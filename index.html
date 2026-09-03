@@ -61,21 +61,28 @@ details.scope li{margin:4px 0}
 #qClear:hover{color:var(--ink)}
 .filter .hint{color:var(--sub);font-size:12px}
 .filter .sp{flex:1}
-button.tab{padding:6px 14px;border:1px solid var(--line);background:#fff;border-radius:8px;cursor:pointer;font-size:13px;color:var(--ink);white-space:nowrap}
+button.tab{padding:5px 14px;border:1px solid var(--line);background:#fff;border-radius:15px;cursor:pointer;font-size:13px;color:var(--ink);white-space:nowrap}
 button.tab:hover{border-color:#9db4d8}
-button.tab.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+button.tab.active{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 2px 6px rgba(29,78,216,.28)}
 button.act{border-style:dashed;color:var(--sub);background:#fafbfd}
 button.act:hover{border-color:#9db4d8;color:var(--ink);background:#fff}
-.glabel{color:var(--sub);font-size:12.5px;font-weight:700;margin-right:2px;align-self:center;white-space:nowrap}
+.ctlhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ctlhead h3{margin:0;font-size:15px}
+.acts{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.panel{background:#f7f9fc;border:1px solid #e6eaf1;border-radius:10px;padding:10px 14px;margin:8px 0}
+.phead{font-size:11px;color:#7a8496;font-weight:700;letter-spacing:1.5px;margin-bottom:7px}
+.prow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.prow .sp{flex:1}
+.prow .opt{color:var(--sub);font-size:12.5px;display:flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap}
+.prow .opt input{accent-color:var(--blue)}
+.bmctl{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:10px 18px;border-bottom:1px solid #eef1f5;background:#fafbfd}
+.bmctl .opt{color:var(--sub);font-size:12.5px;display:flex;align-items:center;gap:5px;cursor:pointer}
+.bmctl .opt input{accent-color:var(--blue)}
+.bmctl .hint{color:var(--sub);font-size:12px}
+table.bm{min-width:920px}
 /* 图表控制区 */
-.ctl{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:16px 0}
-.ctl h3{margin:0 0 6px;font-size:15px}
-.subrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0 2px;padding-top:8px;border-top:1px dashed #e3e6ea}
-.subrow .hint{color:var(--sub);font-size:12px}
-.subrow .opt{color:var(--sub);font-size:12.5px;display:flex;align-items:center;gap:5px;cursor:pointer}
-.subrow .opt input{accent-color:var(--blue)}
-.tabrow{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}
-.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:4px 12px;margin-top:10px;max-height:232px;overflow:auto;border:1px solid #eef1f5;border-radius:8px;padding:8px 10px;background:#fafbfd}
+.ctl{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:16px 0}
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:4px 12px;margin-top:4px;max-height:232px;overflow:auto;border:1px solid #eef1f5;border-radius:8px;padding:8px 10px;background:#fafbfd}
 .chip{display:flex;align-items:center;gap:6px;font-size:12.5px;cursor:pointer;white-space:nowrap}
 .chip:hover{color:var(--blue)}
 .chip input{accent-color:var(--blue)}
@@ -148,6 +155,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
     <li><b>份额筛选</b>：同一基金有 A/C 份额的只保留 <b>A 类</b>；C/D/E/I 份额、美元现汇/现钞份额全部剔除（剔除清单见文末）。</li>
     <li><b>区间涨幅</b>：按累计净值（含分红再投资）计算，基期取 2025-09-02(近1年)/2024-09-02(近2年)/2023-09-01(近3年)/2021-09-02(近5年)/2016-09-02(近10年) 前后最近交易日。成立不足 N 年标注 "--"。<b>成立时间接近 2023-09-01 的基金（如汇添富纳指联接 018966），其"近3年"≈成立以来，比较时请注意。</b></li>
     <li><b>纳斯达克分表</b>：<b>纳斯达克100</b> 与 <b>其他纳斯达克指数</b>（纳指科技 / 纳指生物科技 / 华宝主动精选）分表展示、分组建图；两者走势差异大，收益不可直接比较。</li>
+    <li><b>基准数据</b>：标普500 / 纳斯达克综合 / 纳斯达克100 指数收盘与 SPY / QQQ 前复权价（含分红），汇率取 USDCNY 收盘；基期与基金表一致（基期前最近交易日），人民币口径 = 美元收益 × 汇率变动，与基金净值口径可比（存在费率、跟踪误差与 ±1 交易日时点差异）。</li>
     <li><b>日限额</b> = 单日累计申购上限（限大额）；场内 ETF 的申购状态/限额为场外申赎通道口径，场内买卖不受限。</li>
     <li><b>操作</b>：表格点击表头排序（再点切换升/降序）；顶部输入框按代码/名称过滤；图表区先选分组 → 勾选基金 → 切换图表类型；收益曲线可切换对数 Y 轴；可导出 CSV、打印 PDF。</li>
   </ol>
@@ -156,32 +164,48 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 <div class="stats" id="stats"></div>
 
 <div class="ctl noprint">
-  <h3>📊 可视化对比</h3>
-  <div class="tabrow" id="grpTabs">
-    <span class="glabel">分组</span>
-    <button class="tab active" data-g="all">全部</button>
-    <button class="tab" data-g="sp">标普500</button>
-    <button class="tab" data-g="nq">纳斯达克场外</button>
-    <button class="tab" data-g="etf">纳斯达克ETF</button>
-    <button class="tab" data-g="nx">纳斯达克其他</button>
+  <div class="ctlhead">
+    <h3>📊 可视化对比</h3>
+    <div class="acts">
+      <button class="tab act" id="btnSelAll">☑ 全选本组</button>
+      <button class="tab act" id="btnClear">✕ 清空选择</button>
+      <span class="hint" id="selCnt"></span>
+    </div>
   </div>
-  <div class="tabrow" id="chartTabs">
-    <span class="glabel">图表</span>
-    <button class="tab active" data-c="bar">收益对比（柱状）</button>
-    <button class="tab" data-c="line">收益曲线（1→10年）</button>
-    <button class="tab" data-c="fee">费用对比（管/托/销）</button>
-    <button class="tab" data-c="scat">风险收益（近3年×近1年，气泡=规模）</button>
-    <button class="tab" data-c="size">规模对比</button>
+  <div class="panel">
+    <div class="phead">筛选分组</div>
+    <div class="prow" id="grpTabs">
+      <button class="tab active" data-g="all">全部</button>
+      <button class="tab" data-g="sp">标普500</button>
+      <button class="tab" data-g="nq">纳斯达克100场外</button>
+      <button class="tab" data-g="etf">纳斯达克100ETF</button>
+      <button class="tab" data-g="nx">其他纳斯达克指数</button>
+    </div>
   </div>
-  <div class="subrow">
-    <button class="tab act" id="btnSelAll">☑ 全选本组</button>
-    <button class="tab act" id="btnClear">✕ 清空选择</button>
-    <span class="hint" id="selCnt"></span>
-    <span class="hint">提示：图例可点击显隐系列；柱状图底部滑块可拖动缩放；费用/规模图右侧滑块可滚动。</span>
-    <label class="opt" id="logWrap" style="display:none"><input type="checkbox" id="logT">收益曲线用对数Y轴（近10年收益远大于近1年时更易读）</label>
+  <div class="panel">
+    <div class="phead">图表类型</div>
+    <div class="prow" id="chartTabs">
+      <button class="tab active" data-c="bar">收益对比（柱状）</button>
+      <button class="tab" data-c="line">收益曲线（1→10年）</button>
+      <button class="tab" data-c="fee">费用对比</button>
+      <button class="tab" data-c="scat">风险收益</button>
+      <button class="tab" data-c="size">规模对比</button>
+      <button class="tab" data-c="bm">基准收益（指数/ETF）</button>
+      <span class="sp"></span>
+      <label class="opt" id="logWrap" style="display:none"><input type="checkbox" id="logT">对数Y轴（10年收益大时更易读）</label>
+    </div>
   </div>
+  <div class="phead">勾选基金（出现在图中）</div>
   <div class="chips" id="chips"></div>
   <div id="chart"><div id="chartMsg">图表加载中…</div></div>
+</div>
+
+<div class="card"><h2>基准参考：标普500 / 纳斯达克综合 / 纳斯达克100 指数与 SPY / QQQ<small>与基金同基期（基期前最近交易日收盘），截至 2026-08-31</small></h2>
+<div class="bmctl">
+  <label class="opt"><input type="checkbox" id="fxT" checked> 人民币口径（含汇率换算，与基金可比）</label>
+  <span class="hint" id="bmTag"></span>
+</div>
+<div class="tablebox"><table class="sortable bm" id="bmTbl"></table></div>
 </div>
 
 <div class="filter noprint">
@@ -207,8 +231,9 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   <p><b>★ 国泰纳斯达克100（160213）</b>：2025 年四次大额分红（01-09 每10份10元、05-13 每10份11元、08-20 每10份28元、11-25 每10份9元），表中收益按<b>红利再投资口径重算</b>；天天基金"累计净值"口径下其近1/2/3/5/10年显示为 8.22% / 24.21% / 52.43% / 63.66% / 373.37%。</p>
   <p><b>⚠ 建信纳斯达克100（539001）</b>：2010-2021 年间为"建信全球机遇"（主动型 QDII），2021 年转型跟踪纳斯达克100；近5年/近10年收益含主动管理阶段，不可直接与其他纯指数基金比较。</p>
   <p><b>⚠ 标普500ETF博时（513500）</b>：2022-03-29 做过 1:2 份额拆分，收益已按拆分复权核对。</p>
+  <p><b>基准口径</b>：标普500/纳斯达克综合/纳斯达克100 为价格指数；SPY/QQQ 为前复权价（含分红）；人民币口径按 USDCNY 汇率换算。2026 年内人民币对美元明显升值，故基金（人民币净值）收益低于对应美元基准属正常。</p>
   <p><b>剔除的份额</b>（只保留 A 类人民币）：C 类 006075、012860、008401、019305、007722、006479、014978、008971、012870、012752、015300、016057、016533、016453、018044、019173、019548、019525、018967、019442、017093、017895；D 类 022523、022525、023422；E 类 021773、019118；I 类 021000、024237、021838、022664；美元现汇/现钞份额 003718、012861、013425、013499、018066、000055、006480、003722、012871、012751、012753、016056、016058、016534、016535、019174、019175、018968、018969、017951、017952、017642、017643、013404、015545、017092。</p>
-  <p><b>接口</b>：净值/费用 <code>FundMNDetailInformation</code>、历史净值 <code>FundMNHisNetList</code>、批量净值 <code>FundMNFInfo</code>（fundmobapi.eastmoney.com）；费率与申购限额 <code>fundf10.eastmoney.com/jjfl_&lt;代码&gt;.html</code>；场内盘中价 push2 行情接口。</p>
+  <p><b>接口</b>：净值/费用 <code>FundMNDetailInformation</code>、历史净值 <code>FundMNHisNetList</code>、批量净值 <code>FundMNFInfo</code>（fundmobapi.eastmoney.com）；费率与申购限额 <code>fundf10.eastmoney.com/jjfl_&lt;代码&gt;.html</code>；场内盘中价 push2 行情接口；基准行情 push2his（美股指数/ETF 前复权）与新浪财经 USDCNY。</p>
 </div>
 
 <footer>风险提示：QDII 基金受外汇额度影响，普遍限大额/暂停申购（广发纳指联接 A 日限额仅 5 元）；场内 ETF 存在折溢价；历史涨幅不代表未来。数据仅供参考。</footer>
@@ -432,7 +457,7 @@ function bindSort(){
 /* ================= 过滤 ================= */
 function applyFilter(){
   var kw=document.getElementById('q').value.trim().toLowerCase(), n=0;
-  document.querySelectorAll('table.sortable').forEach(function(tb){
+  document.querySelectorAll('table.sortable:not(.bm)').forEach(function(tb){
     var shown=0;
     [].slice.call(tb.tBodies[0].rows).forEach(function(r){
       var hit=!kw||r.textContent.toLowerCase().indexOf(kw)>=0;
@@ -498,6 +523,39 @@ function renderChips(){
   });
   updateSelCnt();
   renderChart();
+}
+
+/* ================= 基准（指数/ETF） =================
+   基期与基金表一致（基期前最近交易日收盘），截至 2026-08-31；
+   usd/cny 均为 [近1,近2,近3,近5,近10]%，cny=美元收益×USDCNY汇率变动（人民币口径，与基金可比） */
+var BM=[
+ {n:'标普500指数',tp:'指数·价格',usd:[19.81,36.08,70.21,69.41,252.58],cny:[12.77,28.48,57.38,76.32,254.71],note:'价格口径，未含分红'},
+ {n:'纳斯达克综合指数',tp:'指数·价格',usd:[23.93,48.87,87.94,72.01,402.31],cny:[16.65,40.56,73.77,79.02,405.34],note:'价格口径'},
+ {n:'纳斯达克100指数',tp:'指数·价格',usd:[26.80,50.49,90.16,88.78,null],cny:[19.35,42.09,75.83,96.48,null],note:'行情数据自2019-04起，无近10年'},
+ {n:'SPY',tp:'美股ETF',usd:[21.13,39.30,76.46,81.10,318.74],cny:[14.02,31.52,63.16,88.48,321.27],note:'标普500ETF，前复权含分红'},
+ {n:'QQQ',tp:'美股ETF',usd:[27.33,52.07,93.14,94.15,558.16],cny:[19.85,43.58,78.58,102.06,562.13],note:'纳指100ETF，前复权含分红'}
+];
+var BM_COLOR=['#33517e','#0a8a4a','#7a4ad6','#d6a01b','#d6362a'];
+var bmCNY=true;
+function renderBenchTable(){
+  var el=document.getElementById('bmTbl');
+  if(!el)return;
+  var head='<thead><tr>'+
+    '<th class="l" data-sort="text">名称<span class="arr"></span></th>'+
+    '<th class="l" data-sort="text">类型<span class="arr"></span></th>'+
+    '<th data-sort="num">近1年<span class="arr"></span></th>'+
+    '<th data-sort="num">近2年<span class="arr"></span></th>'+
+    '<th data-sort="num">近3年<span class="arr"></span></th>'+
+    '<th data-sort="num">近5年<span class="arr"></span></th>'+
+    '<th data-sort="num">近10年<span class="arr"></span></th>'+
+    '<th class="l" data-sort="text">备注<span class="arr"></span></th>'+
+    '</tr></thead>';
+  el.innerHTML=head+'<tbody>'+BM.map(function(b){
+    var d=bmCNY?b.cny:b.usd;
+    return '<tr>'+cell('<b>'+esc(b.n)+'</b>','l')+cell(esc(b.tp),'l')+
+      retCell(d[0])+retCell(d[1])+retCell(d[2])+retCell(d[3])+retCell(d[4])+
+      cell(esc(b.note),'note')+'</tr>';
+  }).join('')+'</tbody>';
 }
 
 /* ================= 图表 ================= */
@@ -595,16 +653,29 @@ function sizeOption(fs){
   }
   return opt;
 }
+function bmOption(fs){
+  var series=BM.map(function(b,i){
+    return {name:b.n,type:'bar',barMaxWidth:26,data:bmCNY?b.cny:b.usd,
+      itemStyle:{color:BM_COLOR[i]},emphasis:{focus:'series'}};
+  });
+  return {title:{text:'基准收益：近1年 → 近10年（% · '+(bmCNY?'人民币口径（含汇率）':'美元口径')+'）',left:'center',textStyle:{fontSize:15}},
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'},valueFormatter:function(v){return v==null?'无数据':v.toFixed(2)+'%';}},
+    legend:{top:28},
+    grid:{left:50,right:24,top:64,bottom:40},
+    xAxis:{type:'category',data:METRICS},
+    yAxis:{type:'value',name:'%'},
+    series:series};
+}
 function renderChart(){
   if(!chart)return;
   try{
     var fs=selFunds();
-    if(!fs.length){
+    if(!fs.length&&curChart!=='bm'){
       chart.clear();
       chart.setOption({title:{text:'请勾选至少一只基金',left:'center',top:'middle',textStyle:{color:'#999',fontSize:16}}});
       return;
     }
-    var opt={bar:barOption,line:lineOption,fee:feeOption,scat:scatOption,size:sizeOption}[curChart](fs);
+    var opt={bar:barOption,line:lineOption,fee:feeOption,scat:scatOption,size:sizeOption,bm:bmOption}[curChart](fs);
     chart.setOption(opt,true);
     chart.resize();
   }catch(e){
@@ -618,6 +689,11 @@ function initChart(){
     chart=echarts.init(document.getElementById('chart'));
     document.getElementById('chartMsg').style.display='none';
     renderChart();
+    /* 首屏兜底：布局稳定后补一次重绘/缩放，修复默认柱状图空白 */
+    if(window.requestAnimationFrame){
+      requestAnimationFrame(function(){requestAnimationFrame(function(){if(chart)chart.resize();});});
+    }
+    setTimeout(function(){if(chart)chart.resize();},250);
   }catch(e){
     document.getElementById('chartMsg').textContent='图表初始化失败：'+e.message;
   }
@@ -627,6 +703,7 @@ function showChartFail(){
   document.getElementById('chartMsg').textContent='图表库加载失败：请检查网络后刷新页面，或把 echarts.min.js 放到本页面同目录后重开（已依次尝试 本地文件 / jsDelivr / unpkg / BootCDN / staticfile）。下方表格与数据不受影响。';
 }
 window.addEventListener('resize',function(){if(chart)chart.resize();});
+window.addEventListener('load',function(){if(chart)renderChart();});
 
 /* ================= CSV 导出 ================= */
 function exportCSV(){
@@ -691,6 +768,12 @@ document.getElementById('logT').addEventListener('change',function(){
   logAxis=this.checked;
   renderChart();
 });
+document.getElementById('fxT').addEventListener('change',function(){
+  bmCNY=this.checked;
+  renderBenchTable();
+  document.getElementById('bmTag').textContent=bmCNY?'当前：人民币口径（含汇率，可与基金直接比较）':'当前：美元口径（未计汇率）';
+  if(curChart==='bm')renderChart();
+});
 document.getElementById('q').addEventListener('input',applyFilter);
 document.getElementById('qClear').addEventListener('click',function(){
   document.getElementById('q').value='';
@@ -707,6 +790,8 @@ renderTables();
 bindSort();
 applyFilter();
 renderStats();
+renderBenchTable();
+document.getElementById('bmTag').textContent='当前：人民币口径（含汇率，可与基金直接比较）';
 renderGroupTabs();
 renderChips();
 if(window.echarts){
