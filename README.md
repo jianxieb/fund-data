@@ -4,12 +4,12 @@
 
 ## 内容
 
-- [`index.html`](index.html)（同 [`标普500与纳斯达克基金清单.html`](标普500与纳斯达克基金清单.html)）：交互式清单——三张表（标普500 ×10、纳斯达克场外 ×19、纳指 ETF ×14），支持表头排序、代码/名称过滤、天天基金链接直达；内置 ECharts 对比图（收益柱状 / 收益曲线 / 费用 / 风险收益 / 规模）、数据总览、CSV 导出、打印。
+- [`index.html`](index.html)：交互式清单（单文件）——三张表（标普500 ×10、纳斯达克场外 ×19、纳指 ETF ×14），支持表头排序、代码/名称过滤、天天基金链接直达；内置 ECharts 对比图（收益柱状 / 收益曲线 / 费用 / 风险收益 / 规模）、数据总览、CSV 导出、打印。
 - [`标普500与纳斯达克基金清单.md`](标普500与纳斯达克基金清单.md)：Markdown 版清单。
 
 ## 本地 / 离线使用（网络受限电脑推荐）
 
-1. 下载本仓库（GitHub 页面 **Code → Download ZIP**，或把仓库里 `index.html` 与 `标普500与纳斯达克基金清单.html` 保存下来）；
+1. 下载本仓库（GitHub 页面 **Code → Download ZIP**，或直接把 `index.html` 保存下来）；
 2. 下载 ECharts 图表库 `echarts.min.js`（约 1MB，任一国内镜像均可）：
    - https://registry.npmmirror.com/echarts/5.5.1/files/dist/echarts.min.js
    - https://cdn.bootcdn.net/ajax/libs/echarts/5.5.1/echarts.min.js
