@@ -68,7 +68,9 @@ button.act{border-style:dashed;color:var(--sub);background:#fafbfd}
 button.act:hover{border-color:#9db4d8;color:var(--ink);background:#fff}
 .ctlhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .ctlhead h3{margin:0;font-size:15px}
-.acts{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.chipshead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 2px}
+.chipshead .phead{margin:0;flex:1}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:3px}
 .panel{background:#f7f9fc;border:1px solid #e6eaf1;border-radius:10px;padding:10px 14px;margin:8px 0}
 .phead{font-size:11px;color:#7a8496;font-weight:700;letter-spacing:1.5px;margin-bottom:7px}
 .prow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -155,7 +157,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
     <li><b>份额筛选</b>：同一基金有 A/C 份额的只保留 <b>A 类</b>；C/D/E/I 份额、美元现汇/现钞份额全部剔除（剔除清单见文末）。</li>
     <li><b>区间涨幅</b>：按累计净值（含分红再投资）计算，基期取 2025-09-02(近1年)/2024-09-02(近2年)/2023-09-01(近3年)/2021-09-02(近5年)/2016-09-02(近10年) 前后最近交易日。成立不足 N 年标注 "--"。<b>成立时间接近 2023-09-01 的基金（如汇添富纳指联接 018966），其"近3年"≈成立以来，比较时请注意。</b></li>
     <li><b>纳斯达克分表</b>：<b>纳斯达克100</b> 与 <b>其他纳斯达克指数</b>（纳指科技 / 纳指生物科技 / 华宝主动精选）分表展示、分组建图；两者走势差异大，收益不可直接比较。</li>
-    <li><b>基准数据</b>：标普500 / 纳斯达克综合 / 纳斯达克100 指数收盘与 SPY / QQQ 前复权价（含分红），汇率取 USDCNY 收盘；基期与基金表一致（基期前最近交易日），人民币口径 = 美元收益 × 汇率变动，与基金净值口径可比（存在费率、跟踪误差与 ±1 交易日时点差异）。</li>
+    <li><b>基准叠加</b>：标普500 / 纳斯达克综合 / 纳斯达克100 指数与 SPY / QQQ 可在收益柱状、收益曲线图中<b>勾选叠加</b>（虚线为基准），支持人民币/美元口径切换；基期与基金表一致（基期前最近交易日），人民币口径 = 美元收益 × USDCNY 汇率变动。</li>
     <li><b>日限额</b> = 单日累计申购上限（限大额）；场内 ETF 的申购状态/限额为场外申赎通道口径，场内买卖不受限。</li>
     <li><b>操作</b>：表格点击表头排序（再点切换升/降序）；顶部输入框按代码/名称过滤；图表区先选分组 → 勾选基金 → 切换图表类型；收益曲线可切换对数 Y 轴；可导出 CSV、打印 PDF。</li>
   </ol>
@@ -164,14 +166,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 <div class="stats" id="stats"></div>
 
 <div class="ctl noprint">
-  <div class="ctlhead">
-    <h3>📊 可视化对比</h3>
-    <div class="acts">
-      <button class="tab act" id="btnSelAll">☑ 全选本组</button>
-      <button class="tab act" id="btnClear">✕ 清空选择</button>
-      <span class="hint" id="selCnt"></span>
-    </div>
-  </div>
+  <div class="ctlhead"><h3>📊 可视化对比</h3></div>
   <div class="panel">
     <div class="phead">筛选分组</div>
     <div class="prow" id="grpTabs">
@@ -195,15 +190,34 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
       <label class="opt" id="logWrap" style="display:none"><input type="checkbox" id="logT">对数Y轴（10年收益大时更易读）</label>
     </div>
   </div>
-  <div class="phead">勾选基金（出现在图中）</div>
+  <div class="chipshead">
+    <span class="phead">勾选基金（出现在图中）</span>
+    <button class="tab act" id="btnSelAll">☑ 全选本组</button>
+    <button class="tab act" id="btnClear">✕ 清空</button>
+    <span class="hint" id="selCnt"></span>
+  </div>
   <div class="chips" id="chips"></div>
+  <div class="panel">
+    <div class="phead">基准叠加（可选，显示在收益柱状 / 收益曲线图中）</div>
+    <div class="prow" id="bmRow">
+      <label class="opt"><span class="dot" style="background:#33517e"></span><input type="checkbox" class="bmcb" value="0">标普500指数</label>
+      <label class="opt"><span class="dot" style="background:#0a8a4a"></span><input type="checkbox" class="bmcb" value="1">纳斯达克综合</label>
+      <label class="opt"><span class="dot" style="background:#7a4ad6"></span><input type="checkbox" class="bmcb" value="2">纳斯达克100</label>
+      <label class="opt"><span class="dot" style="background:#d6a01b"></span><input type="checkbox" class="bmcb" value="3">SPY</label>
+      <label class="opt"><span class="dot" style="background:#d6362a"></span><input type="checkbox" class="bmcb" value="4">QQQ</label>
+      <span class="sp"></span>
+      <span class="opt">口径</span>
+      <button class="tab" id="bmCny">人民币</button>
+      <button class="tab" id="bmUsd">美元</button>
+    </div>
+  </div>
   <div id="chart"><div id="chartMsg">图表加载中…</div></div>
 </div>
 
 <div class="card"><h2>基准参考：标普500 / 纳斯达克综合 / 纳斯达克100 指数与 SPY / QQQ<small>与基金同基期（基期前最近交易日收盘），截至 2026-08-31</small></h2>
 <div class="bmctl">
-  <label class="opt"><input type="checkbox" id="fxT" checked> 人民币口径（含汇率换算，与基金可比）</label>
   <span class="hint" id="bmTag"></span>
+  <span class="hint">口径切换与叠加勾选见上方图表区「基准叠加」。</span>
 </div>
 <div class="tablebox"><table class="sortable bm" id="bmTbl"></table></div>
 </div>
@@ -537,6 +551,7 @@ var BM=[
 ];
 var BM_COLOR=['#33517e','#0a8a4a','#7a4ad6','#d6a01b','#d6362a'];
 var bmCNY=true;
+var bmSel=new Set();
 function renderBenchTable(){
   var el=document.getElementById('bmTbl');
   if(!el)return;
@@ -560,35 +575,58 @@ function renderBenchTable(){
 
 /* ================= 图表 ================= */
 function barOption(fs){
+  var extra=BM.map(function(b,i){return {b:b,i:i};}).filter(function(o){return bmSel.has(o.i);});
+  var isDiv=extra.length>0;
+  var hasDiv=isDiv&&fs.length>0;
   var cats=fs.map(function(f){return short(f.n)+' '+f.c;});
+  if(hasDiv)cats=cats.concat(['']);
+  extra.forEach(function(o){cats.push(o.b.n);});
   var series=METRICS.map(function(m,i){
-    return {name:m,type:'bar',barMaxWidth:26,
-      data:fs.map(function(f){return f.r[i];}),
+    var data=fs.map(function(f){return f.r[i];});
+    if(isDiv){
+      if(hasDiv)data=data.concat([null]);
+      extra.forEach(function(o){var d=bmCNY?o.b.cny:o.b.usd;data.push(d[i]);});
+    }
+    return {name:m,type:'bar',barMaxWidth:26,data:data,
       itemStyle:{color:['#33517e','#4a7ab5','#d6a01b','#d6702a','#d6362a'][i]},
       emphasis:{focus:'series'}};
   });
-  return {title:{text:'各基金区间收益对比（%）',left:'center',textStyle:{fontSize:15}},
+  return {title:{text:'各基金区间收益对比（%'+(isDiv?(bmCNY?'，基准为人民币口径':'，基准为美元口径'):'')+'）',left:'center',textStyle:{fontSize:15}},
     tooltip:{trigger:'axis',axisPointer:{type:'shadow'},valueFormatter:function(v){return v==null?'无数据':v.toFixed(2)+'%';}},
     legend:{top:28,type:'scroll'},
     grid:{left:50,right:24,top:70,bottom:70},
-    xAxis:{type:'category',data:cats,axisLabel:{interval:0,rotate:38,fontSize:10}},
+    xAxis:{type:'category',data:cats,axisLabel:{interval:0,rotate:38,fontSize:10,
+      color:function(v,idx){
+        if(!isDiv)return '#333';
+        var bi=idx-fs.length-(hasDiv?1:0);
+        if(bi>=0&&extra[bi])return BM_COLOR[extra[bi].i];
+        return '#333';
+      }}},
     yAxis:{type:'value',name:'%'},
     dataZoom:[{type:'slider',height:16,bottom:8},{type:'inside'}],
     series:series};
 }
 function lineOption(fs){
+  var series=fs.map(function(f){
+    return {name:short(f.n)+' '+f.c,type:'line',smooth:true,connectNulls:false,
+      data:f.r.slice(),
+      lineStyle:{width:2},symbol:'circle',symbolSize:6,
+      itemStyle:{color:f.g==='sp'?GROUP_COLOR.sp:(f.c==='159509'?'#7a4ad6':(f.c==='513290'?'#2e8b8b':GROUP_COLOR[f.g]))}};
+  });
+  BM.forEach(function(b,i){
+    if(!bmSel.has(i))return;
+    series.push({name:b.n+'（基准）',type:'line',smooth:true,connectNulls:false,
+      data:bmCNY?b.cny:b.usd,
+      lineStyle:{width:2.5,type:'dashed'},symbol:'diamond',symbolSize:7,
+      itemStyle:{color:BM_COLOR[i]}});
+  });
   return {title:{text:'收益曲线：近1年 → 近10年（%）',left:'center',textStyle:{fontSize:15}},
     tooltip:{trigger:'axis',valueFormatter:function(v){return v==null?'无数据':v.toFixed(2)+'%';}},
     legend:{top:30,type:'scroll'},
     grid:{left:50,right:24,top:70,bottom:40},
     xAxis:{type:'category',data:METRICS,boundaryGap:false},
     yAxis:{type:logAxis?'log':'value',name:'%',min:logAxis?1:null},
-    series:fs.map(function(f){
-      return {name:short(f.n)+' '+f.c,type:'line',smooth:true,connectNulls:false,
-        data:f.r.slice(),
-        lineStyle:{width:2},symbol:'circle',symbolSize:6,
-        itemStyle:{color:f.g==='sp'?GROUP_COLOR.sp:(f.c==='159509'?'#7a4ad6':(f.c==='513290'?'#2e8b8b':GROUP_COLOR[f.g]))}};
-    })};
+    series:series};
 }
 function feeOption(fs){
   var sorted=fs.slice().sort(function(a,b){return (b.fee[0]+b.fee[1]+(b.fee[2]||0))-(a.fee[0]+a.fee[1]+(a.fee[2]||0));});
@@ -670,7 +708,7 @@ function renderChart(){
   if(!chart)return;
   try{
     var fs=selFunds();
-    if(!fs.length&&curChart!=='bm'){
+    if(!fs.length&&curChart!=='bm'&&!bmSel.size){
       chart.clear();
       chart.setOption({title:{text:'请勾选至少一只基金',left:'center',top:'middle',textStyle:{color:'#999',fontSize:16}}});
       return;
@@ -768,12 +806,24 @@ document.getElementById('logT').addEventListener('change',function(){
   logAxis=this.checked;
   renderChart();
 });
-document.getElementById('fxT').addEventListener('change',function(){
-  bmCNY=this.checked;
+function setBmCny(v){
+  bmCNY=v;
+  var a=document.getElementById('bmCny'), b=document.getElementById('bmUsd');
+  if(a){if(bmCNY){a.classList.add('active');}else{a.classList.remove('active');}}
+  if(b){if(!bmCNY){b.classList.add('active');}else{b.classList.remove('active');}}
   renderBenchTable();
   document.getElementById('bmTag').textContent=bmCNY?'当前：人民币口径（含汇率，可与基金直接比较）':'当前：美元口径（未计汇率）';
-  if(curChart==='bm')renderChart();
+  renderChart();
+}
+document.querySelectorAll('#bmRow .bmcb').forEach(function(cb){
+  cb.addEventListener('change',function(){
+    var i=parseInt(cb.value,10);
+    if(cb.checked){bmSel.add(i);}else{bmSel.delete(i);}
+    renderChart();
+  });
 });
+document.getElementById('bmCny').addEventListener('click',function(){setBmCny(true);});
+document.getElementById('bmUsd').addEventListener('click',function(){setBmCny(false);});
 document.getElementById('q').addEventListener('input',applyFilter);
 document.getElementById('qClear').addEventListener('click',function(){
   document.getElementById('q').value='';
@@ -791,7 +841,7 @@ bindSort();
 applyFilter();
 renderStats();
 renderBenchTable();
-document.getElementById('bmTag').textContent='当前：人民币口径（含汇率，可与基金直接比较）';
+setBmCny(true);
 renderGroupTabs();
 renderChips();
 if(window.echarts){
