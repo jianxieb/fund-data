@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>标普500 与 纳斯达克 基金清单 · 多功能对比（2026-09-02）</title>
 <script>
-/* ECharts 多源加载：jsDelivr → unpkg → BootCDN → staticfile，任一成功即用 */
+/* ECharts 多源加载：本地 echarts.min.js（离线可用）→ jsDelivr → unpkg → BootCDN → staticfile，任一成功即用 */
 (function(){
   var urls=[
+    'echarts.min.js',
     'https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js',
     'https://unpkg.com/echarts@5.5.1/dist/echarts.min.js',
     'https://cdn.bootcdn.net/ajax/libs/echarts/5.5.1/echarts.min.js',
@@ -600,7 +601,7 @@ function initChart(){
 }
 function showChartFail(){
   if(window.echarts){initChart();return;}
-  document.getElementById('chartMsg').textContent='图表库加载失败：请检查网络后刷新页面（已依次尝试 jsDelivr / unpkg / BootCDN / staticfile 四个源）。下方表格与数据不受影响。';
+  document.getElementById('chartMsg').textContent='图表库加载失败：请检查网络后刷新页面，或把 echarts.min.js 放到本页面同目录后重开（已依次尝试 本地文件 / jsDelivr / unpkg / BootCDN / staticfile）。下方表格与数据不受影响。';
 }
 window.addEventListener('resize',function(){if(chart)chart.resize();});
 
