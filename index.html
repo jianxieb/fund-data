@@ -655,9 +655,9 @@ function feeOption(fs){
   var opt={title:{text:'年费对比（管理费+托管费'+(hasSale?'+销售服务费':'，A类销售服务费均为0')+'，%/年）',left:'center',textStyle:{fontSize:15}},
     tooltip:{trigger:'axis',axisPointer:{type:'shadow'},valueFormatter:function(v){return v.toFixed(2)+'%';}},
     legend:{top:28},
-    grid:{left:95,right:hasSale?48:30,top:64,bottom:30},
+    grid:{left:150,right:hasSale?48:30,top:64,bottom:30},
     xAxis:{type:'value',name:'%/年'},
-    yAxis:{type:'category',data:sorted.map(function(f){return short(f.n);}),axisLabel:{fontSize:10.5}},
+    yAxis:{type:'category',data:sorted.map(function(f){return short(f.n);}),axisLabel:{fontSize:10.5,width:138,overflow:'break',lineHeight:11}},
     series:series};
   if(sorted.length>15){
     opt.grid.right=48;
@@ -696,9 +696,9 @@ function sizeOption(fs){
   var sorted=fs.slice().sort(function(a,b){return a.sz-b.sz;});
   var opt={title:{text:'净资产规模对比（亿元，截至2026-06-30）',left:'center',textStyle:{fontSize:15}},
     tooltip:{trigger:'axis',axisPointer:{type:'shadow'},valueFormatter:function(v){return v.toFixed(1)+'亿';}},
-    grid:{left:95,right:48,top:44,bottom:30},
+    grid:{left:150,right:48,top:44,bottom:30},
     xAxis:{type:'value',name:'亿元'},
-    yAxis:{type:'category',data:sorted.map(function(f){return short(f.n);}),axisLabel:{fontSize:10.5}},
+    yAxis:{type:'category',data:sorted.map(function(f){return short(f.n);}),axisLabel:{fontSize:10.5,width:138,overflow:'break',lineHeight:11}},
     series:[{type:'bar',data:sorted.map(function(f){return f.sz;}),
       itemStyle:{color:function(p){return GROUP_COLOR[sorted[p.dataIndex].g];}},
       label:{show:true,position:'right',fontSize:10}}]};
