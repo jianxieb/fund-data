@@ -157,7 +157,8 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
     <li><b>份额筛选</b>：同一基金有 A/C 份额的只保留 <b>A 类</b>；C/D/E/I 份额、美元现汇/现钞份额全部剔除（剔除清单见文末）。</li>
     <li><b>区间涨幅</b>：按累计净值（含分红再投资）计算，基期取 2025-09-02(近1年)/2024-09-02(近2年)/2023-09-01(近3年)/2021-09-02(近5年)/2016-09-02(近10年) 前后最近交易日。成立不足 N 年标注 "--"。<b>成立时间接近 2023-09-01 的基金（如汇添富纳指联接 018966），其"近3年"≈成立以来，比较时请注意。</b></li>
     <li><b>纳斯达克分表</b>：<b>纳斯达克100</b> 与 <b>其他纳斯达克指数</b>（纳指科技 / 纳指生物科技 / 华宝主动精选）分表展示、分组建图；两者走势差异大，收益不可直接比较。</li>
-    <li><b>基准叠加</b>：标普500 / 纳斯达克综合 / 纳斯达克100 指数与 SPY / QQQ 可在收益柱状、收益曲线图中<b>勾选叠加</b>（虚线为基准），支持人民币/美元口径切换；基期与基金表一致（基期前最近交易日），人民币口径 = 美元收益 × USDCNY 汇率变动。</li>
+    <li><b>基准数据</b>：标普500 / 纳斯达克综合 / 纳斯达克100 指数收盘与 SPY / QQQ 前复权价（含分红），汇率取 USDCNY 收盘；基期与基金表一致（基期前最近交易日），人民币口径 = 美元收益 × 汇率变动，与基金净值口径可比（存在费率、跟踪误差与 ±1 交易日时点差异）。</li>
+    <li><b>跟踪偏离度</b>：图表区「跟踪偏离」页签 = 基金收益 − 对应基准（百分点，正=跑赢）；标普500 组基准取 SPY、纳斯达克100 组取 QQQ（人民币口径直接可比，美元口径按同期汇率换算）；其他纳斯达克指数暂无对应基准。</li>
     <li><b>日限额</b> = 单日累计申购上限（限大额）；场内 ETF 的申购状态/限额为场外申赎通道口径，场内买卖不受限。</li>
     <li><b>操作</b>：表格点击表头排序（再点切换升/降序）；顶部输入框按代码/名称过滤；图表区先选分组 → 勾选基金 → 切换图表类型；收益曲线可切换对数 Y 轴；可导出 CSV、打印 PDF。</li>
   </ol>
@@ -186,6 +187,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
       <button class="tab" data-c="scat">风险收益</button>
       <button class="tab" data-c="size">规模对比</button>
       <button class="tab" data-c="bm">基准收益（指数/ETF）</button>
+      <button class="tab" data-c="td">跟踪偏离</button>
       <span class="sp"></span>
       <label class="opt" id="logWrap" style="display:none"><input type="checkbox" id="logT">对数Y轴（10年收益大时更易读）</label>
     </div>
@@ -246,6 +248,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   <p><b>⚠ 建信纳斯达克100（539001）</b>：2010-2021 年间为"建信全球机遇"（主动型 QDII），2021 年转型跟踪纳斯达克100；近5年/近10年收益含主动管理阶段，不可直接与其他纯指数基金比较。</p>
   <p><b>⚠ 标普500ETF博时（513500）</b>：2022-03-29 做过 1:2 份额拆分，收益已按拆分复权核对。</p>
   <p><b>基准口径</b>：标普500/纳斯达克综合/纳斯达克100 为价格指数；SPY/QQQ 为前复权价（含分红）；人民币口径按 USDCNY 汇率换算。2026 年内人民币对美元明显升值，故基金（人民币净值）收益低于对应美元基准属正常。</p>
+  <p><b>跟踪偏离度</b>：正=跑赢基准、负=跑输（含费率与跟踪误差影响）；分红型基金若以累计净值口径计算会高估跑输幅度，160213 已按红利再投重算。</p>
   <p><b>剔除的份额</b>（只保留 A 类人民币）：C 类 006075、012860、008401、019305、007722、006479、014978、008971、012870、012752、015300、016057、016533、016453、018044、019173、019548、019525、018967、019442、017093、017895；D 类 022523、022525、023422；E 类 021773、019118；I 类 021000、024237、021838、022664；美元现汇/现钞份额 003718、012861、013425、013499、018066、000055、006480、003722、012871、012751、012753、016056、016058、016534、016535、019174、019175、018968、018969、017951、017952、017642、017643、013404、015545、017092。</p>
   <p><b>接口</b>：净值/费用 <code>FundMNDetailInformation</code>、历史净值 <code>FundMNHisNetList</code>、批量净值 <code>FundMNFInfo</code>（fundmobapi.eastmoney.com）；费率与申购限额 <code>fundf10.eastmoney.com/jjfl_&lt;代码&gt;.html</code>；场内盘中价 push2 行情接口；基准行情 push2his（美股指数/ETF 前复权）、腾讯证券 usNDX 与新浪财经 USDCNY。</p>
 </div>
@@ -704,6 +707,35 @@ function bmOption(fs){
     yAxis:{type:'value',name:'%'},
     series:series};
 }
+function tdOption(fs){
+  /* 跟踪偏离度：基金收益 − 对应基准（百分点）。分组→基准：sp→SPY(3)、nq/etf→QQQ(4)、nx→无 */
+  var TD_BM={sp:3,nq:4,etf:4};
+  var FX_ARR=[-5.87,-5.58,-7.54,4.08,0.60]; /* USDCNY 各期汇率变动%，用于基金收益换算美元口径 */
+  var cats=fs.map(function(f){return short(f.n)+' '+f.c;});
+  var series=METRICS.map(function(m,i){
+    return {name:m,type:'bar',barMaxWidth:26,
+      data:fs.map(function(f){
+        var bi=TD_BM[f.g];
+        if(bi==null||f.r[i]==null)return null;
+        var b=bmCNY?BM[bi].cny[i]:BM[bi].usd[i];
+        if(b==null)return null;
+        var fr=f.r[i];
+        if(!bmCNY)fr=(1+fr/100)/(1+FX_ARR[i]/100)*100-100;
+        return +((fr-b)).toFixed(2);
+      }),
+      itemStyle:{color:['#33517e','#4a7ab5','#d6a01b','#d6702a','#d6362a'][i]},
+      emphasis:{focus:'series'},
+      markLine:i===0?{silent:true,symbol:'none',lineStyle:{color:'#999',type:'dashed'},data:[{yAxis:0}]}:null};
+  });
+  return {title:{text:'跟踪偏离度：基金 − 基准（百分点，正=跑赢基准 · '+(bmCNY?'人民币口径':'美元口径')+'）',left:'center',textStyle:{fontSize:15}},
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'},valueFormatter:function(v){return v==null?'无数据':(v>0?'+':'')+v.toFixed(2)+' 百分点';}},
+    legend:{top:28,type:'scroll'},
+    grid:{left:50,right:24,top:70,bottom:70},
+    xAxis:{type:'category',data:cats,axisLabel:{interval:0,rotate:38,fontSize:10}},
+    yAxis:{type:'value',name:'百分点'},
+    dataZoom:[{type:'slider',height:16,bottom:8},{type:'inside'}],
+    series:series};
+}
 function renderChart(){
   if(!chart)return;
   try{
@@ -713,7 +745,7 @@ function renderChart(){
       chart.setOption({title:{text:'请勾选至少一只基金',left:'center',top:'middle',textStyle:{color:'#999',fontSize:16}}});
       return;
     }
-    var opt={bar:barOption,line:lineOption,fee:feeOption,scat:scatOption,size:sizeOption,bm:bmOption}[curChart](fs);
+    var opt={bar:barOption,line:lineOption,fee:feeOption,scat:scatOption,size:sizeOption,bm:bmOption,td:tdOption}[curChart](fs);
     chart.setOption(opt,true);
     chart.resize();
   }catch(e){
