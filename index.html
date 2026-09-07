@@ -160,7 +160,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
     <li><b>基准数据</b>：标普500 / 纳斯达克综合 / 纳斯达克100 指数收盘与 SPY / QQQ 前复权价（含分红），汇率取 USDCNY 收盘；基期与基金表一致（基期前最近交易日），人民币口径 = 美元收益 × 汇率变动，与基金净值口径可比（存在费率、跟踪误差与 ±1 交易日时点差异）。</li>
     <li><b>跟踪偏离度</b>：图表区「跟踪偏离」页签 = 基金/ETF − <b>纯指数基准</b>（百分点，正=跑赢），基准永远是指数：标普500 组 → 标普500指数、纳指100 组 → 纳斯达克100指数；勾选 SPY/QQQ 时会把它们作为产品一并对比（SPY vs 标普500指数、QQQ vs 纳斯达克100指数）；人民币/美元口径可切换。</li>
     <li><b>日限额</b> = 单日累计申购上限（限大额）；场内 ETF 的申购状态/限额为场外申赎通道口径，场内买卖不受限。</li>
-    <li><b>操作</b>：表格点击表头排序（再点切换升/降序）；顶部输入框按代码/名称过滤；图表区先选分组 → 勾选基金 → 切换图表类型；收益曲线可切换对数 Y 轴；可导出 CSV、打印 PDF。</li>
+    <li><b>操作</b>：表格点击表头排序（再点切换升/降序）；顶部输入框按代码/名称过滤；图表区先选分组 → 勾选基金 → 切换图表类型；收益曲线可切换<b>年化收益率</b>（跨期限比较更合理）或对数 Y 轴；可导出 CSV、打印 PDF。</li>
   </ol>
 </details>
 
@@ -189,7 +189,8 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
       <button class="tab" data-c="bm">基准收益（指数/ETF）</button>
       <button class="tab" data-c="td">跟踪偏离</button>
       <span class="sp"></span>
-      <label class="opt" id="logWrap" style="display:none"><input type="checkbox" id="logT">对数Y轴（10年收益大时更易读）</label>
+      <label class="opt" id="logWrap" style="display:none"><input type="checkbox" id="logT">对数Y轴</label>
+      <label class="opt" id="annWrap" style="display:none"><input type="checkbox" id="annT">年化收益率</label>
     </div>
   </div>
   <div class="chipshead">
@@ -324,7 +325,7 @@ var METRICS=['近1年','近2年','近3年','近5年','近10年'];
 var GROUPS={all:'全部',sp:'标普500',nq:'纳斯达克100场外',etf:'纳斯达克100ETF',nx:'其他纳斯达克指数'};
 var GROUP_COLOR={sp:'#33517e',nq:'#d6362a',etf:'#0a8a4a',nx:'#7a4ad6'};
 var DEFAULT_SEL=['050025','096001','513500','160213','270042','040046','161130','539001','513100','159941','159509','513290'];
-var curGroup='all', curChart='bar', logAxis=false;
+var curGroup='all', curChart='bar', logAxis=false, annOn=false;
 var sel=new Set(DEFAULT_SEL);
 var chart=null;
 
@@ -611,25 +612,36 @@ function barOption(fs){
     series:series};
 }
 function lineOption(fs){
+  var YEARS=[1,2,3,5,10];
+  function ann(v,i){return v==null?null:+((Math.pow(1+v/100,1/YEARS[i])-1)*100).toFixed(2);}
+  function tv(v,i){return annOn?ann(v,i):v;}
+  var allVals=[];
+  function collect(arr){arr.forEach(function(v){if(v!=null)allVals.push(v);});}
   var series=fs.map(function(f){
+    collect(f.r);
     return {name:short(f.n)+' '+f.c,type:'line',smooth:true,connectNulls:false,
-      data:f.r.slice(),
+      data:f.r.map(tv),
       lineStyle:{width:2},symbol:'circle',symbolSize:6,
       itemStyle:{color:f.g==='sp'?GROUP_COLOR.sp:(f.c==='159509'?'#7a4ad6':(f.c==='513290'?'#2e8b8b':GROUP_COLOR[f.g]))}};
   });
   BM.forEach(function(b,i){
     if(!bmSel.has(i))return;
+    var d=bmCNY?b.cny:b.usd;
+    collect(d);
     series.push({name:b.n+'（基准）',type:'line',smooth:true,connectNulls:false,
-      data:bmCNY?b.cny:b.usd,
+      data:d.map(tv),
       lineStyle:{width:2.5,type:'dashed'},symbol:'diamond',symbolSize:7,
       itemStyle:{color:BM_COLOR[i]}});
   });
-  return {title:{text:'收益曲线：近1年 → 近10年（%）',left:'center',textStyle:{fontSize:15}},
+  var useLog=logAxis&&!annOn;
+  var minVal=null;
+  if(allVals.length)minVal=Math.min.apply(null,allVals);
+  return {title:{text:annOn?'年化收益率曲线（%·几何年化）':'收益曲线：近1年 → 近10年（%）',left:'center',textStyle:{fontSize:15}},
     tooltip:{trigger:'axis',valueFormatter:function(v){return v==null?'无数据':v.toFixed(2)+'%';}},
     legend:{top:30,type:'scroll'},
     grid:{left:50,right:24,top:70,bottom:40},
     xAxis:{type:'category',data:METRICS,boundaryGap:false},
-    yAxis:{type:logAxis?'log':'value',name:'%',min:logAxis?1:null},
+    yAxis:{type:useLog?'log':'value',name:'%',min:useLog?(minVal!=null&&minVal>0?minVal*0.8:0.5):null},
     series:series};
 }
 function feeOption(fs){
@@ -845,12 +857,18 @@ document.getElementById('chartTabs').querySelectorAll('button[data-c]').forEach(
     curChart=b.dataset.c;
     document.getElementById('chartTabs').querySelectorAll('button[data-c]').forEach(function(x){x.classList.remove('active');});
     b.classList.add('active');
-    document.getElementById('logWrap').style.display=(curChart==='line')?'':'none';
+    var isLine=curChart==='line';
+    document.getElementById('logWrap').style.display=isLine?'':'none';
+    document.getElementById('annWrap').style.display=isLine?'':'none';
     renderChart();
   });
 });
 document.getElementById('logT').addEventListener('change',function(){
   logAxis=this.checked;
+  renderChart();
+});
+document.getElementById('annT').addEventListener('change',function(){
+  annOn=this.checked;
   renderChart();
 });
 function setBmCny(v){
