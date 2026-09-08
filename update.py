@@ -578,28 +578,29 @@ def write_md(src):
             return '--'
         f = float(v)
         return ('+%.2f%%' if f >= 0 else '%.2f%%') % ((1 + f / 100) ** (1 / n) - 1) * 100
-    def row(code, with_etf_cols=False):
+    def row(code, comm):
         f = fund_rows[code]
         is_etf = (f['t'] == '') or (f['t'] == '场内ETF')
         r = f['r'] + [''] * (5 - len(f['r']))
         st = {'暂停': '暂停申购', '限大额': '限大额', '开放': '开放申购', '场内': '场内交易'}.get(f['st'], f['st'] or '场内交易')
         lm = '--' if f['st'] == '暂停' else (f['lm'] or '--')
         buy = f['buy'] or ('场内交易' if is_etf else '--')
-        rd = f['rd'] or ('--' if is_etf else '--')
+        rd = f['rd'] or '--'
         nav = ('%s (%.4f%s)' % (f['navdate'], float(f['nav']), ('%+.2f%%' % float(f['dz'])) if f['dz'] and f['dz'] != 'null' else '')) if f['nav'] and f['nav'] != 'null' else '--'
-        etf = ''
-        if with_etf_cols and is_etf:
+        if is_etf:
             prem = ('（%+.2f%%）' % float(f['prem'])) if f['prem'] and f['prem'] != 'null' else ''
-            etf = ' | %s%s' % (f['p'] if f['p'] and f['p'] != 'null' else '--', prem)
-        elif with_etf_cols:
-            etf = ' | --'
-        return '| %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s%s |' % (
+            price = '%s%s' % (f['p'] if f['p'] and f['p'] != 'null' else '--', prem)
+            fee = comm
+        else:
+            price, fee = '--', '--'
+        return '| %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s |' % (
             f['c'], f['n'], f['t'] or '场内ETF', f['ix'], f['d'], f['fee'].replace(',', '/'), buy, rd, st, lm,
-            pct(r[0]), pct(r[1]), pct(r[2]), pct(r[3]), pct(r[4]), nav, f['sz'], etf)
-    def tbl(title, ids, with_etf_cols=False):
-        head = '| 代码 | 名称 | 类别 | 跟踪指数 | 成立 | 年费 | 申购费 | 赎回费档 | 申购状态 | 日限额 | 近1年 | 近2年 | 近3年 | 近5年 | 近10年 | 净值/日涨跌 | 规模(亿)' + (' | 盘中价(溢价率)' if with_etf_cols else '') + ' |'
-        sep = '|' + '---|' * (17 + (1 if with_etf_cols else 0))
-        return '## %s\n\n%s\n%s\n' % (title, head, sep) + '\n'.join(row(c, with_etf_cols) for c in ids) + '\n'
+            pct(r[0]), pct(r[1]), pct(r[2]), pct(r[3]), pct(r[4]), nav, price, fee, f['sz'])
+    def tbl(title, ids, comm):
+        head = ('| 代码 | 名称 | 类别 | 跟踪指数 | 成立 | 年费 | 申购费 | 赎回费档 | 申购状态 | 日限额 | '
+                '近1年 | 近2年 | 近3年 | 近5年 | 近10年 | 净值/日涨跌 | 盘中价(溢价率) | 买卖佣金(元/万) | 规模(亿) |')
+        sep = '|' + '---|' * 19
+        return '## %s\n\n%s\n%s\n' % (title, head, sep) + '\n'.join(row(c, comm) for c in ids) + '\n'
     sp = [c for c, f in fund_rows.items() if f['g'] == 'sp']
     nq = [c for c, f in fund_rows.items() if f['g'] == 'nq']
     etf = [c for c, f in fund_rows.items() if f['g'] == 'etf']
@@ -618,11 +619,12 @@ def write_md(src):
                '5. **日限额** = 单日累计申购上限；**暂停申购的基金不显示日限额**；场内 ETF 的申购状态/限额为场外申赎通道口径，场内买卖不受限。\n'
                '6. **场内手续费**：ETF 免印花税/过户费，仅券商佣金（默认万2.5、最低5元，可调）；场外按申购/赎回费档。\n'
                '7. **风险收益**：近3年年化波动率（日收益标准差×√250）× 近3年年化收益率，气泡=规模。\n')
-    out.append(tbl('一、标普500 基金（%d 只）' % len(sp), sp, True))
-    out.append(tbl('二、纳斯达克100 基金 — 场外（%d 只）' % len(nq), nq))
-    out.append(tbl('三、纳斯达克100 基金 — 场内 ETF（%d 只）' % len(etf), etf, True))
-    out.append(tbl('四、其他纳斯达克指数基金 — 场外（%d 只）' % len(nxo), nxo))
-    out.append(tbl('五、其他纳斯达克指数基金 — 场内 ETF（%d 只）' % len(nxe), nxe, True))
+    comm = '≈%.2f' % max(2.5, 5.0)  # 默认万2.5/最低5元，与页面默认一致
+    out.append(tbl('一、标普500 基金（%d 只）' % len(sp), sp, comm))
+    out.append(tbl('二、纳斯达克100 基金 — 场外（%d 只）' % len(nq), nq, comm))
+    out.append(tbl('三、纳斯达克100 基金 — 场内 ETF（%d 只）' % len(etf), etf, comm))
+    out.append(tbl('四、其他纳斯达克指数基金 — 场外（%d 只）' % len(nxo), nxo, comm))
+    out.append(tbl('五、其他纳斯达克指数基金 — 场内 ETF（%d 只）' % len(nxe), nxe, comm))
     out.append('\n## 备注\n\n'
                '- ★ 国泰纳斯达克100（160213）：2025 年四次大额分红 + 2020-01 分红，收益按红利再投资逐笔复权。\n'
                '- ★ 大成标普500等权重A（096001）：每年分红（窗口内 10 次），收益按红利再投逐笔复权。\n'
