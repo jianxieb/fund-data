@@ -94,9 +94,8 @@ table.bm{min-width:920px}
 #chartMsg{color:var(--sub);padding:20px;text-align:center}
 /* 表格：内部滚动 + 粘性表头 */
 .tablebox{overflow:auto;max-height:68vh}
-table{border-collapse:collapse;width:100%}
-table.t1{min-width:1360px}
-table.t3{min-width:1120px}
+table{width:100%;border-collapse:collapse}
+table.t1,table.t3{min-width:1750px}
 thead th{background:var(--th);color:#fff;font-size:12.5px;font-weight:600;padding:9px 8px;text-align:right;white-space:nowrap;position:sticky;top:0;z-index:3}
 table.sortable thead th{cursor:pointer;user-select:none}
 thead th.l{text-align:left}
@@ -162,7 +161,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
     <li><b>跟踪偏离度</b>：图表区「跟踪偏离」页签 = 基金/ETF − <b>纯指数基准</b>（百分点，正=跑赢），基准永远是指数：标普500 组 → 标普500指数、纳指100 组 → 纳斯达克100指数；勾选 SPY/QQQ 时会把它们作为产品一并对比（SPY vs 标普500指数、QQQ vs 纳斯达克100指数）；人民币/美元口径可切换。</li>
     <li><b>日限额</b> = 单日累计申购上限（限大额）；<b>暂停申购的基金不显示日限额</b>（显示 --，买不了谈何限额）；场内 ETF 的申购状态/限额为场外申赎通道口径，场内买卖不受限。</li>
     <li><b>场内溢价率</b> = (盘中价 − IOPV) / IOPV × 100%（腾讯行情 IOPV 口径）。<b>盘中价一列的括号即"当时溢价率"</b>——数据生成时刻（见页头快照时间，每日更新）的快照；QDII ETF 净值 T+1 公布、隔夜美股波动大时溢价率可能失真，请结合 IOPV 判断。</li>
-    <li><b>场内买卖手续费</b>：ETF 场内交易<b>免印花税、免过户费</b>，仅收券商佣金（默认按万 2.5、最低 5 元/笔展示，可按你的券商在表头上方调整）；LOF 场内同理。场外基金则按申购费/赎回费档计算。</li>
+    <li><b>场内买卖手续费</b>：ETF 场内交易<b>免印花税、免过户费</b>，仅收券商佣金（默认按万 2.5、最低 5 元/笔展示，可在顶部工具栏按你的券商调整）；LOF 场内同理。场外基金则按申购费/赎回费档计算。</li>
     <li><b>风险收益图</b>：X 轴 = 近3年<b>年化波动率</b>（日收益率标准差 × √250），Y 轴 = 近3年<b>年化收益率</b>，气泡 = 规模，提示框含近3年最大回撤——用于回答"同样收益下谁更颠簸"。</li>
     <li><b>操作</b>：表格点击表头排序（再点切换升/降序，空值恒排在最后）；顶部输入框按代码/名称过滤；"显示年化"把近N年列切换为年化口径；图表区先选分组 → 勾选基金 → 切换图表类型；收益曲线可切换<b>年化收益率</b>或对数 Y 轴；可导出 CSV、打印 PDF。</li>
   </ol>
@@ -233,6 +232,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   <span class="qwrap"><input id="q" placeholder="输入代码或名称过滤，如：纳斯达克 / 5131 / 广发"><button id="qClear" title="清空过滤">✕</button></span>
   <span class="hint" id="cnt"></span>
   <span class="sp"></span>
+  <span class="hint" title="场内ETF买卖同费率，免印花税/过户费；列为每1万元成交额的费用">买卖佣金 万<input id="etfRate" type="number" step="0.1" min="0" value="2.5" style="width:52px"> 最低<input id="etfMin" type="number" step="0.1" min="0" value="5" style="width:52px">元</span>
   <button class="tab" id="annTbl">▦ 显示年化收益率</button>
   <button class="tab" id="btnCsv">⬇ 导出CSV</button>
   <button class="tab" id="btnPrint">🖨 打印/PDF</button>
@@ -242,13 +242,12 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 
 <div class="card"><h2>二、纳斯达克100 基金 — 场外（16 只）<small>A 类人民币份额</small></h2><div class="tablebox"><table class="sortable t1" id="t2"></table></div></div>
 
-<div class="card"><h2>三、纳斯达克100 基金 — 场内 ETF（12 只）<small>盘中价含隔夜美股涨跌，买卖前请对照 IOPV；括号内为溢价率</small></h2>
-<div class="bmctl">买卖佣金：<input id="etfRate" type="number" step="0.1" min="0" value="2.5" style="width:64px"> 万分之 · 最低 <input id="etfMin" type="number" step="0.1" min="0" value="5" style="width:64px"> 元/笔（默认万2.5/最低5元，按你的券商修改；ETF 免印花税/过户费，买卖同费率，"买卖佣金"列为每 1 万元成交额的费用）</div>
+<div class="card"><h2>三、纳斯达克100 基金 — 场内 ETF（12 只）<small>盘中价含隔夜美股涨跌，括号为当时溢价率；买卖佣金设置见顶部工具栏</small></h2>
 <div class="tablebox"><table class="sortable t3" id="t3"></table></div></div>
 
 <div class="card"><h2>四、其他纳斯达克指数基金 — 场外（3 只）<small>纳指科技 / 纳指生物科技 / 主动精选（华宝），收益与纳指100差异大</small></h2><div class="tablebox"><table class="sortable t1" id="t4"></table></div></div>
 
-<div class="card"><h2>五、其他纳斯达克指数基金 — 场内 ETF（2 只）<small>纳指科技 / 纳指生物科技，与纳指100不可直接比较；佣金设置同上</small></h2><div class="tablebox"><table class="sortable t3" id="t5"></table></div></div>
+<div class="card"><h2>五、其他纳斯达克指数基金 — 场内 ETF（2 只）<small>纳指科技 / 纳指生物科技，与纳指100不可直接比较；买卖佣金设置见顶部工具栏</small></h2><div class="tablebox"><table class="sortable t3" id="t5"></table></div></div>
 
 <div class="notes">
   <h3>备注</h3>
@@ -409,11 +408,11 @@ function link(c){return '<a href="https://fund.eastmoney.com/'+c+'.html" target=
 
 /* ================= 表格渲染 ================= */
 function retHead(n){return annTblOn?'年化'+n+'年':'近'+n+'年';}
-function OTF_HEAD(withEtf){
+/* 五张表统一列布局（同一概念固定在同一列位）：
+   代码 名称 类别 跟踪指数 成立 年费 申购费 赎回费档 申购状态 日限额
+   近1/2/3/5/10年 净值/日涨跌 盘中价(快照+当时溢价) 买卖佣金 规模 备注 */
+function UNI_HEAD(){
   var d=(META&&META.snpdate)?META.snpdate.slice(5):'';
-  var extra=withEtf?
-    '<th data-sort="num">盘中价('+d+')<span class="arr"></span></th>'+
-    '<th data-sort="num">买卖佣金<span class="arr"></span></th>':'';
   return '<thead><tr>'+
   '<th class="l" data-sort="num">代码<span class="arr"></span></th>'+
   '<th class="l" data-sort="text">名称<span class="arr"></span></th>'+
@@ -431,53 +430,18 @@ function OTF_HEAD(withEtf){
   '<th data-sort="num">'+retHead(5)+'<span class="arr"></span></th>'+
   '<th data-sort="num">'+retHead(10)+'<span class="arr"></span></th>'+
   '<th data-sort="num">净值/日涨跌<span class="arr"></span></th>'+
-  extra+
+  '<th data-sort="num">盘中价('+d+')<span class="arr"></span></th>'+
+  '<th data-sort="num">买卖佣金<span class="arr"></span></th>'+
   '<th data-sort="num">规模(亿)<span class="arr"></span></th>'+
   '<th class="l" data-sort="text">备注<span class="arr"></span></th>'+
   '</tr></thead>';
 }
-var OTF_HEAD_ETF=function(){return OTF_HEAD(true);};
 function lmCell(f){
   /* 暂停申购不显示日限额（买不了，限额无意义） */
   if(f.st==='暂停')return '<td class="na" title="暂停申购，无申购限额口径">--</td>';
   return '<td>'+esc(f.lm||'--')+'</td>';
 }
 function isEtfFund(f){return !f.t||f.t==='场内ETF';}
-function otfRow(f,withEtf){
-  var extra='';
-  if(withEtf){
-    extra=f.t==='场内ETF'?snapCell(f)+commCell():
-      '<td class="na">--</td><td class="na">--</td>';
-  }
-  return '<tr>'+
-    cell(link(f.c),'l')+cell('<b>'+esc(f.n)+'</b>','l')+cell(esc(f.t),'l')+cell(esc(f.ix),'l')+
-    cell(f.d)+cell(feeStr(f))+cell(f.buy)+cell(f.rd)+cell(badgeHtml(f.st))+lmCell(f)+
-    retCell(f.r[0],0)+retCell(f.r[1],1)+retCell(f.r[2],2)+retCell(f.r[3],3)+retCell(f.r[4],4)+
-    navCell(f)+extra+
-    cell(f.sz)+cell(esc(f.note),'note')+
-    '</tr>';
-}
-var otfRowEtf=function(f){return otfRow(f,true);};
-function ETF_HEAD(){
-  var d=(META&&META.snpdate)?META.snpdate.slice(5):'';
-  return '<thead><tr>'+
-  '<th class="l" data-sort="num">代码<span class="arr"></span></th>'+
-  '<th class="l" data-sort="text">名称<span class="arr"></span></th>'+
-  '<th class="l" data-sort="text">跟踪指数<span class="arr"></span></th>'+
-  '<th data-sort="date">成立<span class="arr"></span></th>'+
-  '<th data-sort="num">年费(管/托)<span class="arr"></span></th>'+
-  '<th data-sort="num">净值/日涨跌<span class="arr"></span></th>'+
-  '<th data-sort="num">'+retHead(1)+'<span class="arr"></span></th>'+
-  '<th data-sort="num">'+retHead(2)+'<span class="arr"></span></th>'+
-  '<th data-sort="num">'+retHead(3)+'<span class="arr"></span></th>'+
-  '<th data-sort="num">'+retHead(5)+'<span class="arr"></span></th>'+
-  '<th data-sort="num">'+retHead(10)+'<span class="arr"></span></th>'+
-  '<th data-sort="num">规模(亿)<span class="arr"></span></th>'+
-  '<th data-sort="num">盘中价('+d+')<span class="arr"></span></th>'+
-  '<th data-sort="num">买卖佣金<span class="arr"></span></th>'+
-  '<th class="l" data-sort="text">备注<span class="arr"></span></th>'+
-  '</tr></thead>';
-}
 /* 快照价：括号附"当时溢价率"（数据生成时刻快照，随 update.py 每日更新） */
 function snapCell(f){
   if(f.p==null)return '<td class="na">--</td>';
@@ -486,26 +450,29 @@ function snapCell(f){
   return '<td data-n="'+f.p+'" title="'+META.snpdate+' '+META.snptime+' 快照 · IOPV '+(f.iopv==null?'--':f.iopv)+'">'+f.p.toFixed(3)+
     ' <span class="'+cls+'">（'+fmtPct(pr)+'）</span></td>';
 }
-function etfRow(f){
+function uniRow(f){
+  var isE=isEtfFund(f);
+  var st=f.st||'场内';
   return '<tr>'+
-    cell(link(f.c),'l')+cell('<b>'+esc(f.n)+'</b>','l')+cell(esc(f.ix),'l')+
-    cell(f.d)+cell(f.fee.slice(0,2).map(function(v){return v.toFixed(2);}).join('/'))+
-    navCell(f)+
+    cell(link(f.c),'l')+cell('<b>'+esc(f.n)+'</b>','l')+cell(esc(f.t||'场内ETF'),'l')+cell(esc(f.ix),'l')+
+    cell(f.d)+cell(feeStr(f))+cell(esc(f.buy||(isE?'场内交易':'--')))+cell(esc(f.rd||'--'))+
+    cell(badgeHtml(st))+lmCell(f)+
     retCell(f.r[0],0)+retCell(f.r[1],1)+retCell(f.r[2],2)+retCell(f.r[3],3)+retCell(f.r[4],4)+
-    cell(f.sz)+snapCell(f)+commCell()+cell(esc(f.note),'note')+
+    navCell(f)+(isE?snapCell(f):'<td class="na">--</td>')+(isE?commCell():'<td class="na">--</td>')+
+    cell(f.sz)+cell(esc(f.note),'note')+
     '</tr>';
 }
 var nxOtf=function(f){return f.g==='nx'&&!!f.t;};
 var nxEtf=function(f){return f.g==='nx'&&!f.t;};
 function renderTables(){
-  var defs=[['t1','sp',OTF_HEAD_ETF,otfRowEtf],['t2','nq',OTF_HEAD,otfRow],['t3','etf',ETF_HEAD,etfRow],['t4',nxOtf,OTF_HEAD,otfRow],['t5',nxEtf,ETF_HEAD,etfRow]];
+  var defs=[['t1','sp'],['t2','nq'],['t3','etf'],['t4',nxOtf],['t5',nxEtf]];
   defs.forEach(function(def){
     var el=document.getElementById(def[0]);
     if(!el)return;
     var flt=(typeof def[1]==='function')?def[1]:function(f){return f.g===def[1];};
     var rows=FUNDS.filter(flt);
     /* 用闭包调用行渲染器：避免 Array.map 把下标误传为第二个参数（导致表格错位） */
-    el.innerHTML=def[2]()+'<tbody>'+rows.map(function(f){return def[3](f);}).join('')+'</tbody>';
+    el.innerHTML=UNI_HEAD()+'<tbody>'+rows.map(function(f){return uniRow(f);}).join('')+'</tbody>';
   });
 }
 
