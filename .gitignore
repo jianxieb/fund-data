@@ -1,0 +1,7 @@
+# 爬取缓存与日志（update.py 自动重建，不入库）
+.tmp-fhsp/
+.tmp-hist/
+.tmp-update.log
+echarts.min.js
+__pycache__/
+*.pyc

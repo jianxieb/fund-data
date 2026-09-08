@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>标普500 与 纳斯达克 基金清单 · 多功能对比（2026-09-02）</title>
+<title>标普500 与 纳斯达克 基金清单 · 多功能对比（2026-09-08）</title>
 <script>
 /* ECharts 多源加载：本地 echarts.min.js（离线可用）→ jsDelivr → unpkg → BootCDN → staticfile，任一成功即用 */
 (function(){
@@ -77,14 +77,15 @@ button.act:hover{border-color:#9db4d8;color:var(--ink);background:#fff}
 .prow .sp{flex:1}
 .prow .opt{color:var(--sub);font-size:12.5px;display:flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap}
 .prow .opt input{accent-color:var(--blue)}
+/* 图表控制区 */
+.ctl{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:16px 0}
+.ctl h3{margin:0 0 6px;font-size:15px}
 .bmctl{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:10px 18px;border-bottom:1px solid #eef1f5;background:#fafbfd}
 .bmctl .opt{color:var(--sub);font-size:12.5px;display:flex;align-items:center;gap:5px;cursor:pointer}
 .bmctl .opt input{accent-color:var(--blue)}
 .bmctl .hint{color:var(--sub);font-size:12px}
 table.bm{min-width:920px}
-/* 图表控制区 */
-.ctl{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:16px 0}
-.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:4px 12px;margin-top:4px;max-height:232px;overflow:auto;border:1px solid #eef1f5;border-radius:8px;padding:8px 10px;background:#fafbfd}
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:4px 12px;margin-top:10px;max-height:232px;overflow:auto;border:1px solid #eef1f5;border-radius:8px;padding:8px 10px;background:#fafbfd}
 .chip{display:flex;align-items:center;gap:6px;font-size:12.5px;cursor:pointer;white-space:nowrap}
 .chip:hover{color:var(--blue)}
 .chip input{accent-color:var(--blue)}
@@ -145,8 +146,8 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 <header>
   <h1>标普500 与 纳斯达克 基金清单 · 多功能对比</h1>
   <div class="meta">
-    生成时间：<b>2026-09-02 盘中</b> ｜ 净值数据截至 <b>2026-08-31</b>（QDII T+1）｜ 场内 ETF 盘中价为 09-02 约 11:27 快照 ｜ 规模截至 2026-06-30（季报）<br>
-    数据来源：天天基金/东方财富公开接口 ｜ 仅供研究参考，不构成投资建议
+    生成时间：<b id="mGen">2026-09-02 盘中</b> ｜ 净值数据截至 <b id="mNav">2026-08-31</b>（QDII T+1）｜ 场内 ETF 盘中价为 <b id="mSnap">09-02 11:27</b> 快照 ｜ 规模截至 <b id="mSz">2026-06-30</b>（季报）<br>
+    数据来源：天天基金/东方财富公开接口 + 腾讯行情（IOPV/溢价率）｜ 仅供研究参考，不构成投资建议
   </div>
 </header>
 <div class="wrap">
@@ -155,12 +156,15 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   <summary>口径说明（点击折叠）</summary>
   <ol>
     <li><b>份额筛选</b>：同一基金有 A/C 份额的只保留 <b>A 类</b>；C/D/E/I 份额、美元现汇/现钞份额全部剔除（剔除清单见文末）。</li>
-    <li><b>区间涨幅</b>：按累计净值（含分红再投资）计算，基期取 2025-09-02(近1年)/2024-09-02(近2年)/2023-09-01(近3年)/2021-09-02(近5年)/2016-09-02(近10年) 前后最近交易日。成立不足 N 年标注 "--"。窗口期内有分红的基金（国泰纳指100、大成标普500等权重）已按<b>红利再投逐笔复权</b>，其余基金窗口内无分红（累计净值即含分红口径）。<b>成立时间接近 2023-09-01 的基金（如汇添富纳指联接 018966），其"近3年"≈成立以来，比较时请注意。</b></li>
+    <li><b>区间涨幅</b>：按累计净值（含分红再投资）计算，<b>滚动窗口</b>：以最新净值日回推 1/2/3/5/10 年，取该日前最近交易日为基期（每日自动更新时窗口随之滑动）。成立不足 N 年标注 "--"。窗口期内有分红的基金（国泰纳指100、大成标普500等权重）已按<b>红利再投逐笔复权</b>，其余基金窗口内无分红（累计净值即含分红口径）。<b>年化收益率</b> = (1+区间涨幅)^(1/N)−1（几何年化），可在表格上方切换"显示年化"。</li>
     <li><b>纳斯达克分表</b>：<b>纳斯达克100</b> 与 <b>其他纳斯达克指数</b>（纳指科技 / 纳指生物科技 / 华宝主动精选）分表展示、分组建图；两者走势差异大，收益不可直接比较。</li>
     <li><b>基准数据</b>：标普500 / 纳斯达克综合 / 纳斯达克100 指数收盘与 SPY / QQQ 前复权价（含分红），汇率取 USDCNY 收盘；基期与基金表一致（基期前最近交易日），人民币口径 = 美元收益 × 汇率变动，与基金净值口径可比（存在费率、跟踪误差与 ±1 交易日时点差异）。</li>
     <li><b>跟踪偏离度</b>：图表区「跟踪偏离」页签 = 基金/ETF − <b>纯指数基准</b>（百分点，正=跑赢），基准永远是指数：标普500 组 → 标普500指数、纳指100 组 → 纳斯达克100指数；勾选 SPY/QQQ 时会把它们作为产品一并对比（SPY vs 标普500指数、QQQ vs 纳斯达克100指数）；人民币/美元口径可切换。</li>
-    <li><b>日限额</b> = 单日累计申购上限（限大额）；场内 ETF 的申购状态/限额为场外申赎通道口径，场内买卖不受限。</li>
-    <li><b>操作</b>：表格点击表头排序（再点切换升/降序）；顶部输入框按代码/名称过滤；图表区先选分组 → 勾选基金 → 切换图表类型；收益曲线可切换<b>年化收益率</b>（跨期限比较更合理）或对数 Y 轴；可导出 CSV、打印 PDF。</li>
+    <li><b>日限额</b> = 单日累计申购上限（限大额）；<b>暂停申购的基金不显示日限额</b>（显示 --，买不了谈何限额）；场内 ETF 的申购状态/限额为场外申赎通道口径，场内买卖不受限。</li>
+    <li><b>场内溢价率</b> = (盘中价 − IOPV) / IOPV × 100%（腾讯行情 IOPV 口径）。<b>盘中价一列的括号即"当时溢价率"</b>——数据生成时刻（见页头快照时间，每日更新）的快照；QDII ETF 净值 T+1 公布、隔夜美股波动大时溢价率可能失真，请结合 IOPV 判断。</li>
+    <li><b>场内买卖手续费</b>：ETF 场内交易<b>免印花税、免过户费</b>，仅收券商佣金（默认按万 2.5、最低 5 元/笔展示，可按你的券商在表头上方调整）；LOF 场内同理。场外基金则按申购费/赎回费档计算。</li>
+    <li><b>风险收益图</b>：X 轴 = 近3年<b>年化波动率</b>（日收益率标准差 × √250），Y 轴 = 近3年<b>年化收益率</b>，气泡 = 规模，提示框含近3年最大回撤——用于回答"同样收益下谁更颠簸"。</li>
+    <li><b>操作</b>：表格点击表头排序（再点切换升/降序，空值恒排在最后）；顶部输入框按代码/名称过滤；"显示年化"把近N年列切换为年化口径；图表区先选分组 → 勾选基金 → 切换图表类型；收益曲线可切换<b>年化收益率</b>或对数 Y 轴；可导出 CSV、打印 PDF。</li>
   </ol>
 </details>
 
@@ -217,10 +221,10 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   <div id="chart"><div id="chartMsg">图表加载中…</div></div>
 </div>
 
-<div class="card"><h2>基准参考：标普500 / 纳斯达克综合 / 纳斯达克100 指数与 SPY / QQQ<small>与基金同基期（基期前最近交易日收盘），截至 2026-08-31</small></h2>
+<div class="card"><h2>基准参考：标普500 / 纳斯达克综合 / 纳斯达克100 指数与 SPY / QQQ<small>与基金同基期（滚动近N年，基期前最近交易日收盘），截至 <b id="mNav2">2026-08-31</b></small></h2>
 <div class="bmctl">
   <span class="hint" id="bmTag"></span>
-  <span class="hint">口径切换与叠加勾选见上方图表区「基准叠加」。</span>
+  <span class="hint">口径切换与叠加勾选见上方图表区「基准叠加」；基准随 update.py 每日重算，行情接口限流时自动保留上一版。</span>
 </div>
 <div class="tablebox"><table class="sortable bm" id="bmTbl"></table></div>
 </div>
@@ -229,6 +233,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   <span class="qwrap"><input id="q" placeholder="输入代码或名称过滤，如：纳斯达克 / 5131 / 广发"><button id="qClear" title="清空过滤">✕</button></span>
   <span class="hint" id="cnt"></span>
   <span class="sp"></span>
+  <button class="tab" id="annTbl">▦ 显示年化收益率</button>
   <button class="tab" id="btnCsv">⬇ 导出CSV</button>
   <button class="tab" id="btnPrint">🖨 打印/PDF</button>
 </div>
@@ -237,11 +242,13 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 
 <div class="card"><h2>二、纳斯达克100 基金 — 场外（16 只）<small>A 类人民币份额</small></h2><div class="tablebox"><table class="sortable t1" id="t2"></table></div></div>
 
-<div class="card"><h2>三、纳斯达克100 基金 — 场内 ETF（12 只）<small>盘中价含隔夜美股涨跌，买卖前请对照 IOPV</small></h2><div class="tablebox"><table class="sortable t3" id="t3"></table></div></div>
+<div class="card"><h2>三、纳斯达克100 基金 — 场内 ETF（12 只）<small>盘中价含隔夜美股涨跌，买卖前请对照 IOPV；括号内为溢价率</small></h2>
+<div class="bmctl">买卖佣金：<input id="etfRate" type="number" step="0.1" min="0" value="2.5" style="width:64px"> 万分之 · 最低 <input id="etfMin" type="number" step="0.1" min="0" value="5" style="width:64px"> 元/笔（默认万2.5/最低5元，按你的券商修改；ETF 免印花税/过户费，买卖同费率，"买卖佣金"列为每 1 万元成交额的费用）</div>
+<div class="tablebox"><table class="sortable t3" id="t3"></table></div></div>
 
 <div class="card"><h2>四、其他纳斯达克指数基金 — 场外（3 只）<small>纳指科技 / 纳指生物科技 / 主动精选（华宝），收益与纳指100差异大</small></h2><div class="tablebox"><table class="sortable t1" id="t4"></table></div></div>
 
-<div class="card"><h2>五、其他纳斯达克指数基金 — 场内 ETF（2 只）<small>纳指科技 / 纳指生物科技，与纳指100不可直接比较</small></h2><div class="tablebox"><table class="sortable t3" id="t5"></table></div></div>
+<div class="card"><h2>五、其他纳斯达克指数基金 — 场内 ETF（2 只）<small>纳指科技 / 纳指生物科技，与纳指100不可直接比较；佣金设置同上</small></h2><div class="tablebox"><table class="sortable t3" id="t5"></table></div></div>
 
 <div class="notes">
   <h3>备注</h3>
@@ -252,7 +259,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   <p><b>基准口径</b>：标普500/纳斯达克综合/纳斯达克100 为价格指数；SPY/QQQ 为前复权价（含分红）；人民币口径按 USDCNY 汇率换算。2026 年内人民币对美元明显升值，故基金（人民币净值）收益低于对应美元基准属正常。</p>
   <p><b>跟踪偏离度</b>：正=跑赢基准、负=跑输（含费率与跟踪误差影响）；基准<b>永远是纯指数</b>（标普500组→标普500指数、纳指100组→纳斯达克100指数，价格口径），基金与 ETF（含 SPY/QQQ）均按含分红口径与之对比，故偏离度含分红收益，属预期。QQQ 跟踪纳指100指数亦非 100%：管理费 0.20%/年 + 跟踪误差，年化约跑输 0.2~0.3%。</p>
   <p><b>剔除的份额</b>（只保留 A 类人民币）：C 类 006075、012860、008401、019305、007722、006479、014978、008971、012870、012752、015300、016057、016533、016453、018044、019173、019548、019525、018967、019442、017093、017895；D 类 022523、022525、023422；E 类 021773、019118；I 类 021000、024237、021838、022664；美元现汇/现钞份额 003718、012861、013425、013499、018066、000055、006480、003722、012871、012751、012753、016056、016058、016534、016535、019174、019175、018968、018969、017951、017952、017642、017643、013404、015545、017092。</p>
-  <p><b>接口</b>：净值/费用 <code>FundMNDetailInformation</code>、历史净值 <code>FundMNHisNetList</code>、批量净值 <code>FundMNFInfo</code>（fundmobapi.eastmoney.com）；费率与申购限额 <code>fundf10.eastmoney.com/jjfl_&lt;代码&gt;.html</code>；场内盘中价 push2 行情接口；基准行情 push2his（美股指数/ETF 前复权）、腾讯证券 usNDX 与新浪财经 USDCNY。</p>
+  <p><b>接口</b>：批量净值/涨跌幅 <code>FundMNFInfo</code>、历史净值（含分红 <code>FHFCZ</code>）<code>FundMNHisNetList</code>（fundmobapi.eastmoney.com）；申购状态/日限额/净资产规模 <code>fundf10.eastmoney.com/jjfl_&lt;代码&gt;.html</code>；场内现价/IOPV/溢价率 <code>qt.gtimg.cn</code>（腾讯行情）；基准行情 push2his（美股指数/ETF 前复权 + USDCNY）。以上由 <code>update.py</code> 每日自动抓取并写回本页数据块；天天基金 fundgz 估值接口已停用，ETF 估值改用腾讯 IOPV。</p>
 </div>
 
 <footer>风险提示：QDII 基金受外汇额度影响，普遍限大额/暂停申购（广发纳指联接 A 日限额仅 5 元）；场内 ETF 存在折溢价；历史涨幅不代表未来。数据仅供参考。</footer>
@@ -264,73 +271,84 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 /* =========================================================
    唯一数据源：表格、图表、CSV、总览均由此渲染，保证一致
    字段说明：
-   g 分组(sp标普500/nq纳指100场外/etf纳指100ETF/nx其他纳斯达克指数)
-   c 代码  n 名称  t 类别  ix 跟踪指数  d 成立日期
-   fee [管理费,托管费,销售服务费]，null=不适用
-   buy 申购费(原/1折)  rd 赎回费档  st 申购状态(暂停/限大额/场内)
-   lm 日限额  r [近1,近2,近3,近5,近10]%，null=无数据
-   sz 规模(亿)  p 盘中价(仅ETF)  note 备注
+   g 分组(sp标普500/nq纳指场外/etf纳指ETF/nx其他纳指)  c 代码  n 名称  t 类别(场外有，ETF无)
+   ix 跟踪指数  d 成立日期  fee [管理费,托管费,销售服务费]，null=不适用
+   buy 申购费(原/1折)  rd 赎回费档  st 申购状态(暂停/限大额/场内)  lm 日限额
+   r [近1,近2,近3,近5,近10]%，null=无数据
+   sz 规模(亿)  note 备注
+   —— 以下字段由 update.py 每日自动更新 ——
+   nav 单位净值  navdate 净值日期  dz 日涨跌幅%
+   v3 近3年年化波动率%  mdd3 近3年最大回撤%
+   p 盘中价(快照,仅ETF)  prem 当时溢价率%  pct 场内涨跌幅%  iopv 参考净值
    ========================================================= */
+/*__DATA_FUNDS_BEGIN__*/
 var FUNDS=[
 // —— 标普500（10 只）
-{g:'sp',c:'050025',n:'博时标普500ETF联接A',t:'场外',ix:'标普500',d:'2012-06-14',fee:[0.60,0.20,0.00],buy:'1.20%/0.12%',rd:'1.5/0.5/0.25/0',st:'暂停',lm:'100元',r:[13.90,28.63,54.85,69.01,233.21],sz:64.7,p:null,note:''},
-{g:'sp',c:'161125',n:'易方达标普500指数人民币A',t:'LOF',ix:'标普500',d:'2016-12-02',fee:[0.80,0.20,0.00],buy:'1.20%/0.12%',rd:'1.5/0.5/0.25/0',st:'暂停',lm:'10元',r:[13.79,27.79,56.14,73.47,null],sz:15.4,p:null,note:''},
-{g:'sp',c:'018064',n:'华夏标普500ETF联接A',t:'场外',ix:'标普500',d:'2023-05-10',fee:[0.60,0.15,0.00],buy:'1.20%/0.12%',rd:'1.5/0',st:'暂停',lm:'100元',r:[12.53,26.34,50.98,null,null],sz:3.2,p:null,note:''},
-{g:'sp',c:'096001',n:'大成标普500等权重A',t:'场外',ix:'标普500等权重',d:'2011-03-23',fee:[1.00,0.20,0.00],buy:'1.50%/0.15%',rd:'1.5/0.5/0.25/0',st:'限大额',lm:'10元',r:[11.58,18.44,35.75,45.51,148.99],sz:7.3,p:null,note:'等权重编制，每年分红已按红利再投复权'},
-{g:'sp',c:'017641',n:'摩根标普500指数人民币A',t:'场外',ix:'标普500',d:'2023-04-06',fee:[0.50,0.15,0.00],buy:'1.20%/0.12%',rd:'1.5/0.5/0.25/0',st:'限大额',lm:'10元',r:[14.15,29.23,53.90,null,null],sz:53.0,p:null,note:''},
-{g:'sp',c:'007721',n:'天弘标普500发起(QDII-FOF)A',t:'FOF',ix:'标普500',d:'2019-09-24',fee:[0.60,0.20,0.00],buy:'1.00%/0.10%',rd:'1.5/0.5/0.25/0',st:'限大额',lm:'100元',r:[12.59,27.21,50.81,67.37,null],sz:25.3,p:null,note:'FOF结构'},
-{g:'sp',c:'513500',n:'标普500ETF博时',t:'场内ETF',ix:'标普500',d:'2013-12-05',fee:[0.60,0.20,null],buy:'场内交易',rd:'--',st:'场内',lm:'--',r:[14.35,30.19,61.32,78.13,269.29],sz:240.0,p:null,note:'2022-03 1:2拆分已复权'},
-{g:'sp',c:'159655',n:'标普500ETF华夏',t:'场内ETF',ix:'标普500',d:'2022-10-12',fee:[0.60,0.15,null],buy:'场内交易',rd:'--',st:'场内',lm:'--',r:[12.25,29.02,61.57,null,null],sz:39.4,p:null,note:''},
-{g:'sp',c:'159612',n:'标普500ETF国泰',t:'场内ETF',ix:'标普500',d:'2022-05-09',fee:[0.60,0.15,null],buy:'场内交易',rd:'--',st:'场内',lm:'--',r:[14.34,29.90,59.25,null,null],sz:8.4,p:null,note:''},
-{g:'sp',c:'513650',n:'标普500ETF南方',t:'场内ETF',ix:'标普500',d:'2023-03-23',fee:[0.60,0.15,null],buy:'场内交易',rd:'--',st:'场内',lm:'--',r:[13.68,29.97,56.13,null,null],sz:76.9,p:null,note:''},
-// —— 纳斯达克100 场外（16 只）
-{g:'nq',c:'160213',n:'国泰纳斯达克100指数',t:'LOF',ix:'纳斯达克100',d:'2010-04-29',fee:[0.80,0.20,null],buy:'1.50%/0.15%',rd:'1.5/0.5/0.25/0',st:'限大额',lm:'100元',r:[20.52,41.73,76.39,90.45,484.22],sz:21.8,p:null,note:'★2025四次大额分红+2020分红，红利再投口径'},
-{g:'nq',c:'270042',n:'广发纳斯达克100ETF联接A',t:'场外',ix:'纳斯达克100',d:'2012-08-15',fee:[0.80,0.20,0.00],buy:'1.30%/0.13%',rd:'1.5/0.5/0.3/0',st:'限大额',lm:'5元',r:[18.43,37.03,66.88,78.48,384.54],sz:122.2,p:null,note:'日限额仅5元'},
-{g:'nq',c:'040046',n:'华安纳斯达克100ETF联接A',t:'场外',ix:'纳斯达克100',d:'2013-08-02',fee:[0.60,0.20,0.00],buy:'1.20%/0.12%',rd:'1.5/0',st:'限大额',lm:'10元',r:[19.48,37.27,68.50,80.78,454.19],sz:58.1,p:null,note:''},
-{g:'nq',c:'000834',n:'大成纳斯达克100ETF联接A',t:'场外',ix:'纳斯达克100',d:'2014-11-13',fee:[0.80,0.20,0.00],buy:'1.20%/0.12%',rd:'1.5/0.5/0.25/0',st:'限大额',lm:'10元',r:[19.08,36.81,67.38,81.98,423.84],sz:48.9,p:null,note:''},
-{g:'nq',c:'161130',n:'易方达纳斯达克100人民币A',t:'LOF',ix:'纳斯达克100',d:'2017-06-23',fee:[0.50,0.10,0.00],buy:'1.20%/0.12%',rd:'1.5/0.5/0.25/0',st:'暂停',lm:'10元',r:[19.27,39.54,72.47,88.32,null],sz:17.8,p:null,note:''},
-{g:'nq',c:'539001',n:'建信纳斯达克100指数A人民币',t:'场外',ix:'纳斯达克100',d:'2010-09-14',fee:[0.80,0.20,0.00],buy:'1.20%/0.12%',rd:'1.5/0.5/0/0',st:'限大额',lm:'10元',r:[18.40,38.18,74.42,96.34,213.93],sz:21.8,p:null,note:'⚠前身建信全球机遇(主动)，2021转型'},
-{g:'nq',c:'015299',n:'华夏纳斯达克100ETF联接A',t:'场外',ix:'纳斯达克100',d:'2022-04-14',fee:[0.60,0.20,0.00],buy:'1.20%/0.12%',rd:'1.5/0',st:'暂停',lm:'100元',r:[18.78,37.84,67.26,null,null],sz:3.2,p:null,note:''},
-{g:'nq',c:'016055',n:'博时纳斯达克100ETF联接A',t:'场外',ix:'纳斯达克100',d:'2022-07-26',fee:[0.50,0.15,0.00],buy:'1.00%/0.10%',rd:'1.5/0',st:'暂停',lm:'100元',r:[20.58,41.87,69.57,null,null],sz:15.0,p:null,note:''},
-{g:'nq',c:'016532',n:'嘉实纳斯达克100ETF联接A',t:'场外',ix:'纳斯达克100',d:'2022-09-15',fee:[0.50,0.10,0.00],buy:'1.00%/0.10%',rd:'1.5/0.1/0/0',st:'暂停',lm:'100元',r:[19.48,38.98,65.60,null,null],sz:20.8,p:null,note:''},
-{g:'nq',c:'016452',n:'南方纳斯达克100指数发起A',t:'场外',ix:'纳斯达克100',d:'2022-11-29',fee:[0.50,0.15,0.00],buy:'1.20%/0.12%',rd:'1.5/0',st:'限大额',lm:'10元',r:[19.16,39.24,67.31,null,null],sz:62.1,p:null,note:''},
-{g:'nq',c:'018043',n:'天弘纳斯达克100指数发起A',t:'场外',ix:'纳斯达克100',d:'2023-04-11',fee:[0.50,0.10,0.00],buy:'1.00%/0.10%',rd:'1.5/0.5/0/0',st:'限大额',lm:'100元',r:[19.58,41.39,66.24,null,null],sz:30.8,p:null,note:''},
-{g:'nq',c:'019172',n:'摩根纳斯达克100指数人民币A',t:'场外',ix:'纳斯达克100',d:'2023-09-25',fee:[0.50,0.10,0.00],buy:'1.20%/0.12%',rd:'1.5/0',st:'限大额',lm:'10元',r:[19.85,41.16,null,null,null],sz:29.7,p:null,note:''},
-{g:'nq',c:'019547',n:'招商纳斯达克100ETF联接A',t:'场外',ix:'纳斯达克100',d:'2023-11-29',fee:[0.50,0.15,0.00],buy:'1.20%/0.12%',rd:'1.5/0',st:'限大额',lm:'10元',r:[19.50,37.77,null,null,null],sz:21.8,p:null,note:''},
-{g:'nq',c:'019524',n:'华泰柏瑞纳斯达克100ETF联接A',t:'场外',ix:'纳斯达克100',d:'2023-10-19',fee:[0.50,0.15,0.00],buy:'1.20%/0.12%',rd:'1.5/0.1/0/0',st:'限大额',lm:'10元',r:[18.61,35.64,null,null,null],sz:8.2,p:null,note:''},
-{g:'nq',c:'018966',n:'汇添富纳斯达克100ETF联接A',t:'场外',ix:'纳斯达克100',d:'2023-08-02',fee:[0.50,0.15,0.00],buy:'1.20%/0.12%',rd:'1.5/0',st:'限大额',lm:'1万元',r:[17.72,34.80,61.71,null,null],sz:16.3,p:null,note:''},
-{g:'nq',c:'019441',n:'万家纳斯达克100指数发起A',t:'场外',ix:'纳斯达克100',d:'2023-09-27',fee:[0.50,0.15,0.00],buy:'1.00%/0.10%',rd:'1.5/0.1/0/0',st:'限大额',lm:'10元',r:[19.74,39.55,null,null,null],sz:9.7,p:null,note:''},
-// —— 纳斯达克100 ETF（12 只）
-{g:'etf',c:'513100',n:'纳指ETF国泰',ix:'纳斯达克100',d:'2013-04-25',fee:[0.60,0.20],r:[20.47,42.24,77.01,92.55,487.09],sz:194.7,p:2.209,note:''},
-{g:'etf',c:'159941',n:'纳指ETF广发',ix:'纳斯达克100',d:'2015-06-10',fee:[0.80,0.20],r:[20.08,41.13,75.35,90.46,454.48],sz:346.8,p:1.643,note:''},
-{g:'etf',c:'513300',n:'纳斯达克ETF华夏',ix:'纳斯达克100',d:'2020-10-22',fee:[0.60,0.20],r:[18.79,41.28,74.31,92.91,null],sz:132.9,p:2.668,note:''},
-{g:'etf',c:'513390',n:'纳指100ETF博时',ix:'纳斯达克100',d:'2023-04-19',fee:[0.50,0.15],r:[20.67,43.25,79.42,null,null],sz:42.5,p:2.401,note:''},
-{g:'etf',c:'513110',n:'纳指ETF华泰柏瑞',ix:'纳斯达克100',d:'2023-03-01',fee:[0.80,0.20],r:[20.08,42.20,76.74,null,null],sz:51.0,p:2.454,note:''},
-{g:'etf',c:'159660',n:'纳指ETF汇添富',ix:'纳斯达克100',d:'2023-03-30',fee:[0.50,0.15],r:[20.70,42.98,78.18,null,null],sz:49.1,p:2.338,note:''},
-{g:'etf',c:'159501',n:'纳指ETF嘉实',ix:'纳斯达克100',d:'2023-05-31',fee:[0.50,0.10],r:[20.70,42.93,74.89,null,null],sz:124.1,p:2.092,note:''},
-{g:'etf',c:'159659',n:'纳斯达克100ETF招商',ix:'纳斯达克100',d:'2023-04-12',fee:[0.50,0.15],r:[21.00,43.77,75.72,null,null],sz:99.4,p:2.321,note:''},
-{g:'etf',c:'159513',n:'纳斯达克100ETF大成',ix:'纳斯达克100',d:'2023-07-12',fee:[0.80,0.20],r:[19.99,41.04,67.16,null,null],sz:73.8,p:1.782,note:''},
-{g:'etf',c:'159696',n:'纳指ETF易方达',ix:'纳斯达克100',d:'2023-08-17',fee:[0.50,0.10],r:[20.85,43.48,83.01,null,null],sz:50.1,p:2.010,note:''},
-{g:'etf',c:'159632',n:'纳斯达克ETF华安',ix:'纳斯达克100',d:'2022-07-21',fee:[0.60,0.20],r:[20.57,41.75,75.88,null,null],sz:113.0,p:2.430,note:''},
-{g:'etf',c:'513870',n:'纳指ETF富国',ix:'纳斯达克100',d:'2023-10-25',fee:[0.50,0.10],r:[20.75,43.24,null,null,null],sz:24.7,p:2.042,note:''},
-// —— 其他纳斯达克指数 场外（3 只）
-{g:'nx',c:'017091',n:'景顺长城纳斯达克科技ETF联接A',t:'场外',ix:'纳指科技指数',d:'2022-12-09',fee:[0.80,0.20,0.00],buy:'1.20%/0.12%',rd:'1.5/0.75/0/0',st:'暂停',lm:'100元',r:[32.73,57.42,113.43,null,null],sz:27.7,p:null,note:''},
-{g:'nx',c:'017894',n:'汇添富纳斯达克生物科技ETF联接A',t:'场外',ix:'纳指生物科技',d:'2023-03-14',fee:[0.50,0.15,0.00],buy:'1.20%/0.12%',rd:'1.5/0',st:'限大额',lm:'100元',r:[37.59,33.48,51.25,null,null],sz:2.9,p:null,note:''},
-{g:'nx',c:'017436',n:'华宝纳斯达克精选A',t:'场外',ix:'主动精选',d:'2023-03-02',fee:[1.20,0.20,0.00],buy:'1.50%/0.15%',rd:'1.5/0.75/0/0',st:'限大额',lm:'1000元',r:[10.25,46.65,78.07,null,null],sz:47.1,p:null,note:'主动型'},
-// —— 其他纳斯达克指数 ETF（2 只）
-{g:'nx',c:'159509',n:'纳指科技ETF景顺',ix:'纳指科技指数',d:'2023-07-19',fee:[0.80,0.20],r:[34.23,63.81,125.30,null,null],sz:151.3,p:2.790,note:''},
-{g:'nx',c:'513290',n:'纳指生物科技ETF汇添富',ix:'纳指生物科技',d:'2022-08-15',fee:[0.50,0.15],r:[40.76,37.69,60.06,null,null],sz:15.3,p:1.791,note:''}
+{g:'sp',c:'050025',n:'博时标普500ETF联接A',t:'场外',ix:'标普500',d:'2012-06-14',fee:[0.60,0.20,0.00],buy:'1.20%/0.12%',rd:'1.5/0.5/0.25/0',st:'暂停',lm:'100元',r:[13.11,32.16,56.38,71.00,239.19],sz:64.7,p:null,nav:5.6217,navdate:'2026-09-04',dz:-0.37,v3:14.39,mdd3:-17.64,note:''},
+{g:'sp',c:'161125',n:'易方达标普500指数人民币A',t:'LOF',ix:'标普500',d:'2016-12-02',fee:[0.80,0.20,0.00],buy:'1.20%/0.12%',rd:'1.5/0.5/0.25/0',st:'暂停',lm:'10元',r:[13.13,33.82,58.41,74.90,null],sz:15.4,p:null,nav:3.1684,navdate:'2026-09-04',dz:-0.38,v3:14.33,mdd3:-17.65,note:''},
+{g:'sp',c:'018064',n:'华夏标普500ETF联接A',t:'场外',ix:'标普500',d:'2023-05-10',fee:[0.60,0.15,0.00],buy:'1.20%/0.12%',rd:'1.5/0',st:'暂停',lm:'100元',r:[11.95,32.45,52.32,null,null],sz:3.2,p:null,nav:1.7103,navdate:'2026-09-04',dz:-0.45,v3:14.44,mdd3:-17.64,note:''},
+{g:'sp',c:'096001',n:'大成标普500等权重A',t:'场外',ix:'标普500等权重',d:'2011-03-23',fee:[1.00,0.20,0.00],buy:'1.50%/0.15%',rd:'1.5/0.5/0.25/0',st:'限大额',lm:'100元',r:[10.85,19.57,35.56,45.75,148.53],sz:7.3,p:null,v3:13.00,mdd3:-17.24,nav:2.8458,navdate:'2026-09-04',dz:-0.48,note:'等权重编制，每年分红已按红利再投复权'},
+{g:'sp',c:'017641',n:'摩根标普500指数人民币A',t:'场外',ix:'标普500',d:'2023-04-06',fee:[0.50,0.15,0.00],buy:'1.20%/0.12%',rd:'1.5/0.5/0.25/0',st:'限大额',lm:'10元',r:[13.22,32.56,54.54,null,null],sz:53.0,p:null,nav:1.7151,navdate:'2026-09-04',dz:-0.36,v3:14.21,mdd3:-17.40,note:''},
+{g:'sp',c:'007721',n:'天弘标普500发起(QDII-FOF)A',t:'FOF',ix:'标普500',d:'2019-09-24',fee:[0.60,0.20,0.00],buy:'1.00%/0.10%',rd:'1.5/0.5/0.25/0',st:'限大额',lm:'100元',r:[12.27,29.94,51.12,67.35,null],sz:25.2,p:null,nav:2.2676,navdate:'2026-09-04',dz:-0.40,v3:13.09,mdd3:-16.96,note:'FOF结构'},
+{g:'sp',c:'513500',n:'标普500ETF博时',t:'场内ETF',ix:'标普500',d:'2013-12-05',fee:[0.60,0.20,null],buy:'场内交易',rd:'--',st:'场内',lm:'--',r:[13.34,33.54,62.01,78.96,268.81],sz:240.0,p:2.681,nav:2.4753,navdate:'2026-09-04',dz:-0.39,prem:8.30,pct:-0.41,iopv:2.475,v3:15.14,mdd3:-18.62,note:'2022-03 1:2拆分已复权'},
+{g:'sp',c:'159655',n:'标普500ETF华夏',t:'场内ETF',ix:'标普500',d:'2022-10-12',fee:[0.60,0.15,null],buy:'场内交易',rd:'--',st:'场内',lm:'--',r:[12.25,35.60,59.72,null,null],sz:39.4,p:2.017,nav:1.8866,navdate:'2026-09-04',dz:-0.47,prem:6.92,pct:-0.20,iopv:1.887,v3:15.22,mdd3:-18.38,note:''},
+{g:'sp',c:'159612',n:'标普500ETF国泰',t:'场内ETF',ix:'标普500',d:'2022-05-09',fee:[0.60,0.15,null],buy:'场内交易',rd:'--',st:'场内',lm:'--',r:[13.29,33.18,59.86,null,null],sz:8.4,p:2.073,nav:1.9415,navdate:'2026-09-04',dz:-0.40,prem:6.76,pct:-0.29,iopv:1.942,v3:15.13,mdd3:-18.58,note:''},
+{g:'sp',c:'513650',n:'标普500ETF南方',t:'场内ETF',ix:'标普500',d:'2023-03-23',fee:[0.60,0.15,null],buy:'场内交易',rd:'--',st:'场内',lm:'--',r:[13.37,33.27,61.26,null,null],sz:76.9,p:2.015,nav:1.8851,navdate:'2026-09-04',dz:-0.40,prem:7.27,pct:-0.44,iopv:1.879,v3:15.09,mdd3:-18.56,note:''},
+// —— 纳斯达克场外（19 只）
+{g:'nq',c:'160213',n:'国泰纳斯达克100指数',t:'LOF',ix:'纳斯达克100',d:'2010-04-29',fee:[0.80,0.20,null],buy:'1.50%/0.15%',rd:'1.5/0.5/0.25/0',st:'限大额',lm:'100元',r:[18.81,46.81,76.82,90.39,485.66],sz:21.8,p:null,v3:20.65,mdd3:-22.84,nav:4.4850,navdate:'2026-09-04',dz:0.20,note:'★2025四次大额分红+2020分红，红利再投口径'},
+{g:'nq',c:'270042',n:'广发纳斯达克100ETF联接A',t:'场外',ix:'纳斯达克100',d:'2012-08-15',fee:[0.80,0.20,0.00],buy:'1.30%/0.13%',rd:'1.5/0.5/0.3/0',st:'限大额',lm:'5元',r:[17.48,43.51,71.05,83.10,456.45],sz:122.2,p:null,nav:8.1742,navdate:'2026-09-04',dz:0.18,v3:20.37,mdd3:-22.50,note:'日限额仅5元'},
+{g:'nq',c:'040046',n:'华安纳斯达克100ETF联接A',t:'场外',ix:'纳斯达克100',d:'2013-08-02',fee:[0.60,0.20,0.00],buy:'1.20%/0.12%',rd:'1.5/0',st:'限大额',lm:'10元',r:[17.71,41.98,68.80,80.57,455.16],sz:58.1,p:null,nav:8.2052,navdate:'2026-09-04',dz:0.16,v3:20.24,mdd3:-23.03,note:''},
+{g:'nq',c:'000834',n:'大成纳斯达克100ETF联接A',t:'场外',ix:'纳斯达克100',d:'2014-11-13',fee:[0.80,0.20,0.00],buy:'1.20%/0.12%',rd:'1.5/0.5/0.25/0',st:'限大额',lm:'10元',r:[17.32,41.48,67.68,81.78,424.65],sz:48.9,p:null,nav:6.3115,navdate:'2026-09-04',dz:0.14,v3:20.08,mdd3:-23.31,note:''},
+{g:'nq',c:'161130',n:'易方达纳斯达克100人民币A',t:'LOF',ix:'纳斯达克100',d:'2017-06-23',fee:[0.50,0.10,0.00],buy:'1.20%/0.12%',rd:'1.5/0.5/0.25/0',st:'暂停',lm:'10元',r:[17.71,44.21,72.89,88.25,null],sz:17.8,p:null,nav:4.4522,navdate:'2026-09-04',dz:0.18,v3:19.59,mdd3:-21.76,note:''},
+{g:'nq',c:'539001',n:'建信纳斯达克100指数A人民币',t:'场外',ix:'纳斯达克100',d:'2010-09-14',fee:[0.80,0.20,0.00],buy:'1.20%/0.12%',rd:'1.5/0.5/0/0',st:'限大额',lm:'10元',r:[16.85,43.22,74.82,96.56,211.52],sz:21.8,p:null,nav:3.4516,navdate:'2026-09-04',dz:0.21,v3:20.16,mdd3:-21.97,note:'⚠前身建信全球机遇(主动)，2021转型'},
+{g:'nq',c:'015299',n:'华夏纳斯达克100ETF联接A',t:'场外',ix:'纳斯达克100',d:'2022-04-14',fee:[0.60,0.20,0.00],buy:'1.20%/0.12%',rd:'1.5/0',st:'暂停',lm:'100元',r:[17.20,42.51,67.34,null,null],sz:3.2,p:null,nav:2.0282,navdate:'2026-09-04',dz:0.10,v3:19.60,mdd3:-21.88,note:''},
+{g:'nq',c:'016055',n:'博时纳斯达克100ETF联接A',t:'场外',ix:'纳斯达克100',d:'2022-07-26',fee:[0.50,0.15,0.00],buy:'1.00%/0.10%',rd:'1.5/0',st:'暂停',lm:'100元',r:[18.94,46.63,70.00,null,null],sz:15.0,p:null,nav:2.1223,navdate:'2026-09-04',dz:0.19,v3:19.63,mdd3:-21.35,note:''},
+{g:'nq',c:'016532',n:'嘉实纳斯达克100ETF联接A',t:'场外',ix:'纳斯达克100',d:'2022-09-15',fee:[0.50,0.10,0.00],buy:'1.00%/0.10%',rd:'1.5/0.1/0/0',st:'暂停',lm:'100元',r:[17.90,43.65,66.03,null,null],sz:20.8,p:null,nav:2.1773,navdate:'2026-09-04',dz:0.19,v3:19.56,mdd3:-21.94,note:''},
+{g:'nq',c:'016452',n:'南方纳斯达克100指数发起A',t:'场外',ix:'纳斯达克100',d:'2022-11-29',fee:[0.50,0.15,0.00],buy:'1.20%/0.12%',rd:'1.5/0',st:'限大额',lm:'10元',r:[17.61,43.92,67.77,null,null],sz:62.1,p:null,nav:2.2936,navdate:'2026-09-04',dz:0.18,v3:19.66,mdd3:-21.68,note:''},
+{g:'nq',c:'018043',n:'天弘纳斯达克100指数发起A',t:'场外',ix:'纳斯达克100',d:'2023-04-11',fee:[0.50,0.10,0.00],buy:'1.00%/0.10%',rd:'1.5/0.5/0/0',st:'限大额',lm:'100元',r:[17.97,46.11,66.63,null,null],sz:30.8,p:null,nav:2.0381,navdate:'2026-09-04',dz:0.19,v3:19.68,mdd3:-21.36,note:''},
+{g:'nq',c:'019172',n:'摩根纳斯达克100指数人民币A',t:'场外',ix:'纳斯达克100',d:'2023-09-25',fee:[0.50,0.10,0.00],buy:'1.20%/0.12%',rd:'1.5/0',st:'限大额',lm:'10元',r:[18.27,46.09,null,null,null],sz:29.7,p:null,nav:1.7553,navdate:'2026-09-04',dz:0.18,v3:19.55,mdd3:-21.44,note:''},
+{g:'nq',c:'019547',n:'招商纳斯达克100ETF联接A',t:'场外',ix:'纳斯达克100',d:'2023-11-29',fee:[0.50,0.15,0.00],buy:'1.20%/0.12%',rd:'1.5/0',st:'限大额',lm:'10元',r:[17.91,42.31,null,null,null],sz:21.8,p:null,nav:1.5764,navdate:'2026-09-04',dz:0.18,v3:19.44,mdd3:-21.76,note:''},
+{g:'nq',c:'019524',n:'华泰柏瑞纳斯达克100ETF联接A',t:'场外',ix:'纳斯达克100',d:'2023-10-19',fee:[0.50,0.15,0.00],buy:'1.20%/0.12%',rd:'1.5/0.1/0/0',st:'限大额',lm:'10元',r:[17.04,40.15,null,null,null],sz:8.2,p:null,nav:1.6514,navdate:'2026-09-04',dz:0.18,v3:19.47,mdd3:-23.29,note:''},
+{g:'nq',c:'018966',n:'汇添富纳斯达克100ETF联接A',t:'场外',ix:'纳斯达克100',d:'2023-08-02',fee:[0.50,0.15,0.00],buy:'1.20%/0.12%',rd:'1.5/0',st:'限大额',lm:'10元',r:[15.87,38.94,61.71,null,null],sz:16.3,p:null,nav:1.6433,navdate:'2026-09-04',dz:0.04,v3:19.24,mdd3:-21.80,note:''},
+{g:'nq',c:'019441',n:'万家纳斯达克100指数发起A',t:'场外',ix:'纳斯达克100',d:'2023-09-27',fee:[0.50,0.15,0.00],buy:'1.00%/0.10%',rd:'1.5/0.1/0/0',st:'限大额',lm:'10元',r:[18.16,44.13,null,null,null],sz:9.7,p:null,nav:1.6854,navdate:'2026-09-04',dz:0.18,v3:19.45,mdd3:-21.00,note:''},
+{g:'nx',c:'017091',n:'景顺长城纳斯达克科技ETF联接A',t:'场外',ix:'纳指科技指数',d:'2022-12-09',fee:[0.80,0.20,0.00],buy:'1.20%/0.12%',rd:'1.5/0.75/0/0',st:'暂停',lm:'100元',r:[30.90,65.75,115.14,null,null],sz:27.7,p:null,nav:2.8938,navdate:'2026-09-04',dz:0.30,v3:23.50,mdd3:-24.61,note:''},
+{g:'nx',c:'017894',n:'汇添富纳斯达克生物科技ETF联接A',t:'场外',ix:'纳指生物科技',d:'2023-03-14',fee:[0.50,0.15,0.00],buy:'1.20%/0.12%',rd:'1.5/0',st:'限大额',lm:'100元',r:[39.76,37.39,53.33,null,null],sz:2.9,p:null,nav:1.6445,navdate:'2026-09-04',dz:-0.78,v3:20.05,mdd3:-22.08,note:''},
+{g:'nx',c:'017436',n:'华宝纳斯达克精选A',t:'场外',ix:'主动精选',d:'2023-03-02',fee:[1.20,0.20,0.00],buy:'1.50%/0.15%',rd:'1.5/0.75/0/0',st:'限大额',lm:'2000元',r:[11.03,59.88,83.85,null,null],sz:47.1,p:null,nav:2.3683,navdate:'2026-09-07',dz:0.00,v3:25.78,mdd3:-29.87,note:'主动型'},
+// —— 纳斯达克ETF（14 只）
+{g:'etf',c:'513100',n:'纳指ETF国泰',ix:'纳斯达克100',d:'2013-04-25',fee:[0.60,0.20],r:[18.75,47.21,77.44,92.46,488.50],sz:194.7,p:2.233,prem:11.85,pct:-0.13,iopv:1.996,nav:1.9962,navdate:'2026-09-04',dz:0.19,v3:20.60,mdd3:-22.57,note:''},
+{g:'etf',c:'159941',n:'纳指ETF广发',ix:'纳斯达克100',d:'2015-06-10',fee:[0.80,0.20],r:[18.40,46.12,75.81,90.38,455.86],sz:346.8,p:1.663,prem:11.24,pct:-0.30,iopv:1.495,nav:1.4947,navdate:'2026-09-04',dz:0.19,v3:20.56,mdd3:-22.62,note:''},
+{g:'etf',c:'513300',n:'纳斯达克ETF华夏',ix:'纳斯达克100',d:'2020-10-22',fee:[0.60,0.20],r:[17.12,46.33,74.40,92.72,null],sz:132.9,p:2.699,prem:9.34,pct:-0.33,iopv:2.468,nav:2.4685,navdate:'2026-09-04',dz:0.11,v3:20.65,mdd3:-22.41,note:''},
+{g:'etf',c:'513390',n:'纳指100ETF博时',ix:'纳斯达克100',d:'2023-04-19',fee:[0.50,0.15],r:[18.98,48.30,79.91,null,null],sz:42.5,p:2.440,prem:8.87,pct:-0.41,iopv:2.241,nav:2.2410,navdate:'2026-09-04',dz:0.20,v3:20.63,mdd3:-22.64,note:''},
+{g:'etf',c:'513110',n:'纳指ETF华泰柏瑞',ix:'纳斯达克100',d:'2023-03-01',fee:[0.80,0.20],r:[18.39,47.20,77.20,null,null],sz:51.0,p:2.495,prem:8.84,pct:-0.40,iopv:2.292,nav:2.2921,navdate:'2026-09-04',dz:0.19,v3:20.57,mdd3:-22.56,note:''},
+{g:'etf',c:'159660',n:'纳指ETF汇添富',ix:'纳斯达克100',d:'2023-03-30',fee:[0.50,0.15],r:[19.01,48.03,78.64,null,null],sz:49.1,p:2.375,prem:8.85,pct:-0.42,iopv:2.182,nav:2.1817,navdate:'2026-09-04',dz:0.19,v3:20.62,mdd3:-22.52,note:''},
+{g:'etf',c:'159501',n:'纳指ETF嘉实',ix:'纳斯达克100',d:'2023-05-31',fee:[0.50,0.10],r:[19.00,47.98,75.33,null,null],sz:124.1,p:2.108,prem:12.41,pct:-0.09,iopv:1.875,nav:1.8750,navdate:'2026-09-04',dz:0.19,v3:20.65,mdd3:-22.59,note:''},
+{g:'etf',c:'159659',n:'纳斯达克100ETF招商',ix:'纳斯达克100',d:'2023-04-12',fee:[0.50,0.15],r:[19.32,53.31,89.40,null,null],sz:99.4,p:2.359,prem:9.38,pct:-0.25,iopv:2.157,nav:2.1565,navdate:'2026-09-04',dz:0.20,v3:20.78,mdd3:-22.36,note:''},
+{g:'etf',c:'159513',n:'纳斯达克100ETF大成',ix:'纳斯达克100',d:'2023-07-12',fee:[0.80,0.20],r:[18.29,46.01,67.54,null,null],sz:73.8,p:1.811,prem:8.64,pct:-0.44,iopv:1.667,nav:1.6669,navdate:'2026-09-04',dz:0.17,v3:20.43,mdd3:-22.44,note:''},
+{g:'etf',c:'159696',n:'纳指ETF易方达',ix:'纳斯达克100',d:'2023-08-17',fee:[0.50,0.10],r:[19.15,48.53,83.32,null,null],sz:50.1,p:2.039,prem:9.71,pct:-0.44,iopv:1.859,nav:1.8583,navdate:'2026-09-04',dz:0.19,v3:20.61,mdd3:-22.51,note:''},
+{g:'etf',c:'159632',n:'纳斯达克ETF华安',ix:'纳斯达克100',d:'2022-07-21',fee:[0.60,0.20],r:[18.87,46.77,76.35,null,null],sz:113.0,p:2.469,prem:8.90,pct:-0.40,iopv:2.267,nav:2.2671,navdate:'2026-09-04',dz:0.19,v3:20.53,mdd3:-22.67,note:''},
+{g:'etf',c:'513870',n:'纳指ETF富国',ix:'纳斯达克100',d:'2023-10-25',fee:[0.50,0.10],r:[19.06,48.28,null,null,null],sz:24.7,p:2.075,prem:9.14,pct:-0.24,iopv:1.901,nav:1.9010,navdate:'2026-09-04',dz:0.19,v3:20.74,mdd3:-22.55,note:''},
+{g:'nx',c:'159509',n:'纳指科技ETF景顺',ix:'纳指科技指数',d:'2023-07-19',fee:[0.80,0.20],r:[32.25,73.03,127.17,null,null],sz:151.3,p:2.844,prem:24.88,pct:-0.07,iopv:2.277,nav:2.2774,navdate:'2026-09-04',dz:0.33,v3:25.00,mdd3:-25.05,note:''},
+{g:'nx',c:'513290',n:'纳指生物科技ETF汇添富',ix:'纳指生物科技',d:'2022-08-15',fee:[0.50,0.15],r:[43.15,42.03,62.43,null,null],sz:15.3,p:1.800,prem:1.85,pct:0.11,iopv:1.767,nav:1.7671,navdate:'2026-09-04',dz:-0.80,v3:21.38,mdd3:-23.08,note:''}
 ];
+/*__DATA_FUNDS_END__*/
+/*__DATA_META_BEGIN__*/
+var META={gen:"2026-09-08 收盘后",navdate:"2026-09-04",snpdate:"2026-09-08",snptime:"15:22:26",szdate:"2026-06-30",fx:[-5.8700,-5.5800,-7.5400,4.0800,0.6000]};
+/*__DATA_META_END__*/
+var FX_ARR=META.fx; /* USDCNY 各期汇率变动%，用于跟踪偏离图基金收益换算美元口径 */
 var METRICS=['近1年','近2年','近3年','近5年','近10年'];
+var YEARS=[1,2,3,5,10];
 var GROUPS={all:'全部',sp:'标普500',nq:'纳斯达克100场外',etf:'纳斯达克100ETF',nx:'其他纳斯达克指数'};
 var GROUP_COLOR={sp:'#33517e',nq:'#d6362a',etf:'#0a8a4a',nx:'#7a4ad6'};
 var DEFAULT_SEL=['050025','096001','513500','160213','270042','040046','161130','539001','513100','159941','159509','513290'];
-var curGroup='all', curChart='bar', logAxis=false, annOn=false;
+var curGroup='all', curChart='bar', logAxis=false, annOn=false, annTblOn=false;
+var etfRate=2.5, etfMin=5; /* 场内ETF佣金：万2.5 / 最低5元，用户可改 */
 var sel=new Set(DEFAULT_SEL);
 var chart=null;
 
 /* ================= 通用工具 ================= */
 function short(n){return String(n).replace(/\(.*?\)/g,'').replace(/（.*?）/g,'');}
+function annRet(v,i){return v==null?null:+((Math.pow(1+v/100,1/YEARS[i])-1)*100).toFixed(2);}
+function fmtPct(v,dec){dec=dec==null?2:dec;return v==null?'--':((v>=0?'+':'')+v.toFixed(dec)+'%');}
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function num(s){
   /* 解析排序数值：百分比/金额/含"万"单位；"--"/空 返回 NaN */
@@ -356,24 +374,47 @@ function selFunds(){return FUNDS.filter(function(f){return (curGroup==='all'||f.
 function badgeHtml(st){
   if(st==='暂停')return '<span class="badge b-stop">暂停申购</span>';
   if(st==='场内')return '<span class="badge b-field">场内交易</span>';
+  if(st==='开放')return '<span class="badge b-field">开放申购</span>';
   return '<span class="badge b-limit">限大额</span>';
 }
 function stText(st){
   if(st==='暂停')return '暂停申购';
   if(st==='限大额')return '限大额';
+  if(st==='开放')return '开放申购';
   return '场内交易';
 }
 function feeStr(f){return f.fee.map(function(v){return v==null?'--':v.toFixed(2);}).join('/');}
-function retCell(v){
+/* 收益格：annTblOn 时切换为年化口径 */
+function retCell(v,i){
   if(v==null)return '<td class="na">--</td>';
+  if(annTblOn&&i!=null)v=annRet(v,i);
   var cls=v>=0?'up':'down';
   return '<td class="'+cls+'">'+(v>=0?'+':'')+v.toFixed(2)+'%</td>';
+}
+/* 净值/涨跌格：nav (navdate) + dz%，dz 红涨绿跌 */
+function navCell(f){
+  if(f.nav==null)return '<td class="na">--</td>';
+  var dz=f.dz;
+  var cls=dz>0?'up':(dz<0?'down':'');
+  return '<td title="单位净值日期：'+esc(f.navdate||'')+'">'+f.nav.toFixed(4)+
+    ' <span class="'+cls+'">'+(dz==null?'--':((dz>=0?'+':'')+dz.toFixed(2)+'%'))+'</span></td>';
+}
+/* 场内佣金：元/每万元成交额 = max(万X, 最低Y) */
+function commCell(){
+  var v=Math.max(etfRate,etfMin);
+  return '<td title="佣金 '+etfRate+'/万，最低 '+etfMin+' 元；ETF 免印花税/过户费">≈'+v.toFixed(2)+' 元/万</td>';
 }
 function cell(html,cls){return '<td class="'+(cls||'')+'">'+html+'</td>';}
 function link(c){return '<a href="https://fund.eastmoney.com/'+c+'.html" target="_blank" rel="noopener">'+c+'</a>';}
 
 /* ================= 表格渲染 ================= */
-var OTF_HEAD='<thead><tr>'+
+function retHead(n){return annTblOn?'年化'+n+'年':'近'+n+'年';}
+function OTF_HEAD(withEtf){
+  var d=(META&&META.snpdate)?META.snpdate.slice(5):'';
+  var extra=withEtf?
+    '<th data-sort="num">盘中价('+d+')<span class="arr"></span></th>'+
+    '<th data-sort="num">买卖佣金<span class="arr"></span></th>':'';
+  return '<thead><tr>'+
   '<th class="l" data-sort="num">代码<span class="arr"></span></th>'+
   '<th class="l" data-sort="text">名称<span class="arr"></span></th>'+
   '<th class="l" data-sort="text">类别<span class="arr"></span></th>'+
@@ -384,55 +425,87 @@ var OTF_HEAD='<thead><tr>'+
   '<th data-sort="num">赎回费档<span class="arr"></span></th>'+
   '<th data-sort="text">申购状态<span class="arr"></span></th>'+
   '<th data-sort="num">日限额<span class="arr"></span></th>'+
-  '<th data-sort="num">近1年<span class="arr"></span></th>'+
-  '<th data-sort="num">近2年<span class="arr"></span></th>'+
-  '<th data-sort="num">近3年<span class="arr"></span></th>'+
-  '<th data-sort="num">近5年<span class="arr"></span></th>'+
-  '<th data-sort="num">近10年<span class="arr"></span></th>'+
+  '<th data-sort="num">'+retHead(1)+'<span class="arr"></span></th>'+
+  '<th data-sort="num">'+retHead(2)+'<span class="arr"></span></th>'+
+  '<th data-sort="num">'+retHead(3)+'<span class="arr"></span></th>'+
+  '<th data-sort="num">'+retHead(5)+'<span class="arr"></span></th>'+
+  '<th data-sort="num">'+retHead(10)+'<span class="arr"></span></th>'+
+  '<th data-sort="num">净值/日涨跌<span class="arr"></span></th>'+
+  extra+
   '<th data-sort="num">规模(亿)<span class="arr"></span></th>'+
   '<th class="l" data-sort="text">备注<span class="arr"></span></th>'+
   '</tr></thead>';
-function otfRow(f){
+}
+var OTF_HEAD_ETF=function(){return OTF_HEAD(true);};
+function lmCell(f){
+  /* 暂停申购不显示日限额（买不了，限额无意义） */
+  if(f.st==='暂停')return '<td class="na" title="暂停申购，无申购限额口径">--</td>';
+  return '<td>'+esc(f.lm||'--')+'</td>';
+}
+function isEtfFund(f){return !f.t||f.t==='场内ETF';}
+function otfRow(f,withEtf){
+  var extra='';
+  if(withEtf){
+    extra=f.t==='场内ETF'?snapCell(f)+commCell():
+      '<td class="na">--</td><td class="na">--</td>';
+  }
   return '<tr>'+
     cell(link(f.c),'l')+cell('<b>'+esc(f.n)+'</b>','l')+cell(esc(f.t),'l')+cell(esc(f.ix),'l')+
-    cell(f.d)+cell(feeStr(f))+cell(f.buy)+cell(f.rd)+cell(badgeHtml(f.st))+cell(f.lm)+
-    retCell(f.r[0])+retCell(f.r[1])+retCell(f.r[2])+retCell(f.r[3])+retCell(f.r[4])+
+    cell(f.d)+cell(feeStr(f))+cell(f.buy)+cell(f.rd)+cell(badgeHtml(f.st))+lmCell(f)+
+    retCell(f.r[0],0)+retCell(f.r[1],1)+retCell(f.r[2],2)+retCell(f.r[3],3)+retCell(f.r[4],4)+
+    navCell(f)+extra+
     cell(f.sz)+cell(esc(f.note),'note')+
     '</tr>';
 }
-var ETF_HEAD='<thead><tr>'+
+var otfRowEtf=function(f){return otfRow(f,true);};
+function ETF_HEAD(){
+  var d=(META&&META.snpdate)?META.snpdate.slice(5):'';
+  return '<thead><tr>'+
   '<th class="l" data-sort="num">代码<span class="arr"></span></th>'+
   '<th class="l" data-sort="text">名称<span class="arr"></span></th>'+
   '<th class="l" data-sort="text">跟踪指数<span class="arr"></span></th>'+
   '<th data-sort="date">成立<span class="arr"></span></th>'+
   '<th data-sort="num">年费(管/托)<span class="arr"></span></th>'+
-  '<th data-sort="num">近1年<span class="arr"></span></th>'+
-  '<th data-sort="num">近2年<span class="arr"></span></th>'+
-  '<th data-sort="num">近3年<span class="arr"></span></th>'+
-  '<th data-sort="num">近5年<span class="arr"></span></th>'+
-  '<th data-sort="num">近10年<span class="arr"></span></th>'+
+  '<th data-sort="num">净值/日涨跌<span class="arr"></span></th>'+
+  '<th data-sort="num">'+retHead(1)+'<span class="arr"></span></th>'+
+  '<th data-sort="num">'+retHead(2)+'<span class="arr"></span></th>'+
+  '<th data-sort="num">'+retHead(3)+'<span class="arr"></span></th>'+
+  '<th data-sort="num">'+retHead(5)+'<span class="arr"></span></th>'+
+  '<th data-sort="num">'+retHead(10)+'<span class="arr"></span></th>'+
   '<th data-sort="num">规模(亿)<span class="arr"></span></th>'+
-  '<th data-sort="num">盘中价(09-02)<span class="arr"></span></th>'+
+  '<th data-sort="num">盘中价('+d+')<span class="arr"></span></th>'+
+  '<th data-sort="num">买卖佣金<span class="arr"></span></th>'+
   '<th class="l" data-sort="text">备注<span class="arr"></span></th>'+
   '</tr></thead>';
+}
+/* 快照价：括号附"当时溢价率"（数据生成时刻快照，随 update.py 每日更新） */
+function snapCell(f){
+  if(f.p==null)return '<td class="na">--</td>';
+  var pr=f.prem;
+  var cls=pr>0?'up':(pr<0?'down':'');
+  return '<td data-n="'+f.p+'" title="'+META.snpdate+' '+META.snptime+' 快照 · IOPV '+(f.iopv==null?'--':f.iopv)+'">'+f.p.toFixed(3)+
+    ' <span class="'+cls+'">（'+fmtPct(pr)+'）</span></td>';
+}
 function etfRow(f){
   return '<tr>'+
     cell(link(f.c),'l')+cell('<b>'+esc(f.n)+'</b>','l')+cell(esc(f.ix),'l')+
     cell(f.d)+cell(f.fee.slice(0,2).map(function(v){return v.toFixed(2);}).join('/'))+
-    retCell(f.r[0])+retCell(f.r[1])+retCell(f.r[2])+retCell(f.r[3])+retCell(f.r[4])+
-    cell(f.sz)+cell(f.p!=null?f.p.toFixed(3):'--')+cell(esc(f.note),'note')+
+    navCell(f)+
+    retCell(f.r[0],0)+retCell(f.r[1],1)+retCell(f.r[2],2)+retCell(f.r[3],3)+retCell(f.r[4],4)+
+    cell(f.sz)+snapCell(f)+commCell()+cell(esc(f.note),'note')+
     '</tr>';
 }
 var nxOtf=function(f){return f.g==='nx'&&!!f.t;};
 var nxEtf=function(f){return f.g==='nx'&&!f.t;};
 function renderTables(){
-  var defs=[['t1','sp',OTF_HEAD,otfRow],['t2','nq',OTF_HEAD,otfRow],['t3','etf',ETF_HEAD,etfRow],['t4',nxOtf,OTF_HEAD,otfRow],['t5',nxEtf,ETF_HEAD,etfRow]];
+  var defs=[['t1','sp',OTF_HEAD_ETF,otfRowEtf],['t2','nq',OTF_HEAD,otfRow],['t3','etf',ETF_HEAD,etfRow],['t4',nxOtf,OTF_HEAD,otfRow],['t5',nxEtf,ETF_HEAD,etfRow]];
   defs.forEach(function(def){
     var el=document.getElementById(def[0]);
     if(!el)return;
     var flt=(typeof def[1]==='function')?def[1]:function(f){return f.g===def[1];};
     var rows=FUNDS.filter(flt);
-    el.innerHTML=def[2]+'<tbody>'+rows.map(def[3]).join('')+'</tbody>';
+    /* 用闭包调用行渲染器：避免 Array.map 把下标误传为第二个参数（导致表格错位） */
+    el.innerHTML=def[2]()+'<tbody>'+rows.map(function(f){return def[3](f);}).join('')+'</tbody>';
   });
 }
 
@@ -461,11 +534,18 @@ function bindSort(){
         var va=x.cells[ci].textContent.trim(), vb=y.cells[ci].textContent.trim();
         var na, nb;
         if(mode==='date'){na=numDate(va);nb=numDate(vb);}
-        else if(mode==='num'){na=num(va);nb=num(vb);}
+        else if(mode==='num'){
+          /* 复合格（如 盘中价+溢价率）用 data-n 作为排序键 */
+          var dn=x.cells[ci].getAttribute('data-n');
+          na=dn!=null?parseFloat(dn):num(va);
+          dn=y.cells[ci].getAttribute('data-n');
+          nb=dn!=null?parseFloat(dn):num(vb);
+        }
         else {na=NaN;nb=NaN;}
         if(!isNaN(na)&&!isNaN(nb))return dir==='asc'?na-nb:nb-na;
-        if(!isNaN(na))return dir==='asc'?-1:1;
-        if(!isNaN(nb))return dir==='asc'?1:-1;
+        /* 空值/-- 恒排最后（升序降序都是），修复"降序时空值在最前" */
+        if(!isNaN(na))return -1;
+        if(!isNaN(nb))return 1;
         return dir==='asc'?va.localeCompare(vb,'zh'):vb.localeCompare(va,'zh');
       });
       rows.forEach(function(r){tb.tBodies[0].appendChild(r);});
@@ -500,17 +580,18 @@ function renderStats(){
   var feeTotals=FUNDS.map(function(f){return f.fee[0]+f.fee[1];});
   var minFee=Math.min.apply(null,feeTotals);
   var feeCount=FUNDS.filter(function(f){return f.fee[0]+f.fee[1]===minFee;}).length;
-  var limArr=FUNDS.map(function(f){return {f:f,v:num(f.lm)};}).filter(function(o){return !isNaN(o.v);});
+  var limArr=FUNDS.map(function(f){return {f:f,v:num(f.lm)};}).filter(function(o){return o.f.st!=='暂停'&&!isNaN(o.v);});
   var minLim=null;
   limArr.forEach(function(o){if(!minLim||o.v<minLim.v)minLim=o;});
   var stopped=FUNDS.filter(function(f){return f.st==='暂停';}).length;
   var cards=[
     {k:'收录基金',v:'43 只',s:'标普500×10 · 纳指100场外×16 · 纳指100ETF×12 · 其他纳指×5'},
-    {k:'合计规模',v:total.toFixed(1)+' 亿',s:'截至 2026-06-30 季报'},
+    {k:'最新净值日期',v:META.navdate,s:'QDII T+1 公布 · 每日自动更新'},
+    {k:'合计规模',v:total.toFixed(1)+' 亿',s:'截至 '+META.szdate+' 季报'},
     {k:'近1年平均涨幅',v:'+'+avg.toFixed(1)+'%',s:'43 只全部为正',cls:'up'},
     {k:'近1年最强',v:'+'+best.r[0].toFixed(2)+'%',s:best.n+'（'+best.c+'）',cls:'up'},
     {k:'最低年费(管+托)',v:minFee.toFixed(2)+'%/年',s:feeCount+' 只同档（如嘉实/天弘/摩根）'},
-    {k:'最严日限额',v:minLim.f.lm+'/日',s:minLim.f.n+'（'+minLim.f.c+'）'},
+    {k:'最严日限额',v:minLim?minLim.f.lm+'/日':'--',s:minLim?(minLim.f.n+'（'+minLim.f.c+'）'):'无限大额限制',cls:'warn'},
     {k:'暂停申购',v:stopped+' 只',s:'QDII 额度紧张，买前先看状态'}
   ];
   document.getElementById('stats').innerHTML=cards.map(function(cd){
@@ -545,8 +626,9 @@ function renderChips(){
 }
 
 /* ================= 基准（指数/ETF） =================
-   基期与基金表一致（基期前最近交易日收盘），截至 2026-08-31；
+   基期与基金表一致（滚动近N年，基期前最近交易日收盘）；
    usd/cny 均为 [近1,近2,近3,近5,近10]%，cny=美元收益×USDCNY汇率变动（人民币口径，与基金可比） */
+/*__DATA_BM_BEGIN__*/
 var BM=[
  {n:'标普500指数',tp:'指数·价格',usd:[19.81,36.08,70.21,69.41,252.58],cny:[12.77,28.48,57.38,76.32,254.71],note:'价格口径，未含分红'},
  {n:'纳斯达克综合指数',tp:'指数·价格',usd:[23.93,48.87,87.94,72.01,402.31],cny:[16.65,40.56,73.77,79.02,405.34],note:'价格口径'},
@@ -554,6 +636,7 @@ var BM=[
  {n:'SPY',tp:'美股ETF',usd:[21.13,39.30,76.46,81.10,318.74],cny:[14.02,31.52,63.16,88.48,321.27],note:'标普500ETF，前复权含分红'},
  {n:'QQQ',tp:'美股ETF',usd:[27.33,52.07,93.14,94.15,558.16],cny:[19.85,43.58,78.58,102.06,562.13],note:'纳指100ETF，前复权含分红'}
 ];
+/*__DATA_BM_END__*/
 var BM_COLOR=['#33517e','#0a8a4a','#7a4ad6','#d6a01b','#d6362a'];
 var bmCNY=true;
 var bmSel=new Set();
@@ -666,11 +749,13 @@ function feeOption(fs){
   return opt;
 }
 function scatOption(fs){
+  /* 风险收益：X=近3年年化波动率，Y=近3年年化收益率，气泡=规模；提示框含最大回撤 */
   var gs={};
   fs.forEach(function(f){
-    if(f.r[2]==null||f.r[0]==null||!f.sz)return;
+    if(f.v3==null||f.r[2]==null||!f.sz)return;
+    var ann3=+((Math.pow(1+f.r[2]/100,1/3)-1)*100).toFixed(2);
     if(!gs[f.g])gs[f.g]=[];
-    gs[f.g].push({name:short(f.n)+' '+f.c,value:[f.r[2],f.r[0],f.sz]});
+    gs[f.g].push({name:short(f.n)+' '+f.c,value:[f.v3,ann3,f.sz],mdd:f.mdd3,r3:f.r[2]});
   });
   var names={sp:'标普500',nq:'纳斯达克100场外',etf:'纳斯达克100ETF',nx:'其他纳斯达克指数'};
   var series=['sp','nq','etf','nx'].filter(function(k){return gs[k]&&gs[k].length;}).map(function(k){
@@ -679,22 +764,28 @@ function scatOption(fs){
       itemStyle:{color:GROUP_COLOR[k],opacity:0.8},
       emphasis:{focus:'series'}};
   });
-  return {title:{text:'风险收益对比：近3年 × 近1年（气泡=规模，亿）',left:'center',textStyle:{fontSize:15}},
+  var n=series.reduce(function(s,x){return s+x.data.length;},0);
+  if(!n){
+    return {title:{text:'风险收益：暂无波动率数据（需先运行 update.py 下载历史净值后自动计算）',left:'center',top:'middle',textStyle:{color:'#999',fontSize:15}}};
+  }
+  return {title:{text:'风险收益：近3年年化波动率 × 近3年年化收益率（气泡=净资产规模）',left:'center',textStyle:{fontSize:15}},
     tooltip:{trigger:'item',axisPointer:{type:'cross'},
       formatter:function(p){
         var d=p.data;
         if(!d)return '';
-        return d.name+'<br>近3年: '+d.value[0].toFixed(2)+'%<br>近1年: '+d.value[1].toFixed(2)+'%<br>规模: '+d.value[2]+'亿';
+        return d.name+'<br>年化波动率(近3年): '+d.value[0].toFixed(2)+'%<br>年化收益率(近3年): '+d.value[1].toFixed(2)+'%'+
+          '<br>累计涨幅(近3年): '+d.r3.toFixed(2)+'%<br>最大回撤(近3年): '+(d.mdd==null?'--':d.mdd.toFixed(2)+'%')+
+          '<br>规模: '+d.value[2]+'亿';
       }},
     legend:{top:28},
     grid:{left:60,right:30,top:60,bottom:50},
-    xAxis:{type:'value',name:'近3年(%)',scale:true},
-    yAxis:{type:'value',name:'近1年(%)',scale:true},
+    xAxis:{type:'value',name:'年化波动率(%)（日收益标准差×√250）',scale:true,axisLabel:{formatter:function(v){return v+'%';}}},
+    yAxis:{type:'value',name:'年化收益率(%)',scale:true,axisLabel:{formatter:function(v){return v+'%';}}},
     series:series};
 }
 function sizeOption(fs){
   var sorted=fs.slice().sort(function(a,b){return a.sz-b.sz;});
-  var opt={title:{text:'净资产规模对比（亿元，截至2026-06-30）',left:'center',textStyle:{fontSize:15}},
+  var opt={title:{text:'净资产规模对比（亿元，截至 '+(META.szdate||'')+'）',left:'center',textStyle:{fontSize:15}},
     tooltip:{trigger:'axis',axisPointer:{type:'shadow'},valueFormatter:function(v){return v.toFixed(1)+'亿';}},
     grid:{left:150,right:48,top:44,bottom:30},
     xAxis:{type:'value',name:'亿元'},
@@ -713,7 +804,20 @@ function bmOption(fs){
       itemStyle:{color:BM_COLOR[i]},emphasis:{focus:'series'}};
   });
   return {title:{text:'基准收益：近1年 → 近10年（% · '+(bmCNY?'人民币口径（含汇率）':'美元口径')+'）',left:'center',textStyle:{fontSize:15}},
-    tooltip:{trigger:'axis',axisPointer:{type:'shadow'},valueFormatter:function(v){return v==null?'无数据':v.toFixed(2)+'%';}},
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'},
+      /* 悬停任一根柱子：完整列出每个基准的近1/2/3/5/10年各期收益 */
+      formatter:function(ps){
+        if(!ps||!ps.length)return '';
+        var html='<b>'+ps[0].axisValue+'</b><br>';
+        BM.forEach(function(b,i){
+          var d=bmCNY?b.cny:b.usd;
+          html+='<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:'+BM_COLOR[i]+';margin-right:5px"></span><b>'+esc(b.n)+'</b><br>';
+          METRICS.forEach(function(m,j){
+            html+='&nbsp;&nbsp;&nbsp;'+m+'：'+(d[j]==null?'无数据':d[j].toFixed(2)+'%')+'<br>';
+          });
+        });
+        return html;
+      }},
     legend:{top:28},
     grid:{left:50,right:24,top:64,bottom:40},
     xAxis:{type:'category',data:METRICS},
@@ -724,7 +828,6 @@ function tdOption(fs){
   /* 跟踪偏离度：产品（基金/ETF） − 纯指数基准（百分点）。基准永远是指数：sp→标普500指数(0)、nq/etf→纳斯达克100指数(2)、nx→无。
      勾选的 SPY/QQQ 作为产品追加：SPY vs 标普500指数、QQQ vs 纳斯达克100指数 */
   var TD_BM={sp:0,nq:2,etf:2};
-  var FX_ARR=[-5.87,-5.58,-7.54,4.08,0.60]; /* USDCNY 各期汇率变动%，用于基金收益换算美元口径 */
   var etfs=[];
   if(bmSel.has(3))etfs.push({b:BM[3],ib:0}); /* SPY → 标普500指数 */
   if(bmSel.has(4))etfs.push({b:BM[4],ib:2}); /* QQQ → 纳斯达克100指数 */
@@ -756,7 +859,7 @@ function tdOption(fs){
     grid:{left:50,right:24,top:70,bottom:100},
     xAxis:{type:'category',data:cats,axisLabel:{interval:0,rotate:30,fontSize:10,
       color:function(v,idx){
-        if(idx>=fs.length&&etfs[idx-fs.length])return BM_COLOR[etfs[idx-fs.length].b===BM[3]?3:4];
+        if(idx>=fs.length)return BM_COLOR[etfs[idx-fs.length]? (etfs[idx-fs.length].b===BM[3]?3:4) : 0];
         return '#333';
       }}},
     yAxis:{type:'value',name:'百分点'},
@@ -804,15 +907,25 @@ window.addEventListener('load',function(){if(chart)renderChart();});
 
 /* ================= CSV 导出 ================= */
 function exportCSV(){
-  var head=['分组','代码','名称','类别','跟踪指数','成立','管理费%','托管费%','销售服务费%','申购费(原/1折)','赎回费档','申购状态','日限额','近1年%','近2年%','近3年%','近5年%','近10年%','规模(亿)','盘中价(09-02)','备注'];
+  var head=['分组','代码','名称','类别','跟踪指数','成立','管理费%','托管费%','销售服务费%','申购费(原/1折)','赎回费档','申购状态','日限额',
+    '近1年%','近2年%','近3年%','近5年%','近10年%',
+    '年化1年%','年化2年%','年化3年%','年化5年%','年化10年%',
+    '单位净值','净值日期','日涨跌幅%','规模(亿)',
+    '盘中价(快照)','当时溢价率%','IOPV','买卖佣金(元/万)','备注'];
   var lines=[head];
+  var comm=Math.max(etfRate,etfMin).toFixed(2);
   FUNDS.forEach(function(f){
+    var isEtf=isEtfFund(f);
+    var r=f.r.map(function(v,i){return v==null?'':v;});
+    var an=f.r.map(function(v,i){return v==null?'':annRet(v,i);});
     lines.push([
       GROUPS[f.g],f.c,f.n,f.t||'场内ETF',f.ix,f.d,
       f.fee[0]==null?'':f.fee[0],f.fee[1]==null?'':f.fee[1],f.fee[2]==null?'':f.fee[2],
-      f.buy||'场内交易',f.rd||'--',stText(f.st),f.lm||'--',
-      f.r[0]==null?'':f.r[0],f.r[1]==null?'':f.r[1],f.r[2]==null?'':f.r[2],f.r[3]==null?'':f.r[3],f.r[4]==null?'':f.r[4],
-      f.sz,f.p==null?'':f.p,f.note||''
+      f.buy||'场内交易',f.rd||'--',stText(f.st),f.st==='暂停'?'--':(f.lm||'--'),
+      r[0],r[1],r[2],r[3],r[4],an[0],an[1],an[2],an[3],an[4],
+      f.nav==null?'':f.nav,f.navdate||'',f.dz==null?'':f.dz,f.sz,
+      isEtf&&f.p!=null?f.p:'',isEtf&&f.prem!=null?f.prem:'',isEtf&&f.iopv!=null?f.iopv:'',
+      isEtf?comm:'',f.note||''
     ]);
   });
   var csv='\uFEFF'+lines.map(function(r){
@@ -821,16 +934,25 @@ function exportCSV(){
       return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;
     }).join(',');
   }).join('\r\n');
+  var d=META&&META.gen?META.gen.replace(/[^0-9]/g,'').slice(0,8):'data';
   var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
   var a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
-  a.download='标普500与纳斯达克基金清单_2026-09-02.csv';
+  a.download='标普500与纳斯达克基金清单_'+d+'.csv';
   document.body.appendChild(a);
   a.click();
   a.remove();
   setTimeout(function(){URL.revokeObjectURL(a.href);},2000);
 }
 
+/* ================= 头部日期回填（META 驱动） ================= */
+function fillMeta(){
+  var m=META||{};
+  var set=function(id,v){var el=document.getElementById(id);if(el&&v!=null)el.textContent=v;};
+  set('mGen',m.gen);set('mNav',m.navdate);set('mNav2',m.navdate);
+  set('mSnap',m.snpdate+' '+(m.snptime||'')+'');
+  set('mSz',m.szdate);
+}
 /* ================= 控件事件 ================= */
 function renderGroupTabs(){
   var cnt={sp:0,nq:0,etf:0,nx:0};
@@ -896,11 +1018,32 @@ document.getElementById('qClear').addEventListener('click',function(){
 });
 document.getElementById('btnCsv').addEventListener('click',exportCSV);
 document.getElementById('btnPrint').addEventListener('click',function(){window.print();});
+/* 表格收益列：累计 ↔ 年化 切换 */
+document.getElementById('annTbl').addEventListener('click',function(){
+  annTblOn=!annTblOn;
+  this.classList.toggle('active',annTblOn);
+  this.textContent=annTblOn?'▦ 显示累计涨幅':'▦ 显示年化收益率';
+  renderTables();
+  bindSort();
+  applyFilter();
+});
+/* 场内佣金参数 */
+function onFeeCtl(){
+  etfRate=parseFloat(document.getElementById('etfRate').value);
+  etfMin=parseFloat(document.getElementById('etfMin').value);
+  if(!isFinite(etfRate)||etfRate<0)etfRate=2.5;
+  if(!isFinite(etfMin)||etfMin<0)etfMin=5;
+  renderTables();
+  bindSort();
+}
+document.getElementById('etfRate').addEventListener('change',onFeeCtl);
+document.getElementById('etfMin').addEventListener('change',onFeeCtl);
 var toTop=document.getElementById('toTop');
 window.addEventListener('scroll',function(){toTop.style.display=(window.scrollY>600)?'':'none';},{passive:true});
 toTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
 
 /* ================= 启动 ================= */
+fillMeta();
 renderTables();
 bindSort();
 applyFilter();
