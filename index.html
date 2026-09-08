@@ -101,6 +101,7 @@ table.sortable thead th{cursor:pointer;user-select:none}
 thead th.l{text-align:left}
 thead th:hover{background:#31415c}
 thead th.sorted{background:#1d4ed8}
+thead th.sorted2{background:#3d5a99}
 thead th .arr{opacity:.9;font-size:9px;margin-left:3px;display:inline-block;width:10px}
 tbody td{padding:8px;border-bottom:1px solid #edf0f4;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
 tbody td.l{text-align:left}
@@ -163,7 +164,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
     <li><b>场内溢价率</b> = (盘中价 − IOPV) / IOPV × 100%（腾讯行情 IOPV 口径）。<b>盘中价一列的括号即"当时溢价率"</b>——数据生成时刻（见页头快照时间，每日更新）的快照；QDII ETF 净值 T+1 公布、隔夜美股波动大时溢价率可能失真，请结合 IOPV 判断。</li>
     <li><b>场内买卖手续费</b>：ETF 场内交易<b>免印花税、免过户费</b>，仅收券商佣金（默认按万 2.5、最低 5 元/笔展示，可在顶部工具栏按你的券商调整）；LOF 场内同理。场外基金则按申购费/赎回费档计算。</li>
     <li><b>风险收益图</b>：X 轴 = 近3年<b>年化波动率</b>（日收益率标准差 × √250），Y 轴 = 近3年<b>年化收益率</b>，气泡 = 规模，提示框含近3年最大回撤——用于回答"同样收益下谁更颠簸"。</li>
-    <li><b>操作</b>：表格点击表头排序（再点切换升/降序，空值恒排在最后）；顶部输入框按代码/名称过滤；"显示年化"把近N年列切换为年化口径；图表区先选分组 → 勾选基金 → 切换图表类型；收益曲线可切换<b>年化收益率</b>或对数 Y 轴；可导出 CSV、打印 PDF。</li>
+    <li><b>操作</b>：表格默认按清单原始顺序展示；<b>点击表头</b>升序 → 再点降序 → 再点<b>取消排序恢复默认</b>；<b>按住 Shift 点击另一列</b>可加第二排序键（双列混合排序，再点切换方向）；空值恒排最后。顶部输入框按代码/名称过滤；"显示年化"把近N年列切换为年化口径；图表区先选分组 → 勾选基金 → 切换图表类型；收益曲线可切换<b>年化收益率</b>或对数 Y 轴；可导出 CSV、打印 PDF。</li>
   </ol>
 </details>
 
@@ -450,10 +451,10 @@ function snapCell(f){
   return '<td data-n="'+f.p+'" title="'+META.snpdate+' '+META.snptime+' 快照 · IOPV '+(f.iopv==null?'--':f.iopv)+'">'+f.p.toFixed(3)+
     ' <span class="'+cls+'">（'+fmtPct(pr)+'）</span></td>';
 }
-function uniRow(f){
+function uniRow(f,idx){
   var isE=isEtfFund(f);
   var st=f.st||'场内';
-  return '<tr>'+
+  return '<tr data-idx="'+(idx==null?0:idx)+'">'+
     cell(link(f.c),'l')+cell('<b>'+esc(f.n)+'</b>','l')+cell(esc(f.t||'场内ETF'),'l')+cell(esc(f.ix),'l')+
     cell(f.d)+cell(feeStr(f))+cell(esc(f.buy||(isE?'场内交易':'--')))+cell(esc(f.rd||'--'))+
     cell(badgeHtml(st))+lmCell(f)+
@@ -472,50 +473,106 @@ function renderTables(){
     var flt=(typeof def[1]==='function')?def[1]:function(f){return f.g===def[1];};
     var rows=FUNDS.filter(flt);
     /* 用闭包调用行渲染器：避免 Array.map 把下标误传为第二个参数（导致表格错位） */
-    el.innerHTML=UNI_HEAD()+'<tbody>'+rows.map(function(f){return uniRow(f);}).join('')+'</tbody>';
+    el.innerHTML=UNI_HEAD()+'<tbody>'+rows.map(function(f,i){return uniRow(f,i);}).join('')+'</tbody>';
+    el._sort=[]; /* 重绘后清除排序状态，恢复默认顺序 */
   });
 }
 
-/* ================= 排序（含箭头指示） ================= */
+/* ================= 排序（三态 + 双列混合） =================
+   点击表头：升序 → 降序 → 取消（恢复默认顺序），循环往复；
+   Shift+点击另一列：作为第二排序键（再点切换方向，最多两列）。 */
+function sortState(tb){if(!tb._sort)tb._sort=[];return tb._sort;}
+function clearSortUI(tb){
+  tb.querySelectorAll('thead th').forEach(function(th){
+    th.classList.remove('sorted','sorted2');
+    var a=th.querySelector('.arr');
+    if(a)a.textContent='';
+  });
+}
+function renderSortUI(tb){
+  clearSortUI(tb);
+  var st=sortState(tb);
+  var tr=tb.tHead&&tb.tHead.rows[0];
+  if(!tr)return;
+  st.forEach(function(k,i){
+    var th=tr.children[k.ci];
+    if(!th)return;
+    th.classList.add(i===0?'sorted':'sorted2');
+    var a=th.querySelector('.arr');
+    if(a)a.textContent=k.dir==='asc'?'▲':'▼';
+  });
+}
+function cellKey(cell,mode){
+  if(mode==='date')return numDate(cell.textContent.trim());
+  if(mode==='num'){
+    var dn=cell.getAttribute('data-n');
+    if(dn!=null)return parseFloat(dn);
+    return num(cell.textContent.trim());
+  }
+  return NaN;
+}
+function doSort(tb){
+  var st=sortState(tb);
+  var body=tb.tBodies[0];
+  if(!body)return;
+  var rows=[].slice.call(body.rows);
+  rows.sort(function(x,y){
+    if(!st.length){
+      /* 取消排序：恢复默认（数据原始顺序，按渲染时的 data-idx） */
+      return (parseInt(x.getAttribute('data-idx'),10)||0)-(parseInt(y.getAttribute('data-idx'),10)||0);
+    }
+    for(var i=0;i<st.length;i++){
+      var k=st[i];
+      var na=cellKey(x.cells[k.ci],k.mode), nb=cellKey(y.cells[k.ci],k.mode);
+      if(!isNaN(na)&&!isNaN(nb)){
+        var c=k.dir==='asc'?na-nb:nb-na;
+        if(c!==0)return c;
+      }else if(!isNaN(na)){
+        return -1; /* 空值/-- 恒排最后 */
+      }else if(!isNaN(nb)){
+        return 1;
+      }
+      /* 两个都空 → 交下一排序键 */
+    }
+    return (parseInt(x.getAttribute('data-idx'),10)||0)-(parseInt(y.getAttribute('data-idx'),10)||0);
+  });
+  rows.forEach(function(r){body.appendChild(r);});
+  renderSortUI(tb);
+}
 function bindSort(){
   document.querySelectorAll('table.sortable thead th').forEach(function(th){
-    th.addEventListener('click',function(){
+    th.addEventListener('click',function(ev){
       var tb=th.closest('table');
       if(!tb||!tb.tBodies[0])return;
       var tr=th.parentNode;
-      var dir=(th.dataset.dir==='asc')?'desc':'asc';
-      tr.querySelectorAll('th').forEach(function(x){
-        delete x.dataset.dir;
-        x.classList.remove('sorted');
-        var a=x.querySelector('.arr');
-        if(a)a.textContent='';
-      });
-      th.dataset.dir=dir;
-      th.classList.add('sorted');
-      var a=th.querySelector('.arr');
-      if(a)a.textContent=dir==='asc'?'▲':'▼';
       var ci=[].indexOf.call(tr.children,th);
       var mode=th.dataset.sort||'text';
-      var rows=[].slice.call(tb.tBodies[0].rows);
-      rows.sort(function(x,y){
-        var va=x.cells[ci].textContent.trim(), vb=y.cells[ci].textContent.trim();
-        var na, nb;
-        if(mode==='date'){na=numDate(va);nb=numDate(vb);}
-        else if(mode==='num'){
-          /* 复合格（如 盘中价+溢价率）用 data-n 作为排序键 */
-          var dn=x.cells[ci].getAttribute('data-n');
-          na=dn!=null?parseFloat(dn):num(va);
-          dn=y.cells[ci].getAttribute('data-n');
-          nb=dn!=null?parseFloat(dn):num(vb);
+      var st=sortState(tb);
+      var idx=-1;
+      for(var i=0;i<st.length;i++)if(st[i].ci===ci)idx=i;
+      if(ev.shiftKey){
+        /* Shift+点击：双列混合排序的第二键 */
+        if(idx===0){
+          st[0].dir=st[0].dir==='asc'?'desc':'asc';
+        }else if(idx>0){
+          st[idx].dir=st[idx].dir==='asc'?'desc':'asc';
+        }else{
+          if(st.length>=2)st.pop();
+          st.push({ci:ci,mode:mode,dir:'asc'});
         }
-        else {na=NaN;nb=NaN;}
-        if(!isNaN(na)&&!isNaN(nb))return dir==='asc'?na-nb:nb-na;
-        /* 空值/-- 恒排最后（升序降序都是），修复"降序时空值在最前" */
-        if(!isNaN(na))return -1;
-        if(!isNaN(nb))return 1;
-        return dir==='asc'?va.localeCompare(vb,'zh'):vb.localeCompare(va,'zh');
-      });
-      rows.forEach(function(r){tb.tBodies[0].appendChild(r);});
+      }else{
+        /* 普通点击：升序 → 降序 → 取消（恢复默认顺序） */
+        if(idx<0){
+          st.length=0;
+          st.push({ci:ci,mode:mode,dir:'asc'});
+        }else if(st[idx].dir==='asc'){
+          st.length=0;
+          st.push({ci:ci,mode:mode,dir:'desc'});
+        }else{
+          st.length=0;
+        }
+      }
+      doSort(tb);
     });
   });
 }
