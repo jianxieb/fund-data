@@ -431,11 +431,45 @@ def kline_closes(secids, end, fqt=0, need=3000):
     return None
 
 
-def bench_compute(anchor):
-    """按最新净值日 anchor 计算基准：usd/cny 各期涨幅与 fx 汇率变动。任一基准缺失则整体返回 None（保留原值，避免行错位）。"""
+# push2his 被限流时的备用源：新浪美股日线（含 SPY/QQQ，价格口径未复权）
+SINA_SYM = {'标普500指数': '.INX', '纳斯达克综合指数': '.IXIC',
+            '纳斯达克100指数': '.NDX', 'SPY': 'spy', 'QQQ': 'qqq'}
+SINA_NOTE = {'标普500指数': '价格口径，未含分红（Sina）',
+             '纳斯达克综合指数': '价格口径（Sina）',
+             '纳斯达克100指数': '价格口径（Sina）',
+             'SPY': '标普500ETF，价格口径（Sina，未复权）',
+             'QQQ': '纳指100ETF，价格口径（Sina，未复权）'}
+
+
+def sina_us_kline(symbol):
+    url = ('https://stock.finance.sina.com.cn/usstock/api/jsonp.php/var%20_X='
+           '/US_MinKService.getDailyK?symbol=' + symbol + '&___qn=3')
+    t = http_get(url, referer='https://stock.finance.sina.com.cn/', tries=4, delay=1.5)
+    if not t:
+        return None
+    m = re.search(r'=\((\[.*\])\)', t, re.S)
+    if not m:
+        return None
+    try:
+        arr = json.loads(m.group(1))
+    except Exception:  # noqa: BLE001
+        return None
+    return [(r['d'], float(r['c'])) for r in arr if r.get('d') and r.get('c')]
+
+
+def bench_compute(anchor, fx_old=None):
+    """按最新净值日 anchor 计算基准：usd/cny 各期涨幅与 fx 汇率变动。任一基准缺失则整体返回 None（保留原值，避免行错位）。
+    行情源：push2his（前复权）优先，失败降级到新浪美股日线（价格口径）。
+    汇率接口失败时沿用上一版各期汇率变动，保证人民币口径可算。"""
     closes = {}
+    sina_used = set()
     for name, tp, secids, note, fqt in BM_DEFS:
         k = kline_closes(secids, anchor, fqt)
+        if not k and name in SINA_SYM:
+            k = sina_us_kline(SINA_SYM[name])
+            if k:
+                sina_used.add(name)
+                log('  ~ %s push2his 失败，已用新浪日线兜底' % name)
         if k:
             closes[name] = k
         time.sleep(1.5)
@@ -460,6 +494,8 @@ def bench_compute(anchor):
         cl = closes[name]
         cend = at(cl, end)
         usd = [None if (cend is None or at(cl, b) is None) else (cend / at(cl, b) - 1) * 100 for b in bases]
+        if name in sina_used:
+            note = SINA_NOTE.get(name, note + '（Sina价格口径）')
         bm.append({'n': name, 'tp': tp, 'usd': usd, 'note': note})
     fx = [None] * len(WINDOWS)
     if fxk:
@@ -468,6 +504,16 @@ def bench_compute(anchor):
             fb = at(fxk, b)
             if fend and fb:
                 fx[i] = (fb / fend - 1) * 100
+    # 汇率接口失败：沿用上一版各期汇率变动，保证人民币口径可算
+    if fx_old:
+        try:
+            fo = [float(x) for x in fx_old]
+            if len(fo) == len(fx):
+                for i, v in enumerate(fx):
+                    if v is None:
+                        fx[i] = fo[i]
+        except (TypeError, ValueError):
+            pass
     for row in bm:
         row['cny'] = [None if (u is None or fx[i] is None) else ((1 + u / 100) * (1 + fx[i] / 100) - 1) * 100
                       for i, u in enumerate(row['usd'])]
@@ -751,7 +797,7 @@ def main():
     # 5) 基准
     bench = None
     if not quick and not offline:
-        bench = bench_compute(navdate or now.strftime('%Y-%m-%d'))
+        bench = bench_compute(navdate or now.strftime('%Y-%m-%d'), old_meta.get('fx'))
         if not bench:
             log('  !! 基准获取失败，保留原值')
 
