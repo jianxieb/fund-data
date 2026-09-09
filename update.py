@@ -582,24 +582,24 @@ def write_md(src):
         f = fund_rows[code]
         is_etf = (f['t'] == '') or (f['t'] == '场内ETF')
         r = f['r'] + [''] * (5 - len(f['r']))
-        st = {'暂停': '暂停申购', '限大额': '限大额', '开放': '开放申购', '场内': '场内交易'}.get(f['st'], f['st'] or '场内交易')
+        st = {'暂停': '暂停申购', '限大额': '限大额', '开放': '开放申购'}.get(f['st'], f['st'])
+        st = '--' if is_etf else (st or '--')
         lm = '--' if f['st'] == '暂停' else (f['lm'] or '--')
-        buy = f['buy'] or ('场内交易' if is_etf else '--')
-        rd = f['rd'] or '--'
+        buy = comm if is_etf else (f['buy'] or '--')
+        rd = comm if is_etf else (f['rd'] or '--')
         nav = ('%s (%.4f%s)' % (f['navdate'], float(f['nav']), ('%+.2f%%' % float(f['dz'])) if f['dz'] and f['dz'] != 'null' else '')) if f['nav'] and f['nav'] != 'null' else '--'
         if is_etf:
             prem = ('（%+.2f%%）' % float(f['prem'])) if f['prem'] and f['prem'] != 'null' else ''
             price = '%s%s' % (f['p'] if f['p'] and f['p'] != 'null' else '--', prem)
-            fee = comm
         else:
-            price, fee = '--', '--'
-        return '| %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s |' % (
+            price = '--'
+        return '| %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s |' % (
             f['c'], f['n'], f['t'] or '场内ETF', f['ix'], f['d'], f['fee'].replace(',', '/'), buy, rd, st, lm,
-            pct(r[0]), pct(r[1]), pct(r[2]), pct(r[3]), pct(r[4]), nav, price, fee, f['sz'])
+            pct(r[0]), pct(r[1]), pct(r[2]), pct(r[3]), pct(r[4]), nav, price, f['sz'])
     def tbl(title, ids, comm):
-        head = ('| 代码 | 名称 | 类别 | 跟踪指数 | 成立 | 年费 | 申购费 | 赎回费档 | 申购状态 | 日限额 | '
-                '近1年 | 近2年 | 近3年 | 近5年 | 近10年 | 净值/日涨跌 | 盘中价(溢价率) | 买卖佣金(元/万) | 规模(亿) |')
-        sep = '|' + '---|' * 19
+        head = ('| 代码 | 名称 | 类别 | 跟踪指数 | 成立 | 年费 | 买入费用 | 卖出费用 | 申购状态 | 日限额 | '
+                '近1年 | 近2年 | 近3年 | 近5年 | 近10年 | 净值/日涨跌 | 盘中价(溢价率) | 规模(亿) |')
+        sep = '|' + '---|' * 18
         return '## %s\n\n%s\n%s\n' % (title, head, sep) + '\n'.join(row(c, comm) for c in ids) + '\n'
     sp = [c for c, f in fund_rows.items() if f['g'] == 'sp']
     nq = [c for c, f in fund_rows.items() if f['g'] == 'nq']
@@ -616,8 +616,8 @@ def write_md(src):
                '2. **区间涨幅**：滚动近N年（最新净值日回推），按累计净值含分红再投资计算；国泰纳指100、大成标普500等权重按红利再投逐笔复权。成立不足 N 年标注 "--"。\n'
                '3. **年化收益率** = (1+区间涨幅)^(1/N)−1（页面/CSV 可切换显示）。\n'
                '4. **场内溢价率** = (盘中价−IOPV)/IOPV（腾讯行情口径）；QDII 净值 T+1 公布，溢价率可能失真，请对照 IOPV。\n'
-               '5. **日限额** = 单日累计申购上限；**暂停申购的基金不显示日限额**；场内 ETF 的申购状态/限额为场外申赎通道口径，场内买卖不受限。\n'
-               '6. **场内手续费**：ETF 免印花税/过户费，仅券商佣金（默认万2.5、最低5元，可调）；场外按申购/赎回费档。\n'
+               '5. **日限额** = 单日累计申购上限；**暂停申购的基金不显示日限额**；场内 ETF 的申购状态/日限额显示 --（场内买卖不受申赎通道限制）。\n'
+               '6. **买入/卖出费用**：场外=申购费（原费率/1折）与赎回费档（按持有期递减）；场内=券商佣金（默认万2.5、最低5元，买卖同费率，免印花税/过户费）。\n'
                '7. **风险收益**：近3年年化波动率（日收益标准差×√250）× 近3年年化收益率，气泡=规模。\n')
     comm = '≈%.2f' % max(2.5, 5.0)  # 默认万2.5/最低5元，与页面默认一致
     out.append(tbl('一、标普500 基金（%d 只）' % len(sp), sp, comm))
