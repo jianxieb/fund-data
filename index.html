@@ -54,6 +54,14 @@ details.scope li{margin:4px 0}
 .stat .k{color:var(--sub);font-size:12px}
 .stat .v{font-size:19px;font-weight:700;margin-top:3px}
 .stat .s{color:var(--sub);font-size:11px;margin-top:2px}
+/* 收益口径吸顶条：作用域覆盖下方全部图表与表格，滚动时固定在视口顶部 */
+.globar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:rgba(255,255,255,.97);border:1px solid var(--line);border-radius:10px;padding:8px 14px;margin:16px 0;box-shadow:0 2px 10px rgba(16,24,40,.06)}
+.globar .hint{color:var(--sub);font-size:12px}
+.seg{display:flex;border:1px solid var(--line);border-radius:15px;overflow:hidden;background:#fff}
+.seg button{padding:5px 14px;border:0;background:transparent;cursor:pointer;font-size:13px;color:var(--ink);white-space:nowrap}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button.active{background:var(--blue);color:#fff}
+.seg button:not(.active):hover{background:#eef3fc}
 /* 工具栏 */
 .filter{display:flex;gap:10px;align-items:center;margin:14px 0 4px;flex-wrap:wrap}
 .qwrap{position:relative;display:inline-block}
@@ -186,7 +194,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   <summary>口径说明（点击折叠）</summary>
   <ol>
     <li><b>份额筛选</b>：同一基金有 A/C 份额的只保留 <b>A 类</b>；C/D/E/I 份额、美元现汇/现钞份额全部剔除（剔除清单见文末）。</li>
-    <li><b>区间涨幅</b>：按累计净值（含分红再投资）计算，<b>滚动窗口</b>：以最新净值日回推 1/2/3/5/10 年，取该日前最近交易日为基期（每日自动更新时窗口随之滑动）。成立不足 N 年标注 "--"。窗口期内有分红的基金（国泰纳指100、大成标普500等权重）已按<b>红利再投逐笔复权</b>，其余基金窗口内无分红（累计净值即含分红口径）。<b>年化收益率</b> = (1+区间涨幅)^(1/N)−1（几何年化），可在表格上方切换"显示年化"。</li>
+    <li><b>区间涨幅</b>：按累计净值（含分红再投资）计算，<b>滚动窗口</b>：以最新净值日回推 1/2/3/5/10 年，取该日前最近交易日为基期（每日自动更新时窗口随之滑动）。成立不足 N 年标注 "--"。窗口期内有分红的基金（国泰纳指100、大成标普500等权重）已按<b>红利再投逐笔复权</b>，其余基金窗口内无分红（累计净值即含分红口径）。<b>年化收益率</b> = (1+区间涨幅)^(1/N)−1（几何年化），可在页面中部的<b>「收益口径」吸顶条</b>一键切换（累计涨幅 ⇄ 年化收益率）。</li>
     <li><b>纳斯达克分表</b>：<b>纳斯达克100</b> 与 <b>其他纳斯达克指数</b>（纳指科技 / 纳指生物科技 / 华宝主动精选）分表展示、分组建图；两者走势差异大，收益不可直接比较。</li>
     <li><b>基准数据</b>：标普500 / 纳斯达克综合 / 纳斯达克100 指数收盘与 SPY / QQQ 前复权价（含分红），汇率取 USDCNY 收盘；基期与基金表一致（基期前最近交易日），人民币口径 = 美元收益 × 汇率变动，与基金净值口径可比（存在费率、跟踪误差与 ±1 交易日时点差异）。</li>
     <li><b>跟踪偏离度</b>：图表区「跟踪偏离」页签 = 基金/ETF − <b>纯指数基准</b>（百分点，正=跑赢），基准永远是指数：标普500 组 → 标普500指数、纳指100 组 → 纳斯达克100指数；勾选 SPY/QQQ 时会把它们作为产品一并对比（SPY vs 标普500指数、QQQ vs 纳斯达克100指数）；人民币/美元口径可切换。</li>
@@ -194,11 +202,20 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
     <li><b>场内溢价率</b> = (盘中价 − IOPV) / IOPV × 100%（腾讯行情 IOPV 口径）。<b>盘中价一列的括号即"当时溢价率"</b>——数据生成时刻（见页头快照时间，每日更新）的快照；QDII ETF 净值 T+1 公布、隔夜美股波动大时溢价率可能失真，请结合 IOPV 判断。<b>场内 ETF 的区间涨幅一律按净值计算（已剔除溢价影响）</b>，溢价只体现在"盘中价"列，两者互相独立。</li>
     <li><b>买入/卖出费用</b>：两列含义随渠道变化——<b>场外</b>：买入费用=申购费（原费率/1折）、卖出费用=赎回费档（按持有期递减）；<b>场内</b>：买卖均为券商佣金（默认万 2.5、最低 5 元/笔，可在顶部工具栏按你的券商调整），ETF 免印花税/过户费。</li>
     <li><b>风险收益图</b>：X 轴 = 近3年<b>年化波动率</b>（日收益率标准差 × √250），Y 轴 = 近3年<b>年化收益率</b>，气泡 = 规模，提示框含近3年最大回撤——用于回答"同样收益下谁更颠簸"。</li>
-    <li><b>操作</b>：表格默认按清单原始顺序展示；<b>点击表头</b>升序 → 再点降序 → 再点<b>取消排序恢复默认</b>；<b>按住 Shift 点击另一列</b>可加第二排序键（双列混合排序，再点切换方向）；空值恒排最后。顶部输入框按代码/名称过滤；"显示年化"把近N年列切换为年化口径（基金表、基准参考表与基准/柱状图同步切换）。<b>图表区为左右分栏且整块约一屏</b>：顶部两行工具栏选 <b>①指标 → ②分组与形式</b>（区间收益与基准收益可在柱状/曲线间切换），<b>左栏勾选基金</b>（上方搜索框可按名称/代码快速定位，勾选即刷新右栏图表，图表随页面滚动保持可见），基准叠加与人民币/美元口径在图表正上方一行；收益曲线可切换<b>年化收益率</b>或对数 Y 轴；可导出 CSV、打印 PDF。</li>
+    <li><b>操作</b>：表格默认按清单原始顺序展示；<b>点击表头</b>升序 → 再点降序 → 再点<b>取消排序恢复默认</b>；<b>按住 Shift 点击另一列</b>可加第二排序键（双列混合排序，再点切换方向）；空值恒排最后。顶部输入框按代码/名称过滤。<b>「收益口径」吸顶条</b>（在数据总览下方，滚动时固定在视口顶部）作用于它下方的全部内容：把近N年列切换为年化口径，同时切换基金表、基准参考表、区间收益图与基准收益图——一个开关管到底，不必分头找按钮。<b>图表区为左右分栏且整块约一屏</b>：顶部两行工具栏选 <b>①指标 → ②分组与形式</b>（区间收益与基准收益可在柱状/曲线间切换），<b>左栏勾选基金</b>（上方搜索框可按名称/代码快速定位，勾选即刷新右栏图表，图表随页面滚动保持可见），基准叠加与人民币/美元口径在图表正上方一行；收益曲线可切换<b>年化收益率</b>或对数 Y 轴；可导出 CSV、打印 PDF。</li>
   </ol>
 </details>
 
 <div class="stats" id="stats"></div>
+
+<div class="globar noprint">
+  <span class="ptag" title="作用于下方全部：五张基金表、基准参考表、区间收益图与基准收益图；收益曲线与 CSV 同步含年化口径">收益口径</span>
+  <div class="seg" id="annSeg">
+    <button class="active" data-ann="0">累计涨幅</button>
+    <button data-ann="1">年化收益率</button>
+  </div>
+  <span class="hint" id="annHint"></span>
+</div>
 
 <div class="ctl noprint">
   <div class="ctlhead"><h3>📊 可视化对比</h3></div>
@@ -277,7 +294,6 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   <span class="hint" id="cnt"></span>
   <span class="sp"></span>
   <span class="hint" title="场内ETF买卖同费率，免印花税/过户费；写入表中买入/卖出费用两列，按每1万元成交额计">场内佣金 万<input id="etfRate" type="number" step="0.1" min="0" value="2.5" style="width:52px"> 最低<input id="etfMin" type="number" step="0.1" min="0" value="5" style="width:52px">元</span>
-  <button class="tab" id="annTbl">▦ 显示年化收益率</button>
   <button class="tab" id="btnCsv">⬇ 导出CSV</button>
   <button class="tab" id="btnPrint">🖨 打印/PDF</button>
 </div>
@@ -1272,16 +1288,27 @@ document.getElementById('qClear').addEventListener('click',function(){
 });
 document.getElementById('btnCsv').addEventListener('click',exportCSV);
 document.getElementById('btnPrint').addEventListener('click',function(){window.print();});
-/* 表格收益列：累计 ↔ 年化 切换 */
-document.getElementById('annTbl').addEventListener('click',function(){
-  annTblOn=!annTblOn;
-  this.classList.toggle('active',annTblOn);
-  this.textContent=annTblOn?'▦ 显示累计涨幅':'▦ 显示年化收益率';
+/* 收益口径：累计涨幅 ⇄ 年化收益率（吸顶条，作用于下方全部图表与表格） */
+function syncAnnUI(){
+  document.querySelectorAll('#annSeg button[data-ann]').forEach(function(b){
+    b.classList.toggle('active',(b.dataset.ann==='1')===!!annTblOn);
+  });
+  var h=document.getElementById('annHint');
+  if(h)h.textContent=annTblOn
+    ?'当前：年化收益率 (1+区间涨幅)^(1/N)−1，便于不同年限横向比较'
+    :'当前：区间累计涨幅（近N年总涨幅，含分红再投）';
+}
+function setAnn(v){
+  annTblOn=!!v;
+  syncAnnUI();
   renderTables();
   renderBenchTable();
   bindSort();
   applyFilter();
   renderChart();
+}
+document.getElementById('annSeg').querySelectorAll('button[data-ann]').forEach(function(b){
+  b.addEventListener('click',function(){setAnn(b.dataset.ann==='1');});
 });
 /* 场内佣金参数 */
 function onFeeCtl(){
@@ -1309,6 +1336,7 @@ setBmCny(true);
 renderGroupTabs();
 renderChips();
 updateFormUI();
+syncAnnUI();
 if(window.echarts){
   initChart();
 }else if(window.__echartsFailed){
