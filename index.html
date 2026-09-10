@@ -163,6 +163,7 @@ td a:hover{text-decoration:underline}
 .down{color:var(--down);font-weight:600}
 .na{color:#a7aeb8}
 .badge{display:inline-block;padding:1px 8px;border-radius:10px;font-size:11.5px;white-space:nowrap}
+.warnmark{color:var(--warn);font-size:11.5px;cursor:help}
 .b-limit{background:var(--badge-limit);color:var(--warn);border:1px solid #f0d9ae}
 .b-stop{background:var(--badge-stop);color:#b3261e;border:1px solid #f3c6c2}
 .b-field{background:var(--badge-field);color:var(--blue);border:1px solid #c7d8f5}
@@ -379,7 +380,7 @@ var FUNDS=[
 {g:'nq',c:'040046',n:'华安纳斯达克100ETF联接A',t:'场外',ix:'纳斯达克100',d:'2013-08-02',fee:[0.60,0.20,0.00],buy:'1.20%/0.12%',rd:'1.5/0',st:'限大额',lm:'10元',r:[17.59,46.20,70.94,80.45,452.53],sz:58.1,p:null,nav:8.2050,navdate:'2026-09-07',dz:0.00,v3:20.26,mdd3:-23.03,note:''},
 {g:'nq',c:'000834',n:'大成纳斯达克100ETF联接A',t:'场外',ix:'纳斯达克100',d:'2014-11-13',fee:[0.80,0.20,0.00],buy:'1.20%/0.12%',rd:'1.5/0.5/0.25/0',st:'限大额',lm:'10元',r:[17.21,45.59,69.77,81.64,422.51],sz:48.9,p:null,nav:6.3119,navdate:'2026-09-07',dz:0.01,v3:20.10,mdd3:-23.31,note:''},
 {g:'nq',c:'161130',n:'易方达纳斯达克100人民币A',t:'LOF',ix:'纳斯达克100',d:'2017-06-23',fee:[0.50,0.10,0.00],buy:'1.20%/0.12%',rd:'1.5/0.5/0.25/0',st:'暂停',lm:'10元',r:[17.61,48.32,74.95,88.16,null],sz:17.8,p:null,nav:4.4529,navdate:'2026-09-07',dz:0.02,v3:19.61,mdd3:-21.76,note:''},
-{g:'nq',c:'539001',n:'建信纳斯达克100指数A人民币',t:'场外',ix:'纳斯达克100',d:'2010-09-14',fee:[0.80,0.20,0.00],buy:'1.20%/0.12%',rd:'1.5/0.5/0/0',st:'限大额',lm:'10元',r:[16.85,43.22,74.82,96.56,211.52],sz:21.8,p:null,nav:3.4516,navdate:'2026-09-04',dz:0.21,v3:20.16,mdd3:-21.97,note:'⚠前身建信全球机遇(主动)，2021转型'},
+{g:'nq',c:'539001',n:'建信纳斯达克100指数A人民币',t:'场外',ix:'纳斯达克100',d:'2010-09-14',fee:[0.80,0.20,0.00],buy:'1.20%/0.12%',rd:'1.5/0.5/0/0',st:'限大额',lm:'10元',r:[16.85,43.22,74.82,96.56,211.52],sz:21.8,p:null,nav:3.4516,navdate:'2026-09-04',dz:0.21,v3:20.16,mdd3:-21.97,warn:'active',note:'⚠前身建信全球机遇(主动)，2021转型；近5/10年含主动管理期'},
 {g:'nq',c:'015299',n:'华夏纳斯达克100ETF联接A',t:'场外',ix:'纳斯达克100',d:'2022-04-14',fee:[0.60,0.20,0.00],buy:'1.20%/0.12%',rd:'1.5/0',st:'暂停',lm:'100元',r:[17.13,46.66,68.54,null,null],sz:3.2,p:null,nav:2.0280,navdate:'2026-09-07',dz:-0.01,v3:19.62,mdd3:-21.88,note:''},
 {g:'nq',c:'016055',n:'博时纳斯达克100ETF联接A',t:'场外',ix:'纳斯达克100',d:'2022-07-26',fee:[0.50,0.15,0.00],buy:'1.00%/0.10%',rd:'1.5/0',st:'暂停',lm:'100元',r:[18.83,50.87,72.01,null,null],sz:15.0,p:null,nav:2.1224,navdate:'2026-09-07',dz:0.00,v3:19.65,mdd3:-21.35,note:''},
 {g:'nq',c:'016532',n:'嘉实纳斯达克100ETF联接A',t:'场外',ix:'纳斯达克100',d:'2022-09-15',fee:[0.50,0.10,0.00],buy:'1.00%/0.10%',rd:'1.5/0.1/0/0',st:'暂停',lm:'100元',r:[17.79,47.75,68.02,null,null],sz:20.8,p:null,nav:2.1775,navdate:'2026-09-07',dz:0.01,v3:19.58,mdd3:-21.94,note:''},
@@ -525,6 +526,12 @@ function lmCell(f){
   return '<td>'+esc(f.lm||'--')+'</td>';
 }
 function isEtfFund(f){return !f.t||f.t==='场内ETF';}
+/* 含主动管理期等"不可比"信息的基金：跟踪指数列加 ⚠，鼠标悬停给出原因 */
+var WARN_TIP='该基金 2010-2021 为主动型 QDII（建信全球机遇），2021 年起才跟踪纳斯达克100；'
+  +'近5年/近10年区间涨幅与跟踪偏离度含主动管理阶段，不是纯跟踪误差。';
+function ixCell(f){
+  return cell(esc(f.ix)+(f.warn?' <span class="warnmark" title="'+esc(WARN_TIP)+'">⚠</span>':''),'l');
+}
 /* 快照价：括号附"当时溢价率"（数据生成时刻快照，随 update.py 每日更新） */
 function snapCell(f){
   if(f.p==null)return '<td class="na">--</td>';
@@ -541,7 +548,7 @@ function uniRow(f,idx){
   var feeSell=isE?commCell():'<td class="hcol" title="赎回费档（按持有期递减）">'+esc(f.rd||'--')+'</td>';
   var stCell=isE?'<td class="na" title="场内买卖不受申赎通道限制">--</td>':cell(badgeHtml(st));
   return '<tr data-idx="'+(idx==null?0:idx)+'">'+
-    cell('<b>'+esc(f.n)+'</b>','l frz')+cell(link(f.c),'l hcol')+cell(esc(f.t||'场内ETF'),'l')+cell(esc(f.ix),'l')+
+    cell('<b>'+esc(f.n)+'</b>','l frz')+cell(link(f.c),'l hcol')+cell(esc(f.t||'场内ETF'),'l')+ixCell(f)+
     cell(f.d,'hcol')+cell(feeStr(f))+feeBuy+feeSell+
     stCell+lmCell(f)+
     retCell(f.r[0],0)+retCell(f.r[1],1)+retCell(f.r[2],2)+retCell(f.r[3],3)+retCell(f.r[4],4)+
@@ -960,7 +967,8 @@ function barOption(fs){
   var extra=BM.map(function(b,i){return {b:b,i:i};}).filter(function(o){return bmSel.has(o.i);});
   var isDiv=extra.length>0;
   var hasDiv=isDiv&&fs.length>0;
-  var cats=fs.map(function(f){return short(f.n);});
+  var hasWarn=fs.some(function(f){return !!f.warn;});
+  var cats=fs.map(function(f){return short(f.n)+(f.warn?' ⚠':'');});
   if(hasDiv)cats=cats.concat(['']);
   extra.forEach(function(o){cats.push(o.b.n);});
   var series=METRICS.map(function(m,i){
@@ -973,7 +981,7 @@ function barOption(fs){
       itemStyle:{color:['#33517e','#4a7ab5','#d6a01b','#d6702a','#d6362a'][i]},
       emphasis:{focus:'series'}};
   });
-  return {title:{text:'各基金区间收益对比（%'+(annOn?'·年化口径':'')+(isDiv?(bmCNY?'，基准为人民币口径':'，基准为美元口径'):'')+'）',left:'center',textStyle:{fontSize:15}},
+  return {title:{text:'各基金区间收益对比（%'+(annOn?'·年化口径':'')+(isDiv?(bmCNY?'，基准为人民币口径':'，基准为美元口径'):'')+(hasWarn?'；⚠=近5/10年含主动管理期':'' )+'）',left:'center',textStyle:{fontSize:15}},
     /* 高亮哪根柱子就显示哪根柱子的数据：
        光标在柱子上 → 提示被高亮的那一行（该时间段全部基金（及叠加基准）收益）；
        光标在柱外（同列空白）→ 保持原有行为：提示该列基金近1→10年各期收益 */
@@ -1191,7 +1199,8 @@ function tdOption(fs){
   var etfs=[];
   if(bmSel.has(3))etfs.push({b:BM[3],ib:0}); /* SPY → 标普500指数 */
   if(bmSel.has(4))etfs.push({b:BM[4],ib:2}); /* QQQ → 纳斯达克100指数 */
-  var cats=fs.map(function(f){return short(f.n);});
+  var hasWarn=fs.some(function(f){return !!f.warn;});
+  var cats=fs.map(function(f){return short(f.n)+(f.warn?' ⚠':'');});
   etfs.forEach(function(e){cats.push(e.b.n+'（ETF）');});
   var series=METRICS.map(function(m,i){
     var arr=fs.map(function(f){
@@ -1213,7 +1222,7 @@ function tdOption(fs){
       emphasis:{focus:'series'},
       markLine:i===0?{silent:true,symbol:'none',lineStyle:{color:'#999',type:'dashed'},data:[{yAxis:0}]}:null};
   });
-  return {title:{text:'跟踪偏离度：基金/ETF − 纯指数基准（标普500→标普500指数，纳指100→纳斯达克100指数）（百分点，正=跑赢 · '+(bmCNY?'人民币口径':'美元口径')+'）',left:'center',textStyle:{fontSize:15}},
+  return {title:{text:'跟踪偏离度：基金/ETF − 纯指数基准（标普500→标普500指数，纳指100→纳斯达克100指数）（百分点，正=跑赢 · '+(bmCNY?'人民币口径':'美元口径')+(hasWarn?'；⚠=近5/10年含主动管理期，不是纯跟踪误差':'')+'）',left:'center',textStyle:{fontSize:15}},
     /* 高亮哪根柱子就显示哪根柱子的数据：
        光标在柱子上 → 提示被高亮的那一行（该时间段全部产品偏离度）；
        光标在柱外（同列空白）→ 保持原有行为：提示该列产品近1→10年各期偏离度 */
@@ -1232,7 +1241,7 @@ function tdOption(fs){
             var fr=f.r[i];
             if(!bmCNY)fr=(1+fr/100)/(1+FX_ARR[i]/100)*100-100;
             var v=+((fr-b)).toFixed(2);
-            html+=esc(short(f.n))+'：'+(v>0?'+':'')+v.toFixed(2)+'<br>';
+            html+=esc(short(f.n))+(f.warn?' ⚠含主动期':'')+'：'+(v>0?'+':'')+v.toFixed(2)+'<br>';
           });
           etfs.forEach(function(e){
             var ev=bmCNY?e.b.cny[i]:e.b.usd[i];
