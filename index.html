@@ -1055,10 +1055,11 @@ function bindTipMode(c){
 }
 function initChart(){
   if(chart||!window.echarts)return;
+  var msg=document.getElementById('chartMsg'); /* echarts.init 会清空容器，先取引用，否则后面取到 null 报错 */
   try{
     chart=echarts.init(document.getElementById('chart'));
     bindTipMode();
-    document.getElementById('chartMsg').style.display='none';
+    if(msg)msg.style.display='none';
     renderChart();
     /* 首屏兜底：布局稳定后补一次重绘/缩放，修复默认柱状图空白 */
     if(window.requestAnimationFrame){
@@ -1066,7 +1067,7 @@ function initChart(){
     }
     setTimeout(function(){if(chart)chart.resize();},250);
   }catch(e){
-    document.getElementById('chartMsg').textContent='图表初始化失败：'+e.message;
+    if(msg){if(!msg.parentNode&&chart)chart.getDom().appendChild(msg);msg.style.display='';msg.textContent='图表初始化失败：'+e.message;}
   }
 }
 function showChartFail(){
