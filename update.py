@@ -46,9 +46,9 @@ WINDOWS = [1, 2, 3, 5, 10]
 # 基准 secid（失败按顺序尝试；None 表示不适用）
 BM_DEFS = [
     ('标普500指数', '指数·价格', ['100.SPX'], '价格口径，未含分红', 0),
+    ('SPY', '美股ETF', ['106.SPY', '107.SPY', '105.SPY'], '标普500ETF，前复权含分红', 1),
     ('纳斯达克综合指数', '指数·价格', ['100.COMPX', '100.IXIC'], '价格口径', 0),
     ('纳斯达克100指数', '指数·价格', ['100.NDX'], '价格口径', 0),
-    ('SPY', '美股ETF', ['106.SPY', '107.SPY', '105.SPY'], '标普500ETF，前复权含分红', 1),
     ('QQQ', '美股ETF', ['105.QQQ'], '纳指100ETF，前复权含分红', 1),
 ]
 FX_SECIDS = ['133.USDCNY', '119.USDCNY', '133.USDCNH']  # 在岸优先，离岸兜底
@@ -678,6 +678,7 @@ def bench_compute(anchor, fx_old=None):
 def write_patches(fund_patches, bench, meta, quick, changes=None):
     with open(HTML, encoding='utf-8') as f:
         src = f.read()
+    expect_funds = len(parse_fund_lines(src))  # 以写回前的行数为基准，避免因只补丁部分基金而误判
     lines = src.splitlines(keepends=True)
     changed = 0
     for idx, l in enumerate(lines):
@@ -722,7 +723,7 @@ def write_patches(fund_patches, bench, meta, quick, changes=None):
     if changes is not None:
         src = write_changes_block(src, changes)
     # 写回前自检：任何一项不过就整份放弃，宁可保留上一版也不要把页面写坏
-    problems = validate_src(src, len(fund_patches))
+    problems = validate_src(src, expect_funds)
     if problems:
         log('  !! 写回前校验未通过，已放弃本次写回（index.html 保持原样）：')
         for p in problems[:10]:

@@ -308,11 +308,11 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
     <div class="vizright">
       <div class="bmbar" id="bmRow">
         <span class="phead" title="勾选的基准会叠加到柱状/曲线图中；勾选 SPY/QQQ 后也会作为产品出现在跟踪偏离图中">基准叠加</span>
-        <label class="opt"><span class="dot" style="background:#33517e"></span><input type="checkbox" class="bmcb" value="0">标普500指数</label>
-        <label class="opt"><span class="dot" style="background:#0a8a4a"></span><input type="checkbox" class="bmcb" value="1">纳斯达克综合</label>
-        <label class="opt"><span class="dot" style="background:#7a4ad6"></span><input type="checkbox" class="bmcb" value="2">纳斯达克100</label>
-        <label class="opt"><span class="dot" style="background:#d6a01b"></span><input type="checkbox" class="bmcb" value="3">SPY</label>
-        <label class="opt"><span class="dot" style="background:#d6362a"></span><input type="checkbox" class="bmcb" value="4">QQQ</label>
+        <label class="opt"><span class="dot" style="background:#33517e"></span><input type="checkbox" class="bmcb" value="标普500指数">标普500指数</label>
+        <label class="opt"><span class="dot" style="background:#d6a01b"></span><input type="checkbox" class="bmcb" value="SPY">SPY</label>
+        <label class="opt"><span class="dot" style="background:#0a8a4a"></span><input type="checkbox" class="bmcb" value="纳斯达克综合指数">纳斯达克综合</label>
+        <label class="opt"><span class="dot" style="background:#7a4ad6"></span><input type="checkbox" class="bmcb" value="纳斯达克100指数">纳斯达克100</label>
+        <label class="opt"><span class="dot" style="background:#d6362a"></span><input type="checkbox" class="bmcb" value="QQQ">QQQ</label>
         <span class="sp"></span>
         <span class="ptag">口径</span>
         <button class="tab" id="bmCny">人民币</button>
@@ -1006,13 +1006,15 @@ function renderChips(skipChart){
 /*__DATA_BM_BEGIN__*/
 var BM=[
  {n:"标普500指数",tp:"指数·价格",usd:[19.0866,42.7145,73.4073,70.7644,253.0666],cny:[12.0962,34.7510,60.3324,77.7315,255.1850],note:"价格口径，未含分红（Sina）"},
+ {n:"SPY",tp:"美股ETF",usd:[18.9960,42.5328,73.1348,70.5998,251.6689],cny:[12.0110,34.5794,60.0804,77.5603,253.7789],note:"标普500ETF，价格口径（Sina，未复权）"},
  {n:"纳斯达克综合指数",tp:"指数·价格",usd:[22.1498,58.8117,92.7945,72.4107,401.6529],cny:[14.9796,49.9500,78.2578,79.4451,404.6629],note:"价格口径（Sina）"},
  {n:"纳斯达克100指数",tp:"指数·价格",usd:[24.9095,60.3803,93.6240,88.4703,511.4447],cny:[17.5773,51.4311,79.0247,96.1599,515.1133],note:"价格口径（Sina）"},
- {n:"SPY",tp:"美股ETF",usd:[18.9960,42.5328,73.1348,70.5998,251.6689],cny:[12.0110,34.5794,60.0804,77.5603,253.7789],note:"标普500ETF，价格口径（Sina，未复权）"},
  {n:"QQQ",tp:"美股ETF",usd:[24.8064,60.2354,93.2376,88.1552,509.7015],cny:[17.4803,51.2942,78.6675,95.8320,513.3597],note:"纳指100ETF，价格口径（Sina，未复权）"},
 ];
 /*__DATA_BM_END__*/
-var BM_COLOR=['#33517e','#0a8a4a','#7a4ad6','#d6a01b','#d6362a'];
+/* 基准顺序固定为：标普500指数 → SPY → 纳斯达克综合 → 纳斯达克100 → QQQ（颜色与顺序一一对应） */
+var BM_COLOR=['#33517e','#d6a01b','#0a8a4a','#7a4ad6','#d6362a'];
+var BIDX={};BM.forEach(function(b,i){BIDX[b.n]=i;});
 var bmCNY=true;
 var bmSel=new Set();
 /* 基准收益格：随全局"显示年化"切换 */
@@ -1046,7 +1048,7 @@ function renderBenchTable(){
 /* ================= 图表 ================= */
 function annIf(v,i){return (annOn&&v!=null)?annRet(v,i):v;}
 function barOption(fs){
-  var extra=BM.map(function(b,i){return {b:b,i:i};}).filter(function(o){return bmSel.has(o.i);});
+  var extra=BM.map(function(b,i){return {b:b,i:i};}).filter(function(o){return bmSel.has(o.b.n);});
   var isDiv=extra.length>0;
   var hasDiv=isDiv&&fs.length>0;
   var hasWarn=fs.some(function(f){return !!f.warn;});
@@ -1121,7 +1123,7 @@ function lineOption(fs){
       itemStyle:{color:f.g==='sp'?GROUP_COLOR.sp:(f.c==='159509'?'#7a4ad6':(f.c==='513290'?'#2e8b8b':GROUP_COLOR[f.g]))}};
   });
   BM.forEach(function(b,i){
-    if(!bmSel.has(i))return;
+    if(!bmSel.has(b.n))return;
     var d=bmCNY?b.cny:b.usd;
     collect(d);
     series.push({name:b.n+'（基准）',type:'line',smooth:true,connectNulls:false,
@@ -1277,10 +1279,10 @@ function bmLineOption(fs){
 function tdOption(fs){
   /* 跟踪偏离度：产品（基金/ETF） − 纯指数基准（百分点）。基准永远是指数：sp→标普500指数(0)、nq/etf→纳斯达克100指数(2)、nx→无。
      勾选的 SPY/QQQ 作为产品追加：SPY vs 标普500指数、QQQ vs 纳斯达克100指数 */
-  var TD_BM={sp:0,nq:2,etf:2};
+  var TD_BM={sp:BIDX['标普500指数'],nq:BIDX['纳斯达克100指数'],etf:BIDX['纳斯达克100指数']};
   var etfs=[];
-  if(bmSel.has(3))etfs.push({b:BM[3],ib:0}); /* SPY → 标普500指数 */
-  if(bmSel.has(4))etfs.push({b:BM[4],ib:2}); /* QQQ → 纳斯达克100指数 */
+  if(bmSel.has('SPY'))etfs.push({b:BM[BIDX['SPY']],ib:BIDX['标普500指数']});         /* SPY → 标普500指数 */
+  if(bmSel.has('QQQ'))etfs.push({b:BM[BIDX['QQQ']],ib:BIDX['纳斯达克100指数']});      /* QQQ → 纳斯达克100指数 */
   var hasWarn=fs.some(function(f){return !!f.warn;});
   var cats=fs.map(function(f){return short(f.n)+(f.warn?' ⚠':'');});
   etfs.forEach(function(e){cats.push(e.b.n+'（ETF）');});
@@ -1344,7 +1346,7 @@ function tdOption(fs){
     grid:{left:50,right:24,top:70,bottom:100},
     xAxis:{type:'category',data:cats,axisLabel:{interval:0,rotate:30,fontSize:10,
       color:function(v,idx){
-        if(idx>=fs.length)return BM_COLOR[etfs[idx-fs.length]? (etfs[idx-fs.length].b===BM[3]?3:4) : 0];
+        if(idx>=fs.length)return BM_COLOR[etfs[idx-fs.length]? BIDX[etfs[idx-fs.length].b.n] : BIDX['标普500指数']];
         return '#333';
       }}},
     yAxis:{type:'value',name:'百分点'},
@@ -1556,8 +1558,8 @@ function setBmCny(v){
 }
 document.querySelectorAll('#bmRow .bmcb').forEach(function(cb){
   cb.addEventListener('change',function(){
-    var i=parseInt(cb.value,10);
-    if(cb.checked){bmSel.add(i);}else{bmSel.delete(i);}
+    var k=cb.value;
+    if(cb.checked){bmSel.add(k);}else{bmSel.delete(k);}
     renderChart();
   });
 });
