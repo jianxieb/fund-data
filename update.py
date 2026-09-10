@@ -461,6 +461,37 @@ def history_fetch(code):
     return merged
 
 
+def dz_from_hist(rows, navdate):
+    """净值接口没给日涨跌幅时，用历史净值算：最新净值日 ÷ 上一个有净值的日期 − 1。
+    返回 (涨跌幅%, 基准日)；算不出来返回 (None, None)。
+    注意：上一个净值日不一定就是昨天（如 539001 跳过了 09-05/09-07），基准日要一起返回给页面标注。"""
+    if not rows or not navdate:
+        return None, None
+    ser = []
+    for r in rows:
+        d = r.get('FSRQ')
+        try:
+            v = float(r.get('DWJZ'))
+        except (TypeError, ValueError):
+            continue
+        if d:
+            ser.append((d, v))
+    if len(ser) < 2:
+        return None, None
+    ser.sort(key=lambda x: x[0])
+    idx = None
+    for i, (d, _v) in enumerate(ser):
+        if d == navdate:
+            idx = i
+    if idx is None or idx == 0:
+        return None, None
+    base, prev = ser[idx - 1]
+    cur = ser[idx][1]
+    if prev <= 0:
+        return None, None
+    return (cur / prev - 1) * 100, base
+
+
 def calc_metrics(rows):
     """由历史行（含分红）计算：r{1,2,3,5,10年区间涨幅%}、v3、mdd3。无数据返回 None。
     口径：有分红的基金按 单位净值+每份分红 红利再投复权；无分红基金按 累计净值 复权
@@ -872,10 +903,14 @@ def main():
     mn = {}
     navset, dzset, new_navdate = set(), set(), {}  # 本次刷新到净值的基金 / 同时拿到涨跌幅的基金 / 新净值日
     old_navdate = {}
+    old_dz = {}
     for line, code, _is_etf in funds:
         m = re.search(r"navdate:'([^']*)'", line)
         if m:
             old_navdate[code] = m.group(1)
+        m2 = re.search(r'dz:(-?\d+(?:\.\d+)?|null)', line)
+        if m2:
+            old_dz[code] = None if m2.group(1) == 'null' else float(m2.group(1))
     if not offline and not hist_only:
         mn = fund_mnfinfo(codes)
     if not hist_only:
@@ -890,6 +925,7 @@ def main():
                     navdates.append(r['navdate'])
                 if r.get('dz') is not None:
                     p['dz'] = fnum(r['dz'], 2)
+                    p['dzfrom'] = 'null'   # 接口给了官方日涨跌幅，清掉估算基准日
                     dzset.add(code)
     if not offline and not hist_only and not mn:
         log('  !! FundMNFInfo 失败，稍后用 jjfl 页面兜底净值/涨跌幅')
@@ -897,6 +933,7 @@ def main():
 
     # 2) 历史 → 区间涨幅/年化波动率/回撤（--quick 也跑：增量取最近20行，窗口每日滑动）
     busy_streak = 0
+    hist_rows = {}   # 日涨跌幅接口缺失时，用这里的单位净值兜底计算
     for _, code, _ in funds:
         rows = history_fetch(code)
         if rows is None:
@@ -905,6 +942,7 @@ def main():
                 log('  !! 历史接口连续受限（网络繁忙），本次跳过剩余基金；改日再跑会自动补齐缓存')
                 break
             continue
+        hist_rows[code] = rows
         busy_streak = 0
         met = calc_metrics(rows)
         if not met:
@@ -945,24 +983,35 @@ def main():
                     navset.add(code)
                     if jj.get('dz') is not None:
                         p['dz'] = fnum(jj['dz'], 2)
+                        p['dzfrom'] = 'null'
                         dzset.add(code)
             # 净值接口刷新了但没给日涨跌幅（如 539001 长期返回 --）：只有 jjfl 页面的净值日与之一致才敢用它的涨跌幅
             if (code in navset and code not in dzset and jj.get('dz') is not None
                     and jj.get('navdate') == (mn.get(code) or {}).get('navdate')):
                 p['dz'] = fnum(jj['dz'], 2)
+                p['dzfrom'] = 'null'
                 dzset.add(code)
             time.sleep(0.5)
     # 净值换了新日期、日涨跌幅却拿不到时，必须显式置 null：
     # 否则页面会把上一个净值日的涨跌幅配到新净值上（净值与涨跌幅对不上）。
-    # 净值日没变（当天数据尚未更新）则保留原涨跌幅——它本来就属于这一天。
+    # 优先用历史净值补算（页面会标 ≈ 并说明基准日）；
+    # 净值日没变且原本已有涨跌幅时不动它——那个值本来就属于这一天。
     for code in navset:
         if code in dzset:
             continue
         nd = new_navdate.get(code)
-        if nd and nd == old_navdate.get(code):
+        advanced = bool(nd) and nd != old_navdate.get(code)
+        if not advanced and old_dz.get(code) is not None:
             continue
-        patches[code]['dz'] = 'null'
-        log('  ~ %s 净值更新到 %s 但无日涨跌幅，dz 置为 --（不再沿用旧值）' % (code, nd or '?'))
+        dz, base = dz_from_hist(hist_rows.get(code), nd)
+        if dz is not None:
+            patches[code]['dz'] = fnum(dz, 2)
+            patches[code]['dzfrom'] = "'%s'" % base
+            log('  ~ %s 接口无日涨跌幅，按 %s 净值算得 %.2f%%（页面标 ≈）' % (code, base, dz))
+        else:
+            patches[code]['dz'] = 'null'
+            patches[code]['dzfrom'] = 'null'
+            log('  ~ %s 净值更新到 %s 但无日涨跌幅，历史里也算不出，dz 置为 --' % (code, nd or '?'))
     szdate = max(set(szdates), key=szdates.count) if szdates else (old_meta.get('szdate') or '')
     # 净值日期取众数（个别基金公布节奏不同，避免带偏整体口径）
     navdate = max(set(navdates), key=navdates.count) if navdates else ''
