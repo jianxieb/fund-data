@@ -89,6 +89,8 @@ button.act:hover{border-color:#9db4d8;color:var(--ink);background:#fff}
 .pickpanel{height:100%;display:flex;flex-direction:column;min-height:0;margin:0}
 .pickhead{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .pickhead .phead{margin:0}
+.qwrap.small{display:block;margin-top:8px}
+.qwrap.small input{width:100%;padding:6px 28px 6px 10px;font-size:12.5px}
 .vizright{position:sticky;top:8px}
 .bmbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:0 2px 8px}
 .bmbar .phead{margin:0}
@@ -240,6 +242,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
           <button class="tab act" id="btnSelAll">☑ 全选本组</button>
           <button class="tab act" id="btnClear">✕ 清空</button>
         </div>
+        <span class="qwrap small"><input id="chipQ" placeholder="搜索名称或代码，如：招商 / 5131" autocomplete="off"><button class="qclear" id="chipQClear" title="清空搜索">✕</button></span>
         <div class="chips" id="chips"></div>
       </div>
     </div>
@@ -672,12 +675,23 @@ function updateSelCnt(){
   var el=document.getElementById('selCnt');
   if(el)el.textContent='已勾选 '+selFunds().length+' 只';
 }
-function renderChips(){
+function chipKw(){
+  var el=document.getElementById('chipQ');
+  return el?(el.value||'').trim().toLowerCase():'';
+}
+function renderChips(skipChart){
   var box=document.getElementById('chips');
   /* 选定分组后该组基金同属一类，去掉分组标签并排两列，一屏看得更多 */
   box.className='chips'+(curGroup==='all'?'':' grid2');
   box.innerHTML='';
-  var list=FUNDS.filter(function(f){return curGroup==='all'||f.g===curGroup;});
+  var kw=chipKw();
+  var list=FUNDS.filter(function(f){
+    if(curGroup!=='all'&&f.g!==curGroup)return false;
+    if(kw&&(f.n+' '+f.c).toLowerCase().indexOf(kw)<0)return false;
+    return true;
+  });
+  var clr=document.getElementById('chipQClear');
+  if(clr)clr.style.display=kw?'inline-block':'none';
   list.forEach(function(f){
     var lb=document.createElement('label');
     lb.className='chip';
@@ -699,9 +713,21 @@ function renderChips(){
     lb.appendChild(cd);
     box.appendChild(lb);
   });
+  if(!list.length){
+    var none=document.createElement('div');
+    none.className='chipsnone';
+    none.textContent=kw?('没有匹配「'+document.getElementById('chipQ').value.trim()+'」的基金 · 点搜索框右侧 ✕ 清空'):'本组暂无可选基金';
+    box.appendChild(none);
+  }
   updateSelCnt();
-  renderChart();
+  if(!skipChart)renderChart();
 }
+document.getElementById('chipQ').addEventListener('input',function(){renderChips(true);});
+document.getElementById('chipQClear').addEventListener('click',function(){
+  document.getElementById('chipQ').value='';
+  renderChips(true);
+  document.getElementById('chipQ').focus();
+});
 
 /* ================= 基准（指数/ETF） =================
    基期与基金表一致（滚动近N年，基期前最近交易日收盘）；
