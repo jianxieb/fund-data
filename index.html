@@ -49,12 +49,13 @@ header .meta b{color:#fff}
 button.mini{border:1px solid var(--line);background:#fff;border-radius:12px;padding:1px 10px;font-size:11.5px;line-height:1.7;color:var(--sub);cursor:pointer;white-space:nowrap;font-weight:normal}
 button.mini:hover{border-color:#9db4d8;color:var(--ink)}
 button.mini.on{background:var(--badge-field);border-color:#c7d8f5;color:var(--blue)}
-/* 手动调顺序：只在「调顺序」模式显示每行的 ▲▼ */
-.mvbtns{display:none;gap:2px;margin-right:6px;vertical-align:middle}
-table.editing .mvbtns{display:inline-flex}
-table.editing tbody tr:hover{background:#eef3fc}
-button.mv{border:1px solid var(--line);background:#fff;border-radius:5px;font-size:8px;line-height:1;padding:2px 4px;cursor:pointer;color:var(--sub)}
-button.mv:hover{border-color:#9db4d8;color:var(--blue);background:#fff}
+/* 拖动排序：名称列左侧手柄，按住整行拖动；拖动时显示落点线 */
+.dragh{display:inline-block;width:13px;margin-right:3px;cursor:grab;color:#9aa4b2;font-size:11px;opacity:.35;user-select:none;vertical-align:middle}
+.dragh:active{cursor:grabbing}
+tbody tr:hover .dragh{opacity:1;color:var(--blue)}
+tbody tr.dragging{opacity:.45;background:#eef3fc!important}
+tbody tr.drop-before td{border-top:2px solid var(--blue)}
+tbody tr.drop-after td{border-bottom:2px solid var(--blue)}
 details.scope{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 18px;margin:16px 0}
 details.scope summary{cursor:pointer;font-weight:600;color:#33517e}
 details.scope ol{margin:8px 0 4px;padding-left:22px;color:#3a4353}
@@ -257,7 +258,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
     <li><b>场内溢价率</b> = (盘中价 − IOPV) / IOPV × 100%（腾讯行情 IOPV 口径）。<b>盘中价一列的括号即"当时溢价率"</b>——数据生成时刻（见页头快照时间，每日更新）的快照；QDII ETF 净值 T+1 公布、隔夜美股波动大时溢价率可能失真，请结合 IOPV 判断。<b>场内 ETF 的区间涨幅一律按净值计算（已剔除溢价影响）</b>，溢价只体现在"盘中价"列，两者互相独立。</li>
     <li><b>买入/卖出费用</b>：两列含义随渠道变化——<b>场外</b>：买入费用=申购费（原费率/1折）、卖出费用=赎回费档（按持有期递减）；<b>场内</b>：买卖均为券商佣金（默认万 2.5、最低 5 元/笔，可在顶部工具栏按你的券商调整），ETF 免印花税/过户费。</li>
     <li><b>风险收益图</b>：X 轴 = 近3年<b>年化波动率</b>（日收益率标准差 × √250），Y 轴 = 近3年<b>年化收益率</b>，气泡 = 规模，提示框含近3年最大回撤——用于回答"同样收益下谁更颠簸"。</li>
-    <li><b>操作</b>：表格默认按清单原始顺序展示；<b>点击表头</b>升序 → 再点降序 → 再点<b>取消排序恢复默认</b>；<b>按住 Shift 点击另一列</b>可加第二排序键（双列混合排序，再点切换方向）；空值恒排最后。<b>手动调顺序</b>：点每张表标题右侧的<b>「⇅ 调顺序」</b>进入调整模式，名称列出现 <b>▲▼</b>，可一行一行上下移动（移动时该表的列排序会自动取消，否则排序会盖住手动结果）；排好后点<b>「☆ 固定顺序」</b>存成页面默认顺序（记住行顺序 + 当时的列排序，刷新、切换口径都按它排；导出 CSV 也按这个顺序），之后再有改动会出现<b>「↺ 恢复固定顺序」</b>一键找回。<b>左下角常驻搜索框</b>（🔍）按名称/代码同时过滤五张基金表与可视化勾选列表，不影响已勾选的基金。<b>名称列横向滚动时冻结</b>，表格纵向完整展开不再内部滚动。<b>右下角两个小开关</b>：左侧「☰ 视图：完整/精简」切换列密度（精简隐藏 代码/成立/买入费用/卖出费用/净值日涨跌/规模/备注，可视化对比里也不显示代码；打印与导出始终完整）；右侧「⇄ 口径：累计/年化」是全局唯一的累计/年化开关：把近N年列切成年化口径，基金表、基准参考表、区间收益图、基准收益图与收益曲线一起切换（年化模式下曲线图自动隐藏"对数Y轴"开关——年化曲线用对数轴没有意义）。两种淡色即两种口径：<b>淡蓝=累计涨幅</b>、<b>淡琥珀=年化收益率</b>——不必分头找按钮。<b>图表区为左右分栏且整块约一屏</b>：顶部两行工具栏选 <b>①指标 → ②分组与形式</b>（区间收益与基准收益可在柱状/曲线间切换），<b>左栏勾选基金</b>（勾选即刷新右栏图表，图表随页面滚动保持可见），基准叠加与人民币/美元口径在图表正上方一行；可导出 CSV、打印 PDF。</li>
+    <li><b>操作</b>：表格默认按清单原始顺序展示；<b>点击表头</b>升序 → 再点降序 → 再点<b>取消排序恢复默认</b>；<b>按住 Shift 点击另一列</b>可加第二排序键（双列混合排序，再点切换方向）；空值恒排最后。<b>拖动排序</b>：按住每行名称左侧的 <b>⠿</b> 手柄，把整行拖到目标位置松手即可（拖动会取消该表的列排序，否则排序会盖住手动结果）；排好后点每张表标题右侧的<b>「☆ 固定顺序」</b>存成页面默认顺序（记住行顺序 + 当时的列排序，刷新、切换口径都按它排；导出 CSV 也按这个顺序），之后再有改动会出现<b>「↺ 恢复固定顺序」</b>一键找回。<b>左下角常驻搜索框</b>（🔍）按名称/代码同时过滤五张基金表与可视化勾选列表，不影响已勾选的基金。<b>名称列横向滚动时冻结</b>，表格纵向完整展开不再内部滚动。<b>右下角两个小开关</b>：左侧「☰ 视图：完整/精简」切换列密度（精简隐藏 代码/成立/买入费用/卖出费用/净值日涨跌/规模/备注，可视化对比里也不显示代码；打印与导出始终完整）；右侧「⇄ 口径：累计/年化」是全局唯一的累计/年化开关：把近N年列切成年化口径，基金表、基准参考表、区间收益图、基准收益图与收益曲线一起切换（年化模式下曲线图自动隐藏"对数Y轴"开关——年化曲线用对数轴没有意义）。两种淡色即两种口径：<b>淡蓝=累计涨幅</b>、<b>淡琥珀=年化收益率</b>——不必分头找按钮。<b>图表区为左右分栏且整块约一屏</b>：顶部两行工具栏选 <b>①指标 → ②分组与形式</b>（区间收益与基准收益可在柱状/曲线间切换），<b>左栏勾选基金</b>（勾选即刷新右栏图表，图表随页面滚动保持可见），基准叠加与人民币/美元口径在图表正上方一行；可导出 CSV、打印 PDF。</li>
   </ol>
 </details>
 
@@ -636,9 +637,7 @@ function uniRow(f,idx){
   var feeSell=isE?commCell():'<td class="hcol" title="赎回费档（按持有期递减）">'+esc(f.rd||'--')+'</td>';
   var stCell=isE?'<td class="na" title="场内买卖不受申赎通道限制">--</td>':cell(badgeHtml(st)+chgMark(f.c,'st'));
   return '<tr data-idx="'+(idx==null?0:idx)+'" data-code="'+f.c+'">'+
-    cell('<span class="mvbtns noprint" title="调整顺序：点卡片标题的「⇅ 调顺序」后可逐行上下移动">'+
-      '<button type="button" class="mv" data-mv="-1" title="上移一行">▲</button>'+
-      '<button type="button" class="mv" data-mv="1" title="下移一行">▼</button></span>'+
+    cell('<span class="dragh noprint" title="按住这里拖动整行，移到想要的位置松手">⠿</span>'+
       '<b>'+esc(f.n)+'</b>','l frz')+cell(link(f.c),'l hcol')+cell(esc(f.t||'场内ETF'),'l')+ixCell(f)+
     cell(f.d,'hcol')+cell(feeStr(f))+feeBuy+feeSell+
     stCell+lmCell(f)+
@@ -670,7 +669,6 @@ function renderTables(){
     var rows=tableFunds(def[0],flt);
     /* 用闭包调用行渲染器：避免 Array.map 把下标误传为第二个参数（导致表格错位） */
     el.innerHTML=UNI_COLS()+UNI_HEAD()+'<tbody>'+rows.map(function(f,i){return uniRow(f,i);}).join('')+'</tbody>';
-    el.classList.toggle('editing',!!EDITING[el.id]);
     /* 排序状态存在 SORTS 里（按列 key），重绘后按 key 重新套用：
        切换累计/年化会重建表格，但用户排好的顺序必须原样保留 */
     var st=SORTS[el.id];
@@ -693,7 +691,6 @@ var SORTS={};                 /* 每张表当前列排序 [{k,ci,mode,dir}] */
 var ORDER={};                 /* 每张表当前行顺序（基金代码数组，逐行上下移动的结果） */
 var FIXED_ORDER={};           /* 固定顺序 {t1:{order:[代码...],sort:[{k,dir}]}, ...} */
 var FO_KEY='funddata.fixorder.v1';
-var EDITING={};               /* 哪些表处于「调顺序」模式 */
 var SORT_TBLS=['t1','t2','t3','t4','t5'];
 function sortState(tb){if(!SORTS[tb.id])SORTS[tb.id]=[];return SORTS[tb.id];}
 function keyOfTh(th,ci){return th?(th.getAttribute('data-key')||('c'+ci)):('c'+ci);}
@@ -806,8 +803,8 @@ function bindSort(){
   });
 }
 
-/* ============ 手动顺序 + 固定顺序 ============
-   每张表可以逐行上下移动（点卡片标题的「⇅ 调顺序」后，名称列出现 ▲▼）；
+/* ============ 拖动排序 + 固定顺序 ============
+   按住名称列左侧的 ⠿ 手柄拖动整行，松手即落在目标位置（HTML5 拖放）；
    排好后点「☆ 固定顺序」把这张表的行顺序（含当时的列排序）存到 localStorage，
    页面默认进入、切换口径重绘都按它排；此后改动过就出现「↺ 恢复固定顺序」。
    基准表不参与（列布局不同，保持原有点击排序）。 */
@@ -865,37 +862,14 @@ function fixCurrent(tb){
   saveFixedOrder();
   syncOrderTools();
 }
-function moveRow(tb,code,dir){
-  if(!ORDER[tb.id]||!ORDER[tb.id].length)ORDER[tb.id]=orderFromDom(tb);
-  var ord=ORDER[tb.id];
-  var i=ord.indexOf(code);
-  if(i<0)return;
-  var j=i+dir;
-  if(j<0||j>=ord.length)return;
-  var t=ord[i];ord[i]=ord[j];ord[j]=t;
-  /* 手动挪行时先取消列排序，否则排序会把手动调整盖掉 */
-  if(SORTS[tb.id]&&SORTS[tb.id].length){SORTS[tb.id]=[];clearSortUI(tb);}
-  applyOrderTo(tb);
-  syncOrderTools();
-}
-function toggleEdit(tb,on){
-  EDITING[tb.id]=(on==null)?!EDITING[tb.id]:!!on;
-  tb.classList.toggle('editing',!!EDITING[tb.id]);
-  if(EDITING[tb.id]){
-    if(!ORDER[tb.id]||!ORDER[tb.id].length)ORDER[tb.id]=orderFromDom(tb);
-    if(SORTS[tb.id]&&SORTS[tb.id].length){SORTS[tb.id]=[];clearSortUI(tb);}
-    applyOrderTo(tb);
-  }
-  syncOrderTools();
+function clearDropMarks(tb){
+  [].forEach.call(tb.tBodies[0].rows,function(r){r.classList.remove('drop-before','drop-after');});
 }
 function syncOrderTools(){
   SORT_TBLS.forEach(function(id){
     var tb=document.getElementById(id);
-    if(!tb||!tb._edit)return;
-    var editing=!!EDITING[id], fixed=!!FIXED_ORDER[id];
-    tb._edit.textContent=editing?'⇅ 完成调整':'⇅ 调顺序';
-    tb._edit.className='mini'+(editing?' on':'');
-    tb._edit.title=editing?'退出调整模式（已挪动的顺序保留，可再点「☆ 固定顺序」保存）':'进入调整模式：名称列出现 ▲▼，可逐行上下移动';
+    if(!tb||!tb._fix)return;
+    var fixed=!!FIXED_ORDER[id];
     tb._fix.textContent=fixed?'★ 重新固定顺序':'☆ 固定顺序';
     tb._fix.className='mini'+(fixed?' on':'');
     tb._fix.title=fixed?'把本表当前的行顺序（含列排序）重新固定':'把本表当前的行顺序固定下来，作为页面默认顺序';
@@ -905,31 +879,65 @@ function syncOrderTools(){
 function initOrderTools(){
   SORT_TBLS.forEach(function(id){
     var tb=document.getElementById(id);
-    if(!tb||tb._edit)return;
+    if(!tb||tb._fix)return;
     var card=tb.closest('.card'),h2=card?card.querySelector('h2'):null;
     if(!h2)return;
     var box=document.createElement('span');
     box.className='h2tools noprint';
-    var bEdit=document.createElement('button');
-    bEdit.type='button';bEdit.className='mini';
     var bFix=document.createElement('button');
     bFix.type='button';bFix.className='mini';
     var bRes=document.createElement('button');
     bRes.type='button';bRes.className='mini';bRes.textContent='↺ 恢复固定顺序';
     bRes.style.display='none';
-    bEdit.addEventListener('click',function(){toggleEdit(tb);});
     bFix.addEventListener('click',function(){fixCurrent(tb);});
     bRes.addEventListener('click',function(){useFixedOrder(tb);});
-    box.appendChild(bEdit);box.appendChild(bFix);box.appendChild(bRes);h2.appendChild(box);
-    tb._edit=bEdit;tb._fix=bFix;tb._res=bRes;
-    /* 行内 ▲▼：事件委托，重绘后依然有效 */
-    tb.addEventListener('click',function(ev){
-      var b=ev.target&&ev.target.closest?ev.target.closest('button.mv'):null;
-      if(!b)return;
+    box.appendChild(bFix);box.appendChild(bRes);h2.appendChild(box);
+    tb._fix=bFix;tb._res=bRes;
+    /* 拖动排序：只有从 ⠿ 手柄按下的拖动才生效，点代码链接/选文字不受影响 */
+    tb.addEventListener('mousedown',function(ev){
+      var h=ev.target&&ev.target.closest?ev.target.closest('.dragh'):null;
+      var tr=h?h.closest('tr'):null;
+      tb._dragRow=null;
+      [].forEach.call(tb.tBodies[0].rows,function(r){r.draggable=!!(tr&&r===tr);});
+    });
+    tb.addEventListener('dragstart',function(ev){
+      var tr=ev.target&&ev.target.closest?ev.target.closest('tr'):null;
+      if(!tr||!tr.draggable){ev.preventDefault();return;}
+      tb._dragRow=tr;
+      tr.classList.add('dragging');
+      try{ev.dataTransfer.effectAllowed='move';ev.dataTransfer.setData('text/plain',rowCodeOf(tr));}catch(e){}
+    });
+    tb.addEventListener('dragover',function(ev){
+      if(!tb._dragRow)return;
       ev.preventDefault();
-      var tr=b.closest('tr');
-      if(!tr)return;
-      moveRow(tb,rowCodeOf(tr),parseInt(b.getAttribute('data-mv'),10)||0);
+      try{ev.dataTransfer.dropEffect='move';}catch(e){}
+      var tr=ev.target&&ev.target.closest?ev.target.closest('tr'):null;
+      if(!tr||tr===tb._dragRow){clearDropMarks(tb);return;}
+      var r=tr.getBoundingClientRect();
+      var after=ev.clientY>r.top+r.height/2;
+      clearDropMarks(tb);
+      tr.classList.add(after?'drop-after':'drop-before');
+    });
+    tb.addEventListener('drop',function(ev){
+      if(!tb._dragRow)return;
+      ev.preventDefault();
+      var body=tb.tBodies[0];
+      var src=tb._dragRow;
+      var tr=ev.target&&ev.target.closest?ev.target.closest('tr'):null;
+      var after=!!(tr&&tr.classList.contains('drop-after'));
+      clearDropMarks(tb);
+      if(tr&&tr!==src){body.insertBefore(src,after?tr.nextSibling:tr);}
+      ORDER[tb.id]=orderFromDom(tb);
+      [].forEach.call(body.rows,function(r,i){r.setAttribute('data-idx',i);});
+      /* 拖动改的是行顺序，列排序会把它盖住，所以这里取消列排序 */
+      if(SORTS[tb.id]&&SORTS[tb.id].length){SORTS[tb.id]=[];clearSortUI(tb);}
+      syncOrderTools();
+    });
+    tb.addEventListener('dragend',function(){
+      if(tb._dragRow)tb._dragRow.classList.remove('dragging');
+      clearDropMarks(tb);
+      tb._dragRow=null;
+      [].forEach.call(tb.tBodies[0].rows,function(r){r.draggable=false;});
     });
   });
   syncOrderTools();
