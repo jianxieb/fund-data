@@ -20,7 +20,7 @@ python update.py --hist     # 只补历史与基准（限流缓解后回填缓�
 python update.py --offline  # 只用本地缓存
 ```
 
-**当前已配置 Codex 定时任务**：每个交易日 **14:00（A 股收盘前）** 在本项目下运行 `python update.py` 并做一次体检（净值日期、是否有基金净值滞后、场内快照时间、本次申购变动），只在有变动或异常时展开说明。也可用 Windows「任务计划程序」自行调度，例如 11:30 跑 `python update.py --quick`、15:30 再跑一次全量。脚本直接改写 `index.html` 的 `/*__DATA_*__*/` 数据块（含申购变动的 `/*__DATA_CHG_*__*/`）与标题日期，静态字段（费用/费率档/备注等）不受影响。
+**当前已配置 Codex 定时任务**：每个交易日 **14:00（A 股收盘前）** 在本项目下运行 `python update.py` 并做一次体检（净值日期、是否有基金净值滞后、场内快照时间、本次申购变动）：通过写回自检后，自动提交当日数据（`index.html` + Markdown 清单）并 `git push` 到 `main`，线上 Pages（https://jianxieb.github.io/fund-data/ ）随之自动重建；写回被自检拦下或数据无变化时不提交，只报告。也可用 Windows「任务计划程序」自行调度，例如 11:30 跑 `python update.py --quick`、15:30 再跑一次全量。脚本直接改写 `index.html` 的 `/*__DATA_*__*/` 数据块（含申购变动的 `/*__DATA_CHG_*__*/`）与标题日期，静态字段（费用/费率档/备注等）不受影响。
 
 > 提示：fundmobapi 对完整桌面 User-Agent 返回"网络繁忙"，脚本已用精简 UA 规避；接口偶发限流时自动重试/保留缓存，历史与基准可后续用 `python update.py --hist` 补齐。基准行情 push2his 限流时**自动降级新浪美股日线**（`US_MinKService`，SPY/QQQ 届时为价格口径、备注注明），USDCNY 汇率接口失败时沿用上一版各期汇率变动，人民币口径仍可计算。
 
