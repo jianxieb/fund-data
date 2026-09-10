@@ -66,6 +66,13 @@ details.scope li{margin:4px 0}
 .anntoggle .ic{font-weight:700}
 .anntoggle.on{background:var(--badge-limit);border-color:#f0d9ae;color:var(--warn)}
 .anntoggle.on:hover{background:#ffe9c9;border-color:#e2c187}
+/* 列密度开关（完整/精简），排在口径开关左侧；精简只影响页面显示，打印与导出始终完整 */
+.anntoggle.dens{right:180px;background:#f2f5f9;border-color:#dbe1ea;color:var(--sub)}
+.anntoggle.dens:hover{background:#e6ecf5;border-color:#b9c4d4}
+.anntoggle.dens.on{background:#efe9fb;border-color:#d6c8f2;color:#6a3fd0}
+.anntoggle.dens.on:hover{background:#e6dcfa;border-color:#c2abec}
+body.dense .hcol{display:none}
+body.dense table.t1,body.dense table.t3{min-width:1180px}
 /* 工具栏 */
 .filter{display:flex;gap:10px;align-items:center;margin:14px 0 4px;flex-wrap:wrap}
 .qwrap{position:relative;display:inline-block}
@@ -186,6 +193,9 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   .tablebox{overflow:visible;max-height:none}
   thead th{position:static}
   th.frz,td.frz{position:static;box-shadow:none}
+  /* 打印始终完整：精简模式隐藏的低频列在打印时全部还原 */
+  body.dense .hcol{display:table-cell!important}
+  body.dense table.t1,body.dense table.t3{min-width:0}
   td{font-size:11px}
   .card,.stat,.notes{border-radius:0}
 }
@@ -325,6 +335,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 <footer>风险提示：QDII 基金受外汇额度影响，普遍限大额/暂停申购（广发纳指联接 A 日限额仅 5 元）；场内 ETF 存在折溢价；历史涨幅不代表未来。数据仅供参考。</footer>
 </div>
 
+<button class="anntoggle dens noprint" id="densTog" title="表格列显示：完整 19 列 / 精简列（隐藏 代码、成立、买入费用、卖出费用、净值日涨跌、规模、备注，可视化对比里也不显示代码）｜打印与导出始终完整"><span class="ic">☰</span><span id="densTogTxt">视图：完整</span></button>
 <button class="anntoggle noprint" id="annTog" title="收益口径：累计涨幅 ⇄ 年化收益率（作用于全页：基金表、基准参考表、收益/基准图与收益曲线，CSV 同步）：点击切换"><span class="ic">⇄</span><span id="annTogTxt">口径：累计</span></button>
 <button id="toTop" class="noprint" title="回到顶部">↑</button>
 
@@ -401,13 +412,15 @@ var YEARS=[1,2,3,5,10];
 var GROUPS={all:'全部',sp:'标普500',nq:'纳斯达克100场外',etf:'纳斯达克100ETF',nx:'其他纳斯达克指数'};
 var GROUP_COLOR={sp:'#33517e',nq:'#d6362a',etf:'#0a8a4a',nx:'#7a4ad6'};
 var DEFAULT_SEL=['050025','096001','513500','160213','270042','040046','161130','539001','513100','159941','159509','513290'];
-var curGroup='all', curChart='bar', curForm='bar', logAxis=false, annOn=false;
+var curGroup='all', curChart='bar', curForm='bar', logAxis=false, annOn=false, dense=false;
 var etfRate=2.5, etfMin=5; /* 场内ETF佣金：万2.5 / 最低5元，用户可改 */
 var sel=new Set(DEFAULT_SEL);
 var chart=null, hoverBar=null; /* hoverBar：光标是否落在某根柱子上 {seriesIndex,dataIndex}；null=柱外 */
 
 /* ================= 通用工具 ================= */
 function short(n){return String(n).replace(/\(.*?\)/g,'').replace(/（.*?）/g,'');}
+/* 图表/图例里的基金名：完整模式带代码，精简模式只留名称 */
+function fname(f){return dense?(short(f.n)):(short(f.n)+' '+f.c);}
 function annRet(v,i){return v==null?null:+((Math.pow(1+v/100,1/YEARS[i])-1)*100).toFixed(2);}
 function fmtPct(v,dec){dec=dec==null?2:dec;return v==null?'--':((v>=0?'+':'')+v.toFixed(dec)+'%');}
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
@@ -454,16 +467,16 @@ function retCell(v,i){
 }
 /* 净值/涨跌格：nav (navdate) + dz%，dz 红涨绿跌 */
 function navCell(f){
-  if(f.nav==null)return '<td class="na">--</td>';
+  if(f.nav==null)return '<td class="na hcol">--</td>';
   var dz=f.dz;
   var cls=dz>0?'up':(dz<0?'down':'');
-  return '<td title="单位净值日期：'+esc(f.navdate||'')+'">'+f.nav.toFixed(4)+
+  return '<td class="hcol" title="单位净值日期：'+esc(f.navdate||'')+'">'+f.nav.toFixed(4)+
     ' <span class="'+cls+'">'+(dz==null?'--':((dz>=0?'+':'')+dz.toFixed(2)+'%'))+'</span></td>';
 }
 /* 场内佣金：元/每万元成交额 = max(万X, 最低Y)，买卖同费率 */
 function commCell(){
   var v=Math.max(etfRate,etfMin);
-  return '<td title="场内佣金 '+etfRate+'/万，最低 '+etfMin+' 元/笔；免印花税/过户费，买卖同费率">≈'+v.toFixed(2)+' 元/万</td>';
+  return '<td class="hcol" title="场内佣金 '+etfRate+'/万，最低 '+etfMin+' 元/笔；免印花税/过户费，买卖同费率">≈'+v.toFixed(2)+' 元/万</td>';
 }
 function cell(html,cls){return '<td class="'+(cls||'')+'">'+html+'</td>';}
 function link(c){return '<a href="https://fund.eastmoney.com/'+c+'.html" target="_blank" rel="noopener">'+c+'</a>';}
@@ -479,13 +492,13 @@ function UNI_HEAD(){
   var d=(META&&META.snpdate)?META.snpdate.slice(5):'';
   return '<thead><tr>'+
   '<th class="l frz" data-sort="text" data-key="name">名称<span class="arr"></span></th>'+
-  '<th class="l" data-sort="num" data-key="code">代码<span class="arr"></span></th>'+
+  '<th class="l hcol" data-sort="num" data-key="code">代码<span class="arr"></span></th>'+
   '<th class="l" data-sort="text" data-key="type">类别<span class="arr"></span></th>'+
   '<th class="l" data-sort="text" data-key="idx">跟踪指数<span class="arr"></span></th>'+
-  '<th data-sort="date" data-key="est">成立<span class="arr"></span></th>'+
+  '<th class="hcol" data-sort="date" data-key="est">成立<span class="arr"></span></th>'+
   '<th data-sort="num" data-key="fee">年费(管/托/销)<span class="arr"></span></th>'+
-  '<th data-sort="num" data-key="buy">买入费用<span class="arr"></span></th>'+
-  '<th data-sort="num" data-key="sell">卖出费用<span class="arr"></span></th>'+
+  '<th class="hcol" data-sort="num" data-key="buy">买入费用<span class="arr"></span></th>'+
+  '<th class="hcol" data-sort="num" data-key="sell">卖出费用<span class="arr"></span></th>'+
   '<th data-sort="text" data-key="st">申购状态<span class="arr"></span></th>'+
   '<th data-sort="num" data-key="lm">日限额<span class="arr"></span></th>'+
   '<th data-sort="num" data-key="r1">'+retHead(1)+'<span class="arr"></span></th>'+
@@ -493,10 +506,10 @@ function UNI_HEAD(){
   '<th data-sort="num" data-key="r3">'+retHead(3)+'<span class="arr"></span></th>'+
   '<th data-sort="num" data-key="r5">'+retHead(5)+'<span class="arr"></span></th>'+
   '<th data-sort="num" data-key="r10">'+retHead(10)+'<span class="arr"></span></th>'+
-  '<th data-sort="num" data-key="nav">净值/日涨跌<span class="arr"></span></th>'+
+  '<th class="hcol" data-sort="num" data-key="nav">净值/日涨跌<span class="arr"></span></th>'+
   '<th data-sort="num" data-key="snap">盘中价('+d+')<span class="arr"></span></th>'+
-  '<th data-sort="num" data-key="sz">规模(亿)<span class="arr"></span></th>'+
-  '<th class="l" data-sort="text" data-key="note">备注<span class="arr"></span></th>'+
+  '<th class="hcol" data-sort="num" data-key="sz">规模(亿)<span class="arr"></span></th>'+
+  '<th class="l hcol" data-sort="text" data-key="note">备注<span class="arr"></span></th>'+
   '</tr></thead>';
 }
 function lmCell(f){
@@ -517,16 +530,16 @@ function uniRow(f,idx){
   var isE=isEtfFund(f);
   var st=f.st||'场内';
   /* 场内：买入/卖出费用=券商佣金；申购状态列不再重复"场内交易"（类别列已区分） */
-  var feeBuy=isE?commCell():'<td title="申购费（原费率/1折）">'+esc(f.buy||'--')+'</td>';
-  var feeSell=isE?commCell():'<td title="赎回费档（按持有期递减）">'+esc(f.rd||'--')+'</td>';
+  var feeBuy=isE?commCell():'<td class="hcol" title="申购费（原费率/1折）">'+esc(f.buy||'--')+'</td>';
+  var feeSell=isE?commCell():'<td class="hcol" title="赎回费档（按持有期递减）">'+esc(f.rd||'--')+'</td>';
   var stCell=isE?'<td class="na" title="场内买卖不受申赎通道限制">--</td>':cell(badgeHtml(st));
   return '<tr data-idx="'+(idx==null?0:idx)+'">'+
-    cell('<b>'+esc(f.n)+'</b>','l frz')+cell(link(f.c),'l')+cell(esc(f.t||'场内ETF'),'l')+cell(esc(f.ix),'l')+
-    cell(f.d)+cell(feeStr(f))+feeBuy+feeSell+
+    cell('<b>'+esc(f.n)+'</b>','l frz')+cell(link(f.c),'l hcol')+cell(esc(f.t||'场内ETF'),'l')+cell(esc(f.ix),'l')+
+    cell(f.d,'hcol')+cell(feeStr(f))+feeBuy+feeSell+
     stCell+lmCell(f)+
     retCell(f.r[0],0)+retCell(f.r[1],1)+retCell(f.r[2],2)+retCell(f.r[3],3)+retCell(f.r[4],4)+
     navCell(f)+(isE?snapCell(f):'<td class="na">--</td>')+
-    cell(f.sz)+cell(esc(f.note),'note')+
+    cell(f.sz,'hcol')+cell(esc(f.note),'note hcol')+
     '</tr>';
 }
 var nxOtf=function(f){return f.g==='nx'&&!!f.t;};
@@ -836,9 +849,11 @@ function renderChips(skipChart){
       tag.className='g-tag'; tag.textContent=GROUPS[f.g];
       lb.appendChild(tag);
     }
-    var cd=document.createElement('span');
-    cd.className='g-tag'; cd.textContent=f.c;
-    lb.appendChild(cd);
+    if(!dense){ /* 精简模式下连可视化对比里的代码一起隐藏（hover 的 title 里仍可看到完整名称与代码） */
+      var cd=document.createElement('span');
+      cd.className='g-tag'; cd.textContent=f.c;
+      lb.appendChild(cd);
+    }
     box.appendChild(lb);
   });
   if(!list.length){
@@ -971,7 +986,7 @@ function lineOption(fs){
   function collect(arr){arr.forEach(function(v){if(v!=null)allVals.push(v);});}
   var series=fs.map(function(f){
     collect(f.r);
-    return {name:short(f.n)+' '+f.c,type:'line',smooth:true,connectNulls:false,
+    return {name:fname(f),type:'line',smooth:true,connectNulls:false,
       data:f.r.map(tv),
       lineStyle:{width:2},symbol:'circle',symbolSize:6,
       itemStyle:{color:f.g==='sp'?GROUP_COLOR.sp:(f.c==='159509'?'#7a4ad6':(f.c==='513290'?'#2e8b8b':GROUP_COLOR[f.g]))}};
@@ -1024,7 +1039,7 @@ function scatOption(fs){
     if(f.v3==null||f.r[2]==null||!f.sz)return;
     var ann3=+((Math.pow(1+f.r[2]/100,1/3)-1)*100).toFixed(2);
     if(!gs[f.g])gs[f.g]=[];
-    gs[f.g].push({name:short(f.n)+' '+f.c,value:[f.v3,ann3,f.sz],mdd:f.mdd3,r3:f.r[2]});
+    gs[f.g].push({name:fname(f),value:[f.v3,ann3,f.sz],mdd:f.mdd3,r3:f.r[2]});
   });
   var names={sp:'标普500',nq:'纳斯达克100场外',etf:'纳斯达克100ETF',nx:'其他纳斯达克指数'};
   var series=['sp','nq','etf','nx'].filter(function(k){return gs[k]&&gs[k].length;}).map(function(k){
@@ -1418,6 +1433,25 @@ function setAnn(v){
   renderChart();
 }
 document.getElementById('annTog').addEventListener('click',function(){setAnn(!annOn);});
+/* 列密度：完整（19 列）/ 精简（隐藏低频列）。只影响页面显示，打印与 CSV 始终完整。 */
+function syncDensUI(){
+  var b=document.getElementById('densTog'),t=document.getElementById('densTogTxt');
+  if(t)t.textContent=dense?'视图：精简':'视图：完整';
+  if(b){
+    b.classList.toggle('on',!!dense);
+    b.title=dense
+      ?'当前：精简列（隐藏 代码、成立、买入费用、卖出费用、净值日涨跌、规模、备注；可视化对比里也不显示代码）｜点击切回完整 19 列｜打印与导出始终完整'
+      :'当前：完整列（19 列）｜点击切换为精简列，隐藏 代码、成立、买入费用、卖出费用、净值日涨跌、规模、备注（可视化对比里的代码一并隐藏）｜打印与导出始终完整';
+  }
+}
+function setDense(v){
+  dense=!!v;
+  document.body.classList.toggle('dense',dense);
+  syncDensUI();
+  renderChips(true); /* 勾选列表里的代码标签 */
+  renderChart();     /* 图表图例/提示里的代码后缀 */
+}
+document.getElementById('densTog').addEventListener('click',function(){setDense(!dense);});
 /* 场内佣金参数 */
 function onFeeCtl(){
   etfRate=parseFloat(document.getElementById('etfRate').value);
@@ -1448,6 +1482,7 @@ renderGroupTabs();
 renderChips();
 updateFormUI();
 syncAnnUI();
+syncDensUI();
 if(window.echarts){
   initChart();
 }else if(window.__echartsFailed){
