@@ -36,7 +36,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 HTML = os.path.join(HERE, 'index.html')
 FHSP_DIR = os.path.join(HERE, '.tmp-fhsp')
 HIST_DIR = os.path.join(HERE, '.tmp-hist')
-SNAP_DIR = os.path.join(HERE, '.tmp-snap')   # 上一版 index.html 备份 + 申赎状态快照
+SNAP_DIR = os.path.join(HERE, '.tmp-snap')   # 上一版 index.html 备份 + 申赎状态快照 + 变动记录
+CHG_KEEP = 40                                # 页面里保留的变动条数
 UA = {'User-Agent': 'Mozilla/5.0'}  # fundmobapi 对完整桌面 UA 会返回 61136403 网络繁忙
 OFFLINE = False
 
@@ -243,6 +244,43 @@ def backup_and_write(src):
     with open(tmp, 'w', encoding='utf-8') as f:
         f.write(src)
     os.replace(tmp, HTML)
+
+
+def load_json(path, default):
+    try:
+        with open(path, encoding='utf-8') as f:
+            return json.load(f)
+    except Exception:  # noqa: BLE001
+        return default
+
+
+def save_json(path, obj):
+    try:
+        os.makedirs(SNAP_DIR, exist_ok=True)
+        with open(path, 'w', encoding='utf-8') as f:
+            json.dump(obj, f, ensure_ascii=False)
+    except OSError as e:
+        log('  !! 快照写入失败：%s' % e)
+
+
+def write_changes_block(src, changes):
+    """把最近的状态/限额变动写进 index.html 的 CHANGES 数据块（页面按最新在前展示）。"""
+    rows = []
+    for x in reversed(changes[-CHG_KEEP:]):
+        rows.append(' {d:%s,c:%s,n:%s,f:%s,a:%s,b:%s},' % (
+            json.dumps(x.get('d', ''), ensure_ascii=False),
+            json.dumps(x.get('c', ''), ensure_ascii=False),
+            json.dumps(x.get('n', ''), ensure_ascii=False),
+            json.dumps(x.get('f', ''), ensure_ascii=False),
+            json.dumps(x.get('a', ''), ensure_ascii=False),
+            json.dumps(x.get('b', ''), ensure_ascii=False)))
+    block = ('var CHANGES=[\n' + '\n'.join(rows) + '\n];') if rows else 'var CHANGES=[];'
+    m = re.search(r'(/\*__DATA_CHG_BEGIN__\*/\n)(.*?)(\n/\*__DATA_CHG_END__\*/)', src, re.S)
+    if not m:
+        log('  ~ 未找到 CHANGES 数据块，跳过申购变动写回')
+        return src
+    log('  ✓ 申购变动 %d 条已写回' % len(rows))
+    return src[:m.start()] + m.group(1) + block + m.group(3) + src[m.end():]
 
 
 # ---------------------------------------------------------------- jjfl 页面
@@ -637,7 +675,7 @@ def bench_compute(anchor, fx_old=None):
 
 
 # ---------------------------------------------------------------- 写回
-def write_patches(fund_patches, bench, meta, quick):
+def write_patches(fund_patches, bench, meta, quick, changes=None):
     with open(HTML, encoding='utf-8') as f:
         src = f.read()
     lines = src.splitlines(keepends=True)
@@ -680,6 +718,9 @@ def write_patches(fund_patches, bench, meta, quick):
     # 标题日期
     src = re.sub(r'(<title>.*?（)\d{4}-\d{2}-\d{2}(）</title>)',
                  lambda mm: mm.group(1) + meta['gen'][:10] + mm.group(2), src, count=1)
+    # 申购变动块（页面「申购变动」卡片的数据源）
+    if changes is not None:
+        src = write_changes_block(src, changes)
     # 写回前自检：任何一项不过就整份放弃，宁可保留上一版也不要把页面写坏
     problems = validate_src(src, len(fund_patches))
     if problems:
@@ -925,6 +966,46 @@ def main():
     # 净值日期取众数（个别基金公布节奏不同，避免带偏整体口径）
     navdate = max(set(navdates), key=navdates.count) if navdates else ''
 
+    # 3.5) 申赎状态 / 日限额变动：与上一次运行的快照比对（只比场外，场内 lm 恒为 --）
+    prev_snap = load_json(os.path.join(SNAP_DIR, 'last.json'), {})
+    changes = load_json(os.path.join(SNAP_DIR, 'changes.json'), [])
+    today = now.strftime('%Y-%m-%d')
+    cur_snap, n_chg = {}, 0
+
+    def _clean(v, fallback):
+        if isinstance(v, str) and v.strip():
+            return v.strip().strip("'")
+        return fallback
+
+    for line, code, is_etf in funds:
+        if is_etf:
+            continue
+        p = patches.get(code, {})
+        old = prev_snap.get(code) or {}
+        nm = re.search(r"n:'([^']*)'", line)
+        name = nm.group(1) if nm else code
+        st = _clean(p.get('st'), old.get('st', ''))
+        lm = _clean(p.get('lm'), old.get('lm', ''))
+        if st == '暂停':
+            lm = '--'  # 暂停申购不展示限额，快照也按页面口径记 --，恢复申购时才会比出变动
+        if old:
+            if st and old.get('st') and st != old.get('st'):
+                changes.append({'d': today, 'c': code, 'n': name, 'f': 'st', 'a': old.get('st'), 'b': st})
+                n_chg += 1
+            if (lm or '--') != (old.get('lm') or '--'):
+                changes.append({'d': today, 'c': code, 'n': name, 'f': 'lm', 'a': old.get('lm') or '--', 'b': lm or '--'})
+                n_chg += 1
+        cur_snap[code] = {'st': st, 'lm': lm}
+    # 同一天同一字段只留最后一条（一天跑两次也不重复记）
+    ded = {}
+    for x in changes:
+        ded[(x.get('d'), x.get('c'), x.get('f'))] = x
+    changes = list(ded.values())[-CHG_KEEP:]
+    if n_chg:
+        log('  · 本次申购变动 %d 条' % n_chg)
+    save_json(os.path.join(SNAP_DIR, 'last.json'), cur_snap)
+    save_json(os.path.join(SNAP_DIR, 'changes.json'), changes)
+
     # 4) 场内行情快照（当时溢价率）
     snpdate, snptime = old_meta.get('snpdate', ''), old_meta.get('snptime', '')
     if not offline and not hist_only:
@@ -954,7 +1035,7 @@ def main():
     meta = {'gen': gen, 'navdate': navdate or '', 'snpdate': snpdate or now.strftime('%Y-%m-%d'),
             'snptime': snptime or now.strftime('%H:%M'), 'szdate': szdate,
             'fx_old': old_meta.get('fx') or [0, 0, 0, 0, 0]}
-    if not write_patches(patches, bench, meta, quick):
+    if not write_patches(patches, bench, meta, quick, changes):
         log('  !! 本次更新未写回，index.html 保持上一版')
         sys.exit(2)
     with open(HTML, encoding='utf-8') as f:
