@@ -36,6 +36,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 HTML = os.path.join(HERE, 'index.html')
 FHSP_DIR = os.path.join(HERE, '.tmp-fhsp')
 HIST_DIR = os.path.join(HERE, '.tmp-hist')
+SNAP_DIR = os.path.join(HERE, '.tmp-snap')   # 上一版 index.html 备份 + 申赎状态快照
 UA = {'User-Agent': 'Mozilla/5.0'}  # fundmobapi 对完整桌面 UA 会返回 61136403 网络繁忙
 OFFLINE = False
 
@@ -135,6 +136,113 @@ def fnum(v, nd=4):
     if v is None:
         return 'null'
     return ('%.' + str(nd) + 'f') % float(v)
+
+
+# ---------------------------------------------------------------- 校验 / 原子写回
+FIELD_RE = {
+    'nav': re.compile(r"nav:(-?\d+(?:\.\d+)?|null)"),
+    'v3': re.compile(r"v3:(-?\d+(?:\.\d+)?|null)"),
+    'mdd3': re.compile(r"mdd3:(-?\d+(?:\.\d+)?|null)"),
+    'prem': re.compile(r"prem:(-?\d+(?:\.\d+)?|null)"),
+    'sz': re.compile(r"sz:(-?\d+(?:\.\d+)?|null)"),
+    'r': re.compile(r"r:\[([^\]]*)\]"),
+}
+
+
+def _num(pat, line):
+    m = FIELD_RE[pat].search(line)
+    if not m:
+        return None, False
+    v = m.group(1)
+    if v == 'null':
+        return None, True
+    try:
+        return float(v), True
+    except ValueError:
+        return None, False
+
+
+def validate_src(src, expect_funds):
+    """写回前的自检：行数、必需字段、数值范围、META/BM 结构。返回问题列表（空=通过）。"""
+    bad = []
+    rows = parse_fund_lines(src)
+    if len(rows) != expect_funds:
+        bad.append('基金行数 %d != 预期 %d' % (len(rows), expect_funds))
+    codes = set()
+    for line, code, _is_etf in rows:
+        if code in codes:
+            bad.append('%s 重复出现' % code)
+        codes.add(code)
+        for need in ("n:'", "ix:'", "d:'", 'fee:[', "r:["):
+            if need not in line:
+                bad.append('%s 缺少字段 %s' % (code, need))
+        nav, ok = _num('nav', line)
+        if not ok:
+            bad.append('%s nav 格式异常' % code)
+        elif nav is not None and nav <= 0:
+            bad.append('%s nav=%.4f 非正' % (code, nav))
+        v3, ok = _num('v3', line)
+        if ok and v3 is not None and not (0 < v3 < 200):
+            bad.append('%s 波动率 %.2f 越界' % (code, v3))
+        mdd, ok = _num('mdd3', line)
+        if ok and mdd is not None and not (-100 <= mdd <= 0):
+            bad.append('%s 最大回撤 %.2f 越界' % (code, mdd))
+        prem, ok = _num('prem', line)
+        if ok and prem is not None and not (-50 < prem < 50):
+            bad.append('%s 溢价率 %.2f 越界' % (code, prem))
+        sz, ok = _num('sz', line)
+        if ok and sz is not None and sz < 0:
+            bad.append('%s 规模 %.1f 为负' % (code, sz))
+        m = FIELD_RE['r'].search(line)
+        if m:
+            vals = [x.strip() for x in m.group(1).split(',')]
+            if len(vals) != len(WINDOWS):
+                bad.append('%s 区间涨幅列数 %d != %d' % (code, len(vals), len(WINDOWS)))
+            for x in vals:
+                if x == 'null':
+                    continue
+                try:
+                    fv = float(x)
+                except ValueError:
+                    bad.append('%s 区间涨幅 %r 非数值' % (code, x))
+                    continue
+                if not (-100 < fv < 20000):
+                    bad.append('%s 区间涨幅 %.2f 越界' % (code, fv))
+    m = re.search(r'var META=\{(.*?)\};', src, re.S)
+    if not m:
+        bad.append('META 块缺失')
+    else:
+        for k in ('gen', 'navdate', 'snpdate', 'snptime', 'szdate'):
+            if (k + ':') not in m.group(1):
+                bad.append('META 缺少 %s' % k)
+        fm = re.search(r'fx:\[([^\]]*)\]', m.group(1))
+        if not fm or len([x for x in fm.group(1).split(',') if x.strip()]) != len(WINDOWS):
+            bad.append('META.fx 长度不为 %d' % len(WINDOWS))
+    mb = re.search(r'/\*__DATA_BM_BEGIN__\*/(.*?)/\*__DATA_BM_END__\*/', src, re.S)
+    if not mb or len(re.findall(r'\{n:', mb.group(1))) != len(BM_DEFS):
+        bad.append('BM 基准行数不为 %d' % len(BM_DEFS))
+    return bad
+
+
+def backup_and_write(src):
+    """先备份上一版，再临时文件 + 原子替换，避免写一半把 index.html 弄坏。"""
+    try:
+        os.makedirs(SNAP_DIR, exist_ok=True)
+    except OSError:
+        pass
+    if os.path.exists(HTML):
+        try:
+            with open(HTML, encoding='utf-8') as f:
+                prev = f.read()
+            with open(os.path.join(SNAP_DIR, 'index.html.prev'), 'w', encoding='utf-8') as f:
+                f.write(prev)
+        except OSError as e:
+            log('  ~ 备份上一版失败（继续写回）：%s' % e)
+    tmp = HTML + '.tmp'
+    # 与原来的写法保持一致：Windows 上 \n 会写成 CRLF，避免整文件换行符被改写
+    with open(tmp, 'w', encoding='utf-8') as f:
+        f.write(src)
+    os.replace(tmp, HTML)
 
 
 # ---------------------------------------------------------------- jjfl 页面
@@ -572,9 +680,16 @@ def write_patches(fund_patches, bench, meta, quick):
     # 标题日期
     src = re.sub(r'(<title>.*?（)\d{4}-\d{2}-\d{2}(）</title>)',
                  lambda mm: mm.group(1) + meta['gen'][:10] + mm.group(2), src, count=1)
-    with open(HTML, 'w', encoding='utf-8') as f:
-        f.write(src)
-    log('  ✓ FUNDS 更新 %d 行，META/标题已写回' % changed)
+    # 写回前自检：任何一项不过就整份放弃，宁可保留上一版也不要把页面写坏
+    problems = validate_src(src, len(fund_patches))
+    if problems:
+        log('  !! 写回前校验未通过，已放弃本次写回（index.html 保持原样）：')
+        for p in problems[:10]:
+            log('     - %s' % p)
+        return False
+    backup_and_write(src)
+    log('  ✓ FUNDS 更新 %d 行，META/标题已写回（校验通过，上一版备份 .tmp-snap/index.html.prev）' % changed)
+    return True
 
 
 def read_old_meta(src):
@@ -713,6 +828,12 @@ def main():
     # 1) 批量净值/涨跌幅（失败时用 jjfl 页面兜底）
     navdates = [old_meta.get('navdate')]
     mn = {}
+    navset, dzset, new_navdate = set(), set(), {}  # 本次刷新到净值的基金 / 同时拿到涨跌幅的基金 / 新净值日
+    old_navdate = {}
+    for line, code, _is_etf in funds:
+        m = re.search(r"navdate:'([^']*)'", line)
+        if m:
+            old_navdate[code] = m.group(1)
     if not offline and not hist_only:
         mn = fund_mnfinfo(codes)
     if not hist_only:
@@ -720,11 +841,14 @@ def main():
             r = mn.get(code)
             if r and r.get('nav') is not None:
                 p['nav'] = fnum(r['nav'])
+                navset.add(code)
                 if r.get('navdate'):
                     p['navdate'] = "'%s'" % r['navdate']
+                    new_navdate[code] = r['navdate']
                     navdates.append(r['navdate'])
                 if r.get('dz') is not None:
                     p['dz'] = fnum(r['dz'], 2)
+                    dzset.add(code)
     if not offline and not hist_only and not mn:
         log('  !! FundMNFInfo 失败，稍后用 jjfl 页面兜底净值/涨跌幅')
     time.sleep(2)
@@ -774,9 +898,29 @@ def main():
                 if code not in mn:
                     p['nav'] = fnum(jj['nav'])
                     p['navdate'] = "'%s'" % jj['navdate']
+                    new_navdate[code] = jj['navdate']
                     navdates.append(jj['navdate'])
-                    p['dz'] = fnum(jj['dz'], 2)
+                    navset.add(code)
+                    if jj.get('dz') is not None:
+                        p['dz'] = fnum(jj['dz'], 2)
+                        dzset.add(code)
+            # 净值接口刷新了但没给日涨跌幅（如 539001 长期返回 --）：只有 jjfl 页面的净值日与之一致才敢用它的涨跌幅
+            if (code in navset and code not in dzset and jj.get('dz') is not None
+                    and jj.get('navdate') == (mn.get(code) or {}).get('navdate')):
+                p['dz'] = fnum(jj['dz'], 2)
+                dzset.add(code)
             time.sleep(0.5)
+    # 净值换了新日期、日涨跌幅却拿不到时，必须显式置 null：
+    # 否则页面会把上一个净值日的涨跌幅配到新净值上（净值与涨跌幅对不上）。
+    # 净值日没变（当天数据尚未更新）则保留原涨跌幅——它本来就属于这一天。
+    for code in navset:
+        if code in dzset:
+            continue
+        nd = new_navdate.get(code)
+        if nd and nd == old_navdate.get(code):
+            continue
+        patches[code]['dz'] = 'null'
+        log('  ~ %s 净值更新到 %s 但无日涨跌幅，dz 置为 --（不再沿用旧值）' % (code, nd or '?'))
     szdate = max(set(szdates), key=szdates.count) if szdates else (old_meta.get('szdate') or '')
     # 净值日期取众数（个别基金公布节奏不同，避免带偏整体口径）
     navdate = max(set(navdates), key=navdates.count) if navdates else ''
@@ -810,7 +954,9 @@ def main():
     meta = {'gen': gen, 'navdate': navdate or '', 'snpdate': snpdate or now.strftime('%Y-%m-%d'),
             'snptime': snptime or now.strftime('%H:%M'), 'szdate': szdate,
             'fx_old': old_meta.get('fx') or [0, 0, 0, 0, 0]}
-    write_patches(patches, bench, meta, quick)
+    if not write_patches(patches, bench, meta, quick):
+        log('  !! 本次更新未写回，index.html 保持上一版')
+        sys.exit(2)
     with open(HTML, encoding='utf-8') as f:
         write_md(f.read())
     log('完成：净值截至 %s ｜ 生成 %s ｜ 场内快照 %s %s' % (navdate, gen, snpdate, snptime))

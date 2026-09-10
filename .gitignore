@@ -5,3 +5,4 @@
 echarts.min.js
 __pycache__/
 *.pyc
+.tmp-snap/
