@@ -164,7 +164,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
     <li><b>场内溢价率</b> = (盘中价 − IOPV) / IOPV × 100%（腾讯行情 IOPV 口径）。<b>盘中价一列的括号即"当时溢价率"</b>——数据生成时刻（见页头快照时间，每日更新）的快照；QDII ETF 净值 T+1 公布、隔夜美股波动大时溢价率可能失真，请结合 IOPV 判断。<b>场内 ETF 的区间涨幅一律按净值计算（已剔除溢价影响）</b>，溢价只体现在"盘中价"列，两者互相独立。</li>
     <li><b>买入/卖出费用</b>：两列含义随渠道变化——<b>场外</b>：买入费用=申购费（原费率/1折）、卖出费用=赎回费档（按持有期递减）；<b>场内</b>：买卖均为券商佣金（默认万 2.5、最低 5 元/笔，可在顶部工具栏按你的券商调整），ETF 免印花税/过户费。</li>
     <li><b>风险收益图</b>：X 轴 = 近3年<b>年化波动率</b>（日收益率标准差 × √250），Y 轴 = 近3年<b>年化收益率</b>，气泡 = 规模，提示框含近3年最大回撤——用于回答"同样收益下谁更颠簸"。</li>
-    <li><b>操作</b>：表格默认按清单原始顺序展示；<b>点击表头</b>升序 → 再点降序 → 再点<b>取消排序恢复默认</b>；<b>按住 Shift 点击另一列</b>可加第二排序键（双列混合排序，再点切换方向）；空值恒排最后。顶部输入框按代码/名称过滤；"显示年化"把近N年列切换为年化口径（基金表、基准参考表与基准/柱状图同步切换）；图表区先选分组 → 勾选基金 → 切换图表类型；收益曲线可切换<b>年化收益率</b>或对数 Y 轴；可导出 CSV、打印 PDF。</li>
+    <li><b>操作</b>：表格默认按清单原始顺序展示；<b>点击表头</b>升序 → 再点降序 → 再点<b>取消排序恢复默认</b>；<b>按住 Shift 点击另一列</b>可加第二排序键（双列混合排序，再点切换方向）；空值恒排最后。顶部输入框按代码/名称过滤；"显示年化"把近N年列切换为年化口径（基金表、基准参考表与基准/柱状图同步切换）；图表区按 **①指标 → ②形式** 两级选择（区间收益与基准收益可在柱状/曲线间切换），先选分组再勾选基金；收益曲线可切换<b>年化收益率</b>或对数 Y 轴；可导出 CSV、打印 PDF。</li>
   </ol>
 </details>
 
@@ -183,15 +183,21 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
     </div>
   </div>
   <div class="panel">
-    <div class="phead">图表类型</div>
+    <div class="phead">① 选择指标（画什么）</div>
     <div class="prow" id="chartTabs">
-      <button class="tab active" data-c="bar">收益对比（柱状）</button>
-      <button class="tab" data-c="line">收益曲线（1→10年）</button>
+      <button class="tab active" data-c="bar">区间收益（近1→10年）</button>
+      <button class="tab" data-c="scat">风险收益（波动率×收益）</button>
       <button class="tab" data-c="fee">费用对比</button>
-      <button class="tab" data-c="scat">风险收益</button>
       <button class="tab" data-c="size">规模对比</button>
-      <button class="tab" data-c="bm">基准收益（指数/ETF）</button>
       <button class="tab" data-c="td">跟踪偏离</button>
+      <button class="tab" data-c="bm">基准收益（指数/SPY/QQQ）</button>
+    </div>
+  </div>
+  <div class="panel" id="formPanel">
+    <div class="phead">② 展示形式（区间收益 / 基准收益可选）</div>
+    <div class="prow">
+      <button class="tab active" id="formBar">柱状图</button>
+      <button class="tab" id="formLine">曲线图</button>
       <span class="sp"></span>
       <label class="opt" id="logWrap" style="display:none"><input type="checkbox" id="logT">对数Y轴</label>
       <label class="opt" id="annWrap" style="display:none"><input type="checkbox" id="annT">年化收益率</label>
@@ -340,7 +346,7 @@ var YEARS=[1,2,3,5,10];
 var GROUPS={all:'全部',sp:'标普500',nq:'纳斯达克100场外',etf:'纳斯达克100ETF',nx:'其他纳斯达克指数'};
 var GROUP_COLOR={sp:'#33517e',nq:'#d6362a',etf:'#0a8a4a',nx:'#7a4ad6'};
 var DEFAULT_SEL=['050025','096001','513500','160213','270042','040046','161130','539001','513100','159941','159509','513290'];
-var curGroup='all', curChart='bar', logAxis=false, annOn=false, annTblOn=false;
+var curGroup='all', curChart='bar', curForm='bar', logAxis=false, annOn=false, annTblOn=false;
 var etfRate=2.5, etfMin=5; /* 场内ETF佣金：万2.5 / 最低5元，用户可改 */
 var sel=new Set(DEFAULT_SEL);
 var chart=null;
@@ -864,6 +870,32 @@ function bmOption(fs){
     yAxis:{type:'value',name:'%'},
     series:series};
 }
+function bmLineOption(fs){
+  var series=BM.map(function(b,i){
+    return {name:b.n,type:'line',smooth:true,connectNulls:false,
+      data:(bmCNY?b.cny:b.usd).map(function(v,j){return annIf(v,j);}),
+      lineStyle:{width:2.5},symbol:'circle',symbolSize:6,
+      itemStyle:{color:BM_COLOR[i]}};
+  });
+  return {title:{text:'基准收益曲线：近1年 → 近10年（% · '+(annTblOn?'年化口径 · ':'')+(bmCNY?'人民币口径（含汇率）':'美元口径')+'）',left:'center',textStyle:{fontSize:15}},
+    tooltip:{trigger:'axis',
+      formatter:function(ps){
+        if(!ps||!ps.length)return '';
+        var html='<b>'+ps[0].axisValue+'</b><br>';
+        BM.forEach(function(b,i){
+          var d=bmCNY?b.cny:b.usd;
+          var v=d[ps[0].dataIndex];
+          html+='<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:'+BM_COLOR[i]+';margin-right:5px"></span>'+esc(b.n)+'：'+
+            (v==null?'无数据':(annTblOn?annRet(v,ps[0].dataIndex):v).toFixed(2)+'%')+'<br>';
+        });
+        return html;
+      }},
+    legend:{top:30,type:'scroll'},
+    grid:{left:50,right:24,top:70,bottom:40},
+    xAxis:{type:'category',data:METRICS,boundaryGap:false},
+    yAxis:{type:'value',name:'%'},
+    series:series};
+}
 function tdOption(fs){
   /* 跟踪偏离度：产品（基金/ETF） − 纯指数基准（百分点）。基准永远是指数：sp→标普500指数(0)、nq/etf→纳斯达克100指数(2)、nx→无。
      勾选的 SPY/QQQ 作为产品追加：SPY vs 标普500指数、QQQ vs 纳斯达克100指数 */
@@ -915,7 +947,14 @@ function renderChart(){
       chart.setOption({title:{text:'请勾选至少一只基金',left:'center',top:'middle',textStyle:{color:'#999',fontSize:16}}});
       return;
     }
-    var opt={bar:barOption,line:lineOption,fee:feeOption,scat:scatOption,size:sizeOption,bm:bmOption,td:tdOption}[curChart](fs);
+    var opt;
+    if(curChart==='bar'){
+      opt=curForm==='line'?lineOption(fs):barOption(fs);
+    }else if(curChart==='bm'){
+      opt=curForm==='line'?bmLineOption(fs):bmOption(fs);
+    }else{
+      opt={fee:feeOption,scat:scatOption,size:sizeOption,td:tdOption}[curChart](fs);
+    }
     chart.setOption(opt,true);
     chart.resize();
   }catch(e){
@@ -1015,17 +1054,28 @@ document.getElementById('btnSelAll').addEventListener('click',function(){
   renderChips();
 });
 document.getElementById('btnClear').addEventListener('click',function(){sel.clear();renderChips();});
+/* 指标 → 形式 两级选择：区间收益/基准收益 可在柱状与曲线间切换 */
+function updateFormUI(){
+  var hasForm=(curChart==='bar'||curChart==='bm');
+  document.getElementById('formPanel').style.display=hasForm?'':'none';
+  document.getElementById('formBar').classList.toggle('active',curForm==='bar');
+  document.getElementById('formLine').classList.toggle('active',curForm==='line');
+  var isLineChart=(curChart==='bar'&&curForm==='line');
+  document.getElementById('logWrap').style.display=isLineChart?'':'none';
+  document.getElementById('annWrap').style.display=isLineChart?'':'none';
+}
 document.getElementById('chartTabs').querySelectorAll('button[data-c]').forEach(function(b){
   b.addEventListener('click',function(){
     curChart=b.dataset.c;
+    if(curChart!=='bar'&&curChart!=='bm')curForm='bar'; /* 其他指标无曲线形式，保持柱状态 */
     document.getElementById('chartTabs').querySelectorAll('button[data-c]').forEach(function(x){x.classList.remove('active');});
     b.classList.add('active');
-    var isLine=curChart==='line';
-    document.getElementById('logWrap').style.display=isLine?'':'none';
-    document.getElementById('annWrap').style.display=isLine?'':'none';
+    updateFormUI();
     renderChart();
   });
 });
+document.getElementById('formBar').addEventListener('click',function(){curForm='bar';updateFormUI();renderChart();});
+document.getElementById('formLine').addEventListener('click',function(){curForm='line';updateFormUI();renderChart();});
 document.getElementById('logT').addEventListener('change',function(){
   logAxis=this.checked;
   renderChart();
@@ -1095,6 +1145,7 @@ renderBenchTable();
 setBmCny(true);
 renderGroupTabs();
 renderChips();
+updateFormUI();
 if(window.echarts){
   initChart();
 }else if(window.__echartsFailed){
