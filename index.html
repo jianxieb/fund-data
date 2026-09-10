@@ -349,7 +349,7 @@ var DEFAULT_SEL=['050025','096001','513500','160213','270042','040046','161130',
 var curGroup='all', curChart='bar', curForm='bar', logAxis=false, annOn=false, annTblOn=false;
 var etfRate=2.5, etfMin=5; /* 场内ETF佣金：万2.5 / 最低5元，用户可改 */
 var sel=new Set(DEFAULT_SEL);
-var chart=null;
+var chart=null, hoverBar=null; /* hoverBar：光标是否落在某根柱子上 {seriesIndex,dataIndex}；null=柱外 */
 
 /* ================= 通用工具 ================= */
 function short(n){return String(n).replace(/\(.*?\)/g,'').replace(/（.*?）/g,'');}
@@ -722,7 +722,36 @@ function barOption(fs){
       emphasis:{focus:'series'}};
   });
   return {title:{text:'各基金区间收益对比（%'+(annTblOn?'·年化口径':'')+(isDiv?(bmCNY?'，基准为人民币口径':'，基准为美元口径'):'')+'）',left:'center',textStyle:{fontSize:15}},
-    tooltip:{trigger:'axis',axisPointer:{type:'shadow'},valueFormatter:function(v){return v==null?'无数据':v.toFixed(2)+'%';}},
+    /* 高亮哪根柱子就显示哪根柱子的数据：
+       光标在柱子上 → 提示被高亮的那一行（该时间段全部基金（及叠加基准）收益）；
+       光标在柱外（同列空白）→ 保持原有行为：提示该列基金近1→10年各期收益 */
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'},
+      formatter:function(ps){
+        if(!ps||!ps.length)return '';
+        var di=ps[0].dataIndex;
+        if(hoverBar&&hoverBar.dataIndex===di){
+          var i=hoverBar.seriesIndex;
+          var html='<b>'+METRICS[i]+'</b>'+(annTblOn?'（年化）':'')+(isDiv?('（'+(bmCNY?'基准为人民币口径':'基准为美元口径')+'）'):'')+'<br>';
+          fs.forEach(function(f){
+            var v=annIf(f.r[i],i);
+            if(v==null)return;
+            html+=esc(short(f.n))+'：'+v.toFixed(2)+'%<br>';
+          });
+          if(isDiv){
+            extra.forEach(function(o){
+              var v=annIf((bmCNY?o.b.cny:o.b.usd)[i],i);
+              if(v==null)return;
+              html+='<span style="color:'+BM_COLOR[o.i]+'">'+esc(o.b.n)+'（基准）：'+v.toFixed(2)+'%</span><br>';
+            });
+          }
+          return html;
+        }
+        var html='<b>'+esc(ps[0].axisValue)+'</b>'+(annTblOn?'（年化）':'')+'<br>';
+        ps.forEach(function(p){
+          html+='<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:'+p.color+';margin-right:5px"></span>'+esc(p.seriesName)+'：'+(p.value==null?'无数据':p.value.toFixed(2)+'%')+'<br>';
+        });
+        return html;
+      }},
     legend:{top:28,type:'scroll'},
     grid:{left:50,right:24,top:70,bottom:100},
     xAxis:{type:'category',data:cats,axisLabel:{interval:0,rotate:30,fontSize:10,
@@ -847,20 +876,27 @@ function bmOption(fs){
       itemStyle:{color:BM_COLOR[i]},emphasis:{focus:'series'}};
   });
   return {title:{text:'基准收益：近1年 → 近10年（% · '+(annTblOn?'年化口径 · ':'')+(bmCNY?'人民币口径（含汇率）':'美元口径')+'）',left:'center',textStyle:{fontSize:15}},
+    /* 高亮哪根柱子就显示哪根柱子的数据：
+       光标在柱子上 → 只提示该基准近1→10年各期收益（不再罗列所有基准的所有区间）；
+       光标在柱外（同列空白）→ 提示该期间的全部基准收益（轴触发阴影覆盖的那一列） */
     tooltip:{trigger:'axis',axisPointer:{type:'shadow'},
-      /* 悬停任一根柱子：完整列出每个基准的近1/2/3/5/10年各期收益 */
       formatter:function(ps){
         if(!ps||!ps.length)return '';
-        var html='<b>'+ps[0].axisValue+'</b><br>';
-        BM.forEach(function(b,i){
+        var di=ps[0].dataIndex;
+        if(hoverBar&&hoverBar.dataIndex===di){
+          var b=BM[hoverBar.seriesIndex];
+          if(!b)return '';
           var d=bmCNY?b.cny:b.usd;
-          html+='<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:'+BM_COLOR[i]+';margin-right:5px"></span><b>'+esc(b.n)+'</b><br>';
+          var html='<b>'+esc(b.n)+'</b>（'+(annTblOn?'年化口径 · ':'')+(bmCNY?'人民币口径（含汇率）':'美元口径')+'）<br>';
           METRICS.forEach(function(m,j){
-            var dv=d[j];
-            if(dv==null){html+='&nbsp;&nbsp;&nbsp;'+m+'：无数据<br>';return;}
-            if(annTblOn)dv=annRet(dv,j);
-            html+='&nbsp;&nbsp;&nbsp;'+m+'：'+dv.toFixed(2)+'%<br>';
+            var v=annIf(d[j],j);
+            html+=m+'：'+(v==null?'无数据':v.toFixed(2)+'%')+'<br>';
           });
+          return html;
+        }
+        var html='<b>'+ps[0].axisValue+'</b>'+(annTblOn?'（年化）':'')+'（'+(bmCNY?'人民币口径（含汇率）':'美元口径')+'）<br>';
+        ps.forEach(function(p){
+          html+='<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:'+p.color+';margin-right:5px"></span>'+esc(p.seriesName)+'：'+(p.value==null?'无数据':p.value.toFixed(2)+'%')+'<br>';
         });
         return html;
       }},
@@ -926,7 +962,41 @@ function tdOption(fs){
       markLine:i===0?{silent:true,symbol:'none',lineStyle:{color:'#999',type:'dashed'},data:[{yAxis:0}]}:null};
   });
   return {title:{text:'跟踪偏离度：基金/ETF − 纯指数基准（标普500→标普500指数，纳指100→纳斯达克100指数）（百分点，正=跑赢 · '+(bmCNY?'人民币口径':'美元口径')+'）',left:'center',textStyle:{fontSize:15}},
-    tooltip:{trigger:'axis',axisPointer:{type:'shadow'},valueFormatter:function(v){return v==null?'无数据':(v>0?'+':'')+v.toFixed(2)+' 百分点';}},
+    /* 高亮哪根柱子就显示哪根柱子的数据：
+       光标在柱子上 → 提示被高亮的那一行（该时间段全部产品偏离度）；
+       光标在柱外（同列空白）→ 保持原有行为：提示该列产品近1→10年各期偏离度 */
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'},
+      formatter:function(ps){
+        if(!ps||!ps.length)return '';
+        var di=ps[0].dataIndex;
+        if(hoverBar&&hoverBar.dataIndex===di){
+          var i=hoverBar.seriesIndex;
+          var html='<b>'+METRICS[i]+'</b>（百分点，正=跑赢）<br>';
+          fs.forEach(function(f){
+            var bi=TD_BM[f.g];
+            if(bi==null||f.r[i]==null)return;
+            var b=bmCNY?BM[bi].cny[i]:BM[bi].usd[i];
+            if(b==null)return;
+            var fr=f.r[i];
+            if(!bmCNY)fr=(1+fr/100)/(1+FX_ARR[i]/100)*100-100;
+            var v=+((fr-b)).toFixed(2);
+            html+=esc(short(f.n))+'：'+(v>0?'+':'')+v.toFixed(2)+'<br>';
+          });
+          etfs.forEach(function(e){
+            var ev=bmCNY?e.b.cny[i]:e.b.usd[i];
+            var iv=bmCNY?BM[e.ib].cny[i]:BM[e.ib].usd[i];
+            if(ev==null||iv==null)return;
+            var v=+((ev-iv)).toFixed(2);
+            html+=esc(e.b.n+'（ETF）')+'：'+(v>0?'+':'')+v.toFixed(2)+'<br>';
+          });
+          return html;
+        }
+        var html='<b>'+esc(ps[0].axisValue)+'</b>（百分点，正=跑赢 · '+(bmCNY?'人民币口径':'美元口径')+'）<br>';
+        ps.forEach(function(p){
+          html+='<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:'+p.color+';margin-right:5px"></span>'+esc(p.seriesName)+'：'+(p.value==null?'无数据':(p.value>0?'+':'')+p.value.toFixed(2))+'<br>';
+        });
+        return html;
+      }},
     legend:{top:28,type:'scroll'},
     grid:{left:50,right:24,top:70,bottom:100},
     xAxis:{type:'category',data:cats,axisLabel:{interval:0,rotate:30,fontSize:10,
@@ -940,6 +1010,7 @@ function tdOption(fs){
 }
 function renderChart(){
   if(!chart)return;
+  hoverBar=null; /* 重绘前清掉悬停态，避免提示模式残留 */
   try{
     var fs=selFunds();
     if(!fs.length&&curChart!=='bm'&&!bmSel.size){
@@ -962,10 +1033,31 @@ function renderChart(){
     chart.setOption({title:{text:'图表渲染出错：'+e.message,left:'center',top:'middle',textStyle:{color:'#b3261e',fontSize:14}}});
   }
 }
+/* 悬停提示模式：不改动原有高亮（轴触发阴影 + 所指柱子所在系列的整行高亮），
+   只让提示内容跟随高亮——光标在柱子上时提示被高亮那一行，柱外时保持原有列提示 */
+function bindTipMode(c){
+  var ch=c||chart;
+  if(!ch)return;
+  /* 轴触发提示在同一列内不会重建内容，悬停状态变化时主动刷新一次，让提示跟随高亮 */
+  function refresh(p){
+    try{
+      ch.dispatchAction({type:'hideTip'});
+      ch.dispatchAction({type:'showTip',seriesIndex:p.seriesIndex,dataIndex:p.dataIndex});
+    }catch(e){}
+  }
+  ch.on('mouseover',function(p){
+    if(p&&p.componentType==='series'&&p.seriesType==='bar'){hoverBar={seriesIndex:p.seriesIndex,dataIndex:p.dataIndex};refresh(p);}
+  });
+  ch.on('mouseout',function(p){
+    if(p&&p.componentType==='series'&&p.seriesType==='bar'){hoverBar=null;refresh(p);}
+  });
+  ch.on('globalout',function(){hoverBar=null;});
+}
 function initChart(){
   if(chart||!window.echarts)return;
   try{
     chart=echarts.init(document.getElementById('chart'));
+    bindTipMode();
     document.getElementById('chartMsg').style.display='none';
     renderChart();
     /* 首屏兜底：布局稳定后补一次重绘/缩放，修复默认柱状图空白 */
