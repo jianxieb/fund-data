@@ -1307,7 +1307,7 @@ function onFeeCtl(){
 document.getElementById('etfRate').addEventListener('change',onFeeCtl);
 document.getElementById('etfMin').addEventListener('change',onFeeCtl);
 var toTop=document.getElementById('toTop');
-window.addEventListener('scroll',function(){toTop.style.display=(window.scrollY>600)?'':'none';},{passive:true});
+window.addEventListener('scroll',function(){toTop.style.display=(window.scrollY>600)?'block':'none';},{passive:true});
 toTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
 
 /* ================= 启动 ================= */
