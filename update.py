@@ -342,7 +342,13 @@ def calc_metrics(rows):
             prev_dw, prev_lj = ser[-1][1], ser[-1][3]
             if has_div:
                 if fhfcz > 0 and prev_dw > 0:
-                    T *= (dwjz + fhfcz) / prev_dw
+                    drop = prev_dw - dwjz
+                    if drop > 0 and abs(drop - fhfcz) / prev_dw < 0.02:
+                        # 除息日净值确已下跳≈分红金额：红利再投复权
+                        T *= (dwjz + fhfcz) / prev_dw
+                    else:
+                        # 净值序列已复权（如部分ETF分红不除息）：直接比，避免重复计分红
+                        T *= dwjz / prev_dw
                 elif prev_dw > 0:
                     T *= dwjz / prev_dw
             elif prev_lj > 0:
