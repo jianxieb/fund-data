@@ -42,8 +42,13 @@ header .meta{color:#c8d3e2;font-size:12.5px}
 header .meta b{color:#fff}
 .wrap{max-width:1640px;margin:0 auto;padding:20px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;margin:16px 0;box-shadow:0 1px 3px rgba(16,24,40,.05)}
-.card>h2{margin:0;padding:13px 18px;font-size:16px;background:#f0f3f7;border-bottom:1px solid var(--line);border-radius:10px 10px 0 0}
+.card>h2{margin:0;padding:13px 18px;font-size:16px;background:#f0f3f7;border-bottom:1px solid var(--line);border-radius:10px 10px 0 0;display:flex;align-items:center;flex-wrap:wrap}
 .card>h2 small{color:var(--sub);font-weight:normal;font-size:12px;margin-left:6px}
+/* 卡片标题右侧的固定排序小按钮 */
+.h2tools{margin-left:auto;display:flex;gap:6px;align-items:center}
+button.mini{border:1px solid var(--line);background:#fff;border-radius:12px;padding:1px 10px;font-size:11.5px;line-height:1.7;color:var(--sub);cursor:pointer;white-space:nowrap;font-weight:normal}
+button.mini:hover{border-color:#9db4d8;color:var(--ink)}
+button.mini.on{background:var(--badge-field);border-color:#c7d8f5;color:var(--blue)}
 details.scope{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 18px;margin:16px 0}
 details.scope summary{cursor:pointer;font-weight:600;color:#33517e}
 details.scope ol{margin:8px 0 4px;padding-left:22px;color:#3a4353}
@@ -473,25 +478,25 @@ function retHead(n){return annOn?'年化'+n+'年':'近'+n+'年';}
 function UNI_HEAD(){
   var d=(META&&META.snpdate)?META.snpdate.slice(5):'';
   return '<thead><tr>'+
-  '<th class="l frz" data-sort="text">名称<span class="arr"></span></th>'+
-  '<th class="l" data-sort="num">代码<span class="arr"></span></th>'+
-  '<th class="l" data-sort="text">类别<span class="arr"></span></th>'+
-  '<th class="l" data-sort="text">跟踪指数<span class="arr"></span></th>'+
-  '<th data-sort="date">成立<span class="arr"></span></th>'+
-  '<th data-sort="num">年费(管/托/销)<span class="arr"></span></th>'+
-  '<th data-sort="num">买入费用<span class="arr"></span></th>'+
-  '<th data-sort="num">卖出费用<span class="arr"></span></th>'+
-  '<th data-sort="text">申购状态<span class="arr"></span></th>'+
-  '<th data-sort="num">日限额<span class="arr"></span></th>'+
-  '<th data-sort="num">'+retHead(1)+'<span class="arr"></span></th>'+
-  '<th data-sort="num">'+retHead(2)+'<span class="arr"></span></th>'+
-  '<th data-sort="num">'+retHead(3)+'<span class="arr"></span></th>'+
-  '<th data-sort="num">'+retHead(5)+'<span class="arr"></span></th>'+
-  '<th data-sort="num">'+retHead(10)+'<span class="arr"></span></th>'+
-  '<th data-sort="num">净值/日涨跌<span class="arr"></span></th>'+
-  '<th data-sort="num">盘中价('+d+')<span class="arr"></span></th>'+
-  '<th data-sort="num">规模(亿)<span class="arr"></span></th>'+
-  '<th class="l" data-sort="text">备注<span class="arr"></span></th>'+
+  '<th class="l frz" data-sort="text" data-key="name">名称<span class="arr"></span></th>'+
+  '<th class="l" data-sort="num" data-key="code">代码<span class="arr"></span></th>'+
+  '<th class="l" data-sort="text" data-key="type">类别<span class="arr"></span></th>'+
+  '<th class="l" data-sort="text" data-key="idx">跟踪指数<span class="arr"></span></th>'+
+  '<th data-sort="date" data-key="est">成立<span class="arr"></span></th>'+
+  '<th data-sort="num" data-key="fee">年费(管/托/销)<span class="arr"></span></th>'+
+  '<th data-sort="num" data-key="buy">买入费用<span class="arr"></span></th>'+
+  '<th data-sort="num" data-key="sell">卖出费用<span class="arr"></span></th>'+
+  '<th data-sort="text" data-key="st">申购状态<span class="arr"></span></th>'+
+  '<th data-sort="num" data-key="lm">日限额<span class="arr"></span></th>'+
+  '<th data-sort="num" data-key="r1">'+retHead(1)+'<span class="arr"></span></th>'+
+  '<th data-sort="num" data-key="r2">'+retHead(2)+'<span class="arr"></span></th>'+
+  '<th data-sort="num" data-key="r3">'+retHead(3)+'<span class="arr"></span></th>'+
+  '<th data-sort="num" data-key="r5">'+retHead(5)+'<span class="arr"></span></th>'+
+  '<th data-sort="num" data-key="r10">'+retHead(10)+'<span class="arr"></span></th>'+
+  '<th data-sort="num" data-key="nav">净值/日涨跌<span class="arr"></span></th>'+
+  '<th data-sort="num" data-key="snap">盘中价('+d+')<span class="arr"></span></th>'+
+  '<th data-sort="num" data-key="sz">规模(亿)<span class="arr"></span></th>'+
+  '<th class="l" data-sort="text" data-key="note">备注<span class="arr"></span></th>'+
   '</tr></thead>';
 }
 function lmCell(f){
@@ -535,14 +540,42 @@ function renderTables(){
     var rows=FUNDS.filter(flt);
     /* 用闭包调用行渲染器：避免 Array.map 把下标误传为第二个参数（导致表格错位） */
     el.innerHTML=UNI_HEAD()+'<tbody>'+rows.map(function(f,i){return uniRow(f,i);}).join('')+'</tbody>';
-    el._sort=[]; /* 重绘后清除排序状态，恢复默认顺序 */
+    /* 排序状态存在 SORTS 里（按列 key），重绘后按 key 重新套用：
+       切换累计/年化会重建表格，但用户排好的顺序必须原样保留 */
+    var st=SORTS[el.id];
+    if(st&&st.length){
+      applyKeys(el,st.map(function(x){return {k:x.k,dir:x.dir};}));
+      doSort(el);
+    }else{
+      SORTS[el.id]=[];
+      clearSortUI(el);
+    }
   });
 }
 
 /* ================= 排序（三态 + 双列混合） =================
    点击表头：升序 → 降序 → 取消（恢复默认顺序），循环往复；
-   Shift+点击另一列：作为第二排序键（再点切换方向，最多两列）。 */
-function sortState(tb){if(!tb._sort)tb._sort=[];return tb._sort;}
+   Shift+点击另一列：作为第二排序键（再点切换方向，最多两列）。
+   排序键以表头的 data-key 保存（而不是列下标），这样重绘、改列顺序都不会跑偏；
+   排序状态放在 JS 变量里而不是 DOM 上，切换口径重建表格后依然有效。 */
+var SORTS={};                 /* 每张表当前排序 [{k,ci,mode,dir}] */
+var FIXED=null;               /* 固定排序 [{k,dir}]，null=未固定 */
+var FIX_KEY='funddata.fixsort.v1';
+var SORT_TBLS=['t1','t2','t3','t4','t5'];
+function sortState(tb){if(!SORTS[tb.id])SORTS[tb.id]=[];return SORTS[tb.id];}
+function keyOfTh(th,ci){return th?(th.getAttribute('data-key')||('c'+ci)):('c'+ci);}
+function findTh(tb,k){return tb.tHead&&tb.tHead.rows[0]?tb.tHead.rows[0].querySelector('th[data-key="'+k+'"]'):null;}
+/* 把 [{k,dir}] 解析成当前表的排序列下标 + 排序模式 */
+function applyKeys(tb,keys){
+  var st=[];
+  (keys||[]).forEach(function(o){
+    var th=findTh(tb,o.k);
+    if(!th)return;
+    st.push({k:o.k,ci:[].indexOf.call(th.parentNode.children,th),mode:th.getAttribute('data-sort')||'text',dir:o.dir});
+  });
+  SORTS[tb.id]=st;
+  return st;
+}
 function clearSortUI(tb){
   tb.querySelectorAll('thead th').forEach(function(th){
     th.classList.remove('sorted','sorted2');
@@ -608,6 +641,7 @@ function bindSort(){
       var tr=th.parentNode;
       var ci=[].indexOf.call(tr.children,th);
       var mode=th.dataset.sort||'text';
+      var k=keyOfTh(th,ci);
       var st=sortState(tb);
       var idx=-1;
       for(var i=0;i<st.length;i++)if(st[i].ci===ci)idx=i;
@@ -619,23 +653,103 @@ function bindSort(){
           st[idx].dir=st[idx].dir==='asc'?'desc':'asc';
         }else{
           if(st.length>=2)st.pop();
-          st.push({ci:ci,mode:mode,dir:'asc'});
+          st.push({k:k,ci:ci,mode:mode,dir:'asc'});
         }
       }else{
         /* 普通点击：升序 → 降序 → 取消（恢复默认顺序） */
         if(idx<0){
           st.length=0;
-          st.push({ci:ci,mode:mode,dir:'asc'});
+          st.push({k:k,ci:ci,mode:mode,dir:'asc'});
         }else if(st[idx].dir==='asc'){
           st.length=0;
-          st.push({ci:ci,mode:mode,dir:'desc'});
+          st.push({k:k,ci:ci,mode:mode,dir:'desc'});
         }else{
           st.length=0;
         }
       }
       doSort(tb);
+      syncSortTools();
     });
   });
+}
+
+/* ============ 固定排序（人工排序后固定，页面进入/切换口径都回到它） ============
+   五张基金表列布局一致，所以一份固定排序五张表共用；
+   基准表不参与（列不同，保持原有点击排序）。 */
+function sameSort(cur,keys){
+  if(cur.length!==keys.length)return false;
+  for(var i=0;i<cur.length;i++)if(cur[i].k!==keys[i].k||cur[i].dir!==keys[i].dir)return false;
+  return true;
+}
+function saveFixed(){
+  try{
+    if(FIXED)localStorage.setItem(FIX_KEY,JSON.stringify(FIXED));
+    else localStorage.removeItem(FIX_KEY);
+  }catch(e){}
+}
+function loadFixed(){
+  try{
+    var s=localStorage.getItem(FIX_KEY);
+    if(!s)return;
+    var a=JSON.parse(s);
+    if(Object.prototype.toString.call(a)==='[object Array]'){
+      FIXED=a.filter(function(o){return o&&o.k&&(o.dir==='asc'||o.dir==='desc');});
+    }
+  }catch(e){FIXED=null;}
+}
+function fixedDesc(){
+  if(!FIXED||!FIXED.length)return '清单原始顺序';
+  return FIXED.map(function(o){
+    var th=findTh(document.getElementById(SORT_TBLS[0]),o.k);
+    var nm=th?th.textContent.replace(/[▲▼]/g,'').trim():o.k;
+    return nm+(o.dir==='asc'?' 升序':' 降序');
+  }).join(' + ');
+}
+function syncSortTools(){
+  SORT_TBLS.forEach(function(id){
+    var tb=document.getElementById(id);
+    if(!tb||!tb._fix)return;
+    tb._fix.textContent=FIXED?'★ 重新固定':'☆ 固定排序';
+    tb._fix.className='mini'+(FIXED?' on':'');
+    tb._fix.title=FIXED
+      ?('把本表当前的排序重新设为固定排序（五张基金表共用；当前固定：'+fixedDesc()+'）')
+      :'把本表当前的排序固定下来，作为页面默认排序（五张基金表共用）';
+    tb._res.style.display=(FIXED&&!sameSort(sortState(tb),FIXED))?'inline-block':'none';
+  });
+}
+function applyFixed(){
+  SORT_TBLS.forEach(function(id){
+    var tb=document.getElementById(id);
+    if(!tb||!tb.tBodies[0])return;
+    if(FIXED&&FIXED.length)applyKeys(tb,FIXED);
+    else SORTS[tb.id]=[];
+    doSort(tb);
+  });
+  syncSortTools();
+}
+function initSortTools(){
+  SORT_TBLS.forEach(function(id){
+    var tb=document.getElementById(id);
+    if(!tb||tb._fix)return;
+    var card=tb.closest('.card'),h2=card?card.querySelector('h2'):null;
+    if(!h2)return;
+    var box=document.createElement('span');
+    box.className='h2tools noprint';
+    var bFix=document.createElement('button');
+    bFix.type='button';bFix.className='mini';
+    var bRes=document.createElement('button');
+    bRes.type='button';bRes.className='mini';bRes.textContent='↺ 恢复固定排序';
+    bRes.style.display='none';
+    bFix.addEventListener('click',function(){
+      /* 以本表当前排序作为固定排序（未排序时=固定清单原始顺序） */
+      FIXED=sortState(tb).map(function(x){return {k:x.k,dir:x.dir};});
+      saveFixed();applyFixed();
+    });
+    bRes.addEventListener('click',function(){applyFixed();});
+    box.appendChild(bFix);box.appendChild(bRes);h2.appendChild(box);
+    tb._fix=bFix;tb._res=bRes;
+  });
+  syncSortTools();
 }
 
 /* ================= 过滤 ================= */
@@ -1323,6 +1437,9 @@ toTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smoot
 fillMeta();
 renderTables();
 bindSort();
+initSortTools();
+loadFixed();
+applyFixed();
 applyFilter();
 renderStats();
 renderBenchTable();
