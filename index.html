@@ -54,12 +54,13 @@ details.scope li{margin:4px 0}
 .stat .k{color:var(--sub);font-size:12px}
 .stat .v{font-size:19px;font-weight:700;margin-top:3px}
 .stat .s{color:var(--sub);font-size:11px;margin-top:2px}
-/* 收益口径小开关：常驻右下角（"回到顶部"上方），划到哪都能按；年化时整体变蓝以示状态 */
-.anntoggle{position:fixed;right:18px;bottom:64px;z-index:60;display:flex;align-items:center;gap:5px;background:#fff;border:1px solid var(--line);border-radius:15px;padding:5px 12px;font-size:12.5px;color:var(--ink);cursor:pointer;white-space:nowrap;box-shadow:0 2px 10px rgba(16,24,40,.14)}
-.anntoggle:hover{border-color:#9db4d8;background:#f7f9fc}
-.anntoggle .ic{font-weight:700;color:var(--blue)}
-.anntoggle.on{background:var(--blue);border-color:var(--blue);color:#fff}
-.anntoggle.on .ic{color:#fff}
+/* 收益口径小开关：常驻右下角、"回到顶部"左侧（横排，不占竖向空间）
+   两种淡色区分口径状态：累计=淡蓝、年化=淡琥珀，点一下切换 */
+.anntoggle{position:fixed;right:64px;bottom:22px;z-index:60;display:flex;align-items:center;gap:5px;background:var(--badge-field);border:1px solid #c7d8f5;border-radius:15px;padding:5px 12px;font-size:12.5px;color:var(--blue);cursor:pointer;white-space:nowrap;box-shadow:0 2px 8px rgba(16,24,40,.10)}
+.anntoggle:hover{background:#dbe8fb;border-color:#9db4d8}
+.anntoggle .ic{font-weight:700}
+.anntoggle.on{background:var(--badge-limit);border-color:#f0d9ae;color:var(--warn)}
+.anntoggle.on:hover{background:#ffe9c9;border-color:#e2c187}
 /* 工具栏 */
 .filter{display:flex;gap:10px;align-items:center;margin:14px 0 4px;flex-wrap:wrap}
 .qwrap{position:relative;display:inline-block}
@@ -149,8 +150,8 @@ td.note{color:var(--sub);font-size:11.5px;white-space:normal;min-width:150px;tex
 .notes p{margin:6px 0}
 .notes code{background:#eef1f5;padding:1px 5px;border-radius:4px}
 footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
-#toTop{position:fixed;right:18px;bottom:18px;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.14);cursor:pointer;display:none;z-index:50;font-size:16px;color:var(--ink)}
-#toTop:hover{background:#f0f3f7}
+#toTop{position:fixed;right:18px;bottom:18px;width:38px;height:38px;border-radius:50%;border:1px solid #dbe1ea;background:#f2f5f9;box-shadow:0 2px 8px rgba(0,0,0,.10);cursor:pointer;display:none;z-index:50;font-size:16px;color:var(--sub)}
+#toTop:hover{background:#e6ecf5;color:var(--ink)}
 @media (max-width:1080px){
   /* 窄屏回退单列：图表在勾选区下方，勾选区限高滚动 */
   .vizgrid{grid-template-columns:minmax(0,1fr)}
@@ -200,7 +201,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
     <li><b>场内溢价率</b> = (盘中价 − IOPV) / IOPV × 100%（腾讯行情 IOPV 口径）。<b>盘中价一列的括号即"当时溢价率"</b>——数据生成时刻（见页头快照时间，每日更新）的快照；QDII ETF 净值 T+1 公布、隔夜美股波动大时溢价率可能失真，请结合 IOPV 判断。<b>场内 ETF 的区间涨幅一律按净值计算（已剔除溢价影响）</b>，溢价只体现在"盘中价"列，两者互相独立。</li>
     <li><b>买入/卖出费用</b>：两列含义随渠道变化——<b>场外</b>：买入费用=申购费（原费率/1折）、卖出费用=赎回费档（按持有期递减）；<b>场内</b>：买卖均为券商佣金（默认万 2.5、最低 5 元/笔，可在顶部工具栏按你的券商调整），ETF 免印花税/过户费。</li>
     <li><b>风险收益图</b>：X 轴 = 近3年<b>年化波动率</b>（日收益率标准差 × √250），Y 轴 = 近3年<b>年化收益率</b>，气泡 = 规模，提示框含近3年最大回撤——用于回答"同样收益下谁更颠簸"。</li>
-    <li><b>操作</b>：表格默认按清单原始顺序展示；<b>点击表头</b>升序 → 再点降序 → 再点<b>取消排序恢复默认</b>；<b>按住 Shift 点击另一列</b>可加第二排序键（双列混合排序，再点切换方向）；空值恒排最后。顶部输入框按代码/名称过滤。右下角常驻的<b>「口径」小开关</b>（⇄，固定在"回到顶部"上方，划到哪都能按）是全局唯一的累计/年化开关：把近N年列切成年化口径，基金表、基准参考表、区间收益图、基准收益图与收益曲线一起切换（年化模式下曲线图自动隐藏"对数Y轴"开关——年化曲线用对数轴没有意义），按钮本身变蓝表示当前是年化口径——不必分头找按钮。<b>图表区为左右分栏且整块约一屏</b>：顶部两行工具栏选 <b>①指标 → ②分组与形式</b>（区间收益与基准收益可在柱状/曲线间切换），<b>左栏勾选基金</b>（上方搜索框可按名称/代码快速定位，勾选即刷新右栏图表，图表随页面滚动保持可见），基准叠加与人民币/美元口径在图表正上方一行；可导出 CSV、打印 PDF。</li>
+    <li><b>操作</b>：表格默认按清单原始顺序展示；<b>点击表头</b>升序 → 再点降序 → 再点<b>取消排序恢复默认</b>；<b>按住 Shift 点击另一列</b>可加第二排序键（双列混合排序，再点切换方向）；空值恒排最后。顶部输入框按代码/名称过滤。右下角<b>「回到顶部」左侧的「口径」小开关</b>（⇄，横排、不占竖向空间，划到哪都能按）是全局唯一的累计/年化开关：把近N年列切成年化口径，基金表、基准参考表、区间收益图、基准收益图与收益曲线一起切换（年化模式下曲线图自动隐藏"对数Y轴"开关——年化曲线用对数轴没有意义）。两种淡色即两种口径：<b>淡蓝=累计涨幅</b>、<b>淡琥珀=年化收益率</b>——不必分头找按钮。<b>图表区为左右分栏且整块约一屏</b>：顶部两行工具栏选 <b>①指标 → ②分组与形式</b>（区间收益与基准收益可在柱状/曲线间切换），<b>左栏勾选基金</b>（上方搜索框可按名称/代码快速定位，勾选即刷新右栏图表，图表随页面滚动保持可见），基准叠加与人民币/美元口径在图表正上方一行；可导出 CSV、打印 PDF。</li>
   </ol>
 </details>
 
