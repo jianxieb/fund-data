@@ -884,7 +884,7 @@ function renderChips(skipChart){
     lb.title=f.n+'（'+f.c+'）· '+GROUPS[f.g];
     var cb=document.createElement('input');
     cb.type='checkbox'; cb.value=f.c; cb.checked=sel.has(f.c);
-    cb.addEventListener('change',function(){if(cb.checked){sel.add(f.c);}else{sel.delete(f.c);}renderChart();updateSelCnt();});
+    cb.addEventListener('change',function(){if(cb.checked){sel.add(f.c);}else{sel.delete(f.c);}renderChart();updateSelCnt();saveView();});
     lb.appendChild(cb);
     var nm=document.createElement('span');
     nm.className='nm'; nm.textContent=short(f.n);
@@ -1392,13 +1392,15 @@ document.getElementById('grpTabs').querySelectorAll('button[data-g]').forEach(fu
     document.getElementById('grpTabs').querySelectorAll('button[data-g]').forEach(function(x){x.classList.remove('active');});
     b.classList.add('active');
     renderChips();
+    saveView();
   });
 });
 document.getElementById('btnSelAll').addEventListener('click',function(){
   FUNDS.filter(function(f){return curGroup==='all'||f.g===curGroup;}).forEach(function(f){sel.add(f.c);});
   renderChips();
+  saveView();
 });
-document.getElementById('btnClear').addEventListener('click',function(){sel.clear();renderChips();});
+document.getElementById('btnClear').addEventListener('click',function(){sel.clear();renderChips();saveView();});
 /* 指标 → 形式 两级选择：区间收益/基准收益 可在柱状与曲线间切换 */
 function updateFormUI(){
   var hasForm=(curChart==='bar'||curChart==='bm');
@@ -1417,10 +1419,11 @@ document.getElementById('chartTabs').querySelectorAll('button[data-c]').forEach(
     b.classList.add('active');
     updateFormUI();
     renderChart();
+    saveView();
   });
 });
-document.getElementById('formBar').addEventListener('click',function(){curForm='bar';updateFormUI();renderChart();});
-document.getElementById('formLine').addEventListener('click',function(){curForm='line';updateFormUI();renderChart();});
+document.getElementById('formBar').addEventListener('click',function(){curForm='bar';updateFormUI();renderChart();saveView();});
+document.getElementById('formLine').addEventListener('click',function(){curForm='line';updateFormUI();renderChart();saveView();});
 document.getElementById('logT').addEventListener('change',function(){
   logAxis=this.checked;
   renderChart();
@@ -1433,6 +1436,7 @@ function setBmCny(v){
   renderBenchTable();
   document.getElementById('bmTag').textContent=bmCNY?'当前：人民币口径（含汇率，可与基金直接比较）':'当前：美元口径（未计汇率）';
   renderChart();
+  saveView();
 }
 document.querySelectorAll('#bmRow .bmcb').forEach(function(cb){
   cb.addEventListener('change',function(){
@@ -1465,6 +1469,7 @@ function setAnn(v){
   bindSort();
   applyFilter();
   renderChart();
+  saveView();
 }
 document.getElementById('annTog').addEventListener('click',function(){setAnn(!annOn);});
 /* 列密度：完整（19 列）/ 精简（隐藏低频列）。只影响页面显示，打印与 CSV 始终完整。 */
@@ -1484,6 +1489,7 @@ function setDense(v){
   syncDensUI();
   renderChips(true); /* 勾选列表里的代码标签 */
   renderChart();     /* 图表图例/提示里的代码后缀 */
+  saveView();
 }
 document.getElementById('densTog').addEventListener('click',function(){setDense(!dense);});
 /* 场内佣金参数 */
@@ -1501,7 +1507,44 @@ var toTop=document.getElementById('toTop');
 window.addEventListener('scroll',function(){toTop.style.display=(window.scrollY>600)?'block':'none';},{passive:true});
 toTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
 
+/* ================= 视图状态持久化（勾选/分组/指标/形式/口径/币种/密度） =================
+   记住上次的看盘姿势，刷新后不用重新点一遍；搜索关键词不持久化（避免"为什么只剩几行"的困惑）。 */
+var VIEW_KEY='funddata.view.v1';
+function saveView(){
+  try{
+    localStorage.setItem(VIEW_KEY,JSON.stringify({
+      dense:dense,group:curGroup,chart:curChart,form:curForm,ann:annOn,cny:bmCNY,sel:Array.from(sel)
+    }));
+  }catch(e){}
+}
+function loadView(){
+  try{
+    var s=localStorage.getItem(VIEW_KEY);
+    if(!s)return;
+    var v=JSON.parse(s);
+    if(!v||typeof v!=='object')return;
+    if(typeof v.dense==='boolean')dense=v.dense;
+    if(v.group&&GROUPS[v.group])curGroup=v.group;
+    if(typeof v.chart==='string'&&/^(bar|scat|fee|size|td|bm)$/.test(v.chart))curChart=v.chart;
+    if(v.form==='line'||v.form==='bar')curForm=v.form;
+    if(typeof v.ann==='boolean')annOn=v.ann;
+    if(typeof v.cny==='boolean')bmCNY=v.cny;
+    if(Object.prototype.toString.call(v.sel)==='[object Array]'){
+      var ok={};
+      FUNDS.forEach(function(f){ok[f.c]=1;});
+      sel=new Set(v.sel.filter(function(c){return ok[c];}));
+    }
+  }catch(e){}
+}
+/* 恢复的分组/指标要同步按钮选中态（HTML 里的默认 active 是按默认值写死的） */
+function syncTabUI(){
+  document.querySelectorAll('#grpTabs button[data-g]').forEach(function(b){b.classList.toggle('active',b.dataset.g===curGroup);});
+  document.querySelectorAll('#chartTabs button[data-c]').forEach(function(b){b.classList.toggle('active',b.dataset.c===curChart);});
+}
+
 /* ================= 启动 ================= */
+loadView();
+document.body.classList.toggle('dense',!!dense);
 fillMeta();
 renderTables();
 bindSort();
@@ -1511,8 +1554,9 @@ applyFixed();
 applyFilter();
 renderStats();
 renderBenchTable();
-setBmCny(true);
+setBmCny(bmCNY);
 renderGroupTabs();
+syncTabUI();
 renderChips();
 updateFormUI();
 syncAnnUI();
