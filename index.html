@@ -202,7 +202,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
     <li><b>场内溢价率</b> = (盘中价 − IOPV) / IOPV × 100%（腾讯行情 IOPV 口径）。<b>盘中价一列的括号即"当时溢价率"</b>——数据生成时刻（见页头快照时间，每日更新）的快照；QDII ETF 净值 T+1 公布、隔夜美股波动大时溢价率可能失真，请结合 IOPV 判断。<b>场内 ETF 的区间涨幅一律按净值计算（已剔除溢价影响）</b>，溢价只体现在"盘中价"列，两者互相独立。</li>
     <li><b>买入/卖出费用</b>：两列含义随渠道变化——<b>场外</b>：买入费用=申购费（原费率/1折）、卖出费用=赎回费档（按持有期递减）；<b>场内</b>：买卖均为券商佣金（默认万 2.5、最低 5 元/笔，可在顶部工具栏按你的券商调整），ETF 免印花税/过户费。</li>
     <li><b>风险收益图</b>：X 轴 = 近3年<b>年化波动率</b>（日收益率标准差 × √250），Y 轴 = 近3年<b>年化收益率</b>，气泡 = 规模，提示框含近3年最大回撤——用于回答"同样收益下谁更颠簸"。</li>
-    <li><b>操作</b>：表格默认按清单原始顺序展示；<b>点击表头</b>升序 → 再点降序 → 再点<b>取消排序恢复默认</b>；<b>按住 Shift 点击另一列</b>可加第二排序键（双列混合排序，再点切换方向）；空值恒排最后。顶部输入框按代码/名称过滤。<b>「收益口径」吸顶条</b>（在数据总览下方，滚动时固定在视口顶部）作用于它下方的全部内容：把近N年列切换为年化口径，同时切换基金表、基准参考表、区间收益图与基准收益图——一个开关管到底，不必分头找按钮。<b>图表区为左右分栏且整块约一屏</b>：顶部两行工具栏选 <b>①指标 → ②分组与形式</b>（区间收益与基准收益可在柱状/曲线间切换），<b>左栏勾选基金</b>（上方搜索框可按名称/代码快速定位，勾选即刷新右栏图表，图表随页面滚动保持可见），基准叠加与人民币/美元口径在图表正上方一行；收益曲线可切换<b>年化收益率</b>或对数 Y 轴；可导出 CSV、打印 PDF。</li>
+    <li><b>操作</b>：表格默认按清单原始顺序展示；<b>点击表头</b>升序 → 再点降序 → 再点<b>取消排序恢复默认</b>；<b>按住 Shift 点击另一列</b>可加第二排序键（双列混合排序，再点切换方向）；空值恒排最后。顶部输入框按代码/名称过滤。<b>「收益口径」吸顶条</b>（在数据总览下方，滚动时固定在视口顶部）是全局唯一的累计/年化开关，作用于它下方的全部内容：把近N年列切成年化口径，基金表、基准参考表、区间收益图、基准收益图与收益曲线一起切换（年化模式下曲线图自动隐藏"对数Y轴"开关——年化曲线用对数轴没有意义）——不必分头找按钮。<b>图表区为左右分栏且整块约一屏</b>：顶部两行工具栏选 <b>①指标 → ②分组与形式</b>（区间收益与基准收益可在柱状/曲线间切换），<b>左栏勾选基金</b>（上方搜索框可按名称/代码快速定位，勾选即刷新右栏图表，图表随页面滚动保持可见），基准叠加与人民币/美元口径在图表正上方一行；可导出 CSV、打印 PDF。</li>
   </ol>
 </details>
 
@@ -245,7 +245,6 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
         <button class="tab active" id="formBar">柱状图</button>
         <button class="tab" id="formLine">曲线图</button>
         <label class="opt" id="logWrap" style="display:none"><input type="checkbox" id="logT">对数Y轴</label>
-        <label class="opt" id="annWrap" style="display:none"><input type="checkbox" id="annT">年化收益率</label>
       </div>
     </div>
   </div>
@@ -399,7 +398,7 @@ var YEARS=[1,2,3,5,10];
 var GROUPS={all:'全部',sp:'标普500',nq:'纳斯达克100场外',etf:'纳斯达克100ETF',nx:'其他纳斯达克指数'};
 var GROUP_COLOR={sp:'#33517e',nq:'#d6362a',etf:'#0a8a4a',nx:'#7a4ad6'};
 var DEFAULT_SEL=['050025','096001','513500','160213','270042','040046','161130','539001','513100','159941','159509','513290'];
-var curGroup='all', curChart='bar', curForm='bar', logAxis=false, annOn=false, annTblOn=false;
+var curGroup='all', curChart='bar', curForm='bar', logAxis=false, annOn=false;
 var etfRate=2.5, etfMin=5; /* 场内ETF佣金：万2.5 / 最低5元，用户可改 */
 var sel=new Set(DEFAULT_SEL);
 var chart=null, hoverBar=null; /* hoverBar：光标是否落在某根柱子上 {seriesIndex,dataIndex}；null=柱外 */
@@ -443,10 +442,10 @@ function stText(st){
   return '场内交易';
 }
 function feeStr(f){return f.fee.map(function(v){return v==null?'--':v.toFixed(2);}).join('/');}
-/* 收益格：annTblOn 时切换为年化口径 */
+/* 收益格：annOn 时切换为年化口径 */
 function retCell(v,i){
   if(v==null)return '<td class="na">--</td>';
-  if(annTblOn&&i!=null)v=annRet(v,i);
+  if(annOn&&i!=null)v=annRet(v,i);
   var cls=v>=0?'up':'down';
   return '<td class="'+cls+'">'+(v>=0?'+':'')+v.toFixed(2)+'%</td>';
 }
@@ -467,7 +466,7 @@ function cell(html,cls){return '<td class="'+(cls||'')+'">'+html+'</td>';}
 function link(c){return '<a href="https://fund.eastmoney.com/'+c+'.html" target="_blank" rel="noopener">'+c+'</a>';}
 
 /* ================= 表格渲染 ================= */
-function retHead(n){return annTblOn?'年化'+n+'年':'近'+n+'年';}
+function retHead(n){return annOn?'年化'+n+'年':'近'+n+'年';}
 /* 五张表统一列布局（同一概念固定在同一列位）：
    代码 名称 类别 跟踪指数 成立 年费 买入费用 卖出费用 申购状态 日限额
    近1/2/3/5/10年 净值/日涨跌 盘中价(快照+当时溢价) 规模 备注
@@ -763,7 +762,7 @@ var bmSel=new Set();
 /* 基准收益格：随全局"显示年化"切换 */
 function bmRetCell(v,i){
   if(v==null)return '<td class="na">--</td>';
-  if(annTblOn&&i!=null)v=annRet(v,i);
+  if(annOn&&i!=null)v=annRet(v,i);
   var cls=v>=0?'up':'down';
   return '<td class="'+cls+'">'+(v>=0?'+':'')+v.toFixed(2)+'%</td>';
 }
@@ -789,7 +788,7 @@ function renderBenchTable(){
 }
 
 /* ================= 图表 ================= */
-function annIf(v,i){return (annTblOn&&v!=null)?annRet(v,i):v;}
+function annIf(v,i){return (annOn&&v!=null)?annRet(v,i):v;}
 function barOption(fs){
   var extra=BM.map(function(b,i){return {b:b,i:i};}).filter(function(o){return bmSel.has(o.i);});
   var isDiv=extra.length>0;
@@ -807,7 +806,7 @@ function barOption(fs){
       itemStyle:{color:['#33517e','#4a7ab5','#d6a01b','#d6702a','#d6362a'][i]},
       emphasis:{focus:'series'}};
   });
-  return {title:{text:'各基金区间收益对比（%'+(annTblOn?'·年化口径':'')+(isDiv?(bmCNY?'，基准为人民币口径':'，基准为美元口径'):'')+'）',left:'center',textStyle:{fontSize:15}},
+  return {title:{text:'各基金区间收益对比（%'+(annOn?'·年化口径':'')+(isDiv?(bmCNY?'，基准为人民币口径':'，基准为美元口径'):'')+'）',left:'center',textStyle:{fontSize:15}},
     /* 高亮哪根柱子就显示哪根柱子的数据：
        光标在柱子上 → 提示被高亮的那一行（该时间段全部基金（及叠加基准）收益）；
        光标在柱外（同列空白）→ 保持原有行为：提示该列基金近1→10年各期收益 */
@@ -817,7 +816,7 @@ function barOption(fs){
         var di=ps[0].dataIndex;
         if(hoverBar&&hoverBar.dataIndex===di){
           var i=hoverBar.seriesIndex;
-          var html='<b>'+METRICS[i]+'</b>'+(annTblOn?'（年化）':'')+(isDiv?('（'+(bmCNY?'基准为人民币口径':'基准为美元口径')+'）'):'')+'<br>';
+          var html='<b>'+METRICS[i]+'</b>'+(annOn?'（年化）':'')+(isDiv?('（'+(bmCNY?'基准为人民币口径':'基准为美元口径')+'）'):'')+'<br>';
           fs.forEach(function(f){
             var v=annIf(f.r[i],i);
             if(v==null)return;
@@ -832,7 +831,7 @@ function barOption(fs){
           }
           return html;
         }
-        var html='<b>'+esc(ps[0].axisValue)+'</b>'+(annTblOn?'（年化）':'')+'<br>';
+        var html='<b>'+esc(ps[0].axisValue)+'</b>'+(annOn?'（年化）':'')+'<br>';
         ps.forEach(function(p){
           html+='<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:'+p.color+';margin-right:5px"></span>'+esc(p.seriesName)+'：'+(p.value==null?'无数据':p.value.toFixed(2)+'%')+'<br>';
         });
@@ -961,7 +960,7 @@ function bmOption(fs){
       data:(bmCNY?b.cny:b.usd).map(function(v,j){return annIf(v,j);}),
       itemStyle:{color:BM_COLOR[i]},emphasis:{focus:'series'}};
   });
-  return {title:{text:'基准收益：近1年 → 近10年（% · '+(annTblOn?'年化口径 · ':'')+(bmCNY?'人民币口径（含汇率）':'美元口径')+'）',left:'center',textStyle:{fontSize:15}},
+  return {title:{text:'基准收益：近1年 → 近10年（% · '+(annOn?'年化口径 · ':'')+(bmCNY?'人民币口径（含汇率）':'美元口径')+'）',left:'center',textStyle:{fontSize:15}},
     /* 高亮哪根柱子就显示哪根柱子的数据：
        光标在柱子上 → 只提示该基准近1→10年各期收益（不再罗列所有基准的所有区间）；
        光标在柱外（同列空白）→ 提示该期间的全部基准收益（轴触发阴影覆盖的那一列） */
@@ -973,14 +972,14 @@ function bmOption(fs){
           var b=BM[hoverBar.seriesIndex];
           if(!b)return '';
           var d=bmCNY?b.cny:b.usd;
-          var html='<b>'+esc(b.n)+'</b>（'+(annTblOn?'年化口径 · ':'')+(bmCNY?'人民币口径（含汇率）':'美元口径')+'）<br>';
+          var html='<b>'+esc(b.n)+'</b>（'+(annOn?'年化口径 · ':'')+(bmCNY?'人民币口径（含汇率）':'美元口径')+'）<br>';
           METRICS.forEach(function(m,j){
             var v=annIf(d[j],j);
             html+=m+'：'+(v==null?'无数据':v.toFixed(2)+'%')+'<br>';
           });
           return html;
         }
-        var html='<b>'+ps[0].axisValue+'</b>'+(annTblOn?'（年化）':'')+'（'+(bmCNY?'人民币口径（含汇率）':'美元口径')+'）<br>';
+        var html='<b>'+ps[0].axisValue+'</b>'+(annOn?'（年化）':'')+'（'+(bmCNY?'人民币口径（含汇率）':'美元口径')+'）<br>';
         ps.forEach(function(p){
           html+='<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:'+p.color+';margin-right:5px"></span>'+esc(p.seriesName)+'：'+(p.value==null?'无数据':p.value.toFixed(2)+'%')+'<br>';
         });
@@ -999,7 +998,7 @@ function bmLineOption(fs){
       lineStyle:{width:2.5},symbol:'circle',symbolSize:6,
       itemStyle:{color:BM_COLOR[i]}};
   });
-  return {title:{text:'基准收益曲线：近1年 → 近10年（% · '+(annTblOn?'年化口径 · ':'')+(bmCNY?'人民币口径（含汇率）':'美元口径')+'）',left:'center',textStyle:{fontSize:15}},
+  return {title:{text:'基准收益曲线：近1年 → 近10年（% · '+(annOn?'年化口径 · ':'')+(bmCNY?'人民币口径（含汇率）':'美元口径')+'）',left:'center',textStyle:{fontSize:15}},
     tooltip:{trigger:'axis',
       formatter:function(ps){
         if(!ps||!ps.length)return '';
@@ -1008,7 +1007,7 @@ function bmLineOption(fs){
           var d=bmCNY?b.cny:b.usd;
           var v=d[ps[0].dataIndex];
           html+='<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:'+BM_COLOR[i]+';margin-right:5px"></span>'+esc(b.n)+'：'+
-            (v==null?'无数据':(annTblOn?annRet(v,ps[0].dataIndex):v).toFixed(2)+'%')+'<br>';
+            (v==null?'无数据':(annOn?annRet(v,ps[0].dataIndex):v).toFixed(2)+'%')+'<br>';
         });
         return html;
       }},
@@ -1240,8 +1239,8 @@ function updateFormUI(){
   document.getElementById('formBar').classList.toggle('active',curForm==='bar');
   document.getElementById('formLine').classList.toggle('active',curForm==='line');
   var isLineChart=(curChart==='bar'&&curForm==='line');
-  document.getElementById('logWrap').style.display=isLineChart?'':'none';
-  document.getElementById('annWrap').style.display=isLineChart?'':'none';
+  /* 年化口径由吸顶「收益口径」条统一控制，年化模式下对数Y轴无意义，只留一个可用开关 */
+  document.getElementById('logWrap').style.display=(isLineChart&&!annOn)?'':'none';
 }
 document.getElementById('chartTabs').querySelectorAll('button[data-c]').forEach(function(b){
   b.addEventListener('click',function(){
@@ -1257,10 +1256,6 @@ document.getElementById('formBar').addEventListener('click',function(){curForm='
 document.getElementById('formLine').addEventListener('click',function(){curForm='line';updateFormUI();renderChart();});
 document.getElementById('logT').addEventListener('change',function(){
   logAxis=this.checked;
-  renderChart();
-});
-document.getElementById('annT').addEventListener('change',function(){
-  annOn=this.checked;
   renderChart();
 });
 function setBmCny(v){
@@ -1291,16 +1286,17 @@ document.getElementById('btnPrint').addEventListener('click',function(){window.p
 /* 收益口径：累计涨幅 ⇄ 年化收益率（吸顶条，作用于下方全部图表与表格） */
 function syncAnnUI(){
   document.querySelectorAll('#annSeg button[data-ann]').forEach(function(b){
-    b.classList.toggle('active',(b.dataset.ann==='1')===!!annTblOn);
+    b.classList.toggle('active',(b.dataset.ann==='1')===!!annOn);
   });
   var h=document.getElementById('annHint');
-  if(h)h.textContent=annTblOn
+  if(h)h.textContent=annOn
     ?'当前：年化收益率 (1+区间涨幅)^(1/N)−1，便于不同年限横向比较'
     :'当前：区间累计涨幅（近N年总涨幅，含分红再投）';
 }
 function setAnn(v){
-  annTblOn=!!v;
+  annOn=!!v;
   syncAnnUI();
+  updateFormUI();
   renderTables();
   renderBenchTable();
   bindSort();
