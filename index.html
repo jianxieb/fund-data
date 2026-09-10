@@ -58,8 +58,8 @@ details.scope li{margin:4px 0}
 .filter{display:flex;gap:10px;align-items:center;margin:14px 0 4px;flex-wrap:wrap}
 .qwrap{position:relative;display:inline-block}
 .qwrap input{padding:8px 30px 8px 12px;border:1px solid var(--line);border-radius:8px;width:280px;font-size:13.5px}
-#qClear{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:none;background:none;cursor:pointer;color:#8a93a3;font-size:13px;display:none;padding:2px 4px}
-#qClear:hover{color:var(--ink)}
+.qwrap .qclear{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:none;background:none;cursor:pointer;color:#8a93a3;font-size:13px;display:none;padding:2px 4px}
+.qwrap .qclear:hover{color:var(--ink)}
 .hint{color:var(--sub);font-size:12px}
 .filter .hint{color:var(--sub);font-size:12px}
 .filter .sp{flex:1}
@@ -270,7 +270,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 </div>
 
 <div class="filter noprint">
-  <span class="qwrap"><input id="q" placeholder="输入代码或名称过滤，如：纳斯达克 / 5131 / 广发"><button id="qClear" title="清空过滤">✕</button></span>
+  <span class="qwrap"><input id="q" placeholder="输入代码或名称过滤，如：纳斯达克 / 5131 / 广发"><button class="qclear" id="qClear" title="清空过滤">✕</button></span>
   <span class="hint" id="cnt"></span>
   <span class="sp"></span>
   <span class="hint" title="场内ETF买卖同费率，免印花税/过户费；写入表中买入/卖出费用两列，按每1万元成交额计">场内佣金 万<input id="etfRate" type="number" step="0.1" min="0" value="2.5" style="width:52px"> 最低<input id="etfMin" type="number" step="0.1" min="0" value="5" style="width:52px">元</span>
@@ -635,7 +635,7 @@ function applyFilter(){
     n+=shown;
   });
   document.getElementById('cnt').textContent=kw?('匹配 '+n+' 只基金'):('共 '+FUNDS.length+' 只基金');
-  document.getElementById('qClear').style.display=kw?'':'none';
+  document.getElementById('qClear').style.display=kw?'inline-block':'none';
 }
 
 /* ================= 数据总览 ================= */
