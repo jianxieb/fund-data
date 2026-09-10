@@ -59,6 +59,15 @@ details.scope li{margin:4px 0}
 .stat .k{color:var(--sub);font-size:12px}
 .stat .v{font-size:19px;font-weight:700;margin-top:3px}
 .stat .s{color:var(--sub);font-size:11px;margin-top:2px}
+/* 申购变动卡片 */
+.chglist{padding:10px 18px 14px}
+.chgrow{display:flex;gap:8px;align-items:baseline;font-size:12.5px;padding:3px 0;border-bottom:1px dashed #eef1f5;flex-wrap:wrap}
+.chgrow:last-child{border-bottom:none}
+.chgdate{color:var(--sub);font-size:11.5px;flex:none;width:42px}
+.chgtag{font-size:11px;border-radius:8px;padding:0 6px;border:1px solid var(--line);color:var(--sub);flex:none}
+.chgname{font-weight:600}
+.chgup{color:var(--up)}
+.chgdown{color:var(--down)}
 /* 收益口径小开关：常驻右下角、"回到顶部"左侧（横排，不占竖向空间）
    两种淡色区分口径状态：累计=淡蓝、年化=淡琥珀，点一下切换 */
 .anntoggle{position:fixed;right:64px;bottom:22px;z-index:60;display:flex;align-items:center;gap:5px;background:var(--badge-field);border:1px solid #c7d8f5;border-radius:15px;padding:5px 12px;font-size:12.5px;color:var(--blue);cursor:pointer;white-space:nowrap;box-shadow:0 2px 8px rgba(16,24,40,.10)}
@@ -248,6 +257,9 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 
 <div class="stats" id="stats"></div>
 
+<div class="card"><h2>申购变动<small>场外基金的申购状态 / 日限额变化（与上一次运行对比，最新在前，最近 <span id="chgN">0</span> 条）</small></h2>
+<div class="chglist" id="chgBox"></div></div>
+
 <div class="ctl noprint">
   <div class="ctlhead"><h3>📊 可视化对比</h3></div>
   <div class="viztop">
@@ -428,6 +440,55 @@ var FUNDS=[
 /*__DATA_META_BEGIN__*/
 var META={gen:"2026-09-09 盘中",navdate:"2026-09-07",snpdate:"2026-09-09",snptime:"15:02:31",szdate:"2026-06-30",fx:[-5.8700,-5.5800,-7.5400,4.0800,0.6000]};
 /*__DATA_META_END__*/
+/*__DATA_CHG_BEGIN__*/
+var CHANGES=[];
+/*__DATA_CHG_END__*/
+/* 申购状态/限额变动（update.py 每次运行与上次快照比对后写回，最新在前） */
+var CHG_LATEST={};
+CHANGES.forEach(function(x){var k=x.c+'|'+x.f;if(!CHG_LATEST[k])CHG_LATEST[k]=x;});
+function chgDir(x){
+  /* 返回 true=放宽/放开、false=收紧/暂停、null=无法判断 */
+  if(x.f==='st'){
+    var rank={'暂停':0,'限大额':1,'开放':2};
+    if(rank[x.b]!=null&&rank[x.a]!=null)return rank[x.b]>rank[x.a];
+    return null;
+  }
+  var a=num(x.a),b=num(x.b);
+  if(!isNaN(a)&&!isNaN(b))return b>a;
+  if(!isNaN(b))return true;
+  if(!isNaN(a))return false;
+  return null;
+}
+function chgText(x){
+  return (x.f==='st'?'申购状态':'日限额')+' '+x.a+' → '+x.b;
+}
+function chgMark(c,f){
+  var x=CHG_LATEST[c+'|'+f];
+  if(!x)return '';
+  var up=chgDir(x);
+  var arrow=up===null?'⟳':(up?'▲':'▼');
+  return ' <span class="warnmark" title="'+esc(x.d+'：'+chgText(x))+'">'+arrow+'</span>';
+}
+function renderChanges(){
+  var box=document.getElementById('chgBox');
+  if(!box)return;
+  var n=document.getElementById('chgN');
+  if(n)n.textContent=CHANGES.length;
+  if(!CHANGES.length){
+    box.innerHTML='<div class="hint">暂未记录到申购状态或日限额变动；每日更新时与上一次运行比对，有变化才会出现在这里。</div>';
+    return;
+  }
+  box.innerHTML=CHANGES.map(function(x){
+    var up=chgDir(x);
+    var arrow=up===null?'⟳':(up?'▲':'▼');
+    var cls=up===null?'':(up?'chgup':'chgdown');
+    return '<div class="chgrow"><span class="chgdate">'+esc((x.d||'').slice(5))+'</span>'+
+      '<span class="chgtag">'+(x.f==='st'?'状态':'限额')+'</span>'+
+      '<span class="chgname">'+esc(x.n||'')+'</span>'+
+      '<span class="hint">'+esc(x.c||'')+'</span>'+
+      '<span class="'+cls+'">'+arrow+' '+esc(x.a||'--')+' → '+esc(x.b||'--')+'</span></div>';
+  }).join('');
+}
 var FX_ARR=META.fx; /* USDCNY 各期汇率变动%，用于跟踪偏离图基金收益换算美元口径 */
 var METRICS=['近1年','近2年','近3年','近5年','近10年'];
 var YEARS=[1,2,3,5,10];
@@ -544,7 +605,7 @@ function UNI_HEAD(){
 function lmCell(f){
   /* 暂停申购不显示日限额（买不了，限额无意义） */
   if(f.st==='暂停')return '<td class="na" title="暂停申购，无申购限额口径">--</td>';
-  return '<td>'+esc(f.lm||'--')+'</td>';
+  return '<td>'+esc(f.lm||'--')+chgMark(f.c,'lm')+'</td>';
 }
 function isEtfFund(f){return !f.t||f.t==='场内ETF';}
 /* 含主动管理期等"不可比"信息的基金：跟踪指数列加 ⚠，鼠标悬停给出原因 */
@@ -567,7 +628,7 @@ function uniRow(f,idx){
   /* 场内：买入/卖出费用=券商佣金；申购状态列不再重复"场内交易"（类别列已区分） */
   var feeBuy=isE?commCell():'<td class="hcol" title="申购费（原费率/1折）">'+esc(f.buy||'--')+'</td>';
   var feeSell=isE?commCell():'<td class="hcol" title="赎回费档（按持有期递减）">'+esc(f.rd||'--')+'</td>';
-  var stCell=isE?'<td class="na" title="场内买卖不受申赎通道限制">--</td>':cell(badgeHtml(st));
+  var stCell=isE?'<td class="na" title="场内买卖不受申赎通道限制">--</td>':cell(badgeHtml(st)+chgMark(f.c,'st'));
   return '<tr data-idx="'+(idx==null?0:idx)+'">'+
     cell('<b>'+esc(f.n)+'</b>','l frz')+cell(link(f.c),'l hcol')+cell(esc(f.t||'场内ETF'),'l')+ixCell(f)+
     cell(f.d,'hcol')+cell(feeStr(f))+feeBuy+feeSell+
@@ -1608,6 +1669,7 @@ loadFixed();
 applyFixed();
 applyFilter();
 renderStats();
+renderChanges();
 renderBenchTable();
 setBmCny(bmCNY);
 renderGroupTabs();
