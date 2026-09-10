@@ -192,6 +192,8 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   .wrap{padding:12px}
   .stats{grid-template-columns:repeat(2,1fr)}
 }
+/* 打印：19 列全部保留，A4 横向 + 紧凑字号把整张表塞进一页宽（纵向可跨页，行不跨页断开） */
+@page{size:A4 landscape;margin:8mm}
 @media print{
   body{background:#fff}
   .noprint{display:none!important}
@@ -200,9 +202,21 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   th.frz,td.frz{position:static;box-shadow:none}
   /* 打印始终完整：精简模式隐藏的低频列在打印时全部还原 */
   body.dense .hcol{display:table-cell!important}
-  body.dense table.t1,body.dense table.t3{min-width:0}
-  td{font-size:11px}
+  table.t1,table.t3,table.bm{min-width:0}
+  /* 五张基金表按预设列宽固定排版，19 列刚好排进一页宽，不再右侧裁切 */
+  table.t1,table.t3{width:100%;table-layout:fixed}
+  table col{width:var(--w)}
+  /* 注意用 tbody td 而不是 td：基础样式里 tbody td 的优先级更高，写 td 会被 nowrap/padding 压住 */
+  thead th,tbody td{padding:2px 3px;font-size:9px;white-space:normal;overflow-wrap:anywhere}
+  thead th{font-size:8.5px}
+  .badge{white-space:normal;padding:0 4px}
+  td.note{font-size:8px;min-width:0;max-width:34mm}
+  td.frz{max-width:34mm}
+  tr{break-inside:avoid}
+  .card>h2{break-after:avoid;padding:7px 10px;font-size:13px}
+  .card{break-inside:auto}
   .card,.stat,.notes{border-radius:0}
+  .stats{grid-template-columns:repeat(4,1fr)}
 }
 </style>
 </head>
@@ -344,7 +358,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   <span class="sinput"><input id="gSearchInput" placeholder="搜索名称或代码，如：招商 / 5131 / 广发" autocomplete="off"><button id="gSearchClear" title="清空搜索">✕</button></span>
 </div>
 <button class="anntoggle dens noprint" id="densTog" title="表格列显示：完整 19 列 / 精简列（隐藏 代码、成立、买入费用、卖出费用、净值日涨跌、规模、备注，可视化对比里也不显示代码）｜打印与导出始终完整"><span class="ic">☰</span><span id="densTogTxt">视图：完整</span></button>
-<button class="anntoggle noprint" id="annTog" title="收益口径：累计涨幅 ⇄ 年化收益率（作用于全页：基金表、基准参考表、收益/基准图与收益曲线，CSV 同步）：点击切换"><span class="ic">⇄</span><span id="annTogTxt">口径：累计</span></button>
+<button class="anntoggle noprint" id="annTog" title="收益口径：累计涨幅 ⇄ 年化收益率（作用于全页：基金表、基准参考表、收益/基准图与收益曲线；导出的 CSV 始终同时包含累计与年化两套列，不受此开关影响）：点击切换"><span class="ic">⇄</span><span id="annTogTxt">口径：累计</span></button>
 <button id="toTop" class="noprint" title="回到顶部">↑</button>
 
 <script>
@@ -496,6 +510,13 @@ function retHead(n){return annOn?'年化'+n+'年':'近'+n+'年';}
    近1/2/3/5/10年 净值/日涨跌 盘中价(快照+当时溢价) 规模 备注
    买入/卖出费用列：场外=申购费(原/1折)、赎回费档；场内=券商佣金（免印花税/过户费，买卖同费率）
    名称列排首位并冻结（横向滚动时不丢行标签），代码紧随其后 */
+/* 打印用的列宽（百分比）：平时不生效，@media print 里配合 table-layout:fixed 使用，
+   保证 19 列在 A4 横向一页宽内排下不裁切 */
+var UNI_COL_W=['12%','4%','4%','7%','4.5%','5%','5%','5%','4.5%','4%',
+  '4.5%','4.5%','4.5%','4.5%','4.5%','6%','5.5%','3.5%','7.5%'];
+function UNI_COLS(){
+  return '<colgroup>'+UNI_COL_W.map(function(w){return '<col style="--w:'+w+'">';}).join('')+'</colgroup>';
+}
 function UNI_HEAD(){
   var d=(META&&META.snpdate)?META.snpdate.slice(5):'';
   return '<thead><tr>'+
@@ -566,7 +587,7 @@ function renderTables(){
     var flt=(typeof def[1]==='function')?def[1]:function(f){return f.g===def[1];};
     var rows=FUNDS.filter(flt);
     /* 用闭包调用行渲染器：避免 Array.map 把下标误传为第二个参数（导致表格错位） */
-    el.innerHTML=UNI_HEAD()+'<tbody>'+rows.map(function(f,i){return uniRow(f,i);}).join('')+'</tbody>';
+    el.innerHTML=UNI_COLS()+UNI_HEAD()+'<tbody>'+rows.map(function(f,i){return uniRow(f,i);}).join('')+'</tbody>';
     /* 排序状态存在 SORTS 里（按列 key），重绘后按 key 重新套用：
        切换累计/年化会重建表格，但用户排好的顺序必须原样保留 */
     var st=SORTS[el.id];
@@ -1340,28 +1361,53 @@ window.addEventListener('load',function(){if(chart)renderChart();});
 
 /* ================= CSV 导出 ================= */
 function exportCSV(){
-  var head=['分组','代码','名称','类别','跟踪指数','成立','管理费%','托管费%','销售服务费%','买入费用','卖出费用','申购状态','日限额',
+  /* 完整导出：基金全字段（含波动率/回撤/标记）+ 基准表（美元与人民币双口径）+ 数据说明。
+     与页面上的精简/口径开关无关，导出的永远是完整 19 列口径的两套收益列。 */
+  var head=['分组','代码','名称','类别','跟踪指数','成立','管理费%','托管费%','销售服务费%','年费合计%','买入费用','卖出费用','申购状态','日限额',
     '近1年%','近2年%','近3年%','近5年%','近10年%',
     '年化1年%','年化2年%','年化3年%','年化5年%','年化10年%',
     '单位净值','净值日期','日涨跌幅%','规模(亿)',
-    '盘中价(快照)','当时溢价率%','IOPV','备注'];
+    '盘中价(快照)','当时溢价率%','IOPV','近3年年化波动率%','近3年最大回撤%','标记','备注'];
   var lines=[head];
   var comm=Math.max(etfRate,etfMin).toFixed(2);
   FUNDS.forEach(function(f){
     var isEtf=isEtfFund(f);
     var r=f.r.map(function(v,i){return v==null?'':v;});
     var an=f.r.map(function(v,i){return v==null?'':annRet(v,i);});
+    var feeSum=(f.fee[0]==null&&f.fee[1]==null)?'':((f.fee[0]||0)+(f.fee[1]||0)+(f.fee[2]||0)).toFixed(2);
     lines.push([
       GROUPS[f.g],f.c,f.n,f.t||'场内ETF',f.ix,f.d,
-      f.fee[0]==null?'':f.fee[0],f.fee[1]==null?'':f.fee[1],f.fee[2]==null?'':f.fee[2],
+      f.fee[0]==null?'':f.fee[0],f.fee[1]==null?'':f.fee[1],f.fee[2]==null?'':f.fee[2],feeSum,
       isEtf?('≈'+comm+' 元/万'):(f.buy||'--'),isEtf?('≈'+comm+' 元/万'):(f.rd||'--'),
       isEtf?'--':stText(f.st),f.st==='暂停'?'--':(f.lm||'--'),
       r[0],r[1],r[2],r[3],r[4],an[0],an[1],an[2],an[3],an[4],
       f.nav==null?'':f.nav,f.navdate||'',f.dz==null?'':f.dz,f.sz,
       isEtf&&f.p!=null?f.p:'',isEtf&&f.prem!=null?f.prem:'',isEtf&&f.iopv!=null?f.iopv:'',
+      f.v3==null?'':f.v3,f.mdd3==null?'':f.mdd3,
+      f.warn?'含主动管理期(非纯跟踪误差)':'',
       f.note||''
     ]);
   });
+  /* 基准：与基金同基期（滚动近N年），美元/人民币两套口径都给 */
+  lines.push([]);
+  lines.push(['基准参考（与基金同基期，滚动近N年）']);
+  lines.push(['名称','类型','美元近1年%','美元近2年%','美元近3年%','美元近5年%','美元近10年%',
+    '人民币近1年%','人民币近2年%','人民币近3年%','人民币近5年%','人民币近10年%','备注']);
+  BM.forEach(function(b){
+    lines.push([b.n,b.tp].concat(b.usd.map(function(v){return v==null?'':v;}),b.cny.map(function(v){return v==null?'':v;}),[b.note||'']));
+  });
+  /* 数据说明 */
+  var m=META||{};
+  lines.push([]);
+  lines.push(['数据说明']);
+  lines.push(['生成时间',m.gen||'']);
+  lines.push(['净值数据截至',m.navdate||'']);
+  lines.push(['场内快照',(m.snpdate||'')+' '+(m.snptime||'')]);
+  lines.push(['规模截至',m.szdate||'']);
+  lines.push(['USDCNY各期汇率变动%'].concat((m.fx||[]).map(function(v){return v==null?'':v;})));
+  lines.push(['收益口径','累计涨幅=滚动近N年累计净值涨幅（含分红再投）；年化收益率=(1+累计涨幅)^(1/N)-1（几何年化）']);
+  lines.push(['费率口径','场外：买入费用=申购费（原费率/1折），卖出费用=赎回费档（按持有期递减）；场内：买卖均按券商佣金 万'+etfRate+'、最低 '+etfMin+' 元/笔，免印花税/过户费']);
+  lines.push(['数据来源','天天基金/东方财富公开接口 + 腾讯行情（IOPV/溢价率）；仅供研究参考，不构成投资建议']);
   var csv='\uFEFF'+lines.map(function(r){
     return r.map(function(v){
       v=String(v);
@@ -1466,7 +1512,7 @@ function syncAnnUI(){
     b.classList.toggle('on',!!annOn);
     b.title=annOn
       ?'当前：年化收益率 (1+区间涨幅)^(1/N)−1，便于不同年限横向比较｜点击切回累计涨幅'
-      :'当前：区间累计涨幅（近N年总涨幅，含分红再投）｜点击切换为年化收益率｜作用于全页：基金表、基准参考表、收益/基准图与收益曲线，CSV 同步';
+      :'当前：区间累计涨幅（近N年总涨幅，含分红再投）｜点击切换为年化收益率｜作用于全页：基金表、基准参考表、收益/基准图与收益曲线（CSV 始终含累计与年化两套列）';
   }
 }
 function setAnn(v){
