@@ -31,6 +31,7 @@
   --bg:#f5f6f8; --card:#fff; --line:#e3e6ea; --ink:#1c2330; --sub:#5b6472;
   --up:#d6362a; --down:#0a8a4a; --warn:#b45309; --blue:#1d4ed8;
   --badge-limit:#fff3e0; --badge-stop:#fdecea; --badge-field:#e8f1fd; --th:#26303f;
+  --vizh:clamp(380px,58vh,620px); /* 图表/左控制栏共用高度：整块可视化对比控制在一屏内 */
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -59,6 +60,7 @@ details.scope li{margin:4px 0}
 .qwrap input{padding:8px 30px 8px 12px;border:1px solid var(--line);border-radius:8px;width:280px;font-size:13.5px}
 #qClear{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:none;background:none;cursor:pointer;color:#8a93a3;font-size:13px;display:none;padding:2px 4px}
 #qClear:hover{color:var(--ink)}
+.hint{color:var(--sub);font-size:12px}
 .filter .hint{color:var(--sub);font-size:12px}
 .filter .sp{flex:1}
 button.tab{padding:5px 14px;border:1px solid var(--line);background:#fff;border-radius:15px;cursor:pointer;font-size:13px;color:var(--ink);white-space:nowrap}
@@ -68,8 +70,6 @@ button.act{border-style:dashed;color:var(--sub);background:#fafbfd}
 button.act:hover{border-color:#9db4d8;color:var(--ink);background:#fff}
 .ctlhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .ctlhead h3{margin:0;font-size:15px}
-.chipshead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 2px}
-.chipshead .phead{margin:0;flex:1}
 .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:3px}
 .panel{background:#f7f9fc;border:1px solid #e6eaf1;border-radius:10px;padding:10px 14px;margin:8px 0}
 .phead{font-size:11px;color:#7a8496;font-weight:700;letter-spacing:1.5px;margin-bottom:7px}
@@ -77,20 +77,39 @@ button.act:hover{border-color:#9db4d8;color:var(--ink);background:#fff}
 .prow .sp{flex:1}
 .prow .opt{color:var(--sub);font-size:12.5px;display:flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap}
 .prow .opt input{accent-color:var(--blue)}
-/* 图表控制区 */
-.ctl{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:16px 0}
-.ctl h3{margin:0 0 6px;font-size:15px}
+/* 图表控制区：顶部两行工具栏（指标 / 分组+形式）+ 左栏勾选 + 右栏图表
+   左右两栏同高（--vizh），整块控制在一屏内；图表随页面滚动保持可见 */
+.ctl{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 16px 14px;margin:16px 0}
+.ctl h3{margin:0 0 8px;font-size:15px}
+.viztop{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.vizrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ptag{color:#7a8496;font-size:11px;font-weight:700;letter-spacing:1px;flex:none}
+.vizgrid{display:grid;grid-template-columns:minmax(300px,460px) minmax(0,1fr);gap:14px;align-items:start}
+.vizleft{height:var(--vizh)}
+.pickpanel{height:100%;display:flex;flex-direction:column;min-height:0;margin:0}
+.pickhead{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pickhead .phead{margin:0}
+.vizright{position:sticky;top:8px}
+.bmbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:0 2px 8px}
+.bmbar .phead{margin:0}
+.bmbar .opt{color:var(--sub);font-size:12.5px;display:flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap}
+.bmbar .opt input{accent-color:var(--blue)}
+.bmbar .sp{flex:1}
 .bmctl{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:10px 18px;border-bottom:1px solid #eef1f5;background:#fafbfd}
 .bmctl .opt{color:var(--sub);font-size:12.5px;display:flex;align-items:center;gap:5px;cursor:pointer}
 .bmctl .opt input{accent-color:var(--blue)}
 .bmctl .hint{color:var(--sub);font-size:12px}
 table.bm{min-width:920px}
-.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:4px 12px;margin-top:10px;max-height:232px;overflow:auto;border:1px solid #eef1f5;border-radius:8px;padding:8px 10px;background:#fafbfd}
-.chip{display:flex;align-items:center;gap:6px;font-size:12.5px;cursor:pointer;white-space:nowrap}
-.chip:hover{color:var(--blue)}
-.chip input{accent-color:var(--blue)}
-.chip .g-tag{font-size:10px;color:var(--sub);border:1px solid var(--line);border-radius:6px;padding:0 4px}
-#chart{width:100%;height:560px;background:#fff;border:1px solid var(--line);border-radius:10px;margin-top:12px}
+/* 勾选区：占满左栏剩余高度，内部滚动，选中状态即改即见图表 */
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1px 12px;margin-top:8px;flex:1;min-height:110px;overflow:auto;border:1px solid #eef1f5;border-radius:8px;padding:6px 8px;background:#fafbfd}
+.chips.grid2{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.chip{display:flex;align-items:center;gap:6px;font-size:12.5px;cursor:pointer;white-space:nowrap;min-width:0;padding:2px 3px;border-radius:6px}
+.chip:hover{color:var(--blue);background:#eef3fc}
+.chip input{accent-color:var(--blue);flex:none}
+.chip .nm{overflow:hidden;text-overflow:ellipsis}
+.chip .g-tag{font-size:10px;color:var(--sub);border:1px solid var(--line);border-radius:6px;padding:0 4px;flex:none}
+.chipsnone{color:var(--sub);font-size:12px;padding:6px 2px;grid-column:1/-1}
+#chart{width:100%;height:var(--vizh);background:#fff;border:1px solid var(--line);border-radius:10px}
 #chartMsg{color:var(--sub);padding:20px;text-align:center}
 /* 表格：内部滚动 + 粘性表头 */
 .tablebox{overflow:auto;max-height:68vh}
@@ -124,8 +143,17 @@ td.note{color:var(--sub);font-size:11.5px;white-space:normal;min-width:150px;tex
 footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 #toTop{position:fixed;right:18px;bottom:18px;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.14);cursor:pointer;display:none;z-index:50;font-size:16px;color:var(--ink)}
 #toTop:hover{background:#f0f3f7}
+@media (max-width:1080px){
+  /* 窄屏回退单列：图表在勾选区下方，勾选区限高滚动 */
+  .vizgrid{grid-template-columns:minmax(0,1fr)}
+  .vizright{position:static}
+  .vizleft{height:auto}
+  .pickpanel{height:auto}
+  .chips{flex:none;max-height:min(44vh,340px)}
+  #chart{height:clamp(320px,52vh,520px)}
+}
 @media (max-width:760px){
-  #chart{height:420px}
+  #chart{height:min(50vh,420px)}
   .chips{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
   header{padding:18px 16px}
   header h1{font-size:18px}
@@ -164,7 +192,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
     <li><b>场内溢价率</b> = (盘中价 − IOPV) / IOPV × 100%（腾讯行情 IOPV 口径）。<b>盘中价一列的括号即"当时溢价率"</b>——数据生成时刻（见页头快照时间，每日更新）的快照；QDII ETF 净值 T+1 公布、隔夜美股波动大时溢价率可能失真，请结合 IOPV 判断。<b>场内 ETF 的区间涨幅一律按净值计算（已剔除溢价影响）</b>，溢价只体现在"盘中价"列，两者互相独立。</li>
     <li><b>买入/卖出费用</b>：两列含义随渠道变化——<b>场外</b>：买入费用=申购费（原费率/1折）、卖出费用=赎回费档（按持有期递减）；<b>场内</b>：买卖均为券商佣金（默认万 2.5、最低 5 元/笔，可在顶部工具栏按你的券商调整），ETF 免印花税/过户费。</li>
     <li><b>风险收益图</b>：X 轴 = 近3年<b>年化波动率</b>（日收益率标准差 × √250），Y 轴 = 近3年<b>年化收益率</b>，气泡 = 规模，提示框含近3年最大回撤——用于回答"同样收益下谁更颠簸"。</li>
-    <li><b>操作</b>：表格默认按清单原始顺序展示；<b>点击表头</b>升序 → 再点降序 → 再点<b>取消排序恢复默认</b>；<b>按住 Shift 点击另一列</b>可加第二排序键（双列混合排序，再点切换方向）；空值恒排最后。顶部输入框按代码/名称过滤；"显示年化"把近N年列切换为年化口径（基金表、基准参考表与基准/柱状图同步切换）；图表区按 **①指标 → ②形式** 两级选择（区间收益与基准收益可在柱状/曲线间切换），先选分组再勾选基金；收益曲线可切换<b>年化收益率</b>或对数 Y 轴；可导出 CSV、打印 PDF。</li>
+    <li><b>操作</b>：表格默认按清单原始顺序展示；<b>点击表头</b>升序 → 再点降序 → 再点<b>取消排序恢复默认</b>；<b>按住 Shift 点击另一列</b>可加第二排序键（双列混合排序，再点切换方向）；空值恒排最后。顶部输入框按代码/名称过滤；"显示年化"把近N年列切换为年化口径（基金表、基准参考表与基准/柱状图同步切换）。<b>图表区为左右分栏且整块约一屏</b>：顶部两行工具栏选 <b>①指标 → ②分组与形式</b>（区间收益与基准收益可在柱状/曲线间切换），<b>左栏勾选基金</b>（上方搜索框可按名称/代码快速定位，勾选即刷新右栏图表，图表随页面滚动保持可见），基准叠加与人民币/美元口径在图表正上方一行；收益曲线可切换<b>年化收益率</b>或对数 Y 轴；可导出 CSV、打印 PDF。</li>
   </ol>
 </details>
 
@@ -172,59 +200,65 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 
 <div class="ctl noprint">
   <div class="ctlhead"><h3>📊 可视化对比</h3></div>
-  <div class="panel">
-    <div class="phead">筛选分组</div>
-    <div class="prow" id="grpTabs">
-      <button class="tab active" data-g="all">全部</button>
-      <button class="tab" data-g="sp">标普500</button>
-      <button class="tab" data-g="nq">纳斯达克100场外</button>
-      <button class="tab" data-g="etf">纳斯达克100ETF</button>
-      <button class="tab" data-g="nx">其他纳斯达克指数</button>
+  <div class="viztop">
+    <div class="vizrow">
+      <span class="ptag">① 指标</span>
+      <div class="prow" id="chartTabs">
+        <button class="tab active" data-c="bar">区间收益（近1→10年）</button>
+        <button class="tab" data-c="scat">风险收益（波动率×收益）</button>
+        <button class="tab" data-c="fee">费用对比</button>
+        <button class="tab" data-c="size">规模对比</button>
+        <button class="tab" data-c="td">跟踪偏离</button>
+        <button class="tab" data-c="bm">基准收益（指数/SPY/QQQ）</button>
+      </div>
+    </div>
+    <div class="vizrow">
+      <span class="ptag">② 分组</span>
+      <div class="prow" id="grpTabs">
+        <button class="tab active" data-g="all">全部</button>
+        <button class="tab" data-g="sp">标普500</button>
+        <button class="tab" data-g="nq">纳斯达克100场外</button>
+        <button class="tab" data-g="etf">纳斯达克100ETF</button>
+        <button class="tab" data-g="nx">其他纳斯达克指数</button>
+      </div>
+      <div class="prow" id="formPanel">
+        <span class="ptag">形式</span>
+        <button class="tab active" id="formBar">柱状图</button>
+        <button class="tab" id="formLine">曲线图</button>
+        <label class="opt" id="logWrap" style="display:none"><input type="checkbox" id="logT">对数Y轴</label>
+        <label class="opt" id="annWrap" style="display:none"><input type="checkbox" id="annT">年化收益率</label>
+      </div>
     </div>
   </div>
-  <div class="panel">
-    <div class="phead">① 选择指标（画什么）</div>
-    <div class="prow" id="chartTabs">
-      <button class="tab active" data-c="bar">区间收益（近1→10年）</button>
-      <button class="tab" data-c="scat">风险收益（波动率×收益）</button>
-      <button class="tab" data-c="fee">费用对比</button>
-      <button class="tab" data-c="size">规模对比</button>
-      <button class="tab" data-c="td">跟踪偏离</button>
-      <button class="tab" data-c="bm">基准收益（指数/SPY/QQQ）</button>
+  <div class="vizgrid">
+    <div class="vizleft">
+      <div class="panel pickpanel">
+        <div class="pickhead">
+          <span class="phead">③ 勾选基金（出现在图中）</span>
+          <span class="hint" id="selCnt"></span>
+          <span class="sp"></span>
+          <button class="tab act" id="btnSelAll">☑ 全选本组</button>
+          <button class="tab act" id="btnClear">✕ 清空</button>
+        </div>
+        <div class="chips" id="chips"></div>
+      </div>
+    </div>
+    <div class="vizright">
+      <div class="bmbar" id="bmRow">
+        <span class="phead" title="勾选的基准会叠加到柱状/曲线图中；勾选 SPY/QQQ 后也会作为产品出现在跟踪偏离图中">基准叠加</span>
+        <label class="opt"><span class="dot" style="background:#33517e"></span><input type="checkbox" class="bmcb" value="0">标普500指数</label>
+        <label class="opt"><span class="dot" style="background:#0a8a4a"></span><input type="checkbox" class="bmcb" value="1">纳斯达克综合</label>
+        <label class="opt"><span class="dot" style="background:#7a4ad6"></span><input type="checkbox" class="bmcb" value="2">纳斯达克100</label>
+        <label class="opt"><span class="dot" style="background:#d6a01b"></span><input type="checkbox" class="bmcb" value="3">SPY</label>
+        <label class="opt"><span class="dot" style="background:#d6362a"></span><input type="checkbox" class="bmcb" value="4">QQQ</label>
+        <span class="sp"></span>
+        <span class="ptag">口径</span>
+        <button class="tab" id="bmCny">人民币</button>
+        <button class="tab" id="bmUsd">美元</button>
+      </div>
+      <div id="chart"><div id="chartMsg">图表加载中…</div></div>
     </div>
   </div>
-  <div class="panel" id="formPanel">
-    <div class="phead">② 展示形式（区间收益 / 基准收益可选）</div>
-    <div class="prow">
-      <button class="tab active" id="formBar">柱状图</button>
-      <button class="tab" id="formLine">曲线图</button>
-      <span class="sp"></span>
-      <label class="opt" id="logWrap" style="display:none"><input type="checkbox" id="logT">对数Y轴</label>
-      <label class="opt" id="annWrap" style="display:none"><input type="checkbox" id="annT">年化收益率</label>
-    </div>
-  </div>
-  <div class="chipshead">
-    <span class="phead">勾选基金（出现在图中）</span>
-    <button class="tab act" id="btnSelAll">☑ 全选本组</button>
-    <button class="tab act" id="btnClear">✕ 清空</button>
-    <span class="hint" id="selCnt"></span>
-  </div>
-  <div class="chips" id="chips"></div>
-  <div class="panel">
-    <div class="phead">基准叠加（可选；显示在柱状/曲线图中，勾选 SPY/QQQ 后也会作为产品出现在跟踪偏离图中）</div>
-    <div class="prow" id="bmRow">
-      <label class="opt"><span class="dot" style="background:#33517e"></span><input type="checkbox" class="bmcb" value="0">标普500指数</label>
-      <label class="opt"><span class="dot" style="background:#0a8a4a"></span><input type="checkbox" class="bmcb" value="1">纳斯达克综合</label>
-      <label class="opt"><span class="dot" style="background:#7a4ad6"></span><input type="checkbox" class="bmcb" value="2">纳斯达克100</label>
-      <label class="opt"><span class="dot" style="background:#d6a01b"></span><input type="checkbox" class="bmcb" value="3">SPY</label>
-      <label class="opt"><span class="dot" style="background:#d6362a"></span><input type="checkbox" class="bmcb" value="4">QQQ</label>
-      <span class="sp"></span>
-      <span class="opt">口径</span>
-      <button class="tab" id="bmCny">人民币</button>
-      <button class="tab" id="bmUsd">美元</button>
-    </div>
-  </div>
-  <div id="chart"><div id="chartMsg">图表加载中…</div></div>
 </div>
 
 <div class="card"><h2>基准参考：标普500 / 纳斯达克综合 / 纳斯达克100 指数与 SPY / QQQ<small>与基金同基期（滚动近N年，基期前最近交易日收盘），截至 <b id="mNav2">2026-08-31</b></small></h2>
@@ -640,19 +674,29 @@ function updateSelCnt(){
 }
 function renderChips(){
   var box=document.getElementById('chips');
+  /* 选定分组后该组基金同属一类，去掉分组标签并排两列，一屏看得更多 */
+  box.className='chips'+(curGroup==='all'?'':' grid2');
   box.innerHTML='';
-  FUNDS.filter(function(f){return curGroup==='all'||f.g===curGroup;}).forEach(function(f){
+  var list=FUNDS.filter(function(f){return curGroup==='all'||f.g===curGroup;});
+  list.forEach(function(f){
     var lb=document.createElement('label');
     lb.className='chip';
+    lb.title=f.n+'（'+f.c+'）· '+GROUPS[f.g];
     var cb=document.createElement('input');
     cb.type='checkbox'; cb.value=f.c; cb.checked=sel.has(f.c);
     cb.addEventListener('change',function(){if(cb.checked){sel.add(f.c);}else{sel.delete(f.c);}renderChart();updateSelCnt();});
     lb.appendChild(cb);
-    lb.appendChild(document.createTextNode(short(f.n)+' '));
-    var tag=document.createElement('span');
-    tag.className='g-tag'; tag.textContent=GROUPS[f.g];
-    lb.appendChild(tag);
-    lb.appendChild(document.createTextNode(' '+f.c));
+    var nm=document.createElement('span');
+    nm.className='nm'; nm.textContent=short(f.n);
+    lb.appendChild(nm);
+    if(curGroup==='all'){
+      var tag=document.createElement('span');
+      tag.className='g-tag'; tag.textContent=GROUPS[f.g];
+      lb.appendChild(tag);
+    }
+    var cd=document.createElement('span');
+    cd.className='g-tag'; cd.textContent=f.c;
+    lb.appendChild(cd);
     box.appendChild(lb);
   });
   updateSelCnt();
