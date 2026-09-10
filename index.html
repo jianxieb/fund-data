@@ -120,10 +120,16 @@ table.bm{min-width:920px}
 .chipsnone{color:var(--sub);font-size:12px;padding:6px 2px;grid-column:1/-1}
 #chart{width:100%;height:var(--vizh);background:#fff;border:1px solid var(--line);border-radius:10px}
 #chartMsg{color:var(--sub);padding:20px;text-align:center}
-/* 表格：内部滚动 + 粘性表头 */
-.tablebox{overflow:auto;max-height:68vh}
+/* 表格：只保留横向滚动（19 列很宽），纵向不再内部滚动——整张表随页面展开，避免"滚轮到表格里滚不动"
+   名称列冻结（position:sticky;left:0），横向滚动时始终看得到行标签 */
+.tablebox{overflow-x:auto}
 table{width:100%;border-collapse:collapse}
 table.t1,table.t3{min-width:1750px}
+th.frz,td.frz{position:sticky;left:0;z-index:2;box-shadow:1px 0 0 var(--line)}
+thead th.frz{z-index:4}
+tbody td.frz{background:var(--card)}
+tbody tr:nth-child(even) td.frz{background:#fafbfd}
+tbody tr:hover td.frz{background:#f2f6fb}
 thead th{background:var(--th);color:#fff;font-size:12.5px;font-weight:600;padding:9px 8px;text-align:right;white-space:nowrap;position:sticky;top:0;z-index:3}
 table.sortable thead th{cursor:pointer;user-select:none}
 thead th.l{text-align:left}
@@ -174,6 +180,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   .noprint{display:none!important}
   .tablebox{overflow:visible;max-height:none}
   thead th{position:static}
+  th.frz,td.frz{position:static;box-shadow:none}
   td{font-size:11px}
   .card,.stat,.notes{border-radius:0}
 }
@@ -459,14 +466,15 @@ function link(c){return '<a href="https://fund.eastmoney.com/'+c+'.html" target=
 /* ================= 表格渲染 ================= */
 function retHead(n){return annOn?'年化'+n+'年':'近'+n+'年';}
 /* 五张表统一列布局（同一概念固定在同一列位）：
-   代码 名称 类别 跟踪指数 成立 年费 买入费用 卖出费用 申购状态 日限额
+   名称 代码 类别 跟踪指数 成立 年费 买入费用 卖出费用 申购状态 日限额
    近1/2/3/5/10年 净值/日涨跌 盘中价(快照+当时溢价) 规模 备注
-   买入/卖出费用列：场外=申购费(原/1折)、赎回费档；场内=券商佣金（免印花税/过户费，买卖同费率） */
+   买入/卖出费用列：场外=申购费(原/1折)、赎回费档；场内=券商佣金（免印花税/过户费，买卖同费率）
+   名称列排首位并冻结（横向滚动时不丢行标签），代码紧随其后 */
 function UNI_HEAD(){
   var d=(META&&META.snpdate)?META.snpdate.slice(5):'';
   return '<thead><tr>'+
+  '<th class="l frz" data-sort="text">名称<span class="arr"></span></th>'+
   '<th class="l" data-sort="num">代码<span class="arr"></span></th>'+
-  '<th class="l" data-sort="text">名称<span class="arr"></span></th>'+
   '<th class="l" data-sort="text">类别<span class="arr"></span></th>'+
   '<th class="l" data-sort="text">跟踪指数<span class="arr"></span></th>'+
   '<th data-sort="date">成立<span class="arr"></span></th>'+
@@ -508,7 +516,7 @@ function uniRow(f,idx){
   var feeSell=isE?commCell():'<td title="赎回费档（按持有期递减）">'+esc(f.rd||'--')+'</td>';
   var stCell=isE?'<td class="na" title="场内买卖不受申赎通道限制">--</td>':cell(badgeHtml(st));
   return '<tr data-idx="'+(idx==null?0:idx)+'">'+
-    cell(link(f.c),'l')+cell('<b>'+esc(f.n)+'</b>','l')+cell(esc(f.t||'场内ETF'),'l')+cell(esc(f.ix),'l')+
+    cell('<b>'+esc(f.n)+'</b>','l frz')+cell(link(f.c),'l')+cell(esc(f.t||'场内ETF'),'l')+cell(esc(f.ix),'l')+
     cell(f.d)+cell(feeStr(f))+feeBuy+feeSell+
     stCell+lmCell(f)+
     retCell(f.r[0],0)+retCell(f.r[1],1)+retCell(f.r[2],2)+retCell(f.r[3],3)+retCell(f.r[4],4)+
