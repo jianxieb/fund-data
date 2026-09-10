@@ -32,10 +32,11 @@
   --up:#d6362a; --down:#0a8a4a; --warn:#b45309; --blue:#1d4ed8;
   --badge-limit:#fff3e0; --badge-stop:#fdecea; --badge-field:#e8f1fd; --th:#26303f;
   --vizh:clamp(380px,58vh,620px); /* 图表/左控制栏共用高度：整块可视化对比控制在一屏内 */
+  --barh:45px; /* 顶部「收益口径」固定条高度，加载后由 JS 实测回填 */
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;font-family:"Segoe UI","Microsoft YaHei","PingFang SC",sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5}
+body{margin:0;padding-top:var(--barh);font-family:"Segoe UI","Microsoft YaHei","PingFang SC",sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5}
 header{background:linear-gradient(135deg,#1d2b45,#33517e);color:#fff;padding:24px 28px}
 header h1{margin:0 0 8px;font-size:22px}
 header .meta{color:#c8d3e2;font-size:12.5px}
@@ -54,8 +55,9 @@ details.scope li{margin:4px 0}
 .stat .k{color:var(--sub);font-size:12px}
 .stat .v{font-size:19px;font-weight:700;margin-top:3px}
 .stat .s{color:var(--sub);font-size:11px;margin-top:2px}
-/* 收益口径吸顶条：作用域覆盖下方全部图表与表格，滚动时固定在视口顶部 */
-.globar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:rgba(255,255,255,.97);border:1px solid var(--line);border-radius:10px;padding:8px 14px;margin:16px 0;box-shadow:0 2px 10px rgba(16,24,40,.06)}
+/* 收益口径固定条：永远贴在视口顶部，划到哪都能切换（高度由 JS 实测回填 --barh，避免遮住页面内容） */
+.globar{position:fixed;top:0;left:0;right:0;z-index:60;background:rgba(255,255,255,.97);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);box-shadow:0 2px 10px rgba(16,24,40,.06)}
+.globar .gbin{display:flex;align-items:center;gap:12px;flex-wrap:wrap;max-width:1640px;margin:0 auto;padding:8px 20px}
 .globar .hint{color:var(--sub);font-size:12px}
 .seg{display:flex;border:1px solid var(--line);border-radius:15px;overflow:hidden;background:#fff}
 .seg button{padding:5px 14px;border:0;background:transparent;cursor:pointer;font-size:13px;color:var(--ink);white-space:nowrap}
@@ -99,7 +101,7 @@ button.act:hover{border-color:#9db4d8;color:var(--ink);background:#fff}
 .pickhead .phead{margin:0}
 .qwrap.small{display:block;margin-top:8px}
 .qwrap.small input{width:100%;padding:6px 28px 6px 10px;font-size:12.5px}
-.vizright{position:sticky;top:8px}
+.vizright{position:sticky;top:56px} /* 位于固定「收益口径」条下方 */
 .bmbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:0 2px 8px}
 .bmbar .phead{margin:0}
 .bmbar .opt{color:var(--sub);font-size:12.5px;display:flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap}
@@ -163,6 +165,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   #chart{height:clamp(320px,52vh,520px)}
 }
 @media (max-width:760px){
+  .globar .hint{display:none} /* 窄屏只留开关，保持固定条一行高 */
   #chart{height:min(50vh,420px)}
   .chips{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
   header{padding:18px 16px}
@@ -171,7 +174,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   .stats{grid-template-columns:repeat(2,1fr)}
 }
 @media print{
-  body{background:#fff}
+  body{background:#fff;padding-top:0!important} /* 打印不带固定条，正文顶格 */
   .noprint{display:none!important}
   .tablebox{overflow:visible;max-height:none}
   thead th{position:static}
@@ -190,11 +193,22 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 </header>
 <div class="wrap">
 
+<div class="globar noprint">
+  <div class="gbin">
+    <span class="ptag" title="作用于全页：五张基金表、基准参考表、区间收益图、基准收益图与收益曲线；CSV 同步含年化口径">收益口径</span>
+    <div class="seg" id="annSeg">
+      <button class="active" data-ann="0">累计涨幅</button>
+      <button data-ann="1">年化收益率</button>
+    </div>
+    <span class="hint" id="annHint"></span>
+  </div>
+</div>
+
 <details class="scope" open>
   <summary>口径说明（点击折叠）</summary>
   <ol>
     <li><b>份额筛选</b>：同一基金有 A/C 份额的只保留 <b>A 类</b>；C/D/E/I 份额、美元现汇/现钞份额全部剔除（剔除清单见文末）。</li>
-    <li><b>区间涨幅</b>：按累计净值（含分红再投资）计算，<b>滚动窗口</b>：以最新净值日回推 1/2/3/5/10 年，取该日前最近交易日为基期（每日自动更新时窗口随之滑动）。成立不足 N 年标注 "--"。窗口期内有分红的基金（国泰纳指100、大成标普500等权重）已按<b>红利再投逐笔复权</b>，其余基金窗口内无分红（累计净值即含分红口径）。<b>年化收益率</b> = (1+区间涨幅)^(1/N)−1（几何年化），可在页面中部的<b>「收益口径」吸顶条</b>一键切换（累计涨幅 ⇄ 年化收益率）。</li>
+    <li><b>区间涨幅</b>：按累计净值（含分红再投资）计算，<b>滚动窗口</b>：以最新净值日回推 1/2/3/5/10 年，取该日前最近交易日为基期（每日自动更新时窗口随之滑动）。成立不足 N 年标注 "--"。窗口期内有分红的基金（国泰纳指100、大成标普500等权重）已按<b>红利再投逐笔复权</b>，其余基金窗口内无分红（累计净值即含分红口径）。<b>年化收益率</b> = (1+区间涨幅)^(1/N)−1（几何年化），可用常驻页面顶部的<b>「收益口径」固定条</b>一键切换（累计涨幅 ⇄ 年化收益率）。</li>
     <li><b>纳斯达克分表</b>：<b>纳斯达克100</b> 与 <b>其他纳斯达克指数</b>（纳指科技 / 纳指生物科技 / 华宝主动精选）分表展示、分组建图；两者走势差异大，收益不可直接比较。</li>
     <li><b>基准数据</b>：标普500 / 纳斯达克综合 / 纳斯达克100 指数收盘与 SPY / QQQ 前复权价（含分红），汇率取 USDCNY 收盘；基期与基金表一致（基期前最近交易日），人民币口径 = 美元收益 × 汇率变动，与基金净值口径可比（存在费率、跟踪误差与 ±1 交易日时点差异）。</li>
     <li><b>跟踪偏离度</b>：图表区「跟踪偏离」页签 = 基金/ETF − <b>纯指数基准</b>（百分点，正=跑赢），基准永远是指数：标普500 组 → 标普500指数、纳指100 组 → 纳斯达克100指数；勾选 SPY/QQQ 时会把它们作为产品一并对比（SPY vs 标普500指数、QQQ vs 纳斯达克100指数）；人民币/美元口径可切换。</li>
@@ -202,20 +216,11 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
     <li><b>场内溢价率</b> = (盘中价 − IOPV) / IOPV × 100%（腾讯行情 IOPV 口径）。<b>盘中价一列的括号即"当时溢价率"</b>——数据生成时刻（见页头快照时间，每日更新）的快照；QDII ETF 净值 T+1 公布、隔夜美股波动大时溢价率可能失真，请结合 IOPV 判断。<b>场内 ETF 的区间涨幅一律按净值计算（已剔除溢价影响）</b>，溢价只体现在"盘中价"列，两者互相独立。</li>
     <li><b>买入/卖出费用</b>：两列含义随渠道变化——<b>场外</b>：买入费用=申购费（原费率/1折）、卖出费用=赎回费档（按持有期递减）；<b>场内</b>：买卖均为券商佣金（默认万 2.5、最低 5 元/笔，可在顶部工具栏按你的券商调整），ETF 免印花税/过户费。</li>
     <li><b>风险收益图</b>：X 轴 = 近3年<b>年化波动率</b>（日收益率标准差 × √250），Y 轴 = 近3年<b>年化收益率</b>，气泡 = 规模，提示框含近3年最大回撤——用于回答"同样收益下谁更颠簸"。</li>
-    <li><b>操作</b>：表格默认按清单原始顺序展示；<b>点击表头</b>升序 → 再点降序 → 再点<b>取消排序恢复默认</b>；<b>按住 Shift 点击另一列</b>可加第二排序键（双列混合排序，再点切换方向）；空值恒排最后。顶部输入框按代码/名称过滤。<b>「收益口径」吸顶条</b>（在数据总览下方，滚动时固定在视口顶部）是全局唯一的累计/年化开关，作用于它下方的全部内容：把近N年列切成年化口径，基金表、基准参考表、区间收益图、基准收益图与收益曲线一起切换（年化模式下曲线图自动隐藏"对数Y轴"开关——年化曲线用对数轴没有意义）——不必分头找按钮。<b>图表区为左右分栏且整块约一屏</b>：顶部两行工具栏选 <b>①指标 → ②分组与形式</b>（区间收益与基准收益可在柱状/曲线间切换），<b>左栏勾选基金</b>（上方搜索框可按名称/代码快速定位，勾选即刷新右栏图表，图表随页面滚动保持可见），基准叠加与人民币/美元口径在图表正上方一行；可导出 CSV、打印 PDF。</li>
+    <li><b>操作</b>：表格默认按清单原始顺序展示；<b>点击表头</b>升序 → 再点降序 → 再点<b>取消排序恢复默认</b>；<b>按住 Shift 点击另一列</b>可加第二排序键（双列混合排序，再点切换方向）；空值恒排最后。顶部输入框按代码/名称过滤。<b>「收益口径」固定条</b>常驻视口顶部（划到哪都能按），是全局唯一的累计/年化开关：把近N年列切成年化口径，基金表、基准参考表、区间收益图、基准收益图与收益曲线一起切换（年化模式下曲线图自动隐藏"对数Y轴"开关——年化曲线用对数轴没有意义）——不必分头找按钮。<b>图表区为左右分栏且整块约一屏</b>：顶部两行工具栏选 <b>①指标 → ②分组与形式</b>（区间收益与基准收益可在柱状/曲线间切换），<b>左栏勾选基金</b>（上方搜索框可按名称/代码快速定位，勾选即刷新右栏图表，图表随页面滚动保持可见），基准叠加与人民币/美元口径在图表正上方一行；可导出 CSV、打印 PDF。</li>
   </ol>
 </details>
 
 <div class="stats" id="stats"></div>
-
-<div class="globar noprint">
-  <span class="ptag" title="作用于下方全部：五张基金表、基准参考表、区间收益图与基准收益图；收益曲线与 CSV 同步含年化口径">收益口径</span>
-  <div class="seg" id="annSeg">
-    <button class="active" data-ann="0">累计涨幅</button>
-    <button data-ann="1">年化收益率</button>
-  </div>
-  <span class="hint" id="annHint"></span>
-</div>
 
 <div class="ctl noprint">
   <div class="ctlhead"><h3>📊 可视化对比</h3></div>
@@ -1283,7 +1288,13 @@ document.getElementById('qClear').addEventListener('click',function(){
 });
 document.getElementById('btnCsv').addEventListener('click',exportCSV);
 document.getElementById('btnPrint').addEventListener('click',function(){window.print();});
-/* 收益口径：累计涨幅 ⇄ 年化收益率（吸顶条，作用于下方全部图表与表格） */
+/* 收益口径：累计涨幅 ⇄ 年化收益率（视口顶部固定条，作用于全页图表与表格） */
+function syncBarH(){
+  /* 固定条高度随换行变化（窄屏/提示文案长短），实测回填 --barh 保证页面内容不被遮挡 */
+  var bar=document.querySelector('.globar');
+  if(!bar)return;
+  document.documentElement.style.setProperty('--barh',bar.offsetHeight+'px');
+}
 function syncAnnUI(){
   document.querySelectorAll('#annSeg button[data-ann]').forEach(function(b){
     b.classList.toggle('active',(b.dataset.ann==='1')===!!annOn);
@@ -1292,6 +1303,7 @@ function syncAnnUI(){
   if(h)h.textContent=annOn
     ?'当前：年化收益率 (1+区间涨幅)^(1/N)−1，便于不同年限横向比较'
     :'当前：区间累计涨幅（近N年总涨幅，含分红再投）';
+  syncBarH();
 }
 function setAnn(v){
   annOn=!!v;
@@ -1320,6 +1332,7 @@ document.getElementById('etfMin').addEventListener('change',onFeeCtl);
 var toTop=document.getElementById('toTop');
 window.addEventListener('scroll',function(){toTop.style.display=(window.scrollY>600)?'':'none';},{passive:true});
 toTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+window.addEventListener('resize',syncBarH);
 
 /* ================= 启动 ================= */
 fillMeta();
@@ -1333,6 +1346,7 @@ renderGroupTabs();
 renderChips();
 updateFormUI();
 syncAnnUI();
+syncBarH();
 if(window.echarts){
   initChart();
 }else if(window.__echartsFailed){
