@@ -75,10 +75,16 @@ body.dense .hcol{display:none}
 body.dense table.t1,body.dense table.t3{min-width:1180px}
 /* 工具栏 */
 .filter{display:flex;gap:10px;align-items:center;margin:14px 0 4px;flex-wrap:wrap}
-.qwrap{position:relative;display:inline-block}
-.qwrap input{padding:8px 30px 8px 12px;border:1px solid var(--line);border-radius:8px;width:280px;font-size:13.5px}
-.qwrap .qclear{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:none;background:none;cursor:pointer;color:#8a93a3;font-size:13px;display:none;padding:2px 4px}
-.qwrap .qclear:hover{color:var(--ink)}
+/* 全局搜索：左下角常驻胶囊，点开变成输入框；一个关键词同时过滤五张表与可视化勾选列表 */
+.gsearch{position:fixed;left:18px;bottom:22px;z-index:60;display:flex;align-items:center;gap:6px}
+.gsearch .sbtn{display:flex;align-items:center;gap:5px;background:#f2f5f9;border:1px solid #dbe1ea;border-radius:15px;padding:5px 12px;font-size:12.5px;color:var(--sub);cursor:pointer;white-space:nowrap;box-shadow:0 2px 8px rgba(16,24,40,.10)}
+.gsearch .sbtn:hover{background:#e6ecf5;border-color:#b9c4d4;color:var(--ink)}
+.gsearch.on .sbtn{background:var(--badge-field);border-color:#c7d8f5;color:var(--blue)}
+.gsearch .sinput{display:none;position:relative}
+.gsearch.open .sinput{display:block}
+.gsearch .sinput input{width:250px;padding:8px 30px 8px 12px;border:1px solid var(--line);border-radius:8px;font-size:13px;box-shadow:0 2px 8px rgba(16,24,40,.10)}
+.gsearch .sinput button{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:none;background:none;cursor:pointer;color:#8a93a3;font-size:13px;padding:2px 4px;display:none}
+.gsearch .sinput button:hover{color:var(--ink)}
 .hint{color:var(--sub);font-size:12px}
 .filter .hint{color:var(--sub);font-size:12px}
 .filter .sp{flex:1}
@@ -108,8 +114,6 @@ button.act:hover{border-color:#9db4d8;color:var(--ink);background:#fff}
 .pickpanel{height:100%;display:flex;flex-direction:column;min-height:0;margin:0}
 .pickhead{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .pickhead .phead{margin:0}
-.qwrap.small{display:block;margin-top:8px}
-.qwrap.small input{width:100%;padding:6px 28px 6px 10px;font-size:12.5px}
 .vizright{position:sticky;top:8px}
 .bmbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:0 2px 8px}
 .bmbar .phead{margin:0}
@@ -223,7 +227,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
     <li><b>场内溢价率</b> = (盘中价 − IOPV) / IOPV × 100%（腾讯行情 IOPV 口径）。<b>盘中价一列的括号即"当时溢价率"</b>——数据生成时刻（见页头快照时间，每日更新）的快照；QDII ETF 净值 T+1 公布、隔夜美股波动大时溢价率可能失真，请结合 IOPV 判断。<b>场内 ETF 的区间涨幅一律按净值计算（已剔除溢价影响）</b>，溢价只体现在"盘中价"列，两者互相独立。</li>
     <li><b>买入/卖出费用</b>：两列含义随渠道变化——<b>场外</b>：买入费用=申购费（原费率/1折）、卖出费用=赎回费档（按持有期递减）；<b>场内</b>：买卖均为券商佣金（默认万 2.5、最低 5 元/笔，可在顶部工具栏按你的券商调整），ETF 免印花税/过户费。</li>
     <li><b>风险收益图</b>：X 轴 = 近3年<b>年化波动率</b>（日收益率标准差 × √250），Y 轴 = 近3年<b>年化收益率</b>，气泡 = 规模，提示框含近3年最大回撤——用于回答"同样收益下谁更颠簸"。</li>
-    <li><b>操作</b>：表格默认按清单原始顺序展示；<b>点击表头</b>升序 → 再点降序 → 再点<b>取消排序恢复默认</b>；<b>按住 Shift 点击另一列</b>可加第二排序键（双列混合排序，再点切换方向）；空值恒排最后。顶部输入框按代码/名称过滤。右下角<b>「回到顶部」左侧的「口径」小开关</b>（⇄，横排、不占竖向空间，划到哪都能按）是全局唯一的累计/年化开关：把近N年列切成年化口径，基金表、基准参考表、区间收益图、基准收益图与收益曲线一起切换（年化模式下曲线图自动隐藏"对数Y轴"开关——年化曲线用对数轴没有意义）。两种淡色即两种口径：<b>淡蓝=累计涨幅</b>、<b>淡琥珀=年化收益率</b>——不必分头找按钮。<b>图表区为左右分栏且整块约一屏</b>：顶部两行工具栏选 <b>①指标 → ②分组与形式</b>（区间收益与基准收益可在柱状/曲线间切换），<b>左栏勾选基金</b>（上方搜索框可按名称/代码快速定位，勾选即刷新右栏图表，图表随页面滚动保持可见），基准叠加与人民币/美元口径在图表正上方一行；可导出 CSV、打印 PDF。</li>
+    <li><b>操作</b>：表格默认按清单原始顺序展示；<b>点击表头</b>升序 → 再点降序 → 再点<b>取消排序恢复默认</b>；<b>按住 Shift 点击另一列</b>可加第二排序键（双列混合排序，再点切换方向）；空值恒排最后；每张基金表标题右侧可<b>固定当前排序</b>（五张表共用同一份固定排序，页面进来就是它，改动后点「↺ 恢复固定排序」回到它）。<b>左下角常驻搜索框</b>（🔍）按名称/代码同时过滤五张基金表与可视化勾选列表，不影响已勾选的基金。<b>名称列横向滚动时冻结</b>，表格纵向完整展开不再内部滚动。<b>右下角两个小开关</b>：左侧「☰ 视图：完整/精简」切换列密度（精简隐藏 代码/成立/买入费用/卖出费用/净值日涨跌/规模/备注，可视化对比里也不显示代码；打印与导出始终完整）；右侧「⇄ 口径：累计/年化」是全局唯一的累计/年化开关：把近N年列切成年化口径，基金表、基准参考表、区间收益图、基准收益图与收益曲线一起切换（年化模式下曲线图自动隐藏"对数Y轴"开关——年化曲线用对数轴没有意义）。两种淡色即两种口径：<b>淡蓝=累计涨幅</b>、<b>淡琥珀=年化收益率</b>——不必分头找按钮。<b>图表区为左右分栏且整块约一屏</b>：顶部两行工具栏选 <b>①指标 → ②分组与形式</b>（区间收益与基准收益可在柱状/曲线间切换），<b>左栏勾选基金</b>（勾选即刷新右栏图表，图表随页面滚动保持可见），基准叠加与人民币/美元口径在图表正上方一行；可导出 CSV、打印 PDF。</li>
   </ol>
 </details>
 
@@ -266,11 +270,11 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
         <div class="pickhead">
           <span class="phead">③ 勾选基金（出现在图中）</span>
           <span class="hint" id="selCnt"></span>
+          <span class="hint" id="chipCnt"></span>
           <span class="sp"></span>
           <button class="tab act" id="btnSelAll">☑ 全选本组</button>
           <button class="tab act" id="btnClear">✕ 清空</button>
         </div>
-        <span class="qwrap small"><input id="chipQ" placeholder="搜索名称或代码，如：招商 / 5131" autocomplete="off"><button class="qclear" id="chipQClear" title="清空搜索">✕</button></span>
         <div class="chips" id="chips"></div>
       </div>
     </div>
@@ -301,7 +305,6 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 </div>
 
 <div class="filter noprint">
-  <span class="qwrap"><input id="q" placeholder="输入代码或名称过滤，如：纳斯达克 / 5131 / 广发"><button class="qclear" id="qClear" title="清空过滤">✕</button></span>
   <span class="hint" id="cnt"></span>
   <span class="sp"></span>
   <span class="hint" title="场内ETF买卖同费率，免印花税/过户费；写入表中买入/卖出费用两列，按每1万元成交额计">场内佣金 万<input id="etfRate" type="number" step="0.1" min="0" value="2.5" style="width:52px"> 最低<input id="etfMin" type="number" step="0.1" min="0" value="5" style="width:52px">元</span>
@@ -335,6 +338,10 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 <footer>风险提示：QDII 基金受外汇额度影响，普遍限大额/暂停申购（广发纳指联接 A 日限额仅 5 元）；场内 ETF 存在折溢价；历史涨幅不代表未来。数据仅供参考。</footer>
 </div>
 
+<div class="gsearch noprint" id="gSearch">
+  <button class="sbtn" id="gSearchBtn" title="搜索名称或代码：一个关键词同时过滤五张基金表与可视化对比的勾选列表（不改变已勾选的基金）"><span class="ic">🔍</span><span id="gSearchTxt">搜索</span></button>
+  <span class="sinput"><input id="gSearchInput" placeholder="搜索名称或代码，如：招商 / 5131 / 广发" autocomplete="off"><button id="gSearchClear" title="清空搜索">✕</button></span>
+</div>
 <button class="anntoggle dens noprint" id="densTog" title="表格列显示：完整 19 列 / 精简列（隐藏 代码、成立、买入费用、卖出费用、净值日涨跌、规模、备注，可视化对比里也不显示代码）｜打印与导出始终完整"><span class="ic">☰</span><span id="densTogTxt">视图：完整</span></button>
 <button class="anntoggle noprint" id="annTog" title="收益口径：累计涨幅 ⇄ 年化收益率（作用于全页：基金表、基准参考表、收益/基准图与收益曲线，CSV 同步）：点击切换"><span class="ic">⇄</span><span id="annTogTxt">口径：累计</span></button>
 <button id="toTop" class="noprint" title="回到顶部">↑</button>
@@ -767,7 +774,7 @@ function initSortTools(){
 
 /* ================= 过滤 ================= */
 function applyFilter(){
-  var kw=document.getElementById('q').value.trim().toLowerCase(), n=0;
+  var kw=gsearchKw(), n=0;
   document.querySelectorAll('table.sortable:not(.bm)').forEach(function(tb){
     var shown=0;
     [].slice.call(tb.tBodies[0].rows).forEach(function(r){
@@ -779,8 +786,49 @@ function applyFilter(){
     n+=shown;
   });
   document.getElementById('cnt').textContent=kw?('匹配 '+n+' 只基金'):('共 '+FUNDS.length+' 只基金');
-  document.getElementById('qClear').style.display=kw?'inline-block':'none';
 }
+
+/* ============ 全局搜索（左下角常驻，同时作用于表格与勾选列表） ============
+   一个关键词：五张基金表只显示匹配行，可视化勾选列表也只列匹配项；
+   已勾选的基金不变（不会因为搜索而改变图表内容）。 */
+function gsearchInput(){return document.getElementById('gSearchInput');}
+function gsearchKw(){var el=gsearchInput();return el?(el.value||'').trim().toLowerCase():'';}
+function gsearchRaw(){var el=gsearchInput();return el?(el.value||'').trim():'';}
+function setGSearchOpen(v){
+  var box=document.getElementById('gSearch');
+  if(!box)return;
+  box.classList.toggle('open',!!v);
+  if(v){var el=gsearchInput();if(el){el.focus();el.select();}}
+}
+function syncGSearchUI(){
+  var kw=gsearchKw(),box=document.getElementById('gSearch'),t=document.getElementById('gSearchTxt'),c=document.getElementById('gSearchClear');
+  if(t)t.textContent=kw?('搜索：'+gsearchRaw()):'搜索';
+  if(box)box.classList.toggle('on',!!kw);
+  if(c)c.style.display=kw?'block':'none';
+}
+function applySearch(){
+  applyFilter();
+  renderChips(true);
+  syncGSearchUI();
+}
+document.getElementById('gSearchBtn').addEventListener('click',function(){
+  var box=document.getElementById('gSearch');
+  setGSearchOpen(!(box&&box.classList.contains('open')));
+});
+document.getElementById('gSearchClear').addEventListener('click',function(){
+  var el=gsearchInput();
+  if(el)el.value='';
+  applySearch();
+  setGSearchOpen(true);
+});
+document.getElementById('gSearchInput').addEventListener('input',applySearch);
+document.getElementById('gSearchInput').addEventListener('keydown',function(ev){
+  if(ev.key==='Escape'||ev.keyCode===27){setGSearchOpen(false);this.blur();}
+});
+document.addEventListener('click',function(ev){
+  var box=document.getElementById('gSearch');
+  if(box&&box.classList.contains('open')&&!box.contains(ev.target))setGSearchOpen(false);
+});
 
 /* ================= 数据总览 ================= */
 function renderStats(){
@@ -816,10 +864,7 @@ function updateSelCnt(){
   var el=document.getElementById('selCnt');
   if(el)el.textContent='已勾选 '+selFunds().length+' 只';
 }
-function chipKw(){
-  var el=document.getElementById('chipQ');
-  return el?(el.value||'').trim().toLowerCase():'';
-}
+function chipKw(){return gsearchKw();}
 function renderChips(skipChart){
   var box=document.getElementById('chips');
   /* 选定分组后该组基金同属一类，去掉分组标签并排两列，一屏看得更多 */
@@ -831,8 +876,8 @@ function renderChips(skipChart){
     if(kw&&(f.n+' '+f.c).toLowerCase().indexOf(kw)<0)return false;
     return true;
   });
-  var clr=document.getElementById('chipQClear');
-  if(clr)clr.style.display=kw?'inline-block':'none';
+  var ce=document.getElementById('chipCnt');
+  if(ce)ce.textContent=kw?('· 匹配 '+list.length+' 只'):'';
   list.forEach(function(f){
     var lb=document.createElement('label');
     lb.className='chip';
@@ -859,18 +904,12 @@ function renderChips(skipChart){
   if(!list.length){
     var none=document.createElement('div');
     none.className='chipsnone';
-    none.textContent=kw?('没有匹配「'+document.getElementById('chipQ').value.trim()+'」的基金 · 点搜索框右侧 ✕ 清空'):'本组暂无可选基金';
+    none.textContent=kw?('没有匹配「'+gsearchRaw()+'」的基金 · 点搜索框右侧 ✕ 清空'):'本组暂无可选基金';
     box.appendChild(none);
   }
   updateSelCnt();
   if(!skipChart)renderChart();
 }
-document.getElementById('chipQ').addEventListener('input',function(){renderChips(true);});
-document.getElementById('chipQClear').addEventListener('click',function(){
-  document.getElementById('chipQ').value='';
-  renderChips(true);
-  document.getElementById('chipQ').focus();
-});
 
 /* ================= 基准（指数/ETF） =================
    基期与基金表一致（滚动近N年，基期前最近交易日收盘）；
@@ -1404,11 +1443,6 @@ document.querySelectorAll('#bmRow .bmcb').forEach(function(cb){
 });
 document.getElementById('bmCny').addEventListener('click',function(){setBmCny(true);});
 document.getElementById('bmUsd').addEventListener('click',function(){setBmCny(false);});
-document.getElementById('q').addEventListener('input',applyFilter);
-document.getElementById('qClear').addEventListener('click',function(){
-  document.getElementById('q').value='';
-  applyFilter();
-});
 document.getElementById('btnCsv').addEventListener('click',exportCSV);
 document.getElementById('btnPrint').addEventListener('click',function(){window.print();});
 /* 收益口径：累计涨幅 ⇄ 年化收益率（右下角常驻小开关，作用于全页图表与表格） */
@@ -1483,6 +1517,7 @@ renderChips();
 updateFormUI();
 syncAnnUI();
 syncDensUI();
+syncGSearchUI();
 if(window.echarts){
   initChart();
 }else if(window.__echartsFailed){
