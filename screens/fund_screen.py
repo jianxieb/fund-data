@@ -1003,6 +1003,7 @@ def render_md(rows, picked, stats=None, others=None, excl=None):
     A('python screens/fund_screen.py enrich     # 规模/经理/费率/持仓')
     A('python screens/fund_screen.py metrics    # 历史净值自算指标')
     A('python screens/fund_screen.py report     # 本报告 + CSV')
+    A('python screens/fund_screen.py html       # 写回 index.html「大类二：国内长期绩优」数据块')
     A('```')
     A('')
     A('生成时间：%s' % datetime.now().strftime('%Y-%m-%d %H:%M'))
