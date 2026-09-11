@@ -6,3 +6,6 @@ echarts.min.js
 __pycache__/
 *.pyc
 .tmp-snap/
+.tmp-screen/
+screens/.cache/
+screens/data/*.json
