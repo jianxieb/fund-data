@@ -222,12 +222,14 @@ MIN_BOND_CAGR5 = 4.0  # 固收+ 的最低近5年年化，低于此归为“纯�
 
 
 def page_codes():
-    """index.html 里已经跟踪的基金代码。"""
+    """index.html 大类一（FUNDS 块）里已经跟踪的基金代码。"""
     try:
         with open(os.path.join(ROOT, 'index.html'), encoding='utf-8') as f:
-            return set(re.findall(r"c:'(\d{6})'", f.read()))
+            s = f.read()
     except OSError:
         return set()
+    m = re.search(r'/\*__DATA_FUNDS_BEGIN__\*/(.*?)/\*__DATA_FUNDS_END__\*/', s, re.S)
+    return set(re.findall(r"c:'(\d{6})'", m.group(1) if m else s))
 
 
 def exclusion_reason(rec, page=None):
@@ -1052,10 +1054,186 @@ def cmd_report(args):
         log('    %-12s 过门槛 %3d → 入选 %d' % (bucket, len(recs), n))
 
 
+# ---------------------------------------------------------------- 5. 写回 index.html（大类二）
+JJFL_DIR = os.path.join(CACHE, 'jjfl')
+FEE_RE = re.compile(r'管理费率</td><td[^>]*>\s*([\d.]+)%')
+CUST_RE = re.compile(r'托管费率</td><td[^>]*>\s*([\d.]+)%')
+SALE_RE = re.compile(r'销售服务费率</td><td[^>]*>\s*([\d.]+)%')
+XB_KEYS = [('国内权益', 'x1'), ('QDII/海外', 'x2'), ('指数/指数增强', 'x3'),
+           ('场内ETF/LOF', 'x4'), ('债券/固收', 'x5')]
+_METRICS_CACHE = None
+
+
+def _metrics_of(code):
+    """读 metrics.json（首次调用时装载，供 html 阶段查区间涨幅/分年度）。"""
+    global _METRICS_CACHE
+    if _METRICS_CACHE is None:
+        _METRICS_CACHE = (load_json(os.path.join(DATA, 'metrics.json')) or {}).get('funds', {})
+    return _METRICS_CACHE.get(code) or {}
+
+
+def jjfl_page(code, refresh=False):
+    """抓 fundf10 jjfl 页（申赎状态/限额/规模/费率/赎回费档），缓存 7 天。"""
+    path = os.path.join(JJFL_DIR, code + '.html')
+    if os.path.exists(path) and not refresh and time.time() - os.path.getmtime(path) < 86400 * 7:
+        with open(path, encoding='utf-8') as f:
+            return f.read()
+    t = get('https://fundf10.eastmoney.com/jjfl_%s.html' % code,
+            referer='https://fundf10.eastmoney.com/', tries=3)
+    if t:
+        with open(path, 'w', encoding='utf-8') as f:
+            f.write(t)
+    return t
+
+
+def fee_info(html):
+    """由 jjfl 页解析：状态/限额/规模/最新净值（复用 update.py）+ 费率与赎回费档。"""
+    if not html:
+        return {}
+    out = dict(U.jjfl_parse(html))
+    for key, rx in (('fee_m', FEE_RE), ('fee_c', CUST_RE), ('fee_s', SALE_RE)):
+        m = rx.search(html)
+        out[key] = float(m.group(1)) if m else None
+    i = html.find('赎回费率')
+    if i > 0:
+        seg = html[i:i + 2500]
+        steps = re.findall(r'<td[^>]*>[^<]*</td>\s*<td[^>]*>\s*([\d.]+)%\s*</td>', seg)
+        keep = []
+        for s in steps[:6]:
+            v = float(s)
+            if not keep or keep[-1] != v:
+                keep.append(v)
+        while keep and keep[-1] == 0:
+            keep.pop()
+        keep.append(0)
+        out['rd'] = '/'.join(('%g' % v) for v in keep)
+    return out
+
+
+def js_str(s):
+    return "'" + str(s or '').replace('\\', '\\\\').replace("'", "\\'") + "'"
+
+
+def js_num(v, nd=4):
+    return 'null' if v is None else ('%.' + str(nd) + 'f') % float(v)
+
+
+def cmd_html(args):
+    """把「大类二：国内长期绩优」写成 index.html 里独立的数据块（update.py 不触碰）。"""
+    ensure_dirs()
+    os.makedirs(JJFL_DIR, exist_ok=True)
+    rows = assemble()
+    picked = pick(rows)
+    picked.pop('_others', None)
+    if not picked:
+        log('!! 没有可写入的名单，先跑 report')
+        return
+    en = (load_json(os.path.join(DATA, 'enriched.json')) or {}).get('funds', {})
+    uni = (load_json(os.path.join(DATA, 'universe.json')) or {}).get('funds', {})
+    want = []
+    for bucket, key in XB_KEYS:
+        for i, r in enumerate(picked.get(bucket) or []):
+            want.append((key, r, 1 if i < PICK_N.get(bucket, 10) else 0))
+    for r in rows:
+        if r.get('bucket') == '参考基准' and r.get('cagr5') is not None:
+            want.append(('x6', r, 0))
+    log('  待写 %d 只（含备选与基准）' % len(want))
+
+    etf_codes = [r['code'] for _k, r, _s in want
+                 if any(str(s).startswith('fb:') for s in ((uni.get(r['code']) or {}).get('srcs') or []))]
+    snap = {}
+    if etf_codes:
+        try:
+            snap = U.tencent_etf(etf_codes)
+            log('  场内快照 %d 只' % len(snap))
+        except Exception as e:  # noqa: BLE001
+            log('  !! 场内快照失败：%s' % e)
+
+    lines = []
+    total = len(want)
+    for n, (key, r, sel) in enumerate(want, 1):
+        code = r['code']
+        f = en.get(code, {})
+        u = uni.get(code) or {}
+        basic = f.get('basic') or {}
+        srcs = [str(s) for s in (u.get('srcs') or f.get('srcs') or [])]
+        is_etf = any(s.startswith('fb:') for s in srcs) or code in snap
+        info = fee_info(jjfl_page(code, refresh=args.refresh))
+        if n % 10 == 0 or n == total:
+            log('    ... %d/%d' % (n, total))
+        st = (info.get('st') or basic.get('sgzt') or '').strip()
+        st = {'开放申购': '开放', '限大额': '限大额', '暂停申购': '暂停'}.get(st, st)
+        sz = info.get('sz')
+        if sz is None:
+            sc = fnum(basic.get('scale'))
+            sz = (sc / 1e8) if sc else None
+        nav = info.get('nav') or fnum(basic.get('nav'))
+        navdate = (info.get('navdate') or r.get('latest') or '')[:10]
+        dz = info.get('dz')
+        if dz is None:
+            dz = fnum(r.get('r1d'))
+        ftype = basic.get('ftype') or r.get('ftype') or ''
+        ix = (r.get('index_name') or '').strip() or ftype
+        ttype = '场内ETF' if is_etf else ('LOF' if re.search(r'LOF', r['name']) else '场外')
+        sd = snap.get(code) or {}
+        m = _metrics_of(code)
+        rr = [m.get('ret%d' % k) for k in (1, 2, 3, 5, 10)]
+        yr = ' '.join('%s:%+.0f' % (k[2:], v) for k, v in sorted((m.get('yearly') or {}).items())[-6:])
+        note = yr
+        if not sel and key != 'x6':
+            note = ('备选 · ' + note) if note else '备选'
+        parts = [
+            'g:%s' % js_str(key), 'c:%s' % js_str(code), 'n:%s' % js_str(r['name']),
+            't:%s' % js_str(ttype), 'ix:%s' % js_str(ix), 'd:%s' % js_str((r.get('estab') or '')[:10]),
+            'fee:[%s,%s,%s]' % (js_num(info.get('fee_m'), 2), js_num(info.get('fee_c'), 2),
+                                js_num(info.get('fee_s'), 2)),
+        ]
+        if not is_etf:
+            buy = '%s/%s' % ((u.get('fee_src') or f.get('fee_src') or '').strip(),
+                             (u.get('fee_now') or f.get('fee_now') or '').strip())
+            parts += ['buy:%s' % js_str(buy.strip('/')), 'rd:%s' % js_str(info.get('rd') or ''),
+                      'st:%s' % js_str(st), 'lm:%s' % js_str(info.get('lm') or '')]
+        parts += [
+            'r:[%s]' % ','.join(js_num(v, 2) for v in rr),
+            'sz:%s' % js_num(sz, 1), 'nav:%s' % js_num(nav, 4), 'navdate:%s' % js_str(navdate),
+            'dz:%s' % js_num(dz, 2),
+            'p:%s' % js_num(sd.get('price'), 3), 'prem:%s' % js_num(sd.get('prem'), 2),
+            'iopv:%s' % js_num(sd.get('iopv'), 3), 'pct:%s' % js_num(sd.get('pct'), 2),
+            'mgr:%s' % js_str(basic.get('managers') or ','.join(f.get('cur_managers') or [])),
+            'mstart:%s' % js_str((f.get('cur_start') or '')[:10]),
+            'mten:%s' % js_num(r.get('tenure'), 1),
+            'mdd5:%s' % js_num(r.get('mdd5'), 1), 'vol5:%s' % js_num(r.get('vol5'), 1),
+            'score:%s' % js_num(r.get('score'), 1), 'sel:%d' % sel, 'note:%s' % js_str(note),
+        ]
+        lines.append('{' + ','.join(parts) + '},')
+    block = ('/*__DATA_EXTRA_BEGIN__*/\n'
+             '/* 大类二：国内长期绩优（非美指数）—— 由 screens/fund_screen.py html 生成，'
+             'update.py 每日更新不触碰本块。\n'
+             '   字段在 FUNDS 基础上扩展：mgr 基金经理 mstart 任职起始 mten 任职年限 '
+             'mdd5 近5年最大回撤% vol5 近5年年化波动% score 综合分 sel 1=入选 0=备选\n'
+             '   r 为红利再投复权区间涨幅，与页面「累计/年化」开关联动；note 为近6个年度收益 */\n'
+             'var EXTRA=[\n' + '\n'.join(lines) + '\n];\n'
+             '/*__DATA_EXTRA_END__*/')
+    html_path = os.path.join(ROOT, 'index.html')
+    with open(html_path, encoding='utf-8') as fh:
+        src = fh.read()
+    if '/*__DATA_EXTRA_BEGIN__*/' not in src:
+        log('!! index.html 里还没有 EXTRA 占位块（先做页面改造）')
+        return
+    src = re.sub(r'/\*__DATA_EXTRA_BEGIN__\*/.*?/\*__DATA_EXTRA_END__\*/', lambda _m: block,
+                 src, count=1, flags=re.S)
+    with open(html_path, 'w', encoding='utf-8') as fh:
+        fh.write(src)
+    log('  ✓ 已写入 index.html：%d 行（入选 %d / 备选 %d / 基准 %d）'
+        % (len(lines), sum(1 for _k, _r, s in want if s),
+           sum(1 for k, _r, s in want if not s and k != 'x6'),
+           sum(1 for k, _r, _s in want if k == 'x6')))
+
+
 def main():
     ap = argparse.ArgumentParser(description='国内长期绩优基金筛选')
     sub = ap.add_subparsers(dest='cmd')
-    sub.add_parser('universe', help='拉全市场排行（gp/hh/zs × 5年/10年窗口）')
+    sub.add_parser('universe', help='拉全市场排行（开放式 / QDII / 指数型 / 场内四榜）')
     p2 = sub.add_parser('prefilter', help='粗筛：成立年限/名称/份额/长周期收益')
     p3 = sub.add_parser('enrich', help='逐只补基础信息 + 基金经理变动')
     p3.add_argument('--refresh', action='store_true')
@@ -1063,7 +1241,9 @@ def main():
     p4.add_argument('--refresh', action='store_true')
     p4.add_argument('--codes', help='只算指定代码（逗号分隔，可临时补基准）')
     sub.add_parser('report', help='生成筛选报告与 CSV')
-    sub.add_parser('all', help='universe → prefilter → enrich → metrics → report')
+    ph = sub.add_parser('html', help='把入选/备选名单写进 index.html 的新数据块（大类二）')
+    ph.add_argument('--refresh', action='store_true', help='忽略费率/限额页缓存，重新抓取')
+    sub.add_parser('all', help='universe → prefilter → enrich → metrics → report → html')
     args = ap.parse_args()
     ensure_dirs()
     if args.cmd == 'all':
@@ -1072,9 +1252,10 @@ def main():
         cmd_enrich(args)
         cmd_metrics(args)
         cmd_report(args)
+        cmd_html(args)
         return
     fn = {'universe': cmd_universe, 'prefilter': cmd_prefilter, 'enrich': cmd_enrich,
-          'metrics': cmd_metrics, 'report': cmd_report}.get(args.cmd)
+          'metrics': cmd_metrics, 'report': cmd_report, 'html': cmd_html}.get(args.cmd)
     if fn is None:
         ap.print_help()
     else:
