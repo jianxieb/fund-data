@@ -208,15 +208,56 @@ KW_OVERSEAS = ('QDII', 'qdii', '海外', '全球', '美国', '纳斯达克', '�
                '黄金', '白银', '商品', '原油', '石油', 'REIT', '豆粕', '有色', '美元', '现汇', '现钞', '港币')
 KW_INDEX = ('指数', 'ETF', 'etf', 'LOF', '联接', '增强')
 
+# ---- 用户口径排除项（2026-09-11 追加）----
+# 1) 页面（index.html）已跟踪的标普500/纳指100 等美股指数基金
+# 2) 标普500、纳指100 等美股指数的其他跟踪产品（含未上页面的）
+# 3) 纯黄金/白银等贵金属商品基金（黄金股/金银珠宝类主动基金保留）
+# 4) 纯债型（只赚 1–2 个点的长债/短债/信用债/利率债/固收指数）
+EXCL_US_INDEX = ('标普', '纳斯达克', '纳指', 'S&P', '标普500')
+EXCL_METAL_INDEX = ('黄金9999', '上海金', 'Au9999', '白银')
+EXCL_METAL_NAME = re.compile(r'黄金(ETF|基金|主题|及贵金属|-QDII|QDII)|白银|上海金')
+EXCL_METAL_COMMODITY = ('黄金', '贵金属', '白银')  # 归为商品且标的为贵金属的才剔除（原油/能源等保留）
+EXCL_BOND_TYPE = ('长债', '短债', '中短债', '纯债', '信用债', '利率债', '指数型-固收')
+MIN_BOND_CAGR5 = 4.0  # 固收+ 的最低近5年年化，低于此归为“纯债那类只能赚一两个点的”
+
+
+def page_codes():
+    """index.html 里已经跟踪的基金代码。"""
+    try:
+        with open(os.path.join(ROOT, 'index.html'), encoding='utf-8') as f:
+            return set(re.findall(r"c:'(\d{6})'", f.read()))
+    except OSError:
+        return set()
+
+
+def exclusion_reason(rec, page=None):
+    """返回该基金应被排除的理由；不排除则返回 None。"""
+    page = page_codes() if page is None else page
+    code = rec.get('code') or ''
+    name = rec.get('name') or rec.get('full_name') or ''
+    index_name = rec.get('index_name') or rec.get('fbtype') or ''
+    ftype = rec.get('ftype') or ''
+    txt = name + ' ' + index_name
+    if code in page:
+        return '页面已有（美股指数清单）'
+    if any(k in txt for k in EXCL_US_INDEX):
+        return '标普500/纳指100 等美指跟踪'
+    if (index_name in EXCL_METAL_INDEX or EXCL_METAL_NAME.search(txt)
+            or ('商品' in ftype and any(k in txt for k in EXCL_METAL_COMMODITY))):
+        return '纯黄金/白银商品'
+    if any(k in ftype for k in EXCL_BOND_TYPE):
+        return '纯债（收益过低）'
+    return None
+
 
 # 分桶门槛：(最少成立年限, 近5年门槛%, 成立以来门槛%, 入池上限)
 BUCKET_GATE = {
     '国内权益': (10, 50, 80, 130),
-    'QDII/海外': (8, 40, 60, 70),
-    '指数/指数增强': (10, 50, 70, 70),
+    'QDII/海外': (8, 25, 60, 70),
+    '指数/指数增强': (10, 25, 60, 80),
     '债券/固收': (10, 18, 32, 60),
     'FOF': (8, 30, 40, 25),
-    '场内ETF/LOF': (8, 40, 60, 90),
+    '场内ETF/LOF': (8, 25, 60, 90),
 }
 
 
@@ -262,6 +303,8 @@ def cmd_prefilter(args):
     for c, f in funds.items():
         if any(k in f['name'] for k in ('美元', '现汇', '现钞', '港币', '欧元', '英镑')):
             continue  # 同一基金的美元/现汇份额不单列
+        if exclusion_reason({'code': c, 'name': f['name'], 'index_name': '', 'ftype': ''}):
+            continue  # 页面已有 / 美指跟踪 / 纯贵金属（按名称即可判定）
         groups.setdefault(base_name(f['name']), []).append(f)
     drop = {'成立不足': 0, '缺收益': 0, '收益不达标': 0, '不在门槛桶': 0}
     by_bucket = {}
@@ -638,25 +681,28 @@ def assemble():
 # 最终入选规则（可在报告里解释）：硬门槛 + 分桶打分
 HARD = {
     '国内权益': {'min_scale': 2.0, 'min_cagr5': 8.0, 'min_cagr10': 6.0, 'min_mdd5': -55.0, 'min_tenure': 2.0},
-    'QDII/海外': {'min_scale': 2.0, 'min_cagr5': 7.0, 'min_cagr10': 5.0, 'min_mdd5': -60.0, 'min_tenure': 1.5},
-    '指数/指数增强': {'min_scale': 2.0, 'min_cagr5': 8.0, 'min_cagr10': 6.0, 'min_mdd5': -55.0, 'min_tenure': None},
-    '场内ETF/LOF': {'min_scale': 5.0, 'min_cagr5': 8.0, 'min_cagr10': 6.0, 'min_mdd5': -55.0, 'min_tenure': None},
+    'QDII/海外': {'min_scale': 2.0, 'min_cagr5': 5.5, 'min_cagr10': 4.5, 'min_mdd5': -60.0, 'min_tenure': 1.5},
+    '指数/指数增强': {'min_scale': 2.0, 'min_cagr5': 5.0, 'min_cagr10': 5.0, 'min_mdd5': -55.0, 'min_tenure': None},
+    '场内ETF/LOF': {'min_scale': 5.0, 'min_cagr5': 5.0, 'min_cagr10': 5.0, 'min_mdd5': -55.0, 'min_tenure': None},
     '债券/固收': {'min_scale': 2.0, 'min_cagr5': 3.0, 'min_cagr10': 3.0, 'min_mdd5': -20.0, 'min_tenure': 1.5},
     'FOF': {'min_scale': 1.0, 'min_cagr5': 5.0, 'min_cagr10': None, 'min_mdd5': -40.0, 'min_tenure': None},
 }
-PICK_N = {'国内权益': 22, 'QDII/海外': 12, '指数/指数增强': 8, '场内ETF/LOF': 10, '债券/固收': 10, 'FOF': 5}
+PICK_N = {'国内权益': 22, 'QDII/海外': 12, '指数/指数增强': 10, '场内ETF/LOF': 12, '债券/固收': 10, 'FOF': 5}
 
 
 def pick(rows):
     """按桶做硬门槛 → 分位打分 → 取前 N。"""
     out = {}
     other_map = {}
+    page = page_codes()
     for bucket, recs in _group_by(rows, lambda r: r['bucket']).items():
         hard = HARD.get(bucket)
         if not hard:
             continue
         passed = []
         for r in recs:
+            if exclusion_reason(r, page):
+                continue
             if not r.get('sgzt') or '暂停' in (r.get('sgzt') or ''):
                 if bucket != '场内ETF/LOF':
                     continue
@@ -679,6 +725,8 @@ def pick(rows):
                 c8, cs = r.get('cagr8'), r.get('cagr_since')
                 if c8 is not None and cs is not None and cs - c8 > 3.0:
                     continue
+                if (r.get('cagr5') or 0) < MIN_BOND_CAGR5:
+                    continue  # 只有一两个点的纯债类不入选
             passed.append(r)
         if not passed:
             out[bucket] = []
@@ -701,15 +749,23 @@ def pick(rows):
                                     0.22 * pmdd[i] + 0.08 * pscale[i] + 0.10 * pten[i])
         passed.sort(key=lambda r: -r['score'])
         if bucket in ('指数/指数增强', '场内ETF/LOF'):
-            seen, uniq, others = {}, [], []
+            groups = {}
             for r in passed:
                 key = re.sub(r'\s+', '', (r.get('index_name') or r['name']))
-                if key in seen:
-                    others.append({'code': r['code'], 'name': r['name'], 'scale': r.get('scale'),
-                                   'cagr5': r.get('cagr5'), 'dup_of': seen[key]['code']})
-                    continue
-                seen[key] = r
-                uniq.append(r)
+                groups.setdefault(key, []).append(r)
+            uniq, others = [], []
+            for key, members in groups.items():
+                if bucket == '场内ETF/LOF':
+                    # 场内同标的以“规模/流动性”优先，收益差异让位于可交易性
+                    members.sort(key=lambda r: (-(r.get('scale') or 0), -r['score']))
+                else:
+                    members.sort(key=lambda r: -r['score'])
+                rep = members[0]
+                uniq.append(rep)
+                for m in members[1:]:
+                    others.append({'code': m['code'], 'name': m['name'], 'scale': m.get('scale'),
+                                   'cagr5': m.get('cagr5'), 'dup_of': rep['code']})
+            uniq.sort(key=lambda r: -r['score'])
             out[bucket] = uniq
             other_map[bucket] = others
         else:
@@ -742,13 +798,14 @@ def num(v, nd=1):
     return '--' if v is None else ('%.' + str(nd) + 'f') % v
 
 
-def render_md(rows, picked, stats=None, others=None):
+def render_md(rows, picked, stats=None, others=None, excl=None):
     from datetime import datetime
     latest = max((r.get('latest') or '' for r in rows), default=AS_OF)
     stats = stats or {}
     others = others or {}
+    excl = excl or []
     buckets = ['国内权益', 'QDII/海外', '指数/指数增强', '场内ETF/LOF', '债券/固收', 'FOF']
-    titles = {'国内权益': 'A股主动权益', 'QDII/海外': 'QDII 与海外（主动 + 指数）',
+    titles = {'国内权益': 'A股主动权益', 'QDII/海外': 'QDII 主动与海外',
               '指数/指数增强': '指数与指数增强（场外）', '场内ETF/LOF': '场内 ETF / LOF',
               '债券/固收': '债券与固收+', 'FOF': 'FOF'}
     sel = {b: (picked.get(b) or [])[:PICK_N.get(b, 10)] for b in buckets}
@@ -786,13 +843,16 @@ def render_md(rows, picked, stats=None, others=None):
           % (pct(hs300.get('cagr5')), pct(hs300.get('cagr10')), pct((ref.get('159915') or {}).get('cagr5'))))
     A('- 主动权益入选者以成长/科技风格为主，近 5 年年化普遍在 10%–35%，但 2025–2026 两年贡献了大部分收益，'
       '单年出现过 90%+ 涨幅，需要接受同等量级的回撤（近5年最大回撤多在 -35%～-55%）。')
-    A('- QDII 端最突出的是黄金与纳指两条线：黄金 ETF 联接近5年年化约 20%（波动仅 17%），'
-      '纳指 100 系列约 13%（波动 23%）；主动 QDII 也有入选，但要注意额度与申购状态'
-      '（部分美元份额、标普500联接当前暂停申购）。')
-    A('- 固收类入选门槛是“近5年年化 ≥3%、回撤可控”，年化 4%–6% 且最大回撤多在 -10% 以内；'
-      '已剔除成立初期靠大额赎回做高净值的产品。')
-    A('- 场内 ETF 同标的高度重叠（黄金 4 只、纳指 2 只），实际选择 1 只规模最大、费率最低的即可，'
-      '名单里的并列项仅作备选。')
+    A('- QDII 在剔掉标普500/纳指100/贵金属商品后，剩下的是**主动型海外基金**：全球科技与美股成长'
+      '（汇添富全球移动互联、华夏全球科技先锋、广发全球精选）、新兴市场与亚洲（建信新兴市场、'
+      '摩根全球新兴市场、国富亚洲机会、易方达亚洲精选）、资源与欧洲（摩根全球天然资源、华安德国 DAX 联接）。'
+      '不少 QDII 主动基金因**现任经理刚变更**（<1.5 年）或**暂停申购**落选，见落选说明表；'
+      'QDII 额度与申赎状态经常变化，买入前需再看一次。')
+    A('- 债券只保留固收+（近5年年化 ≥' + ('%.0f' % MIN_BOND_CAGR5) + '%）：年化 4%–6.5%、最大回撤多在 -10% 以内，'
+      '靠可转债或少量股票增强；纯债那种一年一两个点的已全部剔除，成立初期靠大额赎回做高净值的也已剔除。')
+    A('- 指数与场内两块是“工具型”清单：A股行业/主题（银行、红利、资源、煤炭、电子/信息、能源）'
+      '加德国 DAX，用来替代选股；同标的只留一只（场内按规模/流动性优先），'
+      '买卖价差与折溢价自行留意。')
     A('')
     A('## 二、筛选口径')
     A('')
@@ -810,14 +870,26 @@ def render_md(rows, picked, stats=None, others=None):
             continue
         A('| %s | %d 年 | ≥%.0f%% | ≥%.0f%% | %d |' % (titles[b], gate[0], gate[1], gate[2], gate[3]))
     A('')
-    A('4. **终选硬门槛**：规模（场外 ≥2 亿、场内 ≥5 亿）、自算近5年年化、近10年年化（不足 10 年用成立以来）、'
+    A('4. **按需求剔除**：① 页面（index.html）已跟踪的 %d 只美股指数基金；② 标普500、纳指100 等其他跟踪产品'
+      '（含未上页面的）；③ 纯黄金/白银等贵金属商品基金（**黄金股、金银珠宝等主动基金保留**）；'
+      '④ 纯债型（长债/短债/中短债/信用债/利率债/固收指数）且近5年年化低于 %.0f%% 的低收益品种，'
+      '只保留固收+（一、二级债基、偏债混合、可转债）。' % (len(page_codes()), MIN_BOND_CAGR5))
+    A('5. **终选硬门槛**：规模（场外 ≥2 亿、场内 ≥5 亿）、自算近5年年化、近10年年化（不足 10 年用成立以来）、'
       '近5年最大回撤、现任基金经理任职年限（主动类 ≥1.5–2 年）、申购状态不为暂停。')
-    A('5. **打分**：桶内分位加权 —— 近5年年化 30% + 近10年年化 20% + 成立以来年化 10% + '
+    A('6. **打分**：桶内分位加权 —— 近5年年化 30% + 近10年年化 20% + 成立以来年化 10% + '
       '近5年最大回撤 22% + 规模 8% + （主动类：现任经理任职年限 10%／指数与场内：费率 10%）。')
-    A('6. **数据源**：天天基金排行榜接口（代码/名称/成立日/区间涨幅/费率）、'
+    A('7. **数据源**：天天基金排行榜接口（代码/名称/成立日/区间涨幅/费率）、'
       'FundMNBasicInformation（类型/规模/基金经理/前十大持仓）、f10 基金经理变动表、'
       'FundMNHisNetList 全量历史净值（自算区间年化、最大回撤、波动率、分年度收益）。')
     A('')
+    if excl:
+        A('### 已按需求剔除（本轮深算候选中的统计）')
+        A('')
+        A('| 剔除项 | 只数 | 代表 |')
+        A('|---|---|---|')
+        for why, n, samples in excl:
+            A('| %s | %d | %s |' % (why, n, '、'.join(samples)))
+        A('')
     A('## 三、精选名单')
     A('')
     for b in buckets:
@@ -849,17 +921,19 @@ def render_md(rows, picked, stats=None, others=None):
             if (r.get('max_year') or 0) > 100 and b not in ('指数/指数增强', '场内ETF/LOF'):
                 flag = '（%s 年 %+.0f%%，单年涨幅较大，注意行情贡献）' % (r.get('max_year_key'), r['max_year'])
             extra = ''
-            holds = [x for x in (r.get('invest') or '').split(',') if x][:3]
-            if holds:
-                extra += '；重仓：%s' % '、'.join(holds)
+            if b in ('国内权益', '债券/固收'):
+                holds = [x for x in (r.get('invest') or '').split(',') if x][:3]
+                if holds:
+                    extra += '；重仓：%s' % '、'.join(holds)
             st = (r.get('sgzt') or '').strip()
-            if st and st not in ('开放申购',):
+            if st and any(k in st for k in ('暂停', '限', '封闭', '停止')):
                 extra += '；申购状态：%s' % st
             A('- **%s（%s）** 分年度：%s%s%s' % (r['name'], r['code'], fmt_yearly(r.get('yearly')), flag, extra))
         if others.get(b):
             dup = others[b][:6]
-            A('- 同标的还有：%s（已按同标的只保留规模/评分最高的一只，其余见 CSV）'
-              % '、'.join('%s %s' % (d['name'], d['code']) for d in dup))
+            rule = '按规模/流动性优先' if b == '场内ETF/LOF' else '按评分优先'
+            A('- 同标的还有：%s（已按同标的只保留一只，%s；其余见 CSV）'
+              % ('、'.join('%s %s（%.1f 亿）' % (d['name'], d['code'], d.get('scale') or 0) for d in dup), rule))
         A('')
     refs = [r for r in rows if r.get('bucket') == '参考基准' and r.get('cagr5') is not None]
     if refs:
@@ -881,6 +955,8 @@ def render_md(rows, picked, stats=None, others=None):
         recs = _group_by(rows, lambda r: r['bucket']).get(b, [])
         failed = []
         for r in recs:
+            if exclusion_reason(r):  # 已按需求剔除的不进“落选”表
+                continue
             why = []
             if r.get('sgzt') and '暂停' in r['sgzt']:
                 why.append('暂停申购')
@@ -960,9 +1036,16 @@ def cmd_report(args):
     sl = load_json(os.path.join(DATA, 'shortlist.json')) or {}
     stats = {'codes': len(uni.get('funds') or {}), 'pool': len(sl.get('kept') or []),
              'funds': len({base_name(v['name']) for v in (uni.get('funds') or {}).values()})}
+    page = page_codes()
+    excl_map = {}
+    for r in rows:
+        why = exclusion_reason(r, page)
+        if why:
+            excl_map.setdefault(why, []).append(r['name'])
+    excl = sorted(((w, len(v), v[:3]) for w, v in excl_map.items()), key=lambda t: -t[1])
     md_path = os.path.join(HERE, '长期绩优基金筛选-%s.md' % AS_OF.replace('-', ''))
     with open(md_path, 'w', encoding='utf-8') as f:
-        f.write(render_md(rows, picked, stats, others))
+        f.write(render_md(rows, picked, stats, others, excl))
     log('  ✓ 报告：%s' % md_path)
     for bucket, recs in picked.items():
         n = min(len(recs), PICK_N.get(bucket, 10))
