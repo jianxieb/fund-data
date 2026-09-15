@@ -860,11 +860,11 @@ def write_md(src):
                '6. **买入/卖出费用**：场外=申购费（原费率/1折）与赎回费档（按持有期递减）；场内=券商佣金（默认万2.5、最低5元，买卖同费率，免印花税/过户费）。\n'
                '7. **风险收益**：近3年年化波动率（日收益标准差×√250）× 近3年年化收益率，气泡=规模。\n')
     comm = '≈%.2f' % max(2.5, 5.0)  # 默认万2.5/最低5元，与页面默认一致
-    out.append(tbl('一、标普500 基金（%d 只）' % len(sp), sp, comm))
+    out.append(tbl('一、标普500 / 标普100 等权重基金（%d 只）' % len(sp), sp, comm))
     out.append(tbl('二、纳斯达克100 基金 — 场外（%d 只）' % len(nq), nq, comm))
     out.append(tbl('三、纳斯达克100 基金 — 场内 ETF（%d 只）' % len(etf), etf, comm))
-    out.append(tbl('四、其他纳斯达克指数基金 — 场外（%d 只）' % len(nxo), nxo, comm))
-    out.append(tbl('五、其他纳斯达克指数基金 — 场内 ETF（%d 只）' % len(nxe), nxe, comm))
+    out.append(tbl('四、其他美股指数基金 — 场外（%d 只）' % len(nxo), nxo, comm))
+    out.append(tbl('五、其他美股指数基金 — 场内 ETF（%d 只）' % len(nxe), nxe, comm))
     out.append('\n## 备注\n\n'
                '- ★ 国泰纳斯达克100（160213）：2025 年四次大额分红 + 2020-01 分红，收益按红利再投资逐笔复权。\n'
                '- ★ 大成标普500等权重A（096001）：每年分红（窗口内 10 次），收益按红利再投逐笔复权。\n'

@@ -219,10 +219,10 @@ EXCL_METAL_NAME = re.compile(r'黄金(ETF|基金|主题|及贵金属|-QDII|QDII)
 EXCL_METAL_COMMODITY = ('黄金', '贵金属', '白银')  # 归为商品且标的为贵金属的才剔除（原油/能源等保留）
 EXCL_BOND_TYPE = ('长债', '短债', '中短债', '纯债', '信用债', '利率债', '指数型-固收')
 MIN_BOND_CAGR5 = 4.0  # 固收+ 的最低近5年年化，低于此归为“纯债那类只能赚一两个点的”
-# 用户指定手动纳入的标的：不受“美指跟踪/场内/成立年限/收益门槛”限制，直接进指定桶
-#   519981 长信美国标准普尔100等权重指数增强(QDII)人民币
-#   513850 美国50ETF（易方达，MSCI 美国50）/ 159577 美国50ETF（汇添富，MSCI 美国50）
-FORCE_INCLUDE = {'519981': '指数/指数增强', '513850': '指数/指数增强', '159577': '指数/指数增强'}
+# 用户指定手动纳入的标的（不受“美指跟踪/场内/成立年限/收益门槛”限制，直接进指定桶）。
+# 目前为空：519981（标普100等权重）与 513850/159577（美国50ETF）已按需求并入 index.html 大类一，
+# 由 `fund_screen.py promote` 写进 FUNDS 块、随 update.py 每日更新，不再重复出现在大类二。
+FORCE_INCLUDE = {}
 
 
 def page_codes():
@@ -670,11 +670,19 @@ def _years_between(d0, d1):
     return (b - a).days / 365.25
 
 
+# 参照基准（A股宽基，不参与打分；不随短名单变化，单独放行）
+BENCH_CODES = ('510300', '159915', '000961')
+
+
 def assemble():
     en = (load_json(os.path.join(DATA, 'enriched.json')) or {}).get('funds', {})
     mt = (load_json(os.path.join(DATA, 'metrics.json')) or {}).get('funds', {})
+    sl = load_json(os.path.join(DATA, 'shortlist.json')) or {}
+    keep = {x['code'] for x in (sl.get('kept') or [])}
     rows = []
     for code, f in en.items():
+        if keep and code not in keep and code not in BENCH_CODES:
+            continue  # 已不在当前入池名单里的历史记录（门槛/口径变了）不再输出
         if any(k in (f.get('full_name') or f.get('name') or '') for k in ('美元', '现汇', '现钞', '港币')):
             continue  # 同一基金的美元份额与人民币份额重复，仅保留人民币份额
         b = f.get('basic') or {}
@@ -911,9 +919,10 @@ def render_md(rows, picked, stats=None, others=None, excl=None):
       '只保留固收+（一、二级债基、偏债混合、可转债）。' % (len(page_codes()), MIN_BOND_CAGR5))
     A('5. **终选硬门槛**：规模（场外 ≥2 亿、场内 ≥5 亿）、自算近5年年化、近10年年化（不足 10 年用成立以来）、'
       '近5年最大回撤、现任基金经理任职年限（主动类 ≥1.5–2 年）、申购状态不为暂停。')
-    A('5.1 **手动纳入**（不受上面排除规则与门槛限制，直接进入「指数与指数增强」桶）：'
-      '长信美国标准普尔100等权重指数增强（519981）、美国50ETF（易方达 513850 / 汇添富 159577）；'
-      '两只美国50ETF 同标的，表内只保留一只、另一只列在「同标的还有」。')
+    A('5.1 **已并入页面大类一的标的**（不在本报告的大类二名单里重复）：'
+      '长信美国标准普尔100等权重指数增强（519981）、美国50ETF（易方达 513850 / 汇添富 159577）'
+      '已按需求并入页面大类一（标普组 / 其他美股指数·场内），随 update.py 每日更新，'
+      '不在本报告的大类二名单里重复出现。')
     A('6. **打分**：桶内分位加权 —— 近5年年化 30% + 近10年年化 20% + 成立以来年化 10% + '
       '近5年最大回撤 22% + 规模 8% + （主动类：现任经理任职年限 10%／指数与场内：费率 10%）。')
     A('7. **数据源**：天天基金排行榜接口（代码/名称/成立日/区间涨幅/费率）、'
@@ -1281,6 +1290,115 @@ def cmd_html(args):
            sum(1 for k, _r, _s in want if k == 'x6')))
 
 
+# ---------------------------------------------------------------- 6. 并入大类一（写进 FUNDS 块）
+# 按需求：标普100等权重 → 标普组（表一）；美国50ETF → 其他美股指数·场内（表五）。
+# 写进 FUNDS 后由 update.py 每日更新（净值/区间涨幅/波动回撤/申赎状态/规模/场内快照）。
+PROMOTE = [
+    {'code': '519981', 'g': 'sp', 't': '场外', 'ix': '标普100等权重',
+     'note': '标普100等权重指数增强(QDII)，按需求并入标普组'},
+    {'code': '513850', 'g': 'nx', 't': None, 'ix': 'MSCI美国50', 'note': '美国50（MSCI USA 50）'},
+    {'code': '159577', 'g': 'nx', 't': None, 'ix': 'MSCI美国50', 'note': '美国50（MSCI USA 50）'},
+]
+
+
+def _v3_mdd3(code):
+    """近3年年化波动率 / 最大回撤（页面 v3/mdd3 列，与 update.py 口径一致）。"""
+    rows = U.history_fetch(code)
+    if not rows:
+        return None, None
+    ser = build_series(rows)
+    b = add_years(ser[-1][0], -3)
+    st = _stats([(d, t) for d, dw, t, lj in ser if d >= b])
+    return (st['vol'], st['mdd']) if st else (None, None)
+
+
+def fund_line(spec, uni, en, snap, refresh=False):
+    """生成一条 FUNDS 行（字段顺序与现有行一致，便于 update.py 之后每日更新）。"""
+    code = spec['code']
+    u = uni.get(code) or {}
+    f = en.get(code) or {}
+    b = f.get('basic') or {}
+    info = fee_info(jjfl_page(code, refresh=refresh))
+    m = _metrics_of(code)
+    v3, mdd3 = _v3_mdd3(code)
+    is_etf = spec['t'] is None
+    fee = [info.get('fee_m'), info.get('fee_c'), info.get('fee_s')]
+    if fee[2] is None and not is_etf:
+        fee[2] = fnum(b.get('fee_s')) or 0.0
+    sz = info.get('sz')
+    if sz is None:
+        sc = fnum(b.get('scale'))
+        sz = (sc / 1e8) if sc else None
+    nav = info.get('nav') or fnum(b.get('nav'))
+    navdate = (info.get('navdate') or m.get('latest') or '')[:10]
+    dz = info.get('dz')
+    if dz is None:
+        dz = fnum(u.get('r1d'))
+    name = b.get('name') or f.get('name') or code
+    parts = ['{g:%s' % js_str(spec['g']), 'c:%s' % js_str(code), 'n:%s' % js_str(name)]
+    if spec['t']:
+        parts.append('t:%s' % js_str(spec['t']))
+    parts += ['ix:%s' % js_str(spec['ix']),
+              'd:%s' % js_str((u.get('estab') or b.get('estab') or '')[:10]),
+              'fee:[%s]' % ','.join(js_num(v, 2) for v in (fee if is_etf else fee[:3]))]
+    if not is_etf:
+        buy = '%s/%s' % ((u.get('fee_src') or '').strip(), (u.get('fee_now') or '').strip())
+        parts += ['buy:%s' % js_str(buy.strip('/')), 'rd:%s' % js_str(info.get('rd') or ''),
+                  'st:%s' % js_str(info.get('st') or ''), 'lm:%s' % js_str(info.get('lm') or '')]
+    sd = snap.get(code) or {}
+    parts += ['r:[%s]' % ','.join(js_num(m.get('ret%d' % k), 2) for k in (1, 2, 3, 5, 10)),
+              'sz:%s' % js_num(sz, 1)]
+    if is_etf:
+        parts += ['p:%s' % js_num(sd.get('price'), 3), 'prem:%s' % js_num(sd.get('prem'), 2),
+                  'pct:%s' % js_num(sd.get('pct'), 2), 'iopv:%s' % js_num(sd.get('iopv'), 3)]
+    parts += ['nav:%s' % js_num(nav, 4), 'navdate:%s' % js_str(navdate), 'dz:%s' % js_num(dz, 2),
+              'v3:%s' % js_num(v3, 2), 'mdd3:%s' % js_num(mdd3, 2), 'dzfrom:null',
+              'note:%s' % js_str(spec['note'])]
+    return ','.join(parts) + '},'
+
+
+def cmd_promote(args):
+    """把 PROMOTE 的标的写进 index.html 的 FUNDS 块（大类一）；它们随 update.py 每日更新。"""
+    ensure_dirs()
+    os.makedirs(JJFL_DIR, exist_ok=True)
+    uni = (load_json(os.path.join(DATA, 'universe.json')) or {}).get('funds', {})
+    en = (load_json(os.path.join(DATA, 'enriched.json')) or {}).get('funds', {})
+    etf_codes = [s['code'] for s in PROMOTE if s['t'] is None]
+    snap = U.tencent_etf(etf_codes) if etf_codes else {}
+    lines = []
+    for spec in PROMOTE:
+        if spec['code'] not in uni and spec['code'] not in en:
+            log('  !! %s 不在全市场名单里，跳过' % spec['code'])
+            continue
+        lines.append(fund_line(spec, uni, en, snap, refresh=args.refresh))
+        log('  ★ 并入大类一：%s %s → %s' % (spec['code'], spec['ix'], spec['g']))
+    html_path = os.path.join(ROOT, 'index.html')
+    with open(html_path, encoding='utf-8') as fh:
+        src = fh.read()
+    m = re.search(r'(/\*__DATA_FUNDS_BEGIN__\*/)(.*?)(/\*__DATA_FUNDS_END__\*/)', src, re.S)
+    if not m:
+        log('!! 找不到 FUNDS 数据块')
+        return
+    codes = [s['code'] for s in PROMOTE]
+    body = '\n'.join(l for l in m.group(2).splitlines()
+                     if not any(("c:'%s'" % c) in l for c in codes)     # 先去重（含上一轮插入的位置）
+                     and not l.lstrip().startswith('// —— 按需求并入'))
+    add = ('// —— 按需求并入：标普100等权重 / 美国50ETF（由 screens/fund_screen.py promote 写入，'
+           '之后随 update.py 每日更新）\n' + '\n'.join(lines) + '\n')
+    stripped = body.rstrip()
+    if not stripped.endswith('];'):
+        log('!! FUNDS 块结构与预期不符（结尾不是 ]）；），已放弃写入')
+        return
+    head = stripped[:-2].rstrip()                          # 去掉结尾的 ];
+    if head.splitlines() and not head.splitlines()[-1].rstrip().endswith(','):
+        head += ','                                        # 原最后一行没有逗号，插入前要补上
+    body = head + '\n' + add + '];\n'                      # 必须插在数组的 ]; 之前
+    src = src[:m.start(2)] + body + src[m.end(2):]
+    with open(html_path, 'w', encoding='utf-8') as fh:
+        fh.write(src)
+    log('  ✓ 已写入 FUNDS：%d 行（大类一现共 %d 只）' % (len(lines), len(U.parse_fund_lines(src))))
+
+
 def main():
     ap = argparse.ArgumentParser(description='国内长期绩优基金筛选')
     sub = ap.add_subparsers(dest='cmd')
@@ -1294,6 +1412,8 @@ def main():
     sub.add_parser('report', help='生成筛选报告与 CSV')
     ph = sub.add_parser('html', help='把入选/备选名单写进 index.html 的新数据块（大类二）')
     ph.add_argument('--refresh', action='store_true', help='忽略费率/限额页缓存，重新抓取')
+    pp = sub.add_parser('promote', help='把指定标的（标普100/美国50ETF）并入 index.html 大类一 FUNDS')
+    pp.add_argument('--refresh', action='store_true')
     sub.add_parser('all', help='universe → prefilter → enrich → metrics → report → html')
     args = ap.parse_args()
     ensure_dirs()
@@ -1306,7 +1426,8 @@ def main():
         cmd_html(args)
         return
     fn = {'universe': cmd_universe, 'prefilter': cmd_prefilter, 'enrich': cmd_enrich,
-          'metrics': cmd_metrics, 'report': cmd_report, 'html': cmd_html}.get(args.cmd)
+          'metrics': cmd_metrics, 'report': cmd_report, 'html': cmd_html,
+          'promote': cmd_promote}.get(args.cmd)
     if fn is None:
         ap.print_help()
     else:
