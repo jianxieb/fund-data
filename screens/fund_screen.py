@@ -219,6 +219,10 @@ EXCL_METAL_NAME = re.compile(r'黄金(ETF|基金|主题|及贵金属|-QDII|QDII)
 EXCL_METAL_COMMODITY = ('黄金', '贵金属', '白银')  # 归为商品且标的为贵金属的才剔除（原油/能源等保留）
 EXCL_BOND_TYPE = ('长债', '短债', '中短债', '纯债', '信用债', '利率债', '指数型-固收')
 MIN_BOND_CAGR5 = 4.0  # 固收+ 的最低近5年年化，低于此归为“纯债那类只能赚一两个点的”
+# 用户指定手动纳入的标的：不受“美指跟踪/场内/成立年限/收益门槛”限制，直接进指定桶
+#   519981 长信美国标准普尔100等权重指数增强(QDII)人民币
+#   513850 美国50ETF（易方达，MSCI 美国50）/ 159577 美国50ETF（汇添富，MSCI 美国50）
+FORCE_INCLUDE = {'519981': '指数/指数增强', '513850': '指数/指数增强', '159577': '指数/指数增强'}
 
 
 def page_codes():
@@ -303,6 +307,8 @@ def cmd_prefilter(args):
     # ① 归并同一基金的多个份额类别：取成立最早、其次近5年收益最高者为代表
     groups = {}
     for c, f in funds.items():
+        if c in FORCE_INCLUDE:
+            continue  # 手动纳入的单独处理，避免被门槛/排除规则拦掉
         if any(k in f['name'] for k in ('美元', '现汇', '现钞', '港币', '欧元', '英镑')):
             continue  # 同一基金的美元/现汇份额不单列
         if exclusion_reason({'code': c, 'name': f['name'], 'index_name': '', 'ftype': ''}):
@@ -310,6 +316,19 @@ def cmd_prefilter(args):
         groups.setdefault(base_name(f['name']), []).append(f)
     drop = {'成立不足': 0, '缺收益': 0, '收益不达标': 0, '不在门槛桶': 0}
     by_bucket = {}
+    # ①.1 手动纳入：不受门槛限制
+    for c, bucket in FORCE_INCLUDE.items():
+        f = funds.get(c)
+        if not f:
+            log('  !! 手动纳入 %s 不在全市场榜单里' % c)
+            continue
+        by_bucket.setdefault(bucket, []).append(
+            {'code': c, 'name': base_name(f['name']), 'full_name': f['name'], 'bucket': bucket,
+             'estab': f.get('estab'), 'r5w': f.get('r5w'), 'rsince': f.get('rsince'),
+             'r1y': f.get('r1y'), 'r2y': f.get('r2y'), 'r3y': f.get('r3y'), 'rytd': f.get('rytd'),
+             'navdate': f.get('navdate'), 'srcs': f['srcs'], 'fbtype': f.get('fbtype'),
+             'fee_now': f.get('fee_now'), 'forced': True, 'siblings': []})
+        log('  ★ 手动纳入 %s %s → %s' % (c, f['name'], bucket))
     for gname, members in groups.items():
         members = [m for m in members if m.get('r5w') is not None]
         if not members:
@@ -342,8 +361,10 @@ def cmd_prefilter(args):
     for bucket, recs in by_bucket.items():
         cap = BUCKET_GATE[bucket][3]
         recs.sort(key=lambda x: -((x['r5w'] or 0) * 0.6 + (x['rsince'] or 0) * 0.4))
-        log('  %-12s 过门槛 %3d 只 → 取前 %d' % (bucket, len(recs), min(cap, len(recs))))
-        kept.extend(recs[:cap])
+        forced = [x for x in recs if x.get('forced')]
+        normal = [x for x in recs if not x.get('forced')]
+        log('  %-12s 过门槛 %3d 只（含手动 %d）→ 取前 %d' % (bucket, len(recs), len(forced), min(cap, len(recs))))
+        kept.extend(forced + normal[:max(0, cap - len(forced))])
     save_json(os.path.join(DATA, 'shortlist.json'),
               {'asof': AS_OF, 'gates': BUCKET_GATE, 'kept': kept})
     log('  剔除明细：%s' % drop)
@@ -425,7 +446,7 @@ def cmd_enrich(args):
     out = load_json(os.path.join(DATA, 'enriched.json')) or {'asof': AS_OF, 'funds': {}}
     funds = out['funds']
     def stale(x):
-        """桶/手动标记变了也要重跑（基础信息走缓存，不重复抓）。"""
+        """桶/手动标记变了也要重跑（只更新元信息，基础数据走缓存不重复抓）。"""
         prev = funds.get(x['code'])
         if not prev or not prev.get('basic'):
             return True
@@ -629,8 +650,9 @@ def cmd_metrics(args):
 
 
 def _pct_rank(vals):
-    """把一组数值映射成 0~1 的分位（越大越好；缺值按最差分位 0 处理，不能当最优）。"""
-    idx = sorted(range(len(vals)), key=lambda i: (vals[i] is None, vals[i] if vals[i] is not None else 0))
+    """把一组数值映射成 0~1 的分位（越大越好；缺值按最差分位 0 处理）。"""
+    idx = sorted(range(len(vals)),
+                 key=lambda i: (vals[i] is not None, vals[i] if vals[i] is not None else 0))
     out = {}
     n = len(vals)
     for rank, i in enumerate(idx):
@@ -679,7 +701,7 @@ def assemble():
             'mdd5': m.get('mdd5'), 'mdd10': m.get('mdd10'), 'mdd_all': m.get('mdd_all'),
             'yearly': m.get('yearly') or {}, 'latest': m.get('latest'),
             'invest': b.get('invest'), 'siblings': f.get('siblings') or [],
-            'buy': b.get('buy'),
+            'buy': b.get('buy'), 'forced': bool(f.get('forced')),
         })
         y = rows[-1]['yearly']
         if y:
@@ -711,6 +733,9 @@ def pick(rows):
             continue
         passed = []
         for r in recs:
+            if r.get('forced'):
+                passed.append(r)  # 用户手动指定纳入：不受排除规则与硬门槛限制（数据不全时排在后面）
+                continue
             if exclusion_reason(r, page):
                 continue
             if not r.get('sgzt') or '暂停' in (r.get('sgzt') or ''):
@@ -816,7 +841,7 @@ def render_md(rows, picked, stats=None, others=None, excl=None):
     excl = excl or []
     buckets = ['国内权益', 'QDII/海外', '指数/指数增强', '场内ETF/LOF', '债券/固收', 'FOF']
     titles = {'国内权益': 'A股主动权益', 'QDII/海外': 'QDII 主动与海外',
-              '指数/指数增强': '指数与指数增强（场外）', '场内ETF/LOF': '场内 ETF / LOF',
+              '指数/指数增强': '指数与指数增强（含海外指数/增强）', '场内ETF/LOF': '场内 ETF / LOF',
               '债券/固收': '债券与固收+', 'FOF': 'FOF'}
     sel = {b: (picked.get(b) or [])[:PICK_N.get(b, 10)] for b in buckets}
     total = sum(len(v) for v in sel.values())
@@ -886,6 +911,9 @@ def render_md(rows, picked, stats=None, others=None, excl=None):
       '只保留固收+（一、二级债基、偏债混合、可转债）。' % (len(page_codes()), MIN_BOND_CAGR5))
     A('5. **终选硬门槛**：规模（场外 ≥2 亿、场内 ≥5 亿）、自算近5年年化、近10年年化（不足 10 年用成立以来）、'
       '近5年最大回撤、现任基金经理任职年限（主动类 ≥1.5–2 年）、申购状态不为暂停。')
+    A('5.1 **手动纳入**（不受上面排除规则与门槛限制，直接进入「指数与指数增强」桶）：'
+      '长信美国标准普尔100等权重指数增强（519981）、美国50ETF（易方达 513850 / 汇添富 159577）；'
+      '两只美国50ETF 同标的，表内只保留一只、另一只列在「同标的还有」。')
     A('6. **打分**：桶内分位加权 —— 近5年年化 30% + 近10年年化 20% + 成立以来年化 10% + '
       '近5年最大回撤 22% + 规模 8% + （主动类：现任经理任职年限 10%／指数与场内：费率 10%）。')
     A('7. **数据源**：天天基金排行榜接口（代码/名称/成立日/区间涨幅/费率）、'
@@ -1133,7 +1161,7 @@ def cmd_html(args):
     os.makedirs(JJFL_DIR, exist_ok=True)
     rows = assemble()
     picked = pick(rows)
-    picked.pop('_others', None)
+    others = picked.pop('_others', {}) or {}
     if not picked:
         log('!! 没有可写入的名单，先跑 report')
         return
@@ -1191,6 +1219,8 @@ def cmd_html(args):
         note = yr
         if not sel and key != 'x6':
             note = ('备选 · ' + note) if note else '备选'
+        if r.get('forced'):
+            note = ('手动加入 · ' + note) if note else '手动加入'
         parts = [
             'g:%s' % js_str(key), 'c:%s' % js_str(code), 'n:%s' % js_str(r['name']),
             't:%s' % js_str(ttype), 'ix:%s' % js_str(ix), 'd:%s' % js_str((r.get('estab') or '')[:10]),
@@ -1215,6 +1245,16 @@ def cmd_html(args):
             'score:%s' % js_num(r.get('score'), 1), 'sel:%d' % sel, 'note:%s' % js_str(note),
         ]
         lines.append('{' + ','.join(parts) + '},')
+    key_of = dict((b, k) for b, k in XB_KEYS)
+    xother_lines = []
+    for bucket, dup in others.items():
+        key = key_of.get(bucket)
+        if not key:
+            continue
+        for d in dup:
+            xother_lines.append('{b:%s,c:%s,n:%s,sz:%s,dup:%s},'
+                                % (js_str(key), js_str(d['code']), js_str(d['name']),
+                                   js_num(d.get('scale'), 1), js_str(d.get('dup_of'))))
     block = ('/*__DATA_EXTRA_BEGIN__*/\n'
              '/* 大类二：国内长期绩优（非美指数）—— 由 screens/fund_screen.py html 生成，'
              'update.py 每日更新不触碰本块。\n'
@@ -1222,6 +1262,8 @@ def cmd_html(args):
              'mdd5 近5年最大回撤% vol5 近5年年化波动% score 综合分 sel 1=入选 0=备选\n'
              '   r 为红利再投复权区间涨幅，与页面「累计/年化」开关联动；note 为近6个年度收益 */\n'
              'var EXTRA=[\n' + '\n'.join(lines) + '\n];\n'
+             '/* 同标的未入表的备选（页面在该表下方以「同标的还有」列出） */\n'
+             'var XOTHERS=[\n' + '\n'.join(xother_lines) + '\n];\n'
              '/*__DATA_EXTRA_END__*/')
     html_path = os.path.join(ROOT, 'index.html')
     with open(html_path, encoding='utf-8') as fh:
