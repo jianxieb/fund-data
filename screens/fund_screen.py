@@ -424,8 +424,13 @@ def cmd_enrich(args):
         return
     out = load_json(os.path.join(DATA, 'enriched.json')) or {'asof': AS_OF, 'funds': {}}
     funds = out['funds']
-    todo = [x for x in sl['kept'] if args.refresh or x['code'] not in funds
-            or not funds[x['code']].get('basic')]
+    def stale(x):
+        """桶/手动标记变了也要重跑（基础信息走缓存，不重复抓）。"""
+        prev = funds.get(x['code'])
+        if not prev or not prev.get('basic'):
+            return True
+        return prev.get('bucket') != x.get('bucket') or bool(prev.get('forced')) != bool(x.get('forced'))
+    todo = [x for x in sl['kept'] if args.refresh or stale(x)]
     log('  待补 %d 只（缓存 %d 只）' % (len(todo), len(funds)))
     for i, x in enumerate(todo, 1):
         code = x['code']
@@ -436,6 +441,9 @@ def cmd_enrich(args):
         rec = dict(x)
         rec['basic'] = b
         rec['manager_hist'] = rows
+        prev = funds.get(code) or {}
+        if prev.get('basic') and not args.refresh:
+            rec['basic'] = prev['basic']      # 基础信息沿用缓存，避免重复抓取
         rec['cur_managers'] = (cur or {}).get('names') or []
         rec['cur_start'] = (cur or {}).get('start')
         rec['cur_ret'] = (cur or {}).get('ret')
@@ -621,7 +629,7 @@ def cmd_metrics(args):
 
 
 def _pct_rank(vals):
-    """把一组数值映射成 0~1 的分位（越大越好，缺值给 0.5）。"""
+    """把一组数值映射成 0~1 的分位（越大越好；缺值按最差分位 0 处理，不能当最优）。"""
     idx = sorted(range(len(vals)), key=lambda i: (vals[i] is None, vals[i] if vals[i] is not None else 0))
     out = {}
     n = len(vals)
