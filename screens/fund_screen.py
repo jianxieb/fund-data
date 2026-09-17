@@ -189,8 +189,12 @@ def cmd_universe(args):
                     continue
                 v = a[i]
                 f[k] = v if k in TEXT_COLS else fnum(v)
-            # 第 18 列 = 自定义区间（sd=10 年前 → ed=今天）累计涨幅，作为“近10年”口径（约 92% 的基金有值）
-            if dt != 'fb' and len(a) > 18 and a[18].strip():
+            # 第 18 列 = 自定义区间（sd=10 年前 → ed=今天）累计涨幅。
+            # 注意：基金成立不足 10 年时接口会把“成立以来”兜底填进这一列（数值与 rsince 相同），
+            # 必须按成立日过滤，否则 3-7 年的新基金会显示一个假的“近10年”收益。
+            est = f.get('estab') or ''
+            if (dt != 'fb' and len(a) > 18 and a[18].strip()
+                    and re.match(r'^\d{4}-\d{2}-\d{2}$', est) and est <= add_years(AS_OF, -10)):
                 f['r10w'] = fnum(a[18])
         time.sleep(0.6)
     save_json(os.path.join(DATA, 'universe.json'), out)
@@ -1364,7 +1368,10 @@ def cmd_html(args):
         note = yr
         if key == 'x7':
             a_since = r.get('asince')
-            note = ('成立来年化 %s · %s' % (('%.1f%%' % a_since) if a_since is not None else '--', yr)).strip(' ·')
+            tot = r.get('rsince_api')
+            note = ('成立来 %s（年化 %s） · %s'
+                    % (('+%.1f%%' % tot) if tot is not None else '--',
+                       ('%.1f%%' % a_since) if a_since is not None else '--', yr)).strip(' ·')
         if not sel and key != 'x6':
             note = ('备选 · ' + note) if note else '备选'
         if r.get('forced'):
