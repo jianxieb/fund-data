@@ -270,6 +270,9 @@ BUCKET_GATE = {
     '债券/固收': (7, 6.0, 4.5, 5.0, 3.0, 200),
     'FOF': (6, 8.0, 5.0, 6.0, 4.0, 30),
 }
+# 新锐档：成立 3–7 年（不满长期门槛）但成立以来年化很强，单独成表，不混进长期名单
+YOUNG_BUCKET = '新锐（3-7年）'
+YOUNG_RULE = {'min_years': 3.0, 'max_years': 7.0, 'a5_hot': 25.0, 'asince': 18.0, 'floor': 12.0, 'cap': 250}
 
 
 def years_between(est, ref=None):
@@ -370,20 +373,35 @@ def cmd_prefilter(args):
         min_years, min_a5, min_a10, min_asince, floor_since, cap = gate
         est = rep.get('estab') or ''
         yrs = years_between(est)
-        if not re.match(r'^\d{4}-\d{2}-\d{2}$', est) or yrs is None or yrs < min_years:
-            drop['成立不足'] += 1
-            continue
         a5 = annualized(rep.get('r5w'), 5)
         a10 = annualized(rep.get('r10w'), 10) if rep.get('r10w') is not None else None
         asince = annualized(rep.get('rsince'), yrs)
-        if a5 is None and a10 is None and asince is None:
-            drop['缺收益'] += 1
-            continue
-        ok = ((a5 is not None and a5 >= min_a5) or (a10 is not None and a10 >= min_a10)
-              or (asince is not None and asince >= min_asince))
-        if not ok or (asince is not None and asince < floor_since):
-            drop['收益不达标'] += 1
-            continue
+        if not re.match(r'^\d{4}-\d{2}-\d{2}$', est) or yrs is None or yrs < min_years:
+            # 不满长期门槛的看是否够“新锐档”：成立 3-7 年、成立来年化 ≥18%（或近5年 ≥25%）
+            y = YOUNG_RULE
+            if (bucket != '债券/固收' and yrs is not None and y['min_years'] <= yrs < y['max_years']
+                    and asince is not None and asince >= y['floor']
+                    and ((asince >= y['asince']) or (a5 is not None and a5 >= y['a5_hot']))):
+                bucket = YOUNG_BUCKET
+            else:
+                drop['成立不足'] += 1
+                continue
+        else:
+            if a5 is None and a10 is None and asince is None:
+                drop['缺收益'] += 1
+                continue
+            ok = ((a5 is not None and a5 >= min_a5) or (a10 is not None and a10 >= min_a10)
+                  or (asince is not None and asince >= min_asince))
+            if not ok or (asince is not None and asince < floor_since):
+                # 长期口径不达标时，也可能符合新锐档
+                y = YOUNG_RULE
+                if (bucket != '债券/固收' and yrs < y['max_years'] and yrs >= y['min_years']
+                        and asince is not None and asince >= y['floor']
+                        and ((asince >= y['asince']) or (a5 is not None and a5 >= y['a5_hot']))):
+                    bucket = YOUNG_BUCKET
+                else:
+                    drop['收益不达标'] += 1
+                    continue
         rec = {'code': rep['code'], 'name': gname, 'full_name': rep['name'], 'bucket': bucket,
                'estab': est, 'years': yrs, 'r5w': rep.get('r5w'), 'r10w': rep.get('r10w'),
                'rsince': rep.get('rsince'), 'a5': a5, 'a10': a10, 'asince': asince,
@@ -396,7 +414,7 @@ def cmd_prefilter(args):
 
     kept = []
     for bucket, recs in by_bucket.items():
-        cap = BUCKET_GATE[bucket][5]
+        cap = BUCKET_GATE[bucket][5] if bucket in BUCKET_GATE else YOUNG_RULE['cap']
         # 截断排序：长期优先（近10年 40% + 成立以来 40% + 近5年 20%），避免近年热门基金挤掉长期老将
         recs.sort(key=lambda x: -(0.20 * (x.get('a5') if x.get('a5') is not None else -99)
                                   + 0.40 * (x.get('a10') if x.get('a10') is not None else -99)
@@ -811,11 +829,18 @@ HARD = {
                   'any_cagr': {'cagr5': 6.0, 'cagr10': 4.5, 'cagr_since': 5.0}},
     'FOF': {'min_scale': 1.0, 'min_mdd5': -45.0, 'min_tenure': None,
             'any_cagr': {'cagr5': 8.0, 'cagr10': 5.0, 'cagr_since': 6.0}},
+    # 新锐档：成立 3-7 年，用成立以来年化把关（不设近10年口径）
+    YOUNG_BUCKET: {'min_scale': 1.0, 'min_mdd5': -70.0, 'min_tenure': 0.5,
+                   'any_cagr': {'cagr5': 25.0, 'cagr_since': 18.0}},
 }
 # 每桶“入选”（角标）数量；其余通过硬门槛的作为“备选”一并入表
 PICK_N = {'国内权益': 80, 'QDII/海外': 30, '指数/指数增强': 30, '场内ETF/LOF': 30, '债券/固收': 20, 'FOF': 5}
+PICK_N[YOUNG_BUCKET] = 40
 # 页面每桶最多渲染行数（含备选），避免 HTML 过大
-PAGE_CAP = {'国内权益': 400, 'QDII/海外': 90, '指数/指数增强': 160, '场内ETF/LOF': 80, '债券/固收': 120, 'FOF': 20}
+# 页面展示全部通过硬门槛的候选（不再截断到前 N 行），保证"名单完整"
+PAGE_CAP = {'国内权益': 1200, 'QDII/海外': 200, '指数/指数增强': 300, '场内ETF/LOF': 200,
+            '债券/固收': 300, 'FOF': 30}
+PAGE_CAP[YOUNG_BUCKET] = 300
 
 
 def pick(rows):
@@ -834,9 +859,7 @@ def pick(rows):
                 continue
             if exclusion_reason(r, page):
                 continue
-            if not r.get('sgzt') or '暂停' in (r.get('sgzt') or ''):
-                if bucket != '场内ETF/LOF':
-                    continue
+            # 暂停申购的基金也保留（状态列会显示"暂停申购"），避免"因为暂时买不到就从长期名单里消失"
             if r.get('scale') is not None and r['scale'] < hard['min_scale']:
                 continue
             if r.get('scale') is None:
@@ -872,6 +895,12 @@ def pick(rows):
             for i, r in enumerate(passed):
                 r['score'] = 100 * (0.25 * p5[i] + 0.25 * p10[i] + 0.15 * psince[i] +
                                     0.20 * pmdd[i] + 0.05 * pscale[i] + 0.10 * pfee[i])
+        elif bucket == YOUNG_BUCKET:
+            # 新锐档没有近5/10年数据，按 成立来年化 45% + 回撤 30% + 规模 10% + 经理任职 15% 打分
+            pten = _pct_rank([(r.get('tenure') or 0) for r in passed])
+            for i, r in enumerate(passed):
+                r['score'] = 100 * (0.45 * psince[i] + 0.30 * pmdd[i] +
+                                    0.10 * pscale[i] + 0.15 * pten[i])
         else:
             pten = _pct_rank([(r.get('tenure') or 0) for r in passed])
             for i, r in enumerate(passed):
@@ -934,10 +963,11 @@ def render_md(rows, picked, stats=None, others=None, excl=None):
     stats = stats or {}
     others = others or {}
     excl = excl or []
-    buckets = ['国内权益', 'QDII/海外', '指数/指数增强', '场内ETF/LOF', '债券/固收', 'FOF']
+    buckets = ['国内权益', 'QDII/海外', '指数/指数增强', '场内ETF/LOF', '债券/固收', 'FOF', YOUNG_BUCKET]
     titles = {'国内权益': 'A股主动权益', 'QDII/海外': 'QDII 主动与海外',
               '指数/指数增强': '指数与指数增强（含海外指数/增强）', '场内ETF/LOF': '场内 ETF / LOF',
-              '债券/固收': '债券与固收+', 'FOF': 'FOF'}
+              '债券/固收': '债券与固收+', 'FOF': 'FOF',
+              YOUNG_BUCKET: '新锐（成立 3-7 年 · 成立来年化 ≥18%）'}
     sel = {b: (picked.get(b) or [])[:PICK_N.get(b, 10)] for b in buckets}
     total = sum(len(v) for v in sel.values())
     L = []
@@ -985,11 +1015,12 @@ def render_md(rows, picked, stats=None, others=None, excl=None):
     A('- 指数与场内两块是“工具型”清单：A股行业/主题（通信、电子/信息、资源、煤炭、能源、银行、红利）、'
       '宽基增强与海外指数（德国 DAX 等），用来替代选股；同标的只留一只（场内按规模/流动性优先），'
       '买卖价差与折溢价自行留意。')
-    A('- 本口径下通过粗筛与硬门槛的候选 **%d 只**（A股主动权益 %d、QDII %d、指数与增强 %d、场内 %d、固收+ %d），'
+    A('- 本口径下通过粗筛与硬门槛的候选 **%d 只**（A股主动权益 %d、QDII %d、指数与增强 %d、场内 %d、固收+ %d、新锐 %d），'
       '页面展示前 %d 只（入选 %d），全量在 CSV 里，可按近5年/近10年/成立来年化、回撤、规模自行再筛。'
       % (sum(len(v) for v in picked.values()), len(picked.get('国内权益') or []),
          len(picked.get('QDII/海外') or []), len(picked.get('指数/指数增强') or []),
          len(picked.get('场内ETF/LOF') or []), len(picked.get('债券/固收') or []),
+         len(picked.get(YOUNG_BUCKET) or []),
          sum(min(len(picked.get(b) or []), PAGE_CAP.get(b, 90)) for b in PICK_N),
          sum(min(len(picked.get(b) or []), PICK_N.get(b, 10)) for b in PICK_N)))
     A('')
@@ -1205,7 +1236,7 @@ FEE_RE = re.compile(r'管理费率</td><td[^>]*>\s*([\d.]+)%')
 CUST_RE = re.compile(r'托管费率</td><td[^>]*>\s*([\d.]+)%')
 SALE_RE = re.compile(r'销售服务费率</td><td[^>]*>\s*([\d.]+)%')
 XB_KEYS = [('国内权益', 'x1'), ('QDII/海外', 'x2'), ('指数/指数增强', 'x3'),
-           ('场内ETF/LOF', 'x4'), ('债券/固收', 'x5')]
+           ('场内ETF/LOF', 'x4'), ('债券/固收', 'x5'), (YOUNG_BUCKET, 'x7')]
 _METRICS_CACHE = None
 
 
@@ -1330,6 +1361,9 @@ def cmd_html(args):
               u.get('r5w'), u.get('r10w')]
         yr = ' '.join('%s:%+.0f' % (k[2:], v) for k, v in sorted((m.get('yearly') or {}).items())[-6:])
         note = yr
+        if key == 'x7':
+            a_since = r.get('asince')
+            note = ('成立来年化 %s · %s' % (('%.1f%%' % a_since) if a_since is not None else '--', yr)).strip(' ·')
         if not sel and key != 'x6':
             note = ('备选 · ' + note) if note else '备选'
         if r.get('forced'):
