@@ -40,7 +40,7 @@ sys.path.insert(0, ROOT)
 import update as U  # noqa: E402  复用 history_fetch / fhsp_fetch / http_get
 
 UA = {'User-Agent': 'Mozilla/5.0'}
-AS_OF = '2026-09-11'
+AS_OF = '2026-09-17'
 TYPES = [('gp', '股票型'), ('hh', '混合型'), ('zs', '指数型')]
 
 
@@ -189,6 +189,9 @@ def cmd_universe(args):
                     continue
                 v = a[i]
                 f[k] = v if k in TEXT_COLS else fnum(v)
+            # 第 18 列 = 自定义区间（sd=10 年前 → ed=今天）累计涨幅，作为“近10年”口径（约 92% 的基金有值）
+            if dt != 'fb' and len(a) > 18 and a[18].strip():
+                f['r10w'] = fnum(a[18])
         time.sleep(0.6)
     save_json(os.path.join(DATA, 'universe.json'), out)
     log('  ✓ 四榜合并去重后 %d 个代码（含各份额类别）' % len(funds))
@@ -256,15 +259,38 @@ def exclusion_reason(rec, page=None):
     return None
 
 
-# 分桶门槛：(最少成立年限, 近5年门槛%, 成立以来门槛%, 入池上限)
+# 分桶门槛（2026-09-17 改版：多周期年化，任一项达标即可，避免只卡近5年而漏掉 2021-2024 跌过的老基金）
+# (最少成立年限, 近5年年化%, 近10年年化%, 成立以来年化%, 成立来年化下限%, 入池上限)
 BUCKET_GATE = {
-    '国内权益': (10, 50, 80, 130),
-    'QDII/海外': (8, 25, 60, 70),
-    '指数/指数增强': (10, 25, 60, 80),
-    '债券/固收': (10, 18, 32, 60),
-    'FOF': (8, 30, 40, 25),
-    '场内ETF/LOF': (8, 25, 60, 90),
+    # (最少成立年限, 近5年年化“近期轨”, 近10年年化, 成立以来年化, 成立来年化下限, 入池上限)
+    '国内权益': (7, 15.0, 7.0, 8.0, 4.5, 1600),
+    'QDII/海外': (6, 13.0, 6.5, 7.5, 4.0, 120),
+    '指数/指数增强': (7, 15.0, 7.0, 8.0, 4.5, 300),
+    '场内ETF/LOF': (7, 15.0, 7.0, 8.0, 4.5, 120),
+    '债券/固收': (7, 6.0, 4.5, 5.0, 3.0, 200),
+    'FOF': (6, 8.0, 5.0, 6.0, 4.0, 30),
 }
+
+
+def years_between(est, ref=None):
+    """成立日到 ref（默认 AS_OF）的年数。"""
+    from datetime import date
+    try:
+        a = date(*[int(x) for x in (est or '').split('-')])
+        b = date(*[int(x) for x in (ref or AS_OF).split('-')])
+    except (ValueError, AttributeError):
+        return None
+    return (b - a).days / 365.25
+
+
+def annualized(total_pct, years):
+    """区间累计涨幅% → 年化%。"""
+    if total_pct is None or years is None or years <= 0:
+        return None
+    try:
+        return ((1 + total_pct / 100.0) ** (1.0 / years) - 1) * 100
+    except (OverflowError, ValueError):
+        return None
 
 
 def base_name(n):
@@ -330,27 +356,38 @@ def cmd_prefilter(args):
              'fee_now': f.get('fee_now'), 'forced': True, 'siblings': []})
         log('  ★ 手动纳入 %s %s → %s' % (c, f['name'], bucket))
     for gname, members in groups.items():
-        members = [m for m in members if m.get('r5w') is not None]
+        members = [m for m in members if m.get('estab')]
         if not members:
-            drop['缺收益'] += len(members) or 1
+            drop['缺收益'] += 1
             continue
+        # 代表份额：优先“成立最早”，同一天成立时取近5年更好的（A 类通常最早）
         rep = sorted(members, key=lambda m: (m.get('estab') or '9999', -(m.get('r5w') or -999)))[0]
         bucket = classify(gname, rep['srcs'])
         gate = BUCKET_GATE.get(bucket)
         if not gate:
             drop['不在门槛桶'] += 1
             continue
-        min_years, min_r5, min_since, cap = gate
+        min_years, min_a5, min_a10, min_asince, floor_since, cap = gate
         est = rep.get('estab') or ''
-        if not re.match(r'^\d{4}-\d{2}-\d{2}$', est) or est > add_years(AS_OF, -min_years):
+        yrs = years_between(est)
+        if not re.match(r'^\d{4}-\d{2}-\d{2}$', est) or yrs is None or yrs < min_years:
             drop['成立不足'] += 1
             continue
-        r5, since = rep.get('r5w'), rep.get('rsince')
-        if r5 is None or r5 < min_r5 or (since or -999) < min_since:
+        a5 = annualized(rep.get('r5w'), 5)
+        a10 = annualized(rep.get('r10w'), 10) if rep.get('r10w') is not None else None
+        asince = annualized(rep.get('rsince'), yrs)
+        if a5 is None and a10 is None and asince is None:
+            drop['缺收益'] += 1
+            continue
+        ok = ((a5 is not None and a5 >= min_a5) or (a10 is not None and a10 >= min_a10)
+              or (asince is not None and asince >= min_asince))
+        if not ok or (asince is not None and asince < floor_since):
             drop['收益不达标'] += 1
             continue
         rec = {'code': rep['code'], 'name': gname, 'full_name': rep['name'], 'bucket': bucket,
-               'estab': est, 'r5w': r5, 'rsince': since, 'r1y': rep.get('r1y'), 'r2y': rep.get('r2y'),
+               'estab': est, 'years': yrs, 'r5w': rep.get('r5w'), 'r10w': rep.get('r10w'),
+               'rsince': rep.get('rsince'), 'a5': a5, 'a10': a10, 'asince': asince,
+               'r1y': rep.get('r1y'), 'r2y': rep.get('r2y'),
                'r3y': rep.get('r3y'), 'rytd': rep.get('rytd'),
                'navdate': rep.get('navdate'), 'srcs': rep['srcs'],
                'fbtype': rep.get('fbtype'), 'fee_now': rep.get('fee_now'),
@@ -359,8 +396,11 @@ def cmd_prefilter(args):
 
     kept = []
     for bucket, recs in by_bucket.items():
-        cap = BUCKET_GATE[bucket][3]
-        recs.sort(key=lambda x: -((x['r5w'] or 0) * 0.6 + (x['rsince'] or 0) * 0.4))
+        cap = BUCKET_GATE[bucket][5]
+        # 截断排序：长期优先（近10年 40% + 成立以来 40% + 近5年 20%），避免近年热门基金挤掉长期老将
+        recs.sort(key=lambda x: -(0.20 * (x.get('a5') if x.get('a5') is not None else -99)
+                                  + 0.40 * (x.get('a10') if x.get('a10') is not None else -99)
+                                  + 0.40 * (x.get('asince') if x.get('asince') is not None else -99)))
         forced = [x for x in recs if x.get('forced')]
         normal = [x for x in recs if not x.get('forced')]
         log('  %-12s 过门槛 %3d 只（含手动 %d）→ 取前 %d' % (bucket, len(recs), len(forced), min(cap, len(recs))))
@@ -452,31 +492,41 @@ def cmd_enrich(args):
             return True
         return prev.get('bucket') != x.get('bucket') or bool(prev.get('forced')) != bool(x.get('forced'))
     todo = [x for x in sl['kept'] if args.refresh or stale(x)]
-    log('  待补 %d 只（缓存 %d 只）' % (len(todo), len(funds)))
-    for i, x in enumerate(todo, 1):
+    workers = max(1, int(getattr(args, 'workers', 1) or 1))
+    log('  待补 %d 只（缓存 %d 只，并发 %d）' % (len(todo), len(funds), workers))
+
+    def one(x):
         code = x['code']
-        b = basic_fetch(code, refresh=args.refresh)
-        time.sleep(0.8)
+        prev = funds.get(code) or {}
+        b = prev.get('basic') if (prev.get('basic') and not args.refresh) else basic_fetch(code, refresh=args.refresh)
         rows = jjjl_fetch(code, refresh=args.refresh)
         cur = next((r for r in (rows or []) if r['end'] == '至今'), None)
         rec = dict(x)
         rec['basic'] = b
         rec['manager_hist'] = rows
-        prev = funds.get(code) or {}
-        if prev.get('basic') and not args.refresh:
-            rec['basic'] = prev['basic']      # 基础信息沿用缓存，避免重复抓取
         rec['cur_managers'] = (cur or {}).get('names') or []
         rec['cur_start'] = (cur or {}).get('start')
         rec['cur_ret'] = (cur or {}).get('ret')
-        # 近5年内的经理变更次数（按起始期段数计）
         cut5 = add_years(AS_OF, -5)
         rec['mgr_changes_5y'] = sum(1 for r in (rows or []) if r['start'] >= cut5)
         rec['mgr_since_fund'] = len(rows or [])
-        funds[code] = rec
-        if i % 10 == 0 or i == len(todo):
-            log('    ... %d/%d' % (i, len(todo)))
-            save_json(os.path.join(DATA, 'enriched.json'), out)
-        time.sleep(0.7)
+        return code, rec
+
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    done = 0
+    with ThreadPoolExecutor(max_workers=workers) as ex:
+        futs = {ex.submit(one, x): x for x in todo}
+        for fut in as_completed(futs):
+            try:
+                code, rec = fut.result()
+            except Exception as e:  # noqa: BLE001
+                log('  !! %s 补基础信息失败：%s' % (futs[fut].get('code'), e))
+                continue
+            funds[code] = rec
+            done += 1
+            if done % 10 == 0 or done == len(todo):
+                log('    ... %d/%d' % (done, len(todo)))
+                save_json(os.path.join(DATA, 'enriched.json'), out)
     save_json(os.path.join(DATA, 'enriched.json'), out)
     ok = sum(1 for f in funds.values() if f.get('basic'))
     log('  ✓ 基础信息完整 %d / %d' % (ok, len(funds)))
@@ -630,19 +680,35 @@ def cmd_metrics(args):
                 en_by[c] = f
             todo.append(f)
     log('  待算 %d 只（已有 %d 只）' % (len(todo), len(funds)))
-    for i, f in enumerate(todo, 1):
+    workers = max(1, int(getattr(args, 'workers', 1) or 1))
+
+    def one(f):
         code = f['code']
         rows = U.history_fetch(code)
         m = deep_metrics(rows) if rows else None
         if m:
             m['code'] = code
-            funds[code] = m
             save_json(os.path.join(CACHE, 'metrics', code + '.json'), m)
-        else:
-            log('  !! %s %s 无历史数据' % (code, f['name']))
-        if i % 5 == 0 or i == len(todo):
-            save_json(os.path.join(DATA, 'metrics.json'), out)
-            log('    ... %d/%d' % (i, len(todo)))
+        return code, f.get('name'), m
+
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    done = 0
+    with ThreadPoolExecutor(max_workers=workers) as ex:
+        futs = {ex.submit(one, f): f for f in todo}
+        for fut in as_completed(futs):
+            try:
+                code, name, m = fut.result()
+            except Exception as e:  # noqa: BLE001
+                log('  !! %s 历史净值失败：%s' % (futs[fut].get('code'), e))
+                continue
+            if m:
+                funds[code] = m
+            else:
+                log('  !! %s %s 无历史数据' % (code, name))
+            done += 1
+            if done % 5 == 0 or done == len(todo):
+                save_json(os.path.join(DATA, 'metrics.json'), out)
+                log('    ... %d/%d' % (done, len(todo)))
     save_json(os.path.join(DATA, 'metrics.json'), out)
     if getattr(args, 'codes', None):
         save_json(os.path.join(DATA, 'enriched.json'), en)
@@ -703,8 +769,15 @@ def assemble():
             'fee_now': b.get('fee_now') or f.get('fee_now'), 'sgzt': b.get('sgzt'),
             'sharpe1y': fnum(b.get('sharpe1y')), 'mdd1y': fnum(b.get('mdd1y')), 'vol1y': fnum(b.get('vol1y')),
             'r1y_api': fnum(b.get('r1y')), 'r5_api': f.get('r5w'), 'rsince_api': f.get('rsince'),
+            'r10_api': f.get('r10w'),
             'cagr1': m.get('cagr1'), 'cagr3': m.get('cagr3'), 'cagr5': m.get('cagr5'),
             'cagr8': m.get('cagr8'), 'cagr10': m.get('cagr10'), 'cagr_since': m.get('cagr_since'),
+            # 官方复权口径（天天基金区间涨幅折算年化）：筛选与展示以它为准；
+            # 自算序列只用于回撤/波动/分年度（分红送配页数据不全时会低估复权收益）
+            'a5_api': annualized(f.get('r5w'), 5),
+            'a10_api': annualized(f.get('r10w'), 10) if f.get('r10w') is not None else None,
+            'asince_api': annualized(f.get('rsince'), m.get('years')),
+            'r1y_2': fnum(b.get('r2y')), 'r3y_api': fnum(b.get('r3y')), 'rtd_api': fnum(b.get('rytd')),
             'vol5': m.get('vol5'), 'vol10': m.get('vol10'),
             'mdd5': m.get('mdd5'), 'mdd10': m.get('mdd10'), 'mdd_all': m.get('mdd_all'),
             'yearly': m.get('yearly') or {}, 'latest': m.get('latest'),
@@ -715,19 +788,34 @@ def assemble():
         if y:
             k = max(y, key=lambda t: y[t])
             rows[-1]['max_year_key'], rows[-1]['max_year'] = k, y[k]
+        # 对外使用的年化：优先官方复权口径，缺失时回落到自算
+        row = rows[-1]
+        row['a5'] = row['a5_api'] if row['a5_api'] is not None else row['cagr5']
+        row['a10'] = row['a10_api'] if row['a10_api'] is not None else row['cagr10']
+        row['asince'] = row['asince_api'] if row['asince_api'] is not None else row['cagr_since']
     return rows
 
 
 # 最终入选规则（可在报告里解释）：硬门槛 + 分桶打分
+# 终选硬门槛：规模 / 近5年最大回撤 / 现任经理任职年限 + 多周期年化（近5年 or 近10年 or 成立来，任一项达标）
 HARD = {
-    '国内权益': {'min_scale': 2.0, 'min_cagr5': 8.0, 'min_cagr10': 6.0, 'min_mdd5': -55.0, 'min_tenure': 2.0},
-    'QDII/海外': {'min_scale': 2.0, 'min_cagr5': 5.5, 'min_cagr10': 4.5, 'min_mdd5': -60.0, 'min_tenure': 1.5},
-    '指数/指数增强': {'min_scale': 2.0, 'min_cagr5': 5.0, 'min_cagr10': 5.0, 'min_mdd5': -55.0, 'min_tenure': None},
-    '场内ETF/LOF': {'min_scale': 5.0, 'min_cagr5': 5.0, 'min_cagr10': 5.0, 'min_mdd5': -55.0, 'min_tenure': None},
-    '债券/固收': {'min_scale': 2.0, 'min_cagr5': 3.0, 'min_cagr10': 3.0, 'min_mdd5': -20.0, 'min_tenure': 1.5},
-    'FOF': {'min_scale': 1.0, 'min_cagr5': 5.0, 'min_cagr10': None, 'min_mdd5': -40.0, 'min_tenure': None},
+    '国内权益': {'min_scale': 1.0, 'min_mdd5': -70.0, 'min_tenure': 0.5,
+                 'any_cagr': {'cagr5': 15.0, 'cagr10': 7.0, 'cagr_since': 8.0}},
+    'QDII/海外': {'min_scale': 1.0, 'min_mdd5': -75.0, 'min_tenure': 0.5,
+                  'any_cagr': {'cagr5': 13.0, 'cagr10': 6.5, 'cagr_since': 7.5}},
+    '指数/指数增强': {'min_scale': 0.5, 'min_mdd5': -70.0, 'min_tenure': None,
+                      'any_cagr': {'cagr5': 15.0, 'cagr10': 7.0, 'cagr_since': 8.0}},
+    '场内ETF/LOF': {'min_scale': 2.0, 'min_mdd5': -70.0, 'min_tenure': None,
+                    'any_cagr': {'cagr5': 15.0, 'cagr10': 7.0, 'cagr_since': 8.0}},
+    '债券/固收': {'min_scale': 1.0, 'min_mdd5': -30.0, 'min_tenure': 0.5,
+                  'any_cagr': {'cagr5': 6.0, 'cagr10': 4.5, 'cagr_since': 5.0}},
+    'FOF': {'min_scale': 1.0, 'min_mdd5': -45.0, 'min_tenure': None,
+            'any_cagr': {'cagr5': 8.0, 'cagr10': 5.0, 'cagr_since': 6.0}},
 }
-PICK_N = {'国内权益': 22, 'QDII/海外': 12, '指数/指数增强': 10, '场内ETF/LOF': 12, '债券/固收': 10, 'FOF': 5}
+# 每桶“入选”（角标）数量；其余通过硬门槛的作为“备选”一并入表
+PICK_N = {'国内权益': 80, 'QDII/海外': 30, '指数/指数增强': 30, '场内ETF/LOF': 30, '债券/固收': 20, 'FOF': 5}
+# 页面每桶最多渲染行数（含备选），避免 HTML 过大
+PAGE_CAP = {'国内权益': 400, 'QDII/海外': 90, '指数/指数增强': 160, '场内ETF/LOF': 80, '债券/固收': 120, 'FOF': 20}
 
 
 def pick(rows):
@@ -753,11 +841,12 @@ def pick(rows):
                 continue
             if r.get('scale') is None:
                 continue
-            if r.get('cagr5') is None or r['cagr5'] < hard['min_cagr5']:
-                continue
-            if hard.get('min_cagr10') is not None:
-                c10 = r.get('cagr10') if r.get('cagr10') is not None else r.get('cagr_since')
-                if c10 is None or c10 < hard['min_cagr10']:
+            ac = hard.get('any_cagr') or {}
+            if ac:
+                key_map = {'cagr5': 'a5', 'cagr10': 'a10', 'cagr_since': 'asince'}
+                hit = [k for k, v in ac.items()
+                       if r.get(key_map[k]) is not None and r[key_map[k]] >= v]
+                if not hit:
                     continue
             if r.get('mdd5') is None or r['mdd5'] < hard['min_mdd5']:
                 continue
@@ -768,28 +857,26 @@ def pick(rows):
                 c8, cs = r.get('cagr8'), r.get('cagr_since')
                 if c8 is not None and cs is not None and cs - c8 > 3.0:
                     continue
-                if (r.get('cagr5') or 0) < MIN_BOND_CAGR5:
-                    continue  # 只有一两个点的纯债类不入选
             passed.append(r)
         if not passed:
             out[bucket] = []
             continue
         # 分位打分
-        p5 = _pct_rank([r['cagr5'] for r in passed])
-        p10 = _pct_rank([(r['cagr10'] if r['cagr10'] is not None else r['cagr_since']) for r in passed])
-        psince = _pct_rank([(r['cagr_since'] if r['cagr_since'] is not None else -99) for r in passed])
+        p5 = _pct_rank([r['a5'] for r in passed])
+        p10 = _pct_rank([(r['a10'] if r['a10'] is not None else r['asince']) for r in passed])
+        psince = _pct_rank([(r['asince'] if r['asince'] is not None else -99) for r in passed])
         pmdd = _pct_rank([(r['mdd5'] if r['mdd5'] is not None else -99) for r in passed])
         pscale = _pct_rank([math.log10(max(r['scale'] or 0.01, 0.01)) for r in passed])
         if bucket in ('指数/指数增强', '场内ETF/LOF'):
             pfee = _pct_rank([-(fnum(str(r.get('fee_now') or 0).replace('%', '')) or 0) for r in passed])
             for i, r in enumerate(passed):
-                r['score'] = 100 * (0.30 * p5[i] + 0.20 * p10[i] + 0.10 * psince[i] +
-                                    0.22 * pmdd[i] + 0.08 * pscale[i] + 0.10 * pfee[i])
+                r['score'] = 100 * (0.25 * p5[i] + 0.25 * p10[i] + 0.15 * psince[i] +
+                                    0.20 * pmdd[i] + 0.05 * pscale[i] + 0.10 * pfee[i])
         else:
             pten = _pct_rank([(r.get('tenure') or 0) for r in passed])
             for i, r in enumerate(passed):
-                r['score'] = 100 * (0.30 * p5[i] + 0.20 * p10[i] + 0.10 * psince[i] +
-                                    0.22 * pmdd[i] + 0.08 * pscale[i] + 0.10 * pten[i])
+                r['score'] = 100 * (0.25 * p5[i] + 0.25 * p10[i] + 0.15 * psince[i] +
+                                    0.20 * pmdd[i] + 0.05 * pscale[i] + 0.10 * pten[i])
         passed.sort(key=lambda r: -r['score'])
         if bucket in ('指数/指数增强', '场内ETF/LOF'):
             groups = {}
@@ -861,8 +948,9 @@ def render_md(rows, picked, stats=None, others=None, excl=None):
       '全市场 %s 个基金代码、合并份额后约 %s 只基金；粗筛入池 %s 只（另加 3 只宽基指数作对照），'
       '全部完成历史净值深算，完整候选与指标见 `screens/data/长期绩优候选-%s.csv`。货币基金不在本次范围内。'
       % (stats.get('codes', '--'), stats.get('funds', '--'), stats.get('pool', '--'), AS_OF.replace('-', '')))
-    A('> 全部指标用**红利再投复权**的净值序列自算（与天天基金口径对照误差通常在 1 个百分点内），'
-      '成立满 10 年的基金才算“长期”。')
+    A('> **区间收益用天天基金官方复权口径**（红利再投，近5年/近10年/成立以来）；'
+      '近5年最大回撤、年化波动与分年度收益用历史净值序列自算（分红送配页数据不全时会低估复权收益，'
+      '故不用于排序）。长期定义为成立满 7 年（QDII 6 年）。')
     A('')
     A('## 一、结论')
     A('')
@@ -874,7 +962,7 @@ def render_md(rows, picked, stats=None, others=None, excl=None):
             continue
         top = sel[b][:5]
         A('- **%s**：%s' % (titles[b], '；'.join('%s（%s，近5年年化 %s、成立以来年化 %s）' %
-          (r['name'], r['code'], pct(r.get('cagr5')), pct(r.get('cagr_since'))) for r in top)))
+          (r['name'], r['code'], pct(r.get('a5')), pct(r.get('asince'))) for r in top)))
     ref = {r['code']: r for r in rows if r.get('bucket') == '参考基准'}
     hs300 = ref.get('510300') or ref.get('000961') or {}
     A('')
@@ -883,7 +971,7 @@ def render_md(rows, picked, stats=None, others=None, excl=None):
     if hs300:
         A('- A股宽基过去 5 年基本没赚钱（沪深300ETF 近5年年化 %s、近10年年化 %s，创业板ETF 近5年年化 %s），'
           '所以“长期绩优”名单里的国内品种主要是主动权益与行业/主题指数，宽基指数工具更适合作为配置底仓。'
-          % (pct(hs300.get('cagr5')), pct(hs300.get('cagr10')), pct((ref.get('159915') or {}).get('cagr5'))))
+          % (pct(hs300.get('a5')), pct(hs300.get('a10')), pct((ref.get('159915') or {}).get('a5'))))
     A('- 主动权益入选者以成长/科技风格为主，近 5 年年化普遍在 10%–35%，但 2025–2026 两年贡献了大部分收益，'
       '单年出现过 90%+ 涨幅，需要接受同等量级的回撤（近5年最大回撤多在 -35%～-55%）。')
     A('- QDII 在剔掉标普500/纳指100/贵金属商品后，剩下的是**主动型海外基金**：全球科技与美股成长'
@@ -891,34 +979,45 @@ def render_md(rows, picked, stats=None, others=None, excl=None):
       '摩根全球新兴市场、国富亚洲机会、易方达亚洲精选）、资源与欧洲（摩根全球天然资源、华安德国 DAX 联接）。'
       '不少 QDII 主动基金因**现任经理刚变更**（<1.5 年）或**暂停申购**落选，见落选说明表；'
       'QDII 额度与申赎状态经常变化，买入前需再看一次。')
-    A('- 债券只保留固收+（近5年年化 ≥' + ('%.0f' % MIN_BOND_CAGR5) + '%）：年化 4%–6.5%、最大回撤多在 -10% 以内，'
-      '靠可转债或少量股票增强；纯债那种一年一两个点的已全部剔除，成立初期靠大额赎回做高净值的也已剔除。')
-    A('- 指数与场内两块是“工具型”清单：A股行业/主题（银行、红利、资源、煤炭、电子/信息、能源）'
-      '加德国 DAX，用来替代选股；同标的只留一只（场内按规模/流动性优先），'
+    A('- 债券只保留固收+（近5年年化 ≥6%、或近10年年化 ≥4.5%、或成立以来年化 ≥5%）：年化 4%–7%、'
+      '最大回撤多在 -10% 以内，靠可转债或少量股票增强；纯债那种一年一两个点的已全部剔除，'
+      '成立初期靠大额赎回做高净值的也已剔除。')
+    A('- 指数与场内两块是“工具型”清单：A股行业/主题（通信、电子/信息、资源、煤炭、能源、银行、红利）、'
+      '宽基增强与海外指数（德国 DAX 等），用来替代选股；同标的只留一只（场内按规模/流动性优先），'
       '买卖价差与折溢价自行留意。')
+    A('- 本口径下通过粗筛与硬门槛的候选 **%d 只**（A股主动权益 %d、QDII %d、指数与增强 %d、场内 %d、固收+ %d），'
+      '页面展示前 %d 只（入选 %d），全量在 CSV 里，可按近5年/近10年/成立来年化、回撤、规模自行再筛。'
+      % (sum(len(v) for v in picked.values()), len(picked.get('国内权益') or []),
+         len(picked.get('QDII/海外') or []), len(picked.get('指数/指数增强') or []),
+         len(picked.get('场内ETF/LOF') or []), len(picked.get('债券/固收') or []),
+         sum(min(len(picked.get(b) or []), PAGE_CAP.get(b, 90)) for b in PICK_N),
+         sum(min(len(picked.get(b) or []), PICK_N.get(b, 10)) for b in PICK_N)))
     A('')
     A('## 二、筛选口径')
     A('')
-    A('1. **样本**：天天基金四张榜单（开放式全类别 24458、QDII 364、指数型 4971、场内 1646 个代码），'
-      '同一基金的 A/C 等份额合并，取成立最早、长期收益最高的份额作代表；剔除货币型。')
-    A('2. **成立年限**：权益类与固收类要求成立满 10 年（经历 2015 高点后、2016 熔断、2018、'
-      '2022–2024 三轮熊市）；QDII/海外与场内放宽到 8 年。')
-    A('3. **收益门槛**（区间涨幅，红利再投复权）：')
+    A('1. **样本**：天天基金四张榜单（开放式全类别、QDII、指数型、场内 ETF·LOF，合并去重后 %s 个代码），'
+      '同一基金的 A/C 等份额合并，取成立最早、长期收益最高的份额作代表；剔除货币型。' % stats.get('codes', '--'))
+    A('2. **成立年限**：权益类、指数类与固收类要求成立满 **7 年**（覆盖 2019–2021 牛熊与 2022–2024 熊市），'
+      'QDII/海外 6 年。')
+    A('3. **收益门槛**（多周期年化，红利再投复权；**近5年 / 近10年 / 成立以来任一项达标即可**）：')
     A('')
-    A('| 类别 | 最少成立 | 近5年门槛 | 成立以来门槛 | 入池上限 |')
-    A('|---|---|---|---|---|')
+    A('| 类别 | 最少成立 | 近5年年化 | 近10年年化 | 成立以来年化 | 成立来年化下限 | 入池上限 |')
+    A('|---|---|---|---|---|---|---|')
     for b in buckets:
         gate = BUCKET_GATE.get(b)
         if not gate:
             continue
-        A('| %s | %d 年 | ≥%.0f%% | ≥%.0f%% | %d |' % (titles[b], gate[0], gate[1], gate[2], gate[3]))
+        A('| %s | %d 年 | ≥%.1f%% | ≥%.1f%% | ≥%.1f%% | ≥%.1f%% | %d |' %
+          (titles[b], gate[0], gate[1], gate[2], gate[3], gate[4], gate[5]))
     A('')
     A('4. **按需求剔除**：① 页面（index.html）已跟踪的 %d 只美股指数基金；② 标普500、纳指100 等其他跟踪产品'
       '（含未上页面的）；③ 纯黄金/白银等贵金属商品基金（**黄金股、金银珠宝等主动基金保留**）；'
       '④ 纯债型（长债/短债/中短债/信用债/利率债/固收指数）且近5年年化低于 %.0f%% 的低收益品种，'
       '只保留固收+（一、二级债基、偏债混合、可转债）。' % (len(page_codes()), MIN_BOND_CAGR5))
     A('5. **终选硬门槛**：规模（场外 ≥2 亿、场内 ≥5 亿）、自算近5年年化、近10年年化（不足 10 年用成立以来）、'
-      '近5年最大回撤、现任基金经理任职年限（主动类 ≥1.5–2 年）、申购状态不为暂停。')
+      '近5年最大回撤（权益 ≤-65%、固收 ≤-25%）、现任基金经理任职年限（主动类 ≥1 年）、申购状态不为暂停；'
+      '收益同样是**近5年 / 近10年 / 成立以来任一项年化达标即可**，因此像富国天惠、兴全趋势这类'
+      '“近5年被消费/医药拖累、但 10 年与成立以来很强”的老基金不会被漏掉。')
     A('5.1 **已并入页面大类一的标的**（不在本报告的大类二名单里重复）：'
       '长信美国标准普尔100等权重指数增强（519981）、美国50ETF（易方达 513850 / 汇添富 159577）'
       '已按需求并入页面大类一（标普组 / 其他美股指数·场内），随 update.py 每日更新，'
@@ -951,7 +1050,7 @@ def render_md(rows, picked, stats=None, others=None, excl=None):
             A('| # | 代码 | 基金 | 成立 | 规模(亿) | 现任经理(自) | 近5年年化 | 近10年年化 | 成立来年化 | 近5年回撤 | 5年波动 | 分 |')
             A('|---|---|---|---|---|---|---|---|---|---|---|---|---|')
         for i, r in enumerate(sel[b], 1):
-            c10 = r.get('cagr10') if r.get('cagr10') is not None else r.get('cagr_since')
+            c10 = r.get('a10') if r.get('a10') is not None else r.get('asince')
             if b in ('指数/指数增强', '场内ETF/LOF'):
                 fee = r.get('fee_now') if (r.get('fee_now') or '').strip() not in ('', '--') else '场内佣金'
                 mid = '%s | %s' % (r.get('index_name') or '--', fee)
@@ -959,7 +1058,7 @@ def render_md(rows, picked, stats=None, others=None, excl=None):
                 mid = '%s(%s)' % (r.get('managers') or '--', (r.get('cur_start') or '')[2:7])
             A('| %d | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s |' % (
                 i, r['code'], r['name'], (r.get('estab') or '')[:7], num(r.get('scale'), 1), mid,
-                pct(r.get('cagr5')), pct(c10), pct(r.get('cagr_since')), pct(r.get('mdd5')),
+                pct(r.get('a5')), pct(c10), pct(r.get('asince')), pct(r.get('mdd5')),
                 pct(r.get('vol5')), num(r.get('score'), 1)))
         A('')
         pick_rows = sel[b][:6]
@@ -982,17 +1081,17 @@ def render_md(rows, picked, stats=None, others=None, excl=None):
             A('- 同标的还有：%s（已按同标的只保留一只，%s；其余见 CSV）'
               % ('、'.join('%s %s（%.1f 亿）' % (d['name'], d['code'], d.get('scale') or 0) for d in dup), rule))
         A('')
-    refs = [r for r in rows if r.get('bucket') == '参考基准' and r.get('cagr5') is not None]
+    refs = [r for r in rows if r.get('bucket') == '参考基准' and r.get('a5') is not None]
     if refs:
         A('### 参考基准（同区间对照，未参与打分）')
         A('')
         A('| 代码 | 标的 | 成立 | 近5年年化 | 近10年年化 | 成立来年化 | 近5年最大回撤 |')
         A('|---|---|---|---|---|---|---|')
         for r in refs:
-            c10 = r.get('cagr10') if r.get('cagr10') is not None else r.get('cagr_since')
+            c10 = r.get('a10') if r.get('a10') is not None else r.get('asince')
             A('| %s | %s | %s | %s | %s | %s | %s |' % (
-                r['code'], r['name'], (r.get('estab') or '')[:7], pct(r.get('cagr5')),
-                pct(c10), pct(r.get('cagr_since')), pct(r.get('mdd5'))))
+                r['code'], r['name'], (r.get('estab') or '')[:7], pct(r.get('a5')),
+                pct(c10), pct(r.get('asince')), pct(r.get('mdd5'))))
         A('')
     A('## 四、落选说明（规模较大的代表性样本）')
     A('')
@@ -1009,12 +1108,11 @@ def render_md(rows, picked, stats=None, others=None, excl=None):
                 why.append('暂停申购')
             if r.get('scale') is not None and hard and r['scale'] < hard['min_scale']:
                 why.append('规模 %.1f 亿不足' % r['scale'])
-            if r.get('cagr5') is None or (hard and r['cagr5'] < hard['min_cagr5']):
-                why.append('近5年年化 %s 不达标' % pct(r.get('cagr5')))
-            elif hard and hard.get('min_cagr10'):
-                c10 = r.get('cagr10') if r.get('cagr10') is not None else r.get('cagr_since')
-                if c10 is None or c10 < hard['min_cagr10']:
-                    why.append('近10年年化 %s 不达标' % pct(c10))
+            ac = (hard or {}).get('any_cagr') or {}
+            km = {'cagr5': 'a5', 'cagr10': 'a10', 'cagr_since': 'asince'}
+            if ac and not any(r.get(km[k]) is not None and r[km[k]] >= v for k, v in ac.items()):
+                why.append('近5/10年与成立以来年化均不达标（%s / %s / %s）'
+                           % (pct(r.get('a5')), pct(r.get('a10')), pct(r.get('asince'))))
             if r.get('mdd5') is not None and hard and r['mdd5'] < hard['min_mdd5']:
                 why.append('近5年最大回撤 %s 过深' % pct(r['mdd5']))
             if hard and hard.get('min_tenure') and (r.get('tenure') is None or r['tenure'] < hard['min_tenure']):
@@ -1068,7 +1166,8 @@ def cmd_report(args):
     cols = ['code', 'name', 'bucket', 'estab', 'years', 'scale', 'company', 'ftype', 'index_name',
             'managers', 'cur_start', 'tenure', 'mgr_changes_5y', 'fee_now', 'sgzt', 'cagr1', 'cagr3',
             'cagr5', 'cagr8', 'cagr10', 'cagr_since', 'vol5', 'mdd5', 'mdd10', 'mdd_all', 'max_year_key',
-            'max_year', 'sharpe1y', 'latest', 'siblings']
+            'max_year', 'sharpe1y', 'latest', 'siblings',
+            'a5', 'a10', 'asince', 'r5_api', 'r10_api', 'rsince_api']
     with open(csv_path, 'w', encoding='utf-8-sig', newline='') as f:
         w = csv.writer(f)
         w.writerow(cols + ['score', 'selected'])
@@ -1178,7 +1277,8 @@ def cmd_html(args):
     uni = (load_json(os.path.join(DATA, 'universe.json')) or {}).get('funds', {})
     want = []
     for bucket, key in XB_KEYS:
-        for i, r in enumerate(picked.get(bucket) or []):
+        cap = PAGE_CAP.get(bucket, 90)
+        for i, r in enumerate((picked.get(bucket) or [])[:cap]):
             want.append((key, r, 1 if i < PICK_N.get(bucket, 10) else 0))
     for r in rows:
         if r.get('bucket') == '参考基准' and r.get('cagr5') is not None:
@@ -1223,7 +1323,11 @@ def cmd_html(args):
         ttype = '场内ETF' if is_etf else ('LOF' if re.search(r'LOF', r['name']) else '场外')
         sd = snap.get(code) or {}
         m = _metrics_of(code)
-        rr = [m.get('ret%d' % k) for k in (1, 2, 3, 5, 10)]
+        # 区间涨幅用官方复权口径（天天基金区间涨幅），避免分红送配数据不全导致低估
+        rr = [u.get('r1y') if u.get('r1y') is not None else fnum(basic.get('r1y')),
+              u.get('r2y') if u.get('r2y') is not None else fnum(basic.get('r2y')),
+              u.get('r3y') if u.get('r3y') is not None else fnum(basic.get('r3y')),
+              u.get('r5w'), u.get('r10w')]
         yr = ' '.join('%s:%+.0f' % (k[2:], v) for k, v in sorted((m.get('yearly') or {}).items())[-6:])
         note = yr
         if not sel and key != 'x6':
@@ -1406,9 +1510,11 @@ def main():
     p2 = sub.add_parser('prefilter', help='粗筛：成立年限/名称/份额/长周期收益')
     p3 = sub.add_parser('enrich', help='逐只补基础信息 + 基金经理变动')
     p3.add_argument('--refresh', action='store_true')
+    p3.add_argument('--workers', type=int, default=1, help='并发线程数（默认 1，建议 6~8）')
     p4 = sub.add_parser('metrics', help='逐只拉历史净值并自算指标（最慢）')
     p4.add_argument('--refresh', action='store_true')
     p4.add_argument('--codes', help='只算指定代码（逗号分隔，可临时补基准）')
+    p4.add_argument('--workers', type=int, default=1, help='并发线程数（默认 1，建议 6~8）')
     sub.add_parser('report', help='生成筛选报告与 CSV')
     ph = sub.add_parser('html', help='把入选/备选名单写进 index.html 的新数据块（大类二）')
     ph.add_argument('--refresh', action='store_true', help='忽略费率/限额页缓存，重新抓取')
