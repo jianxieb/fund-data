@@ -443,7 +443,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 <details class="scope" open>
   <summary>口径说明（点击折叠）</summary>
   <ol>
-    <li><b>数据来源</b>：基于国内长期绩优候选里的指数型基金，按“跟踪指数”名称归并；主表只保留市场常用的 12 个宽基与微盘指数，红利相关基金全部移到独立明细表，不再罗列低知名度行业主题指数。</li>
+    <li><b>数据来源</b>：主表基于国内长期绩优候选里的指数型基金，按“跟踪指数”名称归并；红利明细直接读取全量筛选缓存中的已完成净值复权与风险计算产品，不受 97 只候选入选限制。主表只保留 12 个常用宽基与微盘指数。</li>
     <li><b>基金口径</b>：指数行的收益、近5年最大回撤和波动率都是同一指数下候选基金的<b>中位数</b>，用于观察可投资产品表现，不是指数官方点位收益。</li>
     <li><b>收益口径</b>：近1/2/3/5/10年收益按红利再投复权后的基金净值计算；右下角「累计/年化」开关会同步切换本表。</li>
     <li><b>代表基金</b>：优先选择当前候选池中规模较大的基金，仅作为该指数的产品入口，不代表推荐。</li>
@@ -3561,6 +3561,19 @@ var CNIDX_DEFS=[
   {name:'北证50',bucket:'宽基',re:/^北证50/},
   {name:'科创创业50',bucket:'宽基',re:/^中证科创创业50指数$/}
 ];
+/* 红利指数基金独立明细：来自 screens/.cache 中已完成净值复权与风险计算的基金，不受长期候选入选限制。 */
+var DIVIDEND_FUNDS=[
+ {c:'501029',n:'华宝标普中国A股红利机会ETF联接A(LOF)',t:'场外',tp:'指数型-股票',ix:'标普中国A股红利机会指数',sz:13.3182,r:[3.4932,38.1878,28.9734,43.1713,null],mdd5:-17.4713,vol5:15.6699,tag:'参考'},
+ {c:'510880',n:'红利ETF华泰柏瑞',t:'场内ETF',tp:'指数型-股票',ix:'上证红利指数',sz:222.7580,r:[12.3971,29.8239,25.4645,26.1887,101.9558],mdd5:-17.1817,vol5:16.5553,tag:'参考'},
+ {c:'501059',n:'西部利得国企红利指数增强A',t:'场外',tp:'指数型-股票',ix:'中证国有企业红利指数',sz:2.3565,r:[6.5456,32.8042,21.7615,20.8025,null],mdd5:-17.5946,vol5:16.2710,tag:'入选'},
+ {c:'005561',n:'创金合信中证红利低波动指数A',t:'场外',tp:'指数型-股票',ix:'中证红利低波动指数',sz:16.9257,r:[0.6015,23.0059,21.9559,34.9218,null],mdd5:-14.1057,vol5:15.2626,tag:'参考'},
+ {c:'007466',n:'华泰柏瑞中证红利低波ETF联接A',t:'场外',tp:'指数型-股票',ix:'中证红利低波动指数',sz:65.0624,r:[0.9040,20.2383,18.8724,30.2080,null],mdd5:-13.8837,vol5:15.0345,tag:'备选'},
+ {c:'512890',n:'红利低波ETF华泰柏瑞',t:'场内ETF',tp:'指数型-股票',ix:'中证红利低波动指数',sz:312.8978,r:[1.6066,25.6340,25.0657,38.1033,null],mdd5:-14.8223,vol5:16.1507,tag:'入选'},
+ {c:'090010',n:'大成中证红利指数A',t:'场外',tp:'指数型-股票',ix:'中证红利指数',sz:21.9301,r:[3.1622,24.5080,16.9857,16.5818,115.2523],mdd5:-15.6237,vol5:15.3015,tag:'备选'},
+ {c:'100032',n:'富国中证红利指数增强A',t:'场外',tp:'指数型-股票',ix:'中证红利指数',sz:47.3533,r:[0.7055,20.8191,13.5478,12.2021,61.5783],mdd5:-15.9073,vol5:14.8423,tag:'参考'},
+ {c:'161907',n:'万家中证红利ETF联接A',t:'场外',tp:'指数型-股票',ix:'中证红利指数',sz:3.0783,r:[1.9303,20.3329,12.2624,14.4717,100.1323],mdd5:-15.1972,vol5:15.2054,tag:'参考'},
+ {c:'007751',n:'景顺长城沪港深红利成长低波指数A',t:'场外',tp:'指数型-股票',ix:'中证沪港深红利成长低波动人民币指数',sz:23.3183,r:[-0.5911,27.9034,30.8236,47.5163,null],mdd5:-13.1360,vol5:13.5641,tag:'备选'}
+];
 var curCnIdxCat='全部';
 function cnIdxNorm(s){
   return String(s||'').replace(/\s+/g,'').replace(/指数\((价格|收益)\)$/,'指数');
@@ -3600,19 +3613,26 @@ function cnIdxBuildRows(){
 function cnIdxDividendType(ix){
   var s=cnIdxNorm(ix);
   if(/红利低波/.test(s))return '红利低波';
+  if(/上证红利/.test(s))return '上证红利';
   if(/国有企业红利/.test(s))return '国企红利';
   if(/沪港深.*红利/.test(s))return '沪港深红利';
   if(/中证红利/.test(s))return '中证红利';
+  if(/红利机会/.test(s))return '红利机会';
   return '其他红利';
 }
 function cnIdxDividendFunds(){
-  return (typeof EXTRA!=='undefined'?EXTRA:[]).filter(function(f){
-    return ['x3','x4','x6','x7'].indexOf(f.g)>=0&&/红利/.test(cnIdxNorm(f.ix));
-  }).sort(function(a,b){
-    var order={'中证红利':1,'红利低波':2,'国企红利':3,'沪港深红利':4,'其他红利':5};
+  var map={};
+  DIVIDEND_FUNDS.forEach(function(f){map[f.c]=f;});
+  (typeof EXTRA!=='undefined'?EXTRA:[]).forEach(function(f){
+    if(['x3','x4','x6','x7'].indexOf(f.g)>=0&&/红利/.test(cnIdxNorm(f.ix))&&!map[f.c])map[f.c]=f;
+  });
+  return Object.keys(map).map(function(k){return map[k];}).sort(function(a,b){
+    var order={'上证红利':1,'红利机会':2,'中证红利':3,'红利低波':4,'国企红利':5,'沪港深红利':6,'其他红利':7};
     var ta=order[cnIdxDividendType(a.ix)]||9, tb=order[cnIdxDividendType(b.ix)]||9;
     if(ta!==tb)return ta-tb;
-    if(a.sel!==b.sel)return (b.sel?1:0)-(a.sel?1:0);
+    var sa=a.tag||(a.sel?'入选':'备选'), sb=b.tag||(b.sel?'入选':'备选');
+    var rank={'入选':0,'备选':1,'参考':2};
+    if(rank[sa]!==rank[sb])return rank[sa]-rank[sb];
     return (b.sz||0)-(a.sz||0);
   });
 }
@@ -3735,7 +3755,7 @@ function renderCnDividendTable(){
       cell(f.mdd5==null?'--':f.mdd5.toFixed(1)+'%',f.mdd5==null?'na':'down')+
       cell(f.vol5==null?'--':f.vol5.toFixed(1)+'%',f.vol5==null?'na':'')+
       cell(f.sz==null?'--':f.sz.toFixed(1))+
-      cell(f.sel?'入选':'备选','l')+
+      cell(f.tag||(f.sel?'入选':'备选'),'l')+
       '</tr>';
   }).join('');
   if(!body)body='<tr><td colspan="14" class="na">当前筛选没有匹配的红利相关基金</td></tr>';
