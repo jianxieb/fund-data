@@ -41,6 +41,20 @@ header h1{margin:0 0 8px;font-size:22px}
 header .meta{color:#c8d3e2;font-size:12.5px}
 header .meta b{color:#fff}
 .wrap{max-width:1640px;margin:0 auto;padding:20px}
+/* 顶层双视图：海外指数 / 国内长期绩优 */
+.pagebar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 14px;padding:9px 12px;
+  background:var(--card);border:1px solid var(--line);border-radius:10px;position:sticky;top:0;z-index:40;
+  box-shadow:0 2px 10px rgba(16,24,40,.08)}
+.pageswitch{display:flex;gap:4px;padding:3px;background:#eef2f7;border-radius:12px}
+.pagebtn{border:0;background:transparent;border-radius:9px;padding:7px 16px;font-size:14px;color:var(--sub);cursor:pointer;white-space:nowrap}
+.pagebtn:hover{color:var(--ink)}
+.pagebtn.active{background:#fff;color:var(--blue);box-shadow:0 1px 5px rgba(16,24,40,.12);font-weight:600}
+.pagehint{margin-left:auto;color:var(--sub);font-size:12px}
+.pageview{display:none}
+.pageview.active{display:block}
+[data-pv]{display:none}
+[data-pv].active{display:inline}
+body[data-page="cn"] .page-only-us{display:none!important}
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;margin:16px 0;box-shadow:0 1px 3px rgba(16,24,40,.05)}
 .card>h2{margin:0;padding:13px 18px;font-size:16px;background:#f0f3f7;border-bottom:1px solid var(--line);border-radius:10px 10px 0 0;display:flex;align-items:center;flex-wrap:wrap}
 .card>h2 small{color:var(--sub);font-weight:normal;font-size:12px;margin-left:6px}
@@ -132,7 +146,7 @@ button.act:hover{border-color:#9db4d8;color:var(--ink);background:#fff}
 .pickpanel{height:100%;display:flex;flex-direction:column;min-height:0;margin:0}
 .pickhead{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .pickhead .phead{margin:0}
-.vizright{position:sticky;top:8px}
+.vizright{position:sticky;top:64px}
 .bmbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:0 2px 8px}
 .bmbar .phead{margin:0}
 .bmbar .opt{color:var(--sub);font-size:12.5px;display:flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap}
@@ -182,7 +196,7 @@ thead th.frz{z-index:4}
 tbody td.frz{background:var(--card)}
 tbody tr:nth-child(even) td.frz{background:#fafbfd}
 tbody tr:hover td.frz{background:#f2f6fb}
-thead th{background:var(--th);color:#fff;font-size:12.5px;font-weight:600;padding:9px 8px;text-align:right;white-space:nowrap;position:sticky;top:0;z-index:3}
+thead th{background:var(--th);color:#fff;font-size:12.5px;font-weight:600;padding:9px 8px;text-align:right;white-space:nowrap;position:sticky;top:56px;z-index:3}
 table.sortable thead th{cursor:pointer;user-select:none}
 thead th.l{text-align:left}
 thead th:hover{background:#31415c}
@@ -227,6 +241,10 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   header h1{font-size:18px}
   .wrap{padding:12px}
   .stats{grid-template-columns:repeat(2,1fr)}
+  .pagebar{top:0;padding:8px;gap:7px}
+  .pageswitch{width:100%}
+  .pagebtn{flex:1;padding:7px 9px}
+  .pagehint{display:none}
 }
 /* 打印：19 列全部保留，A4 横向 + 紧凑字号把整张表塞进一页宽（纵向可跨页，行不跨页断开） */
 @page{size:A4 landscape;margin:8mm}
@@ -255,22 +273,41 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   .card{break-inside:auto}
   .card,.stat,.notes{border-radius:0}
   .stats{grid-template-columns:repeat(4,1fr)}
+  .pageview{display:none!important}
+  .pageview.active{display:block!important}
+  [data-pv]{display:none!important}
+  [data-pv].active{display:inline!important}
 }
 </style>
 </head>
 <body>
 <header>
-  <h1>基金清单 · 纯美指数（标普500 / 纳斯达克）＋ 国内长期绩优 · 多功能对比</h1>
+  <h1>
+    <span data-pv="us" class="active">基金清单 · 纯美指数（标普500 / 纳斯达克）</span>
+    <span data-pv="cn">基金清单 · 国内长期绩优（非美指数）</span>
+  </h1>
   <div class="meta">
-    生成时间：<b id="mGen">2026-09-02 盘中</b> ｜ 净值数据截至 <b id="mNav">2026-08-31</b>（QDII T+1）｜ 场内 ETF 盘中价为 <b id="mSnap">09-02 11:27</b> 快照 ｜ 规模截至 <b id="mSz">2026-06-30</b>（季报）<br>
-    数据来源：天天基金/东方财富公开接口 + 腾讯行情（IOPV/溢价率）｜ 仅供研究参考，不构成投资建议<br>
-    页面分两个大类：<b>大类一 纯美指数</b>（标普500 / 标普100 等权重 / 纳斯达克100 及衍生，46 只，update.py 每日更新）＋
-<b>大类二 国内长期绩优</b>（国内可买全样本 26,150 个代码 → 入池 1,792 → 通过硬门槛 1,273 → 入选 81；
-默认只显示入选，可展开备选。筛选快照 2026-09-17，由 <code>screens/fund_screen.py</code> 生成，非每日更新）
+    <span data-pv="us" class="active">
+      生成时间：<b id="mGen">2026-09-02 盘中</b> ｜ 净值数据截至 <b id="mNav">2026-08-31</b>（QDII T+1）｜ 场内 ETF 盘中价为 <b id="mSnap">09-02 11:27</b> 快照 ｜ 规模截至 <b id="mSz">2026-06-30</b>（季报）<br>
+      数据来源：天天基金/东方财富公开接口 + 腾讯行情（IOPV/溢价率）｜ 标普500 / 标普100 等权重 / 纳斯达克100 及衍生共 46 只，由 <code>update.py</code> 每日更新
+    </span>
+    <span data-pv="cn">
+      筛选快照：<b>2026-09-17</b> ｜ 国内可买全样本 26,150 个代码 → 入池 1,792 → 通过硬门槛 1,273 → 入选 81；默认只显示入选，可展开备选<br>
+      生成方式：<code>screens/fund_screen.py</code>，本页为非每日更新的研究快照；数据仅供研究参考，不构成投资建议
+    </span>
   </div>
 </header>
 <div class="wrap">
 
+<nav class="pagebar noprint" aria-label="页面切换">
+  <div class="pageswitch" role="tablist">
+    <button class="pagebtn active" type="button" role="tab" aria-selected="true" data-page="us">海外指数基金</button>
+    <button class="pagebtn" type="button" role="tab" aria-selected="false" data-page="cn">国内长期绩优</button>
+  </div>
+  <span class="pagehint" id="pageHint">每日行情、基准叠加与美指基金对比</span>
+</nav>
+
+<section class="pageview active" data-page-view="us">
 <details class="scope" open>
   <summary>口径说明（点击折叠）</summary>
   <ol>
@@ -389,6 +426,9 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 
 <div class="card"><h2>五、其他美股指数基金 — 场内 ETF（4 只）<small>纳指科技 / 纳指生物科技 / 美国50（MSCI USA 50，易方达 513850、汇添富 159577）；场内佣金设置见顶部工具栏</small></h2><div class="tablebox"><table class="sortable t3" id="t5"></table></div></div>
 
+</section>
+
+<section class="pageview" data-page-view="cn">
 <div class="cat cat2" id="cat2"><span class="catno">大类二</span><b>国内长期绩优（非美指数）</b>
   <span class="hint"><b>筛选机制（四层漏斗）</b><br>
   <b>① 样本</b>：国内可买到的全部基金 —— 开放式全类别 + QDII + 指数型 + 场内 ETF/LOF，共 26,150 个代码；
@@ -409,6 +449,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   「累计/年化」开关、精简/完整列、搜索、拖动排序、保存顺序、打印与「⬇ 导出本大类 CSV」对本大类同样生效；
   上方可视化对比图与基准表仍只覆盖大类一。数据由 <code>screens/fund_screen.py</code> 生成，筛选日期 2026-09-17。</span>
   <button class="mini" id="btnCsvX" type="button" title="导出本大类的完整 CSV（25 列）">⬇ 导出本大类 CSV</button>
+  <button class="mini noprint" id="btnPrintX" type="button" title="打印当前国内长期绩优页面">🖨 打印/PDF</button>
 </div>
 
 <div class="card"><h2>六、A股主动权益<small id="x1Cnt"></small></h2><div class="tablebox"><table class="sortable x" id="x1"><tbody></tbody></table></div></div>
@@ -425,7 +466,9 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 
 <div class="card"><h2>十二、参照基准<small>A股宽基（沪深300ETF / 创业板ETF / 沪深300联接），不参与打分，用于对照长期收益</small></h2><div class="tablebox"><table class="sortable x" id="x6"><tbody></tbody></table></div></div>
 
-<div class="notes">
+</section>
+
+<div class="notes page-only-us">
   <h3>备注</h3>
   <p><b>★ 国泰纳斯达克100（160213）</b>：2025 年四次大额分红（01-09 每10份10元、05-13 每10份11元、08-20 每10份28元、11-25 每10份9元）及 2020-01 分红（每10份4元），表中收益按<b>红利再投资逐笔复权重算</b>；天天基金"累计净值"口径下其近1/2/3/5/10年显示为 8.22% / 24.21% / 52.43% / 63.66% / 373.37%。</p>
   <p><b>★ 大成标普500等权重A（096001）</b>：每年分红（窗口内 10 次，每份约 0.04~0.09 元），表中收益按<b>红利再投逐笔复权重算</b>；累计净值口径下其近1/2/3/5/10年仅为 9.23% / 14.72% / 28.27% / 39.65% / 120.01%，复权后为 11.58% / 18.44% / 35.75% / 45.51% / 148.99%。</p>
@@ -1930,7 +1973,7 @@ var YEARS=[1,2,3,5,10];
 var GROUPS={all:'全部',sp:'标普500',nq:'纳斯达克100场外',etf:'纳斯达克100ETF',nx:'其他纳斯达克指数'};
 var GROUP_COLOR={sp:'#33517e',nq:'#d6362a',etf:'#0a8a4a',nx:'#7a4ad6'};
 var DEFAULT_SEL=['050025','096001','513500','160213','270042','040046','161130','539001','513100','159941','159509','513290'];
-var curGroup='all', curChart='bar', curForm='bar', logAxis=false, annOn=false, dense=false;
+var curGroup='all', curChart='bar', curForm='bar', logAxis=false, annOn=false, dense=false, curPage='us';
 var etfRate=2.5, etfMin=5; /* 场内ETF佣金：万2.5 / 最低5元，用户可改 */
 var sel=new Set(DEFAULT_SEL);
 var chart=null, hoverBar=null; /* hoverBar：光标是否落在某根柱子上 {seriesIndex,dataIndex}；null=柱外 */
@@ -3167,16 +3210,19 @@ var VIEW_KEY='funddata.view.v1';
 function saveView(){
   try{
     localStorage.setItem(VIEW_KEY,JSON.stringify({
-      dense:dense,group:curGroup,chart:curChart,form:curForm,ann:annOn,cny:bmCNY,sel:Array.from(sel)
+      page:curPage,dense:dense,group:curGroup,chart:curChart,form:curForm,ann:annOn,cny:bmCNY,sel:Array.from(sel)
     }));
   }catch(e){}
 }
 function loadView(){
+  var hashPage=(location.hash||'').replace(/^#/,'');
+  if(hashPage==='us'||hashPage==='cn')curPage=hashPage;
   try{
     var s=localStorage.getItem(VIEW_KEY);
     if(!s)return;
     var v=JSON.parse(s);
     if(!v||typeof v!=='object')return;
+    if(!hashPage&&(v.page==='us'||v.page==='cn'))curPage=v.page;
     if(typeof v.dense==='boolean')dense=v.dense;
     if(v.group&&GROUPS[v.group])curGroup=v.group;
     if(typeof v.chart==='string'&&/^(bar|scat|fee|size|td|bm)$/.test(v.chart))curChart=v.chart;
@@ -3190,6 +3236,52 @@ function loadView(){
     }
   }catch(e){}
 }
+function setPage(page,opts){
+  opts=opts||{};
+  curPage=page==='cn'?'cn':'us';
+  document.body.dataset.page=curPage;
+  document.querySelectorAll('.pagebtn').forEach(function(b){
+    var on=b.dataset.page===curPage;
+    b.classList.toggle('active',on);
+    b.setAttribute('aria-selected',on?'true':'false');
+  });
+  document.querySelectorAll('[data-page-view]').forEach(function(el){
+    el.classList.toggle('active',el.dataset.pageView===curPage);
+  });
+  document.querySelectorAll('[data-pv]').forEach(function(el){
+    el.classList.toggle('active',el.dataset.pv===curPage);
+  });
+  var hint=document.getElementById('pageHint');
+  if(hint)hint.textContent=curPage==='us'
+    ?'每日行情、基准叠加与美指基金对比'
+    :'国内长期绩优筛选快照与精选/备选列表';
+  var input=document.getElementById('gSearchInput');
+  if(input)input.placeholder=curPage==='us'
+    ?'搜索名称或代码，如：招商 / 5131 / 广发'
+    :'搜索国内基金名称或代码';
+  var sbtn=document.getElementById('gSearchBtn');
+  if(sbtn)sbtn.title=curPage==='us'
+    ?'搜索名称或代码：过滤美指基金表与可视化勾选列表（不改变已勾选的基金）'
+    :'搜索名称或代码：过滤国内长期绩优各表（不改变入选/备选状态）';
+  document.title=curPage==='us'
+    ?'基金清单 · 纯美指数（标普500/纳斯达克）'
+    :'基金清单 · 国内长期绩优（非美指数）';
+  if(!opts.noHash){
+    try{history.replaceState(null,'',location.pathname+location.search+'#'+curPage);}catch(e){}
+  }
+  if(!opts.noSave)saveView();
+  if(curPage==='us'&&chart){
+    setTimeout(function(){chart.resize();renderChart();},0);
+  }
+  if(opts.scroll!==false)window.scrollTo(0,0);
+}
+document.querySelectorAll('.pagebtn').forEach(function(b){
+  b.addEventListener('click',function(){setPage(b.dataset.page);});
+});
+window.addEventListener('hashchange',function(){
+  var p=(location.hash||'').replace(/^#/,'');
+  if(p==='us'||p==='cn')setPage(p,{noHash:true});
+});
 /* 恢复的分组/指标要同步按钮选中态（HTML 里的默认 active 是按默认值写死的） */
 function syncTabUI(){
   document.querySelectorAll('#grpTabs button[data-g]').forEach(function(b){b.classList.toggle('active',b.dataset.g===curGroup);});
@@ -3198,6 +3290,7 @@ function syncTabUI(){
 
 /* ================= 启动 ================= */
 loadView();
+setPage(curPage,{noHash:true,noSave:true,scroll:false});
 loadFixedOrder();
 /* 固定顺序先写进 ORDER，renderTables 直接按它渲染，避免先出默认顺序再跳一下 */
 SORT_TBLS.forEach(function(id){var f=FIXED_ORDER[id]||{};ORDER[id]=(f.order||[]).slice();});
@@ -3425,6 +3518,8 @@ function exportCSVX(){
   if(typeof syncOrderTools==='function')syncOrderTools();
   var ob=document.getElementById('btnCsvX');
   if(ob)ob.addEventListener('click',exportCSVX);
+  var op=document.getElementById('btnPrintX');
+  if(op)op.addEventListener('click',function(){window.print();});
   /* 底部计数：把大类二也算进去（搜索时的匹配数由原逻辑统计，已覆盖本大类各表） */
   var of=window.applyFilter;
   window.applyFilter=function(){
