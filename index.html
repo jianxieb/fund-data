@@ -176,7 +176,7 @@ table.t1,table.t3{min-width:1750px}
 /* 大类二（国内长期绩优）表格：列比上面五张表多 6 列，横向更宽 */
 table.x{min-width:2600px}
 /* 国内指数：按跟踪指数聚合，列数少于基金表 */
-table.cnidx{min-width:1450px}
+table.cnidx{min-width:1260px}
 body.dense table.x{min-width:1700px}
 /* 精选/备选两层：默认只显示“入选”行，点卡片标题的「显示备选」再展开 */
 table.x.alt-off tr[data-sel="0"]{display:none}
@@ -298,7 +298,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
     </span>
     <span data-pv="cnidx">
       数据口径：基于国内长期绩优候选中的指数型基金，按跟踪指数归并；收益、回撤和波动为同指数候选基金中位数，<b>不是指数官方点位收益</b><br>
-      覆盖宽基、策略风格、行业与主题指数；候选快照 2026-09-17，数据由 <code>screens/fund_screen.py</code> 生成
+      只列常用宽基、微盘与红利策略指数；候选快照 2026-09-17，数据由 <code>screens/fund_screen.py</code> 生成
     </span>
     <span data-pv="cn">
       筛选快照：<b>2026-09-17</b> ｜ 国内可买全样本 26,150 个代码 → 入池 1,792 → 通过硬门槛 1,273 → 入选 81；默认只显示入选，可展开备选<br>
@@ -442,11 +442,11 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 <details class="scope" open>
   <summary>口径说明（点击折叠）</summary>
   <ol>
-    <li><b>数据来源</b>：基于国内长期绩优候选里的指数型基金，按“跟踪指数”名称归并；当前覆盖候选中的 A 股宽基、策略风格、行业与主题指数。</li>
+    <li><b>数据来源</b>：基于国内长期绩优候选里的指数型基金，按“跟踪指数”名称归并；本页只保留市场常用的 14 个宽基、微盘与红利策略指数，不再罗列低知名度行业主题指数。</li>
     <li><b>基金口径</b>：指数行的收益、近5年最大回撤和波动率都是同一指数下候选基金的<b>中位数</b>，用于观察可投资产品表现，不是指数官方点位收益。</li>
     <li><b>收益口径</b>：近1/2/3/5/10年收益按红利再投复权后的基金净值计算；右下角「累计/年化」开关会同步切换本表。</li>
     <li><b>代表基金</b>：优先选择当前候选池中规模较大的基金，仅作为该指数的产品入口，不代表推荐。</li>
-    <li><b>分类规则</b>：宽基、策略风格优先；其余按科技通信、制造资源、消费医药、金融地产、行业主题归类。跨市场、海外指数与非股票商品指数不纳入本页。</li>
+    <li><b>指数范围</b>：上证指数 / 上证50 / 沪深300 / 中证500 / 中证1000 / 中证2000 / 深证成指 / 创业板指 / 科创50 / 科创100 / 北证50 / 科创创业50 / 中证红利 / 红利低波。海外指数、港股指数与非股票商品指数不纳入本页。</li>
     <li><b>数据时点</b>：基金数据来自 2026-09-17 筛选快照，非每日指数行情；数值更新需要重新运行 <code>screens/fund_screen.py</code> 并写入候选数据块。</li>
   </ol>
 </details>
@@ -454,7 +454,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 <div class="stats" id="cnIdxStats"></div>
 
 <div class="cat catidx" id="catidx"><span class="catno">国内</span><b>国内指数</b>
-  <span class="hint">按候选基金覆盖的跟踪指数归并；分类、收益、回撤与波动均支持排序</span>
+  <span class="hint">只保留 14 个常用宽基、微盘与红利策略指数；收益、回撤与波动均支持排序</span>
 </div>
 
 <div class="filter noprint">
@@ -463,7 +463,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   <div class="prow" id="cnIdxCats"></div>
 </div>
 
-<div class="card"><h2>一、国内指数覆盖清单<small>基金中位数口径；点击表头排序</small></h2>
+<div class="card"><h2>一、国内主要指数<small>基金中位数口径；点击表头排序</small></h2>
 <div class="tablebox"><table class="sortable cnidx" id="cnIdxTbl"></table></div></div>
 </section>
 
@@ -3541,23 +3541,26 @@ function exportCSVX(){
 /* =========================================================
    国内指数：从候选基金覆盖的跟踪指数聚合，指标为同指数基金中位数
    ========================================================= */
-var CNIDX_CATS=['全部','宽基','策略风格','科技通信','制造资源','消费医药','金融地产','行业主题'];
+var CNIDX_CATS=['全部','宽基','策略风格'];
+var CNIDX_DEFS=[
+  {name:'上证指数',bucket:'宽基',re:/^上证指数$/},
+  {name:'上证50',bucket:'宽基',re:/^上证50指数$/},
+  {name:'沪深300',bucket:'宽基',re:/^沪深300指数$/},
+  {name:'中证500',bucket:'宽基',re:/^中证500指数$/},
+  {name:'中证1000',bucket:'宽基',re:/^中证1000指数$/},
+  {name:'中证2000（微盘）',bucket:'宽基',re:/^中证2000指数$/},
+  {name:'深证成指',bucket:'宽基',re:/^(深证成指|深证成份)/},
+  {name:'创业板指',bucket:'宽基',re:/^创业板指数$/},
+  {name:'科创50',bucket:'宽基',re:/^(上证)?科创板50成份指数$/},
+  {name:'科创100',bucket:'宽基',re:/^(上证)?科创板100指数$/},
+  {name:'北证50',bucket:'宽基',re:/^北证50/},
+  {name:'科创创业50',bucket:'宽基',re:/^中证科创创业50指数$/},
+  {name:'中证红利',bucket:'策略风格',re:/^中证红利指数$/},
+  {name:'红利低波',bucket:'策略风格',re:/红利低波动|红利低波/}
+];
 var curCnIdxCat='全部';
 function cnIdxNorm(s){
   return String(s||'').replace(/\s+/g,'').replace(/指数\((价格|收益)\)$/,'指数');
-}
-function cnIdxDomestic(name){
-  if(!/(指数|上证中盘|A股资源|中证800有色)/.test(name))return false;
-  return !/(纳斯达克|纳指|标普|MSCI美国|美国50|美国石油|日经|东京|东证|Dow Jones|中韩|香港|恒生|豆粕)/.test(name);
-}
-function cnIdxBucket(name){
-  if(/(红利|价值|低波|质量成长|质量|成长|动态策略|优选|济安|凤凰行动|民企领先|国有企业|国企)/.test(name))return '策略风格';
-  if(/(半导体|芯片|科技|信息|通信|电子|传媒|互联网|人工智能|5G|大数据)/.test(name))return '科技通信';
-  if(/(消费|食品|饮料|白酒|医药|医疗|生物|健康)/.test(name))return '消费医药';
-  if(/(有色|资源|煤炭|新能源|汽车|光伏|电池|制造|工业|钢铁|化工|大宗商品)/.test(name))return '制造资源';
-  if(/(银行|证券|金融|保险|地产)/.test(name))return '金融地产';
-  if(/(沪深300|上证50|中证A100|中证A50|富时中国A50|中证500|中证1000|中证2000|中证800|上证180|上证中盘|深证100|创业板|科创板|科创创业|巨潮100|央视财经50|MSCI中国A股|战略新兴产业)/.test(name))return '宽基';
-  return '行业主题';
 }
 function cnIdxMedian(values){
   var a=values.filter(function(v){return v!=null&&isFinite(v);}).sort(function(x,y){return x-y;});
@@ -3568,29 +3571,27 @@ function cnIdxMedian(values){
 function cnIdxBuildRows(){
   var groups={};
   (typeof EXTRA!=='undefined'?EXTRA:[]).forEach(function(f){
-    if(['x3','x4','x6'].indexOf(f.g)<0)return;
+    if(['x3','x4','x6','x7'].indexOf(f.g)<0)return;
     var name=cnIdxNorm(f.ix);
-    if(!cnIdxDomestic(name))return;
     if(!groups[name])groups[name]=[];
     groups[name].push(f);
   });
-  var order={};CNIDX_CATS.forEach(function(x,i){order[x]=i;});
-  return Object.keys(groups).map(function(name){
-    var fs=groups[name];
-    var rep=fs.slice().sort(function(a,b){
+  return CNIDX_DEFS.map(function(def,i){
+    var fs=[];
+    Object.keys(groups).forEach(function(name){
+      if(def.re.test(name))fs=fs.concat(groups[name]);
+    });
+    var rep=fs.length?fs.slice().sort(function(a,b){
       if(a.sel!==b.sel)return (b.sel?1:0)-(a.sel?1:0);
       if((b.sz||0)!==(a.sz||0))return (b.sz||0)-(a.sz||0);
       return (b.score||0)-(a.score||0);
-    })[0];
+    })[0]:null;
     return {
-      name:name,bucket:cnIdxBucket(name),funds:fs,rep:rep,
-      r:YEARS.map(function(_,i){return cnIdxMedian(fs.map(function(f){return f.r[i];}));}),
+      name:def.name,bucket:def.bucket,funds:fs,rep:rep,order:i,
+      r:YEARS.map(function(_,j){return cnIdxMedian(fs.map(function(f){return f.r[j];}));}),
       mdd5:cnIdxMedian(fs.map(function(f){return f.mdd5;})),
       vol5:cnIdxMedian(fs.map(function(f){return f.vol5;}))
     };
-  }).sort(function(a,b){
-    if(order[a.bucket]!==order[b.bucket])return order[a.bucket]-order[b.bucket];
-    return b.funds.length-a.funds.length||a.name.localeCompare(b.name,'zh-CN');
   });
 }
 function cnIdxPct(v,i){
@@ -3618,12 +3619,12 @@ function renderCnIndexStats(rows){
   if(!el)return;
   var fundCodes={};rows.forEach(function(x){x.funds.forEach(function(f){fundCodes[f.c]=1;});});
   var broad=rows.filter(function(x){return x.bucket==='宽基';}).length;
-  var theme=rows.filter(function(x){return ['科技通信','制造资源','消费医药','金融地产','行业主题'].indexOf(x.bucket)>=0;}).length;
+  var strategy=rows.filter(function(x){return x.bucket==='策略风格';}).length;
   var cards=[
-    {k:'国内指数',v:rows.length+' 个',s:'来自候选基金跟踪指数'},
+    {k:'主要国内指数',v:rows.length+' 个',s:'常用宽基、微盘与红利策略'},
     {k:'关联指数基金',v:Object.keys(fundCodes).length+' 只',s:'候选池内去重'},
-    {k:'宽基指数',v:broad+' 个',s:'沪深300 / 中证500 / 创业板 / 科创等'},
-    {k:'行业主题指数',v:theme+' 个',s:'科技、制造、消费、金融等'}
+    {k:'宽基指数',v:broad+' 个',s:'上证 / 沪深300 / 创业板 / 科创 / 北证等'},
+    {k:'策略指数',v:strategy+' 个',s:'中证红利与红利低波'}
   ];
   el.innerHTML=cards.map(function(c){
     return '<div class="stat"><div class="k">'+c.k+'</div><div class="v">'+c.v+'</div><div class="s">'+c.s+'</div></div>';
@@ -3657,10 +3658,13 @@ function renderCnIndexTable(){
     '</tr></thead>';
   var body=rows.map(function(x,i){
     var repTip=x.funds.map(function(f){return f.n+'（'+f.c+'）';}).join('、');
+    var repCell=x.rep
+      ?'<td class="l note" title="'+esc(repTip)+'">'+link(x.rep.c)+' '+esc(x.rep.n)+'</td>'
+      :'<td class="na">暂无可比候选基金</td>';
     return '<tr data-idx="'+i+'">'+
       cell(esc(x.bucket),'l')+cell('<b>'+esc(x.name)+'</b>','l')+
       cell(String(x.funds.length))+
-      '<td class="l note" title="'+esc(repTip)+'">'+link(x.rep.c)+' '+esc(x.rep.n)+'</td>'+
+      repCell+
       cnIdxPct(x.r[0],0)+cnIdxPct(x.r[1],1)+cnIdxPct(x.r[2],2)+cnIdxPct(x.r[3],3)+cnIdxPct(x.r[4],4)+
       cell(x.mdd5==null?'--':x.mdd5.toFixed(1)+'%',x.mdd5==null?'na':'down')+
       cell(x.vol5==null?'--':x.vol5.toFixed(1)+'%',x.vol5==null?'na':'')+
