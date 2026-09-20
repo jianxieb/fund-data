@@ -16,7 +16,7 @@
 
 ```
 python update.py            # 全量：限额/涨跌幅/净值/区间涨幅/波动率回撤/ETF行情/基准
-python update.py --quick    # 跳过基准（指数/SPY/QQQ，push2his 较慢且易限流），其余全刷
+python update.py --quick    # 跳过基准（指数/SPY/UPRO/QQQ/TQQQ，push2his 较慢且易限流），其余全刷
 python update.py --hist     # 只补历史与基准（限流缓解后回填缓存用）
 python update.py --offline  # 只用本地缓存
 ```
@@ -25,7 +25,7 @@ python update.py --offline  # 只用本地缓存
 
 > 说明：原先的 Codex 桌面版定时任务 `fund-data-14-00` 已暂停——桌面版会把自动化触发注入成一条缺少 `call_id` 的 `function_call_output`，DeepSeek 的 Responses API 会直接返回 400 `missing field call_id`（上游 issue #41690 / #44723），自动化提示词根本到不了模型。等上游修复后可重新启用。
 
-> 提示：fundmobapi 对完整桌面 User-Agent 返回"网络繁忙"，脚本已用精简 UA 规避；接口偶发限流时自动重试/保留缓存，历史与基准可后续用 `python update.py --hist` 补齐。基准行情 push2his 限流时**自动降级新浪美股日线**（`US_MinKService`，SPY/QQQ 届时为价格口径、备注注明），USDCNY 汇率接口失败时沿用上一版各期汇率变动，人民币口径仍可计算。
+> 提示：fundmobapi 对完整桌面 User-Agent 返回"网络繁忙"，脚本已用精简 UA 规避；接口偶发限流时自动重试/保留缓存，历史与基准可后续用 `python update.py --hist` 补齐。基准行情 push2his 限流时**自动降级新浪美股日线**（`US_MinKService`，SPY/UPRO/QQQ/TQQQ 届时为价格口径、备注注明），USDCNY 汇率接口失败时沿用上一版各期汇率变动，人民币口径仍可计算。
 
 ### 更新字段
 
@@ -36,7 +36,7 @@ python update.py --offline  # 只用本地缓存
 | 近1/2/3/5/10年涨幅 | FundMNHisNetList 历史净值（`.tmp-hist/` 增量缓存）+ fundf10 分红送配页 | 滚动窗口、红利再投逐笔复权；ETF 份额折算用累计净值口径规避假暴跌 |
 | 年化波动率 / 最大回撤（近3年） | 同上 | 风险收益图 |
 | 盘中价 + **当时溢价率** + IOPV | 腾讯行情 `qt.gtimg.cn` | 生成时刻快照，页面括号内展示 |
-| 基准（标普500指数/纳指综合/纳指100指数/SPY/QQQ + USDCNY） | push2his kline，失败自动降级新浪美股日线 `US_MinKService` | 人民币/美元双口径；汇率失败沿用上一版各期变动 |
+| 基准（标普500指数/纳指综合/纳指100指数/SPY/UPRO/QQQ/TQQQ + USDCNY） | push2his kline，失败自动降级新浪美股日线 `US_MinKService` | 人民币/美元双口径；UPRO/TQQQ 为三倍做多且每日再平衡；汇率失败沿用上一版各期变动 |
 | 净资产规模 | fundf10 `jjfl` 页面 | 季报口径，随页面更新 |
 
 ## 本地 / 离线使用（网络受限电脑推荐）
