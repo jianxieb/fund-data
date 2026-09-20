@@ -299,7 +299,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
     </span>
     <span data-pv="cnidx">
       数据口径：基于国内长期绩优候选中的指数型基金，按跟踪指数归并；收益、回撤和波动为同指数候选基金中位数，<b>不是指数官方点位收益</b><br>
-      只列常用宽基、微盘与红利策略指数；候选快照 2026-09-17，数据由 <code>screens/fund_screen.py</code> 生成
+      主表列常用宽基与微盘指数，红利相关基金另表逐只比较；候选快照 2026-09-17，数据由 <code>screens/fund_screen.py</code> 生成
     </span>
     <span data-pv="cn">
       筛选快照：<b>2026-09-17</b> ｜ 国内可买全样本 26,150 个代码 → 入池 1,792 → 通过硬门槛 1,273 → 入选 81；默认只显示入选，可展开备选<br>
@@ -443,11 +443,11 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 <details class="scope" open>
   <summary>口径说明（点击折叠）</summary>
   <ol>
-    <li><b>数据来源</b>：基于国内长期绩优候选里的指数型基金，按“跟踪指数”名称归并；本页只保留市场常用的 13 个宽基与策略指数，并单独列出红利低波基金明细，不再罗列低知名度行业主题指数。</li>
+    <li><b>数据来源</b>：基于国内长期绩优候选里的指数型基金，按“跟踪指数”名称归并；主表只保留市场常用的 12 个宽基与微盘指数，红利相关基金全部移到独立明细表，不再罗列低知名度行业主题指数。</li>
     <li><b>基金口径</b>：指数行的收益、近5年最大回撤和波动率都是同一指数下候选基金的<b>中位数</b>，用于观察可投资产品表现，不是指数官方点位收益。</li>
     <li><b>收益口径</b>：近1/2/3/5/10年收益按红利再投复权后的基金净值计算；右下角「累计/年化」开关会同步切换本表。</li>
     <li><b>代表基金</b>：优先选择当前候选池中规模较大的基金，仅作为该指数的产品入口，不代表推荐。</li>
-    <li><b>指数范围</b>：主表为上证指数 / 上证50 / 沪深300 / 中证500 / 中证1000 / 中证2000 / 深证成指 / 创业板指 / 科创50 / 科创100 / 北证50 / 科创创业50 / 中证红利；红利低波因不同 ETF/联接收益与风险差异较大，单独列基金明细。海外指数、港股指数与非股票商品指数不纳入本页。</li>
+    <li><b>指数范围</b>：主表为上证指数 / 上证50 / 沪深300 / 中证500 / 中证1000 / 中证2000 / 深证成指 / 创业板指 / 科创50 / 科创100 / 北证50 / 科创创业50；中证红利、红利低波、国企红利、沪港深红利等因不同 ETF/联接与增强产品差异较大，全部进入红利相关基金明细。</li>
     <li><b>数据时点</b>：基金数据来自 2026-09-17 筛选快照，非每日指数行情；数值更新需要重新运行 <code>screens/fund_screen.py</code> 并写入候选数据块。</li>
   </ol>
 </details>
@@ -455,7 +455,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 <div class="stats" id="cnIdxStats"></div>
 
 <div class="cat catidx" id="catidx"><span class="catno">国内</span><b>国内指数</b>
-  <span class="hint">主表列 13 个常用宽基与策略指数；红利低波单独列出基金明细</span>
+  <span class="hint">主表列 12 个常用宽基与微盘指数；红利相关基金全部单独列出比较</span>
 </div>
 
 <div class="filter noprint">
@@ -467,9 +467,9 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 <div class="card"><h2>一、国内主要指数<small>基金中位数口径；点击表头排序</small></h2>
 <div class="tablebox"><table class="sortable cnidx" id="cnIdxTbl"></table></div></div>
 
-<div class="card"><h2>二、红利低波基金明细<small>同一跟踪指数下逐只比较 ETF、联接与指数增强产品</small></h2>
-<div class="xnote" id="cnLowVolCnt"></div>
-<div class="tablebox"><table class="sortable lowvol" id="cnLowVolTbl"></table></div></div>
+<div class="card"><h2>二、红利相关基金明细<small>按中证红利、红利低波、国企红利、沪港深红利分组逐只比较</small></h2>
+<div class="xnote" id="cnDivCnt"></div>
+<div class="tablebox"><table class="sortable lowvol" id="cnDivTbl"></table></div></div>
 </section>
 
 <section class="pageview" data-page-view="cn">
@@ -3546,7 +3546,7 @@ function exportCSVX(){
 /* =========================================================
    国内指数：从候选基金覆盖的跟踪指数聚合，指标为同指数基金中位数
    ========================================================= */
-var CNIDX_CATS=['全部','宽基','策略风格'];
+var CNIDX_CATS=['全部','宽基'];
 var CNIDX_DEFS=[
   {name:'上证指数',bucket:'宽基',re:/^上证指数$/},
   {name:'上证50',bucket:'宽基',re:/^上证50指数$/},
@@ -3559,8 +3559,7 @@ var CNIDX_DEFS=[
   {name:'科创50',bucket:'宽基',re:/^(上证)?科创板50成份指数$/},
   {name:'科创100',bucket:'宽基',re:/^(上证)?科创板100指数$/},
   {name:'北证50',bucket:'宽基',re:/^北证50/},
-  {name:'科创创业50',bucket:'宽基',re:/^中证科创创业50指数$/},
-  {name:'中证红利',bucket:'策略风格',re:/^中证红利指数$/}
+  {name:'科创创业50',bucket:'宽基',re:/^中证科创创业50指数$/}
 ];
 var curCnIdxCat='全部';
 function cnIdxNorm(s){
@@ -3598,10 +3597,21 @@ function cnIdxBuildRows(){
     };
   });
 }
-function cnIdxLowVolFunds(){
+function cnIdxDividendType(ix){
+  var s=cnIdxNorm(ix);
+  if(/红利低波/.test(s))return '红利低波';
+  if(/国有企业红利/.test(s))return '国企红利';
+  if(/沪港深.*红利/.test(s))return '沪港深红利';
+  if(/中证红利/.test(s))return '中证红利';
+  return '其他红利';
+}
+function cnIdxDividendFunds(){
   return (typeof EXTRA!=='undefined'?EXTRA:[]).filter(function(f){
-    return ['x3','x4','x6','x7'].indexOf(f.g)>=0&&/红利低波动|红利低波/.test(cnIdxNorm(f.ix));
+    return ['x3','x4','x6','x7'].indexOf(f.g)>=0&&/红利/.test(cnIdxNorm(f.ix));
   }).sort(function(a,b){
+    var order={'中证红利':1,'红利低波':2,'国企红利':3,'沪港深红利':4,'其他红利':5};
+    var ta=order[cnIdxDividendType(a.ix)]||9, tb=order[cnIdxDividendType(b.ix)]||9;
+    if(ta!==tb)return ta-tb;
     if(a.sel!==b.sel)return (b.sel?1:0)-(a.sel?1:0);
     return (b.sz||0)-(a.sz||0);
   });
@@ -3630,14 +3640,14 @@ function renderCnIndexStats(rows){
   var el=document.getElementById('cnIdxStats');
   if(!el)return;
   var fundCodes={};rows.forEach(function(x){x.funds.forEach(function(f){fundCodes[f.c]=1;});});
-  cnIdxLowVolFunds().forEach(function(f){fundCodes[f.c]=1;});
+  var dividendFunds=cnIdxDividendFunds();
+  dividendFunds.forEach(function(f){fundCodes[f.c]=1;});
   var broad=rows.filter(function(x){return x.bucket==='宽基';}).length;
-  var strategy=rows.filter(function(x){return x.bucket==='策略风格';}).length;
   var cards=[
     {k:'主要国内指数',v:rows.length+' 个',s:'常用宽基、微盘与红利策略'},
     {k:'关联指数基金',v:Object.keys(fundCodes).length+' 只',s:'候选池内去重'},
     {k:'宽基指数',v:broad+' 个',s:'上证 / 沪深300 / 创业板 / 科创 / 北证等'},
-    {k:'策略指数',v:strategy+' 个',s:'中证红利；红利低波另列明细'}
+    {k:'红利相关基金',v:dividendFunds.length+' 只',s:'中证红利、红利低波、国企红利、沪港深红利'}
   ];
   el.innerHTML=cards.map(function(c){
     return '<div class="stat"><div class="k">'+c.k+'</div><div class="v">'+c.v+'</div><div class="s">'+c.s+'</div></div>';
@@ -3690,17 +3700,18 @@ function renderCnIndexTable(){
   bindSortOne(el);
   var cnt=document.getElementById('cnIdxCnt');
   if(cnt)cnt.textContent='当前显示 '+rows.length+' / '+all.length+' 个指数；分类：'+curCnIdxCat;
-  renderCnLowVolTable();
+  renderCnDividendTable();
 }
-function renderCnLowVolTable(){
-  var el=document.getElementById('cnLowVolTbl');
+function renderCnDividendTable(){
+  var el=document.getElementById('cnDivTbl');
   if(!el)return;
   var q=gsearchKw().toLowerCase();
-  var rows=cnIdxLowVolFunds().filter(function(f){
+  var rows=cnIdxDividendFunds().filter(function(f){
     if(!q)return true;
-    return [f.c,f.n,f.t||'',f.ix||''].join(' ').toLowerCase().indexOf(q)>=0;
+    return [f.c,f.n,f.t||'',f.ix||'',cnIdxDividendType(f.ix)].join(' ').toLowerCase().indexOf(q)>=0;
   });
   var head='<thead><tr>'+
+    '<th class="l" data-sort="text" data-key="divtype">红利类型<span class="arr"></span></th>'+
     '<th class="l" data-sort="num" data-key="code">代码<span class="arr"></span></th>'+
     '<th class="l" data-sort="text" data-key="name">基金名称<span class="arr"></span></th>'+
     '<th class="l" data-sort="text" data-key="type">类别<span class="arr"></span></th>'+
@@ -3717,6 +3728,7 @@ function renderCnLowVolTable(){
     '</tr></thead>';
   var body=rows.map(function(f,i){
     return '<tr data-idx="'+i+'">'+
+      cell(cnIdxDividendType(f.ix),'l')+
       cell(link(f.c),'l')+cell('<b>'+esc(f.n)+'</b>','l')+
       cell(esc(f.t||'场内ETF'),'l')+cell(esc(f.ix||''),'l')+
       cnIdxPct(f.r[0],0)+cnIdxPct(f.r[1],1)+cnIdxPct(f.r[2],2)+cnIdxPct(f.r[3],3)+cnIdxPct(f.r[4],4)+
@@ -3726,16 +3738,16 @@ function renderCnLowVolTable(){
       cell(f.sel?'入选':'备选','l')+
       '</tr>';
   }).join('');
-  if(!body)body='<tr><td colspan="13" class="na">当前筛选没有匹配的红利低波基金</td></tr>';
+  if(!body)body='<tr><td colspan="14" class="na">当前筛选没有匹配的红利相关基金</td></tr>';
   el.innerHTML=head+'<tbody>'+body+'</tbody>';
   SORTS[el.id]=[];
   clearSortUI(el);
   bindSortOne(el);
-  var cnt=document.getElementById('cnLowVolCnt');
+  var cnt=document.getElementById('cnDivCnt');
   if(cnt){
     cnt.textContent=rows.length
-      ?'共 '+rows.length+' 只：同指数产品的收益、回撤和波动差异可直接逐列比较。'
-      :'当前筛选没有匹配的红利低波基金。';
+      ?'共 '+rows.length+' 只：按中证红利、红利低波、国企红利、沪港深红利分组，收益与风险可直接逐列比较。'
+      :'当前筛选没有匹配的红利相关基金。';
   }
 }
 
