@@ -278,7 +278,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
     <li><b>区间涨幅</b>：按累计净值（含分红再投资）计算，<b>滚动窗口</b>：以最新净值日回推 1/2/3/5/10 年，取该日前最近交易日为基期（每日自动更新时窗口随之滑动）。成立不足 N 年标注 "--"。窗口期内有分红的基金（国泰纳指100、大成标普500等权重）已按<b>红利再投逐笔复权</b>，其余基金窗口内无分红（累计净值即含分红口径）。<b>年化收益率</b> = (1+区间涨幅)^(1/N)−1（几何年化），可用右下角常驻的<b>「口径」小开关</b>一键切换（累计涨幅 ⇄ 年化收益率）。</li>
     <li><b>纳斯达克分表</b>：<b>纳斯达克100</b> 与 <b>其他纳斯达克指数</b>（纳指科技 / 纳指生物科技 / 华宝主动精选）分表展示、分组建图；两者走势差异大，收益不可直接比较。</li>
     <li><b>日涨跌幅与净值</b>：日涨跌幅由接口提供；个别基金接口不给（如 539001），则按上一个净值日净值估算并在数值旁标 <b>≈</b>（悬停可见基准日与间隔天数），算不出来才显示 --。</li>
-    <li><b>基准数据</b>：标普500 / 纳斯达克综合 / 纳斯达克100 指数收盘与 SPY / UPRO / QQQ / TQQQ 行情，ETF 优先前复权价（含分红；新浪兜底为未复权价格），汇率取 USDCNY 收盘；基期与基金表一致（基期前最近交易日），人民币口径 = 美元收益 × 汇率变动，与基金净值口径可比（存在费率、跟踪误差与 ±1 交易日时点差异）。UPRO / TQQQ 为三倍做多且每日再平衡，长期收益受路径依赖影响，不等于指数同期涨跌的 3 倍。</li>
+    <li><b>基准数据</b>：标普500 / 纳斯达克综合 / 纳斯达克100 指数收盘与 SPY / SSO / UPRO / QQQ / QLD / TQQQ 行情，ETF 优先前复权价（含分红；新浪兜底为未复权价格），汇率取 USDCNY 收盘；基期与基金表一致（基期前最近交易日），人民币口径 = 美元收益 × 汇率变动，与基金净值口径可比（存在费率、跟踪误差与 ±1 交易日时点差异）。SSO / UPRO / QLD / TQQQ 为两倍或三倍做多且每日再平衡，长期收益受路径依赖影响，不等于指数同期涨跌的 2 倍或 3 倍。</li>
     <li><b>跟踪偏离度</b>：图表区「跟踪偏离」页签 = 基金/ETF − <b>纯指数基准</b>（百分点，正=跑赢），基准永远是指数：标普500 组 → 标普500指数、纳指100 组 → 纳斯达克100指数；勾选 SPY/QQQ 时会把它们作为产品一并对比（SPY vs 标普500指数、QQQ vs 纳斯达克100指数）；人民币/美元口径可切换。</li>
     <li><b>日限额</b> = 单日累计申购上限（限大额）；场内 ETF 的申购状态/日限额显示 --（场内买卖不受申赎通道限制，类别列已区分场内）。</li>
     <li><b>场内溢价率</b> = (盘中价 − IOPV) / IOPV × 100%（腾讯行情 IOPV 口径）。<b>盘中价一列的括号即"当时溢价率"</b>——数据生成时刻（见页头快照时间，每日更新）的快照；QDII ETF 净值 T+1 公布、隔夜美股波动大时溢价率可能失真，请结合 IOPV 判断。<b>场内 ETF 的区间涨幅一律按净值计算（已剔除溢价影响）</b>，溢价只体现在"盘中价"列，两者互相独立。</li>
@@ -343,10 +343,12 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
         <span class="phead" title="勾选的基准会叠加到柱状/曲线图中；勾选 SPY/QQQ 后也会作为产品出现在跟踪偏离图中">基准叠加</span>
         <label class="opt"><span class="dot" style="background:#33517e"></span><input type="checkbox" class="bmcb" value="标普500指数">标普500指数</label>
         <label class="opt"><span class="dot" style="background:#d6a01b"></span><input type="checkbox" class="bmcb" value="SPY">SPY</label>
-        <label class="opt"><span class="dot" style="background:#b06a2b"></span><input type="checkbox" class="bmcb" value="UPRO">UPRO</label>
+        <label class="opt"><span class="dot" style="background:#4b8fc8"></span><input type="checkbox" class="bmcb" value="SSO">SSO</label>
+        <label class="opt"><span class="dot" style="background:#a25b36"></span><input type="checkbox" class="bmcb" value="UPRO">UPRO</label>
         <label class="opt"><span class="dot" style="background:#0a8a4a"></span><input type="checkbox" class="bmcb" value="纳斯达克综合指数">纳斯达克综合</label>
         <label class="opt"><span class="dot" style="background:#7a4ad6"></span><input type="checkbox" class="bmcb" value="纳斯达克100指数">纳斯达克100</label>
         <label class="opt"><span class="dot" style="background:#d6362a"></span><input type="checkbox" class="bmcb" value="QQQ">QQQ</label>
+        <label class="opt"><span class="dot" style="background:#0f8b8d"></span><input type="checkbox" class="bmcb" value="QLD">QLD</label>
         <label class="opt"><span class="dot" style="background:#b83b7a"></span><input type="checkbox" class="bmcb" value="TQQQ">TQQQ</label>
         <span class="sp"></span>
         <span class="ptag">口径</span>
@@ -358,7 +360,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   </div>
 </div>
 
-<div class="card"><h2>基准参考：标普500 / 纳斯达克综合 / 纳斯达克100 指数与 SPY / UPRO / QQQ / TQQQ<small>与基金同基期（滚动近N年，基期前最近交易日收盘），截至 <b id="mNav2">2026-08-31</b></small></h2>
+<div class="card"><h2>基准参考：标普500 / 纳斯达克综合 / 纳斯达克100 指数与 SPY / SSO / UPRO / QQQ / QLD / TQQQ<small>与基金同基期（滚动近N年，基期前最近交易日收盘），截至 <b id="mNav2">2026-08-31</b></small></h2>
 <div class="bmctl">
   <span class="hint" id="bmTag"></span>
   <span class="hint">口径切换与叠加勾选见上方图表区「基准叠加」；基准随 update.py 每日重算，行情接口限流时自动保留上一版。</span>
@@ -429,7 +431,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   <p><b>★ 大成标普500等权重A（096001）</b>：每年分红（窗口内 10 次，每份约 0.04~0.09 元），表中收益按<b>红利再投逐笔复权重算</b>；累计净值口径下其近1/2/3/5/10年仅为 9.23% / 14.72% / 28.27% / 39.65% / 120.01%，复权后为 11.58% / 18.44% / 35.75% / 45.51% / 148.99%。</p>
   <p><b>⚠ 建信纳斯达克100（539001）</b>：2010-2021 年间为"建信全球机遇"（主动型 QDII），2021 年转型跟踪纳斯达克100；近5年/近10年收益含主动管理阶段，不可直接与其他纯指数基金比较。</p>
   <p><b>⚠ 标普500ETF博时（513500）</b>：2022-03-29 做过 1:2 份额拆分，收益已按拆分复权核对。</p>
-  <p><b>基准口径</b>：标普500/纳斯达克综合/纳斯达克100 为价格指数；SPY/UPRO/QQQ/TQQQ 优先采用前复权价（含分红，新浪兜底为未复权价格）；人民币口径按 USDCNY 汇率换算。UPRO/TQQQ 为三倍做多且每日再平衡，长期累计收益会受波动与路径依赖影响，不应按指数区间涨跌的 3 倍理解。2026 年内人民币对美元明显升值，故基金（人民币净值）收益低于对应美元基准属正常。</p>
+  <p><b>基准口径</b>：标普500/纳斯达克综合/纳斯达克100 为价格指数；SPY/SSO/UPRO/QQQ/QLD/TQQQ 优先采用前复权价（含分红，新浪兜底为未复权价格）；人民币口径按 USDCNY 汇率换算。SSO/UPRO/QLD/TQQQ 为两倍或三倍做多且每日再平衡，长期累计收益会受波动与路径依赖影响，不应按指数区间涨跌的 2 倍或 3 倍理解。2026 年内人民币对美元明显升值，故基金（人民币净值）收益低于对应美元基准属正常。</p>
   <p><b>跟踪偏离度</b>：正=跑赢基准、负=跑输（含费率与跟踪误差影响）；基准<b>永远是纯指数</b>（标普500组→标普500指数、纳指100组→纳斯达克100指数，价格口径），基金与 ETF（含 SPY/QQQ）均按含分红口径与之对比，故偏离度含分红收益，属预期。QQQ 跟踪纳指100指数亦非 100%：管理费 0.20%/年 + 跟踪误差，年化约跑输 0.2~0.3%。</p>
   <p><b>剔除的份额</b>（只保留 A 类人民币）：C 类 006075、012860、008401、019305、007722、006479、014978、008971、012870、012752、015300、016057、016533、016453、018044、019173、019548、019525、018967、019442、017093、017895；D 类 022523、022525、023422；E 类 021773、019118；I 类 021000、024237、021838、022664；美元现汇/现钞份额 003718、012861、013425、013499、018066、000055、006480、003722、012871、012751、012753、016056、016058、016534、016535、019174、019175、018968、018969、017951、017952、017642、017643、013404、015545、017092。</p>
   <p><b>接口</b>：批量净值/涨跌幅 <code>FundMNFInfo</code>、历史净值（含分红 <code>FHFCZ</code>）<code>FundMNHisNetList</code>（fundmobapi.eastmoney.com）；申购状态/日限额/净资产规模 <code>fundf10.eastmoney.com/jjfl_&lt;代码&gt;.html</code>；场内现价/IOPV/溢价率 <code>qt.gtimg.cn</code>（腾讯行情）；基准行情 push2his（美股指数/ETF 前复权 + USDCNY）。以上由 <code>update.py</code> 每日自动抓取并写回本页数据块；天天基金 fundgz 估值接口已停用，ETF 估值改用腾讯 IOPV。</p>
@@ -2533,15 +2535,17 @@ function renderChips(skipChart){
 var BM=[
  {n:"标普500指数",tp:"指数·价格",usd:[14.3043,34.0616,69.6914,68.8027,253.0269],cny:[20.9691,41.7366,84.0550,62.3073,249.9714],note:"价格口径，未含分红"},
  {n:"SPY",tp:"美股ETF",usd:[15.5159,37.1436,75.9127,80.4228,317.0584],cny:[22.2514,44.9951,90.8030,73.4803,313.4487],note:"标普500ETF，前复权含分红"},
+ {n:"SSO",tp:"美股ETF·2倍做多",usd:[-38.3348,-21.7436,17.5950,-47.6680,-2.0240],cny:[-34.7393,-17.2634,27.5489,-49.6817,-2.8720],note:"标普500两倍做多ETF，价格口径（Sina，未复权）；每日再平衡"},
  {n:"UPRO",tp:"美股ETF·3倍做多",usd:[31.2702,74.9785,206.7789,11.0503,100.7346],cny:[38.9242,84.9960,232.7465,6.7772,98.9972],note:"标普500三倍做多ETF，价格口径（Sina，未复权）；每日再平衡"},
  {n:"纳斯达克综合指数",tp:"指数·价格",usd:[16.3180,47.6707,89.5083,71.1142,395.3394],cny:[23.1002,56.1248,105.5493,64.5298,391.0521],note:"价格口径（Sina）"},
  {n:"纳斯达克100指数",tp:"指数·价格",usd:[16.3180,47.6707,89.5083,71.1142,395.3394],cny:[23.1002,56.1248,105.5493,64.5298,391.0521],note:"价格口径"},
  {n:"QQQ",tp:"美股ETF",usd:[19.7799,50.4754,93.3669,91.9454,544.5570],cny:[26.7639,59.0901,109.7346,84.5595,538.9783],note:"纳指100ETF，前复权含分红"},
+ {n:"QLD",tp:"美股ETF·2倍做多",usd:[-34.6558,-8.2313,36.8156,6.8173,2.7532],cny:[-30.8458,-2.9775,48.3965,2.7071,1.8639],note:"纳指100两倍做多ETF，价格口径（Sina，未复权）；每日再平衡"},
  {n:"TQQQ",tp:"美股ETF·3倍做多",usd:[-31.3561,2.2272,70.8931,-53.9301,-45.3939],cny:[-27.3537,8.0797,85.3585,-55.7029,-45.8665],note:"纳指100三倍做多ETF，价格口径（Sina，未复权）；每日再平衡"},
 ];
 /*__DATA_BM_END__*/
-/* 基准顺序固定为：标普500指数 → SPY → UPRO → 纳斯达克综合 → 纳斯达克100 → QQQ → TQQQ（颜色与顺序一一对应） */
-var BM_COLOR=['#33517e','#d6a01b','#b06a2b','#0a8a4a','#7a4ad6','#d6362a','#b83b7a'];
+/* 基准顺序固定为：标普500指数 → SPY → SSO → UPRO → 纳斯达克综合 → 纳斯达克100 → QQQ → QLD → TQQQ（颜色与顺序一一对应） */
+var BM_COLOR=['#33517e','#d6a01b','#4b8fc8','#a25b36','#0a8a4a','#7a4ad6','#d6362a','#0f8b8d','#b83b7a'];
 var BIDX={};BM.forEach(function(b,i){BIDX[b.n]=i;});
 var bmCNY=true;
 var bmSel=new Set();

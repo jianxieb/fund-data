@@ -9,13 +9,13 @@
   3) fundmobapi FundMNHisNetList             全量历史净值（含分红 FHFCZ，缓存 .tmp-hist/，增量合并）
      → 重算 近1/2/3/5/10年区间涨幅（红利再投口径）、近3年年化波动率、近3年最大回撤
   4) qt.gtimg.cn/q=sh513100,sz159941,...     场内ETF 现价/涨跌幅/IOPV/溢价率（快照 = "当时溢价率"）
-  5) push2his.eastmoney.com kline            标普500/纳指综合/纳指100/SPY/UPRO/QQQ/TQQQ + USDCNY 汇率（基准）
+  5) push2his.eastmoney.com kline            标普500/纳指综合/纳指100/SPY/SSO/UPRO/QQQ/QLD/TQQQ + USDCNY 汇率（基准）
 
 更新 index.html 中 /*__DATA_*__*/ 标记区块（FUNDS 逐行补丁、BM、META、标题日期）。
 
 用法：
   python update.py           全量更新（历史增量合并 + 基准重算）
-  python update.py --quick   跳过基准（指数/SPY/UPRO/QQQ/TQQQ，其余全刷，日常用）
+  python update.py --quick   跳过基准（指数/SPY/SSO/UPRO/QQQ/QLD/TQQQ，其余全刷，日常用）
   python update.py --hist    只补历史与基准（限流缓解后回填缓存用）
   python update.py --offline 只用本地缓存（.tmp-fhsp/.tmp-hist），不联网
 
@@ -47,10 +47,12 @@ WINDOWS = [1, 2, 3, 5, 10]
 BM_DEFS = [
     ('标普500指数', '指数·价格', ['100.SPX'], '价格口径，未含分红', 0),
     ('SPY', '美股ETF', ['106.SPY', '107.SPY', '105.SPY'], '标普500ETF，前复权含分红', 1),
+    ('SSO', '美股ETF·2倍做多', ['107.SSO', '106.SSO', '105.SSO'], '标普500两倍做多ETF，前复权含分红；每日再平衡', 1),
     ('UPRO', '美股ETF·3倍做多', ['107.UPRO', '106.UPRO', '105.UPRO'], '标普500三倍做多ETF，前复权含分红；每日再平衡', 1),
     ('纳斯达克综合指数', '指数·价格', ['100.COMPX', '100.IXIC'], '价格口径', 0),
     ('纳斯达克100指数', '指数·价格', ['100.NDX'], '价格口径', 0),
     ('QQQ', '美股ETF', ['105.QQQ'], '纳指100ETF，前复权含分红', 1),
+    ('QLD', '美股ETF·2倍做多', ['105.QLD', '106.QLD', '107.QLD'], '纳指100两倍做多ETF，前复权含分红；每日再平衡', 1),
     ('TQQQ', '美股ETF·3倍做多', ['105.TQQQ', '106.TQQQ', '107.TQQQ'], '纳指100三倍做多ETF，前复权含分红；每日再平衡', 1),
 ]
 FX_SECIDS = ['133.USDCNY', '119.USDCNY', '133.USDCNH']  # 在岸优先，离岸兜底
@@ -616,16 +618,18 @@ def kline_closes(secids, end, fqt=0, need=3000):
     return None
 
 
-# push2his 被限流时的备用源：新浪美股日线（含 SPY/UPRO/QQQ/TQQQ，价格口径未复权）
+# push2his 被限流时的备用源：新浪美股日线（含 SPY/SSO/UPRO/QQQ/QLD/TQQQ，价格口径未复权）
 SINA_SYM = {'标普500指数': '.INX', '纳斯达克综合指数': '.IXIC',
-            '纳斯达克100指数': '.NDX', 'SPY': 'spy', 'UPRO': 'upro',
-            'QQQ': 'qqq', 'TQQQ': 'tqqq'}
+            '纳斯达克100指数': '.NDX', 'SPY': 'spy', 'SSO': 'sso',
+            'UPRO': 'upro', 'QQQ': 'qqq', 'QLD': 'qld', 'TQQQ': 'tqqq'}
 SINA_NOTE = {'标普500指数': '价格口径，未含分红（Sina）',
              '纳斯达克综合指数': '价格口径（Sina）',
              '纳斯达克100指数': '价格口径（Sina）',
              'SPY': '标普500ETF，价格口径（Sina，未复权）',
+             'SSO': '标普500两倍做多ETF，价格口径（Sina，未复权）；每日再平衡',
              'UPRO': '标普500三倍做多ETF，价格口径（Sina，未复权）；每日再平衡',
              'QQQ': '纳指100ETF，价格口径（Sina，未复权）',
+             'QLD': '纳指100两倍做多ETF，价格口径（Sina，未复权）；每日再平衡',
              'TQQQ': '纳指100三倍做多ETF，价格口径（Sina，未复权）；每日再平衡'}
 
 
