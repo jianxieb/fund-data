@@ -120,6 +120,11 @@ body.dense table.t1,body.dense table.t3{min-width:1180px}
 .hint{color:var(--sub);font-size:12px}
 .filter .hint{color:var(--sub);font-size:12px}
 .filter .sp{flex:1}
+.idxinfo{border:0;background:transparent;color:#8a93a3;cursor:help;font-size:11px;line-height:1;padding:0 2px;vertical-align:middle}
+.idxinfo:hover,.idxinfo:focus{color:var(--blue);outline:none}
+#idxTip{display:none;position:fixed;z-index:120;max-width:360px;padding:9px 11px;border-radius:8px;
+  background:#263247;color:#fff;font-size:12px;line-height:1.55;box-shadow:0 8px 24px rgba(16,24,40,.24);
+  pointer-events:none;white-space:normal}
 button.tab{padding:5px 14px;border:1px solid var(--line);background:#fff;border-radius:15px;cursor:pointer;font-size:13px;color:var(--ink);white-space:nowrap}
 button.tab:hover{border-color:#9db4d8}
 button.tab.active{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 2px 6px rgba(29,78,216,.28)}
@@ -299,7 +304,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
     </span>
     <span data-pv="cnidx">
       数据口径：基于国内长期绩优候选中的指数型基金，按跟踪指数归并；收益、回撤和波动为同指数候选基金中位数，<b>不是指数官方点位收益</b><br>
-      主表列常用宽基与微盘指数，红利相关基金另表逐只比较；候选快照 2026-09-17，数据由 <code>screens/fund_screen.py</code> 生成
+      主表列常用宽基与小盘指数，红利相关基金另表逐只比较；候选快照 2026-09-17，数据由 <code>screens/fund_screen.py</code> 生成
     </span>
     <span data-pv="cn">
       筛选快照：<b>2026-09-17</b> ｜ 国内可买全样本 26,150 个代码 → 入池 1,792 → 通过硬门槛 1,273 → 入选 81；默认只显示入选，可展开备选<br>
@@ -443,7 +448,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 <details class="scope" open>
   <summary>口径说明（点击折叠）</summary>
   <ol>
-    <li><b>数据来源</b>：主表基于国内长期绩优候选里的指数型基金，按“跟踪指数”名称归并；红利明细直接读取全量筛选缓存中的已完成净值复权与风险计算产品，不受 97 只候选入选限制。主表只保留 12 个常用宽基与微盘指数。</li>
+    <li><b>数据来源</b>：主表基于国内长期绩优候选里的指数型基金，按“跟踪指数”名称归并；红利明细直接读取全量筛选缓存中的已完成净值复权与风险计算产品，不受 97 只候选入选限制。主表只保留 12 个常用宽基与小盘指数。</li>
     <li><b>基金口径</b>：指数行的收益、近5年最大回撤和波动率都是同一指数下候选基金的<b>中位数</b>，用于观察可投资产品表现，不是指数官方点位收益。</li>
     <li><b>收益口径</b>：近1/2/3/5/10年收益按红利再投复权后的基金净值计算；右下角「累计/年化」开关会同步切换本表。</li>
     <li><b>代表基金</b>：优先选择当前候选池中规模较大的基金，仅作为该指数的产品入口，不代表推荐。</li>
@@ -455,7 +460,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 <div class="stats" id="cnIdxStats"></div>
 
 <div class="cat catidx" id="catidx"><span class="catno">国内</span><b>国内指数</b>
-  <span class="hint">主表列 12 个常用宽基与微盘指数；红利相关基金全部单独列出比较</span>
+  <span class="hint">主表列 12 个常用宽基与小盘指数；红利相关基金全部单独列出比较</span>
 </div>
 
 <div class="filter noprint">
@@ -533,6 +538,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 <button class="anntoggle dens noprint" id="densTog" title="表格列显示：完整 19 列 / 精简列（隐藏 代码、成立、买入费用、卖出费用、净值日涨跌、规模、备注，可视化对比里也不显示代码）｜打印与导出始终完整"><span class="ic">☰</span><span id="densTogTxt">视图：完整</span></button>
 <button class="anntoggle noprint" id="annTog" title="收益口径：累计涨幅 ⇄ 年化收益率（作用于全页：基金表、基准参考表、收益/基准图与收益曲线；导出的 CSV 始终同时包含累计与年化两套列，不受此开关影响）：点击切换"><span class="ic">⇄</span><span id="annTogTxt">口径：累计</span></button>
 <button id="toTop" class="noprint" title="回到顶部">↑</button>
+<div id="idxTip" role="tooltip"></div>
 
 <script>
 /* =========================================================
@@ -2098,6 +2104,79 @@ function link(c){return '<a href="https://fund.eastmoney.com/'+c+'.html" target=
 
 /* ================= 表格渲染 ================= */
 function retHead(n){return annOn?'年化'+n+'年':'近'+n+'年';}
+var INDEX_INFO={
+  '标普500指数':'美国大型股基准，约500家公司，覆盖美股约80%市值；自由流通市值加权。',
+  '纳斯达克综合指数':'纳斯达克交易所全部普通股，约数千只；市值加权，科技与成长股占比较高。',
+  '纳斯达克100指数':'纳斯达克100家非金融公司；修正市值加权，科技权重集中，不代表整个美股。',
+  '上证指数':'上交所全部上市股票；总市值加权，金融、工业、能源等传统行业权重较高。',
+  '上证50':'上交所规模大、流动性好的50只股票；市值加权，代表大盘蓝筹。',
+  '沪深300':'沪深两市规模大、流动性好的300只股票；自由流通市值加权，是A股大盘核心基准。',
+  '中证500':'剔除沪深300后，规模居前的500只中盘股；自由流通市值加权。',
+  '中证1000':'剔除沪深300和中证500后，规模居前的1000只小盘股；自由流通市值加权。',
+  '中证2000':'沪深市值较小、流动性较好的2000只股票，偏小微盘；不等同于万得微盘股指数。',
+  '深证成指':'深市500只代表性股票；自由流通市值加权，覆盖深市大盘与中盘。',
+  '创业板指':'创业板市值大、流动性好的100只股票；成长和科技行业占比高，波动通常大于宽基。',
+  '科创50':'科创板市值大、流动性好的50只证券；半导体、高端装备等硬科技权重较高。',
+  '科创100':'剔除科创50后，科创板市值与流动性居前的100只证券；小盘成长属性更明显。',
+  '北证50':'北交所规模与流动性居前的50只证券；市值加权，偏中小企业与创新成长。',
+  '科创创业50':'从科创板和创业板选取50只新兴产业龙头；硬科技集中，成长风格明显。',
+  '上证红利':'上交所50只高股息、分红稳定且具备规模流动性的证券；按股息率加权。',
+  '红利机会':'标普中国A股红利机会指数，筛选高股息且盈利、分红较稳定的A股；按股息率加权。',
+  '中证红利':'沪深市场100只高股息、分红稳定的证券；按股息率加权。',
+  '红利低波':'从高股息股票中再筛选分红稳定、波动较低的证券；按股息率加权，兼顾低波动。',
+  '国企红利':'国有企业样本中高股息、分红稳定的证券；按股息率加权，央国企权重较高。',
+  '沪港深红利':'覆盖沪港深三地上市的高股息标的，并叠加成长与低波筛选；地区和行业更分散。'
+};
+function idxInfoBtn(name){
+  var tip=INDEX_INFO[name];
+  if(!tip)return '';
+  return ' <button class="idxinfo" type="button" aria-label="查看指数说明" data-idx-tip="'+
+    esc(tip).replace(/'/g,'&#39;')+'">ⓘ</button>';
+}
+var idxTipPinned=false, idxTipOwner=null;
+function showIdxTip(btn,pin){
+  var tip=document.getElementById('idxTip');
+  if(!tip||!btn)return;
+  idxTipOwner=btn;idxTipPinned=!!pin;
+  tip.textContent=btn.dataset.idxTip||'';
+  tip.style.display='block';
+  var r=btn.getBoundingClientRect();
+  tip.style.left=Math.max(8,Math.min(r.left,innerWidth-tip.offsetWidth-8))+'px';
+  var below=r.bottom+8;
+  tip.style.top=(below+tip.offsetHeight<=innerHeight?below:Math.max(8,r.top-tip.offsetHeight-8))+'px';
+}
+function hideIdxTip(force){
+  if(idxTipPinned&&!force)return;
+  var tip=document.getElementById('idxTip');
+  if(tip)tip.style.display='none';
+  idxTipPinned=false;idxTipOwner=null;
+}
+document.addEventListener('mouseover',function(e){
+  var b=e.target.closest&&e.target.closest('.idxinfo');
+  if(b&&!idxTipPinned)showIdxTip(b,false);
+});
+document.addEventListener('mouseout',function(e){
+  if(e.target.closest&&e.target.closest('.idxinfo'))hideIdxTip(false);
+});
+document.addEventListener('focusin',function(e){
+  var b=e.target.closest&&e.target.closest('.idxinfo');
+  if(b)showIdxTip(b,false);
+});
+document.addEventListener('focusout',function(e){
+  if(e.target.closest&&e.target.closest('.idxinfo'))hideIdxTip(false);
+});
+document.addEventListener('click',function(e){
+  var b=e.target.closest&&e.target.closest('.idxinfo');
+  if(b){
+    e.preventDefault();
+    if(idxTipPinned&&idxTipOwner===b)hideIdxTip(true);
+    else showIdxTip(b,true);
+    return;
+  }
+  if(!e.target.closest||!e.target.closest('#idxTip'))hideIdxTip(true);
+});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')hideIdxTip(true);});
+window.addEventListener('scroll',function(){hideIdxTip(true);},{passive:true});
 /* 五张表统一列布局（同一概念固定在同一列位）：
    名称 代码 类别 跟踪指数 成立 年费 买入费用 卖出费用 申购状态 日限额
    近1/2/3/5/10年 净值/日涨跌 盘中价(快照+当时溢价) 规模 备注
@@ -2657,7 +2736,7 @@ function renderBenchTable(){
     '</tr></thead>';
   el.innerHTML=head+'<tbody>'+BM.map(function(b){
     var d=bmCNY?b.cny:b.usd;
-    return '<tr>'+cell('<b>'+esc(b.n)+'</b>','l')+cell(esc(b.tp),'l')+
+    return '<tr>'+cell('<b>'+esc(b.n)+'</b>'+idxInfoBtn(b.n),'l')+cell(esc(b.tp),'l')+
       bmRetCell(d[0],0)+bmRetCell(d[1],1)+bmRetCell(d[2],2)+bmRetCell(d[3],3)+bmRetCell(d[4],4)+
       cell(esc(b.note),'note')+'</tr>';
   }).join('')+'</tbody>';
@@ -3553,7 +3632,7 @@ var CNIDX_DEFS=[
   {name:'沪深300',bucket:'宽基',re:/^沪深300指数$/},
   {name:'中证500',bucket:'宽基',re:/^中证500指数$/},
   {name:'中证1000',bucket:'宽基',re:/^中证1000指数$/},
-  {name:'中证2000（微盘）',bucket:'宽基',re:/^中证2000指数$/},
+  {name:'中证2000',bucket:'宽基',re:/^中证2000指数$/},
   {name:'深证成指',bucket:'宽基',re:/^(深证成指|深证成份)/},
   {name:'创业板指',bucket:'宽基',re:/^创业板指数$/},
   {name:'科创50',bucket:'宽基',re:/^(上证)?科创板50成份指数$/},
@@ -3664,7 +3743,7 @@ function renderCnIndexStats(rows){
   dividendFunds.forEach(function(f){fundCodes[f.c]=1;});
   var broad=rows.filter(function(x){return x.bucket==='宽基';}).length;
   var cards=[
-    {k:'主要国内指数',v:rows.length+' 个',s:'常用宽基、微盘与红利策略'},
+    {k:'主要国内指数',v:rows.length+' 个',s:'常用宽基、小盘与红利策略'},
     {k:'关联指数基金',v:Object.keys(fundCodes).length+' 只',s:'候选池内去重'},
     {k:'宽基指数',v:broad+' 个',s:'上证 / 沪深300 / 创业板 / 科创 / 北证等'},
     {k:'红利相关基金',v:dividendFunds.length+' 只',s:'中证红利、红利低波、国企红利、沪港深红利'}
@@ -3705,7 +3784,7 @@ function renderCnIndexTable(){
       ?'<td class="l note" title="'+esc(repTip)+'">'+link(x.rep.c)+' '+esc(x.rep.n)+'</td>'
       :'<td class="na">暂无可比候选基金</td>';
     return '<tr data-idx="'+i+'">'+
-      cell(esc(x.bucket),'l')+cell('<b>'+esc(x.name)+'</b>','l')+
+      cell(esc(x.bucket),'l')+cell('<b>'+esc(x.name)+'</b>'+idxInfoBtn(x.name),'l')+
       cell(String(x.funds.length))+
       repCell+
       cnIdxPct(x.r[0],0)+cnIdxPct(x.r[1],1)+cnIdxPct(x.r[2],2)+cnIdxPct(x.r[3],3)+cnIdxPct(x.r[4],4)+
@@ -3748,7 +3827,7 @@ function renderCnDividendTable(){
     '</tr></thead>';
   var body=rows.map(function(f,i){
     return '<tr data-idx="'+i+'">'+
-      cell(cnIdxDividendType(f.ix),'l')+
+      cell(cnIdxDividendType(f.ix)+idxInfoBtn(cnIdxDividendType(f.ix)),'l')+
       cell(link(f.c),'l')+cell('<b>'+esc(f.n)+'</b>','l')+
       cell(esc(f.t||'场内ETF'),'l')+cell(esc(f.ix||''),'l')+
       cnIdxPct(f.r[0],0)+cnIdxPct(f.r[1],1)+cnIdxPct(f.r[2],2)+cnIdxPct(f.r[3],3)+cnIdxPct(f.r[4],4)+
