@@ -54,7 +54,7 @@ header .meta b{color:#fff}
 .pageview.active{display:block}
 [data-pv]{display:none}
 [data-pv].active{display:inline}
-body[data-page="cn"] .page-only-us{display:none!important}
+body:not([data-page="us"]) .page-only-us{display:none!important}
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;margin:16px 0;box-shadow:0 1px 3px rgba(16,24,40,.05)}
 .card>h2{margin:0;padding:13px 18px;font-size:16px;background:#f0f3f7;border-bottom:1px solid var(--line);border-radius:10px 10px 0 0;display:flex;align-items:center;flex-wrap:wrap}
 .card>h2 small{color:var(--sub);font-weight:normal;font-size:12px;margin-left:6px}
@@ -175,6 +175,8 @@ table{width:100%;border-collapse:collapse}
 table.t1,table.t3{min-width:1750px}
 /* 大类二（国内长期绩优）表格：列比上面五张表多 6 列，横向更宽 */
 table.x{min-width:2600px}
+/* 国内指数：按跟踪指数聚合，列数少于基金表 */
+table.cnidx{min-width:1450px}
 body.dense table.x{min-width:1700px}
 /* 精选/备选两层：默认只显示“入选”行，点卡片标题的「显示备选」再展开 */
 table.x.alt-off tr[data-sel="0"]{display:none}
@@ -190,6 +192,8 @@ table.x.alt-off tr[data-sel="0"]{display:none}
 .cat .hint{color:#5b6b85}
 .cat.cat2{border-left-color:#0a8a4a;background:linear-gradient(90deg,#eefaf3,#f9fdfb)}
 .cat.cat2 .catno{background:#0a8a4a}
+.cat.catidx{border-left-color:#0f8b8d;background:linear-gradient(90deg,#edf9f9,#f8fdfd)}
+.cat.catidx .catno{background:#0f8b8d}
 .cat .mini{font-size:11.5px}
 th.frz,td.frz{position:sticky;left:0;z-index:2;box-shadow:1px 0 0 var(--line)}
 thead th.frz{z-index:4}
@@ -256,9 +260,9 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   th.frz,td.frz{position:static;box-shadow:none}
   /* 打印始终完整：精简模式隐藏的低频列在打印时全部还原 */
   body.dense .hcol{display:table-cell!important}
-  table.t1,table.t3,table.bm,table.x{min-width:0}
+  table.t1,table.t3,table.bm,table.x,table.cnidx{min-width:0}
   /* 基金表按预设列宽固定排版：美股五张 19 列刚好排进一页宽；大类二 25 列用更小字号 */
-  table.t1,table.t3,table.x{width:100%;table-layout:fixed}
+  table.t1,table.t3,table.x,table.cnidx{width:100%;table-layout:fixed}
   table.x thead th,table.x tbody td{font-size:8px;padding:1px 2px}
   table.x td.note{font-size:7.5px;max-width:30mm}
   table col{width:var(--w)}
@@ -284,12 +288,17 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 <header>
   <h1>
     <span data-pv="us" class="active">基金清单 · 纯美指数（标普500 / 纳斯达克）</span>
+    <span data-pv="cnidx">基金清单 · 国内指数</span>
     <span data-pv="cn">基金清单 · 国内长期绩优（非美指数）</span>
   </h1>
   <div class="meta">
     <span data-pv="us" class="active">
       生成时间：<b id="mGen">2026-09-02 盘中</b> ｜ 净值数据截至 <b id="mNav">2026-08-31</b>（QDII T+1）｜ 场内 ETF 盘中价为 <b id="mSnap">09-02 11:27</b> 快照 ｜ 规模截至 <b id="mSz">2026-06-30</b>（季报）<br>
       数据来源：天天基金/东方财富公开接口 + 腾讯行情（IOPV/溢价率）｜ 标普500 / 标普100 等权重 / 纳斯达克100 及衍生共 46 只，由 <code>update.py</code> 每日更新
+    </span>
+    <span data-pv="cnidx">
+      数据口径：基于国内长期绩优候选中的指数型基金，按跟踪指数归并；收益、回撤和波动为同指数候选基金中位数，<b>不是指数官方点位收益</b><br>
+      覆盖宽基、策略风格、行业与主题指数；候选快照 2026-09-17，数据由 <code>screens/fund_screen.py</code> 生成
     </span>
     <span data-pv="cn">
       筛选快照：<b>2026-09-17</b> ｜ 国内可买全样本 26,150 个代码 → 入池 1,792 → 通过硬门槛 1,273 → 入选 81；默认只显示入选，可展开备选<br>
@@ -301,7 +310,8 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 
 <nav class="pagebar noprint" aria-label="页面切换">
   <div class="pageswitch" role="tablist">
-    <button class="pagebtn active" type="button" role="tab" aria-selected="true" data-page="us">海外指数基金</button>
+    <button class="pagebtn active" type="button" role="tab" aria-selected="true" data-page="us">海外指数</button>
+    <button class="pagebtn" type="button" role="tab" aria-selected="false" data-page="cnidx">国内指数</button>
     <button class="pagebtn" type="button" role="tab" aria-selected="false" data-page="cn">国内长期绩优</button>
   </div>
   <span class="pagehint" id="pageHint">每日行情、基准叠加与美指基金对比</span>
@@ -426,6 +436,35 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 
 <div class="card"><h2>五、其他美股指数基金 — 场内 ETF（4 只）<small>纳指科技 / 纳指生物科技 / 美国50（MSCI USA 50，易方达 513850、汇添富 159577）；场内佣金设置见顶部工具栏</small></h2><div class="tablebox"><table class="sortable t3" id="t5"></table></div></div>
 
+</section>
+
+<section class="pageview" data-page-view="cnidx">
+<details class="scope" open>
+  <summary>口径说明（点击折叠）</summary>
+  <ol>
+    <li><b>数据来源</b>：基于国内长期绩优候选里的指数型基金，按“跟踪指数”名称归并；当前覆盖候选中的 A 股宽基、策略风格、行业与主题指数。</li>
+    <li><b>基金口径</b>：指数行的收益、近5年最大回撤和波动率都是同一指数下候选基金的<b>中位数</b>，用于观察可投资产品表现，不是指数官方点位收益。</li>
+    <li><b>收益口径</b>：近1/2/3/5/10年收益按红利再投复权后的基金净值计算；右下角「累计/年化」开关会同步切换本表。</li>
+    <li><b>代表基金</b>：优先选择当前候选池中规模较大的基金，仅作为该指数的产品入口，不代表推荐。</li>
+    <li><b>分类规则</b>：宽基、策略风格优先；其余按科技通信、制造资源、消费医药、金融地产、行业主题归类。跨市场、海外指数与非股票商品指数不纳入本页。</li>
+    <li><b>数据时点</b>：基金数据来自 2026-09-17 筛选快照，非每日指数行情；数值更新需要重新运行 <code>screens/fund_screen.py</code> 并写入候选数据块。</li>
+  </ol>
+</details>
+
+<div class="stats" id="cnIdxStats"></div>
+
+<div class="cat catidx" id="catidx"><span class="catno">国内</span><b>国内指数</b>
+  <span class="hint">按候选基金覆盖的跟踪指数归并；分类、收益、回撤与波动均支持排序</span>
+</div>
+
+<div class="filter noprint">
+  <span class="hint" id="cnIdxCnt"></span>
+  <span class="sp"></span>
+  <div class="prow" id="cnIdxCats"></div>
+</div>
+
+<div class="card"><h2>一、国内指数覆盖清单<small>基金中位数口径；点击表头排序</small></h2>
+<div class="tablebox"><table class="sortable cnidx" id="cnIdxTbl"></table></div></div>
 </section>
 
 <section class="pageview" data-page-view="cn">
@@ -3165,6 +3204,7 @@ function setAnn(v){
   bindSort();
   applyFilter();
   renderChart();
+  if(typeof renderCnIndexTable==='function')renderCnIndexTable();
   saveView();
 }
 document.getElementById('annTog').addEventListener('click',function(){setAnn(!annOn);});
@@ -3215,13 +3255,13 @@ function saveView(){
 }
 function loadView(){
   var hashPage=(location.hash||'').replace(/^#/,'');
-  if(hashPage==='us'||hashPage==='cn')curPage=hashPage;
+  if(hashPage==='us'||hashPage==='cnidx'||hashPage==='cn')curPage=hashPage;
   try{
     var s=localStorage.getItem(VIEW_KEY);
     if(!s)return;
     var v=JSON.parse(s);
     if(!v||typeof v!=='object')return;
-    if(!hashPage&&(v.page==='us'||v.page==='cn'))curPage=v.page;
+    if(!hashPage&&(v.page==='us'||v.page==='cnidx'||v.page==='cn'))curPage=v.page;
     if(typeof v.dense==='boolean')dense=v.dense;
     if(v.group&&GROUPS[v.group])curGroup=v.group;
     if(typeof v.chart==='string'&&/^(bar|scat|fee|size|td|bm)$/.test(v.chart))curChart=v.chart;
@@ -3237,7 +3277,7 @@ function loadView(){
 }
 function setPage(page,opts){
   opts=opts||{};
-  curPage=page==='cn'?'cn':'us';
+  curPage=(page==='cn'||page==='cnidx')?page:'us';
   document.body.dataset.page=curPage;
   document.querySelectorAll('.pagebtn').forEach(function(b){
     var on=b.dataset.page===curPage;
@@ -3253,18 +3293,18 @@ function setPage(page,opts){
   var hint=document.getElementById('pageHint');
   if(hint)hint.textContent=curPage==='us'
     ?'每日行情、基准叠加与美指基金对比'
-    :'国内长期绩优筛选快照与精选/备选列表';
+    :(curPage==='cnidx'?'国内各指数覆盖、收益与风险概览':'国内长期绩优筛选快照与精选/备选列表');
   var input=document.getElementById('gSearchInput');
   if(input)input.placeholder=curPage==='us'
     ?'搜索名称或代码，如：招商 / 5131 / 广发'
-    :'搜索国内基金名称或代码';
+    :(curPage==='cnidx'?'搜索国内指数或关联基金名称':'搜索国内基金名称或代码');
   var sbtn=document.getElementById('gSearchBtn');
   if(sbtn)sbtn.title=curPage==='us'
     ?'搜索名称或代码：过滤美指基金表与可视化勾选列表（不改变已勾选的基金）'
-    :'搜索名称或代码：过滤国内长期绩优各表（不改变入选/备选状态）';
+    :(curPage==='cnidx'?'搜索名称：过滤国内指数与关联基金':'搜索名称或代码：过滤国内长期绩优各表（不改变入选/备选状态）');
   document.title=curPage==='us'
     ?'基金清单 · 纯美指数（标普500/纳斯达克）'
-    :'基金清单 · 国内长期绩优（非美指数）';
+    :(curPage==='cnidx'?'基金清单 · 国内指数':'基金清单 · 国内长期绩优（非美指数）');
   if(!opts.noHash){
     try{history.replaceState(null,'',location.pathname+location.search+'#'+curPage);}catch(e){}
   }
@@ -3272,6 +3312,7 @@ function setPage(page,opts){
   if(curPage==='us'&&chart){
     setTimeout(function(){chart.resize();renderChart();},0);
   }
+  if(curPage==='cnidx'&&typeof renderCnIndexTable==='function')renderCnIndexTable();
   if(opts.scroll!==false)window.scrollTo(0,0);
 }
 document.querySelectorAll('.pagebtn').forEach(function(b){
@@ -3279,7 +3320,7 @@ document.querySelectorAll('.pagebtn').forEach(function(b){
 });
 window.addEventListener('hashchange',function(){
   var p=(location.hash||'').replace(/^#/,'');
-  if(p==='us'||p==='cn')setPage(p,{noHash:true});
+  if(p==='us'||p==='cnidx'||p==='cn')setPage(p,{noHash:true});
 });
 /* 恢复的分组/指标要同步按钮选中态（HTML 里的默认 active 是按默认值写死的） */
 function syncTabUI(){
@@ -3496,6 +3537,144 @@ function exportCSVX(){
   document.body.appendChild(a);a.click();a.remove();
   setTimeout(function(){URL.revokeObjectURL(a.href);},2000);
 }
+
+/* =========================================================
+   国内指数：从候选基金覆盖的跟踪指数聚合，指标为同指数基金中位数
+   ========================================================= */
+var CNIDX_CATS=['全部','宽基','策略风格','科技通信','制造资源','消费医药','金融地产','行业主题'];
+var curCnIdxCat='全部';
+function cnIdxNorm(s){
+  return String(s||'').replace(/\s+/g,'').replace(/指数\((价格|收益)\)$/,'指数');
+}
+function cnIdxDomestic(name){
+  if(!/(指数|上证中盘|A股资源|中证800有色)/.test(name))return false;
+  return !/(纳斯达克|纳指|标普|MSCI美国|美国50|美国石油|日经|东京|东证|Dow Jones|中韩|香港|恒生|豆粕)/.test(name);
+}
+function cnIdxBucket(name){
+  if(/(红利|价值|低波|质量成长|质量|成长|动态策略|优选|济安|凤凰行动|民企领先|国有企业|国企)/.test(name))return '策略风格';
+  if(/(半导体|芯片|科技|信息|通信|电子|传媒|互联网|人工智能|5G|大数据)/.test(name))return '科技通信';
+  if(/(消费|食品|饮料|白酒|医药|医疗|生物|健康)/.test(name))return '消费医药';
+  if(/(有色|资源|煤炭|新能源|汽车|光伏|电池|制造|工业|钢铁|化工|大宗商品)/.test(name))return '制造资源';
+  if(/(银行|证券|金融|保险|地产)/.test(name))return '金融地产';
+  if(/(沪深300|上证50|中证A100|中证A50|富时中国A50|中证500|中证1000|中证2000|中证800|上证180|上证中盘|深证100|创业板|科创板|科创创业|巨潮100|央视财经50|MSCI中国A股|战略新兴产业)/.test(name))return '宽基';
+  return '行业主题';
+}
+function cnIdxMedian(values){
+  var a=values.filter(function(v){return v!=null&&isFinite(v);}).sort(function(x,y){return x-y;});
+  if(!a.length)return null;
+  var m=Math.floor(a.length/2);
+  return a.length%2?a[m]:(a[m-1]+a[m])/2;
+}
+function cnIdxBuildRows(){
+  var groups={};
+  (typeof EXTRA!=='undefined'?EXTRA:[]).forEach(function(f){
+    if(['x3','x4','x6'].indexOf(f.g)<0)return;
+    var name=cnIdxNorm(f.ix);
+    if(!cnIdxDomestic(name))return;
+    if(!groups[name])groups[name]=[];
+    groups[name].push(f);
+  });
+  var order={};CNIDX_CATS.forEach(function(x,i){order[x]=i;});
+  return Object.keys(groups).map(function(name){
+    var fs=groups[name];
+    var rep=fs.slice().sort(function(a,b){
+      if(a.sel!==b.sel)return (b.sel?1:0)-(a.sel?1:0);
+      if((b.sz||0)!==(a.sz||0))return (b.sz||0)-(a.sz||0);
+      return (b.score||0)-(a.score||0);
+    })[0];
+    return {
+      name:name,bucket:cnIdxBucket(name),funds:fs,rep:rep,
+      r:YEARS.map(function(_,i){return cnIdxMedian(fs.map(function(f){return f.r[i];}));}),
+      mdd5:cnIdxMedian(fs.map(function(f){return f.mdd5;})),
+      vol5:cnIdxMedian(fs.map(function(f){return f.vol5;}))
+    };
+  }).sort(function(a,b){
+    if(order[a.bucket]!==order[b.bucket])return order[a.bucket]-order[b.bucket];
+    return b.funds.length-a.funds.length||a.name.localeCompare(b.name,'zh-CN');
+  });
+}
+function cnIdxPct(v,i){
+  if(v==null)return '<td class="na">--</td>';
+  var x=annOn?annRet(v,i):v;
+  return '<td class="'+(x>=0?'up':'down')+'">'+(x>=0?'+':'')+x.toFixed(2)+'%</td>';
+}
+function renderCnIndexCats(rows){
+  var el=document.getElementById('cnIdxCats');
+  if(!el)return;
+  var counts={};rows.forEach(function(x){counts[x.bucket]=(counts[x.bucket]||0)+1;});
+  el.innerHTML=CNIDX_CATS.filter(function(c){return c==='全部'||counts[c];}).map(function(c){
+    return '<button class="tab'+(c===curCnIdxCat?' active':'')+'" type="button" data-idxcat="'+esc(c)+'">'+
+      esc(c)+' ('+(c==='全部'?rows.length:counts[c])+')</button>';
+  }).join('');
+  el.querySelectorAll('button[data-idxcat]').forEach(function(b){
+    b.addEventListener('click',function(){
+      curCnIdxCat=b.dataset.idxcat;
+      renderCnIndexTable();
+    });
+  });
+}
+function renderCnIndexStats(rows){
+  var el=document.getElementById('cnIdxStats');
+  if(!el)return;
+  var fundCodes={};rows.forEach(function(x){x.funds.forEach(function(f){fundCodes[f.c]=1;});});
+  var broad=rows.filter(function(x){return x.bucket==='宽基';}).length;
+  var theme=rows.filter(function(x){return ['科技通信','制造资源','消费医药','金融地产','行业主题'].indexOf(x.bucket)>=0;}).length;
+  var cards=[
+    {k:'国内指数',v:rows.length+' 个',s:'来自候选基金跟踪指数'},
+    {k:'关联指数基金',v:Object.keys(fundCodes).length+' 只',s:'候选池内去重'},
+    {k:'宽基指数',v:broad+' 个',s:'沪深300 / 中证500 / 创业板 / 科创等'},
+    {k:'行业主题指数',v:theme+' 个',s:'科技、制造、消费、金融等'}
+  ];
+  el.innerHTML=cards.map(function(c){
+    return '<div class="stat"><div class="k">'+c.k+'</div><div class="v">'+c.v+'</div><div class="s">'+c.s+'</div></div>';
+  }).join('');
+}
+function renderCnIndexTable(){
+  var el=document.getElementById('cnIdxTbl');
+  if(!el)return;
+  var all=cnIdxBuildRows();
+  renderCnIndexStats(all);
+  renderCnIndexCats(all);
+  var q=gsearchKw().toLowerCase();
+  var rows=all.filter(function(x){
+    if(curCnIdxCat!=='全部'&&x.bucket!==curCnIdxCat)return false;
+    if(!q)return true;
+    var hay=[x.name,x.bucket,x.rep.n,x.rep.c].concat(x.funds.map(function(f){return f.n;})).join(' ').toLowerCase();
+    return hay.indexOf(q)>=0;
+  });
+  var head='<thead><tr>'+
+    '<th class="l" data-sort="text" data-key="bucket">分类<span class="arr"></span></th>'+
+    '<th class="l" data-sort="text" data-key="index">指数<span class="arr"></span></th>'+
+    '<th data-sort="num" data-key="nfund">关联基金<span class="arr"></span></th>'+
+    '<th class="l" data-sort="text" data-key="rep">代表基金<span class="arr"></span></th>'+
+    '<th data-sort="num" data-key="r1">'+retHead(1)+'<span class="arr"></span></th>'+
+    '<th data-sort="num" data-key="r2">'+retHead(2)+'<span class="arr"></span></th>'+
+    '<th data-sort="num" data-key="r3">'+retHead(3)+'<span class="arr"></span></th>'+
+    '<th data-sort="num" data-key="r5">'+retHead(5)+'<span class="arr"></span></th>'+
+    '<th data-sort="num" data-key="r10">'+retHead(10)+'<span class="arr"></span></th>'+
+    '<th data-sort="num" data-key="mdd5">近5年最大回撤<span class="arr"></span></th>'+
+    '<th data-sort="num" data-key="vol5">近5年波动<span class="arr"></span></th>'+
+    '</tr></thead>';
+  var body=rows.map(function(x,i){
+    var repTip=x.funds.map(function(f){return f.n+'（'+f.c+'）';}).join('、');
+    return '<tr data-idx="'+i+'">'+
+      cell(esc(x.bucket),'l')+cell('<b>'+esc(x.name)+'</b>','l')+
+      cell(String(x.funds.length))+
+      '<td class="l note" title="'+esc(repTip)+'">'+link(x.rep.c)+' '+esc(x.rep.n)+'</td>'+
+      cnIdxPct(x.r[0],0)+cnIdxPct(x.r[1],1)+cnIdxPct(x.r[2],2)+cnIdxPct(x.r[3],3)+cnIdxPct(x.r[4],4)+
+      cell(x.mdd5==null?'--':x.mdd5.toFixed(1)+'%',x.mdd5==null?'na':'down')+
+      cell(x.vol5==null?'--':x.vol5.toFixed(1)+'%',x.vol5==null?'na':'')+
+      '</tr>';
+  }).join('');
+  if(!body)body='<tr><td colspan="11" class="na">当前筛选没有匹配的国内指数</td></tr>';
+  el.innerHTML=head+'<tbody>'+body+'</tbody>';
+  SORTS[el.id]=[];
+  clearSortUI(el);
+  bindSortOne(el);
+  var cnt=document.getElementById('cnIdxCnt');
+  if(cnt)cnt.textContent='当前显示 '+rows.length+' / '+all.length+' 个指数；分类：'+curCnIdxCat;
+}
+
 (function(){
   /* 注册到排序与顺序工具：保存顺序 / ↺ / 拖动排序都按表 id 工作 */
   XT_DEFS.forEach(function(id){if(SORT_TBLS.indexOf(id)<0)SORT_TBLS.push(id);});
@@ -3523,6 +3702,7 @@ function exportCSVX(){
   var of=window.applyFilter;
   window.applyFilter=function(){
     of.apply(null,arguments);
+    if(curPage==='cnidx'&&typeof renderCnIndexTable==='function')renderCnIndexTable();
     if(!gsearchKw()){
       var el=document.getElementById('cnt');
       if(el){
@@ -3533,6 +3713,7 @@ function exportCSVX(){
       }
     }
   };
+  renderCnIndexTable();
   window.applyFilter();
 })();
 </script>
