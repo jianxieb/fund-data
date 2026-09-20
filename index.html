@@ -413,7 +413,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   <button class="tab" id="btnPrint">🖨 打印/PDF</button>
 </div>
 
-<div class="cat" id="cat1"><span class="catno">大类一</span><b>纯美指数</b><span class="hint">标普500 / 标普100 等权重 / 纳斯达克100 及其衍生（纳指科技、纳指生物科技、美国50）共 46 只，下面五张表统一 19 列；数据由 update.py 每日更新</span></div>
+<div class="cat" id="cat1"><span class="catno">海外</span><b>纯美指数基金</b><span class="hint">标普500 / 标普100 等权重 / 纳斯达克100 及其衍生（纳指科技、纳指生物科技、美国50）共 46 只，下面五张表统一 19 列；数据由 update.py 每日更新</span></div>
 
 <div class="card"><h2>一、标普500 / 标普100 等权重基金（11 只）<small>含联接/LOF/FOF 与场内 ETF；长信标普100等权重为指数增强（QDII）</small></h2><div class="tablebox"><table class="sortable t1" id="t1"></table></div></div>
 
@@ -429,42 +429,41 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 </section>
 
 <section class="pageview" data-page-view="cn">
-<div class="cat cat2" id="cat2"><span class="catno">大类二</span><b>国内长期绩优（非美指数）</b>
-  <span class="hint"><b>筛选机制（四层漏斗）</b><br>
-  <b>① 样本</b>：国内可买到的全部基金 —— 开放式全类别 + QDII + 指数型 + 场内 ETF/LOF，共 26,150 个代码；
-  同一基金的 A/C/E/I 等份额合并，取成立最早者作代表（约 14,499 只），剔除美元/现汇份额。<br>
-  <b>② 粗筛（长期门槛）</b>：成立满 <b>7 年</b>（QDII 6 年）且 <b>近5年 / 近10年 / 成立以来三项年化任一项达标</b>
-  （A股权益与指数 ≥15% / ≥7% / ≥8%；QDII ≥13% / ≥6.5% / ≥7.5%；固收+ ≥6% / ≥4.5% / ≥5%），
-  并按需求剔除本页已有的美股指数基金、标普500/纳指100 其他跟踪产品、纯黄金/白银商品（黄金股保留）与纯债 → 入池 <b>1,792 只</b>。<br>
-  <b>③ 硬门槛</b>：规模（场外 ≥1 亿、场内 ≥2 亿）、近5年最大回撤（权益 ≤-70%、固收 ≤-30%）、现任经理任职 ≥0.5 年
-  → 通过 <b>1,273 只</b>（暂停申购的保留，状态列可见）。<br>
-  <b>④ 打分排序</b>：桶内分位加权 —— 长期名单 = 近5年 25% + 近10年 25% + 成立来 15% + 回撤 20% + 规模 5% + 经理任职/费率 10%；
-  新锐档 = 成立来 45% + 回撤 30% + 规模 10% + 任职 15% → <b>每桶取前 N，共 81 只入选</b>。<br>
-  <b>默认只显示「入选」行</b>，点每张表标题上的「显示备选（入选 X / 备选 Y）」可展开该表全部候选；
-  <b>表十一「新锐」</b>是成立 3–7 年、成立来年化 ≥18%（或近5年 ≥25%）的新基金（业绩期短、波动大，仅作观察）；
-  全量 1,794 只候选在「⬇ 导出本大类 CSV」里。
-  <br><b>口径提示</b>：<u>近10年列只在成立满 10 年时显示</u>（天天基金对不足 10 年的基金会把"成立以来"兜底填进该列，
-  数值与成立来相同，已按成立日剔除）；新锐基金的成立来收益与年化写在「备注」列。
-  列在大类一 19 列基础上<b>增加 6 列</b>（基金经理、任职起始、任职年限、近5年最大回撤、近5年波动、综合分）；
-  「累计/年化」开关、精简/完整列、搜索、拖动排序、保存顺序、打印与「⬇ 导出本大类 CSV」对本大类同样生效；
-  上方可视化对比图与基准表仍只覆盖大类一。数据由 <code>screens/fund_screen.py</code> 生成，筛选日期 2026-09-17。</span>
-  <button class="mini" id="btnCsvX" type="button" title="导出本大类的完整 CSV（25 列）">⬇ 导出本大类 CSV</button>
+<details class="scope" open>
+  <summary>口径说明（点击折叠）</summary>
+  <ol>
+    <li><b>覆盖范围</b>：国内可买到的全部基金 —— 开放式全类别 + QDII + 指数型 + 场内 ETF/LOF，共 26,150 个代码；同一基金的 A/C/E/I 等份额合并，取成立最早者作代表（约 14,499 只），剔除美元/现汇/现钞份额。</li>
+    <li><b>长期门槛</b>：成立满 <b>7 年</b>（QDII 6 年）且近5年 / 近10年 / 成立以来三项年化任一项达标：A股权益与指数 ≥15% / ≥7% / ≥8%；QDII ≥13% / ≥6.5% / ≥7.5%；固收+ ≥6% / ≥4.5% / ≥5%。同时剔除海外指数页已跟踪的美股指数基金、标普500/纳指100 其他跟踪产品、纯黄金/白银商品（黄金股保留）与纯债 → 入池 <b>1,792 只</b>。</li>
+    <li><b>硬门槛</b>：规模场外 ≥1 亿、场内 ≥2 亿；近5年最大回撤权益 ≤-70%、固收 ≤-30%；现任经理任职 ≥0.5 年 → 通过 <b>1,273 只</b>。暂停申购的基金保留，状态列可见。</li>
+    <li><b>打分排序</b>：桶内分位加权。长期名单 = 近5年 25% + 近10年 25% + 成立来 15% + 回撤 20% + 规模 5% + 经理任职/费率 10%；新锐档 = 成立来 45% + 回撤 30% + 规模 10% + 任职 15%。每桶取前 N，最终 <b>81 只入选</b>。</li>
+    <li><b>入选与备选</b>：默认只显示各表的「入选」行；点表头右侧的「显示备选（入选 X / 备选 Y）」可展开该表全部候选。表六「新锐」为成立 3–7 年、成立来年化 ≥18%（或近5年 ≥25%）的基金，仅作观察。全量 1,794 只候选在「⬇ 导出国内清单 CSV」中。</li>
+    <li><b>收益与窗口</b>：区间涨幅按红利再投复权后的滚动近1/2/3/5/10年计算；「累计/年化」开关切换累计涨幅与几何年化收益率。<u>近10年列只在成立满 10 年时显示</u>，不使用天天基金的“成立以来”兜底值；新锐基金的成立来收益与年化写在备注列。</li>
+    <li><b>扩展指标</b>：在海外指数表的 19 列基础上增加基金经理、任职起始、任职年限、近5年最大回撤、近5年波动、综合分 6 列。</li>
+    <li><b>费用口径</b>：场外申购费按原费率/1折、赎回费按持有期递减；场内按券商佣金计算，默认万2.5、最低5元/笔，可在海外页的佣金设置中调整。</li>
+    <li><b>操作</b>：支持搜索、三态排序、Shift 双列排序、拖动排序、保存顺序、精简/完整列、打印与导出本分类 CSV；可视化对比图与指数基准表只属于海外指数页，不在国内页重复展示。</li>
+    <li><b>数据时点</b>：本页由 <code>screens/fund_screen.py</code> 生成，筛选快照为 <b>2026-09-17</b>，不是每日更新数据。</li>
+  </ol>
+</details>
+
+<div class="cat cat2" id="cat2"><span class="catno">国内</span><b>国内长期绩优（非美指数）</b>
+  <span class="hint">共 97 只候选 + 3 只参照基准，下面 7 张表；默认只显示入选，可逐表展开备选</span>
+  <button class="mini" id="btnCsvX" type="button" title="导出国内长期绩优完整 CSV（25 列）">⬇ 导出国内清单 CSV</button>
   <button class="mini noprint" id="btnPrintX" type="button" title="打印当前国内长期绩优页面">🖨 打印/PDF</button>
 </div>
 
-<div class="card"><h2>六、A股主动权益<small id="x1Cnt"></small></h2><div class="tablebox"><table class="sortable x" id="x1"><tbody></tbody></table></div></div>
+<div class="card"><h2>一、A股主动权益<small id="x1Cnt"></small></h2><div class="tablebox"><table class="sortable x" id="x1"><tbody></tbody></table></div></div>
 
-<div class="card"><h2>七、QDII 主动与海外<small>已剔除标普500 / 纳指100 跟踪产品与贵金属商品；注意额度与申购状态常变</small></h2><div class="tablebox"><table class="sortable x" id="x2"><tbody></tbody></table></div></div>
+<div class="card"><h2>二、QDII 主动与海外<small>已剔除标普500 / 纳指100 跟踪产品与贵金属商品；注意额度与申购状态常变</small></h2><div class="tablebox"><table class="sortable x" id="x2"><tbody></tbody></table></div></div>
 
-<div class="card"><h2>八、指数与指数增强<small>A股行业/主题 + 海外指数（标普100等权重、MSCI 美国50）与增强；同标的只保留一只</small></h2><div class="tablebox"><table class="sortable x" id="x3"><tbody></tbody></table></div></div>
+<div class="card"><h2>三、指数与指数增强<small>A股行业/主题 + 海外指数（标普100等权重、MSCI 美国50）与增强；同标的只保留一只</small></h2><div class="tablebox"><table class="sortable x" id="x3"><tbody></tbody></table></div></div>
 
-<div class="card"><h2>九、场内 ETF / LOF<small>同标的只保留规模最大的一只；盘中价与溢价率为生成时刻快照</small></h2><div class="tablebox"><table class="sortable x" id="x4"><tbody></tbody></table></div></div>
+<div class="card"><h2>四、场内 ETF / LOF<small>同标的只保留规模最大的一只；盘中价与溢价率为生成时刻快照</small></h2><div class="tablebox"><table class="sortable x" id="x4"><tbody></tbody></table></div></div>
 
-<div class="card"><h2>十、债券与固收+<small>剔除纯债（长债/短债/信用债/利率债）与年化 4% 以下品种，只留一二级债基与偏债混合</small></h2><div class="tablebox"><table class="sortable x" id="x5"><tbody></tbody></table></div></div>
+<div class="card"><h2>五、债券与固收+<small>剔除纯债（长债/短债/信用债/利率债）与年化 4% 以下品种，只留一二级债基与偏债混合</small></h2><div class="tablebox"><table class="sortable x" id="x5"><tbody></tbody></table></div></div>
 
-<div class="card"><h2>十一、新锐（成立 3–7 年）<small>不满长期门槛但成立以来年化 ≥18%（或近5年 ≥25%）：多为 2020-2023 年成立的新基金，业绩期短、波动大，仅作观察</small></h2><div class="tablebox"><table class="sortable x" id="x7"><tbody></tbody></table></div></div>
+<div class="card"><h2>六、新锐（成立 3–7 年）<small>不满长期门槛但成立以来年化 ≥18%（或近5年 ≥25%）：多为 2020-2023 年成立的新基金，业绩期短、波动大，仅作观察</small></h2><div class="tablebox"><table class="sortable x" id="x7"><tbody></tbody></table></div></div>
 
-<div class="card"><h2>十二、参照基准<small>A股宽基（沪深300ETF / 创业板ETF / 沪深300联接），不参与打分，用于对照长期收益</small></h2><div class="tablebox"><table class="sortable x" id="x6"><tbody></tbody></table></div></div>
+<div class="card"><h2>七、参照基准<small>A股宽基（沪深300ETF / 创业板ETF / 沪深300联接），不参与打分，用于对照长期收益</small></h2><div class="tablebox"><table class="sortable x" id="x6"><tbody></tbody></table></div></div>
 
 </section>
 
@@ -3482,7 +3481,7 @@ function exportCSVX(){
   });
   lines.push([]);
   lines.push(['数据说明']);
-  lines.push(['覆盖范围','国内可买到的基金全样本（开放式全类别 + QDII + 指数型 + 场内），已剔除大类一的美股指数基金、标普500/纳指100 其他跟踪产品、纯黄金/白银商品（黄金股保留）与纯债']);
+  lines.push(['覆盖范围','国内可买到的基金全样本（开放式全类别 + QDII + 指数型 + 场内），已剔除海外指数页的美股指数基金、标普500/纳指100 其他跟踪产品、纯黄金/白银商品（黄金股保留）与纯债']);
   lines.push(['收益口径','红利再投复权后的滚动近N年区间涨幅；年化=(1+累计涨幅)^(1/N)-1']);
   lines.push(['综合分','近5年年化 30% + 近10年年化 20% + 成立以来年化 10% + 近5年最大回撤 22% + 规模 8% +（主动：经理任职年限／指数与场内：费率）10%，桶内分位加权']);
   lines.push(['生成方式','screens/fund_screen.py：universe → prefilter → enrich → metrics → report → html']);
@@ -3529,8 +3528,8 @@ function exportCSVX(){
       if(el){
         var xb=EXTRA.filter(function(f){return f.g!=='x6';}).length;
         var xr=EXTRA.length-xb;
-        el.textContent='共 '+(FUNDS.length+xb)+' 只基金（大类一 纯美指数 '+FUNDS.length
-          +' + 大类二 国内长期绩优 '+xb+'，另 '+xr+' 只参照基准）';
+        el.textContent='共 '+(FUNDS.length+xb)+' 只基金（海外指数 '+FUNDS.length
+          +' + 国内长期绩优 '+xb+'，另 '+xr+' 只参照基准）';
       }
     }
   };
