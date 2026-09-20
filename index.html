@@ -467,7 +467,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 <div class="card"><h2>一、国内主要指数<small>基金中位数口径；点击表头排序</small></h2>
 <div class="tablebox"><table class="sortable cnidx" id="cnIdxTbl"></table></div></div>
 
-<div class="card"><h2>二、红利相关基金明细<small>按中证红利、红利低波、国企红利、沪港深红利分组逐只比较</small></h2>
+<div class="card"><h2>二、红利相关基金明细<small>收益均按分红再投资复权；按中证红利、红利低波、国企红利、沪港深红利分组逐只比较</small></h2>
 <div class="xnote" id="cnDivCnt"></div>
 <div class="tablebox"><table class="sortable lowvol" id="cnDivTbl"></table></div></div>
 </section>
@@ -3766,7 +3766,7 @@ function renderCnDividendTable(){
   var cnt=document.getElementById('cnDivCnt');
   if(cnt){
     cnt.textContent=rows.length
-      ?'共 '+rows.length+' 只：按中证红利、红利低波、国企红利、沪港深红利分组，收益与风险可直接逐列比较。'
+      ?'共 '+rows.length+' 只：区间收益均包含分红再投资，按中证红利、红利低波、国企红利、沪港深红利分组逐列比较。'
       :'当前筛选没有匹配的红利相关基金。';
   }
 }
