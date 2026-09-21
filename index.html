@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>基金清单 · 纯美指数（标普500/纳斯达克）＋ 国内长期绩优 · 多功能对比（2026-09-21）</title>
+<title>基金清单 · 海外指数 / 国内指数 / 长期股 / 高股息 / 国内长期绩优（2026-09-21）</title>
 <script>
 /* ECharts 多源加载：本地 echarts.min.js（离线可用）→ jsDelivr → unpkg → BootCDN → staticfile，任一成功即用 */
 (function(){
@@ -46,6 +46,7 @@ header .meta b{color:#fff}
   background:var(--card);border:1px solid var(--line);border-radius:10px;
   box-shadow:0 2px 10px rgba(16,24,40,.08)}
 .pageswitch{display:flex;gap:4px;padding:3px;background:#eef2f7;border-radius:12px}
+.pageswitch{flex-wrap:wrap}
 .pagebtn{border:0;background:transparent;border-radius:9px;padding:7px 16px;font-size:14px;color:var(--sub);cursor:pointer;white-space:nowrap}
 .pagebtn:hover{color:var(--ink)}
 .pagebtn.active{background:#fff;color:var(--blue);box-shadow:0 1px 5px rgba(16,24,40,.12);font-weight:600}
@@ -183,6 +184,9 @@ table.x{min-width:2600px}
 /* 国内指数：按跟踪指数聚合，列数少于基金表 */
 table.cnidx{min-width:1260px}
 table.lowvol{min-width:1180px}
+/* 国内长期股 / 高股息：估值、分红与后复权长期收益 */
+table.stock{min-width:2380px}
+body.dense table.stock{min-width:1960px}
 body.dense table.x{min-width:1700px}
 /* 精选/备选两层：默认只显示“入选”行，点卡片标题的「显示备选」再展开 */
 table.x.alt-off tr[data-sel="0"]{display:none}
@@ -200,6 +204,8 @@ table.x.alt-off tr[data-sel="0"]{display:none}
 .cat.cat2 .catno{background:#0a8a4a}
 .cat.catidx{border-left-color:#0f8b8d;background:linear-gradient(90deg,#edf9f9,#f8fdfd)}
 .cat.catidx .catno{background:#0f8b8d}
+.cat.catstock{border-left-color:#a25b36;background:linear-gradient(90deg,#fbf3ed,#fdfaf7)}
+.cat.catstock .catno{background:#a25b36}
 .cat .mini{font-size:11.5px}
 th.frz,td.frz{position:sticky;left:0;z-index:2;box-shadow:1px 0 0 var(--line)}
 thead th.frz{z-index:4}
@@ -252,7 +258,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   .wrap{padding:12px}
   .stats{grid-template-columns:repeat(2,1fr)}
   .pagebar{top:0;padding:8px;gap:7px}
-  .pageswitch{width:100%}
+  .pageswitch{width:100%;display:grid;grid-template-columns:repeat(2,1fr)}
   .pagebtn{flex:1;padding:7px 9px}
   .pagehint{display:none}
 }
@@ -295,6 +301,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   <h1>
     <span data-pv="us" class="active">基金清单 · 纯美指数（标普500 / 纳斯达克）</span>
     <span data-pv="cnidx">基金清单 · 国内指数</span>
+    <span data-pv="stock">基金清单 · 国内长期股 / 高股息</span>
     <span data-pv="cn">基金清单 · 国内长期绩优（非美指数）</span>
   </h1>
   <div class="meta">
@@ -305,6 +312,10 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
     <span data-pv="cnidx">
       数据口径：基于国内长期绩优候选中的指数型基金，按跟踪指数归并；收益、回撤和波动为同指数候选基金中位数，<b>不是指数官方点位收益</b><br>
       主表列常用宽基与小盘指数，红利相关基金另表逐只比较；候选快照 2026-09-17，数据由 <code>screens/fund_screen.py</code> 生成
+    </span>
+    <span data-pv="stock">
+      快照：<b id="mStockAsOf">2026-09-21</b> ｜ 长期核心 + 高股息代表股，非全市场筛选<br>
+      行情、估值、股息率与后复权收益由 <code>stock_screen.py</code> 从东方财富/腾讯公开接口生成
     </span>
     <span data-pv="cn">
       筛选快照：<b>2026-09-17</b> ｜ 国内可买全样本 26,150 个代码 → 入池 1,792 → 通过硬门槛 1,273 → 入选 81；默认只显示入选，可展开备选<br>
@@ -318,6 +329,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   <div class="pageswitch" role="tablist">
     <button class="pagebtn active" type="button" role="tab" aria-selected="true" data-page="us">海外指数</button>
     <button class="pagebtn" type="button" role="tab" aria-selected="false" data-page="cnidx">国内指数</button>
+    <button class="pagebtn" type="button" role="tab" aria-selected="false" data-page="stock">长期股 / 高股息</button>
     <button class="pagebtn" type="button" role="tab" aria-selected="false" data-page="cn">国内长期绩优</button>
   </div>
   <span class="pagehint" id="pageHint">每日行情、基准叠加与美指基金对比</span>
@@ -477,6 +489,35 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 <div class="tablebox"><table class="sortable lowvol" id="cnDivTbl"></table></div></div>
 </section>
 
+<section class="pageview" data-page-view="stock">
+<details class="scope" open>
+  <summary>口径说明（点击折叠）</summary>
+  <ol>
+    <li><b>样本范围</b>：首批 23 只长期核心与高股息代表股，覆盖水电、公用事业、消费、银行、能源、通信、建筑、铁路和高速等行业；这是研究观察清单，不是全市场量化选股结果。</li>
+    <li><b>长期核心</b>：优先选择上市时间较长、行业地位或现金流稳定、后复权长期收益为正且回撤相对可控的公司；不作投资建议。</li>
+    <li><b>高股息</b>：近 12 个月已实施税前现金分红 / 现价达到一定水平，且近 5 年现金分红覆盖年数不少于 4 年；特别分红会按实际现金金额计入。</li>
+    <li><b>收益口径</b>：近1/2/3/5/10年收益按后复权行情计算，包含现金分红、送转和拆分调整；右下角「累计/年化」开关会同步切换本表。历史不足对应年限时显示 <code>--</code>。</li>
+    <li><b>估值与风险</b>：PE(TTM)、PB、ROE 和市值为东方财富行情口径；近5年最大回撤和波动率按后复权日线计算，历史不足约四年半时留空，不用短历史冒充五年数据。</li>
+    <li><b>数据时点</b>：由 <code>stock_screen.py</code> 生成，本页当前快照为 2026-09-21；再次运行脚本可刷新行情、分红与估值。</li>
+  </ol>
+</details>
+
+<div class="stats" id="stockStats"></div>
+
+<div class="cat catstock" id="catstock"><span class="catno">国内</span><b>长期股 / 高股息</b>
+  <span class="hint">长期核心与高股息分层观察；行情、估值、股息率与后复权收益</span>
+</div>
+
+<div class="filter noprint">
+  <span class="hint" id="stockCnt"></span>
+  <span class="sp"></span>
+  <div class="prow" id="stockCats"></div>
+</div>
+
+<div class="card"><h2>一、长期股 / 高股息代表股<small>收益为后复权口径；点击表头排序，支持搜索与累计/年化切换</small></h2>
+<div class="tablebox"><table class="sortable stock" id="stockTbl"></table></div></div>
+</section>
+
 <section class="pageview" data-page-view="cn">
 <details class="scope" open>
   <summary>口径说明（点击折叠）</summary>
@@ -612,6 +653,35 @@ var FUNDS=[
 /*__DATA_META_BEGIN__*/
 var META={gen:"2026-09-21 盘中",navdate:"2026-09-17",snpdate:"2026-09-21",snptime:"14:01:52",szdate:"2026-06-30",fx:[5.9397,6.0785,8.6053,-3.4561,-0.7369]};
 /*__DATA_META_END__*/
+/* 国内长期股 / 高股息快照：由 stock_screen.py 生成 */
+/*__DATA_STOCKS_BEGIN__*/
+var STOCK_ASOF="2026-09-21";
+var STOCKS=[
+{"c":"600900","n":"长江电力","ind":"电力","style":["长期核心","高股息"],"price":28.08,"chg":-0.67,"mcap":6870.7,"pe":18.98,"pb":3.18,"roe":6.55,"yield12":3.56,"divYears":5,"r":[4.9377,4.922,26.4834,38.7302,139.5341],"vol5":12.48,"mdd5":-13.1,"note":"水电龙头，现金流稳定，长期高比例分红","latest":"2026-09-21"},
+{"c":"000333","n":"美的集团","ind":"白色家电","style":["长期核心","高股息"],"price":80.84,"chg":-4.22,"mcap":6167.6,"pe":13.9,"pb":2.91,"roe":11.33,"yield12":5.32,"divYears":5,"r":[11.4191,27.4236,49.2624,39.6234,269.4659],"vol5":21.89,"mdd5":-42.07,"note":"白电龙头，全球化经营，分红稳定","latest":"2026-09-21"},
+{"c":"600901","n":"江苏金租","ind":"多元金融","style":["高股息"],"price":6.65,"chg":-0.75,"mcap":385.2,"pe":11.38,"pb":1.49,"roe":6.64,"yield12":4.51,"divYears":5,"r":[19.6446,50.3722,50.0,95.7997,null],"vol5":19.42,"mdd5":-15.57,"note":"金融租赁平台，高股息与稳健资产扩张","latest":"2026-09-21"},
+{"c":"600941","n":"中国移动","ind":"通信服务","style":["高股息"],"price":95.88,"chg":-0.78,"mcap":20797.3,"pe":15.78,"pb":1.47,"roe":5.6,"yield12":4.91,"divYears":6,"r":[-5.9842,1.2877,7.0153,null,null],"vol5":22.81,"mdd5":-19.58,"note":"通信运营龙头，派息率高、现金流稳定","latest":"2026-09-21"},
+{"c":"601088","n":"中国神华","ind":"煤炭开采","style":["长期核心","高股息"],"price":46.68,"chg":0.97,"mcap":10124.6,"pe":18.76,"pb":2.25,"roe":5.83,"yield12":4.31,"divYears":5,"r":[16.3295,20.949,43.9904,92.3983,242.4488],"vol5":19.07,"mdd5":-15.64,"note":"煤电一体化龙头，分红比例高","latest":"2026-09-21"},
+{"c":"601225","n":"陕西煤业","ind":"煤炭开采","style":["长期核心","高股息"],"price":25.66,"chg":1.83,"mcap":2487.7,"pe":12.2,"pb":2.46,"roe":10.9,"yield12":3.69,"divYears":5,"r":[20.2545,14.6557,43.2023,94.3858,512.4343],"vol5":27.98,"mdd5":-29.04,"note":"动力煤龙头，现金流与分红能力强","latest":"2026-09-21"},
+{"c":"601857","n":"中国石油","ind":"炼化及贸易","style":["高股息"],"price":10.63,"chg":0.66,"mcap":19455.1,"pe":11.05,"pb":1.22,"roe":6.3,"yield12":4.8,"divYears":6,"r":[23.1245,30.2782,32.9992,72.2944,65.6608],"vol5":20.85,"mdd5":-23.92,"note":"油气一体化龙头，长期分红与资源属性","latest":"2026-09-21"},
+{"c":"600938","n":"中国海油","ind":"油气开采Ⅱ","style":["高股息"],"price":33.45,"chg":3.56,"mcap":15898.8,"pe":11.49,"pb":1.86,"roe":10.21,"yield12":3.42,"divYears":4,"r":[26.2853,30.1325,71.1672,null,null],"vol5":32.02,"mdd5":-34.15,"note":"海上油气龙头，高资本开支后现金流改善","latest":"2026-09-21"},
+{"c":"601398","n":"工商银行","ind":"银行Ⅱ","style":["长期核心","高股息"],"price":8.09,"chg":0.25,"mcap":28833.3,"pe":7.71,"pb":0.73,"roe":4.32,"yield12":3.84,"divYears":5,"r":[10.513,31.7954,51.3825,65.4912,104.3546],"vol5":10.25,"mdd5":-10.04,"note":"大型银行，低估值、高股息代表","latest":"2026-09-21"},
+{"c":"601939","n":"建设银行","ind":"银行Ⅱ","style":["长期核心","高股息"],"price":10.89,"chg":0.74,"mcap":28488.3,"pe":8.22,"pb":0.8,"roe":4.76,"yield12":3.57,"divYears":5,"r":[17.4949,38.08,56.1991,74.5197,130.1333],"vol5":11.5,"mdd5":-9.92,"note":"大型银行，资产质量稳健、分红持续","latest":"2026-09-21"},
+{"c":"601288","n":"农业银行","ind":"银行Ⅱ","style":["长期核心","高股息"],"price":6.88,"chg":1.03,"mcap":24078.8,"pe":8.08,"pb":0.84,"roe":5.07,"yield12":3.63,"divYears":5,"r":[5.1557,40.6609,69.3772,107.8556,143.5323],"vol5":12.75,"mdd5":-21.69,"note":"大型银行，县域金融覆盖广、分红稳定","latest":"2026-09-21"},
+{"c":"601988","n":"中国银行","ind":"银行Ⅱ","style":["长期核心"],"price":6.6,"chg":0.92,"mcap":21266.0,"pe":8.54,"pb":0.77,"roe":4.33,"yield12":3.43,"divYears":5,"r":[18.4297,32.7628,55.3648,91.1972,115.0495],"vol5":11.6,"mdd5":-11.35,"note":"大型银行，低估值与稳定现金分红","latest":"2026-09-21"},
+{"c":"600036","n":"招商银行","ind":"银行Ⅱ","style":["高股息"],"price":41.0,"chg":1.01,"mcap":10340.1,"pe":6.82,"pb":0.9,"roe":6.71,"yield12":4.92,"divYears":5,"r":[3.6828,32.9483,31.6248,1.4987,190.366],"vol5":20.16,"mdd5":-43.58,"note":"零售银行龙头，ROE与分红质量较高","latest":"2026-09-21"},
+{"c":"601668","n":"中国建筑","ind":"房屋建设Ⅱ","style":["高股息"],"price":4.31,"chg":0.7,"mcap":1780.9,"pe":5.62,"pb":0.36,"roe":4.61,"yield12":6.31,"divYears":5,"r":[-12.0889,-0.8024,-7.9143,10.2564,39.6893],"vol5":18.92,"mdd5":-25.33,"note":"大型建筑央企，订单与分红稳定","latest":"2026-09-21"},
+{"c":"601006","n":"大秦铁路","ind":"铁路公路","style":["高股息"],"price":4.7,"chg":0.0,"mcap":933.6,"pe":15.46,"pb":0.57,"roe":2.57,"yield12":4.72,"divYears":5,"r":[-8.2963,-6.2831,-12.1363,1.3923,24.5473],"vol5":7.94,"mdd5":-16.79,"note":"铁路运输资产，现金流稳定、分红持续","latest":"2026-09-21"},
+{"c":"600377","n":"宁沪高速","ind":"铁路公路","style":["高股息"],"price":12.48,"chg":-1.42,"mcap":628.7,"pe":13.45,"pb":1.51,"roe":5.86,"yield12":3.93,"divYears":5,"r":[1.8786,-0.8439,21.4122,38.3257,62.943],"vol5":12.72,"mdd5":-18.17,"note":"长三角收费公路资产，现金流稳定","latest":"2026-09-21"},
+{"c":"600886","n":"国投电力","ind":"电力","style":["长期核心","高股息"],"price":14.23,"chg":-0.49,"mcap":1139.0,"pe":15.97,"pb":1.72,"roe":5.05,"yield12":3.57,"divYears":5,"r":[8.9804,-0.7592,26.6113,36.9882,147.8738],"vol5":21.13,"mdd5":-25.33,"note":"水电与能源综合运营商，分红稳定","latest":"2026-09-21"},
+{"c":"600674","n":"川投能源","ind":"电力","style":["长期核心"],"price":15.85,"chg":0.57,"mcap":772.6,"pe":16.71,"pb":1.73,"roe":5.06,"yield12":3.15,"divYears":5,"r":[11.2242,-2.2099,12.6091,21.1736,119.577],"vol5":18.95,"mdd5":-25.83,"note":"水电资产质量较好，长期现金流稳定","latest":"2026-09-21"},
+{"c":"600519","n":"贵州茅台","ind":"白酒Ⅱ","style":["高股息"],"price":1253.62,"chg":-0.28,"mcap":15671.3,"pe":19.24,"pb":6.24,"roe":16.75,"yield12":4.15,"divYears":5,"r":[-9.3647,6.284,-21.9391,-9.2999,383.0511],"vol5":22.56,"mdd5":-35.9,"note":"高端白酒龙头，盈利与现金分红稳定","latest":"2026-09-21"},
+{"c":"000651","n":"格力电器","ind":"白色家电","style":["长期核心","高股息"],"price":37.89,"chg":-1.74,"mcap":2122.4,"pe":7.62,"pb":1.55,"roe":8.68,"yield12":7.92,"divYears":5,"r":[0.6903,4.5023,17.0653,25.9312,147.7458],"vol5":15.98,"mdd5":-17.7,"note":"空调龙头，估值较低、股息率较高","latest":"2026-09-21"},
+{"c":"000895","n":"双汇发展","ind":"食品加工","style":["高股息"],"price":23.23,"chg":-0.26,"mcap":804.8,"pe":15.82,"pb":3.85,"roe":10.68,"yield12":3.44,"divYears":5,"r":[-2.3167,4.4745,0.1812,12.8822,47.7739],"vol5":14.07,"mdd5":-18.62,"note":"肉类加工龙头，现金流与分红较稳定","latest":"2026-09-21"},
+{"c":"601728","n":"中国电信","ind":"通信服务","style":["高股息"],"price":6.16,"chg":-0.48,"mcap":5636.8,"pe":18.94,"pb":1.23,"roe":4.2,"yield12":4.08,"divYears":6,"r":[-4.7315,9.7202,13.7405,60.9071,null],"vol5":25.01,"mdd5":-32.55,"note":"通信运营龙头，低估值高股息","latest":"2026-09-21"},
+{"c":"600690","n":"海尔智家","ind":"白色家电","style":["高股息"],"price":19.87,"chg":-3.92,"mcap":1848.5,"pe":10.36,"pb":1.54,"roe":8.36,"yield12":5.84,"divYears":5,"r":[-16.6544,-16.5345,-5.2426,-7.6887,131.0239],"vol5":23.96,"mdd5":-33.34,"note":"全球化白电龙头，现金流与分红改善","latest":"2026-09-21"}
+];
+/*__DATA_STOCKS_END__*/
 /*__DATA_CHG_BEGIN__*/
 var CHANGES=[
  {d:"2026-09-21",c:"017091",n:"景顺长城纳斯达克科技ETF联接A",f:"lm",a:"1000元",b:"100元"},
@@ -3202,6 +3272,7 @@ function fillMeta(){
   var m=META||{};
   var set=function(id,v){var el=document.getElementById(id);if(el&&v!=null)el.textContent=v;};
   set('mGen',m.gen);set('mNav',m.navdate);set('mNav2',m.navdate);
+  if(typeof STOCK_ASOF!=='undefined')set('mStockAsOf',STOCK_ASOF);
   set('mSnap',m.snpdate+' '+(m.snptime||'')+'');
   set('mSz',m.szdate);
 }
@@ -3297,6 +3368,7 @@ function setAnn(v){
   applyFilter();
   renderChart();
   if(typeof renderCnIndexTable==='function')renderCnIndexTable();
+  if(typeof renderStockTable==='function')renderStockTable();
   saveView();
 }
 document.getElementById('annTog').addEventListener('click',function(){setAnn(!annOn);});
@@ -3347,13 +3419,13 @@ function saveView(){
 }
 function loadView(){
   var hashPage=(location.hash||'').replace(/^#/,'');
-  if(hashPage==='us'||hashPage==='cnidx'||hashPage==='cn')curPage=hashPage;
+  if(hashPage==='us'||hashPage==='cnidx'||hashPage==='cn'||hashPage==='stock')curPage=hashPage;
   try{
     var s=localStorage.getItem(VIEW_KEY);
     if(!s)return;
     var v=JSON.parse(s);
     if(!v||typeof v!=='object')return;
-    if(!hashPage&&(v.page==='us'||v.page==='cnidx'||v.page==='cn'))curPage=v.page;
+    if(!hashPage&&(v.page==='us'||v.page==='cnidx'||v.page==='cn'||v.page==='stock'))curPage=v.page;
     if(typeof v.dense==='boolean')dense=v.dense;
     if(v.group&&GROUPS[v.group])curGroup=v.group;
     if(typeof v.chart==='string'&&/^(bar|scat|fee|size|td|bm)$/.test(v.chart))curChart=v.chart;
@@ -3369,7 +3441,7 @@ function loadView(){
 }
 function setPage(page,opts){
   opts=opts||{};
-  curPage=(page==='cn'||page==='cnidx')?page:'us';
+  curPage=(page==='cn'||page==='cnidx'||page==='stock')?page:'us';
   document.body.dataset.page=curPage;
   document.querySelectorAll('.pagebtn').forEach(function(b){
     var on=b.dataset.page===curPage;
@@ -3385,18 +3457,22 @@ function setPage(page,opts){
   var hint=document.getElementById('pageHint');
   if(hint)hint.textContent=curPage==='us'
     ?'每日行情、基准叠加与美指基金对比'
-    :(curPage==='cnidx'?'国内各指数覆盖、收益与风险概览':'国内长期绩优筛选快照与精选/备选列表');
+    :(curPage==='cnidx'?'国内各指数覆盖、收益与风险概览'
+      :(curPage==='stock'?'国内长期股与高股息代表股观察':'国内长期绩优筛选快照与精选/备选列表'));
   var input=document.getElementById('gSearchInput');
   if(input)input.placeholder=curPage==='us'
     ?'搜索名称或代码，如：招商 / 5131 / 广发'
-    :(curPage==='cnidx'?'搜索国内指数或关联基金名称':'搜索国内基金名称或代码');
+    :(curPage==='cnidx'?'搜索国内指数或关联基金名称'
+      :(curPage==='stock'?'搜索股票名称、代码或行业':'搜索国内基金名称或代码'));
   var sbtn=document.getElementById('gSearchBtn');
   if(sbtn)sbtn.title=curPage==='us'
     ?'搜索名称或代码：过滤美指基金表与可视化勾选列表（不改变已勾选的基金）'
-    :(curPage==='cnidx'?'搜索名称：过滤国内指数与关联基金':'搜索名称或代码：过滤国内长期绩优各表（不改变入选/备选状态）');
+    :(curPage==='cnidx'?'搜索名称：过滤国内指数与关联基金'
+      :(curPage==='stock'?'搜索名称、代码或行业：过滤长期股 / 高股息表':'搜索名称或代码：过滤国内长期绩优各表（不改变入选/备选状态）'));
   document.title=curPage==='us'
     ?'基金清单 · 纯美指数（标普500/纳斯达克）'
-    :(curPage==='cnidx'?'基金清单 · 国内指数':'基金清单 · 国内长期绩优（非美指数）');
+    :(curPage==='cnidx'?'基金清单 · 国内指数'
+      :(curPage==='stock'?'基金清单 · 国内长期股 / 高股息':'基金清单 · 国内长期绩优（非美指数）'));
   if(!opts.noHash){
     try{history.replaceState(null,'',location.pathname+location.search+'#'+curPage);}catch(e){}
   }
@@ -3405,6 +3481,7 @@ function setPage(page,opts){
     setTimeout(function(){chart.resize();renderChart();},0);
   }
   if(curPage==='cnidx'&&typeof renderCnIndexTable==='function')renderCnIndexTable();
+  if(curPage==='stock'&&typeof renderStockTable==='function')renderStockTable();
   if(opts.scroll!==false)window.scrollTo(0,0);
 }
 document.querySelectorAll('.pagebtn').forEach(function(b){
@@ -3412,7 +3489,7 @@ document.querySelectorAll('.pagebtn').forEach(function(b){
 });
 window.addEventListener('hashchange',function(){
   var p=(location.hash||'').replace(/^#/,'');
-  if(p==='us'||p==='cnidx'||p==='cn')setPage(p,{noHash:true});
+  if(p==='us'||p==='cnidx'||p==='cn'||p==='stock')setPage(p,{noHash:true});
 });
 /* 恢复的分组/指标要同步按钮选中态（HTML 里的默认 active 是按默认值写死的） */
 function syncTabUI(){
@@ -3860,6 +3937,123 @@ function renderCnDividendTable(){
   }
 }
 
+/* =========================================================
+   国内长期股 / 高股息：行情、估值、分红和长期后复权收益
+   ========================================================= */
+var STOCK_CATS=['全部','长期核心','高股息','两者兼顾'];
+var curStockCat='全部';
+function stockLink(code){
+  var p=code[0]==='6'?'sh':'sz';
+  return '<a href="https://quote.eastmoney.com/'+p+code+'.html" target="_blank" rel="noopener">'+code+'</a>';
+}
+function stockHas(f,cat){
+  if(cat==='全部')return true;
+  if(cat==='两者兼顾')return f.style.indexOf('长期核心')>=0&&f.style.indexOf('高股息')>=0;
+  return f.style.indexOf(cat)>=0;
+}
+function stockStyleText(f){
+  if(!f.style.length)return '观察';
+  return f.style.join(' · ');
+}
+function stockPct(v,i){
+  if(v==null)return '<td class="na">--</td>';
+  var x=annOn?annRet(v,i):v;
+  return '<td class="'+(x>=0?'up':'down')+'">'+(x>=0?'+':'')+x.toFixed(2)+'%</td>';
+}
+function renderStockStats(rows){
+  var el=document.getElementById('stockStats');
+  if(!el)return;
+  var longN=rows.filter(function(f){return f.style.indexOf('长期核心')>=0;}).length;
+  var divN=rows.filter(function(f){return f.style.indexOf('高股息')>=0;}).length;
+  var yields=rows.map(function(f){return f.yield12;}).filter(function(v){return v!=null&&isFinite(v);});
+  var avgYield=yields.length?yields.reduce(function(a,b){return a+b;},0)/yields.length:null;
+  var cards=[
+    {k:'覆盖股票',v:rows.length+' 只',s:'首批长期核心与高股息观察清单'},
+    {k:'长期核心',v:longN+' 只',s:'长期后复权收益与稳定性较好'},
+    {k:'高股息',v:divN+' 只',s:'近12月现金分红率与分红年数达门槛'},
+    {k:'平均股息率',v:avgYield==null?'--':avgYield.toFixed(2)+'%',s:'近12个月税前现金分红 / 现价'}
+  ];
+  el.innerHTML=cards.map(function(c){
+    return '<div class="stat"><div class="k">'+c.k+'</div><div class="v">'+c.v+'</div><div class="s">'+c.s+'</div></div>';
+  }).join('');
+}
+function renderStockCats(rows){
+  var el=document.getElementById('stockCats');
+  if(!el)return;
+  el.innerHTML=STOCK_CATS.map(function(cat){
+    var n=rows.filter(function(f){return stockHas(f,cat);}).length;
+    return '<button class="tab'+(cat===curStockCat?' active':'')+'" type="button" data-stockcat="'+esc(cat)+'">'+
+      esc(cat)+' ('+n+')</button>';
+  }).join('');
+  el.querySelectorAll('button[data-stockcat]').forEach(function(b){
+    b.addEventListener('click',function(){
+      curStockCat=b.dataset.stockcat;
+      renderStockTable();
+    });
+  });
+}
+function renderStockTable(){
+  var el=document.getElementById('stockTbl');
+  if(!el||typeof STOCKS==='undefined')return;
+  renderStockStats(STOCKS);
+  renderStockCats(STOCKS);
+  var q=gsearchKw().toLowerCase();
+  var rows=STOCKS.filter(function(f){
+    if(!stockHas(f,curStockCat))return false;
+    if(!q)return true;
+    var hay=[f.c,f.n,f.ind,stockStyleText(f),f.note||''].join(' ').toLowerCase();
+    return hay.indexOf(q)>=0;
+  });
+  var head='<thead><tr>'+
+    '<th class="l" data-sort="text" data-key="name">名称<span class="arr"></span></th>'+
+    '<th class="l" data-sort="num" data-key="code">代码<span class="arr"></span></th>'+
+    '<th class="l" data-sort="text" data-key="style">风格<span class="arr"></span></th>'+
+    '<th class="l" data-sort="text" data-key="industry">行业<span class="arr"></span></th>'+
+    '<th data-sort="num" data-key="price">现价<span class="arr"></span></th>'+
+    '<th data-sort="num" data-key="chg">日涨跌<span class="arr"></span></th>'+
+    '<th data-sort="num" data-key="mcap">市值(亿)<span class="arr"></span></th>'+
+    '<th data-sort="num" data-key="pe">PE(TTM)<span class="arr"></span></th>'+
+    '<th data-sort="num" data-key="pb">PB<span class="arr"></span></th>'+
+    '<th data-sort="num" data-key="roe">ROE<span class="arr"></span></th>'+
+    '<th data-sort="num" data-key="yield">近12月股息率<span class="arr"></span></th>'+
+    '<th data-sort="num" data-key="divYears">近5年分红<span class="arr"></span></th>'+
+    '<th data-sort="num" data-key="r1">'+retHead(1)+'<span class="arr"></span></th>'+
+    '<th data-sort="num" data-key="r2">'+retHead(2)+'<span class="arr"></span></th>'+
+    '<th data-sort="num" data-key="r3">'+retHead(3)+'<span class="arr"></span></th>'+
+    '<th data-sort="num" data-key="r5">'+retHead(5)+'<span class="arr"></span></th>'+
+    '<th data-sort="num" data-key="r10">'+retHead(10)+'<span class="arr"></span></th>'+
+    '<th data-sort="num" data-key="mdd5">近5年最大回撤<span class="arr"></span></th>'+
+    '<th data-sort="num" data-key="vol5">近5年波动<span class="arr"></span></th>'+
+    '<th class="l" data-sort="text" data-key="note">备注<span class="arr"></span></th>'+
+    '</tr></thead>';
+  var body=rows.map(function(f,i){
+    var chg=f.chg>=0?'+'+f.chg.toFixed(2)+'%':f.chg.toFixed(2)+'%';
+    return '<tr data-idx="'+i+'">'+
+      cell('<b>'+esc(f.n)+'</b>','l')+cell(stockLink(f.c),'l')+
+      cell(esc(stockStyleText(f)),'l')+cell(esc(f.ind||'--'),'l')+
+      cell(f.price.toFixed(2))+
+      cell(chg,f.chg>=0?'up':'down')+
+      cell(f.mcap.toFixed(1))+
+      cell(f.pe==null?'--':f.pe.toFixed(2))+
+      cell(f.pb==null?'--':f.pb.toFixed(2))+
+      cell(f.roe==null?'--':f.roe.toFixed(2)+'%')+
+      cell(f.yield12==null?'--':f.yield12.toFixed(2)+'%','up')+
+      cell(f.divYears==null?'--':f.divYears+'/5')+
+      stockPct(f.r[0],0)+stockPct(f.r[1],1)+stockPct(f.r[2],2)+stockPct(f.r[3],3)+stockPct(f.r[4],4)+
+      cell(f.mdd5==null?'--':f.mdd5.toFixed(2)+'%',f.mdd5==null?'na':'down')+
+      cell(f.vol5==null?'--':f.vol5.toFixed(2)+'%')+
+      cell(esc(f.note||''),'note')+
+      '</tr>';
+  }).join('');
+  if(!body)body='<tr><td colspan="20" class="na">当前筛选没有匹配的股票</td></tr>';
+  el.innerHTML=head+'<tbody>'+body+'</tbody>';
+  SORTS[el.id]=[];
+  clearSortUI(el);
+  bindSortOne(el);
+  var cnt=document.getElementById('stockCnt');
+  if(cnt)cnt.textContent='当前显示 '+rows.length+' / '+STOCKS.length+' 只；分类：'+curStockCat+'；截至 '+STOCK_ASOF;
+}
+
 (function(){
   /* 注册到排序与顺序工具：保存顺序 / ↺ / 拖动排序都按表 id 工作 */
   XT_DEFS.forEach(function(id){if(SORT_TBLS.indexOf(id)<0)SORT_TBLS.push(id);});
@@ -3888,6 +4082,7 @@ function renderCnDividendTable(){
   window.applyFilter=function(){
     of.apply(null,arguments);
     if(curPage==='cnidx'&&typeof renderCnIndexTable==='function')renderCnIndexTable();
+    if(curPage==='stock'&&typeof renderStockTable==='function')renderStockTable();
     if(!gsearchKw()){
       var el=document.getElementById('cnt');
       if(el){
@@ -3899,6 +4094,7 @@ function renderCnDividendTable(){
     }
   };
   renderCnIndexTable();
+  renderStockTable();
   window.applyFilter();
 })();
 </script>
