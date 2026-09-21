@@ -104,6 +104,7 @@ details.scope li{margin:4px 0}
 .anntoggle.dens:hover{background:#e6ecf5;border-color:#b9c4d4}
 .anntoggle.dens.on{background:#efe9fb;border-color:#d6c8f2;color:#6a3fd0}
 .anntoggle.dens.on:hover{background:#e6dcfa;border-color:#c2abec}
+body[data-page="strategy"] .anntoggle{display:none}
 body.dense .hcol{display:none}
 body.dense table.t1,body.dense table.t3{min-width:1180px}
 /* 工具栏 */
@@ -177,6 +178,7 @@ table.bm{min-width:920px}
 /* 表格：只保留横向滚动（19 列很宽），纵向不再内部滚动——整张表随页面展开，避免"滚轮到表格里滚不动"
    名称列冻结（position:sticky;left:0），横向滚动时始终看得到行标签 */
 .tablebox{overflow-x:auto}
+table.strat{min-width:1180px}
 table{width:100%;border-collapse:collapse}
 table.t1,table.t3{min-width:1750px}
 /* 大类二（国内长期绩优）表格：列比上面五张表多 6 列，横向更宽 */
@@ -301,6 +303,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   <h1>
     <span data-pv="us" class="active">基金清单 · 纯美指数（标普500 / 纳斯达克）</span>
     <span data-pv="cnidx">基金清单 · 国内指数</span>
+    <span data-pv="strategy">ETF 买入策略 · 固定历史快照</span>
     <span data-pv="stock">基金清单 · 国内长期股 / 高股息</span>
     <span data-pv="cn">基金清单 · 国内长期绩优（非美指数）</span>
   </h1>
@@ -312,6 +315,10 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
     <span data-pv="cnidx">
       数据口径：基于国内长期绩优候选中的指数型基金，按跟踪指数归并；收益、回撤和波动为同指数候选基金中位数，<b>不是指数官方点位收益</b><br>
       主表列常用宽基与小盘指数，红利相关基金另表逐只比较；候选快照 2026-09-17，数据由 <code>screens/fund_screen.py</code> 生成
+    </span>
+    <span data-pv="strategy">
+      固定回测区间：<b>2010-03-11 → 2026-09-18</b> ｜ 9 个 1x/2x/3x ETF ｜ 12 种买入策略<br>
+      结果由 <code>strategy_backtest.py</code> 一次计算并冻结；不接入每日更新
     </span>
     <span data-pv="stock">
       快照：<b id="mStockAsOf">2026-09-21</b> ｜ 长期核心 + 高股息代表股，非全市场筛选<br>
@@ -329,6 +336,7 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
   <div class="pageswitch" role="tablist">
     <button class="pagebtn active" type="button" role="tab" aria-selected="true" data-page="us">海外指数</button>
     <button class="pagebtn" type="button" role="tab" aria-selected="false" data-page="cnidx">国内指数</button>
+    <button class="pagebtn" type="button" role="tab" aria-selected="false" data-page="strategy">买入策略</button>
     <button class="pagebtn" type="button" role="tab" aria-selected="false" data-page="stock">长期股 / 高股息</button>
     <button class="pagebtn" type="button" role="tab" aria-selected="false" data-page="cn">国内长期绩优</button>
   </div>
@@ -487,6 +495,48 @@ footer{color:var(--sub);font-size:11.5px;padding:8px 0 30px;text-align:center}
 <div class="card"><h2>二、红利相关基金明细<small>收益均按分红再投资复权；按中证红利、红利低波、国企红利、沪港深红利分组逐只比较</small></h2>
 <div class="xnote" id="cnDivCnt"></div>
 <div class="tablebox"><table class="sortable lowvol" id="cnDivTbl"></table></div></div>
+</section>
+
+<section class="pageview" data-page-view="strategy">
+<details class="scope" open>
+  <summary>回测口径与策略定义（点击折叠）</summary>
+  <ol>
+    <li><b>固定快照</b>：回测区间为 <b>2010-03-11 → 2026-09-18</b>，取 9 个 ETF 同时有行情的共同起点。结果由 <code>strategy_backtest.py</code> 一次计算并写入页面，不随每日数据更新。</li>
+    <li><b>行情口径</b>：使用 Yahoo Finance 复权收盘价，包含现金分红、拆分和 ETF 基金费用。初始资金 100,000 美元；持续定投按月 1,000、按季 3,000、按年 12,000 美元的基础预算执行。</li>
+    <li><b>成本口径</b>：交易佣金、滑点、税费和未投入现金利息均按 0 计算。因此结果是理论上限；ETF 管理费、跟踪成本和再平衡损耗已反映在复权价格中，不能从历史价格中剔除。</li>
+    <li><b>初始资金策略</b>：一次性买入；6/12/24 个月等额分批；回撤 10%/20%/30% 的阶梯加仓；200 日均线择时。均线和回撤信号均在下一次交易执行，不使用未来价格。</li>
+    <li><b>持续定投策略</b>：每月、每季、每年固定投入；回撤超过 10%/20%/30% 时分别按 1.5/2/3 倍月投；以及均线上 1 倍、均线下 0.5 倍或 2 倍的顺势/逆势定投。</li>
+    <li><b>指标口径</b>：累计收益 = 期末资产 / 累计投入 − 1；年化为资金加权 XIRR。最大回撤和最长水下时间按剔除外部现金流影响后的单位净值计算，因此持续定投追加资金不会掩盖亏损。</li>
+    <li><b>杠杆风险</b>：2 倍、3 倍 ETF 按日再平衡，长期结果受路径依赖、波动损耗、融资成本和极端回撤影响；回撤可能超过 80%，不能把日度倍数外推到长期收益。</li>
+  </ol>
+</details>
+
+<div class="stats" id="strategyStats"></div>
+
+<div class="cat catidx"><span class="catno">策略</span><b>买入方式对比</b>
+  <span class="hint">同一资产下比较不同买入节奏；同一策略下比较 1x / 2x / 3x 产品</span>
+</div>
+
+<div class="filter noprint">
+  <span class="hint" id="strategyCnt"></span>
+  <span class="sp"></span>
+  <div class="prow" id="strategyPanels">
+    <button class="tab active" type="button" data-sp="initial">初始资金投放</button>
+    <button class="tab" type="button" data-sp="dca">持续定投</button>
+  </div>
+</div>
+
+<div class="prow" id="strategyAssets" style="margin:8px 0 14px"></div>
+
+<div class="card"><h2>一、策略结果<small id="strategyTitle">初始资金 100,000 美元 · 全部标的</small></h2>
+<div class="tablebox"><table class="sortable strat" id="strategyTbl"></table></div>
+</div>
+
+<div class="notes">
+  <h3>结果解读</h3>
+  <p id="strategyInsight"></p>
+  <p><b>重点不是只看年化。</b>杠杆 ETF 在同一回测区间的终结资产和资金加权年化可能很高，但最大回撤、最长水下时间和实际持有体验差异极大。固定快照只描述这一段历史，不代表未来。</p>
+</div>
 </section>
 
 <section class="pageview" data-page-view="stock">
@@ -653,6 +703,13 @@ var FUNDS=[
 /*__DATA_META_BEGIN__*/
 var META={gen:"2026-09-21 盘中",navdate:"2026-09-17",snpdate:"2026-09-21",snptime:"14:01:52",szdate:"2026-06-30",fx:[5.9397,6.0785,8.6053,-3.4561,-0.7369]};
 /*__DATA_META_END__*/
+
+/*__DATA_STRATEGY_BEGIN__*/
+var STRATEGY_META={"start":"2010-03-11","end":"2026-09-18","initial":100000.0,"monthly":1000.0,"cost":0.0,"source":"Yahoo Finance adjusted close via GlobalAssetHistory","generated":"2026-09-21 17:44"};
+var STRATEGY_ASSETS=[{"c":"SPY","n":"SPY","g":"标普500","lev":"1x"},{"c":"SSO","n":"SSO","g":"标普500","lev":"2x"},{"c":"UPRO","n":"UPRO","g":"标普500","lev":"3x"},{"c":"QQQ","n":"QQQ","g":"纳斯达克100","lev":"1x"},{"c":"QLD","n":"QLD","g":"纳斯达克100","lev":"2x"},{"c":"TQQQ","n":"TQQQ","g":"纳斯达克100","lev":"3x"},{"c":"SOXX","n":"SOXX","g":"半导体","lev":"1x"},{"c":"USD","n":"USD","g":"半导体","lev":"2x"},{"c":"SOXL","n":"SOXL","g":"半导体","lev":"3x"}];
+var STRATEGY_DEFS=[{"id":"lump_sum","panel":"initial","name":"一次性买入","desc":"期初 100,000 美元一次投入，持有到期末。"},{"id":"tranche_6","panel":"initial","name":"6个月分批","desc":"连续 6 个月，每月首个交易日等额买入。"},{"id":"tranche_12","panel":"initial","name":"12个月分批","desc":"连续 12 个月，每月首个交易日等额买入。"},{"id":"tranche_24","panel":"initial","name":"24个月分批","desc":"连续 24 个月，每月首个交易日等额买入。"},{"id":"drawdown_ladder","panel":"initial","name":"回撤阶梯","desc":"首投 25%，回撤 10%/20%/30% 各追加 25%；36 个月未触发则补投剩余资金。"},{"id":"ma200_hold","panel":"initial","name":"200日均线择时","desc":"收盘站上 200 日均线时满仓，跌破转现金；信号下一交易日执行，现金收益按 0。"},{"id":"dca_month","panel":"dca","name":"每月定投","desc":"每月首个交易日投入 1,000 美元。"},{"id":"dca_quarter","panel":"dca","name":"每季定投","desc":"每季度首个交易日投入 3,000 美元，与月定投的年度基础预算一致。"},{"id":"dca_year","panel":"dca","name":"每年定投","desc":"每年首个交易日投入 12,000 美元，与月定投的年度基础预算一致。"},{"id":"dca_drawdown","panel":"dca","name":"回撤倍数定投","desc":"基础月投 1,000 美元；回撤 10%/20%/30% 时分别按 1.5/2/3 倍投入。"},{"id":"dca_ma_trend","panel":"dca","name":"均线顺势定投","desc":"价格在 200 日均线上方时月投 1 倍，下方时降为 0.5 倍。"},{"id":"dca_ma_contrarian","panel":"dca","name":"均线逆势定投","desc":"价格在 200 日均线上方时月投 1 倍，下方时提高为 2 倍。"}];
+var STRATEGY_RESULTS=[{"inv":100000.0,"end":886229.95,"ret":786.2299,"irr":14.1159,"mdd":-33.7173,"uw":488,"exp":100.0,"tr":1,"a":"SPY","p":"initial","s":"lump_sum"},{"inv":100000.0,"end":905291.08,"ret":805.2911,"irr":14.4373,"mdd":-33.7173,"uw":488,"exp":100.0,"tr":6,"a":"SPY","p":"initial","s":"tranche_6"},{"inv":100000.0,"end":874072.77,"ret":774.0728,"irr":14.4224,"mdd":-33.7173,"uw":488,"exp":100.0,"tr":12,"a":"SPY","p":"initial","s":"tranche_12"},{"inv":100000.0,"end":826993.09,"ret":726.9931,"irr":14.4922,"mdd":-33.7173,"uw":488,"exp":100.0,"tr":24,"a":"SPY","p":"initial","s":"tranche_24"},{"inv":100000.0,"end":771086.02,"ret":671.086,"irr":14.4572,"mdd":-33.7173,"uw":488,"exp":100.0,"tr":3,"a":"SPY","p":"initial","s":"drawdown_ladder"},{"inv":100000.0,"end":433574.27,"ret":333.5743,"irr":9.2837,"mdd":-23.4519,"uw":553,"exp":80.6832,"tr":79,"a":"SPY","p":"initial","s":"ma200_hold"},{"inv":199000.0,"end":763597.13,"ret":283.7171,"irr":14.7001,"mdd":-33.7173,"uw":488,"exp":100.0,"tr":199,"a":"SPY","p":"dca","s":"dca_month"},{"inv":198000.0,"end":766354.69,"ret":287.0478,"irr":14.7506,"mdd":-33.7173,"uw":488,"exp":99.6392,"tr":66,"a":"SPY","p":"dca","s":"dca_quarter"},{"inv":192000.0,"end":715832.65,"ret":272.8295,"irr":14.6774,"mdd":-33.7173,"uw":488,"exp":95.0445,"tr":16,"a":"SPY","p":"dca","s":"dca_year"},{"inv":212000.0,"end":807483.74,"ret":280.8886,"irr":14.7709,"mdd":-33.7173,"uw":488,"exp":100.0,"tr":199,"a":"SPY","p":"dca","s":"dca_drawdown"},{"inv":179500.0,"end":667713.01,"ret":271.985,"irr":14.6419,"mdd":-33.7173,"uw":488,"exp":100.0,"tr":199,"a":"SPY","p":"dca","s":"dca_ma_trend"},{"inv":238000.0,"end":955365.37,"ret":301.414,"irr":14.7776,"mdd":-33.7173,"uw":488,"exp":100.0,"tr":199,"a":"SPY","p":"dca","s":"dca_ma_contrarian"},{"inv":100000.0,"end":2975165.03,"ret":2875.165,"irr":22.7942,"mdd":-59.3411,"uw":541,"exp":100.0,"tr":1,"a":"SSO","p":"initial","s":"lump_sum"},{"inv":100000.0,"end":3146518.47,"ret":3046.5185,"irr":23.5043,"mdd":-59.3411,"uw":541,"exp":100.0,"tr":6,"a":"SSO","p":"initial","s":"tranche_6"},{"inv":100000.0,"end":2970763.1,"ret":2870.7631,"irr":23.4557,"mdd":-59.3411,"uw":541,"exp":100.0,"tr":12,"a":"SSO","p":"initial","s":"tranche_12"},{"inv":100000.0,"end":2727726.31,"ret":2627.7263,"irr":23.5675,"mdd":-59.3411,"uw":541,"exp":100.0,"tr":24,"a":"SSO","p":"initial","s":"tranche_24"},{"inv":100000.0,"end":3316903.37,"ret":3216.9034,"irr":23.8715,"mdd":-59.3411,"uw":541,"exp":100.0,"tr":4,"a":"SSO","p":"initial","s":"drawdown_ladder"},{"inv":100000.0,"end":1155390.5,"ret":1055.3905,"irr":15.9624,"mdd":-32.6879,"uw":543,"exp":77.3875,"tr":89,"a":"SSO","p":"initial","s":"ma200_hold"},{"inv":199000.0,"end":1785750.39,"ret":797.362,"irr":23.2666,"mdd":-59.3411,"uw":541,"exp":100.0,"tr":199,"a":"SSO","p":"dca","s":"dca_month"},{"inv":198000.0,"end":1803829.14,"ret":811.0248,"irr":23.373,"mdd":-59.3411,"uw":541,"exp":99.6392,"tr":66,"a":"SSO","p":"dca","s":"dca_quarter"},{"inv":192000.0,"end":1617504.34,"ret":742.4502,"irr":23.1271,"mdd":-59.3411,"uw":541,"exp":95.0445,"tr":16,"a":"SSO","p":"dca","s":"dca_year"},{"inv":258500.0,"end":2259497.8,"ret":774.0804,"irr":23.6755,"mdd":-59.3411,"uw":541,"exp":100.0,"tr":199,"a":"SSO","p":"dca","s":"dca_drawdown"},{"inv":176500.0,"end":1489964.52,"ret":744.1725,"irr":23.0578,"mdd":-59.3411,"uw":541,"exp":100.0,"tr":199,"a":"SSO","p":"dca","s":"dca_ma_trend"},{"inv":244000.0,"end":2377322.14,"ret":874.3124,"irr":23.5209,"mdd":-59.3411,"uw":541,"exp":100.0,"tr":199,"a":"SSO","p":"dca","s":"dca_ma_contrarian"},{"inv":100000.0,"end":6851335.78,"ret":6751.3358,"irr":29.1524,"mdd":-76.8168,"uw":615,"exp":100.0,"tr":1,"a":"UPRO","p":"initial","s":"lump_sum"},{"inv":100000.0,"end":7589065.03,"ret":7489.065,"irr":30.3414,"mdd":-76.8168,"uw":615,"exp":100.0,"tr":6,"a":"UPRO","p":"initial","s":"tranche_6"},{"inv":100000.0,"end":7054405.48,"ret":6954.4055,"irr":30.2662,"mdd":-76.8168,"uw":615,"exp":100.0,"tr":12,"a":"UPRO","p":"initial","s":"tranche_12"},{"inv":100000.0,"end":6385348.16,"ret":6285.3482,"irr":30.4614,"mdd":-76.8168,"uw":615,"exp":100.0,"tr":24,"a":"UPRO","p":"initial","s":"tranche_24"},{"inv":100000.0,"end":7359514.54,"ret":7259.5145,"irr":29.9694,"mdd":-76.8168,"uw":615,"exp":100.0,"tr":4,"a":"UPRO","p":"initial","s":"drawdown_ladder"},{"inv":100000.0,"end":2213199.77,"ret":2113.1998,"irr":20.6151,"mdd":-46.2198,"uw":616,"exp":74.6933,"tr":95,"a":"UPRO","p":"initial","s":"ma200_hold"},{"inv":199000.0,"end":3412649.75,"ret":1614.8994,"irr":29.7331,"mdd":-76.8168,"uw":615,"exp":100.0,"tr":199,"a":"UPRO","p":"dca","s":"dca_month"},{"inv":198000.0,"end":3475914.78,"ret":1655.5125,"irr":29.9201,"mdd":-76.8168,"uw":615,"exp":99.6392,"tr":66,"a":"UPRO","p":"dca","s":"dca_quarter"},{"inv":192000.0,"end":2995094.94,"ret":1459.9453,"irr":29.4582,"mdd":-76.8168,"uw":615,"exp":95.0445,"tr":16,"a":"UPRO","p":"dca","s":"dca_year"},{"inv":306500.0,"end":5434873.81,"ret":1673.2052,"irr":30.5894,"mdd":-76.8168,"uw":615,"exp":100.0,"tr":199,"a":"UPRO","p":"dca","s":"dca_drawdown"},{"inv":174500.0,"end":2751759.05,"ret":1476.9393,"irr":29.3565,"mdd":-76.8168,"uw":615,"exp":100.0,"tr":199,"a":"UPRO","p":"dca","s":"dca_ma_trend"},{"inv":248000.0,"end":4734431.14,"ret":1809.0448,"irr":30.1675,"mdd":-76.8168,"uw":615,"exp":100.0,"tr":199,"a":"UPRO","p":"dca","s":"dca_ma_contrarian"},{"inv":100000.0,"end":1757368.28,"ret":1657.3683,"irr":18.9433,"mdd":-35.1187,"uw":493,"exp":100.0,"tr":1,"a":"QQQ","p":"initial","s":"lump_sum"},{"inv":100000.0,"end":1784387.15,"ret":1684.3872,"irr":19.2903,"mdd":-35.1187,"uw":493,"exp":100.0,"tr":6,"a":"QQQ","p":"initial","s":"tranche_6"},{"inv":100000.0,"end":1692716.69,"ret":1592.7167,"irr":19.2176,"mdd":-35.1187,"uw":493,"exp":100.0,"tr":12,"a":"QQQ","p":"initial","s":"tranche_12"},{"inv":100000.0,"end":1568973.06,"ret":1468.9731,"irr":19.2775,"mdd":-35.1187,"uw":493,"exp":100.0,"tr":24,"a":"QQQ","p":"initial","s":"tranche_24"},{"inv":100000.0,"end":1473010.53,"ret":1373.0105,"irr":19.3883,"mdd":-35.1187,"uw":493,"exp":100.0,"tr":3,"a":"QQQ","p":"initial","s":"drawdown_ladder"},{"inv":100000.0,"end":699012.13,"ret":599.0121,"irr":12.4887,"mdd":-25.1277,"uw":477,"exp":80.7554,"tr":87,"a":"QQQ","p":"initial","s":"ma200_hold"},{"inv":199000.0,"end":1237378.08,"ret":521.798,"irr":19.5925,"mdd":-35.1187,"uw":493,"exp":100.0,"tr":199,"a":"QQQ","p":"dca","s":"dca_month"},{"inv":198000.0,"end":1244960.68,"ret":528.768,"irr":19.6623,"mdd":-35.1187,"uw":493,"exp":99.6392,"tr":66,"a":"QQQ","p":"dca","s":"dca_quarter"},{"inv":192000.0,"end":1154144.12,"ret":501.1167,"irr":19.6502,"mdd":-35.1187,"uw":493,"exp":95.0445,"tr":16,"a":"QQQ","p":"dca","s":"dca_year"},{"inv":223500.0,"end":1328093.62,"ret":494.2253,"irr":19.6888,"mdd":-35.1187,"uw":493,"exp":100.0,"tr":199,"a":"QQQ","p":"dca","s":"dca_drawdown"},{"inv":180000.0,"end":1081220.18,"ret":500.6779,"irr":19.563,"mdd":-35.1187,"uw":493,"exp":100.0,"tr":199,"a":"QQQ","p":"dca","s":"dca_ma_trend"},{"inv":237000.0,"end":1549693.88,"ret":553.8793,"irr":19.6317,"mdd":-35.1187,"uw":493,"exp":100.0,"tr":199,"a":"QQQ","p":"dca","s":"dca_ma_contrarian"},{"inv":100000.0,"end":9450374.74,"ret":9350.3747,"irr":31.6908,"mdd":-63.6845,"uw":629,"exp":100.0,"tr":1,"a":"QLD","p":"initial","s":"lump_sum"},{"inv":100000.0,"end":9894562.31,"ret":9794.5623,"irr":32.4747,"mdd":-63.6845,"uw":629,"exp":100.0,"tr":6,"a":"QLD","p":"initial","s":"tranche_6"},{"inv":100000.0,"end":9055778.92,"ret":8955.7789,"irr":32.3016,"mdd":-63.6845,"uw":629,"exp":100.0,"tr":12,"a":"QLD","p":"initial","s":"tranche_12"},{"inv":100000.0,"end":7991432.77,"ret":7891.4328,"irr":32.3418,"mdd":-63.6845,"uw":629,"exp":100.0,"tr":24,"a":"QLD","p":"initial","s":"tranche_24"},{"inv":100000.0,"end":10559826.79,"ret":10459.8268,"irr":32.9581,"mdd":-63.6845,"uw":629,"exp":100.0,"tr":4,"a":"QLD","p":"initial","s":"drawdown_ladder"},{"inv":100000.0,"end":3253057.75,"ret":3153.0577,"irr":23.4596,"mdd":-44.4975,"uw":409,"exp":77.3635,"tr":93,"a":"QLD","p":"initial","s":"ma200_hold"},{"inv":199000.0,"end":4355436.08,"ret":2088.6613,"irr":32.1772,"mdd":-63.6845,"uw":629,"exp":100.0,"tr":199,"a":"QLD","p":"dca","s":"dca_month"},{"inv":198000.0,"end":4419115.35,"ret":2131.8764,"irr":32.3256,"mdd":-63.6845,"uw":629,"exp":99.6392,"tr":66,"a":"QLD","p":"dca","s":"dca_quarter"},{"inv":192000.0,"end":3886103.93,"ret":1924.0125,"irr":32.1444,"mdd":-63.6845,"uw":629,"exp":95.0445,"tr":16,"a":"QLD","p":"dca","s":"dca_year"},{"inv":274500.0,"end":5413243.91,"ret":1872.0379,"irr":32.4892,"mdd":-63.6845,"uw":629,"exp":100.0,"tr":199,"a":"QLD","p":"dca","s":"dca_drawdown"},{"inv":176000.0,"end":3549596.93,"ret":1916.8164,"irr":31.9909,"mdd":-63.6845,"uw":629,"exp":100.0,"tr":199,"a":"QLD","p":"dca","s":"dca_ma_trend"},{"inv":245000.0,"end":5967114.39,"ret":2335.5569,"irr":32.3922,"mdd":-63.6845,"uw":629,"exp":100.0,"tr":199,"a":"QLD","p":"dca","s":"dca_ma_contrarian"},{"inv":100000.0,"end":27894281.17,"ret":27794.2812,"irr":40.6062,"mdd":-81.6598,"uw":762,"exp":100.0,"tr":1,"a":"TQQQ","p":"initial","s":"lump_sum"},{"inv":100000.0,"end":30406180.87,"ret":30306.1809,"irr":41.8959,"mdd":-81.6598,"uw":762,"exp":100.0,"tr":6,"a":"TQQQ","p":"initial","s":"tranche_6"},{"inv":100000.0,"end":27087095.46,"ret":26987.0955,"irr":41.6115,"mdd":-81.6598,"uw":762,"exp":100.0,"tr":12,"a":"TQQQ","p":"initial","s":"tranche_12"},{"inv":100000.0,"end":23113505.85,"ret":23013.5058,"irr":41.6095,"mdd":-81.6598,"uw":762,"exp":100.0,"tr":24,"a":"TQQQ","p":"initial","s":"tranche_24"},{"inv":100000.0,"end":30140437.99,"ret":30040.438,"irr":41.6371,"mdd":-81.6598,"uw":762,"exp":100.0,"tr":4,"a":"TQQQ","p":"initial","s":"drawdown_ladder"},{"inv":100000.0,"end":7126656.68,"ret":7026.6567,"irr":29.4607,"mdd":-48.1365,"uw":448,"exp":74.6211,"tr":91,"a":"TQQQ","p":"initial","s":"ma200_hold"},{"inv":199000.0,"end":10364344.66,"ret":5108.2134,"irr":40.9692,"mdd":-81.6598,"uw":762,"exp":100.0,"tr":199,"a":"TQQQ","p":"dca","s":"dca_month"},{"inv":198000.0,"end":10621182.16,"ret":5264.2334,"irr":41.222,"mdd":-81.6598,"uw":762,"exp":99.6392,"tr":66,"a":"TQQQ","p":"dca","s":"dca_quarter"},{"inv":192000.0,"end":8887069.78,"ret":4528.6822,"irr":40.7806,"mdd":-81.6598,"uw":762,"exp":95.0445,"tr":16,"a":"TQQQ","p":"dca","s":"dca_year"},{"inv":328500.0,"end":15876927.49,"ret":4733.1591,"irr":41.7225,"mdd":-81.6598,"uw":762,"exp":100.0,"tr":199,"a":"TQQQ","p":"dca","s":"dca_drawdown"},{"inv":173500.0,"end":7936487.78,"ret":4474.3445,"irr":40.5377,"mdd":-81.6598,"uw":762,"exp":100.0,"tr":199,"a":"TQQQ","p":"dca","s":"dca_ma_trend"},{"inv":250000.0,"end":15220058.41,"ret":5988.0234,"irr":41.417,"mdd":-81.6598,"uw":762,"exp":100.0,"tr":199,"a":"TQQQ","p":"dca","s":"dca_ma_contrarian"},{"inv":100000.0,"end":3934830.11,"ret":3834.8301,"irr":24.8895,"mdd":-45.7537,"uw":557,"exp":100.0,"tr":1,"a":"SOXX","p":"initial","s":"lump_sum"},{"inv":100000.0,"end":3993275.55,"ret":3893.2755,"irr":25.3188,"mdd":-45.7537,"uw":557,"exp":100.0,"tr":6,"a":"SOXX","p":"initial","s":"tranche_6"},{"inv":100000.0,"end":3841712.72,"ret":3741.7127,"irr":25.4425,"mdd":-45.7537,"uw":557,"exp":100.0,"tr":12,"a":"SOXX","p":"initial","s":"tranche_12"},{"inv":100000.0,"end":3683324.44,"ret":3583.3244,"irr":25.9601,"mdd":-45.7537,"uw":557,"exp":100.0,"tr":24,"a":"SOXX","p":"initial","s":"tranche_24"},{"inv":100000.0,"end":4160732.87,"ret":4060.7329,"irr":26.161,"mdd":-45.7537,"uw":557,"exp":100.0,"tr":4,"a":"SOXX","p":"initial","s":"drawdown_ladder"},{"inv":100000.0,"end":1383925.1,"ret":1283.9251,"irr":17.236,"mdd":-39.5885,"uw":772,"exp":73.7792,"tr":105,"a":"SOXX","p":"initial","s":"ma200_hold"},{"inv":199000.0,"end":2964490.71,"ret":1389.6938,"irr":28.326,"mdd":-45.7537,"uw":557,"exp":100.0,"tr":199,"a":"SOXX","p":"dca","s":"dca_month"},{"inv":198000.0,"end":2980820.71,"ret":1405.465,"irr":28.3845,"mdd":-45.7537,"uw":557,"exp":99.6392,"tr":66,"a":"SOXX","p":"dca","s":"dca_quarter"},{"inv":192000.0,"end":2773721.67,"ret":1344.6467,"irr":28.6681,"mdd":-45.7537,"uw":557,"exp":95.0445,"tr":16,"a":"SOXX","p":"dca","s":"dca_year"},{"inv":254500.0,"end":3775810.64,"ret":1383.6191,"irr":28.4287,"mdd":-45.7537,"uw":557,"exp":100.0,"tr":199,"a":"SOXX","p":"dca","s":"dca_drawdown"},{"inv":171500.0,"end":2381423.87,"ret":1288.5853,"irr":28.5287,"mdd":-45.7537,"uw":557,"exp":100.0,"tr":199,"a":"SOXX","p":"dca","s":"dca_ma_trend"},{"inv":254000.0,"end":4130624.38,"ret":1526.2301,"irr":28.1125,"mdd":-45.7537,"uw":557,"exp":100.0,"tr":199,"a":"SOXX","p":"dca","s":"dca_ma_contrarian"},{"inv":100000.0,"end":27715827.55,"ret":27615.8275,"irr":40.5515,"mdd":-77.8549,"uw":704,"exp":100.0,"tr":1,"a":"USD","p":"initial","s":"lump_sum"},{"inv":100000.0,"end":28582819.21,"ret":28482.8192,"irr":41.3599,"mdd":-77.8549,"uw":704,"exp":100.0,"tr":6,"a":"USD","p":"initial","s":"tranche_6"},{"inv":100000.0,"end":27764279.08,"ret":27664.2791,"irr":41.8286,"mdd":-77.8549,"uw":704,"exp":100.0,"tr":12,"a":"USD","p":"initial","s":"tranche_12"},{"inv":100000.0,"end":26116245.58,"ret":26016.2456,"irr":42.7152,"mdd":-77.8549,"uw":704,"exp":100.0,"tr":24,"a":"USD","p":"initial","s":"tranche_24"},{"inv":100000.0,"end":28296494.11,"ret":28196.4941,"irr":41.1243,"mdd":-77.8549,"uw":704,"exp":100.0,"tr":4,"a":"USD","p":"initial","s":"drawdown_ladder"},{"inv":100000.0,"end":5983026.57,"ret":5883.0266,"irr":28.0975,"mdd":-51.4307,"uw":827,"exp":71.133,"tr":109,"a":"USD","p":"initial","s":"ma200_hold"},{"inv":199000.0,"end":17878359.73,"ret":8884.1004,"irr":46.6206,"mdd":-77.8549,"uw":704,"exp":100.0,"tr":199,"a":"USD","p":"dca","s":"dca_month"},{"inv":198000.0,"end":18119454.9,"ret":9051.2398,"irr":46.762,"mdd":-77.8549,"uw":704,"exp":99.6392,"tr":66,"a":"USD","p":"dca","s":"dca_quarter"},{"inv":192000.0,"end":16309078.11,"ret":8394.3115,"irr":47.2666,"mdd":-77.8549,"uw":704,"exp":95.0445,"tr":16,"a":"USD","p":"dca","s":"dca_year"},{"inv":347000.0,"end":32915267.96,"ret":9385.668,"irr":47.1574,"mdd":-77.8549,"uw":704,"exp":100.0,"tr":199,"a":"USD","p":"dca","s":"dca_drawdown"},{"inv":169500.0,"end":13693707.84,"ret":7978.8837,"irr":46.9272,"mdd":-77.8549,"uw":704,"exp":100.0,"tr":199,"a":"USD","p":"dca","s":"dca_ma_trend"},{"inv":258000.0,"end":26247663.49,"ret":10073.513,"irr":46.3248,"mdd":-77.8549,"uw":704,"exp":100.0,"tr":199,"a":"USD","p":"dca","s":"dca_ma_contrarian"},{"inv":100000.0,"end":20582030.52,"ret":20482.0305,"irr":38.0429,"mdd":-90.4605,"uw":1043,"exp":100.0,"tr":1,"a":"SOXL","p":"initial","s":"lump_sum"},{"inv":100000.0,"end":22283222.0,"ret":22183.222,"irr":39.2226,"mdd":-90.4605,"uw":1043,"exp":100.0,"tr":6,"a":"SOXL","p":"initial","s":"tranche_6"},{"inv":100000.0,"end":21878437.36,"ret":21778.4374,"irr":39.7471,"mdd":-90.4605,"uw":1043,"exp":100.0,"tr":12,"a":"SOXL","p":"initial","s":"tranche_12"},{"inv":100000.0,"end":22330638.05,"ret":22230.638,"irr":41.299,"mdd":-90.4605,"uw":1043,"exp":100.0,"tr":24,"a":"SOXL","p":"initial","s":"tranche_24"},{"inv":100000.0,"end":20132116.0,"ret":20032.116,"irr":38.1522,"mdd":-90.4605,"uw":1043,"exp":100.0,"tr":4,"a":"SOXL","p":"initial","s":"drawdown_ladder"},{"inv":100000.0,"end":4669023.94,"ret":4569.0239,"irr":26.1894,"mdd":-70.9915,"uw":730,"exp":63.796,"tr":115,"a":"SOXL","p":"initial","s":"ma200_hold"},{"inv":199000.0,"end":14147977.89,"ret":7009.5366,"irr":44.1812,"mdd":-90.4605,"uw":1043,"exp":100.0,"tr":199,"a":"SOXL","p":"dca","s":"dca_month"},{"inv":198000.0,"end":14420392.2,"ret":7183.0264,"irr":44.3804,"mdd":-90.4605,"uw":1043,"exp":99.6392,"tr":66,"a":"SOXL","p":"dca","s":"dca_quarter"},{"inv":192000.0,"end":13221222.34,"ret":6786.0533,"irr":45.0074,"mdd":-90.4605,"uw":1043,"exp":95.0445,"tr":16,"a":"SOXL","p":"dca","s":"dca_year"},{"inv":448500.0,"end":35413658.04,"ret":7796.0219,"irr":45.1495,"mdd":-90.4605,"uw":1043,"exp":100.0,"tr":199,"a":"SOXL","p":"dca","s":"dca_drawdown"},{"inv":163000.0,"end":10170656.04,"ret":6139.6663,"irr":43.974,"mdd":-90.4605,"uw":1043,"exp":100.0,"tr":199,"a":"SOXL","p":"dca","s":"dca_ma_trend"},{"inv":271000.0,"end":22102621.6,"ret":8055.9489,"irr":44.3668,"mdd":-90.4605,"uw":1043,"exp":100.0,"tr":199,"a":"SOXL","p":"dca","s":"dca_ma_contrarian"}];
+/*__DATA_STRATEGY_END__*/
 /* 国内长期股 / 高股息快照：由 stock_screen.py 生成 */
 /*__DATA_STOCKS_BEGIN__*/
 var STOCK_ASOF="2026-09-21";
@@ -3419,13 +3476,13 @@ function saveView(){
 }
 function loadView(){
   var hashPage=(location.hash||'').replace(/^#/,'');
-  if(hashPage==='us'||hashPage==='cnidx'||hashPage==='cn'||hashPage==='stock')curPage=hashPage;
+  if(hashPage==='us'||hashPage==='cnidx'||hashPage==='cn'||hashPage==='stock'||hashPage==='strategy')curPage=hashPage;
   try{
     var s=localStorage.getItem(VIEW_KEY);
     if(!s)return;
     var v=JSON.parse(s);
     if(!v||typeof v!=='object')return;
-    if(!hashPage&&(v.page==='us'||v.page==='cnidx'||v.page==='cn'||v.page==='stock'))curPage=v.page;
+    if(!hashPage&&(v.page==='us'||v.page==='cnidx'||v.page==='cn'||v.page==='stock'||v.page==='strategy'))curPage=v.page;
     if(typeof v.dense==='boolean')dense=v.dense;
     if(v.group&&GROUPS[v.group])curGroup=v.group;
     if(typeof v.chart==='string'&&/^(bar|scat|fee|size|td|bm)$/.test(v.chart))curChart=v.chart;
@@ -3441,7 +3498,7 @@ function loadView(){
 }
 function setPage(page,opts){
   opts=opts||{};
-  curPage=(page==='cn'||page==='cnidx'||page==='stock')?page:'us';
+  curPage=(page==='cn'||page==='cnidx'||page==='stock'||page==='strategy')?page:'us';
   document.body.dataset.page=curPage;
   document.querySelectorAll('.pagebtn').forEach(function(b){
     var on=b.dataset.page===curPage;
@@ -3458,21 +3515,25 @@ function setPage(page,opts){
   if(hint)hint.textContent=curPage==='us'
     ?'每日行情、基准叠加与美指基金对比'
     :(curPage==='cnidx'?'国内各指数覆盖、收益与风险概览'
-      :(curPage==='stock'?'国内长期股与高股息代表股观察':'国内长期绩优筛选快照与精选/备选列表'));
+      :(curPage==='strategy'?'固定历史快照：不同买入方式与 1x / 2x / 3x ETF'
+        :(curPage==='stock'?'国内长期股与高股息代表股观察':'国内长期绩优筛选快照与精选/备选列表')));
   var input=document.getElementById('gSearchInput');
   if(input)input.placeholder=curPage==='us'
     ?'搜索名称或代码，如：招商 / 5131 / 广发'
     :(curPage==='cnidx'?'搜索国内指数或关联基金名称'
-      :(curPage==='stock'?'搜索股票名称、代码或行业':'搜索国内基金名称或代码'));
+      :(curPage==='strategy'?'搜索 ETF、策略或 1x / 2x / 3x'
+        :(curPage==='stock'?'搜索股票名称、代码或行业':'搜索国内基金名称或代码')));
   var sbtn=document.getElementById('gSearchBtn');
   if(sbtn)sbtn.title=curPage==='us'
     ?'搜索名称或代码：过滤美指基金表与可视化勾选列表（不改变已勾选的基金）'
     :(curPage==='cnidx'?'搜索名称：过滤国内指数与关联基金'
-      :(curPage==='stock'?'搜索名称、代码或行业：过滤长期股 / 高股息表':'搜索名称或代码：过滤国内长期绩优各表（不改变入选/备选状态）'));
+      :(curPage==='strategy'?'搜索 ETF、策略或杠杆倍数：过滤当前策略结果表'
+        :(curPage==='stock'?'搜索名称、代码或行业：过滤长期股 / 高股息表':'搜索名称或代码：过滤国内长期绩优各表（不改变入选/备选状态）')));
   document.title=curPage==='us'
     ?'基金清单 · 纯美指数（标普500/纳斯达克）'
     :(curPage==='cnidx'?'基金清单 · 国内指数'
-      :(curPage==='stock'?'基金清单 · 国内长期股 / 高股息':'基金清单 · 国内长期绩优（非美指数）'));
+      :(curPage==='strategy'?'基金清单 · ETF 买入策略回测'
+        :(curPage==='stock'?'基金清单 · 国内长期股 / 高股息':'基金清单 · 国内长期绩优（非美指数）')));
   if(!opts.noHash){
     try{history.replaceState(null,'',location.pathname+location.search+'#'+curPage);}catch(e){}
   }
@@ -3489,7 +3550,7 @@ document.querySelectorAll('.pagebtn').forEach(function(b){
 });
 window.addEventListener('hashchange',function(){
   var p=(location.hash||'').replace(/^#/,'');
-  if(p==='us'||p==='cnidx'||p==='cn'||p==='stock')setPage(p,{noHash:true});
+  if(p==='us'||p==='cnidx'||p==='cn'||p==='stock'||p==='strategy')setPage(p,{noHash:true});
 });
 /* 恢复的分组/指标要同步按钮选中态（HTML 里的默认 active 是按默认值写死的） */
 function syncTabUI(){
@@ -4053,6 +4114,151 @@ function renderStockTable(){
   var cnt=document.getElementById('stockCnt');
   if(cnt)cnt.textContent='当前显示 '+rows.length+' / '+STOCKS.length+' 只；分类：'+curStockCat+'；截至 '+STOCK_ASOF;
 }
+
+(function(){
+  if(typeof STRATEGY_RESULTS==='undefined')return;
+  var stratPanel='initial';
+  var stratAsset='all';
+  var assetMap={};
+  STRATEGY_ASSETS.forEach(function(a){assetMap[a.c]=a;});
+
+  function fmtMoney(v){
+    if(v==null||!isFinite(v))return '--';
+    return '$'+Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  }
+  function fmtPct(v,nd,plus){
+    if(v==null||!isFinite(v))return '--';
+    var s=v.toFixed(nd==null?2:nd)+'%';
+    return plus&&v>0?'+'+s:s;
+  }
+  function assetLabel(a){
+    return a.n+' · '+a.g+' '+a.lev;
+  }
+  function matchingRows(){
+    var q=gsearchKw();
+    return STRATEGY_RESULTS.filter(function(r){
+      if(r.p!==stratPanel)return false;
+      if(stratAsset!=='all'&&r.a!==stratAsset)return false;
+      if(!q)return true;
+      var a=assetMap[r.a]||{};
+      var d=STRATEGY_DEFS.filter(function(x){return x.id===r.s;})[0]||{};
+      return [r.a,a.n,a.g,a.lev,r.s,d.name,d.desc].join(' ').toLowerCase().indexOf(q)>=0;
+    });
+  }
+  function renderStats(){
+    var el=document.getElementById('strategyStats');
+    if(!el)return;
+    function pick(a,s){return STRATEGY_RESULTS.filter(function(x){return x.a===a&&x.s===s;})[0];}
+    var q=pick('QQQ','dca_month');
+    var t=pick('TQQQ','dca_month');
+    var sx=pick('SOXL','dca_month');
+    if(!q||!t||!sx)return;
+    var cards=[
+      {k:'QQQ 每月定投 XIRR',v:fmtPct(q.irr,2,true),s:'期末 '+fmtMoney(q.end)+' ｜ 投入 '+fmtMoney(q.inv)},
+      {k:'TQQQ 每月定投 XIRR',v:fmtPct(t.irr,2,true),s:'期末 '+fmtMoney(t.end)+' ｜ 投入 '+fmtMoney(t.inv)},
+      {k:'TQQQ − QQQ 年化差',v:(t.irr-q.irr>=0?'+':'')+(t.irr-q.irr).toFixed(2)+'pp',s:'同区间、同定投日期、同基础金额'},
+      {k:'TQQQ 最大回撤',v:fmtPct(t.mdd,2,false),s:'QQQ '+fmtPct(q.mdd,2,false)+'；杠杆回撤显著更深'},
+      {k:'SOXL 每月定投 XIRR',v:fmtPct(sx.irr,2,true),s:'最大回撤 '+fmtPct(sx.mdd,2,false)+'；半导体波动更高'},
+    ];
+    el.innerHTML=cards.map(function(c){
+      return '<div class="stat"><div class="k">'+esc(c.k)+'</div><div class="v">'+esc(c.v)+'</div><div class="s">'+esc(c.s)+'</div></div>';
+    }).join('');
+  }
+  function renderPanelTabs(){
+    document.querySelectorAll('#strategyPanels button[data-sp]').forEach(function(b){
+      b.classList.toggle('active',b.dataset.sp===stratPanel);
+    });
+  }
+  function renderAssetTabs(){
+    var el=document.getElementById('strategyAssets');
+    if(!el)return;
+    var rows=[{c:'all',n:'全部',g:'9 个标的',lev:''}].concat(STRATEGY_ASSETS);
+    el.innerHTML=rows.map(function(a){
+      var txt=a.c==='all'?'全部':assetLabel(a);
+      return '<button class="tab'+(a.c===stratAsset?' active':'')+'" type="button" data-sa="'+esc(a.c)+'">'+esc(txt)+'</button>';
+    }).join('');
+    el.querySelectorAll('button[data-sa]').forEach(function(b){
+      b.addEventListener('click',function(){
+        stratAsset=b.dataset.sa;
+        renderStrategyPage();
+      });
+    });
+  }
+  function renderTable(){
+    var el=document.getElementById('strategyTbl');
+    if(!el)return;
+    var rows=matchingRows();
+    var head='<thead><tr>'+
+      '<th class="l" data-sort="text" data-key="asset">标的 / 杠杆<span class="arr"></span></th>'+
+      '<th class="l" data-sort="text" data-key="strategy">买入策略<span class="arr"></span></th>'+
+      '<th data-sort="num" data-key="inv">累计投入<span class="arr"></span></th>'+
+      '<th data-sort="num" data-key="end">期末资产<span class="arr"></span></th>'+
+      '<th data-sort="num" data-key="ret">累计收益<span class="arr"></span></th>'+
+      '<th data-sort="num" data-key="irr">年化 XIRR<span class="arr"></span></th>'+
+      '<th data-sort="num" data-key="mdd">最大回撤<span class="arr"></span></th>'+
+      '<th data-sort="num" data-key="uw">最长水下(交易日)<span class="arr"></span></th>'+
+      '<th data-sort="num" data-key="exp">平均仓位<span class="arr"></span></th>'+
+      '<th data-sort="num" data-key="tr">交易次数<span class="arr"></span></th>'+
+      '</tr></thead>';
+    var body=rows.map(function(r,i){
+      var a=assetMap[r.a]||{};
+      var d=STRATEGY_DEFS.filter(function(x){return x.id===r.s;})[0]||{};
+      return '<tr data-idx="'+i+'">'+
+        cell('<b>'+esc(r.a)+'</b> <span class="hint">'+esc((a.g||'')+' · '+(a.lev||''))+'</span>','l')+
+        cell('<span title="'+esc(d.desc||'')+'">'+esc(d.name||r.s)+'</span>','l')+
+        cell(fmtMoney(r.inv))+
+        cell(fmtMoney(r.end))+
+        cell(fmtPct(r.ret,2,true),r.ret>=0?'up':'down')+
+        cell(fmtPct(r.irr,2,true),r.irr>=0?'up':'down')+
+        cell(fmtPct(r.mdd,2,false),'down')+
+        cell(r.uw+' 天')+
+        cell(fmtPct(r.exp,1,false))+
+        cell(r.tr)+
+        '</tr>';
+    }).join('');
+    if(!body)body='<tr><td colspan="10" class="na">当前筛选没有匹配的策略结果</td></tr>';
+    el.innerHTML=head+'<tbody>'+body+'</tbody>';
+    SORTS[el.id]=[];
+    clearSortUI(el);
+    bindSortOne(el);
+    var cnt=document.getElementById('strategyCnt');
+    if(cnt){
+      var all=STRATEGY_RESULTS.filter(function(r){return r.p===stratPanel;}).length;
+      cnt.textContent='显示 '+rows.length+' / '+all+' 行 ｜ 固定区间 '+STRATEGY_META.start+' → '+STRATEGY_META.end;
+    }
+    var title=document.getElementById('strategyTitle');
+    if(title){
+      title.textContent=(stratPanel==='initial'?'初始资金 '+fmtMoney(STRATEGY_META.initial):'持续定投 · 月度基础 '+fmtMoney(STRATEGY_META.monthly))+' · '+(stratAsset==='all'?'全部标的':assetLabel(assetMap[stratAsset]));
+    }
+  }
+  function renderInsight(){
+    var el=document.getElementById('strategyInsight');
+    if(!el)return;
+    function pick(a,s){return STRATEGY_RESULTS.filter(function(x){return x.a===a&&x.s===s;})[0];}
+    var q=pick('QQQ','dca_month'),t=pick('TQQQ','dca_month'),s=pick('SOXL','dca_month');
+    if(!q||!t||!s)return;
+    el.innerHTML='同一固定区间内，<b>TQQQ 每月定投的 XIRR '+fmtPct(t.irr,2,true)+'</b>，高于 QQQ 的 <b>'+fmtPct(q.irr,2,true)+'</b>，期末资产分别为 '+fmtMoney(t.end)+' 和 '+fmtMoney(q.end)+'。但 TQQQ 最大回撤为 <b>'+fmtPct(t.mdd,2,false)+'</b>，QQQ 为 '+fmtPct(q.mdd,2,false)+'；SOXL 的年化更高到 '+fmtPct(s.irr,2,true)+'，回撤也达到 '+fmtPct(s.mdd,2,false)+'。';
+  }
+  function renderStrategyPage(){
+    renderPanelTabs();
+    renderAssetTabs();
+    renderStats();
+    renderTable();
+    renderInsight();
+  }
+  document.querySelectorAll('#strategyPanels button[data-sp]').forEach(function(b){
+    b.addEventListener('click',function(){
+      stratPanel=b.dataset.sp;
+      applyFilter();
+    });
+  });
+  var prevApply=window.applyFilter;
+  window.applyFilter=function(){
+    renderStrategyPage();
+    if(prevApply)prevApply.apply(null,arguments);
+  };
+  renderStrategyPage();
+})();
 
 (function(){
   /* 注册到排序与顺序工具：保存顺序 / ↺ / 拖动排序都按表 id 工作 */
