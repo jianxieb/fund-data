@@ -376,32 +376,54 @@ def strategy_inputs(prices, dates):
 
 
 def xirr(flows):
-    flows = sorted(flows, key=lambda x: x[0])
-    if not flows:
+    """Annualized IRR for contributions followed by one terminal account value.
+
+    Solving at each sampled date uses the same cash-flow definition as the final
+    result. In log-rate space, the future value of positive contributions is
+    monotone, so guarded Newton steps converge without a library dependency.
+    """
+    if len(flows) < 2:
+        return None
+    terminal_day, terminal_value = flows[-1]
+    if terminal_value <= 0:
+        return None
+    contributions = [(-amount, (terminal_day - day).days / 365.2425)
+                     for day, amount in flows[:-1]]
+    if any(amount <= 0 or age < 0 for amount, age in contributions) or \
+            not any(age > 0 for _, age in contributions):
         return None
 
-    def value(rate):
-        base = flows[0][0]
-        return sum(
-            amount / ((1.0 + rate) ** ((day - base).days / 365.2425))
-            for day, amount in flows
-        )
+    def future(log_growth):
+        try:
+            terms = [(amount * math.exp(log_growth * age), age)
+                     for amount, age in contributions]
+        except OverflowError:
+            return math.inf, math.inf
+        return sum(value for value, _ in terms), sum(value * age for value, age in terms)
 
-    low, high = -0.999999, 10.0
-    f_low, f_high = value(low), value(high)
-    if f_low * f_high > 0:
-        high = 100.0
-        f_high = value(high)
-    if f_low * f_high > 0:
+    low, high = math.log(1e-12), math.log(2.0)
+    if future(low)[0] > terminal_value:
         return None
-
-    for _ in range(240):
-        mid = (low + high) / 2.0
-        if value(low) * value(mid) <= 0:
-            high = mid
+    while future(high)[0] < terminal_value and high < 40:
+        high *= 2
+    if future(high)[0] < terminal_value:
+        return None
+    total = sum(amount for amount, _ in contributions)
+    weighted_age = sum(amount * age for amount, age in contributions) / total
+    guess = math.log(terminal_value / total) / weighted_age
+    current = min(high, max(low, guess))
+    for _ in range(48):
+        value, slope = future(current)
+        difference = value - terminal_value
+        if abs(difference) <= max(1e-9, terminal_value * 1e-11):
+            return math.expm1(current)
+        if difference < 0:
+            low = current
         else:
-            low = mid
-    return (low + high) / 2.0
+            high = current
+        candidate = current - difference / slope if slope and math.isfinite(slope) else math.nan
+        current = candidate if math.isfinite(candidate) and low < candidate < high else (low + high) / 2
+    return math.expm1((low + high) / 2)
 
 
 def drawdown_metrics(nav):
@@ -419,7 +441,8 @@ def drawdown_metrics(nav):
     return max_dd, longest
 
 
-def simulate(dates, prices, events, exposure=None, initial_capital=None, sample_indices=None):
+def simulate(dates, prices, events, exposure=None, initial_capital=None,
+             sample_indices=None, annualized_indices=None):
     """All pre-existing capital enters on day zero, including undeployed cash.
 
     events are purchases from that cash for initial-capital experiments; otherwise
@@ -432,7 +455,9 @@ def simulate(dates, prices, events, exposure=None, initial_capital=None, sample_
     cash = float(initial_capital or 0.0)
     units = cash
     asset_units = 0.0
-    nav, flows = [], []
+    nav, accounts, flows = [], [], []
+    annualized_samples = set(annualized_indices or [])
+    annualized_curve = {}
     total_contrib, trade_count, exposure_sum = cash, 0, 0.0
     min_cash = cash
     if cash:
@@ -480,6 +505,11 @@ def simulate(dates, prices, events, exposure=None, initial_capital=None, sample_
         min_cash = min(min_cash, cash)
         value = cash + asset_units * price
         nav.append(value / units if units > 0 else 1.0)
+        accounts.append(value)
+        if i in annualized_samples:
+            as_of = datetime.strptime(date, '%Y-%m-%d')
+            rate = xirr(flows + [(as_of, value)])
+            annualized_curve[i] = rate * 100 if rate is not None else None
         exposure_sum += asset_units * price / value if value > 0 else 0.0
     final_value = cash + asset_units * prices[-1]
     flows.append((datetime.strptime(dates[-1], '%Y-%m-%d'), final_value))
@@ -493,6 +523,10 @@ def simulate(dates, prices, events, exposure=None, initial_capital=None, sample_
             'cash': cash, 'minimum_cash': min_cash}
     if sample_indices is not None:
         result['curve'] = [round(nav[i] * 100, 4) for i in sample_indices]
+        result['account_curve'] = [round(accounts[i], 2) for i in sample_indices]
+    if annualized_indices is not None:
+        result['irr_curve'] = [round(annualized_curve[i], 4) if annualized_curve[i] is not None else None
+                               for i in annualized_indices]
     return result
 
 
@@ -536,19 +570,27 @@ def weekly_sample_indices(dates):
 
 
 def build_results(dates, prices, assets=None):
-    results, curves = [], {'dates': [], 'series': {}}
+    results, curves = [], {'dates': [], 'series': {}, 'account': {}, 'irrDates': [], 'irr': {}}
     samples = weekly_sample_indices(dates)
+    first = datetime.strptime(dates[0], '%Y-%m-%d')
+    annualized_samples = [i for i in monthly_sample_indices(dates)
+                          if (datetime.strptime(dates[i], '%Y-%m-%d') - first).days >= 365]
     curves['dates'] = [dates[i] for i in samples]
+    curves['irrDates'] = [dates[i] for i in annualized_samples]
     for asset in assets or ASSETS:
         symbol = asset['c']
         inputs = strategy_inputs(prices[symbol], dates)
         curves['series'][symbol] = {}
+        curves['account'][symbol] = {}
+        curves['irr'][symbol] = {}
         for strategy in STRATEGIES:
             events, exposure = inputs[strategy['id']]
             simulated = simulate(dates, prices[symbol], events, exposure,
                                  initial_capital=INITIAL_CAPITAL if strategy['panel'] == 'initial' else None,
-                                 sample_indices=samples)
+                                 sample_indices=samples, annualized_indices=annualized_samples)
             curves['series'][symbol][strategy['id']] = simulated['curve']
+            curves['account'][symbol][strategy['id']] = simulated['account_curve']
+            curves['irr'][symbol][strategy['id']] = simulated['irr_curve']
             metrics = round_metrics(simulated)
             metrics.update({'a': symbol, 'p': strategy['panel'], 's': strategy['id']})
             results.append(metrics)
@@ -569,8 +611,9 @@ def write_html(results, dates, curves, windows, summaries, asset_starts):
         'requestedEnd': END_DATE,
         'status': 'computed',
         'basis': 'provider_adjusted_close',
-        'modelVersion': 2,
+        'modelVersion': 3,
         'initialCashIncluded': True,
+        'curveMetrics': ['account_value_usd', 'since_inception_xirr_percent'],
         'maWarmup': '200 observations; hold cash until first available signal',
         'limitations': ['不同起点与可用标的会改变结果', '税费、汇兑及现金收益未建模', '部分年度按样本月数预算；倍数定投资金总额不同'],
         'curveSampling': 'weekly_last_actual_trading_day',

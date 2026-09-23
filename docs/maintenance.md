@@ -18,7 +18,7 @@ python3 -m http.server 8765 --bind 127.0.0.1
 
 克隆后即可浏览快照和运行单元测试。基金、股票和策略的完整原始缓存不入库，因此第一次运行完整离线刷新可能因缺缓存失败；应先联网刷新对应数据。国内指数原始日线已保存在`data/index-history.json`。
 
-已提交的`data/snapshot.js`含默认2010起点的`STRATEGY_RESULTS`、`STRATEGY_CURVES`和其余四个起点的`STRATEGY_WINDOWS`，所以新电脑即使没有历史缓存，也能直接查看1993/1999/2001/2010/2020五组结果与交互曲线。要**重新计算**，应联网运行`python3 strategy_backtest.py --refresh`取得ETF完整历史，再执行`python3 data_quality.py --strict`；只有本机已保存所有ETF的完整早期行情时才使用`python3 strategy_backtest.py --offline`。曲线使用同一回测区间的资金流中性单位净值，首日为100；保留首日、每周最后一个真实交易日和末日，不插值。网页悬浮点显示该交易日所有可见标的的单位净值。汇总结果的XIRR仍为资金加权口径，两者不能互换。
+已提交的`data/snapshot.js`含默认2010起点的`STRATEGY_RESULTS`、`STRATEGY_CURVES`和其余四个起点的`STRATEGY_WINDOWS`，所以新电脑即使没有历史缓存，也能直接查看1993/1999/2001/2010/2020五组结果与交互曲线。要**重新计算**，应联网运行`python3 strategy_backtest.py --refresh`取得ETF完整历史，再执行`python3 data_quality.py --strict`；只有本机已保存所有ETF的完整早期行情时才使用`python3 strategy_backtest.py --offline`。`STRATEGY_CURVES`中`account`记录按周取样的实际账户金额，`irr`记录满一年后按实际月末交易日取样的截至当日XIRR；两者终点分别与结果表的期末金额、XIRR核对。原`series`仍保留现金流中性单位净值，供回撤及质量核验使用；它不再充当定投方式的比较图，因为满仓买入同一ETF时，不同入金节奏可能给出完全相同的单位净值。字段、公式和边界见[策略曲线说明](strategy-curves.md)。
 
 起点年份是回测下限，实际开始日取该年之后所有可用标的的首个共同交易日；未上市的ETF不参与该窗口。当前快照分别从1993-01-29（SPY）、1999-03-10（SPY/QQQ）、2001-07-13（SPY/QQQ/SOXX）、2010-03-11（九只）、2020-01-02（九只）开始，均截至2026-09-21，共288组实验。前三只ETF的发行资料可核对：[SPY](https://www.ssga.com/us/en/institutional/etfs/state-street-spdr-sp-500-etf-trust-spy)、[QQQ](https://www.invesco.com/qqq-etf/en/home.html)、[SOXX](https://www.ishares.com/us/products/239705/SOX)。快照里的最早日期是行情源首个有效复权收盘观察日，可能晚于基金成立日。质量检查会检查每组窗口和曲线的结构、一致性；不会把第三方复权行情视为已独立审计。
 
@@ -46,7 +46,7 @@ Windows入口调用相同流程：
 | `indices` / `indices.py` | 国内指数自身日线、完整窗口回报和风险 |
 | `stocks` / `stock_screen.py` | 观察样本行情、复权回报、风险和已实施分红 |
 | `screening` / `screens/fund_screen.py policy` | 对已有扩展快照重新应用权益研究规则，不代表重新下载全部扩展基金净值 |
-| `strategy` / `strategy_backtest.py` | 下载或读取明确复权的ETF行情，按五个可用起点重新计算投入实验与每周实际交易日采样的曲线 |
+| `strategy` / `strategy_backtest.py` | 下载或读取明确复权的ETF行情，按五个可用起点重新计算投入实验、每周账户金额与每月资金加权年化曲线 |
 | `quality` / `data_quality.py --strict` | 检查格式、日期、缺失、核验状态与策略曲线对齐，生成质量报告 |
 
 统一入口顺序执行，带并发锁；各脚本独立运行时也应依次完成，避免同时修改共享快照。刷新不提交Git、不推送、不创建系统定时任务。已有定时任务如果调用`daily_update.ps1`，会使用新数据流程，但不会再自动发布。

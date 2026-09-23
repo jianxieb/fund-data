@@ -134,6 +134,33 @@ def audit(snapshot, today=None):
         issue(td, 'unknown_adjusted_close', 'unverified', '旧第三方close字段无法证明为复权收盘价')
     curves = snapshot.get('STRATEGY_CURVES') or {}
     curve_dates, curve_series = curves.get('dates') or [], curves.get('series') or {}
+    def check_strategy_metric_curves(curve_data, rows, scope):
+        account_dates = curve_data.get('dates') or []
+        irr_dates = curve_data.get('irrDates') or []
+        try:
+            first_irr_age = (date.fromisoformat(irr_dates[0]) - date.fromisoformat(account_dates[0])).days
+        except (IndexError, ValueError, TypeError):
+            first_irr_age = -1
+        if not irr_dates or irr_dates != sorted(set(irr_dates)) or \
+                irr_dates[-1] != account_dates[-1] or \
+                first_irr_age < 365:
+            issue(td, 'strategy_irr_dates', 'error', '年化曲线必须使用首年以后真实的月末交易日，并包含回测末日', scope)
+        invalid = []
+        for row in rows:
+            key = '%s/%s' % (row.get('a'), row.get('s'))
+            amounts = ((curve_data.get('account') or {}).get(row.get('a')) or {}).get(row.get('s'))
+            rates = ((curve_data.get('irr') or {}).get(row.get('a')) or {}).get(row.get('s'))
+            if not account_dates or not isinstance(amounts, list) or len(amounts) != len(account_dates) or \
+                    any(not finite(value) or value <= 0 for value in amounts) or \
+                    not finite(row.get('end')) or abs(amounts[-1] - row['end']) > 0.02:
+                invalid.append(key + ' 金额')
+            if not irr_dates or not isinstance(rates, list) or len(rates) != len(irr_dates) or \
+                    any(not finite(value) or value <= -100 for value in rates) or \
+                    not finite(row.get('irr')) or abs(rates[-1] - row['irr']) > 0.01:
+                invalid.append(key + ' 年化')
+        if invalid:
+            issue(td, 'strategy_metric_curves', 'error', '金额或年化曲线与结果表不一致', {'scope': scope, 'series': invalid})
+
     if strategy:
         if not curve_dates or curve_dates[0] != meta.get('start') or curve_dates[-1] != meta.get('end') \
                 or curve_dates != sorted(set(curve_dates)):
@@ -152,6 +179,8 @@ def audit(snapshot, today=None):
             issue(td, 'curve_series', 'error', '策略曲线与结果不一致，缺少同长的正值单位净值序列', malformed)
         if mismatched_ends:
             issue(td, 'curve_end_mismatch', 'error', '期初资金实验的曲线终值与期末账户资产不一致', mismatched_ends)
+        if meta.get('modelVersion', 1) >= 3 and curve_dates:
+            check_strategy_metric_curves(curves, strategy, '2010')
     windows = snapshot.get('STRATEGY_WINDOWS') or {}
     summaries = meta.get('windows') or []
     if summaries:
@@ -190,6 +219,8 @@ def audit(snapshot, today=None):
                     malformed.append('%s/%s end' % (row.get('a'), row.get('s')))
             if malformed:
                 issue(td, 'window_curve_series', 'error', '可选起点的曲线与回测结果不一致', {'year': year, 'series': malformed})
+            if meta.get('modelVersion', 1) >= 3 and dates:
+                check_strategy_metric_curves(item.get('curves') or {}, rows, year)
     checks.append({'id': 'strategy_curves', 'status': 'pass' if not any(i['severity'] == 'error' for i in td['issues']) else 'fail',
                    'scope': '核对全部起点的实际日期、资产与策略组合、曲线长度、正值与首日基准；不证明上游行情正确'})
     issue(td, 'window_selection_bias', 'warning', '起点不同会改变回测表现与可比标的；不同预算策略不可只按期末金额排序')

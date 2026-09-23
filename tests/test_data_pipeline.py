@@ -287,6 +287,32 @@ class StrategyAccounting(unittest.TestCase):
         self.assertEqual(result['invested'], 300)
         self.assertEqual(result['end_value'], 300)
         self.assertEqual(result['curve'], [100, 100, 100])
+        self.assertEqual(result['account_curve'], [100, 200, 300])
+
+    def test_account_and_xirr_curves_show_dca_timing_difference(self):
+        dates = ['2025-01-02', '2025-07-02', '2026-01-05']
+        prices = [100, 150, 200]
+        early = strategy.simulate(dates, prices, {0: 200}, sample_indices=[0, 1, 2], annualized_indices=[2])
+        split = strategy.simulate(dates, prices, {0: 100, 1: 100}, sample_indices=[0, 1, 2], annualized_indices=[2])
+        self.assertEqual(early['curve'], split['curve'])
+        self.assertNotEqual(early['account_curve'], split['account_curve'])
+        self.assertNotEqual(early['irr_curve'], split['irr_curve'])
+        self.assertAlmostEqual(early['irr_curve'][-1], early['irr'], places=3)
+        self.assertAlmostEqual(split['irr_curve'][-1], split['irr'], places=3)
+
+    def test_quality_rejects_account_curve_not_matching_result(self):
+        snapshot = {'STRATEGY_META': {'modelVersion': 3, 'initialCashIncluded': True,
+                                      'basis': 'provider_adjusted_close', 'start': '2025-01-02', 'end': '2026-01-05'},
+                    'STRATEGY_RESULTS': [{'a': 'SPY', 's': 'lump_sum', 'p': 'initial', 'inv': 100,
+                                          'end': 150, 'irr': 50}],
+                    'STRATEGY_CURVES': {'dates': ['2025-01-02', '2026-01-05'],
+                                        'series': {'SPY': {'lump_sum': [100, 150]}},
+                                        'account': {'SPY': {'lump_sum': [100, 140]}},
+                                        'irrDates': ['2026-01-05'],
+                                        'irr': {'SPY': {'lump_sum': [50]}}}}
+        report = data_quality.audit(snapshot, date(2026, 1, 5))
+        findings = next(d for d in report['datasets'] if d['id'] == 'strategy')['issues']
+        self.assertIn('strategy_metric_curves', {finding['code'] for finding in findings})
 
     def test_quality_rejects_curve_with_wrong_period(self):
         snapshot = {'STRATEGY_META': {'modelVersion': 2, 'initialCashIncluded': True,
