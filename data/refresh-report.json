@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "startedAt": "2026-09-23T02:50:50+00:00",
+  "mode": "offline",
+  "steps": [
+    {
+      "dataset": "quality",
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 0.2,
+      "log": ".tmp-snap/refresh-quality.log"
+    }
+  ],
+  "completedAt": "2026-09-23T02:50:50+00:00",
+  "status": "completed"
+}

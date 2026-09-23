@@ -1,0 +1,11 @@
+{
+  "name": "changheng",
+  "version": "1.0.0",
+  "private": true,
+  "description": "长衡 · 公开的长期投资研究站",
+  "scripts": {
+    "test": "node --test tests/model.test.cjs",
+    "check": "node --check assets/app.js && node --check assets/model.js"
+  },
+  "engines": { "node": ">=18" }
+}

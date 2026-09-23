@@ -4,13 +4,13 @@
 ETF 买入策略固定快照回测
 =========================
 
-一次性计算 9 个美股 ETF 在 12 种买入策略下的结果，并写入 index.html 的
+一次性计算 9 个美股 ETF 在 12 种买入策略下的结果，并写入 data/snapshot.js 的
 /*__DATA_STRATEGY_BEGIN__*/ ... /*__DATA_STRATEGY_END__*/ 数据块。
 
 口径：
-  1) 行情使用 Yahoo Finance 复权收盘价（含分红、拆分和基金费用）。
-  2) 统一起点取 SOXX / USD / SOXL 上线后的 2010-03-11，截至 2026-09-18。
-  3) 初始资金 100,000 美元；持续定投按每月 1,000 美元、每季 3,000 美元、
+  1) 直接读取 Yahoo chart indicators.adjclose，记录源字段；拒绝含糊的第三方 close。
+  2) 统一起点 2010-03-11；截止日默认昨天，可 --end 指定；输出使用真实共同交易日期。
+  3) 初始资金 100,000 美元期初全额入账（含待投现金）；持续定投按每月 1,000 美元、每季 3,000 美元、
      每年 12,000 美元的基础预算。
   4) 交易成本、税费和现金利息均按 0；ETF 管理费等已包含在复权价格中。
   5) 定投年化使用 XIRR，最大回撤按剔除外部现金流影响后的单位净值计算。
@@ -28,19 +28,21 @@ import re
 import sys
 import time
 import urllib.request
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
+from data_status import write_status
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-HTML = os.path.join(HERE, 'index.html')
+HTML = os.path.join(HERE, 'data', 'snapshot.js')
 CACHE_DIR = os.path.join(HERE, '.tmp-strategy')
-API_URL = 'https://qqq.tools24.uk/api/price-change/history-download'
+API_URL = 'https://query1.finance.yahoo.com/v8/finance/chart/'
 
 START_DATE = '2010-03-11'
-END_DATE = '2026-09-18'
+END_DATE = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
 INITIAL_CAPITAL = 100000.0
 MONTHLY_CONTRIBUTION = 1000.0
 TRADING_COST = 0.0
-SOURCE_LABEL = 'Yahoo Finance adjusted close via GlobalAssetHistory'
+SOURCE_LABEL = 'Yahoo Finance chart: indicators.adjclose (provider adjusted close)'
 
 ASSETS = [
     {'c': 'SPY', 'n': 'SPY', 'g': '标普500', 'lev': '1x'},
@@ -85,11 +87,11 @@ STRATEGIES = [
     },
     {
         'id': 'dca_quarter', 'panel': 'dca', 'name': '每季定投',
-        'desc': '每季度首个交易日投入 3,000 美元，与月定投的年度基础预算一致。',
+        'desc': '每季度首个交易日投入 3,000 美元，不完整季度按样本月数预算，与月定投总预算相同。',
     },
     {
         'id': 'dca_year', 'panel': 'dca', 'name': '每年定投',
-        'desc': '每年首个交易日投入 12,000 美元，与月定投的年度基础预算一致。',
+        'desc': '每年首个交易日投入 12,000 美元，不完整年度按样本月数预算，与月定投总预算相同。',
     },
     {
         'id': 'dca_drawdown', 'panel': 'dca', 'name': '回撤倍数定投',
@@ -97,11 +99,11 @@ STRATEGIES = [
     },
     {
         'id': 'dca_ma_trend', 'panel': 'dca', 'name': '均线顺势定投',
-        'desc': '价格在 200 日均线上方时月投 1 倍，下方时降为 0.5 倍。',
+        'desc': '价格在 200 日均线上方时月投 1 倍，下方时降为 0.5 倍；均线未形成时按 1 倍。',
     },
     {
         'id': 'dca_ma_contrarian', 'panel': 'dca', 'name': '均线逆势定投',
-        'desc': '价格在 200 日均线上方时月投 1 倍，下方时提高为 2 倍。',
+        'desc': '价格在 200 日均线上方时月投 1 倍，下方时提高为 2 倍；均线未形成时按 1 倍。',
     },
 ]
 
@@ -117,66 +119,90 @@ def parse_args():
     p = argparse.ArgumentParser(description='ETF 买入策略固定快照回测')
     p.add_argument('--refresh', action='store_true', help='强制刷新历史行情缓存')
     p.add_argument('--offline', action='store_true', help='只用本地缓存')
+    p.add_argument('--end', default=END_DATE, help='回测截止日 YYYY-MM-DD')
     return p.parse_args()
 
 
-def http_json(url, payload, tries=6):
-    body = json.dumps(payload).encode('utf-8')
-    last = None
-    for i in range(tries):
-        try:
-            req = urllib.request.Request(
-                url,
-                data=body,
-                headers={
-                    'Content-Type': 'application/json',
-                    'User-Agent': 'Mozilla/5.0',
-                },
-            )
-            with urllib.request.urlopen(req, timeout=45) as resp:
-                return json.loads(resp.read().decode('utf-8'))
-        except Exception as exc:  # noqa: BLE001
-            last = exc
-            if i + 1 < tries:
-                time.sleep(1.5 * (i + 1))
-    raise RuntimeError('历史行情请求失败: %s' % last)
-
-
 def cache_path(symbol):
-    return os.path.join(CACHE_DIR, '%s.json' % symbol.lower())
+    return os.path.join(CACHE_DIR, '%s-adjusted-v3.json' % symbol.lower())
+
+
+def normalize_chart(node, symbol, source_url):
+    """A daily bar belongs to the exchange's civil date, not necessarily its UTC date."""
+    metadata = node.get('meta', {}) if node else {}
+    if metadata.get('symbol', '').upper() != symbol.upper():
+        raise ValueError('标的标识不匹配')
+    if symbol == 'CNY=X' and metadata.get('currency') != 'CNY':
+        raise ValueError('美元兑人民币日线的报价币种不匹配')
+    zone_name = metadata.get('exchangeTimezoneName')
+    if not zone_name:
+        raise ValueError('缺少交易时区，不能确定日线日期')
+    local_zone = ZoneInfo(zone_name)
+    timestamps = node.get('timestamp') or []
+    adjusted = (node.get('indicators', {}).get('adjclose') or [{}])[0].get('adjclose') or []
+    if len(timestamps) != len(adjusted) or not adjusted:
+        raise ValueError('缺少显式 adjusted close 字段；不接受普通 close 替代')
+    rows, missing, dates = [], [], set()
+    for stamp, value in zip(timestamps, adjusted):
+        day = datetime.fromtimestamp(stamp, local_zone).strftime('%Y-%m-%d')
+        if day in dates:
+            raise ValueError('源日线在当地日期重复：' + day)
+        dates.add(day)
+        if value is None or not math.isfinite(float(value)) or float(value) <= 0:
+            missing.append({'date': day, 'timestamp': stamp, 'reason': 'provider_null_or_invalid'})
+            continue
+        rows.append({'date': day, 'adjustedClose': value, 'timestamp': stamp})
+    return {'schemaVersion': 3, 'symbol': symbol, 'basis': 'yahoo_adjusted_close',
+            'source': source_url, 'exchangeTimezoneName': zone_name,
+            'dateConvention': 'exchange_local_date', 'currency': metadata.get('currency'),
+            'fetchedAt': datetime.now(timezone.utc).isoformat(), 'data': rows,
+            'missingObservations': missing}
 
 
 def load_history(symbol, refresh=False, offline=False):
     path = cache_path(symbol)
-    if os.path.exists(path) and not refresh:
-        with open(path, 'r', encoding='utf-8') as fh:
+    # Existing US-ETF snapshots remain usable offline; FX v2 is expressly excluded
+    # because London summer-midnight bars were assigned to the preceding UTC date.
+    legacy = os.path.join(CACHE_DIR, '%s-adjusted-v2.json' % symbol.lower())
+    if not os.path.exists(path) and symbol in {item['c'] for item in ASSETS} | {'^GSPC', '^IXIC', '^NDX'} and (offline or not refresh) and os.path.exists(legacy):
+        path = legacy
+    if os.path.exists(path) and (offline or not refresh):
+        with open(path, encoding='utf-8') as fh:
             data = json.load(fh)
+        if data.get('basis') != 'yahoo_adjusted_close' or data.get('symbol') != symbol:
+            raise RuntimeError('缓存未通过标的/复权口径验证：' + symbol)
+        if symbol.endswith('=X') and (data.get('schemaVersion', 0) < 3 or data.get('dateConvention') != 'exchange_local_date'):
+            raise RuntimeError('旧外汇缓存没有交易时区证明，必须重新获取原始时间戳')
     else:
         if offline:
-            raise RuntimeError('缺少缓存 %s，不能使用 --offline' % path)
-        log('  - 获取 %s %s -> %s' % (symbol, START_DATE, END_DATE))
-        data = http_json(API_URL, {
-            'symbol': symbol,
-            'type': 'stock',
-            'period': 'daily',
-            'start_date': START_DATE,
-            'end_date': END_DATE,
-        })
-        rows = data.get('data') or []
-        if len(rows) < 4000:
-            raise RuntimeError('%s 历史数据不足: %d' % (symbol, len(rows)))
-        os.makedirs(CACHE_DIR, exist_ok=True)
-        tmp = path + '.tmp'
-        with open(tmp, 'w', encoding='utf-8') as fh:
-            json.dump(data, fh, ensure_ascii=False, separators=(',', ':'))
-        os.replace(tmp, path)
-
-    rows = data.get('data') or []
+            raise RuntimeError('缺少经口径校验的缓存：' + symbol)
+        start = int(datetime(2009, 1, 1, tzinfo=timezone.utc).timestamp())
+        end = int((datetime.strptime(END_DATE, '%Y-%m-%d').replace(tzinfo=timezone.utc) + timedelta(days=1)).timestamp())
+        url = API_URL + symbol + '?period1=%d&period2=%d&interval=1d&events=div%%2Csplits' % (start, end)
+        last = None
+        for attempt in range(2):
+            try:
+                req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+                with urllib.request.urlopen(req, timeout=15) as response:
+                    payload = json.load(response)
+                node = (payload.get('chart', {}).get('result') or [None])[0]
+                data = normalize_chart(node, symbol, url)
+                if len(data['data']) < 250:
+                    raise ValueError('历史数据不足一年')
+                os.makedirs(CACHE_DIR, exist_ok=True)
+                temporary = path + '.tmp'
+                with open(temporary, 'w', encoding='utf-8') as fh:
+                    json.dump(data, fh, ensure_ascii=False, allow_nan=False)
+                os.replace(temporary, path)
+                break
+            except Exception as exc:
+                last = exc
+        else:
+            raise RuntimeError('%s 复权历史获取失败：%s' % (symbol, last))
     out = {}
-    for row in rows:
-        date = str(row.get('date') or '')
-        close = row.get('close')
-        if date and close is not None and float(close) > 0:
+    for row in data.get('data') or []:
+        date, close = row.get('date'), row.get('adjustedClose')
+        if date and close is not None and math.isfinite(float(close)) and float(close) > 0:
             out[date] = float(close)
     return out
 
@@ -206,11 +232,11 @@ def first_indices(dates):
 
 
 def quarter_indices(dates, months):
-    return [i for i in months if int(dates[i][5:7]) in (1, 4, 7, 10)]
+    return [i for n, i in enumerate(months) if n == 0 or dates[i][:4] != dates[months[n-1]][:4] or (int(dates[i][5:7])-1)//3 != (int(dates[months[n-1]][5:7])-1)//3]
 
 
 def year_indices(dates, months):
-    return [i for i in months if dates[i][5:7] == '01']
+    return [i for n, i in enumerate(months) if n == 0 or dates[i][:4] != dates[months[n-1]][:4]]
 
 
 def moving_average(values, window):
@@ -250,26 +276,26 @@ def drawdown_ladder_events(prices, months, budget):
     remaining = budget * 0.75
     peak = prices[months[0]]
     hit = set()
-    fallback = months[min(36, len(months) - 1)]
+    fallback = months[36] if len(months) > 36 else len(prices)
 
     for i, price in enumerate(prices):
+        if i >= fallback and remaining > 1e-9:
+            events[i] = events.get(i, 0.0) + remaining
+            remaining = 0.0
+            break
         peak = max(peak, price)
         dd = price / peak - 1.0
         for threshold in (0.10, 0.20, 0.30):
             if threshold in hit or dd > -threshold or remaining <= 1e-9:
                 continue
             amount = min(budget * 0.25, remaining)
-            execute = min(i + 1, len(prices) - 1)
+            if i + 1 >= len(prices):
+                continue
+            execute = i + 1
             events[execute] = events.get(execute, 0.0) + amount
             remaining -= amount
             hit.add(threshold)
-        if i >= fallback and remaining > 1e-9:
-            events[i] = events.get(i, 0.0) + remaining
-            remaining = 0.0
-            break
 
-    if remaining > 1e-9:
-        events[len(prices) - 1] = events.get(len(prices) - 1, 0.0) + remaining
     return events
 
 
@@ -300,7 +326,9 @@ def dca_ma_events(prices, months, contrarian=False):
     signal = previous_ma_signal(prices)
     events = {}
     for i in months:
-        if i == 0 or signal[i] == 0.0:
+        if i < 200:
+            multiplier = 1.0  # Missing history does not constitute a downtrend signal.
+        elif signal[i] == 0.0:
             multiplier = 2.0 if contrarian else 0.5
         else:
             multiplier = 1.0
@@ -321,8 +349,8 @@ def strategy_inputs(prices, dates):
         'drawdown_ladder': (drawdown_ladder_events(prices, months, INITIAL_CAPITAL), None),
         'ma200_hold': ({months[0]: INITIAL_CAPITAL}, ma_signal),
         'dca_month': ({i: MONTHLY_CONTRIBUTION for i in months}, None),
-        'dca_quarter': ({i: MONTHLY_CONTRIBUTION * 3 for i in quarters}, None),
-        'dca_year': ({i: MONTHLY_CONTRIBUTION * 12 for i in years}, None),
+        'dca_quarter': ({i: MONTHLY_CONTRIBUTION * sum(1 for j in months if dates[j][:4] == dates[i][:4] and (int(dates[j][5:7])-1)//3 == (int(dates[i][5:7])-1)//3) for i in quarters}, None),
+        'dca_year': ({i: MONTHLY_CONTRIBUTION * sum(1 for j in months if dates[j][:4] == dates[i][:4]) for i in years}, None),
         'dca_drawdown': (dca_drawdown_events(prices, months), None),
         'dca_ma_trend': (dca_ma_events(prices, months, False), None),
         'dca_ma_contrarian': (dca_ma_events(prices, months, True), None),
@@ -373,58 +401,78 @@ def drawdown_metrics(nav):
     return max_dd, longest
 
 
-def simulate(dates, prices, events, exposure=None):
-    units = 0.0
-    asset_units = 0.0
-    cash = 0.0
-    nav = []
-    flows = []
-    total_contrib = 0.0
-    trade_count = 0
-    exposure_sum = 0.0
+def simulate(dates, prices, events, exposure=None, initial_capital=None):
+    """All pre-existing capital enters on day zero, including undeployed cash.
 
+    events are purchases from that cash for initial-capital experiments; otherwise
+    they are external contributions. Trades execute at that day's close; signals
+    must therefore have been observed no later than the prior trading close.
+    """
+    if not dates or len(prices) != len(dates) or any(p <= 0 for p in prices):
+        raise ValueError('日期与价格无效')
+    funded = initial_capital is not None
+    cash = float(initial_capital or 0.0)
+    units = cash
+    asset_units = 0.0
+    nav, flows = [], []
+    total_contrib, trade_count, exposure_sum = cash, 0, 0.0
+    min_cash = cash
+    if cash:
+        flows.append((datetime.strptime(dates[0], '%Y-%m-%d'), -cash))
     for i, (date, price) in enumerate(zip(dates, prices)):
         value_before = cash + asset_units * price
-        contribution = events.get(i, 0.0)
-        if contribution > 0:
+        amount = events.get(i, 0.0)
+        if amount < 0:
+            raise ValueError('不支持负贡献')
+        if not funded and amount > 0:
             nav_before = value_before / units if units > 0 else 1.0
-            units += contribution / nav_before
-            cash += contribution
-            total_contrib += contribution
-            flows.append((datetime.strptime(date, '%Y-%m-%d'), -contribution))
-
-        target = 1.0 if exposure is None else exposure[i]
-        total_value = cash + asset_units * price
-        target_units = total_value * target / price
-        delta_units = target_units - asset_units
-        if abs(delta_units * price) > 1e-7:
-            trade_value = abs(delta_units) * price
-            cost = trade_value * TRADING_COST
-            if delta_units > 0:
-                cash -= delta_units * price + cost
-            else:
-                cash += (-delta_units) * price - cost
-            asset_units = target_units
-            trade_count += 1
-
+            units += amount / nav_before
+            cash += amount
+            total_contrib += amount
+            flows.append((datetime.strptime(date, '%Y-%m-%d'), -amount))
+        if exposure is None:
+            buy_budget = min(cash, amount)
+            buy_value = buy_budget / (1.0 + TRADING_COST)
+            if buy_value > 1e-8:
+                asset_units += buy_value / price
+                cash -= buy_budget
+                trade_count += 1
+        else:
+            target = exposure[i]
+            if not 0 <= target <= 1:
+                raise ValueError('组合仓位必须在0到1之间；ETF自带杠杆已在价格里')
+            value = cash + asset_units * price
+            held = asset_units * price
+            desired = value * target
+            delta = desired - held
+            if delta > 1e-8:
+                # Account for the cost in post-trade portfolio value.
+                buy_value = min(cash / (1 + TRADING_COST), delta / (1 + target * TRADING_COST))
+                asset_units += buy_value / price
+                cash -= buy_value * (1 + TRADING_COST)
+                trade_count += 1
+            elif delta < -1e-8:
+                sell_value = min(held, -delta / (1 - target * TRADING_COST))
+                asset_units -= sell_value / price
+                cash += sell_value * (1 - TRADING_COST)
+                trade_count += 1
+        if cash < -1e-7:
+            raise ValueError('交易导致无意借款')
+        cash = max(0.0, cash)
+        min_cash = min(min_cash, cash)
         value = cash + asset_units * price
         nav.append(value / units if units > 0 else 1.0)
-        exposure_sum += (asset_units * price / value) if value > 0 else 0.0
-
+        exposure_sum += asset_units * price / value if value > 0 else 0.0
     final_value = cash + asset_units * prices[-1]
     flows.append((datetime.strptime(dates[-1], '%Y-%m-%d'), final_value))
     max_dd, underwater = drawdown_metrics(nav)
     annualized = xirr(flows)
-    return {
-        'invested': total_contrib,
-        'end_value': final_value,
-        'total_return': (final_value / total_contrib - 1.0) * 100.0 if total_contrib else None,
-        'irr': annualized * 100.0 if annualized is not None else None,
-        'mdd': max_dd * 100.0,
-        'underwater': underwater,
-        'avg_exposure': exposure_sum / len(prices) * 100.0,
-        'trades': trade_count,
-    }
+    return {'invested': total_contrib, 'end_value': final_value,
+            'total_return': (final_value / total_contrib - 1) * 100 if total_contrib else None,
+            'irr': annualized * 100 if annualized is not None else None,
+            'mdd': max_dd * 100, 'underwater': underwater,
+            'avg_exposure': exposure_sum / len(prices) * 100, 'trades': trade_count,
+            'cash': cash, 'minimum_cash': min_cash}
 
 
 def round_metrics(metrics):
@@ -447,7 +495,8 @@ def build_results(dates, prices):
         inputs = strategy_inputs(prices[symbol], dates)
         for strategy in STRATEGIES:
             events, exposure = inputs[strategy['id']]
-            metrics = round_metrics(simulate(dates, prices[symbol], events, exposure))
+            metrics = round_metrics(simulate(dates, prices[symbol], events, exposure,
+                                             initial_capital=INITIAL_CAPITAL if strategy['panel'] == 'initial' else None))
             metrics.update({'a': symbol, 'p': strategy['panel'], 's': strategy['id']})
             results.append(metrics)
     return results
@@ -457,13 +506,20 @@ def js_data(payload):
     return json.dumps(payload, ensure_ascii=False, separators=(',', ':'))
 
 
-def write_html(results):
+def write_html(results, dates):
     with open(HTML, 'r', encoding='utf-8') as fh:
         src = fh.read()
 
     meta = {
-        'start': START_DATE,
-        'end': END_DATE,
+        'start': dates[0],
+        'end': dates[-1],
+        'requestedEnd': END_DATE,
+        'status': 'computed',
+        'basis': 'provider_adjusted_close',
+        'modelVersion': 2,
+        'initialCashIncluded': True,
+        'maWarmup': '200 observations; hold cash until first available signal',
+        'limitations': ['单一起止窗口，存在起点偏差', '税费、汇兑及现金收益未建模', '部分年度按样本月数预算；倍数定投资金总额不同'],
         'initial': INITIAL_CAPITAL,
         'monthly': MONTHLY_CONTRIBUTION,
         'cost': TRADING_COST,
@@ -487,7 +543,7 @@ def write_html(results):
     else:
         marker = '/*__DATA_META_END__*/'
         if marker not in src:
-            raise RuntimeError('index.html 缺少 DATA_META_END 标记')
+            raise RuntimeError('data/snapshot.js 缺少 DATA_META_END 标记')
         out = src.replace(marker, marker + '\n\n' + block, 1)
 
     tmp = HTML + '.tmp'
@@ -497,11 +553,15 @@ def write_html(results):
 
 
 def main():
+    global END_DATE
     args = parse_args()
+    datetime.strptime(args.end, '%Y-%m-%d')
+    END_DATE = args.end
     log('ETF 策略回测: %s -> %s' % (START_DATE, END_DATE))
     dates, prices = align_history(refresh=args.refresh, offline=args.offline)
     results = build_results(dates, prices)
-    write_html(results)
+    write_html(results, dates)
+    write_status('strategy', 'cached' if args.offline else 'success', asOf=dates[-1], records=len(results), basis='provider_adjusted_close')
 
     def pick(asset, strategy):
         return next(
@@ -526,5 +586,6 @@ if __name__ == '__main__':
     try:
         sys.exit(main())
     except Exception as exc:  # noqa: BLE001
+        write_status('strategy', 'unavailable', message=str(exc))
         log('!! 回测失败: %s' % exc)
         sys.exit(1)

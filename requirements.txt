@@ -1,0 +1,2 @@
+# IANA time zones are needed for Yahoo exchange-local daily bars (especially on Windows).
+tzdata

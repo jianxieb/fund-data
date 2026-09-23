@@ -1,0 +1,460 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-09-21T14:14:22+00:00",
+  "source": "https://query1.finance.yahoo.com/v8/finance/chart/CNY=X",
+  "exchangeTimezoneName": "Europe/London",
+  "dateConvention": "exchange_local_date",
+  "rawResponseSha256": "8af3b74d25b83a59b4e372a13179699163e99549f1c14265fb7ca157704be1e0",
+  "cause": "夏令时00:00 BST在UTC为前日23:00；按UTC取日期导致日线错位",
+  "normalizationEvidence": [
+    {
+      "timestamp": 1631833200,
+      "utcDate": "2021-09-16",
+      "exchangeDate": "2021-09-17",
+      "adjustedClose": 6.456600189208984
+    },
+    {
+      "timestamp": 1745190000,
+      "utcDate": "2025-04-20",
+      "exchangeDate": "2025-04-21",
+      "adjustedClose": null
+    },
+    {
+      "timestamp": 1789599600,
+      "utcDate": "2026-09-16",
+      "exchangeDate": "2026-09-17",
+      "adjustedClose": 6.705999851226807
+    },
+    {
+      "timestamp": 1789686000,
+      "utcDate": "2026-09-17",
+      "exchangeDate": "2026-09-18",
+      "adjustedClose": 6.707399845123291
+    }
+  ],
+  "benchmarkChanges": [
+    {
+      "name": "标普500指数",
+      "asOf": "2026-09-18",
+      "beforeCNY": [
+        8.781597124848073,
+        28.987497006060913,
+        58.04341089928238,
+        79.28474874684296,
+        259.5810671549745
+      ],
+      "afterCNY": [
+        8.92860895386507,
+        28.77834615315662,
+        58.40625502858601,
+        79.28474874684296,
+        259.5810671549745
+      ],
+      "riskUSD5": {
+        "vol": 16.958655219704177,
+        "mdd": -25.42509661923039,
+        "start": "2021-09-17",
+        "end": "2026-09-18",
+        "years": 5,
+        "observations": 1256,
+        "annualization": 250,
+        "status": "available",
+        "reason": null,
+        "currency": "USD"
+      },
+      "riskCNY5": {
+        "vol": null,
+        "mdd": null,
+        "start": null,
+        "end": "2026-09-18",
+        "years": 5,
+        "observations": 1256,
+        "annualization": 250,
+        "status": "incomplete_fx",
+        "reason": "缺少1个资产交易日的同日实际汇率；完整人民币日风险留空",
+        "currency": "CNY",
+        "fxAlignment": "same_exchange_local_calendar_date",
+        "missingFxDates": [
+          "2025-04-21"
+        ],
+        "requiredStart": "2021-09-17"
+      }
+    },
+    {
+      "name": "SPY",
+      "asOf": "2026-09-18",
+      "beforeCNY": [
+        9.93094542045938,
+        31.88758771368676,
+        63.791037019908735,
+        91.66560811115671,
+        320.2808354428228
+      ],
+      "afterCNY": [
+        10.07951052502647,
+        31.67373441706445,
+        64.16707684261984,
+        91.66560811115671,
+        320.2808354428228
+      ],
+      "riskUSD5": {
+        "vol": 17.108825795573818,
+        "mdd": -24.496388853798678,
+        "start": "2021-09-17",
+        "end": "2026-09-18",
+        "years": 5,
+        "observations": 1256,
+        "annualization": 250,
+        "status": "available",
+        "reason": null,
+        "currency": "USD"
+      },
+      "riskCNY5": {
+        "vol": null,
+        "mdd": null,
+        "start": null,
+        "end": "2026-09-18",
+        "years": 5,
+        "observations": 1256,
+        "annualization": 250,
+        "status": "incomplete_fx",
+        "reason": "缺少1个资产交易日的同日实际汇率；完整人民币日风险留空",
+        "currency": "CNY",
+        "fxAlignment": "same_exchange_local_calendar_date",
+        "missingFxDates": [
+          "2025-04-21"
+        ],
+        "requiredStart": "2021-09-17"
+      }
+    },
+    {
+      "name": "SSO",
+      "asOf": "2026-09-18",
+      "beforeCNY": [
+        19.185693501333102,
+        55.222102861515275,
+        126.39635263037805,
+        133.5275249455791,
+        749.9774488440005
+      ],
+      "afterCNY": [
+        19.346765844977586,
+        54.970413077957716,
+        126.91612493205304,
+        133.5275249455791,
+        749.9774488440005
+      ],
+      "riskUSD5": {
+        "vol": 33.78681943101404,
+        "mdd": -46.73296918151405,
+        "start": "2021-09-17",
+        "end": "2026-09-18",
+        "years": 5,
+        "observations": 1256,
+        "annualization": 250,
+        "status": "available",
+        "reason": null,
+        "currency": "USD"
+      },
+      "riskCNY5": {
+        "vol": null,
+        "mdd": null,
+        "start": null,
+        "end": "2026-09-18",
+        "years": 5,
+        "observations": 1256,
+        "annualization": 250,
+        "status": "incomplete_fx",
+        "reason": "缺少1个资产交易日的同日实际汇率；完整人民币日风险留空",
+        "currency": "CNY",
+        "fxAlignment": "same_exchange_local_calendar_date",
+        "missingFxDates": [
+          "2025-04-21"
+        ],
+        "requiredStart": "2021-09-17"
+      }
+    },
+    {
+      "name": "UPRO",
+      "asOf": "2026-09-18",
+      "beforeCNY": [
+        28.1111262802765,
+        76.62339064093548,
+        200.09471575554687,
+        155.54549620593417,
+        1221.5770898100764
+      ],
+      "afterCNY": [
+        28.284260813043804,
+        76.33699906304739,
+        200.7836885208609,
+        155.54549620593417,
+        1221.5770898100764
+      ],
+      "riskUSD5": {
+        "vol": 50.59844417337904,
+        "mdd": -63.94310897010591,
+        "start": "2021-09-17",
+        "end": "2026-09-18",
+        "years": 5,
+        "observations": 1256,
+        "annualization": 250,
+        "status": "available",
+        "reason": null,
+        "currency": "USD"
+      },
+      "riskCNY5": {
+        "vol": null,
+        "mdd": null,
+        "start": null,
+        "end": "2026-09-18",
+        "years": 5,
+        "observations": 1256,
+        "annualization": 250,
+        "status": "incomplete_fx",
+        "reason": "缺少1个资产交易日的同日实际汇率；完整人民币日风险留空",
+        "currency": "CNY",
+        "fxAlignment": "same_exchange_local_calendar_date",
+        "missingFxDates": [
+          "2025-04-21"
+        ],
+        "requiredStart": "2021-09-17"
+      }
+    },
+    {
+      "name": "纳斯达克综合指数",
+      "asOf": "2026-09-18",
+      "beforeCNY": [
+        11.302675194520262,
+        42.962247334271744,
+        77.97580617830016,
+        83.14832405964216,
+        408.4584564126255
+      ],
+      "afterCNY": [
+        11.453094109918705,
+        42.730436680858766,
+        78.384412118038,
+        83.14832405964216,
+        408.4584564126255
+      ],
+      "riskUSD5": {
+        "vol": 22.714886585189014,
+        "mdd": -36.395279909120205,
+        "start": "2021-09-17",
+        "end": "2026-09-18",
+        "years": 5,
+        "observations": 1256,
+        "annualization": 250,
+        "status": "available",
+        "reason": null,
+        "currency": "USD"
+      },
+      "riskCNY5": {
+        "vol": null,
+        "mdd": null,
+        "start": null,
+        "end": "2026-09-18",
+        "years": 5,
+        "observations": 1256,
+        "annualization": 250,
+        "status": "incomplete_fx",
+        "reason": "缺少1个资产交易日的同日实际汇率；完整人民币日风险留空",
+        "currency": "CNY",
+        "fxAlignment": "same_exchange_local_calendar_date",
+        "missingFxDates": [
+          "2025-04-21"
+        ],
+        "requiredStart": "2021-09-17"
+      }
+    },
+    {
+      "name": "纳斯达克100指数",
+      "asOf": "2026-09-18",
+      "beforeCNY": [
+        14.309171262550269,
+        45.15821382474443,
+        79.12754384614571,
+        100.83951128863728,
+        518.6118824147511
+      ],
+      "afterCNY": [
+        14.463653277752142,
+        44.92284245207501,
+        79.53879400400628,
+        100.83951128863728,
+        518.6118824147511
+      ],
+      "riskUSD5": {
+        "vol": 23.065209567060897,
+        "mdd": -35.56313969041488,
+        "start": "2021-09-17",
+        "end": "2026-09-18",
+        "years": 5,
+        "observations": 1256,
+        "annualization": 250,
+        "status": "available",
+        "reason": null,
+        "currency": "USD"
+      },
+      "riskCNY5": {
+        "vol": null,
+        "mdd": null,
+        "start": null,
+        "end": "2026-09-18",
+        "years": 5,
+        "observations": 1256,
+        "annualization": 250,
+        "status": "incomplete_fx",
+        "reason": "缺少1个资产交易日的同日实际汇率；完整人民币日风险留空",
+        "currency": "CNY",
+        "fxAlignment": "same_exchange_local_calendar_date",
+        "missingFxDates": [
+          "2025-04-21"
+        ],
+        "requiredStart": "2021-09-17"
+      }
+    },
+    {
+      "name": "QQQ",
+      "asOf": "2026-09-18",
+      "beforeCNY": [
+        14.828547059019526,
+        46.47728697929195,
+        81.93275836899925,
+        106.58162741854555,
+        561.0944833153778
+      ],
+      "afterCNY": [
+        14.983730979578569,
+        46.2397767537746,
+        82.35044888153998,
+        106.58162741854555,
+        561.0944833153778
+      ],
+      "riskUSD5": {
+        "vol": 22.87858085572676,
+        "mdd": -35.11873161984236,
+        "start": "2021-09-17",
+        "end": "2026-09-18",
+        "years": 5,
+        "observations": 1256,
+        "annualization": 250,
+        "status": "available",
+        "reason": null,
+        "currency": "USD"
+      },
+      "riskCNY5": {
+        "vol": null,
+        "mdd": null,
+        "start": null,
+        "end": "2026-09-18",
+        "years": 5,
+        "observations": 1256,
+        "annualization": 250,
+        "status": "incomplete_fx",
+        "reason": "缺少1个资产交易日的同日实际汇率；完整人民币日风险留空",
+        "currency": "CNY",
+        "fxAlignment": "same_exchange_local_calendar_date",
+        "missingFxDates": [
+          "2025-04-21"
+        ],
+        "requiredStart": "2021-09-17"
+      }
+    },
+    {
+      "name": "QLD",
+      "asOf": "2026-09-18",
+      "beforeCNY": [
+        27.357074292115378,
+        84.18000681171019,
+        165.26388341923933,
+        140.84048562569197,
+        1656.9399415085486
+      ],
+      "afterCNY": [
+        27.529189768673866,
+        83.88136231975001,
+        165.8728897819044,
+        140.84048562569197,
+        1656.9399415085486
+      ],
+      "riskUSD5": {
+        "vol": 45.73825954154652,
+        "mdd": -63.68447879446351,
+        "start": "2021-09-17",
+        "end": "2026-09-18",
+        "years": 5,
+        "observations": 1256,
+        "annualization": 250,
+        "status": "available",
+        "reason": null,
+        "currency": "USD"
+      },
+      "riskCNY5": {
+        "vol": null,
+        "mdd": null,
+        "start": null,
+        "end": "2026-09-18",
+        "years": 5,
+        "observations": 1256,
+        "annualization": 250,
+        "status": "incomplete_fx",
+        "reason": "缺少1个资产交易日的同日实际汇率；完整人民币日风险留空",
+        "currency": "CNY",
+        "fxAlignment": "same_exchange_local_calendar_date",
+        "missingFxDates": [
+          "2025-04-21"
+        ],
+        "requiredStart": "2021-09-17"
+      }
+    },
+    {
+      "name": "TQQQ",
+      "asOf": "2026-09-18",
+      "beforeCNY": [
+        36.5490418136653,
+        113.68321192751813,
+        247.11238930307283,
+        122.69025436751741,
+        2863.337615104362
+      ],
+      "afterCNY": [
+        36.73357968512627,
+        113.33672853134935,
+        247.90930764310687,
+        122.69025436751741,
+        2863.337615104362
+      ],
+      "riskUSD5": {
+        "vol": 68.10587903115669,
+        "mdd": -81.65985147703094,
+        "start": "2021-09-17",
+        "end": "2026-09-18",
+        "years": 5,
+        "observations": 1256,
+        "annualization": 250,
+        "status": "available",
+        "reason": null,
+        "currency": "USD"
+      },
+      "riskCNY5": {
+        "vol": null,
+        "mdd": null,
+        "start": null,
+        "end": "2026-09-18",
+        "years": 5,
+        "observations": 1256,
+        "annualization": 250,
+        "status": "incomplete_fx",
+        "reason": "缺少1个资产交易日的同日实际汇率；完整人民币日风险留空",
+        "currency": "CNY",
+        "fxAlignment": "same_exchange_local_calendar_date",
+        "missingFxDates": [
+          "2025-04-21"
+        ],
+        "requiredStart": "2021-09-17"
+      }
+    }
+  ]
+}

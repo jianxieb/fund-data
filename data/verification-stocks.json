@@ -1,0 +1,1502 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-09-21T13:56:45+00:00",
+  "scope": "23只股票公开数据源身份/币种/字段校验及重算留证；非全部历史价格的独立审计。",
+  "stocks": [
+    {
+      "code": "600900",
+      "name": "长江电力",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/600900.SS?period1=1262304000&period2=1790085191&interval=1d&events=div%2Csplits",
+      "basis": "provider_adjusted_close",
+      "observations": 4060,
+      "first": [
+        "2010-01-04",
+        4.731149673461914
+      ],
+      "last": [
+        "2026-09-21",
+        28.100000381469727
+      ],
+      "seriesSha256": "a9ce4ffdcb3fc0bbc9a14f2b793a0d2f694fe035ffee98d70de2f7a6e5893ba1",
+      "price": 28.1,
+      "priceAsOf": "2026-09-21T15:00:02+08:00",
+      "dividendSource": "Eastmoney implemented cash dividends by report year",
+      "dividendAsOf": "2026-09-21",
+      "metrics": {
+        "r": [
+          7.1316,
+          6.8822,
+          38.0482,
+          63.4868,
+          202.2033
+        ],
+        "mdd5": -17.54,
+        "vol5": 17.02,
+        "yield12": 3.56
+      },
+      "unverifiedFields": [
+        "fundamentals_report_period"
+      ],
+      "sourceFallbacks": [
+        "Eastmoney quote: Remote end closed connection without response"
+      ],
+      "returnPeriods": [
+        {
+          "years": 1,
+          "start": "2025-09-19",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 2,
+          "start": "2024-09-20",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 3,
+          "start": "2023-09-21",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 5,
+          "start": "2021-09-17",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 10,
+          "start": "2016-09-21",
+          "end": "2026-09-21"
+        }
+      ]
+    },
+    {
+      "code": "000333",
+      "name": "美的集团",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/000333.SZ?period1=1262304000&period2=1790085193&interval=1d&events=div%2Csplits",
+      "basis": "provider_adjusted_close",
+      "observations": 3160,
+      "first": [
+        "2013-09-18",
+        7.104231834411621
+      ],
+      "last": [
+        "2026-09-21",
+        80.9000015258789
+      ],
+      "seriesSha256": "402662e29dacc964124b50094e4cee13be1476b7816a4a97c3555210e38f3021",
+      "price": 80.9,
+      "priceAsOf": "2026-09-21T15:04:21+08:00",
+      "dividendSource": "Eastmoney implemented cash dividends by report year",
+      "dividendAsOf": "2026-09-21",
+      "metrics": {
+        "r": [
+          15.0749,
+          35.8126,
+          66.3446,
+          48.9426,
+          343.5233
+        ],
+        "mdd5": -47.24,
+        "vol5": 26.3,
+        "yield12": 5.32
+      },
+      "unverifiedFields": [
+        "fundamentals_report_period"
+      ],
+      "sourceFallbacks": [
+        "Eastmoney quote: Remote end closed connection without response"
+      ],
+      "returnPeriods": [
+        {
+          "years": 1,
+          "start": "2025-09-19",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 2,
+          "start": "2024-09-20",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 3,
+          "start": "2023-09-21",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 5,
+          "start": "2021-09-17",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 10,
+          "start": "2016-09-21",
+          "end": "2026-09-21"
+        }
+      ]
+    },
+    {
+      "code": "600901",
+      "name": "江苏金租",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/600901.SS?period1=1262304000&period2=1790085195&interval=1d&events=div%2Csplits",
+      "basis": "provider_adjusted_close",
+      "observations": 2074,
+      "first": [
+        "2018-03-07",
+        5.367511749267578
+      ],
+      "last": [
+        "2026-09-21",
+        6.670000076293945
+      ],
+      "seriesSha256": "5619209f9022a3f4b6a954ff15f41685d4a8e2b5ca5a8c3d781793fdf80bc75d",
+      "price": 6.67,
+      "priceAsOf": "2026-09-21T15:00:01+08:00",
+      "dividendSource": "Eastmoney implemented cash dividends by report year",
+      "dividendAsOf": "2026-09-21",
+      "metrics": {
+        "r": [
+          26.4962,
+          69.2014,
+          68.5256,
+          138.7631,
+          null
+        ],
+        "mdd5": -19.77,
+        "vol5": 24.2,
+        "yield12": 4.5
+      },
+      "unverifiedFields": [
+        "fundamentals_report_period"
+      ],
+      "sourceFallbacks": [
+        "Eastmoney quote: Remote end closed connection without response"
+      ],
+      "returnPeriods": [
+        {
+          "years": 1,
+          "start": "2025-09-19",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 2,
+          "start": "2024-09-20",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 3,
+          "start": "2023-09-21",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 5,
+          "start": "2021-09-17",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 10,
+          "start": null,
+          "end": "2026-09-21"
+        }
+      ]
+    },
+    {
+      "code": "600941",
+      "name": "中国移动",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/600941.SS?period1=1262304000&period2=1790085198&interval=1d&events=div%2Csplits",
+      "basis": "provider_adjusted_close",
+      "observations": 1143,
+      "first": [
+        "2022-01-05",
+        46.733131408691406
+      ],
+      "last": [
+        "2026-09-21",
+        96.01000213623047
+      ],
+      "seriesSha256": "821303a110c62cb9f5dfb8d0cebc70fee55402c5c220cd898249d5c1585d1b4e",
+      "price": 96.01,
+      "priceAsOf": "2026-09-21T15:00:00+08:00",
+      "dividendSource": "Eastmoney implemented cash dividends by report year",
+      "dividendAsOf": "2026-09-21",
+      "metrics": {
+        "r": [
+          -6.8974,
+          1.0343,
+          6.7203,
+          null,
+          null
+        ],
+        "mdd5": null,
+        "vol5": null,
+        "yield12": 2.29
+      },
+      "unverifiedFields": [
+        "fundamentals_report_period"
+      ],
+      "sourceFallbacks": [
+        "Eastmoney quote: Remote end closed connection without response"
+      ],
+      "returnPeriods": [
+        {
+          "years": 1,
+          "start": "2025-09-19",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 2,
+          "start": "2024-09-20",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 3,
+          "start": "2023-09-21",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 5,
+          "start": null,
+          "end": "2026-09-21"
+        },
+        {
+          "years": 10,
+          "start": null,
+          "end": "2026-09-21"
+        }
+      ]
+    },
+    {
+      "code": "601088",
+      "name": "中国神华",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/601088.SS?period1=1262304000&period2=1790085200&interval=1d&events=div%2Csplits",
+      "basis": "provider_adjusted_close",
+      "observations": 4060,
+      "first": [
+        "2010-01-04",
+        12.70905590057373
+      ],
+      "last": [
+        "2026-09-21",
+        46.79999923706055
+      ],
+      "seriesSha256": "591c9948a22d1a261afd2fd843f1e4dd8c54bdfba5863f5098f34eb5634c8106",
+      "price": 46.8,
+      "priceAsOf": "2026-09-21T15:00:01+08:00",
+      "dividendSource": "Eastmoney implemented cash dividends by report year",
+      "dividendAsOf": "2026-09-21",
+      "metrics": {
+        "r": [
+          27.1379,
+          34.8947,
+          75.4017,
+          197.9988,
+          547.9224
+        ],
+        "mdd5": -23.09,
+        "vol5": 29.47,
+        "yield12": 4.29
+      },
+      "unverifiedFields": [
+        "fundamentals_report_period"
+      ],
+      "sourceFallbacks": [
+        "Eastmoney quote: Remote end closed connection without response"
+      ],
+      "returnPeriods": [
+        {
+          "years": 1,
+          "start": "2025-09-19",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 2,
+          "start": "2024-09-20",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 3,
+          "start": "2023-09-21",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 5,
+          "start": "2021-09-17",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 10,
+          "start": "2016-09-21",
+          "end": "2026-09-21"
+        }
+      ]
+    },
+    {
+      "code": "601225",
+      "name": "陕西煤业",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/601225.SS?period1=1262304000&period2=1790085202&interval=1d&events=div%2Csplits",
+      "basis": "provider_adjusted_close",
+      "observations": 3074,
+      "first": [
+        "2014-01-28",
+        2.496190309524536
+      ],
+      "last": [
+        "2026-09-21",
+        25.700000762939453
+      ],
+      "seriesSha256": "06942de04792ba7a668738d24802ae523060e550d04bc809d0d79ba74d41d098",
+      "price": 25.7,
+      "priceAsOf": "2026-09-21T15:00:01+08:00",
+      "dividendSource": "Eastmoney implemented cash dividends by report year",
+      "dividendAsOf": "2026-09-21",
+      "metrics": {
+        "r": [
+          29.7285,
+          22.1584,
+          60.3059,
+          143.3002,
+          717.2311
+        ],
+        "mdd5": -33.12,
+        "vol5": 34.4,
+        "yield12": 3.69
+      },
+      "unverifiedFields": [
+        "fundamentals_report_period"
+      ],
+      "sourceFallbacks": [
+        "Eastmoney quote: Remote end closed connection without response"
+      ],
+      "returnPeriods": [
+        {
+          "years": 1,
+          "start": "2025-09-19",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 2,
+          "start": "2024-09-20",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 3,
+          "start": "2023-09-21",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 5,
+          "start": "2021-09-17",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 10,
+          "start": "2016-09-21",
+          "end": "2026-09-21"
+        }
+      ]
+    },
+    {
+      "code": "601857",
+      "name": "中国石油",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/601857.SS?period1=1262304000&period2=1790085204&interval=1d&events=div%2Csplits",
+      "basis": "provider_adjusted_close",
+      "observations": 4060,
+      "first": [
+        "2010-01-04",
+        7.508346080780029
+      ],
+      "last": [
+        "2026-09-21",
+        10.670000076293945
+      ],
+      "seriesSha256": "8bd5921a756de621daa4206234dae4490c97e68df2fa1222d316371784291165",
+      "price": 10.67,
+      "priceAsOf": "2026-09-21T15:00:02+08:00",
+      "dividendSource": "Eastmoney implemented cash dividends by report year",
+      "dividendAsOf": "2026-09-21",
+      "metrics": {
+        "r": [
+          37.8616,
+          49.9395,
+          56.1778,
+          144.636,
+          119.4724
+        ],
+        "mdd5": -32.58,
+        "vol5": 31.35,
+        "yield12": 4.78
+      },
+      "unverifiedFields": [
+        "fundamentals_report_period"
+      ],
+      "sourceFallbacks": [
+        "Eastmoney quote: Remote end closed connection without response"
+      ],
+      "returnPeriods": [
+        {
+          "years": 1,
+          "start": "2025-09-19",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 2,
+          "start": "2024-09-20",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 3,
+          "start": "2023-09-21",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 5,
+          "start": "2021-09-17",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 10,
+          "start": "2016-09-21",
+          "end": "2026-09-21"
+        }
+      ]
+    },
+    {
+      "code": "600938",
+      "name": "中国海油",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/600938.SS?period1=1262304000&period2=1790085207&interval=1d&events=div%2Csplits",
+      "basis": "provider_adjusted_close",
+      "observations": 1074,
+      "first": [
+        "2022-04-21",
+        10.53817081451416
+      ],
+      "last": [
+        "2026-09-21",
+        33.540000915527344
+      ],
+      "seriesSha256": "4b2674d3a788ffb67871e17c69dbfb7fb6bfb758706c6406af56fa69171f06b9",
+      "price": 33.54,
+      "priceAsOf": "2026-09-21T15:00:02+08:00",
+      "dividendSource": "Eastmoney implemented cash dividends by report year",
+      "dividendAsOf": "2026-09-21",
+      "metrics": {
+        "r": [
+          32.5718,
+          36.9271,
+          84.6626,
+          null,
+          null
+        ],
+        "mdd5": null,
+        "vol5": null,
+        "yield12": 3.41
+      },
+      "unverifiedFields": [
+        "fundamentals_report_period"
+      ],
+      "sourceFallbacks": [
+        "Eastmoney quote: Remote end closed connection without response"
+      ],
+      "returnPeriods": [
+        {
+          "years": 1,
+          "start": "2025-09-19",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 2,
+          "start": "2024-09-20",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 3,
+          "start": "2023-09-21",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 5,
+          "start": null,
+          "end": "2026-09-21"
+        },
+        {
+          "years": 10,
+          "start": null,
+          "end": "2026-09-21"
+        }
+      ]
+    },
+    {
+      "code": "601398",
+      "name": "工商银行",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/601398.SS?period1=1262304000&period2=1790085209&interval=1d&events=div%2Csplits",
+      "basis": "provider_adjusted_close",
+      "observations": 4060,
+      "first": [
+        "2010-01-04",
+        2.2254767417907715
+      ],
+      "last": [
+        "2026-09-21",
+        8.109999656677246
+      ],
+      "seriesSha256": "9cf50f8c063c3a6e9259393c73b6b912463048fe4759324d561dd16e70421d5c",
+      "price": 8.11,
+      "priceAsOf": "2026-09-21T15:00:01+08:00",
+      "dividendSource": "Eastmoney implemented cash dividends by report year",
+      "dividendAsOf": "2026-09-21",
+      "metrics": {
+        "r": [
+          17.3225,
+          55.4083,
+          97.6493,
+          124.0564,
+          202.456
+        ],
+        "mdd5": -15.22,
+        "vol5": 16.64,
+        "yield12": 3.83
+      },
+      "unverifiedFields": [
+        "fundamentals_report_period"
+      ],
+      "sourceFallbacks": [
+        "Eastmoney quote: Remote end closed connection without response"
+      ],
+      "returnPeriods": [
+        {
+          "years": 1,
+          "start": "2025-09-19",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 2,
+          "start": "2024-09-20",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 3,
+          "start": "2023-09-21",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 5,
+          "start": "2021-09-17",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 10,
+          "start": "2016-09-21",
+          "end": "2026-09-21"
+        }
+      ]
+    },
+    {
+      "code": "601939",
+      "name": "建设银行",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/601939.SS?period1=1262304000&period2=1790085212&interval=1d&events=div%2Csplits",
+      "basis": "provider_adjusted_close",
+      "observations": 4060,
+      "first": [
+        "2010-01-04",
+        2.5745067596435547
+      ],
+      "last": [
+        "2026-09-21",
+        10.930000305175781
+      ],
+      "seriesSha256": "396f6632ded0550c29508ad75f533790c0f9b928374dbf99a1a6d6db4d3934d3",
+      "price": 10.93,
+      "priceAsOf": "2026-09-21T15:00:00+08:00",
+      "dividendSource": "Eastmoney implemented cash dividends by report year",
+      "dividendAsOf": "2026-09-21",
+      "metrics": {
+        "r": [
+          28.2192,
+          64.7492,
+          101.0391,
+          134.4548,
+          246.0673
+        ],
+        "mdd5": -15.19,
+        "vol5": 17.88,
+        "yield12": 3.56
+      },
+      "unverifiedFields": [
+        "fundamentals_report_period"
+      ],
+      "sourceFallbacks": [
+        "Eastmoney quote: Remote end closed connection without response"
+      ],
+      "returnPeriods": [
+        {
+          "years": 1,
+          "start": "2025-09-19",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 2,
+          "start": "2024-09-20",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 3,
+          "start": "2023-09-21",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 5,
+          "start": "2021-09-17",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 10,
+          "start": "2016-09-21",
+          "end": "2026-09-21"
+        }
+      ]
+    },
+    {
+      "code": "601288",
+      "name": "农业银行",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/601288.SS?period1=1262304000&period2=1790085214&interval=1d&events=div%2Csplits",
+      "basis": "provider_adjusted_close",
+      "observations": 3931,
+      "first": [
+        "2010-07-15",
+        1.1805903911590576
+      ],
+      "last": [
+        "2026-09-21",
+        6.909999847412109
+      ],
+      "seriesSha256": "652aebee0217e8f19b229b5b2429b8bfd055d5c3e2bf9eccbd547f75e8cbee14",
+      "price": 6.91,
+      "priceAsOf": "2026-09-21T15:00:01+08:00",
+      "dividendSource": "Eastmoney implemented cash dividends by report year",
+      "dividendAsOf": "2026-09-21",
+      "metrics": {
+        "r": [
+          7.6068,
+          64.4662,
+          121.2738,
+          202.858,
+          271.2891
+        ],
+        "mdd5": -28.87,
+        "vol5": 18.88,
+        "yield12": 3.61
+      },
+      "unverifiedFields": [
+        "fundamentals_report_period"
+      ],
+      "sourceFallbacks": [
+        "Eastmoney quote: Remote end closed connection without response"
+      ],
+      "returnPeriods": [
+        {
+          "years": 1,
+          "start": "2025-09-19",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 2,
+          "start": "2024-09-20",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 3,
+          "start": "2023-09-21",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 5,
+          "start": "2021-09-17",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 10,
+          "start": "2016-09-21",
+          "end": "2026-09-21"
+        }
+      ]
+    },
+    {
+      "code": "601988",
+      "name": "中国银行",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/601988.SS?period1=1262304000&period2=1790085216&interval=1d&events=div%2Csplits",
+      "basis": "provider_adjusted_close",
+      "observations": 4060,
+      "first": [
+        "2010-01-04",
+        1.7217034101486206
+      ],
+      "last": [
+        "2026-09-21",
+        6.630000114440918
+      ],
+      "seriesSha256": "9af077a4425ef03a274cbfd1cd970f71634658a9a6ce2ebf3f70ff58fbebae83",
+      "price": 6.63,
+      "priceAsOf": "2026-09-21T15:00:02+08:00",
+      "dividendSource": "Eastmoney implemented cash dividends by report year",
+      "dividendAsOf": "2026-09-21",
+      "metrics": {
+        "r": [
+          30.3759,
+          55.3399,
+          101.4551,
+          181.2058,
+          229.6964
+        ],
+        "mdd5": -17.11,
+        "vol5": 18.29,
+        "yield12": 3.41
+      },
+      "unverifiedFields": [
+        "fundamentals_report_period"
+      ],
+      "sourceFallbacks": [
+        "Eastmoney quote: Remote end closed connection without response"
+      ],
+      "returnPeriods": [
+        {
+          "years": 1,
+          "start": "2025-09-19",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 2,
+          "start": "2024-09-20",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 3,
+          "start": "2023-09-21",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 5,
+          "start": "2021-09-17",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 10,
+          "start": "2016-09-21",
+          "end": "2026-09-21"
+        }
+      ]
+    },
+    {
+      "code": "600036",
+      "name": "招商银行",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/600036.SS?period1=1262304000&period2=1790085218&interval=1d&events=div%2Csplits",
+      "basis": "provider_adjusted_close",
+      "observations": 4060,
+      "first": [
+        "2010-01-04",
+        8.505484580993652
+      ],
+      "last": [
+        "2026-09-21",
+        41.040000915527344
+      ],
+      "seriesSha256": "6ea9293a19e0c70ea36718a90534a5072c4820437d15eca810f1e3372792542b",
+      "price": 41.04,
+      "priceAsOf": "2026-09-21T15:00:01+08:00",
+      "dividendSource": "Eastmoney implemented cash dividends by report year",
+      "dividendAsOf": "2026-09-21",
+      "metrics": {
+        "r": [
+          5.5094,
+          45.8626,
+          47.8246,
+          2.8148,
+          241.6355
+        ],
+        "mdd5": -49.39,
+        "vol5": 25.1,
+        "yield12": 4.91
+      },
+      "unverifiedFields": [
+        "fundamentals_report_period"
+      ],
+      "sourceFallbacks": [
+        "Eastmoney quote: Remote end closed connection without response"
+      ],
+      "returnPeriods": [
+        {
+          "years": 1,
+          "start": "2025-09-19",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 2,
+          "start": "2024-09-20",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 3,
+          "start": "2023-09-21",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 5,
+          "start": "2021-09-17",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 10,
+          "start": "2016-09-21",
+          "end": "2026-09-21"
+        }
+      ]
+    },
+    {
+      "code": "601668",
+      "name": "中国建筑",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/601668.SS?period1=1262304000&period2=1790085221&interval=1d&events=div%2Csplits",
+      "basis": "provider_adjusted_close",
+      "observations": 4060,
+      "first": [
+        "2010-01-04",
+        1.8412384986877441
+      ],
+      "last": [
+        "2026-09-21",
+        4.309999942779541
+      ],
+      "seriesSha256": "e9e1fe5c30e16252872e96f5b16faec3585a32a0243e3eeac3935e788aaf9ab5",
+      "price": 4.31,
+      "priceAsOf": "2026-09-21T15:00:01+08:00",
+      "dividendSource": "Eastmoney implemented cash dividends by report year",
+      "dividendAsOf": "2026-09-21",
+      "metrics": {
+        "r": [
+          -17.5972,
+          -2.5101,
+          -9.5658,
+          11.9606,
+          45.3784
+        ],
+        "mdd5": -32.01,
+        "vol5": 25.24,
+        "yield12": 6.31
+      },
+      "unverifiedFields": [
+        "fundamentals_report_period"
+      ],
+      "sourceFallbacks": [
+        "Eastmoney quote: Remote end closed connection without response"
+      ],
+      "returnPeriods": [
+        {
+          "years": 1,
+          "start": "2025-09-19",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 2,
+          "start": "2024-09-20",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 3,
+          "start": "2023-09-21",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 5,
+          "start": "2021-09-17",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 10,
+          "start": "2016-09-21",
+          "end": "2026-09-21"
+        }
+      ]
+    },
+    {
+      "code": "601006",
+      "name": "大秦铁路",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/601006.SS?period1=1262304000&period2=1790085223&interval=1d&events=div%2Csplits",
+      "basis": "provider_adjusted_close",
+      "observations": 4060,
+      "first": [
+        "2010-01-04",
+        3.996757984161377
+      ],
+      "last": [
+        "2026-09-21",
+        4.71999979019165
+      ],
+      "seriesSha256": "c1c0a1db6ff95dfde93e63f748afc86a4a6be918aa551a24d0f0408ffd4cca27",
+      "price": 4.72,
+      "priceAsOf": "2026-09-21T15:00:01+08:00",
+      "dividendSource": "Eastmoney implemented cash dividends by report year",
+      "dividendAsOf": "2026-09-21",
+      "metrics": {
+        "r": [
+          -18.3795,
+          -14.7348,
+          -25.8132,
+          0.1525,
+          34.5502
+        ],
+        "mdd5": -34.07,
+        "vol5": 16.15,
+        "yield12": 4.7
+      },
+      "unverifiedFields": [
+        "fundamentals_report_period"
+      ],
+      "sourceFallbacks": [
+        "Eastmoney quote: Remote end closed connection without response"
+      ],
+      "returnPeriods": [
+        {
+          "years": 1,
+          "start": "2025-09-19",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 2,
+          "start": "2024-09-20",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 3,
+          "start": "2023-09-21",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 5,
+          "start": "2021-09-17",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 10,
+          "start": "2016-09-21",
+          "end": "2026-09-21"
+        }
+      ]
+    },
+    {
+      "code": "600377",
+      "name": "宁沪高速",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/600377.SS?period1=1262304000&period2=1790085225&interval=1d&events=div%2Csplits",
+      "basis": "provider_adjusted_close",
+      "observations": 4060,
+      "first": [
+        "2010-01-04",
+        3.0190587043762207
+      ],
+      "last": [
+        "2026-09-21",
+        12.520000457763672
+      ],
+      "seriesSha256": "e94eba8aeafbbd0e6eb4dc895ad45038d6d917f27eb58ba01e4514b16d438e2c",
+      "price": 12.52,
+      "priceAsOf": "2026-09-21T15:00:01+08:00",
+      "dividendSource": "Eastmoney implemented cash dividends by report year",
+      "dividendAsOf": "2026-09-21",
+      "metrics": {
+        "r": [
+          3.5768,
+          -1.2264,
+          34.5313,
+          79.2506,
+          121.5825
+        ],
+        "mdd5": -27.32,
+        "vol5": 20.95,
+        "yield12": 3.91
+      },
+      "unverifiedFields": [
+        "fundamentals_report_period"
+      ],
+      "sourceFallbacks": [
+        "Eastmoney quote: Remote end closed connection without response"
+      ],
+      "returnPeriods": [
+        {
+          "years": 1,
+          "start": "2025-09-19",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 2,
+          "start": "2024-09-20",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 3,
+          "start": "2023-09-21",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 5,
+          "start": "2021-09-17",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 10,
+          "start": "2016-09-21",
+          "end": "2026-09-21"
+        }
+      ]
+    },
+    {
+      "code": "600886",
+      "name": "国投电力",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/600886.SS?period1=1262304000&period2=1790085227&interval=1d&events=div%2Csplits",
+      "basis": "provider_adjusted_close",
+      "observations": 4060,
+      "first": [
+        "2010-01-04",
+        2.6825716495513916
+      ],
+      "last": [
+        "2026-09-21",
+        14.25
+      ],
+      "seriesSha256": "7496c9af0f60bafa366074184d4a202a8d29dedc2af2d31ea8e9a537cf3d97d6",
+      "price": 14.25,
+      "priceAsOf": "2026-09-21T15:00:01+08:00",
+      "dividendSource": "Eastmoney implemented cash dividends by report year",
+      "dividendAsOf": "2026-09-21",
+      "metrics": {
+        "r": [
+          11.0978,
+          -0.8498,
+          30.5727,
+          57.3905,
+          176.7592
+        ],
+        "mdd5": -28.9,
+        "vol5": 24.78,
+        "yield12": 3.57
+      },
+      "unverifiedFields": [
+        "fundamentals_report_period"
+      ],
+      "sourceFallbacks": [
+        "Eastmoney quote: Remote end closed connection without response"
+      ],
+      "returnPeriods": [
+        {
+          "years": 1,
+          "start": "2025-09-19",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 2,
+          "start": "2024-09-20",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 3,
+          "start": "2023-09-21",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 5,
+          "start": "2021-09-17",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 10,
+          "start": "2016-09-21",
+          "end": "2026-09-21"
+        }
+      ]
+    },
+    {
+      "code": "600674",
+      "name": "川投能源",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/600674.SS?period1=1262304000&period2=1790085230&interval=1d&events=div%2Csplits",
+      "basis": "provider_adjusted_close",
+      "observations": 4060,
+      "first": [
+        "2010-01-04",
+        3.0661168098449707
+      ],
+      "last": [
+        "2026-09-21",
+        15.90999984741211
+      ],
+      "seriesSha256": "2ef3bd20302ba7b885d943cd97500a6122960afb1620fb67510a321469668a26",
+      "price": 15.91,
+      "priceAsOf": "2026-09-21T15:00:01+08:00",
+      "dividendSource": "Eastmoney implemented cash dividends by report year",
+      "dividendAsOf": "2026-09-21",
+      "metrics": {
+        "r": [
+          14.4616,
+          -2.1489,
+          15.2255,
+          36.8849,
+          144.8584
+        ],
+        "mdd5": -30.15,
+        "vol5": 22.69,
+        "yield12": 3.14
+      },
+      "unverifiedFields": [
+        "fundamentals_report_period"
+      ],
+      "sourceFallbacks": [
+        "Eastmoney quote: Remote end closed connection without response"
+      ],
+      "returnPeriods": [
+        {
+          "years": 1,
+          "start": "2025-09-19",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 2,
+          "start": "2024-09-20",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 3,
+          "start": "2023-09-21",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 5,
+          "start": "2021-09-17",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 10,
+          "start": "2016-09-21",
+          "end": "2026-09-21"
+        }
+      ]
+    },
+    {
+      "code": "600519",
+      "name": "贵州茅台",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/600519.SS?period1=1262304000&period2=1790085232&interval=1d&events=div%2Csplits",
+      "basis": "provider_adjusted_close",
+      "observations": 4060,
+      "first": [
+        "2010-01-04",
+        90.44635772705078
+      ],
+      "last": [
+        "2026-09-21",
+        1252.5699462890625
+      ],
+      "seriesSha256": "30563f0bcb6eb606c0151871573f1fabe7edadd034103a3dbdcb87bf60afcef0",
+      "price": 1252.57,
+      "priceAsOf": "2026-09-21T15:00:01+08:00",
+      "dividendSource": "Eastmoney implemented cash dividends by report year",
+      "dividendAsOf": "2026-09-21",
+      "metrics": {
+        "r": [
+          -11.1667,
+          6.8475,
+          -22.467,
+          -14.0416,
+          425.8416
+        ],
+        "mdd5": -38.37,
+        "vol5": 25.12,
+        "yield12": 4.15
+      },
+      "unverifiedFields": [
+        "fundamentals_report_period"
+      ],
+      "sourceFallbacks": [
+        "Eastmoney quote: Remote end closed connection without response"
+      ],
+      "returnPeriods": [
+        {
+          "years": 1,
+          "start": "2025-09-19",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 2,
+          "start": "2024-09-20",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 3,
+          "start": "2023-09-21",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 5,
+          "start": "2021-09-17",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 10,
+          "start": "2016-09-21",
+          "end": "2026-09-21"
+        }
+      ]
+    },
+    {
+      "code": "000651",
+      "name": "格力电器",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/000651.SZ?period1=1262304000&period2=1790085234&interval=1d&events=div%2Csplits",
+      "basis": "provider_adjusted_close",
+      "observations": 4060,
+      "first": [
+        "2010-01-04",
+        4.103919982910156
+      ],
+      "last": [
+        "2026-09-21",
+        38.0
+      ],
+      "seriesSha256": "0332fd45c39ab3c67197d0344926fdc3bd55b9e943c293d25e9a96f8434dfa8d",
+      "price": 38,
+      "priceAsOf": "2026-09-21T15:04:12+08:00",
+      "dividendSource": "Eastmoney implemented cash dividends by report year",
+      "dividendAsOf": "2026-09-21",
+      "metrics": {
+        "r": [
+          1.1917,
+          6.3102,
+          28.112,
+          40.5096,
+          195.6997
+        ],
+        "mdd5": -24.34,
+        "vol5": 23.72,
+        "yield12": 7.89
+      },
+      "unverifiedFields": [
+        "fundamentals_report_period"
+      ],
+      "sourceFallbacks": [
+        "Eastmoney quote: Remote end closed connection without response"
+      ],
+      "returnPeriods": [
+        {
+          "years": 1,
+          "start": "2025-09-19",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 2,
+          "start": "2024-09-20",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 3,
+          "start": "2023-09-21",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 5,
+          "start": "2021-09-17",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 10,
+          "start": "2016-09-21",
+          "end": "2026-09-21"
+        }
+      ]
+    },
+    {
+      "code": "000895",
+      "name": "双汇发展",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/000895.SZ?period1=1262304000&period2=1790085237&interval=1d&events=div%2Csplits",
+      "basis": "provider_adjusted_close",
+      "observations": 4060,
+      "first": [
+        "2010-01-04",
+        8.982738494873047
+      ],
+      "last": [
+        "2026-09-21",
+        23.260000228881836
+      ],
+      "seriesSha256": "9b3be11b6b6cf87e6208d82994875bf2ff12d155fd62b0619772721f3581477e",
+      "price": 23.26,
+      "priceAsOf": "2026-09-21T15:04:45+08:00",
+      "dividendSource": "Eastmoney implemented cash dividends by report year",
+      "dividendAsOf": "2026-09-21",
+      "metrics": {
+        "r": [
+          -4.597,
+          7.222,
+          -0.0837,
+          17.4386,
+          68.4326
+        ],
+        "mdd5": -27.22,
+        "vol5": 22.51,
+        "yield12": 3.44
+      },
+      "unverifiedFields": [
+        "fundamentals_report_period"
+      ],
+      "sourceFallbacks": [
+        "Eastmoney quote: Remote end closed connection without response"
+      ],
+      "returnPeriods": [
+        {
+          "years": 1,
+          "start": "2025-09-19",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 2,
+          "start": "2024-09-20",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 3,
+          "start": "2023-09-21",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 5,
+          "start": "2021-09-17",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 10,
+          "start": "2016-09-21",
+          "end": "2026-09-21"
+        }
+      ]
+    },
+    {
+      "code": "601728",
+      "name": "中国电信",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/601728.SS?period1=1262304000&period2=1790085239&interval=1d&events=div%2Csplits",
+      "basis": "provider_adjusted_close",
+      "observations": 1233,
+      "first": [
+        "2021-08-20",
+        4.840680122375488
+      ],
+      "last": [
+        "2026-09-21",
+        6.159999847412109
+      ],
+      "seriesSha256": "40f9ce0fbd1321fab458b9fb0ed1955877e3b373f2665c30f6dc9c22098af9ef",
+      "price": 6.16,
+      "priceAsOf": "2026-09-21T15:00:01+08:00",
+      "dividendSource": "Eastmoney implemented cash dividends by report year",
+      "dividendAsOf": "2026-09-21",
+      "metrics": {
+        "r": [
+          -5.372,
+          10.4842,
+          15.7174,
+          71.6396,
+          null
+        ],
+        "mdd5": -36.51,
+        "vol5": 27.07,
+        "yield12": 4.08
+      },
+      "unverifiedFields": [
+        "fundamentals_report_period"
+      ],
+      "sourceFallbacks": [
+        "Eastmoney quote: Remote end closed connection without response"
+      ],
+      "returnPeriods": [
+        {
+          "years": 1,
+          "start": "2025-09-19",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 2,
+          "start": "2024-09-20",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 3,
+          "start": "2023-09-21",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 5,
+          "start": "2021-09-17",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 10,
+          "start": null,
+          "end": "2026-09-21"
+        }
+      ]
+    },
+    {
+      "code": "600690",
+      "name": "海尔智家",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/600690.SS?period1=1262304000&period2=1790085241&interval=1d&events=div%2Csplits",
+      "basis": "provider_adjusted_close",
+      "observations": 4060,
+      "first": [
+        "2010-01-04",
+        4.071004867553711
+      ],
+      "last": [
+        "2026-09-21",
+        19.889999389648438
+      ],
+      "seriesSha256": "8f8b1fa1dc8e88b962680c41780ac8bc6e3b12b73856036a5d4c30d2f11045e9",
+      "price": 19.89,
+      "priceAsOf": "2026-09-21T15:00:00+08:00",
+      "dividendSource": "Eastmoney implemented cash dividends by report year",
+      "dividendAsOf": "2026-09-21",
+      "metrics": {
+        "r": [
+          -20.4085,
+          -20.261,
+          -6.2502,
+          -12.5203,
+          148.1235
+        ],
+        "mdd5": -38.86,
+        "vol5": 27.57,
+        "yield12": 5.84
+      },
+      "unverifiedFields": [
+        "fundamentals_report_period"
+      ],
+      "sourceFallbacks": [
+        "Eastmoney quote: Remote end closed connection without response"
+      ],
+      "returnPeriods": [
+        {
+          "years": 1,
+          "start": "2025-09-19",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 2,
+          "start": "2024-09-20",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 3,
+          "start": "2023-09-21",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 5,
+          "start": "2021-09-17",
+          "end": "2026-09-21"
+        },
+        {
+          "years": 10,
+          "start": "2016-09-21",
+          "end": "2026-09-21"
+        }
+      ]
+    }
+  ]
+}
