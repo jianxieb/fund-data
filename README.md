@@ -85,6 +85,7 @@ daily_update.ps1 调用相同更新入口，兼容 Windows 原有调度命令。
 | data/screening-manager-validation.json | 扩展研究池的逐人经理资料、抓取状态与来源证据 |
 | data/screening-validation.json | 扩展研究池已复算样本的收益、风险及费率核对记录 |
 | data/nav-reconciliation.json | 已复算基金同日净值同步前后的值、日期及原始历史哈希 |
+| data/scale-reconciliation.json | 扩展基金规模数值和观察日的逐只来源配对证据 |
 | data/quality.* | 内容质量：错误、限制、尚待核验的领域 |
 | data/update-status.* | 最近执行与最近线上抓取状态 |
 | data/refresh-report.* | 统一刷新执行报告 |

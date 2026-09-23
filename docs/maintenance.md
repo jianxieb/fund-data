@@ -78,6 +78,16 @@ python3 data_quality.py --strict
 
 第一条仅预览，第二条要求`data/screening-validation.json`、当前快照收益日及`.tmp-hist/`原始历史的行数和五个收益周期逐只匹配，全部通过才写回；差异记录在`data/nav-reconciliation.json`。新克隆不带原始历史缓存，需先联网核验对应基金，不能只凭已发布收益推测同日净值。此次 48 只的修复和官方资料对照见[官方资料抽查](official-source-spot-check-2026-09-24.md)。
 
+补齐扩展基金的规模观察日时，先检查本机已保存的基金档案页：
+
+```sh
+python3 screens/fund_screen.py sync-scale-dates
+python3 screens/fund_screen.py sync-scale-dates --apply
+python3 data_quality.py --strict
+```
+
+脚本读取本机`.tmp-fhsp/fhsp_<代码>.html`分红送配页或`screens/.cache/jjfl/<代码>.html`费率页的公共基金信息区，只为缺少规模日期的记录补日期。原始页标题须包含相同基金代码，且同时给出规模和明确的截止日；来源金额按快照生成器的一位小数格式化后必须与现有数值一致，否则整批拒绝写回。缺少本机缓存的记录会留在质量报告中，不能从页面抓取日期或缓存文件时间推测。后续分批补齐时会保留早期记录及各自核对时间。这次 48 条匹配和剩余缺口记录在[官方资料抽查](official-source-spot-check-2026-09-24.md)及`data/scale-reconciliation.json`。这些档案页是第三方资料，规模日期的配对不代表已逐只和管理人公告独立核对。
+
 单独重新核对经理资料：
 
 ```sh
@@ -116,6 +126,7 @@ python3 data_quality.py --strict
 | `.tmp-snap/refresh-<dataset>.log` | 对应阶段完整本地日志 |
 | `data/verification-*.json`、`data/*-validation.json` | 来源、区间、原始摘要、重算与代表项核验记录 |
 | `data/nav-reconciliation.json` | 已复算基金的旧净值、同日新净值、日期及原始缓存哈希 |
+| `data/scale-reconciliation.json` | 扩展基金规模原值、显示值、观察日、页面地址与原始缓存哈希 |
 
 命令成功不等于全部数据都新鲜或经过独立审计。质量检查的严格模式以错误决定失败；仍可能存在限制提示和待核验记录。数据源失败或超时返回非零码，已成功的其他阶段可以保留。
 

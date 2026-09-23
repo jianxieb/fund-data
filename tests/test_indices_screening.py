@@ -112,6 +112,46 @@ class ScreeningTests(unittest.TestCase):
         self.assertEqual(screening.dated_value((3.136, None), (None, '2026-09-21')),
                          (3.136, None))
 
+    def test_scale_date_requires_its_own_matching_source_value(self):
+        row = {'sz': 10.8}
+        self.assertEqual(screening.checked_scale_observation(
+            row, {'sz': 10.85, 'szdate': '2026-06-30'}, date(2026, 9, 24)),
+            {'szdate': '2026-06-30'})
+        with self.assertRaisesRegex(ValueError, '不符'):
+            screening.checked_scale_observation(
+                row, {'sz': 11.25, 'szdate': '2026-06-30'}, date(2026, 9, 24))
+        with self.assertRaisesRegex(ValueError, '未来'):
+            screening.checked_scale_observation(
+                row, {'sz': 10.85, 'szdate': '2026-09-25'}, date(2026, 9, 24))
+        with self.assertRaisesRegex(ValueError, '独立观察日'):
+            screening.checked_scale_observation(row, {'sz': 10.85, 'szdate': None}, date(2026, 9, 24))
+
+    def test_scale_reconciliation_cites_the_actual_cached_page_and_checks_code(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cache = Path(tmp)
+            page = cache / 'fhsp_000001.html'
+            page.write_text('<title>示例基金(000001)基金分红送配</title>'
+                            '净资产规模：<span>10.85 亿元 （截止至：2020-06-30）', encoding='utf-8')
+            rows = [{'c': '000001', 'n': '示例基金', 'sz': 10.8, 'szdate': None}]
+            with patch.object(screening, 'parse_snapshot_extra', return_value=rows), \
+                    patch.object(screening.U, 'FHSP_DIR', str(cache)), \
+                    patch.object(screening, 'JJFL_DIR', str(cache / 'jjfl')):
+                result = screening.cmd_sync_scale_dates(SimpleNamespace(codes='all', apply=False))
+                self.assertEqual(result[0]['newSizeDate'], '2020-06-30')
+                self.assertEqual(result[0]['sourceUrl'], 'https://fundf10.eastmoney.com/fhsp_000001.html')
+                page.write_text(page.read_text(encoding='utf-8').replace('(000001)', '(000002)'), encoding='utf-8')
+                with self.assertRaisesRegex(RuntimeError, '未写入任何数据'):
+                    screening.cmd_sync_scale_dates(SimpleNamespace(codes='all', apply=False))
+
+    def test_later_scale_reconciliation_keeps_prior_source_evidence(self):
+        previous = {'checkedAt': '2026-09-24T01:00:00+00:00',
+                    'records': [{'code': '000001', 'newSizeDate': '2026-06-30'}]}
+        result = screening.merge_scale_evidence(
+            previous, [{'code': '000002', 'newSizeDate': '2026-06-30'}], '2026-09-24T02:00:00+00:00')
+        self.assertEqual(result['count'], 2)
+        self.assertEqual(result['records'][0]['checkedAt'], previous['checkedAt'])
+        self.assertEqual(result['records'][1]['checkedAt'], result['checkedAt'])
+
     def test_institutional_share_is_not_a_default_candidate(self):
         row = research_row('000001')
         row['n'] = '示例长期混合I'

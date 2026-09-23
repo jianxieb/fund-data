@@ -1006,7 +1006,7 @@ def parse_snapshot_extra(path=SNAPSHOT, text=None):
     return records
 
 
-def write_extra_fields(changes, expected_return_asof=None):
+def write_extra_fields(changes, expected_return_asof=None, expected_scale=None):
     """Patch only successful EXTRA rows, re-reading other agents' blocks at commit."""
     src = Path(SNAPSHOT).read_text(encoding='utf-8')
     match = re.search(r'/\*__DATA_EXTRA_BEGIN__\*/.*?/\*__DATA_EXTRA_END__\*/', src, re.S)
@@ -1019,6 +1019,8 @@ def write_extra_fields(changes, expected_return_asof=None):
             row = parse_js_record(line)
             if expected_return_asof is not None and row.get('returnAsOf') != expected_return_asof.get(cm.group(1)):
                 raise RuntimeError('写入前收益截止日已变更，拒绝覆盖 ' + cm.group(1))
+            if expected_scale is not None and (row.get('sz'), row.get('szdate')) != expected_scale.get(cm.group(1)):
+                raise RuntimeError('写入前规模或观察日已变更，拒绝覆盖 ' + cm.group(1))
             row.update(changes[cm.group(1)])
             line = '{' + ','.join(key + ':' + (js_str(value) if isinstance(value, str)
                                 else json.dumps(value, ensure_ascii=False, separators=(',', ':')))
@@ -1063,6 +1065,34 @@ def dated_value(*candidates):
         day, _priority, value = max(dated)
         return value, day
     return (undated, None)
+
+
+def checked_scale_observation(row, info, today=None):
+    """Accept a source date only when its paired size reproduces the displayed size."""
+    source_size, observed = fnum(info.get('sz')), info.get('szdate')
+    displayed = fnum(row.get('sz'))
+    if source_size is None or source_size <= 0 or displayed is None or not observed:
+        raise ValueError('来源缺少完整规模数值及独立观察日，或快照缺少规模')
+    try:
+        day = date.fromisoformat(observed)
+    except (TypeError, ValueError):
+        raise ValueError('规模观察日格式无效') from None
+    if day > (today or date.today()):
+        raise ValueError('规模观察日在未来')
+    if float('%.1f' % source_size) != displayed:
+        raise ValueError('来源规模与快照一位小数不符')
+    return dict(szdate=day.isoformat())
+
+
+def merge_scale_evidence(previous, report, checked_at):
+    """Retain earlier source records when a later run only fills more funds."""
+    by_code = {}
+    for item in previous.get('records', []):
+        if item.get('code'):
+            by_code[item['code']] = dict(item, checkedAt=item.get('checkedAt') or previous.get('checkedAt'))
+    by_code.update({item['code']: dict(item, checkedAt=checked_at) for item in report})
+    return dict(checkedAt=checked_at, count=len(by_code),
+                records=[by_code[code] for code in sorted(by_code)])
 
 
 def cmd_managers(args):
@@ -1498,6 +1528,58 @@ def cmd_sync_verified_nav(args):
         save_json(str(Path(ROOT) / 'data' / 'nav-reconciliation.json'),
                   dict(checkedAt=datetime.now(timezone.utc).isoformat(), count=len(report), records=report))
     log('  ✓ 同日净值可核对 %d / %d；%s' % (len(report), len(chosen), '已回写' if args.apply else '预览，未回写'))
+    return report
+
+
+def cmd_sync_scale_dates(args):
+    """Backfill EXTRA size dates only from cached, value-matching fund pages."""
+    lookup = {row['c']: row for row in parse_snapshot_extra()}
+    wanted = set(lookup) if args.codes == 'all' else {part.strip() for part in args.codes.split(',') if part.strip()}
+    if not wanted or wanted - set(lookup):
+        raise RuntimeError('指定基金不在扩展研究池中')
+    changes, report, failures, no_cache = {}, [], {}, []
+    for code in sorted(wanted):
+        row = lookup[code]
+        if row.get('szdate'):
+            continue
+        paths = [Path(U.FHSP_DIR) / ('fhsp_' + code + '.html'), Path(JJFL_DIR) / (code + '.html')]
+        present = [path for path in paths if path.exists()]
+        if not present:
+            no_cache.append(code)
+            continue
+        matches = []
+        for path in present:
+            html = path.read_text(encoding='utf-8')
+            title = re.search(r'<title>([^<]+)</title>', html, re.I)
+            if not title or not re.search(r'\(' + re.escape(code) + r'\)', title.group(1)):
+                continue
+            info = U.jjfl_parse(html)
+            try:
+                observation = checked_scale_observation(row, info)
+                page = 'fhsp' if path.parent == Path(U.FHSP_DIR) else 'jjfl'
+                matches.append((observation['szdate'], path, info['sz'], page))
+            except ValueError:
+                continue
+        if not matches:
+            failures[code] = '缓存页未提供与快照规模匹配的数值及观察日'
+            continue
+        observed, path, source_size, page = max(matches, key=lambda item: item[0])
+        changes[code] = dict(szdate=observed)
+        report.append(dict(code=code, name=row['n'], sourceUrl='https://fundf10.eastmoney.com/%s_%s.html' % (page, code),
+                           sourceSizeYi=source_size, displayedSizeYi=row['sz'], oldSizeDate=row.get('szdate'),
+                           newSizeDate=observed, rawPageSha256=hashlib.sha256(path.read_bytes()).hexdigest()))
+    if args.codes != 'all' and no_cache:
+        failures.update({code: '本机缺少原始基金档案页缓存' for code in no_cache})
+    if failures:
+        raise RuntimeError('规模日期同步已中止，未写入任何数据：' + json.dumps(failures, ensure_ascii=False))
+    if args.apply and changes:
+        write_extra_fields(changes, expected_scale={code: (lookup[code].get('sz'), lookup[code].get('szdate'))
+                                                    for code in changes})
+        evidence_path = str(Path(ROOT) / 'data' / 'scale-reconciliation.json')
+        previous = load_json(evidence_path, {}) or {}
+        save_json(evidence_path, merge_scale_evidence(previous, report, datetime.now(timezone.utc).isoformat()))
+    log('  ✓ 规模日期可核对 %d 条；缺本机缓存 %d 条；%s' %
+        (len(report), len(no_cache), '已回写' if args.apply else '预览，未回写'))
     return report
 
 
@@ -1996,6 +2078,9 @@ def main():
     pn = sub.add_parser('sync-verified-nav', help='以本机已核验历史缓存修复快照中过期的同日净值')
     pn.add_argument('--codes', default='all', help='默认全部已核验样本；也可指定逗号分隔代码')
     pn.add_argument('--apply', action='store_true', help='核对全部所选样本后写回净值并记录差异')
+    ps = sub.add_parser('sync-scale-dates', help='从数值匹配的原始基金档案页补齐扩展基金规模观察日')
+    ps.add_argument('--codes', default='all', help='默认扫描全部扩展基金；也可指定逗号分隔代码')
+    ps.add_argument('--apply', action='store_true', help='通过严格核对后写回规模日期并记录来源')
     pm = sub.add_parser('managers', help='核对EXTRA每位现任经理的明确个人上任日期')
     pm.add_argument('--codes', default='all', help='默认全部EXTRA；也可逗号分隔代码')
     pm.add_argument('--workers', type=int, default=6)
@@ -2021,7 +2106,7 @@ def main():
     fn = {'universe': cmd_universe, 'prefilter': cmd_prefilter, 'enrich': cmd_enrich,
           'metrics': cmd_metrics, 'report': cmd_report, 'html': cmd_html,
            'promote': cmd_promote, 'policy': cmd_policy, 'verify-samples': cmd_verify_samples,
-           'sync-verified-nav': cmd_sync_verified_nav,
+           'sync-verified-nav': cmd_sync_verified_nav, 'sync-scale-dates': cmd_sync_scale_dates,
            'managers': cmd_managers}.get(args.cmd)
     if fn is None:
         ap.print_help()
