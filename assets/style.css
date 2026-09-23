@@ -111,6 +111,22 @@ dialog{border:1px solid var(--line);border-radius:18px;box-shadow:0 25px 90px #1
 .strategy-rules .rule-item p{margin-top:2px;line-height:1.55}
 .strategy-curve-toolbar{display:flex;align-items:center;gap:24px;margin:2px 0 12px}
 .strategy-curve-toolbar .check-label{font-size:11px}
+.strategy-method-control{display:flex;align-items:center;gap:9px;white-space:nowrap;font-size:11px;color:#5c6b61}
+.select-menu{position:relative;flex:none;font-size:11px;color:#3a5140}
+.select-menu[open]{z-index:30}
+.select-menu>summary{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:38px;padding:7px 11px;border:1px solid #dce1d6;border-radius:9px;background:#fff;cursor:pointer;list-style:none;white-space:nowrap}
+.select-menu>summary::-webkit-details-marker{display:none}
+.select-menu>summary::after{content:'⌄';font-size:15px;line-height:1;color:#718473;flex:none}
+.select-menu[open]>summary{border-color:#82a079;box-shadow:0 0 0 2px #dcebcf}
+.select-menu-list{position:absolute;top:calc(100% + 6px);left:0;z-index:30;min-width:100%;width:max-content;max-width:min(330px,calc(100vw - 24px));max-height:260px;overflow:auto;padding:5px;border:1px solid #dce1d6;border-radius:9px;background:#fff;box-shadow:0 12px 28px #1e342d24}
+.select-menu-option{display:block;width:100%;padding:8px 11px;border-radius:6px;text-align:left;white-space:nowrap;font-size:11px;color:#45584a}
+.select-menu-option:hover,.select-menu-option:focus-visible{background:#f1f6eb}
+.select-menu-option.active{background:#e9f2e1;color:#315d40;font-weight:600}
+.select-menu.short .select-menu-list{left:auto;right:0}
+.benchmark-controls .select-menu>summary{min-height:34px;padding:6px 9px;background:#f9fbf6;border-color:#d5dfcc}
+.filters .select-menu>summary{min-height:38px}
+.strategy-method-control .select-menu>summary{min-height:34px;padding:5px 9px;min-width:116px}
+.column-menu{top:calc(100% + 6px)}
 .page-strategy .curve-card .card-head{padding-top:15px}
 .page-strategy .curve-legend{grid-template-columns:repeat(3,minmax(0,1fr))}
 .curve-plot{position:relative;min-width:0}
