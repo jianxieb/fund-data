@@ -1,6 +1,6 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-09-23T02:50:50+00:00",
+  "checkedAt": "2026-09-23T14:34:43+00:00",
   "asOf": "2026-09-23",
   "status": "unverified",
   "summary": {
@@ -1506,6 +1506,11 @@ var DATA_QUALITY={
       "id": "fund_schema",
       "status": "pass",
       "scope": "只检查字段、数值范围、重复代码及日期；不证明收益数值正确"
+    },
+    {
+      "id": "strategy_curves",
+      "status": "pass",
+      "scope": "核对曲线的实际起止日期、每组长度、正值与首日基准；不证明上游行情正确"
     }
   ],
   "scope": "结构校验、计算逻辑回归和部分官方资料核对；不是对全部历史数值的独立审计。"

@@ -18,6 +18,8 @@ python3 -m http.server 8765 --bind 127.0.0.1
 
 克隆后即可浏览快照和运行单元测试。基金、股票和策略的完整原始缓存不入库，因此第一次运行完整离线刷新可能因缺缓存失败；应先联网刷新对应数据。国内指数原始日线已保存在`data/index-history.json`。
 
+已提交的`data/snapshot.js`含`STRATEGY_RESULTS`和`STRATEGY_CURVES`，所以新电脑即使没有历史缓存，也能直接查看完整曲线。要**重新计算**曲线，应运行`python3 strategy_backtest.py`从上游取得ETF历史，再执行`python3 data_quality.py --strict`；只有已在本机保存对应原始行情时才使用`python3 strategy_backtest.py --offline`。曲线使用同一回测区间的资金流中性单位净值，首日为100；保留首日、各月最后一个真实交易日和末日，不插值。汇总结果的XIRR仍为资金加权口径，两者不能互换。
+
 ## 日常刷新
 
 ```sh
@@ -42,8 +44,8 @@ Windows入口调用相同流程：
 | `indices` / `indices.py` | 国内指数自身日线、完整窗口回报和风险 |
 | `stocks` / `stock_screen.py` | 观察样本行情、复权回报、风险和已实施分红 |
 | `screening` / `screens/fund_screen.py policy` | 对已有扩展快照重新应用权益研究规则，不代表重新下载全部扩展基金净值 |
-| `strategy` / `strategy_backtest.py` | 下载或读取明确复权的ETF行情，重新计算投入实验 |
-| `quality` / `data_quality.py --strict` | 检查格式、日期、缺失和核验状态，生成质量报告 |
+| `strategy` / `strategy_backtest.py` | 下载或读取明确复权的ETF行情，重新计算投入实验及实际交易日采样的曲线 |
+| `quality` / `data_quality.py --strict` | 检查格式、日期、缺失、核验状态与策略曲线对齐，生成质量报告 |
 
 统一入口顺序执行，带并发锁；各脚本独立运行时也应依次完成，避免同时修改共享快照。刷新不提交Git、不推送、不创建系统定时任务。已有定时任务如果调用`daily_update.ps1`，会使用新数据流程，但不会再自动发布。
 

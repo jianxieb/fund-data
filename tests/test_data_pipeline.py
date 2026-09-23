@@ -255,6 +255,38 @@ class StrategyAccounting(unittest.TestCase):
         self.assertAlmostEqual(result['mdd'], -50)
         self.assertEqual(result['end_value'], 150)
 
+    def test_curve_uses_actual_month_end_dates_and_keeps_final_observation(self):
+        dates = ['2025-01-02', '2025-01-31', '2025-02-03', '2025-02-28', '2025-03-03']
+        self.assertEqual(strategy.monthly_sample_indices(dates), [0, 1, 3, 4])
+
+    def test_curve_excludes_external_contributions_from_unit_value(self):
+        dates = ['2025-01-02', '2025-02-03', '2025-03-03']
+        sample = strategy.monthly_sample_indices(dates)
+        result = strategy.simulate(dates, [100, 100, 100], {0: 100, 1: 100, 2: 100}, sample_indices=sample)
+        self.assertEqual(result['invested'], 300)
+        self.assertEqual(result['end_value'], 300)
+        self.assertEqual(result['curve'], [100, 100, 100])
+
+    def test_quality_rejects_curve_with_wrong_period(self):
+        snapshot = {'STRATEGY_META': {'modelVersion': 2, 'initialCashIncluded': True,
+                                      'basis': 'provider_adjusted_close', 'start': '2025-01-02', 'end': '2025-03-03'},
+                    'STRATEGY_RESULTS': [{'a': 'SPY', 's': 'lump_sum'}],
+                    'STRATEGY_CURVES': {'dates': ['2025-01-02', '2025-02-03'],
+                                        'series': {'SPY': {'lump_sum': [100, 110]}}}}
+        report = data_quality.audit(snapshot, date(2025, 3, 3))
+        findings = next(d for d in report['datasets'] if d['id'] == 'strategy')['issues']
+        self.assertIn('curve_dates', {finding['code'] for finding in findings})
+
+    def test_quality_rejects_curve_that_disagrees_with_initial_account(self):
+        snapshot = {'STRATEGY_META': {'modelVersion': 2, 'initialCashIncluded': True,
+                                      'basis': 'provider_adjusted_close', 'start': '2025-01-02', 'end': '2025-03-03'},
+                    'STRATEGY_RESULTS': [{'a': 'SPY', 's': 'lump_sum', 'p': 'initial', 'inv': 100, 'end': 150}],
+                    'STRATEGY_CURVES': {'dates': ['2025-01-02', '2025-03-03'],
+                                        'series': {'SPY': {'lump_sum': [100, 120]}}}}
+        report = data_quality.audit(snapshot, date(2025, 3, 3))
+        findings = next(d for d in report['datasets'] if d['id'] == 'strategy')['issues']
+        self.assertIn('curve_end_mismatch', {finding['code'] for finding in findings})
+
 
 class FreshnessAndOffline(unittest.TestCase):
     def test_manager_and_extended_nav_freshness_do_not_follow_policy_run_date(self):

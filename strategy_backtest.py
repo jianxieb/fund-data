@@ -401,7 +401,7 @@ def drawdown_metrics(nav):
     return max_dd, longest
 
 
-def simulate(dates, prices, events, exposure=None, initial_capital=None):
+def simulate(dates, prices, events, exposure=None, initial_capital=None, sample_indices=None):
     """All pre-existing capital enters on day zero, including undeployed cash.
 
     events are purchases from that cash for initial-capital experiments; otherwise
@@ -467,12 +467,15 @@ def simulate(dates, prices, events, exposure=None, initial_capital=None):
     flows.append((datetime.strptime(dates[-1], '%Y-%m-%d'), final_value))
     max_dd, underwater = drawdown_metrics(nav)
     annualized = xirr(flows)
-    return {'invested': total_contrib, 'end_value': final_value,
+    result = {'invested': total_contrib, 'end_value': final_value,
             'total_return': (final_value / total_contrib - 1) * 100 if total_contrib else None,
             'irr': annualized * 100 if annualized is not None else None,
             'mdd': max_dd * 100, 'underwater': underwater,
             'avg_exposure': exposure_sum / len(prices) * 100, 'trades': trade_count,
             'cash': cash, 'minimum_cash': min_cash}
+    if sample_indices is not None:
+        result['curve'] = [round(nav[i] * 100, 4) for i in sample_indices]
+    return result
 
 
 def round_metrics(metrics):
@@ -488,25 +491,43 @@ def round_metrics(metrics):
     }
 
 
+def monthly_sample_indices(dates):
+    """Keep actual first and last observations plus each month's last trading day."""
+    if not dates:
+        return []
+    indices = [0]
+    for i in range(1, len(dates)):
+        if dates[i][:7] != dates[i - 1][:7]:
+            indices.append(i - 1)
+    indices.append(len(dates) - 1)
+    return sorted(set(indices))
+
+
 def build_results(dates, prices):
-    results = []
+    results, curves = [], {'dates': [], 'series': {}}
+    samples = monthly_sample_indices(dates)
+    curves['dates'] = [dates[i] for i in samples]
     for asset in ASSETS:
         symbol = asset['c']
         inputs = strategy_inputs(prices[symbol], dates)
+        curves['series'][symbol] = {}
         for strategy in STRATEGIES:
             events, exposure = inputs[strategy['id']]
-            metrics = round_metrics(simulate(dates, prices[symbol], events, exposure,
-                                             initial_capital=INITIAL_CAPITAL if strategy['panel'] == 'initial' else None))
+            simulated = simulate(dates, prices[symbol], events, exposure,
+                                 initial_capital=INITIAL_CAPITAL if strategy['panel'] == 'initial' else None,
+                                 sample_indices=samples)
+            curves['series'][symbol][strategy['id']] = simulated['curve']
+            metrics = round_metrics(simulated)
             metrics.update({'a': symbol, 'p': strategy['panel'], 's': strategy['id']})
             results.append(metrics)
-    return results
+    return results, curves
 
 
 def js_data(payload):
     return json.dumps(payload, ensure_ascii=False, separators=(',', ':'))
 
 
-def write_html(results, dates):
+def write_html(results, dates, curves):
     with open(HTML, 'r', encoding='utf-8') as fh:
         src = fh.read()
 
@@ -532,6 +553,7 @@ def write_html(results, dates):
         'var STRATEGY_ASSETS=' + js_data(ASSETS) + ';\n'
         'var STRATEGY_DEFS=' + js_data(STRATEGIES) + ';\n'
         'var STRATEGY_RESULTS=' + js_data(results) + ';\n'
+        'var STRATEGY_CURVES=' + js_data(curves) + ';\n'
         '/*__DATA_STRATEGY_END__*/'
     )
     pattern = re.compile(
@@ -559,8 +581,8 @@ def main():
     END_DATE = args.end
     log('ETF 策略回测: %s -> %s' % (START_DATE, END_DATE))
     dates, prices = align_history(refresh=args.refresh, offline=args.offline)
-    results = build_results(dates, prices)
-    write_html(results, dates)
+    results, curves = build_results(dates, prices)
+    write_html(results, dates, curves)
     write_status('strategy', 'cached' if args.offline else 'success', asOf=dates[-1], records=len(results), basis='provider_adjusted_close')
 
     def pick(asset, strategy):

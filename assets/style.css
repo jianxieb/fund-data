@@ -29,3 +29,78 @@ dialog{border:1px solid var(--line);border-radius:18px;box-shadow:0 25px 90px #1
 @media(max-width:650px){.compact .benchmark-title{flex-wrap:nowrap;gap:6px}.compact .benchmark-title h2{font-size:13px;white-space:nowrap}.compact .benchmark-controls{flex-wrap:nowrap;gap:4px}.compact .benchmark-controls select{font-size:9px;min-height:30px;padding:5px 3px}.compact .benchmark-controls select:first-child{width:129px}.compact .benchmark-controls select:last-child{width:59px}.compact .benchmark-foot{font-size:9px;gap:6px;flex-wrap:nowrap}.compact .benchmark-foot .text-link{font-size:9px}.compact .benchmark-values{padding:5px 0}.compact .benchmark-values strong{font-size:19px}.fund-controls .period-control{gap:4px}.fund-controls .period-control label{padding:7px 5px;gap:3px}.fund-controls .table-controls{gap:7px;flex-wrap:nowrap}.fund-controls .column-picker summary{white-space:nowrap}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 @media print{body{background:white;font-size:11px}.sidebar,.topbar,.page-actions,.footer,.toolbar,.compare-bar,.tabs,#toast{display:none!important}.app-shell{margin:0}main{padding:10px;max-width:none}.card{break-inside:avoid}.table-wrap{overflow:visible}table{min-width:0!important;font-size:9px}.research-table td:first-child,.research-table th:first-child{position:static;min-width:0}th,td{padding:6px}.stats-grid{grid-template-columns:repeat(4,1fr)}.grid-main,.two-col{grid-template-columns:1fr 1fr}a{color:inherit}.btn,.text-link{display:none}@page{size:A4 landscape;margin:12mm}}
+
+/* The research table and paired path charts use the full logical width of a 27-inch display. */
+main,.footer{max-width:2250px}
+.sidebar nav .nav-divider{display:block;margin:22px 14px 7px;font-size:10px;color:#94a991;letter-spacing:1.2px}
+.sidebar nav .nav-home{margin:18px 0 4px}
+.benchmark-return-toggle{display:flex;justify-content:flex-end;margin:12px 0 0}
+.benchmark-return-toggle .segmented{background:#dfe9d5;border-color:#d5e2c8}
+.benchmark-panel.compact .benchmark-title{grid-column:1;grid-row:1}
+.benchmark-panel.compact .benchmark-return-toggle{grid-column:1;grid-row:2;justify-content:flex-start;margin:0}
+.benchmark-panel.compact .benchmark-values{grid-column:2;grid-row:1/3}
+.benchmark-panel.compact .benchmark-foot{grid-column:1/-1}
+.page-overview .benchmark-values{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;padding:26px 0}
+.page-overview .benchmark-values>div{min-width:0}
+.page-overview .benchmark-values strong{font-size:23px}
+.research-entry-grid .review-card{display:flex;flex-direction:column;min-height:198px}
+.research-entry-grid .review-card p{min-height:0;flex:1}
+.fund-table th,.fund-table td{min-width:90px;padding:9px 10px;font-size:11px}
+.fund-table td:first-child,.fund-table th:first-child{min-width:280px;width:280px;max-width:280px;white-space:nowrap}
+.fund-table .fund-name-row{align-items:center;gap:7px}
+.fund-table .fund-name-row>.text-link{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+.fund-table .manager-cell{min-width:170px;max-width:205px;font-size:11px}
+.fund-table .manager-person+.manager-person{margin-top:3px}
+.fund-table .manager-tenure{color:#7f8b7c}
+.fund-table .badge{margin-top:0}
+.fund-table .fund-compare{width:22px;flex-basis:22px;min-height:22px;font-size:12px}
+.fund-table .limit-inline{color:#667862;font-size:10px}
+.fund-table .nav-change{font-size:10px}
+.fund-table .audit-mark{font-size:10px;color:#6b8a60}
+.fee-summary{padding:2px 0;border-bottom:1px dotted #8fa181;font-size:11px;color:#365d43;white-space:nowrap}
+.fee-summary:hover{color:#204a33;border-color:#204a33}
+.fund-table-wrap{max-height:min(850px,calc(100vh - 390px))}
+.page-funds .page-head{margin-bottom:13px}
+.page-funds .tabs{margin-bottom:10px}
+.page-funds .screen-panel{margin-bottom:10px}
+.page-funds .benchmark-panel{margin-bottom:10px}
+.page-funds .fund-controls{margin-bottom:10px}
+.page-funds .table-caption{padding-top:9px;padding-bottom:9px}
+.page-indices .research-table td:first-child,.page-indices .research-table th:first-child{min-width:270px}
+.strategy-controls{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 14px}
+.strategy-controls .check-label{font-size:12px}
+.asset-shelf{padding:14px 17px;background:white;border:1px solid var(--line);border-radius:11px;margin-bottom:10px}
+.shelf-label{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.shelf-label b{font-size:12px;color:#314d3b}
+.shelf-label span{font-size:10px;color:var(--muted)}
+.asset-shelf .pill-row{margin:0}
+.asset-shelf .pill{border-radius:7px;padding:6px 12px}
+.leverage-shelf{background:#faf7f0;border-color:#eadfc8}
+.leverage-shelf .pill{background:#fffaf0;border-color:#eadfc8}
+.strategy-chart-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin:27px 0 12px}
+.strategy-chart-head h2{font-size:18px}
+.strategy-chart-head p{font-size:11px;color:var(--muted);margin-top:3px}
+.strategy-chart-head label{display:flex;align-items:center;gap:9px;white-space:nowrap}
+.strategy-chart-head select{font-size:11px;min-height:34px;padding:6px 8px;min-width:150px}
+.strategy-chart-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.curve-card .card-head{padding:19px 21px 0}
+.curve-card .card-head h2{font-size:15px}
+.curve-body{padding:8px 17px 14px}
+.curve-svg{display:block;width:100%;height:auto}
+.curve-grid{stroke:#e8ece5;stroke-width:1}
+.curve-base{stroke:#b4c3ad;stroke-width:1;stroke-dasharray:5 4}
+.curve-axis{fill:#859087;font-size:12px;font-family:var(--font)}
+.curve-legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 10px;padding:0 8px}
+.curve-key{display:flex;align-items:center;gap:7px;min-width:0;padding:6px 8px;border-radius:6px;text-align:left;font-size:11px;color:#425a49}
+.curve-key:hover{background:#f4f7f0}
+.curve-key.is-hidden{opacity:.38}
+.curve-key i{display:block;width:16px;height:3px;border-radius:3px;flex:none}
+.curve-key span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.curve-key b{font-size:10px;color:#738372}
+.curve-empty{height:315px;display:grid;place-items:center;color:var(--muted);font-size:12px}
+.leverage-comparison{margin-top:16px}
+.leverage-comparison .notice{margin-bottom:10px}
+.leverage-comparison .curve-card{max-width:1120px}
+@media(max-width:1400px){.strategy-chart-grid{grid-template-columns:1fr}.page-overview .benchmark-values{gap:4px}.page-overview .benchmark-values strong{font-size:21px}}
+@media(max-width:900px){.benchmark-panel.compact .benchmark-title,.benchmark-panel.compact .benchmark-return-toggle,.benchmark-panel.compact .benchmark-values,.benchmark-panel.compact .benchmark-foot{grid-column:1;grid-row:auto}.benchmark-panel.compact .benchmark-return-toggle{margin:5px 0}.page-overview .benchmark-values{grid-template-columns:repeat(3,minmax(0,1fr))}.fund-table-wrap{max-height:650px}}
+@media(max-width:650px){.sidebar nav .nav-divider{display:none}.sidebar nav .nav-home{margin:0}.strategy-controls,.strategy-chart-head{align-items:flex-start;flex-direction:column}.strategy-chart-head label{width:100%;justify-content:space-between}.shelf-label{display:block}.shelf-label span{display:block;margin-top:3px}.curve-body{padding:8px 7px 12px}.curve-legend{grid-template-columns:1fr}.page-overview .benchmark-values{grid-template-columns:repeat(2,minmax(0,1fr))}.fund-table td:first-child,.fund-table th:first-child{min-width:175px;width:175px;max-width:175px}}

@@ -3,15 +3,10 @@
   "datasets": {
     "strategy": {
       "status": "cached",
-      "attemptedAt": "2026-09-21T15:52:31+00:00",
+      "attemptedAt": "2026-09-23T14:25:57+00:00",
       "asOf": "2026-09-18",
       "records": 108,
-      "basis": "provider_adjusted_close",
-      "mode": "offline",
-      "execution": {
-        "exitCode": 0,
-        "seconds": 0.88
-      }
+      "basis": "provider_adjusted_close"
     },
     "funds": {
       "status": "cached",
@@ -83,5 +78,5 @@
       }
     }
   },
-  "checkedAt": "2026-09-23T02:50:50+00:00"
+  "checkedAt": "2026-09-23T14:25:57+00:00"
 }

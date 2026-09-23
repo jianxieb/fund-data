@@ -132,6 +132,28 @@ def audit(snapshot, today=None):
         issue(td, 'legacy_cashflow_model', 'error', '旧模型将分批投入的期初资金当未来现金流，收益和风险结果已隔离')
     if meta.get('basis') != 'provider_adjusted_close':
         issue(td, 'unknown_adjusted_close', 'unverified', '旧第三方close字段无法证明为复权收盘价')
+    curves = snapshot.get('STRATEGY_CURVES') or {}
+    curve_dates, curve_series = curves.get('dates') or [], curves.get('series') or {}
+    if strategy:
+        if not curve_dates or curve_dates[0] != meta.get('start') or curve_dates[-1] != meta.get('end') \
+                or curve_dates != sorted(set(curve_dates)):
+            issue(td, 'curve_dates', 'error', '策略曲线缺少与回测相同的真实起止日期，或日期重复、乱序')
+        malformed, mismatched_ends = [], []
+        for row in strategy:
+            values = (curve_series.get(row.get('a')) or {}).get(row.get('s'))
+            if not isinstance(values, list) or len(values) != len(curve_dates) \
+                    or any(not finite(v) or v <= 0 for v in values) \
+                    or (values and abs(values[0] - 100) > 1e-3):
+                malformed.append('%s/%s' % (row.get('a'), row.get('s')))
+            elif row.get('p') == 'initial' and finite(row.get('inv')) and row['inv'] > 0 \
+                    and finite(row.get('end')) and abs(values[-1] - row['end'] / row['inv'] * 100) > 0.01:
+                mismatched_ends.append('%s/%s' % (row.get('a'), row.get('s')))
+        if malformed:
+            issue(td, 'curve_series', 'error', '策略曲线与结果不一致，缺少同长的正值单位净值序列', malformed)
+        if mismatched_ends:
+            issue(td, 'curve_end_mismatch', 'error', '期初资金实验的曲线终值与期末账户资产不一致', mismatched_ends)
+    checks.append({'id': 'strategy_curves', 'status': 'pass' if not any(i['severity'] == 'error' for i in td['issues']) else 'fail',
+                   'scope': '核对曲线的实际起止日期、每组长度、正值与首日基准；不证明上游行情正确'})
     issue(td, 'single_window_backtest', 'warning', '单一起止窗口有起点偏差；不同预算策略不可只按期末金额排序')
     issue(td, 'leverage_daily_target', 'warning', '杠杆ETF目标是单日倍数，长期路径与指数倍数不同；仅作为独立实验')
 
