@@ -30,8 +30,6 @@ dialog{border:1px solid var(--line);border-radius:18px;box-shadow:0 25px 90px #1
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 @media print{body{background:white;font-size:11px}.sidebar,.topbar,.page-actions,.footer,.toolbar,.compare-bar,.tabs,#toast{display:none!important}.app-shell{margin:0}main{padding:10px;max-width:none}.card{break-inside:avoid}.table-wrap{overflow:visible}table{min-width:0!important;font-size:9px}.research-table td:first-child,.research-table th:first-child{position:static;min-width:0}th,td{padding:6px}.stats-grid{grid-template-columns:repeat(4,1fr)}.grid-main,.two-col{grid-template-columns:1fr 1fr}a{color:inherit}.btn,.text-link{display:none}@page{size:A4 landscape;margin:12mm}}
 
-/* The research table and paired path charts use the full logical width of a 27-inch display. */
-main,.footer{max-width:2250px}
 .sidebar nav .nav-divider{display:block;margin:22px 14px 7px;font-size:10px;color:#94a991;letter-spacing:1.2px}
 .sidebar nav .nav-home{margin:18px 0 4px}
 .benchmark-return-toggle{display:flex;justify-content:flex-end;margin:12px 0 0}
@@ -57,6 +55,12 @@ main,.footer{max-width:2250px}
 .fund-table .limit-inline{color:#667862;font-size:10px}
 .fund-table .nav-change{font-size:10px}
 .fund-table .audit-mark{font-size:10px;color:#6b8a60}
+.fund-table th,.fund-table td,.fund-table .manager-cell{text-align:center!important}
+.fund-table th button,.fund-table td button.text-link{text-align:center}
+.fund-table .fund-name-row{position:relative;justify-content:center;padding:0 23px}
+.fund-table .fund-name-row>.text-link{flex:0 1 auto;text-align:center!important}
+.fund-table .fund-name-row>.fund-compare{position:absolute;right:0;top:50%;transform:translateY(-50%)}
+.fund-table .limit-inline{display:block}
 .fee-summary{padding:2px 0;border-bottom:1px dotted #8fa181;font-size:11px;color:#365d43;white-space:nowrap}
 .fee-summary:hover{color:#204a33;border-color:#204a33}
 .fund-table-wrap{max-height:min(850px,calc(100vh - 390px))}
@@ -67,6 +71,27 @@ main,.footer{max-width:2250px}
 .page-funds .fund-controls{margin-bottom:10px}
 .page-funds .table-caption{padding-top:9px;padding-bottom:9px}
 .page-indices .research-table td:first-child,.page-indices .research-table th:first-child{min-width:270px}
+.page-indices .study-summary{gap:14px;margin:0}
+.page-indices .study-summary .text-link{white-space:nowrap}
+.page-strategy .page-head{margin-bottom:16px}
+.strategy-view-tabs{margin-bottom:14px}
+.strategy-control-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 10px}
+.strategy-asset-picker,.strategy-curve-toolbar>label:first-child{display:flex;align-items:center;gap:9px;white-space:nowrap}
+.strategy-asset-picker select,.strategy-curve-toolbar select{margin:0;min-height:34px;max-width:320px;padding:5px 9px;font-size:11px}
+.strategy-context{font-size:11px;color:#788573;margin:0 0 12px}
+.strategy-context.warn{color:#987649}
+.strategy-results-card .table-caption{padding:12px 17px}
+.strategy-results-card th,.strategy-results-card td{padding:11px 13px}
+.strategy-results-card .research-table{min-width:890px}
+.strategy-rules{margin-top:15px;padding:12px 17px;border:1px solid var(--line);border-radius:9px;background:white}
+.strategy-rules[open] .rule-list{margin-top:12px}
+.strategy-curve-toolbar{display:flex;align-items:center;gap:24px;margin:2px 0 12px}
+.strategy-curve-toolbar .check-label{font-size:11px}
+.page-strategy .curve-card .card-head{padding-top:15px}
+.page-strategy .curve-legend{grid-template-columns:repeat(3,minmax(0,1fr))}
+.curve-legend-divider{grid-column:1/-1;margin:6px 8px 0;padding-top:9px;border-top:1px solid var(--line);font-size:10px;color:#887c65}
+.curve-key.experimental{background:#faf8f2}
+.curve-key.experimental i{height:0;border-top:2px dashed;border-radius:0}
 .strategy-controls{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 14px}
 .strategy-controls .check-label{font-size:12px}
 .asset-shelf{padding:14px 17px;background:white;border:1px solid var(--line);border-radius:11px;margin-bottom:10px}
@@ -104,3 +129,5 @@ main,.footer{max-width:2250px}
 @media(max-width:1400px){.strategy-chart-grid{grid-template-columns:1fr}.page-overview .benchmark-values{gap:4px}.page-overview .benchmark-values strong{font-size:21px}}
 @media(max-width:900px){.benchmark-panel.compact .benchmark-title,.benchmark-panel.compact .benchmark-return-toggle,.benchmark-panel.compact .benchmark-values,.benchmark-panel.compact .benchmark-foot{grid-column:1;grid-row:auto}.benchmark-panel.compact .benchmark-return-toggle{margin:5px 0}.page-overview .benchmark-values{grid-template-columns:repeat(3,minmax(0,1fr))}.fund-table-wrap{max-height:650px}}
 @media(max-width:650px){.sidebar nav .nav-divider{display:none}.sidebar nav .nav-home{margin:0}.strategy-controls,.strategy-chart-head{align-items:flex-start;flex-direction:column}.strategy-chart-head label{width:100%;justify-content:space-between}.shelf-label{display:block}.shelf-label span{display:block;margin-top:3px}.curve-body{padding:8px 7px 12px}.curve-legend{grid-template-columns:1fr}.page-overview .benchmark-values{grid-template-columns:repeat(2,minmax(0,1fr))}.fund-table td:first-child,.fund-table th:first-child{min-width:175px;width:175px;max-width:175px}}
+@media(max-width:900px){.strategy-control-bar{align-items:flex-start;flex-wrap:wrap}.page-strategy .curve-legend{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.strategy-curve-toolbar{align-items:flex-start;flex-wrap:wrap;gap:12px}.page-strategy .curve-legend{grid-template-columns:1fr}.strategy-asset-picker{width:100%;justify-content:space-between}.strategy-asset-picker select{max-width:75%}}
