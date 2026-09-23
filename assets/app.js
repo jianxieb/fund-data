@@ -33,9 +33,9 @@
     screen: { minA3: defaults.minA3, minA5: defaults.minA5, minA10: null }, equityAll: false,
     fundSort: 'default', descending: true, page: 1, selected: new Set(),
     stockStyle: 'all', stockQuery: '', stockSort: 'default', stockDesc: true,
-    stratPanel: 'initial', stratView: 'results', stratAsset: 'SPY', stratMethod: 'lump_sum', leverage: false, chartHidden: new Set()
+    stratPanel: 'initial', stratView: 'results', stratYear: '2010', stratAsset: 'SPY', stratMethod: 'lump_sum', leverage: false, showLeverageAssets: false, chartHidden: new Set()
   };
-  let lastFocus = null, toastTimer, searchTimer;
+  let lastFocus = null, toastTimer, searchTimer, activeCurve = null;
   let screenOpen = false;
   function toast(text) { $('#toast').textContent = text; $('#toast').classList.add('visible'); clearTimeout(toastTimer); toastTimer = setTimeout(() => $('#toast').classList.remove('visible'), 3200); }
   function savePrefs() { try { localStorage.setItem(VIEW, JSON.stringify({ annual: state.annual, periods: state.periods, columns: [...state.columns] })); } catch (_) {} }
@@ -87,7 +87,7 @@
       '<div class="home-lead">' + benchmarkPanel() + '<section class="research-intro"><span class="eyebrow">EQUITY RESEARCH</span><h2>多看几年，<br>多问一层。</h2><p>一段漂亮的收益来自什么：市场、策略，还是现任经理？把不同周期、经理任期、风险与费用放在同一张表里判断。</p>' + action('打开基金研究 →', 'research-entry', 'text-link', 'data-value="equity"') + '</section></div>' +
       '<div class="research-entry-grid">' + entries.map(([route, id, title, desc, no]) => '<article class="review-card"><span class="eyebrow">' + no + '</span><h2>' + title + '</h2><p>' + desc + '</p>' + action('进入研究 →', 'research-entry', 'text-link', 'data-route="' + route + '" data-value="' + id + '"') + '</article>').join('') + '</div>' +
       '<div class="section-head"><div><h2>数据覆盖，公开可查</h2><p>研究池来自既有筛选样本，尚不覆盖全市场。</p></div><a href="#quality" class="text-link small">查看数据与方法 →</a></div><div class="stats-grid">' +
-      stat('基金研究池', funds.length, '只', '统一经理、收益、风险、费用字段') + stat('收益已复算', verified, '只', '其余历史快照逐项标记待核验') + stat('独立国内指数', (window.INDEX_DATA || []).filter(r => ['available', 'cached'].includes(r.status)).length, '个', '直接使用指数日线计算收益') + stat('投入策略实验', (window.STRATEGY_RESULTS || []).length, '组', '相同期间，比较资金投入节奏') + '</div>' +
+      stat('基金研究池', funds.length, '只', '统一经理、收益、风险、费用字段') + stat('收益已复算', verified, '只', '其余历史快照逐项标记待核验') + stat('独立国内指数', (window.INDEX_DATA || []).filter(r => ['available', 'cached'].includes(r.status)).length, '个', '直接使用指数日线计算收益') + stat('投入策略实验', (window.STRATEGY_META || {}).totalExperiments || (window.STRATEGY_RESULTS || []).length, '组', '不同真实起点与资金投入节奏') + '</div>' +
       '<div class="two-col">' + card('市场本身，表现如何？', '价格指数与含分红产品分别标注', '<div class="card-body"><p class="small muted">先用独立指数理解市场，再看具体产品是否提供了值得研究的回报。</p><a class="text-link entry-link" href="#indices">浏览国内与海外指数 →</a></div>') + card('同一资产，怎样投入？', '统一期间与投入假设', '<div class="card-body"><p class="small muted">比较一次投入、分批投入与定期投入，核对总投入、资金加权年化和回撤。</p><a class="text-link entry-link" href="#strategy">查看投入策略 →</a></div>') + '</div>';
   }
   function indexRows() {
@@ -241,11 +241,13 @@
       .filter(entry => Array.isArray(entry.values) && entry.values.length === dates.length && entry.values.every(v => M.finite(v) && v > 0));
     const visible = valid.filter(entry => !state.chartHidden.has(entry.key));
     const legend = '<div class="curve-legend">' + valid.map((entry, i) => (entry.experimental && (i === 0 || !valid[i - 1].experimental) ? '<div class="curve-legend-divider">杠杆 ETF 实验</div>' : '') + action('<i style="background:' + entry.color + '"></i><span>' + esc(entry.label) + '</span><b class="num">' + money(entry.values.at(-1), 0) + '</b>', 'chart-line', 'curve-key' + (entry.experimental ? ' experimental' : '') + (state.chartHidden.has(entry.key) ? ' is-hidden' : ''), 'data-value="' + esc(entry.key) + '" aria-pressed="' + !state.chartHidden.has(entry.key) + '" aria-label="' + esc(entry.label + '曲线') + '"')).join('') + '</div>';
-    if (!dates.length || !valid.length) return '<section class="card curve-card"><div class="card-head"><div><h2>' + title + '</h2><p>' + subtitle + '</p></div></div><div class="card-body muted">暂无可绘制的历史路径；运行策略回测后生成曲线。</div></section>';
+    if (!dates.length || !valid.length) return '<section class="card curve-card"><div class="card-head"><div><h2>' + title + '</h2><p>' + subtitle + '</p></div></div><div class="card-body muted">当前起点没有可绘制的历史路径。</div></section>';
     const allValues = visible.flatMap(entry => entry.values), low = Math.min(100, ...allValues), high = Math.max(100, ...allValues);
     const minExp = Math.floor(Math.log2(low)), maxExp = Math.max(minExp + 1, Math.ceil(Math.log2(high)));
     const scaleY = value => 276 - (Math.log2(value) - minExp) / (maxExp - minExp) * 242;
-    const scaleX = i => 59 + i / Math.max(1, dates.length - 1) * 829;
+    const times = dates.map(d => Date.parse(d + 'T00:00:00Z'));
+    const scaleX = i => 59 + (times[i] - times[0]) / Math.max(1, times.at(-1) - times[0]) * 829;
+    activeCurve = { dates, times, entries: visible, minExp, maxExp };
     const step = Math.max(1, Math.ceil((maxExp - minExp) / 6));
     const ticks = [];
     for (let exponent = minExp; exponent <= maxExp; exponent += step) {
@@ -259,32 +261,70 @@
       return '<path d="' + path + '" fill="none" stroke="' + entry.color + '" stroke-width="2.5"' + (entry.experimental ? ' stroke-dasharray="7 4"' : '') + ' stroke-linejoin="round" stroke-linecap="round"><title>' + esc(entry.label) + ' · 起点100，终点' + money(entry.values.at(-1), 1) + '</title></path>';
     }).join('');
     return '<section class="card curve-card"><div class="card-head"><div><h2>' + title + '</h2><p>' + subtitle + '</p></div></div><div class="curve-body">' +
-      (visible.length ? '<svg class="curve-svg" viewBox="0 0 920 320" role="img" aria-label="' + esc(title + '，' + visible.map(e => e.label + '终值' + money(e.values.at(-1), 0)).join('，')) + '">' + ticks.join('') + xTicks + '<line x1="59" x2="888" y1="' + scaleY(100).toFixed(1) + '" y2="' + scaleY(100).toFixed(1) + '" class="curve-base"/>' + paths + '</svg>' : '<div class="curve-empty">选择下方标的以显示曲线</div>') + legend +
-      '</div><div class="panel-foot"><span>首日单位净值＝100 · 实际交易日的月末取样 · 纵轴为对数刻度。点击图例可隐藏或显示曲线。</span></div></section>';
+      (visible.length ? '<div class="curve-plot"><svg class="curve-svg" viewBox="0 0 920 320" role="img" aria-label="' + esc(title + '；悬浮或点击查看具体交易日和各标的单位净值') + '">' + ticks.join('') + xTicks + '<line x1="59" x2="888" y1="' + scaleY(100).toFixed(1) + '" y2="' + scaleY(100).toFixed(1) + '" class="curve-base"/>' + paths + '<g class="curve-hover-layer" hidden><line class="curve-hover-line" y1="34" y2="276"/>' + visible.map(entry => '<circle class="curve-hover-dot" data-key="' + esc(entry.key) + '" r="4" fill="' + entry.color + '"/>').join('') + '</g></svg><div class="curve-tooltip" hidden></div></div>' : '<div class="curve-empty">点击图例以显示曲线</div>') + legend +
+      '</div><div class="panel-foot"><span>首日单位净值＝100 · 每周最后一个实际交易日取样 · 对数刻度；将光标移到曲线上读取具体日期。图例可切换曲线。</span></div></section>';
+  }
+  function showCurvePoint(event, plot) {
+    if (!activeCurve || !activeCurve.entries.length) return;
+    const svg = plot.querySelector('svg'), rect = svg.getBoundingClientRect();
+    const position = Math.max(59, Math.min(888, (event.clientX - rect.left) / rect.width * 920));
+    const times = activeCurve.times, target = times[0] + (position - 59) / 829 * (times.at(-1) - times[0]);
+    let lo = 0, hi = times.length - 1;
+    while (lo < hi) { const mid = Math.floor((lo + hi) / 2); if (times[mid] < target) lo = mid + 1; else hi = mid; }
+    const index = lo > 0 && Math.abs(times[lo - 1] - target) < Math.abs(times[lo] - target) ? lo - 1 : lo;
+    const x = 59 + (times[index] - times[0]) / Math.max(1, times.at(-1) - times[0]) * 829;
+    const layer = svg.querySelector('.curve-hover-layer'); layer.removeAttribute('hidden');
+    const line = layer.querySelector('.curve-hover-line'); line.setAttribute('x1', x); line.setAttribute('x2', x);
+    for (const dot of layer.querySelectorAll('.curve-hover-dot')) {
+      const entry = activeCurve.entries.find(item => item.key === dot.dataset.key);
+      if (!entry) continue;
+      const y = 276 - (Math.log2(entry.values[index]) - activeCurve.minExp) / (activeCurve.maxExp - activeCurve.minExp) * 242;
+      dot.setAttribute('cx', x); dot.setAttribute('cy', y);
+    }
+    const tooltip = plot.querySelector('.curve-tooltip');
+    tooltip.innerHTML = '<strong>' + esc(activeCurve.dates[index]) + '</strong><span class="curve-tooltip-caption">单位净值 · 起点 100</span>' +
+      activeCurve.entries.map(entry => '<div><i style="background:' + entry.color + '"></i><span>' + esc(entry.label) + '</span><b class="num">' + money(entry.values[index], 2) + '</b></div>').join('');
+    tooltip.hidden = false;
+    const plotRect = plot.getBoundingClientRect(), px = event.clientX - plotRect.left;
+    const left = px < plotRect.width / 2 ? px + 15 : px - tooltip.offsetWidth - 15;
+    tooltip.style.left = Math.max(5, Math.min(plotRect.width - tooltip.offsetWidth - 5, left)) + 'px';
+    tooltip.style.top = Math.max(5, Math.min(plotRect.height - tooltip.offsetHeight - 5, event.clientY - plotRect.top - tooltip.offsetHeight / 2)) + 'px';
   }
   function strategies() {
-    const meta = window.STRATEGY_META || {}, definitions = window.STRATEGY_DEFS || [], assets = window.STRATEGY_ASSETS || [];
-    const curves = window.STRATEGY_CURVES || { dates: [], series: {} }, dates = curves.dates || [];
-    const ordinary = assets.filter(a => a.lev === '1x'), leveraged = assets.filter(a => a.lev !== '1x');
-    if (!assets.some(a => a.c === state.stratAsset)) state.stratAsset = ordinary[0] && ordinary[0].c;
+    const rootMeta = window.STRATEGY_META || {}, definitions = window.STRATEGY_DEFS || [], assets = window.STRATEGY_ASSETS || [];
+    const summaries = rootMeta.windows && rootMeta.windows.length ? rootMeta.windows : [{ year: 2010, start: rootMeta.start, end: rootMeta.end, assets: assets.map(a => a.c) }];
+    if (!summaries.some(item => String(item.year) === state.stratYear) ||
+        (state.stratYear !== '2010' && !(window.STRATEGY_WINDOWS || {})[state.stratYear])) state.stratYear = '2010';
+    const archived = state.stratYear === '2010' ? null : (window.STRATEGY_WINDOWS || {})[state.stratYear];
+    const selected = archived || { start: rootMeta.start, end: rootMeta.end, assets: assets.map(a => a.c), results: window.STRATEGY_RESULTS || [], curves: window.STRATEGY_CURVES || {} };
+    const meta = { ...rootMeta, start: selected.start, end: selected.end };
+    const available = new Set(selected.assets || []), ordinary = assets.filter(a => a.lev === '1x' && available.has(a.c));
+    const leveraged = assets.filter(a => a.lev !== '1x' && available.has(a.c));
+    const curves = selected.curves || { dates: [], series: {} }, dates = curves.dates || [];
+    if (!available.has(state.stratAsset)) state.stratAsset = ordinary[0]?.c || leveraged[0]?.c;
     const methods = definitions.filter(d => d.panel === state.stratPanel);
     if (!methods.some(d => d.id === state.stratMethod)) state.stratMethod = methods[0] && methods[0].id;
     const seriesFor = (asset, method) => ((curves.series || {})[asset] || {})[method];
     const across = [...ordinary, ...(state.leverage ? leveraged : [])].map(a => ({ key: 'asset:' + a.c, label: a.g + ' · ' + a.c + (a.lev === '1x' ? '' : ' · ' + a.lev), experimental: a.lev !== '1x', values: seriesFor(a.c, state.stratMethod) }));
-    const rows = (window.STRATEGY_RESULTS || []).filter(r => r.p === state.stratPanel && r.a === state.stratAsset);
+    const rows = (selected.results || []).filter(r => r.p === state.stratPanel && r.a === state.stratAsset);
     const verified = meta.modelVersion >= 2 && meta.initialCashIncluded;
-    const assetOptions = items => items.map(a => '<option value="' + esc(a.c) + '"' + (state.stratAsset === a.c ? ' selected' : '') + '>' + esc(a.g + ' · ' + a.c + (a.lev === '1x' ? '' : ' · ' + a.lev)) + '</option>').join('');
     const controls = '<div class="strategy-control-bar"><div class="segmented" aria-label="资金情境">' + action('已有一笔钱', 'strategy-panel', state.stratPanel === 'initial' ? 'active' : '', 'data-value="initial"') + action('持续有新收入', 'strategy-panel', state.stratPanel === 'dca' ? 'active' : '', 'data-value="dca"') + '</div>' +
-      (state.stratView === 'results' ? '<label class="strategy-asset-picker">研究标的 <select id="strategy-asset-select"><optgroup label="普通 ETF">' + assetOptions(ordinary) + '</optgroup><optgroup label="杠杆 ETF 实验">' + assetOptions(leveraged) + '</optgroup></select></label>' : '') + '</div>';
-    const context = '<p class="strategy-context' + (verified ? '' : ' warn') + '">回测期 ' + esc(meta.start) + ' → ' + esc(meta.end) + ' · ' + (verified ? '现金计入账户' : '模型待核验') + ' · 暂未计入税费、交易成本与现金利息</p>';
+      '<div class="strategy-year-picker"><span>回测起点</span><div class="strategy-year-buttons">' + summaries.map(item => action(item.year + '起', 'strategy-year', String(item.year) === state.stratYear ? 'active' : '', 'data-value="' + item.year + '" aria-pressed="' + (String(item.year) === state.stratYear) + '"')).join('') + '</div></div></div>';
+    const context = '<p class="strategy-context' + (verified ? '' : ' warn') + '">实际共同交易日 ' + esc(meta.start) + ' → ' + esc(meta.end) + ' · ' + available.size + '只ETF有完整同期间行情 · ' + (verified ? '现金计入账户' : '模型待核验') + ' · 暂未计入交易税费</p>';
+    const assetCard = a => {
+      const enabled = available.has(a.c), first = (rootMeta.assetStarts || {})[a.c];
+      return action('<span class="strategy-asset-name">' + esc(a.g) + '</span><strong>' + esc(a.c) + '</strong><small>' + (enabled ? a.lev === '1x' ? '普通 ETF' : a.lev + ' · 杠杆实验' : first ? esc(first.slice(0, 4) + '年起') : '当前不可选') + '</small>', 'strategy-asset', 'strategy-asset-card' + (state.stratAsset === a.c ? ' active' : '') + (enabled ? '' : ' unavailable'), 'data-value="' + esc(a.c) + '" aria-pressed="' + (state.stratAsset === a.c) + '"' + (enabled ? '' : ' disabled'));
+    };
+    const assetShelf = '<section class="strategy-asset-shelf"><div class="strategy-asset-heading"><div><h2>研究标的</h2><p>先选择ETF，再比较同一资产的投入方式。</p></div><span>' + esc(state.stratAsset || '') + ' · ' + esc(state.stratYear) + '起</span></div><div class="strategy-asset-grid">' + assets.filter(a => a.lev === '1x').map(assetCard).join('') + '</div>' +
+      (leveraged.length ? '<div class="strategy-leverage-heading">' + action(state.showLeverageAssets ? '收起杠杆 ETF' : '查看杠杆 ETF 实验（' + leveraged.length + '只）', 'strategy-leverage-picker', 'text-link') + '<span>每日倍数不等于长期倍数</span></div>' + (state.showLeverageAssets ? '<div class="strategy-asset-grid leveraged">' + leveraged.map(assetCard).join('') + '</div>' : '') : '<p class="strategy-unavailable">该起点没有可用于完整同期间比较的杠杆 ETF。</p>') + '</section>';
     const results = '<div class="card strategy-results-card"><div class="table-caption"><span>' + esc(state.stratAsset) + ' · ' + (state.stratPanel === 'initial' ? '首日资金 $' + money(meta.initial) : '基础月度预算 $' + money(meta.monthly)) + ' · 美元</span><span>资金投入总额不同，请结合 XIRR 判断</span></div><div class="table-wrap"><table class="research-table"><thead><tr><th>投入方式</th><th>累计投入</th><th>期末资产</th><th>XIRR</th><th>净值最大回撤</th><th>最长水下 / 日</th><th>平均仓位</th><th>交易次数</th></tr></thead><tbody>' + rows.map(r => { const def = definitions.find(d => d.id === r.s); return '<tr><td>' + (def ? esc(def.name) : esc(r.s)) + '</td><td>$' + money(r.inv) + '</td><td>$' + money(r.end) + '</td><td>' + pc(verified ? r.irr : null) + '</td><td>' + pc(verified ? r.mdd : null, 1) + '</td><td>' + money(r.uw) + '</td><td>' + pct(r.exp, 1, false) + '</td><td>' + r.tr + '</td></tr>'; }).join('') + '</tbody></table></div><div class="panel-foot"><span>XIRR 是资金加权年化；最大回撤剔除外部现金流影响。</span></div></div>' +
       '<details class="strategy-rules"><summary>查看投入方式的计算规则</summary><div class="rule-list">' + methods.map((d, i) => '<div class="rule-item"><span class="rule-number">0' + (i + 1) + '</span><div><h3>' + esc(d.name) + '</h3><p>' + esc(d.desc) + '</p></div></div>').join('') + '</div></details>';
-    const chart = '<div class="strategy-curve-toolbar"><label>统一投入方式 <select id="strategy-chart-method">' + methods.map(d => '<option value="' + d.id + '"' + (state.stratMethod === d.id ? ' selected' : '') + '>' + esc(d.name) + '</option>').join('') + '</select></label><label class="check-label"><input id="show-leverage" type="checkbox"' + (state.leverage ? ' checked' : '') + '>叠加杠杆 ETF</label></div>' +
-      curveCard('同图比较所有标的', '相同投入方式、相同历史区间；默认显示普通 ETF', across, dates) +
+    const chart = '<div class="strategy-curve-toolbar"><label>统一投入方式 <select id="strategy-chart-method">' + methods.map(d => '<option value="' + d.id + '"' + (state.stratMethod === d.id ? ' selected' : '') + '>' + esc(d.name) + '</option>').join('') + '</select></label>' + (leveraged.length ? '<label class="check-label"><input id="show-leverage" type="checkbox"' + (state.leverage ? ' checked' : '') + '>叠加杠杆 ETF</label>' : '') + '</div>' +
+      curveCard('同图比较可用标的', '同一投入方式、相同交易区间 · 悬浮查看每周数据', across, dates) +
       (state.leverage ? '<p class="note">杠杆 ETF 的每日倍数不等于长期收益倍数；在同图中仅作路径实验。</p>' : '');
     return head('INVESTING RHYTHM', '投入策略', '比较同一资产的投入节奏，以及不同标的在同一条件下的历史路径。') +
       '<div class="tabs strategy-view-tabs" role="tablist" aria-label="投入策略视图">' + action('结果表', 'strategy-view', state.stratView === 'results' ? 'active' : '', 'data-value="results" role="tab" aria-selected="' + (state.stratView === 'results') + '"') + action('曲线对比', 'strategy-view', state.stratView === 'curves' ? 'active' : '', 'data-value="curves" role="tab" aria-selected="' + (state.stratView === 'curves') + '"') + '</div>' +
-      controls + context + (state.stratView === 'results' ? results : chart) +
+      controls + context + (state.stratView === 'results' ? assetShelf + results : chart) +
       '<p class="note">来源：' + esc(meta.source || '待核验') + '。历史回测受起点影响；零成本是假设，不能理解为可实现净收益。</p>';
   }
   function quality() {
@@ -497,6 +537,9 @@
       case 'stock-sort': state.stockDesc = state.stockSort === val ? !state.stockDesc : true; state.stockSort = val; break;
       case 'stock-detail': openStock(code); return;
       case 'strategy-panel': state.stratPanel = val; state.stratMethod = val === 'initial' ? 'lump_sum' : 'dca_month'; state.chartHidden.clear(); break;
+      case 'strategy-year': state.stratYear = val; state.leverage = false; state.chartHidden.clear(); break;
+      case 'strategy-asset': state.stratAsset = val; break;
+      case 'strategy-leverage-picker': state.showLeverageAssets = !state.showLeverageAssets; break;
       case 'strategy-view': state.stratView = val; break;
       case 'chart-line': state.chartHidden.has(val) ? state.chartHidden.delete(val) : state.chartHidden.add(val); break;
       case 'export-quality': download('长衡-数据质量.json', JSON.stringify(window.DATA_QUALITY || {}, null, 2)); return;
@@ -535,11 +578,19 @@
     if (el.id === 'benchmark-type') { state.benchmarkType = el.value; render(); return; }
     if (el.id === 'benchmark-currency') { state.benchmarkCurrency = el.value; render(); return; }
     if (el.id === 'strategy-chart-method') { state.stratMethod = el.value; state.chartHidden.clear(); render(); return; }
-    if (el.id === 'strategy-asset-select') { state.stratAsset = el.value; render(); return; }
     if (el.id === 'fund-category') { state.poolCategory = el.value; state.page = 1; renderFundResults(); return; }
     if (el.id === 'fund-channel') { state.channel = el.value; state.page = 1; renderFundResults(); }
     else if (el.id === 'purchasable') { state.purchasable = el.checked; state.page = 1; renderFundResults(); }
     else if (el.id === 'show-leverage') { state.leverage = el.checked; render(); }
+  });
+  document.addEventListener('pointermove', e => { const plot = e.target.closest('.curve-plot'); if (plot) showCurvePoint(e, plot); });
+  document.addEventListener('pointerdown', e => { const plot = e.target.closest('.curve-plot'); if (plot) showCurvePoint(e, plot); });
+  document.addEventListener('pointerout', e => {
+    const plot = e.target.closest('.curve-plot');
+    if (!plot || plot.contains(e.relatedTarget)) return;
+    const layer = plot.querySelector('.curve-hover-layer'), tooltip = plot.querySelector('.curve-tooltip');
+    if (layer) layer.setAttribute('hidden', '');
+    if (tooltip) tooltip.hidden = true;
   });
   $('#dialog').addEventListener('close', () => { if (lastFocus && lastFocus.isConnected) lastFocus.focus(); else restoreFocus(lastFocus); });
   document.addEventListener('keydown', e => {

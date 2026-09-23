@@ -4,12 +4,13 @@
 ETF 买入策略固定快照回测
 =========================
 
-一次性计算 9 个美股 ETF 在 12 种买入策略下的结果，并写入 data/snapshot.js 的
+按各起点实际可用的美股 ETF 计算 12 种买入策略，并写入 data/snapshot.js 的
 /*__DATA_STRATEGY_BEGIN__*/ ... /*__DATA_STRATEGY_END__*/ 数据块。
 
 口径：
   1) 直接读取 Yahoo chart indicators.adjclose，记录源字段；拒绝含糊的第三方 close。
-  2) 统一起点 2010-03-11；截止日默认昨天，可 --end 指定；输出使用真实共同交易日期。
+  2) 提供 1993 / 1999 / 2001 / 2010 / 2020 五个起点；各窗口仅纳入当年已有行情的 ETF，
+     同一窗口内使用真实共同交易日。截止日默认昨天，可 --end 指定。
   3) 初始资金 100,000 美元期初全额入账（含待投现金）；持续定投按每月 1,000 美元、每季 3,000 美元、
      每年 12,000 美元的基础预算。
   4) 交易成本、税费和现金利息均按 0；ETF 管理费等已包含在复权价格中。
@@ -38,6 +39,8 @@ CACHE_DIR = os.path.join(HERE, '.tmp-strategy')
 API_URL = 'https://query1.finance.yahoo.com/v8/finance/chart/'
 
 START_DATE = '2010-03-11'
+WINDOW_YEARS = (1993, 1999, 2001, 2010, 2020)
+EARLY_CACHE_DEADLINE = {'SPY': '1993-12-31', 'QQQ': '1999-12-31', 'SOXX': '2001-12-31'}
 END_DATE = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
 INITIAL_CAPITAL = 100000.0
 MONTHLY_CONTRIBUTION = 1000.0
@@ -173,10 +176,14 @@ def load_history(symbol, refresh=False, offline=False):
             raise RuntimeError('缓存未通过标的/复权口径验证：' + symbol)
         if symbol.endswith('=X') and (data.get('schemaVersion', 0) < 3 or data.get('dateConvention') != 'exchange_local_date'):
             raise RuntimeError('旧外汇缓存没有交易时区证明，必须重新获取原始时间戳')
+        if symbol in EARLY_CACHE_DEADLINE and (not data.get('data') or data['data'][0]['date'] > EARLY_CACHE_DEADLINE[symbol]):
+            if offline:
+                raise RuntimeError('%s 缓存缺少早期行情；请联网运行 python3 strategy_backtest.py --refresh' % symbol)
+            return load_history(symbol, refresh=True, offline=False)
     else:
         if offline:
             raise RuntimeError('缺少经口径校验的缓存：' + symbol)
-        start = int(datetime(2009, 1, 1, tzinfo=timezone.utc).timestamp())
+        start = int(datetime(1990, 1, 1, tzinfo=timezone.utc).timestamp())
         end = int((datetime.strptime(END_DATE, '%Y-%m-%d').replace(tzinfo=timezone.utc) + timedelta(days=1)).timestamp())
         url = API_URL + symbol + '?period1=%d&period2=%d&interval=1d&events=div%%2Csplits' % (start, end)
         last = None
@@ -207,16 +214,27 @@ def load_history(symbol, refresh=False, offline=False):
     return out
 
 
+def load_all_history(refresh=False, offline=False):
+    return {asset['c']: load_history(asset['c'], refresh=refresh, offline=offline) for asset in ASSETS}
+
+
+def window_history(raw, year):
+    """Include only ETFs observed by that calendar year; never backfill pre-listing days."""
+    earliest = {symbol: min(history) for symbol, history in raw.items() if history}
+    cutoff = '%04d-12-31' % year
+    eligible = [asset for asset in ASSETS if earliest.get(asset['c'], '9999') <= cutoff]
+    if not eligible:
+        raise RuntimeError('%s 年没有可用 ETF 行情' % year)
+    dates = sorted(set.intersection(*(set(raw[asset['c']]) for asset in eligible)))
+    dates = [day for day in dates if '%04d-01-01' % year <= day <= END_DATE]
+    if len(dates) < 250:
+        raise RuntimeError('%s 年起的共同交易日不足: %d' % (year, len(dates)))
+    prices = {asset['c']: [raw[asset['c']][day] for day in dates] for asset in eligible}
+    return dates, prices, eligible
+
+
 def align_history(refresh=False, offline=False):
-    raw = {}
-    for asset in ASSETS:
-        symbol = asset['c']
-        raw[symbol] = load_history(symbol, refresh=refresh, offline=offline)
-    dates = sorted(set.intersection(*(set(v) for v in raw.values())))
-    dates = [d for d in dates if START_DATE <= d <= END_DATE]
-    if len(dates) < 4000:
-        raise RuntimeError('共同交易日不足: %d' % len(dates))
-    prices = {s: [raw[s][d] for d in dates] for s in raw}
+    dates, prices, _ = window_history(load_all_history(refresh, offline), 2010)
     return dates, prices
 
 
@@ -503,11 +521,25 @@ def monthly_sample_indices(dates):
     return sorted(set(indices))
 
 
-def build_results(dates, prices):
+def weekly_sample_indices(dates):
+    """Use actual last trading observation of each ISO week, plus both endpoints."""
+    if not dates:
+        return []
+    indices = [0]
+    for i in range(1, len(dates)):
+        previous = datetime.strptime(dates[i - 1], '%Y-%m-%d').isocalendar()[:2]
+        current = datetime.strptime(dates[i], '%Y-%m-%d').isocalendar()[:2]
+        if current != previous:
+            indices.append(i - 1)
+    indices.append(len(dates) - 1)
+    return sorted(set(indices))
+
+
+def build_results(dates, prices, assets=None):
     results, curves = [], {'dates': [], 'series': {}}
-    samples = monthly_sample_indices(dates)
+    samples = weekly_sample_indices(dates)
     curves['dates'] = [dates[i] for i in samples]
-    for asset in ASSETS:
+    for asset in assets or ASSETS:
         symbol = asset['c']
         inputs = strategy_inputs(prices[symbol], dates)
         curves['series'][symbol] = {}
@@ -527,7 +559,7 @@ def js_data(payload):
     return json.dumps(payload, ensure_ascii=False, separators=(',', ':'))
 
 
-def write_html(results, dates, curves):
+def write_html(results, dates, curves, windows, summaries, asset_starts):
     with open(HTML, 'r', encoding='utf-8') as fh:
         src = fh.read()
 
@@ -540,7 +572,11 @@ def write_html(results, dates, curves):
         'modelVersion': 2,
         'initialCashIncluded': True,
         'maWarmup': '200 observations; hold cash until first available signal',
-        'limitations': ['单一起止窗口，存在起点偏差', '税费、汇兑及现金收益未建模', '部分年度按样本月数预算；倍数定投资金总额不同'],
+        'limitations': ['不同起点与可用标的会改变结果', '税费、汇兑及现金收益未建模', '部分年度按样本月数预算；倍数定投资金总额不同'],
+        'curveSampling': 'weekly_last_actual_trading_day',
+        'windows': summaries,
+        'assetStarts': asset_starts,
+        'totalExperiments': sum(item['records'] for item in summaries),
         'initial': INITIAL_CAPITAL,
         'monthly': MONTHLY_CONTRIBUTION,
         'cost': TRADING_COST,
@@ -554,6 +590,7 @@ def write_html(results, dates, curves):
         'var STRATEGY_DEFS=' + js_data(STRATEGIES) + ';\n'
         'var STRATEGY_RESULTS=' + js_data(results) + ';\n'
         'var STRATEGY_CURVES=' + js_data(curves) + ';\n'
+        'var STRATEGY_WINDOWS=' + js_data(windows) + ';\n'
         '/*__DATA_STRATEGY_END__*/'
     )
     pattern = re.compile(
@@ -579,11 +616,25 @@ def main():
     args = parse_args()
     datetime.strptime(args.end, '%Y-%m-%d')
     END_DATE = args.end
-    log('ETF 策略回测: %s -> %s' % (START_DATE, END_DATE))
-    dates, prices = align_history(refresh=args.refresh, offline=args.offline)
-    results, curves = build_results(dates, prices)
-    write_html(results, dates, curves)
-    write_status('strategy', 'cached' if args.offline else 'success', asOf=dates[-1], records=len(results), basis='provider_adjusted_close')
+    log('ETF 策略回测: %s -> %s' % (WINDOW_YEARS, END_DATE))
+    raw = load_all_history(refresh=args.refresh, offline=args.offline)
+    asset_starts = {symbol: min(history) for symbol, history in raw.items() if history}
+    windows, summaries = {}, []
+    for year in WINDOW_YEARS:
+        window_dates, window_prices, eligible = window_history(raw, year)
+        window_results, window_curves = build_results(window_dates, window_prices, eligible)
+        summaries.append({'year': year, 'start': window_dates[0], 'end': window_dates[-1],
+                          'assets': [asset['c'] for asset in eligible], 'records': len(window_results)})
+        if year == 2010:
+            dates, results, curves = window_dates, window_results, window_curves
+        else:
+            windows[str(year)] = {'start': window_dates[0], 'end': window_dates[-1],
+                                  'assets': [asset['c'] for asset in eligible],
+                                  'results': window_results, 'curves': window_curves}
+        log('  %s: %s → %s，%d 只ETF，%d组' % (year, window_dates[0], window_dates[-1], len(eligible), len(window_results)))
+    write_html(results, dates, curves, windows, summaries, asset_starts)
+    write_status('strategy', 'cached' if args.offline else 'success', asOf=dates[-1],
+                 records=sum(item['records'] for item in summaries), basis='provider_adjusted_close')
 
     def pick(asset, strategy):
         return next(
@@ -600,7 +651,8 @@ def main():
     log('  TQQQ: %8.2f%% / %7.2f%%' % (tqqq['irr'], tqqq['mdd']))
     log('  SOXL: %8.2f%% / %7.2f%%' % (soxl['irr'], soxl['mdd']))
     log('')
-    log('已写入 %s（%d 行结果，固定快照，不参与每日更新）' % (HTML, len(results)))
+    log('已写入 %s（%d 个窗口、%d 组结果，固定快照，不参与每日更新）' %
+        (HTML, len(summaries), sum(item['records'] for item in summaries)))
     return 0
 
 

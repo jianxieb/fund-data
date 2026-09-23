@@ -259,6 +259,27 @@ class StrategyAccounting(unittest.TestCase):
         dates = ['2025-01-02', '2025-01-31', '2025-02-03', '2025-02-28', '2025-03-03']
         self.assertEqual(strategy.monthly_sample_indices(dates), [0, 1, 3, 4])
 
+    def test_weekly_curve_uses_actual_last_trading_day_and_both_endpoints(self):
+        dates = ['2025-01-02', '2025-01-03', '2025-01-06', '2025-01-07',
+                 '2025-01-10', '2025-01-13']
+        self.assertEqual(strategy.weekly_sample_indices(dates), [0, 1, 4, 5])
+
+    def test_earlier_windows_exclude_etfs_without_history_yet(self):
+        dates = [(date(1999, 1, 1) + timedelta(days=i)).isoformat() for i in range(1827)]
+        dates = [day for day in dates if date.fromisoformat(day).weekday() < 5]
+        raw = {
+            'SPY': {day: 100 for day in dates},
+            'QQQ': {day: 100 for day in dates if day >= '1999-03-10'},
+            'SOXX': {day: 100 for day in dates if day >= '2001-07-13'},
+        }
+        with patch.object(strategy, 'END_DATE', '2003-12-31'):
+            early_dates, _, early_assets = strategy.window_history(raw, 1999)
+            later_dates, _, later_assets = strategy.window_history(raw, 2001)
+        self.assertEqual(early_dates[0], '1999-03-10')
+        self.assertEqual([item['c'] for item in early_assets], ['SPY', 'QQQ'])
+        self.assertEqual(later_dates[0], '2001-07-13')
+        self.assertEqual([item['c'] for item in later_assets], ['SPY', 'QQQ', 'SOXX'])
+
     def test_curve_excludes_external_contributions_from_unit_value(self):
         dates = ['2025-01-02', '2025-02-03', '2025-03-03']
         sample = strategy.monthly_sample_indices(dates)
@@ -286,6 +307,29 @@ class StrategyAccounting(unittest.TestCase):
         report = data_quality.audit(snapshot, date(2025, 3, 3))
         findings = next(d for d in report['datasets'] if d['id'] == 'strategy')['issues']
         self.assertIn('curve_end_mismatch', {finding['code'] for finding in findings})
+
+    def test_quality_rejects_corrupt_optional_year_curve(self):
+        snapshot = {
+            'STRATEGY_META': {'modelVersion': 2, 'initialCashIncluded': True,
+                              'basis': 'provider_adjusted_close', 'start': '2025-01-02', 'end': '2025-03-03',
+                              'windows': [
+                                  {'year': 1999, 'start': '2025-01-02', 'end': '2025-03-03', 'records': 1},
+                                  {'year': 2010, 'start': '2025-01-02', 'end': '2025-03-03', 'records': 1},
+                              ]},
+            'STRATEGY_DEFS': [{'id': 'lump_sum'}],
+            'STRATEGY_RESULTS': [{'a': 'SPY', 's': 'lump_sum', 'p': 'initial', 'inv': 100, 'end': 110}],
+            'STRATEGY_CURVES': {'dates': ['2025-01-02', '2025-03-03'],
+                                'series': {'SPY': {'lump_sum': [100, 110]}}},
+            'STRATEGY_WINDOWS': {'1999': {
+                'start': '2025-01-02', 'end': '2025-03-03', 'assets': ['SPY'],
+                'results': [{'a': 'SPY', 's': 'lump_sum', 'p': 'initial', 'inv': 100, 'end': 110}],
+                'curves': {'dates': ['2025-01-02', '2025-03-03'],
+                           'series': {'SPY': {'lump_sum': [100]}}},
+            }},
+        }
+        report = data_quality.audit(snapshot, date(2025, 3, 3))
+        findings = next(d for d in report['datasets'] if d['id'] == 'strategy')['issues']
+        self.assertIn('window_curve_series', {finding['code'] for finding in findings})
 
 
 class FreshnessAndOffline(unittest.TestCase):

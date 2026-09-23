@@ -152,9 +152,47 @@ def audit(snapshot, today=None):
             issue(td, 'curve_series', 'error', '策略曲线与结果不一致，缺少同长的正值单位净值序列', malformed)
         if mismatched_ends:
             issue(td, 'curve_end_mismatch', 'error', '期初资金实验的曲线终值与期末账户资产不一致', mismatched_ends)
+    windows = snapshot.get('STRATEGY_WINDOWS') or {}
+    summaries = meta.get('windows') or []
+    if summaries:
+        expected_years = {str(item['year']) for item in summaries if str(item.get('year')) != '2010'}
+        if set(windows) != expected_years:
+            issue(td, 'strategy_windows_missing', 'error', '可选起点的曲线快照与窗口元数据不一致')
+        definitions = snapshot.get('STRATEGY_DEFS') or []
+        for summary in summaries:
+            year = str(summary.get('year'))
+            if year == '2010':
+                if summary.get('start') != meta.get('start') or summary.get('end') != meta.get('end') or summary.get('records') != len(strategy):
+                    issue(td, 'default_window_mismatch', 'error', '2010窗口元数据与默认回测不一致')
+                continue
+            item = windows.get(year) or {}
+            rows = item.get('results') or []
+            dates = (item.get('curves') or {}).get('dates') or []
+            series = (item.get('curves') or {}).get('series') or {}
+            assets = item.get('assets') or []
+            if not dates or dates[0] != item.get('start') or dates[-1] != item.get('end') \
+                    or dates != sorted(set(dates)) or item.get('start') != summary.get('start') \
+                    or item.get('end') != summary.get('end'):
+                issue(td, 'window_curve_dates', 'error', '可选起点的日期缺失、重复或与窗口元数据不符', year)
+            keys = {(row.get('a'), row.get('s')) for row in rows}
+            expected = {(asset, definition.get('id')) for asset in assets for definition in definitions}
+            if keys != expected or len(rows) != len(expected) or len(rows) != summary.get('records'):
+                issue(td, 'window_results', 'error', '可选起点的资产与投入方式组合不完整', year)
+            malformed = []
+            for row in rows:
+                values = (series.get(row.get('a')) or {}).get(row.get('s'))
+                if not isinstance(values, list) or len(values) != len(dates) \
+                        or any(not finite(v) or v <= 0 for v in values) \
+                        or (values and abs(values[0] - 100) > 1e-3):
+                    malformed.append('%s/%s' % (row.get('a'), row.get('s')))
+                elif row.get('p') == 'initial' and finite(row.get('inv')) and row['inv'] > 0 \
+                        and finite(row.get('end')) and abs(values[-1] - row['end'] / row['inv'] * 100) > 0.01:
+                    malformed.append('%s/%s end' % (row.get('a'), row.get('s')))
+            if malformed:
+                issue(td, 'window_curve_series', 'error', '可选起点的曲线与回测结果不一致', {'year': year, 'series': malformed})
     checks.append({'id': 'strategy_curves', 'status': 'pass' if not any(i['severity'] == 'error' for i in td['issues']) else 'fail',
-                   'scope': '核对曲线的实际起止日期、每组长度、正值与首日基准；不证明上游行情正确'})
-    issue(td, 'single_window_backtest', 'warning', '单一起止窗口有起点偏差；不同预算策略不可只按期末金额排序')
+                   'scope': '核对全部起点的实际日期、资产与策略组合、曲线长度、正值与首日基准；不证明上游行情正确'})
+    issue(td, 'window_selection_bias', 'warning', '起点不同会改变回测表现与可比标的；不同预算策略不可只按期末金额排序')
     issue(td, 'leverage_daily_target', 'warning', '杠杆ETF目标是单日倍数，长期路径与指数倍数不同；仅作为独立实验')
 
     extra = snapshot.get('EXTRA', [])

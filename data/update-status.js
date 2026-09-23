@@ -2,10 +2,10 @@ var UPDATE_STATUS={
   "schemaVersion": 1,
   "datasets": {
     "strategy": {
-      "status": "cached",
-      "attemptedAt": "2026-09-23T14:54:41+00:00",
-      "asOf": "2026-09-18",
-      "records": 108,
+      "status": "success",
+      "attemptedAt": "2026-09-23T15:09:51+00:00",
+      "asOf": "2026-09-21",
+      "records": 288,
       "basis": "provider_adjusted_close"
     },
     "funds": {
@@ -78,5 +78,5 @@ var UPDATE_STATUS={
       }
     }
   },
-  "checkedAt": "2026-09-23T14:54:41+00:00"
+  "checkedAt": "2026-09-23T15:09:51+00:00"
 };

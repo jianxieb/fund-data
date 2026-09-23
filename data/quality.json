@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-23T15:01:01+00:00",
+  "checkedAt": "2026-09-23T15:20:12+00:00",
   "asOf": "2026-09-23",
   "status": "unverified",
   "summary": {
@@ -125,14 +125,14 @@
     {
       "id": "strategy",
       "label": "买入策略实验",
-      "asOf": "2026-09-18",
+      "asOf": "2026-09-21",
       "dateRange": null,
       "records": 108,
       "issues": [
         {
-          "code": "single_window_backtest",
+          "code": "window_selection_bias",
           "severity": "warning",
-          "message": "单一起止窗口有起点偏差；不同预算策略不可只按期末金额排序"
+          "message": "起点不同会改变回测表现与可比标的；不同预算策略不可只按期末金额排序"
         },
         {
           "code": "leverage_daily_target",
@@ -1510,7 +1510,7 @@
     {
       "id": "strategy_curves",
       "status": "pass",
-      "scope": "核对曲线的实际起止日期、每组长度、正值与首日基准；不证明上游行情正确"
+      "scope": "核对全部起点的实际日期、资产与策略组合、曲线长度、正值与首日基准；不证明上游行情正确"
     }
   ],
   "scope": "结构校验、计算逻辑回归和部分官方资料核对；不是对全部历史数值的独立审计。"
