@@ -14,6 +14,7 @@ python screens/fund_screen.py all                    # 全量重建（网络工�
 """
 import argparse
 import csv
+import hashlib
 import json
 import math
 import os
@@ -393,7 +394,8 @@ def cmd_prefilter(args):
 # ---------------------------------------------------------------- 3. 逐只补基础信息 + 基金经理
 BASIC_API = 'https://fundmobapi.eastmoney.com/FundMNewApi/FundMNBasicInformation'
 BASIC_KEEP = {
-    'SHORTNAME': 'name', 'FTYPE': 'ftype', 'ESTABDATE': 'estab', 'DWJZ': 'nav', 'LJJZ': 'ljz',
+    'SHORTNAME': 'name', 'FTYPE': 'ftype', 'ESTABDATE': 'estab', 'DWJZ': 'nav', 'FSRQ': 'navdate',
+    'JZZZL': 'daily_return', 'LJJZ': 'ljz',
     'SYL_1N': 'r1y', 'SYL_2N': 'r2y', 'SYL_3N': 'r3y', 'SYL_JN': 'rytd', 'SYL_LN': 'rsince',
     'ENDNAV': 'scale', 'FEGMRQ': 'scale_date', 'JJGS': 'company', 'JJJL': 'managers',
     'RATE': 'fee_now', 'SOURCERATE': 'fee_src', 'SGZT': 'sgzt', 'SHZT': 'shzt',
@@ -1004,7 +1006,7 @@ def parse_snapshot_extra(path=SNAPSHOT, text=None):
     return records
 
 
-def write_extra_fields(changes):
+def write_extra_fields(changes, expected_return_asof=None):
     """Patch only successful EXTRA rows, re-reading other agents' blocks at commit."""
     src = Path(SNAPSHOT).read_text(encoding='utf-8')
     match = re.search(r'/\*__DATA_EXTRA_BEGIN__\*/.*?/\*__DATA_EXTRA_END__\*/', src, re.S)
@@ -1015,6 +1017,8 @@ def write_extra_fields(changes):
         cm = re.search(r"\bc:'(\d{6})'", line)
         if cm and cm.group(1) in changes:
             row = parse_js_record(line)
+            if expected_return_asof is not None and row.get('returnAsOf') != expected_return_asof.get(cm.group(1)):
+                raise RuntimeError('写入前收益截止日已变更，拒绝覆盖 ' + cm.group(1))
             row.update(changes[cm.group(1)])
             line = '{' + ','.join(key + ':' + (js_str(value) if isinstance(value, str)
                                 else json.dumps(value, ensure_ascii=False, separators=(',', ':')))
@@ -1023,6 +1027,42 @@ def write_extra_fields(changes):
     temp = Path(SNAPSHOT).with_suffix('.extra.tmp')
     temp.write_text(src[:match.start()] + '\n'.join(lines) + src[match.end():], encoding='utf-8')
     temp.replace(SNAPSHOT)
+
+
+def latest_nav_observation(rows, asof):
+    """Pair a verified return endpoint with that day's unit NAV and daily change."""
+    matches = [row for row in rows if row.get('FSRQ') == asof]
+    if not matches:
+        return None
+    values = {(fnum(row.get('DWJZ')), fnum(row.get('JZZZL'))) for row in matches}
+    if len(values) != 1:
+        return None
+    nav, daily_change = values.pop()
+    if nav is None or nav <= 0:
+        return None
+    return dict(nav=nav, navdate=asof, dz=daily_change)
+
+
+def dated_value(*candidates):
+    """Choose the newest paired observation; never borrow another source's date."""
+    undated = None
+    dated = []
+    for priority, (value, observed) in enumerate(candidates):
+        value = fnum(value)
+        if value is None or value <= 0:
+            continue
+        try:
+            day = date.fromisoformat(str(observed)[:10]).isoformat()
+        except (ValueError, TypeError):
+            day = None
+        if day:
+            dated.append((day, -priority, value))
+        if undated is None:
+            undated = value
+    if dated:
+        day, _priority, value = max(dated)
+        return value, day
+    return (undated, None)
 
 
 def cmd_managers(args):
@@ -1372,6 +1412,9 @@ def cmd_verify_samples(args):
                          feeUnknownItems=[label for key, label in (('fee_m', '管理费'), ('fee_c', '托管费'), ('fee_s', '销售服务费'))
                                           if fee.get(key) is None],
                          checkedAt=datetime.now(timezone.utc).isoformat())
+            nav_observation = latest_nav_observation(rows, m['latest'])
+            check['navObservation'] = nav_observation
+            check['navSyncStatus'] = 'matched_return_endpoint' if nav_observation else 'source_nav_unavailable'
             checks.append(check)
             changes[code] = dict(r=rvalues, mdd5=m.get('mdd5'), vol5=m.get('vol5'), basis=m['basis'],
                                  returnAsOf=m['latest'], riskAsOf=m['latest'], returnSource='Eastmoney历史净值与公司行为',
@@ -1381,6 +1424,8 @@ def cmd_verify_samples(args):
                                  note='复算年度收益（截至%s）：%s' % (m['latest'], fmt_yearly(m.get('yearly'))),
                                  returnSourceUrl=check['sourceUrl'], fee=check['fees'], feeSource=fee_url,
                                  feeCheckedAt=check['checkedAt'], performanceVerifiedAt=check['checkedAt'])
+            if nav_observation and (not old.get('navdate') or old['navdate'] <= nav_observation['navdate']):
+                changes[code].update(nav_observation)
             log('  ✓ %s %s：%d 条净值；截至 %s；旧日期重演差 %s' %
                 (code, old['n'], len(rows), m['latest'], check['alignedDelta']))
         except (OSError, ValueError, RuntimeError, KeyError, TypeError) as exc:
@@ -1395,6 +1440,65 @@ def cmd_verify_samples(args):
     if failures:
         raise RuntimeError('部分样本核验失败：' + json.dumps(failures, ensure_ascii=False))
     return checks
+
+
+def cmd_sync_verified_nav(args):
+    """Reconcile already verified returns with their saved same-day NAV rows."""
+    evidence = load_json(str(Path(ROOT) / 'data' / 'screening-validation.json'), []) or []
+    if not evidence:
+        raise RuntimeError('缺少业绩核验证据；先运行 verify-samples')
+    lookup = {row['c']: row for row in parse_snapshot_extra()}
+    wanted = None if args.codes == 'all' else {part.strip() for part in args.codes.split(',') if part.strip()}
+    chosen = [row for row in evidence if wanted is None or row['code'] in wanted]
+    if not chosen or wanted and wanted - {row['code'] for row in chosen}:
+        raise RuntimeError('指定基金未全部包含在已核验样本中')
+    changes, report, failures = {}, [], {}
+    for check in chosen:
+        code = check['code']
+        old = lookup.get(code)
+        path = Path(U.HIST_DIR) / (code + '.json')
+        try:
+            if old is None or old.get('returnAsOf') != check.get('asof'):
+                raise ValueError('快照收益日与核验证据不一致')
+            if not path.exists():
+                raise ValueError('本机缺少原始历史缓存')
+            rows = load_json(str(path), []) or []
+            metrics = deep_metrics(rows)
+            if not metrics or not isinstance(check.get('r'), list) or len(check['r']) != 5 or \
+                    not isinstance(old.get('r'), list) or len(old['r']) != 5:
+                raise ValueError('缺少完整的五个收益周期对照')
+            calculated = [metrics.get('ret%d' % years) for years in (1, 2, 3, 5, 10)]
+            if len(rows) != check.get('rows') or metrics.get('latest') != check['asof'] or \
+                    metrics.get('basis') != check.get('basis') or any(
+                    (a is None) != (b is None) or a is not None and abs(a - b) > 1e-5
+                    for a, b in zip(calculated, check['r'])):
+                raise ValueError('原始历史与已发布核验结果不一致')
+            if any((a is None) != (b is None) or a is not None and abs(a - b) > 1e-5
+                   for a, b in zip(old['r'], check['r'])):
+                raise ValueError('当前快照收益与核验证据不一致')
+            observation = latest_nav_observation(rows, check['asof'])
+            if not observation:
+                raise ValueError('收益截止日缺少唯一有效单位净值')
+            if old.get('navdate') and old['navdate'] > check['asof']:
+                raise ValueError('现有净值比核验证据更新，拒绝回退')
+            if old.get('navdate') == check['asof'] and old.get('nav') != observation['nav']:
+                raise ValueError('同日净值与原始历史不一致，需人工核对')
+            changes[code] = observation
+            report.append(dict(code=code, name=old['n'], sourceUrl=check['sourceUrl'],
+                               returnAsOf=check['asof'], oldNav=old.get('nav'), oldNavDate=old.get('navdate'),
+                               newNav=observation['nav'], newNavDate=observation['navdate'],
+                               oldDailyChangePct=old.get('dz'), newDailyChangePct=observation['dz'],
+                               rawHistorySha256=hashlib.sha256(path.read_bytes()).hexdigest()))
+        except (KeyError, TypeError, ValueError) as exc:
+            failures[code] = str(exc)
+    if failures:
+        raise RuntimeError('净值同步已中止，未写入任何数据：' + json.dumps(failures, ensure_ascii=False))
+    if args.apply:
+        write_extra_fields(changes, {row['code']: row['asof'] for row in chosen})
+        save_json(str(Path(ROOT) / 'data' / 'nav-reconciliation.json'),
+                  dict(checkedAt=datetime.now(timezone.utc).isoformat(), count=len(report), records=report))
+    log('  ✓ 同日净值可核对 %d / %d；%s' % (len(report), len(chosen), '已回写' if args.apply else '预览，未回写'))
+    return report
 
 
 def fmt_yearly(yearly, n=6):
@@ -1649,15 +1753,16 @@ def cmd_html(args):
             log('    ... %d/%d' % (n, total))
         st = (info.get('st') or basic.get('sgzt') or '').strip()
         st = {'开放申购': '开放', '限大额': '限大额', '暂停申购': '暂停'}.get(st, st)
-        sz = info.get('sz')
-        if sz is None:
-            sc = fnum(basic.get('scale'))
-            sz = (sc / 1e8) if sc else None
-        nav = info.get('nav') or fnum(basic.get('nav'))
-        navdate = (info.get('navdate') or r.get('latest') or '')[:10]
-        dz = info.get('dz')
-        if dz is None:
-            dz = fnum(r.get('r1d'))
+        basic_scale = fnum(basic.get('scale'))
+        sz, szdate = dated_value((info.get('sz'), info.get('szdate')),
+                                 (basic_scale / 1e8 if basic_scale else None, basic.get('scale_date')))
+        nav, navdate = dated_value((info.get('nav'), info.get('navdate')),
+                                   (basic.get('nav'), basic.get('navdate')))
+        dz = None
+        if navdate and nav == fnum(info.get('nav')) and navdate == info.get('navdate'):
+            dz = fnum(info.get('dz'))
+        elif navdate and nav == fnum(basic.get('nav')) and navdate == basic.get('navdate'):
+            dz = fnum(basic.get('daily_return'))
         ftype = basic.get('ftype') or r.get('ftype') or ''
         ix = (r.get('index_name') or '').strip() or ftype
         ttype = '场内ETF' if is_etf else ('LOF' if re.search(r'LOF', r['name']) else '场外')
@@ -1693,7 +1798,8 @@ def cmd_html(args):
             'returnAsOf:%s' % js_str(m.get('latest')), 'riskAsOf:%s' % js_str(m.get('latest')),
             'returnFirst:%s' % js_str(m.get('first')), 'riskFirst:%s' % js_str(m.get('first')),
             'basis:%s' % js_str(m.get('basis')), 'returnSource:%s' % js_str('Eastmoney历史净值与公司行为'),
-            'sz:%s' % js_num(sz, 1), 'nav:%s' % js_num(nav, 4), 'navdate:%s' % js_str(navdate),
+            'sz:%s' % js_num(sz, 1), 'szdate:%s' % (js_str(szdate) if szdate else 'null'),
+            'nav:%s' % js_num(nav, 4), 'navdate:%s' % (js_str(navdate) if navdate else 'null'),
             'dz:%s' % js_num(dz, 2),
             'p:%s' % js_num(sd.get('price'), 3), 'prem:%s' % js_num(sd.get('prem'), 2),
             'iopv:%s' % js_num(sd.get('iopv'), 3), 'pct:%s' % js_num(sd.get('pct'), 2),
@@ -1886,7 +1992,10 @@ def main():
     sub.add_parser('policy', help='离线重算优先研究名单与原因，写入 data/screening.js')
     pv = sub.add_parser('verify-samples', help='全历史核验代表候选并保留同日对比证据')
     pv.add_argument('--codes', default='shortlist', help='逗号分隔基金代码；默认核验当前全部优先研究候选')
-    pv.add_argument('--apply', action='store_true', help='仅回写核验成功样本的收益、风险、费用和独立日期')
+    pv.add_argument('--apply', action='store_true', help='仅回写核验成功样本的收益、风险、费用及同日净值')
+    pn = sub.add_parser('sync-verified-nav', help='以本机已核验历史缓存修复快照中过期的同日净值')
+    pn.add_argument('--codes', default='all', help='默认全部已核验样本；也可指定逗号分隔代码')
+    pn.add_argument('--apply', action='store_true', help='核对全部所选样本后写回净值并记录差异')
     pm = sub.add_parser('managers', help='核对EXTRA每位现任经理的明确个人上任日期')
     pm.add_argument('--codes', default='all', help='默认全部EXTRA；也可逗号分隔代码')
     pm.add_argument('--workers', type=int, default=6)
@@ -1912,6 +2021,7 @@ def main():
     fn = {'universe': cmd_universe, 'prefilter': cmd_prefilter, 'enrich': cmd_enrich,
           'metrics': cmd_metrics, 'report': cmd_report, 'html': cmd_html,
            'promote': cmd_promote, 'policy': cmd_policy, 'verify-samples': cmd_verify_samples,
+           'sync-verified-nav': cmd_sync_verified_nav,
            'managers': cmd_managers}.get(args.cmd)
     if fn is None:
         ap.print_help()

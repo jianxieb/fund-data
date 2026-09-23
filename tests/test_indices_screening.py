@@ -95,6 +95,23 @@ def research_row(code, manager=None, bucket='x1'):
 
 
 class ScreeningTests(unittest.TestCase):
+    def test_verified_nav_uses_the_return_endpoint_not_an_older_display_quote(self):
+        history = [dict(FSRQ='2026-09-21', DWJZ='3.3550', JZZZL='0.72'),
+                   dict(FSRQ='2026-09-10', DWJZ='3.1360', JZZZL='-0.44')]
+        self.assertEqual(screening.latest_nav_observation(history, '2026-09-21'),
+                         dict(nav=3.355, navdate='2026-09-21', dz=.72))
+        self.assertIsNone(screening.latest_nav_observation(history, '2026-09-18'))
+        self.assertIsNone(screening.latest_nav_observation(history +
+                          [dict(FSRQ='2026-09-21', DWJZ='3.4000', JZZZL='0.72')], '2026-09-21'))
+
+    def test_fallback_value_keeps_its_own_observation_date(self):
+        self.assertEqual(screening.dated_value((3.136, '2026-09-10'), (3.355, '2026-09-21')),
+                         (3.355, '2026-09-21'))
+        self.assertEqual(screening.dated_value((3.136, None), (3.355, '2026-09-21')),
+                         (3.355, '2026-09-21'))
+        self.assertEqual(screening.dated_value((3.136, None), (None, '2026-09-21')),
+                         (3.136, None))
+
     def test_institutional_share_is_not_a_default_candidate(self):
         row = research_row('000001')
         row['n'] = '示例长期混合I'

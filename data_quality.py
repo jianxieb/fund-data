@@ -241,6 +241,15 @@ def audit(snapshot, today=None):
                    or age_days(r.get('navdate'), today) > 10]
     if stale_extra:
         issue(ed, 'stale_research_nav', 'warning', '%d只扩展基金的净值缺日期或超过10日；规则重生成不代表净值已更新' % len(stale_extra), stale_extra)
+    undated_scale = [r.get('c') for r in extra if finite(r.get('sz')) and r['sz'] > 0
+                     and age_days(r.get('szdate'), today) is None]
+    if undated_scale:
+        issue(ed, 'research_scale_date_unverified', 'unverified',
+              '%d只扩展基金的规模缺独立观察日期；不能作为当前规模判断' % len(undated_scale), undated_scale)
+    future_scale = [r.get('c') for r in extra if finite(r.get('sz')) and r['sz'] > 0
+                    and age_days(r.get('szdate'), today) is not None and age_days(r.get('szdate'), today) < 0]
+    if future_scale:
+        issue(ed, 'research_scale_date_future', 'error', '扩展基金规模观察日期在未来', future_scale)
     # Manager observations belong to their own source date. Running the policy
     # again must not silently advance the appointment record or its freshness.
     for target, records in ((fd, funds), (ed, extra)):

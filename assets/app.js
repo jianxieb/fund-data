@@ -428,12 +428,15 @@
         ['卖出费用', redemption(f, true)],
         ['申购状态 / 日限额', f.exchange ? '场内交易；不使用场外申赎限制' : esc(f.st || '未收录') + ' / ' + (/暂停/.test(f.st) ? '暂停期间无可用额度' : esc(f.lm || '未收录'))],
         ['单位净值 / 日期', money(f.nav, 4) + ' / ' + esc(f.navdate || '未收录')],
-        ['规模 / 成立日', money(f.sz, 1) + '亿元 / ' + esc(f.d) + '<span class="sub">规模截至：' + esc(f.szdate || '未独立记录') + '</span>'],
+        ['规模 / 成立日', money(f.sz, 1) + '亿元 / ' + esc(f.d) + (f.szdate ? '<span class="sub">规模截至：' + esc(f.szdate) + '</span>' : '')],
         ['近5年最大回撤 / 波动率', pct(f.mdd5, 2, false) + ' / ' + pct(f.vol5, 2, false) + '<span class="sub">截至：' + esc(metricDate(f, 'risk')) + '</span>'],
-        ['近3年最大回撤 / 波动率', pct(f.mdd3, 2, false) + ' / ' + pct(f.v3, 2, false) + '<span class="sub">截至：' + esc(metricDate(f, 'risk')) + '</span>'],
+        (Number.isFinite(f.mdd3) || Number.isFinite(f.v3) ?
+          ['近3年最大回撤 / 波动率', pct(f.mdd3, 2, false) + ' / ' + pct(f.v3, 2, false) +
+            '<span class="sub">截至：' + esc(metricDate(f, 'risk')) + '</span>'] : null),
         ['现任经理 / 本基金任期', managerText(f, true) + '<span class="sub">任期截至：' + esc(f.managerAsOf || '未记录') + '</span>'],
-        ['交易价 / 快照溢价', money(f.p, 3) + ' / ' + pct(f.prem) + '<span class="sub">报价时间：' + esc(f.priceAsOf || f.quotedAt || '未独立记录') + '；快照非实时</span>']
-      ]) +
+        (f.exchange || Number.isFinite(f.p) ? ['交易价 / 快照溢价', money(f.p, 3) + ' / ' + pct(f.prem) +
+          (f.priceAsOf || f.quotedAt ? '<span class="sub">报价时间：' + esc(f.priceAsOf || f.quotedAt) + '；快照非实时</span>' : '')] : null)
+      ].filter(Boolean)) +
       '<div class="actions">' + extLink(f.managerSourceUrl || 'https://fundf10.eastmoney.com/jjjl_' + code + '.html', '经理任职原文') + extLink('https://fund.eastmoney.com/' + code + '.html', '净值与基金资料') + extLink('https://fundf10.eastmoney.com/jjfl_' + code + '.html', '买入卖出费率') + extLink('https://fundf10.eastmoney.com/jjgg_' + code + '.html', '正式公告') + '</div>' +
       '<p class="note">经理资料采集：' + esc(stamp(f.managerCheckedAt)) + '；持续费率采集：' + esc(stamp(f.feeCheckedAt)) + '。' + (f.exchange ? '交易佣金以实际券商约定为准，未知费项不按0处理。' : '赎回费旧档缺少持有期映射，不能用于精确估算；未知费用不按0处理。') + esc(f.note || '') + '</p><div class="dialog-footer">' + action('加入对比', 'compare-toggle', 'btn primary', 'data-code="' + code + '"') + '</div>');
   }

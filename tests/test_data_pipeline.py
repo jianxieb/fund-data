@@ -361,6 +361,14 @@ class StrategyAccounting(unittest.TestCase):
 
 
 class FreshnessAndOffline(unittest.TestCase):
+    def test_scale_without_its_own_date_is_marked_unverified(self):
+        rows = [{'c': '000001', 'sz': 5.4, 'navdate': '2026-09-21'},
+                {'c': '000002', 'sz': 5.4, 'szdate': '2026-06-30'}]
+        report = data_quality.audit({'EXTRA': rows}, date(2026, 9, 21))
+        issues = {item['code']: item for item in next(d for d in report['datasets']
+                                                      if d['id'] == 'domestic_funds')['issues']}
+        self.assertEqual(issues['research_scale_date_unverified']['affected'], ['000001'])
+
     def test_manager_and_extended_nav_freshness_do_not_follow_policy_run_date(self):
         rows = [{'c': '000001', 'navdate': '2026-09-01', 'managerAsOf': '2026-08-01',
                  'managerSourceUrl': 'https://example.org/manager', 'managerRecords': [{'name': '甲', 'start': '2020-01-01'}]},

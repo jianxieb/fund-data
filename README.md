@@ -49,7 +49,7 @@
 - **历史窗口不是时间曲线**：基金与指数的1/2/3/5/10年区间回报只用于并排比较，不拼成净值曲线。投入策略有“结果表”“曲线对比”两个视图；曲线可比较同一投入方式下的全部可用ETF，或同一ETF的六种投入方式，选择实际账户金额或截至观察日的资金加权年化 XIRR。前者按每周最后一个实际交易日取样，后者满一年后按月末实际交易日取样；悬浮可读数，杠杆ETF单独标记。可选1993、1999、2001、2010、2020年起，实际开始日取当年之后所有可用标的的首个共同交易日，上市前不补数据。曲线由对齐的ETF日度复权行情和现金账户逐日计算，不插值或从几个区间收益倒推路径。完整口径见[策略曲线说明](docs/strategy-curves.md)。
 - **投入策略现金正确入账**：已有资金首日全额进入账户，等待买入仍作为现金；后续定投才是外部入金。交易成本不能让现金变负；不同投入预算不能只比期末资产。
 
-当前数据的逐项核验情况见 data/quality.json，真实源抓取与修复证据见 [数据链路审计](docs/data-pipeline-audit.md)、[指数与筛选审计](docs/indices-screening-audit.md) 和 [经理字段审计](docs/manager-field-audit.md)。计算检查通过不等于全部原始资料已经独立验证。
+当前数据的逐项核验情况见 data/quality.json，真实源抓取与修复证据见 [数据链路审计](docs/data-pipeline-audit.md)、[指数与筛选审计](docs/indices-screening-audit.md)、[经理字段审计](docs/manager-field-audit.md) 和 [官方资料抽查](docs/official-source-spot-check-2026-09-24.md)。计算检查通过不等于全部原始资料已经独立验证。
 
 ## 更新
 
@@ -84,6 +84,7 @@ daily_update.ps1 调用相同更新入口，兼容 Windows 原有调度命令。
 | data/verification-managers.json | 基础基金集的逐人任职日期与公开资料证据 |
 | data/screening-manager-validation.json | 扩展研究池的逐人经理资料、抓取状态与来源证据 |
 | data/screening-validation.json | 扩展研究池已复算样本的收益、风险及费率核对记录 |
+| data/nav-reconciliation.json | 已复算基金同日净值同步前后的值、日期及原始历史哈希 |
 | data/quality.* | 内容质量：错误、限制、尚待核验的领域 |
 | data/update-status.* | 最近执行与最近线上抓取状态 |
 | data/refresh-report.* | 统一刷新执行报告 |

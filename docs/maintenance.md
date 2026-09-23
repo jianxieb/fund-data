@@ -66,7 +66,17 @@ python3 screens/fund_screen.py verify-samples --codes shortlist --apply
 python3 data_quality.py --strict
 ```
 
-也可将`shortlist`替换为逗号分隔的基金代码，分批处理其余待核验记录。去掉`--apply`会生成核验证据而不回写业绩。成功写回后会重新生成候选规则；未成功的记录不会变成“已核验”。这个步骤不保证同时刷新净值、规模和申购状态，各字段仍使用自身日期。
+也可将`shortlist`替换为逗号分隔的基金代码，分批处理其余待核验记录。去掉`--apply`会生成核验证据而不回写业绩。成功写回后会重新生成候选规则；未成功的记录不会变成“已核验”。复算成功且历史行含同日单位净值时，净值与单日涨跌现在也写回收益截止日；规模和申购状态不随此步骤刷新，各字段仍使用自身日期。
+
+已复算样本如果仍展示旧净值，可用本机原始缓存作一次严格对齐：
+
+```sh
+python3 screens/fund_screen.py sync-verified-nav
+python3 screens/fund_screen.py sync-verified-nav --apply
+python3 data_quality.py --strict
+```
+
+第一条仅预览，第二条要求`data/screening-validation.json`、当前快照收益日及`.tmp-hist/`原始历史的行数和五个收益周期逐只匹配，全部通过才写回；差异记录在`data/nav-reconciliation.json`。新克隆不带原始历史缓存，需先联网核验对应基金，不能只凭已发布收益推测同日净值。此次 48 只的修复和官方资料对照见[官方资料抽查](official-source-spot-check-2026-09-24.md)。
 
 单独重新核对经理资料：
 
@@ -105,6 +115,7 @@ python3 data_quality.py --strict
 | `data/quality.json` | 当前内容错误、使用限制和待核验项目 |
 | `.tmp-snap/refresh-<dataset>.log` | 对应阶段完整本地日志 |
 | `data/verification-*.json`、`data/*-validation.json` | 来源、区间、原始摘要、重算与代表项核验记录 |
+| `data/nav-reconciliation.json` | 已复算基金的旧净值、同日新净值、日期及原始缓存哈希 |
 
 命令成功不等于全部数据都新鲜或经过独立审计。质量检查的严格模式以错误决定失败；仍可能存在限制提示和待核验记录。数据源失败或超时返回非零码，已成功的其他阶段可以保留。
 
