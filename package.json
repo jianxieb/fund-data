@@ -5,7 +5,8 @@
   "description": "长衡 · 公开的长期投资研究站",
   "scripts": {
     "test": "node --test tests/model.test.cjs",
-    "check": "node --check assets/app.js && node --check assets/model.js"
+    "check": "node --check assets/app.js && node --check assets/model.js && node scripts/cache_versions.mjs --check",
+    "version-assets": "node scripts/cache_versions.mjs --write"
   },
   "engines": { "node": ">=18" }
 }

@@ -10,6 +10,13 @@ import time
 from data_status import DATA, ROOT, atomic_text, now_iso, write_status
 
 DATASETS = ('funds', 'indices', 'stocks', 'screening', 'strategy', 'quality')
+PUBLISHED_OUTPUTS = {
+    'funds': ('snapshot.js',),
+    'indices': ('indices.js', 'index-history.json'),
+    'stocks': ('snapshot.js',),
+    'screening': ('screening.js',),
+    'strategy': ('snapshot.js',),
+}
 
 
 def commands(offline=False):
@@ -29,6 +36,10 @@ def commands(offline=False):
 def execute(dataset, command, timeout, offline=False):
     started = time.monotonic()
     attempted = now_iso()
+    published_before = {}
+    for name in PUBLISHED_OUTPUTS.get(dataset, ()):
+        path = DATA / name
+        published_before[path] = path.read_bytes() if path.exists() else None
     try:
         result = subprocess.run(command, cwd=ROOT, text=True, encoding='utf-8', errors='replace',
                                 capture_output=True, timeout=timeout)
@@ -42,6 +53,20 @@ def execute(dataset, command, timeout, offline=False):
         log += '\n执行超过 %s 秒，子进程已终止；该数据集不能视为更新成功。\n' % timeout
     except OSError as exc:
         status, code, log = 'failed', 1, str(exc)
+    restored = []
+    if code != 0:
+        for path, previous in published_before.items():
+            if previous is None:
+                if path.exists():
+                    path.unlink()
+                    restored.append(path.name)
+            elif not path.exists() or path.read_bytes() != previous:
+                temporary = path.with_name(path.name + '.rollback.tmp')
+                temporary.write_bytes(previous)
+                os.replace(temporary, path)
+                restored.append(path.name)
+        if restored:
+            log += '\n本阶段未成功，已恢复页面数据：%s。\n' % ', '.join(restored)
     duration = round(time.monotonic() - started, 2)
     directory = ROOT / '.tmp-snap'
     directory.mkdir(exist_ok=True)
@@ -62,7 +87,8 @@ def execute(dataset, command, timeout, offline=False):
             write_status(dataset, 'cached' if offline and dataset not in ('quality', 'screening') else 'checked' if dataset in ('quality', 'screening') else 'success',
                          exitCode=0, seconds=duration, mode='offline' if offline else 'online', message='执行成功；数据准确性与日期由质量报告单独说明。')
     return {'dataset': dataset, 'status': status, 'exitCode': code, 'seconds': duration,
-            'log': '.tmp-snap/refresh-' + dataset + '.log'}
+            'log': '.tmp-snap/refresh-' + dataset + '.log',
+            'publishedRollback': bool(restored)}
 
 
 def main():

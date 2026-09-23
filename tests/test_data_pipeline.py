@@ -1,6 +1,8 @@
 import tempfile
 import unittest
+import subprocess
 from datetime import date, timedelta
+from pathlib import Path
 from unittest.mock import patch
 
 import data_quality
@@ -452,6 +454,68 @@ class FreshnessAndOffline(unittest.TestCase):
         commands = refresh.commands(True)
         for name in ('funds', 'indices', 'stocks', 'strategy'):
             self.assertIn('--offline', commands[name])
+
+    def test_failed_refresh_restores_published_data_but_keeps_failure_log(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            data = root / 'data'
+            data.mkdir()
+            published = data / 'snapshot.js'
+            published.write_text('previous snapshot', encoding='utf-8')
+
+            def partial_run(*_args, **_kwargs):
+                published.write_text('incomplete replacement', encoding='utf-8')
+                return subprocess.CompletedProcess(['fake'], 3, stdout='partial', stderr='')
+
+            with patch.object(refresh, 'ROOT', root), patch.object(refresh, 'DATA', data), \
+                    patch.object(refresh.subprocess, 'run', side_effect=partial_run), \
+                    patch.object(refresh, 'write_status') as status:
+                result = refresh.execute('funds', ['fake'], 5, offline=True)
+            self.assertEqual(result['exitCode'], 3)
+            self.assertTrue(result['publishedRollback'])
+            self.assertEqual(published.read_text(encoding='utf-8'), 'previous snapshot')
+            self.assertIn('已恢复页面数据：snapshot.js', (root / result['log']).read_text(encoding='utf-8'))
+            self.assertEqual(status.call_args.args[:2], ('funds', 'failed'))
+
+    def test_successful_refresh_keeps_new_published_data(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            data = root / 'data'
+            data.mkdir()
+            published = data / 'snapshot.js'
+            published.write_text('previous snapshot', encoding='utf-8')
+
+            def successful_run(*_args, **_kwargs):
+                published.write_text('new snapshot', encoding='utf-8')
+                return subprocess.CompletedProcess(['fake'], 0, stdout='done', stderr='')
+
+            with patch.object(refresh, 'ROOT', root), patch.object(refresh, 'DATA', data), \
+                    patch.object(refresh.subprocess, 'run', side_effect=successful_run), \
+                    patch.object(refresh, 'write_status'):
+                result = refresh.execute('funds', ['fake'], 5, offline=True)
+            self.assertEqual(result['exitCode'], 0)
+            self.assertFalse(result['publishedRollback'])
+            self.assertEqual(published.read_text(encoding='utf-8'), 'new snapshot')
+
+    def test_timed_out_refresh_restores_published_data(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            data = root / 'data'
+            data.mkdir()
+            published = data / 'indices.js'
+            published.write_text('previous indices', encoding='utf-8')
+
+            def timed_out(*_args, **_kwargs):
+                published.write_text('incomplete indices', encoding='utf-8')
+                raise subprocess.TimeoutExpired(['fake'], 5, output=b'partial')
+
+            with patch.object(refresh, 'ROOT', root), patch.object(refresh, 'DATA', data), \
+                    patch.object(refresh.subprocess, 'run', side_effect=timed_out), \
+                    patch.object(refresh, 'write_status'):
+                result = refresh.execute('indices', ['fake'], 5, offline=True)
+            self.assertEqual(result['exitCode'], 124)
+            self.assertTrue(result['publishedRollback'])
+            self.assertEqual(published.read_text(encoding='utf-8'), 'previous indices')
 
     def test_structural_pass_is_not_independent_data_verification(self):
         report = data_quality.audit({'FUNDS': [{'c': '123456', 'nav': 1, 'r': [1] * 5, 'navdate': '2026-09-18'}]}, date(2026, 9, 21))
