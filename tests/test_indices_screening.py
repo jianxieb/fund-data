@@ -70,6 +70,22 @@ class IndexMetricsTests(unittest.TestCase):
             self.assertIn('"status":"cached"', content)
             self.assertEqual(json.loads(hist.read_text())['indices'], original['indices'])
 
+    def test_older_official_response_does_not_replace_newer_saved_index(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            hist = Path(tmp) / 'history.json'
+            output = Path(tmp) / 'indices.js'
+            spec = next(s for s in indices.SPECS if s['c'] == '399001')
+            original = {'indices': {'399001': dict(c='399001', n='深证成指', source='国证指数官网',
+                                                    sourceUrl='https://example.com',
+                                                    points=[['2025-09-19', 100], ['2026-09-21', 110]])}}
+            older = dict(original['indices']['399001'], points=[('2025-09-19', 100), ('2026-03-27', 105)])
+            hist.write_text(json.dumps(original))
+            with patch.object(indices, 'SPECS', [spec]), patch.object(indices, 'fetch_history', return_value=older):
+                self.assertEqual(indices.refresh('2026-09-23', history_path=hist, output_path=output), 0)
+            self.assertEqual(json.loads(hist.read_text())['indices']['399001']['points'], original['indices']['399001']['points'])
+            self.assertIn('"status":"cached"', output.read_text())
+            self.assertIn('"sourceRegression"', output.read_text())
+
     def test_checked_in_artifact_is_reproducible_and_shanghai_is_populated(self):
         history = json.loads(indices.HISTORY_PATH.read_text())['indices']
         data = json.loads(indices.OUTPUT_PATH.read_text().split('var INDEX_DATA=', 1)[1].split(';\nvar INDEX_META=', 1)[0])

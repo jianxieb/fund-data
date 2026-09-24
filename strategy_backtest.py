@@ -130,7 +130,7 @@ def cache_path(symbol):
     return os.path.join(CACHE_DIR, '%s-adjusted-v3.json' % symbol.lower())
 
 
-def normalize_chart(node, symbol, source_url):
+def normalize_chart(node, symbol, source_url, max_day=None):
     """A daily bar belongs to the exchange's civil date, not necessarily its UTC date."""
     metadata = node.get('meta', {}) if node else {}
     if metadata.get('symbol', '').upper() != symbol.upper():
@@ -145,9 +145,26 @@ def normalize_chart(node, symbol, source_url):
     adjusted = (node.get('indicators', {}).get('adjclose') or [{}])[0].get('adjclose') or []
     if len(timestamps) != len(adjusted) or not adjusted:
         raise ValueError('缺少显式 adjusted close 字段；不接受普通 close 替代')
-    rows, missing, dates = [], [], set()
+    observations = []
     for stamp, value in zip(timestamps, adjusted):
-        day = datetime.fromtimestamp(stamp, local_zone).strftime('%Y-%m-%d')
+        local = datetime.fromtimestamp(stamp, local_zone)
+        day = local.strftime('%Y-%m-%d')
+        # Yahoo can append a live quote even when period2 asks for yesterday.
+        if max_day and day > max_day:
+            continue
+        observations.append((day, stamp, value, local))
+    missing = []
+    if symbol == 'CNY=X' and observations:
+        trailing = max(item[0] for item in observations)
+        # The FX daily series uses London midnight. A later timestamp on the
+        # trailing day is an unfinished quote, not a second daily close.
+        if any(day == trailing and (local.hour, local.minute, local.second) != (0, 0, 0)
+               for day, _stamp, _value, local in observations):
+            missing.extend({'date': day, 'timestamp': stamp, 'reason': 'provisional_trailing_fx_quote'}
+                           for day, stamp, _value, _local in observations if day == trailing)
+            observations = [item for item in observations if item[0] != trailing]
+    rows, dates = [], set()
+    for day, stamp, value, _local in observations:
         if day in dates:
             raise ValueError('源日线在当地日期重复：' + day)
         dates.add(day)
@@ -193,7 +210,7 @@ def load_history(symbol, refresh=False, offline=False):
                 with urllib.request.urlopen(req, timeout=15) as response:
                     payload = json.load(response)
                 node = (payload.get('chart', {}).get('result') or [None])[0]
-                data = normalize_chart(node, symbol, url)
+                data = normalize_chart(node, symbol, url, max_day=END_DATE)
                 if len(data['data']) < 250:
                     raise ValueError('历史数据不足一年')
                 os.makedirs(CACHE_DIR, exist_ok=True)

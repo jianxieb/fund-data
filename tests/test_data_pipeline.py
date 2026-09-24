@@ -176,6 +176,32 @@ class Benchmarks(unittest.TestCase):
         self.assertEqual(output['data'][-1]['timestamp'], summer)
         self.assertEqual(output['dateConvention'], 'exchange_local_date')
 
+    def test_forex_chart_excludes_provisional_trailing_quote_but_rejects_old_duplicates(self):
+        from datetime import datetime
+        from zoneinfo import ZoneInfo
+        london = ZoneInfo('Europe/London')
+        stamps = [int(datetime(2026, 9, 23, 0, tzinfo=london).timestamp()),
+                  int(datetime(2026, 9, 24, 0, tzinfo=london).timestamp()),
+                  int(datetime(2026, 9, 24, 8, 30, tzinfo=london).timestamp())]
+        node = {'meta': {'symbol': 'CNY=X', 'exchangeTimezoneName': 'Europe/London', 'currency': 'CNY'},
+                'timestamp': stamps, 'indicators': {'adjclose': [{'adjclose': [6.7, None, 6.71]}]}}
+        for end in ('2026-09-23', '2026-09-24'):
+            output = strategy.normalize_chart(node, 'CNY=X', 'https://query1.finance.yahoo.com', max_day=end)
+            self.assertEqual([row['date'] for row in output['data']], ['2026-09-23'])
+        node['timestamp'].append(stamps[0])
+        node['indicators']['adjclose'][0]['adjclose'].append(6.8)
+        with self.assertRaisesRegex(ValueError, '重复'):
+            strategy.normalize_chart(node, 'CNY=X', 'https://query1.finance.yahoo.com', max_day='2026-09-24')
+
+    def test_quality_reports_index_source_regression_by_code(self):
+        rows = [{'c': code, 'n': code, 'r': [1] * 5, 'asof': '2026-09-21',
+                 'status': 'cached', 'sourceRegression': '本次来源更旧'} for code in ('399001', '399006')]
+        report = data_quality.audit({'INDEX_DATA': rows}, date(2026, 9, 24))
+        issues = next(group['issues'] for group in report['datasets'] if group['id'] == 'indices')
+        regression = [item for item in issues if item['code'] == 'index_source_regression']
+        self.assertEqual(len(regression), 1)
+        self.assertEqual(regression[0]['affected'], ['399001', '399006'])
+
     def test_fx_cache_without_timezone_proof_is_rejected(self):
         import json
         from pathlib import Path

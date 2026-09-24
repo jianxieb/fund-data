@@ -1,21 +1,21 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-09-23T17:19:26+00:00",
+  "checkedAt": "2026-09-24T07:39:32+00:00",
   "asOf": "2026-09-24",
   "status": "unverified",
   "summary": {
     "errors": 0,
-    "warnings": 5,
+    "warnings": 6,
     "unverified": 4
   },
   "datasets": [
     {
       "id": "funds",
       "label": "海外基金",
-      "asOf": "2026-09-18",
+      "asOf": "2026-09-22",
       "dateRange": [
-        "2026-09-18",
-        "2026-09-18"
+        "2026-09-22",
+        "2026-09-22"
       ],
       "records": 46,
       "issues": [
@@ -78,10 +78,10 @@ var DATA_QUALITY={
     {
       "id": "benchmarks",
       "label": "海外指数与ETF基准",
-      "asOf": "2026-09-18",
+      "asOf": "2026-09-22",
       "dateRange": [
-        "2026-09-18",
-        "2026-09-18"
+        "2026-09-21",
+        "2026-09-22"
       ],
       "records": 9,
       "issues": [
@@ -107,10 +107,10 @@ var DATA_QUALITY={
     {
       "id": "stocks",
       "label": "股票观察清单",
-      "asOf": "2026-09-21",
+      "asOf": "2026-09-24",
       "dateRange": [
-        "2026-09-21",
-        "2026-09-21"
+        "2026-09-24",
+        "2026-09-24"
       ],
       "records": 23,
       "issues": [
@@ -125,7 +125,7 @@ var DATA_QUALITY={
     {
       "id": "strategy",
       "label": "买入策略实验",
-      "asOf": "2026-09-21",
+      "asOf": "2026-09-23",
       "dateRange": null,
       "records": 108,
       "issues": [
@@ -2701,18 +2701,29 @@ var DATA_QUALITY={
     {
       "id": "indices",
       "label": "国内指数",
-      "asOf": "2026-09-21",
+      "asOf": "2026-09-23",
       "dateRange": [
         "2026-09-21",
-        "2026-09-21"
+        "2026-09-23"
       ],
       "records": 13,
       "issues": [
         {
+          "code": "index_source_regression",
+          "severity": "warning",
+          "message": "指数商本次返回较旧日线，已保留已有观察日",
+          "affected": [
+            "399001",
+            "399006"
+          ]
+        },
+        {
           "code": "index_source_unavailable",
           "severity": "warning",
           "message": "指数源数据不可用，收益留空",
-          "affected": "万得微盘股指数"
+          "affected": [
+            "8841431.WI"
+          ]
         }
       ],
       "status": "warning"

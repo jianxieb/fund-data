@@ -46,6 +46,7 @@ SCREEN_POLICY 第3版按用户确认的权益优先方向设置默认条件：�
 - 10条由[中证指数官网](https://www.csindex.com.cn/)日线采集；深证成指、创业板指由[国证指数官网](https://www.cnindex.com.cn/index.html)采集，核对返回代码和名称。原始序列保存于 data/index-history.json。
 - 中证源日期2026-09-21，国证两条2026-09-18，分别保留。12条有真实日线，上证1/2/3/5/10年都有自身收益；Wind微盘未接入可复核授权日线，指标不可用，不以其他指数或基金代填。
 - 2026-09-24 复查时，国证官方接口已补齐 2026-09-21 日线，深证成指和创业板指的原始序列及收益已重算到该日；这属于上游补发后的源日期推进，旧 9 月 18 日同日点位未发现差异。抽查记录见[官方资料抽查](official-source-spot-check-2026-09-24.md)。
+- 2026-09-24 完整在线刷新时，同一国证接口对这两条指数却只返回到 2026-03-27。更新器现在拒绝用较旧响应覆盖已保存的 9 月 21 日日线，页面保留原观察日并标记 `sourceRegression`；质量报告列出受影响代码。待上游恢复后再抓取，不能把 3 月点位冒充最新值。
 - 中证图表接口会在请求开始日插入“1000”基点，即使早于实际基日。按官方基日过滤，剔除点记录为 discardedBeforeBase，防止人为拉长历史。
 - [科创50事实表](https://oss-ch.csindex.com.cn/static/html/csindex/public/uploads/indices/detail/files/zh_CN/000688factsheet.pdf)、[科创100事实表](https://oss-ch.csindex.com.cn/static/html/csindex/public/uploads/indices/detail/files/zh_CN/000698factsheet.pdf)、[科创创业50事实表](https://oss-ch.csindex.com.cn/static/html/csindex/public/uploads/indices/detail/files/zh_CN/931643factsheet.pdf)确认共同基日2019-12-31但发布日期不同。[北证50历史点位通知](https://www.bse.cn/important_news/200013826.html)确认基日2022-04-29、发布日期2022-11-21。不足期限留空，发布前回溯由 backfilledPeriods 标注。
 - 10条有第二来源的指数抽查首、中、末三个相同交易日，与新浪日线均在0.006指数点内相符；另外2条仅完成官方来源核验。证据为 data/index-validation.json，不宣称全历史第二来源逐日验证。

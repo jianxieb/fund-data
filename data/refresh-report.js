@@ -1,16 +1,57 @@
 var REFRESH_REPORT={
   "schemaVersion": 1,
-  "startedAt": "2026-09-23T02:50:50+00:00",
-  "mode": "offline",
+  "startedAt": "2026-09-24T07:34:42+00:00",
+  "mode": "online",
   "steps": [
+    {
+      "dataset": "funds",
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 36.87,
+      "log": ".tmp-snap/refresh-funds.log",
+      "publishedRollback": false
+    },
+    {
+      "dataset": "indices",
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 2.31,
+      "log": ".tmp-snap/refresh-indices.log",
+      "publishedRollback": false
+    },
+    {
+      "dataset": "stocks",
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 62.47,
+      "log": ".tmp-snap/refresh-stocks.log",
+      "publishedRollback": false
+    },
+    {
+      "dataset": "screening",
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 0.5,
+      "log": ".tmp-snap/refresh-screening.log",
+      "publishedRollback": false
+    },
+    {
+      "dataset": "strategy",
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 16.53,
+      "log": ".tmp-snap/refresh-strategy.log",
+      "publishedRollback": false
+    },
     {
       "dataset": "quality",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 0.2,
-      "log": ".tmp-snap/refresh-quality.log"
+      "seconds": 0.4,
+      "log": ".tmp-snap/refresh-quality.log",
+      "publishedRollback": false
     }
   ],
-  "completedAt": "2026-09-23T02:50:50+00:00",
+  "completedAt": "2026-09-24T07:36:41+00:00",
   "status": "completed"
 };

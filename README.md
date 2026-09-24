@@ -53,7 +53,7 @@
 
 ## 更新
 
-分步操作、扩展基金核验、失败排查与发布流程见[数据更新与维护指南](docs/maintenance.md)。
+分步操作、扩展基金核验、失败排查与发布流程见[数据更新与维护指南](docs/maintenance.md)；定时抓取、验证与 GitHub Pages 发布的实施步骤见[自动更新方案](docs/automatic-update-plan.md)。
 
 需要 Python 3.9+；数据校验和筛选策略解析还会调用 Node.js 18+。Windows 等缺少 IANA 时区数据库的环境还需安装 requirements.txt 中的 tzdata，用于正确识别汇率日线交易日期。
 

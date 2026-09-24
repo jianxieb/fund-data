@@ -279,13 +279,22 @@ def audit(snapshot, today=None):
     idata = dataset('indices', '国内指数', indices if isinstance(indices, list) else [], snapshot.get('INDEX_META', {}).get('asof'))
     if not indices:
         issue(idata, 'index_data_missing', 'warning', '独立指数价格序列未就绪，不得用关联基金替代')
+    regressed_indices, unavailable_indices, stale_indices = [], [], []
     for row in indices if isinstance(indices, list) else []:
+        if row.get('sourceRegression'):
+            regressed_indices.append(row.get('c'))
         if row.get('status') in ('unavailable', 'unverified', 'error'):
-            issue(idata, 'index_source_unavailable', 'warning', '指数源数据不可用，收益留空', row.get('n', row.get('c')))
+            unavailable_indices.append(row.get('c'))
         elif age_days(row.get('asof'), today) not in range(0, 11):
-            issue(idata, 'stale_index', 'warning', '指数日期缺失或超过10个自然日', row.get('c'))
+            stale_indices.append(row.get('c'))
         if len(row.get('r', [])) != 5 or any(x is not None and not finite(x) for x in row.get('r', [])):
-            issue(idata, 'index_return_schema', 'error', '指数收益窗口或数值异常', row.get('c'))
+            issue(idata, 'index_return_schema', 'error', '指数收益窗口或数值异常', [row.get('c')])
+    if regressed_indices:
+        issue(idata, 'index_source_regression', 'warning', '指数商本次返回较旧日线，已保留已有观察日', regressed_indices)
+    if unavailable_indices:
+        issue(idata, 'index_source_unavailable', 'warning', '指数源数据不可用，收益留空', unavailable_indices)
+    if stale_indices:
+        issue(idata, 'stale_index', 'warning', '指数日期缺失或超过10个自然日', stale_indices)
 
     for result in datasets:
         severities = {i['severity'] for i in result['issues']}
