@@ -53,7 +53,7 @@ jobs:
           python3 -m unittest discover -s tests -q
           node --test tests/model.test.cjs
       - name: Refresh all scheduled datasets
-        run: python3 refresh.py --timeout 420
+        run: python3 refresh.py --timeout 900
       - name: Reject incomplete or regressed results
         run: python3 scripts/check_refresh.py
       - name: Verify generated browser assets
@@ -71,4 +71,5 @@ jobs:
             data/update-status.json
             .tmp-snap/refresh-*.log
           if-no-files-found: ignore
+          include-hidden-files: true
           retention-days: 7
