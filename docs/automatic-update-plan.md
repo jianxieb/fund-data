@@ -24,6 +24,8 @@ Actions 源缓存只是加速：`.tmp-hist/`、`.tmp-strategy/`、`.tmp-fhsp/`�
 
 首次真实发布 [36260970037](https://github.com/jianxieb/fund-data/actions/runs/36260970037) 再次无缓存完成六阶段、质量检查、机器人提交与 Pages 部署，数据提交为 `5ab1ea0`。部署后，线上 `index.html`、`data/refresh-report.json`、`data/snapshot.js` 和 `data/fund-actions.json` 的字节内容与仓库这次提交一致。普通代码推送的独立 [Pages 发布运行 36260930209](https://github.com/jianxieb/fund-data/actions/runs/36260930209) 也已通过。
 
+数据按北京时间进入 2026-09-27 后，一次普通推送 [36261399971](https://github.com/jianxieb/fund-data/actions/runs/36261399971) 暴露了质量检查依赖 runner 的 UTC 日期、把经理核验日期误判为未来的问题。质量审计现明确使用北京时间，Pages 作业也设置相同时区；[36261497158](https://github.com/jianxieb/fund-data/actions/runs/36261497158) 已重新通过构建和部署。无发布冷启动 [36261412489](https://github.com/jianxieb/fund-data/actions/runs/36261412489) 成功保存约 2.9 MB 的公开源缓存；随后无发布运行 [36261768657](https://github.com/jianxieb/fund-data/actions/runs/36261768657) 成功恢复并更新该缓存，提交和部署步骤按设置跳过。这两次运行验证了与工作日调度相同的缓存路径。
+
 ## 尚未覆盖的更新
 
 日常 `screening` 阶段只重算已有扩展基金池的权益研究规则，**不会每日重新抓取 1268 条扩展基金的历史净值、费用和规模**。这部分旧观察日与待核验状态会保留，不能把六阶段成功解释为全站每个字段都更新到当天。下一阶段应先按代码分批核验默认权益候选，再逐步扩展；经理、费率等慢速来源可单独安排，不挤进每日工作流。有关分批指令和数据来源见[维护指南](maintenance.md)。
