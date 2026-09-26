@@ -1,13 +1,13 @@
 var REFRESH_REPORT={
   "schemaVersion": 1,
-  "startedAt": "2026-09-24T07:34:42+00:00",
+  "startedAt": "2026-09-26T17:59:57+00:00",
   "mode": "online",
   "steps": [
     {
       "dataset": "funds",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 36.87,
+      "seconds": 102.17,
       "log": ".tmp-snap/refresh-funds.log",
       "publishedRollback": false
     },
@@ -15,7 +15,7 @@ var REFRESH_REPORT={
       "dataset": "indices",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 2.31,
+      "seconds": 16.69,
       "log": ".tmp-snap/refresh-indices.log",
       "publishedRollback": false
     },
@@ -23,7 +23,7 @@ var REFRESH_REPORT={
       "dataset": "stocks",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 62.47,
+      "seconds": 143.68,
       "log": ".tmp-snap/refresh-stocks.log",
       "publishedRollback": false
     },
@@ -31,7 +31,7 @@ var REFRESH_REPORT={
       "dataset": "screening",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 0.5,
+      "seconds": 0.91,
       "log": ".tmp-snap/refresh-screening.log",
       "publishedRollback": false
     },
@@ -39,7 +39,7 @@ var REFRESH_REPORT={
       "dataset": "strategy",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 16.53,
+      "seconds": 12.89,
       "log": ".tmp-snap/refresh-strategy.log",
       "publishedRollback": false
     },
@@ -47,11 +47,11 @@ var REFRESH_REPORT={
       "dataset": "quality",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 0.4,
+      "seconds": 0.61,
       "log": ".tmp-snap/refresh-quality.log",
       "publishedRollback": false
     }
   ],
-  "completedAt": "2026-09-24T07:36:41+00:00",
+  "completedAt": "2026-09-26T18:04:34+00:00",
   "status": "completed"
 };

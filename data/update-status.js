@@ -3,126 +3,126 @@ var UPDATE_STATUS={
   "datasets": {
     "strategy": {
       "status": "success",
-      "attemptedAt": "2026-09-24T07:36:41+00:00",
-      "asOf": "2026-09-23",
+      "attemptedAt": "2026-09-26T18:04:33+00:00",
+      "asOf": "2026-09-25",
       "records": 288,
       "basis": "provider_adjusted_close",
       "mode": "online",
       "execution": {
         "exitCode": 0,
-        "seconds": 16.53
+        "seconds": 12.89
       },
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-09-24T07:36:41+00:00",
-        "asOf": "2026-09-23",
+        "attemptedAt": "2026-09-26T18:04:33+00:00",
+        "asOf": "2026-09-25",
         "records": 288,
         "basis": "provider_adjusted_close",
         "mode": "online",
         "execution": {
           "exitCode": 0,
-          "seconds": 16.53
+          "seconds": 12.89
         }
       }
     },
     "funds": {
       "status": "success",
-      "attemptedAt": "2026-09-24T07:35:19+00:00",
-      "asOf": "2026-09-22",
+      "attemptedAt": "2026-09-26T18:01:39+00:00",
+      "asOf": "2026-09-23",
       "records": 46,
       "requested": 46,
       "failures": [],
       "mode": "online",
       "execution": {
         "exitCode": 0,
-        "seconds": 36.87
+        "seconds": 102.17
       },
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-09-24T07:35:19+00:00",
-        "asOf": "2026-09-22",
+        "attemptedAt": "2026-09-26T18:01:39+00:00",
+        "asOf": "2026-09-23",
         "records": 46,
         "requested": 46,
         "failures": [],
         "mode": "online",
         "execution": {
           "exitCode": 0,
-          "seconds": 36.87
+          "seconds": 102.17
         }
       }
     },
     "indices": {
       "status": "success",
-      "attemptedAt": "2026-09-24T07:35:21+00:00",
+      "attemptedAt": "2026-09-26T18:01:56+00:00",
       "exitCode": 0,
-      "seconds": 2.31,
+      "seconds": 16.69,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-09-24T07:35:21+00:00",
+        "attemptedAt": "2026-09-26T18:01:56+00:00",
         "exitCode": 0,
-        "seconds": 2.31,
+        "seconds": 16.69,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "stocks": {
       "status": "success",
-      "attemptedAt": "2026-09-24T07:36:24+00:00",
+      "attemptedAt": "2026-09-26T18:04:19+00:00",
       "records": 23,
       "failures": [],
       "asOf": "2026-09-24",
       "mode": "online",
       "execution": {
         "exitCode": 0,
-        "seconds": 62.47
+        "seconds": 143.68
       },
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-09-24T07:36:24+00:00",
+        "attemptedAt": "2026-09-26T18:04:19+00:00",
         "records": 23,
         "failures": [],
         "asOf": "2026-09-24",
         "mode": "online",
         "execution": {
           "exitCode": 0,
-          "seconds": 62.47
+          "seconds": 143.68
         }
       }
     },
     "screening": {
       "status": "checked",
-      "attemptedAt": "2026-09-24T07:36:24+00:00",
+      "attemptedAt": "2026-09-26T18:04:20+00:00",
       "exitCode": 0,
-      "seconds": 0.5,
+      "seconds": 0.91,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "checked",
-        "attemptedAt": "2026-09-24T07:36:24+00:00",
+        "attemptedAt": "2026-09-26T18:04:20+00:00",
         "exitCode": 0,
-        "seconds": 0.5,
+        "seconds": 0.91,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "quality": {
       "status": "checked",
-      "attemptedAt": "2026-09-24T07:36:41+00:00",
+      "attemptedAt": "2026-09-26T18:04:34+00:00",
       "exitCode": 0,
-      "seconds": 0.4,
+      "seconds": 0.61,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "checked",
-        "attemptedAt": "2026-09-24T07:36:41+00:00",
+        "attemptedAt": "2026-09-26T18:04:34+00:00",
         "exitCode": 0,
-        "seconds": 0.4,
+        "seconds": 0.61,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     }
   },
-  "checkedAt": "2026-09-24T07:36:41+00:00"
+  "checkedAt": "2026-09-26T18:04:34+00:00"
 };
