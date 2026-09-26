@@ -1,0 +1,74 @@
+name: Validate research data refresh
+
+on:
+  workflow_dispatch:
+    inputs:
+      cold_start:
+        description: Ignore historical source caches for a clean-run check
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: research-data-refresh
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      TZ: Asia/Shanghai
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - name: Install runtime dependencies
+        run: python3 -m pip install -r requirements.txt
+      - name: Restore optional source caches
+        if: ${{ !inputs.cold_start }}
+        uses: actions/cache@v4
+        with:
+          path: |
+            .tmp-hist
+            .tmp-strategy
+            .tmp-fhsp
+            .tmp-managers
+            .tmp-snap/stocks
+          key: research-source-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            research-source-${{ runner.os }}-
+      - name: Test calculations and source guards
+        run: |
+          python3 -m unittest discover -s tests -q
+          node --test tests/model.test.cjs
+      - name: Refresh all scheduled datasets
+        run: python3 refresh.py --timeout 420
+      - name: Reject incomplete or regressed results
+        run: python3 scripts/check_refresh.py
+      - name: Verify generated browser assets
+        run: |
+          npm run version-assets
+          npm run check
+      - name: Preserve diagnosis for a failed run
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: refresh-diagnosis-${{ github.run_id }}
+          path: |
+            data/refresh-report.json
+            data/quality.json
+            data/update-status.json
+            .tmp-snap/refresh-*.log
+          if-no-files-found: ignore
+          retention-days: 7
