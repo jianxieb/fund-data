@@ -54,6 +54,8 @@ jobs:
           node --test tests/model.test.cjs
       - name: Refresh all scheduled datasets
         run: python3 refresh.py --timeout 900
+      - name: Archive newly observed fund actions
+        run: python3 scripts/build_fund_actions.py --apply
       - name: Reject incomplete or regressed results
         run: python3 scripts/check_refresh.py
       - name: Verify generated browser assets
@@ -69,6 +71,7 @@ jobs:
             data/refresh-report.json
             data/quality.json
             data/update-status.json
+            data/fund-actions.json
             .tmp-snap/refresh-*.log
           if-no-files-found: ignore
           include-hidden-files: true

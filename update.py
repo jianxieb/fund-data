@@ -43,6 +43,7 @@ from data_status import write_status
 HERE = os.path.dirname(os.path.abspath(__file__))
 HTML = os.path.join(HERE, 'data', 'snapshot.js')
 FHSP_DIR = os.path.join(HERE, '.tmp-fhsp')
+ACTION_ARCHIVE = os.path.join(HERE, 'data', 'fund-actions.json')
 HIST_DIR = os.path.join(HERE, '.tmp-hist')
 MANAGER_DIR = os.path.join(HERE, '.tmp-managers')
 SNAP_DIR = os.path.join(HERE, '.tmp-snap')   # 上一版 data/snapshot.js 备份 + 申赎状态快照 + 变动记录
@@ -79,7 +80,7 @@ def http_get(url, referer=None, tries=2, delay=1.0, timeout=12):
     if OFFLINE:
         return None
     last = None
-    tries = min(tries, 2)
+    tries = min(max(tries, 1), 4)
     for i in range(tries):
         try:
             req = urllib.request.Request(url, headers=dict(UA, **( {'Referer': referer} if referer else {})))
@@ -544,22 +545,36 @@ def parse_actions_page(html):
 def attach_corporate_actions(code, rows):
     fhsp_fetch(code)
     cache = os.path.join(FHSP_DIR, 'fhsp_%s.html' % code)
-    if not os.path.exists(cache):
+    evidence = []
+    if os.path.exists(cache):
+        with open(cache, encoding='utf-8', errors='replace') as fh:
+            actions = parse_actions_page(fh.read())
+        if actions is not None:
+            evidence.append((datetime.fromtimestamp(os.path.getmtime(cache), ZoneInfo('Asia/Shanghai')).strftime('%Y-%m-%d'),
+                             actions, 'Eastmoney dividend and split tables'))
+    archive = load_json(ACTION_ARCHIVE, {}).get('funds', {}).get(code, {})
+    if archive.get('sourceUrl') == 'https://fundf10.eastmoney.com/fhsp_%s.html' % code:
+        action_date = archive.get('observedAt')
+        actions = {'dividends': archive.get('dividends'), 'splits': archive.get('splits')}
+        if (re.fullmatch(r'\d{4}-\d{2}-\d{2}', str(action_date))
+                and isinstance(actions['dividends'], dict) and isinstance(actions['splits'], dict)):
+            evidence.append((action_date, actions, 'Eastmoney dividend and split tables (archived summary)'))
+    if not evidence:
         return rows
-    with open(cache, encoding='utf-8', errors='replace') as fh:
-        actions = parse_actions_page(fh.read())
-    if actions is None:
-        return rows
-    action_date = datetime.fromtimestamp(os.path.getmtime(cache)).strftime('%Y-%m-%d')
-    if max((row.get('FSRQ', '') for row in rows), default='') > action_date:
-        return rows  # A stale action table cannot certify absence of a newer distribution.
+    action_date, actions, source = max(evidence, key=lambda item: item[0])
     result = []
     for row in rows:
         date = row.get('FSRQ')
-        result.append({**row, 'FHFCZ': actions['dividends'].get(date, 0),
-                       'SPLIT_FACTOR': actions['splits'].get(date, 1),
-                       'ACTIONS_SOURCE': 'Eastmoney dividend and split tables',
-                       'ACTIONS_ASOF': action_date})
+        clean = dict(row)
+        if date and date <= action_date:
+            clean.update(FHFCZ=actions['dividends'].get(date, 0),
+                         SPLIT_FACTOR=actions['splits'].get(date, 1),
+                         ACTIONS_SOURCE=source, ACTIONS_ASOF=action_date)
+        elif row.get('ACTIONS_SOURCE') or row.get('ACTIONS_ASOF'):
+            # Old table annotations cannot certify that no newer action occurred.
+            for key in ('FHFCZ', 'SPLIT_FACTOR', 'ACTIONS_SOURCE', 'ACTIONS_ASOF'):
+                clean.pop(key, None)
+        result.append(clean)
     return result
 
 
@@ -1074,10 +1089,20 @@ def main():
         return 3 if failed else 0
     patches, failures, dates, size_dates, refreshed = {}, [], [], [], 0
     quotes = fund_mnfinfo(codes) if not args.offline and not args.hist else {}
-    for line, code, is_etf in funds:
+    # Each fund owns separate cache files. Fetch its history and profile in a
+    # small pool so a slow source host cannot consume the whole refresh budget.
+    def fetch_sources(fund):
+        _, code, _ = fund
+        rows = history_fetch(code)
+        if args.hist:
+            return rows, None, None
+        return rows, manager_fetch(code, refresh=args.refresh_managers), jjfl_fetch(code)
+
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        sources = list(pool.map(fetch_sources, funds))
+    for (line, code, is_etf), (rows, manager, info) in zip(funds, sources):
         patch = {}
         row_ok = True
-        rows = history_fetch(code)
         try:
             metrics = calc_metrics(rows)
         except ValueError as exc:
@@ -1115,15 +1140,12 @@ def main():
         else:
             failures.append(code + ':history')
             row_ok = False
-        info = {}
         if not args.hist:
-            manager = manager_fetch(code, refresh=args.refresh_managers)
             for key, value in manager.items():
                 patch[key] = json.dumps(value, ensure_ascii=False, allow_nan=False, separators=(',', ':'))
             if manager['managerDataStatus'] in ('unavailable', 'refresh_failed'):
                 failures.append(code + ':manager')
                 row_ok = False
-            info = jjfl_fetch(code)
             if info:
                 if not is_etf and info.get('st'):
                     patch['st'] = "'%s'" % info['st']

@@ -14,6 +14,26 @@ import update
 
 
 class FundReturns(unittest.TestCase):
+    def test_archived_actions_cover_old_dates_but_not_new_unverified_days(self):
+        with tempfile.TemporaryDirectory() as directory:
+            archive = Path(directory) / 'fund-actions.json'
+            archive.write_text('{"funds":{"513100":{"sourceUrl":"https://fundf10.eastmoney.com/fhsp_513100.html",'
+                               '"observedAt":"2026-09-24","dividends":{"2026-09-23":1},"splits":{}}}}',
+                               encoding='utf-8')
+            rows = [{'FSRQ': '2026-09-22', 'DWJZ': '10'},
+                    {'FSRQ': '2026-09-23', 'DWJZ': '9'},
+                    {'FSRQ': '2026-09-25', 'DWJZ': '9', 'FHFCZ': 0,
+                     'SPLIT_FACTOR': 1, 'ACTIONS_ASOF': '2026-09-24'}]
+            with patch.object(update, 'ACTION_ARCHIVE', str(archive)), \
+                 patch.object(update, 'FHSP_DIR', directory), \
+                 patch.object(update, 'OFFLINE', True):
+                enriched = update.attach_corporate_actions('513100', rows)
+            self.assertEqual(enriched[1]['FHFCZ'], 1)
+            self.assertNotIn('FHFCZ', enriched[2])
+            self.assertEqual(update.total_return_series(enriched[:2])[-1][1], 1)
+            with self.assertRaisesRegex(ValueError, '缺少每日收益'):
+                update.total_return_series(enriched)
+
     def test_action_coverage_requires_both_recognized_tables(self):
         dividend = "<table class='comm cfxq'><tr><td>2025-05-13</td><td>每10份派现金11.0000元</td></tr></table>"
         split = "<table class='comm fhxq'><tr><td>2022年</td><td>2022-03-29</td><td>份额分拆</td><td>1:2.0000</td></tr></table>"
