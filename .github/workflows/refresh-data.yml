@@ -46,7 +46,7 @@ jobs:
         run: python3 -m pip install -r requirements.txt
       - name: Restore optional source caches
         if: ${{ github.event_name == 'schedule' || !inputs.cold_start }}
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: |
             .tmp-hist
@@ -71,6 +71,16 @@ jobs:
         run: |
           npm run version-assets
           npm run check
+      - name: Save source caches for later runs
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            .tmp-hist
+            .tmp-strategy
+            .tmp-fhsp
+            .tmp-managers
+            .tmp-snap/stocks
+          key: research-source-${{ runner.os }}-${{ github.run_id }}
       - name: Commit validated generated files
         id: commit
         if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || inputs.publish) }}

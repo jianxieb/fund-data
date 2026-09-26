@@ -14,13 +14,15 @@
 
 通过后运行 `npm run version-assets` 与 `npm run check`。只有研究数据或来源证据确实变化时才提交 `data/*.js`、`data/*.json` 和随其变化的 `index.html`；未改变时保留原站点。提交使用工作流限定的 `contents: write`，Pages 部署作业单独使用 `pages: write` 与 `id-token: write`。任何步骤失败都不会提交或部署，新旧站点不混用；Actions 会保留 `refresh-report.json`、质量报告、状态文件及逐阶段日志 7 天。查看失败原因应先看本次运行的 `refresh-diagnosis-<run id>` 工件，再按[维护指南](maintenance.md)定位具体来源。
 
-Actions 源缓存只是加速：`.tmp-hist/`、`.tmp-strategy/`、`.tmp-fhsp/`、`.tmp-managers/` 和股票缓存可能被清除，新 runner 必须能从源站重新获取或用有明确日期的仓库证据安全复算。缓存丢失、源站不稳定或某字段无有效证据时，刷新明确失败，不会把本次尝试时间冒充观察日。GitHub 对缓存有清除规则，定时运行也可能延迟、丢失或因公开仓库长期无活动被停用：[缓存说明](https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching)、[定时事件规则](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows)。应定期查看仓库 Actions 最近成功运行及页面的实际数据截至日。
+Actions 源缓存只是加速：`.tmp-hist/`、`.tmp-strategy/`、`.tmp-fhsp/`、`.tmp-managers/` 和股票缓存可能被清除。冷启动手动运行不读取旧缓存，但校验成功后仍保存本轮来源，供下次定时运行复用；新 runner 必须能从源站重新获取或用有明确日期的仓库证据安全复算。缓存丢失、源站不稳定或某字段无有效证据时，刷新明确失败，不会把本次尝试时间冒充观察日。GitHub 对缓存有清除规则，定时运行也可能延迟、丢失或因公开仓库长期无活动被停用：[缓存说明](https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching)、[定时事件规则](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows)。应定期查看仓库 Actions 最近成功运行及页面的实际数据截至日。
 
 ## 冷启动验收记录
 
 首次无缓存试跑 [36258819460](https://github.com/jianxieb/fund-data/actions/runs/36258819460) 的测试及其余五阶段通过，基础基金串行请求在第 30 只附近达到 420 秒上限。诊断试跑 [36259598787](https://github.com/jianxieb/fund-data/actions/runs/36259598787) 把上限提高到 900 秒，46 只全部处理完毕，但 159513 的公开资料页两次读取超时，基础基金阶段保守回滚。随后将逐只来源抓取改为三路并发、修正被意外截断的重试次数，并把 46 只分红/拆分页的已解析历史证据与来源日期纳入仓库。
 
 第三次无缓存试跑 [36260439462](https://github.com/jianxieb/fund-data/actions/runs/36260439462) 六阶段全部成功，基础基金阶段用时 175 秒，严格质量错误为 0，标的集合和关键观察日未倒退。各来源**并非同日**：基础基金净值截至 2026-09-23、股票 2026-09-24、策略 2026-09-25；质量报告仍有 5 条限制提示和 4 处待核验，不应解释为全站数据均已审计。实际 Pages 发布另以发布工作流及线上文件为准。
+
+首次真实发布 [36260970037](https://github.com/jianxieb/fund-data/actions/runs/36260970037) 再次无缓存完成六阶段、质量检查、机器人提交与 Pages 部署，数据提交为 `5ab1ea0`。部署后，线上 `index.html`、`data/refresh-report.json`、`data/snapshot.js` 和 `data/fund-actions.json` 的字节内容与仓库这次提交一致。普通代码推送的独立 [Pages 发布运行 36260930209](https://github.com/jianxieb/fund-data/actions/runs/36260930209) 也已通过。
 
 ## 尚未覆盖的更新
 
