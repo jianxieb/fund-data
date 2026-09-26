@@ -8,6 +8,7 @@ import shutil
 import subprocess
 from datetime import date, datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from data_status import DATA, ROOT, atomic_text, now_iso
 
@@ -43,7 +44,7 @@ def finite(value):
 
 
 def audit(snapshot, today=None):
-    today = today or date.today()
+    today = today or datetime.now(ZoneInfo('Asia/Shanghai')).date()
     datasets = []
     checks = []
 
