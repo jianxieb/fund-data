@@ -1,0 +1,63 @@
+name: Publish site after source changes
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Check the committed site assets
+        run: |
+          npm run check
+          python3 -m unittest discover -s tests -q
+          node --test tests/model.test.cjs
+          python3 - <<'PY'
+          import data_quality
+          report = data_quality.audit(data_quality.read_snapshot())
+          assert report['summary']['errors'] == 0, report['summary']
+          PY
+      - name: Stage the committed site
+        run: |
+          mkdir -p _site
+          cp index.html _site/
+          cp -R assets data docs _site/
+          touch _site/.nojekyll
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Upload site for Pages
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: pages-deployment
+      cancel-in-progress: false
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy the committed site
+        id: deployment
+        uses: actions/deploy-pages@v4

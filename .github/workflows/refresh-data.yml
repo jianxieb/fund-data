@@ -1,10 +1,17 @@
-name: Validate research data refresh
+name: Refresh research data and publish
 
 on:
+  schedule:
+    # 22:17 in Beijing, Monday through Friday. Scheduled runs may be delayed.
+    - cron: '17 14 * * 1-5'
   workflow_dispatch:
     inputs:
       cold_start:
         description: Ignore historical source caches for a clean-run check
+        type: boolean
+        default: false
+      publish:
+        description: Commit validated data and publish the site
         type: boolean
         default: true
 
@@ -16,16 +23,18 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  validate:
+  refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    outputs:
+      changed: ${{ steps.commit.outputs.changed }}
     env:
       TZ: Asia/Shanghai
       PYTHONUTF8: '1'
     steps:
       - uses: actions/checkout@v6
-        with:
-          persist-credentials: false
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
@@ -36,7 +45,7 @@ jobs:
       - name: Install runtime dependencies
         run: python3 -m pip install -r requirements.txt
       - name: Restore optional source caches
-        if: ${{ !inputs.cold_start }}
+        if: ${{ github.event_name == 'schedule' || !inputs.cold_start }}
         uses: actions/cache@v4
         with:
           path: |
@@ -53,7 +62,7 @@ jobs:
           python3 -m unittest discover -s tests -q
           node --test tests/model.test.cjs
       - name: Refresh all scheduled datasets
-        run: python3 refresh.py --timeout 900
+        run: python3 refresh.py --timeout 420 --funds-timeout 900
       - name: Archive newly observed fund actions
         run: python3 scripts/build_fund_actions.py --apply
       - name: Reject incomplete or regressed results
@@ -62,6 +71,34 @@ jobs:
         run: |
           npm run version-assets
           npm run check
+      - name: Commit validated generated files
+        id: commit
+        if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || inputs.publish) }}
+        run: |
+          if git diff --quiet -- data/snapshot.js data/indices.js data/index-history.json data/screening.js data/fund-actions.json data/*validation.json data/verification*.json data/*reconciliation.json; then
+            echo 'No research data or evidence changed; keeping the existing published snapshot.'
+            echo 'changed=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git add index.html data/*.js data/*.json
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "Refresh research data (${{ github.run_id }})"
+          git push origin HEAD:main
+          echo 'changed=true' >> "$GITHUB_OUTPUT"
+      - name: Stage the validated site
+        if: ${{ steps.commit.outputs.changed == 'true' }}
+        run: |
+          mkdir -p _site
+          cp index.html _site/
+          cp -R assets data docs _site/
+          touch _site/.nojekyll
+      - name: Configure Pages
+        if: ${{ steps.commit.outputs.changed == 'true' }}
+        uses: actions/configure-pages@v5
+      - name: Upload site for Pages
+        if: ${{ steps.commit.outputs.changed == 'true' }}
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
       - name: Preserve diagnosis for a failed run
         if: always()
         uses: actions/upload-artifact@v4
@@ -76,3 +113,22 @@ jobs:
           if-no-files-found: ignore
           include-hidden-files: true
           retention-days: 7
+
+  deploy:
+    if: ${{ needs.refresh.outputs.changed == 'true' }}
+    needs: refresh
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: pages-deployment
+      cancel-in-progress: false
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy the validated site
+        id: deployment
+        uses: actions/deploy-pages@v4

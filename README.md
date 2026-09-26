@@ -53,7 +53,7 @@
 
 ## 更新
 
-分步操作、扩展基金核验、失败排查与发布流程见[数据更新与维护指南](docs/maintenance.md)；定时抓取、验证与 GitHub Pages 发布的实施步骤见[自动更新方案](docs/automatic-update-plan.md)。
+分步操作、扩展基金核验、失败排查与发布流程见[数据更新与维护指南](docs/maintenance.md)；GitHub Actions 的定时抓取、验证与 Pages 发布见[自动更新方案](docs/automatic-update-plan.md)。
 
 需要 Python 3.9+；数据校验和筛选策略解析还会调用 Node.js 18+。Windows 等缺少 IANA 时区数据库的环境还需安装 requirements.txt 中的 tzdata，用于正确识别汇率日线交易日期。
 
@@ -79,6 +79,7 @@ daily_update.ps1 调用相同更新入口，兼容 Windows 原有调度命令。
 | --- | --- |
 | data/snapshot.js | 基金、海外基准、股票、投入策略与旧研究池快照 |
 | data/indices.js / data/index-history.json | 国内指数指标与可复现原始日线 |
+| data/fund-actions.json | 基础基金分红与拆分的已解析来源证据；保留逐只抓取日期与原始页哈希，供无缓存重算旧历史 |
 | data/screening.js | 研究政策、上限、名单、逐只理由与旗标 |
 | data/verification-samples.* | 代表净值、分红、拆分与官方资料核验证据 |
 | data/verification-managers.json | 基础基金集的逐人任职日期与公开资料证据 |

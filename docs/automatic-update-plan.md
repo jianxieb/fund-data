@@ -1,21 +1,29 @@
-# 自动更新实施方案（2026-09-24）
+# 自动更新与发布
 
-## 现状与本次实跑
+长衡的公开站点由仓库中的生成快照构成。`refresh.py` 只计算和检查数据，不提交、不推送；GitHub Actions 在校验通过后负责提交数据并发布同一份站点文件。另一台电脑拉取 `main` 后，可直接看到已发布的生成数据、脚本与运行规则，不依赖维护者本机的 `.tmp-*` 缓存。
 
-仓库已有跨平台的 `python3 refresh.py`，负责基金、国内指数、股票、基金筛选、投入策略及最后的严格质量检查，并逐阶段限时、回滚失败阶段。它不会定时启动，也不会提交或推送。仓库目前没有 `.github/workflows/`。GitHub Pages 现在从 `main` 分支根目录发布，因此只有手动推送后的页面快照会更新。
+## 触发方式
 
-2026-09-24 手工在线运行 `python3 refresh.py --timeout 300` 时，首轮发现 Yahoo 汇率日线附带当日未结束的盘中报价，基金阶段因此拒绝并回滚；国证接口本次只返回到 2026-03-27，早于已保存的 2026-09-21。修复后重跑，六阶段均成功，严格质量检查为 0 错误。国证两条指数继续使用已保存的 9 月 21 日日线，并显式标记来源倒退；基金净值截至 9 月 22 日、策略截至 9 月 23 日。一次调度成功不代表每个源都更新到了同一日期。
+- [数据刷新工作流](../.github/workflows/refresh-data.yml) 在工作日北京时间 22:17（UTC 14:17）运行，也可到仓库 Actions 页面手动运行。`cold_start=true` 忽略 Actions 历史源缓存；`publish=false` 仅验证，不提交或部署。只从 `main` 发布。
+- [普通站点发布工作流](../.github/workflows/pages.yml) 在 `main` 的代码或文档推送后检查已提交的站点并部署。数据工作流用 `GITHUB_TOKEN` 提交时不会再次触发普通 `push` 工作流，所以它自己上传并部署刚通过验证的文件。
+- GitHub Pages 发布源须为 **GitHub Actions**。两个部署作业共用 `pages-deployment` 并发组；网页只包含 `index.html`、`assets/`、`data/` 和 `docs/`，不上传原始缓存或本机日志。
 
-## 推荐实现
+## 发布门槛与失败处理
 
-1. 在 GitHub Actions 加一个可以手动触发的更新工作流，先用新检出环境跑通一次在线更新。安装 Python 3.9+、Node.js 18+，执行 `refresh.py`、Python/JS 测试、`data_quality.py --strict`、`npm run version-assets` 和 `npm run check`。仅当刷新六阶段全部成功、质量错误为零、测试通过且数据日期没有倒退时才进入发布步骤。失败时保留现有站点，上传报告和日志供定位。
-2. 冷启动必须成立：`.tmp-hist/`、`.tmp-strategy/` 等原始缓存不入库。Actions 缓存可以加速，但不能作为唯一数据来源；缓存丢失时应从源站重新获取、重新计算，失败就明确停止发布。GitHub 官方说明 Actions 缓存可能因未访问或容量被清除：[依赖缓存说明](https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching)。首次手动运行应专门检验无缓存路径及源站限流，必要时再设计带哈希的持久原始输入备份。
-3. 冷启动与失败回退验证通过后，设为工作日北京时间 22:17 左右运行，并保留手动触发。该时间中国市场已收盘、前一美国交易日通常也已结束；QDII 净值仍按实际来源日显示。定时事件可能延迟或丢失，避免整点，并监控最近一次成功运行时间；GitHub 对无活动的公开仓库还可能停用定时工作流：[定时工作流规则](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows)。
-4. 只提交生成的数据文件、刷新报告和随数据变化的 `index.html` 资源版本。发布前重新检查代码集合、记录数量和关键日期；无有效变化时不提交。生成数据提交到 `main`，保证另一台电脑拉取后看到与站点一致的快照。工作流使用最小必要权限，不暴露个人访问令牌，也不在外部源失败时将“本次尝试时间”冒充观察日。
-5. 将 Pages 发布源从当前的分支模式改为 GitHub Actions，让**同一次已验证的工作流**上传并部署站点。GitHub 官方明确指出：使用 `GITHUB_TOKEN` 的工作流提交即使推到 Pages 来源分支，也不会触发该分支模式的 Pages 构建；自定义 Pages 部署需要 `pages: write` 和 `id-token: write`：[Pages 发布源](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)、[自定义部署](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)。仓库当前的默认工作流权限是只读，实施时需要在具体作业内声明写入权限并通过手动运行验证。
+数据工作流先安装 Python/Node 运行时并运行单元测试，接着执行六阶段在线刷新。每一阶段必须返回零；`scripts/check_refresh.py` 还会核对六阶段报告、严格质量错误为零、标的集合不变、基金/指数/股票和策略关键来源日期不倒退。基础基金的分红与拆分页会归档为 `data/fund-actions.json`，记录逐只公开来源、实际抓取日、原始页哈希与已解析动作；旧证据仅用于其抓取日及之前的历史，之后必须有来源每日涨跌幅或新的公开动作证据。
 
-## 覆盖边界
+通过后运行 `npm run version-assets` 与 `npm run check`。只有研究数据或来源证据确实变化时才提交 `data/*.js`、`data/*.json` 和随其变化的 `index.html`；未改变时保留原站点。提交使用工作流限定的 `contents: write`，Pages 部署作业单独使用 `pages: write` 与 `id-token: write`。任何步骤失败都不会提交或部署，新旧站点不混用；Actions 会保留 `refresh-report.json`、质量报告、状态文件及逐阶段日志 7 天。查看失败原因应先看本次运行的 `refresh-diagnosis-<run id>` 工件，再按[维护指南](maintenance.md)定位具体来源。
 
-当前 `refresh.py` 的 `screening` 阶段只对扩展基金池重新应用筛选规则，**不会重新抓取 1268 条扩展基金的历史净值、费用和规模**。因此把现有脚本放入定时器不能宣称“全站数据每日更新”。第二阶段应增加按代码分批的扩展基金刷新：先对 24 只默认候选核验近期净值和申购状态，再按研究优先级逐批扩展；每条保留来源、份额类别、观察日、原始摘要和失败状态。全量重建与经理/费率等慢速来源宜单独安排，不挤进每日例行工作流。完成前，页面继续展示这部分数据的旧日期与待核验标记。
+Actions 源缓存只是加速：`.tmp-hist/`、`.tmp-strategy/`、`.tmp-fhsp/`、`.tmp-managers/` 和股票缓存可能被清除，新 runner 必须能从源站重新获取或用有明确日期的仓库证据安全复算。缓存丢失、源站不稳定或某字段无有效证据时，刷新明确失败，不会把本次尝试时间冒充观察日。GitHub 对缓存有清除规则，定时运行也可能延迟、丢失或因公开仓库长期无活动被停用：[缓存说明](https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching)、[定时事件规则](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows)。应定期查看仓库 Actions 最近成功运行及页面的实际数据截至日。
 
-上线验收至少包括：无缓存新检出能完成在线计算；人工触发能生成与本地同口径的结果；源站失败时不部署错误数据；源返回较旧日线时不倒退；机器人数据提交与同次 Pages 部署后的站点内容一致。首次上线前先完成这些验证，再开启定时触发。
+## 冷启动验收记录
+
+首次无缓存试跑 [36258819460](https://github.com/jianxieb/fund-data/actions/runs/36258819460) 的测试及其余五阶段通过，基础基金串行请求在第 30 只附近达到 420 秒上限。诊断试跑 [36259598787](https://github.com/jianxieb/fund-data/actions/runs/36259598787) 把上限提高到 900 秒，46 只全部处理完毕，但 159513 的公开资料页两次读取超时，基础基金阶段保守回滚。随后将逐只来源抓取改为三路并发、修正被意外截断的重试次数，并把 46 只分红/拆分页的已解析历史证据与来源日期纳入仓库。
+
+第三次无缓存试跑 [36260439462](https://github.com/jianxieb/fund-data/actions/runs/36260439462) 六阶段全部成功，基础基金阶段用时 175 秒，严格质量错误为 0，标的集合和关键观察日未倒退。各来源**并非同日**：基础基金净值截至 2026-09-23、股票 2026-09-24、策略 2026-09-25；质量报告仍有 5 条限制提示和 4 处待核验，不应解释为全站数据均已审计。实际 Pages 发布另以发布工作流及线上文件为准。
+
+## 尚未覆盖的更新
+
+日常 `screening` 阶段只重算已有扩展基金池的权益研究规则，**不会每日重新抓取 1268 条扩展基金的历史净值、费用和规模**。这部分旧观察日与待核验状态会保留，不能把六阶段成功解释为全站每个字段都更新到当天。下一阶段应先按代码分批核验默认权益候选，再逐步扩展；经理、费率等慢速来源可单独安排，不挤进每日工作流。有关分批指令和数据来源见[维护指南](maintenance.md)。
+
+GitHub 对 `GITHUB_TOKEN` 提交不触发分支模式 Pages 构建，以及自定义部署的权限要求，见 [Pages 发布源](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site) 和 [自定义工作流部署](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)。
