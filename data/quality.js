@@ -1,7 +1,7 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-09-28T03:24:14+00:00",
-  "asOf": "2026-09-28",
+  "checkedAt": "2026-09-28T20:36:22+00:00",
+  "asOf": "2026-09-29",
   "status": "unverified",
   "summary": {
     "errors": 0,
@@ -12,10 +12,10 @@ var DATA_QUALITY={
     {
       "id": "funds",
       "label": "海外基金",
-      "asOf": "2026-09-23",
+      "asOf": "2026-09-24",
       "dateRange": [
-        "2026-09-23",
-        "2026-09-23"
+        "2026-09-24",
+        "2026-09-24"
       ],
       "records": 46,
       "issues": [
@@ -78,10 +78,10 @@ var DATA_QUALITY={
     {
       "id": "benchmarks",
       "label": "海外指数与ETF基准",
-      "asOf": "2026-09-23",
+      "asOf": "2026-09-24",
       "dateRange": [
-        "2026-09-23",
-        "2026-09-23"
+        "2026-09-24",
+        "2026-09-24"
       ],
       "records": 9,
       "issues": [
@@ -107,10 +107,10 @@ var DATA_QUALITY={
     {
       "id": "stocks",
       "label": "股票观察清单",
-      "asOf": "2026-09-24",
+      "asOf": "2026-09-28",
       "dateRange": [
         "2026-09-24",
-        "2026-09-24"
+        "2026-09-28"
       ],
       "records": 23,
       "issues": [
@@ -125,7 +125,7 @@ var DATA_QUALITY={
     {
       "id": "strategy",
       "label": "买入策略实验",
-      "asOf": "2026-09-25",
+      "asOf": "2026-09-28",
       "dateRange": null,
       "records": 108,
       "issues": [
@@ -1382,7 +1382,7 @@ var DATA_QUALITY={
         {
           "code": "stale_research_nav",
           "severity": "warning",
-          "message": "1220只扩展基金的净值缺日期或超过10日；规则重生成不代表净值已更新",
+          "message": "1222只扩展基金的净值缺日期或超过10日；规则重生成不代表净值已更新",
           "affected": [
             "001437",
             "519196",
@@ -2274,9 +2274,11 @@ var DATA_QUALITY={
             "160723",
             "457001",
             "501018",
+            "539002",
             "000934",
             "519696",
             "007937",
+            "006282",
             "100061",
             "165520",
             "006308",
@@ -3839,10 +3841,10 @@ var DATA_QUALITY={
     {
       "id": "indices",
       "label": "国内指数",
-      "asOf": "2026-09-24",
+      "asOf": "2026-09-28",
       "dateRange": [
-        "2026-09-24",
-        "2026-09-24"
+        "2026-09-28",
+        "2026-09-28"
       ],
       "records": 13,
       "issues": [
