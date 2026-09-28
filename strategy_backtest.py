@@ -478,6 +478,7 @@ def simulate(dates, prices, events, exposure=None, initial_capital=None,
     annualized_curve = {}
     total_contrib, trade_count, exposure_sum = cash, 0, 0.0
     min_cash = cash
+    worst_paid_return, below_paid_streak, longest_below_paid = 0.0, 0, 0
     if cash:
         flows.append((datetime.strptime(dates[0], '%Y-%m-%d'), -cash))
     for i, (date, price) in enumerate(zip(dates, prices)):
@@ -524,6 +525,10 @@ def simulate(dates, prices, events, exposure=None, initial_capital=None,
         value = cash + asset_units * price
         nav.append(value / units if units > 0 else 1.0)
         accounts.append(value)
+        if total_contrib > 0:
+            worst_paid_return = min(worst_paid_return, (value / total_contrib - 1.0) * 100)
+            below_paid_streak = below_paid_streak + 1 if value < total_contrib - max(1e-8, total_contrib * 1e-10) else 0
+            longest_below_paid = max(longest_below_paid, below_paid_streak)
         if i in annualized_samples:
             as_of = datetime.strptime(date, '%Y-%m-%d')
             rate = xirr(flows + [(as_of, value)])
@@ -537,6 +542,7 @@ def simulate(dates, prices, events, exposure=None, initial_capital=None,
             'total_return': (final_value / total_contrib - 1) * 100 if total_contrib else None,
             'irr': annualized * 100 if annualized is not None else None,
             'mdd': max_dd * 100, 'underwater': underwater,
+            'worst_paid': worst_paid_return, 'below_paid': longest_below_paid,
             'avg_exposure': exposure_sum / len(prices) * 100, 'trades': trade_count,
             'cash': cash, 'minimum_cash': min_cash}
     if sample_indices is not None:
@@ -556,6 +562,8 @@ def round_metrics(metrics):
         'irr': round(metrics['irr'], 4) if metrics['irr'] is not None else None,
         'mdd': round(metrics['mdd'], 4),
         'uw': metrics['underwater'],
+        'worst_paid': round(metrics['worst_paid'], 4),
+        'below_paid': metrics['below_paid'],
         'exp': round(metrics['avg_exposure'], 4),
         'tr': metrics['trades'],
     }
@@ -631,13 +639,14 @@ def write_html(results, dates, curves, windows, summaries, asset_starts):
         'requestedEnd': END_DATE,
         'status': 'computed',
         'basis': 'provider_adjusted_close',
-        'modelVersion': 4,
+        'modelVersion': 5,
         'initialCashIncluded': True,
         'curveMetrics': ['account_value_usd', 'since_inception_xirr_percent'],
         'maWarmup': '200 observations; hold cash until first available signal',
         'limitations': ['不同起点与可用标的会改变结果', '税费、汇兑及现金收益未建模', '部分年度按样本月数预算；倍数定投资金总额不同'],
         'curveSampling': 'weekly_last_actual_trading_day',
         'annualizedCurveSampling': 'monthly_last_actual_trading_day_after_28_days',
+        'cashflowRiskMetrics': ['worst_account_value_vs_paid_in_percent', 'longest_trading_days_below_paid'],
         'windows': summaries,
         'assetStarts': asset_starts,
         'totalExperiments': sum(item['records'] for item in summaries),

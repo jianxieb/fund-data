@@ -146,7 +146,7 @@ def audit(snapshot, today=None):
                 irr_dates[-1] != account_dates[-1] or \
                 not 28 <= first_irr_age <= 62:
             issue(td, 'strategy_irr_dates', 'error', '年化曲线须从满28天后的首个月末交易日开始，并包含回测末日', scope)
-        invalid = []
+        invalid, invalid_paid_risk = [], []
         for row in rows:
             key = '%s/%s' % (row.get('a'), row.get('s'))
             amounts = ((curve_data.get('account') or {}).get(row.get('a')) or {}).get(row.get('s'))
@@ -159,8 +159,15 @@ def audit(snapshot, today=None):
                     any(not finite(value) or value <= -100 for value in rates) or \
                     not finite(row.get('irr')) or abs(rates[-1] - row['irr']) > 0.01:
                 invalid.append(key + ' 年化')
+            if meta.get('modelVersion', 1) >= 5 and (
+                    not finite(row.get('worst_paid')) or not -100 < row['worst_paid'] <= 0 or
+                    type(row.get('below_paid')) is not int or row['below_paid'] < 0):
+                invalid_paid_risk.append(key)
         if invalid:
             issue(td, 'strategy_metric_curves', 'error', '金额或年化曲线与结果表不一致', {'scope': scope, 'series': invalid})
+        if invalid_paid_risk:
+            issue(td, 'strategy_paid_risk', 'error', '账户低于累计投入本金的风险字段缺失或无效',
+                  {'scope': scope, 'series': invalid_paid_risk})
 
     if strategy:
         if not curve_dates or curve_dates[0] != meta.get('start') or curve_dates[-1] != meta.get('end') \

@@ -370,6 +370,18 @@ class StrategyAccounting(unittest.TestCase):
         self.assertEqual(result['account_curve'], [100, 100, 200])
         self.assertEqual(result['irr_curve'], [0.0, 0.0])
 
+    def test_contribution_timing_changes_account_loss_not_fully_invested_nav_drawdown(self):
+        dates = ['2025-01-02', '2025-02-03', '2025-03-03', '2025-04-01']
+        prices = [100, 50, 70, 100]
+        early = strategy.simulate(dates, prices, {0: 200})
+        split = strategy.simulate(dates, prices, {0: 100, 1: 100})
+        self.assertEqual(early['mdd'], split['mdd'])
+        self.assertEqual(early['mdd'], -50.0)
+        self.assertEqual(early['worst_paid'], -50.0)
+        self.assertEqual(split['worst_paid'], -25.0)
+        self.assertEqual(early['below_paid'], 2)
+        self.assertEqual(split['below_paid'], 1)
+
     def test_quality_rejects_account_curve_not_matching_result(self):
         snapshot = {'STRATEGY_META': {'modelVersion': 3, 'initialCashIncluded': True,
                                       'basis': 'provider_adjusted_close', 'start': '2025-01-02', 'end': '2026-01-05'},

@@ -1,6 +1,6 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-09-28T03:00:04+00:00",
+  "checkedAt": "2026-09-28T03:24:14+00:00",
   "asOf": "2026-09-28",
   "status": "unverified",
   "summary": {

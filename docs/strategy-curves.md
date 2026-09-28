@@ -11,11 +11,11 @@
 
 结果表的“累计投入”“期末资产”“XIRR”与所选窗口曲线使用同一逐日现金账户。已有一笔钱的100,000美元在首日全额入账，未买入部分留作零利息现金；后续分批买入只是账户内部交易。持续有新收入时，购买当日的入金是外部现金流。买卖、现金利息及税费目前按脚本说明处理；ETF自身费用已反映在供应商复权行情中。投入当天 XIRR 尚未定义，所以图上的 0% 只作为视觉起点；未满一年按短期实际天数年化，数值可能很大，不能把早期峰谷当作稳定的长期年化水平。账户金额用美元计量，并包含持续新增投入；XIRR 是截至当日的资金加权年化率，二者不应有相同形状。
 
-同一ETF的六种持续定投方式每次入金后都立即满仓，因此剔除入金影响的净值最大回撤、最长水下交易日和平均仓位完全一致。结果表把这三项共同风险只展示一次；方法之间的实际差别看累计投入、期末金额、XIRR和交易次数。共同净值回撤不代表每位持续入金者经历的账户金额回撤。
+同一ETF的六种持续定投方式每次入金后都立即满仓，因此剔除入金影响的净值最大回撤、最长水下交易日和平均仓位完全一致。结果表对每种方式都展示累计投入、期末金额、账面盈亏（期末金额减累计投入，未扣交易税费）、XIRR、交易次数及风险。现金流中性净值风险虽然数值相同，仍逐行展示并明确标为共同标的路径；账户风险另列“最差账面盈亏”（每日账户金额相对当日累计投入的最低比例）和“低于本金最长”（连续低于累计投入本金的交易日数）。后两项会随入金节奏改变；如果不同方式在最差时点之前的入金完全一致，也可能得到相同值。共同净值回撤不代表每位持续入金者经历的账户亏损。
 
 快照位于`data/snapshot.js`：默认2010窗口的`STRATEGY_CURVES.dates/account`保存每周金额，`irrDates/irr`保存每月年化，`series`保存首日100的现金流中性单位净值。其余四个窗口使用`STRATEGY_WINDOWS[年份].curves`同样结构。`data_quality.py --strict`检查真实日期顺序、序列长度和值域，并逐组核对金额曲线终值和XIRR曲线终值与`STRATEGY_RESULTS`。这一检查证明计算产物彼此一致，不等于供应商历史行情已经独立审计。
 
-新电脑拉取仓库即可查看已提交快照。重新计算需要完整ETF历史行情：联网运行`python3 strategy_backtest.py --refresh`，再运行`python3 data_quality.py --strict`。本地已有经校验的完整缓存时可运行`python3 strategy_backtest.py --offline`；`--end YYYY-MM-DD`可固定回测截止日。完整数据链路见[维护指南](maintenance.md)。
+新电脑拉取仓库即可查看已提交快照。重新计算需要完整ETF历史行情：联网运行`python3 strategy_backtest.py --refresh`，再运行`python3 data_quality.py --strict`与`python3 scripts/audit_strategy.py`。本地已有经校验的完整缓存时可运行`python3 strategy_backtest.py --offline`；`--end YYYY-MM-DD`可固定回测截止日。独立账本核验及发行人十年业绩对照见[杠杆 ETF 收益复核](strategy-leverage-audit.md)，完整数据链路见[维护指南](maintenance.md)。
 
 资金流中性收益和资金加权收益的区别可参照[CFA Institute 的定义](https://rpc.cfainstitute.org/sites/default/files/docs/codes-and-standards/introduction-to-the-gips-standards-for-asset-owners_requirements_online.pdf)：前者排除外部现金流影响，后者反映其时间与金额。两者回答不同问题，不能互换。
 
