@@ -46,6 +46,7 @@ INITIAL_CAPITAL = 100000.0
 MONTHLY_CONTRIBUTION = 1000.0
 TRADING_COST = 0.0
 SOURCE_LABEL = 'Yahoo Finance chart: indicators.adjclose (provider adjusted close)'
+MIN_ANNUALIZED_DAYS = 28
 
 ASSETS = [
     {'c': 'SPY', 'n': 'SPY', 'g': '标普500', 'lev': '1x'},
@@ -590,8 +591,10 @@ def build_results(dates, prices, assets=None):
     results, curves = [], {'dates': [], 'series': {}, 'account': {}, 'irrDates': [], 'irr': {}}
     samples = weekly_sample_indices(dates)
     first = datetime.strptime(dates[0], '%Y-%m-%d')
+    # Sample short holding periods too. A four-week floor avoids treating a
+    # one-day move as a meaningful annualized comparison.
     annualized_samples = [i for i in monthly_sample_indices(dates)
-                          if (datetime.strptime(dates[i], '%Y-%m-%d') - first).days >= 365]
+                          if (datetime.strptime(dates[i], '%Y-%m-%d') - first).days >= MIN_ANNUALIZED_DAYS]
     curves['dates'] = [dates[i] for i in samples]
     curves['irrDates'] = [dates[i] for i in annualized_samples]
     for asset in assets or ASSETS:
@@ -628,12 +631,13 @@ def write_html(results, dates, curves, windows, summaries, asset_starts):
         'requestedEnd': END_DATE,
         'status': 'computed',
         'basis': 'provider_adjusted_close',
-        'modelVersion': 3,
+        'modelVersion': 4,
         'initialCashIncluded': True,
         'curveMetrics': ['account_value_usd', 'since_inception_xirr_percent'],
         'maWarmup': '200 observations; hold cash until first available signal',
         'limitations': ['不同起点与可用标的会改变结果', '税费、汇兑及现金收益未建模', '部分年度按样本月数预算；倍数定投资金总额不同'],
         'curveSampling': 'weekly_last_actual_trading_day',
+        'annualizedCurveSampling': 'monthly_last_actual_trading_day_after_28_days',
         'windows': summaries,
         'assetStarts': asset_starts,
         'totalExperiments': sum(item['records'] for item in summaries),

@@ -348,6 +348,28 @@ class StrategyAccounting(unittest.TestCase):
         self.assertAlmostEqual(early['irr_curve'][-1], early['irr'], places=3)
         self.assertAlmostEqual(split['irr_curve'][-1], split['irr'], places=3)
 
+    def test_xirr_curve_includes_short_holding_periods(self):
+        dates = ['2025-01-02', '2025-01-31', '2025-02-28', '2026-01-05']
+        results, curves = strategy.build_results(dates, {'SPY': [100, 110, 105, 120]},
+                                                 assets=[{'c': 'SPY'}])
+        self.assertEqual(curves['irrDates'][0], '2025-01-31')
+        expected = ((110 / 100) ** (365.2425 / 29) - 1) * 100
+        self.assertAlmostEqual(curves['irr']['SPY']['lump_sum'][0], expected, places=3)
+        snapshot = {'STRATEGY_META': {'modelVersion': 4, 'initialCashIncluded': True,
+                                      'basis': 'provider_adjusted_close',
+                                      'start': dates[0], 'end': dates[-1]},
+                    'STRATEGY_RESULTS': results, 'STRATEGY_CURVES': curves}
+        report = data_quality.audit(snapshot, date(2026, 1, 5))
+        issues = next(d for d in report['datasets'] if d['id'] == 'strategy')['issues']
+        self.assertNotIn('strategy_irr_dates', {item['code'] for item in issues})
+
+    def test_short_period_xirr_does_not_count_new_principal_as_profit(self):
+        dates = ['2025-01-02', '2025-01-31', '2025-02-28']
+        result = strategy.simulate(dates, [100, 100, 100], {0: 100, 2: 100},
+                                   sample_indices=[0, 1, 2], annualized_indices=[1, 2])
+        self.assertEqual(result['account_curve'], [100, 100, 200])
+        self.assertEqual(result['irr_curve'], [0.0, 0.0])
+
     def test_quality_rejects_account_curve_not_matching_result(self):
         snapshot = {'STRATEGY_META': {'modelVersion': 3, 'initialCashIncluded': True,
                                       'basis': 'provider_adjusted_close', 'start': '2025-01-02', 'end': '2026-01-05'},

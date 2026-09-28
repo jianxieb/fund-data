@@ -259,12 +259,28 @@
     const allValues = visible.flatMap(entry => entry.values);
     let scaleY, ticks = [];
     const logarithmic = metric === 'amount' && state.stratCompare === 'assets';
+    const annualizedLow = metric === 'annualized' ? Math.min(0, ...allValues) : 0;
+    const annualizedHigh = metric === 'annualized' ? Math.max(0, ...allValues) : 0;
+    const compressedAnnualized = metric === 'annualized' && (annualizedHigh > 250 || annualizedHigh - annualizedLow > 400);
     if (logarithmic) {
       const minExp = Math.floor(Math.log2(Math.min(...allValues))), maxExp = Math.max(minExp + 1, Math.ceil(Math.log2(Math.max(...allValues))));
       scaleY = value => 276 - (Math.log2(value) - minExp) / (maxExp - minExp) * 242;
       const step = Math.max(1, Math.ceil((maxExp - minExp) / 6));
       for (let exponent = minExp; exponent <= maxExp; exponent += step) {
         const value = 2 ** exponent, y = scaleY(value);
+        ticks.push('<line x1="59" x2="888" y1="' + y.toFixed(1) + '" y2="' + y.toFixed(1) + '" class="curve-grid"/><text x="49" y="' + (y + 4).toFixed(1) + '" text-anchor="end" class="curve-axis">' + axisFormat(value) + '</text>');
+      }
+    } else if (compressedAnnualized) {
+      const transform = value => Math.sign(value) * Math.log1p(Math.abs(value) / 20);
+      const candidates = [-100, -50, -20, 0, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000];
+      const minTick = candidates.filter(value => value <= annualizedLow).at(-1) ?? -100;
+      const maxTick = candidates.find(value => value >= annualizedHigh) ?? Math.ceil(annualizedHigh / 10000) * 10000;
+      const low = transform(minTick), high = transform(maxTick);
+      scaleY = value => 276 - (transform(value) - low) / (high - low) * 242;
+      const tickValues = candidates.filter(value => value >= minTick && value <= maxTick);
+      if (!tickValues.includes(maxTick)) tickValues.push(maxTick);
+      for (const value of tickValues) {
+        const y = scaleY(value);
         ticks.push('<line x1="59" x2="888" y1="' + y.toFixed(1) + '" y2="' + y.toFixed(1) + '" class="curve-grid"/><text x="49" y="' + (y + 4).toFixed(1) + '" text-anchor="end" class="curve-axis">' + axisFormat(value) + '</text>');
       }
     } else {
@@ -294,11 +310,14 @@
     const unavailable = metric === 'annualized' && unavailableWidth > 0 ? '<rect x="59" y="34" width="' + unavailableWidth.toFixed(1) + '" height="242" class="curve-unavailable"/><line x1="' + scaleX(0).toFixed(1) + '" x2="' + scaleX(0).toFixed(1) + '" y1="34" y2="276" class="curve-unavailable-edge"/>' : '';
     const paths = visible.map(entry => {
       const path = entry.values.map((v, i) => (i ? 'L' : 'M') + scaleX(i).toFixed(1) + ',' + scaleY(v).toFixed(1)).join(' ');
-      return '<path d="' + path + '" fill="none" stroke="' + entry.color + '" stroke-width="2.5"' + (entry.experimental ? ' stroke-dasharray="7 4"' : '') + ' stroke-linejoin="round" stroke-linecap="round"><title>' + esc(entry.label + ' · 期末' + format(entry.values.at(-1))) + '</title></path>';
+      const intro = metric === 'annualized' && originTime < times[0]
+        ? '<path d="M59,' + scaleY(0).toFixed(1) + ' L' + scaleX(0).toFixed(1) + ',' + scaleY(entry.values[0]).toFixed(1) + '" fill="none" stroke="' + entry.color + '" stroke-width="2" stroke-dasharray="2 3" opacity=".7"/>'
+        : '';
+      return intro + '<path d="' + path + '" fill="none" stroke="' + entry.color + '" stroke-width="2.5"' + (entry.experimental ? ' stroke-dasharray="7 4"' : '') + ' stroke-linejoin="round" stroke-linecap="round"><title>' + esc(entry.label + ' · 期末' + format(entry.values.at(-1))) + '</title></path>';
     }).join('');
     return '<section class="card curve-card"><div class="card-head"><div><h2>' + title + '</h2><p>' + subtitle + '</p></div></div><div class="curve-body">' +
       '<div class="curve-plot"><svg class="curve-svg" viewBox="0 0 920 320" role="img" aria-label="' + esc(title + '；悬浮或点击查看具体交易日与' + (metric === 'amount' ? '账户金额' : '资金加权年化')) + '">' + unavailable + ticks.join('') + xTicks + (metric === 'annualized' ? '<line x1="59" x2="888" y1="' + scaleY(0).toFixed(1) + '" y2="' + scaleY(0).toFixed(1) + '" class="curve-base"/>' : '') + paths + '<g class="curve-hover-layer" hidden><line class="curve-hover-line" y1="34" y2="276"/>' + visible.map(entry => '<circle class="curve-hover-dot" data-key="' + esc(entry.key) + '" r="4" fill="' + entry.color + '"/>').join('') + '</g></svg><div class="curve-tooltip" hidden></div></div>' + legend +
-      '</div><div class="panel-foot"><span>' + (metric === 'amount' ? '实际账户金额，含每次新增投入 · 每周实际交易日取样 · ' + (logarithmic ? '对数' : '线性') + '刻度' : '横轴从实际投入日起、纵轴含 0% 基线；首年没有可比较的年化值，曲线从满一年后的首个实测 XIRR 开始 · 月末实际交易日取样') + '；悬浮读取数值，图例可切换曲线。</span></div></section>';
+      '</div><div class="panel-foot"><span>' + (metric === 'amount' ? '实际账户金额，含每次新增投入 · 每周实际交易日取样 · ' + (logarithmic ? '对数' : '线性') + '刻度' : '起点 0% 是绘图基线；满四周后从首个月末起计算 XIRR，首年为按实际天数计算的短期年化推算 · ' + (compressedAnnualized ? '高波动时采用不等距刻度' : '线性刻度')) + '；悬浮读取真实数值，图例可切换曲线。</span></div></section>';
   }
   function showCurvePoint(event, plot) {
     if (!activeCurve || !activeCurve.entries.length) return;
@@ -308,7 +327,7 @@
     const layer = svg.querySelector('.curve-hover-layer'), tooltip = plot.querySelector('.curve-tooltip');
     if (activeCurve.metric === 'annualized' && target < times[0]) {
       layer.setAttribute('hidden', '');
-      tooltip.innerHTML = '<strong>' + new Date(activeCurve.originTime).toISOString().slice(0, 10) + ' → ' + esc(activeCurve.dates[0]) + '</strong><span class="curve-tooltip-caption">首个满一年采样日前不展示年化；0% 仅是坐标基线</span>';
+      tooltip.innerHTML = '<strong>' + new Date(activeCurve.originTime).toISOString().slice(0, 10) + ' → ' + esc(activeCurve.dates[0]) + '</strong><span class="curve-tooltip-caption">起点 0% 仅是绘图基线；虚线连接首个真实月末 XIRR</span>';
       tooltip.hidden = false;
     } else {
       let lo = 0, hi = times.length - 1;

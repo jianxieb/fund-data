@@ -144,8 +144,8 @@ def audit(snapshot, today=None):
             first_irr_age = -1
         if not irr_dates or irr_dates != sorted(set(irr_dates)) or \
                 irr_dates[-1] != account_dates[-1] or \
-                first_irr_age < 365:
-            issue(td, 'strategy_irr_dates', 'error', '年化曲线必须使用首年以后真实的月末交易日，并包含回测末日', scope)
+                not 28 <= first_irr_age <= 62:
+            issue(td, 'strategy_irr_dates', 'error', '年化曲线须从满28天后的首个月末交易日开始，并包含回测末日', scope)
         invalid = []
         for row in rows:
             key = '%s/%s' % (row.get('a'), row.get('s'))
