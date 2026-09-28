@@ -246,7 +246,7 @@
       '<div class="toolbar"><div class="filters"><input type="search" id="stock-search" aria-label="搜索股票名称、代码或行业" placeholder="搜索股票名称、代码或行业" value="' + esc(state.stockQuery) + '"></div><div class="segmented">' + action('全部观察', 'stock-style', state.stockStyle === 'all' ? 'active' : '', 'data-value="all"') + action('高股息标签', 'stock-style', state.stockStyle === 'dividend' ? 'active' : '', 'data-value="dividend"') + '</div></div>' +
       '<div class="table-controls">' + periodControl() + '</div><div class="card"><div class="table-caption"><span>' + rows.length + ' / ' + all.length + '只观察样本</span><span>点名称查看完整资料</span></div><div class="table-wrap"><table class="research-table"><thead><tr><th>公司 / 行业</th><th>现价</th><th>PE / TTM</th><th>PB</th><th>ROE</th><th>市值 / 亿元</th><th>' + sh('近12月股息率', 'yield12') + '</th><th>5年完整分红年数</th>' + state.periods.map(y => '<th>' + sh(periodHead(y), 'return:' + y) + '</th>').join('') + '<th>' + sh('5年最大回撤', 'mdd5') + '</th><th>5年波动率</th><th>截至日</th></tr></thead><tbody>' + rows.map(s => '<tr><td>' + action(esc(s.n), 'stock-detail', 'text-link', 'data-code="' + s.c + '"') + '<span class="sub">' + s.c + ' · ' + esc(s.ind) + '</span></td><td>' + money(s.price, 2) + '</td><td>' + money(s.pe, 2) + '</td><td>' + money(s.pb, 2) + '</td><td>' + pct(s.roe, 2, false) + '</td><td>' + money(s.mcap, 1) + '</td><td>' + pct(s.yield12, 2, false) + '</td><td>' + (s.divYears == null ? '—' : esc(s.divYears) + ' / 5') + '</td>' + state.periods.map(y => '<td>' + pc(ret(s.r && s.r[years.indexOf(y)], y, s)) + '</td>').join('') + '<td>' + pc(s.mdd5, 1) + '</td><td>' + pct(s.vol5, 1, false) + '</td><td>' + esc(s.latest || window.STOCK_ASOF) + '</td></tr>').join('') + (rows.length ? '' : '<tr><td colspan="' + (11 + state.periods.length) + '"><div class="empty">没有匹配的公司</div></td></tr>') + '</tbody></table></div></div><p class="note">收益为供应商复权收盘价口径，保留原始序列与重算记录；未对每笔公司行动做独立审计。税费、实际成交价格与个股流动性另行考虑。</p>';
   }
-  function curveCard(title, subtitle, entries, dates, metric) {
+  function curveCard(title, subtitle, entries, dates, metric, startDate) {
     const palette = ['#35654a', '#b58a46', '#557b9b', '#b36b5d', '#756c9b', '#698b6b', '#b78673', '#6e91a6', '#998a54'];
     const format = value => metric === 'amount' ? '$' + money(value) : pct(value, 2);
     const axisFormat = value => metric === 'amount' ? '$' + (value >= 1000000 ? money(value / 1000000, 1) + 'm' : value >= 1000 ? money(value / 1000, 0) + 'k' : money(value)) : pct(value, 0, false);
@@ -279,39 +279,54 @@
       }
     }
     const times = dates.map(d => Date.parse(d + 'T00:00:00Z'));
-    const scaleX = i => 59 + (times[i] - times[0]) / Math.max(1, times.at(-1) - times[0]) * 829;
-    activeCurve = { dates, times, entries: visible, scaleY, metric };
-    const xTicks = [0, Math.round((dates.length - 1) / 4), Math.round((dates.length - 1) / 2), Math.round((dates.length - 1) * 3 / 4), dates.length - 1]
-      .map(i => '<text x="' + scaleX(i).toFixed(1) + '" y="303" text-anchor="' + (i === 0 ? 'start' : i === dates.length - 1 ? 'end' : 'middle') + '" class="curve-axis">' + esc(dates[i].slice(0, 7)) + '</text>').join('');
+    const requestedStart = Date.parse(startDate + 'T00:00:00Z');
+    const originTime = metric === 'annualized' && Number.isFinite(requestedStart) && requestedStart < times[0] ? requestedStart : times[0];
+    const span = Math.max(1, times.at(-1) - originTime);
+    const scaleXTime = time => 59 + (time - originTime) / span * 829;
+    const scaleX = i => scaleXTime(times[i]);
+    activeCurve = { dates, times, entries: visible, scaleY, metric, originTime };
+    const xTicks = [0, 0.25, 0.5, 0.75, 1]
+      .map((fraction, i) => {
+        const time = originTime + span * fraction;
+        return '<text x="' + scaleXTime(time).toFixed(1) + '" y="303" text-anchor="' + (i === 0 ? 'start' : i === 4 ? 'end' : 'middle') + '" class="curve-axis">' + new Date(time).toISOString().slice(0, 7) + '</text>';
+      }).join('');
+    const unavailableWidth = scaleX(0) - 59;
+    const unavailable = metric === 'annualized' && unavailableWidth > 0 ? '<rect x="59" y="34" width="' + unavailableWidth.toFixed(1) + '" height="242" class="curve-unavailable"/><line x1="' + scaleX(0).toFixed(1) + '" x2="' + scaleX(0).toFixed(1) + '" y1="34" y2="276" class="curve-unavailable-edge"/>' : '';
     const paths = visible.map(entry => {
       const path = entry.values.map((v, i) => (i ? 'L' : 'M') + scaleX(i).toFixed(1) + ',' + scaleY(v).toFixed(1)).join(' ');
       return '<path d="' + path + '" fill="none" stroke="' + entry.color + '" stroke-width="2.5"' + (entry.experimental ? ' stroke-dasharray="7 4"' : '') + ' stroke-linejoin="round" stroke-linecap="round"><title>' + esc(entry.label + ' · 期末' + format(entry.values.at(-1))) + '</title></path>';
     }).join('');
     return '<section class="card curve-card"><div class="card-head"><div><h2>' + title + '</h2><p>' + subtitle + '</p></div></div><div class="curve-body">' +
-      '<div class="curve-plot"><svg class="curve-svg" viewBox="0 0 920 320" role="img" aria-label="' + esc(title + '；悬浮或点击查看具体交易日与' + (metric === 'amount' ? '账户金额' : '资金加权年化')) + '">' + ticks.join('') + xTicks + (metric === 'annualized' ? '<line x1="59" x2="888" y1="' + scaleY(0).toFixed(1) + '" y2="' + scaleY(0).toFixed(1) + '" class="curve-base"/>' : '') + paths + '<g class="curve-hover-layer" hidden><line class="curve-hover-line" y1="34" y2="276"/>' + visible.map(entry => '<circle class="curve-hover-dot" data-key="' + esc(entry.key) + '" r="4" fill="' + entry.color + '"/>').join('') + '</g></svg><div class="curve-tooltip" hidden></div></div>' + legend +
-      '</div><div class="panel-foot"><span>' + (metric === 'amount' ? '实际账户金额，含每次新增投入 · 每周实际交易日取样 · ' + (logarithmic ? '对数' : '线性') + '刻度' : '截至该日的资金加权年化 XIRR，包含投入日期与金额 · 满一年后按月末实际交易日取样 · 线性刻度') + '；悬浮读取数值，图例可切换曲线。</span></div></section>';
+      '<div class="curve-plot"><svg class="curve-svg" viewBox="0 0 920 320" role="img" aria-label="' + esc(title + '；悬浮或点击查看具体交易日与' + (metric === 'amount' ? '账户金额' : '资金加权年化')) + '">' + unavailable + ticks.join('') + xTicks + (metric === 'annualized' ? '<line x1="59" x2="888" y1="' + scaleY(0).toFixed(1) + '" y2="' + scaleY(0).toFixed(1) + '" class="curve-base"/>' : '') + paths + '<g class="curve-hover-layer" hidden><line class="curve-hover-line" y1="34" y2="276"/>' + visible.map(entry => '<circle class="curve-hover-dot" data-key="' + esc(entry.key) + '" r="4" fill="' + entry.color + '"/>').join('') + '</g></svg><div class="curve-tooltip" hidden></div></div>' + legend +
+      '</div><div class="panel-foot"><span>' + (metric === 'amount' ? '实际账户金额，含每次新增投入 · 每周实际交易日取样 · ' + (logarithmic ? '对数' : '线性') + '刻度' : '横轴从实际投入日起、纵轴含 0% 基线；首年没有可比较的年化值，曲线从满一年后的首个实测 XIRR 开始 · 月末实际交易日取样') + '；悬浮读取数值，图例可切换曲线。</span></div></section>';
   }
   function showCurvePoint(event, plot) {
     if (!activeCurve || !activeCurve.entries.length) return;
     const svg = plot.querySelector('svg'), rect = svg.getBoundingClientRect();
     const position = Math.max(59, Math.min(888, (event.clientX - rect.left) / rect.width * 920));
-    const times = activeCurve.times, target = times[0] + (position - 59) / 829 * (times.at(-1) - times[0]);
-    let lo = 0, hi = times.length - 1;
-    while (lo < hi) { const mid = Math.floor((lo + hi) / 2); if (times[mid] < target) lo = mid + 1; else hi = mid; }
-    const index = lo > 0 && Math.abs(times[lo - 1] - target) < Math.abs(times[lo] - target) ? lo - 1 : lo;
-    const x = 59 + (times[index] - times[0]) / Math.max(1, times.at(-1) - times[0]) * 829;
-    const layer = svg.querySelector('.curve-hover-layer'); layer.removeAttribute('hidden');
-    const line = layer.querySelector('.curve-hover-line'); line.setAttribute('x1', x); line.setAttribute('x2', x);
-    for (const dot of layer.querySelectorAll('.curve-hover-dot')) {
-      const entry = activeCurve.entries.find(item => item.key === dot.dataset.key);
-      if (!entry) continue;
-      const y = activeCurve.scaleY(entry.values[index]);
-      dot.setAttribute('cx', x); dot.setAttribute('cy', y);
+    const times = activeCurve.times, target = activeCurve.originTime + (position - 59) / 829 * (times.at(-1) - activeCurve.originTime);
+    const layer = svg.querySelector('.curve-hover-layer'), tooltip = plot.querySelector('.curve-tooltip');
+    if (activeCurve.metric === 'annualized' && target < times[0]) {
+      layer.setAttribute('hidden', '');
+      tooltip.innerHTML = '<strong>' + new Date(activeCurve.originTime).toISOString().slice(0, 10) + ' → ' + esc(activeCurve.dates[0]) + '</strong><span class="curve-tooltip-caption">首个满一年采样日前不展示年化；0% 仅是坐标基线</span>';
+      tooltip.hidden = false;
+    } else {
+      let lo = 0, hi = times.length - 1;
+      while (lo < hi) { const mid = Math.floor((lo + hi) / 2); if (times[mid] < target) lo = mid + 1; else hi = mid; }
+      const index = lo > 0 && Math.abs(times[lo - 1] - target) < Math.abs(times[lo] - target) ? lo - 1 : lo;
+      const x = 59 + (times[index] - activeCurve.originTime) / Math.max(1, times.at(-1) - activeCurve.originTime) * 829;
+      layer.removeAttribute('hidden');
+      const line = layer.querySelector('.curve-hover-line'); line.setAttribute('x1', x); line.setAttribute('x2', x);
+      for (const dot of layer.querySelectorAll('.curve-hover-dot')) {
+        const entry = activeCurve.entries.find(item => item.key === dot.dataset.key);
+        if (!entry) continue;
+        const y = activeCurve.scaleY(entry.values[index]);
+        dot.setAttribute('cx', x); dot.setAttribute('cy', y);
+      }
+      tooltip.innerHTML = '<strong>' + esc(activeCurve.dates[index]) + '</strong><span class="curve-tooltip-caption">' + (activeCurve.metric === 'amount' ? '账户金额 · 美元' : '资金加权年化 · XIRR') + '</span>' +
+        activeCurve.entries.map(entry => '<div><i style="background:' + entry.color + '"></i><span>' + esc(entry.label) + '</span><b class="num">' + (activeCurve.metric === 'amount' ? '$' + money(entry.values[index], 2) : pct(entry.values[index], 2)) + '</b></div>').join('');
+      tooltip.hidden = false;
     }
-    const tooltip = plot.querySelector('.curve-tooltip');
-    tooltip.innerHTML = '<strong>' + esc(activeCurve.dates[index]) + '</strong><span class="curve-tooltip-caption">' + (activeCurve.metric === 'amount' ? '账户金额 · 美元' : '资金加权年化 · XIRR') + '</span>' +
-      activeCurve.entries.map(entry => '<div><i style="background:' + entry.color + '"></i><span>' + esc(entry.label) + '</span><b class="num">' + (activeCurve.metric === 'amount' ? '$' + money(entry.values[index], 2) : pct(entry.values[index], 2)) + '</b></div>').join('');
-    tooltip.hidden = false;
     const plotRect = plot.getBoundingClientRect(), px = event.clientX - plotRect.left;
     const left = px < plotRect.width / 2 ? px + 15 : px - tooltip.offsetWidth - 15;
     tooltip.style.left = Math.max(5, Math.min(plotRect.width - tooltip.offsetWidth - 5, left)) + 'px';
@@ -359,7 +374,7 @@
       (state.showLeverageAssets || leveraged.some(a => a.c === state.stratAsset) ? leveraged.map(chartAssetChip).join('') : '') + '</div></div>';
     const chart = '<div class="strategy-curve-toolbar"><div class="strategy-curve-modes"><div class="segmented" aria-label="比较对象">' + action('比较标的', 'strategy-compare', state.stratCompare === 'assets' ? 'active' : '', 'data-value="assets" aria-pressed="' + (state.stratCompare === 'assets') + '"') + action('比较投入方式', 'strategy-compare', state.stratCompare === 'methods' ? 'active' : '', 'data-value="methods" aria-pressed="' + (state.stratCompare === 'methods') + '"') + '</div><div class="segmented" aria-label="曲线指标">' + action('账户金额', 'strategy-metric', state.stratMetric === 'amount' ? 'active' : '', 'data-value="amount" aria-pressed="' + (state.stratMetric === 'amount') + '"') + action('年化收益', 'strategy-metric', state.stratMetric === 'annualized' ? 'active' : '', 'data-value="annualized" aria-pressed="' + (state.stratMetric === 'annualized') + '"') + '</div></div>' +
       (state.stratCompare === 'assets' ? '<div class="strategy-curve-choices"><div class="strategy-method-control"><span>统一投入方式</span>' + selectMenu('strategy-chart-method', '统一投入方式', methods.map(d => [d.id, d.name]), state.stratMethod) + '</div>' + (leveraged.length ? '<label class="check-label"><input id="show-leverage" type="checkbox"' + (state.leverage ? ' checked' : '') + '>显示杠杆 ETF（' + leveraged.length + '只）</label>' : '') + '</div>' : chartAssets) + '</div>' +
-      curveCard(state.stratCompare === 'assets' ? '同图比较可用标的' : esc(state.stratAsset) + ' · 投入方式对比', state.stratCompare === 'assets' ? '同一投入方式、相同交易区间' : '同一标的、相同交易区间 · 期末金额差 $' + money(amountSpread) + '，XIRR 差 ' + money(annualSpread, 2) + ' 个百分点', state.stratCompare === 'assets' ? across : byMethod, dates, state.stratMetric) +
+      curveCard(state.stratCompare === 'assets' ? '同图比较可用标的' : esc(state.stratAsset) + ' · 投入方式对比', state.stratCompare === 'assets' ? '同一投入方式、相同交易区间' : '同一标的、相同交易区间 · 期末金额差 $' + money(amountSpread) + '，XIRR 差 ' + money(annualSpread, 2) + ' 个百分点', state.stratCompare === 'assets' ? across : byMethod, dates, state.stratMetric, meta.start) +
       '<p class="note">账户金额包含投入本金；投入总额不同的方式需结合 XIRR 比较。杠杆 ETF 仅作路径实验，其每日倍数不等于长期倍数。</p>';
     return head('INVESTING RHYTHM', '投入策略', '比较同一资产的投入节奏，以及不同标的在同一条件下的历史路径。') +
       '<div class="tabs strategy-view-tabs" role="tablist" aria-label="投入策略视图">' + action('结果表', 'strategy-view', state.stratView === 'results' ? 'active' : '', 'data-value="results" role="tab" aria-selected="' + (state.stratView === 'results') + '"') + action('曲线对比', 'strategy-view', state.stratView === 'curves' ? 'active' : '', 'data-value="curves" role="tab" aria-selected="' + (state.stratView === 'curves') + '"') + '</div>' +

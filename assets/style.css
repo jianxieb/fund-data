@@ -184,6 +184,8 @@ dialog{border:1px solid var(--line);border-radius:18px;box-shadow:0 25px 90px #1
 .curve-svg{display:block;width:100%;height:auto}
 .curve-grid{stroke:#e8ece5;stroke-width:1}
 .curve-base{stroke:#b4c3ad;stroke-width:1;stroke-dasharray:5 4}
+.curve-unavailable{fill:#f4f6f0}
+.curve-unavailable-edge{stroke:#d5ddd2;stroke-width:1;stroke-dasharray:3 4}
 .curve-axis{fill:#859087;font-size:12px;font-family:var(--font)}
 .curve-legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 10px;padding:0 8px}
 .curve-key{display:flex;align-items:center;gap:7px;min-width:0;padding:6px 8px;border-radius:6px;text-align:left;font-size:11px;color:#425a49}
