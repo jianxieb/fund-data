@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 import update
 from scripts.build_fund_actions import build_archive
-from stock_fundamentals import parse_evidence, quality_review
+from stock_fundamentals import parse_evidence, quality_review, latest_report_review
 from fund_evidence import fund_actions
 from update import total_return_series
 from scripts.build_crossborder_data import summarize
@@ -21,6 +21,9 @@ class ResearchEvidenceTests(unittest.TestCase):
         self.reports = [{'SECUCODE': '601899.SH', 'SECURITY_CODE': '601899', 'REPORT_DATE': '%d-12-31' % y,
                          'NOTICE_DATE': '%d-03-01' % (y + 1), 'ROEJQ': 15, 'PARENTNETPROFIT': 10e8,
                          'NETCASH_OPERATE_PK': 12e8, 'TOTALOPERATEREVE': 50e8} for y in (2025, 2024, 2023)]
+        self.interims = [{**self.reports[0], 'REPORT_DATE': '%d-06-30' % y,
+                          'NOTICE_DATE': '%d-08-12' % y, 'ROEJQ': 8, 'KCFJCXSYJLR': 9e8}
+                         for y in (2026, 2025)]
 
     def test_named_valuation_fields_and_annual_roe_keep_independent_dates(self):
         evidence = parse_evidence('601899', [self.quote], self.reports, '2026-09-29')
@@ -42,7 +45,7 @@ class ResearchEvidenceTests(unittest.TestCase):
         self.assertFalse(parse_evidence('601899', [], [{**self.reports[0], 'NOTICE_DATE': None}], '2026-09-29')['financialHistory'])
 
     def test_quality_screen_rejects_cashflow_gaps_missing_years_and_financial_industries(self):
-        row = {**parse_evidence('601899', [self.quote], self.reports, '2026-09-29'),
+        row = {**parse_evidence('601899', [self.quote], self.interims + self.reports, '2026-09-29'),
                'historyFirst': '2010-01-01', 'n': '紫金矿业'}
         self.assertTrue(quality_review(row, '2026-09-29')['qualified'])
         for kind in ('cash', 'year', 'industry', 'roe', 'short'):
@@ -68,6 +71,8 @@ class ResearchEvidenceTests(unittest.TestCase):
         self.assertEqual(latest['netProfitGrowth'], 20)
         self.assertAlmostEqual(latest['deductedProfitGrowth'], 22.2222)
         self.assertEqual(latest['roe'], 8)
+        self.assertEqual(latest['roePrevious'], 15)
+        self.assertEqual(latest['roeChangePoints'], -7)
         self.assertEqual(evidence['roe'], 15)
         self.assertEqual(latest['announcedAt'], '2026-08-12')
         before_release = parse_evidence('601899', [], [current, prior] + self.reports, '2026-08-11')
@@ -101,7 +106,7 @@ class ResearchEvidenceTests(unittest.TestCase):
         self.assertEqual(len(evidence['financialHistory']), 3)
         self.assertIsNone(parse_evidence('601899', [], reports[:-1], '2026-09-29')['financialGrowth3']['revenue'])
 
-    def test_quality_reasons_expose_declines_and_cash_conversion_despite_passing_screen(self):
+    def test_quality_reasons_expose_declines_but_history_alone_no_longer_qualifies(self):
         reports = copy.deepcopy(self.reports)
         reports[0].update({'PARENTNETPROFIT': 5e8, 'PARENTNETPROFITTZ': -50, 'ROEJQ': 9})
         for report in reports:
@@ -110,7 +115,9 @@ class ResearchEvidenceTests(unittest.TestCase):
                'historyFirst': '2010-01-01', 'n': '紫金矿业',
                'financialGrowth3': {'revenue': -5, 'netProfit': -20}}
         review = quality_review(row, '2026-09-29')
-        self.assertTrue(review['qualified'])
+        self.assertTrue(review['historicalQualified'])
+        self.assertTrue(review['reviewRequired'])
+        self.assertFalse(review['qualified'])
         self.assertAlmostEqual(review['cashProfitRatio3'], 3 / 25)
         self.assertTrue(any('平均ROE 13.0%' in s for s in review['reasons']))
         self.assertTrue(any('归母利润同比-50.0%' in s for s in review['watchouts']))
@@ -118,6 +125,44 @@ class ResearchEvidenceTests(unittest.TestCase):
         self.assertTrue(any('ROE低于10%' in s for s in review['watchouts']))
         self.assertFalse(any('复合增长-' in s for s in review['reasons']))
         self.assertTrue(any('3年归母利润复合增长-20.0%' in s for s in review['watchouts']))
+
+    def test_dynamic_pe_annualizes_only_the_report_known_on_the_valuation_day(self):
+        evidence = parse_evidence('601899', [{**self.quote, 'PE_LAR': 18}], self.interims + self.reports, '2026-09-29')
+        self.assertEqual(evidence['pe'], 12)
+        self.assertEqual(evidence['peStatic'], 18)
+        self.assertEqual(evidence['peDynamic'], 10)  # 200亿元 / (10亿元 * 2)
+        self.assertEqual(evidence['peDynamicBasis']['reportDate'], '2026-06-30')
+        before = parse_evidence('601899', [{**self.quote, 'TRADE_DATE': '2026-08-11'}], self.interims + self.reports, '2026-09-29')
+        self.assertEqual(before['peDynamic'], 20)
+        self.assertEqual(before['peDynamicBasis']['reportDate'], '2025-12-31')
+        loss = [{**r, 'PARENTNETPROFIT': -10e8} for r in self.interims]
+        evidence = parse_evidence('601899', [self.quote], loss + self.reports, '2026-09-29')
+        self.assertIsNone(evidence['peDynamic'])
+        self.assertEqual(evidence['peDynamicBasis']['status'], 'loss')
+
+    def test_high_annual_roe_does_not_override_deteriorating_interim_results(self):
+        reports = [{**r, 'ROEJQ': value} for r, value in zip(self.reports, (31.26, 33.99, 40.96))]
+        current = {**self.interims[0], 'ROEJQ': 10.73, 'TOTALOPERATEREVETZ': -28.9914,
+                   'PARENTNETPROFITTZ': -32.013, 'KCFJCXSYJLRTZ': -42.9571}
+        previous = {**self.interims[1], 'ROEJQ': 19.18}
+        row = {**parse_evidence('601899', [self.quote], [current, previous] + reports, '2026-09-29'),
+               'historyFirst': '2010-01-01', 'n': '测试公司'}
+        review = quality_review(row, '2026-09-29')
+        self.assertEqual(review['roe3'], 35.4)
+        self.assertEqual(row['latestFinancials']['roeChangePoints'], -8.45)
+        self.assertTrue(review['historicalQualified'])
+        self.assertEqual(review['status'], 'review')
+        self.assertFalse(review['qualified'])
+        self.assertEqual([r['pass'] for r in review['recentChecks']], [True, True, False, False, False])
+
+    def test_recent_screen_requires_due_report_and_same_period_roe(self):
+        report = {'reportDate': '2026-06-30', 'roe': 7, 'roePrevious': 10,
+                  'netProfit': 1, 'deductedProfit': 1, 'revenueGrowth': -20,
+                  'netProfitGrowth': -20, 'deductedProfitGrowth': -20}
+        self.assertTrue(all(c['pass'] for c in latest_report_review(report, '2026-09-29')))
+        self.assertFalse(latest_report_review(report, '2026-10-31')[0]['pass'])
+        report['roePrevious'] = None
+        self.assertFalse(latest_report_review(report, '2026-09-29')[-1]['pass'])
 
     def test_cash_distribution_and_split_are_distinct_and_preserved(self):
         archive = {'160213': {'dividends': {'2025-05-13': 1.1, '2027-01-01': 2}, 'splits': {},

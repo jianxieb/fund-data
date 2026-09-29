@@ -28,6 +28,17 @@ class RefreshGateTests(unittest.TestCase):
                 'META': {'navdate': '2026-09-22'}}
         self.assertEqual(check_refresh.check_snapshots(before, good), [])
 
+    def test_stock_valuation_dates_and_history_cannot_silently_disappear(self):
+        prior = {'c': '300274', 'valuationAsOf': '2026-09-29', 'fundamentalsAsOf': '2026-06-30',
+                 'pePercentiles': {'5': {'status': 'available', 'value': 25}}}
+        changed = {**prior, 'valuationAsOf': None, 'pePercentiles': {}}
+        failures = check_refresh.check_snapshots({'STOCKS': [prior]}, {'STOCKS': [changed]})
+        self.assertTrue(any('valuationAsOf' in s for s in failures))
+        self.assertTrue(any('5年PE历史退化' in s for s in failures))
+        # An actual loss can legitimately make PE inapplicable, while source dates remain valid.
+        loss = {**prior, 'pePercentiles': {'5': {'status': 'loss', 'value': None}}}
+        self.assertEqual(check_refresh.check_snapshots({'STOCKS': [prior]}, {'STOCKS': [loss]}), [])
+
 
 if __name__ == '__main__':
     unittest.main()

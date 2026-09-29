@@ -417,15 +417,21 @@ html{scrollbar-gutter:stable}
 .stock-table td{padding-top:21px;padding-bottom:21px;vertical-align:top}
 .stock-table td .sub{white-space:nowrap}
 .stock-table .text-link{font-size:13px}
-.stock-financial-table{min-width:1080px}
+.stock-financial-table{min-width:1320px}
 .stock-financial-table td:first-child,.stock-financial-table th:first-child{width:175px;min-width:175px;max-width:205px}
 .stock-financial-table td,.stock-financial-table th{padding-left:17px;padding-right:17px}
 .stock-financial-table th:not(:nth-child(2)){white-space:nowrap}
-.stock-financial-table th:nth-child(2){text-align:left}
-.stock-reason{width:290px;min-width:260px;max-width:310px;white-space:normal;text-align:left;line-height:1.7}
+.stock-financial-table th:nth-child(2),.stock-financial-table th:nth-child(3){text-align:left}
+.stock-reason{width:255px;min-width:230px;max-width:275px;white-space:normal;text-align:left;line-height:1.7}
 .stock-reason>strong{font-size:12px;font-weight:500;color:#3d5943}
-.stock-reason>span{display:block;font-size:11px;color:#75816f;margin-top:2px}
-.stock-reason>span.stock-caution{color:#a17b44}
+.stock-reason>span{display:block;font-size:12px;color:#75816f;margin-top:3px}
+.stock-risk{width:225px;min-width:210px;max-width:255px;white-space:normal;text-align:left;line-height:1.7;color:#9b7344}
+.stock-risk>span{display:block;font-size:12px;margin-bottom:3px}
+.stock-risk .text-link{margin-top:6px;font-size:11px;color:#947849}
+.stock-review-label{display:block;font-size:11px;font-weight:600;margin-bottom:7px;color:#a56532}
+.stock-review-notice{padding:12px 16px;background:#faf1e4;border:1px solid #ead7b6;border-radius:8px;font-size:12px;line-height:1.7;color:#94642e;margin-top:20px}
+.stock-roe{font-size:15px}
+.stock-percentile{font-variant-numeric:tabular-nums}
 .stock-growth strong{font-size:15px;font-weight:550;white-space:nowrap}
 .stock-annual{display:block;margin-top:10px;font-size:10px;white-space:nowrap;color:var(--muted)}
 .stock-growth>.sub{font-size:10px}

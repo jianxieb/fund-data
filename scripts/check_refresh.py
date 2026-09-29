@@ -17,7 +17,7 @@ IDENTITIES = {'FUNDS': 'c', 'EXTRA': 'c', 'STOCKS': 'c', 'INDEX_DATA': 'c',
               'BM': 'n', 'STRATEGY_ASSETS': 'c'}
 DATED_FIELDS = {'FUNDS': ('navdate', 'returnAsOf', 'riskAsOf', 'szdate'),
                 'EXTRA': ('navdate', 'returnAsOf', 'riskAsOf', 'szdate'),
-                'STOCKS': ('priceAsOf', 'returnAsOf', 'riskAsOf'),
+                'STOCKS': ('priceAsOf', 'returnAsOf', 'riskAsOf', 'valuationAsOf', 'fundamentalsAsOf'),
                 'INDEX_DATA': ('asof',), 'BM': ('asOf',)}
 TOP_LEVEL_DATES = (('META', 'navdate'), ('INDEX_META', 'asof'),
                    ('STRATEGY_META', 'end'))
@@ -69,6 +69,11 @@ def check_snapshots(before, after):
                 old_day, new_day = previous.get(field), row.get(field)
                 if old_day and (not new_day or str(new_day)[:10] < str(old_day)[:10]):
                     problems.append(f'{section} {identity} {field} 日期倒退：{old_day} → {new_day}')
+            if section == 'STOCKS':
+                for years, prior in (previous.get('pePercentiles') or {}).items():
+                    current = (row.get('pePercentiles') or {}).get(years, {})
+                    if prior.get('status') == 'available' and current.get('status') not in ('available', 'loss'):
+                        problems.append(f'STOCKS {identity} {years}年PE历史退化：{current.get("status", "missing")}')
     for section, field in TOP_LEVEL_DATES:
         old_day = (before.get(section) or {}).get(field)
         new_day = (after.get(section) or {}).get(field)

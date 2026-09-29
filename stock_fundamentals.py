@@ -4,6 +4,7 @@ import math
 import urllib.parse
 from datetime import date, datetime, timezone
 from pathlib import Path
+from stock_valuations import percentile_evidence
 
 CACHE = Path(__file__).resolve().parent / '.tmp-snap/stocks/fundamentals'
 
@@ -31,7 +32,12 @@ def financial_report(row, reports):
     result = {'year': int(day[:4]), 'reportDate': day,
               'announcedAt': str(row.get('NOTICE_DATE') or '')[:10],
               'roe': numeric(row.get('ROEJQ')),
+              'roePrevious': numeric(prior.get('ROEJQ')),
+              'roePreviousPeriod': prior_day if prior else None,
+              'deductedRoe': numeric(row.get('ROEKCJQ')),
               'operatingCashFlow': numeric(row.get('NETCASH_OPERATE_PK'))}
+    result['roeChangePoints'] = round(result['roe'] - result['roePrevious'], 4) if result['roe'] is not None and result['roePrevious'] is not None else None
+    result['roeChangePercent'] = round((result['roe'] / result['roePrevious'] - 1) * 100, 4) if result['roe'] is not None and result['roePrevious'] is not None and result['roePrevious'] > 0 else None
     for key, field, growth_field in [
         ('revenue', 'TOTALOPERATEREVE', 'TOTALOPERATEREVETZ'),
         ('netProfit', 'PARENTNETPROFIT', 'PARENTNETPROFITTZ'),
@@ -94,6 +100,14 @@ def parse_evidence(code, valuation, financials, asof):
     quotes = valid(valuation, 'TRADE_DATE')
     reports = valid(financials, 'REPORT_DATE', True)
     q = quotes[0] if quotes else {}
+    quote_day = str(q.get('TRADE_DATE') or '')[:10]
+    known = next((r for r in reports if str(r['NOTICE_DATE'])[:10] <= quote_day), {})
+    period = str(known.get('REPORT_DATE') or '')[:10]
+    months = int(period[5:7]) if period and period[5:] in ('03-31', '06-30', '09-30', '12-31') else 0
+    profit = numeric(known.get('PARENTNETPROFIT'))
+    market_cap = numeric(q.get('TOTAL_MARKET_CAP'))
+    annualized_profit = profit * 12 / months if profit is not None and months else None
+    dynamic_pe = market_cap / annualized_profit if market_cap is not None and market_cap > 0 and annualized_profit is not None and annualized_profit > 0 else None
     annual = [r for r in reports if str(r['REPORT_DATE'])[:10].endswith('-12-31')][:3]
     history = [financial_report(r, reports) for r in annual]
     growth = {'years': 3, 'start': None, 'end': history[0]['reportDate'] if history else None,
@@ -106,7 +120,14 @@ def parse_evidence(code, valuation, financials, asof):
             first, last = numeric(base.get(field)), numeric(annual[0].get(field))
             if first is not None and first > 0 and last is not None and last > 0:
                 growth[key] = round(((last / first) ** (1 / 3) - 1) * 100, 4)
-    return {'pe': numeric(q.get('PE_TTM')), 'pb': numeric(q.get('PB_MRQ')),
+    return {'pe': numeric(q.get('PE_TTM')), 'peStatic': numeric(q.get('PE_LAR')),
+            'peDynamic': round(dynamic_pe, 4) if dynamic_pe is not None else None,
+            'peDynamicBasis': {'method': 'latest_report_profit_annualized', 'reportDate': period or None,
+                               'announcedAt': str(known.get('NOTICE_DATE') or '')[:10] or None,
+                               'valuationAsOf': quote_day or None, 'months': months or None,
+                               'profit': profit, 'annualizedProfit': annualized_profit,
+                               'status': 'available' if dynamic_pe is not None else 'loss' if profit is not None and profit <= 0 else 'missing_report'},
+            'pb': numeric(q.get('PB_MRQ')),
             'valuationIndustry': q.get('BOARD_NAME') or None,
             'researchCategory': research_category(q.get('BOARD_NAME') or ''),
             'mcap': numeric(q.get('TOTAL_MARKET_CAP')) / 1e8 if numeric(q.get('TOTAL_MARKET_CAP')) is not None else None,
@@ -126,17 +147,21 @@ def parse_evidence(code, valuation, financials, asof):
 
 def fetch_evidence(code, fetcher, asof):
     results, errors = {}, []
-    for key, report, sort, size in [('valuation', 'RPT_VALUEANALYSIS_DET', 'TRADE_DATE', 2),
+    for key, report, sort, size in [('valuation', 'RPT_VALUEANALYSIS_DET', 'TRADE_DATE', 10000),
                                     ('financials', 'RPT_F10_FINANCE_MAINFINADATA', 'REPORT_DATE', 20)]:
         try:
             payload = fetcher(source_url(code, report, sort, size))
             if not payload.get('success') or not (payload.get('result') or {}).get('data'):
                 raise ValueError(payload.get('message') or '没有财务记录')
+            if key == 'valuation' and payload['result'].get('count', 0) > len(payload['result']['data']):
+                raise ValueError('历史估值响应被分页截断')
             results[key] = payload['result']['data']
         except Exception as exc:
             results[key] = []
             errors.append(key + ': ' + str(exc))
     parsed = parse_evidence(code, results['valuation'], results['financials'], asof)
+    parsed['pePercentiles'] = percentile_evidence(code, results['valuation'], parsed['pe'], parsed['valuationAsOf'] or asof)
+    parsed['peHistorySourceUrl'] = source_url(code, 'RPT_VALUEANALYSIS_DET', 'TRADE_DATE', 10000)
     CACHE.mkdir(parents=True, exist_ok=True)
     (CACHE / (code + '.json')).write_text(json.dumps({'fetchedAt': datetime.now(timezone.utc).isoformat(),
         'sourceResponses': results, 'errors': errors}, ensure_ascii=False), encoding='utf-8')
@@ -144,10 +169,34 @@ def fetch_evidence(code, fetcher, asof):
     return parsed
 
 
+def latest_report_review(latest, asof):
+    """Recheck current operations against the same reporting period, not full-year ROE."""
+    year, month_day = int(asof[:4]), asof[5:]
+    due = '%d-09-30' % (year - 1)
+    for deadline, report_end in [('04-30', '03-31'), ('08-31', '06-30'), ('10-31', '09-30')]:
+        if month_day >= deadline:
+            due = '%d-%s' % (year, report_end)
+    day = latest.get('reportDate') or ''
+    def growth_ok(key):
+        value = numeric(latest.get(key + 'Growth'))
+        return (value is not None and value >= -20) or latest.get(key + 'GrowthStatus') == '扭亏'
+    roe, previous = numeric(latest.get('roe')), numeric(latest.get('roePrevious'))
+    roe_ok = roe is not None and roe > 0 and previous is not None and (previous <= 0 or roe / previous >= 0.7)
+    checks = [
+        {'label': '已收录最新应披露报告（截至%s）' % due, 'pass': day >= due},
+        {'label': '最新报告归母及扣非利润均为正', 'pass': all((numeric(latest.get(k)) or 0) > 0 for k in ('netProfit', 'deductedProfit'))},
+        {'label': '最新营收同比降幅不超过20%', 'pass': growth_ok('revenue')},
+        {'label': '最新归母及扣非利润同比降幅均不超过20%', 'pass': growth_ok('netProfit') and growth_ok('deductedProfit')},
+        {'label': '最新ROE为正，较上年同期降幅不超过30%', 'pass': roe_ok},
+    ]
+    return checks
+
+
 def quality_review(row, asof):
     history = row.get('financialHistory') or []
     years = [r['year'] for r in history]
-    complete = len(years) == 3 and years == list(range(int(asof[:4]) - 1, int(asof[:4]) - 4, -1))
+    latest_due_year = int(asof[:4]) - (1 if asof[5:] >= '04-30' else 2)
+    complete = len(years) == 3 and years[0] >= latest_due_year and years == list(range(years[0], years[0] - 3, -1))
     def every(key):
         return complete and all(numeric(r.get(key)) is not None and r[key] > 0 for r in history)
     roes = [numeric(r.get('roe')) for r in history]
@@ -166,7 +215,11 @@ def quality_review(row, asof):
     cash = sum(r['operatingCashFlow'] for r in history) if complete and all(numeric(r.get('operatingCashFlow')) is not None for r in history) else None
     profit = sum(r['netProfit'] for r in history) if complete and all(numeric(r.get('netProfit')) is not None for r in history) else None
     cash_ratio = cash / profit if cash is not None and profit is not None and profit > 0 else None
-    qualified = all(c['pass'] for c in checks)
+    historical_qualified = all(c['pass'] for c in checks)
+    latest = row.get('latestFinancials') or {}
+    recent_checks = latest_report_review(latest, asof)
+    recent_pass = all(c['pass'] for c in recent_checks)
+    qualified = historical_qualified and recent_pass
     reasons = []
     if every('netProfit'):
         reasons.append('连续3年盈利，合计归母利润%.1f亿元' % (profit / 1e8))
@@ -181,7 +234,8 @@ def quality_review(row, asof):
     if growing:
         reasons.append('3年' + '，'.join(growing))
     watchouts = []
-    latest = row.get('latestFinancials') or {}
+    if not recent_checks[0]['pass']:
+        watchouts.append('最新应披露财报未收录；现有报告截至' + (latest.get('reportDate') or '未知'))
     for report in [latest] + history[:1]:
         if not report or (report is not latest and report.get('reportDate') == latest.get('reportDate')):
             continue
@@ -193,6 +247,8 @@ def quality_review(row, asof):
             watchouts.append(period + '归母净亏损')
         if numeric(report.get('operatingCashFlow')) is not None and report['operatingCashFlow'] < 0:
             watchouts.append(period + '经营现金流为负（%.1f亿元）' % (report['operatingCashFlow'] / 1e8))
+    if numeric(latest.get('roeChangePoints')) is not None and latest['roeChangePoints'] < 0:
+        watchouts.append('最新ROE较上年同期下降%.2f个百分点（%.2f%%→%.2f%%）' % (-latest['roeChangePoints'], latest['roePrevious'], latest['roe']))
     for key, label in [('revenue', '营收'), ('netProfit', '归母利润')]:
         if numeric(growth.get(key)) is not None and growth[key] < 0:
             watchouts.append('3年' + label + '复合增长%+.1f%%' % growth[key])
@@ -200,7 +256,11 @@ def quality_review(row, asof):
         watchouts.append('3年经营现金流合计低于归母利润（%.2f倍）' % cash_ratio)
     if history and numeric(history[0].get('roe')) is not None and history[0]['roe'] < 10:
         watchouts.append('%s年ROE低于10%%（%.1f%%）' % (history[0]['year'], history[0]['roe']))
-    return {'qualified': qualified, 'checks': checks, 'reasons': reasons, 'watchouts': watchouts,
+    return {'qualified': qualified, 'historicalQualified': historical_qualified,
+            'reviewRequired': historical_qualified and not recent_pass,
+            'status': 'qualified' if qualified else 'review' if historical_qualified else 'outside_screen',
+            'checks': checks + recent_checks, 'historicalChecks': checks, 'recentChecks': recent_checks,
+            'reasons': reasons, 'watchouts': watchouts,
             'cashProfitRatio3': round(cash_ratio, 4) if cash_ratio is not None else None,
             'roe3': round(average, 2) if average is not None else None,
-            'years': years, 'checkedAt': asof, 'basis': 'research_pool_financial_screen_v1'}
+            'years': years, 'checkedAt': asof, 'basis': 'research_pool_financial_screen_v2'}
