@@ -3,23 +3,24 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="长衡：开放的长期投资研究站。比较基金、指数和投入策略，核对长期收益、基金经理、风险与费用。">
+  <meta name="description" content="长衡：长期投资研究。比较指数、基金、个股、投入策略与跨境投资税费。">
   <meta name="theme-color" content="#233d32">
   <title>长衡 · 长期投资研究</title>
-  <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="assets/style.css?v=dcb59caf2064">
-  <script defer src="data/snapshot.js?v=b40fc03193ef"></script>
+  <link rel="icon" type="image/svg+xml" href="assets/brand-mark.svg">
+  <link rel="stylesheet" href="assets/style.css?v=157a5288ce80">
+  <script defer src="data/snapshot.js?v=ea43e3bb2171"></script>
+  <script defer src="data/buy-location.js?v=0ebd9196b817"></script>
   <script defer src="data/indices.js?v=e349088ed5e6"></script>
   <script defer src="data/screening.js?v=7475f1977e46"></script>
-  <script defer src="data/quality.js?v=69248ab48282"></script>
-  <script defer src="data/update-status.js?v=bd6e1630f01b"></script>
-  <script defer src="assets/model.js?v=f748e5f2ab22"></script>
-  <script defer src="assets/app.js?v=e93212bfa405"></script>
+  <script defer src="data/quality.js?v=ad1eaf577158"></script>
+  <script defer src="data/update-status.js?v=38cb1c10a6e5"></script>
+  <script defer src="assets/model.js?v=e9952ba5b16e"></script>
+  <script defer src="assets/app.js?v=74286da949f7"></script>
 </head>
 <body>
   <a class="skip" href="#main">跳转到主要内容</a>
   <aside class="sidebar">
-    <a class="brand" href="#overview" aria-label="长衡首页"><span class="brand-symbol">衡</span><span>长衡<small>CHANGHENG</small></span></a>
+    <a class="brand" href="#overview" aria-label="长衡首页"><img src="assets/brand-mark.svg" class="brand-mark" width="42" height="42" alt=""><span>长衡</span></a>
     <nav aria-label="主导航">
       <a href="#overview" data-route="overview" class="nav-home">研究总览</a>
       <span class="nav-divider">研究对象</span>
@@ -28,6 +29,7 @@
       <a href="#stocks" data-route="stocks">个股深入</a>
       <span class="nav-divider">研究方法</span>
       <a href="#strategy" data-route="strategy">投入策略</a>
+      <a href="#buy-location" data-route="buy-location">投资渠道</a>
     </nav>
     <div class="sidebar-bottom">
       <a href="#quality" data-route="quality">数据与方法 <span id="quality-dot" class="status-dot"></span></a>
@@ -36,8 +38,8 @@
   </aside>
   <div class="app-shell">
     <header class="topbar">
-      <span id="breadcrumb">公开研究 / 研究总览</span>
-      <div class="top-actions"><span class="public-label">开放数据 · 可复核方法</span><a class="quiet" href="#quality">数据状态 ↗</a></div>
+      <span id="breadcrumb">研究总览</span>
+      <div class="top-actions"><a class="quiet" href="#quality">数据状态 ↗</a></div>
     </header>
     <main id="main" tabindex="-1"></main>
     <footer class="footer"><span>长衡 · 长期投资研究</span><a href="#quality">数据来源与研究方法</a></footer>

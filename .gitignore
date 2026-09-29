@@ -10,5 +10,6 @@ __pycache__/
 .tmp-snap/
 .tmp-screen/
 .tmp-strategy/
+.tmp-buy-location/
 screens/.cache/
 screens/data/*.json

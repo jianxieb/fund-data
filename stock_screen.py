@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-国内长期股 / 高股息快照生成脚本
+A股优质企业 / 红利价值观察快照生成脚本
 
 数据源：
   1) push2.eastmoney.com          股票现价、市值、PE(TTM)、PB、ROE、行业
@@ -38,6 +38,13 @@ YAHOO_CACHE = os.path.join(HERE, '.tmp-snap', 'stocks')
 # 核心观察清单：优先覆盖稳定现金流、行业龙头和常见高股息标的。
 # note 只写业务和筛选逻辑，不写推荐语。
 STOCK_UNIVERSE = [
+    {'code': '601138', 'name': '工业富联', 'industry': '电子制造', 'group': 'quality', 'note': '覆盖服务器、通信网络设备与精密工具制造，观察算力需求、客户集中度和盈利兑现'},
+    {'code': '603259', 'name': '药明康德', 'industry': '医药研发服务', 'group': 'quality', 'note': '提供药物研发与生产服务，观察订单、产能利用率及跨境经营风险'},
+    {'code': '601899', 'name': '紫金矿业', 'industry': '有色金属', 'group': 'quality', 'note': '经营铜、金等矿产资源，观察产量、矿山成本、金属价格和海外项目投入'},
+    {'code': '300750', 'name': '宁德时代', 'industry': '动力与储能电池', 'group': 'quality', 'note': '动力与储能电池制造，观察产能利用率、单位盈利和技术迭代'},
+    {'code': '002594', 'name': '比亚迪', 'industry': '汽车制造', 'group': 'quality', 'note': '新能源汽车与电池制造，观察销量、单车盈利和海外经营'},
+    {'code': '300124', 'name': '汇川技术', 'industry': '工业自动化', 'group': 'quality', 'note': '工业自动化与新能源车电驱产品，观察制造业投资、产品结构和研发投入'},
+    {'code': '600309', 'name': '万华化学', 'industry': '化工', 'group': 'quality', 'note': '聚氨酯、石化与新材料制造，观察产品价差、产能扩张和资本回报'},
     {'code': '600900', 'note': '水电龙头，现金流稳定，长期高比例分红'},
     {'code': '000333', 'note': '白电龙头，全球化经营，分红稳定'},
     {'code': '600901', 'note': '金融租赁平台，高股息与稳健资产扩张'},
@@ -293,6 +300,7 @@ def fetch_stock(item):
     high_dividend = yield_12m >= 3.2 and dividend_years is not None and dividend_years >= 4
     styles = (['长期核心'] if long_term else []) + (['高股息'] if high_dividend else [])
     return {'c': code, 'n': quote.get('f58') or item.get('name') or code, 'ind': quote.get('f127') or item.get('industry') or '',
+            'group': item.get('group', 'dividend'),
             'style': styles, 'price': price, 'chg': number(quote.get('f170'), 100),
             'mcap': market_cap, 'pe': number(quote.get('f164'), 100), 'pb': number(quote.get('f167'), 100),
             'roe': number(quote.get('f173')), 'yield12': yield_12m, 'divYears': dividend_years,
@@ -354,7 +362,7 @@ def main():
     only = {x.strip() for x in args.only.split(',') if x.strip()} if args.only else None
     if only and only - {row['code'] for row in STOCK_UNIVERSE}:
         parser.error('存在未知股票代码')
-    universe = [{**x, 'name': old.get(x['code'], {}).get('n'), 'industry': old.get(x['code'], {}).get('ind')} for x in STOCK_UNIVERSE if not only or x['code'] in only]
+    universe = [{**x, 'name': x.get('name') or old.get(x['code'], {}).get('n'), 'industry': x.get('industry') or old.get(x['code'], {}).get('ind')} for x in STOCK_UNIVERSE if not only or x['code'] in only]
     rows = [old[x['code']] for x in STOCK_UNIVERSE if only and x['code'] not in only and x['code'] in old]
     failures = []
     for item in universe:
@@ -377,6 +385,9 @@ def main():
         write_status('stocks', 'failed', records=len(rows), failures=failures, message='有效数据不足80%，保留旧数据')
         return 2
     order = {item['code']: i for i, item in enumerate(STOCK_UNIVERSE)}
+    groups = {item['code']: item.get('group', 'dividend') for item in STOCK_UNIVERSE}
+    for row in rows:
+        row['group'] = groups.get(row['c'], 'dividend')
     rows.sort(key=lambda row: order.get(row.get('c'), 9999))
     block = format_block(rows)
     pattern = re.compile(r'/\*__DATA_STOCKS_BEGIN__\*/.*?/\*__DATA_STOCKS_END__\*/', re.S)

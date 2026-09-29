@@ -1,6 +1,7 @@
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
 const M = require('../assets/model.js');
 
 function close(actual, expected, tolerance = 1e-8) {
@@ -157,4 +158,73 @@ test('equity filter uses independent multiyear thresholds and exact current-mana
   assert.equal(M.equityQualifies({ ...rule, thresholdInputs: { ...rule.thresholdInputs, managerYears: null, passive: true } }, limits), true);
   assert.equal(M.equityQualifies(null, limits), false);
   assert.equal(M.equityQualifies(rule, { ...limits, minA3: 7 }), false);
+});
+
+function buyData(products, fx = [['2020-01-01', 1], ['2021-01-01', 1]]) {
+  return { asOf: '2021-01-01', fx, products: products.map(p => ({ family: 'sp', name: p.code, channel: 'us', dividendFraction: {}, ...p })) };
+}
+const freeFees = { usCommission: 0, usMinimum: 0, fxSpread: 0, exchangeCommission: 0, exchangeMinimum: 0,
+  subscription: 0, redemption: 0, usDividendTax: 10, cnDividendTax: 20, capitalGainsTax: 20 };
+const buyConfig = { family: 'sp', years: 1, plan: 'lump', lumpAmount: 100, monthlyAmount: 100, fees: freeFees };
+
+test('buy-location simulation taxes US realized gains but not domestic fund gains', () => {
+  const series = [['2020-01-01', 100], ['2021-01-01', 120]];
+  const data = buyData([{ code: 'SPY', series }, { code: 'CN', channel: 'off', series }]);
+  const result = M.buyLocationResult(data, buyConfig);
+  assert.equal(result.start, '2020-01-01'); assert.equal(result.end, '2021-01-01');
+  close(result.rows[0].taxableGain, 20); close(result.rows[0].capitalTax, 4); close(result.rows[0].terminal, 116);
+  close(result.rows[1].terminal, 120); close(result.rows[1].capitalTax, 0);
+  close(result.rows[0].xirr, 16, 0.05);
+});
+
+test('US dividend withholding and China top-up reduce reinvestment without double-taxing the sale', () => {
+  const data = buyData([{ code: 'SPY', series: [['2020-01-01', 100], ['2021-01-01', 110]],
+    dividendFraction: { '2021-01-01': 10 / 110 } }]);
+  const [row] = M.buyLocationResult(data, buyConfig).rows;
+  close(row.usDividendTax, 1); close(row.cnDividendTax, 1);
+  close(row.basis, 108); close(row.capitalTax, 0); close(row.terminal, 108);
+  const noTreaty = M.buyLocationResult(data, { ...buyConfig, fees: { ...freeFees, usDividendTax: 30 } }).rows[0];
+  close(noTreaty.usDividendTax, 3); close(noTreaty.cnDividendTax, 0); close(noTreaty.terminal, 107);
+});
+
+test('monthly investing pays minimum commission each time and rejects unaffordable orders', () => {
+  const series = [['2020-01-01', 100], ['2020-02-03', 100], ['2021-01-01', 100]];
+  const data = buyData([{ code: 'CN', channel: 'exchange', series }], series.map(([day]) => [day, 1]));
+  const config = { ...buyConfig, plan: 'monthly', fees: { ...freeFees, exchangeMinimum: 5 } };
+  const [row] = M.buyLocationResult(data, config).rows;
+  assert.equal(row.purchases, 3); close(row.transactionCost, 20); close(row.terminal, 280);
+  assert.match(M.buyLocationResult(data, { ...config, monthlyAmount: 5 }).rows[0].error, /最低手续费/);
+});
+
+test('off-exchange funds use their own subscription and redemption fees', () => {
+  const series = [['2020-01-01', 100], ['2021-01-01', 100]];
+  const data = buyData([{ code: 'A', channel: 'off', series }, { code: 'B', channel: 'off', series }]);
+  const [a, b] = M.buyLocationResult(data, { ...buyConfig, fundFees: {
+    A: { subscription: 0, redemption: 0 }, B: { subscription: 10, redemption: 10 }
+  } }).rows;
+  close(a.terminal, 100);
+  close(b.terminal, 100 / 1.1 * 0.9);
+  close(b.transactionCost, 100 - b.terminal);
+});
+
+test('comparison requires a full shared window rather than filling missing history', () => {
+  const data = buyData([{ code: 'SPY', series: [['2020-06-01', 100], ['2021-01-01', 120]] }],
+    [['2020-06-01', 1], ['2021-01-01', 1]]);
+  assert.match(M.buyLocationResult(data, buyConfig).error, /完整共同历史/);
+});
+
+test('published buy-location snapshot supports both index families across every offered period', () => {
+  const source = fs.readFileSync(require.resolve('../data/buy-location.js'), 'utf8');
+  const data = JSON.parse(source.slice('window.BUY_LOCATION_DATA='.length).trim().replace(/;$/, ''));
+  assert.equal(data.products.length, 8);
+  for (const family of ['sp', 'nq']) for (const years of [1, 2, 3, 5, 10]) for (const plan of ['lump', 'monthly']) {
+    const result = M.buyLocationResult(data, { ...buyConfig, family, years, plan });
+    assert.equal(result.error, undefined, `${family} ${years}年：${result.error}`);
+    assert.equal(result.end, data.asOf);
+    for (const row of result.rows) {
+      assert.equal(row.error, undefined, `${row.code}：${row.error}`);
+      assert.ok(Number.isFinite(row.terminal) && Number.isFinite(row.xirr));
+      assert.ok(row.transactionCost >= 0 && row.capitalTax >= 0);
+    }
+  }
 });

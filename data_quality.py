@@ -231,8 +231,10 @@ def audit(snapshot, today=None):
                 check_strategy_metric_curves(item.get('curves') or {}, rows, year)
     checks.append({'id': 'strategy_curves', 'status': 'pass' if not any(i['severity'] == 'error' for i in td['issues']) else 'fail',
                    'scope': '核对全部起点的实际日期、资产与策略组合、曲线长度、正值与首日基准；不证明上游行情正确'})
-    issue(td, 'window_selection_bias', 'warning', '起点不同会改变回测表现与可比标的；不同预算策略不可只按期末金额排序')
-    issue(td, 'leverage_daily_target', 'warning', '杠杆ETF目标是单日倍数，长期路径与指数倍数不同；仅作为独立实验')
+    td['notes'] = [
+        '起点不同会改变回测表现与可比标的；不同预算策略不可只按期末金额排序',
+        '杠杆ETF目标是单日倍数，长期路径与指数倍数不同；仅作为独立实验',
+    ]
 
     extra = snapshot.get('EXTRA', [])
     ed = dataset('domestic_funds', '扩展基金研究池', extra)
@@ -300,7 +302,9 @@ def audit(snapshot, today=None):
     if regressed_indices:
         issue(idata, 'index_source_regression', 'warning', '指数商本次返回较旧日线，已保留已有观察日', regressed_indices)
     if unavailable_indices:
-        issue(idata, 'index_source_unavailable', 'warning', '指数源数据不可用，收益留空', unavailable_indices)
+        message = ('万得微盘股指数尚无可复核的完整授权日线，收益与风险留空'
+                   if unavailable_indices == ['8841431.WI'] else '指数源数据不可用，收益与风险留空')
+        issue(idata, 'index_source_unavailable', 'warning', message, unavailable_indices)
     if stale_indices:
         issue(idata, 'stale_index', 'warning', '指数日期缺失或超过10个自然日', stale_indices)
 

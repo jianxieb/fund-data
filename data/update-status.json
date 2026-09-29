@@ -69,26 +69,18 @@
     },
     "stocks": {
       "status": "success",
-      "attemptedAt": "2026-09-26T18:04:19+00:00",
-      "records": 23,
+      "attemptedAt": "2026-09-28T16:25:54+00:00",
+      "mode": "online",
+      "records": 30,
       "failures": [],
       "asOf": "2026-09-24",
-      "mode": "online",
-      "execution": {
-        "exitCode": 0,
-        "seconds": 143.68
-      },
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-09-26T18:04:19+00:00",
-        "records": 23,
-        "failures": [],
-        "asOf": "2026-09-24",
+        "attemptedAt": "2026-09-28T16:25:54+00:00",
         "mode": "online",
-        "execution": {
-          "exitCode": 0,
-          "seconds": 143.68
-        }
+        "records": 30,
+        "failures": [],
+        "asOf": "2026-09-24"
       }
     },
     "screening": {
@@ -124,5 +116,5 @@
       }
     }
   },
-  "checkedAt": "2026-09-26T18:04:34+00:00"
+  "checkedAt": "2026-09-28T16:25:54+00:00"
 }

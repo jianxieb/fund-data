@@ -1,11 +1,11 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-09-28T03:24:14+00:00",
-  "asOf": "2026-09-28",
+  "checkedAt": "2026-09-28T16:27:33+00:00",
+  "asOf": "2026-09-29",
   "status": "unverified",
   "summary": {
     "errors": 0,
-    "warnings": 5,
+    "warnings": 3,
     "unverified": 4
   },
   "datasets": [
@@ -112,7 +112,7 @@ var DATA_QUALITY={
         "2026-09-24",
         "2026-09-24"
       ],
-      "records": 23,
+      "records": 30,
       "issues": [
         {
           "code": "fundamentals_period",
@@ -128,19 +128,12 @@ var DATA_QUALITY={
       "asOf": "2026-09-25",
       "dateRange": null,
       "records": 108,
-      "issues": [
-        {
-          "code": "window_selection_bias",
-          "severity": "warning",
-          "message": "起点不同会改变回测表现与可比标的；不同预算策略不可只按期末金额排序"
-        },
-        {
-          "code": "leverage_daily_target",
-          "severity": "warning",
-          "message": "杠杆ETF目标是单日倍数，长期路径与指数倍数不同；仅作为独立实验"
-        }
+      "issues": [],
+      "notes": [
+        "起点不同会改变回测表现与可比标的；不同预算策略不可只按期末金额排序",
+        "杠杆ETF目标是单日倍数，长期路径与指数倍数不同；仅作为独立实验"
       ],
-      "status": "warning"
+      "status": "checked"
     },
     {
       "id": "domestic_funds",
@@ -1382,7 +1375,7 @@ var DATA_QUALITY={
         {
           "code": "stale_research_nav",
           "severity": "warning",
-          "message": "1220只扩展基金的净值缺日期或超过10日；规则重生成不代表净值已更新",
+          "message": "1222只扩展基金的净值缺日期或超过10日；规则重生成不代表净值已更新",
           "affected": [
             "001437",
             "519196",
@@ -2274,9 +2267,11 @@ var DATA_QUALITY={
             "160723",
             "457001",
             "501018",
+            "539002",
             "000934",
             "519696",
             "007937",
+            "006282",
             "100061",
             "165520",
             "006308",
@@ -3849,7 +3844,7 @@ var DATA_QUALITY={
         {
           "code": "index_source_unavailable",
           "severity": "warning",
-          "message": "指数源数据不可用，收益留空",
+          "message": "万得微盘股指数尚无可复核的完整授权日线，收益与风险留空",
           "affected": [
             "8841431.WI"
           ]

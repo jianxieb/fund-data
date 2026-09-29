@@ -128,5 +128,138 @@
       return '"' + s.replace(/"/g, '""') + '"';
     }).join(',')).join('\r\n');
   }
-  return { finite, sum, copy, escapeHtml, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, csv };
+  function buyLocationXirr(flows) {
+    if (!Array.isArray(flows) || flows.length < 2 || !flows.some(x => x[1] < 0) || !flows.some(x => x[1] > 0)) return null;
+    const first = Date.parse(flows[0][0] + 'T00:00:00Z');
+    const npv = rate => flows.reduce((total, [day, amount]) => total + amount / Math.pow(1 + rate, (Date.parse(day + 'T00:00:00Z') - first) / 86400000 / 365.2425), 0);
+    let low = -0.9999, high = 1;
+    while (npv(high) > 0 && high < 1e6) high = high * 2 + 1;
+    if (!(npv(low) > 0) || !(npv(high) < 0)) return null;
+    for (let i = 0; i < 100; i++) {
+      const mid = (low + high) / 2;
+      if (npv(mid) > 0) low = mid; else high = mid;
+    }
+    return (low + high) * 50;
+  }
+  function buyLocationResult(data, config) {
+    if (!record(data) || !Array.isArray(data.products) || !Array.isArray(data.fx)) return { error: '比较数据缺失' };
+    const products = data.products.filter(p => p.family === config.family);
+    if (!products.length || ![1, 2, 3, 5, 10].includes(config.years) || !['lump', 'monthly'].includes(config.plan)) return { error: '比较条件无效' };
+    const amount = Number(config.plan === 'lump' ? config.lumpAmount : config.monthlyAmount);
+    const fees = config.fees || {};
+    const keys = ['usCommission', 'usMinimum', 'fxSpread', 'exchangeCommission', 'exchangeMinimum', 'subscription', 'redemption', 'usDividendTax', 'cnDividendTax', 'capitalGainsTax'];
+    if (!finite(amount) || amount <= 0 || amount > 1e9 || keys.some(key => !finite(Number(fees[key])) || Number(fees[key]) < 0 || Number(fees[key]) > (key.endsWith('Minimum') ? 1e6 : 100))) return { error: '金额或费用假设无效' };
+    const fundFees = config.fundFees || {};
+    if (Object.values(fundFees).some(pair => !record(pair) || ['subscription', 'redemption'].some(key => !finite(Number(pair[key])) || Number(pair[key]) < 0 || Number(pair[key]) > 100))) return { error: '场外基金费率无效' };
+    const fx = new Map(data.fx);
+    const series = products.map(p => new Map(p.series));
+    let common = new Set(fx.keys());
+    for (const prices of series) common = new Set([...common].filter(day => prices.has(day)));
+    const available = [...common].filter(day => day <= data.asOf).sort();
+    if (!available.length) return { error: '产品与汇率没有共同交易日' };
+    const end = available.at(-1), anchor = new Date(end + 'T00:00:00Z');
+    anchor.setUTCFullYear(anchor.getUTCFullYear() - config.years);
+    const desiredStart = anchor.toISOString().slice(0, 10);
+    const start = available.find(day => day >= desiredStart);
+    if (!start || start > desiredStart.slice(0, 4) + '-12-31' || available[0] > desiredStart) return { error: '缺少完整共同历史窗口' };
+    const months = new Set(), purchaseDays = [];
+    for (const day of available) {
+      if (day < start || day > end) continue;
+      if (config.plan === 'lump') { if (day === start) purchaseDays.push(day); break; }
+      const month = day.slice(0, 7);
+      if (!months.has(month)) { months.add(month); purchaseDays.push(day); }
+    }
+    const purchaseSet = new Set(purchaseDays);
+    const fxDays = [...fx.keys()].sort();
+    const fxAt = day => {
+      if (fx.has(day)) return fx.get(day);
+      let lo = 0, hi = fxDays.length;
+      while (lo < hi) { const mid = (lo + hi) >> 1; if (fxDays[mid] <= day) lo = mid + 1; else hi = mid; }
+      const prior = fxDays[lo - 1];
+      return prior && (Date.parse(day) - Date.parse(prior)) / 86400000 <= 5 ? fx.get(prior) : null;
+    };
+    const buyAfterFee = (cash, pctRate, minimum) => {
+      const rate = pctRate / 100;
+      const proportional = cash / (1 + rate);
+      const fee = proportional * rate >= minimum ? proportional * rate : minimum;
+      return { invested: cash - fee, fee };
+    };
+    const rows = products.map((product, index) => {
+      const points = product.series.filter(([day]) => day >= start && day <= end);
+      let units = 0, basis = 0, transactionCost = 0, fxCost = 0, usDividendTax = 0, cnDividendTax = 0, contributed = 0, purchases = 0;
+      const flows = [];
+      for (const [day, price] of points) {
+        if (!finite(price) || price <= 0) return { code: product.code, error: '价格序列无效' };
+        if (product.channel === 'us' && units > 0) {
+          const fraction = Number((product.dividendFraction || {})[day] || 0);
+          if (fraction > 0) {
+            const rate = fxAt(day);
+            if (!finite(rate) || rate <= 0) return { code: product.code, error: '分红日汇率缺失' };
+            const gross = units * price * fraction;
+            const withheld = gross * fees.usDividendTax / 100;
+            const extra = gross * Math.max(0, fees.cnDividendTax - fees.usDividendTax) / 100;
+            usDividendTax += withheld * rate;
+            cnDividendTax += extra * rate;
+            units -= (withheld + extra) / price;
+            basis += (gross - withheld - extra) * rate;
+          }
+        }
+        if (!purchaseSet.has(day)) continue;
+        const rate = fx.get(day);
+        if (!finite(rate) || rate <= 0) return { code: product.code, error: '买入日汇率缺失' };
+        let invested;
+        if (product.channel === 'us') {
+          const usd = amount / (rate * (1 + fees.fxSpread / 100));
+          const result = buyAfterFee(usd, fees.usCommission, fees.usMinimum);
+          invested = result.invested;
+          transactionCost += result.fee * rate;
+          fxCost += amount - usd * rate;
+        } else {
+          const result = buyAfterFee(amount, product.channel === 'exchange' ? fees.exchangeCommission : (fundFees[product.code]?.subscription ?? fees.subscription),
+            product.channel === 'exchange' ? fees.exchangeMinimum : 0);
+          invested = result.invested;
+          transactionCost += result.fee;
+        }
+        if (invested <= 0) return { code: product.code, error: '单次投入不足以支付最低手续费' };
+        units += invested / price;
+        basis += amount;
+        contributed += amount;
+        purchases++;
+        flows.push([day, -amount]);
+      }
+      const finalPrice = series[index].get(end), finalFx = fx.get(end);
+      if (!finite(finalPrice) || !finite(finalFx)) return { code: product.code, error: '卖出日数据缺失' };
+      const gross = units * finalPrice;
+      let beforeCapitalTax;
+      if (product.channel === 'us') {
+        const fee = Math.max(gross * fees.usCommission / 100, fees.usMinimum);
+        if (fee >= gross) return { code: product.code, error: '卖出金额不足以支付最低手续费' };
+        transactionCost += fee * finalFx;
+        fxCost += (gross - fee) * finalFx * fees.fxSpread / 100;
+        beforeCapitalTax = (gross - fee) * finalFx * (1 - fees.fxSpread / 100);
+      } else if (product.channel === 'exchange') {
+        const fee = Math.max(gross * fees.exchangeCommission / 100, fees.exchangeMinimum);
+        transactionCost += fee;
+        beforeCapitalTax = gross - fee;
+      } else {
+        const fee = gross * (fundFees[product.code]?.redemption ?? fees.redemption) / 100;
+        transactionCost += fee;
+        beforeCapitalTax = gross - fee;
+      }
+      const taxableGain = product.channel === 'us' ? Math.max(0, beforeCapitalTax - basis) : 0;
+      const capitalTax = taxableGain * fees.capitalGainsTax / 100;
+      const terminal = beforeCapitalTax - capitalTax;
+      flows.push([end, terminal]);
+      const nav = new Map(product.navSeries || []);
+      const premiumRatioChange = product.channel === 'exchange' && nav.has(start) && nav.has(end)
+        ? ((finalPrice / series[index].get(start)) / (nav.get(end) / nav.get(start)) - 1) * 100 : null;
+      return { code: product.code, name: product.name, channel: product.channel,
+        contributed, terminal, profit: terminal - contributed,
+        totalReturn: (terminal / contributed - 1) * 100, xirr: buyLocationXirr(flows),
+        purchases, transactionCost, fxCost, usDividendTax, cnDividendTax,
+        capitalTax, taxableGain, beforeCapitalTax, basis, premiumRatioChange };
+    });
+    return { start, end, purchaseDays, rows };
+  }
+  return { finite, sum, copy, escapeHtml, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, csv, buyLocationXirr, buyLocationResult };
 }));

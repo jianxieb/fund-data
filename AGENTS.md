@@ -1,0 +1,14 @@
+@/Users/ajin/.codex/RTK.md
+
+## Product UI
+
+- Keep each screen self explanatory through clear labels, visual hierarchy and direct controls. Do not turn product pages into instruction manuals.
+- Keep methodology, audit trails, long caveats and implementation notes in repository docs or a dedicated detail view. Show a short warning in the interface only when it changes how a user should interpret or act on a result.
+- Give each research topic one clear navigation path. Do not repeat calls to action for the same destination on the same page.
+- Keep return period and annualized/cumulative controls consistent across index, fund and stock pages.
+- Prioritize the desktop layout. The primary display is 27 inches at 4K resolution.
+
+## Data integrity
+
+- Name the exact missing evidence in status labels. Do not hide unresolved data gaps or replace one index with another series.
+- Separate index values, ETF prices and fund net values; label each return basis and date.
