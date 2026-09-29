@@ -1,5 +1,10 @@
 @/Users/ajin/.codex/RTK.md
 
+## Workflow
+
+- In this project, push immediately after every commit. Committing without pushing is not a completed delivery.
+- Before pushing, fetch and integrate any remote updates, including scheduled data refreshes. Preserve their changes and do not force-push over them.
+
 ## Product UI
 
 - Keep each screen self explanatory through clear labels, visual hierarchy and direct controls. Do not turn product pages into instruction manuals.
