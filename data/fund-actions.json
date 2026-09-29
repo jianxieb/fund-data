@@ -4,7 +4,7 @@
     "050025": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_050025.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "e62820483862065037c23a223f0aff1f2f075b0272a6edf918430e6d00c3fd02",
+      "sourceSha256": "314d3d00fa0494e7c91b982047f20e92f36e4d11c066d30ee6c85266dbb9bd1a",
       "dividends": {
         "2012-09-20": 0.028000000000000004,
         "2014-01-09": 0.0066,
@@ -15,14 +15,14 @@
     "161125": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_161125.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "4c67520e9d4834bb1fddf990d5ba5ef0839acdd5cc0977f84b2f48d1b84d0b74",
+      "sourceSha256": "99898ba895608d581efb9f6557d8f58f36640f084890dd27f31ab4881029ca09",
       "dividends": {},
       "splits": {}
     },
     "018064": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_018064.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "75a70add3ade761662f912e9685313761a75de5b1975055ecb2af4bad1e9e5a9",
+      "sourceSha256": "bd5c0efa3fd3eedc6d77f0dd9e39bac845deb0e432874153ae865ee5df07f104",
       "dividends": {},
       "splits": {}
     },
@@ -50,7 +50,7 @@
     "017641": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_017641.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "ca86929a87cae3d3d53f76b57f2755bea2e9e8b549696504db43916238f8a830",
+      "sourceSha256": "efcf3a2da00ca0f1055e62a594dc30c6c53e0d6542eddfb8524fea613303309c",
       "dividends": {},
       "splits": {}
     },
@@ -73,21 +73,21 @@
     "159655": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_159655.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "09dedc3d5d5918ab56cdc7821953a9390ac81b7951cf0313e8beab095f15e3f4",
+      "sourceSha256": "6618853890107ce27467d91e15ff19985c8519a6e31480f39b41d853fb3ffbfa",
       "dividends": {},
       "splits": {}
     },
     "159612": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_159612.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "ed93c64f5403b0d44965fd0a8c41ae2ea3fbef935063d0c2753ac71bb3dc9e2e",
+      "sourceSha256": "bb68fa05f4f6fd3cac2feb67fa5406cda4fc65033eabee2405398b80ade2a61f",
       "dividends": {},
       "splits": {}
     },
     "513650": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_513650.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "3500f8fe382960a189bd7414381cbde46a45feb274cbbc5c4dc38d6dc1ea5862",
+      "sourceSha256": "c09459012b2b8ff45d06f4b19feea8274e1e26634c8398522c43911738ba3175",
       "dividends": {},
       "splits": {}
     },
@@ -120,7 +120,7 @@
     "040046": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_040046.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "54b6c1a68480ed6b845f8fda816479be9df43b8ed3dd766eb0ee35f4b98595c6",
+      "sourceSha256": "4a5e2cc14189f52d780f52d1ba7cf2f7713fb5747f22e021fa9db8a221b75319",
       "dividends": {},
       "splits": {}
     },
@@ -141,63 +141,63 @@
     "539001": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_539001.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "223e5275951671e67d5a6f7eb67149d791182ac72209117e91acf77c18a74fc5",
+      "sourceSha256": "fefe83e6a78d4d7a32b0a79f6084c13faaa3e55bb84d6ca09d9afe55c55e6662",
       "dividends": {},
       "splits": {}
     },
     "015299": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_015299.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "010fc9e20438b94248baf0c4072d853335a403449a92a2df3260a63e3a45a72b",
+      "sourceSha256": "f130931caa2ca0b3051a6e53f5b3af3ee232bc279c5621ef487b5367ae0b1bf5",
       "dividends": {},
       "splits": {}
     },
     "016055": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_016055.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "5dd9bd5bd1170ba44d24a1ea4f6cf8396ddc40e758fd6e337652fcaa049cfae8",
+      "sourceSha256": "d40b3b9520da8331ac3e847293b4fc2dcc25c9d2b05445f80a7bf6160f222e2a",
       "dividends": {},
       "splits": {}
     },
     "016532": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_016532.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "9ac1e76fcc755ca36ad50786ff8cc3565323b1d5b7d275e9df5176b47f6c6c0c",
+      "sourceSha256": "913a8ee56e0f71833381e2f6da2202b16a0eb07511d4306b7dab61c9c61943c9",
       "dividends": {},
       "splits": {}
     },
     "016452": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_016452.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "56be86471bae6d06f19120a4b4433b113381c62db8a178526d1a626fd509748f",
+      "sourceSha256": "ba8ed97bdc645fe72e6288aae1938b88fba86f3fe6a69c694235fc53f25238b3",
       "dividends": {},
       "splits": {}
     },
     "018043": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_018043.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "b56ae4f5dcd9ce22e9afbfcf4a72c4e53db8ea63431f809cd6ae2e8f23f9c231",
+      "sourceSha256": "c73cbcf01c5abfb6d1f900f6db279f3ebd5a03f75f15f19b309b151a80b2c589",
       "dividends": {},
       "splits": {}
     },
     "019172": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_019172.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "0c2515d9130a4d4a6ce128f049ad06ca96fa76300e0fc53b7391dfc9d11104e5",
+      "sourceSha256": "22ebef978eff01133e157b6fe87d0d6db7c48dafff6ca6eaf7883d56b54e59cc",
       "dividends": {},
       "splits": {}
     },
     "019547": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_019547.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "d0b9f8e71e3547c5eea1d84b791f069a10ccb53e4c6d5a33dcea4fe04cda37f6",
+      "sourceSha256": "799925d90b80dd6060063b4047b81abebee3aad6e2a563a4a2cc1e5e50b6fc7d",
       "dividends": {},
       "splits": {}
     },
     "019524": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_019524.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "ed471bb16b934e8ff50eb005ecfa23bf10dc2717583a5d33950432e38f944f7e",
+      "sourceSha256": "eeb7ce4c27b7ee4e29272a89751f126e61b037ee4c58b6e37e154b4da3ca77aa",
       "dividends": {},
       "splits": {}
     },
@@ -211,7 +211,7 @@
     "019441": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_019441.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "629b7299144beac7de640ef49e3fe37d626fd28e9d97ef527ac8c55265425296",
+      "sourceSha256": "d8a3072eddd3b1f862f3f8226989e78e1a6aa8a1c110c5941e2d6ff6b06119ac",
       "dividends": {},
       "splits": {}
     },
@@ -239,7 +239,7 @@
     "513100": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_513100.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "f01300378a35c6d3b9413cd8bd5db9413556916555e2caa84482b248536c1bda",
+      "sourceSha256": "ca3e0dcc22c2965ca4a84768ac0b38995c0a41f973cc94c8449459a0026f8ce9",
       "dividends": {},
       "splits": {
         "2022-01-13": 5.0
@@ -248,28 +248,43 @@
     "159941": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_159941.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "28ca75868f1f734fbc198fbe9e82362a51e16cd9e16119a8ad82d70650e65853",
+      "sourceSha256": "bee498fb662e90fe864301727174c234a5182285fa2648f882ed5a20f2ca2b93",
       "dividends": {},
-      "splits": {}
+      "splits": {
+        "2022-07-04": 4.0
+      },
+      "verifiedEvents": [
+        {
+          "code": "159941",
+          "kind": "split",
+          "date": "2022-07-04",
+          "marketExDate": "2022-07-05",
+          "value": 4.0,
+          "announcedAt": "2022-07-05",
+          "verifiedAt": "2026-09-29",
+          "sourceUrl": "https://www.gffunds.com.cn/jjgg/zdsj/202207/t20220705_376047.shtml",
+          "note": "净值在份额拆分日按拆分后份额计算；交易所除权日为次日。"
+        }
+      ]
     },
     "513300": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_513300.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "b872d700dd886838165091c613846a579b5a442e2cd265f897ca80bbd1a6580c",
+      "sourceSha256": "2ecd4c1bdeb05ce37f6c1110241b8c2f7eef5f1e30a7ceda336122e2cc072740",
       "dividends": {},
       "splits": {}
     },
     "513390": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_513390.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "673bc4c0de01ecef0e7659723ca4bc1de128dbf3f1dcf6089c79439366945ff1",
+      "sourceSha256": "56a18680347b5ae7281a62fc5cf3ee5dd8757913c8a01a7b9711a30345e21d81",
       "dividends": {},
       "splits": {}
     },
     "513110": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_513110.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "b47275ee02b2f5249ae7f10f78086ff2c5f7dcf0ab04048a6f2af4a1e09ec65a",
+      "sourceSha256": "ee304ea7d3fd5fa9b928c4ab8def6e75b8382a220b106398d8acc1e2cbc82bc5",
       "dividends": {},
       "splits": {}
     },
@@ -311,28 +326,28 @@
     "159632": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_159632.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "8720d12d8328223fcf36ae5481fa3be8d8d06b61beaaba6d9db017434c63ac14",
+      "sourceSha256": "e560598f23e4272f99984196c38b58c12295388298095d097b87bdf6bb2bc183",
       "dividends": {},
       "splits": {}
     },
     "513870": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_513870.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "0a07cfcda5aaefe17466f736e0306d6877da3acb23733d310e8984a5098ed004",
+      "sourceSha256": "b1abb3c9691025ac187dfa5313910c2747c12b007894debb2fff5335787824a6",
       "dividends": {},
       "splits": {}
     },
     "159509": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_159509.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "ae604c15559821426fc9b50a9b1344e4ad75a46c8985174cf75069ef8c317c59",
+      "sourceSha256": "fd724816f3e5764d77bbe624222adc39ff6faf4b7c680c245e6412abf093216d",
       "dividends": {},
       "splits": {}
     },
     "513290": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_513290.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "53a54b422d331cf2ec22447dc78d0d27e53478f8318bace1f5a4107ef96a7639",
+      "sourceSha256": "abac2769874dffb48646923a9d44e393ec1fe665ce1aaf0bafada395411f96c6",
       "dividends": {},
       "splits": {}
     },
@@ -352,14 +367,14 @@
     "513850": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_513850.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "c223a3964fbe527a47938abde9773727a7272c55d4ce4b1cd651a3b4cb4cabe0",
+      "sourceSha256": "d2394b1e26249c63bc0b44679fa730f00edf86b0f9f326360513837b11221aec",
       "dividends": {},
       "splits": {}
     },
     "159577": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_159577.html",
       "observedAt": "2026-09-29",
-      "sourceSha256": "fa0667e1f4449044bc1122dfecc86cff4501ce1c3d4c19fa74a9a5c172f9ce06",
+      "sourceSha256": "4d7793ed8af8a6a51a810d8b2b69bfb62b997e2c474e0f0761e0ca9cd01f59ff",
       "dividends": {},
       "splits": {}
     }

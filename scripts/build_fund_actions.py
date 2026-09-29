@@ -38,6 +38,10 @@ def build_archive(cache_dir=Path(update.FHSP_DIR), current_path=Path(update.ACTI
                     candidate = refreshed
         if candidate is None:
             raise ValueError(f'{code} has neither a parseable source page nor archived actions')
+        candidate = dict(candidate)
+        if previous.get(code, {}).get('verifiedEvents'):
+            candidate['verifiedEvents'] = previous[code]['verifiedEvents']
+            candidate.update(update.with_verified_actions(code, candidate, candidate))
         if (candidate.get('sourceUrl') != f'https://fundf10.eastmoney.com/fhsp_{code}.html'
                 or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', str(candidate.get('observedAt')))
                 or not re.fullmatch(r'[0-9a-f]{64}', str(candidate.get('sourceSha256')))

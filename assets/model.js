@@ -106,6 +106,22 @@
     const selected = Array.isArray(value) ? [1, 2, 3, 5, 10].filter(y => value.includes(y)) : [];
     return selected.length ? selected : [3, 5, 10];
   }
+  function crossborderPerformance(fund, evidence, basis = 'nav') {
+    if (fund.exchange && basis === 'market') {
+      return evidence?.market || { r: [null, null, null, null, null], returnAsOf: null,
+        returnPeriods: [], mdd5: null, vol5: null, missing: '缺成交价复权历史' };
+    }
+    return evidence?.nav || fund;
+  }
+  function crossborderMatches(fund, filters) {
+    const types = filters.types || [], channels = filters.channels || [];
+    if (types.length && !types.includes(fund.ix)) return false;
+    if (channels.length && !channels.includes(fund.exchange ? 'exchange' : 'off')) return false;
+    if (filters.query && !(fund.c + fund.n + fund.ix).toLowerCase().includes(filters.query.toLowerCase())) return false;
+    if (finite(filters.premiumMax) && fund.exchange && (!finite(fund.prem) || fund.prem > filters.premiumMax)) return false;
+    if (filters.purchasable && !fund.exchange && !/开放|限大额/.test(fund.st || '')) return false;
+    return true;
+  }
   function compareNullable(a, b, descending = true) {
     if (a == null || typeof a === 'number' && !finite(a)) return b == null || typeof b === 'number' && !finite(b) ? 0 : 1;
     if (b == null || typeof b === 'number' && !finite(b)) return -1;
@@ -152,7 +168,11 @@
     const fundFees = config.fundFees || {};
     if (Object.values(fundFees).some(pair => !record(pair) || ['subscription', 'redemption'].some(key => !finite(Number(pair[key])) || Number(pair[key]) < 0 || Number(pair[key]) > 100))) return { error: '场外基金费率无效' };
     const fx = new Map(data.fx);
-    const series = products.map(p => new Map(p.series));
+    const exchangeBasis = config.exchangeBasis || 'nav';
+    if (!['nav', 'market'].includes(exchangeBasis)) return { error: '场内收益口径无效' };
+    const chosen = products.map(p => p.channel === 'exchange' && exchangeBasis === 'nav' ? p.navSeries : p.series);
+    if (chosen.some(s => !Array.isArray(s) || !s.length)) return { error: '所选口径缺少历史序列' };
+    const series = chosen.map(s => new Map(s));
     let common = new Set(fx.keys());
     for (const prices of series) common = new Set([...common].filter(day => prices.has(day)));
     const available = [...common].filter(day => day <= data.asOf).sort();
@@ -185,7 +205,7 @@
       return { invested: cash - fee, fee };
     };
     const rows = products.map((product, index) => {
-      const points = product.series.filter(([day]) => day >= start && day <= end);
+      const points = chosen[index].filter(([day]) => day >= start && day <= end);
       let units = 0, basis = 0, transactionCost = 0, fxCost = 0, usDividendTax = 0, cnDividendTax = 0, contributed = 0, purchases = 0;
       const flows = [];
       for (const [day, price] of points) {
@@ -251,15 +271,17 @@
       const terminal = beforeCapitalTax - capitalTax;
       flows.push([end, terminal]);
       const nav = new Map(product.navSeries || []);
-      const premiumRatioChange = product.channel === 'exchange' && nav.has(start) && nav.has(end)
-        ? ((finalPrice / series[index].get(start)) / (nav.get(end) / nav.get(start)) - 1) * 100 : null;
+      const market = new Map(product.series || []);
+      const premiumRatioChange = product.channel === 'exchange' && nav.has(start) && nav.has(end) && market.has(start) && market.has(end)
+        ? ((market.get(end) / market.get(start)) / (nav.get(end) / nav.get(start)) - 1) * 100 : null;
       return { code: product.code, name: product.name, channel: product.channel,
         contributed, terminal, profit: terminal - contributed,
         totalReturn: (terminal / contributed - 1) * 100, xirr: buyLocationXirr(flows),
         purchases, transactionCost, fxCost, usDividendTax, cnDividendTax,
-        capitalTax, taxableGain, beforeCapitalTax, basis, premiumRatioChange };
+        capitalTax, taxableGain, beforeCapitalTax, basis, premiumRatioChange,
+        exchangeBasis: product.channel === 'exchange' ? exchangeBasis : null, dividendsIncluded: true };
     });
-    return { start, end, purchaseDays, rows };
+    return { start, end, purchaseDays, rows, exchangeBasis };
   }
-  return { finite, sum, copy, escapeHtml, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, csv, buyLocationXirr, buyLocationResult };
+  return { finite, sum, copy, escapeHtml, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, csv, buyLocationXirr, buyLocationResult, crossborderPerformance, crossborderMatches };
 }));

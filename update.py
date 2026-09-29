@@ -542,6 +542,22 @@ def parse_actions_page(html):
     return {'dividends': divs, 'splits': splits}
 
 
+def with_verified_actions(code, archive, actions):
+    """Official, dated corrections survive incomplete newer provider listings."""
+    merged = {key: dict(actions.get(key) or {}) for key in ('dividends', 'splits')}
+    for event in archive.get('verifiedEvents', []):
+        if (event.get('code') != code or event.get('kind') not in ('split', 'dividend')
+                or not str(event.get('sourceUrl', '')).startswith('https://')):
+            raise ValueError('官方分红拆分证据格式无效：' + code)
+        for key in ('date', 'announcedAt', 'verifiedAt'):
+            datetime.strptime(event[key], '%Y-%m-%d')
+        value = finite_number(event.get('value'))
+        if value is None or value <= 0:
+            raise ValueError('官方分红拆分数值无效：' + code)
+        merged['splits' if event['kind'] == 'split' else 'dividends'][event['date']] = value
+    return merged
+
+
 def attach_corporate_actions(code, rows):
     fhsp_fetch(code)
     cache = os.path.join(FHSP_DIR, 'fhsp_%s.html' % code)
@@ -562,6 +578,8 @@ def attach_corporate_actions(code, rows):
     if not evidence:
         return rows
     action_date, actions, source = max(evidence, key=lambda item: item[0])
+    actions = with_verified_actions(code, archive, actions)
+    verified = {event['date']: event for event in archive.get('verifiedEvents', [])}
     result = []
     for row in rows:
         date = row.get('FSRQ')
@@ -570,6 +588,8 @@ def attach_corporate_actions(code, rows):
             clean.update(FHFCZ=actions['dividends'].get(date, 0),
                          SPLIT_FACTOR=actions['splits'].get(date, 1),
                          ACTIONS_SOURCE=source, ACTIONS_ASOF=action_date)
+            if date in verified:
+                clean.update(ACTIONS_SOURCE=verified[date]['sourceUrl'], ACTIONS_ASOF=verified[date]['verifiedAt'])
         elif row.get('ACTIONS_SOURCE') or row.get('ACTIONS_ASOF'):
             # Old table annotations cannot certify that no newer action occurred.
             for key in ('FHFCZ', 'SPLIT_FACTOR', 'ACTIONS_SOURCE', 'ACTIONS_ASOF'):

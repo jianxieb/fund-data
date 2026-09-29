@@ -1,12 +1,12 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-09-29T07:48:15+00:00",
+  "checkedAt": "2026-09-29T08:38:34+00:00",
   "asOf": "2026-09-29",
   "status": "unverified",
   "summary": {
     "errors": 0,
     "warnings": 3,
-    "unverified": 4
+    "unverified": 3
   },
   "datasets": [
     {
@@ -107,20 +107,14 @@ var DATA_QUALITY={
     {
       "id": "stocks",
       "label": "股票观察清单",
-      "asOf": "2026-09-28",
+      "asOf": "2026-09-29",
       "dateRange": [
-        "2026-09-24",
-        "2026-09-28"
+        "2026-09-29",
+        "2026-09-29"
       ],
-      "records": 30,
-      "issues": [
-        {
-          "code": "fundamentals_period",
-          "severity": "unverified",
-          "message": "估值/ROE缺少报告期，不用于盈利质量打分"
-        }
-      ],
-      "status": "unverified"
+      "records": 59,
+      "issues": [],
+      "status": "checked"
     },
     {
       "id": "strategy",

@@ -189,7 +189,7 @@ test('US dividend withholding and China top-up reduce reinvestment without doubl
 
 test('monthly investing pays minimum commission each time and rejects unaffordable orders', () => {
   const series = [['2020-01-01', 100], ['2020-02-03', 100], ['2021-01-01', 100]];
-  const data = buyData([{ code: 'CN', channel: 'exchange', series }], series.map(([day]) => [day, 1]));
+  const data = buyData([{ code: 'CN', channel: 'exchange', series, navSeries: series }], series.map(([day]) => [day, 1]));
   const config = { ...buyConfig, plan: 'monthly', fees: { ...freeFees, exchangeMinimum: 5 } };
   const [row] = M.buyLocationResult(data, config).rows;
   assert.equal(row.purchases, 3); close(row.transactionCost, 20); close(row.terminal, 280);
@@ -217,8 +217,8 @@ test('published buy-location snapshot supports both index families across every 
   const source = fs.readFileSync(require.resolve('../data/buy-location.js'), 'utf8');
   const data = JSON.parse(source.slice('window.BUY_LOCATION_DATA='.length).trim().replace(/;$/, ''));
   assert.equal(data.products.length, 8);
-  for (const family of ['sp', 'nq']) for (const years of [1, 2, 3, 5, 10]) for (const plan of ['lump', 'monthly']) {
-    const result = M.buyLocationResult(data, { ...buyConfig, family, years, plan });
+  for (const family of ['sp', 'nq']) for (const years of [1, 2, 3, 5, 10]) for (const plan of ['lump', 'monthly']) for (const exchangeBasis of ['nav', 'market']) {
+    const result = M.buyLocationResult(data, { ...buyConfig, family, years, plan, exchangeBasis });
     assert.equal(result.error, undefined, `${family} ${years}年：${result.error}`);
     assert.equal(result.end, data.asOf);
     for (const row of result.rows) {
@@ -227,4 +227,44 @@ test('published buy-location snapshot supports both index families across every 
       assert.ok(row.transactionCost >= 0 && row.capitalTax >= 0);
     }
   }
+});
+
+test('default NAV simulation excludes premium changes while retaining per-order costs and dividends once', () => {
+  const navSeries = [['2020-01-01', 100], ['2021-01-01', 110]]; // Total return already includes the distribution.
+  const series = [['2020-01-01', 120], ['2021-01-01', 110]]; // Initial premium of 20% disappears.
+  const data = buyData([{ code: 'CN', channel: 'exchange', series, navSeries,
+    actions: { cash: [{ date: '2021-01-01', perUnit: 10 }] } }]);
+  const fees = { ...freeFees, exchangeMinimum: 5 };
+  const nav = M.buyLocationResult(data, { ...buyConfig, fees }).rows[0];
+  const market = M.buyLocationResult(data, { ...buyConfig, fees, exchangeBasis: 'market' }).rows[0];
+  close(nav.terminal, 95 * 1.1 - 5);
+  close(market.terminal, 95 * 110 / 120 - 5);
+  close(nav.transactionCost, 10); close(market.transactionCost, 10);
+  close(nav.premiumRatioChange, -100 / 6);
+  assert.equal(nav.dividendsIncluded, true); assert.equal(nav.exchangeBasis, 'nav');
+  delete data.products[0].navSeries;
+  assert.match(M.buyLocationResult(data, buyConfig).error, /缺少历史序列/);
+  assert.equal(M.buyLocationResult(data, { ...buyConfig, exchangeBasis: 'market' }).error, undefined);
+});
+
+test('cross-border multiselect combines within each dimension and excludes unknown premiums only when capped', () => {
+  const a = { c: 'A', n: '国泰纳指', ix: '纳斯达克100', exchange: true, prem: 4 };
+  const b = { ...a, c: 'B', ix: '标普500', prem: null };
+  const c = { ...a, c: 'C', exchange: false, prem: null, st: '开放申购' };
+  const filters = { types: ['纳斯达克100', '标普500'], channels: ['exchange', 'off'] };
+  assert.equal([a, b, c].filter(f => M.crossborderMatches(f, filters)).length, 3);
+  assert.deepEqual([a, b, c].filter(f => M.crossborderMatches(f, { ...filters, premiumMax: 5 })).map(f => f.c), ['A', 'C']);
+  assert.equal(M.crossborderMatches(a, { ...filters, channels: ['off'] }), false);
+  assert.equal(M.crossborderMatches(c, { query: '国泰', purchasable: true }), true);
+  assert.equal(M.crossborderMatches({ ...c, st: '暂停申购' }, { purchasable: true }), false);
+  assert.equal(M.crossborderMatches({ ...c, st: '暂停大额申购' }, { purchasable: true }), false);
+});
+
+test('cross-border market returns never silently substitute NAV when missing', () => {
+  const f = { exchange: true, r: [10], returnAsOf: '2026-09-24' };
+  const evidence = { nav: { r: [10], returnAsOf: '2026-09-24' }, market: { r: [25], returnAsOf: '2026-09-24' } };
+  assert.equal(M.crossborderPerformance(f, evidence).r[0], 10);
+  assert.equal(M.crossborderPerformance(f, evidence, 'market').r[0], 25);
+  assert.equal(M.crossborderPerformance(f, {}, 'market').r[0], null);
+  assert.equal(M.crossborderPerformance({ ...f, exchange: false }, evidence, 'market').r[0], 10);
 });

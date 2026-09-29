@@ -25,8 +25,10 @@ import time
 import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta, timezone
+from concurrent.futures import ThreadPoolExecutor
 from data_status import write_status
 from update import add_years
+from stock_fundamentals import fetch_evidence, quality_review
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 HTML = os.path.join(HERE, 'data', 'snapshot.js')
@@ -45,6 +47,35 @@ STOCK_UNIVERSE = [
     {'code': '002594', 'name': '比亚迪', 'industry': '汽车制造', 'group': 'quality', 'note': '新能源汽车与电池制造，观察销量、单车盈利和海外经营'},
     {'code': '300124', 'name': '汇川技术', 'industry': '工业自动化', 'group': 'quality', 'note': '工业自动化与新能源车电驱产品，观察制造业投资、产品结构和研发投入'},
     {'code': '600309', 'name': '万华化学', 'industry': '化工', 'group': 'quality', 'note': '聚氨酯、石化与新材料制造，观察产品价差、产能扩张和资本回报'},
+    {'code': '002475', 'name': '立讯精密', 'group': 'quality', 'note': '观察消费电子与汽车业务的客户结构、毛利率和现金回收'},
+    {'code': '002371', 'name': '北方华创', 'group': 'quality', 'note': '观察半导体设备需求、研发投入与订单交付'},
+    {'code': '688012', 'name': '中微公司', 'group': 'quality', 'note': '观察半导体设备业务的研发、客户验证与现金回收'},
+    {'code': '300308', 'name': '中际旭创', 'group': 'quality', 'note': '观察光通信产品需求、技术迭代和客户集中度'},
+    {'code': '300502', 'name': '新易盛', 'group': 'quality', 'note': '观察光模块产品结构、毛利率与产能投入'},
+    {'code': '000063', 'name': '中兴通讯', 'group': 'quality', 'note': '观察通信设备投资周期、研发与海外经营'},
+    {'code': '600406', 'name': '国电南瑞', 'group': 'quality', 'note': '观察电网自动化需求、项目交付与现金回收'},
+    {'code': '300274', 'name': '阳光电源', 'group': 'quality', 'note': '观察逆变器及储能业务增长、库存与海外经营'},
+    {'code': '601012', 'name': '隆基绿能', 'group': 'quality', 'note': '观察光伏价格周期、技术路线与产能退出'},
+    {'code': '002415', 'name': '海康威视', 'group': 'quality', 'note': '观察智能物联业务、客户需求与经营现金流'},
+    {'code': '300760', 'name': '迈瑞医疗', 'group': 'quality', 'note': '观察医疗器械研发、产品结构和海外销售'},
+    {'code': '600276', 'name': '恒瑞医药', 'group': 'quality', 'note': '观察创新药研发、商业化与研发投入回报'},
+    {'code': '603288', 'name': '海天味业', 'group': 'quality', 'note': '观察调味品销量、渠道变化与利润率'},
+    {'code': '600887', 'name': '伊利股份', 'group': 'quality', 'note': '观察乳品需求、产品结构与现金回报'},
+    {'code': '000858', 'name': '五粮液', 'group': 'quality', 'note': '观察白酒渠道库存、现金回款与分红'},
+    {'code': '600438', 'name': '通威股份', 'group': 'quality', 'note': '观察光伏产业价格周期、资本开支与现金流'},
+    {'code': '002714', 'name': '牧原股份', 'group': 'quality', 'note': '观察养殖成本、猪价周期与负债现金流'},
+    {'code': '601100', 'name': '恒立液压', 'group': 'quality', 'note': '观察液压产品需求、出口与资本回报'},
+    {'code': '600031', 'name': '三一重工', 'group': 'quality', 'note': '观察工程机械周期、国际业务与应收回款'},
+    {'code': '000338', 'name': '潍柴动力', 'group': 'quality', 'note': '观察动力系统、商用车周期与现金回报'},
+    {'code': '603986', 'name': '兆易创新', 'group': 'quality', 'note': '观察存储与微控制器产品周期、研发和库存'},
+    {'code': '600660', 'name': '福耀玻璃', 'group': 'quality', 'note': '观察汽车玻璃产品升级、全球产能与现金回报'},
+    {'code': '002352', 'name': '顺丰控股', 'group': 'quality', 'note': '观察物流网络效率、业务结构和资本开支'},
+    {'code': '601919', 'name': '中远海控', 'group': 'quality', 'note': '观察航运运价周期、运力供给与现金分配'},
+    {'code': '600585', 'name': '海螺水泥', 'group': 'quality', 'note': '观察水泥需求、产能供给与现金流'},
+    {'code': '601689', 'name': '拓普集团', 'group': 'quality', 'note': '观察汽车零部件客户结构、产能利用与利润率'},
+    {'code': '300014', 'name': '亿纬锂能', 'group': 'quality', 'note': '观察电池产品结构、研发与资本开支'},
+    {'code': '600436', 'name': '片仔癀', 'group': 'quality', 'note': '观察核心产品需求、渠道库存和现金回报'},
+    {'code': '002027', 'name': '分众传媒', 'group': 'quality', 'note': '观察广告需求、媒体点位效率与经营现金流'},
     {'code': '600900', 'note': '水电龙头，现金流稳定，长期高比例分红'},
     {'code': '000333', 'note': '白电龙头，全球化经营，分红稳定'},
     {'code': '600901', 'note': '金融租赁平台，高股息与稳健资产扩张'},
@@ -219,6 +250,7 @@ def dividend_stats(code, latest, price):
 
 def fetch_stock(item):
     code = item['code']
+    evidence = fetch_evidence(code, fetch_json, datetime.now(timezone(timedelta(hours=8))).date().isoformat())
     alternate = None
     source_errors = []
 
@@ -282,6 +314,11 @@ def fetch_stock(item):
         raise RuntimeError('现价无效')
     quoted_at = datetime.fromtimestamp(float(quote['f86']), timezone(timedelta(hours=8))).isoformat(timespec='seconds')
     quote_date = quoted_at[:10]
+    if evidence.get('valuationPrice') and evidence.get('valuationAsOf'):
+        price = evidence['valuationPrice']
+        quoted_at = evidence['valuationAsOf']
+        quote_date = quoted_at
+        quote_source = 'Eastmoney RPT_VALUEANALYSIS_DET dated close'
     returns = [window_return(series, latest, years) for years in WINDOWS]
     volatility, max_drawdown = risk_metrics(series, latest)
     dividend_source = 'Eastmoney implemented cash dividends by report year'
@@ -299,9 +336,9 @@ def fetch_stock(item):
     long_term = returns[4] is not None and returns[4] >= 80 and returns[3] is not None and returns[3] > 20 and market_cap is not None and market_cap >= 500
     high_dividend = yield_12m >= 3.2 and dividend_years is not None and dividend_years >= 4
     styles = (['长期核心'] if long_term else []) + (['高股息'] if high_dividend else [])
-    return {'c': code, 'n': quote.get('f58') or item.get('name') or code, 'ind': quote.get('f127') or item.get('industry') or '',
+    result = {'c': code, 'n': item.get('name') or quote.get('f58') or code, 'ind': quote.get('f127') or item.get('industry') or '',
             'group': item.get('group', 'dividend'),
-            'style': styles, 'price': price, 'chg': number(quote.get('f170'), 100),
+            'style': styles, 'price': price, 'chg': None if evidence.get('valuationAsOf') else number(quote.get('f170'), 100),
             'mcap': market_cap, 'pe': number(quote.get('f164'), 100), 'pb': number(quote.get('f167'), 100),
             'roe': number(quote.get('f173')), 'yield12': yield_12m, 'divYears': dividend_years,
             'r': returns, 'vol5': volatility, 'mdd5': max_drawdown, 'note': item['note'], 'latest': latest,
@@ -310,7 +347,11 @@ def fetch_stock(item):
             'returnBasis': basis, 'historySource': history_source, 'sourceUrl': source_url,
             'quoteSource': quote_source, 'dividendSource': dividend_source, 'sourceFallbacks': source_errors,
             'dataStatus': 'computed', 'dividendWindow': '%d–%d' % (int(quote_date[:4]) - 5, int(quote_date[:4]) - 1) if dividend_years is not None else None,
-            'fundamentalsStatus': 'report_period_unverified'}
+            'historyFirst': series[0][0], 'fundamentalsStatus': 'report_period_unverified'}
+    result.update(evidence)
+    result['ind'] = evidence.get('valuationIndustry') or result['ind']
+    result['qualityReview'] = quality_review(result, datetime.now(timezone(timedelta(hours=8))).date().isoformat())
+    return result
 
 
 def load_old_rows(src):
@@ -365,10 +406,18 @@ def main():
     universe = [{**x, 'name': x.get('name') or old.get(x['code'], {}).get('n'), 'industry': x.get('industry') or old.get(x['code'], {}).get('ind')} for x in STOCK_UNIVERSE if not only or x['code'] in only]
     rows = [old[x['code']] for x in STOCK_UNIVERSE if only and x['code'] not in only and x['code'] in old]
     failures = []
-    for item in universe:
+    def refreshed(item):
+        try:
+            return item, fetch_stock(item), None
+        except Exception as exc:
+            return item, None, exc
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        outcomes = list(pool.map(refreshed, universe))
+    for item, row, error in outcomes:
         code = item['code']
         try:
-            row = fetch_stock(item)
+            if error:
+                raise error
             rows.append(row)
             log('  ✓ %s %s' % (code, row['n']))
         except Exception as exc:  # noqa: BLE001

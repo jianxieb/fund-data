@@ -54,6 +54,7 @@ jobs:
             .tmp-fhsp
             .tmp-managers
             .tmp-snap/stocks
+            .tmp-buy-location
           key: research-source-${{ runner.os }}-${{ github.run_id }}
           restore-keys: |
             research-source-${{ runner.os }}-
@@ -65,6 +66,8 @@ jobs:
         run: python3 refresh.py --timeout 420 --funds-timeout 900
       - name: Archive newly observed fund actions
         run: python3 scripts/build_fund_actions.py --apply
+      - name: Update cross-border fund return bases and distributions
+        run: python3 scripts/build_crossborder_data.py
       - name: Reject incomplete or regressed results
         run: python3 scripts/check_refresh.py
       - name: Verify generated browser assets
@@ -80,12 +83,13 @@ jobs:
             .tmp-fhsp
             .tmp-managers
             .tmp-snap/stocks
+            .tmp-buy-location
           key: research-source-${{ runner.os }}-${{ github.run_id }}
       - name: Commit validated generated files
         id: commit
         if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || inputs.publish) }}
         run: |
-          if git diff --quiet -- data/snapshot.js data/indices.js data/index-history.json data/screening.js data/fund-actions.json data/*validation.json data/verification*.json data/*reconciliation.json; then
+          if git diff --quiet -- data/snapshot.js data/indices.js data/index-history.json data/screening.js data/fund-actions.json data/crossborder.js data/*validation.json data/verification*.json data/*reconciliation.json; then
             echo 'No research data or evidence changed; keeping the existing published snapshot.'
             echo 'changed=false' >> "$GITHUB_OUTPUT"
             exit 0

@@ -508,7 +508,7 @@ class FreshnessAndOffline(unittest.TestCase):
                 return chart
             return {'result': {'data': []}}
 
-        with tempfile.TemporaryDirectory() as directory, patch.object(stock_screen, 'YAHOO_CACHE', directory), patch.object(stock_screen, 'fetch_json', side_effect=source):
+        with tempfile.TemporaryDirectory() as directory, patch('stock_fundamentals.CACHE', Path(directory)), patch.object(stock_screen, 'YAHOO_CACHE', directory), patch.object(stock_screen, 'fetch_json', side_effect=source):
             row = stock_screen.fetch_stock({'code': '600900', 'name': '长江电力', 'note': 'test'})
         self.assertEqual(row['n'], '长江电力')
         self.assertEqual(row['returnBasis'], 'provider_adjusted_close')

@@ -19,6 +19,7 @@ from zoneinfo import ZoneInfo
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from update import history_fetch, total_return_series  # noqa: E402
+from fund_evidence import fund_actions  # noqa: E402
 
 RAW = ROOT / '.tmp-buy-location'
 OUT = ROOT / 'data/buy-location.js'
@@ -37,7 +38,7 @@ FAMILY = {'SPY': 'sp', '513500': 'sp', '050025': 'sp',
           'QQQ': 'nq', '513100': 'nq', '159941': 'nq', '270042': 'nq', '040046': 'nq'}
 
 
-def chart(symbol, end, offline):
+def chart(symbol, end, offline, min_observations=500):
     path = RAW / (symbol.lower().replace('=', '-') + '.json')
     if offline:
         if not path.exists():
@@ -97,10 +98,27 @@ def chart(symbol, end, offline):
         dividends[day] = dividends.get(day, 0) + amount
     fractions = {day: round(amount / (rows[day][1] + amount), 9)
                  for day, amount in dividends.items()}
-    if len(rows) < 500:
+    if len(rows) < min_observations:
         raise ValueError('行情观测不足：' + symbol)
     source = 'https://finance.yahoo.com/quote/' + urllib.parse.quote(symbol, safe='') + '/history/'
     return sorted((day, round(price, 7)) for day, (price, _) in rows.items()), fractions, source, hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def chart_actions(symbol, end):
+    path = RAW / (symbol.lower().replace('=', '-') + '.json')
+    node = json.loads(path.read_text())['chart']['result'][0]
+    if node['meta']['symbol'].upper() != symbol.upper():
+        raise ValueError('分红记录标的身份不符')
+    zone = ZoneInfo(node['meta']['exchangeTimezoneName'])
+    def day(event):
+        return datetime.fromtimestamp(event['date'], zone).date().isoformat()
+    events = node.get('events') or {}
+    return {'cash': sorted([{'date': day(e), 'perUnit': e['amount']} for e in events.get('dividends', {}).values() if day(e) <= end], key=lambda e: e['date']),
+            'splits': sorted([{'date': day(e), 'factor': e['numerator'] / e['denominator']} for e in events.get('splits', {}).values() if day(e) <= end], key=lambda e: e['date']),
+            'through': end, 'historyFrom': HISTORY_START, 'status': 'recorded',
+            'source': 'https://finance.yahoo.com/quote/' + symbol + '/history/',
+            'sourceSha256': hashlib.sha256(path.read_bytes()).hexdigest(),
+            'returnTreatment': 'reinvested_in_total_return'}
 
 
 def fund_nav(code, end, offline):
@@ -126,11 +144,14 @@ def main():
     for code, name, channel, symbol in PRODUCTS:
         series, dividends, source, digest = (fund_nav(code, args.end, args.offline)
                                              if channel == 'off' else chart(symbol, args.end, args.offline))
-        nav_series = fund_nav(code, args.end, args.offline)[0] if channel == 'exchange' else []
+        nav_data = fund_nav(code, args.end, args.offline) if channel == 'exchange' else None
         products.append({'code': code, 'name': name, 'family': FAMILY[code],
                          'channel': channel, 'basis': 'fund_nav_total_return' if channel == 'off' else 'yahoo_adjusted_close',
                          'source': source, 'sourceSha256': digest, 'series': series,
-                         'navSeries': nav_series,
+                         'navSeries': nav_data[0] if nav_data else [],
+                         'actions': chart_actions(symbol, args.end) if channel == 'us' else fund_actions(code, args.end),
+                         'navSource': nav_data[2] if nav_data else None,
+                         'navSourceSha256': nav_data[3] if nav_data else None,
                          'dividendFraction': dividends if channel == 'us' else {}})
     fx, _, fx_source, fx_hash = chart('CNY=X', args.end, args.offline)
     actual_end = min([p['series'][-1][0] for p in products] + [fx[-1][0]])

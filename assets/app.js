@@ -33,14 +33,14 @@
   const state = {
     route: 'overview', annual: prefs.annual !== false, periods: M.visiblePeriods(prefs.periods),
     columns: new Set(Array.isArray(prefs.columns) ? prefs.columns.filter(x => Object.hasOwn(columnNames, x)) : defaultColumns),
-    indexTab: 'us', indexSort: 'default', indexDescending: true, indexType: 'all', indexChannel: 'all', currency: 'usd', benchmarkType: 'total', benchmarkCurrency: 'cny',
+    indexTab: 'us', indexSort: 'default', indexDescending: true, crossTypes: new Set(), crossChannels: new Set(), crossQuery: '', crossPremium: null, crossPurchasable: false, crossBasis: 'nav', crossSort: 'default', crossDesc: true, crossPage: 1, crossSelected: new Set(), currency: 'usd', benchmarkType: 'total', benchmarkCurrency: 'cny',
     fundTab: 'equity', poolCategory: 'all', query: '', channel: 'all', purchasable: false,
     screen: { minA3: defaults.minA3, minA5: defaults.minA5, minA10: null }, equityAll: false,
     fundSort: 'default', descending: true, page: 1, selected: new Set(),
     stockTab: 'quality', stockQuery: '', stockSort: 'default', stockDesc: true,
     stratPanel: 'initial', stratView: 'results', stratYear: '2010', stratAsset: 'SPY', stratMethod: 'lump_sum',
     stratCompare: 'assets', stratMetric: 'amount', leverage: true, showLeverageAssets: false, chartHidden: new Set(),
-    buyFamily: 'sp', buyYears: 5, buyPlan: 'lump', buyLumpAmount: 100000, buyMonthlyAmount: 3000,
+    buyFamily: 'sp', buyYears: 5, buyPlan: 'lump', buyBasis: 'nav', buyLumpAmount: 100000, buyMonthlyAmount: 3000,
     buyFees: { usCommission: 0.02, usMinimum: 1, fxSpread: 0.15,
       exchangeCommission: 0.025, exchangeMinimum: 5, subscription: 0.12, redemption: 0,
       usDividendTax: 10, cnDividendTax: 20, capitalGainsTax: 20 },
@@ -92,9 +92,10 @@
       selectMenu('benchmark-currency', '标普500计价币种', [['cny', '人民币'], ['usd', '美元']], state.benchmarkCurrency, 'short') + '</div></div>' +
       '<div class="benchmark-values">' + shown.map(y => '<div><span>' + periodHead(y) + '</span><strong class="num">' + pc(ret(r && r[years.indexOf(y)], y, b)) + '</strong></div>').join('') + '</div><div class="benchmark-foot"><span>截至 ' + esc(b && b.asOf || '未记录') + ' · ' + (state.route === 'funds' ? state.benchmarkType === 'total' ? 'SPY含分红、含产品费用' : '价格指数，不含分红' : state.benchmarkType === 'total' ? 'SPY为可投资ETF参照，含产品费用；不是指数全收益序列。' : '价格指数不含分红，不与基金含分红回报直接计算差值。') + '</span>' + action('查看区间与来源', 'benchmark-detail', 'text-link small') + '</div></section>';
   }
+  function entryArrow() { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5"/></svg>'; }
   function home() {
     const overseasFunds = funds.filter(f => f.origin === 'overseas' && !f.active);
-    const qualityStocks = (window.STOCKS || []).filter(s => s.group === 'quality');
+    const qualityStocks = (window.STOCKS || []).filter(s => s.qualityReview?.qualified);
     const markets = [
       ['标普500', (window.BM || []).find(b => b.n === '标普500指数')],
       ['纳斯达克100', (window.BM || []).find(b => b.n === '纳斯达克100指数')],
@@ -113,9 +114,9 @@
     ];
     return head('LONG-TERM INVESTMENT RESEARCH', '长期表现，值得仔细比较。', '在市场、公司与投入方式之间，找到自己的长期尺度。') + marketOverview +
       '<div class="home-section-title home-research-title"><h2>研究方向</h2><span>回报 · 风险 · 成本</span></div><div class="research-entry-grid home-four">' + entries.map(([route, id, title, desc, no, group, count, topics]) =>
-        '<a class="home-entry" href="#' + route + '" data-home-tab="' + id + '"><span class="home-entry-top"><span class="eyebrow">' + no + ' / ' + group + '</span><span class="home-entry-arrow" aria-hidden="true">↗</span></span><span class="home-entry-body"><strong>' + title + '</strong><span>' + desc + '</span></span><span class="home-entry-foot"><b>' + count + '</b><span>' + topics + '</span></span></a>').join('') + '</div>' +
-      '<div class="home-secondary"><a class="home-secondary-card" href="#stocks" data-home-tab="quality"><span class="eyebrow">COMPANY RESEARCH</span><span class="home-secondary-title"><strong>个股深入</strong><span aria-hidden="true">↗</span></span><p>工业富联、药明康德、紫金矿业等 ' + qualityStocks.length + ' 家优质企业，与红利价值股分组研究。</p><span class="home-tags"><span>公司估值</span><span>盈利与股息</span><span>长期回报</span></span></a>' +
-      '<a class="home-secondary-card" href="#buy-location"><span class="eyebrow">INVESTMENT CHANNELS</span><span class="home-secondary-title"><strong>投资渠道</strong><span aria-hidden="true">↗</span></span><p>同样投资标普500与纳指100，比较不同渠道扣除费用与税款后的结果。</p><span class="home-tags"><span>海外 ETF</span><span>境内场内</span><span>境内场外</span></span></a></div>';
+        '<a class="home-entry" href="#' + route + '" data-home-tab="' + id + '"><span class="home-entry-top"><span class="eyebrow">' + no + ' / ' + group + '</span><span class="home-entry-arrow" aria-hidden="true">' + entryArrow() + '</span></span><span class="home-entry-body"><strong>' + title + '</strong><span>' + desc + '</span></span><span class="home-entry-foot"><b>' + count + '</b><span>' + topics + '</span></span></a>').join('') + '</div>' +
+      '<div class="home-secondary"><a class="home-secondary-card" href="#stocks" data-home-tab="quality"><span class="eyebrow">COMPANY RESEARCH</span><span class="home-secondary-title"><strong>个股深入</strong><span class="home-entry-arrow" aria-hidden="true">' + entryArrow() + '</span></span><p>工业富联、药明康德、紫金矿业等 ' + qualityStocks.length + ' 家通过财务筛选的企业，逐项查看入选依据与估值。</p><span class="home-tags"><span>公司估值</span><span>盈利与股息</span><span>长期回报</span></span></a>' +
+      '<a class="home-secondary-card" href="#buy-location"><span class="eyebrow">INVESTMENT CHANNELS</span><span class="home-secondary-title"><strong>投资渠道</strong><span class="home-entry-arrow" aria-hidden="true">' + entryArrow() + '</span></span><p>同样投资标普500与纳指100，比较不同渠道扣除费用与税款后的结果。</p><span class="home-tags"><span>海外 ETF</span><span>境内场内</span><span>境内场外</span></span></a></div>';
   }
   function indexRows() {
     return state.indexTab === 'cn' ? window.INDEX_DATA || [] : window.BM || [];
@@ -153,14 +154,62 @@
       }).join('');
       return '<section class="card index-section"><div class="index-section-head"><div><h2>' + label + '</h2><p>' + description + '</p></div><span>' + input.length + '条</span></div><div class="table-wrap"><table class="research-table"><thead><tr>' + sortHead('指数 / 产品', 'name') + state.periods.map(y => sortHead(periodHead(y), 'return:' + y)).join('') + sortHead('5年最大回撤', 'mdd') + sortHead('5年波动率', 'vol') + sortHead('截至日', 'date') + '</tr></thead><tbody>' + rowsHtml + '</tbody></table></div></section>';
     };
-    const crossborderPool = funds.filter(f => f.origin === 'overseas' && !f.active);
-    const crossborder = crossborderPool.filter(f => (state.indexType === 'all' || f.ix === state.indexType) && (state.indexChannel === 'all' || (state.indexChannel === 'exchange' ? f.exchange : !f.exchange)));
-    const crossborderFilters = selectMenu('crossborder-index', '指数类型', [['all', '全部指数'], ...[...new Set(crossborderPool.map(f => f.ix).filter(Boolean))].map(ix => [ix, ix])], state.indexType) + selectMenu('crossborder-channel', '交易渠道', [['all', '场内与场外'], ['exchange', '场内'], ['off', '场外']], state.indexChannel);
-    const crossborderTable = '<section class="card index-section"><div class="index-section-head"><div><h2>境内可买的跨境指数基金</h2><p>人民币份额 · 场内交易与场外申赎</p></div><span>' + crossborder.length + ' / ' + crossborderPool.length + '只</span></div><div class="table-wrap" tabindex="0" aria-label="跨境指数基金，可横向滚动"><table class="research-table crossborder-table"><thead><tr><th>基金</th><th>跟踪指数</th><th>渠道</th>' + state.periods.map(y => '<th>' + periodHead(y) + '</th>').join('') + '<th>已知持续费率 / 年</th><th>买入费用</th><th>收益截至</th></tr></thead><tbody>' + crossborder.map(f => '<tr><td>' + action(esc(f.n), 'fund-detail', 'text-link', 'data-code="' + esc(f.c) + '"') + '<span class="sub">' + esc(f.c) + '</span></td><td>' + esc(f.ix || '—') + '</td><td>' + (f.exchange ? '场内' : '场外') + '</td>' + state.periods.map(y => '<td>' + pc(ret(f.r[years.indexOf(y)], y, f)) + '</td>').join('') + '<td>' + (f.knownOngoingFee == null ? '—' : (f.feeCoverage === 'complete' ? '' : '≥') + pct(f.knownOngoingFee, 2, false)) + '</td><td>' + buyFee(f) + '</td><td>' + esc(f.returnAsOf || '—') + '</td></tr>').join('') + (crossborder.length ? '' : '<tr><td colspan="' + (6 + state.periods.length) + '"><div class="empty">当前条件没有匹配的跨境基金</div></td></tr>') + '</tbody></table></div></section>';
     return head('MARKET OBSERVATORY', '指数观察', '指数、海外 ETF 与境内跨境基金分别查看。') +
       '<div class="tabs" role="tablist">' + tabNames.map(([id, n]) => action(n, 'index-tab', state.indexTab === id ? 'active' : '', 'data-value="' + id + '" role="tab" aria-selected="' + (state.indexTab === id) + '"')).join('') + '</div>' +
-      '<div class="index-controls"><div class="index-currency">' + (state.indexTab === 'us' ? '<span>计价币种</span><div class="segmented">' + action('美元', 'currency', state.currency === 'usd' ? 'active' : '', 'data-value="usd"') + action('人民币', 'currency', state.currency === 'cny' ? 'active' : '', 'data-value="cny"') + '</div>' : state.indexTab === 'crossborder' ? crossborderFilters : '<span>人民币口径</span>') + (state.indexSort !== 'default' && state.indexTab !== 'crossborder' ? action('恢复默认顺序', 'index-sort-reset', 'text-link small') : '') + '</div>' + returnControls() + '</div>' +
-      (state.indexTab === 'crossborder' ? crossborderTable : state.indexTab === 'cn' ? indexTable(domestic, '国内指数', '价格指数 · 不含分红') : indexTable(baseRows.filter(b => /指数/.test(b.tp)), '海外指数', '价格指数 · 不含分红') + indexTable(baseRows.filter(b => !/指数/.test(b.tp)), '海外 ETF', '复权产品表现 · 已包含产品持续费用'));
+      (state.indexTab === 'crossborder' ? crossborderView() :
+      '<div class="index-controls"><div class="index-currency">' + (state.indexTab === 'us' ? '<span>计价币种</span><div class="segmented">' + action('美元', 'currency', state.currency === 'usd' ? 'active' : '', 'data-value="usd"') + action('人民币', 'currency', state.currency === 'cny' ? 'active' : '', 'data-value="cny"') + '</div>' : '<span>人民币口径</span>') + (state.indexSort !== 'default' ? action('恢复默认顺序', 'index-sort-reset', 'text-link small') : '') + '</div>' + returnControls() + '</div>' +
+      (state.indexTab === 'cn' ? indexTable(domestic, '国内指数', '价格指数 · 不含分红') : indexTable(baseRows.filter(b => /指数/.test(b.tp)), '海外指数', '价格指数 · 不含分红') + indexTable(baseRows.filter(b => !/指数/.test(b.tp)), '海外 ETF', '复权产品表现 · 已包含产品持续费用')));
+  }
+
+  const crossPool = () => funds.filter(f => f.origin === 'overseas' && !f.active);
+  const crossEvidence = code => window.CROSSBORDER_DATA?.byCode?.[code];
+  const crossPerformance = f => M.crossborderPerformance(f, crossEvidence(f.c), state.crossBasis);
+  function crossRows() {
+    const rows = crossPool().filter(f => M.crossborderMatches(f, { types: [...state.crossTypes], channels: [...state.crossChannels], query: state.crossQuery, premiumMax: state.crossPremium, purchasable: state.crossPurchasable }));
+    const metric = f => {
+      const perf = crossPerformance(f), key = state.crossSort;
+      if (key.startsWith('return:')) { const y = +key.split(':')[1]; return ret(perf.r?.[years.indexOf(y)], y, perf); }
+      if (key === 'date') return perf.returnAsOf;
+      if (key === 'mdd5') return perf.mdd5;
+      return f[key];
+    };
+    if (state.crossSort !== 'default') rows.sort((a, b) => M.compareNullable(metric(a), metric(b), state.crossDesc));
+    return rows;
+  }
+  function distributionLabel(code) {
+    const a = crossEvidence(code)?.actions;
+    if (!a || a.status !== 'recorded') return '缺分红记录';
+    return a.cash.length ? a.cash.length + '次现金分红' : a.splits.length ? '未见分红 · 有拆分' : '未见现金分红';
+  }
+  function crossborderView() {
+    const pool = crossPool(), rows = crossRows(), pages = Math.max(1, Math.ceil(rows.length / 15));
+    state.crossPage = Math.max(1, Math.min(state.crossPage, pages));
+    const page = rows.slice((state.crossPage - 1) * 15, state.crossPage * 15);
+    const chips = (values, selected, act) => action('全部', act, 'filter-chip' + (!selected.size ? ' active' : ''), 'data-value="all" aria-pressed="' + !selected.size + '"') + values.map(([key, name]) => action(esc(name), act, 'filter-chip' + (selected.has(key) ? ' active' : ''), 'data-value="' + esc(key) + '" aria-pressed="' + selected.has(key) + '"')).join('');
+    const filters = '<section class="cross-filters" aria-label="跨境基金筛选"><div class="cross-filter-row"><span>跟踪指数 <small>可多选</small></span><div class="filter-chips">' + chips([...new Set(pool.map(f => f.ix))].map(ix => [ix, ix]), state.crossTypes, 'cross-type') + '</div></div><div class="cross-filter-row"><span>交易渠道 <small>可多选</small></span><div class="filter-chips">' + chips([['exchange', '场内 ETF'], ['off', '场外基金']], state.crossChannels, 'cross-channel') + '</div></div><div class="cross-filter-row"><span>快照溢价</span><div class="filter-chips">' + [['all', '不限'], ['0', '折价 / 平价'], ['2', '≤ 2%'], ['5', '≤ 5%']].map(([v, label]) => action(label, 'cross-premium', 'filter-chip' + ((v === 'all' ? state.crossPremium === null : state.crossPremium === +v) ? ' active' : ''), 'data-value="' + v + '" aria-pressed="' + (v === 'all' ? state.crossPremium === null : state.crossPremium === +v) + '"')).join('') + '<label class="check-label cross-available"><input type="checkbox" id="cross-purchasable"' + (state.crossPurchasable ? ' checked' : '') + '>场外可申购</label></div></div><div class="cross-filter-foot"><label class="cross-search"><input type="search" id="cross-search" aria-label="搜索跨境基金名称或代码" placeholder="搜索基金名称或代码" value="' + esc(state.crossQuery) + '"></label><div>' + action('重置筛选', 'cross-reset', 'text-link small') + action('溢价与分红口径', 'cross-method', 'btn sm') + '</div></div></section>';
+    const basis = '<div class="cross-basis"><span>场内收益</span><div class="segmented" aria-label="场内基金收益口径">' + [['nav', '净值 · 剔除溢价'], ['market', '成交价 · 含溢价']].map(([v, label]) => action(label, 'cross-basis', state.crossBasis === v ? 'active' : '', 'data-value="' + v + '" aria-pressed="' + (state.crossBasis === v) + '"')).join('') + '</div></div>';
+    const th = (label, key) => '<th aria-sort="' + (state.crossSort === key ? state.crossDesc ? 'descending' : 'ascending' : 'none') + '">' + action(label + (state.crossSort === key ? state.crossDesc ? ' ↓' : ' ↑' : ''), 'cross-sort', '', 'data-value="' + key + '"') + '</th>';
+    const table = '<section class="card index-section"><div class="cross-results-head"><div><h2>' + rows.length + '<small> / ' + pool.length + '只基金</small></h2><p>人民币 · 分红再投 · 已含产品持续费用' + (state.crossPremium !== null ? ' · 溢价筛选仅作用于场内，缺报价则排除' : '') + '</p></div>' + action('导出筛选结果', 'cross-export', 'btn sm') + '</div><div class="table-wrap cross-table-wrap" tabindex="0" aria-label="跨境基金研究表，可横向滚动"><table class="research-table crossborder-table"><thead><tr><th>基金 / 渠道</th>' + state.periods.map(y => th(periodHead(y), 'return:' + y)).join('') + th('持续费率 / 年', 'knownOngoingFee') + th('快照溢价', 'prem') + '<th>分红记录</th><th>买入费用 / 状态</th>' + th('5年最大回撤', 'mdd5') + th('收益截至', 'date') + '</tr></thead><tbody>' + page.map(f => {
+      const perf = crossPerformance(f), selected = state.crossSelected.has(f.c);
+      return '<tr><td><div class="fund-name-row">' + action(esc(f.n), 'fund-detail', 'text-link', 'data-code="' + f.c + '"') + action(selected ? '✓' : '+', 'cross-select', 'fund-compare' + (selected ? ' selected' : ''), 'data-code="' + f.c + '" aria-label="' + (selected ? '移出对比 ' : '加入对比 ') + esc(f.n) + '" aria-pressed="' + selected + '"') + '</div><span class="sub">' + f.c + ' · ' + (f.exchange ? '场内 ETF' : '场外') + ' · ' + esc(f.ix) + '</span></td>' + state.periods.map(y => '<td>' + pc(ret(perf.r?.[years.indexOf(y)], y, perf)) + '</td>').join('') + '<td>' + (M.finite(f.knownOngoingFee) ? (f.feeCoverage === 'complete' ? '' : '≥') + pct(f.knownOngoingFee, 2, false) : '—') + '</td><td>' + (f.exchange ? (M.finite(f.prem) ? '<span class="' + (f.prem > 5 ? 'negative' : '') + '">' + pct(f.prem) + '</span><span class="sub">' + esc((f.priceAsOf || f.quotedAt || '').slice(0, 10)) + '</span>' : '缺报价') : '不适用') + '</td><td>' + action(distributionLabel(f.c), 'fund-actions', 'text-link small', 'data-code="' + f.c + '"') + '<span class="sub">' + (perf.missing ? '收益序列缺失' : '含分红总回报') + '</span></td><td>' + buyFee(f) + '<span class="sub">' + (f.exchange ? '场内交易' : esc(f.st || '状态未收录') + (f.lm && f.lm !== '--' && !/暂停/.test(f.st || '') ? ' · ' + esc(f.lm) : '')) + '</span></td><td>' + pc(perf.mdd5, 1) + '</td><td>' + esc(perf.returnAsOf || '缺成交价历史') + '<span class="sub">' + (f.exchange && state.crossBasis === 'market' ? '成交价复权' : '净值总回报') + '</span></td></tr>';
+    }).join('') + (!page.length ? '<tr><td colspan="' + (7 + state.periods.length) + '"><div class="empty">没有符合条件的基金' + action('重置筛选', 'cross-reset', 'btn sm') + '</div></td></tr>' : '') + '</tbody></table></div><div class="cross-pagination"><span>' + (rows.length ? (state.crossPage - 1) * 15 + 1 : 0) + '–' + Math.min(state.crossPage * 15, rows.length) + ' / ' + rows.length + '</span><div>' + action('上一页', 'cross-page', 'btn sm', 'data-value="-1"' + (state.crossPage === 1 ? ' disabled' : '')) + '<span>' + state.crossPage + ' / ' + pages + '</span>' + action('下一页', 'cross-page', 'btn sm', 'data-value="1"' + (state.crossPage === pages ? ' disabled' : '')) + '</div></div></section>';
+    const comparison = state.crossSelected.size ? '<div class="compare-bar"><span>已选 ' + state.crossSelected.size + ' / 4 · ' + [...state.crossSelected].join(' · ') + '</span>' + action('清空', 'cross-clear', 'quiet') + action('并排比较', 'cross-compare', 'btn', state.crossSelected.size < 2 ? 'disabled' : '') + '</div>' : '';
+    return filters + '<div class="index-controls">' + basis + returnControls() + '</div>' + (state.crossBasis === 'market' ? '<p class="basis-note">场内成交价回报包含买卖两端溢价变化；场外仍按净值。分红均再投，交易佣金另见投资渠道。</p>' : '') + table + comparison;
+  }
+  function distributionDetails(a, currency = '元') {
+    if (!a || a.status !== 'recorded') return '<p class="notice warn">缺少已记录的分红事件；不能据此判断从未分红。</p>';
+    const cash = a.cash || [], splits = a.splits || [];
+    return '<p class="notice">收益已计入现金分红再投资，拆分仅调整份额。' + (currency === '美元' ? '投资渠道另按设定税率扣除美股股息税。' : '基金净值已包含底层证券股息及基金承担的税费。') + '</p>' + detailGrid([['已收录现金分红', cash.length + '次'], ['事件截至', esc(a.through)], ['最近现金分红', cash.length ? esc(cash.at(-1).date) + ' · 每份 ' + money(cash.at(-1).perUnit, 4) + currency : '所收录历史未见现金分红'], ['拆分记录', splits.length ? splits.map(e => esc(e.date) + ' · 1份变为' + money(e.factor, 3) + '份').join('<br>') : '所收录历史未见拆分']]) +
+      (cash.length ? '<div class="table-wrap"><table><thead><tr><th>除息日</th><th>每份现金分红 / ' + currency + '</th><th>收益处理</th></tr></thead><tbody>' + [...cash].reverse().map(e => '<tr><td>' + esc(e.date) + '</td><td>' + money(e.perUnit, 4) + '</td><td>已计入再投回报</td></tr>').join('') + '</tbody></table></div>' : '') + '<div class="actions">' + extLink(a.source, '分红 / 拆分原始记录') + (a.verifiedEvents || []).map(e => extLink(e.sourceUrl, e.date + ' 官方公告')).join('') + '</div><p class="note">按所收录历史展示' + (a.observedAt ? '，记录采集于 ' + esc(a.observedAt) : '') + '；不把份额拆分当作分红收益。</p>';
+  }
+  function openCrossMethod() {
+    openModal(modalTitle('溢价与分红口径', '境内跨境指数基金 · 人民币份额') + '<div class="rule-list"><div class="rule-item"><span class="rule-number">01</span><p><strong>默认剔除溢价</strong><br>使用基金分红再投净值，比较基金本身的回报。切换“成交价”后使用复权收盘价，计入买入和卖出时的溢价变化。剔除溢价不是把当前溢价从历史收益直接减掉。</p></div><div class="rule-item"><span class="rule-number">02</span><p><strong>快照溢价单独筛选</strong><br>报价相对当时 IOPV 的溢价；受时差及估值时点影响。它不参与默认净值回报计算，也不是实时可成交报价。开启上限后，场内缺报价的产品被排除，场外保留。</p></div><div class="rule-item"><span class="rule-number">03</span><p><strong>现金分红全部再投</strong><br>国泰 160213 的现金分红已计入净值总回报；国泰 513100 收录的是 2022-01-13 的 1拆5，不能算成现金分红。逐只点击“分红记录”查看事件与来源。历史不足的周期留空。</p></div><div class="rule-item"><span class="rule-number">04</span><p><strong>费用与实际成交</strong><br>净值和复权价已包含产品持续费用；此表不扣投资者佣金、申赎费。逐笔费率、定投和税后结果在投资渠道中计算。ETF 通常不能按净值直接成交。</p></div></div>' + '<div class="actions">' + extLink('https://static.cninfo.com.cn/finalpage/2022-01-14/1212179309.PDF', '国泰 513100 拆分公告') + extLink('https://st.gtfund.com/report/2025/05/国泰纳斯达克100指数证券投资基金分红公告.pdf', '国泰 160213 分红公告') + '</div>');
+  }
+  function openCrossCompare() {
+    const selected = [...state.crossSelected].map(c => funds.find(f => f.c === c)).filter(Boolean);
+    if (selected.length < 2) return;
+    const row = (label, fn) => '<tr><td>' + label + '</td>' + selected.map(f => '<td>' + fn(f) + '</td>').join('') + '</tr>';
+    openModal(modalTitle('跨境基金对比', (state.crossBasis === 'nav' ? '场内按净值 · 剔除溢价' : '场内按成交价 · 含溢价') + ' · 全部含分红再投') + '<div class="table-wrap"><table class="compare-table"><thead><tr><th>研究维度</th>' + selected.map(f => '<th>' + esc(f.n) + '<span class="sub">' + f.c + '</span></th>').join('') + '</tr></thead><tbody>' + row('指数 / 渠道', f => esc(f.ix) + ' / ' + (f.exchange ? '场内' : '场外')) + years.map((y, i) => row(periodHead(y), f => { const p = crossPerformance(f); return pc(ret(p.r?.[i], y, p)); })).join('') + row('收益截至', f => esc(crossPerformance(f).returnAsOf || '缺成交价历史')) + row('持续费率 / 年', f => (f.feeCoverage === 'complete' ? '' : '≥') + pct(f.knownOngoingFee, 2, false)) + row('快照溢价', f => f.exchange ? pct(f.prem) : '不适用') + row('已收录分红', f => distributionLabel(f.c)) + row('买入费用', buyFee) + row('申购状态', f => f.exchange ? '场内交易' : esc(f.st || '未记录')) + '</tbody></table></div><p class="note">各产品实际收益区间在详情中查看；不同截至日不直接计算跟踪差异。</p>');
   }
   function fundTabPass(f, tab) {
     const rule = (policy.byCode || {})[f.c] || {};
@@ -256,18 +305,25 @@
   function compareBar() {
     return '<div id="comparison-bar"' + (!state.selected.size ? ' class="hidden"' : ' class="compare-bar"') + '><span>已选 ' + state.selected.size + ' / 4 &nbsp; ' + [...state.selected].map(c => esc(c)).join(' · ') + '</span>' + action('清空', 'compare-clear', 'quiet') + action('并排比较 →', 'compare-open', 'btn', state.selected.size < 2 ? 'disabled' : '') + '</div>';
   }
+  function stockPass(s, tab) { return tab === 'all' || (tab === 'quality' ? s.qualityReview?.qualified : (s.group || 'dividend') === 'dividend'); }
+  function stockRules() {
+    const all = window.STOCKS || [], qualified = all.filter(s => stockPass(s, 'quality'));
+    const checks = all.find(s => s.qualityReview)?.qualityReview.checks || [];
+    const fiscalYears = [...new Set(all.flatMap(s => s.qualityReview?.years || []))].sort();
+    openModal(modalTitle('优质企业的入选依据', all.length + '家人工研究池 · ' + qualified.length + '家通过当前财务条件') + '<p class="notice">研究池覆盖制造、科技、医疗、消费、资源、公用事业等方向；由人工选取有代表性的 A 股公司，再统一做财务筛选。没有扫描全部 A 股，入选也不等于估值便宜。</p><div class="rule-list">' + checks.map((c, i) => '<div class="rule-item"><span class="rule-number">0' + (i + 1) + '</span><p>' + esc(c.label) + '</p></div>').join('') + '</div><p class="note">当前使用 ' + esc(fiscalYears.join('、')) + ' 年已公告年报；ROE 为各年加权平均 ROE。银行、保险、证券等金融企业不适用这一现金流筛选，保留在红利价值与完整观察池中。点开公司可查看逐年财务数据、每项判定和原始来源。</p>');
+  }
   function stocks() {
     const all = window.STOCKS || [];
-    const groups = [['quality', '优质企业'], ['dividend', '红利价值']];
-    const pool = all.filter(s => (s.group || 'dividend') === state.stockTab);
+    const groups = [['quality', '优质企业'], ['dividend', '红利价值'], ['all', '完整观察池']];
+    const pool = all.filter(s => stockPass(s, state.stockTab));
     const rows = pool.filter(s => !state.stockQuery || (s.c + s.n + s.ind).toLowerCase().includes(state.stockQuery.toLowerCase()));
     const value = x => state.stockSort.startsWith('return:') ? ret(x.r[years.indexOf(+state.stockSort.split(':')[1])], +state.stockSort.split(':')[1], x) : x[state.stockSort];
     if (state.stockSort !== 'default') rows.sort((a, b) => M.compareNullable(value(a), value(b), state.stockDesc));
     const sh = (n, k) => action(n + (state.stockSort === k ? state.stockDesc ? ' ↓' : ' ↑' : ''), 'stock-sort', '', 'data-value="' + k + '"');
-    return head('STOCK WATCHLIST', '看懂公司，也看清集中风险。', '从产业竞争力、公司估值到股息与长期收益。') +
-      '<div class="tabs" role="tablist" aria-label="个股研究分组">' + groups.map(([id, label]) => action(label + '<span class="tab-count">' + all.filter(s => (s.group || 'dividend') === id).length + '</span>', 'stock-tab', state.stockTab === id ? 'active' : '', 'data-value="' + id + '" role="tab" aria-selected="' + (state.stockTab === id) + '"')).join('') + '</div>' +
+    return head('STOCK WATCHLIST', '看懂公司，也看清集中风险。', '盈利、经营现金流与资本回报，结合估值和长期表现研究。', action('入选依据', 'stock-rules', 'btn sm')) +
+      '<div class="tabs" role="tablist" aria-label="个股研究分组">' + groups.map(([id, label]) => action(label + '<span class="tab-count">' + all.filter(s => stockPass(s, id)).length + '</span>', 'stock-tab', state.stockTab === id ? 'active' : '', 'data-value="' + id + '" role="tab" aria-selected="' + (state.stockTab === id) + '"')).join('') + '</div>' +
       '<div class="stock-controls"><div class="filters"><input type="search" id="stock-search" aria-label="搜索股票名称、代码或行业" placeholder="搜索股票名称、代码或行业" value="' + esc(state.stockQuery) + '"></div>' + returnControls() + '</div>' +
-      '<div class="card"><div class="table-caption"><span>' + rows.length + ' / ' + pool.length + '只观察样本</span><span>PE、PB、ROE 的报告期未独立核验</span></div><div class="table-wrap"><table class="research-table"><thead><tr><th>公司 / 行业</th><th>现价</th><th>PE / TTM</th><th>PB</th><th>ROE</th><th>市值 / 亿元</th><th>' + sh('近12月股息率', 'yield12') + '</th><th>5年完整分红年数</th>' + state.periods.map(y => '<th>' + sh(periodHead(y), 'return:' + y) + '</th>').join('') + '<th>' + sh('5年最大回撤', 'mdd5') + '</th><th>5年波动率</th><th>截至日</th></tr></thead><tbody>' + rows.map(s => '<tr><td>' + action(esc(s.n), 'stock-detail', 'text-link', 'data-code="' + s.c + '"') + '<span class="sub">' + s.c + ' · ' + esc(s.ind) + '</span></td><td>' + money(s.price, 2) + '</td><td>' + money(s.pe, 2) + '</td><td>' + money(s.pb, 2) + '</td><td>' + pct(s.roe, 2, false) + '</td><td>' + money(s.mcap, 1) + '</td><td>' + pct(s.yield12, 2, false) + '</td><td>' + (s.divYears == null ? '—' : esc(s.divYears) + ' / 5') + '</td>' + state.periods.map(y => '<td>' + pc(ret(s.r && s.r[years.indexOf(y)], y, s)) + '</td>').join('') + '<td>' + pc(s.mdd5, 1) + '</td><td>' + pct(s.vol5, 1, false) + '</td><td>' + esc(s.latest || window.STOCK_ASOF) + '</td></tr>').join('') + (rows.length ? '' : '<tr><td colspan="' + (11 + state.periods.length) + '"><div class="empty">没有匹配的公司</div></td></tr>') + '</tbody></table></div></div>';
+      '<div class="card"><div class="table-caption"><span>' + rows.length + ' / ' + pool.length + '家公司' + (state.stockTab === 'quality' ? ' · 3年盈利与经营现金流均为正 · 平均ROE ≥ 10%' : '') + '</span><span>估值按交易日 · ROE 按年报</span></div><div class="table-wrap"><table class="research-table stock-table"><thead><tr><th>公司 / 行业</th><th>现价</th><th>' + sh('PE / TTM', 'pe') + '</th><th>' + sh('PB / MRQ', 'pb') + '</th><th>' + sh('年度 ROE', 'roe') + '</th><th>' + sh('市值 / 亿元', 'mcap') + '</th><th>' + sh('近12月股息率', 'yield12') + '</th><th>5年分红年数</th>' + state.periods.map(y => '<th>' + sh(periodHead(y), 'return:' + y) + '</th>').join('') + '<th>' + sh('5年最大回撤', 'mdd5') + '</th><th>收益截至</th></tr></thead><tbody>' + rows.map(s => '<tr><td>' + action(esc(s.n), 'stock-detail', 'text-link', 'data-code="' + s.c + '"') + '<span class="sub">' + s.c + ' · ' + esc(s.ind) + '</span></td><td>' + money(s.price, 2) + '</td><td>' + money(s.pe, 2) + '<span class="sub">' + esc(s.valuationAsOf || '缺估值日期') + '</span></td><td>' + money(s.pb, 2) + '</td><td>' + pct(s.roe, 2, false) + '<span class="sub">' + esc(s.roeAsOf?.slice(0, 4) || '缺报告期') + '年报</span></td><td>' + money(s.mcap, 1) + '</td><td>' + pct(s.yield12, 2, false) + '</td><td>' + (s.divYears == null ? '—' : esc(s.divYears) + ' / 5') + '</td>' + state.periods.map(y => '<td>' + pc(ret(s.r?.[years.indexOf(y)], y, s)) + '</td>').join('') + '<td>' + pc(s.mdd5, 1) + '</td><td>' + esc(s.returnAsOf || '—') + '</td></tr>').join('') + (rows.length ? '' : '<tr><td colspan="' + (10 + state.periods.length) + '"><div class="empty">没有匹配的公司</div></td></tr>') + '</tbody></table></div></div>';
   }
   function curveCard(title, subtitle, entries, dates, metric, startDate) {
     const palette = ['#35654a', '#b58a46', '#557b9b', '#b36b5d', '#756c9b', '#698b6b', '#b78673', '#6e91a6', '#998a54'];
@@ -434,7 +490,7 @@
     const data = window.BUY_LOCATION_DATA;
     if (!data) return head('INVESTMENT CHANNELS', '投资渠道', '比较 SPY、QQQ 与国内场内、场外指数工具的历史税后结果。') + '<p class="notice red">比较数据未加载，请检查 data/buy-location.js。</p>';
     const config = { family: state.buyFamily, years: state.buyYears, plan: state.buyPlan,
-      lumpAmount: state.buyLumpAmount, monthlyAmount: state.buyMonthlyAmount, fees: state.buyFees, fundFees: state.buyFundFees };
+      lumpAmount: state.buyLumpAmount, monthlyAmount: state.buyMonthlyAmount, fees: state.buyFees, fundFees: state.buyFundFees, exchangeBasis: state.buyBasis };
     const result = M.buyLocationResult(data, config);
     const feeField = (key, label, unit, hint = '') => '<label>' + label + '<span class="buy-field"><input type="number" min="0" max="' + (key.endsWith('Minimum') ? '1000000' : '100') + '" step="any" inputmode="decimal" data-buy-input="' + key + '" value="' + esc(state.buyFees[key]) + '"><span>' + unit + '</span></span>' + (hint ? '<small>' + hint + '</small>' : '') + '</label>';
     const fundFeeFields = data.products.filter(p => p.family === state.buyFamily && p.channel === 'off').map(p => {
@@ -447,6 +503,7 @@
     const planSelect = '<div class="segmented" aria-label="买入方式">' + action('一次买入', 'buy-plan', state.buyPlan === 'lump' ? 'active' : '', 'data-value="lump" aria-pressed="' + (state.buyPlan === 'lump') + '"') + action('每月定投', 'buy-plan', state.buyPlan === 'monthly' ? 'active' : '', 'data-value="monthly" aria-pressed="' + (state.buyPlan === 'monthly') + '"') + '</div>';
     const amountField = '<label class="buy-amount">' + (state.buyPlan === 'lump' ? '首笔投入' : '每月投入') + '<span class="buy-field"><input type="number" min="1" max="1000000000" step="100" inputmode="decimal" data-buy-input="' + (state.buyPlan === 'lump' ? 'buyLumpAmount' : 'buyMonthlyAmount') + '" value="' + esc(state.buyPlan === 'lump' ? state.buyLumpAmount : state.buyMonthlyAmount) + '"><span>元</span></span></label>';
     const controls = '<section class="buy-controls"><div class="buy-control"><span>跟踪指数</span>' + familySelect + '</div><div class="buy-control"><span>历史窗口</span>' + yearSelect + '</div><div class="buy-control"><span>投入方式</span>' + planSelect + '</div>' + amountField + '</section>';
+    const basisControls = '<div class="buy-basis-bar"><div class="cross-basis"><span>场内 ETF</span><div class="segmented" aria-label="投资渠道场内收益口径">' + [['nav', '净值 · 剔除溢价'], ['market', '成交价 · 含溢价']].map(([v, label]) => action(label, 'buy-basis', state.buyBasis === v ? 'active' : '', 'data-value="' + v + '" aria-pressed="' + (state.buyBasis === v) + '"')).join('') + '</div></div><span>' + (state.buyBasis === 'nav' ? '按净值模拟买卖，仍扣券商佣金；实际成交可能有溢价。' : '按历史成交价模拟，计入买卖两端溢价变化。') + '</span><strong>分红已再投</strong></div>';
     const constrained = data.products.filter(p => p.family === state.buyFamily && p.channel === 'off').map(p => {
       const f = funds.find(item => item.c === p.code);
       return f && (/暂停/.test(f.st || '') || /限/.test(f.st || '')) ? p.code + ' ' + (f.st || '交易待核验') + (f.lm && f.lm !== '--' ? '，单日' + f.lm : '') + (f.navdate ? '（快照 ' + f.navdate + '）' : '') : null;
@@ -472,13 +529,17 @@
         const product = data.products.find(p => p.code === row.code);
         if (row.error) return '<tr><td><strong>' + esc(product.name) + '</strong><span class="sub">' + esc(channelText[product.channel]) + ' · ' + esc(row.code) + '</span></td><td colspan="8">' + esc(row.error) + '</td></tr>';
         return '<tr><td><strong>' + esc(product.name) + '</strong><span class="sub">' + esc(channelText[row.channel]) + ' · ' + esc(row.code) + '</span>' +
-          (M.finite(row.premiumRatioChange) ? '<span class="sub buy-premium">场内价/净值倍率变化 ' + pct(row.premiumRatioChange, 1) + '</span>' : '') + '</td><td>' + feeText(row.code) + '</td><td>¥' + money(row.contributed) + '</td><td>¥' + money(row.transactionCost + row.fxCost) + '</td><td>¥' + money(row.usDividendTax + row.cnDividendTax) + '</td><td>¥' + money(row.capitalTax) + '</td><td><strong>¥' + money(row.terminal) + '</strong></td><td>' + pc(row.totalReturn) + '</td><td>' + pc(row.xirr) + '</td></tr>';
-      }).join('') + '</tbody></table></div><div class="panel-foot"><span>持续费率是当前产品信息；历史收盘价或分红复权净值已反映实际运营费用，未再次扣除。场内“价/净值倍率变化”是买卖端点的相对变化，若溢价回落，历史场内优势可能消失。</span></div></section>';
+          (row.channel === 'exchange' ? '<span class="sub buy-premium">' + (state.buyBasis === 'nav' ? '净值模拟 · 已剔除溢价' : '成交价复权 · 含溢价变化') + '</span>' : '') + '</td><td>' + feeText(row.code) + '</td><td>¥' + money(row.contributed) + '</td><td>¥' + money(row.transactionCost + row.fxCost) + '</td><td>¥' + money(row.usDividendTax + row.cnDividendTax) + '</td><td>¥' + money(row.capitalTax) + '</td><td><strong>¥' + money(row.terminal) + '</strong></td><td>' + pc(row.totalReturn) + '</td><td>' + pc(row.xirr) + '</td></tr>';
+      }).join('') + '</tbody></table></div><div class="panel-foot"><span>持续费用已含于净值或复权价；现金分红已再投，美股 ETF 再扣投资者股息税。切换溢价口径仅改变场内价格序列。</span></div></section>';
+    const distributions = '<details class="buy-method buy-distributions"><summary>各产品分红与拆分</summary><div class="buy-method-body"><div class="table-wrap"><table><thead><tr><th>产品</th><th>本区间现金分红</th><th>本区间拆分</th><th>收益处理</th><th>事件记录</th></tr></thead><tbody>' + data.products.filter(p => p.family === state.buyFamily).map(p => {
+      const a = p.actions, within = e => result.start && e.date > result.start && e.date <= result.end;
+      return '<tr><td>' + esc(p.name) + '<span class="sub">' + p.code + '</span></td><td>' + (a ? a.cash.filter(within).length + '次' : '缺事件记录') + '</td><td>' + (a ? a.splits.filter(within).map(e => e.date + ' · 1:' + e.factor).join('；') || '无' : '缺事件记录') + '</td><td>分红已再投' + (p.channel === 'us' ? '<span class="sub">已扣美股股息税</span>' : '') + '</td><td>' + action('查看', 'buy-actions', 'text-link', 'data-code="' + p.code + '"') + '</td></tr>';
+    }).join('') + '</tbody></table></div><p class="note">统计区间 ' + esc(result.start || '—') + ' → ' + esc(result.end || '—') + '；现金分红进入总回报，份额拆分不创造额外收益。QDII 底层股息已反映在净值中。</p></div></details>';
     const key = '<div class="buy-key"><div><span class="eyebrow">TAX FIRST</span><h2>卖出时的税，已计入期末金额。</h2><p>以大陆税收居民经香港券商买入美国 ETF 为默认情境。香港账户不会自动免除境内境外所得申报；美国股息预扣、境内股息补缴和卖出正收益分别估算。</p></div><div class="buy-key-number"><strong>20%</strong><span>默认境外财产转让所得税率<br>只对本次卖出的估算正收益计税</span></div></div>';
-    const notes = '<details class="buy-method"><summary>查看数据来源与计算边界</summary><div class="buy-method-body"><p>基于产品每日分红复权收盘价、场外基金分红再投净值及美元兑人民币实际日线。美股 ETF 使用同一日价格与汇率；每月定投在该月第一个共同交易日买入，期间股息税从账户扣除，期末全部卖出。手续费、换汇价差和投资者税费逐笔计算。场外基金按当天净值成交，未模拟申购确认时差、限购；场内按收盘价成交，未模拟买卖价差、滑点和最小交易单位。汇率、境内纳税申报折算价、抵免及持有期间的费率变化可与个人实际交易不同。</p><p>国内基金投资者层面的申赎差价与分配在现行优惠口径下按0估算；QDII 底层可能已承担境外税，反映在净值中。美股 ETF 的历史复权价含产品运营费用，股息税按分红日折减；境外所得税抵免以简化的逐次股息模型估算。结果是历史条件模拟，不是个人税务申报金额。</p><div class="buy-sources">' +
+    const notes = '<details class="buy-method"><summary>查看数据来源与计算边界</summary><div class="buy-method-body"><p>基于产品每日分红复权收盘价、场外基金分红再投净值及美元兑人民币实际日线。美股 ETF 使用同一日价格与汇率；每月定投在该月第一个共同交易日买入，期间股息税从账户扣除，期末全部卖出。手续费、换汇价差和投资者税费逐笔计算。场外基金按当天净值成交，未模拟申购确认时差、限购；场内默认按分红再投净值模拟买卖，剔除溢价但保留券商佣金；切换成交价后按复权收盘价模拟。净值不保证可成交，未模拟买卖价差、滑点和最小交易单位。汇率、境内纳税申报折算价、抵免及持有期间的费率变化可与个人实际交易不同。</p><p>国内基金投资者层面的申赎差价与分配在现行优惠口径下按0估算；QDII 底层可能已承担境外税，反映在净值中。美股 ETF 的历史复权价含产品运营费用，股息税按分红日折减；境外所得税抵免以简化的逐次股息模型估算。结果是历史条件模拟，不是个人税务申报金额。</p><div class="buy-sources">' +
       extLink('https://www.chinatax.gov.cn/n810219/n810744/n3752930/n3752974/c3970366/content.html', '个人所得税法') + extLink('https://www.chinatax.gov.cn/chinatax/n810219/n810744/n3752930/n3752974/c5143076/content.html', '境外所得及抵免公告') + extLink('https://www.chinatax.gov.cn/chinatax/n810341/n810765/n812203/200207/c1208424/content.html', '国内基金税收政策') + extLink('https://www.irs.gov/pub/irs-trty/china.pdf', '中美税收协定') + extLink('https://www.irs.gov/individuals/international-taxpayers/federal-income-tax-withholding-and-reporting-on-other-kinds-of-us-source-income-paid-to-nonresident-aliens', '美国税务局') + extLink('https://www.ssga.com/us/en/individual/etfs/state-street-spdr-sp-500-etf-trust-spy', 'SPY 费用') + extLink('https://www.invesco.com/qqq-etf/en/market-outlook/whats-new-about-qqq.html', 'QQQ 费用') + '</div><div class="buy-sources">' + data.products.filter(p => p.family === state.buyFamily).map(p => extLink(p.source, p.code + ' 行情')).join('') + extLink(data.fxSource, '美元兑人民币汇率') + '</div><p>资料快照 ' + esc(data.asOf) + '；原始数据哈希和生成脚本保存在仓库。完整假设见 <a class="inline-link" href="docs/buy-location-method.md" target="_blank" rel="noopener">买入渠道研究方法</a>。</p></div></details>';
     return head('INVESTMENT CHANNELS', '投资渠道', '把 SPY、QQQ 与国内场内、场外工具放在同一人民币账户中，观察买入节奏、费用与税后的差别。') +
-      key + controls + availability + table + assumptions + notes;
+      key + controls + basisControls + availability + table + distributions + assumptions + notes;
   }
   function quality() {
     const q = window.DATA_QUALITY || { summary: {}, datasets: [] };
@@ -536,12 +597,15 @@
   }
   function openFund(code) {
     const f = funds.find(x => x.c === code); if (!f) return;
+    const cross = state.route === 'indices' && state.indexTab === 'crossborder';
+    const perf = cross ? crossPerformance(f) : f;
+    const basis = cross && f.exchange && state.crossBasis === 'market' ? '成交价复权 · 含溢价与分红' : '净值总回报 · 剔除溢价 · 分红再投';
     const rule = (policy.byCode || {})[code];
     const fees = (f.fee || []).map(x => pct(x, 2, false));
     openModal(modalTitle(esc(f.n), esc(f.c) + ' · ' + esc(f.exchange ? '场内交易' : '场外申赎') + ' · ' + esc(f.ix)) +
       '<div class="pill-row">' + badge(/增强/.test(f.n + f.ix) ? '指数增强' : f.active ? '主动管理' : '指数 / 规则工具') + (f.dividend ? badge('红利是权益风格') : '') + badge(verifiedReturn(f) ? '收益已复算' : '历史字段待逐项核验', verifiedReturn(f) ? 'green' : 'warn') + '</div>' +
       (rule ? '<div class="notice"><strong>' + (rule.tier === 'shortlist' ? '权益候选：' : '研究池：') + '</strong>' + esc(rule.reason) + '<br>' + esc((rule.flags || []).join('；')) + '</div>' : '') +
-      returnTable(f.r, f) + '<p class="note">收益截至：' + esc(metricDate(f, 'return')) + ' · ' + esc(f.historyNote || f.returnNote || '有实际区间时按日期跨度年化；旧快照无基期时按名义年数计算。完整周期不足留空。') + '</p>' +
+      '<h3 class="detail-heading">' + basis + '</h3>' + returnTable(perf.r, perf) + '<p class="note">收益截至：' + esc(metricDate(perf, 'return')) + ' · ' + esc(f.historyNote || f.returnNote || '有实际区间时按日期跨度年化；旧快照无基期时按名义年数计算。完整周期不足留空。') + '</p>' +
       detailGrid([
         ['管理 / 托管 / 销售服务费（年）', fees.join(' / ') || '待核验'],
         ['买入费用', buyFee(f) + (f.exchange ? '，按实际券商约定' : '<span class="sub">原费率 / 历史渠道折扣，生效日待核验</span>')],
@@ -549,16 +613,17 @@
         ['申购状态 / 日限额', f.exchange ? '场内交易；不使用场外申赎限制' : esc(f.st || '未收录') + ' / ' + (/暂停/.test(f.st) ? '暂停期间无可用额度' : esc(f.lm || '未收录'))],
         ['单位净值 / 日期', money(f.nav, 4) + ' / ' + esc(f.navdate || '未收录')],
         ['规模 / 成立日', money(f.sz, 1) + '亿元 / ' + esc(f.d) + (f.szdate ? '<span class="sub">规模截至：' + esc(f.szdate) + '</span>' : '')],
-        ['近5年最大回撤 / 波动率', pct(f.mdd5, 2, false) + ' / ' + pct(f.vol5, 2, false) + '<span class="sub">截至：' + esc(metricDate(f, 'risk')) + '</span>'],
+        ['近5年最大回撤 / 波动率', pct(perf.mdd5, 2, false) + ' / ' + pct(perf.vol5, 2, false) + '<span class="sub">截至：' + esc(metricDate(perf, 'risk')) + '</span>'],
         (Number.isFinite(f.mdd3) || Number.isFinite(f.v3) ?
-          ['近3年最大回撤 / 波动率', pct(f.mdd3, 2, false) + ' / ' + pct(f.v3, 2, false) +
+          ['近3年净值回撤 / 波动率', pct(f.mdd3, 2, false) + ' / ' + pct(f.v3, 2, false) +
             '<span class="sub">截至：' + esc(metricDate(f, 'risk')) + '</span>'] : null),
         ['现任经理 / 本基金任期', managerText(f, true) + '<span class="sub">任期截至：' + esc(f.managerAsOf || '未记录') + '</span>'],
         (f.exchange || Number.isFinite(f.p) ? ['交易价 / 快照溢价', money(f.p, 3) + ' / ' + pct(f.prem) +
           (f.priceAsOf || f.quotedAt ? '<span class="sub">报价时间：' + esc(f.priceAsOf || f.quotedAt) + '；快照非实时</span>' : '')] : null)
       ].filter(Boolean)) +
-      '<div class="actions">' + extLink(f.managerSourceUrl || 'https://fundf10.eastmoney.com/jjjl_' + code + '.html', '经理任职原文') + extLink('https://fund.eastmoney.com/' + code + '.html', '净值与基金资料') + extLink('https://fundf10.eastmoney.com/jjfl_' + code + '.html', '买入卖出费率') + extLink('https://fundf10.eastmoney.com/jjgg_' + code + '.html', '正式公告') + '</div>' +
-      '<p class="note">经理资料采集：' + esc(stamp(f.managerCheckedAt)) + '；持续费率采集：' + esc(stamp(f.feeCheckedAt)) + '。' + (f.exchange ? '交易佣金以实际券商约定为准，未知费项不按0处理。' : '赎回费旧档缺少持有期映射，不能用于精确估算；未知费用不按0处理。') + esc(f.note || '') + '</p><div class="dialog-footer">' + action('加入对比', 'compare-toggle', 'btn primary', 'data-code="' + code + '"') + '</div>');
+      (crossEvidence(code) ? '<div class="fund-distribution-summary"><strong>分红与溢价</strong><span>' + basis + '</span>' + action(distributionLabel(code) + ' · 查看记录', 'fund-actions', 'text-link', 'data-code="' + code + '"') + '</div>' : '') +
+      '<div class="actions">' + (cross ? extLink(perf.source, '当前回报原始来源') : '') + extLink(f.managerSourceUrl || 'https://fundf10.eastmoney.com/jjjl_' + code + '.html', '经理任职原文') + extLink('https://fund.eastmoney.com/' + code + '.html', '净值与基金资料') + extLink('https://fundf10.eastmoney.com/jjfl_' + code + '.html', '买入卖出费率') + extLink('https://fundf10.eastmoney.com/jjgg_' + code + '.html', '正式公告') + '</div>' +
+      '<p class="note">经理资料采集：' + esc(stamp(f.managerCheckedAt)) + '；持续费率采集：' + esc(stamp(f.feeCheckedAt)) + '。' + (f.exchange ? '交易佣金以实际券商约定为准，未知费项不按0处理。' : '赎回费旧档缺少持有期映射，不能用于精确估算；未知费用不按0处理。') + esc(f.note || '') + '</p><div class="dialog-footer">' + action((cross ? state.crossSelected : state.selected).has(code) ? '移出对比' : '加入对比', cross ? 'cross-select' : 'compare-toggle', 'btn primary', 'data-code="' + code + '"') + '</div>');
   }
   function openIndex(i) {
     const rows = indexRows();
@@ -574,9 +639,11 @@
   }
   function openStock(code) {
     const s = (window.STOCKS || []).find(x => x.c === code); if (!s) return;
-    openModal(modalTitle(esc(s.n), s.c + ' · ' + esc(s.ind) + ' · 行情截至' + esc(s.latest || window.STOCK_ASOF)) + returnTable(s.r, s) +
-      detailGrid([['现价 / 市值', '¥' + money(s.price, 2) + ' / ' + money(s.mcap, 1) + '亿元'], ['PE（TTM） / PB', money(s.pe, 2) + ' / ' + money(s.pb, 2)], ['ROE', pct(s.roe, 2, false) + '<span class="sub">报告期未完整收录，不参与质量打分</span>'], ['近12月股息率', pct(s.yield12, 2, false)], ['近5年分红年数', s.divYears == null ? '待重算核验' : s.divYears + ' / 5'], ['5年最大回撤 / 波动率', pct(s.mdd5, 2, false) + ' / ' + pct(s.vol5, 2, false)]]) +
-      '<p class="notice">' + esc(basisText(s.returnBasis)) + '；收益截至 ' + esc(s.returnAsOf || '未记录') + '，风险截至 ' + esc(s.riskAsOf || '未记录') + '。分红窗口 ' + esc(s.dividendWindow || '未记录') + '，滚动股息截至 ' + esc(s.dividendAsOf || '未记录') + '。</p><p class="note">报价时间：' + esc(s.priceAsOf || '未记录') + '。观察标签是研究起点，需要结合最新公告重新判断。</p><div class="actions">' + extLink(s.sourceUrl, '复权日线来源') + extLink('https://quote.eastmoney.com/' + (code.startsWith('6') ? 'sh' : 'sz') + code + '.html', '行情与公司公告') + '</div>');
+    const review = s.qualityReview;
+    const financials = '<h3 class="detail-heading">年度财务与入选依据</h3><div class="table-wrap"><table><thead><tr><th>报告年度</th><th>归母净利润 / 亿元</th><th>经营现金流 / 亿元</th><th>加权平均 ROE</th><th>公告日</th></tr></thead><tbody>' + (s.financialHistory || []).map(r => '<tr><td>' + r.year + '</td><td>' + money(M.finite(r.netProfit) ? r.netProfit / 1e8 : null, 2) + '</td><td>' + money(M.finite(r.operatingCashFlow) ? r.operatingCashFlow / 1e8 : null, 2) + '</td><td>' + pct(r.roe, 2, false) + '</td><td>' + esc(r.announcedAt) + '</td></tr>').join('') + '</tbody></table></div>' + (review ? '<div class="stock-checks">' + review.checks.map(c => '<span class="' + (c.pass ? 'passed' : 'missed') + '">' + (c.pass ? '✓ ' : '— ') + esc(c.label) + '</span>').join('') + '</div><p class="note">三年平均 ROE ' + pct(review.roe3, 2, false) + ' · ' + (review.qualified ? '通过当前财务条件' : '未满足全部财务条件，保留观察') + ' · 核算于 ' + esc(review.checkedAt) + '</p>' : '');
+    openModal(modalTitle(esc(s.n), s.c + ' · ' + esc(s.ind)) + returnTable(s.r, s) +
+      detailGrid([['现价 / 市值', '¥' + money(s.price, 2) + ' / ' + money(s.mcap, 1) + '亿元'], ['PE（TTM） / PB（MRQ）', money(s.pe, 2) + ' / ' + money(s.pb, 2) + '<span class="sub">估值截至 ' + esc(s.valuationAsOf || '缺交易日期') + '</span>'], ['年度加权平均 ROE', pct(s.roe, 2, false) + '<span class="sub">报告期 ' + esc(s.roeAsOf || '未收录') + '</span>'], ['近12月股息率', pct(s.yield12, 2, false)], ['近5年分红年数', s.divYears == null ? '缺完整分红年度证据' : s.divYears + ' / 5'], ['5年最大回撤 / 波动率', pct(s.mdd5, 2, false) + ' / ' + pct(s.vol5, 2, false)]]) + financials +
+      '<p class="note">' + esc(basisText(s.returnBasis)) + '；收益截至 ' + esc(s.returnAsOf || '未记录') + '，风险截至 ' + esc(s.riskAsOf || '未记录') + '。分红窗口 ' + esc(s.dividendWindow || '未记录') + '，滚动股息截至 ' + esc(s.dividendAsOf || '未记录') + '。价格截至 ' + esc(s.priceAsOf || '未记录') + '。</p><div class="actions">' + extLink(s.valuationSourceUrl, 'PE / PB 估值来源') + extLink(s.fundamentalsSourceUrl, '财报数据来源') + extLink(s.sourceUrl, '复权日线来源') + '</div>');
   }
   function openCompare() {
     const selected = [...state.selected].map(c => funds.find(f => f.c === c)).filter(Boolean);
@@ -666,8 +733,6 @@
           case 'benchmark-currency': state.benchmarkCurrency = val; break;
           case 'fund-category': state.poolCategory = val; state.page = 1; break;
           case 'fund-channel': state.channel = val; state.page = 1; break;
-          case 'crossborder-index': state.indexType = val; break;
-          case 'crossborder-channel': state.indexChannel = val; break;
           case 'strategy-chart-method': state.stratMethod = val; state.chartHidden.clear(); break;
           default: return;
         }
@@ -692,6 +757,37 @@
         state.equityAll = !state.equityAll;
         if (!state.equityAll) state.screen = { minA3: defaults.minA3, minA5: defaults.minA5, minA10: null };
         state.page = 1; state.fundSort = 'default'; break;
+      case 'cross-type':
+      case 'cross-channel': {
+        const set = act === 'cross-type' ? state.crossTypes : state.crossChannels;
+        if (val === 'all') set.clear(); else if (set.has(val)) set.delete(val); else set.add(val);
+        state.crossPage = 1; break;
+      }
+      case 'cross-premium': state.crossPremium = val === 'all' ? null : Number(val); state.crossPage = 1; break;
+      case 'cross-basis': state.crossBasis = val; state.crossPage = 1; break;
+      case 'cross-page': state.crossPage += Number(val); break;
+      case 'cross-reset': state.crossTypes.clear(); state.crossChannels.clear(); state.crossQuery = ''; state.crossPremium = null; state.crossPurchasable = false; state.crossSort = 'default'; state.crossPage = 1; break;
+      case 'cross-sort': state.crossDesc = state.crossSort === val ? !state.crossDesc : !['knownOngoingFee', 'prem', 'n'].includes(val); state.crossSort = val; state.crossPage = 1; break;
+      case 'cross-select':
+        if (state.crossSelected.has(code)) state.crossSelected.delete(code);
+        else if (state.crossSelected.size < 4) state.crossSelected.add(code);
+        else { toast('一次最多比较4只产品'); return; }
+        if ($('#dialog').open) { render(); openFund(code); return; }
+        break;
+      case 'cross-clear': state.crossSelected.clear(); break;
+      case 'cross-compare': openCrossCompare(); return;
+      case 'cross-method': openCrossMethod(); return;
+      case 'cross-export': {
+        const rows = crossRows();
+        download('长衡-跨境基金-' + state.crossBasis + '.csv', M.csv([['代码', '基金', '指数', '渠道', '收益口径', ...state.periods.map(periodHead), '收益截至', '快照溢价%', '报价日期', '持续费率%（已知）', '现金分红处理', '已收录分红次数'], ...rows.map(f => {
+          const p = crossPerformance(f); return [f.c, f.n, f.ix, f.exchange ? '场内' : '场外', f.exchange && state.crossBasis === 'market' ? '成交价复权' : '净值总回报', ...state.periods.map(y => ret(p.r?.[years.indexOf(y)], y, p)), p.returnAsOf, f.prem, f.priceAsOf || f.quotedAt, f.knownOngoingFee, '已再投', crossEvidence(f.c)?.actions.cash.length];
+        })]), 'text/csv;charset=utf-8'); return;
+      }
+      case 'fund-actions': {
+        const f = funds.find(f => f.c === code); if (!f) return;
+        openModal(modalTitle(esc(f.n) + ' · 分红与拆分', code) + distributionDetails(crossEvidence(code)?.actions)); return;
+      }
+      case 'stock-rules': stockRules(); return;
       case 'index-tab': state.indexTab = val; state.indexSort = 'default'; break;
       case 'stock-tab': state.stockTab = val; state.stockSort = 'default'; state.stockQuery = ''; break;
       case 'index-sort':
@@ -737,16 +833,21 @@
       case 'strategy-view': state.stratView = val; break;
       case 'strategy-compare': state.stratCompare = val; state.chartHidden.clear(); break;
       case 'strategy-metric': state.stratMetric = val; break;
+      case 'buy-basis': state.buyBasis = val; break;
+      case 'buy-actions': {
+        const p = window.BUY_LOCATION_DATA?.products.find(p => p.code === code); if (!p) return;
+        openModal(modalTitle(esc(p.name) + ' · 分红与拆分', code) + distributionDetails(p.actions, p.channel === 'us' ? '美元' : '元')); return;
+      }
       case 'buy-family': state.buyFamily = val; break;
       case 'buy-years': state.buyYears = Number(val); break;
       case 'buy-plan': state.buyPlan = val; break;
       case 'buy-export': {
         const result = M.buyLocationResult(window.BUY_LOCATION_DATA, { family: state.buyFamily, years: state.buyYears,
-          plan: state.buyPlan, lumpAmount: state.buyLumpAmount, monthlyAmount: state.buyMonthlyAmount, fees: state.buyFees, fundFees: state.buyFundFees });
+          plan: state.buyPlan, lumpAmount: state.buyLumpAmount, monthlyAmount: state.buyMonthlyAmount, fees: state.buyFees, fundFees: state.buyFundFees, exchangeBasis: state.buyBasis });
         if (result.error) { toast(result.error); return; }
-        const columns = ['产品代码', '产品名称', '渠道', '开始日', '结束日', '买入笔数', '累计投入CNY', '交易费用CNY', '换汇价差CNY', '美股股息预扣CNY', '境内股息补缴CNY', '卖出收益税CNY', '税后期末CNY', '累计收益%', 'XIRR%', '费用假设JSON'];
+        const columns = ['产品代码', '产品名称', '渠道', '场内收益口径', '分红处理', '开始日', '结束日', '买入笔数', '累计投入CNY', '交易费用CNY', '换汇价差CNY', '美股股息预扣CNY', '境内股息补缴CNY', '卖出收益税CNY', '税后期末CNY', '累计收益%', 'XIRR%', '费用假设JSON'];
         download('长衡-买入渠道-' + result.end + '.csv', M.csv([columns, ...result.rows.filter(r => !r.error).map(r => [r.code, r.name,
-          r.channel, result.start, result.end, r.purchases, r.contributed, r.transactionCost, r.fxCost,
+          r.channel, r.exchangeBasis || '原渠道', '再投资', result.start, result.end, r.purchases, r.contributed, r.transactionCost, r.fxCost,
           r.usDividendTax, r.cnDividendTax, r.capitalTax, r.terminal, r.totalReturn, r.xirr, JSON.stringify({ ...state.buyFees, fundFees: state.buyFundFees })])]), 'text/csv;charset=utf-8');
         return;
       }
@@ -759,6 +860,10 @@
   document.addEventListener('input', e => {
     const el = e.target;
     if (el.id === 'fund-search') { state.query = el.value; state.page = 1; clearTimeout(searchTimer); searchTimer = setTimeout(renderFundResults, 120); }
+    if (el.id === 'cross-search') {
+      state.crossQuery = el.value; state.crossPage = 1; clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => { render(); $('#cross-search')?.focus(); }, 180);
+    }
     if (el.id === 'stock-search') {
       state.stockQuery = el.value; clearTimeout(searchTimer);
       searchTimer = setTimeout(() => { const value = state.stockQuery; render(); const input = $('#stock-search'); if (input) { input.focus(); input.value = value; } }, 200);
@@ -766,6 +871,7 @@
   });
   document.addEventListener('change', e => {
     const el = e.target;
+    if (el.id === 'cross-purchasable') { state.crossPurchasable = el.checked; state.crossPage = 1; render(); return; }
     if (el.dataset.buyFund) {
       if (!el.checkValidity() || !el.value.trim() || !Number.isFinite(Number(el.value))) { toast('请输入0至100之间的费率'); render(); return; }
       const code = el.dataset.buyFund, fee = el.dataset.fee;
