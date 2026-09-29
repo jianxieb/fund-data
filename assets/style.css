@@ -358,10 +358,14 @@ html{scrollbar-gutter:stable}
 @media(max-width:650px){.strategy-curve-toolbar{gap:12px}.strategy-curve-modes,.strategy-curve-choices{align-items:flex-start;flex-wrap:wrap}.strategy-curve-assets{display:block}.strategy-curve-assets>span{display:block;padding:0 0 7px}.page-strategy .curve-legend{grid-template-columns:1fr}.strategy-asset-families{grid-template-columns:1fr}.strategy-leverage-tools{align-items:flex-start;flex-direction:column;gap:6px}.strategy-year-picker{align-items:flex-start;flex-direction:column}.strategy-year-buttons{flex-wrap:wrap}.strategy-rules .rule-list{grid-template-columns:1fr}}
 
 /* Consistent navigation and concise research controls. */
-.sidebar nav>a{justify-content:center;text-align:center;padding-left:10px;padding-right:10px}
-.sidebar nav .nav-divider{text-align:center;margin-left:0;margin-right:0;letter-spacing:2px}
-.sidebar-bottom>a{justify-content:center;gap:12px}
-.sidebar-bottom p{text-align:center}
+.sidebar nav>a{justify-content:flex-start;text-align:left;padding-left:22px;padding-right:16px;gap:12px}
+.sidebar nav .nav-divider{text-align:left;margin-left:22px;margin-right:0;letter-spacing:1.5px;font-size:10px}
+.nav-icon{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;opacity:.8}
+.sidebar nav>a.active .nav-icon{opacity:1}
+.sidebar-bottom{padding-left:22px;padding-right:15px}
+.sidebar-bottom>a{justify-content:flex-start;gap:10px;white-space:nowrap}
+.sidebar-bottom .status-dot{width:5px;height:5px;margin-left:auto;flex:none}
+.sidebar-bottom p{text-align:left}
 .home-entry-arrow{display:grid;place-items:center;width:32px;height:32px;border:1px solid #dce5d4;border-radius:50%;flex:none;color:#698064;background:#fafcf7}
 .home-entry-arrow svg{display:block;width:18px;height:18px;transition:transform .18s}
 .home-entry:hover .home-entry-arrow svg,.home-secondary-card:hover .home-entry-arrow svg{transform:translateX(2px)}
@@ -400,6 +404,53 @@ html{scrollbar-gutter:stable}
 .stock-checks .passed{background:#eff5e9;color:#527249}
 .stock-checks .missed{background:#f7f0e5;color:#927648}
 .stock-table .sub{margin-top:4px}
+.stock-category-filter{display:flex;gap:7px;flex-wrap:wrap;margin:-2px 0 20px}
+.stock-category-filter .filter-chip{background:transparent;border-color:var(--line)}
+.stock-category-filter .filter-chip.active{background:#e4eed7;border-color:#c2d5ad}
+.stock-view button{font-size:12px;padding:7px 13px}
+.stock-table-caption{padding-top:11px;padding-bottom:11px}
+.stock-table-caption .stock-view{margin-left:auto}
+.stock-category{display:inline-block;margin-top:8px;padding:3px 7px;border-radius:4px;background:#f0f3eb;font-size:11px;color:#6c7e62}
+.stock-table-wrap{max-height:720px}
+.stock-table th{position:sticky;top:0;z-index:2}
+.stock-table th:first-child{z-index:4}
+.stock-table td{padding-top:21px;padding-bottom:21px;vertical-align:top}
+.stock-table td .sub{white-space:nowrap}
+.stock-table .text-link{font-size:13px}
+.stock-financial-table{min-width:1080px}
+.stock-financial-table td:first-child,.stock-financial-table th:first-child{width:175px;min-width:175px;max-width:205px}
+.stock-financial-table td,.stock-financial-table th{padding-left:17px;padding-right:17px}
+.stock-financial-table th:not(:nth-child(2)){white-space:nowrap}
+.stock-financial-table th:nth-child(2){text-align:left}
+.stock-reason{width:290px;min-width:260px;max-width:310px;white-space:normal;text-align:left;line-height:1.7}
+.stock-reason>strong{font-size:12px;font-weight:500;color:#3d5943}
+.stock-reason>span{display:block;font-size:11px;color:#75816f;margin-top:2px}
+.stock-reason>span.stock-caution{color:#a17b44}
+.stock-growth strong{font-size:15px;font-weight:550;white-space:nowrap}
+.stock-annual{display:block;margin-top:10px;font-size:10px;white-space:nowrap;color:var(--muted)}
+.stock-growth>.sub{font-size:10px}
+dialog:has(.stock-detail){width:min(1180px,94vw);max-width:1180px}
+.stock-thesis{background:#f3f6ee;border:1px solid #e3e9d9;border-radius:10px;padding:19px 22px;margin:20px 0 16px}
+.stock-thesis-title{display:flex;align-items:center;gap:12px}
+.stock-thesis-title h3,.stock-watchouts h3{font-size:14px}
+.stock-business{font-size:12px;color:#718069;line-height:1.8;margin-top:7px}
+.stock-evidence-list{display:grid;grid-template-columns:1fr 1fr;gap:8px 28px;margin:15px 0 0;padding:0;list-style:none;font-size:12px;color:#3d5b42}
+.stock-evidence-list li{padding-left:13px;position:relative;line-height:1.8}
+.stock-evidence-list li::before{content:'';width:4px;height:4px;background:#91a77a;border-radius:50%;position:absolute;left:0;top:9px}
+.stock-watchouts{padding:12px 17px;border-left:3px solid #ccb986;background:#faf7ef;font-size:12px;color:#997649;border-radius:0 7px 7px 0}
+.stock-watchouts h3{font-size:12px;font-weight:550}
+.stock-watchouts ul{display:flex;gap:5px 25px;flex-wrap:wrap;margin:5px 0 0;padding:0;list-style:none}
+.stock-growth-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:0 0 20px}
+.stock-growth-summary>div{padding:12px 16px;border:1px solid var(--line);border-radius:8px}
+.stock-growth-summary>div>span,.stock-growth-summary small{display:block;font-size:11px;color:var(--muted)}
+.stock-growth-summary strong{display:block;font-size:23px;font-weight:500;margin:7px 0 3px}
+.stock-report-table{min-width:1050px;font-size:12px}
+.stock-report-table td,.stock-report-table th{padding:13px 12px;white-space:nowrap}
+.stock-report-table tr:first-child td{background:#f8faf4}
+.stock-screen-details{padding:15px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:20px 0}
+.stock-screen-details summary{font-size:12px;color:#64775c;cursor:pointer}
+@media(max-width:900px){.sidebar nav>a{padding-left:14px;gap:10px}.sidebar nav .nav-divider{margin-left:14px}.sidebar-bottom{padding-left:14px;padding-right:8px}.sidebar-bottom>a{gap:8px;font-size:11px}.stock-controls .stock-view{margin-left:0}.stock-evidence-list{grid-template-columns:1fr}.stock-growth-summary{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:650px){.sidebar nav>a{padding:11px 12px}.sidebar nav .nav-icon{display:none}.stock-category-filter{gap:5px}.stock-thesis{padding:16px}.stock-report-table{font-size:11px}.stock-growth-summary>div{padding:10px}}
 .fund-distribution-summary{display:flex;flex-wrap:wrap;gap:10px 20px;align-items:center;padding:17px 19px;margin:18px 0;border:1px solid var(--line);border-radius:9px;font-size:12px}
 .fund-distribution-summary>span{color:var(--muted)}
 .fund-distribution-summary>.text-link{margin-left:auto}
