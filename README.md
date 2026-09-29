@@ -19,9 +19,9 @@
 | 页面 | 用途 |
 | --- | --- |
 | 研究总览 | 四个清晰入口：海外指数、长期主动权益、红利/债券/固收、投入策略 |
-| 指数观察 | 海外指数、国内指数、境内跨境指数基金三个页签；海外指数下单列 SPY、QQQ 等海外 ETF 产品表 |
+| 指数观察 | 海外指数、境内跨境指数基金、国内指数三个页签；海外指数下单列 SPY、QQQ 等海外 ETF 产品表 |
 | 基金研究 | 四个不重复入口：长期主动权益、红利/债券/固收、指数工具、完整研究池；细分类在完整研究池筛选；支持详细资料、对比与搜索 |
-| 个股深入 | 有限人工样本中的估值、股息、多周期历史收益与风险；缺少财务报告期时保留空值 |
+| 个股深入 | 长期优质企业、高质成长股、红利价值；前两类独立筛选、允许重叠，逐公司查看财务依据、估值、风险和深入报告 |
 | 投入策略 | 可选1993/1999/2001/2010/2020起点；可按标的或投入方式同图比较，并切换账户金额与资金加权年化；杠杆ETF单独标记，附回测结果明细 |
 | 投资渠道 | SPY/QQQ 与国内场内、场外标普500及纳指100产品的同日人民币历史模拟；自定义佣金、申赎费、换汇价差、定投金额及境外投资者税率，显示税后金额与 XIRR |
 | 数据与方法 | 各数据集的来源、时间、计算检查与未核验事项 |
@@ -54,6 +54,15 @@
 当前数据的逐项核验情况见 data/quality.json，真实源抓取与修复证据见 [数据链路审计](docs/data-pipeline-audit.md)、[指数与筛选审计](docs/indices-screening-audit.md)、[经理字段审计](docs/manager-field-audit.md) 和 [官方资料抽查](docs/official-source-spot-check-2026-09-24.md)。计算检查通过不等于全部原始资料已经独立验证。
 
 ## 更新
+
+个股研究整合了 `jianxieb/stock-research` 的公司研究资源。当前筛选口径见[长期优质与高质成长](docs/stock-quality-method.md)，与五个开源项目、七份 skill 的逐项对照及修订见[研究工具比较](docs/research/stock-skill-comparison-2026-09-30.md)。可复用的研究流程在 [company-report/SKILL.md](company-report/SKILL.md)。
+
+    python3 company-report/scripts/01_fetch_data.py 601138 --as-of 2026-09-30
+    python3 company-report/scripts/02_compute.py company-report/data/601138/summary.json
+    python3 scripts/build_stock_reports.py
+    python3 scripts/build_stock_reports.py --check
+
+取数后需审阅公司原始公告，并更新 `data/stock-report-research.json` 的业务判断、风险和证据日期，才能生成对应日期的报告。报告输入冻结行情、财务和当时的分类依据；定时行情刷新不会改写旧报告的日期或结论。网页版由 `data/stock-reports.js` 提供，Markdown 和原版修订记录位于 `docs/company-reports/`。
 
 分步操作、扩展基金核验、失败排查与发布流程见[数据更新与维护指南](docs/maintenance.md)；GitHub Actions 的定时抓取、验证与 Pages 发布见[自动更新方案](docs/automatic-update-plan.md)。
 

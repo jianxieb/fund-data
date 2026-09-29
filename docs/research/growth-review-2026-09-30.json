@@ -1,0 +1,2138 @@
+{
+  "asOf": "2026-09-30",
+  "scope": "原成长初筛10家、原报告10家、既有长期优质12家去重的26家；不等于全A股覆盖",
+  "companies": [
+    {
+      "code": "002028",
+      "name": "思源电气",
+      "longTermQualified": true,
+      "growthFinancialQualified": false,
+      "growthQualified": false,
+      "decision": "长期优质；当前成长速度或连续性不足，不额外标高成长。",
+      "financialChecks": [
+        {
+          "label": "非ST、非金融企业，总市值≥100亿元",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "已收录最新应披露报告（截至2026-06-30）",
+          "pass": true,
+          "reason": null,
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新累计营收同比≥20%，归母及扣非利润同比均≥30%",
+          "pass": false,
+          "reason": "累计增速不足20% / 30% / 30%，或同比基数非正"
+        },
+        {
+          "label": "连续两个单季营收≥20%、归母及扣非利润增长均≥30%",
+          "pass": false,
+          "reason": "缺连续两个可比较的高增长单季"
+        },
+        {
+          "label": "最新扣非利润占归母利润≥80%，ROE为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近2个完整财年归母、扣非利润和经营现金流均为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新完整年度ROE≥10%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近12个月经营现金流为正",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sources": [
+        {
+          "title": "RPT_F10_FINANCE_MAINFINADATA",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22002028.SZ%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.285985+00:00"
+        },
+        {
+          "title": "RPT_VALUEANALYSIS_DET",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22002028.SZ%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.286272+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_BALANCE",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22002028.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.438068+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_CASHFLOW",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22002028.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.674090+00:00"
+        },
+        {
+          "title": "已实施及拟议权益分派",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22002028%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-30"
+        },
+        {
+          "title": "近180日公开研报目录（同机构留最新）",
+          "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=002028",
+          "fetchedAt": "2026-09-30"
+        }
+      ],
+      "reportPeriod": "2026-06-30"
+    },
+    {
+      "code": "002384",
+      "name": "东山精密",
+      "longTermQualified": false,
+      "growthFinancialQualified": false,
+      "growthQualified": false,
+      "decision": "本期财务增长很快，但2024—2025年ROE低、资本回报恢复时间短，且新增业务与并购整合需要分拆验证。本次保留专题分析，不进入两个主名单。",
+      "financialChecks": [
+        {
+          "label": "非ST、非金融企业，总市值≥100亿元",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "已收录最新应披露报告（截至2026-06-30）",
+          "pass": true,
+          "reason": null,
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新累计营收同比≥20%，归母及扣非利润同比均≥30%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "连续两个单季营收≥20%、归母及扣非利润增长均≥30%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新扣非利润占归母利润≥80%，ROE为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近2个完整财年归母、扣非利润和经营现金流均为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新完整年度ROE≥10%",
+          "pass": false,
+          "reason": "上年资本回报不足10%"
+        },
+        {
+          "label": "最近12个月经营现金流为正",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sources": [
+        {
+          "title": "RPT_F10_FINANCE_MAINFINADATA",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22002384.SZ%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.287568+00:00"
+        },
+        {
+          "title": "RPT_VALUEANALYSIS_DET",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22002384.SZ%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.287580+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_BALANCE",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22002384.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.474456+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_CASHFLOW",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22002384.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.605996+00:00"
+        },
+        {
+          "title": "已实施及拟议权益分派",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22002384%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-30"
+        },
+        {
+          "title": "近180日公开研报目录（同机构留最新）",
+          "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=002384",
+          "fetchedAt": "2026-09-30"
+        }
+      ],
+      "reportPeriod": "2026-06-30"
+    },
+    {
+      "code": "002463",
+      "name": "沪电股份",
+      "longTermQualified": true,
+      "growthFinancialQualified": true,
+      "growthQualified": true,
+      "decision": "高质成长；同时为长期优质。",
+      "financialChecks": [
+        {
+          "label": "非ST、非金融企业，总市值≥100亿元",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "已收录最新应披露报告（截至2026-06-30）",
+          "pass": true,
+          "reason": null,
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新累计营收同比≥20%，归母及扣非利润同比均≥30%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "连续两个单季营收≥20%、归母及扣非利润增长均≥30%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新扣非利润占归母利润≥80%，ROE为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近2个完整财年归母、扣非利润和经营现金流均为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新完整年度ROE≥10%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近12个月经营现金流为正",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sources": [
+        {
+          "title": "RPT_F10_FINANCE_MAINFINADATA",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22002463.SZ%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.288521+00:00"
+        },
+        {
+          "title": "RPT_VALUEANALYSIS_DET",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22002463.SZ%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.288571+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_BALANCE",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22002463.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.438882+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_CASHFLOW",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22002463.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.581755+00:00"
+        },
+        {
+          "title": "已实施及拟议权益分派",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22002463%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-30"
+        },
+        {
+          "title": "近180日公开研报目录（同机构留最新）",
+          "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=002463",
+          "fetchedAt": "2026-09-30"
+        }
+      ],
+      "reportPeriod": "2026-06-30"
+    },
+    {
+      "code": "002475",
+      "name": "立讯精密",
+      "longTermQualified": false,
+      "growthFinancialQualified": false,
+      "growthQualified": false,
+      "decision": "本期扣非增速不足且现金回收为负，不能仅因历史高ROE与知名制造平台身份归入当前长期优质或高质成长名单。",
+      "financialChecks": [
+        {
+          "label": "非ST、非金融企业，总市值≥100亿元",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "已收录最新应披露报告（截至2026-06-30）",
+          "pass": true,
+          "reason": null,
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新累计营收同比≥20%，归母及扣非利润同比均≥30%",
+          "pass": false,
+          "reason": "累计增速不足20% / 30% / 30%，或同比基数非正"
+        },
+        {
+          "label": "连续两个单季营收≥20%、归母及扣非利润增长均≥30%",
+          "pass": false,
+          "reason": "缺连续两个可比较的高增长单季"
+        },
+        {
+          "label": "最新扣非利润占归母利润≥80%，ROE为正",
+          "pass": false,
+          "reason": "经常性盈利占比或当期资本回报不足"
+        },
+        {
+          "label": "最近2个完整财年归母、扣非利润和经营现金流均为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新完整年度ROE≥10%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近12个月经营现金流为正",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sources": [
+        {
+          "title": "RPT_F10_FINANCE_MAINFINADATA",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22002475.SZ%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.295661+00:00"
+        },
+        {
+          "title": "RPT_VALUEANALYSIS_DET",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22002475.SZ%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.295673+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_BALANCE",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22002475.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.458562+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_CASHFLOW",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22002475.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.686082+00:00"
+        },
+        {
+          "title": "已实施及拟议权益分派",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22002475%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-30"
+        },
+        {
+          "title": "近180日公开研报目录（同机构留最新）",
+          "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=002475",
+          "fetchedAt": "2026-09-30"
+        }
+      ],
+      "reportPeriod": "2026-06-30"
+    },
+    {
+      "code": "002648",
+      "name": "卫星化学",
+      "longTermQualified": false,
+      "growthFinancialQualified": false,
+      "growthQualified": false,
+      "decision": "本期经营与现金回收改善，但年度下降历史与季度连续性不符合两个名单的现行条件。保留化工周期专题研究。",
+      "financialChecks": [
+        {
+          "label": "非ST、非金融企业，总市值≥100亿元",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "已收录最新应披露报告（截至2026-06-30）",
+          "pass": true,
+          "reason": null,
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新累计营收同比≥20%，归母及扣非利润同比均≥30%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "连续两个单季营收≥20%、归母及扣非利润增长均≥30%",
+          "pass": false,
+          "reason": "缺连续两个可比较的高增长单季"
+        },
+        {
+          "label": "最新扣非利润占归母利润≥80%，ROE为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近2个完整财年归母、扣非利润和经营现金流均为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新完整年度ROE≥10%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近12个月经营现金流为正",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sources": [
+        {
+          "title": "RPT_F10_FINANCE_MAINFINADATA",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22002648.SZ%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.588062+00:00"
+        },
+        {
+          "title": "RPT_VALUEANALYSIS_DET",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22002648.SZ%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.588089+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_BALANCE",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22002648.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.742774+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_CASHFLOW",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22002648.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.899776+00:00"
+        },
+        {
+          "title": "已实施及拟议权益分派",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22002648%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-30"
+        },
+        {
+          "title": "近180日公开研报目录（同机构留最新）",
+          "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=002648",
+          "fetchedAt": "2026-09-30"
+        }
+      ],
+      "reportPeriod": "2026-06-30"
+    },
+    {
+      "code": "300308",
+      "name": "中际旭创",
+      "longTermQualified": true,
+      "growthFinancialQualified": true,
+      "growthQualified": true,
+      "decision": "高质成长；同时为长期优质。",
+      "financialChecks": [
+        {
+          "label": "非ST、非金融企业，总市值≥100亿元",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "已收录最新应披露报告（截至2026-06-30）",
+          "pass": true,
+          "reason": null,
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新累计营收同比≥20%，归母及扣非利润同比均≥30%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "连续两个单季营收≥20%、归母及扣非利润增长均≥30%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新扣非利润占归母利润≥80%，ROE为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近2个完整财年归母、扣非利润和经营现金流均为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新完整年度ROE≥10%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近12个月经营现金流为正",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sources": [
+        {
+          "title": "RPT_F10_FINANCE_MAINFINADATA",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22300308.SZ%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.611817+00:00"
+        },
+        {
+          "title": "RPT_VALUEANALYSIS_DET",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22300308.SZ%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.611839+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_BALANCE",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22300308.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.889758+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_CASHFLOW",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22300308.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.021936+00:00"
+        },
+        {
+          "title": "已实施及拟议权益分派",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22300308%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-30"
+        },
+        {
+          "title": "近180日公开研报目录（同机构留最新）",
+          "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=300308",
+          "fetchedAt": "2026-09-30"
+        }
+      ],
+      "reportPeriod": "2026-06-30"
+    },
+    {
+      "code": "300394",
+      "name": "天孚通信",
+      "longTermQualified": true,
+      "growthFinancialQualified": false,
+      "growthQualified": false,
+      "decision": "长期优质；当前成长速度或连续性不足，不额外标高成长。",
+      "financialChecks": [
+        {
+          "label": "非ST、非金融企业，总市值≥100亿元",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "已收录最新应披露报告（截至2026-06-30）",
+          "pass": true,
+          "reason": null,
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新累计营收同比≥20%，归母及扣非利润同比均≥30%",
+          "pass": false,
+          "reason": "累计增速不足20% / 30% / 30%，或同比基数非正"
+        },
+        {
+          "label": "连续两个单季营收≥20%、归母及扣非利润增长均≥30%",
+          "pass": false,
+          "reason": "缺连续两个可比较的高增长单季"
+        },
+        {
+          "label": "最新扣非利润占归母利润≥80%，ROE为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近2个完整财年归母、扣非利润和经营现金流均为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新完整年度ROE≥10%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近12个月经营现金流为正",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sources": [
+        {
+          "title": "RPT_F10_FINANCE_MAINFINADATA",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22300394.SZ%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.680772+00:00"
+        },
+        {
+          "title": "RPT_VALUEANALYSIS_DET",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22300394.SZ%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.680801+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_BALANCE",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22300394.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.860302+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_CASHFLOW",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22300394.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.012609+00:00"
+        },
+        {
+          "title": "已实施及拟议权益分派",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22300394%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-30"
+        },
+        {
+          "title": "近180日公开研报目录（同机构留最新）",
+          "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=300394",
+          "fetchedAt": "2026-09-30"
+        }
+      ],
+      "reportPeriod": "2026-06-30"
+    },
+    {
+      "code": "300573",
+      "name": "兴齐眼药",
+      "longTermQualified": true,
+      "growthFinancialQualified": false,
+      "growthQualified": false,
+      "decision": "长期优质；当前成长速度或连续性不足，不额外标高成长。",
+      "financialChecks": [
+        {
+          "label": "非ST、非金融企业，总市值≥100亿元",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "已收录最新应披露报告（截至2026-06-30）",
+          "pass": true,
+          "reason": null,
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新累计营收同比≥20%，归母及扣非利润同比均≥30%",
+          "pass": false,
+          "reason": "累计增速不足20% / 30% / 30%，或同比基数非正"
+        },
+        {
+          "label": "连续两个单季营收≥20%、归母及扣非利润增长均≥30%",
+          "pass": false,
+          "reason": "缺连续两个可比较的高增长单季"
+        },
+        {
+          "label": "最新扣非利润占归母利润≥80%，ROE为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近2个完整财年归母、扣非利润和经营现金流均为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新完整年度ROE≥10%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近12个月经营现金流为正",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sources": [
+        {
+          "title": "RPT_F10_FINANCE_MAINFINADATA",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22300573.SZ%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.691286+00:00"
+        },
+        {
+          "title": "RPT_VALUEANALYSIS_DET",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22300573.SZ%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.691312+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_BALANCE",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22300573.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.838016+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_CASHFLOW",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22300573.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.974663+00:00"
+        },
+        {
+          "title": "已实施及拟议权益分派",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22300573%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-30"
+        },
+        {
+          "title": "近180日公开研报目录（同机构留最新）",
+          "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=300573",
+          "fetchedAt": "2026-09-30"
+        }
+      ],
+      "reportPeriod": "2026-06-30"
+    },
+    {
+      "code": "300604",
+      "name": "长川科技",
+      "longTermQualified": false,
+      "growthFinancialQualified": true,
+      "growthQualified": true,
+      "decision": "高质成长；历史年度波动不符合长期优质条件。",
+      "financialChecks": [
+        {
+          "label": "非ST、非金融企业，总市值≥100亿元",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "已收录最新应披露报告（截至2026-06-30）",
+          "pass": true,
+          "reason": null,
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新累计营收同比≥20%，归母及扣非利润同比均≥30%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "连续两个单季营收≥20%、归母及扣非利润增长均≥30%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新扣非利润占归母利润≥80%，ROE为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近2个完整财年归母、扣非利润和经营现金流均为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新完整年度ROE≥10%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近12个月经营现金流为正",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sources": [
+        {
+          "title": "RPT_F10_FINANCE_MAINFINADATA",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22300604.SZ%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.906221+00:00"
+        },
+        {
+          "title": "RPT_VALUEANALYSIS_DET",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22300604.SZ%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.906251+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_BALANCE",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22300604.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.057698+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_CASHFLOW",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22300604.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.205347+00:00"
+        },
+        {
+          "title": "已实施及拟议权益分派",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22300604%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-30"
+        },
+        {
+          "title": "近180日公开研报目录（同机构留最新）",
+          "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=300604",
+          "fetchedAt": "2026-09-30"
+        }
+      ],
+      "reportPeriod": "2026-06-30"
+    },
+    {
+      "code": "300693",
+      "name": "盛弘股份",
+      "longTermQualified": true,
+      "growthFinancialQualified": false,
+      "growthQualified": false,
+      "decision": "长期优质；当前成长速度或连续性不足，不额外标高成长。",
+      "financialChecks": [
+        {
+          "label": "非ST、非金融企业，总市值≥100亿元",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "已收录最新应披露报告（截至2026-06-30）",
+          "pass": true,
+          "reason": null,
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新累计营收同比≥20%，归母及扣非利润同比均≥30%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "连续两个单季营收≥20%、归母及扣非利润增长均≥30%",
+          "pass": false,
+          "reason": "缺连续两个可比较的高增长单季"
+        },
+        {
+          "label": "最新扣非利润占归母利润≥80%，ROE为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近2个完整财年归母、扣非利润和经营现金流均为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新完整年度ROE≥10%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近12个月经营现金流为正",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sources": [
+        {
+          "title": "RPT_F10_FINANCE_MAINFINADATA",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22300693.SZ%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.980771+00:00"
+        },
+        {
+          "title": "RPT_VALUEANALYSIS_DET",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22300693.SZ%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:14.980798+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_BALANCE",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22300693.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.156600+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_CASHFLOW",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22300693.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.345053+00:00"
+        },
+        {
+          "title": "已实施及拟议权益分派",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22300693%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-30"
+        },
+        {
+          "title": "近180日公开研报目录（同机构留最新）",
+          "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=300693",
+          "fetchedAt": "2026-09-30"
+        }
+      ],
+      "reportPeriod": "2026-06-30"
+    },
+    {
+      "code": "300750",
+      "name": "宁德时代",
+      "longTermQualified": true,
+      "growthFinancialQualified": true,
+      "growthQualified": true,
+      "decision": "高质成长；同时为长期优质。",
+      "financialChecks": [
+        {
+          "label": "非ST、非金融企业，总市值≥100亿元",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "已收录最新应披露报告（截至2026-06-30）",
+          "pass": true,
+          "reason": null,
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新累计营收同比≥20%，归母及扣非利润同比均≥30%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "连续两个单季营收≥20%、归母及扣非利润增长均≥30%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新扣非利润占归母利润≥80%，ROE为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近2个完整财年归母、扣非利润和经营现金流均为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新完整年度ROE≥10%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近12个月经营现金流为正",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sources": [
+        {
+          "title": "RPT_F10_FINANCE_MAINFINADATA",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22300750.SZ%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.017993+00:00"
+        },
+        {
+          "title": "RPT_VALUEANALYSIS_DET",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22300750.SZ%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.018016+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_BALANCE",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22300750.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.150419+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_CASHFLOW",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22300750.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.372078+00:00"
+        },
+        {
+          "title": "已实施及拟议权益分派",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22300750%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-30"
+        },
+        {
+          "title": "近180日公开研报目录（同机构留最新）",
+          "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=300750",
+          "fetchedAt": "2026-09-30"
+        }
+      ],
+      "reportPeriod": "2026-06-30"
+    },
+    {
+      "code": "600183",
+      "name": "生益科技",
+      "longTermQualified": false,
+      "growthFinancialQualified": true,
+      "growthQualified": true,
+      "decision": "高质成长；历史年度波动不符合长期优质条件。",
+      "financialChecks": [
+        {
+          "label": "非ST、非金融企业，总市值≥100亿元",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "已收录最新应披露报告（截至2026-06-30）",
+          "pass": true,
+          "reason": null,
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新累计营收同比≥20%，归母及扣非利润同比均≥30%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "连续两个单季营收≥20%、归母及扣非利润增长均≥30%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新扣非利润占归母利润≥80%，ROE为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近2个完整财年归母、扣非利润和经营现金流均为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新完整年度ROE≥10%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近12个月经营现金流为正",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sources": [
+        {
+          "title": "RPT_F10_FINANCE_MAINFINADATA",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600183.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.026360+00:00"
+        },
+        {
+          "title": "RPT_VALUEANALYSIS_DET",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22600183.SH%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.026379+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_BALANCE",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22600183.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.175878+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_CASHFLOW",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22600183.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.353844+00:00"
+        },
+        {
+          "title": "已实施及拟议权益分派",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22600183%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-30"
+        },
+        {
+          "title": "近180日公开研报目录（同机构留最新）",
+          "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=600183",
+          "fetchedAt": "2026-09-30"
+        }
+      ],
+      "reportPeriod": "2026-06-30"
+    },
+    {
+      "code": "600901",
+      "name": "江苏金租",
+      "longTermQualified": false,
+      "growthFinancialQualified": false,
+      "growthQualified": false,
+      "decision": "红利价值独立保留；金融企业不用工业质量门槛。",
+      "financialChecks": [],
+      "sources": [
+        {
+          "title": "RPT_F10_FINANCE_MAINFINADATA",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600901.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.211531+00:00"
+        },
+        {
+          "title": "RPT_VALUEANALYSIS_DET",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22600901.SH%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.211558+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_BALANCE",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22600901.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.361686+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_CASHFLOW",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22600901.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.510027+00:00"
+        },
+        {
+          "title": "已实施及拟议权益分派",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22600901%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-30"
+        },
+        {
+          "title": "近180日公开研报目录（同机构留最新）",
+          "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=600901",
+          "fetchedAt": "2026-09-30"
+        }
+      ],
+      "reportPeriod": "2026-06-30"
+    },
+    {
+      "code": "601138",
+      "name": "工业富联",
+      "longTermQualified": true,
+      "growthFinancialQualified": true,
+      "growthQualified": true,
+      "decision": "高质成长；同时为长期优质。",
+      "financialChecks": [
+        {
+          "label": "非ST、非金融企业，总市值≥100亿元",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "已收录最新应披露报告（截至2026-06-30）",
+          "pass": true,
+          "reason": null,
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新累计营收同比≥20%，归母及扣非利润同比均≥30%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "连续两个单季营收≥20%、归母及扣非利润增长均≥30%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新扣非利润占归母利润≥80%，ROE为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近2个完整财年归母、扣非利润和经营现金流均为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新完整年度ROE≥10%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近12个月经营现金流为正",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sources": [
+        {
+          "title": "RPT_F10_FINANCE_MAINFINADATA",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22601138.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.349981+00:00"
+        },
+        {
+          "title": "RPT_VALUEANALYSIS_DET",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22601138.SH%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.350007+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_BALANCE",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22601138.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.533149+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_CASHFLOW",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22601138.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.656319+00:00"
+        },
+        {
+          "title": "已实施及拟议权益分派",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22601138%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-30"
+        },
+        {
+          "title": "近180日公开研报目录（同机构留最新）",
+          "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=601138",
+          "fetchedAt": "2026-09-30"
+        }
+      ],
+      "reportPeriod": "2026-06-30"
+    },
+    {
+      "code": "601869",
+      "name": "长飞光纤",
+      "longTermQualified": false,
+      "growthFinancialQualified": false,
+      "growthQualified": false,
+      "decision": "当前业务改善明确，但上年资本回报不足10%且多年经营波动明显，本次未进入两类主名单。排除依据是历史资本回报与质量记录，不能简单称为没有真实成长。",
+      "financialChecks": [
+        {
+          "label": "非ST、非金融企业，总市值≥100亿元",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "已收录最新应披露报告（截至2026-06-30）",
+          "pass": true,
+          "reason": null,
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新累计营收同比≥20%，归母及扣非利润同比均≥30%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "连续两个单季营收≥20%、归母及扣非利润增长均≥30%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新扣非利润占归母利润≥80%，ROE为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近2个完整财年归母、扣非利润和经营现金流均为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新完整年度ROE≥10%",
+          "pass": false,
+          "reason": "上年资本回报不足10%"
+        },
+        {
+          "label": "最近12个月经营现金流为正",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sources": [
+        {
+          "title": "RPT_F10_FINANCE_MAINFINADATA",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22601869.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.357862+00:00"
+        },
+        {
+          "title": "RPT_VALUEANALYSIS_DET",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22601869.SH%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.357880+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_BALANCE",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22601869.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.632170+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_CASHFLOW",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22601869.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.755461+00:00"
+        },
+        {
+          "title": "已实施及拟议权益分派",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22601869%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-30"
+        },
+        {
+          "title": "近180日公开研报目录（同机构留最新）",
+          "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=601869",
+          "fetchedAt": "2026-09-30"
+        }
+      ],
+      "reportPeriod": "2026-06-30"
+    },
+    {
+      "code": "601899",
+      "name": "紫金矿业",
+      "longTermQualified": true,
+      "growthFinancialQualified": false,
+      "growthQualified": false,
+      "decision": "长期优质；当前成长速度或连续性不足，不额外标高成长。",
+      "financialChecks": [
+        {
+          "label": "非ST、非金融企业，总市值≥100亿元",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "已收录最新应披露报告（截至2026-06-30）",
+          "pass": true,
+          "reason": null,
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新累计营收同比≥20%，归母及扣非利润同比均≥30%",
+          "pass": false,
+          "reason": "累计增速不足20% / 30% / 30%，或同比基数非正"
+        },
+        {
+          "label": "连续两个单季营收≥20%、归母及扣非利润增长均≥30%",
+          "pass": false,
+          "reason": "缺连续两个可比较的高增长单季"
+        },
+        {
+          "label": "最新扣非利润占归母利润≥80%，ROE为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近2个完整财年归母、扣非利润和经营现金流均为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新完整年度ROE≥10%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近12个月经营现金流为正",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sources": [
+        {
+          "title": "RPT_F10_FINANCE_MAINFINADATA",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22601899.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.375425+00:00"
+        },
+        {
+          "title": "RPT_VALUEANALYSIS_DET",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22601899.SH%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.375439+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_BALANCE",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22601899.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.512400+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_CASHFLOW",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22601899.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.669358+00:00"
+        },
+        {
+          "title": "已实施及拟议权益分派",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22601899%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-30"
+        },
+        {
+          "title": "近180日公开研报目录（同机构留最新）",
+          "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=601899",
+          "fetchedAt": "2026-09-30"
+        }
+      ],
+      "reportPeriod": "2026-06-30"
+    },
+    {
+      "code": "603259",
+      "name": "药明康德",
+      "longTermQualified": false,
+      "growthFinancialQualified": false,
+      "growthQualified": false,
+      "decision": "当前主营恢复较强，但归母增长29.43%未达到30%成长参数，且长期名单要求的历史利润连续增长不成立。保留专题研究，不能把29.43%四舍五入成达标，也不据此断言企业本身差。",
+      "financialChecks": [
+        {
+          "label": "非ST、非金融企业，总市值≥100亿元",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "已收录最新应披露报告（截至2026-06-30）",
+          "pass": true,
+          "reason": null,
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新累计营收同比≥20%，归母及扣非利润同比均≥30%",
+          "pass": false,
+          "reason": "累计增速不足20% / 30% / 30%，或同比基数非正"
+        },
+        {
+          "label": "连续两个单季营收≥20%、归母及扣非利润增长均≥30%",
+          "pass": false,
+          "reason": "缺连续两个可比较的高增长单季"
+        },
+        {
+          "label": "最新扣非利润占归母利润≥80%，ROE为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近2个完整财年归母、扣非利润和经营现金流均为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新完整年度ROE≥10%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近12个月经营现金流为正",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sources": [
+        {
+          "title": "RPT_F10_FINANCE_MAINFINADATA",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22603259.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.520267+00:00"
+        },
+        {
+          "title": "RPT_VALUEANALYSIS_DET",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22603259.SH%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.520291+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_BALANCE",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22603259.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.679055+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_CASHFLOW",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22603259.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.837992+00:00"
+        },
+        {
+          "title": "已实施及拟议权益分派",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22603259%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-30"
+        },
+        {
+          "title": "近180日公开研报目录（同机构留最新）",
+          "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=603259",
+          "fetchedAt": "2026-09-30"
+        }
+      ],
+      "reportPeriod": "2026-06-30"
+    },
+    {
+      "code": "603629",
+      "name": "利通电子",
+      "longTermQualified": false,
+      "growthFinancialQualified": true,
+      "growthQualified": false,
+      "decision": "财务初筛可过，但主营研究否决：净额经销放量，不能把68.22%算力综合毛利率误判为租赁能力；需拆分可持续租赁回报与资金安排。",
+      "financialChecks": [
+        {
+          "label": "非ST、非金融企业，总市值≥100亿元",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "已收录最新应披露报告（截至2026-06-30）",
+          "pass": true,
+          "reason": null,
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新累计营收同比≥20%，归母及扣非利润同比均≥30%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "连续两个单季营收≥20%、归母及扣非利润增长均≥30%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新扣非利润占归母利润≥80%，ROE为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近2个完整财年归母、扣非利润和经营现金流均为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新完整年度ROE≥10%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近12个月经营现金流为正",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sources": [
+        {
+          "title": "RPT_F10_FINANCE_MAINFINADATA",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22603629.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.659924+00:00"
+        },
+        {
+          "title": "RPT_VALUEANALYSIS_DET",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22603629.SH%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.659939+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_BALANCE",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22603629.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.817223+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_CASHFLOW",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22603629.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.973753+00:00"
+        },
+        {
+          "title": "已实施及拟议权益分派",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22603629%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-30"
+        },
+        {
+          "title": "近180日公开研报目录（同机构留最新）",
+          "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=603629",
+          "fetchedAt": "2026-09-30"
+        }
+      ],
+      "reportPeriod": "2026-06-30"
+    },
+    {
+      "code": "603699",
+      "name": "纽威股份",
+      "longTermQualified": true,
+      "growthFinancialQualified": false,
+      "growthQualified": false,
+      "decision": "长期优质；当前成长速度或连续性不足，不额外标高成长。",
+      "financialChecks": [
+        {
+          "label": "非ST、非金融企业，总市值≥100亿元",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "已收录最新应披露报告（截至2026-06-30）",
+          "pass": true,
+          "reason": null,
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新累计营收同比≥20%，归母及扣非利润同比均≥30%",
+          "pass": false,
+          "reason": "累计增速不足20% / 30% / 30%，或同比基数非正"
+        },
+        {
+          "label": "连续两个单季营收≥20%、归母及扣非利润增长均≥30%",
+          "pass": false,
+          "reason": "缺连续两个可比较的高增长单季"
+        },
+        {
+          "label": "最新扣非利润占归母利润≥80%，ROE为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近2个完整财年归母、扣非利润和经营现金流均为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新完整年度ROE≥10%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近12个月经营现金流为正",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sources": [
+        {
+          "title": "RPT_F10_FINANCE_MAINFINADATA",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22603699.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.673943+00:00"
+        },
+        {
+          "title": "RPT_VALUEANALYSIS_DET",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22603699.SH%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.673957+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_BALANCE",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22603699.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.825845+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_CASHFLOW",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22603699.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:16.098553+00:00"
+        },
+        {
+          "title": "已实施及拟议权益分派",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22603699%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-30"
+        },
+        {
+          "title": "近180日公开研报目录（同机构留最新）",
+          "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=603699",
+          "fetchedAt": "2026-09-30"
+        }
+      ],
+      "reportPeriod": "2026-06-30"
+    },
+    {
+      "code": "603986",
+      "name": "兆易创新",
+      "longTermQualified": false,
+      "growthFinancialQualified": false,
+      "growthQualified": false,
+      "decision": "扣非/归母约71%，2025年ROE9.30%；不以存储周期和高基数弹性直接入选。",
+      "financialChecks": [
+        {
+          "label": "非ST、非金融企业，总市值≥100亿元",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "已收录最新应披露报告（截至2026-06-30）",
+          "pass": true,
+          "reason": null,
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新累计营收同比≥20%，归母及扣非利润同比均≥30%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "连续两个单季营收≥20%、归母及扣非利润增长均≥30%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新扣非利润占归母利润≥80%，ROE为正",
+          "pass": false,
+          "reason": "经常性盈利占比或当期资本回报不足"
+        },
+        {
+          "label": "最近2个完整财年归母、扣非利润和经营现金流均为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新完整年度ROE≥10%",
+          "pass": false,
+          "reason": "上年资本回报不足10%"
+        },
+        {
+          "label": "最近12个月经营现金流为正",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sources": [
+        {
+          "title": "RPT_F10_FINANCE_MAINFINADATA",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22603986.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.760043+00:00"
+        },
+        {
+          "title": "RPT_VALUEANALYSIS_DET",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22603986.SH%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.760063+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_BALANCE",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22603986.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.909164+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_CASHFLOW",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22603986.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:16.080424+00:00"
+        },
+        {
+          "title": "已实施及拟议权益分派",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22603986%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-30"
+        },
+        {
+          "title": "近180日公开研报目录（同机构留最新）",
+          "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=603986",
+          "fetchedAt": "2026-09-30"
+        }
+      ],
+      "reportPeriod": "2026-06-30"
+    },
+    {
+      "code": "688188",
+      "name": "柏楚电子",
+      "longTermQualified": true,
+      "growthFinancialQualified": false,
+      "growthQualified": false,
+      "decision": "长期优质；当前成长速度或连续性不足，不额外标高成长。",
+      "financialChecks": [
+        {
+          "label": "非ST、非金融企业，总市值≥100亿元",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "已收录最新应披露报告（截至2026-06-30）",
+          "pass": true,
+          "reason": null,
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新累计营收同比≥20%，归母及扣非利润同比均≥30%",
+          "pass": false,
+          "reason": "累计增速不足20% / 30% / 30%，或同比基数非正"
+        },
+        {
+          "label": "连续两个单季营收≥20%、归母及扣非利润增长均≥30%",
+          "pass": false,
+          "reason": "缺连续两个可比较的高增长单季"
+        },
+        {
+          "label": "最新扣非利润占归母利润≥80%，ROE为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近2个完整财年归母、扣非利润和经营现金流均为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新完整年度ROE≥10%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近12个月经营现金流为正",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sources": [
+        {
+          "title": "RPT_F10_FINANCE_MAINFINADATA",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688188.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.843336+00:00"
+        },
+        {
+          "title": "RPT_VALUEANALYSIS_DET",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22688188.SH%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.843357+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_BALANCE",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22688188.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:16.005286+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_CASHFLOW",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22688188.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:16.153847+00:00"
+        },
+        {
+          "title": "已实施及拟议权益分派",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22688188%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-30"
+        },
+        {
+          "title": "近180日公开研报目录（同机构留最新）",
+          "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=688188",
+          "fetchedAt": "2026-09-30"
+        }
+      ],
+      "reportPeriod": "2026-06-30"
+    },
+    {
+      "code": "688256",
+      "name": "寒武纪",
+      "longTermQualified": false,
+      "growthFinancialQualified": false,
+      "growthQualified": false,
+      "decision": "2024年亏损，2025年经营现金流为负；缺连续两年正利润与正现金记录。",
+      "financialChecks": [
+        {
+          "label": "非ST、非金融企业，总市值≥100亿元",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "已收录最新应披露报告（截至2026-06-30）",
+          "pass": true,
+          "reason": null,
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新累计营收同比≥20%，归母及扣非利润同比均≥30%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "连续两个单季营收≥20%、归母及扣非利润增长均≥30%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新扣非利润占归母利润≥80%，ROE为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近2个完整财年归母、扣非利润和经营现金流均为正",
+          "pass": false,
+          "reason": "尚未形成两年正利润和正现金回收记录"
+        },
+        {
+          "label": "最新完整年度ROE≥10%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近12个月经营现金流为正",
+          "pass": false,
+          "reason": "缺TTM正经营现金流"
+        }
+      ],
+      "sources": [
+        {
+          "title": "RPT_F10_FINANCE_MAINFINADATA",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688256.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.977729+00:00"
+        },
+        {
+          "title": "RPT_VALUEANALYSIS_DET",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22688256.SH%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:15.977763+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_BALANCE",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22688256.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:16.131360+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_CASHFLOW",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22688256.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:16.276760+00:00"
+        },
+        {
+          "title": "已实施及拟议权益分派",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22688256%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-30"
+        },
+        {
+          "title": "近180日公开研报目录（同机构留最新）",
+          "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=688256",
+          "fetchedAt": "2026-09-30"
+        }
+      ],
+      "reportPeriod": "2026-06-30"
+    },
+    {
+      "code": "688331",
+      "name": "荣昌生物",
+      "longTermQualified": false,
+      "growthFinancialQualified": false,
+      "growthQualified": false,
+      "decision": "去年同期亏损，本期利润增速无可比正基数；未建立连续两年盈利记录，不因单期授权收入直接入选。",
+      "financialChecks": [
+        {
+          "label": "非ST、非金融企业，总市值≥100亿元",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "已收录最新应披露报告（截至2026-06-30）",
+          "pass": true,
+          "reason": null,
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新累计营收同比≥20%，归母及扣非利润同比均≥30%",
+          "pass": false,
+          "reason": "累计增速不足20% / 30% / 30%，或同比基数非正"
+        },
+        {
+          "label": "连续两个单季营收≥20%、归母及扣非利润增长均≥30%",
+          "pass": false,
+          "reason": "缺连续两个可比较的高增长单季"
+        },
+        {
+          "label": "最新扣非利润占归母利润≥80%，ROE为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近2个完整财年归母、扣非利润和经营现金流均为正",
+          "pass": false,
+          "reason": "尚未形成两年正利润和正现金回收记录"
+        },
+        {
+          "label": "最新完整年度ROE≥10%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近12个月经营现金流为正",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sources": [
+        {
+          "title": "RPT_F10_FINANCE_MAINFINADATA",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688331.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:16.086955+00:00"
+        },
+        {
+          "title": "RPT_VALUEANALYSIS_DET",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22688331.SH%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:16.086975+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_BALANCE",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22688331.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:16.227254+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_CASHFLOW",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22688331.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:16.463793+00:00"
+        },
+        {
+          "title": "近180日公开研报目录（同机构留最新）",
+          "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=688331",
+          "fetchedAt": "2026-09-30"
+        }
+      ],
+      "reportPeriod": "2026-06-30"
+    },
+    {
+      "code": "688617",
+      "name": "惠泰医疗",
+      "longTermQualified": true,
+      "growthFinancialQualified": false,
+      "growthQualified": false,
+      "decision": "长期优质；当前成长速度或连续性不足，不额外标高成长。",
+      "financialChecks": [
+        {
+          "label": "非ST、非金融企业，总市值≥100亿元",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "已收录最新应披露报告（截至2026-06-30）",
+          "pass": true,
+          "reason": null,
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新累计营收同比≥20%，归母及扣非利润同比均≥30%",
+          "pass": false,
+          "reason": "累计增速不足20% / 30% / 30%，或同比基数非正"
+        },
+        {
+          "label": "连续两个单季营收≥20%、归母及扣非利润增长均≥30%",
+          "pass": false,
+          "reason": "缺连续两个可比较的高增长单季"
+        },
+        {
+          "label": "最新扣非利润占归母利润≥80%，ROE为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近2个完整财年归母、扣非利润和经营现金流均为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新完整年度ROE≥10%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近12个月经营现金流为正",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sources": [
+        {
+          "title": "RPT_F10_FINANCE_MAINFINADATA",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688617.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:16.102719+00:00"
+        },
+        {
+          "title": "RPT_VALUEANALYSIS_DET",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22688617.SH%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:16.102738+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_BALANCE",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22688617.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:16.319567+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_CASHFLOW",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22688617.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:16.632443+00:00"
+        },
+        {
+          "title": "已实施及拟议权益分派",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22688617%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-30"
+        },
+        {
+          "title": "近180日公开研报目录（同机构留最新）",
+          "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=688617",
+          "fetchedAt": "2026-09-30"
+        }
+      ],
+      "reportPeriod": "2026-06-30"
+    },
+    {
+      "code": "688766",
+      "name": "普冉股份",
+      "longTermQualified": false,
+      "growthFinancialQualified": false,
+      "growthQualified": false,
+      "decision": "2025年ROE8.97%，2023年亏损；存储周期价格弹性不能独立证明质量。",
+      "financialChecks": [
+        {
+          "label": "非ST、非金融企业，总市值≥100亿元",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "已收录最新应披露报告（截至2026-06-30）",
+          "pass": true,
+          "reason": null,
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新累计营收同比≥20%，归母及扣非利润同比均≥30%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "连续两个单季营收≥20%、归母及扣非利润增长均≥30%",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新扣非利润占归母利润≥80%，ROE为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近2个完整财年归母、扣非利润和经营现金流均为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最新完整年度ROE≥10%",
+          "pass": false,
+          "reason": "上年资本回报不足10%"
+        },
+        {
+          "label": "最近12个月经营现金流为正",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sources": [
+        {
+          "title": "RPT_F10_FINANCE_MAINFINADATA",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688766.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:16.158255+00:00"
+        },
+        {
+          "title": "RPT_VALUEANALYSIS_DET",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22688766.SH%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:16.158276+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_BALANCE",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22688766.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:16.306338+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_CASHFLOW",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22688766.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:16.461240+00:00"
+        },
+        {
+          "title": "已实施及拟议权益分派",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22688766%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-30"
+        },
+        {
+          "title": "近180日公开研报目录（同机构留最新）",
+          "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=688766",
+          "fetchedAt": "2026-09-30"
+        }
+      ],
+      "reportPeriod": "2026-06-30"
+    },
+    {
+      "code": "688825",
+      "name": "长鑫科技",
+      "longTermQualified": false,
+      "growthFinancialQualified": false,
+      "growthQualified": false,
+      "decision": "去年同期亏损，2024年度亏损，缺稳定盈利记录；IPO/新上市身份需另行核实，本次没有发布。",
+      "financialChecks": [
+        {
+          "label": "非ST、非金融企业，总市值≥100亿元",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "已收录最新应披露报告（截至2026-06-30）",
+          "pass": true,
+          "reason": null,
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新累计营收同比≥20%，归母及扣非利润同比均≥30%",
+          "pass": false,
+          "reason": "累计增速不足20% / 30% / 30%，或同比基数非正"
+        },
+        {
+          "label": "连续两个单季营收≥20%、归母及扣非利润增长均≥30%",
+          "pass": false,
+          "reason": "缺连续两个可比较的高增长单季"
+        },
+        {
+          "label": "最新扣非利润占归母利润≥80%，ROE为正",
+          "pass": true,
+          "reason": null
+        },
+        {
+          "label": "最近2个完整财年归母、扣非利润和经营现金流均为正",
+          "pass": false,
+          "reason": "尚未形成两年正利润和正现金回收记录"
+        },
+        {
+          "label": "最新完整年度ROE≥10%",
+          "pass": false,
+          "reason": "上年资本回报不足10%"
+        },
+        {
+          "label": "最近12个月经营现金流为正",
+          "pass": true,
+          "reason": null
+        }
+      ],
+      "sources": [
+        {
+          "title": "RPT_F10_FINANCE_MAINFINADATA",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688825.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:16.281557+00:00"
+        },
+        {
+          "title": "RPT_VALUEANALYSIS_DET",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22688825.SH%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:16.281586+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_BALANCE",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22688825.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:16.427705+00:00"
+        },
+        {
+          "title": "RPT_DMSK_FN_CASHFLOW",
+          "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22688825.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+          "fetchedAt": "2026-09-29T16:16:16.659526+00:00"
+        },
+        {
+          "title": "近180日公开研报目录（同机构留最新）",
+          "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=688825",
+          "fetchedAt": "2026-09-30"
+        }
+      ],
+      "reportPeriod": "2026-06-30"
+    }
+  ]
+}

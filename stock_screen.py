@@ -29,6 +29,7 @@ from concurrent.futures import ThreadPoolExecutor
 from data_status import write_status
 from update import add_years
 from stock_fundamentals import fetch_evidence, quality_review
+from stock_groups import long_term_review, growth_review
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 HTML = os.path.join(HERE, 'data', 'snapshot.js')
@@ -41,7 +42,7 @@ YAHOO_CACHE = os.path.join(HERE, '.tmp-snap', 'stocks')
 with open(os.path.join(HERE, 'data', 'stock-quality-research.json'), encoding='utf-8') as research_file:
     QUALITY_RESEARCH = json.load(research_file)
 QUALITY_PROFILES = [{
-    'code': row['code'], 'name': row['name'], 'business': row['business'], 'group': 'quality',
+    'code': row['code'], 'name': row['name'], 'business': row['business'], 'group': 'quality' if row.get('longTerm') else 'growth',
     'note': row['title'], 'research_category': row['category'],
     'business_source_url': row['sources'][0]['url'],
     'quality_research': {**row, 'status': 'reviewed', 'reviewedAt': QUALITY_RESEARCH['reviewedAt'],
@@ -346,6 +347,12 @@ def refresh_quality_review(row, asof):
         row.pop('qualityReview', None)
     else:
         row['qualityReview'] = review
+    for key, fn in [('longTermReview', long_term_review), ('growthReview', growth_review)]:
+        classification = fn(row, asof)
+        if classification is None:
+            row.pop(key, None)
+        else:
+            row[key] = classification
 
 
 def load_old_rows(src):

@@ -20,7 +20,7 @@
     return '<details class="select-menu ' + cls + '"><summary id="' + esc(id) + '" aria-label="' + esc(label + '：' + current[1]) + '"><span>' + esc(current[1]) + '</span></summary>' +
       '<div class="select-menu-list" role="group" aria-label="' + esc(label) + '">' + options.map(([key, text]) => action(esc(text), 'menu-choice', 'select-menu-option' + (key === value ? ' active' : ''), 'data-menu="' + esc(id) + '" data-value="' + esc(key) + '" aria-label="' + esc(text) + '" aria-current="' + (key === value) + '"')).join('') + '</div></details>';
   }
-  const years = [1, 2, 3, 5, 10], titles = { overview: '研究总览', indices: '指数观察', funds: '基金研究', stocks: '个股深入', strategy: '投入策略', 'buy-location': '投资渠道', quality: '数据与方法' };
+  const years = [1, 2, 3, 5, 10], titles = { overview: '研究总览', indices: '指数观察', funds: '基金研究', stocks: '个股深入', reports: '深入报告', strategy: '投入策略', 'buy-location': '投资渠道', quality: '数据与方法' };
   const funds = M.dedupeFunds(window.FUNDS, window.EXTRA);
   const policy = window.SCREEN_POLICY || { shortlist: [], byCode: {}, rules: [], counts: {} };
   const shortlist = new Set(policy.shortlist || []);
@@ -37,7 +37,7 @@
     fundTab: 'equity', poolCategory: 'all', query: '', channel: 'all', purchasable: false,
     screen: { minA3: defaults.minA3, minA5: defaults.minA5, minA10: null }, equityAll: false,
     fundSort: 'default', descending: true, page: 1, selected: new Set(),
-    stockTab: 'quality', stockQuery: '', stockCategory: 'all', stockView: 'financials', stockSort: 'default', stockDesc: true,
+    stockTab: 'quality', stockQuery: '', stockCategory: 'all', stockView: 'financials', stockSort: 'default', stockDesc: true, reportCode: null, reportQuery: '',
     stratPanel: 'initial', stratView: 'results', stratYear: '2010', stratAsset: 'SPY', stratMethod: 'lump_sum',
     stratCompare: 'assets', stratMetric: 'amount', leverage: true, showLeverageAssets: false, chartHidden: new Set(),
     buyFamily: 'sp', buyYears: 5, buyPlan: 'lump', buyBasis: 'nav', buyLumpAmount: 100000, buyMonthlyAmount: 3000,
@@ -96,6 +96,7 @@
   function home() {
     const overseasFunds = funds.filter(f => f.origin === 'overseas' && !f.active);
     const qualityStocks = (window.STOCKS || []).filter(s => M.stockMatches(s, 'quality'));
+    const growthStocks = (window.STOCKS || []).filter(s => M.stockMatches(s, 'growth'));
     const markets = [
       ['标普500', (window.BM || []).find(b => b.n === '标普500指数')],
       ['纳斯达克100', (window.BM || []).find(b => b.n === '纳斯达克100指数')],
@@ -115,7 +116,7 @@
     return head('LONG-TERM INVESTMENT RESEARCH', '长期表现，值得仔细比较。', '在市场、公司与投入方式之间，找到自己的长期尺度。') + marketOverview +
       '<div class="home-section-title home-research-title"><h2>研究方向</h2><span>回报 · 风险 · 成本</span></div><div class="research-entry-grid home-four">' + entries.map(([route, id, title, desc, no, group, count, topics]) =>
         '<a class="home-entry" href="#' + route + '" data-home-tab="' + id + '"><span class="home-entry-top"><span class="eyebrow">' + no + ' / ' + group + '</span><span class="home-entry-arrow" aria-hidden="true">' + entryArrow() + '</span></span><span class="home-entry-body"><strong>' + title + '</strong><span>' + desc + '</span></span><span class="home-entry-foot"><b>' + count + '</b><span>' + topics + '</span></span></a>').join('') + '</div>' +
-      '<div class="home-secondary"><a class="home-secondary-card" href="#stocks" data-home-tab="quality"><span class="eyebrow">COMPANY RESEARCH</span><span class="home-secondary-title"><strong>个股深入</strong><span class="home-entry-arrow" aria-hidden="true">' + entryArrow() + '</span></span><p>' + qualityStocks.length + ' 家企业通过当前增长与财务筛选，逐项查看入选依据与估值。</p><span class="home-tags"><span>公司估值</span><span>盈利与股息</span><span>长期回报</span></span></a>' +
+      '<div class="home-secondary"><a class="home-secondary-card" href="#stocks" data-home-tab="quality"><span class="eyebrow">COMPANY RESEARCH</span><span class="home-secondary-title"><strong>个股深入</strong><span class="home-entry-arrow" aria-hidden="true">' + entryArrow() + '</span></span><p>' + qualityStocks.length + ' 家长期优质企业 · ' + growthStocks.length + ' 家高质成长股，结合深入报告研究业务、估值与风险。</p><span class="home-tags"><span>长期质量</span><span>成长阶段</span><span>盈利与股息</span></span></a>' +
       '<a class="home-secondary-card" href="#buy-location"><span class="eyebrow">INVESTMENT CHANNELS</span><span class="home-secondary-title"><strong>投资渠道</strong><span class="home-entry-arrow" aria-hidden="true">' + entryArrow() + '</span></span><p>同样投资标普500与纳指100，比较不同渠道扣除费用与税款后的结果。</p><span class="home-tags"><span>海外 ETF</span><span>境内场内</span><span>境内场外</span></span></a></div>';
   }
   function indexRows() {
@@ -307,8 +308,9 @@
   }
   function stockPass(s, tab) { return M.stockMatches(s, tab); }
   function stockRules() {
-    const checks = (window.STOCKS || []).find(s => s.group === 'quality')?.qualityReview?.checks || [];
-    openModal(modalTitle('优质企业的入选依据', '财报初筛 → 持续增长核对 → 公司报告研究') +
+    const growth = state.stockTab === 'growth', key = growth ? 'growthReview' : 'longTermReview';
+    const checks = (window.STOCKS || []).find(s => s[key]?.qualified)?.[key]?.checks || [];
+    openModal(modalTitle((growth ? '高质成长股' : '长期优质企业') + '的入选依据', growth ? '主营增长 · 连续两个单季 · 盈利与现金质量' : '五年经营记录 · 业务持续性 · 当前财务条件') +
       '<p class="notice">先核对增长、资本回报与现金流，再查主营产品、竞争依据和业务风险。完成报告研究且满足当前条件的公司才进入此页。</p><div class="rule-list">' + checks.map((c, i) => '<div class="rule-item"><span class="rule-number">' + String(i + 1).padStart(2, '0') + '</span><p>' + esc(c.label) + '</p></div>').join('') +
       '</div><p class="note">增长与ROE门槛是本项目的研究参数，未经收益优化。中报、季报与上年同期比较，不年化ROE。名单覆盖已完成研究的企业，不是全A股排名；入选不代表估值便宜。</p><div class="actions">' + extLink('https://github.com/jianxieb/fund-data/blob/main/docs/stock-quality-method.md', '名单来源与研究记录') + '</div>');
   }
@@ -325,7 +327,12 @@
       (annual && annual.reportDate !== latest?.reportDate ? '<span class="stock-annual">' + esc(reportLabel(annual)) + ' ' + stockGrowth(annual, key) + '</span>' : '') + '</td>';
   }
   function stockIdentity(s) {
-    return '<td class="stock-identity">' + action(esc(s.n), 'stock-detail', 'text-link', 'data-code="' + s.c + '"') + '<span class="sub">' + s.c + '</span><span class="stock-business-label">' + esc(s.businessLabel || s.ind) + '</span></td>';
+    const overlap = M.stockMatches(s, 'quality') && M.stockMatches(s, 'growth');
+    return '<td class="stock-identity">' + action(esc(s.n), 'stock-detail', 'text-link', 'data-code="' + s.c + '"') + '<span class="sub">' + s.c + '</span><span class="stock-business-label">' + esc(s.businessLabel || s.ind) + '</span>' +
+      (overlap ? '<span class="stock-overlap">长期优质 · 高成长</span>' : '') + stockDeepLink(s) + '</td>';
+  }
+  function stockDeepLink(s, cls = 'stock-deep-link') {
+    return (window.STOCK_REPORTS?.reports || []).some(r => r.code === s.c) ? '<a class="' + cls + '" href="#stock-report/' + s.c + '" aria-label="' + esc(s.n) + '深入报告">深入报告 <span aria-hidden="true">↗</span></a>' : '';
   }
   function stockReportLink(s) {
     const research = s.qualityResearch, source = research?.sources?.[0];
@@ -333,8 +340,9 @@
   }
   function stockReason(s) {
     const research = s.qualityResearch, growth = s.financialGrowth3;
+    const thesis = state.stockTab === 'growth' ? research?.growth?.driver : research?.longTerm?.durability;
     return '<td class="stock-reason"><strong>' + esc(research?.title || '') + '</strong><span>' + esc(research?.thesis?.[0] || '') + '</span>' +
-      '<span class="stock-growth-basis">3年复合增长 · 营收 ' + pc(growth?.revenue, 1) + ' / 扣非 ' + pc(growth?.deductedProfit, 1) + '</span>' + stockReportLink(s) + '</td>';
+      '<span>' + esc(thesis || '') + '</span>' + (state.stockTab === 'growth' ? '<span class="stock-growth-basis">连续两季增长 · 扣非占比 ' + pct(s.growthReview?.coreProfitRatio * 100, 1, false) + '</span>' : '<span class="stock-growth-basis">5年平均ROE ' + pct(s.longTermReview?.roe5, 1, false) + ' · 3年扣非复合增长 ' + pc(growth?.deductedProfit, 1) + '</span>') + stockReportLink(s) + '</td>';
   }
   function stockRisks(s) { return [...(s.qualityReview?.watchouts || []), ...(s.qualityResearch?.risks || [])]; }
   function stockRisk(s) {
@@ -357,7 +365,7 @@
   function stocks() {
     const all = window.STOCKS || [], dividend = state.stockTab === 'dividend';
     const financials = !dividend && state.stockView === 'financials', valuation = !dividend && state.stockView === 'valuation';
-    const groups = [['quality', '优质企业'], ['dividend', '红利价值']];
+    const groups = [['quality', '长期优质企业'], ['growth', '高质成长股'], ['dividend', '红利价值']];
     const pool = all.filter(s => M.stockMatches(s, state.stockTab));
     const categories = [...new Set(pool.map(s => s.researchCategory || s.ind))];
     const rows = pool.filter(s => (state.stockCategory === 'all' || (s.researchCategory || s.ind) === state.stockCategory) &&
@@ -373,11 +381,28 @@
     const financialRow = s => '<td class="stock-roe">' + stockRoe(s) + '</td>' + stockGrowthCell(s, 'revenue') + stockGrowthCell(s, 'netProfit') + stockGrowthCell(s, 'deductedProfit') + stockReason(s) + stockRisk(s);
     const valuationRow = s => '<td>' + money(s.pe, 2) + '</td><td>' + stockDynamic(s) + '</td><td>' + money(s.peStatic, 2) + '</td><td>' + stockPercentile(s, 5) + '</td><td>' + stockPercentile(s, 10) + '</td><td>' + money(s.pb, 2) + '</td><td>' + money(s.mcap, 1) + '</td><td>' + esc(s.valuationAsOf || '—') + '</td>';
     const returnRow = s => '<td>' + money(s.price, 2) + '</td>' + (dividend ? '<td>' + money(s.pe, 2) + '<span class="sub">' + esc(s.valuationAsOf || '缺估值日期') + '</span></td><td>' + money(s.pb, 2) + '</td><td class="stock-roe">' + stockRoe(s) + '</td><td>' + money(s.mcap, 1) + '</td>' : '') + '<td>' + pct(s.yield12, 2, false) + '</td><td>' + (s.divYears == null ? '—' : esc(s.divYears) + ' / 5') + '</td>' + state.periods.map(y => '<td>' + pc(ret(s.r?.[years.indexOf(y)], y, s)) + '</td>').join('') + '<td>' + pc(s.mdd5, 1) + '</td><td>' + esc(s.returnAsOf || '—') + '</td>';
-    return head('STOCK WATCHLIST', '个股深入', dividend ? '关注现金分红、股息率与长期收益。' : '从业务类别、盈利增长和现金回报，理解每一家企业。', dividend ? '' : action('入选标准', 'stock-rules', 'btn sm')) +
+    return head('STOCK WATCHLIST', '个股深入', dividend ? '关注现金分红、股息率与长期收益。' : state.stockTab === 'growth' ? '主营业务持续放量，收入与核心利润共同增长。' : '长期经营能力，经得起多年财务与当前业绩的检验。', '<a class="btn sm" href="#reports">研究报告</a>' + (dividend ? '' : action('入选标准', 'stock-rules', 'btn sm'))) +
       '<div class="tabs" role="tablist" aria-label="个股研究分组">' + groups.map(([id, label]) => action(label + '<span class="tab-count">' + all.filter(s => stockPass(s, id)).length + '</span>', 'stock-tab', state.stockTab === id ? 'active' : '', 'data-value="' + id + '" role="tab" aria-selected="' + (state.stockTab === id) + '"')).join('') + '</div>' +
       (dividend ? '' : '<div class="stock-category-filter" role="group" aria-label="企业类别">' + [['all', '全部类别'], ...categories.map(c => [c, c])].map(([id, label]) => action(esc(label), 'stock-category', 'filter-chip' + (state.stockCategory === id ? ' active' : ''), 'data-value="' + esc(id) + '" aria-pressed="' + (state.stockCategory === id) + '"')).join('') + '</div>') +
       '<div class="stock-controls"><div class="filters"><input type="search" id="stock-search" aria-label="搜索公司、代码或业务" placeholder="搜索公司、代码或业务" value="' + esc(state.stockQuery) + '"></div>' + (dividend || state.stockView === 'returns' ? returnControls() : '') + '</div>' +
       '<div class="card"><div class="table-caption stock-table-caption"><span><b>' + rows.length + '</b> / ' + pool.length + '家公司</span>' + viewControl + '</div><div class="table-wrap stock-table-wrap" tabindex="0" role="region" aria-label="个股研究表，可横向滚动"><table class="research-table stock-table' + (financials ? ' stock-financial-table' : '') + '"><thead><tr><th>公司 / 主营业务</th>' + (financials ? financialHead : valuation ? valuationHead : returnHead) + '</tr></thead><tbody>' + rows.map(s => '<tr>' + stockIdentity(s) + (financials ? financialRow(s) : valuation ? valuationRow(s) : returnRow(s)) + '</tr>').join('') + (rows.length ? '' : '<tr><td colspan="' + (financials ? 7 : valuation ? 9 : (dividend ? 10 : 6) + state.periods.length) + '"><div class="empty">没有匹配的公司</div></td></tr>') + '</tbody></table></div></div>';
+  }
+  function reportsView() {
+    const reports = window.STOCK_REPORTS?.reports || [];
+    const report = reports.find(r => r.code === state.reportCode);
+    if (state.reportCode && !report) return head('COMPANY RESEARCH', '报告未收录', '', '<a class="btn" href="#reports">返回报告库</a>');
+    if (!report) {
+      const query = state.reportQuery.trim().toLowerCase();
+      const rows = reports.filter(r => !query || (r.name + r.code + r.business + r.category).toLowerCase().includes(query));
+      return head('COMPANY RESEARCH', '研究报告', '业务、财务、估值与风险，放在同一份分析里。', '<a class="btn sm" href="#stocks">返回个股研究</a>') +
+        '<div class="report-library-controls"><label for="report-search">' + reports.length + '份报告</label><input id="report-search" type="search" placeholder="搜索公司、代码或业务" aria-label="搜索研究报告" value="' + esc(state.reportQuery) + '"></div>' +
+        '<div class="report-library">' + rows.map(r => '<a class="report-cover" href="#stock-report/' + r.code + '"><div class="report-cover-top"><span>' + esc(r.code) + ' · ' + esc(r.category) + '</span><span>' + esc(r.asOf) + '</span></div><h2>' + esc(r.name) + '</h2><p class="report-cover-business">' + esc(r.business) + '</p><p>' + esc(r.summary) + '</p><div class="report-cover-bottom"><span>' + esc(r.groups.join(' · ') || '专题研究') + '</span><span>阅读全文 <span aria-hidden="true">↗</span></span></div></a>').join('') + '</div>' + (rows.length ? '' : '<div class="empty">没有匹配的报告</div>');
+    }
+    const table = t => '<div class="table-wrap" tabindex="0" role="region" aria-label="报告数据表，可横向滚动"><table><thead><tr>' + t.headers.map(h => '<th>' + esc(h) + '</th>').join('') + '</tr></thead><tbody>' + t.rows.map(r => '<tr>' + r.map(v => '<td>' + esc(v) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>';
+    const section = s => '<section class="report-section" id="report-' + esc(s.id) + '"><h2>' + esc(s.title) + '</h2>' + (s.paragraphs || []).map(p => '<p>' + esc(p) + '</p>').join('') + (s.bullets?.length ? '<ul>' + s.bullets.map(p => '<li>' + esc(p) + '</li>').join('') + '</ul>' : '') + (s.table ? table(s.table) : '') + (s.links?.length ? '<ul class="report-sources">' + s.links.map(l => '<li>' + extLink(l.url, l.label) + '</li>').join('') + '</ul>' : '') + '</section>';
+    return '<div class="report-topline"><a href="#stocks">← 个股研究</a><a href="#reports">全部报告</a><a href="' + esc(report.markdownPath) + '" download>下载 Markdown</a></div>' +
+      '<header class="report-header"><div class="eyebrow">COMPANY RESEARCH / ' + esc(report.code) + '</div><h1>' + esc(report.name) + '</h1><p class="report-business">' + esc(report.business) + '</p><div class="report-dates"><span>研究 ' + esc(report.asOf) + '</span><span>行情 ' + esc(report.marketAsOf) + '</span><span>财报 ' + esc(report.reportPeriod) + '</span><b>' + esc(report.groups.join(' · ') || '专题研究') + '</b></div></header>' +
+      '<div class="report-layout"><nav class="report-toc" aria-label="报告章节">' + report.sections.map((s, i) => action('<span>' + String(i + 1).padStart(2, '0') + '</span>' + esc(s.title), 'report-section', '', 'data-value="' + esc(s.id) + '"')).join('') + '</nav><article class="report-article" aria-label="' + esc(report.name) + '深入分析">' + report.sections.map(section).join('') + (report.archivePath ? '<details class="report-archive"><summary>原版报告与修订记录</summary><p>原版日期为2026-09-02，已在文首追加更正；历史正文不代表当前结论。</p><a href="' + esc(report.archivePath) + '" download>下载原版与更正记录</a></details>' : '') + '</article></div>';
   }
   function curveCard(title, subtitle, entries, dates, metric, startDate) {
     const palette = ['#35654a', '#b58a46', '#557b9b', '#b36b5d', '#756c9b', '#698b6b', '#b78673', '#6e91a6', '#998a54'];
@@ -692,7 +717,7 @@
       '<div class="actions">' + extLink(x.sourceUrl || x.source, '原始行情来源') + (x.identityUrl ? extLink(x.identityUrl, '官方指数说明') : '') + (displayCurrency === 'cny' && x.fxSourceUrl ? extLink(x.fxSourceUrl, '美元兑人民币汇率') : '') + '</div><div class="dialog-footer">' + action('在基金库搜索此标的', 'find-index-funds', 'btn primary', 'data-value="' + esc(x.n.replace(/指数$/, '')) + '"') + '</div>');
   }
   function openDividendStock(s) {
-    openModal('<div class="stock-detail stock-dividend-detail">' + modalTitle(esc(s.n), s.c + ' · ' + esc(s.businessLabel || s.ind)) +
+    openModal('<div class="stock-detail stock-dividend-detail">' + modalTitle(esc(s.n), s.c + ' · ' + esc(s.businessLabel || s.ind)) + stockDeepLink(s, 'btn sm') +
       '<h3 class="detail-heading">分红与长期收益</h3>' + detailGrid([
         ['近12月股息率', pct(s.yield12, 2, false) + '<span class="sub">截至 ' + esc(s.dividendAsOf || '缺日期') + '</span>'],
         ['近5年分红年数', (s.divYears == null ? '缺完整分红年度证据' : s.divYears + ' / 5') + '<span class="sub">' + esc(s.dividendWindow || '缺分红年度') + '</span>'],
@@ -706,16 +731,16 @@
   function openStock(code) {
     const s = (window.STOCKS || []).find(x => x.c === code); if (!s) return;
     if (s.group === 'dividend') { openDividendStock(s); return; }
-    if (!M.stockMatches(s, 'quality')) return;
-    const review = s.qualityReview, research = s.qualityResearch;
+    if (!M.stockMatches(s, 'quality') && !M.stockMatches(s, 'growth')) return;
+    const review = state.stockTab === 'growth' ? s.growthReview : s.longTermReview?.qualified ? s.longTermReview : s.growthReview, research = s.qualityResearch;
     const latest = s.latestFinancials;
-    const reports = [latest, ...(s.financialHistory || [])].filter((r, i, all) => r && all.findIndex(x => x?.reportDate === r.reportDate) === i);
+    const reports = [latest, ...(s.financialHistory5 || s.financialHistory || [])].filter((r, i, all) => r && all.findIndex(x => x?.reportDate === r.reportDate) === i);
     const thesis = '<section class="stock-thesis"><div class="stock-thesis-title"><h3>入选理由</h3></div><p class="stock-business">' + esc(research.title) + '</p><ul class="stock-evidence-list">' +
-      [...research.thesis, ...(review.reasons || []).filter(t => !t.startsWith('3年平均ROE'))].map(t => '<li>' + esc(t) + '</li>').join('') + '</ul><div class="actions">' + stockReportLink(s) + '</div></section>' +
+      [...research.thesis, ...(review.reasons || []).filter(t => !t.startsWith('3年平均ROE'))].map(t => '<li>' + esc(t) + '</li>').join('') + '</ul><div class="actions">' + stockDeepLink(s, 'btn sm') + stockReportLink(s) + '</div></section>' +
       '<section class="stock-watchouts"><h3>风险</h3><ul>' + stockRisks(s).map(t => '<li>' + esc(t) + '</li>').join('') + '</ul></section>';
     const latestSummary = '<h3 class="detail-heading">' + esc(reportLabel(latest)) + '</h3><div class="stock-growth-summary">' +
       [['报告期 ROE', pct(latest?.roe, 2, false), M.finite(latest?.roePrevious) ? '上年同期 ' + pct(latest.roePrevious, 2, false) : '缺上年同期ROE'], ['营收同比', stockGrowth(latest, 'revenue'), '与上年同期相比'], ['归母利润同比', stockGrowth(latest, 'netProfit'), '与上年同期相比'], ['扣非利润同比', stockGrowth(latest, 'deductedProfit'), '与上年同期相比']].map(([label, value, period]) => '<div><span>' + label + '</span><strong>' + value + '</strong><small>' + esc(period) + '</small></div>').join('') + '</div>';
-    const financials = '<details class="stock-screen-details"><summary>历史财务 · 营收、利润、现金流与年度 ROE</summary><p class="note">' + esc([...(review?.years || [])].sort().join('、')) + ' 年平均年度 ROE：' + pct(review?.roe3, 2, false) + '。</p><div class="table-wrap"><table class="stock-report-table"><thead><tr><th>报告期</th><th>营收 / 亿元</th><th>营收同比</th><th>归母利润 / 亿元</th><th>归母利润同比</th><th>扣非利润同比</th><th>经营现金流 / 亿元</th><th>加权平均ROE</th><th>公告日</th></tr></thead><tbody>' + reports.map(r => '<tr><td>' + esc(reportLabel(r)) + '</td><td>' + money(M.finite(r.revenue) ? r.revenue / 1e8 : null, 2) + '</td><td>' + stockGrowth(r, 'revenue') + '</td><td>' + money(M.finite(r.netProfit) ? r.netProfit / 1e8 : null, 2) + '</td><td>' + stockGrowth(r, 'netProfit') + '</td><td>' + stockGrowth(r, 'deductedProfit') + '</td><td>' + money(M.finite(r.operatingCashFlow) ? r.operatingCashFlow / 1e8 : null, 2) + '</td><td>' + pct(r.roe, 2, false) + '</td><td>' + esc(r.announcedAt) + '</td></tr>').join('') + '</tbody></table></div><p class="note">中报、季报均为年初至报告期末的累计金额；同比与上年同期比较。ROE 为该报告期数值，未将中报 ROE 年化。扣非利润为扣除非经常性损益后的归母净利润。</p></details>';
+    const financials = '<details class="stock-screen-details"><summary>历史财务 · 营收、利润、现金流与年度 ROE</summary><p class="note">' + esc((s.financialHistory5 || []).map(r => r.year).sort().join('、')) + ' 年平均年度 ROE：' + pct(s.longTermReview?.roe5, 2, false) + '。</p><div class="table-wrap"><table class="stock-report-table"><thead><tr><th>报告期</th><th>营收 / 亿元</th><th>营收同比</th><th>归母利润 / 亿元</th><th>归母利润同比</th><th>扣非利润同比</th><th>经营现金流 / 亿元</th><th>加权平均ROE</th><th>公告日</th></tr></thead><tbody>' + reports.map(r => '<tr><td>' + esc(reportLabel(r)) + '</td><td>' + money(M.finite(r.revenue) ? r.revenue / 1e8 : null, 2) + '</td><td>' + stockGrowth(r, 'revenue') + '</td><td>' + money(M.finite(r.netProfit) ? r.netProfit / 1e8 : null, 2) + '</td><td>' + stockGrowth(r, 'netProfit') + '</td><td>' + stockGrowth(r, 'deductedProfit') + '</td><td>' + money(M.finite(r.operatingCashFlow) ? r.operatingCashFlow / 1e8 : null, 2) + '</td><td>' + pct(r.roe, 2, false) + '</td><td>' + esc(r.announcedAt) + '</td></tr>').join('') + '</tbody></table></div><p class="note">中报、季报均为年初至报告期末的累计金额；同比与上年同期比较。ROE 为该报告期数值，未将中报 ROE 年化。扣非利润为扣除非经常性损益后的归母净利润。</p></details>';
     const checks = review ? '<details class="stock-screen-details"><summary>财务条件与报告核对 · ' + review.checks.length + '项</summary><div class="stock-checks">' + review.checks.map(c => '<span class="' + (c.pass ? 'passed' : 'missed') + '">' + (c.pass ? '✓ ' : '— ') + esc(c.label) + (!c.pass && c.reason ? '<small>' + esc(c.reason) + '</small>' : '') + '</span>').join('') + '</div><p class="note">核算于 ' + esc(review.checkedAt) + '。业务依据对应所链接的公司报告；财报更新时重新核算，经营前景和估值仍有不确定性。</p></details>' : '';
     const valuationBasis = '<details class="stock-screen-details"><summary>PE口径与历史分位</summary><p class="note">TTM使用最近12个月归母利润；静态PE使用上一完整年度利润；动态PE使用估值日已公告的最新累计归母利润，按报告月份年化，不是分析师预测，季节性会影响结果。动态PE所用报告：' + esc(s.peDynamicBasis?.reportDate || '缺报告') + '，公告于 ' + esc(s.peDynamicBasis?.announcedAt || '—') + '。</p><div class="table-wrap"><table><thead><tr><th>PE-TTM分位</th><th>取样窗口</th><th>实际首末记录</th><th>正PE样本</th><th>剔除非正 / 缺失PE</th></tr></thead><tbody>' + [5, 10].map(y => {
       const p = s.pePercentiles?.[y];
@@ -769,12 +794,12 @@
     else if (next.closest('details')) next.closest('details').querySelector('summary').focus({ preventScroll: true });
   }
   function render() {
-    const renderers = { overview: home, indices, funds: fundView, stocks, strategy: strategies, 'buy-location': buyLocation, quality };
+    const renderers = { overview: home, indices, funds: fundView, stocks, reports: reportsView, strategy: strategies, 'buy-location': buyLocation, quality };
     const focus = document.activeElement;
     document.title = '长衡 · ' + titles[state.route];
-    const group = { indices: '研究对象', funds: '研究对象', stocks: '研究对象', strategy: '研究方法', 'buy-location': '研究方法' }[state.route];
-    $('#breadcrumb').innerHTML = (group ? '<span>' + group + '</span><span class="breadcrumb-separator" aria-hidden="true">/</span>' : '') + '<span aria-current="page">' + titles[state.route] + '</span>';
-    $$('[data-route]').forEach(a => { const active = a.dataset.route === state.route; a.classList.toggle('active', active); if (active) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+    const group = { indices: '研究对象', funds: '研究对象', stocks: '研究对象', reports: '研究对象', strategy: '研究方法', 'buy-location': '研究方法' }[state.route];
+    $('#breadcrumb').innerHTML = (group ? '<span>' + group + '</span><span class="breadcrumb-separator" aria-hidden="true">/</span>' : '') + (state.route === 'reports' ? '<a href="#stocks">个股深入</a><span class="breadcrumb-separator" aria-hidden="true">/</span>' : '') + '<span aria-current="page">' + titles[state.route] + '</span>';
+    $$('[data-route]').forEach(a => { const active = a.dataset.route === (state.route === 'reports' ? 'stocks' : state.route); a.classList.toggle('active', active); if (active) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
     $('#main').className = 'page-' + state.route;
     $('#main').innerHTML = renderers[state.route]();
     restoreFocus(focus);
@@ -784,7 +809,10 @@
     if (hash === 'main') { $('#main').focus(); return; }
     if (hash === 'us') { state.fundTab = 'all'; state.poolCategory = 'overseas'; }
     if (hash === 'cn') state.fundTab = 'equity';
-    state.route = titles[hash] ? hash : legacy[hash] || 'overview';
+    const reportMatch = hash.match(/^stock-report\/(\d{6})$/);
+    state.reportCode = reportMatch ? reportMatch[1] : null;
+    state.route = reportMatch ? 'reports' : titles[hash] ? hash : legacy[hash] || 'overview';
+    if ($('#dialog').open) $('#dialog').close();
     render(); window.scrollTo(0, 0);
   }
   function go(name) { if (location.hash === '#' + name) { state.route = name; render(); } else location.hash = name; }
@@ -868,6 +896,7 @@
         openModal(modalTitle(esc(f.n) + ' · 分红与拆分', code) + distributionDetails(crossEvidence(code)?.actions)); return;
       }
       case 'stock-rules': stockRules(); return;
+      case 'report-section': $('#report-' + val)?.scrollIntoView({ behavior: 'auto', block: 'start' }); return;
       case 'index-tab': state.indexTab = val; state.indexSort = 'default'; break;
       case 'stock-tab': state.stockTab = val; state.stockSort = 'default'; state.stockQuery = ''; state.stockCategory = 'all'; break;
       case 'stock-category': state.stockCategory = val; break;
@@ -941,6 +970,7 @@
   });
   document.addEventListener('input', e => {
     const el = e.target;
+    if (el.id === 'report-search') { state.reportQuery = el.value; clearTimeout(searchTimer); searchTimer = setTimeout(() => { const pos = el.selectionStart; render(); const input = $('#report-search'); if (input) { input.focus({ preventScroll: true }); input.setSelectionRange(pos, pos); } }, 120); return; }
     if (el.id === 'fund-search') { state.query = el.value; state.page = 1; clearTimeout(searchTimer); searchTimer = setTimeout(renderFundResults, 120); }
     if (el.id === 'cross-search') {
       state.crossQuery = el.value; state.crossPage = 1; clearTimeout(searchTimer);

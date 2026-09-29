@@ -1,0 +1,94 @@
+{
+  "sourceRepository": "https://github.com/jianxieb/stock-research",
+  "sourceCommit": "c38abebfd832745f17b333877332ffb2d618ad02",
+  "importedAt": "2026-09-30",
+  "scope": "作者授权合并的调研方法、10份报告及成长股初筛；原仓库未改动",
+  "originalReportDate": "2026-09-02",
+  "changes": "取数、计算与skill在本项目重写；旧报告保留原日期并加具名修订；KDJ工具不参与基本面选股。",
+  "comparisonSources": [
+    {
+      "slug": "anthropic-initiation",
+      "repo": "anthropics/financial-services",
+      "path": "plugins/vertical-plugins/equity-research/skills/initiating-coverage/SKILL.md",
+      "commit": "574ed3624aebd0418c7e96cd101262f30210ab26",
+      "license": "Apache-2.0",
+      "archived": false,
+      "pushedAt": "2026-09-21T21:10:41Z",
+      "url": "https://github.com/anthropics/financial-services/blob/574ed3624aebd0418c7e96cd101262f30210ab26/plugins/vertical-plugins/equity-research/skills/initiating-coverage/SKILL.md",
+      "sha256": "9d21c6e460bc3692e19eeda6dc6d425a704b21243bd28af7f13b6f1dd888ed63",
+      "chars": 29381
+    },
+    {
+      "slug": "anthropic-earnings",
+      "repo": "anthropics/financial-services",
+      "path": "plugins/vertical-plugins/equity-research/skills/earnings-analysis/SKILL.md",
+      "commit": "574ed3624aebd0418c7e96cd101262f30210ab26",
+      "license": "Apache-2.0",
+      "archived": false,
+      "pushedAt": "2026-09-21T21:10:41Z",
+      "url": "https://github.com/anthropics/financial-services/blob/574ed3624aebd0418c7e96cd101262f30210ab26/plugins/vertical-plugins/equity-research/skills/earnings-analysis/SKILL.md",
+      "sha256": "4db857c27a53141b6ebc38ec9ee7f0020dec59cab084ae6753e53366d118c8ee",
+      "chars": 8624
+    },
+    {
+      "slug": "anthropic-dcf",
+      "repo": "anthropics/financial-services",
+      "path": "plugins/vertical-plugins/financial-analysis/skills/dcf-model/SKILL.md",
+      "commit": "574ed3624aebd0418c7e96cd101262f30210ab26",
+      "license": "Apache-2.0",
+      "archived": false,
+      "pushedAt": "2026-09-21T21:10:41Z",
+      "url": "https://github.com/anthropics/financial-services/blob/574ed3624aebd0418c7e96cd101262f30210ab26/plugins/vertical-plugins/financial-analysis/skills/dcf-model/SKILL.md",
+      "sha256": "2bb3ed672ab2fa76f8820ee919b158a67dc6df10e7052eeb661599140a9a2494",
+      "chars": 49508
+    },
+    {
+      "slug": "lzwme",
+      "repo": "lzwme/finance-quant-skills",
+      "path": "skills/equity-researcher/SKILL.md",
+      "commit": "d973f3595fc7e26ca00de347f76425ae289291ad",
+      "license": null,
+      "archived": false,
+      "pushedAt": "2026-09-23T08:36:22Z",
+      "url": "https://github.com/lzwme/finance-quant-skills/blob/d973f3595fc7e26ca00de347f76425ae289291ad/skills/equity-researcher/SKILL.md",
+      "sha256": "ddedb5b926d231ea85b2648f95fe7aa6a89da955fc9868874529b671b18c5633",
+      "chars": 19597
+    },
+    {
+      "slug": "alireza",
+      "repo": "alirezarezvani/claude-skills",
+      "path": "finance/skills/stock-analysis/SKILL.md",
+      "commit": "19392f7a08264ed00486a251f5b2098321771f94",
+      "license": "MIT",
+      "archived": false,
+      "pushedAt": "2026-08-30T09:46:16Z",
+      "url": "https://github.com/alirezarezvani/claude-skills/blob/19392f7a08264ed00486a251f5b2098321771f94/finance/skills/stock-analysis/SKILL.md",
+      "sha256": "f46e5d7da41013ea5fc6837e92d5ab3b7691db572bc2b81ef0fd42b641e71e90",
+      "chars": 34044
+    },
+    {
+      "slug": "netease",
+      "repo": "netease-youdao/LobsterAI",
+      "path": "SKILLs/stock-analyzer/SKILL.md",
+      "commit": "791a352dee3b3d8c6f64edcaf229ce474a68f6c5",
+      "license": "MIT",
+      "archived": false,
+      "pushedAt": "2026-09-29T14:38:55Z",
+      "url": "https://github.com/netease-youdao/LobsterAI/blob/791a352dee3b3d8c6f64edcaf229ce474a68f6c5/SKILLs/stock-analyzer/SKILL.md",
+      "sha256": "eb3ce94ec0cfc78d73e6778c8a5402592712c632fb6f7f035cdf006eb706b27a",
+      "chars": 3543
+    },
+    {
+      "slug": "five-layer",
+      "repo": "Alexey-Rivkin/fundamental-analysis-skill",
+      "path": "SKILL.md",
+      "commit": "9995efbdde594ebbaf6e40462dfd53e4d70736cf",
+      "license": "MIT",
+      "archived": false,
+      "pushedAt": "2026-07-17T13:31:26Z",
+      "url": "https://github.com/Alexey-Rivkin/fundamental-analysis-skill/blob/9995efbdde594ebbaf6e40462dfd53e4d70736cf/SKILL.md",
+      "sha256": "6b686d8119a32de7e00227eae958da8bfc4f4a6efb3ee5dedaf460487d4fe964",
+      "chars": 9301
+    }
+  ]
+}

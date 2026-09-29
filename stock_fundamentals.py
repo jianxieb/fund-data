@@ -139,17 +139,19 @@ def parse_evidence(code, valuation, financials, asof):
             'roe': latest_report['roe'] if latest_report else None,
             'roeAsOf': latest_report['reportDate'] if latest_report else None,
             'roeBasis': '最新报告期加权平均ROE（不年化）', 'financialHistory': history,
+            'financialHistory5': [financial_report(r, reports) for r in reports if r['REPORT_DATE'][:10].endswith('-12-31')][:5],
+            'financialReports': [financial_report(r, reports) for r in reports],
             'latestFinancials': latest_report,
             'financialGrowth3': growth,
             'fundamentalsAsOf': str(reports[0]['REPORT_DATE'])[:10] if reports else None,
-            'fundamentalsSourceUrl': source_url(code, 'RPT_F10_FINANCE_MAINFINADATA', 'REPORT_DATE', 20),
+            'fundamentalsSourceUrl': source_url(code, 'RPT_F10_FINANCE_MAINFINADATA', 'REPORT_DATE', 40),
             'fundamentalsStatus': 'dated_source' if q and len(history) == 3 else 'incomplete_source'}
 
 
 def fetch_evidence(code, fetcher, asof):
     results, errors = {}, []
     for key, report, sort, size in [('valuation', 'RPT_VALUEANALYSIS_DET', 'TRADE_DATE', 10000),
-                                    ('financials', 'RPT_F10_FINANCE_MAINFINADATA', 'REPORT_DATE', 20)]:
+                                    ('financials', 'RPT_F10_FINANCE_MAINFINADATA', 'REPORT_DATE', 40)]:
         try:
             payload = fetcher(source_url(code, report, sort, size))
             if not payload.get('success') or not (payload.get('result') or {}).get('data'):
@@ -263,7 +265,7 @@ def research_evidence_check(row, asof):
 
 
 def quality_review(row, asof):
-    if row.get('group') != 'quality':
+    if row.get('group') not in ('quality', 'growth'):
         return None
     history = row.get('financialHistory') or []
     years = [r['year'] for r in history]

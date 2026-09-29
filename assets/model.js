@@ -10,9 +10,10 @@
   const record = v => v !== null && typeof v === 'object' && !Array.isArray(v);
   const escapeHtml = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   function stockMatches(stock, group) {
-    if (!['quality', 'dividend'].includes(group) || stock.group !== group) return false;
-    return group === 'dividend' || (stock.qualityReview?.qualified === true &&
-      stock.qualityResearch?.status === 'reviewed' && stock.qualityResearch?.code === stock.c);
+    if (group === 'dividend') return stock.group === 'dividend';
+    if (!['quality', 'growth'].includes(group) || !['quality', 'growth'].includes(stock.group)) return false;
+    const review = group === 'quality' ? stock.longTermReview : stock.growthReview;
+    return review?.qualified === true && stock.qualityResearch?.status === 'reviewed' && stock.qualityResearch?.code === stock.c;
   }
   function validDate(value) {
     if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;

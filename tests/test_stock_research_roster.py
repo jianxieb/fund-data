@@ -13,7 +13,7 @@ class StockResearchRosterTests(unittest.TestCase):
         profiles = stock_screen.STOCK_UNIVERSE
         self.assertEqual(len({r['code'] for r in profiles}), len(profiles))
         for profile in profiles:
-            if profile.get('group', 'dividend') == 'quality':
+            if profile.get('group', 'dividend') in ('quality', 'growth'):
                 research = profile['quality_research']
                 self.assertEqual(research['code'], profile['code'])
                 self.assertTrue(research['thesis'])
