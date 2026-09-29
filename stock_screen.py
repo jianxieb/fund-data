@@ -37,45 +37,17 @@ WINDOWS = [1, 2, 3, 5, 10]
 OFFLINE = False
 YAHOO_CACHE = os.path.join(HERE, '.tmp-snap', 'stocks')
 
-# 核心观察清单：优先覆盖稳定现金流、行业龙头和常见高股息标的。
-# note 只写业务和筛选逻辑，不写推荐语。
-STOCK_UNIVERSE = [
-    {'code': '601138', 'business_source_url': 'https://panel.fii-foxconn.com/mtgz/5000.html', 'business': 'AI服务器与通信网络设备', 'name': '工业富联', 'industry': '电子制造', 'group': 'quality', 'note': '覆盖服务器、通信网络设备与精密工具制造，观察算力需求、客户集中度和盈利兑现'},
-    {'code': '603259', 'business_source_url': 'https://www.wuxiapptec.com/news/wuxi-news/o11j18jj5dltcdtm9so5f4sk', 'business': '药物研发与生产服务（CRDMO）', 'name': '药明康德', 'industry': '医药研发服务', 'group': 'quality', 'note': '提供药物研发与生产服务，观察订单、产能利用率及跨境经营风险'},
-    {'code': '601899', 'business': '铜金等矿产开采', 'name': '紫金矿业', 'industry': '有色金属', 'group': 'quality', 'note': '经营铜、金等矿产资源，观察产量、矿山成本、金属价格和海外项目投入'},
-    {'code': '300750', 'business': '动力与储能电池', 'name': '宁德时代', 'industry': '动力与储能电池', 'group': 'quality', 'note': '动力与储能电池制造，观察产能利用率、单位盈利和技术迭代'},
-    {'code': '002594', 'business': '新能源汽车与电池', 'name': '比亚迪', 'industry': '汽车制造', 'group': 'quality', 'note': '新能源汽车与电池制造，观察销量、单车盈利和海外经营'},
-    {'code': '300124', 'business': '工业自动化与汽车电驱', 'name': '汇川技术', 'industry': '工业自动化', 'group': 'quality', 'note': '工业自动化与新能源车电驱产品，观察制造业投资、产品结构和研发投入'},
-    {'code': '600309', 'business': '聚氨酯与化工新材料', 'name': '万华化学', 'industry': '化工', 'group': 'quality', 'note': '聚氨酯、石化与新材料制造，观察产品价差、产能扩张和资本回报'},
-    {'code': '002475', 'business': '消费电子与汽车电子制造', 'name': '立讯精密', 'group': 'quality', 'note': '观察消费电子与汽车业务的客户结构、毛利率和现金回收'},
-    {'code': '002371', 'business_source_url': 'https://www.naura.com/content/details_30_2309.html', 'business': '半导体设备 · 刻蚀与薄膜沉积', 'name': '北方华创', 'group': 'quality', 'note': '观察半导体设备需求、研发投入与订单交付'},
-    {'code': '688012', 'business': '半导体设备 · 刻蚀与沉积', 'name': '中微公司', 'group': 'quality', 'note': '观察半导体设备业务的研发、客户验证与现金回收'},
-    {'code': '300308', 'business': '光通信模块', 'name': '中际旭创', 'group': 'quality', 'note': '观察光通信产品需求、技术迭代和客户集中度'},
-    {'code': '300502', 'business': '光通信模块', 'name': '新易盛', 'group': 'quality', 'note': '观察光模块产品结构、毛利率与产能投入'},
-    {'code': '000063', 'business': '通信网络设备', 'name': '中兴通讯', 'group': 'quality', 'note': '观察通信设备投资周期、研发与海外经营'},
-    {'code': '600406', 'business': '电网自动化设备', 'name': '国电南瑞', 'group': 'quality', 'note': '观察电网自动化需求、项目交付与现金回收'},
-    {'code': '300274', 'business': '光伏逆变器与储能系统', 'name': '阳光电源', 'group': 'quality', 'note': '观察逆变器及储能业务增长、库存与海外经营'},
-    {'code': '601012', 'business': '光伏硅片与电池组件', 'name': '隆基绿能', 'group': 'quality', 'note': '观察光伏价格周期、技术路线与产能退出'},
-    {'code': '002415', 'business': '视频安防与智能物联', 'name': '海康威视', 'group': 'quality', 'note': '观察智能物联业务、客户需求与经营现金流'},
-    {'code': '300760', 'business': '医疗设备与体外诊断', 'name': '迈瑞医疗', 'group': 'quality', 'note': '观察医疗器械研发、产品结构和海外销售'},
-    {'code': '600276', 'business': '创新药与仿制药', 'name': '恒瑞医药', 'group': 'quality', 'note': '观察创新药研发、商业化与研发投入回报'},
-    {'code': '603288', 'business': '酱油等调味品', 'name': '海天味业', 'group': 'quality', 'note': '观察调味品销量、渠道变化与利润率'},
-    {'code': '600887', 'business': '液态奶与乳制品', 'name': '伊利股份', 'group': 'quality', 'note': '观察乳品需求、产品结构与现金回报'},
-    {'code': '000858', 'business': '白酒酿造', 'name': '五粮液', 'group': 'quality', 'note': '观察白酒渠道库存、现金回款与分红'},
-    {'code': '600438', 'business': '光伏硅料与电池、饲料', 'name': '通威股份', 'group': 'quality', 'note': '观察光伏产业价格周期、资本开支与现金流'},
-    {'code': '002714', 'business': '生猪养殖与屠宰', 'name': '牧原股份', 'group': 'quality', 'note': '观察养殖成本、猪价周期与负债现金流'},
-    {'code': '601100', 'business': '液压油缸与泵阀', 'name': '恒立液压', 'group': 'quality', 'note': '观察液压产品需求、出口与资本回报'},
-    {'code': '600031', 'business': '工程机械', 'name': '三一重工', 'group': 'quality', 'note': '观察工程机械周期、国际业务与应收回款'},
-    {'code': '000338', 'business': '发动机与动力系统', 'name': '潍柴动力', 'group': 'quality', 'note': '观察动力系统、商用车周期与现金回报'},
-    {'code': '603986', 'business': '存储芯片与微控制器', 'name': '兆易创新', 'group': 'quality', 'note': '观察存储与微控制器产品周期、研发和库存'},
-    {'code': '600660', 'business': '汽车玻璃', 'name': '福耀玻璃', 'group': 'quality', 'note': '观察汽车玻璃产品升级、全球产能与现金回报'},
-    {'code': '002352', 'business': '快递与综合物流', 'name': '顺丰控股', 'group': 'quality', 'note': '观察物流网络效率、业务结构和资本开支'},
-    {'code': '601919', 'business': '集装箱航运与码头', 'name': '中远海控', 'group': 'quality', 'note': '观察航运运价周期、运力供给与现金分配'},
-    {'code': '600585', 'business': '水泥与熟料', 'name': '海螺水泥', 'group': 'quality', 'note': '观察水泥需求、产能供给与现金流'},
-    {'code': '601689', 'business': '汽车底盘与减振零部件', 'name': '拓普集团', 'group': 'quality', 'note': '观察汽车零部件客户结构、产能利用与利润率'},
-    {'code': '300014', 'business': '消费、动力与储能电池', 'name': '亿纬锂能', 'group': 'quality', 'note': '观察电池产品结构、研发与资本开支'},
-    {'code': '600436', 'business': '中成药制造', 'name': '片仔癀', 'group': 'quality', 'note': '观察核心产品需求、渠道库存和现金回报'},
-    {'code': '002027', 'business': '电梯媒体广告', 'name': '分众传媒', 'group': 'quality', 'note': '观察广告需求、媒体点位效率与经营现金流'},
+# 优质企业须先完成报告研究，再进入刷新名单；红利名单保持独立。
+with open(os.path.join(HERE, 'data', 'stock-quality-research.json'), encoding='utf-8') as research_file:
+    QUALITY_RESEARCH = json.load(research_file)
+QUALITY_PROFILES = [{
+    'code': row['code'], 'name': row['name'], 'business': row['business'], 'group': 'quality',
+    'note': row['title'], 'research_category': row['category'],
+    'business_source_url': row['sources'][0]['url'],
+    'quality_research': {**row, 'status': 'reviewed', 'reviewedAt': QUALITY_RESEARCH['reviewedAt'],
+                         'reportPeriod': QUALITY_RESEARCH['reportPeriod']},
+} for row in QUALITY_RESEARCH['companies']]
+STOCK_UNIVERSE = QUALITY_PROFILES + [
     {'code': '600900', 'business': '水力发电', 'note': '水电龙头，现金流稳定，长期高比例分红'},
     {'code': '000333', 'business': '家电与工业自动化', 'note': '白电龙头，全球化经营，分红稳定'},
     {'code': '600901', 'business': '设备融资租赁', 'note': '金融租赁平台，高股息与稳健资产扩张'},
@@ -361,6 +333,11 @@ def apply_research_profile(row, item):
     row['businessLabel'] = item['business']
     row['businessSourceUrl'] = item.get('business_source_url')
     row['note'] = item['note']
+    if item.get('quality_research'):
+        row['qualityResearch'] = item['quality_research']
+        row['researchCategory'] = item['research_category']
+    else:
+        row.pop('qualityResearch', None)
 
 
 def refresh_quality_review(row, asof):
@@ -445,7 +422,7 @@ def main():
             else:
                 log('  !! %s 获取失败：%s' % (code, exc))
 
-    expected = len(set(old) | {item['code'] for item in universe}) if only else len(STOCK_UNIVERSE)
+    expected = len(STOCK_UNIVERSE)
     if len(rows) < max(1, int(expected * 0.8)):
         log('成功数据不足 80%%，放弃写回；失败：%s' % ','.join(failures))
         write_status('stocks', 'failed', records=len(rows), failures=failures, message='有效数据不足80%，保留旧数据')

@@ -1,0 +1,1616 @@
+{
+  "asOf": "2026-09-29",
+  "reason": "撤销没有逐家报告研究支持的原人工候选，移出产品及定时刷新名单；保留当时证据供审计。",
+  "companies": [
+    {
+      "code": "603259",
+      "name": "药明康德",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-04",
+        "roe": 13.19,
+        "roePrevious": 13.93,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 12.58,
+        "operatingCashFlow": 9699142388.08,
+        "roeChangePoints": -0.74,
+        "roeChangePercent": -5.3123,
+        "revenue": 28897478718.36,
+        "revenueGrowth": 38.935,
+        "revenueGrowthStatus": null,
+        "netProfit": 11080173661.42,
+        "netProfitGrowth": 29.4279,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 10572177317.83,
+        "deductedProfitGrowth": 89.3934,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "3年营收复合增长≥5%",
+          "pass": false,
+          "reason": "3年营收复合增长+4.92%，低于5%门槛",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "002594",
+      "name": "比亚迪",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-29",
+        "roe": 4.86,
+        "roePrevious": 7.43,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 4.88,
+        "operatingCashFlow": 37334744000.0,
+        "roeChangePoints": -2.57,
+        "roeChangePercent": -34.5895,
+        "revenue": 344815421000.0,
+        "revenueGrowth": -7.1282,
+        "revenueGrowthStatus": null,
+        "netProfit": 12325408000.0,
+        "netProfitGrowth": -20.5352,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 12373343000.0,
+        "deductedProfitGrowth": -9.0178,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "最新营收同比增长≥10%",
+          "pass": false,
+          "reason": "营收同比-7.13%，低于10%增长门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新归母及扣非利润同比增长均≥10%",
+          "pass": false,
+          "reason": "归母利润同比-20.54%、扣非利润同比-9.02%，低于10%增长门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新ROE为正，较上年同期相对降幅不超过20%",
+          "pass": false,
+          "reason": "ROE 7.43%→4.86%，相对下降34.59%，超过20%降幅上限",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "300124",
+      "name": "汇川技术",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-29",
+        "roe": 7.69,
+        "roePrevious": 10.06,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 7.54,
+        "operatingCashFlow": 1975059030.42,
+        "roeChangePoints": -2.37,
+        "roeChangePercent": -23.5586,
+        "revenue": 24675250997.63,
+        "revenueGrowth": 20.3122,
+        "revenueGrowthStatus": null,
+        "netProfit": 2809924122.46,
+        "netProfitGrowth": -5.3508,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 2756053764.48,
+        "deductedProfitGrowth": 3.1522,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "3年归母利润复合增长≥10%",
+          "pass": false,
+          "reason": "3年归母利润复合增长+5.34%，低于10%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新归母及扣非利润同比增长均≥10%",
+          "pass": false,
+          "reason": "归母利润同比-5.35%、扣非利润同比+3.15%，低于10%增长门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新ROE为正，较上年同期相对降幅不超过20%",
+          "pass": false,
+          "reason": "ROE 10.06%→7.69%，相对下降23.56%，超过20%降幅上限",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "600309",
+      "name": "万华化学",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-25",
+        "roe": 8.96,
+        "roePrevious": 6.24,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 8.62,
+        "operatingCashFlow": 11784141040.7,
+        "roeChangePoints": 2.72,
+        "roeChangePercent": 43.5897,
+        "revenue": 119315863794.85,
+        "revenueGrowth": 31.2585,
+        "revenueGrowthStatus": null,
+        "netProfit": 10062963544.81,
+        "netProfitGrowth": 64.3542,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 9676293596.48,
+        "deductedProfitGrowth": 54.9578,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "最新完整年度ROE≥15%",
+          "pass": false,
+          "reason": "2025年度ROE 12.44%，低于15%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "3年归母利润复合增长≥10%",
+          "pass": false,
+          "reason": "3年归母利润复合增长-8.28%，低于10%门槛",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "002475",
+      "name": "立讯精密",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-25",
+        "roe": 8.76,
+        "roePrevious": 9.13,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 6.73,
+        "operatingCashFlow": -2445863006.32,
+        "roeChangePoints": -0.37,
+        "roeChangePercent": -4.0526,
+        "revenue": 174504335921.25,
+        "revenueGrowth": 40.1606,
+        "revenueGrowthStatus": null,
+        "netProfit": 7842698288.86,
+        "netProfitGrowth": 18.037,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 5961877867.17,
+        "deductedProfitGrowth": 6.4729,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "最新归母及扣非利润同比增长均≥10%",
+          "pass": false,
+          "reason": "扣非利润同比+6.47%，低于10%增长门槛",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "002371",
+      "name": "北方华创",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-26",
+        "roe": 8.58,
+        "roePrevious": 9.81,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 8.5,
+        "operatingCashFlow": 3773698817.34,
+        "roeChangePoints": -1.23,
+        "roeChangePercent": -12.5382,
+        "revenue": 20161416890.56,
+        "revenueGrowth": 24.9039,
+        "revenueGrowthStatus": null,
+        "netProfit": 3370020676.75,
+        "netProfitGrowth": 5.0512,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 3340719149.36,
+        "deductedProfitGrowth": 5.0229,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "最新归母及扣非利润同比增长均≥10%",
+          "pass": false,
+          "reason": "归母利润同比+5.05%、扣非利润同比+5.02%，低于10%增长门槛",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "688012",
+      "name": "中微公司",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-20",
+        "roe": 11.56,
+        "roePrevious": 3.49,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 4.59,
+        "operatingCashFlow": 684553490.6,
+        "roeChangePoints": 8.07,
+        "roeChangePercent": 231.2321,
+        "revenue": 6691287327.67,
+        "revenueGrowth": 34.8886,
+        "revenueGrowthStatus": null,
+        "netProfit": 2825194624.91,
+        "netProfitGrowth": 300.2165,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 1122590335.26,
+        "deductedProfitGrowth": 108.3625,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "最近3个完整财年经营现金流为正",
+          "pass": false
+        },
+        {
+          "label": "3年平均年度ROE≥15%，各年均≥10%",
+          "pass": false,
+          "reason": "3年平均年度ROE 9.78%、最低年度8.66%，须分别达到15%和10%",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新完整年度ROE≥15%",
+          "pass": false,
+          "reason": "2025年度ROE 9.97%，低于15%门槛",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "300502",
+      "name": "新易盛",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-25",
+        "roe": 34.86,
+        "roePrevious": 38.12,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 34.78,
+        "operatingCashFlow": 1616408524.15,
+        "roeChangePoints": -3.26,
+        "roeChangePercent": -8.5519,
+        "revenue": 20909746962.2,
+        "revenueGrowth": 100.3392,
+        "revenueGrowthStatus": null,
+        "netProfit": 7529168039.39,
+        "netProfitGrowth": 90.9844,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 7510738801.54,
+        "deductedProfitGrowth": 90.9235,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "3年平均年度ROE≥15%，各年均≥10%",
+          "pass": false,
+          "reason": "3年平均年度ROE 33.22%、最低年度5.25%，须分别达到15%和10%",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "000063",
+      "name": "中兴通讯",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-22",
+        "roe": 3.65,
+        "roePrevious": 6.85,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 2.94,
+        "operatingCashFlow": -126600000.0,
+        "roeChangePoints": -3.2,
+        "roeChangePercent": -46.7153,
+        "revenue": 78025359000.0,
+        "revenueGrowth": 9.046,
+        "revenueGrowthStatus": null,
+        "netProfit": 2752825000.0,
+        "netProfitGrowth": -45.5702,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 2220797000.0,
+        "deductedProfitGrowth": -45.8857,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "3年平均年度ROE≥15%，各年均≥10%",
+          "pass": false,
+          "reason": "3年平均年度ROE 11.58%、最低年度7.58%，须分别达到15%和10%",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新完整年度ROE≥15%",
+          "pass": false,
+          "reason": "2025年度ROE 7.58%，低于15%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "3年营收复合增长≥5%",
+          "pass": false,
+          "reason": "3年营收复合增长+2.88%，低于5%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "3年归母利润复合增长≥10%",
+          "pass": false,
+          "reason": "3年归母利润复合增长-11.41%，低于10%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新营收同比增长≥10%",
+          "pass": false,
+          "reason": "营收同比+9.05%，低于10%增长门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新归母及扣非利润同比增长均≥10%",
+          "pass": false,
+          "reason": "归母利润同比-45.57%、扣非利润同比-45.89%，低于10%增长门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新ROE为正，较上年同期相对降幅不超过20%",
+          "pass": false,
+          "reason": "ROE 6.85%→3.65%，相对下降46.72%，超过20%降幅上限",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "600406",
+      "name": "国电南瑞",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-27",
+        "roe": 5.73,
+        "roePrevious": 5.87,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 5.45,
+        "operatingCashFlow": 591109591.8,
+        "roeChangePoints": -0.14,
+        "roeChangePercent": -2.385,
+        "revenue": 27767190529.75,
+        "revenueGrowth": 14.536,
+        "revenueGrowthStatus": null,
+        "netProfit": 3072688826.28,
+        "netProfitGrowth": 4.0816,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 2925285478.78,
+        "deductedProfitGrowth": 4.3147,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "3年归母利润复合增长≥10%",
+          "pass": false,
+          "reason": "3年归母利润复合增长+8.70%，低于10%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新归母及扣非利润同比增长均≥10%",
+          "pass": false,
+          "reason": "归母利润同比+4.08%、扣非利润同比+4.31%，低于10%增长门槛",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "300274",
+      "name": "阳光电源",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-29",
+        "roe": 10.73,
+        "roePrevious": 19.18,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 8.72,
+        "operatingCashFlow": 3735133201.04,
+        "roeChangePoints": -8.45,
+        "roeChangePercent": -44.0563,
+        "revenue": 30912265605.12,
+        "revenueGrowth": -28.9914,
+        "revenueGrowthStatus": null,
+        "netProfit": 5258509295.38,
+        "netProfitGrowth": -32.013,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 4275499654.46,
+        "deductedProfitGrowth": -42.9571,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "最新营收同比增长≥10%",
+          "pass": false,
+          "reason": "营收同比-28.99%，低于10%增长门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新归母及扣非利润同比增长均≥10%",
+          "pass": false,
+          "reason": "归母利润同比-32.01%、扣非利润同比-42.96%，低于10%增长门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新ROE为正，较上年同期相对降幅不超过20%",
+          "pass": false,
+          "reason": "ROE 19.18%→10.73%，相对下降44.06%，超过20%降幅上限",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "601012",
+      "name": "隆基绿能",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-31",
+        "roe": -7.04,
+        "roePrevious": -4.31,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": -7.71,
+        "operatingCashFlow": -5817794006.91,
+        "roeChangePoints": -2.73,
+        "roeChangePercent": null,
+        "revenue": 27045209097.55,
+        "revenueGrowth": -17.5781,
+        "revenueGrowthStatus": null,
+        "netProfit": -3684104428.05,
+        "netProfitGrowth": null,
+        "netProfitGrowthStatus": "亏损扩大",
+        "deductedProfit": -4031797081.95,
+        "deductedProfitGrowth": null,
+        "deductedProfitGrowthStatus": "亏损扩大"
+      },
+      "oldChecks": [
+        {
+          "label": "最近3个完整财年持续盈利",
+          "pass": false
+        },
+        {
+          "label": "最近3个完整财年经营现金流为正",
+          "pass": false
+        },
+        {
+          "label": "3年平均年度ROE≥15%，各年均≥10%",
+          "pass": false,
+          "reason": "3年平均年度ROE -2.66%、最低年度-13.07%，须分别达到15%和10%",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新完整年度ROE≥15%",
+          "pass": false,
+          "reason": "2025年度ROE -11.15%，低于15%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "3年营收复合增长≥5%",
+          "pass": false,
+          "reason": "3年营收复合增长-18.30%，低于5%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "3年归母利润复合增长≥10%",
+          "pass": false,
+          "reason": "缺可比较的3年归母利润复合增长数据（需要相距3年的完整年报及正基数）",
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新报告归母及扣非利润均为正",
+          "pass": false,
+          "reason": "归母利润为-36.84亿元，未满足大于0的条件；扣非利润为-40.32亿元，未满足大于0的条件",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新营收同比增长≥10%",
+          "pass": false,
+          "reason": "营收同比-17.58%，低于10%增长门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新归母及扣非利润同比增长均≥10%",
+          "pass": false,
+          "reason": "归母利润：亏损扩大；扣非利润：亏损扩大",
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新ROE为正，较上年同期相对降幅不超过20%",
+          "pass": false,
+          "reason": "最新报告ROE为-7.04%，未满足大于0的条件",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "002415",
+      "name": "海康威视",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-07-25",
+        "roe": 9.17,
+        "roePrevious": 6.85,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 8.95,
+        "operatingCashFlow": 3231411324.58,
+        "roeChangePoints": 2.32,
+        "roeChangePercent": 33.8686,
+        "revenue": 46822537847.07,
+        "revenueGrowth": 11.9673,
+        "revenueGrowthStatus": null,
+        "netProfit": 7895705450.11,
+        "netProfitGrowth": 39.5654,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 7711948685.9,
+        "deductedProfitGrowth": 40.4982,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "3年营收复合增长≥5%",
+          "pass": false,
+          "reason": "3年营收复合增长+3.61%，低于5%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "3年归母利润复合增长≥10%",
+          "pass": false,
+          "reason": "3年归母利润复合增长+3.41%，低于10%门槛",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "300760",
+      "name": "迈瑞医疗",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-29",
+        "roe": 12.01,
+        "roePrevious": 13.26,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 11.98,
+        "operatingCashFlow": 4876986709.0,
+        "roeChangePoints": -1.25,
+        "roeChangePercent": -9.4268,
+        "revenue": 17746969604.0,
+        "revenueGrowth": 5.9963,
+        "revenueGrowthStatus": null,
+        "netProfit": 4796791800.0,
+        "netProfitGrowth": -5.3657,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 4784797726.0,
+        "deductedProfitGrowth": -3.3242,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "3年营收复合增长≥5%",
+          "pass": false,
+          "reason": "3年营收复合增长+3.10%，低于5%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "3年归母利润复合增长≥10%",
+          "pass": false,
+          "reason": "3年归母利润复合增长-5.39%，低于10%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新营收同比增长≥10%",
+          "pass": false,
+          "reason": "营收同比+6.00%，低于10%增长门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新归母及扣非利润同比增长均≥10%",
+          "pass": false,
+          "reason": "归母利润同比-5.37%、扣非利润同比-3.32%，低于10%增长门槛",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "600276",
+      "name": "恒瑞医药",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-20",
+        "roe": 8.04,
+        "roePrevious": 9.42,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 6.71,
+        "operatingCashFlow": 1987003872.34,
+        "roeChangePoints": -1.38,
+        "roeChangePercent": -14.6497,
+        "revenue": 15455583728.11,
+        "revenueGrowth": -1.939,
+        "revenueGrowthStatus": null,
+        "netProfit": 4465439428.1,
+        "netProfitGrowth": 0.3446,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 3729589028.7,
+        "deductedProfitGrowth": -12.7142,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "3年平均年度ROE≥15%，各年均≥10%",
+          "pass": false,
+          "reason": "3年平均年度ROE 13.33%、最低年度10.99%，须分别达到15%和10%",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新完整年度ROE≥15%",
+          "pass": false,
+          "reason": "2025年度ROE 14.26%，低于15%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新营收同比增长≥10%",
+          "pass": false,
+          "reason": "营收同比-1.94%，低于10%增长门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新归母及扣非利润同比增长均≥10%",
+          "pass": false,
+          "reason": "归母利润同比+0.34%、扣非利润同比-12.71%，低于10%增长门槛",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "603288",
+      "name": "海天味业",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-27",
+        "roe": 10.07,
+        "roePrevious": 11.29,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 9.52,
+        "operatingCashFlow": 1224226577.61,
+        "roeChangePoints": -1.22,
+        "roeChangePercent": -10.806,
+        "revenue": 16146273837.53,
+        "revenueGrowth": 6.0062,
+        "revenueGrowthStatus": null,
+        "netProfit": 4190156263.0,
+        "netProfitGrowth": 7.1251,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 3960405507.28,
+        "deductedProfitGrowth": 3.7695,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "3年营收复合增长≥5%",
+          "pass": false,
+          "reason": "3年营收复合增长+4.08%，低于5%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "3年归母利润复合增长≥10%",
+          "pass": false,
+          "reason": "3年归母利润复合增长+4.33%，低于10%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新营收同比增长≥10%",
+          "pass": false,
+          "reason": "营收同比+6.01%，低于10%增长门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新归母及扣非利润同比增长均≥10%",
+          "pass": false,
+          "reason": "归母利润同比+7.13%、扣非利润同比+3.77%，低于10%增长门槛",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "600887",
+      "name": "伊利股份",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-27",
+        "roe": 10.09,
+        "roePrevious": 12.6,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 9.8,
+        "operatingCashFlow": 9759147483.18,
+        "roeChangePoints": -2.51,
+        "roeChangePercent": -19.9206,
+        "revenue": 64489715236.16,
+        "revenueGrowth": 4.1285,
+        "revenueGrowthStatus": null,
+        "netProfit": 5758628097.79,
+        "netProfitGrowth": -20.0244,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 5595762517.76,
+        "deductedProfitGrowth": -20.2468,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "3年营收复合增长≥5%",
+          "pass": false,
+          "reason": "3年营收复合增长-2.00%，低于5%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "3年归母利润复合增长≥10%",
+          "pass": false,
+          "reason": "3年归母利润复合增长+7.04%，低于10%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新营收同比增长≥10%",
+          "pass": false,
+          "reason": "营收同比+4.13%，低于10%增长门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新归母及扣非利润同比增长均≥10%",
+          "pass": false,
+          "reason": "归母利润同比-20.02%、扣非利润同比-20.25%，低于10%增长门槛",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "000858",
+      "name": "五粮液",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-29",
+        "roe": 7.14,
+        "roePrevious": 3.41,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 6.92,
+        "operatingCashFlow": -2153568792.32,
+        "roeChangePoints": 3.73,
+        "roeChangePercent": 109.3842,
+        "revenue": 28416674541.77,
+        "revenueGrowth": 20.8707,
+        "revenueGrowthStatus": null,
+        "netProfit": 8752942991.31,
+        "netProfitGrowth": 89.2999,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 8483289707.34,
+        "deductedProfitGrowth": 83.9574,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "3年平均年度ROE≥15%，各年均≥10%",
+          "pass": false,
+          "reason": "3年平均年度ROE 18.43%、最低年度6.89%，须分别达到15%和10%",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新完整年度ROE≥15%",
+          "pass": false,
+          "reason": "2025年度ROE 6.89%，低于15%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "3年营收复合增长≥5%",
+          "pass": false,
+          "reason": "3年营收复合增长-18.17%，低于5%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "3年归母利润复合增长≥10%",
+          "pass": false,
+          "reason": "3年归母利润复合增长-30.51%，低于10%门槛",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "600438",
+      "name": "通威股份",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-27",
+        "roe": -14.1,
+        "roePrevious": -10.72,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": -14.55,
+        "operatingCashFlow": 108966427.04,
+        "roeChangePoints": -3.38,
+        "roeChangePercent": null,
+        "revenue": 34356956077.44,
+        "revenueGrowth": -15.1865,
+        "revenueGrowthStatus": null,
+        "netProfit": -5119294750.54,
+        "netProfitGrowth": null,
+        "netProfitGrowthStatus": "亏损扩大",
+        "deductedProfit": -5282960916.09,
+        "deductedProfitGrowth": null,
+        "deductedProfitGrowthStatus": "亏损扩大"
+      },
+      "oldChecks": [
+        {
+          "label": "最近3个完整财年持续盈利",
+          "pass": false
+        },
+        {
+          "label": "3年平均年度ROE≥15%，各年均≥10%",
+          "pass": false,
+          "reason": "3年平均年度ROE -4.04%、最低年度-21.95%，须分别达到15%和10%",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新完整年度ROE≥15%",
+          "pass": false,
+          "reason": "2025年度ROE -21.95%，低于15%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "3年营收复合增长≥5%",
+          "pass": false,
+          "reason": "3年营收复合增长-16.09%，低于5%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "3年归母利润复合增长≥10%",
+          "pass": false,
+          "reason": "缺可比较的3年归母利润复合增长数据（需要相距3年的完整年报及正基数）",
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新报告归母及扣非利润均为正",
+          "pass": false,
+          "reason": "归母利润为-51.19亿元，未满足大于0的条件；扣非利润为-52.83亿元，未满足大于0的条件",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新营收同比增长≥10%",
+          "pass": false,
+          "reason": "营收同比-15.19%，低于10%增长门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新归母及扣非利润同比增长均≥10%",
+          "pass": false,
+          "reason": "归母利润：亏损扩大；扣非利润：亏损扩大",
+          "failureKind": "evidence"
+        },
+        {
+          "label": "最新ROE为正，较上年同期相对降幅不超过20%",
+          "pass": false,
+          "reason": "最新报告ROE为-14.10%，未满足大于0的条件",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "002714",
+      "name": "牧原股份",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-21",
+        "roe": -7.48,
+        "roePrevious": 13.79,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": -7.25,
+        "operatingCashFlow": -2223668382.68,
+        "roeChangePoints": -21.27,
+        "roeChangePercent": -154.2422,
+        "revenue": 59410306384.59,
+        "revenueGrowth": -22.3016,
+        "revenueGrowthStatus": null,
+        "netProfit": -6077653278.94,
+        "netProfitGrowth": -157.7172,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": -5895303071.49,
+        "deductedProfitGrowth": -155.2157,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "最近3个完整财年持续盈利",
+          "pass": false
+        },
+        {
+          "label": "3年平均年度ROE≥15%，各年均≥10%",
+          "pass": false,
+          "reason": "3年平均年度ROE 13.10%、最低年度-6.38%，须分别达到15%和10%",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "3年营收复合增长≥5%",
+          "pass": false,
+          "reason": "3年营收复合增长+4.91%，低于5%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "3年归母利润复合增长≥10%",
+          "pass": false,
+          "reason": "3年归母利润复合增长+5.29%，低于10%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新报告归母及扣非利润均为正",
+          "pass": false,
+          "reason": "归母利润为-60.78亿元，未满足大于0的条件；扣非利润为-58.95亿元，未满足大于0的条件",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新营收同比增长≥10%",
+          "pass": false,
+          "reason": "营收同比-22.30%，低于10%增长门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新归母及扣非利润同比增长均≥10%",
+          "pass": false,
+          "reason": "归母利润同比-157.72%、扣非利润同比-155.22%，低于10%增长门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新ROE为正，较上年同期相对降幅不超过20%",
+          "pass": false,
+          "reason": "最新报告ROE为-7.48%，未满足大于0的条件",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "601100",
+      "name": "恒立液压",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-25",
+        "roe": 7.99,
+        "roePrevious": 8.64,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 7.66,
+        "operatingCashFlow": 1254180981.41,
+        "roeChangePoints": -0.65,
+        "roeChangePercent": -7.5231,
+        "revenue": 6832528870.28,
+        "revenueGrowth": 32.1269,
+        "revenueGrowthStatus": null,
+        "netProfit": 1436337628.27,
+        "netProfitGrowth": 0.4993,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 1377319249.63,
+        "deductedProfitGrowth": -5.007,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "3年归母利润复合增长≥10%",
+          "pass": false,
+          "reason": "3年归母利润复合增长+5.28%，低于10%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新归母及扣非利润同比增长均≥10%",
+          "pass": false,
+          "reason": "归母利润同比+0.50%、扣非利润同比-5.01%，低于10%增长门槛",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "600031",
+      "name": "三一重工",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-31",
+        "roe": 6.16,
+        "roePrevious": 6.99,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 5.07,
+        "operatingCashFlow": 9767583000.0,
+        "roeChangePoints": -0.83,
+        "roeChangePercent": -11.8741,
+        "revenue": 53506463000.0,
+        "revenueGrowth": 19.4869,
+        "revenueGrowthStatus": null,
+        "netProfit": 5690229000.0,
+        "netProfitGrowth": 9.1314,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 4681837000.0,
+        "deductedProfitGrowth": -13.4506,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "3年平均年度ROE≥15%，各年均≥10%",
+          "pass": false,
+          "reason": "3年平均年度ROE 8.85%、最低年度6.85%，须分别达到15%和10%",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新完整年度ROE≥15%",
+          "pass": false,
+          "reason": "2025年度ROE 11.18%，低于15%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "3年营收复合增长≥5%",
+          "pass": false,
+          "reason": "3年营收复合增长+3.53%，低于5%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新归母及扣非利润同比增长均≥10%",
+          "pass": false,
+          "reason": "归母利润同比+9.13%、扣非利润同比-13.45%，低于10%增长门槛",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "000338",
+      "name": "潍柴动力",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-28",
+        "roe": 8.0,
+        "roePrevious": 6.29,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 6.36,
+        "operatingCashFlow": 11349444379.45,
+        "roeChangePoints": 1.71,
+        "roeChangePercent": 27.186,
+        "revenue": 123162965227.85,
+        "revenueGrowth": 8.8476,
+        "revenueGrowthStatus": null,
+        "netProfit": 7701265423.95,
+        "netProfitGrowth": 36.4637,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 6118889076.31,
+        "deductedProfitGrowth": 18.8556,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "3年平均年度ROE≥15%，各年均≥10%",
+          "pass": false,
+          "reason": "3年平均年度ROE 12.49%、最低年度11.69%，须分别达到15%和10%",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新完整年度ROE≥15%",
+          "pass": false,
+          "reason": "2025年度ROE 12.08%，低于15%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新营收同比增长≥10%",
+          "pass": false,
+          "reason": "营收同比+8.85%，低于10%增长门槛",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "603986",
+      "name": "兆易创新",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-19",
+        "roe": 23.13,
+        "roePrevious": 3.41,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 16.47,
+        "operatingCashFlow": 6048341057.06,
+        "roeChangePoints": 19.72,
+        "roeChangePercent": 578.2991,
+        "revenue": 11565760432.15,
+        "revenueGrowth": 178.6723,
+        "revenueGrowthStatus": null,
+        "netProfit": 6856786413.68,
+        "netProfitGrowth": 1091.4991,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 4883033478.93,
+        "deductedProfitGrowth": 796.9038,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "3年平均年度ROE≥15%，各年均≥10%",
+          "pass": false,
+          "reason": "3年平均年度ROE 5.77%、最低年度1.06%，须分别达到15%和10%",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新完整年度ROE≥15%",
+          "pass": false,
+          "reason": "2025年度ROE 9.30%，低于15%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "3年营收复合增长≥5%",
+          "pass": false,
+          "reason": "3年营收复合增长+4.22%，低于5%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "3年归母利润复合增长≥10%",
+          "pass": false,
+          "reason": "3年归母利润复合增长-7.06%，低于10%门槛",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "600660",
+      "name": "福耀玻璃",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-19",
+        "roe": 10.34,
+        "roePrevious": 13.18,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 10.11,
+        "operatingCashFlow": 4550946040.0,
+        "roeChangePoints": -2.84,
+        "roeChangePercent": -21.5478,
+        "revenue": 21971104612.0,
+        "revenueGrowth": 2.4418,
+        "revenueGrowthStatus": null,
+        "netProfit": 3970299706.0,
+        "netProfitGrowth": -17.3665,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 3879167099.0,
+        "deductedProfitGrowth": -17.5817,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "最新营收同比增长≥10%",
+          "pass": false,
+          "reason": "营收同比+2.44%，低于10%增长门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新归母及扣非利润同比增长均≥10%",
+          "pass": false,
+          "reason": "归母利润同比-17.37%、扣非利润同比-17.58%，低于10%增长门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新ROE为正，较上年同期相对降幅不超过20%",
+          "pass": false,
+          "reason": "ROE 13.18%→10.34%，相对下降21.55%，超过20%降幅上限",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "002352",
+      "name": "顺丰控股",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-29",
+        "roe": 5.49,
+        "roePrevious": 6.07,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 4.96,
+        "operatingCashFlow": 11171404000.0,
+        "roeChangePoints": -0.58,
+        "roeChangePercent": -9.5552,
+        "revenue": 155506421000.0,
+        "revenueGrowth": 5.8888,
+        "revenueGrowthStatus": null,
+        "netProfit": 5501905000.0,
+        "netProfitGrowth": -4.1096,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 4974949000.0,
+        "deductedProfitGrowth": 9.3158,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "3年平均年度ROE≥15%，各年均≥10%",
+          "pass": false,
+          "reason": "3年平均年度ROE 10.62%、最低年度9.19%，须分别达到15%和10%",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新完整年度ROE≥15%",
+          "pass": false,
+          "reason": "2025年度ROE 11.51%，低于15%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "3年营收复合增长≥5%",
+          "pass": false,
+          "reason": "3年营收复合增长+4.84%，低于5%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新营收同比增长≥10%",
+          "pass": false,
+          "reason": "营收同比+5.89%，低于10%增长门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新归母及扣非利润同比增长均≥10%",
+          "pass": false,
+          "reason": "归母利润同比-4.11%、扣非利润同比+9.32%，低于10%增长门槛",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "601919",
+      "name": "中远海控",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-29",
+        "roe": 5.7,
+        "roePrevious": 7.35,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 5.69,
+        "operatingCashFlow": 23330225726.57,
+        "roeChangePoints": -1.65,
+        "roeChangePercent": -22.449,
+        "revenue": 111921747568.76,
+        "revenueGrowth": 2.587,
+        "revenueGrowthStatus": null,
+        "netProfit": 13418920777.4,
+        "netProfitGrowth": -23.4783,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 13386735443.83,
+        "deductedProfitGrowth": -23.3512,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "最新完整年度ROE≥15%",
+          "pass": false,
+          "reason": "2025年度ROE 13.17%，低于15%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "3年营收复合增长≥5%",
+          "pass": false,
+          "reason": "3年营收复合增长-17.51%，低于5%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "3年归母利润复合增长≥10%",
+          "pass": false,
+          "reason": "3年归母利润复合增长-34.47%，低于10%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新营收同比增长≥10%",
+          "pass": false,
+          "reason": "营收同比+2.59%，低于10%增长门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新归母及扣非利润同比增长均≥10%",
+          "pass": false,
+          "reason": "归母利润同比-23.48%、扣非利润同比-23.35%，低于10%增长门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新ROE为正，较上年同期相对降幅不超过20%",
+          "pass": false,
+          "reason": "ROE 7.35%→5.70%，相对下降22.45%，超过20%降幅上限",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "600585",
+      "name": "海螺水泥",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-27",
+        "roe": 1.31,
+        "roePrevious": 2.32,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 0.98,
+        "operatingCashFlow": 4515900235.0,
+        "roeChangePoints": -1.01,
+        "roeChangePercent": -43.5345,
+        "revenue": 36926872423.0,
+        "revenueGrowth": -10.8838,
+        "revenueGrowthStatus": null,
+        "netProfit": 2526711692.0,
+        "netProfitGrowth": -42.761,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 1902123000.0,
+        "deductedProfitGrowth": -54.6908,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "3年平均年度ROE≥15%，各年均≥10%",
+          "pass": false,
+          "reason": "3年平均年度ROE 4.68%、最低年度4.14%，须分别达到15%和10%",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新完整年度ROE≥15%",
+          "pass": false,
+          "reason": "2025年度ROE 4.27%，低于15%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "3年营收复合增长≥5%",
+          "pass": false,
+          "reason": "3年营收复合增长-14.49%，低于5%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "3年归母利润复合增长≥10%",
+          "pass": false,
+          "reason": "3年归母利润复合增长-19.69%，低于10%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新营收同比增长≥10%",
+          "pass": false,
+          "reason": "营收同比-10.88%，低于10%增长门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新归母及扣非利润同比增长均≥10%",
+          "pass": false,
+          "reason": "归母利润同比-42.76%、扣非利润同比-54.69%，低于10%增长门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新ROE为正，较上年同期相对降幅不超过20%",
+          "pass": false,
+          "reason": "ROE 2.32%→1.31%，相对下降43.53%，超过20%降幅上限",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "601689",
+      "name": "拓普集团",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-28",
+        "roe": 4.21,
+        "roePrevious": 6.02,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 3.74,
+        "operatingCashFlow": 2596056538.23,
+        "roeChangePoints": -1.81,
+        "roeChangePercent": -30.0664,
+        "revenue": 14199245308.27,
+        "revenueGrowth": 9.777,
+        "revenueGrowthStatus": null,
+        "netProfit": 1022548890.95,
+        "netProfitGrowth": -21.0343,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 907521896.35,
+        "deductedProfitGrowth": -21.8728,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "最新完整年度ROE≥15%",
+          "pass": false,
+          "reason": "2025年度ROE 12.37%，低于15%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新营收同比增长≥10%",
+          "pass": false,
+          "reason": "营收同比+9.78%，低于10%增长门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新归母及扣非利润同比增长均≥10%",
+          "pass": false,
+          "reason": "归母利润同比-21.03%、扣非利润同比-21.87%，低于10%增长门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新ROE为正，较上年同期相对降幅不超过20%",
+          "pass": false,
+          "reason": "ROE 6.02%→4.21%，相对下降30.07%，超过20%降幅上限",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "300014",
+      "name": "亿纬锂能",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-20",
+        "roe": 7.24,
+        "roePrevious": 4.2,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 5.38,
+        "operatingCashFlow": -387920722.12,
+        "roeChangePoints": 3.04,
+        "roeChangePercent": 72.381,
+        "revenue": 45691465298.91,
+        "revenueGrowth": 62.2015,
+        "revenueGrowthStatus": null,
+        "netProfit": 3301230562.92,
+        "netProfitGrowth": 105.6622,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 2451482110.3,
+        "deductedProfitGrowth": 111.8892,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "3年平均年度ROE≥15%，各年均≥10%",
+          "pass": false,
+          "reason": "3年平均年度ROE 11.43%、最低年度10.50%，须分别达到15%和10%",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新完整年度ROE≥15%",
+          "pass": false,
+          "reason": "2025年度ROE 10.50%，低于15%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "3年归母利润复合增长≥10%",
+          "pass": false,
+          "reason": "3年归母利润复合增长+5.62%，低于10%门槛",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "600436",
+      "name": "片仔癀",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-29",
+        "roe": 7.26,
+        "roePrevious": 9.62,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 7.01,
+        "operatingCashFlow": 1624544672.4,
+        "roeChangePoints": -2.36,
+        "roeChangePercent": -24.5322,
+        "revenue": 4572843621.56,
+        "revenueGrowth": -14.9798,
+        "revenueGrowthStatus": null,
+        "netProfit": 1092974060.35,
+        "netProfitGrowth": -24.2206,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 1054586603.29,
+        "deductedProfitGrowth": -27.4137,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "最新完整年度ROE≥15%",
+          "pass": false,
+          "reason": "2025年度ROE 14.84%，低于15%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "3年营收复合增长≥5%",
+          "pass": false,
+          "reason": "3年营收复合增长+1.17%，低于5%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "3年归母利润复合增长≥10%",
+          "pass": false,
+          "reason": "3年归母利润复合增长-4.42%，低于10%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新营收同比增长≥10%",
+          "pass": false,
+          "reason": "营收同比-14.98%，低于10%增长门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新归母及扣非利润同比增长均≥10%",
+          "pass": false,
+          "reason": "归母利润同比-24.22%、扣非利润同比-27.41%，低于10%增长门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新ROE为正，较上年同期相对降幅不超过20%",
+          "pass": false,
+          "reason": "ROE 9.62%→7.26%，相对下降24.53%，超过20%降幅上限",
+          "failureKind": "threshold"
+        }
+      ]
+    },
+    {
+      "code": "002027",
+      "name": "分众传媒",
+      "latestReport": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-19",
+        "roe": 20.44,
+        "roePrevious": 14.52,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 14.87,
+        "operatingCashFlow": 4453428032.4,
+        "roeChangePoints": 5.92,
+        "roeChangePercent": 40.7713,
+        "revenue": 5991375629.17,
+        "revenueGrowth": -1.9793,
+        "revenueGrowthStatus": null,
+        "netProfit": 3128055743.26,
+        "netProfitGrowth": 17.3852,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 2290530695.17,
+        "deductedProfitGrowth": -7.0614,
+        "deductedProfitGrowthStatus": null
+      },
+      "oldChecks": [
+        {
+          "label": "3年归母利润复合增长≥10%",
+          "pass": false,
+          "reason": "3年归母利润复合增长+1.83%，低于10%门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新营收同比增长≥10%",
+          "pass": false,
+          "reason": "营收同比-1.98%，低于10%增长门槛",
+          "failureKind": "threshold"
+        },
+        {
+          "label": "最新归母及扣非利润同比增长均≥10%",
+          "pass": false,
+          "reason": "扣非利润同比-7.06%，低于10%增长门槛",
+          "failureKind": "threshold"
+        }
+      ]
+    }
+  ]
+}

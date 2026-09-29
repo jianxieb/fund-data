@@ -9,9 +9,10 @@
   const copy = x => JSON.parse(JSON.stringify(x));
   const record = v => v !== null && typeof v === 'object' && !Array.isArray(v);
   const escapeHtml = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  function stockMatches(stock, group, showFailed = false) {
+  function stockMatches(stock, group) {
     if (!['quality', 'dividend'].includes(group) || stock.group !== group) return false;
-    return group === 'dividend' || showFailed || stock.qualityReview?.qualified === true;
+    return group === 'dividend' || (stock.qualityReview?.qualified === true &&
+      stock.qualityResearch?.status === 'reviewed' && stock.qualityResearch?.code === stock.c);
   }
   function validDate(value) {
     if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;

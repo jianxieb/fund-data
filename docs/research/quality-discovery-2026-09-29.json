@@ -1,0 +1,3030 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-09-29",
+  "scope": "沪深A股",
+  "financialRule": "report_backed_quality_v4",
+  "note": "财务线索并非优质企业名单；须另核实五年价格历史及具名公司报告。手工研究覆盖有限，不是全A排名。",
+  "annualCount": 211,
+  "latestCount": 1068,
+  "intersectionCount": 116,
+  "financialLeadCount": 28,
+  "sourceErrors": [
+    "001246",
+    "301718"
+  ],
+  "bulkSources": [
+    "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=SECURITY_CODE%2CSECURITY_NAME_ABBR%2CSECUCODE%2CREPORT_DATE%2CNOTICE_DATE%2CROEJQ%2CTOTALOPERATEREVETZ%2CPARENTNETPROFITTZ%2CKCFJCXSYJLRTZ%2CPARENTNETPROFIT%2CKCFJCXSYJLR&filter=%28REPORT_DATE%3D%272025-12-31%27%29%28TOTALOPERATEREVETZ%3E%3D10%29%28PARENTNETPROFITTZ%3E%3D10%29%28KCFJCXSYJLRTZ%3E%3D10%29%28PARENTNETPROFIT%3E0%29%28KCFJCXSYJLR%3E0%29%28ROEJQ%3E%3D15%29&pageSize=500&pageNumber=1&sortColumns=SECURITY_CODE&sortTypes=1",
+    "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=SECURITY_CODE%2CSECURITY_NAME_ABBR%2CSECUCODE%2CREPORT_DATE%2CNOTICE_DATE%2CROEJQ%2CTOTALOPERATEREVETZ%2CPARENTNETPROFITTZ%2CKCFJCXSYJLRTZ%2CPARENTNETPROFIT%2CKCFJCXSYJLR&filter=%28REPORT_DATE%3D%272025-12-31%27%29%28TOTALOPERATEREVETZ%3E%3D10%29%28PARENTNETPROFITTZ%3E%3D10%29%28KCFJCXSYJLRTZ%3E%3D10%29%28PARENTNETPROFIT%3E0%29%28KCFJCXSYJLR%3E0%29%28ROEJQ%3E%3D15%29&pageSize=500&pageNumber=2&sortColumns=SECURITY_CODE&sortTypes=1",
+    "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=SECURITY_CODE%2CSECURITY_NAME_ABBR%2CSECUCODE%2CREPORT_DATE%2CNOTICE_DATE%2CROEJQ%2CTOTALOPERATEREVETZ%2CPARENTNETPROFITTZ%2CKCFJCXSYJLRTZ%2CPARENTNETPROFIT%2CKCFJCXSYJLR&filter=%28REPORT_DATE%3D%272025-12-31%27%29%28TOTALOPERATEREVETZ%3E%3D10%29%28PARENTNETPROFITTZ%3E%3D10%29%28KCFJCXSYJLRTZ%3E%3D10%29%28PARENTNETPROFIT%3E0%29%28KCFJCXSYJLR%3E0%29%28ROEJQ%3E%3D15%29&pageSize=500&pageNumber=3&sortColumns=SECURITY_CODE&sortTypes=1",
+    "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=SECURITY_CODE%2CSECURITY_NAME_ABBR%2CSECUCODE%2CREPORT_DATE%2CNOTICE_DATE%2CROEJQ%2CTOTALOPERATEREVETZ%2CPARENTNETPROFITTZ%2CKCFJCXSYJLRTZ%2CPARENTNETPROFIT%2CKCFJCXSYJLR&filter=%28REPORT_DATE%3D%272026-06-30%27%29%28TOTALOPERATEREVETZ%3E%3D10%29%28PARENTNETPROFITTZ%3E%3D10%29%28KCFJCXSYJLRTZ%3E%3D10%29%28PARENTNETPROFIT%3E0%29%28KCFJCXSYJLR%3E0%29&pageSize=500&pageNumber=1&sortColumns=SECURITY_CODE&sortTypes=1",
+    "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=SECURITY_CODE%2CSECURITY_NAME_ABBR%2CSECUCODE%2CREPORT_DATE%2CNOTICE_DATE%2CROEJQ%2CTOTALOPERATEREVETZ%2CPARENTNETPROFITTZ%2CKCFJCXSYJLRTZ%2CPARENTNETPROFIT%2CKCFJCXSYJLR&filter=%28REPORT_DATE%3D%272026-06-30%27%29%28TOTALOPERATEREVETZ%3E%3D10%29%28PARENTNETPROFITTZ%3E%3D10%29%28KCFJCXSYJLRTZ%3E%3D10%29%28PARENTNETPROFIT%3E0%29%28KCFJCXSYJLR%3E0%29&pageSize=500&pageNumber=2&sortColumns=SECURITY_CODE&sortTypes=1",
+    "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=SECURITY_CODE%2CSECURITY_NAME_ABBR%2CSECUCODE%2CREPORT_DATE%2CNOTICE_DATE%2CROEJQ%2CTOTALOPERATEREVETZ%2CPARENTNETPROFITTZ%2CKCFJCXSYJLRTZ%2CPARENTNETPROFIT%2CKCFJCXSYJLR&filter=%28REPORT_DATE%3D%272026-06-30%27%29%28TOTALOPERATEREVETZ%3E%3D10%29%28PARENTNETPROFITTZ%3E%3D10%29%28KCFJCXSYJLRTZ%3E%3D10%29%28PARENTNETPROFIT%3E0%29%28KCFJCXSYJLR%3E0%29&pageSize=500&pageNumber=3&sortColumns=SECURITY_CODE&sortTypes=1",
+    "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=SECURITY_CODE%2CSECURITY_NAME_ABBR%2CSECUCODE%2CREPORT_DATE%2CNOTICE_DATE%2CROEJQ%2CTOTALOPERATEREVETZ%2CPARENTNETPROFITTZ%2CKCFJCXSYJLRTZ%2CPARENTNETPROFIT%2CKCFJCXSYJLR&filter=%28REPORT_DATE%3D%272026-06-30%27%29%28TOTALOPERATEREVETZ%3E%3D10%29%28PARENTNETPROFITTZ%3E%3D10%29%28KCFJCXSYJLRTZ%3E%3D10%29%28PARENTNETPROFIT%3E0%29%28KCFJCXSYJLR%3E0%29&pageSize=500&pageNumber=4&sortColumns=SECURITY_CODE&sortTypes=1",
+    "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=SECURITY_CODE%2CSECURITY_NAME_ABBR%2CSECUCODE%2CREPORT_DATE%2CNOTICE_DATE%2CROEJQ%2CTOTALOPERATEREVETZ%2CPARENTNETPROFITTZ%2CKCFJCXSYJLRTZ%2CPARENTNETPROFIT%2CKCFJCXSYJLR&filter=%28REPORT_DATE%3D%272026-06-30%27%29%28TOTALOPERATEREVETZ%3E%3D10%29%28PARENTNETPROFITTZ%3E%3D10%29%28KCFJCXSYJLRTZ%3E%3D10%29%28PARENTNETPROFIT%3E0%29%28KCFJCXSYJLR%3E0%29&pageSize=500&pageNumber=5&sortColumns=SECURITY_CODE&sortTypes=1",
+    "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=SECURITY_CODE%2CSECURITY_NAME_ABBR%2CSECUCODE%2CREPORT_DATE%2CNOTICE_DATE%2CROEJQ%2CTOTALOPERATEREVETZ%2CPARENTNETPROFITTZ%2CKCFJCXSYJLRTZ%2CPARENTNETPROFIT%2CKCFJCXSYJLR&filter=%28REPORT_DATE%3D%272026-06-30%27%29%28TOTALOPERATEREVETZ%3E%3D10%29%28PARENTNETPROFITTZ%3E%3D10%29%28KCFJCXSYJLRTZ%3E%3D10%29%28PARENTNETPROFIT%3E0%29%28KCFJCXSYJLR%3E0%29&pageSize=500&pageNumber=6&sortColumns=SECURITY_CODE&sortTypes=1"
+  ],
+  "reportResearchFile": "data/stock-quality-research.json",
+  "reportReviewedCodes": [
+    "601138",
+    "601899",
+    "300750",
+    "300308",
+    "002028",
+    "002463",
+    "300394",
+    "688188",
+    "688617",
+    "300573",
+    "300693",
+    "603699"
+  ],
+  "records": [
+    {
+      "code": "000408",
+      "name": "藏格矿业",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": -24.1424,
+        "netProfit": -12.0103,
+        "deductedProfit": -10.8901
+      },
+      "roe3": 23.91,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 23.0455,
+        "netProfit": 102.0926,
+        "deductedProfit": 104.9158
+      },
+      "failedConditions": [
+        "3年营收复合增长-24.14%，低于5%门槛",
+        "3年归母利润复合增长-12.01%，低于10%门槛",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "3年扣非利润复合增长-10.89%，低于10%门槛"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22000408.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "6d1b6cf4fd5023f8010f052a8f0801fbfd94a2cd78d34a566b11b8b76262c6e0"
+    },
+    {
+      "code": "000426",
+      "name": "兴业银锡",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 38.6131,
+        "netProfit": 113.9981,
+        "deductedProfit": 104.8116
+      },
+      "roe3": 19.0,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 73.1308,
+        "netProfit": 184.4196,
+        "deductedProfit": 126.6008
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22000426.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "953f07cc0e35c4d8c1e658258aa40a487fc65f266c7eb9b4dab6c9ef2f1c6a7a"
+    },
+    {
+      "code": "000506",
+      "name": "招金黄金",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 23.8814,
+        "netProfit": -14.369,
+        "deductedProfit": null
+      },
+      "roe3": 1.9,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 85.1313,
+        "netProfit": 407.4399,
+        "deductedProfit": 666.3904
+      },
+      "failedConditions": [
+        "最近3个完整财年持续盈利",
+        "最近3个完整财年经营现金流为正",
+        "3年平均年度ROE 1.90%、最低年度-21.19%，须分别达到15%和10%",
+        "3年归母利润复合增长-14.37%，低于10%门槛",
+        "最近3年存在扣非亏损或缺扣非利润",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "最新完整年度营收或利润增长不足10%，或缺可比同比",
+        "缺可比较的3年扣非利润复合增长数据（需要相距3年的完整年报及正基数）"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22000506.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "f1dac43e7e3bb329c41589ed8da70c691bbff7ef1e0b217d3b41427e2d2ae752"
+    },
+    {
+      "code": "000603",
+      "name": "盛达资源",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 9.4137,
+        "netProfit": 13.4541,
+        "deductedProfit": 14.7973
+      },
+      "roe3": 11.03,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 27.0844,
+        "netProfit": 456.4619,
+        "deductedProfit": 417.0643
+      },
+      "failedConditions": [
+        "3年平均年度ROE 11.03%、最低年度4.85%，须分别达到15%和10%",
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22000603.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "b9d9868088b42fdc86704fa04a5d1f3c7861d4184185733f6a1574f8597b7518"
+    },
+    {
+      "code": "000807",
+      "name": "云铝股份",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 7.4032,
+        "netProfit": 9.844,
+        "deductedProfit": 11.3
+      },
+      "roe3": 17.54,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 20.3002,
+        "netProfit": 177.614,
+        "deductedProfit": 176.5076
+      },
+      "failedConditions": [
+        "3年归母利润复合增长+9.84%，低于10%门槛",
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22000807.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "1976f732e28d8d4c40023244f80919630b7293a38dcc537960804d95d053a07f"
+    },
+    {
+      "code": "001232",
+      "name": "嘉立创",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 17.0072,
+        "netProfit": 31.6418,
+        "deductedProfit": 37.4455
+      },
+      "roe3": 19.0,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 54.1253,
+        "netProfit": 73.5426,
+        "deductedProfit": 81.2685
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22001232.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "0d75cc02d4b9300d754f0efb96968140dcae9319f7dbd77ad835820e7b7415c6"
+    },
+    {
+      "code": "001246",
+      "status": "source_unavailable",
+      "error": "'NoneType' object is not subscriptable"
+    },
+    {
+      "code": "001309",
+      "name": "德明利",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 108.4809,
+        "netProfit": 116.8524,
+        "deductedProfit": 284.1012
+      },
+      "roe3": 17.77,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 311.5456,
+        "netProfit": null,
+        "deductedProfit": null
+      },
+      "failedConditions": [
+        "最近3个完整财年经营现金流为正",
+        "3年平均年度ROE 17.77%、最低年度2.26%，须分别达到15%和10%",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "归母利润：扭亏；扣非利润：扭亏"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22001309.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "54625e07c17d61a58fd324830d5cec7961f710c1c0062c8f9189f5ee649d76a0"
+    },
+    {
+      "code": "001337",
+      "name": "四川黄金",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 29.5036,
+        "netProfit": 32.8466,
+        "deductedProfit": 50.492
+      },
+      "roe3": 21.13,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 87.0261,
+        "netProfit": 107.3448,
+        "deductedProfit": 102.076
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22001337.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "7ce013b124ae45dc76a5a572624d5d61f4f562318a6e5a3bdde6d41c56b9557a"
+    },
+    {
+      "code": "001389",
+      "name": "广合科技",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 31.4982,
+        "netProfit": 53.7195,
+        "deductedProfit": 52.221
+      },
+      "roe3": 26.9,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 80.9776,
+        "netProfit": 94.3899,
+        "deductedProfit": 96.7115
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22001389.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "473726bbe156ef5c8b0536b5d7c15880df0ec68416ac0fa2365eafa69068cfa3"
+    },
+    {
+      "code": "002028",
+      "name": "思源电气",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 26.9117,
+        "netProfit": 37.1714,
+        "deductedProfit": 36.196
+      },
+      "roe3": 18.86,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 27.0491,
+        "netProfit": 13.2295,
+        "deductedProfit": 13.1183
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22002028.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "13f069ccb6bcbc69e802d8a6222338a43aaf4e6b016cbb606828680a3badd0ef"
+    },
+    {
+      "code": "002155",
+      "name": "湖南黄金",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 33.6061,
+        "netProfit": 50.1195,
+        "deductedProfit": 54.2033
+      },
+      "roe3": 13.24,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 12.6336,
+        "netProfit": 46.0064,
+        "deductedProfit": 46.3093
+      },
+      "failedConditions": [
+        "3年平均年度ROE 13.24%、最低年度8.14%，须分别达到15%和10%"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22002155.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "cb943910d6ca33de050b17ba5025500fc0cdf5e8225111ec84063b38e8261520"
+    },
+    {
+      "code": "002209",
+      "name": "达意隆",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 17.2385,
+        "netProfit": 75.939,
+        "deductedProfit": 125.3538
+      },
+      "roe3": 11.15,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 17.0101,
+        "netProfit": 31.2414,
+        "deductedProfit": 15.5477
+      },
+      "failedConditions": [
+        "总市值≥100亿元",
+        "3年平均年度ROE 11.15%、最低年度7.54%，须分别达到15%和10%"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22002209.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "33dec587fcc659e116cd738877a528be3acf1303c0dfd3a02bf624d33656963d"
+    },
+    {
+      "code": "002222",
+      "name": "福晶科技",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 14.6438,
+        "netProfit": 7.1588,
+        "deductedProfit": 6.8547
+      },
+      "roe3": 15.2,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 39.462,
+        "netProfit": 40.9656,
+        "deductedProfit": 37.4231
+      },
+      "failedConditions": [
+        "3年归母利润复合增长+7.16%，低于10%门槛",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "3年扣非利润复合增长+6.85%，低于10%门槛"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22002222.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "fad1923f1cc708701971e3591533cf47eb2ca37925fdad192479485b0290f533"
+    },
+    {
+      "code": "002463",
+      "name": "沪电股份",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 31.4761,
+        "netProfit": 41.0678,
+        "deductedProfit": 43.8001
+      },
+      "roe3": 23.22,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 61.1683,
+        "netProfit": 73.7221,
+        "deductedProfit": 70.0027
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22002463.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "69fefbc5d34fe08011b51f4456a6c7addb91b487ea6f7b018f4458e242f1fad5"
+    },
+    {
+      "code": "002602",
+      "name": "世纪华通",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 48.9204,
+        "netProfit": null,
+        "deductedProfit": null
+      },
+      "roe3": 9.13,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 28.5345,
+        "netProfit": 69.5059,
+        "deductedProfit": 66.4003
+      },
+      "failedConditions": [
+        "3年平均年度ROE 9.13%、最低年度2.19%，须分别达到15%和10%",
+        "缺可比较的3年归母利润复合增长数据（需要相距3年的完整年报及正基数）",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "缺可比较的3年扣非利润复合增长数据（需要相距3年的完整年报及正基数）"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22002602.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "61d8c60953ac79864c2209ce380865f368a66d7cfa9c3d99dbaf428989c250e4"
+    },
+    {
+      "code": "002768",
+      "name": "国恩股份",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 16.5978,
+        "netProfit": 8.2933,
+        "deductedProfit": 9.3356
+      },
+      "roe3": 13.66,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 18.0524,
+        "netProfit": 89.327,
+        "deductedProfit": 91.8443
+      },
+      "failedConditions": [
+        "3年平均年度ROE 13.66%、最低年度10.92%，须分别达到15%和10%",
+        "3年归母利润复合增长+8.29%，低于10%门槛",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "3年扣非利润复合增长+9.34%，低于10%门槛"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22002768.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "c25ecf4e80961baece0062d32b9bae0f3577de67db13418001fd5b1b3db0d0a5"
+    },
+    {
+      "code": "002901",
+      "name": "大博医疗",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 21.9493,
+        "netProfit": 86.4208,
+        "deductedProfit": 73.8073
+      },
+      "roe3": 10.48,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 10.694,
+        "netProfit": 44.6548,
+        "deductedProfit": 25.1016
+      },
+      "failedConditions": [
+        "3年平均年度ROE 10.48%、最低年度1.95%，须分别达到15%和10%",
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22002901.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "ef51eb92a0d17077db12d2b48291365d25c1e67518941d4aea999b2c96858b8f"
+    },
+    {
+      "code": "002916",
+      "name": "深南电路",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 19.1134,
+        "netProfit": 25.9058,
+        "deductedProfit": 27.5668
+      },
+      "roe3": 15.15,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 46.3283,
+        "netProfit": 65.5463,
+        "deductedProfit": 76.943
+      },
+      "failedConditions": [
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22002916.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "992c6e29e827604c688e8ee9721861b73e9bb06ca72bd37478f357e7579f3edd"
+    },
+    {
+      "code": "002961",
+      "name": "瑞达期货",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": -16.482,
+        "netProfit": 23.0503,
+        "deductedProfit": 20.5515
+      },
+      "roe3": 13.61,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 60.2839,
+        "netProfit": 80.0178,
+        "deductedProfit": 75.93
+      },
+      "failedConditions": [
+        "非金融企业（金融企业单独观察）",
+        "总市值≥100亿元",
+        "最近3个完整财年经营现金流为正",
+        "3年平均年度ROE 13.61%、最低年度9.42%，须分别达到15%和10%",
+        "3年营收复合增长-16.48%，低于5%门槛",
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22002961.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "2bf456cd127ad9d711cdb25fefbe981a124556185b3f6681194d5da9a196452b"
+    },
+    {
+      "code": "003010",
+      "name": "若羽臣",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 41.2792,
+        "netProfit": 79.2814,
+        "deductedProfit": 81.3052
+      },
+      "roe3": 11.88,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 73.2874,
+        "netProfit": 131.725,
+        "deductedProfit": 128.6472
+      },
+      "failedConditions": [
+        "总市值≥100亿元",
+        "最近3个完整财年经营现金流为正",
+        "3年平均年度ROE 11.88%、最低年度5.01%，须分别达到15%和10%"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22003010.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "6e79f01a5e4a93ff354583e898e2b7140c9718ceb16207f6bb9a6d5db9711499"
+    },
+    {
+      "code": "300033",
+      "name": "同花顺",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 19.2065,
+        "netProfit": 23.7541,
+        "deductedProfit": 23.6035
+      },
+      "roe3": 27.84,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 48.6819,
+        "netProfit": 89.7555,
+        "deductedProfit": 92.8947
+      },
+      "failedConditions": [
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22300033.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "11ba35f22b68c07efb1b00b0d297d9080659d1e78df652836abcf3d3c2c11a85"
+    },
+    {
+      "code": "300308",
+      "name": "中际旭创",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 58.2899,
+        "netProfit": 106.6229,
+        "deductedProfit": 117.7441
+      },
+      "roe3": 30.55,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 182.4914,
+        "netProfit": 241.696,
+        "deductedProfit": 229.3168
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22300308.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "7194d6dba3de098829a7721525dffe655ce8f7ff36d59648366adfaf110cafe8"
+    },
+    {
+      "code": "300394",
+      "name": "天孚通信",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 62.8127,
+        "netProfit": 71.0698,
+        "deductedProfit": 75.6692
+      },
+      "roe3": 34.58,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 15.1492,
+        "netProfit": 33.9224,
+        "deductedProfit": 36.7632
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22300394.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "c32eb16d136c3579b35c1f21e38edcbfe01619f5123baa16d92363690b1495fe"
+    },
+    {
+      "code": "300410",
+      "name": "正业科技",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": -4.2606,
+        "netProfit": null,
+        "deductedProfit": null
+      },
+      "roe3": -31.02,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 28.3187,
+        "netProfit": 32.2691,
+        "deductedProfit": 451.2743
+      },
+      "failedConditions": [
+        "总市值≥100亿元",
+        "最近3个完整财年持续盈利",
+        "最近3个完整财年经营现金流为正",
+        "3年平均年度ROE -31.02%、最低年度-68.22%，须分别达到15%和10%",
+        "3年营收复合增长-4.26%，低于5%门槛",
+        "缺可比较的3年归母利润复合增长数据（需要相距3年的完整年报及正基数）",
+        "最近3年存在扣非亏损或缺扣非利润",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "最新完整年度营收或利润增长不足10%，或缺可比同比",
+        "缺可比较的3年扣非利润复合增长数据（需要相距3年的完整年报及正基数）"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22300410.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "4a97eec89ba19110ca1e12a530d669df57aae47335bfc5842f3f1759879a5260"
+    },
+    {
+      "code": "300475",
+      "name": "香农芯创",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 36.79,
+        "netProfit": 20.1514,
+        "deductedProfit": 26.5583
+      },
+      "roe3": 8.91,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 251.5962,
+        "netProfit": 2207.2013,
+        "deductedProfit": 2163.5139
+      },
+      "failedConditions": [
+        "最近3个完整财年经营现金流为正",
+        "3年平均年度ROE 8.91%、最低年度0.16%，须分别达到15%和10%",
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22300475.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "c4b59fe1a4864e00beab4213ba6847bb314964a301848debb3a6c67ec9f50233"
+    },
+    {
+      "code": "300476",
+      "name": "胜宏科技",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 34.7487,
+        "netProfit": 76.0213,
+        "deductedProfit": 78.6837
+      },
+      "roe3": 19.62,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 28.7736,
+        "netProfit": 33.3,
+        "deductedProfit": 12.4992
+      },
+      "failedConditions": [
+        "3年平均年度ROE 19.62%、最低年度9.35%，须分别达到15%和10%",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "ROE 21.48%→11.80%，相对下降45.07%，超过20%降幅上限"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22300476.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "6c44ab939d24db9a2a49d46b3f7d8ae19f290bf376e251694a58ed77c16751f0"
+    },
+    {
+      "code": "300502",
+      "name": "新易盛",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 95.7764,
+        "netProfit": 119.3164,
+        "deductedProfit": 129.7651
+      },
+      "roe3": 33.22,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 100.3392,
+        "netProfit": 90.9844,
+        "deductedProfit": 90.9235
+      },
+      "failedConditions": [
+        "3年平均年度ROE 33.22%、最低年度5.25%，须分别达到15%和10%",
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22300502.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "a1fd9a33a29f9dd18b216e35b5d9066b96b74aa7c1b821dad6a81dd82f73e1b2"
+    },
+    {
+      "code": "300509",
+      "name": "新美星",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 16.8571,
+        "netProfit": 53.5055,
+        "deductedProfit": 34.3948
+      },
+      "roe3": 10.44,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 22.0627,
+        "netProfit": 34.5855,
+        "deductedProfit": 38.3314
+      },
+      "failedConditions": [
+        "总市值≥100亿元",
+        "3年平均年度ROE 10.44%、最低年度3.79%，须分别达到15%和10%",
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22300509.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "dc8fe46222fe4217515a580389c4352046c0907badffd67af13cd05d6271ac3a"
+    },
+    {
+      "code": "300515",
+      "name": "三德科技",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 18.7913,
+        "netProfit": 25.821,
+        "deductedProfit": 29.3278
+      },
+      "roe3": 15.89,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 19.5988,
+        "netProfit": 42.8018,
+        "deductedProfit": 32.8277
+      },
+      "failedConditions": [
+        "总市值≥100亿元",
+        "3年平均年度ROE 15.89%、最低年度7.51%，须分别达到15%和10%",
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22300515.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "d4a8cde3d35b60df626327022aaa5c4ba43a79a9cff9506816c3521e87ed0ead"
+    },
+    {
+      "code": "300548",
+      "name": "长芯博创",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 14.5488,
+        "netProfit": 18.5262,
+        "deductedProfit": 30.3636
+      },
+      "roe3": 9.19,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 40.7202,
+        "netProfit": 91.0776,
+        "deductedProfit": 94.4911
+      },
+      "failedConditions": [
+        "3年平均年度ROE 9.19%、最低年度4.28%，须分别达到15%和10%",
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22300548.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "46d505f7b2e0e3c7e006c3f717e1e1bc0a12541cad8dd2a37b244c29b93fbddd"
+    },
+    {
+      "code": "300573",
+      "name": "兴齐眼药",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 25.5392,
+        "netProfit": 48.6883,
+        "deductedProfit": 49.644
+      },
+      "roe3": 24.64,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 20.4801,
+        "netProfit": 28.5456,
+        "deductedProfit": 30.3956
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22300573.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "c231cb5c834e22adf377539653158310933e222ab7979dc6a895b224c3376840"
+    },
+    {
+      "code": "300604",
+      "name": "长川科技",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 27.1108,
+        "netProfit": 42.3887,
+        "deductedProfit": 46.8098
+      },
+      "roe3": 16.5,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 59.7154,
+        "netProfit": 125.6729,
+        "deductedProfit": 158.1133
+      },
+      "failedConditions": [
+        "最近3个完整财年经营现金流为正",
+        "3年平均年度ROE 16.50%、最低年度1.79%，须分别达到15%和10%",
+        "最近3年存在扣非亏损或缺扣非利润",
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22300604.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "59720d006d20fbaa79932006dfe11bde3486b811be1bf06fb8b8fbfb7fa8119c"
+    },
+    {
+      "code": "300684",
+      "name": "中石科技",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 4.8395,
+        "netProfit": 20.5148,
+        "deductedProfit": 23.0285
+      },
+      "roe3": 10.27,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 10.661,
+        "netProfit": 13.5862,
+        "deductedProfit": 19.9584
+      },
+      "failedConditions": [
+        "3年平均年度ROE 10.27%、最低年度4.30%，须分别达到15%和10%",
+        "3年营收复合增长+4.84%，低于5%门槛",
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22300684.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "6f306ff1d33c0136fe62c1e82c440e18f0241fc9bb4b35cb31da1ccf7cdc8abf"
+    },
+    {
+      "code": "300693",
+      "name": "盛弘股份",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 32.0729,
+        "netProfit": 28.6613,
+        "deductedProfit": 29.7801
+      },
+      "roe3": 27.45,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 29.1564,
+        "netProfit": 44.1115,
+        "deductedProfit": 50.4486
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22300693.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "4e05c84070affffc6d452c509a9abd4563dd412fc295e6cdfc1ac27576f2bc9e"
+    },
+    {
+      "code": "300750",
+      "name": "宁德时代",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 8.8429,
+        "netProfit": 32.9428,
+        "deductedProfit": 31.7409
+      },
+      "roe3": 24.36,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 54.8004,
+        "netProfit": 41.9839,
+        "deductedProfit": 43.4446
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22300750.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "bab8890ab74ea05fdec4d3a4f56249df5053d9c27f014bac3b47c97af062b8ea"
+    },
+    {
+      "code": "300857",
+      "name": "协创数据",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 57.2222,
+        "netProfit": 107.1942,
+        "deductedProfit": 113.0839
+      },
+      "roe3": 24.16,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 153.2889,
+        "netProfit": 325.5069,
+        "deductedProfit": 339.9121
+      },
+      "failedConditions": [
+        "最近3个完整财年经营现金流为正"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22300857.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "37c90522d88124783ad69762b5bbf8d3822efd34dd0c7b06166b76cbccf72107"
+    },
+    {
+      "code": "300866",
+      "name": "安克创新",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 28.8916,
+        "netProfit": 30.5649,
+        "deductedProfit": 40.7412
+      },
+      "roe3": 24.28,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 29.0535,
+        "netProfit": 45.8576,
+        "deductedProfit": 49.6533
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22300866.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "355d4c4192d2401453fb8ae263936165c2a911b20d2763604bab76ee30f38d27"
+    },
+    {
+      "code": "300913",
+      "name": "兆龙互连",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 9.6464,
+        "netProfit": 21.0449,
+        "deductedProfit": 21.1011
+      },
+      "roe3": 13.51,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 25.6018,
+        "netProfit": 18.1343,
+        "deductedProfit": 19.3634
+      },
+      "failedConditions": [
+        "3年平均年度ROE 13.51%、最低年度9.60%，须分别达到15%和10%",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "ROE 7.10%→3.99%，相对下降43.80%，超过20%降幅上限"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22300913.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "dae2d5b3269151b21a3bc10c7eff4b2988221c93670ad3cccf87603f5167f08f"
+    },
+    {
+      "code": "300972",
+      "name": "万辰集团",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 354.1788,
+        "netProfit": 204.2617,
+        "deductedProfit": 238.01
+      },
+      "roe3": 33.02,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 54.2616,
+        "netProfit": 156.5751,
+        "deductedProfit": 153.1724
+      },
+      "failedConditions": [
+        "最近3个完整财年持续盈利",
+        "3年平均年度ROE 33.02%、最低年度-11.39%，须分别达到15%和10%",
+        "最近3年存在扣非亏损或缺扣非利润",
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22300972.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "d9472119e26c4377a69aa4744ff7938dfb3a984dde13bd96a2ad44964f0b2b46"
+    },
+    {
+      "code": "301031",
+      "name": "中熔电气",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 42.2571,
+        "netProfit": 38.0999,
+        "deductedProfit": 39.6212
+      },
+      "roe3": 20.03,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 62.7682,
+        "netProfit": 82.412,
+        "deductedProfit": 76.6548
+      },
+      "failedConditions": [
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22301031.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "baff7b906d37d6fd93c462c2a1917236a04f751fd3d3490b5f275b1db8408038"
+    },
+    {
+      "code": "301033",
+      "name": "迈普医学",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 23.6166,
+        "netProfit": 46.6197,
+        "deductedProfit": 63.9217
+      },
+      "roe3": 11.27,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 20.2969,
+        "netProfit": 19.6227,
+        "deductedProfit": 17.2644
+      },
+      "failedConditions": [
+        "总市值≥100亿元",
+        "3年平均年度ROE 11.27%、最低年度6.63%，须分别达到15%和10%"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22301033.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "32ffb127f810616631c2caf0a111cc6476c102b285326406d85833094f507f24"
+    },
+    {
+      "code": "301128",
+      "name": "强瑞技术",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 58.5212,
+        "netProfit": 54.4868,
+        "deductedProfit": 82.9191
+      },
+      "roe3": 10.91,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 63.6833,
+        "netProfit": 56.8292,
+        "deductedProfit": 52.8171
+      },
+      "failedConditions": [
+        "3年平均年度ROE 10.91%、最低年度6.73%，须分别达到15%和10%"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22301128.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "30ac49281c123bf291b8c2f7ea548271b858a972365be189a6d08ab43667c4d7"
+    },
+    {
+      "code": "301308",
+      "name": "江波龙",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 39.8136,
+        "netProfit": 169.3979,
+        "deductedProfit": 224.1684
+      },
+      "roe3": 4.77,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 136.2611,
+        "netProfit": 71528.661,
+        "deductedProfit": 31096.3303
+      },
+      "failedConditions": [
+        "最近3个完整财年持续盈利",
+        "最近3个完整财年经营现金流为正",
+        "3年平均年度ROE 4.77%、最低年度-13.01%，须分别达到15%和10%",
+        "最近3年存在扣非亏损或缺扣非利润",
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22301308.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "ef0eb934f5c3640a70318cb2dd19d4c04b8f61eb20282a82f48f91c23434a140"
+    },
+    {
+      "code": "301345",
+      "name": "涛涛车业",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 30.6916,
+        "netProfit": 58.2202,
+        "deductedProfit": 57.8415
+      },
+      "roe3": 16.61,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 60.5619,
+        "netProfit": 57.9394,
+        "deductedProfit": 58.1554
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22301345.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "4733ecb8f879bfb4c82b1e203797510c22ec2657d63b7454ca23eb17a48e855e"
+    },
+    {
+      "code": "301377",
+      "name": "鼎泰高科",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 20.7122,
+        "netProfit": 24.8453,
+        "deductedProfit": 25.3246
+      },
+      "roe3": 11.85,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 114.8533,
+        "netProfit": 325.1151,
+        "deductedProfit": 353.2774
+      },
+      "failedConditions": [
+        "3年平均年度ROE 11.85%、最低年度9.38%，须分别达到15%和10%",
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22301377.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "7d59ff62805ef2bf7a57eb6084400d119660247ea301f75a62a1b64e26446baf"
+    },
+    {
+      "code": "301603",
+      "name": "乔锋智能",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 17.2602,
+        "netProfit": 22.6057,
+        "deductedProfit": 22.4932
+      },
+      "roe3": 14.4,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 42.3768,
+        "netProfit": 52.6943,
+        "deductedProfit": 44.6691
+      },
+      "failedConditions": [
+        "最近3个完整财年经营现金流为正",
+        "3年平均年度ROE 14.40%、最低年度12.71%，须分别达到15%和10%",
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22301603.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "5cdc4229d123ad7109402ee70bf39de09ec8e44e5f109d326241fbf20ef4f2a5"
+    },
+    {
+      "code": "301606",
+      "name": "绿联科技",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 35.212,
+        "netProfit": 29.1046,
+        "deductedProfit": 31.1111
+      },
+      "roe3": 22.64,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 50.9176,
+        "netProfit": 56.9043,
+        "deductedProfit": 62.5913
+      },
+      "failedConditions": [
+        "最近3个完整财年经营现金流为正"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22301606.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "060466db25894ee09b17ca90e41c371fa82be710c9fce66f103e0239229af4cf"
+    },
+    {
+      "code": "301607",
+      "name": "富特科技",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 35.3523,
+        "netProfit": 35.3175,
+        "deductedProfit": 33.7604
+      },
+      "roe3": 17.09,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 65.808,
+        "netProfit": 135.7579,
+        "deductedProfit": 139.1371
+      },
+      "failedConditions": [
+        "总市值≥100亿元",
+        "最近3个完整财年经营现金流为正",
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22301607.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "1a015bdb0827234f43127cb45a0ff53f6cbeefdd946dabe6daa7df516a1de7d6"
+    },
+    {
+      "code": "301655",
+      "name": "绿控传动",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 67.612,
+        "netProfit": null,
+        "deductedProfit": null
+      },
+      "roe3": 9.37,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 94.0661,
+        "netProfit": 80.625,
+        "deductedProfit": 98.3549
+      },
+      "failedConditions": [
+        "最近3个完整财年持续盈利",
+        "最近3个完整财年经营现金流为正",
+        "3年平均年度ROE 9.37%、最低年度-3.14%，须分别达到15%和10%",
+        "缺可比较的3年归母利润复合增长数据（需要相距3年的完整年报及正基数）",
+        "最近3年存在扣非亏损或缺扣非利润",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "缺可比较的3年扣非利润复合增长数据（需要相距3年的完整年报及正基数）"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22301655.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "f6671888b8627735993a170c1a3aa214038b8616a76bfb2e98956e71b993fd73"
+    },
+    {
+      "code": "301696",
+      "name": "三瑞智能",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 43.7748,
+        "netProfit": 55.1365,
+        "deductedProfit": 59.0133
+      },
+      "roe3": 49.28,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 68.7919,
+        "netProfit": 65.4489,
+        "deductedProfit": 59.1411
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22301696.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "b4b50b9c7a3e54aa2cd6220d06b65ac0a7540b167e0ff9e44fed2063a5cb2a07"
+    },
+    {
+      "code": "301716",
+      "name": "鸿富诚",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 42.4424,
+        "netProfit": 91.1472,
+        "deductedProfit": 90.3267
+      },
+      "roe3": 25.7,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 66.2871,
+        "netProfit": 94.6006,
+        "deductedProfit": 103.1157
+      },
+      "failedConditions": [
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22301716.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "8f127148f1ba5694d14c16dc21d641cad9d4f89270424c84d93e644678232a24"
+    },
+    {
+      "code": "301717",
+      "name": "超纯应材",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 53.7509,
+        "netProfit": 47.5158,
+        "deductedProfit": 53.5894
+      },
+      "roe3": 21.55,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 48.4085,
+        "netProfit": 85.4592,
+        "deductedProfit": 35.2176
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22301717.SZ%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "1ad613a2df727c7ecc91c5f676d627ccdf00319c3515943160164d54071aa3a2"
+    },
+    {
+      "code": "301718",
+      "status": "source_unavailable",
+      "error": "'NoneType' object is not subscriptable"
+    },
+    {
+      "code": "600183",
+      "name": "生益科技",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 16.4281,
+        "netProfit": 29.6228,
+        "deductedProfit": 30.503
+      },
+      "roe3": 14.0,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 50.0455,
+        "netProfit": 130.424,
+        "deductedProfit": 110.9915
+      },
+      "failedConditions": [
+        "3年平均年度ROE 14.00%、最低年度8.57%，须分别达到15%和10%",
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600183.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "415145994a57b7613511e16530ed4ef8e0cf383b261d19d5430a4d84cf5fa69c"
+    },
+    {
+      "code": "600186",
+      "name": "莲花控股",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 26.8582,
+        "netProfit": 88.4421,
+        "deductedProfit": 67.9571
+      },
+      "roe3": 12.71,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 18.1013,
+        "netProfit": 50.9779,
+        "deductedProfit": 25.5169
+      },
+      "failedConditions": [
+        "3年平均年度ROE 12.71%、最低年度8.79%，须分别达到15%和10%"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600186.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "e34fb91fc060205085f1c6b912b3db4e04fc7433fba809c2b14a8ff26b1af578"
+    },
+    {
+      "code": "600489",
+      "name": "中金黄金",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 11.4303,
+        "netProfit": 37.5581,
+        "deductedProfit": 43.1247
+      },
+      "roe3": 13.87,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 22.5681,
+        "netProfit": 61.6744,
+        "deductedProfit": 45.968
+      },
+      "failedConditions": [
+        "3年平均年度ROE 13.87%、最低年度11.86%，须分别达到15%和10%"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600489.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "82c248a153318003a489f25b3f307297bd3959da1f72748ba3e6003cd72d7a45"
+    },
+    {
+      "code": "600550",
+      "name": "保变电气",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 18.325,
+        "netProfit": 88.292,
+        "deductedProfit": null
+      },
+      "roe3": 3.97,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 28.4281,
+        "netProfit": 77.3403,
+        "deductedProfit": 76.5822
+      },
+      "failedConditions": [
+        "最近3个完整财年持续盈利",
+        "3年平均年度ROE 3.97%、最低年度-32.92%，须分别达到15%和10%",
+        "最近3年存在扣非亏损或缺扣非利润",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "缺可比较的3年扣非利润复合增长数据（需要相距3年的完整年报及正基数）"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600550.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "6df5c10601b3edd16d9b23aba401e69478192ff98d58ca0fd9e878bbccd31c8c"
+    },
+    {
+      "code": "600867",
+      "name": "通化东宝",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 1.9851,
+        "netProfit": -8.3185,
+        "deductedProfit": -23.5959
+      },
+      "roe3": 11.61,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 11.1269,
+        "netProfit": 37.3158,
+        "deductedProfit": 35.5524
+      },
+      "failedConditions": [
+        "最近3个完整财年持续盈利",
+        "3年平均年度ROE 11.61%、最低年度-0.62%，须分别达到15%和10%",
+        "3年营收复合增长+1.99%，低于5%门槛",
+        "3年归母利润复合增长-8.32%，低于10%门槛",
+        "最近3年存在扣非亏损或缺扣非利润",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "最新完整年度营收或利润增长不足10%，或缺可比同比",
+        "3年扣非利润复合增长-23.60%，低于10%门槛"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600867.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "e0a8bf7a4c608361bd2d5b13a66baa3933bdea25d6cee324f220071d94c3f4ca"
+    },
+    {
+      "code": "600961",
+      "name": "株冶集团",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 2.9169,
+        "netProfit": 31.67,
+        "deductedProfit": 157.2189
+      },
+      "roe3": 32.89,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 35.9091,
+        "netProfit": 232.7481,
+        "deductedProfit": 228.6008
+      },
+      "failedConditions": [
+        "3年营收复合增长+2.92%，低于5%门槛"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600961.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "04f65eff2ea4b4f975f015191b540a3dee1acc0fbe22efd58b0664bf01788c5f"
+    },
+    {
+      "code": "600988",
+      "name": "赤峰黄金",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 26.3427,
+        "netProfit": 89.7575,
+        "deductedProfit": 96.8245
+      },
+      "roe3": 22.29,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 33.1131,
+        "netProfit": 56.4992,
+        "deductedProfit": 56.3403
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600988.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "22852f974d014a34747eb207e2e6fd8705e2fa6e05e8cb14c85e625d360a7564"
+    },
+    {
+      "code": "600989",
+      "name": "宝丰能源",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 19.1065,
+        "netProfit": 21.6647,
+        "deductedProfit": 19.69
+      },
+      "roe3": 18.7,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 32.3321,
+        "netProfit": 70.1374,
+        "deductedProfit": 65.0686
+      },
+      "failedConditions": [
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600989.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "7a5695b2d672c1e457e59bfe96fce7a707f59456522df165b706ab31ac4bbb86"
+    },
+    {
+      "code": "601112",
+      "name": "振石股份",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 10.9921,
+        "netProfit": -1.7743,
+        "deductedProfit": 7.3618
+      },
+      "roe3": 26.77,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 16.7432,
+        "netProfit": 15.0695,
+        "deductedProfit": 12.4357
+      },
+      "failedConditions": [
+        "最近3个完整财年经营现金流为正",
+        "3年归母利润复合增长-1.77%，低于10%门槛",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "3年扣非利润复合增长+7.36%，低于10%门槛",
+        "ROE 12.90%→7.57%，相对下降41.32%，超过20%降幅上限"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22601112.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "5c51ca73cca1003cbe1baf98772f1bdadf66d2bf6ecd69ada159b21c37d838d4"
+    },
+    {
+      "code": "601138",
+      "name": "工业富联",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 20.8269,
+        "netProfit": 20.6872,
+        "deductedProfit": 22.9149
+      },
+      "roe3": 17.71,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 54.635,
+        "netProfit": 95.9858,
+        "deductedProfit": 96.987
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22601138.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "af9f8d0907b758cc325c177b787906e2daa8265cae62980e45a0017c1b7d087b"
+    },
+    {
+      "code": "601168",
+      "name": "西部矿业",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 15.3056,
+        "netProfit": 2.1513,
+        "deductedProfit": 3.2743
+      },
+      "roe3": 18.82,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 24.7433,
+        "netProfit": 123.0349,
+        "deductedProfit": 129.6539
+      },
+      "failedConditions": [
+        "3年归母利润复合增长+2.15%，低于10%门槛",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "3年扣非利润复合增长+3.27%，低于10%门槛"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22601168.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "10c797ad1fa2656c2d693345c2f72f7d5d00f139a1d5fab5670f5e6ebcbab903"
+    },
+    {
+      "code": "601336",
+      "name": "新华保险",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 13.4435,
+        "netProfit": 19.0581,
+        "deductedProfit": 51.33
+      },
+      "roe3": 22.84,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 18.8704,
+        "netProfit": 54.0172,
+        "deductedProfit": 53.741
+      },
+      "failedConditions": [
+        "非金融企业（金融企业单独观察）",
+        "3年平均年度ROE 22.84%、最低年度7.94%，须分别达到15%和10%",
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22601336.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "1858f1d816c15db29007c34c8f8a4e4e1c3f177bdb9a681798cb66a5e03c0ee6"
+    },
+    {
+      "code": "601628",
+      "name": "中国人寿",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 16.5486,
+        "netProfit": 32.2051,
+        "deductedProfit": 32.2009
+      },
+      "roe3": 21.38,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 81.5399,
+        "netProfit": 228.5749,
+        "deductedProfit": 228.1311
+      },
+      "failedConditions": [
+        "非金融企业（金融企业单独观察）",
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22601628.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "81279a1e56e30058ad9d64e2479efe2de28b48f5b23a06b80639ea09f824168a"
+    },
+    {
+      "code": "601899",
+      "name": "紫金矿业",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 8.8956,
+        "netProfit": 37.2142,
+        "deductedProfit": 37.4552
+      },
+      "roe3": 26.79,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 15.7817,
+        "netProfit": 68.1703,
+        "deductedProfit": 75.8916
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22601899.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "ff705161ecfa784efffd486a7287b10151b701b51bf80b70feb13f15131048ef"
+    },
+    {
+      "code": "603025",
+      "name": "大豪科技",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 23.3955,
+        "netProfit": 17.728,
+        "deductedProfit": 28.3938
+      },
+      "roe3": 24.49,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 23.3648,
+        "netProfit": 33.4465,
+        "deductedProfit": 33.5542
+      },
+      "failedConditions": [
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22603025.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "3d76f22e781d1a8c2be29171229f5b4236d0c959863c8003ca18aef4a75eea3d"
+    },
+    {
+      "code": "603170",
+      "name": "宝立食品",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 12.9341,
+        "netProfit": 6.8336,
+        "deductedProfit": 9.148
+      },
+      "roe3": 20.01,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 16.0772,
+        "netProfit": 10.1256,
+        "deductedProfit": 13.1999
+      },
+      "failedConditions": [
+        "总市值≥100亿元",
+        "3年归母利润复合增长+6.83%，低于10%门槛",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "3年扣非利润复合增长+9.15%，低于10%门槛"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22603170.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "2399d5eb561f36261e50e31928b061cae4dae1119be46faa3395a293e49251f8"
+    },
+    {
+      "code": "603186",
+      "name": "华正新材",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 9.9681,
+        "netProfit": 97.2067,
+        "deductedProfit": 63.7355
+      },
+      "roe3": 1.14,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 41.2789,
+        "netProfit": 305.2824,
+        "deductedProfit": 385.105
+      },
+      "failedConditions": [
+        "最近3个完整财年持续盈利",
+        "3年平均年度ROE 1.14%、最低年度-7.46%，须分别达到15%和10%",
+        "最近3年存在扣非亏损或缺扣非利润",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "最新完整年度营收或利润增长不足10%，或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22603186.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "0b2c69f50f6dd9a8117a1721416ce36ef2a81551d2cea34aa410619890df92c2"
+    },
+    {
+      "code": "603236",
+      "name": "移远通信",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 19.57,
+        "netProfit": 10.3715,
+        "deductedProfit": 18.8297
+      },
+      "roe3": 12.15,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 32.1567,
+        "netProfit": 27.8404,
+        "deductedProfit": 29.0284
+      },
+      "failedConditions": [
+        "最近3个完整财年经营现金流为正",
+        "3年平均年度ROE 12.15%、最低年度2.41%，须分别达到15%和10%",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "ROE 11.07%→8.38%，相对下降24.30%，超过20%降幅上限"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22603236.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "8cdee8770cf2f371429cedbe0fa9cb846f524b7d1df7fbe4c787784024d54bc4"
+    },
+    {
+      "code": "603259",
+      "name": "药明康德",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 4.9217,
+        "netProfit": 29.5212,
+        "deductedProfit": 16.6356
+      },
+      "roe3": 21.44,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 38.935,
+        "netProfit": 29.4279,
+        "deductedProfit": 89.3934
+      },
+      "failedConditions": [
+        "3年营收复合增长+4.92%，低于5%门槛",
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22603259.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "25c135adff8f5b680136c877b2385fe14d36348f5ab28e755baabf69fa125e9f"
+    },
+    {
+      "code": "603268",
+      "name": "松发股份",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 330.7084,
+        "netProfit": null,
+        "deductedProfit": null
+      },
+      "roe3": -7.81,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 251.8743,
+        "netProfit": 457.6689,
+        "deductedProfit": 2935.3108
+      },
+      "failedConditions": [
+        "最近3个完整财年持续盈利",
+        "最近3个完整财年经营现金流为正",
+        "3年平均年度ROE -7.81%、最低年度-87.59%，须分别达到15%和10%",
+        "缺可比较的3年归母利润复合增长数据（需要相距3年的完整年报及正基数）",
+        "最近3年存在扣非亏损或缺扣非利润",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "最新完整年度营收或利润增长不足10%，或缺可比同比",
+        "缺可比较的3年扣非利润复合增长数据（需要相距3年的完整年报及正基数）"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22603268.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "02a006aad06548216e6c631edbe9509c7b18c3f72535758b23fc5d836ed34fa2"
+    },
+    {
+      "code": "603271",
+      "name": "永杰新材",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 10.4769,
+        "netProfit": 5.4976,
+        "deductedProfit": 5.2467
+      },
+      "roe3": 18.89,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 18.046,
+        "netProfit": 176.6549,
+        "deductedProfit": 31.1199
+      },
+      "failedConditions": [
+        "总市值≥100亿元",
+        "3年归母利润复合增长+5.50%，低于10%门槛",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "3年扣非利润复合增长+5.25%，低于10%门槛"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22603271.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "720691d03de675d866680c01f99b515816dc75d8971da0ec4db7e785ecf6b1e1"
+    },
+    {
+      "code": "603296",
+      "name": "华勤技术",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 22.7702,
+        "netProfit": 16.5066,
+        "deductedProfit": 20.1853
+      },
+      "roe3": 15.71,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 11.6511,
+        "netProfit": 58.7968,
+        "deductedProfit": 11.0421
+      },
+      "failedConditions": [
+        "最近3个完整财年经营现金流为正"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22603296.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "79d7037bd479fdc60d19baf5eec8abd186d9505170cd7a4a15d234d295b7a484"
+    },
+    {
+      "code": "603444",
+      "name": "吉比特",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 6.286,
+        "netProfit": 7.0803,
+        "deductedProfit": 5.6491
+      },
+      "roe3": 26.37,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 48.0138,
+        "netProfit": 69.3142,
+        "deductedProfit": 67.7695
+      },
+      "failedConditions": [
+        "3年归母利润复合增长+7.08%，低于10%门槛",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "3年扣非利润复合增长+5.65%，低于10%门槛"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22603444.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "42ea88c19396c9573434d303be06771bc5920cf6e2f2243ffab43eac714020fb"
+    },
+    {
+      "code": "603530",
+      "name": "神马电力",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 32.6376,
+        "netProfit": 106.3552,
+        "deductedProfit": 129.4298
+      },
+      "roe3": 17.49,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 26.9757,
+        "netProfit": 34.0095,
+        "deductedProfit": 32.2356
+      },
+      "failedConditions": [
+        "3年平均年度ROE 17.49%、最低年度9.57%，须分别达到15%和10%"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22603530.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "8a5d5b2041081c2f9ff166ad1844bcee339167a848333d8eb6c49b3bb01eaa2b"
+    },
+    {
+      "code": "603606",
+      "name": "东方电缆",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 15.6571,
+        "netProfit": 14.7293,
+        "deductedProfit": 14.3988
+      },
+      "roe3": 16.38,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 30.8481,
+        "netProfit": 19.4144,
+        "deductedProfit": 21.0281
+      },
+      "failedConditions": [
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22603606.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "28673dd21acb7796d1cbacf49bf68b5e942d39b1de7b4da3df957d93b465e424"
+    },
+    {
+      "code": "603629",
+      "name": "利通电子",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 17.7579,
+        "netProfit": 64.3443,
+        "deductedProfit": 88.7327
+      },
+      "roe3": 6.72,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 38.5752,
+        "netProfit": 1275.1473,
+        "deductedProfit": 1088.9498
+      },
+      "failedConditions": [
+        "3年平均年度ROE 6.72%、最低年度1.50%，须分别达到15%和10%",
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22603629.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "a147ae3999b073a4d3f332e0d2d06fb43a747d34f54e36cdd29ca68d11651bf3"
+    },
+    {
+      "code": "603699",
+      "name": "纽威股份",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 24.1511,
+        "netProfit": 50.8772,
+        "deductedProfit": 52.6552
+      },
+      "roe3": 27.92,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 14.4708,
+        "netProfit": 15.2024,
+        "deductedProfit": 17.1079
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22603699.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "ef2e5eeb7cb852cfdd346c565b0a0d1edeae3269be1b7e26334c1c326845305a"
+    },
+    {
+      "code": "603893",
+      "name": "瑞芯微",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 29.4427,
+        "netProfit": 51.7787,
+        "deductedProfit": 80.1652
+      },
+      "roe3": 16.04,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 40.6036,
+        "netProfit": 61.7312,
+        "deductedProfit": 62.7698
+      },
+      "failedConditions": [
+        "3年平均年度ROE 16.04%、最低年度4.53%，须分别达到15%和10%",
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22603893.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "b3a6fb47a301a3a76d5039835fa7c5caeacd2cca8f07e866af3bd1713c4e2091"
+    },
+    {
+      "code": "603979",
+      "name": "金诚信",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 37.4124,
+        "netProfit": 56.4151,
+        "deductedProfit": 55.7717
+      },
+      "roe3": 19.39,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 20.9743,
+        "netProfit": 45.2991,
+        "deductedProfit": 48.0785
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22603979.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "73900bde6693a9a2d1ff84715f9a3cf7b2867e76d713b812e90d08a745962096"
+    },
+    {
+      "code": "605016",
+      "name": "百龙创园",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 24.0802,
+        "netProfit": 34.7137,
+        "deductedProfit": 37.1048
+      },
+      "roe3": 16.15,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 16.9868,
+        "netProfit": 24.0627,
+        "deductedProfit": 26.289
+      },
+      "failedConditions": [
+        "总市值≥100亿元"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22605016.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "ac45e31d33777309ea95a5e1e9c5cd552200cd03b8e4abc5b02ee60b080d6a3c"
+    },
+    {
+      "code": "605118",
+      "name": "力鼎光电",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 12.3828,
+        "netProfit": 18.526,
+        "deductedProfit": 21.8915
+      },
+      "roe3": 13.25,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 54.3881,
+        "netProfit": 37.0505,
+        "deductedProfit": 33.7108
+      },
+      "failedConditions": [
+        "3年平均年度ROE 13.25%、最低年度11.00%，须分别达到15%和10%",
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22605118.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "3afae296458bfa25cd09343c0578f893b1acee52727bd51e4400f4f967dd3c62"
+    },
+    {
+      "code": "605499",
+      "name": "东鹏饮料",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 34.8899,
+        "netProfit": 45.2599,
+        "deductedProfit": 45.7284
+      },
+      "roe3": 44.79,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 15.8933,
+        "netProfit": 20.7201,
+        "deductedProfit": 14.4083
+      },
+      "failedConditions": [
+        "ROE 28.18%→19.03%，相对下降32.47%，超过20%降幅上限"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22605499.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "9b297a2d093ed076f4c8258d2d99aa7ab8d15e8e4c6efc74f0130f968c47314c"
+    },
+    {
+      "code": "605580",
+      "name": "恒盛能源",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 4.7927,
+        "netProfit": 4.4112,
+        "deductedProfit": 2.9048
+      },
+      "roe3": 15.5,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 28.0908,
+        "netProfit": 38.0213,
+        "deductedProfit": 64.5458
+      },
+      "failedConditions": [
+        "总市值≥100亿元",
+        "3年营收复合增长+4.79%，低于5%门槛",
+        "3年归母利润复合增长+4.41%，低于10%门槛",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "3年扣非利润复合增长+2.90%，低于10%门槛"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22605580.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "7bf6001c832beaa301427c613a917b705e1ac1d48c69b40bc56b56fe222b2ff3"
+    },
+    {
+      "code": "688002",
+      "name": "睿创微纳",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 33.5626,
+        "netProfit": 53.1038,
+        "deductedProfit": 61.7598
+      },
+      "roe3": 13.66,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 72.8372,
+        "netProfit": 258.7807,
+        "deductedProfit": 275.3812
+      },
+      "failedConditions": [
+        "3年平均年度ROE 13.66%、最低年度10.99%，须分别达到15%和10%"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688002.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "ee4dabfb8167828bb4ada38c3c53f6cd985f5add323f04aae3eab542e4e523bd"
+    },
+    {
+      "code": "688008",
+      "name": "澜起科技",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 14.1096,
+        "netProfit": 19.826,
+        "deductedProfit": 31.7923
+      },
+      "roe3": 12.03,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 26.6585,
+        "netProfit": 72.3256,
+        "deductedProfit": 21.1743
+      },
+      "failedConditions": [
+        "3年平均年度ROE 12.03%、最低年度4.44%，须分别达到15%和10%",
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688008.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "3a29ddd2482f94c8ba3a47635e899e00b24bbc363767d6d3015b719d2dd546b7"
+    },
+    {
+      "code": "688018",
+      "name": "乐鑫科技",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 26.3713,
+        "netProfit": 72.3024,
+        "deductedProfit": 89.7041
+      },
+      "roe3": 13.84,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 18.881,
+        "netProfit": 27.9275,
+        "deductedProfit": 30.2569
+      },
+      "failedConditions": [
+        "3年平均年度ROE 13.84%、最低年度7.14%，须分别达到15%和10%",
+        "ROE 11.30%→7.26%，相对下降35.75%，超过20%降幅上限"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688018.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "6abc9598f216f5bcee42f851aef8c66407ead83332027f2739a464356d0a19a6"
+    },
+    {
+      "code": "688019",
+      "name": "安集科技",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 32.4893,
+        "netProfit": 37.5018,
+        "deductedProfit": 32.3505
+      },
+      "roe3": 22.94,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 33.7207,
+        "netProfit": 41.5642,
+        "deductedProfit": 19.3479
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688019.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "eb2ef3de6e6bb61b580341b7ec8b7ae8d1254d8af010c9edcbdf402fbd4ff4ae"
+    },
+    {
+      "code": "688072",
+      "name": "拓荆科技",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 56.3531,
+        "netProfit": 35.9918,
+        "deductedProfit": 59.5471
+      },
+      "roe3": 15.32,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 49.0607,
+        "netProfit": 1324.099,
+        "deductedProfit": 861.9195
+      },
+      "failedConditions": [
+        "最近3个完整财年经营现金流为正"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688072.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "e83f275905ecac114a2362a40684e13eb7ea5589cfc9571297b9dcdb1655425e"
+    },
+    {
+      "code": "688111",
+      "name": "金山办公",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 15.1309,
+        "netProfit": 18.0071,
+        "deductedProfit": 24.2875
+      },
+      "roe3": 14.96,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 24.6937,
+        "netProfit": 236.9351,
+        "deductedProfit": 241.9918
+      },
+      "failedConditions": [
+        "3年平均年度ROE 14.96%、最低年度14.18%，须分别达到15%和10%"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688111.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "a9c530b2628ba0485b80860e0f5b4dd14765c6324188ead7a2754a4c0f9a8ab8"
+    },
+    {
+      "code": "688117",
+      "name": "圣诺生物",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 23.2821,
+        "netProfit": 34.7922,
+        "deductedProfit": 42.7986
+      },
+      "roe3": 9.94,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 50.2693,
+        "netProfit": 51.9773,
+        "deductedProfit": 50.1853
+      },
+      "failedConditions": [
+        "总市值≥100亿元",
+        "3年平均年度ROE 9.94%、最低年度5.59%，须分别达到15%和10%",
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688117.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "dc81a73b215c5de03908cc0e320bd12fccd3b2541303376114bf15d410efc910"
+    },
+    {
+      "code": "688127",
+      "name": "蓝特光学",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 59.2446,
+        "netProfit": 59.3638,
+        "deductedProfit": 122.7194
+      },
+      "roe3": 14.54,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 75.5008,
+        "netProfit": 163.214,
+        "deductedProfit": 171.975
+      },
+      "failedConditions": [
+        "3年平均年度ROE 14.54%、最低年度11.27%，须分别达到15%和10%"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688127.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "f30e09d05c1014c77dd295d043501a52c7945dc75081124c9b83c79d6b13aea4"
+    },
+    {
+      "code": "688155",
+      "name": "先惠技术",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 18.978,
+        "netProfit": null,
+        "deductedProfit": null
+      },
+      "roe3": 11.1,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 48.4869,
+        "netProfit": 38.7821,
+        "deductedProfit": 36.093
+      },
+      "failedConditions": [
+        "总市值≥100亿元",
+        "最近3个完整财年经营现金流为正",
+        "3年平均年度ROE 11.10%、最低年度3.45%，须分别达到15%和10%",
+        "缺可比较的3年归母利润复合增长数据（需要相距3年的完整年报及正基数）",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "缺可比较的3年扣非利润复合增长数据（需要相距3年的完整年报及正基数）"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688155.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "69a368b0fb4ffff63ffdae8bd4458cefb5b5a09c93dfcf1fbff2c348d07999b4"
+    },
+    {
+      "code": "688183",
+      "name": "生益电子",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 39.0046,
+        "netProfit": 67.6008,
+        "deductedProfit": 75.1187
+      },
+      "roe3": 12.45,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 53.4617,
+        "netProfit": 109.3645,
+        "deductedProfit": 110.2945
+      },
+      "failedConditions": [
+        "最近3个完整财年持续盈利",
+        "3年平均年度ROE 12.45%、最低年度-0.63%，须分别达到15%和10%",
+        "最近3年存在扣非亏损或缺扣非利润",
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688183.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "789884b84ebf499022e981a6843bdc498c7cf68fa02d1ed5acc16873e33604da"
+    },
+    {
+      "code": "688188",
+      "name": "柏楚电子",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 34.6941,
+        "netProfit": 32.3842,
+        "deductedProfit": 30.1199
+      },
+      "roe3": 17.37,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 15.8383,
+        "netProfit": 22.9698,
+        "deductedProfit": 20.2042
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688188.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "eed96d274992cb1c44fd5f6b83ed3ddde02eef54c4405e90c24d95857ecfcb52"
+    },
+    {
+      "code": "688213",
+      "name": "思特威",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 53.7887,
+        "netProfit": null,
+        "deductedProfit": null
+      },
+      "roe3": 10.46,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 21.4799,
+        "netProfit": 33.1513,
+        "deductedProfit": 26.7388
+      },
+      "failedConditions": [
+        "3年平均年度ROE 10.46%、最低年度0.38%，须分别达到15%和10%",
+        "缺可比较的3年归母利润复合增长数据（需要相距3年的完整年报及正基数）",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "缺可比较的3年扣非利润复合增长数据（需要相距3年的完整年报及正基数）"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688213.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "453012446425413f04bbe2aa7daeb2d26f26ded49cf2f75ed0b7623a599692be"
+    },
+    {
+      "code": "688256",
+      "name": "寒武纪",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 107.3286,
+        "netProfit": null,
+        "deductedProfit": null
+      },
+      "roe3": 1.15,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 108.1331,
+        "netProfit": 122.6135,
+        "deductedProfit": 137.3038
+      },
+      "failedConditions": [
+        "最近3个完整财年持续盈利",
+        "最近3个完整财年经营现金流为正",
+        "3年平均年度ROE 1.15%、最低年度-15.34%，须分别达到15%和10%",
+        "缺可比较的3年归母利润复合增长数据（需要相距3年的完整年报及正基数）",
+        "最近3年存在扣非亏损或缺扣非利润",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "最新完整年度营收或利润增长不足10%，或缺可比同比",
+        "缺可比较的3年扣非利润复合增长数据（需要相距3年的完整年报及正基数）"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688256.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "e50aa5ed69194ea54a6d9e15c9ac50bdd79c9e14761f049ff2b3360645a9c2cb"
+    },
+    {
+      "code": "688278",
+      "name": "特宝生物",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 34.263,
+        "netProfit": 53.1612,
+        "deductedProfit": 47.0862
+      },
+      "roe3": 35.5,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 21.5772,
+        "netProfit": 11.3656,
+        "deductedProfit": 13.1629
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688278.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "f202ee02f50576eadd91e4658b5b2c2ce5c2721109264ac96c6f04931736b688"
+    },
+    {
+      "code": "688313",
+      "name": "仕佳光子",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 33.085,
+        "netProfit": 79.573,
+        "deductedProfit": 111.4026
+      },
+      "roe3": 9.55,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 50.6602,
+        "netProfit": 45.2981,
+        "deductedProfit": 44.4207
+      },
+      "failedConditions": [
+        "最近3个完整财年持续盈利",
+        "3年平均年度ROE 9.55%、最低年度-4.05%，须分别达到15%和10%",
+        "最近3年存在扣非亏损或缺扣非利润",
+        "最近3年存在利润下降、非正基数或缺可比同比"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688313.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "716bf0cb7fbda8a5ad15c3ab6df53f65c7cb0913d89407dddcc4b266fdfddde1"
+    },
+    {
+      "code": "688331",
+      "name": "荣昌生物",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 61.4786,
+        "netProfit": null,
+        "deductedProfit": null
+      },
+      "roe3": -21.57,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 433.1095,
+        "netProfit": null,
+        "deductedProfit": null
+      },
+      "failedConditions": [
+        "最近3个完整财年持续盈利",
+        "最近3个完整财年经营现金流为正",
+        "3年平均年度ROE -21.57%、最低年度-54.07%，须分别达到15%和10%",
+        "缺可比较的3年归母利润复合增长数据（需要相距3年的完整年报及正基数）",
+        "最近3年存在扣非亏损或缺扣非利润",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "最新完整年度营收或利润增长不足10%，或缺可比同比",
+        "缺可比较的3年扣非利润复合增长数据（需要相距3年的完整年报及正基数）",
+        "归母利润：扭亏；扣非利润：扭亏"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688331.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "7717b1c0ea4d0b2e710a75ffcd840b29809758813390b18e58d9b15e59e6ce2c"
+    },
+    {
+      "code": "688336",
+      "name": "三生国健",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 71.9815,
+        "netProfit": 288.887,
+        "deductedProfit": 2151.0026
+      },
+      "roe3": 20.33,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 34.8419,
+        "netProfit": 95.1026,
+        "deductedProfit": 65.1504
+      },
+      "failedConditions": [
+        "3年平均年度ROE 20.33%、最低年度6.20%，须分别达到15%和10%"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688336.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "ec4fb120576fa637ff9043ac89222a11932eadfb856ddc57b6daf8d66d413a47"
+    },
+    {
+      "code": "688401",
+      "name": "路维光电",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 21.7568,
+        "netProfit": 28.133,
+        "deductedProfit": 31.62
+      },
+      "roe3": 13.58,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 22.8011,
+        "netProfit": 35.8181,
+        "deductedProfit": 43.3344
+      },
+      "failedConditions": [
+        "3年平均年度ROE 13.58%、最低年度10.61%，须分别达到15%和10%"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688401.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "fcd6ed2e0c2dfe716c568bdf90717cb9beed1de003d6a2544a0f8762420ad2df"
+    },
+    {
+      "code": "688411",
+      "name": "海博思创",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 64.1394,
+        "netProfit": 75.0713,
+        "deductedProfit": 90.5787
+      },
+      "roe3": 24.72,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 39.2335,
+        "netProfit": 100.1612,
+        "deductedProfit": 141.5221
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688411.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "6f84c9aad615a5d01e6ec051960128a4208d3e535f4b26afa92e8e3f514f5809"
+    },
+    {
+      "code": "688525",
+      "name": "佰维存储",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 55.851,
+        "netProfit": 128.8008,
+        "deductedProfit": 128.5314
+      },
+      "roe3": -0.61,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 298.0982,
+        "netProfit": null,
+        "deductedProfit": null
+      },
+      "failedConditions": [
+        "最近3个完整财年持续盈利",
+        "最近3个完整财年经营现金流为正",
+        "3年平均年度ROE -0.61%、最低年度-28.99%，须分别达到15%和10%",
+        "最近3年存在扣非亏损或缺扣非利润",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "归母利润：扭亏；扣非利润：扭亏"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688525.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "88efdb478b5708fa5b615a83ee920f7584f9fa466496991a75a69337766c9fa9"
+    },
+    {
+      "code": "688578",
+      "name": "艾力斯",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 87.1783,
+        "netProfit": 155.9739,
+        "deductedProfit": 194.2148
+      },
+      "roe3": 27.54,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 39.8534,
+        "netProfit": 46.5695,
+        "deductedProfit": 50.993
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688578.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "63100b5d130f5ba1fa01a771f02a0ce862148f9fd81bb9f1f2215ef57093e9cd"
+    },
+    {
+      "code": "688617",
+      "name": "惠泰医疗",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 28.5622,
+        "netProfit": 31.8504,
+        "deductedProfit": 34.951
+      },
+      "roe3": 29.77,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 25.7493,
+        "netProfit": 26.3802,
+        "deductedProfit": 28.711
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688617.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "0ba3c72b0df2a19ca819cbee2d3dd4b109eddaa612731ff5f21e57b28aa44a5d"
+    },
+    {
+      "code": "688796",
+      "name": "百奥赛图",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 37.1997,
+        "netProfit": null,
+        "deductedProfit": null
+      },
+      "roe3": -6.2,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 51.6013,
+        "netProfit": 402.2894,
+        "deductedProfit": 591.5291
+      },
+      "failedConditions": [
+        "最近3个完整财年持续盈利",
+        "最近3个完整财年经营现金流为正",
+        "3年平均年度ROE -6.20%、最低年度-39.59%，须分别达到15%和10%",
+        "缺可比较的3年归母利润复合增长数据（需要相距3年的完整年报及正基数）",
+        "最近3年存在扣非亏损或缺扣非利润",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "缺可比较的3年扣非利润复合增长数据（需要相距3年的完整年报及正基数）"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688796.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "fe4b744654c3b401c87126ff0a4207b26bfbea4be716fcb86b451e1af9da5441"
+    },
+    {
+      "code": "688797",
+      "name": "臻宝科技",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 31.035,
+        "netProfit": 40.446,
+        "deductedProfit": 41.6269
+      },
+      "roe3": 20.86,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 31.9779,
+        "netProfit": 25.7436,
+        "deductedProfit": 19.0564
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688797.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "8621379a5d10ad81caecb16dc9917deb20a3be1a07d5156dd1e79a1cecc26507"
+    },
+    {
+      "code": "688805",
+      "name": "健信超导",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 17.2963,
+        "netProfit": 29.423,
+        "deductedProfit": 32.6414
+      },
+      "roe3": 13.1,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 32.1611,
+        "netProfit": 54.4346,
+        "deductedProfit": 53.0518
+      },
+      "failedConditions": [
+        "总市值≥100亿元",
+        "最近3个完整财年经营现金流为正",
+        "3年平均年度ROE 13.10%、最低年度11.95%，须分别达到15%和10%",
+        "ROE 6.64%→3.92%，相对下降40.96%，超过20%降幅上限"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688805.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "3ae20da5a7fe2a20a94b7a2024c7b1d82c8635fbf6fb70433054b2e55c97f423"
+    },
+    {
+      "code": "688808",
+      "name": "联讯仪器",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 77.2588,
+        "netProfit": null,
+        "deductedProfit": null
+      },
+      "roe3": 11.71,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 208.7056,
+        "netProfit": 902.9979,
+        "deductedProfit": 944.346
+      },
+      "failedConditions": [
+        "最近3个完整财年持续盈利",
+        "最近3个完整财年经营现金流为正",
+        "3年平均年度ROE 11.71%、最低年度-12.44%，须分别达到15%和10%",
+        "缺可比较的3年归母利润复合增长数据（需要相距3年的完整年报及正基数）",
+        "最近3年存在扣非亏损或缺扣非利润",
+        "最近3年存在利润下降、非正基数或缺可比同比",
+        "缺可比较的3年扣非利润复合增长数据（需要相距3年的完整年报及正基数）"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688808.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "f4c7af3845200af10b03b5b3c83e667d2a8014a1f1ff0266ccd8e935b89251b8"
+    },
+    {
+      "code": "688809",
+      "name": "强一股份",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 58.5043,
+        "netProfit": 193.4873,
+        "deductedProfit": 204.5912
+      },
+      "roe3": 18.46,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 66.7048,
+        "netProfit": 61.3005,
+        "deductedProfit": 60.8865
+      },
+      "failedConditions": [
+        "3年平均年度ROE 18.46%、最低年度2.15%，须分别达到15%和10%",
+        "ROE 11.57%→5.35%，相对下降53.76%，超过20%降幅上限"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688809.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "e595f958905beb6967f043a46652de495bff5527eeb0d2a857c4784aedb160f7"
+    },
+    {
+      "code": "688826",
+      "name": "频准激光",
+      "status": "financial_lead",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 73.2043,
+        "netProfit": 67.4429,
+        "deductedProfit": 69.815
+      },
+      "roe3": 51.64,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 42.1323,
+        "netProfit": 24.5809,
+        "deductedProfit": 29.657
+      },
+      "failedConditions": [],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688826.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "6cf4a1bd947787af05eda341de5994954cf22e334063a94afbdfd7da71303c77"
+    },
+    {
+      "code": "688835",
+      "name": "高凯技术",
+      "status": "excluded",
+      "growth3": {
+        "years": 3,
+        "start": "2022-12-31",
+        "end": "2025-12-31",
+        "revenue": 45.7165,
+        "netProfit": 105.0356,
+        "deductedProfit": 157.7007
+      },
+      "roe3": 18.14,
+      "latestReport": "2026-06-30",
+      "latestGrowth": {
+        "revenue": 35.458,
+        "netProfit": 95.0669,
+        "deductedProfit": 84.7267
+      },
+      "failedConditions": [
+        "最近3个完整财年经营现金流为正",
+        "3年平均年度ROE 18.14%、最低年度8.36%，须分别达到15%和10%"
+      ],
+      "financialsUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688835.SH%22%29&pageSize=20&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceSha256": "2f0c73ba11a4dc0ac7736a2a81e719a861cacac8e819957b592876cfd4243b37"
+    }
+  ]
+}

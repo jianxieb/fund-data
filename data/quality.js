@@ -1,6 +1,6 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-09-29T08:38:34+00:00",
+  "checkedAt": "2026-09-29T15:56:04+00:00",
   "asOf": "2026-09-29",
   "status": "unverified",
   "summary": {
@@ -112,7 +112,7 @@ var DATA_QUALITY={
         "2026-09-29",
         "2026-09-29"
       ],
-      "records": 59,
+      "records": 35,
       "issues": [],
       "status": "checked"
     },

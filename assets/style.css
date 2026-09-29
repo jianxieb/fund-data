@@ -411,8 +411,6 @@ html{scrollbar-gutter:stable}
 .stock-table-caption{padding-top:11px;padding-bottom:11px}
 .stock-table-caption .stock-view{margin-left:auto}
 .stock-business-label{display:block;max-width:180px;margin-top:7px;font-size:12px;line-height:1.6;color:var(--muted);white-space:normal}
-.stock-failed-toggle{margin-left:8px;white-space:nowrap}
-.stock-failed-mark{color:#9b7344}
 .stock-table-wrap{max-height:720px}
 .stock-table th{position:sticky;top:0;z-index:2}
 .stock-table th:first-child{z-index:4}
@@ -430,13 +428,6 @@ html{scrollbar-gutter:stable}
 .stock-risk{width:225px;min-width:210px;max-width:255px;white-space:normal;text-align:left;line-height:1.7;color:#9b7344}
 .stock-risk>span{display:block;font-size:12px;margin-bottom:3px}
 .stock-risk .text-link{margin-top:6px;font-size:11px;color:#947849}
-.stock-review-label{display:block;font-size:11px;font-weight:600;margin-bottom:7px;color:#a56532}
-.stock-review-notice{padding:12px 16px;background:#faf1e4;border:1px solid #ead7b6;border-radius:8px;font-size:12px;line-height:1.7;color:#94642e;margin-top:20px}
-.stock-review-notice>span{display:block;margin-top:3px}
-.stock-watchouts.stock-unmet>ul{display:grid;gap:7px;margin-top:9px}
-.stock-threshold-note{font-size:11px;margin-top:10px;color:#8a7c66}
-.stock-risk-records{margin-top:11px;padding-top:10px;border-top:1px solid #e7dcc6}
-.stock-risk-records summary{cursor:pointer;font-size:11px}
 .stock-checks small{display:block;margin-top:5px;line-height:1.6}
 .stock-roe>strong{font-size:15px;font-weight:550}
 .stock-percentile{font-variant-numeric:tabular-nums}
@@ -473,3 +464,6 @@ dialog:has(.stock-detail){width:min(1180px,94vw);max-width:1180px}
 .buy-distributions{margin-bottom:18px}
 @media(max-width:900px){.cross-filter-row{gap:14px}.cross-filter-row>span{flex-basis:67px}.cross-filter-foot{flex-wrap:wrap}.cross-search{flex:1}.cross-basis{font-size:11px}.cross-available{margin-left:0}.buy-basis-bar{gap:10px}}
 @media(max-width:650px){.cross-filters{padding:16px}.cross-filter-row{flex-direction:column;gap:6px}.cross-filter-row>span{flex-direction:row;gap:8px;flex-basis:auto}.cross-filter-row>span small{margin-top:0}.filter-chip{padding:6px 9px}.cross-search input{width:100%}.cross-filter-foot>div{gap:12px}.cross-results-head{padding:15px}.cross-basis .segmented button{padding:8px}.cross-pagination{padding:13px}.cross-pagination>div{gap:9px}.crossborder-table td:first-child,.crossborder-table th:first-child{min-width:210px;max-width:210px;width:210px}}
+
+.stock-reason>a{display:inline-block;margin-top:8px;font-size:11px;color:var(--green)}
+.stock-reason .stock-growth-basis{color:#465942;font-variant-numeric:tabular-nums}

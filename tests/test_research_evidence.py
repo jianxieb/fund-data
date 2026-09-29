@@ -30,10 +30,15 @@ class ResearchEvidenceTests(unittest.TestCase):
     def candidate(self):
         current = {**self.interims[0], 'TOTALOPERATEREVE': 60e8,
                    'PARENTNETPROFIT': 12e8, 'KCFJCXSYJLR': 10.8e8}
-        base = {**self.reports[-1], 'REPORT_DATE': '2022-12-31', 'NOTICE_DATE': '2023-03-01',
-                'TOTALOPERATEREVE': 30e8, 'PARENTNETPROFIT': 5e8}
-        return {**parse_evidence('601899', [self.quote], [current, self.interims[1], base] + self.reports, '2026-09-29'),
-                'group': 'quality', 'historyFirst': '2010-01-01', 'n': '测试公司'}
+        annuals = [{**self.reports[0], 'REPORT_DATE': '%d-12-31' % y,
+                    'NOTICE_DATE': '%d-03-01' % (y + 1), 'TOTALOPERATEREVE': 30e8 * 1.2 ** (y-2022),
+                    'PARENTNETPROFIT': 5e8 * 1.2 ** (y-2022), 'KCFJCXSYJLR': 4e8 * 1.2 ** (y-2022)}
+                   for y in (2025, 2024, 2023, 2022)]
+        return {**parse_evidence('601899', [self.quote], [current, self.interims[1]] + annuals, '2026-09-29'),
+                'c': '601899', 'group': 'quality', 'historyFirst': '2010-01-01', 'n': '测试公司',
+                'qualityResearch': {'code': '601899', 'status': 'reviewed', 'reviewedAt': '2026-09-29',
+                    'reportPeriod': '2026-06-30', 'title': '测试业务依据', 'thesis': ['具名报告业务事实'], 'risks': ['具体业务风险'],
+                    'sources': [{'title': '测试公司2026中报', 'url': 'https://example.test/report.pdf', 'publishedAt': '2026-08-12'}]}}
 
     def test_named_valuation_fields_and_reported_roe_keep_independent_dates(self):
         evidence = parse_evidence('601899', [self.quote], self.reports, '2026-09-29')
@@ -139,7 +144,7 @@ class ResearchEvidenceTests(unittest.TestCase):
                                        'deductedProfitGrowth': 4.3147})
         review = quality_review(row, '2026-09-29')
         self.assertFalse(review['qualified'])
-        self.assertIn('+8.70%，低于10%', review['historicalChecks'][-1]['reason'])
+        self.assertIn('+8.70%，低于10%', review['historicalChecks'][9]['reason'])
         self.assertIn('归母利润同比+4.08%、扣非利润同比+4.31%', review['recentChecks'][3]['reason'])
         # A half-year ROE is compared with the prior half-year, not an annual threshold.
         self.assertTrue(review['recentChecks'][-1]['pass'])
@@ -167,6 +172,46 @@ class ResearchEvidenceTests(unittest.TestCase):
         review = quality_review(row, '2026-09-29')
         self.assertFalse(review['qualified'])
         self.assertIn('归母利润：扭亏', review['recentChecks'][3]['reason'])
+
+    def test_report_research_is_required_even_when_every_financial_check_passes(self):
+        for kind in ('missing', 'different_company', 'future', 'expired', 'no_source', 'no_risk', 'source_before_report', 'malformed'):
+            row = self.candidate()
+            if kind == 'missing': row.pop('qualityResearch')
+            if kind == 'different_company': row['qualityResearch']['code'] = '000001'
+            if kind == 'future': row['qualityResearch']['reviewedAt'] = '2026-10-01'
+            if kind == 'expired': row['qualityResearch'].update(reviewedAt='2025-01-01', reportPeriod='2024-06-30')
+            if kind == 'no_source': row['qualityResearch']['sources'] = []
+            if kind == 'no_risk': row['qualityResearch']['risks'] = []
+            if kind == 'source_before_report': row['qualityResearch']['sources'][0]['publishedAt'] = '2025-08-12'
+            if kind == 'malformed': row['qualityResearch']['sources'] = ['not a source record']
+            result = quality_review(row, '2026-09-29')
+            self.assertTrue(result['historicalQualified'], kind)
+            self.assertFalse(result['qualified'], kind)
+            self.assertFalse(result['researchChecks'][0]['pass'], kind)
+
+    def test_positive_profits_do_not_hide_an_annual_earnings_collapse(self):
+        for decline in (-80, -3, 0):
+            row = self.candidate()
+            row['financialHistory'][1]['netProfitGrowth'] = decline
+            self.assertGreater(row['financialHistory'][1]['netProfit'], 0)
+            self.assertFalse(quality_review(row, '2026-09-29')['qualified'])
+        row = self.candidate()
+        row['financialHistory'][0]['deductedProfitGrowth'] = 3
+        self.assertFalse(quality_review(row, '2026-09-29')['qualified'])
+
+    def test_recent_low_growth_or_loss_cannot_be_rescued_by_historical_roe(self):
+        for growth in (3, -80, -155.22):
+            row = self.candidate()
+            row['latestFinancials']['deductedProfitGrowth'] = growth
+            if growth < -100: row['latestFinancials']['deductedProfit'] = -58.95e8
+            self.assertFalse(quality_review(row, '2026-09-29')['qualified'])
+
+    def test_thin_current_cash_conversion_is_visible_as_a_specific_risk(self):
+        row = self.candidate()
+        row['latestFinancials']['operatingCashFlow'] = 1e8
+        result = quality_review(row, '2026-09-29')
+        self.assertTrue(result['qualified'])
+        self.assertTrue(any('仅为归母利润的8%' in risk for risk in result['watchouts']))
 
     def test_loss_and_zero_bases_are_not_presented_as_normal_growth(self):
         reports = copy.deepcopy(self.reports)
@@ -213,7 +258,7 @@ class ResearchEvidenceTests(unittest.TestCase):
         self.assertTrue(any('归母利润同比-50.0%' in s for s in review['watchouts']))
         self.assertTrue(any('经营现金流合计低于归母利润' in s for s in review['watchouts']))
         self.assertTrue(any('ROE低于10%' in s for s in review['watchouts']))
-        self.assertFalse(any('复合增长-' in s for s in review['reasons']))
+        self.assertTrue(any('归母利润复合增长-20.0%' in s for s in review['reasons']))
         self.assertTrue(any('3年归母利润复合增长-20.0%' in s for s in review['watchouts']))
 
     def test_dynamic_pe_annualizes_only_the_report_known_on_the_valuation_day(self):
@@ -231,13 +276,11 @@ class ResearchEvidenceTests(unittest.TestCase):
         self.assertEqual(evidence['peDynamicBasis']['status'], 'loss')
 
     def test_high_annual_roe_does_not_override_deteriorating_interim_results(self):
-        reports = [{**r, 'ROEJQ': value} for r, value in zip(self.reports, (31.26, 33.99, 40.96))]
-        reports.append({**self.reports[-1], 'REPORT_DATE': '2022-12-31', 'NOTICE_DATE': '2023-03-01', 'TOTALOPERATEREVE': 30e8, 'PARENTNETPROFIT': 5e8})
-        current = {**self.interims[0], 'ROEJQ': 10.73, 'TOTALOPERATEREVETZ': -28.9914,
-                   'PARENTNETPROFITTZ': -32.013, 'KCFJCXSYJLRTZ': -42.9571}
-        previous = {**self.interims[1], 'ROEJQ': 19.18}
-        row = {**parse_evidence('601899', [self.quote], [current, previous] + reports, '2026-09-29'),
-               'group': 'quality', 'historyFirst': '2010-01-01', 'n': '测试公司'}
+        row = self.candidate()
+        for r, value in zip(row['financialHistory'], (31.26, 33.99, 40.96)):
+            r['roe'] = value
+        row['latestFinancials'].update(roe=10.73, roePrevious=19.18, roeChangePoints=-8.45,
+            revenueGrowth=-28.9914, netProfitGrowth=-32.013, deductedProfitGrowth=-42.9571)
         review = quality_review(row, '2026-09-29')
         self.assertEqual(review['roe3'], 35.4)
         self.assertEqual(row['latestFinancials']['roeChangePoints'], -8.45)

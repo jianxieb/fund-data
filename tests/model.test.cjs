@@ -14,13 +14,15 @@ function fund(patch = {}) {
 }
 
 test('quality candidates and dividend stocks stay separate even with stale qualification flags', () => {
-  const growth = {group:'quality', qualityReview:{qualified:true}};
+  const growth = {c:'123456', group:'quality', qualityReview:{qualified:true}, qualityResearch:{code:'123456', status:'reviewed'}};
   const failed = {group:'quality', qualityReview:{qualified:false}};
   const dividend = {group:'dividend', qualityReview:{qualified:true}};
   const dividendWithStaleFailure = {group:'dividend', qualityReview:{qualified:false}};
-  const rows = [growth, failed, dividend, dividendWithStaleFailure];
+  const noResearch = {...growth, qualityResearch:null};
+  const wrongResearch = {...growth, qualityResearch:{code:'654321', status:'reviewed'}};
+  const rows = [growth, failed, noResearch, wrongResearch, dividend, dividendWithStaleFailure];
   assert.deepEqual(rows.filter(s => M.stockMatches(s, 'quality')), [growth]);
-  assert.deepEqual(rows.filter(s => M.stockMatches(s, 'quality', true)), [growth, failed]);
+  assert.deepEqual(rows.filter(s => M.stockMatches(s, 'quality', true)), [growth]);
   assert.deepEqual(rows.filter(s => M.stockMatches(s, 'dividend')), [dividend, dividendWithStaleFailure]);
   assert.deepEqual(rows.filter(s => M.stockMatches(s, 'all', true)), []);
   assert.equal(M.stockMatches({qualityReview:{qualified:true}}, 'quality', true), false);

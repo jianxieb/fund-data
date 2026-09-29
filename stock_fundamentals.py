@@ -112,12 +112,12 @@ def parse_evidence(code, valuation, financials, asof):
     history = [financial_report(r, reports) for r in annual]
     latest_report = financial_report(reports[0], reports) if reports else None
     growth = {'years': 3, 'start': None, 'end': history[0]['reportDate'] if history else None,
-              'revenue': None, 'netProfit': None}
+              'revenue': None, 'netProfit': None, 'deductedProfit': None}
     if annual:
         start = str(int(annual[0]['REPORT_DATE'][:4]) - 3) + '-12-31'
         base = next((r for r in reports if r['REPORT_DATE'][:10] == start), {})
         growth['start'] = start if base else None
-        for key, field in [('revenue', 'TOTALOPERATEREVE'), ('netProfit', 'PARENTNETPROFIT')]:
+        for key, field in [('revenue', 'TOTALOPERATEREVE'), ('netProfit', 'PARENTNETPROFIT'), ('deductedProfit', 'KCFJCXSYJLR')]:
             first, last = numeric(base.get(field)), numeric(annual[0].get(field))
             if first is not None and first > 0 and last is not None and last > 0:
                 growth[key] = round(((last / first) ** (1 / 3) - 1) * 100, 4)
@@ -233,6 +233,35 @@ def latest_report_review(latest, asof):
     return checks
 
 
+def research_evidence_check(row, asof):
+    """A financial result alone cannot turn an arbitrary watchlist row into research."""
+    research = row.get('qualityResearch') or {}
+    if not isinstance(research, dict):
+        research = {}
+    sources = research.get('sources') or []
+    try:
+        reviewed = date.fromisoformat(research.get('reviewedAt', ''))
+        report = date.fromisoformat(research.get('reportPeriod', ''))
+        today = date.fromisoformat(asof)
+        dates_ok = report <= reviewed <= today and (today - reviewed).days <= 365
+        sources_ok = isinstance(sources, list) and bool(sources) and all(
+            isinstance(source, dict) and source.get('title')
+            and isinstance(source.get('url'), str) and source['url'].startswith('https://')
+            and report <= date.fromisoformat(source.get('publishedAt', '')) <= reviewed
+            for source in sources)
+    except (ValueError, TypeError):
+        dates_ok = sources_ok = False
+    passed = (research.get('code') == row.get('c') and bool(row.get('c'))
+              and research.get('status') == 'reviewed' and dates_ok and sources_ok
+              and bool(research.get('title'))
+              and all(isinstance(research.get(key), list) and bool(research[key])
+                      and all(isinstance(value, str) and value.strip() for value in research[key])
+                      for key in ('thesis', 'risks')))
+    return {'label': '已核对具名公司报告、业务入选依据及风险', 'pass': bool(passed),
+            'reason': None if passed else '缺有效的公司研究记录、报告来源或业务风险依据',
+            'failureKind': 'evidence'}
+
+
 def quality_review(row, asof):
     if row.get('group') != 'quality':
         return None
@@ -272,6 +301,22 @@ def quality_review(row, asof):
         growth_check('revenue', '营收', QUALITY_LIMITS['revenueCagr']),
         growth_check('netProfit', '归母利润', QUALITY_LIMITS['profitCagr']),
     ]
+    # Profit amounts staying above zero cannot conceal an earnings collapse.
+    stable_profits = complete and all(
+        numeric(r.get(key)) is not None and r[key] > 0
+        for r in history for key in ('netProfitGrowth', 'deductedProfitGrowth'))
+    annual_growth = complete and all(
+        numeric(history[0].get(key)) is not None and history[0][key] >= QUALITY_LIMITS['recentGrowth']
+        for key in ('revenueGrowth', 'netProfitGrowth', 'deductedProfitGrowth'))
+    checks += [
+        {'label': '最近3个完整财年扣非利润均为正', 'pass': every('deductedProfit'),
+         'reason': None if every('deductedProfit') else '最近3年存在扣非亏损或缺扣非利润'},
+        {'label': '最近3年归母及扣非利润逐年增长', 'pass': stable_profits,
+         'reason': None if stable_profits else '最近3年存在利润下降、非正基数或缺可比同比'},
+        {'label': '最新完整年度营收、归母及扣非利润增长均≥10%', 'pass': annual_growth,
+         'reason': None if annual_growth else '最新完整年度营收或利润增长不足10%，或缺可比同比'},
+        growth_check('deductedProfit', '扣非利润', QUALITY_LIMITS['profitCagr']),
+    ]
     cash = sum(r['operatingCashFlow'] for r in history) if complete and all(numeric(r.get('operatingCashFlow')) is not None for r in history) else None
     profit = sum(r['netProfit'] for r in history) if complete and all(numeric(r.get('netProfit')) is not None for r in history) else None
     cash_ratio = cash / profit if cash is not None and profit is not None and profit > 0 else None
@@ -279,19 +324,20 @@ def quality_review(row, asof):
     latest = row.get('latestFinancials') or {}
     recent_checks = latest_report_review(latest, asof)
     recent_pass = all(c['pass'] for c in recent_checks)
-    qualified = historical_qualified and recent_pass
+    research_check = research_evidence_check(row, asof)
+    qualified = historical_qualified and recent_pass and research_check['pass']
     reasons = []
-    if every('netProfit'):
-        reasons.append('连续3年盈利，合计归母利润%.1f亿元' % (profit / 1e8))
+    growing = [label + '复合增长%+.1f%%' % growth[key]
+               for key, label in [('revenue', '营收'), ('netProfit', '归母利润'), ('deductedProfit', '扣非利润')]
+               if numeric(growth.get(key)) is not None]
+    if growing:
+        reasons.append('3年' + '，'.join(growing))
+    if stable_profits:
+        reasons.append('最近3个完整财年归母及扣非利润均逐年增长')
     if average is not None:
         reasons.append('3年平均ROE %.1f%%，各年%.1f%%–%.1f%%' % (average, min(roes), max(roes)))
     if every('operatingCashFlow') and cash_ratio is not None:
         reasons.append('连续3年经营现金流为正，合计为归母利润的%.2f倍' % cash_ratio)
-    growing = [label + '复合增长%+.1f%%' % growth[key]
-               for key, label in [('revenue', '营收'), ('netProfit', '归母利润')]
-               if numeric(growth.get(key)) is not None and growth[key] > 0]
-    if growing:
-        reasons.append('3年' + '，'.join(growing))
     watchouts = []
     if not recent_checks[0]['pass']:
         watchouts.append('最新应披露财报未收录；现有报告截至' + (latest.get('reportDate') or '未知'))
@@ -313,14 +359,18 @@ def quality_review(row, asof):
             watchouts.append('3年' + label + '复合增长%+.1f%%' % growth[key])
     if cash_ratio is not None and cash_ratio < 1:
         watchouts.append('3年经营现金流合计低于归母利润（%.2f倍）' % cash_ratio)
+    current_cash, current_profit = numeric(latest.get('operatingCashFlow')), numeric(latest.get('netProfit'))
+    if current_cash is not None and current_profit is not None and current_profit > 0 and current_cash / current_profit < 0.5:
+        watchouts.append('最新报告经营现金流%.2f亿元，仅为归母利润的%.0f%%' % (current_cash / 1e8, current_cash / current_profit * 100))
     if history and numeric(history[0].get('roe')) is not None and history[0]['roe'] < 10:
         watchouts.append('%s年ROE低于10%%（%.1f%%）' % (history[0]['year'], history[0]['roe']))
     return {'qualified': qualified, 'historicalQualified': historical_qualified,
             'reviewRequired': historical_qualified and not recent_pass,
             'status': 'qualified' if qualified else 'review' if historical_qualified else 'outside_screen',
-            'checks': checks + recent_checks, 'historicalChecks': checks, 'recentChecks': recent_checks,
+            'checks': checks + recent_checks + [research_check], 'historicalChecks': checks, 'recentChecks': recent_checks,
+            'researchChecks': [research_check],
             'reasons': reasons, 'watchouts': watchouts,
             'cashProfitRatio3': round(cash_ratio, 4) if cash_ratio is not None else None,
             'roe3': round(average, 2) if average is not None else None,
-            'years': years, 'checkedAt': asof, 'basis': 'quality_candidates_growth_screen_v3',
+            'years': years, 'checkedAt': asof, 'basis': 'report_backed_quality_v4',
             'thresholds': QUALITY_LIMITS.copy()}

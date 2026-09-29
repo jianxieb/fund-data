@@ -65,16 +65,16 @@
     },
     "stocks": {
       "status": "success",
-      "attemptedAt": "2026-09-29T08:10:36+00:00",
+      "attemptedAt": "2026-09-29T15:43:47+00:00",
       "mode": "online",
-      "records": 59,
+      "records": 35,
       "failures": [],
       "asOf": "2026-09-29",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-09-29T08:10:36+00:00",
+        "attemptedAt": "2026-09-29T15:43:47+00:00",
         "mode": "online",
-        "records": 59,
+        "records": 35,
         "failures": [],
         "asOf": "2026-09-29"
       }
@@ -112,5 +112,5 @@
       }
     }
   },
-  "checkedAt": "2026-09-29T08:37:02+00:00"
+  "checkedAt": "2026-09-29T15:43:47+00:00"
 }
