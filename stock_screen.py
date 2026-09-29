@@ -351,7 +351,7 @@ def fetch_stock(item):
     result.update(evidence)
     result['ind'] = evidence.get('valuationIndustry') or result['ind']
     apply_research_profile(result, item)
-    result['qualityReview'] = quality_review(result, datetime.now(timezone(timedelta(hours=8))).date().isoformat())
+    refresh_quality_review(result, datetime.now(timezone(timedelta(hours=8))).date().isoformat())
     return result
 
 
@@ -361,6 +361,14 @@ def apply_research_profile(row, item):
     row['businessLabel'] = item['business']
     row['businessSourceUrl'] = item.get('business_source_url')
     row['note'] = item['note']
+
+
+def refresh_quality_review(row, asof):
+    review = quality_review(row, asof)
+    if review is None:
+        row.pop('qualityReview', None)
+    else:
+        row['qualityReview'] = review
 
 
 def load_old_rows(src):
@@ -449,7 +457,7 @@ def main():
         if row['c'] in profiles:
             apply_research_profile(row, profiles[row['c']])
         # A failed download must not keep an old qualification after a reporting deadline.
-        row['qualityReview'] = quality_review(row, review_asof)
+        refresh_quality_review(row, review_asof)
     rows.sort(key=lambda row: order.get(row.get('c'), 9999))
     block = format_block(rows)
     pattern = re.compile(r'/\*__DATA_STOCKS_BEGIN__\*/.*?/\*__DATA_STOCKS_END__\*/', re.S)

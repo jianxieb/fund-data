@@ -9,6 +9,10 @@
   const copy = x => JSON.parse(JSON.stringify(x));
   const record = v => v !== null && typeof v === 'object' && !Array.isArray(v);
   const escapeHtml = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  function stockMatches(stock, group, showFailed = false) {
+    if (!['quality', 'dividend'].includes(group) || stock.group !== group) return false;
+    return group === 'dividend' || showFailed || stock.qualityReview?.qualified === true;
+  }
   function validDate(value) {
     if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
     const time = Date.parse(value + 'T00:00:00Z');
@@ -283,5 +287,5 @@
     });
     return { start, end, purchaseDays, rows, exchangeBasis };
   }
-  return { finite, sum, copy, escapeHtml, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, csv, buyLocationXirr, buyLocationResult, crossborderPerformance, crossborderMatches };
+  return { finite, sum, copy, escapeHtml, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, stockMatches, csv, buyLocationXirr, buyLocationResult, crossborderPerformance, crossborderMatches };
 }));

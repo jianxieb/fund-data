@@ -13,6 +13,19 @@ function fund(patch = {}) {
     r: [10, 20, 30, 50, 100], mdd5: -20, vol5: 15, mdd3: -15, v3: 12, fee: [0.15, 0.05, 0], ...patch };
 }
 
+test('quality candidates and dividend stocks stay separate even with stale qualification flags', () => {
+  const growth = {group:'quality', qualityReview:{qualified:true}};
+  const failed = {group:'quality', qualityReview:{qualified:false}};
+  const dividend = {group:'dividend', qualityReview:{qualified:true}};
+  const dividendWithStaleFailure = {group:'dividend', qualityReview:{qualified:false}};
+  const rows = [growth, failed, dividend, dividendWithStaleFailure];
+  assert.deepEqual(rows.filter(s => M.stockMatches(s, 'quality')), [growth]);
+  assert.deepEqual(rows.filter(s => M.stockMatches(s, 'quality', true)), [growth, failed]);
+  assert.deepEqual(rows.filter(s => M.stockMatches(s, 'dividend')), [dividend, dividendWithStaleFailure]);
+  assert.deepEqual(rows.filter(s => M.stockMatches(s, 'all', true)), []);
+  assert.equal(M.stockMatches({qualityReview:{qualified:true}}, 'quality', true), false);
+});
+
 test('calendar coverage rejects impossible dates and handles leap anniversaries', () => {
   assert.equal(M.hasWindow('2021-02-28', '2024-02-29', 3), true);
   assert.equal(M.hasWindow('2021-03-01', '2024-02-29', 3), false);

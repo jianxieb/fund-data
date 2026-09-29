@@ -170,6 +170,13 @@ def fetch_evidence(code, fetcher, asof):
     return parsed
 
 
+QUALITY_LIMITS = {
+    'annualRoe': 15, 'minimumAnnualRoe': 10,
+    'revenueCagr': 5, 'profitCagr': 10,
+    'recentGrowth': 10, 'roeDecline': 20,
+}
+
+
 def latest_report_review(latest, asof):
     """Recheck current operations against the same reporting period, not full-year ROE."""
     year, month_day = int(asof[:4]), asof[5:]
@@ -180,22 +187,22 @@ def latest_report_review(latest, asof):
     day = latest.get('reportDate') or ''
     def growth_ok(key):
         value = numeric(latest.get(key + 'Growth'))
-        return (value is not None and value >= -20) or latest.get(key + 'GrowthStatus') == '扭亏'
+        return value is not None and value >= QUALITY_LIMITS['recentGrowth']
     def growth_failure(keys):
-        declines, unavailable = [], []
+        below, unavailable = [], []
         for key, label in keys:
             if growth_ok(key):
                 continue
             value = numeric(latest.get(key + 'Growth'))
             if value is not None:
-                declines.append(label + '同比下降%.2f%%' % -value)
+                below.append(label + '同比%+.2f%%' % value)
             else:
                 status = latest.get(key + 'GrowthStatus') or '缺同比数据'
                 unavailable.append(label + '：' + status)
-        text = '、'.join(declines) + '，超过20%降幅上限' if declines else ''
-        return '；'.join(([text] if text else []) + unavailable), 'threshold' if declines else 'evidence'
+        text = '、'.join(below) + '，低于%d%%增长门槛' % QUALITY_LIMITS['recentGrowth'] if below else ''
+        return '；'.join(([text] if text else []) + unavailable), 'threshold' if below else 'evidence'
     roe, previous = numeric(latest.get('roe')), numeric(latest.get('roePrevious'))
-    roe_ok = roe is not None and roe > 0 and previous is not None and (previous <= 0 or roe / previous >= 0.7)
+    roe_ok = roe is not None and roe > 0 and previous is not None and (previous <= 0 or roe / previous >= 1 - QUALITY_LIMITS['roeDecline'] / 100)
     revenue_reason, revenue_kind = growth_failure([('revenue', '营收')])
     profit_reason, profit_kind = growth_failure([('netProfit', '归母利润'), ('deductedProfit', '扣非利润')])
     amounts = [(label, numeric(latest.get(key))) for key, label in [('netProfit', '归母利润'), ('deductedProfit', '扣非利润')]]
@@ -209,24 +216,26 @@ def latest_report_review(latest, asof):
     elif previous is None:
         roe_reason, roe_kind = '缺上年同期ROE，无法比较相对降幅', 'evidence'
     elif not roe_ok:
-        roe_reason = 'ROE %.2f%%→%.2f%%，相对下降%.2f%%，超过30%%降幅上限' % (previous, roe, (1 - roe / previous) * 100)
+        roe_reason = 'ROE %.2f%%→%.2f%%，相对下降%.2f%%，超过%d%%降幅上限' % (previous, roe, (1 - roe / previous) * 100, QUALITY_LIMITS['roeDecline'])
     checks = [
         {'label': '已收录最新应披露报告（截至%s）' % due, 'pass': day >= due,
          'reason': '缺截至%s的应披露财报，现有报告截至%s' % (due, day or '未知') if day < due else None, 'failureKind': 'evidence'},
         {'label': '最新报告归母及扣非利润均为正', 'pass': not positive_failures,
          'reason': '；'.join(positive_failures) or None,
          'failureKind': 'threshold' if any(v is not None and v <= 0 for _, v in amounts) else 'evidence'},
-        {'label': '最新营收同比降幅不超过20%', 'pass': growth_ok('revenue'),
+        {'label': '最新营收同比增长≥%d%%' % QUALITY_LIMITS['recentGrowth'], 'pass': growth_ok('revenue'),
          'reason': revenue_reason or None, 'failureKind': revenue_kind},
-        {'label': '最新归母及扣非利润同比降幅均不超过20%', 'pass': growth_ok('netProfit') and growth_ok('deductedProfit'),
+        {'label': '最新归母及扣非利润同比增长均≥%d%%' % QUALITY_LIMITS['recentGrowth'], 'pass': growth_ok('netProfit') and growth_ok('deductedProfit'),
          'reason': profit_reason or None, 'failureKind': profit_kind},
-        {'label': '最新ROE为正，较上年同期相对降幅不超过30%', 'pass': roe_ok,
+        {'label': '最新ROE为正，较上年同期相对降幅不超过%d%%' % QUALITY_LIMITS['roeDecline'], 'pass': roe_ok,
          'reason': roe_reason or None, 'failureKind': roe_kind},
     ]
     return checks
 
 
 def quality_review(row, asof):
+    if row.get('group') != 'quality':
+        return None
     history = row.get('financialHistory') or []
     years = [r['year'] for r in history]
     latest_due_year = int(asof[:4]) - (1 if asof[5:] >= '04-30' else 2)
@@ -235,6 +244,16 @@ def quality_review(row, asof):
         return complete and all(numeric(r.get(key)) is not None and r[key] > 0 for r in history)
     roes = [numeric(r.get('roe')) for r in history]
     average = sum(roes) / 3 if complete and all(v is not None for v in roes) else None
+    last_roe = numeric(history[0].get('roe')) if history else None
+    roe_history_ok = average is not None and average >= QUALITY_LIMITS['annualRoe'] and all(v >= QUALITY_LIMITS['minimumAnnualRoe'] for v in roes)
+    growth = row.get('financialGrowth3') or {}
+    growth_complete = growth.get('years') == 3 and bool(growth.get('start')) and bool(growth.get('end'))
+    def growth_check(key, label, minimum):
+        value = numeric(growth.get(key)) if growth_complete else None
+        passed = value is not None and value >= minimum
+        reason = None if passed else ('缺可比较的3年%s复合增长数据（需要相距3年的完整年报及正基数）' % label if value is None else '3年%s复合增长%+.2f%%，低于%d%%门槛' % (label, value, minimum))
+        return {'label': '3年%s复合增长≥%d%%' % (label, minimum), 'pass': passed,
+                'reason': reason, 'failureKind': 'evidence' if value is None else 'threshold'}
     first = row.get('historyFirst')
     observed_years = (date.fromisoformat(asof) - date.fromisoformat(first)).days / 365.2425 if first else 0
     checks = [
@@ -243,8 +262,15 @@ def quality_review(row, asof):
         {'label': '总市值≥100亿元', 'pass': (numeric(row.get('mcap')) or 0) >= 100},
         {'label': '最近3个完整财年持续盈利', 'pass': every('netProfit')},
         {'label': '最近3个完整财年经营现金流为正', 'pass': every('operatingCashFlow')},
-        {'label': '3年平均年度ROE≥10%', 'pass': average is not None and average >= 10 and all(v > 0 for v in roes)},
+        {'label': '3年平均年度ROE≥15%，各年均≥10%', 'pass': roe_history_ok,
+         'reason': None if roe_history_ok else '缺连续3年完整年度ROE' if average is None else '3年平均年度ROE %.2f%%、最低年度%.2f%%，须分别达到15%%和10%%' % (average, min(roes)),
+         'failureKind': 'evidence' if average is None else 'threshold'},
         {'label': '非ST企业', 'pass': 'ST' not in row.get('n', '').upper()},
+        {'label': '最新完整年度ROE≥15%', 'pass': complete and last_roe is not None and last_roe >= QUALITY_LIMITS['annualRoe'],
+         'reason': '缺最新完整年度ROE' if not complete or last_roe is None else None if last_roe >= QUALITY_LIMITS['annualRoe'] else '%s年度ROE %.2f%%，低于15%%门槛' % (years[0], last_roe),
+         'failureKind': 'evidence' if not complete or last_roe is None else 'threshold'},
+        growth_check('revenue', '营收', QUALITY_LIMITS['revenueCagr']),
+        growth_check('netProfit', '归母利润', QUALITY_LIMITS['profitCagr']),
     ]
     cash = sum(r['operatingCashFlow'] for r in history) if complete and all(numeric(r.get('operatingCashFlow')) is not None for r in history) else None
     profit = sum(r['netProfit'] for r in history) if complete and all(numeric(r.get('netProfit')) is not None for r in history) else None
@@ -261,7 +287,6 @@ def quality_review(row, asof):
         reasons.append('3年平均ROE %.1f%%，各年%.1f%%–%.1f%%' % (average, min(roes), max(roes)))
     if every('operatingCashFlow') and cash_ratio is not None:
         reasons.append('连续3年经营现金流为正，合计为归母利润的%.2f倍' % cash_ratio)
-    growth = row.get('financialGrowth3') or {}
     growing = [label + '复合增长%+.1f%%' % growth[key]
                for key, label in [('revenue', '营收'), ('netProfit', '归母利润')]
                if numeric(growth.get(key)) is not None and growth[key] > 0]
@@ -297,4 +322,5 @@ def quality_review(row, asof):
             'reasons': reasons, 'watchouts': watchouts,
             'cashProfitRatio3': round(cash_ratio, 4) if cash_ratio is not None else None,
             'roe3': round(average, 2) if average is not None else None,
-            'years': years, 'checkedAt': asof, 'basis': 'research_pool_financial_screen_v2'}
+            'years': years, 'checkedAt': asof, 'basis': 'quality_candidates_growth_screen_v3',
+            'thresholds': QUALITY_LIMITS.copy()}
