@@ -154,6 +154,11 @@ class ResearchEvidenceTests(unittest.TestCase):
         self.assertEqual(review['status'], 'review')
         self.assertFalse(review['qualified'])
         self.assertEqual([r['pass'] for r in review['recentChecks']], [True, True, False, False, False])
+        failures = [r for r in review['recentChecks'] if not r['pass']]
+        self.assertIn('28.99%，超过20%', failures[0]['reason'])
+        self.assertIn('归母利润同比下降32.01%、扣非利润同比下降42.96%', failures[1]['reason'])
+        self.assertIn('19.18%→10.73%，相对下降44.06%，超过30%', failures[2]['reason'])
+        self.assertTrue(all(r['failureKind'] == 'threshold' for r in failures))
 
     def test_recent_screen_requires_due_report_and_same_period_roe(self):
         report = {'reportDate': '2026-06-30', 'roe': 7, 'roePrevious': 10,
@@ -162,7 +167,14 @@ class ResearchEvidenceTests(unittest.TestCase):
         self.assertTrue(all(c['pass'] for c in latest_report_review(report, '2026-09-29')))
         self.assertFalse(latest_report_review(report, '2026-10-31')[0]['pass'])
         report['roePrevious'] = None
-        self.assertFalse(latest_report_review(report, '2026-09-29')[-1]['pass'])
+        missing = latest_report_review(report, '2026-09-29')[-1]
+        self.assertFalse(missing['pass'])
+        self.assertEqual(missing['failureKind'], 'evidence')
+        self.assertIn('缺上年同期ROE', missing['reason'])
+        stale = latest_report_review(report, '2026-10-31')[0]
+        self.assertEqual(stale['failureKind'], 'evidence')
+        self.assertIn('缺截至2026-09-30', stale['reason'])
+        self.assertIn('现有报告截至2026-06-30', stale['reason'])
 
     def test_cash_distribution_and_split_are_distinct_and_preserved(self):
         archive = {'160213': {'dividends': {'2025-05-13': 1.1, '2027-01-01': 2}, 'splits': {},

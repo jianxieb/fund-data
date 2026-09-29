@@ -180,14 +180,47 @@ def latest_report_review(latest, asof):
     def growth_ok(key):
         value = numeric(latest.get(key + 'Growth'))
         return (value is not None and value >= -20) or latest.get(key + 'GrowthStatus') == '扭亏'
+    def growth_failure(keys):
+        declines, unavailable = [], []
+        for key, label in keys:
+            if growth_ok(key):
+                continue
+            value = numeric(latest.get(key + 'Growth'))
+            if value is not None:
+                declines.append(label + '同比下降%.2f%%' % -value)
+            else:
+                status = latest.get(key + 'GrowthStatus') or '缺同比数据'
+                unavailable.append(label + '：' + status)
+        text = '、'.join(declines) + '，超过20%降幅上限' if declines else ''
+        return '；'.join(([text] if text else []) + unavailable), 'threshold' if declines else 'evidence'
     roe, previous = numeric(latest.get('roe')), numeric(latest.get('roePrevious'))
     roe_ok = roe is not None and roe > 0 and previous is not None and (previous <= 0 or roe / previous >= 0.7)
+    revenue_reason, revenue_kind = growth_failure([('revenue', '营收')])
+    profit_reason, profit_kind = growth_failure([('netProfit', '归母利润'), ('deductedProfit', '扣非利润')])
+    amounts = [(label, numeric(latest.get(key))) for key, label in [('netProfit', '归母利润'), ('deductedProfit', '扣非利润')]]
+    positive_failures = [label + ('金额缺失' if value is None else '为%.2f亿元，未满足大于0的条件' % (value / 1e8))
+                         for label, value in amounts if value is None or value <= 0]
+    roe_reason, roe_kind = '', 'threshold'
+    if roe is None:
+        roe_reason, roe_kind = '缺最新报告加权平均ROE', 'evidence'
+    elif roe <= 0:
+        roe_reason = '最新报告ROE为%.2f%%，未满足大于0的条件' % roe
+    elif previous is None:
+        roe_reason, roe_kind = '缺上年同期ROE，无法比较相对降幅', 'evidence'
+    elif not roe_ok:
+        roe_reason = 'ROE %.2f%%→%.2f%%，相对下降%.2f%%，超过30%%降幅上限' % (previous, roe, (1 - roe / previous) * 100)
     checks = [
-        {'label': '已收录最新应披露报告（截至%s）' % due, 'pass': day >= due},
-        {'label': '最新报告归母及扣非利润均为正', 'pass': all((numeric(latest.get(k)) or 0) > 0 for k in ('netProfit', 'deductedProfit'))},
-        {'label': '最新营收同比降幅不超过20%', 'pass': growth_ok('revenue')},
-        {'label': '最新归母及扣非利润同比降幅均不超过20%', 'pass': growth_ok('netProfit') and growth_ok('deductedProfit')},
-        {'label': '最新ROE为正，较上年同期降幅不超过30%', 'pass': roe_ok},
+        {'label': '已收录最新应披露报告（截至%s）' % due, 'pass': day >= due,
+         'reason': '缺截至%s的应披露财报，现有报告截至%s' % (due, day or '未知') if day < due else None, 'failureKind': 'evidence'},
+        {'label': '最新报告归母及扣非利润均为正', 'pass': not positive_failures,
+         'reason': '；'.join(positive_failures) or None,
+         'failureKind': 'threshold' if any(v is not None and v <= 0 for _, v in amounts) else 'evidence'},
+        {'label': '最新营收同比降幅不超过20%', 'pass': growth_ok('revenue'),
+         'reason': revenue_reason or None, 'failureKind': revenue_kind},
+        {'label': '最新归母及扣非利润同比降幅均不超过20%', 'pass': growth_ok('netProfit') and growth_ok('deductedProfit'),
+         'reason': profit_reason or None, 'failureKind': profit_kind},
+        {'label': '最新ROE为正，较上年同期相对降幅不超过30%', 'pass': roe_ok,
+         'reason': roe_reason or None, 'failureKind': roe_kind},
     ]
     return checks
 
