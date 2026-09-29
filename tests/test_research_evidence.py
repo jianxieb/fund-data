@@ -6,6 +6,8 @@ from pathlib import Path
 from unittest.mock import patch
 
 import update
+import stock_screen
+from datetime import datetime
 from scripts.build_fund_actions import build_archive
 from stock_fundamentals import parse_evidence, quality_review, latest_report_review
 from fund_evidence import fund_actions
@@ -25,7 +27,7 @@ class ResearchEvidenceTests(unittest.TestCase):
                           'NOTICE_DATE': '%d-08-12' % y, 'ROEJQ': 8, 'KCFJCXSYJLR': 9e8}
                          for y in (2026, 2025)]
 
-    def test_named_valuation_fields_and_annual_roe_keep_independent_dates(self):
+    def test_named_valuation_fields_and_reported_roe_keep_independent_dates(self):
         evidence = parse_evidence('601899', [self.quote], self.reports, '2026-09-29')
         self.assertEqual(evidence['pe'], 12)
         self.assertEqual(evidence['pb'], 3)
@@ -73,10 +75,45 @@ class ResearchEvidenceTests(unittest.TestCase):
         self.assertEqual(latest['roe'], 8)
         self.assertEqual(latest['roePrevious'], 15)
         self.assertEqual(latest['roeChangePoints'], -7)
-        self.assertEqual(evidence['roe'], 15)
+        self.assertEqual(evidence['roe'], 8)
+        self.assertEqual(evidence['roeAsOf'], '2026-06-30')
+        self.assertEqual(evidence['financialHistory'][0]['roe'], 15)
         self.assertEqual(latest['announcedAt'], '2026-08-12')
         before_release = parse_evidence('601899', [], [current, prior] + self.reports, '2026-08-11')
         self.assertEqual(before_release['latestFinancials']['reportDate'], '2025-12-31')
+        self.assertEqual(before_release['roeAsOf'], '2025-12-31')
+
+    def test_missing_current_roe_does_not_fall_back_to_a_high_annual_value(self):
+        reports = [{**self.interims[0], 'ROEJQ': None}, self.interims[1]] + self.reports
+        evidence = parse_evidence('601899', [self.quote], reports, '2026-09-29')
+        self.assertIsNone(evidence['roe'])
+        self.assertEqual(evidence['roeAsOf'], '2026-06-30')
+        self.assertEqual(evidence['financialHistory'][0]['roe'], 15)
+        row = {**evidence, 'historyFirst': '2010-01-01', 'n': '测试公司'}
+        self.assertFalse(quality_review(row, '2026-09-29')['qualified'])
+
+    def test_cached_stock_loses_qualification_when_next_report_becomes_due(self):
+        row = {**parse_evidence('601899', [self.quote], self.interims + self.reports, '2026-09-29'),
+               'c': '601899', 'n': '紫金矿业', 'historyFirst': '2010-01-01', 'latest': '2026-09-29'}
+        row['qualityReview'] = quality_review(row, '2026-09-29')
+        self.assertTrue(row['qualityReview']['qualified'])
+        profile = next(x for x in stock_screen.STOCK_UNIVERSE if x['code'] == row['c'])
+        with tempfile.TemporaryDirectory() as directory:
+            snapshot = Path(directory) / 'snapshot.js'
+            snapshot.write_text(stock_screen.format_block([row]))
+            with patch.object(stock_screen, 'HTML', str(snapshot)), \
+                 patch.object(stock_screen, 'STOCK_UNIVERSE', [profile]), \
+                 patch.object(stock_screen, 'fetch_stock', side_effect=RuntimeError('upstream unavailable')), \
+                 patch.object(stock_screen, 'write_status'), patch.object(stock_screen, 'log'), \
+                 patch.object(stock_screen, 'datetime') as clock, patch('sys.argv', ['stock_screen.py']):
+                clock.now.return_value = datetime(2026, 10, 31)
+                self.assertEqual(stock_screen.main(), 3)
+            cached = stock_screen.load_old_rows(snapshot.read_text())[row['c']]
+            self.assertFalse(cached['qualityReview']['qualified'])
+            self.assertIn('缺截至2026-09-30', cached['qualityReview']['recentChecks'][0]['reason'])
+            self.assertEqual(cached['latestFinancials']['reportDate'], '2026-06-30')
+            self.assertEqual(cached['businessLabel'], profile['business'])
+            self.assertEqual(cached['valuationIndustry'], row['valuationIndustry'])
 
     def test_loss_and_zero_bases_are_not_presented_as_normal_growth(self):
         reports = copy.deepcopy(self.reports)

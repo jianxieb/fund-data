@@ -40,65 +40,65 @@ YAHOO_CACHE = os.path.join(HERE, '.tmp-snap', 'stocks')
 # 核心观察清单：优先覆盖稳定现金流、行业龙头和常见高股息标的。
 # note 只写业务和筛选逻辑，不写推荐语。
 STOCK_UNIVERSE = [
-    {'code': '601138', 'name': '工业富联', 'industry': '电子制造', 'group': 'quality', 'note': '覆盖服务器、通信网络设备与精密工具制造，观察算力需求、客户集中度和盈利兑现'},
-    {'code': '603259', 'name': '药明康德', 'industry': '医药研发服务', 'group': 'quality', 'note': '提供药物研发与生产服务，观察订单、产能利用率及跨境经营风险'},
-    {'code': '601899', 'name': '紫金矿业', 'industry': '有色金属', 'group': 'quality', 'note': '经营铜、金等矿产资源，观察产量、矿山成本、金属价格和海外项目投入'},
-    {'code': '300750', 'name': '宁德时代', 'industry': '动力与储能电池', 'group': 'quality', 'note': '动力与储能电池制造，观察产能利用率、单位盈利和技术迭代'},
-    {'code': '002594', 'name': '比亚迪', 'industry': '汽车制造', 'group': 'quality', 'note': '新能源汽车与电池制造，观察销量、单车盈利和海外经营'},
-    {'code': '300124', 'name': '汇川技术', 'industry': '工业自动化', 'group': 'quality', 'note': '工业自动化与新能源车电驱产品，观察制造业投资、产品结构和研发投入'},
-    {'code': '600309', 'name': '万华化学', 'industry': '化工', 'group': 'quality', 'note': '聚氨酯、石化与新材料制造，观察产品价差、产能扩张和资本回报'},
-    {'code': '002475', 'name': '立讯精密', 'group': 'quality', 'note': '观察消费电子与汽车业务的客户结构、毛利率和现金回收'},
-    {'code': '002371', 'name': '北方华创', 'group': 'quality', 'note': '观察半导体设备需求、研发投入与订单交付'},
-    {'code': '688012', 'name': '中微公司', 'group': 'quality', 'note': '观察半导体设备业务的研发、客户验证与现金回收'},
-    {'code': '300308', 'name': '中际旭创', 'group': 'quality', 'note': '观察光通信产品需求、技术迭代和客户集中度'},
-    {'code': '300502', 'name': '新易盛', 'group': 'quality', 'note': '观察光模块产品结构、毛利率与产能投入'},
-    {'code': '000063', 'name': '中兴通讯', 'group': 'quality', 'note': '观察通信设备投资周期、研发与海外经营'},
-    {'code': '600406', 'name': '国电南瑞', 'group': 'quality', 'note': '观察电网自动化需求、项目交付与现金回收'},
-    {'code': '300274', 'name': '阳光电源', 'group': 'quality', 'note': '观察逆变器及储能业务增长、库存与海外经营'},
-    {'code': '601012', 'name': '隆基绿能', 'group': 'quality', 'note': '观察光伏价格周期、技术路线与产能退出'},
-    {'code': '002415', 'name': '海康威视', 'group': 'quality', 'note': '观察智能物联业务、客户需求与经营现金流'},
-    {'code': '300760', 'name': '迈瑞医疗', 'group': 'quality', 'note': '观察医疗器械研发、产品结构和海外销售'},
-    {'code': '600276', 'name': '恒瑞医药', 'group': 'quality', 'note': '观察创新药研发、商业化与研发投入回报'},
-    {'code': '603288', 'name': '海天味业', 'group': 'quality', 'note': '观察调味品销量、渠道变化与利润率'},
-    {'code': '600887', 'name': '伊利股份', 'group': 'quality', 'note': '观察乳品需求、产品结构与现金回报'},
-    {'code': '000858', 'name': '五粮液', 'group': 'quality', 'note': '观察白酒渠道库存、现金回款与分红'},
-    {'code': '600438', 'name': '通威股份', 'group': 'quality', 'note': '观察光伏产业价格周期、资本开支与现金流'},
-    {'code': '002714', 'name': '牧原股份', 'group': 'quality', 'note': '观察养殖成本、猪价周期与负债现金流'},
-    {'code': '601100', 'name': '恒立液压', 'group': 'quality', 'note': '观察液压产品需求、出口与资本回报'},
-    {'code': '600031', 'name': '三一重工', 'group': 'quality', 'note': '观察工程机械周期、国际业务与应收回款'},
-    {'code': '000338', 'name': '潍柴动力', 'group': 'quality', 'note': '观察动力系统、商用车周期与现金回报'},
-    {'code': '603986', 'name': '兆易创新', 'group': 'quality', 'note': '观察存储与微控制器产品周期、研发和库存'},
-    {'code': '600660', 'name': '福耀玻璃', 'group': 'quality', 'note': '观察汽车玻璃产品升级、全球产能与现金回报'},
-    {'code': '002352', 'name': '顺丰控股', 'group': 'quality', 'note': '观察物流网络效率、业务结构和资本开支'},
-    {'code': '601919', 'name': '中远海控', 'group': 'quality', 'note': '观察航运运价周期、运力供给与现金分配'},
-    {'code': '600585', 'name': '海螺水泥', 'group': 'quality', 'note': '观察水泥需求、产能供给与现金流'},
-    {'code': '601689', 'name': '拓普集团', 'group': 'quality', 'note': '观察汽车零部件客户结构、产能利用与利润率'},
-    {'code': '300014', 'name': '亿纬锂能', 'group': 'quality', 'note': '观察电池产品结构、研发与资本开支'},
-    {'code': '600436', 'name': '片仔癀', 'group': 'quality', 'note': '观察核心产品需求、渠道库存和现金回报'},
-    {'code': '002027', 'name': '分众传媒', 'group': 'quality', 'note': '观察广告需求、媒体点位效率与经营现金流'},
-    {'code': '600900', 'note': '水电龙头，现金流稳定，长期高比例分红'},
-    {'code': '000333', 'note': '白电龙头，全球化经营，分红稳定'},
-    {'code': '600901', 'note': '金融租赁平台，高股息与稳健资产扩张'},
-    {'code': '600941', 'note': '通信运营龙头，派息率高、现金流稳定'},
-    {'code': '601088', 'note': '煤电一体化龙头，分红比例高'},
-    {'code': '601225', 'note': '动力煤龙头，现金流与分红能力强'},
-    {'code': '601857', 'note': '油气一体化龙头，长期分红与资源属性'},
-    {'code': '600938', 'note': '海上油气龙头，高资本开支后现金流改善'},
-    {'code': '601398', 'note': '大型银行，低估值、高股息代表'},
-    {'code': '601939', 'note': '大型银行，资产质量稳健、分红持续'},
-    {'code': '601288', 'note': '大型银行，县域金融覆盖广、分红稳定'},
-    {'code': '601988', 'note': '大型银行，低估值与稳定现金分红'},
-    {'code': '600036', 'note': '零售银行龙头，ROE与分红质量较高'},
-    {'code': '601668', 'note': '大型建筑央企，订单与分红稳定'},
-    {'code': '601006', 'note': '铁路运输资产，现金流稳定、分红持续'},
-    {'code': '600377', 'note': '长三角收费公路资产，现金流稳定'},
-    {'code': '600886', 'note': '水电与能源综合运营商，分红稳定'},
-    {'code': '600674', 'note': '水电资产质量较好，长期现金流稳定'},
-    {'code': '600519', 'note': '高端白酒龙头，盈利与现金分红稳定'},
-    {'code': '000651', 'note': '空调龙头，估值较低、股息率较高'},
-    {'code': '000895', 'note': '肉类加工龙头，现金流与分红较稳定'},
-    {'code': '601728', 'note': '通信运营龙头，低估值高股息'},
-    {'code': '600690', 'note': '全球化白电龙头，现金流与分红改善'},
+    {'code': '601138', 'business_source_url': 'https://panel.fii-foxconn.com/mtgz/5000.html', 'business': 'AI服务器与通信网络设备', 'name': '工业富联', 'industry': '电子制造', 'group': 'quality', 'note': '覆盖服务器、通信网络设备与精密工具制造，观察算力需求、客户集中度和盈利兑现'},
+    {'code': '603259', 'business_source_url': 'https://www.wuxiapptec.com/news/wuxi-news/o11j18jj5dltcdtm9so5f4sk', 'business': '药物研发与生产服务（CRDMO）', 'name': '药明康德', 'industry': '医药研发服务', 'group': 'quality', 'note': '提供药物研发与生产服务，观察订单、产能利用率及跨境经营风险'},
+    {'code': '601899', 'business': '铜金等矿产开采', 'name': '紫金矿业', 'industry': '有色金属', 'group': 'quality', 'note': '经营铜、金等矿产资源，观察产量、矿山成本、金属价格和海外项目投入'},
+    {'code': '300750', 'business': '动力与储能电池', 'name': '宁德时代', 'industry': '动力与储能电池', 'group': 'quality', 'note': '动力与储能电池制造，观察产能利用率、单位盈利和技术迭代'},
+    {'code': '002594', 'business': '新能源汽车与电池', 'name': '比亚迪', 'industry': '汽车制造', 'group': 'quality', 'note': '新能源汽车与电池制造，观察销量、单车盈利和海外经营'},
+    {'code': '300124', 'business': '工业自动化与汽车电驱', 'name': '汇川技术', 'industry': '工业自动化', 'group': 'quality', 'note': '工业自动化与新能源车电驱产品，观察制造业投资、产品结构和研发投入'},
+    {'code': '600309', 'business': '聚氨酯与化工新材料', 'name': '万华化学', 'industry': '化工', 'group': 'quality', 'note': '聚氨酯、石化与新材料制造，观察产品价差、产能扩张和资本回报'},
+    {'code': '002475', 'business': '消费电子与汽车电子制造', 'name': '立讯精密', 'group': 'quality', 'note': '观察消费电子与汽车业务的客户结构、毛利率和现金回收'},
+    {'code': '002371', 'business_source_url': 'https://www.naura.com/content/details_30_2309.html', 'business': '半导体设备 · 刻蚀与薄膜沉积', 'name': '北方华创', 'group': 'quality', 'note': '观察半导体设备需求、研发投入与订单交付'},
+    {'code': '688012', 'business': '半导体设备 · 刻蚀与沉积', 'name': '中微公司', 'group': 'quality', 'note': '观察半导体设备业务的研发、客户验证与现金回收'},
+    {'code': '300308', 'business': '光通信模块', 'name': '中际旭创', 'group': 'quality', 'note': '观察光通信产品需求、技术迭代和客户集中度'},
+    {'code': '300502', 'business': '光通信模块', 'name': '新易盛', 'group': 'quality', 'note': '观察光模块产品结构、毛利率与产能投入'},
+    {'code': '000063', 'business': '通信网络设备', 'name': '中兴通讯', 'group': 'quality', 'note': '观察通信设备投资周期、研发与海外经营'},
+    {'code': '600406', 'business': '电网自动化设备', 'name': '国电南瑞', 'group': 'quality', 'note': '观察电网自动化需求、项目交付与现金回收'},
+    {'code': '300274', 'business': '光伏逆变器与储能系统', 'name': '阳光电源', 'group': 'quality', 'note': '观察逆变器及储能业务增长、库存与海外经营'},
+    {'code': '601012', 'business': '光伏硅片与电池组件', 'name': '隆基绿能', 'group': 'quality', 'note': '观察光伏价格周期、技术路线与产能退出'},
+    {'code': '002415', 'business': '视频安防与智能物联', 'name': '海康威视', 'group': 'quality', 'note': '观察智能物联业务、客户需求与经营现金流'},
+    {'code': '300760', 'business': '医疗设备与体外诊断', 'name': '迈瑞医疗', 'group': 'quality', 'note': '观察医疗器械研发、产品结构和海外销售'},
+    {'code': '600276', 'business': '创新药与仿制药', 'name': '恒瑞医药', 'group': 'quality', 'note': '观察创新药研发、商业化与研发投入回报'},
+    {'code': '603288', 'business': '酱油等调味品', 'name': '海天味业', 'group': 'quality', 'note': '观察调味品销量、渠道变化与利润率'},
+    {'code': '600887', 'business': '液态奶与乳制品', 'name': '伊利股份', 'group': 'quality', 'note': '观察乳品需求、产品结构与现金回报'},
+    {'code': '000858', 'business': '白酒酿造', 'name': '五粮液', 'group': 'quality', 'note': '观察白酒渠道库存、现金回款与分红'},
+    {'code': '600438', 'business': '光伏硅料与电池、饲料', 'name': '通威股份', 'group': 'quality', 'note': '观察光伏产业价格周期、资本开支与现金流'},
+    {'code': '002714', 'business': '生猪养殖与屠宰', 'name': '牧原股份', 'group': 'quality', 'note': '观察养殖成本、猪价周期与负债现金流'},
+    {'code': '601100', 'business': '液压油缸与泵阀', 'name': '恒立液压', 'group': 'quality', 'note': '观察液压产品需求、出口与资本回报'},
+    {'code': '600031', 'business': '工程机械', 'name': '三一重工', 'group': 'quality', 'note': '观察工程机械周期、国际业务与应收回款'},
+    {'code': '000338', 'business': '发动机与动力系统', 'name': '潍柴动力', 'group': 'quality', 'note': '观察动力系统、商用车周期与现金回报'},
+    {'code': '603986', 'business': '存储芯片与微控制器', 'name': '兆易创新', 'group': 'quality', 'note': '观察存储与微控制器产品周期、研发和库存'},
+    {'code': '600660', 'business': '汽车玻璃', 'name': '福耀玻璃', 'group': 'quality', 'note': '观察汽车玻璃产品升级、全球产能与现金回报'},
+    {'code': '002352', 'business': '快递与综合物流', 'name': '顺丰控股', 'group': 'quality', 'note': '观察物流网络效率、业务结构和资本开支'},
+    {'code': '601919', 'business': '集装箱航运与码头', 'name': '中远海控', 'group': 'quality', 'note': '观察航运运价周期、运力供给与现金分配'},
+    {'code': '600585', 'business': '水泥与熟料', 'name': '海螺水泥', 'group': 'quality', 'note': '观察水泥需求、产能供给与现金流'},
+    {'code': '601689', 'business': '汽车底盘与减振零部件', 'name': '拓普集团', 'group': 'quality', 'note': '观察汽车零部件客户结构、产能利用与利润率'},
+    {'code': '300014', 'business': '消费、动力与储能电池', 'name': '亿纬锂能', 'group': 'quality', 'note': '观察电池产品结构、研发与资本开支'},
+    {'code': '600436', 'business': '中成药制造', 'name': '片仔癀', 'group': 'quality', 'note': '观察核心产品需求、渠道库存和现金回报'},
+    {'code': '002027', 'business': '电梯媒体广告', 'name': '分众传媒', 'group': 'quality', 'note': '观察广告需求、媒体点位效率与经营现金流'},
+    {'code': '600900', 'business': '水力发电', 'note': '水电龙头，现金流稳定，长期高比例分红'},
+    {'code': '000333', 'business': '家电与工业自动化', 'note': '白电龙头，全球化经营，分红稳定'},
+    {'code': '600901', 'business': '设备融资租赁', 'note': '金融租赁平台，高股息与稳健资产扩张'},
+    {'code': '600941', 'business': '移动通信与云服务', 'note': '通信运营龙头，派息率高、现金流稳定'},
+    {'code': '601088', 'business': '煤炭开采与发电', 'note': '煤电一体化龙头，分红比例高'},
+    {'code': '601225', 'business': '煤炭开采', 'note': '动力煤龙头，现金流与分红能力强'},
+    {'code': '601857', 'business': '油气开采与炼化', 'note': '油气一体化龙头，长期分红与资源属性'},
+    {'code': '600938', 'business': '海上油气开采', 'note': '海上油气龙头，高资本开支后现金流改善'},
+    {'code': '601398', 'business': '商业银行', 'note': '大型银行，低估值、高股息代表'},
+    {'code': '601939', 'business': '商业银行', 'note': '大型银行，资产质量稳健、分红持续'},
+    {'code': '601288', 'business': '商业银行', 'note': '大型银行，县域金融覆盖广、分红稳定'},
+    {'code': '601988', 'business': '商业银行', 'note': '大型银行，低估值与稳定现金分红'},
+    {'code': '600036', 'business': '商业银行', 'note': '零售银行龙头，ROE与分红质量较高'},
+    {'code': '601668', 'business': '房建与基础设施施工', 'note': '大型建筑央企，订单与分红稳定'},
+    {'code': '601006', 'business': '铁路货运', 'note': '铁路运输资产，现金流稳定、分红持续'},
+    {'code': '600377', 'business': '收费公路运营', 'note': '长三角收费公路资产，现金流稳定'},
+    {'code': '600886', 'business': '水电与综合发电', 'note': '水电与能源综合运营商，分红稳定'},
+    {'code': '600674', 'business': '水电投资与运营', 'note': '水电资产质量较好，长期现金流稳定'},
+    {'code': '600519', 'business': '白酒酿造', 'note': '高端白酒龙头，盈利与现金分红稳定'},
+    {'code': '000651', 'business': '空调与家电', 'note': '空调龙头，估值较低、股息率较高'},
+    {'code': '000895', 'business': '屠宰与肉制品', 'note': '肉类加工龙头，现金流与分红较稳定'},
+    {'code': '601728', 'business': '固定及移动通信与云服务', 'note': '通信运营龙头，低估值高股息'},
+    {'code': '600690', 'business': '家电制造', 'note': '全球化白电龙头，现金流与分红改善'},
 ]
 
 
@@ -350,8 +350,17 @@ def fetch_stock(item):
             'historyFirst': series[0][0], 'fundamentalsStatus': 'report_period_unverified'}
     result.update(evidence)
     result['ind'] = evidence.get('valuationIndustry') or result['ind']
+    apply_research_profile(result, item)
     result['qualityReview'] = quality_review(result, datetime.now(timezone(timedelta(hours=8))).date().isoformat())
     return result
+
+
+def apply_research_profile(row, item):
+    """Keep curated business labels separate from the quote provider's sector."""
+    row['group'] = item.get('group', 'dividend')
+    row['businessLabel'] = item['business']
+    row['businessSourceUrl'] = item.get('business_source_url')
+    row['note'] = item['note']
 
 
 def load_old_rows(src):
@@ -434,9 +443,13 @@ def main():
         write_status('stocks', 'failed', records=len(rows), failures=failures, message='有效数据不足80%，保留旧数据')
         return 2
     order = {item['code']: i for i, item in enumerate(STOCK_UNIVERSE)}
-    groups = {item['code']: item.get('group', 'dividend') for item in STOCK_UNIVERSE}
+    profiles = {item['code']: item for item in STOCK_UNIVERSE}
+    review_asof = datetime.now(timezone(timedelta(hours=8))).date().isoformat()
     for row in rows:
-        row['group'] = groups.get(row['c'], 'dividend')
+        if row['c'] in profiles:
+            apply_research_profile(row, profiles[row['c']])
+        # A failed download must not keep an old qualification after a reporting deadline.
+        row['qualityReview'] = quality_review(row, review_asof)
     rows.sort(key=lambda row: order.get(row.get('c'), 9999))
     block = format_block(rows)
     pattern = re.compile(r'/\*__DATA_STOCKS_BEGIN__\*/.*?/\*__DATA_STOCKS_END__\*/', re.S)

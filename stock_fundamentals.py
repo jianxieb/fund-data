@@ -110,6 +110,7 @@ def parse_evidence(code, valuation, financials, asof):
     dynamic_pe = market_cap / annualized_profit if market_cap is not None and market_cap > 0 and annualized_profit is not None and annualized_profit > 0 else None
     annual = [r for r in reports if str(r['REPORT_DATE'])[:10].endswith('-12-31')][:3]
     history = [financial_report(r, reports) for r in annual]
+    latest_report = financial_report(reports[0], reports) if reports else None
     growth = {'years': 3, 'start': None, 'end': history[0]['reportDate'] if history else None,
               'revenue': None, 'netProfit': None}
     if annual:
@@ -135,10 +136,10 @@ def parse_evidence(code, valuation, financials, asof):
             'valuationAsOf': str(q.get('TRADE_DATE') or '')[:10] or None,
             'valuationSource': 'Eastmoney RPT_VALUEANALYSIS_DET: PE_TTM / PB_MRQ',
             'valuationSourceUrl': source_url(code, 'RPT_VALUEANALYSIS_DET', 'TRADE_DATE', 2),
-            'roe': history[0]['roe'] if history else None,
-            'roeAsOf': history[0]['reportDate'] if history else None,
-            'roeBasis': '年度加权平均ROE', 'financialHistory': history,
-            'latestFinancials': financial_report(reports[0], reports) if reports else None,
+            'roe': latest_report['roe'] if latest_report else None,
+            'roeAsOf': latest_report['reportDate'] if latest_report else None,
+            'roeBasis': '最新报告期加权平均ROE（不年化）', 'financialHistory': history,
+            'latestFinancials': latest_report,
             'financialGrowth3': growth,
             'fundamentalsAsOf': str(reports[0]['REPORT_DATE'])[:10] if reports else None,
             'fundamentalsSourceUrl': source_url(code, 'RPT_F10_FINANCE_MAINFINADATA', 'REPORT_DATE', 20),
