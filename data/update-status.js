@@ -81,26 +81,18 @@ var UPDATE_STATUS={
     },
     "stocks": {
       "status": "success",
-      "attemptedAt": "2026-09-30T03:07:19+00:00",
-      "records": 37,
+      "attemptedAt": "2026-09-30T03:34:57+00:00",
+      "mode": "online",
+      "records": 41,
       "failures": [],
       "asOf": "2026-09-30",
-      "mode": "online",
-      "execution": {
-        "exitCode": 0,
-        "seconds": 105.44
-      },
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-09-30T03:07:19+00:00",
-        "records": 37,
-        "failures": [],
-        "asOf": "2026-09-30",
+        "attemptedAt": "2026-09-30T03:34:57+00:00",
         "mode": "online",
-        "execution": {
-          "exitCode": 0,
-          "seconds": 105.44
-        }
+        "records": 41,
+        "failures": [],
+        "asOf": "2026-09-30"
       }
     },
     "screening": {
@@ -170,5 +162,5 @@ var UPDATE_STATUS={
       }
     }
   },
-  "checkedAt": "2026-09-30T03:07:31+00:00"
+  "checkedAt": "2026-09-30T03:34:57+00:00"
 };

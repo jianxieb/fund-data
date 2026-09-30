@@ -1,6 +1,6 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-09-30T03:07:31+00:00",
+  "checkedAt": "2026-09-30T04:09:33+00:00",
   "asOf": "2026-09-30",
   "status": "unverified",
   "summary": {
@@ -112,7 +112,7 @@ var DATA_QUALITY={
         "2026-09-30",
         "2026-09-30"
       ],
-      "records": 37,
+      "records": 41,
       "issues": [],
       "status": "checked"
     },
@@ -1021,7 +1021,6 @@ var DATA_QUALITY={
             "001951",
             "080012",
             "310308",
-            "006373",
             "162719",
             "001668",
             "006555",
@@ -1365,7 +1364,7 @@ var DATA_QUALITY={
         {
           "code": "stale_research_nav",
           "severity": "warning",
-          "message": "1216只扩展基金的净值缺日期或超过10日；规则重生成不代表净值已更新",
+          "message": "1215只扩展基金的净值缺日期或超过10日；规则重生成不代表净值已更新",
           "affected": [
             "001437",
             "519196",
@@ -2244,7 +2243,6 @@ var DATA_QUALITY={
             "001951",
             "080012",
             "310308",
-            "006373",
             "162719",
             "001668",
             "006555",

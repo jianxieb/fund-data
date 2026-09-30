@@ -33,6 +33,16 @@ test('quality candidates and dividend stocks stay separate even with stale quali
   assert.equal(M.stockMatches({qualityReview:{qualified:true}}, 'quality', true), false);
 });
 
+test('earnings breakouts require reviewed evidence and remain separate from quality stages', () => {
+  const stock = {c:'002648', group:'quality', qualityResearch:{code:'002648',status:'reviewed'},
+    longTermReview:{qualified:false}, growthReview:{qualified:false}, breakoutReview:{qualified:true}};
+  assert.equal(M.stockMatches(stock, 'breakout'), true);
+  assert.equal(M.stockMatches(stock, 'quality'), false);
+  assert.equal(M.stockMatches({...stock, growthReview:{qualified:true}}, 'breakout'), false);
+  assert.equal(M.stockMatches({...stock, group:'dividend'}, 'breakout'), false);
+  assert.equal(M.stockMatches({...stock, qualityResearch:{code:'601138',status:'reviewed'}}, 'breakout'), false);
+});
+
 test('calendar coverage rejects impossible dates and handles leap anniversaries', () => {
   assert.equal(M.hasWindow('2021-02-28', '2024-02-29', 3), true);
   assert.equal(M.hasWindow('2021-03-01', '2024-02-29', 3), false);

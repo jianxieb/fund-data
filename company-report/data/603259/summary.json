@@ -1469,7 +1469,62 @@
     }
   ],
   "screeningContext": {
-    "profile": null,
-    "security": {}
+    "profile": {
+      "code": "603259",
+      "name": "药明康德",
+      "business": "小分子及TIDES药物研发生产服务",
+      "group": "quality",
+      "note": "小分子与TIDES交付扩张",
+      "research_category": "医药健康",
+      "business_source_url": "https://static.cninfo.com.cn/finalpage/2026-08-04/1225455027.PDF",
+      "quality_research": {
+        "code": "603259",
+        "name": "药明康德",
+        "business": "小分子及TIDES药物研发生产服务",
+        "category": "医药健康",
+        "title": "小分子与TIDES交付扩张",
+        "thesis": [
+          "中报TIDES收入72.6亿元、同比增长44.3%，对应实际药物研发生产业务。",
+          "H1扣非增长89.39%，归母增长29.43%；归母与扣非基数不同，不能把较慢归母增速等同于主营恶化。"
+        ],
+        "risks": [
+          "客户订单、产能利用率和海外政策约束影响业务持续性。",
+          "2025年的非经常损益和历史利润下降使跨期归母利润比较需要拆分。"
+        ],
+        "sources": [
+          {
+            "title": "药明康德2026年半年度报告",
+            "url": "https://static.cninfo.com.cn/finalpage/2026-08-04/1225455027.PDF",
+            "publishedAt": "2026-08-04",
+            "pages": "5—7、10—13",
+            "businessPage": 5
+          }
+        ],
+        "longTerm": {
+          "durability": "小分子与TIDES药物研发生产服务提供持续业务基础；2024年归母利润下降1.63%，未满足三年逐年增长，不能以本期恢复替代完整历史。",
+          "reinvestment": "小分子及TIDES产能跟随管线分子向后期和商业化推进，须持续检验订单、产能利用率与现金回收。",
+          "invalidation": "订单转化、产能利用率或海外业务合规环境恶化并影响持续经营收入。"
+        },
+        "growth": {
+          "driver": "H1小分子D&M收入增长72.7%、TIDES增长44.3%，营收和扣非利润分别增长38.94%、89.39%。",
+          "quality": "H1扣非占归母95.42%，经营现金流96.99亿元；归母仅增长29.43%，Q1增长26.68%，受到上年处置收益高基数影响。",
+          "invalidation": "主营订单或扣非增长失速，现金回收下降，或海外限制落地影响实际客户交付。"
+        },
+        "breakout": {
+          "driver": "H1小分子D&M收入增长72.7%、TIDES增长44.3%，营收和扣非利润分别增长38.94%、89.39%。",
+          "quality": "H1扣非占归母95.42%，经营现金流96.99亿元；归母仅增长29.43%，Q1增长26.68%，受到上年处置收益高基数影响。",
+          "invalidation": "主营订单或扣非增长失速，现金回收下降，或海外限制落地影响实际客户交付。"
+        },
+        "stageConstraint": "H1归母+29.43%、Q1+26.68%，未达30%；上年处置收益抬高基数。",
+        "status": "reviewed",
+        "reviewedAt": "2026-09-30",
+        "reportPeriod": "2026-06-30"
+      }
+    },
+    "security": {
+      "historyFirst": "2018-05-08",
+      "valuationIndustry": "医疗服务",
+      "ind": "医疗服务"
+    }
   }
 }

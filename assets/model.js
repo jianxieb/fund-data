@@ -11,8 +11,9 @@
   const escapeHtml = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   function stockMatches(stock, group) {
     if (group === 'dividend') return stock.group === 'dividend';
-    if (!['quality', 'growth'].includes(group) || !['quality', 'growth'].includes(stock.group)) return false;
-    const review = group === 'quality' ? stock.longTermReview : stock.growthReview;
+    if (!['quality', 'growth', 'breakout'].includes(group) || !['quality', 'growth'].includes(stock.group)) return false;
+    if (group === 'breakout' && (stockMatches(stock, 'quality') || stockMatches(stock, 'growth'))) return false;
+    const review = group === 'quality' ? stock.longTermReview : group === 'growth' ? stock.growthReview : stock.breakoutReview;
     return review?.qualified === true && stock.qualityResearch?.status === 'reviewed' && stock.qualityResearch?.code === stock.c;
   }
   function validDate(value) {

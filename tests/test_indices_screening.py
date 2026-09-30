@@ -111,6 +111,19 @@ def research_row(code, manager=None, bucket='x1'):
 
 
 class ScreeningTests(unittest.TestCase):
+    def test_reviewed_theme_mandate_has_contract_reason_instead_of_return_failure(self):
+        row = {'c': '006373', 'n': '国富全球科技互联混合(QDII)人民币A', 'ix': 'QDII-混合偏股',
+               'd': '2018-11-20', 'navdate': '2026-09-28', 'r': [55, 110, 180, 190, None],
+               'sz': 58.8, 'fee': [1.2, .2, 0], 'managerStartBasis': 'explicit_individual_appointment',
+               'managerRecords': [{'name': '狄星华', 'start': '2018-11-20'}], 'managerAsOf': '2026-09-30'}
+        policy = screening.build_policy([row])
+        rule = policy['byCode']['006373']
+        self.assertEqual(rule['category'], 'theme')
+        self.assertFalse(rule['equityEligible'])
+        self.assertIn('80%', rule['reason'])
+        self.assertIn('ftsfund.com', rule['classificationEvidence']['sourceUrl'])
+        self.assertGreater(rule['thresholdInputs']['a5'], 8)
+
     def test_verified_nav_uses_the_return_endpoint_not_an_older_display_quote(self):
         history = [dict(FSRQ='2026-09-21', DWJZ='3.3550', JZZZL='0.72'),
                    dict(FSRQ='2026-09-10', DWJZ='3.1360', JZZZL='-0.44')]

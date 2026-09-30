@@ -31,6 +31,8 @@ from pathlib import Path
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
+with open(os.path.join(ROOT, 'data', 'fund-research-mandates.json'), encoding='utf-8') as mandate_file:
+    FUND_MANDATES = json.load(mandate_file)
 CACHE = os.path.join(HERE, '.cache')
 DATA = os.path.join(HERE, 'data')
 sys.path.insert(0, ROOT)
@@ -1223,6 +1225,9 @@ def research_record(raw, supplement=None):
     combined = name + ' ' + ftype + ' ' + index_name
     passive = ('指数' in combined or 'ETF' in name) and '增强' not in combined
     category = research_category(name, ftype, index_name, bucket)
+    mandate = FUND_MANDATES.get(code) or {}
+    if mandate:
+        category = mandate['category']
     # A-share indices published by Hang Seng are still domestic A-share tools.
     region = ('cn' if 'A股' in index_name else 'overseas' if 'QDII' in ftype or
               re.search('日经|日本|美国|标普|纳斯达克|欧洲|全球|亚洲|香港|港股', index_name) else
@@ -1244,7 +1249,8 @@ def research_record(raw, supplement=None):
                 'fund:' + base_name(name))
     role = {'fixed_income': '债券及偏债混合', 'commodity': '商品研究', 'dividend': '红利风格',
             'theme': '行业主题', 'fof': 'FOF研究', 'reference': '参考基准'}.get(category) or (
-            '海外权益' if region == 'overseas' else '权益指数工具' if passive else '主动混合（仓位可变）' if '混合' in ftype else '主动权益')
+             '海外权益' if region == 'overseas' else '权益指数工具' if passive else '主动混合（仓位可变）' if '混合' in ftype else '主动权益')
+    role = mandate.get('role') or role
     interval_years, interval_basis = {}, {}
     for older, recent, nominal in ((5, 3, 2), (10, 5, 5)):
         first, last = periods.get(older) or {}, periods.get(recent) or {}
@@ -1269,7 +1275,7 @@ def research_record(raw, supplement=None):
                 fee=fee, feeAnnual=fee_known if not fee_missing else None, feeKnownAnnual=fee_known, feeMissing=fee_missing,
                 status=raw.get('st') or raw.get('sgzt') or old.get('sgzt') or '',
                 shareClass=share_class(name), passive=passive, theme=category == 'theme', role=role,
-                strategy=strategy, latest=latest, score=fnum(raw.get('score')),
+                strategy=strategy, latest=latest, score=fnum(raw.get('score')), classificationEvidence=mandate,
                 legacy=(raw.get('basis') or raw.get('returnBasis')) != 'provider_daily_return_or_explicit_actions')
 
 
@@ -1287,7 +1293,7 @@ def build_policy(records, supplements=None):
         category_counts[row['category']] = category_counts.get(row['category'], 0) + 1
         equity_eligible = row['category'] == 'equity' and row['shareClass'] in ('', 'A', 'C')
         if row['category'] != 'equity':
-            blocking.append(row['role'] + '在独立研究入口')
+            blocking.append(row['classificationEvidence'].get('reason') or row['role'] + '在独立研究入口')
         if row['shareClass'] not in ('', 'A', 'C'):
             blocking.append('份额资格待核实（%s类）' % row['shareClass'])
         if row['category'] == 'equity':
@@ -1324,7 +1330,8 @@ def build_policy(records, supplements=None):
                       asof=row['latest'], managerAsOf=row['managerAsOf'])
         by_code[row['code']] = dict(tier='research', category=row['category'], region=row['region'],
                                    equityEligible=equity_eligible, thresholdInputs=inputs, defaultQualified=not blocking,
-                                   reason='；'.join(blocking) or '符合默认权益研究条件', flags=flags, role=row['role'],
+                                    reason='；'.join(blocking) or '符合默认权益研究条件', flags=flags, role=row['role'],
+                                    classificationEvidence=row['classificationEvidence'],
                                    shareClass=row['shareClass'], historicalScore=row['score'], priorityRank=rank,
                                    strategyKey=row['strategy'], managerKey=row['managers'], company=row['company'],
                                    verificationStatus='legacy_unverified' if row['legacy'] else 'performance_recomputed',

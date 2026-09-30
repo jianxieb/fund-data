@@ -5,7 +5,7 @@ from pathlib import Path
 from company_report import (normalize, compute, known_rows, forecast_sample, dividend_summary,
                             ttm_amount, quarter_history, wacc)
 from stock_screen import load_old_rows, refresh_quality_review
-from stock_groups import growth_review, long_term_review
+from stock_groups import growth_review, long_term_review, breakout_review
 from scripts.build_stock_reports import build, report_row
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -141,6 +141,37 @@ class IndependentGroupTests(unittest.TestCase):
         row['qualityResearch']['reportPeriod'] = '2025-12-31'
         self.assertFalse(growth_review(row, '2026-09-30')['qualified'])
         self.assertFalse(long_term_review(row, '2026-09-30')['qualified'])
+
+    def test_reviewed_earnings_breakouts_keep_quality_failures_explicit(self):
+        expected = {'002648', '603259', '002384', '601869'}
+        breakout = {c for c, r in self.rows.items() if (r.get('breakoutReview') or {}).get('qualified')}
+        self.assertEqual(breakout, expected)
+        for code in expected:
+            row = self.rows[code]
+            self.assertFalse(row['longTermReview']['qualified'])
+            self.assertFalse(row['growthReview']['qualified'])
+            self.assertEqual(breakout_review(row, '2026-09-30'), row['breakoutReview'])
+            live = self.live_rows[code]
+            self.assertEqual(breakout_review(live, live['breakoutReview']['checkedAt']), live['breakoutReview'])
+            self.assertTrue(all(c['reason'] for c in row['growthReview']['checks'] if not c['pass']))
+
+    def test_breakout_rejects_losses_declining_prior_quarter_and_missing_research(self):
+        row = copy.deepcopy(self.rows['002648'])
+        row['latestFinancials']['netProfit'] = -1
+        self.assertFalse(breakout_review(row, '2026-09-30')['qualified'])
+        row = copy.deepcopy(self.rows['002648'])
+        prior = next(r for r in row['financialReports'] if r['reportDate'] == '2026-03-31')
+        prior['deductedProfit'] = 1  # positive profit alone cannot conceal a collapse.
+        self.assertFalse(breakout_review(row, '2026-09-30')['qualified'])
+        row = copy.deepcopy(self.rows['002648'])
+        row['qualityResearch'].pop('breakout')
+        self.assertFalse(breakout_review(row, '2026-09-30')['qualified'])
+        row = copy.deepcopy(self.rows['002648'])
+        row['latestFinancials']['announcedAt'] = '2026-10-01'
+        self.assertFalse(breakout_review(row, '2026-09-30')['qualified'])
+        row = copy.deepcopy(self.rows['002648'])
+        row['latestFinancials']['operatingCashFlow'] = None
+        self.assertFalse(breakout_review(row, '2026-09-30')['qualified'])
 
     def test_reports_reproduce_have_source_links_and_cover_published_companies(self):
         reports = build(check_only=True)

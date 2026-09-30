@@ -1484,7 +1484,62 @@
     }
   ],
   "screeningContext": {
-    "profile": null,
-    "security": {}
+    "profile": {
+      "code": "002384",
+      "name": "东山精密",
+      "business": "PCB、光模块与精密组件",
+      "group": "quality",
+      "note": "AI PCB与光模块业务扩张",
+      "research_category": "科技制造",
+      "business_source_url": "https://disc.static.szse.cn/disc/disk03/finalpage/2026-08-22/9290e257-66b5-4681-a8ce-824cd1e6d853.PDF",
+      "quality_research": {
+        "code": "002384",
+        "name": "东山精密",
+        "business": "PCB、光模块与精密组件",
+        "category": "科技制造",
+        "title": "AI PCB与光模块业务扩张",
+        "thesis": [
+          "中报显示PCB、光模块与精密组件并行，索尔思与GMD构成业务整合的重要部分。",
+          "H1收入和扣非利润显著增长，但2025年ROE为6.89%，历史资本回报尚不满足成长质量门槛。"
+        ],
+        "risks": [
+          "增长包含并购后的业务结构变化，需区分原有业务有机增长与并表影响。",
+          "H1资本开支52.53亿元高于经营现金流23.84亿元，扩产依赖资金安排。"
+        ],
+        "sources": [
+          {
+            "title": "东山精密2026年半年度报告",
+            "url": "https://disc.static.szse.cn/disc/disk03/finalpage/2026-08-22/9290e257-66b5-4681-a8ce-824cd1e6d853.PDF",
+            "publishedAt": "2026-08-22",
+            "pages": "7—10、15—23",
+            "businessPage": 7
+          }
+        ],
+        "longTerm": {
+          "durability": "PCB与精密组件形成经营基础，但2023、2024年归母及扣非利润下降，2025年年度ROE仅6.89%，长期资本回报仍须重新验证。",
+          "reinvestment": "AI PCB、光模块与并购整合扩展产品与地区覆盖，投入回报依赖订单、良率和整合效率。",
+          "invalidation": "并购整合失效、商誉减值或扩产后的现金回收和年度ROE未改善。"
+        },
+        "growth": {
+          "driver": "H1营收增长63.95%、扣非增长277.52%；Q1、Q2收入和核心利润均扩张，AI PCB与光模块交付有公司披露。",
+          "quality": "H1扣非占归母83.86%，TTM经营现金流为正；2025年ROE6.89%低于10%，并购并表效应仍须单独拆解。",
+          "invalidation": "剔除并表后的增长不足，或资本开支和债务增长持续快于经营现金回收。"
+        },
+        "breakout": {
+          "driver": "H1营收增长63.95%、扣非增长277.52%；Q1、Q2收入和核心利润均扩张，AI PCB与光模块交付有公司披露。",
+          "quality": "H1扣非占归母83.86%，TTM经营现金流为正；2025年ROE6.89%低于10%，并购并表效应仍须单独拆解。",
+          "invalidation": "剔除并表后的增长不足，或资本开支和债务增长持续快于经营现金回收。"
+        },
+        "stageConstraint": "2025年度ROE6.89%低于10%；并购并表增长与有机增长需分拆。",
+        "status": "reviewed",
+        "reviewedAt": "2026-09-30",
+        "reportPeriod": "2026-06-30"
+      }
+    },
+    "security": {
+      "historyFirst": "2010-04-09",
+      "valuationIndustry": "元件",
+      "ind": "元件"
+    }
   }
 }

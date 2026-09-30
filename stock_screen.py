@@ -29,7 +29,7 @@ from concurrent.futures import ThreadPoolExecutor
 from data_status import write_status
 from update import add_years
 from stock_fundamentals import fetch_evidence, quality_review
-from stock_groups import long_term_review, growth_review
+from stock_groups import long_term_review, growth_review, breakout_review
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 HTML = os.path.join(HERE, 'data', 'snapshot.js')
@@ -347,7 +347,7 @@ def refresh_quality_review(row, asof):
         row.pop('qualityReview', None)
     else:
         row['qualityReview'] = review
-    for key, fn in [('longTermReview', long_term_review), ('growthReview', growth_review)]:
+    for key, fn in [('longTermReview', long_term_review), ('growthReview', growth_review), ('breakoutReview', breakout_review)]:
         classification = fn(row, asof)
         if classification is None:
             row.pop(key, None)

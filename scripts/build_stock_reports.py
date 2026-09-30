@@ -52,7 +52,9 @@ def make_report(research, data, row):
         raise ValueError(data['code'] + ' 的业务研究与财报/研究日期不一致，需要重新审阅后生成')
     financial = research['sectorModel'] == 'financial'
     groups = [label for key, label in [('longTermReview', '长期优质'), ('growthReview', '高质成长')]
-              if (row.get(key) or {}).get('qualified')]
+               if (row.get(key) or {}).get('qualified')]
+    if not groups and (row.get('breakoutReview') or {}).get('qualified'):
+        groups = ['业绩爆发']
     if row.get('group') == 'dividend':
         groups = ['红利价值']
     core = calculated['cashMetrics'][0]
@@ -60,6 +62,15 @@ def make_report(research, data, row):
     def section(id_, title, **kwargs):
         sections.append({'id': id_, 'title': title, **kwargs})
     section('view', '研究判断', paragraphs=[research['assessment']], bullets=research['thesis'])
+    if row.get('qualityResearch'):
+        selection = []
+        for key, label in [('longTermReview', '长期优质企业'), ('growthReview', '高质成长股'), ('breakoutReview', '业绩爆发股')]:
+            review = row.get(key)
+            if not review or (key == 'breakoutReview' and not research.get('breakout')):
+                continue
+            failures = [c.get('reason') or c['label'] for c in review['checks'] if not c['pass']]
+            selection.append([label, '满足条件' if review['qualified'] else '未入选', '；'.join(failures) or '满足当前财务条件及对应报告研究要求'])
+        section('selection', '筛选定位', table={'headers': ['研究方向', '本次结果', '具体依据'], 'rows': selection})
     business = research.get('longTerm') or {}
     if business:
         section('durability', '长期经营能力', paragraphs=[business['durability'], business['reinvestment']],
