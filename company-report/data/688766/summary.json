@@ -949,22 +949,22 @@
     {
       "title": "RPT_F10_FINANCE_MAINFINADATA",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688766.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:16.158255+00:00"
+      "fetchedAt": "2026-09-30T05:37:46.097723+00:00"
     },
     {
       "title": "RPT_VALUEANALYSIS_DET",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22688766.SH%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:16.158276+00:00"
+      "fetchedAt": "2026-09-30T05:37:46.222205+00:00"
     },
     {
       "title": "RPT_DMSK_FN_BALANCE",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22688766.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:16.306338+00:00"
+      "fetchedAt": "2026-09-30T05:37:46.377700+00:00"
     },
     {
       "title": "RPT_DMSK_FN_CASHFLOW",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22688766.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:16.461240+00:00"
+      "fetchedAt": "2026-09-30T05:37:46.704983+00:00"
     },
     {
       "title": "已实施及拟议权益分派",
@@ -1044,10 +1044,97 @@
     }
   ],
   "peers": [],
-  "fetchErrors": [],
   "researchNotes": [],
+  "fetchErrors": [],
   "screeningContext": {
-    "profile": null,
-    "security": {}
-  }
+    "profile": {
+      "code": "688766",
+      "name": "普冉股份",
+      "business": "非易失存储与微控制器芯片",
+      "group": "growth",
+      "note": "存储价格与并表共同扩张",
+      "research_category": "科技制造",
+      "business_source_url": "https://static.cninfo.com.cn/finalpage/2026-08-19/1225480536.PDF",
+      "quality_research": {
+        "code": "688766",
+        "name": "普冉股份",
+        "business": "非易失存储与微控制器芯片",
+        "category": "科技制造",
+        "title": "存储价格与并表共同扩张",
+        "thesis": [
+          "中报新增收入30.53亿元中，SHM并表贡献约23.46亿元，不能称全部有机增长。",
+          "存储芯片价格上行、MCU新品及并表共同带动两季利润增长，基数很低。"
+        ],
+        "risks": [
+          "新增收入主要含并购并表，历史与本期合并范围不可直接外推。",
+          "存储价格周期、商誉和客户导入风险影响并购回报。"
+        ],
+        "sources": [
+          {
+            "title": "普冉股份2026年半年度报告",
+            "url": "https://static.cninfo.com.cn/finalpage/2026-08-19/1225480536.PDF",
+            "publishedAt": "2026-08-19",
+            "pages": "23、39",
+            "businessPage": 23,
+            "sha256": "fc73f10f3d13be28eb1ec671e93926e030a5585892c6c1a0cd14dff2f3415cb0",
+            "reportPeriod": "2026-06-30"
+          },
+          {
+            "title": "普冉股份2025年年度报告",
+            "url": "https://static.cninfo.com.cn/finalpage/2026-03-21/1225023836.PDF",
+            "publishedAt": "2026-03-21",
+            "pages": "56、62、97、98、99、135、136",
+            "sha256": "85c471999d074fbdfd30251044d00196032c71f4826941bc165445cfd6a2a2fe",
+            "reportPeriod": "2025-12-31"
+          }
+        ],
+        "breakout": {
+          "driver": "两季利润大幅增长，来源是存储涨价、新品和SHM并表；新增收入约77%由并表贡献。",
+          "quality": "当期现金回收超过归母利润，但尚不能证明同口径有机利润连续翻倍。",
+          "invalidation": "剔除并表后的业务转弱、存储价格下行或商誉减值，使增长与现金持续性失效。"
+        },
+        "stageConstraint": "新增收入主要含并购并表，历史与本期合并范围不可直接外推。",
+        "status": "reviewed",
+        "reviewedAt": "2026-09-30",
+        "reportPeriod": "2026-06-30"
+      }
+    },
+    "security": {
+      "historyFirst": "2021-08-23",
+      "valuationIndustry": "半导体",
+      "ind": "半导体"
+    }
+  },
+  "pePercentiles": {
+    "5": {
+      "value": 52.1,
+      "start": "2021-09-29",
+      "end": "2026-09-29",
+      "observedStart": "2021-09-29",
+      "observedEnd": "2026-09-29",
+      "samples": 1049,
+      "observations": 1212,
+      "excluded": 163,
+      "gaps": [],
+      "method": "positive_pe_ttm_midrank",
+      "legacySource": null,
+      "status": "available"
+    },
+    "10": {
+      "value": null,
+      "start": "2016-09-29",
+      "end": "2026-09-29",
+      "observedStart": "2021-08-23",
+      "observedEnd": "2026-09-29",
+      "samples": 1074,
+      "observations": 1237,
+      "excluded": 163,
+      "gaps": [],
+      "method": "positive_pe_ttm_midrank",
+      "legacySource": null,
+      "status": "short_history",
+      "reason": "历史不足10年"
+    }
+  },
+  "pePercentilesAsOf": "2026-09-29"
 }

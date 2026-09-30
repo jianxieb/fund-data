@@ -2,9 +2,25 @@
   "006373": {
     "category": "theme",
     "role": "全球科技主题",
-    "reason": "基金合同要求科技互联主题股票占非现金资产至少80%，归入行业主题",
+    "reason": "投资范围：全球科技互联主题股票占非现金资产至少80%；主题属性不影响主动权益入选资格",
     "sourceTitle": "国海富兰克林基金 · 国富全球科技互联人民币A · 投资范围",
     "sourceUrl": "https://www.ftsfund.com/qxjj/jjxq/006373",
+    "checkedAt": "2026-09-30"
+  },
+  "001668": {
+    "category": "theme",
+    "role": "全球移动互联主题",
+    "reason": "投资范围：全球移动互联网相关企业；按主动权益的同一条件筛选",
+    "sourceTitle": "汇添富基金 · 全球移动互联人民币A · 产品资料",
+    "sourceUrl": "https://www.99fund.com/main/products/pofund/001668/fundgk.shtml",
+    "checkedAt": "2026-09-30"
+  },
+  "005698": {
+    "category": "theme",
+    "role": "全球科技主题",
+    "reason": "投资范围：全球科技主题证券占非现金资产至少80%；按主动权益的同一条件筛选",
+    "sourceTitle": "华夏基金 · 华夏全球科技先锋 · 招募说明书（更新）",
+    "sourceUrl": "https://www.chinaamc.com/upload/resources/file/2026/05/29/928e507e97ae4998986f27e068688a4f.pdf",
     "checkedAt": "2026-09-30"
   }
 }

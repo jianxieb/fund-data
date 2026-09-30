@@ -249,8 +249,12 @@ def research_evidence_check(row, asof):
         sources_ok = isinstance(sources, list) and bool(sources) and all(
             isinstance(source, dict) and source.get('title')
             and isinstance(source.get('url'), str) and source['url'].startswith('https://')
-            and report <= date.fromisoformat(source.get('publishedAt', '')) <= reviewed
-            for source in sources)
+            and date.fromisoformat(source.get('reportPeriod') or research.get('reportPeriod', '')) <= report
+            and date.fromisoformat(source.get('reportPeriod') or research.get('reportPeriod', ''))
+                <= date.fromisoformat(source.get('publishedAt', '')) <= reviewed
+            for source in sources) and any(
+                (source.get('reportPeriod') or research.get('reportPeriod')) == research.get('reportPeriod')
+                for source in sources)
     except (ValueError, TypeError):
         dates_ok = sources_ok = False
     passed = (research.get('code') == row.get('c') and bool(row.get('c'))

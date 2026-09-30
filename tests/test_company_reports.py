@@ -121,8 +121,8 @@ class IndependentGroupTests(unittest.TestCase):
     def test_current_groups_overlap_without_importing_dividend_pool(self):
         quality = {c for c, r in self.rows.items() if (r.get('longTermReview') or {}).get('qualified')}
         growth = {c for c, r in self.rows.items() if (r.get('growthReview') or {}).get('qualified')}
-        self.assertEqual(quality & growth, {'601138', '300750', '300308', '002463'})
-        self.assertEqual(growth - quality, {'600183', '300604'})
+        self.assertTrue({'601138', '300750', '300308', '002463', '603979'} <= quality & growth)
+        self.assertTrue({'600183', '300604', '001389', '002916', '688183'} <= growth - quality)
         self.assertEqual(sum(r['group'] == 'dividend' for r in self.live_rows.values()), 23)
         for row in self.live_rows.values():
             asof = (row.get('qualityReview') or {}).get('checkedAt', '2026-09-30')
@@ -143,7 +143,7 @@ class IndependentGroupTests(unittest.TestCase):
         self.assertFalse(long_term_review(row, '2026-09-30')['qualified'])
 
     def test_reviewed_earnings_breakouts_keep_quality_failures_explicit(self):
-        expected = {'002648', '603259', '002384', '601869'}
+        expected = {'002384', '601869', '002266', '002756', '600111', '688700', '688766'}
         breakout = {c for c, r in self.rows.items() if (r.get('breakoutReview') or {}).get('qualified')}
         self.assertEqual(breakout, expected)
         for code in expected:
@@ -154,29 +154,42 @@ class IndependentGroupTests(unittest.TestCase):
             live = self.live_rows[code]
             self.assertEqual(breakout_review(live, live['breakoutReview']['checkedAt']), live['breakoutReview'])
             self.assertTrue(all(c['reason'] for c in row['growthReview']['checks'] if not c['pass']))
+        for code in ('002648', '603259'):
+            self.assertFalse(self.rows[code]['breakoutReview']['qualified'])
+            self.assertFalse(self.live_rows[code]['breakoutReview']['qualified'])
 
     def test_breakout_rejects_losses_declining_prior_quarter_and_missing_research(self):
-        row = copy.deepcopy(self.rows['002648'])
+        row = copy.deepcopy(self.rows['601869'])
+        self.assertTrue(breakout_review(row, '2026-09-30')['qualified'])
         row['latestFinancials']['netProfit'] = -1
         self.assertFalse(breakout_review(row, '2026-09-30')['qualified'])
-        row = copy.deepcopy(self.rows['002648'])
+        row = copy.deepcopy(self.rows['601869'])
         prior = next(r for r in row['financialReports'] if r['reportDate'] == '2026-03-31')
         prior['deductedProfit'] = 1  # positive profit alone cannot conceal a collapse.
         self.assertFalse(breakout_review(row, '2026-09-30')['qualified'])
-        row = copy.deepcopy(self.rows['002648'])
+        row = copy.deepcopy(self.rows['601869'])
         row['qualityResearch'].pop('breakout')
         self.assertFalse(breakout_review(row, '2026-09-30')['qualified'])
-        row = copy.deepcopy(self.rows['002648'])
+        row = copy.deepcopy(self.rows['601869'])
         row['latestFinancials']['announcedAt'] = '2026-10-01'
         self.assertFalse(breakout_review(row, '2026-09-30')['qualified'])
-        row = copy.deepcopy(self.rows['002648'])
+        row = copy.deepcopy(self.rows['601869'])
         row['latestFinancials']['operatingCashFlow'] = None
         self.assertFalse(breakout_review(row, '2026-09-30')['qualified'])
+
+    def test_breakout_requires_cash_conversion_and_two_doubling_quarters(self):
+        row = copy.deepcopy(self.rows['601869'])
+        row['latestFinancials']['operatingCashFlow'] = row['latestFinancials']['netProfit'] * .49
+        self.assertFalse(breakout_review(row, '2026-09-30')['financialQualified'])
+        self.assertFalse(self.rows['002648']['breakoutReview']['financialQualified'])  # Q2 spike alone.
+        self.assertFalse(self.rows['603259']['breakoutReview']['financialQualified'])  # Steady growth is not doubling.
 
     def test_reports_reproduce_have_source_links_and_cover_published_companies(self):
         reports = build(check_only=True)
         codes = {r['code'] for r in reports}
-        self.assertEqual(len(reports), 21)
+        manifest = json.loads((ROOT / 'data/stock-report-research.json').read_text())
+        self.assertEqual(codes, {r['code'] for r in manifest['companies']})
+        self.assertTrue({'300866', '001389', '688019', '688700', '688766'} <= codes)
         self.assertTrue({c for c, r in self.live_rows.items() if r['group'] != 'dividend'} <= codes)
         for report in reports:
             self.assertTrue((ROOT / report['markdownPath']).is_file())

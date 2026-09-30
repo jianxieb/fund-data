@@ -34,7 +34,7 @@
     route: 'overview', annual: prefs.annual !== false, periods: M.visiblePeriods(prefs.periods),
     columns: new Set(Array.isArray(prefs.columns) ? prefs.columns.filter(x => Object.hasOwn(columnNames, x)) : defaultColumns),
     indexTab: 'us', indexSort: 'default', indexDescending: true, crossTypes: new Set(), crossChannels: new Set(), crossQuery: '', crossPremium: null, crossPurchasable: false, crossBasis: 'nav', crossSort: 'default', crossDesc: true, crossPage: 1, crossSelected: new Set(), currency: 'usd', benchmarkType: 'total', benchmarkCurrency: 'cny',
-    fundTab: 'equity', poolCategory: 'all', query: '', channel: 'all', purchasable: false,
+    fundTab: 'equity', poolCategory: 'all', fundFocus: 'all', query: '', channel: 'all', purchasable: false,
     screen: { minA3: defaults.minA3, minA5: defaults.minA5, minA10: null }, equityAll: false,
     fundSort: 'default', descending: true, page: 1, selected: new Set(),
     stockTab: 'quality', stockQuery: '', stockCategory: 'all', stockView: 'financials', stockSort: 'default', stockDesc: true, reportCode: null, reportQuery: '',
@@ -214,7 +214,7 @@
   }
   function fundTabPass(f, tab) {
     const rule = (policy.byCode || {})[f.c] || {};
-    if (tab === 'equity') return f.active && M.equityQualifies(rule, { ...defaults, ...state.screen }) && (state.equityAll || shortlist.has(f.c) || f.overseasExposure);
+    if (tab === 'equity') return f.active && M.equityQualifies(rule, { ...defaults, ...state.screen }) && (state.equityAll || state.fundFocus !== 'all' || state.query.trim() || shortlist.has(f.c) || f.overseasExposure);
     if (tab === 'overseas') return rule.region ? ['overseas', 'global', 'cross_border', 'mixed', 'cn_hk'].includes(rule.region) : f.overseasExposure;
     if (tab === 'dividend') return rule.category === 'dividend' || f.dividend;
     if (tab === 'income') return rule.category === 'dividend' || f.dividend || rule.category === 'fixed_income' || /债券|偏债|货币|固收[+＋]/.test((f.n || '') + ' ' + (f.ix || ''));
@@ -227,7 +227,7 @@
   }
   function fundRows() {
     const q = state.query.trim().toLowerCase();
-    const result = funds.filter(f => fundTabPass(f, state.fundTab) && (state.fundTab !== 'all' || state.poolCategory === 'all' || fundTabPass(f, state.poolCategory)) && (!q || [f.n, f.c, f.ix, f.mgr].join(' ').toLowerCase().includes(q)) && (state.channel === 'all' || (state.channel === 'exchange' ? f.exchange : !f.exchange)) && (!state.purchasable || f.exchange || /^(开放|限大额|开放申购)$/.test(f.st)));
+    const result = funds.filter(f => fundTabPass(f, state.fundTab) && (state.fundTab !== 'all' || state.poolCategory === 'all' || fundTabPass(f, state.poolCategory)) && (state.fundTab !== 'equity' || state.fundFocus === 'all' || (state.fundFocus === 'theme' ? policy.byCode[f.c]?.category === 'theme' : policy.byCode[f.c]?.category !== 'theme')) && (!q || [f.n, f.c, f.ix, f.mgr].join(' ').toLowerCase().includes(q)) && (state.channel === 'all' || (state.channel === 'exchange' ? f.exchange : !f.exchange)) && (!state.purchasable || f.exchange || /^(开放|限大额|开放申购)$/.test(f.st)));
     const value = f => state.fundSort.startsWith('return:') ? ret(f.r[years.indexOf(+state.fundSort.split(':')[1])], +state.fundSort.split(':')[1], f) : state.fundSort === 'fee' ? f.annualFee : state.fundSort === 'risk' ? f.mdd5 : state.fundSort === 'size' ? f.sz : state.fundSort === 'manager' ? f.mten : f.c;
     if (state.fundSort !== 'default') result.sort((a, b) => M.compareNullable(value(a), value(b), state.descending) || a.c.localeCompare(b.c));
     else if (state.fundTab === 'equity') result.sort((a, b) => state.equityAll ? M.compareNullable((policy.byCode[a.c]?.thresholdInputs || {}).a5, (policy.byCode[b.c]?.thresholdInputs || {}).a5, true) || a.c.localeCompare(b.c) : (shortlist.has(a.c) ? 0 : 1) - (shortlist.has(b.c) ? 0 : 1) || M.compareNullable((policy.byCode[a.c]?.thresholdInputs || {}).a5, (policy.byCode[b.c]?.thresholdInputs || {}).a5, true) || a.c.localeCompare(b.c));
@@ -236,7 +236,7 @@
   function fundSearchAlternatives() {
     const q = state.query.trim().toLowerCase();
     if (!q) return '';
-    const names = { theme: '行业主题', fixed_income: '债券与固收', dividend: '红利风格', commodity: '商品', equity: '主动权益' };
+    const names = { theme: '行业与主题策略', fixed_income: '债券与固收', dividend: '红利风格', commodity: '商品', equity: '主动权益' };
     const matches = funds.filter(f => !fundTabPass(f, state.fundTab) && [f.n, f.c, f.ix, f.mgr].join(' ').toLowerCase().includes(q)).slice(0, 4);
     return matches.length ? '<div class="fund-search-alternatives"><p>其他分类中的匹配基金</p>' + matches.map(f => '<div>' + action(esc(f.n), 'fund-detail', 'text-link', 'data-code="' + f.c + '"') + '<span>' + f.c + ' · ' + esc(names[policy.byCode[f.c]?.category] || '研究池') + '</span></div>').join('') + '</div>' : '';
   }
@@ -294,7 +294,7 @@
   }
   function screenControls() {
     const qualified = funds.filter(f => f.active && M.equityQualifies(policy.byCode[f.c], { ...defaults, ...state.screen }));
-    return '<details class="screen-panel"' + (screenOpen ? ' open' : '') + '><summary><span>3年年化 ≥ ' + state.screen.minA3 + '% · 5年年化 ≥ ' + state.screen.minA5 + '%' + (state.screen.minA10 === null ? '' : ' · 10年 ≥ ' + state.screen.minA10 + '%') + '</span><b>调整筛选条件</b></summary><div class="screen-heading"><div><h2>长期权益筛选</h2><p>收益门槛可调；债券、红利和行业主题另行研究。</p></div>' + action('完整筛选依据', 'screen-rules', 'text-link small') + '</div>' +
+    return '<details class="screen-panel"' + (screenOpen ? ' open' : '') + '><summary><span>3年年化 ≥ ' + state.screen.minA3 + '% · 5年年化 ≥ ' + state.screen.minA5 + '%' + (state.screen.minA10 === null ? '' : ' · 10年 ≥ ' + state.screen.minA10 + '%') + '</span><b>调整筛选条件</b></summary><div class="screen-heading"><div><h2>长期权益筛选</h2><p>综合策略与主题策略使用相同条件。</p></div>' + action('完整筛选依据', 'screen-rules', 'text-link small') + '</div>' +
       '<div class="screen-inputs"><label>近3年年化至少 <span><input data-screen="minA3" type="number" min="-100" max="100" step="1" value="' + state.screen.minA3 + '">%</span></label><label>近5年年化至少 <span><input data-screen="minA5" type="number" min="-100" max="100" step="1" value="' + state.screen.minA5 + '">%</span></label><label>近10年年化至少 <span><input data-screen="minA10" type="number" min="-100" max="100" step="1" placeholder="不限" value="' + (state.screen.minA10 === null ? '' : state.screen.minA10) + '">%</span></label>' + action('恢复默认条件', 'screen-reset', 'quiet') + '</div><div class="screen-foot"><span>基金历史≥' + defaults.minHistoryYears + '年 · 规模≥' + defaults.minScale + '亿元 · 主动基金至少一位现任经理任职≥' + defaults.minManagerYears + '年</span>' + action(state.equityAll ? '返回精简候选' : '展开全部合格（' + qualified.length + '只）', 'equity-expand', 'text-link small') + '</div><p class="note">' + (state.equityAll ? '展示当前条件下的全部合格主动权益样本，按近5年年化排序。' : '默认展示精简候选和通过同一门槛的海外主动基金。候选按策略、经理与公司去重。') + '筛选通过与数据已复算分别标记，历史业绩不全由现任经理创造。</p></details>';
   }
   function columnControl() {
@@ -304,12 +304,13 @@
     openModal('<div class="fund-columns">' + modalTitle('表格设置', '选择表格中的信息') + '<div class="fund-column-options">' + Object.entries(columnNames).map(([id, n]) => '<label><input type="checkbox" data-column="' + id + '"' + (state.columns.has(id) ? ' checked' : '') + '>' + n + '</label>').join('') + '</div><div class="column-actions">' + action('全部显示', 'columns-all', 'text-link') + action('恢复默认', 'columns-default', 'text-link') + '</div></div>');
   }
   function fundView() {
-    const tabs = [['equity', '长期主动权益'], ['theme', '行业主题'], ['income', '红利 / 债券 / 固收'], ['passive', '指数工具'], ['all', '完整研究池']];
+    const tabs = [['equity', '长期主动权益'], ['income', '红利 / 债券 / 固收'], ['passive', '指数工具'], ['all', '完整研究池']];
     return head('FUND RESEARCH', '基金研究', '比较多年表现、经理任期与完整成本。') +
       '<div class="tabs" aria-label="研究范围">' + tabs.map(([id, n]) => action(n, 'fund-tab', state.fundTab === id ? 'active' : '', 'data-value="' + id + '" aria-pressed="' + (state.fundTab === id) + '"')).join('') + '</div>' +
       (state.fundTab === 'equity' ? screenControls() + benchmarkPanel() : '') +
       '<div class="fund-controls"><div class="toolbar"><div class="filters"><input id="fund-search" type="search" aria-label="搜索基金名称、代码、指数或经理" placeholder="搜索名称、代码、指数或经理" value="' + esc(state.query) + '">' +
-      (state.fundTab === 'all' ? selectMenu('fund-category', '研究池分类', [['all', '全部分类'], ['overseas', '海外'], ['active', '主动权益'], ['dividend', '红利'], ['fixed', '债券与固收'], ['theme', '行业主题'], ['commodity', '商品']], state.poolCategory) : '') +
+      (state.fundTab === 'all' ? selectMenu('fund-category', '研究池分类', [['all', '全部分类'], ['overseas', '海外'], ['active', '主动权益'], ['dividend', '红利'], ['fixed', '债券与固收'], ['theme', '行业与主题'], ['commodity', '商品']], state.poolCategory) : '') +
+      (state.fundTab === 'equity' ? selectMenu('fund-focus', '投资策略', [['all', '全部策略'], ['broad', '综合策略'], ['theme', '行业与主题']], state.fundFocus) : '') +
       selectMenu('fund-channel', '交易渠道', [['all', '全部渠道'], ['exchange', '场内交易'], ['otc', '场外申赎']], state.channel) +
       '<label class="check-label"><input id="purchasable" type="checkbox"' + (state.purchasable ? ' checked' : '') + '>快照显示可买</label></div></div>' +
       '<div class="table-controls">' + returnControls() + '</div></div><div id="fund-results">' + fundTable(fundRows()) + '</div>' + compareBar() + '<p class="note">场外买入费率为原费率 / 历史渠道优惠，卖出费率需核对持有期档位；场内产品使用券商佣金，LOF 的两个交易渠道费用不同。资料只代表所示日期的快照。</p>';
@@ -366,7 +367,7 @@
     const review = state.stockTab === 'breakout' ? s.breakoutReview : s.growthReview;
     const thesis = currentGrowth ? research?.[state.stockTab]?.driver : research?.longTerm?.durability;
     return '<td class="stock-reason"><strong>' + esc(research?.title || '') + '</strong>' + (state.stockTab === 'breakout' ? '' : '<span>' + esc(research?.thesis?.[0] || '') + '</span>') +
-      '<span>' + esc(thesis || '') + '</span>' + (currentGrowth ? '<span class="stock-growth-basis">' + (state.stockTab === 'growth' ? '连续两季增长' : '本期核心盈利扩张') + ' · 扣非占比 ' + pct(review?.coreProfitRatio * 100, 1, false) + '</span>' : '<span class="stock-growth-basis">5年平均ROE ' + pct(s.longTermReview?.roe5, 1, false) + ' · 3年扣非复合增长 ' + pc(growth?.deductedProfit, 1) + '</span>') + stockReportLink(s) + '</td>';
+      '<span>' + esc(thesis || '') + '</span>' + (currentGrowth ? '<span class="stock-growth-basis">' + (state.stockTab === 'growth' ? '连续两季增长' : '连续两季归母、扣非翻倍') + ' · 扣非占比 ' + pct(review?.coreProfitRatio * 100, 1, false) + '</span>' : '<span class="stock-growth-basis">5年平均ROE ' + pct(s.longTermReview?.roe5, 1, false) + ' · 3年扣非复合增长 ' + pc(growth?.deductedProfit, 1) + '</span>') + stockReportLink(s) + '</td>';
   }
   function stockRisks(s) { return [...(state.stockTab === 'breakout' && s.qualityResearch?.stageConstraint ? [s.qualityResearch.stageConstraint] : []), ...(s.qualityReview?.watchouts || []), ...(s.qualityResearch?.risks || [])]; }
   function stockRisk(s) {
@@ -873,6 +874,7 @@
           case 'benchmark-type': state.benchmarkType = val; break;
           case 'benchmark-currency': state.benchmarkCurrency = val; break;
           case 'fund-category': state.poolCategory = val; state.page = 1; break;
+          case 'fund-focus': state.fundFocus = val; state.page = 1; break;
           case 'fund-channel': state.channel = val; state.page = 1; break;
           case 'strategy-chart-method': state.stratMethod = val; state.chartHidden.clear(); break;
           default: return;
@@ -947,7 +949,7 @@
       case 'index-detail': openIndex(Number(val)); return;
       case 'go-index-funds': state.fundTab = 'passive'; state.query = ''; state.page = 1; go('funds'); return;
       case 'find-index-funds': state.fundTab = 'all'; state.poolCategory = 'all'; state.query = val; state.page = 1; $('#dialog').close(); go('funds'); return;
-      case 'fund-tab': state.fundTab = val; state.poolCategory = 'all'; state.page = 1; state.fundSort = 'default'; break;
+      case 'fund-tab': state.fundTab = val; state.poolCategory = 'all'; state.fundFocus = 'all'; state.query = ''; state.page = 1; state.fundSort = 'default'; break;
       case 'fund-sort':
         if (state.fundSort === val) { if (state.descending) state.descending = false; else { state.fundSort = 'default'; state.descending = true; } }
         else { state.fundSort = val; state.descending = true; }
@@ -955,7 +957,7 @@
       case 'fund-sort-reset': state.fundSort = 'default'; state.descending = true; state.page = 1; renderFundResults(); return;
       case 'fund-prev': state.page--; renderFundResults(); return;
       case 'fund-next': state.page++; renderFundResults(); return;
-      case 'fund-reset': state.query = ''; state.poolCategory = 'all'; state.channel = 'all'; state.purchasable = false; state.page = 1; state.fundSort = 'default'; state.screen = { minA3: defaults.minA3, minA5: defaults.minA5, minA10: null }; state.equityAll = false; break;
+      case 'fund-reset': state.query = ''; state.poolCategory = 'all'; state.fundFocus = 'all'; state.channel = 'all'; state.purchasable = false; state.page = 1; state.fundSort = 'default'; state.screen = { minA3: defaults.minA3, minA5: defaults.minA5, minA10: null }; state.equityAll = false; break;
       case 'fund-detail': openFund(code); return;
       case 'export-funds': exportFunds(); return;
       case 'compare-toggle':

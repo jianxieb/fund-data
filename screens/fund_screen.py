@@ -930,7 +930,7 @@ POLICY_RULES = [
     '主动基金至少一位现任经理在本基金连续任满5年；逐人使用明确上任日期。其他现任经理任期较短会单独提示，基金业绩不归因于某个人。',
     '默认按近5年年化降序；同时展示3年和10年，缺10年不填成立以来。回撤、波动、费用、申购状态是独立研究证据，不按低回撤跨资产排总榜。',
     '默认最多24只，同经理最多2只、同公司最多3只、同策略或同指数工具最多1只；可以展开全部符合数值条件的基金，集中度限制不删除研究记录。',
-    '债券及偏债混合、红利、显式行业主题、商品分别设研究入口，不占权益默认候选名额。灵活配置基金保留股票仓位需核实的提示。',
+    '综合策略、行业和主题主动基金使用同一权益筛选条件；主题属性单独记录，不作为排除理由。债券及偏债混合、红利、商品另设研究入口。',
     '费用缺失保持未知，暂停申购不等于缺乏研究价值；A/C等份额先去同策略重复，I/Y等其他份额需核实资格。',
     '新进入条件筛选的基金不自动视为已核验；历史研究分不参与排序。旧池有幸存者与收益预筛偏差，不代表全市场，也不是投资建议。',
 ]
@@ -1248,7 +1248,7 @@ def research_record(raw, supplement=None):
     strategy = ('index:' + re.sub(r'\s|（价格）|\(价格\)', '', index_name) if passive and index_name else
                 'fund:' + base_name(name))
     role = {'fixed_income': '债券及偏债混合', 'commodity': '商品研究', 'dividend': '红利风格',
-            'theme': '行业主题', 'fof': 'FOF研究', 'reference': '参考基准'}.get(category) or (
+            'theme': '行业与主题策略', 'fof': 'FOF研究', 'reference': '参考基准'}.get(category) or (
              '海外权益' if region == 'overseas' else '权益指数工具' if passive else '主动混合（仓位可变）' if '混合' in ftype else '主动权益')
     role = mandate.get('role') or role
     interval_years, interval_basis = {}, {}
@@ -1291,12 +1291,12 @@ def build_policy(records, supplements=None):
     for rank, row in enumerate(ranked, 1):
         flags, blocking = [], []
         category_counts[row['category']] = category_counts.get(row['category'], 0) + 1
-        equity_eligible = row['category'] == 'equity' and row['shareClass'] in ('', 'A', 'C')
-        if row['category'] != 'equity':
+        equity_eligible = row['category'] in ('equity', 'theme') and row['shareClass'] in ('', 'A', 'C')
+        if row['category'] not in ('equity', 'theme'):
             blocking.append(row['classificationEvidence'].get('reason') or row['role'] + '在独立研究入口')
         if row['shareClass'] not in ('', 'A', 'C'):
             blocking.append('份额资格待核实（%s类）' % row['shareClass'])
-        if row['category'] == 'equity':
+        if row['category'] in ('equity', 'theme'):
             for value, cutoff, reason in ((row['years'], 7, '基金历史不足7年或日期缺失'),
                                            (row['scale'], 1, '规模不足1亿元或数据缺失'),
                                            (row['a3'], 5, '3年年化未达5%或完整期间缺失'),

@@ -9,7 +9,7 @@ import update
 import stock_screen
 from datetime import datetime
 from scripts.build_fund_actions import build_archive
-from stock_fundamentals import parse_evidence, quality_review, latest_report_review
+from stock_fundamentals import parse_evidence, quality_review, latest_report_review, research_evidence_check
 from fund_evidence import fund_actions
 from update import total_return_series
 from scripts.build_crossborder_data import summarize
@@ -70,6 +70,18 @@ class ResearchEvidenceTests(unittest.TestCase):
             if kind == 'roe': changed['financialHistory'][1]['roe'] = None
             if kind == 'short': changed['historyFirst'] = '2023-01-01'
             self.assertFalse(quality_review(changed, '2026-09-29')['qualified'], kind)
+
+    def test_current_dossier_can_include_prior_annual_audit_without_replacing_current_evidence(self):
+        row = self.candidate()
+        annual = {'title': '测试公司2025年年度报告', 'url': 'https://example.test/annual.pdf',
+                  'reportPeriod': '2025-12-31', 'publishedAt': '2026-03-01'}
+        row['qualityResearch']['sources'].append(annual)
+        self.assertTrue(research_evidence_check(row, '2026-09-29')['pass'])
+        row['qualityResearch']['sources'] = [annual]
+        self.assertFalse(research_evidence_check(row, '2026-09-29')['pass'])
+        row = self.candidate()
+        row['qualityResearch']['sources'].append({**annual, 'publishedAt': '2026-10-01'})
+        self.assertFalse(research_evidence_check(row, '2026-09-29')['pass'])
 
     def test_growth_uses_reported_same_period_and_does_not_annualize_interim_roe(self):
         current = {**self.reports[0], 'REPORT_DATE': '2026-06-30', 'NOTICE_DATE': '2026-08-12',

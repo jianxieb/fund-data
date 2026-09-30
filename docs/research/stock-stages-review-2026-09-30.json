@@ -1,0 +1,3258 @@
+{
+  "asOf": "2026-09-30",
+  "scope": "全市场财务发现87条线索；本次新增28家经营复核，其中24家发布、4家因具体业务或证据条件未发布；其余线索尚未完成业务核查。",
+  "newReviewed": 28,
+  "newPublished": 24,
+  "records": [
+    {
+      "code": "000426",
+      "name": "兴业银锡",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "5年平均年度ROE 12.98%、最低年度3.19%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": true,
+          "failedConditions": []
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "000737",
+      "name": "北方铜业",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "最近3个完整财年经营现金流为正",
+            "3年平均年度ROE 12.37%、最低年度11.96%，须分别达到15%和10%",
+            "2025年度ROE 12.18%，低于15%门槛",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "3年扣非利润复合增长+8.14%，低于10%门槛",
+            "缺连续5年正利润、正扣非利润或正经营现金流",
+            "5年平均年度ROE 13.20%、最低年度11.96%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-03-31：营收+46.89%、归母+65.74%、扣非+68.06%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "000792",
+      "name": "盐湖股份",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年营收复合增长-20.40%，低于5%门槛",
+            "3年归母利润复合增长-18.35%，低于10%门槛",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "最新完整年度营收或利润增长不足10%，或缺可比同比",
+            "3年扣非利润复合增长-18.16%，低于10%门槛"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": true,
+          "failedConditions": []
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "000833",
+      "name": "粤桂股份",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 7.64%、最低年度2.00%，须分别达到15%和10%",
+            "2025年度ROE 12.81%，低于15%门槛",
+            "3年营收复合增长+4.17%，低于5%门槛",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "最新完整年度营收或利润增长不足10%，或缺可比同比",
+            "5年平均年度ROE 6.34%、最低年度0.09%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-03-31：营收+43.17%、归母+84.56%、扣非+85.23%；须达到20% / 100% / 100%",
+            "当前现金回收不足归母利润50%，或TTM经营现金流未转正"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "000893",
+      "name": "亚钾国际",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 11.02%、最低年度8.15%，须分别达到15%和10%",
+            "2025年度ROE 13.28%，低于15%门槛",
+            "3年归母利润复合增长-6.23%，低于10%门槛",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "3年扣非利润复合增长-2.91%，低于10%门槛"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+51.53%、归母+57.93%、扣非+57.32%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+78.23%、归母+73.79%、扣非+73.10%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+22.70%、归母+38.52%、扣非+37.90%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "000938",
+      "name": "紫光股份",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "最近3个完整财年经营现金流为正",
+            "3年平均年度ROE 8.07%、最低年度5.80%，须分别达到15%和10%",
+            "2025年度ROE 12.03%，低于15%门槛",
+            "3年归母利润复合增长-7.91%，低于10%门槛",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "最新完整年度营收或利润增长不足10%，或缺可比同比",
+            "3年扣非利润复合增长-2.42%，低于10%门槛",
+            "缺连续5年正利润、正扣非利润或正经营现金流",
+            "5年平均年度ROE 7.71%、最低年度5.80%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+33.93%、归母+108.18%、扣非+67.59%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+33.40%、归母+99.18%、扣非+76.81%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+34.61%、归母+126.06%、扣非+51.64%；须达到20% / 100% / 100%",
+            "当前现金回收不足归母利润50%，或TTM经营现金流未转正"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "000951",
+      "name": "中国重汽",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 9.34%、最低年度7.59%，须分别达到15%和10%",
+            "2025年度ROE 10.58%，低于15%门槛",
+            "5年平均年度ROE 7.41%、最低年度1.55%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+46.82%、归母+45.48%、扣非+50.22%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+41.48%、归母+44.59%、扣非+50.91%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+52.30%、归母+46.50%、扣非+49.42%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "001232",
+      "name": "嘉立创",
+      "stages": {
+        "quality": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+54.13%、归母+73.54%、扣非+81.27%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+61.30%、归母+89.22%、扣非+99.91%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+45.29%、归母+51.71%、扣非+55.17%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "source_gap",
+      "decision": "尚未取得2025年度全文；实际价格历史不足一年，未完成初次覆盖研究。",
+      "sources": [
+        {
+          "title": "2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-27/1225514252.PDF",
+          "publishedAt": "2026-08-27",
+          "period": "2026-06-30",
+          "sha256": "d82dfa714e72e71c39808919a1de44ed04a8dc9c1c59c035377caadbc1c04912"
+        }
+      ]
+    },
+    {
+      "code": "001337",
+      "name": "四川黄金",
+      "stages": {
+        "quality": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+48.05%、归母+48.18%、扣非+45.35%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "business_not_approved",
+      "decision": "金精矿销量+14.59%，金价+45.88%，增速主要含价格贡献；未将仅三年上市历史及单矿资源集中直接归为长期或高质成长。",
+      "sources": [
+        {
+          "title": "2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-21/1225484625.PDF",
+          "publishedAt": "2026-08-21",
+          "period": "2026-06-30",
+          "sha256": "d4b9c80e5c2896bd600d53bb484ebaeb12bf2e9d760d9c03b0b973b545ab7df8"
+        },
+        {
+          "title": "2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-04-03/1225076598.PDF",
+          "publishedAt": "2026-04-03",
+          "period": "2025-12-31",
+          "sha256": "3cfc43bd8b1ddd82f5e8b46ab5e8a192ef88f79c5dc304deab1859de3a4ca89b"
+        }
+      ]
+    },
+    {
+      "code": "001389",
+      "name": "广合科技",
+      "stages": {
+        "quality": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+80.98%、归母+94.39%、扣非+96.71%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+71.35%、归母+63.31%、扣非+67.88%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "reviewed",
+      "decision": "逐家公司核对后按相应规则显示。",
+      "sources": [
+        {
+          "title": "广合科技2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-08/1225464824.PDF",
+          "publishedAt": "2026-08-08",
+          "pages": "12、13、21",
+          "businessPage": 12,
+          "sha256": "12d9a33fdcc8734a67f00936ceb35dcc43bf2d1f914c55e142c83a9a3f4798af",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "title": "广合科技2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-03-28/1225044663.PDF",
+          "publishedAt": "2026-03-28",
+          "pages": "38、39、43、65、72、107、108",
+          "sha256": "ff29ff5cd45d428fc7e8f9840b6e05cf72805bad6bd6b43460c179a5f410b54c",
+          "reportPeriod": "2025-12-31"
+        }
+      ],
+      "publishedGroups": [
+        "高质成长"
+      ]
+    },
+    {
+      "code": "002028",
+      "name": "思源电气",
+      "stages": {
+        "quality": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "growth": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+27.05%、归母+13.23%、扣非+13.12%；须达到20% / 30% / 30%",
+            "2026-06-30：营收+18.14%、归母+7.98%、扣非+13.30%；2026-03-31：营收+41.60%、归母+23.17%、扣非+12.79%；单季须达到20% / 30% / 30%"
+          ]
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+27.05%、归母+13.23%、扣非+13.12%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+18.14%、归母+7.98%、扣非+13.30%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+41.60%、归母+23.17%、扣非+12.79%；须达到20% / 100% / 100%",
+            "当前现金回收不足归母利润50%，或TTM经营现金流未转正"
+          ]
+        }
+      },
+      "businessStatus": "previously_reviewed",
+      "decision": "已有具名报告，本次使用相同财务规则重新核对。",
+      "sources": [
+        {
+          "title": "思源电气2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-15/1225473691.PDF",
+          "publishedAt": "2026-08-15",
+          "pages": "9—12、20—21",
+          "businessPage": 9
+        }
+      ],
+      "publishedGroups": [
+        "长期优质"
+      ]
+    },
+    {
+      "code": "002266",
+      "name": "浙富控股",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 9.30%、最低年度8.76%，须分别达到15%和10%",
+            "2025年度ROE 9.61%，低于15%门槛",
+            "3年归母利润复合增长-8.66%，低于10%门槛",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "3年扣非利润复合增长-15.47%，低于10%门槛",
+            "缺连续5年正利润、正扣非利润或正经营现金流",
+            "5年平均年度ROE 13.79%、最低年度8.76%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2025年度ROE 9.61%，低于10%"
+          ]
+        },
+        "breakout": {
+          "financialQualified": true,
+          "failedConditions": []
+        }
+      },
+      "businessStatus": "reviewed",
+      "decision": "逐家公司核对后按相应规则显示。",
+      "sources": [
+        {
+          "title": "浙富控股2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225524656.PDF",
+          "publishedAt": "2026-08-29",
+          "pages": "10、24",
+          "businessPage": 10,
+          "sha256": "cb55168e8684b2af38fcb6f7d586dfc339e5837e46a5be88286e5f9a143503af",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "title": "浙富控股2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-04-29/1225226528.PDF",
+          "publishedAt": "2026-04-29",
+          "pages": "42、43、45、47、62、117、118",
+          "sha256": "190ebed9842c5616731962aedd4a5373384980f3484ab21ce8a3b14b17c21fdb",
+          "reportPeriod": "2025-12-31"
+        }
+      ],
+      "publishedGroups": [
+        "业绩爆发"
+      ]
+    },
+    {
+      "code": "002384",
+      "name": "东山精密",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 8.05%、最低年度5.89%，须分别达到15%和10%",
+            "2025年度ROE 6.89%，低于15%门槛",
+            "3年归母利润复合增长-16.35%，低于10%门槛",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "最新完整年度营收或利润增长不足10%，或缺可比同比",
+            "3年扣非利润复合增长-23.13%，低于10%门槛",
+            "5年平均年度ROE 10.59%、最低年度5.89%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2025年度ROE 6.89%，低于10%"
+          ]
+        },
+        "breakout": {
+          "financialQualified": true,
+          "failedConditions": []
+        }
+      },
+      "businessStatus": "previously_reviewed",
+      "decision": "已有具名报告，本次使用相同财务规则重新核对。",
+      "sources": [
+        {
+          "title": "东山精密2026年半年度报告",
+          "url": "https://disc.static.szse.cn/disc/disk03/finalpage/2026-08-22/9290e257-66b5-4681-a8ce-824cd1e6d853.PDF",
+          "publishedAt": "2026-08-22",
+          "pages": "7—10、15—23",
+          "businessPage": 7
+        }
+      ],
+      "publishedGroups": [
+        "业绩爆发"
+      ]
+    },
+    {
+      "code": "002463",
+      "name": "沪电股份",
+      "stages": {
+        "quality": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+61.17%、归母+73.72%、扣非+70.00%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+67.75%、归母+82.69%、扣非+81.60%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+53.91%、归母+62.90%、扣非+56.02%；须达到20% / 100% / 100%",
+            "当前现金回收不足归母利润50%，或TTM经营现金流未转正"
+          ]
+        }
+      },
+      "businessStatus": "previously_reviewed",
+      "decision": "已有具名报告，本次使用相同财务规则重新核对。",
+      "sources": [
+        {
+          "title": "沪电股份2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-26/1225502252.PDF",
+          "publishedAt": "2026-08-26",
+          "pages": "7、11、13—14",
+          "businessPage": 13
+        }
+      ],
+      "publishedGroups": [
+        "长期优质",
+        "高质成长"
+      ]
+    },
+    {
+      "code": "002468",
+      "name": "申通快递",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 9.51%、最低年度4.03%，须分别达到15%和10%",
+            "2025年度ROE 13.32%，低于15%门槛",
+            "缺连续5年正利润、正扣非利润或正经营现金流",
+            "5年平均年度ROE 4.24%、最低年度-10.96%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-03-31：营收+30.74%、归母+94.29%、扣非+101.29%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "002545",
+      "name": "东方铁塔",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 8.98%、最低年度6.48%，须分别达到15%和10%",
+            "2025年度ROE 12.97%，低于15%门槛",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "5年平均年度ROE 8.43%、最低年度5.13%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+42.03%、归母+97.84%、扣非+100.88%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+36.78%、归母+99.73%、扣非+104.58%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+48.59%、归母+95.21%、扣非+95.87%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "002558",
+      "name": "巨人网络",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 10.98%、最低年度8.93%，须分别达到15%和10%",
+            "2025年度ROE 12.45%，低于15%门槛",
+            "5年平均年度ROE 10.10%、最低年度7.58%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": true,
+          "failedConditions": []
+        }
+      },
+      "businessStatus": "reviewed",
+      "decision": "逐家公司核对后按相应规则显示。",
+      "sources": [
+        {
+          "title": "巨人网络2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-27/1225514014.PDF",
+          "publishedAt": "2026-08-27",
+          "pages": "10、13、19",
+          "businessPage": 10,
+          "sha256": "66cce719b2bc0635f0419e9144ffcdf32337eb2f3363afd83c512a3b68866c1d",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "title": "巨人网络2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-04-27/1225190389.PDF",
+          "publishedAt": "2026-04-27",
+          "pages": "46、47、49、50、51、62、63",
+          "sha256": "3458dcd075b96120633006a24d991f593debfac5f22c235a3bdf5babc3553429",
+          "reportPeriod": "2025-12-31"
+        }
+      ],
+      "publishedGroups": [
+        "高质成长"
+      ]
+    },
+    {
+      "code": "002602",
+      "name": "世纪华通",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 9.13%、最低年度2.19%，须分别达到15%和10%",
+            "缺可比较的3年归母利润复合增长数据（需要相距3年的完整年报及正基数）",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "缺可比较的3年扣非利润复合增长数据（需要相距3年的完整年报及正基数）",
+            "缺连续5年正利润、正扣非利润或正经营现金流",
+            "5年平均年度ROE 0.46%、最低年度-25.18%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+28.53%、归母+69.51%、扣非+66.40%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+22.56%、归母+89.47%、扣非+87.54%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+35.19%、归母+50.18%、扣非+46.94%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "002756",
+      "name": "永兴材料",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 13.62%、最低年度5.29%，须分别达到15%和10%",
+            "2025年度ROE 5.29%，低于15%门槛",
+            "3年营收复合增长-21.89%，低于5%门槛",
+            "3年归母利润复合增长-52.87%，低于10%门槛",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "最新完整年度营收或利润增长不足10%，或缺可比同比",
+            "3年扣非利润复合增长-54.68%，低于10%门槛"
+          ]
+        },
+        "growth": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2025年度ROE 5.29%，低于10%"
+          ]
+        },
+        "breakout": {
+          "financialQualified": true,
+          "failedConditions": []
+        }
+      },
+      "businessStatus": "reviewed",
+      "decision": "逐家公司核对后按相应规则显示。",
+      "sources": [
+        {
+          "title": "永兴材料2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-25/1225496651.PDF",
+          "publishedAt": "2026-08-25",
+          "pages": "12、16、22、23",
+          "businessPage": 12,
+          "sha256": "560a52e2884e246b84521d6f3d95540a05f20b3121abfeee64bfff6c7bfba307",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "title": "永兴材料2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225207010.PDF",
+          "publishedAt": "2026-04-28",
+          "pages": "42、48、62、63、64、75、76",
+          "sha256": "1a5b95453c3897e0e167fb959e06a48e62425032768c0eda2bacfa1da60ced25",
+          "reportPeriod": "2025-12-31"
+        }
+      ],
+      "publishedGroups": [
+        "业绩爆发"
+      ]
+    },
+    {
+      "code": "002916",
+      "name": "深南电路",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "最近3年存在利润下降、非正基数或缺可比同比"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+46.33%、归母+65.55%、扣非+76.94%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+53.44%、归母+61.33%、扣非+78.13%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+37.90%、归母+73.01%、扣非+75.04%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "reviewed",
+      "decision": "逐家公司核对后按相应规则显示。",
+      "sources": [
+        {
+          "title": "深南电路2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-27/1225512708.PDF",
+          "publishedAt": "2026-08-27",
+          "pages": "13、22",
+          "businessPage": 13,
+          "sha256": "2ac44e797a7c7f4e8f1a306a48a5760e078fc7b9086c182fa77d2c502f21c753",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "title": "深南电路2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-03-13/1225006760.PDF",
+          "publishedAt": "2026-03-13",
+          "pages": "39、48、57、59、61、81、82",
+          "sha256": "80c2d67323e64875eb80d7f13603930bc0a5087631ebbd66f14c109bada627d9",
+          "reportPeriod": "2025-12-31"
+        }
+      ],
+      "publishedGroups": [
+        "高质成长"
+      ]
+    },
+    {
+      "code": "300033",
+      "name": "同花顺",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "最近3年存在利润下降、非正基数或缺可比同比"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+48.68%、归母+89.76%、扣非+92.89%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+54.40%、归母+82.55%、扣非+83.91%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "300037",
+      "name": "新宙邦",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 10.76%、最低年度9.97%，须分别达到15%和10%",
+            "2025年度ROE 10.74%，低于15%门槛",
+            "3年营收复合增长-0.07%，低于5%门槛",
+            "3年归母利润复合增长-14.55%，低于10%门槛",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "3年扣非利润复合增长-14.00%，低于10%门槛"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+82.62%、归母+98.19%、扣非+104.51%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "reviewed",
+      "decision": "逐家公司核对后按相应规则显示。",
+      "sources": [
+        {
+          "title": "新宙邦2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-21/1225487079.PDF",
+          "publishedAt": "2026-08-21",
+          "pages": "18、32",
+          "businessPage": 18,
+          "sha256": "9619da670d27a1d9ea392469529fc303ef79fe17ea180f3d0e18e34eda5d673a",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "title": "新宙邦2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-03-24/1225026296.PDF",
+          "publishedAt": "2026-03-24",
+          "pages": "40、47、48、52、53、102、103",
+          "sha256": "869370f748df99731c01040af0d0bebfc85e1dd82d2b42377f70888fe529b3ae",
+          "reportPeriod": "2025-12-31"
+        }
+      ],
+      "publishedGroups": [
+        "高质成长"
+      ]
+    },
+    {
+      "code": "300308",
+      "name": "中际旭创",
+      "stages": {
+        "quality": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "当前现金回收不足归母利润50%，或TTM经营现金流未转正"
+          ]
+        }
+      },
+      "businessStatus": "previously_reviewed",
+      "decision": "已有具名报告，本次使用相同财务规则重新核对。",
+      "sources": [
+        {
+          "title": "中际旭创2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225491753.PDF",
+          "publishedAt": "2026-08-22",
+          "pages": "8、12、21—24、27",
+          "businessPage": 24
+        }
+      ],
+      "publishedGroups": [
+        "长期优质",
+        "高质成长"
+      ]
+    },
+    {
+      "code": "300394",
+      "name": "天孚通信",
+      "stages": {
+        "quality": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "growth": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+15.15%、归母+33.92%、扣非+36.76%；须达到20% / 30% / 30%",
+            "2026-06-30：营收-0.90%、归母+26.79%、扣非+29.51%；单季须达到20% / 30% / 30%"
+          ]
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+15.15%、归母+33.92%、扣非+36.76%；须达到20% / 100% / 100%",
+            "2026-06-30：营收-0.90%、归母+26.79%、扣非+29.51%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+40.82%、归母+45.79%、扣非+48.44%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "previously_reviewed",
+      "decision": "已有具名报告，本次使用相同财务规则重新核对。",
+      "sources": [
+        {
+          "title": "天孚通信2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-19/1225480328.PDF",
+          "publishedAt": "2026-08-19",
+          "pages": "10、19、36",
+          "businessPage": 19
+        }
+      ],
+      "publishedGroups": [
+        "长期优质"
+      ]
+    },
+    {
+      "code": "300408",
+      "name": "三环集团",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 11.02%、最低年度8.95%，须分别达到15%和10%",
+            "2025年度ROE 12.62%，低于15%门槛",
+            "5年平均年度ROE 11.81%、最低年度8.95%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+54.82%、归母+56.18%、扣非+69.66%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+61.61%、归母+61.99%、扣非+76.07%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+46.25%、归母+48.48%、扣非+60.82%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "reviewed",
+      "decision": "逐家公司核对后按相应规则显示。",
+      "sources": [
+        {
+          "title": "三环集团2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-28/1225516992.PDF",
+          "publishedAt": "2026-08-28",
+          "pages": "9、10、17",
+          "businessPage": 9,
+          "sha256": "25a0351b968aeb19aba61222df2050cce4e5535836a1591317317a2f9d71f595",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "title": "三环集团2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-03-28/1225041594.PDF",
+          "publishedAt": "2026-03-28",
+          "pages": "39、42、45、47、48、63、64",
+          "sha256": "4f2da7d6c5905c053237981fd4e01b834c5df99ae00fe65fd14fee13436220e6",
+          "reportPeriod": "2025-12-31"
+        }
+      ],
+      "publishedGroups": [
+        "高质成长"
+      ]
+    },
+    {
+      "code": "300442",
+      "name": "润泽科技",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "最新完整年度营收或利润增长不足10%，或缺可比同比"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+50.05%、归母+36.43%、扣非+37.34%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+46.83%、归母+37.45%、扣非+38.69%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+53.55%、归母+35.35%、扣非+35.92%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "300502",
+      "name": "新易盛",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 33.22%、最低年度5.25%，须分别达到15%和10%",
+            "最近3年存在利润下降、非正基数或缺可比同比"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+100.34%、归母+90.98%、扣非+90.92%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+105.76%、归母+76.80%、扣非+76.44%；须达到20% / 100% / 100%",
+            "当前现金回收不足归母利润50%，或TTM经营现金流未转正"
+          ]
+        }
+      },
+      "businessStatus": "reviewed",
+      "decision": "逐家公司核对后按相应规则显示。",
+      "sources": [
+        {
+          "title": "新易盛2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-25/1225499406.PDF",
+          "publishedAt": "2026-08-25",
+          "pages": "9、17",
+          "businessPage": 9,
+          "sha256": "bc164fb2026947ef377e0f242cb80566b30afcb06d202e47b20222fd45c93d3e",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "title": "新易盛2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-04-24/1225172598.PDF",
+          "publishedAt": "2026-04-24",
+          "pages": "45、46、47、49、50、64、65",
+          "sha256": "3432905a431a8254c2274c2188269e94cfc5a69e92c7d34332a5a3a7da8b15b6",
+          "reportPeriod": "2025-12-31"
+        }
+      ],
+      "publishedGroups": [
+        "高质成长"
+      ]
+    },
+    {
+      "code": "300548",
+      "name": "长芯博创",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 9.19%、最低年度4.28%，须分别达到15%和10%",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "5年平均年度ROE 10.45%、最低年度4.28%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+40.72%、归母+91.08%、扣非+94.49%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+24.53%、归母+45.00%、扣非+47.37%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "300573",
+      "name": "兴齐眼药",
+      "stages": {
+        "quality": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "growth": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+20.48%、归母+28.55%、扣非+30.40%；须达到20% / 30% / 30%",
+            "2026-06-30：营收+14.51%、归母+18.56%、扣非+15.52%；单季须达到20% / 30% / 30%"
+          ]
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+20.48%、归母+28.55%、扣非+30.40%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+14.51%、归母+18.56%、扣非+15.52%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+27.45%、归母+41.48%、扣非+51.72%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "previously_reviewed",
+      "decision": "已有具名报告，本次使用相同财务规则重新核对。",
+      "sources": [
+        {
+          "title": "兴齐眼药2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-28/1225517259.PDF",
+          "publishedAt": "2026-08-28",
+          "pages": "11—12、25",
+          "businessPage": 12
+        }
+      ],
+      "publishedGroups": [
+        "长期优质"
+      ]
+    },
+    {
+      "code": "300604",
+      "name": "长川科技",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "最近3个完整财年经营现金流为正",
+            "3年平均年度ROE 16.50%、最低年度1.79%，须分别达到15%和10%",
+            "最近3年存在扣非亏损或缺扣非利润",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "缺连续5年正利润、正扣非利润或正经营现金流"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+54.06%、归母+93.38%、扣非+91.52%；须达到20% / 100% / 100%",
+            "当前现金回收不足归母利润50%，或TTM经营现金流未转正"
+          ]
+        }
+      },
+      "businessStatus": "previously_reviewed",
+      "decision": "已有具名报告，本次使用相同财务规则重新核对。",
+      "sources": [
+        {
+          "title": "长川科技2026年半年度报告",
+          "url": "https://disc.static.szse.cn/disc/disk03/finalpage/2026-08-28/df60c9ec-07cc-4c91-bfa5-7b40801df61b.PDF",
+          "publishedAt": "2026-08-28",
+          "pages": "8—9、16—20",
+          "businessPage": 20
+        }
+      ],
+      "publishedGroups": [
+        "高质成长"
+      ]
+    },
+    {
+      "code": "300661",
+      "name": "圣邦股份",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 10.26%、最低年度7.63%，须分别达到15%和10%",
+            "2025年度ROE 11.24%，低于15%门槛",
+            "3年归母利润复合增长-14.45%，低于10%门槛",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "最新完整年度营收或利润增长不足10%，或缺可比同比",
+            "3年扣非利润复合增长-20.37%，低于10%门槛"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": true,
+          "failedConditions": []
+        }
+      },
+      "businessStatus": "reviewed",
+      "decision": "逐家公司核对后按相应规则显示。",
+      "sources": [
+        {
+          "title": "圣邦股份2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225531990.PDF",
+          "publishedAt": "2026-08-29",
+          "pages": "10、12、20",
+          "businessPage": 10,
+          "sha256": "4949e8607c16ce843b229f7163010dda27cf1d4accc503fa362c8f4a566f8437",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "title": "圣邦股份2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-03-28/1225045012.PDF",
+          "publishedAt": "2026-03-28",
+          "pages": "37、51、54、55、57、78、79",
+          "sha256": "2c6cc2667b3b736d22d7274f5e8903d8e4b880656639f5679978e1e10974a38f",
+          "reportPeriod": "2025-12-31"
+        }
+      ],
+      "publishedGroups": [
+        "高质成长"
+      ]
+    },
+    {
+      "code": "300693",
+      "name": "盛弘股份",
+      "stages": {
+        "quality": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "growth": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-03-31：营收+23.13%、归母+16.86%、扣非+25.01%；单季须达到20% / 30% / 30%"
+          ]
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+29.16%、归母+44.11%、扣非+50.45%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+33.96%、归母+67.43%、扣非+71.39%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+23.13%、归母+16.86%、扣非+25.01%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "previously_reviewed",
+      "decision": "已有具名报告，本次使用相同财务规则重新核对。",
+      "sources": [
+        {
+          "title": "盛弘股份2026年半年度报告",
+          "url": "https://disc.static.szse.cn/disc/disk03/finalpage/2026-08-11/bb9494df-9aa5-4222-887e-f9be3aae9e12.PDF",
+          "publishedAt": "2026-08-11",
+          "pages": "9、26—27",
+          "businessPage": 26
+        }
+      ],
+      "publishedGroups": [
+        "长期优质"
+      ]
+    },
+    {
+      "code": "300750",
+      "name": "宁德时代",
+      "stages": {
+        "quality": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+54.80%、归母+41.98%、扣非+43.44%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+56.92%、归母+36.46%、扣非+36.13%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+52.45%、归母+48.52%、扣非+52.95%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "previously_reviewed",
+      "decision": "已有具名报告，本次使用相同财务规则重新核对。",
+      "sources": [
+        {
+          "title": "宁德时代2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-07-25/1225441586.PDF",
+          "publishedAt": "2026-07-25",
+          "pages": "12—14、28—29",
+          "businessPage": 12
+        }
+      ],
+      "publishedGroups": [
+        "长期优质",
+        "高质成长"
+      ]
+    },
+    {
+      "code": "300857",
+      "name": "协创数据",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "最近3个完整财年经营现金流为正",
+            "缺连续5年正利润、正扣非利润或正经营现金流"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": true,
+          "failedConditions": []
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "300866",
+      "name": "安克创新",
+      "stages": {
+        "quality": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "growth": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-03-31：营收+26.93%、归母-4.87%、扣非+24.39%；单季须达到20% / 30% / 30%"
+          ]
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+29.05%、归母+45.86%、扣非+49.65%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+30.90%、归母+83.33%、扣非+70.93%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+26.93%、归母-4.87%、扣非+24.39%；须达到20% / 100% / 100%",
+            "当前现金回收不足归母利润50%，或TTM经营现金流未转正"
+          ]
+        }
+      },
+      "businessStatus": "reviewed",
+      "decision": "逐家公司核对后按相应规则显示。",
+      "sources": [
+        {
+          "title": "安克创新2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-31/1225533054.PDF",
+          "publishedAt": "2026-08-31",
+          "pages": "9、20、31",
+          "businessPage": 9,
+          "sha256": "ff81b9e7c2e8eb04bd450fce3c084b28f5b4be4c1e2638250160b7bb813ebac1",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "title": "安克创新2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-04-10/1225090973.PDF",
+          "publishedAt": "2026-04-10",
+          "pages": "42、43、46、67、68、102、103",
+          "sha256": "8dadc4bfd7282738697a5ee82d9b25faa657e053e3f480e71dd6ae9987703202",
+          "reportPeriod": "2025-12-31"
+        }
+      ],
+      "publishedGroups": [
+        "长期优质"
+      ]
+    },
+    {
+      "code": "300972",
+      "name": "万辰集团",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "最近3个完整财年持续盈利",
+            "3年平均年度ROE 33.02%、最低年度-11.39%，须分别达到15%和10%",
+            "最近3年存在扣非亏损或缺扣非利润",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "缺连续5年正利润、正扣非利润或正经营现金流",
+            "5年平均年度ROE 22.05%、最低年度-11.39%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": true,
+          "failedConditions": []
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "301031",
+      "name": "中熔电气",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "最近3年存在利润下降、非正基数或缺可比同比"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+62.77%、归母+82.41%、扣非+76.65%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+63.50%、归母+78.44%、扣非+71.66%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+61.92%、归母+87.43%、扣非+83.16%；须达到20% / 100% / 100%",
+            "当前现金回收不足归母利润50%，或TTM经营现金流未转正"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "301345",
+      "name": "涛涛车业",
+      "stages": {
+        "quality": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+60.56%、归母+57.94%、扣非+58.16%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+57.53%、归母+42.26%、扣非+42.95%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "reviewed",
+      "decision": "逐家公司核对后按相应规则显示。",
+      "sources": [
+        {
+          "title": "涛涛车业2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225523756.PDF",
+          "publishedAt": "2026-08-29",
+          "pages": "9、18、33",
+          "businessPage": 9,
+          "sha256": "c5ba406cdbab98293719b9bc63f7bfbd80963e37b000265fb753a8327239c726",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "title": "涛涛车业2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-03-31/1225051342.PDF",
+          "publishedAt": "2026-03-31",
+          "pages": "39、45、46、49、50、90、91",
+          "sha256": "745f0687f6b6c918c391b77ff0a77ade0e6c552fdf577de4dd1d29608d7e165b",
+          "reportPeriod": "2025-12-31"
+        }
+      ],
+      "publishedGroups": [
+        "高质成长"
+      ]
+    },
+    {
+      "code": "301377",
+      "name": "鼎泰高科",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 11.85%、最低年度9.38%，须分别达到15%和10%",
+            "最近3年存在利润下降、非正基数或缺可比同比"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "当前现金回收不足归母利润50%，或TTM经营现金流未转正"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "301630",
+      "name": "同宇新材",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2025年度ROE 10.70%，低于15%门槛",
+            "3年营收复合增长+0.28%，低于5%门槛",
+            "3年归母利润复合增长-12.19%，低于10%门槛",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "最新完整年度营收或利润增长不足10%，或缺可比同比",
+            "3年扣非利润复合增长-12.10%，低于10%门槛",
+            "缺连续5年正利润、正扣非利润或正经营现金流"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+32.49%、归母+79.57%、扣非+76.52%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+20.47%、归母+35.88%、扣非+32.87%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "301696",
+      "name": "三瑞智能",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "缺连续5年正利润、正扣非利润或正经营现金流",
+            "缺连续5年年度ROE"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+68.79%、归母+65.45%、扣非+59.14%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+65.72%、归母+73.89%、扣非+47.64%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+72.63%、归母+57.53%、扣非+71.86%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "301716",
+      "name": "鸿富诚",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "缺连续5年正利润、正扣非利润或正经营现金流",
+            "缺连续5年年度ROE"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+66.29%、归母+94.60%、扣非+103.12%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+59.10%、归母+81.48%、扣非+83.36%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "600026",
+      "name": "中远海能",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 10.48%、最低年度9.92%，须分别达到15%和10%",
+            "2025年度ROE 10.42%，低于15%门槛",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "最新完整年度营收或利润增长不足10%，或缺可比同比",
+            "缺连续5年正利润、正扣非利润或正经营现金流",
+            "5年平均年度ROE 4.18%、最低年度-15.51%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": true,
+          "failedConditions": []
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "600111",
+      "name": "北方稀土",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 8.52%、最低年度4.57%，须分别达到15%和10%",
+            "2025年度ROE 9.56%，低于15%门槛",
+            "3年营收复合增长+4.54%，低于5%门槛",
+            "3年归母利润复合增长-27.81%，低于10%门槛",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "3年扣非利润复合增长-30.80%，低于10%门槛"
+          ]
+        },
+        "growth": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2025年度ROE 9.56%，低于10%"
+          ]
+        },
+        "breakout": {
+          "financialQualified": true,
+          "failedConditions": []
+        }
+      },
+      "businessStatus": "reviewed",
+      "decision": "逐家公司核对后按相应规则显示。",
+      "sources": [
+        {
+          "title": "北方稀土2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-20/1225483017.PDF",
+          "publishedAt": "2026-08-20",
+          "pages": "18、24",
+          "businessPage": 18,
+          "sha256": "4455fee5d0885fbe560b86ae17ae04703dda3947441125fe87eea820da55cdfc",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "title": "北方稀土2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-04-18/1225118607.PDF",
+          "publishedAt": "2026-04-18",
+          "pages": "46、50、51、78、80、98、99",
+          "sha256": "401eba062f09132ee6a1814dd57a1aff5aa52375f4bfde070d2034c2175b141c",
+          "reportPeriod": "2025-12-31"
+        }
+      ],
+      "publishedGroups": [
+        "业绩爆发"
+      ]
+    },
+    {
+      "code": "600183",
+      "name": "生益科技",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 14.00%、最低年度8.57%，须分别达到15%和10%",
+            "最近3年存在利润下降、非正基数或缺可比同比"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-03-31：营收+45.09%、归母+105.47%、扣非+93.51%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "previously_reviewed",
+      "decision": "已有具名报告，本次使用相同财务规则重新核对。",
+      "sources": [
+        {
+          "title": "生益科技2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-15/1225475783.PDF",
+          "publishedAt": "2026-08-15",
+          "pages": "5—11、22",
+          "businessPage": 7
+        }
+      ],
+      "publishedGroups": [
+        "高质成长"
+      ]
+    },
+    {
+      "code": "600236",
+      "name": "桂冠电力",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 12.89%、最低年度6.93%，须分别达到15%和10%",
+            "3年营收复合增长-0.73%，低于5%门槛",
+            "3年归母利润复合增长+0.73%，低于10%门槛",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "最新完整年度营收或利润增长不足10%，或缺可比同比",
+            "3年扣非利润复合增长+0.68%，低于10%门槛",
+            "5年平均年度ROE 13.58%、最低年度6.93%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+37.59%、归母+48.09%、扣非+49.70%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+38.14%、归母+39.64%、扣非+42.02%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+36.96%、归母+58.12%、扣非+58.97%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "600499",
+      "name": "科达制造",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 12.71%、最低年度8.80%，须分别达到15%和10%",
+            "2025年度ROE 10.90%，低于15%门槛",
+            "3年归母利润复合增长-32.47%，低于10%门槛",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "3年扣非利润复合增长-34.23%，低于10%门槛"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+26.92%、归母+72.39%、扣非+85.70%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+28.14%、归母+75.26%、扣非+93.53%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+25.48%、归母+69.10%、扣非+76.57%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "600595",
+      "name": "中孚实业",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 8.01%、最低年度4.99%，须分别达到15%和10%",
+            "2025年度ROE 10.05%，低于15%门槛",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "最新完整年度营收或利润增长不足10%，或缺可比同比",
+            "5年平均年度ROE 10.28%、最低年度4.99%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": true,
+          "failedConditions": []
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "600601",
+      "name": "方正科技",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 6.81%、最低年度3.70%，须分别达到15%和10%",
+            "2025年度ROE 10.27%，低于15%门槛",
+            "3年营收复合增长+0.34%，低于5%门槛",
+            "缺可比较的3年归母利润复合增长数据（需要相距3年的完整年报及正基数）",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "缺可比较的3年扣非利润复合增长数据（需要相距3年的完整年报及正基数）",
+            "缺连续5年正利润、正扣非利润或正经营现金流",
+            "缺连续5年年度ROE"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": true,
+          "failedConditions": []
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "600961",
+      "name": "株冶集团",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年营收复合增长+2.92%，低于5%门槛",
+            "缺连续5年年度ROE"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": true,
+          "failedConditions": []
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "600988",
+      "name": "赤峰黄金",
+      "stages": {
+        "quality": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "growth": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+20.90%、归母+19.34%、扣非+20.93%；单季须达到20% / 30% / 30%"
+          ]
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+33.11%、归母+56.50%、扣非+56.34%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+20.90%、归母+19.34%、扣非+20.93%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "business_not_approved",
+      "decision": "本期产量低于预算、增长显著依赖金价，控制权变更仍在推进；尚未确认稳产及资本投入回报改善，未仅凭财务初筛发布为长期优质。",
+      "sources": [
+        {
+          "title": "赤峰黄金2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-31/1225534832.PDF",
+          "publishedAt": "2026-08-31",
+          "period": "2026-06-30",
+          "sha256": "c86d474d3cd66c7a1aff9bf1de6372072ce54acf1edfe6e52635772394f172ed"
+        },
+        {
+          "title": "赤峰黄金2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-03-21/1225021883.PDF",
+          "publishedAt": "2026-03-21",
+          "period": "2025-12-31",
+          "sha256": "d53382f3f9e7989347b91524d63140dca89cd56d8ade23a07d3e9a33dc1a043e"
+        }
+      ]
+    },
+    {
+      "code": "600989",
+      "name": "宝丰能源",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "最近3年存在利润下降、非正基数或缺可比同比"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+32.33%、归母+70.14%、扣非+65.07%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+40.77%、归母+84.92%、扣非+94.81%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+22.90%、归母+50.23%、扣非+30.92%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "601061",
+      "name": "中信金属",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 11.60%、最低年度10.95%，须分别达到15%和10%",
+            "2025年度ROE 11.83%，低于15%门槛",
+            "3年归母利润复合增长+6.68%，低于10%门槛",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "最新完整年度营收或利润增长不足10%，或缺可比同比",
+            "缺连续5年正利润、正扣非利润或正经营现金流",
+            "5年平均年度ROE 13.96%、最低年度10.95%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+36.53%、归母+84.55%、扣非+95.32%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+23.46%、归母+47.74%、扣非+57.98%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "601138",
+      "name": "工业富联",
+      "stages": {
+        "quality": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+54.63%、归母+95.99%、扣非+96.99%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+53.13%、归母+91.00%、扣非+88.24%；须达到20% / 100% / 100%",
+            "当前现金回收不足归母利润50%，或TTM经营现金流未转正"
+          ]
+        }
+      },
+      "businessStatus": "previously_reviewed",
+      "decision": "已有具名报告，本次使用相同财务规则重新核对。",
+      "sources": [
+        {
+          "title": "工业富联2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-12/1225468066.PDF",
+          "publishedAt": "2026-08-12",
+          "pages": "9、11、19",
+          "businessPage": 9
+        }
+      ],
+      "publishedGroups": [
+        "长期优质",
+        "高质成长"
+      ]
+    },
+    {
+      "code": "601677",
+      "name": "明泰铝业",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 10.67%、最低年度10.54%，须分别达到15%和10%",
+            "2025年度ROE 10.81%，低于15%门槛",
+            "3年归母利润复合增长+7.03%，低于10%门槛",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "最新完整年度营收或利润增长不足10%，或缺可比同比",
+            "缺连续5年正利润、正扣非利润或正经营现金流",
+            "5年平均年度ROE 13.01%、最低年度10.54%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+24.23%、归母+49.61%、扣非+64.29%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+27.91%、归母+40.77%、扣非+55.99%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+20.22%、归母+59.68%、扣非+74.08%；须达到20% / 100% / 100%",
+            "当前现金回收不足归母利润50%，或TTM经营现金流未转正"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "601869",
+      "name": "长飞光纤",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 8.31%、最低年度5.94%，须分别达到15%和10%",
+            "2025年度ROE 6.92%，低于15%门槛",
+            "3年营收复合增长+1.01%，低于5%门槛",
+            "3年归母利润复合增长-11.32%，低于10%门槛",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "3年扣非利润复合增长-19.30%，低于10%门槛",
+            "5年平均年度ROE 8.86%、最低年度5.94%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2025年度ROE 6.92%，低于10%"
+          ]
+        },
+        "breakout": {
+          "financialQualified": true,
+          "failedConditions": []
+        }
+      },
+      "businessStatus": "previously_reviewed",
+      "decision": "已有具名报告，本次使用相同财务规则重新核对。",
+      "sources": [
+        {
+          "title": "长飞光纤2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225493215.PDF",
+          "publishedAt": "2026-08-22",
+          "pages": "5—13",
+          "businessPage": 5
+        }
+      ],
+      "publishedGroups": [
+        "业绩爆发"
+      ]
+    },
+    {
+      "code": "601872",
+      "name": "招商轮船",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 13.67%、最低年度13.21%，须分别达到15%和10%",
+            "2025年度ROE 14.55%，低于15%门槛",
+            "3年营收复合增长-1.75%，低于5%门槛",
+            "3年归母利润复合增长+5.72%，低于10%门槛",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "最新完整年度营收或利润增长不足10%，或缺可比同比",
+            "3年扣非利润复合增长+1.47%，低于10%门槛",
+            "5年平均年度ROE 14.13%、最低年度12.54%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": true,
+          "failedConditions": []
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "601899",
+      "name": "紫金矿业",
+      "stages": {
+        "quality": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "growth": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+15.78%、归母+68.17%、扣非+75.89%；须达到20% / 30% / 30%",
+            "2026-06-30：营收+7.77%、归母+45.45%、扣非+66.71%；单季须达到20% / 30% / 30%"
+          ]
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+15.78%、归母+68.17%、扣非+75.89%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+7.77%、归母+45.45%、扣非+66.71%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+24.79%、归母+97.50%、扣非+86.81%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "previously_reviewed",
+      "decision": "已有具名报告，本次使用相同财务规则重新核对。",
+      "sources": [
+        {
+          "title": "紫金矿业2026年半年度报告摘要",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225493321.PDF",
+          "publishedAt": "2026-08-22",
+          "pages": "5",
+          "businessPage": 5
+        }
+      ],
+      "publishedGroups": [
+        "长期优质"
+      ]
+    },
+    {
+      "code": "603061",
+      "name": "金海通",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "最近3个完整财年经营现金流为正",
+            "3年平均年度ROE 8.36%、最低年度6.01%，须分别达到15%和10%",
+            "2025年度ROE 12.22%，低于15%门槛",
+            "3年归母利润复合增长+4.67%，低于10%门槛",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "3年扣非利润复合增长+3.76%，低于10%门槛",
+            "缺连续5年正利润、正扣非利润或正经营现金流"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+77.17%、归母+76.12%、扣非+76.88%；须达到20% / 100% / 100%",
+            "当前现金回收不足归母利润50%，或TTM经营现金流未转正"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "603162",
+      "name": "海通发展",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 10.25%、最低年度5.81%，须分别达到15%和10%",
+            "2025年度ROE 10.79%，低于15%门槛",
+            "3年归母利润复合增长-11.53%，低于10%门槛",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "最新完整年度营收或利润增长不足10%，或缺可比同比",
+            "3年扣非利润复合增长-11.50%，低于10%门槛"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": true,
+          "failedConditions": []
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "603256",
+      "name": "宏和科技",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "最近3个完整财年持续盈利",
+            "最近3个完整财年经营现金流为正",
+            "3年平均年度ROE 3.43%、最低年度-4.32%，须分别达到15%和10%",
+            "2025年度ROE 13.03%，低于15%门槛",
+            "最近3年存在扣非亏损或缺扣非利润",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "缺连续5年正利润、正扣非利润或正经营现金流",
+            "5年平均年度ROE 4.41%、最低年度-4.32%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": true,
+          "failedConditions": []
+        }
+      },
+      "businessStatus": "reviewed",
+      "decision": "逐家公司核对后按相应规则显示。",
+      "sources": [
+        {
+          "title": "宏和科技2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-14/1225471942.PDF",
+          "publishedAt": "2026-08-14",
+          "pages": "10、12、21",
+          "businessPage": 10,
+          "sha256": "ce1834781e2f937cfa986886fc56ec45a6136e494b296279a587714c72d9fb63",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "title": "宏和科技2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-04-10/1225088508.PDF",
+          "publishedAt": "2026-04-10",
+          "pages": "43、51、52、72、73、98、99",
+          "sha256": "f00d263905d26345d1c0e64cb39a159e049555fc63b8a59d5b7c273a4ba4460c",
+          "reportPeriod": "2025-12-31"
+        }
+      ],
+      "publishedGroups": [
+        "高质成长"
+      ]
+    },
+    {
+      "code": "603444",
+      "name": "吉比特",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年归母利润复合增长+7.08%，低于10%门槛",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "3年扣非利润复合增长+5.65%，低于10%门槛"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+48.01%、归母+69.31%、扣非+67.77%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+35.97%、归母+58.84%、扣非+50.38%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+62.67%、归母+82.68%、扣非+91.39%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "reviewed",
+      "decision": "逐家公司核对后按相应规则显示。",
+      "sources": [
+        {
+          "title": "吉比特2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-14/1225471814.PDF",
+          "publishedAt": "2026-08-14",
+          "pages": "19、38",
+          "businessPage": 19,
+          "sha256": "fe1efb2738df94ab48990a5c4995870d91cd422980e118053841c7bc3e3a39db",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "title": "吉比特2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-03-27/1225034641.PDF",
+          "publishedAt": "2026-03-27",
+          "pages": "41、50、51、79、80、91、92",
+          "sha256": "b667627a278b87fd70c9ef5618241d4e72ad65e6b9a49b60dcf46370f55955ad",
+          "reportPeriod": "2025-12-31"
+        }
+      ],
+      "publishedGroups": [
+        "高质成长"
+      ]
+    },
+    {
+      "code": "603629",
+      "name": "利通电子",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 6.72%、最低年度1.50%，须分别达到15%和10%",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "5年平均年度ROE 5.96%、最低年度1.50%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": true,
+          "failedConditions": []
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "603638",
+      "name": "艾迪精密",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 10.01%、最低年度9.07%，须分别达到15%和10%",
+            "2025年度ROE 10.98%，低于15%门槛",
+            "5年平均年度ROE 11.30%、最低年度8.60%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+44.21%、归母+47.71%、扣非+56.40%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+37.09%、归母+47.05%、扣非+65.13%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+51.58%、归母+48.39%、扣非+46.53%；须达到20% / 100% / 100%",
+            "当前现金回收不足归母利润50%，或TTM经营现金流未转正"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "603699",
+      "name": "纽威股份",
+      "stages": {
+        "quality": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "growth": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+14.47%、归母+15.20%、扣非+17.11%；须达到20% / 30% / 30%",
+            "2026-06-30：营收+12.74%、归母+3.82%、扣非+1.85%；2026-03-31：营收+16.53%、归母+31.40%、扣非+40.12%；单季须达到20% / 30% / 30%"
+          ]
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+14.47%、归母+15.20%、扣非+17.11%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+12.74%、归母+3.82%、扣非+1.85%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+16.53%、归母+31.40%、扣非+40.12%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "previously_reviewed",
+      "decision": "已有具名报告，本次使用相同财务规则重新核对。",
+      "sources": [
+        {
+          "title": "纽威股份2026年半年度报告（公司公告）",
+          "url": "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESH_STOCK/2026/2026-8/2026-08-22/12515699.PDF",
+          "publishedAt": "2026-08-22",
+          "pages": "8、11、17",
+          "businessPage": 11
+        }
+      ],
+      "publishedGroups": [
+        "长期优质"
+      ]
+    },
+    {
+      "code": "603893",
+      "name": "瑞芯微",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 16.04%、最低年度4.53%，须分别达到15%和10%",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "缺连续5年正利润、正扣非利润或正经营现金流"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+40.60%、归母+61.73%、扣非+62.77%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+43.95%、归母+64.72%、扣非+68.80%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+36.22%、归母+57.15%、扣非+53.84%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "reviewed",
+      "decision": "逐家公司核对后按相应规则显示。",
+      "sources": [
+        {
+          "title": "瑞芯微2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-18/1225478618.PDF",
+          "publishedAt": "2026-08-18",
+          "pages": "9、15、19",
+          "businessPage": 9,
+          "sha256": "88e4a58a79029dfa9ffb2bb242850cc4b29235c070d64e36d7955acb837e19e3",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "title": "瑞芯微2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-04-15/1225103780.PDF",
+          "publishedAt": "2026-04-15",
+          "pages": "52、55、57、60、62、76、77",
+          "sha256": "68afb0e91ddc2d32527264460d752d3192d6424be045e52a50da0bb4d12338b2",
+          "reportPeriod": "2025-12-31"
+        }
+      ],
+      "publishedGroups": [
+        "高质成长"
+      ]
+    },
+    {
+      "code": "603929",
+      "name": "亚翔集成",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "最新完整年度营收或利润增长不足10%，或缺可比同比"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "当前现金回收不足归母利润50%，或TTM经营现金流未转正"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "603979",
+      "name": "金诚信",
+      "stages": {
+        "quality": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+20.97%、归母+45.30%、扣非+48.08%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+20.59%、归母+46.98%、扣非+49.24%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+21.45%、归母+42.55%、扣非+46.15%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "reviewed",
+      "decision": "逐家公司核对后按相应规则显示。",
+      "sources": [
+        {
+          "title": "金诚信2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-26/1225502889.PDF",
+          "publishedAt": "2026-08-26",
+          "pages": "9、13、14",
+          "businessPage": 9,
+          "sha256": "e7e650354c13fcf333da903f3be84c8df5428b496f881a5ab8c6338c7941c350",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "title": "金诚信2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225201125.PDF",
+          "publishedAt": "2026-04-28",
+          "pages": "38、40、43、51、52、102、103",
+          "sha256": "265cb4d469379f2b38802a3254c2228af412c009f4e5f81b1fd78fe4219f42d9",
+          "reportPeriod": "2025-12-31"
+        }
+      ],
+      "publishedGroups": [
+        "长期优质",
+        "高质成长"
+      ]
+    },
+    {
+      "code": "603993",
+      "name": "洛阳钼业",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "最新完整年度营收或利润增长不足10%，或缺可比同比"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+42.78%、归母+86.27%、扣非+78.89%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+41.32%、归母+77.60%、扣非+69.31%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+44.34%、归母+96.65%、扣非+90.58%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "605117",
+      "name": "德业股份",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "最新完整年度营收或利润增长不足10%，或缺可比同比"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+92.23%、归母+78.53%、扣非+75.81%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+108.20%、归母+87.31%、扣非+67.55%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+73.77%、归母+68.37%、扣非+87.25%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "reviewed",
+      "decision": "逐家公司核对后按相应规则显示。",
+      "sources": [
+        {
+          "title": "德业股份2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-27/1225509880.PDF",
+          "publishedAt": "2026-08-27",
+          "pages": "12、18",
+          "businessPage": 12,
+          "sha256": "93d5d7ae724ae6b3d429aa258059bacaa304a6ec7f1dc5ed69bac102c7cdde1d",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "title": "德业股份2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-04-10/1225089135.PDF",
+          "publishedAt": "2026-04-10",
+          "pages": "38、39、66、68、69、105、106",
+          "sha256": "f59647db168aa6bb30cc9934b011f80a8ff170ec11750bc57b69f54dd98e1339",
+          "reportPeriod": "2025-12-31"
+        }
+      ],
+      "publishedGroups": [
+        "高质成长"
+      ]
+    },
+    {
+      "code": "688002",
+      "name": "睿创微纳",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 13.66%、最低年度10.99%，须分别达到15%和10%",
+            "5年平均年度ROE 12.83%、最低年度8.43%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": true,
+          "failedConditions": []
+        }
+      },
+      "businessStatus": "reviewed",
+      "decision": "逐家公司核对后按相应规则显示。",
+      "sources": [
+        {
+          "title": "睿创微纳2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-18/1225478709.PDF",
+          "publishedAt": "2026-08-18",
+          "pages": "9、15、30",
+          "businessPage": 9,
+          "sha256": "6af964e0497d1e560e67d1b6899aeb5a4e94b6942734134b0dd4aff6185342db",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "title": "睿创微纳2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-04-10/1225091244.PDF",
+          "publishedAt": "2026-04-10",
+          "pages": "47、51、52、75、76、133、134",
+          "sha256": "17fcc96673445338bcc20461c31e4a395f69ac1a3e0c259447cb99f471271148",
+          "reportPeriod": "2025-12-31"
+        }
+      ],
+      "publishedGroups": [
+        "高质成长"
+      ]
+    },
+    {
+      "code": "688019",
+      "name": "安集科技",
+      "stages": {
+        "quality": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "growth": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+33.72%、归母+41.56%、扣非+19.35%；须达到20% / 30% / 30%",
+            "2026-06-30：营收+34.60%、归母+56.71%、扣非+17.44%；2026-03-31：营收+32.76%、归母+23.01%、扣非+21.65%；单季须达到20% / 30% / 30%"
+          ]
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+33.72%、归母+41.56%、扣非+19.35%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+34.60%、归母+56.71%、扣非+17.44%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+32.76%、归母+23.01%、扣非+21.65%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "reviewed",
+      "decision": "逐家公司核对后按相应规则显示。",
+      "sources": [
+        {
+          "title": "安集科技2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-27/1225513853.PDF",
+          "publishedAt": "2026-08-27",
+          "pages": "9、20、31、32",
+          "businessPage": 9,
+          "sha256": "f0cff7c70465fa581da10351cecf5f24ecff30287f62f0770d8309a47fa4aa3f",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "title": "安集科技2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-04-16/1225108553.PDF",
+          "publishedAt": "2026-04-16",
+          "pages": "48、55、79、80、83、113、114",
+          "sha256": "67b5395147988628df51a72089349f79fe22fb36e2ca836e338f3969c65ec4c1",
+          "reportPeriod": "2025-12-31"
+        }
+      ],
+      "publishedGroups": [
+        "长期优质"
+      ]
+    },
+    {
+      "code": "688025",
+      "name": "杰普特",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 8.42%、最低年度5.68%，须分别达到15%和10%",
+            "2025年度ROE 12.88%，低于15%门槛",
+            "缺连续5年正利润、正扣非利润或正经营现金流",
+            "5年平均年度ROE 7.02%、最低年度4.36%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+53.63%、归母+65.20%、扣非+67.10%；须达到20% / 100% / 100%",
+            "当前现金回收不足归母利润50%，或TTM经营现金流未转正"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "688127",
+      "name": "蓝特光学",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 14.54%、最低年度11.27%，须分别达到15%和10%",
+            "5年平均年度ROE 11.99%、最低年度6.48%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": true,
+          "failedConditions": []
+        }
+      },
+      "businessStatus": "reviewed",
+      "decision": "逐家公司核对后按相应规则显示。",
+      "sources": [
+        {
+          "title": "蓝特光学2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-21/1225485663.PDF",
+          "publishedAt": "2026-08-21",
+          "pages": "12、13、14、27、31",
+          "businessPage": 12,
+          "sha256": "99eeaba1186f48bc20168ef6464d56ced3fdc125dec24a8bf10a3cffca630c67",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "title": "蓝特光学2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-03-17/1225013060.PDF",
+          "publishedAt": "2026-03-17",
+          "pages": "43、47、69、73、75、108、109",
+          "sha256": "24dd00bb678de52e41cc310305d8b1898650c79c2e4f88c2906364370e86c2cf",
+          "reportPeriod": "2025-12-31"
+        }
+      ],
+      "publishedGroups": [
+        "高质成长"
+      ]
+    },
+    {
+      "code": "688183",
+      "name": "生益电子",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "最近3个完整财年持续盈利",
+            "3年平均年度ROE 12.45%、最低年度-0.63%，须分别达到15%和10%",
+            "最近3年存在扣非亏损或缺扣非利润",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "缺连续5年正利润、正扣非利润或正经营现金流",
+            "5年平均年度ROE 10.54%、最低年度-0.63%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": true,
+          "failedConditions": []
+        }
+      },
+      "businessStatus": "reviewed",
+      "decision": "逐家公司核对后按相应规则显示。",
+      "sources": [
+        {
+          "title": "生益电子2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-15/1225474834.PDF",
+          "publishedAt": "2026-08-15",
+          "pages": "13、24",
+          "businessPage": 13,
+          "sha256": "7fa3e4a049b162ad60d697e4c197c85792aaa9c2eed9d40d1e9d057f103385af",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "title": "生益电子2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-04-24/1225167248.PDF",
+          "publishedAt": "2026-04-24",
+          "pages": "37、40、41、73、76、110、111",
+          "sha256": "d34f3cb21de6e8fea2847cf3be972aa957069eea5889ba1de6474c23d856118e",
+          "reportPeriod": "2025-12-31"
+        }
+      ],
+      "publishedGroups": [
+        "高质成长"
+      ]
+    },
+    {
+      "code": "688188",
+      "name": "柏楚电子",
+      "stages": {
+        "quality": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "growth": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+15.84%、归母+22.97%、扣非+20.20%；须达到20% / 30% / 30%",
+            "2026-06-30：营收+20.17%、归母+22.37%、扣非+19.74%；2026-03-31：营收+10.53%、归母+23.87%、扣非+20.89%；单季须达到20% / 30% / 30%"
+          ]
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+15.84%、归母+22.97%、扣非+20.20%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+20.17%、归母+22.37%、扣非+19.74%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+10.53%、归母+23.87%、扣非+20.89%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "previously_reviewed",
+      "decision": "已有具名报告，本次使用相同财务规则重新核对。",
+      "sources": [
+        {
+          "title": "柏楚电子2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-18/1225477071.PDF",
+          "publishedAt": "2026-08-18",
+          "pages": "12—13、20",
+          "businessPage": 12
+        }
+      ],
+      "publishedGroups": [
+        "长期优质"
+      ]
+    },
+    {
+      "code": "688278",
+      "name": "特宝生物",
+      "stages": {
+        "quality": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "growth": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+21.58%、归母+11.37%、扣非+13.16%；须达到20% / 30% / 30%",
+            "2026-06-30：营收+24.07%、归母+26.96%、扣非+32.97%；2026-03-31：营收+18.48%、归母-9.68%、扣非-12.34%；单季须达到20% / 30% / 30%"
+          ]
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+21.58%、归母+11.37%、扣非+13.16%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+24.07%、归母+26.96%、扣非+32.97%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+18.48%、归母-9.68%、扣非-12.34%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "reviewed",
+      "decision": "逐家公司核对后按相应规则显示。",
+      "sources": [
+        {
+          "title": "特宝生物2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-19/1225480751.PDF",
+          "publishedAt": "2026-08-19",
+          "pages": "7、9、15、39、43",
+          "businessPage": 7,
+          "sha256": "fee364db16fd3d3264e30f688d8ab1e1b6fb1624c5d0ff22640b8da34057fc2c",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "title": "特宝生物2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-03-27/1225038165.PDF",
+          "publishedAt": "2026-03-27",
+          "pages": "72、80、146、147",
+          "sha256": "6846ec0999ad9c60d4618a32eeac7836fad4563c10baf1cb27474c5fd0d928cb",
+          "reportPeriod": "2025-12-31"
+        }
+      ],
+      "publishedGroups": [
+        "长期优质"
+      ]
+    },
+    {
+      "code": "688401",
+      "name": "路维光电",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 13.58%、最低年度10.61%，须分别达到15%和10%",
+            "5年平均年度ROE 13.63%、最低年度10.61%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+22.80%、归母+35.82%、扣非+43.33%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+20.27%、归母+33.25%、扣非+44.51%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+25.56%、归母+38.81%、扣非+42.02%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "688411",
+      "name": "海博思创",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "缺连续5年正利润、正扣非利润或正经营现金流"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+32.04%、归母+93.04%、扣非+136.84%；须达到20% / 100% / 100%",
+            "当前现金回收不足归母利润50%，或TTM经营现金流未转正"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "688578",
+      "name": "艾力斯",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "缺连续5年正利润、正扣非利润或正经营现金流"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+39.85%、归母+46.57%、扣非+50.99%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+36.12%、归母+41.20%、扣非+44.10%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+44.19%、归母+54.94%、扣非+59.86%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "688617",
+      "name": "惠泰医疗",
+      "stages": {
+        "quality": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "growth": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+25.75%、归母+26.38%、扣非+28.71%；须达到20% / 30% / 30%",
+            "2026-06-30：营收+26.60%、归母+27.22%、扣非+31.84%；2026-03-31：营收+24.78%、归母+25.27%、扣非+24.72%；单季须达到20% / 30% / 30%"
+          ]
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+25.75%、归母+26.38%、扣非+28.71%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+26.60%、归母+27.22%、扣非+31.84%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+24.78%、归母+25.27%、扣非+24.72%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "previously_reviewed",
+      "decision": "已有具名报告，本次使用相同财务规则重新核对。",
+      "sources": [
+        {
+          "title": "惠泰医疗2026年半年度报告（公司公告）",
+          "url": "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESH_STOCK/2026/2026-8/2026-08-20/12505603.PDF",
+          "publishedAt": "2026-08-20",
+          "pages": "7、10—11、25—26",
+          "businessPage": 10
+        }
+      ],
+      "publishedGroups": [
+        "长期优质"
+      ]
+    },
+    {
+      "code": "688668",
+      "name": "鼎通科技",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 7.62%、最低年度3.86%，须分别达到15%和10%",
+            "2025年度ROE 12.73%，低于15%门槛",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "5年平均年度ROE 11.36%、最低年度3.86%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+31.17%、归母+59.24%、扣非+62.73%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+40.86%、归母+65.50%、扣非+68.49%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+20.78%、归母+51.86%、扣非+55.90%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "688690",
+      "name": "纳微科技",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "3年平均年度ROE 5.51%、最低年度4.23%，须分别达到15%和10%",
+            "2025年度ROE 7.45%，低于15%门槛",
+            "3年归母利润复合增长-20.93%，低于10%门槛",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "3年扣非利润复合增长-15.80%，低于10%门槛",
+            "5年平均年度ROE 12.40%、最低年度4.23%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2025年度ROE 7.45%，低于10%"
+          ]
+        },
+        "breakout": {
+          "financialQualified": true,
+          "failedConditions": []
+        }
+      },
+      "businessStatus": "business_not_approved",
+      "decision": "公司披露剔除股份支付后归母增速65.02%，低于报表利润翻倍；费用及低基数贡献须拆分，未确认主营核心盈利持续翻倍。",
+      "sources": [
+        {
+          "title": "苏州纳微科技股份有限公司2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-27/1225509889.PDF",
+          "publishedAt": "2026-08-27",
+          "period": "2026-06-30",
+          "sha256": "cc8ef428c353d917e06bb3521d3629bd57a7eea436e7046f6ed0156ffa2b3c91"
+        },
+        {
+          "title": "苏州纳微科技股份有限公司2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-04-16/1225107014.PDF",
+          "publishedAt": "2026-04-16",
+          "period": "2025-12-31",
+          "sha256": "ead0ff9369c34457e26591cba7942230aaa8cbbcebd8fb43be9c2890aa6eca7b"
+        }
+      ]
+    },
+    {
+      "code": "688700",
+      "name": "东威科技",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "最近3个完整财年经营现金流为正",
+            "3年平均年度ROE 7.41%、最低年度4.02%，须分别达到15%和10%",
+            "2025年度ROE 6.79%，低于15%门槛",
+            "3年营收复合增长+2.78%，低于5%门槛",
+            "3年归母利润复合增长-17.24%，低于10%门槛",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "3年扣非利润复合增长-16.59%，低于10%门槛",
+            "缺连续5年正利润、正扣非利润或正经营现金流"
+          ]
+        },
+        "growth": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2025年度ROE 6.79%，低于10%"
+          ]
+        },
+        "breakout": {
+          "financialQualified": true,
+          "failedConditions": []
+        }
+      },
+      "businessStatus": "reviewed",
+      "decision": "逐家公司核对后按相应规则显示。",
+      "sources": [
+        {
+          "title": "东威科技2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-08/1225463818.PDF",
+          "publishedAt": "2026-08-08",
+          "pages": "11、21",
+          "businessPage": 11,
+          "sha256": "c757cfab99f4c6f2196503978b4869f557de73b3b5aa3844372567c21335b7a7",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "title": "东威科技2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225209398.PDF",
+          "publishedAt": "2026-04-28",
+          "pages": "46、51、74、75、76、98、99",
+          "sha256": "f758d0e0b76c92217b248ba49419f3b0e014f0690cfae36f757aac83545c363f",
+          "reportPeriod": "2025-12-31"
+        }
+      ],
+      "publishedGroups": [
+        "业绩爆发"
+      ]
+    },
+    {
+      "code": "688766",
+      "name": "普冉股份",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "最近3个完整财年持续盈利",
+            "3年平均年度ROE 6.85%、最低年度-2.47%，须分别达到15%和10%",
+            "2025年度ROE 8.97%，低于15%门槛",
+            "最近3年存在扣非亏损或缺扣非利润",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "最新完整年度营收或利润增长不足10%，或缺可比同比",
+            "缺连续5年正利润、正扣非利润或正经营现金流",
+            "5年平均年度ROE 11.08%、最低年度-2.47%，平均须≥15%且各年为正"
+          ]
+        },
+        "growth": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2025年度ROE 8.97%，低于10%"
+          ]
+        },
+        "breakout": {
+          "financialQualified": true,
+          "failedConditions": []
+        }
+      },
+      "businessStatus": "reviewed",
+      "decision": "逐家公司核对后按相应规则显示。",
+      "sources": [
+        {
+          "title": "普冉股份2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-19/1225480536.PDF",
+          "publishedAt": "2026-08-19",
+          "pages": "23、39",
+          "businessPage": 23,
+          "sha256": "fc73f10f3d13be28eb1ec671e93926e030a5585892c6c1a0cd14dff2f3415cb0",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "title": "普冉股份2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-03-21/1225023836.PDF",
+          "publishedAt": "2026-03-21",
+          "pages": "56、62、97、98、99、135、136",
+          "sha256": "85c471999d074fbdfd30251044d00196032c71f4826941bc165445cfd6a2a2fe",
+          "reportPeriod": "2025-12-31"
+        }
+      ],
+      "publishedGroups": [
+        "业绩爆发"
+      ]
+    },
+    {
+      "code": "688808",
+      "name": "联讯仪器",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "最近3个完整财年持续盈利",
+            "最近3个完整财年经营现金流为正",
+            "3年平均年度ROE 11.71%、最低年度-12.44%，须分别达到15%和10%",
+            "缺可比较的3年归母利润复合增长数据（需要相距3年的完整年报及正基数）",
+            "最近3年存在扣非亏损或缺扣非利润",
+            "最近3年存在利润下降、非正基数或缺可比同比",
+            "缺可比较的3年扣非利润复合增长数据（需要相距3年的完整年报及正基数）",
+            "缺连续5年正利润、正扣非利润或正经营现金流",
+            "缺连续5年年度ROE"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": true,
+          "failedConditions": []
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "688835",
+      "name": "高凯技术",
+      "stages": {
+        "quality": {
+          "financialQualified": false,
+          "failedConditions": [
+            "最近3个完整财年经营现金流为正",
+            "3年平均年度ROE 18.14%、最低年度8.36%，须分别达到15%和10%",
+            "缺连续5年正利润、正扣非利润或正经营现金流",
+            "缺连续5年年度ROE"
+          ]
+        },
+        "growth": {
+          "financialQualified": true,
+          "failedConditions": []
+        },
+        "breakout": {
+          "financialQualified": false,
+          "failedConditions": [
+            "2026-06-30：营收+35.46%、归母+95.07%、扣非+84.73%；须达到20% / 100% / 100%",
+            "2026-06-30：营收+21.77%、归母+85.86%、扣非+80.97%；须达到20% / 100% / 100%",
+            "2026-03-31：营收+50.50%、归母+105.00%、扣非+88.89%；须达到20% / 100% / 100%"
+          ]
+        }
+      },
+      "businessStatus": "business_review_pending",
+      "decision": "仅财务线索，尚未完成逐公司经营质量核对；不进入产品名单。",
+      "sources": []
+    },
+    {
+      "code": "002648",
+      "name": "卫星化学",
+      "businessStatus": "previously_reviewed",
+      "decision": "未入选高质不等于业绩爆发；三个阶段均未满足本期条件。",
+      "publishedGroups": [],
+      "failedConditions": {
+        "longTermReview": [
+          "最近3年存在利润下降、非正基数或缺可比同比",
+          "最新完整年度营收或利润增长不足10%，或缺可比同比"
+        ],
+        "growthReview": [
+          "2026-03-31：营收+2.82%、归母+34.97%、扣非+15.47%；单季须达到20% / 30% / 30%"
+        ],
+        "breakoutReview": [
+          "2026-03-31：营收+2.82%、归母+34.97%、扣非+15.47%；须达到20% / 100% / 100%"
+        ]
+      },
+      "sources": [
+        {
+          "title": "卫星化学2026年半年度报告",
+          "url": "https://disc.static.szse.cn/disc/disk03/finalpage/2026-08-15/8bff6e97-0600-4164-8f2f-895863b23a53.PDF",
+          "publishedAt": "2026-08-15",
+          "pages": "8—17",
+          "businessPage": 8
+        }
+      ]
+    },
+    {
+      "code": "603259",
+      "name": "药明康德",
+      "businessStatus": "previously_reviewed",
+      "decision": "未入选高质不等于业绩爆发；三个阶段均未满足本期条件。",
+      "publishedGroups": [],
+      "failedConditions": {
+        "longTermReview": [
+          "3年营收复合增长+4.92%，低于5%门槛",
+          "最近3年存在利润下降、非正基数或缺可比同比"
+        ],
+        "growthReview": [
+          "2026-06-30：营收+38.94%、归母+29.43%、扣非+89.39%；须达到20% / 30% / 30%",
+          "2026-03-31：营收+28.81%、归母+26.68%、扣非+83.56%；单季须达到20% / 30% / 30%"
+        ],
+        "breakoutReview": [
+          "2026-06-30：营收+38.94%、归母+29.43%、扣非+89.39%；须达到20% / 100% / 100%",
+          "2026-06-30：营收+47.71%、归母+31.49%、扣非+93.57%；须达到20% / 100% / 100%",
+          "2026-03-31：营收+28.81%、归母+26.68%、扣非+83.56%；须达到20% / 100% / 100%"
+        ]
+      },
+      "sources": [
+        {
+          "title": "药明康德2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-04/1225455027.PDF",
+          "publishedAt": "2026-08-04",
+          "pages": "5—7、10—13",
+          "businessPage": 5
+        }
+      ]
+    }
+  ]
+}

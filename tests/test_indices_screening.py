@@ -119,10 +119,21 @@ class ScreeningTests(unittest.TestCase):
         policy = screening.build_policy([row])
         rule = policy['byCode']['006373']
         self.assertEqual(rule['category'], 'theme')
-        self.assertFalse(rule['equityEligible'])
-        self.assertIn('80%', rule['reason'])
+        self.assertTrue(rule['equityEligible'])
+        self.assertTrue(rule['defaultQualified'])
+        self.assertIn('80%', rule['classificationEvidence']['reason'])
         self.assertIn('ftsfund.com', rule['classificationEvidence']['sourceUrl'])
         self.assertGreater(rule['thresholdInputs']['a5'], 8)
+
+    def test_theme_and_broad_funds_use_identical_equity_conditions(self):
+        a = research_row('000001')
+        b = {**research_row('000002'), 'n': '科技行业主题混合A'}
+        policy = screening.build_policy([a, b])
+        self.assertTrue(policy['byCode']['000001']['equityEligible'])
+        self.assertTrue(policy['byCode']['000002']['equityEligible'])
+        self.assertEqual(policy['byCode']['000001']['defaultQualified'], policy['byCode']['000002']['defaultQualified'])
+        b['r'] = [0, 0, 0, 0, None]
+        self.assertFalse(screening.build_policy([b])['byCode']['000002']['defaultQualified'])
 
     def test_verified_nav_uses_the_return_endpoint_not_an_older_display_quote(self):
         history = [dict(FSRQ='2026-09-21', DWJZ='3.3550', JZZZL='0.72'),

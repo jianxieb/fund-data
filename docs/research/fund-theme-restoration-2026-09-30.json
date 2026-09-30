@@ -1,0 +1,1153 @@
+{
+  "checkedAt": "2026-09-30",
+  "requested": 31,
+  "performancePassed": 31,
+  "managerPassed": 31,
+  "qualified": 30,
+  "excluded": {
+    "001396": "最新5年年化7.64%，未达到8%门槛"
+  },
+  "records": [
+    {
+      "code": "000354",
+      "name": "长盛城镇化主题混合A",
+      "asof": "2026-09-29",
+      "first": "2013-11-12",
+      "rows": 3105,
+      "r": [
+        32.981216425713164,
+        247.74205713208337,
+        203.23084511673838,
+        113.82608695652196,
+        186.1520558572545
+      ],
+      "mdd5": -59.25872788139648,
+      "vol5": 43.48537642962315,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_000354.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_000354.html",
+      "checkedAt": "2026-09-30T04:45:20.862114+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_000354.html",
+      "managerRecords": [
+        {
+          "name": "代毅",
+          "start": "2018-06-05",
+          "end": null,
+          "tenureYears": 8.320499394238075,
+          "tenureText": "8年117天"
+        }
+      ]
+    },
+    {
+      "code": "001167",
+      "name": "金鹰科技创新股票A",
+      "asof": "2026-09-29",
+      "first": "2015-04-30",
+      "rows": 2738,
+      "r": [
+        -13.302087359876236,
+        58.6893075086232,
+        47.96637483931847,
+        72.36234489231114,
+        227.14174942923106
+      ],
+      "mdd5": -41.428571428571445,
+      "vol5": 30.235141124675796,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_001167.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_001167.html",
+      "checkedAt": "2026-09-30T04:45:21.665655+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001167.html",
+      "managerRecords": [
+        {
+          "name": "陈颖",
+          "start": "2021-05-18",
+          "end": null,
+          "tenureYears": 5.369035640704463,
+          "tenureText": "5年135天"
+        }
+      ]
+    },
+    {
+      "code": "001227",
+      "name": "中邮信息产业灵活配置混合A",
+      "asof": "2026-09-29",
+      "first": "2015-05-14",
+      "rows": 2760,
+      "r": [
+        49.0842490842492,
+        170.97203728362192,
+        150.92478421701614,
+        92.70833333333348,
+        146.6666666666681
+      ],
+      "mdd5": -49.543568464730306,
+      "vol5": 29.0589206578027,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_001227.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_001227.html",
+      "checkedAt": "2026-09-30T04:45:22.599063+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001227.html",
+      "managerRecords": [
+        {
+          "name": "周楠",
+          "start": "2015-05-26",
+          "end": null,
+          "tenureYears": 11.348624543967365,
+          "tenureText": "11年127天"
+        }
+      ]
+    },
+    {
+      "code": "001302",
+      "name": "前海开源金银珠宝混合A",
+      "asof": "2026-09-29",
+      "first": "2015-07-09",
+      "rows": 2724,
+      "r": [
+        6.0780287474331285,
+        69.26605504587128,
+        82.67326732673241,
+        115.4295246038366,
+        118.15878378378568
+      ],
+      "mdd5": -44.88538328814404,
+      "vol5": 32.58497323540516,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_001302.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_001302.html",
+      "checkedAt": "2026-09-30T04:45:23.373670+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001302.html",
+      "managerRecords": [
+        {
+          "name": "吴国清",
+          "start": "2021-06-01",
+          "end": null,
+          "tenureYears": 5.330704942606625,
+          "tenureText": "5年121天"
+        }
+      ]
+    },
+    {
+      "code": "001323",
+      "name": "东吴移动互联混合A",
+      "asof": "2026-09-29",
+      "first": "2015-05-27",
+      "rows": 2767,
+      "r": [
+        0.884606530961074,
+        114.73418961957069,
+        149.3639504165818,
+        185.85538576220603,
+        526.7211440245101
+      ],
+      "mdd5": -39.5276929617748,
+      "vol5": 36.80443850156832,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_001323.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_001323.html",
+      "checkedAt": "2026-09-30T04:45:24.161478+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001323.html",
+      "managerRecords": [
+        {
+          "name": "刘元海",
+          "start": "2016-04-27",
+          "end": null,
+          "tenureYears": 10.425949882612237,
+          "tenureText": "10年156天"
+        }
+      ]
+    },
+    {
+      "code": "001396",
+      "name": "建信互联网+产业升级股票",
+      "asof": "2026-09-29",
+      "first": "2015-06-23",
+      "rows": 2732,
+      "r": [
+        39.11516853932599,
+        118.6534216335545,
+        97.9020979020982,
+        44.49307075127702,
+        168.06495263870374
+      ],
+      "mdd5": -48.516129032257936,
+      "vol5": 27.980510169121857,
+      "fees": [
+        1.2,
+        0.2,
+        null
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_001396.html",
+      "feeUnknownItems": [
+        "销售服务费"
+      ],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_001396.html",
+      "checkedAt": "2026-09-30T04:45:24.906537+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001396.html",
+      "managerRecords": [
+        {
+          "name": "何珅华",
+          "start": "2015-06-23",
+          "end": null,
+          "tenureYears": 11.271963147771686,
+          "tenureText": "11年99天"
+        }
+      ]
+    },
+    {
+      "code": "001404",
+      "name": "招商移动互联网产业股票基金A",
+      "asof": "2026-09-29",
+      "first": "2015-06-19",
+      "rows": 2736,
+      "r": [
+        38.914259618677896,
+        110.27391341916513,
+        90.50414905276318,
+        60.83939193654992,
+        208.03797468354267
+      ],
+      "mdd5": -52.04159824849479,
+      "vol5": 39.221027296431025,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_001404.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_001404.html",
+      "checkedAt": "2026-09-30T04:45:25.806477+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001404.html",
+      "managerRecords": [
+        {
+          "name": "张林",
+          "start": "2019-06-14",
+          "end": null,
+          "tenureYears": 7.296522173624373,
+          "tenureText": "7年108天"
+        }
+      ]
+    },
+    {
+      "code": "001513",
+      "name": "易方达信息产业混合A",
+      "asof": "2026-09-29",
+      "first": "2016-09-27",
+      "rows": 2422,
+      "r": [
+        46.07394393456381,
+        242.71194538493793,
+        255.43989934008752,
+        178.25356082582005,
+        675.2144204607382
+      ],
+      "mdd5": -46.25386996903998,
+      "vol5": 33.207179287391114,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_001513.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_001513.html",
+      "checkedAt": "2026-09-30T04:45:26.674730+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001513.html",
+      "managerRecords": [
+        {
+          "name": "郑希",
+          "start": "2016-09-27",
+          "end": null,
+          "tenureYears": 10.007050110542995,
+          "tenureText": "10年3天"
+        }
+      ]
+    },
+    {
+      "code": "001564",
+      "name": "东方红京东大数据混合A",
+      "asof": "2026-09-29",
+      "first": "2015-07-31",
+      "rows": 2681,
+      "r": [
+        9.810479375696456,
+        53.726102223955905,
+        53.54637568199436,
+        76.12874385337322,
+        251.4719000891998
+      ],
+      "mdd5": -25.81254724111861,
+      "vol5": 17.112954184631445,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_001564.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_001564.html",
+      "checkedAt": "2026-09-30T04:45:27.540479+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001564.html",
+      "managerRecords": [
+        {
+          "name": "周云",
+          "start": "2015-09-14",
+          "end": null,
+          "tenureYears": 11.04471686619164,
+          "tenureText": "11年16天"
+        }
+      ]
+    },
+    {
+      "code": "001668",
+      "name": "汇添富全球移动互联混合(QDII)人民币A",
+      "asof": "2026-09-28",
+      "first": "2017-01-25",
+      "rows": 2325,
+      "r": [
+        20.643485211830527,
+        56.927475955289864,
+        112.32121922626015,
+        96.14801444043289,
+        null
+      ],
+      "mdd5": -35.96075778078487,
+      "vol5": 24.462876626638153,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_001668.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_001668.html",
+      "checkedAt": "2026-09-30T04:45:28.274430+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001668.html",
+      "managerRecords": [
+        {
+          "name": "杨瑨",
+          "start": "2017-01-25",
+          "end": null,
+          "tenureYears": 9.678501269704375,
+          "tenureText": "9年248天"
+        }
+      ]
+    },
+    {
+      "code": "001856",
+      "name": "易方达环保主题混合A",
+      "asof": "2026-09-29",
+      "first": "2017-06-02",
+      "rows": 2267,
+      "r": [
+        57.61790915018463,
+        113.73415856174414,
+        124.381188118811,
+        77.00756651208083,
+        null
+      ],
+      "mdd5": -39.3493576460839,
+      "vol5": 25.668119205048573,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_001856.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_001856.html",
+      "checkedAt": "2026-09-30T04:45:29.114276+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001856.html",
+      "managerRecords": [
+        {
+          "name": "祁禾",
+          "start": "2017-12-27",
+          "end": null,
+          "tenureYears": 8.758564515356236,
+          "tenureText": "8年277天"
+        }
+      ]
+    },
+    {
+      "code": "001956",
+      "name": "国联安科技动力股票A",
+      "asof": "2026-09-29",
+      "first": "2016-01-26",
+      "rows": 2566,
+      "r": [
+        53.34180970544604,
+        200.38190120381861,
+        157.86472810205905,
+        54.18477797664685,
+        265.0958627648813
+      ],
+      "mdd5": -63.987267671593685,
+      "vol5": 43.22420882806784,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_001956.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_001956.html",
+      "checkedAt": "2026-09-30T04:45:29.905052+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001956.html",
+      "managerRecords": [
+        {
+          "name": "潘明",
+          "start": "2016-01-26",
+          "end": null,
+          "tenureYears": 10.67783732725518,
+          "tenureText": "10年247天"
+        }
+      ]
+    },
+    {
+      "code": "002450",
+      "name": "平安睿享文娱混合A",
+      "asof": "2026-09-29",
+      "first": "2016-03-29",
+      "rows": 2560,
+      "r": [
+        39.368165249088506,
+        159.11144578313218,
+        112.481762952256,
+        95.07153248853552,
+        425.6633849840559
+      ],
+      "mdd5": -41.70620727388077,
+      "vol5": 28.77247106899008,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_002450.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_002450.html",
+      "checkedAt": "2026-09-30T04:45:30.322235+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_002450.html",
+      "managerRecords": [
+        {
+          "name": "黄维",
+          "start": "2016-08-24",
+          "end": null,
+          "tenureYears": 10.100138948780604,
+          "tenureText": "10年37天"
+        }
+      ]
+    },
+    {
+      "code": "003304",
+      "name": "前海开源沪港深核心资源混合A",
+      "asof": "2026-09-29",
+      "first": "2016-10-17",
+      "rows": 2422,
+      "r": [
+        -1.7788255465066571,
+        74.99045437189768,
+        69.4896449704142,
+        67.50730994152076,
+        null
+      ],
+      "mdd5": -38.898401826484,
+      "vol5": 31.731499608807418,
+      "fees": [
+        0.6,
+        0.1,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_003304.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_003304.html",
+      "checkedAt": "2026-09-30T04:45:31.182913+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_003304.html",
+      "managerRecords": [
+        {
+          "name": "吴国清",
+          "start": "2016-10-17",
+          "end": null,
+          "tenureYears": 9.952291970403225,
+          "tenureText": "9年348天"
+        }
+      ]
+    },
+    {
+      "code": "004616",
+      "name": "中欧电子信息产业沪港深股票A",
+      "asof": "2026-09-29",
+      "first": "2017-07-07",
+      "rows": 2234,
+      "r": [
+        15.70625035872142,
+        109.94011976047892,
+        73.51207126565387,
+        60.07142662466396,
+        null
+      ],
+      "mdd5": -49.865708830857855,
+      "vol5": 33.38327047887045,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_004616.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_004616.html",
+      "checkedAt": "2026-09-30T04:45:32.016598+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_004616.html",
+      "managerRecords": [
+        {
+          "name": "刘金辉",
+          "start": "2020-08-14",
+          "end": null,
+          "tenureYears": 6.12743588164028,
+          "tenureText": "6年47天"
+        }
+      ]
+    },
+    {
+      "code": "005310",
+      "name": "广发电子信息传媒股票A",
+      "asof": "2026-09-29",
+      "first": "2017-12-11",
+      "rows": 2134,
+      "r": [
+        39.71152945583982,
+        138.31611460219477,
+        106.84538941530005,
+        138.92685531233394,
+        null
+      ],
+      "mdd5": -47.68232385661306,
+      "vol5": 34.99791194600333,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_005310.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_005310.html",
+      "checkedAt": "2026-09-30T04:45:32.752637+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_005310.html",
+      "managerRecords": [
+        {
+          "name": "冯骋",
+          "start": "2020-08-07",
+          "end": null,
+          "tenureYears": 6.1466012306892,
+          "tenureText": "6年54天"
+        }
+      ]
+    },
+    {
+      "code": "005576",
+      "name": "华泰柏瑞新金融地产混合A",
+      "asof": "2026-09-29",
+      "first": "2018-03-08",
+      "rows": 2068,
+      "r": [
+        5.897296935848106,
+        37.23042758316806,
+        61.18175291280969,
+        86.51297794120029,
+        null
+      ],
+      "mdd5": -18.23805460750848,
+      "vol5": 18.874512340884884,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_005576.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_005576.html",
+      "checkedAt": "2026-09-30T04:45:33.518306+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_005576.html",
+      "managerRecords": [
+        {
+          "name": "杨景涵",
+          "start": "2018-03-08",
+          "end": null,
+          "tenureYears": 8.56417311786005,
+          "tenureText": "8年206天"
+        }
+      ]
+    },
+    {
+      "code": "005698",
+      "name": "华夏全球科技先锋混合(QDII)A(人民币)",
+      "asof": "2026-09-28",
+      "first": "2018-04-17",
+      "rows": 1971,
+      "r": [
+        26.903795655287553,
+        59.056908623062654,
+        120.39800995024876,
+        89.27579577013478,
+        null
+      ],
+      "mdd5": -45.441641396219076,
+      "vol5": 32.02993560042935,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_005698.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_005698.html",
+      "checkedAt": "2026-09-30T04:45:34.263394+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_005698.html",
+      "managerRecords": [
+        {
+          "name": "李湘杰",
+          "start": "2018-04-17",
+          "end": null,
+          "tenureYears": 8.454656837580512,
+          "tenureText": "8年166天"
+        }
+      ]
+    },
+    {
+      "code": "005844",
+      "name": "东方人工智能主题混合A",
+      "asof": "2026-09-29",
+      "first": "2018-06-07",
+      "rows": 2025,
+      "r": [
+        99.59782205172607,
+        290.49751846023406,
+        222.65453090617967,
+        153.01176470588138,
+        null
+      ],
+      "mdd5": -51.378748139221656,
+      "vol5": 43.1540947868023,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_005844.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_005844.html",
+      "checkedAt": "2026-09-30T04:45:35.043922+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_005844.html",
+      "managerRecords": [
+        {
+          "name": "严凯",
+          "start": "2020-04-30",
+          "end": null,
+          "tenureYears": 6.417654024381061,
+          "tenureText": "6年153天"
+        }
+      ]
+    },
+    {
+      "code": "006274",
+      "name": "圆信永丰医药健康A",
+      "asof": "2026-09-29",
+      "first": "2018-11-29",
+      "rows": 1894,
+      "r": [
+        -4.241269246607349,
+        60.60804177387307,
+        33.867565582833194,
+        59.14103794006411,
+        null
+      ],
+      "mdd5": -37.118115318416415,
+      "vol5": 29.468626653197255,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_006274.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_006274.html",
+      "checkedAt": "2026-09-30T04:45:35.766226+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_006274.html",
+      "managerRecords": [
+        {
+          "name": "肖世源",
+          "start": "2018-11-29",
+          "end": null,
+          "tenureYears": 7.835889854001109,
+          "tenureText": "7年305天"
+        }
+      ]
+    },
+    {
+      "code": "006373",
+      "name": "国富全球科技互联混合(QDII)人民币A",
+      "asof": "2026-09-28",
+      "first": "2018-11-20",
+      "rows": 1897,
+      "r": [
+        67.6448799139681,
+        116.96409241332395,
+        201.18066288854496,
+        200.87064676616748,
+        null
+      ],
+      "mdd5": -34.532789408867174,
+      "vol5": 25.650591776753863,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_006373.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_006373.html",
+      "checkedAt": "2026-09-30T04:45:36.159375+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_006373.html",
+      "managerRecords": [
+        {
+          "name": "狄星华",
+          "start": "2018-11-20",
+          "end": null,
+          "tenureYears": 7.860531017064005,
+          "tenureText": "7年314天"
+        }
+      ]
+    },
+    {
+      "code": "006502",
+      "name": "财通集成电路产业股票A",
+      "asof": "2026-09-29",
+      "first": "2018-11-29",
+      "rows": 1862,
+      "r": [
+        98.91038406827892,
+        376.30628789427163,
+        378.16304199152154,
+        245.2179923961896,
+        null
+      ],
+      "mdd5": -50.75030012004801,
+      "vol5": 41.592179379213235,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_006502.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_006502.html",
+      "checkedAt": "2026-09-30T04:45:36.914085+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_006502.html",
+      "managerRecords": [
+        {
+          "name": "金梓才",
+          "start": "2018-11-29",
+          "end": null,
+          "tenureYears": 7.835889854001109,
+          "tenureText": "7年305天"
+        }
+      ]
+    },
+    {
+      "code": "006555",
+      "name": "浦银全球智能科技(QDII)A",
+      "asof": "2026-09-28",
+      "first": "2019-01-29",
+      "rows": 1853,
+      "r": [
+        54.7247398455855,
+        94.11455043166926,
+        160.55681175805455,
+        127.16855593888474,
+        null
+      ],
+      "mdd5": -37.738493047321306,
+      "vol5": 28.218608984389753,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_006555.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_006555.html",
+      "checkedAt": "2026-09-30T04:45:37.701564+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_006555.html",
+      "managerRecords": [
+        {
+          "name": "IKEDA KAE",
+          "start": "2019-01-29",
+          "end": null,
+          "tenureYears": 7.66887752657481,
+          "tenureText": "7年244天"
+        },
+        {
+          "name": "俞瑾",
+          "start": "2022-08-11",
+          "end": null,
+          "tenureYears": 4.136977487559635,
+          "tenureText": "4年50天"
+        }
+      ]
+    },
+    {
+      "code": "006751",
+      "name": "富国互联科技股票A",
+      "asof": "2026-09-29",
+      "first": "2019-03-26",
+      "rows": 1813,
+      "r": [
+        43.989534014453156,
+        158.72212769768126,
+        177.57601959936702,
+        101.98196308724974,
+        null
+      ],
+      "mdd5": -49.20591289475277,
+      "vol5": 34.06273901074366,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_006751.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_006751.html",
+      "checkedAt": "2026-09-30T04:45:38.428298+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_006751.html",
+      "managerRecords": [
+        {
+          "name": "许炎",
+          "start": "2019-03-26",
+          "end": null,
+          "tenureYears": 7.515554734183453,
+          "tenureText": "7年188天"
+        }
+      ]
+    },
+    {
+      "code": "007343",
+      "name": "嘉实科技创新混合",
+      "asof": "2026-09-29",
+      "first": "2019-05-07",
+      "rows": 1754,
+      "r": [
+        57.9342960898573,
+        175.14958312898466,
+        204.5269500081423,
+        125.91205605218603,
+        null
+      ],
+      "mdd5": -46.45921973029509,
+      "vol5": 31.21544054435824,
+      "fees": [
+        1.2,
+        0.2,
+        null
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_007343.html",
+      "feeUnknownItems": [
+        "销售服务费"
+      ],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_007343.html",
+      "checkedAt": "2026-09-30T04:45:39.141145+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_007343.html",
+      "managerRecords": [
+        {
+          "name": "王贵重",
+          "start": "2019-05-07",
+          "end": null,
+          "tenureYears": 7.400562639889936,
+          "tenureText": "7年146天"
+        }
+      ]
+    },
+    {
+      "code": "007346",
+      "name": "易方达科技创新混合A",
+      "asof": "2026-09-29",
+      "first": "2019-04-29",
+      "rows": 1759,
+      "r": [
+        22.20187906528541,
+        136.56204822086409,
+        108.04691985891091,
+        94.80030721966017,
+        null
+      ],
+      "mdd5": -43.015454454421096,
+      "vol5": 30.90230545101712,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_007346.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_007346.html",
+      "checkedAt": "2026-09-30T04:45:39.837739+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_007346.html",
+      "managerRecords": [
+        {
+          "name": "蔡荣成",
+          "start": "2019-04-29",
+          "end": null,
+          "tenureYears": 7.4224658959458445,
+          "tenureText": "7年154天"
+        }
+      ]
+    },
+    {
+      "code": "007355",
+      "name": "汇添富科技创新混合A",
+      "asof": "2026-09-29",
+      "first": "2019-05-06",
+      "rows": 1757,
+      "r": [
+        19.829124533607477,
+        157.3452560678208,
+        145.15986281668395,
+        91.86147186147298,
+        null
+      ],
+      "mdd5": -47.03457395091958,
+      "vol5": 29.49183746043596,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_007355.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_007355.html",
+      "checkedAt": "2026-09-30T04:45:40.604843+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_007355.html",
+      "managerRecords": [
+        {
+          "name": "马翔",
+          "start": "2019-05-06",
+          "end": null,
+          "tenureYears": 7.403300546896925,
+          "tenureText": "7年147天"
+        }
+      ]
+    },
+    {
+      "code": "007490",
+      "name": "南方信息创新混合A",
+      "asof": "2026-09-29",
+      "first": "2019-06-19",
+      "rows": 1740,
+      "r": [
+        77.90511627906957,
+        256.4070070816249,
+        205.39090444557945,
+        126.6616099364743,
+        null
+      ],
+      "mdd5": -56.40805654287699,
+      "vol5": 38.69682768633682,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_007490.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_007490.html",
+      "checkedAt": "2026-09-30T04:45:41.299495+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_007490.html",
+      "managerRecords": [
+        {
+          "name": "郑晓曦",
+          "start": "2019-06-19",
+          "end": null,
+          "tenureYears": 7.28283263858943,
+          "tenureText": "7年103天"
+        }
+      ]
+    },
+    {
+      "code": "100039",
+      "name": "富国通胀通缩主题轮动混合A",
+      "asof": "2026-09-29",
+      "first": "2010-05-12",
+      "rows": 3965,
+      "r": [
+        28.26875634886088,
+        180.51412250079431,
+        155.98030697943895,
+        104.79610750695132,
+        520.2807017543892
+      ],
+      "mdd5": -43.87537345283828,
+      "vol5": 28.19395665569399,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_100039.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_100039.html",
+      "checkedAt": "2026-09-30T04:45:42.249621+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_100039.html",
+      "managerRecords": [
+        {
+          "name": "曹晋",
+          "start": "2019-02-01",
+          "end": null,
+          "tenureYears": 7.6606638055538445,
+          "tenureText": "7年241天"
+        }
+      ]
+    },
+    {
+      "code": "519929",
+      "name": "长信电子信息量化灵活配置混合A",
+      "asof": "2026-09-29",
+      "first": "2016-07-27",
+      "rows": 2472,
+      "r": [
+        22.228637413394758,
+        164.29463171036173,
+        136.0089186176138,
+        56.12094395280201,
+        113.19234642497298
+      ],
+      "mdd5": -56.73662830060937,
+      "vol5": 30.836569684383804,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_519929.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_519929.html",
+      "checkedAt": "2026-09-30T04:45:43.129783+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_519929.html",
+      "managerRecords": [
+        {
+          "name": "左金保",
+          "start": "2016-07-27",
+          "end": null,
+          "tenureYears": 10.176800344976282,
+          "tenureText": "10年65天"
+        },
+        {
+          "name": "宋海岸",
+          "start": "2023-01-30",
+          "end": null,
+          "tenureYears": 3.6660574823576115,
+          "tenureText": "3年243天"
+        }
+      ]
+    },
+    {
+      "code": "660015",
+      "name": "农银行业轮动混合A",
+      "asof": "2026-09-29",
+      "first": "2012-11-14",
+      "rows": 3335,
+      "r": [
+        29.457761423389407,
+        109.03045034096297,
+        87.2843034950019,
+        81.48750641166573,
+        376.81349145233594
+      ],
+      "mdd5": -39.04813412655489,
+      "vol5": 29.76869627976505,
+      "fees": [
+        1.2,
+        0.2,
+        0.0
+      ],
+      "feeSource": "https://fundf10.eastmoney.com/jjfl_660015.html",
+      "feeUnknownItems": [],
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_660015.html",
+      "checkedAt": "2026-09-30T04:45:44.010718+00:00",
+      "historyNote": null,
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_660015.html",
+      "managerRecords": [
+        {
+          "name": "邢军亮",
+          "start": "2021-07-15",
+          "end": null,
+          "tenureYears": 5.21023703429913,
+          "tenureText": "5年77天"
+        },
+        {
+          "name": "魏刚",
+          "start": "2026-09-18",
+          "end": null,
+          "tenureYears": 0.03285488408386209,
+          "tenureText": "12天"
+        }
+      ]
+    }
+  ]
+}
