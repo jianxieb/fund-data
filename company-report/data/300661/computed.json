@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "code": "300661",
-  "asOf": "2026-09-30",
+  "asOf": "2026-10-01",
   "annual": [
     {
       "year": 2025,
@@ -33,7 +33,10 @@
       "receivables": 361712052.3,
       "inventory": 1448216300.11,
       "liabilities": 1627044091.5,
-      "equity": 5327105573.48
+      "equity": 5327105573.48,
+      "cost": 1912334714.23,
+      "profitBeforeTax": 549889322.76,
+      "incomeTax": 15514903.72
     },
     {
       "year": 2024,
@@ -65,7 +68,10 @@
       "receivables": 232763853.97,
       "inventory": 1164817206.32,
       "liabilities": 1171860447.49,
-      "equity": 4599259109.01
+      "equity": 4599259109.01,
+      "cost": 1624468592.32,
+      "profitBeforeTax": 484782233.04,
+      "incomeTax": -6378999.42
     },
     {
       "year": 2023,
@@ -194,7 +200,10 @@
     "receivables": 450159887.46,
     "inventory": 1677078919.35,
     "liabilities": 1958908742.02,
-    "equity": 9810563972.02
+    "equity": 9810563972.02,
+    "cost": 1249972728.03,
+    "profitBeforeTax": 438549746.8,
+    "incomeTax": 16808464.28
   },
   "quarters": [
     {
@@ -317,7 +326,7 @@
     "operatingCashFlow": 608444860.84,
     "capex": 319860876.23
   },
-  "peFromProfitAmounts": 100.96213951036468,
+  "peFromProfitAmounts": 98.64394854111075,
   "cashMetrics": [
     {
       "reportDate": "2026-06-30",
@@ -363,7 +372,7 @@
   },
   "dividend": {
     "cash12": 0.2,
-    "yield12": 0.1773049645390071,
+    "yield12": 0.18147173577715273,
     "byFiscalYear": {
       "2025": 0.2,
       "2024": 0.2,

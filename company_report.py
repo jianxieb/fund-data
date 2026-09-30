@@ -80,7 +80,7 @@ def normalize(code, raw, asof, sources=None):
     if not financials or not valuations:
         raise ValueError('缺已公告财报或有日期的行情：' + code)
     statements = {key: {r['REPORT_DATE'][:10]: r for r in known_rows(code, raw.get(key, []), asof)}
-                  for key in ('balance', 'cashflow')}
+                  for key in ('balance', 'cashflow', 'income')}
     reports = []
     for row in financials:
         r = financial_report(row, financials)
@@ -95,6 +95,11 @@ def normalize(code, raw, asof, sources=None):
             if record:
                 r['announcedAt'] = max(r['announcedAt'], str(record['NOTICE_DATE'])[:10])
         reports.append(r)
+        income = statements['income'].get(r['reportDate'])
+        if income:
+            r.update({out: numeric(income.get(field)) for out, field in
+                      {'cost': 'OPERATE_COST', 'profitBeforeTax': 'TOTAL_PROFIT', 'incomeTax': 'INCOME_TAX'}.items()})
+            r['announcedAt'] = max(r['announcedAt'], str(income['NOTICE_DATE'])[:10])
     evidence = parse_evidence(code, valuations, financials, asof)
     return {'schemaVersion': 2, 'code': code, 'name': financials[0]['SECURITY_NAME_ABBR'],
             'asOf': asof, 'currency': 'CNY', 'amountUnit': 'yuan', 'consolidated': True,
@@ -247,6 +252,7 @@ def fetch_report(code, asof, fetcher, cached_financials=None):
         ('valuation', 'RPT_VALUEANALYSIS_DET', 'TRADE_DATE', 2),
         ('balance', 'RPT_DMSK_FN_BALANCE', 'REPORT_DATE', 32),
         ('cashflow', 'RPT_DMSK_FN_CASHFLOW', 'REPORT_DATE', 32),
+        ('income', 'RPT_DMSK_FN_INCOME', 'REPORT_DATE', 8),
     ]:
         url = source_url(code, report, sort, size)
         try:

@@ -9,6 +9,7 @@ sys.path.insert(0, str(ROOT))
 from company_report import compute
 from stock_fundamentals import numeric
 from stock_screen import apply_research_profile, refresh_quality_review
+from stock_earnings import margin_bridge, profit_bridge, unit_bridge
 
 
 def fmt(value, digits=2, suffix=''):
@@ -81,9 +82,37 @@ def make_report(research, data, row):
                 bullets=['失效信号：' + growth_research['invalidation']])
     breakout_research = research.get('breakout') or {}
     if breakout_research:
-        operating = breakout_research.get('operatingReview') or {}
+        operating = research.get('earningsReview') or {}
         section('breakout', '盈利扩张的来源', paragraphs=[breakout_research['driver'], breakout_research['quality']],
-                bullets=([operating[k] for k in ('rationale', 'priceEffect', 'consolidationEffect', 'valuationAssessment') if operating.get(k)] + ['失效信号：' + breakout_research['invalidation']]))
+                bullets=['失效信号：' + breakout_research['invalidation']])
+    attribution = research.get('earningsReview') or {}
+    if attribution:
+        previous = next((r for r in data['reports'] if r['reportDate'] == str(int(latest['reportDate'][:4]) - 1) + latest['reportDate'][4:]), {})
+        # Conclusions and numbers are frozen together; stale edited tables cannot silently pass.
+        for key, calculation in [('marginBridge', margin_bridge), ('profitBridge', profit_bridge)]:
+            if attribution.get(key) != calculation(previous, latest):
+                raise ValueError(data['code'] + ' 的盈利贡献表与冻结财报金额不一致')
+        section('attribution', '利润增量与经营拆分', paragraphs=[attribution[k] for k in ('rationale', 'priceEffect', 'consolidationEffect')],
+                table={'headers': ['经营证据', '数值', '口径', '来源位置'], 'rows': [
+                    [e['label'], amount(e['value']) + ' 亿元' if e['unit'] == '元' else fmt(e['value']) + ' ' + e['unit'],
+                     {'disclosed': '公司披露', 'calculated': '金额复算', 'estimate': '估算'}[e['basis']] + ('；' + e['note'] if e.get('note') else ''), e['sourcePages']]
+                    for e in attribution['quantitativeEvidence']]}, links=[{'label': '本期拆分所用公司报告 / 披露', 'url': u} for u in attribution['sourceUrls']])
+        bridge = attribution.get('profitBridge')
+        if bridge:
+            section('profit-bridge', '从毛利到归母扣非', paragraphs=['下表是同比金额变化，单位亿元；各项相加等于扣非利润增量。费用和其他损益合并项不等于纯降本。'],
+                    table={'headers': ['同比增量项目', '贡献 / 亿元'], 'rows': [[label, amount(bridge[key])] for key, label in [
+                        ('grossProfitChange', '毛利变化'), ('otherProfitEffect', '期间费用、减值、投资及其他税前损益'),
+                        ('taxEffect', '所得税变化'), ('minorityEffect', '少数股东归属变化'),
+                        ('nonRecurringEffect', '归母非经常损益扣除变化'), ('coreProfitChange', '合计：归母扣非增量')]]})
+        unit_rows = []
+        for item in attribution.get('unitInputs', []):
+            b = unit_bridge(item)
+            if b is None:
+                raise ValueError(data['code'] + ' 的销量/单价/单位成本基准不一致')
+            unit_rows.append([item['label']] + [amount(b[k]) for k in ('volumeEffect', 'priceMixEffect', 'unitCostEffect', 'grossProfitChange')])
+        if unit_rows:
+            section('unit-bridge', '销量、售价与单位成本', paragraphs=attribution.get('limitations', []),
+                    table={'headers': ['产品', '销量贡献 / 亿元', '售价及组合 / 亿元', '单位成本 / 亿元', '毛利增量 / 亿元'], 'rows': unit_rows})
     section('financials', '五年财务与最新报告',
             paragraphs=['金额为人民币亿元；ROE为各报告期加权平均值，中报不年化。历史数为本次取数时已知口径，可能含后续重述。'],
             table={'headers': ['报告期', '营收', '归母利润', '扣非利润', '经营现金流', '购建长期资产', 'ROE', '公告日'],

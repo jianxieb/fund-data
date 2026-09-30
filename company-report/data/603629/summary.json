@@ -2,18 +2,18 @@
   "schemaVersion": 2,
   "code": "603629",
   "name": "利通电子",
-  "asOf": "2026-09-30",
+  "asOf": "2026-10-01",
   "currency": "CNY",
   "amountUnit": "yuan",
   "consolidated": true,
   "quote": {
-    "valuationAsOf": "2026-09-29",
-    "valuationPrice": 98.16,
-    "mcap": 359.9802048,
-    "pe": 38.13657235,
-    "peStatic": 123.03267953,
-    "peDynamic": 25.6245,
-    "pb": 13.65967106
+    "valuationAsOf": "2026-09-30",
+    "valuationPrice": 95.96,
+    "mcap": 351.9121888,
+    "pe": 37.2818407,
+    "peStatic": 120.27522338,
+    "peDynamic": 25.0502,
+    "pb": 13.35352521
   },
   "reports": [
     {
@@ -46,7 +46,10 @@
       "receivables": 779452377.53,
       "inventory": 719600851.95,
       "liabilities": 5678949642.25,
-      "equity": 2642504131.95
+      "equity": 2642504131.95,
+      "cost": 1122000416.1,
+      "profitBeforeTax": 849980822.38,
+      "incomeTax": 144792424.47
     },
     {
       "year": 2026,
@@ -78,7 +81,10 @@
       "receivables": 832064874.92,
       "inventory": 2718726839.84,
       "liabilities": 6787219083.79,
-      "equity": 2250922340.19
+      "equity": 2250922340.19,
+      "cost": 536324685.49,
+      "profitBeforeTax": 340862551.38,
+      "incomeTax": 67804217.71
     },
     {
       "year": 2025,
@@ -110,7 +116,10 @@
       "receivables": 967184470.61,
       "inventory": 661931739.86,
       "liabilities": 4348444370.8,
-      "equity": 1951312402.83
+      "equity": 1951312402.83,
+      "cost": 2487286459.29,
+      "profitBeforeTax": 384386125.35,
+      "incomeTax": 90341423.95
     },
     {
       "year": 2025,
@@ -142,7 +151,10 @@
       "receivables": 976813458.2,
       "inventory": 410979578.64,
       "liabilities": 4350175417.35,
-      "equity": 1876293955.63
+      "equity": 1876293955.63,
+      "cost": 1902103360.99,
+      "profitBeforeTax": 278390637.03,
+      "incomeTax": 61766649.31
     },
     {
       "year": 2025,
@@ -174,7 +186,10 @@
       "receivables": 800318641.01,
       "inventory": 411480396.07,
       "liabilities": 4087712447.62,
-      "equity": 1727674267.95
+      "equity": 1727674267.95,
+      "cost": 1194174289.1,
+      "profitBeforeTax": 85853698.84,
+      "incomeTax": 34219663.93
     },
     {
       "year": 2025,
@@ -206,7 +221,10 @@
       "receivables": 726254295.58,
       "inventory": 394236487.3,
       "liabilities": 4294093489.73,
-      "equity": 1698108141.32
+      "equity": 1698108141.32,
+      "cost": 570685082.85,
+      "profitBeforeTax": 44215768.17,
+      "incomeTax": 14512770.69
     },
     {
       "year": 2024,
@@ -238,7 +256,10 @@
       "receivables": 704238097.32,
       "inventory": 378954305.76,
       "liabilities": 4270307491.6,
-      "equity": 1662175297.99
+      "equity": 1662175297.99,
+      "cost": 1834941752.62,
+      "profitBeforeTax": 60091812.86,
+      "incomeTax": 33462101.14
     },
     {
       "year": 2024,
@@ -270,7 +291,10 @@
       "receivables": 744192673.66,
       "inventory": 382164933.37,
       "liabilities": 4389582736.6,
-      "equity": 1660230649.39
+      "equity": 1660230649.39,
+      "cost": 1184463187.78,
+      "profitBeforeTax": 61941710.84,
+      "incomeTax": 6916841.8
     },
     {
       "year": 2024,
@@ -1269,32 +1293,37 @@
     {
       "title": "RPT_F10_FINANCE_MAINFINADATA",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22603629.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:15.659924+00:00"
+      "fetchedAt": "2026-09-30T16:45:17.118328+00:00"
     },
     {
       "title": "RPT_VALUEANALYSIS_DET",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22603629.SH%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:15.659939+00:00"
+      "fetchedAt": "2026-09-30T16:45:17.275420+00:00"
     },
     {
       "title": "RPT_DMSK_FN_BALANCE",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22603629.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:15.817223+00:00"
+      "fetchedAt": "2026-09-30T16:45:17.458415+00:00"
     },
     {
       "title": "RPT_DMSK_FN_CASHFLOW",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22603629.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:15.973753+00:00"
+      "fetchedAt": "2026-09-30T16:45:17.615144+00:00"
     },
     {
       "title": "已实施及拟议权益分派",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22603629%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-30"
+      "fetchedAt": "2026-10-01"
     },
     {
       "title": "近180日公开研报目录（同机构留最新）",
-      "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=603629",
-      "fetchedAt": "2026-09-30"
+      "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-04&endTime=2026-10-01&pageNo=1&qType=0&code=603629",
+      "fetchedAt": "2026-10-01"
+    },
+    {
+      "title": "RPT_DMSK_FN_INCOME",
+      "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_INCOME&columns=ALL&filter=%28SECUCODE%3D%22603629.SH%22%29&pageSize=8&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "fetchedAt": "2026-10-01"
     }
   ],
   "forecasts": [],
@@ -1382,10 +1411,210 @@
     }
   ],
   "peers": [],
-  "fetchErrors": [],
   "researchNotes": [],
+  "fetchErrors": [],
   "screeningContext": {
-    "profile": null,
-    "security": {}
+    "profile": {
+      "code": "603629",
+      "name": "利通电子",
+      "business": "算力租赁与服务器设备经销",
+      "group": "growth",
+      "note": "经销毛利放量，租赁回报另看",
+      "research_category": "科技制造",
+      "business_source_url": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225529563.PDF",
+      "quality_research": {
+        "name": "利通电子",
+        "business": "算力租赁与服务器设备经销",
+        "category": "科技制造",
+        "title": "经销毛利放量，租赁回报另看",
+        "thesis": [
+          "设备经销毛利约6.16亿元，占算力毛利约70.8%；经销订单集中交付及低基数主导，不是重复性算力租赁翻倍。制造端仍亏损，OCF又含预收货款，不批准高质成长或结构性爆发。"
+        ],
+        "risks": [
+          "设备经销增长和净额确认放大报表毛利率，不能解释为全部算力租赁具有同样盈利能力。",
+          "制造业务仍亏损；本期现金流强但需要结合客户预收、设备采购、转租付款和后续订单履约判断。"
+        ],
+        "assessment": "设备经销毛利约6.16亿元，占算力毛利约70.8%；经销订单集中交付及低基数主导，不是重复性算力租赁翻倍。制造端仍亏损，OCF又含预收货款，不批准高质成长或结构性爆发。",
+        "valuationContext": "2026-09-30来源TTM PE 37.28、静态PE 120.28、动态PE 25.05；动态值按累计利润年化，不能作为预测。",
+        "watchMetrics": [
+          "下一期主营收入、扣非利润及经营现金回收",
+          "报告所列销量/售价/单位成本或经营规模，及其同口径比较",
+          "资本开支、应收存货、融资和少数股东归属"
+        ],
+        "sources": [
+          {
+            "title": "利通电子603629：利通电子2026年半年度报告",
+            "url": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225529563.PDF",
+            "publishedAt": "2026-08-29",
+            "reportPeriod": "2026-06-30",
+            "pages": "8—9、12—17、25；财务复算：PDF第8、59页",
+            "sha256": "56fcdf7870df538152b397c00fc0d482ed562e68757e906496e7259b6019d30c"
+          },
+          {
+            "title": "利通电子603629：利通电子2025年年度报告",
+            "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225219408.PDF",
+            "publishedAt": "2026-04-28",
+            "reportPeriod": "2025-12-31",
+            "pages": "财务报表、重大并购及经营数据",
+            "sha256": "fbb9875c7eca1f921ca0635cabbe53727b7ff57658750fa0eeefd92402730c59"
+          }
+        ],
+        "code": "603629",
+        "sectorModel": "industrial",
+        "coverage": "核对2026中报经营讨论、财务报表和利润来源；按具体披露构建金额/分部桥。初筛财务数据与业务批准分开；没有公开的独立量价项在对应表中注明，未以研究机构估计或生产量替代实际销量。",
+        "corrections": [
+          "原称算力租赁/经销无法拆分，错误。中报第13页已拆分：租赁毛利率36.48%，总额口径算力综合毛利率7.65%。",
+          "原“68.22%指向租赁服务模式”混淆净额经销与租赁，撤回；经营现金流异常大的原因不能未经附注核对就定性为过手流水。",
+          "撤回原统一10/13/16及12/16/20倍PE情景、混合口径PEG，以及由这些数值推出的贵贱/目标价结论。",
+          "原研报样本存在同机构重复、预测财年与股本口径不明；新版目录按机构去重，仅列来源，不称全市场一致预期。",
+          "股息改按已实施记录、除权日和所属财年重算；尚未实施的预案不进入已实现股息。五年财务表补为五个完整年度，ROE不年化。"
+        ],
+        "archivePath": "docs/company-reports/archive/利通电子603629-全面研报-20260902.md",
+        "reviewedAt": "2026-10-01",
+        "reportPeriod": "2026-06-30",
+        "peerFramework": "根据主营产品、客户和资本投入强度选择可比公司，统一交易日与盈利口径后再作横向估值。",
+        "growth": {
+          "driver": "设备经销毛利约6.16亿元，占算力毛利约70.8%；经销订单集中交付及低基数主导，不是重复性算力租赁翻倍。制造端仍亏损，OCF又含预收货款，不批准高质成长或结构性爆发。",
+          "quality": "采用未加回股份支付的归母和扣非、两年ROE及正经营现金流；量价及比较范围详见盈利来源复核。",
+          "invalidation": "下一期正基数扣非增长未持续、主营毛利或现金回收恶化。"
+        },
+        "breakout": {
+          "driver": "设备经销毛利约6.16亿元，占算力毛利约70.8%；经销订单集中交付及低基数主导，不是重复性算力租赁翻倍。制造端仍亏损，OCF又含预收货款，不批准高质成长或结构性爆发。",
+          "quality": "连续两个季度归母及扣非均翻倍仅是财务线索；价格、并表、费用及持续性另行复核。",
+          "invalidation": "交付/利润翻倍中断，现金转化低于50%，或高价与低成本条件反转。"
+        },
+        "earningsReview": {
+          "code": "603629",
+          "name": "利通电子",
+          "reportPeriod": "2026-06-30",
+          "checkedAt": "2026-10-01",
+          "growthDecision": "exclude",
+          "breakoutDecision": "exclude",
+          "rationale": "设备经销毛利约6.16亿元，占算力毛利约70.8%；经销订单集中交付及低基数主导，不是重复性算力租赁翻倍。制造端仍亏损，OCF又含预收货款，不批准高质成长或结构性爆发。",
+          "priceEffect": "净额法经销收入等于毛利，100%账面毛利率不表示暴利；按披露还原总额法经销毛利率6.07%、算力综合7.65%，租赁独立毛利率36.48%。",
+          "consolidationEffect": "收入确认口径与利润来源已拆开；旧报告的7.65%是还原后的综合值，不是租赁毛利率。新增主体对报告期影响小，主要问题是经销持续性及预收而非简单并表。",
+          "valuationAssessment": "2026-09-30来源TTM PE 37.28、静态PE 120.28、动态PE 25.05；动态值按累计利润年化，不能作为预测。",
+          "sourceUrls": [
+            "https://static.cninfo.com.cn/finalpage/2026-08-29/1225529563.PDF",
+            "https://static.cninfo.com.cn/finalpage/2026-04-28/1225219408.PDF"
+          ],
+          "quantitativeEvidence": [
+            {
+              "label": "本期扣非利润",
+              "value": 614798036.37,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225529563.PDF",
+              "sourcePages": "PDF第8页"
+            },
+            {
+              "label": "上年同期扣非利润",
+              "value": 51709335.02,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225529563.PDF",
+              "sourcePages": "PDF第8页"
+            },
+            {
+              "label": "本期经营现金流",
+              "value": 2573219134.54,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225529563.PDF",
+              "sourcePages": "PDF第8页"
+            },
+            {
+              "label": "毛利增量",
+              "value": 657070853.81,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225529563.PDF",
+              "sourcePages": "PDF第8、59页"
+            },
+            {
+              "label": "收入规模效应（含量价/范围变化）",
+              "value": 124242454.95371471,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225529563.PDF",
+              "sourcePages": "PDF第8、59页"
+            },
+            {
+              "label": "毛利率效应（含售价/成本/组合）",
+              "value": 532828398.8562853,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225529563.PDF",
+              "sourcePages": "PDF第8、59页"
+            },
+            {
+              "label": "租赁业务收入",
+              "value": 613738377.76,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225529563.PDF",
+              "sourcePages": "8—9、12—17、25"
+            },
+            {
+              "label": "租赁业务成本",
+              "value": 389845508.13,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225529563.PDF",
+              "sourcePages": "8—9、12—17、25"
+            },
+            {
+              "label": "设备经销净额收入/毛利",
+              "value": 615750787.24,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225529563.PDF",
+              "sourcePages": "8—9、12—17、25"
+            },
+            {
+              "label": "还原总额经销毛利率",
+              "value": 6.07,
+              "unit": "%",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225529563.PDF",
+              "sourcePages": "8—9、12—17、25"
+            },
+            {
+              "label": "还原总额算力综合毛利率",
+              "value": 7.65,
+              "unit": "%",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225529563.PDF",
+              "sourcePages": "8—9、12—17、25"
+            }
+          ],
+          "marginBridge": {
+            "previousGrossProfit": 322078991.94000006,
+            "currentGrossProfit": 979149845.75,
+            "revenueScaleEffect": 124242454.95371471,
+            "marginEffect": 532828398.8562853,
+            "grossProfitChange": 657070853.81
+          },
+          "profitBridge": {
+            "grossProfitChange": 657070853.81,
+            "otherProfitEffect": 107056269.73000005,
+            "taxEffect": -110572760.53999999,
+            "minorityEffect": -2219601.6799999177,
+            "nonRecurringEffect": -88246059.97000004,
+            "coreProfitChange": 563088701.35
+          },
+          "unitInputs": [],
+          "limitations": [
+            "收入规模与毛利率桥是会计恒等式，不能单独证明纯销量增长或恒久利润。毛利到扣非利润另扣费用、税、少数股东及非经常损益。"
+          ]
+        },
+        "status": "reviewed"
+      }
+    },
+    "security": {
+      "historyFirst": null,
+      "valuationIndustry": "算力租赁与服务器设备经销",
+      "ind": "算力租赁与服务器设备经销"
+    }
   }
 }

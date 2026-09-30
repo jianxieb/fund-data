@@ -2,18 +2,18 @@
   "schemaVersion": 2,
   "code": "002475",
   "name": "立讯精密",
-  "asOf": "2026-09-30",
+  "asOf": "2026-10-01",
   "currency": "CNY",
   "amountUnit": "yuan",
   "consolidated": true,
   "quote": {
-    "valuationAsOf": "2026-09-29",
-    "valuationPrice": 50.4,
-    "mcap": 3901.101015168,
-    "pe": 21.91851921,
-    "peStatic": 23.50093444,
-    "peDynamic": 24.8709,
-    "pb": 4.1910217
+    "valuationAsOf": "2026-09-30",
+    "valuationPrice": 49.43,
+    "mcap": 3826.0203011856,
+    "pe": 21.4966747,
+    "peStatic": 23.04863471,
+    "peDynamic": 24.3922,
+    "pb": 4.11036116
   },
   "reports": [
     {
@@ -46,7 +46,10 @@
       "receivables": 47666294604.5,
       "inventory": 50367311994.53,
       "liabilities": 235963762191.32,
-      "equity": 113925866823.95
+      "equity": 113925866823.95,
+      "cost": 153950279740.21,
+      "profitBeforeTax": 9462819452.07,
+      "incomeTax": 937145786.69
     },
     {
       "year": 2026,
@@ -78,7 +81,10 @@
       "receivables": 43548712833.7,
       "inventory": 46032089420.41,
       "liabilities": 216638429970.1,
-      "equity": 108978157702.06
+      "equity": 108978157702.06,
+      "cost": 73888547146.58,
+      "profitBeforeTax": 4290956126.96,
+      "incomeTax": 323319338.83
     },
     {
       "year": 2025,
@@ -110,7 +116,10 @@
       "receivables": 48438796114.12,
       "inventory": 42332782449.47,
       "liabilities": 202517443006.8,
-      "equity": 104020232779.62
+      "equity": 104020232779.62,
+      "cost": 292755910976.71,
+      "profitBeforeTax": 19549858322.39,
+      "incomeTax": 1379621493.72
     },
     {
       "year": 2025,
@@ -142,7 +151,10 @@
       "receivables": 51738639975.72,
       "inventory": 51996772866.61,
       "liabilities": 201219454366.08,
-      "equity": 99042423545.5
+      "equity": 99042423545.5,
+      "cost": 194076965965,
+      "profitBeforeTax": 14228254029.91,
+      "incomeTax": 1500025154.1
     },
     {
       "year": 2025,
@@ -174,7 +186,10 @@
       "receivables": 30881042757.71,
       "inventory": 34137067620.91,
       "liabilities": 153630727552.89,
-      "equity": 90723857342.34
+      "equity": 90723857342.34,
+      "cost": 110047863704.95,
+      "profitBeforeTax": 8139618852.51,
+      "incomeTax": 841924446.73
     },
     {
       "year": 2025,
@@ -206,7 +221,10 @@
       "receivables": 31344031158.65,
       "inventory": 34666902575.71,
       "liabilities": 149781232471.95,
-      "equity": 88322002007.54
+      "equity": 88322002007.54,
+      "cost": 54880239067.48,
+      "profitBeforeTax": 3821585200.16,
+      "incomeTax": 444542712.82
     },
     {
       "year": 2024,
@@ -238,7 +256,10 @@
       "receivables": 32561098916.58,
       "inventory": 31702675549.03,
       "liabilities": 139140458018.25,
-      "equity": 84687126415.01
+      "equity": 84687126415.01,
+      "cost": 240809417980.59,
+      "profitBeforeTax": 16108738740.78,
+      "incomeTax": 1529694922.93
     },
     {
       "year": 2024,
@@ -270,7 +291,10 @@
       "receivables": 38356509675.31,
       "inventory": 43078966443.49,
       "liabilities": 135590512284.71,
-      "equity": 79493062205.44
+      "equity": 79493062205.44,
+      "cost": 156405038214.67,
+      "profitBeforeTax": 10532333363.29,
+      "incomeTax": 745622749.31
     },
     {
       "year": 2024,
@@ -1301,32 +1325,37 @@
     {
       "title": "RPT_F10_FINANCE_MAINFINADATA",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22002475.SZ%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:14.295661+00:00"
+      "fetchedAt": "2026-09-30T16:45:06.348150+00:00"
     },
     {
       "title": "RPT_VALUEANALYSIS_DET",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22002475.SZ%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:14.295673+00:00"
+      "fetchedAt": "2026-09-30T16:45:06.531367+00:00"
     },
     {
       "title": "RPT_DMSK_FN_BALANCE",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22002475.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:14.458562+00:00"
+      "fetchedAt": "2026-09-30T16:45:06.723453+00:00"
     },
     {
       "title": "RPT_DMSK_FN_CASHFLOW",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22002475.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:14.686082+00:00"
+      "fetchedAt": "2026-09-30T16:45:06.916467+00:00"
     },
     {
       "title": "已实施及拟议权益分派",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22002475%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-30"
+      "fetchedAt": "2026-10-01"
     },
     {
       "title": "近180日公开研报目录（同机构留最新）",
-      "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=002475",
-      "fetchedAt": "2026-09-30"
+      "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-04&endTime=2026-10-01&pageNo=1&qType=0&code=002475",
+      "fetchedAt": "2026-10-01"
+    },
+    {
+      "title": "RPT_DMSK_FN_INCOME",
+      "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_INCOME&columns=ALL&filter=%28SECUCODE%3D%22002475.SZ%22%29&pageSize=8&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "fetchedAt": "2026-10-01"
     }
   ],
   "forecasts": [],
@@ -1495,10 +1524,149 @@
     }
   ],
   "peers": [],
-  "fetchErrors": [],
   "researchNotes": [],
+  "fetchErrors": [],
   "screeningContext": {
-    "profile": null,
-    "security": {}
+    "profile": {
+      "code": "002475",
+      "name": "立讯精密",
+      "business": "消费电子、汽车与通信互联",
+      "group": "growth",
+      "note": "收入扩张与核心利润分化",
+      "research_category": "科技制造",
+      "business_source_url": "https://disc.static.szse.cn/disc/disk03/finalpage/2026-08-25/b918536a-c817-455f-84a9-1b3938bd1bc8.PDF",
+      "quality_research": {
+        "name": "立讯精密",
+        "business": "消费电子、汽车与通信互联",
+        "category": "科技制造",
+        "title": "收入扩张与核心利润分化",
+        "thesis": [
+          "中报业务包括消费电子、通信与数据中心、汽车，Leoni整合属于增长背景。",
+          "H1收入增长40.16%，归母增长18.04%，扣非仅增长6.47%；业务规模扩张未等比例转化为核心盈利。"
+        ],
+        "risks": [
+          "H1经营现金流−24.46亿元，资本开支102.70亿元，扩张阶段现金压力已经发生。",
+          "扣非占归母利润约76%，非经常损益不可当作稳定的主营增长。"
+        ],
+        "assessment": "消费电子、通信与数据中心及汽车业务推动收入增长40.16%，但扣非仅增长6.47%、经营现金流为负。研究重点是并购后规模能否转化为核心利润和现金回收，当前未满足两类入选条件。",
+        "valuationContext": "2026-09-30来源TTM PE 21.50、静态PE 23.05、动态PE 24.39；动态值按累计利润年化，不能作为预测。",
+        "watchMetrics": [
+          "扣非增速与收入增速差距能否收敛",
+          "应收、存货、经营现金流与资本开支",
+          "汽车业务整合成本及通信产品量产进度"
+        ],
+        "sources": [
+          {
+            "title": "立讯精密2026年半年度报告",
+            "url": "https://disc.static.szse.cn/disc/disk03/finalpage/2026-08-25/b918536a-c817-455f-84a9-1b3938bd1bc8.PDF",
+            "publishedAt": "2026-08-25",
+            "pages": "8—19；财务复算：PDF第8、11、65页"
+          }
+        ],
+        "code": "002475",
+        "sectorModel": "industrial",
+        "coverage": "本次重新核对所列中报章节和财务/行情/分红计算；原报告其余历史事件、治理结论及全部券商全文未作全面重新审阅。",
+        "corrections": [
+          "当前扣非增长6.47%、H1经营现金流为负，不能用收入增长40.16%概括成整体高质成长。",
+          "撤回原统一10/13/16及12/16/20倍PE情景、混合口径PEG，以及由这些数值推出的贵贱/目标价结论。",
+          "原研报样本存在同机构重复、预测财年与股本口径不明；新版目录按机构去重，仅列来源，不称全市场一致预期。",
+          "股息改按已实施记录、除权日和所属财年重算；尚未实施的预案不进入已实现股息。五年财务表补为五个完整年度，ROE不年化。"
+        ],
+        "archivePath": "docs/company-reports/archive/立讯精密002475-全面研报-20260902.md",
+        "reviewedAt": "2026-10-01",
+        "reportPeriod": "2026-06-30",
+        "peerFramework": "根据主营产品、客户和资本投入强度选择可比公司，统一交易日与盈利口径后再作横向估值。",
+        "earningsReview": {
+          "code": "002475",
+          "name": "立讯精密",
+          "reportPeriod": "2026-06-30",
+          "checkedAt": "2026-10-01",
+          "growthDecision": "retain",
+          "breakoutDecision": "retain",
+          "rationale": "中报业务包括消费电子、通信与数据中心、汽车，Leoni整合属于增长背景。 配合本期毛利到扣非的金额桥、季度盈利和现金核对；业务判断沿用已核对的公司报告。",
+          "priceEffect": "产品收入与毛利率同时观察；公司未逐SKU公开同口径单价、销量和成本，收入规模与毛利率效应不冒称纯销量/纯提价。",
+          "consolidationEffect": "沿用公司合并财报及公开业务范围；未把收购、产品组合或费用影响默认为零，具体经营依据见主营研究和现金/利润桥。",
+          "valuationAssessment": "2026-09-30来源TTM PE 21.50、静态PE 23.05、动态PE 24.39；动态值按累计利润年化，不能作为预测。",
+          "sourceUrls": [
+            "https://disc.static.szse.cn/disc/disk03/finalpage/2026-08-25/b918536a-c817-455f-84a9-1b3938bd1bc8.PDF"
+          ],
+          "quantitativeEvidence": [
+            {
+              "label": "本期扣非利润",
+              "value": 5961877867.17,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://disc.static.szse.cn/disc/disk03/finalpage/2026-08-25/b918536a-c817-455f-84a9-1b3938bd1bc8.PDF",
+              "sourcePages": "PDF第8页"
+            },
+            {
+              "label": "上年同期扣非利润",
+              "value": 5599433499.57,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://disc.static.szse.cn/disc/disk03/finalpage/2026-08-25/b918536a-c817-455f-84a9-1b3938bd1bc8.PDF",
+              "sourcePages": "PDF第8页"
+            },
+            {
+              "label": "本期经营现金流",
+              "value": -2445863006.32,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://disc.static.szse.cn/disc/disk03/finalpage/2026-08-25/b918536a-c817-455f-84a9-1b3938bd1bc8.PDF",
+              "sourcePages": "PDF第8页"
+            },
+            {
+              "label": "毛利增量",
+              "value": 6098745770.389999,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://disc.static.szse.cn/disc/disk03/finalpage/2026-08-25/b918536a-c817-455f-84a9-1b3938bd1bc8.PDF",
+              "sourcePages": "PDF第8、11页"
+            },
+            {
+              "label": "收入规模效应（含量价/范围变化）",
+              "value": 5805332433.715397,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://disc.static.szse.cn/disc/disk03/finalpage/2026-08-25/b918536a-c817-455f-84a9-1b3938bd1bc8.PDF",
+              "sourcePages": "PDF第8、11页"
+            },
+            {
+              "label": "毛利率效应（含售价/成本/组合）",
+              "value": 293413336.67460287,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://disc.static.szse.cn/disc/disk03/finalpage/2026-08-25/b918536a-c817-455f-84a9-1b3938bd1bc8.PDF",
+              "sourcePages": "PDF第8、11页"
+            }
+          ],
+          "marginBridge": {
+            "previousGrossProfit": 14455310410.65001,
+            "currentGrossProfit": 20554056181.04001,
+            "revenueScaleEffect": 5805332433.715397,
+            "marginEffect": 293413336.67460287,
+            "grossProfitChange": 6098745770.389999
+          },
+          "profitBridge": {
+            "grossProfitChange": 6098745770.389999,
+            "otherProfitEffect": -4775545170.83,
+            "taxEffect": -95221339.96000004,
+            "minorityEffect": -29553020.199998856,
+            "nonRecurringEffect": -835981871.7999992,
+            "coreProfitChange": 362444367.6000004
+          },
+          "unitInputs": [],
+          "limitations": [
+            "收入规模与毛利率桥是会计恒等式，不能单独证明纯销量增长或恒久利润。毛利到扣非利润另扣费用、税、少数股东及非经常损益。"
+          ]
+        },
+        "status": "reviewed"
+      }
+    },
+    "security": {
+      "historyFirst": null,
+      "valuationIndustry": "消费电子、汽车与通信互联",
+      "ind": "消费电子、汽车与通信互联"
+    }
   }
 }

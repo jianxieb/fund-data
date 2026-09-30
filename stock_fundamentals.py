@@ -174,7 +174,7 @@ def fetch_evidence(code, fetcher, asof):
 
 QUALITY_LIMITS = {
     'annualRoe': 15, 'minimumAnnualRoe': 10,
-    'revenueCagr': 5, 'profitCagr': 10,
+    'revenueCagr': None, 'profitCagr': 10,
     'recentGrowth': 10, 'roeDecline': 20,
 }
 
@@ -205,7 +205,7 @@ def latest_report_review(latest, asof):
         return '；'.join(([text] if text else []) + unavailable), 'threshold' if below else 'evidence'
     roe, previous = numeric(latest.get('roe')), numeric(latest.get('roePrevious'))
     roe_ok = roe is not None and roe > 0 and previous is not None and (previous <= 0 or roe / previous >= 1 - QUALITY_LIMITS['roeDecline'] / 100)
-    revenue_reason, revenue_kind = growth_failure([('revenue', '营收')])
+    revenue = numeric(latest.get('revenue'))
     profit_reason, profit_kind = growth_failure([('netProfit', '归母利润'), ('deductedProfit', '扣非利润')])
     amounts = [(label, numeric(latest.get(key))) for key, label in [('netProfit', '归母利润'), ('deductedProfit', '扣非利润')]]
     positive_failures = [label + ('金额缺失' if value is None else '为%.2f亿元，未满足大于0的条件' % (value / 1e8))
@@ -225,8 +225,9 @@ def latest_report_review(latest, asof):
         {'label': '最新报告归母及扣非利润均为正', 'pass': not positive_failures,
          'reason': '；'.join(positive_failures) or None,
          'failureKind': 'threshold' if any(v is not None and v <= 0 for _, v in amounts) else 'evidence'},
-        {'label': '最新营收同比增长≥%d%%' % QUALITY_LIMITS['recentGrowth'], 'pass': growth_ok('revenue'),
-         'reason': revenue_reason or None, 'failureKind': revenue_kind},
+        {'label': '最新报告营收金额为正，增速单列观察', 'pass': revenue is not None and revenue > 0,
+         'reason': None if revenue is not None and revenue > 0 else '缺最新报告正营业收入金额',
+         'failureKind': 'evidence' if revenue is None else 'threshold'},
         {'label': '最新归母及扣非利润同比增长均≥%d%%' % QUALITY_LIMITS['recentGrowth'], 'pass': growth_ok('netProfit') and growth_ok('deductedProfit'),
          'reason': profit_reason or None, 'failureKind': profit_kind},
         {'label': '最新ROE为正，较上年同期相对降幅不超过%d%%' % QUALITY_LIMITS['roeDecline'], 'pass': roe_ok,
@@ -304,23 +305,24 @@ def quality_review(row, asof):
         {'label': '最新完整年度ROE≥15%', 'pass': complete and last_roe is not None and last_roe >= QUALITY_LIMITS['annualRoe'],
          'reason': '缺最新完整年度ROE' if not complete or last_roe is None else None if last_roe >= QUALITY_LIMITS['annualRoe'] else '%s年度ROE %.2f%%，低于15%%门槛' % (years[0], last_roe),
          'failureKind': 'evidence' if not complete or last_roe is None else 'threshold'},
-        growth_check('revenue', '营收', QUALITY_LIMITS['revenueCagr']),
+        {'label': '最近3个完整年度营收金额为正，复合增速单列观察', 'pass': every('revenue'),
+         'reason': None if every('revenue') else '缺最近3个完整年度正营业收入金额', 'failureKind': 'evidence'},
         growth_check('netProfit', '归母利润', QUALITY_LIMITS['profitCagr']),
     ]
     # Profit amounts staying above zero cannot conceal an earnings collapse.
     stable_profits = complete and all(
         numeric(r.get(key)) is not None and r[key] > 0
         for r in history for key in ('netProfitGrowth', 'deductedProfitGrowth'))
-    annual_growth = complete and all(
+    annual_growth = complete and (numeric(history[0].get('revenue')) or 0) > 0 and all(
         numeric(history[0].get(key)) is not None and history[0][key] >= QUALITY_LIMITS['recentGrowth']
-        for key in ('revenueGrowth', 'netProfitGrowth', 'deductedProfitGrowth'))
+        for key in ('netProfitGrowth', 'deductedProfitGrowth'))
     checks += [
         {'label': '最近3个完整财年扣非利润均为正', 'pass': every('deductedProfit'),
          'reason': None if every('deductedProfit') else '最近3年存在扣非亏损或缺扣非利润'},
         {'label': '最近3年归母及扣非利润逐年增长', 'pass': stable_profits,
          'reason': None if stable_profits else '最近3年存在利润下降、非正基数或缺可比同比'},
-        {'label': '最新完整年度营收、归母及扣非利润增长均≥10%', 'pass': annual_growth,
-         'reason': None if annual_growth else '最新完整年度营收或利润增长不足10%，或缺可比同比'},
+        {'label': '最新完整年度归母及扣非利润增长均≥10%，营收金额为正', 'pass': annual_growth,
+         'reason': None if annual_growth else '最新完整年度利润增长不足10%、营收金额非正，或缺可比同比'},
         growth_check('deductedProfit', '扣非利润', QUALITY_LIMITS['profitCagr']),
     ]
     cash = sum(r['operatingCashFlow'] for r in history) if complete and all(numeric(r.get('operatingCashFlow')) is not None for r in history) else None
@@ -378,5 +380,5 @@ def quality_review(row, asof):
             'reasons': reasons, 'watchouts': watchouts,
             'cashProfitRatio3': round(cash_ratio, 4) if cash_ratio is not None else None,
             'roe3': round(average, 2) if average is not None else None,
-            'years': years, 'checkedAt': asof, 'basis': 'report_backed_quality_v4',
+            'years': years, 'checkedAt': asof, 'basis': 'report_backed_quality_v5',
             'thresholds': QUALITY_LIMITS.copy()}

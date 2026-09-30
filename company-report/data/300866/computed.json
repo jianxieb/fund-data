@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "code": "300866",
-  "asOf": "2026-09-30",
+  "asOf": "2026-10-01",
   "annual": [
     {
       "year": 2025,
@@ -33,7 +33,10 @@
       "receivables": 1872623540.2,
       "inventory": 4997119037.74,
       "liabilities": 9355222427.13,
-      "equity": 10711670026.73
+      "equity": 10711670026.73,
+      "cost": 16762975546.47,
+      "profitBeforeTax": 2922473589.97,
+      "incomeTax": 305279668.74
     },
     {
       "year": 2024,
@@ -65,7 +68,10 @@
       "receivables": 1654200095.42,
       "inventory": 3233554201.13,
       "liabilities": 7459188022.22,
-      "equity": 9144519240.49
+      "equity": 9144519240.49,
+      "cost": 13918403694.15,
+      "profitBeforeTax": 2348348478.74,
+      "incomeTax": 137224510.42
     },
     {
       "year": 2023,
@@ -194,7 +200,10 @@
     "receivables": 2500613129.44,
     "inventory": 6733783995.03,
     "liabilities": 10667181269.36,
-    "equity": 11752974457.73
+    "equity": 11752974457.73,
+    "cost": 8331940197.78,
+    "profitBeforeTax": 2075126308.64,
+    "incomeTax": 330304038.64
   },
   "quarters": [
     {
@@ -362,9 +371,10 @@
     "groups": []
   },
   "dividend": {
-    "cash12": 1.7,
-    "yield12": 1.3640375511514082,
+    "cash12": 2.5,
+    "yield12": 2.005937575222659,
     "byFiscalYear": {
+      "2026": 0.8,
       "2025": 2.4,
       "2024": 2.1,
       "2023": 2.0,
@@ -374,6 +384,15 @@
     },
     "payoutRatio": null,
     "records": [
+      {
+        "fiscalPeriod": "2026-06-30",
+        "announcedAt": "2026-09-23",
+        "exDate": "2026-09-30",
+        "status": "implemented",
+        "cashPerShare": 0.8,
+        "splitFactor": 1.0,
+        "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22300866%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1"
+      },
       {
         "fiscalPeriod": "2025-12-31",
         "announcedAt": "2026-05-20",

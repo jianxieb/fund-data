@@ -2,18 +2,18 @@
   "schemaVersion": 2,
   "code": "688617",
   "name": "惠泰医疗",
-  "asOf": "2026-09-30",
+  "asOf": "2026-10-01",
   "currency": "CNY",
   "amountUnit": "yuan",
   "consolidated": true,
   "quote": {
-    "valuationAsOf": "2026-09-29",
-    "valuationPrice": 240.03,
-    "mcap": 339.7124475486,
-    "pe": 36.41877895,
-    "peStatic": 41.39621055,
-    "peDynamic": 31.6118,
-    "pb": 11.00348736
+    "valuationAsOf": "2026-09-30",
+    "valuationPrice": 248.25,
+    "mcap": 351.346144665,
+    "pe": 37.66596624,
+    "peStatic": 42.81385356,
+    "peDynamic": 32.6944,
+    "pb": 11.3803097
   },
   "reports": [
     {
@@ -46,7 +46,10 @@
       "receivables": 76143851.9,
       "inventory": 492726721.32,
       "liabilities": 498885376.86,
-      "equity": 3119566205.31
+      "equity": 3119566205.31,
+      "cost": 412470194.36,
+      "profitBeforeTax": 603209707.65,
+      "incomeTax": 75350791.46
     },
     {
       "year": 2026,
@@ -78,7 +81,10 @@
       "receivables": 57729733.64,
       "inventory": 480364106.98,
       "liabilities": 423401210.04,
-      "equity": 3007103820.1
+      "equity": 3007103820.1,
+      "cost": 194140326.74,
+      "profitBeforeTax": 265527279.38,
+      "incomeTax": 39765232.46
     },
     {
       "year": 2025,
@@ -110,7 +116,10 @@
       "receivables": 78220713.58,
       "inventory": 491955767.74,
       "liabilities": 521507277.92,
-      "equity": 3130349369.16
+      "equity": 3130349369.16,
+      "cost": 700841947.49,
+      "profitBeforeTax": 936290399.51,
+      "incomeTax": 128551192.99
     },
     {
       "year": 2025,
@@ -142,7 +151,10 @@
       "receivables": 77502600.09,
       "inventory": 469362313.72,
       "liabilities": 423502726.05,
-      "equity": 3037250313.91
+      "equity": 3037250313.91,
+      "cost": 500684351.08,
+      "profitBeforeTax": 705751543.8,
+      "incomeTax": 90932514.01
     },
     {
       "year": 2025,
@@ -174,7 +186,10 @@
       "receivables": 87543973.01,
       "inventory": 441006063.06,
       "liabilities": 393220828.06,
-      "equity": 2829279686.35
+      "equity": 2829279686.35,
+      "cost": 321558137.08,
+      "profitBeforeTax": 479340286.62,
+      "incomeTax": 60439614.74
     },
     {
       "year": 2025,
@@ -206,7 +221,10 @@
       "receivables": 89697063.25,
       "inventory": 419378003.56,
       "liabilities": 408138258.65,
-      "equity": 2736454510.58
+      "equity": 2736454510.58,
+      "cost": 151862192.91,
+      "profitBeforeTax": 213819515.86,
+      "incomeTax": 33684373.99
     },
     {
       "year": 2024,
@@ -238,7 +256,10 @@
       "receivables": 83293511.26,
       "inventory": 399316319.82,
       "liabilities": 425854466.29,
-      "equity": 2554843302.53
+      "equity": 2554843302.53,
+      "cost": 571958608.18,
+      "profitBeforeTax": 745967278.53,
+      "incomeTax": 87799537.81
     },
     {
       "year": 2024,
@@ -270,7 +291,10 @@
       "receivables": 58430915.2,
       "inventory": 409258823.79,
       "liabilities": 367807271.76,
-      "equity": 2436113899.56
+      "equity": 2436113899.56,
+      "cost": 416428949.37,
+      "profitBeforeTax": 586766450.36,
+      "incomeTax": 64715837.72
     },
     {
       "year": 2024,
@@ -981,32 +1005,37 @@
     {
       "title": "RPT_F10_FINANCE_MAINFINADATA",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688617.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:16.102719+00:00"
+      "fetchedAt": "2026-09-30T16:45:19.937304+00:00"
     },
     {
       "title": "RPT_VALUEANALYSIS_DET",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22688617.SH%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:16.102738+00:00"
+      "fetchedAt": "2026-09-30T16:45:20.110820+00:00"
     },
     {
       "title": "RPT_DMSK_FN_BALANCE",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22688617.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:16.319567+00:00"
+      "fetchedAt": "2026-09-30T16:45:20.374627+00:00"
     },
     {
       "title": "RPT_DMSK_FN_CASHFLOW",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22688617.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:16.632443+00:00"
+      "fetchedAt": "2026-09-30T16:45:20.577052+00:00"
     },
     {
       "title": "已实施及拟议权益分派",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22688617%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-30"
+      "fetchedAt": "2026-10-01"
     },
     {
       "title": "近180日公开研报目录（同机构留最新）",
-      "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=688617",
-      "fetchedAt": "2026-09-30"
+      "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-04&endTime=2026-10-01&pageNo=1&qType=0&code=688617",
+      "fetchedAt": "2026-10-01"
+    },
+    {
+      "title": "RPT_DMSK_FN_INCOME",
+      "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_INCOME&columns=ALL&filter=%28SECUCODE%3D%22688617.SH%22%29&pageSize=8&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "fetchedAt": "2026-10-01"
     }
   ],
   "forecasts": [],
@@ -1067,7 +1096,6 @@
     }
   ],
   "peers": [],
-  "fetchErrors": [],
   "researchNotes": [
     {
       "institution": "东吴证券",
@@ -1098,39 +1126,7 @@
       "status": "仅核对目录，未把标题视为本研究结论"
     }
   ],
-  "pePercentiles": {
-    "5": {
-      "value": 5.49,
-      "start": "2021-09-29",
-      "end": "2026-09-29",
-      "observedStart": "2021-09-29",
-      "observedEnd": "2026-09-29",
-      "samples": 1212,
-      "observations": 1212,
-      "excluded": 0,
-      "gaps": [],
-      "method": "positive_pe_ttm_midrank",
-      "legacySource": null,
-      "status": "available"
-    },
-    "10": {
-      "value": null,
-      "start": "2016-09-29",
-      "end": "2026-09-29",
-      "observedStart": "2021-01-07",
-      "observedEnd": "2026-09-29",
-      "samples": 1389,
-      "observations": 1389,
-      "excluded": 0,
-      "gaps": [],
-      "method": "positive_pe_ttm_midrank",
-      "legacySource": null,
-      "status": "short_history",
-      "reason": "历史不足10年"
-    }
-  },
-  "pePercentilesAsOf": "2026-09-29",
-  "peHistorySourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22688617.SH%22%29&pageSize=10000&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+  "fetchErrors": [],
   "screeningContext": {
     "profile": {
       "code": "688617",
@@ -1159,7 +1155,7 @@
             "title": "惠泰医疗2026年半年度报告（公司公告）",
             "url": "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESH_STOCK/2026/2026-8/2026-08-20/12505603.PDF",
             "publishedAt": "2026-08-20",
-            "pages": "7、10—11、25—26",
+            "pages": "7、10—11、25—26；财务复算：PDF第7、28页",
             "businessPage": 10
           }
         ],
@@ -1168,9 +1164,93 @@
           "reinvestment": "从电生理向血管介入产品扩展，持续检验研发与商业化回报。",
           "invalidation": "集采降价、产品注册延迟或临床推广效率下降。"
         },
-        "status": "reviewed",
-        "reviewedAt": "2026-09-30",
-        "reportPeriod": "2026-06-30"
+        "earningsReview": {
+          "code": "688617",
+          "name": "惠泰医疗",
+          "reportPeriod": "2026-06-30",
+          "checkedAt": "2026-10-01",
+          "growthDecision": "retain",
+          "breakoutDecision": "retain",
+          "rationale": "冠脉通路产品线与磁定位压力导管形成组合，脉冲消融产品已上市并推进医院准入。 配合本期毛利到扣非的金额桥、季度盈利和现金核对；业务判断沿用已核对的公司报告。",
+          "priceEffect": "产品收入与毛利率同时观察；公司未逐SKU公开同口径单价、销量和成本，收入规模与毛利率效应不冒称纯销量/纯提价。",
+          "consolidationEffect": "沿用公司合并财报及公开业务范围；未把收购、产品组合或费用影响默认为零，具体经营依据见主营研究和现金/利润桥。",
+          "valuationAssessment": "2026-09-30来源TTM PE 37.67、静态PE 42.81、动态PE 32.69；动态值按累计利润年化，不能作为预测。",
+          "sourceUrls": [
+            "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESH_STOCK/2026/2026-8/2026-08-20/12505603.PDF"
+          ],
+          "quantitativeEvidence": [
+            {
+              "label": "本期扣非利润",
+              "value": 528771505.05,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESH_STOCK/2026/2026-8/2026-08-20/12505603.PDF",
+              "sourcePages": "PDF第7页"
+            },
+            {
+              "label": "上年同期扣非利润",
+              "value": 410820730.61,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESH_STOCK/2026/2026-8/2026-08-20/12505603.PDF",
+              "sourcePages": "PDF第7页"
+            },
+            {
+              "label": "本期经营现金流",
+              "value": 549285182.9,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESH_STOCK/2026/2026-8/2026-08-20/12505603.PDF",
+              "sourcePages": "PDF第7页"
+            },
+            {
+              "label": "毛利增量",
+              "value": 221634781.95999986,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESH_STOCK/2026/2026-8/2026-08-20/12505603.PDF",
+              "sourcePages": "PDF第7、28页"
+            },
+            {
+              "label": "收入规模效应（含量价/范围变化）",
+              "value": 229747718.19873682,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESH_STOCK/2026/2026-8/2026-08-20/12505603.PDF",
+              "sourcePages": "PDF第7、28页"
+            },
+            {
+              "label": "毛利率效应（含售价/成本/组合）",
+              "value": -8112936.238736944,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESH_STOCK/2026/2026-8/2026-08-20/12505603.PDF",
+              "sourcePages": "PDF第7、28页"
+            }
+          ],
+          "marginBridge": {
+            "previousGrossProfit": 892246769.45,
+            "currentGrossProfit": 1113881551.4099998,
+            "revenueScaleEffect": 229747718.19873682,
+            "marginEffect": -8112936.238736944,
+            "grossProfitChange": 221634781.95999986
+          },
+          "profitBridge": {
+            "grossProfitChange": 221634781.9599998,
+            "otherProfitEffect": -97765360.92999983,
+            "taxEffect": -14911176.719999991,
+            "minorityEffect": 3199894.2799999714,
+            "nonRecurringEffect": 5792635.850000024,
+            "coreProfitChange": 117950774.44
+          },
+          "unitInputs": [],
+          "limitations": [
+            "收入规模与毛利率桥是会计恒等式，不能单独证明纯销量增长或恒久利润。毛利到扣非利润另扣费用、税、少数股东及非经常损益。"
+          ]
+        },
+        "reviewedAt": "2026-10-01",
+        "reportPeriod": "2026-06-30",
+        "status": "reviewed"
       }
     },
     "security": {
@@ -1178,5 +1258,37 @@
       "valuationIndustry": "医疗器械",
       "ind": "医疗器械"
     }
-  }
+  },
+  "pePercentiles": {
+    "5": {
+      "value": 7.43,
+      "start": "2021-09-30",
+      "end": "2026-09-30",
+      "observedStart": "2021-09-30",
+      "observedEnd": "2026-09-30",
+      "samples": 1212,
+      "observations": 1212,
+      "excluded": 0,
+      "gaps": [],
+      "method": "positive_pe_ttm_midrank",
+      "legacySource": null,
+      "status": "available"
+    },
+    "10": {
+      "value": null,
+      "start": "2016-09-30",
+      "end": "2026-09-30",
+      "observedStart": "2021-01-07",
+      "observedEnd": "2026-09-30",
+      "samples": 1390,
+      "observations": 1390,
+      "excluded": 0,
+      "gaps": [],
+      "method": "positive_pe_ttm_midrank",
+      "legacySource": null,
+      "status": "short_history",
+      "reason": "历史不足10年"
+    }
+  },
+  "pePercentilesAsOf": "2026-09-30"
 }

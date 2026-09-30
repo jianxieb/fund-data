@@ -45,8 +45,8 @@ QUALITY_PROFILES = [{
     'code': row['code'], 'name': row['name'], 'business': row['business'], 'group': 'quality' if row.get('longTerm') else 'growth',
     'note': row['title'], 'research_category': row['category'],
     'business_source_url': row['sources'][0]['url'],
-    'quality_research': {**row, 'status': 'reviewed', 'reviewedAt': QUALITY_RESEARCH['reviewedAt'],
-                         'reportPeriod': QUALITY_RESEARCH['reportPeriod']},
+    'quality_research': {**row, 'status': 'reviewed', 'reviewedAt': row.get('reviewedAt', QUALITY_RESEARCH['reviewedAt']),
+                         'reportPeriod': row.get('reportPeriod', QUALITY_RESEARCH['reportPeriod'])},
 } for row in QUALITY_RESEARCH['companies']]
 STOCK_UNIVERSE = QUALITY_PROFILES + [
     {'code': '600900', 'business': '水力发电', 'note': '水电龙头，现金流稳定，长期高比例分红'},
@@ -120,9 +120,9 @@ def yahoo_stock(code):
     today = datetime.now(china).strftime('%Y-%m-%d')
     series = sorted((datetime.fromtimestamp(stamp, china).strftime('%Y-%m-%d'), float(value))
                     for stamp, value in zip(timestamps, adjusted) if value is not None and value > 0)
-    series = [(day, value) for day, value in series if day <= today]
-    if len(series) < 250:
-        raise RuntimeError('Yahoo股票复权历史不足一年')
+    series = [(day, value) for day, value in series if day <= today and math.isfinite(value)]
+    if len(series) < 2:
+        raise RuntimeError('Yahoo股票缺少两个有效复权收盘价')
     meta = node['meta']
     os.makedirs(YAHOO_CACHE, exist_ok=True)
     with open(os.path.join(YAHOO_CACHE, code + '.json'), 'w', encoding='utf-8') as fh:
@@ -260,8 +260,8 @@ def fetch_stock(item):
         try:
             raw = fetch_json('https://push2his.eastmoney.com/api/qt/stock/kline/get?secid=%s&ut=fa5fd1943c7b386f172d6893dbfba10b&fields1=f1,f2,f3&fields2=f51,f53&klt=101&fqt=2&end=20500101&lmt=4000' % secid(code)).get('data') or {}
             series = [(row.split(',')[0], float(row.split(',')[1])) for row in raw.get('klines') or []]
-            if len(series) < 250:
-                raise ValueError('历史行情不足一年')
+            if len(series) < 2:
+                raise ValueError('缺少两个有效历史收盘价')
         except Exception as exc:
             source_errors.append('Eastmoney history: ' + str(exc))
             market = 'sh' if code[0] in '5689' else 'sz'
@@ -274,13 +274,15 @@ def fetch_stock(item):
             except Exception as exc:
                 source_errors.append('Tencent history: ' + str(exc))
                 series = []
-    if alternate is not None or len(series) < 250:
+    if alternate is not None or len(series) < 2:
         resolved = yahoo()
         series = resolved['series']
         history_source = 'Yahoo Finance chart indicators.adjclose'
         source_url = resolved['sourceUrl']
         basis = 'provider_adjusted_close'
-    series = sorted((d, v) for d, v in series if v > 0 and d <= datetime.now().strftime('%Y-%m-%d'))
+    series = sorted((d, v) for d, v in series if math.isfinite(v) and v > 0 and d <= datetime.now().strftime('%Y-%m-%d'))
+    if len(series) < 2:
+        raise RuntimeError('股票缺少两个有效历史收盘价')
     latest = series[-1][0]
     price = number(quote.get('f43'), 100)
     if price is None or price <= 0:
@@ -386,6 +388,24 @@ def format_block(rows):
     return '\n'.join(lines)
 
 
+def retain_newer_history(row, previous):
+    """Keep a complete newer published return basis if an upstream history lags."""
+    previous_day = previous.get('returnAsOf') or previous.get('latest') or ''
+    current_day = row.get('returnAsOf') or row.get('latest') or ''
+    if not previous_day or not current_day or previous_day <= current_day:
+        return row
+    fields = ('r', 'vol5', 'mdd5', 'latest', 'returnAsOf', 'riskAsOf', 'returnPeriods',
+              'returnBasis', 'historySource', 'sourceUrl', 'historyFirst')
+    for field in fields:
+        if field in previous:
+            row[field] = previous[field]
+        else:
+            row.pop(field, None)
+    row['historyRefreshStatus'] = 'retained_newer_snapshot'
+    row.setdefault('sourceFallbacks', []).append('历史源仅截至%s，保留已发布%s的收益及风险口径' % (current_day, previous_day))
+    return row
+
+
 def main():
     global OFFLINE
     parser = argparse.ArgumentParser(description='股票观察清单数据刷新')
@@ -419,7 +439,7 @@ def main():
         try:
             if error:
                 raise error
-            rows.append(row)
+            rows.append(retain_newer_history(row, old.get(code, {})))
             log('  ✓ %s %s' % (code, row['n']))
         except Exception as exc:  # noqa: BLE001
             failures.append(code)

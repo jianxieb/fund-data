@@ -2,18 +2,18 @@
   "schemaVersion": 2,
   "code": "301345",
   "name": "涛涛车业",
-  "asOf": "2026-09-30",
+  "asOf": "2026-10-01",
   "currency": "CNY",
   "amountUnit": "yuan",
   "consolidated": true,
   "quote": {
-    "valuationAsOf": "2026-09-29",
-    "valuationPrice": 229.06,
-    "mcap": 249.78780203259998,
-    "pe": 24.61932081,
-    "peStatic": 30.59915632,
-    "peDynamic": 23.1073,
-    "pb": 6.32414975
+    "valuationAsOf": "2026-09-30",
+    "valuationPrice": 228.0,
+    "mcap": 248.63188188,
+    "pe": 24.50539223,
+    "peStatic": 30.4575554,
+    "peDynamic": 23.0004,
+    "pb": 6.29488406
   },
   "reports": [
     {
@@ -46,7 +46,10 @@
       "receivables": 1459227265.83,
       "inventory": 1803808382.05,
       "liabilities": 3000401626.82,
-      "equity": 3949814659.44
+      "equity": 3949814659.44,
+      "cost": 1585948375.83,
+      "profitBeforeTax": 664321657.74,
+      "incomeTax": 123826632.07
     },
     {
       "year": 2026,
@@ -78,7 +81,10 @@
       "receivables": 906917496.1,
       "inventory": 1831858535.34,
       "liabilities": 2239897711.63,
-      "equity": 3778786761.03
+      "equity": 3778786761.03,
+      "cost": 625837617.05,
+      "profitBeforeTax": 211766369.44,
+      "incomeTax": 35462895.75
     },
     {
       "year": 2025,
@@ -110,7 +116,10 @@
       "receivables": 939197582.1,
       "inventory": 1705803779.63,
       "liabilities": 2285658668.69,
-      "equity": 3620578572.11
+      "equity": 3620578572.11,
+      "cost": 2306625741.86,
+      "profitBeforeTax": 947254386.21,
+      "incomeTax": 130931937.71
     },
     {
       "year": 2025,
@@ -142,7 +151,10 @@
       "receivables": 871640252.16,
       "inventory": 1338885672.01,
       "liabilities": 1829334087.23,
-      "equity": 3415732103.12
+      "equity": 3415732103.12,
+      "cost": 1599647538.96,
+      "profitBeforeTax": 716974341.78,
+      "incomeTax": 110432521.75
     },
     {
       "year": 2025,
@@ -174,7 +186,10 @@
       "receivables": 831522707.15,
       "inventory": 1163684921.48,
       "liabilities": 1621742003.91,
-      "equity": 3308232739.7
+      "equity": 3308232739.7,
+      "cost": 1028086204.69,
+      "profitBeforeTax": 402863862.7,
+      "incomeTax": 60643479.39
     },
     {
       "year": 2025,
@@ -206,7 +221,10 @@
       "receivables": 555172949.11,
       "inventory": 1167285901.25,
       "liabilities": 1490510797.53,
-      "equity": 3213477325.6
+      "equity": 3213477325.6,
+      "cost": 401264344.38,
+      "profitBeforeTax": 107989707.28,
+      "incomeTax": 21781405.37
     },
     {
       "year": 2024,
@@ -238,7 +256,10 @@
       "receivables": 698196181.69,
       "inventory": 1206096970.56,
       "liabilities": 1357762503.18,
-      "equity": 3180826333.18
+      "equity": 3180826333.18,
+      "cost": 1935309149.46,
+      "profitBeforeTax": 513225391.46,
+      "incomeTax": 81962658.37
     },
     {
       "year": 2024,
@@ -270,7 +291,10 @@
       "receivables": 600046715.84,
       "inventory": 1198138768.69,
       "liabilities": 1488139924.48,
-      "equity": 3033748529.7
+      "equity": 3033748529.7,
+      "cost": 1413896947.6,
+      "profitBeforeTax": 385281743.66,
+      "incomeTax": 83917487.07
     },
     {
       "year": 2024,
@@ -885,32 +909,37 @@
     {
       "title": "RPT_F10_FINANCE_MAINFINADATA",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22301345.SZ%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-30T05:37:41.338091+00:00"
+      "fetchedAt": "2026-09-30T16:45:12.396374+00:00"
     },
     {
       "title": "RPT_VALUEANALYSIS_DET",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22301345.SZ%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-30T05:37:41.476420+00:00"
+      "fetchedAt": "2026-09-30T16:45:12.523061+00:00"
     },
     {
       "title": "RPT_DMSK_FN_BALANCE",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22301345.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-30T05:37:41.625346+00:00"
+      "fetchedAt": "2026-09-30T16:45:12.696987+00:00"
     },
     {
       "title": "RPT_DMSK_FN_CASHFLOW",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22301345.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-30T05:37:41.819867+00:00"
+      "fetchedAt": "2026-09-30T16:45:12.859466+00:00"
     },
     {
       "title": "已实施及拟议权益分派",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22301345%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-30"
+      "fetchedAt": "2026-10-01"
     },
     {
       "title": "近180日公开研报目录（同机构留最新）",
-      "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=301345",
-      "fetchedAt": "2026-09-30"
+      "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-04&endTime=2026-10-01&pageNo=1&qType=0&code=301345",
+      "fetchedAt": "2026-10-01"
+    },
+    {
+      "title": "RPT_DMSK_FN_INCOME",
+      "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_INCOME&columns=ALL&filter=%28SECUCODE%3D%22301345.SZ%22%29&pageSize=8&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "fetchedAt": "2026-10-01"
     }
   ],
   "forecasts": [],
@@ -1030,7 +1059,7 @@
             "title": "涛涛车业2026年半年度报告",
             "url": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225523756.PDF",
             "publishedAt": "2026-08-29",
-            "pages": "9、18、33",
+            "pages": "9、18、33；财务复算：PDF第7、20、59页",
             "businessPage": 9,
             "sha256": "c5ba406cdbab98293719b9bc63f7bfbd80963e37b000265fb753a8327239c726",
             "reportPeriod": "2026-06-30"
@@ -1049,9 +1078,94 @@
           "quality": "当期经营现金流超过归母利润，销售增长有现金回收支撑；需关注终端库存。",
           "invalidation": "渠道补库存结束后销量失速，或关税和贸易调查使新增销售无法形成利润。"
         },
-        "status": "reviewed",
-        "reviewedAt": "2026-09-30",
-        "reportPeriod": "2026-06-30"
+        "earningsReview": {
+          "code": "301345",
+          "name": "涛涛车业",
+          "reportPeriod": "2026-06-30",
+          "checkedAt": "2026-10-01",
+          "growthDecision": "retain",
+          "breakoutDecision": "retain",
+          "rationale": "中报公司披露北美电动低速车渠道与本地组装产线扩大，营业收入增长60.56%。 配合本期毛利到扣非的金额桥、季度盈利和现金核对；业务判断沿用已核对的公司报告。",
+          "priceEffect": "产品收入与毛利率同时观察；公司未逐SKU公开同口径单价、销量和成本，收入规模与毛利率效应不冒称纯销量/纯提价。",
+          "consolidationEffect": "沿用公司合并财报及公开业务范围；未把收购、产品组合或费用影响默认为零，具体经营依据见主营研究和现金/利润桥。",
+          "valuationAssessment": "2026-09-30来源TTM PE 24.51、静态PE 30.46、动态PE 23.00；动态值按累计利润年化，不能作为预测。",
+          "sourceUrls": [
+            "https://static.cninfo.com.cn/finalpage/2026-08-29/1225523756.PDF",
+            "https://static.cninfo.com.cn/finalpage/2026-03-31/1225051342.PDF"
+          ],
+          "quantitativeEvidence": [
+            {
+              "label": "本期扣非利润",
+              "value": 535799184.54,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225523756.PDF",
+              "sourcePages": "PDF第7页"
+            },
+            {
+              "label": "上年同期扣非利润",
+              "value": 338780222.7,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225523756.PDF",
+              "sourcePages": "PDF第7页"
+            },
+            {
+              "label": "本期经营现金流",
+              "value": 712617555.79,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225523756.PDF",
+              "sourcePages": "PDF第7页"
+            },
+            {
+              "label": "毛利增量",
+              "value": 479741382.70000005,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225523756.PDF",
+              "sourcePages": "PDF第7、20页"
+            },
+            {
+              "label": "收入规模效应（含量价/范围变化）",
+              "value": 414974616.2984807,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225523756.PDF",
+              "sourcePages": "PDF第7、20页"
+            },
+            {
+              "label": "毛利率效应（含售价/成本/组合）",
+              "value": 64766766.40151925,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225523756.PDF",
+              "sourcePages": "PDF第7、20页"
+            }
+          ],
+          "marginBridge": {
+            "previousGrossProfit": 685206954.8799999,
+            "currentGrossProfit": 1164948337.58,
+            "revenueScaleEffect": 414974616.2984807,
+            "marginEffect": 64766766.40151925,
+            "grossProfitChange": 479741382.70000005
+          },
+          "profitBridge": {
+            "grossProfitChange": 479741382.70000005,
+            "otherProfitEffect": -218283587.66000003,
+            "taxEffect": -63183152.67999999,
+            "minorityEffect": 3547.069999933243,
+            "nonRecurringEffect": -1259227.5899999738,
+            "coreProfitChange": 197018961.84000003
+          },
+          "unitInputs": [],
+          "limitations": [
+            "收入规模与毛利率桥是会计恒等式，不能单独证明纯销量增长或恒久利润。毛利到扣非利润另扣费用、税、少数股东及非经常损益。"
+          ]
+        },
+        "reviewedAt": "2026-10-01",
+        "reportPeriod": "2026-06-30",
+        "status": "reviewed"
       }
     },
     "security": {
@@ -1063,12 +1177,12 @@
   "pePercentiles": {
     "5": {
       "value": null,
-      "start": "2021-09-29",
-      "end": "2026-09-29",
+      "start": "2021-09-30",
+      "end": "2026-09-30",
       "observedStart": "2023-03-21",
-      "observedEnd": "2026-09-29",
-      "samples": 857,
-      "observations": 857,
+      "observedEnd": "2026-09-30",
+      "samples": 858,
+      "observations": 858,
       "excluded": 0,
       "gaps": [],
       "method": "positive_pe_ttm_midrank",
@@ -1078,12 +1192,12 @@
     },
     "10": {
       "value": null,
-      "start": "2016-09-29",
-      "end": "2026-09-29",
+      "start": "2016-09-30",
+      "end": "2026-09-30",
       "observedStart": "2023-03-21",
-      "observedEnd": "2026-09-29",
-      "samples": 857,
-      "observations": 857,
+      "observedEnd": "2026-09-30",
+      "samples": 858,
+      "observations": 858,
       "excluded": 0,
       "gaps": [],
       "method": "positive_pe_ttm_midrank",
@@ -1092,5 +1206,5 @@
       "reason": "历史不足10年"
     }
   },
-  "pePercentilesAsOf": "2026-09-29"
+  "pePercentilesAsOf": "2026-09-30"
 }

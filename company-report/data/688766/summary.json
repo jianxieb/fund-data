@@ -2,18 +2,18 @@
   "schemaVersion": 2,
   "code": "688766",
   "name": "普冉股份",
-  "asOf": "2026-09-30",
+  "asOf": "2026-10-01",
   "currency": "CNY",
   "amountUnit": "yuan",
   "consolidated": true,
   "quote": {
-    "valuationAsOf": "2026-09-29",
-    "valuationPrice": 377.9,
-    "mcap": 561.950726787,
-    "pe": 56.56084519,
-    "peStatic": 270.79269502,
-    "peDynamic": 33.9857,
-    "pb": 16.81188884
+    "valuationAsOf": "2026-09-30",
+    "valuationPrice": 356.64,
+    "mcap": 530.3363514192,
+    "pe": 53.37882993,
+    "peStatic": 255.55836663,
+    "peDynamic": 32.0737,
+    "pb": 15.86608107
   },
   "reports": [
     {
@@ -46,7 +46,10 @@
       "receivables": 1114276784.81,
       "inventory": 2128729807.26,
       "liabilities": 2471698840.05,
-      "equity": 4093687602.32
+      "equity": 4093687602.32,
+      "cost": 1934142802.94,
+      "profitBeforeTax": 1498622607.42,
+      "incomeTax": 188537246.68
     },
     {
       "year": 2026,
@@ -78,7 +81,10 @@
       "receivables": 743814847.42,
       "inventory": 1584037929.46,
       "liabilities": 1171549601.15,
-      "equity": 3093183654.56
+      "equity": 3093183654.56,
+      "cost": 800312621.24,
+      "profitBeforeTax": 420494381.23,
+      "incomeTax": 47944830.37
     },
     {
       "year": 2025,
@@ -110,7 +116,10 @@
       "receivables": 641583986.53,
       "inventory": 1255817083.49,
       "liabilities": 957758735.64,
-      "equity": 2698681618.61
+      "equity": 2698681618.61,
+      "cost": 1661717961.94,
+      "profitBeforeTax": 210836301.54,
+      "incomeTax": -10496103.38
     },
     {
       "year": 2025,
@@ -142,7 +151,10 @@
       "receivables": 436798936.63,
       "inventory": 729788657.03,
       "liabilities": 348313262.8,
-      "equity": 2272643453.95
+      "equity": 2272643453.95,
+      "cost": 1003828084.87,
+      "profitBeforeTax": 47419857.69,
+      "incomeTax": -11629358.68
     },
     {
       "year": 2025,
@@ -174,7 +186,10 @@
       "receivables": 423134883.19,
       "inventory": 697369933.7,
       "liabilities": 256288675.56,
-      "equity": 2240372111.0
+      "equity": 2240372111.0,
+      "cost": 625395166.95,
+      "profitBeforeTax": 36296678.64,
+      "incomeTax": -4436737.66
     },
     {
       "year": 2025,
@@ -206,7 +221,10 @@
       "receivables": 372049421.14,
       "inventory": 756774498.15,
       "liabilities": 202064550.38,
-      "equity": 2246916695.35
+      "equity": 2246916695.35,
+      "cost": 278519471.13,
+      "profitBeforeTax": 18590143.93,
+      "incomeTax": 124321.96
     },
     {
       "year": 2024,
@@ -238,7 +256,10 @@
       "receivables": 386517887.08,
       "inventory": 717954571.81,
       "liabilities": 361044016.68,
-      "equity": 2217473737.26
+      "equity": 2217473737.26,
+      "cost": 1198427055.05,
+      "profitBeforeTax": 305029452.61,
+      "incomeTax": 12612890.14
     },
     {
       "year": 2024,
@@ -270,7 +291,10 @@
       "receivables": 363042613.43,
       "inventory": 680040659.26,
       "liabilities": 333751041.15,
-      "equity": 2157776267.09
+      "equity": 2157776267.09,
+      "cost": 910556630.92,
+      "profitBeforeTax": 236840272.93,
+      "incomeTax": 12089894.59
     },
     {
       "year": 2024,
@@ -949,32 +973,37 @@
     {
       "title": "RPT_F10_FINANCE_MAINFINADATA",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688766.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-30T05:37:46.097723+00:00"
+      "fetchedAt": "2026-09-30T16:45:20.699495+00:00"
     },
     {
       "title": "RPT_VALUEANALYSIS_DET",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22688766.SH%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-30T05:37:46.222205+00:00"
+      "fetchedAt": "2026-09-30T16:45:20.854220+00:00"
     },
     {
       "title": "RPT_DMSK_FN_BALANCE",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22688766.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-30T05:37:46.377700+00:00"
+      "fetchedAt": "2026-09-30T16:45:21.024218+00:00"
     },
     {
       "title": "RPT_DMSK_FN_CASHFLOW",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22688766.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-30T05:37:46.704983+00:00"
+      "fetchedAt": "2026-09-30T16:45:21.188518+00:00"
     },
     {
       "title": "已实施及拟议权益分派",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22688766%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-30"
+      "fetchedAt": "2026-10-01"
     },
     {
       "title": "近180日公开研报目录（同机构留最新）",
-      "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=688766",
-      "fetchedAt": "2026-09-30"
+      "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-04&endTime=2026-10-01&pageNo=1&qType=0&code=688766",
+      "fetchedAt": "2026-10-01"
+    },
+    {
+      "title": "RPT_DMSK_FN_INCOME",
+      "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_INCOME&columns=ALL&filter=%28SECUCODE%3D%22688766.SH%22%29&pageSize=8&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "fetchedAt": "2026-10-01"
     }
   ],
   "forecasts": [],
@@ -1071,44 +1100,241 @@
         ],
         "sources": [
           {
-            "title": "普冉股份2026年半年度报告",
+            "title": "普冉股份普冉半导体（上海）股份有限公司2026年半年度报告",
             "url": "https://static.cninfo.com.cn/finalpage/2026-08-19/1225480536.PDF",
             "publishedAt": "2026-08-19",
-            "pages": "23、39",
-            "businessPage": 23,
-            "sha256": "fc73f10f3d13be28eb1ec671e93926e030a5585892c6c1a0cd14dff2f3415cb0",
-            "reportPeriod": "2026-06-30"
+            "reportPeriod": "2026-06-30",
+            "pages": "9—11、14—16、25、38—39；财务复算：PDF第9、38页",
+            "sha256": "fc73f10f3d13be28eb1ec671e93926e030a5585892c6c1a0cd14dff2f3415cb0"
           },
           {
-            "title": "普冉股份2025年年度报告",
+            "title": "普冉股份普冉半导体（上海）股份有限公司2025年年度报告",
             "url": "https://static.cninfo.com.cn/finalpage/2026-03-21/1225023836.PDF",
             "publishedAt": "2026-03-21",
-            "pages": "56、62、97、98、99、135、136",
-            "sha256": "85c471999d074fbdfd30251044d00196032c71f4826941bc165445cfd6a2a2fe",
-            "reportPeriod": "2025-12-31"
+            "reportPeriod": "2025-12-31",
+            "pages": "经营数据、财务报表",
+            "sha256": "85c471999d074fbdfd30251044d00196032c71f4826941bc165445cfd6a2a2fe"
+          },
+          {
+            "title": "普冉股份2026年9月1日投资者关系活动记录",
+            "url": "https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?CompanyCode=82475705&gather=1&id=12589170",
+            "publishedAt": "2026-09-08",
+            "reportPeriod": "2026-06-30",
+            "pages": "问题2"
+          },
+          {
+            "title": "普冉股份审核问询函回复：SHM收入、成本与毛利",
+            "url": "https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=12613586&stockid=688766",
+            "publishedAt": "2026-09-21",
+            "reportPeriod": "2026-06-30",
+            "pages": "6-1-153—155"
+          },
+          {
+            "title": "资产评估专项回复：SHM 2026上半年已实现收入（审阅）",
+            "url": "https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=12609612&stockid=688766",
+            "publishedAt": "2026-09-18",
+            "reportPeriod": "2026-06-30",
+            "pages": "期后经营业绩表（6-5）"
           }
         ],
         "breakout": {
           "driver": "两季利润大幅增长，来源是存储涨价、新品和SHM并表；新增收入约77%由并表贡献。",
           "quality": "当期现金回收超过归母利润，但尚不能证明同口径有机利润连续翻倍。",
-          "invalidation": "剔除并表后的业务转弱、存储价格下行或商誉减值，使增长与现金持续性失效。",
-          "operatingReview": {
-            "decision": "exclude",
-            "growthSource": "consolidation_and_prices",
-            "reportPeriod": "2026-06-30",
-            "checkedAt": "2026-09-30",
-            "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-19/1225480536.PDF",
-            "sourcePages": "23、39",
-            "rationale": "移出业绩爆发：新增收入30.53亿元中SHM并表约23.46亿元，占增量约77%；缺剔除并表后的两季核心利润可比增长。",
-            "priceEffect": "存储供给与报价上行提高毛利；新品和并表也有贡献，未披露足以排除价格因素的核心利润拆分。",
-            "consolidationEffect": "2025年11月收购诺亚长天51%股权后并表，2026与2025上半年合并范围不同。",
-            "valuationAssessment": "估值单独判断：2026-09-29的TTM PE 56.56倍、动态PE 33.99倍；动态PE仅为本期累计利润年化，并非预测。不能由名单入选推导便宜，周期/并表盈利也不能直接外推。"
-          }
+          "invalidation": "剔除并表后的业务转弱、存储价格下行或商誉减值，使增长与现金持续性失效。"
         },
         "stageConstraint": "新增收入主要含并购并表，历史与本期合并范围不可直接外推。",
-        "status": "reviewed",
-        "reviewedAt": "2026-09-30",
-        "reportPeriod": "2026-06-30"
+        "earningsReview": {
+          "code": "688766",
+          "name": "普冉股份",
+          "reportPeriod": "2026-06-30",
+          "checkedAt": "2026-10-01",
+          "growthDecision": "exclude",
+          "breakoutDecision": "exclude",
+          "rationale": "SHM归母扣非贡献已拆清约5.08亿元；剔除后原有业务扣非约3.17亿元，同比约1088%，不是只有并表的虚增。仍不批准本轮结构性爆发：公司明确价格周期显著修复毛利，半年度原有增长不证明两个单季均由非周期来源翻倍；2025年度ROE8.97%未到成长。",
+          "priceEffect": "NOR及EEPROM确有实际出货；本期存储系列收入12.84亿元、增长90.79%，存储+3.29亿元、增长41.20%，SHM中高端NAND价格大幅改善。原有利润增长包含售价/成本时滞，不能称纯研发或销量增长。",
+          "consolidationEffect": "9月1日公司记录明确5.08亿元是归母及归母扣非贡献，不再乘51%。用39.59减23.46亿元收入、8.2455减5.08亿元扣非复算剩余；H1贡献不得任意摊到Q1/Q2。 问询回复给出SHM Q1收入7.4266亿元，审阅数据H1收入23.4597亿元，可估算剔除后的Q1/Q2收入约7.04/9.09亿元；单季内部抵销与归母扣非贡献未公开，不任意分摊。",
+          "valuationAssessment": "2026-09-30来源TTM PE 53.38、静态PE 255.56、动态PE 32.07；动态值按累计利润年化，不能作为预测。",
+          "sourceUrls": [
+            "https://static.cninfo.com.cn/finalpage/2026-08-19/1225480536.PDF",
+            "https://static.cninfo.com.cn/finalpage/2026-03-21/1225023836.PDF",
+            "https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?CompanyCode=82475705&gather=1&id=12589170",
+            "https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=12613586&stockid=688766",
+            "https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=12609612&stockid=688766"
+          ],
+          "quantitativeEvidence": [
+            {
+              "label": "本期扣非利润",
+              "value": 824554019.49,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-19/1225480536.PDF",
+              "sourcePages": "PDF第9页"
+            },
+            {
+              "label": "上年同期扣非利润",
+              "value": 26649378.25,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-19/1225480536.PDF",
+              "sourcePages": "PDF第9页"
+            },
+            {
+              "label": "本期经营现金流",
+              "value": 944513554.72,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-19/1225480536.PDF",
+              "sourcePages": "PDF第9页"
+            },
+            {
+              "label": "毛利增量",
+              "value": 1743843571.9800003,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-19/1225480536.PDF",
+              "sourcePages": "PDF第9、38页"
+            },
+            {
+              "label": "收入规模效应（含量价/范围变化）",
+              "value": 947072155.3969928,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-19/1225480536.PDF",
+              "sourcePages": "PDF第9、38页"
+            },
+            {
+              "label": "毛利率效应（含售价/成本/组合）",
+              "value": 796771416.5830072,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-19/1225480536.PDF",
+              "sourcePages": "PDF第9、38页"
+            },
+            {
+              "label": "SHM合并收入贡献约",
+              "value": 2346000000,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-19/1225480536.PDF",
+              "sourcePages": "9—11、14—16、25、38—39"
+            },
+            {
+              "label": "SHM归母扣非贡献约",
+              "value": 508000000,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?CompanyCode=82475705&gather=1&id=12589170",
+              "sourcePages": "问题2"
+            },
+            {
+              "label": "NOR出货超过",
+              "value": 3700000000,
+              "unit": "颗",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-19/1225480536.PDF",
+              "sourcePages": "9—11、14—16、25、38—39"
+            },
+            {
+              "label": "EEPROM出货超过",
+              "value": 870000000,
+              "unit": "颗",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-19/1225480536.PDF",
+              "sourcePages": "9—11、14—16、25、38—39"
+            },
+            {
+              "label": "剔除SHM后收入",
+              "value": 1613291997.88,
+              "unit": "元",
+              "basis": "estimate",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-19/1225480536.PDF",
+              "sourcePages": "9—11、14—16、25、38—39",
+              "note": "减去公司披露约数；不含单季分配或协同抵销的精确归因"
+            },
+            {
+              "label": "剔除SHM后收入同比",
+              "value": 77.92992085516292,
+              "unit": "%",
+              "basis": "estimate",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-19/1225480536.PDF",
+              "sourcePages": "9—11、14—16、25、38—39"
+            },
+            {
+              "label": "剔除SHM后归母扣非",
+              "value": 316554019.49,
+              "unit": "元",
+              "basis": "estimate",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-19/1225480536.PDF",
+              "sourcePages": "9—11、14—16、25、38—39",
+              "note": "减去公司披露约数；不含单季分配或协同抵销的精确归因"
+            },
+            {
+              "label": "剔除SHM后归母扣非同比",
+              "value": 1087.8476732942167,
+              "unit": "%",
+              "basis": "estimate",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-19/1225480536.PDF",
+              "sourcePages": "9—11、14—16、25、38—39"
+            },
+            {
+              "label": "SHM Q1单体收入（未经审计）",
+              "value": 742655400,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=12613586&stockid=688766",
+              "sourcePages": "6-1-153"
+            },
+            {
+              "label": "SHM H1单体收入（审阅）",
+              "value": 2345973700,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=12609612&stockid=688766",
+              "sourcePages": "期后经营业绩表（6-5）"
+            },
+            {
+              "label": "按SHM单体收入剔除后Q1收入",
+              "value": 704124383.0699999,
+              "unit": "元",
+              "basis": "estimate",
+              "sourceUrl": "https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=12613586&stockid=688766",
+              "sourcePages": "6-1-153",
+              "note": "合并收入减SHM单体收入；未公开单季内部抵销，不能等同审计后的原有合并范围"
+            },
+            {
+              "label": "按SHM单体收入剔除后Q2收入",
+              "value": 909193914.8100004,
+              "unit": "元",
+              "basis": "estimate",
+              "sourceUrl": "https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=12609612&stockid=688766",
+              "sourcePages": "期后经营业绩表（6-5）",
+              "note": "SHM Q2由H1减Q1；跨审阅/未经审计口径，金额近似，不将H1扣非贡献分摊到单季"
+            }
+          ],
+          "marginBridge": {
+            "previousGrossProfit": 281305622.9599999,
+            "currentGrossProfit": 2025149194.94,
+            "revenueScaleEffect": 947072155.3969928,
+            "marginEffect": 796771416.5830072,
+            "grossProfitChange": 1743843571.9800003
+          },
+          "profitBridge": {
+            "grossProfitChange": 1743843571.98,
+            "otherProfitEffect": -281517643.20000005,
+            "taxEffect": -192973984.34,
+            "minorityEffect": -483339467.43000007,
+            "nonRecurringEffect": 11892164.230000064,
+            "coreProfitChange": 797904641.24
+          },
+          "unitInputs": [],
+          "limitations": [
+            "收入规模与毛利率桥是会计恒等式，不能单独证明纯销量增长或恒久利润。毛利到扣非利润另扣费用、税、少数股东及非经常损益。",
+            "SHM单体收入和公司合并贡献并非严格同一口径；季度收入剔除只作估算，不能代替单季归母扣非利润。"
+          ]
+        },
+        "reviewedAt": "2026-10-01",
+        "reportPeriod": "2026-06-30",
+        "status": "reviewed"
       }
     },
     "security": {
@@ -1119,11 +1345,11 @@
   },
   "pePercentiles": {
     "5": {
-      "value": 52.1,
-      "start": "2021-09-29",
-      "end": "2026-09-29",
-      "observedStart": "2021-09-29",
-      "observedEnd": "2026-09-29",
+      "value": 49.62,
+      "start": "2021-09-30",
+      "end": "2026-09-30",
+      "observedStart": "2021-09-30",
+      "observedEnd": "2026-09-30",
       "samples": 1049,
       "observations": 1212,
       "excluded": 163,
@@ -1134,12 +1360,12 @@
     },
     "10": {
       "value": null,
-      "start": "2016-09-29",
-      "end": "2026-09-29",
+      "start": "2016-09-30",
+      "end": "2026-09-30",
       "observedStart": "2021-08-23",
-      "observedEnd": "2026-09-29",
-      "samples": 1074,
-      "observations": 1237,
+      "observedEnd": "2026-09-30",
+      "samples": 1075,
+      "observations": 1238,
       "excluded": 163,
       "gaps": [],
       "method": "positive_pe_ttm_midrank",
@@ -1148,5 +1374,5 @@
       "reason": "历史不足10年"
     }
   },
-  "pePercentilesAsOf": "2026-09-29"
+  "pePercentilesAsOf": "2026-09-30"
 }

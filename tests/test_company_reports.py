@@ -40,7 +40,7 @@ class ReportCalculationTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             compute({'schemaVersion': 1})
         d = copy.deepcopy(self.input)
-        d['reports'][0]['announcedAt'] = '2026-10-01'
+        d['reports'][0]['announcedAt'] = '2026-10-02'
         with self.assertRaises(ValueError):
             compute(d)
         row = {'SECUCODE': '601138.SH', 'SECURITY_CODE': '601138', 'REPORT_DATE': '2026-06-30', 'NOTICE_DATE': '2026-08-12'}
@@ -117,11 +117,12 @@ class IndependentGroupTests(unittest.TestCase):
             data = json.loads(path.read_text())
             if data.get('screeningContext', {}).get('profile'):
                 self.rows[data['code']] = report_row(data)
+        self.asof = self.rows['601138']['growthReview']['checkedAt']
 
     def test_current_groups_overlap_without_importing_dividend_pool(self):
         quality = {c for c, r in self.rows.items() if (r.get('longTermReview') or {}).get('qualified')}
         growth = {c for c, r in self.rows.items() if (r.get('growthReview') or {}).get('qualified')}
-        self.assertTrue({'601138', '300750', '300308', '002463', '603979'} <= quality & growth)
+        self.assertTrue({'601138', '601899', '300750', '300308', '002463', '603979'} <= quality & growth)
         self.assertTrue({'600183', '300604', '001389', '002916', '688183'} <= growth - quality)
         self.assertEqual(sum(r['group'] == 'dividend' for r in self.live_rows.values()), 23)
         for row in self.live_rows.values():
@@ -133,24 +134,25 @@ class IndependentGroupTests(unittest.TestCase):
         self.assertFalse(self.rows['300693']['growthReview']['qualified'])  # Q1 not yet high growth.
         row = copy.deepcopy(self.rows['601138'])
         row['financialHistory5'] = row['financialHistory5'][:3]
-        self.assertFalse(long_term_review(row, '2026-09-30')['qualified'])
+        self.assertFalse(long_term_review(row, self.asof)['qualified'])
         row = copy.deepcopy(self.rows['601138'])
         row['qualityResearch'].pop('growth')
-        self.assertFalse(growth_review(row, '2026-09-30')['qualified'])
+        self.assertFalse(growth_review(row, self.asof)['qualified'])
         row = copy.deepcopy(self.rows['601138'])
         row['qualityResearch']['reportPeriod'] = '2025-12-31'
-        self.assertFalse(growth_review(row, '2026-09-30')['qualified'])
-        self.assertFalse(long_term_review(row, '2026-09-30')['qualified'])
+        self.assertFalse(growth_review(row, self.asof)['qualified'])
+        self.assertFalse(long_term_review(row, self.asof)['qualified'])
 
     def test_reviewed_earnings_breakouts_keep_quality_failures_explicit(self):
-        expected = {'601869', '688700'}
-        breakout = {c for c, r in self.rows.items() if (r.get('breakoutReview') or {}).get('qualified')}
+        expected = {'601869', '688700', '600150'}
+        breakout = {c for c, r in self.rows.items() if (r.get('breakoutReview') or {}).get('qualified')
+                    and not any((r.get(k) or {}).get('qualified') for k in ('longTermReview', 'growthReview'))}
         self.assertEqual(breakout, expected)
         for code in expected:
             row = self.rows[code]
             self.assertFalse(row['longTermReview']['qualified'])
             self.assertFalse(row['growthReview']['qualified'])
-            self.assertEqual(breakout_review(row, '2026-09-30'), row['breakoutReview'])
+            self.assertEqual(breakout_review(row, self.asof), row['breakoutReview'])
             live = self.live_rows[code]
             self.assertEqual(breakout_review(live, live['breakoutReview']['checkedAt']), live['breakoutReview'])
             self.assertTrue(all(c['reason'] for c in row['growthReview']['checks'] if not c['pass']))
@@ -164,43 +166,43 @@ class IndependentGroupTests(unittest.TestCase):
                 review = self.rows[code]['breakoutReview']
                 self.assertTrue(review['financialQualified'])
                 self.assertFalse(review['qualified'])
-                self.assertEqual(review['operatingReview']['decision'], 'exclude')
+                self.assertEqual(review['operatingReview']['breakoutDecision'], 'exclude')
                 self.assertFalse(review['checks'][-1]['pass'])
                 self.assertTrue(review['checks'][-1]['reason'])
                 self.assertEqual(review, self.live_rows[code]['breakoutReview'])
         for change in ('missing', 'future', 'stale', 'no_source', 'prices'):
             row = copy.deepcopy(self.rows['601869'])
-            review = row['qualityResearch']['breakout']['operatingReview']
-            if change == 'missing': row['qualityResearch']['breakout'].pop('operatingReview')
-            elif change == 'future': review['checkedAt'] = '2026-10-01'
+            review = row['qualityResearch']['earningsReview']
+            if change == 'missing': row['qualityResearch'].pop('earningsReview')
+            elif change == 'future': review['checkedAt'] = '2026-10-02'
             elif change == 'stale': review['reportPeriod'] = '2025-12-31'
-            elif change == 'no_source': review['sourceUrl'] = 'https://example.com/unknown'
-            elif change == 'prices': review['growthSource'] = 'commodity_prices'
-            self.assertFalse(breakout_review(row, '2026-09-30')['qualified'], change)
+            elif change == 'no_source': review['sourceUrls'] = ['https://example.com/unknown']
+            elif change == 'prices': review['breakoutDecision'] = 'exclude'
+            self.assertFalse(breakout_review(row, self.asof)['qualified'], change)
 
     def test_breakout_rejects_losses_declining_prior_quarter_and_missing_research(self):
         row = copy.deepcopy(self.rows['601869'])
-        self.assertTrue(breakout_review(row, '2026-09-30')['qualified'])
+        self.assertTrue(breakout_review(row, self.asof)['qualified'])
         row['latestFinancials']['netProfit'] = -1
-        self.assertFalse(breakout_review(row, '2026-09-30')['qualified'])
+        self.assertFalse(breakout_review(row, self.asof)['qualified'])
         row = copy.deepcopy(self.rows['601869'])
         prior = next(r for r in row['financialReports'] if r['reportDate'] == '2026-03-31')
         prior['deductedProfit'] = 1  # positive profit alone cannot conceal a collapse.
-        self.assertFalse(breakout_review(row, '2026-09-30')['qualified'])
+        self.assertFalse(breakout_review(row, self.asof)['qualified'])
         row = copy.deepcopy(self.rows['601869'])
         row['qualityResearch'].pop('breakout')
-        self.assertFalse(breakout_review(row, '2026-09-30')['qualified'])
+        self.assertFalse(breakout_review(row, self.asof)['qualified'])
         row = copy.deepcopy(self.rows['601869'])
-        row['latestFinancials']['announcedAt'] = '2026-10-01'
-        self.assertFalse(breakout_review(row, '2026-09-30')['qualified'])
+        row['latestFinancials']['announcedAt'] = '2026-10-02'
+        self.assertFalse(breakout_review(row, self.asof)['qualified'])
         row = copy.deepcopy(self.rows['601869'])
         row['latestFinancials']['operatingCashFlow'] = None
-        self.assertFalse(breakout_review(row, '2026-09-30')['qualified'])
+        self.assertFalse(breakout_review(row, self.asof)['qualified'])
 
     def test_breakout_requires_cash_conversion_and_two_doubling_quarters(self):
         row = copy.deepcopy(self.rows['601869'])
         row['latestFinancials']['operatingCashFlow'] = row['latestFinancials']['netProfit'] * .49
-        self.assertFalse(breakout_review(row, '2026-09-30')['financialQualified'])
+        self.assertFalse(breakout_review(row, self.asof)['financialQualified'])
         self.assertFalse(self.rows['002648']['breakoutReview']['financialQualified'])  # Q2 spike alone.
         self.assertFalse(self.rows['603259']['breakoutReview']['financialQualified'])  # Steady growth is not doubling.
 

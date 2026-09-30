@@ -28,6 +28,14 @@ class FilingSelectionTests(unittest.TestCase):
                 self.announcement('2026年半年度报告', day='2026-10-01')]
         self.assertIsNone(select_filing(rows, '300037', '2026年半年度报告', '2026-09-30'))
 
+    def test_quarter_report_aliases_do_not_select_summary_or_future_reports(self):
+        rows = [self.announcement('东山精密2026年一季度报告', code='002384', day='2026-04-24', identity='101'),
+                self.announcement('2026年第一季度报告摘要', code='002384', day='2026-04-24', identity='102'),
+                self.announcement('2026年第三季度报告', code='002384', day='2026-10-30', identity='103')]
+        result = select_filing(rows, '002384', '2026年第一季度报告', '2026-10-01')
+        self.assertEqual(result['announcementId'], '101')
+        self.assertIsNone(select_filing(rows, '002384', '2026年第三季度报告', '2026-10-01'))
+
 
 if __name__ == '__main__':
     unittest.main()

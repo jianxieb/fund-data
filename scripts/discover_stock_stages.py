@@ -39,7 +39,7 @@ def bulk(report, condition, columns, sort):
 def fetch_market(asof, annual, latest, quote):
     columns = 'SECURITY_CODE,SECURITY_NAME_ABBR,SECUCODE,REPORT_DATE,NOTICE_DATE,ROEJQ'
     current, current_sources = bulk('RPT_F10_FINANCE_MAINFINADATA',
-        "(REPORT_DATE='%s')(TOTALOPERATEREVETZ>=10)(PARENTNETPROFITTZ>=10)(KCFJCXSYJLRTZ>=10)(PARENTNETPROFIT>0)(KCFJCXSYJLR>0)" % latest,
+        "(REPORT_DATE='%s')(PARENTNETPROFITTZ>=10)(KCFJCXSYJLRTZ>=10)(PARENTNETPROFIT>0)(KCFJCXSYJLR>0)(TOTALOPERATEREVE>0)" % latest,
         columns, 'SECURITY_CODE')
     prior, annual_sources = bulk('RPT_F10_FINANCE_MAINFINADATA',
         "(REPORT_DATE='%s')(ROEJQ>=5)(PARENTNETPROFIT>0)(KCFJCXSYJLR>0)" % annual,
@@ -64,7 +64,7 @@ def fetch_market(asof, annual, latest, quote):
     with ThreadPoolExecutor(max_workers=4) as executor:
         records = list(executor.map(details, codes))
     return {'asOf': asof, 'annual': annual, 'latest': latest, 'quoteDate': quote,
-            'scope': '沪深非ST、非金融A股，市值≥100亿元；全市场财报查询，非点名名单',
+            'scope': '沪深非ST、非金融A股，市值≥100亿元；以正收入、归母及扣非增长发现，不用营收增速截断候选',
             'bulkCounts': {'currentGrowth': len(current), 'positiveAnnualRoe5': len(prior), 'intersection': len(codes)},
             'sources': current_sources + annual_sources + quote_sources, 'records': records}
 

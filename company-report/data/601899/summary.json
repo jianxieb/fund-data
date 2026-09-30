@@ -2,18 +2,18 @@
   "schemaVersion": 2,
   "code": "601899",
   "name": "紫金矿业",
-  "asOf": "2026-09-30",
+  "asOf": "2026-10-01",
   "currency": "CNY",
   "amountUnit": "yuan",
   "consolidated": true,
   "quote": {
-    "valuationAsOf": "2026-09-29",
-    "valuationPrice": 29.46,
-    "mcap": 7833.6245276412,
-    "pe": 11.57871589,
-    "peStatic": 15.12944924,
-    "peDynamic": 9.9996,
-    "pb": 3.8786475
+    "valuationAsOf": "2026-09-30",
+    "valuationPrice": 29.79,
+    "mcap": 7921.3987959939,
+    "pe": 11.70845319,
+    "peStatic": 15.29897184,
+    "peDynamic": 10.1116,
+    "pb": 3.922107
   },
   "reports": [
     {
@@ -46,7 +46,10 @@
       "receivables": 10283730013.0,
       "inventory": 39658825296.0,
       "liabilities": 268266643912.0,
-      "equity": 273087729696.0
+      "equity": 273087729696.0,
+      "cost": 120881455727,
+      "profitBeforeTax": 63489448069,
+      "incomeTax": 13676755053
     },
     {
       "year": 2026,
@@ -78,7 +81,10 @@
       "receivables": 8356060642.0,
       "inventory": 40491201658.0,
       "liabilities": 282500837539.0,
-      "equity": 267419293687.0
+      "equity": 267419293687.0,
+      "cost": 62717591879,
+      "profitBeforeTax": 31583865680,
+      "incomeTax": 6418137006
     },
     {
       "year": 2025,
@@ -110,7 +116,10 @@
       "receivables": 9308395310.0,
       "inventory": 39612522210.0,
       "liabilities": 263982621036.0,
-      "equity": 248022521414.0
+      "equity": 248022521414.0,
+      "cost": 252288843039,
+      "profitBeforeTax": 80752523141,
+      "incomeTax": 16930333554
     },
     {
       "year": 2025,
@@ -142,7 +151,10 @@
       "receivables": 7505355169.0,
       "inventory": 33241195115.0,
       "liabilities": 256040587353.0,
-      "equity": 226966981990.0
+      "equity": 226966981990.0,
+      "cost": 190816455507,
+      "profitBeforeTax": 55645581474,
+      "incomeTax": 9944421493
     },
     {
       "year": 2025,
@@ -174,7 +186,10 @@
       "receivables": 9271711391.0,
       "inventory": 35562684581.0,
       "liabilities": 247860819991.0,
-      "equity": 191882375750.0
+      "equity": 191882375750.0,
+      "cost": 127877977436,
+      "profitBeforeTax": 34496536167,
+      "incomeTax": 5851494417
     },
     {
       "year": 2025,
@@ -206,7 +221,10 @@
       "receivables": 8134990443.0,
       "inventory": 35695217814.0,
       "liabilities": 225951145507.0,
-      "equity": 185695676022.0
+      "equity": 185695676022.0,
+      "cost": 60864779361,
+      "profitBeforeTax": 14687930601,
+      "incomeTax": 2223313979
     },
     {
       "year": 2024,
@@ -238,7 +256,10 @@
       "receivables": 6811753955.0,
       "inventory": 33313199379.0,
       "liabilities": 218880000963.0,
-      "equity": 177730729063.0
+      "equity": 177730729063.0,
+      "cost": 241776168937,
+      "profitBeforeTax": 48077725154,
+      "incomeTax": 8684860973
     },
     {
       "year": 2024,
@@ -270,7 +291,10 @@
       "receivables": 7256852528.0,
       "inventory": 32833087985.0,
       "liabilities": 209378880554.0,
-      "equity": 168677020008.0
+      "equity": 168677020008.0,
+      "cost": 185396466695,
+      "profitBeforeTax": 35325171289,
+      "incomeTax": 5646814278
     },
     {
       "year": 2024,
@@ -1301,32 +1325,37 @@
     {
       "title": "RPT_F10_FINANCE_MAINFINADATA",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22601899.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:15.375425+00:00"
+      "fetchedAt": "2026-09-30T16:45:15.537540+00:00"
     },
     {
       "title": "RPT_VALUEANALYSIS_DET",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22601899.SH%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:15.375439+00:00"
+      "fetchedAt": "2026-09-30T16:45:15.727030+00:00"
     },
     {
       "title": "RPT_DMSK_FN_BALANCE",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22601899.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:15.512400+00:00"
+      "fetchedAt": "2026-09-30T16:45:15.920439+00:00"
     },
     {
       "title": "RPT_DMSK_FN_CASHFLOW",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22601899.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:15.669358+00:00"
+      "fetchedAt": "2026-09-30T16:45:16.082930+00:00"
     },
     {
       "title": "已实施及拟议权益分派",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22601899%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-30"
+      "fetchedAt": "2026-10-01"
     },
     {
       "title": "近180日公开研报目录（同机构留最新）",
-      "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=601899",
-      "fetchedAt": "2026-09-30"
+      "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-04&endTime=2026-10-01&pageNo=1&qType=0&code=601899",
+      "fetchedAt": "2026-10-01"
+    },
+    {
+      "title": "RPT_DMSK_FN_INCOME",
+      "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_INCOME&columns=ALL&filter=%28SECUCODE%3D%22601899.SH%22%29&pageSize=8&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "fetchedAt": "2026-10-01"
     }
   ],
   "forecasts": [],
@@ -1549,7 +1578,6 @@
     }
   ],
   "peers": [],
-  "fetchErrors": [],
   "researchNotes": [
     {
       "institution": "华龙证券",
@@ -1587,39 +1615,7 @@
       "status": "仅核对目录，未把标题视为本研究结论"
     }
   ],
-  "pePercentiles": {
-    "5": {
-      "value": 5.4,
-      "start": "2021-09-29",
-      "end": "2026-09-29",
-      "observedStart": "2021-09-29",
-      "observedEnd": "2026-09-29",
-      "samples": 1212,
-      "observations": 1212,
-      "excluded": 0,
-      "gaps": [],
-      "method": "positive_pe_ttm_midrank",
-      "legacySource": null,
-      "status": "available"
-    },
-    "10": {
-      "value": null,
-      "start": "2016-09-29",
-      "end": "2026-09-29",
-      "observedStart": "2018-01-02",
-      "observedEnd": "2026-09-29",
-      "samples": 2122,
-      "observations": 2122,
-      "excluded": 0,
-      "gaps": [],
-      "method": "positive_pe_ttm_midrank",
-      "legacySource": null,
-      "status": "source_conflict",
-      "reason": "早期估值来源有差异"
-    }
-  },
-  "pePercentilesAsOf": "2026-09-29",
-  "peHistorySourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22601899.SH%22%29&pageSize=10000&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+  "fetchErrors": [],
   "screeningContext": {
     "profile": {
       "code": "601899",
@@ -1628,7 +1624,7 @@
       "group": "quality",
       "note": "矿产扩张与现金回收共同支撑",
       "research_category": "资源与化工",
-      "business_source_url": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225493321.PDF",
+      "business_source_url": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225550244.PDF",
       "quality_research": {
         "code": "601899",
         "name": "紫金矿业",
@@ -1645,11 +1641,20 @@
         ],
         "sources": [
           {
-            "title": "紫金矿业2026年半年度报告摘要",
-            "url": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225493321.PDF",
+            "title": "紫金矿业紫金矿业集团股份有限公司2026年半年度报告",
+            "url": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225550244.PDF",
             "publishedAt": "2026-08-22",
-            "pages": "5",
-            "businessPage": 5
+            "reportPeriod": "2026-06-30",
+            "pages": "12—14；财务复算：PDF第6、14页",
+            "sha256": "b934ec8dde5757b3fbd757e6c8c6ae5bd13a09c65e5a7acbfa58430b538d75ad"
+          },
+          {
+            "title": "紫金矿业紫金矿业集团股份有限公司2025年年度报告",
+            "url": "https://static.cninfo.com.cn/finalpage/2026-03-21/1225550242.PDF",
+            "publishedAt": "2026-03-21",
+            "reportPeriod": "2025-12-31",
+            "pages": "经营、成本及财务报表",
+            "sha256": "01819e1c7daad939d1779a8aa729f50f02151192e609cb28c2c405634a8f343d"
           }
         ],
         "longTerm": {
@@ -1657,9 +1662,282 @@
           "reinvestment": "矿山开发、技改与并购扩充可采资源；回报依赖矿价、成本及投产效率。",
           "invalidation": "项目延期或成本抬升，使新增产能无法抵消资源价格回落。"
         },
-        "status": "reviewed",
-        "reviewedAt": "2026-09-30",
-        "reportPeriod": "2026-06-30"
+        "earningsReview": {
+          "code": "601899",
+          "name": "紫金矿业",
+          "reportPeriod": "2026-06-30",
+          "checkedAt": "2026-10-01",
+          "growthDecision": "retain",
+          "breakoutDecision": "retain",
+          "rationale": "取消统一营收增速门槛后，紫金本期归母/扣非增长68.17%/75.89%，连续两季扣非增长86.81%/66.71%，现金与年度ROE满足成长；多年质量条件也满足，现同时为长期优质和高质成长。按矿山销售数量、售价和单位成本复算，增长既有价格贡献也有黄金/锂盐实际销售增量，未宣称纯量增长。",
+          "priceEffect": "铜金涨价明显贡献利润，铜单位成本也上升。销量桥以同一产品上期单位毛利加本期售价/成本效应，不把资源涨价称为永久竞争力。低毛利冶炼、贸易及内部抵销使总收入增速不能等同矿山盈利增速。",
+          "consolidationEffect": "2025年以来并购及矿山扩产都影响销量，数量贡献是合并范围内实际销售增量，不等于全部有机扩产；产品表在内部抵销前，不能将其总和当成合并归母利润。",
+          "valuationAssessment": "2026-09-30来源TTM PE 11.71、静态PE 15.30、动态PE 10.11；动态值按累计利润年化，不能作为预测。周期上涨期的TTM利润会压低PE，须按价格/成本回落情景评估。",
+          "sourceUrls": [
+            "https://static.cninfo.com.cn/finalpage/2026-08-22/1225550244.PDF",
+            "https://static.cninfo.com.cn/finalpage/2026-03-21/1225550242.PDF"
+          ],
+          "quantitativeEvidence": [
+            {
+              "label": "本期扣非利润",
+              "value": 38034770076.0,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225550244.PDF",
+              "sourcePages": "PDF第6页"
+            },
+            {
+              "label": "上年同期扣非利润",
+              "value": 21623977106.0,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225550244.PDF",
+              "sourcePages": "PDF第6页"
+            },
+            {
+              "label": "本期经营现金流",
+              "value": 55471692934.0,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225550244.PDF",
+              "sourcePages": "PDF第6页"
+            },
+            {
+              "label": "毛利增量",
+              "value": 33464127108.0,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225550244.PDF",
+              "sourcePages": "PDF第6、14页"
+            },
+            {
+              "label": "收入规模效应（含量价/范围变化）",
+              "value": 6286300606.898129,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225550244.PDF",
+              "sourcePages": "PDF第6、14页"
+            },
+            {
+              "label": "毛利率效应（含售价/成本/组合）",
+              "value": 27177826501.101875,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225550244.PDF",
+              "sourcePages": "PDF第6、14页"
+            }
+          ],
+          "marginBridge": {
+            "previousGrossProfit": 39832875795.0,
+            "currentGrossProfit": 73297002903.0,
+            "revenueScaleEffect": 6286300606.898129,
+            "marginEffect": 27177826501.101875,
+            "grossProfitChange": 33464127108.0
+          },
+          "profitBridge": {
+            "grossProfitChange": 33464127108.0,
+            "otherProfitEffect": -4471215206.0,
+            "taxEffect": -7825260636,
+            "minorityEffect": -5289596494.0,
+            "nonRecurringEffect": 532738198.0,
+            "coreProfitChange": 16410792970.0
+          },
+          "unitInputs": [
+            {
+              "label": "矿产金锭",
+              "quantityBasis": "sales",
+              "quantityUnit": "千克",
+              "priceQuantityUnit": "千克",
+              "comparable": true,
+              "basis": "estimate",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225550244.PDF",
+              "sourcePages": "12—14",
+              "previous": {
+                "quantity": 21178,
+                "price": 715470.0,
+                "unitCost": 326320.0
+              },
+              "current": {
+                "quantity": 27424,
+                "price": 1034089.9999999999,
+                "unitCost": 347300.0
+              }
+            },
+            {
+              "label": "矿产金精矿",
+              "quantityBasis": "sales",
+              "quantityUnit": "千克",
+              "priceQuantityUnit": "千克",
+              "comparable": true,
+              "basis": "estimate",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225550244.PDF",
+              "sourcePages": "12—14",
+              "previous": {
+                "quantity": 17028,
+                "price": 663720.0,
+                "unitCost": 181930.0
+              },
+              "current": {
+                "quantity": 16756,
+                "price": 961300.0,
+                "unitCost": 199150.0
+              }
+            },
+            {
+              "label": "矿产铜精矿",
+              "quantityBasis": "sales",
+              "quantityUnit": "吨",
+              "priceQuantityUnit": "吨",
+              "comparable": true,
+              "basis": "estimate",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225550244.PDF",
+              "sourcePages": "12—14",
+              "previous": {
+                "quantity": 330599,
+                "price": 60354,
+                "unitCost": 21104
+              },
+              "current": {
+                "quantity": 353831,
+                "price": 82624,
+                "unitCost": 24480
+              }
+            },
+            {
+              "label": "矿产电积铜",
+              "quantityBasis": "sales",
+              "quantityUnit": "吨",
+              "priceQuantityUnit": "吨",
+              "comparable": true,
+              "basis": "estimate",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225550244.PDF",
+              "sourcePages": "12—14",
+              "previous": {
+                "quantity": 47616,
+                "price": 66889,
+                "unitCost": 31113
+              },
+              "current": {
+                "quantity": 46845,
+                "price": 90734,
+                "unitCost": 36620
+              }
+            },
+            {
+              "label": "矿产电解铜",
+              "quantityBasis": "sales",
+              "quantityUnit": "吨",
+              "priceQuantityUnit": "吨",
+              "comparable": true,
+              "basis": "estimate",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225550244.PDF",
+              "sourcePages": "12—14",
+              "previous": {
+                "quantity": 60925,
+                "price": 67678,
+                "unitCost": 36004
+              },
+              "current": {
+                "quantity": 59120,
+                "price": 90524,
+                "unitCost": 38513
+              }
+            },
+            {
+              "label": "矿产锂盐",
+              "quantityBasis": "sales",
+              "quantityUnit": "吨",
+              "priceQuantityUnit": "吨",
+              "comparable": true,
+              "basis": "estimate",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225550244.PDF",
+              "sourcePages": "12—14",
+              "previous": {
+                "quantity": 7253,
+                "price": 48987,
+                "unitCost": 35321
+              },
+              "current": {
+                "quantity": 22021,
+                "price": 130778,
+                "unitCost": 49912
+              }
+            },
+            {
+              "label": "矿产锌",
+              "quantityBasis": "sales",
+              "quantityUnit": "吨",
+              "priceQuantityUnit": "吨",
+              "comparable": true,
+              "basis": "estimate",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225550244.PDF",
+              "sourcePages": "12—14",
+              "previous": {
+                "quantity": 181088,
+                "price": 14654,
+                "unitCost": 10113
+              },
+              "current": {
+                "quantity": 171897,
+                "price": 17539,
+                "unitCost": 9692
+              }
+            },
+            {
+              "label": "矿产银",
+              "quantityBasis": "sales",
+              "quantityUnit": "千克",
+              "priceQuantityUnit": "千克",
+              "comparable": true,
+              "basis": "estimate",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225550244.PDF",
+              "sourcePages": "12—14",
+              "previous": {
+                "quantity": 221749,
+                "price": 5720.0,
+                "unitCost": 1990.0
+              },
+              "current": {
+                "quantity": 225232,
+                "price": 13950.0,
+                "unitCost": 2280.0
+              }
+            },
+            {
+              "label": "冶炼铜",
+              "quantityBasis": "sales",
+              "quantityUnit": "吨",
+              "priceQuantityUnit": "吨",
+              "comparable": true,
+              "basis": "estimate",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225550244.PDF",
+              "sourcePages": "12—14",
+              "previous": {
+                "quantity": 381692,
+                "price": 68331,
+                "unitCost": 67572
+              },
+              "current": {
+                "quantity": 345532,
+                "price": 90954,
+                "unitCost": 90600
+              }
+            }
+          ],
+          "limitations": [
+            "分产品售价和单位成本经过报告四舍五入，金额桥为估算；每产品拆分可复算。",
+            "分产品表在内部抵销前且不含非控股矿山；新增锂精矿无可比正基数，本表不计算其同比贡献。",
+            "毛利桥不是归母扣非桥。费用、税金、权益归属、投资损益等另按合并利润表对账。"
+          ]
+        },
+        "reviewedAt": "2026-10-01",
+        "reportPeriod": "2026-06-30",
+        "growth": {
+          "driver": "金锭与锂盐销量扩张，矿山交付及金铜价格共同带动核心利润。",
+          "quality": "2025年度ROE33.04%，本期经营现金流554.72亿元；长期矿山资源、成本能力及多品种回收支撑，价格周期风险单列。",
+          "invalidation": "矿价回落、成本抬升或项目延期使核心利润及现金增长中断。"
+        },
+        "status": "reviewed"
       }
     },
     "security": {
@@ -1667,5 +1945,37 @@
       "valuationIndustry": "工业金属",
       "ind": "工业金属"
     }
-  }
+  },
+  "pePercentiles": {
+    "5": {
+      "value": 5.73,
+      "start": "2021-09-30",
+      "end": "2026-09-30",
+      "observedStart": "2021-09-30",
+      "observedEnd": "2026-09-30",
+      "samples": 1212,
+      "observations": 1212,
+      "excluded": 0,
+      "gaps": [],
+      "method": "positive_pe_ttm_midrank",
+      "legacySource": null,
+      "status": "available"
+    },
+    "10": {
+      "value": null,
+      "start": "2016-09-30",
+      "end": "2026-09-30",
+      "observedStart": "2018-01-02",
+      "observedEnd": "2026-09-30",
+      "samples": 2123,
+      "observations": 2123,
+      "excluded": 0,
+      "gaps": [],
+      "method": "positive_pe_ttm_midrank",
+      "legacySource": null,
+      "status": "source_conflict",
+      "reason": "早期估值来源有差异"
+    }
+  },
+  "pePercentilesAsOf": "2026-09-30"
 }

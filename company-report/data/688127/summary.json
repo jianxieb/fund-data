@@ -2,18 +2,18 @@
   "schemaVersion": 2,
   "code": "688127",
   "name": "蓝特光学",
-  "asOf": "2026-09-30",
+  "asOf": "2026-10-01",
   "currency": "CNY",
   "amountUnit": "yuan",
   "consolidated": true,
   "quote": {
-    "valuationAsOf": "2026-09-29",
-    "valuationPrice": 62.24,
-    "mcap": 252.63072848,
-    "pe": 45.31287927,
-    "peStatic": 64.97354217,
-    "peDynamic": 46.4278,
-    "pb": 10.57920511
+    "valuationAsOf": "2026-09-30",
+    "valuationPrice": 61.05,
+    "mcap": 247.80054585,
+    "pe": 44.44651798,
+    "peStatic": 63.73127811,
+    "peDynamic": 45.5402,
+    "pb": 10.3769356
   },
   "reports": [
     {
@@ -46,7 +46,10 @@
       "receivables": 463574646.65,
       "inventory": 304542167.34,
       "liabilities": 915883409.8,
-      "equity": 2394131138.9
+      "equity": 2394131138.9,
+      "cost": 565575139.5,
+      "profitBeforeTax": 309224100.91,
+      "incomeTax": 36645879.91
     },
     {
       "year": 2026,
@@ -78,7 +81,10 @@
       "receivables": 368277012.16,
       "inventory": 281040941.62,
       "liabilities": 810675185.92,
-      "equity": 2341100315.04
+      "equity": 2341100315.04,
+      "cost": 241450044.13,
+      "profitBeforeTax": 147594436.09,
+      "incomeTax": 17777206.86
     },
     {
       "year": 2025,
@@ -110,7 +116,10 @@
       "receivables": 377021725.54,
       "inventory": 229866816.3,
       "liabilities": 741619702.38,
-      "equity": 2194659266.65
+      "equity": 2194659266.65,
+      "cost": 874362860.42,
+      "profitBeforeTax": 441507264.73,
+      "incomeTax": 50414132.91
     },
     {
       "year": 2025,
@@ -142,7 +151,10 @@
       "receivables": 331857194.98,
       "inventory": 253544385.24,
       "liabilities": 684872028.75,
-      "equity": 2029121710.03
+      "equity": 2029121710.03,
+      "cost": 620844184.22,
+      "profitBeforeTax": 284523928.1,
+      "incomeTax": 32519801.84
     },
     {
       "year": 2025,
@@ -174,7 +186,10 @@
       "receivables": 288946067.6,
       "inventory": 242672546.43,
       "liabilities": 579852950.71,
-      "equity": 1867330247.48
+      "equity": 1867330247.48,
+      "cost": 369310001.79,
+      "profitBeforeTax": 115845029.66,
+      "incomeTax": 11016951.63
     },
     {
       "year": 2025,
@@ -206,7 +221,10 @@
       "receivables": 222586565.61,
       "inventory": 222160460.68,
       "liabilities": 468317079.23,
-      "equity": 1880808928.26
+      "equity": 1880808928.26,
+      "cost": 166825367.3,
+      "profitBeforeTax": 50589219,
+      "incomeTax": 4682509.36
     },
     {
       "year": 2024,
@@ -238,7 +256,10 @@
       "receivables": 202042523.71,
       "inventory": 227120901.24,
       "liabilities": 483356727.05,
-      "equity": 1824732891.09
+      "equity": 1824732891.09,
+      "cost": 622050500.56,
+      "profitBeforeTax": 241798599.35,
+      "incomeTax": 20513439.92
     },
     {
       "year": 2024,
@@ -270,7 +291,10 @@
       "receivables": 285646531.24,
       "inventory": 207842481.01,
       "liabilities": 488812013.79,
-      "equity": 1741267649.23
+      "equity": 1741267649.23,
+      "cost": 484701767.68,
+      "profitBeforeTax": 181168473.12,
+      "incomeTax": 18917083.88
     },
     {
       "year": 2024,
@@ -1269,32 +1293,37 @@
     {
       "title": "RPT_F10_FINANCE_MAINFINADATA",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22688127.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-30T05:37:43.879181+00:00"
+      "fetchedAt": "2026-09-30T16:45:18.854252+00:00"
     },
     {
       "title": "RPT_VALUEANALYSIS_DET",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22688127.SH%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-30T05:37:44.104468+00:00"
+      "fetchedAt": "2026-09-30T16:45:18.985849+00:00"
     },
     {
       "title": "RPT_DMSK_FN_BALANCE",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22688127.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-30T05:37:44.270871+00:00"
+      "fetchedAt": "2026-09-30T16:45:19.179538+00:00"
     },
     {
       "title": "RPT_DMSK_FN_CASHFLOW",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22688127.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-30T05:37:44.526326+00:00"
+      "fetchedAt": "2026-09-30T16:45:19.344539+00:00"
     },
     {
       "title": "已实施及拟议权益分派",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22688127%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-30"
+      "fetchedAt": "2026-10-01"
     },
     {
       "title": "近180日公开研报目录（同机构留最新）",
-      "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=688127",
-      "fetchedAt": "2026-09-30"
+      "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-04&endTime=2026-10-01&pageNo=1&qType=0&code=688127",
+      "fetchedAt": "2026-10-01"
+    },
+    {
+      "title": "RPT_DMSK_FN_INCOME",
+      "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_INCOME&columns=ALL&filter=%28SECUCODE%3D%22688127.SH%22%29&pageSize=8&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "fetchedAt": "2026-10-01"
     }
   ],
   "forecasts": [],
@@ -1393,7 +1422,7 @@
             "title": "蓝特光学2026年半年度报告",
             "url": "https://static.cninfo.com.cn/finalpage/2026-08-21/1225485663.PDF",
             "publishedAt": "2026-08-21",
-            "pages": "12、13、14、27、31",
+            "pages": "12、13、14、27、31；财务复算：PDF第7、30页",
             "businessPage": 12,
             "sha256": "99eeaba1186f48bc20168ef6464d56ced3fdc125dec24a8bf10a3cffca630c67",
             "reportPeriod": "2026-06-30"
@@ -1412,9 +1441,94 @@
           "quality": "经营现金回收超过当期归母利润，核心盈利增长与收入扩张共同出现。",
           "invalidation": "核心客户项目停产或新光学方案替代，使产品价格、良率与回款下降。"
         },
-        "status": "reviewed",
-        "reviewedAt": "2026-09-30",
-        "reportPeriod": "2026-06-30"
+        "earningsReview": {
+          "code": "688127",
+          "name": "蓝特光学",
+          "reportPeriod": "2026-06-30",
+          "checkedAt": "2026-10-01",
+          "growthDecision": "retain",
+          "breakoutDecision": "retain",
+          "rationale": "中报收入增长75.50%，精密光学产品覆盖消费电子、光通信及显示晶圆。 配合本期毛利到扣非的金额桥、季度盈利和现金核对；业务判断沿用已核对的公司报告。",
+          "priceEffect": "产品收入与毛利率同时观察；公司未逐SKU公开同口径单价、销量和成本，收入规模与毛利率效应不冒称纯销量/纯提价。",
+          "consolidationEffect": "沿用公司合并财报及公开业务范围；未把收购、产品组合或费用影响默认为零，具体经营依据见主营研究和现金/利润桥。",
+          "valuationAssessment": "2026-09-30来源TTM PE 44.45、静态PE 63.73、动态PE 45.54；动态值按累计利润年化，不能作为预测。",
+          "sourceUrls": [
+            "https://static.cninfo.com.cn/finalpage/2026-08-21/1225485663.PDF",
+            "https://static.cninfo.com.cn/finalpage/2026-03-17/1225013060.PDF"
+          ],
+          "quantitativeEvidence": [
+            {
+              "label": "本期扣非利润",
+              "value": 266735956.99,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-21/1225485663.PDF",
+              "sourcePages": "PDF第7页"
+            },
+            {
+              "label": "上年同期扣非利润",
+              "value": 98073702.57,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-21/1225485663.PDF",
+              "sourcePages": "PDF第7页"
+            },
+            {
+              "label": "本期经营现金流",
+              "value": 391243881.77,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-21/1225485663.PDF",
+              "sourcePages": "PDF第7页"
+            },
+            {
+              "label": "毛利增量",
+              "value": 239294064.0299999,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-21/1225485663.PDF",
+              "sourcePages": "PDF第7、30页"
+            },
+            {
+              "label": "收入规模效应（含量价/范围变化）",
+              "value": 156727235.24950808,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-21/1225485663.PDF",
+              "sourcePages": "PDF第7、30页"
+            },
+            {
+              "label": "毛利率效应（含售价/成本/组合）",
+              "value": 82566828.7804918,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-21/1225485663.PDF",
+              "sourcePages": "PDF第7、30页"
+            }
+          ],
+          "marginBridge": {
+            "previousGrossProfit": 207583571.78000003,
+            "currentGrossProfit": 446877635.80999994,
+            "revenueScaleEffect": 156727235.24950808,
+            "marginEffect": 82566828.7804918,
+            "grossProfitChange": 239294064.0299999
+          },
+          "profitBridge": {
+            "grossProfitChange": 239294064.0299999,
+            "otherProfitEffect": -45914992.77999988,
+            "taxEffect": -25628928.279999994,
+            "minorityEffect": 954147.7899999917,
+            "nonRecurringEffect": -42036.339999973774,
+            "coreProfitChange": 168662254.42000002
+          },
+          "unitInputs": [],
+          "limitations": [
+            "收入规模与毛利率桥是会计恒等式，不能单独证明纯销量增长或恒久利润。毛利到扣非利润另扣费用、税、少数股东及非经常损益。"
+          ]
+        },
+        "reviewedAt": "2026-10-01",
+        "reportPeriod": "2026-06-30",
+        "status": "reviewed"
       }
     },
     "security": {
@@ -1425,11 +1539,11 @@
   },
   "pePercentiles": {
     "5": {
-      "value": 30.36,
-      "start": "2021-09-29",
-      "end": "2026-09-29",
-      "observedStart": "2021-09-29",
-      "observedEnd": "2026-09-29",
+      "value": 27.97,
+      "start": "2021-09-30",
+      "end": "2026-09-30",
+      "observedStart": "2021-09-30",
+      "observedEnd": "2026-09-30",
       "samples": 1212,
       "observations": 1212,
       "excluded": 0,
@@ -1440,12 +1554,12 @@
     },
     "10": {
       "value": null,
-      "start": "2016-09-29",
-      "end": "2026-09-29",
+      "start": "2016-09-30",
+      "end": "2026-09-30",
       "observedStart": "2020-09-21",
-      "observedEnd": "2026-09-29",
-      "samples": 1460,
-      "observations": 1460,
+      "observedEnd": "2026-09-30",
+      "samples": 1461,
+      "observations": 1461,
       "excluded": 0,
       "gaps": [],
       "method": "positive_pe_ttm_midrank",
@@ -1454,5 +1568,5 @@
       "reason": "历史不足10年"
     }
   },
-  "pePercentilesAsOf": "2026-09-29"
+  "pePercentilesAsOf": "2026-09-30"
 }

@@ -2,18 +2,18 @@
   "schemaVersion": 2,
   "code": "002463",
   "name": "沪电股份",
-  "asOf": "2026-09-30",
+  "asOf": "2026-10-01",
   "currency": "CNY",
   "amountUnit": "yuan",
   "consolidated": true,
   "quote": {
-    "valuationAsOf": "2026-09-29",
-    "valuationPrice": 119.07,
-    "mcap": 2291.3396635059,
-    "pe": 45.25757007,
-    "peStatic": 59.94652182,
-    "peDynamic": 39.1901,
-    "pb": 12.73730841
+    "valuationAsOf": "2026-09-30",
+    "valuationPrice": 115.93,
+    "mcap": 2230.9146484441,
+    "pe": 44.06408077,
+    "peStatic": 58.36566956,
+    "peDynamic": 38.1567,
+    "pb": 12.40141231
   },
   "reports": [
     {
@@ -46,7 +46,10 @@
       "receivables": 7967258462.0,
       "inventory": 6041283966.0,
       "liabilities": 19659787787.0,
-      "equity": 18003395615.0
+      "equity": 18003395615.0,
+      "cost": 8389487706,
+      "profitBeforeTax": 3308121493,
+      "incomeTax": 384961765
     },
     {
       "year": 2026,
@@ -78,7 +81,10 @@
       "receivables": 6476447190.0,
       "inventory": 4913409150.0,
       "liabilities": 15916037828.0,
-      "equity": 16803981371.0
+      "equity": 16803981371.0,
+      "cost": 3999902225,
+      "profitBeforeTax": 1393378020,
+      "incomeTax": 151938275
     },
     {
       "year": 2025,
@@ -110,7 +116,10 @@
       "receivables": 5507160245.0,
       "inventory": 4245940570.0,
       "liabilities": 13126187360.0,
-      "equity": 15128086679.0
+      "equity": 15128086679.0,
+      "cost": 12224297224,
+      "profitBeforeTax": 4398187220,
+      "incomeTax": 579514112
     },
     {
       "year": 2025,
@@ -142,7 +151,10 @@
       "receivables": 4869838809.0,
       "inventory": 3592309450.0,
       "liabilities": 12310191120.0,
-      "equity": 14004421534.0
+      "equity": 14004421534.0,
+      "cost": 8728624634,
+      "profitBeforeTax": 3110004874,
+      "incomeTax": 396683504
     },
     {
       "year": 2025,
@@ -174,7 +186,10 @@
       "receivables": 4380540222.0,
       "inventory": 3099441471.0,
       "liabilities": 11668181619.0,
-      "equity": 12795584599.0
+      "equity": 12795584599.0,
+      "cost": 5508789969,
+      "profitBeforeTax": 1914252682,
+      "incomeTax": 235938225
     },
     {
       "year": 2025,
@@ -206,7 +221,10 @@
       "receivables": 3993791773.0,
       "inventory": 2798877418.0,
       "liabilities": 10310691516.0,
-      "equity": 12712286309.0
+      "equity": 12712286309.0,
+      "cost": 2715105615,
+      "profitBeforeTax": 891906320,
+      "incomeTax": 131930273
     },
     {
       "year": 2024,
@@ -238,7 +256,10 @@
       "receivables": 4043412696.0,
       "inventory": 2436102152.0,
       "liabilities": 9278509516.0,
-      "equity": 11901426159.0
+      "equity": 11901426159.0,
+      "cost": 8733408277,
+      "profitBeforeTax": 2949759821,
+      "incomeTax": 383444586
     },
     {
       "year": 2024,
@@ -270,7 +291,10 @@
       "receivables": 2974444273.0,
       "inventory": 2690767746.0,
       "liabilities": 8114378220.0,
-      "equity": 10993689736.0
+      "equity": 10993689736.0,
+      "cost": 5791190464,
+      "profitBeforeTax": 2091855274,
+      "incomeTax": 261633353
     },
     {
       "year": 2024,
@@ -1301,32 +1325,37 @@
     {
       "title": "RPT_F10_FINANCE_MAINFINADATA",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22002463.SZ%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:14.288521+00:00"
+      "fetchedAt": "2026-09-30T16:45:06.382526+00:00"
     },
     {
       "title": "RPT_VALUEANALYSIS_DET",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22002463.SZ%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:14.288571+00:00"
+      "fetchedAt": "2026-09-30T16:45:06.726409+00:00"
     },
     {
       "title": "RPT_DMSK_FN_BALANCE",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22002463.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:14.438882+00:00"
+      "fetchedAt": "2026-09-30T16:45:06.914363+00:00"
     },
     {
       "title": "RPT_DMSK_FN_CASHFLOW",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22002463.SZ%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:14.581755+00:00"
+      "fetchedAt": "2026-09-30T16:45:07.118090+00:00"
     },
     {
       "title": "已实施及拟议权益分派",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22002463%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-30"
+      "fetchedAt": "2026-10-01"
     },
     {
       "title": "近180日公开研报目录（同机构留最新）",
-      "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=002463",
-      "fetchedAt": "2026-09-30"
+      "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-04&endTime=2026-10-01&pageNo=1&qType=0&code=002463",
+      "fetchedAt": "2026-10-01"
+    },
+    {
+      "title": "RPT_DMSK_FN_INCOME",
+      "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_INCOME&columns=ALL&filter=%28SECUCODE%3D%22002463.SZ%22%29&pageSize=8&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "fetchedAt": "2026-10-01"
     }
   ],
   "forecasts": [],
@@ -1459,7 +1488,6 @@
     }
   ],
   "peers": [],
-  "fetchErrors": [],
   "researchNotes": [
     {
       "institution": "太平洋",
@@ -1504,39 +1532,7 @@
       "status": "仅核对目录，未把标题视为本研究结论"
     }
   ],
-  "pePercentiles": {
-    "5": {
-      "value": 89.98,
-      "start": "2021-09-29",
-      "end": "2026-09-29",
-      "observedStart": "2021-09-29",
-      "observedEnd": "2026-09-29",
-      "samples": 1212,
-      "observations": 1212,
-      "excluded": 0,
-      "gaps": [],
-      "method": "positive_pe_ttm_midrank",
-      "legacySource": null,
-      "status": "available"
-    },
-    "10": {
-      "value": null,
-      "start": "2016-09-29",
-      "end": "2026-09-29",
-      "observedStart": "2018-01-02",
-      "observedEnd": "2026-09-29",
-      "samples": 2122,
-      "observations": 2122,
-      "excluded": 0,
-      "gaps": [],
-      "method": "positive_pe_ttm_midrank",
-      "legacySource": null,
-      "status": "source_conflict",
-      "reason": "早期估值来源有差异"
-    }
-  },
-  "pePercentilesAsOf": "2026-09-29",
-  "peHistorySourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22002463.SZ%22%29&pageSize=10000&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+  "fetchErrors": [],
   "screeningContext": {
     "profile": {
       "code": "002463",
@@ -1565,7 +1561,7 @@
             "title": "沪电股份2026年半年度报告",
             "url": "https://static.cninfo.com.cn/finalpage/2026-08-26/1225502252.PDF",
             "publishedAt": "2026-08-26",
-            "pages": "7、11、13—14",
+            "pages": "7、11、13—14；财务复算：PDF第7、15、46页",
             "businessPage": 13
           }
         ],
@@ -1579,9 +1575,93 @@
           "quality": "扣非利润占比超过80%，两年与TTM经营现金流为正；扩产开支不能被当期利润替代。",
           "invalidation": "高阶板订单或价格下滑，产能利用率与现金回收未跟上扩产。"
         },
-        "status": "reviewed",
-        "reviewedAt": "2026-09-30",
-        "reportPeriod": "2026-06-30"
+        "earningsReview": {
+          "code": "002463",
+          "name": "沪电股份",
+          "reportPeriod": "2026-06-30",
+          "checkedAt": "2026-10-01",
+          "growthDecision": "retain",
+          "breakoutDecision": "retain",
+          "rationale": "2026中报数据通讯PCB收入增长73.46%，32层及以上产品收入增长190.83%。 配合本期毛利到扣非的金额桥、季度盈利和现金核对；业务判断沿用已核对的公司报告。",
+          "priceEffect": "产品收入与毛利率同时观察；公司未逐SKU公开同口径单价、销量和成本，收入规模与毛利率效应不冒称纯销量/纯提价。",
+          "consolidationEffect": "沿用公司合并财报及公开业务范围；未把收购、产品组合或费用影响默认为零，具体经营依据见主营研究和现金/利润桥。",
+          "valuationAssessment": "2026-09-30来源TTM PE 44.06、静态PE 58.37、动态PE 38.16；动态值按累计利润年化，不能作为预测。",
+          "sourceUrls": [
+            "https://static.cninfo.com.cn/finalpage/2026-08-26/1225502252.PDF"
+          ],
+          "quantitativeEvidence": [
+            {
+              "label": "本期扣非利润",
+              "value": 2794525941.0,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-26/1225502252.PDF",
+              "sourcePages": "PDF第7页"
+            },
+            {
+              "label": "上年同期扣非利润",
+              "value": 1643812901.0,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-26/1225502252.PDF",
+              "sourcePages": "PDF第7页"
+            },
+            {
+              "label": "本期经营现金流",
+              "value": 1150686191.0,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-26/1225502252.PDF",
+              "sourcePages": "PDF第7页"
+            },
+            {
+              "label": "毛利增量",
+              "value": 2314857884.0,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-26/1225502252.PDF",
+              "sourcePages": "PDF第7、15页"
+            },
+            {
+              "label": "收入规模效应（含量价/范围变化）",
+              "value": 1825923363.4626436,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-26/1225502252.PDF",
+              "sourcePages": "PDF第7、15页"
+            },
+            {
+              "label": "毛利率效应（含售价/成本/组合）",
+              "value": 488934520.53735596,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-26/1225502252.PDF",
+              "sourcePages": "PDF第7、15页"
+            }
+          ],
+          "marginBridge": {
+            "previousGrossProfit": 2985081914.0,
+            "currentGrossProfit": 5299939798.0,
+            "revenueScaleEffect": 1825923363.4626436,
+            "marginEffect": 488934520.53735596,
+            "grossProfitChange": 2314857884.0
+          },
+          "profitBridge": {
+            "grossProfitChange": 2314857884.0,
+            "otherProfitEffect": -920989073.0,
+            "taxEffect": -149023540,
+            "minorityEffect": -4264472.0,
+            "nonRecurringEffect": -89867759.0,
+            "coreProfitChange": 1150713040.0
+          },
+          "unitInputs": [],
+          "limitations": [
+            "收入规模与毛利率桥是会计恒等式，不能单独证明纯销量增长或恒久利润。毛利到扣非利润另扣费用、税、少数股东及非经常损益。"
+          ]
+        },
+        "reviewedAt": "2026-10-01",
+        "reportPeriod": "2026-06-30",
+        "status": "reviewed"
       }
     },
     "security": {
@@ -1589,5 +1669,37 @@
       "valuationIndustry": "元件",
       "ind": "元件"
     }
-  }
+  },
+  "pePercentiles": {
+    "5": {
+      "value": 88.9,
+      "start": "2021-09-30",
+      "end": "2026-09-30",
+      "observedStart": "2021-09-30",
+      "observedEnd": "2026-09-30",
+      "samples": 1212,
+      "observations": 1212,
+      "excluded": 0,
+      "gaps": [],
+      "method": "positive_pe_ttm_midrank",
+      "legacySource": null,
+      "status": "available"
+    },
+    "10": {
+      "value": null,
+      "start": "2016-09-30",
+      "end": "2026-09-30",
+      "observedStart": "2018-01-02",
+      "observedEnd": "2026-09-30",
+      "samples": 2123,
+      "observations": 2123,
+      "excluded": 0,
+      "gaps": [],
+      "method": "positive_pe_ttm_midrank",
+      "legacySource": null,
+      "status": "source_conflict",
+      "reason": "早期估值来源有差异"
+    }
+  },
+  "pePercentilesAsOf": "2026-09-30"
 }

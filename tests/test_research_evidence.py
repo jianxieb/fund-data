@@ -176,7 +176,7 @@ class ResearchEvidenceTests(unittest.TestCase):
 
     def test_latest_growth_must_reach_ten_percent_from_a_comparable_base(self):
         row = self.candidate()
-        for key in ['revenue', 'netProfit', 'deductedProfit']:
+        for key in ['netProfit', 'deductedProfit']:
             changed = copy.deepcopy(row)
             changed['latestFinancials'][key + 'Growth'] = 0
             self.assertFalse(quality_review(changed, '2026-09-29')['qualified'], key)
@@ -299,16 +299,15 @@ class ResearchEvidenceTests(unittest.TestCase):
         self.assertTrue(review['historicalQualified'])
         self.assertEqual(review['status'], 'review')
         self.assertFalse(review['qualified'])
-        self.assertEqual([r['pass'] for r in review['recentChecks']], [True, True, False, False, False])
+        self.assertEqual([r['pass'] for r in review['recentChecks']], [True, True, True, False, False])
         failures = [r for r in review['recentChecks'] if not r['pass']]
-        self.assertIn('-28.99%，低于10%增长门槛', failures[0]['reason'])
-        self.assertIn('归母利润同比-32.01%、扣非利润同比-42.96%', failures[1]['reason'])
-        self.assertIn('19.18%→10.73%，相对下降44.06%，超过20%', failures[2]['reason'])
+        self.assertIn('归母利润同比-32.01%、扣非利润同比-42.96%', failures[0]['reason'])
+        self.assertIn('19.18%→10.73%，相对下降44.06%，超过20%', failures[1]['reason'])
         self.assertTrue(all(r['failureKind'] == 'threshold' for r in failures))
 
     def test_recent_screen_requires_due_report_and_same_period_roe(self):
         report = {'reportDate': '2026-06-30', 'roe': 8, 'roePrevious': 10,
-                  'netProfit': 1, 'deductedProfit': 1, 'revenueGrowth': 10,
+                  'revenue': 10, 'netProfit': 1, 'deductedProfit': 1, 'revenueGrowth': 10,
                   'netProfitGrowth': 10, 'deductedProfitGrowth': 10}
         self.assertTrue(all(c['pass'] for c in latest_report_review(report, '2026-09-29')))
         self.assertFalse(latest_report_review(report, '2026-10-31')[0]['pass'])

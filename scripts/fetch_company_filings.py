@@ -20,13 +20,19 @@ def read(url, data=None):
         return response.read()
 
 
+def title_pattern(title):
+    suffix = re.escape(title[5:])
+    suffix = suffix.replace('第一季度', '(?:第一季度|一季度)').replace('第三季度', '(?:第三季度|三季度)')
+    return re.escape(title[:4]) + r'年?' + suffix + r'(?:全文)?(?:[（(][^（）()]*[）)])?$'
+
+
 def select_filing(rows, code, title, asof):
     matches = []
     for row in rows:
         label = re.sub('<[^>]+>', '', row['announcementTitle'])
         published = datetime.fromtimestamp(row['announcementTime'] / 1000,
                                           timezone(timedelta(hours=8))).date().isoformat()
-        pattern = re.escape(title[:4]) + r'年?' + re.escape(title[5:]) + r'(?:全文)?(?:[（(][^（）()]*[）)])?$'
+        pattern = title_pattern(title)
         if row.get('secCode') != code or published > asof or not re.search(pattern, label):
             continue
         if any(word in label for word in ('摘要', '英文', '取消', '更正公告', '董事会', '审核', '审议')):
@@ -43,15 +49,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--codes', required=True, help='Comma separated security codes')
     parser.add_argument('--asof', required=True)
-    parser.add_argument('--periods', default='2026-06-30,2025-12-31', help='Half-year or annual report periods')
+    parser.add_argument('--periods', default='2026-06-30,2025-12-31', help='Quarter, half-year or annual report periods')
     parser.add_argument('--output', required=True)
     parser.add_argument('--pdftotext', required=True, help='Available Poppler executable')
     args = parser.parse_args()
     periods = args.periods.split(',')
     for period in periods:
         datetime.fromisoformat(period)
-        if period[5:] not in ('06-30', '12-31') or period > args.asof:
-            parser.error('仅支持不晚于研究日期的中报和年报期间')
+        if period[5:] not in ('03-31', '06-30', '09-30', '12-31') or period > args.asof:
+            parser.error('仅支持不晚于研究日期的季报、中报和年报期间')
     folder = Path(args.output)
     folder.mkdir(parents=True, exist_ok=True)
     path = folder / 'filings.json'
@@ -60,12 +66,12 @@ def main():
     stocks = {r['code']: r for r in json.loads(read('https://www.cninfo.com.cn/new/data/szse_stock.json'))['stockList']}
     for code in args.codes.split(','):
         for period in periods:
-            title = period[:4] + '年' + ('年度报告' if period.endswith('12-31') else '半年度报告')
+            title = period[:4] + '年' + {'03-31': '第一季度报告', '06-30': '半年度报告', '09-30': '第三季度报告', '12-31': '年度报告'}[period[5:]]
             start = str(int(period[:4]) + (1 if period.endswith('12-31') else 0)) + '-01-01'
             key = code, period
             try:
                 source = by_key.get(key)
-                if source and ('title' not in source or not re.search(re.escape(title[:4]) + r'年?' + re.escape(title[5:]) + r'(?:全文)?(?:[（(][^（）()]*[）)])?$', source['title'])):
+                if source and ('title' not in source or not re.search(title_pattern(title), source['title'])):
                     source = None
                 if not source or not source.get('url'):
                     payload = urlencode({'pageNum': 1, 'pageSize': 30,
@@ -77,7 +83,7 @@ def main():
                     if not source:
                         retry = dict(pageNum=1, pageSize=100, column='sse' if code.startswith('6') else 'szse',
                                      tabName='fulltext', stock=code + ',' + stocks[code]['orgId'],
-                                     searchkey=title[5:], seDate=start + '~' + args.asof, isHLtitle='true')
+                                     searchkey=title[5:].replace('第一季度', '一季度').replace('第三季度', '三季度'), seDate=start + '~' + args.asof, isHLtitle='true')
                         time.sleep(.5)
                         result = json.loads(read(QUERY, urlencode(retry).encode()))
                         source = select_filing(result.get('announcements') or [], code, title, args.asof)
@@ -99,7 +105,7 @@ def main():
                 if not txt.exists():
                     subprocess.run(['rtk', 'proxy', args.pdftotext, '-layout', str(pdf), str(txt)], check=True,
                                    capture_output=True, text=True)
-                if len(txt.read_text().split('\f')) < 20:
+                if len(txt.read_text().split('\f')) < (4 if period[5:] in ('03-31', '09-30') else 20):
                     raise ValueError('报告全文页数异常，需核对原文')
                 source['extracted'] = True
                 source.pop('error', None)

@@ -2,18 +2,18 @@
   "schemaVersion": 2,
   "code": "603256",
   "name": "宏和科技",
-  "asOf": "2026-09-30",
+  "asOf": "2026-10-01",
   "currency": "CNY",
   "amountUnit": "yuan",
   "consolidated": true,
   "quote": {
-    "valuationAsOf": "2026-09-29",
-    "valuationPrice": 139.05,
-    "mcap": 1257.8274517725,
-    "pe": 254.60814477,
-    "peStatic": 622.95411996,
-    "peDynamic": 165.7275,
-    "pb": 42.64795356
+    "valuationAsOf": "2026-09-30",
+    "valuationPrice": 130.7,
+    "mcap": 1182.294483615,
+    "pe": 239.3188387,
+    "peStatic": 585.54551225,
+    "peDynamic": 155.7755,
+    "pb": 40.08692938
   },
   "reports": [
     {
@@ -46,7 +46,10 @@
       "receivables": 691933838.3,
       "inventory": 355918809.99,
       "liabilities": 2943288168.47,
-      "equity": 2949326630.58
+      "equity": 2949326630.58,
+      "cost": 426020016.6,
+      "profitBeforeTax": 434436199.58,
+      "incomeTax": 54949601.93
     },
     {
       "year": 2026,
@@ -78,7 +81,10 @@
       "receivables": 536248396.78,
       "inventory": 278141420.2,
       "liabilities": 1730548365.96,
-      "equity": 2771582504.23
+      "equity": 2771582504.23,
+      "cost": 196051319.62,
+      "profitBeforeTax": 167114348.2,
+      "incomeTax": 26883597.3
     },
     {
       "year": 2025,
@@ -110,7 +116,10 @@
       "receivables": 441246548.36,
       "inventory": 194715421.34,
       "liabilities": 1632798388.91,
-      "equity": 1649889293.2
+      "equity": 1649889293.2,
+      "cost": 754468721.17,
+      "profitBeforeTax": 224651558.78,
+      "incomeTax": 22738221.75
     },
     {
       "year": 2025,
@@ -142,7 +151,10 @@
       "receivables": 385373446.17,
       "inventory": 168612903.91,
       "liabilities": 1263743172.33,
-      "equity": 1587490873.55
+      "equity": 1587490873.55,
+      "cost": 574380460.58,
+      "profitBeforeTax": 156712608.75,
+      "incomeTax": 17904200.11
     },
     {
       "year": 2025,
@@ -174,7 +186,10 @@
       "receivables": 391574526.84,
       "inventory": 161475124.19,
       "liabilities": 1133126171.54,
-      "equity": 1537928801.1
+      "equity": 1537928801.1,
+      "cost": 377773936.98,
+      "profitBeforeTax": 98377141.59,
+      "incomeTax": 11002035.9
     },
     {
       "year": 2025,
@@ -206,7 +221,10 @@
       "receivables": 333424955.6,
       "inventory": 179004568.79,
       "liabilities": 1034007613.75,
-      "equity": 1481168083.8
+      "equity": 1481168083.8,
+      "cost": 176962748.18,
+      "profitBeforeTax": 35929731.53,
+      "incomeTax": 5056561.45
     },
     {
       "year": 2024,
@@ -238,7 +256,10 @@
       "receivables": 304333277.05,
       "inventory": 175572347.07,
       "liabilities": 1058678405.38,
-      "equity": 1450039422.01
+      "equity": 1450039422.01,
+      "cost": 689667880.19,
+      "profitBeforeTax": 19812446.85,
+      "incomeTax": -2988487.07
     },
     {
       "year": 2024,
@@ -270,7 +291,10 @@
       "receivables": 283267124.72,
       "inventory": 184408377.43,
       "liabilities": 1131082993.4,
-      "equity": 1436051241.41
+      "equity": 1436051241.41,
+      "cost": 516979144.76,
+      "profitBeforeTax": 9305500.98,
+      "incomeTax": 1578663.13
     },
     {
       "year": 2024,
@@ -1205,32 +1229,37 @@
     {
       "title": "RPT_F10_FINANCE_MAINFINADATA",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22603256.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-30T05:37:45.077742+00:00"
+      "fetchedAt": "2026-09-30T16:45:16.041677+00:00"
     },
     {
       "title": "RPT_VALUEANALYSIS_DET",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22603256.SH%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-30T05:37:45.234762+00:00"
+      "fetchedAt": "2026-09-30T16:45:16.346432+00:00"
     },
     {
       "title": "RPT_DMSK_FN_BALANCE",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22603256.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-30T05:37:45.402726+00:00"
+      "fetchedAt": "2026-09-30T16:45:16.713198+00:00"
     },
     {
       "title": "RPT_DMSK_FN_CASHFLOW",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22603256.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-30T05:37:45.538530+00:00"
+      "fetchedAt": "2026-09-30T16:45:16.872343+00:00"
     },
     {
       "title": "已实施及拟议权益分派",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22603256%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-30"
+      "fetchedAt": "2026-10-01"
     },
     {
       "title": "近180日公开研报目录（同机构留最新）",
-      "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=603256",
-      "fetchedAt": "2026-09-30"
+      "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-04&endTime=2026-10-01&pageNo=1&qType=0&code=603256",
+      "fetchedAt": "2026-10-01"
+    },
+    {
+      "title": "RPT_DMSK_FN_INCOME",
+      "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_INCOME&columns=ALL&filter=%28SECUCODE%3D%22603256.SH%22%29&pageSize=8&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "fetchedAt": "2026-10-01"
     }
   ],
   "forecasts": [],
@@ -1336,7 +1365,7 @@
             "title": "宏和科技2026年半年度报告",
             "url": "https://static.cninfo.com.cn/finalpage/2026-08-14/1225471942.PDF",
             "publishedAt": "2026-08-14",
-            "pages": "10、12、21",
+            "pages": "10、12、21；财务复算：PDF第6、14页",
             "businessPage": 10,
             "sha256": "ce1834781e2f937cfa986886fc56ec45a6136e494b296279a587714c72d9fb63",
             "reportPeriod": "2026-06-30"
@@ -1355,9 +1384,94 @@
           "quality": "现金回收为归母利润约73%，需分拆高端产品量增与玻纤布行业涨价。",
           "invalidation": "下游高端PCB需求减速或价格回落，扩建产能无法消化并使现金承压。"
         },
-        "status": "reviewed",
-        "reviewedAt": "2026-09-30",
-        "reportPeriod": "2026-06-30"
+        "earningsReview": {
+          "code": "603256",
+          "name": "宏和科技",
+          "reportPeriod": "2026-06-30",
+          "checkedAt": "2026-10-01",
+          "growthDecision": "retain",
+          "breakoutDecision": "retain",
+          "rationale": "低介电及低热膨胀特种电子布经过客户认证，2025起批量供应CCL客户。 配合本期毛利到扣非的金额桥、季度盈利和现金核对；业务判断沿用已核对的公司报告。",
+          "priceEffect": "产品收入与毛利率同时观察；公司未逐SKU公开同口径单价、销量和成本，收入规模与毛利率效应不冒称纯销量/纯提价。",
+          "consolidationEffect": "沿用公司合并财报及公开业务范围；未把收购、产品组合或费用影响默认为零，具体经营依据见主营研究和现金/利润桥。",
+          "valuationAssessment": "2026-09-30来源TTM PE 239.32、静态PE 585.55、动态PE 155.78；动态值按累计利润年化，不能作为预测。当前倍数对盈利持续性要求较高，经营入选不表示当前价格便宜。",
+          "sourceUrls": [
+            "https://static.cninfo.com.cn/finalpage/2026-08-14/1225471942.PDF",
+            "https://static.cninfo.com.cn/finalpage/2026-04-10/1225088508.PDF"
+          ],
+          "quantitativeEvidence": [
+            {
+              "label": "本期扣非利润",
+              "value": 372705576.25,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-14/1225471942.PDF",
+              "sourcePages": "PDF第6页"
+            },
+            {
+              "label": "上年同期扣非利润",
+              "value": 82661949.76,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-14/1225471942.PDF",
+              "sourcePages": "PDF第6页"
+            },
+            {
+              "label": "本期经营现金流",
+              "value": 278520632.79,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-14/1225471942.PDF",
+              "sourcePages": "PDF第6页"
+            },
+            {
+              "label": "毛利增量",
+              "value": 449225574.06000006,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-14/1225471942.PDF",
+              "sourcePages": "PDF第6、14页"
+            },
+            {
+              "label": "收入规模效应（含量价/范围变化）",
+              "value": 156005784.17260602,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-14/1225471942.PDF",
+              "sourcePages": "PDF第6、14页"
+            },
+            {
+              "label": "毛利率效应（含售价/成本/组合）",
+              "value": 293219789.8873941,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-14/1225471942.PDF",
+              "sourcePages": "PDF第6、14页"
+            }
+          ],
+          "marginBridge": {
+            "previousGrossProfit": 172593879.91999996,
+            "currentGrossProfit": 621819453.98,
+            "revenueScaleEffect": 156005784.17260602,
+            "marginEffect": 293219789.8873941,
+            "grossProfitChange": 449225574.06000006
+          },
+          "profitBridge": {
+            "grossProfitChange": 449225574.06000006,
+            "otherProfitEffect": -113166516.07000008,
+            "taxEffect": -43947566.03,
+            "minorityEffect": 0.0,
+            "nonRecurringEffect": -2067865.469999984,
+            "coreProfitChange": 290043626.49
+          },
+          "unitInputs": [],
+          "limitations": [
+            "收入规模与毛利率桥是会计恒等式，不能单独证明纯销量增长或恒久利润。毛利到扣非利润另扣费用、税、少数股东及非经常损益。"
+          ]
+        },
+        "reviewedAt": "2026-10-01",
+        "reportPeriod": "2026-06-30",
+        "status": "reviewed"
       }
     },
     "security": {
@@ -1368,11 +1482,11 @@
   },
   "pePercentiles": {
     "5": {
-      "value": 71.67,
-      "start": "2021-09-29",
-      "end": "2026-09-29",
-      "observedStart": "2021-09-29",
-      "observedEnd": "2026-09-29",
+      "value": 70.31,
+      "start": "2021-09-30",
+      "end": "2026-09-30",
+      "observedStart": "2021-09-30",
+      "observedEnd": "2026-09-30",
       "samples": 810,
       "observations": 1212,
       "excluded": 402,
@@ -1383,12 +1497,12 @@
     },
     "10": {
       "value": null,
-      "start": "2016-09-29",
-      "end": "2026-09-29",
+      "start": "2016-09-30",
+      "end": "2026-09-30",
       "observedStart": "2019-07-19",
-      "observedEnd": "2026-09-29",
-      "samples": 1345,
-      "observations": 1747,
+      "observedEnd": "2026-09-30",
+      "samples": 1346,
+      "observations": 1748,
       "excluded": 402,
       "gaps": [],
       "method": "positive_pe_ttm_midrank",
@@ -1397,5 +1511,5 @@
       "reason": "历史不足10年"
     }
   },
-  "pePercentilesAsOf": "2026-09-29"
+  "pePercentilesAsOf": "2026-09-30"
 }

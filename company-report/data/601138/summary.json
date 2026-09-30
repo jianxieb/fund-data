@@ -2,18 +2,18 @@
   "schemaVersion": 2,
   "code": "601138",
   "name": "工业富联",
-  "asOf": "2026-09-30",
+  "asOf": "2026-10-01",
   "currency": "CNY",
   "amountUnit": "yuan",
   "consolidated": true,
   "quote": {
-    "valuationAsOf": "2026-09-29",
-    "valuationPrice": 58.42,
-    "mcap": 11592.9187123128,
-    "pe": 24.71170515,
-    "peStatic": 32.85456822,
-    "peDynamic": 24.416,
-    "pb": 6.59613382
+    "valuationAsOf": "2026-09-30",
+    "valuationPrice": 58.2,
+    "mcap": 11549.261709288001,
+    "pe": 24.61864498,
+    "peStatic": 32.73084339,
+    "peDynamic": 24.324,
+    "pb": 6.57129388
   },
   "reports": [
     {
@@ -46,7 +46,10 @@
       "receivables": 127522458000.0,
       "inventory": 192109117000.0,
       "liabilities": 336652207000.0,
-      "equity": 176097978000.0
+      "equity": 176097978000.0,
+      "cost": 517969798000,
+      "profitBeforeTax": 27816953000,
+      "incomeTax": 4067872000
     },
     {
       "year": 2026,
@@ -78,7 +81,10 @@
       "receivables": 102501294000.0,
       "inventory": 167332053000.0,
       "liabilities": 280632103000.0,
-      "equity": 176555892000.0
+      "equity": 176555892000.0,
+      "cost": 232622564000,
+      "profitBeforeTax": 12323577000,
+      "incomeTax": 1727058000
     },
     {
       "year": 2025,
@@ -110,7 +116,10 @@
       "receivables": 110741559000.0,
       "inventory": 150912711000.0,
       "liabilities": 289109592000.0,
-      "equity": 167114230000.0
+      "equity": 167114230000.0,
+      "cost": 839901600000,
+      "profitBeforeTax": 41042184000,
+      "incomeTax": 5713122000
     },
     {
       "year": 2025,
@@ -142,7 +151,10 @@
       "receivables": 85779512000.0,
       "inventory": 164664271000.0,
       "liabilities": 285472758000.0,
-      "equity": 161865624000.0
+      "equity": 161865624000.0,
+      "cost": 563085829000,
+      "profitBeforeTax": 26243773000,
+      "incomeTax": 3722201000
     },
     {
       "year": 2025,
@@ -174,7 +186,10 @@
       "receivables": 97799015000.0,
       "inventory": 122949245000.0,
       "liabilities": 231140143000.0,
-      "equity": 151987941000.0
+      "equity": 151987941000.0,
+      "cost": 336934278000,
+      "profitBeforeTax": 14023018000,
+      "incomeTax": 1885128000
     },
     {
       "year": 2025,
@@ -206,7 +221,10 @@
       "receivables": 85205740000.0,
       "inventory": 119976504000.0,
       "liabilities": 205036669000.0,
-      "equity": 157627028000.0
+      "equity": 157627028000.0,
+      "cost": 149611900000,
+      "profitBeforeTax": 5885332000,
+      "incomeTax": 633766000
     },
     {
       "year": 2024,
@@ -238,7 +256,10 @@
       "receivables": 94507748000.0,
       "inventory": 85265717000.0,
       "liabilities": 164387028000.0,
-      "equity": 153136491000.0
+      "equity": 153136491000.0,
+      "cost": 564814240000,
+      "profitBeforeTax": 25973636000,
+      "incomeTax": 2718630000
     },
     {
       "year": 2024,
@@ -270,7 +291,10 @@
       "receivables": 117766835000.0,
       "inventory": 90334675000.0,
       "liabilities": 164471247000.0,
-      "equity": 143971969000.0
+      "equity": 143971969000.0,
+      "cost": 406595251000,
+      "profitBeforeTax": 16829655000,
+      "incomeTax": 1679678000
     },
     {
       "year": 2024,
@@ -1301,32 +1325,37 @@
     {
       "title": "RPT_F10_FINANCE_MAINFINADATA",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22601138.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:15.349981+00:00"
+      "fetchedAt": "2026-09-30T16:45:14.620698+00:00"
     },
     {
       "title": "RPT_VALUEANALYSIS_DET",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22601138.SH%22%29&pageSize=2&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:15.350007+00:00"
+      "fetchedAt": "2026-09-30T16:45:14.763297+00:00"
     },
     {
       "title": "RPT_DMSK_FN_BALANCE",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_BALANCE&columns=ALL&filter=%28SECUCODE%3D%22601138.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:15.533149+00:00"
+      "fetchedAt": "2026-09-30T16:45:15.013853+00:00"
     },
     {
       "title": "RPT_DMSK_FN_CASHFLOW",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_CASHFLOW&columns=ALL&filter=%28SECUCODE%3D%22601138.SH%22%29&pageSize=32&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-29T16:16:15.656319+00:00"
+      "fetchedAt": "2026-09-30T16:45:15.187064+00:00"
     },
     {
       "title": "已实施及拟议权益分派",
       "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22601138%22%29&pageSize=100&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
-      "fetchedAt": "2026-09-30"
+      "fetchedAt": "2026-10-01"
     },
     {
       "title": "近180日公开研报目录（同机构留最新）",
-      "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-03&endTime=2026-09-30&pageNo=1&qType=0&code=601138",
-      "fetchedAt": "2026-09-30"
+      "url": "https://reportapi.eastmoney.com/report/list?industryCode=%2A&pageSize=100&industry=%2A&rating=%2A&ratingChange=%2A&beginTime=2026-04-04&endTime=2026-10-01&pageNo=1&qType=0&code=601138",
+      "fetchedAt": "2026-10-01"
+    },
+    {
+      "title": "RPT_DMSK_FN_INCOME",
+      "url": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_DMSK_FN_INCOME&columns=ALL&filter=%28SECUCODE%3D%22601138.SH%22%29&pageSize=8&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "fetchedAt": "2026-10-01"
     }
   ],
   "forecasts": [],
@@ -1414,7 +1443,6 @@
     }
   ],
   "peers": [],
-  "fetchErrors": [],
   "researchNotes": [
     {
       "institution": "中邮证券",
@@ -1459,39 +1487,7 @@
       "status": "仅核对目录，未把标题视为本研究结论"
     }
   ],
-  "pePercentiles": {
-    "5": {
-      "value": 74.96,
-      "start": "2021-09-29",
-      "end": "2026-09-29",
-      "observedStart": "2021-09-29",
-      "observedEnd": "2026-09-29",
-      "samples": 1212,
-      "observations": 1212,
-      "excluded": 0,
-      "gaps": [],
-      "method": "positive_pe_ttm_midrank",
-      "legacySource": null,
-      "status": "available"
-    },
-    "10": {
-      "value": null,
-      "start": "2016-09-29",
-      "end": "2026-09-29",
-      "observedStart": "2018-06-08",
-      "observedEnd": "2026-09-29",
-      "samples": 2018,
-      "observations": 2018,
-      "excluded": 0,
-      "gaps": [],
-      "method": "positive_pe_ttm_midrank",
-      "legacySource": "https://eniu.com/chart/pea/sh601138/t/all",
-      "status": "short_history",
-      "reason": "历史不足10年"
-    }
-  },
-  "pePercentilesAsOf": "2026-09-29",
-  "peHistorySourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_VALUEANALYSIS_DET&columns=ALL&filter=%28SECUCODE%3D%22601138.SH%22%29&pageSize=10000&pageNumber=1&sortColumns=TRADE_DATE&sortTypes=-1",
+  "fetchErrors": [],
   "screeningContext": {
     "profile": {
       "code": "601138",
@@ -1530,13 +1526,97 @@
           "invalidation": "云计算客户削减资本开支，或应收及存货持续吞噬新增利润。"
         },
         "growth": {
-          "driver": "中报云计算与AI服务器交付放量，两个单季营收、归母及扣非利润增速均超过门槛。",
+          "driver": "中报云计算与AI服务器交付放量，连续两个单季归母及扣非利润均增长超过30%。",
           "quality": "扣非利润与归母利润增长接近，最近两年和TTM经营现金流为正；当期现金转化偏低仍单列风险。",
-          "invalidation": "服务器需求回落，或下一季营收/扣非增长跌破门槛且营运资金继续占用。"
+          "invalidation": "服务器需求回落，或下一季归母/扣非增长不足30%且营运资金继续占用。"
         },
-        "status": "reviewed",
-        "reviewedAt": "2026-09-30",
-        "reportPeriod": "2026-06-30"
+        "earningsReview": {
+          "code": "601138",
+          "name": "工业富联",
+          "reportPeriod": "2026-06-30",
+          "checkedAt": "2026-10-01",
+          "growthDecision": "retain",
+          "breakoutDecision": "retain",
+          "rationale": "2026中报云计算收入增长75.7%，云服务商AI服务器收入增长2.3倍。 配合本期毛利到扣非的金额桥、季度盈利和现金核对；业务判断沿用已核对的公司报告。",
+          "priceEffect": "产品收入与毛利率同时观察；公司未逐SKU公开同口径单价、销量和成本，收入规模与毛利率效应不冒称纯销量/纯提价。",
+          "consolidationEffect": "沿用公司合并财报及公开业务范围；未把收购、产品组合或费用影响默认为零，具体经营依据见主营研究和现金/利润桥。",
+          "valuationAssessment": "2026-09-30来源TTM PE 24.62、静态PE 32.73、动态PE 24.32；动态值按累计利润年化，不能作为预测。",
+          "sourceUrls": [
+            "https://static.cninfo.com.cn/finalpage/2026-08-12/1225468066.PDF"
+          ],
+          "quantitativeEvidence": [
+            {
+              "label": "本期扣非利润",
+              "value": 22984123000.0,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-12/1225468066.PDF",
+              "sourcePages": "9、11、19"
+            },
+            {
+              "label": "上年同期扣非利润",
+              "value": 11667840000.0,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-12/1225468066.PDF",
+              "sourcePages": "9、11、19"
+            },
+            {
+              "label": "本期经营现金流",
+              "value": 7391463000.0,
+              "unit": "元",
+              "basis": "disclosed",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-12/1225468066.PDF",
+              "sourcePages": "9、11、19"
+            },
+            {
+              "label": "毛利增量",
+              "value": 16065472000.0,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-12/1225468066.PDF",
+              "sourcePages": "9、11、19"
+            },
+            {
+              "label": "收入规模效应（含量价/范围变化）",
+              "value": 13016990697.881617,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-12/1225468066.PDF",
+              "sourcePages": "9、11、19"
+            },
+            {
+              "label": "毛利率效应（含售价/成本/组合）",
+              "value": 3048481302.118381,
+              "unit": "元",
+              "basis": "calculated",
+              "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-12/1225468066.PDF",
+              "sourcePages": "9、11、19"
+            }
+          ],
+          "marginBridge": {
+            "previousGrossProfit": 23825375000.0,
+            "currentGrossProfit": 39890847000.0,
+            "revenueScaleEffect": 13016990697.881617,
+            "marginEffect": 3048481302.118381,
+            "grossProfitChange": 16065472000.0
+          },
+          "profitBridge": {
+            "grossProfitChange": 16065472000.0,
+            "otherProfitEffect": -2271537000.0,
+            "taxEffect": -2182744000,
+            "minorityEffect": 15910000.0,
+            "nonRecurringEffect": -310818000.0,
+            "coreProfitChange": 11316283000.0
+          },
+          "unitInputs": [],
+          "limitations": [
+            "收入规模与毛利率桥是会计恒等式，不能单独证明纯销量增长或恒久利润。毛利到扣非利润另扣费用、税、少数股东及非经常损益。"
+          ]
+        },
+        "reviewedAt": "2026-10-01",
+        "reportPeriod": "2026-06-30",
+        "status": "reviewed"
       }
     },
     "security": {
@@ -1544,5 +1624,37 @@
       "valuationIndustry": "消费电子",
       "ind": "消费电子"
     }
-  }
+  },
+  "pePercentiles": {
+    "5": {
+      "value": 74.59,
+      "start": "2021-09-30",
+      "end": "2026-09-30",
+      "observedStart": "2021-09-30",
+      "observedEnd": "2026-09-30",
+      "samples": 1212,
+      "observations": 1212,
+      "excluded": 0,
+      "gaps": [],
+      "method": "positive_pe_ttm_midrank",
+      "legacySource": null,
+      "status": "available"
+    },
+    "10": {
+      "value": null,
+      "start": "2016-09-30",
+      "end": "2026-09-30",
+      "observedStart": "2018-06-08",
+      "observedEnd": "2026-09-30",
+      "samples": 2019,
+      "observations": 2019,
+      "excluded": 0,
+      "gaps": [],
+      "method": "positive_pe_ttm_midrank",
+      "legacySource": "https://eniu.com/chart/pea/sh601138/t/all",
+      "status": "short_history",
+      "reason": "历史不足10年"
+    }
+  },
+  "pePercentilesAsOf": "2026-09-30"
 }
