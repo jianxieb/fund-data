@@ -1602,7 +1602,19 @@
         "breakout": {
           "driver": "稀土产品产销与价格走强共同推动两季利润翻倍，不将资源涨价解释为永久增长。",
           "quality": "当期现金回收为归母利润约59%；生产和资源采购政策带来周期约束。",
-          "invalidation": "稀土价格下跌、配额收紧或采购成本提高，使核心利润和回款转弱。"
+          "invalidation": "稀土价格下跌、配额收紧或采购成本提高，使核心利润和回款转弱。",
+          "operatingReview": {
+            "decision": "exclude",
+            "growthSource": "commodity_prices",
+            "reportPeriod": "2026-06-30",
+            "checkedAt": "2026-09-30",
+            "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-20/1225483017.PDF",
+            "sourcePages": "8—9、18、24",
+            "rationale": "移出业绩爆发：中报明确稀土供需偏紧、价格上涨，同时产销创高；未证明排除稀土价格回升后的核心盈利仍持续翻倍。",
+            "priceEffect": "产品价格与销量共同改善，商品供需是主要经营变量；低基数与价格回升不能独立证明持续成长。",
+            "consolidationEffect": "本次经营证据指向量价变化，不以未披露的并表增量作解释。",
+            "valuationAssessment": "估值单独判断：2026-09-29的TTM PE 37.95倍、动态PE 31.17倍；动态PE仅为本期累计利润年化，并非预测。不能由名单入选推导便宜，周期/并表盈利也不能直接外推。"
+          }
         },
         "stageConstraint": "稀土价格、生产配额与资源采购规则影响利润。",
         "status": "reviewed",

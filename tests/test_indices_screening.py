@@ -317,6 +317,17 @@ class ScreeningTests(unittest.TestCase):
         self.assertNotIn('mdd_all', result)
         self.assertGreaterEqual(result['first'], '2016-09-01')
 
+    def test_newly_listed_index_product_keeps_nav_without_fabricating_year_windows(self):
+        rows = [dict(FSRQ=d, DWJZ=str(v), FHFCZ=0, SPLIT_FACTOR=1)
+                for d, v in weekdays('2026-03-18')]
+        result = screening.deep_metrics(rows)
+        self.assertIsNotNone(result)
+        self.assertEqual(result['first'], '2026-03-18')
+        for year in (1, 2, 3, 5, 10):
+            self.assertNotIn('ret%d' % year, result)
+        self.assertNotIn('mdd5', result)
+        self.assertNotIn('vol5', result)
+
     def test_verifying_a_subset_keeps_previous_evidence(self):
         with tempfile.TemporaryDirectory() as tmp:
             directory = Path(tmp) / 'data'

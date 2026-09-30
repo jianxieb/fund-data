@@ -1,8 +1,8 @@
 {
   "asOf": "2026-09-30",
-  "scope": "全市场财务发现87条线索；本次新增28家经营复核，其中24家发布、4家因具体业务或证据条件未发布；其余线索尚未完成业务核查。",
+  "scope": "全市场财务发现87条线索；新增28家经营复核，周期与并表复核后20家新增发布。原有东山精密同时移出爆发股。未完成经营研究的线索仍保留在发现档案。",
   "newReviewed": 28,
-  "newPublished": 24,
+  "newPublished": 20,
   "records": [
     {
       "code": "000426",
@@ -392,11 +392,15 @@
         },
         "breakout": {
           "financialQualified": true,
-          "failedConditions": []
+          "failedConditions": [],
+          "qualified": false,
+          "businessFailedConditions": [
+            "移出业绩爆发：资源化业务占中报收入94.78%，收入增长27.40%；清洁能源设备仅占4.86%、增长6.32%，缺金属价格中性条件下的核心利润增长拆分。"
+          ]
         }
       },
       "businessStatus": "reviewed",
-      "decision": "逐家公司核对后按相应规则显示。",
+      "decision": "移出业绩爆发：资源化业务占中报收入94.78%，收入增长27.40%；清洁能源设备仅占4.86%、增长6.32%，缺金属价格中性条件下的核心利润增长拆分。",
       "sources": [
         {
           "title": "浙富控股2026年半年度报告",
@@ -416,9 +420,19 @@
           "reportPeriod": "2025-12-31"
         }
       ],
-      "publishedGroups": [
-        "业绩爆发"
-      ]
+      "publishedGroups": [],
+      "operatingReview": {
+        "decision": "exclude",
+        "growthSource": "resource_prices_unseparated",
+        "reportPeriod": "2026-06-30",
+        "checkedAt": "2026-09-30",
+        "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225524656.PDF",
+        "sourcePages": "15、24",
+        "rationale": "移出业绩爆发：资源化业务占中报收入94.78%，收入增长27.40%；清洁能源设备仅占4.86%、增长6.32%，缺金属价格中性条件下的核心利润增长拆分。",
+        "priceEffect": "回收销售金属的价格影响毛利；未定量拆分销量、加工回收能力与价格对利润的贡献，不将高利润增速直接判作结构性放量。",
+        "consolidationEffect": "现有证据不能用清洁能源设备的小体量增长解释合并报表利润翻倍；本次不借并购假设填补归因缺口。",
+        "valuationAssessment": "估值单独判断：2026-09-29的TTM PE 12.42倍、动态PE 8.74倍；动态PE仅为本期累计利润年化，并非预测。不能由名单入选推导便宜，周期/并表盈利也不能直接外推。"
+      }
     },
     {
       "code": "002384",
@@ -444,11 +458,15 @@
         },
         "breakout": {
           "financialQualified": true,
-          "failedConditions": []
+          "failedConditions": [],
+          "qualified": false,
+          "businessFailedConditions": [
+            "移出业绩爆发：中报将增长部分归于索尔思、GMD并表，缺原合并范围下两季核心利润增长拆分；经营现金流同比下降4.65%。"
+          ]
         }
       },
       "businessStatus": "previously_reviewed",
-      "decision": "已有具名报告，本次使用相同财务规则重新核对。",
+      "decision": "移出业绩爆发：中报将增长部分归于索尔思、GMD并表，缺原合并范围下两季核心利润增长拆分；经营现金流同比下降4.65%。",
       "sources": [
         {
           "title": "东山精密2026年半年度报告",
@@ -458,9 +476,19 @@
           "businessPage": 7
         }
       ],
-      "publishedGroups": [
-        "业绩爆发"
-      ]
+      "publishedGroups": [],
+      "operatingReview": {
+        "decision": "exclude",
+        "growthSource": "consolidation_unseparated",
+        "reportPeriod": "2026-06-30",
+        "checkedAt": "2026-09-30",
+        "sourceUrl": "https://disc.static.szse.cn/disc/disk03/finalpage/2026-08-22/9290e257-66b5-4681-a8ce-824cd1e6d853.PDF",
+        "sourcePages": "8、19—20",
+        "rationale": "移出业绩爆发：中报将增长部分归于索尔思、GMD并表，缺原合并范围下两季核心利润增长拆分；经营现金流同比下降4.65%。",
+        "priceEffect": "AI相关产品与客户增长有业务依据，但未量化产品、价格与原业务利润贡献，不能把合并增速直接当作有机扩张。",
+        "consolidationEffect": "2025年收购索尔思、GMD改变可比范围；本期购建长期资产52.53亿元高于经营现金23.84亿元，融资与交付回款仍需核对。",
+        "valuationAssessment": "估值单独判断：2026-09-29的TTM PE 87.47倍、动态PE 53.03倍；动态PE仅为本期累计利润年化，并非预测。不能由名单入选推导便宜，周期/并表盈利也不能直接外推。"
+      }
     },
     {
       "code": "002463",
@@ -660,11 +688,15 @@
         },
         "breakout": {
           "financialQualified": true,
-          "failedConditions": []
+          "failedConditions": [],
+          "qualified": false,
+          "businessFailedConditions": [
+            "移出业绩爆发：中报将收入与现金流增长归于碳酸锂销量、价格及毛利回升；缺剔除锂价回升后的连续核心盈利扩张证据。"
+          ]
         }
       },
       "businessStatus": "reviewed",
-      "decision": "逐家公司核对后按相应规则显示。",
+      "decision": "移出业绩爆发：中报将收入与现金流增长归于碳酸锂销量、价格及毛利回升；缺剔除锂价回升后的连续核心盈利扩张证据。",
       "sources": [
         {
           "title": "永兴材料2026年半年度报告",
@@ -684,9 +716,19 @@
           "reportPeriod": "2025-12-31"
         }
       ],
-      "publishedGroups": [
-        "业绩爆发"
-      ]
+      "publishedGroups": [],
+      "operatingReview": {
+        "decision": "exclude",
+        "growthSource": "commodity_prices",
+        "reportPeriod": "2026-06-30",
+        "checkedAt": "2026-09-30",
+        "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-25/1225496651.PDF",
+        "sourcePages": "12、16、22—23",
+        "rationale": "移出业绩爆发：中报将收入与现金流增长归于碳酸锂销量、价格及毛利回升；缺剔除锂价回升后的连续核心盈利扩张证据。",
+        "priceEffect": "销售量也有增长，但商品价格贡献未单独量化，不能用两季低基数翻倍证明结构性成长。",
+        "consolidationEffect": "本次所列经营说明以锂业务量价回升为主，不将未披露的并购贡献假定为增长来源。",
+        "valuationAssessment": "估值单独判断：2026-09-29的TTM PE 17.09倍、动态PE 10.86倍；动态PE仅为本期累计利润年化，并非预测。不能由名单入选推导便宜，周期/并表盈利也不能直接外推。"
+      }
     },
     {
       "code": "002916",
@@ -1584,11 +1626,15 @@
         },
         "breakout": {
           "financialQualified": true,
-          "failedConditions": []
+          "failedConditions": [],
+          "qualified": false,
+          "businessFailedConditions": [
+            "移出业绩爆发：中报明确稀土供需偏紧、价格上涨，同时产销创高；未证明排除稀土价格回升后的核心盈利仍持续翻倍。"
+          ]
         }
       },
       "businessStatus": "reviewed",
-      "decision": "逐家公司核对后按相应规则显示。",
+      "decision": "移出业绩爆发：中报明确稀土供需偏紧、价格上涨，同时产销创高；未证明排除稀土价格回升后的核心盈利仍持续翻倍。",
       "sources": [
         {
           "title": "北方稀土2026年半年度报告",
@@ -1608,9 +1654,19 @@
           "reportPeriod": "2025-12-31"
         }
       ],
-      "publishedGroups": [
-        "业绩爆发"
-      ]
+      "publishedGroups": [],
+      "operatingReview": {
+        "decision": "exclude",
+        "growthSource": "commodity_prices",
+        "reportPeriod": "2026-06-30",
+        "checkedAt": "2026-09-30",
+        "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-20/1225483017.PDF",
+        "sourcePages": "8—9、18、24",
+        "rationale": "移出业绩爆发：中报明确稀土供需偏紧、价格上涨，同时产销创高；未证明排除稀土价格回升后的核心盈利仍持续翻倍。",
+        "priceEffect": "产品价格与销量共同改善，商品供需是主要经营变量；低基数与价格回升不能独立证明持续成长。",
+        "consolidationEffect": "本次经营证据指向量价变化，不以未披露的并表增量作解释。",
+        "valuationAssessment": "估值单独判断：2026-09-29的TTM PE 37.95倍、动态PE 31.17倍；动态PE仅为本期累计利润年化，并非预测。不能由名单入选推导便宜，周期/并表盈利也不能直接外推。"
+      }
     },
     {
       "code": "600183",
@@ -1989,11 +2045,13 @@
         },
         "breakout": {
           "financialQualified": true,
-          "failedConditions": []
+          "failedConditions": [],
+          "qualified": true,
+          "businessFailedConditions": []
         }
       },
       "businessStatus": "previously_reviewed",
-      "decision": "已有具名报告，本次使用相同财务规则重新核对。",
+      "decision": "暂保留业绩爆发：光传输、光互联组件收入分别增长59.2%、55.0%；新产品认证、量产与实际部署提供主营交付依据，现金回收达到门槛。",
       "sources": [
         {
           "title": "长飞光纤2026年半年度报告",
@@ -2005,7 +2063,19 @@
       ],
       "publishedGroups": [
         "业绩爆发"
-      ]
+      ],
+      "operatingReview": {
+        "decision": "retain",
+        "growthSource": "product_delivery",
+        "reportPeriod": "2026-06-30",
+        "checkedAt": "2026-09-30",
+        "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225493215.PDF",
+        "sourcePages": "5—13",
+        "rationale": "暂保留业绩爆发：光传输、光互联组件收入分别增长59.2%、55.0%；新产品认证、量产与实际部署提供主营交付依据，现金回收达到门槛。",
+        "priceEffect": "光通信仍有供需与报价周期；63.11%、48.97%的分部毛利率不作常态假设。不能将累计部署数冒充本期增量，下一季须继续检验产品结构和毛利。",
+        "consolidationEffect": "本次增长依据来自已披露的光传输与组件收入、交付和客户认证；未把假定的并表收益或全年预测当作主营证据。",
+        "valuationAssessment": "估值单独判断：2026-09-29的TTM PE 98.11倍、动态PE 57.74倍；动态PE仅为本期累计利润年化，并非预测。不能由名单入选推导便宜，周期/并表盈利也不能直接外推。"
+      }
     },
     {
       "code": "601872",
@@ -3053,11 +3123,13 @@
         },
         "breakout": {
           "financialQualified": true,
-          "failedConditions": []
+          "failedConditions": [],
+          "qualified": true,
+          "businessFailedConditions": []
         }
       },
       "businessStatus": "reviewed",
-      "decision": "逐家公司核对后按相应规则显示。",
+      "decision": "暂保留业绩爆发：中报将PCB高端板需求、出口和设备交付列为增量来源；收入增长51.94%、核心盈利连续两季翻倍，现金回收达到门槛。",
       "sources": [
         {
           "title": "东威科技2026年半年度报告",
@@ -3079,7 +3151,19 @@
       ],
       "publishedGroups": [
         "业绩爆发"
-      ]
+      ],
+      "operatingReview": {
+        "decision": "retain",
+        "growthSource": "product_delivery",
+        "reportPeriod": "2026-06-30",
+        "checkedAt": "2026-09-30",
+        "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-08/1225463818.PDF",
+        "sourcePages": "11、21",
+        "rationale": "暂保留业绩爆发：中报将PCB高端板需求、出口和设备交付列为增量来源；收入增长51.94%、核心盈利连续两季翻倍，现金回收达到门槛。",
+        "priceEffect": "设备订单受下游资本开支周期影响；新增订单增长不计为已确认收入，交付及验收收入才作为经营证据。",
+        "consolidationEffect": "现有经营依据为自有设备交付，不以未经拆分的并购增量支撑入选；期末存货14.77亿元，仍须跟踪验收、预收款和回款。",
+        "valuationAssessment": "估值单独判断：2026-09-29的TTM PE 103.05倍、动态PE 92.30倍；动态PE仅为本期累计利润年化，并非预测。不能由名单入选推导便宜，周期/并表盈利也不能直接外推。"
+      }
     },
     {
       "code": "688766",
@@ -3106,11 +3190,15 @@
         },
         "breakout": {
           "financialQualified": true,
-          "failedConditions": []
+          "failedConditions": [],
+          "qualified": false,
+          "businessFailedConditions": [
+            "移出业绩爆发：新增收入30.53亿元中SHM并表约23.46亿元，占增量约77%；缺剔除并表后的两季核心利润可比增长。"
+          ]
         }
       },
       "businessStatus": "reviewed",
-      "decision": "逐家公司核对后按相应规则显示。",
+      "decision": "移出业绩爆发：新增收入30.53亿元中SHM并表约23.46亿元，占增量约77%；缺剔除并表后的两季核心利润可比增长。",
       "sources": [
         {
           "title": "普冉股份2026年半年度报告",
@@ -3130,9 +3218,19 @@
           "reportPeriod": "2025-12-31"
         }
       ],
-      "publishedGroups": [
-        "业绩爆发"
-      ]
+      "publishedGroups": [],
+      "operatingReview": {
+        "decision": "exclude",
+        "growthSource": "consolidation_and_prices",
+        "reportPeriod": "2026-06-30",
+        "checkedAt": "2026-09-30",
+        "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-19/1225480536.PDF",
+        "sourcePages": "23、39",
+        "rationale": "移出业绩爆发：新增收入30.53亿元中SHM并表约23.46亿元，占增量约77%；缺剔除并表后的两季核心利润可比增长。",
+        "priceEffect": "存储供给与报价上行提高毛利；新品和并表也有贡献，未披露足以排除价格因素的核心利润拆分。",
+        "consolidationEffect": "2025年11月收购诺亚长天51%股权后并表，2026与2025上半年合并范围不同。",
+        "valuationAssessment": "估值单独判断：2026-09-29的TTM PE 56.56倍、动态PE 33.99倍；动态PE仅为本期累计利润年化，并非预测。不能由名单入选推导便宜，周期/并表盈利也不能直接外推。"
+      }
     },
     {
       "code": "688808",
@@ -3254,5 +3352,7 @@
         }
       ]
     }
-  ]
+  ],
+  "newPublishedBeforeCycleReview": 24,
+  "cycleReview": "同日补充7家周期/并表复核，撤回5家爆发发布资格；其中4家为本次新发现，新增发布证券由24变为20。"
 }

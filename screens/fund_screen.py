@@ -583,7 +583,9 @@ def deep_metrics(rows):
         ser = build_series(relevant)  # A gap inside the requested period still fails.
         full_history = False
         history_note = '更早历史未通过连续性校验，只复核最近完整10年窗口；成立以来收益和全历史风险不可用。' + str(exc)
-    if len(ser) < 250:
+    # Product coverage includes newly listed ETFs. Keep their actual NAV dates;
+    # each return/risk window below still requires its own complete history.
+    if len(ser) < 2:
         return None
     latest = ser[-1][0]
     Tend = ser[-1][2]
@@ -929,7 +931,7 @@ POLICY_RULES = [
     '公开权益研究默认条件：至少7年历史、规模至少1亿元、近3年年化至少5%、近5年年化至少8%；页面可调整收益门槛。',
     '主动基金至少一位现任经理在本基金连续任满5年；逐人使用明确上任日期。其他现任经理任期较短会单独提示，基金业绩不归因于某个人。',
     '默认按近5年年化降序；同时展示3年和10年，缺10年不填成立以来。回撤、波动、费用、申购状态是独立研究证据，不按低回撤跨资产排总榜。',
-    '默认最多24只，同经理最多2只、同公司最多3只、同策略或同指数工具最多1只；可以展开全部符合数值条件的基金，集中度限制不删除研究记录。',
+    '页面默认展示全部符合当前条件的产品；多选综合策略与行业主题取并集，搜索和排序作用于完整匹配集。',
     '综合策略、行业和主题主动基金使用同一权益筛选条件；主题属性单独记录，不作为排除理由。债券及偏债混合、红利、商品另设研究入口。',
     '费用缺失保持未知，暂停申购不等于缺乏研究价值；A/C等份额先去同策略重复，I/Y等其他份额需核实资格。',
     '新进入条件筛选的基金不自动视为已核验；历史研究分不参与排序。旧池有幸存者与收益预筛偏差，不代表全市场，也不是投资建议。',
@@ -1347,7 +1349,7 @@ def build_policy(records, supplements=None):
     for row in eligible:
         limits = []
         if len(selected) >= POLICY_DEFAULTS['maxShortlist']:
-            limits.append('默认24只已满，可展开全部合格')
+            limits.append('核验优先清单24只已满')
         if any(manager_count.get(manager, 0) >= 2 for manager in row['managers']):
             limits.append('同经理最多2只')
         if row['company'] and company_count.get(row['company'], 0) >= 3:
@@ -1355,10 +1357,10 @@ def build_policy(records, supplements=None):
         if row['strategy'] in strategies:
             limits.append('同基金或同指数工具已保留代表')
         if limits:
-            by_code[row['code']]['reason'] = '符合收益与历史条件；' + '；'.join(limits)
+            by_code[row['code']].update(reason='符合收益、历史与经理任期条件', researchPriorityReason='；'.join(limits))
             continue
         selected.append(row['code'])
-        by_code[row['code']].update(tier='shortlist', reason='3年年化%.2f%%、5年年化%.2f%%；按长期收益顺序进入默认权益研究' %
+        by_code[row['code']].update(tier='shortlist', reason='3年年化%.2f%%、5年年化%.2f%%；符合当前权益研究条件' %
                                    (row['a3'], row['a5']))
         strategies.add(row['strategy'])
         bucket_count[row['bucket']] = bucket_count.get(row['bucket'], 0) + 1

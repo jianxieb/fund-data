@@ -1,1 +1,1923 @@
-{"checkedAt": "2026-09-30T04:50:47.342831+00:00", "requested": 31, "checked": 31, "failures": {}, "records": {"001167": {"managerRecords": [{"name": "陈颖", "start": "2021-05-18", "end": null, "tenureYears": 5.369035640704463, "tenureText": "5年135天"}], "managerCheckedAt": "2026-09-30T04:50:32.134032+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001167.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 5.369035640704463, "managerTenureMax": 5.369035640704463, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "9f04a14576a746257e2f79c5be914b583a685b9cf622e96d83719fa1ac4137cf"}, "000354": {"managerRecords": [{"name": "代毅", "start": "2018-06-05", "end": null, "tenureYears": 8.320499394238075, "tenureText": "8年117天"}], "managerCheckedAt": "2026-09-30T04:50:32.649445+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_000354.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 8.320499394238075, "managerTenureMax": 8.320499394238075, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "57d4818f56fa1fad0f76ca915e67ee712b09ef7909ee7a361c1c6b0565e74ee0"}, "001227": {"managerRecords": [{"name": "周楠", "start": "2015-05-26", "end": null, "tenureYears": 11.348624543967365, "tenureText": "11年127天"}], "managerCheckedAt": "2026-09-30T04:50:33.097900+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001227.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 11.348624543967365, "managerTenureMax": 11.348624543967365, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "afee13db18da19857a607acb8dc25fde61100b0d4c7bfdc35a14e8367827fd3a"}, "001302": {"managerRecords": [{"name": "吴国清", "start": "2021-06-01", "end": null, "tenureYears": 5.330704942606625, "tenureText": "5年121天"}], "managerCheckedAt": "2026-09-30T04:50:33.664638+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001302.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 5.330704942606625, "managerTenureMax": 5.330704942606625, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "4a670a31aa212c89d96274f6fc8cd7e58e50693223981e9632133b71171ac46e"}, "001323": {"managerRecords": [{"name": "刘元海", "start": "2016-04-27", "end": null, "tenureYears": 10.425949882612237, "tenureText": "10年156天"}], "managerCheckedAt": "2026-09-30T04:50:34.137209+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001323.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 10.425949882612237, "managerTenureMax": 10.425949882612237, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "d454fdf8cd1a8fdfd062ef247662d1d65bbe3ac381731cc628d918450707957e"}, "001396": {"managerRecords": [{"name": "何珅华", "start": "2015-06-23", "end": null, "tenureYears": 11.271963147771686, "tenureText": "11年99天"}], "managerCheckedAt": "2026-09-30T04:50:34.595390+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001396.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 11.271963147771686, "managerTenureMax": 11.271963147771686, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "8a5255f1c307c97743c2416110660db8f13ed11ca6acecdcf229e616455cff23"}, "001404": {"managerRecords": [{"name": "张林", "start": "2019-06-14", "end": null, "tenureYears": 7.296522173624373, "tenureText": "7年108天"}], "managerCheckedAt": "2026-09-30T04:50:35.157899+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001404.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 7.296522173624373, "managerTenureMax": 7.296522173624373, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "cfba582021e4a873757cfaa7de9c2c2e48c9cef6f1ea14e8c724cd877926215d"}, "001513": {"managerRecords": [{"name": "郑希", "start": "2016-09-27", "end": null, "tenureYears": 10.007050110542995, "tenureText": "10年3天"}], "managerCheckedAt": "2026-09-30T04:50:35.668644+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001513.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 10.007050110542995, "managerTenureMax": 10.007050110542995, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "89ee835e3cff4e233621e5236544fd27f2c879e6141ec321d85a196cc1c67b14"}, "001564": {"managerRecords": [{"name": "周云", "start": "2015-09-14", "end": null, "tenureYears": 11.04471686619164, "tenureText": "11年16天"}], "managerCheckedAt": "2026-09-30T04:50:36.142652+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001564.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 11.04471686619164, "managerTenureMax": 11.04471686619164, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "281a197657d646e6be0a25c792c3b581c3e10fabcbfa617a3a1c74d9e4e9ef7c"}, "001668": {"managerRecords": [{"name": "杨瑨", "start": "2017-01-25", "end": null, "tenureYears": 9.678501269704375, "tenureText": "9年248天"}], "managerCheckedAt": "2026-09-30T04:50:36.655468+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001668.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 9.678501269704375, "managerTenureMax": 9.678501269704375, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "07f5a8892932f164dcc3a0f64cb45c0591d7c3a3d8072f08da7bba505fef8a23"}, "001856": {"managerRecords": [{"name": "祁禾", "start": "2017-12-27", "end": null, "tenureYears": 8.758564515356236, "tenureText": "8年277天"}], "managerCheckedAt": "2026-09-30T04:50:37.135107+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001856.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 8.758564515356236, "managerTenureMax": 8.758564515356236, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "facbce6f60278542f4b00919ba6e16acdb5cd1160dfaa0961a8bf2aff297e76a"}, "001956": {"managerRecords": [{"name": "潘明", "start": "2016-01-26", "end": null, "tenureYears": 10.67783732725518, "tenureText": "10年247天"}], "managerCheckedAt": "2026-09-30T04:50:37.686871+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001956.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 10.67783732725518, "managerTenureMax": 10.67783732725518, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "18957fa2aeeeec09c842709f20abaf708325fe62034324c7df3b52cecb9b3273"}, "002450": {"managerRecords": [{"name": "黄维", "start": "2016-08-24", "end": null, "tenureYears": 10.100138948780604, "tenureText": "10年37天"}], "managerCheckedAt": "2026-09-30T04:50:38.180364+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_002450.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 10.100138948780604, "managerTenureMax": 10.100138948780604, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "f3f0c72bc3370eb42537fad1e09afb16d645815f7386a3bd94ca0af117ad7f33"}, "003304": {"managerRecords": [{"name": "吴国清", "start": "2016-10-17", "end": null, "tenureYears": 9.952291970403225, "tenureText": "9年348天"}], "managerCheckedAt": "2026-09-30T04:50:38.688379+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_003304.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 9.952291970403225, "managerTenureMax": 9.952291970403225, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "83ff2e34acaa56fef12718683a113f8f50b61b70ce1658858653f538f8eaacfc"}, "004616": {"managerRecords": [{"name": "刘金辉", "start": "2020-08-14", "end": null, "tenureYears": 6.12743588164028, "tenureText": "6年47天"}], "managerCheckedAt": "2026-09-30T04:50:39.208701+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_004616.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 6.12743588164028, "managerTenureMax": 6.12743588164028, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "e22912877bd9c82a455dace0eea4eaf6a8788ceb2209f1a42fab777467a5db99"}, "005310": {"managerRecords": [{"name": "冯骋", "start": "2020-08-07", "end": null, "tenureYears": 6.1466012306892, "tenureText": "6年54天"}], "managerCheckedAt": "2026-09-30T04:50:39.692684+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_005310.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 6.1466012306892, "managerTenureMax": 6.1466012306892, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "0bc8e24fe03d413eb03878aef025f083288555bf8921d32d3acab2499f6a4f85"}, "005576": {"managerRecords": [{"name": "杨景涵", "start": "2018-03-08", "end": null, "tenureYears": 8.56417311786005, "tenureText": "8年206天"}], "managerCheckedAt": "2026-09-30T04:50:40.231942+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_005576.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 8.56417311786005, "managerTenureMax": 8.56417311786005, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "8e0956d3561adf65c26d655b5e1448767a4b6cb948addd8d895b93dcf7117323"}, "005698": {"managerRecords": [{"name": "李湘杰", "start": "2018-04-17", "end": null, "tenureYears": 8.454656837580512, "tenureText": "8年166天"}], "managerCheckedAt": "2026-09-30T04:50:40.729868+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_005698.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 8.454656837580512, "managerTenureMax": 8.454656837580512, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "72f2181b1a6d9234bae7a28011b9ff5409ef69fb899d3b5d27cde2ba8d439a3f"}, "005844": {"managerRecords": [{"name": "严凯", "start": "2020-04-30", "end": null, "tenureYears": 6.417654024381061, "tenureText": "6年153天"}], "managerCheckedAt": "2026-09-30T04:50:41.186957+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_005844.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 6.417654024381061, "managerTenureMax": 6.417654024381061, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "99ec2481d48bd4d0194ad35a6d84440a20b61c5a7f9c5ae2d287996c1e46dbf7"}, "006274": {"managerRecords": [{"name": "肖世源", "start": "2018-11-29", "end": null, "tenureYears": 7.835889854001109, "tenureText": "7年305天"}], "managerCheckedAt": "2026-09-30T04:50:41.695312+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_006274.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 7.835889854001109, "managerTenureMax": 7.835889854001109, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "c8bd90df2e6ba2b6163847ed778487bf38e9cbf89131dbef68ac3c1652401ecd"}, "006373": {"managerRecords": [{"name": "狄星华", "start": "2018-11-20", "end": null, "tenureYears": 7.860531017064005, "tenureText": "7年314天"}], "managerCheckedAt": "2026-09-30T04:50:42.209760+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_006373.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 7.860531017064005, "managerTenureMax": 7.860531017064005, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "10307e4e5cdeebc89fbbf458c1f704a74be1cff615c915ce4da9feb933a96ae7"}, "006502": {"managerRecords": [{"name": "金梓才", "start": "2018-11-29", "end": null, "tenureYears": 7.835889854001109, "tenureText": "7年305天"}], "managerCheckedAt": "2026-09-30T04:50:42.779878+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_006502.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 7.835889854001109, "managerTenureMax": 7.835889854001109, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "b9dd27b4da21221926b76f3b4145e2d2ebf278078666a99448393ac90e5fb9ed"}, "006555": {"managerRecords": [{"name": "IKEDA KAE", "start": "2019-01-29", "end": null, "tenureYears": 7.66887752657481, "tenureText": "7年244天"}, {"name": "俞瑾", "start": "2022-08-11", "end": null, "tenureYears": 4.136977487559635, "tenureText": "4年50天"}], "managerCheckedAt": "2026-09-30T04:50:43.216722+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_006555.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 4.136977487559635, "managerTenureMax": 7.66887752657481, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "60a8942c0af3fd9730836b8ab03e64e33b171af38f037ec642c0ab5321c5317b"}, "006751": {"managerRecords": [{"name": "许炎", "start": "2019-03-26", "end": null, "tenureYears": 7.515554734183453, "tenureText": "7年188天"}], "managerCheckedAt": "2026-09-30T04:50:43.742381+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_006751.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 7.515554734183453, "managerTenureMax": 7.515554734183453, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "55f2743bcf14c202db4593351353a281abbead90a9e9bfade7d4c3be87b38f37"}, "007343": {"managerRecords": [{"name": "王贵重", "start": "2019-05-07", "end": null, "tenureYears": 7.400562639889936, "tenureText": "7年146天"}], "managerCheckedAt": "2026-09-30T04:50:44.269079+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_007343.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 7.400562639889936, "managerTenureMax": 7.400562639889936, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "d0ea77e6acb4b7323884df9e3553fb864377760ba077898da67b80a6319c0d63"}, "007346": {"managerRecords": [{"name": "蔡荣成", "start": "2019-04-29", "end": null, "tenureYears": 7.4224658959458445, "tenureText": "7年154天"}], "managerCheckedAt": "2026-09-30T04:50:44.769387+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_007346.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 7.4224658959458445, "managerTenureMax": 7.4224658959458445, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "3697f05b5af69d367ebd89c383f3590caa653815230e3455047e947c22de9975"}, "007355": {"managerRecords": [{"name": "马翔", "start": "2019-05-06", "end": null, "tenureYears": 7.403300546896925, "tenureText": "7年147天"}], "managerCheckedAt": "2026-09-30T04:50:45.282390+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_007355.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 7.403300546896925, "managerTenureMax": 7.403300546896925, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "cdc1e6ed0db34bc594cd5eaa09601b4ec4f16738b164f2d5747fb36145c45b07"}, "007490": {"managerRecords": [{"name": "郑晓曦", "start": "2019-06-19", "end": null, "tenureYears": 7.28283263858943, "tenureText": "7年103天"}], "managerCheckedAt": "2026-09-30T04:50:45.745002+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_007490.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 7.28283263858943, "managerTenureMax": 7.28283263858943, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "5e346c55d30d7284bd7e8c405693ce3ebf39be0718bc7dd46fd9ac5747011a54"}, "100039": {"managerRecords": [{"name": "曹晋", "start": "2019-02-01", "end": null, "tenureYears": 7.6606638055538445, "tenureText": "7年241天"}], "managerCheckedAt": "2026-09-30T04:50:46.296397+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_100039.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 7.6606638055538445, "managerTenureMax": 7.6606638055538445, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "6da7666ab51c9126eb74768652767d73118825c95bf84724912be95d3f3e9654"}, "519929": {"managerRecords": [{"name": "左金保", "start": "2016-07-27", "end": null, "tenureYears": 10.176800344976282, "tenureText": "10年65天"}, {"name": "宋海岸", "start": "2023-01-30", "end": null, "tenureYears": 3.6660574823576115, "tenureText": "3年243天"}], "managerCheckedAt": "2026-09-30T04:50:46.860573+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_519929.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 3.6660574823576115, "managerTenureMax": 10.176800344976282, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "a6c3535417253b78ce4b16798f97d734849b21a7bfeea4a7255b23cbc840f07f"}, "660015": {"managerRecords": [{"name": "邢军亮", "start": "2021-07-15", "end": null, "tenureYears": 5.21023703429913, "tenureText": "5年77天"}, {"name": "魏刚", "start": "2026-09-18", "end": null, "tenureYears": 0.03285488408386209, "tenureText": "12天"}], "managerCheckedAt": "2026-09-30T04:50:47.282233+00:00", "managerAsOf": "2026-09-30", "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_660015.html", "managerDateBasis": "source_observed_at", "managerStartBasis": "explicit_individual_appointment", "managerTenureMin": 0.03285488408386209, "managerTenureMax": 5.21023703429913, "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425", "managerDataStatus": "checked", "managerSourceSha256": "9bd2cd35287cb22782cd51ae565f957375e2b03be66b3c9b4235babbd6cbae77"}}}
+{
+  "checkedAt": "2026-09-30T04:50:47.342831+00:00",
+  "requested": 31,
+  "checked": 31,
+  "failures": {},
+  "records": {
+    "001167": {
+      "managerRecords": [
+        {
+          "name": "陈颖",
+          "start": "2021-05-18",
+          "end": null,
+          "tenureYears": 5.369035640704463,
+          "tenureText": "5年135天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:32.134032+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001167.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 5.369035640704463,
+      "managerTenureMax": 5.369035640704463,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "9f04a14576a746257e2f79c5be914b583a685b9cf622e96d83719fa1ac4137cf"
+    },
+    "000354": {
+      "managerRecords": [
+        {
+          "name": "代毅",
+          "start": "2018-06-05",
+          "end": null,
+          "tenureYears": 8.320499394238075,
+          "tenureText": "8年117天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:32.649445+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_000354.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 8.320499394238075,
+      "managerTenureMax": 8.320499394238075,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "57d4818f56fa1fad0f76ca915e67ee712b09ef7909ee7a361c1c6b0565e74ee0"
+    },
+    "001227": {
+      "managerRecords": [
+        {
+          "name": "周楠",
+          "start": "2015-05-26",
+          "end": null,
+          "tenureYears": 11.348624543967365,
+          "tenureText": "11年127天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:33.097900+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001227.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 11.348624543967365,
+      "managerTenureMax": 11.348624543967365,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "afee13db18da19857a607acb8dc25fde61100b0d4c7bfdc35a14e8367827fd3a"
+    },
+    "001302": {
+      "managerRecords": [
+        {
+          "name": "吴国清",
+          "start": "2021-06-01",
+          "end": null,
+          "tenureYears": 5.330704942606625,
+          "tenureText": "5年121天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:33.664638+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001302.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 5.330704942606625,
+      "managerTenureMax": 5.330704942606625,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "4a670a31aa212c89d96274f6fc8cd7e58e50693223981e9632133b71171ac46e"
+    },
+    "001323": {
+      "managerRecords": [
+        {
+          "name": "刘元海",
+          "start": "2016-04-27",
+          "end": null,
+          "tenureYears": 10.425949882612237,
+          "tenureText": "10年156天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:34.137209+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001323.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 10.425949882612237,
+      "managerTenureMax": 10.425949882612237,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "d454fdf8cd1a8fdfd062ef247662d1d65bbe3ac381731cc628d918450707957e"
+    },
+    "001396": {
+      "managerRecords": [
+        {
+          "name": "何珅华",
+          "start": "2015-06-23",
+          "end": null,
+          "tenureYears": 11.271963147771686,
+          "tenureText": "11年99天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:34.595390+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001396.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 11.271963147771686,
+      "managerTenureMax": 11.271963147771686,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "8a5255f1c307c97743c2416110660db8f13ed11ca6acecdcf229e616455cff23"
+    },
+    "001404": {
+      "managerRecords": [
+        {
+          "name": "张林",
+          "start": "2019-06-14",
+          "end": null,
+          "tenureYears": 7.296522173624373,
+          "tenureText": "7年108天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:35.157899+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001404.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 7.296522173624373,
+      "managerTenureMax": 7.296522173624373,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "cfba582021e4a873757cfaa7de9c2c2e48c9cef6f1ea14e8c724cd877926215d"
+    },
+    "001513": {
+      "managerRecords": [
+        {
+          "name": "郑希",
+          "start": "2016-09-27",
+          "end": null,
+          "tenureYears": 10.007050110542995,
+          "tenureText": "10年3天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:35.668644+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001513.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 10.007050110542995,
+      "managerTenureMax": 10.007050110542995,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "89ee835e3cff4e233621e5236544fd27f2c879e6141ec321d85a196cc1c67b14"
+    },
+    "001564": {
+      "managerRecords": [
+        {
+          "name": "周云",
+          "start": "2015-09-14",
+          "end": null,
+          "tenureYears": 11.04471686619164,
+          "tenureText": "11年16天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:36.142652+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001564.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 11.04471686619164,
+      "managerTenureMax": 11.04471686619164,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "281a197657d646e6be0a25c792c3b581c3e10fabcbfa617a3a1c74d9e4e9ef7c"
+    },
+    "001668": {
+      "managerRecords": [
+        {
+          "name": "杨瑨",
+          "start": "2017-01-25",
+          "end": null,
+          "tenureYears": 9.678501269704375,
+          "tenureText": "9年248天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:36.655468+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001668.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 9.678501269704375,
+      "managerTenureMax": 9.678501269704375,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "07f5a8892932f164dcc3a0f64cb45c0591d7c3a3d8072f08da7bba505fef8a23"
+    },
+    "001856": {
+      "managerRecords": [
+        {
+          "name": "祁禾",
+          "start": "2017-12-27",
+          "end": null,
+          "tenureYears": 8.758564515356236,
+          "tenureText": "8年277天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:37.135107+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001856.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 8.758564515356236,
+      "managerTenureMax": 8.758564515356236,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "facbce6f60278542f4b00919ba6e16acdb5cd1160dfaa0961a8bf2aff297e76a"
+    },
+    "001956": {
+      "managerRecords": [
+        {
+          "name": "潘明",
+          "start": "2016-01-26",
+          "end": null,
+          "tenureYears": 10.67783732725518,
+          "tenureText": "10年247天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:37.686871+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_001956.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 10.67783732725518,
+      "managerTenureMax": 10.67783732725518,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "18957fa2aeeeec09c842709f20abaf708325fe62034324c7df3b52cecb9b3273"
+    },
+    "002450": {
+      "managerRecords": [
+        {
+          "name": "黄维",
+          "start": "2016-08-24",
+          "end": null,
+          "tenureYears": 10.100138948780604,
+          "tenureText": "10年37天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:38.180364+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_002450.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 10.100138948780604,
+      "managerTenureMax": 10.100138948780604,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "f3f0c72bc3370eb42537fad1e09afb16d645815f7386a3bd94ca0af117ad7f33"
+    },
+    "003304": {
+      "managerRecords": [
+        {
+          "name": "吴国清",
+          "start": "2016-10-17",
+          "end": null,
+          "tenureYears": 9.952291970403225,
+          "tenureText": "9年348天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:38.688379+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_003304.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 9.952291970403225,
+      "managerTenureMax": 9.952291970403225,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "83ff2e34acaa56fef12718683a113f8f50b61b70ce1658858653f538f8eaacfc"
+    },
+    "004616": {
+      "managerRecords": [
+        {
+          "name": "刘金辉",
+          "start": "2020-08-14",
+          "end": null,
+          "tenureYears": 6.12743588164028,
+          "tenureText": "6年47天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:39.208701+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_004616.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 6.12743588164028,
+      "managerTenureMax": 6.12743588164028,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "e22912877bd9c82a455dace0eea4eaf6a8788ceb2209f1a42fab777467a5db99"
+    },
+    "005310": {
+      "managerRecords": [
+        {
+          "name": "冯骋",
+          "start": "2020-08-07",
+          "end": null,
+          "tenureYears": 6.1466012306892,
+          "tenureText": "6年54天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:39.692684+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_005310.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 6.1466012306892,
+      "managerTenureMax": 6.1466012306892,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "0bc8e24fe03d413eb03878aef025f083288555bf8921d32d3acab2499f6a4f85"
+    },
+    "005576": {
+      "managerRecords": [
+        {
+          "name": "杨景涵",
+          "start": "2018-03-08",
+          "end": null,
+          "tenureYears": 8.56417311786005,
+          "tenureText": "8年206天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:40.231942+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_005576.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 8.56417311786005,
+      "managerTenureMax": 8.56417311786005,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "8e0956d3561adf65c26d655b5e1448767a4b6cb948addd8d895b93dcf7117323"
+    },
+    "005698": {
+      "managerRecords": [
+        {
+          "name": "李湘杰",
+          "start": "2018-04-17",
+          "end": null,
+          "tenureYears": 8.454656837580512,
+          "tenureText": "8年166天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:40.729868+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_005698.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 8.454656837580512,
+      "managerTenureMax": 8.454656837580512,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "72f2181b1a6d9234bae7a28011b9ff5409ef69fb899d3b5d27cde2ba8d439a3f"
+    },
+    "005844": {
+      "managerRecords": [
+        {
+          "name": "严凯",
+          "start": "2020-04-30",
+          "end": null,
+          "tenureYears": 6.417654024381061,
+          "tenureText": "6年153天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:41.186957+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_005844.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 6.417654024381061,
+      "managerTenureMax": 6.417654024381061,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "99ec2481d48bd4d0194ad35a6d84440a20b61c5a7f9c5ae2d287996c1e46dbf7"
+    },
+    "006274": {
+      "managerRecords": [
+        {
+          "name": "肖世源",
+          "start": "2018-11-29",
+          "end": null,
+          "tenureYears": 7.835889854001109,
+          "tenureText": "7年305天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:41.695312+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_006274.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 7.835889854001109,
+      "managerTenureMax": 7.835889854001109,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "c8bd90df2e6ba2b6163847ed778487bf38e9cbf89131dbef68ac3c1652401ecd"
+    },
+    "006373": {
+      "managerRecords": [
+        {
+          "name": "狄星华",
+          "start": "2018-11-20",
+          "end": null,
+          "tenureYears": 7.860531017064005,
+          "tenureText": "7年314天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:42.209760+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_006373.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 7.860531017064005,
+      "managerTenureMax": 7.860531017064005,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "10307e4e5cdeebc89fbbf458c1f704a74be1cff615c915ce4da9feb933a96ae7"
+    },
+    "006502": {
+      "managerRecords": [
+        {
+          "name": "金梓才",
+          "start": "2018-11-29",
+          "end": null,
+          "tenureYears": 7.835889854001109,
+          "tenureText": "7年305天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:42.779878+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_006502.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 7.835889854001109,
+      "managerTenureMax": 7.835889854001109,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "b9dd27b4da21221926b76f3b4145e2d2ebf278078666a99448393ac90e5fb9ed"
+    },
+    "006555": {
+      "managerRecords": [
+        {
+          "name": "IKEDA KAE",
+          "start": "2019-01-29",
+          "end": null,
+          "tenureYears": 7.66887752657481,
+          "tenureText": "7年244天"
+        },
+        {
+          "name": "俞瑾",
+          "start": "2022-08-11",
+          "end": null,
+          "tenureYears": 4.136977487559635,
+          "tenureText": "4年50天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:43.216722+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_006555.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 4.136977487559635,
+      "managerTenureMax": 7.66887752657481,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "60a8942c0af3fd9730836b8ab03e64e33b171af38f037ec642c0ab5321c5317b"
+    },
+    "006751": {
+      "managerRecords": [
+        {
+          "name": "许炎",
+          "start": "2019-03-26",
+          "end": null,
+          "tenureYears": 7.515554734183453,
+          "tenureText": "7年188天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:43.742381+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_006751.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 7.515554734183453,
+      "managerTenureMax": 7.515554734183453,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "55f2743bcf14c202db4593351353a281abbead90a9e9bfade7d4c3be87b38f37"
+    },
+    "007343": {
+      "managerRecords": [
+        {
+          "name": "王贵重",
+          "start": "2019-05-07",
+          "end": null,
+          "tenureYears": 7.400562639889936,
+          "tenureText": "7年146天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:44.269079+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_007343.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 7.400562639889936,
+      "managerTenureMax": 7.400562639889936,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "d0ea77e6acb4b7323884df9e3553fb864377760ba077898da67b80a6319c0d63"
+    },
+    "007346": {
+      "managerRecords": [
+        {
+          "name": "蔡荣成",
+          "start": "2019-04-29",
+          "end": null,
+          "tenureYears": 7.4224658959458445,
+          "tenureText": "7年154天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:44.769387+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_007346.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 7.4224658959458445,
+      "managerTenureMax": 7.4224658959458445,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "3697f05b5af69d367ebd89c383f3590caa653815230e3455047e947c22de9975"
+    },
+    "007355": {
+      "managerRecords": [
+        {
+          "name": "马翔",
+          "start": "2019-05-06",
+          "end": null,
+          "tenureYears": 7.403300546896925,
+          "tenureText": "7年147天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:45.282390+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_007355.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 7.403300546896925,
+      "managerTenureMax": 7.403300546896925,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "cdc1e6ed0db34bc594cd5eaa09601b4ec4f16738b164f2d5747fb36145c45b07"
+    },
+    "007490": {
+      "managerRecords": [
+        {
+          "name": "郑晓曦",
+          "start": "2019-06-19",
+          "end": null,
+          "tenureYears": 7.28283263858943,
+          "tenureText": "7年103天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:45.745002+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_007490.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 7.28283263858943,
+      "managerTenureMax": 7.28283263858943,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "5e346c55d30d7284bd7e8c405693ce3ebf39be0718bc7dd46fd9ac5747011a54"
+    },
+    "100039": {
+      "managerRecords": [
+        {
+          "name": "曹晋",
+          "start": "2019-02-01",
+          "end": null,
+          "tenureYears": 7.6606638055538445,
+          "tenureText": "7年241天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:46.296397+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_100039.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 7.6606638055538445,
+      "managerTenureMax": 7.6606638055538445,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "6da7666ab51c9126eb74768652767d73118825c95bf84724912be95d3f3e9654"
+    },
+    "519929": {
+      "managerRecords": [
+        {
+          "name": "左金保",
+          "start": "2016-07-27",
+          "end": null,
+          "tenureYears": 10.176800344976282,
+          "tenureText": "10年65天"
+        },
+        {
+          "name": "宋海岸",
+          "start": "2023-01-30",
+          "end": null,
+          "tenureYears": 3.6660574823576115,
+          "tenureText": "3年243天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:46.860573+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_519929.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 3.6660574823576115,
+      "managerTenureMax": 10.176800344976282,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "a6c3535417253b78ce4b16798f97d734849b21a7bfeea4a7255b23cbc840f07f"
+    },
+    "660015": {
+      "managerRecords": [
+        {
+          "name": "邢军亮",
+          "start": "2021-07-15",
+          "end": null,
+          "tenureYears": 5.21023703429913,
+          "tenureText": "5年77天"
+        },
+        {
+          "name": "魏刚",
+          "start": "2026-09-18",
+          "end": null,
+          "tenureYears": 0.03285488408386209,
+          "tenureText": "12天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T04:50:47.282233+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_660015.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 0.03285488408386209,
+      "managerTenureMax": 5.21023703429913,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "checked",
+      "managerSourceSha256": "9bd2cd35287cb22782cd51ae565f957375e2b03be66b3c9b4235babbd6cbae77"
+    },
+    "510050": {
+      "managerRecords": [
+        {
+          "name": "徐猛",
+          "start": "2020-03-06",
+          "end": null,
+          "tenureYears": 6.56823890976543,
+          "tenureText": "6年208天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:07.916869+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_510050.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 6.56823890976543,
+      "managerTenureMax": 6.56823890976543,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "5ed1cd104978701a2bf864afa1c348dd0ded327e8173559049e82b43e2e083a1"
+    },
+    "510500": {
+      "managerRecords": [
+        {
+          "name": "罗文杰",
+          "start": "2013-04-22",
+          "end": null,
+          "tenureYears": 13.440385497306584,
+          "tenureText": "13年161天"
+        },
+        {
+          "name": "龚涛",
+          "start": "2026-07-24",
+          "end": null,
+          "tenureYears": 0.18617767647521852,
+          "tenureText": "68天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:07.890889+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_510500.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 0.18617767647521852,
+      "managerTenureMax": 13.440385497306584,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "d77f9a2e4916bf33730f4b6bfea6da0d47a457a1153b422a6adda8ce187e782e"
+    },
+    "512100": {
+      "managerRecords": [
+        {
+          "name": "崔蕾",
+          "start": "2019-07-12",
+          "end": null,
+          "tenureYears": 7.2198607774286945,
+          "tenureText": "7年80天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:08.085756+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_512100.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 7.2198607774286945,
+      "managerTenureMax": 7.2198607774286945,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "9f91855cddd8f89c665a48a20731dafc5c1e49c53a7c0d92e14681d54b696e08"
+    },
+    "563300": {
+      "managerRecords": [
+        {
+          "name": "柳军",
+          "start": "2023-09-06",
+          "end": null,
+          "tenureYears": 3.0664558478271284,
+          "tenureText": "3年24天"
+        },
+        {
+          "name": "李沐阳",
+          "start": "2023-09-06",
+          "end": null,
+          "tenureYears": 3.0664558478271284,
+          "tenureText": "3年24天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:08.213814+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_563300.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 3.0664558478271284,
+      "managerTenureMax": 3.0664558478271284,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "376931b00b69df12261498d12d6329f96b9022999ec97ebe0b261a7cb12530fd"
+    },
+    "159338": {
+      "managerRecords": [
+        {
+          "name": "黄岳",
+          "start": "2024-09-26",
+          "end": null,
+          "tenureYears": 2.0096237431295645,
+          "tenureText": "2年4天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:08.267440+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_159338.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 2.0096237431295645,
+      "managerTenureMax": 2.0096237431295645,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "bea2f27404fb4d358a20b2dfa1b10610c6aed671ee12475b307e6c314e3b2dd1"
+    },
+    "512010": {
+      "managerRecords": [
+        {
+          "name": "余海燕",
+          "start": "2013-09-23",
+          "end": null,
+          "tenureYears": 13.018747818230354,
+          "tenureText": "13年7天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:08.413398+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_512010.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 13.018747818230354,
+      "managerTenureMax": 13.018747818230354,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "d6612187d5bc66fbd8d36ab87e53218898dea42fa752e1d3ae0fea130a8b9bae"
+    },
+    "512170": {
+      "managerRecords": [
+        {
+          "name": "张放",
+          "start": "2026-02-12",
+          "end": null,
+          "tenureYears": 0.6297186116073568,
+          "tenureText": "230天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:08.469797+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_512170.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 0.6297186116073568,
+      "managerTenureMax": 0.6297186116073568,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "85d6a1b7fc3933ea7ef029e8f92ab6ee2d815af1de9b4cde047004854fcc5c2a"
+    },
+    "159992": {
+      "managerRecords": [
+        {
+          "name": "马君",
+          "start": "2020-03-20",
+          "end": null,
+          "tenureYears": 6.529908211667591,
+          "tenureText": "6年194天"
+        },
+        {
+          "name": "王帅",
+          "start": "2020-03-20",
+          "end": null,
+          "tenureYears": 6.529908211667591,
+          "tenureText": "6年194天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:08.643045+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_159992.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 6.529908211667591,
+      "managerTenureMax": 6.529908211667591,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "865d297f686d5d067bdb46f788e0d3677fcaaa81669aef9f8a686bcfe3e29715"
+    },
+    "512290": {
+      "managerRecords": [
+        {
+          "name": "梁杏",
+          "start": "2019-04-18",
+          "end": null,
+          "tenureYears": 7.452582873022718,
+          "tenureText": "7年165天"
+        },
+        {
+          "name": "黄岳",
+          "start": "2021-02-05",
+          "end": null,
+          "tenureYears": 5.648302155417291,
+          "tenureText": "5年237天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:08.717697+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_512290.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 5.648302155417291,
+      "managerTenureMax": 7.452582873022718,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "f25e611ffb9bb8a9afeb5624bd98dfaee9f143817f30bcb2fda7c7429ae12dc7"
+    },
+    "512800": {
+      "managerRecords": [
+        {
+          "name": "丰晨成",
+          "start": "2019-12-21",
+          "end": null,
+          "tenureYears": 6.776319842296556,
+          "tenureText": "6年283天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:08.859655+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_512800.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 6.776319842296556,
+      "managerTenureMax": 6.776319842296556,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "09b03966f6526b5ba7b6e626bf8647b4a5086e63477ab557e5b3e0248f72ea7a"
+    },
+    "512000": {
+      "managerRecords": [
+        {
+          "name": "丰晨成",
+          "start": "2016-08-30",
+          "end": null,
+          "tenureYears": 10.083711506738673,
+          "tenureText": "10年31天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:08.907427+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_512000.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 10.083711506738673,
+      "managerTenureMax": 10.083711506738673,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "3203bfc24f719efb806ceb369963167ec5ba4c5a2e04f28f2b8db3becbf0bf5b"
+    },
+    "512200": {
+      "managerRecords": [
+        {
+          "name": "罗文杰",
+          "start": "2017-08-25",
+          "end": null,
+          "tenureYears": 9.09806498422281,
+          "tenureText": "9年36天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:09.105626+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_512200.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 9.09806498422281,
+      "managerTenureMax": 9.09806498422281,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "809df39ecc3217e8084ed0d8aa7571b993380904f788fb3a16c91adb5d0c294f"
+    },
+    "159928": {
+      "managerRecords": [
+        {
+          "name": "孙浩",
+          "start": "2026-08-04",
+          "end": null,
+          "tenureYears": 0.15606069939834494,
+          "tenureText": "57天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:09.182156+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_159928.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 0.15606069939834494,
+      "managerTenureMax": 0.15606069939834494,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "e8c2cf72563a6d76449bfd624577a33a678a9ab16035a300d510174eb1dedae9"
+    },
+    "159996": {
+      "managerRecords": [
+        {
+          "name": "苗梦羽",
+          "start": "2023-05-10",
+          "end": null,
+          "tenureYears": 3.392266781658761,
+          "tenureText": "3年143天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:09.321257+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_159996.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 3.392266781658761,
+      "managerTenureMax": 3.392266781658761,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "733da83804a9e2d04d940212f1d9c5edb4170377b5c90c50b2a736a4aa73822d"
+    },
+    "515170": {
+      "managerRecords": [
+        {
+          "name": "徐猛",
+          "start": "2020-12-30",
+          "end": null,
+          "tenureYears": 5.749604714675866,
+          "tenureText": "5年274天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:09.397405+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_515170.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 5.749604714675866,
+      "managerTenureMax": 5.749604714675866,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "6eb38919021eeaf9cfff72ebcf0409b4aca8868fa7b0b84e3a78bc64737e4a72"
+    },
+    "512690": {
+      "managerRecords": [
+        {
+          "name": "张羽翔",
+          "start": "2019-04-04",
+          "end": null,
+          "tenureYears": 7.490913571120557,
+          "tenureText": "7年179天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:09.600595+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_512690.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 7.490913571120557,
+      "managerTenureMax": 7.490913571120557,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "81475b7e024a489832178f2bccf2a7e3b514dea044f2788c91b9aa60c8cab716"
+    },
+    "159995": {
+      "managerRecords": [
+        {
+          "name": "赵宗庭",
+          "start": "2020-01-20",
+          "end": null,
+          "tenureYears": 6.694182632086901,
+          "tenureText": "6年253天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:09.664452+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_159995.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 6.694182632086901,
+      "managerTenureMax": 6.694182632086901,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "b41c6b7ca0ee73734e3af47fb443dd73f31cf59984a5f301e9538078e1beacd4"
+    },
+    "159998": {
+      "managerRecords": [
+        {
+          "name": "洪明华",
+          "start": "2025-07-19",
+          "end": null,
+          "tenureYears": 1.1992032690609664,
+          "tenureText": "1年73天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:09.782346+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_159998.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 1.1992032690609664,
+      "managerTenureMax": 1.1992032690609664,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "ebd318dcd16e60e4d6aefc17ed817d324ff4562455cc85c6f7f86283bf97a571"
+    },
+    "515230": {
+      "managerRecords": [
+        {
+          "name": "苗梦羽",
+          "start": "2021-09-28",
+          "end": null,
+          "tenureYears": 5.004894008774992,
+          "tenureText": "5年2天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:09.864856+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_515230.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 5.004894008774992,
+      "managerTenureMax": 5.004894008774992,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "fd7d51a9c4a6e557b6c91859cf199e40ea1e50a2b9ab45c24033e41619dfd68e"
+    },
+    "516510": {
+      "managerRecords": [
+        {
+          "name": "张湛",
+          "start": "2021-03-29",
+          "end": null,
+          "tenureYears": 5.505930991053889,
+          "tenureText": "5年185天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:10.016819+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_516510.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 5.505930991053889,
+      "managerTenureMax": 5.505930991053889,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "eac1cb84586e5ea15c943f0460549d504e7dbda6b46e63140271e2fe459b757d"
+    },
+    "515070": {
+      "managerRecords": [
+        {
+          "name": "李俊",
+          "start": "2019-12-09",
+          "end": null,
+          "tenureYears": 6.8091747263804185,
+          "tenureText": "6年295天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:10.093259+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_515070.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 6.8091747263804185,
+      "managerTenureMax": 6.8091747263804185,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "ccd17dd00ac180a84a3ba0fd44859f51d86117bb08b64cf38536a433b5eb431c"
+    },
+    "159869": {
+      "managerRecords": [
+        {
+          "name": "鲁亚运",
+          "start": "2025-07-29",
+          "end": null,
+          "tenureYears": 1.1718241989910811,
+          "tenureText": "1年63天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:10.247383+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_159869.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 1.1718241989910811,
+      "managerTenureMax": 1.1718241989910811,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "1220ddd95a0ec41a31863d03175a8b970293442795d2c9c926cd57f66380e948"
+    },
+    "512660": {
+      "managerRecords": [
+        {
+          "name": "艾小军",
+          "start": "2016-07-26",
+          "end": null,
+          "tenureYears": 10.17953825198327,
+          "tenureText": "10年66天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:10.292860+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_512660.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 10.17953825198327,
+      "managerTenureMax": 10.17953825198327,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "fac796bac5ded98cd8af3212b5e4a07b04586a180a8c874ada8424ed575692da"
+    },
+    "516800": {
+      "managerRecords": [
+        {
+          "name": "王夫乐",
+          "start": "2026-05-12",
+          "end": null,
+          "tenureYears": 0.38604488798537956,
+          "tenureText": "141天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:10.460491+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_516800.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 0.38604488798537956,
+      "managerTenureMax": 0.38604488798537956,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "e6f1442a0e4fb989fd9d235e4655eb5e6ee0ae7677d57a3aaac4a53e54af0f6e"
+    },
+    "516110": {
+      "managerRecords": [
+        {
+          "name": "黄岳",
+          "start": "2023-05-23",
+          "end": null,
+          "tenureYears": 3.35667399056791,
+          "tenureText": "3年130天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:10.478052+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_516110.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 3.35667399056791,
+      "managerTenureMax": 3.35667399056791,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "479f038afdfc650c7e82237df6c0a032340b97d15ac386bf3104a2675084316b"
+    },
+    "515400": {
+      "managerRecords": [
+        {
+          "name": "刘海燕",
+          "start": "2026-04-03",
+          "end": null,
+          "tenureYears": 0.49282326125793136,
+          "tenureText": "180天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:10.679615+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_515400.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 0.49282326125793136,
+      "managerTenureMax": 0.49282326125793136,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "b58e946791a5a1cc748b3172a0cd9801662bcd0452f9f49f50fb2bd2c999c240"
+    },
+    "515790": {
+      "managerRecords": [
+        {
+          "name": "李茜",
+          "start": "2020-12-07",
+          "end": null,
+          "tenureYears": 5.8125765758366015,
+          "tenureText": "5年297天"
+        },
+        {
+          "name": "李沐阳",
+          "start": "2021-01-06",
+          "end": null,
+          "tenureYears": 5.730439365626946,
+          "tenureText": "5年267天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:10.725466+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_515790.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 5.730439365626946,
+      "managerTenureMax": 5.8125765758366015,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "ab0fdd65fbbb4bbf79d0bdf2fb111350b5aee8f850f18e26416d232b8346591a"
+    },
+    "515700": {
+      "managerRecords": [
+        {
+          "name": "马浩然",
+          "start": "2025-10-20",
+          "end": null,
+          "tenureYears": 0.9445779174110351,
+          "tenureText": "345天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:10.880654+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_515700.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 0.9445779174110351,
+      "managerTenureMax": 0.9445779174110351,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "80c9bc6057237d157662b9daadcd7049ec8dd18ace5db0ce974e591a696cdfa1"
+    },
+    "159755": {
+      "managerRecords": [
+        {
+          "name": "罗国庆",
+          "start": "2021-06-15",
+          "end": null,
+          "tenureYears": 5.292374244508785,
+          "tenureText": "5年107天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:10.961591+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_159755.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 5.292374244508785,
+      "managerTenureMax": 5.292374244508785,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "da44c5a7a2c4425c67d7b2dc2d2823912082457249dbc667e435071676ea8754"
+    },
+    "516160": {
+      "managerRecords": [
+        {
+          "name": "龚涛",
+          "start": "2021-01-22",
+          "end": null,
+          "tenureYears": 5.68663285351513,
+          "tenureText": "5年251天"
+        },
+        {
+          "name": "潘水洋",
+          "start": "2026-03-27",
+          "end": null,
+          "tenureYears": 0.5119886103068509,
+          "tenureText": "187天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:11.167422+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_516160.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 0.5119886103068509,
+      "managerTenureMax": 5.68663285351513,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "7e80d484e6f985e21abf912062d1d110f1410ddb781380f53e5adfd440917739"
+    },
+    "516150": {
+      "managerRecords": [
+        {
+          "name": "田光远",
+          "start": "2021-03-09",
+          "end": null,
+          "tenureYears": 5.560689131193659,
+          "tenureText": "5年205天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:11.149067+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_516150.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 5.560689131193659,
+      "managerTenureMax": 5.560689131193659,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "592e1d591e0f126f1e88cb8afb4bca74674522ea1f4f24a89b7a9be04b73b160"
+    },
+    "512400": {
+      "managerRecords": [
+        {
+          "name": "崔蕾",
+          "start": "2019-07-12",
+          "end": null,
+          "tenureYears": 7.2198607774286945,
+          "tenureText": "7年80天"
+        },
+        {
+          "name": "龚涛",
+          "start": "2026-08-21",
+          "end": null,
+          "tenureYears": 0.1095162802795403,
+          "tenureText": "40天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:11.362580+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_512400.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 0.1095162802795403,
+      "managerTenureMax": 7.2198607774286945,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "11442e9633519f396018d3df10c9bb1009f996df2578a4cd6628e01511b9c060"
+    },
+    "515210": {
+      "managerRecords": [
+        {
+          "name": "吴中昊",
+          "start": "2023-05-10",
+          "end": null,
+          "tenureYears": 3.392266781658761,
+          "tenureText": "3年143天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:11.349148+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_515210.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 3.392266781658761,
+      "managerTenureMax": 3.392266781658761,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "05b26ca2c5ec027e16c8de2b024f8477a72cc6b0f3fc99c7314b8e3669479699"
+    },
+    "516220": {
+      "managerRecords": [
+        {
+          "name": "王玉",
+          "start": "2021-03-02",
+          "end": null,
+          "tenureYears": 5.579854480242578,
+          "tenureText": "5年212天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:11.554008+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_516220.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 5.579854480242578,
+      "managerTenureMax": 5.579854480242578,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "de7fa69eacd6abc80238c6aa56cdbff769b368ec6a58283d69d215683f23c92e"
+    },
+    "515220": {
+      "managerRecords": [
+        {
+          "name": "吴中昊",
+          "start": "2023-05-23",
+          "end": null,
+          "tenureYears": 3.35667399056791,
+          "tenureText": "3年130天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:11.577490+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_515220.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 3.35667399056791,
+      "managerTenureMax": 3.35667399056791,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "f059f916a6240287866a8cf2d517371eb6df7b71eb105f11775c1a34cfd47c26"
+    },
+    "561360": {
+      "managerRecords": [
+        {
+          "name": "苗梦羽",
+          "start": "2023-10-23",
+          "end": null,
+          "tenureYears": 2.9377742184986686,
+          "tenureText": "2年342天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:11.758535+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_561360.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 2.9377742184986686,
+      "managerTenureMax": 2.9377742184986686,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "bd7dafdca698f1c3617e6223990ffa89a942a27baee4989ad763dfad78435c10"
+    },
+    "159666": {
+      "managerRecords": [
+        {
+          "name": "杨斯琪",
+          "start": "2024-11-07",
+          "end": null,
+          "tenureYears": 1.8946316488360473,
+          "tenureText": "1年327天"
+        },
+        {
+          "name": "华龙",
+          "start": "2023-01-13",
+          "end": null,
+          "tenureYears": 3.7126019014764164,
+          "tenureText": "3年260天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:11.822871+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_159666.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 1.8946316488360473,
+      "managerTenureMax": 3.7126019014764164,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "780a36caa0ba3adb80ec982a08fb181291fda2043582fb636f3aa5711fe84970"
+    },
+    "516970": {
+      "managerRecords": [
+        {
+          "name": "霍华明",
+          "start": "2021-06-23",
+          "end": null,
+          "tenureYears": 5.270470988452877,
+          "tenureText": "5年99天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:12.021996+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_516970.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 5.270470988452877,
+      "managerTenureMax": 5.270470988452877,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "4b8860e10cd88b9a616c79e13b336b921c9ad22223f31e285a684956ff93726b"
+    },
+    "561170": {
+      "managerRecords": [
+        {
+          "name": "张圣贤",
+          "start": "2023-03-02",
+          "end": null,
+          "tenureYears": 3.5811823651409678,
+          "tenureText": "3年212天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:12.057524+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_561170.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 3.5811823651409678,
+      "managerTenureMax": 3.5811823651409678,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "16098ea85166fa67efc16431ab641eedd31d531c7ad739467c228ac033290dd0"
+    },
+    "562510": {
+      "managerRecords": [
+        {
+          "name": "林海涵",
+          "start": "2026-08-13",
+          "end": null,
+          "tenureYears": 0.13141953633544837,
+          "tenureText": "48天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:12.227220+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_562510.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 0.13141953633544837,
+      "managerTenureMax": 0.13141953633544837,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "29ae01b2bfb347949c743f0c82db39f7d7630feefa8a91a131d6fb8adadab603"
+    },
+    "516550": {
+      "managerRecords": [
+        {
+          "name": "朱盟邦",
+          "start": "2026-03-12",
+          "end": null,
+          "tenureYears": 0.5530572154116785,
+          "tenureText": "202天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:12.236949+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_516550.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 0.5530572154116785,
+      "managerTenureMax": 0.5530572154116785,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "ee68a30d2f9878cf53a05ec0ccc905576e81b75269512072eacf07a3b625d93c"
+    },
+    "512450": {
+      "managerRecords": [
+        {
+          "name": "王嘉时",
+          "start": "2026-03-18",
+          "end": null,
+          "tenureYears": 0.5366297733697475,
+          "tenureText": "196天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:13.486468+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_512450.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 0.5366297733697475,
+      "managerTenureMax": 0.5366297733697475,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "f80b61b86d2bb5352b91d713fd153d4786ca3fac3c11f3fa7fc679e9d503ffed"
+    },
+    "159787": {
+      "managerRecords": [
+        {
+          "name": "聂启文",
+          "start": "2025-11-29",
+          "end": null,
+          "tenureYears": 0.8350616371314948,
+          "tenureText": "305天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:13.532536+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_159787.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 0.8350616371314948,
+      "managerTenureMax": 0.8350616371314948,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "737b82c77a4c7ce0a46ee6744150e4ba373340e27cda63d9803468803a5bb525"
+    },
+    "515150": {
+      "managerRecords": [
+        {
+          "name": "汤杰强",
+          "start": "2025-09-19",
+          "end": null,
+          "tenureYears": 1.029453034627679,
+          "tenureText": "1年11天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:13.687270+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_515150.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 1.029453034627679,
+      "managerTenureMax": 1.029453034627679,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "f097eac2a09b3d9e202bde961a77400f45f87f76b5e070f059abf33dbff6aa58"
+    },
+    "512580": {
+      "managerRecords": [
+        {
+          "name": "夏浩洋",
+          "start": "2023-05-15",
+          "end": null,
+          "tenureYears": 3.378577246623818,
+          "tenureText": "3年138天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:13.746134+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_512580.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 3.378577246623818,
+      "managerTenureMax": 3.378577246623818,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "afa3400c069c1f630274006c4ae270010563f4060b4d333e56009a51743df349"
+    },
+    "516070": {
+      "managerRecords": [
+        {
+          "name": "聂启文",
+          "start": "2025-11-20",
+          "end": null,
+          "tenureYears": 0.8597028001943914,
+          "tenureText": "314天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:13.873437+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_516070.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 0.8597028001943914,
+      "managerTenureMax": 0.8597028001943914,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "1b57670c59ff0ff3838bd5da69449ca5eb5f7213ca087e16df7f4927d24a057b"
+    },
+    "515250": {
+      "managerRecords": [
+        {
+          "name": "张圣贤",
+          "start": "2020-12-24",
+          "end": null,
+          "tenureYears": 5.766032156717797,
+          "tenureText": "5年280天"
+        },
+        {
+          "name": "王子豪",
+          "start": "2026-09-23",
+          "end": null,
+          "tenureYears": 0.019165349048919554,
+          "tenureText": "7天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:13.958637+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_515250.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 0.019165349048919554,
+      "managerTenureMax": 5.766032156717797,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "b07f074cf9affb83b8f211c0859622a0f728a129687857ba1770db81646df471"
+    },
+    "159611": {
+      "managerRecords": [
+        {
+          "name": "陆志明",
+          "start": "2021-12-29",
+          "end": null,
+          "tenureYears": 4.75300656413205,
+          "tenureText": "4年275天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:14.173439+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_159611.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 4.75300656413205,
+      "managerTenureMax": 4.75300656413205,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "fb819ac8fd5528ec7cad64e259782ed2c3c29e4ca57298e954bfbf9aa6b6bb27"
+    },
+    "518880": {
+      "managerRecords": [
+        {
+          "name": "许之彦",
+          "start": "2013-07-18",
+          "end": null,
+          "tenureYears": 13.202187587698583,
+          "tenureText": "13年74天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:14.160722+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_518880.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 13.202187587698583,
+      "managerTenureMax": 13.202187587698583,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "c5714c8be400b02522ca8446eeb77222bdd869daf0acc349e1f2d2f1f8bd6344"
+    },
+    "159937": {
+      "managerRecords": [
+        {
+          "name": "赵云阳",
+          "start": "2015-10-08",
+          "end": null,
+          "tenureYears": 10.979007098023915,
+          "tenureText": "10年357天"
+        },
+        {
+          "name": "王祥",
+          "start": "2016-11-02",
+          "end": null,
+          "tenureYears": 9.908485458291409,
+          "tenureText": "9年332天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:14.371555+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_159937.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 9.908485458291409,
+      "managerTenureMax": 10.979007098023915,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "62e96f643f5081c747d637ea7d591e3dfc3d925790b6597116146035f305e21a"
+    },
+    "159985": {
+      "managerRecords": [
+        {
+          "name": "荣膺",
+          "start": "2019-09-24",
+          "end": null,
+          "tenureYears": 7.017255658911545,
+          "tenureText": "7年6天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:14.385842+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_159985.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 7.017255658911545,
+      "managerTenureMax": 7.017255658911545,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "6a93ddb3025dd2350cc6255f3533d24833f9985ff60acf74b7a5c66f19ec8370"
+    },
+    "511010": {
+      "managerRecords": [
+        {
+          "name": "王玉",
+          "start": "2019-12-25",
+          "end": null,
+          "tenureYears": 6.7653682142686025,
+          "tenureText": "6年279天"
+        },
+        {
+          "name": "王振扬",
+          "start": "2025-02-13",
+          "end": null,
+          "tenureYears": 1.6263167621511736,
+          "tenureText": "1年229天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:14.590099+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_511010.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 1.6263167621511736,
+      "managerTenureMax": 6.7653682142686025,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "78168e2e9decd51268db9fcceabfcb5780f2b2c0b895d305595013ff48a452b7"
+    },
+    "562360": {
+      "managerRecords": [
+        {
+          "name": "谭跃峰",
+          "start": "2022-11-21",
+          "end": null,
+          "tenureYears": 3.857710972846807,
+          "tenureText": "3年313天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:14.587489+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_562360.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 3.857710972846807,
+      "managerTenureMax": 3.857710972846807,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "dd6494c174b1277542ef8c3c60e664f0a720e897bc860a200f52d74bd5369e17"
+    },
+    "159593": {
+      "managerRecords": [
+        {
+          "name": "钱晶",
+          "start": "2024-03-04",
+          "end": null,
+          "tenureYears": 2.573632586569197,
+          "tenureText": "2年210天"
+        },
+        {
+          "name": "李严",
+          "start": "2024-04-18",
+          "end": null,
+          "tenureYears": 2.450426771254714,
+          "tenureText": "2年165天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:14.797983+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_159593.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 2.450426771254714,
+      "managerTenureMax": 2.573632586569197,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "dd6138fb088adbe81e7ad754611cf3be60cbebc0a5464a49464ffdf70b1427af"
+    },
+    "512070": {
+      "managerRecords": [
+        {
+          "name": "余海燕",
+          "start": "2014-06-26",
+          "end": null,
+          "tenureYears": 12.263085484301525,
+          "tenureText": "12年96天"
+        }
+      ],
+      "managerCheckedAt": "2026-09-30T11:49:14.816937+00:00",
+      "managerAsOf": "2026-09-30",
+      "managerSourceUrl": "https://fundf10.eastmoney.com/jjjl_512070.html",
+      "managerDateBasis": "source_observed_at",
+      "managerStartBasis": "explicit_individual_appointment",
+      "managerTenureMin": 12.263085484301525,
+      "managerTenureMax": 12.263085484301525,
+      "managerTenureBasis": "calendar_days_since_explicit_appointment/365.2425",
+      "managerDataStatus": "cached",
+      "managerSourceSha256": "e1b98658b47fc49ba738a765744ede42acd2d7c4f040acc8c27631683758aff8"
+    }
+  },
+  "indexCoverageCheckedAt": "2026-09-30T11:51:06.187646+00:00",
+  "indexCoverageFailures": {},
+  "indexCoverageRequested": 55,
+  "indexCoverageChecked": 55
+}

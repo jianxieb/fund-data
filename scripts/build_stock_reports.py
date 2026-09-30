@@ -81,8 +81,9 @@ def make_report(research, data, row):
                 bullets=['失效信号：' + growth_research['invalidation']])
     breakout_research = research.get('breakout') or {}
     if breakout_research:
+        operating = breakout_research.get('operatingReview') or {}
         section('breakout', '盈利扩张的来源', paragraphs=[breakout_research['driver'], breakout_research['quality']],
-                bullets=['失效信号：' + breakout_research['invalidation']])
+                bullets=([operating[k] for k in ('rationale', 'priceEffect', 'consolidationEffect', 'valuationAssessment') if operating.get(k)] + ['失效信号：' + breakout_research['invalidation']]))
     section('financials', '五年财务与最新报告',
             paragraphs=['金额为人民币亿元；ROE为各报告期加权平均值，中报不年化。历史数为本次取数时已知口径，可能含后续重述。'],
             table={'headers': ['报告期', '营收', '归母利润', '扣非利润', '经营现金流', '购建长期资产', 'ROE', '公告日'],

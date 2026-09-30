@@ -546,7 +546,19 @@
       "breakout": {
         "driver": "H1营收增长63.95%、扣非增长277.52%；Q1、Q2收入和核心利润均扩张，AI PCB与光模块交付有公司披露。",
         "quality": "H1扣非占归母83.86%，TTM经营现金流为正；2025年ROE6.89%低于10%，并购并表效应仍须单独拆解。",
-        "invalidation": "剔除并表后的增长不足，或资本开支和债务增长持续快于经营现金回收。"
+        "invalidation": "剔除并表后的增长不足，或资本开支和债务增长持续快于经营现金回收。",
+        "operatingReview": {
+          "decision": "exclude",
+          "growthSource": "consolidation_unseparated",
+          "reportPeriod": "2026-06-30",
+          "checkedAt": "2026-09-30",
+          "sourceUrl": "https://disc.static.szse.cn/disc/disk03/finalpage/2026-08-22/9290e257-66b5-4681-a8ce-824cd1e6d853.PDF",
+          "sourcePages": "8、19—20",
+          "rationale": "移出业绩爆发：中报将增长部分归于索尔思、GMD并表，缺原合并范围下两季核心利润增长拆分；经营现金流同比下降4.65%。",
+          "priceEffect": "AI相关产品与客户增长有业务依据，但未量化产品、价格与原业务利润贡献，不能把合并增速直接当作有机扩张。",
+          "consolidationEffect": "2025年收购索尔思、GMD改变可比范围；本期购建长期资产52.53亿元高于经营现金23.84亿元，融资与交付回款仍需核对。",
+          "valuationAssessment": "估值单独判断：2026-09-29的TTM PE 87.47倍、动态PE 53.03倍；动态PE仅为本期累计利润年化，并非预测。不能由名单入选推导便宜，周期/并表盈利也不能直接外推。"
+        }
       },
       "stageConstraint": "2025年度ROE6.89%低于10%；并购并表增长与有机增长需分拆。"
     },
@@ -586,7 +598,19 @@
       "breakout": {
         "driver": "H1光传输和光互联组件收入增长约59.2%、55.0%；两个单季收入与扣非利润高增长，H1扣非增长1680.48%。",
         "quality": "H1扣非占归母83.75%，经营现金流18.26亿元；上年ROE6.92%未达10%，极低同比基数放大增速。",
-        "invalidation": "扣非占比下降、下一季产品收入失速，或下一完整年度资本回报未改善。"
+        "invalidation": "扣非占比下降、下一季产品收入失速，或下一完整年度资本回报未改善。",
+        "operatingReview": {
+          "decision": "retain",
+          "growthSource": "product_delivery",
+          "reportPeriod": "2026-06-30",
+          "checkedAt": "2026-09-30",
+          "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225493215.PDF",
+          "sourcePages": "5—13",
+          "rationale": "暂保留业绩爆发：光传输、光互联组件收入分别增长59.2%、55.0%；新产品认证、量产与实际部署提供主营交付依据，现金回收达到门槛。",
+          "priceEffect": "光通信仍有供需与报价周期；63.11%、48.97%的分部毛利率不作常态假设。不能将累计部署数冒充本期增量，下一季须继续检验产品结构和毛利。",
+          "consolidationEffect": "本次增长依据来自已披露的光传输与组件收入、交付和客户认证；未把假定的并表收益或全年预测当作主营证据。",
+          "valuationAssessment": "估值单独判断：2026-09-29的TTM PE 98.11倍、动态PE 57.74倍；动态PE仅为本期累计利润年化，并非预测。不能由名单入选推导便宜，周期/并表盈利也不能直接外推。"
+        }
       },
       "stageConstraint": "2025年度ROE6.92%低于10%；低基数显著放大利润同比增速。"
     },
@@ -1372,7 +1396,19 @@
       "breakout": {
         "driver": "两季收入增长与核心利润翻倍，危废金属回收及装备交付构成经营来源。",
         "quality": "本期现金回收约为归母利润89%；铜金等金属涨价对利润贡献需持续拆分。",
-        "invalidation": "金属价格回落或处理量下降，使利润及现金同步收缩。"
+        "invalidation": "金属价格回落或处理量下降，使利润及现金同步收缩。",
+        "operatingReview": {
+          "decision": "exclude",
+          "growthSource": "resource_prices_unseparated",
+          "reportPeriod": "2026-06-30",
+          "checkedAt": "2026-09-30",
+          "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225524656.PDF",
+          "sourcePages": "15、24",
+          "rationale": "移出业绩爆发：资源化业务占中报收入94.78%，收入增长27.40%；清洁能源设备仅占4.86%、增长6.32%，缺金属价格中性条件下的核心利润增长拆分。",
+          "priceEffect": "回收销售金属的价格影响毛利；未定量拆分销量、加工回收能力与价格对利润的贡献，不将高利润增速直接判作结构性放量。",
+          "consolidationEffect": "现有证据不能用清洁能源设备的小体量增长解释合并报表利润翻倍；本次不借并购假设填补归因缺口。",
+          "valuationAssessment": "估值单独判断：2026-09-29的TTM PE 12.42倍、动态PE 8.74倍；动态PE仅为本期累计利润年化，并非预测。不能由名单入选推导便宜，周期/并表盈利也不能直接外推。"
+        }
       },
       "stageConstraint": "回收金属价格变化直接影响资源化利润，周期回升不代表永久质量改善。"
     },
@@ -1412,7 +1448,19 @@
       "breakout": {
         "driver": "碳酸锂销量及售价回升带动两季核心盈利翻倍，属于周期恢复阶段。",
         "quality": "本期经营现金流超过归母利润；上一年ROE5.29%，当前增速不等同长期资本回报。",
-        "invalidation": "锂价或销量下降使毛利与现金回收回落，新增矿山和产能未形成回报。"
+        "invalidation": "锂价或销量下降使毛利与现金回收回落，新增矿山和产能未形成回报。",
+        "operatingReview": {
+          "decision": "exclude",
+          "growthSource": "commodity_prices",
+          "reportPeriod": "2026-06-30",
+          "checkedAt": "2026-09-30",
+          "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-25/1225496651.PDF",
+          "sourcePages": "12、16、22—23",
+          "rationale": "移出业绩爆发：中报将收入与现金流增长归于碳酸锂销量、价格及毛利回升；缺剔除锂价回升后的连续核心盈利扩张证据。",
+          "priceEffect": "销售量也有增长，但商品价格贡献未单独量化，不能用两季低基数翻倍证明结构性成长。",
+          "consolidationEffect": "本次所列经营说明以锂业务量价回升为主，不将未披露的并购贡献假定为增长来源。",
+          "valuationAssessment": "估值单独判断：2026-09-29的TTM PE 17.09倍、动态PE 10.86倍；动态PE仅为本期累计利润年化，并非预测。不能由名单入选推导便宜，周期/并表盈利也不能直接外推。"
+        }
       },
       "stageConstraint": "增长包含锂价回升和低基数，不能据此归为高质成长。"
     },
@@ -1452,7 +1500,19 @@
       "breakout": {
         "driver": "稀土产品产销与价格走强共同推动两季利润翻倍，不将资源涨价解释为永久增长。",
         "quality": "当期现金回收为归母利润约59%；生产和资源采购政策带来周期约束。",
-        "invalidation": "稀土价格下跌、配额收紧或采购成本提高，使核心利润和回款转弱。"
+        "invalidation": "稀土价格下跌、配额收紧或采购成本提高，使核心利润和回款转弱。",
+        "operatingReview": {
+          "decision": "exclude",
+          "growthSource": "commodity_prices",
+          "reportPeriod": "2026-06-30",
+          "checkedAt": "2026-09-30",
+          "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-20/1225483017.PDF",
+          "sourcePages": "8—9、18、24",
+          "rationale": "移出业绩爆发：中报明确稀土供需偏紧、价格上涨，同时产销创高；未证明排除稀土价格回升后的核心盈利仍持续翻倍。",
+          "priceEffect": "产品价格与销量共同改善，商品供需是主要经营变量；低基数与价格回升不能独立证明持续成长。",
+          "consolidationEffect": "本次经营证据指向量价变化，不以未披露的并表增量作解释。",
+          "valuationAssessment": "估值单独判断：2026-09-29的TTM PE 37.95倍、动态PE 31.17倍；动态PE仅为本期累计利润年化，并非预测。不能由名单入选推导便宜，周期/并表盈利也不能直接外推。"
+        }
       },
       "stageConstraint": "稀土价格、生产配额与资源采购规则影响利润。"
     },
@@ -1492,7 +1552,19 @@
       "breakout": {
         "driver": "PCB电镀设备出口和交付增加，两季核心利润翻倍；新签订单只作后续验证线索。",
         "quality": "当期经营现金回收超过归母利润；上年资本回报及设备验收周期仍有约束。",
-        "invalidation": "新签订单不能交付验收，存货与发出商品增加同时收入、回款放缓。"
+        "invalidation": "新签订单不能交付验收，存货与发出商品增加同时收入、回款放缓。",
+        "operatingReview": {
+          "decision": "retain",
+          "growthSource": "product_delivery",
+          "reportPeriod": "2026-06-30",
+          "checkedAt": "2026-09-30",
+          "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-08/1225463818.PDF",
+          "sourcePages": "11、21",
+          "rationale": "暂保留业绩爆发：中报将PCB高端板需求、出口和设备交付列为增量来源；收入增长51.94%、核心盈利连续两季翻倍，现金回收达到门槛。",
+          "priceEffect": "设备订单受下游资本开支周期影响；新增订单增长不计为已确认收入，交付及验收收入才作为经营证据。",
+          "consolidationEffect": "现有经营依据为自有设备交付，不以未经拆分的并购增量支撑入选；期末存货14.77亿元，仍须跟踪验收、预收款和回款。",
+          "valuationAssessment": "估值单独判断：2026-09-29的TTM PE 103.05倍、动态PE 92.30倍；动态PE仅为本期累计利润年化，并非预测。不能由名单入选推导便宜，周期/并表盈利也不能直接外推。"
+        }
       },
       "stageConstraint": "上年ROE6.79%，当前两季盈利恢复尚不代表稳定高回报。"
     },
@@ -1532,7 +1604,19 @@
       "breakout": {
         "driver": "两季利润大幅增长，来源是存储涨价、新品和SHM并表；新增收入约77%由并表贡献。",
         "quality": "当期现金回收超过归母利润，但尚不能证明同口径有机利润连续翻倍。",
-        "invalidation": "剔除并表后的业务转弱、存储价格下行或商誉减值，使增长与现金持续性失效。"
+        "invalidation": "剔除并表后的业务转弱、存储价格下行或商誉减值，使增长与现金持续性失效。",
+        "operatingReview": {
+          "decision": "exclude",
+          "growthSource": "consolidation_and_prices",
+          "reportPeriod": "2026-06-30",
+          "checkedAt": "2026-09-30",
+          "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-19/1225480536.PDF",
+          "sourcePages": "23、39",
+          "rationale": "移出业绩爆发：新增收入30.53亿元中SHM并表约23.46亿元，占增量约77%；缺剔除并表后的两季核心利润可比增长。",
+          "priceEffect": "存储供给与报价上行提高毛利；新品和并表也有贡献，未披露足以排除价格因素的核心利润拆分。",
+          "consolidationEffect": "2025年11月收购诺亚长天51%股权后并表，2026与2025上半年合并范围不同。",
+          "valuationAssessment": "估值单独判断：2026-09-29的TTM PE 56.56倍、动态PE 33.99倍；动态PE仅为本期累计利润年化，并非预测。不能由名单入选推导便宜，周期/并表盈利也不能直接外推。"
+        }
       },
       "stageConstraint": "新增收入主要含并购并表，历史与本期合并范围不可直接外推。"
     }

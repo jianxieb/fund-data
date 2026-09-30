@@ -109,6 +109,12 @@ def breakout_review(row, asof):
     ocf = ttm_amount(reports, 'operatingCashFlow')
     research = row.get('qualityResearch') or {}
     business = research.get('breakout') or {}
+    operating = business.get('operatingReview') or {}
+    current_operating = operating.get('reportPeriod') == latest.get('reportDate') and bool(operating.get('checkedAt')) and latest.get('reportDate', '') <= operating['checkedAt'] <= asof
+    source = next((s for s in research.get('sources', []) if s.get('url') == operating.get('sourceUrl')), {})
+    evidence = bool(source) and source.get('publishedAt', '') <= asof and bool(operating.get('sourcePages'))
+    reviewed = current_operating and evidence and all(isinstance(operating.get(k), str) and operating[k].strip() for k in ('rationale', 'priceEffect', 'consolidationEffect', 'valuationAssessment'))
+    structural = reviewed and operating.get('decision') == 'retain' and operating.get('growthSource') in ('product_delivery', 'structural_demand')
     reported = latest_report_review(latest, asof)[0]
     notice = latest.get('announcedAt') or ''
     known = bool(notice) and latest.get('reportDate', '') <= notice <= asof
@@ -124,9 +130,10 @@ def breakout_review(row, asof):
         check('最新经营现金流≥归母利润50%，TTM经营现金流为正', profit is not None and profit > 0 and (numeric(latest.get('operatingCashFlow')) or 0) >= profit * BREAKOUT_LIMITS['cashProfitRatio'] and ocf is not None and ocf > 0, '当前现金回收不足归母利润50%，或TTM经营现金流未转正'),
         research_evidence_check(row, asof),
         check('本期增长来源、周期/并购/基数影响和失效信号均有报告依据', research.get('reportPeriod') == latest.get('reportDate') and all(isinstance(business.get(k), str) and business[k].strip() for k in ('driver', 'quality', 'invalidation')), '缺本期业绩爆发的增长来源、周期/并购/基数影响或失效信号记录'),
+        check('有产品交付或结构性需求依据，增长不依赖商品涨价或未拆分并表', structural, operating.get('rationale') if reviewed else '缺本期价格、并表与主营交付的独立复核'),
     ]
     return {'qualified': all(c['pass'] for c in checks), 'checks': checks, 'checkedAt': asof,
             'quarters': quarters, 'coreProfitRatio': ratio, 'operatingCashFlowTtm': ocf,
             'financialQualified': all(c['pass'] for c in checks[:9]),
-            'basis': 'core_earnings_breakout_v2', 'thresholds': BREAKOUT_LIMITS.copy(),
+            'operatingReview': operating, 'basis': 'core_earnings_breakout_v3', 'thresholds': BREAKOUT_LIMITS.copy(),
             'reasons': [business[k] for k in ('driver', 'quality') if business.get(k)], 'watchouts': []}

@@ -143,7 +143,7 @@ class IndependentGroupTests(unittest.TestCase):
         self.assertFalse(long_term_review(row, '2026-09-30')['qualified'])
 
     def test_reviewed_earnings_breakouts_keep_quality_failures_explicit(self):
-        expected = {'002384', '601869', '002266', '002756', '600111', '688700', '688766'}
+        expected = {'601869', '688700'}
         breakout = {c for c, r in self.rows.items() if (r.get('breakoutReview') or {}).get('qualified')}
         self.assertEqual(breakout, expected)
         for code in expected:
@@ -157,6 +157,26 @@ class IndependentGroupTests(unittest.TestCase):
         for code in ('002648', '603259'):
             self.assertFalse(self.rows[code]['breakoutReview']['qualified'])
             self.assertFalse(self.live_rows[code]['breakoutReview']['qualified'])
+
+    def test_breakout_financial_growth_cannot_override_prices_or_unseparated_consolidation(self):
+        for code in ('002384', '002266', '002756', '600111', '688766'):
+            with self.subTest(code=code):
+                review = self.rows[code]['breakoutReview']
+                self.assertTrue(review['financialQualified'])
+                self.assertFalse(review['qualified'])
+                self.assertEqual(review['operatingReview']['decision'], 'exclude')
+                self.assertFalse(review['checks'][-1]['pass'])
+                self.assertTrue(review['checks'][-1]['reason'])
+                self.assertEqual(review, self.live_rows[code]['breakoutReview'])
+        for change in ('missing', 'future', 'stale', 'no_source', 'prices'):
+            row = copy.deepcopy(self.rows['601869'])
+            review = row['qualityResearch']['breakout']['operatingReview']
+            if change == 'missing': row['qualityResearch']['breakout'].pop('operatingReview')
+            elif change == 'future': review['checkedAt'] = '2026-10-01'
+            elif change == 'stale': review['reportPeriod'] = '2025-12-31'
+            elif change == 'no_source': review['sourceUrl'] = 'https://example.com/unknown'
+            elif change == 'prices': review['growthSource'] = 'commodity_prices'
+            self.assertFalse(breakout_review(row, '2026-09-30')['qualified'], change)
 
     def test_breakout_rejects_losses_declining_prior_quarter_and_missing_research(self):
         row = copy.deepcopy(self.rows['601869'])

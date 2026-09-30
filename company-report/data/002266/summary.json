@@ -1557,7 +1557,19 @@
         "breakout": {
           "driver": "两季收入增长与核心利润翻倍，危废金属回收及装备交付构成经营来源。",
           "quality": "本期现金回收约为归母利润89%；铜金等金属涨价对利润贡献需持续拆分。",
-          "invalidation": "金属价格回落或处理量下降，使利润及现金同步收缩。"
+          "invalidation": "金属价格回落或处理量下降，使利润及现金同步收缩。",
+          "operatingReview": {
+            "decision": "exclude",
+            "growthSource": "resource_prices_unseparated",
+            "reportPeriod": "2026-06-30",
+            "checkedAt": "2026-09-30",
+            "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225524656.PDF",
+            "sourcePages": "15、24",
+            "rationale": "移出业绩爆发：资源化业务占中报收入94.78%，收入增长27.40%；清洁能源设备仅占4.86%、增长6.32%，缺金属价格中性条件下的核心利润增长拆分。",
+            "priceEffect": "回收销售金属的价格影响毛利；未定量拆分销量、加工回收能力与价格对利润的贡献，不将高利润增速直接判作结构性放量。",
+            "consolidationEffect": "现有证据不能用清洁能源设备的小体量增长解释合并报表利润翻倍；本次不借并购假设填补归因缺口。",
+            "valuationAssessment": "估值单独判断：2026-09-29的TTM PE 12.42倍、动态PE 8.74倍；动态PE仅为本期累计利润年化，并非预测。不能由名单入选推导便宜，周期/并表盈利也不能直接外推。"
+          }
         },
         "stageConstraint": "回收金属价格变化直接影响资源化利润，周期回升不代表永久质量改善。",
         "status": "reviewed",

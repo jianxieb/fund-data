@@ -298,3 +298,73 @@ test('cross-border market returns never silently substitute NAV when missing', (
   assert.equal(M.crossborderPerformance(f, {}, 'market').r[0], null);
   assert.equal(M.crossborderPerformance({ ...f, exchange: false }, evidence, 'market').r[0], 10);
 });
+
+
+test('all fund facets include every individual selection and combine by union', () => {
+  const vm = require('node:vm'), ctx = {};
+  for (const path of ['data/snapshot.js', 'data/screening.js']) vm.runInNewContext(fs.readFileSync(path, 'utf8'), ctx);
+  const funds = M.dedupeFunds(ctx.FUNDS, ctx.EXTRA), policy = ctx.SCREEN_POLICY;
+  const pool = funds.filter(f => M.fundScopeMatches(f, policy.byCode[f.c], 'equity', policy.defaults));
+  const codes = facets => new Set(pool.filter(f => M.fundFacetMatches(f, policy.byCode[f.c], 'equity', facets, policy.defaults)).map(f => f.c));
+  const all = codes([]), broad = codes(['broad']), theme = codes(['theme']), both = codes(['broad', 'theme']);
+  assert.ok(all.size > policy.shortlist.length);
+  for (const code of [...broad, ...theme]) assert.ok(all.has(code));
+  assert.deepEqual(both, all);
+  assert.equal(broad.size + theme.size, all.size);
+  assert.equal(pool.filter(f => f.exchange).length, 0);
+});
+
+test('index categories distinguish actual sectors, factors and broad exposure', () => {
+  const kind = (n, ix = n) => M.indexFundKind(M.dedupeFunds([], [fund({n, ix})])[0], {});
+  assert.equal(kind('中证A500ETF', '中证A500指数'), 'broad');
+  assert.equal(kind('机器人ETF'), 'sector');
+  assert.equal(kind('大数据ETF'), 'sector');
+  assert.equal(kind('中证红利ETF'), 'factor');
+  assert.equal(kind('国债ETF'), 'fixed');
+  assert.equal(kind('豆粕ETF'), 'commodity');
+  assert.equal(kind('标普500ETF'), 'overseas');
+  assert.equal(M.indexSectorMatches(fund({n:'银行ETF', ix:'中证银行指数'}), ['medical']), false);
+  assert.equal(M.indexSectorMatches(fund({n:'银行ETF', ix:'中证银行指数'}), ['medical', 'financial']), true);
+  assert.equal(M.indexSectorMatches(fund(), []), true);
+});
+
+test('reviewed coverage products keep identity, real NAV dates and complete-window boundaries', () => {
+  const vm = require('node:vm'), ctx = {};
+  vm.runInNewContext(fs.readFileSync('data/snapshot.js', 'utf8'), ctx);
+  const funds = new Map(M.dedupeFunds(ctx.FUNDS, ctx.EXTRA).map(f => [f.c, f]));
+  const catalog = JSON.parse(fs.readFileSync('data/index-fund-catalog.json', 'utf8'));
+  for (const item of catalog.products) {
+    const f = funds.get(item.code);
+    assert.ok(f, item.code);
+    assert.equal(f.n, item.expectedName);
+    assert.ok(f.ix && f.indexCode, item.code);
+    assert.ok(M.validDate(f.returnAsOf), item.code);
+    assert.ok(f.returnAsOf >= '2026-09-28', item.code);
+    for (let i = 0; i < 5; i++) if (f.r[i] !== null) assert.ok(M.hasWindow(f.returnFirst, f.returnAsOf, [1,2,3,5,10][i]), item.code);
+  }
+  const young = funds.get('512450');
+  for (let i = 0; i < 5; i++) if (!M.hasWindow(young.returnFirst, young.returnAsOf, [1,2,3,5,10][i])) assert.equal(young.r[i], null);
+});
+
+test('growth board exclusion uses security code rather than company labels', () => {
+  assert.equal(M.stockBoard('688700'), 'star');
+  assert.equal(M.stockBoard('689009'), 'star');
+  assert.equal(M.stockBoard('300308'), 'chinext');
+  assert.equal(M.stockBoard('301269'), 'chinext');
+  assert.equal(M.stockBoard('601138'), 'main');
+  assert.equal(M.stockBoard('002384'), 'main');
+});
+
+test('scroll batches cover all results once, including a partial final batch', () => {
+  for (const total of [0, 2, 22, 45, 112, 1369]) {
+    let shown = 0; const indices = [];
+    do {
+      const w = M.loadWindow(total, shown, 20);
+      for (let i = w.start; i < w.end; i++) indices.push(i);
+      shown = w.end;
+      if (!w.hasMore) break;
+    } while (shown < total);
+    assert.deepEqual(indices, Array.from({length: total}, (_, i) => i));
+    assert.equal(M.loadWindow(total, shown, 20).hasMore, false);
+  }
+});

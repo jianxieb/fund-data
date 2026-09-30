@@ -1528,7 +1528,19 @@
         "breakout": {
           "driver": "H1营收增长63.95%、扣非增长277.52%；Q1、Q2收入和核心利润均扩张，AI PCB与光模块交付有公司披露。",
           "quality": "H1扣非占归母83.86%，TTM经营现金流为正；2025年ROE6.89%低于10%，并购并表效应仍须单独拆解。",
-          "invalidation": "剔除并表后的增长不足，或资本开支和债务增长持续快于经营现金回收。"
+          "invalidation": "剔除并表后的增长不足，或资本开支和债务增长持续快于经营现金回收。",
+          "operatingReview": {
+            "decision": "exclude",
+            "growthSource": "consolidation_unseparated",
+            "reportPeriod": "2026-06-30",
+            "checkedAt": "2026-09-30",
+            "sourceUrl": "https://disc.static.szse.cn/disc/disk03/finalpage/2026-08-22/9290e257-66b5-4681-a8ce-824cd1e6d853.PDF",
+            "sourcePages": "8、19—20",
+            "rationale": "移出业绩爆发：中报将增长部分归于索尔思、GMD并表，缺原合并范围下两季核心利润增长拆分；经营现金流同比下降4.65%。",
+            "priceEffect": "AI相关产品与客户增长有业务依据，但未量化产品、价格与原业务利润贡献，不能把合并增速直接当作有机扩张。",
+            "consolidationEffect": "2025年收购索尔思、GMD改变可比范围；本期购建长期资产52.53亿元高于经营现金23.84亿元，融资与交付回款仍需核对。",
+            "valuationAssessment": "估值单独判断：2026-09-29的TTM PE 87.47倍、动态PE 53.03倍；动态PE仅为本期累计利润年化，并非预测。不能由名单入选推导便宜，周期/并表盈利也不能直接外推。"
+          }
         },
         "stageConstraint": "2025年度ROE6.89%低于10%；并购并表增长与有机增长需分拆。",
         "status": "reviewed",

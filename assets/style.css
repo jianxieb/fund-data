@@ -276,12 +276,12 @@ html{scrollbar-gutter:stable}
 .stock-controls .filters input[type=search]{min-width:230px}
 .page-funds .page-head h1{font-size:30px}
 .page-funds .page-head p{font-size:12px}
-.fund-controls{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:start}
-.fund-query{display:grid;gap:10px;min-width:0}
+.fund-controls{display:flex;align-items:center;justify-content:space-between;gap:20px;margin:18px 0;flex-wrap:wrap}
+.fund-query{flex:1 1 240px;min-width:0;max-width:400px}
 .fund-query>input[type=search]{width:100%;min-width:0;font-size:12px;min-height:39px}
 .fund-controls .filters{min-height:39px}
 .fund-controls .select-menu{margin:0}
-.fund-controls .return-controls{flex-direction:column;align-items:flex-end;gap:10px}
+.fund-controls .return-controls{flex-direction:row;align-items:center;gap:14px}
 .fund-controls .period-control{min-height:39px;flex-wrap:nowrap}
 .fund-controls .segmented{min-height:39px;align-items:center}
 .fund-controls .period-control label,.fund-controls .column-picker summary{font-size:12px}
@@ -472,18 +472,13 @@ dialog:has(.stock-detail){width:min(1180px,94vw);max-width:1180px}
 
 .stock-reason>a{display:inline-block;margin-top:8px;font-size:11px;color:var(--green)}
 .stock-reason .stock-growth-basis{color:#465942;font-variant-numeric:tabular-nums}
-.stock-overlap{display:inline-block;width:7px;height:7px;margin-left:8px;background:#2e8465;transform:rotate(45deg);flex:none}
 .stock-name{display:inline-flex;align-items:center;white-space:nowrap}
 .stock-board{display:inline-grid;place-items:center;flex-shrink:0;width:18px;height:18px;margin-left:7px;border:1px solid #d4dfd1;border-radius:4px;background:#f1f6ee;color:#5c7950;font-size:11px;font-weight:600;line-height:1;letter-spacing:0;vertical-align:middle}
 .stock-board.star{color:#8c6b40;border-color:#e5dbc8;background:#faf5eb}
-.stock-deep-link{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;margin-left:7px;border:1px solid #dbe4d8;border-radius:5px;color:#698362;flex:none;vertical-align:middle}
-.stock-deep-link svg{width:16px;height:16px}
-.stock-deep-link:hover{color:var(--green);border-color:#91ab84;background:#edf3e6}
-.stock-deep-link:focus-visible{outline:2px solid var(--green);outline-offset:2px}
 .fund-table-actions{display:flex;align-items:center;gap:22px}
 .fund-table-actions>.btn{background:transparent}
 .fund-controls .return-controls{margin-left:0}
-@media(min-width:1500px){.fund-controls{align-items:center;gap:20px}.fund-query{display:flex;align-items:center;gap:12px}.fund-query>input[type=search]{flex:1 1 200px;max-width:300px}.fund-controls .filters{flex-wrap:nowrap}.fund-controls .return-controls{flex-direction:row;align-items:center;gap:16px}}
+
 @media(max-width:900px){.fund-controls{grid-template-columns:1fr;gap:12px}.fund-controls .return-controls{flex-direction:row;align-items:center;justify-content:space-between;width:100%;flex-wrap:wrap}.fund-controls .period-control{justify-content:flex-start;flex-wrap:wrap}}
 #dialog:has(.fund-columns){width:min(500px,calc(100% - 32px))}
 .fund-column-options{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin:16px 0 22px}
@@ -535,3 +530,37 @@ dialog:has(.stock-detail){width:min(1180px,94vw);max-width:1180px}
 @media(max-width:760px){.report-library{grid-template-columns:1fr}.report-layout{display:block}.report-toc{position:static;display:flex;overflow-x:auto;padding:0 0 15px;margin-bottom:22px;border:0;gap:10px}.report-toc button{white-space:nowrap;width:auto;padding:7px}.report-toc button span{display:none}.report-header h1{font-size:30px}.report-topline{gap:15px}.report-dates{gap:10px 15px}}
 
 .fund-search-alternatives{margin:24px auto;max-width:600px;text-align:left}.fund-search-alternatives>p{font-size:12px;margin-bottom:12px}.fund-search-alternatives>div{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:12px 0;border-top:1px solid var(--line)}.fund-search-alternatives span{font-size:12px;white-space:nowrap}
+
+/* Shared search, visible filter controls, and continuous result lists. */
+input[type=search]:focus{border-color:#dce1d6;outline:none;box-shadow:none;background:#fff}
+body.keyboard-navigation input[type=search]:focus-visible{outline:2px solid #9aba70;outline-offset:3px}
+.check-label input[type=checkbox]{width:16px;min-width:16px;min-height:16px;flex:0 0 16px;margin:0}
+.fund-tabs .fund-pool-tab{margin-left:auto;color:var(--muted)}
+.fund-tabs .fund-pool-tab.active{color:var(--green)}
+.fund-filter-panel{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:18px 23px;margin-bottom:18px}
+.fund-filter-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.fund-filter-heading h2{font-size:14px}
+.fund-filter-row{display:flex;gap:20px;align-items:flex-start;margin:10px 0}
+.fund-filter-row>span{font-size:12px;color:var(--muted);flex:0 0 76px;padding-top:6px}
+.fund-filter-row>span small{display:block;font-size:10px;color:#98a292}
+.fund-filter-row .filter-chip small{font-size:10px;color:var(--muted);margin-left:7px;font-variant-numeric:tabular-nums}
+.fund-thresholds{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+.fund-thresholds>span:first-child{font-size:12px;color:var(--muted);margin-right:2px}
+.fund-thresholds label{display:flex;align-items:center;gap:7px;white-space:nowrap}
+.fund-thresholds label>span{display:inline-flex;align-items:center;gap:5px}
+.fund-thresholds input{width:69px;min-height:34px;padding:5px 8px;margin:0}
+.fund-fixed-thresholds{font-size:11px;color:var(--muted)}
+.fund-thresholds>.text-link{margin-left:auto;white-space:nowrap}
+.fund-filter-bottom{display:flex;align-items:center;margin-top:15px}
+.fund-filter-bottom .check-label{font-size:12px;gap:7px}
+.fund-table-wrap,.cross-table-wrap,.stock-table-wrap{max-height:none}
+.load-footer{display:flex;justify-content:center;align-items:center;gap:24px;min-height:59px;padding:14px 20px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+.stock-table td.stock-overlap-company{background:#ecf5ef;box-shadow:inset 3px 0 #27805c,1px 0 #edf0e7}
+.stock-overlap-company .stock-name>.text-link,.stock-overlap-label{color:#21764f;font-weight:650}
+.stock-overlap-legend{color:#21764f;font-size:11px;white-space:nowrap}
+.stock-report-entry{display:inline-flex;align-items:center;gap:14px;color:var(--green);font-size:12px;line-height:1.5;margin-top:10px;padding:5px 0;min-height:28px}
+.stock-report-entry:hover{text-decoration:underline;text-underline-offset:4px}
+.board-filter{border:1px solid #dce1d6;background:#fff;border-radius:7px;padding:8px 13px;font-size:12px;min-height:39px;white-space:nowrap}
+.board-filter.active{background:var(--green-bg);border-color:#a4b99a;color:var(--green)}
+@media(max-width:900px){.fund-query{max-width:none}.fund-controls .return-controls{width:auto;margin-left:auto}.fund-filter-row{gap:12px}.fund-thresholds{gap:10px}.stock-overlap-legend{order:3;flex-basis:100%}}
+@media(max-width:650px){.fund-filter-panel{padding:16px}.fund-filter-row{flex-direction:column;gap:5px}.fund-filter-row>span{flex-basis:auto;padding:0}.fund-filter-row>span small{display:inline;margin-left:8px}.fund-thresholds>.text-link{margin-left:0}.fund-fixed-thresholds{width:100%}.fund-tabs .fund-pool-tab{margin-left:20px}.fund-controls .return-controls{width:100%}.board-filter{width:100%}}

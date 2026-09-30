@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-09-30T05:50:39+00:00",
+  "checkedAt": "2026-09-30T11:50:22+00:00",
   "asOf": "2026-09-30",
   "status": "unverified",
   "summary": {
@@ -132,12 +132,12 @@
     {
       "id": "domestic_funds",
       "label": "扩展基金研究池",
-      "asOf": "2026-09-29",
+      "asOf": "2026-09-30",
       "dateRange": [
         "2026-09-09",
-        "2026-09-29"
+        "2026-09-30"
       ],
-      "records": 1268,
+      "records": 1323,
       "issues": [
         {
           "code": "domestic_basis_unverified",

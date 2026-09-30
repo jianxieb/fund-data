@@ -1091,7 +1091,19 @@
         "breakout": {
           "driver": "两季利润大幅增长，来源是存储涨价、新品和SHM并表；新增收入约77%由并表贡献。",
           "quality": "当期现金回收超过归母利润，但尚不能证明同口径有机利润连续翻倍。",
-          "invalidation": "剔除并表后的业务转弱、存储价格下行或商誉减值，使增长与现金持续性失效。"
+          "invalidation": "剔除并表后的业务转弱、存储价格下行或商誉减值，使增长与现金持续性失效。",
+          "operatingReview": {
+            "decision": "exclude",
+            "growthSource": "consolidation_and_prices",
+            "reportPeriod": "2026-06-30",
+            "checkedAt": "2026-09-30",
+            "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-19/1225480536.PDF",
+            "sourcePages": "23、39",
+            "rationale": "移出业绩爆发：新增收入30.53亿元中SHM并表约23.46亿元，占增量约77%；缺剔除并表后的两季核心利润可比增长。",
+            "priceEffect": "存储供给与报价上行提高毛利；新品和并表也有贡献，未披露足以排除价格因素的核心利润拆分。",
+            "consolidationEffect": "2025年11月收购诺亚长天51%股权后并表，2026与2025上半年合并范围不同。",
+            "valuationAssessment": "估值单独判断：2026-09-29的TTM PE 56.56倍、动态PE 33.99倍；动态PE仅为本期累计利润年化，并非预测。不能由名单入选推导便宜，周期/并表盈利也不能直接外推。"
+          }
         },
         "stageConstraint": "新增收入主要含并购并表，历史与本期合并范围不可直接外推。",
         "status": "reviewed",

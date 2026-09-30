@@ -1537,7 +1537,19 @@
         "breakout": {
           "driver": "碳酸锂销量及售价回升带动两季核心盈利翻倍，属于周期恢复阶段。",
           "quality": "本期经营现金流超过归母利润；上一年ROE5.29%，当前增速不等同长期资本回报。",
-          "invalidation": "锂价或销量下降使毛利与现金回收回落，新增矿山和产能未形成回报。"
+          "invalidation": "锂价或销量下降使毛利与现金回收回落，新增矿山和产能未形成回报。",
+          "operatingReview": {
+            "decision": "exclude",
+            "growthSource": "commodity_prices",
+            "reportPeriod": "2026-06-30",
+            "checkedAt": "2026-09-30",
+            "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-25/1225496651.PDF",
+            "sourcePages": "12、16、22—23",
+            "rationale": "移出业绩爆发：中报将收入与现金流增长归于碳酸锂销量、价格及毛利回升；缺剔除锂价回升后的连续核心盈利扩张证据。",
+            "priceEffect": "销售量也有增长，但商品价格贡献未单独量化，不能用两季低基数翻倍证明结构性成长。",
+            "consolidationEffect": "本次所列经营说明以锂业务量价回升为主，不将未披露的并购贡献假定为增长来源。",
+            "valuationAssessment": "估值单独判断：2026-09-29的TTM PE 17.09倍、动态PE 10.86倍；动态PE仅为本期累计利润年化，并非预测。不能由名单入选推导便宜，周期/并表盈利也不能直接外推。"
+          }
         },
         "stageConstraint": "增长包含锂价回升和低基数，不能据此归为高质成长。",
         "status": "reviewed",

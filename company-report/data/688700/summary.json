@@ -1138,7 +1138,19 @@
         "breakout": {
           "driver": "PCB电镀设备出口和交付增加，两季核心利润翻倍；新签订单只作后续验证线索。",
           "quality": "当期经营现金回收超过归母利润；上年资本回报及设备验收周期仍有约束。",
-          "invalidation": "新签订单不能交付验收，存货与发出商品增加同时收入、回款放缓。"
+          "invalidation": "新签订单不能交付验收，存货与发出商品增加同时收入、回款放缓。",
+          "operatingReview": {
+            "decision": "retain",
+            "growthSource": "product_delivery",
+            "reportPeriod": "2026-06-30",
+            "checkedAt": "2026-09-30",
+            "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-08/1225463818.PDF",
+            "sourcePages": "11、21",
+            "rationale": "暂保留业绩爆发：中报将PCB高端板需求、出口和设备交付列为增量来源；收入增长51.94%、核心盈利连续两季翻倍，现金回收达到门槛。",
+            "priceEffect": "设备订单受下游资本开支周期影响；新增订单增长不计为已确认收入，交付及验收收入才作为经营证据。",
+            "consolidationEffect": "现有经营依据为自有设备交付，不以未经拆分的并购增量支撑入选；期末存货14.77亿元，仍须跟踪验收、预收款和回款。",
+            "valuationAssessment": "估值单独判断：2026-09-29的TTM PE 103.05倍、动态PE 92.30倍；动态PE仅为本期累计利润年化，并非预测。不能由名单入选推导便宜，周期/并表盈利也不能直接外推。"
+          }
         },
         "stageConstraint": "上年ROE6.79%，当前两季盈利恢复尚不代表稳定高回报。",
         "status": "reviewed",

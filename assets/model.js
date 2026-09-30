@@ -16,6 +16,65 @@
     const review = group === 'quality' ? stock.longTermReview : group === 'growth' ? stock.growthReview : stock.breakoutReview;
     return review?.qualified === true && stock.qualityResearch?.status === 'reviewed' && stock.qualityResearch?.code === stock.c;
   }
+  function stockBoard(code) {
+    return /^68[89]\d{3}$/.test(code) ? 'star' : /^30[01]\d{3}$/.test(code) ? 'chinext' : 'main';
+  }
+  function loadWindow(total, shown, batch) {
+    const end = Math.min(total, Math.max(0, shown) + batch);
+    return { start: Math.min(total, Math.max(0, shown)), end, hasMore: end < total };
+  }
+  function fundScopeMatches(fund, rule, tab, limits) {
+    const text = (fund.n || '') + ' ' + (fund.ix || '');
+    if (tab === 'equity') return fund.active && equityQualifies(rule, limits);
+    if (tab === 'passive') return /指数|ETF|联接/.test(text);
+    if (tab === 'income') return rule?.category === 'dividend' || fund.dividend || rule?.category === 'fixed_income' || /债券|国债|政金债|信用债|偏债|货币|固收[+＋]/.test(text);
+    if (tab === 'active') return fund.active && !['fixed_income', 'commodity', 'fof'].includes(rule?.category);
+    if (tab === 'overseas') return rule?.region ? ['overseas', 'global', 'cross_border', 'mixed', 'cn_hk'].includes(rule.region) : fund.overseasExposure;
+    if (tab === 'dividend') return rule?.category === 'dividend' || fund.dividend;
+    if (tab === 'fixed') return rule?.category === 'fixed_income' || /债券|国债|政金债|信用债|偏债|货币|固收[+＋]/.test(text);
+    if (tab === 'commodity') return rule?.category === 'commodity' || fund.asset === 'gold';
+    if (tab === 'theme') return rule?.category === 'theme';
+    if (tab === 'fof') return rule?.category === 'fof';
+    return true;
+  }
+  function indexFundKind(fund, rule) {
+    const text = (fund.n || '') + ' ' + (fund.ix || '');
+    if (fundScopeMatches(fund, rule, 'fixed')) return 'fixed';
+    if (fundScopeMatches(fund, rule, 'commodity') || /原油|豆粕|白银|期货/.test(text)) return 'commodity';
+    if (fundScopeMatches(fund, rule, 'overseas')) return 'overseas';
+    if (/红利|股息|价值|质量|低波|动量|等权|基本面|策略|研发创新/.test(text)) return 'factor';
+    if (rule?.category === 'theme' || /主题|行业|产业|半导体|芯片|通信|电子|科技|消费|医药|医疗|银行|券商|证券|保险|煤炭|有色|资源|能源|光伏|新能源|军工|国防|机床|汽车|农业|传媒|计算机|房地产|电力|建筑|环保|稀土|TMT|5G|机器人|软件|云计算|人工智能|游戏|大数据|家电|食品|白酒|旅游|建材|石油|基建|交通|养殖|低碳/.test(text)) return 'sector';
+    return 'broad';
+  }
+  function fundFacetMatches(fund, rule, tab, facets, limits) {
+    if (!facets?.length) return true;
+    if (tab === 'equity') return facets.includes(rule?.category === 'theme' ? 'theme' : 'broad');
+    if (tab === 'passive') return facets.includes(indexFundKind(fund, rule));
+    return facets.some(key => fundScopeMatches(fund, rule, key, limits));
+  }
+  const indexSectors = [
+    ['medical', '医疗健康', /医药|医疗|创新药|生物|中药/],
+    ['financial', '金融地产', /银行|券商|证券|保险|金融|房地产/],
+    ['consumer', '消费', /消费|家电|食品|饮料|白酒|酒/],
+    ['chips', '半导体', /半导体|芯片|集成电路/],
+    ['software', '软件互联网', /计算机|软件|云计算|人工智能|大数据|互联网/],
+    ['electronics', '通信电子', /通信|电子|5G|光通信|光模块/],
+    ['manufacturing', '高端制造', /机器人|智能制造|机床|工业|机械/],
+    ['defense', '国防军工', /军工|国防|航天|航空/],
+    ['newenergy', '新能源', /新能源|光伏|电池|风电|储能|低碳/],
+    ['auto', '汽车', /汽车|智能车/],
+    ['materials', '资源材料', /稀土|有色|金属|钢铁|化工|材料|资源/],
+    ['energy', '能源电力', /煤炭|石油|能源|电力/],
+    ['infrastructure', '基建交通', /基建|建筑|建材|交通|运输|一带一路/],
+    ['agriculture', '农业养殖', /农业|养殖|畜牧/],
+    ['environment', '环保', /环保/],
+    ['leisure', '文旅传媒', /旅游|传媒|游戏|文化/],
+  ];
+  function indexSectorMatches(fund, sectors) {
+    if (!sectors?.length) return true;
+    const text = (fund.n || '') + ' ' + (fund.ix || '');
+    return indexSectors.some(([key, _label, pattern]) => sectors.includes(key) && pattern.test(text));
+  }
   function validDate(value) {
     if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
     const time = Date.parse(value + 'T00:00:00Z');
@@ -290,5 +349,5 @@
     });
     return { start, end, purchaseDays, rows, exchangeBasis };
   }
-  return { finite, sum, copy, escapeHtml, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, stockMatches, csv, buyLocationXirr, buyLocationResult, crossborderPerformance, crossborderMatches };
+  return { finite, sum, copy, escapeHtml, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, stockMatches, stockBoard, loadWindow, fundScopeMatches, fundFacetMatches, indexFundKind, indexSectors, indexSectorMatches, csv, buyLocationXirr, buyLocationResult, crossborderPerformance, crossborderMatches };
 }));

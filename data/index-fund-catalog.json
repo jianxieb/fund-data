@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-09-30",
+  "scope": "常用宽基、主要行业和细分主题的代表ETF；不按近年涨幅入选，不宣称覆盖全市场产品",
+  "discoverySource": "https://fund.eastmoney.com/data/fundranking.html",
+  "exchangeSource": "https://etf.sse.com.cn/fundlist/",
+  "products": [
+    {
+      "code": "510050",
+      "expectedName": "上证50ETF华夏"
+    },
+    {
+      "code": "510500",
+      "expectedName": "中证500ETF南方"
+    },
+    {
+      "code": "512100",
+      "expectedName": "中证1000ETF南方"
+    },
+    {
+      "code": "563300",
+      "expectedName": "中证2000ETF华泰柏瑞"
+    },
+    {
+      "code": "159338",
+      "expectedName": "中证A500ETF国泰"
+    },
+    {
+      "code": "512010",
+      "expectedName": "医药ETF易方达"
+    },
+    {
+      "code": "512170",
+      "expectedName": "医疗ETF华宝"
+    },
+    {
+      "code": "159992",
+      "expectedName": "创新药ETF银华"
+    },
+    {
+      "code": "512290",
+      "expectedName": "生物医药ETF国泰"
+    },
+    {
+      "code": "512800",
+      "expectedName": "银行ETF华宝"
+    },
+    {
+      "code": "512000",
+      "expectedName": "券商ETF华宝"
+    },
+    {
+      "code": "512200",
+      "expectedName": "房地产ETF南方"
+    },
+    {
+      "code": "159928",
+      "expectedName": "消费ETF汇添富"
+    },
+    {
+      "code": "159996",
+      "expectedName": "家电ETF国泰"
+    },
+    {
+      "code": "515170",
+      "expectedName": "食品饮料ETF华夏"
+    },
+    {
+      "code": "512690",
+      "expectedName": "酒ETF鹏华"
+    },
+    {
+      "code": "159995",
+      "expectedName": "芯片ETF华夏"
+    },
+    {
+      "code": "159998",
+      "expectedName": "计算机ETF天弘"
+    },
+    {
+      "code": "515230",
+      "expectedName": "软件ETF国泰"
+    },
+    {
+      "code": "516510",
+      "expectedName": "云计算ETF易方达"
+    },
+    {
+      "code": "515070",
+      "expectedName": "人工智能ETF华夏"
+    },
+    {
+      "code": "159869",
+      "expectedName": "游戏ETF华夏"
+    },
+    {
+      "code": "512660",
+      "expectedName": "军工ETF国泰"
+    },
+    {
+      "code": "516800",
+      "expectedName": "智能制造ETF华宝"
+    },
+    {
+      "code": "516110",
+      "expectedName": "汽车ETF国泰"
+    },
+    {
+      "code": "515400",
+      "expectedName": "大数据ETF富国"
+    },
+    {
+      "code": "515790",
+      "expectedName": "光伏ETF华泰柏瑞"
+    },
+    {
+      "code": "515700",
+      "expectedName": "新能源车ETF平安"
+    },
+    {
+      "code": "159755",
+      "expectedName": "电池ETF广发"
+    },
+    {
+      "code": "516160",
+      "expectedName": "新能源ETF南方"
+    },
+    {
+      "code": "516150",
+      "expectedName": "稀土ETF嘉实"
+    },
+    {
+      "code": "512400",
+      "expectedName": "有色金属ETF南方"
+    },
+    {
+      "code": "515210",
+      "expectedName": "钢铁ETF国泰"
+    },
+    {
+      "code": "516220",
+      "expectedName": "化工ETF国泰"
+    },
+    {
+      "code": "515220",
+      "expectedName": "煤炭ETF国泰"
+    },
+    {
+      "code": "561360",
+      "expectedName": "石油ETF国泰"
+    },
+    {
+      "code": "159666",
+      "expectedName": "交通运输ETF华夏"
+    },
+    {
+      "code": "516970",
+      "expectedName": "基建ETF广发"
+    },
+    {
+      "code": "561170",
+      "expectedName": "绿色电力ETF富国"
+    },
+    {
+      "code": "562510",
+      "expectedName": "旅游ETF华夏"
+    },
+    {
+      "code": "516550",
+      "expectedName": "农业ETF嘉实"
+    },
+    {
+      "code": "512450",
+      "expectedName": "畜牧养殖ETF广发"
+    },
+    {
+      "code": "159787",
+      "expectedName": "建材ETF易方达"
+    },
+    {
+      "code": "515150",
+      "expectedName": "一带一路ETF富国"
+    },
+    {
+      "code": "512580",
+      "expectedName": "环保ETF广发"
+    },
+    {
+      "code": "516070",
+      "expectedName": "低碳ETF易方达"
+    },
+    {
+      "code": "515250",
+      "expectedName": "智能汽车ETF富国"
+    },
+    {
+      "code": "159611",
+      "expectedName": "电力ETF广发"
+    },
+    {
+      "code": "518880",
+      "expectedName": "黄金ETF华安"
+    },
+    {
+      "code": "159937",
+      "expectedName": "黄金ETF博时"
+    },
+    {
+      "code": "159985",
+      "expectedName": "豆粕ETF华夏"
+    },
+    {
+      "code": "511010",
+      "expectedName": "国债ETF国泰"
+    },
+    {
+      "code": "562360",
+      "expectedName": "机器人ETF银华"
+    },
+    {
+      "code": "159593",
+      "expectedName": "A50ETF平安"
+    },
+    {
+      "code": "512070",
+      "expectedName": "证券保险ETF易方达"
+    }
+  ]
+}
