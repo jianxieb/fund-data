@@ -1107,7 +1107,7 @@ def main():
         failed = [code for code, result in zip(codes, results) if result['managerDataStatus'] in ('unavailable', 'refresh_failed')]
         log('FUNDS经理更新 %d/%d；无法核对：%s' % (changed, len(codes), ','.join(failed) or '无'))
         return 3 if failed else 0
-    patches, failures, dates, size_dates, refreshed = {}, [], [], [], 0
+    patches, failures, metadata_warnings, dates, size_dates, refreshed = {}, [], [], [], [], 0
     quotes = fund_mnfinfo(codes) if not args.offline and not args.hist else {}
     # Each fund owns separate cache files. Fetch its history and profile in a
     # small pool so a slow source host cannot consume the whole refresh budget.
@@ -1164,7 +1164,7 @@ def main():
             for key, value in manager.items():
                 patch[key] = json.dumps(value, ensure_ascii=False, allow_nan=False, separators=(',', ':'))
             if manager['managerDataStatus'] in ('unavailable', 'refresh_failed'):
-                failures.append(code + ':manager')
+                metadata_warnings.append(code + ':manager')
                 row_ok = False
             if info:
                 if not is_etf and info.get('st'):
@@ -1175,9 +1175,9 @@ def main():
                     patch['szdate'] = "'%s'" % info['szdate']
                     size_dates.append(info['szdate'])
             elif not args.offline:
-                failures.append(code + ':profile')
+                metadata_warnings.append(code + ':profile')
                 row_ok = False
-            nav = quotes.get(code) or info
+            nav = quotes.get(code) or info or {}
             if not nav.get('navdate') and rows:
                 latest_row = max(rows, key=lambda row: row.get('FSRQ', ''))
                 nav = {'nav': finite_number(latest_row.get('DWJZ')), 'navdate': latest_row.get('FSRQ'),
@@ -1208,7 +1208,7 @@ def main():
                 patch[field] = fnum(quote[key])
             patch['quotedAt'] = json.dumps(quote.get('time'))
         elif not args.offline and not args.hist:
-            failures.append(code + ':quote')
+            metadata_warnings.append(code + ':quote')
     navdate = max(set(dates), key=dates.count) if dates else old_meta.get('navdate', '')
     bench = None
     if not args.quick:
@@ -1231,10 +1231,15 @@ def main():
         write_status('funds', 'failed', message='写回前校验失败，旧数据未替换', failures=failures)
         return 2
     # All writers target snapshot.js; rendered UI is never modified by a refresh.
-    status = 'partial' if failures else 'cached' if args.offline else 'success'
+    status = 'partial' if failures or metadata_warnings else 'cached' if args.offline else 'success'
     write_status('funds', status, asOf=navdate, records=refreshed, requested=len(funds),
-                 mode='offline' if args.offline else 'online', failures=failures)
+                 mode='offline' if args.offline else 'online', failures=failures,
+                 metadataWarnings=metadata_warnings)
     log('FUNDS 更新 %d/%d，状态 %s；净值截至 %s' % (refreshed, len(funds), status, navdate))
+    if metadata_warnings:
+        log('资料未更新（保留原字段及来源日期，不影响已校验收益）：' + ', '.join(metadata_warnings))
+    # History, NAV and benchmark failures still reject the entire fund stage.
+    # Separately dated manager/profile/quote gaps cannot invalidate valid returns.
     return 3 if failures else 0
 
 

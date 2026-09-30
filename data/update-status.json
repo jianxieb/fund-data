@@ -3,114 +3,162 @@
   "datasets": {
     "strategy": {
       "status": "success",
-      "attemptedAt": "2026-09-28T20:36:21+00:00",
-      "asOf": "2026-09-28",
+      "attemptedAt": "2026-09-30T02:51:02+00:00",
+      "asOf": "2026-09-29",
       "records": 288,
       "basis": "provider_adjusted_close",
       "mode": "online",
       "execution": {
         "exitCode": 0,
-        "seconds": 10.73
+        "seconds": 18.7
       },
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-09-28T20:36:21+00:00",
-        "asOf": "2026-09-28",
+        "attemptedAt": "2026-09-30T02:51:02+00:00",
+        "asOf": "2026-09-29",
         "records": 288,
         "basis": "provider_adjusted_close",
         "mode": "online",
         "execution": {
           "exitCode": 0,
-          "seconds": 10.73
+          "seconds": 18.7
         }
       }
     },
     "funds": {
-      "status": "cached",
-      "attemptedAt": "2026-09-29T08:37:02+00:00",
-      "asOf": "2026-09-24",
-      "records": 1,
-      "requested": 1,
-      "mode": "offline",
+      "status": "success",
+      "attemptedAt": "2026-09-30T02:50:06+00:00",
+      "asOf": "2026-09-28",
+      "records": 46,
+      "requested": 46,
       "failures": [],
+      "metadataWarnings": [],
+      "mode": "online",
+      "execution": {
+        "exitCode": 0,
+        "seconds": 25.59
+      },
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-09-28T20:33:33+00:00",
-        "asOf": "2026-09-24",
+        "attemptedAt": "2026-09-30T02:50:06+00:00",
+        "asOf": "2026-09-28",
         "records": 46,
         "requested": 46,
         "failures": [],
+        "metadataWarnings": [],
         "mode": "online",
         "execution": {
           "exitCode": 0,
-          "seconds": 59.52
+          "seconds": 25.59
         }
       }
     },
     "indices": {
       "status": "success",
-      "attemptedAt": "2026-09-28T20:33:52+00:00",
+      "attemptedAt": "2026-09-30T02:50:12+00:00",
       "exitCode": 0,
-      "seconds": 19.6,
+      "seconds": 2.17,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-09-28T20:33:52+00:00",
+        "attemptedAt": "2026-09-30T02:50:12+00:00",
         "exitCode": 0,
-        "seconds": 19.6,
+        "seconds": 2.17,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "stocks": {
       "status": "success",
-      "attemptedAt": "2026-09-29T16:26:00+00:00",
-      "mode": "online",
+      "attemptedAt": "2026-09-30T02:50:43+00:00",
       "records": 37,
       "failures": [],
-      "asOf": "2026-09-29",
+      "asOf": "2026-09-30",
+      "mode": "online",
+      "execution": {
+        "exitCode": 0,
+        "seconds": 31.02
+      },
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-09-29T16:26:00+00:00",
-        "mode": "online",
+        "attemptedAt": "2026-09-30T02:50:43+00:00",
         "records": 37,
         "failures": [],
-        "asOf": "2026-09-29"
+        "asOf": "2026-09-30",
+        "mode": "online",
+        "execution": {
+          "exitCode": 0,
+          "seconds": 31.02
+        }
       }
     },
     "screening": {
       "status": "checked",
-      "attemptedAt": "2026-09-28T20:36:10+00:00",
+      "attemptedAt": "2026-09-30T02:50:44+00:00",
       "exitCode": 0,
-      "seconds": 0.67,
+      "seconds": 0.47,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "checked",
-        "attemptedAt": "2026-09-28T20:36:10+00:00",
+        "attemptedAt": "2026-09-30T02:50:44+00:00",
         "exitCode": 0,
-        "seconds": 0.67,
+        "seconds": 0.47,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "quality": {
       "status": "checked",
-      "attemptedAt": "2026-09-28T20:36:22+00:00",
+      "attemptedAt": "2026-09-30T02:51:03+00:00",
       "exitCode": 0,
-      "seconds": 0.51,
+      "seconds": 0.41,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "checked",
-        "attemptedAt": "2026-09-28T20:36:22+00:00",
+        "attemptedAt": "2026-09-30T02:51:03+00:00",
         "exitCode": 0,
-        "seconds": 0.51,
+        "seconds": 0.41,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
+    },
+    "research_funds": {
+      "status": "success",
+      "attemptedAt": "2026-09-30T02:50:10+00:00",
+      "records": 48,
+      "requested": 48,
+      "asOf": "2026-09-29",
+      "dateRange": [
+        "2026-09-28",
+        "2026-09-29"
+      ],
+      "failures": [],
+      "mode": "online",
+      "execution": {
+        "exitCode": 0,
+        "seconds": 4.18
+      },
+      "lastOnlineAttempt": {
+        "status": "success",
+        "attemptedAt": "2026-09-30T02:50:10+00:00",
+        "records": 48,
+        "requested": 48,
+        "asOf": "2026-09-29",
+        "dateRange": [
+          "2026-09-28",
+          "2026-09-29"
+        ],
+        "failures": [],
+        "mode": "online",
+        "execution": {
+          "exitCode": 0,
+          "seconds": 4.18
+        }
+      }
     }
   },
-  "checkedAt": "2026-09-29T16:26:00+00:00"
+  "checkedAt": "2026-09-30T02:51:03+00:00"
 }

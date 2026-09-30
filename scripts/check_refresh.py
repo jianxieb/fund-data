@@ -12,7 +12,7 @@ import data_quality
 from data_status import DATA, ROOT
 
 
-EXPECTED_STEPS = ('funds', 'indices', 'stocks', 'screening', 'strategy', 'quality')
+EXPECTED_STEPS = ('funds', 'research_funds', 'indices', 'stocks', 'screening', 'strategy', 'quality')
 IDENTITIES = {'FUNDS': 'c', 'EXTRA': 'c', 'STOCKS': 'c', 'INDEX_DATA': 'c',
               'BM': 'n', 'STRATEGY_ASSETS': 'c'}
 DATED_FIELDS = {'FUNDS': ('navdate', 'returnAsOf', 'riskAsOf', 'szdate'),
@@ -42,7 +42,7 @@ def check_results(report, quality):
     problems = []
     steps = report.get('steps') or []
     if report.get('status') != 'completed' or tuple(item.get('dataset') for item in steps) != EXPECTED_STEPS:
-        problems.append('刷新报告不是完整六阶段成功结果')
+        problems.append('刷新报告不是完整七阶段成功结果')
     for item in steps:
         if item.get('exitCode') != 0 or item.get('status') != 'completed':
             problems.append('阶段失败：' + str(item.get('dataset')))
@@ -91,7 +91,7 @@ def main():
         for item in problems:
             print('拒绝发布：' + item)
         return 1
-    print('刷新通过：六阶段成功、质量错误为零、标的集合及来源日期未倒退。')
+    print('刷新通过：七阶段成功、质量错误为零、标的集合及来源日期未倒退。')
     return 0
 
 

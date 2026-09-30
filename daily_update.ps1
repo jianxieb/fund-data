@@ -9,7 +9,7 @@
 [CmdletBinding()]
 param(
     [switch]$Offline,
-    [string]$Datasets = 'funds,indices,stocks,screening,strategy,quality',
+    [string]$Datasets = 'funds,research_funds,indices,stocks,screening,strategy,quality',
     [int]$Timeout = 180,
     [switch]$NoPush
 )

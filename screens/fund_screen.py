@@ -10,6 +10,7 @@ universe → prefilter → enrich → metrics → report → html。
 
 python screens/fund_screen.py policy                 # 离线重算研究分层
 python screens/fund_screen.py verify-samples --apply  # 样本全历史与费率核验
+python screens/fund_screen.py refresh-performance     # 每日刷新已核验样本收益、风险和净值
 python screens/fund_screen.py all                    # 全量重建（网络工作量较大）
 """
 import argparse
@@ -25,6 +26,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import date, datetime, timezone
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -33,7 +35,7 @@ CACHE = os.path.join(HERE, '.cache')
 DATA = os.path.join(HERE, 'data')
 sys.path.insert(0, ROOT)
 import update as U  # noqa: E402  复用 history_fetch / fhsp_fetch / http_get
-from data_status import atomic_text
+from data_status import atomic_text, write_status
 
 UA = {'User-Agent': 'Mozilla/5.0'}
 AS_OF = date.today().isoformat()
@@ -1472,6 +1474,89 @@ def cmd_verify_samples(args):
     return checks
 
 
+def cmd_refresh_performance(args):
+    """Refresh verified EXTRA histories without coupling them to slow fee pages."""
+    ensure_dirs()
+    output = Path(ROOT) / 'data' / 'screening-validation.json'
+    previous = {r['code']: r for r in (load_json(str(output), []) or [])}
+    lookup = {r['c']: r for r in parse_snapshot_extra()}
+    codes = list(previous) if args.codes == 'verified' else list(dict.fromkeys(
+        c.strip() for c in args.codes.split(',') if c.strip()))
+    if not codes or set(codes) - (set(previous) & set(lookup)):
+        raise ValueError('每日刷新只接受已完成全历史核验的扩展基金；新增样本先运行 verify-samples --apply')
+    if not 1 <= args.workers <= 3:
+        raise ValueError('每日净值刷新并发线程数须在1到3之间')
+    offline = bool(getattr(args, 'offline', False))
+    original_offline = U.OFFLINE
+    U.OFFLINE = offline
+
+    def calculate(code):
+        old, baseline = lookup[code], previous[code]
+        rows = U.history_fetch(code)
+        metrics = deep_metrics(rows)
+        if not metrics:
+            raise ValueError('净值历史不足，无法重算收益和风险')
+        endpoint = metrics['latest']
+        for field in ('returnAsOf', 'riskAsOf'):
+            if old.get(field) and endpoint < old[field]:
+                raise ValueError('%s 来源日期倒退：%s → %s' % (field, old[field], endpoint))
+        returns = [metrics.get('ret%d' % years) for years in (1, 2, 3, 5, 10)]
+        for before, after in zip(old.get('r') or [], returns):
+            if before is not None and after is None:
+                raise ValueError('已核验收益窗口缺少完整历史，拒绝覆盖')
+        for field in ('mdd5', 'vol5'):
+            if old.get(field) is not None and metrics.get(field) is None:
+                raise ValueError('已核验五年风险窗口缺少完整历史，拒绝覆盖')
+        observation = latest_nav_observation(rows, endpoint)
+        if not observation:
+            raise ValueError('收益截止日缺少唯一有效单位净值')
+        checked = datetime.now(timezone.utc).isoformat()
+        periods = [p for p in metrics.get('periods', []) if p['years'] in (1, 2, 3, 5, 10)]
+        source = 'https://fundf10.eastmoney.com/jjjz_%s.html' % code
+        # Retain the original audit comparison and fee evidence with their dates.
+        evidence = dict(baseline, asof=endpoint, first=metrics['first'], rows=len(rows),
+                        metricRows=metrics['rows'], historyNote=metrics.get('historyNote'),
+                        basis=metrics['basis'], r=returns, mdd5=metrics.get('mdd5'), vol5=metrics.get('vol5'),
+                        returnPeriods=periods, sourceUrl=source, navObservation=observation,
+                        navSyncStatus='matched_return_endpoint', performanceCheckedAt=checked)
+        changes = dict(r=returns, mdd5=metrics.get('mdd5'), vol5=metrics.get('vol5'), basis=metrics['basis'],
+                       returnAsOf=endpoint, riskAsOf=endpoint, returnSource='Eastmoney历史净值与公司行为',
+                       returnSourceUrl=source, returnFirst=metrics['first'], riskFirst=metrics['first'],
+                       returnPeriods=periods, risk5First=metrics.get('risk5First'),
+                       historyNote=metrics.get('historyNote') or '', performanceVerifiedAt=checked,
+                       note='复算年度收益（截至%s）：%s' % (endpoint, fmt_yearly(metrics.get('yearly'))))
+        if not old.get('navdate') or old['navdate'] <= observation['navdate']:
+            changes.update(observation)
+        return evidence, changes
+
+    changes, checks, failures = {}, {}, {}
+    try:
+        with ThreadPoolExecutor(max_workers=args.workers) as pool:
+            futures = {code: pool.submit(calculate, code) for code in codes}
+            for code, future in futures.items():
+                try:
+                    evidence, patch = future.result()
+                    checks[code], changes[code] = evidence, patch
+                    log('  ✓ %s %s：收益 / 风险截至 %s' % (code, lookup[code]['n'], evidence['asof']))
+                except (OSError, ValueError, RuntimeError, KeyError, TypeError) as exc:
+                    failures[code] = str(exc)
+    finally:
+        U.OFFLINE = original_offline
+    if failures:
+        write_status('research_funds', 'failed', records=len(checks), requested=len(codes),
+                     mode='offline' if offline else 'online', failures=failures)
+        raise RuntimeError('扩展基金每日收益刷新失败，已发布数据未替换：' + json.dumps(failures, ensure_ascii=False))
+    write_extra_fields(changes)
+    previous.update(checks)
+    save_json(str(output), list(previous.values()))
+    dates = sorted({r['asof'] for r in checks.values()})
+    write_status('research_funds', 'cached' if offline else 'success', records=len(checks),
+                 requested=len(codes), asOf=dates[-1], dateRange=[dates[0], dates[-1]],
+                 mode='offline' if offline else 'online', failures=[])
+    log('已核验扩展基金每日刷新 %d/%d；截至 %s → %s' % (len(checks), len(codes), dates[0], dates[-1]))
+    return list(checks.values())
+
+
 def cmd_sync_verified_nav(args):
     """Reconcile already verified returns with their saved same-day NAV rows."""
     evidence = load_json(str(Path(ROOT) / 'data' / 'screening-validation.json'), []) or []
@@ -2075,6 +2160,10 @@ def main():
     pv = sub.add_parser('verify-samples', help='全历史核验代表候选并保留同日对比证据')
     pv.add_argument('--codes', default='shortlist', help='逗号分隔基金代码；默认核验当前全部优先研究候选')
     pv.add_argument('--apply', action='store_true', help='仅回写核验成功样本的收益、风险、费用及同日净值')
+    pr = sub.add_parser('refresh-performance', help='每日刷新已核验扩展样本的收益、风险和同日净值；保留独立费率证据')
+    pr.add_argument('--codes', default='verified', help='默认全部已核验样本；也可指定已核验代码')
+    pr.add_argument('--workers', type=int, default=3)
+    pr.add_argument('--offline', action='store_true', help='严格仅使用已保存的净值和公司行为证据')
     pn = sub.add_parser('sync-verified-nav', help='以本机已核验历史缓存修复快照中过期的同日净值')
     pn.add_argument('--codes', default='all', help='默认全部已核验样本；也可指定逗号分隔代码')
     pn.add_argument('--apply', action='store_true', help='核对全部所选样本后写回净值并记录差异')
@@ -2105,7 +2194,8 @@ def main():
         return
     fn = {'universe': cmd_universe, 'prefilter': cmd_prefilter, 'enrich': cmd_enrich,
           'metrics': cmd_metrics, 'report': cmd_report, 'html': cmd_html,
-           'promote': cmd_promote, 'policy': cmd_policy, 'verify-samples': cmd_verify_samples,
+            'promote': cmd_promote, 'policy': cmd_policy, 'verify-samples': cmd_verify_samples,
+            'refresh-performance': cmd_refresh_performance,
            'sync-verified-nav': cmd_sync_verified_nav, 'sync-scale-dates': cmd_sync_scale_dates,
            'managers': cmd_managers}.get(args.cmd)
     if fn is None:

@@ -8,7 +8,7 @@ class RefreshGateTests(unittest.TestCase):
         steps = [dict(dataset=name, status='completed', exitCode=0) for name in check_refresh.EXPECTED_STEPS]
         self.assertEqual(check_refresh.check_results({'status': 'completed', 'steps': steps},
                                                       {'summary': {'errors': 0}}), [])
-        steps[1]['exitCode'] = 1
+        next(step for step in steps if step['dataset'] == 'indices')['exitCode'] = 1
         self.assertTrue(any('indices' in item for item in check_refresh.check_results(
             {'status': 'partial', 'steps': steps}, {'summary': {'errors': 0}})))
 

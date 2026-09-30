@@ -9,9 +9,10 @@ import time
 
 from data_status import DATA, ROOT, atomic_text, now_iso, write_status
 
-DATASETS = ('funds', 'indices', 'stocks', 'screening', 'strategy', 'quality')
+DATASETS = ('funds', 'research_funds', 'indices', 'stocks', 'screening', 'strategy', 'quality')
 PUBLISHED_OUTPUTS = {
     'funds': ('snapshot.js',),
+    'research_funds': ('snapshot.js', 'screening-validation.json'),
     'indices': ('indices.js', 'index-history.json'),
     'stocks': ('snapshot.js',),
     'screening': ('screening.js',),
@@ -23,6 +24,7 @@ def commands(offline=False):
     flag = ['--offline'] if offline else []
     return {
         'funds': [sys.executable, str(ROOT / 'update.py'), *flag],
+        'research_funds': [sys.executable, str(ROOT / 'screens' / 'fund_screen.py'), 'refresh-performance', *flag],
         'indices': [sys.executable, str(ROOT / 'indices.py'), *flag],
         'stocks': [sys.executable, str(ROOT / 'stock_screen.py'), *flag],
         # Daily policy regeneration is offline. A whole-market screen is a separate
@@ -96,7 +98,7 @@ def main():
     parser.add_argument('--offline', action='store_true', help='所有被选的数据集严格不联网')
     parser.add_argument('--datasets', default=','.join(DATASETS), help='逗号分隔：' + ','.join(DATASETS))
     parser.add_argument('--timeout', type=int, default=180, help='每个数据集最大运行秒数（默认180）')
-    parser.add_argument('--funds-timeout', type=int, help='基础基金阶段单独的运行秒数上限；默认使用 --timeout')
+    parser.add_argument('--funds-timeout', type=int, help='基础与已核验扩展基金阶段的运行秒数上限；默认使用 --timeout')
     args = parser.parse_args()
     selected = list(dict.fromkeys(x.strip() for x in args.datasets.split(',') if x.strip()))
     if not selected or set(selected) - set(DATASETS):
@@ -119,7 +121,7 @@ def main():
         available = commands(args.offline)
         for name in selected:
             print('刷新 %s …' % name, flush=True)
-            limit = args.funds_timeout if name == 'funds' and args.funds_timeout else args.timeout
+            limit = args.funds_timeout if name in ('funds', 'research_funds') and args.funds_timeout else args.timeout
             step = execute(name, available[name], limit, args.offline)
             run['steps'].append(step)
             print('  %s（exit=%d，%.1fs）' % (step['status'], step['exitCode'], step['seconds']), flush=True)

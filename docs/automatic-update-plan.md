@@ -10,7 +10,7 @@
 
 ## 发布门槛与失败处理
 
-数据工作流先安装 Python/Node 运行时并运行单元测试，接着执行六阶段在线刷新。每一阶段必须返回零；`scripts/check_refresh.py` 还会核对六阶段报告、严格质量错误为零、标的集合不变、基金/指数/股票和策略关键来源日期不倒退。基础基金的分红与拆分页会归档为 `data/fund-actions.json`，记录逐只公开来源、实际抓取日、原始页哈希与已解析动作；旧证据仅用于其抓取日及之前的历史，之后必须有来源每日涨跌幅或新的公开动作证据。
+数据工作流先安装 Python/Node 运行时并运行单元测试，接着执行七阶段在线刷新。`research_funds` 每日更新已核验扩展基金（按已核验名单）的净值、收益和风险，再由 `screening` 重算候选规则。每一阶段必须返回零；`scripts/check_refresh.py` 还会核对七阶段报告、严格质量错误为零、标的集合不变、基金/指数/股票和策略关键来源日期不倒退。基础基金的分红与拆分页会归档为 `data/fund-actions.json`，记录逐只公开来源、实际抓取日、原始页哈希与已解析动作；旧证据仅用于其抓取日及之前的历史，之后必须有来源每日涨跌幅或新的公开动作证据。
 
 通过后运行 `npm run version-assets` 与 `npm run check`。只有研究数据或来源证据确实变化时才提交 `data/*.js`、`data/*.json` 和随其变化的 `index.html`；未改变时保留原站点。提交使用工作流限定的 `contents: write`，Pages 部署作业单独使用 `pages: write` 与 `id-token: write`。任何步骤失败都不会提交或部署，新旧站点不混用；Actions 会保留 `refresh-report.json`、质量报告、状态文件及逐阶段日志 7 天。查看失败原因应先看本次运行的 `refresh-diagnosis-<run id>` 工件，再按[维护指南](maintenance.md)定位具体来源。
 
@@ -28,6 +28,10 @@ Actions 源缓存只是加速：`.tmp-hist/`、`.tmp-strategy/`、`.tmp-fhsp/`�
 
 ## 尚未覆盖的更新
 
-日常 `screening` 阶段只重算已有扩展基金池的权益研究规则，**不会每日重新抓取 1268 条扩展基金的历史净值、费用和规模**。这部分旧观察日与待核验状态会保留，不能把六阶段成功解释为全站每个字段都更新到当天。下一阶段应先按代码分批核验默认权益候选，再逐步扩展；经理、费率等慢速来源可单独安排，不挤进每日工作流。有关分批指令和数据来源见[维护指南](maintenance.md)。
+日常 `research_funds` 更新 `data/screening-validation.json` 中已完成全历史核验的扩展基金，包含当前全部默认权益候选。**不会每日重新抓取1268条旧池记录的历史净值、费用和规模**；未核验记录保留旧日期。新增基金先用 `verify-samples --apply` 完成首次核验，之后自动进入每日收益刷新。费率和经理仍使用独立证据日期，不能把七阶段成功解释为全站每个字段都更新到当天。有关分批指令和数据来源见[维护指南](maintenance.md)。
+
+## 2026-09-30 更新修复
+
+定时运行 [36618978531](https://github.com/jianxieb/fund-data/actions/runs/36618978531) 因经理资料接口超时返回非零，整批46只基础基金收益被回滚；扩展基金原流程只重算规则，未纳入每日业绩更新。现新增独立的 `research_funds` 阶段。基础基金经理/规模资料/场内报价失败记录为 `metadataWarnings`，保留旧字段及其来源日期，不再回滚已经校验成功的净值收益；净值、收益和基准缺证据仍拒绝发布。归档费率证据的 `checkedAt` 与每日业绩的 `performanceCheckedAt` 分开记录。
 
 GitHub 对 `GITHUB_TOKEN` 提交不触发分支模式 Pages 构建，以及自定义部署的权限要求，见 [Pages 发布源](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site) 和 [自定义工作流部署](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)。

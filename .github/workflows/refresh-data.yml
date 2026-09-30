@@ -123,6 +123,7 @@ jobs:
             data/quality.json
             data/update-status.json
             data/fund-actions.json
+            data/screening-validation.json
             .tmp-snap/refresh-*.log
           if-no-files-found: ignore
           include-hidden-files: true

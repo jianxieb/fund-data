@@ -33,7 +33,7 @@ python3 refresh.py --timeout 420 --funds-timeout 900
 python3 refresh.py --offline
 ```
 
-第一条刷新全部六个阶段，每阶段默认限时180秒；第二条只更新选定数据集，最后仍自动检查质量；第三条仅延长基础基金阶段的冷启动上限；最后一条严格使用本机缓存，不联网。首次下载历史较慢时可适当增大超时。
+第一条刷新全部七个阶段，每阶段默认限时180秒；第二条只更新选定数据集，最后仍自动检查质量；第三条延长基础基金及已核验扩展基金两个阶段的冷启动上限；最后一条严格使用本机缓存，不联网。首次下载历史较慢时可适当增大超时。
 
 Windows入口调用相同流程：
 
@@ -46,6 +46,7 @@ Windows入口调用相同流程：
 | 阶段 | 实际负责什么 |
 | --- | --- |
 | `funds` / `update.py` | 基础基金集的净值、收益、风险、经理、费用/交易资料，以及海外指数和ETF参照 |
+| `research_funds` / `screens/fund_screen.py refresh-performance` | 已核验扩展基金（按已核验名单）的每日净值、完整窗口收益和风险，保留独立费率及经理日期 |
 | `indices` / `indices.py` | 国内指数自身日线、完整窗口回报和风险 |
 | `stocks` / `stock_screen.py` | 观察样本行情、复权回报、风险和已实施分红 |
 | `screening` / `screens/fund_screen.py policy` | 对已有扩展快照重新应用权益研究规则，不代表重新下载全部扩展基金净值 |
@@ -55,6 +56,14 @@ Windows入口调用相同流程：
 统一入口顺序执行，带并发锁；各脚本独立运行时也应依次完成，避免同时修改共享快照。统一入口中某一阶段返回非零或超时时，该阶段已写入的页面数据文件会恢复到执行前；其他成功阶段仍保留，失败状态与日志仍记录。直接运行单项脚本不经过这层回滚，需先备份并审查写回结果。`refresh.py` 本身不提交Git、不推送；仓库的 GitHub Actions 工作流另行完成校验、提交与发布。已有本机定时任务如果调用`daily_update.ps1`，会使用新数据流程，但不会自动发布。
 
 ## 扩展研究池的核验与重建
+
+已核验样本每日自动刷新，也可单独运行：
+
+```sh
+python3 refresh.py --datasets research_funds,screening --funds-timeout 900
+```
+
+此步骤仅更新 `data/screening-validation.json` 中的已核验样本，不访问费率及经理资料页，也不改这些资料的日期。所有所选净值历史和窗口校验通过后才写回，拒绝来源日期倒退或丢失已有完整窗口。统一入口同时保护快照和核验证据，阶段失败或超时会回滚。基础基金阶段的经理、资料、报价缺项另在 `update-status.json` 的 `metadataWarnings` 记录，保留各自旧日期；净值、收益及基准失败仍阻止发布。
 
 仅重新筛选：
 
@@ -153,4 +162,4 @@ python3 data_quality.py --strict
 
 发布前运行单元测试和质量检查，在浏览器检查实际变更，再审阅Git差异。全部数据产物确定后运行`npm run version-assets`，它把`index.html`中八个本地CSS/JS资源的版本更新为各文件内容摘要；`npm run check`会拒绝过期的资源引用。最后提交脚本、文档、`index.html`及相互对应的数据产物；不要提交原始大缓存、个人资料或凭据。`refresh.py`本身不提交或推送，直接运行单项更新脚本后也需执行资源版本命令。
 
-手动更新时，提交与推送仍由维护者显式执行。`main` 上的普通代码推送由 `.github/workflows/pages.yml` 校验资源版本并部署；`.github/workflows/refresh-data.yml` 在工作日北京时间22:17定时运行，也可从仓库 Actions 页面手动触发。它安装依赖、运行测试、在线执行六阶段刷新、检查报告和来源日期、更新资源版本，然后只提交生成的数据与 `index.html`；同一次工作流把这些已验证文件部署到 Pages。手动触发时可关闭 `publish` 只验证，也可启用 `cold_start` 忽略源缓存。无实质数据或证据变化时不创建提交。任一步失败都不推送、不部署，并上传最近报告与阶段日志作为 Actions 诊断工件。发布源需要设为 GitHub Actions；详见[自动更新方案](automatic-update-plan.md)。
+手动更新时，提交与推送仍由维护者显式执行。`main` 上的普通代码推送由 `.github/workflows/pages.yml` 校验资源版本并部署；`.github/workflows/refresh-data.yml` 在工作日北京时间22:17定时运行，也可从仓库 Actions 页面手动触发。它安装依赖、运行测试、在线执行七阶段刷新、检查报告和来源日期、更新资源版本，然后只提交生成的数据与 `index.html`；同一次工作流把这些已验证文件部署到 Pages。手动触发时可关闭 `publish` 只验证，也可启用 `cold_start` 忽略源缓存。无实质数据或证据变化时不创建提交。任一步失败都不推送、不部署，并上传最近报告与阶段日志作为 Actions 诊断工件。发布源需要设为 GitHub Actions；详见[自动更新方案](automatic-update-plan.md)。
