@@ -276,9 +276,14 @@ html{scrollbar-gutter:stable}
 .stock-controls .filters input[type=search]{min-width:230px}
 .page-funds .page-head h1{font-size:30px}
 .page-funds .page-head p{font-size:12px}
-.fund-controls{display:block}
-.fund-controls>.toolbar{margin-bottom:12px}
-.fund-controls>.table-controls{display:flex;justify-content:space-between;width:100%;gap:16px}
+.fund-controls{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:start}
+.fund-query{display:grid;gap:10px;min-width:0}
+.fund-query>input[type=search]{width:100%;min-width:0;font-size:12px;min-height:39px}
+.fund-controls .filters{min-height:39px}
+.fund-controls .select-menu{margin:0}
+.fund-controls .return-controls{flex-direction:column;align-items:flex-end;gap:10px}
+.fund-controls .period-control{min-height:39px;flex-wrap:nowrap}
+.fund-controls .segmented{min-height:39px;align-items:center}
 .fund-controls .period-control label,.fund-controls .column-picker summary{font-size:12px}
 .fund-controls .period-control legend{display:block}
 .fund-controls .filters input[type=search]{font-size:12px}
@@ -477,7 +482,9 @@ dialog:has(.stock-detail){width:min(1180px,94vw);max-width:1180px}
 .stock-deep-link:focus-visible{outline:2px solid var(--green);outline-offset:2px}
 .fund-table-actions{display:flex;align-items:center;gap:22px}
 .fund-table-actions>.btn{background:transparent}
-.fund-controls .return-controls{margin-left:auto}
+.fund-controls .return-controls{margin-left:0}
+@media(min-width:1500px){.fund-controls{align-items:center;gap:20px}.fund-query{display:flex;align-items:center;gap:12px}.fund-query>input[type=search]{flex:1 1 200px;max-width:300px}.fund-controls .filters{flex-wrap:nowrap}.fund-controls .return-controls{flex-direction:row;align-items:center;gap:16px}}
+@media(max-width:900px){.fund-controls{grid-template-columns:1fr;gap:12px}.fund-controls .return-controls{flex-direction:row;align-items:center;justify-content:space-between;width:100%;flex-wrap:wrap}.fund-controls .period-control{justify-content:flex-start;flex-wrap:wrap}}
 #dialog:has(.fund-columns){width:min(500px,calc(100% - 32px))}
 .fund-column-options{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin:16px 0 22px}
 .fund-column-options label{display:flex;align-items:center;gap:9px;padding:10px 4px;font-size:13px;cursor:pointer}
