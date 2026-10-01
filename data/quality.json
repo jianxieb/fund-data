@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-10-01T15:17:33+00:00",
-  "asOf": "2026-10-01",
+  "checkedAt": "2026-10-01T19:39:21+00:00",
+  "asOf": "2026-10-02",
   "status": "unverified",
   "summary": {
     "errors": 0,
@@ -119,7 +119,7 @@
     {
       "id": "strategy",
       "label": "买入策略实验",
-      "asOf": "2026-09-30",
+      "asOf": "2026-10-01",
       "dateRange": null,
       "records": 108,
       "issues": [],
