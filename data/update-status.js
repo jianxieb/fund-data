@@ -3,31 +3,31 @@ var UPDATE_STATUS={
   "datasets": {
     "strategy": {
       "status": "success",
-      "attemptedAt": "2026-10-01T14:17:32+00:00",
+      "attemptedAt": "2026-10-01T15:17:32+00:00",
       "asOf": "2026-09-30",
       "records": 288,
       "basis": "provider_adjusted_close",
       "mode": "online",
       "execution": {
         "exitCode": 0,
-        "seconds": 17.05
+        "seconds": 9.32
       },
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-10-01T14:17:32+00:00",
+        "attemptedAt": "2026-10-01T15:17:32+00:00",
         "asOf": "2026-09-30",
         "records": 288,
         "basis": "provider_adjusted_close",
         "mode": "online",
         "execution": {
           "exitCode": 0,
-          "seconds": 17.05
+          "seconds": 9.32
         }
       }
     },
     "funds": {
       "status": "success",
-      "attemptedAt": "2026-10-01T14:15:34+00:00",
+      "attemptedAt": "2026-10-01T15:09:06+00:00",
       "asOf": "2026-09-29",
       "records": 46,
       "requested": 46,
@@ -36,11 +36,11 @@ var UPDATE_STATUS={
       "mode": "online",
       "execution": {
         "exitCode": 0,
-        "seconds": 30.75
+        "seconds": 173.07
       },
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-10-01T14:15:34+00:00",
+        "attemptedAt": "2026-10-01T15:09:06+00:00",
         "asOf": "2026-09-29",
         "records": 46,
         "requested": 46,
@@ -49,85 +49,85 @@ var UPDATE_STATUS={
         "mode": "online",
         "execution": {
           "exitCode": 0,
-          "seconds": 30.75
+          "seconds": 173.07
         }
       }
     },
     "indices": {
       "status": "success",
-      "attemptedAt": "2026-10-01T14:16:16+00:00",
+      "attemptedAt": "2026-10-01T15:14:11+00:00",
       "exitCode": 0,
-      "seconds": 3.95,
+      "seconds": 16.48,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-10-01T14:16:16+00:00",
+        "attemptedAt": "2026-10-01T15:14:11+00:00",
         "exitCode": 0,
-        "seconds": 3.95,
+        "seconds": 16.48,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "stocks": {
       "status": "success",
-      "attemptedAt": "2026-10-01T14:17:14+00:00",
+      "attemptedAt": "2026-10-01T15:17:22+00:00",
       "records": 71,
       "failures": [],
       "asOf": "2026-09-30",
       "mode": "online",
       "execution": {
         "exitCode": 0,
-        "seconds": 58.22
+        "seconds": 190.89
       },
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-10-01T14:17:14+00:00",
+        "attemptedAt": "2026-10-01T15:17:22+00:00",
         "records": 71,
         "failures": [],
         "asOf": "2026-09-30",
         "mode": "online",
         "execution": {
           "exitCode": 0,
-          "seconds": 58.22
+          "seconds": 190.89
         }
       }
     },
     "screening": {
       "status": "checked",
-      "attemptedAt": "2026-10-01T14:17:15+00:00",
+      "attemptedAt": "2026-10-01T15:17:23+00:00",
       "exitCode": 0,
-      "seconds": 0.76,
+      "seconds": 0.67,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "checked",
-        "attemptedAt": "2026-10-01T14:17:15+00:00",
+        "attemptedAt": "2026-10-01T15:17:23+00:00",
         "exitCode": 0,
-        "seconds": 0.76,
+        "seconds": 0.67,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "quality": {
       "status": "checked",
-      "attemptedAt": "2026-10-01T14:17:33+00:00",
+      "attemptedAt": "2026-10-01T15:17:33+00:00",
       "exitCode": 0,
-      "seconds": 0.66,
+      "seconds": 0.64,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "checked",
-        "attemptedAt": "2026-10-01T14:17:33+00:00",
+        "attemptedAt": "2026-10-01T15:17:33+00:00",
         "exitCode": 0,
-        "seconds": 0.66,
+        "seconds": 0.64,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "research_funds": {
       "status": "success",
-      "attemptedAt": "2026-10-01T14:16:12+00:00",
+      "attemptedAt": "2026-10-01T15:13:55+00:00",
       "records": 395,
       "requested": 395,
       "asOf": "2026-09-30",
@@ -139,11 +139,11 @@ var UPDATE_STATUS={
       "mode": "online",
       "execution": {
         "exitCode": 0,
-        "seconds": 37.93
+        "seconds": 289.23
       },
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-10-01T14:16:12+00:00",
+        "attemptedAt": "2026-10-01T15:13:55+00:00",
         "records": 395,
         "requested": 395,
         "asOf": "2026-09-30",
@@ -155,10 +155,10 @@ var UPDATE_STATUS={
         "mode": "online",
         "execution": {
           "exitCode": 0,
-          "seconds": 37.93
+          "seconds": 289.23
         }
       }
     }
   },
-  "checkedAt": "2026-10-01T14:17:33+00:00"
+  "checkedAt": "2026-10-01T15:17:33+00:00"
 };
