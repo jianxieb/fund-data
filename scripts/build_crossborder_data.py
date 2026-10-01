@@ -37,12 +37,21 @@ def summarize(series, end):
 def build(fund, offline):
     code, end = fund['c'], fund['returnAsOf']
     out = {'errors': []}
+    if not end:
+        return code, {'errors': ['净值历史：缺独立复算截至日'],
+            'nav': {'r': [None] * 5, 'returnAsOf': None, 'returnPeriods': [],
+                    'mdd5': None, 'vol5': None, 'missing': '缺独立复算净值历史'},
+            'actions': {'status': 'unavailable', 'missing': '缺独立复算截至日'}}
     try:
         path = ROOT / '.tmp-hist' / (code + '.json')
         rows = json.loads(path.read_text()) if path.exists() else []
         if not offline and max((r.get('FSRQ', '') for r in rows), default='') < end:
             rows = history_fetch(code) or rows
-        nav = total_return_series([row for row in rows if row.get('FSRQ', '') <= end])
+        first = fund.get('returnFirst') or ''
+        # Use the same independently verified history boundary as the snapshot.
+        # An invalid source observation before all displayed windows cannot turn
+        # an otherwise valid ten-year series into a missing NAV result.
+        nav = total_return_series([row for row in rows if first <= row.get('FSRQ', '') <= end])
         out['nav'] = {**summarize(nav, end), 'basis': 'fund_nav_total_return',
                       'source': 'https://fundf10.eastmoney.com/jjjz_' + code + '.html'}
     except (OSError, ValueError) as exc:
@@ -73,7 +82,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--offline', action='store_true')
     args = parser.parse_args()
-    code = "const fs=require('fs'),vm=require('vm'),M=require('./assets/model.js'),ctx={};vm.createContext(ctx);vm.runInContext(fs.readFileSync('data/snapshot.js','utf8'),ctx);console.log(JSON.stringify(M.dedupeFunds(ctx.FUNDS,ctx.EXTRA).filter(f=>f.origin==='overseas'&&!f.active)))"
+    code = "const fs=require('fs'),vm=require('vm'),M=require('./assets/model.js'),ctx={};vm.createContext(ctx);vm.runInContext(fs.readFileSync('data/snapshot.js','utf8'),ctx);console.log(JSON.stringify(M.dedupeFunds(ctx.FUNDS,ctx.EXTRA).filter(f=>M.isCrossborderIndex(f)&&f.returnAsOf)))"
     funds = json.loads(subprocess.check_output(['node', '-e', code], cwd=ROOT, text=True))
     with ThreadPoolExecutor(max_workers=4) as pool:
         entries = list(pool.map(lambda f: build(f, args.offline), funds))

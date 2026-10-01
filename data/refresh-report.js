@@ -1,13 +1,13 @@
 var REFRESH_REPORT={
   "schemaVersion": 1,
-  "startedAt": "2026-09-30T02:58:30+00:00",
+  "startedAt": "2026-10-01T14:15:03+00:00",
   "mode": "online",
   "steps": [
     {
       "dataset": "funds",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 330.03,
+      "seconds": 30.75,
       "log": ".tmp-snap/refresh-funds.log",
       "publishedRollback": false
     },
@@ -15,7 +15,7 @@ var REFRESH_REPORT={
       "dataset": "research_funds",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 76.57,
+      "seconds": 37.93,
       "log": ".tmp-snap/refresh-research_funds.log",
       "publishedRollback": false
     },
@@ -23,7 +23,7 @@ var REFRESH_REPORT={
       "dataset": "indices",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 16.84,
+      "seconds": 3.95,
       "log": ".tmp-snap/refresh-indices.log",
       "publishedRollback": false
     },
@@ -31,7 +31,7 @@ var REFRESH_REPORT={
       "dataset": "stocks",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 105.44,
+      "seconds": 58.22,
       "log": ".tmp-snap/refresh-stocks.log",
       "publishedRollback": false
     },
@@ -39,7 +39,7 @@ var REFRESH_REPORT={
       "dataset": "screening",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 0.68,
+      "seconds": 0.76,
       "log": ".tmp-snap/refresh-screening.log",
       "publishedRollback": false
     },
@@ -47,7 +47,7 @@ var REFRESH_REPORT={
       "dataset": "strategy",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 10.71,
+      "seconds": 17.05,
       "log": ".tmp-snap/refresh-strategy.log",
       "publishedRollback": false
     },
@@ -55,11 +55,11 @@ var REFRESH_REPORT={
       "dataset": "quality",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 0.7,
+      "seconds": 0.66,
       "log": ".tmp-snap/refresh-quality.log",
       "publishedRollback": false
     }
   ],
-  "completedAt": "2026-09-30T03:07:31+00:00",
+  "completedAt": "2026-10-01T14:17:33+00:00",
   "status": "completed"
 };

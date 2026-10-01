@@ -3,6 +3,9 @@
   const M = window.Changheng;
   const $ = s => document.querySelector(s);
   const $$ = s => [...document.querySelectorAll(s)];
+  document.documentElement.dataset.inputMode = 'pointer';
+  document.addEventListener('pointerdown', () => { document.documentElement.dataset.inputMode = 'pointer'; }, true);
+  document.addEventListener('keydown', () => { document.documentElement.dataset.inputMode = 'keyboard'; }, true);
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const money = (v, dec = 0) => M.finite(v) ? v.toLocaleString('zh-CN', { minimumFractionDigits: dec, maximumFractionDigits: dec }) : '—';
   const pct = (v, digits = 2, signed = true) => M.finite(v) ? (signed && v > 0 ? '+' : '') + v.toFixed(digits) + '%' : '—';
@@ -32,12 +35,12 @@
   const state = {
     route: 'overview', annual: prefs.annual !== false, periods: M.visiblePeriods(prefs.periods),
     columns: new Set(Array.isArray(prefs.columns) ? prefs.columns.filter(x => Object.hasOwn(columnNames, x)) : defaultColumns),
-    indexTab: 'us', indexSort: 'default', indexDescending: true, crossTypes: new Set(), crossChannels: new Set(), crossQuery: '', crossPremium: null, crossPurchasable: false, crossBasis: 'nav', crossSort: 'default', crossDesc: true, crossSelected: new Set(), currency: 'usd', benchmarkType: 'total', benchmarkCurrency: 'cny',
+    indexTab: 'us', indexSort: 'default', indexDescending: true, crossTypes: new Set(), crossRegions: new Set(), crossMoreTypes: false, crossChannels: new Set(), crossQuery: '', crossPremium: null, crossPurchasable: false, crossBasis: 'nav', crossSort: 'default', crossDesc: true, crossSelected: new Set(), currency: 'usd', benchmarkType: 'total', benchmarkCurrency: 'cny',
     fundTab: 'equity', poolCategory: 'all', fundFacets: new Set(), fundSectors: new Set(), query: '', channel: 'all', purchasable: false,
     screen: { minA3: defaults.minA3, minA5: defaults.minA5, minA10: null },
     fundSort: 'default', descending: true, selected: new Set(),
     stockTab: 'quality', stockQuery: '', stockCategory: 'all', stockView: 'financials', stockSort: 'default', stockDesc: true, hideGrowthBoards: false, reportCode: null, reportQuery: '',
-    stratPanel: 'initial', stratView: 'results', stratYear: '2010', stratAsset: 'SPY', stratMethod: 'lump_sum',
+    stratPanel: 'initial', stratView: 'results', stratYear: '2010', stratAsset: 'SPY', stratMethod: 'lump_sum', stratMethods: { initial: 'lump_sum', dca: 'dca_month' },
     stratCompare: 'assets', stratMetric: 'amount', leverage: true, showLeverageAssets: false, chartHidden: new Set(),
     buyFamily: 'sp', buyYears: 5, buyPlan: 'lump', buyBasis: 'nav', buyLumpAmount: 100000, buyMonthlyAmount: 3000,
     buyFees: { usCommission: 0.02, usMinimum: 1, fxSpread: 0.15,
@@ -190,11 +193,12 @@
       (state.indexTab === 'cn' ? indexTable(domestic, '国内指数', '价格指数 · 不含分红') : indexTable(baseRows.filter(b => /指数/.test(b.tp)), '海外指数', '价格指数 · 不含分红') + indexTable(baseRows.filter(b => !/指数/.test(b.tp)), '海外 ETF', '复权产品表现 · 已包含产品持续费用')));
   }
 
-  const crossPool = () => funds.filter(f => f.origin === 'overseas' && !f.active);
+  const crossPool = () => funds.filter(f => M.isCrossborderIndex(f) && f.returnAsOf);
+  const crossIndexOrder = ['标普500', '纳斯达克100', '标普500等权重', '恒生科技', '恒生指数', '日经225'];
   const crossEvidence = code => window.CROSSBORDER_DATA?.byCode?.[code];
   const crossPerformance = f => M.crossborderPerformance(f, crossEvidence(f.c), state.crossBasis);
   function crossRows() {
-    const rows = crossPool().filter(f => M.crossborderMatches(f, { types: [...state.crossTypes], channels: [...state.crossChannels], query: state.crossQuery, premiumMax: state.crossPremium, purchasable: state.crossPurchasable }));
+    const rows = crossPool().filter(f => M.crossborderMatches(f, { types: [...state.crossTypes], regions: [...state.crossRegions], channels: [...state.crossChannels], query: state.crossQuery, premiumMax: state.crossPremium, purchasable: state.crossPurchasable }));
     const metric = f => {
       const perf = crossPerformance(f), key = state.crossSort;
       if (key.startsWith('return:')) { const y = +key.split(':')[1]; return ret(perf.r?.[years.indexOf(y)], y, perf); }
@@ -203,6 +207,10 @@
       return f[key];
     };
     if (state.crossSort !== 'default') rows.sort((a, b) => M.compareNullable(metric(a), metric(b), state.crossDesc));
+    else {
+      const rank = f => crossIndexOrder.includes(f.ix) ? crossIndexOrder.indexOf(f.ix) : 99;
+      rows.sort((a,b) => rank(a)-rank(b) || a.ix.localeCompare(b.ix,'zh-CN') || Number(b.exchange)-Number(a.exchange) || a.c.localeCompare(b.c));
+    }
     return rows;
   }
   function distributionLabel(code) {
@@ -213,7 +221,16 @@
   function crossborderView() {
     const pool = crossPool(), rows = crossRows();
     const chips = (values, selected, act) => action('全部', act, 'filter-chip' + (!selected.size ? ' active' : ''), 'data-value="all" aria-pressed="' + !selected.size + '"') + values.map(([key, name]) => action(esc(name), act, 'filter-chip' + (selected.has(key) ? ' active' : ''), 'data-value="' + esc(key) + '" aria-pressed="' + selected.has(key) + '"')).join('');
-    const filters = '<section class="cross-filters" aria-label="跨境基金筛选"><div class="cross-filter-row"><span>跟踪指数 <small>可多选</small></span><div class="filter-chips">' + chips([...new Set(pool.map(f => f.ix))].map(ix => [ix, ix]), state.crossTypes, 'cross-type') + '</div></div><div class="cross-filter-row"><span>交易渠道 <small>可多选</small></span><div class="filter-chips">' + chips([['exchange', '场内 ETF'], ['off', '场外基金']], state.crossChannels, 'cross-channel') + '</div></div><div class="cross-filter-row"><span>快照溢价</span><div class="filter-chips">' + [['all', '不限'], ['0', '折价 / 平价'], ['2', '≤ 2%'], ['5', '≤ 5%']].map(([v, label]) => action(label, 'cross-premium', 'filter-chip' + ((v === 'all' ? state.crossPremium === null : state.crossPremium === +v) ? ' active' : ''), 'data-value="' + v + '" aria-pressed="' + (v === 'all' ? state.crossPremium === null : state.crossPremium === +v) + '"')).join('') + '<label class="check-label cross-available"><input type="checkbox" id="cross-purchasable"' + (state.crossPurchasable ? ' checked' : '') + '>场外可申购</label></div></div><div class="cross-filter-foot"><label class="cross-search"><input type="search" id="cross-search" aria-label="搜索跨境基金名称或代码" placeholder="搜索基金名称或代码" value="' + esc(state.crossQuery) + '"></label><div>' + action('重置筛选', 'cross-reset', 'text-link small') + action('溢价与分红口径', 'cross-method', 'btn sm') + '</div></div></section>';
+    const regionPool = pool.filter(f => !state.crossRegions.size || state.crossRegions.has(M.crossborderRegion(f)));
+    const priority = crossIndexOrder;
+    const types = [...new Set(regionPool.map(f => f.ix))].sort((a, b) => {
+      const pa = priority.includes(a) ? priority.indexOf(a) : 99, pb = priority.includes(b) ? priority.indexOf(b) : 99;
+      return pa - pb || a.localeCompare(b, 'zh-CN');
+    });
+    const shownTypes = types.filter((ix, i) => state.crossMoreTypes || i < 8 || state.crossTypes.has(ix));
+    for (const ix of state.crossTypes) if (!shownTypes.includes(ix)) shownTypes.push(ix);
+    const moreTypes = types.length > 8 ? action(state.crossMoreTypes ? '收起' : '更多指数（' + (types.length - shownTypes.length) + '）', 'cross-more-types', 'text-link small', 'aria-expanded="' + state.crossMoreTypes + '"') : '';
+    const filters = '<section class="cross-filters" aria-label="跨境基金筛选"><div class="cross-filter-row"><span>市场 <small>可多选</small></span><div class="filter-chips">' + chips(['美国', '港股与中概', '日本', '欧洲', '全球', '其他与跨区域'].filter(r => pool.some(f => M.crossborderRegion(f) === r)).map(r => [r, r]), state.crossRegions, 'cross-region') + '</div></div><div class="cross-filter-row"><span>跟踪指数 <small>可多选</small></span><div class="filter-chips">' + chips(shownTypes.map(ix => [ix, ix]), state.crossTypes, 'cross-type') + moreTypes + '</div></div><div class="cross-filter-row"><span>交易渠道 <small>可多选</small></span><div class="filter-chips">' + chips([['exchange', '场内 ETF'], ['off', '场外基金']], state.crossChannels, 'cross-channel') + '</div></div><div class="cross-filter-row"><span>快照溢价</span><div class="filter-chips">' + [['all', '不限'], ['0', '折价 / 平价'], ['2', '≤ 2%'], ['5', '≤ 5%']].map(([v, label]) => action(label, 'cross-premium', 'filter-chip' + ((v === 'all' ? state.crossPremium === null : state.crossPremium === +v) ? ' active' : ''), 'data-value="' + v + '" aria-pressed="' + (v === 'all' ? state.crossPremium === null : state.crossPremium === +v) + '"')).join('') + '<label class="check-label cross-available"><input type="checkbox" id="cross-purchasable"' + (state.crossPurchasable ? ' checked' : '') + '>场外可申购</label></div></div><div class="cross-filter-foot"><label class="cross-search"><input type="search" id="cross-search" aria-label="搜索跨境基金名称或代码" placeholder="搜索基金名称或代码" value="' + esc(state.crossQuery) + '"></label><div>' + action('重置筛选', 'cross-reset', 'text-link small') + action('溢价与分红口径', 'cross-method', 'btn sm') + '</div></div></section>';
     const basis = '<div class="cross-basis"><span>场内收益</span><div class="segmented" aria-label="场内基金收益口径">' + [['nav', '净值 · 剔除溢价'], ['market', '成交价 · 含溢价']].map(([v, label]) => action(label, 'cross-basis', state.crossBasis === v ? 'active' : '', 'data-value="' + v + '" aria-pressed="' + (state.crossBasis === v) + '"')).join('') + '</div></div>';
     const th = (label, key) => '<th aria-sort="' + (state.crossSort === key ? state.crossDesc ? 'descending' : 'ascending' : 'none') + '">' + action(label + (state.crossSort === key ? state.crossDesc ? ' ↓' : ' ↑' : ''), 'cross-sort', '', 'data-value="' + key + '"') + '</th>';
     const table = '<section class="card index-section"><div class="cross-results-head"><div><h2>' + rows.length + '<small> / ' + pool.length + '只基金</small></h2><p>人民币 · 分红再投 · 已含产品持续费用' + (state.crossPremium !== null ? ' · 溢价筛选仅作用于场内，缺报价则排除' : '') + '</p></div>' + action('导出筛选结果', 'cross-export', 'btn sm') + '</div><div class="table-wrap cross-table-wrap" tabindex="0" aria-label="跨境基金研究表，可横向滚动"><table class="research-table crossborder-table"><thead><tr><th>基金 / 渠道</th>' + state.periods.map(y => th(periodHead(y), 'return:' + y)).join('') + th('持续费率 / 年', 'knownOngoingFee') + th('快照溢价', 'prem') + '<th>分红记录</th><th>买入费用 / 状态</th>' + th('5年最大回撤', 'mdd5') + th('收益截至', 'date') + '</tr></thead><tbody data-list-body="cross">' + lazyRows('cross', rows, f => {
@@ -538,7 +555,7 @@
     }).join('');
     return '<section class="card curve-card"><div class="card-head"><div><h2>' + title + '</h2><p>' + subtitle + '</p></div></div><div class="curve-body">' +
       '<div class="curve-plot"><svg class="curve-svg" viewBox="0 0 920 320" role="img" aria-label="' + esc(title + '；悬浮或点击查看具体交易日与' + (metric === 'amount' ? '账户金额' : '资金加权年化')) + '">' + unavailable + ticks.join('') + xTicks + (metric === 'annualized' ? '<line x1="59" x2="888" y1="' + scaleY(0).toFixed(1) + '" y2="' + scaleY(0).toFixed(1) + '" class="curve-base"/>' : '') + paths + '<g class="curve-hover-layer" hidden><line class="curve-hover-line" y1="34" y2="276"/>' + visible.map(entry => '<circle class="curve-hover-dot" data-key="' + esc(entry.key) + '" r="4" fill="' + entry.color + '"/>').join('') + '</g></svg><div class="curve-tooltip" hidden></div></div>' + legend +
-      '</div><div class="panel-foot"><span>' + (metric === 'amount' ? '实际账户金额，含每次新增投入 · 每周实际交易日取样 · ' + (logarithmic ? '对数' : '线性') + '刻度' : '起点 0% 是绘图基线；满四周后从首个月末起计算 XIRR，首年为按实际天数计算的短期年化推算 · ' + (compressedAnnualized ? '高波动时采用不等距刻度' : '线性刻度')) + '；悬浮读取真实数值，图例可切换曲线。</span></div></section>';
+      '</div><div class="panel-foot"><span>' + (metric === 'amount' ? '实际账户金额，含每次新增投入 · 每周实际交易日取样 · ' + (logarithmic ? '对数' : '线性') + '刻度' : '未满一年按剩余时间零收益补足；满一年后按实际现金流计算 XIRR · ' + (compressedAnnualized ? '高波动时采用不等距刻度' : '线性刻度')) + '；悬浮读取数值，图例可切换曲线。</span></div></section>';
   }
   function showCurvePoint(event, plot) {
     if (!activeCurve || !activeCurve.entries.length) return;
@@ -563,7 +580,7 @@
         const y = activeCurve.scaleY(entry.values[index]);
         dot.setAttribute('cx', x); dot.setAttribute('cy', y);
       }
-      tooltip.innerHTML = '<strong>' + esc(activeCurve.dates[index]) + '</strong><span class="curve-tooltip-caption">' + (activeCurve.metric === 'amount' ? '账户金额 · 美元' : '资金加权年化 · XIRR') + '</span>' +
+      tooltip.innerHTML = '<strong>' + esc(activeCurve.dates[index]) + '</strong><span class="curve-tooltip-caption">' + (activeCurve.metric === 'amount' ? '账户金额 · 美元' : M.yearsBetween(new Date(activeCurve.originTime).toISOString().slice(0, 10), activeCurve.dates[index]) < 1 ? '资金加权收益 · 未满一年补零收益' : '资金加权年化 · XIRR') + '</span>' +
         activeCurve.entries.map(entry => '<div><i style="background:' + entry.color + '"></i><span>' + esc(entry.label) + '</span><b class="num">' + (activeCurve.metric === 'amount' ? '$' + money(entry.values[index], 2) : pct(entry.values[index], 2)) + '</b></div>').join('');
       tooltip.hidden = false;
     }
@@ -908,7 +925,7 @@
     const button = event.target.closest('[data-action]'); if (!button || button.disabled) return;
     const act = button.dataset.action, val = button.dataset.value, code = button.dataset.code;
     if (['fund-tab', 'fund-facet', 'fund-sector', 'fund-channel', 'fund-reset', 'fund-sort', 'fund-sort-reset', 'screen-reset', 'menu-choice', 'go-index-funds', 'find-index-funds'].includes(act)) loadedCounts.delete('funds');
-    if (['cross-type', 'cross-channel', 'cross-premium', 'cross-reset', 'cross-sort', 'cross-basis'].includes(act)) loadedCounts.delete('cross');
+    if (['cross-type', 'cross-region', 'cross-channel', 'cross-premium', 'cross-reset', 'cross-sort', 'cross-basis'].includes(act)) loadedCounts.delete('cross');
     if (['stock-tab', 'stock-category', 'stock-sort', 'stock-boards'].includes(act)) loadedCounts.delete('stocks');
     switch (act) {
       case 'close': $('#dialog').close(); return;
@@ -924,7 +941,7 @@
           case 'benchmark-currency': state.benchmarkCurrency = val; break;
           case 'fund-category': state.poolCategory = val; break;
           case 'fund-channel': state.channel = val; break;
-          case 'strategy-chart-method': state.stratMethod = val; state.chartHidden.clear(); break;
+          case 'strategy-chart-method': state.stratMethod = val; state.stratMethods[state.stratPanel] = val; state.chartHidden.clear(); break;
           default: return;
         }
         break;
@@ -947,15 +964,17 @@
         $$('#dialog [data-column]').forEach(el => { el.checked = state.columns.has(el.dataset.column); });
         renderFundResults(); return;
       case 'screen-reset': state.screen = { minA3: defaults.minA3, minA5: defaults.minA5, minA10: null };  state.fundSort = 'default'; break;
+      case 'cross-more-types': state.crossMoreTypes = !state.crossMoreTypes; break;
       case 'cross-type':
+      case 'cross-region':
       case 'cross-channel': {
-        const set = act === 'cross-type' ? state.crossTypes : state.crossChannels;
+        const set = act === 'cross-type' ? state.crossTypes : act === 'cross-region' ? state.crossRegions : state.crossChannels;
         if (val === 'all') set.clear(); else if (set.has(val)) set.delete(val); else set.add(val);
         break;
       }
       case 'cross-premium': state.crossPremium = val === 'all' ? null : Number(val); break;
       case 'cross-basis': state.crossBasis = val; break;
-      case 'cross-reset': state.crossTypes.clear(); state.crossChannels.clear(); state.crossQuery = ''; state.crossPremium = null; state.crossPurchasable = false; state.crossSort = 'default'; break;
+      case 'cross-reset': state.crossTypes.clear(); state.crossRegions.clear(); state.crossMoreTypes = false; state.crossChannels.clear(); state.crossQuery = ''; state.crossPremium = null; state.crossPurchasable = false; state.crossSort = 'default'; break;
       case 'cross-sort': state.crossDesc = state.crossSort === val ? !state.crossDesc : !['knownOngoingFee', 'prem', 'n'].includes(val); state.crossSort = val; break;
       case 'cross-select':
         if (state.crossSelected.has(code)) state.crossSelected.delete(code);
@@ -1010,7 +1029,7 @@
       case 'screen-rules': openModal(modalTitle('长期权益，如何筛选', '规则生成日期 ' + esc(policy.asof || '未记录')) + '<div class="rule-list">' + (policy.rules || []).map((r, i) => '<div class="rule-item"><span class="rule-number">0' + (i + 1) + '</span><p>' + esc(r) + '</p></div>').join('') + '</div><p class="notice">原“综合分”保留为历史研究分；它不是未来概率，也不用于当前默认排序。完整研究池保留检索，研究候选不代表购买建议。</p>'); return;
       case 'stock-sort': state.stockDesc = state.stockSort === val ? !state.stockDesc : true; state.stockSort = val; break;
       case 'stock-detail': openStock(code); return;
-      case 'strategy-panel': state.stratPanel = val; state.stratMethod = val === 'initial' ? 'lump_sum' : 'dca_month'; state.stratCompare = val === 'dca' ? 'methods' : 'assets'; state.chartHidden.clear(); break;
+      case 'strategy-panel': state.stratMethods[state.stratPanel] = state.stratMethod; state.stratPanel = val; state.stratMethod = state.stratMethods[val]; state.chartHidden.clear(); break;
       case 'strategy-year': state.stratYear = val; state.chartHidden.clear(); break;
       case 'strategy-asset':
         state.stratAsset = val;

@@ -14,12 +14,17 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import update
 
 
-def build_archive(cache_dir=Path(update.FHSP_DIR), current_path=Path(update.ACTION_ARCHIVE)):
+def build_archive(cache_dir=Path(update.FHSP_DIR), current_path=Path(update.ACTION_ARCHIVE), validation_path=None):
     old = json.loads(current_path.read_text(encoding='utf-8')) if current_path.exists() else {}
     previous = old.get('funds', {})
     funds = update.parse_fund_lines(Path(update.HTML).read_text(encoding='utf-8'))
-    result = {}
-    for _, code, _ in funds:
+    validation = Path(validation_path) if validation_path is not None else Path(update.HERE) / 'data' / 'screening-validation.json'
+    verified = json.loads(validation.read_text(encoding='utf-8')) if validation.exists() else []
+    codes = list(dict.fromkeys([code for _, code, _ in funds] + [row['code'] for row in verified]))
+    # Daily EXTRA refreshes need the same dated action evidence as the original
+    # fund list, particularly on historical report dates without a daily rate.
+    result = dict(previous)
+    for code in codes:
         candidate = previous.get(code)
         path = cache_dir / f'fhsp_{code}.html'
         if path.exists():

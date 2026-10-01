@@ -18,11 +18,11 @@ python3 -m http.server 8765 --bind 127.0.0.1
 
 克隆后即可浏览快照和运行单元测试。基金、股票和策略的完整原始缓存不入库，因此第一次运行完整离线刷新可能因缺缓存失败；应先联网刷新对应数据。国内指数原始日线已保存在`data/index-history.json`。无缓存新检出的实际安装、测试和离线失败回放见[新环境验证](fresh-clone-validation.md)。
 
-已提交的`data/snapshot.js`含默认2010起点的`STRATEGY_RESULTS`、`STRATEGY_CURVES`和其余四个起点的`STRATEGY_WINDOWS`，所以新电脑即使没有历史缓存，也能直接查看1993/1999/2001/2010/2020五组结果与交互曲线。要**重新计算**，应联网运行`python3 strategy_backtest.py --refresh`取得ETF完整历史，再执行`python3 data_quality.py --strict`和`python3 scripts/audit_strategy.py`；后者使用本机原始缓存另建现金与份额账本核对全部策略终值、XIRR、账户与净值风险及交易次数。只有本机已保存所有ETF的完整早期行情时才使用`python3 strategy_backtest.py --offline`。`STRATEGY_CURVES`中`account`记录按周取样的实际账户金额，`irr`记录满28天后按实际月末交易日取样的截至当日XIRR，首年值是短期年化推算；两者终点分别与结果表的期末金额、XIRR核对。原`series`仍保留现金流中性单位净值，供回撤及质量核验使用；它不再充当定投方式的比较图，因为满仓买入同一ETF时，不同入金节奏可能给出完全相同的单位净值。结果表另列相对累计投入本金的最差账面盈亏与连续低于本金天数，和现金流中性净值风险分组展示。字段、公式和边界见[策略曲线说明](strategy-curves.md)与[杠杆 ETF 收益复核](strategy-leverage-audit.md)。
+已提交的`data/snapshot.js`含默认2010起点的`STRATEGY_RESULTS`、`STRATEGY_CURVES`和其余四个起点的`STRATEGY_WINDOWS`，所以新电脑即使没有历史缓存，也能直接查看1993/1999/2001/2010/2020五组结果与交互曲线。要**重新计算**，应联网运行`python3 strategy_backtest.py --refresh`取得ETF完整历史，再执行`python3 data_quality.py --strict`和`python3 scripts/audit_strategy.py`；后者使用本机原始缓存另建现金与份额账本核对全部策略终值、XIRR、账户与净值风险及交易次数。只有本机已保存所有ETF的完整早期行情时才使用`python3 strategy_backtest.py --offline`。`STRATEGY_CURVES`中`account`记录按周取样的实际账户金额，`irr`记录首日、实际月末交易日及末日的资金加权收益曲线；不足一年把剩余时间设为零收益，满一年后按真实现金流日期计算XIRR。两个终点分别核对结果表的期末金额与`curveIrr`字段；真实日期的结果表XIRR保留在`irr`字段。原`series`仍保留现金流中性单位净值，供回撤及质量核验使用；它不再充当定投方式的比较图，因为满仓买入同一ETF时，不同入金节奏可能给出完全相同的单位净值。结果表另列相对累计投入本金的最差账面盈亏与连续低于本金天数，和现金流中性净值风险分组展示。字段、公式和边界见[策略曲线说明](strategy-curves.md)与[杠杆 ETF 收益复核](strategy-leverage-audit.md)。
 
 起点年份是回测下限，实际开始日取该年之后所有可用标的的首个共同交易日；未上市的ETF不参与该窗口。当前快照分别从1993-01-29（SPY）、1999-03-10（SPY/QQQ）、2001-07-13（SPY/QQQ/SOXX）、2010-03-11（九只）、2020-01-02（九只）开始，截至日期以`STRATEGY_META.end`为准（本次为2026-09-25），共288组实验。前三只ETF的发行资料可核对：[SPY](https://www.ssga.com/us/en/institutional/etfs/state-street-spdr-sp-500-etf-trust-spy)、[QQQ](https://www.invesco.com/qqq-etf/en/home.html)、[SOXX](https://www.ishares.com/us/products/239705/SOX)。快照里的最早日期是行情源首个有效复权收盘观察日，可能晚于基金成立日。质量检查会检查每组窗口和曲线的结构、一致性；不会把第三方复权行情视为已独立审计。
 
-基础基金的分红、拆分公开页会被解析成 `data/fund-actions.json`：每只记录来源链接、实际抓取日、原始页 SHA-256 和动作表。新克隆无需本机 HTML 缓存，也能用已保存的证据重算**抓取日及之前**缺少每日涨跌幅的历史行。抓取日之后不能据旧表断言“没有新分红”；这些日期必须有来源发布的每日涨跌幅，缺失则拒绝计算。重新抓取公开页后运行 `python3 scripts/build_fund_actions.py --apply` 更新归档；脚本会保留未取回基金的旧证据与原日期，不把重试时间写成新观察日。
+基础基金及所有已核验扩展基金的分红、拆分公开页会被解析成 `data/fund-actions.json`：每只记录来源链接、实际抓取日、原始页 SHA-256 和动作表。新克隆无需本机 HTML 缓存，也能用已保存的证据重算**抓取日及之前**缺少每日涨跌幅的历史行。抓取日之后不能据旧表断言“没有新分红”；这些日期必须有来源发布的每日涨跌幅，缺失则拒绝计算。重新抓取公开页后运行 `python3 scripts/build_fund_actions.py --apply` 更新归档；脚本会保留未取回基金的旧证据与原日期，不把重试时间写成新观察日。
 
 ## 日常刷新
 
@@ -163,3 +163,11 @@ python3 data_quality.py --strict
 发布前运行单元测试和质量检查，在浏览器检查实际变更，再审阅Git差异。全部数据产物确定后运行`npm run version-assets`，它把`index.html`中八个本地CSS/JS资源的版本更新为各文件内容摘要；`npm run check`会拒绝过期的资源引用。最后提交脚本、文档、`index.html`及相互对应的数据产物；不要提交原始大缓存、个人资料或凭据。`refresh.py`本身不提交或推送，直接运行单项更新脚本后也需执行资源版本命令。
 
 手动更新时，提交与推送仍由维护者显式执行。`main` 上的普通代码推送由 `.github/workflows/pages.yml` 校验资源版本并部署；`.github/workflows/refresh-data.yml` 在工作日北京时间22:17定时运行，也可从仓库 Actions 页面手动触发。它安装依赖、运行测试、在线执行七阶段刷新、检查报告和来源日期、更新资源版本，然后只提交生成的数据与 `index.html`；同一次工作流把这些已验证文件部署到 Pages。手动触发时可关闭 `publish` 只验证，也可启用 `cold_start` 忽略源缓存。无实质数据或证据变化时不创建提交。任一步失败都不推送、不部署，并上传最近报告与阶段日志作为 Actions 诊断工件。发布源需要设为 GitHub Actions；详见[自动更新方案](automatic-update-plan.md)。
+
+## 2026-10-01 跨境目录与更新修复
+
+`data/crossborder-fund-catalog.json`记录登记源、校验哈希及人民币海外股票指数份额目录。新增发现使用`fundcode_search.js`的`指数型-海外股票`分类，保留人民币A/C及其他份额、ETF、联接和LOF申购；不按历史收益排除指数。美元、现汇、现钞及增强产品不并入该目录。运行`scripts/restore_crossborder_funds.py --registry <登记数组JSON>`核对身份、实际跟踪指数、费率与完整净值历史；未发行或缺证据的产品记入目录缺口。305份额中303份额有已复算收益；两个鹏华恒生科技联接尚未披露成立日及净值。指数观察按真实暴露与已复算日期选择列表，不再按FUNDS/EXTRA来源数组决定展示资格。原列表其他已核验港股产品仍保留。标普500等权重与标普医疗保健等权重分别标注，后者不能归到全市场等权重。
+
+9月29日与9月30日的定时刷新在扩展基金阶段失败：001404与001564分红页面超时，旧归档只有基础46只基金，无法复算2017-12-31缺每日收益的历史净值。现已补齐基础46只与已核验扩展395只的分红拆分存档，共441条，保留日期与原始页哈希。缺网页缓存时可回退至有日期的已保存动作，不能用旧证据证明新日期未分红。整套七阶段联网复算通过；发布前仍检查质量与日期退化。
+
+工作流发布前抓取远端；若执行期间main更新，先快进到新提交，再按新代码重新复算与检验，防止旧运行覆盖新的手工或定时数据。普通推送竞争仍会拒绝写入，不强推。

@@ -85,6 +85,26 @@ jobs:
             .tmp-snap/stocks
             .tmp-buy-location
           key: research-source-${{ runner.os }}-${{ github.run_id }}
+      - name: Integrate remote changes before publishing
+        if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || inputs.publish) }}
+        run: |
+          git fetch origin main
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
+            # These are generated files in this disposable runner. Recompute
+            # against the current main rather than overwrite concurrent edits.
+            git restore --worktree --staged -- .
+            git merge --ff-only origin/main
+            python3 -m unittest discover -s tests -q
+            node --test tests/model.test.cjs
+            python3 refresh.py --timeout 420 --funds-timeout 900
+            python3 scripts/build_fund_actions.py --apply
+            python3 scripts/build_crossborder_data.py
+            python3 scripts/check_refresh.py
+            npm run version-assets
+            npm run check
+          fi
+          git fetch origin main
+          test "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)"
       - name: Commit validated generated files
         id: commit
         if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || inputs.publish) }}

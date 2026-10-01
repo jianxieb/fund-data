@@ -1,7 +1,7 @@
 import tempfile
 import unittest
 import subprocess
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from unittest.mock import patch
 
@@ -352,16 +352,35 @@ class StrategyAccounting(unittest.TestCase):
         dates = ['2025-01-02', '2025-01-31', '2025-02-28', '2026-01-05']
         results, curves = strategy.build_results(dates, {'SPY': [100, 110, 105, 120]},
                                                  assets=[{'c': 'SPY'}])
-        self.assertEqual(curves['irrDates'][0], '2025-01-31')
-        expected = ((110 / 100) ** (365.2425 / 29) - 1) * 100
-        self.assertAlmostEqual(curves['irr']['SPY']['lump_sum'][0], expected, places=3)
-        snapshot = {'STRATEGY_META': {'modelVersion': 4, 'initialCashIncluded': True,
+        self.assertEqual(curves['irrDates'][0], '2025-01-02')
+        self.assertEqual(curves['irr']['SPY']['lump_sum'][:3], [0.0, 10.0, 5.0])
+        snapshot = {'STRATEGY_META': {'modelVersion': 6, 'initialCashIncluded': True,
                                       'basis': 'provider_adjusted_close',
                                       'start': dates[0], 'end': dates[-1]},
                     'STRATEGY_RESULTS': results, 'STRATEGY_CURVES': curves}
         report = data_quality.audit(snapshot, date(2026, 1, 5))
         issues = next(d for d in report['datasets'] if d['id'] == 'strategy')['issues']
         self.assertNotIn('strategy_irr_dates', {item['code'] for item in issues})
+
+    def test_first_year_curve_extends_zero_return_without_annualizing_short_gain(self):
+        flows = [(datetime(2025, 1, 2), -100), (datetime(2025, 2, 2), 105)]
+        self.assertAlmostEqual(strategy.xirr(flows, minimum_years=1), 0.05, places=10)
+        self.assertGreater(strategy.xirr(flows), 0.7)
+        loss = [(datetime(2025, 1, 2), -100), (datetime(2025, 2, 2), 95)]
+        self.assertAlmostEqual(strategy.xirr(loss, minimum_years=1), -0.05, places=10)
+
+    def test_padded_curve_keeps_dca_cashflow_timing_and_does_not_create_profit(self):
+        flat = [(datetime(2025, 1, 2), -100), (datetime(2025, 2, 2), -100),
+                (datetime(2025, 2, 2), 200)]
+        self.assertAlmostEqual(strategy.xirr(flat, minimum_years=1), 0, places=10)
+        flows = flat[:-1] + [(datetime(2025, 2, 2), 210)]
+        self.assertLess(strategy.xirr(flows, minimum_years=1), 0.06)
+        self.assertGreater(strategy.xirr(flows, minimum_years=1), 0.05)
+
+    def test_one_year_padding_does_not_change_mature_xirr(self):
+        flows = [(datetime(2024, 1, 2), -100), (datetime(2025, 7, 2), -100),
+                 (datetime(2026, 1, 2), 250)]
+        self.assertEqual(strategy.xirr(flows, minimum_years=1), strategy.xirr(flows))
 
     def test_short_period_xirr_does_not_count_new_principal_as_profit(self):
         dates = ['2025-01-02', '2025-01-31', '2025-02-28']

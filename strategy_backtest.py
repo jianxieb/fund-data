@@ -46,7 +46,6 @@ INITIAL_CAPITAL = 100000.0
 MONTHLY_CONTRIBUTION = 1000.0
 TRADING_COST = 0.0
 SOURCE_LABEL = 'Yahoo Finance chart: indicators.adjclose (provider adjusted close)'
-MIN_ANNUALIZED_DAYS = 28
 
 ASSETS = [
     {'c': 'SPY', 'n': 'SPY', 'g': '标普500', 'lev': '1x'},
@@ -393,7 +392,7 @@ def strategy_inputs(prices, dates):
     }
 
 
-def xirr(flows):
+def xirr(flows, minimum_years=0.0):
     """Annualized IRR for contributions followed by one terminal account value.
 
     Solving at each sampled date uses the same cash-flow definition as the final
@@ -403,9 +402,14 @@ def xirr(flows):
     if len(flows) < 2:
         return None
     terminal_day, terminal_value = flows[-1]
-    if terminal_value <= 0:
+    if terminal_value <= 0 or any(day > terminal_day for day, _ in flows[:-1]):
         return None
-    contributions = [(-amount, (terminal_day - day).days / 365.2425)
+    span = (terminal_day - flows[0][0]).days / 365.2425
+    padding = max(0.0, minimum_years - span)
+    # The curve extends an incomplete first year with zero return and no new
+    # flows. Original contribution dates stay intact; only the terminal holding
+    # interval is extended. A one-month single-payment gain of 5% is then 5%.
+    contributions = [(-amount, (terminal_day - day).days / 365.2425 + padding)
                      for day, amount in flows[:-1]]
     if any(amount <= 0 or age < 0 for amount, age in contributions) or \
             not any(age > 0 for _, age in contributions):
@@ -531,7 +535,7 @@ def simulate(dates, prices, events, exposure=None, initial_capital=None,
             longest_below_paid = max(longest_below_paid, below_paid_streak)
         if i in annualized_samples:
             as_of = datetime.strptime(date, '%Y-%m-%d')
-            rate = xirr(flows + [(as_of, value)])
+            rate = xirr(flows + [(as_of, value)], minimum_years=1.0)
             annualized_curve[i] = rate * 100 if rate is not None else None
         exposure_sum += asset_units * price / value if value > 0 else 0.0
     final_value = cash + asset_units * prices[-1]
@@ -551,6 +555,7 @@ def simulate(dates, prices, events, exposure=None, initial_capital=None,
     if annualized_indices is not None:
         result['irr_curve'] = [round(annualized_curve[i], 4) if annualized_curve[i] is not None else None
                                for i in annualized_indices]
+        result['curve_irr'] = annualized_curve[annualized_indices[-1]] if annualized_indices else None
     return result
 
 
@@ -560,6 +565,7 @@ def round_metrics(metrics):
         'end': round(metrics['end_value'], 2),
         'ret': round(metrics['total_return'], 4) if metrics['total_return'] is not None else None,
         'irr': round(metrics['irr'], 4) if metrics['irr'] is not None else None,
+        'curveIrr': round(metrics['curve_irr'], 4) if metrics.get('curve_irr') is not None else None,
         'mdd': round(metrics['mdd'], 4),
         'uw': metrics['underwater'],
         'worst_paid': round(metrics['worst_paid'], 4),
@@ -598,11 +604,7 @@ def weekly_sample_indices(dates):
 def build_results(dates, prices, assets=None):
     results, curves = [], {'dates': [], 'series': {}, 'account': {}, 'irrDates': [], 'irr': {}}
     samples = weekly_sample_indices(dates)
-    first = datetime.strptime(dates[0], '%Y-%m-%d')
-    # Sample short holding periods too. A four-week floor avoids treating a
-    # one-day move as a meaningful annualized comparison.
-    annualized_samples = [i for i in monthly_sample_indices(dates)
-                          if (datetime.strptime(dates[i], '%Y-%m-%d') - first).days >= MIN_ANNUALIZED_DAYS]
+    annualized_samples = monthly_sample_indices(dates)
     curves['dates'] = [dates[i] for i in samples]
     curves['irrDates'] = [dates[i] for i in annualized_samples]
     for asset in assets or ASSETS:
@@ -639,13 +641,15 @@ def write_html(results, dates, curves, windows, summaries, asset_starts):
         'requestedEnd': END_DATE,
         'status': 'computed',
         'basis': 'provider_adjusted_close',
-        'modelVersion': 5,
+        'modelVersion': 6,
         'initialCashIncluded': True,
-        'curveMetrics': ['account_value_usd', 'since_inception_xirr_percent'],
+        'curveMetrics': ['account_value_usd', 'since_inception_xirr_minimum_one_year_percent'],
         'maWarmup': '200 observations; hold cash until first available signal',
         'limitations': ['不同起点与可用标的会改变结果', '税费、汇兑及现金收益未建模', '部分年度按样本月数预算；倍数定投资金总额不同'],
         'curveSampling': 'weekly_last_actual_trading_day',
-        'annualizedCurveSampling': 'monthly_last_actual_trading_day_after_28_days',
+        'annualizedCurveSampling': 'monthly_last_actual_trading_day_and_both_endpoints',
+        'annualizedCurveMinimumYears': 1.0,
+        'annualizedCurveShortPeriodTreatment': 'extend_terminal_horizon_to_one_year_with_zero_return_and_no_new_flows',
         'cashflowRiskMetrics': ['worst_account_value_vs_paid_in_percent', 'longest_trading_days_below_paid'],
         'windows': summaries,
         'assetStarts': asset_starts,
@@ -724,7 +728,7 @@ def main():
     log('  TQQQ: %8.2f%% / %7.2f%%' % (tqqq['irr'], tqqq['mdd']))
     log('  SOXL: %8.2f%% / %7.2f%%' % (soxl['irr'], soxl['mdd']))
     log('')
-    log('已写入 %s（%d 个窗口、%d 组结果，固定快照，不参与每日更新）' %
+    log('已写入 %s（%d 个窗口、%d 组结果；定时任务重算）' %
         (HTML, len(summaries), sum(item['records'] for item in summaries)))
     return 0
 

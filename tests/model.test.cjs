@@ -299,6 +299,38 @@ test('cross-border market returns never silently substitute NAV when missing', (
   assert.equal(M.crossborderPerformance({ ...f, exchange: false }, evidence, 'market').r[0], 10);
 });
 
+test('cross-border indices include research-source Japanese funds and keep equal weight separate', () => {
+  const rows = M.dedupeFunds([], [
+    fund({c:'513880', n:'日经225ETF华安', ix:'日经225', t:'场内ETF'}),
+    fund({c:'096001', n:'大成标普500等权重指数(QDII)A人民币', ix:'标普500等权重', t:'场外A'}),
+    fund({c:'161125', n:'易方达标普500指数人民币A', ix:'标普500', t:'场外A'}),
+    fund({c:'000001', n:'全球股票主动基金', ix:'主动基金', t:'场外A'}),
+    fund({c:'000002', n:'全球债券指数基金', ix:'全球债券指数', t:'场外A'})
+  ]);
+  assert.deepEqual(rows.filter(M.isCrossborderIndex).map(f=>f.c), ['513880','096001','161125']);
+  assert.equal(M.crossborderRegion(rows[0]), '日本');
+  assert.equal(M.crossborderMatches(rows[0], {regions:['美国']}), false);
+  assert.deepEqual(rows.filter(f=>M.crossborderMatches(f, {types:['标普500等权重']})).map(f=>f.c), ['096001']);
+  assert.equal(M.dedupeFunds([fund({n:'大成标普500等权重A', ix:'标普500等权重'})], [])[0].active, false);
+  assert.equal(M.dedupeFunds([], [fund({n:'银华-道琼斯88指数', ix:'Dow Jones China 88 Index'})])[0].overseasExposure, false);
+  assert.equal(M.isCrossborderIndex(M.dedupeFunds([], [fund({n:'汇丰晋信恒生龙头指数A',ix:'恒生A股行业龙头指数'})])[0]), false);
+});
+
+test('every available RMB overseas index catalog product is visible with its own dated return basis', () => {
+  const vm = require('node:vm'), ctx = {};
+  vm.runInNewContext(fs.readFileSync('data/snapshot.js', 'utf8'), ctx);
+  const catalog = JSON.parse(fs.readFileSync('data/crossborder-fund-catalog.json', 'utf8'));
+  const funds = new Map(M.dedupeFunds(ctx.FUNDS,ctx.EXTRA).filter(f=>M.isCrossborderIndex(f)&&f.returnAsOf).map(f=>[f.c,f]));
+  for (const p of catalog.products) {
+    if (Object.hasOwn(catalog.coverage.missingEvidence, p.code)) continue;
+    assert.ok(funds.has(p.code), 'Missing cross-border fund '+p.code);
+    assert.ok(funds.get(p.code).returnBasis, 'Missing return basis '+p.code);
+  }
+  assert.equal(funds.get('096001').ix, '标普500等权重');
+  assert.equal(funds.get('008401').ix, '标普500等权重');
+  assert.equal(funds.get('012864').ix, '标普500医疗保健等权重指数');
+});
+
 
 test('all fund facets include every individual selection and combine by union', () => {
   const vm = require('node:vm'), ctx = {};

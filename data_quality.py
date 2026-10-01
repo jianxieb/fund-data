@@ -142,10 +142,12 @@ def audit(snapshot, today=None):
             first_irr_age = (date.fromisoformat(irr_dates[0]) - date.fromisoformat(account_dates[0])).days
         except (IndexError, ValueError, TypeError):
             first_irr_age = -1
+        new_curve = meta.get('modelVersion', 1) >= 6
+        valid_first_age = first_irr_age == 0 if new_curve else 28 <= first_irr_age <= 62
         if not irr_dates or irr_dates != sorted(set(irr_dates)) or \
                 irr_dates[-1] != account_dates[-1] or \
-                not 28 <= first_irr_age <= 62:
-            issue(td, 'strategy_irr_dates', 'error', '年化曲线须从满28天后的首个月末交易日开始，并包含回测末日', scope)
+                not valid_first_age:
+            issue(td, 'strategy_irr_dates', 'error', '年化曲线须包含模型要求的真实起止日及月末交易日', scope)
         invalid, invalid_paid_risk = [], []
         for row in rows:
             key = '%s/%s' % (row.get('a'), row.get('s'))
@@ -157,7 +159,8 @@ def audit(snapshot, today=None):
                 invalid.append(key + ' 金额')
             if not irr_dates or not isinstance(rates, list) or len(rates) != len(irr_dates) or \
                     any(not finite(value) or value <= -100 for value in rates) or \
-                    not finite(row.get('irr')) or abs(rates[-1] - row['irr']) > 0.01:
+                    not finite(row.get('curveIrr') if new_curve else row.get('irr')) or \
+                    abs(rates[-1] - (row['curveIrr'] if new_curve else row['irr'])) > 0.01:
                 invalid.append(key + ' 年化')
             if meta.get('modelVersion', 1) >= 5 and (
                     not finite(row.get('worst_paid')) or not -100 < row['worst_paid'] <= 0 or

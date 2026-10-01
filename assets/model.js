@@ -155,10 +155,10 @@
       n.knownOngoingFee = fees.some(v => v !== null) ? sum(fees.filter(v => v !== null)) : null;
       n.totalOngoingFee = n.feeCoverage === 'complete' ? sum(fees) : null;
       const text = (f.ix || '') + ' ' + (f.n || '');
-      const indexLike = /指数|ETF|联接/.test(text);
+      const indexLike = f.crossborderIndex === true || (f.origin === 'overseas' && !!f.ix) || /指数|ETF|联接/.test(text);
       const mixed = /混合|灵活配置|固收[+＋]|偏债|可转债|转债|FOF|多资产|资产配置/.test(text);
       const physicalGold = /黄金|上海金|Au99|伦敦金/i.test(text) && !/黄金股|产业|矿业|股票/.test(text);
-      const overseas = f.origin === 'overseas' || /QDII|海外|全球|美国|标普|纳斯达克|恒生|港股|香港|沪港深/.test(text);
+      const overseas = f.crossborderIndex === true || f.origin === 'overseas' || /QDII|海外|全球|美国|标普|纳斯达克|恒生|港股|香港|沪港深|日经|日本|东证|德国|法国|沙特|巴西|东南亚|富时100/.test(text);
       n.dividend = /红利|股息/.test(text);
       n.overseasExposure = overseas;
       n.fixedIncomeOrMixed = f.g === 'x5' || mixed || /债券|纯债|货币/.test(text);
@@ -179,8 +179,23 @@
     }
     return evidence?.nav || fund;
   }
+  function isCrossborderIndex(fund) {
+    const text = (fund.ix || '') + ' ' + (fund.n || '');
+    return !!fund.overseasExposure && !/恒生A股|恒生中国A股/.test(text) && !fund.active && !fund.fixedIncomeOrMixed && fund.asset !== 'gold' && fund.asset !== 'other';
+  }
+  function crossborderRegion(fund) {
+    if (fund.crossborderRegion) return fund.crossborderRegion;
+    const text = (fund.ix || '') + ' ' + (fund.n || '');
+    if (/恒生|香港|港股|H股|中概|海外中国|中国(?:互联网|新经济|教育)/.test(text)) return '港股与中概';
+    if (/日本|日经|东证|东京/.test(text)) return '日本';
+    if (/德国|DAX|法国|CAC|富时100|FTSE 100/i.test(text)) return '欧洲';
+    if (/沙特|巴西|新兴亚洲|东南亚|亚太|中韩|中美/.test(text)) return '其他与跨区域';
+    if (/全球|发达市场|环球/.test(text)) return '全球';
+    return '美国';
+  }
   function crossborderMatches(fund, filters) {
     const types = filters.types || [], channels = filters.channels || [];
+    if (filters.regions?.length && !filters.regions.includes(crossborderRegion(fund))) return false;
     if (types.length && !types.includes(fund.ix)) return false;
     if (channels.length && !channels.includes(fund.exchange ? 'exchange' : 'off')) return false;
     if (filters.query && !(fund.c + fund.n + fund.ix).toLowerCase().includes(filters.query.toLowerCase())) return false;
@@ -349,5 +364,5 @@
     });
     return { start, end, purchaseDays, rows, exchangeBasis };
   }
-  return { finite, sum, copy, escapeHtml, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, stockMatches, stockBoard, loadWindow, fundScopeMatches, fundFacetMatches, indexFundKind, indexSectors, indexSectorMatches, csv, buyLocationXirr, buyLocationResult, crossborderPerformance, crossborderMatches };
+  return { finite, sum, copy, escapeHtml, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, stockMatches, stockBoard, loadWindow, fundScopeMatches, fundFacetMatches, indexFundKind, indexSectors, indexSectorMatches, csv, buyLocationXirr, buyLocationResult, crossborderPerformance, crossborderMatches, isCrossborderIndex, crossborderRegion };
 }));

@@ -1,0 +1,1542 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-01T14:07:40.757321+00:00",
+  "source": "https://fund.eastmoney.com/js/fundcode_search.js",
+  "registrySha256": "6fe0b3d2be8bc1715e5457ec2dab8632a71ee1ec31684d66da8e123c9ecf0518",
+  "scope": "人民币份额、海外股票指数型；含ETF、联接、LOF申购及各份额，不按历史收益筛掉指数",
+  "products": [
+    {
+      "code": "000071",
+      "expectedName": "华夏恒生ETF联接A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "000179",
+      "expectedName": "广发美国房地产指数人民币(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "000369",
+      "expectedName": "广发全球医疗保健指数人民币(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "000614",
+      "expectedName": "华安德国(DAX)联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "000834",
+      "expectedName": "大成纳斯达克100ETF联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "001092",
+      "expectedName": "广发生物科技指数人民币(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "004243",
+      "expectedName": "广发道琼斯石油指数人民币C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "005613",
+      "expectedName": "摩根富时发达市场REITs指数(QDII)人民币A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "005675",
+      "expectedName": "易方达恒生国企ETF联接C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "005676",
+      "expectedName": "易方达标普消费品指数C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "006075",
+      "expectedName": "博时标普500ETF联接C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "006263",
+      "expectedName": "易方达香港小型股指数C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "006327",
+      "expectedName": "易方达中证海外互联网50ETF联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "006328",
+      "expectedName": "易方达中证海外互联网50ETF联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "006381",
+      "expectedName": "华夏恒生ETF联接C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "006479",
+      "expectedName": "广发纳斯达克100ETF联接人民币(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "007844",
+      "expectedName": "华宝标普油气上游股票人民币C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "008401",
+      "expectedName": "大成标普500等权重指数(QDII)C人民币",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "008706",
+      "expectedName": "建信富时100指数(QDII)C人民币",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "008971",
+      "expectedName": "大成纳斯达克100ETF联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "009225",
+      "expectedName": "天弘中证中美互联网(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "009226",
+      "expectedName": "天弘中证中美互联网(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "009975",
+      "expectedName": "华宝标普美国消费人民币C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "010789",
+      "expectedName": "汇添富恒生指数(QDII-LOF)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "012348",
+      "expectedName": "天弘恒生科技ETF联接A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "012349",
+      "expectedName": "天弘恒生科技ETF联接C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "012570",
+      "expectedName": "建信恒生科技指数发起(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "012571",
+      "expectedName": "建信恒生科技指数发起(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "012752",
+      "expectedName": "建信纳斯达克100指数(QDII)C人民币",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "012804",
+      "expectedName": "广发恒生科技ETF联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "012805",
+      "expectedName": "广发恒生科技ETF联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "012860",
+      "expectedName": "易方达标普500指数人民币C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "012864",
+      "expectedName": "易方达标普医疗保健人民币C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "012866",
+      "expectedName": "易方达标普生物科技人民币C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "012868",
+      "expectedName": "易方达标普信息科技指数(QDII-LOF)C(人民币)",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "012870",
+      "expectedName": "易方达纳斯达克100ETF联接(QDII-LOF)C(人民币)",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "012979",
+      "expectedName": "大成恒生科技ETF发起式联接A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "012980",
+      "expectedName": "大成恒生科技ETF发起式联接C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "013127",
+      "expectedName": "汇添富恒生科技ETF联接发起式(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "013128",
+      "expectedName": "汇添富恒生科技ETF联接发起式(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "013171",
+      "expectedName": "华夏恒生互联网科技业ETF联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "013172",
+      "expectedName": "华夏恒生互联网科技业ETF联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "013308",
+      "expectedName": "易方达恒生科技ETF联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "013309",
+      "expectedName": "易方达恒生科技ETF联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "013402",
+      "expectedName": "华夏恒生科技ETF发起式联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "013403",
+      "expectedName": "华夏恒生科技ETF发起式联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "013945",
+      "expectedName": "交银中证海外中国互联网指数(LOF)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "014424",
+      "expectedName": "博时恒生医疗保健ETF发起式联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "014425",
+      "expectedName": "博时恒生医疗保健ETF发起式联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "014438",
+      "expectedName": "博时恒生科技ETF发起式联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "014439",
+      "expectedName": "博时恒生科技ETF发起式联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "014978",
+      "expectedName": "华安纳斯达克100ETF联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "014982",
+      "expectedName": "华安标普全球石油指数(LOF)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "015016",
+      "expectedName": "华安德国(DAX)联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "015282",
+      "expectedName": "华安恒生科技ETF发起式联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "015283",
+      "expectedName": "华安恒生科技ETF发起式联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "015299",
+      "expectedName": "华夏纳斯达克100ETF发起式联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "015300",
+      "expectedName": "华夏纳斯达克100ETF发起式联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "015310",
+      "expectedName": "华泰柏瑞恒生科技ETF联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "015311",
+      "expectedName": "华泰柏瑞恒生科技ETF联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "015546",
+      "expectedName": "大成恒生指数(QDII-LOF)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "016055",
+      "expectedName": "博时纳斯达克100ETF发起式联接(QDII)A人民币",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "016057",
+      "expectedName": "博时纳斯达克100ETF发起式联接(QDII)C人民币",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "016278",
+      "expectedName": "广发美国房地产指数人民币(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "016280",
+      "expectedName": "广发全球医疗保健指数人民币(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "016452",
+      "expectedName": "南方纳斯达克100指数发起(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "016453",
+      "expectedName": "南方纳斯达克100指数发起(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "016470",
+      "expectedName": "广发生物科技指数人民币(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "016532",
+      "expectedName": "嘉实纳斯达克100ETF发起联接(QDII)A人民币",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "016533",
+      "expectedName": "嘉实纳斯达克100ETF发起联接(QDII)C人民币",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "016970",
+      "expectedName": "华夏恒生生物科技ETF发起式联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "016971",
+      "expectedName": "华夏恒生生物科技ETF发起式联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "017028",
+      "expectedName": "国泰标普500ETF发起联接(QDII)A人民币",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "017030",
+      "expectedName": "国泰标普500ETF发起联接(QDII)C人民币",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "017091",
+      "expectedName": "景顺长城纳斯达克科技ETF联接(QDII)A人民币",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "017093",
+      "expectedName": "景顺长城纳斯达克科技ETF联接(QDII)C人民币",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "017641",
+      "expectedName": "摩根标普500指数(QDII)人民币A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "017894",
+      "expectedName": "汇添富纳斯达克生物科技ETF发起式联接(QDII)人民币A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "017895",
+      "expectedName": "汇添富纳斯达克生物科技ETF发起式联接(QDII)人民币C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "018043",
+      "expectedName": "天弘纳斯达克100指数发起(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "018044",
+      "expectedName": "天弘纳斯达克100指数发起(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "018064",
+      "expectedName": "华夏标普500ETF发起式联接(QDII)A(人民币)",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "018065",
+      "expectedName": "华夏标普500ETF发起式联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "018078",
+      "expectedName": "南方恒生生物科技ETF发起联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "018079",
+      "expectedName": "南方恒生生物科技ETF发起联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "018200",
+      "expectedName": "嘉实恒生消费ETF发起联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "018201",
+      "expectedName": "嘉实恒生消费ETF发起联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "018432",
+      "expectedName": "嘉实恒生医疗保健ETF发起联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "018433",
+      "expectedName": "嘉实恒生医疗保健ETF发起联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "018475",
+      "expectedName": "万家恒生互联网科技业ETF发起式联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "018476",
+      "expectedName": "万家恒生互联网科技业ETF发起式联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "018523",
+      "expectedName": "华泰紫金恒生互联网科技业指数型发起基金(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "018524",
+      "expectedName": "华泰紫金恒生互联网科技业指数型发起基金(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "018577",
+      "expectedName": "摩根恒生科技ETF发起式联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "018578",
+      "expectedName": "摩根恒生科技ETF发起式联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "018738",
+      "expectedName": "博时标普500ETF联接E(人民币)",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "018851",
+      "expectedName": "博时标普石油天然气勘探及生产精选行业指数发起(QDII)A人民币",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "018853",
+      "expectedName": "博时标普石油天然气勘探及生产精选行业指数发起(QDII)C人民币",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "018966",
+      "expectedName": "汇添富纳斯达克100ETF发起式联接(QDII)人民币A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "018967",
+      "expectedName": "汇添富纳斯达克100ETF发起式联接(QDII)人民币C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "019102",
+      "expectedName": "景顺长城恒生消费ETF联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "019103",
+      "expectedName": "景顺长城恒生消费ETF联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "019118",
+      "expectedName": "景顺长城纳斯达克科技ETF联接(QDII)E人民币",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "019172",
+      "expectedName": "摩根纳斯达克100指数(QDII)人民币A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "019173",
+      "expectedName": "摩根纳斯达克100指数(QDII)人民币C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "019305",
+      "expectedName": "摩根标普500指数(QDII)人民币C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "019441",
+      "expectedName": "万家纳斯达克100指数发起式(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "019442",
+      "expectedName": "万家纳斯达克100指数发起式(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "019454",
+      "expectedName": "华泰柏瑞中韩半导体ETF发起式联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "019455",
+      "expectedName": "华泰柏瑞中韩半导体ETF发起式联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "019495",
+      "expectedName": "摩根富时发达市场REITs指数(QDII)人民币C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "019524",
+      "expectedName": "华泰柏瑞纳斯达克100ETF发起式联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "019525",
+      "expectedName": "华泰柏瑞纳斯达克100ETF发起式联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "019547",
+      "expectedName": "招商纳斯达克100ETF发起式联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "019548",
+      "expectedName": "招商纳斯达克100ETF发起式联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "019670",
+      "expectedName": "广发港股创新药ETF联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "019671",
+      "expectedName": "广发港股创新药ETF联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "019710",
+      "expectedName": "广发道琼斯石油指数(QDII-LOF)人民币E",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "019736",
+      "expectedName": "宝盈纳斯达克100指数发起(QDII)A人民币",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "019737",
+      "expectedName": "宝盈纳斯达克100指数发起(QDII)C人民币",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "019936",
+      "expectedName": "华安恒生互联网科技业ETF发起式联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "019937",
+      "expectedName": "华安恒生互联网科技业ETF发起式联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "020515",
+      "expectedName": "华泰柏瑞东南亚科技ETF发起式联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "020516",
+      "expectedName": "华泰柏瑞东南亚科技ETF发起式联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "020621",
+      "expectedName": "华夏中证香港内地国有企业ETF发起式联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "020622",
+      "expectedName": "华夏中证香港内地国有企业ETF发起式联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "020634",
+      "expectedName": "汇添富恒生生物科技ETF发起式联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "020635",
+      "expectedName": "汇添富恒生生物科技ETF发起式联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "020712",
+      "expectedName": "华安三菱日联日经225ETF发起式联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "020713",
+      "expectedName": "华安三菱日联日经225ETF发起式联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "020743",
+      "expectedName": "广发恒生消费ETF发起式联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "020744",
+      "expectedName": "广发恒生消费ETF发起式联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "020988",
+      "expectedName": "南方恒生科技ETF发起联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "020989",
+      "expectedName": "南方恒生科技ETF发起联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "021000",
+      "expectedName": "南方纳斯达克100指数发起(QDII)I",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "021044",
+      "expectedName": "国泰香港国企红利ETF联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "021045",
+      "expectedName": "国泰香港国企红利ETF联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "021053",
+      "expectedName": "南方恒生生物科技ETF发起联接(QDII)I",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "021189",
+      "expectedName": "南方亚太精选ETF联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "021190",
+      "expectedName": "南方亚太精选ETF联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "021539",
+      "expectedName": "华安法国CAC40ETF发起式联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "021540",
+      "expectedName": "华安法国CAC40ETF发起式联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "021583",
+      "expectedName": "中欧中证港股通央企红利指数发起(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "021584",
+      "expectedName": "中欧中证港股通央企红利指数发起(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "021633",
+      "expectedName": "招商中证香港科技ETF发起式联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "021634",
+      "expectedName": "招商中证香港科技ETF发起式联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "021658",
+      "expectedName": "华安恒生生物科技指数发起式(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "021659",
+      "expectedName": "华安恒生生物科技指数发起式(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "021773",
+      "expectedName": "汇添富纳斯达克100ETF发起式联接(QDII)人民币E",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "021778",
+      "expectedName": "广发纳指100ETF联接(QDII)人民币F",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "021838",
+      "expectedName": "嘉实纳斯达克100ETF发起联接(QDII)I人民币",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "022005",
+      "expectedName": "广发恒生科技ETF联接(QDII)F",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "022121",
+      "expectedName": "国泰海通中证香港科技指数发起(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "022122",
+      "expectedName": "国泰海通中证香港科技指数发起(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "022325",
+      "expectedName": "长城中证港股通高股息指数发起(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "022326",
+      "expectedName": "长城中证港股通高股息指数发起(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "022525",
+      "expectedName": "天弘纳斯达克100指数发起(QDII)D",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "022647",
+      "expectedName": "华安恒生科技ETF发起式联接(QDII)I",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "022664",
+      "expectedName": "华泰柏瑞纳斯达克100ETF发起式联接(QDII)I",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "022680",
+      "expectedName": "华泰柏瑞恒生科技ETF联接(QDII)I",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "022681",
+      "expectedName": "华泰柏瑞中韩半导体ETF发起式联接(QDII)I",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "023034",
+      "expectedName": "中欧恒生科技指数发起(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "023035",
+      "expectedName": "中欧恒生科技指数发起(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "023073",
+      "expectedName": "国泰海通中证港股通高股息投资指数发起(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "023074",
+      "expectedName": "国泰海通中证港股通高股息投资指数发起(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "023242",
+      "expectedName": "中欧恒生消费指数发起(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "023243",
+      "expectedName": "中欧恒生消费指数发起(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "023373",
+      "expectedName": "建信富时100指数(QDII)D人民币",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "023422",
+      "expectedName": "建信纳斯达克100指数(QDII)D人民币",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "023763",
+      "expectedName": "华夏恒生科技ETF发起式联接(QDII)D",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "023764",
+      "expectedName": "华夏恒生互联网科技业ETF发起式联接(QDII)D",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "024055",
+      "expectedName": "大成恒生医疗保健ETF发起式联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "024056",
+      "expectedName": "大成恒生医疗保健ETF发起式联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "024148",
+      "expectedName": "长城恒生科技指数(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "024149",
+      "expectedName": "长城恒生科技指数(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "024166",
+      "expectedName": "西部利得恒生科技指数(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "024167",
+      "expectedName": "西部利得恒生科技指数(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "024237",
+      "expectedName": "博时纳斯达克100ETF发起式联接(QDII)I人民币",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "024393",
+      "expectedName": "永赢恒生消费指数发起(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "024394",
+      "expectedName": "永赢恒生消费指数发起(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "025330",
+      "expectedName": "银华恒生国企指数(QDII-LOF)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "026206",
+      "expectedName": "宝盈恒生科技指数(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "026207",
+      "expectedName": "宝盈恒生科技指数(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "026534",
+      "expectedName": "兴业恒生科技指数(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "026535",
+      "expectedName": "兴业恒生科技指数(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "027164",
+      "expectedName": "富国恒生科技指数(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "027165",
+      "expectedName": "富国恒生科技指数(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "027395",
+      "expectedName": "鹏华恒生科技ETF发起式联接A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "027396",
+      "expectedName": "鹏华恒生科技ETF发起式联接C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "027765",
+      "expectedName": "嘉实恒生科技ETF发起联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "027766",
+      "expectedName": "嘉实恒生科技ETF发起联接(QDII)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "040046",
+      "expectedName": "华安纳斯达克100ETF联接(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "050025",
+      "expectedName": "博时标普500ETF联接A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "096001",
+      "expectedName": "大成标普500等权重指数(QDII)A人民币",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "110031",
+      "expectedName": "易方达恒生国企ETF联接A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "118002",
+      "expectedName": "易方达标普消费品指数A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "158042",
+      "expectedName": "恒生科技ETF富国",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159100",
+      "expectedName": "巴西ETF华夏",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159202",
+      "expectedName": "恒生互联网ETF万家",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159303",
+      "expectedName": "恒生医疗ETF大成",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159329",
+      "expectedName": "沙特ETF南方",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159501",
+      "expectedName": "纳指ETF嘉实",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159502",
+      "expectedName": "标普生物科技ETF嘉实",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159509",
+      "expectedName": "纳指科技ETF景顺",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159513",
+      "expectedName": "纳斯达克100ETF大成",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159518",
+      "expectedName": "标普油气ETF嘉实",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159519",
+      "expectedName": "港股国企ETF国泰",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159529",
+      "expectedName": "标普消费ETF景顺",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159557",
+      "expectedName": "恒生医疗ETF嘉实",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159561",
+      "expectedName": "德国ETF嘉实",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159577",
+      "expectedName": "美国50ETF汇添富",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159605",
+      "expectedName": "中概互联ETF广发",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159607",
+      "expectedName": "中概互联网ETF嘉实",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159612",
+      "expectedName": "标普500ETF国泰",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159615",
+      "expectedName": "恒生生物科技ETF南方",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159632",
+      "expectedName": "纳斯达克ETF华安",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159655",
+      "expectedName": "标普500ETF华夏",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159659",
+      "expectedName": "纳斯达克100ETF招商",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159660",
+      "expectedName": "纳指ETF汇添富",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159687",
+      "expectedName": "亚太精选ETF南方",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159688",
+      "expectedName": "恒生互联网ETF华安",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159696",
+      "expectedName": "纳指ETF易方达",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159699",
+      "expectedName": "恒生消费ETF广发",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159740",
+      "expectedName": "恒生科技ETF大成",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159741",
+      "expectedName": "恒生科技ETF嘉实",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159742",
+      "expectedName": "恒生科技ETF博时",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159747",
+      "expectedName": "香港科技ETF南方",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159750",
+      "expectedName": "港股科技50ETF招商",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159822",
+      "expectedName": "新经济ETF银华",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159850",
+      "expectedName": "恒生国企ETF华夏",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159866",
+      "expectedName": "日经ETF工银",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159892",
+      "expectedName": "恒生医药ETF华夏",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159920",
+      "expectedName": "恒生ETF华夏",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "159941",
+      "expectedName": "纳指ETF广发",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "160140",
+      "expectedName": "南方美国精选REIT指数(QDII-LOF)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "160141",
+      "expectedName": "南方美国精选REIT指数(QDII-LOF)C",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "160213",
+      "expectedName": "国泰纳斯达克100指数",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "160416",
+      "expectedName": "华安标普全球石油指数(LOF)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "160717",
+      "expectedName": "嘉实H股指数(QDII-LOF)",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "160924",
+      "expectedName": "大成恒生指数(QDII-LOF)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "161124",
+      "expectedName": "易方达香港小型股指数A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "161125",
+      "expectedName": "易方达标普500指数人民币A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "161126",
+      "expectedName": "易方达标普医疗保健人民币A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "161127",
+      "expectedName": "易方达标普生物科技人民币A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "161128",
+      "expectedName": "易方达标普信息科技指数(QDII-LOF)A(人民币)",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "161130",
+      "expectedName": "易方达纳斯达克100ETF联接(QDII-LOF)A(人民币)",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "161831",
+      "expectedName": "银华恒生国企指数(QDII-LOF)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "162411",
+      "expectedName": "华宝标普油气上游股票人民币A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "162415",
+      "expectedName": "华宝标普美国消费人民币A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "162719",
+      "expectedName": "广发道琼斯石油指数人民币A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "164705",
+      "expectedName": "汇添富恒生指数(QDII-LOF)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "164906",
+      "expectedName": "交银中证海外中国互联网指数(LOF)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "270042",
+      "expectedName": "广发纳斯达克100ETF联接人民币(QDII)A",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "510900",
+      "expectedName": "恒生中国企业ETF易方达",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513000",
+      "expectedName": "日经225ETF易方达",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513010",
+      "expectedName": "恒生科技ETF易方达",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513030",
+      "expectedName": "德国ETF华安",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513050",
+      "expectedName": "中概互联网ETF易方达",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513060",
+      "expectedName": "恒生医疗ETF博时",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513080",
+      "expectedName": "法国ETF华安",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513100",
+      "expectedName": "纳指ETF国泰",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513110",
+      "expectedName": "纳指ETF华泰柏瑞",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513120",
+      "expectedName": "港股创新药ETF广发",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513130",
+      "expectedName": "恒生科技ETF华泰柏瑞",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513140",
+      "expectedName": "港股通金融ETF华泰柏瑞",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513170",
+      "expectedName": "恒生央企ETF鹏华",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513180",
+      "expectedName": "恒生科技ETF华夏",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513210",
+      "expectedName": "恒生ETF易方达",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513220",
+      "expectedName": "中概互联ETF招商",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513260",
+      "expectedName": "恒生科技ETF汇添富",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513280",
+      "expectedName": "恒生生物科技ETF汇添富",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513290",
+      "expectedName": "纳指生物科技ETF汇添富",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513300",
+      "expectedName": "纳斯达克ETF华夏",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513310",
+      "expectedName": "中韩半导体ETF华泰柏瑞",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513330",
+      "expectedName": "恒生互联网ETF华夏",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513350",
+      "expectedName": "标普油气ETF富国",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513360",
+      "expectedName": "教育ETF博时",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513380",
+      "expectedName": "恒生科技ETF广发",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513390",
+      "expectedName": "纳指100ETF博时",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513400",
+      "expectedName": "道琼斯ETF鹏华",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513500",
+      "expectedName": "标普500ETF博时",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513520",
+      "expectedName": "日经ETF华夏",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513530",
+      "expectedName": "港股通红利ETF华泰柏瑞",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513580",
+      "expectedName": "恒生科技ETF华安",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513650",
+      "expectedName": "标普500ETF南方",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513730",
+      "expectedName": "东南亚科技ETF华泰柏瑞",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513800",
+      "expectedName": "日本东证指数ETF南方",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513810",
+      "expectedName": "港股国企ETF华夏",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513850",
+      "expectedName": "美国50ETF易方达",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513870",
+      "expectedName": "纳指ETF富国",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513880",
+      "expectedName": "日经225ETF华安",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513890",
+      "expectedName": "恒生科技ETF摩根",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513950",
+      "expectedName": "恒生红利ETF富国",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "513970",
+      "expectedName": "恒生消费ETF景顺",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "519981",
+      "expectedName": "长信标普100等权重指数人民币",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "520500",
+      "expectedName": "恒生创新药ETF华泰柏瑞",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "520520",
+      "expectedName": "恒生消费ETF华泰柏瑞",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "520570",
+      "expectedName": "恒生科技ETF南方",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "520580",
+      "expectedName": "新兴亚洲ETF招商",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "520590",
+      "expectedName": "恒生科技ETF鹏华",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "520830",
+      "expectedName": "沙特ETF华泰柏瑞",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "520870",
+      "expectedName": "巴西ETF易方达",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "520920",
+      "expectedName": "天弘恒生科技ETF",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "539001",
+      "expectedName": "建信纳斯达克100指数(QDII)A人民币",
+      "registryType": "指数型-海外股票"
+    },
+    {
+      "code": "539003",
+      "expectedName": "建信富时100指数(QDII)A人民币",
+      "registryType": "指数型-海外股票"
+    }
+  ],
+  "coverage": {
+    "existing": 303,
+    "added": 0,
+    "missingEvidence": {
+      "027395": "尚未披露成立日或单位净值；登记发行日：2026-10-09",
+      "027396": "尚未披露成立日或单位净值；登记发行日：2026-10-09"
+    }
+  }
+}

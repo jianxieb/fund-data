@@ -13,9 +13,45 @@ from stock_fundamentals import parse_evidence, quality_review, latest_report_rev
 from fund_evidence import fund_actions
 from update import total_return_series
 from scripts.build_crossborder_data import summarize
+from scripts import build_crossborder_data as crossborder
+from scripts.restore_crossborder_funds import index_identity, registry_candidates, product_channel
 
 
 class ResearchEvidenceTests(unittest.TestCase):
+    def test_equal_weight_broad_index_is_not_a_sector_equal_weight_index(self):
+        broad = index_identity({'name': '大成标普500等权重指数(QDII)C人民币',
+                                'index_name': 'S&P 500 EQUAL WEIGHTED TOTAL RETURN', 'index_code': 'SP500EWTR'})
+        health = index_identity({'name': '易方达标普医疗保健人民币C',
+                                 'index_name': '标普500医疗保健等权重指数', 'index_code': 'SP50035'})
+        self.assertEqual(broad['ix'], '标普500等权重')
+        self.assertEqual(health['ix'], '标普500医疗保健等权重指数')
+        self.assertNotEqual(broad['indexCode'], health['indexCode'])
+
+    def test_registry_currency_and_share_classes_are_not_blended(self):
+        rows = [['096001', '', '大成标普500等权重指数(QDII)A人民币', '指数型-海外股票'],
+                ['008401', '', '大成标普500等权重指数(QDII)C人民币', '指数型-海外股票'],
+                ['000075', '', '华夏恒生ETF联接现汇', '指数型-海外股票'],
+                ['000076', '', '华夏恒生ETF联接现钞', '指数型-海外股票'],
+                ['000001', '', '标普500指数美元A', '指数型-海外股票'],
+                ['000002', '', '标普500增强指数A', '指数型-海外股票']]
+        self.assertEqual([r['code'] for r in registry_candidates(rows)], ['096001', '008401'])
+        self.assertEqual(product_channel({'name': '景顺长城纳斯达克科技ETF联接(QDII)E人民币'}), '场外E')
+        self.assertEqual(product_channel({'name': '纳指ETF国泰'}), '场内ETF')
+
+    def test_crossborder_nav_retains_verified_windows_after_irrelevant_bad_old_observation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / '.tmp-hist').mkdir()
+            (root / '.tmp-hist' / '096001.json').write_text(json.dumps([
+                {'FSRQ': '2015-01-19', 'DWJZ': '--'},
+                {'FSRQ': '2026-09-28', 'DWJZ': 1},
+                {'FSRQ': '2026-09-29', 'DWJZ': 1.05, 'JZZZL': 5}]))
+            with patch.object(crossborder, 'ROOT', root), patch.object(crossborder, 'fund_actions', return_value={'status':'recorded'}):
+                _, result = crossborder.build({'c':'096001', 'returnAsOf':'2026-09-29', 'returnFirst':'2026-09-28', 'exchange':False}, True)
+            self.assertEqual(result['errors'], [])
+            self.assertEqual(result['nav']['first'], '2026-09-28')
+            self.assertEqual(result['nav']['returnAsOf'], '2026-09-29')
+
     def setUp(self):
         self.quote = {'SECUCODE': '601899.SH', 'SECURITY_CODE': '601899', 'TRADE_DATE': '2026-09-29',
                       'PE_TTM': 12, 'PB_MRQ': 3, 'TOTAL_MARKET_CAP': 200e8, 'CLOSE_PRICE': 30,
@@ -358,7 +394,7 @@ class ResearchEvidenceTests(unittest.TestCase):
             (root / 'fhsp_159941.html').write_text("<table class='cfxq'>暂无分红信息</table><table class='fhxq'>暂无拆分信息</table>")
             snapshot = root / 'snapshot.js'; snapshot.write_text('fixture')
             with patch.object(update, 'HTML', snapshot), patch.object(update, 'parse_fund_lines', return_value=[('', '159941', '')]):
-                rebuilt = build_archive(root, archive)['funds']['159941']
+                rebuilt = build_archive(root, archive, root / 'empty-validation.json')['funds']['159941']
             self.assertEqual(rebuilt['splits'], {'2022-07-04': 4})
             self.assertEqual(rebuilt['verifiedEvents'], [event])
             with patch.object(update, 'ACTION_ARCHIVE', str(archive)), patch.object(update, 'FHSP_DIR', directory), patch.object(update, 'OFFLINE', True):
@@ -366,6 +402,25 @@ class ResearchEvidenceTests(unittest.TestCase):
                                                                  {'FSRQ': '2022-07-04', 'DWJZ': '1'}])
             self.assertEqual(rows[1]['SPLIT_FACTOR'], 4)
             self.assertEqual(rows[1]['ACTIONS_SOURCE'], event['sourceUrl'])
+            self.assertEqual(total_return_series(rows)[-1][1], 1)
+
+    def test_action_archive_covers_verified_extra_and_preserves_older_records(self):
+        def record(code):
+            return {'sourceUrl': 'https://fundf10.eastmoney.com/fhsp_' + code + '.html',
+                    'observedAt': '2026-09-30', 'sourceSha256': 'a' * 64, 'dividends': {}, 'splits': {}}
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            archive = root / 'fund-actions.json'
+            archive.write_text(json.dumps({'funds': {c: record(c) for c in ('159941', '001404', '001564', '999999')}}))
+            validation = root / 'validation.json'
+            validation.write_text(json.dumps([{'code': '001404'}, {'code': '001564'}]))
+            snapshot = root / 'snapshot.js'; snapshot.write_text('fixture')
+            with patch.object(update, 'HTML', snapshot), patch.object(update, 'parse_fund_lines', return_value=[('', '159941', '')]):
+                rebuilt = build_archive(root, archive, validation)['funds']
+            self.assertEqual(set(rebuilt), {'159941', '001404', '001564', '999999'})
+            with patch.object(update, 'ACTION_ARCHIVE', str(archive)), patch.object(update, 'FHSP_DIR', directory), patch.object(update, 'OFFLINE', True):
+                rows = update.attach_corporate_actions('001404', [{'FSRQ': '2017-12-30', 'DWJZ': '1'},
+                                                                 {'FSRQ': '2017-12-31', 'DWJZ': '1'}])
             self.assertEqual(total_return_series(rows)[-1][1], 1)
 
     def test_official_correction_requires_matching_fund_identity(self):
