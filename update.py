@@ -493,7 +493,7 @@ def fund_mnfinfo(codes):
 
 # ---------------------------------------------------------------- 历史净值
 def fhsp_fetch(code):
-    """分红送配页 → {除息日: 每份分红}（缓存 .tmp-fhsp/fhsp_<code>.html，7 天内不重复抓取）。"""
+    """分红送配页 → {除息日: 每份分红}（缓存 .tmp-fhsp/fhsp_<code>.html，1 天内不重复抓取）。"""
     cache = os.path.join(FHSP_DIR, 'fhsp_%s.html' % code)
     fresh = os.path.exists(cache) and (time.time() - os.path.getmtime(cache)) < 86400
     html = None
@@ -559,7 +559,21 @@ def with_verified_actions(code, archive, actions):
 
 
 def attach_corporate_actions(code, rows):
-    fhsp_fetch(code)
+    archive = load_json(ACTION_ARCHIVE, {}).get('funds', {}).get(code, {})
+    action_date = archive.get('observedAt')
+    archived_actions = {'dividends': archive.get('dividends'), 'splits': archive.get('splits')}
+    archive_valid = (archive.get('sourceUrl') == 'https://fundf10.eastmoney.com/fhsp_%s.html' % code
+                     and re.fullmatch(r'\d{4}-\d{2}-\d{2}', str(action_date))
+                     and isinstance(archived_actions['dividends'], dict)
+                     and isinstance(archived_actions['splits'], dict))
+    latest_nav = max((row['FSRQ'] for row in rows
+                      if re.fullmatch(r'\d{4}-\d{2}-\d{2}', str(row.get('FSRQ')))), default='')
+    # A dated, hashed archive already covering these NAVs is sufficient evidence.
+    # New NAV dates still require a fresh source attempt; never extend coverage.
+    archive_covers = (archive_valid and latest_nav and action_date >= latest_nav
+                      and re.fullmatch(r'[0-9a-f]{64}', str(archive.get('sourceSha256'))))
+    if not archive_covers:
+        fhsp_fetch(code)
     cache = os.path.join(FHSP_DIR, 'fhsp_%s.html' % code)
     evidence = []
     if os.path.exists(cache):
@@ -568,13 +582,8 @@ def attach_corporate_actions(code, rows):
         if actions is not None:
             evidence.append((datetime.fromtimestamp(os.path.getmtime(cache), ZoneInfo('Asia/Shanghai')).strftime('%Y-%m-%d'),
                              actions, 'Eastmoney dividend and split tables'))
-    archive = load_json(ACTION_ARCHIVE, {}).get('funds', {}).get(code, {})
-    if archive.get('sourceUrl') == 'https://fundf10.eastmoney.com/fhsp_%s.html' % code:
-        action_date = archive.get('observedAt')
-        actions = {'dividends': archive.get('dividends'), 'splits': archive.get('splits')}
-        if (re.fullmatch(r'\d{4}-\d{2}-\d{2}', str(action_date))
-                and isinstance(actions['dividends'], dict) and isinstance(actions['splits'], dict)):
-            evidence.append((action_date, actions, 'Eastmoney dividend and split tables (archived summary)'))
+    if archive_valid:
+        evidence.append((action_date, archived_actions, 'Eastmoney dividend and split tables (archived summary)'))
     if not evidence:
         return rows
     action_date, actions, source = max(evidence, key=lambda item: item[0])

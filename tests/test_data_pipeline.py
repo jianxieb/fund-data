@@ -1,3 +1,4 @@
+import json
 import tempfile
 import unittest
 import subprocess
@@ -14,6 +15,42 @@ import update
 
 
 class FundReturns(unittest.TestCase):
+    def test_covered_archive_recomputes_dividends_without_fetching_a_page(self):
+        with tempfile.TemporaryDirectory() as directory:
+            archive = Path(directory) / 'fund-actions.json'
+            archive.write_text(json.dumps({'funds': {'513100': {
+                'sourceUrl': 'https://fundf10.eastmoney.com/fhsp_513100.html',
+                'sourceSha256': 'a' * 64, 'observedAt': '2026-09-24',
+                'dividends': {'2026-09-23': 1}, 'splits': {}}}}))
+            rows = [{'FSRQ': '2026-09-22', 'DWJZ': '10'},
+                    {'FSRQ': '2026-09-23', 'DWJZ': '9'}]
+            with patch.object(update, 'ACTION_ARCHIVE', str(archive)), \
+                 patch.object(update, 'FHSP_DIR', directory), \
+                 patch.object(update, 'OFFLINE', False), \
+                 patch.object(update, 'fhsp_fetch') as download:
+                enriched = update.attach_corporate_actions('513100', rows)
+            download.assert_not_called()
+            self.assertEqual(enriched[-1]['ACTIONS_ASOF'], '2026-09-24')
+            self.assertEqual(update.total_return_series(enriched)[-1][1], 1)
+
+    def test_new_nav_or_unverifiable_archive_still_attempts_fresh_actions(self):
+        record = {'sourceUrl': 'https://fundf10.eastmoney.com/fhsp_513100.html',
+                  'sourceSha256': 'a' * 64, 'observedAt': '2026-09-24',
+                  'dividends': {}, 'splits': {}}
+        cases = ({'observedAt': '2026-09-22'}, {'sourceSha256': ''},
+                 {'sourceUrl': 'https://fundf10.eastmoney.com/fhsp_159941.html'})
+        with tempfile.TemporaryDirectory() as directory:
+            archive = Path(directory) / 'fund-actions.json'
+            for change in cases:
+                with self.subTest(change=change):
+                    archive.write_text(json.dumps({'funds': {'513100': dict(record, **change)}}))
+                    with patch.object(update, 'ACTION_ARCHIVE', str(archive)), \
+                         patch.object(update, 'FHSP_DIR', directory), \
+                         patch.object(update, 'OFFLINE', False), \
+                         patch.object(update, 'fhsp_fetch') as download:
+                        update.attach_corporate_actions('513100', [{'FSRQ': '2026-09-23', 'DWJZ': '10'}])
+                    download.assert_called_once_with('513100')
+
     def test_archived_actions_cover_old_dates_but_not_new_unverified_days(self):
         with tempfile.TemporaryDirectory() as directory:
             archive = Path(directory) / 'fund-actions.json'
