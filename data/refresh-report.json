@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "startedAt": "2026-10-01T19:31:03+00:00",
+  "startedAt": "2026-10-02T07:48:52+00:00",
   "mode": "online",
   "steps": [
     {
       "dataset": "funds",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 153.74,
+      "seconds": 159.85,
       "log": ".tmp-snap/refresh-funds.log",
       "publishedRollback": false
     },
@@ -15,7 +15,7 @@
       "dataset": "research_funds",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 149.73,
+      "seconds": 133.49,
       "log": ".tmp-snap/refresh-research_funds.log",
       "publishedRollback": false
     },
@@ -23,7 +23,7 @@
       "dataset": "indices",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 16.95,
+      "seconds": 21.15,
       "log": ".tmp-snap/refresh-indices.log",
       "publishedRollback": false
     },
@@ -31,7 +31,7 @@
       "dataset": "stocks",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 161.11,
+      "seconds": 216.77,
       "log": ".tmp-snap/refresh-stocks.log",
       "publishedRollback": false
     },
@@ -39,7 +39,7 @@
       "dataset": "screening",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 1.22,
+      "seconds": 1.13,
       "log": ".tmp-snap/refresh-screening.log",
       "publishedRollback": false
     },
@@ -47,7 +47,7 @@
       "dataset": "strategy",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 14.25,
+      "seconds": 22.68,
       "log": ".tmp-snap/refresh-strategy.log",
       "publishedRollback": false
     },
@@ -55,11 +55,11 @@
       "dataset": "quality",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 0.78,
+      "seconds": 0.99,
       "log": ".tmp-snap/refresh-quality.log",
       "publishedRollback": false
     }
   ],
-  "completedAt": "2026-10-01T19:39:21+00:00",
+  "completedAt": "2026-10-02T07:58:08+00:00",
   "status": "completed"
 }
