@@ -174,10 +174,57 @@
   }
   function crossborderPerformance(fund, evidence, basis = 'nav') {
     if (fund.exchange && basis === 'market') {
-      return evidence?.market || { r: [null, null, null, null, null], returnAsOf: null,
-        returnPeriods: [], mdd5: null, vol5: null, missing: '缺成交价复权历史' };
+      return { ...fund, ...(evidence?.market || { r: [null, null, null, null, null], returnAsOf: null,
+        returnPeriods: [], mdd5: null, vol5: null, missing: '缺成交价复权历史' }) };
     }
-    return evidence?.nav || fund;
+    return { ...fund, ...(evidence?.nav || {}) };
+  }
+  function annualFeeInfo(product, override) {
+    if (!record(product)) return { applicable: false, rate: null };
+    const applicable = product.feesEmbedded === true || Array.isArray(product.fee) || finite(product.expenseRatio);
+    if (!applicable) return { applicable: false, rate: null };
+    if (override !== undefined && override !== null) return finite(override) && override >= 0 && override < 100
+      ? { applicable: true, rate: override, custom: true }
+      : { applicable: true, rate: null, missing: '自定义年费率无效' };
+    if (finite(product.expenseRatio)) {
+      const rate = product.feeAddbackRate ?? product.expenseRatio;
+      return finite(rate) && rate >= 0 && rate < 100 ? { applicable: true, rate } : { applicable: true, rate: null, missing: '缺有效年费率' };
+    }
+    // Nominal fee rates do not apply to all assets of ETF feeders / funds of funds.
+    if (/联接|FOF|基金中基金/i.test((product.n || product.name || '') + (product.ix || ''))) {
+      return { applicable: true, rate: null, missing: '缺实际计费资产比例', requiresEffectiveRate: true };
+    }
+    const labels = ['管理费', '托管费', '销售服务费'];
+    const fees = labels.map((_, i) => product.fee?.[i]);
+    const missing = labels.filter((_, i) => !finite(fees[i]) || fees[i] < 0 || fees[i] >= 100);
+    const rate = missing.length ? null : sum(fees);
+    return { applicable: true, rate: rate !== null && rate < 100 ? rate : null,
+      missing: missing.length ? '缺' + missing.join('、') : rate >= 100 ? '持续费率无效' : null };
+  }
+  function annualFeeFactor(rate, start, end) {
+    if (!finite(rate) || rate < 0 || rate >= 100 || !validDate(start) || !validDate(end)) return null;
+    const a = Date.parse(start + 'T00:00:00Z'), b = Date.parse(end + 'T00:00:00Z');
+    if (b < a) return null;
+    const days = (b - a) / 86400000;
+    return Math.exp(-days * Math.log1p(-rate / 100 / 365.2425));
+  }
+  function returnWithAnnualFees(value, product, years, basis = 'net', override) {
+    if (!finite(value) || value < -100) return null;
+    const info = annualFeeInfo(product, override);
+    if (basis === 'net' || !info.applicable) return value;
+    if (basis !== 'gross_estimate' || info.rate === null) return null;
+    const period = (product.returnPeriods || product.periods || []).find(p => p.years === years);
+    const start = period ? period.start : product.baseDates?.[[1, 2, 3, 5, 10].indexOf(years)];
+    const end = period ? period.end : product.returnAsOf || product.asOf || product.asof;
+    const factor = annualFeeFactor(info.rate, start, end);
+    const result = factor === null ? null : ((1 + value / 100) * factor - 1) * 100;
+    return finite(result) ? result : null;
+  }
+  function overseasEtfMatches(product, filters = {}) {
+    if (filters.categories?.length && !filters.categories.includes(product.category)) return false;
+    if (filters.styles?.length && !filters.styles.includes(product.style)) return false;
+    const query = (filters.query || '').trim().toLowerCase();
+    return !query || [product.n, product.symbol, product.label, product.underlying, product.category, product.style].join(' ').toLowerCase().includes(query);
   }
   function isCrossborderIndex(fund) {
     const text = (fund.ix || '') + ' ' + (fund.n || '');
@@ -250,6 +297,8 @@
     if (Object.values(fundFees).some(pair => !record(pair) || ['subscription', 'redemption'].some(key => !finite(Number(pair[key])) || Number(pair[key]) < 0 || Number(pair[key]) > 100))) return { error: '场外基金费率无效' };
     const fx = new Map(data.fx);
     const exchangeBasis = config.exchangeBasis || 'nav';
+    const annualFeeBasis = config.annualFeeBasis || 'net';
+    if (!['net', 'gross_estimate'].includes(annualFeeBasis)) return { error: '年费口径无效' };
     if (!['nav', 'market'].includes(exchangeBasis)) return { error: '场内收益口径无效' };
     const chosen = products.map(p => p.channel === 'exchange' && exchangeBasis === 'nav' ? p.navSeries : p.series);
     if (chosen.some(s => !Array.isArray(s) || !s.length)) return { error: '所选口径缺少历史序列' };
@@ -286,10 +335,16 @@
       return { invested: cash - fee, fee };
     };
     const rows = products.map((product, index) => {
+      const feeInfo = annualFeeInfo(product, config.annualFeeOverrides?.[product.code]);
+      if (annualFeeBasis === 'gross_estimate' && (!feeInfo.applicable || feeInfo.rate === null)) {
+        return { code: product.code, error: feeInfo.missing || '缺持续年费率' };
+      }
+      const priced = (day, price) => annualFeeBasis === 'net' ? price : price * annualFeeFactor(feeInfo.rate, start, day);
       const points = chosen[index].filter(([day]) => day >= start && day <= end);
       let units = 0, basis = 0, transactionCost = 0, fxCost = 0, usDividendTax = 0, cnDividendTax = 0, contributed = 0, purchases = 0;
       const flows = [];
-      for (const [day, price] of points) {
+      for (const [day, netPrice] of points) {
+        const price = priced(day, netPrice);
         if (!finite(price) || price <= 0) return { code: product.code, error: '价格序列无效' };
         if (product.channel === 'us' && units > 0) {
           const fraction = Number((product.dividendFraction || {})[day] || 0);
@@ -328,7 +383,7 @@
         purchases++;
         flows.push([day, -amount]);
       }
-      const finalPrice = series[index].get(end), finalFx = fx.get(end);
+      const finalPrice = priced(end, series[index].get(end)), finalFx = fx.get(end);
       if (!finite(finalPrice) || !finite(finalFx)) return { code: product.code, error: '卖出日数据缺失' };
       const gross = units * finalPrice;
       let beforeCapitalTax;
@@ -360,9 +415,10 @@
         totalReturn: (terminal / contributed - 1) * 100, xirr: buyLocationXirr(flows),
         purchases, transactionCost, fxCost, usDividendTax, cnDividendTax,
         capitalTax, taxableGain, beforeCapitalTax, basis, premiumRatioChange,
-        exchangeBasis: product.channel === 'exchange' ? exchangeBasis : null, dividendsIncluded: true };
+        exchangeBasis: product.channel === 'exchange' ? exchangeBasis : null, dividendsIncluded: true,
+        annualFeeBasis, annualFeeRate: feeInfo.rate };
     });
-    return { start, end, purchaseDays, rows, exchangeBasis };
+    return { start, end, purchaseDays, rows, exchangeBasis, annualFeeBasis };
   }
-  return { finite, sum, copy, escapeHtml, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, stockMatches, stockBoard, loadWindow, fundScopeMatches, fundFacetMatches, indexFundKind, indexSectors, indexSectorMatches, csv, buyLocationXirr, buyLocationResult, crossborderPerformance, crossborderMatches, isCrossborderIndex, crossborderRegion };
+  return { finite, sum, copy, escapeHtml, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, stockMatches, stockBoard, loadWindow, fundScopeMatches, fundFacetMatches, indexFundKind, indexSectors, indexSectorMatches, csv, buyLocationXirr, buyLocationResult, crossborderPerformance, crossborderMatches, isCrossborderIndex, crossborderRegion, annualFeeInfo, annualFeeFactor, returnWithAnnualFees, overseasEtfMatches };
 }));

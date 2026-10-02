@@ -169,7 +169,10 @@ class IndependentGroupTests(unittest.TestCase):
                 self.assertEqual(review['operatingReview']['breakoutDecision'], 'exclude')
                 self.assertFalse(review['checks'][-1]['pass'])
                 self.assertTrue(review['checks'][-1]['reason'])
-                self.assertEqual(review, self.live_rows[code]['breakoutReview'])
+                live = self.live_rows[code]
+                self.assertEqual(breakout_review(live, live['breakoutReview']['checkedAt']), live['breakoutReview'])
+                self.assertEqual({k: v for k, v in review.items() if k != 'checkedAt'},
+                                 {k: v for k, v in live['breakoutReview'].items() if k != 'checkedAt'})
         for change in ('missing', 'future', 'stale', 'no_source', 'prices'):
             row = copy.deepcopy(self.rows['601869'])
             review = row['qualityResearch']['earningsReview']

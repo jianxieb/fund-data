@@ -34,6 +34,9 @@
   const defaults = { minA3: 5, minA5: 8, minHistoryYears: 7, minScale: 1, minManagerYears: 5, ...policy.defaults };
   const state = {
     route: 'overview', annual: prefs.annual !== false, periods: M.visiblePeriods(prefs.periods),
+    annualFeeBasis: prefs.annualFeeBasis === 'gross_estimate' ? 'gross_estimate' : 'net',
+    annualFeeOverrides: Object.fromEntries(Object.entries(prefs.annualFeeOverrides || {}).filter(([key, value]) => /^\d{6}$/.test(key) && M.finite(value) && value >= 0 && value < 100)),
+    overseasCategories: new Set(), overseasStyles: new Set(), overseasQuery: '',
     columns: new Set(Array.isArray(prefs.columns) ? prefs.columns.filter(x => Object.hasOwn(columnNames, x)) : defaultColumns),
     indexTab: 'us', indexSort: 'default', indexDescending: true, crossTypes: new Set(), crossRegions: new Set(), crossMoreTypes: false, crossChannels: new Set(), crossQuery: '', crossPremium: null, crossPurchasable: false, crossBasis: 'nav', crossSort: 'default', crossDesc: true, crossSelected: new Set(), currency: 'usd', benchmarkType: 'total', benchmarkCurrency: 'cny',
     fundTab: 'equity', poolCategory: 'all', fundFacets: new Set(), fundSectors: new Set(), query: '', channel: 'all', purchasable: false,
@@ -48,7 +51,7 @@
       usDividendTax: 10, cnDividendTax: 20, capitalGainsTax: 20 },
     buyFundFees: { '050025': { subscription: 0.12, redemption: 0 }, '270042': { subscription: 0.13, redemption: 0 }, '040046': { subscription: 0.12, redemption: 0 } }
   };
-  let lastFocus = null, toastTimer, searchTimer, activeCurve = null;
+  let lastFocus = null, toastTimer, searchTimer, activeCurve = null, strategyFeeLoading = false, strategyFeeError = false;
   const lazyLists = new Map(), loadedCounts = new Map();
   let loadObserver;
   function lazyRows(key, rows, rowHtml, batch = 20) {
@@ -80,7 +83,7 @@
     $$('[data-load-more]').forEach(el => loadObserver.observe(el));
   }
   function toast(text) { $('#toast').textContent = text; $('#toast').classList.add('visible'); clearTimeout(toastTimer); toastTimer = setTimeout(() => $('#toast').classList.remove('visible'), 3200); }
-  function savePrefs() { try { localStorage.setItem(VIEW, JSON.stringify({ annual: state.annual, periods: state.periods, columns: [...state.columns] })); } catch (_) {} }
+  function savePrefs() { try { localStorage.setItem(VIEW, JSON.stringify({ annual: state.annual, periods: state.periods, columns: [...state.columns], annualFeeBasis: state.annualFeeBasis, annualFeeOverrides: state.annualFeeOverrides })); } catch (_) {} }
   function download(name, text, type) {
     const url = URL.createObjectURL(new Blob([text], { type: type || 'application/json;charset=utf-8' }));
     const a = document.createElement('a'); a.href = url; a.download = name;
@@ -104,13 +107,34 @@
     const end = period ? period.end : record && (record.returnAsOf || record.asof || record.asOf);
     return M.yearsBetween(start, end) || y;
   }
-  function ret(v, y, record) { return state.annual ? M.annualized(v, duration(record, y)) : v; }
+  const feeOverride = record => state.annualFeeOverrides[record?.c || record?.code];
+  const feeInfo = record => M.annualFeeInfo(record, feeOverride(record));
+  const feeBasisLabel = () => state.annualFeeBasis === 'net' ? '年费已扣除' : '扣费前估算';
+  function totalRet(v, y, record) { return M.returnWithAnnualFees(v, record, y, state.annualFeeBasis, feeOverride(record)); }
+  function ret(v, y, record) { const value = totalRet(v, y, record); return state.annual ? M.annualized(value, duration(record, y)) : value; }
+  function feeControl() {
+    return '<div class="annual-fee-control"><span>年费</span><div class="segmented" aria-label="持续年费处理">' + [['net', '扣除'], ['gross_estimate', '不扣除 · 估算']].map(([value, label]) => action(label, 'annual-fee-basis', value === state.annualFeeBasis ? 'active' : '', 'data-value="' + value + '" aria-pressed="' + (value === state.annualFeeBasis) + '"')).join('') + '</div>' + action('ⓘ', 'annual-fee-method', 'fee-info-button', 'aria-label="年费如何计算" title="年费如何计算"') + '</div>';
+  }
+  function feeMissing(record) {
+    const info = feeInfo(record);
+    return state.annualFeeBasis === 'gross_estimate' && info.applicable && info.rate === null ? '<span class="sub fee-missing">' + esc(info.missing) + '</span>' : '';
+  }
+  function feeEstimateNote() {
+    return state.annualFeeBasis === 'gross_estimate' ? '<span class="fee-estimate-note">按现行年费估算；风险仍取真实扣费后日线</span>' : '';
+  }
+  function fundFeeEditor(f) {
+    const info = feeInfo(f), custom = feeOverride(f);
+    return '<details class="annual-fee-details"' + (state.annualFeeBasis === 'gross_estimate' && info.rate === null ? ' open' : '') + '><summary>年费估算与自定义费率</summary><p>' + (M.annualFeeInfo(f).requiresEffectiveRate ? '联接基金持有目标ETF的部分可能免收管理、托管费；有效年费率需反映实际计费资产比例及底层费用。' : '扣费前只按现行管理、托管和销售服务费估算。历史费率与其他运营费用未完整还原。') + '</p><label class="fee-override-field">估算用有效年费<input type="number" min="0" max="99" step="any" data-annual-fee-code="' + esc(f.c) + '" aria-label="' + esc(f.n) + '的估算有效年费率" placeholder="' + (info.rate === null ? '填写后可估算' : pct(info.rate, 2, false)) + '" value="' + (custom ?? '') + '"><span>% / 年</span></label><p class="note">留空恢复来源费率；自定义值仅用于扣费前估算。已扣除口径始终使用实际净值收益。联接或FOF若要估算全部年费，应填入本基金与底层基金合并后的有效费用率。</p></details>';
+  }
+  function openAnnualFeeMethod() {
+    openModal(modalTitle('年费如何计算', '真实扣费后收益 / 扣费前估算') + '<div class="rule-list"><p><strong>默认扣除：</strong>基金净值和ETF复权价格已经反映管理、托管等持续费用，直接使用原始回报，不再扣一次。分红再投资不会撤销这些费用。</p><p><strong>不扣除：</strong>按现行有效年费率逐日还原费用因子，累计收益先还原再按实际日期年化。它是费率固定的情景估算，不是可实现的历史毛收益。</p><p>国内基金采用管理、托管、销售服务费之和；任一费项缺失不当作0。联接和FOF缺计费资产比例时不估算，可在产品详情填有效费率。海外ETF采用减免后的净运营费率，融资、交易成本和投资者税费仍保留。SOXL只还原直接运营费用，底层基金费用保留。</p><p>分批、定投逐笔按实际持有日期计算，未投入的现金不收年费；投入策略保持原有信号和买入日，投资渠道仍逐笔计算交易、换汇、股息与卖出税。</p></div><div class="actions">' + extLink('https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/mutual-fund-and-etf-fees-and-expenses-investor-bulletin', 'SEC费用说明') + '<a class="source-link" href="docs/annual-fee-method.md" target="_blank" rel="noopener">完整公式与边界 ↗</a></div>');
+  }
   function periodHead(y) { return '近' + y + '年' + (state.annual ? '年化' : '累计'); }
   function periodControl() {
     return '<fieldset class="period-control"><legend>显示收益周期</legend>' + years.map(y => '<label><input type="checkbox" data-period="' + y + '"' + (state.periods.includes(y) ? ' checked' : '') + '>' + y + '年</label>').join('') + '</fieldset>';
   }
-  function returnControls() {
-    return '<div class="return-controls">' + periodControl() + annualControl() + '</div>';
+  function returnControls(includeFees = state.route !== 'stocks' && !(state.route === 'indices' && state.indexTab === 'cn')) {
+    return '<div class="return-controls">' + periodControl() + annualControl() + (includeFees ? feeControl() : '') + '</div>';
   }
   function benchmark() {
     return (window.BM || []).find(b => state.benchmarkType === 'total' ? b.n === 'SPY' : b.n === '标普500指数');
@@ -121,7 +145,7 @@
     return '<section class="benchmark-panel' + (state.route === 'funds' ? ' compact' : '') + '" aria-label="标普500参照"><div class="benchmark-title"><div><span class="eyebrow">THE BENCHMARK</span><h2>标普500参照</h2></div><div class="benchmark-controls">' +
       selectMenu('benchmark-type', '标普500回报口径', [['total', 'SPY ETF · 含分红复权'], ['price', '标普500 · 价格指数']], state.benchmarkType) +
       selectMenu('benchmark-currency', '标普500计价币种', [['cny', '人民币'], ['usd', '美元']], state.benchmarkCurrency, 'short') + '</div></div>' +
-      '<div class="benchmark-values">' + shown.map(y => '<div><span>' + periodHead(y) + '</span><strong class="num">' + pc(ret(r && r[years.indexOf(y)], y, b)) + '</strong></div>').join('') + '</div><div class="benchmark-foot"><span>截至 ' + esc(b && b.asOf || '未记录') + ' · ' + (state.route === 'funds' ? state.benchmarkType === 'total' ? 'SPY含分红、含产品费用' : '价格指数，不含分红' : state.benchmarkType === 'total' ? 'SPY为可投资ETF参照，含产品费用；不是指数全收益序列。' : '价格指数不含分红，不与基金含分红回报直接计算差值。') + '</span>' + action('查看区间与来源', 'benchmark-detail', 'text-link small') + '</div></section>';
+      '<div class="benchmark-values">' + shown.map(y => '<div><span>' + periodHead(y) + '</span><strong class="num">' + pc(ret(r && r[years.indexOf(y)], y, b)) + '</strong></div>').join('') + '</div><div class="benchmark-foot"><span>截至 ' + esc(b && b.asOf || '未记录') + ' · ' + (state.route === 'funds' ? state.benchmarkType === 'total' ? 'SPY含分红 · ' + feeBasisLabel() : '价格指数，不含分红' : state.benchmarkType === 'total' ? 'SPY为可投资ETF参照，含产品费用；不是指数全收益序列。' : '价格指数不含分红，不与基金含分红回报直接计算差值。') + '</span>' + action('查看区间与来源', 'benchmark-detail', 'text-link small') + '</div></section>';
   }
   function entryArrow() { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5"/></svg>'; }
   function home() {
@@ -151,11 +175,11 @@
       '<a class="home-secondary-card" href="#buy-location"><span class="eyebrow">INVESTMENT CHANNELS</span><span class="home-secondary-title"><strong>投资渠道</strong><span class="home-entry-arrow" aria-hidden="true">' + entryArrow() + '</span></span><p>同样投资标普500与纳指100，比较不同渠道扣除费用与税款后的结果。</p><span class="home-tags"><span>海外 ETF</span><span>境内场内</span><span>境内场外</span></span></a></div>';
   }
   function indexRows() {
-    return state.indexTab === 'cn' ? window.INDEX_DATA || [] : window.BM || [];
+    return state.indexTab === 'cn' ? window.INDEX_DATA || [] : (window.BM || []).filter(b => state.indexTab === 'other' ? b.section === 'other' : b.section !== 'other');
   }
   function indices() {
     const domestic = window.INDEX_DATA || [], baseRows = indexRows();
-    const tabNames = [['us', '海外指数'], ['crossborder', '境内跨境指数基金'], ['cn', '国内指数']];
+    const tabNames = [['us', '海外指数'], ['crossborder', '境内跨境指数基金'], ['other', '海外其他ETF'], ['cn', '国内指数']];
     const metric = (r, key) => {
       const isDomestic = domestic.includes(r), c = isDomestic ? 'cny' : state.currency;
       const risk = isDomestic ? { mdd: r.mdd5, vol: r.vol5 } : r[c === 'usd' ? 'riskUSD5' : 'riskCNY5'] || {};
@@ -176,21 +200,32 @@
     };
     const sortHead = (label, key) => '<th aria-sort="' + (state.indexSort === key ? state.indexDescending ? 'descending' : 'ascending' : 'none') + '">' + action(label + (state.indexSort === key ? state.indexDescending ? ' ↓' : ' ↑' : ''), 'index-sort', '', 'data-value="' + key + '"') + '</th>';
     const indexTable = (input, label, description) => {
+      const products = input.some(r => r.feesEmbedded === true);
       const rowsHtml = sorted(input).map(({ r, i }) => {
       const isDomestic = domestic.includes(r), displayCurrency = isDomestic ? 'cny' : state.currency;
       const returns = isDomestic ? r.r : r[displayCurrency];
       const risk = isDomestic ? { mdd: r.mdd5, vol: r.vol5 } : r[displayCurrency === 'usd' ? 'riskUSD5' : 'riskCNY5'] || {};
-      return '<tr><td>' + action(esc(r.n), 'index-detail', 'text-link', 'data-value="' + i + '"') + (r.status === 'unavailable' ? badge('缺原始日线', 'warn') : '') + '<span class="sub">' + esc(isDomestic ? '国内价格指数' : /指数/.test(r.tp) ? '海外价格指数' : '海外 ETF') + ' · ' + esc(r.c || r.symbol || r.tp || '') + '</span></td>' +
+      const availableYears = years.filter(y => M.finite(returns?.[years.indexOf(y)]));
+      const shortHistory = r.symbol && availableYears.length && state.periods.every(y => !availableYears.includes(y))
+        ? '<span class="sub">' + esc((r.inception || r.first || '').slice(0, 7)) + '成立 · 可用' + availableYears.join(' / ') + '年收益</span>' : '';
+      return '<tr><td>' + action(esc(r.symbol ? r.symbol + ' · ' + r.label : r.n), 'index-detail', 'text-link', 'data-value="' + i + '"') + (r.status === 'unavailable' ? badge('缺原始日线', 'warn') : '') + '<span class="sub">' + esc(r.symbol ? r.style + (r.leverage > 1 ? ' · 目标按日重设' : '') : isDomestic ? '国内价格指数 · ' + r.c : '海外价格指数') + '</span>' + shortHistory + feeMissing(r) + '</td>' +
         state.periods.map(y => '<td>' + pc(ret(returns && returns[years.indexOf(y)], y, r)) + ((r.backfilledPeriods || []).includes(y) ? '<span class="sub">含发布前回溯</span>' : '') + '</td>').join('') +
-        '<td>' + pc(risk.mdd, 1) + '</td><td>' + pct(risk.vol, 1, false) + '</td><td>' + esc(r.asof || r.asOf || (r.status === 'unavailable' ? '—' : '待核验')) + '</td></tr>';
+        (products ? '<td class="num">' + pct(r.expenseRatio, r.expenseRatio < 0.1 ? 4 : 2, false) + '<span class="sub">' + esc(r.distribution || '') + '分配</span></td>' : '') + '<td>' + pc(risk.mdd, 1) + '</td><td>' + pct(risk.vol, 1, false) + '</td><td>' + esc(r.asof || r.asOf || (r.status === 'unavailable' ? '—' : '待核验')) + '</td></tr>';
       }).join('');
-      return '<section class="card index-section"><div class="index-section-head"><div><h2>' + label + '</h2><p>' + description + '</p></div><span>' + input.length + '条</span></div><div class="table-wrap"><table class="research-table"><thead><tr>' + sortHead('指数 / 产品', 'name') + state.periods.map(y => sortHead(periodHead(y), 'return:' + y)).join('') + sortHead('5年最大回撤', 'mdd') + sortHead('5年波动率', 'vol') + sortHead('截至日', 'date') + '</tr></thead><tbody>' + rowsHtml + '</tbody></table></div></section>';
+      return '<section class="card index-section"><div class="index-section-head"><div><h2>' + label + '</h2><p>' + description + '</p></div><span>' + input.length + '条</span></div><div class="table-wrap"><table class="research-table overseas-table"><thead><tr>' + sortHead('指数 / 产品', 'name') + state.periods.map(y => sortHead(periodHead(y), 'return:' + y)).join('') + (products ? '<th>持续年费 / 分配</th>' : '') + sortHead('5年最大回撤', 'mdd') + sortHead('5年波动率', 'vol') + sortHead('截至日', 'date') + '</tr></thead><tbody>' + rowsHtml + '</tbody></table></div>' + (products ? '<div class="panel-foot"><span>含分红再投资 · ' + feeBasisLabel() + '</span>' + feeEstimateNote() + '</div>' : '') + '</section>';
     };
+    const categories = ['信息科技', '半导体', '期权收益'], styles = ['行业指数', '每日杠杆', '主动期权', '备兑指数'];
+    const filterRow = (label, options, selected, act, field) => '<div class="fund-filter-row"><span>' + label + '<small>可多选</small></span><div class="filter-chips">' + action('全部', act, 'filter-chip' + (!selected.size ? ' active' : ''), 'data-value="all" aria-pressed="' + !selected.size + '"') + options.map(value => action(esc(value) + '<small>' + baseRows.filter(r => r[field] === value).length + '</small>', act, 'filter-chip' + (selected.has(value) ? ' active' : ''), 'data-value="' + esc(value) + '" aria-pressed="' + selected.has(value) + '"')).join('') + '</div></div>';
+    const otherRows = baseRows.filter(r => M.overseasEtfMatches(r, { categories: [...state.overseasCategories], styles: [...state.overseasStyles], query: state.overseasQuery }));
+    const otherFilters = '<section class="fund-filter-panel overseas-filters" aria-label="海外ETF筛选"><div class="fund-filter-heading"><h2>筛选海外ETF</h2>' + action('重置', 'overseas-reset', 'text-link small') + '</div>' + filterRow('投资方向', categories, state.overseasCategories, 'overseas-category', 'category') + filterRow('产品策略', styles, state.overseasStyles, 'overseas-style', 'style') + '<div class="overseas-search-row"><input id="overseas-search" type="search" placeholder="搜索代码、标的指数或策略" aria-label="搜索海外ETF" value="' + esc(state.overseasQuery) + '">' + action('QQQ、QQQI、VGT有何不同', 'etf-differences', 'text-link small') + '</div></section>';
+    const tables = state.indexTab === 'cn' ? indexTable(domestic, '国内指数', '价格指数 · 不含分红') : state.indexTab === 'other' ? otherFilters + (otherRows.length ? categories.map(category => {
+      const rows = otherRows.filter(r => r.category === category);
+      return rows.length ? indexTable(rows, category, category === '期权收益' ? '股票与期权策略 · 比较含分配总回报' : category === '半导体' ? '不同标的指数分别标明 · 杠杆为每日目标' : '信息科技行业指数 · 与纳指100的选股范围不同') : '';
+    }).join('') : '<div class="empty">没有匹配的海外ETF</div>') : indexTable(baseRows.filter(b => !b.symbol), '海外指数', '价格指数 · 不含分红') + ['标普500', '纳斯达克100'].map(category => indexTable(baseRows.filter(b => b.category === category), category + ' ETF', '普通ETF与每日2倍、3倍产品 · 长期收益不按倍数计算')).join('');
     return head('MARKET OBSERVATORY', '指数观察', '指数、海外 ETF 与境内跨境基金分别查看。') +
       '<div class="tabs" role="tablist">' + tabNames.map(([id, n]) => action(n, 'index-tab', state.indexTab === id ? 'active' : '', 'data-value="' + id + '" role="tab" aria-selected="' + (state.indexTab === id) + '"')).join('') + '</div>' +
       (state.indexTab === 'crossborder' ? crossborderView() :
-      '<div class="index-controls"><div class="index-currency">' + (state.indexTab === 'us' ? '<span>计价币种</span><div class="segmented">' + action('美元', 'currency', state.currency === 'usd' ? 'active' : '', 'data-value="usd"') + action('人民币', 'currency', state.currency === 'cny' ? 'active' : '', 'data-value="cny"') + '</div>' : '<span>人民币口径</span>') + (state.indexSort !== 'default' ? action('恢复默认顺序', 'index-sort-reset', 'text-link small') : '') + '</div>' + returnControls() + '</div>' +
-      (state.indexTab === 'cn' ? indexTable(domestic, '国内指数', '价格指数 · 不含分红') : indexTable(baseRows.filter(b => /指数/.test(b.tp)), '海外指数', '价格指数 · 不含分红') + indexTable(baseRows.filter(b => !/指数/.test(b.tp)), '海外 ETF', '复权产品表现 · 已包含产品持续费用')));
+      '<div class="index-controls"><div class="index-currency">' + (state.indexTab !== 'cn' ? '<span>计价币种</span><div class="segmented">' + action('美元', 'currency', state.currency === 'usd' ? 'active' : '', 'data-value="usd"') + action('人民币', 'currency', state.currency === 'cny' ? 'active' : '', 'data-value="cny"') + '</div>' : '<span>人民币口径</span>') + (state.indexSort !== 'default' ? action('恢复默认顺序', 'index-sort-reset', 'text-link small') : '') + '</div>' + returnControls() + '</div>' + tables);
   }
 
   const crossPool = () => funds.filter(f => M.isCrossborderIndex(f) && f.returnAsOf);
@@ -233,10 +268,10 @@
     const filters = '<section class="cross-filters" aria-label="跨境基金筛选"><div class="cross-filter-row"><span>市场 <small>可多选</small></span><div class="filter-chips">' + chips(['美国', '港股与中概', '日本', '欧洲', '全球', '其他与跨区域'].filter(r => pool.some(f => M.crossborderRegion(f) === r)).map(r => [r, r]), state.crossRegions, 'cross-region') + '</div></div><div class="cross-filter-row"><span>跟踪指数 <small>可多选</small></span><div class="filter-chips">' + chips(shownTypes.map(ix => [ix, ix]), state.crossTypes, 'cross-type') + moreTypes + '</div></div><div class="cross-filter-row"><span>交易渠道 <small>可多选</small></span><div class="filter-chips">' + chips([['exchange', '场内 ETF'], ['off', '场外基金']], state.crossChannels, 'cross-channel') + '</div></div><div class="cross-filter-row"><span>快照溢价</span><div class="filter-chips">' + [['all', '不限'], ['0', '折价 / 平价'], ['2', '≤ 2%'], ['5', '≤ 5%']].map(([v, label]) => action(label, 'cross-premium', 'filter-chip' + ((v === 'all' ? state.crossPremium === null : state.crossPremium === +v) ? ' active' : ''), 'data-value="' + v + '" aria-pressed="' + (v === 'all' ? state.crossPremium === null : state.crossPremium === +v) + '"')).join('') + '<label class="check-label cross-available"><input type="checkbox" id="cross-purchasable"' + (state.crossPurchasable ? ' checked' : '') + '>场外可申购</label></div></div><div class="cross-filter-foot"><label class="cross-search"><input type="search" id="cross-search" aria-label="搜索跨境基金名称或代码" placeholder="搜索基金名称或代码" value="' + esc(state.crossQuery) + '"></label><div>' + action('重置筛选', 'cross-reset', 'text-link small') + action('溢价与分红口径', 'cross-method', 'btn sm') + '</div></div></section>';
     const basis = '<div class="cross-basis"><span>场内收益</span><div class="segmented" aria-label="场内基金收益口径">' + [['nav', '净值 · 剔除溢价'], ['market', '成交价 · 含溢价']].map(([v, label]) => action(label, 'cross-basis', state.crossBasis === v ? 'active' : '', 'data-value="' + v + '" aria-pressed="' + (state.crossBasis === v) + '"')).join('') + '</div></div>';
     const th = (label, key) => '<th aria-sort="' + (state.crossSort === key ? state.crossDesc ? 'descending' : 'ascending' : 'none') + '">' + action(label + (state.crossSort === key ? state.crossDesc ? ' ↓' : ' ↑' : ''), 'cross-sort', '', 'data-value="' + key + '"') + '</th>';
-    const table = '<section class="card index-section"><div class="cross-results-head"><div><h2>' + rows.length + '<small> / ' + pool.length + '只基金</small></h2><p>人民币 · 分红再投 · 已含产品持续费用' + (state.crossPremium !== null ? ' · 溢价筛选仅作用于场内，缺报价则排除' : '') + '</p></div>' + action('导出筛选结果', 'cross-export', 'btn sm') + '</div><div class="table-wrap cross-table-wrap" tabindex="0" aria-label="跨境基金研究表，可横向滚动"><table class="research-table crossborder-table"><thead><tr><th>基金 / 渠道</th>' + state.periods.map(y => th(periodHead(y), 'return:' + y)).join('') + th('持续费率 / 年', 'knownOngoingFee') + th('快照溢价', 'prem') + '<th>分红记录</th><th>买入费用 / 状态</th>' + th('5年最大回撤', 'mdd5') + th('收益截至', 'date') + '</tr></thead><tbody data-list-body="cross">' + lazyRows('cross', rows, f => {
+    const table = '<section class="card index-section"><div class="cross-results-head"><div><h2>' + rows.length + '<small> / ' + pool.length + '只基金</small></h2><p>人民币 · 分红再投 · ' + feeBasisLabel() + (state.crossPremium !== null ? ' · 溢价筛选仅作用于场内，缺报价则排除' : '') + '</p></div>' + action('导出筛选结果', 'cross-export', 'btn sm') + '</div><div class="table-wrap cross-table-wrap" tabindex="0" aria-label="跨境基金研究表，可横向滚动"><table class="research-table crossborder-table"><thead><tr><th>基金 / 渠道</th>' + state.periods.map(y => th(periodHead(y), 'return:' + y)).join('') + th('持续费率 / 年', 'knownOngoingFee') + th('快照溢价', 'prem') + '<th>分红记录</th><th>买入费用 / 状态</th>' + th('5年最大回撤', 'mdd5') + th('收益截至', 'date') + '</tr></thead><tbody data-list-body="cross">' + lazyRows('cross', rows, f => {
       const perf = crossPerformance(f), selected = state.crossSelected.has(f.c);
-      return '<tr><td><div class="fund-name-row">' + action(esc(f.n), 'fund-detail', 'text-link', 'data-code="' + f.c + '"') + action(selected ? '✓' : '+', 'cross-select', 'fund-compare' + (selected ? ' selected' : ''), 'data-code="' + f.c + '" aria-label="' + (selected ? '移出对比 ' : '加入对比 ') + esc(f.n) + '" aria-pressed="' + selected + '"') + '</div><span class="sub">' + f.c + ' · ' + (f.exchange ? '场内 ETF' : '场外') + ' · ' + esc(f.ix) + '</span></td>' + state.periods.map(y => '<td>' + pc(ret(perf.r?.[years.indexOf(y)], y, perf)) + '</td>').join('') + '<td>' + (M.finite(f.knownOngoingFee) ? (f.feeCoverage === 'complete' ? '' : '≥') + pct(f.knownOngoingFee, 2, false) : '—') + '</td><td>' + (f.exchange ? (M.finite(f.prem) ? '<span class="' + (f.prem > 5 ? 'negative' : '') + '">' + pct(f.prem) + '</span><span class="sub">' + esc((f.priceAsOf || f.quotedAt || '').slice(0, 10)) + '</span>' : '缺报价') : '不适用') + '</td><td>' + action(distributionLabel(f.c), 'fund-actions', 'text-link small', 'data-code="' + f.c + '"') + '<span class="sub">' + (perf.missing ? '收益序列缺失' : '含分红总回报') + '</span></td><td>' + buyFee(f) + '<span class="sub">' + (f.exchange ? '场内交易' : esc(f.st || '状态未收录') + (f.lm && f.lm !== '--' && !/暂停/.test(f.st || '') ? ' · ' + esc(f.lm) : '')) + '</span></td><td>' + pc(perf.mdd5, 1) + '</td><td>' + esc(perf.returnAsOf || '缺成交价历史') + '<span class="sub">' + (f.exchange && state.crossBasis === 'market' ? '成交价复权' : '净值总回报') + '</span></td></tr>';
-    }, 15) + (!rows.length ? '<tr><td colspan="' + (7 + state.periods.length) + '"><div class="empty">没有符合条件的基金' + action('重置筛选', 'cross-reset', 'btn sm') + '</div></td></tr>' : '') + '</tbody></table></div>' + loadFooter('cross') + '</section>';
+      return '<tr><td><div class="fund-name-row">' + action(esc(f.n), 'fund-detail', 'text-link', 'data-code="' + f.c + '"') + action(selected ? '✓' : '+', 'cross-select', 'fund-compare' + (selected ? ' selected' : ''), 'data-code="' + f.c + '" aria-label="' + (selected ? '移出对比 ' : '加入对比 ') + esc(f.n) + '" aria-pressed="' + selected + '"') + '</div><span class="sub">' + f.c + ' · ' + (f.exchange ? '场内 ETF' : '场外') + ' · ' + esc(f.ix) + '</span>' + feeMissing(f) + '</td>' + state.periods.map(y => '<td>' + pc(ret(perf.r?.[years.indexOf(y)], y, perf)) + '</td>').join('') + '<td>' + (M.finite(f.knownOngoingFee) ? (f.feeCoverage === 'complete' ? '' : '≥') + pct(f.knownOngoingFee, 2, false) : '—') + '</td><td>' + (f.exchange ? (M.finite(f.prem) ? '<span class="' + (f.prem > 5 ? 'negative' : '') + '">' + pct(f.prem) + '</span><span class="sub">' + esc((f.priceAsOf || f.quotedAt || '').slice(0, 10)) + '</span>' : '缺报价') : '不适用') + '</td><td>' + action(distributionLabel(f.c), 'fund-actions', 'text-link small', 'data-code="' + f.c + '"') + '<span class="sub">' + (perf.missing ? '收益序列缺失' : '含分红总回报') + '</span></td><td>' + buyFee(f) + '<span class="sub">' + (f.exchange ? '场内交易' : esc(f.st || '状态未收录') + (f.lm && f.lm !== '--' && !/暂停/.test(f.st || '') ? ' · ' + esc(f.lm) : '')) + '</span></td><td>' + pc(perf.mdd5, 1) + '</td><td>' + esc(perf.returnAsOf || '缺成交价历史') + '<span class="sub">' + (f.exchange && state.crossBasis === 'market' ? '成交价复权' : '净值总回报') + '</span></td></tr>';
+    }, 15) + (!rows.length ? '<tr><td colspan="' + (7 + state.periods.length) + '"><div class="empty">没有符合条件的基金' + action('重置筛选', 'cross-reset', 'btn sm') + '</div></td></tr>' : '') + '</tbody></table></div>' + loadFooter('cross') + '<div class="panel-foot">' + feeEstimateNote() + '</div></section>';
     const comparison = state.crossSelected.size ? '<div class="compare-bar"><span>已选 ' + state.crossSelected.size + ' / 4 · ' + [...state.crossSelected].join(' · ') + '</span>' + action('清空', 'cross-clear', 'quiet') + action('并排比较', 'cross-compare', 'btn', state.crossSelected.size < 2 ? 'disabled' : '') + '</div>' : '';
     return filters + '<div class="index-controls">' + basis + returnControls() + '</div>' + (state.crossBasis === 'market' ? '<p class="basis-note">场内成交价回报包含买卖两端溢价变化；场外仍按净值。分红均再投，交易佣金另见投资渠道。</p>' : '') + table + comparison;
   }
@@ -253,7 +288,7 @@
     const selected = [...state.crossSelected].map(c => funds.find(f => f.c === c)).filter(Boolean);
     if (selected.length < 2) return;
     const row = (label, fn) => '<tr><td>' + label + '</td>' + selected.map(f => '<td>' + fn(f) + '</td>').join('') + '</tr>';
-    openModal(modalTitle('跨境基金对比', (state.crossBasis === 'nav' ? '场内按净值 · 剔除溢价' : '场内按成交价 · 含溢价') + ' · 全部含分红再投') + '<div class="table-wrap"><table class="compare-table"><thead><tr><th>研究维度</th>' + selected.map(f => '<th>' + esc(f.n) + '<span class="sub">' + f.c + '</span></th>').join('') + '</tr></thead><tbody>' + row('指数 / 渠道', f => esc(f.ix) + ' / ' + (f.exchange ? '场内' : '场外')) + years.map((y, i) => row(periodHead(y), f => { const p = crossPerformance(f); return pc(ret(p.r?.[i], y, p)); })).join('') + row('收益截至', f => esc(crossPerformance(f).returnAsOf || '缺成交价历史')) + row('持续费率 / 年', f => (f.feeCoverage === 'complete' ? '' : '≥') + pct(f.knownOngoingFee, 2, false)) + row('快照溢价', f => f.exchange ? pct(f.prem) : '不适用') + row('已收录分红', f => distributionLabel(f.c)) + row('买入费用', buyFee) + row('申购状态', f => f.exchange ? '场内交易' : esc(f.st || '未记录')) + '</tbody></table></div><p class="note">各产品实际收益区间在详情中查看；不同截至日不直接计算跟踪差异。</p>');
+    openModal(modalTitle('跨境基金对比', (state.crossBasis === 'nav' ? '场内按净值 · 剔除溢价' : '场内按成交价 · 含溢价') + ' · 全部含分红再投 · ' + feeBasisLabel()) + '<div class="table-wrap"><table class="compare-table"><thead><tr><th>研究维度</th>' + selected.map(f => '<th>' + esc(f.n) + '<span class="sub">' + f.c + '</span></th>').join('') + '</tr></thead><tbody>' + row('指数 / 渠道', f => esc(f.ix) + ' / ' + (f.exchange ? '场内' : '场外')) + years.map((y, i) => row(periodHead(y), f => { const p = crossPerformance(f); return pc(ret(p.r?.[i], y, p)); })).join('') + row('收益截至', f => esc(crossPerformance(f).returnAsOf || '缺成交价历史')) + row('持续费率 / 年', f => (f.feeCoverage === 'complete' ? '' : '≥') + pct(f.knownOngoingFee, 2, false)) + row('快照溢价', f => f.exchange ? pct(f.prem) : '不适用') + row('已收录分红', f => distributionLabel(f.c)) + row('买入费用', buyFee) + row('申购状态', f => f.exchange ? '场内交易' : esc(f.st || '未记录')) + '</tbody></table></div><p class="note">各产品实际收益区间在详情中查看；不同截至日不直接计算跟踪差异。</p>');
   }
   function fundTabPass(f, tab) {
     return M.fundScopeMatches(f, policy.byCode[f.c], tab, { ...defaults, ...state.screen });
@@ -267,7 +302,7 @@
       (!q || [f.n, f.c, f.ix, f.mgr].join(' ').toLowerCase().includes(q)) &&
       (state.channel === 'all' || (state.channel === 'exchange' ? f.exchange : !f.exchange)) &&
       (!state.purchasable || f.exchange || /^(开放|限大额|开放申购)$/.test(f.st)));
-    const value = f => state.fundSort.startsWith('return:') ? ret(f.r[years.indexOf(+state.fundSort.split(':')[1])], +state.fundSort.split(':')[1], f) : state.fundSort === 'fee' ? f.annualFee : state.fundSort === 'risk' ? f.mdd5 : state.fundSort === 'size' ? f.sz : state.fundSort === 'manager' ? f.mten : f.c;
+    const value = f => state.fundSort.startsWith('return:') ? ret(f.r[years.indexOf(+state.fundSort.split(':')[1])], +state.fundSort.split(':')[1], f) : state.fundSort === 'fee' ? f.totalOngoingFee : state.fundSort === 'risk' ? f.mdd5 : state.fundSort === 'size' ? f.sz : state.fundSort === 'manager' ? f.mten : f.c;
     if (state.fundSort !== 'default') result.sort((a, b) => M.compareNullable(value(a), value(b), state.descending) || a.c.localeCompare(b.c));
     else if (state.fundTab === 'equity') result.sort((a, b) => M.compareNullable(policy.byCode[a.c]?.thresholdInputs?.a5, policy.byCode[b.c]?.thresholdInputs?.a5, true) || a.c.localeCompare(b.c));
     return result;
@@ -326,15 +361,15 @@
     const sort = (n, k) => action(n + (state.fundSort === k ? (state.descending ? ' ↓' : ' ↑') : ''), 'fund-sort', '', 'data-value="' + k + '"');
     const rowHtml = f => '<tr><td><div class="fund-name-row">' + action(esc(f.n), 'fund-detail', 'text-link', 'data-code="' + f.c + '" title="' + esc(f.c + ' · ' + (f.exchange ? '场内' : '场外') + ' · ' + (f.ix || '策略待核验')) + '"') +
       (state.fundTab === 'income' ? badge(f.dividend ? '红利' : '债券/固收') : '') + action(state.selected.has(f.c) ? '✓' : '＋', 'compare-toggle', 'fund-compare' + (state.selected.has(f.c) ? ' selected' : ''), 'data-code="' + f.c + '" aria-pressed="' + state.selected.has(f.c) + '" aria-label="对比' + esc(f.n) + '"') + '</div>' +
-      (state.fundTab === 'passive' ? '<span class="sub">' + esc(f.ix || '跟踪标的未收录') + ' · ' + (f.exchange ? '场内' : '场外') + (/增强/.test(f.n) ? ' · 指数增强' : '') + '</span>' : '') + '</td>' + cols.map(c => '<td class="' + (c.cls || '') + '">' + c.cell(f) + '</td>').join('') + '</tr>';
+      (state.fundTab === 'passive' ? '<span class="sub">' + esc(f.ix || '跟踪标的未收录') + ' · ' + (f.exchange ? '场内' : '场外') + (/增强/.test(f.n) ? ' · 指数增强' : '') + '</span>' : '') + feeMissing(f) + '</td>' + cols.map(c => '<td class="' + (c.cls || '') + '">' + c.cell(f) + '</td>').join('') + '</tr>';
     const rowsHtml = lazyRows('funds', rows, rowHtml);
-    return '<div class="card"><div class="table-caption"><span><b>' + rows.length + '</b>只产品' + (state.query ? ' · 搜索“' + esc(state.query) + '”' : '') + ' · 人民币净值口径' + (state.fundSort !== 'default' ? ' · ' + action('恢复默认顺序', 'fund-sort-reset', 'text-link small') : '') + '</span>' + columnControl() + '</div>' +
+    return '<div class="card"><div class="table-caption"><span><b>' + rows.length + '</b>只产品' + (state.query ? ' · 搜索“' + esc(state.query) + '”' : '') + ' · 人民币净值口径 · ' + feeBasisLabel() + (state.fundSort !== 'default' ? ' · ' + action('恢复默认顺序', 'fund-sort-reset', 'text-link small') : '') + '</span>' + columnControl() + '</div>' +
       '<div class="table-wrap fund-table-wrap" tabindex="0" aria-label="基金数据表，可横向滚动"><table class="research-table fund-table"><thead><tr><th>基金 / 跟踪标的</th>' + cols.map(c => '<th' + (c.key ? ' aria-sort="' + (state.fundSort === c.key ? state.descending ? 'descending' : 'ascending' : 'none') + '"' : '') + '>' + (c.key ? sort(c.label, c.key) : c.label) + '</th>').join('') + '</tr></thead><tbody data-list-body="funds">' +
       (rowsHtml || '<tr><td colspan="' + (cols.length + 1) + '"><div class="empty"><b>没有符合条件的产品</b>' + fundSearchAlternatives() + '<p>' + action('清除筛选', 'fund-reset', 'text-link') + '</p></div></td></tr>') +
-      '</tbody></table></div>' + loadFooter('funds') + '<div class="panel-foot"><span>— 表示缺失或历史不足。</span>' + action('导出完整字段 CSV', 'export-funds', 'text-link') + '</div></div>';
+      '</tbody></table></div>' + loadFooter('funds') + '<div class="panel-foot"><span>— 表示缺失或历史不足。</span>' + feeEstimateNote() + action('导出完整字段 CSV', 'export-funds', 'text-link') + '</div></div>';
   }
   function screenControls() {
-    return '<div class="fund-thresholds"><span>年化收益至少</span>' +
+    return '<div class="fund-thresholds"><span>扣费后年化至少</span>' +
       [['minA3', '近3年'], ['minA5', '近5年'], ['minA10', '近10年']].map(([key, label]) => '<label>' + label + '<span><input data-screen="' + key + '" aria-label="' + label + '最低年化收益" type="number" min="-100" max="100" step="1" placeholder="不限" value="' + (state.screen[key] ?? '') + '">%</span></label>').join('') +
       '<span class="fund-fixed-thresholds">历史≥' + defaults.minHistoryYears + '年 · 规模≥' + defaults.minScale + '亿 · 经理任职≥' + defaults.minManagerYears + '年</span>' + action('筛选依据', 'screen-rules', 'text-link small') + '</div>';
   }
@@ -595,7 +630,19 @@
     if (!summaries.some(item => String(item.year) === state.stratYear) ||
         (state.stratYear !== '2010' && !(window.STRATEGY_WINDOWS || {})[state.stratYear])) state.stratYear = '2010';
     const archived = state.stratYear === '2010' ? null : (window.STRATEGY_WINDOWS || {})[state.stratYear];
-    const selected = archived || { start: rootMeta.start, end: rootMeta.end, assets: assets.map(a => a.c), results: window.STRATEGY_RESULTS || [], curves: window.STRATEGY_CURVES || {} };
+    const actual = archived || { start: rootMeta.start, end: rootMeta.end, assets: assets.map(a => a.c), results: window.STRATEGY_RESULTS || [], curves: window.STRATEGY_CURVES || {} };
+    const selected = state.annualFeeBasis === 'net' ? actual : (window.STRATEGY_FEE_ESTIMATES || {})[state.stratYear];
+    if (!selected) {
+      if (!strategyFeeLoading && !strategyFeeError) {
+        strategyFeeLoading = true;
+        const script = document.createElement('script');
+        script.src = $('#strategy-fee-source').dataset.src;
+        script.onload = () => { strategyFeeLoading = false; strategyFeeError = !(window.STRATEGY_FEE_ESTIMATES || {})[state.stratYear]; render(); };
+        script.onerror = () => { strategyFeeLoading = false; strategyFeeError = true; render(); };
+        document.head.append(script);
+      }
+      return head('INVESTING RHYTHM', '投入策略', '比较同一资产的投入节奏。') + feeControl() + '<p class="notice">' + (strategyFeeError ? '扣费前逐笔模拟加载失败 · ' + action('重试加载', 'strategy-fees-retry', 'text-link small') : '正在加载扣费前逐笔模拟…') + '</p>';
+    }
     const meta = { ...rootMeta, start: selected.start, end: selected.end };
     const available = new Set(selected.assets || []), ordinary = assets.filter(a => a.lev === '1x' && available.has(a.c));
     const leveraged = assets.filter(a => a.lev !== '1x' && available.has(a.c));
@@ -613,8 +660,8 @@
     const annualSpread = rows.length ? Math.max(...rows.map(r => r.irr)) - Math.min(...rows.map(r => r.irr)) : 0;
     const verified = meta.modelVersion >= 2 && meta.initialCashIncluded;
     const controls = '<div class="strategy-control-bar"><div class="segmented" aria-label="资金情境">' + action('已有一笔钱', 'strategy-panel', state.stratPanel === 'initial' ? 'active' : '', 'data-value="initial"') + action('持续有新收入', 'strategy-panel', state.stratPanel === 'dca' ? 'active' : '', 'data-value="dca"') + '</div>' +
-      '<div class="strategy-year-picker"><span>回测起点</span><div class="strategy-year-buttons">' + summaries.map(item => action(item.year + '起', 'strategy-year', String(item.year) === state.stratYear ? 'active' : '', 'data-value="' + item.year + '" aria-pressed="' + (String(item.year) === state.stratYear) + '"')).join('') + '</div></div></div>';
-    const context = '<p class="strategy-context' + (verified ? '' : ' warn') + '">实际共同交易日 ' + esc(meta.start) + ' → ' + esc(meta.end) + ' · ' + available.size + '只ETF有完整同期间行情 · ' + (verified ? '现金计入账户' : '模型待核验') + ' · 暂未计入交易税费</p>';
+      '<div class="strategy-year-picker"><span>回测起点</span><div class="strategy-year-buttons">' + summaries.map(item => action(item.year + '起', 'strategy-year', String(item.year) === state.stratYear ? 'active' : '', 'data-value="' + item.year + '" aria-pressed="' + (String(item.year) === state.stratYear) + '"')).join('') + '</div></div>' + feeControl() + '</div>';
+    const context = '<p class="strategy-context' + (verified ? '' : ' warn') + '">实际共同交易日 ' + esc(meta.start) + ' → ' + esc(meta.end) + ' · ' + available.size + '只ETF有完整同期间行情 · ' + feeBasisLabel() + ' · ' + (verified ? '现金计入账户' : '模型待核验') + ' · 暂未计入交易税费</p>';
     const assetCard = a => {
       const enabled = available.has(a.c), first = (rootMeta.assetStarts || {})[a.c];
       const detail = enabled ? a.lev === '1x' ? '普通 ETF' : '每日目标杠杆' : first ? first.slice(0, 4) + '年起' : '当前不可选';
@@ -645,11 +692,19 @@
       controls + context + (state.stratView === 'results' ? assetShelf + results : chart) +
       '<p class="note">来源：' + esc(meta.source || '待核验') + '。历史回测受起点影响；零成本是假设，不能理解为可实现净收益。</p>';
   }
-  function buyLocation() {
+  function currentBuyData() {
     const data = window.BUY_LOCATION_DATA;
+    return data ? { ...data, products: data.products.map(p => {
+      const source = p.channel === 'us' ? (window.BM || []).find(b => b.symbol === p.code) : funds.find(f => f.c === p.code);
+      return { ...p, n: source?.n || p.name, fee: source?.fee, expenseRatio: source?.expenseRatio,
+        feeAddbackRate: source?.feeAddbackRate, feesEmbedded: true };
+    }) } : null;
+  }
+  function buyLocation() {
+    const data = currentBuyData();
     if (!data) return head('INVESTMENT CHANNELS', '投资渠道', '比较 SPY、QQQ 与国内场内、场外指数工具的历史税后结果。') + '<p class="notice red">比较数据未加载，请检查 data/buy-location.js。</p>';
     const config = { family: state.buyFamily, years: state.buyYears, plan: state.buyPlan,
-      lumpAmount: state.buyLumpAmount, monthlyAmount: state.buyMonthlyAmount, fees: state.buyFees, fundFees: state.buyFundFees, exchangeBasis: state.buyBasis };
+      lumpAmount: state.buyLumpAmount, monthlyAmount: state.buyMonthlyAmount, fees: state.buyFees, fundFees: state.buyFundFees, exchangeBasis: state.buyBasis, annualFeeBasis: state.annualFeeBasis, annualFeeOverrides: state.annualFeeOverrides };
     const result = M.buyLocationResult(data, config);
     const feeField = (key, label, unit, hint = '') => '<label>' + label + '<span class="buy-field"><input type="number" min="0" max="' + (key.endsWith('Minimum') ? '1000000' : '100') + '" step="any" inputmode="decimal" data-buy-input="' + key + '" value="' + esc(state.buyFees[key]) + '"><span>' + unit + '</span></span>' + (hint ? '<small>' + hint + '</small>' : '') + '</label>';
     const fundFeeFields = data.products.filter(p => p.family === state.buyFamily && p.channel === 'off').map(p => {
@@ -661,7 +716,7 @@
     const yearSelect = '<div class="segmented" aria-label="比较期间">' + years.map(y => action(y + '年', 'buy-years', state.buyYears === y ? 'active' : '', 'data-value="' + y + '" aria-pressed="' + (state.buyYears === y) + '"')).join('') + '</div>';
     const planSelect = '<div class="segmented" aria-label="买入方式">' + action('一次买入', 'buy-plan', state.buyPlan === 'lump' ? 'active' : '', 'data-value="lump" aria-pressed="' + (state.buyPlan === 'lump') + '"') + action('每月定投', 'buy-plan', state.buyPlan === 'monthly' ? 'active' : '', 'data-value="monthly" aria-pressed="' + (state.buyPlan === 'monthly') + '"') + '</div>';
     const amountField = '<label class="buy-amount">' + (state.buyPlan === 'lump' ? '首笔投入' : '每月投入') + '<span class="buy-field"><input type="number" min="1" max="1000000000" step="100" inputmode="decimal" data-buy-input="' + (state.buyPlan === 'lump' ? 'buyLumpAmount' : 'buyMonthlyAmount') + '" value="' + esc(state.buyPlan === 'lump' ? state.buyLumpAmount : state.buyMonthlyAmount) + '"><span>元</span></span></label>';
-    const controls = '<section class="buy-controls"><div class="buy-control"><span>跟踪指数</span>' + familySelect + '</div><div class="buy-control"><span>历史窗口</span>' + yearSelect + '</div><div class="buy-control"><span>投入方式</span>' + planSelect + '</div>' + amountField + '</section>';
+    const controls = '<section class="buy-controls"><div class="buy-control"><span>跟踪指数</span>' + familySelect + '</div><div class="buy-control"><span>历史窗口</span>' + yearSelect + '</div><div class="buy-control"><span>投入方式</span>' + planSelect + '</div>' + amountField + '<div class="buy-control buy-annual-fees">' + feeControl() + '</div></section>';
     const basisControls = '<div class="buy-basis-bar"><div class="cross-basis"><span>场内 ETF</span><div class="segmented" aria-label="投资渠道场内收益口径">' + [['nav', '净值 · 剔除溢价'], ['market', '成交价 · 含溢价']].map(([v, label]) => action(label, 'buy-basis', state.buyBasis === v ? 'active' : '', 'data-value="' + v + '" aria-pressed="' + (state.buyBasis === v) + '"')).join('') + '</div></div><span>' + (state.buyBasis === 'nav' ? '按净值模拟买卖，仍扣券商佣金；实际成交可能有溢价。' : '按历史成交价模拟，计入买卖两端溢价变化。') + '</span><strong>分红已再投</strong></div>';
     const constrained = data.products.filter(p => p.family === state.buyFamily && p.channel === 'off').map(p => {
       const f = funds.find(item => item.c === p.code);
@@ -674,22 +729,20 @@
       '<div><h3>大陆税收居民 · 美股 ETF</h3><div class="buy-fee-grid">' + feeField('usDividendTax', '美国分红预扣', '%') + feeField('cnDividendTax', '境内股息税率', '%') + feeField('capitalGainsTax', '卖出收益税率', '%') + '</div><p>默认按 W-8BEN 适用10%美股股息预扣；境内股息按20%并抵免已缴美税，卖出正收益按20%。实际抵免和计税基础以申报结果为准。</p></div>' +
       '</div></details>';
     const feeText = code => {
-      if (code === 'SPY') return '0.0945%';
-      if (code === 'QQQ') return '0.18%';
+      const product = data.products.find(p => p.code === code), info = feeInfo(product);
       const f = funds.find(item => item.c === code);
-      if (!f || !M.finite(f.annualFee)) return '待核验';
-      return (f.feeCoverage === 'complete' ? '' : '≥') + pct(f.annualFee, 2, false);
+      return M.finite(info.rate) ? pct(info.rate, info.rate < 0.1 ? 4 : 2, false) + (info.custom ? '<span class="sub">自定义有效费率</span>' : '') : f ? ongoingFee(f) : '缺持续年费率';
     };
     const channelText = { us: '香港券商 · 美股 ETF', exchange: '国内场内 ETF', off: '国内场外基金' };
     const table = result.error ? '<p class="notice red">' + esc(result.error) + '</p>' :
-      '<section class="card buy-results"><div class="card-head"><div><h2>同一期间的税后账户结果</h2><p>' + esc(result.start) + ' → ' + esc(result.end) + ' · ' + (state.buyPlan === 'lump' ? '一次投入 ¥' + money(state.buyLumpAmount) : '每月投入 ¥' + money(state.buyMonthlyAmount) + '，共' + result.purchaseDays.length + '笔') + ' · 人民币</p></div>' + action('导出 CSV', 'buy-export', 'btn sm') + '</div>' +
+      '<section class="card buy-results"><div class="card-head"><div><h2>同一期间的税后账户结果</h2><p>' + esc(result.start) + ' → ' + esc(result.end) + ' · ' + (state.buyPlan === 'lump' ? '一次投入 ¥' + money(state.buyLumpAmount) : '每月投入 ¥' + money(state.buyMonthlyAmount) + '，共' + result.purchaseDays.length + '笔') + ' · 人民币 · ' + feeBasisLabel() + '</p></div>' + action('导出 CSV', 'buy-export', 'btn sm') + '</div>' +
       '<div class="table-wrap" tabindex="0" aria-label="购买渠道收益对比表，可横向滚动"><table class="research-table buy-table"><thead><tr><th>产品 / 渠道</th><th>持续费率 / 年<span class="strategy-th-unit">已含在行情中</span></th><th>累计投入</th><th>交易及换汇</th><th>美股股息税<span class="strategy-th-unit">预扣 + 境内补缴</span></th><th>卖出收益税</th><th>税后期末</th><th>累计收益</th><th>资金年化 XIRR</th></tr></thead><tbody>' +
       result.rows.map(row => {
         const product = data.products.find(p => p.code === row.code);
-        if (row.error) return '<tr><td><strong>' + esc(product.name) + '</strong><span class="sub">' + esc(channelText[product.channel]) + ' · ' + esc(row.code) + '</span></td><td colspan="8">' + esc(row.error) + '</td></tr>';
+        if (row.error) return '<tr><td><strong>' + esc(product.name) + '</strong><span class="sub">' + esc(channelText[product.channel]) + ' · ' + esc(row.code) + '</span></td><td colspan="8">' + esc(row.error) + (state.annualFeeBasis === 'gross_estimate' && product.channel !== 'us' ? ' · ' + action('填写估算有效年费', 'fund-detail', 'text-link small', 'data-code="' + esc(row.code) + '"') : '') + '</td></tr>';
         return '<tr><td><strong>' + esc(product.name) + '</strong><span class="sub">' + esc(channelText[row.channel]) + ' · ' + esc(row.code) + '</span>' +
           (row.channel === 'exchange' ? '<span class="sub buy-premium">' + (state.buyBasis === 'nav' ? '净值模拟 · 已剔除溢价' : '成交价复权 · 含溢价变化') + '</span>' : '') + '</td><td>' + feeText(row.code) + '</td><td>¥' + money(row.contributed) + '</td><td>¥' + money(row.transactionCost + row.fxCost) + '</td><td>¥' + money(row.usDividendTax + row.cnDividendTax) + '</td><td>¥' + money(row.capitalTax) + '</td><td><strong>¥' + money(row.terminal) + '</strong></td><td>' + pc(row.totalReturn) + '</td><td>' + pc(row.xirr) + '</td></tr>';
-      }).join('') + '</tbody></table></div><div class="panel-foot"><span>持续费用已含于净值或复权价；现金分红已再投，美股 ETF 再扣投资者股息税。切换溢价口径仅改变场内价格序列。</span></div></section>';
+      }).join('') + '</tbody></table></div><div class="panel-foot"><span>' + (state.annualFeeBasis === 'net' ? '年费已含于净值或复权价；现金分红已再投，再扣投资者股息税。' : '按现行有效年费逐笔估算扣费前结果；交易、换汇和投资者税仍扣除。') + '</span></div></section>';
     const distributions = '<details class="buy-method buy-distributions"><summary>各产品分红与拆分</summary><div class="buy-method-body"><div class="table-wrap"><table><thead><tr><th>产品</th><th>本区间现金分红</th><th>本区间拆分</th><th>收益处理</th><th>事件记录</th></tr></thead><tbody>' + data.products.filter(p => p.family === state.buyFamily).map(p => {
       const a = p.actions, within = e => result.start && e.date > result.start && e.date <= result.end;
       return '<tr><td>' + esc(p.name) + '<span class="sub">' + p.code + '</span></td><td>' + (a ? a.cash.filter(within).length + '次' : '缺事件记录') + '</td><td>' + (a ? a.splits.filter(within).map(e => e.date + ' · 1:' + e.factor).join('；') || '无' : '缺事件记录') + '</td><td>分红已再投' + (p.channel === 'us' ? '<span class="sub">已扣美股股息税</span>' : '') + '</td><td>' + action('查看', 'buy-actions', 'text-link', 'data-code="' + p.code + '"') + '</td></tr>';
@@ -765,7 +818,7 @@
     openModal(modalTitle(esc(f.n), esc(f.c) + ' · ' + esc(f.exchange ? '场内交易' : '场外申赎') + ' · ' + esc(f.ix)) +
       '<div class="pill-row">' + badge(/增强/.test(f.n + f.ix) ? '指数增强' : f.active ? '主动管理' : '指数 / 规则工具') + (f.dividend ? badge('红利是权益风格') : '') + (rule?.category === 'theme' ? badge(rule.role || '行业主题') : '') + badge(verifiedReturn(f) ? '收益已复算' : '历史字段待逐项核验', verifiedReturn(f) ? 'green' : 'warn') + '</div>' +
       (rule ? '<div class="notice"><strong>' + (rule.tier === 'shortlist' ? '权益候选：' : '研究定位：') + '</strong>' + esc(rule.reason) + (rule.classificationEvidence?.sourceUrl ? ' · ' + extLink(rule.classificationEvidence.sourceUrl, '基金合同依据') : '') + '<br>' + esc((rule.flags || []).join('；')) + '</div>' : '') +
-      '<h3 class="detail-heading">' + basis + '</h3>' + returnTable(perf.r, perf) + '<p class="note">收益截至：' + esc(metricDate(perf, 'return')) + ' · ' + esc(f.historyNote || f.returnNote || '有实际区间时按日期跨度年化；旧快照无基期时按名义年数计算。完整周期不足留空。') + '</p>' +
+      '<h3 class="detail-heading">' + basis + ' · ' + feeBasisLabel() + '</h3>' + returnTable(perf.r, perf) + '<p class="note">收益截至：' + esc(metricDate(perf, 'return')) + ' · ' + esc(f.historyNote || f.returnNote || '有实际区间时按日期跨度年化；旧快照无基期时按名义年数计算。完整周期不足留空。') + '</p>' + fundFeeEditor(f) +
       detailGrid([
         ['管理 / 托管 / 销售服务费（年）', fees.join(' / ') || '待核验'],
         ['买入费用', buyFee(f) + (f.exchange ? '，按实际券商约定' : '<span class="sub">原费率 / 历史渠道折扣，生效日待核验</span>')],
@@ -788,6 +841,7 @@
   function openIndex(i) {
     const rows = indexRows();
     const x = rows[i]; if (!x) return;
+    if (x.symbol) { openOverseasEtf(x); return; }
     const isDomestic = (window.INDEX_DATA || []).includes(x), displayCurrency = isDomestic ? 'cny' : state.currency;
     const r = isDomestic ? x.r : x[displayCurrency];
     const risk = isDomestic ? { mdd: x.mdd5, vol: x.vol5 } : x[displayCurrency === 'usd' ? 'riskUSD5' : 'riskCNY5'] || {};
@@ -796,6 +850,17 @@
       (risk.reason ? '<div class="notice warn">' + esc(risk.reason) + (risk.missingFxDates ? '。缺失日期：' + esc(risk.missingFxDates.join('、')) : '') + '</div>' : '') +
       (x.backfilledPeriods && x.backfilledPeriods.length ? '<div class="notice warn">近' + x.backfilledPeriods.join(' / ') + '年包含发布前回溯；这部分不是当时可投资的指数实绩。</div>' : '') +
       '<div class="actions">' + extLink(x.sourceUrl || x.source, '原始行情来源') + (x.identityUrl ? extLink(x.identityUrl, '官方指数说明') : '') + (displayCurrency === 'cny' && x.fxSourceUrl ? extLink(x.fxSourceUrl, '美元兑人民币汇率') : '') + '</div><div class="dialog-footer">' + action('在基金库搜索此标的', 'find-index-funds', 'btn primary', 'data-value="' + esc(x.n.replace(/指数$/, '')) + '"') + '</div>');
+  }
+  function openOverseasEtf(x) {
+    const risk = x[state.currency === 'usd' ? 'riskUSD5' : 'riskCNY5'] || {};
+    openModal(modalTitle(esc(x.symbol) + ' · ' + esc(x.label), esc(x.category) + ' / ' + esc(x.style)) +
+      '<p class="notice">' + esc(x.description) + '</p><div class="detail-return-heading"><h3>含分红再投资 · ' + feeBasisLabel() + '</h3><span>' + (state.currency === 'usd' ? '美元' : '人民币，含汇率变化') + '</span></div>' + returnTable(x[state.currency], x) +
+      detailGrid([['标的指数 / 策略', esc(x.underlying)], ['收益截至 / 实际行情起点', esc(x.asOf) + ' / ' + esc(x.first || '缺首日')], ['成立日期', esc(x.inception)], ['持续运营年费', pct(x.expenseRatio, x.expenseRatio < 0.1 ? 4 : 2, false) + '<span class="sub">来源核对 ' + esc(x.feeCheckedAt) + '</span>'], ['估算还原费率', pct(x.feeAddbackRate ?? x.expenseRatio, 4, false) + '<span class="sub">现行费率固定情景，历史费率未逐日还原</span>'], ['现金分配频率', esc(x.distribution) + '<span class="sub">分配率不是总收益率</span>'], ['每日目标', x.leverage > 1 ? x.leverage + '倍标的每日收益；长期收益不等于该倍数' : '不设杠杆倍数'], ['5年实际回撤 / 波动率', pct(risk.mdd, 2, false) + ' / ' + pct(risk.vol, 2, false) + '<span class="sub">真实扣费后日线；不足5年留空</span>']]) +
+      (x.category === '期权收益' ? '<p class="notice warn">分配可能包含期权收益、资本利得或资本返还。这里比较分红再投资总回报，不把月分配率乘12作为投资收益率。</p>' : '') +
+      '<details class="annual-fee-details"><summary>实际收益区间与费用口径</summary><p>扣费后直接使用供应商明确的复权收盘价，已反映产品持续费用。扣费前以现行净费率逐日还原，保留融资成本、底层基金费用及其他不在还原费率中的成本；不是历史毛收益。年费切换不改变现金分配再投资与汇率口径。</p><div class="table-wrap"><table><thead><tr><th>周期</th><th>起日</th><th>截至</th></tr></thead><tbody>' + (x.periods || []).map(p => '<tr><td>' + p.years + '年</td><td>' + esc(p.start || '成立或行情不足') + '</td><td>' + esc(p.end) + '</td></tr>').join('') + '</tbody></table></div></details><div class="actions">' + extLink(x.identityUrl, '官方策略与费用') + extLink(x.sourceUrl, '分红复权行情') + (state.currency === 'cny' ? extLink(x.fxSourceUrl, '汇率来源') : '') + '</div>');
+  }
+  function openEtfDifferences() {
+    openModal(modalTitle('QQQ、QQQI、VGT有何不同', '选股范围与回报来源不同') + '<div class="table-wrap"><table class="compare-table"><thead><tr><th>维度</th><th>QQQ</th><th>QQQI</th><th>VGT</th></tr></thead><tbody><tr><td>投资范围</td><td>纳斯达克100非金融企业，跨行业</td><td>纳指100股票组合 + NDX指数期权</td><td>美国信息科技行业，大中小盘</td></tr><tr><td>管理方式</td><td>被动指数跟踪</td><td>主动买卖看涨期权</td><td>被动行业指数跟踪</td></tr><tr><td>回报特征</td><td>主要参与股票上涨和下跌</td><td>偏向月分配；期权改变上涨参与和下跌表现</td><td>软件、硬件、半导体与设备的行业暴露</td></tr><tr><td>现行年费</td><td>0.18%</td><td>0.68%</td><td>0.09%</td></tr><tr><td>分配</td><td>季度</td><td>每月，可含资本返还</td><td>季度</td></tr></tbody></table></div><p class="notice">比较总回报：净值或价格变化 + 现金分配再投资。高分配率不代表高收益，期权策略也不保证本金安全。</p><div class="actions">' + ['QQQ', 'QQQI', 'VGT'].map(symbol => extLink((window.BM || []).find(b => b.symbol === symbol)?.identityUrl, symbol + '官方资料')).join('') + '</div>');
   }
   function openDividendStock(s) {
     openModal('<div class="stock-detail stock-dividend-detail">' + modalTitle(esc(s.n) + stockBoardBadge(s.c), s.c + ' · ' + esc(s.businessLabel || s.ind)) +
@@ -836,7 +901,7 @@
     if (selected.length < 2) return;
     const renderRow = (name, fn) => '<tr><td>' + name + '</td>' + selected.map(f => '<td>' + fn(f) + '</td>').join('') + '</tr>';
     openModal(modalTitle('把选择放在一起看', '最多4只 · 相同字段、相同期别；截至日不同的数值不计算排名或跟踪误差。') +
-      '<div class="table-wrap" tabindex="0" aria-label="基金对比表，可横向滚动"><table class="compare-table"><thead><tr><th>比较维度</th>' + selected.map(f => '<th>' + esc(f.n) + '<span class="sub">' + f.c + '</span></th>').join('') + '</tr></thead><tbody>' +
+      '<p class="detail-fee-basis">' + feeBasisLabel() + '</p><div class="table-wrap" tabindex="0" aria-label="基金对比表，可横向滚动"><table class="compare-table"><thead><tr><th>比较维度</th>' + selected.map(f => '<th>' + esc(f.n) + '<span class="sub">' + f.c + '</span></th>').join('') + '</tr></thead><tbody>' +
       renderRow('投资策略', f => esc(f.ix)) + renderRow('现任经理 / 本基金任期', f => managerText(f, true)) + renderRow('成立日期', f => esc(f.d)) + renderRow('规模 / 亿元', f => money(f.sz, 1)) + renderRow('单位净值 / 日期', f => money(f.nav, 4) + ' / ' + esc(f.navdate)) + renderRow('收益截至', f => esc(metricDate(f, 'return'))) +
       years.map((y, i) => renderRow(periodHead(y), f => pc(ret(f.r[i], y, f)))).join('') +
       renderRow('5年最大回撤', f => pc(f.mdd5, 1)) + renderRow('5年波动率', f => pct(f.vol5, 1, false)) + renderRow('风险截至', f => esc(metricDate(f, 'risk'))) +
@@ -856,13 +921,13 @@
     const rows = [['名称', '代码', '策略', '渠道', '现任经理', '个人经理任职记录', '经理资料截至', '经理抓取时间', '经理来源',
       '成立日', '规模(亿元)', '规模日期', '单位净值', '日涨跌%', '净值截至', '交易价', '溢价%', '报价时间',
       '管理费%', '托管费%', '销售服务费%', '持续费率核对日', '买入费旧档', '卖出费旧档(持有期待核验)', '申购', '限额',
-      '近5年最大回撤%', '近5年波动率%', '近3年最大回撤%', '近3年波动率%', '风险截至', '收益截至', '收益口径', '实际收益区间',
+      '近5年实际最大回撤%', '近5年实际波动率%', '近3年实际最大回撤%', '近3年实际波动率%', '风险截至', '收益截至', '收益口径', '实际收益区间', '年费口径', '估算有效年费%', '费用缺失说明',
       ...years.map(y => '近' + y + '年累计%'), ...years.map(y => '近' + y + '年年化%'), '基金来源', '收益来源', '资料状态']];
     fundRows().forEach(f => rows.push([f.n, f.c, f.ix, f.exchange ? '场内' : '场外', f.mgr, JSON.stringify(f.managerRecords || []), f.managerAsOf, f.managerCheckedAt, f.managerSourceUrl,
       f.d, f.sz, f.szdate, f.nav, f.dz, f.navdate, f.p, f.prem, f.priceAsOf || f.quotedAt,
       ...[0, 1, 2].map(i => f.fee && f.fee[i]), f.feeCheckedAt, f.exchange ? '按实际券商约定' : f.buy, f.exchange ? '按实际券商约定' : f.rd, f.exchange ? '场内交易' : f.st, f.exchange || /暂停/.test(f.st) ? '' : f.lm,
       f.mdd5, f.vol5, f.mdd3, f.v3, metricDate(f, 'risk'), metricDate(f, 'return'), f.returnBasis, JSON.stringify(f.returnPeriods || []),
-      ...f.r, ...f.r.map((r, i) => M.annualized(r, duration(f, years[i]))), 'https://fund.eastmoney.com/' + f.c + '.html', f.returnSourceUrl,
+      feeBasisLabel(), feeInfo(f).rate, feeInfo(f).missing, ...f.r.map((r, i) => totalRet(r, years[i], f)), ...f.r.map((r, i) => M.annualized(totalRet(r, years[i], f), duration(f, years[i]))), 'https://fund.eastmoney.com/' + f.c + '.html', f.returnSourceUrl,
       verifiedReturn(f) ? '收益已复算；其他字段见个体核验记录' : '历史快照待核验；年化按名义周期估算']));
     download('长衡-基金研究.csv', M.csv(rows), 'text/csv;charset=utf-8'); toast('已导出当前筛选结果，含累计与年化两套口径');
   }
@@ -928,6 +993,17 @@
     if (['cross-type', 'cross-region', 'cross-channel', 'cross-premium', 'cross-reset', 'cross-sort', 'cross-basis'].includes(act)) loadedCounts.delete('cross');
     if (['stock-tab', 'stock-category', 'stock-sort', 'stock-boards'].includes(act)) loadedCounts.delete('stocks');
     switch (act) {
+      case 'annual-fee-basis': state.annualFeeBasis = val; savePrefs(); loadedCounts.delete('funds'); loadedCounts.delete('cross'); break;
+      case 'annual-fee-method': openAnnualFeeMethod(); return;
+      case 'strategy-fees-retry': strategyFeeError = false; break;
+      case 'etf-differences': openEtfDifferences(); return;
+      case 'overseas-category':
+      case 'overseas-style': {
+        const set = act === 'overseas-category' ? state.overseasCategories : state.overseasStyles;
+        if (val === 'all') set.clear(); else if (set.has(val)) set.delete(val); else set.add(val);
+        break;
+      }
+      case 'overseas-reset': state.overseasCategories.clear(); state.overseasStyles.clear(); state.overseasQuery = ''; break;
       case 'close': $('#dialog').close(); return;
       case 'load-more': loadMore(val); return;
       case 'fund-facet': if (val === 'all') state.fundFacets.clear(); else if (state.fundFacets.has(val)) state.fundFacets.delete(val); else state.fundFacets.add(val); if (state.fundFacets.size && !state.fundFacets.has('sector')) state.fundSectors.clear(); break;
@@ -955,7 +1031,7 @@
       }
       case 'benchmark-detail': {
         const b = benchmark(); if (!b) return;
-        openModal(modalTitle('标普500参照 · ' + esc(b.n), (state.benchmarkCurrency === 'cny' ? '人民币' : '美元') + ' · 截至 ' + esc(b.asOf)) + returnTable(b[state.benchmarkCurrency], b) + '<div class="notice" style="margin-top:20px">' + esc(basisText(b.basis)) + '。' + (b.basis === 'price_index' ? '价格指数与基金含分红回报的定义不同。' : 'SPY为含产品费用的ETF参照。') + (state.benchmarkCurrency === 'cny' ? '人民币回报包含汇率变化，实际区间列于下方。' : '当前显示美元回报，与人民币基金回报不直接计算差值。') + '</div>' + detailGrid((b.periods || []).map(p => ['近' + p.years + '年实际区间', esc(p.start) + ' → ' + esc(p.end)])) + '<div class="actions">' + extLink(b.sourceUrl || b.source, '原始行情来源') + (state.benchmarkCurrency === 'cny' ? extLink(b.fxSourceUrl, '汇率来源') : '') + '</div>'); return;
+        openModal(modalTitle('标普500参照 · ' + esc(b.n), (state.benchmarkCurrency === 'cny' ? '人民币' : '美元') + ' · 截至 ' + esc(b.asOf)) + returnTable(b[state.benchmarkCurrency], b) + '<div class="notice" style="margin-top:20px">' + esc(basisText(b.basis)) + '。' + (b.basis === 'price_index' ? '价格指数与基金含分红回报的定义不同。' : 'SPY为ETF参照；当前为' + feeBasisLabel() + '。') + (state.benchmarkCurrency === 'cny' ? '人民币回报包含汇率变化，实际区间列于下方。' : '当前显示美元回报，与人民币基金回报不直接计算差值。') + '</div>' + detailGrid((b.periods || []).map(p => ['近' + p.years + '年实际区间', esc(p.start) + ' → ' + esc(p.end)])) + '<div class="actions">' + extLink(b.sourceUrl || b.source, '原始行情来源') + (state.benchmarkCurrency === 'cny' ? extLink(b.fxSourceUrl, '汇率来源') : '') + '</div>'); return;
       }
       case 'fund-columns': openFundColumns(); return;
       case 'columns-all':
@@ -987,8 +1063,8 @@
       case 'cross-method': openCrossMethod(); return;
       case 'cross-export': {
         const rows = crossRows();
-        download('长衡-跨境基金-' + state.crossBasis + '.csv', M.csv([['代码', '基金', '指数', '渠道', '收益口径', ...state.periods.map(periodHead), '收益截至', '快照溢价%', '报价日期', '持续费率%（已知）', '现金分红处理', '已收录分红次数'], ...rows.map(f => {
-          const p = crossPerformance(f); return [f.c, f.n, f.ix, f.exchange ? '场内' : '场外', f.exchange && state.crossBasis === 'market' ? '成交价复权' : '净值总回报', ...state.periods.map(y => ret(p.r?.[years.indexOf(y)], y, p)), p.returnAsOf, f.prem, f.priceAsOf || f.quotedAt, f.knownOngoingFee, '已再投', crossEvidence(f.c)?.actions.cash.length];
+        download('长衡-跨境基金-' + state.crossBasis + '.csv', M.csv([['代码', '基金', '指数', '渠道', '收益口径', '年费口径', '估算有效年费%', '费用缺失说明', ...state.periods.map(periodHead), '收益截至', '快照溢价%', '报价日期', '持续费率%（已知）', '现金分红处理', '已收录分红次数'], ...rows.map(f => {
+          const p = crossPerformance(f); return [f.c, f.n, f.ix, f.exchange ? '场内' : '场外', f.exchange && state.crossBasis === 'market' ? '成交价复权' : '净值总回报', feeBasisLabel(), feeInfo(f).rate, feeInfo(f).missing, ...state.periods.map(y => ret(p.r?.[years.indexOf(y)], y, p)), p.returnAsOf, f.prem, f.priceAsOf || f.quotedAt, f.knownOngoingFee, '已再投', crossEvidence(f.c)?.actions.cash.length];
         })]), 'text/csv;charset=utf-8'); return;
       }
       case 'fund-actions': {
@@ -1051,13 +1127,13 @@
       case 'buy-years': state.buyYears = Number(val); break;
       case 'buy-plan': state.buyPlan = val; break;
       case 'buy-export': {
-        const result = M.buyLocationResult(window.BUY_LOCATION_DATA, { family: state.buyFamily, years: state.buyYears,
-          plan: state.buyPlan, lumpAmount: state.buyLumpAmount, monthlyAmount: state.buyMonthlyAmount, fees: state.buyFees, fundFees: state.buyFundFees, exchangeBasis: state.buyBasis });
+        const result = M.buyLocationResult(currentBuyData(), { family: state.buyFamily, years: state.buyYears,
+          plan: state.buyPlan, lumpAmount: state.buyLumpAmount, monthlyAmount: state.buyMonthlyAmount, fees: state.buyFees, fundFees: state.buyFundFees, exchangeBasis: state.buyBasis, annualFeeBasis: state.annualFeeBasis, annualFeeOverrides: state.annualFeeOverrides });
         if (result.error) { toast(result.error); return; }
-        const columns = ['产品代码', '产品名称', '渠道', '场内收益口径', '分红处理', '开始日', '结束日', '买入笔数', '累计投入CNY', '交易费用CNY', '换汇价差CNY', '美股股息预扣CNY', '境内股息补缴CNY', '卖出收益税CNY', '税后期末CNY', '累计收益%', 'XIRR%', '费用假设JSON'];
-        download('长衡-买入渠道-' + result.end + '.csv', M.csv([columns, ...result.rows.filter(r => !r.error).map(r => [r.code, r.name,
-          r.channel, r.exchangeBasis || '原渠道', '再投资', result.start, result.end, r.purchases, r.contributed, r.transactionCost, r.fxCost,
-          r.usDividendTax, r.cnDividendTax, r.capitalTax, r.terminal, r.totalReturn, r.xirr, JSON.stringify({ ...state.buyFees, fundFees: state.buyFundFees })])]), 'text/csv;charset=utf-8');
+        const columns = ['产品代码', '产品名称', '渠道', '场内收益口径', '分红处理', '开始日', '结束日', '买入笔数', '累计投入CNY', '交易费用CNY', '换汇价差CNY', '美股股息预扣CNY', '境内股息补缴CNY', '卖出收益税CNY', '税后期末CNY', '累计收益%', 'XIRR%', '年费口径', '估算有效年费%', '缺失说明', '费用假设JSON'];
+        download('长衡-买入渠道-' + result.end + '.csv', M.csv([columns, ...result.rows.map(r => [r.code, r.name || currentBuyData().products.find(p => p.code === r.code)?.name,
+          r.channel || currentBuyData().products.find(p => p.code === r.code)?.channel, r.exchangeBasis || '原渠道', '再投资', result.start, result.end, r.purchases, r.contributed, r.transactionCost, r.fxCost,
+          r.usDividendTax, r.cnDividendTax, r.capitalTax, r.terminal, r.totalReturn, r.xirr, feeBasisLabel(), r.annualFeeRate, r.error, JSON.stringify({ ...state.buyFees, fundFees: state.buyFundFees, annualFeeOverrides: state.annualFeeOverrides })])]), 'text/csv;charset=utf-8');
         return;
       }
       case 'chart-line': state.chartHidden.has(val) ? state.chartHidden.delete(val) : state.chartHidden.add(val); break;
@@ -1071,6 +1147,7 @@
     if (e.isComposing) { clearTimeout(searchTimer); return; }
     if (el.id === 'report-search') { state.reportQuery = el.value; loadedCounts.delete('reports'); clearTimeout(searchTimer); searchTimer = setTimeout(render, 120); return; }
     if (el.id === 'fund-search') { state.query = el.value; loadedCounts.delete('funds'); clearTimeout(searchTimer); searchTimer = setTimeout(renderFundResults, 120); }
+    if (el.id === 'overseas-search') { state.overseasQuery = el.value; clearTimeout(searchTimer); searchTimer = setTimeout(render, 120); }
     if (el.id === 'cross-search') {
       state.crossQuery = el.value; loadedCounts.delete('cross'); clearTimeout(searchTimer);
       searchTimer = setTimeout(render, 180);
@@ -1082,10 +1159,16 @@
   });
   document.addEventListener('compositionstart', () => clearTimeout(searchTimer));
   document.addEventListener('compositionend', e => {
-    if (e.target.matches('#fund-search,#stock-search,#cross-search,#report-search')) e.target.dispatchEvent(new Event('input', { bubbles: true }));
+    if (e.target.matches('#fund-search,#stock-search,#cross-search,#report-search,#overseas-search')) e.target.dispatchEvent(new Event('input', { bubbles: true }));
   });
   document.addEventListener('change', e => {
     const el = e.target;
+    if (el.dataset.annualFeeCode) {
+      const code = el.dataset.annualFeeCode;
+      if (el.value.trim() && (!el.checkValidity() || !Number.isFinite(Number(el.value)))) { toast('请输入0至99之间的有效年费率'); return; }
+      if (!el.value.trim()) delete state.annualFeeOverrides[code]; else state.annualFeeOverrides[code] = Number(el.value);
+      savePrefs(); render(); openFund(code); return;
+    }
     if (el.id === 'cross-purchasable') { state.crossPurchasable = el.checked; loadedCounts.delete('cross'); render(); return; }
     if (el.dataset.buyFund) {
       if (!el.checkValidity() || !el.value.trim() || !Number.isFinite(Number(el.value))) { toast('请输入0至100之间的费率'); render(); return; }

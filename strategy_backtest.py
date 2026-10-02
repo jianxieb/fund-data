@@ -32,6 +32,7 @@ import urllib.request
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 from data_status import write_status
+from annual_fees import fee_metadata, before_fee_prices
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 HTML = os.path.join(HERE, 'data', 'snapshot.js')
@@ -58,6 +59,7 @@ ASSETS = [
     {'c': 'USD', 'n': 'USD', 'g': '半导体', 'lev': '2x'},
     {'c': 'SOXL', 'n': 'SOXL', 'g': '半导体', 'lev': '3x'},
 ]
+ASSETS = [{**asset, **fee_metadata(asset['c'])} for asset in ASSETS]
 
 STRATEGIES = [
     {
@@ -601,7 +603,7 @@ def weekly_sample_indices(dates):
     return sorted(set(indices))
 
 
-def build_results(dates, prices, assets=None):
+def build_results(dates, prices, assets=None, before_fees=False):
     results, curves = [], {'dates': [], 'series': {}, 'account': {}, 'irrDates': [], 'irr': {}}
     samples = weekly_sample_indices(dates)
     annualized_samples = monthly_sample_indices(dates)
@@ -610,12 +612,14 @@ def build_results(dates, prices, assets=None):
     for asset in assets or ASSETS:
         symbol = asset['c']
         inputs = strategy_inputs(prices[symbol], dates)
+        # Keep actual decision dates and cash flows; change only invested prices.
+        valued_prices = before_fee_prices(dates, prices[symbol], symbol) if before_fees else prices[symbol]
         curves['series'][symbol] = {}
         curves['account'][symbol] = {}
         curves['irr'][symbol] = {}
         for strategy in STRATEGIES:
             events, exposure = inputs[strategy['id']]
-            simulated = simulate(dates, prices[symbol], events, exposure,
+            simulated = simulate(dates, valued_prices, events, exposure,
                                  initial_capital=INITIAL_CAPITAL if strategy['panel'] == 'initial' else None,
                                  sample_indices=samples, annualized_indices=annualized_samples)
             curves['series'][symbol][strategy['id']] = simulated['curve']
@@ -631,7 +635,7 @@ def js_data(payload):
     return json.dumps(payload, ensure_ascii=False, separators=(',', ':'))
 
 
-def write_html(results, dates, curves, windows, summaries, asset_starts):
+def write_html(results, dates, curves, windows, summaries, asset_starts, fee_estimates=None):
     with open(HTML, 'r', encoding='utf-8') as fh:
         src = fh.read()
 
@@ -641,7 +645,10 @@ def write_html(results, dates, curves, windows, summaries, asset_starts):
         'requestedEnd': END_DATE,
         'status': 'computed',
         'basis': 'provider_adjusted_close',
-        'modelVersion': 6,
+        'modelVersion': 7,
+        'annualFeeBasis': 'net_actual_returns_and_current_rate_before_fee_estimates',
+        'feeEstimateDecisions': 'same_net_price_signals_and_contribution_dates',
+        'feeEstimateDataFile': 'data/strategy-fees.js',
         'initialCashIncluded': True,
         'curveMetrics': ['account_value_usd', 'since_inception_xirr_minimum_one_year_percent'],
         'maWarmup': '200 observations; hold cash until first available signal',
@@ -686,6 +693,15 @@ def write_html(results, dates, curves, windows, summaries, asset_starts):
     with open(tmp, 'w', encoding='utf-8') as fh:
         fh.write(out)
     os.replace(tmp, HTML)
+    # Fee scenarios load only when requested by the strategy view. The legacy
+    # unit-NAV curve is not rendered there; retain account and XIRR curves.
+    estimates = fee_estimates or {}
+    for window in estimates.values():
+        window['curves'].pop('series', None)
+    fee_path = os.path.join(HERE, 'data', 'strategy-fees.js')
+    with open(fee_path + '.tmp', 'w', encoding='utf-8') as fh:
+        fh.write('var STRATEGY_FEE_ESTIMATES=' + js_data(estimates) + ';\n')
+    os.replace(fee_path + '.tmp', fee_path)
 
 
 def main():
@@ -696,10 +712,14 @@ def main():
     log('ETF 策略回测: %s -> %s' % (WINDOW_YEARS, END_DATE))
     raw = load_all_history(refresh=args.refresh, offline=args.offline)
     asset_starts = {symbol: min(history) for symbol, history in raw.items() if history}
-    windows, summaries = {}, []
+    windows, summaries, fee_estimates = {}, [], {}
     for year in WINDOW_YEARS:
         window_dates, window_prices, eligible = window_history(raw, year)
         window_results, window_curves = build_results(window_dates, window_prices, eligible)
+        gross_results, gross_curves = build_results(window_dates, window_prices, eligible, before_fees=True)
+        fee_estimates[str(year)] = {'start': window_dates[0], 'end': window_dates[-1],
+                                   'assets': [asset['c'] for asset in eligible],
+                                   'results': gross_results, 'curves': gross_curves}
         summaries.append({'year': year, 'start': window_dates[0], 'end': window_dates[-1],
                           'assets': [asset['c'] for asset in eligible], 'records': len(window_results)})
         if year == 2010:
@@ -709,7 +729,7 @@ def main():
                                   'assets': [asset['c'] for asset in eligible],
                                   'results': window_results, 'curves': window_curves}
         log('  %s: %s → %s，%d 只ETF，%d组' % (year, window_dates[0], window_dates[-1], len(eligible), len(window_results)))
-    write_html(results, dates, curves, windows, summaries, asset_starts)
+    write_html(results, dates, curves, windows, summaries, asset_starts, fee_estimates)
     write_status('strategy', 'cached' if args.offline else 'success', asOf=dates[-1],
                  records=sum(item['records'] for item in summaries), basis='provider_adjusted_close')
 

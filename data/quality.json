@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-10-01T19:39:21+00:00",
+  "checkedAt": "2026-10-02T07:40:37+00:00",
   "asOf": "2026-10-02",
   "status": "unverified",
   "summary": {
@@ -78,12 +78,12 @@
     {
       "id": "benchmarks",
       "label": "海外指数与ETF基准",
-      "asOf": "2026-09-29",
+      "asOf": "2026-10-01",
       "dateRange": [
-        "2026-09-29",
-        "2026-09-29"
+        "2026-10-01",
+        "2026-10-01"
       ],
-      "records": 9,
+      "records": 20,
       "issues": [
         {
           "code": "fx_risk_incomplete",
@@ -98,7 +98,15 @@
             "纳斯达克100指数",
             "QQQ",
             "QLD",
-            "TQQQ"
+            "TQQQ",
+            "VGT",
+            "XLK",
+            "SOXX",
+            "SMH",
+            "USD",
+            "SOXL",
+            "QYLD",
+            "JEPI"
           ]
         }
       ],

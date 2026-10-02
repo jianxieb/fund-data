@@ -226,6 +226,74 @@ test('monthly investing pays minimum commission each time and rejects unaffordab
   assert.match(M.buyLocationResult(data, { ...config, monthlyAmount: 5 }).rows[0].error, /最低手续费/);
 });
 
+test('already-net NAV and ETF returns are never charged annual expenses twice', () => {
+  const p = { fee: [1, 0.2, 0.5], returnPeriods: [{ years: 1, start: '2020-01-01', end: '2021-01-01' }] };
+  assert.equal(M.returnWithAnnualFees(10, p, 1), 10);
+  const gross = M.returnWithAnnualFees(10, p, 1, 'gross_estimate');
+  // Accrue 1.7% / year for 366 actual calendar days, then remove the drag.
+  const expected = (1.1 / Math.pow(1 - 0.017 / 365.2425, 366) - 1) * 100;
+  close(gross, expected);
+  assert.equal(M.returnWithAnnualFees(10, { basis: 'price_index' }, 1, 'gross_estimate'), 10);
+  assert.equal(M.returnWithAnnualFees(-100, p, 1, 'gross_estimate'), -100);
+  assert.equal(M.returnWithAnnualFees(10, { ...p, returnPeriods: [] }, 1, 'gross_estimate'), null);
+  assert.equal(M.annualFeeFactor(1, '2020-02-30', '2021-01-01'), null);
+  assert.equal(M.annualFeeFactor(1, '2021-01-01', '2020-01-01'), null);
+});
+
+test('missing fees and feeder exemptions block estimates; explicit zero and custom effective rates work', () => {
+  const p = { fee: [0.15, 0.05, null] };
+  assert.match(M.annualFeeInfo(p).missing, /销售服务费/);
+  assert.equal(M.annualFeeInfo({ fee: [0, 0, 0] }).rate, 0);
+  const linked = { n: '广发纳指100ETF联接A', fee: [0.5, 0.15, 0] };
+  assert.equal(M.annualFeeInfo(linked).rate, null);
+  assert.match(M.annualFeeInfo(linked).missing, /实际计费资产比例/);
+  assert.equal(M.annualFeeInfo(linked, 0.08).rate, 0.08);
+  assert.equal(M.annualFeeInfo({ expenseRatio: 0.75, feeAddbackRate: 0.71 }).rate, 0.71);
+  const market = M.crossborderPerformance({ ...p, exchange: true }, { market: { r: [20] } }, 'market');
+  assert.deepEqual(market.fee, p.fee);
+});
+
+test('monthly fee addback follows each lot holding period rather than all contributed cash', () => {
+  const days = ['2020-01-01', '2020-02-03', '2021-01-01'];
+  const series = days.map(day => [day, 100]);
+  const data = buyData([{ code: 'CN', channel: 'off', fee: [10, 0, 0], series }], days.map(day => [day, 1]));
+  const config = { ...buyConfig, plan: 'monthly', annualFeeBasis: 'gross_estimate' };
+  const row = M.buyLocationResult(data, config).rows[0];
+  const factors = [366, 333, 0].map(days => Math.pow(1 - 0.1 / 365.2425, -days));
+  close(row.terminal, 100 * (factors[0] + factors[1] + factors[2]));
+  assert.ok(row.terminal < 300 * factors[0]);
+  const net = M.buyLocationResult(data, { ...config, annualFeeBasis: 'net' }).rows[0];
+  assert.equal(net.terminal, 300);
+  const us = buyData([{ code: 'US', expenseRatio: 10, series }], days.map(day => [day, 1]));
+  const taxed = M.buyLocationResult(us, config).rows[0];
+  close(taxed.capitalTax, Math.max(0, row.terminal - 300) * 0.2);
+  close(taxed.terminal, row.terminal - taxed.capitalTax);
+});
+
+test('unpriced fee assumptions retain per-product missing evidence instead of pretending zero cost', () => {
+  const series = [['2020-01-01', 100], ['2021-01-01', 100]];
+  const data = buyData([{ code: 'A', channel: 'off', fee: [0.5, null, 0], series },
+    { code: 'B', channel: 'off', fee: [0.5, 0.1, 0], name: 'ETF联接基金', series }]);
+  const result = M.buyLocationResult(data, { ...buyConfig, annualFeeBasis: 'gross_estimate' });
+  assert.match(result.rows[0].error, /托管费/);
+  assert.match(result.rows[1].error, /计费资产比例/);
+  const custom = M.buyLocationResult(data, { ...buyConfig, annualFeeBasis: 'gross_estimate', annualFeeOverrides: { A: 0, B: 0.1 } });
+  close(custom.rows[0].terminal, 100);
+  assert.ok(custom.rows[1].terminal > 100);
+});
+
+test('overseas ETF filters combine categories by union and product strategies by intersection', () => {
+  const products = JSON.parse(fs.readFileSync('data/overseas-etf-catalog.json', 'utf8')).products;
+  assert.equal(products.length, 17);
+  const other = products.filter(p => p.section === 'other');
+  const selected = other.filter(p => M.overseasEtfMatches(p, { categories: ['信息科技', '半导体'], styles: ['行业指数'] }));
+  assert.deepEqual(selected.map(p => p.symbol), ['VGT', 'XLK', 'SOXX', 'SMH']);
+  assert.deepEqual(other.filter(p => M.overseasEtfMatches(p, { query: 'ndx' })).map(p => p.symbol), ['QQQI']);
+  const qqqi = products.find(p => p.symbol === 'QQQI');
+  assert.equal(qqqi.style, '主动期权');
+  assert.equal(products.find(p => p.symbol === 'USD').underlying, 'Dow Jones U.S. Semiconductors Index');
+});
+
 test('off-exchange funds use their own subscription and redemption fees', () => {
   const series = [['2020-01-01', 100], ['2021-01-01', 100]];
   const data = buyData([{ code: 'A', channel: 'off', series }, { code: 'B', channel: 'off', series }]);

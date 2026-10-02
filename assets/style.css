@@ -272,6 +272,28 @@ html{scrollbar-gutter:stable}
 .return-controls{display:flex;align-items:center;justify-content:flex-end;gap:16px;flex-wrap:wrap;margin-left:auto}
 .return-controls .period-control{justify-content:flex-end}
 .return-controls .segmented{white-space:nowrap}
+.annual-fee-control{display:flex;align-items:center;gap:8px;white-space:nowrap;font-size:11px;color:var(--muted)}
+.annual-fee-control .segmented button{font-size:11px;padding:7px 11px}
+.fee-info-button{border:0;background:transparent;color:var(--muted);padding:4px;font-size:15px;line-height:1;cursor:pointer}
+.fee-info-button:hover{color:var(--green)}
+.fee-missing{color:#987037!important}
+.fee-estimate-note{color:var(--muted);font-size:11px}
+.annual-fee-details{margin:18px 0;border-top:1px solid var(--line);padding-top:13px}
+.annual-fee-details summary{cursor:pointer;font-size:13px;color:var(--ink);font-weight:600}
+.annual-fee-details p{font-size:12px;line-height:1.7;color:var(--muted);margin:10px 0}
+.fee-override-field{display:flex;align-items:center;gap:10px;font-size:12px;flex-wrap:wrap}
+.fee-override-field input{width:155px;min-width:0;padding:8px 10px;font-size:12px}
+.detail-return-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:20px 0 12px}
+.detail-return-heading h3{margin:0;font-size:14px}
+.detail-return-heading>span{font-size:11px;color:var(--muted)}
+.detail-fee-basis{font-size:12px;color:var(--muted)}
+.overseas-search-row{display:flex;align-items:center;gap:18px;margin-top:14px;justify-content:space-between}
+.overseas-search-row input{width:340px;min-width:0;font-size:12px}
+.overseas-table td:first-child{min-width:235px;max-width:340px;white-space:normal}
+.overseas-table td:first-child .text-link{line-height:1.65;text-align:left}
+.strategy-control-bar{flex-wrap:wrap}
+.strategy-control-bar>.annual-fee-control{margin-left:auto}
+.buy-annual-fees{grid-column:1/-1;border-top:1px solid var(--line);padding-top:13px}
 .stock-controls .filters{min-width:230px}
 .stock-controls .filters input[type=search]{min-width:230px}
 .page-funds .page-head h1{font-size:30px}

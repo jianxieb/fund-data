@@ -20,7 +20,7 @@ def read_snapshot():
     script = """
 const fs=require('fs'),vm=require('vm'),path=require('path');
 const context={}; vm.createContext(context);
-for(const name of ['snapshot.js','indices.js','screening.js']) {
+for(const name of ['snapshot.js','strategy-fees.js','indices.js','screening.js']) {
   const file=path.join(process.argv[1],name);
   if(fs.existsSync(file)) vm.runInContext(fs.readFileSync(file,'utf8'),context,{timeout:1000});
 }
@@ -106,6 +106,10 @@ def audit(snapshot, today=None):
             issue(bd, 'fx_without_endpoints', 'error', '人民币收益缺少可核对的汇率起止日期', name)
         if 'ETF' in row.get('tp', '') and '未复权' in row.get('note', ''):
             issue(bd, 'unadjusted_etf', 'error', '未复权ETF价格含拆分断点，不能作为总收益基准', name)
+        if row.get('symbol') and (not row.get('underlying') or not row.get('category') or
+                not row.get('style') or not row.get('feeSourceUrl') or
+                not finite(row.get('expenseRatio')) or row['expenseRatio'] < 0 or row['expenseRatio'] >= 100):
+            issue(bd, 'etf_identity_or_fee_evidence', 'error', 'ETF缺明确标的、策略或现行年费来源', name)
     missing_fx = [row.get('n') for row in benchmark_rows if row.get('riskCNY5', {}).get('status') == 'incomplete_fx']
     if missing_fx:
         dates = sorted({day for row in benchmark_rows for day in row.get('riskCNY5', {}).get('missingFxDates', [])})
@@ -232,6 +236,23 @@ def audit(snapshot, today=None):
                 issue(td, 'window_curve_series', 'error', '可选起点的曲线与回测结果不一致', {'year': year, 'series': malformed})
             if meta.get('modelVersion', 1) >= 3 and dates:
                 check_strategy_metric_curves(item.get('curves') or {}, rows, year)
+    if meta.get('modelVersion', 1) >= 7:
+        fee_estimates = snapshot.get('STRATEGY_FEE_ESTIMATES') or {}
+        for summary in meta.get('windows') or []:
+            year = str(summary['year'])
+            estimate = fee_estimates.get(year) or {}
+            actual_rows = strategy if year == '2010' else (windows.get(year) or {}).get('results') or []
+            gross_rows = estimate.get('results') or []
+            actual_by_key = {(r.get('a'), r.get('s')): r for r in actual_rows}
+            gross_by_key = {(r.get('a'), r.get('s')): r for r in gross_rows}
+            if actual_by_key.keys() != gross_by_key.keys() or len(gross_rows) != len(actual_rows) or \
+                    estimate.get('start') != summary.get('start') or estimate.get('end') != summary.get('end'):
+                issue(td, 'fee_estimate_coverage', 'error', '扣费前估算缺完整同期间资产与策略组合', year)
+            elif any(gross_by_key[key].get('inv') != row.get('inv') or
+                     gross_by_key[key].get('tr') != row.get('tr') for key, row in actual_by_key.items()):
+                issue(td, 'fee_estimate_cashflow', 'error', '年费情景改变了原有投入本金或交易次数', year)
+            if gross_rows:
+                check_strategy_metric_curves(estimate.get('curves') or {}, gross_rows, '年费估算/' + year)
     checks.append({'id': 'strategy_curves', 'status': 'pass' if not any(i['severity'] == 'error' for i in td['issues']) else 'fail',
                    'scope': '核对全部起点的实际日期、资产与策略组合、曲线长度、正值与首日基准；不证明上游行情正确'})
     td['notes'] = [

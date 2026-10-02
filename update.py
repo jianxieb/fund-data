@@ -39,6 +39,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 from data_status import write_status
+from annual_fees import ETFS, fee_metadata
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 HTML = os.path.join(HERE, 'data', 'snapshot.js')
@@ -65,6 +66,10 @@ BM_DEFS = [
     ('QLD', '美股ETF·2倍做多', ['105.QLD', '106.QLD', '107.QLD'], '纳指100两倍做多ETF，前复权含分红；每日再平衡', 1),
     ('TQQQ', '美股ETF·3倍做多', ['105.TQQQ', '106.TQQQ', '107.TQQQ'], '纳指100三倍做多ETF，前复权含分红；每日再平衡', 1),
 ]
+# Product identities and expense evidence are shared with the strategy engine.
+BM_DEFS.extend((symbol, '海外ETF', ['105.' + symbol, '106.' + symbol, '107.' + symbol],
+                product['description'], 1) for symbol, product in ETFS.items()
+               if product['section'] == 'other')
 FX_SECIDS = ['133.USDCNY', '119.USDCNY']  # CNY 与 CNH 不互换
 
 
@@ -970,6 +975,11 @@ def bench_compute(anchor, fx_old=None):
                             if source[name].startswith('Sina') else 'https://quote.eastmoney.com/',
                'asOf': last[0] if last else None, 'periods': [],
                'status': 'computed' if last else 'unavailable'}
+        if name in ETFS:
+            row.update(fee_metadata(name))
+            row['identityUrl'] = ETFS[name]['sourceUrl']
+            row['note'] = ETFS[name]['description']
+        row['first'] = cl[0][0] if cl else None
         for years in WINDOWS:
             base = observation_at(cl, add_years(last[0], -years)) if last else None
             usd = (last[1] / base[1] - 1) * 100 if base and last else None
@@ -1221,7 +1231,7 @@ def main():
     navdate = max(set(dates), key=dates.count) if dates else old_meta.get('navdate', '')
     bench = None
     if not args.quick:
-        bench = bench_compute(navdate or datetime.now().strftime('%Y-%m-%d'))
+        bench = bench_compute((datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d'))
         if not bench['complete']:
             failures.append('benchmarks')
     quote_times = sorted(q['time'] for q in tq.values() if re.fullmatch(r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}', q.get('time', '')))
