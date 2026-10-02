@@ -641,6 +641,29 @@ class FreshnessAndOffline(unittest.TestCase):
             self.assertFalse(result['publishedRollback'])
             self.assertEqual(published.read_text(encoding='utf-8'), 'new snapshot')
 
+    def test_failed_strategy_refresh_restores_net_and_fee_scenarios_together(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            data = root / 'data'
+            data.mkdir()
+            net, fees = data / 'snapshot.js', data / 'strategy-fees.js'
+            net.write_text('previous net snapshot', encoding='utf-8')
+            fees.write_text('previous fee scenario', encoding='utf-8')
+
+            def partial_run(*_args, **_kwargs):
+                net.write_text('new net snapshot', encoding='utf-8')
+                fees.write_text('incomplete fee scenario', encoding='utf-8')
+                return subprocess.CompletedProcess(['fake'], 3, stdout='partial', stderr='')
+
+            with patch.object(refresh, 'ROOT', root), patch.object(refresh, 'DATA', data), \
+                    patch.object(refresh.subprocess, 'run', side_effect=partial_run), \
+                    patch.object(refresh, 'write_status'):
+                result = refresh.execute('strategy', ['fake'], 5, offline=True)
+            self.assertEqual(result['exitCode'], 3)
+            self.assertTrue(result['publishedRollback'])
+            self.assertEqual(net.read_text(encoding='utf-8'), 'previous net snapshot')
+            self.assertEqual(fees.read_text(encoding='utf-8'), 'previous fee scenario')
+
     def test_timed_out_refresh_restores_published_data(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

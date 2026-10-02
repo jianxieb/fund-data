@@ -16,7 +16,7 @@ PUBLISHED_OUTPUTS = {
     'indices': ('indices.js', 'index-history.json'),
     'stocks': ('snapshot.js',),
     'screening': ('screening.js',),
-    'strategy': ('snapshot.js',),
+    'strategy': ('snapshot.js', 'strategy-fees.js'),
 }
 
 
