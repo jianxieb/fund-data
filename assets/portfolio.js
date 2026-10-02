@@ -75,9 +75,10 @@
       // a valid user's combination impossible to simulate.
       if (benchmark && !selected.some(a => a.id === benchmark.id)) await loadHistory(benchmark).catch(() => {});
       if (token !== runId) return;
-      const computed = P.simulate({ catalog, histories: Object.fromEntries(histories), config: params, fxHistory: histories.get(catalog.fx?.id) });
+      const input = { catalog, histories: Object.fromEntries(histories), config: params, fxHistory: histories.get(catalog.fx?.id) };
+      const computed = P.simulate(input);
       if (computed.error) error = computed.error;
-      else { result = computed; resultKey = JSON.stringify(params); }
+      else { computed.snapshots = P.simulateWindows(input, computed.end); result = computed; resultKey = JSON.stringify(params); }
     } catch (e) { if (token === runId) error = e.message; }
     finally { if (token === runId) { running = false; update(); } }
   }
@@ -158,6 +159,14 @@
     return H.card('组合走势', label, '<div class="portfolio-chart-body"><div class="portfolio-chart-legend"><span><i style="background:#35654a"></i>我的组合</span>' + (secondary ? '<span><i style="background:#9c8d6e"></i>' + H.esc(metric === 'amount' ? '累计投入' : result.benchmark.name) + '</span>' : '') + '<span id="portfolio-chart-readout" aria-live="polite"></span></div><div class="portfolio-plot-wrap"><div id="portfolio-tooltip" class="portfolio-tooltip" hidden></div><svg class="portfolio-plot" data-portfolio-plot data-min="' + lo + '" data-max="' + hi + '" viewBox="0 0 ' + W + ' ' + HH + '" role="img" aria-label="' + label + '"><title>' + label + '</title><defs><linearGradient id="portfolio-fill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#a4c1a2" stop-opacity=".24"/><stop offset="1" stop-color="#a4c1a2" stop-opacity=".02"/></linearGradient></defs>' + grid + '<path d="' + area + '" fill="url(#portfolio-fill)"/>' + (secondary ? '<path d="' + path(secondary) + '" stroke="#9c8d6e" fill="none" stroke-width="1.8" stroke-dasharray="5 4"/>' : '') + '<path d="' + path(primary) + '" stroke="#35654a" fill="none" stroke-width="2.3"/><line id="portfolio-cursor" x1="0" x2="0" y1="' + pad.y + '" y2="' + (HH - pad.bottom) + '" stroke="#83927c" stroke-dasharray="3 3" visibility="hidden" pointer-events="none"/><circle id="portfolio-point" r="4.5" fill="#35654a" stroke="white" stroke-width="2" visibility="hidden" pointer-events="none"/><rect x="63" y="24" width="841" height="272" fill="transparent" pointer-events="all"/></svg></div></div>',
       '<div class="segmented">' + [['return', '收益率'], ['amount', '账户资产'], ['drawdown', '回撤']].map(([key, name]) => btn(name, 'metric', key === metric ? 'active' : '', 'data-value="' + key + '"')).join('') + '</div>');
   }
+  function snapshots() {
+    const periods = result.snapshots || [];
+    const measures = [[H.annual ? '组合年化收益' : '组合累计收益', r => H.pc(H.annual ? r.annualReturn : r.totalReturn)],
+      ['对照收益', r => r.benchmark ? H.pc(H.annual ? r.benchmark.annualReturn : r.benchmark.totalReturn) : '<span class="muted">无覆盖</span>'],
+      ['期末资产 / 元', r => H.money(r.value)], ['累计投入 / 元', r => H.money(r.contributed)],
+      ['账面盈亏 / 元', r => H.money(r.profit)], ['最大回撤', r => H.pc(r.mdd)], ['年化波动', r => H.pct(r.volatility, 2, false)]];
+    return H.card('区间快照', '同一组合 · 同一投入方式', '<div class="table-wrap"><table class="portfolio-snapshot-table"><thead><tr><th>指标</th>' + periods.map(r => '<th>近' + r.years + '年<small>' + (r.error ? '历史未覆盖' : r.start + ' — ' + r.end) + '</small></th>').join('') + '</tr></thead><tbody>' + measures.map(([label, format]) => '<tr><td>' + label + '</td>' + periods.map(r => '<td class="num">' + (r.error ? '—' : format(r)) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>' + periods.filter(r => r.error).map(r => '<p class="portfolio-snapshot-missing">近' + r.years + '年：' + H.esc(r.error) + '</p>').join(''));
+  }
   function results() {
     if (!result) return '<section class="portfolio-result-placeholder"><div><span class="eyebrow">YOUR PORTFOLIO, OVER TIME</span><h2>看组合如何走过市场起伏</h2><p>配置权重和投入方式后，开始模拟。</p></div><svg viewBox="0 0 460 135" aria-hidden="true"><path d="M3 120H457M3 80H457M3 40H457" stroke="#e0e5d7"/><path d="m3 101 37-13 37 14 38-28 37 7 38-22 38 12 37-31 37 5 40-26 38 6 40-23" fill="none" stroke="#96aa83" stroke-width="2"/><path d="m3 110 37-4 37 5 38-19 37 10 38-8 38-9 37 6 37-19 40 9 38-16 40 2" fill="none" stroke="#c3b291" stroke-width="1.5" stroke-dasharray="5 5"/></svg></section>';
     const r = result;
@@ -166,7 +175,7 @@
     return '<div class="portfolio-results"><div class="portfolio-result-head"><div><h2>' + (resultKey === signature() ? '模拟结果' : '上次模拟结果') + '</h2><p>' + r.start + ' — ' + r.end + ' · ' + (r.config.feeBasis === 'net' ? '年费已扣除' : '扣费前估算') + ' · 投资者税前</p></div><div class="actions">' + btn('区间与来源', 'sources', 'text-link small') + btn('导出结果', 'export-result', 'btn sm') + '</div></div>' +
       '<div class="stats-grid">' + H.stat(H.annual ? '组合年化收益' : '组合累计收益', H.pct(H.annual ? r.annualReturn : r.totalReturn, 2, false), '', r.benchmark ? '对照 ' + H.pct(H.annual ? r.benchmark.annualReturn : r.benchmark.totalReturn) : '按现金流中性组合净值计算') +
       H.stat('期末资产', H.money(r.value), '元', '累计投入 ' + H.money(r.contributed) + ' 元') + H.stat('账面盈亏', H.money(r.profit), '元', '持仓与现金合计；未按期末清仓') + H.stat('最大回撤', H.pct(r.mdd, 2, false), '', '年化波动 ' + H.pct(r.volatility, 2, false)) + '</div>' +
-      (r.benchmarkError ? '<div class="portfolio-warning">' + H.esc(r.benchmarkError) + '，当前仅显示组合曲线。</div>' : '') +
+      snapshots() + (r.benchmarkError ? '<div class="portfolio-warning">' + H.esc(r.benchmarkError) + '，当前仅显示组合曲线。</div>' : '') +
       chart() + '<div class="portfolio-result-notes"><span>投入 ' + r.deposits + '笔</span><span>再平衡 ' + r.rebalances + '次</span><span>交易费用 ' + H.money(r.tradeCost, 2) + '元</span>' + (r.xirr !== null ? '<span>资金年化 ' + H.pct(r.xirr) + '</span>' : '') + '</div>' +
       H.card('持仓贡献', '', '<div class="portfolio-structure portfolio-end-structure"><h3>期末结构</h3>' + structure(r.holdings.map(h => ({ id: h.id, weight: h.actualWeight }))) + '</div>' + holdingTable) + '<section class="card portfolio-yearly"><div class="card-head"><h2>年度表现</h2><span class="small">现金流中性 · 累计收益</span></div><div class="portfolio-year-grid">' + r.annual.map(y => '<div><span>' + y.year + '</span><strong class="num">' + H.pc(y.return) + '</strong><small>' + y.start.slice(5) + ' — ' + y.end.slice(5) + '</small></div>').join('') + '</div></section></div>';
   }

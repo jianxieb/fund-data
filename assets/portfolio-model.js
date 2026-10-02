@@ -83,6 +83,10 @@
   function simulate(input) {
     try { return run(input); } catch (error) { return { error: error.message }; }
   }
+  function simulateWindows(input, end, periods = [3, 5]) {
+    return periods.map(years => ({ years, ...simulate({ ...input,
+      config: { ...input.config, years: 'custom', start: addYears(end, -years), end } }) }));
+  }
   function run({ catalog, histories, config, fxHistory }) {
     const assets = new Map((catalog?.assets || []).map(a => [a.id, a]));
     const { positions, total, cashWeight } = validateConfig(config, new Set(assets.keys()));
@@ -274,5 +278,5 @@
     }
     return config;
   }
-  return { simulate, validateHistory, validateConfig, sanitizeDraft, allocation, at, annualReturn, addYears };
+  return { simulate, simulateWindows, validateHistory, validateConfig, sanitizeDraft, allocation, at, annualReturn, addYears };
 });

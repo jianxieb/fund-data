@@ -31,6 +31,20 @@ test('portfolio structure counts weights and treats 2x/3x as ETF subsets', () =>
   assert.equal(P.allocation([{ id: 's', weight: NaN }], assets).invalid, true);
 });
 
+test('3/5-year snapshots restart cash flows at each window with a shared end date', () => {
+  const days = [];
+  for (let t = Date.parse('2020-01-01'); t <= Date.parse('2026-01-01'); t += 86400000) days.push(new Date(t).toISOString().slice(0, 10));
+  const input = fixture([{ days, values: days.map(() => 1) }], { monthly: 100, years: 1 });
+  const before = JSON.stringify(input.config), snapshots = P.simulateWindows(input, '2026-01-01');
+  assert.equal(JSON.stringify(input.config), before);
+  assert.deepEqual(snapshots.map(r => r.start), ['2023-01-01', '2021-01-01']);
+  assert.deepEqual(snapshots.map(r => r.end), ['2026-01-01', '2026-01-01']);
+  close(snapshots[0].value, 4600); close(snapshots[1].value, 7000);
+  close(snapshots[0].contributed, 4600); close(snapshots[1].totalReturn, 0);
+  const short = fixture([{ values: [1, 2, 3] }]);
+  assert.ok(P.simulateWindows(short, dates.at(-1)).every(r => /不覆盖/.test(r.error)));
+});
+
 test('buy and hold uses real paths; monthly rebalance has a different hand-calculated result', () => {
   const input = fixture([{ values: [1, 2, 1] }, { values: [1, 1, 2] }]);
   const hold = P.simulate(input);
