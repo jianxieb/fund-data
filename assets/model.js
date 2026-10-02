@@ -10,6 +10,7 @@
   const record = v => v !== null && typeof v === 'object' && !Array.isArray(v);
   const escapeHtml = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   function stockMatches(stock, group) {
+    if (group === 'other') return !['quality', 'growth', 'breakout', 'dividend'].some(id => stockMatches(stock, id));
     if (group === 'dividend') return stock.group === 'dividend';
     if (!['quality', 'growth', 'breakout'].includes(group) || !['quality', 'growth'].includes(stock.group)) return false;
     if (group === 'breakout' && (stockMatches(stock, 'quality') || stockMatches(stock, 'growth'))) return false;
@@ -37,11 +38,6 @@
       return { id, label, checks };
     });
     return { groups, label: groups.length ? groups.map(g => g.label).join(' · ') : '未入选当前名单', exclusions };
-  }
-  function stockSearchExtras(stocks, query, group, hideBoards = false) {
-    const q = query.trim().toLowerCase();
-    return q ? stocks.filter(s => !stockMatches(s, group) && (!hideBoards || stockBoard(s.c) === 'main') &&
-      [s.c, s.n, s.ind, s.businessLabel, s.researchCategory].join(' ').toLowerCase().includes(q)) : [];
   }
   function stockBoard(code) {
     return /^68[89]\d{3}$/.test(code) ? 'star' : /^30[01]\d{3}$/.test(code) ? 'chinext' : 'main';
@@ -458,5 +454,5 @@
     });
     return { start, end, purchaseDays, rows, exchangeBasis, annualFeeBasis };
   }
-  return { finite, sum, copy, escapeHtml, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, stockMatches, stockResearchStatus, stockSearchExtras, stockBoard, loadWindow, fundScopeMatches, fundFacetMatches, indexFundKind, indexSectors, indexSectorMatches, csv, buyLocationXirr, buyLocationResult, crossborderPerformance, crossborderMatches, isCrossborderIndex, crossborderRegion, annualFeeInfo, annualFeeFactor, returnWithAnnualFees, overseasEtfMatches };
+  return { finite, sum, copy, escapeHtml, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, stockMatches, stockResearchStatus, stockBoard, loadWindow, fundScopeMatches, fundFacetMatches, indexFundKind, indexSectors, indexSectorMatches, csv, buyLocationXirr, buyLocationResult, crossborderPerformance, crossborderMatches, isCrossborderIndex, crossborderRegion, annualFeeInfo, annualFeeFactor, returnWithAnnualFees, overseasEtfMatches };
 }));

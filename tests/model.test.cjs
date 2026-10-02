@@ -57,16 +57,20 @@ test('calendar coverage rejects impossible dates and handles leap anniversaries'
   assert.equal(M.hasWindow('2010-01-01', '2026-01-01', 1e12), false);
 });
 
-test('searched research outside a published list remains discoverable with exact exclusion evidence', () => {
+test('other research is a visible group with exact exclusion evidence and no selected companies', () => {
   const vm = require('node:vm'), context = {};
   vm.createContext(context); vm.runInContext(fs.readFileSync('data/snapshot.js', 'utf8'), context);
   const s = context.STOCKS.find(s => s.c === '002648'), status = M.stockResearchStatus(s);
   assert.equal(status.groups.length, 0); assert.equal(status.label, '未入选当前名单');
   assert.match(status.exclusions.find(e => e.id === 'quality').checks.at(-1).reason, /2025.*-12.54%.*4.03%/);
   assert.match(status.exclusions.find(e => e.id === 'growth').checks[0].reason, /15.47%.*30%/);
-  assert.deepEqual(M.stockSearchExtras([s], '', 'quality'), []);
-  assert.deepEqual(M.stockSearchExtras([s], '卫星', 'quality'), [s]);
-  assert.deepEqual(M.stockSearchExtras([{ ...s, c: '688001' }], '卫星', 'quality', true), []);
+  assert.equal(M.stockMatches(s, 'other'), true);
+  const selectedGroups = ['quality', 'growth', 'breakout', 'dividend'];
+  for (const stock of context.STOCKS) {
+    const selected = selectedGroups.some(group => M.stockMatches(stock, group));
+    assert.equal(M.stockMatches(stock, 'other'), !selected, stock.c);
+  }
+  for (const code of ['601138', '601899', '600036']) assert.equal(M.stockMatches(context.STOCKS.find(stock => stock.c === code), 'other'), false);
   assert.equal(M.stockResearchStatus({ c:'123456', group:'dividend' }).exclusions.length, 0);
 });
 
