@@ -13,7 +13,7 @@
   } catch (_) {}
   const colors = ['#35654a', '#768855', '#aa8253', '#7d839f', '#64a6a1', '#ad6f78', '#8ba9cf', '#aab865'];
   const typeName = { stock: '个股', fund: '基金', etf: 'ETF' };
-  const config = () => ({ ...draft, feeBasis: H.feeBasis, feeOverrides: { ...H.feeOverrides, ...draft.feeOverrides } });
+  const config = () => ({ ...draft, feeBasis: 'net', feeOverrides: {} });
   const signature = () => JSON.stringify(config());
   const asset = id => catalog?.assets.find(a => a.id === id);
   const btn = (text, act, cls = 'btn', extra = '') => H.action(text, 'portfolio-' + act, cls, extra);
@@ -172,7 +172,7 @@
       (draft.positions.some(p => (asset(p.id)?.leverage || 1) > 1 && p.weight > 0) ? '<div class="portfolio-warning">组合含每日杠杆ETF，长期表现取决于价格路径；杠杆并非长期收益的固定倍数。</div>' : '') + results();
   }
   function method() {
-    H.openModal(H.modalTitle('组合回测口径', '人民币 · 每日历史 · 投资者税前') + '<div class="rule-list"><p><strong>价格与分红：</strong>境内基金及ETF使用净值与已发布每日收益，默认不计场内溢价；个股和海外ETF使用含分红复权股价。分红视为再投资，支持碎股，不模拟申购暂停、涨跌停或整手限制。</p><p><strong>汇率与交易日：</strong>海外资产按美元兑人民币历史汇率估值。休市日沿用最近已发布价格；新增投入和再平衡推迟到所选资产都有真实报价的共同日期，不使用未来价格。</p><p><strong>投入与权重：</strong>未分配权重持有零息现金。每月追加按目标权重购买；再平衡按所选月份、季度或年份的首个共同交易日进行，先结算买卖费用再求目标持仓。</p><p><strong>费用与税：</strong>实际净值与复权股价已经反映持续年费，默认不重复扣费；不扣年费只按现行有效费率逐日还原。买卖费率是统一自定义假设，未含最低佣金、换汇价差、申赎阶梯费率和投资者税费。期末为持仓估值，未扣清仓费用。跨境卖出和股息税后的渠道比较见“投资渠道”。</p><p><strong>收益：</strong>组合净值消除外部追加本金影响；账面盈亏为期末资产减累计投入。首年年化按至少一年计算；不满一年不显示资金年化。对照线为同币种、同区间持有回报，不计用户自定义交易费。</p></div><div class="actions"><a class="source-link" href="docs/portfolio-method.md" target="_blank" rel="noopener">完整公式与边界 ↗</a></div>');
+    H.openModal(H.modalTitle('组合回测口径', '人民币 · 每日历史 · 投资者税前') + '<div class="rule-list"><p><strong>价格与分红：</strong>境内基金及ETF使用净值与已发布每日收益，默认不计场内溢价；个股和海外ETF使用含分红复权股价。分红视为再投资，支持碎股，不模拟申购暂停、涨跌停或整手限制。</p><p><strong>汇率与交易日：</strong>海外资产按美元兑人民币历史汇率估值。休市日沿用最近已发布价格；新增投入和再平衡推迟到所选资产都有真实报价的共同日期，不使用未来价格。</p><p><strong>投入与权重：</strong>未分配权重持有零息现金。每月追加按目标权重购买；再平衡按所选月份、季度或年份的首个共同交易日进行，先结算买卖费用再求目标持仓。</p><p><strong>费用与税：</strong>实际净值与复权股价已经反映产品持续年费，不再重复扣费，也不加回年费。买卖费率是统一自定义假设，未含最低佣金、换汇价差、申赎阶梯费率和投资者税费。期末为持仓估值，未扣清仓费用。跨境卖出和股息税后的渠道比较见“投资渠道”。</p><p><strong>收益：</strong>组合净值消除外部追加本金影响；账面盈亏为期末资产减累计投入。首年年化按至少一年计算；不满一年不显示资金年化。对照线为同币种、同区间持有回报，不计用户自定义交易费。</p></div><div class="actions"><a class="source-link" href="docs/portfolio-method.md" target="_blank" rel="noopener">完整公式与边界 ↗</a></div>');
   }
   function sources() {
     if (!result) return;
