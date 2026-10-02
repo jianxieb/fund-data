@@ -988,9 +988,9 @@
     const homeEntry = event.target.closest('[data-home-tab]');
     if (homeEntry) {
       const tab = homeEntry.dataset.homeTab, target = homeEntry.getAttribute('href').slice(1);
-      if (target === 'funds') { state.fundTab = tab; state.poolCategory = 'all'; state.fundFacets.clear(); state.fundSectors.clear(); state.query = ''; state.channel = 'all'; state.purchasable = false; loadedCounts.delete('funds'); }
+      if (target === 'funds') { state.fundTab = tab; state.poolCategory = 'all'; state.fundFacets.clear(); state.fundSectors.clear(); state.channel = 'all'; state.purchasable = false; loadedCounts.delete('funds'); }
       if (target === 'indices') state.indexTab = tab;
-      if (target === 'stocks') { state.stockTab = tab; state.stockQuery = ''; state.stockSort = 'default'; }
+      if (target === 'stocks') { state.stockTab = tab; state.stockSort = 'default'; }
       if (target === 'strategy') { state.stratPanel = tab; state.stratView = 'results'; }
       if (location.hash === '#' + target) { event.preventDefault(); render(); }
       return;
@@ -1034,7 +1034,7 @@
         break;
       case 'research-entry': {
         const target = button.dataset.route || 'funds';
-        if (target === 'funds') { state.fundTab = val; state.poolCategory = 'all'; state.fundFacets.clear(); state.fundSectors.clear(); state.query = ''; state.channel = 'all'; state.purchasable = false; loadedCounts.delete('funds'); state.fundSort = 'default'; }
+        if (target === 'funds') { state.fundTab = val; state.poolCategory = 'all'; state.fundFacets.clear(); state.fundSectors.clear(); state.channel = 'all'; state.purchasable = false; loadedCounts.delete('funds'); state.fundSort = 'default'; }
         if (target === 'indices') { state.indexTab = val; state.indexSort = 'default'; }
         if (target === 'strategy') { state.stratPanel = val; state.stratCompare = val === 'dca' ? 'methods' : 'assets'; state.stratView = 'results'; }
         if (target === 'buy-location') state.buyFamily = val;
@@ -1085,7 +1085,7 @@
       case 'stock-rules': stockRules(); return;
       case 'report-section': $('#report-' + val)?.scrollIntoView({ behavior: 'auto', block: 'start' }); return;
       case 'index-tab': state.indexTab = val; state.indexSort = 'default'; break;
-      case 'stock-tab': state.stockTab = val; state.stockSort = 'default'; state.stockQuery = ''; state.stockCategory = 'all'; break;
+      case 'stock-tab': state.stockTab = val; state.stockSort = 'default'; state.stockCategory = 'all'; break;
       case 'stock-category': state.stockCategory = val; break;
       case 'stock-view': state.stockView = val; state.stockSort = 'default'; break;
       case 'index-sort':
@@ -1097,7 +1097,7 @@
       case 'index-detail': openIndex(Number(val)); return;
       case 'go-index-funds': state.fundTab = 'passive'; state.fundFacets.clear(); state.fundSectors.clear(); state.channel = 'all'; state.query = ''; go('funds'); return;
       case 'find-index-funds': state.fundTab = 'all'; state.poolCategory = 'all'; state.fundFacets.clear(); state.fundSectors.clear(); state.channel = 'all'; state.purchasable = false; state.query = val; $('#dialog').close(); go('funds'); return;
-      case 'fund-tab': state.fundTab = val; state.poolCategory = 'all'; state.fundFacets.clear(); state.fundSectors.clear(); state.query = ''; state.channel = 'all'; state.purchasable = false; state.fundSort = 'default'; break;
+      case 'fund-tab': state.fundTab = val; state.poolCategory = 'all'; state.fundFacets.clear(); state.fundSectors.clear(); state.channel = 'all'; state.purchasable = false; state.fundSort = 'default'; break;
       case 'fund-sort':
         if (state.fundSort === val) { if (state.descending) state.descending = false; else { state.fundSort = 'default'; state.descending = true; } }
         else { state.fundSort = val; state.descending = true; }
