@@ -706,3 +706,10 @@ html[data-input-mode=pointer] :is(button,a,input,select,summary):focus-visible{o
 .portfolio-tooltip>div{display:flex;gap:24px;justify-content:space-between;margin-top:6px}
 .portfolio-tooltip span{color:var(--muted);max-width:170px}
 .portfolio-tooltip b{font-weight:550;font-variant-numeric:tabular-nums;white-space:nowrap}
+.portfolio-structure{padding:13px 0 17px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.portfolio-structure-main{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;font-size:11px;color:var(--muted)}
+.portfolio-structure-main b{display:block;margin-top:5px;font-size:17px;font-weight:550;color:var(--text);font-variant-numeric:tabular-nums}
+.portfolio-structure-leverage{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px;font-size:11px;color:var(--muted)}
+.portfolio-structure-leverage b{color:var(--text);font-weight:550;font-variant-numeric:tabular-nums}
+.portfolio-end-structure{padding:18px 24px;margin-bottom:0}
+.portfolio-end-structure h3{font-size:12px;font-weight:500;margin-bottom:14px;color:var(--muted)}

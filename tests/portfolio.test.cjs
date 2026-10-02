@@ -19,6 +19,18 @@ function fixture(specs, options = {}) {
 }
 const close = (actual, expected, tolerance = 1e-7) => assert.ok(Math.abs(actual - expected) < tolerance, `${actual} != ${expected}`);
 
+test('portfolio structure counts weights and treats 2x/3x as ETF subsets', () => {
+  const assets = [{ id: 'e2', kind: 'etf', leverage: 2 }, { id: 'e3', kind: 'etf', leverage: 3 },
+    { id: 'e1', kind: 'etf' }, { id: 's', kind: 'stock', leverage: 2 }, { id: 'f', kind: 'fund' }];
+  const positions = [15, 20, 10, 25, 20].map((weight, i) => ({ id: assets[i].id, weight }));
+  assert.deepEqual(P.allocation(positions, assets), { etf: 45, stock: 25, fund: 20, cash: 10,
+    unclassified: 0, total: 90, x2: 15, x3: 20, invalid: false });
+  const excess = P.allocation([...positions, { id: 'unknown', weight: 20 }], assets);
+  assert.equal(excess.total, 110); assert.equal(excess.etf, 45); assert.equal(excess.invalid, true);
+  assert.equal(excess.unclassified, 20); assert.equal(excess.cash, 0);
+  assert.equal(P.allocation([{ id: 's', weight: NaN }], assets).invalid, true);
+});
+
 test('buy and hold uses real paths; monthly rebalance has a different hand-calculated result', () => {
   const input = fixture([{ values: [1, 2, 1] }, { values: [1, 1, 2] }]);
   const hold = P.simulate(input);

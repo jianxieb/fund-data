@@ -40,6 +40,21 @@
     const years = gap(start, end) / YEAR;
     return finite(ratio) && ratio >= 0 && years > 0 ? (Math.pow(ratio, 1 / Math.max(1, years)) - 1) * 100 : null;
   }
+  function allocation(positions, assets) {
+    const byId = new Map(assets.map(a => [a.id, a]));
+    const result = { etf: 0, stock: 0, fund: 0, cash: 0, unclassified: 0, total: 0, x2: 0, x3: 0, invalid: false };
+    for (const p of positions) {
+      if (!finite(p.weight) || p.weight < 0 || p.weight > 100) { result.invalid = true; continue; }
+      result.total += p.weight;
+      const a = byId.get(p.id);
+      result[['etf', 'stock', 'fund'].includes(a?.kind) ? a.kind : 'unclassified'] += p.weight;
+      if (a?.kind === 'etf' && a.leverage === 2) result.x2 += p.weight;
+      if (a?.kind === 'etf' && a.leverage === 3) result.x3 += p.weight;
+    }
+    result.cash = Math.max(0, 100 - result.total);
+    result.invalid ||= result.total > 100 + EPS || result.unclassified > EPS;
+    return result;
+  }
   function validateConfig(config, ids) {
     if (!config || !Array.isArray(config.positions) || !config.positions.length) fail('先添加组合标的并设置权重');
     const used = new Set();
@@ -259,5 +274,5 @@
     }
     return config;
   }
-  return { simulate, validateHistory, validateConfig, sanitizeDraft, at, annualReturn, addYears };
+  return { simulate, validateHistory, validateConfig, sanitizeDraft, allocation, at, annualReturn, addYears };
 });

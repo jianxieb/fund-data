@@ -104,10 +104,17 @@
       btn('×', 'remove', 'portfolio-remove', 'data-value="' + H.esc(position.id) + '" aria-label="移除' + H.esc(row?.name || position.id) + '"') +
       (H.feeBasis === 'gross_estimate' && info?.applicable ? '<div class="portfolio-fee-field"><span>' + H.esc(info.rate === null ? info.missing : '估算有效年费') + '</span><label><input type="number" min="0" max="99" step="any" data-portfolio-fee="' + H.esc(row.code) + '" value="' + (draft.feeOverrides[row.code] ?? '') + '" placeholder="' + (info.rate ?? '填写有效费率') + '" aria-label="' + H.esc(row.name + '的估算有效年费') + '"><span>% / 年</span></label></div>' : '') + '</div>';
   }
-  function composition() {
+  function structure(positions) {
+    const a = P.allocation(positions, catalog.assets);
+    return '<div class="portfolio-structure-main">' + [['etf', 'ETF'], ['stock', '个股'], ['fund', '基金'], ['cash', '现金']].map(([key, label]) => '<span>' + label + '<b>' + H.pct(a[key], 2, false) + '</b></span>').join('') + '</div><div class="portfolio-structure-leverage"><span>其中杠杆ETF</span><span>2x <b>' + H.pct(a.x2, 2, false) + '</b></span><span>3x <b>' + H.pct(a.x3, 2, false) + '</b></span></div>' + (a.invalid ? '<span class="negative small">请修正无效权重或超过100%的合计</span>' : '');
+  }
+  function allocationMarkup() {
     const total = draft.positions.reduce((s, p) => s + (Number(p.weight) || 0), 0), cash = Math.max(0, 100 - total);
     const bars = draft.positions.filter(p => p.weight > 0).map((p, i) => '<span style="flex:' + p.weight + ';background:' + colors[i % colors.length] + '" title="' + H.esc((asset(p.id)?.name || p.id) + ' ' + p.weight + '%') + '"></span>').join('') + (cash ? '<span style="flex:' + cash + ';background:#e4e7df" title="现金 ' + cash.toFixed(2) + '%"></span>' : '');
-    return H.card('我的组合', draft.positions.length + '只标的', '<div class="portfolio-composition"><div class="portfolio-allocation-bar" aria-label="组合权重分布">' + (bars || '<span style="flex:100;background:#e4e7df"></span>') + '</div><div class="portfolio-allocation-total' + (total > 100 + 1e-8 ? ' negative' : '') + '"><strong>标的 ' + H.pct(total, 2, false) + '</strong><span>现金 ' + H.pct(cash, 2, false) + '</span></div>' +
+    return '<div class="portfolio-allocation-bar" aria-label="组合权重分布">' + (bars || '<span style="flex:100;background:#e4e7df"></span>') + '</div><div class="portfolio-allocation-total' + (total > 100 + 1e-8 ? ' negative' : '') + '"><strong>标的合计 ' + H.pct(total, 2, false) + '</strong></div><div class="portfolio-structure">' + structure(draft.positions) + '</div>';
+  }
+  function composition() {
+    return H.card('我的组合', draft.positions.length + '只标的', '<div class="portfolio-composition"><div id="portfolio-allocation-summary" aria-live="polite">' + allocationMarkup() + '</div>' +
       (draft.positions.length ? draft.positions.map(holdingRow).join('') : '<div class="portfolio-empty-holdings"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 8h13v13H8zM27 8h13v13H27zM8 27h13v13H8zM33.5 27v13M27 33.5h13"/></svg><h3>从标的库开始构建</h3><p>ETF、个股和基金可以放在同一个组合中。</p></div>') + '</div>',
       '<div class="actions">' + btn('均分权重', 'equal', 'text-link small', draft.positions.length ? '' : 'disabled') + (draft.positions.length ? btn('清空', 'clear', 'text-link small') : '') + '</div>');
   }
@@ -161,7 +168,7 @@
       H.stat('期末资产', H.money(r.value), '元', '累计投入 ' + H.money(r.contributed) + ' 元') + H.stat('账面盈亏', H.money(r.profit), '元', '持仓与现金合计；未按期末清仓') + H.stat('最大回撤', H.pct(r.mdd, 2, false), '', '年化波动 ' + H.pct(r.volatility, 2, false)) + '</div>' +
       (r.benchmarkError ? '<div class="portfolio-warning">' + H.esc(r.benchmarkError) + '，当前仅显示组合曲线。</div>' : '') +
       chart() + '<div class="portfolio-result-notes"><span>投入 ' + r.deposits + '笔</span><span>再平衡 ' + r.rebalances + '次</span><span>交易费用 ' + H.money(r.tradeCost, 2) + '元</span>' + (r.xirr !== null ? '<span>资金年化 ' + H.pct(r.xirr) + '</span>' : '') + '</div>' +
-      H.card('持仓贡献', '', holdingTable) + '<section class="card portfolio-yearly"><div class="card-head"><h2>年度表现</h2><span class="small">现金流中性 · 累计收益</span></div><div class="portfolio-year-grid">' + r.annual.map(y => '<div><span>' + y.year + '</span><strong class="num">' + H.pc(y.return) + '</strong><small>' + y.start.slice(5) + ' — ' + y.end.slice(5) + '</small></div>').join('') + '</div></section></div>';
+      H.card('持仓贡献', '', '<div class="portfolio-structure portfolio-end-structure"><h3>期末结构</h3>' + structure(r.holdings.map(h => ({ id: h.id, weight: h.actualWeight }))) + '</div>' + holdingTable) + '<section class="card portfolio-yearly"><div class="card-head"><h2>年度表现</h2><span class="small">现金流中性 · 累计收益</span></div><div class="portfolio-year-grid">' + r.annual.map(y => '<div><span>' + y.year + '</span><strong class="num">' + H.pc(y.return) + '</strong><small>' + y.start.slice(5) + ' — ' + y.end.slice(5) + '</small></div>').join('') + '</div></section></div>';
   }
   function view(context) {
     H = context; ensureCatalog();
@@ -230,7 +237,10 @@
     if (el.dataset.portfolioWeight) {
       const p = draft.positions.find(p => p.id === el.dataset.portfolioWeight);
       if (p) p.weight = el.value.trim() ? Number(el.value) : NaN;
-      touch(); return false;
+      touch();
+      const summary = document.getElementById('portfolio-allocation-summary');
+      if (summary) summary.innerHTML = allocationMarkup();
+      return false;
     }
     if (el.dataset.portfolioField) {
       const key = el.dataset.portfolioField;
