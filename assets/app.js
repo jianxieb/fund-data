@@ -261,9 +261,9 @@
     const filters = '<section class="cross-filters" aria-label="跨境基金筛选"><div class="cross-filter-row"><span>市场 <small>可多选</small></span><div class="filter-chips">' + chips(['美国', '港股与中概', '日本', '欧洲', '全球', '其他与跨区域'].filter(r => pool.some(f => M.crossborderRegion(f) === r)).map(r => [r, r]), state.crossRegions, 'cross-region') + '</div></div><div class="cross-filter-row"><span>跟踪指数 <small>可多选</small></span><div class="filter-chips">' + chips(shownTypes.map(ix => [ix, ix]), state.crossTypes, 'cross-type') + moreTypes + '</div></div><div class="cross-filter-row"><span>交易渠道 <small>可多选</small></span><div class="filter-chips">' + chips([['exchange', '场内 ETF'], ['off', '场外基金']], state.crossChannels, 'cross-channel') + '</div></div><div class="cross-filter-row"><span>快照溢价</span><div class="filter-chips">' + [['all', '不限'], ['0', '折价 / 平价'], ['2', '≤ 2%'], ['5', '≤ 5%']].map(([v, label]) => action(label, 'cross-premium', 'filter-chip' + ((v === 'all' ? state.crossPremium === null : state.crossPremium === +v) ? ' active' : ''), 'data-value="' + v + '" aria-pressed="' + (v === 'all' ? state.crossPremium === null : state.crossPremium === +v) + '"')).join('') + '<label class="check-label cross-available"><input type="checkbox" id="cross-purchasable"' + (state.crossPurchasable ? ' checked' : '') + '>场外可申购</label></div></div><div class="cross-filter-foot"><label class="cross-search"><input type="search" id="cross-search" aria-label="搜索跨境基金名称或代码" placeholder="搜索基金名称或代码" value="' + esc(state.crossQuery) + '"></label><div>' + action('重置筛选', 'cross-reset', 'text-link small') + action('溢价与分红口径', 'cross-method', 'btn sm') + '</div></div></section>';
     const basis = '<div class="cross-basis"><span>场内收益</span><div class="segmented" aria-label="场内基金收益口径">' + [['nav', '净值 · 剔除溢价'], ['market', '成交价 · 含溢价']].map(([v, label]) => action(label, 'cross-basis', state.crossBasis === v ? 'active' : '', 'data-value="' + v + '" aria-pressed="' + (state.crossBasis === v) + '"')).join('') + '</div></div>';
     const th = (label, key) => '<th aria-sort="' + (state.crossSort === key ? state.crossDesc ? 'descending' : 'ascending' : 'none') + '">' + action(label + (state.crossSort === key ? state.crossDesc ? ' ↓' : ' ↑' : ''), 'cross-sort', '', 'data-value="' + key + '"') + '</th>';
-    const table = '<section class="card index-section"><div class="cross-results-head"><div><h2>' + rows.length + '<small> / ' + pool.length + '只基金</small></h2><p>人民币 · 分红再投 · ' + feeBasisLabel() + (state.crossPremium !== null ? ' · 溢价筛选仅作用于场内，缺报价则排除' : '') + '</p></div>' + action('导出筛选结果', 'cross-export', 'btn sm') + '</div><div class="table-wrap cross-table-wrap" tabindex="0" aria-label="跨境基金研究表，可横向滚动"><table class="research-table crossborder-table"><thead><tr><th>基金 / 渠道</th>' + state.periods.map(y => th(periodHead(y), 'return:' + y)).join('') + th('持续费率 / 年', 'knownOngoingFee') + th('快照溢价', 'prem') + '<th>分红记录</th><th>买入费用 / 状态</th>' + th('5年最大回撤', 'mdd5') + th('收益截至', 'date') + '</tr></thead><tbody data-list-body="cross">' + lazyRows('cross', rows, f => {
+    const table = '<section class="card index-section"><div class="cross-results-head"><div><h2>' + rows.length + '<small> / ' + pool.length + '只基金</small></h2><p>人民币 · 分红再投 · ' + feeBasisLabel() + (state.crossPremium !== null ? ' · 溢价筛选仅作用于场内，缺报价则排除' : '') + '</p></div>' + action('导出筛选结果', 'cross-export', 'btn sm') + '</div><div class="table-wrap cross-table-wrap" tabindex="0" aria-label="跨境基金研究表，可横向滚动"><table class="research-table crossborder-table"><thead><tr><th>基金 / 渠道</th>' + state.periods.map(y => th(periodHead(y), 'return:' + y)).join('') + th('持续费率 / 年', 'knownOngoingFee') + th('快照溢价', 'prem') + '<th>分红记录</th><th>买入费用 / 状态</th>' + th('近5年内最大回撤', 'mdd5') + th('收益截至', 'date') + '</tr></thead><tbody data-list-body="cross">' + lazyRows('cross', rows, f => {
       const perf = crossPerformance(f), selected = state.crossSelected.has(f.c);
-      return '<tr><td><div class="fund-name-row">' + action(esc(f.n), 'fund-detail', 'text-link', 'data-code="' + f.c + '"') + action(selected ? '✓' : '+', 'cross-select', 'fund-compare' + (selected ? ' selected' : ''), 'data-code="' + f.c + '" aria-label="' + (selected ? '移出对比 ' : '加入对比 ') + esc(f.n) + '" aria-pressed="' + selected + '"') + '</div><span class="sub">' + f.c + ' · ' + (f.exchange ? '场内 ETF' : '场外') + ' · ' + esc(f.ix) + '</span>' + '</td>' + state.periods.map(y => '<td>' + pc(ret(perf.r?.[years.indexOf(y)], y, perf)) + '</td>').join('') + '<td>' + (M.finite(f.knownOngoingFee) ? (f.feeCoverage === 'complete' ? '' : '≥') + pct(f.knownOngoingFee, 2, false) : '—') + '</td><td>' + (f.exchange ? (M.finite(f.prem) ? '<span class="' + (f.prem > 5 ? 'negative' : '') + '">' + pct(f.prem) + '</span><span class="sub">' + esc((f.priceAsOf || f.quotedAt || '').slice(0, 10)) + '</span>' : '缺报价') : '不适用') + '</td><td>' + action(distributionLabel(f.c), 'fund-actions', 'text-link small', 'data-code="' + f.c + '"') + '<span class="sub">' + (perf.missing ? '收益序列缺失' : '含分红总回报') + '</span></td><td>' + buyFee(f) + '<span class="sub">' + (f.exchange ? '场内交易' : esc(f.st || '状态未收录') + (f.lm && f.lm !== '--' && !/暂停/.test(f.st || '') ? ' · ' + esc(f.lm) : '')) + '</span></td><td>' + pc(perf.mdd5, 1) + '</td><td>' + esc(perf.returnAsOf || '缺成交价历史') + '<span class="sub">' + (f.exchange && state.crossBasis === 'market' ? '成交价复权' : '净值总回报') + '</span></td></tr>';
+      return '<tr><td><div class="fund-name-row">' + action(esc(f.n), 'fund-detail', 'text-link', 'data-code="' + f.c + '"') + action(selected ? '✓' : '+', 'cross-select', 'fund-compare' + (selected ? ' selected' : ''), 'data-code="' + f.c + '" aria-label="' + (selected ? '移出对比 ' : '加入对比 ') + esc(f.n) + '" aria-pressed="' + selected + '"') + '</div><span class="sub">' + f.c + ' · ' + (f.exchange ? '场内 ETF' : '场外') + ' · ' + esc(f.ix) + '</span>' + '</td>' + state.periods.map(y => '<td>' + pc(ret(perf.r?.[years.indexOf(y)], y, perf)) + '</td>').join('') + '<td>' + (M.finite(f.knownOngoingFee) ? (f.feeCoverage === 'complete' ? '' : '≥') + pct(f.knownOngoingFee, 2, false) : '—') + '</td><td>' + (f.exchange ? (M.finite(f.prem) ? '<span class="' + (f.prem > 5 ? 'negative' : '') + '">' + pct(f.prem) + '</span><span class="sub">' + esc((f.priceAsOf || f.quotedAt || '').slice(0, 10)) + '</span>' : '缺报价') : '不适用') + '</td><td>' + action(distributionLabel(f.c), 'fund-actions', 'text-link small', 'data-code="' + f.c + '"') + '<span class="sub">' + (perf.missing ? '收益序列缺失' : '含分红总回报') + '</span></td><td>' + buyFee(f) + '<span class="sub">' + (f.exchange ? '场内交易' : esc(f.st || '状态未收录') + (f.lm && f.lm !== '--' && !/暂停/.test(f.st || '') ? ' · ' + esc(f.lm) : '')) + '</span></td><td>' + fundRiskCell(perf, 'mdd5') + '</td><td>' + esc(perf.returnAsOf || '缺成交价历史') + '<span class="sub">' + (f.exchange && state.crossBasis === 'market' ? '成交价复权' : '净值总回报') + '</span></td></tr>';
     }, 15) + (!rows.length ? '<tr><td colspan="' + (7 + state.periods.length) + '"><div class="empty">没有符合条件的基金' + action('重置筛选', 'cross-reset', 'btn sm') + '</div></td></tr>' : '') + '</tbody></table></div>' + loadFooter('cross') + '</section>';
     const comparison = state.crossSelected.size ? '<div class="compare-bar"><span>已选 ' + state.crossSelected.size + ' / 4 · ' + [...state.crossSelected].join(' · ') + '</span>' + action('清空', 'cross-clear', 'quiet') + action('并排比较', 'cross-compare', 'btn', state.crossSelected.size < 2 ? 'disabled' : '') + '</div>' : '';
     return filters + '<div class="index-controls">' + basis + returnControls() + '</div>' + (state.crossBasis === 'market' ? '<p class="basis-note">场内成交价回报包含买卖两端溢价变化；场外仍按净值。分红均再投，交易佣金另见投资渠道。</p>' : '') + table + comparison;
@@ -330,13 +330,25 @@
     const summary = same ? compactDate(returns) : '收益 ' + compactDate(returns) + ' / 风险 ' + compactDate(risk);
     return '<span title="' + esc('收益截至 ' + returns + '；风险截至 ' + risk) + '">' + esc(summary) + '</span><span class="audit-mark" title="' + (verifiedReturn(f) ? '收益已复算' : '收益待核验') + '">' + (verifiedReturn(f) ? ' ✓' : ' 待核验') + '</span>';
   }
+  function fundRiskPeriod(f, years = 5, detail = false) {
+    const p = f['risk' + years + 'Period'];
+    if (!p || p.status !== 'available') return '';
+    const days = (Date.parse(p.end) - Date.parse(p.start)) / 86400000;
+    const span = days >= 365 ? (Math.floor(days / 365.2425 * 100) / 100).toFixed(2) + '年' : days + '天';
+    if (!p.partial && !detail) return '';
+    return '<span class="sub" title="' + esc(p.start + ' — ' + p.end + ' · ' + p.observations + '条日观测') + '">' + (p.partial ? '已有' + span + (detail ? ' · ' : '') : '') + (detail ? p.start + ' — ' + p.end : '') + '</span>';
+  }
+  function fundRiskCell(f, key) {
+    const years = key === 'mdd3' || key === 'v3' ? 3 : 5, period = f['risk' + years + 'Period'];
+    return '<span' + (period ? ' title="' + esc(period.start + ' — ' + period.end) + '"' : '') + '>' + (key.startsWith('mdd') ? pc(f[key], 1) : pct(f[key], 1, false)) + '</span>' + fundRiskPeriod(f, years);
+  }
   function fundColumns() {
     const cols = [];
     const add = (group, label, cell, key = '', cls = '') => { if (state.columns.has(group)) cols.push({ label, cell, key, cls }); };
     add('manager', '现任经理', f => managerText(f), '', 'manager-cell');
     state.periods.forEach(y => cols.push({ label: periodHead(y), key: 'return:' + y, cell: f => pc(ret(f.r[years.indexOf(y)], y, f)) }));
-    add('risk', '5年最大回撤', f => pc(f.mdd5, 1) + (f.mdd5 == null && M.finite(f.mdd3) ? '<span class="sub">3年 ' + pct(f.mdd3, 1) + '</span>' : ''), 'risk');
-    add('risk', '5年波动率', f => pct(f.vol5, 1, false) + (f.vol5 == null && M.finite(f.v3) ? '<span class="sub">3年 ' + pct(f.v3, 1, false) + '</span>' : ''));
+    add('risk', '近5年内最大回撤', f => fundRiskCell(f, 'mdd5'), 'risk');
+    add('risk', '近5年内波动率', f => fundRiskCell(f, 'vol5'));
     add('status', '申购状态', f => badge(f.exchange ? '场内交易' : f.st || '未收录', /暂停/.test(f.st) && !f.exchange ? 'warn' : ''));
     add('status', '日限额', f => '<span class="limit-inline">' + (f.exchange || /暂停/.test(f.st) ? '—' : esc(f.lm || '—')) + '</span>');
     add('size', '规模 / 亿元', f => money(f.sz, 1), 'size');
@@ -825,10 +837,10 @@
         ['申购状态 / 日限额', f.exchange ? '场内交易；不使用场外申赎限制' : esc(f.st || '未收录') + ' / ' + (/暂停/.test(f.st) ? '暂停期间无可用额度' : esc(f.lm || '未收录'))],
         ['单位净值 / 日期', money(f.nav, 4) + ' / ' + esc(f.navdate || '未收录')],
         ['规模 / 成立日', money(f.sz, 1) + '亿元 / ' + esc(f.d) + (f.szdate ? '<span class="sub">规模截至：' + esc(f.szdate) + '</span>' : '')],
-        ['近5年最大回撤 / 波动率', pct(perf.mdd5, 2, false) + ' / ' + pct(perf.vol5, 2, false) + '<span class="sub">截至：' + esc(metricDate(perf, 'risk')) + '</span>'],
+        ['近5年内最大回撤 / 波动率', pct(perf.mdd5, 2, false) + ' / ' + pct(perf.vol5, 2, false) + (fundRiskPeriod(perf, 5, true) || '<span class="sub">截至：' + esc(metricDate(perf, 'risk')) + '</span>')],
         (Number.isFinite(f.mdd3) || Number.isFinite(f.v3) ?
           ['近3年净值回撤 / 波动率', pct(f.mdd3, 2, false) + ' / ' + pct(f.v3, 2, false) +
-            '<span class="sub">截至：' + esc(metricDate(f, 'risk')) + '</span>'] : null),
+            (fundRiskPeriod(f, 3, true) || '<span class="sub">截至：' + esc(metricDate(f, 'risk')) + '</span>')] : null),
         ['现任经理 / 本基金任期', managerText(f, true) + '<span class="sub">任期截至：' + esc(f.managerAsOf || '未记录') + '</span>'],
         (f.exchange || Number.isFinite(f.p) ? ['交易价 / 快照溢价', money(f.p, 3) + ' / ' + pct(f.prem) +
           (f.priceAsOf || f.quotedAt ? '<span class="sub">报价时间：' + esc(f.priceAsOf || f.quotedAt) + '；快照非实时</span>' : '')] : null)
@@ -904,7 +916,7 @@
       '<p class="detail-fee-basis">' + feeBasisLabel() + '</p><div class="table-wrap" tabindex="0" aria-label="基金对比表，可横向滚动"><table class="compare-table"><thead><tr><th>比较维度</th>' + selected.map(f => '<th>' + esc(f.n) + '<span class="sub">' + f.c + '</span></th>').join('') + '</tr></thead><tbody>' +
       renderRow('投资策略', f => esc(f.ix)) + renderRow('现任经理 / 本基金任期', f => managerText(f, true)) + renderRow('成立日期', f => esc(f.d)) + renderRow('规模 / 亿元', f => money(f.sz, 1)) + renderRow('单位净值 / 日期', f => money(f.nav, 4) + ' / ' + esc(f.navdate)) + renderRow('收益截至', f => esc(metricDate(f, 'return'))) +
       years.map((y, i) => renderRow(periodHead(y), f => pc(ret(f.r[i], y, f)))).join('') +
-      renderRow('5年最大回撤', f => pc(f.mdd5, 1)) + renderRow('5年波动率', f => pct(f.vol5, 1, false)) + renderRow('风险截至', f => esc(metricDate(f, 'risk'))) +
+      renderRow('近5年内最大回撤', f => fundRiskCell(f, 'mdd5')) + renderRow('近5年内波动率', f => fundRiskCell(f, 'vol5')) + renderRow('风险截至', f => esc(metricDate(f, 'risk'))) +
       renderRow('管理费 / 年', f => pct(f.fee && f.fee[0], 2, false)) + renderRow('托管费 / 年', f => pct(f.fee && f.fee[1], 2, false)) + renderRow('销售服务费 / 年', f => pct(f.fee && f.fee[2], 2, false)) + renderRow('买入费用', buyFee) + renderRow('卖出费用', f => redemption(f, true)) +
       renderRow('渠道 / 申购', f => f.exchange ? '场内交易' : esc(f.st || '待核验')) + renderRow('资料原文', f => extLink('https://fund.eastmoney.com/' + f.c + '.html', '基金资料')) +
       '</tbody></table></div><p class="note">缺失数据用—表示，不以0参与比较。费用折扣和赎回档位未经当前渠道确认；历史收益不等于未来收益。</p>');
@@ -921,12 +933,12 @@
     const rows = [['名称', '代码', '策略', '渠道', '现任经理', '个人经理任职记录', '经理资料截至', '经理抓取时间', '经理来源',
       '成立日', '规模(亿元)', '规模日期', '单位净值', '日涨跌%', '净值截至', '交易价', '溢价%', '报价时间',
       '管理费%', '托管费%', '销售服务费%', '持续费率核对日', '买入费旧档', '卖出费旧档(持有期待核验)', '申购', '限额',
-      '近5年实际最大回撤%', '近5年实际波动率%', '近3年实际最大回撤%', '近3年实际波动率%', '风险截至', '收益截至', '收益口径', '实际收益区间', '年费口径', '估算有效年费%', '费用缺失说明',
+      '近5年内实际最大回撤%', '近5年内实际波动率%', '近3年实际最大回撤%', '近3年实际波动率%', '风险截至', '实际风险区间', '收益截至', '收益口径', '实际收益区间', '年费口径', '估算有效年费%', '费用缺失说明',
       ...years.map(y => '近' + y + '年累计%'), ...years.map(y => '近' + y + '年年化%'), '基金来源', '收益来源', '资料状态']];
     fundRows().forEach(f => rows.push([f.n, f.c, f.ix, f.exchange ? '场内' : '场外', f.mgr, JSON.stringify(f.managerRecords || []), f.managerAsOf, f.managerCheckedAt, f.managerSourceUrl,
       f.d, f.sz, f.szdate, f.nav, f.dz, f.navdate, f.p, f.prem, f.priceAsOf || f.quotedAt,
       ...[0, 1, 2].map(i => f.fee && f.fee[i]), f.feeCheckedAt, f.exchange ? '按实际券商约定' : f.buy, f.exchange ? '按实际券商约定' : f.rd, f.exchange ? '场内交易' : f.st, f.exchange || /暂停/.test(f.st) ? '' : f.lm,
-      f.mdd5, f.vol5, f.mdd3, f.v3, metricDate(f, 'risk'), metricDate(f, 'return'), f.returnBasis, JSON.stringify(f.returnPeriods || []),
+      f.mdd5, f.vol5, f.mdd3, f.v3, metricDate(f, 'risk'), JSON.stringify(f.risk5Period || null), metricDate(f, 'return'), f.returnBasis, JSON.stringify(f.returnPeriods || []),
       feeBasisLabel(), feeInfo(f).rate, feeInfo(f).missing, ...f.r.map((r, i) => totalRet(r, years[i], f)), ...f.r.map((r, i) => M.annualized(totalRet(r, years[i], f), duration(f, years[i]))), 'https://fund.eastmoney.com/' + f.c + '.html', f.returnSourceUrl,
       verifiedReturn(f) ? '收益已复算；其他字段见个体核验记录' : '历史快照待核验；年化按名义周期估算']));
     download('长衡-基金研究.csv', M.csv(rows), 'text/csv;charset=utf-8'); toast('已导出当前筛选结果，含累计与年化两套口径');

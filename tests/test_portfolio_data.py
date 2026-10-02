@@ -9,6 +9,7 @@ from unittest.mock import patch
 from scripts import build_portfolio_data as portfolio
 import refresh
 import update
+from screens.fund_screen import parse_js_record
 
 
 class PortfolioHistoryTests(unittest.TestCase):
@@ -77,7 +78,39 @@ class PortfolioHistoryTests(unittest.TestCase):
         self.assertIn('--refresh', refresh.commands()['portfolio'])
         self.assertIn('--offline', refresh.commands(True)['portfolio'])
         self.assertNotIn('--refresh', refresh.commands(True)['portfolio'])
-        self.assertEqual(refresh.PUBLISHED_OUTPUTS['portfolio'], ('portfolio/catalog.js',))
+        self.assertEqual(refresh.PUBLISHED_OUTPUTS['portfolio'], ('portfolio/catalog.js', 'snapshot.js'))
+
+    def test_risk_sync_uses_own_verified_path_and_preserves_return_and_nav_dates(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            history_path = root / 'data/portfolio/fund/000001-test.json'
+            history_path.parent.mkdir(parents=True)
+            series = [['2026-09-%02d' % i, 2 if i == 1 else 1] for i in range(1, 11)]
+            history = dict(id='fund:000001', currency='CNY', basis='provider_daily_return_or_explicit_actions', dividends='reinvested', series=series)
+            history_path.write_text(json.dumps(history))
+            asset = dict(code='000001', id='fund:000001', status='available', sourceUrl='https://example.test/own-nav',
+                         historyUrl=history_path.relative_to(root).as_posix(), sha256=hashlib.sha256(history_path.read_bytes()).hexdigest())
+            snapshot = root / 'snapshot.js'
+            original = "/*__DATA_FUNDS_BEGIN__*/\nvar FUNDS=[\n{c:'000001',d:'2026-09-01',navdate:'2026-09-05',r:[1,null,null,null,null],returnAsOf:'2026-09-04'},\n];\n/*__DATA_FUNDS_END__*/\n/*__DATA_EXTRA_BEGIN__*/\nvar EXTRA=[];\n/*__DATA_EXTRA_END__*/\nvar STOCKS=['untouched'];\n"
+            snapshot.write_text(original)
+            with patch.object(portfolio, 'ROOT', root):
+                result = portfolio.sync_fund_risk({'assets': [asset]}, snapshot)
+                row = parse_js_record(next(line for line in snapshot.read_text().splitlines() if line.startswith('{')))
+                self.assertEqual(result['updated'], 1)
+                self.assertEqual(row['mdd5'], -50)
+                self.assertEqual(row['riskAsOf'], '2026-09-10')
+                self.assertTrue(row['risk5Period']['partial'])
+                self.assertEqual(row['risk5Period']['start'], '2026-09-01')
+                self.assertEqual(row['returnAsOf'], '2026-09-04')
+                self.assertEqual(row['navdate'], '2026-09-05')
+                self.assertEqual(row['r'], [1, None, None, None, None])
+                self.assertIn("var STOCKS=['untouched']", snapshot.read_text())
+                published = snapshot.read_bytes()
+                self.assertEqual(portfolio.sync_fund_risk({'assets': [asset]}, snapshot)['updated'], 0)
+                self.assertEqual(snapshot.read_bytes(), published)
+                asset['sha256'] = '0' * 64
+                with self.assertRaisesRegex(ValueError, '校验和'):
+                    portfolio.sync_fund_risk({'assets': [asset]}, snapshot)
 
     def test_failed_stage_restores_catalog_and_keeps_its_immutable_history(self):
         with tempfile.TemporaryDirectory() as directory:

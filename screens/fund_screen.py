@@ -583,8 +583,7 @@ def deep_metrics(rows):
         ser = build_series(relevant)  # A gap inside the requested period still fails.
         full_history = False
         history_note = '更早历史未通过连续性校验，只复核最近完整10年窗口；成立以来收益和全历史风险不可用。' + str(exc)
-    # Product coverage includes newly listed ETFs. Keep their actual NAV dates;
-    # each return/risk window below still requires its own complete history.
+    # Named return windows remain complete; risk can use explicitly dated shorter histories.
     if len(ser) < 2:
         return None
     latest = ser[-1][0]
@@ -627,21 +626,17 @@ def deep_metrics(rows):
             out['cagr_since'] = ((Tend / ser[0][2]) ** (1 / yrs) - 1) * 100
             out['years'] = yrs
     # 窗口统计
-    for n in (5, 10):
-        b = add_years(latest, -n)
-        before = [(d, t) for d, dw, t, lj in ser if d <= b]
-        if not before or (date.fromisoformat(b) - date.fromisoformat(before[-1][0])).days > 15:
+    for n in (3, 5, 10):
+        risk = U.risk_window([(d, t) for d, dw, t, lj in ser], latest, n, allow_partial=n <= 5)
+        out['risk%dPeriod' % n] = risk
+        if risk['status'] != 'available':
             continue
-        win = [before[-1]] + [(d, t) for d, dw, t, lj in ser if d > b]
-        if len(win) < n * 180 or any((date.fromisoformat(d2) - date.fromisoformat(d1)).days > 20
-                                    for (d1, _), (d2, _) in zip(win, win[1:])):
-            continue
+        out['vol%d' % n] = risk['vol']
+        out['mdd%d' % n] = risk['mdd']
+        out['risk%dFirst' % n] = risk['start']
+        win = [(d, t) for d, dw, t, lj in ser if risk['start'] <= d <= risk['end']]
         st = _stats(win)
-        if st:
-            out['vol%d' % n] = st['vol']
-            out['mdd%d' % n] = st['mdd']
-            out['mdd%d_date' % n] = st['mdd_date']
-            out['risk%dFirst' % n] = win[0][0]
+        if st: out['mdd%d_date' % n] = st['mdd_date']
     st_all = _stats([(d, t) for d, dw, t, lj in ser])
     if st_all and full_history:
         out['mdd_all'] = st_all['mdd']
@@ -1461,6 +1456,8 @@ def cmd_verify_samples(args):
                                  returnAsOf=m['latest'], riskAsOf=m['latest'], returnSource='Eastmoney历史净值与公司行为',
                                  returnFirst=m['first'], riskFirst=m['first'],
                                  returnPeriods=check['returnPeriods'], risk5First=m.get('risk5First'),
+                                 risk3Period=m.get('risk3Period'), risk5Period=m.get('risk5Period'),
+                                 mdd3=m.get('mdd3'), v3=m.get('vol3'), riskBasis=m['basis'],
                                  historyNote=m.get('historyNote') or '',
                                  note='复算年度收益（截至%s）：%s' % (m['latest'], fmt_yearly(m.get('yearly'))),
                                  returnSourceUrl=check['sourceUrl'], fee=check['fees'], feeSource=fee_url,
@@ -1532,6 +1529,8 @@ def cmd_refresh_performance(args):
                        returnAsOf=endpoint, riskAsOf=endpoint, returnSource='Eastmoney历史净值与公司行为',
                        returnSourceUrl=source, returnFirst=metrics['first'], riskFirst=metrics['first'],
                        returnPeriods=periods, risk5First=metrics.get('risk5First'),
+                       risk3Period=metrics.get('risk3Period'), risk5Period=metrics.get('risk5Period'),
+                       mdd3=metrics.get('mdd3'), v3=metrics.get('vol3'), riskBasis=metrics['basis'],
                        historyNote=metrics.get('historyNote') or '', performanceVerifiedAt=checked,
                        note='复算年度收益（截至%s）：%s' % (endpoint, fmt_yearly(metrics.get('yearly'))))
         if not old.get('navdate') or old['navdate'] <= observation['navdate']:

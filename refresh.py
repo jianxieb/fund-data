@@ -17,7 +17,7 @@ PUBLISHED_OUTPUTS = {
     'stocks': ('snapshot.js',),
     'screening': ('screening.js',),
     'strategy': ('snapshot.js', 'strategy-fees.js'),
-    'portfolio': ('portfolio/catalog.js',),
+    'portfolio': ('portfolio/catalog.js', 'snapshot.js'),
 }
 
 

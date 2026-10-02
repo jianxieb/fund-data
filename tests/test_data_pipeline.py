@@ -110,12 +110,15 @@ class FundReturns(unittest.TestCase):
                 {'FSRQ': '2025-01-02', 'DWJZ': 9, 'LJJZ': 10},
             ])
 
-    def test_short_history_does_not_claim_three_year_risk(self):
+    def test_short_history_calculates_actual_risk_without_inventing_named_returns(self):
         start = date(2025, 1, 1)
         rows = [{'FSRQ': (start + timedelta(days=i)).isoformat(), 'DWJZ': 1 + i / 1000, 'JZZZL': 0.1} for i in range(250)]
         metrics = update.calc_metrics(rows)
-        self.assertIsNone(metrics['v3'])
-        self.assertIsNone(metrics['mdd3'])
+        self.assertIsNotNone(metrics['v3'])
+        self.assertEqual(metrics['mdd3'], 0)
+        self.assertTrue(metrics['risk3Period']['partial'])
+        self.assertTrue(metrics['risk5Period']['partial'])
+        self.assertEqual(metrics['risk3Period']['start'], rows[0]['FSRQ'])
         self.assertEqual(metrics['r'], [None] * 5)
 
     def test_dividend_adjusted_daily_change(self):
@@ -204,6 +207,30 @@ class Benchmarks(unittest.TestCase):
         self.assertEqual(result['start'], '2021-09-17')
         partial = update.risk_window(series[100:], '2026-09-18', 5)
         self.assertIsNone(partial['mdd'])
+
+    def test_fund_partial_risk_has_exact_dates_and_keeps_gap_and_density_checks(self):
+        series = self.full_window()[700:]
+        series[0] = (series[0][0], 200)
+        r = update.risk_window(series, series[-1][0], 5, allow_partial=True)
+        self.assertEqual(r['mdd'], -50)
+        self.assertTrue(r['partial'])
+        self.assertEqual(r['start'], series[0][0])
+        self.assertEqual(r['observations'], len(series))
+        self.assertGreater(r['vol'], 0)
+        sparse = update.risk_window(series[::20], series[-1][0], 5, allow_partial=True)
+        self.assertIsNone(sparse['vol'])
+        gap = update.risk_window(series[:10] + series[40:], series[-1][0], 5, allow_partial=True)
+        self.assertEqual(gap['status'], 'incomplete_history')
+        two = update.risk_window(series[:2], series[1][0], 5, allow_partial=True)
+        self.assertIsNone(two['vol'])
+
+    def test_risk_period_patch_replaces_nested_evidence_without_duplicate_keys(self):
+        line = "{c:'000001',risk5Period:{\"start\":\"2024-01-01\",\"end\":\"2025-01-01\",\"partial\":true},note:'保留'},"
+        output = update.patch_field(line, 'risk5Period', '{"start":"2024-01-01","end":"2026-01-01","partial":true}')
+        self.assertEqual(output.count('risk5Period:'), 1)
+        self.assertIn('2026-01-01', output)
+        self.assertIn("note:'保留'", output)
+        self.assertEqual(update.patch_field("{v3:9.61e-15}", 'v3', '0'), '{v3:0}')
 
     def test_yuan_risk_uses_daily_fx_instead_of_reusing_dollar_risk(self):
         series = self.full_window()

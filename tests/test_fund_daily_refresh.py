@@ -17,6 +17,8 @@ class FundStageFailures(unittest.TestCase):
                        risk3First='2023-09-28', risk5First='2021-09-28', risk5Status='complete',
                        asOf='2026-09-29', periods=[], riskStart='2021-09-28',
                        first='2010-01-01', basis='provider_daily_return_or_explicit_actions')
+        metrics.update(risk3Period={'years': 3, 'start': metrics['risk3First'], 'end': metrics['asOf'], 'partial': False},
+                       risk5Period={'years': 5, 'start': metrics['risk5First'], 'end': metrics['asOf'], 'partial': False})
         with tempfile.TemporaryDirectory() as tmp, ExitStack() as stack:
             source = Path(tmp) / 'snapshot.js'
             source.write_text('fixture')

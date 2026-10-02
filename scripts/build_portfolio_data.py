@@ -19,6 +19,7 @@ sys.path.insert(0, str(ROOT))
 import strategy_backtest
 import update
 from data_status import atomic_text, now_iso, write_status
+from screens.fund_screen import parse_js_record, js_str
 
 OUTPUT = ROOT / 'data' / 'portfolio'
 END = (datetime.now(ZoneInfo('Asia/Shanghai')).date() - timedelta(days=1)).isoformat()
@@ -290,6 +291,55 @@ def prune():
             path.unlink()
 
 
+def sync_fund_risk(catalog, snapshot_path=None):
+    """Publish risk from each fund's proven daily wealth path, never changing NAV/returns."""
+    path = Path(snapshot_path) if snapshot_path else ROOT / 'data/snapshot.js'
+    source = path.read_text(encoding='utf-8')
+    available = {a['code']: a for a in catalog['assets'] if a['id'].startswith('fund:') and a['status'] == 'available'}
+    histories = {}
+    for code, asset in available.items():
+        raw = (ROOT / asset['historyUrl']).read_bytes()
+        if hashlib.sha256(raw).hexdigest() != asset['sha256']:
+            raise ValueError('风险历史校验和不一致：' + code)
+        h = json.loads(raw)
+        if h['id'] != asset['id'] or h['currency'] != 'CNY' or h['basis'] != 'provider_daily_return_or_explicit_actions' or h['dividends'] != 'reinvested':
+            raise ValueError('风险历史身份或含分红口径不一致：' + code)
+        histories[code] = validate_series(h['series'])
+    checked = now_iso()
+    updated, partial = set(), set()
+    def patch_block(match):
+        lines = []
+        for line in match.group(0).splitlines(keepends=True):
+            cm = re.search(r"\bc:'(\d{6})'", line)
+            if not cm or cm.group(1) not in histories:
+                lines.append(line); continue
+            code = cm.group(1)
+            row = parse_js_record(line)
+            boundary = max(row.get('d') or '', row.get('strategySince') or '')
+            series = [(d, v) for d, v in histories[code] if d >= boundary]
+            if not series or row.get('riskAsOf', '') and row['riskAsOf'] > series[-1][0]:
+                lines.append(line); continue
+            end = series[-1][0]
+            risks = {y: update.risk_window(series, end, y, allow_partial=True) for y in (3, 5)}
+            changes = {'mdd3': risks[3]['mdd'], 'v3': risks[3]['vol'], 'mdd5': risks[5]['mdd'], 'vol5': risks[5]['vol'],
+                       'risk3Period': risks[3], 'risk5Period': risks[5], 'risk3First': risks[3]['start'],
+                       'risk5First': risks[5]['start'], 'riskStart': risks[5]['start'], 'riskFirst': series[0][0],
+                       'riskAsOf': end, 'riskBasis': 'provider_daily_return_or_explicit_actions',
+                       'riskSourceUrl': available[code]['sourceUrl'], 'riskHistoryUrl': available[code]['historyUrl'],
+                       'riskHistorySha256': available[code]['sha256'], 'risk5Status': risks[5]['status']}
+            if all(row.get(k) == v for k, v in changes.items()):
+                lines.append(line); continue
+            row.update(changes, riskVerifiedAt=checked)
+            ending = '\n' if line.endswith('\n') else ''
+            lines.append('{' + ','.join(k + ':' + (js_str(v) if isinstance(v, str) else json.dumps(v, ensure_ascii=False, allow_nan=False, separators=(',', ':'))) for k, v in row.items()) + '},' + ending)
+            updated.add(code)
+            if risks[5]['status'] == 'available' and risks[5]['partial']: partial.add(code)
+        return ''.join(lines)
+    source = re.sub(r'/\*__DATA_(FUNDS|EXTRA)_BEGIN__\*/.*?/\*__DATA_\1_END__\*/', patch_block, source, flags=re.S)
+    if updated: atomic_text(path, source)
+    return {'updated': len(updated), 'partialFiveYear': len(partial)}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--offline', action='store_true')
@@ -297,11 +347,17 @@ def main():
     parser.add_argument('--workers', type=int, default=12)
     parser.add_argument('--prune', action='store_true')
     parser.add_argument('--check', action='store_true', help='validate committed coverage and every history checksum without mutation')
+    parser.add_argument('--sync-risk', action='store_true', help='recalculate fund risk from already published verified histories')
     args = parser.parse_args()
     if args.check:
         catalog = json.loads((OUTPUT / 'catalog.js').read_text(encoding='utf-8').split('=', 1)[1].strip().rstrip(';'))
         validate_catalog(catalog, universe())
         print('组合历史校验通过：', catalog['summary'])
+        return 0
+    if args.sync_risk:
+        catalog = json.loads((OUTPUT / 'catalog.js').read_text(encoding='utf-8').split('=', 1)[1].strip().rstrip(';'))
+        validate_catalog(catalog, universe())
+        print('基金风险同步：', sync_fund_risk(catalog))
         return 0
     if args.prune:
         prune()
@@ -347,9 +403,11 @@ def main():
             catalog['fx'] = {**previous_fx, 'refreshWarning': fx.get('missing') or '本次汇率末日倒退，保留上一版'}
     validate_catalog(catalog, rows)
     atomic_text(prior_path, 'var PORTFOLIO_CATALOG=' + json.dumps(catalog, ensure_ascii=False, allow_nan=False, separators=(',', ':')) + ';\n')
+    risk_summary = sync_fund_risk(catalog)
     write_status('portfolio', 'cached' if args.offline else 'success', mode='offline' if args.offline else 'online',
                  records=len(rows), **catalog['summary'], message='全部研究对象纳入标的库；可用性与实际历史末日逐项保存。')
     print('组合历史发布：', catalog['summary'], flush=True)
+    print('基金风险同步：', risk_summary, flush=True)
     return 0
 
 

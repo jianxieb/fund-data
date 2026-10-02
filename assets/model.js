@@ -157,7 +157,8 @@
         returnPeriods: Array.isArray(returns.returnPeriods) ? copy(returns.returnPeriods) : null,
         returnSource: returns.returnSource, returnSourceUrl: returns.returnSourceUrl,
         returnBasis: returns.returnBasis || returns.basis, riskBasis: risk.riskBasis || risk.basis,
-        performanceVerifiedAt: returns.performanceVerifiedAt, riskVerifiedAt: risk.performanceVerifiedAt };
+        performanceVerifiedAt: returns.performanceVerifiedAt, riskVerifiedAt: risk.riskVerifiedAt || risk.performanceVerifiedAt,
+        riskSourceUrl: risk.riskSourceUrl, riskHistoryUrl: risk.riskHistoryUrl, riskHistorySha256: risk.riskHistorySha256 };
       n.r = periods.map((y, i) => {
         const raw = returns.r && returns.r[i];
         if (!hasWindow(first(returns, 'return'), returnEnd, y) || !finite(raw) || raw < -100) return null;
@@ -173,7 +174,11 @@
       });
       for (const [key, y] of [['mdd5', 5], ['vol5', 5], ['mdd3', 3], ['v3', 3]]) {
         const v = risk[key], allowed = key.startsWith('mdd') ? finite(v) && v >= -100 && v <= 0 : finite(v) && v >= 0;
-        n[key] = hasWindow(first(risk, 'risk'), riskEnd, y) && allowed ? v : null;
+        const p = risk['risk' + y + 'Period'], periodKnown = record(p);
+        const actual = periodKnown && p.status === 'available' && p.years === y && validDate(p.start) && p.end === riskEnd && p.start < p.end && p.observations >= 3 &&
+          p.start >= first(risk, 'risk') && (p.partial === true ? !hasWindow(p.start, p.end, y) : hasWindow(p.start, p.end, y));
+        n[key] = (periodKnown ? actual : hasWindow(first(risk, 'risk'), riskEnd, y)) && allowed ? v : null;
+        n['risk' + y + 'Period'] = actual ? copy(p) : null;
       }
       const fees = [0, 1, 2].map(i => Array.isArray(f.fee) && finite(f.fee[i]) && f.fee[i] >= 0 ? f.fee[i] : null);
       n.fee = fees;
@@ -201,10 +206,16 @@
   }
   function crossborderPerformance(fund, evidence, basis = 'nav') {
     if (fund.exchange && basis === 'market') {
-      return { ...fund, ...(evidence?.market || { r: [null, null, null, null, null], returnAsOf: null,
+      return { ...fund, mdd3: null, v3: null, risk3Period: null,
+        risk5Period: evidence?.market?.risk5Period || null, riskAsOf: evidence?.market?.riskAsOf || null,
+        ...(evidence?.market || { r: [null, null, null, null, null], returnAsOf: null,
         returnPeriods: [], mdd5: null, vol5: null, missing: '缺成交价复权历史' }) };
     }
-    return { ...fund, ...(evidence?.nav || {}) };
+    const result = { ...fund, ...(evidence?.nav || {}) };
+    if (fund.risk5Period && fund.riskAsOf >= (evidence?.nav?.riskAsOf || '')) {
+      for (const key of ['mdd5', 'vol5', 'mdd3', 'v3', 'riskAsOf', 'risk3Period', 'risk5Period', 'riskBasis']) result[key] = fund[key];
+    }
+    return result;
   }
   function annualFeeInfo(product, override) {
     if (!record(product)) return { applicable: false, rate: null };

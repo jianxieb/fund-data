@@ -295,12 +295,15 @@ class ScreeningTests(unittest.TestCase):
             result = json.loads((directory / 'shortlist.json').read_text())
             self.assertEqual(len(result['kept']), 2)
 
-    def test_fund_risk_requires_a_full_window_and_yearly_includes_first_day(self):
+    def test_fund_risk_uses_actual_shorter_history_and_yearly_includes_first_day(self):
         series = weekdays('2023-01-01')
         with patch.object(screening.U, 'total_return_series', return_value=series):
             result = screening.deep_metrics([{}])
-        self.assertNotIn('mdd5', result)
-        self.assertNotIn('vol5', result)
+        self.assertIsNotNone(result['mdd5'])
+        self.assertIsNotNone(result['vol5'])
+        self.assertTrue(result['risk5Period']['partial'])
+        self.assertEqual(result['risk5Period']['start'], series[0][0])
+        self.assertEqual(result['risk5Period']['end'], series[-1][0])
         prior = [v for d, v in series if d.startswith('2023')][-1]
         current = [v for d, v in series if d.startswith('2024')][-1]
         self.assertAlmostEqual(result['yearly']['2024'], (current / prior - 1) * 100)
@@ -325,8 +328,9 @@ class ScreeningTests(unittest.TestCase):
         self.assertEqual(result['first'], '2026-03-18')
         for year in (1, 2, 3, 5, 10):
             self.assertNotIn('ret%d' % year, result)
-        self.assertNotIn('mdd5', result)
-        self.assertNotIn('vol5', result)
+        self.assertIsNotNone(result['mdd5'])
+        self.assertIsNotNone(result['vol5'])
+        self.assertTrue(result['risk5Period']['partial'])
 
     def test_verifying_a_subset_keeps_previous_evidence(self):
         with tempfile.TemporaryDirectory() as tmp:

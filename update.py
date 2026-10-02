@@ -7,7 +7,7 @@
   1) fundf10.eastmoney.com/jjfl_<代码>.html  申购状态 / 单日累计购买上限 / 净资产规模（缓存 .tmp-fhsp/）
   2) fundmobapi FundMNFInfo                  批量净值 NAV / 日涨跌幅 NAVCHGRT（核心：涨跌幅）
   3) fundmobapi FundMNHisNetList             全量历史净值（含分红 FHFCZ，缓存 .tmp-hist/，增量合并）
-     → 重算 近1/2/3/5/10年区间涨幅（红利再投口径）、完整3年/5年风险
+     → 重算 近1/2/3/5/10年区间涨幅（红利再投口径）、近3年/5年内实际历史风险
   4) qt.gtimg.cn/q=sh513100,sz159941,...     场内ETF 现价/涨跌幅/IOPV/溢价率（快照 = "当时溢价率"）
   5) Yahoo chart显式adjclose / CNY=X         真实基准与美元兑人民币；汇率须有币种与交易时区证明
   6) fundf10.eastmoney.com/jjjl_<代码>.html  现任经理及个人明确上任日期（缓存 .tmp-managers/）
@@ -145,10 +145,16 @@ def parse_fund_lines(src):
 
 def patch_field(line, name, literal):
     """替换行内已有字段值，若无则插入到 ,note: 前 / } 前。"""
-    pat = re.compile(r'\b' + re.escape(name) + r"\s*:\s*(?:'[^']*'|\"[^\"]*\"|-?\d+(?:\.\d+)?|\[[^\]]*\]|null|true|false)")
+    pat = re.compile(r'\b' + re.escape(name) + r"\s*:\s*(?:'[^']*'|\"[^\"]*\"|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?|\[[^\]]*\]|null|true|false)")
     m = pat.search(line)
     if m:
         return line[:m.start()] + name + ':' + literal + line[m.end():]
+    # New window evidence is a JSON object. Replace it as one value on later
+    # refreshes; the scalar/array expression above must not append duplicate keys.
+    obj = re.search(r'\b' + re.escape(name) + r'\s*:\s*(?=\{)', line)
+    if obj:
+        _, consumed = json.JSONDecoder().raw_decode(line[obj.end():])
+        return line[:obj.start()] + name + ':' + literal + line[obj.end() + consumed:]
     idx = line.rfind(',note:')
     if idx >= 0:
         return line[:idx] + ',' + name + ':' + literal + line[idx:]
@@ -747,10 +753,11 @@ def total_return_series(rows):
     return series
 
 
-def risk_window(series, anchor, years=5):
-    """Risk of a complete calendar window, including its initial peak observation."""
+def risk_window(series, anchor, years=5, allow_partial=False):
+    """Risk over the requested window; funds may use their explicit shorter history."""
     result = {'vol': None, 'mdd': None, 'start': None, 'end': None,
               'years': years, 'observations': 0, 'annualization': 250,
+              'partial': False, 'actualYears': None,
               'status': 'insufficient_history', 'reason': '历史未覆盖完整窗口'}
     ordered = sorted((day, value) for day, value in series if day <= anchor)
     if not ordered:
@@ -759,13 +766,18 @@ def risk_window(series, anchor, years=5):
     result['end'] = end
     anniversary = add_years(end, -years)
     before = [(day, value) for day, value in ordered if day <= anniversary]
-    if not before:
+    if not before and not allow_partial:
         return result
-    start = before[-1][0]
+    start = before[-1][0] if before else ordered[0][0]
+    partial = start > anniversary
+    actual_years = (datetime.strptime(end, '%Y-%m-%d') - datetime.strptime(start, '%Y-%m-%d')).days / 365.2425
+    if before and (datetime.strptime(anniversary, '%Y-%m-%d') - datetime.strptime(start, '%Y-%m-%d')).days > 21:
+        result.update(status='incomplete_history', reason='窗口起点前21日内缺有效观测')
+        return result
     window = [(day, value) for day, value in ordered if start <= day <= end]
     result['observations'] = len(window)
-    if len(window) < years * 200:
-        result['reason'] = '观测数量不足以计算完整日频风险'
+    if len(window) < max(3, math.floor(actual_years * 200) if partial else years * 200):
+        result['reason'] = '日频风险观测不足（至少3条，且需覆盖实际区间）'
         return result
     if any(not math.isfinite(value) or value <= 0 for _, value in window):
         result.update(status='invalid_data', reason='风险窗口内有无效价格')
@@ -784,7 +796,7 @@ def risk_window(series, anchor, years=5):
         peak = max(peak, value)
         drawdown = min(drawdown, value / peak - 1)
     result.update(vol=math.sqrt(variance * 250) * 100, mdd=drawdown * 100,
-                  start=start, status='available', reason=None)
+                  start=start, partial=partial, actualYears=actual_years, status='available', reason=None)
     return result
 
 
@@ -833,10 +845,10 @@ def calc_metrics(rows):
                 break
         out['r'].append(None if base is None else (Tend / base - 1) * 100)
         out['periods'].append({'years': n, 'start': base_date, 'end': latest})
-    risk3, risk5 = risk_window(ser, latest, 3), risk_window(ser, latest, 5)
+    risk3, risk5 = risk_window(ser, latest, 3, allow_partial=True), risk_window(ser, latest, 5, allow_partial=True)
     out.update(v3=risk3['vol'], mdd3=risk3['mdd'], vol5=risk5['vol'], mdd5=risk5['mdd'],
                riskStart=risk5['start'], risk3First=risk3['start'], risk5First=risk5['start'],
-               risk5Status=risk5['status'])
+               risk5Status=risk5['status'], risk3Period=risk3, risk5Period=risk5)
     return out
 
 
@@ -1168,6 +1180,8 @@ def main():
             patch['risk3First'] = json.dumps(metrics['risk3First'])
             patch['risk5First'] = json.dumps(metrics['risk5First'])
             patch['risk5Status'] = json.dumps(metrics['risk5Status'])
+            for years in (3, 5):
+                patch['risk%dPeriod' % years] = json.dumps(metrics['risk%dPeriod' % years], ensure_ascii=False, separators=(',', ':'))
             patch['retdate'] = "'%s'" % metrics['asOf']
             patch['returnPeriods'] = json.dumps(metrics['periods'], separators=(',', ':'))
             patch['riskStart'] = json.dumps(metrics['riskStart'])

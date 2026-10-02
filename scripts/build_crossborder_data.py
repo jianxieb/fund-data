@@ -29,9 +29,9 @@ def summarize(series, end):
         baseline = prior[-1] if prior else None
         returns.append(round((series[-1][1] / baseline[1] - 1) * 100, 6) if baseline else None)
         periods.append({'years': years, 'start': baseline[0] if baseline else None, 'end': last})
-    risk = risk_window(series, last, 5)
+    risk = risk_window(series, last, 5, allow_partial=True)
     return {'r': returns, 'returnPeriods': periods, 'returnAsOf': last,
-            'first': series[0][0], 'mdd5': risk['mdd'], 'vol5': risk['vol'], 'riskAsOf': last}
+            'first': series[0][0], 'mdd5': risk['mdd'], 'vol5': risk['vol'], 'riskAsOf': last, 'risk5Period': risk}
 
 
 def build(fund, offline):

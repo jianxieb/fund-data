@@ -111,6 +111,22 @@ test('per-window source dates are retained and cannot substitute shorter histori
   close(f.returnYears[0], 365 / 365.2425);
 });
 
+test('short fund risk is displayed only with explicit valid window evidence; returns stay complete', () => {
+  const p = { years:5, start:'2024-01-02', end:'2026-09-18', partial:true, status:'available', observations:650 };
+  const raw = fund({ d:'2024-01-01', riskFirst:p.start, riskAsOf:p.end, returnAsOf:p.end, risk5Period:p });
+  const [short] = M.dedupeFunds([], [raw]);
+  assert.equal(short.mdd5, -20); assert.equal(short.vol5, 15); assert.equal(short.r[3], null);
+  assert.equal(short.risk5Period.start, p.start);
+  for (const patch of [{ end:'2026-09-17' }, { partial:false }, { start:'2023-01-01' }, { status:'incomplete_history' }, { observations:2 }]) {
+    const [invalid] = M.dedupeFunds([], [{ ...raw, risk5Period:{ ...p, ...patch } }]);
+    assert.equal(invalid.mdd5, null);
+  }
+  const actual = M.crossborderPerformance(short, { nav:{ riskAsOf:'2026-09-10', mdd5:null } });
+  assert.equal(actual.mdd5, -20); assert.equal(actual.risk5Period.end, p.end);
+  const missingMarket = M.crossborderPerformance({ ...short, exchange:true }, {}, 'market');
+  assert.equal(missingMarket.risk5Period, null); assert.equal(missingMarket.mdd5, null);
+});
+
 test('normalization ignores invalid identities and leaves raw snapshots unchanged', () => {
   const input = fund(); const before = M.copy(input);
   assert.deepEqual(M.dedupeFunds({}, null), []);
