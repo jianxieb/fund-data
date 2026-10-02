@@ -647,7 +647,7 @@ html[data-input-mode=pointer] :is(button,a,input,select,summary):focus-visible{o
 .portfolio-filters .segmented button{font-size:11px;padding:6px 9px}
 .portfolio-library-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:13px;font-size:11px;color:var(--muted)}
 .portfolio-library-tools input{width:13px;min-height:13px;margin:0}
-.portfolio-library-scroll{max-height:353px;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.portfolio-library-scroll{max-height:720px;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;padding-bottom:24px}
 .portfolio-library-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 24px;border-bottom:1px solid #edf0e7}
 .portfolio-library-row>div{min-width:0}
 .portfolio-library-row strong{display:block;font-size:13px;font-weight:550;line-height:1.5}
