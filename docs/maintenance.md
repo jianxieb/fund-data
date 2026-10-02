@@ -162,7 +162,7 @@ python3 data_quality.py --strict
 
 发布前运行单元测试和质量检查，在浏览器检查实际变更，再审阅Git差异。全部数据产物确定后运行`npm run version-assets`，它把`index.html`中八个本地CSS/JS资源的版本更新为各文件内容摘要；`npm run check`会拒绝过期的资源引用。最后提交脚本、文档、`index.html`及相互对应的数据产物；不要提交原始大缓存、个人资料或凭据。`refresh.py`本身不提交或推送，直接运行单项更新脚本后也需执行资源版本命令。
 
-手动更新时，提交与推送仍由维护者显式执行。`main` 上的普通代码推送由 `.github/workflows/pages.yml` 校验资源版本并部署；`.github/workflows/refresh-data.yml` 在工作日北京时间22:17定时运行，也可从仓库 Actions 页面手动触发。它安装依赖、运行测试、在线执行七阶段刷新、检查报告和来源日期、更新资源版本，然后只提交生成的数据与 `index.html`；同一次工作流把这些已验证文件部署到 Pages。手动触发时可关闭 `publish` 只验证，也可启用 `cold_start` 忽略源缓存。无实质数据或证据变化时不创建提交。任一步失败都不推送、不部署，并上传最近报告与阶段日志作为 Actions 诊断工件。发布源需要设为 GitHub Actions；详见[自动更新方案](automatic-update-plan.md)。
+手动更新时，提交与推送仍由维护者显式执行。`main` 上的普通代码推送由 `.github/workflows/pages.yml` 校验资源版本并部署；`.github/workflows/refresh-data.yml` 在工作日北京时间22:17定时运行，也可从仓库 Actions 页面手动触发。它安装依赖、运行测试、在线执行八阶段刷新、检查报告和来源日期、更新资源版本，然后只提交生成的数据与 `index.html`；同一次工作流把这些已验证文件部署到 Pages。手动触发时可关闭 `publish` 只验证，也可启用 `cold_start` 忽略源缓存。无实质数据或证据变化时不创建提交。任一步失败都不推送、不部署，并上传最近报告与阶段日志作为 Actions 诊断工件。发布源需要设为 GitHub Actions；详见[自动更新方案](automatic-update-plan.md)。
 
 ## 2026-10-01 跨境目录与更新修复
 
@@ -171,3 +171,13 @@ python3 data_quality.py --strict
 9月29日与9月30日的定时刷新在扩展基金阶段失败：001404与001564分红页面超时，旧归档只有基础46只基金，无法复算2017-12-31缺每日收益的历史净值。现已补齐基础46只与已核验扩展395只的分红拆分存档，共441条，保留日期与原始页哈希。缺网页缓存时可回退至有日期的已保存动作，不能用旧证据证明新日期未分红。整套七阶段联网复算通过；发布前仍检查质量与日期退化。
 
 工作流发布前抓取远端；若执行期间main更新，先快进到新提交，再按新代码重新复算与检验，防止旧运行覆盖新的手工或定时数据。普通推送竞争仍会拒绝写入，不强推。
+
+## 组合模拟每日历史
+
+- 首次补齐：`python3 scripts/build_portfolio_data.py`。
+- 增量更新：`python3 scripts/build_portfolio_data.py --refresh`；已接入默认`refresh.py`。
+- 发布校验：`python3 scripts/build_portfolio_data.py --check`（不联网、不写数据）。
+- 离线重建：`python3 scripts/build_portfolio_data.py --offline`。缺缓存时保留已有已验证发布文件并记录原因。
+- 成功阶段清理旧哈希文件：`python3 scripts/build_portfolio_data.py --prune`；定时入口仅在该阶段成功之后运行。
+
+每天覆盖所有当前研究对象的每日历史，其他产品字段的观察日期不会由此自动改变。网页只下载用户选中的历史，完整计算口径见[组合模拟方法](portfolio-method.md)。

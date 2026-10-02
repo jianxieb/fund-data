@@ -1,13 +1,13 @@
 var REFRESH_REPORT={
   "schemaVersion": 1,
-  "startedAt": "2026-10-02T07:48:52+00:00",
+  "startedAt": "2026-10-02T09:05:59+00:00",
   "mode": "online",
   "steps": [
     {
       "dataset": "funds",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 159.85,
+      "seconds": 37.3,
       "log": ".tmp-snap/refresh-funds.log",
       "publishedRollback": false
     },
@@ -15,7 +15,7 @@ var REFRESH_REPORT={
       "dataset": "research_funds",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 133.49,
+      "seconds": 22.37,
       "log": ".tmp-snap/refresh-research_funds.log",
       "publishedRollback": false
     },
@@ -23,7 +23,7 @@ var REFRESH_REPORT={
       "dataset": "indices",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 21.15,
+      "seconds": 4.65,
       "log": ".tmp-snap/refresh-indices.log",
       "publishedRollback": false
     },
@@ -31,7 +31,7 @@ var REFRESH_REPORT={
       "dataset": "stocks",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 216.77,
+      "seconds": 60.11,
       "log": ".tmp-snap/refresh-stocks.log",
       "publishedRollback": false
     },
@@ -39,7 +39,7 @@ var REFRESH_REPORT={
       "dataset": "screening",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 1.13,
+      "seconds": 0.47,
       "log": ".tmp-snap/refresh-screening.log",
       "publishedRollback": false
     },
@@ -47,19 +47,27 @@ var REFRESH_REPORT={
       "dataset": "strategy",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 22.68,
+      "seconds": 21.46,
       "log": ".tmp-snap/refresh-strategy.log",
+      "publishedRollback": false
+    },
+    {
+      "dataset": "portfolio",
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 171.8,
+      "log": ".tmp-snap/refresh-portfolio.log",
       "publishedRollback": false
     },
     {
       "dataset": "quality",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 0.99,
+      "seconds": 0.52,
       "log": ".tmp-snap/refresh-quality.log",
       "publishedRollback": false
     }
   ],
-  "completedAt": "2026-10-02T07:58:08+00:00",
+  "completedAt": "2026-10-02T09:11:18+00:00",
   "status": "completed"
 };

@@ -13,3 +13,5 @@ __pycache__/
 .tmp-buy-location/
 screens/.cache/
 screens/data/*.json
+
+.tmp-portfolio/

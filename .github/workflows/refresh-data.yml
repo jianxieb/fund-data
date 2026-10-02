@@ -55,13 +55,14 @@ jobs:
             .tmp-managers
             .tmp-snap/stocks
             .tmp-buy-location
+            .tmp-portfolio
           key: research-source-${{ runner.os }}-${{ github.run_id }}
           restore-keys: |
             research-source-${{ runner.os }}-
       - name: Test calculations and source guards
         run: |
           python3 -m unittest discover -s tests -q
-          node --test tests/model.test.cjs
+          node --test tests/*.test.cjs
       - name: Refresh all scheduled datasets
         run: python3 refresh.py --timeout 420 --funds-timeout 900
       - name: Archive newly observed fund actions
@@ -84,6 +85,7 @@ jobs:
             .tmp-managers
             .tmp-snap/stocks
             .tmp-buy-location
+            .tmp-portfolio
           key: research-source-${{ runner.os }}-${{ github.run_id }}
       - name: Integrate remote changes before publishing
         if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || inputs.publish) }}
@@ -95,7 +97,7 @@ jobs:
             git restore --worktree --staged -- .
             git merge --ff-only origin/main
             python3 -m unittest discover -s tests -q
-            node --test tests/model.test.cjs
+            node --test tests/*.test.cjs
             python3 refresh.py --timeout 420 --funds-timeout 900
             python3 scripts/build_fund_actions.py --apply
             python3 scripts/build_crossborder_data.py
@@ -109,12 +111,12 @@ jobs:
         id: commit
         if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || inputs.publish) }}
         run: |
-          if git diff --quiet -- data/snapshot.js data/indices.js data/index-history.json data/screening.js data/fund-actions.json data/crossborder.js data/*validation.json data/verification*.json data/*reconciliation.json; then
+          if git diff --quiet -- data/snapshot.js data/indices.js data/index-history.json data/screening.js data/fund-actions.json data/crossborder.js data/*validation.json data/verification*.json data/*reconciliation.json data/portfolio; then
             echo 'No research data or evidence changed; keeping the existing published snapshot.'
             echo 'changed=false' >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          git add index.html data/*.js data/*.json
+          git add index.html data/*.js data/*.json data/portfolio
           git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "Refresh research data (${{ github.run_id }})"
           git push origin HEAD:main
           echo 'changed=true' >> "$GITHUB_OUTPUT"

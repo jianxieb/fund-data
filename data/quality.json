@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-10-02T07:58:08+00:00",
+  "checkedAt": "2026-10-02T09:11:18+00:00",
   "asOf": "2026-10-02",
   "status": "unverified",
   "summary": {
@@ -4047,6 +4047,18 @@
         }
       ],
       "status": "warning"
+    },
+    {
+      "id": "portfolio",
+      "label": "组合每日历史",
+      "asOf": "2026-10-01",
+      "dateRange": [
+        "2026-09-28",
+        "2026-10-01"
+      ],
+      "records": 1711,
+      "issues": [],
+      "status": "checked"
     }
   ],
   "checks": [

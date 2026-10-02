@@ -9,7 +9,7 @@ import time
 
 from data_status import DATA, ROOT, atomic_text, now_iso, write_status
 
-DATASETS = ('funds', 'research_funds', 'indices', 'stocks', 'screening', 'strategy', 'quality')
+DATASETS = ('funds', 'research_funds', 'indices', 'stocks', 'screening', 'strategy', 'portfolio', 'quality')
 PUBLISHED_OUTPUTS = {
     'funds': ('snapshot.js',),
     'research_funds': ('snapshot.js', 'screening-validation.json'),
@@ -17,6 +17,7 @@ PUBLISHED_OUTPUTS = {
     'stocks': ('snapshot.js',),
     'screening': ('screening.js',),
     'strategy': ('snapshot.js', 'strategy-fees.js'),
+    'portfolio': ('portfolio/catalog.js',),
 }
 
 
@@ -31,6 +32,7 @@ def commands(offline=False):
         # expensive research job, not a daily download of all 1,268 legacy candidates.
         'screening': [sys.executable, str(ROOT / 'screens' / 'fund_screen.py'), 'policy'],
         'strategy': [sys.executable, str(ROOT / 'strategy_backtest.py'), *(flag if offline else ['--refresh'])],
+        'portfolio': [sys.executable, str(ROOT / 'scripts' / 'build_portfolio_data.py'), *(flag if offline else ['--refresh'])],
         'quality': [sys.executable, str(ROOT / 'data_quality.py'), '--strict'],
     }
 
@@ -124,6 +126,9 @@ def main():
             limit = args.funds_timeout if name in ('funds', 'research_funds') and args.funds_timeout else args.timeout
             step = execute(name, available[name], limit, args.offline)
             run['steps'].append(step)
+            if name == 'portfolio' and step['exitCode'] == 0:
+                from scripts.build_portfolio_data import prune
+                prune()
             print('  %s（exit=%d，%.1fs）' % (step['status'], step['exitCode'], step['seconds']), flush=True)
         run['completedAt'] = now_iso()
         run['status'] = 'completed' if all(step['exitCode'] == 0 for step in run['steps']) else 'partial'

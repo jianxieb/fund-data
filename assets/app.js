@@ -23,7 +23,7 @@
     return '<details class="select-menu ' + cls + '"><summary id="' + esc(id) + '" aria-label="' + esc(label + '：' + current[1]) + '"><span>' + esc(current[1]) + '</span></summary>' +
       '<div class="select-menu-list" role="group" aria-label="' + esc(label) + '">' + options.map(([key, text]) => action(esc(text), 'menu-choice', 'select-menu-option' + (key === value ? ' active' : ''), 'data-menu="' + esc(id) + '" data-value="' + esc(key) + '" aria-label="' + esc(text) + '" aria-current="' + (key === value) + '"')).join('') + '</div></details>';
   }
-  const years = [1, 2, 3, 5, 10], titles = { overview: '研究总览', indices: '指数观察', funds: '基金研究', stocks: '个股深入', reports: '深入报告', strategy: '投入策略', 'buy-location': '投资渠道', quality: '数据与方法' };
+  const years = [1, 2, 3, 5, 10], titles = { overview: '研究总览', indices: '指数观察', funds: '基金研究', stocks: '个股深入', reports: '深入报告', strategy: '投入策略', 'buy-location': '投资渠道', portfolio: '组合模拟', quality: '数据与方法' };
   const funds = M.dedupeFunds(window.FUNDS, window.EXTRA);
   const policy = window.SCREEN_POLICY || { shortlist: [], byCode: {}, rules: [], counts: {} };
   const VIEW = 'changheng.research-view.v2';
@@ -172,7 +172,17 @@
       '<div class="home-section-title home-research-title"><h2>研究方向</h2><span>回报 · 风险 · 成本</span></div><div class="research-entry-grid home-four">' + entries.map(([route, id, title, desc, no, group, count, topics]) =>
         '<a class="home-entry" href="#' + route + '" data-home-tab="' + id + '"><span class="home-entry-top"><span class="eyebrow">' + no + ' / ' + group + '</span><span class="home-entry-arrow" aria-hidden="true">' + entryArrow() + '</span></span><span class="home-entry-body"><strong>' + title + '</strong><span>' + desc + '</span></span><span class="home-entry-foot"><b>' + count + '</b><span>' + topics + '</span></span></a>').join('') + '</div>' +
       '<div class="home-secondary"><a class="home-secondary-card" href="#stocks" data-home-tab="quality"><span class="eyebrow">COMPANY RESEARCH</span><span class="home-secondary-title"><strong>个股深入</strong><span class="home-entry-arrow" aria-hidden="true">' + entryArrow() + '</span></span><p>' + qualityStocks.length + ' 家长期优质企业 · ' + growthStocks.length + ' 家高质成长股，结合深入报告研究业务、估值与风险。</p><span class="home-tags"><span>长期质量</span><span>成长阶段</span><span>盈利与股息</span></span></a>' +
-      '<a class="home-secondary-card" href="#buy-location"><span class="eyebrow">INVESTMENT CHANNELS</span><span class="home-secondary-title"><strong>投资渠道</strong><span class="home-entry-arrow" aria-hidden="true">' + entryArrow() + '</span></span><p>同样投资标普500与纳指100，比较不同渠道扣除费用与税款后的结果。</p><span class="home-tags"><span>海外 ETF</span><span>境内场内</span><span>境内场外</span></span></a></div>';
+      '<a class="home-secondary-card" href="#buy-location"><span class="eyebrow">INVESTMENT CHANNELS</span><span class="home-secondary-title"><strong>投资渠道</strong><span class="home-entry-arrow" aria-hidden="true">' + entryArrow() + '</span></span><p>同样投资标普500与纳指100，比较不同渠道扣除费用与税款后的结果。</p><span class="home-tags"><span>海外 ETF</span><span>境内场内</span><span>境内场外</span></span></a>' +
+      '<a class="home-secondary-card" href="#portfolio"><span class="eyebrow">PORTFOLIO RESEARCH</span><span class="home-secondary-title"><strong>组合模拟</strong><span class="home-entry-arrow" aria-hidden="true">' + entryArrow() + '</span></span><p>把已收录的ETF、个股和基金组合起来，观察权重、定投与再平衡如何影响长期结果。</p><span class="home-tags"><span>自由配置</span><span>收益与回撤</span><span>持仓贡献</span></span></a></div>';
+  }
+  function portfolio() {
+    return head('PORTFOLIO RESEARCH', '组合模拟', '从标的、权重到投入方式，看看组合会如何表现。') + window.ChanghengPortfolio.view({
+      esc, money, pct, pc, action, stat, card, modalTitle, openModal, toast, download, render,
+      lazyRows, loadFooter, resetList: () => loadedCounts.delete('portfolio-library'),
+      annual: state.annual, annualControl: annualControl(), feeControl: feeControl(),
+      feeBasis: state.annualFeeBasis, feeOverrides: state.annualFeeOverrides,
+      setFeeBasis: basis => { state.annualFeeBasis = basis; savePrefs(); }
+    });
   }
   function indexRows() {
     return state.indexTab === 'cn' ? window.INDEX_DATA || [] : (window.BM || []).filter(b => state.indexTab === 'other' ? b.section === 'other' : b.section !== 'other');
@@ -949,10 +959,10 @@
     else if (next.closest('details')) next.closest('details').querySelector('summary').focus({ preventScroll: true });
   }
   function render() {
-    const renderers = { overview: home, indices, funds: fundView, stocks, reports: reportsView, strategy: strategies, 'buy-location': buyLocation, quality };
+    const renderers = { overview: home, indices, funds: fundView, stocks, reports: reportsView, strategy: strategies, 'buy-location': buyLocation, portfolio, quality };
     const focus = captureFocus(document.activeElement);
     document.title = '长衡 · ' + titles[state.route];
-    const group = { indices: '研究对象', funds: '研究对象', stocks: '研究对象', reports: '研究对象', strategy: '研究方法', 'buy-location': '研究方法' }[state.route];
+    const group = { indices: '研究对象', funds: '研究对象', stocks: '研究对象', reports: '研究对象', strategy: '研究方法', 'buy-location': '研究方法', portfolio: '组合研究' }[state.route];
     $('#breadcrumb').innerHTML = (group ? '<span>' + group + '</span><span class="breadcrumb-separator" aria-hidden="true">/</span>' : '') + (state.route === 'reports' ? '<a href="#stocks">个股深入</a><span class="breadcrumb-separator" aria-hidden="true">/</span>' : '') + '<span aria-current="page">' + titles[state.route] + '</span>';
     $$('[data-route]').forEach(a => { const active = a.dataset.route === (state.route === 'reports' ? 'stocks' : state.route); a.classList.toggle('active', active); if (active) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
     $('#main').className = 'page-' + state.route;
@@ -989,6 +999,7 @@
     $$('.select-menu[open],.column-picker[open]').forEach(menu => { if (menu !== currentMenu) menu.open = false; });
     const button = event.target.closest('[data-action]'); if (!button || button.disabled) return;
     const act = button.dataset.action, val = button.dataset.value, code = button.dataset.code;
+    if (act.startsWith('portfolio-')) { window.ChanghengPortfolio.handleAction(button); return; }
     if (['fund-tab', 'fund-facet', 'fund-sector', 'fund-channel', 'fund-reset', 'fund-sort', 'fund-sort-reset', 'screen-reset', 'menu-choice', 'go-index-funds', 'find-index-funds'].includes(act)) loadedCounts.delete('funds');
     if (['cross-type', 'cross-region', 'cross-channel', 'cross-premium', 'cross-reset', 'cross-sort', 'cross-basis'].includes(act)) loadedCounts.delete('cross');
     if (['stock-tab', 'stock-category', 'stock-sort', 'stock-boards'].includes(act)) loadedCounts.delete('stocks');
@@ -1145,6 +1156,10 @@
   document.addEventListener('input', e => {
     const el = e.target;
     if (e.isComposing) { clearTimeout(searchTimer); return; }
+    if (el.id === 'portfolio-search' || el.dataset.portfolioWeight || el.dataset.portfolioField) {
+      if (window.ChanghengPortfolio.handleInput(el)) { clearTimeout(searchTimer); searchTimer = setTimeout(render, 120); }
+      return;
+    }
     if (el.id === 'report-search') { state.reportQuery = el.value; loadedCounts.delete('reports'); clearTimeout(searchTimer); searchTimer = setTimeout(render, 120); return; }
     if (el.id === 'fund-search') { state.query = el.value; loadedCounts.delete('funds'); clearTimeout(searchTimer); searchTimer = setTimeout(renderFundResults, 120); }
     if (el.id === 'overseas-search') { state.overseasQuery = el.value; clearTimeout(searchTimer); searchTimer = setTimeout(render, 120); }
@@ -1159,10 +1174,13 @@
   });
   document.addEventListener('compositionstart', () => clearTimeout(searchTimer));
   document.addEventListener('compositionend', e => {
-    if (e.target.matches('#fund-search,#stock-search,#cross-search,#report-search,#overseas-search')) e.target.dispatchEvent(new Event('input', { bubbles: true }));
+    if (e.target.matches('#fund-search,#stock-search,#cross-search,#report-search,#overseas-search,#portfolio-search')) e.target.dispatchEvent(new Event('input', { bubbles: true }));
   });
   document.addEventListener('change', e => {
     const el = e.target;
+    if (el.id === 'portfolio-import' || el.id === 'portfolio-hide-boards' || el.dataset.portfolioWeight || el.dataset.portfolioField || el.dataset.portfolioFee) {
+      window.ChanghengPortfolio.handleChange(el); return;
+    }
     if (el.dataset.annualFeeCode) {
       const code = el.dataset.annualFeeCode;
       if (el.value.trim() && (!el.checkValidity() || !Number.isFinite(Number(el.value)))) { toast('请输入0至99之间的有效年费率'); return; }
@@ -1204,6 +1222,8 @@
     else if (el.id === 'show-leverage') { state.leverage = el.checked; render(); }
   });
   document.addEventListener('pointermove', e => { const plot = e.target.closest('.curve-plot'); if (plot) showCurvePoint(e, plot); });
+  document.addEventListener('pointermove', e => window.ChanghengPortfolio.showPoint(e));
+  document.addEventListener('pointerdown', e => window.ChanghengPortfolio.showPoint(e));
   document.addEventListener('pointerdown', e => { const plot = e.target.closest('.curve-plot'); if (plot) showCurvePoint(e, plot); });
   document.addEventListener('pointerout', e => {
     const plot = e.target.closest('.curve-plot');

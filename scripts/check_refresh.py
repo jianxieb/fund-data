@@ -12,7 +12,7 @@ import data_quality
 from data_status import DATA, ROOT
 
 
-EXPECTED_STEPS = ('funds', 'research_funds', 'indices', 'stocks', 'screening', 'strategy', 'quality')
+EXPECTED_STEPS = ('funds', 'research_funds', 'indices', 'stocks', 'screening', 'strategy', 'portfolio', 'quality')
 IDENTITIES = {'FUNDS': 'c', 'EXTRA': 'c', 'STOCKS': 'c', 'INDEX_DATA': 'c',
               'BM': 'n', 'STRATEGY_ASSETS': 'c'}
 DATED_FIELDS = {'FUNDS': ('navdate', 'returnAsOf', 'riskAsOf', 'szdate'),
@@ -26,10 +26,15 @@ TOP_LEVEL_DATES = (('META', 'navdate'), ('INDEX_META', 'asof'),
 def baseline_snapshot(ref='HEAD'):
     with tempfile.TemporaryDirectory() as temporary:
         directory = Path(temporary)
-        for name in ('snapshot.js', 'indices.js', 'screening.js'):
+        for name in ('snapshot.js', 'indices.js', 'screening.js', 'portfolio/catalog.js'):
             result = subprocess.run(['git', 'show', f'{ref}:data/{name}'], cwd=ROOT,
-                                    capture_output=True, check=True)
-            (directory / name).write_bytes(result.stdout)
+                                    capture_output=True, check=False)
+            if result.returncode and name == 'portfolio/catalog.js':
+                continue  # The initial portfolio publication has no previous catalog.
+            result.check_returncode()
+            destination = directory / name
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_bytes(result.stdout)
         original = data_quality.DATA
         try:
             data_quality.DATA = directory
@@ -42,7 +47,7 @@ def check_results(report, quality):
     problems = []
     steps = report.get('steps') or []
     if report.get('status') != 'completed' or tuple(item.get('dataset') for item in steps) != EXPECTED_STEPS:
-        problems.append('刷新报告不是完整七阶段成功结果')
+        problems.append('刷新报告不是完整八阶段成功结果')
     for item in steps:
         if item.get('exitCode') != 0 or item.get('status') != 'completed':
             problems.append('阶段失败：' + str(item.get('dataset')))
@@ -79,6 +84,20 @@ def check_snapshots(before, after):
         new_day = (after.get(section) or {}).get(field)
         if old_day and (not new_day or str(new_day)[:10] < str(old_day)[:10]):
             problems.append(f'{section}.{field} 日期倒退：{old_day} → {new_day}')
+    previous = before.get('PORTFOLIO_CATALOG') or {}
+    current = after.get('PORTFOLIO_CATALOG') or {}
+    if previous:
+        old_rows = {row['id']: row for row in previous.get('assets') or []}
+        new_rows = {row['id']: row for row in current.get('assets') or []}
+        if set(old_rows) != set(new_rows):
+            problems.append('PORTFOLIO_CATALOG 标的集合变化')
+        for identity, prior in old_rows.items():
+            row = new_rows.get(identity) or {}
+            if prior.get('status') == 'available' and (row.get('status') != 'available' or row.get('asOf', '') < prior.get('asOf', '')):
+                problems.append('组合历史退化：' + identity)
+        old_fx, new_fx = previous.get('fx') or {}, current.get('fx') or {}
+        if old_fx.get('status') == 'available' and (new_fx.get('status') != 'available' or new_fx.get('asOf', '') < old_fx.get('asOf', '')):
+            problems.append('组合美元兑人民币历史退化')
     return problems
 
 
@@ -87,11 +106,16 @@ def main():
     quality = json.loads((DATA / 'quality.json').read_text(encoding='utf-8'))
     problems = check_results(report, quality)
     problems.extend(check_snapshots(baseline_snapshot(), data_quality.read_snapshot()))
+    from scripts.build_portfolio_data import universe, validate_catalog
+    try:
+        validate_catalog(data_quality.read_snapshot().get('PORTFOLIO_CATALOG') or {}, universe())
+    except (ValueError, OSError) as exc:
+        problems.append('组合每日历史校验失败：' + str(exc))
     if problems:
         for item in problems:
             print('拒绝发布：' + item)
         return 1
-    print('刷新通过：七阶段成功、质量错误为零、标的集合及来源日期未倒退。')
+    print('刷新通过：八阶段成功、质量错误为零、标的集合及来源日期未倒退。')
     return 0
 
 

@@ -28,7 +28,8 @@ jobs:
         run: |
           npm run check
           python3 -m unittest discover -s tests -q
-          node --test tests/model.test.cjs
+          node --test tests/*.test.cjs
+          python3 scripts/build_portfolio_data.py --check
           python3 - <<'PY'
           import data_quality
           report = data_quality.audit(data_quality.read_snapshot())

@@ -20,7 +20,7 @@ def read_snapshot():
     script = """
 const fs=require('fs'),vm=require('vm'),path=require('path');
 const context={}; vm.createContext(context);
-for(const name of ['snapshot.js','strategy-fees.js','indices.js','screening.js']) {
+for(const name of ['snapshot.js','strategy-fees.js','indices.js','screening.js','portfolio/catalog.js']) {
   const file=path.join(process.argv[1],name);
   if(fs.existsSync(file)) vm.runInContext(fs.readFileSync(file,'utf8'),context,{timeout:1000});
 }
@@ -331,6 +331,29 @@ def audit(snapshot, today=None):
         issue(idata, 'index_source_unavailable', 'warning', message, unavailable_indices)
     if stale_indices:
         issue(idata, 'stale_index', 'warning', '指数日期缺失或超过10个自然日', stale_indices)
+
+    portfolio = snapshot.get('PORTFOLIO_CATALOG')
+    if portfolio:
+        rows = portfolio.get('assets') or []
+        pd = dataset('portfolio', '组合每日历史', rows)
+        expected = ({'fund:' + row['c'] for row in [*funds, *extra]}
+                    | {'stock:' + row['c'] for row in snapshot.get('STOCKS') or []}
+                    | {'us:' + row['symbol'] for row in snapshot.get('BM') or [] if row.get('symbol') and row.get('feesEmbedded')})
+        actual = [row.get('id') for row in rows]
+        if len(actual) != len(set(actual)) or set(actual) != expected:
+            issue(pd, 'portfolio_universe_mismatch', 'error', '组合标的库未完整覆盖当前ETF、个股与基金')
+        invalid = [row.get('id') for row in rows if row.get('status') == 'available'
+                   and (age_days(row.get('asOf'), today) is None or age_days(row.get('asOf'), today) < 0
+                        or age_days(row.get('first'), today) is None or row.get('first', '') >= row.get('asOf', '')
+                        or not row.get('historyUrl') or not row.get('sha256') or not row.get('sourceUrl'))]
+        if invalid:
+            issue(pd, 'portfolio_history_metadata_invalid', 'error', '组合历史日期、文件或来源证据无效', invalid)
+        missing = [row['id'] for row in rows if row.get('status') != 'available']
+        if missing:
+            issue(pd, 'portfolio_history_missing', 'warning', '部分标的缺每日历史；页面逐项说明具体原因', missing)
+        unexplained = [row.get('id') for row in rows if row.get('status') != 'available' and not row.get('missing')]
+        if unexplained:
+            issue(pd, 'portfolio_missing_unexplained', 'error', '缺历史标的未记录具体缺项', unexplained)
 
     for result in datasets:
         severities = {i['severity'] for i in result['issues']}
