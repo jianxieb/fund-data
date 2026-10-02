@@ -1208,6 +1208,7 @@
   document.addEventListener('pointerdown', e => window.ChanghengPortfolio.showPoint(e));
   document.addEventListener('pointerdown', e => { const plot = e.target.closest('.curve-plot'); if (plot) showCurvePoint(e, plot); });
   document.addEventListener('pointerout', e => {
+    window.ChanghengPortfolio.hidePoint(e);
     const plot = e.target.closest('.curve-plot');
     if (!plot || plot.contains(e.relatedTarget)) return;
     const layer = plot.querySelector('.curve-hover-layer'), tooltip = plot.querySelector('.curve-tooltip');

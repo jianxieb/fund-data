@@ -148,7 +148,7 @@
     for (const i of [0, Math.floor((rows.length - 1) / 2), rows.length - 1]) grid += '<text x="' + x(i) + '" y="' + (HH - 8) + '" text-anchor="' + (i === 0 ? 'start' : i === rows.length - 1 ? 'end' : 'middle') + '">' + rows[i].day + '</text>';
     const area = path(primary) + 'L' + x(rows.length - 1) + ' ' + y(0) + 'L' + x(0) + ' ' + y(0) + 'Z';
     const label = metric === 'amount' ? '账户资产与累计投入' : metric === 'drawdown' ? '组合回撤' : H.annual ? '年化收益 · 首年按一年计' : '累计收益';
-    return H.card('组合走势', label, '<div class="portfolio-chart-body"><div class="portfolio-chart-legend"><span><i style="background:#35654a"></i>我的组合</span>' + (secondary ? '<span><i style="background:#9c8d6e"></i>' + H.esc(metric === 'amount' ? '累计投入' : result.benchmark.name) + '</span>' : '') + '<span id="portfolio-chart-readout" aria-live="polite"></span></div><svg class="portfolio-plot" data-portfolio-plot viewBox="0 0 ' + W + ' ' + HH + '" role="img" aria-label="' + label + '"><title>' + label + '</title><defs><linearGradient id="portfolio-fill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#a4c1a2" stop-opacity=".24"/><stop offset="1" stop-color="#a4c1a2" stop-opacity=".02"/></linearGradient></defs>' + grid + '<path d="' + area + '" fill="url(#portfolio-fill)"/>' + (secondary ? '<path d="' + path(secondary) + '" stroke="#9c8d6e" fill="none" stroke-width="1.8" stroke-dasharray="5 4"/>' : '') + '<path d="' + path(primary) + '" stroke="#35654a" fill="none" stroke-width="2.3"/><line id="portfolio-cursor" x1="0" x2="0" y1="' + pad.y + '" y2="' + (HH - pad.bottom) + '" stroke="#83927c" stroke-dasharray="3 3" visibility="hidden"/></svg></div>',
+    return H.card('组合走势', label, '<div class="portfolio-chart-body"><div class="portfolio-chart-legend"><span><i style="background:#35654a"></i>我的组合</span>' + (secondary ? '<span><i style="background:#9c8d6e"></i>' + H.esc(metric === 'amount' ? '累计投入' : result.benchmark.name) + '</span>' : '') + '<span id="portfolio-chart-readout" aria-live="polite"></span></div><div class="portfolio-plot-wrap"><div id="portfolio-tooltip" class="portfolio-tooltip" hidden></div><svg class="portfolio-plot" data-portfolio-plot data-min="' + lo + '" data-max="' + hi + '" viewBox="0 0 ' + W + ' ' + HH + '" role="img" aria-label="' + label + '"><title>' + label + '</title><defs><linearGradient id="portfolio-fill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#a4c1a2" stop-opacity=".24"/><stop offset="1" stop-color="#a4c1a2" stop-opacity=".02"/></linearGradient></defs>' + grid + '<path d="' + area + '" fill="url(#portfolio-fill)"/>' + (secondary ? '<path d="' + path(secondary) + '" stroke="#9c8d6e" fill="none" stroke-width="1.8" stroke-dasharray="5 4"/>' : '') + '<path d="' + path(primary) + '" stroke="#35654a" fill="none" stroke-width="2.3"/><line id="portfolio-cursor" x1="0" x2="0" y1="' + pad.y + '" y2="' + (HH - pad.bottom) + '" stroke="#83927c" stroke-dasharray="3 3" visibility="hidden" pointer-events="none"/><circle id="portfolio-point" r="4.5" fill="#35654a" stroke="white" stroke-width="2" visibility="hidden" pointer-events="none"/><rect x="63" y="24" width="841" height="272" fill="transparent" pointer-events="all"/></svg></div></div>',
       '<div class="segmented">' + [['return', '收益率'], ['amount', '账户资产'], ['drawdown', '回撤']].map(([key, name]) => btn(name, 'metric', key === metric ? 'active' : '', 'data-value="' + key + '"')).join('') + '</div>');
   }
   function results() {
@@ -263,13 +263,46 @@
     if (el.dataset.portfolioWeight || el.dataset.portfolioField) { handleInput(el); update(); }
   }
   function showPoint(event) {
-    const plot = event.target.closest('[data-portfolio-plot]');
+    const plot = event.target.closest?.('[data-portfolio-plot]');
     if (!plot || !result) return;
-    const box = plot.getBoundingClientRect(), fraction = Math.max(0, Math.min(1, (event.clientX - box.left - box.width * 63 / 920) / (box.width * (920 - 63 - 16) / 920)));
+    const box = plot.getBoundingClientRect();
+    const fraction = Math.max(0, Math.min(1, (event.clientX - box.left - box.width * 63 / 920) / (box.width * 841 / 920)));
     const index = Math.round(fraction * (result.curve.length - 1)), point = result.curve[index];
-    const cursor = document.getElementById('portfolio-cursor'), readout = document.getElementById('portfolio-chart-readout');
-    if (cursor) { const x = 63 + index / Math.max(1, result.curve.length - 1) * (920 - 63 - 16); cursor.setAttribute('x1', x); cursor.setAttribute('x2', x); cursor.setAttribute('visibility', 'visible'); }
-    if (readout) readout.textContent = point.day + ' · ' + (metric === 'amount' ? H.money(point.value, 2) + '元' : H.pct(metric === 'drawdown' ? point.drawdown : H.annual ? point.annualReturn : point.totalReturn));
+    const value = metric === 'amount' ? point.value : metric === 'drawdown' ? point.drawdown : H.annual ? point.annualReturn : point.totalReturn;
+    const format = v => metric === 'amount' ? H.money(v, 2) + '元' : H.pct(v);
+    const comparison = metric === 'amount' ? point.contributed : metric === 'return' && result.benchmark
+      ? H.annual ? point.day === result.start ? 0 : P.annualReturn(result.benchmark.curve[index].nav, result.start, point.day)
+      : (result.benchmark.curve[index].nav - 1) * 100 : null;
+    const comparisonName = metric === 'amount' ? '累计投入' : result.benchmark?.name;
+    const x = 63 + index / Math.max(1, result.curve.length - 1) * 841;
+    const cursor = document.getElementById('portfolio-cursor'), dot = document.getElementById('portfolio-point');
+    if (cursor) { cursor.setAttribute('x1', x); cursor.setAttribute('x2', x); cursor.setAttribute('visibility', 'visible'); }
+    if (dot) {
+      const lo = Number(plot.dataset.min), hi = Number(plot.dataset.max);
+      dot.setAttribute('cx', x); dot.setAttribute('cy', 24 + (hi - value) / (hi - lo) * 272); dot.setAttribute('visibility', 'visible');
+    }
+    const readout = document.getElementById('portfolio-chart-readout');
+    if (readout) readout.textContent = point.day + ' · 组合 ' + format(value) + (comparison !== null ? ' · 对照 ' + format(comparison) : '');
+    const tooltip = document.getElementById('portfolio-tooltip');
+    if (tooltip) {
+      const entries = [[metric === 'drawdown' ? '组合回撤' : '我的组合', format(value)]];
+      if (comparison !== null) entries.push([comparisonName, format(comparison)]);
+      if (metric !== 'amount') entries.push(['账户资产', H.money(point.value, 2) + '元'], ['累计投入', H.money(point.contributed, 2) + '元']);
+      entries.push(['账面盈亏', H.money(point.profit, 2) + '元']);
+      if (metric !== 'drawdown') entries.push(['回撤', H.pct(point.drawdown)]);
+      tooltip.innerHTML = '<strong>' + point.day + '</strong>' + entries.map(([name, text]) => '<div><span>' + H.esc(name) + '</span><b>' + H.esc(text) + '</b></div>').join('');
+      tooltip.hidden = false;
+      const px = event.clientX - box.left, py = event.clientY - box.top;
+      tooltip.style.left = Math.max(8, Math.min(box.width - tooltip.offsetWidth - 8, px > box.width / 2 ? px - tooltip.offsetWidth - 16 : px + 16)) + 'px';
+      tooltip.style.top = Math.max(8, Math.min(box.height - tooltip.offsetHeight - 8, py + 16)) + 'px';
+    }
   }
-  window.ChanghengPortfolio = { view, handleAction, handleInput, handleChange, showPoint, method };
+  function hidePoint(event) {
+    const plot = event.target.closest?.('[data-portfolio-plot]');
+    if (!plot || plot.contains(event.relatedTarget)) return;
+    document.getElementById('portfolio-tooltip')?.setAttribute('hidden', '');
+    document.getElementById('portfolio-cursor')?.setAttribute('visibility', 'hidden');
+    document.getElementById('portfolio-point')?.setAttribute('visibility', 'hidden');
+  }
+  window.ChanghengPortfolio = { view, handleAction, handleInput, handleChange, showPoint, hidePoint, method };
 })();

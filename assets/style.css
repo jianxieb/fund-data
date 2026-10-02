@@ -697,3 +697,12 @@ html[data-input-mode=pointer] :is(button,a,input,select,summary):focus-visible{o
 
 .annual-fee-note{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);white-space:nowrap}
 .annual-fee-note::before{content:"";width:5px;height:5px;background:#879d75;border-radius:50%}
+
+.portfolio-plot{cursor:crosshair}
+.portfolio-plot-wrap{position:relative}
+.portfolio-tooltip{position:absolute;z-index:3;min-width:250px;max-width:300px;padding:14px 16px;border:1px solid #d8e2d4;border-radius:10px;background:#fffefa;box-shadow:0 8px 28px #1e342d30;pointer-events:none;font-size:12px}
+.portfolio-tooltip[hidden]{display:none}
+.portfolio-tooltip>strong{display:block;margin-bottom:9px;font-size:13px;font-variant-numeric:tabular-nums}
+.portfolio-tooltip>div{display:flex;gap:24px;justify-content:space-between;margin-top:6px}
+.portfolio-tooltip span{color:var(--muted);max-width:170px}
+.portfolio-tooltip b{font-weight:550;font-variant-numeric:tabular-nums;white-space:nowrap}
