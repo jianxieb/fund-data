@@ -2,6 +2,7 @@
 
 ## Workflow
 
+- Commit every completed change. Prefer one independent change per Git commit; keep its required tests, data and documentation together, and avoid combining unrelated changes.
 - In this project, push immediately after every commit. Committing without pushing is not a completed delivery.
 - Before pushing, fetch and integrate any remote updates, including scheduled data refreshes. Preserve their changes and do not force-push over them.
 
