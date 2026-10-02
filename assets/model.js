@@ -16,6 +16,33 @@
     const review = group === 'quality' ? stock.longTermReview : group === 'growth' ? stock.growthReview : stock.breakoutReview;
     return review?.qualified === true && stock.qualityResearch?.status === 'reviewed' && stock.qualityResearch?.code === stock.c;
   }
+  function stockResearchStatus(stock) {
+    const stages = [['quality', '长期优质企业', 'longTermReview'], ['growth', '高质成长股', 'growthReview'],
+      ['breakout', '业绩爆发股', 'breakoutReview'], ['dividend', '红利价值', null]];
+    const groups = stages.filter(([group]) => stockMatches(stock, group)).map(([id, label]) => ({ id, label }));
+    const annual = [...(stock.financialHistory5 || stock.financialHistory || [])].sort((a, b) => String(b.reportDate || b.year || '').localeCompare(String(a.reportDate || a.year || '')));
+    const percent = v => finite(v) ? (v >= 0 ? '+' : '') + v.toFixed(2) + '%' : '缺可比同比';
+    const annualText = r => r.year + '年归母' + percent(r.netProfitGrowth) + '、扣非' + percent(r.deductedProfitGrowth);
+    const exclusions = stock.group === 'dividend' ? [] : stages.filter(([id, , key]) => key && !stockMatches(stock, id)).map(([id, label, key]) => {
+      const checks = (stock[key]?.checks || []).filter(c => c.pass === false).map(c => {
+        let reason = c.reason || c.label;
+        if (id === 'quality' && c.label.startsWith('最新完整年度归母及扣非利润增长') && annual.length) reason = annualText(annual[0]) + '；两项均需≥10%';
+        if (id === 'quality' && c.label.startsWith('最近3年归母及扣非利润逐年增长')) {
+          const declines = annual.slice(0, 3).filter(r => r.netProfitGrowth < 0 || r.deductedProfitGrowth < 0);
+          if (declines.length) reason = declines.map(annualText).join('；');
+        }
+        return { label: c.label, reason };
+      });
+      if (!checks.length) checks.push({ label: '研究证据', reason: stock.qualityResearch?.code !== stock.c ? '缺本公司具名业务研究' : '缺本期逐项入选核对记录' });
+      return { id, label, checks };
+    });
+    return { groups, label: groups.length ? groups.map(g => g.label).join(' · ') : '未入选当前名单', exclusions };
+  }
+  function stockSearchExtras(stocks, query, group, hideBoards = false) {
+    const q = query.trim().toLowerCase();
+    return q ? stocks.filter(s => !stockMatches(s, group) && (!hideBoards || stockBoard(s.c) === 'main') &&
+      [s.c, s.n, s.ind, s.businessLabel, s.researchCategory].join(' ').toLowerCase().includes(q)) : [];
+  }
   function stockBoard(code) {
     return /^68[89]\d{3}$/.test(code) ? 'star' : /^30[01]\d{3}$/.test(code) ? 'chinext' : 'main';
   }
@@ -420,5 +447,5 @@
     });
     return { start, end, purchaseDays, rows, exchangeBasis, annualFeeBasis };
   }
-  return { finite, sum, copy, escapeHtml, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, stockMatches, stockBoard, loadWindow, fundScopeMatches, fundFacetMatches, indexFundKind, indexSectors, indexSectorMatches, csv, buyLocationXirr, buyLocationResult, crossborderPerformance, crossborderMatches, isCrossborderIndex, crossborderRegion, annualFeeInfo, annualFeeFactor, returnWithAnnualFees, overseasEtfMatches };
+  return { finite, sum, copy, escapeHtml, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, stockMatches, stockResearchStatus, stockSearchExtras, stockBoard, loadWindow, fundScopeMatches, fundFacetMatches, indexFundKind, indexSectors, indexSectorMatches, csv, buyLocationXirr, buyLocationResult, crossborderPerformance, crossborderMatches, isCrossborderIndex, crossborderRegion, annualFeeInfo, annualFeeFactor, returnWithAnnualFees, overseasEtfMatches };
 }));

@@ -57,6 +57,19 @@ test('calendar coverage rejects impossible dates and handles leap anniversaries'
   assert.equal(M.hasWindow('2010-01-01', '2026-01-01', 1e12), false);
 });
 
+test('searched research outside a published list remains discoverable with exact exclusion evidence', () => {
+  const vm = require('node:vm'), context = {};
+  vm.createContext(context); vm.runInContext(fs.readFileSync('data/snapshot.js', 'utf8'), context);
+  const s = context.STOCKS.find(s => s.c === '002648'), status = M.stockResearchStatus(s);
+  assert.equal(status.groups.length, 0); assert.equal(status.label, '未入选当前名单');
+  assert.match(status.exclusions.find(e => e.id === 'quality').checks.at(-1).reason, /2025.*-12.54%.*4.03%/);
+  assert.match(status.exclusions.find(e => e.id === 'growth').checks[0].reason, /15.47%.*30%/);
+  assert.deepEqual(M.stockSearchExtras([s], '', 'quality'), []);
+  assert.deepEqual(M.stockSearchExtras([s], '卫星', 'quality'), [s]);
+  assert.deepEqual(M.stockSearchExtras([{ ...s, c: '688001' }], '卫星', 'quality', true), []);
+  assert.equal(M.stockResearchStatus({ c:'123456', group:'dividend' }).exclusions.length, 0);
+});
+
 test('deduplication keeps NAV, return and risk observation dates independent', () => {
   const freshNAV = fund({ navdate: '2026-09-21', returnAsOf: '2026-09-10', riskAsOf: '2026-09-19', r: [1, 2, 3, 4, 5], mdd5: -25 });
   const freshReturns = fund({ navdate: '2026-09-18', returnAsOf: '2026-09-18', riskAsOf: '2026-09-18', r: [10, 20, 30, 40, 50], returnSource: 'verified-snapshot' });

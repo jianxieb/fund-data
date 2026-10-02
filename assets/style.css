@@ -722,3 +722,19 @@ html[data-input-mode=pointer] :is(button,a,input,select,summary):focus-visible{o
 .portfolio-snapshot-table td{font-size:13px;padding-top:12px;padding-bottom:12px}
 .portfolio-snapshot-table tbody tr:first-child td.num{font-size:21px}
 .portfolio-snapshot-missing{font-size:12px;color:#937043;line-height:1.7;padding:0 24px 16px}
+.stock-search-extras{padding:0 24px}
+.stock-search-extra{display:flex;justify-content:space-between;align-items:center;gap:25px;padding:20px 0;border-bottom:1px solid var(--line)}
+.stock-search-extra:last-child{border-bottom:0}
+.stock-search-extra p{font-size:12px;color:var(--muted);line-height:1.7;margin-top:8px;max-width:700px}
+.stock-search-status{display:block;font-size:12px;color:#937043;margin-top:9px}
+.stock-selection-detail{padding:18px 22px;background:#f4f5ee;border:1px solid #e4e7db;border-radius:10px;margin-bottom:23px}
+.stock-selection-detail h3{font-size:14px;font-weight:550}
+.stock-selection-detail h4{font-size:12px;font-weight:550;margin:17px 0 8px}
+.stock-selection-detail ul{padding-left:17px}
+.stock-selection-detail li{margin:8px 0;font-size:12px;line-height:1.7}
+.stock-selection-detail li strong{font-weight:500}
+.stock-selection-detail li span{display:block;color:var(--muted)}
+.portfolio-library-row:has(.portfolio-stock-status){display:grid;grid-template-columns:minmax(0,1fr) 39px;column-gap:12px}
+.portfolio-stock-status{grid-column:1;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.portfolio-library-row .portfolio-stock-status span{color:#937043;margin-top:0}
+.portfolio-library-row:has(.portfolio-stock-status)>.portfolio-add{grid-column:2;grid-row:1/3;align-self:center}
