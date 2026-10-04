@@ -15,3 +15,6 @@ screens/.cache/
 screens/data/*.json
 
 .tmp-portfolio/
+
+# Local business planning documents
+/private-planning/
