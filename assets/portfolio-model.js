@@ -107,7 +107,7 @@
   function simulate(input) {
     try { return run(input); } catch (error) { return { error: error.message }; }
   }
-  function simulateWindows(input, end, periods = [3, 5]) {
+  function simulateWindows(input, end, periods = [1, 2, 3, 5]) {
     return periods.map(years => ({ years, ...simulate({ ...input,
       config: { ...input.config, years: 'custom', start: addYears(end, -years), end } }) }));
   }

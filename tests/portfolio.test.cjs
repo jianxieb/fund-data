@@ -57,16 +57,24 @@ test('portfolio structure counts weights and treats 2x/3x as ETF subsets', () =>
   assert.equal(P.allocation([{ id: 's', weight: NaN }], assets).invalid, true);
 });
 
-test('3/5-year snapshots restart cash flows at each window with a shared end date', () => {
+test('1/2/3/5-year snapshots restart cash flows at each window with a shared end date', () => {
   const days = [];
   for (let t = Date.parse('2020-01-01'); t <= Date.parse('2026-01-01'); t += 86400000) days.push(new Date(t).toISOString().slice(0, 10));
   const input = fixture([{ days, values: days.map(() => 1) }], { monthly: 100, years: 1 });
   const before = JSON.stringify(input.config), snapshots = P.simulateWindows(input, '2026-01-01');
   assert.equal(JSON.stringify(input.config), before);
-  assert.deepEqual(snapshots.map(r => r.start), ['2023-01-01', '2021-01-01']);
-  assert.deepEqual(snapshots.map(r => r.end), ['2026-01-01', '2026-01-01']);
-  close(snapshots[0].value, 4600); close(snapshots[1].value, 7000);
-  close(snapshots[0].contributed, 4600); close(snapshots[1].totalReturn, 0);
+  assert.deepEqual(snapshots.map(r => r.start), ['2025-01-01', '2024-01-01', '2023-01-01', '2021-01-01']);
+  assert.ok(snapshots.every(r => r.end === '2026-01-01'));
+  for (const [i, expected] of [2200, 3400, 4600, 7000].entries()) {
+    close(snapshots[i].value, expected); close(snapshots[i].contributed, expected);
+    close(snapshots[i].totalReturn, 0);
+  }
+  const recentDays = days.filter(day => day >= '2024-01-01');
+  const recent = fixture([{ days: recentDays, values: recentDays.map(() => 1) }], { monthly: 100 });
+  const partial = P.simulateWindows(recent, '2026-01-01');
+  assert.equal(partial[0].error, undefined); assert.equal(partial[1].error, undefined);
+  close(partial[0].value, 2200); close(partial[1].value, 3400);
+  assert.match(partial[2].error, /不覆盖/); assert.match(partial[3].error, /不覆盖/);
   const short = fixture([{ values: [1, 2, 3] }]);
   assert.ok(P.simulateWindows(short, dates.at(-1)).every(r => /不覆盖/.test(r.error)));
 });
