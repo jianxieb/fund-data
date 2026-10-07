@@ -58,6 +58,12 @@ class PortfolioHistoryTests(unittest.TestCase):
                     'provider_daily_return_or_explicit_actions', 'https://example.test/nav')
                 catalog = {'assets': [row], 'fx': {'missing': 'fixture has no FX'}}
                 self.assertTrue(portfolio.validate_catalog(catalog, [row]))
+                row['performance']['risk5']['mdd'] += 1e-11
+                self.assertTrue(portfolio.validate_catalog(catalog, [row]))
+                row['performance']['risk5']['end'] = '2026-09-11'
+                with self.assertRaisesRegex(ValueError, '预览与每日历史不一致'):
+                    portfolio.validate_catalog(catalog, [row])
+                row['performance']['risk5']['end'] = '2026-09-10'
                 row['performance']['risk5']['mdd'] = -99
                 with self.assertRaisesRegex(ValueError, '预览与每日历史不一致'):
                     portfolio.validate_catalog(catalog, [row])

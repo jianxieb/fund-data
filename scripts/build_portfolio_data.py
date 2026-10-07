@@ -244,6 +244,16 @@ def performance_preview(series):
     return {'annual': annual, 'risk5': {key: risk[key] for key in ('mdd', 'start', 'end', 'partial', 'actualYears', 'reason')}}
 
 
+def preview_matches(actual, expected):
+    # libm exponentiation can differ by a few last bits on macOS and Linux.
+    # Only numeric results have a tolerance; dates, coverage and missing evidence stay exact.
+    if isinstance(actual, dict) and isinstance(expected, dict):
+        return actual.keys() == expected.keys() and all(preview_matches(actual[k], expected[k]) for k in expected)
+    if isinstance(actual, (int, float)) and not isinstance(actual, bool) and isinstance(expected, (int, float)) and not isinstance(expected, bool):
+        return math.isfinite(actual) and math.isfinite(expected) and math.isclose(actual, expected, rel_tol=0, abs_tol=1e-9)
+    return type(actual) is type(expected) and actual == expected
+
+
 def publish_history(asset, series, basis, source, warning=None):
     series = validate_series(series)
     body = {'schemaVersion': 1, 'id': asset['id'], 'currency': asset['currency'],
@@ -309,7 +319,7 @@ def validate_catalog(catalog, expected=None, verify_files=True):
             series = validate_series(history.get('series') or [])
             if series[0][0] != row['first'] or series[-1][0] != row['asOf'] or len(series) != row['observations']:
                 raise ValueError('历史文件区间不一致：' + row['id'])
-            if 'performance' in row and row['performance'] != performance_preview(series):
+            if 'performance' in row and not preview_matches(row['performance'], performance_preview(series)):
                 raise ValueError('标的收益风险预览与每日历史不一致：' + row['id'])
     return True
 
