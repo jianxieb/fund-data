@@ -136,7 +136,7 @@
     const status = stock ? M.stockResearchStatus(stock) : null;
     return '<div class="portfolio-library-row"><div><strong>' + H.esc(row.name) + ((row.leverage || 1) > 1 ? tag(row.leverage + '倍', 'warn') : '') + '</strong><span>' + H.esc(row.code) + ' · ' + H.esc(typeName[row.kind]) + ' · ' + (row.market === 'us' ? '海外' : '境内') + ' · ' + H.esc(row.category || '') + '</span><small>' + H.esc(row.status === 'available' ? row.first + ' — ' + row.asOf : row.missing) + '</small></div>' +
       (status ? '<div class="portfolio-stock-status"><span>' + H.esc(status.label) + '</span>' + H.action('研究详情', 'stock-detail', 'text-link small', 'data-code="' + H.esc(stock.c) + '" aria-label="' + H.esc(stock.n + '研究详情') + '"') + '</div>' : '') +
-      btn(selected ? '已选' : pickerMode === 'holding' ? '+' : '选用', 'add', 'portfolio-add' + (selected ? ' selected' : ''), 'data-value="' + H.esc(row.id) + '" aria-label="' + H.esc((selected ? '已选择' : pickerMode === 'holding' ? '添加' : '设为对照') + row.name) + '"' + (selected ? ' disabled' : '')) + '</div>';
+      btn(selected ? '已选' : pickerMode === 'holding' ? '+' : '选用', 'add', 'portfolio-add' + (pickerMode === 'benchmark' ? ' portfolio-add-text' : '') + (selected ? ' selected' : ''), 'data-value="' + H.esc(row.id) + '" aria-label="' + H.esc((selected ? '已选择' : pickerMode === 'holding' ? '添加' : '设为对照') + row.name) + '"' + (selected ? ' disabled' : '')) + '</div>';
   }
   function library() {
     const rows = libraryRows();
@@ -243,7 +243,7 @@
       case 'kind': kind = val; H.resetList(); break;
       case 'market': market = val; H.resetList(); break;
       case 'reset-filter': query = ''; kind = 'all'; market = 'all'; hideBoards = false; H.resetList(); break;
-      case 'benchmark': pickerMode = 'benchmark'; query = ''; kind = 'all'; market = 'all'; H.resetList(); break;
+      case 'benchmark': pickerMode = 'benchmark'; break;
       case 'no-benchmark': draft.benchmarkId = ''; pickerMode = 'holding'; touch(); break;
       case 'picker-holdings': pickerMode = 'holding'; break;
       case 'metric': metric = val; break;
