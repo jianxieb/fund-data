@@ -13,12 +13,14 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import strategy_backtest
+import overseas_research
 from data_status import ROOT, DATA, atomic_text, now_iso, write_status
 from update import add_years, risk_window
 
 CACHE = ROOT / '.tmp-snap' / 'overseas-stocks'
 CATALOG = json.loads((DATA / 'overseas-stock-catalog.json').read_text())['stocks']
 EVIDENCE = json.loads((DATA / 'overseas-stock-evidence.json').read_text())['companies']
+RESEARCH = json.loads((DATA / 'overseas-stock-research.json').read_text())
 METRICS = ['TotalRevenue', 'NetIncome', 'TotalOperatingIncomeAsReported', 'GrossProfit',
            'StockholdersEquity', 'OperatingCashFlow', 'DilutedEPS']
 UA = {'User-Agent': 'Mozilla/5.0'}
@@ -85,6 +87,16 @@ def normalize_history(node, company, end):
     result['close'] = closes.get(series[-1][0])
     if not result['close']:
         raise ValueError(symbol + ' 缺同日收盘价，不能以复权价格计算PE')
+    events = node.get('events', {})
+    cutoff = add_years(series[-1][0], -1)
+    event_day = lambda event: datetime.fromtimestamp(event['date'], zone).date().isoformat()
+    dividends = sorted([{'day': event_day(event), 'amount': event['amount']} for event in events.get('dividends', {}).values()
+                        if finite(event.get('amount')) and floor <= event_day(event) <= series[-1][0]], key=lambda e: e['day'])
+    recent_split = any(cutoff < event_day(event) <= series[-1][0] and event_day(event) >= floor
+                       for event in events.get('splits', {}).values())
+    cash12 = sum(d['amount'] for d in dividends if d['day'] > cutoff) if not recent_split else None
+    result.update(dividendRecords=dividends, cashDividend12=cash12,
+                  dividendMissing='近12月有拆股，缺每份分红统一股本口径' if recent_split else None)
     return result
 
 
@@ -241,8 +253,13 @@ def build_stock(company, end, offline=False):
               'fundamentalsAsOf': financials['reportDate'], 'financialHistory': facts,
               'returnBasis': 'provider_adjusted_close', 'returnSourceUrl': history['source'],
               'dividends': 'reinvested', 'investorTaxesIncluded': False,
+              'cashDividend12': history.get('cashDividend12'),
+              'yield12': history['cashDividend12'] / price * 100 if finite(history.get('cashDividend12')) else None,
+              'dividendMissing': history.get('dividendMissing'),
+              'dividendRecords': history.get('dividendRecords', []),
+              'research': RESEARCH[symbol],
               'fetchedAt': now_iso()}
-    return result
+    return overseas_research.enrich(result)
 
 
 def validate_rows(rows):
@@ -271,7 +288,8 @@ def main():
         validate_rows(rows)
         meta = {'schemaVersion': 1, 'updatedAt': now_iso(), 'asOf': max(r['returnAsOf'] for r in rows),
                 'currency': 'USD', 'selection': 'requested_watchlist', 'companies': len(rows)}
-        atomic_text(DATA / 'overseas-stocks.js', 'var OVERSEAS_STOCK_META=' + json.dumps(meta, ensure_ascii=False) + ';\nvar OVERSEAS_STOCKS=' + json.dumps(rows, ensure_ascii=False, allow_nan=False, separators=(',', ':')) + ';\n')
+        reports = {'reports': [overseas_research.report_for(row) for row in rows]}
+        atomic_text(DATA / 'overseas-stocks.js', 'var OVERSEAS_STOCK_META=' + json.dumps(meta, ensure_ascii=False) + ';\nvar OVERSEAS_STOCKS=' + json.dumps(rows, ensure_ascii=False, allow_nan=False, separators=(',', ':')) + ';\nvar OVERSEAS_REPORTS=' + json.dumps(reports, ensure_ascii=False, allow_nan=False, separators=(',', ':')) + ';\n')
         write_status('overseas_stocks', 'cached' if args.offline else 'success', mode='offline' if args.offline else 'online',
                      asOf=meta['asOf'], records=len(rows), message='发行人、股票类型、币种及上市历史已核对；财报与估值分别标注日期。')
         print(json.dumps({'companies': len(rows), 'asOf': meta['asOf'], 'financials': {r['symbol']: r['fundamentalsAsOf'] for r in rows}}, ensure_ascii=False))

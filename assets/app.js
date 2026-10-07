@@ -498,7 +498,7 @@
     return '<div class="stock-market-nav" role="group" aria-label="个股市场">' + [['cn', '国内', (window.STOCKS || []).length], ['us', '海外', (window.OVERSEAS_STOCKS || []).length]].map(([id, label, count]) => action('<strong>' + label + '</strong><span>' + count + '家公司</span>', 'stock-market', 'stock-market-choice' + (state.stockMarket === id ? ' active' : ''), 'data-value="' + id + '" aria-pressed="' + (state.stockMarket === id) + '"')).join('') + '<span class="stock-market-context">' + (state.stockMarket === 'cn' ? 'A股 · 人民币' : '美股与ADR · 美元') + '</span></div>';
   }
   function stocks() {
-    if (state.stockMarket === 'us') return head('GLOBAL COMPANY RESEARCH', '个股深入', '从业务、盈利和估值，理解公司的长期价值。') + stockMarkets() + window.ChanghengOverseasStocks.view({
+    if (state.stockMarket === 'us') return head('GLOBAL COMPANY RESEARCH', '个股深入', '从业务、盈利和估值，理解公司的长期价值。', '<a class="btn sm" href="#reports">研究报告</a>') + stockMarkets() + window.ChanghengOverseasStocks.view({
       esc, money, pct, pc, action, modalTitle, openModal, detailGrid, render, lazyRows, loadFooter,
       periods: state.periods, periodHead, ret, returnControls, resetList: () => loadedCounts.delete('overseas-stocks')
     });
@@ -527,7 +527,7 @@
       '<div class="card"><div class="table-caption stock-table-caption"><span><b>' + rows.length + '</b> / ' + pool.length + '家公司</span>' + (dividend || other ? '' : '<span class="stock-overlap-legend">绿色公司：长期优质＋高成长</span>') + viewControl + '</div><div class="table-wrap stock-table-wrap" tabindex="0" role="region" aria-label="个股研究表，可横向滚动"><table class="research-table stock-table' + (financials ? ' stock-financial-table' : '') + '"><thead><tr><th>公司 / 主营业务</th>' + (financials ? financialHead : valuation ? valuationHead : returnHead) + '</tr></thead><tbody data-list-body="stocks">' + lazyRows('stocks', rows, s => '<tr>' + stockIdentity(s) + (financials ? financialRow(s) : valuation ? valuationRow(s) : returnRow(s)) + '</tr>') + (rows.length ? '' : '<tr><td colspan="' + (financials ? 7 : valuation ? 9 : (dividend ? 10 : 6) + state.periods.length) + '"><div class="empty">当前分组没有匹配的公司</div></td></tr>') + '</tbody></table></div>' + loadFooter('stocks') + '</div>';
   }
   function reportsView() {
-    const reports = window.STOCK_REPORTS?.reports || [];
+    const reports = [...(window.STOCK_REPORTS?.reports || []), ...(window.OVERSEAS_REPORTS?.reports || [])];
     const report = reports.find(r => r.code === state.reportCode);
     if (state.reportCode && !report) return head('COMPANY RESEARCH', '报告未收录', '', '<a class="btn" href="#reports">返回报告库</a>');
     if (!report) {
@@ -539,7 +539,7 @@
     }
     const table = t => '<div class="table-wrap" tabindex="0" role="region" aria-label="报告数据表，可横向滚动"><table><thead><tr>' + t.headers.map(h => '<th>' + esc(h) + '</th>').join('') + '</tr></thead><tbody>' + t.rows.map(r => '<tr>' + r.map(v => '<td>' + esc(v) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>';
     const section = s => '<section class="report-section" id="report-' + esc(s.id) + '"><h2>' + esc(s.title) + '</h2>' + (s.paragraphs || []).map(p => '<p>' + esc(p) + '</p>').join('') + (s.bullets?.length ? '<ul>' + s.bullets.map(p => '<li>' + esc(p) + '</li>').join('') + '</ul>' : '') + (s.table ? table(s.table) : '') + (s.links?.length ? '<ul class="report-sources">' + s.links.map(l => '<li>' + extLink(l.url, l.label) + '</li>').join('') + '</ul>' : '') + '</section>';
-    return '<div class="report-topline"><a href="#stocks">← 个股研究</a><a href="#reports">全部报告</a><a href="' + esc(report.markdownPath) + '" download>下载 Markdown</a></div>' +
+    return '<div class="report-topline"><a href="#stocks">← 个股研究</a><a href="#reports">全部报告</a>' + (report.markdown ? action('下载 Markdown', 'overseas-report-download', 'text-link', 'data-value="' + esc(report.code) + '"') : '<a href="' + esc(report.markdownPath) + '" download>下载 Markdown</a>') + '</div>' +
       '<header class="report-header"><div class="eyebrow">COMPANY RESEARCH / ' + esc(report.code) + '</div><h1>' + esc(report.name) + stockBoardBadge(report.code) + '</h1><p class="report-business">' + esc(report.business) + '</p><div class="report-dates"><span>研究 ' + esc(report.asOf) + '</span><span>行情 ' + esc(report.marketAsOf) + '</span><span>财报 ' + esc(report.reportPeriod) + '</span><b>' + reportGroupLabel(report.groups) + '</b></div></header>' +
       '<div class="report-layout"><nav class="report-toc" aria-label="报告章节">' + report.sections.map((s, i) => action('<span>' + String(i + 1).padStart(2, '0') + '</span>' + esc(s.title), 'report-section', '', 'data-value="' + esc(s.id) + '"')).join('') + '</nav><article class="report-article" aria-label="' + esc(report.name) + '深入分析">' + report.sections.map(section).join('') + (report.archivePath ? '<details class="report-archive"><summary>原版报告与修订记录</summary><p>原版日期为2026-09-02，已在文首追加更正；历史正文不代表当前结论。</p><a href="' + esc(report.archivePath) + '" download>下载原版与更正记录</a></details>' : '') + '</article></div>';
   }
@@ -993,7 +993,8 @@
     if (hash === 'main') { $('#main').focus(); return; }
     if (hash === 'us') { state.fundTab = 'all'; state.poolCategory = 'overseas'; }
     if (hash === 'cn') state.fundTab = 'equity';
-    const reportMatch = hash.match(/^stock-report\/(\d{6})$/);
+    const reportMatch = hash.match(/^stock-report\/(\d{6}|[A-Z]{1,6})$/);
+    if (reportMatch) state.stockMarket = /^[A-Z]/.test(reportMatch[1]) ? 'us' : 'cn';
     state.reportCode = reportMatch ? reportMatch[1] : null;
     state.route = reportMatch ? 'reports' : titles[hash] ? hash : legacy[hash] || 'overview';
     if ($('#dialog').open) $('#dialog').close();
@@ -1101,6 +1102,11 @@
       }
       case 'stock-rules': stockRules(); return;
       case 'report-section': $('#report-' + val)?.scrollIntoView({ behavior: 'auto', block: 'start' }); return;
+      case 'overseas-report-download': {
+        const report = window.OVERSEAS_REPORTS?.reports.find(r => r.code === val);
+        if (report?.markdown) download(report.name + '-' + report.code + '-深入分析.md', report.markdown, 'text/markdown;charset=utf-8');
+        return;
+      }
       case 'index-tab': state.indexTab = val; state.indexSort = 'default'; break;
       case 'stock-tab': state.stockTab = val; state.stockSort = 'default'; state.stockCategory = 'all'; break;
       case 'stock-category': state.stockCategory = val; break;

@@ -1,6 +1,6 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-10-07T13:49:30+00:00",
+  "checkedAt": "2026-10-07T14:43:50+00:00",
   "asOf": "2026-10-07",
   "status": "unverified",
   "summary": {
@@ -109,6 +109,7 @@ var DATA_QUALITY={
             "纳斯达克综合指数",
             "纳斯达克100指数",
             "QQQ",
+            "QQQM",
             "QLD",
             "TQQQ",
             "VGT",
@@ -118,8 +119,7 @@ var DATA_QUALITY={
             "USD",
             "SOXL",
             "QYLD",
-            "JEPI",
-            "QQQM"
+            "JEPI"
           ]
         }
       ],

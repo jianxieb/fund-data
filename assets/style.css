@@ -522,7 +522,7 @@ dialog:has(.stock-detail){width:min(1180px,94vw);max-width:1180px}
 .report-cover p{font-size:13px;line-height:1.85;color:#707767;margin:0 0 24px}
 .report-cover-bottom{margin-top:auto;padding-top:18px;border-top:1px solid var(--line);color:var(--green)}
 .report-topline{display:flex;gap:25px;align-items:center;margin-bottom:35px;font-size:12px;color:var(--muted)}
-.report-topline>a:last-child{margin-left:auto}
+.report-topline>:last-child{margin-left:auto}
 .report-header{padding-bottom:28px;border-bottom:1px solid var(--line);margin-bottom:30px}
 .report-header .eyebrow{font-size:11px;letter-spacing:2px;color:var(--muted)}
 .report-header h1{font-size:38px;font-weight:550;letter-spacing:1px;margin:15px 0 8px}
@@ -758,9 +758,10 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .stock-market-choice strong{font-size:19px;font-weight:600;letter-spacing:.08em}.stock-market-choice span{font-size:12px;font-variant-numeric:tabular-nums}
 .stock-market-choice.active{color:var(--green);background:#edf2ec;border-color:#d8e2d5}.stock-market-choice:hover{background:#f0f2ec}
 .stock-market-context{margin:auto 0 auto auto;color:var(--muted);font-size:12px}
-.overseas-stock-table{min-width:1120px}.overseas-stock-table th,.overseas-stock-table td{padding:18px 20px}.overseas-stock-table th{white-space:nowrap}
+.overseas-stock-table{min-width:1180px}.overseas-stock-table th,.overseas-stock-table td{padding:21px 17px}.overseas-stock-table th{white-space:nowrap}.overseas-financial-table{min-width:1380px}.overseas-stock-table .stock-annual{display:block;margin-top:9px;font-size:11px;color:var(--muted);line-height:1.7}
 .overseas-stock-table .overseas-company{width:220px;min-width:200px;text-align:left;white-space:normal}.overseas-company strong{display:block;font-size:16px}.overseas-business{display:block;margin-top:6px;color:var(--muted);font-size:12px;line-height:1.6}
 .overseas-stock-table .overseas-reason,.overseas-stock-table .overseas-risk{white-space:normal;text-align:left;min-width:200px;max-width:300px;line-height:1.75;font-size:13px}.overseas-financial-table th:nth-last-child(-n+2){text-align:left}
+.overseas-detail-heading{margin:25px 0 12px;font-size:15px;font-weight:550}.overseas-summary{line-height:1.9;margin-bottom:12px}.overseas-detail-research p+p{margin-top:10px}
 .overseas-detail-research{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin:22px 0}.overseas-detail-research h3{font-size:14px;margin:0 0 8px}.overseas-detail-research p{font-size:14px;line-height:1.8;color:var(--muted);margin:0}
 .overseas-method{margin:24px 0 0;border-top:1px solid var(--line);padding-top:18px}.overseas-method summary{cursor:pointer;font-weight:600}.overseas-method p{line-height:1.8;color:var(--muted);font-size:13px}
 @media(max-width:650px){.stock-market-choice{padding:10px 14px;gap:8px}.stock-market-context{display:none}.overseas-detail-research{grid-template-columns:1fr;gap:16px}}

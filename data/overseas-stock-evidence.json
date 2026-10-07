@@ -62,7 +62,10 @@
         "providerPeriod": "2026-06",
         "reportDate": "2026-06-30",
         "publishedAt": "2026-07-16",
-        "sourceUrl": "https://investor.tsmc.com/english/quarterly-results/2026/q2"
+        "sourceUrl": "https://investor.tsmc.com/english/encrypt/files/encrypt_file/reports/2026-07/a80d7933be643644081584087731f73b22ea5a2c/2Q26%20EarningsRelease.pdf",
+        "quarterly": {
+          "ListingDilutedEPSUSD": 4.31
+        }
       }
     ],
     "TSLA": [
