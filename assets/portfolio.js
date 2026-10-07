@@ -134,8 +134,14 @@
     const selected = pickerMode === 'holding' ? draft.positions.some(p => p.id === row.id) : draft.benchmarkId === row.id;
     const stock = row.kind === 'stock' ? (window.STOCKS || []).find(s => s.c === row.code) : null;
     const status = stock ? M.stockResearchStatus(stock) : null;
-    return '<div class="portfolio-library-row"><div><strong>' + H.esc(row.name) + ((row.leverage || 1) > 1 ? tag(row.leverage + '倍', 'warn') : '') + '</strong><span>' + H.esc(row.code) + ' · ' + H.esc(typeName[row.kind]) + ' · ' + (row.market === 'us' ? '海外' : '境内') + ' · ' + H.esc(row.category || '') + '</span><small>' + H.esc(row.status === 'available' ? row.first + ' — ' + row.asOf : row.missing) + '</small></div>' +
-      (status ? '<div class="portfolio-stock-status"><span>' + H.esc(status.label) + '</span>' + H.action('研究详情', 'stock-detail', 'text-link small', 'data-code="' + H.esc(stock.c) + '" aria-label="' + H.esc(stock.n + '研究详情') + '"') + '</div>' : '') +
+    const preview = row.performance;
+    const metric = (label, value, reason, note, range) => '<div title="' + H.esc(reason || range || '') + '"><span>' + label + '</span><b class="' + (M.finite(value) ? value < 0 ? 'negative' : 'positive' : 'muted') + '">' + (M.finite(value) ? H.pct(value, 1) : reason?.startsWith('历史不足') ? H.esc(reason.replace('历史', '')) : '—') + '</b>' + (note ? '<small>' + H.esc(note) + '</small>' : '') + '</div>';
+    const performance = '<div class="portfolio-library-metrics" role="group" aria-label="' + H.esc(row.name + '的历史收益与回撤') + '">' + [1, 3, 5].map(y => {
+      const r = preview?.annual?.[y];
+      return metric(y + '年年化', r?.value, r?.reason || (!r ? row.missing || '缺收益历史' : ''), '', r?.start && r.start + ' — ' + r.end);
+    }).join('') + metric('5年内最大回撤', preview?.risk5?.mdd, preview?.risk5?.reason || (!preview ? row.missing || '缺回撤历史' : ''), preview?.risk5?.partial ? '实际' + H.money(preview.risk5.actualYears, 1) + '年' : '', preview?.risk5?.start && preview.risk5.start + ' — ' + preview.risk5.end) + '</div>';
+    return '<div class="portfolio-library-row"><div class="portfolio-library-main"><strong>' + H.esc(row.name) + ((row.leverage || 1) > 1 ? tag(row.leverage + '倍', 'warn') : '') + '</strong><span>' + H.esc(row.code) + ' · ' + H.esc(typeName[row.kind]) + ' · ' + (row.market === 'us' ? '海外 · 美元' : '境内 · 人民币') + ' · ' + H.esc(row.category || '') + '</span><small>' + H.esc(row.status === 'available' ? row.first + ' — ' + row.asOf : row.missing) + '</small>' + performance +
+      (status ? '<div class="portfolio-stock-status"><span>' + H.esc(status.label) + '</span>' + H.action('研究详情', 'stock-detail', 'text-link small', 'data-code="' + H.esc(stock.c) + '" aria-label="' + H.esc(stock.n + '研究详情') + '"') + '</div>' : '') + '</div>' +
       btn(selected ? '已选' : pickerMode === 'holding' ? '+' : '选用', 'add', 'portfolio-add' + (pickerMode === 'benchmark' ? ' portfolio-add-text' : '') + (selected ? ' selected' : ''), 'data-value="' + H.esc(row.id) + '" aria-label="' + H.esc((selected ? '已选择' : pickerMode === 'holding' ? '添加' : '设为对照') + row.name) + '"' + (selected ? ' disabled' : '')) + '</div>';
   }
   function library() {

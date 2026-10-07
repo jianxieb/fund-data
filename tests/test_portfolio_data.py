@@ -3,6 +3,7 @@ import json
 import subprocess
 import tempfile
 import unittest
+from datetime import date, timedelta
 from pathlib import Path
 from unittest.mock import patch
 
@@ -13,10 +14,59 @@ from screens.fund_screen import parse_js_record
 
 
 class PortfolioHistoryTests(unittest.TestCase):
+    def test_preview_annual_returns_use_full_windows_and_actual_holding_days(self):
+        start, end = date(2020, 10, 5), date(2025, 10, 6)
+        series = []
+        for n in range((end - start).days + 1):
+            day = start + timedelta(days=n)
+            if day.weekday() < 5:
+                series.append([day.isoformat(), 100 * 1.1 ** (n / 365.2425)])
+        preview = portfolio.performance_preview(series)
+        for years in ('1', '3', '5'):
+            self.assertAlmostEqual(preview['annual'][years]['value'], 10)
+        self.assertEqual(preview['annual']['1']['start'], '2024-10-04')  # anniversary is Sunday
+        self.assertEqual(preview['risk5']['mdd'], 0)
+        self.assertFalse(preview['risk5']['partial'])
+        # An observation weeks before the anniversary is not a valid window start.
+        gapped = [r for r in series if not '2024-09-01' < r[0] < '2024-10-07']
+        missing = portfolio.performance_preview(gapped)['annual']['1']
+        self.assertIsNone(missing['value'])
+        self.assertIn('起点前14日', missing['reason'])
+
+    def test_preview_five_year_drawdown_excludes_older_losses_and_allows_short_history(self):
+        start, end = date(2019, 1, 1), date(2026, 1, 1)
+        series = []
+        for n in range((end - start).days + 1):
+            day = start + timedelta(days=n)
+            if day.weekday() < 5:
+                value = 250 if n == 0 else 80 if day >= date(2025, 12, 1) else 100
+                series.append([day.isoformat(), value])
+        self.assertAlmostEqual(portfolio.performance_preview(series)['risk5']['mdd'], -20)
+        short = [['2026-09-%02d' % day, 2 if day == 1 else 1] for day in range(1, 21)]
+        preview = portfolio.performance_preview(short)
+        self.assertTrue(all(r['value'] is None for r in preview['annual'].values()))
+        self.assertAlmostEqual(preview['risk5']['mdd'], -50)
+        self.assertTrue(preview['risk5']['partial'])
+        self.assertEqual(preview['risk5']['start'], '2026-09-01')
+
+    def test_preview_and_history_must_reconcile_before_publication(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            with patch.object(portfolio, 'ROOT', root), patch.object(portfolio, 'OUTPUT', root / 'data/portfolio'):
+                row = portfolio.publish_history({'id': 'fund:000001', 'currency': 'CNY'},
+                    [['2026-09-%02d' % day, day] for day in range(1, 11)],
+                    'provider_daily_return_or_explicit_actions', 'https://example.test/nav')
+                catalog = {'assets': [row], 'fx': {'missing': 'fixture has no FX'}}
+                self.assertTrue(portfolio.validate_catalog(catalog, [row]))
+                row['performance']['risk5']['mdd'] = -99
+                with self.assertRaisesRegex(ValueError, '预览与每日历史不一致'):
+                    portfolio.validate_catalog(catalog, [row])
+
     def test_published_catalog_covers_all_research_objects_with_valid_history_files(self):
         source = (portfolio.OUTPUT / 'catalog.js').read_text(encoding='utf-8')
         catalog = json.loads(source.split('=', 1)[1].strip().rstrip(';'))
         self.assertTrue(portfolio.validate_catalog(catalog, portfolio.universe()))
+        self.assertTrue(all('performance' in row for row in catalog['assets'] if row['status'] == 'available'))
         self.assertEqual(catalog['summary']['total'], len(catalog['assets']))
         self.assertEqual(catalog['summary']['missing'], sum(row['status'] != 'available' for row in catalog['assets']))
 

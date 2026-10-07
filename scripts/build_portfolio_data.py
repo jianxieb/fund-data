@@ -9,6 +9,7 @@ import re
 import subprocess
 import sys
 import urllib.request
+from bisect import bisect_right
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -221,6 +222,28 @@ def validate_series(series, end=END):
     return valid
 
 
+def performance_preview(series):
+    """Native-currency holding returns from the same reinvested path as simulation."""
+    days = [row[0] for row in series]
+    end, value = series[-1]
+    annual = {}
+    for years in (1, 3, 5):
+        target = update.add_years(end, -years)
+        index = bisect_right(days, target) - 1
+        result = {'value': None, 'start': None, 'end': end, 'reason': None}
+        if index < 0:
+            result['reason'] = '历史不足%d年' % years
+        elif (datetime.fromisoformat(target) - datetime.fromisoformat(days[index])).days > 14:
+            result['reason'] = '窗口起点前14日内缺有效观测'
+        else:
+            start, initial = series[index]
+            actual_years = (datetime.fromisoformat(end) - datetime.fromisoformat(start)).days / 365.2425
+            result.update(value=((value / initial) ** (1 / max(1, actual_years)) - 1) * 100, start=start)
+        annual[str(years)] = result
+    risk = update.risk_window(series, end, 5, allow_partial=True)
+    return {'annual': annual, 'risk5': {key: risk[key] for key in ('mdd', 'start', 'end', 'partial', 'actualYears', 'reason')}}
+
+
 def publish_history(asset, series, basis, source, warning=None):
     series = validate_series(series)
     body = {'schemaVersion': 1, 'id': asset['id'], 'currency': asset['currency'],
@@ -237,6 +260,8 @@ def publish_history(asset, series, basis, source, warning=None):
     result = {**asset, 'status': 'available', 'basis': basis, 'first': body['first'],
               'asOf': body['asOf'], 'observations': len(series),
               'historyUrl': 'data/portfolio/' + relative, 'sha256': digest}
+    if not asset['id'].startswith('fx:'):
+        result['performance'] = performance_preview(series)
     if warning:
         result['refreshWarning'] = warning
     return result
@@ -284,6 +309,8 @@ def validate_catalog(catalog, expected=None, verify_files=True):
             series = validate_series(history.get('series') or [])
             if series[0][0] != row['first'] or series[-1][0] != row['asOf'] or len(series) != row['observations']:
                 raise ValueError('历史文件区间不一致：' + row['id'])
+            if 'performance' in row and row['performance'] != performance_preview(series):
+                raise ValueError('标的收益风险预览与每日历史不一致：' + row['id'])
     return True
 
 
@@ -355,6 +382,7 @@ def main():
     parser.add_argument('--prune', action='store_true')
     parser.add_argument('--check', action='store_true', help='validate committed coverage and every history checksum without mutation')
     parser.add_argument('--sync-risk', action='store_true', help='recalculate fund risk from already published verified histories')
+    parser.add_argument('--sync-preview', action='store_true', help='add picker performance from published histories without fetching data')
     args = parser.parse_args()
     if args.check:
         catalog = json.loads((OUTPUT / 'catalog.js').read_text(encoding='utf-8').split('=', 1)[1].strip().rstrip(';'))
@@ -365,6 +393,17 @@ def main():
         catalog = json.loads((OUTPUT / 'catalog.js').read_text(encoding='utf-8').split('=', 1)[1].strip().rstrip(';'))
         validate_catalog(catalog, universe())
         print('基金风险同步：', sync_fund_risk(catalog))
+        return 0
+    if args.sync_preview:
+        path = OUTPUT / 'catalog.js'
+        catalog = json.loads(path.read_text(encoding='utf-8').split('=', 1)[1].strip().rstrip(';'))
+        validate_catalog(catalog, universe())
+        for row in catalog['assets']:
+            if row['status'] == 'available':
+                history = json.loads((ROOT / row['historyUrl']).read_text(encoding='utf-8'))
+                row['performance'] = performance_preview(history['series'])
+        atomic_text(path, 'var PORTFOLIO_CATALOG=' + json.dumps(catalog, ensure_ascii=False, allow_nan=False, separators=(',', ':')) + ';\n')
+        print('标的收益风险预览已同步：', len(catalog['assets']))
         return 0
     if args.prune:
         prune()
@@ -400,6 +439,7 @@ def main():
             previous = old.get(row['id'])
             if previous and previous.get('status') == 'available' and (row['status'] != 'available' or row['asOf'] < previous['asOf']):
                 retained = {**row, **{k: previous[k] for k in ('status', 'basis', 'first', 'asOf', 'observations', 'historyUrl', 'sha256')}}
+                retained['performance'] = performance_preview(json.loads((ROOT / previous['historyUrl']).read_text(encoding='utf-8'))['series'])
                 retained['refreshWarning'] = row.get('missing') or '本次历史末日倒退，保留上一版已验证序列'
                 results[row['id']] = retained
         catalog['assets'] = [results[row['id']] for row in rows]

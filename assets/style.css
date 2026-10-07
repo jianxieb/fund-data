@@ -658,12 +658,18 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-library-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:13px;font-size:11px;color:var(--muted)}
 .portfolio-library-tools input{width:13px;min-height:13px;margin:0}
 .portfolio-library-scroll{max-height:720px;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;padding-bottom:24px}
-.portfolio-library-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 24px;border-bottom:1px solid #edf0e7}
+.portfolio-library-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:16px;padding:14px 24px;border-bottom:1px solid #edf0e7}
 .portfolio-library-row>div{min-width:0}
 .portfolio-library-row strong{display:block;font-size:13px;font-weight:550;line-height:1.5}
 .portfolio-library-row strong .badge{margin-left:8px;font-size:10px}
 .portfolio-library-row span:not(.badge){display:block;font-size:11px;line-height:1.5;color:var(--muted);margin-top:4px}
 .portfolio-library-row small{display:block;font-size:10px;color:#9aa292;margin-top:4px}
+.portfolio-library-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:11px;font-variant-numeric:tabular-nums}
+.portfolio-library-metrics>div{min-width:0}
+.portfolio-library-row .portfolio-library-metrics span{font-size:10px;margin:0;white-space:nowrap}
+.portfolio-library-metrics b{display:block;font-size:12px;font-weight:550;white-space:nowrap;margin-top:4px}
+.portfolio-library-metrics b.muted{font-size:11px;font-weight:400}
+.portfolio-library-metrics small{font-size:10px}
 .portfolio-add{flex-shrink:0;width:39px;min-height:33px;display:grid;place-items:center;font-size:20px;color:var(--green);background:#eff4e9;border:1px solid #e1e9d9;border-radius:7px}
 .portfolio-add-text{width:auto;min-width:48px;padding:0 10px;font-size:12px;white-space:nowrap}
 .portfolio-add.selected{font-size:11px;color:#86927e;border-color:transparent;background:#f5f7f1}
@@ -748,10 +754,8 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .stock-selection-detail li{margin:8px 0;font-size:12px;line-height:1.7}
 .stock-selection-detail li strong{font-weight:500}
 .stock-selection-detail li span{display:block;color:var(--muted)}
-.portfolio-library-row:has(.portfolio-stock-status){display:grid;grid-template-columns:minmax(0,1fr) 39px;column-gap:12px}
-.portfolio-stock-status{grid-column:1;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.portfolio-stock-status{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px}
 .portfolio-library-row .portfolio-stock-status span{color:#937043;margin-top:0}
-.portfolio-library-row:has(.portfolio-stock-status)>.portfolio-add{grid-column:2;grid-row:1/3;align-self:center}
 
 /* Market scope sits above the independent research groups. */
 .stock-market-nav{display:flex;align-items:stretch;gap:6px;border-bottom:1px solid var(--line);padding-bottom:16px;margin:0 0 24px}
