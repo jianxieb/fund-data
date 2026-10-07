@@ -11,6 +11,7 @@
     const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
     if (saved && Array.isArray(saved.positions)) draft = { ...defaults, ...saved };
   } catch (_) {}
+  if (draft.monthly == null || draft.monthly === '') draft.monthly = 0;
   const colors = ['#35654a', '#768855', '#aa8253', '#7d839f', '#64a6a1', '#ad6f78', '#8ba9cf', '#aab865'];
   const typeName = { stock: '个股', fund: '基金', etf: 'ETF' };
   const config = () => ({ ...draft, feeBasis: 'net', feeOverrides: {} });
@@ -272,7 +273,7 @@
     if (el.dataset.portfolioField) {
       const key = el.dataset.portfolioField;
       if (['start', 'end'].includes(key)) draft[key] = el.value;
-      else draft[key] = el.value.trim() ? Number(el.value) : NaN;
+      else draft[key] = el.value.trim() ? Number(el.value) : key === 'monthly' && !el.validity.badInput ? 0 : NaN;
       touch();
       if (key === 'initial') syncBudget(el);
       return false;
@@ -311,7 +312,10 @@
       else { H.toast('请输入0至99之间的有效年费率'); return; }
       touch(); update(); return;
     }
-    if (el.dataset.portfolioWeight || el.dataset.portfolioAmount || el.dataset.portfolioField) handleInput(el);
+    if (el.dataset.portfolioWeight || el.dataset.portfolioAmount || el.dataset.portfolioField) {
+      handleInput(el);
+      if (el.dataset.portfolioField === 'monthly' && !el.value.trim() && !el.validity.badInput) el.value = '0';
+    }
   }
   function showPoint(event) {
     const plot = event.target.closest?.('[data-portfolio-plot]');
