@@ -317,7 +317,8 @@ test('unpriced fee assumptions retain per-product missing evidence instead of pr
 
 test('overseas ETF filters combine categories by union and product strategies by intersection', () => {
   const products = JSON.parse(fs.readFileSync('data/overseas-etf-catalog.json', 'utf8')).products;
-  assert.equal(products.length, 17);
+  assert.equal(new Set(products.map(p => p.symbol)).size, products.length);
+  assert.deepEqual(products.filter(p => M.overseasEtfMatches(p, { categories: ['纳斯达克100'], styles: ['指数跟踪'], query: 'qqqm' })).map(p => p.symbol), ['QQQM']);
   const other = products.filter(p => p.section === 'other');
   const selected = other.filter(p => M.overseasEtfMatches(p, { categories: ['信息科技', '半导体'], styles: ['行业指数'] }));
   assert.deepEqual(selected.map(p => p.symbol), ['VGT', 'XLK', 'SOXX', 'SMH']);
