@@ -5,7 +5,7 @@
   "description": "长衡 · 公开的长期投资研究站",
   "scripts": {
     "test": "node --test tests/*.test.cjs",
-    "check": "node --check assets/overseas-stocks.js && node --check assets/app.js && node --check assets/model.js && node --check assets/portfolio-model.js && node --check assets/portfolio.js && node scripts/cache_versions.mjs --check",
+    "check": "node --check assets/overseas-stocks.js && node --check assets/app.js && node --check assets/model.js && node --check assets/portfolio-model.js && node --check assets/portfolio-pdf.js && node --check assets/portfolio.js && node scripts/cache_versions.mjs --check",
     "version-assets": "node scripts/cache_versions.mjs --write"
   },
   "engines": {

@@ -6,7 +6,7 @@
   const defaults = { positions: [], initial: 100000, monthly: 0, rebalance: 'none', transactionFee: 0,
     years: 5, start: '', end: '', benchmarkId: 'us:SPY', feeOverrides: {} };
   let draft = { ...defaults }, query = '', kind = 'all', market = 'all', hideBoards = false, pickerMode = 'holding';
-  let result = null, resultKey = '', error = '', metric = 'return', importError = '';
+  let result = null, resultKey = '', error = '', metric = 'return', importError = '', exportingPdf = false;
   try {
     const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
     if (saved && Array.isArray(saved.positions)) draft = { ...defaults, ...saved };
@@ -189,7 +189,7 @@
       '<td class="num">' + H.pc(h.performance.annualReturn) + '<span class="sub">' + H.esc(h.performance.annualMissing || (h.performance.annualBasis === 'money_weighted_xirr' ? 'XIRR' : '不足一年不外推')) + '</span></td><td class="num">' + H.pc(h.performance.totalReturn) + '</td><td class="num">' + H.pc(h.performance.mdd) + '</td><td class="num">' + H.pct(h.performance.volatility, 2, false) + '</td>' +
       '<td class="num">' + H.pct(h.targetWeight, 2, false) + '</td><td class="num">' + H.pct(h.actualWeight, 2, false) + '</td><td class="num">' + H.money(h.value, 2) + '</td><td class="num"><span class="' + (h.profit < 0 ? 'negative' : 'positive') + '">' + H.money(h.profit, 2) + '</span></td><td class="num">' + H.money(h.transactionCost, 2) + '</td></tr>').join('');
     const holdingTable = '<div class="table-wrap" tabindex="0" role="region" aria-label="持仓收益与风险明细"><table class="portfolio-holdings-table"><thead><tr class="portfolio-holdings-groups"><th rowspan="2" scope="col">标的</th><th colspan="4" scope="colgroup">策略收益与风险</th><th colspan="5" scope="colgroup">投入与贡献</th></tr><tr><th scope="col">策略年化收益</th><th scope="col" title="实际盈亏 ÷ 累计买入金额（含买入费）">累计投入收益</th><th scope="col">最大回撤</th><th scope="col">年化波动</th><th scope="col">目标权重</th><th scope="col">期末权重</th><th scope="col">期末市值 / 元</th><th scope="col">盈亏贡献 / 元</th><th scope="col">交易费 / 元</th></tr></thead><tbody>' + rows + (r.cash > .005 ? '<tr><td>现金</td><td class="num">0.00%</td><td class="num">0.00%</td><td class="num">0.00%</td><td class="num">0.00%</td><td class="num">' + H.pct(r.cashWeight, 2, false) + '</td><td class="num">' + H.pct(r.cash / r.value * 100, 2, false) + '</td><td class="num">' + H.money(r.cash, 2) + '</td><td class="num">0.00</td><td class="num">0.00</td></tr>' : '') + '</tbody></table></div>';
-    return '<div class="portfolio-results"><div class="portfolio-result-head"><div><h2>' + (resultKey === signature() ? '模拟结果' : '上次模拟结果') + '</h2><p>' + r.start + ' — ' + r.end + ' · ' + (r.config.feeBasis === 'net' ? '年费已扣除' : '扣费前估算') + ' · 投资者税前</p></div><div class="actions">' + btn('区间与来源', 'sources', 'text-link small') + btn('导出走势', 'export-result', 'btn sm') + '</div></div>' +
+    return '<div class="portfolio-results"><div class="portfolio-result-head"><div><h2>' + (resultKey === signature() ? '模拟结果' : '上次模拟结果') + '</h2><p>' + r.start + ' — ' + r.end + ' · ' + (r.config.feeBasis === 'net' ? '年费已扣除' : '扣费前估算') + ' · 投资者税前</p></div><div class="actions">' + btn('区间与来源', 'sources', 'text-link small') + btn('导出走势', 'export-result', 'btn sm') + btn(exportingPdf ? '正在生成 PDF…' : '导出 PDF', 'export-pdf', 'btn sm', running || exportingPdf ? 'disabled' : '') + '</div></div>' +
       '<div class="stats-grid">' + H.stat(H.annual ? '组合年化收益' : '组合累计收益', H.pct(H.annual ? r.annualReturn : r.totalReturn, 2, false), '', r.benchmark ? '对照 ' + H.pct(H.annual ? r.benchmark.annualReturn : r.benchmark.totalReturn) : '按现金流中性组合净值计算') +
       H.stat('期末资产', H.money(r.value), '元', '累计投入 ' + H.money(r.contributed) + ' 元') + H.stat('账面盈亏', H.money(r.profit), '元', '持仓与现金合计；未按期末清仓') + H.stat('最大回撤', H.pct(r.mdd, 2, false), '', '年化波动 ' + H.pct(r.volatility, 2, false)) + '</div>' +
       snapshots() + (r.benchmarkError ? '<div class="portfolio-warning">' + H.esc(r.benchmarkError) + '，当前仅显示组合曲线。</div>' : '') +
@@ -201,7 +201,7 @@
     if (!catalog) return '<section class="card pad"><h2>' + (loadError ? '标的库加载失败' : '正在载入组合标的库') + '</h2><p class="muted">' + H.esc(loadError || 'ETF、个股与基金每日历史按需载入。') + '</p>' + (loadError ? btn('重新加载', 'retry', 'btn primary') : '') + '</section>';
     const unknown = draft.positions.filter(p => !asset(p.id));
     return settings() + (unknown.length ? '<div class="portfolio-warning">' + unknown.length + '只保存的标的已不在当前研究对象中，请移除后模拟。</div>' : '') +
-      '<div class="portfolio-builder">' + composition() + library() + '</div><div class="portfolio-run-bar"><div><span id="portfolio-dirty">' + (result && resultKey !== signature() ? '参数已改动，重新模拟后生效' : '') + '</span>' + (error || importError ? '<p class="negative" role="alert">' + H.esc(error || importError) + '</p>' : '') + '</div><div class="actions">' + btn('导入配置', 'import', 'btn') + btn('导出配置', 'save', 'btn', draft.positions.length ? '' : 'disabled') + btn(running ? '正在读取历史…' : '开始模拟', 'run', 'btn primary', running || !draft.positions.length ? 'disabled' : '') + '<input type="file" id="portfolio-import" accept="application/json,.json" hidden></div></div>' +
+      '<div class="portfolio-builder">' + composition() + library() + '</div><div class="portfolio-run-bar"><div><span id="portfolio-dirty">' + (result && resultKey !== signature() ? '参数已改动，重新模拟后生效' : '') + '</span>' + (error || importError ? '<p class="negative" role="alert">' + H.esc(error || importError) + '</p>' : '') + '</div><div class="actions">' + btn('导入配置', 'import', 'btn') + btn('导出配置', 'save', 'btn', draft.positions.length ? '' : 'disabled') + btn(running ? '正在读取历史…' : '开始模拟', 'run', 'btn primary', running || exportingPdf || !draft.positions.length ? 'disabled' : '') + '<input type="file" id="portfolio-import" accept="application/json,.json" hidden></div></div>' +
       (draft.positions.some(p => (asset(p.id)?.leverage || 1) > 1 && p.weight > 0) ? '<div class="portfolio-warning">组合含每日杠杆ETF，长期表现取决于价格路径；杠杆并非长期收益的固定倍数。</div>' : '') + results();
   }
   function method() {
@@ -221,6 +221,20 @@
       ...result.curve.map(p => [p.day, p.value, p.contributed, p.profit, p.nav, p.totalReturn, p.annualReturn, p.drawdown, result.config.feeBasis, JSON.stringify(result.config)])];
     H.download('长衡-组合模拟-' + result.end + '.csv', M.csv(rows), 'text/csv;charset=utf-8');
   }
+  async function exportPdf() {
+    if (running || exportingPdf || !result) return;
+    exportingPdf = true; update();
+    try {
+      if (resultKey !== signature()) await run();
+      if (error) throw new Error(error);
+      if (!result || resultKey !== signature()) throw new Error('参数在模拟期间发生改动，请重新导出');
+      const report = window.ChanghengPortfolioPdf.snapshot(result, catalog);
+      const blob = await window.ChanghengPortfolioPdf.create(report);
+      H.download('长衡-组合模拟-' + report.result.start + '_' + report.result.end + '.pdf', blob, 'application/pdf');
+      H.toast('组合报告已导出');
+    } catch (e) { H.toast('PDF 导出失败：' + e.message); }
+    finally { exportingPdf = false; update(); }
+  }
   function exportHoldings() {
     if (!result) return;
     const rows = [['标的ID', '代码', '名称', '起始日', '结束日', '计价币种', '策略年化收益%', '累计投入收益%', '持仓净值最大回撤%', '持仓净值年化波动%', '目标权重%', '期末权重%', '期末市值CNY', '盈亏贡献CNY', '交易费CNY', '累计买入含费CNY', '累计卖出净回款CNY', '年化口径', '收益口径'],
@@ -232,7 +246,7 @@
     const act = button.dataset.action.replace('portfolio-', ''), val = button.dataset.value;
     switch (act) {
       case 'retry': loadError = ''; ensureCatalog(); break;
-      case 'run': run(); return;
+      case 'run': if (!exportingPdf) return run(); return;
       case 'add':
         if (pickerMode === 'benchmark') { draft.benchmarkId = val; pickerMode = 'holding'; }
         else if (asset(val) && !draft.positions.some(p => p.id === val)) draft.positions.push({ id: val, weight: draft.positions.length ? 0 : 100 });
@@ -256,6 +270,7 @@
       case 'method': method(); return;
       case 'sources': sources(); return;
       case 'export-result': exportResult(); return;
+      case 'export-pdf': return exportPdf();
       case 'export-holdings': exportHoldings(); return;
       case 'save':
         try { P.validateConfig(config(), new Set(catalog.assets.map(a => a.id))); }
