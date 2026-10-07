@@ -180,7 +180,7 @@ var UPDATE_STATUS={
     },
     "overseas_stocks": {
       "status": "cached",
-      "attemptedAt": "2026-10-07T16:32:22+00:00",
+      "attemptedAt": "2026-10-07T16:45:11+00:00",
       "mode": "offline",
       "asOf": "2026-10-06",
       "records": 62,
@@ -195,5 +195,5 @@ var UPDATE_STATUS={
       }
     }
   },
-  "checkedAt": "2026-10-07T16:35:57+00:00"
+  "checkedAt": "2026-10-07T16:45:11+00:00"
 };

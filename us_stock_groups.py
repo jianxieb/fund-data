@@ -51,6 +51,22 @@ def classify(row, asof):
                                             'reason': None if passed else observed})
     def metric(value, suffix='%'):
         return f'{value:.2f}{suffix}' if finite(value) else '缺对应可比数据'
+    def annual_roe_reason(q):
+        key = q.get('period')
+        if not key:
+            return '缺完整年度财报'
+        previous_key = str(int(key[:4]) - 1) + key[4:]
+        previous = next((r for r in annual if r['period'] == previous_key), {})
+        reasons = []
+        for record, period in ((previous, previous_key), (q, key)):
+            equity = record.get('StockholdersEquity')
+            if not finite(equity):
+                reasons.append('缺' + period + '母公司净资产')
+            elif equity <= 0:
+                reasons.append(period + '净资产非正，ROE不适用')
+        if not finite(q.get('NetIncome')):
+            reasons.append('缺' + key + '报表利润')
+        return '；'.join(reasons) or key + '缺年度ROE'
     def positive_years(rows):
         return all(finite(q.get(k)) and q[k] > 0 for q in rows for k in ('NetIncome', 'OperatingCashFlow'))
     def common(group):
@@ -59,7 +75,9 @@ def classify(row, asof):
         check(group, '本期经营复核对应最新财报', reviewed, '经营复核仅覆盖' + research.get('reportPeriod', '未注明报告期') + '，最新财报为' + f['reportDate'])
     common('quality')
     check('quality', '连续5个完整财年报表利润和经营现金流均为正', contiguous5 and positive_years(last5), '缺连续5年正利润/正经营现金流；亏损期：' + ('、'.join(q['period'] for q in last5 if finite(q.get('NetIncome')) and q['NetIncome'] <= 0) or '见年度表'))
-    check('quality', '5年平均ROE≥15%，各年为正，最新年度≥15%', finite(roe5) and roe5 >= 15 and all(v > 0 for v in roes5) and (last.get('roe') or 0) >= 15, '5年平均ROE ' + metric(roe5) + '；最新年度 ' + metric(last.get('roe')))
+    roe5_reason = metric(roe5) if finite(roe5) else '；'.join(dict.fromkeys(annual_roe_reason(q) for q in last5 if not finite(q.get('roe')))) or '缺连续5个完整年度'
+    latest_roe_reason = metric(last.get('roe')) if finite(last.get('roe')) else annual_roe_reason(last)
+    check('quality', '5年平均ROE≥15%，各年为正，最新年度≥15%', finite(roe5) and roe5 >= 15 and all(v > 0 for v in roes5) and (last.get('roe') or 0) >= 15, '5年平均ROE ' + roe5_reason + '；最新年度 ' + latest_roe_reason)
     check('quality', '三年报表利润复合增速≥10%，最新完整年度利润增长≥10%', (a['profitCagr3'].get('value') or 0) >= 10 and (last.get('profitGrowth') or 0) >= 10, '三年利润复合 ' + metric(a['profitCagr3'].get('value')) + '；年度同比 ' + metric(last.get('profitGrowth')))
     check('quality', '最新单季利润增长≥10%，当前TTM ROE≥10%', (f['profitGrowth'].get('value') or 0) >= 10 and (f.get('roeTTM') or 0) >= 10, '最新单季利润 ' + metric(f['profitGrowth'].get('value')) + '；TTM ROE ' + metric(f.get('roeTTM')))
     check('quality', 'TTM利润与经营现金均为正', (f.get('ttmProfit') or 0) > 0 and (f.get('ttmCash') or 0) > 0, 'TTM利润或经营现金非正/期间不完整；现金/利润 ' + metric(a.get('cashConversion'), '倍'))
@@ -75,7 +93,7 @@ def classify(row, asof):
         years_ok = contiguous2 and positive_years(last2) if group == 'growth' else bool(last) and positive_years([last])
         check(group, '最近两个完整财年正利润、正经营现金' if group == 'growth' else '最新完整财年正利润、正经营现金', years_ok, '未形成对应完整财年的正盈利和现金记录')
         minimum = 10 if group == 'growth' else 5
-        check(group, f'最新年度与当前TTM ROE均≥{minimum}%', (last.get('roe') or 0) >= minimum and (f.get('roeTTM') or 0) >= minimum, '年度ROE ' + metric(last.get('roe')) + '；TTM ROE ' + metric(f.get('roeTTM')))
+        check(group, f'最新年度与当前TTM ROE均≥{minimum}%', (last.get('roe') or 0) >= minimum and (f.get('roeTTM') or 0) >= minimum, '年度ROE ' + latest_roe_reason + '；TTM ROE ' + (metric(f.get('roeTTM')) if finite(f.get('roeTTM')) else f.get('roeMissing', '缺连续四季利润与期初期末净资产')))
         cash_ok = finite(a.get('cashConversion')) and a['cashConversion'] >= .5
         if group == 'breakout':
             cash_ok = cash_ok and finite(f.get('OperatingCashFlow')) and f.get('NetIncome', 0) > 0 and f['OperatingCashFlow'] >= f['NetIncome'] * .5

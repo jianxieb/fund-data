@@ -86,6 +86,15 @@ class UsStockGroupsTests(unittest.TestCase):
         row['financials']['OperatingCashFlow'] = 10
         self.assertEqual(self.groups(row), ['other'])
 
+    def test_known_negative_equity_is_not_labeled_as_missing_financial_data(self):
+        row = self.company()
+        row['analysis']['annual'][-1].update(roe=None, StockholdersEquity=-10)
+        row['analysis']['annual'][-2]['StockholdersEquity'] = 20
+        self.assertEqual(self.groups(row), ['other'])
+        reason = row['screening']['reviews']['quality']['checks'][4]['reason']
+        self.assertIn('2025-12净资产非正，ROE不适用', reason)
+        self.assertNotIn('缺2025-12母公司净资产', reason)
+
     def test_reit_uses_affo_payout_and_is_independent_of_growth(self):
         row = self.company()
         row.update(accountingModel='reits', yield12=5, cashDividend12=3, epsTTM=1,
