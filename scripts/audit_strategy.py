@@ -40,7 +40,7 @@ def annualized_cashflow_return(contributions, terminal_date, terminal_value):
     return math.expm1((low + high) / 2) * 100
 
 
-def independent_ledger(dates, prices, events, exposure, funded):
+def independent_ledger(dates, prices, events, exposure, funded, additions=None):
     """Use cash plus shares, then evaluate capital shortfall at each close."""
     cash = source.INITIAL_CAPITAL if funded else 0.0
     shares = 0.0
@@ -57,15 +57,16 @@ def independent_ledger(dates, prices, events, exposure, funded):
     trades = 0
     for index, (day, price) in enumerate(zip(dates, prices)):
         amount = events.get(index, 0.0)
-        if not funded and amount:
+        income = (additions or {}).get(index, 0.0) if funded else amount
+        if income:
             before = cash + shares * price
             unit_price = before / nav_units if nav_units else 1.0
-            nav_units += amount / unit_price
-            cash += amount
-            paid += amount
-            contributions.append((day, amount))
+            nav_units += income / unit_price
+            cash += income
+            paid += income
+            contributions.append((day, income))
         if exposure is None:
-            spend = min(cash, amount)
+            spend = min(cash, amount + (income if funded else 0))
             if spend > 1e-8:
                 shares += spend / ((1 + source.TRADING_COST) * price)
                 cash -= spend
@@ -130,9 +131,10 @@ def audit():
                     raise AssertionError(f'{year}/{symbol}/{method}: 定投总预算不相等')
             for definition in source.STRATEGIES:
                 method = definition['id']
-                events, exposure = events_by_strategy[method]
+                events, exposure = events_by_strategy[definition.get('initialMethod', method)]
+                additions = {i: source.MONTHLY_CONTRIBUTION for i in source.first_indices(dates)[1:]} if definition['panel'] == 'combined' else None
                 rebuilt = independent_ledger(
-                    dates, prices[symbol], events, exposure, definition['panel'] == 'initial')
+                    dates, prices[symbol], events, exposure, definition['panel'] in ('initial', 'combined'), additions)
                 row = actual[symbol, method]
                 differences = {name: abs(rebuilt[name] - row[shipped])
                                for name, shipped in shipped_keys.items()}

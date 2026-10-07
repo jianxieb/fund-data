@@ -4,7 +4,7 @@
 ETF 买入策略固定快照回测
 =========================
 
-按各起点实际可用的美股 ETF 计算 12 种买入策略，并写入 data/snapshot.js 的
+按各起点实际可用的美股 ETF 计算三种资金情境下的买入策略，并写入 data/snapshot.js 的
 /*__DATA_STRATEGY_BEGIN__*/ ... /*__DATA_STRATEGY_END__*/ 数据块。
 
 口径：
@@ -110,6 +110,13 @@ STRATEGIES = [
         'id': 'dca_ma_contrarian', 'panel': 'dca', 'name': '均线逆势定投',
         'desc': '价格在 200 日均线上方时月投 1 倍，下方时提高为 2 倍；均线未形成时按 1 倍。',
     },
+]
+STRATEGIES += [
+    {'id': 'combined_' + item['id'], 'initialMethod': item['id'], 'panel': 'combined',
+     'name': item['name'] + ('＋月度入金' if item['id'] == 'ma200_hold' else '＋每月定投'),
+     'desc': item['desc'] + ' 次月起每月首个交易日追加1,000美元。' +
+             ('追加资金同样遵循均线仓位信号，未买入时保留现金。' if item['id'] == 'ma200_hold' else '追加资金当日买入，不改变初始本金的分批计划。')}
+    for item in STRATEGIES if item['panel'] == 'initial'
 ]
 
 
@@ -466,11 +473,13 @@ def drawdown_metrics(nav):
 
 
 def simulate(dates, prices, events, exposure=None, initial_capital=None,
-             sample_indices=None, annualized_indices=None):
+             sample_indices=None, annualized_indices=None, contributions=None):
     """All pre-existing capital enters on day zero, including undeployed cash.
 
     events are purchases from that cash for initial-capital experiments; otherwise
-    they are external contributions. Trades execute at that day's close; signals
+    they are external contributions. A funded account can receive additional
+    external contributions separately from its initial-capital purchase orders.
+    Trades execute at that day's close; signals
     must therefore have been observed no later than the prior trading close.
     """
     if not dates or len(prices) != len(dates) or any(p <= 0 for p in prices):
@@ -490,16 +499,17 @@ def simulate(dates, prices, events, exposure=None, initial_capital=None,
     for i, (date, price) in enumerate(zip(dates, prices)):
         value_before = cash + asset_units * price
         amount = events.get(i, 0.0)
-        if amount < 0:
+        external = (contributions or {}).get(i, 0.0) if funded else amount
+        if amount < 0 or external < 0:
             raise ValueError('不支持负贡献')
-        if not funded and amount > 0:
+        if external > 0:
             nav_before = value_before / units if units > 0 else 1.0
-            units += amount / nav_before
-            cash += amount
-            total_contrib += amount
-            flows.append((datetime.strptime(date, '%Y-%m-%d'), -amount))
+            units += external / nav_before
+            cash += external
+            total_contrib += external
+            flows.append((datetime.strptime(date, '%Y-%m-%d'), -external))
         if exposure is None:
-            buy_budget = min(cash, amount)
+            buy_budget = min(cash, amount + (external if funded else 0))
             buy_value = buy_budget / (1.0 + TRADING_COST)
             if buy_value > 1e-8:
                 asset_units += buy_value / price
@@ -618,9 +628,11 @@ def build_results(dates, prices, assets=None, before_fees=False):
         curves['account'][symbol] = {}
         curves['irr'][symbol] = {}
         for strategy in STRATEGIES:
-            events, exposure = inputs[strategy['id']]
+            events, exposure = inputs[strategy.get('initialMethod', strategy['id'])]
+            contributions = {i: MONTHLY_CONTRIBUTION for i in first_indices(dates)[1:]} if strategy['panel'] == 'combined' else None
             simulated = simulate(dates, valued_prices, events, exposure,
-                                 initial_capital=INITIAL_CAPITAL if strategy['panel'] == 'initial' else None,
+                                 initial_capital=INITIAL_CAPITAL if strategy['panel'] in ('initial', 'combined') else None,
+                                 contributions=contributions,
                                  sample_indices=samples, annualized_indices=annualized_samples)
             curves['series'][symbol][strategy['id']] = simulated['curve']
             curves['account'][symbol][strategy['id']] = simulated['account_curve']
@@ -645,7 +657,9 @@ def write_html(results, dates, curves, windows, summaries, asset_starts, fee_est
         'requestedEnd': END_DATE,
         'status': 'computed',
         'basis': 'provider_adjusted_close',
-        'modelVersion': 7,
+        'modelVersion': 8,
+        'fundingPanels': ['initial', 'dca', 'combined'],
+        'combinedContributionStart': 'first_trading_day_of_the_next_calendar_month',
         'annualFeeBasis': 'net_actual_returns_and_current_rate_before_fee_estimates',
         'feeEstimateDecisions': 'same_net_price_signals_and_contribution_dates',
         'feeEstimateDataFile': 'data/strategy-fees.js',

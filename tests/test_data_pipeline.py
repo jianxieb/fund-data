@@ -326,6 +326,50 @@ class Benchmarks(unittest.TestCase):
 
 
 class StrategyAccounting(unittest.TestCase):
+    def test_initial_capital_and_new_income_are_separate_cash_flows(self):
+        result = strategy.simulate(['2025-01-02', '2025-02-03', '2025-03-03'],
+                                   [100, 200, 100], {0: 100}, initial_capital=100,
+                                   contributions={1: 100, 2: 100},
+                                   sample_indices=[0, 1, 2], annualized_indices=[0, 1, 2])
+        self.assertEqual(result['invested'], 300)
+        self.assertEqual(result['account_curve'], [100, 300, 250])
+        self.assertEqual(result['curve'], [100, 200, 100])
+        self.assertEqual(result['mdd'], -50)
+        self.assertEqual(result['cash'], 0)
+        self.assertEqual(result['trades'], 3)
+
+    def test_monthly_income_does_not_reclassify_undeployed_initial_cash(self):
+        result = strategy.simulate(['2025-01-02', '2025-02-03'], [100, 50],
+                                   {0: 50, 1: 50}, initial_capital=100,
+                                   contributions={1: 20}, sample_indices=[0, 1])
+        self.assertEqual(result['invested'], 120)
+        self.assertEqual(result['account_curve'], [100, 95])
+        self.assertEqual(result['curve'], [100, 75])
+        self.assertEqual(result['cash'], 0)
+
+    def test_combined_timing_preserves_income_as_cash_until_signal(self):
+        with patch.object(strategy, 'TRADING_COST', .01):
+            result = strategy.simulate(['2025-01-02', '2025-02-03', '2025-03-03'],
+                                       [100, 80, 100], {0: 100}, exposure=[0, 0, 1],
+                                       initial_capital=100, contributions={1: 20, 2: 20},
+                                       sample_indices=[0, 1, 2])
+        self.assertEqual(result['invested'], 140)
+        self.assertEqual(result['account_curve'][:2], [100, 120])
+        self.assertAlmostEqual(result['end_value'], 140 / 1.01)
+        self.assertEqual(result['trades'], 1)
+        self.assertGreaterEqual(result['minimum_cash'], 0)
+
+    def test_combined_definitions_start_additions_next_month_and_match_curve_endpoints(self):
+        dates = ['2025-01-15', '2025-01-31', '2025-02-03', '2025-03-03']
+        rows, curves = strategy.build_results(dates, {'SPY': [100] * 4}, assets=[{'c': 'SPY'}])
+        combined = [row for row in rows if row['p'] == 'combined']
+        self.assertEqual(len(combined), 6)
+        for row in combined:
+            self.assertEqual(row['inv'], strategy.INITIAL_CAPITAL + 2 * strategy.MONTHLY_CONTRIBUTION)
+            self.assertEqual(row['end'], row['inv'])
+            self.assertEqual(curves['account']['SPY'][row['s']][0], strategy.INITIAL_CAPITAL)
+            self.assertEqual(curves['account']['SPY'][row['s']][-1], row['end'])
+
     def test_missing_moving_average_is_not_a_downtrend(self):
         for contrarian in (False, True):
             events = strategy.dca_ma_events([100] * 200, [0, 20, 199], contrarian)

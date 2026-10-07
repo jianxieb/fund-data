@@ -2,16 +2,11 @@ var UPDATE_STATUS={
   "schemaVersion": 1,
   "datasets": {
     "strategy": {
-      "status": "success",
-      "attemptedAt": "2026-10-02T09:08:25+00:00",
+      "status": "cached",
+      "attemptedAt": "2026-10-07T13:27:53+00:00",
       "asOf": "2026-10-01",
-      "records": 288,
+      "records": 432,
       "basis": "provider_adjusted_close",
-      "mode": "online",
-      "execution": {
-        "exitCode": 0,
-        "seconds": 21.46
-      },
       "lastOnlineAttempt": {
         "status": "success",
         "attemptedAt": "2026-10-02T09:08:25+00:00",
@@ -184,5 +179,5 @@ var UPDATE_STATUS={
       }
     }
   },
-  "checkedAt": "2026-10-02T12:47:21+00:00"
+  "checkedAt": "2026-10-07T13:27:53+00:00"
 };

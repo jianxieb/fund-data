@@ -50,7 +50,7 @@
     screen: { minA3: defaults.minA3, minA5: defaults.minA5, minA10: null },
     fundSort: 'default', descending: true, selected: new Set(),
     stockTab: 'quality', stockQuery: '', stockCategory: 'all', stockView: 'financials', stockSort: 'default', stockDesc: true, hideGrowthBoards: false, reportCode: null, reportQuery: '',
-    stratPanel: 'initial', stratView: 'results', stratYear: '2010', stratAsset: 'SPY', stratMethod: 'lump_sum', stratMethods: { initial: 'lump_sum', dca: 'dca_month' },
+    stratPanel: 'initial', stratView: 'results', stratYear: '2010', stratAsset: 'SPY', stratMethod: 'lump_sum', stratMethods: { initial: 'lump_sum', dca: 'dca_month', combined: 'combined_lump_sum' },
     stratCompare: 'assets', stratMetric: 'amount', leverage: true, showLeverageAssets: false, chartHidden: new Set(),
     buyFamily: 'sp', buyYears: 5, buyPlan: 'lump', buyBasis: 'nav', buyLumpAmount: 100000, buyMonthlyAmount: 3000,
     buyFees: { usCommission: 0.02, usMinimum: 1, fxSpread: 0.15,
@@ -676,7 +676,7 @@
     const amountSpread = rows.length ? Math.max(...rows.map(r => r.end)) - Math.min(...rows.map(r => r.end)) : 0;
     const annualSpread = rows.length ? Math.max(...rows.map(r => r.irr)) - Math.min(...rows.map(r => r.irr)) : 0;
     const verified = meta.modelVersion >= 2 && meta.initialCashIncluded;
-    const controls = '<div class="strategy-control-bar"><div class="segmented" aria-label="资金情境">' + action('已有一笔钱', 'strategy-panel', state.stratPanel === 'initial' ? 'active' : '', 'data-value="initial"') + action('持续有新收入', 'strategy-panel', state.stratPanel === 'dca' ? 'active' : '', 'data-value="dca"') + '</div>' +
+    const controls = '<div class="strategy-control-bar"><div class="segmented" aria-label="资金来源">' + [['initial', '仅初始本金'], ['dca', '仅定期投入'], ['combined', '本金＋定期投入']].map(([id, label]) => action(label, 'strategy-panel', state.stratPanel === id ? 'active' : '', 'data-value="' + id + '" aria-pressed="' + (state.stratPanel === id) + '"')).join('') + '</div>' +
       '<div class="strategy-year-picker"><span>回测起点</span><div class="strategy-year-buttons">' + summaries.map(item => action(item.year + '起', 'strategy-year', String(item.year) === state.stratYear ? 'active' : '', 'data-value="' + item.year + '" aria-pressed="' + (String(item.year) === state.stratYear) + '"')).join('') + '</div></div>' + feeControl() + '</div>';
     const context = '<p class="strategy-context' + (verified ? '' : ' warn') + '">实际共同交易日 ' + esc(meta.start) + ' → ' + esc(meta.end) + ' · ' + available.size + '只ETF有完整同期间行情 · ' + feeBasisLabel() + ' · ' + (verified ? '现金计入账户' : '模型待核验') + ' · 暂未计入交易税费</p>';
     const assetCard = a => {
@@ -692,7 +692,8 @@
       '<div class="strategy-asset-families">' + assetFamilies + '</div></section>';
     const sharedRisk = state.stratPanel === 'dca' && rows.length > 0 && rows.every(r => r.mdd === rows[0].mdd && r.uw === rows[0].uw && r.exp === rows[0].exp);
     const profitCell = r => '<span class="' + (r.end < r.inv ? 'negative' : 'positive') + '">' + (r.end >= r.inv ? '+' : '−') + '$' + money(Math.abs(r.end - r.inv)) + '</span>';
-    const results = '<div class="card strategy-results-card"><div class="table-caption"><span>' + esc(state.stratAsset) + ' · ' + (state.stratPanel === 'initial' ? '首日资金 $' + money(meta.initial) : '基础月度预算 $' + money(meta.monthly)) + ' · 美元</span><span>比较投入额、账面盈亏、年化与风险</span></div>' +
+    const funding = state.stratPanel === 'initial' ? '初始本金 $' + money(meta.initial) : state.stratPanel === 'combined' ? '初始本金 $' + money(meta.initial) + ' ＋ 次月起每月 $' + money(meta.monthly) : '基础月度预算 $' + money(meta.monthly);
+    const results = '<div class="card strategy-results-card"><div class="table-caption"><span>' + esc(state.stratAsset) + ' · ' + funding + ' · 美元</span><span>比较投入额、账面盈亏、年化与风险</span></div>' +
       '<div class="table-wrap" tabindex="0" aria-label="投入策略结果表，可横向滚动"><table class="research-table strategy-results-table"><thead><tr><th>投入方式</th><th>累计投入</th><th>期末资产</th><th title="期末资产减累计投入，未扣交易税费">账面盈亏</th><th title="资金加权年化收益率">年化收益 XIRR</th><th>最差账面盈亏</th><th>低于本金最长<span class="strategy-th-unit">交易日</span></th><th>最大回撤</th><th>最长回撤时间<span class="strategy-th-unit">交易日</span></th><th>平均仓位</th><th>交易次数</th></tr></thead><tbody>' +
       rows.map(r => { const def = definitions.find(d => d.id === r.s); return '<tr><td>' + (def ? esc(def.name) : esc(r.s)) + '</td><td>$' + money(r.inv) + '</td><td>$' + money(r.end) + '</td><td>' + profitCell(r) + '</td><td>' + pc(verified ? r.irr : null) + '</td><td>' + pc(meta.modelVersion >= 5 ? r.worst_paid : null, 1) + '</td><td>' + money(meta.modelVersion >= 5 ? r.below_paid : null) + '</td><td>' + pc(verified ? r.mdd : null, 1) + '</td><td>' + money(r.uw) + '</td><td>' + pct(r.exp, 1, false) + '</td><td>' + r.tr + '</td></tr>'; }).join('') + '</tbody></table></div><div class="panel-foot"><span>最差账面盈亏按每日账户金额相对当日累计投入计算；最长天数按连续交易日。净值回撤剔除新增入金。' + (sharedRisk ? ' 满仓持有同一 ETF 时，净值风险与仓位相同；账户亏损和 XIRR 仍因入金节奏而变。' : '') + '</span>' + (leveraged.some(a => a.c === state.stratAsset) ? '<a class="text-link" href="docs/strategy-leverage-audit.md" target="_blank" rel="noopener">核对杠杆收益 ↗</a>' : '') + '</div></div>' +
       '<details class="strategy-rules"><summary>查看投入方式的计算规则</summary><div class="rule-list">' + methods.map((d, i) => '<div class="rule-item"><span class="rule-number">0' + (i + 1) + '</span><div><h3>' + esc(d.name) + '</h3><p>' + esc(d.desc) + '</p></div></div>').join('') + '</div></details>';
