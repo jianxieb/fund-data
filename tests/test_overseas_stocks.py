@@ -71,7 +71,7 @@ class OverseasStockTests(unittest.TestCase):
         quote = dict(symbol='TSM', quoteType='EQUITY', currency='USD', longName=company['issuer'], financialCurrency='TWD', epsTrailingTwelveMonths=10, epsForward=20)
         hist = dict(close=200, data=[{'date': '2026-10-05', 'adjustedClose': 199}, {'date': '2026-10-06', 'adjustedClose': 200}], source='source')
         financial = dict(reportDate='2026-06-30', DilutedEPS=136.25)
-        with patch.object(stocks, 'cache_json', side_effect=[quote, {}]), patch.object(stocks, 'stock_history', return_value=hist), patch.object(stocks, 'parse_facts', return_value={}), patch.object(stocks, 'financial_summary', return_value=financial):
+        with patch.object(stocks, 'cache_json', side_effect=[quote, {}]), patch.object(stocks, 'stock_history', return_value=hist), patch.object(stocks, 'parse_facts', return_value={'annual':{},'quarterly':{}}), patch.object(stocks, 'official_history', return_value=({'annual':{},'quarterly':{}}, 'test')), patch.object(stocks, 'classify', side_effect=lambda row, asof: row), patch.object(stocks, 'financial_summary', return_value=financial):
             result = stocks.build_stock(company, '2026-10-06', offline=True)
         self.assertEqual(result['pe'], 20)
         self.assertEqual(result['peForward'], 10)
@@ -96,7 +96,7 @@ class OverseasStockTests(unittest.TestCase):
 
     def test_daily_refresh_precedes_portfolio_and_gate_tracks_foreign_dates(self):
         self.assertLess(refresh.DATASETS.index('overseas_stocks'), refresh.DATASETS.index('portfolio'))
-        self.assertEqual(refresh.PUBLISHED_OUTPUTS['overseas_stocks'], ('overseas-stocks.js',))
+        self.assertEqual(refresh.PUBLISHED_OUTPUTS['overseas_stocks'], ('overseas-stocks.js', 'us-financial-history.json'))
         self.assertIn('--offline', refresh.commands(True)['overseas_stocks'])
         before = {'OVERSEAS_STOCKS': [{'symbol': 'LITE', 'returnAsOf': '2026-10-06'}]}
         after = {'OVERSEAS_STOCKS': [{'symbol': 'LITE', 'returnAsOf': '2026-10-01'}]}

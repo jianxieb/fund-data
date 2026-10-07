@@ -66,6 +66,36 @@
         "quarterly": {
           "ListingDilutedEPSUSD": 4.31
         }
+      },
+      {
+        "providerPeriod": "2025-03",
+        "reportDate": "2025-03-31",
+        "publishedAt": "2026-04-16",
+        "sourceUrl": "https://investor.tsmc.com/english/encrypt/files/encrypt_file/qr/phase4_reports/2026-04/9f060092ba29ff3630cfdaefd67774026195e135/1Q26ManagementReport.pdf",
+        "currency": "TWD",
+        "quarterly": {
+          "TotalRevenue": 839250000000,
+          "NetIncome": 361560000000,
+          "TotalOperatingIncomeAsReported": 407080000000
+        },
+        "note": "1Q26管理报告第1页列示的1Q25可比金额，以十亿新台币保留两位小数；营业利润4070.8亿元新台币，未用利润率反推金额。"
+      },
+      {
+        "providerPeriod": "2026-03",
+        "reportDate": "2026-03-31",
+        "publishedAt": "2026-04-16",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1046179/000104617926000199/a1q26presentatione.htm",
+        "currency": "TWD",
+        "quarterly": {
+          "ListingDilutedEPSUSD": 3.49
+        }
+      },
+      {
+        "providerPeriod": "2025-12",
+        "reportDate": "2025-12-31",
+        "publishedAt": "2026-01-15",
+        "sourceUrl": "https://investor.tsmc.com/english/quarterly-results/2025/q4",
+        "currency": "TWD"
       }
     ],
     "TSLA": [
@@ -83,6 +113,177 @@
         "publishedAt": "2026-08-04",
         "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026052535/spcx-20260630.htm",
         "note": "2026年6月12日上市，仅使用SpaceX自身股价；上市前同代码的ETF历史不进入收益。"
+      }
+    ],
+    "V": [
+      {
+        "providerPeriod": "2026-06",
+        "reportDate": "2026-06-30",
+        "publishedAt": "2026-07-28",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1403161/000140316126000103/q32026earningsrelease.htm"
+      },
+      {
+        "providerPeriod": "2020-09",
+        "reportDate": "2020-09-30",
+        "publishedAt": "2021-11-18",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1403161/000140316121000060/v-20210930.htm",
+        "note": "合并资产负债表及股东权益变动表，第53、56页；权益全部由母公司股份和留存收益构成",
+        "annual": {
+          "StockholdersEquity": 36210000000
+        }
+      },
+      {
+        "providerPeriod": "2021-09",
+        "reportDate": "2021-09-30",
+        "publishedAt": "2021-11-18",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1403161/000140316121000060/v-20210930.htm",
+        "note": "合并资产负债表及股东权益变动表，第53、56页",
+        "annual": {
+          "StockholdersEquity": 37589000000
+        }
+      }
+    ],
+    "SPGI": [
+      {
+        "providerPeriod": "2026-06",
+        "reportDate": "2026-06-30",
+        "publishedAt": "2026-07-28",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/64040/000006404026000040/spgi2q2026-earningsrelease.htm"
+      }
+    ],
+    "KO": [
+      {
+        "providerPeriod": "2026-06",
+        "reportDate": "2026-07-03",
+        "publishedAt": "2026-07-28",
+        "sourceUrl": "https://investors.coca-colacompany.com/filings-reports/all-sec-filings/content/0001628280-26-049922/a2026q2earningsreleaseex-9.htm"
+      }
+    ],
+    "NEE": [
+      {
+        "providerPeriod": "2026-06",
+        "reportDate": "2026-06-30",
+        "publishedAt": "2026-07-24",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/753308/000075330826000058/neeq22026exhibit99.htm"
+      }
+    ],
+    "ABT": [
+      {
+        "providerPeriod": "2026-06",
+        "reportDate": "2026-06-30",
+        "publishedAt": "2026-07-16",
+        "sourceUrl": "https://www.abbottinvestor.com/static-files/6050fc59-d0ce-4bd6-afea-8a2f2ab80208",
+        "quarterly": {
+          "TotalRevenue": 12593000000,
+          "NetIncome": 928000000,
+          "TotalOperatingIncomeAsReported": 1693000000,
+          "GrossProfit": 6610000000,
+          "StockholdersEquity": 51110000000,
+          "OperatingCashFlow": 2488000000,
+          "DilutedEPS": 0.53
+        },
+        "note": "2026年3月23日起并表Exact Sciences；营收报告增速13.0%，可比增速4.8%。单季经营现金流为半年38.03亿减一季度13.15亿美元；净资产使用归属母公司511.10亿美元。GAAP净利与调整净利不混用。",
+        "calculation": {
+          "OperatingCashFlow": {
+            "basis": "calculated",
+            "operands": [
+              3803000000,
+              1315000000
+            ],
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1800/000162828026050134/abt-20260630.htm"
+          }
+        }
+      }
+    ],
+    "DUK": [
+      {
+        "providerPeriod": "2026-06",
+        "reportDate": "2026-06-30",
+        "publishedAt": "2026-08-04",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1326160/000132616026000037/er-20260630xearningsreleas.htm",
+        "quarterly": {
+          "TotalRevenue": 7592000000,
+          "NetIncome": 1092000000,
+          "TotalOperatingIncomeAsReported": 2049000000,
+          "StockholdersEquity": 54751000000,
+          "OperatingCashFlow": 2760000000,
+          "DilutedEPS": 1.38
+        },
+        "note": "归属母公司净利润10.92亿美元；扣优先股股息后普通股净利润10.77亿美元，EPS使用普通股口径。经营现金流为半年42.72亿减一季度15.12亿美元。",
+        "calculation": {
+          "OperatingCashFlow": {
+            "basis": "calculated",
+            "operands": [
+              4272000000,
+              1512000000
+            ],
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1326160/000132616026000037/er-20260630xearningsreleas.htm"
+          }
+        }
+      }
+    ],
+    "JNJ": [
+      {
+        "providerPeriod": "2020-12",
+        "reportDate": "2021-01-03",
+        "publishedAt": "2022-02-17",
+        "sourceUrl": "https://www.investor.jnj.com/files/doc_financials/2021/ar/2021-annual-report.pdf",
+        "note": "2021年报第41、44页母公司股东权益组成，无少数股东权益项",
+        "annual": {
+          "StockholdersEquity": 63278000000
+        }
+      },
+      {
+        "providerPeriod": "2021-12",
+        "reportDate": "2022-01-02",
+        "publishedAt": "2022-02-17",
+        "sourceUrl": "https://www.investor.jnj.com/files/doc_financials/2021/ar/2021-annual-report.pdf",
+        "note": "2021年报第41、44页母公司股东权益组成",
+        "annual": {
+          "StockholdersEquity": 74023000000
+        }
+      }
+    ],
+    "QCOM": [
+      {
+        "providerPeriod": "2020-09",
+        "reportDate": "2020-09-27",
+        "publishedAt": "2023-11-01",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/804328/000080432823000055/qcom-20230924.htm",
+        "note": "股东权益表F-7：2021财年期初权益，全部为普通股、留存收益和累计综合损益",
+        "annual": {
+          "StockholdersEquity": 6077000000
+        }
+      },
+      {
+        "providerPeriod": "2021-09",
+        "reportDate": "2021-09-26",
+        "publishedAt": "2023-11-01",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/804328/000080432823000055/qcom-20230924.htm",
+        "note": "股东权益表F-7：2021财年期末权益",
+        "annual": {
+          "StockholdersEquity": 9950000000
+        }
+      },
+      {
+        "providerPeriod": "2025-06",
+        "reportDate": "2025-06-29",
+        "publishedAt": "2026-07-29",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/804328/000080432826000086/qcom-20260628.htm",
+        "note": "股东权益变动表第8页2025年比较栏：母公司股份、留存收益和累计综合损益",
+        "quarterly": {
+          "StockholdersEquity": 27209000000
+        }
+      },
+      {
+        "providerPeriod": "2026-06",
+        "reportDate": "2026-06-28",
+        "publishedAt": "2026-07-29",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/804328/000080432826000086/qcom-20260628.htm",
+        "note": "资产负债表第4页及股东权益变动表第8页",
+        "quarterly": {
+          "StockholdersEquity": 27658000000
+        }
       }
     ]
   }

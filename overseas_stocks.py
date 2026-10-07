@@ -14,6 +14,8 @@ from zoneinfo import ZoneInfo
 
 import strategy_backtest
 import overseas_research
+import us_filings
+from us_stock_groups import classify, LABELS
 from data_status import ROOT, DATA, atomic_text, now_iso, write_status
 from update import add_years, risk_window
 
@@ -21,6 +23,8 @@ CACHE = ROOT / '.tmp-snap' / 'overseas-stocks'
 CATALOG = json.loads((DATA / 'overseas-stock-catalog.json').read_text())['stocks']
 EVIDENCE = json.loads((DATA / 'overseas-stock-evidence.json').read_text())['companies']
 RESEARCH = json.loads((DATA / 'overseas-stock-research.json').read_text())
+HISTORY_PATH = DATA / 'us-financial-history.json'
+SEC_HISTORY = json.loads(HISTORY_PATH.read_text()).get('companies', {}) if HISTORY_PATH.exists() else {}
 METRICS = ['TotalRevenue', 'NetIncome', 'TotalOperatingIncomeAsReported', 'GrossProfit',
            'StockholdersEquity', 'OperatingCashFlow', 'DilutedEPS']
 UA = {'User-Agent': 'Mozilla/5.0'}
@@ -58,7 +62,7 @@ def fetch_quotes():
         'symbols': ','.join(s['symbol'] for s in CATALOG), 'crumb': crumb})
     rows = request_json(url, client).get('quoteResponse', {}).get('result', [])
     if {q.get('symbol') for q in rows} != {s['symbol'] for s in CATALOG}:
-        raise ValueError('海外个股报价未完整返回六个身份')
+        raise ValueError('美股报价未完整返回已收录证券身份')
     for row in rows:
         row['_fetchedAt'] = now_iso()
         cache_json(row['symbol'], 'quote', row)
@@ -128,6 +132,10 @@ def parse_facts(payload, symbol, financial_currency):
         for value in item.get(metric, []):
             if value.get('currencyCode') != financial_currency or value.get('periodType') != ('3M' if prefix == 'quarterly' else '12M'):
                 raise ValueError(symbol + ' 财报币种或周期不符')
+            # The provider's ADR EPS in the statement currency is not an
+            # ordinary-share EPS. USD ADR EPS comes only from issuer evidence.
+            if metric[len(prefix):] == 'DilutedEPS' and financial_currency != 'USD':
+                continue
             raw = value.get('reportedValue', {}).get('raw')
             if not finite(raw):
                 continue
@@ -159,6 +167,47 @@ def parse_facts(payload, symbol, financial_currency):
 def month_number(period):
     y, m = map(int, period.split('-'))
     return y * 12 + m
+
+
+def merge_filings(provider, official):
+    """Keep current provider periods; official statements own overlapping amounts."""
+    result = {p: {k: dict(r) for k, r in rows.items()} for p, rows in provider.items()}
+    for prefix, rows in official.items():
+        for key, evidence in rows.items():
+            row = result[prefix].setdefault(key, {})
+            differences = {metric: {'provider': row[metric], 'official': value}
+                           for metric, value in evidence.items() if metric in METRICS
+                           and finite(row.get(metric)) and finite(value)
+                           and abs(row[metric] - value) > max(abs(value) * .005, .02)}
+            row.update(evidence)
+            if differences:
+                row['providerDifferences'] = differences
+    return result
+
+
+def official_history(company, asof, offline):
+    symbol = company['symbol']
+    old = SEC_HISTORY.get(symbol, {'annual': {}, 'quarterly': {}})
+    if offline or not company.get('cik'):
+        return old, 'saved_official_filings'
+    try:
+        raw = request_json('https://data.sec.gov/api/xbrl/companyfacts/CIK' + str(company['cik']).zfill(10) + '.json')
+        cache_json(symbol, 'sec', raw)
+        new = us_filings.normalize(raw, company['cik'], asof, company['fiscalYearEndMonth'],
+            company.get('financialCurrency', 'USD'), company.get('accountingStandard', 'us-gaap'),
+            company.get('noNciThrough') if company.get('noNciStatementSource') else False)
+        if company.get('predecessorCik'):
+            # Only a source-verified legal successor may retain earlier filings.
+            # XOM's July 2026 one-for-one holding reorganization preserves the
+            # operating group; this is distinct from SPCX's unrelated ticker reuse.
+            if not company.get('identitySourceUrl') or not company.get('predecessorThrough'):
+                raise ValueError(symbol + ' 缺继承主体与前身期间边界')
+            new = {p: {**{k:r for k,r in old[p].items() if r['reportDate'] <= company['predecessorThrough']}, **new[p]} for p in new}
+        return {p: dict(sorted(rows.items())[-(7 if p == 'annual' else 12):]) for p, rows in new.items()}, 'live_official_filings'
+    except (urllib.error.URLError, TimeoutError, OSError):
+        if not any(old.values()):
+            raise ValueError(symbol + ' 缺SEC历史财报，无法完成本次筛选')
+        return old, 'saved_official_filings_after_network_failure'
 
 
 def trailing_total(rows, metric):
@@ -193,15 +242,17 @@ def financial_summary(facts):
     roe = ttm_profit / (sum(equity) / 2) * 100 if finite(ttm_profit) and all(finite(x) and x > 0 for x in equity) else None
     missing = []
     if ttm_profit is None:
-        missing.append('连续四季利润')
-    if not finite(equity[0]) or equity[0] <= 0:
-        missing.append(latest['period'] + '正净资产')
-    if not finite(equity[1]) or equity[1] <= 0:
-        missing.append(f'{year-1:04}-{month:02}正净资产')
+        missing.append('缺连续四季利润')
+    for value, period in zip(equity, [latest['period'], f'{year-1:04}-{month:02}']):
+        if not finite(value):
+            missing.append('缺' + period + '母公司净资产')
+        elif value <= 0:
+            missing.append(period + '净资产非正，ROE不适用')
     return {**latest, 'revenueGrowth': growth(latest.get('TotalRevenue'), previous.get('TotalRevenue')),
             'profitGrowth': growth(latest.get('NetIncome'), previous.get('NetIncome')),
             'ttmRevenue': ttm_revenue, 'ttmProfit': ttm_profit, 'ttmCash': ttm_cash,
-            'roeTTM': roe, 'roeMissing': None if roe is not None else '缺' + '、'.join(missing),
+            'roeTTM': roe, 'roeMissing': None if roe is not None else '；'.join(missing),
+            'operatingGrowth': growth(latest.get('TotalOperatingIncomeAsReported'), previous.get('TotalOperatingIncomeAsReported')),
             'operatingMargin': latest.get('TotalOperatingIncomeAsReported') / latest['TotalRevenue'] * 100 if finite(latest.get('TotalOperatingIncomeAsReported')) and latest['TotalRevenue'] > 0 else None}
 
 
@@ -234,7 +285,20 @@ def build_stock(company, end, offline=False):
         raw = cache_json(symbol, 'facts', request_json(url))
     else:
         raw = cache_json(symbol, 'facts')
-    facts = parse_facts(raw, symbol, quote['financialCurrency'])
+    provider = parse_facts(raw, symbol, quote['financialCurrency'])
+    reviewed_asof = datetime.now(ZoneInfo('Asia/Shanghai')).date().isoformat()
+    official, filing_status = official_history(company, reviewed_asof, offline)
+    facts = merge_filings(provider, official)
+    # Issuer earnings releases may precede the structured SEC submission.
+    # Date/source overlays are bound to this exact fiscal period in the dossier.
+    dossier = RESEARCH[symbol]
+    for prefix, rows in facts.items():
+        for entry in EVIDENCE.get(symbol, []):
+            key = entry['providerPeriod']
+            if key in rows and (entry.get(prefix) or rows[key].get('dateBasis') == 'provider_month_end'):
+                rows[key].update(entry.get(prefix, {}))
+                rows[key].update(reportDate=entry['reportDate'], dateBasis='issuer_report_end',
+                    sourceUrl=entry['sourceUrl'], publishedAt=entry.get('publishedAt'), note=entry.get('note'))
     financials = financial_summary(facts)
     if date.fromisoformat(financials['reportDate']) > date.fromisoformat(end):
         raise ValueError(symbol + ' 财报日期在行情截至日之后')
@@ -257,9 +321,9 @@ def build_stock(company, end, offline=False):
               'yield12': history['cashDividend12'] / price * 100 if finite(history.get('cashDividend12')) else None,
               'dividendMissing': history.get('dividendMissing'),
               'dividendRecords': history.get('dividendRecords', []),
-              'research': RESEARCH[symbol],
+              'research': dossier, 'financialSourceStatus': filing_status, '_officialHistory': official,
               'fetchedAt': now_iso()}
-    return overseas_research.enrich(result)
+    return classify(overseas_research.enrich(result), reviewed_asof)
 
 
 def validate_rows(rows):
@@ -272,6 +336,8 @@ def validate_rows(rows):
             raise ValueError('SPCX混入旧ETF历史')
         if row['peStatus'] == 'loss' and row['pe'] is not None:
             raise ValueError('亏损股票不应给出正PE')
+        if row['screening']['groups'] == ['other'] and not row['screening']['otherReasons']:
+            raise ValueError(row['symbol'] + ' 缺具体未入选原因')
     return True
 
 
@@ -286,9 +352,22 @@ def main():
         with ThreadPoolExecutor(max_workers=3) as executor:
             rows = list(executor.map(lambda c: build_stock(c, args.end, args.offline), CATALOG))
         validate_rows(rows)
-        meta = {'schemaVersion': 1, 'updatedAt': now_iso(), 'asOf': max(r['returnAsOf'] for r in rows),
-                'currency': 'USD', 'selection': 'requested_watchlist', 'companies': len(rows)}
+        meta = {'schemaVersion': 2, 'updatedAt': now_iso(), 'asOf': max(r['returnAsOf'] for r in rows),
+                'currency': 'USD', 'selection': 'reviewed_us_companies', 'companies': len(rows),
+                'screeningAsOf': max(r['screening']['checkedAt'] for r in rows),
+                'groupCounts': {g: sum(g in r['screening']['groups'] for r in rows) for g in LABELS}}
+        history = {'schemaVersion': 1, 'checkedAt': meta['screeningAsOf'],
+                   'companies': {r['symbol']: r.pop('_officialHistory') for r in rows}}
+        # The audit snapshot preserves field provenance. Public rows retain the
+        # values, filing links and dates without repeating every XBRL operand.
+        for row in rows:
+            for periods in row['financialHistory'].values():
+                for record in periods.values():
+                    record.pop('provenance', None)
+            for record in row['analysis']['annual']:
+                record.pop('provenance', None)
         reports = {'reports': [overseas_research.report_for(row) for row in rows]}
+        atomic_text(HISTORY_PATH, json.dumps(history, ensure_ascii=False, allow_nan=False, separators=(',', ':')) + '\n')
         atomic_text(DATA / 'overseas-stocks.js', 'var OVERSEAS_STOCK_META=' + json.dumps(meta, ensure_ascii=False) + ';\nvar OVERSEAS_STOCKS=' + json.dumps(rows, ensure_ascii=False, allow_nan=False, separators=(',', ':')) + ';\nvar OVERSEAS_REPORTS=' + json.dumps(reports, ensure_ascii=False, allow_nan=False, separators=(',', ':')) + ';\n')
         write_status('overseas_stocks', 'cached' if args.offline else 'success', mode='offline' if args.offline else 'online',
                      asOf=meta['asOf'], records=len(rows), message='发行人、股票类型、币种及上市历史已核对；财报与估值分别标注日期。')

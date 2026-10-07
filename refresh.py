@@ -15,7 +15,7 @@ PUBLISHED_OUTPUTS = {
     'research_funds': ('snapshot.js', 'screening-validation.json'),
     'indices': ('indices.js', 'index-history.json'),
     'stocks': ('snapshot.js',),
-    'overseas_stocks': ('overseas-stocks.js',),
+    'overseas_stocks': ('overseas-stocks.js', 'us-financial-history.json'),
     'screening': ('screening.js',),
     'strategy': ('snapshot.js', 'strategy-fees.js'),
     'portfolio': ('portfolio/catalog.js', 'snapshot.js'),

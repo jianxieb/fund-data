@@ -156,11 +156,11 @@
     },
     "portfolio": {
       "status": "cached",
-      "attemptedAt": "2026-10-02T12:47:21+00:00",
+      "attemptedAt": "2026-10-07T16:35:57+00:00",
       "mode": "offline",
-      "records": 1711,
-      "total": 1711,
-      "available": 1711,
+      "records": 1774,
+      "total": 1774,
+      "available": 1774,
       "missing": 0,
       "message": "全部研究对象纳入标的库；可用性与实际历史末日逐项保存。",
       "lastOnlineAttempt": {
@@ -180,10 +180,10 @@
     },
     "overseas_stocks": {
       "status": "cached",
-      "attemptedAt": "2026-10-07T14:44:51+00:00",
+      "attemptedAt": "2026-10-07T16:32:22+00:00",
       "mode": "offline",
       "asOf": "2026-10-06",
-      "records": 6,
+      "records": 62,
       "message": "发行人、股票类型、币种及上市历史已核对；财报与估值分别标注日期。",
       "lastOnlineAttempt": {
         "status": "success",
@@ -195,5 +195,5 @@
       }
     }
   },
-  "checkedAt": "2026-10-07T14:44:51+00:00"
+  "checkedAt": "2026-10-07T16:35:57+00:00"
 }

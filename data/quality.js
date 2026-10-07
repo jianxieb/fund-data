@@ -1,7 +1,7 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-10-07T14:43:50+00:00",
-  "asOf": "2026-10-07",
+  "checkedAt": "2026-10-07T16:38:49+00:00",
+  "asOf": "2026-10-08",
   "status": "unverified",
   "summary": {
     "errors": 0,
@@ -83,7 +83,7 @@ var DATA_QUALITY={
         "2026-10-06",
         "2026-10-06"
       ],
-      "records": 6,
+      "records": 62,
       "issues": [],
       "status": "checked"
     },
@@ -4069,7 +4069,7 @@ var DATA_QUALITY={
         "2026-09-28",
         "2026-10-06"
       ],
-      "records": 1718,
+      "records": 1774,
       "issues": [],
       "status": "checked"
     }
