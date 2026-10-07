@@ -625,6 +625,7 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-allocation-total strong{font-weight:500;color:var(--ink)}
 .portfolio-allocation-total.negative strong{color:var(--red)}
 .portfolio-holding{display:grid;grid-template-columns:minmax(0,1fr) 89px 28px;align-items:center;gap:10px;padding:16px 0;border-top:1px solid #edf0e7}
+#portfolio-allocation-summary + .portfolio-holding{border-top:0}
 .portfolio-holding-name{display:flex;gap:10px;align-items:flex-start;min-width:0}
 .portfolio-holding-name>i,.portfolio-result-name>i{width:8px;height:8px;border-radius:2px;flex-shrink:0;margin-top:5px}
 .portfolio-holding-name strong{font-size:13px;font-weight:550;line-height:1.6;display:block}
