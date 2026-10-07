@@ -41,6 +41,31 @@ class UsFilingsTests(unittest.TestCase):
         self.assertEqual(fiscal_month('2026-09-03'), '2026-08')
         self.assertEqual(fiscal_month('2026-06-27'), '2026-06')
         self.assertEqual(fiscal_month('2026-02-01'), '2026-01')
+        self.assertEqual(fiscal_month('2025-09-06', 12), '2025-09')
+        self.assertEqual(fiscal_month('2026-09-03', 8), '2026-08')
+
+    def test_nci_is_removed_from_parent_profit_and_equity_and_not_assumed_zero(self):
+        p = self.payload()
+        p['cik'] = '0000000001'
+        g = p['facts']['us-gaap']
+        g['ProfitLoss'] = g.pop('NetIncomeLoss')
+        g['NetIncomeLossAttributableToNoncontrollingInterest'] = {'units': {'USD': [dict(r, val=1) for r in g['ProfitLoss']['units']['USD']]}}
+        instant = dict(end='2026-06-30', val=100, filed='2026-08-01', form='10-Q', accn='0000000001-26-000001')
+        g['StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest'] = {'units': {'USD': [instant]}}
+        g['MinorityInterest'] = {'units': {'USD': [dict(instant, val=5)]}}
+        out = normalize(p, 1, '2026-10-06')
+        self.assertEqual(out['quarterly']['2026-03']['NetIncome'], 9)
+        self.assertEqual(out['quarterly']['2026-06']['StockholdersEquity'], 95)
+        del g['NetIncomeLossAttributableToNoncontrollingInterest']
+        self.assertFalse(normalize(p, 1, '2026-10-06')['quarterly'])
+
+    def test_sixteen_week_quarter_is_preserved(self):
+        p = self.payload()
+        for key in ('Revenues', 'NetIncomeLoss'):
+            p['facts']['us-gaap'][key]['units']['USD'].append(dict(
+                start='2026-05-11', end='2026-08-30', val=30, filed='2026-09-24',
+                form='10-Q', accn='0000000001-26-000003'))
+        self.assertEqual(normalize(p, 1, '2026-10-06')['quarterly']['2026-08']['NetIncome'], 30)
 
     def test_instant_equity_does_not_create_an_extra_income_quarter(self):
         p = self.payload()

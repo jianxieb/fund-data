@@ -6,10 +6,10 @@ TAGS = {
     'TotalRevenue': ('RevenueFromContractWithCustomerExcludingAssessedTax',
                      'RevenueFromContractWithCustomerIncludingAssessedTax',
                      'Revenues', 'SalesRevenueNet', 'RevenuesNetOfInterestExpense'),
-    'NetIncome': ('NetIncomeLoss',),
+    'NetIncome': ('NetIncomeLoss', 'NetIncomeLossAvailableToCommonStockholdersBasic', 'ProfitLoss'),
     'TotalOperatingIncomeAsReported': ('OperatingIncomeLoss',),
     'GrossProfit': ('GrossProfit',),
-    'StockholdersEquity': ('StockholdersEquity',),
+    'StockholdersEquity': ('StockholdersEquity', 'StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest'),
     'OperatingCashFlow': ('NetCashProvidedByUsedInOperatingActivities',
                          'NetCashProvidedByUsedInOperatingActivitiesContinuingOperations'),
     'DilutedEPS': ('EarningsPerShareDiluted',),
@@ -17,18 +17,25 @@ TAGS = {
 }
 
 
-def fiscal_month(day):
+def fiscal_month(day, year_end_month=None):
     """Week based fiscal years ending in the first week use the preceding month."""
     d = date.fromisoformat(day)
-    return ((d.replace(day=1) - timedelta(days=1)) if d.day <= 7 else d).strftime('%Y-%m')
+    previous = d.replace(day=1) - timedelta(days=1)
+    if year_end_month is not None:
+        months = {(year_end_month - 1 - n * 3) % 12 + 1 for n in range(4)}
+        if d.month in months:
+            return d.strftime('%Y-%m')
+        if previous.month in months and d.day <= 10:
+            return previous.strftime('%Y-%m')
+    return (previous if d.day <= 7 else d).strftime('%Y-%m')
 
 
 def number(v):
     return isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v)
 
 
-def normalize(payload, cik, asof):
-    if payload.get('cik') != int(cik) or not payload.get('entityName'):
+def normalize(payload, cik, asof, year_end_month=None):
+    if str(payload.get('cik', '')).lstrip('0') != str(int(cik)) or not payload.get('entityName'):
         raise ValueError('SEC财报CIK身份不符')
     gaap = payload.get('facts', {}).get('us-gaap', {})
     output = {'annual': {}, 'quarterly': {}}
@@ -37,10 +44,11 @@ def normalize(payload, cik, asof):
     def source(r, tag, basis='disclosed', operands=None):
         url = 'https://www.sec.gov/Archives/edgar/data/' + str(int(cik)) + '/' + r['accn'].replace('-', '') + '/' + r['accn'] + '-index.html'
         return {'tag': tag, 'start': r.get('start'), 'end': r['end'], 'publishedAt': r['filed'],
-                'sourceUrl': url, 'basis': basis, **({'operands': operands} if operands else {})}
+                'sourceUrl': url, 'value': r.get('_rawValue', r['val']), 'basis': basis,
+                **({'operands': operands} if operands else {})}
 
     def put(prefix, r, metric, value, provenance):
-        key = fiscal_month(r['end'])
+        key = fiscal_month(r['end'], year_end_month)
         row = output[prefix].setdefault(key, {'period': key, 'reportDate': r['end'],
             'dateBasis': 'issuer_report_end', 'currency': 'USD', 'provenance': {}})
         # Different tags may describe gross and net revenue. Prefer the first
@@ -51,6 +59,13 @@ def normalize(payload, cik, asof):
         row['provenance'][metric] = provenance
         if metric == 'NetIncome' or 'sourceUrl' not in row:
             row.update(sourceUrl=provenance['sourceUrl'], publishedAt=provenance['publishedAt'])
+
+    def minority(tag, r):
+        matches = [p for p in gaap.get(tag, {}).get('units', {}).get('USD', [])
+                   if p.get('start') == r.get('start') and p.get('end') == r['end']
+                   and p.get('form') in ('10-K', '10-K/A', '10-Q', '10-Q/A')
+                   and r['end'] <= p.get('filed', '') <= asof and number(p.get('val'))]
+        return max(matches, key=lambda p: (p['filed'], p['accn'])) if matches else None
 
     for metric, tags in TAGS.items():
         for tag in tags:
@@ -72,20 +87,35 @@ def normalize(payload, cik, asof):
                 # below; an extra balance-sheet date must not create a new quarter.
                 for r in entries:
                     if 'start' not in r:
+                        value, evidence = r['val'], source(r, tag)
+                        if tag != 'StockholdersEquity':
+                            nci = minority('MinorityInterest', r)
+                            if nci is None:
+                                continue  # Unknown NCI is not assumed to be zero.
+                            value -= nci['val']
+                            evidence = source(r, tag, 'calculated', [source(r, tag), source(nci, 'MinorityInterest')])
                         for prefix in output:
-                            key = fiscal_month(r['end'])
+                            key = fiscal_month(r['end'], year_end_month)
                             if key in output[prefix]:
-                                put(prefix, r, metric, r['val'], source(r, tag))
+                                put(prefix, r, metric, value, evidence)
                 continue
+            if tag == 'ProfitLoss':
+                converted = []
+                for r in entries:
+                    nci = minority('NetIncomeLossAttributableToNoncontrollingInterest', r)
+                    if nci is not None:
+                        converted.append(dict(r, val=r['val'] - nci['val'], _rawValue=r['val'], _nci=nci))
+                entries = converted  # Consolidated income is not parent income.
             cumulative = []
             for r in entries:
                 if not r.get('start'):
                     continue
                 days = (date.fromisoformat(r['end']) - date.fromisoformat(r['start'])).days + 1
+                evidence = source(r, tag, 'calculated', [source(r, tag), source(r['_nci'], 'NetIncomeLossAttributableToNoncontrollingInterest')]) if '_nci' in r else source(r, tag)
                 if 330 <= days <= 385:
-                    put('annual', r, metric, r['val'], source(r, tag))
-                if 70 <= days <= 105:
-                    put('quarterly', r, metric, r['val'], source(r, tag))
+                    put('annual', r, metric, r['val'], evidence)
+                if 70 <= days <= 120:
+                    put('quarterly', r, metric, r['val'], evidence)
                 if 150 <= days <= 385:
                     cumulative.append(r)
             # Cash flow usually appears as YTD. Q4 earnings are often absent as
@@ -94,7 +124,7 @@ def normalize(payload, cik, asof):
             if metric != 'DilutedEPS':
                 for r in cumulative:
                     priors = [p for p in entries if p.get('start') == r['start']
-                              and 70 <= (date.fromisoformat(r['end']) - date.fromisoformat(p['end'])).days <= 105]
+                              and 70 <= (date.fromisoformat(r['end']) - date.fromisoformat(p['end'])).days <= 120]
                     if not priors:
                         continue
                     p = max(priors, key=lambda x: x['end'])
