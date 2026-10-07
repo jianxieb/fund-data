@@ -15,6 +15,14 @@ TAGS = {
     'DilutedEPS': ('EarningsPerShareDiluted',),
     'CapitalExpenditures': ('PaymentsToAcquirePropertyPlantAndEquipment',),
 }
+IFRS_TAGS = {
+    'TotalRevenue': ('Revenue',), 'NetIncome': ('ProfitLossAttributableToOwnersOfParent',),
+    'TotalOperatingIncomeAsReported': ('ProfitLossFromOperatingActivities',),
+    'GrossProfit': ('GrossProfit',), 'StockholdersEquity': ('EquityAttributableToOwnersOfParent',),
+    'OperatingCashFlow': ('CashFlowsFromUsedInOperatingActivities',),
+    'DilutedEPS': ('DilutedEarningsLossPerShare',),
+    'CapitalExpenditures': ('PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities',),
+}
 
 
 def fiscal_month(day, year_end_month=None):
@@ -34,12 +42,19 @@ def number(v):
     return isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v)
 
 
-def normalize(payload, cik, asof, year_end_month=None):
+def normalize(payload, cik, asof, year_end_month=None, currency='USD', standard='us-gaap', no_nci=False):
     if str(payload.get('cik', '')).lstrip('0') != str(int(cik)) or not payload.get('entityName'):
         raise ValueError('SEC财报CIK身份不符')
-    gaap = payload.get('facts', {}).get('us-gaap', {})
+    if standard not in ('us-gaap', 'ifrs-full'):
+        raise ValueError('不支持的SEC会计准则')
+    gaap = payload.get('facts', {}).get(standard, {})
+    tags_for = TAGS if standard == 'us-gaap' else IFRS_TAGS
+    forms = ('10-K', '10-K/A', '10-Q', '10-Q/A') if standard == 'us-gaap' else ('20-F', '20-F/A', '6-K')
     output = {'annual': {}, 'quarterly': {}}
     floor = str(int(asof[:4]) - 8) + '-01-01'
+
+    def known_no_nci(r):
+        return no_nci is True or isinstance(no_nci, str) and r['end'] <= no_nci
 
     def source(r, tag, basis='disclosed', operands=None):
         url = 'https://www.sec.gov/Archives/edgar/data/' + str(int(cik)) + '/' + r['accn'].replace('-', '') + '/' + r['accn'] + '-index.html'
@@ -50,7 +65,7 @@ def normalize(payload, cik, asof, year_end_month=None):
     def put(prefix, r, metric, value, provenance):
         key = fiscal_month(r['end'], year_end_month)
         row = output[prefix].setdefault(key, {'period': key, 'reportDate': r['end'],
-            'dateBasis': 'issuer_report_end', 'currency': 'USD', 'provenance': {}})
+            'dateBasis': 'issuer_report_end', 'currency': currency, 'provenance': {}})
         # Different tags may describe gross and net revenue. Prefer the first
         # supported tag for a given period instead of silently summing them.
         if metric in row:
@@ -67,13 +82,13 @@ def normalize(payload, cik, asof, year_end_month=None):
                    and r['end'] <= p.get('filed', '') <= asof and number(p.get('val'))]
         return max(matches, key=lambda p: (p['filed'], p['accn'])) if matches else None
 
-    for metric, tags in TAGS.items():
+    for metric, tags in tags_for.items():
         for tag in tags:
-            unit = 'USD/shares' if metric == 'DilutedEPS' else 'USD'
+            unit = currency + '/shares' if metric == 'DilutedEPS' else currency
             rows = gaap.get(tag, {}).get('units', {}).get(unit, [])
             unique = {}
             for r in rows:
-                if (r.get('form') not in ('10-K', '10-K/A', '10-Q', '10-Q/A')
+                if (r.get('form') not in forms
                         or not floor <= r.get('end', '') <= asof
                         or not r.get('filed') or not r['end'] <= r['filed'] <= asof
                         or not r.get('accn') or not number(r.get('val'))):
@@ -88,12 +103,13 @@ def normalize(payload, cik, asof, year_end_month=None):
                 for r in entries:
                     if 'start' not in r:
                         value, evidence = r['val'], source(r, tag)
-                        if tag != 'StockholdersEquity':
+                        if standard == 'us-gaap' and tag != 'StockholdersEquity':
                             nci = minority('MinorityInterest', r)
-                            if nci is None:
+                            if nci is None and not known_no_nci(r):
                                 continue  # Unknown NCI is not assumed to be zero.
-                            value -= nci['val']
-                            evidence = source(r, tag, 'calculated', [source(r, tag), source(nci, 'MinorityInterest')])
+                            if nci is not None:
+                                value -= nci['val']
+                                evidence = source(r, tag, 'calculated', [source(r, tag), source(nci, 'MinorityInterest')])
                         for prefix in output:
                             key = fiscal_month(r['end'], year_end_month)
                             if key in output[prefix]:
@@ -105,6 +121,8 @@ def normalize(payload, cik, asof, year_end_month=None):
                     nci = minority('NetIncomeLossAttributableToNoncontrollingInterest', r)
                     if nci is not None:
                         converted.append(dict(r, val=r['val'] - nci['val'], _rawValue=r['val'], _nci=nci))
+                    elif known_no_nci(r):
+                        converted.append(r)
                 entries = converted  # Consolidated income is not parent income.
             cumulative = []
             for r in entries:

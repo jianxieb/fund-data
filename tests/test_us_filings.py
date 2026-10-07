@@ -67,6 +67,20 @@ class UsFilingsTests(unittest.TestCase):
                 form='10-Q', accn='0000000001-26-000003'))
         self.assertEqual(normalize(p, 1, '2026-10-06')['quarterly']['2026-08']['NetIncome'], 30)
 
+    def test_ifrs_adr_facts_keep_reporting_currency_and_ordinary_share_eps(self):
+        p = self.payload()
+        g = p['facts'].pop('us-gaap')
+        p['facts']['ifrs-full'] = {}
+        for old, new, unit in [('Revenues', 'Revenue', 'TWD'),
+                              ('NetIncomeLoss', 'ProfitLossAttributableToOwnersOfParent', 'TWD'),
+                              ('EarningsPerShareDiluted', 'DilutedEarningsLossPerShare', 'TWD/shares')]:
+            rows = [dict(r, form='20-F') for values in g[old]['units'].values() for r in values]
+            p['facts']['ifrs-full'][new] = {'units': {unit: rows}}
+        row = normalize(p, 1, '2026-10-06', 12, 'TWD', 'ifrs-full')['annual']['2025-12']
+        self.assertEqual(row['currency'], 'TWD')
+        self.assertEqual(row['DilutedEPS'], 50)
+        self.assertNotIn('ListingDilutedEPSUSD', row)
+
     def test_instant_equity_does_not_create_an_extra_income_quarter(self):
         p = self.payload()
         p['facts']['us-gaap']['StockholdersEquity'] = {'units': {'USD': [
@@ -75,6 +89,17 @@ class UsFilingsTests(unittest.TestCase):
         out = normalize(p, 1, '2026-10-06')
         self.assertEqual(out['quarterly']['2026-06']['StockholdersEquity'], 100)
         self.assertNotIn('2026-09', out['quarterly'])
+
+    def test_reviewed_no_nci_assumption_expires_after_its_report_period(self):
+        p = self.payload()
+        g = p['facts']['us-gaap']
+        g['ProfitLoss'] = g.pop('NetIncomeLoss')
+        old = dict(end='2026-03-31', val=100, filed='2026-08-01', form='10-Q', accn='0000000001-26-000001')
+        g['StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest'] = {'units': {'USD': [old, dict(old, end='2026-06-30', val=110)]}}
+        result = normalize(p, 1, '2026-10-06', no_nci='2026-03-31')
+        self.assertEqual(result['quarterly']['2026-03']['NetIncome'], 10)
+        self.assertEqual(result['quarterly']['2026-03']['StockholdersEquity'], 100)
+        self.assertNotIn('2026-06', result['quarterly'])
 
 
 if __name__ == '__main__':
