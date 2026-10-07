@@ -7,6 +7,15 @@ import strategy_backtest as strategy
 
 
 class AnnualFeeEstimates(unittest.TestCase):
+    def test_qqqm_is_a_distinct_lower_fee_nasdaq_product(self):
+        qqqm, qqq = annual_fees.fee_metadata('QQQM'), annual_fees.fee_metadata('QQQ')
+        self.assertEqual(qqqm['section'], 'other')
+        self.assertEqual(qqqm['underlying'], qqq['underlying'])
+        self.assertEqual(qqqm['inception'], '2020-10-13')
+        self.assertEqual(qqqm['expenseRatio'], .15)
+        self.assertEqual(qqqm['feeCheckedAt'], '2026-10-07')
+        self.assertLess(qqqm['expenseRatio'], qqq['expenseRatio'])
+
     def test_calendar_accrual_matches_browser_math_including_leap_day(self):
         actual = annual_fees.addback_factor(1.7, '2020-01-01', '2021-01-01')
         expected = math.pow(1 - 0.017 / 365.2425, -366)

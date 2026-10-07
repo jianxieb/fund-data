@@ -12,7 +12,7 @@ def fee_metadata(symbol):
     product = ETFS[symbol]
     # Product facts must not overwrite the market-data source on a return row.
     facts = {key: value for key, value in product.items() if key != 'sourceUrl'}
-    return {**facts, 'identityUrl': product['sourceUrl'], 'feeCheckedAt': CATALOG['checkedAt'],
+    return {**facts, 'identityUrl': product['sourceUrl'], 'feeCheckedAt': product.get('checkedAt', CATALOG['checkedAt']),
             'feeSourceUrl': product['sourceUrl'], 'feesEmbedded': True,
             'feeEstimateMethod': 'current_rate_daily_accrual_scenario'}
 

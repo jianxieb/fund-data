@@ -2,6 +2,7 @@
   "checkedAt": "2026-10-02",
   "feeBasis": "current_net_expense_ratio_scenario_not_historical_gross_returns",
   "products": [
+    {"symbol":"QQQM","section":"other","category":"纳斯达克100","label":"纳斯达克100 · 低费率","underlying":"Nasdaq-100 Index","leverage":1,"style":"指数跟踪","expenseRatio":0.15,"inception":"2020-10-13","distribution":"季度","checkedAt":"2026-10-07","sourceUrl":"https://www.invesco.com/us/en/financial-products/etfs/invesco-nasdaq-100-etf.html","description":"与QQQ一样被动跟踪纳斯达克100；现行年费0.15%，低于QQQ的0.18%。这里使用QQQM自身含分红再投资历史，不拼接QQQ上市前的数据；实际收益已包含持续年费。"},
     {"symbol":"SPY","section":"main","category":"标普500","label":"标普500","underlying":"S&P 500 Index","leverage":1,"style":"指数跟踪","expenseRatio":0.0945,"inception":"1993-01-22","distribution":"季度","sourceUrl":"https://www.ssga.com/us/en/individual/etfs/state-street-spdr-sp-500-etf-trust-spy","description":"被动跟踪标普500；与指数价格收益不同，这里的产品收益包含现金分红再投资。"},
     {"symbol":"SSO","section":"main","category":"标普500","label":"标普500 · 每日2倍做多","underlying":"S&P 500 Index","leverage":2,"style":"每日杠杆","expenseRatio":0.87,"inception":"2006-06-19","distribution":"季度","sourceUrl":"https://www.proshares.com/our-etfs/leveraged-and-inverse/sso","description":"目标为标普500每日收益的2倍；按日重设，长期收益不等于指数长期收益乘2。"},
     {"symbol":"UPRO","section":"main","category":"标普500","label":"标普500 · 每日3倍做多","underlying":"S&P 500 Index","leverage":3,"style":"每日杠杆","expenseRatio":0.89,"inception":"2009-06-23","distribution":"季度","sourceUrl":"https://www.proshares.com/our-etfs/leveraged-and-inverse/upro","description":"目标为标普500每日收益的3倍；按日重设，波动与融资成本会影响长期路径。"},
