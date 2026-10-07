@@ -9,12 +9,13 @@ import time
 
 from data_status import DATA, ROOT, atomic_text, now_iso, write_status
 
-DATASETS = ('funds', 'research_funds', 'indices', 'stocks', 'screening', 'strategy', 'portfolio', 'quality')
+DATASETS = ('funds', 'research_funds', 'indices', 'stocks', 'overseas_stocks', 'screening', 'strategy', 'portfolio', 'quality')
 PUBLISHED_OUTPUTS = {
     'funds': ('snapshot.js',),
     'research_funds': ('snapshot.js', 'screening-validation.json'),
     'indices': ('indices.js', 'index-history.json'),
     'stocks': ('snapshot.js',),
+    'overseas_stocks': ('overseas-stocks.js',),
     'screening': ('screening.js',),
     'strategy': ('snapshot.js', 'strategy-fees.js'),
     'portfolio': ('portfolio/catalog.js', 'snapshot.js'),
@@ -28,6 +29,7 @@ def commands(offline=False):
         'research_funds': [sys.executable, str(ROOT / 'screens' / 'fund_screen.py'), 'refresh-performance', *flag],
         'indices': [sys.executable, str(ROOT / 'indices.py'), *flag],
         'stocks': [sys.executable, str(ROOT / 'stock_screen.py'), *flag],
+        'overseas_stocks': [sys.executable, str(ROOT / 'overseas_stocks.py'), *flag],
         # Daily policy regeneration is offline. A whole-market screen is a separate
         # expensive research job, not a daily download of all 1,268 legacy candidates.
         'screening': [sys.executable, str(ROOT / 'screens' / 'fund_screen.py'), 'policy'],

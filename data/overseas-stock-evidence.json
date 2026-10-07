@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "companies": {
+    "LITE": [
+      {
+        "providerPeriod": "2026-06",
+        "reportDate": "2026-06-27",
+        "publishedAt": "2026-08-11",
+        "sourceUrl": "https://investor.lumentum.com/financial-news-releases/news-details/2026/Lumentum-Announces-Fourth-Quarter-and-Full-Fiscal-Year-2026-Results/default.aspx",
+        "note": "FY2026第四季：债转股产生约77.57亿美元一次性非现金债务清偿损失；报表净亏损71.62亿美元，Non-GAAP净利润3.26亿美元。两种利润分开看。",
+        "currency": "USD",
+        "quarterly": {
+          "TotalRevenue": 1006300000,
+          "NetIncome": -7161700000,
+          "StockholdersEquity": 4643900000,
+          "TotalOperatingIncomeAsReported": 279300000
+        },
+        "annual": {
+          "TotalRevenue": 3014000000,
+          "NetIncome": -6935100000,
+          "StockholdersEquity": 4643900000,
+          "TotalOperatingIncomeAsReported": 524800000
+        }
+      }
+    ],
+    "NVDA": [
+      {
+        "providerPeriod": "2026-07",
+        "reportDate": "2026-07-26",
+        "publishedAt": "2026-08-26",
+        "sourceUrl": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-Financial-Results-for-Second-Quarter-Fiscal-2027/"
+      }
+    ],
+    "MU": [
+      {
+        "providerPeriod": "2026-08",
+        "reportDate": "2026-09-03",
+        "publishedAt": "2026-09-30",
+        "currency": "USD",
+        "sourceUrl": "https://investors.micron.com/news/press-release/2026/Micron-Technology-Inc--Reports-Record-Fiscal-Fourth-Quarter-and-Full-Year-2026-Results/default.aspx",
+        "quarterly": {
+          "TotalRevenue": 54229000000,
+          "NetIncome": 37701000000,
+          "GrossProfit": 47047000000,
+          "StockholdersEquity": 138378000000,
+          "OperatingCashFlow": 43973000000,
+          "DilutedEPS": 32.87,
+          "TotalOperatingIncomeAsReported": 43751000000
+        },
+        "annual": {
+          "TotalRevenue": 133188000000,
+          "NetIncome": 84969000000,
+          "StockholdersEquity": 138378000000,
+          "OperatingCashFlow": 89675000000,
+          "DilutedEPS": 74.33
+        }
+      }
+    ],
+    "TSM": [
+      {
+        "providerPeriod": "2026-06",
+        "reportDate": "2026-06-30",
+        "publishedAt": "2026-07-16",
+        "sourceUrl": "https://investor.tsmc.com/english/quarterly-results/2026/q2"
+      }
+    ],
+    "TSLA": [
+      {
+        "providerPeriod": "2026-06",
+        "reportDate": "2026-06-30",
+        "publishedAt": "2026-07-22",
+        "sourceUrl": "https://ir.tesla.com/"
+      }
+    ],
+    "SPCX": [
+      {
+        "providerPeriod": "2026-06",
+        "reportDate": "2026-06-30",
+        "publishedAt": "2026-08-04",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026052535/spcx-20260630.htm",
+        "note": "2026年6月12日上市，仅使用SpaceX自身股价；上市前同代码的ETF历史不进入收益。"
+      }
+    ]
+  }
+}

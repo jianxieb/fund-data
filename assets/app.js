@@ -49,7 +49,7 @@
     fundTab: 'equity', poolCategory: 'all', fundFacets: new Set(), fundSectors: new Set(), query: '', channel: 'all', purchasable: false,
     screen: { minA3: defaults.minA3, minA5: defaults.minA5, minA10: null },
     fundSort: 'default', descending: true, selected: new Set(),
-    stockTab: 'quality', stockQuery: '', stockCategory: 'all', stockView: 'financials', stockSort: 'default', stockDesc: true, hideGrowthBoards: false, reportCode: null, reportQuery: '',
+    stockMarket: 'cn', stockTab: 'quality', stockQuery: '', stockCategory: 'all', stockView: 'financials', stockSort: 'default', stockDesc: true, hideGrowthBoards: false, reportCode: null, reportQuery: '',
     stratPanel: 'initial', stratView: 'results', stratYear: '2010', stratAsset: 'SPY', stratMethod: 'lump_sum', stratMethods: { initial: 'lump_sum', dca: 'dca_month', combined: 'combined_lump_sum' },
     stratCompare: 'assets', stratMetric: 'amount', leverage: true, showLeverageAssets: false, chartHidden: new Set(),
     buyFamily: 'sp', buyYears: 5, buyPlan: 'lump', buyBasis: 'nav', buyLumpAmount: 100000, buyMonthlyAmount: 3000,
@@ -494,7 +494,14 @@
   function stockDynamic(s) {
     return money(s.peDynamic, 2) + '<span class="sub">' + (M.finite(s.peDynamic) ? esc(reportLabel({ reportDate: s.peDynamicBasis?.reportDate })) + '利润年化' : s.peDynamicBasis?.status === 'loss' ? '本期亏损' : '缺当期利润或市值') + '</span>';
   }
+  function stockMarkets() {
+    return '<div class="stock-market-nav" role="group" aria-label="个股市场">' + [['cn', '国内', (window.STOCKS || []).length], ['us', '海外', (window.OVERSEAS_STOCKS || []).length]].map(([id, label, count]) => action('<strong>' + label + '</strong><span>' + count + '家公司</span>', 'stock-market', 'stock-market-choice' + (state.stockMarket === id ? ' active' : ''), 'data-value="' + id + '" aria-pressed="' + (state.stockMarket === id) + '"')).join('') + '<span class="stock-market-context">' + (state.stockMarket === 'cn' ? 'A股 · 人民币' : '美股与ADR · 美元') + '</span></div>';
+  }
   function stocks() {
+    if (state.stockMarket === 'us') return head('GLOBAL COMPANY RESEARCH', '个股深入', '从业务、盈利和估值，理解公司的长期价值。') + stockMarkets() + window.ChanghengOverseasStocks.view({
+      esc, money, pct, pc, action, modalTitle, openModal, detailGrid, render, lazyRows, loadFooter,
+      periods: state.periods, periodHead, ret, returnControls, resetList: () => loadedCounts.delete('overseas-stocks')
+    });
     const all = window.STOCKS || [], dividend = state.stockTab === 'dividend', other = state.stockTab === 'other';
     const financials = !dividend && state.stockView === 'financials', valuation = !dividend && state.stockView === 'valuation';
     const groups = [['quality', '长期优质企业'], ['growth', '高质成长股'], ['breakout', '业绩爆发股'], ['dividend', '红利价值'], ['other', '其他已收录']];
@@ -514,7 +521,7 @@
     const valuationRow = s => '<td>' + money(s.pe, 2) + '</td><td>' + stockDynamic(s) + '</td><td>' + money(s.peStatic, 2) + '</td><td>' + stockPercentile(s, 5) + '</td><td>' + stockPercentile(s, 10) + '</td><td>' + money(s.pb, 2) + '</td><td>' + money(s.mcap, 1) + '</td><td>' + esc(s.valuationAsOf || '—') + '</td>';
     const returnRow = s => '<td>' + money(s.price, 2) + '</td>' + (dividend ? '<td>' + money(s.pe, 2) + '<span class="sub">' + esc(s.valuationAsOf || '缺估值日期') + '</span></td><td>' + money(s.pb, 2) + '</td><td class="stock-roe">' + stockRoe(s) + '</td><td>' + money(s.mcap, 1) + '</td>' : '') + '<td>' + pct(s.yield12, 2, false) + '</td><td>' + (s.divYears == null ? '—' : esc(s.divYears) + ' / 5') + '</td>' + state.periods.map(y => '<td>' + pc(ret(s.r?.[years.indexOf(y)], y, s)) + '</td>').join('') + '<td>' + pc(s.mdd5, 1) + '</td><td>' + esc(s.returnAsOf || '—') + '</td>';
     return head('STOCK WATCHLIST', '个股深入', dividend ? '关注现金分红、股息率与长期收益。' : other ? '查看已收录公司的经营、估值与未入选原因。' : state.stockTab === 'breakout' ? '核心盈利快速扩张，单独检验周期、并购和资本回报。' : state.stockTab === 'growth' ? '研究核心盈利的持续扩张、资本回报与现金回收。' : '长期经营能力，经得起多年财务与当前业绩的检验。', '<a class="btn sm" href="#reports">研究报告</a>' + (dividend || other ? '' : action('入选标准', 'stock-rules', 'btn sm'))) +
-      '<div class="tabs stock-tabs" role="tablist" aria-label="个股研究分组">' + groups.map(([id, label]) => action(label + '<span class="tab-count">' + all.filter(s => stockPass(s, id) && (!state.hideGrowthBoards || M.stockBoard(s.c) === 'main')).length + '</span>', 'stock-tab', (state.stockTab === id ? 'active ' : '') + (id === 'other' ? 'stock-other-tab' : ''), 'data-value="' + id + '" role="tab" aria-selected="' + (state.stockTab === id) + '"')).join('') + '</div>' +
+      stockMarkets() + '<div class="tabs stock-tabs" role="tablist" aria-label="个股研究分组">' + groups.map(([id, label]) => action(label + '<span class="tab-count">' + all.filter(s => stockPass(s, id) && (!state.hideGrowthBoards || M.stockBoard(s.c) === 'main')).length + '</span>', 'stock-tab', (state.stockTab === id ? 'active ' : '') + (id === 'other' ? 'stock-other-tab' : ''), 'data-value="' + id + '" role="tab" aria-selected="' + (state.stockTab === id) + '"')).join('') + '</div>' +
       (dividend ? '' : '<div class="stock-category-filter" role="group" aria-label="企业类别">' + [['all', '全部类别'], ...categories.map(c => [c, c])].map(([id, label]) => action(esc(label), 'stock-category', 'filter-chip' + (state.stockCategory === id ? ' active' : ''), 'data-value="' + esc(id) + '" aria-pressed="' + (state.stockCategory === id) + '"')).join('') + '</div>') +
       '<div class="stock-controls"><div class="filters"><input type="search" id="stock-search" aria-label="搜索公司、代码或业务" placeholder="搜索公司、代码或业务" value="' + esc(state.stockQuery) + '">' + action('隐藏科创／创业板', 'stock-boards', 'board-filter' + (state.hideGrowthBoards ? ' active' : ''), 'aria-pressed="' + state.hideGrowthBoards + '"') + '</div>' + (dividend || state.stockView === 'returns' ? returnControls() : '') + '</div>' +
       '<div class="card"><div class="table-caption stock-table-caption"><span><b>' + rows.length + '</b> / ' + pool.length + '家公司</span>' + (dividend || other ? '' : '<span class="stock-overlap-legend">绿色公司：长期优质＋高成长</span>') + viewControl + '</div><div class="table-wrap stock-table-wrap" tabindex="0" role="region" aria-label="个股研究表，可横向滚动"><table class="research-table stock-table' + (financials ? ' stock-financial-table' : '') + '"><thead><tr><th>公司 / 主营业务</th>' + (financials ? financialHead : valuation ? valuationHead : returnHead) + '</tr></thead><tbody data-list-body="stocks">' + lazyRows('stocks', rows, s => '<tr>' + stockIdentity(s) + (financials ? financialRow(s) : valuation ? valuationRow(s) : returnRow(s)) + '</tr>') + (rows.length ? '' : '<tr><td colspan="' + (financials ? 7 : valuation ? 9 : (dividend ? 10 : 6) + state.periods.length) + '"><div class="empty">当前分组没有匹配的公司</div></td></tr>') + '</tbody></table></div>' + loadFooter('stocks') + '</div>';
@@ -1000,7 +1007,7 @@
       const tab = homeEntry.dataset.homeTab, target = homeEntry.getAttribute('href').slice(1);
       if (target === 'funds') { state.fundTab = tab; state.poolCategory = 'all'; state.fundFacets.clear(); state.fundSectors.clear(); state.channel = 'all'; state.purchasable = false; loadedCounts.delete('funds'); }
       if (target === 'indices') state.indexTab = tab;
-      if (target === 'stocks') { state.stockTab = tab; state.stockSort = 'default'; }
+      if (target === 'stocks') { state.stockMarket = 'cn'; state.stockTab = tab; state.stockSort = 'default'; }
       if (target === 'strategy') { state.stratPanel = tab; state.stratView = 'results'; }
       if (location.hash === '#' + target) { event.preventDefault(); render(); }
       return;
@@ -1009,6 +1016,7 @@
     $$('.select-menu[open],.column-picker[open]').forEach(menu => { if (menu !== currentMenu) menu.open = false; });
     const button = event.target.closest('[data-action]'); if (!button || button.disabled) return;
     const act = button.dataset.action, val = button.dataset.value, code = button.dataset.code;
+    if (act.startsWith('os-stock-')) { window.ChanghengOverseasStocks.handleAction(button); return; }
     if (act.startsWith('portfolio-')) { window.ChanghengPortfolio.handleAction(button); return; }
     if (['fund-tab', 'fund-facet', 'fund-sector', 'fund-channel', 'fund-reset', 'fund-sort', 'fund-sort-reset', 'screen-reset', 'menu-choice', 'go-index-funds', 'find-index-funds'].includes(act)) loadedCounts.delete('funds');
     if (['cross-type', 'cross-region', 'cross-channel', 'cross-premium', 'cross-reset', 'cross-sort', 'cross-basis'].includes(act)) loadedCounts.delete('cross');
@@ -1028,6 +1036,7 @@
       case 'fund-facet': if (val === 'all') state.fundFacets.clear(); else if (state.fundFacets.has(val)) state.fundFacets.delete(val); else state.fundFacets.add(val); if (state.fundFacets.size && !state.fundFacets.has('sector')) state.fundSectors.clear(); break;
       case 'fund-sector': if (val === 'all') state.fundSectors.clear(); else if (state.fundSectors.has(val)) state.fundSectors.delete(val); else state.fundSectors.add(val); break;
       case 'fund-channel': state.channel = val; break;
+      case 'stock-market': state.stockMarket = val; break;
       case 'stock-boards': state.hideGrowthBoards = !state.hideGrowthBoards; state.stockCategory = 'all'; break;
       case 'annual': state.annual = val === '1'; savePrefs(); break;
       case 'menu-choice':
@@ -1168,6 +1177,7 @@
       if (window.ChanghengPortfolio.handleInput(el)) { clearTimeout(searchTimer); searchTimer = setTimeout(render, 120); }
       return;
     }
+    if (el.id === 'os-stock-search') { window.ChanghengOverseasStocks.handleInput(el); clearTimeout(searchTimer); searchTimer = setTimeout(render, 120); return; }
     if (el.id === 'report-search') { state.reportQuery = el.value; loadedCounts.delete('reports'); clearTimeout(searchTimer); searchTimer = setTimeout(render, 120); return; }
     if (el.id === 'fund-search') { state.query = el.value; loadedCounts.delete('funds'); clearTimeout(searchTimer); searchTimer = setTimeout(renderFundResults, 120); }
     if (el.id === 'overseas-search') { state.overseasQuery = el.value; clearTimeout(searchTimer); searchTimer = setTimeout(render, 120); }
@@ -1182,7 +1192,7 @@
   });
   document.addEventListener('compositionstart', () => clearTimeout(searchTimer));
   document.addEventListener('compositionend', e => {
-    if (e.target.matches('#fund-search,#stock-search,#cross-search,#report-search,#overseas-search,#portfolio-search')) e.target.dispatchEvent(new Event('input', { bubbles: true }));
+    if (e.target.matches('#fund-search,#stock-search,#cross-search,#report-search,#overseas-search,#portfolio-search,#os-stock-search')) e.target.dispatchEvent(new Event('input', { bubbles: true }));
   });
   document.addEventListener('change', e => {
     const el = e.target;

@@ -749,3 +749,16 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-stock-status{grid-column:1;display:flex;align-items:center;justify-content:space-between;gap:8px}
 .portfolio-library-row .portfolio-stock-status span{color:#937043;margin-top:0}
 .portfolio-library-row:has(.portfolio-stock-status)>.portfolio-add{grid-column:2;grid-row:1/3;align-self:center}
+
+/* Market scope sits above the independent research groups. */
+.stock-market-nav{display:flex;align-items:stretch;gap:6px;border-bottom:1px solid var(--line);padding-bottom:16px;margin:0 0 24px}
+.stock-market-choice{display:flex;align-items:baseline;gap:14px;background:transparent;border:1px solid transparent;border-radius:8px;padding:12px 22px;color:var(--muted);cursor:pointer}
+.stock-market-choice strong{font-size:19px;font-weight:600;letter-spacing:.08em}.stock-market-choice span{font-size:12px;font-variant-numeric:tabular-nums}
+.stock-market-choice.active{color:var(--green);background:#edf2ec;border-color:#d8e2d5}.stock-market-choice:hover{background:#f0f2ec}
+.stock-market-context{margin:auto 0 auto auto;color:var(--muted);font-size:12px}
+.overseas-stock-table{min-width:1120px}.overseas-stock-table th,.overseas-stock-table td{padding:18px 20px}.overseas-stock-table th{white-space:nowrap}
+.overseas-stock-table .overseas-company{width:220px;min-width:200px;text-align:left;white-space:normal}.overseas-company strong{display:block;font-size:16px}.overseas-business{display:block;margin-top:6px;color:var(--muted);font-size:12px;line-height:1.6}
+.overseas-stock-table .overseas-reason,.overseas-stock-table .overseas-risk{white-space:normal;text-align:left;min-width:200px;max-width:300px;line-height:1.75;font-size:13px}.overseas-financial-table th:nth-last-child(-n+2){text-align:left}
+.overseas-detail-research{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin:22px 0}.overseas-detail-research h3{font-size:14px;margin:0 0 8px}.overseas-detail-research p{font-size:14px;line-height:1.8;color:var(--muted);margin:0}
+.overseas-method{margin:24px 0 0;border-top:1px solid var(--line);padding-top:18px}.overseas-method summary{cursor:pointer;font-weight:600}.overseas-method p{line-height:1.8;color:var(--muted);font-size:13px}
+@media(max-width:650px){.stock-market-choice{padding:10px 14px;gap:8px}.stock-market-context{display:none}.overseas-detail-research{grid-template-columns:1fr;gap:16px}}

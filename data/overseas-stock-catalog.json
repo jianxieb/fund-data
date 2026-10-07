@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "stocks": [
+    {
+      "symbol": "LITE",
+      "name": "Lumentum",
+      "issuer": "Lumentum Holdings Inc.",
+      "category": "光通信",
+      "business": "光通信器件与激光器",
+      "reason": "关注云数据中心光互连、光模块与高功率激光器需求。",
+      "risk": "客户集中、扩产与订单波动；债转股可能显著影响报表利润与每股收益。",
+      "sourceUrl": "https://investor.lumentum.com/financial-news-releases/news-details/2026/Lumentum-Announces-Fourth-Quarter-and-Full-Fiscal-Year-2026-Results/default.aspx",
+      "market": "us",
+      "currency": "USD",
+      "selection": "requested_watchlist"
+    },
+    {
+      "symbol": "TSM",
+      "name": "台积电",
+      "issuer": "Taiwan Semiconductor Manufacturing Company Limited",
+      "category": "半导体",
+      "business": "先进制程晶圆代工与先进封装",
+      "reason": "关注先进制程、先进封装产能及客户长期制造需求。",
+      "risk": "地缘风险、海外建厂成本、资本开支及客户集中。",
+      "sourceUrl": "https://investor.tsmc.com/english/quarterly-results/2026/q2",
+      "securityType": "ADR · 1份对应5股",
+      "market": "us",
+      "currency": "USD",
+      "selection": "requested_watchlist"
+    },
+    {
+      "symbol": "NVDA",
+      "name": "英伟达",
+      "issuer": "NVIDIA Corporation",
+      "category": "半导体",
+      "business": "AI计算平台、GPU与数据中心网络",
+      "reason": "关注加速计算平台、软件生态与网络产品的协同。",
+      "risk": "大客户资本开支、出口限制、竞争及产品换代带来的交付波动。",
+      "sourceUrl": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-Financial-Results-for-Second-Quarter-Fiscal-2027/",
+      "market": "us",
+      "currency": "USD",
+      "selection": "requested_watchlist"
+    },
+    {
+      "symbol": "MU",
+      "name": "美光科技",
+      "issuer": "Micron Technology, Inc.",
+      "category": "半导体",
+      "business": "DRAM、HBM与NAND存储芯片",
+      "reason": "关注HBM与数据中心存储需求，以及技术与产品组合升级。",
+      "risk": "存储价格和供需具有周期性；高景气期PE低不代表穿越周期后仍便宜。",
+      "sourceUrl": "https://investors.micron.com/news/press-release/2026/Micron-Technology-Inc--Reports-Record-Fiscal-Fourth-Quarter-and-Full-Year-2026-Results/default.aspx",
+      "market": "us",
+      "currency": "USD",
+      "selection": "requested_watchlist"
+    },
+    {
+      "symbol": "TSLA",
+      "name": "特斯拉",
+      "issuer": "Tesla, Inc.",
+      "category": "汽车与能源",
+      "business": "电动车、储能与自动驾驶",
+      "reason": "分别跟踪汽车盈利、储能业务和自动驾驶商业化。",
+      "risk": "汽车竞争与毛利率压力；自动驾驶、机器人等远期预期兑现存在不确定性。",
+      "sourceUrl": "https://ir.tesla.com/",
+      "market": "us",
+      "currency": "USD",
+      "selection": "requested_watchlist"
+    },
+    {
+      "symbol": "SPCX",
+      "name": "SpaceX",
+      "issuer": "Space Exploration Technologies Corp.",
+      "category": "航天与通信",
+      "business": "航天发射、Starlink与AI业务",
+      "reason": "分别观察发射、卫星通信与AI投入的收入和现金流。",
+      "risk": "仍有报表亏损；研发与资本投入较大，合并口径变化影响增长可比性。",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026052535/spcx-20260630.htm",
+      "listingDate": "2026-06-12",
+      "identitySourceUrl": "https://m.nasdaqtrader.com/TraderNews.aspx?id=DTN2026-8",
+      "market": "us",
+      "currency": "USD",
+      "selection": "requested_watchlist"
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+(function (root) {
+  'use strict';
+  const M = root.Changheng;
+  const state = { view: 'financials', category: 'all', query: '', sort: 'default', descending: true };
+  let H;
+  const finite = x => typeof x === 'number' && Number.isFinite(x);
+  const sub = text => '<span class="sub">' + H.esc(text || '') + '</span>';
+  const amount = (n, currency) => finite(n) ? H.money(n / 1e8, 2) + sub('亿' + (currency === 'TWD' ? '新台币' : '美元')) : '—';
+  const growth = g => finite(g?.value) ? H.pc(g.value, 1) + sub(g.label) : H.esc(g?.label || '缺同期数据');
+  const pe = s => finite(s.pe) ? H.money(s.pe, 2) : s.peStatus === 'loss' ? '<span class="negative">亏损</span>' : '缺TTM每股收益';
+  const periodLabel = f => f.dateBasis === 'issuer_report_end' ? f.reportDate : f.period + '季';
+  const identity = s => '<td class="overseas-company"><strong>' + H.action(H.esc(s.n), 'os-stock-detail', 'text-link', 'data-value="' + H.esc(s.symbol) + '"') + '</strong>' + sub(s.symbol + ' · ' + (s.securityType || '美股')) + '<span class="overseas-business">' + H.esc(s.business) + '</span></td>';
+  function rows() {
+    const query = state.query.trim().toLowerCase();
+    const result = (root.OVERSEAS_STOCKS || []).filter(s => (state.category === 'all' || s.category === state.category) && (!query || [s.symbol, s.name, s.issuer, s.category, s.business].join(' ').toLowerCase().includes(query)));
+    const metric = s => state.sort.startsWith('return:') ? s.r[[1, 2, 3, 5, 10].indexOf(+state.sort.split(':')[1])] : state.sort === 'roe' ? s.financials.roeTTM : state.sort === 'revenueGrowth' ? s.financials.revenueGrowth.value : state.sort === 'profitGrowth' ? s.financials.profitGrowth.value : s[state.sort];
+    if (state.sort !== 'default') result.sort((a, b) => M.compareNullable(metric(a), metric(b), state.descending));
+    return result;
+  }
+  function th(label, key) {
+    return '<th aria-sort="' + (state.sort === key ? state.descending ? 'descending' : 'ascending' : 'none') + '">' + (key ? H.action(H.esc(label) + (state.sort === key ? state.descending ? ' ↓' : ' ↑' : ''), 'os-stock-sort', '', 'data-value="' + key + '"') : H.esc(label)) + '</th>';
+  }
+  function view(helpers) {
+    H = helpers;
+    const all = root.OVERSEAS_STOCKS || [], data = rows(), categories = [...new Set(all.map(s => s.category))];
+    const filters = '<div class="stock-category-filter" role="group" aria-label="海外公司行业">' + [['all', '全部行业'], ...categories.map(c => [c, c])].map(([id, name]) => H.action(H.esc(name), 'os-stock-category', 'filter-chip' + (state.category === id ? ' active' : ''), 'data-value="' + H.esc(id) + '" aria-pressed="' + (state.category === id) + '"')).join('') + '</div>';
+    const controls = '<div class="stock-controls"><div class="filters"><input type="search" id="os-stock-search" aria-label="搜索海外公司、代码或业务" placeholder="搜索海外公司、代码或业务" value="' + H.esc(state.query) + '"></div>' + (state.view === 'returns' ? H.returnControls(false) : '') + '</div>';
+    const views = '<div class="segmented stock-view" aria-label="海外个股研究视图">' + [['financials', '财务与理由'], ['valuation', '估值'], ['returns', '收益与风险']].map(([id, label]) => H.action(label, 'os-stock-view', state.view === id ? 'active' : '', 'data-value="' + id + '" aria-pressed="' + (state.view === id) + '"')).join('') + '</div>';
+    let headers, cells;
+    if (state.view === 'financials') {
+      headers = th('ROE / TTM', 'roe') + th('季度营收同比', 'revenueGrowth') + th('季度净利润同比', 'profitGrowth') + th('研究要点') + th('风险');
+      cells = s => { const f = s.financials; return '<td>' + (finite(f.roeTTM) ? H.pc(f.roeTTM, 1) + sub('截至 ' + periodLabel(f)) : '—' + sub(f.roeMissing)) + '</td><td>' + growth(f.revenueGrowth) + sub(periodLabel(f)) + '</td><td>' + growth(f.profitGrowth) + sub('报表净利润') + (f.note && s.symbol === 'LITE' ? H.action('一次性损失', 'os-stock-detail', 'text-link small', 'data-value="LITE"') : '') + '</td><td class="overseas-reason">' + H.esc(s.reason) + '</td><td class="overseas-risk">' + H.esc(s.risk) + '</td>'; };
+    } else if (state.view === 'valuation') {
+      headers = th('收盘价 / 美元', 'price') + th('PE / TTM', 'pe') + th('预测PE', 'peForward') + th('TTM每股收益 / 美元', 'epsTTM') + th('预测每股收益 / 美元', 'epsForward') + th('收盘 / 预测日期');
+      cells = s => '<td>' + H.money(s.price, 2) + '</td><td>' + pe(s) + '</td><td>' + H.money(s.peForward, 2) + sub('分析师年度预期') + '</td><td>' + H.money(s.epsTTM, 2) + '</td><td>' + H.money(s.epsForward, 2) + '</td><td>' + H.esc(s.priceAsOf) + sub('预期采集 ' + s.estimateAsOf) + '</td>';
+    } else {
+      headers = H.periods.map(y => th(H.periodHead(y), 'return:' + y)).join('') + th('上市以来累计', 'sinceListing') + th('近5年内最大回撤', 'mdd5') + th('近5年内波动率', 'vol5') + th('收益截至');
+      cells = s => H.periods.map(y => '<td>' + H.pc(H.ret(s.r[[1, 2, 3, 5, 10].indexOf(y)], y, s)) + (s.r[[1, 2, 3, 5, 10].indexOf(y)] == null ? sub('历史不足' + y + '年') : '') + '</td>').join('') + '<td>' + H.pc(s.sinceListing) + sub(s.first + '起') + '</td><td>' + H.pc(s.mdd5, 1) + (s.risk5.partial ? sub('上市以来') : '') + '</td><td>' + H.pct(s.vol5, 1, false) + (s.risk5.partial ? sub('上市以来') : '') + '</td><td>' + H.esc(s.returnAsOf) + '</td>';
+    }
+    return filters + controls + '<section class="card"><div class="table-caption stock-table-caption"><span><b>' + data.length + '</b> / ' + all.length + '家公司</span>' + views + '</div><div class="table-wrap" tabindex="0" role="region" aria-label="海外个股研究表，可横向滚动"><table class="research-table overseas-stock-table ' + (state.view === 'financials' ? 'overseas-financial-table' : '') + '"><thead><tr><th>公司 / 主营业务</th>' + headers + '</tr></thead><tbody>' + H.lazyRows('overseas-stocks', data, s => '<tr>' + identity(s) + cells(s) + '</tr>') + (!data.length ? '<tr><td colspan="12"><div class="empty">没有匹配的海外公司</div></td></tr>' : '') + '</tbody></table></div>' + H.loadFooter('overseas-stocks') + (state.view === 'returns' ? '<div class="panel-foot"><span>美元 · 含分红再投资 · 未扣个人交易费与税款</span></div>' : state.view === 'valuation' ? '<div class="panel-foot"><span>预测PE随盈利预期变化，口径见公司详情。</span></div>' : '') + '</section>';
+  }
+  function detail(symbol) {
+    const s = (root.OVERSEAS_STOCKS || []).find(r => r.symbol === symbol);
+    if (!s) return;
+    const f = s.financials, c = s.financialCurrency;
+    const sourceLink = (url, label) => '<a href="' + H.esc(url) + '" target="_blank" rel="noopener noreferrer">' + H.esc(label) + ' ↗</a>';
+    const financialRows = Object.values(s.financialHistory.quarterly).sort((a, b) => b.period.localeCompare(a.period));
+    const table = '<div class="table-wrap"><table><thead><tr><th>季度截至</th><th>营收 / 亿' + (c === 'TWD' ? '新台币' : '美元') + '</th><th>净利润</th><th>营业利润</th><th>经营现金流</th></tr></thead><tbody>' + financialRows.map(q => '<tr><td>' + H.esc(periodLabel(q)) + '</td>' + ['TotalRevenue', 'NetIncome', 'TotalOperatingIncomeAsReported', 'OperatingCashFlow'].map(k => '<td>' + (finite(q[k]) ? H.money(q[k] / 1e8, 2) : '—') + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>';
+    H.openModal(H.modalTitle(H.esc(s.name) + ' · ' + s.symbol, H.esc(s.business)) +
+      '<div class="overseas-detail-research"><section><h3>研究要点</h3><p>' + H.esc(s.reason) + '</p></section><section><h3>风险</h3><p>' + H.esc(s.risk) + '</p></section></div>' +
+      (f.note ? '<p class="notice warn">' + H.esc(f.note) + '</p>' : '') +
+      H.detailGrid([['最新财报', H.esc(periodLabel(f))], ['TTM ROE', finite(f.roeTTM) ? H.pct(f.roeTTM, 1) : H.esc(f.roeMissing)], ['本季营收', amount(f.TotalRevenue, c)], ['本季净利润', amount(f.NetIncome, c)], ['营业利润率', H.pct(f.operatingMargin, 1)], ['TTM经营现金流', amount(f.ttmCash, c)], ['PE / TTM', pe(s)], ['预测PE', H.money(s.peForward, 2)], ['股价截至', H.esc(s.priceAsOf)], ['可用行情起点', H.esc(s.first)]]) + table +
+      '<details class="overseas-method"><summary>数据口径与来源</summary><p>本板块为指定公司研究名单；没有自动授予国内“长期优质企业”或“高质成长股”的筛选结论。同比比较同一公司、同一报告币种的对应季度；亏损基数显示扭亏或亏损变化，不制造增长百分比。ROE为连续四季净利润除以期初期末平均净资产。</p><p>PE使用美元上市证券的TTM每股收益与已收盘股价；TSM使用美元ADR口径。预测PE使用接口提供的分析师年度EPS预期，未与国内“本期利润年化”的动态PE混用。尚缺5年、10年逐时点历史EPS，未计算历史PE分位。不同年度的股份稀释会影响单季EPS加总与年度EPS。</p><p>财报按报表口径（美国公司为GAAP、台积电为IFRS）展示；不以Non-GAAP利润代替。标为“季”的历史日期是接口归一化月份。收益含拆分和分红再投资，未扣个人交易费用及税款；SPCX从SpaceX上市首日收盘开始，未使用IPO发行价。</p><div class="actions">' + sourceLink(s.sourceUrl, '公司原始财报') + sourceLink(s.returnSourceUrl, '股价与分红历史') + sourceLink('https://finance.yahoo.com/quote/' + s.symbol + '/financials/', '财报接口对应页面') + sourceLink('https://finance.yahoo.com/quote/' + s.symbol + '/analysis/', '盈利预期') + (s.identitySourceUrl ? sourceLink(s.identitySourceUrl, 'SPCX身份与历史隔离公告') : '') + '</div></details>');
+  }
+  function handleAction(button) {
+    const act = button.dataset.action, value = button.dataset.value;
+    if (act === 'os-stock-detail') { detail(value); return; }
+    if (act === 'os-stock-view') { state.view = value; state.sort = 'default'; state.descending = true; }
+    else if (act === 'os-stock-category') state.category = value;
+    else if (act === 'os-stock-sort') { state.descending = state.sort === value ? !state.descending : true; state.sort = value; }
+    else return;
+    H.resetList(); H.render();
+  }
+  function handleInput(el) { state.query = el.value; H.resetList(); }
+  root.ChanghengOverseasStocks = { view, handleAction, handleInput };
+})(window);

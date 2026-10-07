@@ -177,7 +177,23 @@ var UPDATE_STATUS={
           "seconds": 171.8
         }
       }
+    },
+    "overseas_stocks": {
+      "status": "success",
+      "attemptedAt": "2026-10-07T13:46:36+00:00",
+      "mode": "online",
+      "asOf": "2026-10-06",
+      "records": 6,
+      "message": "发行人、股票类型、币种及上市历史已核对；财报与估值分别标注日期。",
+      "lastOnlineAttempt": {
+        "status": "success",
+        "attemptedAt": "2026-10-07T13:46:36+00:00",
+        "mode": "online",
+        "asOf": "2026-10-06",
+        "records": 6,
+        "message": "发行人、股票类型、币种及上市历史已核对；财报与估值分别标注日期。"
+      }
     }
   },
-  "checkedAt": "2026-10-07T13:27:53+00:00"
+  "checkedAt": "2026-10-07T13:46:36+00:00"
 };

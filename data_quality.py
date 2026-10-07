@@ -20,7 +20,7 @@ def read_snapshot():
     script = """
 const fs=require('fs'),vm=require('vm'),path=require('path');
 const context={}; vm.createContext(context);
-for(const name of ['snapshot.js','strategy-fees.js','indices.js','screening.js','portfolio/catalog.js']) {
+for(const name of ['snapshot.js','strategy-fees.js','indices.js','screening.js','overseas-stocks.js','portfolio/catalog.js']) {
   const file=path.join(process.argv[1],name);
   if(fs.existsSync(file)) vm.runInContext(fs.readFileSync(file,'utf8'),context,{timeout:1000});
 }
@@ -89,6 +89,25 @@ def audit(snapshot, today=None):
         issue(fd, 'duplicate_code', 'error', '海外基金存在重复代码')
     checks.append({'id': 'fund_schema', 'status': 'pass' if not any(i['severity'] == 'error' for i in fd['issues']) else 'fail',
                    'scope': '只检查字段、数值范围、重复代码及日期；不证明收益数值正确'})
+
+    overseas_rows = snapshot.get('OVERSEAS_STOCKS', [])
+    if overseas_rows:
+        od = dataset('overseas_stocks', '海外个股', overseas_rows)
+        for row in overseas_rows:
+            symbol = row.get('symbol')
+            if row.get('currency') != 'USD' or row.get('returnBasis') != 'provider_adjusted_close':
+                issue(od, 'overseas_identity', 'error', '海外个股币种或复权口径不完整', symbol)
+            if symbol == 'SPCX' and row.get('first', '') < '2026-06-12':
+                issue(od, 'ticker_reuse', 'error', 'SPCX混入旧ETF上市历史', symbol)
+            if len(row.get('r') or []) != 5 or any(v is not None and (not finite(v) or v <= -100) for v in row.get('r') or []):
+                issue(od, 'overseas_return', 'error', '海外个股收益窗口无效', symbol)
+            age = age_days(row.get('returnAsOf'), today)
+            if age is None or age > 7:
+                issue(od, 'overseas_stale', 'warning', '海外个股行情超过7日未更新', symbol)
+            elif age < 0:
+                issue(od, 'overseas_future', 'error', '海外个股行情日期在未来', symbol)
+        if len({r.get('symbol') for r in overseas_rows}) != len(overseas_rows):
+            issue(od, 'overseas_duplicate', 'error', '海外个股身份重复')
 
     benchmark_rows = snapshot.get('BM', [])
     bd = dataset('benchmarks', '海外指数与ETF基准', benchmark_rows)
@@ -338,6 +357,7 @@ def audit(snapshot, today=None):
         pd = dataset('portfolio', '组合每日历史', rows)
         expected = ({'fund:' + row['c'] for row in [*funds, *extra]}
                     | {'stock:' + row['c'] for row in snapshot.get('STOCKS') or []}
+                    | {'stock:' + row['symbol'] for row in snapshot.get('OVERSEAS_STOCKS') or []}
                     | {'us:' + row['symbol'] for row in snapshot.get('BM') or [] if row.get('symbol') and row.get('feesEmbedded')})
         actual = [row.get('id') for row in rows]
         if len(actual) != len(set(actual)) or set(actual) != expected:

@@ -30,6 +30,8 @@ def universe():
     script = """
 const fs=require('fs'),vm=require('vm'),M=require('./assets/model.js');
 const s={};vm.createContext(s);vm.runInContext(fs.readFileSync('data/snapshot.js','utf8'),s);
+vm.runInContext(fs.readFileSync('data/overseas-stocks.js','utf8'),s);
+const foreignStocks=(s.OVERSEAS_STOCKS||[]).map(f=>({id:'stock:'+f.symbol,code:f.symbol,name:f.n+' · '+f.symbol,kind:'stock',market:'us',currency:'USD',category:f.business,sourceUrl:f.returnSourceUrl,inception:f.listingDate||f.first}));
 const funds=M.dedupeFunds(s.FUNDS,s.EXTRA).map(f=>({
  id:'fund:'+f.c,code:f.c,name:f.n,kind:f.exchange?'etf':'fund',market:'cn',currency:'CNY',
  category:f.ix||f.asset||'基金',exchange:!!f.exchange,fee:f.fee||null,feesEmbedded:true,
@@ -43,7 +45,7 @@ const us=(s.BM||[]).filter(f=>f.symbol&&f.feesEmbedded).map(f=>({
  market:'us',currency:'USD',category:f.category,style:f.style,leverage:f.leverage,
  expenseRatio:f.expenseRatio,feeAddbackRate:f.feeAddbackRate,feesEmbedded:true,
  sourceUrl:f.sourceUrl,inception:f.inception,distribution:f.distribution}));
-process.stdout.write(JSON.stringify([...us,...stocks,...funds]));
+process.stdout.write(JSON.stringify([...us,...foreignStocks,...stocks,...funds]));
 """
     result = subprocess.run(['node', '-e', script], cwd=ROOT, capture_output=True, text=True, check=True)
     rows = json.loads(result.stdout)
@@ -245,7 +247,12 @@ def build_asset(asset, offline=False, refresh=False):
         if asset['id'].startswith('fund:'):
             values = fund_history(asset, offline, refresh)
         elif asset['id'].startswith('stock:'):
-            values = stock_history(asset, offline, refresh)
+            if asset.get('market') == 'us':
+                from overseas_stocks import stock_history as foreign_stock_history
+                history = foreign_stock_history(asset['code'], offline=True, end=END)
+                values = ([(r['date'], r['adjustedClose']) for r in history['data']], 'provider_adjusted_close', history['source'], None)
+            else:
+                values = stock_history(asset, offline, refresh)
         else:
             values = overseas_history(asset['code'], offline)
         return publish_history(asset, *values)

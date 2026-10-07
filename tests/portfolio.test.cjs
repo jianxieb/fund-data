@@ -263,9 +263,9 @@ test('shipped catalog covers the exact research universe and a real mixed combin
   const fs = require('node:fs'), vm = require('node:vm'), path = require('node:path');
   const root = path.resolve(__dirname, '..'), context = {};
   vm.createContext(context);
-  for (const name of ['data/snapshot.js', 'data/portfolio/catalog.js']) vm.runInContext(fs.readFileSync(path.join(root, name), 'utf8'), context);
+  for (const name of ['data/snapshot.js', 'data/overseas-stocks.js', 'data/portfolio/catalog.js']) vm.runInContext(fs.readFileSync(path.join(root, name), 'utf8'), context);
   const catalog = context.PORTFOLIO_CATALOG;
-  const expected = [...M.dedupeFunds(context.FUNDS, context.EXTRA).map(f => 'fund:' + f.c), ...context.STOCKS.map(s => 'stock:' + s.c),
+  const expected = [...M.dedupeFunds(context.FUNDS, context.EXTRA).map(f => 'fund:' + f.c), ...context.STOCKS.map(s => 'stock:' + s.c), ...context.OVERSEAS_STOCKS.map(s => 'stock:' + s.symbol),
     ...context.BM.filter(b => b.symbol && b.feesEmbedded).map(b => 'us:' + b.symbol)];
   assert.deepEqual([...catalog.assets.map(a => a.id)].sort(), expected.sort());
   const ids = ['us:SPY', 'stock:601138', 'fund:050025'];

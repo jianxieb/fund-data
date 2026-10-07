@@ -54,6 +54,7 @@ jobs:
             .tmp-fhsp
             .tmp-managers
             .tmp-snap/stocks
+            .tmp-snap/overseas-stocks
             .tmp-buy-location
             .tmp-portfolio
           key: research-source-${{ runner.os }}-${{ github.run_id }}
@@ -84,6 +85,7 @@ jobs:
             .tmp-fhsp
             .tmp-managers
             .tmp-snap/stocks
+            .tmp-snap/overseas-stocks
             .tmp-buy-location
             .tmp-portfolio
           key: research-source-${{ runner.os }}-${{ github.run_id }}
@@ -111,7 +113,7 @@ jobs:
         id: commit
         if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || inputs.publish) }}
         run: |
-          if git diff --quiet -- data/snapshot.js data/indices.js data/index-history.json data/screening.js data/fund-actions.json data/crossborder.js data/*validation.json data/verification*.json data/*reconciliation.json data/portfolio; then
+          if git diff --quiet -- data/snapshot.js data/overseas-stocks.js data/indices.js data/index-history.json data/screening.js data/fund-actions.json data/crossborder.js data/*validation.json data/verification*.json data/*reconciliation.json data/portfolio; then
             echo 'No research data or evidence changed; keeping the existing published snapshot.'
             echo 'changed=false' >> "$GITHUB_OUTPUT"
             exit 0
