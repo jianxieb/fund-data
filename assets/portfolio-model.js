@@ -46,6 +46,24 @@
   function weightFromAmount(total, amount) {
     return finite(total) && total > 0 && finite(amount) && amount >= 0 ? amount / total * 100 : NaN;
   }
+  function annualVolatility(values) {
+    const returns = values.slice(1).map((value, i) => value / values[i] - 1);
+    if (returns.length < 2) return null;
+    const mean = sum(returns) / returns.length;
+    return Math.sqrt(sum(returns.map(r => (r - mean) ** 2)) / (returns.length - 1) * 250) * 100;
+  }
+  function holdingPerformance(rows) {
+    const [start, initial] = rows[0], [end, final] = rows.at(-1);
+    let peak = initial, mdd = 0;
+    for (const [, value] of rows) {
+      peak = Math.max(peak, value);
+      mdd = Math.min(mdd, (value / peak - 1) * 100);
+    }
+    return { start, end, totalReturn: (final / initial - 1) * 100,
+      annualReturn: annualReturn(final / initial, start, end), mdd,
+      volatility: annualVolatility(rows.map(row => row[1])), observations: rows.length,
+      currency: 'CNY', dividends: 'reinvested', transactionFeesIncluded: false };
+  }
   function allocation(positions, assets) {
     const byId = new Map(assets.map(a => [a.id, a]));
     const result = { etf: 0, stock: 0, fund: 0, cash: 0, unclassified: 0, total: 0, x2: 0, x3: 0, invalid: false };
@@ -196,9 +214,16 @@
         trade(day, prices, deltas, deltas.map(delta => delta * fee), 'contribution');
       }
     }
-    const curve = [];
+    const curve = [], holdingPaths = series.map(() => []), fxDates = new Set((fx || []).map(row => row[0]));
     for (const day of days) {
       const observations = pricesAt(day), prices = observations.map(p => p.value);
+      series.forEach((s, i) => {
+        // Each asset's risk uses its own observations (plus FX and window endpoints),
+        // never extra zero-return dates introduced by a different holding's calendar.
+        if (s.dates.has(day) || s.asset.currency === 'USD' && fxDates.has(day) || day === start || day === end) {
+          holdingPaths[i].push([day, prices[i]]);
+        }
+      });
       carriedPrices += observations.filter(p => p.carried).length;
       if (observations.some(p => p.fxCarried)) carriedFx++;
       if (day === start) deposit(day, config.initial || config.monthly, prices, true);
@@ -219,15 +244,13 @@
     }
     const final = curve.at(-1), prices = pricesAt(end).map(p => p.value);
     flows.push([end, final.value]);
-    const returns = curve.slice(1).map((p, i) => p.nav / curve[i].nav - 1);
-    const mean = returns.length ? sum(returns) / returns.length : 0;
-    const volatility = returns.length > 1 ? Math.sqrt(sum(returns.map(r => (r - mean) ** 2)) / (returns.length - 1) * 250) * 100 : null;
+    const volatility = annualVolatility(curve.map(p => p.nav));
     const holdings = series.map((s, i) => ({ id: s.asset.id, code: s.asset.code, name: s.asset.name,
       targetWeight: s.weight * 100, actualWeight: final.value ? units[i] * prices[i] / final.value * 100 : 0,
       value: units[i] * prices[i], bought: bought[i], sold: sold[i], transactionCost: costs[i],
       profit: units[i] * prices[i] + sold[i] - bought[i] - costs[i], first: s.rows[0][0], asOf: s.rows.at(-1)[0],
       basis: histories[s.asset.id].basis, currency: s.asset.currency, feeRate: s.feeRate,
-      leveraged: (s.asset.leverage || 1) > 1 }));
+      leveraged: (s.asset.leverage || 1) > 1, performance: holdingPerformance(holdingPaths[i]) }));
     if (Math.abs(sum(holdings.map(h => h.profit)) - final.profit) > Math.max(1e-4, contributed * 1e-10)) fail('组合持仓盈亏未与账户勾稽');
     const annual = [];
     let base = 1, year = curve[0].day.slice(0, 4), from = start;

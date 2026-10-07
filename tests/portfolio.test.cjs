@@ -83,6 +83,52 @@ test('buy and hold uses real paths; monthly rebalance has a different hand-calcu
   assert.equal(balanced.rebalances, 1);
 });
 
+test('holding returns and drawdown follow the asset path, independently of contributions and rebalancing', () => {
+  const input = fixture([{ values: [100, 120, 90] }, { values: [100, 100, 100] }]);
+  const hold = P.simulate(input), metrics = hold.holdings[0].performance;
+  close(metrics.totalReturn, -10); close(metrics.annualReturn, -10); close(metrics.mdd, -25);
+  close(metrics.volatility, Math.sqrt((.45 ** 2 / 2) * 250) * 100);
+  close(hold.holdings[1].performance.volatility, 0);
+  assert.equal(metrics.start, hold.start); assert.equal(metrics.end, hold.end);
+  assert.equal(metrics.currency, 'CNY'); assert.equal(metrics.transactionFeesIncluded, false);
+  assert.ok(hold.mdd > metrics.mdd);
+  Object.assign(input.config, { monthly: 1500, transactionFee: 1, rebalance: 'month' });
+  const changed = P.simulate(input);
+  assert.deepEqual(changed.holdings.map(h => h.performance), hold.holdings.map(h => h.performance));
+  assert.notEqual(changed.holdings[0].profit, hold.holdings[0].profit);
+});
+
+test('holding risk does not acquire zero-return dates from a second market calendar', () => {
+  const alone = fixture([{ values: [100, 120, 90] }]);
+  const mixed = fixture([{ values: [100, 120, 90] },
+    { values: [1, 1, 1, 1], days: [dates[0], '2025-01-31', dates[1], dates[2]] }]);
+  assert.deepEqual(P.simulate(alone).holdings[0].performance, P.simulate(mixed).holdings[0].performance);
+  assert.equal(P.simulate(mixed).curve.length, 4);
+});
+
+test('holding metrics include historical FX once, including exchange-rate changes on local market holidays', () => {
+  const input = fixture([{ currency: 'USD', values: [10, 10], days: [dates[0], dates[2]] }], { fxValues: [7, 8, 6] });
+  const r = P.simulate(input), p = r.holdings[0].performance;
+  close(p.totalReturn, (6 / 7 - 1) * 100); close(p.mdd, -25);
+  close(p.volatility, Math.sqrt(((1 / 7 + .25) ** 2 / 2) * 250) * 100);
+  assert.equal(p.observations, 3);
+  close(p.totalReturn, r.totalReturn);
+});
+
+test('holding returns use the chosen window rather than inception and annualize only beyond a year', () => {
+  const days = [];
+  for (let t = Date.parse('2023-01-02'); t <= Date.parse('2025-01-02'); t += 86400000) days.push(new Date(t).toISOString().slice(0, 10));
+  const input = fixture([{ days, values: days.map((_, i) => 100 * 1.44 ** (i / (days.length - 1))) }]);
+  const full = P.simulate(input).holdings[0].performance;
+  close(full.totalReturn, 44); close(full.mdd, 0);
+  close(full.annualReturn, (1.44 ** (365.2425 / 731) - 1) * 100);
+  Object.assign(input.config, { years: 'custom', start: '2024-12-02', end: '2025-01-02' });
+  const short = P.simulate(input).holdings[0].performance;
+  close(short.totalReturn, (1.44 ** (31 / 731) - 1) * 100);
+  close(short.annualReturn, short.totalReturn);
+  assert.equal(short.start, '2024-12-02');
+});
+
 test('cash is the unallocated weight and excess allocation is rejected', () => {
   const input = fixture([{ values: [1, 2, 3] }]);
   input.config.positions[0].weight = 40;
@@ -135,6 +181,8 @@ test('net histories keep embedded expenses; gross estimates undo fees once by ac
   const input = fixture([{ id: 'us:TEST', name: '费用ETF', feesEmbedded: true, expenseRatio: 2, values: [1, 1, 1] }], { monthly: 500 });
   const net = P.simulate(input);
   close(net.value, 1500); close(net.tradeCost, 0);
+  close(net.holdings[0].performance.totalReturn, 0);
+  close(net.holdings[0].performance.mdd, 0);
   input.config.feeBasis = 'gross_estimate';
   const gross = P.simulate(input), factor = M.annualFeeFactor(2, dates[0], dates[2]), later = M.annualFeeFactor(2, dates[1], dates[2]);
   close(gross.value, 1000 * factor + 500 * later);
@@ -230,4 +278,13 @@ test('shipped catalog covers the exact research universe and a real mixed combin
   close(result.holdings.reduce((s, h) => s + h.value, 0) + result.cash, result.value, .001);
   assert.ok(result.deposits >= 60);
   assert.ok(result.annualReturn > -100 && result.annualReturn < 1000);
+  for (const h of result.holdings) {
+    const rows = histories[h.id].series;
+    const fx = JSON.parse(fs.readFileSync(path.join(root, catalog.fx.historyUrl))).series;
+    const value = day => P.at(rows, day).value * (h.currency === 'USD' ? P.at(fx, day, 7).value : 1);
+    close(h.performance.totalReturn, (value(result.end) / value(result.start) - 1) * 100);
+    assert.equal(h.performance.start, result.start); assert.equal(h.performance.end, result.end);
+    assert.ok(Number.isFinite(h.performance.volatility));
+    assert.ok(h.performance.mdd <= 0 && h.performance.mdd > -100);
+  }
 });
