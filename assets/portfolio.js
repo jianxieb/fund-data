@@ -16,6 +16,7 @@
   const config = () => ({ ...draft, feeBasis: 'net', feeOverrides: {} });
   const signature = () => JSON.stringify(config());
   const asset = id => catalog?.assets.find(a => a.id === id);
+  const inputValue = (value, digits = 8) => M.finite(value) ? String(Number(value.toFixed(digits))) : '';
   const btn = (text, act, cls = 'btn', extra = '') => H.action(text, 'portfolio-' + act, cls, extra);
   const tag = (text, cls = '') => '<span class="badge ' + cls + '">' + H.esc(text) + '</span>';
   function persist() { try { localStorage.setItem(KEY, JSON.stringify(draft)); } catch (_) { H.toast('浏览器未能保存组合，请导出配置'); } }
@@ -87,12 +88,12 @@
     return '<details class="select-menu portfolio-menu"><summary id="portfolio-' + id + '" aria-label="' + H.esc(label + '：' + current[1]) + '"><span>' + H.esc(current[1]) + '</span></summary><div class="select-menu-list" role="group" aria-label="' + H.esc(label) + '">' + options.map(([key, name]) => btn(H.esc(name), 'select', 'select-menu-option' + (String(key) === String(value) ? ' active' : ''), 'data-field="' + id + '" data-value="' + H.esc(key) + '"')).join('') + '</div></details>';
   }
   function number(label, field, value, max, step = 'any', suffix = '') {
-    return '<label class="portfolio-field"><span>' + label + '</span><span class="portfolio-number"><input id="portfolio-' + field + '" type="number" min="0" max="' + max + '" step="' + step + '" value="' + value + '" data-portfolio-field="' + field + '" aria-label="' + label + '">' + (suffix ? '<span>' + suffix + '</span>' : '') + '</span></label>';
+    return '<label class="portfolio-field"><span>' + label + '</span><span class="portfolio-number"><input id="portfolio-' + field + '" type="number" min="0" max="' + max + '" step="' + step + '" value="' + inputValue(value) + '" data-portfolio-field="' + field + '" aria-label="' + label + '">' + (suffix ? '<span>' + suffix + '</span>' : '') + '</span></label>';
   }
   function settings() {
     const benchmark = asset(draft.benchmarkId);
     return '<section class="card portfolio-settings"><div class="portfolio-settings-top"><h2>模拟设置</h2><div class="portfolio-return-controls"><span class="muted">回测区间</span>' + menu('years', '回测区间', [[1, '近1年'], [2, '近2年'], [3, '近3年'], [5, '近5年'], [10, '近10年'], ['common', '共同历史'], ['custom', '自定义区间']], draft.years) + H.annualControl + '</div></div>' +
-      '<div class="portfolio-settings-grid">' + number('初始投入', 'initial', draft.initial, 1e12, 'any', '元') + number('每月追加', 'monthly', draft.monthly, 1e10, 'any', '元') +
+      '<div class="portfolio-settings-grid">' + number('每月追加', 'monthly', draft.monthly, 1e10, 'any', '元') +
       '<div class="portfolio-field"><span>再平衡</span>' + menu('rebalance', '再平衡周期', [['none', '不再平衡'], ['month', '每月'], ['quarter', '每季度'], ['year', '每年']], draft.rebalance) + '</div>' +
       number('买卖交易费率', 'transactionFee', draft.transactionFee, 5, 'any', '%') + '<div class="portfolio-field portfolio-benchmark"><span>对照标的</span>' + btn(H.esc(benchmark?.code || '不设置') + '<span>更换</span>', 'benchmark', 'portfolio-benchmark-button', 'aria-label="更换对照标的"') + '</div></div>' +
       (draft.years === 'custom' ? '<div class="portfolio-dates"><label>开始日<input type="date" id="portfolio-start" data-portfolio-field="start" value="' + H.esc(draft.start) + '"></label><label>结束日<input type="date" id="portfolio-end" data-portfolio-field="end" value="' + H.esc(draft.end) + '"></label></div>' : '') +
@@ -101,8 +102,10 @@
   function holdingRow(position, index) {
     const row = asset(position.id), info = row && M.annualFeeInfo({ ...row, n: row.name }, config().feeOverrides[row.code]);
     return '<div class="portfolio-holding"><div class="portfolio-holding-name"><i style="background:' + colors[index % colors.length] + '"></i><div><strong>' + H.esc(row?.name || position.id) + '</strong><span>' + H.esc(row?.code || '') + ' · ' + H.esc(typeName[row?.kind] || '') + (row?.currency === 'USD' ? ' · 美元资产' : '') + (['star', 'chinext'].includes(row?.board) ? ' · ' + (row.board === 'star' ? '科创板' : '创业板') : '') + '</span>' +
-      (row?.status !== 'available' ? '<span class="fee-missing">' + H.esc(row?.missing || '标的已移出研究对象') + '</span>' : '') + '</div></div><label class="portfolio-weight"><input type="number" min="0" max="100" step="any" value="' + position.weight + '" data-portfolio-weight="' + H.esc(position.id) + '" aria-label="' + H.esc((row?.name || position.id) + '的组合权重') + '"><span>%</span></label>' +
+      (row?.status !== 'available' ? '<span class="fee-missing">' + H.esc(row?.missing || '标的已移出研究对象') + '</span>' : '') + '</div></div>' +
       btn('×', 'remove', 'portfolio-remove', 'data-value="' + H.esc(position.id) + '" aria-label="移除' + H.esc(row?.name || position.id) + '"') +
+      '<div class="portfolio-holding-inputs"><label class="portfolio-field"><span>投入金额</span><span class="portfolio-number"><input type="number" min="0" max="1000000000000" step="0.01" value="' + inputValue(P.amountFromWeight(draft.initial, position.weight), 2) + '" data-portfolio-amount="' + H.esc(position.id) + '" aria-label="' + H.esc((row?.name || position.id) + '的投入金额') + '"' + (draft.initial > 0 ? '' : ' disabled') + '><span>元</span></span></label>' +
+      '<label class="portfolio-field"><span>占比</span><span class="portfolio-number portfolio-weight"><input type="number" min="0" max="100" step="any" value="' + inputValue(position.weight) + '" data-portfolio-weight="' + H.esc(position.id) + '" aria-label="' + H.esc((row?.name || position.id) + '的组合权重') + '"><span>%</span></span></label></div>' +
       (H.feeBasis === 'gross_estimate' && info?.applicable ? '<div class="portfolio-fee-field"><span>' + H.esc(info.rate === null ? info.missing : '估算有效年费') + '</span><label><input type="number" min="0" max="99" step="any" data-portfolio-fee="' + H.esc(row.code) + '" value="' + (draft.feeOverrides[row.code] ?? '') + '" placeholder="' + (info.rate ?? '填写有效费率') + '" aria-label="' + H.esc(row.name + '的估算有效年费') + '"><span>% / 年</span></label></div>' : '') + '</div>';
   }
   function structure(positions) {
@@ -112,10 +115,12 @@
   function allocationMarkup() {
     const total = draft.positions.reduce((s, p) => s + (Number(p.weight) || 0), 0), cash = Math.max(0, 100 - total);
     const bars = draft.positions.filter(p => p.weight > 0).map((p, i) => '<span style="flex:' + p.weight + ';background:' + colors[i % colors.length] + '" title="' + H.esc((asset(p.id)?.name || p.id) + ' ' + p.weight + '%') + '"></span>').join('') + (cash ? '<span style="flex:' + cash + ';background:#e4e7df" title="现金 ' + cash.toFixed(2) + '%"></span>' : '');
-    return '<div class="portfolio-allocation-bar" aria-label="组合权重分布">' + (bars || '<span style="flex:100;background:#e4e7df"></span>') + '</div><div class="portfolio-allocation-total' + (total > 100 + 1e-8 ? ' negative' : '') + '"><strong>标的合计 ' + H.pct(total, 2, false) + '</strong></div><div class="portfolio-structure">' + structure(draft.positions) + '</div>';
+    const balance = P.amountFromWeight(draft.initial, Math.abs(100 - total));
+    const budget = !M.finite(draft.initial) || draft.initial < 0 || draft.initial > 1e12 ? '请输入有效总金额' : draft.initial === 0 ? '仅定投 · 按占比投入' : (total > 100 + 1e-8 ? '超出总额 ' : '现金 ') + H.money(balance, 2) + '元';
+    return '<div class="portfolio-allocation-bar" aria-label="组合权重分布">' + (bars || '<span style="flex:100;background:#e4e7df"></span>') + '</div><div class="portfolio-allocation-total' + (total > 100 + 1e-8 ? ' negative' : '') + '"><strong>标的合计 ' + H.pct(total, 2, false) + '</strong><span>' + budget + '</span></div><div class="portfolio-structure">' + structure(draft.positions) + '</div>';
   }
   function composition() {
-    return H.card('我的组合', draft.positions.length + '只标的', '<div class="portfolio-composition"><div id="portfolio-allocation-summary" aria-live="polite">' + allocationMarkup() + '</div>' +
+    return H.card('我的组合', draft.positions.length + '只标的', '<div class="portfolio-composition"><div class="portfolio-budget">' + number('总投入金额', 'initial', draft.initial, 1e12, '0.01', '元') + '<span>初始投入 · 人民币</span></div><div id="portfolio-allocation-summary" aria-live="polite">' + allocationMarkup() + '</div>' +
       (draft.positions.length ? draft.positions.map(holdingRow).join('') : '<div class="portfolio-empty-holdings"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 8h13v13H8zM27 8h13v13H27zM8 27h13v13H8zM33.5 27v13M27 33.5h13"/></svg><h3>从标的库开始构建</h3><p>ETF、个股和基金可以放在同一个组合中。</p></div>') + '</div>',
       '<div class="actions">' + btn('均分权重', 'equal', 'text-link small', draft.positions.length ? '' : 'disabled') + (draft.positions.length ? btn('清空', 'clear', 'text-link small') : '') + '</div>');
   }
@@ -246,21 +251,35 @@
   }
   function handleInput(el) {
     if (el.id === 'portfolio-search') { query = el.value; H.resetList(); return true; }
-    if (el.dataset.portfolioWeight) {
-      const p = draft.positions.find(p => p.id === el.dataset.portfolioWeight);
-      if (p) p.weight = el.value.trim() ? Number(el.value) : NaN;
+    if (el.dataset.portfolioWeight || el.dataset.portfolioAmount) {
+      const p = draft.positions.find(p => p.id === (el.dataset.portfolioWeight || el.dataset.portfolioAmount));
+      const value = el.value.trim() ? Number(el.value) : NaN;
+      if (p) p.weight = el.dataset.portfolioAmount ? P.weightFromAmount(draft.initial, value) : value;
       touch();
-      const summary = document.getElementById('portfolio-allocation-summary');
-      if (summary) summary.innerHTML = allocationMarkup();
+      syncBudget(el);
       return false;
     }
     if (el.dataset.portfolioField) {
       const key = el.dataset.portfolioField;
       if (['start', 'end'].includes(key)) draft[key] = el.value;
       else draft[key] = el.value.trim() ? Number(el.value) : NaN;
-      touch(); return false;
+      touch();
+      if (key === 'initial') syncBudget(el);
+      return false;
     }
     return false;
+  }
+  function syncBudget(active) {
+    const summary = document.getElementById('portfolio-allocation-summary');
+    if (summary) summary.innerHTML = allocationMarkup();
+    // Keep numeric input nodes intact so editing, caret positions and blur clicks survive.
+    document.querySelectorAll('[data-portfolio-amount], [data-portfolio-weight]').forEach(input => {
+      const p = draft.positions.find(p => p.id === (input.dataset.portfolioAmount || input.dataset.portfolioWeight));
+      if (!p) return;
+      if (input.dataset.portfolioAmount) input.disabled = !(draft.initial > 0);
+      if (input === active) return;
+      input.value = input.dataset.portfolioAmount ? inputValue(P.amountFromWeight(draft.initial, p.weight), 2) : inputValue(p.weight);
+    });
   }
   async function handleChange(el) {
     if (el.id === 'portfolio-import') {
@@ -282,7 +301,7 @@
       else { H.toast('请输入0至99之间的有效年费率'); return; }
       touch(); update(); return;
     }
-    if (el.dataset.portfolioWeight || el.dataset.portfolioField) { handleInput(el); update(); }
+    if (el.dataset.portfolioWeight || el.dataset.portfolioAmount || el.dataset.portfolioField) handleInput(el);
   }
   function showPoint(event) {
     const plot = event.target.closest?.('[data-portfolio-plot]');

@@ -40,6 +40,12 @@
     const years = gap(start, end) / YEAR;
     return finite(ratio) && ratio >= 0 && years > 0 ? (Math.pow(ratio, 1 / Math.max(1, years)) - 1) * 100 : null;
   }
+  function amountFromWeight(total, weight) {
+    return finite(total) && total >= 0 && finite(weight) && weight >= 0 ? total * weight / 100 : NaN;
+  }
+  function weightFromAmount(total, amount) {
+    return finite(total) && total > 0 && finite(amount) && amount >= 0 ? amount / total * 100 : NaN;
+  }
   function allocation(positions, assets) {
     const byId = new Map(assets.map(a => [a.id, a]));
     const result = { etf: 0, stock: 0, fund: 0, cash: 0, unclassified: 0, total: 0, x2: 0, x3: 0, invalid: false };
@@ -278,5 +284,5 @@
     }
     return config;
   }
-  return { simulate, simulateWindows, validateHistory, validateConfig, sanitizeDraft, allocation, at, annualReturn, addYears };
+  return { simulate, simulateWindows, validateHistory, validateConfig, sanitizeDraft, allocation, amountFromWeight, weightFromAmount, at, annualReturn, addYears };
 });

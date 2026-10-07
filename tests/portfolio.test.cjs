@@ -19,6 +19,32 @@ function fixture(specs, options = {}) {
 }
 const close = (actual, expected, tolerance = 1e-7) => assert.ok(Math.abs(actual - expected) < tolerance, `${actual} != ${expected}`);
 
+test('investment amounts translate to weights and the same initial funding in the simulation', () => {
+  const input = fixture([{ values: [1, 1, 1] }], { initial: 100000 });
+  input.config.positions[0].weight = P.weightFromAmount(100000, 30000);
+  close(input.config.positions[0].weight, 30);
+  const first = P.simulate(input);
+  close(first.holdings[0].bought, 30000); close(first.cash, 70000);
+  input.config.initial = 200000;
+  close(P.amountFromWeight(input.config.initial, input.config.positions[0].weight), 60000);
+  input.config.positions[0].weight = P.weightFromAmount(input.config.initial, 30000);
+  close(input.config.positions[0].weight, 15);
+  close(P.simulate(input).holdings[0].bought, 30000);
+  const amount = 30000.01, total = 123456.78;
+  close(P.amountFromWeight(total, P.weightFromAmount(total, amount)), amount);
+});
+
+test('amount conversion leaves overspending visible and does not divide by a zero or invalid budget', () => {
+  const input = fixture([{ values: [1, 1, 1] }], { initial: 100000 });
+  input.config.positions[0].weight = P.weightFromAmount(100000, 110000);
+  close(input.config.positions[0].weight, 110);
+  assert.match(P.simulate(input).error, /权重/);
+  for (const total of [0, -1, NaN, null]) assert.ok(Number.isNaN(P.weightFromAmount(total, 30000)));
+  for (const amount of [-1, NaN, null]) assert.ok(Number.isNaN(P.weightFromAmount(100000, amount)));
+  close(P.amountFromWeight(0, 30), 0);
+  assert.ok(Number.isNaN(P.amountFromWeight(NaN, 30)));
+});
+
 test('portfolio structure counts weights and treats 2x/3x as ETF subsets', () => {
   const assets = [{ id: 'e2', kind: 'etf', leverage: 2 }, { id: 'e3', kind: 'etf', leverage: 3 },
     { id: 'e1', kind: 'etf' }, { id: 's', kind: 'stock', leverage: 2 }, { id: 'f', kind: 'fund' }];
