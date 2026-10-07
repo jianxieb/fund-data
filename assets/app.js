@@ -495,10 +495,10 @@
     return money(s.peDynamic, 2) + '<span class="sub">' + (M.finite(s.peDynamic) ? esc(reportLabel({ reportDate: s.peDynamicBasis?.reportDate })) + '利润年化' : s.peDynamicBasis?.status === 'loss' ? '本期亏损' : '缺当期利润或市值') + '</span>';
   }
   function stockMarkets() {
-    return '<div class="stock-market-nav" role="group" aria-label="个股市场">' + [['cn', '国内', (window.STOCKS || []).length], ['us', '海外', (window.OVERSEAS_STOCKS || []).length]].map(([id, label, count]) => action('<strong>' + label + '</strong><span>' + count + '家公司</span>', 'stock-market', 'stock-market-choice' + (state.stockMarket === id ? ' active' : ''), 'data-value="' + id + '" aria-pressed="' + (state.stockMarket === id) + '"')).join('') + '<span class="stock-market-context">' + (state.stockMarket === 'cn' ? 'A股 · 人民币' : '美股与ADR · 美元') + '</span></div>';
+    return '<div class="stock-market-nav" role="group" aria-label="个股市场">' + [['cn', 'A股', (window.STOCKS || []).length], ['us', '美股', (window.OVERSEAS_STOCKS || []).length]].map(([id, label, count]) => action('<strong>' + label + '</strong><span>' + count + '家公司</span>', 'stock-market', 'stock-market-choice' + (state.stockMarket === id ? ' active' : ''), 'data-value="' + id + '" aria-pressed="' + (state.stockMarket === id) + '"')).join('') + '<span class="stock-market-context">' + (state.stockMarket === 'cn' ? 'A股 · 人民币' : '美股与ADR · 美元') + '</span></div>';
   }
   function stocks() {
-    if (state.stockMarket === 'us') return head('GLOBAL COMPANY RESEARCH', '个股深入', '从业务、盈利和估值，理解公司的长期价值。', '<a class="btn sm" href="#reports">研究报告</a>') + stockMarkets() + window.ChanghengOverseasStocks.view({
+    if (state.stockMarket === 'us') return head('US COMPANY RESEARCH', '个股深入', '从业务、盈利和估值，理解公司的长期价值。', '<a class="btn sm" href="#reports">研究报告</a>' + action('入选标准', 'os-stock-rules', 'btn sm')) + stockMarkets() + window.ChanghengOverseasStocks.view({
       esc, money, pct, pc, action, modalTitle, openModal, detailGrid, render, lazyRows, loadFooter,
       periods: state.periods, periodHead, ret, returnControls, resetList: () => loadedCounts.delete('overseas-stocks')
     });
@@ -993,7 +993,7 @@
     if (hash === 'main') { $('#main').focus(); return; }
     if (hash === 'us') { state.fundTab = 'all'; state.poolCategory = 'overseas'; }
     if (hash === 'cn') state.fundTab = 'equity';
-    const reportMatch = hash.match(/^stock-report\/(\d{6}|[A-Z]{1,6})$/);
+    const reportMatch = hash.match(/^stock-report\/(\d{6}|[A-Z]{1,6}(?:-[A-Z])?)$/);
     if (reportMatch) state.stockMarket = /^[A-Z]/.test(reportMatch[1]) ? 'us' : 'cn';
     state.reportCode = reportMatch ? reportMatch[1] : null;
     state.route = reportMatch ? 'reports' : titles[hash] ? hash : legacy[hash] || 'overview';
