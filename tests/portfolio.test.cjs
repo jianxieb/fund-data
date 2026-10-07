@@ -91,18 +91,19 @@ test('buy and hold uses real paths; monthly rebalance has a different hand-calcu
   assert.equal(balanced.rebalances, 1);
 });
 
-test('holding returns and drawdown follow the asset path, independently of contributions and rebalancing', () => {
+test('holding returns use actual investment amounts and trade fees', () => {
   const input = fixture([{ values: [100, 120, 90] }, { values: [100, 100, 100] }]);
   const hold = P.simulate(input), metrics = hold.holdings[0].performance;
   close(metrics.totalReturn, -10); close(metrics.annualReturn, -10); close(metrics.mdd, -25);
   close(metrics.volatility, Math.sqrt((.45 ** 2 / 2) * 250) * 100);
   close(hold.holdings[1].performance.volatility, 0);
   assert.equal(metrics.start, hold.start); assert.equal(metrics.end, hold.end);
-  assert.equal(metrics.currency, 'CNY'); assert.equal(metrics.transactionFeesIncluded, false);
+  assert.equal(metrics.currency, 'CNY'); assert.equal(metrics.transactionFeesIncluded, true);
   assert.ok(hold.mdd > metrics.mdd);
   Object.assign(input.config, { monthly: 1500, transactionFee: 1, rebalance: 'month' });
   const changed = P.simulate(input);
-  assert.deepEqual(changed.holdings.map(h => h.performance), hold.holdings.map(h => h.performance));
+  assert.notEqual(changed.holdings[0].performance.totalReturn, metrics.totalReturn);
+  assert.ok(changed.holdings[0].performance.mdd <= metrics.mdd);
   assert.notEqual(changed.holdings[0].profit, hold.holdings[0].profit);
 });
 
@@ -110,8 +111,39 @@ test('holding risk does not acquire zero-return dates from a second market calen
   const alone = fixture([{ values: [100, 120, 90] }]);
   const mixed = fixture([{ values: [100, 120, 90] },
     { values: [1, 1, 1, 1], days: [dates[0], '2025-01-31', dates[1], dates[2]] }]);
-  assert.deepEqual(P.simulate(alone).holdings[0].performance, P.simulate(mixed).holdings[0].performance);
+  const a = P.simulate(alone).holdings[0].performance, b = P.simulate(mixed).holdings[0].performance;
+  for (const key of ['mdd', 'volatility', 'observations', 'totalReturn', 'annualReturn']) close(a[key], b[key]);
   assert.equal(P.simulate(mixed).curve.length, 4);
+});
+
+test('buying later changes holding ROI and the first-year result is not annualized', () => {
+  const input = fixture([{ values: [1, 2, 3] }], { monthly: 1000 });
+  const p = P.simulate(input).holdings[0].performance;
+  close(p.invested, 2000); close(p.profit, 2500); close(p.totalReturn, 125);
+  close(p.annualReturn, 125); assert.equal(p.annualBasis, 'under_one_year_total_return');
+  input.config.transactionFee = 1;
+  const fee = P.simulate(input).holdings[0].performance;
+  close(fee.invested, 2000); close(fee.profit, 4500 / 1.01 - 2000);
+  close(fee.totalReturn, (4500 / 1.01 / 2000 - 1) * 100);
+  close(fee.mdd, (1 / 1.01 - 1) * 100);
+});
+
+test('rebalance sales enter the holding return rather than a buy-and-hold price ratio', () => {
+  const input = fixture([{ values: [1, 2, 1] }, { values: [1, 1, 2] }], { rebalance: 'month' });
+  const [a, b] = P.simulate(input).holdings;
+  close(a.performance.invested, 500); close(a.performance.returned, 250);
+  close(a.value, 375); close(a.performance.profit, 125); close(a.performance.totalReturn, 25);
+  close(b.performance.invested, 750); close(b.performance.totalReturn, 100);
+});
+
+test('holding annual return solves dated flows and declines multiple-root cash flows', () => {
+  const days = [];
+  for (let t = Date.parse('2021-01-01'); t <= Date.parse('2025-01-01'); t += 86400000) days.push(new Date(t).toISOString().slice(0, 10));
+  const input = fixture([{ days, values: days.map((_, i) => 100 * 1.1 ** (i / 365.2425)) }], { monthly: 100 });
+  const p = P.simulate(input).holdings[0].performance;
+  close(p.annualReturn, 10); assert.equal(p.annualBasis, 'money_weighted_xirr');
+  assert.ok(p.totalReturn < 40);
+  assert.equal(P.holdingXirr([['2021-01-01', -100], ['2022-01-01', 230], ['2023-01-01', -132]]), null);
 });
 
 test('holding metrics include historical FX once, including exchange-rate changes on local market holidays', () => {
@@ -287,10 +319,15 @@ test('shipped catalog covers the exact research universe and a real mixed combin
   assert.ok(result.deposits >= 60);
   assert.ok(result.annualReturn > -100 && result.annualReturn < 1000);
   for (const h of result.holdings) {
-    const rows = histories[h.id].series;
-    const fx = JSON.parse(fs.readFileSync(path.join(root, catalog.fx.historyUrl))).series;
-    const value = day => P.at(rows, day).value * (h.currency === 'USD' ? P.at(fx, day, 7).value : 1);
-    close(h.performance.totalReturn, (value(result.end) / value(result.start) - 1) * 100);
+    const trades = result.transactions.filter(t => t.id === h.id);
+    const invested = trades.filter(t => t.side === 'buy').reduce((sum, t) => sum + t.amount + t.fee, 0);
+    const returned = trades.filter(t => t.side === 'sell').reduce((sum, t) => sum + t.amount - t.fee, 0);
+    close(h.performance.totalReturn, (h.value + returned - invested) / invested * 100);
+    close(h.performance.profit, h.profit);
+    if (h.performance.annualReturn !== null) {
+      const npv = h.performance.flows.reduce((sum, [day, amount]) => sum + amount / (1 + h.performance.annualReturn / 100) ** ((Date.parse(day) - Date.parse(result.start)) / 86400000 / 365.2425), 0);
+      close(npv, 0, .001);
+    }
     assert.equal(h.performance.start, result.start); assert.equal(h.performance.end, result.end);
     assert.ok(Number.isFinite(h.performance.volatility));
     assert.ok(h.performance.mdd <= 0 && h.performance.mdd > -100);

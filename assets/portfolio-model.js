@@ -52,17 +52,57 @@
     const mean = sum(returns) / returns.length;
     return Math.sqrt(sum(returns.map(r => (r - mean) ** 2)) / (returns.length - 1) * 250) * 100;
   }
-  function holdingPerformance(rows) {
-    const [start, initial] = rows[0], [end, final] = rows.at(-1);
-    let peak = initial, mdd = 0;
+  function holdingXirr(flows) {
+    const byDay = new Map();
+    flows.forEach(([day, amount]) => byDay.set(day, (byDay.get(day) || 0) + amount));
+    const entries = [...byDay].sort(([a], [b]) => a.localeCompare(b)).filter(([, amount]) => Math.abs(amount) > EPS);
+    if (!entries.some(([, a]) => a < 0) || !entries.some(([, a]) => a > 0)) return null;
+    const terms = entries.map(([day, amount]) => [gap(entries[0][0], day) / YEAR, amount]);
+    // Rebalancing can produce several cash-flow sign changes. Search for distinct
+    // roots in log(1 + rate), rather than assuming the NPV is monotone.
+    const npv = logRate => {
+      const scale = Math.max(...terms.map(([years]) => -years * logRate));
+      return sum(terms.map(([years, amount]) => amount * Math.exp(-years * logRate - scale)));
+    };
+    const roots = [], limit = Math.log(1e8), steps = 512;
+    let a = -limit, fa = npv(a);
+    for (let i = 1; i <= steps; i++) {
+      const b = -limit + 2 * limit * i / steps, fb = npv(b);
+      if (fa === 0) roots.push(a);
+      else if (fa * fb < 0) {
+        let low = a, high = b, flow = fa;
+        for (let j = 0; j < 70; j++) {
+          const mid = (low + high) / 2, fm = npv(mid);
+          if (flow * fm <= 0) high = mid; else { low = mid; flow = fm; }
+        }
+        roots.push((low + high) / 2);
+      }
+      a = b; fa = fb;
+    }
+    const distinct = roots.filter((r, i) => !i || Math.abs(r - roots[i - 1]) > 1e-7);
+    return distinct.length === 1 ? Math.expm1(distinct[0]) * 100 : null;
+  }
+  function holdingPerformance(rows, trades, terminalValue) {
+    const start = trades.find(t => t.side === 'buy')?.day, end = rows.at(-1)[0];
+    const invested = sum(trades.filter(t => t.side === 'buy').map(t => t.amount + t.fee));
+    const returned = sum(trades.filter(t => t.side === 'sell').map(t => t.amount - t.fee));
+    const profit = terminalValue + returned - invested;
+    const totalReturn = invested > 0 ? profit / invested * 100 : null;
+    const flows = trades.map(t => [t.day, t.side === 'buy' ? -(t.amount + t.fee) : t.amount - t.fee]);
+    flows.push([end, terminalValue]);
+    const short = gap(start, end) < YEAR;
+    const annual = short ? totalReturn : holdingXirr(flows);
+    let peak = 1, mdd = 0;
     for (const [, value] of rows) {
       peak = Math.max(peak, value);
       mdd = Math.min(mdd, (value / peak - 1) * 100);
     }
-    return { start, end, totalReturn: (final / initial - 1) * 100,
-      annualReturn: annualReturn(final / initial, start, end), mdd,
+    return { start, end, totalReturn, annualReturn: annual, mdd, invested, returned, profit, flows,
+      annualBasis: short ? 'under_one_year_total_return' : 'money_weighted_xirr',
+      annualMissing: annual === null ? '资金流未找到唯一年化解' : null,
       volatility: annualVolatility(rows.map(row => row[1])), observations: rows.length,
-      currency: 'CNY', dividends: 'reinvested', transactionFeesIncluded: false };
+      currency: 'CNY', dividends: 'reinvested', transactionFeesIncluded: true,
+      riskBasis: 'actual_holding_flow_adjusted_nav' };
   }
   function allocation(positions, assets) {
     const byId = new Map(assets.map(a => [a.id, a]));
@@ -166,6 +206,7 @@
         carried: observation.carried, fxCarried: !!quote?.carried };
     });
     const units = series.map(() => 0), bought = series.map(() => 0), sold = series.map(() => 0), costs = series.map(() => 0);
+    const holdingNav = series.map(() => 1);
     const fee = config.transactionFee / 100, transactions = [], flows = [];
     let cash = 0, contributed = 0, fundUnits = 0, tradeCost = 0, rebalances = 0, deposits = 0;
     let lastMonth = start.slice(0, 7), lastBalance = periodKey(start, config.rebalance), peak = 1, mdd = 0;
@@ -174,6 +215,8 @@
     const trade = (day, prices, deltas, fees, reason) => {
       deltas.forEach((delta, i) => {
         if (Math.abs(delta) > EPS) {
+          const before = units[i] * prices[i];
+          holdingNav[i] *= delta > 0 ? (before + delta) / (before + delta + fees[i]) : (before - fees[i]) / before;
           units[i] += delta / prices[i];
           if (delta > 0) bought[i] += delta; else sold[i] -= delta;
           costs[i] += fees[i];
@@ -215,15 +258,13 @@
       }
     }
     const curve = [], holdingPaths = series.map(() => []), fxDates = new Set((fx || []).map(row => row[0]));
+    let lastPrices = null;
     for (const day of days) {
       const observations = pricesAt(day), prices = observations.map(p => p.value);
       series.forEach((s, i) => {
-        // Each asset's risk uses its own observations (plus FX and window endpoints),
-        // never extra zero-return dates introduced by a different holding's calendar.
-        if (s.dates.has(day) || s.asset.currency === 'USD' && fxDates.has(day) || day === start || day === end) {
-          holdingPaths[i].push([day, prices[i]]);
-        }
+        if (lastPrices && units[i] > EPS) holdingNav[i] *= prices[i] / lastPrices[i];
       });
+      const tradesBefore = transactions.length;
       carriedPrices += observations.filter(p => p.carried).length;
       if (observations.some(p => p.fxCarried)) carriedFx++;
       if (day === start) deposit(day, config.initial || config.monthly, prices, true);
@@ -237,6 +278,13 @@
           rebalance(day, prices, 'rebalance'); lastBalance = balance;
         }
       }
+      const traded = new Set(transactions.slice(tradesBefore).map(t => t.id));
+      series.forEach((s, i) => {
+        // Risk observes actual exposure and trade fees; external cash transfers
+        // do not create gains or drawdowns. Extra foreign-market dates add no zeros.
+        if (s.dates.has(day) || s.asset.currency === 'USD' && fxDates.has(day) || traded.has(s.asset.id) || day === start || day === end) holdingPaths[i].push([day, holdingNav[i]]);
+      });
+      lastPrices = prices;
       const account = value(prices), nav = account / fundUnits;
       peak = Math.max(peak, nav); mdd = Math.min(mdd, (nav / peak - 1) * 100);
       curve.push({ day, value: account, contributed, profit: account - contributed, nav, totalReturn: (nav - 1) * 100,
@@ -250,7 +298,8 @@
       value: units[i] * prices[i], bought: bought[i], sold: sold[i], transactionCost: costs[i],
       profit: units[i] * prices[i] + sold[i] - bought[i] - costs[i], first: s.rows[0][0], asOf: s.rows.at(-1)[0],
       basis: histories[s.asset.id].basis, currency: s.asset.currency, feeRate: s.feeRate,
-      leveraged: (s.asset.leverage || 1) > 1, performance: holdingPerformance(holdingPaths[i]) }));
+      leveraged: (s.asset.leverage || 1) > 1,
+      performance: holdingPerformance(holdingPaths[i], transactions.filter(t => t.id === s.asset.id), units[i] * prices[i]) }));
     if (Math.abs(sum(holdings.map(h => h.profit)) - final.profit) > Math.max(1e-4, contributed * 1e-10)) fail('组合持仓盈亏未与账户勾稽');
     const annual = [];
     let base = 1, year = curve[0].day.slice(0, 4), from = start;
@@ -307,5 +356,5 @@
     }
     return config;
   }
-  return { simulate, simulateWindows, validateHistory, validateConfig, sanitizeDraft, allocation, amountFromWeight, weightFromAmount, at, annualReturn, addYears };
+  return { simulate, simulateWindows, validateHistory, validateConfig, sanitizeDraft, allocation, amountFromWeight, weightFromAmount, at, annualReturn, holdingXirr, addYears };
 });
