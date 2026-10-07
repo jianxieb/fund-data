@@ -63,13 +63,14 @@ BM_DEFS = [
     ('纳斯达克综合指数', '指数·价格', ['100.COMPX', '100.IXIC'], '价格口径', 0),
     ('纳斯达克100指数', '指数·价格', ['100.NDX'], '价格口径', 0),
     ('QQQ', '美股ETF', ['105.QQQ'], '纳指100ETF，前复权含分红', 1),
+    ('QQQM', '美股ETF', ['105.QQQM', '106.QQQM', '107.QQQM'], '纳指100低费率ETF，使用自身含分红历史', 1),
     ('QLD', '美股ETF·2倍做多', ['105.QLD', '106.QLD', '107.QLD'], '纳指100两倍做多ETF，前复权含分红；每日再平衡', 1),
     ('TQQQ', '美股ETF·3倍做多', ['105.TQQQ', '106.TQQQ', '107.TQQQ'], '纳指100三倍做多ETF，前复权含分红；每日再平衡', 1),
 ]
 # Product identities and expense evidence are shared with the strategy engine.
 BM_DEFS.extend((symbol, '海外ETF', ['105.' + symbol, '106.' + symbol, '107.' + symbol],
                 product['description'], 1) for symbol, product in ETFS.items()
-               if product['section'] == 'other')
+               if symbol not in {row[0] for row in BM_DEFS})
 FX_SECIDS = ['133.USDCNY', '119.USDCNY']  # CNY 与 CNH 不互换
 
 
