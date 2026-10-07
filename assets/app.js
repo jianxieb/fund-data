@@ -3,9 +3,16 @@
   const M = window.Changheng;
   const $ = s => document.querySelector(s);
   const $$ = s => [...document.querySelectorAll(s)];
-  document.documentElement.dataset.inputMode = 'pointer';
-  document.addEventListener('pointerdown', () => { document.documentElement.dataset.inputMode = 'pointer'; }, true);
-  document.addEventListener('keydown', () => { document.documentElement.dataset.inputMode = 'keyboard'; }, true);
+  function setInputMode(mode) {
+    document.documentElement.dataset.inputMode = mode;
+    document.body.classList.toggle('keyboard-navigation', mode === 'keyboard');
+  }
+  setInputMode('pointer');
+  ['pointerdown', 'mousedown', 'touchstart'].forEach(type => document.addEventListener(type, () => setInputMode('pointer'), { capture: true, passive: true }));
+  document.addEventListener('click', event => { if (event.detail > 0) setInputMode('pointer'); }, true);
+  document.addEventListener('keydown', event => {
+    if (['Tab', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) setInputMode('keyboard');
+  }, true);
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const money = (v, dec = 0) => M.finite(v) ? v.toLocaleString('zh-CN', { minimumFractionDigits: dec, maximumFractionDigits: dec }) : '—';
   const pct = (v, digits = 2, signed = true) => M.finite(v) ? (signed && v > 0 ? '+' : '') + v.toFixed(digits) + '%' : '—';
@@ -1234,9 +1241,7 @@
     if (tooltip) tooltip.hidden = true;
   });
   $('#dialog').addEventListener('close', () => { if (lastFocus && lastFocus.isConnected) lastFocus.focus(); else restoreFocus(lastFocus); });
-  document.addEventListener('pointerdown', () => document.body.classList.remove('keyboard-navigation'));
   document.addEventListener('keydown', e => {
-    if (e.key === 'Tab') document.body.classList.add('keyboard-navigation');
     if (e.key === 'Escape') {
       const menu = e.target.closest('.select-menu[open],.column-picker[open]') || $('.select-menu[open],.column-picker[open]');
       if (menu) { menu.open = false; menu.querySelector('summary').focus(); e.preventDefault(); return; }

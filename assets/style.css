@@ -592,6 +592,8 @@ body.keyboard-navigation input[type=search]:focus-visible{outline:2px solid #9ab
 
 /* Pointer clicks keep the selected state; keyboard navigation keeps a focus ring. */
 html[data-input-mode=pointer] :is(button,a,input,select,summary):focus-visible{outline:none}
+.sidebar a:focus{outline:none}
+html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
 
 /* Portfolio research */
 .home-secondary>:last-child:nth-child(3){grid-column:1/-1}
