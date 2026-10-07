@@ -440,7 +440,8 @@
       "financialCurrency": "USD",
       "accountingStandard": "us-gaap",
       "accountingModel": "bank",
-      "coverageBasis": "重要蓝筹，保留独立研究；分类仍按当期财务与经营证据判断"
+      "coverageBasis": "重要蓝筹，保留独立研究；分类仍按当期财务与经营证据判断",
+      "revenueLabel": "净利息及非利息收入"
     },
     {
       "symbol": "BRK-B",
@@ -614,7 +615,8 @@
       "financialCurrency": "USD",
       "accountingStandard": "us-gaap",
       "accountingModel": "corporate",
-      "coverageBasis": "重要蓝筹，保留独立研究；分类仍按当期财务与经营证据判断"
+      "coverageBasis": "重要蓝筹，保留独立研究；分类仍按当期财务与经营证据判断",
+      "revenueLabel": "收入及其他收益"
     },
     {
       "symbol": "NEE",

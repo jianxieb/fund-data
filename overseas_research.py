@@ -59,6 +59,7 @@ def report_for(s):
     from us_stock_groups import LABELS
     f, a, r = s['financials'], s['analysis'], s['research']
     c = '亿新台币' if s['financialCurrency'] == 'TWD' else '亿美元'
+    revenue = s.get('revenueLabel', '营收')
     g = lambda v: fmt(v.get('value'), '%') if finite(v.get('value')) else v.get('label') or v.get('reason') or '—'
     period = lambda q: q['reportDate'] if q.get('dateBasis') == 'issuer_report_end' else q['period'] + '季'
     def pe_value(key):
@@ -71,7 +72,7 @@ def report_for(s):
     def add(id, title, **values):
         sections.append({'id': id, 'title': title, **values})
     add('thesis', '核心判断', paragraphs=[r['summary'],
-        '最新单季营收同比' + g(f['revenueGrowth']) + '，净利润同比' + g(f['profitGrowth']) + '；TTM ROE ' + fmt(f.get('roeTTM'), '%') + '，营业利润率' + fmt(f.get('operatingMargin'), '%') + '。'],
+        '最新单季' + revenue + '同比' + g(f['revenueGrowth']) + '，净利润同比' + g(f['profitGrowth']) + '；TTM ROE ' + fmt(f.get('roeTTM'), '%') + '，营业利润率' + fmt(f.get('operatingMargin'), '%') + '。'],
         links=[{'label': '对应公司原始财报', 'url': f['sourceUrl']}])
     add('business', '业务与竞争力', bullets=r['thesis'])
     screening = s['screening']
@@ -93,13 +94,13 @@ def report_for(s):
             for e in operating['evidence']]},
         links=[{'label':source['label'],'url':source['url']} for source in r['sources']])
     add('quarterly', '最新季度与盈利变化', paragraphs=[f.get('note') or '单季数据与年度数据分开。同比使用同一币种的上年同期；负基数不计算具有误导性的增长百分比。'],
-        table={'headers': ['财季截至', '营收 / ' + c, '报表净利润 / ' + c, '营业利润 / ' + c, '经营现金流 / ' + c],
+        table={'headers': ['财季截至', revenue + ' / ' + c, '报表净利润 / ' + c, '营业利润 / ' + c, '经营现金流 / ' + c],
             'rows': [[period(q)] + [fmt(q.get(k), scale=1e8) for k in ['TotalRevenue', 'NetIncome', 'TotalOperatingIncomeAsReported', 'OperatingCashFlow']] for q in sorted(s['financialHistory']['quarterly'].values(), key=lambda x: x['period'], reverse=True)]})
     add('annual', '年度财务与增长持续性', paragraphs=[
-        '三年营收复合增长：' + g(a['revenueCagr3']) + '；三年报表利润复合增长：' + g(a['profitCagr3']) + '。',
+        '三年' + revenue + '复合增长：' + g(a['revenueCagr3']) + '；三年报表利润复合增长：' + g(a['profitCagr3']) + '。',
         '最近三个完整财年平均ROE：' + fmt(a['roe3'], '%') + '；使用各年利润除以该年期初期末平均净资产，不能替代当前TTM。',
         '已收录年度中的亏损期：' + ('、'.join(a['lossYears']) or '无') + '。未收录年度不能据此推断。'],
-        table={'headers': ['财年截至', '营收 / ' + c, '营收同比', '净利润 / ' + c, '利润同比', '经营现金流 / ' + c, 'ROE'],
+        table={'headers': ['财年截至', revenue + ' / ' + c, revenue + '同比', '净利润 / ' + c, '利润同比', '经营现金流 / ' + c, 'ROE'],
             'rows': [[q['reportDate'] if q.get('dateBasis') == 'issuer_report_end' else q['period'], fmt(q.get('TotalRevenue'), scale=1e8), fmt(q['revenueGrowth'], '%'), fmt(q.get('NetIncome'), scale=1e8), fmt(q['profitGrowth'], '%'), fmt(q.get('OperatingCashFlow'), scale=1e8), fmt(q['roe'], '%')] for q in reversed(a['annual'])]})
     cash_note = 'TTM利润非正或连续季度不足，不计算现金流/净利润倍数。' if a['cashConversion'] is None else ('现金回收暂低于同期利润，应继续核对营运资金、税款和非现金项目。' if a['cashConversion'] < 1 else '经营现金流覆盖同期利润；仍需扣除资本支出后才能判断自由现金流。')
     if s.get('accountingModel') in ('bank', 'financial', 'holding'):
@@ -109,10 +110,10 @@ def report_for(s):
     add('quality', '盈利质量与现金回收', paragraphs=[cash_note,
         '报表利润保留一次性项目。Non-GAAP调整口径因公司而异，不能与A股扣非归母利润直接比较。'],
         table={'headers': ['指标', '数值', '口径'], 'rows': [
-            ['TTM营收', fmt(f.get('ttmRevenue'), scale=1e8), c], ['TTM净利润', fmt(f.get('ttmProfit'), scale=1e8), c],
+            ['TTM' + revenue, fmt(f.get('ttmRevenue'), scale=1e8), c], ['TTM净利润', fmt(f.get('ttmProfit'), scale=1e8), c],
             ['TTM经营现金流', fmt(f.get('ttmCash'), scale=1e8), c], ['现金流 / 净利润', fmt(a['cashConversion'], '倍'), '连续四季、净利润为正'],
-            ['TTM净利率', fmt(a['ttmNetMargin'], '%'), 'TTM利润 / TTM营收'], ['最新单季毛利率', fmt(a['grossMargin'], '%'), '报表毛利 / 营收'],
-            ['最新单季营业利润率', fmt(f.get('operatingMargin'), '%'), '报表营业利润 / 营收']]})
+            ['TTM净利率', fmt(a['ttmNetMargin'], '%'), 'TTM利润 / TTM' + revenue], ['最新单季毛利率', fmt(a['grossMargin'], '%'), '报表毛利 / ' + revenue],
+            ['最新单季营业利润率', fmt(f.get('operatingMargin'), '%'), '报表营业利润 / ' + revenue]]})
     add('valuation', '估值与盈利假设', paragraphs=[
         'TTM和预测EPS均为美元上市证券口径。预测EPS是分析师预期，采集日' + s['estimateAsOf'] + '，不代表已经兑现的利润。',
         '预测EPS较TTM变化' + fmt(s['epsForecastGrowth'], '%') + '。TTM EPS非正时不计算增长率；从亏损转为盈利的预测需要单独检验。',

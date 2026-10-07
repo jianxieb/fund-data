@@ -3,9 +3,10 @@ from datetime import date, timedelta
 import math
 
 TAGS = {
-    'TotalRevenue': ('RevenueFromContractWithCustomerExcludingAssessedTax',
+    'TotalRevenue': ('RevenuesNetOfInterestExpense', 'Revenues',
+                     'RevenueFromContractWithCustomerExcludingAssessedTax',
                      'RevenueFromContractWithCustomerIncludingAssessedTax',
-                     'Revenues', 'SalesRevenueNet', 'RevenuesNetOfInterestExpense'),
+                     'SalesRevenueNet'),
     'NetIncome': ('NetIncomeLoss', 'NetIncomeLossAvailableToCommonStockholdersBasic', 'ProfitLoss'),
     'TotalOperatingIncomeAsReported': ('OperatingIncomeLoss',),
     'GrossProfit': ('GrossProfit',),
@@ -66,10 +67,17 @@ def normalize(payload, cik, asof, year_end_month=None, currency='USD', standard=
         key = fiscal_month(r['end'], year_end_month)
         row = output[prefix].setdefault(key, {'period': key, 'reportDate': r['end'],
             'dateBasis': 'issuer_report_end', 'currency': currency, 'provenance': {}})
-        # Different tags may describe gross and net revenue. Prefer the first
-        # supported tag for a given period instead of silently summing them.
+        # Prefer the reported consolidated total (net of interest expense for
+        # banks). Contract sales can omit membership, insurance or lease income.
+        # These are overlapping tags, so they must never be summed.
         if metric in row:
-            return
+            previous = row['provenance'][metric]
+            if (metric != 'TotalRevenue' or
+                    (provenance['publishedAt'], provenance['sourceUrl']) <=
+                    (previous['publishedAt'], previous['sourceUrl'])):
+                return
+            # A newer filing may change the revenue tag after a restructuring.
+            # An old shell-company total must not override the restated business.
         row[metric] = value
         row['provenance'][metric] = provenance
         if metric == 'NetIncome' or 'sourceUrl' not in row:

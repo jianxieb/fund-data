@@ -37,6 +37,39 @@ class UsFilingsTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'CIK'):
             normalize(p, 2, '2026-10-06')
 
+    def test_consolidated_revenue_wins_over_contract_subtotal_for_every_period(self):
+        p = self.payload()
+        g = p['facts']['us-gaap']
+        g['RevenueFromContractWithCustomerExcludingAssessedTax'] = {'units': {'USD': [
+            dict(r, val=r['val'] * .7) for r in g['Revenues']['units']['USD']]}}
+        out = normalize(p, 1, '2026-10-06')
+        self.assertEqual(out['annual']['2025-12']['TotalRevenue'], 50)
+        self.assertEqual(out['quarterly']['2026-03']['TotalRevenue'], 10)
+        self.assertEqual(out['quarterly']['2026-06']['TotalRevenue'], 15)
+        self.assertEqual(out['quarterly']['2025-12']['TotalRevenue'], 20)
+        self.assertEqual(out['quarterly']['2025-12']['provenance']['TotalRevenue']['tag'], 'Revenues')
+
+    def test_bank_revenue_uses_reported_total_net_of_interest_expense(self):
+        p = self.payload()
+        g = p['facts']['us-gaap']
+        g['RevenuesNetOfInterestExpense'] = {'units': {'USD': [
+            dict(r, val=r['val'] * .8) for r in g['Revenues']['units']['USD']]}}
+        out = normalize(p, 1, '2026-10-06')
+        self.assertEqual(out['annual']['2025-12']['TotalRevenue'], 40)
+        self.assertEqual(out['quarterly']['2026-06']['TotalRevenue'], 12)
+        self.assertEqual(out['quarterly']['2026-06']['provenance']['TotalRevenue']['tag'], 'RevenuesNetOfInterestExpense')
+
+    def test_newer_report_can_replace_legacy_shell_revenue_tag(self):
+        p = self.payload()
+        g = p['facts']['us-gaap']
+        original = g['Revenues']['units']['USD'][-1]
+        g['Revenues']['units']['USD'][-1] = dict(original, val=0)
+        g['RevenueFromContractWithCustomerExcludingAssessedTax'] = {'units': {'USD': [
+            dict(original, val=50, filed='2026-03-01')]}}
+        row = normalize(p, 1, '2026-10-06')['annual']['2025-12']
+        self.assertEqual(row['TotalRevenue'], 50)
+        self.assertEqual(row['provenance']['TotalRevenue']['publishedAt'], '2026-03-01')
+
     def test_week_based_fiscal_year_is_not_confused_with_calendar_month(self):
         self.assertEqual(fiscal_month('2026-09-03'), '2026-08')
         self.assertEqual(fiscal_month('2026-06-27'), '2026-06')

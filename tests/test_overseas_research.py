@@ -93,6 +93,9 @@ class OverseasResearchTests(unittest.TestCase):
             self.assertEqual(report, research.report_for(research.enrich(deepcopy(row))))
             self.assertIn(research.fmt(row['price']), report['markdown'])
             self.assertEqual(report['reportPeriod'], row['financials']['reportDate'])
+            revenue = row.get('revenueLabel', '营收')
+            quarterly = next(s for s in report['sections'] if s['id'] == 'quarterly')
+            self.assertEqual(quarterly['table']['headers'][1].split(' / ')[0], revenue)
 
 
 if __name__ == '__main__':
