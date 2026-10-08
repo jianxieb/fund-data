@@ -141,7 +141,7 @@
     const missing = [], rows = [];
     if (!refs || !positive(amount)) return { error: '请输入有效金额与正汇率。' };
     const months = number(config.months);
-    if (!knownFee(months) || invalidOptional(config, ['depositHkd', 'inwardHkd', 'intermediaryCny', 'returnWireHkd', 'returnExtraCny', 'monthlyHkd', 'balanceHkd'])) return { error: '银行费用、保留资产及使用月数必须为非负数；未知费用请留空。' };
+    if (!knownFee(months) || invalidOptional(config, ['depositHkd', 'inwardHkd', 'intermediaryCny', 'returnWireHkd', 'returnExtraCny', 'monthlyHkd', 'balanceHkd', 'tradeFeeUsd'])) return { error: '银行费用、保留资产及使用月数必须为非负数；未知费用请留空。' };
     const price = number(config.entryPrice);
     const localDefault = currency === 'USD' || config.fxMode === 'bank' ? (knownFee(hkBank.localUsdNative) ? hkBank.localUsdNative * refs.USD / refs.HKD : hkBank.localUsd) : hkBank.localHkd;
     const deposit = number(config.depositHkd) ?? localDefault;
@@ -154,7 +154,9 @@
     if (investUsd <= 0) return { error: '余额不足以支付入金费用。' };
     const profitUsd = number(config.profitUsd);
     if (!finite(profitUsd)) return { error: '请输入有效卖出盈亏；0表示仅比较资金流转费用。' };
-    const proceeds = investUsd + profitUsd;
+    const tradeFee = number(config.tradeFeeUsd);
+    if (Object.hasOwn(config, 'tradeFeeUsd') && !knownFee(tradeFee)) missing.push('证券交易费用');
+    const proceeds = investUsd + profitUsd - (knownFee(tradeFee) ? tradeFee : 0);
     const tax = taxReserve(number(config.taxableCny), number(config.taxRate), number(config.creditCny));
     if (tax == null) return { error: '请输入非负应税所得、0–100%税率及可抵免税额。' };
     const withdrawalIndex = number(config.withdrawalIndex);
@@ -182,13 +184,14 @@
     const exitFx = (bankUsd - exit / config.usdHkd) * refs.USD - (bankUsd - exit / config.usdHkd) * spendRate * refs[spend];
     const monthly = maintenance(hkBank, number(config.balanceHkd) || 0, months, number(config.monthlyHkd));
     if (monthly == null) missing.push('香港账户月费');
-    const explicit = (initial.commissionUsd + depositUsd + feesUsd + exit / config.usdHkd) * refs.USD + (knownFee(mainlandExtra) ? mainlandExtra : 0) + (knownFee(monthly) ? monthly * refs.HKD : 0);
+    const explicit = (initial.commissionUsd + depositUsd + feesUsd + exit / config.usdHkd + (knownFee(tradeFee) ? tradeFee : 0)) * refs.USD + (knownFee(mainlandExtra) ? mainlandExtra : 0) + (knownFee(monthly) ? monthly * refs.HKD : 0);
     const fx = entryFx + exitFx + initial.markupUsd * refs.USD;
     const monthlySpend = knownFee(monthly) ? monthly * refs.HKD / refs[spend] : 0;
     const net = spending - monthlySpend;
     if (net < 0) return { error: '资金不足以支付账户月费。' };
     rows.push({ label: '本地入金费用', cny: knownFee(deposit) ? depositUsd * refs.USD : null });
     rows.push({ label: '换汇佣金／自动加价', cny: (initial.commissionUsd + initial.markupUsd) * refs.USD });
+    if (Object.hasOwn(config, 'tradeFeeUsd')) rows.push({ label: '证券交易费用', cny: knownFee(tradeFee) ? tradeFee * refs.USD : null });
     rows.push({ label: '券商出金费', cny: withdrawal * refs.USD });
     rows.push({ label: '香港银行汇入费', cny: knownFee(inward) ? inward / config.usdHkd * refs.USD : null });
     rows.push({ label: '出金中转行费', cny: knownFee(middle) ? middle : null });
@@ -222,5 +225,64 @@
     const net = amount / (1 + pct / 100);
     return { net, cost: amount - net, fee: amount - net, fx: 0, missing: [] };
   }
-  return { number, reference, fee, remitPrincipal, inwardFee, outwardFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption };
+  // Compare complete, same-bank round trips. A public mid quote is a scenario
+  // reference, never an executable IBKR quote. CNH and mainland CNY have
+  // separate units and cannot share a bank bid/ask row.
+  function journeyPlans(config, data, quotes) {
+    if (config.currency === 'CNY') return { blocked: true, error: legalPath('mainland', 'invest', false).reason, plans: [] };
+    const budget = number(config.budgetCny), currency = config.currency;
+    if (!positive(budget) || !['USD', 'CNH', 'HKD'].includes(currency)) return { error: '请输入正数金额。', plans: [] };
+    if (['usdCny', 'usdHkd', 'usdCnh', 'entryPrice', 'exitPrice'].some(key => config[key] != null && String(config[key]).trim() !== '' && !positive(number(config[key])))) return { error: '汇率须为有效正数；留空使用自动参考价。', plans: [] };
+    const mainland = Object.entries(quotes.banks || {}).flatMap(([id, bank]) => {
+      const row = bank.quotes?.USD;
+      return row && positive(row.buy) && positive(row.sell) && row.buy <= row.sell ? [{ id, ...row }] : [];
+    });
+    if (!mainland.length) return { error: '缺少内地银行USD现汇买入牌价。', plans: [] };
+    const offshore = quotes.offshoreUsd?.bochk?.quotes || {};
+    const chosenExit = mainland.find(row => row.id === config.exitBank);
+    const exit = chosenExit || [...mainland].sort((a, b) => b.buy - a.buy)[0];
+    const refRow = mainland.find(row => row.id === 'boc') || mainland[0];
+    const cnyMid = (refRow.buy + refRow.sell) / 2;
+    const midpoint = key => offshore[key] && positive(offshore[key].bidPerUsd) && positive(offshore[key].askPerUsd) && offshore[key].bidPerUsd <= offshore[key].askPerUsd ? (offshore[key].bidPerUsd + offshore[key].askPerUsd) / 2 : null;
+    const refs = reference({ usdCny: number(config.usdCny) ?? cnyMid, usdHkd: number(config.usdHkd) ?? midpoint('HKD'), usdCnh: number(config.usdCnh) ?? midpoint('CNH') });
+    if (!refs) return { error: '缺少USD/HKD或USD/CNH参考汇率。', plans: [] };
+    const sourceAmount = budget / refs[currency];
+    const entryPrice = number(config.entryPrice) ?? (currency === 'USD' ? 1 : refs.USD / refs[currency]);
+    const exitPrice = number(config.exitPrice) ?? exit.buy;
+    const profit = number(config.profitUsd);
+    if (!finite(profit)) return { error: '请输入有效卖出盈亏。', plans: [] };
+    if (invalidOptional(config, ['taxableCny', 'openingCny', 'extraCapitalCny', 'annualGapPct', 'depositHkd', 'inwardHkd', 'returnWireHkd', 'monthlyHkd']) || !knownFee(number(config.months))) return { error: '应税所得、银行费用、开户支出、保留资产和使用月数须为非负数。', plans: [] };
+    const taxableCny = number(config.taxableCny) ?? Math.max(0, (profit - (number(config.tradeFeeUsd) ?? 0)) * refs.USD);
+    const inputs = { ...config, amount: sourceAmount, currency, origin: 'offshore', brokerApproved: true,
+      usdCny: refs.USD, usdHkd: refs.USD / refs.HKD, usdCnh: refs.USD / refs.CNH,
+      entryPrice, exitPrice, profitUsd: profit, taxableCny, spend: 'CNY' };
+    const extraCny = (number(config.openingCny) ?? 0) + opportunityCost(number(config.extraCapitalCny) ?? 0, number(config.annualGapPct) ?? 0, number(config.months));
+    const errors = [];
+    const plans = data.hkBanks.flatMap(bank => {
+      const modes = currency === 'USD' ? ['manual'] : ['manual', 'auto', ...(bank.id === 'bochk' && positive(offshore[currency]?.askPerUsd) ? ['bank'] : [])];
+      const rows = modes.map(mode => {
+        // Customer-specific fee overrides apply only to the explicitly chosen
+        // bank. They must not silently waive competing banks' public tariffs.
+        const bankInputs = { ...inputs, fxMode: mode };
+        if (config.bank !== bank.id) for (const key of ['depositHkd', 'inwardHkd', 'returnWireHkd', 'monthlyHkd']) delete bankInputs[key];
+        if (mode === 'bank') bankInputs.entryPrice = offshore[currency].askPerUsd;
+        const result = offshoreTransfer(bankInputs, bank, data.broker);
+        if (result.error) { errors.push(result.error); return null; }
+        const net = result.net - extraCny;
+        if (net < 0) { errors.push('预算不足以支付开户与资产机会成本。'); return null; }
+        return { ...result, net, costCny: result.costCny + extraCny, extraCny, bank, fxMode: mode, sourceAmount,
+          entryPrice: bankInputs.entryPrice, exitPrice, exitBank: exit.id, exitAsOf: exit.asOf,
+          taxableCny, estimatedTax: number(config.taxableCny) == null, budgetCny: budget };
+      }).filter(Boolean).sort((a, b) => b.net - a.net);
+      return rows.slice(0, 1);
+    }).sort((a, b) => b.net - a.net);
+    if (!plans.length) return { error: errors[0] || '当前条件无法完成测算。', plans: [] };
+    // Avoid a short-lived SWIFT promotion in the default long-term route.
+    // Priority accounts with maintenance capital are not required by default.
+    const stable = plans.filter(row => !row.bank.outwardChanges?.some(change => change.from > config.date) && row.bank.monthlyHkd === 0);
+    const recommended = stable[0] || plans[0];
+    const selected = plans.find(row => row.bank.id === config.bank) || (config.plan === 'minimum' ? plans[0] : recommended);
+    return { selected, recommended, minimum: plans[0], plans, refs, sourceAmount, exit, mainland, extraCny };
+  }
+  return { number, reference, fee, remitPrincipal, inwardFee, outwardFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans };
 }));

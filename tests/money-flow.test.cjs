@@ -152,3 +152,99 @@ test('ZA USD spending includes both FX directions and charges 1.95% on purchases
   const foreignHkd = M.consumption({ amount: 1000, currency: 'HKD', method: 'card', overseasProcessed: true }, hk('za'));
   close(foreignHkd.net, 1000 / 1.0195);
 });
+
+const publicQuotes = {
+  banks: { boc: { quotes: { USD: { buy: 6.99, sell: 7.01, asOf: '2026-10-08 20:00:00' } } },
+    cmb: { quotes: { USD: { buy: 6.98, sell: 7.02, asOf: '2026-10-08 20:01:00' } } } },
+  offshoreUsd: { bochk: { quotes: { HKD: { bidPerUsd: 7.98, askPerUsd: 8.02, asOf: '2026-10-08 20:00:00' },
+    CNH: { bidPerUsd: 7, askPerUsd: 7.2, asOf: '2026-10-08 20:00:00' } } } }
+};
+const journey = { budgetCny: 70000, currency: 'USD', plan: 'recommended', bank: '', months: 12,
+  balanceHkd: 0, profitUsd: 0, taxRate: 20, creditCny: 0, withdrawalIndex: 1,
+  intermediaryCny: 0, returnExtraCny: 0, tradeFeeUsd: 0, date: '2026-10-08' };
+
+test('default recommendation completes one USD-to-CNY path, without a HKD conversion or asset threshold', () => {
+  const p = M.journeyPlans(journey, D, publicQuotes), r = p.selected;
+  assert.equal(r.bank.id, 'hang'); assert.equal(r.exitBank, 'boc');
+  assert.equal(r.currency, 'CNY'); close(r.sourceAmount, 10000); close(r.investUsd, 10000);
+  close(r.brokerFx.commissionUsd, 0); close(r.taxCny, 0);
+  close(r.net, (10000 - 65 / 8) * 6.99);
+  assert.equal(r.complete, true);
+  close(r.net + r.costCny + r.taxCny, journey.budgetCny);
+});
+
+test('minimum uses today’s ZA tariff, while default avoids its expiring promotion', () => {
+  const p = M.journeyPlans({ ...journey, plan: 'minimum' }, D, publicQuotes);
+  assert.equal(p.selected.bank.id, 'za'); assert.equal(p.recommended.bank.id, 'hang');
+  close(p.selected.costCny, 100);
+  const expired = M.journeyPlans({ ...journey, date: '2026-11-01', plan: 'minimum' }, D, publicQuotes);
+  assert.equal(expired.selected.bank.id, 'hang');
+  assert.ok(expired.plans.find(r => r.bank.id === 'za').costCny > expired.selected.costCny);
+});
+
+test('CNH goes directly to USD; optimal conversion changes with size and includes local transfer fees', () => {
+  const large = M.journeyPlans({ ...journey, currency: 'CNH' }, D, publicQuotes);
+  assert.equal(large.selected.bank.id, 'sc'); assert.equal(large.selected.fxMode, 'manual');
+  close(large.selected.sourceAmount, 71000); close(large.selected.investUsd, 9998);
+  close(large.selected.brokerFx.commissionUsd, 2);
+  const small = M.journeyPlans({ ...journey, currency: 'CNH', budgetCny: 7000 }, D, publicQuotes);
+  assert.equal(small.selected.fxMode, 'auto');
+  close(small.selected.brokerFx.commissionUsd, 0);
+  close(small.selected.investUsd, 1000 / 1.0003);
+  const bank = large.plans.find(r => r.bank.id === 'bochk');
+  assert.equal(bank.fxMode, 'manual'); // bank ask costs more than the reference + IBKR fee
+  close(large.selected.net + large.selected.costCny + large.selected.taxCny, journey.budgetCny);
+});
+
+test('choose bank conversion only with that bank’s actual USD ask; never assign it to other banks', () => {
+  const p = M.journeyPlans({ ...journey, currency: 'CNH', entryPrice: 7.5 }, D, publicQuotes);
+  assert.equal(p.plans.find(r => r.bank.id === 'bochk').fxMode, 'bank');
+  assert.ok(p.plans.filter(r => r.bank.id !== 'bochk').every(r => r.fxMode !== 'bank'));
+  const noAsk = structuredClone(publicQuotes); delete noAsk.offshoreUsd.bochk.quotes.CNH;
+  assert.match(M.journeyPlans({ ...journey, currency: 'CNH' }, D, noAsk).error, /参考汇率/);
+});
+
+test('changing mainland settlement bank holds the source amount and reference currency rates fixed', () => {
+  const a = M.journeyPlans(journey, D, publicQuotes).selected;
+  const b = M.journeyPlans({ ...journey, exitBank: 'cmb' }, D, publicQuotes).selected;
+  close(a.sourceAmount, b.sourceAmount); close(a.refs.USD, b.refs.USD);
+  close(a.net - b.net, (10000 - 65 / 8) * .01);
+});
+
+test('estimated tax uses positive net profit, exact RMB taxable income takes priority, principal is not taxed', () => {
+  const p = M.journeyPlans({ ...journey, profitUsd: 1000, tradeFeeUsd: 10 }, D, publicQuotes).selected;
+  close(p.taxableCny, 990 * 7); close(p.taxCny, 990 * 7 * .2);
+  close(p.net + p.costCny + p.taxCny, journey.budgetCny + 1000 * 7);
+  assert.equal(p.estimatedTax, true);
+  const exact = M.journeyPlans({ ...journey, profitUsd: 1000, taxableCny: 5000, creditCny: 100 }, D, publicQuotes).selected;
+  close(exact.taxCny, 900); assert.equal(exact.estimatedTax, false);
+  close(M.journeyPlans({ ...journey, profitUsd: -500 }, D, publicQuotes).selected.taxCny, 0);
+});
+
+test('unknown fees stay unknown; same-bank rebates cannot conceal broker wire charges', () => {
+  const p = M.journeyPlans({ ...journey, intermediaryCny: '', returnExtraCny: '', tradeFeeUsd: '' }, D, publicQuotes);
+  assert.equal(p.selected.complete, false);
+  assert.deepEqual(p.selected.missing, ['证券交易费用', '出金中转行费用', '回大陆的中转费及收款行费']);
+  close(p.plans.find(r => r.bank.id === 'bochk').rows.find(r => r.label === '香港银行汇入费').cny, 60 * 7 / 8);
+  const r = M.journeyPlans({ ...journey, intermediaryCny: 20, returnExtraCny: 30, tradeFeeUsd: 4 }, D, publicQuotes).selected;
+  assert.equal(r.complete, true); close(p.selected.net - r.net, (4 + 20 / 7) * 6.99 + 30);
+});
+
+test('customer fee override applies only to selected bank; asset principal is not deducted as a fee', () => {
+  const p = M.journeyPlans({ ...journey, bank: 'hang', returnWireHkd: 0, openingCny: 100,
+    extraCapitalCny: 500000, annualGapPct: 2 }, D, publicQuotes);
+  close(p.selected.extraCny, 10100); close(p.selected.rows.find(r => r.label === '回大陆汇出费').cny, 0);
+  close(p.plans.find(r => r.bank.id === 'sc').rows.find(r => r.label === '回大陆汇出费').cny, 50 * 7 / 8);
+  close(p.selected.net + p.selected.costCny, journey.budgetCny);
+});
+
+test('mainland RMB investment gate remains visible, with no fictitious broker payout', () => {
+  const p = M.journeyPlans({ ...journey, currency: 'CNY' }, D, publicQuotes);
+  assert.equal(p.blocked, true); assert.equal(p.selected, undefined); assert.deepEqual(p.plans, []);
+  assert.match(p.error, /不能用于境外证券投资/);
+  assert.match(M.journeyPlans({ ...journey, budgetCny: -1 }, D, publicQuotes).error, /正数/);
+  assert.match(M.journeyPlans({ ...journey, tradeFeeUsd: -1 }, D, publicQuotes).error, /非负数/);
+  assert.match(M.journeyPlans({ ...journey, returnWireHkd: -1 }, D, publicQuotes).error, /非负数/);
+  assert.match(M.journeyPlans({ ...journey, entryPrice: 'invalid' }, D, publicQuotes).error, /有效正数/);
+  assert.match(M.journeyPlans({ ...journey, usdCny: 0 }, D, publicQuotes).error, /有效正数/);
+});

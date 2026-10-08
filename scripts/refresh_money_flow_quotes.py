@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CURRENCIES = {"美元": "USD", "港币": "HKD", "欧元": "EUR", "英镑": "GBP", "日元": "JPY"}
 BOC_URL = "https://www.boc.cn/sourcedb/whpj/"
 CMB_URL = "https://fx.cmbchina.com/api/v1/fx/rate"
+BOCHK_USD_URL = "https://www.bochk.com/whk/rates/exchangeRatesUSD/exchangeRatesUSD-input.action?lang=cn"
 
 
 class QuoteTable(HTMLParser):
@@ -44,8 +45,8 @@ class QuoteTable(HTMLParser):
             self.rows.append(self.row)
 
 
-def validate_quote(buy, sell, at):
-    buy, sell = round(float(buy) / 100, 8), round(float(sell) / 100, 8)
+def validate_quote(buy, sell, at, divisor=100):
+    buy, sell = round(float(buy) / divisor, 8), round(float(sell) / divisor, 8)
     timestamp = datetime.fromisoformat(at)
     if not 0 < buy <= sell or sell / buy > 1.15:
         raise ValueError("invalid bank bid/ask")
@@ -86,6 +87,24 @@ def parse_cmb(payload):
     return out
 
 
+def parse_bochk(html):
+    parser = QuoteTable()
+    parser.feed(html)
+    match = re.search(r"资料更新于香港时间：\s*(\d{4}/\d{1,2}/\d{1,2}\s+\d{2}:\d{2}:\d{2})", html)
+    if not match:
+        raise ValueError("BOCHK timestamp missing")
+    at = datetime.strptime(match.group(1), "%Y/%m/%d %H:%M:%S").strftime("%Y-%m-%d %H:%M:%S")
+    currencies = {"美元/人民币": "CNH", "美元/港元": "HKD"}
+    out = {}
+    for row in parser.rows:
+        if len(row) == 3 and row[0] in currencies:
+            quote = validate_quote(row[1], row[2], at, divisor=1)
+            out[currencies[row[0]]] = {"bidPerUsd": quote["buy"], "askPerUsd": quote["sell"], "asOf": at}
+    if "CNH" not in out or "HKD" not in out:
+        raise ValueError("BOCHK CNH/HKD rows missing")
+    return out
+
+
 def read_snapshot(path):
     if not path.exists():
         return {"banks": {}}
@@ -97,18 +116,23 @@ def read_snapshot(path):
 
 
 def fetch_bank(bank):
-    url = BOC_URL if bank == "boc" else CMB_URL
+    url = {"boc": BOC_URL, "cmb": CMB_URL, "bochk": BOCHK_USD_URL}[bank]
     request = Request(url, headers={"User-Agent": "Mozilla/5.0", "Referer": "https://fx.cmbchina.com/hq/"})
     with urlopen(request, timeout=25) as response:
         body = response.read().decode("utf-8")
+    if bank == "bochk":
+        return parse_bochk(body)
     return parse_boc(body) if bank == "boc" else parse_cmb(json.loads(body))
 
 
 def merge_bank(snapshot, bank, quotes):
-    previous = snapshot.setdefault("banks", {}).get(bank, {}).get("quotes", {})
+    section = snapshot.setdefault("offshoreUsd" if bank == "bochk" else "banks", {})
+    previous = section.get(bank, {}).get("quotes", {})
     if any(key in previous and row["asOf"] < previous[key]["asOf"] for key, row in quotes.items()):
         raise ValueError("bank timestamp would regress")
-    snapshot["banks"][bank] = {"quotes": {**previous, **quotes}, "source": BOC_URL if bank == "boc" else "https://fx.cmbchina.com/hq/"}
+    section[bank] = {"quotes": {**previous, **quotes}, "source": {"boc": BOC_URL, "cmb": "https://fx.cmbchina.com/hq/", "bochk": BOCHK_USD_URL}[bank]}
+    if bank == "bochk":
+        section[bank]["unit"] = "foreign currency per 1 USD; Hong Kong renminbi is CNH"
 
 
 def main():
@@ -118,8 +142,8 @@ def main():
     snapshot = read_snapshot(options.output)
     snapshot.update({"unit": "CNY per 1 foreign currency", "capturedAt": datetime.now(timezone.utc).isoformat(timespec="seconds")})
     success = 0
-    with ThreadPoolExecutor(max_workers=2) as pool:
-        jobs = {bank: pool.submit(fetch_bank, bank) for bank in ("boc", "cmb")}
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        jobs = {bank: pool.submit(fetch_bank, bank) for bank in ("boc", "cmb", "bochk")}
         for bank, job in jobs.items():
             try:
                 merge_bank(snapshot, bank, job.result())

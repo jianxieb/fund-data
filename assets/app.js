@@ -1207,7 +1207,7 @@
   });
   document.addEventListener('change', e => {
     const el = e.target;
-    if (el.dataset.moneyField || el.dataset.moneyQuote || el.dataset.moneyEligible || el.dataset.moneyCheck) { window.ChanghengMoneyFlow.handleChange(el); return; }
+    if (el.dataset.moneyField || el.dataset.moneySelect || el.dataset.moneyQuote || el.dataset.moneyEligible || el.dataset.moneyCheck) { window.ChanghengMoneyFlow.handleChange(el); return; }
     if (el.id === 'portfolio-import' || el.id === 'portfolio-hide-boards' || el.id === 'portfolio-liquidate' || el.dataset.portfolioWeight || el.dataset.portfolioAmount || el.dataset.portfolioField || el.dataset.portfolioFee || el.dataset.portfolioTaxAsset) {
       window.ChanghengPortfolio.handleChange(el); return;
     }
