@@ -94,21 +94,36 @@
     return '<label class="portfolio-field"><span>' + label + '</span><span class="portfolio-number"><input id="portfolio-' + field + '" type="number" min="0" max="' + max + '" step="' + step + '" value="' + inputValue(value) + '" data-portfolio-field="' + field + '" aria-label="' + label + '">' + (suffix ? '<span>' + suffix + '</span>' : '') + '</span></label>';
   }
   function taxSummary() {
-    return '美股卖出 ' + inputValue(draft.tax.usCapitalGains) + '% · 分红 ' + inputValue(draft.tax.usDividend) + '%' + (Object.keys(draft.tax.overrides).length ? ' · 含单项税率' : '');
+    if (taxScenario() === 'zero') return '全部标的 0%';
+    return '美股卖出 ' + inputValue(draft.tax.usCapitalGains) + '% · 股息总税负 ' + inputValue(draft.tax.usDividend) + '%' + (['cnStockCapitalGains', 'cnStockDividend', 'cnFundCapitalGains', 'cnFundDividend'].some(key => draft.tax[key] !== 0) ? ' · 境内自定义' : '') + (Object.keys(draft.tax.overrides).length ? ' · 含单项税率' : '');
+  }
+  function taxScenario() {
+    if (Object.keys(draft.tax.overrides).length) return 'custom';
+    const rates = Object.keys(P.taxConfig()).filter(key => key.endsWith('CapitalGains') || key.endsWith('Dividend'));
+    if (rates.every(key => draft.tax[key] === 0)) return 'zero';
+    return rates.every(key => draft.tax[key] === (key.startsWith('us') ? 20 : 0)) ? 'mainland' : 'custom';
   }
   function displayTaxRates(a) {
     const group = a.market === 'us' || a.currency === 'USD' ? 'us' : a.kind === 'stock' ? 'cnStock' : 'cnFund';
     return { gain: draft.tax.overrides[a.id]?.gain ?? draft.tax[group + 'CapitalGains'], dividend: draft.tax.overrides[a.id]?.dividend ?? draft.tax[group + 'Dividend'] };
   }
+  function hasLongHoldTaxAssumption() {
+    return taxScenario() !== 'zero' && draft.positions.some(p => {
+      const a = asset(p.id);
+      return p.weight > 0 && a?.kind === 'stock' && a.market !== 'us' && a.currency !== 'USD' && displayTaxRates(a).dividend === 0;
+    });
+  }
   function taxSettings() {
+    const scenario = taxScenario();
+    const presets = '<div class="segmented portfolio-tax-presets" aria-label="税务情景">' + [['mainland', '大陆居民假设'], ['zero', '不计税']].map(([key, label]) => btn(label, 'tax-' + key, scenario === key ? 'active' : '', 'aria-pressed="' + (scenario === key) + '"')).join('') + '</div>';
     const domestic = [['cnStock', 'A股'], ['cnFund', '境内基金 / ETF']].map(([key, label]) => '<span><strong>' + label + '</strong>卖出 ' + inputValue(draft.tax[key + 'CapitalGains']) + '% · ' + (key === 'cnStock' && !draft.tax.cnStockDividend ? '长期股息 ' : '分红 ') + inputValue(draft.tax[key + 'Dividend']) + '%</span>').join('');
     const overrides = draft.positions.map(p => asset(p.id)).filter(a => a && (a.market === 'us' || a.currency === 'USD' || a.kind === 'stock' || Object.keys(draft.tax.overrides[a.id] || {}).length)).map(a => {
       const rates = displayTaxRates(a), own = draft.tax.overrides[a.id] || {};
       const input = (field, label) => '<label><span>' + label + '</span><span class="portfolio-number"><input type="number" min="0" max="100" step="any" value="' + inputValue(own[field]) + '" placeholder="' + inputValue(rates[field]) + '" data-portfolio-tax-asset="' + H.esc(a.id) + '" data-tax-field="' + field + '" aria-label="' + H.esc(a.name + '的' + label) + '"><span>%</span></span></label>';
       const domesticStock = a.market !== 'us' && a.currency !== 'USD' && a.kind === 'stock' && own.gain === undefined;
-      return '<div class="portfolio-tax-asset' + (domesticStock ? ' portfolio-tax-asset-single' : '') + '"><strong>' + H.esc(a.name) + '</strong>' + (domesticStock ? '' : input('gain', '卖出盈利税率')) + input('dividend', domesticStock ? '短期持股股息税率' : '分红综合税率') + '</div>';
+      return '<div class="portfolio-tax-asset' + (domesticStock ? ' portfolio-tax-asset-single' : '') + '"><strong>' + H.esc(a.name) + '</strong>' + (domesticStock ? '' : input('gain', '卖出盈利税率')) + input('dividend', domesticStock ? '短期持股股息税率' : '股息总税负') + '</div>';
     }).join('');
-    return '<div class="portfolio-tax-bar"><details class="portfolio-tax-settings"><summary><strong>模拟税率</strong><span id="portfolio-tax-summary">' + H.esc(taxSummary()) + '</span></summary><div class="portfolio-tax-body"><div class="actions">' + btn('大陆居民假设', 'tax-mainland', 'btn sm') + btn('不计税', 'tax-zero', 'btn sm') + btn('税费口径', 'tax-method', 'text-link small') + '</div><div class="portfolio-tax-grid">' + number('美股卖出盈利税率', 'tax-usCapitalGains', draft.tax.usCapitalGains, 100, 'any', '%') + number('美股分红综合税率', 'tax-usDividend', draft.tax.usDividend, 100, 'any', '%') + '</div><div class="portfolio-tax-domestic">' + domestic + '</div>' + (overrides ? '<details class="portfolio-tax-overrides"><summary>特殊标的税率</summary>' + overrides + '</details>' : '') + '</div></details><label class="check-label"><input type="checkbox" id="portfolio-liquidate"' + (draft.tax.liquidate ? ' checked' : '') + '>期末清仓</label></div>';
+    return '<div class="portfolio-tax-bar"><div class="portfolio-tax-top"><strong>模拟税率</strong>' + presets + '<span id="portfolio-tax-summary">' + H.esc(taxSummary()) + '</span><div class="portfolio-tax-options"><label class="check-label"><input type="checkbox" id="portfolio-liquidate"' + (draft.tax.liquidate ? ' checked' : '') + '>期末清仓</label>' + btn('税费口径', 'tax-method', 'text-link small') + '</div></div><details class="portfolio-tax-settings"><summary>自定义税率</summary><div class="portfolio-tax-body"><div class="portfolio-tax-grid">' + number('美股卖出盈利税率', 'tax-usCapitalGains', draft.tax.usCapitalGains, 100, 'any', '%') + number('美股股息总税负', 'tax-usDividend', draft.tax.usDividend, 100, 'any', '%') + '</div><div class="portfolio-tax-domestic">' + domestic + '</div>' + (overrides ? '<details class="portfolio-tax-overrides"><summary>特殊标的税率</summary>' + overrides + '</details>' : '') + '</div></details><p id="portfolio-tax-assumption" class="portfolio-tax-assumption"' + (hasLongHoldTaxAssumption() ? '' : ' hidden') + '>A股股息按长期持有0%估算，未自动计入短期卖出补税。</p></div>';
   }
   function strategyHints() {
     const initial = draft.initial === 0 ? '初始金额为0，仅执行持续投入' : ({
@@ -248,7 +263,7 @@
     H.openModal(H.modalTitle('组合回测口径', '人民币 · 每日历史 · 按所设税率') + '<div class="rule-list"><p><strong>价格与分红：</strong>境内基金及ETF使用净值与已发布每日收益，默认不计场内溢价；个股和海外ETF使用含分红复权股价。分红视为再投资，支持碎股，不模拟申购暂停、涨跌停或整手限制。</p><p><strong>汇率与交易日：</strong>海外资产按美元兑人民币历史汇率估值。休市日沿用最近已发布价格；新增投入和再平衡推迟到所选资产都有真实报价的共同日期，不使用未来价格。</p><p><strong>投入与权重：</strong>本金与持续投入方式可分别选择。分批、回撤阶梯的待投入本金持有零息现金，再平衡不提前使用。季投、年投在周期首个共同交易日一次入金该周期预算，末期按窗口内月份数计；倍数定投改变实际入金金额。再平衡只调整已释放资金。</p><p><strong>择时信号：</strong>使用独立目标组合的人民币收益路径，现金为零息，按目标权重每日复位；不受实际入金、择时仓位或投资者费用税款影响。前一个共同交易日收盘确定回撤和200日均线信号，下一共同交易日执行。回撤从模拟起点峰值计算；均线可使用窗口前真实历史。不足200次时按常规投入，均线择时作用于整个已释放组合。</p><p><strong>费用与税：</strong>实际净值与复权股价已经反映产品持续年费，不再重复扣费，也不加回年费。买卖费率是统一自定义假设，未含最低佣金、换汇价差和申赎阶梯费率。投资者税使用所设综合税率；期末清仓开启时扣清仓交易税费。跨境卖出和股息税后的渠道比较见“投资渠道”。</p><p><strong>收益：</strong>组合净值消除外部追加本金影响；账面盈亏为期末资产减累计投入。首年年化按至少一年计算；不满一年不显示资金年化。对照线为同币种、同区间持有回报，使用同样税率和期末清仓设置，不计用户自定义交易费。</p><p><strong>持仓策略收益：</strong>逐笔使用实际买卖金额和费用。累计投入收益为（期末市值＋累计卖出净回款－累计买入含费金额）除以累计买入含费金额；反复买入的资金也计入分母。满一年按实际日期计算资金年化XIRR，不足一年显示累计投入收益、不外推；资金流找不到唯一年化解时留空。回撤和波动使用实际持仓的现金流中性净值，计入交易费，追加和调仓转账本身不计收益。它们衡量持仓过程的风险，不是累计投入收益率的波动。</p></div><div class="actions"><a class="source-link" href="docs/portfolio-method.md" target="_blank" rel="noopener">完整公式与边界 ↗</a></div>');
   }
   function taxMethod() {
-    H.openModal(H.modalTitle('组合税费口径', '中国大陆税收居民 · 自定义综合税率') + '<div class="rule-list"><p><strong>卖出盈利税：</strong>只对实际卖出的正收益预留税款，包括再平衡与择时卖出；未卖出的浮盈不征税。税基采用人民币移动平均成本，买入费用及税后分红再投入计入成本。逐笔亏损不抵减其他盈利。</p><p><strong>分红税：</strong>行情已含税前分红再投，按现金分配事件只减去所设税额，再把净分红加入成本；不会把分红重复加到账户。综合税率包含来源地预扣与抵免后的境内补税，ADR、REIT及特殊分配ETF可逐项覆盖。</p><p><strong>默认假设：</strong>美股卖出盈利及现金分配20%，A股与境内基金/ETF为0%。A股股息按长期持有假设，不自动重建差别化持有期补税；有短期买卖时可填写实际综合税率。缺覆盖窗口的分红明细时会停止应税回测并写明缺失依据。</p><p><strong>期末清仓：</strong>开启后才在末日卖出全部持仓，并扣除清仓交易费和正收益税。关闭时显示持仓估值；对照线使用同样税率和期末设置，但不计自定义交易费。</p><p>税款在发生交易或分配时预留；不模拟申报延期、跨年亏损抵扣、外税抵免结转、ADR费用或特殊分配性质。这里是税率情景模拟，不能替代个人税单。</p></div><div class="actions"><a class="source-link" href="https://www.chinatax.gov.cn/n810219/n810744/n3752930/n3752974/c3970366/content.html" target="_blank" rel="noopener">个人所得税法 ↗</a><a class="source-link" href="docs/portfolio-method.md" target="_blank" rel="noopener">完整公式 ↗</a></div>');
+    H.openModal(H.modalTitle('组合税费口径', '中国大陆税收居民 · 2026-10-09核对') + '<div class="rule-list"><p><strong>美股普通股息的20%：</strong>是股息总税负。符合中美协定并向券商提交有效W-8BEN时，美国通常预扣10%；中国按20%计税，凭境外纳税凭证抵免10%后补税10%，合计20%。未享协定、ADR、REIT及特殊ETF分配需按实际性质与税单核定，不能一律套用20%，可在“特殊标的税率”中覆盖。</p><p><strong>卖出盈利税：</strong>大陆居民情景对美股实际卖出的正收益预留20%，包括再平衡与择时卖出；浮盈不征税。采用人民币移动平均成本，买入费用及税后分红再投入计入成本，逐笔亏损不抵减其他盈利。A股普通流通股卖出所得按现行暂免个税处理。</p><p><strong>境内分红：</strong>A股持股超过一年股息暂免，持股一个月以内为20%，超过一个月至一年为10%。默认只采用长期持有0%的简化情景，未自动重建逐笔持有期及卖出时的股息补税；短期买卖可单独设置股息税率。境内公募基金及ETF不在投资者层面追加个税，产品资产中已承担的税费仍保留在净值里。</p><p><strong>分红处理：</strong>复权行情已含税前分红再投，只按真实现金分配扣所设税额，再把净分红加入成本，避免重复增加分红或重复扣税。缺完整分红证据时停止应税回测，并指出缺失数据。</p><p><strong>不计税与期末清仓：</strong>“不计税”把模拟投资者税率设为0%，不会加回净值内已承担的税费。开启“期末清仓”才在末日卖出持仓并扣清仓交易费与正收益税；对照线采用同样税率和期末设置。</p><p>这是统一有效税率情景，税款在交易或分配时预留；未模拟申报延期、跨笔或跨年抵扣、外税结转、ADR费用和每次分配的税务分类。</p></div><div class="actions"><a class="source-link" href="https://www.irs.gov/pub/irs-trty/china.pdf" target="_blank" rel="noopener">中美税收协定第9条 ↗</a><a class="source-link" href="https://12366.chinatax.gov.cn/bzds/081/081-5-9.html" target="_blank" rel="noopener">境外所得抵免 ↗</a><a class="source-link" href="https://shanghai.chinatax.gov.cn/zcfw/zcfgk/grsds/201509/t418999.html" target="_blank" rel="noopener">A股股息持有期税率 ↗</a><a class="source-link" href="docs/portfolio-method.md" target="_blank" rel="noopener">完整依据与公式 ↗</a></div>');
   }
   function sources() {
     if (!result) return;
@@ -361,6 +376,14 @@
   function syncTax() {
     const summary = document.getElementById('portfolio-tax-summary');
     if (summary) summary.textContent = taxSummary();
+    const scenario = taxScenario();
+    document.querySelectorAll('.portfolio-tax-presets button').forEach(button => {
+      const active = button.dataset.action === 'portfolio-tax-' + scenario;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+    const assumption = document.getElementById('portfolio-tax-assumption');
+    if (assumption) assumption.hidden = !hasLongHoldTaxAssumption();
     document.querySelectorAll('[data-portfolio-tax-asset]').forEach(input => {
       const a = asset(input.dataset.portfolioTaxAsset);
       if (a) input.placeholder = inputValue(displayTaxRates(a)[input.dataset.taxField]);
@@ -377,6 +400,7 @@
       if (input === active) return;
       input.value = input.dataset.portfolioAmount ? inputValue(P.amountFromWeight(draft.initial, p.weight), 2) : inputValue(p.weight);
     });
+    syncTax();
   }
   async function handleChange(el) {
     if (el.id === 'portfolio-import') {
