@@ -45,7 +45,7 @@ test('PDF includes actual strategy results, precise fee and weights, all curves 
   const { input, result } = fixture();
   const document = Pdf.layout(Pdf.snapshot(result, input.catalog), measure), text = textOf(document);
   for (const value of ['0.025%', '47.12345678%', '42.87654322%', '零权重仍应完整收录的基金', '0.00（未投入）',
-    '初始投入 + 每月追加', '每季度', '策略年化收益', '累计投入收益', '近3年', '近5年', '两倍测试ETF']) assert.ok(text.includes(value), value);
+    '一次性投入', '每月定投', '本金投入方式', '持续投入方式', '每季度', '策略年化收益', '累计投入收益', '近3年', '近5年', '两倍测试ETF']) assert.ok(text.includes(value), value);
   for (const window of result.snapshots.filter(s => s.error)) assert.ok(text.includes(window.error));
   const displayPct = n => n.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%';
   for (const h of result.holdings) for (const key of ['annualReturn', 'totalReturn', 'mdd', 'volatility']) assert.ok(text.includes(displayPct(h.performance[key])), key);

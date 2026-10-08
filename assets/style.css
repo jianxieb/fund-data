@@ -601,7 +601,9 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-settings-top{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:20px 24px 0}
 .portfolio-settings-top h2{font-size:16px}
 .portfolio-return-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px}
-.portfolio-settings-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;padding:23px 24px}
+.portfolio-settings-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;padding:23px 24px}
+.portfolio-strategy-hint{font-size:11px;line-height:1.6;color:var(--muted)}
+.portfolio-result-strategy{color:var(--green);font-size:12px}
 .portfolio-field{display:flex;flex-direction:column;gap:9px;font-size:12px;color:var(--muted);min-width:0}
 .portfolio-field input{margin:0;width:100%;font-size:14px;min-height:39px}
 .portfolio-number{position:relative;display:block}
@@ -738,7 +740,7 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-year-grid span{display:block;font-size:12px;color:var(--muted)}
 .portfolio-year-grid strong{display:block;font-size:21px;font-weight:500;margin-top:7px}
 .portfolio-year-grid small{display:block;color:#9aa292;font-size:10px;margin-top:7px}
-@media(max-width:1150px){.portfolio-settings-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.portfolio-builder{grid-template-columns:minmax(310px,1fr) minmax(0,1.1fr)}.portfolio-return-controls{gap:8px}.portfolio-settings-top{align-items:flex-start}.portfolio-filters{gap:10px}.portfolio-library-row{padding:14px 19px}.portfolio-composition{padding:20px 19px 16px}}
+@media(max-width:1150px){.portfolio-settings-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.portfolio-builder{grid-template-columns:minmax(310px,1fr) minmax(0,1.1fr)}.portfolio-return-controls{gap:8px}.portfolio-settings-top{align-items:flex-start}.portfolio-filters{gap:10px}.portfolio-library-row{padding:14px 19px}.portfolio-composition{padding:20px 19px 16px}}
 @media(max-width:1050px){.portfolio-builder{grid-template-columns:1fr}}
 @media(max-width:900px){.portfolio-builder{grid-template-columns:1fr}.portfolio-settings-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.portfolio-settings-top{flex-direction:column;gap:15px}.portfolio-empty-holdings{min-height:160px;padding:25px 0}.portfolio-library-scroll{max-height:340px}.portfolio-result-placeholder{gap:25px;padding:25px}.portfolio-results .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.portfolio-run-bar{align-items:flex-start}.portfolio-result-head{align-items:flex-start}.portfolio-result-notes{gap:16px}.portfolio-settings-foot{align-items:flex-start}}
 @media(max-width:650px){.portfolio-settings-grid{grid-template-columns:repeat(2,minmax(0,1fr));padding:20px 18px}.portfolio-settings-top{padding:18px 18px 0}.portfolio-return-controls{gap:8px}.portfolio-settings-foot{padding:14px 18px}.portfolio-settings-note{font-size:10px}.portfolio-dates{padding:0 18px 18px;flex-wrap:wrap}.portfolio-builder{gap:16px}.portfolio-library-controls{padding:18px}.portfolio-run-bar{flex-direction:column;gap:12px}.portfolio-run-bar .actions{width:100%;flex-wrap:wrap;justify-content:flex-end}.portfolio-result-placeholder{grid-template-columns:1fr}.portfolio-result-placeholder svg{display:none}.portfolio-result-head{flex-wrap:wrap}.portfolio-result-head .actions{margin-left:auto}.portfolio-chart-legend{gap:12px;padding-left:0;font-size:11px}.portfolio-plot text{font-size:13px}.portfolio-chart-body{padding:15px 10px 10px}.portfolio-results .card-head{align-items:flex-start;flex-wrap:wrap}.portfolio-year-grid{gap:18px;padding:22px 18px}.portfolio-fee-field{flex-wrap:wrap}.portfolio-fee-field input{width:100px}}

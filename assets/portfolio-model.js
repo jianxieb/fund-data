@@ -9,6 +9,23 @@
   const gap = (a, b) => (time(b) - time(a)) / DAY;
   const sum = values => values.reduce((a, b) => a + b, 0);
   const fail = message => { throw new Error(message); };
+  const initialMethods = [
+    ['lump_sum', '一次性投入'], ['tranche_6', '6个月分批投入'], ['tranche_12', '12个月分批投入'],
+    ['tranche_24', '24个月分批投入'], ['drawdown_ladder', '回撤阶梯投入'], ['ma200_hold', '200日均线择时']
+  ];
+  const contributionMethods = [
+    ['dca_month', '每月定投'], ['dca_quarter', '每季度定投'], ['dca_year', '每年定投'],
+    ['dca_drawdown', '回撤倍数定投'], ['dca_ma_trend', '均线顺势定投'], ['dca_ma_contrarian', '均线逆势定投']
+  ];
+  function strategyConfig(config) {
+    const strategy = { initialMethod: config.initialMethod ?? 'lump_sum', contributionMethod: config.contributionMethod ?? 'dca_month' };
+    if (!initialMethods.some(([key]) => key === strategy.initialMethod) || !contributionMethods.some(([key]) => key === strategy.contributionMethod)) fail('投入方式无效');
+    return strategy;
+  }
+  function strategyNames(config) {
+    const strategy = strategyConfig(config);
+    return { initial: initialMethods.find(([key]) => key === strategy.initialMethod)[1], contribution: contributionMethods.find(([key]) => key === strategy.contributionMethod)[1] };
+  }
   const taxDefaults = { usCapitalGains: 0, usDividend: 0, cnStockCapitalGains: 0, cnStockDividend: 0,
     cnFundCapitalGains: 0, cnFundDividend: 0, liquidate: false, overrides: {} };
   function taxConfig(value) {
@@ -113,23 +130,24 @@
   }
   function holdingPerformance(rows, trades, terminalValue) {
     const start = trades.find(t => t.side === 'buy')?.day, end = rows.at(-1)[0];
+    const activeRows = start ? rows.filter(([day]) => day >= start) : [];
     const invested = sum(trades.filter(t => t.side === 'buy').map(t => t.amount + t.fee));
     const returned = sum(trades.filter(t => t.side === 'sell').map(t => t.amount - t.fee - (t.tax || 0)));
     const profit = terminalValue + returned - invested;
     const totalReturn = invested > 0 ? profit / invested * 100 : null;
     const flows = trades.map(t => [t.day, t.side === 'buy' ? -(t.amount + t.fee) : t.amount - t.fee - (t.tax || 0)]);
     flows.push([end, terminalValue]);
-    const short = gap(start, end) < YEAR;
+    const short = !start || gap(start, end) < YEAR;
     const annual = short ? totalReturn : holdingXirr(flows);
     let peak = 1, mdd = 0;
-    for (const [, value] of rows) {
+    for (const [, value] of activeRows) {
       peak = Math.max(peak, value);
       mdd = Math.min(mdd, (value / peak - 1) * 100);
     }
     return { start, end, totalReturn, annualReturn: annual, mdd, invested, returned, profit, flows,
       annualBasis: short ? 'under_one_year_total_return' : 'money_weighted_xirr',
-      annualMissing: annual === null ? '资金流未找到唯一年化解' : null,
-      volatility: annualVolatility(rows.map(row => row[1])), observations: rows.length,
+      annualMissing: !start ? '模拟区间内未买入' : annual === null ? '资金流未找到唯一年化解' : null,
+      volatility: annualVolatility(activeRows.map(row => row[1])), observations: activeRows.length,
       currency: 'CNY', dividends: 'reinvested', transactionFeesIncluded: true,
       riskBasis: 'actual_holding_flow_adjusted_nav' };
   }
@@ -164,6 +182,7 @@
     if (!finite(config.transactionFee) || config.transactionFee < 0 || config.transactionFee > 5) fail('交易费率须在0至5%之间');
     if (!['none', 'month', 'quarter', 'year'].includes(config.rebalance)) fail('再平衡周期无效');
     if (!['net', 'gross_estimate'].includes(config.feeBasis)) fail('年费口径无效');
+    strategyConfig(config);
     const tax = taxConfig(config.tax);
     if (Object.keys(tax.overrides).some(id => !ids.has(id))) fail('单项税率含未收录的标的');
     if (![1, 2, 3, 5, 10, 'common', 'custom'].includes(config.years)) fail('回测区间无效');
@@ -237,13 +256,78 @@
       return { value: observation.value * (quote?.value || 1) * feeFactor,
         carried: observation.carried, fxCarried: !!quote?.carried };
     });
+    const strategy = strategyConfig(config), strategyDays = common.filter(day => day >= start && day <= end);
+    const months = strategyDays.filter((day, i) => !i || day.slice(0, 7) !== strategyDays[i - 1].slice(0, 7));
+    // Signals use a separate target-weight reference, without investor cash flows,
+    // fees or taxes. Each close is formed only from prices already published.
+    const signals = new Map(), needsSignal = strategy.initialMethod === 'drawdown_ladder' && config.initial > 0 ||
+      strategy.initialMethod === 'ma200_hold' && config.initial > 0 || config.monthly > 0 && ['dca_drawdown', 'dca_ma_trend', 'dca_ma_contrarian'].includes(strategy.contributionMethod);
+    let warmupDays = 0, insufficientMaDays = 0;
+    if (needsSignal) {
+      const warmDays = common.filter(day => day < start).slice(-200), referenceDays = [...warmDays, ...strategyDays];
+      let reference = 1, referencePeak = null, previous = null, previousDay = null, closes = [];
+      for (const day of referenceDays) {
+        if (previousDay && gap(previousDay, day) > 14 && day <= start) { closes = []; previous = null; }
+        const historyCount = closes.length;
+        const trend = historyCount < 200 ? null : closes.at(-1) > sum(closes.slice(-200)) / 200;
+        const drawdown = referencePeak === null || !historyCount ? 0 : Math.min(0, closes.at(-1) / referencePeak - 1);
+        if (day >= start) {
+          signals.set(day, { trend, drawdown, historyCount });
+          if (day === start) warmupDays = historyCount;
+          if (trend === null) insufficientMaDays++;
+        }
+        const current = pricesAt(day).map(p => p.value);
+        if (previous) reference *= cashWeight + sum(series.map((s, i) => s.weight * current[i] / previous[i]));
+        closes.push(reference); if (closes.length > 200) closes.shift();
+        if (day >= start) referencePeak = Math.max(referencePeak ?? reference, reference);
+        previous = current; previousDay = day;
+      }
+    }
+    const initialPlan = new Map();
+    if (config.initial > 0) {
+      if (strategy.initialMethod.startsWith('tranche_')) {
+        const count = Number(strategy.initialMethod.split('_')[1]);
+        months.slice(0, count).forEach(day => initialPlan.set(day, config.initial / count));
+      } else if (strategy.initialMethod === 'drawdown_ladder') {
+        initialPlan.set(start, config.initial / 4);
+        const hit = new Set(); let left = config.initial * .75;
+        for (const day of strategyDays.slice(1)) {
+          if (day === months[36]) { initialPlan.set(day, (initialPlan.get(day) || 0) + left); left = 0; break; }
+          for (const threshold of [.1, .2, .3]) {
+            if (!hit.has(threshold) && signals.get(day).drawdown <= -threshold + 1e-12 && left > EPS) {
+              const amount = Math.min(config.initial / 4, left);
+              initialPlan.set(day, (initialPlan.get(day) || 0) + amount); left -= amount; hit.add(threshold);
+            }
+          }
+        }
+      } else initialPlan.set(start, config.initial);
+    }
+    const incomePlan = new Map(), incomeMonths = config.initial > 0 ? months.slice(1) : months;
+    if (config.monthly > 0) {
+      if (['dca_quarter', 'dca_year'].includes(strategy.contributionMethod)) {
+        // The quarterly/annual choice pre-funds that period's planned budget;
+        // the final incomplete period uses only months inside this window.
+        const frequency = strategy.contributionMethod === 'dca_quarter' ? 'quarter' : 'year';
+        const groups = new Map();
+        incomeMonths.forEach(day => { const key = periodKey(day, frequency); const group = groups.get(key) || []; group.push(day); groups.set(key, group); });
+        for (const group of groups.values()) incomePlan.set(group[0], config.monthly * group.length);
+      } else for (const day of incomeMonths) {
+        const signal = signals.get(day); let multiplier = 1;
+        if (strategy.contributionMethod === 'dca_drawdown') multiplier = signal.drawdown > -.1 + 1e-12 ? 1 : signal.drawdown > -.2 + 1e-12 ? 1.5 : signal.drawdown > -.3 + 1e-12 ? 2 : 3;
+        else if (signal?.trend === false && strategy.contributionMethod === 'dca_ma_trend') multiplier = .5;
+        else if (signal?.trend === false && strategy.contributionMethod === 'dca_ma_contrarian') multiplier = 2;
+        incomePlan.set(day, config.monthly * multiplier);
+      }
+    }
     const units = series.map(() => 0), bought = series.map(() => 0), sold = series.map(() => 0), costs = series.map(() => 0);
     const basis = series.map(() => 0), capitalTaxes = series.map(() => 0), dividendTaxes = series.map(() => 0), taxEvents = [];
     const tax = taxConfig(config.tax);
     const holdingNav = series.map(() => 1);
     const fee = config.transactionFee / 100, transactions = [], flows = [];
     let cash = 0, contributed = 0, fundUnits = 0, tradeCost = 0, rebalances = 0, deposits = 0;
-    let lastMonth = start.slice(0, 7), lastBalance = periodKey(start, config.rebalance), peak = 1, mdd = 0;
+    let lastBalance = periodKey(start, config.rebalance), peak = 1, mdd = 0;
+    let initialReserve = config.initial, exposure = 1, timingChanges = 0;
+    const timing = config.initial > 0 && strategy.initialMethod === 'ma200_hold';
     let carriedPrices = 0, carriedFx = 0;
     const value = prices => cash + sum(units.map((unit, i) => unit * prices[i]));
     const saleTax = (i, amount, price, saleFee) => {
@@ -273,36 +357,36 @@
       if (Math.abs(cash) < 1e-5) cash = 0;
       tradeCost += charge;
     };
-    function rebalance(day, prices, reason) {
-      const wealth = value(prices), previous = units.map((u, i) => u * prices[i]);
+    function rebalance(day, prices, reason, targetExposure = exposure) {
+      const wealth = Math.max(0, value(prices) - initialReserve), previous = units.map((u, i) => u * prices[i]);
       let lo = 0, hi = wealth;
       if (fee || series.some(s => s.tax.gain > 0)) {
         for (let i = 0; i < 70; i++) {
           const charge = (lo + hi) / 2;
           const implied = sum(series.map((s, k) => {
-            const delta = s.weight * (wealth - charge) - previous[k], tradeFee = Math.abs(delta) * fee;
+            const delta = targetExposure * s.weight * (wealth - charge) - previous[k], tradeFee = Math.abs(delta) * fee;
             return tradeFee + (delta < 0 ? saleTax(k, -delta, prices[k], tradeFee).tax : 0);
           }));
           if (implied > charge) lo = charge; else hi = charge;
         }
       } else hi = 0;
-      const usable = wealth - hi, deltas = series.map((s, i) => s.weight * usable - previous[i]);
+      const usable = wealth - hi, deltas = series.map((s, i) => targetExposure * s.weight * usable - previous[i]);
       trade(day, prices, deltas, deltas.map(delta => Math.abs(delta) * fee), reason);
       if (reason === 'rebalance') rebalances++;
     }
-    function deposit(day, amount, prices, initial) {
+    function deposit(day, amount, prices) {
       if (!amount) return;
       const before = value(prices), nav = fundUnits ? before / fundUnits : 1;
       if (!finite(nav) || nav <= 0) fail('组合净值无效');
       fundUnits += amount / nav;
       cash += amount; contributed += amount; deposits++;
       flows.push([day, -amount]);
-      if (initial) rebalance(day, prices, 'initial');
-      else {
-        const usable = amount / (1 + fee * total / 100);
-        const deltas = series.map(s => usable * s.weight);
-        trade(day, prices, deltas, deltas.map(delta => delta * fee), 'contribution');
-      }
+    }
+    function invest(day, amount, prices, reason) {
+      if (amount <= EPS || !exposure) return;
+      const usable = amount / (1 + fee * total / 100);
+      const deltas = series.map(s => usable * s.weight);
+      trade(day, prices, deltas, deltas.map(delta => delta * fee), reason);
     }
     const curve = [], holdingPaths = series.map(() => []), fxDates = new Set((fx || []).map(row => row[0]));
     let lastPrices = null;
@@ -324,14 +408,21 @@
       const tradesBefore = transactions.length;
       carriedPrices += observations.filter(p => p.carried).length;
       if (observations.some(p => p.fxCarried)) carriedFx++;
-      if (day === start) deposit(day, config.initial || config.monthly, prices, true);
-      else if (commonSet.has(day)) {
-        if (config.monthly && day.slice(0, 7) !== lastMonth) {
-          deposit(day, config.monthly, prices, false);
-          lastMonth = day.slice(0, 7);
+      if (commonSet.has(day)) {
+        if (day === start) deposit(day, config.initial, prices);
+        const released = Math.min(initialReserve, initialPlan.get(day) || 0), income = incomePlan.get(day) || 0;
+        initialReserve = Math.max(0, initialReserve - released);
+        deposit(day, income, prices);
+        const nextExposure = timing && signals.get(day).trend === false ? 0 : 1;
+        const switched = timing && (day === start ? nextExposure === 0 : nextExposure !== exposure);
+        exposure = nextExposure;
+        if (switched) { rebalance(day, prices, exposure ? 'timing_in' : 'timing_out'); if (day !== start) timingChanges++; }
+        else {
+          invest(day, released, prices, day === start ? 'initial' : 'initial_plan');
+          invest(day, income, prices, 'contribution');
         }
         const balance = periodKey(day, config.rebalance);
-        if (config.rebalance !== 'none' && balance !== lastBalance) {
+        if (config.rebalance !== 'none' && day !== start && balance !== lastBalance) {
           rebalance(day, prices, 'rebalance'); lastBalance = balance;
         }
       }
@@ -349,7 +440,7 @@
       const account = value(prices), nav = account / fundUnits;
       peak = Math.max(peak, nav); mdd = Math.min(mdd, (nav / peak - 1) * 100);
       curve.push({ day, value: account, contributed, profit: account - contributed, nav, totalReturn: (nav - 1) * 100,
-        annualReturn: day === start ? (nav - 1) * 100 : annualReturn(nav, start, day), drawdown: (nav / peak - 1) * 100, taxCost: sum(capitalTaxes) + sum(dividendTaxes) });
+        annualReturn: day === start ? (nav - 1) * 100 : annualReturn(nav, start, day), drawdown: (nav / peak - 1) * 100, cash, initialReserve, exposure, taxCost: sum(capitalTaxes) + sum(dividendTaxes) });
     }
     const final = curve.at(-1), prices = pricesAt(end).map(p => p.value);
     flows.push([end, final.value]);
@@ -414,7 +505,9 @@
       // A short-period money-weighted figure is left unannualized rather than
       // exaggerating one month's change into a full-year compound rate.
       xirr: gap(start, end) / YEAR >= 1 ? M.buyLocationXirr(flows) : null,
-      deposits, rebalances, transactions, tradeCost, taxEvents, taxCost: sum(capitalTaxes) + sum(dividendTaxes), capitalTax: sum(capitalTaxes), dividendTax: sum(dividendTaxes), carriedPrices, carriedFx, benchmark, benchmarkError,
+      deposits, rebalances, transactions, tradeCost, initialReserve, timingChanges,
+      strategy: { ...strategy, warmupDays, insufficientMaDays, signalBasis: 'prior_common_close_target_weight_reference' },
+      plan: { initial: [...initialPlan].map(([day, amount]) => ({ day, amount })), income: [...incomePlan].map(([day, amount]) => ({ day, amount })) }, taxEvents, taxCost: sum(capitalTaxes) + sum(dividendTaxes), capitalTax: sum(capitalTaxes), dividendTax: sum(dividendTaxes), carriedPrices, carriedFx, benchmark, benchmarkError,
       config: JSON.parse(JSON.stringify(config)) };
   }
   function sanitizeDraft(value, ids) {
@@ -422,7 +515,7 @@
     const positions = value.positions.map(p => ({ id: p.id, weight: p.weight }));
     const config = { positions, initial: value.initial, monthly: value.monthly, rebalance: value.rebalance,
       years: value.years, start: value.start || '', end: value.end || '', transactionFee: value.transactionFee,
-      feeBasis: value.feeBasis || 'net', feeOverrides: value.feeOverrides || {}, benchmarkId: value.benchmarkId || '', tax: taxConfig(value.tax) };
+      feeBasis: value.feeBasis || 'net', feeOverrides: value.feeOverrides || {}, benchmarkId: value.benchmarkId || '', tax: taxConfig(value.tax), ...strategyConfig(value) };
     validateConfig(config, ids);
     if (config.benchmarkId && !ids.has(config.benchmarkId)) fail('对照标的未收录');
     for (const [code, rate] of Object.entries(config.feeOverrides)) {
@@ -430,5 +523,5 @@
     }
     return config;
   }
-  return { simulate, simulateWindows, validateHistory, validateConfig, sanitizeDraft, allocation, amountFromWeight, weightFromAmount, at, annualReturn, holdingXirr, addYears, taxConfig, taxRates };
+  return { simulate, simulateWindows, validateHistory, validateConfig, sanitizeDraft, allocation, amountFromWeight, weightFromAmount, at, annualReturn, holdingXirr, addYears, taxConfig, taxRates, strategyConfig, strategyNames, initialMethods, contributionMethods };
 });

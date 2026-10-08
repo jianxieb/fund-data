@@ -3,7 +3,7 @@
   const M = window.Changheng, P = window.ChanghengPortfolioModel, KEY = 'changheng.portfolio.v1';
   let H, catalog = window.PORTFOLIO_CATALOG || null, loading = false, loadError = '', running = false, runId = 0;
   const histories = new Map(), requests = new Map();
-  const defaults = { positions: [], initial: 100000, monthly: 0, rebalance: 'none', transactionFee: 0,
+  const defaults = { positions: [], initial: 100000, monthly: 0, initialMethod: 'lump_sum', contributionMethod: 'dca_month', rebalance: 'none', transactionFee: 0,
     years: 5, start: '', end: '', benchmarkId: 'us:SPY', feeOverrides: {},
     tax: { ...P.taxConfig(), usCapitalGains: 20, usDividend: 20 } };
   let draft = { ...defaults }, query = '', kind = 'all', market = 'all', hideBoards = false, pickerMode = 'holding';
@@ -109,10 +109,29 @@
     }).join('');
     return '<div class="portfolio-tax-bar"><details class="portfolio-tax-settings"><summary><strong>模拟税率</strong><span id="portfolio-tax-summary">' + H.esc(taxSummary()) + '</span></summary><div class="portfolio-tax-body"><div class="actions">' + btn('大陆居民假设', 'tax-mainland', 'btn sm') + btn('不计税', 'tax-zero', 'btn sm') + btn('税费口径', 'tax-method', 'text-link small') + '</div><div class="portfolio-tax-grid">' + groups.map(([key, label]) => '<div><h3>' + label + '</h3>' + number('卖出盈利税率', 'tax-' + key + 'CapitalGains', draft.tax[key + 'CapitalGains'], 100, 'any', '%') + number('分红综合税率', 'tax-' + key + 'Dividend', draft.tax[key + 'Dividend'], 100, 'any', '%') + '</div>').join('') + '</div>' + (overrides ? '<details class="portfolio-tax-overrides"><summary>逐项设置税率</summary>' + overrides + '</details>' : '') + '</div></details><label class="check-label"><input type="checkbox" id="portfolio-liquidate"' + (draft.tax.liquidate ? ' checked' : '') + '>期末清仓</label></div>';
   }
+  function strategyHints() {
+    const initial = draft.initial === 0 ? '初始金额为0，仅执行持续投入' : ({
+      lump_sum: '初始本金一次买入', tranche_6: '初始本金分6份，每月投入一份', tranche_12: '初始本金分12份，每月投入一份',
+      tranche_24: '初始本金分24份，每月投入一份', drawdown_ladder: '先投入25%；回撤10% / 20% / 30%各投入25%', ma200_hold: '前收盘高于200日均线持有，否则持有现金'
+    }[draft.initialMethod]);
+    const income = draft.monthly === 0 ? '月预算为0，不追加投入' : ({
+      dca_month: '每月投入基础月预算', dca_quarter: '季度首个共同交易日投入本季预算', dca_year: '年度首个共同交易日投入本年预算',
+      dca_drawdown: '回撤10% / 20% / 30%时投入1.5 / 2 / 3倍月预算', dca_ma_trend: '不高于200日均线时投入半份月预算', dca_ma_contrarian: '不高于200日均线时投入双份月预算'
+    }[draft.contributionMethod]);
+    return { initial, income };
+  }
+  function syncStrategyHints() {
+    const hints = strategyHints();
+    for (const [key, value] of Object.entries(hints)) {
+      const el = document.getElementById('portfolio-' + key + '-hint');
+      if (el) el.textContent = value || '';
+    }
+  }
   function settings() {
-    const benchmark = asset(draft.benchmarkId);
+    const benchmark = asset(draft.benchmarkId), hints = strategyHints();
     return '<section class="card portfolio-settings"><div class="portfolio-settings-top"><h2>模拟设置</h2><div class="portfolio-return-controls"><span class="muted">回测区间</span>' + menu('years', '回测区间', [[1, '近1年'], [2, '近2年'], [3, '近3年'], [5, '近5年'], [10, '近10年'], ['common', '共同历史'], ['custom', '自定义区间']], draft.years) + '</div></div>' +
-      '<div class="portfolio-settings-grid">' + number('每月追加', 'monthly', draft.monthly, 1e10, 'any', '元') +
+      '<div class="portfolio-settings-grid"><div class="portfolio-field"><span>本金投入方式</span>' + menu('initialMethod', '本金投入方式', P.initialMethods, draft.initialMethod) + '<small id="portfolio-initial-hint" class="portfolio-strategy-hint">' + H.esc(hints.initial || '') + '</small></div>' +
+      '<div class="portfolio-field"><span>持续投入方式</span>' + menu('contributionMethod', '持续投入方式', P.contributionMethods, draft.contributionMethod) + '<small id="portfolio-income-hint" class="portfolio-strategy-hint">' + H.esc(hints.income || '') + '</small></div>' + number('基础月预算', 'monthly', draft.monthly, 1e10, 'any', '元') +
       '<div class="portfolio-field"><span>再平衡</span>' + menu('rebalance', '再平衡周期', [['none', '不再平衡'], ['month', '每月'], ['quarter', '每季度'], ['year', '每年']], draft.rebalance) + '</div>' +
       number('买卖交易费率', 'transactionFee', draft.transactionFee, 5, 'any', '%') + '<div class="portfolio-field portfolio-benchmark"><span>对照标的</span>' + btn(H.esc(benchmark?.code || '不设置') + '<span>更换</span>', 'benchmark', 'portfolio-benchmark-button', 'aria-label="更换对照标的"') + '</div></div>' +
       (draft.years === 'custom' ? '<div class="portfolio-dates"><label>开始日<input type="date" id="portfolio-start" data-portfolio-field="start" value="' + H.esc(draft.start) + '"></label><label>结束日<input type="date" id="portfolio-end" data-portfolio-field="end" value="' + H.esc(draft.end) + '"></label></div>' : '') +
@@ -203,16 +222,17 @@
   }
   function results() {
     if (!result) return '<section class="portfolio-result-placeholder"><div><span class="eyebrow">YOUR PORTFOLIO, OVER TIME</span><h2>看组合如何走过市场起伏</h2><p>配置权重和投入方式后，开始模拟。</p></div><svg viewBox="0 0 460 135" aria-hidden="true"><path d="M3 120H457M3 80H457M3 40H457" stroke="#e0e5d7"/><path d="m3 101 37-13 37 14 38-28 37 7 38-22 38 12 37-31 37 5 40-26 38 6 40-23" fill="none" stroke="#96aa83" stroke-width="2"/><path d="m3 110 37-4 37 5 38-19 37 10 38-8 38-9 37 6 37-19 40 9 38-16 40 2" fill="none" stroke="#c3b291" stroke-width="1.5" stroke-dasharray="5 5"/></svg></section>';
-    const r = result;
+    const r = result, strategy = P.strategyNames(r.config);
+    const usesMa = r.config.initial > 0 && r.config.initialMethod === 'ma200_hold' || r.config.monthly > 0 && ['dca_ma_trend', 'dca_ma_contrarian'].includes(r.config.contributionMethod);
     const rows = r.holdings.map((h, i) => '<tr><td><span class="portfolio-result-name"><i style="background:' + colors[i % colors.length] + '"></i><span><strong>' + H.esc(h.name) + '</strong><small>' + H.esc(h.code) + '</small></span></span></td>' +
       '<td class="num">' + H.pc(h.performance.annualReturn) + '<span class="sub">' + H.esc(h.performance.annualMissing || (h.performance.annualBasis === 'money_weighted_xirr' ? 'XIRR' : '不足一年不外推')) + '</span></td><td class="num">' + H.pc(h.performance.totalReturn) + '</td><td class="num">' + H.pc(h.performance.mdd) + '</td><td class="num">' + H.pct(h.performance.volatility, 2, false) + '</td>' +
       '<td class="num">' + H.pct(h.targetWeight, 2, false) + '</td><td class="num">' + H.pct(h.actualWeight, 2, false) + '</td><td class="num">' + H.money(h.value, 2) + '</td><td class="num"><span class="' + (h.profit < 0 ? 'negative' : 'positive') + '">' + H.money(h.profit, 2) + '</span></td><td class="num">' + H.money(h.transactionCost, 2) + '</td><td class="num">' + H.money(h.taxCost, 2) + '</td></tr>').join('');
     const holdingTable = '<div class="table-wrap" tabindex="0" role="region" aria-label="持仓收益与风险明细"><table class="portfolio-holdings-table"><thead><tr class="portfolio-holdings-groups"><th rowspan="2" scope="col">标的</th><th colspan="4" scope="colgroup">策略收益与风险</th><th colspan="6" scope="colgroup">投入与贡献</th></tr><tr><th scope="col">策略年化收益</th><th scope="col" title="实际盈亏 ÷ 累计买入金额（含买入费）">累计投入收益</th><th scope="col">最大回撤</th><th scope="col">年化波动</th><th scope="col">目标权重</th><th scope="col">期末权重</th><th scope="col">期末市值 / 元</th><th scope="col">盈亏贡献 / 元</th><th scope="col">交易费 / 元</th><th scope="col">投资者税 / 元</th></tr></thead><tbody>' + rows + (r.cash > .005 ? '<tr><td>现金</td><td class="num">0.00%</td><td class="num">0.00%</td><td class="num">0.00%</td><td class="num">0.00%</td><td class="num">' + H.pct(r.cashWeight, 2, false) + '</td><td class="num">' + H.pct(r.cash / r.value * 100, 2, false) + '</td><td class="num">' + H.money(r.cash, 2) + '</td><td class="num">0.00</td><td class="num">0.00</td><td class="num">0.00</td></tr>' : '') + '</tbody></table></div>';
-    return '<div class="portfolio-results"><div class="portfolio-result-head"><div><h2>' + (resultKey === signature() ? '模拟结果' : '上次模拟结果') + '</h2><p>' + r.start + ' — ' + r.end + ' · ' + (r.config.feeBasis === 'net' ? '年费已扣除' : '扣费前估算') + ' · ' + (r.config.tax?.liquidate ? '清仓后结果' : '持仓估值') + ' · 已计模拟税费</p></div><div class="portfolio-result-tools">' + H.annualControl + '<div class="actions">' + btn('区间与来源', 'sources', 'text-link small') + btn(exportingPdf ? '正在生成 PDF…' : '导出 PDF', 'export-pdf', 'btn portfolio-export', running || exportingPdf ? 'disabled' : '') + '</div></div></div>' +
+    return '<div class="portfolio-results"><div class="portfolio-result-head"><div><h2>' + (resultKey === signature() ? '模拟结果' : '上次模拟结果') + '</h2><p>' + r.start + ' — ' + r.end + ' · ' + (r.config.feeBasis === 'net' ? '年费已扣除' : '扣费前估算') + ' · ' + (r.config.tax?.liquidate ? '清仓后结果' : '持仓估值') + ' · 已计模拟税费</p><p class="portfolio-result-strategy">' + H.esc((r.config.initial > 0 ? strategy.initial : '') + (r.config.initial > 0 && r.config.monthly > 0 ? ' ＋ ' : '') + (r.config.monthly > 0 ? strategy.contribution : '')) + '</p></div><div class="portfolio-result-tools">' + H.annualControl + '<div class="actions">' + btn('区间与来源', 'sources', 'text-link small') + btn(exportingPdf ? '正在生成 PDF…' : '导出 PDF', 'export-pdf', 'btn portfolio-export', running || exportingPdf ? 'disabled' : '') + '</div></div></div>' +
       '<div class="stats-grid">' + H.stat(H.annual ? '组合年化收益' : '组合累计收益', H.pct(H.annual ? r.annualReturn : r.totalReturn, 2, false), '', r.benchmark ? '对照 ' + H.pct(H.annual ? r.benchmark.annualReturn : r.benchmark.totalReturn) : '按现金流中性组合净值计算') +
       H.stat('期末资产', H.money(r.value), '元', '累计投入 ' + H.money(r.contributed) + ' 元') + H.stat(r.config.tax?.liquidate ? '清仓盈亏' : '账面盈亏', H.money(r.profit), '元', r.config.tax?.liquidate ? '已扣清仓交易费与盈利税' : '持仓与现金合计；浮盈未征税') + H.stat('最大回撤', H.pct(r.mdd, 2, false), '', '年化波动 ' + H.pct(r.volatility, 2, false)) + '</div>' +
       snapshots() + (r.benchmarkError ? '<div class="portfolio-warning">' + H.esc(r.benchmarkError) + '，当前仅显示组合曲线。</div>' : '') +
-      chart() + '<div class="portfolio-result-notes"><span>投入 ' + r.deposits + '笔</span><span>再平衡 ' + r.rebalances + '次</span><span>交易费用 ' + H.money(r.tradeCost, 2) + '元</span><span>卖出盈利税 ' + H.money(r.capitalTax, 2) + '元</span><span>分红税 ' + H.money(r.dividendTax, 2) + '元</span>' + (r.xirr !== null ? '<span>资金年化 ' + H.pct(r.xirr) + '</span>' : '') + '</div>' +
+      chart() + '<div class="portfolio-result-notes"><span>入金 ' + r.deposits + '笔</span><span>买入 ' + r.transactions.filter(t => t.side === 'buy').length + '笔</span><span>再平衡 ' + r.rebalances + '次</span><span>交易费用 ' + H.money(r.tradeCost, 2) + '元</span><span>卖出盈利税 ' + H.money(r.capitalTax, 2) + '元</span><span>分红税 ' + H.money(r.dividendTax, 2) + '元</span>' + (r.xirr !== null ? '<span>资金年化 ' + H.pct(r.xirr) + '</span>' : '') + (r.initialReserve > .005 ? '<span>待投入本金 ' + H.money(r.initialReserve, 2) + '元</span>' : '') + (r.timingChanges ? '<span>择时切换 ' + r.timingChanges + '次</span>' : '') + '</div>' + (usesMa && r.strategy.insufficientMaDays ? '<div class="portfolio-warning">均线不足200个共同交易日的阶段按常规投入，未将缺历史视为下跌信号。</div>' : '') +
       H.card('持仓贡献', r.start + ' — ' + r.end + ' · 人民币', '<div class="portfolio-structure portfolio-end-structure"><h3>期末结构</h3>' + structure(r.holdings.map(h => ({ id: h.id, weight: h.actualWeight }))) + '</div>' + holdingTable, btn('导出持仓', 'export-holdings', 'btn portfolio-export')) + '<section class="card portfolio-yearly"><div class="card-head"><h2>年度表现</h2><span class="small">现金流中性 · 累计收益</span></div><div class="portfolio-year-grid">' + r.annual.map(y => '<div><span>' + y.year + '</span><strong class="num">' + H.pc(y.return) + '</strong><small>' + y.start.slice(5) + ' — ' + y.end.slice(5) + '</small></div>').join('') + '</div></section></div>';
   }
   function view(context) {
@@ -224,7 +244,7 @@
       (draft.positions.some(p => (asset(p.id)?.leverage || 1) > 1 && p.weight > 0) ? '<div class="portfolio-warning">组合含每日杠杆ETF，长期表现取决于价格路径；杠杆并非长期收益的固定倍数。</div>' : '') + results();
   }
   function method() {
-    H.openModal(H.modalTitle('组合回测口径', '人民币 · 每日历史 · 按所设税率') + '<div class="rule-list"><p><strong>价格与分红：</strong>境内基金及ETF使用净值与已发布每日收益，默认不计场内溢价；个股和海外ETF使用含分红复权股价。分红视为再投资，支持碎股，不模拟申购暂停、涨跌停或整手限制。</p><p><strong>汇率与交易日：</strong>海外资产按美元兑人民币历史汇率估值。休市日沿用最近已发布价格；新增投入和再平衡推迟到所选资产都有真实报价的共同日期，不使用未来价格。</p><p><strong>投入与权重：</strong>未分配权重持有零息现金。每月追加按目标权重购买；再平衡按所选月份、季度或年份的首个共同交易日进行，先结算买卖费用再求目标持仓。</p><p><strong>费用与税：</strong>实际净值与复权股价已经反映产品持续年费，不再重复扣费，也不加回年费。买卖费率是统一自定义假设，未含最低佣金、换汇价差和申赎阶梯费率。投资者税使用所设综合税率；期末清仓开启时扣清仓交易税费。跨境卖出和股息税后的渠道比较见“投资渠道”。</p><p><strong>收益：</strong>组合净值消除外部追加本金影响；账面盈亏为期末资产减累计投入。首年年化按至少一年计算；不满一年不显示资金年化。对照线为同币种、同区间持有回报，使用同样税率和期末清仓设置，不计用户自定义交易费。</p><p><strong>持仓策略收益：</strong>逐笔使用实际买卖金额和费用。累计投入收益为（期末市值＋累计卖出净回款－累计买入含费金额）除以累计买入含费金额；反复买入的资金也计入分母。满一年按实际日期计算资金年化XIRR，不足一年显示累计投入收益、不外推；资金流找不到唯一年化解时留空。回撤和波动使用实际持仓的现金流中性净值，计入交易费，追加和调仓转账本身不计收益。它们衡量持仓过程的风险，不是累计投入收益率的波动。</p></div><div class="actions"><a class="source-link" href="docs/portfolio-method.md" target="_blank" rel="noopener">完整公式与边界 ↗</a></div>');
+    H.openModal(H.modalTitle('组合回测口径', '人民币 · 每日历史 · 按所设税率') + '<div class="rule-list"><p><strong>价格与分红：</strong>境内基金及ETF使用净值与已发布每日收益，默认不计场内溢价；个股和海外ETF使用含分红复权股价。分红视为再投资，支持碎股，不模拟申购暂停、涨跌停或整手限制。</p><p><strong>汇率与交易日：</strong>海外资产按美元兑人民币历史汇率估值。休市日沿用最近已发布价格；新增投入和再平衡推迟到所选资产都有真实报价的共同日期，不使用未来价格。</p><p><strong>投入与权重：</strong>本金与持续投入方式可分别选择。分批、回撤阶梯的待投入本金持有零息现金，再平衡不提前使用。季投、年投在周期首个共同交易日一次入金该周期预算，末期按窗口内月份数计；倍数定投改变实际入金金额。再平衡只调整已释放资金。</p><p><strong>择时信号：</strong>使用独立目标组合的人民币收益路径，现金为零息，按目标权重每日复位；不受实际入金、择时仓位或投资者费用税款影响。前一个共同交易日收盘确定回撤和200日均线信号，下一共同交易日执行。回撤从模拟起点峰值计算；均线可使用窗口前真实历史。不足200次时按常规投入，均线择时作用于整个已释放组合。</p><p><strong>费用与税：</strong>实际净值与复权股价已经反映产品持续年费，不再重复扣费，也不加回年费。买卖费率是统一自定义假设，未含最低佣金、换汇价差和申赎阶梯费率。投资者税使用所设综合税率；期末清仓开启时扣清仓交易税费。跨境卖出和股息税后的渠道比较见“投资渠道”。</p><p><strong>收益：</strong>组合净值消除外部追加本金影响；账面盈亏为期末资产减累计投入。首年年化按至少一年计算；不满一年不显示资金年化。对照线为同币种、同区间持有回报，使用同样税率和期末清仓设置，不计用户自定义交易费。</p><p><strong>持仓策略收益：</strong>逐笔使用实际买卖金额和费用。累计投入收益为（期末市值＋累计卖出净回款－累计买入含费金额）除以累计买入含费金额；反复买入的资金也计入分母。满一年按实际日期计算资金年化XIRR，不足一年显示累计投入收益、不外推；资金流找不到唯一年化解时留空。回撤和波动使用实际持仓的现金流中性净值，计入交易费，追加和调仓转账本身不计收益。它们衡量持仓过程的风险，不是累计投入收益率的波动。</p></div><div class="actions"><a class="source-link" href="docs/portfolio-method.md" target="_blank" rel="noopener">完整公式与边界 ↗</a></div>');
   }
   function taxMethod() {
     H.openModal(H.modalTitle('组合税费口径', '中国大陆税收居民 · 自定义综合税率') + '<div class="rule-list"><p><strong>卖出盈利税：</strong>只对实际卖出的正收益预留税款，包括再平衡与择时卖出；未卖出的浮盈不征税。税基采用人民币移动平均成本，买入费用及税后分红再投入计入成本。逐笔亏损不抵减其他盈利。</p><p><strong>分红税：</strong>行情已含税前分红再投，按现金分配事件只减去所设税额，再把净分红加入成本；不会把分红重复加到账户。综合税率包含来源地预扣与抵免后的境内补税，ADR、REIT及特殊分配ETF可逐项覆盖。</p><p><strong>默认假设：</strong>美股卖出盈利及现金分配20%，A股与境内基金/ETF为0%。A股股息按长期持有假设，不自动重建差别化持有期补税；有短期买卖时可填写实际综合税率。缺覆盖窗口的分红明细时会停止应税回测并写明缺失依据。</p><p><strong>期末清仓：</strong>开启后才在末日卖出全部持仓，并扣除清仓交易费和正收益税。关闭时显示持仓估值；对照线使用同样税率和期末设置，但不计自定义交易费。</p><p>税款在发生交易或分配时预留；不模拟申报延期、跨年亏损抵扣、外税抵免结转、ADR费用或特殊分配性质。这里是税率情景模拟，不能替代个人税单。</p></div><div class="actions"><a class="source-link" href="https://www.chinatax.gov.cn/n810219/n810744/n3752930/n3752974/c3970366/content.html" target="_blank" rel="noopener">个人所得税法 ↗</a><a class="source-link" href="docs/portfolio-method.md" target="_blank" rel="noopener">完整公式 ↗</a></div>');
@@ -239,8 +259,8 @@
   }
   function exportResult() {
     if (!result) return;
-    const rows = [['日期', '账户资产CNY', '累计投入CNY', '账面盈亏CNY', '组合净值', '累计收益%', '年化收益%（首年至少一年）', '回撤%', '累计投资者税CNY', '年费口径', '配置JSON'],
-      ...result.curve.map(p => [p.day, p.value, p.contributed, p.profit, p.nav, p.totalReturn, p.annualReturn, p.drawdown, p.taxCost, result.config.feeBasis, JSON.stringify(result.config)])];
+    const rows = [['日期', '账户资产CNY', '累计投入CNY', '账面盈亏CNY', '组合净值', '累计收益%', '年化收益%（首年至少一年）', '回撤%', '累计投资者税CNY', '账户现金CNY', '待投入本金CNY', '择时仓位', '年费口径', '配置JSON'],
+      ...result.curve.map(p => [p.day, p.value, p.contributed, p.profit, p.nav, p.totalReturn, p.annualReturn, p.drawdown, p.taxCost, p.cash, p.initialReserve, p.exposure, result.config.feeBasis, JSON.stringify(result.config)])];
     H.download('长衡-组合模拟-' + result.end + '.csv', M.csv(rows), 'text/csv;charset=utf-8');
   }
   async function exportPdf() {
@@ -279,7 +299,7 @@
       case 'select': {
         const field = button.dataset.field;
         if (field === 'years') draft.years = /^\d+$/.test(val) ? Number(val) : val;
-        else if (field === 'rebalance') draft.rebalance = val;
+        else if (['rebalance', 'initialMethod', 'contributionMethod'].includes(field)) draft[field] = val;
         touch(); break;
       }
       case 'kind': kind = val; H.resetList(); break;
@@ -331,6 +351,7 @@
       else draft[key] = el.value.trim() ? Number(el.value) : key === 'monthly' && !el.validity.badInput ? 0 : NaN;
       touch();
       if (key === 'initial') syncBudget(el);
+      if (['initial', 'monthly'].includes(key)) syncStrategyHints();
       if (key.startsWith('tax-')) syncTax();
       return false;
     }
