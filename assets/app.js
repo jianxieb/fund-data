@@ -30,7 +30,7 @@
     return '<details class="select-menu ' + cls + '"><summary id="' + esc(id) + '" aria-label="' + esc(label + '：' + current[1]) + '"><span>' + esc(current[1]) + '</span></summary>' +
       '<div class="select-menu-list" role="group" aria-label="' + esc(label) + '">' + options.map(([key, text]) => action(esc(text), 'menu-choice', 'select-menu-option' + (key === value ? ' active' : ''), 'data-menu="' + esc(id) + '" data-value="' + esc(key) + '" aria-label="' + esc(text) + '" aria-current="' + (key === value) + '"')).join('') + '</div></details>';
   }
-  const years = [1, 2, 3, 5, 10], titles = { overview: '研究总览', indices: '指数观察', funds: '基金研究', stocks: '个股深入', reports: '深入报告', strategy: '投入策略', 'buy-location': '投资渠道', portfolio: '组合模拟', quality: '数据与方法' };
+  const years = [1, 2, 3, 5, 10], titles = { overview: '研究总览', indices: '指数观察', funds: '基金研究', stocks: '个股深入', reports: '深入报告', strategy: '投入策略', 'buy-location': '投资渠道', 'money-flow': '跨境资金', portfolio: '组合模拟', quality: '数据与方法' };
   const funds = M.dedupeFunds(window.FUNDS, window.EXTRA);
   const policy = window.SCREEN_POLICY || { shortlist: [], byCode: {}, rules: [], counts: {} };
   const VIEW = 'changheng.research-view.v2';
@@ -173,6 +173,9 @@
       feeBasis: state.annualFeeBasis, feeOverrides: state.annualFeeOverrides,
       setFeeBasis: () => { state.annualFeeBasis = 'net'; }
     });
+  }
+  function moneyFlow() {
+    return window.ChanghengMoneyFlow.view({ head, esc, money, action, modalTitle, openModal, render });
   }
   function indexRows() {
     return state.indexTab === 'cn' ? window.INDEX_DATA || [] : (window.BM || []).filter(b => state.indexTab === 'other' ? b.section === 'other' : b.section !== 'other');
@@ -976,10 +979,10 @@
     else if (next.closest('details')) next.closest('details').querySelector('summary').focus({ preventScroll: true });
   }
   function render() {
-    const renderers = { overview: home, indices, funds: fundView, stocks, reports: reportsView, strategy: strategies, 'buy-location': buyLocation, portfolio, quality };
+    const renderers = { overview: home, indices, funds: fundView, stocks, reports: reportsView, strategy: strategies, 'buy-location': buyLocation, 'money-flow': moneyFlow, portfolio, quality };
     const focus = captureFocus(document.activeElement);
     document.title = '长衡 · ' + titles[state.route];
-    const group = { indices: '研究对象', funds: '研究对象', stocks: '研究对象', reports: '研究对象', strategy: '研究方法', 'buy-location': '研究方法', portfolio: '组合研究' }[state.route];
+    const group = { indices: '研究对象', funds: '研究对象', stocks: '研究对象', reports: '研究对象', strategy: '研究方法', 'buy-location': '研究方法', 'money-flow': '研究方法', portfolio: '组合研究' }[state.route];
     $('#breadcrumb').innerHTML = (group ? '<span>' + group + '</span><span class="breadcrumb-separator" aria-hidden="true">/</span>' : '') + (state.route === 'reports' ? '<a href="#stocks">个股深入</a><span class="breadcrumb-separator" aria-hidden="true">/</span>' : '') + '<span aria-current="page">' + titles[state.route] + '</span>';
     $$('[data-route]').forEach(a => { const active = a.dataset.route === (state.route === 'reports' ? 'stocks' : state.route); a.classList.toggle('active', active); if (active) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
     $('#main').className = 'page-' + state.route;
@@ -1019,6 +1022,7 @@
     const act = button.dataset.action, val = button.dataset.value, code = button.dataset.code;
     if (act.startsWith('os-stock-')) { window.ChanghengOverseasStocks.handleAction(button); return; }
     if (act.startsWith('portfolio-')) { window.ChanghengPortfolio.handleAction(button); return; }
+    if (act.startsWith('money-flow-')) { window.ChanghengMoneyFlow.handleAction(button); return; }
     if (['fund-tab', 'fund-facet', 'fund-sector', 'fund-channel', 'fund-reset', 'fund-sort', 'fund-sort-reset', 'screen-reset', 'menu-choice', 'go-index-funds', 'find-index-funds'].includes(act)) loadedCounts.delete('funds');
     if (['cross-type', 'cross-region', 'cross-channel', 'cross-premium', 'cross-reset', 'cross-sort', 'cross-basis'].includes(act)) loadedCounts.delete('cross');
     if (['stock-tab', 'stock-category', 'stock-sort', 'stock-boards'].includes(act)) loadedCounts.delete('stocks');
@@ -1179,6 +1183,7 @@
   document.addEventListener('input', e => {
     const el = e.target;
     if (e.isComposing) { clearTimeout(searchTimer); return; }
+    if (el.dataset.moneyField || el.dataset.moneyQuote) { window.ChanghengMoneyFlow.handleInput(el); return; }
     if (el.id === 'portfolio-search' || el.dataset.portfolioWeight || el.dataset.portfolioAmount || el.dataset.portfolioField || el.dataset.portfolioTaxAsset) {
       if (window.ChanghengPortfolio.handleInput(el)) { clearTimeout(searchTimer); searchTimer = setTimeout(render, 120); }
       return;
@@ -1202,6 +1207,7 @@
   });
   document.addEventListener('change', e => {
     const el = e.target;
+    if (el.dataset.moneyField || el.dataset.moneyQuote || el.dataset.moneyEligible || el.dataset.moneyCheck) { window.ChanghengMoneyFlow.handleChange(el); return; }
     if (el.id === 'portfolio-import' || el.id === 'portfolio-hide-boards' || el.id === 'portfolio-liquidate' || el.dataset.portfolioWeight || el.dataset.portfolioAmount || el.dataset.portfolioField || el.dataset.portfolioFee || el.dataset.portfolioTaxAsset) {
       window.ChanghengPortfolio.handleChange(el); return;
     }

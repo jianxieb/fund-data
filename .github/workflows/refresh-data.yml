@@ -70,6 +70,9 @@ jobs:
         run: python3 scripts/build_fund_actions.py --apply
       - name: Update cross-border fund return bases and distributions
         run: python3 scripts/build_crossborder_data.py
+      - name: Update bank reference FX quotes with original timestamps
+        continue-on-error: true
+        run: python3 scripts/refresh_money_flow_quotes.py
       - name: Reject incomplete or regressed results
         run: python3 scripts/check_refresh.py
       - name: Verify generated browser assets
@@ -103,6 +106,7 @@ jobs:
             python3 refresh.py --timeout 420 --funds-timeout 900
             python3 scripts/build_fund_actions.py --apply
             python3 scripts/build_crossborder_data.py
+            python3 scripts/refresh_money_flow_quotes.py || echo 'Bank quotes unavailable; retained the previous quote timestamps.'
             python3 scripts/check_refresh.py
             npm run version-assets
             npm run check
@@ -113,7 +117,7 @@ jobs:
         id: commit
         if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || inputs.publish) }}
         run: |
-          if git diff --quiet -- data/snapshot.js data/overseas-stocks.js data/indices.js data/index-history.json data/screening.js data/fund-actions.json data/crossborder.js data/*validation.json data/verification*.json data/*reconciliation.json data/portfolio; then
+          if git diff --quiet -- data/snapshot.js data/overseas-stocks.js data/indices.js data/index-history.json data/screening.js data/fund-actions.json data/crossborder.js data/money-flow-quotes.js data/*validation.json data/verification*.json data/*reconciliation.json data/portfolio; then
             echo 'No research data or evidence changed; keeping the existing published snapshot.'
             echo 'changed=false' >> "$GITHUB_OUTPUT"
             exit 0
