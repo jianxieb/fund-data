@@ -134,7 +134,7 @@
     text('长衡', MARGIN + 60, y + 6, 28, C.ink, 700); text('PORTFOLIO RESEARCH', WIDTH - MARGIN, y + 16, 12, C.muted, 600, 'right');
     y += 76; text('组合模拟报告', MARGIN, y, 36, C.ink, 700); y += 56;
     text(r.start + ' - ' + r.end, MARGIN, y, 20, C.green, 600); y += 36;
-    paragraph('人民币 · 分红再投 · ' + (cfg.feeBasis === 'net' ? '年费已含' : '扣费前估算') + ' · 投资者税前');
+    paragraph('人民币 · 分红再投 · ' + (cfg.feeBasis === 'net' ? '年费已含' : '扣费前估算') + ' · 已计模拟税费 · ' + (cfg.tax?.liquidate ? '期末清仓' : '期末持仓估值'));
     paragraph('导出时间 ' + new Date(report.createdAt).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', hour12: false }) + '（北京时间）', C.muted, 13);
 
     section('策略与组合');
@@ -147,6 +147,13 @@
       ['指定区间', r.requestedStart + ' - ' + r.requestedEnd, '实际模拟区间', r.start + ' - ' + r.end],
       ['对照标的', benchmark ? benchmark.name + ' · ' + benchmark.code : '不设置', '持续年费', cfg.feeBasis === 'net' ? '使用已扣年费的真实历史' : '扣费前估算，按有效费率加回']
     ], [1, 2, 1, 2]);
+    const tax = P.taxConfig(cfg.tax);
+    table(['类别', '卖出盈利税率', '分红综合税率'], [
+      ['美股', settingPct(tax.usCapitalGains), settingPct(tax.usDividend)],
+      ['A股', settingPct(tax.cnStockCapitalGains), settingPct(tax.cnStockDividend)],
+      ['境内基金 / ETF', settingPct(tax.cnFundCapitalGains), settingPct(tax.cnFundDividend)],
+      ...Object.keys(tax.overrides).map(id => { const a = assets.get(id), rates = a && P.taxRates(a, tax); return [(a?.name || id) + ' · 单项设置', settingPct(rates?.gain), settingPct(rates?.dividend)]; })
+    ], [2, 1, 1]);
     structure(cfg.positions);
     const firstTrades = new Map();
     r.transactions.filter(t => t.day === r.start && t.side === 'buy').forEach(t => firstTrades.set(t.id, (firstTrades.get(t.id) || 0) + t.amount + t.fee));
@@ -164,7 +171,8 @@
       ['账面盈亏 / 元', number(r.profit)], ['最大回撤', pct(r.mdd)], ['年化波动', pct(r.volatility)], ['资金年化 / XIRR', pct(r.xirr), r.xirr === null ? (Date.parse(r.end) - Date.parse(r.start)) / 86400000 < 365.2425 ? '不足一年不外推' : '缺可用年化解' : '按实际投入日期与金额']
     ]);
     paragraph('投入 ' + r.deposits + '笔    再平衡 ' + r.rebalances + '次    买卖 ' + r.transactions.length + '笔    交易费合计 ' + number(r.tradeCost) + '元    期末现金 ' + number(r.cash) + '元');
-    if (r.benchmark) paragraph('对照持有回报：年化 ' + pct(r.benchmark.annualReturn) + '，累计 ' + pct(r.benchmark.totalReturn) + '；同区间、同币种，不计用户交易费。');
+    paragraph('投资者税合计 ' + number(r.taxCost) + '元    卖出盈利税 ' + number(r.capitalTax) + '元    分红税 ' + number(r.dividendTax) + '元');
+    if (r.benchmark) paragraph('对照持有回报：年化 ' + pct(r.benchmark.annualReturn) + '，累计 ' + pct(r.benchmark.totalReturn) + '；同区间、同币种、同税率及期末设置，不计用户交易费。');
     if (r.benchmarkError) paragraph('对照数据：' + r.benchmarkError, C.negative);
 
     section('区间快照', '近1/2/3/5年分别重新建仓，使用相同组合与策略。');
@@ -189,13 +197,14 @@
     chart('账户资产与累计投入 / 人民币', r.curve.map(p => p.value), r.curve.map(p => p.contributed), '累计投入', '元');
     chart('组合回撤', r.curve.map(p => p.drawdown));
 
-    section('持仓贡献', '人民币 · 实际投入、追加、再平衡与买卖费用均已计入。');
+    section('持仓贡献', '人民币 · 实际投入、追加、再平衡与买卖税费均已计入。');
     structure(r.holdings.map(h => ({ id: h.id, weight: h.actualWeight })));
     const cashRow = r.cash > .005;
     const label = h => h.name + '\n' + h.code;
     const contributions = r.holdings.map(h => [label(h), pct(h.targetWeight), pct(h.actualWeight), number(h.value), { text: number(h.profit), color: h.profit < 0 ? C.negative : C.green }, number(h.transactionCost)]);
     if (cashRow) contributions.push(['人民币现金', pct(r.cashWeight), pct(r.cash / r.value * 100), number(r.cash), '0.00', '0.00']);
     table(['标的', '目标权重', '期末权重', '期末市值 / 元', '盈亏贡献 / 元', '交易费 / 元'], contributions, [2.5, 1, 1, 1.5, 1.5, 1.3], { numeric: [1, 2, 3, 4, 5] });
+    table(['标的', '卖出盈利税 / 元', '分红税 / 元', '税费合计 / 元'], r.holdings.map(h => [label(h), number(h.capitalTax), number(h.dividendTax), number(h.taxCost)]), [2.5, 1.5, 1.5, 1.5], { numeric: [1, 2, 3] });
     const performance = r.holdings.map(h => { const p = h.performance; return [label(h), pct(p.annualReturn) + '\n' + (p.annualMissing || (p.annualBasis === 'money_weighted_xirr' ? 'XIRR' : '不足一年不外推')), pct(p.totalReturn), pct(p.mdd), pct(p.volatility), p.start + '\n' + p.end]; });
     if (cashRow) performance.push(['人民币现金', '0.00%', '0.00%', '0.00%', '0.00%', r.start + '\n' + r.end]);
     table(['标的', '策略年化收益', '累计投入收益', '最大回撤', '年化波动', '实际持仓区间'], performance, [2.5, 1.4, 1.25, 1.2, 1.2, 1.25], { numeric: [1, 2, 3, 4] });
@@ -213,7 +222,8 @@
     if (benchmark && !r.holdings.some(h => h.id === benchmark.id)) sourceRows.push([benchmark.name + '\n' + benchmark.code + ' · 对照', '同区间持有回报', benchmark.first + '\n' + benchmark.asOf, { text: benchmark.sourceUrl || '缺来源链接', url: benchmark.sourceUrl, color: C.green }]);
     table(['标的', '收益依据', '可用历史', '来源'], sourceRows, [2, 2, 1.4, 3]);
     paragraph('价格或净值已经包含产品持续年费；净收益模拟不重复扣费。分红再投资，境内 ETF 默认使用净值，不计场内溢价；海外资产使用历史汇率。');
-    paragraph('自定义交易费从账户扣除；未含最低佣金、换汇价差、阶梯申赎费及投资者税费。期末是持仓估值，未假设清仓。现金为零息，允许碎股和任意基金份额。');
+    paragraph('自定义交易费从账户扣除；未含最低佣金、换汇价差及阶梯申赎费。' + (cfg.tax?.liquidate ? '期末卖出所有持仓，并扣除清仓交易费与正收益税。' : '期末为持仓估值，浮盈未征税。') + '现金为零息，允许碎股和任意基金份额。');
+    paragraph('卖出税按人民币移动平均成本逐次预留；买入费和税后分红再投入进入成本。分红仅扣设定综合税额，不重复记收益。未模拟跨笔亏损抵扣、申报延期、抵免结转或A股差别化持有期补税；ADR、REIT及特殊分配的实际税率需单项设置。');
     paragraph('指定开始日前取最近共同实际交易日。休市沿用价格 ' + r.carriedPrices + '次、汇率 ' + r.carriedFx + '日；价格最多沿用14日、汇率7日。追加与再平衡在共同实际交易日执行。');
     if (r.holdings.some(h => h.leveraged)) paragraph('每日杠杆 ETF 的长期表现取决于价格路径，不能按固定倍数外推长期回报。', C.negative);
     y += 20; line(MARGIN, y, width); y += 22;

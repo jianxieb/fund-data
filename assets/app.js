@@ -1179,7 +1179,7 @@
   document.addEventListener('input', e => {
     const el = e.target;
     if (e.isComposing) { clearTimeout(searchTimer); return; }
-    if (el.id === 'portfolio-search' || el.dataset.portfolioWeight || el.dataset.portfolioAmount || el.dataset.portfolioField) {
+    if (el.id === 'portfolio-search' || el.dataset.portfolioWeight || el.dataset.portfolioAmount || el.dataset.portfolioField || el.dataset.portfolioTaxAsset) {
       if (window.ChanghengPortfolio.handleInput(el)) { clearTimeout(searchTimer); searchTimer = setTimeout(render, 120); }
       return;
     }
@@ -1202,7 +1202,7 @@
   });
   document.addEventListener('change', e => {
     const el = e.target;
-    if (el.id === 'portfolio-import' || el.id === 'portfolio-hide-boards' || el.dataset.portfolioWeight || el.dataset.portfolioAmount || el.dataset.portfolioField || el.dataset.portfolioFee) {
+    if (el.id === 'portfolio-import' || el.id === 'portfolio-hide-boards' || el.id === 'portfolio-liquidate' || el.dataset.portfolioWeight || el.dataset.portfolioAmount || el.dataset.portfolioField || el.dataset.portfolioFee || el.dataset.portfolioTaxAsset) {
       window.ChanghengPortfolio.handleChange(el); return;
     }
     if (el.dataset.annualFeeCode) {

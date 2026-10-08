@@ -254,11 +254,13 @@ def preview_matches(actual, expected):
     return type(actual) is type(expected) and actual == expected
 
 
-def publish_history(asset, series, basis, source, warning=None):
+def publish_history(asset, series, basis, source, warning=None, dividend_evidence=None):
     series = validate_series(series)
     body = {'schemaVersion': 1, 'id': asset['id'], 'currency': asset['currency'],
             'basis': basis, 'dividends': 'reinvested', 'first': series[0][0],
             'asOf': series[-1][0], 'sourceUrl': source, 'series': series}
+    if dividend_evidence is not None:
+        body['dividendEvidence'] = dividend_evidence
     encoded = json.dumps(body, ensure_ascii=False, allow_nan=False, separators=(',', ':')) + '\n'
     digest = hashlib.sha256(encoded.encode()).hexdigest()
     namespace, code = asset['id'].split(':')
@@ -272,6 +274,8 @@ def publish_history(asset, series, basis, source, warning=None):
               'historyUrl': 'data/portfolio/' + relative, 'sha256': digest}
     if not asset['id'].startswith('fx:'):
         result['performance'] = performance_preview(series)
+    if dividend_evidence is not None:
+        result['dividendTaxData'] = {k: v for k, v in dividend_evidence.items() if k not in ('fractions', 'sourceSha256')}
     if warning:
         result['refreshWarning'] = warning
     return result
@@ -290,7 +294,11 @@ def build_asset(asset, offline=False, refresh=False):
                 values = stock_history(asset, offline, refresh)
         else:
             values = overseas_history(asset['code'], offline)
-        return publish_history(asset, *values)
+        evidence = None
+        if not asset['id'].startswith('fx:'):
+            from scripts.build_portfolio_tax_data import dividend_evidence
+            evidence = dividend_evidence(asset, values[0][0][0], values[0][-1][0], offline)
+        return publish_history(asset, *values, dividend_evidence=evidence)
     except Exception as exc:
         return {**asset, 'status': 'missing', 'missing': str(exc)[:220]}
 
