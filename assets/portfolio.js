@@ -164,7 +164,7 @@
   }
   function structure(positions) {
     const a = P.allocation(positions, catalog.assets);
-    return '<div class="portfolio-structure-main">' + [['etf', 'ETF'], ['stock', '个股'], ['fund', '基金'], ['cash', '现金']].map(([key, label]) => '<span>' + label + '<b>' + H.pct(a[key], 2, false) + '</b></span>').join('') + '</div><div class="portfolio-structure-leverage"><span>其中杠杆ETF</span><span>2x <b>' + H.pct(a.x2, 2, false) + '</b></span><span>3x <b>' + H.pct(a.x3, 2, false) + '</b></span></div>' + (a.invalid ? '<span class="negative small">请修正无效权重或超过100%的合计</span>' : '');
+    return '<div class="portfolio-structure-main">' + [['etf', 'ETF'], ['stock', '个股'], ['fund', '基金'], ['cash', '现金'], ['x2', '其中2x ETF'], ['x3', '其中3x ETF']].map(([key, label]) => '<span' + (key.startsWith('x') ? ' title="每日' + key.slice(1) + '倍ETF占整个组合的比例，已包含在ETF占比内"' : '') + '>' + label + '<b>' + H.pct(a[key], 2, false) + '</b></span>').join('') + '</div>' + (a.invalid ? '<span class="negative small">请修正无效权重或超过100%的合计</span>' : '');
   }
   function allocationMarkup() {
     const total = draft.positions.reduce((s, p) => s + (Number(p.weight) || 0), 0), cash = Math.max(0, 100 - total);

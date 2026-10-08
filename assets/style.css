@@ -762,11 +762,11 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-tooltip>div{display:flex;gap:24px;justify-content:space-between;margin-top:6px}
 .portfolio-tooltip span{color:var(--muted);max-width:170px}
 .portfolio-tooltip b{font-weight:550;font-variant-numeric:tabular-nums;white-space:nowrap}
-.portfolio-structure{padding:13px 0 17px;border-bottom:1px solid var(--line);margin-bottom:6px}
-.portfolio-structure-main{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;font-size:11px;color:var(--muted)}
-.portfolio-structure-main b{display:block;margin-top:5px;font-size:17px;font-weight:550;color:var(--text);font-variant-numeric:tabular-nums}
-.portfolio-structure-leverage{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px;font-size:11px;color:var(--muted)}
-.portfolio-structure-leverage b{color:var(--text);font-weight:550;font-variant-numeric:tabular-nums}
+.portfolio-structure{container-type:inline-size;padding:13px 0 17px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.portfolio-structure-main{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:18px 12px;font-size:12px;color:var(--muted)}
+.portfolio-structure-main>span{white-space:nowrap}
+.portfolio-structure-main b{display:block;margin-top:6px;font-size:18px;font-weight:550;color:var(--ink);font-variant-numeric:tabular-nums}
+@container(max-width:600px){.portfolio-structure-main{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .portfolio-end-structure{padding:18px 24px;margin-bottom:0}
 .portfolio-end-structure h3{font-size:12px;font-weight:500;margin-bottom:14px;color:var(--muted)}
 .portfolio-results>.card{margin-top:22px}
