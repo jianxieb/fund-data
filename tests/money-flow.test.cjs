@@ -262,7 +262,7 @@ richQuotes.banks.comm = { quotes: { USD: { buy: 7, sell: 7.01, asOf: '2026-10-08
 const ledger = r => {
   const sum = r.rows.reduce((total, row) => total + (row.cny ?? 0), 0);
   close(r.costCny, sum);
-  close(r.net + sum + r.taxCny, r.budgetCny + r.refs.USD * 1000);
+  close(r.net + sum + r.taxCny, r.budgetCny + r.refs.USD * 1000 + r.fxImpactCny);
 };
 
 test('every mainland route reconciles actual RMB principal, FX, fees and profit exactly once', () => {
@@ -379,4 +379,26 @@ test('when all upstream quotes are stale, own confirmed quotes still compute wit
   assert.equal(stale.selected.rankable, false);
   assert.ok(stale.selected.missing.includes('USD/CNY参照牌价超过3天'));
   assert.equal(stale.selected.entryAsOf, '2026-10-08 20:00:00');
+});
+
+test('RMB remitted unchanged has no negative fee; CNH basis is a separate signed valuation effect', () => {
+  const quotes = structuredClone(richQuotes);
+  quotes.offshoreUsd.bochk.quotes.CNH = { bidPerUsd: 6.95, askPerUsd: 6.97, asOf: '2026-10-08 20:00:00' };
+  const r = M.journeyPlans({ ...mainlandConfig, route: 'CNH', depositMethod: 'fps', senderFeeCny: 0, profitUsd: 1000 }, D, quotes).selected;
+  const entry = r.rows.find(row => row.key === 'entryFx');
+  close(entry.cny, 0);
+  assert.ok(entry.fxImpactCny > 0);
+  assert.ok(r.rows.every(row => row.cny == null || row.cny >= 0));
+  assert.ok(r.costCny >= 0); ledger(r);
+  close(r.steps.mainlandForeign, r.budgetCny);
+});
+
+test('bank spread uses its own bid/ask; another bank midpoint cannot become a negative bank charge', () => {
+  const quotes = structuredClone(richQuotes);
+  quotes.banks.abc.quotes.USD = { buy: 6.95, sell: 6.97, asOf: '2026-10-08 20:00:00' };
+  const r = M.journeyPlans({ ...mainlandConfig, startBank: 'abc', profitUsd: 1000 }, D, quotes).selected;
+  const entry = r.rows.find(row => row.key === 'entryFx');
+  close(entry.cny, r.steps.mainlandForeign * .01);
+  close(entry.fxImpactCny, r.steps.mainlandForeign * .04);
+  assert.ok(r.rows.every(row => row.cny == null || row.cny >= 0)); ledger(r);
 });

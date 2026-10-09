@@ -42,8 +42,11 @@
   const note = text => '<p class="flow-stop-note">' + text + '</p>';
   function stepCost(r, keys) {
     if (!r) return '等待有效报价';
-    const unknown = keys.filter(key => rowFee(r, key) == null);
-    return '该步已知损耗 <b class="num">' + num(sumFees(r, keys)) + ' CNY</b>' + (unknown.length ? '<span>另有' + unknown.length + '项未报价</span>' : '');
+    const rows = r.rows.filter(row => keys.includes(row.key)), unknown = rows.filter(row => row.cny == null);
+    const impact = rows.reduce((sum, row) => sum + (row.fxImpactCny ?? 0), 0);
+    return '该步已知费用 <b class="num">' + num(sumFees(r, keys)) + ' CNY</b>' +
+      (Math.abs(impact) >= .005 ? '<span class="flow-fx-impact">汇率折算影响 ' + (impact > 0 ? '+' : '') + num(impact) + ' CNY</span>' : '') +
+      (unknown.length ? '<span>待确认：' + unknown.map(row => esc(row.label)).join('、') + '</span>' : '');
   }
   function node(cls, step, title, content, value, currency, cost, detailKey) {
     return '<section class="flow-stop ' + cls + '"><header><span class="flow-step">' + step + '</span><h3>' + esc(title) + '</h3>' +
@@ -91,7 +94,9 @@
     html += arrow('consume', true);
     html += node('destination', '06', '内地人民币消费', '<div class="flow-final-breakdown"><span>内地本金<b class="num">' + num(M.number(state.budgetCny)) + '</b></span>' +
       '<span>卖出盈亏折合<b class="num">' + num(r ? M.number(state.profitUsd) * r.refs.USD : null) + '</b></span>' +
-      '<span>已知全程损耗<b class="num">−' + num(r?.costCny) + '</b></span><span>预留税款<b class="num">−' + num(r?.taxCny) + '</b></span></div>',
+      '<span>已知全程费用<b class="num">−' + num(r?.costCny) + '</b></span>' +
+      (r && Math.abs(r.fxImpactCny) >= .005 ? '<span>汇率折算影响<b class="num">' + (r.fxImpactCny > 0 ? '+' : '') + num(r.fxImpactCny) + '</b></span>' : '') +
+      '<span>预留税款<b class="num">−' + num(r?.taxCny) + '</b></span></div>',
       r?.net, r?.complete ? 'CNY可用' : 'CNY可用上限', stepCost(r, ['account', 'extra']), 'cost');
     return html + '</div>';
   }
@@ -99,7 +104,8 @@
     const r = data.selected;
     if (!r) return '<div class="flow-message" role="status">' + esc(data.error || '缺少有效报价') + ' ' + action('填入成交报价', 'detail', 'data-value="quotes"') + '</div>';
     return '<div class="flow-totals" aria-live="polite"><div><span>' + (r.complete ? '最终人民币可用' : '最终人民币可用上限') + '</span><strong class="num">' + num(r.net) + '<small>CNY</small></strong></div>' +
-      '<div><span>全程已知损耗</span><strong class="num">' + num(r.costCny) + '<small>CNY · ' + num(r.costCny / r.budgetCny * 100) + '%</small></strong></div>' +
+      '<div><span>全程已知费用（含点差）</span><strong class="num">' + num(r.costCny) + '<small>CNY · ' + num(r.costCny / r.budgetCny * 100) + '%</small></strong>' +
+      (Math.abs(r.fxImpactCny) >= .005 ? '<span>汇率折算影响 ' + (r.fxImpactCny > 0 ? '+' : '') + num(r.fxImpactCny) + ' CNY</span>' : '') + '</div>' +
       '<div><span>税款单列</span><strong class="num">' + num(r.taxCny) + '<small>CNY</small></strong></div>' + action('逐笔费用 ↗', 'detail', 'data-value="cost"') + '</div>' +
       '<div class="flow-caption"><span>' + (r.missing.length ? '未计：' + r.missing.map(esc).join('、') + '。' : '所填费用已全部计入。') + '</span>' +
       action('成交报价与费用', 'detail', 'data-value="quotes"', 'text-link') + '</div>';
@@ -195,19 +201,21 @@
     const data = result(), r = data.selected, s = r || data.selection || {};
     const descriptions = {
       mainland: ['适用条件', '从内地银行卡人民币开始计算完整往返费用；金额测算不等于出境许可。大陆个人便利化购汇不能用于境外证券投资，同名香港账户不改变用途。跨境人民币也须符合真实用途、资本项目和银行准入规则。资金来源、获准渠道和券商接受身份必须先确认；银行优惠不代表证券投资出境资格。', ['safe', 'pbcRmb', 'scCnTerms', 'csrc']],
-      entry: ['内地人民币出发', '汇出手续费、电讯费和全额到账附加费先从人民币预算内扣除，再按出发银行现汇卖出价购汇。买美股可以直接换USD，不必经过港币。人民币原币到港后为CNH，参考基差单列。普通SWIFT中转费无统一值；农行USD全额到账附加25美元按每笔计入。指定同名优惠须匹配银行集团和账户条件。', s.start?.sources || ['bocFx', 'abc']],
+      entry: ['内地人民币出发', '汇出手续费、电讯费和全额到账附加费先从人民币预算内扣除，再按出发银行现汇卖出价购汇。买美股可以直接换USD，不必经过港币。人民币原币到港后为CNH，此步没有换汇点差。CNY/CNH及不同时点、银行报价的折算影响单列，正值不代表银行返还手续费。普通SWIFT中转费无统一值；农行USD全额到账附加25美元按每笔计入。指定同名优惠须匹配银行集团和账户条件。', s.start?.sources || ['bocFx', 'abc']],
       bank: ['香港同名银行', '入金银行与回款银行可以不同，月费分别算；相同银行不重复扣。最佳实践优先美元直达、无验资门槛和月费，不依赖即将结束的优惠。最低已知费用包含有条件账户，条件在图中列出。汇丰One新开非香港身份证账户不足1万港元按100港元/月；渣打中国同名优惠须优先理财及指定渠道。', ['hangOpen', 'hsbcHk', 'sc', 'scTier', 'hang', 'hsbcGlobal']],
       broker: ['入金方式与换美元', '先在IBKR建立当次入金通知，按收款指示核对币种、银行所在地与本人账户。USD本地CHATS；HKD/CNH可用FPS或eDDA（须授权），两者均不支持USD。SWIFT另外计算电汇费。IBKR现金入金费0不代表银行、代理及收款行都免费。渣打USD本地RTGS公开费为22美元。手动换汇0.002%、最低2美元；自动换汇加价0.03%，不叠加手动佣金。银行换USD仅用该行实际报价，目前公开数据覆盖中银香港，其他行需账户询价。', ['ibFunding', 'ibDeposits', 'ibEdda', 'ibFx', 'scHk', 'bochkUsdFx']],
       withdraw: ['卖出与券商出金', '卖出盈亏为交易费前USD；交易费另扣。税款预留后USD电汇返回香港本人银行账户。IBKR每月前两次出金免费，之后USD电汇10美元；中转及银行收款费另计。中银香港的内地中行同名优惠不能套在券商汇入上。卖出结算、入金等待期及提款余额按实际账户规则；券商不是纯汇款换汇工具。', ['ibFees', 'ibFunding', 'bochk']],
       spend: ['回内地人民币消费', 'USD汇回本人内地外汇账户，用收款银行现汇买入价结汇为CNY，无需再经HKD，也不计算香港卡签账费。中银快汇网上至内地中行汇出费0，普通SWIFT汇出65港元；中转、收款行费用另核。两地同名回款须匹配银行集团。保留资金来源、交易与税务凭证并满足汇回、结汇审核。', ['bochk', 'remit', 'safe', 'hang', 'hsbcGlobal']],
       tax: ['税款按利润单列', '大陆税收居民境外财产转让所得通常20%，按人民币收入减成本及允许费用核算，不是对本金或整笔提现征税；股息另行核算。默认仅以正的净交易利润×USD/CNY参照估算，假定买卖汇率相同。有已核算人民币应税所得时优先使用，境外税抵免须有依据。不能代替真实人民币成本及汇率损益核算。', ['tax']],
-      sources: ['官方报价与收费依据', '自动更新7家内地银行及中银香港牌价，各行时间分别保留。出发银行覆盖10种账户／渠道，香港银行5家。兴业公开接口无报价，恒生中国及渣打中国需账户询价；工行与交行现行个人汇出完整费用未核齐，不参与自动推荐。超过3天的报价不参与推荐。最低是已收录账户、渠道及已知费用中的低损耗方案，未报价中转费可能改变排序；券商参考价不是可执行价。每笔手续费只扣一次，最终人民币＋已知损耗＋税款＝人民币本金＋USD盈亏折合。', Object.keys(D.sources)]
+      sources: ['官方报价与收费依据', '自动更新7家内地银行及中银香港牌价，各行时间分别保留。出发银行覆盖10种账户／渠道，香港银行5家。兴业公开接口无报价，恒生中国及渣打中国需账户询价；工行与交行现行个人汇出完整费用未核齐，不参与自动推荐。超过3天的报价不参与推荐。最低是已收录账户、渠道及已知费用中的低损耗方案，未报价中转费可能改变排序；券商参考价不是可执行价。每笔手续费只扣一次。人民币原币汇出没有换汇费用，CNY/CNH及不同银行、时点的参考折算影响单列；最终人民币＋已知费用＋税款＝人民币本金＋USD盈亏折合＋汇率折算影响。', Object.keys(D.sources)]
     };
     let title, content, keys;
     if (key === 'cost') {
-      title = '全程逐笔损耗'; keys = ['ibFees', 'tax'];
-      content = r ? '<div class="flow-cost-detail">' + r.rows.map(row => '<div><span>' + esc(row.label) + '</span><b class="num">' + feeText(row.cny) + '</b></div>').join('') +
-        '<div><span>全程已知损耗</span><b class="num">' + num(r.costCny) + ' CNY</b></div><div><span>税款（独立列示）</span><b class="num">' + num(r.taxCny) + ' CNY</b></div></div>' : '<p>' + esc(data.error) + '</p>';
+      title = '全程逐笔费用与汇率影响'; keys = ['ibFees', 'tax'];
+      content = r ? '<div class="flow-cost-detail">' + r.rows.map(row => '<div><span>' + esc(row.label) + '</span><b class="num">' + feeText(row.cny) + '</b></div>' +
+        (Math.abs(row.fxImpactCny ?? 0) >= .005 ? '<div><span>' + esc(row.label) + ' · 汇率折算影响</span><b class="num">' + (row.fxImpactCny > 0 ? '+' : '') + num(row.fxImpactCny) + ' CNY</b></div>' : '')).join('') +
+        '<div><span>全程已知费用</span><b class="num">' + num(r.costCny) + ' CNY</b></div><div><span>汇率折算影响（独立列示）</span><b class="num">' + (r.fxImpactCny > 0 ? '+' : '') + num(r.fxImpactCny) + ' CNY</b></div>' +
+        '<div><span>税款（独立列示）</span><b class="num">' + num(r.taxCny) + ' CNY</b></div></div>' : '<p>' + esc(data.error) + '</p>';
     } else if (key === 'quotes') {
       title = '本方案成交报价与费用'; keys = ['bocFx', 'cmbFx', 'icbcFx', 'ccbFx', 'abcFx', 'commFx', 'hsbcFx', 'bochkUsdFx'];
       content = '<p>留空读取官方基准；未知费用留空，确认免收才填0。报价及银行优惠绑定当前所选银行。</p><div class="flow-parameter-grid">' +

@@ -299,9 +299,17 @@
         rows.push({ key, label, cny, step });
         if (cny == null) missing.push(reason); else balance -= cny / refs[unit];
       };
+      // Bank spreads are costs; differences between currencies, banks and
+      // observation times are valuation effects. Neither is charged again.
+      const fxRow = (key, label, referenceDifference, spreadCost, step) => {
+        const cny = Math.max(0, spreadCost);
+        rows.push({ key, label, cny, step, fxImpactCny: cny - referenceDifference });
+      };
       rows.push({ key: 'sender', label: '内地汇出手续费＋电讯费' + (fullFee ? '＋全额到账费' : ''), cny: unknownSender ? null : sender, step: 'entry' });
       if (unknownSender) missing.push(start.name + '所选渠道汇出收费');
-      rows.push({ key: 'entryFx', label: currency === 'CNH' ? 'CNY与CNH参考基差' : '内地购汇价差', cny: principal - balance * refs[currency], step: 'entry' });
+      const entryMid = currency === 'CNH' ? 1 : positive(q?.buy) ? (q.buy + q.sell) / 2 : refs[currency];
+      fxRow('entryFx', currency === 'CNH' ? '人民币原币汇出（未换汇）' : '内地购汇点差',
+        principal - balance * refs[currency], currency === 'CNH' ? 0 : principal - balance * entryMid, 'entry');
       steps.mainlandForeign = balance;
       const entryMiddle = own('entryMiddleCny', isSelectedStart) ?? (mainlandMethod === 'linked' && start.includedIntermediary ? 0 : mainlandMethod === 'full' ? 0 : null);
       add('entryMiddle', '内地→香港中转行费', entryMiddle == null ? null : entryMiddle * count, 'entry');
@@ -329,7 +337,12 @@
         if (!fx) return null;
         balance = fx.usd; unit = 'USD';
         rows.push({ key: 'brokerFx', label: '换USD佣金／自动加价', cny: (fx.commissionUsd + fx.markupUsd) * refs.USD, step: 'deposit' });
-        rows.push({ key: 'brokerSpread', label: fxMode === 'bank' ? '香港银行换汇价差' : '换汇参考价差', cny: oldBalance * refs[oldUnit] - (balance + fx.commissionUsd + fx.markupUsd) * refs.USD, step: 'deposit' });
+        const grossUsd = balance + fx.commissionUsd + fx.markupUsd;
+        const referenceDifference = oldBalance * refs[oldUnit] - grossUsd * refs.USD;
+        const bankMid = fxMode === 'bank' && positive(bankFxQuote?.bidPerUsd) && positive(bankFxQuote?.askPerUsd)
+          ? (bankFxQuote.bidPerUsd + bankFxQuote.askPerUsd) / 2 : null;
+        fxRow('brokerSpread', fxMode === 'bank' ? '香港银行换汇点差' : '换汇成交点差', referenceDifference,
+          bankMid ? (oldBalance / bankMid - grossUsd) * refs.USD : referenceDifference, 'deposit');
         return fx;
       };
       let brokerFxResult;
@@ -359,7 +372,8 @@
       const exitPrice = config.exitBank === exit.id ? number(config.exitPrice) ?? exit.quotes.USD?.buy : exit.quotes.USD?.buy;
       const preSettle = balance;
       balance *= exitPrice; unit = 'CNY';
-      rows.push({ key: 'exitFx', label: '内地结汇价差', cny: preSettle * refs.USD - balance, step: 'return' });
+      const exitMid = positive(exit.quotes.USD?.sell) ? (exit.quotes.USD.buy + exit.quotes.USD.sell) / 2 : refs.USD;
+      fxRow('exitFx', '内地结汇点差', preSettle * refs.USD - balance, preSettle * (exitMid - exitPrice), 'return');
       steps.settledCny = balance;
       const account = maintenance(bank, number(config.balanceHkd) ?? 0, number(config.months), own('monthlyHkd', isSelectedBank));
       const returnAccount = bank.id === returning.id ? 0 : maintenance(returning, number(config.returnBalanceHkd) ?? 0, number(config.months), own('returnMonthlyHkd', isSelectedReturn));
@@ -371,7 +385,8 @@
       if (bank.thresholdHkd && (number(config.balanceHkd) ?? 0) < bank.thresholdHkd) requirements.push(bank.name + '未达到免月费资产要求，已扣月费');
       if (currency === 'CNH') requirements.push('人民币跨境汇款须符合实际用途及银行准入；不能套用香港居民安排');
       const unpriced = rows.filter(row => row.cny == null);
-      const costCny = budget + profit * refs.USD - taxCny - balance;
+      const costCny = rows.reduce((sum, row) => sum + (row.cny ?? 0), 0);
+      const fxImpactCny = rows.reduce((sum, row) => sum + (row.fxImpactCny ?? 0), 0);
       const fxKeys = ['entryFx', 'brokerSpread', 'exitFx'];
       const fxCny = rows.filter(row => fxKeys.includes(row.key)).reduce((sum, row) => sum + (row.cny ?? 0), 0);
       const sourceFresh = currency === 'CNH' || own('startSell', isSelectedStart) != null || quoteFresh(q, config.date);
@@ -388,7 +403,7 @@
         sourceAmount: budget, investUsd: steps.investUsd, proceeds: steps.proceedsUsd, bankUsd: steps.returnUsd,
         net: balance, taxCny, taxableCny, estimatedTax: number(config.taxableCny) == null, rows, steps,
         missing: [...new Set(missing)], complete: !missing.length, requirements: [...new Set(requirements)],
-        refs, costCny, fxCny, explicitCny: costCny - fxCny, extraCny, brokerFx: brokerFxResult,
+        refs, costCny, fxCny, fxImpactCny, explicitCny: costCny - fxCny, extraCny, brokerFx: brokerFxResult,
         rankable: sourceFresh && exitFresh && marketFresh && referenceFresh && !unknownSender && !unpriced.some(row => ['depositBank', 'entryInward', 'returnInward', 'returnWire', 'account'].includes(row.key)) };
     }
     const plans = [], errors = [];
