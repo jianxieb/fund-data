@@ -424,10 +424,15 @@
     if (!range || !ledger?.stops[range[1]]) return null;
     const legs = ledger.legs.slice(...range), inputCny = ledger.stops[range[0]].valueCny, outputCny = ledger.stops[range[1]].valueCny;
     const sum = key => legs.reduce((total, leg) => total + leg[key], 0);
-    const lossCny = inputCny + sum('profitCny') - outputCny;
-    return { inputCny, outputCny, lossCny, lossRate: inputCny > 0 ? lossCny / inputCny : null,
+    const missing = [...new Set(legs.flatMap(leg => leg.missing))], indicative = legs.some(leg => leg.indicative);
+    if (indicative && item.indicativeFx && !missing.includes(item.indicativeFx)) missing.push(item.indicativeFx);
+    const complete = !missing.length && !indicative;
+    // A fee subtotal remains useful, but an incomplete route must not look
+    // cheaper because its unquoted charges were omitted from the arithmetic.
+    const lossCny = complete ? inputCny + sum('profitCny') - outputCny : null;
+    return { inputCny, outputCny, lossCny, lossRate: lossCny != null && inputCny > 0 ? lossCny / inputCny : null,
       costCny: sum('costCny'), taxCny: sum('taxCny'), fxImpactCny: sum('fxImpactCny'),
-      indicative: legs.some(leg => leg.indicative), missing: legs.flatMap(leg => leg.missing) };
+      rows: legs.flatMap(leg => leg.rows), complete, indicative, missing };
   }
   const bankQuoteKeys = ['senderFeeCny', 'entryMiddleCny', 'entryInwardHkd', 'depositHkd', 'depositOtherCny', 'inwardHkd', 'intermediaryCny', 'returnWireHkd', 'returnExtraCny', 'monthlyHkd', 'returnMonthlyHkd', 'startSell', 'entryPrice', 'exitPrice'];
   let mainlandPlanCache;
@@ -541,7 +546,7 @@
       const inward = own('entryInwardHkd', isSelectedBank) ?? inwardFee(bank, balance * refs[currency] / refs.HKD / count, start.group);
       add('entryInward', '香港首次汇入费', inward == null ? null : inward * refs.HKD * count, 'entry');
       steps.hongKong = balance;
-      const downstreamError = error => ({ error, rows, steps, startSell: quote, route, refs, budgetCny: budget, start, bank, returning, exit, broker: provider });
+      const downstreamError = error => ({ error, rows, steps, startSell: quote, route, mainlandMethod, fxMode, refs, budgetCny: budget, start, bank, returning, exit, broker: provider });
       if (!positive(exit.quotes.USD?.buy) && !positive(number(config.exitPrice))) return downstreamError(exit.name + '缺少USD现汇买入价。');
       const depositMethod = provider.integratedBank ? 'internal' : method('depositMethod', currency === 'USD' || fxMode === 'bank' ? 'chats' : 'fps');
       const depositCurrency = fxMode === 'bank' ? 'USD' : currency;

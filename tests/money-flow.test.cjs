@@ -403,6 +403,48 @@ test('the reported RMB example reconciles the fee, valuation change and loss wit
   close(M.comparisonMetric(partial, 'bank', 'step').lossCny, entry.lossCny);
 });
 
+test('comparison rows retain known charges but never rank unquoted remittances by a numeric loss', () => {
+  const input = { ...mainlandConfig, budgetCny: 100000, bank: 'bochk', returnBank: 'bochk', route: 'CNH',
+    depositMethod: 'fps', entryMiddleCny: '', usdCny: 6.70035, usdHkd: 7.8484, usdCnh: 6.697095 };
+  const p = M.journeyPlans(input, D, richQuotes);
+  for (const id of ['boc', 'cmb', 'icbc', 'ccb']) {
+    const r = p.alternatives.start.find(row => row.start.id === id), metric = M.comparisonMetric(r, 'start');
+    assert.equal(metric.complete, false);
+    assert.equal(metric.lossCny, null); assert.equal(metric.lossRate, null);
+    assert.ok(metric.costCny > 0);
+    assert.ok(metric.missing.includes('内地→香港中转行费'));
+    if (id !== 'boc') {
+      assert.ok(metric.missing.includes(r.start.name + '汇出手续费'));
+      assert.ok(metric.missing.includes(r.start.name + '电讯费'));
+      close(metric.costCny, r.rows.find(row => row.key === 'entryInward').cny);
+    }
+    assert.deepEqual([...new Set(metric.rows.map(row => row.key))], ['sender', 'entryFx', 'entryMiddle', 'entryInward']);
+    close(metric.costCny, metric.rows.reduce((sum, row) => sum + (row.cny ?? 0), 0));
+  }
+  assert.equal(M.comparisonMetric(p.selected, 'start').costCny.toFixed(2), '179.82');
+  const quoted = M.journeyPlans({ ...input, entryMiddleCny: 0 }, D, richQuotes).selected;
+  const entry = M.comparisonMetric(quoted, 'start');
+  assert.ok(quoted.indicativeFx); // A later FX quote must not blank a fully priced first operation.
+  assert.equal(entry.complete, true); assert.deepEqual(entry.missing, []);
+  assert.equal(entry.lossCny.toFixed(2), '131.30');
+  close(entry.lossCny, entry.costCny - entry.fxImpactCny);
+  close(entry.lossRate, entry.lossCny / 100000);
+  const funding = M.comparisonMetric(quoted, 'bank');
+  assert.equal(funding.complete, false); assert.equal(funding.lossRate, null);
+  assert.ok(funding.missing.includes(quoted.indicativeFx));
+});
+
+test('a missing settlement quote preserves the actual first-operation channel and fee comparison', () => {
+  const p = M.journeyPlans({ ...mainlandConfig, bank: 'bochk', route: 'CNH', depositMethod: 'fps',
+    mainlandMethod: 'payment-connect', senderFeeCny: 0, exitBank: 'cib' }, D, richQuotes);
+  assert.match(p.error, /缺少USD现汇买入价/);
+  const entry = p.alternatives.start.find(row => row.start.id === 'boc');
+  assert.equal(entry.mainlandMethod, 'payment-connect');
+  const metric = M.comparisonMetric(entry, 'start');
+  assert.equal(metric.complete, true); close(metric.costCny, 0);
+  assert.equal(M.comparisonMetric(entry, 'bank'), null);
+});
+
 test('Payment Connect does not inherit SWIFT tariffs or pretend a historical free case is a current quote', () => {
   const input = { ...mainlandConfig, bank: 'bochk', returnBank: 'bochk', route: 'CNH', depositMethod: 'fps', mainlandMethod: 'payment-connect' };
   const r = M.journeyPlans(input, D, richQuotes).selected;

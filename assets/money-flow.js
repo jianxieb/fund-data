@@ -178,26 +178,52 @@
   function summary(data) {
     return '<div class="flow-caption"><span>损耗＝费用＋税款−参考汇率折算增值；折算减值则增加损耗。点差已含在成交价内，不会再次扣款。</span>' + action('成交报价与费用', 'detail', 'data-value="quotes"', 'text-link') + '</div>';
   }
+  function comparisonOperations(item, key, fallback) {
+    const s = { ...fallback, ...item }, bank = s.bank?.name || '香港银行', broker = s.broker?.name || '交易账户';
+    const currency = { CNH: '人民币', USD: '美元', HKD: '港币' }[s.route] || '原币';
+    const entry = { swift: '普通电汇', 'boc-mobile': '中行手机银行向境外中行', 'payment-connect': '跨境支付通', linked: '两地同名专用转账', full: 'SWIFT全额到账' }[item.mainlandMethod];
+    const deposit = { fps: 'FPS', edda: 'eDDA', chats: 'CHATS', swift: 'SWIFT', internal: '内部交收' }[item.depositMethod] || '入金渠道待核';
+    const returning = { swift: '普通SWIFT', 'bochk-fast': '中银快汇', linked: '两地同名专用转账' }[item.returnMethod] || '回款渠道待核';
+    const arrival = s.route === 'CNH' ? '人民币原币汇出，香港收人民币（CNH）' : '人民币购入' + currency + '，以' + currency + '汇到香港';
+    const funding = s.route === 'USD' ? '美元原币经' + deposit + '入金' : s.fxMode === 'bank' ? bank + '先将' + currency + '换美元，再经' + deposit + '入金' : currency + '经' + deposit + '入金，' + (s.fxMode === 'auto' ? '买入时自动换美元' : '在券商手动换美元');
+    const withdrawal = { wire: '美元电汇出金', swift: '美元电汇出金', cheque: '美元支票出金', internal: '美元内部交收' }[s.broker?.withdrawalMethod] || '美元出金';
+    const operations = [
+      [(s.start?.name || '内地出发银行') + ' → ' + bank, arrival, entry || '汇出渠道待核'],
+      [bank + ' → ' + broker, funding],
+      ['在' + broker + '买入、卖出美股', '美元结算；交易费与税款计入本次比较'],
+      [broker + ' → ' + (s.returning?.name || '香港回款账户'), withdrawal],
+      [(s.returning?.name || '香港回款账户') + ' → ' + (s.exit?.name || '内地收款行'), '以美元汇回，再结汇成人民币 · ' + returning]
+    ];
+    const range = { start: [0, 1], bank: [0, 2], route: [0, 2], broker: [1, 4], returnBank: [3, 5], exit: [4, 5] }[key];
+    return operations.slice(...range).map(([path, ...details]) => '<div class="flow-compare-operation"><span>' + esc(path) + '</span><small>' + details.map(esc).join(' · ') + '</small></div>').join('');
+  }
   function comparison(data) {
     const key = state.comparison, rows = data.alternatives?.[key] || [], r = data.selected;
     const labels = { start: '内地出发银行', bank: '香港入金银行', route: '换汇路径', broker: '交易账户', returnBank: '香港回款银行', exit: '内地结汇银行' };
-    const spans = { start: '内地CNY → 香港原币到账', bank: '内地CNY → 交易账户入金', route: '内地CNY → 交易账户入金', broker: '香港原币余额 → 买卖及出金', returnBank: '卖出后现金 → 内地结汇', exit: '香港USD → 内地CNY' };
+    const titles = { start: '汇款到香港 · 比较出发银行', bank: '汇款及入金 · 比较香港银行', route: '购汇、汇款及入金 · 比较换汇路径', broker: '入金、交易及出金 · 比较交易账户', returnBank: '出金并汇回内地 · 比较回款银行', exit: '汇回内地并结汇 · 比较收款银行' };
+    const spans = { start: '范围：内地人民币汇出 → 香港银行到账', bank: '范围：内地人民币出发 → 交易账户美元入金', route: '范围：内地人民币出发 → 交易账户美元入金', broker: '范围：香港银行余额 → 入金、买卖及出金到账', returnBank: '范围：交易账户出金 → 香港银行回款 → 内地结汇', exit: '范围：香港美元汇回 → 内地人民币到账' };
     const identity = item => key === 'route' ? item.route : item[{ start: 'start', bank: 'bank', broker: 'broker', returnBank: 'returning', exit: 'exit' }[key]]?.id;
-    const selectedId = r ? identity(r) : '';
+    const fallback = r || data.selection || {}, selectedId = identity(fallback);
     const tableRows = rows.map(item => {
       const id = identity(item), entity = key === 'route' ? null : item[{ start: 'start', bank: 'bank', broker: 'broker', returnBank: 'returning', exit: 'exit' }[key]];
       const metric = M.comparisonMetric(item, key), selected = id === selectedId;
-      const conditions = entity?.condition || entity?.feeShort || '';
-      const status = metric?.missing.length ? '未计／待确认：' + metric.missing.join('、') : item.error || '本段费用已计齐';
+      const included = new Set(metric?.rows.map(row => row.key) || []);
+      const charges = (item.rows || []).filter(row => included.has(row.key)).flatMap(row => row.key === 'sender' ? row.items || [row] : [row]).filter(row => row.cny > 0);
+      const pending = metric?.missing.length ? '缺少：' + metric.missing.join('、') : item.error || '缺少本次操作的费用报价';
+      const costs = metric ? '<strong>' + (metric.complete ? '费用合计 ' : '已知费用小计 ') + feeText(metric.costCny) + '</strong>' +
+        charges.map(row => '<small>' + esc(row.label) + ' ' + feeText(row.cny) + '</small>').join('') : '—';
+      const loss = metric?.complete ? '<strong class="num">' + feeText(metric.lossCny) + '</strong><span class="num">' + pct(metric.lossRate) + '</span>' +
+        (metric.taxCny ? '<small>含税款预留 ' + feeText(metric.taxCny) + '</small>' : '') +
+        (Math.abs(metric.fxImpactCny) >= .005 ? '<small>' + impactLabel(metric.fxImpactCny) + ' ' + signedFee(metric.fxImpactCny) + '</small>' : '') :
+        '<strong class="flow-comparison-pending">' + (metric ? '损耗待核' : '无法计算') + '</strong><small>' + esc(pending) + '</small>';
       return '<tr class="' + (selected ? 'selected' : '') + '"><td><strong>' + esc(key === 'route' ? routes[id] : entity?.name) + '</strong>' +
-        '<small>' + esc(conditions) + '</small></td>' +
-        '<td class="num">' + pct(metric?.lossRate) + (metric?.indicative ? '<small>参考测算</small>' : '') + '</td><td class="num">' + (metric ? feeText(metric.costCny) : '未报价') +
-        '<small>' + esc(status) + '</small></td><td class="num">' + feeText(rowFee(item, 'account')) + '<small>所用香港账户合计</small></td><td>' +
-        action(selected ? '已选' : '选用', 'choose', 'data-field="' + ({ start: 'startBank', bank: 'bank', route: 'route', broker: 'broker', returnBank: 'returnBank', exit: 'exitBank' }[key]) + '" data-value="' + esc(id) + '"') + '</td></tr>';
+        (item.eligibilityReasons?.length ? '<small>' + esc(item.eligibilityReasons.join('；')) + '</small>' : '') + '</td>' +
+        '<td>' + comparisonOperations(item, key, fallback) + '</td><td class="flow-comparison-cost">' + costs + '</td><td>' + loss + '</td><td>' +
+        action(selected ? '已选' : '选用', 'choose', 'data-field="' + ({ start: 'startBank', bank: 'bank', route: 'route', broker: 'broker', returnBank: 'returnBank', exit: 'exitBank' }[key]) + '" data-value="' + esc(id) + '"' + (selected ? ' disabled' : '')) + '</td></tr>';
     }).join('');
-    return '<div class="flow-comparison-head"><div><h2>逐段横向比较</h2><span>' + spans[key] + ' · 损耗率按相同参考币值计算；未知费用未当作免费</span></div></div>' +
+    return '<div class="flow-comparison-head"><div><h2>' + titles[key] + '</h2><span>' + spans[key] + ' · 起始本金 ' + feeText(M.number(state.budgetCny)) + '</span></div></div>' +
       '<div class="flow-comparison-tabs segmented" aria-label="费用对比">' + Object.entries(labels).map(([id, label]) => action(label, 'compare', 'data-value="' + id + '" aria-pressed="' + (key === id) + '"', key === id ? 'active' : '')).join('') + '</div>' +
-      '<div class="table-wrap"><table class="flow-bank-table"><thead><tr>' + [labels[key], '比较范围损耗率', '比较范围费用 · CNY', '账户使用期费用 · CNY', ''].map(t => '<th>' + t + '</th>').join('') + '</tr></thead><tbody>' + tableRows + '</tbody></table></div>';
+      '<div class="table-wrap"><table class="flow-bank-table"><thead><tr>' + [labels[key], '本次比较的操作与渠道', '操作费用 · CNY', '折算损耗 · CNY / %', ''].map(t => '<th>' + t + '</th>').join('') + '</tr></thead><tbody>' + tableRows + '</tbody></table></div>';
   }
   function parameters() {
     const group = (title, fields) => '<h3>' + title + '</h3><div class="flow-parameter-grid">' + fields.map(args => field(...args)).join('') + '</div>';
