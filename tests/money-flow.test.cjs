@@ -324,6 +324,8 @@ test('BOCHK fast return only waives its own matching route, not broker inward or
   close(r.rows.find(row => row.key === 'returnInward').cny, 60 * 7 / 8);
   assert.equal(r.rows.find(row => row.key === 'returnOther').cny, null); ledger(r);
   assert.match(M.journeyPlans({ ...mainlandConfig, bank: 'bochk', returnBank: 'bochk', returnMethod: 'bochk-fast', exitBank: 'cmb' }, D, richQuotes).error, /不匹配/);
+  close(M.returnFee(hk('bochk'), mainland('boc'), 'swift', feeRefs, '2026-10-09'), 0);
+  close(M.returnFee(hk('bochk'), mainland('cmb'), 'swift', feeRefs, '2026-10-09'), 65 * feeRefs.HKD);
 });
 
 test('two HK accounts have separate maintenance costs, one account is never charged twice', () => {
@@ -534,16 +536,20 @@ test('buy commissions fit inside USD cash; regulatory fees are separate from zer
   const za = M.brokerTradingFees(feeConfig, broker('za'), 10000, 0, feeRefs);
   close(za.totalUsd, 1.99 * 2 + .21);
 });
-test('Trade25 retains HKD25 per active month, third-party fees and the monthly turnover limit', () => {
+test('Trade25 US monthly fee is waived and the whole first quota-crossing order is exempt', () => {
   const ordinary = M.brokerTradingFees(feeConfig, broker('hsbc'), 10000, 0, feeRefs);
   close(ordinary.orders[0].commission, 18); close(ordinary.monthlyHkd, 0);
   const offer = M.brokerTradingFees({ ...feeConfig, trade25: true, months: 12 }, broker('hsbc'), 10000, 0, feeRefs);
-  close(offer.monthlyHkd, 300); close(offer.orders[0].commission, 0);
+  close(offer.monthlyHkd, 0); close(offer.monthlyUsd, 0); close(offer.orders[0].commission, 0);
   assert.ok(offer.orders[1].sec > 0); assert.ok(offer.orders[1].taf > 0);
   const capped = M.brokerTradingFees({ ...feeConfig, trade25: true, otherTurnoverHkd: 100000 }, broker('hsbc'), 10000, 0, feeRefs);
-  close(capped.orders[0].commission, 0); close(capped.orders[1].commission, 18);
+  close(capped.orders[0].commission, 0); close(capped.orders[1].commission, 0);
+  const crossed = M.brokerTradingFees({ ...feeConfig, trade25: true, buyOrders: 2, otherTurnoverHkd: 249999 }, broker('hsbc'), 10000, 0, feeRefs);
+  close(crossed.orders[0].commission, 0); close(crossed.orders[1].commission, 18);
+  const normal2027 = M.brokerTradingFees({ ...feeConfig, date: '2026-10-09', months: 12 }, broker('hsbc'), 10000, 0, feeRefs);
+  close(normal2027.monthlyUsd, 8 * 5);
   const manual = M.brokerTradingFees({ ...feeConfig, trade25: true, tradeFeeUsd: 0 }, broker('hsbc'), 10000, 0, feeRefs);
-  close(manual.totalUsd, 0); close(manual.monthlyHkd, 25);
+  close(manual.totalUsd, 0); close(manual.monthlyHkd, 0);
 });
 test('Chief monthly offer applies to eligible buys, expires and leaves clearing and ordinary sale fees', () => {
   const r = M.brokerTradingFees({ ...feeConfig, chiefMonthly: true }, broker('chief'), 500, 0, feeRefs);
@@ -592,8 +598,9 @@ test('the five broker journeys reconcile RMB and retain the exact deposit and wi
     close(r.net + r.costCny + r.taxCny, input.budgetCny + input.profitUsd * r.refs.USD + r.fxImpactCny);
     assert.ok(r.rows.every(row => row.cny == null || row.cny >= 0));
     if (provider.integratedBank) {
-      assert.equal(r.bank.id, provider.integratedBank); assert.equal(r.returning.id, provider.integratedBank);
-      assert.equal(r.depositMethod, 'internal');
+      assert.equal(r.bank.id, input.bank); assert.equal(r.returning.id, input.returnBank || input.bank);
+      assert.equal(r.settlementBank.id, provider.integratedBank);
+      assert.equal(r.depositMethod, r.bank.id === provider.integratedBank ? 'internal' : 'chats');
       for (const key of ['depositBank', 'depositOther', 'returnInward', 'withdrawMiddle', 'withdraw']) close(r.rows.find(row => row.key === key).cny, 0);
     }
     if (provider.id === 'hsbc') close(r.taxCny, Math.max(0, input.profitUsd - r.trading.totalUsd) * r.refs.USD * .2);
@@ -761,13 +768,13 @@ test('linked return channels require the destination mainland account eligibilit
   close(ordinary.recommended.net, ordinary.minimum.net);
 });
 
-test('BOC mobile group remittance does not inherit the standard wire tariff or an expired waiver', () => {
+test('BOC mobile uses explicitly attributed 2026 reported waiver, independent of standard wire and agent fees', () => {
   const input = { ...mainlandConfig, broker: 'ibkr', bank: 'bochk', returnBank: 'bochk', returnMethod: 'bochk-fast',
     mainlandMethod: 'boc-mobile', profitUsd: 0, tradeFeeUsd: '', senderFeeCny: '', entryMiddleCny: '' };
   const data = M.journeyPlans(input, D, richQuotes), r = data.selected;
-  assert.equal(r.rows.find(row => row.key === 'sender').cny, null);
-  assert.ok(r.missing.includes('中行手机银行向境外中行·现行汇出手续费'));
-  assert.ok(r.missing.includes('中行手机银行向境外中行·现行电讯费'));
+  close(r.rows.find(row => row.key === 'sender').cny, 0);
+  assert.match(r.rows.find(row => row.key === 'sender').evidence, /2026公开报道/);
+  assert.equal(D.bocMobileEvidence.level, 'reported');
   close(r.rows.find(row => row.key === 'entryInward').cny, 0);
   assert.equal(r.rows.find(row => row.key === 'entryMiddle').cny, null);
   assert.equal(r.rankable, false);
@@ -794,7 +801,8 @@ test('confirmed free BOC mobile transfers preserve the foreign principal without
   assert.ok(elsewhere.rows.find(row => row.key === 'sender').cny > 0);
   assert.equal(elsewhere.rows.find(row => row.key === 'entryMiddle').cny, null);
   const hkd = data.alternatives.route.find(row => row.route === 'HKD');
-  assert.equal(hkd.rows.find(row => row.key === 'sender').cny, null);
+  close(hkd.rows.find(row => row.key === 'sender').cny, 0);
+  assert.match(hkd.rows.find(row => row.key === 'sender').evidence, /公开报道/);
   const cnh = data.alternatives.route.find(row => row.route === 'CNH');
   assert.equal(cnh.mainlandMethod, 'swift');
   assert.ok(cnh.rows.find(row => row.key === 'sender').cny > 0);
@@ -892,14 +900,14 @@ test('COMM regional price endpoints fit inside the budget, with per-transfer min
   ledger(r, 0); ledger(quoted, 0);
 });
 
-test('choosing BOC does not silently switch a standard quote to an unverified mobile promotion', () => {
+test('choosing BOC preserves an explicitly selected standard tariff alongside the reported mobile waiver', () => {
   const config = { ...mainlandConfig, bank: 'bochk', mainlandMethod: '' };
   const standard = M.journeyPlans(config, D, richQuotes).selected;
   assert.equal(standard.mainlandMethod, 'swift');
   assert.ok(standard.rows.find(row => row.key === 'sender').cny > 0);
   const mobile = M.journeyPlans({ ...config, mainlandMethod: 'boc-mobile' }, D, richQuotes).selected;
   const sender = mobile.rows.find(row => row.key === 'sender');
-  assert.equal(sender.cny, null); assert.equal(sender.status, '2026优惠公告未查到');
+  close(sender.cny, 0); assert.match(sender.evidence, /2026公开报道/);
   close(mobile.rows.find(row => row.key === 'entryInward').cny, 0);
 });
 
@@ -924,4 +932,68 @@ test('bank selector changes preserve a compatible channel, while explicit mobile
   assert.equal(saved.mainlandMethod, 'boc-mobile');
   choose('route', 'CNH');
   assert.equal(saved.mainlandMethod, 'swift');
+});
+
+
+test('BOCHK receiving and bank stock settlement accounts stay independent in both directions', () => {
+  for (const id of ['za', 'hsbc']) {
+    const input = { ...mainlandConfig, selectedOnly: true, broker: id, tradeFeeUsd: '', startBank: 'boc', bank: 'bochk', returnBank: 'bochk', exitBank: 'boc',
+      route: 'USD', mainlandMethod: 'boc-mobile', outcome: 'usd-balance', trade25: true, hsbcBalanceWaiver: true, profitUsd: 0, months: 12 };
+    const r = M.journeyPlans(input, D, richQuotes).selected;
+    assert.equal(r.bank.id, 'bochk'); assert.equal(r.returning.id, 'bochk'); assert.equal(r.settlementBank.id, id);
+    assert.equal(r.depositMethod, 'chats');
+    for (const key of ['sender', 'entryInward', 'depositBank', 'depositOther', 'withdraw', 'returnInward', 'withdrawMiddle']) close(r.rows.find(x => x.key === key).cny, 0);
+    assert.equal(r.rows.some(x => ['returnWire', 'exitFx'].includes(x.key)), false);
+    close(r.steps.hongKong, r.budgetCny / r.startSell);
+    if (id === 'hsbc') { close(r.trading.monthlyHkd, 0); close(r.rows.find(x => x.key === 'brokerAccount').cny, 0); }
+  }
+});
+
+test('holding, USD debit, CNH debit and mainland settlement each conserve their own currency and rate', () => {
+  const input = { ...mainlandConfig, selectedOnly: true, broker: 'za', tradeFeeUsd: '', startBank: 'boc', bank: 'bochk', returnBank: 'bochk', exitBank: 'boc',
+    route: 'USD', mainlandMethod: 'boc-mobile', profitUsd: 1000, entryMiddleCny: 0, returnExtraCny: 0, months: 12 };
+  const results = {};
+  for (const outcome of ['usd-balance', 'usd-card', 'cnh-card', 'mainland']) {
+    const r = M.journeyPlans({ ...input, outcome }, D, richQuotes).selected; assert.ok(r, outcome); results[outcome] = r;
+    close(r.netCny, r.net * r.refs[r.currency]);
+    close(r.netCny + r.costCny + r.taxCny, r.budgetCny + input.profitUsd * r.refs.USD + r.fxImpactCny);
+    for (const leg of M.flowLedger(r).legs) close(leg.outputCny + leg.costCny + leg.taxCny, leg.inputCny + leg.profitCny + leg.fxImpactCny);
+  }
+  close(results['usd-balance'].net, results['usd-card'].net);
+  close(results['cnh-card'].exitPrice, richQuotes.offshoreUsd.bochk.quotes.CNH.bidPerUsd);
+  close(results.mainland.exitPrice, richQuotes.banks.boc.quotes.USD.buy);
+  assert.equal(results['cnh-card'].currency, 'CNH'); assert.equal(results.mainland.currency, 'CNY');
+  assert.match(M.journeyPlans({ ...input, outcome: 'usd-card', returnBank: 'za' }, D, richQuotes).error, /不支持.*美元/);
+  assert.match(M.journeyPlans({ ...input, outcome: 'cnh-card', returnBank: 'hsbc' }, D, richQuotes).error, /中银香港/);
+});
+
+test('a third settlement bank adds its own monthly charge once and keeps native currency arithmetic', () => {
+  const input = { ...mainlandConfig, selectedOnly: true, broker: 'hsbc', tradeFeeUsd: '', startBank: 'boc', bank: 'bochk', returnBank: 'za', exitBank: 'boc',
+    route: 'USD', mainlandMethod: 'boc-mobile', outcome: 'usd-balance', profitUsd: 0, months: 12, trade25: true };
+  const charged = M.journeyPlans(input, D, richQuotes).selected;
+  const account = charged.rows.find(x => x.key === 'account');
+  close(account.cny, 100 * 12 * charged.refs.HKD);
+  assert.equal(account.items.filter(x => x.label.includes('汇丰')).length, 1);
+  const waived = M.journeyPlans({ ...input, hsbcBalanceWaiver: true }, D, richQuotes).selected;
+  close(waived.net - charged.net, 1200 * charged.refs.HKD / charged.refs.USD);
+  close(charged.rows.find(x => x.key === 'brokerAccount').cny, 0);
+});
+
+test('bank bridge charges cannot be confused with free stock internal settlement', () => {
+  close(M.localUsdTransfer(hk('sc'), hk('za'), feeRefs, '2026-10-09'), 22 * feeRefs.USD);
+  close(M.localUsdTransfer(hk('za'), hk('bochk'), feeRefs, '2027-01-09'), 0);
+  close(M.localUsdTransfer(hk('hsbc'), hk('bochk'), feeRefs, '2026-10-09'), 0);
+});
+
+test('switching the stock venue in the UI preserves both selected banks and does not disturb entry fees', () => {
+  const fs = require('node:fs'), vm = require('node:vm');
+  let saved = { ...mainlandConfig, bank: 'bochk', returnBank: 'bochk', broker: 'ibkr', route: 'USD', mainlandMethod: 'boc-mobile', entryMiddleCny: '0', profitUsd: 0 };
+  const context = { window: { MONEY_FLOW: D, MONEY_FLOW_QUOTES: richQuotes, ChanghengMoneyFlowModel: M },
+    document: { querySelectorAll: () => [], getElementById: () => null },
+    localStorage: { getItem: () => JSON.stringify(saved), setItem: (_, v) => { saved = JSON.parse(v); } } };
+  vm.runInNewContext(fs.readFileSync(require.resolve('../assets/money-flow.js'), 'utf8'), context);
+  for (const id of ['za', 'hsbc', 'ibkr']) {
+    context.window.ChanghengMoneyFlow.handleAction({ dataset: { action: 'money-flow-choose', field: 'broker', value: id } });
+    assert.equal(saved.bank, 'bochk'); assert.equal(saved.returnBank, 'bochk'); assert.equal(saved.mainlandMethod, 'boc-mobile'); assert.equal(saved.entryMiddleCny, '0');
+  }
 });
