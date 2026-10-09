@@ -432,7 +432,11 @@
     const current = options.indexOf(event.target.closest('.flow-select-option'));
     const next = event.key === 'Home' ? 0 : event.key === 'End' ? options.length - 1 : current < 0 ? options.findIndex(option => option.getAttribute('aria-pressed') === 'true') : current + (event.key === 'ArrowDown' ? 1 : -1);
     menu.open = true;
-    options[Math.max(0, Math.min(options.length - 1, next))].focus();
+    const target = options[Math.max(0, Math.min(options.length - 1, next))];
+    target.focus({ preventScroll: true });
+    const list = menu.querySelector('.select-menu-list'), targetRect = target.getBoundingClientRect(), listRect = list.getBoundingClientRect();
+    if (targetRect.top < listRect.top) list.scrollTop += targetRect.top - listRect.top - 6;
+    if (targetRect.bottom > listRect.bottom) list.scrollTop += targetRect.bottom - listRect.bottom + 6;
   });
   document.addEventListener('focusin', event => {
     // Pointer clicks close other menus after mouseup in the shared handler,
@@ -444,8 +448,18 @@
     const menu = event.target;
     if (!menu.matches('.flow-select') || !menu.open) return;
     const list = menu.querySelector('.select-menu-list'), focused = document.activeElement?.closest('.flow-select-option');
+    const rect = menu.querySelector('summary').getBoundingClientRect();
+    const below = window.innerHeight - rect.bottom - 16, above = rect.top - 16;
+    const opensAbove = below < Math.min(264, list.scrollHeight) && above > below;
+    menu.dataset.side = opensAbove ? 'above' : 'below';
+    list.style.maxHeight = Math.max(40, Math.min(264, opensAbove ? above : below)) + 'px';
     const target = focused && list.contains(focused) ? focused : list.querySelector('[aria-pressed="true"]');
     if (target) list.scrollTop += target.getBoundingClientRect().top - list.getBoundingClientRect().top - 6;
   }, true);
+  const closeSelects = event => document.querySelectorAll('.flow-select[open]').forEach(menu => {
+    if (!(event.target instanceof Node) || !menu.querySelector('.select-menu-list').contains(event.target)) menu.open = false;
+  });
+  document.addEventListener('scroll', closeSelects, true);
+  window.addEventListener('resize', closeSelects);
   window.ChanghengMoneyFlow = { view, handleAction, handleInput, handleChange };
 }());
