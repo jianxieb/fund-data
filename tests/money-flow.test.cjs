@@ -527,3 +527,146 @@ test('other brokers never inherit IBKR FX commissions; Chief USD cheque bank pro
   const cheque = M.journeyPlans({ ...mainlandConfig, broker: 'chief', tradeFeeUsd: '', inwardHkd: '' }, D, richQuotes).selected;
   assert.ok(cheque.missing.includes('收款银行USD支票处理费')); close(cheque.rows.find(row => row.key === 'withdrawMiddle').cny, 0);
 });
+
+
+test('every displayed leg conserves value, tax and reference effects; coefficients compare equal units', () => {
+  for (const id of ['ibkr', 'hsbc', 'chief', 'usmart', 'za']) for (const profitUsd of [0, 1500, -500]) {
+    const r = M.journeyPlans({ ...mainlandConfig, broker: id, tradeFeeUsd: '', profitUsd, months: 12,
+      bank: id === 'hsbc' || id === 'za' ? id : 'bochk', returnBank: id === 'hsbc' || id === 'za' ? id : 'hang',
+      trade25: true, useVoucher: true, voucherUsd: 2, voucherScope: 'both', voucherOrders: 2, voucherExpiry: '2026-12-31',
+      returnMethod: 'swift', openingCny: 25, extraCapitalCny: 10000, annualGapPct: 2 }, D, richQuotes).selected;
+    assert.ok(r, id);
+    const l = M.flowLedger(r);
+    close(l.stops[0].amount, r.budgetCny);
+    close(l.stops[2].amount, r.steps.fundedUsd); // Buy fees belong to the NEXT leg.
+    close(l.stops.at(-1).amount, r.net);
+    close(l.legs.reduce((sum, leg) => sum + leg.costCny, 0), r.costCny);
+    close(l.legs.reduce((sum, leg) => sum + leg.lossCny, 0), l.lossCny);
+    for (const leg of l.legs) {
+      close(leg.inputCny + leg.profitCny + leg.fxImpactCny, leg.outputCny + leg.costCny + leg.taxCny);
+      close(leg.coefficient, (leg.outputCny - leg.profitCny) / leg.inputCny);
+      close(leg.lossRate, leg.lossCny / leg.inputCny);
+      close(leg.rows.reduce((sum, row) => sum + (row.cny ?? 0), 0), leg.costCny);
+      assert.ok(leg.rows.every(row => row.cny == null || row.cny >= -1e-10));
+    }
+    close(l.stops.at(-1).cumulativeLossCny, r.budgetCny + profitUsd * r.refs.USD - r.net);
+    assert.notEqual(l.legs[0].coefficient, r.steps.hongKong / r.budgetCny);
+    assert.notEqual(l.legs[0].coefficient, r.net / r.budgetCny);
+  }
+});
+
+test('CNH transfer has no conversion charge; conversion stays after Hong Kong arrival in both orders', () => {
+  for (const fxMode of ['manual', 'auto', 'bank']) {
+    const r = M.journeyPlans({ ...mainlandConfig, bank: 'bochk', returnBank: 'hang', broker: 'ibkr', route: 'CNH',
+      fxMode, depositMethod: fxMode === 'bank' ? 'chats' : 'edda', profitUsd: 0, tradeFeeUsd: '', depositHkd: 20 }, D, richQuotes).selected;
+    const l = M.flowLedger(r);
+    close(l.legs[0].rows.find(row => row.key === 'entryFx').cny, 0);
+    assert.equal(l.stops[1].currency, 'CNH');
+    assert.ok(l.legs[1].rows.some(row => row.key === 'brokerFx'));
+    if (fxMode === 'bank') close(r.steps.hkConvertedUsd - 20 * r.refs.HKD / r.refs.USD, r.steps.fundedUsd);
+    else close(r.steps.brokerOriginal, r.steps.hongKong - 20 * r.refs.HKD / r.refs.CNH);
+    close(l.legs[0].inputCny + l.legs[0].fxImpactCny, l.legs[0].outputCny + l.legs[0].costCny);
+  }
+});
+
+test('favourable currency valuation is signed, never hidden by an absolute value or a clamp', () => {
+  const q = structuredClone(richQuotes);
+  q.offshoreUsd.bochk.quotes.CNH = { bidPerUsd: 6.85, askPerUsd: 6.87, asOf: '2026-10-08 20:00:00' };
+  const r = M.journeyPlans({ ...mainlandConfig, broker: 'ibkr', profitUsd: 0, route: 'CNH', depositMethod: 'fps',
+    senderFeeCny: 0, tradeFeeUsd: '' }, D, q).selected;
+  const l = M.flowLedger(r);
+  assert.ok(l.legs[0].lossCny < 0); assert.ok(l.legs[0].coefficient > 1);
+  close(l.legs[0].costCny, 0); close(l.legs[0].lossCny, -l.legs[0].fxImpactCny);
+});
+
+test('unquoted fees remain named in every affected node, while explicit zero clears that gap', () => {
+  const input = { ...mainlandConfig, broker: 'ibkr', profitUsd: 0, tradeFeeUsd: '', entryMiddleCny: '',
+    depositOtherCny: '', intermediaryCny: '', returnExtraCny: '' };
+  const r = M.journeyPlans(input, D, richQuotes).selected, l = M.flowLedger(r);
+  assert.ok(l.legs[0].missing.includes('内地→香港中转行费'));
+  assert.ok(l.stops[2].missing.includes('内地→香港中转行费'));
+  assert.ok(l.legs[4].missing.includes('回内地中转行费'));
+  assert.ok(l.legs[4].missing.includes('中国银行USD收款费'));
+  assert.equal(r.complete, false);
+  const confirmed = M.journeyPlans({ ...input, entryMiddleCny: 0, depositOtherCny: 0, intermediaryCny: 0, returnExtraCny: 0 }, D, richQuotes).selected;
+  assert.equal(confirmed.complete, true); assert.equal(M.flowLedger(confirmed).stops.at(-1).missing.length, 0);
+});
+
+test('route presets replace all routing and scoped prices, and reproduce their advertised result', () => {
+  const dirty = { ...mainlandConfig, broker: 'hsbc', trade25: true, hsbcBalanceWaiver: true, profitUsd: 0, tradeFeeUsd: '99',
+    startSell: '7.9', entryPrice: '8.1', exitPrice: '6.8', senderFeeCny: '10', monthlyHkd: '1', useVoucher: true,
+    voucherUsd: '20', voucherOrders: '2', voucherScope: 'both', voucherExpiry: '2026-12-31', months: 12 };
+  const data = M.journeyPlans(dirty, D, richQuotes);
+  assert.ok(data.presets.length >= 7);
+  for (const preset of data.presets) {
+    const applied = M.applyRoute(dirty, preset.result, preset.id);
+    for (const key of M.routeKeys) assert.equal(applied[key], M.routeConfiguration(preset.result)[key], key);
+    for (const key of M.bankQuoteKeys) assert.equal(applied[key], '', key);
+    assert.equal(applied.budgetCny, dirty.budgetCny); assert.equal(applied.months, dirty.months);
+    assert.equal(applied.useVoucher, false); assert.equal(applied.tradeFeeUsd, '');
+    const r = M.journeyPlans(applied, D, richQuotes).selected;
+    close(r.net, preset.result.net); close(r.costCny, preset.result.costCny);
+  }
+});
+
+test('recommendations compare complete routes across brokers without using unknown bank or FX prices as free', () => {
+  const data = M.journeyPlans({ ...mainlandConfig, broker: 'ibkr', profitUsd: 0, tradeFeeUsd: '', bank: '', returnBank: '',
+    startBank: '', exitBank: '', route: '', fxMode: '', mainlandMethod: '', depositMethod: '', returnMethod: '', months: 1 }, D, richQuotes);
+  assert.ok(data.plans.some(r => r.broker.id === 'za'));
+  assert.ok(data.plans.every(r => !r.indicativeFx));
+  assert.ok(data.plans.every(r => !r.requiredEligibility.length));
+  close(data.minimum.net, Math.max(...data.plans.map(r => r.net)));
+  assert.equal(data.recommended, data.minimum);
+  assert.ok(data.recommendationReason.includes(data.recommended.complete ? '费用已核齐' : '缺项另列'));
+  if (data.simple) assert.ok(data.simple.net <= data.minimum.net + 1e-7);
+  assert.equal(data.alternatives.start.length, 10); assert.equal(data.alternatives.bank.length, 5);
+});
+
+test('ZA return fees use the expected sell month, with publicly announced November changes included', () => {
+  const input = { ...mainlandConfig, broker: 'za', bank: 'za', returnBank: 'za', profitUsd: 0, tradeFeeUsd: '', date: '2026-10-08', returnMethod: 'swift' };
+  const current = M.journeyPlans({ ...input, months: 1 }, D, richQuotes).selected;
+  const later = M.journeyPlans({ ...input, months: 12 }, D, richQuotes).selected;
+  close(current.rows.find(row => row.key === 'returnWire').cny, 0);
+  close(later.rows.find(row => row.key === 'returnWire').cny, 70 * later.refs.HKD);
+  assert.equal(later.returnDate, '2027-09-08');
+});
+
+
+test('linked return channels require the destination mainland account eligibility too', () => {
+  const config = { ...mainlandConfig, startBank: '', bank: '', returnBank: '', exitBank: '', route: '', fxMode: '',
+    mainlandMethod: '', depositMethod: '', returnMethod: '', broker: 'ibkr', profitUsd: 0, tradeFeeUsd: '' };
+  const q = structuredClone(richQuotes);
+  q.banks.hsbc = { quotes: { USD: { buy: 7, sell: 7.01, asOf: '2026-10-08 20:00:00' } } };
+  const ordinary = M.journeyPlans(config, D, q);
+  assert.ok(ordinary.plans.every(row => row.returnMethod !== 'linked'));
+  const enabled = M.journeyPlans({ ...config, eligible_hsbc: true }, D, q);
+  assert.ok(enabled.plans.some(row => row.returnMethod === 'linked'));
+  assert.ok(enabled.plans.filter(row => row.returnMethod === 'linked').every(row => row.requiredEligibility.includes('hsbc')));
+  for (const preset of ordinary.presets) assert.ok(preset.result.rows.find(row => row.key === 'sender').cny != null);
+  assert.ok(ordinary.plans.some(row => row.mainlandMethod === 'full'));
+  assert.ok(ordinary.plans.some(row => row.depositMethod === 'swift'));
+  close(ordinary.recommended.net, ordinary.minimum.net);
+});
+
+test('a downstream missing conversion quote preserves the priced mainland arrival ledger', () => {
+  const data = M.journeyPlans({ ...mainlandConfig, broker: 'za', route: 'CNH', fxMode: 'bank', tradeFeeUsd: '' }, D, richQuotes);
+  assert.equal(data.selected, undefined);
+  const l = M.flowLedger(data.partial);
+  assert.equal(l.stops.length, 2); assert.equal(l.legs.length, 1);
+  close(l.stops[1].amount, data.partial.steps.hongKong);
+  close(l.legs[0].costCny, data.partial.rows.reduce((sum, row) => sum + (row.cny || 0), 0));
+});
+
+
+test('the diagram shows the final RMB only once and retains every closing cost', () => {
+  const r = M.journeyPlans({ ...mainlandConfig, broker: 'ibkr', profitUsd: 0, tradeFeeUsd: '', months: 12,
+    bank: 'hsbc', returnBank: 'hang', openingCny: 100, extraCapitalCny: 50000, annualGapPct: 2 }, D, richQuotes).selected;
+  const l = M.diagramLedger(r);
+  assert.equal(l.stops.length, 6); assert.equal(l.legs.length, 5);
+  assert.deepEqual(l.stops.filter(row => row.currency === 'CNY').map(row => row.id), ['start', 'destination']);
+  close(l.legs.reduce((sum, row) => sum + row.costCny, 0), r.costCny);
+  close(l.stops.at(-1).amount, r.net);
+  const end = l.legs.at(-1);
+  close(end.inputCny + end.fxImpactCny, end.outputCny + end.costCny);
+  for (const key of ['returnWire', 'returnOther', 'exitFx', 'account', 'extra']) assert.ok(end.rows.some(row => row.key === key));
+});

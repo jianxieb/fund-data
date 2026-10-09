@@ -6,6 +6,13 @@
   'use strict';
   return {
     verifiedAt: '2026-10-09',
+    evidenceGaps: [
+      { bank: 'icbc', checkedAt: '2026-10-09', items: ['网银汇出手续费', '网银汇出电讯费'], source: 'icbc', finding: '官方产品页请求403；未取得可核对的2026完整收费原文，不采用历史0.8‰价格。' },
+      { bank: 'comm', checkedAt: '2026-10-09', items: ['个人汇出手续费', '个人汇出电讯费'], source: 'commFx', finding: '有官方现汇报价，但现行个人汇出完整收费仍未核实。' },
+      { bank: 'cib', checkedAt: '2026-10-09', items: ['USD现汇买入/卖出价', 'HKD现汇买入/卖出价'], source: 'cibFx', finding: '当天官方公开查询显示日期但无价格行；须本人App成交报价。' },
+      { bank: 'hang', checkedAt: '2026-10-09', items: ['USD/HKD账户成交买卖价'], source: 'hangCnFx', finding: '须本人的账户询价，不能借其他银行价格。' },
+      { bank: 'sc', checkedAt: '2026-10-09', items: ['USD/HKD账户成交买卖价'], source: 'scFx', finding: '须本人的账户询价，不能借其他银行价格。' }
+    ],
     sources: {
       safe: { name: '外汇局 · 个人购汇用途与额度', url: 'https://www.safe.gov.cn/shanghai/2019/1213/1198.html' },
       remit: { name: '外汇局 · 外汇账户汇出与真实性材料', url: 'https://www.safe.gov.cn/tianjin/2026/0422/3039.html' },
