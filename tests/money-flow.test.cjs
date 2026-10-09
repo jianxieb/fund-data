@@ -360,14 +360,69 @@ test('the current comparison row matches the displayed route including full-amou
   for (const overrides of [
     { startBank: 'abc', mainlandMethod: 'full' },
     { route: 'HKD', fxMode: 'auto', depositMethod: 'edda' },
-    { depositMethod: 'swift' }
+    { depositMethod: 'swift' },
+    { bank: 'bochk', returnBank: 'bochk', returnMethod: 'swift' },
+    { bank: 'bochk', returnBank: 'bochk', route: 'CNH', depositMethod: 'fps', mainlandMethod: 'payment-connect', senderFeeCny: 0, broker: 'ibkr' }
   ]) {
     const p = M.journeyPlans({ ...mainlandConfig, ...overrides }, D, richQuotes);
-    for (const [key, id] of [['start', p.selected.start.id], ['bank', p.selected.bank.id], ['route', p.selected.route]]) {
-      const current = p.alternatives[key].find(row => (key === 'route' ? row.route : row[key].id) === id);
+    for (const [key, entity] of Object.entries({ start: 'start', bank: 'bank', route: 'route', returnBank: 'returning', exit: 'exit', ...(overrides.broker ? { broker: 'broker' } : {}) })) {
+      const id = key === 'route' ? p.selected.route : p.selected[entity].id;
+      const current = p.alternatives[key].find(row => (key === 'route' ? row.route : row[entity].id) === id);
       assert.equal(current.error, undefined); close(current.net, p.selected.net);
     }
   }
+});
+
+test('diagram bank selectors use their own leg; wider comparison ranges stay explicit', () => {
+  for (const route of ['USD', 'HKD', 'CNH']) {
+    const r = M.journeyPlans({ ...mainlandConfig, route, bank: 'bochk', returnBank: 'bochk',
+      depositMethod: route === 'USD' ? 'chats' : 'fps', monthlyHkd: 100, profitUsd: 1000 }, D, richQuotes).selected;
+    const diagram = M.diagramLedger(r);
+    for (const [key, index] of Object.entries({ start: 0, bank: 0, returnBank: 3, exit: 4 })) {
+      const metric = M.comparisonMetric(r, key, 'step'), leg = diagram.legs[index];
+      close(metric.costCny, leg.costCny); close(metric.lossRate, leg.lossRate);
+      close(metric.lossCny, metric.costCny + metric.taxCny - metric.fxImpactCny);
+    }
+    close(M.comparisonMetric(r, 'bank').costCny, diagram.legs[0].costCny + diagram.legs[1].costCny);
+    close(M.comparisonMetric(r, 'exit', 'step').costCny - M.comparisonMetric(r, 'exit').costCny, r.rows.find(row => row.key === 'account').cny);
+  }
+  assert.equal(M.comparisonMetric({ error: 'no source quote' }, 'bank', 'step'), null);
+});
+
+test('the reported RMB example reconciles the fee, valuation change and loss without including the next leg', () => {
+  const r = M.journeyPlans({ ...mainlandConfig, budgetCny: 100000, bank: 'bochk', returnBank: 'bochk', route: 'CNH',
+    depositMethod: 'fps', entryMiddleCny: '', usdCny: 6.70035, usdHkd: 7.8484, usdCnh: 6.697095 }, D, richQuotes).selected;
+  const entry = M.comparisonMetric(r, 'bank', 'step');
+  assert.equal(entry.costCny.toFixed(2), '179.82');
+  assert.equal(entry.fxImpactCny.toFixed(2), '48.52');
+  assert.equal(entry.lossCny.toFixed(2), '131.30');
+  assert.equal((entry.lossRate * 100).toFixed(3), '0.131');
+  assert.equal(M.comparisonMetric(r, 'bank').costCny.toFixed(2), '193.22');
+  const partial = { ...r, net: undefined };
+  close(M.comparisonMetric(partial, 'bank', 'step').costCny, entry.costCny);
+  close(M.comparisonMetric(partial, 'bank', 'step').lossCny, entry.lossCny);
+});
+
+test('Payment Connect does not inherit SWIFT tariffs or pretend a historical free case is a current quote', () => {
+  const input = { ...mainlandConfig, bank: 'bochk', returnBank: 'bochk', route: 'CNH', depositMethod: 'fps', mainlandMethod: 'payment-connect' };
+  const r = M.journeyPlans(input, D, richQuotes).selected;
+  assert.ok(r); assert.equal(r.rankable, false);
+  const sender = r.rows.find(row => row.key === 'sender');
+  assert.equal(sender.cny, null); assert.deepEqual(sender.items.map(row => row.label), ['跨境支付通本次汇出服务费']);
+  close(r.rows.find(row => row.key === 'entryMiddle').cny, 0);
+  close(r.steps.hongKong, input.budgetCny);
+  assert.ok(r.missing.includes('跨境支付通本次汇出服务费'));
+  const confirmed = M.journeyPlans({ ...input, senderFeeCny: 0 }, D, richQuotes).selected;
+  close(confirmed.rows.find(row => row.key === 'sender').cny, 0);
+  assert.equal(M.comparisonMetric(confirmed, 'bank', 'step').missing.length, 0);
+  assert.equal(confirmed.rankable, false);
+  const paid = M.journeyPlans({ ...input, count: 2, senderFeeCny: 5 }, D, richQuotes).selected;
+  close(paid.rows.find(row => row.key === 'sender').cny, 10);
+  close(paid.steps.hongKong, input.budgetCny - 10);
+  const badRoute = M.journeyPlans({ ...input, route: 'USD', depositMethod: 'chats' }, D, richQuotes);
+  assert.match(badRoute.error, /人民币原币/);
+  const otherBank = M.journeyPlans({ ...input, bank: 'za' }, D, richQuotes);
+  assert.match(otherBank.error, /仅收录/);
 });
 
 test('when all upstream quotes are stale, own confirmed quotes still compute without claiming an automatic recommendation', () => {

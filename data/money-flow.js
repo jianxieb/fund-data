@@ -9,7 +9,7 @@
     comparisonNotice: '中行手机银行同名优惠、跨境支付通的现行收费尚未核齐；以下仅为已收录渠道测算，暂不判定最低损耗。',
     evidenceGaps: [
       { bank: 'boc', channel: 'boc-mobile', checkedAt: '2026-10-09', items: ['手机银行向境外中行汇款的现行手续费优惠', '现行电讯费优惠', '中转行费用'], source: 'bocMobileHistory', finding: '已核实中银香港同名汇入基本手续费豁免；内地手机银行双免官方公告仅取得2022年有效版本，现行优惠入口失效。不能套普通电汇标准价，也不能将历史双免无期限延长。' },
-      { bank: 'boc', channel: 'payment-connect', checkedAt: '2026-10-09', items: ['跨境支付通南向现行收费、限额及适用条件'], source: 'bocPaymentConnect', finding: '官方确认支持人民币汇出、人民币或港币到账；尚未取得完整现行收费和限额，未纳入完整路线排序。' },
+      { bank: 'boc', channel: 'payment-connect', checkedAt: '2026-10-09', items: ['中行跨境支付通本次南向汇出服务费', '本人剩余便利化额度及银行交易限额'], source: 'bocPaymentConnect', finding: '中行确认人民币汇出、人民币或港币到账；黄石政府网2025-07-01记录中行南向人民币汇款无额外手续费实例。金管局2026-09-08更新页确认南向受年度等值5万美元便利化额度约束。实例不等同2026年全国账户永久免费承诺；本次费率可按App确认页填写，不套用SWIFT电讯费，不纳入美股入金推荐。' },
       { bank: 'icbc', checkedAt: '2026-10-09', items: ['网银汇出手续费', '网银汇出电讯费'], source: 'icbc', finding: '官方产品页请求403；未取得可核对的2026完整收费原文，不采用历史0.8‰价格。' },
       { bank: 'comm', checkedAt: '2026-10-09', items: ['个人汇出手续费', '个人汇出电讯费'], source: 'commFx', finding: '有官方现汇报价，但现行个人汇出完整收费仍未核实。' },
       { bank: 'cib', checkedAt: '2026-10-09', items: ['USD现汇买入/卖出价', 'HKD现汇买入/卖出价'], source: 'cibFx', finding: '当天官方公开查询显示日期但无价格行；须本人App成交报价。' },
@@ -23,6 +23,8 @@
       boc: { name: '中国银行 · 个人金融现行标准价（电子渠道优惠另列）', url: 'https://pic.bankofchina.com/bocappd/pricelist/202511/P020251110646838136627.pdf' },
       bocMobileHistory: { name: '中国银行 · 手机银行向境外中行双免（仅2022年历史公告）', url: 'https://wap.boc.cn/bif/bi3/202112/t20211228_20575165.html' },
       bocPaymentConnect: { name: '中国银行 · 跨境支付通南向人民币／港币到账', url: 'https://www.boc.cn/aboutboc/bi1/202506/t20250620_25390382.html' },
+      bocPaymentCase: { name: '黄石政府网 · 中行南向零手续费实例（2025-07-01）', url: 'https://huangshi.gov.cn/xwdt/hsyw/202507/t20250701_1235188.html' },
+      paymentCurrent: { name: '香港金管局 · 跨境支付通资格与额度（2026-09-08）', url: 'https://www.hkma.gov.hk/chi/smart-consumers/payment-connect/' },
       bocFx: { name: '中国银行 · 外汇牌价（每100外币）', url: 'https://www.boc.cn/sourcedb/whpj/' },
       cmb: { name: '招商银行 · 专业版跨境汇款标准价', url: 'https://www.cmbchina.com/personalbank/gb/page/standfee.htm' },
       cmbFx: { name: '招商银行 · 外汇牌价（每100外币）', url: 'https://fx.cmbchina.com/hq/' },
