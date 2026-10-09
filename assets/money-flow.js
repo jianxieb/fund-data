@@ -34,7 +34,12 @@
     return '<label class="flow-field"><span>' + esc(label) + '</span><div class="flow-input"><input ' + (key === 'voucherExpiry' ? 'type="date"' : 'type="text" inputmode="decimal"') + ' data-money-field="' + key + '" aria-label="' + esc(label) + '" value="' + esc(state[key]) + '" placeholder="' + esc(placeholder) + '">' + (unit ? '<span>' + esc(unit) + '</span>' : '') + '</div></label>';
   }
   function select(key, label, values, value) {
-    return '<label class="flow-field"><span>' + esc(label) + '</span><select data-money-select="' + key + '" aria-label="' + esc(label) + '">' + values.map(([id, text]) => '<option value="' + esc(id) + '"' + (value === id ? ' selected' : '') + '>' + esc(text) + '</option>').join('') + '</select></label>';
+    const current = values.find(([id]) => id === value) || values[0] || ['', '暂无可选项'];
+    const copy = ([, text, detail]) => '<span class="flow-select-copy"><span>' + esc(text) + '</span>' + (detail ? '<small>' + esc(detail) + '</small>' : '') + '</span>';
+    return '<div class="flow-field"><span>' + esc(label) + '</span><details class="select-menu flow-select" data-money-select="' + esc(key) + '">' +
+      '<summary id="flow-select-' + esc(key) + '" aria-label="' + esc(label + '：' + current.slice(1).filter(Boolean).join('，')) + '">' + copy(current) + '</summary>' +
+      '<div class="select-menu-list" role="group" aria-label="' + esc(label) + '">' + values.map(option => action(copy(option) + '<span class="flow-option-check" aria-hidden="true">' + (option[0] === value ? '✓' : '') + '</span>',
+        'select-choice', 'data-field="' + esc(key) + '" data-value="' + esc(option[0]) + '" aria-pressed="' + (option[0] === value) + '"', 'select-menu-option flow-select-option')).join('') + '</div></details></div>';
   }
   function checkbox(key, label) {
     return '<label class="flow-offer"><input type="checkbox" data-money-check="' + key + '"' + (state[key] ? ' checked' : '') + '><span>' + esc(label) + '</span></label>';
@@ -123,19 +128,13 @@
     const selection = key => key === 'startBank' ? s.start?.id : key === 'bank' ? s.bank?.id : key === 'returnBank' ? s.returning?.id : key === 'exitBank' ? s.exit?.id : state[key];
     const control = (key, label, options, value) => {
       const group = { startBank: 'start', bank: 'bank', returnBank: 'returnBank', exitBank: 'exit' }[key];
-      const selectedId = value ?? selection(key), selectedName = options.find(([id]) => id === selectedId)?.[1] || '';
-      let selectedMetric, selectedError;
+      const selectedId = value ?? selection(key);
       if (group) options = options.map(([id, name]) => {
         const entity = { start: 'start', bank: 'bank', returnBank: 'returning', exit: 'exit' }[group];
         const item = id === selectedId ? r || data.partial : data.alternatives?.[group]?.find(row => row[entity]?.id === id), metric = item && M.comparisonMetric(item, group, 'step');
-        if (id === selectedId) { selectedMetric = metric; selectedError = item?.error?.replace(name, '').replace('；填入该行成交价后可计算。', ''); }
-        return [id, name + (metric ? ' · ' + stepFeeText(metric) : ' · ' + (item?.error?.replace(name, '').replace('；填入该行成交价后可计算。', '') || '缺少本段报价'))];
+        return [id, name, metric ? stepFeeText(metric) : item?.error?.replace(name, '').replace('；填入该行成交价后可计算。', '') || '缺少本段报价'];
       });
-      const html = select(key, label, options, selectedId);
-      if (!group) return html;
-      const visible = '<div class="flow-selected-bank" aria-hidden="true"><span>' + esc(selectedName) + '</span><span>' +
-        (selectedMetric ? stepFeeText(selectedMetric) : esc(selectedError || '缺少本段报价')) + '</span></div>';
-      return html.replace('<select ', '<div class="flow-bank-select"><select ').replace('</select>', '</select>' + visible + '</div>');
+      return select(key, label, options, selectedId);
     };
     const controls = [
       control('startBank', '内地出发银行', bankOptions(data.mainland || D.mainlandBanks)) + control('bank', '香港入金银行', bankOptions(banks)) +
@@ -253,7 +252,6 @@
   function syncFields() {
     document.querySelectorAll('[data-money-field]').forEach(input => { if (input !== document.activeElement) input.value = state[input.dataset.moneyField] ?? ''; });
     document.querySelectorAll('[data-money-check]').forEach(input => { input.checked = !!state[input.dataset.moneyCheck]; });
-    const scope = document.querySelector('[data-money-select="voucherScope"]'); if (scope) scope.value = state.voucherScope;
   }
   function refresh() {
     const data = result();
@@ -288,7 +286,6 @@
       state.fxMode = state.route === 'USD' ? 'manual' : provider.id === 'ibkr' ? 'manual' : 'bank';
       state.depositMethod = provider.integratedBank ? 'internal' : state.route === 'USD' || state.fxMode === 'bank' ? 'chats' : 'fps';
       state.voucherScope = provider.id === 'chief' || provider.id === 'usmart' || provider.id === 'za' ? 'platform' : 'commission';
-      const scopeSelect = document.querySelector('[data-money-select="voucherScope"]'); if (scopeSelect) scopeSelect.value = state.voucherScope;
     }
     if (key === 'startBank') clear(['startSell', 'senderFeeCny', 'entryMiddleCny']);
     if (key === 'bank') clear(['entryInwardHkd', 'depositHkd', 'depositOtherCny', 'monthlyHkd', 'entryPrice']);
@@ -371,6 +368,13 @@
     if (act === 'detail') { detail(value); return; }
     if (act === 'compare') { state.comparison = value; save(); refresh(); return; }
     if (act === 'choose') { choose(button.dataset.field, value); return; }
+    if (act === 'select-choice') {
+      const key = button.dataset.field;
+      button.closest('.flow-select').open = false;
+      if (button.getAttribute('aria-pressed') !== 'true') choose(key, value);
+      document.getElementById('flow-select-' + key)?.focus({ preventScroll: true });
+      return;
+    }
     if (act === 'preset') {
       const preset = result().presets?.find(row => row.id === value);
       if (preset) { state = M.applyRoute(state, preset.result, value); syncFields(); save(); refresh(); }
@@ -393,5 +397,29 @@
     if (el.dataset.moneyField) { clearTimeout(timer); refresh(); return true; }
     return false;
   }
+  document.addEventListener('keydown', event => {
+    const menu = event.target.closest('.flow-select');
+    if (!menu || !['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
+    const options = [...menu.querySelectorAll('.flow-select-option')];
+    if (!options.length) return;
+    event.preventDefault();
+    const current = options.indexOf(event.target.closest('.flow-select-option'));
+    const next = event.key === 'Home' ? 0 : event.key === 'End' ? options.length - 1 : current < 0 ? options.findIndex(option => option.getAttribute('aria-pressed') === 'true') : current + (event.key === 'ArrowDown' ? 1 : -1);
+    menu.open = true;
+    options[Math.max(0, Math.min(options.length - 1, next))].focus();
+  });
+  document.addEventListener('focusin', event => {
+    // Pointer clicks close other menus after mouseup in the shared handler,
+    // so collapsing a preceding list cannot move the target mid-click.
+    if (document.documentElement.dataset.inputMode !== 'keyboard') return;
+    document.querySelectorAll('.flow-select[open]').forEach(menu => { if (!menu.contains(event.target)) menu.open = false; });
+  });
+  document.addEventListener('toggle', event => {
+    const menu = event.target;
+    if (!menu.matches('.flow-select') || !menu.open) return;
+    const list = menu.querySelector('.select-menu-list'), focused = document.activeElement?.closest('.flow-select-option');
+    const target = focused && list.contains(focused) ? focused : list.querySelector('[aria-pressed="true"]');
+    if (target) list.scrollTop += target.getBoundingClientRect().top - list.getBoundingClientRect().top - 6;
+  }, true);
   window.ChanghengMoneyFlow = { view, handleAction, handleInput, handleChange };
 }());
