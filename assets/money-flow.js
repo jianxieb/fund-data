@@ -47,7 +47,7 @@
       (state.useVoucher ? note('券额度、适用费用与有效期在下方“交易费测算”填写') : '') + '</div>';
   }
   function entryMethods(s) {
-    return [['swift', '网银／App · 普通SWIFT'], ...(['hang', 'hsbc', 'sc'].includes(s.start?.id) && s.start.group === s.bank?.group ? [['linked', '两地同名专用渠道']] : []),
+    return [['swift', '普通电汇 · 公开标准价'], ...(s.start?.id === 'boc' && s.bank?.id === 'bochk' && s.route !== 'CNH' ? [['boc-mobile', '中行手机银行 · 向境外中行汇款']] : []), ...(['hang', 'hsbc', 'sc'].includes(s.start?.id) && s.start.group === s.bank?.group ? [['linked', '两地同名专用渠道']] : []),
       ...(s.route === 'USD' && s.start?.fullAmountUsd != null ? [['full', 'SWIFT · 全额到账（加25 USD）']] : [])];
   }
   function depositMethods(s) {
@@ -80,20 +80,21 @@
   }
   function planCards(data) {
     const shown = (data.presets || []).filter(p => ['recommended', 'simple', 'CNH', 'HKD'].includes(p.id));
-    const brokerPlans = (data.presets || []).filter(p => !['recommended', 'simple', 'CNH', 'HKD'].includes(p.id));
+    const bocMobile = (data.presets || []).filter(p => p.id === 'boc-mobile');
+    const brokerPlans = (data.presets || []).filter(p => !['boc-mobile', 'recommended', 'simple', 'CNH', 'HKD'].includes(p.id));
     const sharedMissing = shown.length ? shown[0].result.missing.filter(gap => shown.every(p => p.result.missing.includes(gap))) : [];
     const cards = (plans, common = []) => plans.map(p => {
       const r = p.result, loss = r.budgetCny + r.profitUsd * r.refs.USD - r.net;
       const selected = state.plan === p.id && M.routeKeys.every(key => state[key] === M.routeConfiguration(r)[key]);
-      return '<button type="button" class="flow-plan' + (selected ? ' selected' : '') + (p.id === 'recommended' ? ' recommended' : '') + '" data-action="money-flow-preset" data-value="' + p.id + '" aria-pressed="' + selected + '">' +
+      return '<button type="button" class="flow-plan' + (selected ? ' selected' : '') + '" data-action="money-flow-preset" data-value="' + p.id + '" aria-pressed="' + selected + '">' +
         '<strong>' + esc(p.name) + '</strong><span>' + esc(r.start.name + ' → ' + r.bank.name + ' → ' + r.broker.name) + '</span>' +
-        '<b class="num">' + (r.complete ? '全程损耗 ' : '已知损耗 ') + feeText(loss) + ' · ' + pct(loss / r.budgetCny) + '</b>' +
+        '<b class="num">' + (p.evidenceOnly ? '同名汇入手续费 0 · 汇出优惠待核' : (r.complete ? '全程损耗 ' : '已知损耗 ') + feeText(loss) + ' · ' + pct(loss / r.budgetCny)) + '</b>' +
         '<small>' + esc([r.route === 'USD' ? '内地直购USD' : '中银香港换USD', r.bank.id === r.returning.id ? '一个香港账户' : '回款用' + r.returning.name, rowFee(r, 'account') === 0 ? '账户免月费' : '已计账户月费'].join('；')) + '</small>' +
-        (p.differenceCny > .005 ? '<small>比推荐多 ' + feeText(p.differenceCny) + '</small>' : '') +
-        (r.missing.some(gap => !common.includes(gap)) ? '<small class="flow-gap">待确认：' + esc(r.missing.filter(gap => !common.includes(gap)).join('、')) + '</small>' : '') + '</button>';
+        (p.differenceCny > .005 ? '<small>比公开基准多 ' + feeText(p.differenceCny) + '</small>' : '') +
+        (p.evidenceOnly ? '<small class="flow-gap">内地汇出手续费、电讯费及中转费待核；暂不参与排名。</small>' : r.missing.some(gap => !common.includes(gap)) ? '<small class="flow-gap">待确认：' + esc(r.missing.filter(gap => !common.includes(gap)).join('、')) + '</small>' : '') + '</button>';
     }).join('');
-    const conditional = data.conditional && data.recommended && data.conditional.net > data.recommended.net ? '<p class="flow-conditional">另有条件方案已知损耗少 ' + feeText(data.conditional.net - data.recommended.net) + '：' + esc(data.conditional.eligibilityReasons.join('；')) + '。在高级设置确认资格后纳入推荐。</p>' : '';
-    return '<div class="flow-plan-picker"><h2>完整路线</h2><div class="flow-plans">' + cards(shown, sharedMissing) + '</div>' +
+    const conditional = data.conditional && data.recommended && data.conditional.net > data.recommended.net ? '<p class="flow-conditional">另有条件方案已知损耗少 ' + feeText(data.conditional.net - data.recommended.net) + '：' + esc(data.conditional.eligibilityReasons.join('；')) + '。在高级设置确认资格后纳入比较。</p>' : '';
+    return '<div class="flow-plan-picker"><h2>完整路线</h2><p class="flow-gap">' + esc(D.comparisonNotice) + '</p>' + (bocMobile.length ? '<div class="flow-channel-review">' + cards(bocMobile) + '</div>' : '') + '<div class="flow-plans">' + cards(shown, sharedMissing) + '</div>' +
       (sharedMissing.length ? '<p class="flow-gap">以上方案均待确认：' + esc(sharedMissing.join('、')) + '。已知损耗用于比较，不能保证实际最低。</p>' : '') + conditional +
       '<details class="flow-broker-plans"><summary>按交易账户选择整条路线</summary><div class="flow-plans">' + cards(brokerPlans) + '</div></details></div>';
   }
@@ -106,17 +107,16 @@
     const control = (key, label, options, value) => {
       const group = { startBank: 'start', bank: 'bank', returnBank: 'returnBank', exitBank: 'exit' }[key];
       const selectedId = value ?? selection(key), selectedName = options.find(([id]) => id === selectedId)?.[1] || '';
-      let selectedMetric, selectedRecommended, selectedError;
+      let selectedMetric, selectedError;
       if (group) options = options.map(([id, name]) => {
         const entity = { start: 'start', bank: 'bank', returnBank: 'returning', exit: 'exit' }[group];
         const item = data.alternatives?.[group]?.find(row => row[entity]?.id === id), metric = item && comparisonMetric(item, group);
-        const recommended = data.recommended?.[entity]?.id === id;
-        if (id === selectedId) { selectedMetric = metric; selectedRecommended = recommended; selectedError = item?.error?.replace(name, '').replace('；填入该行成交价后可计算。', ''); }
-        return [id, name + (recommended ? ' · 推荐' : '') + (metric ? ' · 损耗' + pct(metric.lossRate) + ' / 保留' + num(metric.coefficient, 6) + ' / ' + (metric.missing.length ? '已知费' : '费用') + num(metric.costCny) + ' CNY' : ' · ' + (item?.error?.replace(name, '').replace('；填入该行成交价后可计算。', '') || '缺少本段报价'))];
+        if (id === selectedId) { selectedMetric = metric; selectedError = item?.error?.replace(name, '').replace('；填入该行成交价后可计算。', ''); }
+        return [id, name + (metric ? ' · 损耗' + pct(metric.lossRate) + ' / 保留' + num(metric.coefficient, 6) + ' / ' + (metric.missing.length ? '已知费' : '费用') + num(metric.costCny) + ' CNY' : ' · ' + (item?.error?.replace(name, '').replace('；填入该行成交价后可计算。', '') || '缺少本段报价'))];
       });
       const html = select(key, label, options, selectedId);
       if (!group) return html;
-      const visible = '<div class="flow-selected-bank" aria-hidden="true"><span>' + esc(selectedName) + (selectedRecommended ? '<small>推荐</small>' : '') + '</span><span>' +
+      const visible = '<div class="flow-selected-bank" aria-hidden="true"><span>' + esc(selectedName) + '</span><span>' +
         (selectedMetric ? (selectedMetric.missing.length ? '已知损耗 ' : '损耗 ') + pct(selectedMetric.lossRate) + ' · 保留 ' + num(selectedMetric.coefficient, 6) + ' · 费用 ' + feeText(selectedMetric.costCny) : esc(selectedError || '缺少本段报价')) + '</span></div>';
       return html.replace('<select ', '<div class="flow-bank-select"><select ').replace('</select>', '</select>' + visible + '</div>');
     };
@@ -180,14 +180,13 @@
     const spans = { start: '内地CNY → 香港原币到账', bank: '内地CNY → 交易账户入金', route: '内地CNY → 交易账户入金', broker: '香港原币余额 → 买卖及出金', returnBank: '卖出后现金 → 内地结汇', exit: '香港USD → 内地CNY' };
     const identity = item => key === 'route' ? item.route : item[{ start: 'start', bank: 'bank', broker: 'broker', returnBank: 'returning', exit: 'exit' }[key]]?.id;
     const selectedId = r ? identity(r) : '';
-    const recommendationId = data.recommended ? identity(data.recommended) : '';
     const tableRows = rows.map(item => {
       const id = identity(item), entity = key === 'route' ? null : item[{ start: 'start', bank: 'bank', broker: 'broker', returnBank: 'returning', exit: 'exit' }[key]];
       const metric = comparisonMetric(item, key), selected = id === selectedId;
       const conditions = entity?.condition || entity?.feeShort || '';
       const status = metric?.missing.length ? '未计／待确认：' + metric.missing.join('、') : item.error || '本段费用已计齐';
       return '<tr class="' + (selected ? 'selected' : '') + '"><td><strong>' + esc(key === 'route' ? routes[id] : entity?.name) + '</strong>' +
-        (id === recommendationId ? '<span class="flow-recommended-label">推荐路线采用</span>' : '') + '<small>' + esc(conditions) + '</small></td>' +
+        '<small>' + esc(conditions) + '</small></td>' +
         '<td class="num">' + pct(metric?.lossRate) + '</td><td class="num">' + num(metric?.coefficient, 6) + '</td><td class="num">' + (metric ? feeText(metric.costCny) : '未报价') +
         '<small>' + esc(status) + '</small></td><td class="num">' + feeText(rowFee(item, 'account')) + '<small>所用香港账户合计</small></td><td>' +
         action(selected ? '已选' : '选用', 'choose', 'data-field="' + ({ start: 'startBank', bank: 'bank', route: 'route', broker: 'broker', returnBank: 'returnBank', exit: 'exitBank' }[key]) + '" data-value="' + esc(id) + '"') + '</td></tr>';
@@ -201,7 +200,7 @@
     return '<div class="flow-adjustments"><h3>已确认的账户资格</h3><div class="flow-eligibility">' + [['cib', '持有兴业寰宇人生指定卡'], ['hang', '已有恒生两地账户及跨域转账资格'], ['hsbc', '已有汇丰两地环球转账资格及卓越理财豁免／达标'], ['sc', '已有渣打两地优先理财及同名速汇资格']].map(([id, label]) => checkbox('eligible_' + id, label)).join('') + '</div>' +
       group('汇款与账户', [['count', '内地汇出笔数', '笔'], ['usedFreeTransfers', '已用优惠免费笔数', '笔'], ['balanceHkd', '入金银行另留资产', 'HKD'], ['returnBalanceHkd', '回款银行另留资产', 'HKD']]) +
       group('盈亏情景、税款与出金', [['profitUsd', '卖出盈亏（交易费前）', 'USD'], ['taxRate', '境外财产转让所得税率', '%'], ['taxableCny', '已核算人民币应税所得', 'CNY', '按净利润估算'], ['creditCny', '可抵免境外税额', 'CNY'], ['withdrawalIndex', '本月第几次券商出金', '次']]) +
-      group('内地 → 香港', [['senderFeeCny', '每笔汇出手续费＋电讯费', 'CNY', '银行公开基准'], ['entryMiddleCny', '每笔内地→香港中转费', 'CNY', '未报价；免收填0'], ['entryInwardHkd', '每笔香港首次汇入费', 'HKD', '所选银行公开基准']]) +
+      group('内地 → 香港', [['senderFeeCny', '每笔汇出手续费＋电讯费', 'CNY', '按渠道；确认双免填0'], ['entryMiddleCny', '每笔内地→香港中转费', 'CNY', '未报价；免收填0'], ['entryInwardHkd', '每笔香港首次汇入费', 'HKD', '所选银行公开基准']]) +
       group('香港 → 券商 → 香港', [['depositHkd', '银行向券商转账费', 'HKD', '所选方式公开基准'], ['depositOtherCny', '入金代理／收款行费', 'CNY', '未报价；免收填0'], ['inwardHkd', '券商出金银行收款费', 'HKD', '所选银行公开基准'], ['intermediaryCny', '券商出金中转费', 'CNY', '未报价；免收填0']]) +
       group('香港 → 内地', [['returnWireHkd', '香港回内地汇出费', 'HKD', '所选方式公开基准'], ['returnExtraCny', '回内地中转／收款费', 'CNY', '未报价；免收填0'], ['monthlyHkd', '入金银行月费', 'HKD', '所选账户标准'], ['returnMonthlyHkd', '回款银行月费', 'HKD', '相同银行不重复扣']]) +
       group('额外成本', [['openingCny', '开户／赴港实际支出', 'CNY'], ['extraCapitalCny', '另占用资产本金', 'CNY'], ['annualGapPct', '占用资产年收益差', '%']]) +
@@ -276,7 +275,7 @@
     for (const key of keys) { state[key] = ''; document.querySelectorAll('[data-money-field="' + key + '"]').forEach(input => { input.value = ''; }); }
   }
   function choose(key, value) {
-    lockCurrent(); const previousRoute = state.route; state[key] = value; state.plan = 'custom';
+    lockCurrent(); const previousRoute = state.route, previousBank = state.bank, previousMethod = state.mainlandMethod; state[key] = value; state.plan = 'custom';
     const provider = M.selectedBroker(state, D);
     if (key === 'broker') {
       clear(['tradeFeeUsd', 'entryPrice', 'depositHkd', 'depositOtherCny', 'inwardHkd', 'intermediaryCny']); state.useVoucher = false;
@@ -305,8 +304,9 @@
     if (key === 'returnMethod') clear(['returnWireHkd', 'returnExtraCny']);
     const start = D.mainlandBanks.find(bank => bank.id === state.startBank), bank = D.hkBanks.find(bank => bank.id === state.bank),
       returning = D.hkBanks.find(bank => bank.id === state.returnBank), exit = D.mainlandBanks.find(bank => bank.id === state.exitBank);
-    if (['startBank', 'bank', 'broker'].includes(key)) state.mainlandMethod = ['hang', 'hsbc', 'sc'].includes(start?.id) && start.group === bank?.group ? 'linked' : 'swift';
+    if (['startBank', 'bank', 'broker'].includes(key)) state.mainlandMethod = ['hang', 'hsbc', 'sc'].includes(start?.id) && start.group === bank?.group ? 'linked' : start?.id === 'boc' && bank?.id === 'bochk' && state.route !== 'CNH' ? 'boc-mobile' : 'swift';
     if (['startBank', 'bank', 'route', 'broker'].includes(key) && !entryMethods({ start, bank, route: state.route }).some(([id]) => id === state.mainlandMethod)) state.mainlandMethod = 'swift';
+    if (state.bank !== previousBank || state.route !== previousRoute || state.mainlandMethod !== previousMethod) clear(['senderFeeCny', 'entryMiddleCny']);
     if (['exitBank', 'returnBank', 'broker'].includes(key)) state.returnMethod = returnMethods({ returning, exit }).find(([id]) => id !== 'swift')?.[0] || 'swift';
     save(); refresh();
   }
@@ -316,7 +316,7 @@
     const descriptions = {
       mainland: ['适用条件', '从内地银行卡人民币开始计算完整往返费用；金额测算不等于出境许可。大陆个人便利化购汇不能用于境外证券投资，同名香港账户不改变用途。跨境人民币也须符合真实用途、资本项目和银行准入规则。资金来源、获准渠道和券商接受身份必须先确认；银行优惠不代表证券投资出境资格。', ['safe', 'pbcRmb', 'scCnTerms', 'csrc']],
       entry: ['内地人民币出发', '汇出手续费、电讯费和全额到账附加费先从人民币预算内扣除，再按出发银行现汇卖出价购汇。买美股可以直接换USD，不必经过港币。人民币原币到港后为CNH，此步没有换汇点差。CNY/CNH及不同时点、银行报价的折算影响单列，正值不代表银行返还手续费。普通SWIFT中转费无统一值；农行USD全额到账附加25美元按每笔计入。指定同名优惠须匹配银行集团和账户条件。', s.start?.sources || ['bocFx', 'abc']],
-      bank: ['香港同名银行', '入金银行与回款银行可以不同，月费分别算；相同银行不重复扣。推荐遍历已收录的银行、换汇路径、交易账户、香港回款银行及内地结汇行；按已知损耗给出参考方案，未知收费始终单列；没有将费用齐全但成本明显更高的方案强行标为最低。单香港账户方案同时列出与推荐的差额。有门槛的内地账户在确认资格后纳入推荐。汇丰One新开非香港身份证账户不足1万港元按100港元/月；渣打中国同名优惠须优先理财及指定渠道。', ['hangOpen', 'hsbcHk', 'sc', 'scTier', 'hang', 'hsbcGlobal']],
+      bank: ['香港同名银行', '入金银行与回款银行可以不同，月费分别算；相同银行不重复扣。公开基准遍历已收录的银行、换汇路径、交易账户、香港回款银行及内地结汇行。中行手机银行同名优惠、跨境支付通等现行收费未核齐，不能据此判定哪家最低。普通电汇标准价与手机银行专属优惠分开；中银香港同名中行汇入基本手续费为0，不能由此推定内地汇出端及中转端全部免费。有门槛的账户在确认资格后纳入比较。汇丰One新开非香港身份证账户不足1万港元按100港元/月；渣打中国同名优惠须优先理财及指定渠道。', ['hangOpen', 'hsbcHk', 'sc', 'scTier', 'hang', 'hsbcGlobal']],
       broker: ['美股交易账户与优惠', provider.fundingText + '。' + provider.feeText + '。' +
         (provider.id === 'hsbc' ? '2026年18–35岁可申请Trade25；26岁以上通常须每年完成25笔交易才能续用，25岁转26岁的加入年份等有例外。36岁以上须符合One+新股票客户专门条件。每月首25万港元成交额免佣金及平台费，超额按普通美股收费；持仓或交易月份仍收25港元，监管费另计。One的三个月平均全面理财总值包括该行证券持仓，须实际满足后才勾免月费，不能把100港元银行月费与25港元Trade25月费混为一项。' :
           provider.id === 'chief' ? '网上直属客户常规佣金为0，平台费和清算费仍计入。2026年App月供每只股票每次首500美元免佣金及平台费，超额0.15%；仅合资格月供买入，普通卖出仍按标准价。' :
@@ -329,7 +329,7 @@
           '券商豁免提款收费不代表银行汇入或中转费也免；未公开费用按实际单据填写。') + '交易费用按起始月均分买入、账户使用最后一个月均分卖出估算；不足一月仍按一个交易月，不含中间调仓、分红、融资或ADR额外收费。长期结果使用当前常规费率基准，限期优惠只在已核实有效期内应用。', provider.sources],
       spend: ['回内地人民币消费', 'USD汇回本人内地外汇账户，用收款银行现汇买入价结汇为CNY，无需再经HKD，也不计算香港卡签账费。中银快汇网上至内地中行汇出费0，普通SWIFT汇出65港元；中转、收款行费用另核。两地同名回款须匹配银行集团。保留资金来源、交易与税务凭证并满足汇回、结汇审核。', ['bochk', 'remit', 'safe', 'hang', 'hsbcGlobal']],
       tax: ['税款按利润单列', '大陆税收居民境外财产转让所得通常20%，按人民币收入减成本及允许费用核算，不是对本金或整笔提现征税；股息另行核算。默认仅以正的净交易利润×USD/CNY参照估算，假定买卖汇率相同。有已核算人民币应税所得时优先使用，境外税抵免须有依据。不能代替真实人民币成本及汇率损益核算。', ['tax']],
-      sources: ['官方报价与收费依据', '自动更新7家内地银行及中银香港牌价，各行时间分别保留。出发银行覆盖10种账户／渠道，香港银行5家。兴业公开接口无报价，恒生中国及渣打中国需账户询价；工行与交行现行个人汇出完整费用未核齐，不参与自动推荐。超过3天的报价不参与推荐。最低是已收录账户、渠道及已知费用中的低损耗方案，未报价中转费可能改变排序；券商参考价不是可执行价。每笔手续费只扣一次。人民币原币汇出没有换汇费用，CNY/CNH及不同银行、时点的参考折算影响单列；最终人民币＋已知费用＋税款＝人民币本金＋USD盈亏折合＋汇率折算影响。', Object.keys(D.sources)]
+      sources: ['官方报价与收费依据', '自动更新7家内地银行及中银香港牌价，各行时间分别保留。出发银行覆盖10种账户／渠道，香港银行5家。兴业公开接口无报价，恒生中国及渣打中国需账户询价；工行与交行现行个人汇出完整费用未核齐，不参与公开基准排序。超过3天的报价不参与排序。中行手机银行同名优惠和跨境支付通仍缺完整现行证据，因此只提供渠道测算，不发布最低损耗推荐。中行2022年手机银行双免公告已过有效期，不自动延长；普通电汇标准价也不能冒充手机银行实际收费。未报价费用可能改变排序；券商参考价不是可执行价。每笔手续费只扣一次。人民币原币汇出没有换汇费用，CNY/CNH及不同银行、时点的参考折算影响单列；最终人民币＋已知费用＋税款＝人民币本金＋USD盈亏折合＋汇率折算影响。', Object.keys(D.sources)]
     };
     let title, content, keys;
     if (key === 'cost') {

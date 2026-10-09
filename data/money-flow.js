@@ -6,7 +6,10 @@
   'use strict';
   return {
     verifiedAt: '2026-10-09',
+    comparisonNotice: '中行手机银行同名优惠、跨境支付通的现行收费尚未核齐；以下仅为已收录渠道测算，暂不判定最低损耗。',
     evidenceGaps: [
+      { bank: 'boc', channel: 'boc-mobile', checkedAt: '2026-10-09', items: ['手机银行向境外中行汇款的现行手续费优惠', '现行电讯费优惠', '中转行费用'], source: 'bocMobileHistory', finding: '已核实中银香港同名汇入基本手续费豁免；内地手机银行双免官方公告仅取得2022年有效版本，现行优惠入口失效。不能套普通电汇标准价，也不能将历史双免无期限延长。' },
+      { bank: 'boc', channel: 'payment-connect', checkedAt: '2026-10-09', items: ['跨境支付通南向现行收费、限额及适用条件'], source: 'bocPaymentConnect', finding: '官方确认支持人民币汇出、人民币或港币到账；尚未取得完整现行收费和限额，未纳入完整路线排序。' },
       { bank: 'icbc', checkedAt: '2026-10-09', items: ['网银汇出手续费', '网银汇出电讯费'], source: 'icbc', finding: '官方产品页请求403；未取得可核对的2026完整收费原文，不采用历史0.8‰价格。' },
       { bank: 'comm', checkedAt: '2026-10-09', items: ['个人汇出手续费', '个人汇出电讯费'], source: 'commFx', finding: '有官方现汇报价，但现行个人汇出完整收费仍未核实。' },
       { bank: 'cib', checkedAt: '2026-10-09', items: ['USD现汇买入/卖出价', 'HKD现汇买入/卖出价'], source: 'cibFx', finding: '当天官方公开查询显示日期但无价格行；须本人App成交报价。' },
@@ -17,7 +20,9 @@
       safe: { name: '外汇局 · 个人购汇用途与额度', url: 'https://www.safe.gov.cn/shanghai/2019/1213/1198.html' },
       remit: { name: '外汇局 · 外汇账户汇出与真实性材料', url: 'https://www.safe.gov.cn/tianjin/2026/0422/3039.html' },
       csrc: { name: '证监会 · 2026年跨境证券经营整治', url: 'https://www.csrc.gov.cn/csrc/c100028/c7634324/content.shtml' },
-      boc: { name: '中国银行 · 电子银行汇款标准价', url: 'https://www.boc.cn/ebanking/service/cs1/200905/t20090506_990712.html' },
+      boc: { name: '中国银行 · 个人金融现行标准价（电子渠道优惠另列）', url: 'https://pic.bankofchina.com/bocappd/pricelist/202511/P020251110646838136627.pdf' },
+      bocMobileHistory: { name: '中国银行 · 手机银行向境外中行双免（仅2022年历史公告）', url: 'https://wap.boc.cn/bif/bi3/202112/t20211228_20575165.html' },
+      bocPaymentConnect: { name: '中国银行 · 跨境支付通南向人民币／港币到账', url: 'https://www.boc.cn/aboutboc/bi1/202506/t20250620_25390382.html' },
       bocFx: { name: '中国银行 · 外汇牌价（每100外币）', url: 'https://www.boc.cn/sourcedb/whpj/' },
       cmb: { name: '招商银行 · 专业版跨境汇款标准价', url: 'https://www.cmbchina.com/personalbank/gb/page/standfee.htm' },
       cmbFx: { name: '招商银行 · 外汇牌价（每100外币）', url: 'https://fx.cmbchina.com/hq/' },
@@ -88,7 +93,7 @@
       bochkCard: { name: '中银香港 · 多货币扣账设置', url: 'https://www.bochk.com/dam/more/bocdebitcard/card/sc.html' }
     },
     mainlandBanks: [
-      { id: 'boc', name: '中国银行', group: 'boc', rate: 0.001, minimum: 50, maximum: 260, telegram: 80, cnhTariff: true, feeText: '1‰，50–260元 + 80元电讯费', condition: '公开电子银行跨境电汇标准价；App优惠另填', sources: ['boc', 'bocFx'], quoteSource: 'bocFx' },
+      { id: 'boc', name: '中国银行', group: 'boc', rate: 0.001, minimum: 50, maximum: 260, telegram: 80, cnhTariff: true, feeText: '标准电汇1‰，50–260元＋80元；手机银行同名优惠单列', condition: '手机银行向境外中行汇款与标准电汇分开；同名中银香港汇入手续费0，现行手机银行汇出优惠待核', sources: ['boc', 'bocMobileHistory', 'bochkSame', 'bocPaymentConnect', 'bocFx'], quoteSource: 'bocFx' },
       { id: 'cmb', name: '招商银行', group: 'cmb', rate: 0.001, minimum: 100, maximum: 1000, telegram: 150, feeText: '1‰，100–1,000元 + 150元电讯费', condition: '专业版标准价；不等同手机银行优惠', sources: ['cmb', 'cmbFx'], quoteSource: 'cmbFx' },
       { id: 'icbc', name: '工商银行', group: 'icbc', rate: null, minimum: null, maximum: null, telegram: null, feeText: '现行汇出收费需客户确认页报价', condition: '旧收费页无法核对，保留官方牌价；汇出费须按本人App确认', sources: ['icbc', 'icbcFx'], quoteSource: 'icbcFx' },
       { id: 'ccb', name: '建设银行', group: 'ccb', rate: 0.001, minimum: 20, maximum: 300, telegram: 80, feeText: '网银1‰，20–300元 + 80元电报费', condition: '个人网银公开标准价；实际优惠可覆盖', sources: ['ccb', 'ccbFx'], quoteSource: 'ccbFx' },

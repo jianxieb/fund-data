@@ -642,10 +642,49 @@ test('linked return channels require the destination mainland account eligibilit
   const enabled = M.journeyPlans({ ...config, eligible_hsbc: true }, D, q);
   assert.ok(enabled.plans.some(row => row.returnMethod === 'linked'));
   assert.ok(enabled.plans.filter(row => row.returnMethod === 'linked').every(row => row.requiredEligibility.includes('hsbc')));
-  for (const preset of ordinary.presets) assert.ok(preset.result.rows.find(row => row.key === 'sender').cny != null);
+  for (const preset of ordinary.presets.filter(row => !row.evidenceOnly)) assert.ok(preset.result.rows.find(row => row.key === 'sender').cny != null);
   assert.ok(ordinary.plans.some(row => row.mainlandMethod === 'full'));
   assert.ok(ordinary.plans.some(row => row.depositMethod === 'swift'));
   close(ordinary.recommended.net, ordinary.minimum.net);
+});
+
+test('BOC mobile group remittance does not inherit the standard wire tariff or an expired waiver', () => {
+  const input = { ...mainlandConfig, broker: 'ibkr', bank: 'bochk', returnBank: 'bochk', returnMethod: 'bochk-fast',
+    mainlandMethod: 'boc-mobile', profitUsd: 0, tradeFeeUsd: '', senderFeeCny: '', entryMiddleCny: '' };
+  const data = M.journeyPlans(input, D, richQuotes), r = data.selected;
+  assert.equal(r.rows.find(row => row.key === 'sender').cny, null);
+  assert.ok(r.missing.includes('中行手机银行向境外中行·现行汇出手续费'));
+  assert.ok(r.missing.includes('中行手机银行向境外中行·现行电讯费'));
+  close(r.rows.find(row => row.key === 'entryInward').cny, 0);
+  assert.equal(r.rows.find(row => row.key === 'entryMiddle').cny, null);
+  assert.equal(r.rankable, false);
+  assert.ok(data.plans.every(row => row.mainlandMethod !== 'boc-mobile'));
+  const mobile = data.presets.find(row => row.id === 'boc-mobile');
+  assert.equal(mobile.evidenceOnly, true); assert.equal(mobile.differenceCny, null);
+  assert.equal(mobile.result.mainlandMethod, 'boc-mobile');
+  const standard = M.journeyPlans({ ...input, mainlandMethod: 'swift' }, D, richQuotes).selected;
+  assert.ok(standard.rows.find(row => row.key === 'sender').cny > 0);
+  assert.match(M.journeyPlans({ ...input, bank: 'za' }, D, richQuotes).error, /同名中银香港/);
+  assert.match(M.journeyPlans({ ...input, route: 'CNH' }, D, richQuotes).error, /另一渠道/);
+});
+
+test('confirmed free BOC mobile transfers preserve the foreign principal without erasing purchase spreads', () => {
+  const input = { ...mainlandConfig, broker: 'ibkr', bank: 'bochk', returnBank: 'bochk', returnMethod: 'bochk-fast',
+    mainlandMethod: 'boc-mobile', profitUsd: 0, tradeFeeUsd: '', senderFeeCny: 0, entryMiddleCny: 0 };
+  const data = M.journeyPlans(input, D, richQuotes), r = data.selected;
+  for (const key of ['sender', 'entryMiddle', 'entryInward']) close(r.rows.find(row => row.key === key).cny, 0);
+  close(r.steps.hongKong, r.steps.mainlandForeign);
+  close(r.steps.hongKong, r.budgetCny / r.startSell);
+  assert.ok(r.rows.find(row => row.key === 'entryFx').cny > 0);
+  close(r.net + r.costCny + r.taxCny, r.budgetCny + r.fxImpactCny);
+  const elsewhere = data.alternatives.bank.find(row => row.bank.id === 'za');
+  assert.ok(elsewhere.rows.find(row => row.key === 'sender').cny > 0);
+  assert.equal(elsewhere.rows.find(row => row.key === 'entryMiddle').cny, null);
+  const hkd = data.alternatives.route.find(row => row.route === 'HKD');
+  assert.equal(hkd.rows.find(row => row.key === 'sender').cny, null);
+  const cnh = data.alternatives.route.find(row => row.route === 'CNH');
+  assert.equal(cnh.mainlandMethod, 'swift');
+  assert.ok(cnh.rows.find(row => row.key === 'sender').cny > 0);
 });
 
 test('a downstream missing conversion quote preserves the priced mainland arrival ledger', () => {
