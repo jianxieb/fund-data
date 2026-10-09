@@ -911,27 +911,13 @@ test('choosing BOC preserves an explicitly selected standard tariff alongside th
   close(mobile.rows.find(row => row.key === 'entryInward').cny, 0);
 });
 
-test('bank selector changes preserve a compatible channel, while explicit mobile selection survives broker changes', () => {
-  const fs = require('node:fs'), path = require('node:path'), vm = require('node:vm');
-  let saved = { ...mainlandConfig, startBank: 'cmb', bank: 'hang', senderFeeCny: '99', profitUsd: 0 };
-  const context = {
-    window: { MONEY_FLOW: D, MONEY_FLOW_QUOTES: richQuotes, ChanghengMoneyFlowModel: M, addEventListener() {} },
-    document: { addEventListener() {}, querySelectorAll: () => [], getElementById: () => null },
-    localStorage: { getItem: () => JSON.stringify(saved), setItem: (_, value) => { saved = JSON.parse(value); } },
-    Date: class extends Date { constructor(...args) { super(...(args.length ? args : ['2026-10-09T04:00:00Z'])); } }
-  };
-  vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../assets/money-flow.js'), 'utf8'), context);
-  const choose = (field, value) => context.window.ChanghengMoneyFlow.handleAction({ dataset: { action: 'money-flow-choose', field, value } });
-  choose('startBank', 'boc');
-  assert.equal(saved.mainlandMethod, 'swift');
-  assert.equal(saved.senderFeeCny, '');
-  choose('bank', 'bochk');
-  assert.equal(saved.mainlandMethod, 'swift');
-  choose('mainlandMethod', 'boc-mobile');
-  choose('broker', 'chief');
-  assert.equal(saved.mainlandMethod, 'boc-mobile');
-  choose('route', 'CNH');
-  assert.equal(saved.mainlandMethod, 'swift');
+test('retired routes cannot be selected or revived by a hidden UI action', () => {
+  const initial = { ...mainlandConfig, startBank: 'cib', bank: 'bochk', broker: 'za', count: 2, mainlandMethod: 'cib-go', outcome: 'usd-balance', senderFeeCny: '99', profitUsd: 0 };
+  const ui = moneyUi(initial); ui.render();
+  for (const [field, value] of [['startBank', 'abc'], ['startBank', 'boc'], ['broker', 'ibkr'], ['route', 'CNH'], ['mainlandMethod', 'swift']]) {
+    ui.act('choose', field, value);
+    assert.deepEqual(ui.saved(), initial);
+  }
 });
 
 
@@ -1065,18 +1051,18 @@ function moneyUi(input, quotes = cibQuotes) {
 
 test('UI keeps all four steps and account controls when the sending quote is missing', () => {
   const q = structuredClone(cibQuotes); delete q.banks.cib;
-  const ui = moneyUi(currentRoute, q), html = ui.render();
+  const ui = moneyUi({ ...currentRoute, count: 2, mainlandMethod: 'cib-go' }, q), html = ui.render();
   assert.equal((html.match(/data-flow-stage=/g) || []).length, 4);
   for (const text of ['香港收款银行', '买美股的账户', '人民币本金', '汇出笔数', 'USD现汇卖出价尚未取得']) assert.ok(html.includes(text), text);
   assert.doesNotMatch(html, /<select|填入该行成交价|flow-route-bar/);
   const first = html.slice(html.indexOf('data-flow-stage="01"'), html.indexOf('data-flow-stage="02"'));
   assert.match(first, /data-money-field="budgetCny"/); assert.match(first, /data-money-field="count"/);
-  assert.match(html, /全程损耗与最终余额：报价补齐后显示/);
+  assert.match(html, /此组合不提供全程报价/);
 });
 
 test('UI places HSBC bank conditions in the bank step for every stock venue and reports period totals correctly', () => {
-  for (const broker of ['za', 'ibkr', 'hsbc']) {
-    const html = moneyUi({ ...currentRoute, broker, trade25: true, hsbcBalanceWaiver: false }).render();
+  for (const broker of ['za', 'hsbc']) {
+    const html = moneyUi({ ...currentRoute, count: 2, mainlandMethod: 'cib-go', broker, trade25: true, hsbcBalanceWaiver: false }).render();
     const bank = html.slice(html.indexOf('data-flow-stage="02"'), html.indexOf('data-flow-stage="03"'));
     const trade = html.slice(html.indexOf('data-flow-stage="03"'), html.indexOf('data-flow-stage="04"'));
     assert.match(bank, /HSBC One已满足免管理费条件/); assert.doesNotMatch(trade, /hsbcBalanceWaiver/);
@@ -1085,28 +1071,28 @@ test('UI places HSBC bank conditions in the bank step for every stock venue and 
   }
 });
 
-test('quick presets restore complete routing while keeping budget, duration and personal eligibility', () => {
+test('quick presets announce transfer counts and keep budget, duration and eligibility', () => {
   const ui = moneyUi({ ...currentRoute, budgetCny: 150000, count: 2, months: 6, startSell: '8', senderFeeCny: '99', trade25: false, hsbcBalanceWaiver: false });
-  ui.render(); ui.act('preset', '', 'cib-usd');
+  assert.match(ui.render(), /3笔全额到账费 150 CNY/); ui.act('preset', '', 'cib-usd');
   const state = ui.saved();
   assert.equal(state.startBank, 'cib'); assert.equal(state.bank, 'hsbc'); assert.equal(state.broker, 'hsbc');
-  assert.equal(state.budgetCny, 150000); assert.equal(state.count, 2); assert.equal(state.months, 6);
+  assert.equal(state.budgetCny, 150000); assert.equal(state.count, '3'); assert.equal(state.months, 6);
   assert.equal(state.trade25, false); assert.equal(state.hsbcBalanceWaiver, false); assert.equal(state.startSell, ''); assert.equal(state.senderFeeCny, '');
-  ui.act('preset', '', 'boc-za'); assert.equal(ui.saved().broker, 'za'); assert.equal(ui.saved().bank, 'bochk');
+  ui.act('preset', '', 'cib-za'); assert.equal(ui.saved().broker, 'za'); assert.equal(ui.saved().bank, 'bochk');
 });
 
-test('unpriced RMB tariffs stay visible and cannot display a zero-loss badge or full balance', () => {
+test('unpriced RMB routes close the quote without inventing a free transfer or balance', () => {
   const html = moneyUi({ ...currentRoute, startBank: 'cib', route: 'CNH' }).render();
   const first = html.slice(html.indexOf('data-flow-stage="01"'), html.indexOf('data-flow-stage="02"'));
-  assert.match(first, /人民币资费未收录/); assert.match(first, /金额暂不可算/);
+  assert.match(first, /人民币原币跨境渠道未纳入全程报价/); assert.doesNotMatch(first, /0.00 CNY|金额暂不可算/);
   assert.doesNotMatch(first, /损耗率<b class="num">0.000%/);
 });
 
 test('incompatible consumption choices show their correction in the last step, without dropping earlier steps', () => {
-  const html = moneyUi({ ...currentRoute, outcome: 'cnh-card', returnBank: 'hsbc' }).render();
+  const html = moneyUi({ ...currentRoute, count: 2, mainlandMethod: 'cib-go', outcome: 'cnh-card', returnBank: 'hsbc' }).render();
   const first = html.slice(html.indexOf('data-flow-stage="01"'), html.indexOf('data-flow-stage="02"'));
   const last = html.slice(html.indexOf('data-flow-stage="04"'));
-  assert.doesNotMatch(first, /请选择中银香港消费账户/); assert.match(last, /请选择中银香港消费账户/);
+  assert.doesNotMatch(first, /class="flow-error"/); assert.match(last, /class="flow-error"[^>]*>人民币刷卡路线使用中银香港/);
   assert.equal((html.match(/data-flow-stage=/g) || []).length, 4);
 });
 
@@ -1132,7 +1118,32 @@ test('an incompatible saved channel stays repairable when the new bank has one s
   const ui = moneyUi({ ...currentRoute, mainlandMethod: 'boc-mobile' });
   assert.match(ui.render(), /汇款渠道：请选择汇款渠道/);
   ui.act('control-pick', '', 'mainlandMethod');
-  assert.match(ui.modal(), /data-value="swift"/);
-  ui.act('choose', 'mainlandMethod', 'swift');
+  assert.match(ui.modal(), /data-value="cib-go"/);
+  ui.act('choose', 'mainlandMethod', 'cib-go');
   assert.doesNotMatch(ui.render(), /请选择汇款渠道|向境外中行渠道须/);
+});
+
+
+test('curated bank and stock selectors preserve independent accounts and upstream quotes', () => {
+  const ui = moneyUi({ ...currentRoute, count: 2, mainlandMethod: 'cib-go', bank: 'bochk', returnBank: 'bochk', senderFeeCny: '99', entryMiddleCny: '0' });
+  ui.render();
+  ui.act('pick', '', 'startBank');
+  assert.doesNotMatch(ui.modal(), /农业银行|data-value="abc"|data-value="comm"/);
+  for (const broker of ['hsbc', 'za']) {
+    ui.act('choose', 'broker', broker);
+    assert.equal(ui.saved().bank, 'bochk'); assert.equal(ui.saved().returnBank, 'bochk');
+    assert.equal(ui.saved().senderFeeCny, '99'); assert.equal(ui.saved().entryMiddleCny, '0');
+    const html = ui.render();
+    assert.doesNotMatch(html, /未报价|待确认|金额暂不可算|缺少|NaN|undefined/);
+    assert.match(html, /全程损耗率/);
+  }
+});
+
+test('picker disables incompatible endpoints before a click and retains the last valid route', () => {
+  const ui = moneyUi({ ...currentRoute, count: 2, mainlandMethod: 'cib-go', bank: 'bochk', returnBank: 'za' });
+  ui.render(); ui.act('pick', '', 'outcome');
+  assert.match(ui.modal(), /data-value="usd-card"[^>]*disabled/);
+  ui.act('choose', 'outcome', 'usd-card');
+  assert.equal(ui.saved().outcome, 'usd-balance');
+  assert.match(ui.render(), /全程损耗率/);
 });

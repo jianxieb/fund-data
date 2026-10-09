@@ -5,7 +5,22 @@
 }(typeof window === 'object' ? window : globalThis, function () {
   'use strict';
   return {
-    verifiedAt: '2026-10-09',
+    verifiedAt: '2026-10-10',
+    calculator: {
+      // This is the priced product catalogue, not a list of all banks that exist.
+      mainland: ['cib', 'hsbc'], hkBanks: ['bochk', 'hsbc', 'za'], brokers: ['hsbc', 'za'],
+      fxComparison: ['cib', 'boc', 'cmb', 'hsbc'], currencies: ['USD', 'HKD'],
+      excluded: [
+        { ids: ['abc'], scope: 'mainland', reason: '本页已移除：当前收录渠道没有费用或购汇优势。' },
+        { ids: ['boc'], scope: 'mainland', reason: '同名基本汇入费已确认豁免；官网未承诺代理费全免，内地2026双免仅有报道证据。' },
+        { ids: ['cmb', 'icbc', 'ccb'], scope: 'mainland', reason: '已核实汇出标准价，但普通电汇代理费不固定，不提供全程报价。' },
+        { ids: ['comm'], scope: 'mainland', reason: '各地分行费率不同，没有可通用的单一汇出价。' },
+        { ids: ['hang', 'sc'], scope: 'mainland', reason: '未公开可采集的内地购汇成交牌价。' },
+        { ids: ['hang', 'sc'], scope: 'hkBank', reason: '精简为中银香港、汇丰和ZA；已覆盖本地转账、银行买股及原币消费。' },
+        { ids: ['ibkr', 'usmart'], scope: 'broker', reason: '券商自收费已核实，USD出入金银行及代理费不由券商保证；暂不提供全程报价。' },
+        { ids: ['chief'], scope: 'broker', reason: 'USD支票出金涉及收款行清算收费，尚无完整报价依据。' }
+      ]
+    },
     comparisonNotice: '按具体渠道、币种及账户收费计算；购汇点差与转账手续费分别列示。',
     bocMobileEvidence: { feeCny: 0, telegramCny: 0, checkedAt: '2026-10-09', level: 'reported', sources: ['bocMobile2026', 'bocMobileGuide', 'bocMobileHistory'], note: '按2026年公开报道及操作记录的双免情景测算，非全国永久免费承诺；代理行费用不在豁免范围。' },
     evidenceGaps: [
@@ -44,6 +59,7 @@
       commFx: { name: '交通银行 · 境内外汇牌价', url: 'https://www.bankcomm.com/BankCommSite/zonghang/cn/newWhpj/foreignExchangeSearch_Cn.html' },
       cibCard: { name: '兴业银行 · 2026/7–2027/6寰宇人生卡权益及五折点差', url: 'https://mobile.cib.com.cn/netbank/cn/personal/debit/index.html' },
       cmbTariff: { name: '招商银行 · 个人国际汇款GJ001/GJ003及人民币适用范围', url: 'https://s3gw.cmbimg.com/lb5001-cmbweb-prd-1255000097/cmbcms/20241125/2d400cbc-4f03-4966-86d3-f028ba64ae8b.pdf' },
+      cibGo: { name: '兴业银行 · 小额全额到账50元/笔、单笔等值1万美元内', url: 'https://www.cib.com.cn/cn/aboutCIB/about/charges/zfNotices/20240204.html' },
       cibFx: { name: '兴业银行 · 公开外汇牌价查询', url: 'https://personalbank.cib.com.cn/pers/main/pubinfo/ifxQuotationQuery.do' },
       hsbcFx: { name: '汇丰中国 · 个人现汇牌价', url: 'https://www.services.cn-banking.hsbc.com.cn/PublicContent/common/rate/zh/exchange-rates.html' },
       scFx: { name: '渣打中国 · 客户外汇报价渠道', url: 'https://www.sc.com/cn/foreign-exchange/wfx/' },
@@ -110,7 +126,7 @@
       { id: 'ccb', name: '建设银行', group: 'ccb', rate: 0.001, minimum: 20, maximum: 300, telegram: 80, cnhTariff: true, inwardCny: 0, validFrom: '2026-01-18', tariffChannel: '本外币跨境电汇 · 公开标准价', feeText: '本外币跨境1‰，20–300元＋80元电讯费；汇入免费', condition: '2026年生效价目表明确包含跨境人民币；银行汇入手续费0，中转费用另计', sources: ['ccb', 'ccbRemit', 'ccbFx'], quoteSource: 'ccbFx' },
       { id: 'abc', name: '农业银行', group: 'abc', rate: 0.001, minimum: 20, maximum: 200, telegram: 80, fullAmountUsd: 25, feeText: '1‰，20–200元 + 80元电报费', condition: '全额到账另加25 USD；普通汇款中转费按实收取', sources: ['abc', 'abcFx'], quoteSource: 'abcFx' },
       { id: 'comm', name: '交通银行', group: 'comm', rate: null, minimum: null, maximum: null, telegram: null, tariffChannel: '个人网银／手机银行 · 地区定价', tariffRange: { currencies: ['USD', 'HKD'], validFrom: '2026-05-27', lower: { rate: .0005, minimum: 20, maximum: 200, telegram: 80 }, upper: { rate: .0008, minimum: 40, maximum: 200, telegram: 150 } }, feeText: '0.5‰–0.8‰，最低20–40元、最高200元；电报费80–150元', condition: '2026年5月个人价目表；不同地区价格不同，按公开区间展示', sources: ['comm', 'commFx'], quoteSource: 'commFx' },
-      { id: 'cib', name: '兴业 · 寰宇人生', group: 'cib', rate: 0, minimum: 0, maximum: 0, telegram: 100, freeTelegram: 30, validFrom: '2026-07-01', validUntil: '2027-06-30', required: 'cib', fxSpreadDiscount: .5, fxValidFrom: '2026-07-01', fxValidUntil: '2027-06-30', tariffChannel: '寰宇人生 · 优惠期前30笔双免', feeText: '购结汇点差五折；汇款费免，优惠期前30笔电讯费免', condition: '寰宇人生卡；点差五折与前30笔电讯费优惠至2027-06-30，不包含境外代理费', sources: ['cib', 'cibCard', 'cibFx'], quoteSource: 'cibFx' },
+      { id: 'cib', name: '兴业 · 寰宇人生', group: 'cib', swiftGoCny: 50, swiftGoLimitUsd: 10000, rate: 0, minimum: 0, maximum: 0, telegram: 100, freeTelegram: 30, validFrom: '2026-07-01', validUntil: '2027-06-30', required: 'cib', fxSpreadDiscount: .5, fxValidFrom: '2026-07-01', fxValidUntil: '2027-06-30', tariffChannel: '寰宇人生 · 优惠期前30笔双免', feeText: '购结汇点差五折；汇款费免，优惠期前30笔电讯费免', condition: '寰宇人生卡；点差五折与前30笔电讯费优惠至2027-06-30，不包含境外代理费', sources: ['cib', 'cibGo', 'cibCard', 'cibFx'], quoteSource: 'cibFx' },
       { id: 'hang', name: '恒生 · 跨域转账', group: 'hang', rate: 0, minimum: 0, maximum: 0, telegram: 0, required: 'hang', includedIntermediary: true, feeText: '指定两地同名转账免费', condition: '须有恒生中国＋香港账户；内地账户准入需银行确认', sources: ['hang', 'hangOpen'] },
       { id: 'hsbc', name: '汇丰 · 环球转账', group: 'hsbc', rate: 0, minimum: 0, maximum: 0, telegram: 0, required: 'hsbc', thresholdCny: 500000, includedIntermediary: true, feeText: '已连通同名环球转账免费', condition: '中国卓越理财通常月日均50万元；境外卓越身份等可豁免', sources: ['hsbcCn', 'hsbcGlobal'] },
       { id: 'sc', name: '渣打 · 同名速汇', group: 'sc', rate: 0, minimum: 0, maximum: 0, telegram: 0, required: 'sc', thresholdCny: 500000, includedIntermediary: true, feeText: '手续费、电讯费、中间行费用免', condition: '优先理财＋两地同名账户＋指定网上/手机渠道，选OUR', sources: ['sc', 'scTier'] }

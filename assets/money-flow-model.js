@@ -544,6 +544,8 @@
       const mainlandMethod = method('mainlandMethod', linked && sameGroup ? 'linked' : 'swift');
       const bocMobile = mainlandMethod === 'boc-mobile';
       const paymentConnect = mainlandMethod === 'payment-connect';
+      const swiftGo = mainlandMethod === 'cib-go';
+      if (swiftGo && (start.id !== 'cib' || !['USD', 'HKD'].includes(currency))) return { error: 'SWIFT GO仅收录兴业寰宇人生的USD/HKD全额到账服务。' };
       if (bocMobile && !bocMobilePair) return { error: '中行手机银行向境外中行渠道须选择中国银行→同名中银香港，使用USD或HKD；人民币支付通是另一渠道。' };
       if (paymentConnect && !(start.id === 'boc' && bank.id === 'bochk' && currency === 'CNH')) return { error: '此跨境支付通测算仅收录中国银行→中银香港、人民币原币到账；其他银行及币种须另核。' };
       if (mainlandMethod === 'linked' && !(linked && sameGroup)) return { error: '两地同名专用渠道须选择同一银行集团的香港账户。' };
@@ -555,7 +557,7 @@
       const reportedMobile = bocMobile && !!data.bocMobileEvidence;
       const effectiveSender = senderOverride ?? (reportedMobile ? data.bocMobileEvidence.feeCny + data.bocMobileEvidence.telegramCny : null);
       const unknownSender = effectiveSender == null && (bocMobile || paymentConnect || fee(start, 0, used + 1, config.date) == null || (linked && mainlandMethod !== 'linked') || (currency === 'CNH' && !sameGroup && !start.cnhTariff && start.id !== 'abc'));
-      const fullFee = mainlandMethod === 'full' ? start.fullAmountUsd * quote : 0;
+      const fullFee = swiftGo ? start.swiftGoCny : mainlandMethod === 'full' ? start.fullAmountUsd * quote : 0;
       let principal = 0, sender = 0, commission = 0, telegram = 0;
       const senderKey = [start.id, quote, mainlandMethod, senderOverride, unknownSender].join(':');
       const cachedSender = senderCache.get(senderKey);
@@ -567,6 +569,7 @@
         // Full-amount service is an extra per-transfer charge, not a second
         // percentage commission. Include it in the budget equation.
         const fullSolved = fullFee && senderOverride == null ? remitPrincipal(budget / count - fullFee, start, used + i + 1, config.date, null) : null;
+        if (fullFee && senderOverride == null && !fullSolved) return { error: '预算不足以支付全额到账服务费。' };
         principal += fullSolved ? fullSolved.principal : solved.principal;
         sender += fullSolved ? fullSolved.fee + fullFee : solved.fee;
         if (!unknownSender && effectiveSender == null) {
@@ -575,6 +578,13 @@
         }
       }
       senderCache.set(senderKey, { principal, sender, commission, telegram });
+      }
+      // A priced full-amount service has a per-payment limit. Never silently
+      // switch to an ordinary wire or split a customer's payment to fit it.
+      if (swiftGo) {
+        if (currency !== 'USD' && (!positive(start.quotes.USD?.buy) || !quoteFresh(start.quotes.USD, config.date))) return { error: '兴业USD牌价缺失或超过3天，无法校验SWIFT GO港币单笔上限。' };
+        const usdEquivalent = currency === 'USD' ? principal / quote / count : principal / count / start.quotes.USD.buy;
+        if (usdEquivalent > start.swiftGoLimitUsd + 1e-8) return { error: 'SWIFT GO单笔上限为等值10,000 USD；当前每笔约' + usdEquivalent.toFixed(2) + ' USD，超出服务范围。' };
       }
       const rows = [], missing = [], requirements = [], steps = {};
       let balance = principal / quote, unit = currency;
@@ -593,7 +603,7 @@
       const senderLabel = bocMobile ? '中行手机银行向境外中行·现行' : start.name;
       rows[0].items = unknownSender ? [{ label: senderLabel + '汇出手续费', cny: null }, { label: senderLabel + '电讯费', cny: null }] :
         senderOverride == null ? [{ label: '汇出手续费', cny: commission, evidence: reportedMobile ? '2026公开报道' : '' }, { label: '汇出电讯费', cny: telegram, evidence: reportedMobile ? '2026公开报道' : '' }] : [{ label: '本人报价：汇出手续费及电讯费', cny: senderOverride * count }];
-      if (fullFee) rows[0].items.push({ label: '全额到账附加费 · ' + (start.fullAmountUsd * count) + ' USD', cny: fullFee * count });
+      if (fullFee) rows[0].items.push({ label: swiftGo ? 'SWIFT GO全额到账 · 50 CNY/笔' : '全额到账附加费 · ' + (start.fullAmountUsd * count) + ' USD', cny: fullFee * count });
       if (paymentConnect) Object.assign(rows[0], { label: '跨境支付通汇出服务费', items: [{ label: senderOverride == null ? '跨境支付通本次汇出服务费' : '本人报价：跨境支付通汇出服务费', cny: senderOverride == null ? null : senderOverride * count }] });
       if (unknownSender) {
         const rangeCny = mainlandMethod === 'swift' ? senderFeeRange(start, budget, count, used, config.date, currency) : null;
@@ -608,9 +618,9 @@
       fxRow('entryFx', currency === 'CNH' ? '人民币原币汇出（未换汇）' : '内地购汇点差',
         principal - balance * refs[currency], currency === 'CNH' ? 0 : principal - balance * entryMid, 'entry');
       steps.mainlandForeign = balance;
-      const entryMiddle = paymentConnect ? 0 : own('entryMiddleCny', isSelectedEntry) ?? (mainlandMethod === 'linked' && start.includedIntermediary ? 0 : mainlandMethod === 'full' ? 0 : null);
+      const entryMiddle = paymentConnect ? 0 : own('entryMiddleCny', isSelectedEntry) ?? (mainlandMethod === 'linked' && start.includedIntermediary ? 0 : mainlandMethod === 'full' || swiftGo ? 0 : null);
       add('entryMiddle', paymentConnect ? '跨境支付通直连（无SWIFT中转）' : '内地→香港中转行费', entryMiddle == null ? null : entryMiddle * count, 'entry');
-      const inward = own('entryInwardHkd', isSelectedBank) ?? inwardFee(bank, balance * refs[currency] / refs.HKD / count, start.group);
+      const inward = own('entryInwardHkd', isSelectedBank) ?? (swiftGo ? 0 : inwardFee(bank, balance * refs[currency] / refs.HKD / count, start.group));
       add('entryInward', '香港首次汇入费', inward == null ? null : inward * refs.HKD * count, 'entry');
       steps.hongKong = balance;
       const downstreamError = (error, errorStage = '03') => ({ error, errorStage, rows, steps, startSell: quote, route, mainlandMethod, fxMode, refs, budgetCny: budget, start, bank, returning, exit, broker: provider });
@@ -736,6 +746,7 @@
       rows[rows.length - 1].items = [{ label: '开户／赴港支出', cny: number(config.openingCny) ?? 0 }, { label: '另留资产机会成本', cny: extraCny - (number(config.openingCny) ?? 0) }];
       if (!finite(balance) || balance < 0 || Object.values(steps).some(value => value < 0)) return { error: '资金不足以覆盖所选费用、亏损及税款。' };
       if (start.condition) requirements.push(start.condition);
+      if (swiftGo) requirements.push('仅适用兴业App为该收款账户提供SWIFT GO的交易；50元/笔涵盖境外行费用。普通电汇不适用此报价。');
       if (bocMobile) requirements.push(data.bocMobileEvidence.note);
       if (paymentConnect) requirements.push('跨境支付通已查到中行南向零手续费实例，本次服务费仍须确认；南向受年度等值5万美元便利化额度及用途审核约束，不作为美股入金推荐。');
       if (returnMethod === 'linked') requirements.push('回款须已登记' + returning.name + '两地同名专用转账');
@@ -921,5 +932,45 @@
     const selected = plans.find(row => row.bank.id === config.bank) || (config.plan === 'minimum' ? plans[0] : recommended);
     return { selected, recommended, minimum: plans[0], plans, refs, sourceAmount, exit, mainland, extraCny };
   }
-  return { number, reference, fee, remitPrincipal, senderFeeRange, inwardFee, outwardFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
+  function calculatorRoute(config) {
+    const s = { ...config };
+    // Only infer ancillary channels; banks and stock venues stay independent.
+    s.mainlandMethod = s.startBank === 'cib' ? 'cib-go' : 'linked';
+    s.fxMode = s.route === 'USD' ? 'manual' : 'bank';
+    s.depositMethod = s.broker === s.bank ? 'internal' : 'chats';
+    s.returnMethod = s.outcome === 'mainland' ? 'linked' : '';
+    return s;
+  }
+  function calculatorIssue(config, data) {
+    const p = data.calculator, s = config;
+    const excluded = (scope, id) => p.excluded.find(x => x.scope === scope && x.ids.includes(id))?.reason;
+    if (!p.mainland.includes(s.startBank)) return excluded('mainland', s.startBank) || '请选择已收录的出发银行。';
+    const start = data.mainlandBanks.find(b => b.id === s.startBank);
+    if (start.validUntil && s.date > start.validUntil) return '寰宇人生优惠已超出有效期，完整报价已停止。';
+    if (!p.hkBanks.includes(s.bank) || !p.hkBanks.includes(s.returnBank)) return '香港银行选择已精简为中银香港、汇丰和ZA。';
+    if (!p.brokers.includes(s.broker)) return excluded('broker', s.broker) || '请选择已收录的买股账户。';
+    if (!p.currencies.includes(s.route)) return '人民币原币跨境渠道未纳入全程报价；请选内地购美元或港币。';
+    if (s.startBank === 'cib' && s.mainlandMethod !== 'cib-go') return '兴业普通电汇不保证代理费；本页仅计算50元/笔的SWIFT GO全额到账服务。';
+    if (s.startBank === 'hsbc' && (s.bank !== 'hsbc' || s.mainlandMethod !== 'linked')) return '汇丰环球转账须汇入本人汇丰香港账户。';
+    if (s.route !== 'USD' && (s.bank !== 'bochk' || s.fxMode !== 'bank')) return '港币路线仅计算中银香港按公开牌价换美元。';
+    if (!['internal', 'chats'].includes(s.depositMethod)) return '美元转入买股账户使用内部交收或本地CHATS。';
+    if (s.outcome === 'usd-card' && s.returnBank === 'za') return 'ZA卡不能直接扣美元余额；原币消费请选择中银香港或汇丰。';
+    if (s.outcome === 'cnh-card' && s.returnBank !== 'bochk') return '人民币刷卡路线使用中银香港USD/CNH牌价及多币种卡。';
+    if (s.outcome === 'mainland' && (s.returnBank !== 'hsbc' || s.exitBank !== 'hsbc' || s.returnMethod !== 'linked')) return '完整回内地报价仅支持汇丰两地同名环球转账。';
+    if (!['usd-balance', 'usd-card', 'cnh-card', 'mainland'].includes(s.outcome)) return '请选择已收录的资金用途。';
+    return '';
+  }
+  function calculatorJourney(config, data, quotes) {
+    const issue = calculatorIssue(config, data);
+    if (issue) return { error: issue, errorStage: /ZA卡|人民币刷卡|回内地/.test(issue) ? '04' : /券商|支票|港币路线|买股/.test(issue) ? '03' : '01', excluded: true, plans: [] };
+    for (const [currency, override] of [['HKD', 'usdHkd'], ['CNH', 'usdCnh']]) {
+      if (number(config[override]) == null && !quoteFresh(quotes.offshoreUsd?.bochk?.quotes?.[currency], config.date)) return { error: '当前报价已停止：USD/' + currency + '参考牌价超过3天或缺失。', excluded: true, plans: [] };
+    }
+    const r = mainlandJourney({ ...config, currency: 'CNY', selectedOnly: true }, data, quotes);
+    if (r.selected?.complete && r.selected.rows.every(row => finite(row.cny))) return r;
+    // Do not turn omitted charges into zero, a known-cost badge or a full
+    // arrival balance. A stale feed also closes the quote as a whole.
+    return { error: r.error || '当前报价已停止：' + (r.selected?.missing || []).join('；'), errorStage: r.partial?.errorStage || '01', excluded: true, selection: r.selection, plans: [] };
+  }
+  return { calculatorRoute, calculatorIssue, calculatorJourney, number, reference, fee, remitPrincipal, senderFeeRange, inwardFee, outwardFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
 }));
