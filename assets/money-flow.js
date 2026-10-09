@@ -38,13 +38,19 @@
   function checkbox(key, label) {
     return '<label class="flow-offer"><input type="checkbox" data-money-check="' + key + '"' + (state[key] ? ' checked' : '') + '><span>' + esc(label) + '</span></label>';
   }
-  function brokerOffers(provider) {
+  function brokerOffers(provider, r) {
     const offers = provider.id === 'hsbc' ? checkbox('trade25', '已获Trade25资格 · 年龄/One+及持有期续用条件') + checkbox('hsbcBalanceWaiver', '已满足One连续3个月免月费条件') :
       provider.id === 'chief' ? checkbox('chiefMonthly', '本次为合资格App月供 · 首500 USD优惠') :
       provider.id === 'usmart' ? checkbox('usmartPromo', '合资格标的 · 开户180天内0.99 USD优惠') :
       provider.id === 'za' ? checkbox('zaLv2', 'ZA Perks Lv2 · 每月前5笔平台费优惠') : '';
+    const voucher = M.voucherState(state);
+    const voucherMessage = r?.trading?.overridden ? '已按填写的实际交易费计算，不再重复抵扣费用券。' : voucher.message ||
+      (r?.trading?.warnings.find(text => text.includes('费用券已过期')) || '本次抵扣 ' + num(r?.trading?.discountUsd ?? 0) + ' USD；仅抵所选佣金／平台费。');
     return '<div class="flow-broker-offers">' + note(esc(provider.feeShort || provider.feeText)) + offers + checkbox('useVoucher', '使用已获佣金／平台费券') +
-      (state.useVoucher ? note('券额度、适用费用与有效期在下方“交易费测算”填写') : '') + '</div>';
+      (state.useVoucher ? '<div class="flow-voucher"><div class="flow-parameter-grid">' +
+        select('voucherScope', '券适用费用', [['commission', '仅佣金'], ['platform', '仅平台费'], ['both', '佣金及平台费']], state.voucherScope) +
+        field('voucherUsd', '券总抵扣额度', 'USD') + field('voucherOrders', '券可用订单数', '笔') + field('voucherExpiry', '券有效截止日期') +
+        '</div><p class="flow-voucher-status" role="status">' + esc(voucherMessage) + '</p></div>' : '') + '</div>';
   }
   function entryMethods(s) {
     return [['swift', '普通电汇 · 公开标准价'], ...(s.start?.id === 'boc' && s.bank?.id === 'bochk' && s.route !== 'CNH' ? [['boc-mobile', '中行手机银行 · 向境外中行汇款']] : []), ...(['hang', 'hsbc', 'sc'].includes(s.start?.id) && s.start.group === s.bank?.group ? [['linked', '两地同名专用渠道']] : []),
@@ -64,7 +70,7 @@
   const exactMissing = r => r?.missing?.length ? '待确认：' + r.missing.join('、') : '';
   function legMetric(leg) {
     if (!leg) return '<span>等待本段报价</span>';
-    return '<span>' + (leg.indicative ? '参考损耗率' : leg.missing.length ? '已知损耗率' : '损耗率') + ' <b class="num">' + pct(leg.lossRate) + '</b></span><span>' + (leg.indicative ? '参考保留系数' : '保留系数' + (leg.missing.length ? '上限' : '')) + ' <b class="num">' + num(leg.coefficient, 6) + '</b></span>';
+    return '<span>' + (leg.indicative ? '参考损耗率' : leg.missing.length ? '已知损耗率' : '损耗率') + ' <b class="num">' + pct(leg.lossRate) + '</b></span>';
   }
   function fees(leg) {
     if (!leg) return '<p class="flow-stop-note">缺少本段有效报价</p>';
@@ -112,12 +118,12 @@
         const entity = { start: 'start', bank: 'bank', returnBank: 'returning', exit: 'exit' }[group];
         const item = data.alternatives?.[group]?.find(row => row[entity]?.id === id), metric = item && comparisonMetric(item, group);
         if (id === selectedId) { selectedMetric = metric; selectedError = item?.error?.replace(name, '').replace('；填入该行成交价后可计算。', ''); }
-        return [id, name + (metric ? ' · 损耗' + pct(metric.lossRate) + ' / 保留' + num(metric.coefficient, 6) + ' / ' + (metric.missing.length ? '已知费' : '费用') + num(metric.costCny) + ' CNY' : ' · ' + (item?.error?.replace(name, '').replace('；填入该行成交价后可计算。', '') || '缺少本段报价'))];
+        return [id, name + (metric ? ' · ' + (metric.indicative ? '参考损耗' : '损耗') + pct(metric.lossRate) + ' / ' + (metric.missing.length ? '已知费' : '费用') + num(metric.costCny) + ' CNY' : ' · ' + (item?.error?.replace(name, '').replace('；填入该行成交价后可计算。', '') || '缺少本段报价'))];
       });
       const html = select(key, label, options, selectedId);
       if (!group) return html;
       const visible = '<div class="flow-selected-bank" aria-hidden="true"><span>' + esc(selectedName) + '</span><span>' +
-        (selectedMetric ? (selectedMetric.missing.length ? '已知损耗 ' : '损耗 ') + pct(selectedMetric.lossRate) + ' · 保留 ' + num(selectedMetric.coefficient, 6) + ' · 费用 ' + feeText(selectedMetric.costCny) : esc(selectedError || '缺少本段报价')) + '</span></div>';
+        (selectedMetric ? (selectedMetric.indicative ? '参考损耗 ' : selectedMetric.missing.length ? '已知损耗 ' : '损耗 ') + pct(selectedMetric.lossRate) + ' · 费用 ' + feeText(selectedMetric.costCny) : esc(selectedError || '缺少本段报价')) + '</span></div>';
       return html.replace('<select ', '<div class="flow-bank-select"><select ').replace('</select>', '</select>' + visible + '</div>');
     };
     const controls = [
@@ -125,7 +131,7 @@
       control('route', '汇出币种与换汇地点', Object.entries(routes), route) + control('mainlandMethod', '内地 → 香港方式', entryMethods(s), r?.mainlandMethod || state.mainlandMethod || 'swift'),
       control('broker', '券商／银行证券账户', bankOptions(D.brokers), provider.id) + control('fxMode', '换成美元', fxModes, s.fxMode || 'manual') +
       control('depositMethod', '银行 → 交易账户方式', depositMethods(s), r?.depositMethod || state.depositMethod || 'chats'),
-      brokerOffers(provider),
+      brokerOffers(provider, r),
       control('returnBank', '香港回款银行', bankOptions(banks)) + note(esc(provider.withdrawalText)),
       control('exitBank', '内地收款／结汇银行', bankOptions(data.mainland || D.mainlandBanks)) + control('returnMethod', '香港 → 内地方式', returnMethods(s), r?.returnMethod || state.returnMethod || 'swift') +
       note('本段合并结汇及使用期支出；银行月费、开户支出、另留资产成本分别列出。')
@@ -165,14 +171,14 @@
     if (!ledger?.stops[range[1]]) {
       if (key === 'start' && item.steps?.hongKong != null) {
         const rows = item.rows.filter(row => ['sender', 'entryFx', 'entryMiddle', 'entryInward'].includes(row.key));
-        const coefficient = item.steps.hongKong * item.refs[item.route] / item.budgetCny;
-        return { coefficient, lossRate: 1 - coefficient, costCny: rows.reduce((sum, row) => sum + (row.cny ?? 0), 0), missing: rows.filter(row => row.cny == null).map(row => row.label) };
+        const lossRate = 1 - item.steps.hongKong * item.refs[item.route] / item.budgetCny;
+        return { lossRate, costCny: rows.reduce((sum, row) => sum + (row.cny ?? 0), 0), missing: rows.filter(row => row.cny == null).map(row => row.label) };
       }
       return null;
     }
     const legs = ledger.legs.slice(...range), input = ledger.stops[range[0]].valueCny, output = ledger.stops[range[1]].valueCny;
-    const profit = legs.reduce((sum, row) => sum + row.profitCny, 0), coefficient = (output - profit) / input;
-    return { coefficient, lossRate: 1 - coefficient, costCny: legs.reduce((sum, row) => sum + row.costCny, 0), missing: legs.flatMap(row => row.missing) };
+    const profit = legs.reduce((sum, row) => sum + row.profitCny, 0), lossRate = 1 - (output - profit) / input;
+    return { lossRate, indicative: legs.some(row => row.indicative), costCny: legs.reduce((sum, row) => sum + row.costCny, 0), missing: legs.flatMap(row => row.missing) };
   }
   function comparison(data) {
     const key = state.comparison, rows = data.alternatives?.[key] || [], r = data.selected;
@@ -187,13 +193,13 @@
       const status = metric?.missing.length ? '未计／待确认：' + metric.missing.join('、') : item.error || '本段费用已计齐';
       return '<tr class="' + (selected ? 'selected' : '') + '"><td><strong>' + esc(key === 'route' ? routes[id] : entity?.name) + '</strong>' +
         '<small>' + esc(conditions) + '</small></td>' +
-        '<td class="num">' + pct(metric?.lossRate) + '</td><td class="num">' + num(metric?.coefficient, 6) + '</td><td class="num">' + (metric ? feeText(metric.costCny) : '未报价') +
+        '<td class="num">' + pct(metric?.lossRate) + (metric?.indicative ? '<small>参考测算</small>' : '') + '</td><td class="num">' + (metric ? feeText(metric.costCny) : '未报价') +
         '<small>' + esc(status) + '</small></td><td class="num">' + feeText(rowFee(item, 'account')) + '<small>所用香港账户合计</small></td><td>' +
         action(selected ? '已选' : '选用', 'choose', 'data-field="' + ({ start: 'startBank', bank: 'bank', route: 'route', broker: 'broker', returnBank: 'returnBank', exit: 'exitBank' }[key]) + '" data-value="' + esc(id) + '"') + '</td></tr>';
     }).join('');
-    return '<div class="flow-comparison-head"><div><h2>逐段横向比较</h2><span>' + spans[key] + ' · 保留系数按相同参考币值计算；未知费用未当作免费</span></div></div>' +
+    return '<div class="flow-comparison-head"><div><h2>逐段横向比较</h2><span>' + spans[key] + ' · 损耗率按相同参考币值计算；未知费用未当作免费</span></div></div>' +
       '<div class="flow-comparison-tabs segmented" aria-label="费用对比">' + Object.entries(labels).map(([id, label]) => action(label, 'compare', 'data-value="' + id + '" aria-pressed="' + (key === id) + '"', key === id ? 'active' : '')).join('') + '</div>' +
-      '<div class="table-wrap"><table class="flow-bank-table"><thead><tr>' + [labels[key], '本段损耗率', '本段保留系数', '本段费用合计 · CNY', '账户使用期费用 · CNY', ''].map(t => '<th>' + t + '</th>').join('') + '</tr></thead><tbody>' + tableRows + '</tbody></table></div>';
+      '<div class="table-wrap"><table class="flow-bank-table"><thead><tr>' + [labels[key], '本段损耗率', '本段费用合计 · CNY', '账户使用期费用 · CNY', ''].map(t => '<th>' + t + '</th>').join('') + '</tr></thead><tbody>' + tableRows + '</tbody></table></div>';
   }
   function parameters() {
     const group = (title, fields) => '<h3>' + title + '</h3><div class="flow-parameter-grid">' + fields.map(args => field(...args)).join('') + '</div>';
@@ -217,10 +223,7 @@
         field('sharePriceUsd', '测算买入均价', 'USD/股') + field('buyOrders', '买入笔数', '笔') + field('sellOrders', '卖出笔数', '笔') + field('tradeFeeUsd', '实际买卖交易费合计', 'USD', '留空按收费表计算') + '</div>' +
         '<div class="flow-parameter-grid flow-extra-trade" data-money-when="hsbc"' + (state.broker === 'hsbc' ? '' : ' hidden') + '>' + field('otherTurnoverHkd', '各交易月其他已用成交额', 'HKD') + '</div>' +
         '<div class="flow-parameter-grid flow-extra-trade" data-money-when="za"' + (state.broker === 'za' ? '' : ' hidden') + '>' + field('usedPromoOrders', '各交易月已用Lv2笔数', '笔') + '</div>' +
-        '<div class="flow-parameter-grid flow-extra-trade" data-money-when="usmart"' + (state.broker === 'usmart' ? '' : ' hidden') + '>' + field('usmartDays', '开户距今', '天') + '</div>' +
-        '<div class="flow-parameter-grid flow-extra-trade" data-money-when="voucher"' + (state.useVoucher ? '' : ' hidden') + '>' +
-        select('voucherScope', '券适用费用', [['commission', '仅佣金'], ['platform', '仅平台费'], ['both', '佣金及平台费']], state.voucherScope) +
-        field('voucherUsd', '券总抵扣额度', 'USD') + field('voucherOrders', '券可用订单数', '笔') + field('voucherExpiry', '券有效截止日期') + '</div></section>' +
+        '<div class="flow-parameter-grid flow-extra-trade" data-money-when="usmart"' + (state.broker === 'usmart' ? '' : ' hidden') + '>' + field('usmartDays', '开户距今', '天') + '</div></section>' +
       '<section class="card" id="flow-live-comparison">' + comparison(data) + '</section><details class="card flow-disclosure"><summary>高级设置 · 盈亏、税款、账户与手续费</summary>' + parameters() + '</details></div>';
   }
   function patch(element, html) {
@@ -259,7 +262,7 @@
       const element = document.getElementById(id);
       if (element) patch(element, renderer(data));
     }
-    document.querySelectorAll('[data-money-when]').forEach(element => { element.hidden = element.dataset.moneyWhen === 'voucher' ? !state.useVoucher : element.dataset.moneyWhen !== state.broker; });
+    document.querySelectorAll('[data-money-when]').forEach(element => { element.hidden = element.dataset.moneyWhen !== state.broker; });
     syncFields();
   }
   function lockCurrent() {
@@ -323,7 +326,7 @@
           provider.id === 'usmart' ? '按非香港身份证个人标准账户收费。0.99美元平台费要求合资格标的、成交股价至少100美元、App交易及开户180天内；已核实推广期至2026年12月31日。本测算只在有效期内应用优惠，后续卖出自动恢复常规费率。清算及监管费另计。' :
           provider.id === 'za' ? '常规佣金已是0，不能再次把迎新免佣当作额外收益。Lv2每月前5笔港/美股交易平台费0.008美元/股、最低0.99美元；后续恢复常规费率。卖出资金直接回存款账户。随机开户奖赏不抵扣成本；已到账的费用券须自行确认范围、额度、可用笔数和有效期。' :
           '按IBKR Pro Fixed收费；Lite免佣只适用于符合条件的美国居民。手动换汇0.002%、最低2美元；自动换汇加价0.03%，不叠加手动佣金。USD用CHATS/SWIFT，HKD/CNH可用FPS/eDDA。') +
-        '银行先换USD仅用该行实际报价；目前公开覆盖中银香港，其他行可填账户报价。其他券商不套用IBKR换汇价格及佣金。费用券只抵指定佣金/平台费，不抵税费、清算费或月费。', [...provider.sources, 'bochkUsdFx']],
+        '银行先换USD优先使用该行实际报价；目前公开覆盖中银香港。其他行缺成交价时，按统一参考中间价保留已知交易收费测算，换汇点差仍为未报价，整条路线标为参考且不参与排名；填入该行账户报价后按成交价计算。其他券商不套用IBKR换汇佣金。费用券信息未填齐时不抵扣，也不影响其他费用；只抵指定佣金/平台费，不抵税费、清算费或月费。', [...provider.sources, 'bochkUsdFx']],
       withdraw: ['卖出与同名出金', provider.withdrawalText + '。卖出盈亏按交易费前USD输入，买卖费用与证券月费另扣。' +
         (provider.withdrawalMethod === 'internal' ? '该行证券交易直接交收至本人USD存款账户，不叠加外部券商入金、中转或电汇收款费。' : provider.withdrawalMethod === 'cheque' ? '支票出金没有SWIFT中转行费；收款银行美元支票处理费用需另核，未报价不默认为0。需已登记美元账户；遥距开户限制可能需到分行解除。' :
           '券商豁免提款收费不代表银行汇入或中转费也免；未公开费用按实际单据填写。') + '交易费用按起始月均分买入、账户使用最后一个月均分卖出估算；不足一月仍按一个交易月，不含中间调仓、分红、融资或ADR额外收费。长期结果使用当前常规费率基准，限期优惠只在已核实有效期内应用。', provider.sources],

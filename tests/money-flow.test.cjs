@@ -481,7 +481,9 @@ test('welcome vouchers cannot double-discount zero commission or pay regulatory 
   close(limited.discountUsd, 1);
   const expired = M.brokerTradingFees({ ...voucher, voucherScope: 'platform', months: 12 }, broker('za'), 10000, 0, feeRefs);
   close(expired.orders[1].discount, 0);
-  assert.match(M.brokerTradingFees({ ...voucher, voucherExpiry: '' }, broker('za'), 10000, 0, feeRefs).error, /截止日期/);
+  const pending = M.brokerTradingFees({ ...voucher, voucherExpiry: '' }, broker('za'), 10000, 0, feeRefs);
+  assert.match(pending.voucher.message, /截止日期/);
+  close(pending.discountUsd, 0); close(pending.totalUsd, commissionOnly.totalUsd);
 });
 test('the five broker journeys reconcile RMB and retain the exact deposit and withdrawal method', () => {
   for (const provider of D.brokers) {
@@ -502,14 +504,28 @@ test('the five broker journeys reconcile RMB and retain the exact deposit and wi
   }
 });
 
-test('downstream FX or voucher gaps do not erase the first mainland-bank arrival quote', () => {
-  const quoteGap = M.journeyPlans({ ...mainlandConfig, broker: 'za', route: 'CNH', fxMode: 'bank', tradeFeeUsd: '' }, D, richQuotes);
-  assert.match(quoteGap.error, /换USD的成交报价/);
-  assert.ok(quoteGap.alternatives.start.find(row => row.start.id === 'boc').steps.hongKong > 0);
-  const voucherGap = M.journeyPlans({ ...mainlandConfig, broker: 'za', useVoucher: true, voucherExpiry: '', tradeFeeUsd: '' }, D, richQuotes);
-  assert.match(voucherGap.error, /截止日期/);
-  assert.ok(voucherGap.alternatives.start.find(row => row.start.id === 'boc').steps.hongKong > 0);
+test('unfinished vouchers retain every priced leg and all standard trading fees', () => {
+  for (const provider of D.brokers) {
+    const input = { ...mainlandConfig, broker: provider.id, tradeFeeUsd: '', profitUsd: 0 };
+    const base = M.journeyPlans(input, D, richQuotes).selected;
+    for (const draft of [
+      { voucherUsd: 0, voucherExpiry: '' },
+      { voucherUsd: 20, voucherExpiry: '' },
+      { voucherUsd: 20, voucherExpiry: '2026-02-30' },
+      { voucherUsd: -1, voucherExpiry: '2026-12-31' },
+      { voucherUsd: 20, voucherExpiry: '2026-12-31', voucherOrders: 0 }
+    ]) {
+      const data = M.journeyPlans({ ...input, useVoucher: true, ...draft }, D, richQuotes), r = data.selected;
+      assert.ok(r, provider.id); assert.equal(data.error, undefined);
+      assert.equal(r.trading.voucher.pending, true); close(r.trading.discountUsd, 0);
+      close(r.trading.totalUsd, base.trading.totalUsd); close(r.net, base.net);
+      assert.deepEqual(r.rows, base.rows); assert.deepEqual(r.steps, base.steps);
+      assert.deepEqual(r.missing, base.missing);
+      assert.equal(M.diagramLedger(r).legs.length, 5);
+    }
+  }
 });
+
 test('broker comparison keeps account-specific vouchers and manual trading fees on that broker', () => {
   const r = M.journeyPlans({ ...mainlandConfig, broker: 'za', tradeFeeUsd: '', useVoucher: true, voucherScope: 'platform', voucherUsd: 100,
     voucherOrders: 2, voucherExpiry: '2026-12-31', months: 1 }, D, richQuotes);
@@ -687,15 +703,33 @@ test('confirmed free BOC mobile transfers preserve the foreign principal without
   assert.ok(cnh.rows.find(row => row.key === 'sender').cny > 0);
 });
 
-test('a downstream missing conversion quote preserves the priced mainland arrival ledger', () => {
-  const data = M.journeyPlans({ ...mainlandConfig, broker: 'za', route: 'CNH', fxMode: 'bank', tradeFeeUsd: '' }, D, richQuotes);
-  assert.equal(data.selected, undefined);
-  const l = M.flowLedger(data.partial);
-  assert.equal(l.stops.length, 2); assert.equal(l.legs.length, 1);
-  close(l.stops[1].amount, data.partial.steps.hongKong);
-  close(l.legs[0].costCny, data.partial.rows.reduce((sum, row) => sum + (row.cny || 0), 0));
+test('all five trading accounts retain fees for USD, HKD and CNH without inventing bank FX quotes', () => {
+  for (const route of ['USD', 'HKD', 'CNH']) {
+    const input = { ...mainlandConfig, route, broker: 'ibkr', bank: 'za', returnBank: 'za', returnMethod: 'swift',
+      fxMode: 'manual', mainlandMethod: 'swift', depositMethod: route === 'USD' ? 'chats' : 'fps', tradeFeeUsd: '', profitUsd: 0 };
+    const data = M.journeyPlans(input, D, richQuotes);
+    assert.equal(data.alternatives.broker.length, 5);
+    for (const row of data.alternatives.broker) {
+      assert.equal(row.error, undefined, route + ':' + row.broker.id);
+      assert.ok(row.trading.totalUsd > 0); assert.ok(Number.isFinite(row.net));
+      const ledger = M.diagramLedger(row);
+      assert.equal(ledger.legs.length, 5);
+      close(row.net + row.costCny + row.taxCny, row.budgetCny + row.fxImpactCny);
+      if (route !== 'USD' && row.broker.id !== 'ibkr') {
+        assert.match(row.indicativeFx, /成交价（暂按参考中间价）/);
+        assert.equal(row.rows.find(r => r.key === 'brokerSpread').cny, null);
+        assert.equal(row.quotedCore, false); assert.equal(row.rankable, false);
+        close(row.rows.find(r => r.key === 'brokerFx').cny, 0);
+        assert.equal(ledger.legs[1].indicative, true);
+        assert.ok(row.missing.some(text => text.includes(row.bank.name) && text.includes(route)));
+      }
+    }
+  }
+  const input = { ...mainlandConfig, broker: 'za', bank: 'za', returnBank: 'za', route: 'HKD', fxMode: 'bank', tradeFeeUsd: '', profitUsd: 0 };
+  const priced = M.journeyPlans({ ...input, entryPrice: 8 }, D, richQuotes).selected;
+  assert.equal(priced.indicativeFx, ''); close(priced.entryPrice, 8);
+  assert.ok(priced.rows.find(row => row.key === 'brokerSpread').cny != null);
 });
-
 
 test('the diagram shows the final RMB only once and retains every closing cost', () => {
   const r = M.journeyPlans({ ...mainlandConfig, broker: 'ibkr', profitUsd: 0, tradeFeeUsd: '', months: 12,

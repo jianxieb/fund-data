@@ -258,6 +258,18 @@
     d.setUTCDate(Math.min(day, last));
     return d.toISOString().slice(0, 10);
   }
+  function voucherState(config) {
+    const amount = number(config.voucherUsd) ?? 0, orders = number(config.voucherOrders) ?? 1;
+    const expiry = config.voucherExpiry || '', scope = config.voucherScope || 'commission';
+    const parsed = Date.parse(expiry), missing = [];
+    if (!positive(amount)) missing.push('抵扣额度');
+    if (!positive(orders) || !Number.isInteger(orders) || orders > 240) missing.push('可用订单数（1–240）');
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(expiry) || !Number.isFinite(parsed) || new Date(parsed).toISOString().slice(0, 10) !== expiry) missing.push('有效截止日期');
+    if (!['commission', 'platform', 'both'].includes(scope)) missing.push('适用费用');
+    const pending = !!config.useVoucher && missing.length > 0;
+    return { amount, orders, expiry, scope, ready: !!config.useVoucher && !pending, pending,
+      message: pending ? '费用券待补充：' + missing.join('、') + '；暂按未抵扣计算。' : '' };
+  }
   // Equal-size buy orders in the starting month and equal-size sell orders in
   // the final holding month are a fee benchmark, not a return simulation.
   // Buy-side charges fit inside available USD, including voucher allocation.
@@ -266,20 +278,18 @@
     const price = number(config.sharePriceUsd) ?? 100, months = number(config.months) ?? 1;
     if (![buys, sells].every(v => positive(v) && Number.isInteger(v) && v <= 120) || !positive(price) || !knownFee(months) || months > 1200) return { error: '交易笔数须为1–120整数，测算股价须为正数，使用月数不超过1200。' };
     const usedQuota = number(config.usedPromoOrders) ?? 0, usedTurnover = number(config.otherTurnoverHkd) ?? 0;
-    const voucher = number(config.voucherUsd) ?? 0, voucherOrders = number(config.voucherOrders) ?? 1;
-    if (!knownFee(usedQuota) || !Number.isInteger(usedQuota) || !knownFee(usedTurnover) || !knownFee(voucher) || !positive(voucherOrders) || !Number.isInteger(voucherOrders) || voucherOrders > 240) return { error: '优惠已用笔数、月成交额及抵扣额度须为非负数，券可用笔数须为1–240整数。' };
+    const voucher = voucherState(config);
+    if (!knownFee(usedQuota) || !Number.isInteger(usedQuota) || !knownFee(usedTurnover)) return { error: '优惠已用笔数须为非负整数，月成交额须为非负数。' };
     const date = config.date || '2026-10-09', heldMonths = Math.max(1, Math.ceil(months));
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(Date.parse(date))) return { error: '测算日期无效。' };
     const sellDate = shiftedMonth(date, heldMonths - 1), sameMonth = date.slice(0, 7) === sellDate.slice(0, 7);
-    const expiry = config.voucherExpiry || '';
-    if (config.useVoucher && (!/^\d{4}-\d{2}-\d{2}$/.test(expiry) || !Number.isFinite(Date.parse(expiry)))) return { error: '请填入已获交易费券的有效截止日期。' };
     const usmartDays = number(config.usmartDays) ?? 0;
     if (!knownFee(usmartDays) || !Number.isInteger(usmartDays)) return { error: '开户距今须为非负整数天。' };
     const centsUp = value => value > 0 ? Math.ceil((value - 1e-10) * 100) / 100 : 0;
     const promoDate = d => d >= '2026-04-20' && d <= '2026-12-31';
     const estimate = buyValue => {
       const shares = buyValue / price, saleValue = buyValue + profitUsd;
-      let remainingVoucher = config.useVoucher ? voucher : 0, couponsUsed = 0;
+      let remainingVoucher = voucher.ready ? voucher.amount : 0, couponsUsed = 0;
       let turnover = usedTurnover, orderIndex = usedQuota;
       const orders = [];
       function side(kind, count, total, d) {
@@ -308,8 +318,8 @@
           const holiday = d >= '2026-10-01' && d <= '2026-12-31';
           const taf = kind === 'sell' && !holiday ? Math.max(.01, Math.min(9.79, centsUp(qty * .000195))) : 0;
           const cat = broker.catMinimum != null ? Math.max(broker.catMinimum, qty * .000003) : 0;
-          const voucherBase = config.voucherScope === 'platform' ? platform : config.voucherScope === 'both' ? commission + platform : commission;
-          const discount = remainingVoucher > 0 && d <= expiry && couponsUsed < voucherOrders ? Math.min(remainingVoucher, voucherBase) : 0;
+          const voucherBase = voucher.scope === 'platform' ? platform : voucher.scope === 'both' ? commission + platform : commission;
+          const discount = remainingVoucher > 0 && d <= voucher.expiry && couponsUsed < voucher.orders ? Math.min(remainingVoucher, voucherBase) : 0;
           if (discount > 0) { remainingVoucher -= discount; couponsUsed++; }
           orders.push({ kind, date: d, value, shares: qty, commission, platform, clearing, sec, taf, cat, discount, offer,
             feeUsd: commission + platform + clearing + sec + taf + cat - discount });
@@ -331,8 +341,9 @@
     const override = number(config.tradeFeeUsd), warnings = [];
     if (broker.id === 'usmart' && config.usmartPromo && !orders.some(order => order.offer)) warnings.push('盈立0.99优惠未适用：须股价≥100 USD、合资格标的、开户180天内且在推广期');
     if (broker.id === 'chief' && config.chiefMonthly && date > '2026-12-31') warnings.push('致富2026年月供优惠已过期，按普通网上交易基准测算');
-    if (config.useVoucher && voucher === 0) warnings.push('已勾交易费券但未填抵扣额度，尚未抵扣');
-    return { investUsd: override == null ? low : cashUsd, buyFeeUsd, sellFeeUsd, orders, monthlyHkd, warnings,
+    if (voucher.pending) warnings.push(voucher.message);
+    if (voucher.ready && voucher.expiry < date) warnings.push('费用券已过期，未抵扣。');
+    return { investUsd: override == null ? low : cashUsd, buyFeeUsd, sellFeeUsd, orders, monthlyHkd, warnings, voucher,
       totalUsd: override ?? buyFeeUsd + sellFeeUsd, overridden: override != null,
       discountUsd: override == null ? orders.reduce((sum, row) => sum + row.discount, 0) : 0, price, buys, sells, sellDate };
   }
@@ -380,7 +391,7 @@
       const inputCny = stops[i].amount * rates[stops[i].currency], outputCny = stops[i + 1].amount * rates[stops[i + 1].currency];
       const lossCny = inputCny + profitCny - outputCny;
       const legMissing = rows.filter(row => row.cny == null).map(row => row.label);
-      if (i === 1 && r.indicativeFx) legMissing.push(r.indicativeFx);
+      if (i === 1 && r.indicativeFx && !grouped.some(row => row.key === 'brokerSpread' && row.cny == null)) legMissing.push(r.indicativeFx);
       missing.push(...legMissing);
       stops[i + 1] = { ...stops[i + 1], valueCny: outputCny, indicative: i >= 1 && !!r.indicativeFx, cumulativeCostCny: cumulative, cumulativeTaxCny: tax,
         cumulativeLossCny: r.budgetCny + investmentProfit - outputCny, cumulativeImpactCny: impact, missing: [...missing] };
@@ -388,7 +399,7 @@
       // profit before measuring channel retention; never divide USD by CNY.
       const coefficient = inputCny > 0 ? (outputCny - profitCny) / inputCny : null;
       return { from: stops[i].id, to: stops[i + 1].id, rows, costCny, taxCny, profitCny, fxImpactCny, lossCny, inputCny, outputCny,
-        coefficient, indicative: i === 1 && !!r.indicativeFx, lossRate: coefficient == null ? null : 1 - coefficient, missing: legMissing };
+        coefficient, indicative: i >= 1 && !!r.indicativeFx, lossRate: coefficient == null ? null : 1 - coefficient, missing: legMissing };
     });
     return { stops, legs, rates, lossCny: r.budgetCny + (r.profitUsd || 0) * rates.USD - r.net };
   }
@@ -520,7 +531,11 @@
       if (['fps', 'edda'].includes(depositMethod) && depositCurrency === 'USD') return { error: 'FPS/eDDA不支持USD；美元入金请选CHATS或SWIFT。' };
       if (depositMethod === 'chats' && depositCurrency !== 'USD') return { error: '本页CHATS收费为USD本地转账；HKD/CNH可选FPS或eDDA。' };
       const bankFxQuote = bank.id === 'bochk' ? offshore[currency] : null;
-      const entryPrice = currency === 'USD' ? 1 : own('entryPrice', isSelectedBank) ?? (fxMode === 'bank' ? bankFxQuote?.askPerUsd : refs.USD / refs[currency]);
+      const ownEntryPrice = own('entryPrice', isSelectedBank);
+      const unquotedBankFx = currency !== 'USD' && fxMode === 'bank' && ownEntryPrice == null && !positive(bankFxQuote?.askPerUsd);
+      // Retain known broker tariffs using the same reference scenario as IBKR.
+      // A reference conversion is never an executable bank quote or a ranked route.
+      const entryPrice = currency === 'USD' ? 1 : ownEntryPrice ?? (fxMode === 'bank' && !unquotedBankFx ? bankFxQuote?.askPerUsd : refs.USD / refs[currency]);
       if (!positive(entryPrice)) return downstreamError(bank.name + '缺少' + currency + '换USD的成交报价。');
       const transfer = () => {
         const charge = own('depositHkd', isSelectedBank);
@@ -542,6 +557,7 @@
           ? (bankFxQuote.bidPerUsd + bankFxQuote.askPerUsd) / 2 : null;
         fxRow('brokerSpread', fxMode === 'bank' ? '香港银行换汇点差' : '换汇成交点差', referenceDifference,
           bankMid ? (oldBalance / bankMid - grossUsd) * refs.USD : referenceDifference, 'deposit');
+        if (unquotedBankFx) Object.assign(rows[rows.length - 1], { cny: null, fxImpactCny: -referenceDifference, label: bank.name + ' ' + currency + '换USD点差（缺成交价）' });
         return fx;
       };
       let brokerFxResult;
@@ -626,8 +642,9 @@
       if (!marketFresh) missing.push('香港换汇参考牌价超过3天');
       const referenceFresh = number(config.usdCny) != null || quoteFresh(refRow, config.date);
       if (!referenceFresh) missing.push('USD/CNY参照牌价超过3天');
-      const indicativeFx = currency !== 'USD' && fxMode !== 'bank' && own('entryPrice', isSelectedBank) == null ? 'IBKR ' + currency + '/USD成交价（暂按参考中间价）' : '';
-      if (indicativeFx) missing.push(indicativeFx);
+      const indicativeFx = unquotedBankFx ? bank.name + ' ' + currency + '/USD成交价（暂按参考中间价）' :
+        currency !== 'USD' && fxMode !== 'bank' && ownEntryPrice == null ? 'IBKR ' + currency + '/USD成交价（暂按参考中间价）' : '';
+      if (indicativeFx && !unquotedBankFx) missing.push(indicativeFx);
       const preciseMissing = [...unpriced.flatMap(row => (row.items || [row]).map(item => item.label)),
         ...missing.filter(reason => !unpriced.some(row => reason === row.label || row.key === 'sender' && reason === start.name + '所选渠道汇出收费'))];
       const requiredEligibility = [...new Set([start.required, ...(returnMethod === 'linked' ? [exit.required] : [])].filter(Boolean))];
@@ -777,5 +794,5 @@
     const selected = plans.find(row => row.bank.id === config.bank) || (config.plan === 'minimum' ? plans[0] : recommended);
     return { selected, recommended, minimum: plans[0], plans, refs, sourceAmount, exit, mainland, extraCny };
   }
-  return { number, reference, fee, remitPrincipal, inwardFee, outwardFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, returnFee, quoteFresh, selectedBroker, cappedCharge, brokerTradingFees, flowLedger, diagramLedger, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
+  return { number, reference, fee, remitPrincipal, inwardFee, outwardFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, returnFee, quoteFresh, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
 }));
