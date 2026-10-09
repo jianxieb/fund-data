@@ -259,10 +259,10 @@ const richQuotes = structuredClone(publicQuotes);
 richQuotes.banks.boc.quotes.HKD = { buy: .873, sell: .878, asOf: '2026-10-08 20:00:00' };
 richQuotes.banks.abc = { quotes: { USD: { buy: 6.99, sell: 7.01, asOf: '2026-10-08 20:00:00' } } };
 richQuotes.banks.comm = { quotes: { USD: { buy: 7, sell: 7.01, asOf: '2026-10-08 20:00:00' } } };
-const ledger = r => {
+const ledger = (r, profit = 1000) => {
   const sum = r.rows.reduce((total, row) => total + (row.cny ?? 0), 0);
   close(r.costCny, sum);
-  close(r.net + sum + r.taxCny, r.budgetCny + r.refs.USD * 1000 + r.fxImpactCny);
+  close(r.net + sum + r.taxCny, r.budgetCny + r.refs.USD * profit + r.fxImpactCny);
 };
 
 test('every mainland route reconciles actual RMB principal, FX, fees and profit exactly once', () => {
@@ -300,7 +300,7 @@ test('unknown bank and correspondent fees remain unknown, and incomplete sender 
   const p = M.journeyPlans({ ...mainlandConfig, startBank: 'comm', entryMiddleCny: '', depositOtherCny: '', intermediaryCny: '', returnExtraCny: '' }, D, richQuotes);
   assert.equal(p.selected.rankable, false); assert.equal(p.selected.complete, false);
   for (const key of ['sender', 'entryMiddle', 'depositOther', 'withdrawMiddle', 'returnOther']) assert.equal(p.selected.rows.find(row => row.key === key).cny, null);
-  assert.ok(p.plans.every(row => !['comm', 'icbc'].includes(row.start.id)));
+  assert.ok(p.plans.every(row => row.start.id !== 'comm'));
   assert.notEqual(p.recommended.start.id, 'comm'); assert.notEqual(p.minimum.start.id, 'comm');
   assert.equal(M.fee(D.mainlandBanks.find(bank => bank.id === 'comm'), 100000), null);
 });
@@ -413,7 +413,7 @@ test('comparison rows retain known charges but never rank unquoted remittances b
     assert.equal(metric.lossCny, null); assert.equal(metric.lossRate, null);
     assert.ok(metric.costCny > 0);
     assert.ok(metric.missing.includes('内地→香港中转行费'));
-    if (id !== 'boc') {
+    if (!['boc', 'ccb'].includes(id)) {
       assert.ok(metric.missing.includes(r.start.name + '汇出手续费'));
       assert.ok(metric.missing.includes(r.start.name + '电讯费'));
       close(metric.costCny, r.rows.find(row => row.key === 'entryInward').cny);
@@ -839,4 +839,89 @@ test('the diagram shows the final RMB only once and retains every closing cost',
   const end = l.legs.at(-1);
   close(end.inputCny + end.fxImpactCny, end.outputCny + end.costCny);
   for (const key of ['returnWire', 'returnOther', 'exitFx', 'account', 'extra']) assert.ok(end.rows.some(row => row.key === key));
+});
+
+
+test('current ICBC online fees use 80% of the 50–260 CNY counter schedule, not obsolete limits', () => {
+  const bank = D.mainlandBanks.find(row => row.id === 'icbc');
+  close(M.fee(bank, 1000, 1, '2026-10-09'), 120);
+  close(M.fee(bank, 100000, 1, '2026-10-09'), 160);
+  close(M.fee(bank, 1000000, 1, '2026-10-09'), 288);
+  assert.equal(M.fee(bank, 100000, 1, '2026-08-07'), null);
+  const r = M.journeyPlans({ ...mainlandConfig, startBank: 'icbc', startSell: 7.01 }, D, richQuotes).selected;
+  assert.ok(r.rows.find(row => row.key === 'sender').cny > 0);
+  assert.ok(!r.missing.some(text => /工商银行汇出手续费|工商银行电讯费/.test(text)));
+  ledger(r, 0);
+});
+
+test('CCB cross-border RMB and free incoming transfer are supported by the current schedule', () => {
+  const r = M.journeyPlans({ ...mainlandConfig, startBank: 'ccb', bank: 'bochk', route: 'CNH', depositMethod: 'fps',
+    exitBank: 'ccb', exitPrice: 7, returnExtraCny: '' }, D, richQuotes).selected;
+  const sender = r.rows.find(row => row.key === 'sender');
+  close(sender.cny, (70000 - 80) / 1.001 * .001 + 80);
+  const incoming = r.rows.find(row => row.key === 'returnOther').items;
+  close(incoming.find(row => row.label === '建设银行USD收款费').cny, 0);
+  assert.ok(!r.missing.includes('建设银行USD收款费'));
+  assert.ok(r.missing.includes('回内地中转行费'));
+  assert.ok(!M.flowLedger(r).legs[4].missing.includes('建设银行USD收款费'));
+  ledger(r, 0);
+});
+
+test('COMM regional price endpoints fit inside the budget, with per-transfer minimums and caps', () => {
+  const bank = D.mainlandBanks.find(row => row.id === 'comm');
+  const range = (budget, count = 1, currency = 'USD', date = '2026-10-09') => M.senderFeeRange(bank, budget, count, 0, date, currency);
+  const bounds = range(100000);
+  close(bounds[0], (100000 - 80) / 1.0005 * .0005 + 80);
+  close(bounds[1], (100000 - 150) / 1.0008 * .0008 + 150);
+  assert.deepEqual(range(1000), [100, 190]);
+  assert.deepEqual(range(3000, 3), [300, 570]);
+  assert.deepEqual(range(1000000), [280, 350]);
+  assert.equal(range(80), null);
+  assert.equal(range(100000, 1, 'CNH'), null);
+  assert.equal(range(100000, 1, 'USD', '2026-05-26'), null);
+  const r = M.journeyPlans({ ...mainlandConfig, startBank: 'comm', budgetCny: 100000 }, D, richQuotes).selected;
+  const sender = r.rows.find(row => row.key === 'sender');
+  assert.equal(sender.cny, null); assert.deepEqual(sender.rangeCny, bounds);
+  assert.equal(sender.status, '按地区定价');
+  const first = M.comparisonMetric(r, 'start');
+  assert.equal(first.lossRate, null); assert.equal(r.rankable, false);
+  assert.deepEqual(first.rows.find(row => row.key === 'sender').rangeCny, bounds);
+  const quoted = M.journeyPlans({ ...mainlandConfig, startBank: 'comm', senderFeeCny: 150 }, D, richQuotes).selected;
+  close(quoted.rows.find(row => row.key === 'sender').cny, 150);
+  assert.equal(quoted.rows.find(row => row.key === 'sender').rangeCny, undefined);
+  ledger(r, 0); ledger(quoted, 0);
+});
+
+test('choosing BOC does not silently switch a standard quote to an unverified mobile promotion', () => {
+  const config = { ...mainlandConfig, bank: 'bochk', mainlandMethod: '' };
+  const standard = M.journeyPlans(config, D, richQuotes).selected;
+  assert.equal(standard.mainlandMethod, 'swift');
+  assert.ok(standard.rows.find(row => row.key === 'sender').cny > 0);
+  const mobile = M.journeyPlans({ ...config, mainlandMethod: 'boc-mobile' }, D, richQuotes).selected;
+  const sender = mobile.rows.find(row => row.key === 'sender');
+  assert.equal(sender.cny, null); assert.equal(sender.status, '2026优惠公告未查到');
+  close(mobile.rows.find(row => row.key === 'entryInward').cny, 0);
+});
+
+test('bank selector changes preserve a compatible channel, while explicit mobile selection survives broker changes', () => {
+  const fs = require('node:fs'), path = require('node:path'), vm = require('node:vm');
+  let saved = { ...mainlandConfig, startBank: 'cmb', bank: 'hang', senderFeeCny: '99', profitUsd: 0 };
+  const context = {
+    window: { MONEY_FLOW: D, MONEY_FLOW_QUOTES: richQuotes, ChanghengMoneyFlowModel: M, addEventListener() {} },
+    document: { addEventListener() {}, querySelectorAll: () => [], getElementById: () => null },
+    localStorage: { getItem: () => JSON.stringify(saved), setItem: (_, value) => { saved = JSON.parse(value); } },
+    Date: class extends Date { constructor(...args) { super(...(args.length ? args : ['2026-10-09T04:00:00Z'])); } }
+  };
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../assets/money-flow.js'), 'utf8'), context);
+  const choose = (field, value) => context.window.ChanghengMoneyFlow.handleAction({ dataset: { action: 'money-flow-choose', field, value } });
+  choose('startBank', 'boc');
+  assert.equal(saved.mainlandMethod, 'swift');
+  assert.equal(saved.senderFeeCny, '');
+  choose('bank', 'bochk');
+  assert.equal(saved.mainlandMethod, 'swift');
+  choose('mainlandMethod', 'boc-mobile');
+  choose('broker', 'chief');
+  assert.equal(saved.mainlandMethod, 'boc-mobile');
+  choose('route', 'CNH');
+  assert.equal(saved.mainlandMethod, 'swift');
 });

@@ -42,6 +42,23 @@
     }
     return { principal: low, fee: charge(low) };
   }
+  // Regional schedules are evidence, but not a single executable quote.
+  // Keep both inclusive-budget endpoints; never silently pick the cheapest.
+  function senderFeeRange(bank, budgetCny, count, used, date, currency) {
+    const range = bank?.tariffRange;
+    if (!range?.currencies.includes(currency) || !positive(budgetCny) || !Number.isInteger(count) || count < 1 ||
+      (range.validFrom && date < range.validFrom) || (range.validUntil && date > range.validUntil)) return null;
+    const bounds = [range.lower, range.upper].map(tariff => {
+      let total = 0;
+      for (let i = 0; i < count; i++) {
+        const solved = remitPrincipal(budgetCny / count, tariff, used + i + 1, date);
+        if (!solved) return null;
+        total += solved.fee;
+      }
+      return total;
+    });
+    return bounds.every(knownFee) ? bounds : null;
+  }
   function inwardFee(bank, amountHkd, senderGroup, local = false) {
     if (local && knownFee(bank.localHkd)) return bank.localHkd;
     if (bank.sameGroupWaiver && bank.group === senderGroup) return 0;
@@ -484,7 +501,7 @@
       const linked = ['hang', 'hsbc', 'sc'].includes(start.id);
       const method = (key, fallback) => (Object.hasOwn(selections, key) ? selections[key] : config[key]) || fallback;
       const bocMobilePair = start.id === 'boc' && bank.id === 'bochk' && currency !== 'CNH';
-      const mainlandMethod = method('mainlandMethod', linked && sameGroup ? 'linked' : bocMobilePair ? 'boc-mobile' : 'swift');
+      const mainlandMethod = method('mainlandMethod', linked && sameGroup ? 'linked' : 'swift');
       const bocMobile = mainlandMethod === 'boc-mobile';
       const paymentConnect = mainlandMethod === 'payment-connect';
       if (bocMobile && !bocMobilePair) return { error: '中行手机银行向境外中行渠道须选择中国银行→同名中银香港，使用USD或HKD；人民币支付通是另一渠道。' };
@@ -494,8 +511,8 @@
       const isSelectedEntry = isSelectedStart && isSelectedBank && (!config.route || config.route === currency) && (!config.mainlandMethod || config.mainlandMethod === mainlandMethod);
       const senderOverride = own('senderFeeCny', isSelectedEntry);
       // The standard wire tariff is not the mobile group-remittance tariff.
-      // The recovered official double-waiver notice expired in 2022; retain
-      // unknowns until a current executed quote is supplied, including zero.
+      // The recovered double-waiver notice covers May–December 2025 only.
+      // The missing 2026 extension is a research gap, not proof of a charge.
       const unknownSender = senderOverride == null && (bocMobile || paymentConnect || fee(start, 0, used + 1, config.date) == null || (linked && mainlandMethod !== 'linked') || (currency === 'CNH' && !sameGroup && !start.cnhTariff && start.id !== 'abc'));
       const fullFee = mainlandMethod === 'full' ? start.fullAmountUsd * quote : 0;
       let principal = 0, sender = 0, commission = 0, telegram = 0;
@@ -536,7 +553,15 @@
         senderOverride == null ? [{ label: '汇出手续费', cny: commission }, { label: '汇出电讯费', cny: telegram }] : [{ label: '本人报价：汇出手续费及电讯费', cny: senderOverride * count }];
       if (fullFee) rows[0].items.push({ label: '全额到账附加费 · ' + (start.fullAmountUsd * count) + ' USD', cny: fullFee * count });
       if (paymentConnect) Object.assign(rows[0], { label: '跨境支付通汇出服务费', items: [{ label: senderOverride == null ? '跨境支付通本次汇出服务费' : '本人报价：跨境支付通汇出服务费', cny: senderOverride == null ? null : senderOverride * count }] });
-      if (unknownSender) missing.push(start.name + '所选渠道汇出收费');
+      if (unknownSender) {
+        const rangeCny = mainlandMethod === 'swift' ? senderFeeRange(start, budget, count, used, config.date, currency) : null;
+        const status = rangeCny ? '按地区定价' : bocMobile ? '2026优惠公告未查到' : paymentConnect ? '2026费率未查到' :
+          currency === 'CNH' && !start.cnhTariff ? '人民币资费未收录' : '该渠道资费未收录';
+        Object.assign(rows[0], { status, rangeCny });
+        if (rangeCny) rows[0].items = [{ label: '汇出手续费＋电讯费（地区定价）', cny: null, rangeCny, status }];
+        else rows[0].items.forEach(item => { if (item.cny == null) item.status = status; });
+        missing.push(start.name + '所选渠道汇出收费');
+      }
       const entryMid = currency === 'CNH' ? 1 : positive(q?.buy) ? (q.buy + q.sell) / 2 : refs[currency];
       fxRow('entryFx', currency === 'CNH' ? '人民币原币汇出（未换汇）' : '内地购汇点差',
         principal - balance * refs[currency], currency === 'CNH' ? 0 : principal - balance * entryMid, 'entry');
@@ -629,7 +654,7 @@
       if (returnMethod !== 'swift' && publishedReturnFee == null) return { error: '所选回款专用渠道与内地收款银行不匹配。' };
       add('returnWire', '香港→内地汇出费', returningFee == null ? publishedReturnFee : returningFee * refs.HKD, 'return');
       add('returnOther', '回内地中转／收款费', own('returnExtraCny', isSelectedReturn && config.exitBank === exit.id) ?? (returnMethod === 'linked' ? 0 : null), 'return');
-      if (rows[rows.length - 1].cny == null) rows[rows.length - 1].items = [{ label: '回内地中转行费', cny: null }, { label: exit.name + 'USD收款费', cny: null }];
+      if (rows[rows.length - 1].cny == null) rows[rows.length - 1].items = [{ label: '回内地中转行费', cny: null, status: '按实际汇路收费' }, { label: exit.name + 'USD收款费', cny: exit.inwardCny === 0 ? 0 : null, status: '汇入资费未收录' }];
       steps.remitUsd = balance;
       const exitPrice = own('exitPrice', config.exitBank === exit.id) ?? exit.quotes.USD?.buy;
       const preSettle = balance;
@@ -668,7 +693,7 @@
       const indicativeFx = unquotedBankFx ? bank.name + ' ' + currency + '/USD成交价（暂按参考中间价）' :
         currency !== 'USD' && fxMode !== 'bank' && ownEntryPrice == null ? 'IBKR ' + currency + '/USD成交价（暂按参考中间价）' : '';
       if (indicativeFx && !unquotedBankFx) missing.push(indicativeFx);
-      const preciseMissing = [...unpriced.flatMap(row => (row.items || [row]).map(item => item.label)),
+      const preciseMissing = [...unpriced.flatMap(row => (row.items || [row]).filter(item => item.cny == null).map(item => item.label)),
         ...missing.filter(reason => !unpriced.some(row => reason === row.label || row.key === 'sender' && reason === start.name + '所选渠道汇出收费'))];
       const requiredEligibility = [...new Set([start.required, ...(returnMethod === 'linked' ? [exit.required] : [])].filter(Boolean))];
       const eligibilityReasons = requiredEligibility.map(id => mainland.find(row => row.required === id)?.condition).filter(Boolean);
@@ -817,5 +842,5 @@
     const selected = plans.find(row => row.bank.id === config.bank) || (config.plan === 'minimum' ? plans[0] : recommended);
     return { selected, recommended, minimum: plans[0], plans, refs, sourceAmount, exit, mainland, extraCny };
   }
-  return { number, reference, fee, remitPrincipal, inwardFee, outwardFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, returnFee, quoteFresh, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
+  return { number, reference, fee, remitPrincipal, senderFeeRange, inwardFee, outwardFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, returnFee, quoteFresh, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
 }));
