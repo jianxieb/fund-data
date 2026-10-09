@@ -379,6 +379,34 @@ test('default NAV simulation excludes premium changes while retaining per-order 
   assert.equal(M.buyLocationResult(data, { ...buyConfig, exchangeBasis: 'market' }).error, undefined);
 });
 
+test('NAV removes both entry and exit premiums even when neither premium is zero', () => {
+  const navSeries = [['2020-01-01', 100], ['2021-01-01', 110]];
+  const series = [['2020-01-01', 120], ['2021-01-01', 143]]; // 20% -> 30% premium.
+  const data = buyData([{ code: 'CN', channel: 'exchange', series, navSeries, prem: 30 }]);
+  const nav = M.buyLocationResult(data, { ...buyConfig, fees: freeFees }).rows[0];
+  const market = M.buyLocationResult(data, { ...buyConfig, fees: freeFees, exchangeBasis: 'market' }).rows[0];
+  close(nav.totalReturn, 10);
+  close(market.totalReturn, (143 / 120 - 1) * 100);
+  close((1 + market.totalReturn / 100) * 1.2 / 1.3 - 1, nav.totalReturn / 100);
+  assert.notEqual(market.totalReturn - 30, nav.totalReturn);
+  data.products[0].prem = -50; // A different latest quote must not rewrite history.
+  close(M.buyLocationResult(data, { ...buyConfig, fees: freeFees }).rows[0].terminal, nav.terminal);
+});
+
+test('each monthly buy and the final sale use NAV while premiums move throughout the window', () => {
+  const days = ['2020-01-01', '2020-02-03', '2021-01-01'];
+  const navSeries = days.map((day, i) => [day, [100, 105, 110][i]]);
+  const series = days.map((day, i) => [day, [120, 157.5, 143][i]]); // 20%, 50%, 30%.
+  const data = buyData([{ code: 'CN', channel: 'exchange', series, navSeries }], days.map(day => [day, 1]));
+  const config = { ...buyConfig, plan: 'monthly', fees: { ...freeFees, exchangeMinimum: 5 } };
+  const nav = M.buyLocationResult(data, config).rows[0];
+  const market = M.buyLocationResult(data, { ...config, exchangeBasis: 'market' }).rows[0];
+  close(nav.terminal, (95 / 100 + 95 / 105 + 95 / 110) * 110 - 5);
+  close(market.terminal, (95 / 120 + 95 / 157.5 + 95 / 143) * 143 - 5);
+  close(nav.transactionCost, 20); close(nav.contributed, 300);
+  assert.equal(nav.purchases, 3);
+});
+
 test('cross-border multiselect combines within each dimension and excludes unknown premiums only when capped', () => {
   const a = { c: 'A', n: '国泰纳指', ix: '纳斯达克100', exchange: true, prem: 4 };
   const b = { ...a, c: 'B', ix: '标普500', prem: null };

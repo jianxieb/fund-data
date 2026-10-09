@@ -14,6 +14,18 @@ from screens.fund_screen import parse_js_record
 
 
 class PortfolioHistoryTests(unittest.TestCase):
+    def test_every_published_domestic_fund_and_etf_uses_nav_for_the_entire_path(self):
+        catalog = json.loads((portfolio.OUTPUT / 'catalog.js').read_text().split('=', 1)[1].strip().rstrip(';'))
+        funds = [a for a in catalog['assets'] if a['id'].startswith('fund:') and a['status'] == 'available']
+        self.assertGreater(len(funds), 100)
+        self.assertIn('fund:513100', [a['id'] for a in funds])
+        for asset in funds:
+            with self.subTest(code=asset['code']):
+                history = json.loads((portfolio.ROOT / asset['historyUrl']).read_text())
+                self.assertEqual(asset['basis'], 'provider_daily_return_or_explicit_actions')
+                self.assertEqual(history['basis'], 'provider_daily_return_or_explicit_actions')
+                self.assertEqual(history['dividends'], 'reinvested')
+
     def test_preview_annual_returns_use_full_windows_and_actual_holding_days(self):
         start, end = date(2020, 10, 5), date(2025, 10, 6)
         series = []
