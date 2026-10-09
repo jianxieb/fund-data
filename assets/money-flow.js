@@ -3,12 +3,15 @@
   const D = window.MONEY_FLOW, M = window.ChanghengMoneyFlowModel, STORE = 'changheng.money-flow.v3';
   const defaults = { budgetCny: '100000', currency: 'CNY', plan: 'recommended', startBank: '', route: '', bank: '', returnBank: '', exitBank: '',
     mainlandMethod: '', depositMethod: '', fxMode: '', returnMethod: '', comparison: 'start', count: '1', usedFreeTransfers: '0',
-    months: '12', balanceHkd: '0', returnBalanceHkd: '0', profitUsd: '0', taxableCny: '', taxRate: '20', creditCny: '0', withdrawalIndex: '1', tradeFeeUsd: '0',
+    months: '12', balanceHkd: '0', returnBalanceHkd: '0', profitUsd: '0', taxableCny: '', taxRate: '20', creditCny: '0', withdrawalIndex: '1', tradeFeeUsd: '',
+    broker: 'ibkr', buyOrders: '1', sellOrders: '1', sharePriceUsd: '100', trade25: false, chiefMonthly: false, usmartPromo: false, zaLv2: false,
+    hsbcBalanceWaiver: false, otherTurnoverHkd: '0', usedPromoOrders: '0', usmartDays: '0', useVoucher: false, voucherScope: 'commission', voucherUsd: '0', voucherOrders: '1', voucherExpiry: '',
     senderFeeCny: '', entryMiddleCny: '', entryInwardHkd: '', depositHkd: '', depositOtherCny: '', inwardHkd: '', intermediaryCny: '',
     returnWireHkd: '', returnExtraCny: '', monthlyHkd: '', returnMonthlyHkd: '', startSell: '', entryPrice: '', exitPrice: '',
     usdCny: '', usdHkd: '', usdCnh: '', openingCny: '0', extraCapitalCny: '0', annualGapPct: '0' };
   let stored = {};
   try { stored = JSON.parse(localStorage.getItem(STORE) || '{}') || {}; } catch (_) {}
+  if (!stored.broker && stored.tradeFeeUsd === '0') delete stored.tradeFeeUsd;
   let state = { ...defaults, ...stored, currency: 'CNY' }, H, timer;
   const esc = value => H.esc(value), num = (value, digits = 2) => value == null ? '—' : H.money(value, digits);
   const action = (label, act, extra = '', cls = 'btn') => H.action(label, 'money-flow-' + act, cls, extra);
@@ -22,16 +25,28 @@
   const routes = { USD: '内地换美元 → 美元入金', HKD: '内地换港币 → 再换美元', CNH: '人民币到港 → 再换美元' };
   const bankOptions = banks => banks.map(bank => [bank.id, bank.name]);
   function field(key, label, unit = '', placeholder = '') {
-    return '<label class="flow-field"><span>' + esc(label) + '</span><div class="flow-input"><input type="text" inputmode="decimal" data-money-field="' + key + '" aria-label="' + esc(label) + '" value="' + esc(state[key]) + '" placeholder="' + esc(placeholder) + '">' + (unit ? '<span>' + esc(unit) + '</span>' : '') + '</div></label>';
+    return '<label class="flow-field"><span>' + esc(label) + '</span><div class="flow-input"><input ' + (key === 'voucherExpiry' ? 'type="date"' : 'type="text" inputmode="decimal"') + ' data-money-field="' + key + '" aria-label="' + esc(label) + '" value="' + esc(state[key]) + '" placeholder="' + esc(placeholder) + '">' + (unit ? '<span>' + esc(unit) + '</span>' : '') + '</div></label>';
   }
   function select(key, label, values, value) {
     return '<label class="flow-field"><span>' + esc(label) + '</span><select data-money-select="' + key + '" aria-label="' + esc(label) + '">' + values.map(([id, text]) => '<option value="' + esc(id) + '"' + (value === id ? ' selected' : '') + '>' + esc(text) + '</option>').join('') + '</select></label>';
+  }
+  function checkbox(key, label) {
+    return '<label class="flow-offer"><input type="checkbox" data-money-check="' + key + '"' + (state[key] ? ' checked' : '') + '><span>' + esc(label) + '</span></label>';
+  }
+  function brokerOffers(provider) {
+    const offers = provider.id === 'hsbc' ? checkbox('trade25', '已获Trade25资格 · 年龄/One+及续用条件') + checkbox('hsbcBalanceWaiver', '已满足One连续3个月免月费条件') :
+      provider.id === 'chief' ? checkbox('chiefMonthly', '本次为合资格App月供 · 首500 USD优惠') :
+      provider.id === 'usmart' ? checkbox('usmartPromo', '合资格标的 · 开户180天内0.99 USD优惠') :
+      provider.id === 'za' ? checkbox('zaLv2', 'ZA Perks Lv2 · 每月前5笔平台费优惠') : '';
+    return '<div class="flow-broker-offers">' + note(esc(provider.feeShort || provider.feeText)) + offers + checkbox('useVoucher', '使用已获佣金／平台费券') +
+      (state.useVoucher ? note('券额度、适用费用与有效期在下方“交易费测算”填写') : '') + '</div>';
   }
   function entryMethods(s) {
     return [['swift', '网银／App · 普通SWIFT'], ...(['hang', 'hsbc', 'sc'].includes(s.start?.id) && s.start.group === s.bank?.group ? [['linked', '两地同名专用渠道']] : []),
       ...(s.route === 'USD' && s.start?.fullAmountUsd != null ? [['full', 'SWIFT · 全额到账（加25 USD）']] : [])];
   }
   function depositMethods(s) {
+    if (s.broker?.integratedBank) return [['internal', '本人银行USD账户直接交收']];
     return s.route === 'USD' || s.fxMode === 'bank' ? [['chats', 'USD本地CHATS转账'], ['swift', 'USD SWIFT电汇']] :
       [['fps', 'HKD／CNH转数快 FPS'], ['edda', 'HKD／CNH eDDA扣款'], ['swift', 'HKD／CNH SWIFT电汇']];
   }
@@ -78,7 +93,7 @@
         '<strong>' + esc(bank.name) + (selected ? '<span aria-hidden="true">✓</span>' : '') + '</strong>' +
         '<span class="flow-bank-coefficient">1 CNY → <b class="num">' + num(coefficient, 6) + '</b> ' + route + '</span>' +
         '<span class="flow-bank-quote-fee">汇出费 <b class="num">' + (sender == null ? '待核对' : num(sender) + ' CNY') + '</b></span>' +
-        '<span class="flow-bank-arrival">到港' + (entryMissing.length || item?.error ? '上限' : '') + ' <b class="num">' + num(item?.steps?.hongKong) + '</b> ' + route + '</span>' +
+        '<span class="flow-bank-arrival">到港' + (entryMissing.length || !item?.steps ? '上限' : '') + ' <b class="num">' + num(item?.steps?.hongKong) + '</b> ' + route + '</span>' +
         '<small>' + esc(status) + (q?.asOf ? ' · ' + esc(q.asOf) : '') + '</small></button>';
     }).join('');
     return '<div class="flow-bank-picker"><div class="flow-bank-picker-head"><h3>选择出发银行</h3>' + select('route', '换汇路径', Object.entries(routes), route) + '</div>' +
@@ -86,10 +101,11 @@
   }
   function diagram(data) {
     const r = data.selected, s = r || data.selection || {}, route = s.route || state.route || 'USD';
+    const provider = s.broker || M.selectedBroker(state, D), banks = provider.integratedBank ? D.hkBanks.filter(row => row.id === provider.integratedBank) : D.hkBanks;
     const mainland = data.mainland || D.mainlandBanks, fxModes = route === 'USD' ? [['manual', '美元原币 · 无需换汇']] :
-      [['manual', 'IBKR · 手动换美元'], ['auto', 'IBKR · 买入时自动换美元'], ['bank', '香港银行先换美元']];
-    const title = state.plan === 'custom' ? '自选往返方案' : !data.recommended ? '报价需更新 · 参考情景' : state.plan === 'minimum' ? '最低已知费用' : '最佳实践 · 美元直达';
-    let html = '<div class="flow-map-head"><div><h2>' + title + '</h2><span>' + esc(s.start?.name || '内地银行卡') + ' → ' + esc(s.bank?.name || '香港同名银行') + ' → IBKR → 内地人民币</span></div><div class="segmented" aria-label="方案选择">' +
+      [...(provider.id === 'ibkr' ? [['manual', 'IBKR · 手动换美元'], ['auto', 'IBKR · 买入时自动换美元']] : []), ['bank', '香港银行先换美元']];
+    const title = state.plan === 'custom' ? '自选往返方案' : !data.recommended ? '费用需核对 · 参考方案' : state.plan === 'minimum' ? '最低已知费用' : '最佳实践 · 美元直达';
+    let html = '<div class="flow-map-head"><div><h2>' + title + '</h2><span>' + esc(s.start?.name || '内地银行卡') + ' → ' + esc(s.bank?.name || '香港同名银行') + ' → ' + esc(provider.name) + ' → 内地人民币</span></div><div class="segmented" aria-label="方案选择">' +
       [['recommended', '最佳实践'], ['minimum', '最低已知费用']].map(([id, label]) => action(label, 'preset', 'data-value="' + id + '" aria-pressed="' + (state.plan === id) + '"', state.plan === id ? 'active' : '')).join('') + '</div></div>' +
       '<div class="flow-inlet"><span>费用情景：便利化购汇不适用于境外证券投资；资金来源和出境用途须获准。</span>' + action('适用条件', 'detail', 'data-value="mainland"', 'text-link') + '</div>' +
       (r?.requirements.length ? '<div class="flow-conditions">' + r.requirements.map(esc).join(' · ') + '</div>' : '') + bankChoices(data) +
@@ -99,20 +115,23 @@
       note('汇出主金额：<b class="num">' + num(r?.steps.mainlandForeign) + ' ' + route + '</b>') +
       note(r?.entryAsOf ? '牌价 ' + esc(r.entryAsOf) : ''), M.number(state.budgetCny), 'CNY本金', stepCost(r, ['sender', 'entryFx', 'entryMiddle']), 'entry');
     html += arrow('entry');
-    html += node('receiving', '02', '香港同名银行', select('bank', '香港入金银行', bankOptions(D.hkBanks), s.bank?.id) +
+    html += node('receiving', '02', '香港同名银行', select('bank', '香港入金银行', bankOptions(banks), s.bank?.id) +
       select('mainlandMethod', '内地 → 香港方式', entryMethods({ ...s, route }), r?.mainlandMethod || state.mainlandMethod || 'swift') +
       note('首次汇入费：<b>' + feeText(rowFee(r, 'entryInward')) + '</b>') + note('本人账户 · 同币种收款'),
       r?.steps.hongKong, route, stepCost(r, ['entryInward']), 'bank');
     html += arrow('invest');
-    html += node('funding', '03', '券商入金 · IBKR', select('depositMethod', '银行 → 券商方式', depositMethods({ ...s, route }), r?.depositMethod || state.depositMethod || (route === 'USD' ? 'chats' : 'fps')) +
+    html += node('funding', '03', '美股交易账户', select('broker', '券商／银行证券账户', bankOptions(D.brokers), provider.id) + brokerOffers(provider) +
+      select('depositMethod', '银行 → 交易账户方式', depositMethods({ ...s, route, broker: provider }), r?.depositMethod || state.depositMethod || (route === 'USD' ? 'chats' : 'fps')) +
       select('fxMode', '换成美元', fxModes, s.fxMode || 'manual') +
-      '<div class="flow-fee-pair"><span>银行转账费<b>' + feeText(rowFee(r, 'depositBank')) + '</b></span><span>IBKR入金费<b>' + feeText(rowFee(r, 'depositBroker')) + '</b></span></div>',
+      '<div class="flow-fee-pair"><span>银行转账费<b>' + feeText(rowFee(r, 'depositBank')) + '</b></span><span>交易账户入金费<b>' + feeText(rowFee(r, 'depositBroker')) + '</b></span></div>',
       r?.investUsd, 'USD可投资', stepCost(r, ['depositBank', 'depositBroker', 'depositOther', 'brokerFx', 'brokerSpread']), 'broker');
     html += '<div class="flow-turn"><div><span>买入美股 → 卖出结算 → 预留税款</span>' + action('税款 ' + num(r?.taxCny) + ' CNY ↗', 'detail', 'data-value="tax"', 'text-link') + '</div><svg viewBox="0 0 20 40" aria-hidden="true"><path d="M10 1v32m-5-6 5 6 5-6"/></svg></div>';
-    html += node('return', '04', '卖出与同名出金', select('returnBank', '香港回款银行', bankOptions(D.hkBanks), s.returning?.id) +
-      note('方式：IBKR USD电汇 → 本人银行账户') + note('卖出余额：<b class="num">' + num(r?.proceeds) + ' USD</b>') +
+    html += node('return', '04', '卖出与同名出金', select('returnBank', '香港回款银行', bankOptions(banks), s.returning?.id) +
+      note(esc(provider.withdrawalText)) + note('交易费：<b class="num">' + num(r?.trading?.totalUsd ?? M.number(state.tradeFeeUsd)) + ' USD</b>' +
+        (r?.trading?.monthlyHkd ? ' · Trade25月费合计 <b>' + num(r.trading.monthlyHkd) + ' HKD</b>' : '')) +
+      note('卖出余额：<b class="num">' + num(r?.proceeds) + ' USD</b>') +
       note('券商出金费：' + feeText(rowFee(r, 'withdraw')) + '<br>银行收款费：' + feeText(rowFee(r, 'returnInward'))),
-      r?.steps.returnUsd, 'USD税后回款', stepCost(r, ['trade', 'withdraw', 'returnInward', 'withdrawMiddle']), 'withdraw');
+      r?.steps.returnUsd, 'USD税后回款', stepCost(r, ['trade', 'brokerAccount', 'withdraw', 'returnInward', 'withdrawMiddle']), 'withdraw');
     html += arrow('repatriate', true);
     html += node('settle', '05', '汇回内地 · 结汇', select('exitBank', '内地收款／结汇银行', bankOptions(mainland), s.exit?.id) +
       select('returnMethod', '香港 → 内地方式', returnMethods(s), r?.returnMethod || state.returnMethod || 'swift') +
@@ -140,33 +159,34 @@
   function comparison(data) {
     const key = state.comparison, rows = data.alternatives?.[key] || [], r = data.selected;
     const heads = key === 'start' ? ['出发银行', '1 CNY 换算系数', '同银行换汇往返损耗', '汇出费'] :
-      key === 'bank' ? ['香港入金银行', '银行入金费', '首次汇入费', '账户费'] : ['换汇路径', '购汇及换USD价差', '换USD佣金', '汇出费'];
+      key === 'bank' ? ['香港入金银行', '银行入金费', '首次汇入费', '账户费'] : key === 'broker' ? ['交易账户', '买卖交易费', '证券月费／托管费', '券商出金费'] : ['换汇路径', '购汇及换USD价差', '换USD佣金', '汇出费'];
     const tableRows = rows.map(item => {
-      const id = key === 'start' ? item.start.id : key === 'bank' ? item.bank.id : item.route;
-      const selected = id === (key === 'start' ? r?.start.id || data.selection?.start.id : key === 'bank' ? r?.bank.id || data.selection?.bank.id : r?.route || data.selection?.route);
-      const identity = key === 'start' ? item.start.name : key === 'bank' ? item.bank.name : routes[item.route];
-      const condition = key === 'start' ? item.start.condition : key === 'bank' ? item.bank.condition : item.route === 'USD' ? '只在内地换USD，不经过港币' : item.route === 'HKD' ? '内地CNY→HKD，再在港换USD' : '内地CNY原币到港，CNH→USD';
+      const id = key === 'start' ? item.start.id : key === 'bank' ? item.bank.id : key === 'broker' ? item.broker.id : item.route;
+      const selected = id === (key === 'start' ? r?.start.id || data.selection?.start.id : key === 'bank' ? r?.bank.id || data.selection?.bank.id : key === 'broker' ? state.broker : r?.route || data.selection?.route);
+      const identity = key === 'start' ? item.start.name : key === 'bank' ? item.bank.name : key === 'broker' ? item.broker.name : routes[item.route];
+      const condition = key === 'start' ? item.start.condition : key === 'bank' ? item.bank.condition : key === 'broker' ? item.broker.feeText + (item.broker.integratedBank ? '；使用该行本人账户' : '') : item.route === 'USD' ? '只在内地换USD，不经过港币' : item.route === 'HKD' ? '内地CNY→HKD，再在港换USD' : '内地CNY原币到港，CNH→USD';
       let cells;
       if (key === 'start') {
         const q = item.start.quotes?.[item.route || r?.route || data.selection?.route || 'USD'], route = item.route || r?.route || data.selection?.route || 'USD';
         cells = '<td class="num">' + num(route === 'CNH' ? 1 : q?.sell > 0 ? 1 / q.sell : null, 6) + ' ' + route + '<small>' + esc(q?.asOf || (route === 'CNH' ? '原币汇出，不换汇' : '本行牌价未公开')) + '</small></td>' +
           '<td class="num">' + (route === 'CNH' ? '未换汇' : num(M.fxRoundTripLoss(q?.buy, q?.sell)) + '%') + '</td><td class="num">' + feeText(rowFee(item, 'sender')) + '</td>';
       } else if (key === 'bank') cells = ['depositBank', 'entryInward', 'account'].map(name => '<td class="num">' + feeText(rowFee(item, name)) + '</td>').join('');
+      else if (key === 'broker') cells = ['trade', 'brokerAccount', 'withdraw'].map(name => '<td class="num">' + feeText(rowFee(item, name)) + '</td>').join('');
       else cells = '<td class="num">' + (item.error ? '—' : num(sumFees(item, ['entryFx', 'brokerSpread']))) + '</td><td class="num">' + feeText(rowFee(item, 'brokerFx')) + '</td><td class="num">' + feeText(rowFee(item, 'sender')) + '</td>';
       const status = item.error || (!item.rankable ? '关键费用／牌价未核齐，未参与推荐' : item.missing?.length ? '未计：' + item.missing.join('、') : '费用已计齐');
       return '<tr class="' + (selected ? 'selected' : '') + '"><td><strong>' + esc(identity) + '</strong><small>' + esc(condition) + '</small></td>' + cells +
         '<td class="num">' + num(item.costCny) + '<small>' + esc(status) + '</small></td><td class="num">' + num(item.net) + (r && item.rankable ? '<small>费用差 ' + (item.costCny >= r.costCny ? '+' : '') + num(item.costCny - r.costCny) + '</small>' : '') + '</td>' +
-        '<td>' + action(selected ? '已选' : '选用', 'choose', 'data-field="' + ({ start: 'startBank', bank: 'bank', route: 'route' }[key]) + '" data-value="' + id + '"') + '</td></tr>';
+        '<td>' + action(selected ? '已选' : '选用', 'choose', 'data-field="' + ({ start: 'startBank', bank: 'bank', route: 'route', broker: 'broker' }[key]) + '" data-value="' + id + '"') + '</td></tr>';
     }).join('');
-    return '<div class="flow-comparison-head"><div><h2>银行基准与方案对比</h2><span>只切换这一环，比较全程费用与人民币到账 · 公开牌价基准</span></div><div class="segmented" aria-label="费用对比">' +
-      [['start', '出发银行'], ['bank', '香港入金银行'], ['route', '换汇路径']].map(([id, label]) => action(label, 'compare', 'data-value="' + id + '" aria-pressed="' + (key === id) + '"', key === id ? 'active' : '')).join('') + '</div></div>' +
+    return '<div class="flow-comparison-head"><div><h2>银行与交易账户对比</h2><span>' + (key === 'broker' ? '同一本金、盈亏与交易假设；银行证券服务使用对应本人账户' : '只切换这一环，比较全程费用与人民币到账 · 公开牌价基准') + '</span></div><div class="segmented" aria-label="费用对比">' +
+      [['start', '出发银行'], ['bank', '香港入金银行'], ['route', '换汇路径'], ['broker', '交易账户']].map(([id, label]) => action(label, 'compare', 'data-value="' + id + '" aria-pressed="' + (key === id) + '"', key === id ? 'active' : '')).join('') + '</div></div>' +
       '<div class="table-wrap"><table class="flow-bank-table"><thead><tr>' + [...heads, '全程已知费用', '最终人民币上限', ''].map(text => '<th>' + text + '</th>').join('') + '</tr></thead><tbody>' + tableRows + '</tbody></table></div>';
   }
   function parameters() {
     const group = (title, fields) => '<h3>' + title + '</h3><div class="flow-parameter-grid">' + fields.map(args => field(...args)).join('') + '</div>';
     return '<div class="flow-adjustments">' +
       group('汇款与账户', [['count', '内地汇出笔数', '笔'], ['usedFreeTransfers', '已用优惠免费笔数', '笔'], ['balanceHkd', '入金银行另留资产', 'HKD'], ['returnBalanceHkd', '回款银行另留资产', 'HKD']]) +
-      group('交易与税款', [['tradeFeeUsd', '买卖交易费合计', 'USD', '未报价'], ['taxRate', '境外财产转让所得税率', '%'], ['taxableCny', '已核算人民币应税所得', 'CNY', '按净利润估算'], ['creditCny', '可抵免境外税额', 'CNY'], ['withdrawalIndex', '本月第几次券商出金', '次']]) +
+      group('税款与出金', [['taxRate', '境外财产转让所得税率', '%'], ['taxableCny', '已核算人民币应税所得', 'CNY', '按净利润估算'], ['creditCny', '可抵免境外税额', 'CNY'], ['withdrawalIndex', '本月第几次券商出金', '次']]) +
       group('内地 → 香港', [['senderFeeCny', '每笔汇出手续费＋电讯费', 'CNY', '银行公开基准'], ['entryMiddleCny', '每笔内地→香港中转费', 'CNY', '未报价；免收填0'], ['entryInwardHkd', '每笔香港首次汇入费', 'HKD', '所选银行公开基准']]) +
       group('香港 → 券商 → 香港', [['depositHkd', '银行向券商转账费', 'HKD', '所选方式公开基准'], ['depositOtherCny', '入金代理／收款行费', 'CNY', '未报价；免收填0'], ['inwardHkd', '券商出金银行收款费', 'HKD', '所选银行公开基准'], ['intermediaryCny', '券商出金中转费', 'CNY', '未报价；免收填0']]) +
       group('香港 → 内地', [['returnWireHkd', '香港回内地汇出费', 'HKD', '所选方式公开基准'], ['returnExtraCny', '回内地中转／收款费', 'CNY', '未报价；免收填0'], ['monthlyHkd', '入金银行月费', 'HKD', '所选账户标准'], ['returnMonthlyHkd', '回款银行月费', 'HKD', '相同银行不重复扣']]) +
@@ -179,6 +199,14 @@
     return H.head('CROSS-BORDER MONEY', '跨境资金', '内地银行卡人民币 → 买美股 → 内地人民币消费', action('官方依据', 'detail', 'data-value="sources"')) +
       '<div class="page-money-flow"><div class="flow-controls">' + field('budgetCny', '内地人民币本金', 'CNY') + field('profitUsd', '卖出盈亏（交易费前）', 'USD') + field('months', '账户使用月数', '月') + '</div>' +
       '<section class="card flow-map-card"><div id="flow-live-diagram">' + diagram(data) + '</div><div id="flow-live-summary">' + summary(data) + '</div></section>' +
+      '<section class="card flow-trading-card"><h2>交易费测算</h2><p>按测算均价、买卖笔数及账户使用月数计算；实际交易费可直接覆盖。</p><div class="flow-parameter-grid">' +
+        field('sharePriceUsd', '测算买入均价', 'USD/股') + field('buyOrders', '买入笔数', '笔') + field('sellOrders', '卖出笔数', '笔') + field('tradeFeeUsd', '实际买卖交易费合计', 'USD', '留空按收费表计算') + '</div>' +
+        '<div class="flow-parameter-grid flow-extra-trade" data-money-when="hsbc"' + (state.broker === 'hsbc' ? '' : ' hidden') + '>' + field('otherTurnoverHkd', '各交易月其他已用成交额', 'HKD') + '</div>' +
+        '<div class="flow-parameter-grid flow-extra-trade" data-money-when="za"' + (state.broker === 'za' ? '' : ' hidden') + '>' + field('usedPromoOrders', '各交易月已用Lv2笔数', '笔') + '</div>' +
+        '<div class="flow-parameter-grid flow-extra-trade" data-money-when="usmart"' + (state.broker === 'usmart' ? '' : ' hidden') + '>' + field('usmartDays', '开户距今', '天') + '</div>' +
+        '<div class="flow-parameter-grid flow-extra-trade" data-money-when="voucher"' + (state.useVoucher ? '' : ' hidden') + '>' +
+        select('voucherScope', '券适用费用', [['commission', '仅佣金'], ['platform', '仅平台费'], ['both', '佣金及平台费']], state.voucherScope) +
+        field('voucherUsd', '券总抵扣额度', 'USD') + field('voucherOrders', '券可用订单数', '笔') + field('voucherExpiry', '券有效截止日期') + '</div></section>' +
       '<section class="card" id="flow-live-comparison">' + comparison(data) + '</section><details class="card flow-disclosure"><summary>调整手续费、账户与税款</summary>' + parameters() + '</details></div>';
   }
   function refresh() {
@@ -187,6 +215,7 @@
       const element = document.getElementById(id);
       if (element) element.innerHTML = renderer(data);
     }
+    document.querySelectorAll('[data-money-when]').forEach(element => { element.hidden = element.dataset.moneyWhen === 'voucher' ? !state.useVoucher : element.dataset.moneyWhen !== state.broker; });
     // Editable inputs live outside the updated regions, preserving the caret,
     // focus and the open adjustments panel through every recalculation.
   }
@@ -204,13 +233,25 @@
   }
   function choose(key, value) {
     lockCurrent(); const previousRoute = state.route; state[key] = value; state.plan = 'custom';
+    const provider = M.selectedBroker(state, D);
+    if (key === 'broker') {
+      clear(['tradeFeeUsd', 'entryPrice', 'depositHkd', 'depositOtherCny', 'inwardHkd', 'intermediaryCny']); state.useVoucher = false;
+      if (provider.integratedBank) {
+        state.bank = state.returnBank = provider.integratedBank;
+        clear(['entryInwardHkd', 'monthlyHkd', 'returnMonthlyHkd', 'returnWireHkd', 'returnExtraCny']);
+      }
+      state.fxMode = state.route === 'USD' ? 'manual' : provider.id === 'ibkr' ? 'manual' : 'bank';
+      state.depositMethod = provider.integratedBank ? 'internal' : state.route === 'USD' || state.fxMode === 'bank' ? 'chats' : 'fps';
+      state.voucherScope = provider.id === 'chief' || provider.id === 'usmart' || provider.id === 'za' ? 'platform' : 'commission';
+      const scopeSelect = document.querySelector('[data-money-select="voucherScope"]'); if (scopeSelect) scopeSelect.value = state.voucherScope;
+    }
     if (key === 'startBank') clear(['startSell', 'senderFeeCny', 'entryMiddleCny']);
     if (key === 'bank') clear(['entryInwardHkd', 'depositHkd', 'depositOtherCny', 'monthlyHkd', 'entryPrice']);
     if (key === 'returnBank') clear(['inwardHkd', 'intermediaryCny', 'returnWireHkd', 'returnExtraCny', 'returnMonthlyHkd']);
     if (key === 'route') {
       clear(['startSell', 'entryPrice']);
-      if (value === 'USD' || previousRoute === 'USD') state.fxMode = 'manual';
-      const methods = depositMethods({ route: value, fxMode: state.fxMode });
+      if (value === 'USD' || previousRoute === 'USD') state.fxMode = value !== 'USD' && provider.id !== 'ibkr' ? 'bank' : 'manual';
+      const methods = depositMethods({ route: value, fxMode: state.fxMode, broker: provider });
       if (!methods.some(([id]) => id === state.depositMethod)) state.depositMethod = methods[0][0];
     }
     if (key === 'fxMode') { clear(['entryPrice', 'depositHkd', 'depositOtherCny']); state.depositMethod = value === 'bank' || state.route === 'USD' ? 'chats' : 'fps'; }
@@ -220,30 +261,41 @@
     if (key === 'returnMethod') clear(['returnWireHkd', 'returnExtraCny']);
     const start = D.mainlandBanks.find(bank => bank.id === state.startBank), bank = D.hkBanks.find(bank => bank.id === state.bank),
       returning = D.hkBanks.find(bank => bank.id === state.returnBank), exit = D.mainlandBanks.find(bank => bank.id === state.exitBank);
-    if (['startBank', 'bank'].includes(key)) state.mainlandMethod = ['hang', 'hsbc', 'sc'].includes(start?.id) && start.group === bank?.group ? 'linked' : 'swift';
-    if (['startBank', 'bank', 'route'].includes(key) && !entryMethods({ start, bank, route: state.route }).some(([id]) => id === state.mainlandMethod)) state.mainlandMethod = 'swift';
-    if (['exitBank', 'returnBank'].includes(key)) state.returnMethod = returnMethods({ returning, exit }).find(([id]) => id !== 'swift')?.[0] || 'swift';
+    if (['startBank', 'bank', 'broker'].includes(key)) state.mainlandMethod = ['hang', 'hsbc', 'sc'].includes(start?.id) && start.group === bank?.group ? 'linked' : 'swift';
+    if (['startBank', 'bank', 'route', 'broker'].includes(key) && !entryMethods({ start, bank, route: state.route }).some(([id]) => id === state.mainlandMethod)) state.mainlandMethod = 'swift';
+    if (['exitBank', 'returnBank', 'broker'].includes(key)) state.returnMethod = returnMethods({ returning, exit }).find(([id]) => id !== 'swift')?.[0] || 'swift';
     save(); refresh();
   }
   function detail(key) {
     const data = result(), r = data.selected, s = r || data.selection || {};
+    const provider = s.broker || M.selectedBroker(state, D);
     const descriptions = {
       mainland: ['适用条件', '从内地银行卡人民币开始计算完整往返费用；金额测算不等于出境许可。大陆个人便利化购汇不能用于境外证券投资，同名香港账户不改变用途。跨境人民币也须符合真实用途、资本项目和银行准入规则。资金来源、获准渠道和券商接受身份必须先确认；银行优惠不代表证券投资出境资格。', ['safe', 'pbcRmb', 'scCnTerms', 'csrc']],
       entry: ['内地人民币出发', '汇出手续费、电讯费和全额到账附加费先从人民币预算内扣除，再按出发银行现汇卖出价购汇。买美股可以直接换USD，不必经过港币。人民币原币到港后为CNH，此步没有换汇点差。CNY/CNH及不同时点、银行报价的折算影响单列，正值不代表银行返还手续费。普通SWIFT中转费无统一值；农行USD全额到账附加25美元按每笔计入。指定同名优惠须匹配银行集团和账户条件。', s.start?.sources || ['bocFx', 'abc']],
       bank: ['香港同名银行', '入金银行与回款银行可以不同，月费分别算；相同银行不重复扣。最佳实践优先美元直达、无验资门槛和月费，不依赖即将结束的优惠。最低已知费用包含有条件账户，条件在图中列出。汇丰One新开非香港身份证账户不足1万港元按100港元/月；渣打中国同名优惠须优先理财及指定渠道。', ['hangOpen', 'hsbcHk', 'sc', 'scTier', 'hang', 'hsbcGlobal']],
-      broker: ['入金方式与换美元', '先在IBKR建立当次入金通知，按收款指示核对币种、银行所在地与本人账户。USD本地CHATS；HKD/CNH可用FPS或eDDA（须授权），两者均不支持USD。SWIFT另外计算电汇费。IBKR现金入金费0不代表银行、代理及收款行都免费。渣打USD本地RTGS公开费为22美元。手动换汇0.002%、最低2美元；自动换汇加价0.03%，不叠加手动佣金。银行换USD仅用该行实际报价，目前公开数据覆盖中银香港，其他行需账户询价。', ['ibFunding', 'ibDeposits', 'ibEdda', 'ibFx', 'scHk', 'bochkUsdFx']],
-      withdraw: ['卖出与券商出金', '卖出盈亏为交易费前USD；交易费另扣。税款预留后USD电汇返回香港本人银行账户。IBKR每月前两次出金免费，之后USD电汇10美元；中转及银行收款费另计。中银香港的内地中行同名优惠不能套在券商汇入上。卖出结算、入金等待期及提款余额按实际账户规则；券商不是纯汇款换汇工具。', ['ibFees', 'ibFunding', 'bochk']],
+      broker: ['美股交易账户与优惠', provider.fundingText + '。' + provider.feeText + '。' +
+        (provider.id === 'hsbc' ? '2026年18–35岁可申请Trade25；26岁以上通常须每年完成25笔交易才能续用，25岁转26岁的加入年份等有例外。36岁以上须符合One+新股票客户专门条件。每月首25万港元成交额免佣金及平台费，超额按普通美股收费；持仓或交易月份仍收25港元，监管费另计。One的三个月平均全面理财总值包括该行证券持仓，须实际满足后才勾免月费，不能把100港元银行月费与25港元Trade25月费混为一项。' :
+          provider.id === 'chief' ? '网上直属客户常规佣金为0，平台费和清算费仍计入。2026年App月供每只股票每次首500美元免佣金及平台费，超额0.15%；仅合资格月供买入，普通卖出仍按标准价。' :
+          provider.id === 'usmart' ? '按非香港身份证个人标准账户收费。0.99美元平台费要求合资格标的、成交股价至少100美元、App交易及开户180天内；已核实推广期至2026年12月31日。本测算只在有效期内应用优惠，后续卖出自动恢复常规费率。清算及监管费另计。' :
+          provider.id === 'za' ? '常规佣金已是0，不能再次把迎新免佣当作额外收益。Lv2每月前5笔港/美股交易平台费0.008美元/股、最低0.99美元；后续恢复常规费率。卖出资金直接回存款账户。随机开户奖赏不抵扣成本；已到账的费用券须自行确认范围、额度、可用笔数和有效期。' :
+          '按IBKR Pro Fixed收费；Lite免佣只适用于符合条件的美国居民。手动换汇0.002%、最低2美元；自动换汇加价0.03%，不叠加手动佣金。USD用CHATS/SWIFT，HKD/CNH可用FPS/eDDA。') +
+        '银行先换USD仅用该行实际报价；目前公开覆盖中银香港，其他行可填账户报价。其他券商不套用IBKR换汇价格及佣金。费用券只抵指定佣金/平台费，不抵税费、清算费或月费。', [...provider.sources, 'bochkUsdFx']],
+      withdraw: ['卖出与同名出金', provider.withdrawalText + '。卖出盈亏按交易费前USD输入，买卖费用与证券月费另扣。' +
+        (provider.withdrawalMethod === 'internal' ? '该行证券交易直接交收至本人USD存款账户，不叠加外部券商入金、中转或电汇收款费。' : provider.withdrawalMethod === 'cheque' ? '支票出金没有SWIFT中转行费；收款银行美元支票处理费用需另核，未报价不默认为0。需已登记美元账户；遥距开户限制可能需到分行解除。' :
+          '券商豁免提款收费不代表银行汇入或中转费也免；未公开费用按实际单据填写。') + '交易费用按起始月均分买入、账户使用最后一个月均分卖出估算；不足一月仍按一个交易月，不含中间调仓、分红、融资或ADR额外收费。长期结果使用当前常规费率基准，限期优惠只在已核实有效期内应用。', provider.sources],
       spend: ['回内地人民币消费', 'USD汇回本人内地外汇账户，用收款银行现汇买入价结汇为CNY，无需再经HKD，也不计算香港卡签账费。中银快汇网上至内地中行汇出费0，普通SWIFT汇出65港元；中转、收款行费用另核。两地同名回款须匹配银行集团。保留资金来源、交易与税务凭证并满足汇回、结汇审核。', ['bochk', 'remit', 'safe', 'hang', 'hsbcGlobal']],
       tax: ['税款按利润单列', '大陆税收居民境外财产转让所得通常20%，按人民币收入减成本及允许费用核算，不是对本金或整笔提现征税；股息另行核算。默认仅以正的净交易利润×USD/CNY参照估算，假定买卖汇率相同。有已核算人民币应税所得时优先使用，境外税抵免须有依据。不能代替真实人民币成本及汇率损益核算。', ['tax']],
       sources: ['官方报价与收费依据', '自动更新7家内地银行及中银香港牌价，各行时间分别保留。出发银行覆盖10种账户／渠道，香港银行5家。兴业公开接口无报价，恒生中国及渣打中国需账户询价；工行与交行现行个人汇出完整费用未核齐，不参与自动推荐。超过3天的报价不参与推荐。最低是已收录账户、渠道及已知费用中的低损耗方案，未报价中转费可能改变排序；券商参考价不是可执行价。每笔手续费只扣一次。人民币原币汇出没有换汇费用，CNY/CNH及不同银行、时点的参考折算影响单列；最终人民币＋已知费用＋税款＝人民币本金＋USD盈亏折合＋汇率折算影响。', Object.keys(D.sources)]
     };
     let title, content, keys;
     if (key === 'cost') {
-      title = '全程逐笔费用与汇率影响'; keys = ['ibFees', 'tax'];
+      title = '全程逐笔费用与汇率影响'; keys = [...provider.sources, 'tax'];
       content = r ? '<div class="flow-cost-detail">' + r.rows.map(row => '<div><span>' + esc(row.label) + '</span><b class="num">' + feeText(row.cny) + '</b></div>' +
         (Math.abs(row.fxImpactCny ?? 0) >= .005 ? '<div><span>' + esc(row.label) + ' · 汇率折算影响</span><b class="num">' + (row.fxImpactCny > 0 ? '+' : '') + num(row.fxImpactCny) + ' CNY</b></div>' : '')).join('') +
         '<div><span>全程已知费用</span><b class="num">' + num(r.costCny) + ' CNY</b></div><div><span>汇率折算影响（独立列示）</span><b class="num">' + (r.fxImpactCny > 0 ? '+' : '') + num(r.fxImpactCny) + ' CNY</b></div>' +
-        '<div><span>税款（独立列示）</span><b class="num">' + num(r.taxCny) + ' CNY</b></div></div>' : '<p>' + esc(data.error) + '</p>';
+        '<div><span>税款（独立列示）</span><b class="num">' + num(r.taxCny) + ' CNY</b></div></div>' +
+        (r.trading && !r.trading.overridden ? '<h3>交易费明细 · USD</h3><div class="table-wrap"><table class="flow-trade-detail"><thead><tr><th>订单</th><th>佣金</th><th>平台费</th><th>清算/监管</th><th>券抵扣</th><th>实收</th></tr></thead><tbody>' + r.trading.orders.map(order => '<tr><td>' + (order.kind === 'buy' ? '买入' : '卖出') + '<small>' + order.date + (order.offer ? ' · ' + esc(order.offer) : '') + '</small></td>' +
+          [order.commission, order.platform, order.clearing + order.sec + order.taf + order.cat, order.discount, order.feeUsd].map(value => '<td class="num">' + num(value, 4) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>' : '') : '<p>' + esc(data.error) + '</p>';
     } else if (key === 'quotes') {
       title = '本方案成交报价与费用'; keys = ['bocFx', 'cmbFx', 'icbcFx', 'ccbFx', 'abcFx', 'commFx', 'hsbcFx', 'bochkUsdFx'];
       content = '<p>留空读取官方基准；未知费用留空，确认免收才填0。报价及银行优惠绑定当前所选银行。</p><div class="flow-parameter-grid">' +
@@ -279,6 +331,7 @@
     save(); clearTimeout(timer); timer = setTimeout(refresh, 100); return true;
   }
   function handleChange(el) {
+    if (el.dataset.moneyCheck) { lockCurrent(); state[el.dataset.moneyCheck] = el.checked; state.plan = 'custom'; save(); refresh(); return true; }
     if (el.dataset.moneySelect) { choose(el.dataset.moneySelect, el.value); return true; }
     if (el.dataset.moneyField) { clearTimeout(timer); refresh(); return true; }
     return false;

@@ -412,3 +412,118 @@ test('BOC RMB cross-border tariff is priced before CNH arrives, independently of
   assert.equal(r.missing.some(reason => reason === '中国银行所选渠道汇出收费'), false);
   ledger(r);
 });
+
+const broker = id => D.brokers.find(row => row.id === id);
+const feeConfig = { date: '2026-10-09', months: 1, sharePriceUsd: 100, buyOrders: 1, sellOrders: 1, tradeFeeUsd: '' };
+const feeRefs = { CNY: 1, USD: 7, HKD: 7 / 8, CNH: 7 / 7.1 };
+test('broker fee caps preserve each provider’s minimum/cap precedence', () => {
+  close(M.cappedCharge(broker('ibkr').commission, .1, 10), .1);
+  close(M.cappedCharge(broker('chief').platform, .1, 10), .99);
+  close(M.cappedCharge(broker('usmart').platform, .1, 10), 1.88);
+  close(M.cappedCharge(broker('za').platform, .1, 10), 1.99);
+});
+test('buy commissions fit inside USD cash; regulatory fees are separate from zero commission', () => {
+  for (const id of ['ibkr', 'chief', 'usmart', 'za']) {
+    const r = M.brokerTradingFees(feeConfig, broker(id), 10000, 0, feeRefs);
+    assert.ok(!r.error); close(r.investUsd + r.buyFeeUsd, 10000);
+    close(r.totalUsd, r.buyFeeUsd + r.sellFeeUsd);
+    assert.ok(r.orders.every(order => order.feeUsd >= 0));
+    assert.ok(r.orders.find(order => order.kind === 'sell').sec > 0);
+    assert.equal(r.orders.find(order => order.kind === 'buy').sec, 0);
+    assert.equal(r.orders.find(order => order.kind === 'sell').taf, 0);
+  }
+  const ib = M.brokerTradingFees(feeConfig, broker('ibkr'), 10000, 0, feeRefs);
+  close(ib.totalUsd, 2.21 + (10000 - 1 - .0003) / 100 * .000003 * 2, 1e-7);
+  const za = M.brokerTradingFees(feeConfig, broker('za'), 10000, 0, feeRefs);
+  close(za.totalUsd, 1.99 * 2 + .21);
+});
+test('Trade25 retains HKD25 per active month, third-party fees and the monthly turnover limit', () => {
+  const ordinary = M.brokerTradingFees(feeConfig, broker('hsbc'), 10000, 0, feeRefs);
+  close(ordinary.orders[0].commission, 18); close(ordinary.monthlyHkd, 0);
+  const offer = M.brokerTradingFees({ ...feeConfig, trade25: true, months: 12 }, broker('hsbc'), 10000, 0, feeRefs);
+  close(offer.monthlyHkd, 300); close(offer.orders[0].commission, 0);
+  assert.ok(offer.orders[1].sec > 0); assert.ok(offer.orders[1].taf > 0);
+  const capped = M.brokerTradingFees({ ...feeConfig, trade25: true, otherTurnoverHkd: 100000 }, broker('hsbc'), 10000, 0, feeRefs);
+  close(capped.orders[0].commission, 0); close(capped.orders[1].commission, 18);
+  const manual = M.brokerTradingFees({ ...feeConfig, trade25: true, tradeFeeUsd: 0 }, broker('hsbc'), 10000, 0, feeRefs);
+  close(manual.totalUsd, 0); close(manual.monthlyHkd, 25);
+});
+test('Chief monthly offer applies to eligible buys, expires and leaves clearing and ordinary sale fees', () => {
+  const r = M.brokerTradingFees({ ...feeConfig, chiefMonthly: true }, broker('chief'), 500, 0, feeRefs);
+  close(r.orders[0].platform, 0); assert.ok(r.orders[0].clearing > 0);
+  close(r.orders[1].platform, .99);
+  const large = M.brokerTradingFees({ ...feeConfig, chiefMonthly: true }, broker('chief'), 1000, 0, feeRefs);
+  close(large.orders[0].platform, (large.investUsd - 500) * .0015);
+  const expired = M.brokerTradingFees({ ...feeConfig, chiefMonthly: true, date: '2027-01-01' }, broker('chief'), 500, 0, feeRefs);
+  close(expired.orders[0].platform, .99); assert.match(expired.warnings.join(' '), /过期/);
+});
+test('uSMART discount checks price, non-HK opening age, campaign dates and the sale date', () => {
+  const offer = M.brokerTradingFees({ ...feeConfig, usmartPromo: true, months: 12 }, broker('usmart'), 10000, 0, feeRefs);
+  close(offer.orders[0].platform, .99); close(offer.orders[1].platform, 1.88);
+  for (const change of [{ sharePriceUsd: 99 }, { usmartDays: 180 }, { date: '2027-01-01' }]) {
+    const r = M.brokerTradingFees({ ...feeConfig, usmartPromo: true, ...change }, broker('usmart'), 10000, 0, feeRefs);
+    close(r.orders[0].platform, 1.88);
+  }
+});
+test('ZA Lv2 shares five monthly orders across HK/US trading and both sides of the fee benchmark', () => {
+  const same = M.brokerTradingFees({ ...feeConfig, zaLv2: true, usedPromoOrders: 4 }, broker('za'), 10000, 0, feeRefs);
+  close(same.orders[0].platform, .99); close(same.orders[1].platform, 1.99);
+  const separate = M.brokerTradingFees({ ...feeConfig, zaLv2: true, usedPromoOrders: 4, months: 2 }, broker('za'), 10000, 0, feeRefs);
+  close(separate.orders[0].platform, .99); close(separate.orders[1].platform, .99);
+});
+test('welcome vouchers cannot double-discount zero commission or pay regulatory fees; scope and expiry apply', () => {
+  const voucher = { ...feeConfig, useVoucher: true, voucherUsd: 100, voucherOrders: 2, voucherExpiry: '2026-12-31' };
+  const commissionOnly = M.brokerTradingFees({ ...voucher, voucherScope: 'commission' }, broker('za'), 10000, 0, feeRefs);
+  close(commissionOnly.discountUsd, 0); close(commissionOnly.totalUsd, 4.19);
+  const platform = M.brokerTradingFees({ ...voucher, voucherScope: 'platform' }, broker('za'), 10000, 0, feeRefs);
+  close(platform.discountUsd, 3.98); close(platform.totalUsd, .21);
+  const limited = M.brokerTradingFees({ ...voucher, voucherScope: 'platform', voucherUsd: 1 }, broker('za'), 10000, 0, feeRefs);
+  close(limited.discountUsd, 1);
+  const expired = M.brokerTradingFees({ ...voucher, voucherScope: 'platform', months: 12 }, broker('za'), 10000, 0, feeRefs);
+  close(expired.orders[1].discount, 0);
+  assert.match(M.brokerTradingFees({ ...voucher, voucherExpiry: '' }, broker('za'), 10000, 0, feeRefs).error, /截止日期/);
+});
+test('the five broker journeys reconcile RMB and retain the exact deposit and withdrawal method', () => {
+  for (const provider of D.brokers) {
+    const input = { ...mainlandConfig, broker: provider.id, tradeFeeUsd: '', buyOrders: 3, sellOrders: 2, sharePriceUsd: 100,
+      trade25: true, hsbcBalanceWaiver: true, chiefMonthly: true, usmartPromo: true, zaLv2: true, months: 12,
+      profitUsd: 1000, inwardHkd: 0, intermediaryCny: 0, returnExtraCny: 0 };
+    const r = M.journeyPlans(input, D, richQuotes).selected;
+    assert.ok(r, provider.id); assert.equal(r.broker.id, provider.id);
+    close(r.net + r.costCny + r.taxCny, input.budgetCny + input.profitUsd * r.refs.USD + r.fxImpactCny);
+    assert.ok(r.rows.every(row => row.cny == null || row.cny >= 0));
+    if (provider.integratedBank) {
+      assert.equal(r.bank.id, provider.integratedBank); assert.equal(r.returning.id, provider.integratedBank);
+      assert.equal(r.depositMethod, 'internal');
+      for (const key of ['depositBank', 'depositOther', 'returnInward', 'withdrawMiddle', 'withdraw']) close(r.rows.find(row => row.key === key).cny, 0);
+    }
+    if (provider.id === 'hsbc') close(r.taxCny, Math.max(0, input.profitUsd - r.trading.totalUsd) * r.refs.USD * .2);
+    if (provider.id === 'chief') close(r.rows.find(row => row.key === 'withdrawMiddle').cny, 0);
+  }
+});
+
+test('downstream FX or voucher gaps do not erase the first mainland-bank arrival quote', () => {
+  const quoteGap = M.journeyPlans({ ...mainlandConfig, broker: 'za', route: 'CNH', fxMode: 'bank', tradeFeeUsd: '' }, D, richQuotes);
+  assert.match(quoteGap.error, /换USD的成交报价/);
+  assert.ok(quoteGap.alternatives.start.find(row => row.start.id === 'boc').steps.hongKong > 0);
+  const voucherGap = M.journeyPlans({ ...mainlandConfig, broker: 'za', useVoucher: true, voucherExpiry: '', tradeFeeUsd: '' }, D, richQuotes);
+  assert.match(voucherGap.error, /截止日期/);
+  assert.ok(voucherGap.alternatives.start.find(row => row.start.id === 'boc').steps.hongKong > 0);
+});
+test('broker comparison keeps account-specific vouchers and manual trading fees on that broker', () => {
+  const r = M.journeyPlans({ ...mainlandConfig, broker: 'za', tradeFeeUsd: '', useVoucher: true, voucherScope: 'platform', voucherUsd: 100,
+    voucherOrders: 2, voucherExpiry: '2026-12-31', months: 1 }, D, richQuotes);
+  assert.ok(r.selected.trading.discountUsd > 0);
+  for (const row of r.alternatives.broker.filter(row => row.broker.id !== 'za' && !row.error)) close(row.trading.discountUsd, 0);
+  const manual = M.journeyPlans({ ...mainlandConfig, broker: 'za', tradeFeeUsd: 0 }, D, richQuotes);
+  close(manual.selected.trading.totalUsd, 0);
+  assert.ok(manual.alternatives.broker.find(row => row.broker.id === 'ibkr').trading.totalUsd > 0);
+});
+test('other brokers never inherit IBKR FX commissions; Chief USD cheque bank processing remains unpriced', () => {
+  const rejected = M.journeyPlans({ ...mainlandConfig, broker: 'chief', route: 'CNH', fxMode: 'manual', tradeFeeUsd: '' }, D, richQuotes);
+  assert.match(rejected.error, /换汇成交价未公开/);
+  const bank = M.journeyPlans({ ...mainlandConfig, broker: 'chief', bank: 'bochk', route: 'CNH', fxMode: 'bank', tradeFeeUsd: '' }, D, richQuotes).selected;
+  assert.ok(bank); close(bank.rows.find(row => row.key === 'brokerFx').cny, 0);
+  const cheque = M.journeyPlans({ ...mainlandConfig, broker: 'chief', tradeFeeUsd: '', inwardHkd: '' }, D, richQuotes).selected;
+  assert.ok(cheque.missing.includes('收款银行USD支票处理费')); close(cheque.rows.find(row => row.key === 'withdrawMiddle').cny, 0);
+});
