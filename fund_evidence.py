@@ -38,5 +38,9 @@ def fund_actions(code, end, archive=None, rows=None):
         'sourceSha256': record.get('sourceSha256') if record else None,
         'historicalEvidence': evidence,
         'verifiedEvents': record.get('verifiedEvents', []) if record else [],
+        # Report-period evidence is descriptive, never an extra cash-flow event.
+        # Do not show a report period that ends after the requested snapshot.
+        'verifiedDistributionPeriods': [p for p in (record or {}).get('verifiedDistributionPeriods', [])
+                                        if p.get('code') == code and p.get('end', '') <= end],
         'returnTreatment': 'reinvested_in_total_return',
     }

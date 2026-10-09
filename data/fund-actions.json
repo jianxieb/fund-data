@@ -243,7 +243,30 @@
       "dividends": {},
       "splits": {
         "2022-01-13": 5.0
-      }
+      },
+      "verifiedDistributionPeriods": [
+        {
+          "code": "513100",
+          "start": "2023-01-01",
+          "end": "2025-12-31",
+          "cashDistributed": 0,
+          "sourceTitle": "2025年年度报告",
+          "section": "3.3",
+          "verifiedAt": "2026-10-09",
+          "sourceUrl": "https://st.gtfund.com/report_root/2026/03/纳斯达克100交易型开放式指数证券投资基金2025年年度报告.pdf"
+        },
+        {
+          "code": "513100",
+          "start": "2026-01-01",
+          "end": "2026-06-30",
+          "cashDistributed": 0,
+          "underlyingDividends": 47104790.09,
+          "sourceTitle": "2026年中期报告",
+          "section": "6.4.11、6.4.7.14",
+          "verifiedAt": "2026-10-09",
+          "sourceUrl": "https://st.gtfund.com/report_root/2026/08/纳斯达克100交易型开放式指数证券投资基金2026年中期报告.pdf"
+        }
+      ]
     },
     "159941": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_159941.html",
