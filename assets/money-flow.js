@@ -56,6 +56,34 @@
   function arrow(cls, reverse = false) {
     return '<div class="flow-connector ' + cls + (reverse ? ' reverse' : '') + '" aria-hidden="true"><svg viewBox="0 0 38 18"><path d="M2 9h30m-6-5 6 5-6 5"/></svg></div>';
   }
+  function bankChoices(data) {
+    const r = data.selected, s = r || data.selection || {}, route = s.route || 'USD';
+    const choices = (data.mainland || D.mainlandBanks).map(bank => {
+      const item = data.alternatives?.start?.find(row => row.start.id === bank.id), q = bank.quotes?.[route];
+      const selected = bank.id === s.start?.id, price = route === 'CNH' ? 1 : selected ? r?.startSell ?? q?.sell : q?.sell;
+      const coefficient = price > 0 ? 1 / price : null;
+      let sender = rowFee(item, 'sender');
+      // An unavailable exchange quote does not invalidate an independently
+      // published remittance tariff, such as CIB's free-transfer allowance.
+      const linked = ['hang', 'hsbc', 'sc'].includes(bank.id), sameGroup = bank.group === s.bank?.group;
+      if (sender == null && item?.error && (!linked || sameGroup) && (route !== 'CNH' || sameGroup || bank.cnhTariff || bank.id === 'abc')) {
+        const count = M.number(state.count), used = M.number(state.usedFreeTransfers) || 0;
+        const tariffRows = count > 0 && Number.isInteger(count) ? Array.from({ length: Math.min(120, count) }, (_, i) => M.remitPrincipal(M.number(state.budgetCny) / count, bank, used + i + 1, today())) : [];
+        if (tariffRows.length && tariffRows.every(Boolean)) sender = tariffRows.reduce((sum, row) => sum + row.fee, 0);
+      }
+      const entryMissing = item?.rows?.filter(row => ['sender', 'entryMiddle', 'entryInward'].includes(row.key) && row.cny == null) || [];
+      const fresh = route === 'CNH' || (q && M.quoteFresh(q, today()));
+      const status = coefficient == null ? '本行' + route + '牌价未公开' : !fresh ? '牌价已过期' : sender == null ? '汇出收费需核对' : entryMissing.length ? '中转费按实收取' : '已计到港费用';
+      return '<button type="button" class="flow-bank-choice' + (selected ? ' selected' : '') + '" data-action="money-flow-choose" data-field="startBank" data-value="' + bank.id + '" aria-pressed="' + selected + '">' +
+        '<strong>' + esc(bank.name) + (selected ? '<span aria-hidden="true">✓</span>' : '') + '</strong>' +
+        '<span class="flow-bank-coefficient">1 CNY → <b class="num">' + num(coefficient, 6) + '</b> ' + route + '</span>' +
+        '<span class="flow-bank-quote-fee">汇出费 <b class="num">' + (sender == null ? '待核对' : num(sender) + ' CNY') + '</b></span>' +
+        '<span class="flow-bank-arrival">到港' + (entryMissing.length || item?.error ? '上限' : '') + ' <b class="num">' + num(item?.steps?.hongKong) + '</b> ' + route + '</span>' +
+        '<small>' + esc(status) + (q?.asOf ? ' · ' + esc(q.asOf) : '') + '</small></button>';
+    }).join('');
+    return '<div class="flow-bank-picker"><div class="flow-bank-picker-head"><h3>选择出发银行</h3>' + select('route', '换汇路径', Object.entries(routes), route) + '</div>' +
+      '<div class="flow-bank-choices" role="group" aria-label="出发银行汇率与到港系数">' + choices + '</div></div>';
+  }
   function diagram(data) {
     const r = data.selected, s = r || data.selection || {}, route = s.route || state.route || 'USD';
     const mainland = data.mainland || D.mainlandBanks, fxModes = route === 'USD' ? [['manual', '美元原币 · 无需换汇']] :
@@ -64,10 +92,9 @@
     let html = '<div class="flow-map-head"><div><h2>' + title + '</h2><span>' + esc(s.start?.name || '内地银行卡') + ' → ' + esc(s.bank?.name || '香港同名银行') + ' → IBKR → 内地人民币</span></div><div class="segmented" aria-label="方案选择">' +
       [['recommended', '最佳实践'], ['minimum', '最低已知费用']].map(([id, label]) => action(label, 'preset', 'data-value="' + id + '" aria-pressed="' + (state.plan === id) + '"', state.plan === id ? 'active' : '')).join('') + '</div></div>' +
       '<div class="flow-inlet"><span>费用情景：便利化购汇不适用于境外证券投资；资金来源和出境用途须获准。</span>' + action('适用条件', 'detail', 'data-value="mainland"', 'text-link') + '</div>' +
-      (r?.requirements.length ? '<div class="flow-conditions">' + r.requirements.map(esc).join(' · ') + '</div>' : '') +
+      (r?.requirements.length ? '<div class="flow-conditions">' + r.requirements.map(esc).join(' · ') + '</div>' : '') + bankChoices(data) +
       '<div class="flow-route" role="group" aria-label="内地人民币到美股再到人民币消费的完整资金图">';
-    html += node('start', '01', '内地银行卡人民币', select('startBank', '出发银行', bankOptions(mainland), s.start?.id) +
-      select('route', '换汇路径', Object.entries(routes), route) +
+    html += node('start', '01', '内地银行卡人民币', note('<strong>' + esc(s.start?.name || '请选择出发银行') + '</strong>') + note(esc(routes[route])) +
       note(route === 'CNH' ? 'CNY原币汇出 · 到港为CNH' : '现汇卖出：1 ' + route + ' = <b class="num">' + num(r?.startSell, 5) + '</b> CNY') +
       note('汇出主金额：<b class="num">' + num(r?.steps.mainlandForeign) + ' ' + route + '</b>') +
       note(r?.entryAsOf ? '牌价 ' + esc(r.entryAsOf) : ''), M.number(state.budgetCny), 'CNY本金', stepCost(r, ['sender', 'entryFx', 'entryMiddle']), 'entry');
@@ -112,7 +139,7 @@
   }
   function comparison(data) {
     const key = state.comparison, rows = data.alternatives?.[key] || [], r = data.selected;
-    const heads = key === 'start' ? ['出发银行', 'USD现汇卖出', 'USD现汇买入', '汇出费'] :
+    const heads = key === 'start' ? ['出发银行', '1 CNY 换算系数', '同银行换汇往返损耗', '汇出费'] :
       key === 'bank' ? ['香港入金银行', '银行入金费', '首次汇入费', '账户费'] : ['换汇路径', '购汇及换USD价差', '换USD佣金', '汇出费'];
     const tableRows = rows.map(item => {
       const id = key === 'start' ? item.start.id : key === 'bank' ? item.bank.id : item.route;
@@ -121,18 +148,19 @@
       const condition = key === 'start' ? item.start.condition : key === 'bank' ? item.bank.condition : item.route === 'USD' ? '只在内地换USD，不经过港币' : item.route === 'HKD' ? '内地CNY→HKD，再在港换USD' : '内地CNY原币到港，CNH→USD';
       let cells;
       if (key === 'start') {
-        const q = item.start.quotes?.USD;
-        cells = '<td class="num">' + num(q?.sell, 5) + '<small>' + esc(q?.asOf || '需该行App询价') + '</small></td><td class="num">' + num(q?.buy, 5) + '</td><td class="num">' + feeText(rowFee(item, 'sender')) + '</td>';
+        const q = item.start.quotes?.[item.route || r?.route || data.selection?.route || 'USD'], route = item.route || r?.route || data.selection?.route || 'USD';
+        cells = '<td class="num">' + num(route === 'CNH' ? 1 : q?.sell > 0 ? 1 / q.sell : null, 6) + ' ' + route + '<small>' + esc(q?.asOf || (route === 'CNH' ? '原币汇出，不换汇' : '本行牌价未公开')) + '</small></td>' +
+          '<td class="num">' + (route === 'CNH' ? '未换汇' : num(M.fxRoundTripLoss(q?.buy, q?.sell)) + '%') + '</td><td class="num">' + feeText(rowFee(item, 'sender')) + '</td>';
       } else if (key === 'bank') cells = ['depositBank', 'entryInward', 'account'].map(name => '<td class="num">' + feeText(rowFee(item, name)) + '</td>').join('');
       else cells = '<td class="num">' + (item.error ? '—' : num(sumFees(item, ['entryFx', 'brokerSpread']))) + '</td><td class="num">' + feeText(rowFee(item, 'brokerFx')) + '</td><td class="num">' + feeText(rowFee(item, 'sender')) + '</td>';
-      const status = item.error || (!item.rankable ? '关键费用／牌价未核齐，未参与推荐' : item.missing?.length ? item.missing.length + '项费用未报价' : '费用已计齐');
+      const status = item.error || (!item.rankable ? '关键费用／牌价未核齐，未参与推荐' : item.missing?.length ? '未计：' + item.missing.join('、') : '费用已计齐');
       return '<tr class="' + (selected ? 'selected' : '') + '"><td><strong>' + esc(identity) + '</strong><small>' + esc(condition) + '</small></td>' + cells +
-        '<td class="num">' + num(item.costCny) + '<small>' + esc(status) + '</small></td><td class="num">' + num(item.net) + (r && item.rankable ? '<small>损耗差 ' + (item.costCny >= r.costCny ? '+' : '') + num(item.costCny - r.costCny) + '</small>' : '') + '</td>' +
+        '<td class="num">' + num(item.costCny) + '<small>' + esc(status) + '</small></td><td class="num">' + num(item.net) + (r && item.rankable ? '<small>费用差 ' + (item.costCny >= r.costCny ? '+' : '') + num(item.costCny - r.costCny) + '</small>' : '') + '</td>' +
         '<td>' + action(selected ? '已选' : '选用', 'choose', 'data-field="' + ({ start: 'startBank', bank: 'bank', route: 'route' }[key]) + '" data-value="' + id + '"') + '</td></tr>';
     }).join('');
-    return '<div class="flow-comparison-head"><div><h2>银行基准与方案对比</h2><span>只切换这一环，比较全程已知损耗 · 金额为CNY，汇率为每1 USD</span></div><div class="segmented" aria-label="费用对比">' +
+    return '<div class="flow-comparison-head"><div><h2>银行基准与方案对比</h2><span>只切换这一环，比较全程费用与人民币到账 · 公开牌价基准</span></div><div class="segmented" aria-label="费用对比">' +
       [['start', '出发银行'], ['bank', '香港入金银行'], ['route', '换汇路径']].map(([id, label]) => action(label, 'compare', 'data-value="' + id + '" aria-pressed="' + (key === id) + '"', key === id ? 'active' : '')).join('') + '</div></div>' +
-      '<div class="table-wrap"><table class="flow-bank-table"><thead><tr>' + [...heads, '全程已知损耗', '最终人民币上限', ''].map(text => '<th>' + text + '</th>').join('') + '</tr></thead><tbody>' + tableRows + '</tbody></table></div>';
+      '<div class="table-wrap"><table class="flow-bank-table"><thead><tr>' + [...heads, '全程已知费用', '最终人民币上限', ''].map(text => '<th>' + text + '</th>').join('') + '</tr></thead><tbody>' + tableRows + '</tbody></table></div>';
   }
   function parameters() {
     const group = (title, fields) => '<h3>' + title + '</h3><div class="flow-parameter-grid">' + fields.map(args => field(...args)).join('') + '</div>';

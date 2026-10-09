@@ -63,7 +63,7 @@
       bochkCard: { name: '中银香港 · 多货币扣账设置', url: 'https://www.bochk.com/dam/more/bocdebitcard/card/sc.html' }
     },
     mainlandBanks: [
-      { id: 'boc', name: '中国银行', group: 'boc', rate: 0.001, minimum: 50, maximum: 260, telegram: 80, feeText: '1‰，50–260元 + 80元电讯费', condition: '公开电子银行标准价；App优惠另填', sources: ['boc', 'bocFx'], quoteSource: 'bocFx' },
+      { id: 'boc', name: '中国银行', group: 'boc', rate: 0.001, minimum: 50, maximum: 260, telegram: 80, cnhTariff: true, feeText: '1‰，50–260元 + 80元电讯费', condition: '公开电子银行跨境电汇标准价；App优惠另填', sources: ['boc', 'bocFx'], quoteSource: 'bocFx' },
       { id: 'cmb', name: '招商银行', group: 'cmb', rate: 0.001, minimum: 100, maximum: 1000, telegram: 150, feeText: '1‰，100–1,000元 + 150元电讯费', condition: '专业版标准价；不等同手机银行优惠', sources: ['cmb', 'cmbFx'], quoteSource: 'cmbFx' },
       { id: 'icbc', name: '工商银行', group: 'icbc', rate: null, minimum: null, maximum: null, telegram: null, feeText: '现行汇出收费需客户确认页报价', condition: '旧收费页无法核对，保留官方牌价；汇出费须按本人App确认', sources: ['icbc', 'icbcFx'], quoteSource: 'icbcFx' },
       { id: 'ccb', name: '建设银行', group: 'ccb', rate: 0.001, minimum: 20, maximum: 300, telegram: 80, feeText: '网银1‰，20–300元 + 80元电报费', condition: '个人网银公开标准价；实际优惠可覆盖', sources: ['ccb', 'ccbFx'], quoteSource: 'ccbFx' },

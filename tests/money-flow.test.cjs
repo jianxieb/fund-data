@@ -402,3 +402,13 @@ test('bank spread uses its own bid/ask; another bank midpoint cannot become a ne
   close(entry.fxImpactCny, r.steps.mainlandForeign * .04);
   assert.ok(r.rows.every(row => row.cny == null || row.cny >= 0)); ledger(r);
 });
+
+test('BOC RMB cross-border tariff is priced before CNH arrives, independently of currency valuation', () => {
+  const p = M.journeyPlans({ ...mainlandConfig, route: 'CNH', depositMethod: 'fps', profitUsd: 1000 }, D, richQuotes);
+  const r = p.selected;
+  close(r.rows.find(row => row.key === 'sender').cny, (70000 - 80) / 1.001 * .001 + 80);
+  assert.equal(r.rows.find(row => row.key === 'entryFx').cny, 0);
+  close(r.steps.mainlandForeign + r.rows.find(row => row.key === 'sender').cny, 70000);
+  assert.equal(r.missing.some(reason => reason === '中国银行所选渠道汇出收费'), false);
+  ledger(r);
+});
