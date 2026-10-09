@@ -17,7 +17,7 @@
   const save = () => { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (_) {} };
   const today = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Shanghai' });
   const result = () => M.journeyPlans({ ...state, date: today() }, D, window.MONEY_FLOW_QUOTES || {});
-  const bankName = id => ({ boc: '中国银行', cmb: '招商银行' }[id] || id);
+  const bankName = id => D.mainlandBanks.find(bank => bank.id === id)?.name || id;
   const feeValue = (r, label) => r?.rows.find(row => row.label === label)?.cny;
   const feeText = (r, label) => { const v = feeValue(r, label); return v == null ? '费用未报价' : num(v) + ' CNY'; };
   function field(key, label, unit = '', placeholder = '') {
