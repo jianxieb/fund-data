@@ -829,11 +829,11 @@
   function openModal(html) {
     const d = $('#dialog');
     if (!d.open) lastFocus = document.activeElement;
-    d.innerHTML = html;
+    d.innerHTML = action('×', 'close', 'close', 'aria-label="关闭弹窗"') + '<div class="dialog-content">' + html + '</div>';
     if (!d.open) d.showModal();
-    d.scrollTop = 0;
+    d.querySelector('.dialog-content').scrollTop = 0;
   }
-  function modalTitle(title, sub = '') { return '<div class="detail-title"><div><h2 id="dialog-title">' + title + '</h2><p class="detail-sub">' + sub + '</p></div>' + action('×', 'close', 'close', 'aria-label="关闭弹窗"') + '</div>'; }
+  function modalTitle(title, sub = '') { return '<div class="detail-title"><div><h2 id="dialog-title">' + title + '</h2><p class="detail-sub">' + sub + '</p></div></div>'; }
   function detailGrid(items) { return '<dl class="detail-grid">' + items.map(([k, v]) => '<div><dt>' + k + '</dt><dd>' + v + '</dd></div>').join('') + '</dl>'; }
   function returnTable(r, record) {
     return '<div class="table-wrap"><table><thead><tr>' + years.map(y => '<th>' + periodHead(y) + '</th>').join('') + '</tr></thead><tbody><tr>' + years.map((y, i) => '<td>' + pc(ret(r && r[i], y, record)) + '</td>').join('') + '</tr></tbody></table></div>';
