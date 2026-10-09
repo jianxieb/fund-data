@@ -238,13 +238,145 @@ test('customer fee override applies only to selected bank; asset principal is no
   close(p.selected.net + p.selected.costCny, journey.budgetCny);
 });
 
-test('mainland RMB investment gate remains visible, with no fictitious broker payout', () => {
+test('mainland RMB has a complete tariff scenario while keeping the investment purpose restriction explicit', () => {
   const p = M.journeyPlans({ ...journey, currency: 'CNY' }, D, publicQuotes);
-  assert.equal(p.blocked, true); assert.equal(p.selected, undefined); assert.deepEqual(p.plans, []);
-  assert.match(p.error, /不能用于境外证券投资/);
+  assert.equal(p.origin, 'mainland'); assert.equal(p.permission.allowed, false);
+  assert.match(p.permission.reason, /不能用于境外证券投资/);
+  assert.equal(p.selected.origin, 'mainland'); assert.equal(p.selected.sourceAmount, journey.budgetCny);
+  assert.equal(p.selected.route, 'USD'); assert.ok(p.selected.investUsd > 0);
+  close(p.selected.net + p.selected.costCny + p.selected.taxCny, journey.budgetCny);
   assert.match(M.journeyPlans({ ...journey, budgetCny: -1 }, D, publicQuotes).error, /正数/);
   assert.match(M.journeyPlans({ ...journey, tradeFeeUsd: -1 }, D, publicQuotes).error, /非负数/);
   assert.match(M.journeyPlans({ ...journey, returnWireHkd: -1 }, D, publicQuotes).error, /非负数/);
   assert.match(M.journeyPlans({ ...journey, entryPrice: 'invalid' }, D, publicQuotes).error, /有效正数/);
   assert.match(M.journeyPlans({ ...journey, usdCny: 0 }, D, publicQuotes).error, /有效正数/);
+});
+
+const mainlandConfig = { ...journey, currency: 'CNY', startBank: 'boc', bank: 'hang', returnBank: 'hang', exitBank: 'boc',
+  route: 'USD', fxMode: 'manual', mainlandMethod: 'swift', depositMethod: 'chats', returnMethod: 'swift',
+  entryMiddleCny: 0, depositOtherCny: 0 };
+const richQuotes = structuredClone(publicQuotes);
+richQuotes.banks.boc.quotes.HKD = { buy: .873, sell: .878, asOf: '2026-10-08 20:00:00' };
+richQuotes.banks.abc = { quotes: { USD: { buy: 6.99, sell: 7.01, asOf: '2026-10-08 20:00:00' } } };
+richQuotes.banks.comm = { quotes: { USD: { buy: 7, sell: 7.01, asOf: '2026-10-08 20:00:00' } } };
+const ledger = r => {
+  const sum = r.rows.reduce((total, row) => total + (row.cny ?? 0), 0);
+  close(r.costCny, sum);
+  close(r.net + sum + r.taxCny, r.budgetCny + r.refs.USD * 1000);
+};
+
+test('every mainland route reconciles actual RMB principal, FX, fees and profit exactly once', () => {
+  for (const route of ['USD', 'HKD', 'CNH']) for (const fxMode of route === 'USD' ? ['manual'] : ['manual', 'auto', 'bank']) {
+    const p = M.journeyPlans({ ...mainlandConfig, bank: 'bochk', returnBank: 'bochk', route, fxMode,
+      profitUsd: 1000, tradeFeeUsd: 8, depositMethod: route === 'USD' || fxMode === 'bank' ? 'chats' : 'fps',
+      senderFeeCny: 30, entryInwardHkd: 0, inwardHkd: 60, returnWireHkd: 65, openingCny: 100,
+      extraCapitalCny: 50000, annualGapPct: 2 }, D, richQuotes);
+    assert.equal(p.error, undefined); ledger(p.selected);
+    close(p.selected.taxCny, 992 * 7 * .2);
+    if (route === 'USD' || fxMode === 'bank') close(p.selected.brokerFx.commissionUsd, 0);
+  }
+});
+
+test('sender fees are solved inside the budget; multiple transfers pay the minimum per transfer', () => {
+  const r = M.journeyPlans({ ...mainlandConfig, count: 3, profitUsd: 1000 }, D, richQuotes).selected;
+  const sender = r.rows.find(row => row.key === 'sender').cny;
+  close(sender, 3 * 130);
+  close(r.steps.mainlandForeign, (70000 - sender) / 7.01); ledger(r);
+});
+
+test('ABC full-amount USD fee is per transfer and never charged twice', () => {
+  for (const senderFeeCny of ['', 30]) {
+    const r = M.journeyPlans({ ...mainlandConfig, startBank: 'abc', count: 2, mainlandMethod: 'full',
+      senderFeeCny, profitUsd: 1000 }, D, richQuotes).selected;
+    const sender = r.rows.find(row => row.key === 'sender').cny;
+    const principal = r.steps.mainlandForeign * 7.01;
+    const baseFee = senderFeeCny === '' ? 2 * (principal / 2 * .001 + 80) : 60;
+    close(sender, baseFee + 2 * 25 * 7.01);
+    close(sender + principal, 70000); close(r.rows.find(row => row.key === 'entryMiddle').cny, 0); ledger(r);
+  }
+});
+
+test('unknown bank and correspondent fees remain unknown, and incomplete sender tariffs cannot win', () => {
+  const p = M.journeyPlans({ ...mainlandConfig, startBank: 'comm', entryMiddleCny: '', depositOtherCny: '', intermediaryCny: '', returnExtraCny: '' }, D, richQuotes);
+  assert.equal(p.selected.rankable, false); assert.equal(p.selected.complete, false);
+  for (const key of ['sender', 'entryMiddle', 'depositOther', 'withdrawMiddle', 'returnOther']) assert.equal(p.selected.rows.find(row => row.key === key).cny, null);
+  assert.ok(p.plans.every(row => !['comm', 'icbc'].includes(row.start.id)));
+  assert.notEqual(p.recommended.start.id, 'comm'); assert.notEqual(p.minimum.start.id, 'comm');
+  assert.equal(M.fee(D.mainlandBanks.find(bank => bank.id === 'comm'), 100000), null);
+});
+
+test('USD bank deposits distinguish CHATS, SWIFT and unsupported FPS/eDDA', () => {
+  const refs = { USD: 7, HKD: 7 / 8 };
+  close(M.depositFee(hk('sc'), 'chats', 'USD', refs, '2026-10-08'), 22 * 7);
+  close(M.depositFee(hk('hang'), 'swift', 'USD', refs, '2026-10-08'), 65 * 7 / 8);
+  for (const method of ['fps', 'edda']) assert.equal(M.depositFee(hk('hang'), method, 'USD', refs, '2026-10-08'), null);
+  const p = M.journeyPlans({ ...mainlandConfig, bank: 'sc', profitUsd: 1000 }, D, richQuotes);
+  close(p.selected.rows.find(row => row.key === 'depositBank').cny, 154);
+  close(p.selected.rows.find(row => row.key === 'depositBroker').cny, 0); ledger(p.selected);
+  assert.match(M.journeyPlans({ ...mainlandConfig, depositMethod: 'fps' }, D, richQuotes).error, /不支持USD/);
+});
+
+test('BOCHK fast return only waives its own matching route, not broker inward or other bank costs', () => {
+  const r = M.journeyPlans({ ...mainlandConfig, bank: 'bochk', returnBank: 'bochk', returnMethod: 'bochk-fast',
+    inwardHkd: '', returnExtraCny: '', profitUsd: 1000 }, D, richQuotes).selected;
+  close(r.rows.find(row => row.key === 'entryInward').cny, 0);
+  close(r.rows.find(row => row.key === 'returnWire').cny, 0);
+  close(r.rows.find(row => row.key === 'returnInward').cny, 60 * 7 / 8);
+  assert.equal(r.rows.find(row => row.key === 'returnOther').cny, null); ledger(r);
+  assert.match(M.journeyPlans({ ...mainlandConfig, bank: 'bochk', returnBank: 'bochk', returnMethod: 'bochk-fast', exitBank: 'cmb' }, D, richQuotes).error, /不匹配/);
+});
+
+test('two HK accounts have separate maintenance costs, one account is never charged twice', () => {
+  const two = M.journeyPlans({ ...mainlandConfig, bank: 'hsbc', returnBank: 'hang', months: 12, profitUsd: 1000 }, D, richQuotes).selected;
+  close(two.rows.find(row => row.key === 'account').cny, 1200 * 7 / 8); ledger(two);
+  const one = M.journeyPlans({ ...mainlandConfig, bank: 'hsbc', returnBank: 'hsbc', months: 12, profitUsd: 1000 }, D, richQuotes).selected;
+  close(one.rows.find(row => row.key === 'account').cny, 1200 * 7 / 8); ledger(one);
+});
+
+test('manual bank fees and rates are scoped to that bank, and one-step comparisons keep the other selections', () => {
+  const p = M.journeyPlans({ ...mainlandConfig, senderFeeCny: 0, returnWireHkd: 0 }, D, richQuotes);
+  close(p.selected.rows.find(row => row.key === 'sender').cny, 0);
+  assert.ok(p.alternatives.start.find(row => row.start.id === 'cmb').rows.find(row => row.key === 'sender').cny > 0);
+  for (const row of p.alternatives.start.filter(row => !row.error)) {
+    assert.equal(row.bank.id, 'hang'); assert.equal(row.returning.id, 'hang'); assert.equal(row.exit.id, 'boc'); assert.equal(row.route, 'USD');
+  }
+  const preset = M.journeyPlans({ ...mainlandConfig, returnMethod: 'bochk-fast' }, D, richQuotes);
+  assert.ok(preset.recommended); // invalid manual method must not invalidate automatic candidates
+  assert.match(preset.error, /不匹配/);
+});
+
+test('stale bank quotes stay dated and cannot be used by automatic recommendations', () => {
+  const quotes = structuredClone(richQuotes);
+  quotes.banks.comm.quotes.USD.buy = 7.5;
+  quotes.banks.comm.quotes.USD.asOf = '2026-09-30 12:00:00';
+  const p = M.journeyPlans(mainlandConfig, D, quotes);
+  assert.ok(p.plans.every(row => row.exit.id !== 'comm'));
+  assert.equal(M.quoteFresh({ asOf: '2026-10-08' }, '2026-10-08'), true);
+  assert.equal(M.quoteFresh({ asOf: '2026-10-09 12:00:00' }, '2026-10-08'), false);
+  assert.equal(M.quoteFresh({ asOf: '2026-10-04 23:59:59' }, '2026-10-08'), false);
+});
+
+test('the current comparison row matches the displayed route including full-amount, eDDA and automatic FX', () => {
+  for (const overrides of [
+    { startBank: 'abc', mainlandMethod: 'full' },
+    { route: 'HKD', fxMode: 'auto', depositMethod: 'edda' },
+    { depositMethod: 'swift' }
+  ]) {
+    const p = M.journeyPlans({ ...mainlandConfig, ...overrides }, D, richQuotes);
+    for (const [key, id] of [['start', p.selected.start.id], ['bank', p.selected.bank.id], ['route', p.selected.route]]) {
+      const current = p.alternatives[key].find(row => (key === 'route' ? row.route : row[key].id) === id);
+      assert.equal(current.error, undefined); close(current.net, p.selected.net);
+    }
+  }
+});
+
+test('when all upstream quotes are stale, own confirmed quotes still compute without claiming an automatic recommendation', () => {
+  const p = M.journeyPlans({ ...mainlandConfig, date: '2026-11-01', startSell: 7.02, exitPrice: 6.98,
+    usdCny: 7, usdHkd: 8, usdCnh: 7.1, profitUsd: 1000 }, D, richQuotes);
+  assert.equal(p.recommended, undefined); assert.equal(p.minimum, undefined);
+  assert.equal(p.selected.rankable, true); ledger(p.selected);
+  const stale = M.journeyPlans({ ...mainlandConfig, date: '2026-11-01' }, D, richQuotes);
+  assert.equal(stale.selected.rankable, false);
+  assert.ok(stale.selected.missing.includes('USD/CNY参照牌价超过3天'));
+  assert.equal(stale.selected.entryAsOf, '2026-10-08 20:00:00');
 });

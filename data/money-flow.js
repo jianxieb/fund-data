@@ -15,7 +15,7 @@
       cmb: { name: '招商银行 · 专业版跨境汇款标准价', url: 'https://www.cmbchina.com/personalbank/gb/page/standfee.htm' },
       cmbFx: { name: '招商银行 · 外汇牌价（每100外币）', url: 'https://fx.cmbchina.com/hq/' },
       icbcFx: { name: '工商银行 · 人民币即期外汇牌价', url: 'https://www.icbc.com.cn/page/721852558099644433.html' },
-      icbc: { name: '工商银行 · 电子银行汇款标准价', url: 'https://www.icbc.com.cn/icbc/html/dongtaiyanshi/personalbank/icbc/perbank/icbcmodule/thirdindex.htm?column=%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BD%EF%BF%BD%CF%A2%3E%EF%BF%BD%CA%B7%D1%B9%EF%BF%BD%EF%BF%BD%EF%BF%BD%3E%EF%BF%BD%EF%BF%BD%EF%BF%BD%C6%BD%EF%BF%BD%EF%BF%BD%CA%BB%EF%BF%BD%EF%BF%BD%C5%BB%DD%B1%EF%BF%BD%D7%BC' },
+      icbc: { name: '工商银行 · 网银跨境汇款（现行收费需确认）', url: 'https://www.icbc.com.cn/page/721852505792479257.html' },
       ccbFx: { name: '建设银行 · 个人结售汇参考牌价', url: 'https://ebank1.ccb.com/chn/forex/exchange-quotations.shtml' },
       ccb: { name: '建设银行 · 个人网上银行境外汇款', url: 'https://ae2.ccb.com/chn/2016-08/22/article_2021122215120781239.shtml' },
       abcFx: { name: '农业银行 · 结售汇牌价', url: 'https://ewealth.abchina.com.cn/ForeignExchange/ListPrice/' },
@@ -65,7 +65,7 @@
     mainlandBanks: [
       { id: 'boc', name: '中国银行', group: 'boc', rate: 0.001, minimum: 50, maximum: 260, telegram: 80, feeText: '1‰，50–260元 + 80元电讯费', condition: '公开电子银行标准价；App优惠另填', sources: ['boc', 'bocFx'], quoteSource: 'bocFx' },
       { id: 'cmb', name: '招商银行', group: 'cmb', rate: 0.001, minimum: 100, maximum: 1000, telegram: 150, feeText: '1‰，100–1,000元 + 150元电讯费', condition: '专业版标准价；不等同手机银行优惠', sources: ['cmb', 'cmbFx'], quoteSource: 'cmbFx' },
-      { id: 'icbc', name: '工商银行', group: 'icbc', rate: 0.0008, minimum: 16, maximum: 160, telegram: 100, feeText: '网银0.8‰，16–160元 + 100元电讯费', condition: '公开网银标准价；手机银行或客群优惠以确认页为准', sources: ['icbc', 'icbcFx'], quoteSource: 'icbcFx' },
+      { id: 'icbc', name: '工商银行', group: 'icbc', rate: null, minimum: null, maximum: null, telegram: null, feeText: '现行汇出收费需客户确认页报价', condition: '旧收费页无法核对，保留官方牌价；汇出费须按本人App确认', sources: ['icbc', 'icbcFx'], quoteSource: 'icbcFx' },
       { id: 'ccb', name: '建设银行', group: 'ccb', rate: 0.001, minimum: 20, maximum: 300, telegram: 80, feeText: '网银1‰，20–300元 + 80元电报费', condition: '个人网银公开标准价；实际优惠可覆盖', sources: ['ccb', 'ccbFx'], quoteSource: 'ccbFx' },
       { id: 'abc', name: '农业银行', group: 'abc', rate: 0.001, minimum: 20, maximum: 200, telegram: 80, fullAmountUsd: 25, feeText: '1‰，20–200元 + 80元电报费', condition: '全额到账另加25 USD；普通汇款中转费按实收取', sources: ['abc', 'abcFx'], quoteSource: 'abcFx' },
       { id: 'comm', name: '交通银行', group: 'comm', rate: null, minimum: null, maximum: null, telegram: null, feeText: '汇出收费待客户确认页报价', condition: '有官方汇率；未取得可核对的现行个人汇款完整收费', sources: ['commFx'], quoteSource: 'commFx' },
