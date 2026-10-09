@@ -10,11 +10,13 @@ import argparse
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 from html.parser import HTMLParser
+from http.cookiejar import CookieJar
 import json
 from pathlib import Path
 import re
 import xml.etree.ElementTree as ET
-from urllib.request import Request, urlopen
+from urllib.request import Request, urlopen, build_opener, HTTPCookieProcessor
+from urllib.parse import urlencode
 
 ROOT = Path(__file__).resolve().parents[1]
 CURRENCIES = {"美元": "USD", "港币": "HKD", "欧元": "EUR", "英镑": "GBP", "日元": "JPY"}
@@ -26,9 +28,11 @@ CCB_URL = "https://ebank1.ccb.com/cn/home/news/jshckpj_new2.xml"
 ABC_URL = "https://ewealth.abchina.com.cn/app/data/api/DataService/ExchangeRateV2"
 COMM_URL = "https://www.bankcomm.com/SITE/queryExchangeResult.do"
 HSBC_URL = "https://www.services.cn-banking.hsbc.com.cn/mobile/channel/digital-proxy/cnyTransfer/ratesInfo/remittanceRate"
+CIB_URL = "https://personalbank.cib.com.cn/pers/main/pubinfo/ifxQuotationQuery/list"
 BANK_URLS = {"boc": BOC_URL, "cmb": CMB_URL, "icbc": ICBC_URL, "ccb": CCB_URL,
-             "abc": ABC_URL, "comm": COMM_URL, "hsbc": HSBC_URL, "bochk": BOCHK_USD_URL}
+             "abc": ABC_URL, "comm": COMM_URL, "hsbc": HSBC_URL, "cib": CIB_URL, "bochk": BOCHK_USD_URL}
 SOURCE_URLS = {**BANK_URLS, "cmb": "https://fx.cmbchina.com/hq/",
+               "cib": "https://personalbank.cib.com.cn/pers/main/pubinfo/ifxQuotationQuery.do",
                "icbc": "https://www.icbc.com.cn/page/721852558099644433.html",
                "ccb": "https://ebank1.ccb.com/chn/forex/exchange-quotations.shtml",
                "abc": "https://ewealth.abchina.com.cn/ForeignExchange/ListPrice/",
@@ -184,6 +188,21 @@ def parse_hsbc(payload):
     return required_quotes(out, "HSBC")
 
 
+def parse_cib(payload, observed_at):
+    # The official jqGrid endpoint has no quote publication timestamp. Its
+    # parent page's clock is NOT a publication time. Record observation time
+    # explicitly, and keep the ordinary remittance prices un-discounted here.
+    if payload.get("error"):
+        raise ValueError("CIB unsuccessful response")
+    out = {}
+    for row in payload.get("rows", []):
+        cells = row.get("cell", [])
+        if len(cells) >= 7 and cells[1] in CURRENCIES.values():
+            out[cells[1]] = {**validate_quote(cells[3], cells[4], observed_at, divisor=float(cells[2])),
+                            "timeBasis": "observed"}
+    return required_quotes(out, "CIB")
+
+
 def read_snapshot(path):
     if not path.exists():
         return {"banks": {}}
@@ -195,6 +214,19 @@ def read_snapshot(path):
 
 
 def fetch_bank(bank):
+    if bank == "cib":
+        opener = build_opener(HTTPCookieProcessor(CookieJar()))
+        opener.addheaders = [("User-Agent", "Mozilla/5.0")]
+        with opener.open(SOURCE_URLS[bank], timeout=25) as response:
+            response.read()
+        # Match getPrmNames('dataSet') in the bank's own jqGrid script. Without
+        # pagination parameters the endpoint returns 520, not an empty quote.
+        query = urlencode({"dataSet.page": 1, "dataSet.rows": 80, "dataSet.sidx": "", "dataSet.sord": "asc", "_search": "false"})
+        request = Request(CIB_URL + "?" + query, headers={"Referer": SOURCE_URLS[bank], "X-Requested-With": "XMLHttpRequest"})
+        with opener.open(request, timeout=25) as response:
+            payload = json.load(response)
+        observed_at = datetime.now(timezone(timedelta(hours=8))).replace(tzinfo=None).isoformat(sep=" ", timespec="seconds")
+        return parse_cib(payload, observed_at)
     url = BANK_URLS[bank]
     request = Request(url, data=b"{}" if bank == "icbc" else None,
                       headers={"User-Agent": "Mozilla/5.0", "Referer": SOURCE_URLS[bank], "Content-Type": "application/json"})

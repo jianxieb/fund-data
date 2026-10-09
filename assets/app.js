@@ -1265,6 +1265,16 @@
     if (layer) layer.setAttribute('hidden', '');
     if (tooltip) tooltip.hidden = true;
   });
+  // Native <dialog> backdrop clicks target the dialog itself. Require both
+  // pointer-down and click outside its rectangle so an inside drag is safe.
+  const dialog = $('#dialog');
+  let dialogBackdropDown = false;
+  const outsideDialog = event => {
+    const box = dialog.getBoundingClientRect();
+    return event.target === dialog && (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom);
+  };
+  dialog.addEventListener('pointerdown', event => { dialogBackdropDown = event.button === 0 && outsideDialog(event); });
+  dialog.addEventListener('click', event => { if (dialogBackdropDown && outsideDialog(event)) dialog.close(); dialogBackdropDown = false; });
   $('#dialog').addEventListener('close', () => { if (lastFocus && lastFocus.isConnected) lastFocus.focus(); else restoreFocus(lastFocus); });
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {

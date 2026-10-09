@@ -243,6 +243,31 @@
     const net = amount / (1 + pct / 100);
     return { net, cost: amount - net, fee: amount - net, fx: 0, missing: [] };
   }
+  function quotedMainlandBanks(data, quotes, date) {
+    return data.mainlandBanks.map(bank => {
+      const discount = bank.fxSpreadDiscount && date >= bank.fxValidFrom && date <= bank.fxValidUntil ? bank.fxSpreadDiscount : 1;
+      const prices = Object.fromEntries(Object.entries(quotes.banks?.[bank.id]?.quotes || {}).map(([currency, q]) => {
+        if (discount === 1 || !positive(q.buy) || !positive(q.sell) || q.buy > q.sell) return [currency, { ...q }];
+        const mid = (q.buy + q.sell) / 2;
+        return [currency, { ...q, publishedBuy: q.buy, publishedSell: q.sell,
+          buy: mid - (mid - q.buy) * discount, sell: mid + (q.sell - mid) * discount, spreadDiscount: discount }];
+      }));
+      return { ...bank, quotes: prices };
+    });
+  }
+  function purchaseComparison(config, data, quotes) {
+    const currency = config.route || 'USD';
+    if (currency === 'CNH') return { currency, rows: [], best: null };
+    const rows = quotedMainlandBanks(data, quotes, config.date).map(bank => {
+      const quote = bank.quotes[currency];
+      const override = bank.id === config.startBank ? number(config.startSell) : null;
+      const sell = override ?? quote?.sell;
+      return { bank, quote, sell, custom: positive(override), comparable: positive(sell) && (positive(override) || quoteFresh(quote, config.date)) };
+    });
+    const best = rows.filter(row => row.comparable).sort((a, b) => a.sell - b.sell)[0] || null;
+    for (const row of rows) row.lossRate = row.comparable && best ? Math.max(0, 1 - best.sell / row.sell) : null;
+    return { currency, rows, best };
+  }
   function quoteFresh(quote, date) {
     if (!quote?.asOf) return false;
     const age = (Date.parse(date + 'T23:59:59+08:00') - Date.parse(quote.asOf.replace(' ', 'T') + (quote.asOf.length === 10 ? 'T00:00:00+08:00' : '+08:00'))) / 864e5;
@@ -493,7 +518,7 @@
     if (!finite(profit) || !knownFee(taxRate) || taxRate > 100) return empty('请输入有效盈亏及0–100%的税率。');
     const withdrawalIndex = number(config.withdrawalIndex) ?? 1;
     if (!positive(withdrawalIndex) || !Number.isInteger(withdrawalIndex)) return empty('本月券商出金次数须为正整数。');
-    const mainland = data.mainlandBanks.map(bank => ({ ...bank, quotes: quotes.banks?.[bank.id]?.quotes || {} }));
+    const mainland = quotedMainlandBanks(data, quotes, config.date);
     const fresh = mainland.filter(bank => positive(bank.quotes.USD?.buy) && positive(bank.quotes.USD?.sell) && quoteFresh(bank.quotes.USD, config.date));
     const refRow = fresh.find(bank => bank.id === 'boc')?.quotes.USD || fresh[0]?.quotes.USD || mainland.find(bank => positive(bank.quotes.USD?.buy) && positive(bank.quotes.USD?.sell))?.quotes.USD;
     const offshore = quotes.offshoreUsd?.bochk?.quotes || {};
@@ -512,7 +537,7 @@
       const isSelectedReturn = (config.returnBank || config.bank) === returning.id;
       const own = (key, selected) => selected && !selections.public ? number(config[key]) : null;
       const q = start.quotes[currency], quote = currency === 'CNH' ? 1 : own('startSell', isSelectedStart) ?? q?.sell;
-      if (!positive(quote)) return { error: start.name + '缺少' + currency + '现汇卖出价；填入该行成交价后可计算。' };
+      if (!positive(quote)) return { error: start.name + '的' + currency + '现汇卖出价尚未取得；到账金额暂不可算。', missingQuote: currency };
       const linked = ['hang', 'hsbc', 'sc'].includes(start.id);
       const method = (key, fallback) => (Object.hasOwn(selections, key) ? selections[key] : config[key]) || fallback;
       const bocMobilePair = start.id === 'boc' && bank.id === 'bochk' && currency !== 'CNH';
@@ -588,8 +613,8 @@
       const inward = own('entryInwardHkd', isSelectedBank) ?? inwardFee(bank, balance * refs[currency] / refs.HKD / count, start.group);
       add('entryInward', '香港首次汇入费', inward == null ? null : inward * refs.HKD * count, 'entry');
       steps.hongKong = balance;
-      const downstreamError = error => ({ error, rows, steps, startSell: quote, route, mainlandMethod, fxMode, refs, budgetCny: budget, start, bank, returning, exit, broker: provider });
-      if (outcome === 'mainland' && !positive(exit.quotes.USD?.buy) && !positive(number(config.exitPrice))) return downstreamError(exit.name + '缺少USD现汇买入价。');
+      const downstreamError = (error, errorStage = '03') => ({ error, errorStage, rows, steps, startSell: quote, route, mainlandMethod, fxMode, refs, budgetCny: budget, start, bank, returning, exit, broker: provider });
+      if (outcome === 'mainland' && !positive(exit.quotes.USD?.buy) && !positive(number(config.exitPrice))) return downstreamError(exit.name + '缺少USD现汇买入价。', '04');
       const depositMethod = internalDeposit ? 'internal' : settlementBank ? 'chats' : method('depositMethod', currency === 'USD' || fxMode === 'bank' ? 'chats' : 'fps');
       const depositCurrency = fxMode === 'bank' ? 'USD' : currency;
       if (['fps', 'edda'].includes(depositMethod) && depositCurrency === 'USD') return { error: 'FPS/eDDA不支持USD；美元入金请选CHATS或SWIFT。' };
@@ -623,6 +648,8 @@
         fxRow('brokerSpread', fxMode === 'bank' ? '香港银行换汇点差' : '换汇成交点差', referenceDifference,
           bankMid ? (oldBalance / bankMid - grossUsd) * refs.USD : referenceDifference, 'deposit');
         if (unquotedBankFx) Object.assign(rows[rows.length - 1], { cny: null, fxImpactCny: -referenceDifference, label: bank.name + ' ' + currency + '换USD点差（缺成交价）' });
+        else if (currency !== 'USD' && fxMode !== 'bank' && ownEntryPrice == null) Object.assign(rows[rows.length - 1], {
+          cny: null, fxImpactCny: -referenceDifference, label: 'IBKR ' + currency + '/USD实时成交点差', status: '按实时成交价计算' });
         return fx;
       };
       let brokerFxResult;
@@ -677,24 +704,26 @@
       add('returnOther', '回内地中转／收款费', own('returnExtraCny', isSelectedReturn && config.exitBank === exit.id) ?? (returnMethod === 'linked' ? 0 : null), 'return');
       if (rows[rows.length - 1].cny == null) rows[rows.length - 1].items = [{ label: '回内地中转行费', cny: null, status: '按实际汇路收费' }, { label: exit.name + 'USD收款费', cny: exit.inwardCny === 0 ? 0 : null, status: '汇入资费未收录' }];
       steps.remitUsd = balance;
-      exitPrice = own('exitPrice', config.exitBank === exit.id) ?? exit.quotes.USD?.buy;
+      const exitQuote = exit.quotes.USD;
+      const discountExpired = exitQuote?.spreadDiscount && returnDate > exit.fxValidUntil;
+      exitPrice = own('exitPrice', config.exitBank === exit.id) ?? (discountExpired ? exitQuote.publishedBuy : exitQuote?.buy);
       const preSettle = balance;
       balance *= exitPrice; unit = 'CNY';
       const exitMid = positive(exit.quotes.USD?.sell) ? (exit.quotes.USD.buy + exit.quotes.USD.sell) / 2 : refs.USD;
       fxRow('exitFx', '内地结汇点差', preSettle * refs.USD - balance, preSettle * (exitMid - exitPrice), 'return');
       steps.settledCny = balance;
       } else if (outcome === 'cnh-card') {
-        if (returning.id !== 'bochk') return downstreamError('人民币刷卡测算目前使用中银香港公开USD/CNH牌价；请选择中银香港消费账户。');
+        if (returning.id !== 'bochk') return downstreamError('人民币刷卡测算使用中银香港USD/CNH牌价；请选择中银香港消费账户。', '04');
         exitPrice = own('exitPrice', isSelectedReturn) ?? offshore.CNH?.bidPerUsd;
-        if (!positive(exitPrice)) return downstreamError('中银香港USD换CNH买入价缺失。');
+        if (!positive(exitPrice)) return downstreamError('中银香港USD换CNH买入价缺失。', '04');
         const usd = balance; balance *= exitPrice; unit = 'CNH';
         fxRow('exitFx', '中银香港 USD → CNH换汇点差', usd * refs.USD - balance * refs.CNH,
           usd * (mid('CNH') - exitPrice) * refs.CNH, 'return');
         add('card', '人民币原币刷卡手续费', 0, 'return');
       } else if (outcome === 'usd-card') {
-        if (!returning.directUsdCard) return downstreamError(returning.name + '不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。');
+        if (!returning.directUsdCard) return downstreamError(returning.name + '不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。', '04');
         add('card', '美元原币刷卡手续费', 0, 'return');
-      } else if (outcome !== 'usd-balance') return downstreamError('请选择有效的资金用途。');
+      } else if (outcome !== 'usd-balance') return downstreamError('请选择有效的资金用途。', '04');
       steps.terminal = balance; steps.settledCny = balance * refs[unit];
       const account = maintenance(bank, own('balanceHkd', isSelectedBank) ?? 0, number(config.months), own('monthlyHkd', isSelectedBank) ?? (bank.id === 'hsbc' && config.hsbcBalanceWaiver ? 0 : null));
       const returnAccount = bank.id === returning.id ? 0 : maintenance(returning, own('returnBalanceHkd', isSelectedReturn) ?? 0, number(config.months), own('returnMonthlyHkd', isSelectedReturn) ?? (returning.id === 'hsbc' && config.hsbcBalanceWaiver ? 0 : null));
@@ -736,7 +765,8 @@
       const eligibilityReasons = requiredEligibility.map(id => mainland.find(row => row.required === id)?.condition).filter(Boolean);
       return { budgetCny: budget, origin: 'mainland', permission, currency: unit, outcome, settlementBank, route, start, bank, returning, exit, exitBank: exit.id, broker: provider, trading,
         mainlandMethod, depositMethod, fxMode, returnMethod, returnDate, indicativeFx, startSell: quote, entryPrice, exitPrice,
-        entryAsOf: currency === 'CNH' ? null : q?.asOf, exitAsOf: exit.quotes.USD?.asOf, fxAsOf: currency === 'USD' ? null : offshore[currency]?.asOf,
+        entryAsOf: currency === 'CNH' ? null : q?.asOf, entryTimeBasis: q?.timeBasis, entryDiscount: own('startSell', isSelectedStart) == null ? q?.spreadDiscount : undefined,
+        exitAsOf: exit.quotes.USD?.asOf, fxAsOf: currency === 'USD' ? null : offshore[currency]?.asOf,
         sourceAmount: budget, profitUsd: profit, investUsd: steps.investUsd, proceeds: steps.proceedsUsd, bankUsd: steps.returnUsd,
         net: balance, netCny: balance * refs[unit], taxCny, taxableCny, estimatedTax: number(config.taxableCny) == null, rows, steps,
         missing: [...new Set(preciseMissing)], complete: !preciseMissing.length, requiredEligibility, eligibilityReasons, requirements: [...new Set([...requirements, ...eligibilityReasons])],
@@ -891,5 +921,5 @@
     const selected = plans.find(row => row.bank.id === config.bank) || (config.plan === 'minimum' ? plans[0] : recommended);
     return { selected, recommended, minimum: plans[0], plans, refs, sourceAmount, exit, mainland, extraCny };
   }
-  return { number, reference, fee, remitPrincipal, senderFeeRange, inwardFee, outwardFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
+  return { number, reference, fee, remitPrincipal, senderFeeRange, inwardFee, outwardFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
 }));

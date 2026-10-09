@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch
 
 from scripts.refresh_money_flow_quotes import (parse_boc, parse_cmb, parse_bochk, parse_icbc,
-    parse_ccb, parse_abc, parse_comm, parse_hsbc, validate_quote, merge_bank, read_snapshot, main)
+    parse_ccb, parse_abc, parse_comm, parse_hsbc, parse_cib, validate_quote, merge_bank, read_snapshot, main)
 
 
 class BankQuotesTests(unittest.TestCase):
@@ -117,6 +117,20 @@ class BankQuotesTests(unittest.TestCase):
             parse_bochk('<table></table>')
         with self.assertRaisesRegex(ValueError, 'rows missing'):
             parse_bochk('资料更新于香港时间： 2026/10/08 10:00:00')
+
+    def test_cib_reads_jqgrid_remittance_columns_and_labels_observation_time(self):
+        payload = {"page": "1", "records": "2", "rows": [
+            {"cell": ["美元", "USD", "100.00", "668.27", "670.81", "662.65", "670.68"], "id": "5"},
+            {"cell": ["港币", "HKD", "100.00", "85.15", "85.48", "84.44", "85.46"], "id": "4"}]}
+        q = parse_cib(payload, '2026-10-09 12:00:00')
+        self.assertEqual(q['USD'], {'buy': 6.6827, 'sell': 6.7081, 'asOf': '2026-10-09 12:00:00', 'timeBasis': 'observed'})
+        self.assertEqual(q['HKD']['sell'], .8548)
+        # Never apply the card's spread discount in the raw bank snapshot.
+        self.assertNotIn('spreadDiscount', q['USD'])
+        with self.assertRaisesRegex(ValueError, 'unsuccessful'):
+            parse_cib({'error': True, 'msg': 'missing dataSet parameters'}, '2026-10-09')
+        with self.assertRaisesRegex(ValueError, 'missing'):
+            parse_cib({'rows': []}, '2026-10-09')
 
     def test_complete_network_outage_never_rewrites_the_snapshot(self):
         with tempfile.TemporaryDirectory() as tmp:
