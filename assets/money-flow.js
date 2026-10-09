@@ -28,6 +28,7 @@
   const sumFees = (r, keys) => keys.reduce((sum, key) => sum + (rowFee(r, key) ?? 0), 0);
   const feeText = value => value == null ? '未报价' : value > 0 && value < .005 ? '＜0.01 CNY' : num(value) + ' CNY';
   const routes = { USD: '内地换美元 → 美元入金', HKD: '内地换港币 → 再换美元', CNH: '人民币到港 → 再换美元' };
+  const remittanceCurrencies = { USD: '美元 · 内地购汇后汇出', HKD: '港币 · 内地购汇后汇出', CNH: '人民币 · 原币汇出' };
   const bankOptions = banks => banks.map(bank => [bank.id, bank.name]);
   function field(key, label, unit = '', placeholder = '') {
     return '<label class="flow-field"><span>' + esc(label) + '</span><div class="flow-input"><input ' + (key === 'voucherExpiry' ? 'type="date"' : 'type="text" inputmode="decimal"') + ' data-money-field="' + key + '" aria-label="' + esc(label) + '" value="' + esc(state[key]) + '" placeholder="' + esc(placeholder) + '">' + (unit ? '<span>' + esc(unit) + '</span>' : '') + '</div></label>';
@@ -138,7 +139,7 @@
     };
     const controls = [
       control('startBank', '内地出发银行', bankOptions(data.mainland || D.mainlandBanks)) + control('bank', '香港入金银行', bankOptions(banks)) +
-      control('route', '汇出币种与换汇地点', Object.entries(routes), route) + control('mainlandMethod', '内地 → 香港方式', entryMethods(s), r?.mainlandMethod || state.mainlandMethod || 'swift') +
+      control('route', '汇出币种', Object.entries(remittanceCurrencies), route) + control('mainlandMethod', '内地 → 香港方式', entryMethods(s), r?.mainlandMethod || state.mainlandMethod || 'swift') +
       (r?.mainlandMethod === 'payment-connect' ? '<div class="flow-channel-quote">' + note('已查到南向零手续费实例；本次收费以App确认页为准。仅作汇款费用情景，不作为美股入金推荐。') + field('senderFeeCny', '本次每笔跨境支付通服务费', 'CNY', '确认免收后填0') + '</div>' : ''),
       control('broker', '券商／银行证券账户', bankOptions(D.brokers), provider.id) + control('fxMode', '换成美元', fxModes, s.fxMode || 'manual') +
       control('depositMethod', '银行 → 交易账户方式', depositMethods(s), r?.depositMethod || state.depositMethod || 'chats'),
