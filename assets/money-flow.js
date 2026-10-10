@@ -16,6 +16,7 @@
   // Earlier versions incorrectly offered the foreign-currency-only Global
   // Link channel for RMB. Keep all accounts and repair that saved method.
   if (state.startBank === 'sc' && state.route === 'CNH' && state.mainlandMethod === 'linked') state.mainlandMethod = 'swift';
+  if (state.route !== 'USD' && state.broker !== 'ibkr') state.fxMode = 'bank';
   if (!['01', '02', '03', '04'].includes(state.activeStep)) state.activeStep = '01';
   const catalog = (key, all) => D.calculator[key].map(id => all.find(x => x.id === id)).filter(Boolean);
   const mainland = catalog('mainland', D.mainlandBanks), banks = catalog('hkBanks', D.hkBanks), brokers = catalog('brokers', D.brokers);
@@ -151,6 +152,18 @@
   const exitKeys = ['returnWire', 'returnOther', 'exitFx', 'card'];
   const costRows = (r, keys) => (r?.rows || []).filter(x => keys.includes(x.key));
   const sumRows = rows => rows.reduce((sum, x) => sum + (x.cny ?? 0), 0);
+  function missingFeeStatus(r, item, part = item) {
+    if (item.key === 'brokerSpread') return ((r?.fxMode || state.fxMode) === 'bank' ? shortName(r?.bank) : 'IBKR') + ' ' + state.route + '/USD成交价尚未取得';
+    if (part.status || item.status) return part.status || item.status;
+    if (['entryFx', 'exitFx'].includes(item.key)) return '尚缺该银行换汇报价';
+    if (['entryMiddle', 'depositOther', 'withdrawMiddle', 'returnOther'].includes(item.key)) return '此汇路代理／收款行收费未公开';
+    return '该项资费依据未取得';
+  }
+  function detailRows(r, rows) {
+    return '<div class="flow-cost-detail">' + rows.flatMap(item => (item.items?.length ? item.items : [item]).map(part =>
+      '<div><span>' + esc(part.label) + (part.months != null ? '<small>' + num(part.monthlyHkd) + ' HKD/月 × ' + num(part.months, 0) + '个月</small>' : '') +
+      '</span><b>' + (part.cny == null ? esc(missingFeeStatus(r, item, part)) : cost(part.cny)) + '</b></div>')).join('') + '</div>';
+  }
   function loss(r, keys, pending = '') {
     const rows = costRows(r, keys), total = sumRows(rows), missing = rows.some(x => x.cny == null);
     const stale = r?.quoteFreshness && (r.quoteFreshness.reference === false || keys.includes('entryFx') && r.quoteFreshness.source === false ||
@@ -201,9 +214,7 @@
         if (item.key === 'entryFx' && state.route !== 'CNH' && r.startSell > 0) description = '1 ' + state.route + ' = ' + quoteNum(r.startSell) + ' CNY' + (r.entryDiscount ? ' · 点差五折' : '');
         if (item.key === 'sender' && Number(state.count) > 1) description = (description ? description + ' · ' : '') + state.count + '笔合计';
         const feeCurrency = item.key === 'depositBank' && r.depositMethod === 'chats' && r.bank?.localUsdNative != null ? 'USD' : 'HKD';
-        const missingStatus = ['entryFx', 'brokerSpread', 'exitFx'].includes(item.key) ? '尚缺该银行换汇报价' :
-          ['entryMiddle', 'depositOther', 'withdrawMiddle', 'returnOther'].includes(item.key) ? '此汇路代理行收费未公开' : '该项资费依据未取得';
-        const native = part.cny == null ? part.status || item.status || missingStatus :
+        const native = part.cny == null ? missingFeeStatus(r, item, part) :
           ['entryInward', 'depositBank', 'returnWire'].includes(item.key) ? num(part.cny / r.refs[feeCurrency]) + ' ' + feeCurrency : '';
         return feeLine(part.label, part.cny, description, native);
       });
@@ -240,7 +251,7 @@
     if (state.outcome !== 'broker-balance') html += edge(data, withdrawKeys, '出金 → ' + shortName(s.returning),
       action('本月第' + esc(state.withdrawalIndex) + '次出金', 'detail', 'data-value="profit-settings"', 'flow-setting-button'), 'withdraw');
     if (state.outcome === 'mainland') html += edge(data, exitKeys, '汇回内地 → 美元结汇', account('exitBank', '内地收款银行', s.exit) + select('returnMethod', '汇回渠道', returnMethods()), '04',
-      r?.exitPrice > 1 ? '1 USD = ' + quoteNum(r.exitPrice) + ' CNY' : '');
+      !data.error && !r?.indicativeExit && r?.exitPrice > 1 ? '1 USD = ' + quoteNum(r.exitPrice) + ' CNY' : '');
     if (state.outcome === 'cnh-card' || state.outcome === 'usd-card') html += edge(data, exitKeys, state.outcome === 'cnh-card' ? (row(r, 'exitFx')?.path ? '美元 → 港币 → 人民币 → 消费' : '美元换人民币 → 消费') : '美元余额 → 原币消费',
       state.outcome === 'cnh-card' && s.returning?.cnhCardRequiresHkid ? checkbox('scCnhAccount', '持有效香港身份证，已开通渣打人民币储蓄账户') : '', '04',
       data.error || r?.indicativeExit ? '' : esc(state.outcome === 'cnh-card' && r?.exitPrice > 1 ? '1 USD = ' + quoteNum(r.exitPrice) + ' CNH' : '对应币种余额直接扣账'));
@@ -284,7 +295,7 @@
       '佣金 ' + num(sum('commission')) + '＋平台 ' + num(sum('platform')) + '＋清算／监管 ' + num(sum('sec') + sum('taf') + sum('cat') + sum('clearing')) +
       (sum('discount') ? ' − 券抵扣 ' + num(sum('discount')) : '') + ' USD', num(sum('feeUsd')) + ' USD');
   }
-  function summary(data) {
+  function balancePresentation(data) {
     const r = data.selected || data.partial, rows = r?.rows || [], total = sumRows(rows), gaps = rows.filter(x => x.cny == null);
     const incomplete = !data.selected || !!r?.indicativeFx || !!r?.indicativeExit || !!r?.exitIssue;
     const stale = !r?.missingQuote && r?.quoteFreshness && (r.quoteFreshness.source === false || r.quoteFreshness.reference === false ||
@@ -294,9 +305,13 @@
     const label = stale ? '全程损耗 · 历史报价' : partial ? '全程已核费用' : estimated ? '参考总损耗' : '全程损耗';
     const canBalance = !!data.selected && !incomplete && !stale && gaps.every(x => ['entryMiddle', 'depositOther', 'withdrawMiddle', 'returnOther'].includes(x.key));
     const lastBalance = r?.steps?.remitUsd ?? r?.steps?.returnUsd ?? r?.steps?.proceedsUsd ?? r?.steps?.fundedUsd;
-    const canShowLast = Number.isFinite(lastBalance) && !r?.indicativeFx && r?.quoteFreshness?.source !== false;
+    const canShowLast = Number.isFinite(lastBalance) && !r?.indicativeFx && r?.quoteFreshness?.source !== false && r?.quoteFreshness?.entryMarket !== false;
     const lastPoint = canShowLast ? { amount: lastBalance, currency: 'USD' } :
       Number.isFinite(r?.steps?.hongKong) && r?.quoteFreshness?.source !== false ? { amount: r.steps.hongKong, currency: state.route } : null;
+    return { r, rows, total, gaps, partial, estimated, label, canBalance, lastPoint };
+  }
+  function summary(data) {
+    const { r, rows, total, gaps, partial, estimated, label, canBalance, lastPoint } = balancePresentation(data);
     const balanceLabel = canBalance ? (gaps.length ? '已扣已核费用后的余额' : estimated ? '按公布参考费计算的余额' : state.outcome.includes('card') ? '可消费金额' : '最终余额') : lastPoint ? '最后可计余额' : '最终余额暂不可算';
     const finalHtml = (canBalance ? amount(r.net, r.currency) : lastPoint ? amount(lastPoint.amount, lastPoint.currency) : '<b>—</b>') +
       (r?.sourceRemainderCny > 1e-6 ? '<small>另留内地账户 ' + cost(r.sourceRemainderCny) + '</small>' : '');
@@ -427,10 +442,13 @@
     } else if (key.startsWith('edge-')) {
       const stage = key.slice(5), edgeKeys = ({ '01': transferKeys, '03': fundingKeys, trade: tradingKeys, withdraw: withdrawKeys, '04': exitKeys })[stage] || [];
       title = ({ '01': '内地购汇与跨境汇款', '03': '换汇与股票入金', trade: '美股买卖', withdraw: '出金至香港银行', '04': '资金使用' })[stage];
-      content = '<div class="flow-cost-detail">' + costRows(r, edgeKeys).flatMap(x => x.items || [x]).map(x => '<div><span>' + esc(x.label) + '</span><b>' + (x.cny == null ? esc(x.status || '按实际汇路收费') : cost(x.cny)) + '</b></div>').join('') + '</div>';
+      content = detailRows(r, costRows(r, edgeKeys));
       const exchanges = costRows(r, edgeKeys).flatMap(x => x.exchanges || []);
       if (exchanges.length) content += '<h3>实际兑换顺序</h3><div class="flow-cost-detail">' + exchanges.map(x => '<div><span>' + num(x.input) + ' ' + x.from + ' → ' + num(x.output) + ' ' + x.to + '</span><b>1 ' + x.from + ' = ' + quoteNum(x.rate) + ' ' + x.to + '</b></div>').join('') + '</div>';
-      if (stage === '01') { content += '<p>' + esc(transferHint() || s.start.feeText) + '</p>'; if (s.start.id === 'cib') content += field('usedFreeTransfers', '优惠期内已汇出笔数', '笔') + '<p>寰宇人生前30笔手续费及电讯费免，优惠至2027-06-30。</p>'; }
+      if (stage === '01') {
+        content += '<p>' + esc(transferHint() || (state.route === 'CNH' ? s.start.cnhTariff?.feeText : '') || s.start.feeText) + '</p>';
+        if (s.start.id === 'cib' && state.route !== 'CNH') content += field('usedFreeTransfers', '优惠期内已汇出笔数', '笔') + '<p>寰宇人生外汇汇出手续费免，优惠期前30笔电讯费免；优惠至2027-06-30。</p>';
+      }
       if (stage === 'trade') content += tradeLine(r, 'buy') + tradeLine(r, 'sell');
       keys = [...(s.start?.sources || []), ...(s.bank?.sources || []), ...(s.broker?.sources || []), ...(s.returning?.sources || [])];
     } else if (key === 'mainland') {
@@ -454,13 +472,13 @@
     } else {
       const rows = key === 'stage' ? currentRows(r) : r?.rows || [];
       title = key === 'stage' ? stageNames[Number(state.activeStep) - 1] + ' · 费用明细' : '全程费用明细';
-      content = rows.length ? '<div class="flow-cost-detail">' + rows.flatMap(x => x.items || [x]).map(x => '<div><span>' + esc(x.label) +
-        (x.months != null ? '<small>' + num(x.monthlyHkd) + ' HKD/月 × ' + num(x.months, 0) + '个月</small>' : '') + '</span><b>' +
-        (x.cny == null ? esc(x.rangeCny ? x.rangeCny.map(n => num(n)).join('–') + ' CNY' : x.status || '按实际汇路收费；未计入合计') : cost(x.cny)) + '</b></div>').join('') + '</div>' :
+      content = rows.length ? detailRows(r, rows) :
         '<p>' + esc(data.error || '选择对应账户后显示资费') + '</p>';
       if (r?.missing?.length) content += '<h3>影响最终金额的项目</h3><ul>' + r.missing.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>';
-      if (Number.isFinite(r?.netCny)) content += '<p>' + num(r.budgetCny) + ' 本金 ＋ ' + num(r.profitUsd * r.refs.USD) + ' 盈亏 − ' + num(r.costCny) + ' 成本 − ' + num(r.taxCny) +
-        ' 税款' + (Math.abs(r.fxImpactCny || 0) > .005 ? ' ＋ ' + num(r.fxImpactCny) + ' 未报价换汇估值差额' : '') + ' ＝ ' + num(r.netCny) + ' CNY。' + (r.complete ? '' : '未报价项目未扣除，不是最终到账承诺。') + '按完整精度计算，分项显示到分时可能产生四舍五入尾差。</p>';
+      const { canBalance, lastPoint } = balancePresentation(data);
+      if (canBalance && Number.isFinite(r?.netCny)) content += '<p>' + num(r.budgetCny) + ' 本金 ＋ ' + num(r.profitUsd * r.refs.USD) + ' 盈亏 − ' + num(r.costCny) + ' 成本 − ' + num(r.taxCny) +
+        ' 税款 ＝ ' + num(r.netCny) + ' CNY。' + (r.complete ? '' : '未报价项目未扣除，不是最终到账承诺。') + '按完整精度计算，分项显示到分时可能产生四舍五入尾差。</p>';
+      else if (lastPoint) content += '<p>最后可计余额：' + num(lastPoint.amount) + ' ' + esc(lastPoint.currency) + '</p>';
       keys = [...(s.start?.sources || []), ...(s.bank?.sources || []), ...(s.broker?.sources || []), ...(s.returning?.sources || [])];
     }
     const html = H.modalTitle(title) + '<div class="flow-detail">' + content + '<div class="flow-detail-sources">' + [...new Set(keys)].filter(Boolean).map(source).join('') + '</div></div>';

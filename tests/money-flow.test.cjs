@@ -1226,9 +1226,15 @@ test('CIB RMB channel, picker and fee detail agree without an FX-only free-trans
   ui.act('detail', '', 'cost');
   assert.match(ui.modal(), /汇出手续费<\/span><b>99.80 CNY/);
   assert.match(ui.modal(), /汇出电讯费<\/span><b>100.00 CNY/);
+  ui.act('detail', '', 'edge-01');
+  assert.match(ui.modal(), /人民币跨境1‰、50–200元＋100元电讯费/);
+  assert.doesNotMatch(ui.modal(), /data-money-field="usedFreeTransfers"|前30笔/);
   ui.act('choose', 'route', 'USD');
   assert.equal(ui.saved().bank, 'bochk'); assert.equal(ui.saved().startBank, 'cib');
   assert.match(ui.render(), /普通汇款 · 寰宇人生卡/);
+  ui.act('detail', '', 'edge-01');
+  assert.match(ui.modal(), /外汇汇出手续费免，优惠期前30笔电讯费免/);
+  assert.match(ui.modal(), /data-money-field="usedFreeTransfers"/);
 });
 
 test('RMB channels show the correct tariff and repair the old SC foreign-only choice without changing accounts', () => {
@@ -1237,7 +1243,8 @@ test('RMB channels show the correct tariff and repair the old SC foreign-only ch
   assert.match(html, /优先理财 · 人民币跨境汇款/);
   assert.match(html, /5.50 CNY/);
   assert.doesNotMatch(html, /同名速汇 · 免费|汇款渠道：请选择/);
-  assert.match(html, /尚缺该银行换汇报价/);
+  assert.match(html, /渣打 · 快易理财 CNH\/USD成交价尚未取得/);
+  assert.doesNotMatch(html, /转入IBKR|请选择换美元地点/);
   const summary = html.split('id="flow-live-summary"')[1];
   assert.match(summary, /最后可计余额/); assert.match(summary, /99994.50/); assert.match(summary, /CNH/);
   ui.act('choose', 'broker', 'za');
@@ -1262,6 +1269,61 @@ test('missing terminal FX never forces a different bank, erases the total, or sh
   assert.match(html, /汇丰 HSBC One/); assert.match(html, /全程已核费用|全程损耗 · 历史报价/);
   assert.match(html, /最后可计余额/); assert.doesNotMatch(edge, /0.000%/);
   assert.doesNotMatch(html, /请选择中银香港消费账户/);
+});
+
+test('missing funding FX is named consistently in the flow and details without a fabricated converted balance', () => {
+  for (const [broker, fxMode, bank, expected] of [
+    ['za', 'bank', 'sc', /渣打 · 快易理财 CNH\/USD成交价尚未取得/],
+    ['ibkr', 'manual', 'bochk', /IBKR CNH\/USD成交价尚未取得/]
+  ]) {
+    const config = { ...currentRoute, startBank: 'sc', bank, route: 'CNH', broker, fxMode,
+      mainlandMethod: 'swift', depositMethod: fxMode === 'bank' ? 'chats' : 'fps', outcome: 'broker-balance' };
+    const r = M.calculatorJourney(config, D, cibQuotes).selected;
+    assert.ok(r?.indicativeFx);
+    const ui = moneyUi(config), html = ui.render();
+    assert.match(html, expected);
+    for (const key of ['edge-03', 'cost']) {
+      ui.act('detail', '', key);
+      assert.match(ui.modal(), expected);
+      assert.doesNotMatch(ui.modal(), /换汇.*?<b>按实际汇路收费|未报价换汇估值差额|本金 ＋/);
+      if (key === 'cost') assert.match(ui.modal(), new RegExp('最后可计余额：' + r.steps.hongKong.toFixed(2) + ' CNH'));
+    }
+  }
+});
+
+test('missing terminal and source FX never leak reference rates or an executable CNY equation into details', () => {
+  const config = { ...currentRoute, startBank: 'cib', route: 'USD', fxMode: 'bank', outcome: 'mainland', exitBank: 'sc', exitPrice: '', returnMethod: 'swift' };
+  const r = M.calculatorJourney(config, D, cibQuotes).selected;
+  assert.equal(r?.indicativeExit, true);
+  const ui = moneyUi(config), html = ui.render();
+  const exit = html.split('aria-label="汇回内地 → 美元结汇"')[1].split('</section>')[0];
+  assert.doesNotMatch(exit, /1 USD =/);
+  ui.act('detail', '', 'cost');
+  assert.match(ui.modal(), new RegExp('最后可计余额：' + r.steps.remitUsd.toFixed(2) + ' USD'));
+  assert.doesNotMatch(ui.modal(), /未报价换汇估值差额|本金 ＋/);
+  const q = structuredClone(cibQuotes); delete q.banks.cib;
+  const source = moneyUi({ ...config, outcome: 'broker-balance' }, q); source.render(); source.act('detail', '', 'cost');
+  assert.match(source.modal(), /USD现汇卖出价尚未取得/);
+  assert.doesNotMatch(source.modal(), /未报价换汇估值差额|本金 ＋|最后可计余额/);
+});
+
+test('detail reconciliation stays available for priced routes but not stale FX conversions', () => {
+  const config = { ...currentRoute, startBank: 'boc', bank: 'bochk', broker: 'za', mainlandMethod: 'boc-mobile', route: 'USD', outcome: 'broker-balance' };
+  const ui = moneyUi(config); ui.render(); ui.act('detail', '', 'cost');
+  assert.match(ui.modal(), /100000.00 本金 ＋/);
+  const q = structuredClone(cibQuotes); q.banks.boc.quotes.USD.asOf = '2020-01-01';
+  const stale = moneyUi(config, q); stale.render(); stale.act('detail', '', 'cost');
+  assert.doesNotMatch(stale.modal(), /本金 ＋|最后可计余额/);
+  const fundingQuotes = structuredClone(cibQuotes);
+  fundingQuotes.offshoreUsd.hsbc = { quotes: { CNH: { bidPerUsd: 6.8, askPerUsd: 7, asOf: '2020-01-01' } } };
+  const fundingConfig = { ...currentRoute, startBank: 'sc', route: 'CNH', mainlandMethod: 'swift', fxMode: 'bank', outcome: 'broker-balance' };
+  const r = M.calculatorJourney(fundingConfig, D, fundingQuotes).selected;
+  assert.equal(r?.quoteFreshness.entryMarket, false); assert.equal(r?.indicativeFx, '');
+  const funding = moneyUi(fundingConfig, fundingQuotes), html = funding.render();
+  assert.match(html.split('id="flow-live-summary"')[1], /最后可计余额[\s\S]*CNH/);
+  funding.act('detail', '', 'cost');
+  assert.match(funding.modal(), new RegExp('最后可计余额：' + r.steps.hongKong.toFixed(2) + ' CNH'));
+  assert.doesNotMatch(funding.modal(), /本金 ＋/);
 });
 
 test('CIB settlement does not extend the card FX discount past its published expiry', () => {
