@@ -250,6 +250,36 @@ window.MONEY_FLOW_QUOTES = {
         }
       },
       "source": "https://personalbank.cib.com.cn/pers/main/pubinfo/ifxQuotationQuery.do"
+    },
+    "hang": {
+      "quotes": {
+        "EUR": {
+          "buy": 7.3842086,
+          "sell": 7.6091083,
+          "asOf": "2026-10-10 19:27:00"
+        },
+        "GBP": {
+          "buy": 8.722687,
+          "sell": 8.9883526,
+          "asOf": "2026-10-10 19:27:00"
+        },
+        "HKD": {
+          "buy": 0.8399689,
+          "sell": 0.8655518,
+          "asOf": "2026-10-10 19:27:00"
+        },
+        "JPY": {
+          "buy": 0.0416324,
+          "sell": 0.0429004,
+          "asOf": "2026-10-10 19:27:00"
+        },
+        "USD": {
+          "buy": 6.5918663,
+          "sell": 6.7926338,
+          "asOf": "2026-10-10 19:27:00"
+        }
+      },
+      "source": "https://www.hangseng.com.cn/zh-cn/index/useful-information/deposit-exchange-rates/"
     }
   },
   "unit": "CNY per 1 foreign currency",
@@ -269,6 +299,52 @@ window.MONEY_FLOW_QUOTES = {
         }
       },
       "source": "https://www.bochk.com/whk/rates/exchangeRatesUSD/exchangeRatesUSD-input.action?lang=cn",
+      "unit": "foreign currency per 1 USD; Hong Kong renminbi is CNH"
+    },
+    "hang": {
+      "quotes": {
+        "HKD": {
+          "bidPerUsd": 7.819,
+          "askPerUsd": 7.878,
+          "asOf": "2026-10-10 23:26:00"
+        },
+        "CNH": {
+          "bidPerUsd": 6.60779177,
+          "askPerUsd": 6.77852349,
+          "asOf": "2026-10-10 23:26:00",
+          "path": "via-HKD",
+          "legs": {
+            "usdBuy": 7.819,
+            "usdSell": 7.878,
+            "cnhBuy": 1.1622,
+            "cnhSell": 1.1833
+          }
+        }
+      },
+      "source": "https://www.hangseng.com/en-hk/rates/foreign-currency-tt-exchange-rates/",
+      "unit": "foreign currency per 1 USD; Hong Kong renminbi is CNH"
+    },
+    "hsbc": {
+      "quotes": {
+        "HKD": {
+          "bidPerUsd": 7.8134,
+          "askPerUsd": 7.8823,
+          "asOf": "2026-10-10 04:57:16"
+        },
+        "CNH": {
+          "bidPerUsd": 6.60976229,
+          "askPerUsd": 6.77755804,
+          "asOf": "2026-10-10 04:57:16",
+          "path": "via-HKD",
+          "legs": {
+            "usdBuy": 7.8134,
+            "usdSell": 7.8823,
+            "cnhBuy": 1.163,
+            "cnhSell": 1.1821
+          }
+        }
+      },
+      "source": "https://www.hsbc.com.hk/investments/products/foreign-exchange/currency-rate/",
       "unit": "foreign currency per 1 USD; Hong Kong renminbi is CNH"
     }
   }

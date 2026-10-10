@@ -29,9 +29,15 @@ ABC_URL = "https://ewealth.abchina.com.cn/app/data/api/DataService/ExchangeRateV
 COMM_URL = "https://www.bankcomm.com/SITE/queryExchangeResult.do"
 HSBC_URL = "https://www.services.cn-banking.hsbc.com.cn/mobile/channel/digital-proxy/cnyTransfer/ratesInfo/remittanceRate"
 CIB_URL = "https://personalbank.cib.com.cn/pers/main/pubinfo/ifxQuotationQuery/list"
+HANG_HK_URL = "https://rbwm-api.hsbc.com.hk/pws-hk-hase-rates-papi-prod-proxy/v1/fxtt-exchange-rates"
+HSBC_HK_URL = "https://rbwm-api.hsbc.com.hk/digital-pws-tools-investments-eapi-prod-proxy/v1/investments/exchange-rate?locale=en_HK"
+HANG_CN_URL = "https://hacndb-api.hangseng.com.cn/hacn-mobile-experience-platform-papi-prod-proxy/v1/exchange-rate"
 BANK_URLS = {"boc": BOC_URL, "cmb": CMB_URL, "icbc": ICBC_URL, "ccb": CCB_URL,
-             "abc": ABC_URL, "comm": COMM_URL, "hsbc": HSBC_URL, "cib": CIB_URL, "bochk": BOCHK_USD_URL}
+             "abc": ABC_URL, "comm": COMM_URL, "hsbc": HSBC_URL, "cib": CIB_URL, "bochk": BOCHK_USD_URL, "hanghk": HANG_HK_URL, "hsbchk": HSBC_HK_URL, "hang": HANG_CN_URL}
 SOURCE_URLS = {**BANK_URLS, "cmb": "https://fx.cmbchina.com/hq/",
+               "hang": "https://www.hangseng.com.cn/zh-cn/index/useful-information/deposit-exchange-rates/",
+               "hanghk": "https://www.hangseng.com/en-hk/rates/foreign-currency-tt-exchange-rates/",
+               "hsbchk": "https://www.hsbc.com.hk/investments/products/foreign-exchange/currency-rate/",
                "cib": "https://personalbank.cib.com.cn/pers/main/pubinfo/ifxQuotationQuery.do",
                "icbc": "https://www.icbc.com.cn/page/721852558099644433.html",
                "ccb": "https://ebank1.ccb.com/chn/forex/exchange-quotations.shtml",
@@ -129,6 +135,40 @@ def required_quotes(out, bank):
     return out
 
 
+def parse_hang_hk(payload):
+    """Price two actual HKD legs, not an invented preferential USD/CNH quote."""
+    at = datetime.fromisoformat(payload["lastUpdateTime"]).astimezone(
+        timezone(timedelta(hours=8))).replace(tzinfo=None).isoformat(sep=" ")
+    rows = {row["ccyDisplayCode"]: row for row in payload["fxttExchangeRates"]}
+    usd = validate_quote(rows["USD"]["ttBuyRate"], rows["USD"]["ttSellRate"], at, divisor=1)
+    cnh = validate_quote(rows["CNH"]["ttBuyRate"], rows["CNH"]["ttSellRate"], at, divisor=1)
+    return hkd_cross_quotes(usd, cnh)
+
+
+def parse_hsbc_hk(payload):
+    rows = {row["ccy"]: row for row in payload["detailRates"]}
+    quotes = {}
+    for currency in ("USD", "CNY"):
+        row = rows[currency]
+        at = datetime.strptime(row["lastUpdateDate"], "%Y-%m-%d %H:%M:%S %z").astimezone(
+            timezone(timedelta(hours=8))).replace(tzinfo=None).isoformat(sep=" ")
+        # ttBuyRt/ttSelRt are account conversion rates. bankBuyRt/bankSellRt
+        # refer to notes and must not enter an account-to-account calculation.
+        quotes[currency] = validate_quote(row["ttBuyRt"], row["ttSelRt"], at, divisor=1)
+    return hkd_cross_quotes(quotes["USD"], quotes["CNY"])
+
+
+def hkd_cross_quotes(usd, cnh):
+    at = min(usd["asOf"], cnh["asOf"])
+    cross = validate_quote(usd["buy"] / cnh["sell"], usd["sell"] / cnh["buy"], at, divisor=1)
+    return {
+        "HKD": {"bidPerUsd": usd["buy"], "askPerUsd": usd["sell"], "asOf": usd["asOf"]},
+        "CNH": {"bidPerUsd": cross["buy"], "askPerUsd": cross["sell"], "asOf": at,
+                "path": "via-HKD", "legs": {"usdBuy": usd["buy"], "usdSell": usd["sell"],
+                                              "cnhBuy": cnh["buy"], "cnhSell": cnh["sell"]}},
+    }
+
+
 def parse_icbc(payload):
     if payload.get("code") != 0:
         raise ValueError("ICBC unsuccessful response")
@@ -203,6 +243,13 @@ def parse_cib(payload, observed_at):
     return required_quotes(out, "CIB")
 
 
+def parse_hang_cn(payload):
+    at = datetime.fromisoformat(payload["time"]).isoformat(sep=" ", timespec="seconds")
+    quotes = {row["currencyCode"]: validate_quote(row["ttBuyRate"], row["ttSellRate"], at, divisor=1)
+              for row in payload.get("exchangeRateList", []) if row.get("currencyCode") in CURRENCIES.values()}
+    return required_quotes(quotes, "Hang Seng China")
+
+
 def read_snapshot(path):
     if not path.exists():
         return {"banks": {}}
@@ -228,23 +275,27 @@ def fetch_bank(bank):
         observed_at = datetime.now(timezone(timedelta(hours=8))).replace(tzinfo=None).isoformat(sep=" ", timespec="seconds")
         return parse_cib(payload, observed_at)
     url = BANK_URLS[bank]
-    request = Request(url, data=b"{}" if bank == "icbc" else None,
-                      headers={"User-Agent": "Mozilla/5.0", "Referer": SOURCE_URLS[bank], "Content-Type": "application/json"})
+    headers = {"User-Agent": "Mozilla/5.0", "Referer": SOURCE_URLS[bank], "Content-Type": "application/json"}
+    if bank == "hang":
+        headers.update({"Accept": "application/json", "X-HSBC-Locale": "zh_CN", "X-HSBC-Channel-Id": "PWS", "X-HSBC-Chnl-CountryCode": "CN", "Accept-Language": "zh-CN"})
+    request = Request(url, data=b"{}" if bank == "icbc" else None, headers=headers)
     with urlopen(request, timeout=25) as response:
         body = response.read().decode("utf-8")
     parsers = {"boc": parse_boc, "cmb": parse_cmb, "bochk": parse_bochk, "icbc": parse_icbc,
-               "ccb": parse_ccb, "abc": parse_abc, "comm": parse_comm, "hsbc": parse_hsbc}
+               "ccb": parse_ccb, "abc": parse_abc, "comm": parse_comm, "hsbc": parse_hsbc, "hanghk": parse_hang_hk, "hsbchk": parse_hsbc_hk, "hang": parse_hang_cn}
     return parsers[bank](body if bank in ("boc", "bochk", "ccb") else json.loads(body))
 
 
 def merge_bank(snapshot, bank, quotes):
-    section = snapshot.setdefault("offshoreUsd" if bank == "bochk" else "banks", {})
-    previous = section.get(bank, {}).get("quotes", {})
+    offshore_ids = {"bochk": "bochk", "hanghk": "hang", "hsbchk": "hsbc"}
+    section = snapshot.setdefault("offshoreUsd" if bank in offshore_ids else "banks", {})
+    bank_id = offshore_ids.get(bank, bank)
+    previous = section.get(bank_id, {}).get("quotes", {})
     if any(key in previous and row["asOf"] < previous[key]["asOf"] for key, row in quotes.items()):
         raise ValueError("bank timestamp would regress")
-    section[bank] = {"quotes": {**previous, **quotes}, "source": SOURCE_URLS[bank]}
-    if bank == "bochk":
-        section[bank]["unit"] = "foreign currency per 1 USD; Hong Kong renminbi is CNH"
+    section[bank_id] = {"quotes": {**previous, **quotes}, "source": SOURCE_URLS[bank]}
+    if bank in offshore_ids:
+        section[bank_id]["unit"] = "foreign currency per 1 USD; Hong Kong renminbi is CNH"
 
 
 def main():

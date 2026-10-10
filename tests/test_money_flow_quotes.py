@@ -7,10 +7,68 @@ import unittest
 from unittest.mock import patch
 
 from scripts.refresh_money_flow_quotes import (parse_boc, parse_cmb, parse_bochk, parse_icbc,
-    parse_ccb, parse_abc, parse_comm, parse_hsbc, parse_cib, validate_quote, merge_bank, read_snapshot, main)
+    parse_ccb, parse_abc, parse_comm, parse_hsbc, parse_cib, parse_hsbc_hk, parse_hang_hk,
+    hkd_cross_quotes, parse_hang_cn, validate_quote, merge_bank, read_snapshot, main)
 
 
 class BankQuotesTests(unittest.TestCase):
+    def test_hang_seng_china_uses_current_api_timestamp_and_one_unit_cny_quotes(self):
+        raw = json.loads((Path(__file__).parent / 'fixtures' / 'hang-cn-20261010.json').read_text())
+        quotes = parse_hang_cn(raw)
+        self.assertEqual(quotes['USD'], {'buy': 6.5918663, 'sell': 6.7926338, 'asOf': '2026-10-10 19:27:00'})
+        self.assertEqual(quotes['HKD']['sell'], .8655518)
+        self.assertNotIn('ATS', quotes)
+        snapshot = {'offshoreUsd': {'hang': {'quotes': {'CNH': {'bidPerUsd': 6.5, 'askPerUsd': 6.8}}}}}
+        before = copy.deepcopy(snapshot['offshoreUsd'])
+        merge_bank(snapshot, 'hang', quotes)
+        self.assertEqual(snapshot['offshoreUsd'], before)
+        self.assertEqual(snapshot['banks']['hang']['quotes']['USD'], quotes['USD'])
+        del raw['time']
+        with self.assertRaises(KeyError):
+            parse_hang_cn(raw)
+
+    def test_hong_kong_banks_use_their_own_tt_prices_and_two_explicit_hkd_legs(self):
+        fixtures = Path(__file__).parent / 'fixtures'
+        hsbc = parse_hsbc_hk(json.loads((fixtures / 'hsbc-hk-20261010.json').read_text()))
+        hang = parse_hang_hk(json.loads((fixtures / 'hang-hk-20261010.json').read_text()))
+        self.assertEqual(hsbc['HKD']['bidPerUsd'], 7.8134)
+        self.assertEqual(hsbc['HKD']['askPerUsd'], 7.8823)
+        self.assertAlmostEqual(hsbc['CNH']['bidPerUsd'], 7.8134 / 1.1821, places=7)
+        self.assertAlmostEqual(hsbc['CNH']['askPerUsd'], 7.8823 / 1.163, places=7)
+        self.assertEqual(hang['HKD']['bidPerUsd'], 7.819)
+        self.assertAlmostEqual(hang['CNH']['bidPerUsd'], 7.819 / 1.1833, places=7)
+        self.assertAlmostEqual(hang['CNH']['askPerUsd'], 7.878 / 1.1622, places=7)
+        self.assertEqual(hsbc['CNH']['path'], 'via-HKD')
+        self.assertEqual(hsbc['CNH']['legs']['usdBuy'], hsbc['HKD']['bidPerUsd'])
+        snapshot = {'banks': {'hsbc': {'quotes': {'USD': {'buy': 6.7, 'sell': 6.8, 'asOf': '2026-10-09'}}}}}
+        before = copy.deepcopy(snapshot['banks'])
+        merge_bank(snapshot, 'hsbchk', hsbc)
+        merge_bank(snapshot, 'hanghk', hang)
+        self.assertEqual(snapshot['banks'], before)
+        self.assertEqual(snapshot['offshoreUsd']['hsbc']['quotes'], hsbc)
+        self.assertEqual(snapshot['offshoreUsd']['hang']['quotes'], hang)
+        older = copy.deepcopy(hsbc)
+        older['CNH']['asOf'] = '2026-01-01'
+        with self.assertRaisesRegex(ValueError, 'regress'):
+            merge_bank(snapshot, 'hsbchk', older)
+        self.assertEqual(snapshot['offshoreUsd']['hsbc']['quotes'], hsbc)
+
+    def test_hong_kong_cross_uses_the_older_leg_timestamp_and_rejects_bad_prices(self):
+        q = hkd_cross_quotes({'buy': 7.8, 'sell': 8, 'asOf': '2026-10-09 12:00:00'},
+                             {'buy': 1.1, 'sell': 1.2, 'asOf': '2026-10-09 11:00:00'})
+        self.assertEqual(q['HKD']['asOf'], '2026-10-09 12:00:00')
+        self.assertEqual(q['CNH']['asOf'], '2026-10-09 11:00:00')
+        self.assertAlmostEqual(q['CNH']['bidPerUsd'], 6.5)
+        self.assertAlmostEqual(q['CNH']['askPerUsd'], 8 / 1.1, places=7)
+        source = json.loads((Path(__file__).parent / 'fixtures/hsbc-hk-20261010.json').read_text())
+        for row in source['detailRates']:
+            row['bankBuyRt'], row['bankSellRt'] = 999, 1000
+        self.assertEqual(parse_hsbc_hk(source)['HKD']['bidPerUsd'], 7.8134)
+        usd = next(x for x in source['detailRates'] if x['ccy'] == 'USD')
+        usd['ttBuyRt'] = 99
+        with self.assertRaisesRegex(ValueError, 'bid/ask'):
+            parse_hsbc_hk(source)
+
     def test_icbc_remittance_prices_are_per_100_and_not_reference_or_cash_prices(self):
         payload = {'code': 0, 'data': [dict(currencyENName=c, foreignBuy=b, foreignSell=s,
             reference='1', cashBuy='1', publishDate='2026-01-02', publishTime='10:20:00')
