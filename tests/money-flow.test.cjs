@@ -825,7 +825,7 @@ test('confirmed free BOC mobile transfers preserve the foreign principal without
 
 test('all five trading accounts retain fees for USD, HKD and CNH without inventing bank FX quotes', () => {
   for (const route of ['USD', 'HKD', 'CNH']) {
-    const input = { ...mainlandConfig, route, broker: 'ibkr', bank: 'za', returnBank: 'za', returnMethod: 'swift',
+    const input = { ...mainlandConfig, route, broker: 'ibkr', bank: 'za', returnBank: 'bochk', returnMethod: 'swift',
       fxMode: 'manual', mainlandMethod: 'swift', depositMethod: route === 'USD' ? 'chats' : 'fps', tradeFeeUsd: '', profitUsd: 0 };
     const data = M.journeyPlans(input, D, richQuotes);
     assert.equal(data.alternatives.broker.length, 5);
@@ -1195,6 +1195,17 @@ test('the inline bank management fee identifies HSBC even when the receiving ban
   assert.match(bankNode, /香港收款银行：中银香港/);
   assert.match(bankNode, /账户使用 12个月 · 汇丰 HSBC One管理费/);
   assert.doesNotMatch(bankNode, /中银香港管理费 [1-9]/);
+});
+
+test('withdrawal capability and minimum errors appear at the withdrawal action, including a USD-balance endpoint', () => {
+  const input = { ...currentRoute, bank: 'bochk', returnBank: 'za', broker: 'chief', depositMethod: 'internal', outcome: 'usd-balance' };
+  const html = moneyUi(input).render(), withdrawal = html.split('aria-label="出金 → 众安 ZA Bank"')[1].split('</section>')[0];
+  assert.match(withdrawal, /不接受支票存款/); assert.equal((html.match(/不接受支票存款/g) || []).length, 1);
+  assert.match(withdrawal, /本次无法出金/); assert.doesNotMatch(withdrawal, /已核费用/);
+  assert.match(html, /买入美股 · 1笔/); assert.match(html, /最后可计余额/);
+  const small = moneyUi({ ...input, broker: 'usmart', budgetCny: 20 * cibQuotes.banks.boc.quotes.USD.sell,
+    startBank: 'boc', route: 'USD', mainlandMethod: 'boc-mobile', startSell: '', tradeFeeUsd: '0' }).render();
+  assert.match(small.split('aria-label="出金 → 众安 ZA Bank"')[1].split('</section>')[0], /须超过20 USD/);
 });
 
 test('RMB source is not described as free when its sender tariff remains unpriced', () => {

@@ -681,7 +681,7 @@
       add('entryInward', '香港首次汇入费', inward == null ? null : inward * refs.HKD * count, 'entry');
       steps.hongKong = balance;
       let trading = null, taxCny = 0;
-      const downstreamError = (error, errorStage = '03') => ({ error, errorStage, rows: [...rows,
+      const downstreamError = (error, errorStage = '03', errorAction = errorStage) => ({ error, errorStage, errorAction, rows: [...rows,
         { key: 'account', label: '香港账户期间管理费', cny: accountCny, step: 'spend', items: accountItems },
         { key: 'extra', label: '开户及资产机会成本', cny: extraCny, step: 'spend' }], steps, startSell: quote, route, mainlandMethod, fxMode, refs, budgetCny: budget, start, bank, returning, exit, broker: provider,
         trading: trading?.error ? null : trading, taxCny, indicativeFx: rows.find(x => x.key === 'brokerSpread' && x.cny == null)?.label || '',
@@ -765,7 +765,8 @@
       if (!keepInBroker) {
       const localCheque = provider.localChequeBanks?.includes(returning.id);
       const virtualReturn = provider.withdrawalMethod === 'local' && !localCheque;
-      if (virtualReturn && balance <= provider.virtualWithdrawalMinimumUsd) return downstreamError(provider.name + '美元提至数字银行须超过' + provider.virtualWithdrawalMinimumUsd + ' USD。', '04');
+      if (provider.withdrawalMethod === 'cheque' && returning.acceptsCheques === false) return downstreamError(returning.name + '不接受支票存款；' + provider.name + '的美元支票不能直接存入该账户。已保留券商美元余额。', '04', 'withdraw');
+      if (virtualReturn && balance <= provider.virtualWithdrawalMinimumUsd) return downstreamError(provider.name + '美元提至数字银行须超过' + provider.virtualWithdrawalMinimumUsd + ' USD。', '04', 'withdraw');
       const withdrawal = provider.withdrawalMinimumHkd && balance * refs.USD / refs.HKD < provider.withdrawalMinimumHkd ? null :
         withdrawalIndex <= (provider.freeWithdrawals ?? 0) ? 0 : provider.withdrawUsd;
       add('withdraw', provider.name + '出金费', withdrawal == null ? null : withdrawal * refs.USD, 'withdraw');

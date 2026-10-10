@@ -172,10 +172,12 @@
       account(key, label, item) + '<div class="flow-node-options">' + extra + '</div>' + balanceHtml + '</section>';
   }
   function edge(data, keys, title, controls, stage, note = '') {
-    const r = data.selected || data.partial, pending = data.error && (data.partial?.errorStage || data.errorStage || '01') === stage ? data.error : '';
+    const r = data.selected || data.partial, failedAction = data.partial?.errorAction || data.partial?.errorStage || data.errorStage || '01';
+    const pending = data.error && (failedAction === stage || failedAction === '04' && stage === 'withdraw' && state.outcome === 'usd-balance') ? data.error : '';
     const feeNamesIssue = pending && costRows(r, keys).some(item => item.status === pending || item.items?.some(part => part.status === pending));
+    const edgeLoss = pending && stage === 'withdraw' && !costRows(r, keys).length ? '<div class="flow-edge-loss"><strong>本次无法出金</strong></div>' : loss(r, keys, pending);
     return '<section class="flow-edge" aria-label="' + esc(title) + '"><span class="flow-edge-arrow" aria-hidden="true">↓</span><div class="flow-edge-heading"><div class="flow-edge-title"><h3>' + esc(title) + '</h3>' +
-      action('依据', 'detail', 'data-value="edge-' + stage + '" aria-label="' + esc(title + '收费依据') + '"', 'text-link') + '</div>' + loss(r, keys, pending) + '</div><div class="flow-edge-main">' +
+      action('依据', 'detail', 'data-value="edge-' + stage + '" aria-label="' + esc(title + '收费依据') + '"', 'text-link') + '</div>' + edgeLoss + '</div><div class="flow-edge-main">' +
       (controls ? '<div class="flow-edge-controls">' + controls + '</div>' : '') + (note ? '<p class="flow-edge-note">' + note + '</p>' : '') +
       '<div class="flow-edge-fees">' + edgeFees(r, keys, stage) + '</div>' +
       (pending && !feeNamesIssue ? '<p class="flow-error" role="status">' + esc(pending) + '</p>' : '') + '</div></section>';

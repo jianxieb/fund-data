@@ -214,3 +214,12 @@ test('each stock-venue recommendation matches an independent exhaustive route co
   assert.equal(choices.length, minimum.size);
   for (const p of choices) close(p.result.costCny, minimum.get(p.config.broker));
 });
+
+test('a bank that rejects cheques is an unsupported Chief withdrawal route, not an unknown cheque fee', () => {
+  const result = run({ broker: 'chief', depositMethod: 'internal', returnBank: 'za', outcome: 'usd-balance', inwardHkd: 0 });
+  assert.equal(result.selected, undefined); assert.match(result.error, /不接受支票存款/);
+  assert.equal(result.partial.errorAction, 'withdraw'); assert.equal(result.partial.errorStage, '04');
+  assert.ok(Number.isFinite(result.partial.steps.proceedsUsd)); assert.equal(result.partial.steps.returnUsd, undefined);
+  assert.ok(result.partial.trading.orders.length > 0);
+  assert.ok(!result.partial.rows.some(x => x.key === 'returnInward'));
+});

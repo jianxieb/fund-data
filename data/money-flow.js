@@ -91,6 +91,7 @@
       ibDeposits: { name: 'IBKR · 券商不收现金入金费，银行费另计', url: 'https://www.interactivebrokers.com/campus/gabe-funding-demo/' },
       ibLocalUsd: { name: '2026公开操作记录 · IBKR香港渣打收款、USD CHATS全额到账', url: 'https://yolkinsight.hk/ib-funds/' },
       ibLocalCiti: { name: '公开操作记录 · IBKR香港花旗USD收款', url: 'https://www.kdkh.com/guide/ibkr/hsbc-ibkr.html' },
+      zaAccountTerms: { name: 'ZA账户条款 · 储蓄账户不接受支票存款（B.I.1.1）', url: 'https://cdn.za.group/bank/app/info/zh-hans/static/1003322.html' },
       ibEdda: { name: 'IBKR · 香港HKD/CNH eDDA入金', url: 'https://ibkrguides.com/clientportal/transferandpay/edda-deposit.htm' },
       ibStocks: { name: 'IBKR · 美股Pro Fixed佣金及代收费', url: 'https://www.interactivebrokers.com/en/pricing/commissions-stocks.php' },
       trade25: { name: '汇丰 · Trade25资格及每月25万港元额度', url: 'https://www.hsbc.com.hk/investments/products/stocks/trade25/' },
@@ -138,7 +139,7 @@
       { id: 'sc', name: '渣打中国', group: 'sc', rate: 0, minimum: 0, maximum: 0, telegram: 0, inwardCny: 0, standardTariff: { currencies: ['USD', 'HKD'], rate: 0, minimum: 0, maximum: 0, telegram: 0 }, tariffChannel: '优先理财 · 网上外币汇款（SHA）', required: 'sc', thresholdCny: 500000, includedIntermediary: true, feeText: '优先理财网上外币汇款：手续费、电讯费0；同名全球账户渠道OUR代理费另免', condition: '按优先理财客户计算；同名全球账户渠道选OUR代理费免，普通境外汇款SHA不豁免其他银行收费', sources: ['sc', 'scTier', 'scCnTariff'] }
     ],
     hkBanks: [
-      { id: 'za', name: '众安 ZA Bank', group: 'za', inwardHkd: 0, localHkd: 0, localUsd: 0, outwardHkd: 0, outwardChanges: [{ from: '2026-11-01', fee: 70 }], monthlyHkd: 0, thresholdHkd: 0, cardForeignPct: 1.95, condition: '在港申请；无账户管理费。外币/海外处理港元签账有1.95%费用', sources: ['za', 'zaNov', 'zaOpen', 'zaCard'] },
+      { id: 'za', name: '众安 ZA Bank', group: 'za', inwardHkd: 0, localHkd: 0, localUsd: 0, acceptsCheques: false, outwardHkd: 0, outwardChanges: [{ from: '2026-11-01', fee: 70 }], monthlyHkd: 0, thresholdHkd: 0, cardForeignPct: 1.95, condition: '在港申请；无账户管理费，不接受支票存款。外币/海外处理港元签账有1.95%费用', sources: ['za', 'zaNov', 'zaOpen', 'zaCard', 'zaAccountTerms'] },
       { id: 'hsbc', name: '汇丰 HSBC One', group: 'hsbc', inwardHkd: 0, localHkd: 0, localUsd: 0, localUsdChequeHkd: 0, outwardHkd: 70, monthlyHkd: 100, thresholdHkd: 10000, directUsdCard: true, directCnhCard: true, cardForeignPct: 0, condition: '2026年起新开非香港身份证One：低于1万港元收100港元/月；扣账卡外币交易费免', sources: ['hsbcHk', 'hsbcCard', 'hsbcHkFx'] },
       { id: 'bochk', name: '中银香港', group: 'boc', inwardHkd: 60, inwardSmallLimitHkd: 500, sameGroupWaiver: true, localHkd: 0, localUsd: 0, localUsdChequeHkd: 0, outwardHkd: 65, monthlyHkd: 0, thresholdHkd: 0, directUsdCard: true, directCnhCard: true, cardForeignPct: 0, condition: '普通个人账户免月费；一般汇入超过500港元收60港元，内地中行同名优惠可免。网上同名汇至内地中行的快汇及SWIFT基本手续费豁免，代理费另计', sources: ['bochkAccount', 'bochkSame', 'bochkCard', 'bochkCheque'] },
       { id: 'hang', name: '恒生 · 优进理财', group: 'hang', inwardHkd: 0, sameGroupWaiver: true, localHkd: 0, localUsd: 0, localUsdChequeHkd: 0, outwardHkd: 65, monthlyHkd: 0, thresholdHkd: 0, directUsdCard: true, directCnhCard: true, cardForeignPct: 0, condition: '优进理财无最低理财总值/月费；跨域转账须已登记，并经指定页面提交', sources: ['hangHk', 'hangOpen', 'hangCard', 'hangHkFx'] },
