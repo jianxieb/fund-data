@@ -1250,6 +1250,37 @@ test('a missing ICBC quote preserves the fixed telegram tariff and named full-am
   assert.match(html, /费用小计 · 含估算/); assert.doesNotMatch(html, /NaN|undefined/);
 });
 
+test('mainland receiving-bank choices show inward tariffs and USD bid prices regardless of the initial remittance currency', () => {
+  const quotes = structuredClone(cibQuotes);
+  quotes.banks.icbc = { quotes: { USD: { buy: 6.60, sell: 6.90, asOf: '2026-10-09 10:00:00' } } };
+  for (const route of ['USD', 'HKD', 'CNH']) {
+    const ui = moneyUi({ ...currentRoute, route, fxMode: 'bank', outcome: 'mainland', exitBank: 'icbc' }, quotes);
+    ui.render(); ui.act('pick', '', 'exitBank');
+    const modal = ui.modal();
+    assert.match(modal, /境外USD汇入手续费：0.00 CNY/);
+    assert.match(modal, /境外USD汇入手续费：尚未取得适用价目/);
+    assert.match(modal, /<b>6.6<\/b><small>CNY\/USD · 结汇/);
+    assert.doesNotMatch(modal, /汇出|电讯|全额到账|前30笔/);
+  }
+});
+
+test('RMB source descriptions never substitute foreign-wire tariffs in the picker, channel or evidence', () => {
+  for (const startBank of ['icbc', 'comm']) {
+    const ui = moneyUi({ ...currentRoute, startBank, route: 'CNH', fxMode: 'bank', mainlandMethod: 'swift', outcome: 'broker-balance' });
+    assert.match(ui.render(), /人民币跨境汇款/);
+    ui.act('pick', '', 'startBank');
+    assert.match(ui.modal(), /人民币跨境汇出手续费／电讯费：尚未取得适用价目/);
+    assert.doesNotMatch(ui.modal(), /USD全额到账|网银0.8‰|手机银行同名优惠单列/);
+    ui.act('detail', '', 'edge-01');
+    assert.match(ui.modal(), /人民币跨境汇出手续费／电讯费：尚未取得适用价目/);
+    assert.doesNotMatch(ui.modal(), /USD全额到账另加|网银0.8‰/);
+  }
+  const boc = moneyUi({ ...currentRoute, startBank: 'boc', route: 'CNH', fxMode: 'bank', mainlandMethod: 'swift' });
+  boc.render(); boc.act('detail', '', 'edge-01');
+  assert.match(boc.modal(), /人民币跨境1‰，50–260元＋80元电讯费/);
+  assert.doesNotMatch(boc.modal(), /手机银行同名优惠单列/);
+});
+
 test('CIB RMB channel, picker and fee detail agree without an FX-only free-transfer label', () => {
   const ui = moneyUi({ ...currentRoute, startBank: 'cib', bank: 'bochk', route: 'CNH', count: 1, mainlandMethod: 'swift', senderFeeCny: '' });
   const html = ui.render();

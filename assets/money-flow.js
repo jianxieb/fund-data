@@ -68,9 +68,18 @@
     return action('<span><small>' + esc(label) + '</small><strong>' + esc(shortName(item)) + '</strong></span><span class="flow-account-change">更换 <i aria-hidden="true">↗</i></span>',
       'pick', 'data-value="' + key + '" aria-haspopup="dialog" aria-label="' + esc(label + '：' + shortName(item) + '，更换') + '"', 'flow-account-button');
   }
+  function sourceTariffCopy(bank) {
+    if (state.route !== 'CNH') return bank.feeText;
+    if (bank.cnhTariff?.feeText) return bank.cnhTariff.feeText;
+    if (bank.cnhTariff === true) return '人民币跨境' + num(bank.rate * 1000, 0) + '‰，' + bank.minimum + '–' + bank.maximum + '元＋' + bank.telegram + '元电讯费';
+    return '人民币跨境汇出手续费／电讯费：尚未取得适用价目';
+  }
   function entryMethods() {
     const s = selected(), tariff = state.route === 'CNH' && typeof s.start?.cnhTariff === 'object' ? s.start.cnhTariff : s.start;
-    const values = [['swift', s.start?.id === 'cib' && state.route !== 'CNH' ? '普通汇款 · 寰宇人生卡' : tariff?.tariffChannel || '普通汇款 · 公开标准价']];
+    let channel = s.start?.id === 'cib' ? '普通汇款 · 寰宇人生卡' : tariff?.tariffChannel || '普通汇款 · 公开标准价';
+    if (state.route === 'CNH') channel = typeof s.start.cnhTariff === 'object' ? tariff.tariffChannel :
+      s.start.cnhTariff ? '人民币跨境电汇 · 公开标准价' : '人民币跨境汇款';
+    const values = [['swift', channel]];
     if (s.start?.id === 'boc' && s.bank?.id === 'bochk' && state.route !== 'CNH') values.unshift(['boc-mobile', '手机银行 · 向同名境外中行汇款']);
     if (s.start?.id === 'cib' && state.route !== 'CNH') values.push(['cib-go', '小额全额到账 · 另加50 CNY/笔']);
     if (state.route === 'USD' && s.start?.fullAmountUsd != null) values.push(['full', '美元全额到账 · 另加' + s.start.fullAmountUsd + ' USD/笔']);
@@ -401,9 +410,14 @@
     const small = options.get(key), isMainland = ['startBank', 'exitBank'].includes(key), isBank = ['bank', 'returnBank'].includes(key);
     const list = key === 'outcome' ? outcomes.map(([id, name]) => ({ id, name })) : isMainland ? mainland : isBank ? banks : key === 'broker' ? brokers : (small?.values || []).map(([id, name]) => ({ id, name }));
     const comparison = key === 'startBank' ? M.purchaseComparison({ ...state, date: today() }, comparisonData, window.MONEY_FLOW_QUOTES || {}) : null;
-    const copy = item => key === 'broker' ? item.feeShort : isMainland ? state.route === 'CNH' && item.cnhTariff?.feeText ? item.cnhTariff.feeText : item.feeText : isBank ?
+    const copy = item => key === 'broker' ? item.feeShort : key === 'exitBank' ? '境外USD汇入手续费：' + (item.inwardCny == null ? '尚未取得适用价目' : num(item.inwardCny) + ' CNY') : key === 'startBank' ? sourceTariffCopy(item) : isBank ?
       ({ bochk: '中行同名汇入0；本地美元转账0；账户月费0', hsbc: '汇入及本地美元转账0；One月费按豁免条件', za: '本地美元转账0；账户月费0；可开美股交易', hang: '同名跨域转账0；本地美元转账0；优进月费0', sc: '本地USD转账标准费22 USD；快易月费0' })[item.id] : '';
     const price = item => {
+      if (key === 'exitBank') {
+        const quote = window.MONEY_FLOW_QUOTES?.banks?.[item.id]?.quotes?.USD;
+        return '<span class="flow-picker-price">' + (quote?.buy > 0 && M.quoteFresh(quote, today()) ? '<b>' + quoteNum(quote.buy) + '</b><small>CNY/USD · 结汇</small>' :
+          '<small>' + (quote?.buy > 0 ? 'USD结汇牌价超过3天' : '尚未取得该行USD结汇牌价') + '</small>') + '</span>';
+      }
       const q = comparison?.rows.find(x => x.bank.id === item.id);
       if (!comparison || state.route === 'CNH') return '';
       return '<span class="flow-picker-price">' + (q?.comparable ? '<b>' + quoteNum(q.sell) + '</b><small>CNY/' + state.route + '</small><em>' +
@@ -450,7 +464,7 @@
       const exchanges = costRows(r, edgeKeys).flatMap(x => x.exchanges || []);
       if (exchanges.length) content += '<h3>实际兑换顺序</h3><div class="flow-cost-detail">' + exchanges.map(x => '<div><span>' + num(x.input) + ' ' + x.from + ' → ' + num(x.output) + ' ' + x.to + '</span><b>1 ' + x.from + ' = ' + quoteNum(x.rate) + ' ' + x.to + '</b></div>').join('') + '</div>';
       if (stage === '01') {
-        content += '<p>' + esc(transferHint() || (state.route === 'CNH' ? s.start.cnhTariff?.feeText : '') || s.start.feeText) + '</p>';
+        content += '<p>' + esc(transferHint() || sourceTariffCopy(s.start)) + '</p>';
         if (s.start.id === 'cib' && state.route !== 'CNH') content += field('usedFreeTransfers', '优惠期内已汇出笔数', '笔') + '<p>寰宇人生外汇汇出手续费免，优惠期前30笔电讯费免；优惠至2027-06-30。</p>';
       }
       if (stage === 'trade') content += tradeLine(r, 'buy') + tradeLine(r, 'sell');
