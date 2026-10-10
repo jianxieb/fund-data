@@ -1280,15 +1280,41 @@ test('missing funding FX is named consistently in the flow and details without a
       mainlandMethod: 'swift', depositMethod: fxMode === 'bank' ? 'chats' : 'fps', outcome: 'broker-balance' };
     const r = M.calculatorJourney(config, D, cibQuotes).selected;
     assert.ok(r?.indicativeFx);
+    assert.match(r.rows.find(x => x.key === 'trade').estimate, /交易金额按参考汇率估算/);
+    const parts = r.rows.find(x => x.key === 'trade').items;
+    const knownParts = broker === 'za' ? ['买入佣金', '卖出佣金', '买入SEC费', '买入TAF费', '买入CAT费'] : ['买入平台费', '卖出平台费', '买入清算费', '买入SEC费', '买入TAF费'];
+    const estimatedParts = broker === 'za' ? ['买入平台费', '卖出平台费', '卖出SEC费'] : ['买入佣金', '卖出佣金', '买入CAT费', '卖出SEC费'];
+    for (const label of knownParts) assert.equal(parts.find(x => x.label === label).estimate, false, label);
+    for (const label of estimatedParts) assert.ok(parts.find(x => x.label === label).estimate, label);
+    for (const key of ['sender', 'entryInward', 'depositBank', 'depositBroker', 'account']) assert.equal(r.rows.find(x => x.key === key).estimate, undefined, key);
     const ui = moneyUi(config), html = ui.render();
     assert.match(html, expected);
+    const trade = html.split('aria-label="买入美股 → 卖出"')[1].split('</section>')[0];
+    assert.match(trade, /参考损耗/); assert.match(trade, /估算 .*? USD/);
+    assert.match(html.split('id="flow-live-summary"')[1], /费用小计 · 含估算/);
     for (const key of ['edge-03', 'cost']) {
       ui.act('detail', '', key);
       assert.match(ui.modal(), expected);
       assert.doesNotMatch(ui.modal(), /换汇.*?<b>按实际汇路收费|未报价换汇估值差额|本金 ＋/);
       if (key === 'cost') assert.match(ui.modal(), new RegExp('最后可计余额：' + r.steps.hongKong.toFixed(2) + ' CNH'));
+      if (key === 'cost') for (const label of knownParts) assert.doesNotMatch(ui.modal(), new RegExp(label + '</span><b>估算'));
     }
+    const quoted = M.calculatorJourney({ ...config, entryPrice: 7 }, D, cibQuotes).selected;
+    assert.equal(quoted.indicativeFx, ''); assert.equal(quoted.rows.find(x => x.key === 'trade').estimate, undefined);
+    const confirmedFee = M.calculatorJourney({ ...config, tradeFeeUsd: 10 }, D, cibQuotes).selected;
+    assert.equal(confirmedFee.rows.find(x => x.key === 'trade').estimate, undefined);
+    close(confirmedFee.rows.find(x => x.key === 'trade').cny, 10 * confirmedFee.refs.USD);
   }
+});
+
+test('unquoted funding propagates into amount-based conversion fees without changing fixed transfer tariffs', () => {
+  const config = { ...currentRoute, startBank: 'cib', bank: 'bochk', broker: 'ibkr', route: 'CNH', fxMode: 'auto', mainlandMethod: 'swift', depositMethod: 'fps',
+    outcome: 'cnh-card', returnBank: 'bochk', entryPrice: '', exitPrice: '' };
+  const r = M.calculatorJourney(config, D, cibQuotes).selected;
+  for (const key of ['brokerFx', 'trade', 'returnInward', 'exitFx']) assert.ok(r.rows.find(x => x.key === key).estimate, key);
+  for (const key of ['sender', 'depositBank', 'withdraw', 'brokerAccount', 'account']) assert.equal(r.rows.find(x => x.key === key).estimate, undefined, key);
+  const quoted = M.calculatorJourney({ ...config, entryPrice: 7.2 }, D, cibQuotes).selected;
+  for (const key of ['brokerFx', 'trade', 'returnInward', 'exitFx']) assert.equal(quoted.rows.find(x => x.key === key).estimate, undefined, key);
 });
 
 test('missing terminal and source FX never leak reference rates or an executable CNY equation into details', () => {

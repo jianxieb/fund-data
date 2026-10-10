@@ -162,7 +162,7 @@
   function detailRows(r, rows) {
     return '<div class="flow-cost-detail">' + rows.flatMap(item => (item.items?.length ? item.items : [item]).map(part =>
       '<div><span>' + esc(part.label) + (part.months != null ? '<small>' + num(part.monthlyHkd) + ' HKD/月 × ' + num(part.months, 0) + '个月</small>' : '') +
-      '</span><b>' + (part.cny == null ? esc(missingFeeStatus(r, item, part)) : cost(part.cny)) + '</b></div>')).join('') + '</div>';
+      '</span><b>' + (part.cny == null ? esc(missingFeeStatus(r, item, part)) : (part.estimate ?? item.estimate ? '估算 ' : '') + cost(part.cny)) + '</b></div>')).join('') + '</div>';
   }
   function loss(r, keys, pending = '') {
     const rows = costRows(r, keys), total = sumRows(rows), missing = rows.some(x => x.cny == null);
@@ -170,7 +170,8 @@
       keys.includes('brokerSpread') && r.quoteFreshness.entryMarket === false || keys.includes('exitFx') && r.quoteFreshness.exit === false);
     const variableFx = rows.some(x => x.cny == null && ['entryFx', 'brokerSpread', 'exitFx'].includes(x.key));
     const partial = !!pending || variableFx || missing;
-    const label = partial ? '已核费用' : stale ? '历史损耗' : rows.some(x => x.estimate) ? '参考损耗' : '损耗';
+    const estimated = rows.some(x => x.estimate);
+    const label = partial ? estimated ? '费用小计 · 含估算' : '已核费用' : stale ? '历史损耗' : estimated ? '参考损耗' : '损耗';
     const hasPrice = rows.some(x => x.cny != null);
     return '<div class="flow-edge-loss"><span>' + label + '</span><strong class="num">' + (hasPrice ?
       (partial ? cost(total) : pct(total / M.number(state.budgetCny))) : '—') + '</strong>' +
@@ -214,8 +215,9 @@
         if (item.key === 'entryFx' && state.route !== 'CNH' && r.startSell > 0) description = '1 ' + state.route + ' = ' + quoteNum(r.startSell) + ' CNY' + (r.entryDiscount ? ' · 点差五折' : '');
         if (item.key === 'sender' && Number(state.count) > 1) description = (description ? description + ' · ' : '') + state.count + '笔合计';
         const feeCurrency = item.key === 'depositBank' && r.depositMethod === 'chats' && r.bank?.localUsdNative != null ? 'USD' : 'HKD';
-        const native = part.cny == null ? missingFeeStatus(r, item, part) :
+        let native = part.cny == null ? missingFeeStatus(r, item, part) :
           ['entryInward', 'depositBank', 'returnWire'].includes(item.key) ? num(part.cny / r.refs[feeCurrency]) + ' ' + feeCurrency : '';
+        if (part.cny != null && (part.estimate ?? item.estimate)) native = '估算 ' + (native || cost(part.cny));
         return feeLine(part.label, part.cny, description, native);
       });
     }).join('');
@@ -243,7 +245,7 @@
       action('买' + esc(state.buyOrders) + '笔 / 卖' + esc(state.sellOrders) + '笔 · 股价 ' + esc(state.sharePriceUsd) + ' USD', 'detail', 'data-value="trade-settings"', 'flow-setting-button') +
       (s.broker.id === 'hsbc' ? checkbox('trade25', 'Trade25 · 仅美股月费0') : '') +
       action(state.useVoucher ? r?.trading?.discountUsd > 0 ? '费用券 · 抵扣' + num(r.trading.discountUsd) + ' USD' : '费用券 · 未抵扣' : '优惠与费用券', 'detail', 'data-value="offers"', 'text-link'));
-    html += edge(data, tradingKeys, '买入美股 → 卖出', action('盈亏 ' + num(M.number(state.profitUsd)) + ' USD', 'detail', 'data-value="profit-settings"', 'flow-setting-button'), 'trade');
+    html += edge(data, tradingKeys, '买入美股 → 卖出', action('盈亏 ' + num(M.number(state.profitUsd)) + ' USD', 'detail', 'data-value="profit-settings"', 'flow-setting-button'), 'trade', esc(row(r, 'trade')?.estimate || ''));
     const endSelect = select('outcome', '卖出后的资金', outcomes);
     html += '<section class="flow-node flow-end" data-flow-stage="04" aria-label="卖出后的资金"><span class="flow-node-number">04</span><div class="flow-end-choice">' + endSelect + '</div><div class="flow-node-options">' +
       (state.outcome === 'broker-balance' ? '<strong>' + esc(shortName(s.broker)) + '</strong><small>美元留在账户</small>' : account('returnBank', '取回／消费银行', s.returning)) +
@@ -260,7 +262,7 @@
   function currentRows(r, stage = state.activeStep) { return (r?.rows || []).filter(x => stageKeys[Number(stage) - 1].includes(x.key)); }
   function feeLine(label, cny, description = '', native = '') {
     return '<div class="flow-fee-line"><div><strong>' + esc(label) + '</strong>' + (description ? '<small>' + esc(description) + '</small>' : '') +
-      '</div><div>' + (cny == null ? '<span class="flow-variable">' + esc(native || '随实际汇路收费') + '</span>' : '<b class="num">' + esc(native || cost(cny)) + '</b>' + (native && cny !== 0 ? '<small>≈ ' + cost(cny) + '</small>' : '')) + '</div></div>';
+      '</div><div>' + (cny == null ? '<span class="flow-variable">' + esc(native || '随实际汇路收费') + '</span>' : '<b class="num">' + esc(native || cost(cny)) + '</b>' + (native && !native.endsWith(' CNY') && cny !== 0 ? '<small>≈ ' + cost(cny) + '</small>' : '')) + '</div></div>';
   }
   function feeRow(r, key, label, description = '', currency = 'CNY') {
     const item = row(r, key); if (!item) return '';
@@ -293,7 +295,7 @@
     const orders = r.trading.orders.filter(o => o.kind === kind), sum = key => orders.reduce((n, o) => n + o[key], 0);
     return feeLine((kind === 'buy' ? '买入' : '卖出') + '美股 · ' + orders.length + '笔', sum('feeUsd') * r.refs.USD,
       '佣金 ' + num(sum('commission')) + '＋平台 ' + num(sum('platform')) + '＋清算／监管 ' + num(sum('sec') + sum('taf') + sum('cat') + sum('clearing')) +
-      (sum('discount') ? ' − 券抵扣 ' + num(sum('discount')) : '') + ' USD', num(sum('feeUsd')) + ' USD');
+      (sum('discount') ? ' − 券抵扣 ' + num(sum('discount')) : '') + ' USD', (row(r, 'trade')?.estimate ? '估算 ' : '') + num(sum('feeUsd')) + ' USD');
   }
   function balancePresentation(data) {
     const r = data.selected || data.partial, rows = r?.rows || [], total = sumRows(rows), gaps = rows.filter(x => x.cny == null);
@@ -302,7 +304,7 @@
       !r.indicativeFx && r.quoteFreshness.entryMarket === false || !r.indicativeExit && r.quoteFreshness.exit === false);
     const partial = incomplete || !!gaps.length;
     const estimated = rows.some(x => x.estimate);
-    const label = stale ? '全程损耗 · 历史报价' : partial ? '全程已核费用' : estimated ? '参考总损耗' : '全程损耗';
+    const label = stale ? '全程损耗 · 历史报价' : partial ? estimated ? '费用小计 · 含估算' : '全程已核费用' : estimated ? '参考总损耗' : '全程损耗';
     const canBalance = !!data.selected && !incomplete && !stale && gaps.every(x => ['entryMiddle', 'depositOther', 'withdrawMiddle', 'returnOther'].includes(x.key));
     const lastBalance = r?.steps?.remitUsd ?? r?.steps?.returnUsd ?? r?.steps?.proceedsUsd ?? r?.steps?.fundedUsd;
     const canShowLast = Number.isFinite(lastBalance) && !r?.indicativeFx && r?.quoteFreshness?.source !== false && r?.quoteFreshness?.entryMarket !== false;

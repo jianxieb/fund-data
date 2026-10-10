@@ -730,6 +730,8 @@
       const bankFxQuote = quotes.offshoreUsd?.[bank.id]?.quotes?.[currency];
       const ownEntryPrice = own('entryPrice', isSelectedBank);
       const unquotedBankFx = currency !== 'USD' && fxMode === 'bank' && ownEntryPrice == null && !positive(bankFxQuote?.askPerUsd);
+      const unquotedFundingFx = unquotedBankFx || currency !== 'USD' && fxMode !== 'bank' && ownEntryPrice == null;
+      const fundingEstimate = '尚缺换汇成交价，交易金额按参考汇率估算';
       // Retain known broker tariffs using the same reference scenario as IBKR.
       // A reference conversion is never an executable bank quote or a ranked route.
       const entryPrice = currency === 'USD' ? 1 : ownEntryPrice ?? (fxMode === 'bank' && !unquotedBankFx ? bankFxQuote?.askPerUsd : refs.USD / refs[currency]);
@@ -752,6 +754,7 @@
         if (!fx) return null;
         balance = fx.usd; unit = 'USD';
         rows.push({ key: 'brokerFx', label: '换USD佣金／自动加价', cny: (fx.commissionUsd + fx.markupUsd) * refs.USD, step: 'deposit' });
+        if (unquotedFundingFx && fxMode !== 'bank') rows[rows.length - 1].estimate = '尚缺换汇成交价，换汇佣金／加价按参考汇率估算';
         const grossUsd = balance + fx.commissionUsd + fx.markupUsd;
         const referenceDifference = oldBalance * refs[oldUnit] - grossUsd * refs.USD + deferredCnhBasis;
         const bankMid = fxMode === 'bank' && positive(bankFxQuote?.bidPerUsd) && positive(bankFxQuote?.askPerUsd)
@@ -778,6 +781,7 @@
       const trade = trading?.totalUsd ?? number(config.tradeFeeUsd);
       add('trade', '证券买卖交易费', trade == null ? null : trade * refs.USD, 'investment');
       if (trading && !trading.overridden) {
+        if (unquotedFundingFx) rows[rows.length - 1].estimate = fundingEstimate;
         rows[rows.length - 1].items = ['buy', 'sell'].flatMap(kind => {
           const orders = trading.orders.filter(order => order.kind === kind), label = kind === 'buy' ? '买入' : '卖出';
           return ['commission', 'platform', 'clearing', 'sec', 'taf', 'cat'].map(key => {
@@ -787,7 +791,11 @@
               const discount = key === 'commission' ? commissionDiscount : key === 'platform' ? order.discount - commissionDiscount : 0;
               return sum + order[key] - discount;
             }, 0) * refs.USD;
-            return { label: label + ({ commission: '佣金', platform: '平台费', clearing: '清算费', sec: 'SEC费', taf: 'TAF费', cat: 'CAT费' }[key]), cny };
+            const amountBased = key === 'commission' ? provider.id === 'hsbc' || !!provider.commission :
+              key === 'platform' ? !!provider.platform : key === 'clearing' ? !!provider.clearing :
+              key === 'sec' ? kind === 'sell' : key === 'taf' ? orders.some(order => order.date < '2026-10-01' || order.date > '2026-12-31') && kind === 'sell' : provider.catMinimum != null;
+            return { label: label + ({ commission: '佣金', platform: '平台费', clearing: '清算费', sec: 'SEC费', taf: 'TAF费', cat: 'CAT费' }[key]), cny,
+              ...(unquotedFundingFx ? { estimate: amountBased ? fundingEstimate : false } : {}) };
           });
         });
       }
@@ -811,6 +819,9 @@
       const returnLabel = settlementBank ? settlementBank.name + ' → ' + returning.name + (settlementBank.id === returning.id ? ' · 内部交收' : ' · USD CHATS') :
         localCheque || provider.withdrawalMethod === 'cheque' ? returning.name + ' · 本地USD支票存入' : virtualReturn ? '数字银行USD提款 · 官网参考7.5 USD' : '券商→香港银行汇入费';
       add('returnInward', returnLabel, returnInward == null ? null : returnInward * refs.HKD, 'withdraw');
+      if (unquotedFundingFx && !settlementBank && !localCheque && !virtualReturn && provider.withdrawalMethod !== 'cheque' && returning.inwardSmallLimitHkd && own('inwardHkd', isSelectedReturn) == null) {
+        rows[rows.length - 1].estimate = '尚缺换汇成交价，汇入收费档位按参考美元金额估算';
+      }
       if (virtualReturn && own('inwardHkd', isSelectedReturn) == null) rows[rows.length - 1].estimate = '盈立公布约7.5 USD，由银行收取';
       add('withdrawMiddle', '券商出金中转行费', provider.integratedBank || provider.withdrawalMethod === 'cheque' || provider.withdrawalMethod === 'local' ? 0 : own('intermediaryCny', isSelectedReturn), 'withdraw');
       }
@@ -860,6 +871,7 @@
         add('card', '美元原币刷卡手续费', 0, 'return');
       } else if (!['usd-balance', 'broker-balance'].includes(outcome)) return downstreamError('请选择有效的资金用途。', '04');
       steps.terminal = balance; steps.settledCny = balance * refs[unit];
+      if (unquotedFundingFx) for (const row of rows) if (row.key === 'exitFx' && row.cny != null) row.estimate = '上游美元金额按参考汇率估算';
       add('account', '香港账户期间管理费', accountCny, 'spend');
       rows[rows.length - 1].items = accountItems;
       add('extra', '开户及资产机会成本', extraCny, 'spend');
