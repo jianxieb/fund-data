@@ -5,7 +5,7 @@
     mainlandMethod: 'boc-mobile', depositMethod: 'chats', fxMode: 'manual', returnMethod: '', comparison: 'start', count: '1', usedFreeTransfers: '0',
     months: '12', balanceHkd: '0', returnBalanceHkd: '0', profitUsd: '0', taxableCny: '', taxRate: '20', creditCny: '0', withdrawalIndex: '1', tradeFeeUsd: '',
     broker: 'za', buyOrders: '1', sellOrders: '1', sharePriceUsd: '100', trade25: false, chiefMonthly: false, usmartPromo: false, zaLv2: false,
-    hsbcBalanceWaiver: false, otherTurnoverHkd: '0', usedPromoOrders: '0', usmartDays: '0', useVoucher: false, voucherScope: 'platform', voucherUsd: '0', voucherOrders: '1', voucherExpiry: '',
+    hsbcBalanceWaiver: false, scCnhAccount: false, otherTurnoverHkd: '0', usedPromoOrders: '0', usmartDays: '0', useVoucher: false, voucherScope: 'platform', voucherUsd: '0', voucherOrders: '1', voucherExpiry: '',
     senderFeeCny: '', entryMiddleCny: '', entryInwardHkd: '', depositHkd: '', depositOtherCny: '', inwardHkd: '', intermediaryCny: '',
     returnWireHkd: '', returnExtraCny: '', monthlyHkd: '', returnMonthlyHkd: '', startSell: '', entryPrice: '', exitPrice: '',
     usdCny: '', usdHkd: '', usdCnh: '', openingCny: '0', extraCapitalCny: '0', annualGapPct: '0' };
@@ -203,8 +203,9 @@
       action('本月第' + esc(state.withdrawalIndex) + '次出金', 'detail', 'data-value="profit-settings"', 'flow-setting-button'), 'withdraw');
     if (state.outcome === 'mainland') html += edge(data, exitKeys, '汇回内地 → 美元结汇', account('exitBank', '内地收款银行', s.exit) + select('returnMethod', '汇回渠道', returnMethods()), '04',
       r?.exitPrice > 1 ? '1 USD = ' + quoteNum(r.exitPrice) + ' CNY' : '');
-    if (state.outcome === 'cnh-card' || state.outcome === 'usd-card') html += edge(data, exitKeys, state.outcome === 'cnh-card' ? (row(r, 'exitFx')?.path ? '美元 → 港币 → 人民币 → 消费' : '美元换人民币 → 消费') : '美元余额 → 原币消费', '', '04',
-      esc(r?.exitIssue || (state.outcome === 'cnh-card' && r?.exitPrice > 1 ? '1 USD = ' + quoteNum(r.exitPrice) + ' CNH' : '对应币种余额直接扣账')));
+    if (state.outcome === 'cnh-card' || state.outcome === 'usd-card') html += edge(data, exitKeys, state.outcome === 'cnh-card' ? (row(r, 'exitFx')?.path ? '美元 → 港币 → 人民币 → 消费' : '美元换人民币 → 消费') : '美元余额 → 原币消费',
+      state.outcome === 'cnh-card' && s.returning?.cnhCardRequiresHkid ? checkbox('scCnhAccount', '持有效香港身份证，已开通渣打人民币储蓄账户') : '', '04',
+      data.error || r?.indicativeExit ? '' : esc(state.outcome === 'cnh-card' && r?.exitPrice > 1 ? '1 USD = ' + quoteNum(r.exitPrice) + ' CNH' : '对应币种余额直接扣账'));
     return '<div class="flow-ledger" aria-label="完整资金流">' + html + '</div>';
   }
   function currentRows(r, stage = state.activeStep) { return (r?.rows || []).filter(x => stageKeys[Number(stage) - 1].includes(x.key)); }
@@ -259,9 +260,9 @@
     const canShowLast = Number.isFinite(lastBalance) && !r?.indicativeFx && r?.quoteFreshness?.source !== false;
     const finalHtml = canBalance ? amount(r.net, r.currency) : canShowLast ? amount(lastBalance, 'USD') : '<b>—</b>';
     return '<div class="flow-result"><div><span>' + label + '</span><strong class="num">' + (rows.some(x => x.cny != null) ? partial ? cost(total) : pct(total / M.number(state.budgetCny)) : '—') + '</strong>' +
-      '<small>' + (rows.length ? partial ? '总损耗尚缺：' + esc(gaps.map(x => x.label).join('、') || data.error || r?.exitIssue || '有效成交报价') : cost(total) : esc(data.error || '选择有效本金和汇出报价')) + '</small></div><div class="flow-result-equation"><span>其中账户期间费</span><b>' +
+      '<small>' + (rows.length ? partial ? data.error ? '第' + esc(r?.errorStage || data.errorStage || '01') + '步尚未完成' : '总损耗尚缺：' + esc(gaps.map(x => x.label).join('、') || r?.exitIssue || '有效成交报价') : cost(total) : esc(data.error || '选择有效本金和汇出报价')) + '</small></div><div class="flow-result-equation"><span>其中账户期间费</span><b>' +
       (row(r, 'account') ? cost(row(r, 'account').cny) : '—') + '</b>' + (r?.taxCny ? '<small>另预留税款 ' + cost(r.taxCny) + '</small>' : '<small>已计入合计</small>') + '</div><div><span>' + balanceLabel + '</span>' + finalHtml +
-      (incomplete ? '<small>' + esc(r?.exitIssue || data.error || r?.indicativeFx || '') + '</small>' : '') + '</div><div class="flow-result-detail">' +
+      '</div><div class="flow-result-detail">' +
       action('全程明细', 'detail', 'data-value="cost"', 'text-link') + '</div></div>';
   }
   function view(helpers) {

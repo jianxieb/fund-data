@@ -679,7 +679,11 @@
       const inward = own('entryInwardHkd', isSelectedBank) ?? (swiftGo ? 0 : inwardFee(bank, balance * refs[currency] / refs.HKD / count, start.group));
       add('entryInward', '香港首次汇入费', inward == null ? null : inward * refs.HKD * count, 'entry');
       steps.hongKong = balance;
-      const downstreamError = (error, errorStage = '03') => ({ error, errorStage, rows, steps, startSell: quote, route, mainlandMethod, fxMode, refs, budgetCny: budget, start, bank, returning, exit, broker: provider,
+      let trading = null, taxCny = 0;
+      const downstreamError = (error, errorStage = '03') => ({ error, errorStage, rows: [...rows,
+        { key: 'account', label: '香港账户期间管理费', cny: accountCny, step: 'spend', items: accountItems },
+        { key: 'extra', label: '开户及资产机会成本', cny: extraCny, step: 'spend' }], steps, startSell: quote, route, mainlandMethod, fxMode, refs, budgetCny: budget, start, bank, returning, exit, broker: provider,
+        trading: trading?.error ? null : trading, taxCny, indicativeFx: rows.find(x => x.key === 'brokerSpread' && x.cny == null)?.label || '',
         quoteFreshness: { source: currency === 'CNH' || own('startSell', isSelectedStart) != null || quoteFresh(q, config.date) } });
       const depositMethod = internalDeposit ? 'internal' : settlementBank ? 'chats' : method('depositMethod', currency === 'USD' || fxMode === 'bank' ? 'chats' : 'fps');
       const depositCurrency = fxMode === 'bank' ? 'USD' : currency;
@@ -727,7 +731,7 @@
       if (!brokerFxResult || balance <= 0) return { error: '余额不足以支付入金及换汇费用。' };
       const tradingKey = provider.id + ':' + balance.toFixed(8) + ':' + !!selections.public;
       if (autoTrade && !tradingCache.has(tradingKey)) tradingCache.set(tradingKey, brokerTradingFees(provider.id === broker.id && !selections.public ? config : { ...config, useVoucher: false, tradeFeeUsd: '' }, provider, balance, profit, refs));
-      const trading = autoTrade ? tradingCache.get(tradingKey) : null;
+      trading = autoTrade ? tradingCache.get(tradingKey) : null;
       if (trading?.error) return downstreamError(trading.error);
       steps.fundedUsd = balance;
       steps.investUsd = trading?.investUsd ?? balance;
@@ -752,7 +756,7 @@
       if (autoTrade) add('brokerAccount', provider.id === 'hsbc' && config.trade25 ? 'Trade25美股月费 · 现行豁免' : '证券账户／托管费', brokerAccountCny, 'investment');
       steps.proceedsUsd = balance;
       const taxableCny = number(config.taxableCny) ?? Math.max(0, (profit - (trade ?? 0)) * refs.USD);
-      const taxCny = taxReserve(taxableCny, taxRate, credit);
+      taxCny = taxReserve(taxableCny, taxRate, credit);
       balance -= taxCny / refs.USD;
       if (!keepInBroker) {
       const localCheque = provider.localChequeBanks?.includes(returning.id);
@@ -796,6 +800,8 @@
       if (indicativeExit) { Object.assign(rows[rows.length - 1], { cny: null, status: exitIssue }); missing.push(exitIssue); }
       steps.settledCny = balance;
       } else if (outcome === 'cnh-card') {
+        if (!returning.directCnhCard) return downstreamError(returning.name + '扣账卡以港币结算，不支持人民币余额原币消费；已保留出金后的美元余额。', '04');
+        if (returning.cnhCardRequiresHkid && !config.scCnhAccount) return downstreamError('渣打人民币原币消费须持有效香港身份证，并已开通人民币储蓄账户；已保留出金后的美元余额。', '04');
         const quotedPrice = own('exitPrice', isSelectedReturn) ?? returnFxQuote?.bidPerUsd;
         indicativeExit = !positive(quotedPrice);
         exitIssue = indicativeExit ? returning.name + ' USD/CNH换汇价尚未取得；已保留换汇前美元余额' : '';
@@ -808,8 +814,7 @@
           usd * (returnMid - exitPrice) * refs.CNH, 'return');
         if (!indicativeExit && own('exitPrice', isSelectedReturn) == null) crossLegs(rows[rows.length - 1], returnFxQuote, usd, false);
         if (indicativeExit) { Object.assign(rows[rows.length - 1], { cny: null, status: exitIssue }); missing.push(exitIssue); }
-        if (!returning.directUsdCard) exitIssue = returning.name + '扣账卡以港币结算，不能从人民币余额直接扣账';
-        add('card', '人民币原币刷卡手续费', returning.directUsdCard ? 0 : null, 'return', exitIssue);
+        add('card', '人民币原币刷卡手续费', 0, 'return');
       } else if (outcome === 'usd-card') {
         if (!returning.directUsdCard) return downstreamError(returning.name + '不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。', '04');
         add('card', '美元原币刷卡手续费', 0, 'return');

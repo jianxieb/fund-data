@@ -1330,3 +1330,31 @@ test('missing source FX keeps independent sender charges without a fabricated fo
   const unknownTransfer = allUnknown.split('aria-label="内地购美元 → 汇往香港"')[1].split('</section>')[0];
   assert.match(unknownTransfer, /class="num">—</); assert.doesNotMatch(unknownTransfer, /0.00 CNY/);
 });
+
+
+test('SC RMB debit eligibility is separate from USD debit support and preserves prior balances', () => {
+  const input = { ...currentRoute, startBank: 'boc', bank: 'bochk', broker: 'za', mainlandMethod: 'boc-mobile',
+    returnBank: 'sc', outcome: 'cnh-card', exitPrice: 6.5 };
+  const blocked = M.calculatorJourney(input, D, cibQuotes);
+  assert.match(blocked.error, /有效香港身份证/);
+  assert.equal(blocked.partial.errorStage, '04');
+  assert.ok(blocked.partial.steps.returnUsd > 0);
+  assert.ok(blocked.partial.trading.orders.length === 2);
+  close(blocked.partial.rows.find(x => x.key === 'account').cny, 0);
+  assert.ok(!blocked.partial.rows.some(x => x.key === 'exitFx'));
+  const allowed = M.calculatorJourney({ ...input, scCnhAccount: true }, D, cibQuotes).selected;
+  assert.ok(allowed);
+  close(allowed.steps.terminal, blocked.partial.steps.returnUsd * 6.5);
+  close(allowed.rows.find(x => x.key === 'card').cny, 0);
+  const usd = M.calculatorJourney({ ...input, outcome: 'usd-card' }, D, cibQuotes).selected;
+  assert.ok(usd); close(usd.rows.find(x => x.key === 'card').cny, 0);
+  const za = M.calculatorJourney({ ...input, returnBank: 'za' }, D, cibQuotes);
+  assert.match(za.error, /不支持人民币余额原币消费/);
+  assert.ok(za.partial.steps.returnUsd > 0);
+  const html = moneyUi(input).render();
+  assert.match(html, /data-money-check="scCnhAccount"/);
+  assert.match(html, /最后可计余额/);
+  assert.match(html, /买入美股 · 1笔/);
+  assert.equal((html.match(/渣打人民币原币消费须持有效香港身份证/g) || []).length, 1);
+  assert.doesNotMatch(moneyUi({ ...input, outcome: 'usd-card' }).render(), /data-money-check="scCnhAccount"/);
+});
