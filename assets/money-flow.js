@@ -68,7 +68,7 @@
     const s = selected(), values = [['swift', s.start?.id === 'cib' ? '普通汇款 · 寰宇人生卡' : s.start?.tariffChannel || '普通汇款 · 公开标准价']];
     if (s.start?.id === 'boc' && s.bank?.id === 'bochk' && state.route !== 'CNH') values.unshift(['boc-mobile', '手机银行 · 向同名境外中行汇款']);
     if (s.start?.id === 'cib' && state.route !== 'CNH') values.push(['cib-go', '小额全额到账 · 另加50 CNY/笔']);
-    if (['hsbc', 'hang', 'sc'].includes(s.start?.id) && s.start.group === s.bank?.group) values.unshift(['linked', ({ hsbc: '同名环球转账', hang: '同名跨域转账', sc: '优先理财 · 同名速汇' })[s.start.id] + ' · 免费']);
+    if (['hsbc', 'hang', 'sc'].includes(s.start?.id) && s.start.group === s.bank?.group) values.unshift(['linked', ({ hsbc: '同名环球转账', hang: '优越理财 · 同名跨域转账', sc: '优先理财 · 同名速汇' })[s.start.id] + ' · 免费']);
     return values;
   }
   function depositMethods() {
@@ -252,7 +252,7 @@
   function transferHint() {
     if (state.mainlandMethod === 'cib-go') return '附加服务：每笔≤等值10,000 USD，仅限App提供此服务的收款账户；包含境外行费用。';
     if (state.mainlandMethod === 'boc-mobile') return '双免按2026年公开报道情景计算；中银香港同名汇入基本费已获官网确认。';
-    if (state.mainlandMethod === 'linked') return state.startBank === 'sc' ? '适用于渣打优先理财、两地同名账户及指定渠道。' : '适用于已连通的两地同名账户及指定转账页面。';
+    if (state.mainlandMethod === 'linked') return state.startBank === 'sc' ? '适用于渣打优先理财、两地同名账户及指定渠道。' : state.startBank === 'hang' ? '适用于恒生中国优越理财，经跨域转账页面汇往同名恒生香港账户；优进理财的累计3次本行费用优惠不适用此项。' : '适用于已连通的两地同名账户及指定转账页面。';
     return '';
   }
   function bankAccountSet(s) {

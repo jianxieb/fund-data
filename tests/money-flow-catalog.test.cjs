@@ -114,6 +114,25 @@ test('HSBC China standard wire is priced separately from the free linked service
   }
 });
 
+test('Hang Seng China Prestige uses the current ordinary FX-wire tariff and free inward receipt, separately from linked transfers', () => {
+  for (const route of ['USD', 'HKD']) {
+    const ordinary = run({ startBank: 'hang', bank: 'bochk', route, mainlandMethod: 'swift', fxMode: 'bank', count: 2,
+      startSell: route === 'USD' ? 6.75 : .86 }).selected;
+    close(ordinary.rows.find(x => x.key === 'sender').cny, 340);
+    close(ordinary.steps.mainlandForeign, (100000 - 340) / ordinary.startSell);
+    assert.equal(ordinary.rows.find(x => x.key === 'entryMiddle').cny, null);
+    ledger(ordinary);
+  }
+  const linked = run({ startBank: 'hang', bank: 'hang', mainlandMethod: 'linked', count: 4, usedFreeTransfers: 3, startSell: 6.75 }).selected;
+  close(linked.rows.find(x => x.key === 'sender').cny, 0);
+  close(linked.rows.find(x => x.key === 'entryMiddle').cny, 0);
+  assert.match(linked.start.name, /优越理财/);
+  const back = run({ outcome: 'mainland', returnBank: 'bochk', exitBank: 'hang', returnMethod: 'swift', exitPrice: 6.7 }).selected;
+  close(back.rows.find(x => x.key === 'returnOther').items.find(x => x.label.endsWith('USD收款费')).cny, 0);
+  assert.ok(back.missing.includes('回内地中转行费'));
+  ledger(back);
+});
+
 test('fees, periods, trading offers, stock prices and vouchers reconcile at numeric boundaries', () => {
   const scenarios = [
     { months: 0 }, { months: 1 }, { months: 12, hsbcBalanceWaiver: false }, { trade25: false }, { usedFreeTransfers: 30 },
