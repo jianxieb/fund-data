@@ -161,3 +161,56 @@ test('IBKR local USD receiving instructions price the observed route, while over
   close(custom.rows.find(x => x.key === 'depositOther').cny, 15);
   assert.equal(custom.rows.find(x => x.key === 'depositOther').estimate, undefined);
 });
+
+test('recommendations compare complete routes for all stock venues under the same budget and eligibility', () => {
+  const input = { ...base, count: 1, hsbcBalanceWaiver: false, trade25: false, outcome: 'broker-balance' };
+  const snapshot = structuredClone(input), recommendations = M.calculatorRecommendations(input, D, Q);
+  assert.deepEqual(input, snapshot);
+  assert.equal(new Set(recommendations.plans.map(p => p.config.broker)).size, 5);
+  for (const [index, p] of recommendations.plans.entries()) {
+    assert.equal(p.result.complete, true); assert.equal(p.result.quotedCore, true);
+    assert.ok(p.result.rows.every(x => Number.isFinite(x.cny))); ledger(p.result);
+    if (index) assert.ok(p.result.costCny >= recommendations.plans[index - 1].result.costCny);
+    assert.notEqual(p.config.mainlandMethod, 'cib-go'); // one 100k-CNY payment exceeds its USD cap
+    const applied = M.calculatorJourney({ ...input, ...p.config }, D, Q).selected;
+    close(applied.costCny, p.result.costCny);
+    if (p.config.broker === 'hsbc') assert.ok(p.result.rows.find(x => x.key === 'account').cny > 0);
+  }
+  const sameProfile = M.calculatorRecommendations({ ...input, startBank: 'cmb', broker: 'chief', plan: 'custom', activeStep: '03' }, D, Q);
+  assert.equal(sameProfile, recommendations);
+  const two = M.calculatorRecommendations({ ...input, count: 2, hsbcBalanceWaiver: true, trade25: true }, D, Q);
+  assert.equal(two.plans[0].config.startBank, 'cib'); assert.equal(two.plans[0].config.mainlandMethod, 'cib-go');
+  assert.equal(two.plans[0].config.broker, 'hsbc');
+  close(two.plans[0].result.rows.find(x => x.key === 'sender').cny, 100);
+  close(two.plans[0].result.rows.find(x => x.key === 'account').cny, 0);
+});
+
+test('unpriced transfer subtotals and private quote overrides cannot become recommended minima', () => {
+  const input = { ...base, count: 1, hsbcBalanceWaiver: false, trade25: false };
+  const plain = M.calculatorRecommendations(input, D, Q);
+  const overridden = M.calculatorRecommendations({ ...input, startSell: .1, senderFeeCny: 0, entryMiddleCny: 0, depositOtherCny: 0,
+    tradeFeeUsd: 0, balanceHkd: 1000000, useVoucher: true, voucherUsd: 999999 }, D, Q);
+  assert.deepEqual(overridden.plans.map(x => [x.id, x.result.costCny]), plain.plans.map(x => [x.id, x.result.costCny]));
+  assert.ok(plain.plans.every(p => p.config.startBank !== 'comm' && p.config.mainlandMethod !== 'swift'));
+  const stale = structuredClone(Q);
+  for (const bank of Object.values(stale.banks)) for (const quote of Object.values(bank.quotes)) quote.asOf = '2020-01-01';
+  assert.deepEqual(M.calculatorRecommendations(input, D, stale).plans, []);
+  const returns = M.calculatorRecommendations({ ...input, outcome: 'mainland' }, D, Q);
+  assert.ok(returns.plans.length > 0);
+  assert.ok(returns.plans.every(p => p.config.broker !== 'ibkr' && p.result.complete)); // USD withdrawal correspondent fee is still unpriced
+});
+
+test('each stock-venue recommendation matches an independent exhaustive route comparison', () => {
+  const data = structuredClone(D);
+  data.calculator.mainland = ['boc', 'cib', 'hsbc']; data.calculator.hkBanks = ['bochk', 'hsbc'];
+  const input = { ...base, count: 2, trade25: true, hsbcBalanceWaiver: true, outcome: 'broker-balance' }, minimum = new Map();
+  for (const startBank of data.calculator.mainland) for (const bank of data.calculator.hkBanks) for (const broker of data.calculator.brokers)
+    for (const route of ['USD', 'HKD', 'CNH']) for (const mainlandMethod of ['swift', 'boc-mobile', 'linked', 'cib-go'])
+      for (const fxMode of ['manual', 'auto', 'bank']) for (const depositMethod of ['internal', 'chats', 'fps', 'edda', 'swift']) {
+        const r = M.calculatorJourney({ ...input, startBank, bank, broker, route, mainlandMethod, fxMode, depositMethod }, data, Q).selected;
+        if (r?.complete && r.quotedCore && (!minimum.has(broker) || r.costCny < minimum.get(broker))) minimum.set(broker, r.costCny);
+      }
+  const choices = M.calculatorRecommendations(input, data, Q).plans;
+  assert.equal(choices.length, minimum.size);
+  for (const p of choices) close(p.result.costCny, minimum.get(p.config.broker));
+});

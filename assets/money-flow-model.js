@@ -1050,5 +1050,63 @@
     // account catalogue, disables a picker or silently turns an unknown fee to 0.
     return mainlandJourney({ ...config, pricingBasis: 'best-quote', currency: 'CNY', selectedOnly: true }, data, quotes);
   }
-  return { calculatorRoute, calculatorIssue, calculatorJourney, number, reference, fee, remitPrincipal, senderFeeRange, inwardFee, outwardFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
+  let recommendationCache;
+  function calculatorRecommendations(config, data, quotes) {
+    const cleared = [...bankQuoteKeys, 'usdCny', 'usdHkd', 'usdCnh', 'tradeFeeUsd', 'balanceHkd', 'returnBalanceHkd'];
+    const profile = { ...config, ...Object.fromEntries(cleared.map(key => [key, ''])), useVoucher: false };
+    for (const key of [...routeKeys, 'plan', 'activeStep', 'comparison']) delete profile[key];
+    const cacheKey = JSON.stringify(profile);
+    if (recommendationCache?.key === cacheKey && recommendationCache.data === data && recommendationCache.quotes === quotes) return recommendationCache.result;
+    const catalogue = data.calculator, entryKeys = ['sender', 'entryFx', 'entryMiddle', 'entryInward'];
+    const entries = [], bestByBroker = new Map();
+    let checked = 0, complete = 0;
+    const run = candidate => {
+      checked++;
+      return calculatorJourney(calculatorRoute({ ...profile, ...candidate }), data, quotes);
+    };
+    // Reject incomplete entry legs before expanding stock venues and endpoints.
+    // This preserves the entire picker catalogue without rewarding missing fees.
+    for (const startBank of catalogue.mainland) for (const bank of catalogue.hkBanks) for (const route of catalogue.currencies) {
+      const start = data.mainlandBanks.find(x => x.id === startBank), incoming = data.hkBanks.find(x => x.id === bank);
+      const methods = ['swift'];
+      if (startBank === 'boc' && bank === 'bochk' && route !== 'CNH') methods.push('boc-mobile');
+      if (['hsbc', 'hang', 'sc'].includes(startBank) && start.group === incoming.group) methods.push('linked');
+      if (startBank === 'cib' && route !== 'CNH') methods.push('cib-go');
+      for (const mainlandMethod of methods) {
+        const entry = { startBank, bank, route, mainlandMethod };
+        const probe = run({ ...entry, broker: 'za', returnBank: bank, exitBank: startBank, outcome: 'broker-balance', fxMode: 'bank' });
+        const r = probe.selected || probe.partial;
+        if (!r || r.quoteFreshness?.source === false || r.quoteFreshness?.reference === false ||
+          !entryKeys.every(key => Number.isFinite(r.rows?.find(x => x.key === key)?.cny))) continue;
+        entries.push(entry);
+      }
+    }
+    const signature = r => [r.start.id, r.bank.id, r.broker.id, r.route, r.fxMode, r.mainlandMethod,
+      r.depositMethod, profile.outcome === 'broker-balance' ? '' : r.returning.id,
+      profile.outcome === 'mainland' ? r.exit.id : '', r.returnMethod].join(':');
+    const complexity = r => new Set([r.bank.id, r.broker.integratedBank, ...(profile.outcome === 'broker-balance' ? [] : [r.returning.id])].filter(Boolean)).size + (r.route === 'USD' ? 0 : 1);
+    const compare = (a, b) => a.costCny - b.costCny || complexity(a) - complexity(b) || signature(a).localeCompare(signature(b));
+    const remember = (map, key, r) => { if (!map.has(key) || compare(r, map.get(key)) < 0) map.set(key, r); };
+    for (const entry of entries) for (const broker of catalogue.brokers) {
+      const modes = entry.route === 'USD' ? ['manual'] : broker === 'ibkr' ? ['manual', 'auto', 'bank'] : ['bank'];
+      const returningBanks = profile.outcome === 'broker-balance' ? [entry.bank] : catalogue.hkBanks;
+      const exitingBanks = profile.outcome === 'mainland' ? catalogue.mainland : [entry.startBank];
+      for (const fxMode of modes) for (const returnBank of returningBanks) for (const exitBank of exitingBanks) {
+        const route = calculatorRoute({ ...profile, ...entry, broker, fxMode, returnBank, exitBank });
+        const depositMethods = [...new Set([route.depositMethod, ...(!['hsbc', 'za'].includes(broker) ? [entry.route === 'USD' || fxMode === 'bank' ? 'chats' : 'edda', 'swift'] : [])])];
+        const returnMethods = profile.outcome === 'mainland' ? [...new Set([route.returnMethod, 'swift'])] : [''];
+        for (const depositMethod of depositMethods) for (const returnMethod of returnMethods) {
+          const result = run({ ...route, depositMethod, returnMethod }), r = result.selected;
+          if (!r?.complete || !r.quotedCore || !r.rows.every(x => Number.isFinite(x.cny))) continue;
+          complete++;
+          remember(bestByBroker, broker, r);
+        }
+      }
+    }
+    const plans = [...bestByBroker.values()].sort(compare);
+    const result = { plans: plans.map(r => ({ id: 'best:' + signature(r), result: r, config: routeConfiguration(r) })), checked, complete };
+    recommendationCache = { key: cacheKey, data, quotes, result };
+    return result;
+  }
+  return { calculatorRoute, calculatorIssue, calculatorJourney, calculatorRecommendations, number, reference, fee, remitPrincipal, senderFeeRange, inwardFee, outwardFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
 }));

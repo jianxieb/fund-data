@@ -93,23 +93,51 @@
     { id: 'boc-ibkr', title: '中行 → 中银香港 → IBKR', note: '香港花旗／渣打USD收款指示；本地转账入金', config: { startBank: 'boc', bank: 'bochk', broker: 'ibkr', route: 'USD', mainlandMethod: 'boc-mobile', returnBank: 'bochk' } },
   ];
   function presetState(p) {
-    const next = M.calculatorRoute({ ...state, ...p.config, plan: p.id, activeStep: '01', fxMode: '', depositMethod: '', returnMethod: '' });
+    const next = M.calculatorRoute({ ...state, fxMode: '', depositMethod: '', returnMethod: '', ...p.config, plan: p.id, activeStep: '01' });
     for (const key of quoteKeys) next[key] = '';
-    next.tradeFeeUsd = ''; next.useVoucher = false;
+    next.tradeFeeUsd = ''; next.useVoucher = false; next.balanceHkd = '0'; next.returnBalanceHkd = '0';
     return next;
   }
+  let visiblePresets = [];
+  const routeName = (id, kind) => (kind === 'mainland' ? { boc: '中行', cib: '兴业', hsbc: '汇丰中国', hang: '恒生中国', sc: '渣打中国' } :
+    kind === 'bank' ? { bochk: '中银香港', hsbc: '汇丰香港', hang: '恒生香港', sc: '渣打香港', za: 'ZA' } :
+      { ibkr: 'IBKR', hsbc: '汇丰证券', chief: '致富', usmart: '盈立', za: 'ZA' })[id] || id;
+  function candidatePresets() {
+    const comparison = M.calculatorRecommendations({ ...state, date: today() }, D, window.MONEY_FLOW_QUOTES || {});
+    const best = comparison.plans.map(p => {
+      const r = p.result, config = { ...p.config };
+      if (state.outcome === 'broker-balance') config.returnBank = state.returnBank;
+      if (state.outcome !== 'mainland') config.exitBank = state.exitBank;
+      const channel = ({ 'boc-mobile': '手机同名汇款', linked: '两地同名转账', 'cib-go': '全额到账50元/笔', swift: '普通电汇' })[r.mainlandMethod];
+      const funding = r.broker.id === 'ibkr' && r.depositMethod === 'chats' ? '香港花旗／渣打收款指示' :
+        r.route !== 'USD' ? (r.fxMode === 'bank' ? routeName(r.bank.id, 'bank') : 'IBKR') + '换美元' : r.depositMethod === 'internal' ? '同行交收' : '本地美元转账';
+      const end = state.outcome === 'broker-balance' ? '美元留在' + routeName(r.broker.id, 'broker') :
+        state.outcome === 'mainland' ? routeName(r.returning.id, 'bank') + ' → ' + routeName(r.exit.id, 'mainland') + '结汇' :
+          routeName(r.returning.id, 'bank') + ' · ' + ({ 'usd-balance': '保留美元', 'usd-card': '美元消费', 'cnh-card': '人民币消费' })[state.outcome];
+      return { ...p, config, title: routeName(r.start.id, 'mainland') + ' → ' + routeName(r.bank.id, 'bank') + ' → ' + routeName(r.broker.id, 'broker'),
+        note: r.route + ' · ' + channel + '；' + funding, end };
+    });
+    // Keep a route to every stock venue, including an explicit unpriced result.
+    // Incomplete routes are available but never ranked by their small subtotal.
+    const covered = new Set(best.map(p => p.config.broker));
+    const fallback = presets.filter(p => !covered.has(p.config.broker) && covered.add(p.config.broker));
+    return [...best, ...fallback].map(p => {
+      const calculated = p.result ? { selected: p.result } : M.calculatorJourney({ ...presetState(p), date: today() }, D, window.MONEY_FLOW_QUOTES || {});
+      const r = calculated.selected || calculated.partial, rows = r?.rows || [], complete = !!r?.complete && !!r?.quotedCore;
+      return { ...p, calculated, rows, complete, total: rows.reduce((sum, item) => sum + (item.cny ?? 0), 0) };
+    }).sort((a, b) => Number(b.complete) - Number(a.complete) || (a.complete && b.complete ? a.total - b.total : 0));
+  }
   function toolbar() {
-    return '<div class="flow-toolbar"><h2>优选方案</h2><div>' + action('报价与依据', 'detail', 'data-value="quotes"', 'text-link') + action('重置', 'reset', '', 'text-link') + '</div></div>' +
-      '<div class="flow-presets" aria-label="优选方案">' + presets.map(p => {
-        const calculated = M.calculatorJourney({ ...presetState(p), date: today() }, D, window.MONEY_FLOW_QUOTES || {});
-        const r = calculated.selected || calculated.partial, rows = r?.rows || [], complete = !!r?.complete && !!r?.quotedCore;
-        const total = rows.reduce((sum, item) => sum + (item.cny ?? 0), 0);
+    visiblePresets = candidatePresets();
+    return '<div class="flow-toolbar"><h2>优选方案</h2><div><span>按全程损耗排序</span>' + action('报价与依据', 'detail', 'data-value="quotes"', 'text-link') + action('重置', 'reset', '', 'text-link') + '</div></div>' +
+      '<div class="flow-presets" aria-label="优选方案">' + visiblePresets.map(p => {
+        const { calculated, rows, complete, total } = p, r = calculated.selected || calculated.partial;
         const missing = r?.missing || [calculated.error].filter(Boolean);
         const price = rows.length ? '<span class="flow-preset-price"><small>' + (complete ? rows.some(x => x.estimate) ? '参考总损耗' : '全程损耗' : '已核费用') + '</small><b>' +
           (complete ? pct(total / M.number(state.budgetCny)) : cost(total)) + '</b>' + (complete ? '<small>' + cost(total) + '</small>' : '') + '</span>' : '<span class="flow-preset-price"><small>无法计算总额</small></span>';
         return action('<span class="flow-preset-route"><strong>' + esc(p.title) + '</strong><small>' + esc(p.note) + '</small><small class="flow-preset-outcome">→ ' +
-          esc(outcomes.find(([id]) => id === state.outcome)?.[1] || '') + '</small>' + (!complete ? '<small class="flow-preset-gap">总损耗尚缺：' + esc(missing.join('、')) + '</small>' : '') + '</span>' + price,
-          'preset', 'data-value="' + p.id + '" aria-pressed="' + (state.plan === p.id) + '" aria-label="优选方案：' + esc(p.title) + '"', 'flow-preset');
+          esc(p.end || outcomes.find(([id]) => id === state.outcome)?.[1] || '') + '</small>' + (!complete ? '<small class="flow-preset-gap">总损耗尚缺：' + esc(missing.join('、')) + '</small>' : '') + '</span>' + price,
+          'preset', 'data-value="' + p.id + '" aria-pressed="' + (state.plan === p.id || Object.keys(p.config).filter(key => !(['exitBank', 'returnMethod'].includes(key) && state.outcome !== 'mainland')).every(key => p.config[key] === state[key])) + '" aria-label="优选方案：' + esc(p.title) + '"', 'flow-preset');
       }).join('') + '</div>';
   }
   const transferKeys = ['entryFx', 'sender', 'entryMiddle', 'entryInward'];
@@ -429,7 +457,7 @@
   function handleAction(button) {
     const act = button.dataset.action.replace('money-flow-', ''), value = button.dataset.value;
     if (act === 'pick' || act === 'control-pick') { picker(value); return; }
-    if (act === 'preset') { const p = presets.find(x => x.id === value); if (!p) return; document.getElementById('dialog')?.close(); state = presetState(p); save(); refresh(); return; }
+    if (act === 'preset') { const p = visiblePresets.find(x => x.id === value) || presets.find(x => x.id === value); if (!p) return; document.getElementById('dialog')?.close(); state = presetState(p); save(); refresh(); return; }
     if (act === 'detail') { detail(value); return; }
     if (act === 'choose' || act === 'pick-choice') { if (act === 'pick-choice') document.getElementById('dialog')?.close(); choose(button.dataset.field, value); return; }
     if (act === 'clear-quotes') { for (const key of quoteKeys) state[key] = ''; state.tradeFeeUsd = ''; save(); document.getElementById('dialog')?.close(); refresh(); return; }

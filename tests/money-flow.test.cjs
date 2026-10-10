@@ -1070,7 +1070,7 @@ function moneyUi(input, quotes = cibQuotes) {
 test('all nodes, action losses, balance summaries and quick plans are visible without step navigation', () => {
   const ui = moneyUi({ ...currentRoute, outcome: 'broker-balance', activeStep: '04' }), html = ui.render();
   assert.equal((html.match(/data-flow-stage=/g) || []).length, 4);
-  assert.equal((html.match(/data-action="money-flow-preset"/g) || []).length, 6);
+  assert.equal((html.match(/data-action="money-flow-preset"/g) || []).length, 5);
   assert.equal((html.match(/class="flow-edge-loss"/g) || []).length, 3);
   for (const label of ['内地出发银行', '香港收款银行', '买美股的账户', '卖出后的资金', '人民币本金', '汇款到账', '入金到账', '全程损耗']) assert.ok(html.includes(label), label);
   assert.doesNotMatch(html, /自由组合|下一步|上一步|data-action="money-flow-step"|data-action="money-flow-presets"/);
@@ -1173,6 +1173,22 @@ test('presets preserve amounts, duration and eligibility; every selected bank re
   ui.act('preset', '', 'boc-za'); assert.equal(ui.saved().broker, 'za'); assert.equal(ui.saved().bank, 'bochk');
 });
 
+test('every visible calculated plan reproduces its full price after selection and preserves user conditions', () => {
+  const initial = { ...currentRoute, budgetCny: 100000, count: 2, months: 12, outcome: 'broker-balance', trade25: true, hsbcBalanceWaiver: true };
+  const ui = moneyUi(initial), html = ui.render();
+  const cards = [...html.matchAll(/<button[^>]*data-action="money-flow-preset"[\s\S]*?<\/button>/g)].map(m => m[0]);
+  assert.equal(cards.length, 5);
+  for (const card of cards) {
+    const id = card.match(/data-value="([^\"]+)"/)[1];
+    ui.act('preset', '', id);
+    const state = ui.saved(), r = M.calculatorJourney({ ...state, date: '2026-10-09' }, D, cibQuotes).selected;
+    assert.ok(card.includes(r.costCny.toFixed(2) + ' CNY'));
+    assert.ok(card.includes((r.costCny / r.budgetCny * 100).toFixed(3) + '%'));
+    assert.equal(state.budgetCny, 100000); assert.equal(state.count, 2); assert.equal(state.months, 12);
+    assert.equal(state.trade25, true); assert.equal(state.hsbcBalanceWaiver, true);
+  }
+});
+
 test('RMB source is not described as free when its sender tariff remains unpriced', () => {
   const ui = moneyUi({ ...currentRoute, startBank: 'cib', route: 'CNH', mainlandMethod: 'swift' }), html = ui.render();
   assert.match(html, /人民币原币汇往香港/);
@@ -1270,8 +1286,8 @@ test('primary fee details are visible immediately below each loss and sum to tha
   }
   for (const label of ['汇出手续费', '汇出电讯费', '内地购汇差额', '买入美股 · 1笔', '卖出美股 · 1笔']) assert.ok(html.includes(label));
   assert.doesNotMatch(html, /下限|上限|≥|≤|自由组合|上一页|下一页/);
-  const card = html.match(/<button[^>]*data-value="boc-za"[\s\S]*?<\/button>/)[0];
-  ui.act('preset', '', 'boc-za');
+  const card = [...html.matchAll(/<button[^>]*data-action="money-flow-preset"[\s\S]*?<\/button>/g)].map(m => m[0]).find(card => /aria-label="优选方案：[^\"]*→ ZA"/.test(card));
+  ui.act('preset', '', card.match(/data-value="([^\"]+)"/)[1]);
   const applied = M.calculatorJourney({ ...ui.saved(), date: '2026-10-09' }, D, cibQuotes).selected;
   assert.match(card, new RegExp((applied.costCny / applied.budgetCny * 100).toFixed(3) + '%'));
   assert.ok(card.includes(applied.costCny.toFixed(2) + ' CNY'));
