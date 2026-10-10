@@ -544,8 +544,15 @@
       const isSelectedStart = config.startBank === start.id, isSelectedBank = config.bank === bank.id;
       const isSelectedReturn = (config.returnBank || config.bank) === returning.id;
       const own = (key, selected) => selected && !selections.public ? number(config[key]) : null;
+      const account = maintenance(bank, own('balanceHkd', isSelectedBank) ?? 0, number(config.months), own('monthlyHkd', isSelectedBank) ?? (bank.id === 'hsbc' && config.hsbcBalanceWaiver ? 0 : null));
+      const returnAccount = keepInBroker || bank.id === returning.id ? 0 : maintenance(returning, own('returnBalanceHkd', isSelectedReturn) ?? 0, number(config.months), own('returnMonthlyHkd', isSelectedReturn) ?? (returning.id === 'hsbc' && config.hsbcBalanceWaiver ? 0 : null));
+      const settlementAccount = settlementBank && ![bank.id, ...(keepInBroker ? [] : [returning.id])].includes(settlementBank.id) ? maintenance(settlementBank, 0, number(config.months), settlementBank.id === 'hsbc' && config.hsbcBalanceWaiver ? 0 : null) : 0;
+      const accountCny = account == null || returnAccount == null || settlementAccount == null ? null : (account + returnAccount + settlementAccount) * refs.HKD;
+      const accountItems = [{ label: bank.name + '期间管理费', cny: account == null ? null : account * refs.HKD }, ...(keepInBroker || bank.id === returning.id ? [] : [{ label: returning.name + '期间管理费', cny: returnAccount == null ? null : returnAccount * refs.HKD }])];
+      if (settlementBank && ![bank.id, ...(keepInBroker ? [] : [returning.id])].includes(settlementBank.id)) accountItems.push({ label: settlementBank.name + '期间管理费', cny: settlementAccount == null ? null : settlementAccount * refs.HKD });
+      accountItems.forEach(item => { item.months = number(config.months); item.monthlyHkd = item.cny == null ? null : item.cny / refs.HKD / (number(config.months) || 1); });
       const q = start.quotes[currency], quote = currency === 'CNH' ? 1 : own('startSell', isSelectedStart) ?? q?.sell;
-      if (!positive(quote)) return { error: start.name + '的' + currency + '现汇卖出价尚未取得；到账金额暂不可算。', missingQuote: currency };
+      const missingSourceQuote = !positive(quote);
       const linked = ['hang', 'hsbc', 'sc'].includes(start.id);
       const method = (key, fallback) => (Object.hasOwn(selections, key) ? selections[key] : config[key]) || fallback;
       const bocMobilePair = start.id === 'boc' && bank.id === 'bochk' && currency !== 'CNH';
@@ -567,6 +574,7 @@
       const standardTariff = mainlandMethod === 'swift' && start.standardTariff;
       const senderBank = standardTariff ? { ...start, ...standardTariff } : start;
       const unknownSender = effectiveSender == null && (bocMobile || paymentConnect || fee(senderBank, 0, used + 1, config.date) == null || (linked && mainlandMethod !== 'linked' && !standardTariff) || (currency === 'CNH' && !sameGroup && !senderBank.cnhTariff && start.id !== 'abc'));
+      if (missingSourceQuote && mainlandMethod === 'full') return { error: start.name + '的' + currency + '现汇卖出价尚未取得；到账金额暂不可算。', missingQuote: currency };
       const fullFee = swiftGo ? start.swiftGoCny : mainlandMethod === 'full' ? start.fullAmountUsd * quote : 0;
       let principal = 0, sender = 0, commission = 0, telegram = 0;
       const senderKey = [start.id, quote, mainlandMethod, senderOverride, unknownSender].join(':');
@@ -591,13 +599,13 @@
       }
       // A priced full-amount service has a per-payment limit. Never silently
       // switch to an ordinary wire or split a customer's payment to fit it.
-      if (swiftGo) {
+      if (swiftGo && !missingSourceQuote) {
         if (currency !== 'USD' && (!positive(start.quotes.USD?.buy) || !quoteFresh(start.quotes.USD, config.date))) return { error: '兴业USD牌价缺失或超过3天，无法校验SWIFT GO港币单笔上限。' };
         const usdEquivalent = currency === 'USD' ? principal / quote / count : principal / count / start.quotes.USD.buy;
         if (usdEquivalent > start.swiftGoLimitUsd + 1e-8) return { error: 'SWIFT GO单笔上限为等值10,000 USD；当前每笔约' + usdEquivalent.toFixed(2) + ' USD，超出服务范围。' };
       }
       const rows = [], missing = [], requirements = [], steps = {};
-      let balance = principal / quote, unit = currency;
+      let balance = missingSourceQuote ? null : principal / quote, unit = currency;
       const add = (key, label, cny, step, reason = label) => {
         rows.push({ key, label, cny, step });
         if (cny == null) missing.push(reason); else balance -= cny / refs[unit];
@@ -647,12 +655,25 @@
         else rows[0].items.forEach(item => { if (item.cny == null) item.status = status; });
         missing.push(start.name + '所选渠道汇出收费');
       }
+      const entryMiddle = paymentConnect ? 0 : own('entryMiddleCny', isSelectedEntry) ?? (reportedMobile ? data.bocMobileEvidence.intermediaryCny ?? null : mainlandMethod === 'linked' && start.includedIntermediary ? 0 : mainlandMethod === 'full' || swiftGo ? 0 : null);
+      if (missingSourceQuote) {
+        // Sender charges in CNY are independent of the unavailable FX quote.
+        // Keep their real values without inventing a converted cash balance.
+        const error = start.name + '的' + currency + '现汇卖出价尚未取得；到账金额暂不可算。';
+        rows.push({ key: 'entryFx', label: '内地购汇差额', cny: null, step: 'entry', status: error });
+        rows.push({ key: 'entryMiddle', label: '内地→香港中转行费', cny: entryMiddle == null ? null : entryMiddle * count, step: 'entry' });
+        const knownInward = own('entryInwardHkd', isSelectedBank) ?? (swiftGo || bank.inwardHkd === 0 || bank.sameGroupWaiver && sameGroup ? 0 : null);
+        rows.push({ key: 'entryInward', label: '香港首次汇入费', cny: knownInward == null ? null : knownInward * refs.HKD * count, step: 'entry',
+          status: knownInward == null ? '须先确定外币到账额及适用汇入资费' : '' });
+        rows.push({ key: 'account', label: '香港账户期间管理费', cny: accountCny, step: 'spend', items: accountItems });
+        return { error, errorStage: '01', missingQuote: currency, rows, steps, route, mainlandMethod, fxMode,
+          refs, budgetCny: budget, start, bank, returning, exit, broker: provider, quoteFreshness: { source: false } };
+      }
       const entryMid = currency === 'CNH' ? 1 : positive(q?.buy) ? (q.buy + q.sell) / 2 : refs[currency];
       const deferredCnhBasis = relativeBasis && currency === 'CNH' ? principal - balance * refs.CNH : 0;
       fxRow('entryFx', currency === 'CNH' ? '人民币原币汇出（未换汇）' : relativeBasis ? '内地购汇差额' : '内地购汇点差',
         relativeBasis && currency === 'CNH' ? 0 : principal - balance * refs[currency], currency === 'CNH' ? 0 : principal - balance * entryMid, 'entry');
       steps.mainlandForeign = balance;
-      const entryMiddle = paymentConnect ? 0 : own('entryMiddleCny', isSelectedEntry) ?? (reportedMobile ? data.bocMobileEvidence.intermediaryCny ?? null : mainlandMethod === 'linked' && start.includedIntermediary ? 0 : mainlandMethod === 'full' || swiftGo ? 0 : null);
       add('entryMiddle', paymentConnect ? '跨境支付通直连（无SWIFT中转）' : '内地→香港中转行费', entryMiddle == null ? null : entryMiddle * count, 'entry');
       if (reportedMobile && own('entryMiddleCny', isSelectedEntry) == null && entryMiddle != null) rows[rows.length - 1].evidence = 'USD/HKD同行SHA路径 · 2026公开操作记录';
       const inward = own('entryInwardHkd', isSelectedBank) ?? (swiftGo ? 0 : inwardFee(bank, balance * refs[currency] / refs.HKD / count, start.group));
@@ -794,13 +815,8 @@
         add('card', '美元原币刷卡手续费', 0, 'return');
       } else if (!['usd-balance', 'broker-balance'].includes(outcome)) return downstreamError('请选择有效的资金用途。', '04');
       steps.terminal = balance; steps.settledCny = balance * refs[unit];
-      const account = maintenance(bank, own('balanceHkd', isSelectedBank) ?? 0, number(config.months), own('monthlyHkd', isSelectedBank) ?? (bank.id === 'hsbc' && config.hsbcBalanceWaiver ? 0 : null));
-      const returnAccount = keepInBroker || bank.id === returning.id ? 0 : maintenance(returning, own('returnBalanceHkd', isSelectedReturn) ?? 0, number(config.months), own('returnMonthlyHkd', isSelectedReturn) ?? (returning.id === 'hsbc' && config.hsbcBalanceWaiver ? 0 : null));
-      const settlementAccount = settlementBank && ![bank.id, ...(keepInBroker ? [] : [returning.id])].includes(settlementBank.id) ? maintenance(settlementBank, 0, number(config.months), settlementBank.id === 'hsbc' && config.hsbcBalanceWaiver ? 0 : null) : 0;
-      add('account', '香港账户期间管理费', account == null || returnAccount == null || settlementAccount == null ? null : (account + returnAccount + settlementAccount) * refs.HKD, 'spend');
-      rows[rows.length - 1].items = [{ label: bank.name + '账户月费', cny: account == null ? null : account * refs.HKD }, ...(keepInBroker || bank.id === returning.id ? [] : [{ label: returning.name + '账户月费', cny: returnAccount == null ? null : returnAccount * refs.HKD }])];
-      if (settlementBank && ![bank.id, ...(keepInBroker ? [] : [returning.id])].includes(settlementBank.id)) rows[rows.length - 1].items.push({ label: settlementBank.name + '账户月费', cny: settlementAccount == null ? null : settlementAccount * refs.HKD });
-      rows[rows.length - 1].items.forEach(item => { item.label = item.label.replace('账户月费', '期间管理费'); item.months = number(config.months); item.monthlyHkd = item.cny / refs.HKD / (number(config.months) || 1); });
+      add('account', '香港账户期间管理费', accountCny, 'spend');
+      rows[rows.length - 1].items = accountItems;
       add('extra', '开户及资产机会成本', extraCny, 'spend');
       rows[rows.length - 1].items = [{ label: '开户／赴港支出', cny: number(config.openingCny) ?? 0 }, { label: '另留资产机会成本', cny: extraCny - (number(config.openingCny) ?? 0) }];
       if (!finite(balance) || balance < 0 || Object.values(steps).some(value => value < 0)) return { error: '资金不足以覆盖所选费用、亏损及税款。' };

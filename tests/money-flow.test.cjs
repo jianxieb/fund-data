@@ -1300,3 +1300,30 @@ test('an incomplete or inapplicable voucher never claims that a discount is acti
   const html = moneyUi({ ...currentRoute, useVoucher: true, voucherUsd: '0', voucherExpiry: '' }).render();
   assert.match(html, /费用券 · 未抵扣/); assert.doesNotMatch(html, /费用券 · 已启用/);
 });
+
+test('missing source FX keeps independent sender charges without a fabricated foreign balance', () => {
+  const q = structuredClone(cibQuotes); delete q.banks.cmb;
+  const config = { ...currentRoute, startBank: 'cmb', bank: 'hsbc', broker: 'za', route: 'USD', mainlandMethod: 'swift', startSell: '',
+    senderFeeCny: '', entryMiddleCny: '', entryInwardHkd: '' };
+  const data = M.calculatorJourney(config, D, q), r = data.partial;
+  assert.equal(data.selected, undefined); assert.equal(r.errorStage, '01'); assert.equal(r.missingQuote, 'USD');
+  close(r.rows.find(x => x.key === 'sender').cny, 199.80019980019983);
+  assert.equal(r.rows.find(x => x.key === 'entryFx').cny, null);
+  assert.equal(r.rows.find(x => x.key === 'entryMiddle').cny, null);
+  close(r.rows.find(x => x.key === 'entryInward').cny, 0);
+  assert.deepEqual(r.steps, {});
+  const html = moneyUi(config, q).render();
+  assert.match(html, /199.80 CNY/); assert.match(html, /现汇卖出价尚未取得/);
+  assert.doesNotMatch(html, /1 USD = —|NaN|undefined/);
+  const source = html.split('aria-label="内地购美元 → 汇往香港"')[1].split('</section>')[0];
+  assert.doesNotMatch(source, /0.000%/);
+  assert.equal((source.match(/现汇卖出价尚未取得/g) || []).length, 1);
+  const sc = M.calculatorJourney({ ...config, startBank: 'sc', bank: 'sc', mainlandMethod: 'linked' }, D, q).partial;
+  for (const key of ['sender', 'entryMiddle', 'entryInward']) close(sc.rows.find(x => x.key === key).cny, 0);
+  const charged = M.calculatorJourney({ ...config, hsbcBalanceWaiver: false, balanceHkd: 0, monthlyHkd: '' }, D, q).partial;
+  close(charged.rows.find(x => x.key === 'account').cny, 1200 * charged.refs.HKD);
+  assert.doesNotMatch(html, /全程损耗 · 历史报价/);
+  const allUnknown = moneyUi({ ...config, startBank: 'sc', bank: 'bochk', returnBank: 'bochk' }, q).render();
+  const unknownTransfer = allUnknown.split('aria-label="内地购美元 → 汇往香港"')[1].split('</section>')[0];
+  assert.match(unknownTransfer, /class="num">—</); assert.doesNotMatch(unknownTransfer, /0.00 CNY/);
+});

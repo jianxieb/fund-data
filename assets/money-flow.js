@@ -126,13 +126,14 @@
     const variableFx = rows.some(x => x.cny == null && ['entryFx', 'brokerSpread', 'exitFx'].includes(x.key));
     const partial = !!pending || variableFx || missing;
     const label = partial ? '已核费用' : stale ? '历史损耗' : rows.some(x => x.estimate) ? '参考损耗' : '损耗';
-    return '<div class="flow-edge-loss"><span>' + label + '</span><strong class="num">' + (rows.length ?
+    const hasPrice = rows.some(x => x.cny != null);
+    return '<div class="flow-edge-loss"><span>' + label + '</span><strong class="num">' + (hasPrice ?
       (partial ? cost(total) : pct(total / M.number(state.budgetCny))) : '—') + '</strong>' +
-      (rows.length && !partial ? '<small>' + cost(total) + '</small>' : '') + '</div>';
+      (hasPrice && !partial ? '<small>' + cost(total) + '</small>' : '') + '</div>';
   }
   function nodeBalance(r, value, currency, label, keys = [], blocked = false) {
     const unknown = costRows(r, keys).some(x => x.cny == null), fx = costRows(r, keys).some(x => x.cny == null && ['entryFx', 'brokerSpread', 'exitFx'].includes(x.key));
-    const stale = r?.quoteFreshness && (r.quoteFreshness.source === false || keys.includes('brokerSpread') && r.quoteFreshness.entryMarket === false || keys.includes('exitFx') && r.quoteFreshness.exit === false);
+    const stale = keys.length > 0 && r?.quoteFreshness && (r.quoteFreshness.source === false || keys.includes('brokerSpread') && r.quoteFreshness.entryMarket === false || keys.includes('exitFx') && r.quoteFreshness.exit === false);
     const available = Number.isFinite(value) && !blocked && !fx && !stale;
     return '<div class="flow-node-balance"><small>' + esc(available && unknown ? '已扣已核费用 · ' + label : label) + '</small><div>' +
       (available ? amount(value, currency) : '<b>— <small>' + esc(currency) + '</small></b>') + '</div>' +
@@ -144,11 +145,12 @@
   }
   function edge(data, keys, title, controls, stage, note = '') {
     const r = data.selected || data.partial, pending = data.error && (data.partial?.errorStage || data.errorStage || '01') === stage ? data.error : '';
+    const feeNamesIssue = pending && costRows(r, keys).some(item => item.status === pending || item.items?.some(part => part.status === pending));
     return '<section class="flow-edge" aria-label="' + esc(title) + '"><span class="flow-edge-arrow" aria-hidden="true">↓</span><div class="flow-edge-heading"><div class="flow-edge-title"><h3>' + esc(title) + '</h3>' +
       action('依据', 'detail', 'data-value="edge-' + stage + '" aria-label="' + esc(title + '收费依据') + '"', 'text-link') + '</div>' + loss(r, keys, pending) + '</div><div class="flow-edge-main">' +
       (controls ? '<div class="flow-edge-controls">' + controls + '</div>' : '') + (note ? '<p class="flow-edge-note">' + note + '</p>' : '') +
       '<div class="flow-edge-fees">' + edgeFees(r, keys, stage) + '</div>' +
-      (pending ? '<p class="flow-error" role="status">' + esc(pending) + '</p>' : '') + '</div></section>';
+      (pending && !feeNamesIssue ? '<p class="flow-error" role="status">' + esc(pending) + '</p>' : '') + '</div></section>';
   }
   function edgeFees(r, keys, stage) {
     if (!r?.rows?.length) return '';
@@ -162,7 +164,7 @@
         let description = part.evidence || item.evidence || item.estimate || '';
         const exchange = item.exchanges?.[i];
         if (exchange) description = num(exchange.input) + ' ' + exchange.from + ' → ' + num(exchange.output) + ' ' + exchange.to;
-        if (item.key === 'entryFx' && state.route !== 'CNH') description = '1 ' + state.route + ' = ' + quoteNum(r.startSell) + ' CNY' + (r.entryDiscount ? ' · 点差五折' : '');
+        if (item.key === 'entryFx' && state.route !== 'CNH' && r.startSell > 0) description = '1 ' + state.route + ' = ' + quoteNum(r.startSell) + ' CNY' + (r.entryDiscount ? ' · 点差五折' : '');
         if (item.key === 'sender' && Number(state.count) > 1) description = (description ? description + ' · ' : '') + state.count + '笔合计';
         const feeCurrency = item.key === 'depositBank' && r.depositMethod === 'chats' && r.bank?.localUsdNative != null ? 'USD' : 'HKD';
         const native = part.cny == null ? part.status || item.status || '此汇路代理行收费未公开' :
@@ -246,7 +248,7 @@
   function summary(data) {
     const r = data.selected || data.partial, rows = r?.rows || [], total = sumRows(rows), gaps = rows.filter(x => x.cny == null);
     const incomplete = !data.selected || !!r?.indicativeFx || !!r?.indicativeExit || !!r?.exitIssue;
-    const stale = r?.quoteFreshness && (r.quoteFreshness.source === false || r.quoteFreshness.reference === false ||
+    const stale = !r?.missingQuote && r?.quoteFreshness && (r.quoteFreshness.source === false || r.quoteFreshness.reference === false ||
       !r.indicativeFx && r.quoteFreshness.entryMarket === false || !r.indicativeExit && r.quoteFreshness.exit === false);
     const partial = incomplete || !!gaps.length;
     const estimated = rows.some(x => x.estimate);
@@ -256,7 +258,7 @@
     const lastBalance = r?.steps?.remitUsd ?? r?.steps?.returnUsd ?? r?.steps?.proceedsUsd ?? r?.steps?.fundedUsd;
     const canShowLast = Number.isFinite(lastBalance) && !r?.indicativeFx && r?.quoteFreshness?.source !== false;
     const finalHtml = canBalance ? amount(r.net, r.currency) : canShowLast ? amount(lastBalance, 'USD') : '<b>—</b>';
-    return '<div class="flow-result"><div><span>' + label + '</span><strong class="num">' + (rows.length ? partial ? cost(total) : pct(total / M.number(state.budgetCny)) : '—') + '</strong>' +
+    return '<div class="flow-result"><div><span>' + label + '</span><strong class="num">' + (rows.some(x => x.cny != null) ? partial ? cost(total) : pct(total / M.number(state.budgetCny)) : '—') + '</strong>' +
       '<small>' + (rows.length ? partial ? '总损耗尚缺：' + esc(gaps.map(x => x.label).join('、') || data.error || r?.exitIssue || '有效成交报价') : cost(total) : esc(data.error || '选择有效本金和汇出报价')) + '</small></div><div class="flow-result-equation"><span>其中账户期间费</span><b>' +
       (row(r, 'account') ? cost(row(r, 'account').cny) : '—') + '</b>' + (r?.taxCny ? '<small>另预留税款 ' + cost(r.taxCny) + '</small>' : '<small>已计入合计</small>') + '</div><div><span>' + balanceLabel + '</span>' + finalHtml +
       (incomplete ? '<small>' + esc(r?.exitIssue || data.error || r?.indicativeFx || '') + '</small>' : '') + '</div><div class="flow-result-detail">' +
