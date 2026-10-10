@@ -49,6 +49,31 @@ test('full-amount limit never silently splits payments and honours exact budget 
   assert.ok(after.error || after.selected?.missing.length);
 });
 
+test('CIB RMB wire uses retail commission and telegram charges without inheriting FX-only waivers', () => {
+  const bank = D.mainlandBanks.find(b => b.id === 'cib');
+  const cnh = { ...bank, ...bank.cnhTariff };
+  for (const date of ['2026-10-10', '2027-07-01']) for (const index of [1, 30, 31]) {
+    for (const [principal, charge] of [[10000, 150], [50000, 150], [100000, 200], [200000, 300], [1000000, 300]]) {
+      close(M.fee(cnh, principal, index, date), charge);
+    }
+  }
+  for (const count of [1, 2, 3]) for (const usedFreeTransfers of [0, 29, 30]) {
+    const r = run({ startBank: 'cib', route: 'CNH', bank: 'bochk', mainlandMethod: 'swift', fxMode: 'bank', count, usedFreeTransfers }).selected;
+    const sender = r.rows.find(x => x.key === 'sender');
+    const expected = count === 1 ? 100000 - 99900 / 1.001 : count * 150;
+    close(sender.cny, expected);
+    close(sender.items.find(x => x.label === '汇出电讯费').cny, count * 100);
+    close(sender.items.reduce((sum, item) => sum + item.cny, 0), expected);
+    close(r.steps.mainlandForeign, 100000 - expected);
+    close(r.rows.find(x => x.key === 'entryFx').cny, 0);
+    assert.equal(r.rows.find(x => x.key === 'entryMiddle').cny, null);
+    assert.ok(!r.missing.some(x => /兴业.*汇出手续费|兴业.*电讯费/.test(x)));
+    ledger(r);
+  }
+  close(run({ count: 1, usedFreeTransfers: 0 }).selected.rows.find(x => x.key === 'sender').cny, 0);
+  close(run({ count: 1, usedFreeTransfers: 30 }).selected.rows.find(x => x.key === 'sender').cny, 100);
+});
+
 test('source accounts, Hong Kong banks, stock venues and every currency have independent catalogues', () => {
   assert.deepEqual(D.calculator.mainland, ['boc', 'cib', 'cmb', 'icbc', 'ccb', 'comm', 'hsbc', 'hang', 'sc']);
   for (const startBank of D.calculator.mainland) for (const bank of D.calculator.hkBanks) for (const broker of D.calculator.brokers) for (const route of D.calculator.currencies) {

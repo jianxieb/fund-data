@@ -1209,10 +1209,26 @@ test('withdrawal capability and minimum errors appear at the withdrawal action, 
 });
 
 test('RMB source is not described as free when its sender tariff remains unpriced', () => {
-  const ui = moneyUi({ ...currentRoute, startBank: 'cib', route: 'CNH', mainlandMethod: 'swift' }), html = ui.render();
+  const ui = moneyUi({ ...currentRoute, startBank: 'icbc', route: 'CNH', mainlandMethod: 'swift' }), html = ui.render();
   assert.match(html, /人民币原币汇往香港/);
   assert.doesNotMatch(html, /人民币原币跨境渠道未纳入全程报价/);
   ui.act('detail', '', 'cost'); assert.match(ui.modal(), /人民币资费未收录/);
+});
+
+test('CIB RMB channel, picker and fee detail agree without an FX-only free-transfer label', () => {
+  const ui = moneyUi({ ...currentRoute, startBank: 'cib', bank: 'bochk', route: 'CNH', count: 1, mainlandMethod: 'swift', senderFeeCny: '' });
+  const html = ui.render();
+  assert.match(html, /人民币跨境电汇 · 标准价/);
+  assert.match(html, /99.80 CNY/); assert.match(html, /100.00 CNY/);
+  assert.doesNotMatch(html, /人民币资费未收录|普通汇款 · 寰宇人生卡/);
+  ui.act('pick', '', 'startBank');
+  assert.match(ui.modal(), /人民币跨境1‰、50–200元＋100元电讯费/);
+  ui.act('detail', '', 'cost');
+  assert.match(ui.modal(), /汇出手续费<\/span><b>99.80 CNY/);
+  assert.match(ui.modal(), /汇出电讯费<\/span><b>100.00 CNY/);
+  ui.act('choose', 'route', 'USD');
+  assert.equal(ui.saved().bank, 'bochk'); assert.equal(ui.saved().startBank, 'cib');
+  assert.match(ui.render(), /普通汇款 · 寰宇人生卡/);
 });
 
 test('RMB channels show the correct tariff and repair the old SC foreign-only choice without changing accounts', () => {
