@@ -5,7 +5,7 @@
 }(typeof window === 'object' ? window : globalThis, function () {
   'use strict';
   return {
-    verifiedAt: '2026-10-10',
+    verifiedAt: '2026-10-11',
     calculator: {
       // Account choice is independent of whether a full route has a public quote.
       mainland: ['boc', 'cib', 'cmb', 'icbc', 'ccb', 'comm', 'hsbc', 'hang', 'sc'],
@@ -16,9 +16,9 @@
       ]
     },
     comparisonNotice: '按具体渠道、币种及账户收费计算；购汇点差与转账手续费分别列示。',
-    bocMobileEvidence: { feeCny: 0, telegramCny: 0, intermediaryCny: 0, checkedAt: '2026-10-11', level: 'reported', sources: ['bocMobile2026', 'bocMobileUsdGuide', 'bochkSame', 'bocMobileHistory'], note: 'USD/HKD通过手机银行“境外中行”汇往同名中银香港：手续费、电讯费按2026报道双免，代理费按2026操作记录的SHA同行路径0元测算。此记录不是所有币种、所有汇路的代理费豁免承诺；跨境支付通实录不作外币电汇证据。' },
+    bocMobileEvidence: { feeCny: 0, telegramCny: 0, intermediaryCny: 0, checkedAt: '2026-10-11', level: 'bank-statement', intermediaryLevel: 'reported', senderEvidence: '手机银行双免', sources: ['bocMobile2026', 'bocMobileUsdGuide', 'bochkSame', 'bocMobileHistory'], note: '中行山西省分行2026-05-29在新华网供稿确认：手机银行向境外中行汇款免手续费及电报费。USD/HKD同名中银香港的代理费另按2026操作记录的SHA同行路径0元测算；该记录不是所有币种、所有汇路的代理费豁免承诺，跨境支付通实录不作外币电汇证据。' },
     evidenceGaps: [
-      { bank: 'boc', channel: 'boc-mobile', checkedAt: '2026-10-11', items: ['全国现行双免公告全文'], source: 'bocMobile2026', finding: '2026公开报道支持手机银行双免，2月9日USD/HKD同行SHA操作记录支持代理费0情景；香港同名基本汇入豁免由官网确认。报道情景不扩展成所有币种／汇路的官方免费承诺。' },
+      { bank: 'boc', channel: 'boc-mobile', checkedAt: '2026-10-11', items: ['USD/HKD同行路径代理费的银行资费依据'], source: 'bocMobileUsdGuide', finding: '2026-05-29中行山西省分行在新华网的供稿已确认手机银行向境外中行汇款手续费及电报费免；该两项不再仅依赖搜狐转载。2月9日同行SHA操作记录支持代理费0情景，仍不扩展成所有币种／汇路的代理费豁免。' },
       { bank: 'boc', channel: 'payment-connect', checkedAt: '2026-10-09', items: ['中行跨境支付通本次南向汇出服务费', '本人剩余便利化额度及银行交易限额'], source: 'bocPaymentConnect', finding: '中行确认人民币汇出、人民币或港币到账；黄石政府网2025-07-01记录中行南向人民币汇款无额外手续费实例。金管局2026-09-08更新页确认南向受年度等值5万美元便利化额度约束。实例不等同2026年全国账户永久免费承诺；本次费率可按App确认页填写，不套用SWIFT电讯费，不纳入美股入金推荐。' },
       { bank: 'comm', kind: 'regional', checkedAt: '2026-10-09', items: ['地区适用费率'], source: 'comm', finding: '2026年5月名录已核实：个人网银／手机银行0.5‰–0.8‰，最低20–40元，最高200元；港澳台电报费80–150元。官方明确各地分行定价不同，显示公开区间，不任取最低价。' },
       { bank: 'sc', checkedAt: '2026-10-09', items: ['USD/HKD账户成交买卖价'], source: 'scFx', finding: '须本人的账户询价，不能借其他银行价格。' }
@@ -29,7 +29,7 @@
       csrc: { name: '证监会 · 2026年跨境证券经营整治', url: 'https://www.csrc.gov.cn/csrc/c100028/c7634324/content.shtml' },
       boc: { name: '中国银行 · 个人金融现行标准价（电子渠道优惠另列）', url: 'https://pic.bankofchina.com/bocappd/pricelist/202511/P020251110646838136627.pdf' },
       bocMobileHistory: { name: '中国银行 · 手机银行向境外中行双免（2025年5–12月）', url: 'https://www.boc.cn/big5/ebanking/bi3/bi31/202504/t20250430_25339098.html' },
-      bocMobile2026: { name: '2026-05-28公开报道 · 中行手机银行向境外中行双免', url: 'https://www.sohu.com/a/1028992119_121123789' },
+      bocMobile2026: { name: '中行山西省分行供稿 · 2026-05-29新华网手机银行双免说明', url: 'https://app.xinhuanet.com/news/article.html?articleId=202605292bb12419965b415d874dba730080d3af' },
       bocPaymentGuide: { name: '2026-06-30用户实录 · 中行跨境支付通人民币汇款', url: 'https://linux.do/t/topic/2632770?tl=zh_CN' },
       bocMobileUsdGuide: { name: '2026-02-09操作记录 · USD/HKD同名境外中行SHA同行路径', url: 'https://www.huigeblog.com/news/operational-guide-for-cross-border-remittance-via-bank-of-china-hong-kong.html' },
       zaLocalUsd: { name: 'ZA官方 · 免费本地美元转账与直连银行名单', url: 'https://cdn.zaticdn.com/if/ipage/prd/data/blog/a1e7a724-9c51-421a-936a-a339d6d18c4e/en/USD-local-bank-transfers.html?v=1758617552695' },
@@ -129,7 +129,7 @@
       bochkCard: { name: '中银香港 · 多货币扣账设置', url: 'https://www.bochk.com/dam/more/bocdebitcard/card/sc.html' }
     },
     mainlandBanks: [
-      { id: 'boc', name: '中国银行', group: 'boc', rate: 0.001, minimum: 50, maximum: 260, telegram: 80, cnhTariff: true, tariffChannel: '普通电汇 · 公开标准价', feeText: '标准电汇1‰，50–260元＋80元；手机银行同名优惠单列', condition: '手机银行向境外中行汇款与标准电汇分开；同名中银香港汇入手续费0，手机银行双免按2026公开报道情景计算，代理费用另列', sources: ['boc', 'bocMobileHistory', 'bochkSame', 'bocPaymentConnect', 'bocFx'], quoteSource: 'bocFx' },
+      { id: 'boc', name: '中国银行', group: 'boc', rate: 0.001, minimum: 50, maximum: 260, telegram: 80, cnhTariff: true, tariffChannel: '普通电汇 · 公开标准价', feeText: '标准电汇1‰，50–260元＋80元；手机银行同名优惠单列', condition: '中行2026年供稿确认手机银行向境外中行汇款手续费、电报费免；同名中银香港基本汇入费0。普通电汇与代理费用分别计算', sources: ['bocMobile2026', 'bocMobileUsdGuide', 'boc', 'bocMobileHistory', 'bochkSame', 'bocPaymentConnect', 'bocFx'], quoteSource: 'bocFx' },
       { id: 'cmb', name: '招商银行', group: 'cmb', rate: 0.001, minimum: 50, maximum: 280, telegram: 100, cnhTariff: true, inwardCny: 0, validFrom: '2023-09-30', tariffChannel: '个人跨境汇款 · 公开标准价', feeText: '个人1‰，50–280元＋100元电讯费', condition: '个人价目表GJ001/GJ003；跨境人民币参照执行，客户专属减免另计', sources: ['cmbTariff', 'cmbFx'], quoteSource: 'cmbFx' },
       { id: 'icbc', name: '工商银行', group: 'icbc', rate: .0008, minimum: 40, maximum: 208, telegram: 80, fullAmountUsd: 25, inwardCny: 0, validFrom: '2026-08-08', tariffChannel: '个人网银 · 向境外他行', feeText: '网银0.8‰，40–208元＋香港电讯费80元；USD全额到账另加25 USD/笔', condition: '按现行柜面1‰、50–260元的8折；06030033美元全额到账另加25美元/笔，香港收款行本行汇入费另列；手机银行折扣及工行集团内渠道另计', sources: ['icbc', 'icbcOnline', 'icbcInternational', 'icbcFx', 'icbcInward'], quoteSource: 'icbcFx' },
       { id: 'ccb', name: '建设银行', group: 'ccb', rate: 0.001, minimum: 20, maximum: 300, telegram: 80, cnhTariff: true, inwardCny: 0, validFrom: '2026-01-18', tariffChannel: '本外币跨境电汇 · 公开标准价', feeText: '本外币跨境1‰，20–300元＋80元电讯费；汇入免费', condition: '2026年生效价目表明确包含跨境人民币；银行汇入手续费0，中转费用另计', sources: ['ccb', 'ccbRemit', 'ccbFx'], quoteSource: 'ccbFx' },

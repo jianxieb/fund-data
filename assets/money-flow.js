@@ -282,7 +282,7 @@
   function transferHint() {
     if (state.mainlandMethod === 'cib-go') return '附加服务：每笔≤等值10,000 USD，仅限App提供此服务的收款账户；包含境外行费用。';
     if (state.mainlandMethod === 'full') return '美元全额到账附加服务按笔收费，汇出手续费、电讯费及收款行本行汇入费分别列示。';
-    if (state.mainlandMethod === 'boc-mobile') return '双免按2026年公开报道情景计算；中银香港同名汇入基本费已获官网确认。';
+    if (state.mainlandMethod === 'boc-mobile') return '手机银行手续费、电报费双免已获2026年中行供稿确认；同名中银香港基本汇入费免。代理费单独按所列汇路证据计算。';
     if (state.mainlandMethod === 'linked') return state.startBank === 'sc' ? '适用于渣打优先理财、两地同名账户及指定渠道。' : state.startBank === 'hang' ? '适用于恒生中国优越理财，经跨域转账页面汇往同名恒生香港账户；优进理财的累计3次本行费用优惠不适用此项。' : '适用于已连通的两地同名账户及指定转账页面。';
     return '';
   }
@@ -485,7 +485,7 @@
           '<small>' + esc(price.asOf) + (price.path === 'via-HKD' ? ' · 经HKD两次兑换' : '') + '</small></span><b>卖美元 ' + quoteNum(price.bidPerUsd) +
           '<small>买美元 ' + quoteNum(price.askPerUsd) + '</small></b></div>')).join('') + '</div>';
       if (r?.refs) content += '<p>统一折算：1 USD = ' + num(r.refs.USD, 6) + ' CNY；1 HKD = ' + num(r.refs.HKD, 6) + ' CNY。CNY与CNH分开计价。</p>';
-      content += '<h3>同名转账豁免</h3><p>中银香港官网确认同名内地中行的基本汇入费豁免，条款不含代理行费。内地手机银行双免采用2026年报道情景；2025年的优惠公告没有自动延长。恒生、汇丰、渣打的免费服务各须符合所列同名渠道和账户条件。</p>';
+      content += '<h3>同名转账豁免</h3><p>中行山西省分行2026年5月29日新华网供稿确认手机银行向境外中行汇款免手续费及电报费。中银香港官网确认同名基本汇入费免；代理费0另据USD/HKD同行SHA操作记录，不由上述基本费豁免推出。恒生、汇丰、渣打分别适用所列同名渠道和账户条件。</p>';
       keys.push('bochkSame', 'bocMobile2026', 'bocMobileUsdGuide', 'hang', 'hsbcGlobal', 'sc', 'bochkUsdFx', 'hsbcHkFx', 'hangHkFx');
     } else {
       const rows = key === 'stage' ? currentRows(r) : r?.rows || [];

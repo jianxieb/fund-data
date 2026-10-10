@@ -599,8 +599,8 @@
       if (mainlandMethod === 'full' && !(currency === 'USD' && knownFee(start.fullAmountUsd))) return { error: '所选银行未收录USD全额到账收费，请改用普通汇款。' };
       const isSelectedEntry = isSelectedStart && isSelectedBank && (!config.route || config.route === currency) && (!config.mainlandMethod || config.mainlandMethod === mainlandMethod);
       const senderOverride = own('senderFeeCny', isSelectedEntry);
-      // Standard wire prices and the 2026 reported mobile waiver are separate
-      // scenarios. Public reporting does not establish a nationwide guarantee.
+      // The bank-authored mobile waiver covers sending fees. The observed
+      // SHA intermediary charge remains a separate source and fee item.
       const reportedMobile = bocMobile && !!data.bocMobileEvidence;
       const effectiveSender = senderOverride ?? (reportedMobile ? data.bocMobileEvidence.feeCny + data.bocMobileEvidence.telegramCny : null);
       const currencyTariff = currency === 'CNH' && typeof start.cnhTariff === 'object' ? start.cnhTariff : start.standardTariff;
@@ -676,10 +676,11 @@
         }
       };
       rows.push({ key: 'sender', label: '内地汇出手续费＋电讯费' + (fullFee ? '＋全额到账费' : ''), cny: unknownSender ? null : sender, step: 'entry' });
-      if (reportedMobile && senderOverride == null) rows[0].evidence = '2026公开报道 · 双免情景';
+      const senderEvidence = reportedMobile ? data.bocMobileEvidence.senderEvidence : '';
+      if (reportedMobile && senderOverride == null) rows[0].evidence = senderEvidence;
       const senderLabel = bocMobile ? '中行手机银行向境外中行·现行' : start.name;
       rows[0].items = unknownSender ? [{ label: senderLabel + '汇出手续费', cny: null }, { label: senderLabel + '电讯费', cny: null }] :
-        senderOverride == null ? [{ label: '汇出手续费', cny: commission, evidence: reportedMobile ? '2026公开报道' : '' }, { label: '汇出电讯费', cny: telegram, evidence: reportedMobile ? '2026公开报道' : '' }] : [{ label: '本人报价：汇出手续费及电讯费', cny: senderOverride * count }];
+        senderOverride == null ? [{ label: '汇出手续费', cny: commission, evidence: senderEvidence }, { label: '汇出电讯费', cny: telegram, evidence: senderEvidence }] : [{ label: '本人报价：汇出手续费及电讯费', cny: senderOverride * count }];
       if (fullFee) rows[0].items.push({ label: swiftGo ? 'SWIFT GO全额到账 · 50 CNY/笔' : '全额到账附加费 · ' + (start.fullAmountUsd * count) + ' USD', cny: fullFee * count });
       if (unquotedFullAmount) {
         rows[0].estimate = '尚缺内地购汇价，附加服务折人民币及汇出手续费按参考汇率估算';

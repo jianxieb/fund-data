@@ -781,13 +781,14 @@ test('linked return channels require the destination mainland account eligibilit
   close(ordinary.recommended.net, ordinary.minimum.net);
 });
 
-test('BOC mobile uses explicitly attributed 2026 reported waiver, independent of standard wire and agent fees', () => {
+test('BOC mobile uses the bank-authored 2026 waiver separately from the observed SHA agent charge', () => {
   const input = { ...mainlandConfig, broker: 'ibkr', bank: 'bochk', returnBank: 'bochk', returnMethod: 'bochk-fast',
     mainlandMethod: 'boc-mobile', profitUsd: 0, tradeFeeUsd: '', senderFeeCny: '', entryMiddleCny: '' };
   const data = M.journeyPlans(input, D, richQuotes), r = data.selected;
   close(r.rows.find(row => row.key === 'sender').cny, 0);
-  assert.match(r.rows.find(row => row.key === 'sender').evidence, /2026公开报道/);
-  assert.equal(D.bocMobileEvidence.level, 'reported');
+  assert.match(r.rows.find(row => row.key === 'sender').evidence, /手机银行双免/);
+  assert.equal(D.bocMobileEvidence.level, 'bank-statement');
+  assert.equal(D.bocMobileEvidence.intermediaryLevel, 'reported');
   close(r.rows.find(row => row.key === 'entryInward').cny, 0);
   close(r.rows.find(row => row.key === 'entryMiddle').cny, 0);
   assert.match(r.rows.find(row => row.key === 'entryMiddle').evidence, /USD\/HKD同行SHA路径/);
@@ -817,7 +818,7 @@ test('confirmed free BOC mobile transfers preserve the foreign principal without
   assert.equal(elsewhere.rows.find(row => row.key === 'entryMiddle').cny, null);
   const hkd = data.alternatives.route.find(row => row.route === 'HKD');
   close(hkd.rows.find(row => row.key === 'sender').cny, 0);
-  assert.match(hkd.rows.find(row => row.key === 'sender').evidence, /公开报道/);
+  assert.match(hkd.rows.find(row => row.key === 'sender').evidence, /手机银行双免/);
   const cnh = data.alternatives.route.find(row => row.route === 'CNH');
   assert.equal(cnh.mainlandMethod, 'swift');
   assert.ok(cnh.rows.find(row => row.key === 'sender').cny > 0);
@@ -922,7 +923,7 @@ test('choosing BOC preserves an explicitly selected standard tariff alongside th
   assert.ok(standard.rows.find(row => row.key === 'sender').cny > 0);
   const mobile = M.journeyPlans({ ...config, mainlandMethod: 'boc-mobile' }, D, richQuotes).selected;
   const sender = mobile.rows.find(row => row.key === 'sender');
-  close(sender.cny, 0); assert.match(sender.evidence, /2026公开报道/);
+  close(sender.cny, 0); assert.match(sender.evidence, /手机银行双免/);
   close(mobile.rows.find(row => row.key === 'entryInward').cny, 0);
 });
 

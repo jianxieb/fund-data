@@ -39,7 +39,7 @@ ZA卡不适用USD原币扣账，其他消费账户可重新选择。香港银行
 ## 中行、兴业与集团优惠的证据
 
 - [中银香港同名汇款官网](https://www.bochk.com/tc/crossborder/personal/financialservicehk/remittance.html)确认同名内地中行的基本汇入费豁免；香港方向的网上／手机同名汇出基本费亦免。条款第3项不包含代理行费用。
-- [中行2025年手机银行公告](https://www.boc.cn/big5/ebanking/bi3/bi31/202504/t20250430_25339098.html)只覆盖2025年5–12月。[2026年公开报道](https://www.sohu.com/a/1028992119_121123789)和[2026-02-09美元／港币操作记录](https://www.huigeblog.com/news/operational-guide-for-cross-border-remittance-via-bank-of-china-hong-kong.html)支持手机银行向同名境外中行汇款的0汇出费、0电讯费及同行SHA路径0代理费情景。证据标记为公开报道／操作记录，不能当成全国无条件保证，不扩展到人民币、其他收款行或普通SWIFT。[Linux.do记录](https://linux.do/t/topic/2632770?tl=zh_CN)使用人民币跨境支付通，不能当成美元电汇免代理费证据。
+- [中行2025年手机银行公告](https://www.boc.cn/big5/ebanking/bi3/bi31/202504/t20250430_25339098.html)只覆盖2025年5–12月。已追溯取得[中行山西省分行2026-05-29新华网供稿](https://app.xinhuanet.com/news/article.html?articleId=202605292bb12419965b415d874dba730080d3af)，直接确认手机银行向境外中行汇款免手续费、电报费；替代之前仅引用的搜狐转载。代理费0仍独立依据[2026-02-09美元／港币操作记录](https://www.huigeblog.com/news/operational-guide-for-cross-border-remittance-via-bank-of-china-hong-kong.html)中的同名SHA同行路径，不因本行双免而推导出所有汇路的代理费豁免。2026供稿没有列完整活动条款或到期日，不编造期限，也不将2025公告自动延长；人民币、其他收款行和普通SWIFT不套用此USD/HKD情景。[Linux.do记录](https://linux.do/t/topic/2632770?tl=zh_CN)使用人民币跨境支付通，不能当成美元电汇免代理费证据。
 - [兴业寰宇人生权益](https://mobile.cib.com.cn/netbank/cn/personal/debit/index.html)提供2026-07-01至2027-06-30购结汇点差五折、前30笔电讯费免及汇款手续费免。普通汇款不另加50元。
 - [兴业小额全额到账](https://www.cib.com.cn/cn/aboutCIB/about/charges/zfNotices/20240204.html)是另外的50 CNY/笔服务，限等值10,000 USD以内且App须提供该收款账户服务；含境外行费用。超限只在本步报错，不偷偷拆笔或换服务。
 - [恒生两地同名跨域转账](https://www.hangseng.com/zh-cn/personal/banking/cross-border-view-and-transfer/)明确指定渠道免费；人民币由内地到港若发生人民币清算费，官网说明当天退回。
