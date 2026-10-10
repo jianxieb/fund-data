@@ -697,12 +697,16 @@
         missing.push(start.name + '所选渠道汇出收费');
       }
       const entryMiddle = paymentConnect ? 0 : own('entryMiddleCny', isSelectedEntry) ?? (reportedMobile ? data.bocMobileEvidence.intermediaryCny ?? null : mainlandMethod === 'linked' && start.includedIntermediary ? 0 : mainlandMethod === 'full' || swiftGo ? 0 : null);
+      const entryMiddleEvidence = reportedMobile && own('entryMiddleCny', isSelectedEntry) == null && entryMiddle != null ? {
+        evidence: 'USD/HKD同行SHA路径 · 2026公开操作记录',
+        ...(data.bocMobileEvidence.intermediaryLevel === 'reported' ? { estimate: '代理费按同名同行SHA操作记录测算' } : {})
+      } : {};
       if (missingSourceQuote) {
         // Sender charges in CNY are independent of the unavailable FX quote.
         // Keep their real values without inventing a converted cash balance.
         const error = start.name + '的' + currency + '现汇卖出价尚未取得；到账金额暂不可算。';
         rows.push({ key: 'entryFx', label: '内地购汇差额', cny: null, step: 'entry', status: error });
-        rows.push({ key: 'entryMiddle', label: '内地→香港中转行费', cny: entryMiddle == null ? null : entryMiddle * count, step: 'entry' });
+        rows.push({ key: 'entryMiddle', label: '内地→香港中转行费', cny: entryMiddle == null ? null : entryMiddle * count, step: 'entry', ...entryMiddleEvidence });
         const knownInward = own('entryInwardHkd', isSelectedBank) ?? (swiftGo || bank.inwardHkd === 0 || bank.sameGroupWaiver && sameGroup ? 0 : null);
         rows.push({ key: 'entryInward', label: '香港首次汇入费', cny: knownInward == null ? null : knownInward * refs.HKD * count, step: 'entry',
           status: knownInward == null ? '须先确定外币到账额及适用汇入资费' : '' });
@@ -716,7 +720,7 @@
         relativeBasis && currency === 'CNH' ? 0 : principal - balance * refs[currency], currency === 'CNH' ? 0 : principal - balance * entryMid, 'entry');
       steps.mainlandForeign = balance;
       add('entryMiddle', paymentConnect ? '跨境支付通直连（无SWIFT中转）' : '内地→香港中转行费', entryMiddle == null ? null : entryMiddle * count, 'entry');
-      if (reportedMobile && own('entryMiddleCny', isSelectedEntry) == null && entryMiddle != null) rows[rows.length - 1].evidence = 'USD/HKD同行SHA路径 · 2026公开操作记录';
+      Object.assign(rows[rows.length - 1], entryMiddleEvidence);
       const inward = own('entryInwardHkd', isSelectedBank) ?? (swiftGo ? 0 : inwardFee(bank, balance * refs[currency] / refs.HKD / count, start.group));
       add('entryInward', '香港首次汇入费', inward == null ? null : inward * refs.HKD * count, 'entry');
       steps.hongKong = balance;

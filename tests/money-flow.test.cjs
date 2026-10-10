@@ -792,6 +792,8 @@ test('BOC mobile uses the bank-authored 2026 waiver separately from the observed
   close(r.rows.find(row => row.key === 'entryInward').cny, 0);
   close(r.rows.find(row => row.key === 'entryMiddle').cny, 0);
   assert.match(r.rows.find(row => row.key === 'entryMiddle').evidence, /USD\/HKD同行SHA路径/);
+  assert.match(r.rows.find(row => row.key === 'entryMiddle').estimate, /同名同行SHA操作记录/);
+  for (const key of ['sender', 'entryInward']) assert.equal(r.rows.find(row => row.key === key).estimate, undefined);
   assert.equal(r.rankable, false);
   assert.ok(data.plans.every(row => row.mainlandMethod !== 'boc-mobile'));
   const mobile = data.presets.find(row => row.id === 'boc-mobile');
@@ -809,6 +811,7 @@ test('confirmed free BOC mobile transfers preserve the foreign principal without
     mainlandMethod: 'boc-mobile', profitUsd: 0, tradeFeeUsd: '', senderFeeCny: 0, entryMiddleCny: 0 };
   const data = M.journeyPlans(input, D, richQuotes), r = data.selected;
   for (const key of ['sender', 'entryMiddle', 'entryInward']) close(r.rows.find(row => row.key === key).cny, 0);
+  assert.equal(r.rows.find(row => row.key === 'entryMiddle').estimate, undefined);
   close(r.steps.hongKong, r.steps.mainlandForeign);
   close(r.steps.hongKong, r.budgetCny / r.startSell);
   assert.ok(r.rows.find(row => row.key === 'entryFx').cny > 0);
@@ -1091,6 +1094,26 @@ function evidenceLinks(ui, detail) {
   ui.act('detail', '', detail);
   return new Set([...ui.modal().matchAll(/class="source-link"[^>]*href="([^"]+)"/g)].map(match => match[1]));
 }
+
+test('BOC observed correspondent cost is reference-priced without downgrading bank-confirmed fee waivers', () => {
+  const config = { ...currentRoute, startBank: 'boc', bank: 'bochk', broker: 'za', mainlandMethod: 'boc-mobile', outcome: 'broker-balance' };
+  const ui = moneyUi(config), html = ui.render(), r = M.calculatorJourney(config, D, cibQuotes).selected;
+  const transfer = html.split('aria-label="内地购美元 → 汇往香港"')[1].split('</section>')[0];
+  assert.match(transfer, /参考损耗/);
+  assert.match(transfer, /手机银行双免/);
+  assert.match(transfer, /估算 0.00 CNY/);
+  const summary = html.split('id="flow-live-summary"')[1];
+  assert.match(summary, /参考总损耗/);
+  assert.match(summary, new RegExp(r.costCny.toFixed(2).replace('.', '\\.')));
+  const confirmed = M.calculatorJourney({ ...config, entryMiddleCny: 0 }, D, cibQuotes).selected;
+  close(confirmed.costCny, r.costCny); close(confirmed.net, r.net);
+  const confirmedUi = moneyUi({ ...config, entryMiddleCny: 0 }).render().split('id="flow-live-summary"')[1];
+  assert.match(confirmedUi, /全程损耗/); assert.doesNotMatch(confirmedUi, /参考总损耗/);
+  const noFx = structuredClone(cibQuotes); delete noFx.banks.boc;
+  const partial = M.calculatorJourney(config, D, noFx).partial;
+  assert.match(partial.rows.find(row => row.key === 'entryMiddle').estimate, /同名同行SHA操作记录/);
+  assert.equal(partial.rows.find(row => row.key === 'sender').estimate, undefined);
+});
 
 test('remittance evidence follows its own channel and excludes stock, card and expired offer sources', () => {
   const ui = moneyUi({ ...currentRoute, startBank: 'boc', bank: 'bochk', broker: 'za', mainlandMethod: 'boc-mobile', outcome: 'broker-balance' });
