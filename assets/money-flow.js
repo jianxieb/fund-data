@@ -111,9 +111,15 @@
     broker: M.selectedBroker(state, D), returning: D.hkBanks.find(x => x.id === state.returnBank), exit: D.mainlandBanks.find(x => x.id === state.exitBank) });
   const row = (r, key) => r?.rows?.find(x => x.key === key);
   function field(key, label, unit = '', placeholder = '') {
+    const monthField = key === 'months' || key.endsWith('FreeMonths'), value = M.number(state[key]);
+    const invalidMonths = monthField && (key === 'months' || String(state[key] ?? '').trim() !== '') &&
+      (value == null || value < 0 || !Number.isInteger(value));
     return '<label class="flow-field"><span>' + esc(label) + '</span><div class="flow-input"><input ' +
-      (key === 'voucherExpiry' ? 'type="date"' : 'type="text" inputmode="decimal"') + ' data-money-field="' + key + '" aria-label="' + esc(label) + '" value="' + esc(state[key]) + '" placeholder="' + esc(placeholder) + '">' +
-      (unit ? '<span>' + esc(unit) + '</span>' : '') + '</div></label>';
+      (key === 'voucherExpiry' ? 'type="date"' : 'type="text" inputmode="' + (monthField ? 'numeric' : 'decimal') + '"') +
+      (invalidMonths ? ' aria-invalid="true" aria-describedby="flow-error-' + key + '"' : '') +
+      ' data-money-field="' + key + '" aria-label="' + esc(label) + '" value="' + esc(state[key]) + '" placeholder="' + esc(placeholder) + '">' +
+      (unit ? '<span>' + esc(unit) + '</span>' : '') + '</div>' +
+      (invalidMonths ? '<small class="flow-field-error" id="flow-error-' + key + '" role="status">月数须为非负整数。</small>' : '') + '</label>';
   }
   function checkbox(key, label) {
     return '<label class="flow-offer"><input type="checkbox" data-money-check="' + key + '"' + (state[key] ? ' checked' : '') + '><span>' + esc(label) + '</span></label>';

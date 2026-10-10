@@ -246,6 +246,29 @@ test('amounts between fee bands retain source cash instead of overstating fees o
   close(above.fee, above.principal * .00001);
 });
 
+test('monthly account rates survive zero months for receiving, settlement and return accounts', () => {
+  const scenarios = [
+    { bank: 'hsbc', broker: 'za' },
+    { bank: 'bochk', broker: 'hsbc' },
+    { bank: 'bochk', broker: 'za', outcome: 'usd-balance', returnBank: 'hsbc' }
+  ];
+  for (const selection of scenarios) for (const months of [0, 1, 12]) for (const hsbcBalanceWaiver of [false, true]) {
+    const r = run({ ...selection, months, hsbcBalanceWaiver }).selected;
+    const account = r.rows.find(row => row.key === 'account'), item = account.items.find(item => item.bankId === 'hsbc');
+    close(item.monthlyHkd, hsbcBalanceWaiver ? 0 : 100); close(item.months, months);
+    close(item.cny, item.monthlyHkd * months * r.refs.HKD);
+    close(account.cny, account.items.reduce((sum, item) => sum + item.cny, 0)); ledger(r);
+  }
+  const own = run({ bank: 'hsbc', months: 0, monthlyHkd: 27 }).selected;
+  close(own.rows.find(row => row.key === 'account').items[0].monthlyHkd, 27);
+  const back = run({ outcome: 'usd-balance', returnBank: 'hsbc', months: 0, returnMonthlyHkd: 37 }).selected;
+  close(back.rows.find(row => row.key === 'account').items.find(item => item.bankId === 'hsbc').monthlyHkd, 37);
+  for (const months of [-1, .5, 1.2, '', 'bad', Infinity]) {
+    const invalid = run({ months }); assert.equal(invalid.selected, undefined);
+    assert.match(invalid.error, /持有月数须为非负整数/);
+  }
+});
+
 test('mainland premium account fees use CNY, actual charged months and distinct bank-specific waivers', () => {
   for (const [id, monthly] of [['hsbc', 300], ['hang', 180], ['sc', 150]]) {
     const service = D.mainlandBanks.find(bank => bank.id === id).accountService;

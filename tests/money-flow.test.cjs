@@ -1300,6 +1300,23 @@ test('bank management stays next to the bank and monthly and period prices recon
   }
 });
 
+test('month controls show zero-period unit prices and report invalid months where they are edited', () => {
+  const input = { ...currentRoute, bank: 'hsbc', hsbcBalanceWaiver: false, months: 0 };
+  const zero = moneyUi(input); zero.render(); zero.act('detail', '', 'bank-settings');
+  assert.match(zero.modal(), /100.00 HKD\/月 × 0个月/); assert.match(zero.modal(), /0.00 HKD/);
+  assert.doesNotMatch(zero.modal(), /aria-invalid/);
+  for (const months of [.5, -1, '', 'bad']) {
+    const ui = moneyUi({ ...input, months }); ui.render(); ui.act('detail', '', 'bank-settings');
+    assert.match(ui.modal(), /aria-invalid="true" aria-describedby="flow-error-months"/);
+    assert.match(ui.modal(), /月数须为非负整数/);
+    assert.doesNotMatch(ui.modal(), /100.00 HKD\/月 × 1个月/);
+  }
+  const free = moneyUi({ ...input, months: 12, startBank: 'hsbc', mainlandMethod: 'linked', cnHsbcFreeMonths: .5 });
+  free.render(); free.act('detail', '', 'cn-bank-hsbc');
+  assert.match(free.modal(), /aria-invalid="true" aria-describedby="flow-error-cnHsbcFreeMonths"/);
+  assert.match(free.modal(), /月数须为非负整数/);
+});
+
 test('presets preserve amounts, duration and eligibility; every selected bank remains editable', () => {
   const ui = moneyUi({ ...currentRoute, budgetCny: 150000, count: 2, months: 6, startSell: '8', senderFeeCny: '99', trade25: false, hsbcBalanceWaiver: false });
   assert.match(ui.render(), /中行.*IBKR/);

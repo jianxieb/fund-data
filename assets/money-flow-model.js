@@ -542,7 +542,9 @@
     const empty = error => ({ error, permission, origin: 'mainland', plans: [] });
     if (!positive(budget)) return empty('请输入正数内地银行卡人民币本金。');
     const overrides = ['senderFeeCny', 'entryMiddleCny', 'entryInwardHkd', 'depositHkd', 'depositOtherCny', 'inwardHkd', 'intermediaryCny', 'returnWireHkd', 'returnExtraCny', 'monthlyHkd', 'returnMonthlyHkd', 'balanceHkd', 'returnBalanceHkd', 'tradeFeeUsd', 'taxableCny', 'creditCny', 'openingCny', 'extraCapitalCny', 'annualGapPct'];
-    if (invalidOptional(config, overrides) || !knownFee(number(config.months))) return empty('费用、资产、应税所得和使用月数须为非负数；未报价请留空。');
+    if (invalidOptional(config, overrides)) return empty('费用、资产和应税所得须为非负数；未报价请留空。');
+    const months = number(config.months);
+    if (!knownFee(months) || !Number.isInteger(months)) return empty('账户使用／持有月数须为非负整数。');
     if (['startSell', 'usdCny', 'usdHkd', 'usdCnh', 'entryPrice', 'exitPrice'].some(key => config[key] != null && String(config[key]).trim() !== '' && !positive(number(config[key])))) return empty('汇率须为有效正数；留空使用该行官方牌价。');
     const count = number(config.count) ?? 1, used = number(config.usedFreeTransfers) ?? 0;
     if (!positive(count) || !Number.isInteger(count) || count > 120 || !knownFee(used) || !Number.isInteger(used)) return empty('汇款笔数须为1–120的整数，已用免费笔数须为非负整数。');
@@ -576,12 +578,14 @@
       const isSelectedStart = config.startBank === start.id, isSelectedBank = config.bank === bank.id;
       const isSelectedReturn = (config.returnBank || config.bank) === returning.id;
       const own = (key, selected) => selected && !selections.public ? number(config[key]) : null;
-      const account = maintenance(bank, own('balanceHkd', isSelectedBank) ?? 0, number(config.months), own('monthlyHkd', isSelectedBank) ?? (bank.id === 'hsbc' && config.hsbcBalanceWaiver ? 0 : null));
-      const returnAccount = keepInBroker || bank.id === returning.id ? 0 : maintenance(returning, own('returnBalanceHkd', isSelectedReturn) ?? 0, number(config.months), own('returnMonthlyHkd', isSelectedReturn) ?? (returning.id === 'hsbc' && config.hsbcBalanceWaiver ? 0 : null));
-      const settlementAccount = settlementBank && ![bank.id, ...(keepInBroker ? [] : [returning.id])].includes(settlementBank.id) ? maintenance(settlementBank, 0, number(config.months), settlementBank.id === 'hsbc' && config.hsbcBalanceWaiver ? 0 : null) : 0;
-      const accountItems = [{ label: bank.name + '期间管理费', cny: account == null ? null : account * refs.HKD }, ...(keepInBroker || bank.id === returning.id ? [] : [{ label: returning.name + '期间管理费', cny: returnAccount == null ? null : returnAccount * refs.HKD }])];
-      if (settlementBank && ![bank.id, ...(keepInBroker ? [] : [returning.id])].includes(settlementBank.id)) accountItems.push({ label: settlementBank.name + '期间管理费', cny: settlementAccount == null ? null : settlementAccount * refs.HKD });
-      accountItems.forEach(item => { item.region = 'hong-kong'; item.months = number(config.months); item.monthlyHkd = item.cny == null ? null : item.cny / refs.HKD / (number(config.months) || 1); });
+      const hkAccountItem = (accountBank, balanceHkd, override) => {
+        const monthlyHkd = maintenance(accountBank, balanceHkd, 1, override ?? (accountBank.id === 'hsbc' && config.hsbcBalanceWaiver ? 0 : null));
+        return { region: 'hong-kong', bankId: accountBank.id, label: accountBank.name + '期间管理费', months, monthlyHkd,
+          cny: monthlyHkd == null ? null : monthlyHkd * months * refs.HKD };
+      };
+      const accountItems = [hkAccountItem(bank, own('balanceHkd', isSelectedBank) ?? 0, own('monthlyHkd', isSelectedBank))];
+      if (!keepInBroker && bank.id !== returning.id) accountItems.push(hkAccountItem(returning, own('returnBalanceHkd', isSelectedReturn) ?? 0, own('returnMonthlyHkd', isSelectedReturn)));
+      if (settlementBank && ![bank.id, ...(keepInBroker ? [] : [returning.id])].includes(settlementBank.id)) accountItems.push(hkAccountItem(settlementBank, 0, null));
       // Mainland premium plans charge in CNY. One account used at both ends
       // incurs one period fee; an unvisited return account incurs none.
       const mainlandAccounts = [...new Map([start, ...(outcome === 'mainland' ? [exit] : [])].map(item => [item.id, item])).values()];
@@ -907,7 +911,7 @@
       if (bocMobile) requirements.push(data.bocMobileEvidence.note);
       if (paymentConnect) requirements.push('跨境支付通已查到中行南向零手续费实例，本次服务费仍须确认；南向受年度等值5万美元便利化额度及用途审核约束，不作为美股入金推荐。');
       if (returnMethod === 'linked') requirements.push('回款须已登记' + returning.name + '两地同名专用转账');
-      if (bank.thresholdHkd && account > 0) requirements.push(bank.name + '尚未确认免月费资格，已按标准月费计入');
+      if (bank.thresholdHkd && accountItems[0].cny > 0) requirements.push(bank.name + '尚未确认免月费资格，已按标准月费计入');
       if (currency === 'CNH') requirements.push('人民币跨境汇款须符合实际用途及银行准入；不能套用香港居民安排');
       if (trading) requirements.push(...trading.warnings);
       if (provider.withdrawalMethod === 'cheque') requirements.push('致富USD出金需已登记美元银行账户；遥距开户限制可能须到分行解除');
