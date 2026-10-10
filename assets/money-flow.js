@@ -13,6 +13,9 @@
   try { stored = JSON.parse(localStorage.getItem(STORE) || '{}') || {}; } catch (_) {}
   if (Object.keys(stored).length && !stored.outcome) stored.outcome = 'mainland';
   let state = { ...defaults, ...stored, currency: 'CNY' }, H, timer, modalKey;
+  // Earlier versions incorrectly offered the foreign-currency-only Global
+  // Link channel for RMB. Keep all accounts and repair that saved method.
+  if (state.startBank === 'sc' && state.route === 'CNH' && state.mainlandMethod === 'linked') state.mainlandMethod = 'swift';
   if (!['01', '02', '03', '04'].includes(state.activeStep)) state.activeStep = '01';
   const catalog = (key, all) => D.calculator[key].map(id => all.find(x => x.id === id)).filter(Boolean);
   const mainland = catalog('mainland', D.mainlandBanks), banks = catalog('hkBanks', D.hkBanks), brokers = catalog('brokers', D.brokers);
@@ -65,10 +68,11 @@
       'pick', 'data-value="' + key + '" aria-haspopup="dialog" aria-label="' + esc(label + '：' + shortName(item) + '，更换') + '"', 'flow-account-button');
   }
   function entryMethods() {
-    const s = selected(), values = [['swift', s.start?.id === 'cib' ? '普通汇款 · 寰宇人生卡' : s.start?.tariffChannel || '普通汇款 · 公开标准价']];
+    const s = selected(), tariff = state.route === 'CNH' && typeof s.start?.cnhTariff === 'object' ? s.start.cnhTariff : s.start;
+    const values = [['swift', s.start?.id === 'cib' ? '普通汇款 · 寰宇人生卡' : tariff?.tariffChannel || '普通汇款 · 公开标准价']];
     if (s.start?.id === 'boc' && s.bank?.id === 'bochk' && state.route !== 'CNH') values.unshift(['boc-mobile', '手机银行 · 向同名境外中行汇款']);
     if (s.start?.id === 'cib' && state.route !== 'CNH') values.push(['cib-go', '小额全额到账 · 另加50 CNY/笔']);
-    if (['hsbc', 'hang', 'sc'].includes(s.start?.id) && s.start.group === s.bank?.group) values.unshift(['linked', ({ hsbc: '同名环球转账', hang: '优越理财 · 同名跨域转账', sc: '优先理财 · 同名速汇' })[s.start.id] + ' · 免费']);
+    if (['hsbc', 'hang', 'sc'].includes(s.start?.id) && s.start.group === s.bank?.group && (!s.start.linkedCurrencies || s.start.linkedCurrencies.includes(state.route))) values.unshift(['linked', ({ hsbc: '同名环球转账', hang: '优越理财 · 同名跨域转账', sc: '优先理财 · 同名速汇' })[s.start.id] + ' · 免费']);
     return values;
   }
   function depositMethods() {
@@ -197,7 +201,9 @@
         if (item.key === 'entryFx' && state.route !== 'CNH' && r.startSell > 0) description = '1 ' + state.route + ' = ' + quoteNum(r.startSell) + ' CNY' + (r.entryDiscount ? ' · 点差五折' : '');
         if (item.key === 'sender' && Number(state.count) > 1) description = (description ? description + ' · ' : '') + state.count + '笔合计';
         const feeCurrency = item.key === 'depositBank' && r.depositMethod === 'chats' && r.bank?.localUsdNative != null ? 'USD' : 'HKD';
-        const native = part.cny == null ? part.status || item.status || '此汇路代理行收费未公开' :
+        const missingStatus = ['entryFx', 'brokerSpread', 'exitFx'].includes(item.key) ? '尚缺该银行换汇报价' :
+          ['entryMiddle', 'depositOther', 'withdrawMiddle', 'returnOther'].includes(item.key) ? '此汇路代理行收费未公开' : '该项资费依据未取得';
+        const native = part.cny == null ? part.status || item.status || missingStatus :
           ['entryInward', 'depositBank', 'returnWire'].includes(item.key) ? num(part.cny / r.refs[feeCurrency]) + ' ' + feeCurrency : '';
         return feeLine(part.label, part.cny, description, native);
       });
@@ -205,7 +211,8 @@
   }
   function flow(data) {
     const r = data.selected || data.partial, s = selected(), steps = r?.steps || {}, throughFunding = [...transferKeys, ...fundingKeys], throughTrade = [...throughFunding, ...tradingKeys];
-    const sourceControls = '<div class="flow-count">' + select('count', '汇出笔数', [['1', '1笔'], ['2', '2笔'], ['3', '3笔'], ['4', '4笔'], ...(!['1', '2', '3', '4'].includes(String(state.count)) ? [[String(state.count), state.count + '笔']] : []), ['custom', '自定义笔数']], String(state.count)) + '</div>';
+    const sourceControls = '<div class="flow-count">' + select('count', '汇出笔数', [['1', '1笔'], ['2', '2笔'], ['3', '3笔'], ['4', '4笔'], ...(!['1', '2', '3', '4'].includes(String(state.count)) ? [[String(state.count), state.count + '笔']] : []), ['custom', '自定义笔数']], String(state.count)) +
+      (r?.sourceRemainderCny > 1e-6 ? '<small>留在本账户 ' + cost(r.sourceRemainderCny) + '</small>' : '') + '</div>';
     const principal = nodeBalance(r, M.number(state.budgetCny), 'CNY', '人民币本金 · 含费用').replace('</div></div>', '</div>' + action('修改', 'detail', 'data-value="budget" aria-label="修改人民币本金" aria-haspopup="dialog"', 'text-link') + '</div>');
     let html = node('01', 'startBank', '内地出发银行', s.start, principal, sourceControls);
     html += edge(data, transferKeys, state.route === 'CNH' ? '人民币原币汇往香港' : '内地购' + currencyNames[state.route] + ' → 汇往香港',
@@ -286,10 +293,13 @@
     const estimated = rows.some(x => x.estimate);
     const label = stale ? '全程损耗 · 历史报价' : partial ? '全程已核费用' : estimated ? '参考总损耗' : '全程损耗';
     const canBalance = !!data.selected && !incomplete && !stale && gaps.every(x => ['entryMiddle', 'depositOther', 'withdrawMiddle', 'returnOther'].includes(x.key));
-    const balanceLabel = canBalance ? (gaps.length ? '已扣已核费用后的余额' : estimated ? '按公布参考费计算的余额' : state.outcome.includes('card') ? '可消费金额' : '最终余额') : '最后可计余额 · USD';
     const lastBalance = r?.steps?.remitUsd ?? r?.steps?.returnUsd ?? r?.steps?.proceedsUsd ?? r?.steps?.fundedUsd;
     const canShowLast = Number.isFinite(lastBalance) && !r?.indicativeFx && r?.quoteFreshness?.source !== false;
-    const finalHtml = canBalance ? amount(r.net, r.currency) : canShowLast ? amount(lastBalance, 'USD') : '<b>—</b>';
+    const lastPoint = canShowLast ? { amount: lastBalance, currency: 'USD' } :
+      Number.isFinite(r?.steps?.hongKong) && r?.quoteFreshness?.source !== false ? { amount: r.steps.hongKong, currency: state.route } : null;
+    const balanceLabel = canBalance ? (gaps.length ? '已扣已核费用后的余额' : estimated ? '按公布参考费计算的余额' : state.outcome.includes('card') ? '可消费金额' : '最终余额') : lastPoint ? '最后可计余额' : '最终余额暂不可算';
+    const finalHtml = (canBalance ? amount(r.net, r.currency) : lastPoint ? amount(lastPoint.amount, lastPoint.currency) : '<b>—</b>') +
+      (r?.sourceRemainderCny > 1e-6 ? '<small>另留内地账户 ' + cost(r.sourceRemainderCny) + '</small>' : '');
     return '<div class="flow-result"><div><span>' + label + '</span><strong class="num">' + (rows.some(x => x.cny != null) ? partial ? cost(total) : pct(total / M.number(state.budgetCny)) : '—') + '</strong>' +
       '<small>' + (rows.length ? partial ? data.error ? '第' + esc(r?.errorStage || data.errorStage || '01') + '步尚未完成' : '总损耗尚缺：' + esc(gaps.map(x => x.label).join('、') || r?.exitIssue || '有效成交报价') : cost(total) : esc(data.error || '选择有效本金和汇出报价')) + '</small></div><div class="flow-result-equation"><span>其中账户期间费</span><b>' +
       (row(r, 'account') ? cost(row(r, 'account').cny) : '—') + '</b>' + (r?.taxCny ? '<small>另预留税款 ' + cost(r.taxCny) + '</small>' : '<small>已计入合计</small>') + '</div><div><span>' + balanceLabel + '</span>' + finalHtml +
@@ -372,7 +382,7 @@
     const small = options.get(key), isMainland = ['startBank', 'exitBank'].includes(key), isBank = ['bank', 'returnBank'].includes(key);
     const list = key === 'outcome' ? outcomes.map(([id, name]) => ({ id, name })) : isMainland ? mainland : isBank ? banks : key === 'broker' ? brokers : (small?.values || []).map(([id, name]) => ({ id, name }));
     const comparison = key === 'startBank' ? M.purchaseComparison({ ...state, date: today() }, comparisonData, window.MONEY_FLOW_QUOTES || {}) : null;
-    const copy = item => key === 'broker' ? item.feeShort : isMainland ? item.feeText : isBank ?
+    const copy = item => key === 'broker' ? item.feeShort : isMainland ? state.route === 'CNH' && item.cnhTariff?.feeText ? item.cnhTariff.feeText : item.feeText : isBank ?
       ({ bochk: '中行同名汇入0；本地美元转账0；账户月费0', hsbc: '汇入及本地美元转账0；One月费按豁免条件', za: '本地美元转账0；账户月费0；可开美股交易', hang: '同名跨域转账0；本地美元转账0；优进月费0', sc: '本地USD转账标准费22 USD；快易月费0' })[item.id] : '';
     const price = item => {
       const q = comparison?.rows.find(x => x.bank.id === item.id);

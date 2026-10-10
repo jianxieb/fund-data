@@ -146,6 +146,53 @@ test('fees, periods, trading offers, stock prices and vouchers reconcile at nume
   }
 });
 
+test('RMB cross-border tariffs use the actual amount bands and never inherit foreign-wire waivers', () => {
+  const tariffs = Object.fromEntries(['hang', 'sc'].map(id => [id, D.mainlandBanks.find(b => b.id === id).cnhTariff]));
+  for (const [amount, charged] of [[2000, 2], [2000.01, 5], [5000, 5], [5000.01, 10], [10000, 10], [10000.01, 15], [50000, 15], [100000, 30], [1000000, 50]]) {
+    close(M.fee(tariffs.hang, amount, 1, config.date), charged);
+  }
+  for (const [amount, charged] of [[50000, .6], [50000.01, 5.5], [100000, 5.5], [100000.01, 8], [500000, 8], [500000.01, 10.5], [1000000, 10.5], [2000000, 20], [6000000, 50]]) {
+    close(M.fee(tariffs.sc, amount, 1, config.date), charged);
+  }
+  for (const startBank of ['hang', 'hsbc', 'sc']) {
+    for (const count of [1, 2]) {
+      const r = run({ startBank, route: 'CNH', bank: 'bochk', mainlandMethod: 'swift', fxMode: 'bank', count }).selected;
+      const sender = r.rows.find(x => x.key === 'sender');
+      close(sender.cny, startBank === 'hang' ? count === 1 ? 100000 - 100000 / 1.0003 : 30 : startBank === 'hsbc' ? count * 220 : count === 1 ? 5.5 : 1.2);
+      close(sender.items.reduce((s, row) => s + row.cny, 0), sender.cny);
+      close(r.steps.mainlandForeign + sender.cny + r.sourceRemainderCny, 100000);
+      close(r.rows.find(x => x.key === 'entryFx').cny, 0);
+      assert.equal(r.rows.find(x => x.key === 'entryMiddle').cny, null);
+      ledger(r);
+    }
+  }
+  const paired = M.calculatorRoute({ ...base, startBank: 'sc', bank: 'sc', route: 'CNH', mainlandMethod: '' });
+  assert.equal(paired.mainlandMethod, 'swift');
+  assert.match(run({ ...paired, mainlandMethod: 'linked' }).error, /仅支持外币同币种/);
+  const linkedHang = run({ startBank: 'hang', bank: 'hang', route: 'CNH', mainlandMethod: 'linked', fxMode: 'bank' }).selected;
+  close(linkedHang.rows.find(x => x.key === 'sender').cny, 0);
+  close(linkedHang.rows.find(x => x.key === 'entryMiddle').cny, 0);
+});
+
+test('amounts between fee bands retain source cash instead of overstating fees or losing money', () => {
+  const tariff = D.mainlandBanks.find(b => b.id === 'hang').cnhTariff;
+  for (const [budgetCny, principal, charge, remainder] of [[2002, 2000, 2, 0], [2004, 2000, 2, 2], [5006, 5000, 5, 1], [10014, 10000, 10, 4]]) {
+    const solved = M.remitPrincipal(budgetCny, tariff, 1, config.date, null);
+    close(solved.principal, principal); close(solved.fee, charge); close(solved.remainderCny, remainder);
+    const r = run({ budgetCny, count: 1, startBank: 'hang', route: 'CNH', bank: 'bochk', mainlandMethod: 'swift', fxMode: 'bank', outcome: 'mainland' }).selected;
+    assert.ok(r); close(r.sourceRemainderCny, remainder); close(r.steps.mainlandForeign, principal);
+    close(r.rows.find(x => x.key === 'sender').cny, charge);
+    close(r.netCny, r.net * r.refs[r.currency] + remainder); ledger(r);
+    for (const leg of M.flowLedger(r).legs) close(leg.inputCny + leg.profitCny + leg.fxImpactCny, leg.outputCny + leg.costCny + leg.taxCny);
+  }
+  // The SC fee drops slightly above one million; a global binary search can
+  // miss the larger affordable transfer in the next band.
+  const sc = D.mainlandBanks.find(b => b.id === 'sc').cnhTariff;
+  const above = M.remitPrincipal(1000010.25, sc, 1, config.date, null);
+  assert.ok(above.principal > 1000000); close(above.principal + above.fee + above.remainderCny, 1000010.25);
+  close(above.fee, above.principal * .00001);
+});
+
 test('stale quotes keep tariff data but cannot claim a complete quote; missing quote preserves selection', () => {
   const stale = structuredClone(Q); stale.banks.cib.quotes.USD.asOf = '2020-01-01';
   const r = M.calculatorJourney(base, D, stale);

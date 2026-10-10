@@ -20,18 +20,44 @@
     if (![usdCny, usdHkd, usdCnh].every(positive)) return null;
     return { CNY: 1, USD: usdCny, HKD: usdCny / usdHkd, CNH: usdCny / usdCnh };
   }
-  function fee(bank, principalCny, index = 1, date = '2026-10-08') {
+  function feeParts(bank, principalCny, index = 1, date = '2026-10-08') {
     if (!bank || !knownFee(principalCny)) return null;
-    if (![bank.rate, bank.minimum, bank.maximum, bank.telegram].every(knownFee)) return null;
     if ((bank.validFrom && date < bank.validFrom) || (bank.validUntil && date > bank.validUntil)) return null;
-    const commission = Math.min(bank.maximum, Math.max(bank.minimum, principalCny * bank.rate));
+    const band = bank.bands?.find(row => row.upTo == null || principalCny <= row.upTo);
+    if (bank.bands && !band) return null;
+    const tariff = band || bank;
+    if (!knownFee(bank.telegram) || (!knownFee(tariff.fixedCny) && ![tariff.rate, tariff.minimum, tariff.maximum].every(knownFee))) return null;
+    const commission = knownFee(tariff.fixedCny) ? tariff.fixedCny : Math.min(tariff.maximum, Math.max(tariff.minimum, principalCny * tariff.rate));
     const telegram = bank.freeTelegram && index <= bank.freeTelegram ? 0 : bank.telegram;
-    return commission + telegram;
+    return { commission, telegram };
+  }
+  function fee(bank, principalCny, index = 1, date = '2026-10-08') {
+    const parts = feeParts(bank, principalCny, index, date);
+    return parts ? parts.commission + parts.telegram : null;
   }
   // Sender fees are paid inside the declared budget, so charging r * budget
   // would overcharge an uncapped percentage fee. Solve principal + fee = budget.
   function remitPrincipal(budgetCny, bank, index, date, override) {
     if (!positive(budgetCny)) return null;
+    if (bank?.bands && !knownFee(override)) {
+      // A tier jump can leave a small amount at source; it is cash, not a fee.
+      // Solve each band independently, including schedules with a lower fee
+      // just above a boundary, then choose the largest affordable transfer.
+      let best = null, lower = -1;
+      for (const band of bank.bands) {
+        const tariff = { ...bank, ...band, bands: undefined };
+        const solved = remitPrincipal(budgetCny, tariff, index, date, null);
+        const principal = solved ? Math.min(solved.principal, band.upTo ?? Infinity) : null;
+        if (positive(principal) && principal > lower) {
+          const charged = fee(bank, principal, index, date);
+          if (charged != null && principal + charged <= budgetCny + 1e-8 && (!best || principal > best.principal)) {
+            best = { principal, fee: charged, remainderCny: Math.max(0, budgetCny - principal - charged) };
+          }
+        }
+        lower = band.upTo ?? Infinity;
+      }
+      return best;
+    }
     const charge = x => knownFee(override) ? override : fee(bank, x, index, date);
     const minimum = charge(0);
     if (minimum == null || minimum >= budgetCny) return null;
@@ -405,15 +431,18 @@
   function flowLedger(result) {
     if (!result?.steps || !result.refs) return null;
     const r = result, rates = r.refs;
+    // RMB remains at its source value until the actual CNH conversion. The
+    // calculator assigns the CNY/CNH basis difference to that conversion row.
+    const receivingBasisCny = r.pricingBasis === 'best-quote' && r.route === 'CNH' && finite(r.steps.mainlandForeign) ? r.steps.mainlandForeign * (1 - rates.CNH) : 0;
     if (!finite(r.net)) {
       if (!finite(r.steps.hongKong)) return null;
       const grouped = r.rows.filter(row => ['sender', 'entryFx', 'entryMiddle', 'entryInward'].includes(row.key));
       const rows = grouped.flatMap(row => row.items?.length ? row.items.map(item => ({ ...item, key: row.key })) : [row]);
-      const costCny = rows.reduce((sum, row) => sum + (row.cny ?? 0), 0), outputCny = r.steps.hongKong * rates[r.route];
+      const costCny = rows.reduce((sum, row) => sum + (row.cny ?? 0), 0), outputCny = r.steps.hongKong * rates[r.route] + (r.sourceRemainderCny || 0) + receivingBasisCny;
       const missing = rows.filter(row => row.cny == null).map(row => row.label), coefficient = outputCny / r.budgetCny;
       return { rates, stops: [
         { id: 'start', account: r.start.name, currency: 'CNY', amount: r.budgetCny, valueCny: r.budgetCny, cumulativeLossCny: 0, missing: [] },
-        { id: 'receiving', account: r.bank.name, currency: r.route, amount: r.steps.hongKong, valueCny: outputCny, cumulativeLossCny: r.budgetCny - outputCny, missing }
+        { id: 'receiving', account: r.bank.name, currency: r.route, amount: r.steps.hongKong, retainedCny: r.sourceRemainderCny || 0, valueCny: outputCny, cumulativeLossCny: r.budgetCny - outputCny, missing }
       ], legs: [{ from: 'start', to: 'receiving', rows, costCny, taxCny: 0, profitCny: 0, inputCny: r.budgetCny, outputCny,
         lossCny: r.budgetCny - outputCny, coefficient, lossRate: 1 - coefficient, missing,
         fxImpactCny: grouped.reduce((sum, row) => sum + (row.fxImpactCny || 0), 0) }] };
@@ -443,12 +472,13 @@
       const taxCny = i === 2 ? r.taxCny : 0, profitCny = i === 2 ? (r.profitUsd || 0) * rates.USD : 0;
       const fxImpactCny = grouped.reduce((sum, row) => sum + (row.fxImpactCny ?? 0), 0);
       cumulative += costCny; tax += taxCny; impact += fxImpactCny; investmentProfit += profitCny;
-      const inputCny = stops[i].amount * rates[stops[i].currency], outputCny = stops[i + 1].amount * rates[stops[i + 1].currency];
+      const inputCny = stops[i].amount * rates[stops[i].currency] + (i > 0 ? r.sourceRemainderCny || 0 : 0) + (i === 1 ? receivingBasisCny : 0);
+      const outputCny = stops[i + 1].amount * rates[stops[i + 1].currency] + (r.sourceRemainderCny || 0) + (i === 0 ? receivingBasisCny : 0);
       const lossCny = inputCny + profitCny - outputCny;
       const legMissing = rows.filter(row => row.cny == null).map(row => row.label);
       if (i === 1 && r.indicativeFx && !grouped.some(row => row.key === 'brokerSpread' && row.cny == null)) legMissing.push(r.indicativeFx);
       missing.push(...legMissing);
-      stops[i + 1] = { ...stops[i + 1], valueCny: outputCny, indicative: i >= 1 && !!r.indicativeFx, cumulativeCostCny: cumulative, cumulativeTaxCny: tax,
+      stops[i + 1] = { ...stops[i + 1], retainedCny: r.sourceRemainderCny || 0, valueCny: outputCny, indicative: i >= 1 && !!r.indicativeFx, cumulativeCostCny: cumulative, cumulativeTaxCny: tax,
         cumulativeLossCny: r.budgetCny + investmentProfit - outputCny, cumulativeImpactCny: impact, missing: [...missing] };
       // Both sides are valued at the SAME reference vector. Subtract scenario
       // profit before measuring channel retention; never divide USD by CNY.
@@ -556,7 +586,8 @@
       const linked = ['hang', 'hsbc', 'sc'].includes(start.id);
       const method = (key, fallback) => (Object.hasOwn(selections, key) ? selections[key] : config[key]) || fallback;
       const bocMobilePair = start.id === 'boc' && bank.id === 'bochk' && currency !== 'CNH';
-      const mainlandMethod = method('mainlandMethod', linked && sameGroup ? 'linked' : 'swift');
+      const linkedCurrency = !start.linkedCurrencies || start.linkedCurrencies.includes(currency);
+      const mainlandMethod = method('mainlandMethod', linked && sameGroup && linkedCurrency ? 'linked' : 'swift');
       const bocMobile = mainlandMethod === 'boc-mobile';
       const paymentConnect = mainlandMethod === 'payment-connect';
       const swiftGo = mainlandMethod === 'cib-go';
@@ -564,6 +595,7 @@
       if (bocMobile && !bocMobilePair) return { error: '中行手机银行向境外中行渠道须选择中国银行→同名中银香港，使用USD或HKD；人民币支付通是另一渠道。' };
       if (paymentConnect && !(start.id === 'boc' && bank.id === 'bochk' && currency === 'CNH')) return { error: '此跨境支付通测算仅收录中国银行→中银香港、人民币原币到账；其他银行及币种须另核。' };
       if (mainlandMethod === 'linked' && !(linked && sameGroup)) return { error: '两地同名专用渠道须选择同一银行集团的香港账户。' };
+      if (mainlandMethod === 'linked' && !linkedCurrency) return { error: '渣打全球账户间汇款仅支持外币同币种；人民币原币汇出使用人民币跨境汇款渠道。' };
       if (mainlandMethod === 'full' && !(currency === 'USD' && knownFee(start.fullAmountUsd))) return { error: '所选银行未收录USD全额到账收费，请改用普通汇款。' };
       const isSelectedEntry = isSelectedStart && isSelectedBank && (!config.route || config.route === currency) && (!config.mainlandMethod || config.mainlandMethod === mainlandMethod);
       const senderOverride = own('senderFeeCny', isSelectedEntry);
@@ -571,16 +603,17 @@
       // scenarios. Public reporting does not establish a nationwide guarantee.
       const reportedMobile = bocMobile && !!data.bocMobileEvidence;
       const effectiveSender = senderOverride ?? (reportedMobile ? data.bocMobileEvidence.feeCny + data.bocMobileEvidence.telegramCny : null);
-      const standardTariff = mainlandMethod === 'swift' && start.standardTariff &&
-        (!start.standardTariff.currencies || start.standardTariff.currencies.includes(currency)) && start.standardTariff;
+      const currencyTariff = currency === 'CNH' && typeof start.cnhTariff === 'object' ? start.cnhTariff : start.standardTariff;
+      const standardTariff = mainlandMethod === 'swift' && currencyTariff &&
+        (!currencyTariff.currencies || currencyTariff.currencies.includes(currency)) && currencyTariff;
       const senderBank = standardTariff ? { ...start, ...standardTariff } : start;
-      const unknownSender = effectiveSender == null && (bocMobile || paymentConnect || fee(senderBank, 0, used + 1, config.date) == null || (linked && mainlandMethod !== 'linked' && !standardTariff) || (currency === 'CNH' && !sameGroup && !senderBank.cnhTariff && start.id !== 'abc'));
+      const unknownSender = effectiveSender == null && (bocMobile || paymentConnect || fee(senderBank, 0, used + 1, config.date) == null || (linked && mainlandMethod !== 'linked' && !standardTariff) || (currency === 'CNH' && mainlandMethod !== 'linked' && !senderBank.cnhTariff && start.id !== 'abc'));
       if (missingSourceQuote && mainlandMethod === 'full') return { error: start.name + '的' + currency + '现汇卖出价尚未取得；到账金额暂不可算。', missingQuote: currency };
       const fullFee = swiftGo ? start.swiftGoCny : mainlandMethod === 'full' ? start.fullAmountUsd * quote : 0;
-      let principal = 0, sender = 0, commission = 0, telegram = 0;
-      const senderKey = [start.id, quote, mainlandMethod, senderOverride, unknownSender].join(':');
+      let principal = 0, sender = 0, commission = 0, telegram = 0, sourceRemainderCny = 0;
+      const senderKey = [start.id, currency, quote, mainlandMethod, senderOverride, unknownSender].join(':');
       const cachedSender = senderCache.get(senderKey);
-      if (cachedSender) ({ principal, sender, commission, telegram } = cachedSender);
+      if (cachedSender) ({ principal, sender, commission, telegram, sourceRemainderCny } = cachedSender);
       else {
       for (let i = 0; i < count; i++) {
         const solved = remitPrincipal(budget / count, senderBank, used + i + 1, config.date, unknownSender ? 0 : effectiveSender == null ? null : effectiveSender + fullFee);
@@ -591,12 +624,14 @@
         if (fullFee && senderOverride == null && !fullSolved) return { error: '预算不足以支付全额到账服务费。' };
         principal += fullSolved ? fullSolved.principal : solved.principal;
         sender += fullSolved ? fullSolved.fee + fullFee : solved.fee;
+        sourceRemainderCny += (fullSolved || solved).remainderCny || 0;
         if (!unknownSender && effectiveSender == null) {
-          commission += Math.min(senderBank.maximum, Math.max(senderBank.minimum, (fullSolved || solved).principal * senderBank.rate));
-          telegram += senderBank.freeTelegram && used + i + 1 <= senderBank.freeTelegram ? 0 : senderBank.telegram;
+          const parts = feeParts(senderBank, (fullSolved || solved).principal, used + i + 1, config.date);
+          commission += parts.commission;
+          telegram += parts.telegram;
         }
       }
-      senderCache.set(senderKey, { principal, sender, commission, telegram });
+      senderCache.set(senderKey, { principal, sender, commission, telegram, sourceRemainderCny });
       }
       // A priced full-amount service has a per-payment limit. Never silently
       // switch to an ordinary wire or split a customer's payment to fit it.
@@ -668,7 +703,7 @@
           status: knownInward == null ? '须先确定外币到账额及适用汇入资费' : '' });
         rows.push({ key: 'account', label: '香港账户期间管理费', cny: accountCny, step: 'spend', items: accountItems });
         return { error, errorStage: '01', missingQuote: currency, rows, steps, route, mainlandMethod, fxMode,
-          refs, budgetCny: budget, start, bank, returning, exit, broker: provider, quoteFreshness: { source: false } };
+          refs, budgetCny: budget, pricingBasis: config.pricingBasis, sourceRemainderCny, start, bank, returning, exit, broker: provider, quoteFreshness: { source: false } };
       }
       const entryMid = currency === 'CNH' ? 1 : positive(q?.buy) ? (q.buy + q.sell) / 2 : refs[currency];
       const deferredCnhBasis = relativeBasis && currency === 'CNH' ? principal - balance * refs.CNH : 0;
@@ -683,7 +718,7 @@
       let trading = null, taxCny = 0;
       const downstreamError = (error, errorStage = '03', errorAction = errorStage) => ({ error, errorStage, errorAction, rows: [...rows,
         { key: 'account', label: '香港账户期间管理费', cny: accountCny, step: 'spend', items: accountItems },
-        { key: 'extra', label: '开户及资产机会成本', cny: extraCny, step: 'spend' }], steps, startSell: quote, route, mainlandMethod, fxMode, refs, budgetCny: budget, start, bank, returning, exit, broker: provider,
+        { key: 'extra', label: '开户及资产机会成本', cny: extraCny, step: 'spend' }], steps, startSell: quote, route, mainlandMethod, fxMode, refs, budgetCny: budget, pricingBasis: config.pricingBasis, sourceRemainderCny, start, bank, returning, exit, broker: provider,
         trading: trading?.error ? null : trading, taxCny, indicativeFx: rows.find(x => x.key === 'brokerSpread' && x.cny == null)?.label || '',
         quoteFreshness: { source: currency === 'CNH' || own('startSell', isSelectedStart) != null || quoteFresh(q, config.date) } });
       const depositMethod = internalDeposit ? 'internal' : settlementBank ? 'chats' : method('depositMethod', currency === 'USD' || fxMode === 'bank' ? 'chats' : 'fps');
@@ -868,7 +903,7 @@
         fxAsOf: currency === 'USD' ? null : (fxMode === 'bank' ? bankFxQuote : offshore[currency])?.asOf,
         quoteFreshness: { source: sourceFresh, exit: exitFresh && exitMarketFresh, entryMarket: entryMarketFresh, market: marketFresh, reference: referenceFresh },
         sourceAmount: budget, profitUsd: profit, investUsd: steps.investUsd, proceeds: steps.proceedsUsd, bankUsd: steps.returnUsd,
-        net: balance, netCny: balance * refs[unit], taxCny, taxableCny, estimatedTax: number(config.taxableCny) == null, rows, steps,
+        net: balance, netCny: balance * refs[unit] + sourceRemainderCny, sourceRemainderCny, taxCny, taxableCny, estimatedTax: number(config.taxableCny) == null, rows, steps,
         missing: [...new Set(preciseMissing)], complete: !preciseMissing.length, requiredEligibility, eligibilityReasons, requirements: [...new Set([...requirements, ...eligibilityReasons])],
         refs, benchmarks, pricingBasis: config.pricingBasis, costCny, fxCny, fxImpactCny, explicitCny: costCny - fxCny, extraCny, brokerFx: brokerFxResult,
         quotedCore: !indicativeFx && !indicativeExit && !exitIssue && sourceFresh && exitFresh && marketFresh && referenceFresh && !unknownSender && !unpriced.some(row => ['depositBank', 'entryInward', 'returnWire', 'account'].includes(row.key)),
@@ -896,7 +931,7 @@
       if (route === 'CNH' && !(['hang', 'hsbc', 'sc', 'abc', 'boc'].includes(start.id))) continue;
       const returningBanks = provider.integratedBank ? [bank] : data.hkBanks;
       const modes = route === 'USD' ? ['manual'] : [...(provider.id === 'ibkr' ? ['manual', 'auto'] : []), ...(bank.id === 'bochk' && offshore[route] ? ['bank'] : [])];
-      const entryMethods = ['hang', 'hsbc', 'sc'].includes(start.id) && start.group === bank.group ? ['linked', 'swift'] :
+      const entryMethods = ['hang', 'hsbc', 'sc'].includes(start.id) && start.group === bank.group && (!start.linkedCurrencies || start.linkedCurrencies.includes(route)) ? ['linked', 'swift'] :
         ['swift', ...(start.id === 'boc' && bank.id === 'bochk' && route !== 'CNH' ? ['boc-mobile'] : []), ...(route === 'USD' && start.fullAmountUsd != null ? ['full'] : [])];
       for (const returning of returningBanks) for (const fxMode of modes) for (const exit of fresh) for (const mainlandMethod of entryMethods) {
         const deposits = provider.integratedBank ? ['internal'] : route === 'USD' || fxMode === 'bank' ? ['chats', 'swift'] : ['fps', 'edda', 'swift'];
@@ -946,7 +981,7 @@
         const mode = value === 'USD' ? 'manual' : activeBroker.id !== 'ibkr' ? 'bank' : route === 'USD' ? 'manual' : fxMode;
         const methods = value === 'USD' || mode === 'bank' ? ['chats', 'swift'] : ['fps', 'edda', 'swift'];
         const deposit = methods.includes(selected.depositMethod) ? selected.depositMethod : methods[0];
-        const entry = (selected.mainlandMethod === 'full' && value !== 'USD') || (selected.mainlandMethod === 'boc-mobile' && value === 'CNH') || (selected.mainlandMethod === 'payment-connect' && value !== 'CNH') ? '' : selected.mainlandMethod;
+        const entry = (selected.mainlandMethod === 'full' && value !== 'USD') || (selected.mainlandMethod === 'boc-mobile' && value === 'CNH') || (selected.mainlandMethod === 'payment-connect' && value !== 'CNH') || (selected.mainlandMethod === 'linked' && start.linkedCurrencies && !start.linkedCurrencies.includes(value)) ? '' : selected.mainlandMethod;
         return { route: value, ...calculate(start, bank, value, mode, exit, returning, { mainlandMethod: entry, depositMethod: deposit }, activeBroker) };
       }),
       returnBank: data.hkBanks.map(row => ({ returning: row, ...calculate(start, bank, route, fxMode, exit, row, { returnMethod: row.id === returning.id ? selected.returnMethod : '' }, activeBroker) })),
@@ -1024,7 +1059,7 @@
   function calculatorRoute(config) {
     const s = { ...config };
     const paired = ({ boc: 'bochk', hsbc: 'hsbc', hang: 'hang', sc: 'sc' })[s.startBank] === s.bank;
-    s.mainlandMethod ||= paired && s.startBank === 'boc' && s.route !== 'CNH' ? 'boc-mobile' : paired && s.startBank !== 'boc' ? 'linked' : 'swift';
+    s.mainlandMethod ||= paired && s.startBank === 'boc' && s.route !== 'CNH' ? 'boc-mobile' : paired && s.startBank !== 'boc' && !(s.startBank === 'sc' && s.route === 'CNH') ? 'linked' : 'swift';
     s.fxMode = s.route === 'USD' ? 'manual' : s.fxMode || (s.broker === 'ibkr' ? 'manual' : 'bank');
     s.depositMethod ||= ['hsbc', 'za'].includes(s.broker) && s.broker === s.bank ? 'internal' :
       s.broker === 'usmart' && s.bank === 'bochk' || s.broker === 'chief' && ['bochk', 'hsbc', 'hang'].includes(s.bank) ? 'internal' :
@@ -1071,7 +1106,7 @@
       const start = data.mainlandBanks.find(x => x.id === startBank), incoming = data.hkBanks.find(x => x.id === bank);
       const methods = ['swift'];
       if (startBank === 'boc' && bank === 'bochk' && route !== 'CNH') methods.push('boc-mobile');
-      if (['hsbc', 'hang', 'sc'].includes(startBank) && start.group === incoming.group) methods.push('linked');
+      if (['hsbc', 'hang', 'sc'].includes(startBank) && start.group === incoming.group && (!start.linkedCurrencies || start.linkedCurrencies.includes(route))) methods.push('linked');
       if (startBank === 'cib' && route !== 'CNH') methods.push('cib-go');
       for (const mainlandMethod of methods) {
         const entry = { startBank, bank, route, mainlandMethod };

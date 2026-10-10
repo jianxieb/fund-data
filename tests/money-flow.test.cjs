@@ -1215,6 +1215,30 @@ test('RMB source is not described as free when its sender tariff remains unprice
   ui.act('detail', '', 'cost'); assert.match(ui.modal(), /人民币资费未收录/);
 });
 
+test('RMB channels show the correct tariff and repair the old SC foreign-only choice without changing accounts', () => {
+  const ui = moneyUi({ ...currentRoute, startBank: 'sc', bank: 'sc', route: 'CNH', mainlandMethod: 'linked', count: 1, senderFeeCny: '', outcome: 'broker-balance' });
+  const html = ui.render();
+  assert.match(html, /优先理财 · 人民币跨境汇款/);
+  assert.match(html, /5.50 CNY/);
+  assert.doesNotMatch(html, /同名速汇 · 免费|汇款渠道：请选择/);
+  assert.match(html, /尚缺该银行换汇报价/);
+  const summary = html.split('id="flow-live-summary"')[1];
+  assert.match(summary, /最后可计余额/); assert.match(summary, /99994.50/); assert.match(summary, /CNH/);
+  ui.act('choose', 'broker', 'za');
+  assert.equal(ui.saved().startBank, 'sc'); assert.equal(ui.saved().bank, 'sc'); assert.equal(ui.saved().mainlandMethod, 'swift');
+  ui.act('choose', 'route', 'USD');
+  assert.equal(ui.saved().mainlandMethod, 'linked');
+  assert.match(ui.render(), /优先理财 · 同名速汇 · 免费/);
+  ui.act('choose', 'route', 'CNH');
+  assert.equal(ui.saved().mainlandMethod, 'swift');
+  ui.act('pick', '', 'startBank');
+  assert.match(ui.modal(), /人民币跨境按金额分档/);
+  const gap = moneyUi({ ...currentRoute, startBank: 'hang', bank: 'bochk', route: 'CNH', budgetCny: 2004, count: 1, senderFeeCny: '', mainlandMethod: 'swift', outcome: 'broker-balance' }).render();
+  assert.match(gap, /留在本账户 2.00 CNY/);
+  assert.match(gap, /另留内地账户 2.00 CNY/);
+  assert.doesNotMatch(gap, /NaN|undefined/);
+});
+
 test('missing terminal FX never forces a different bank, erases the total, or shows a zero loss rate', () => {
   const ui = moneyUi({ ...currentRoute, count: 2, mainlandMethod: 'cib-go', outcome: 'cnh-card', returnBank: 'hsbc' });
   const html = ui.render(), edge = html.split('aria-label="美元换人民币 → 消费"')[1].split('</section>')[0];
@@ -1416,5 +1440,6 @@ test('SC Priority standard overseas FX remittance waives sender fees without wai
   }
   const cnh = M.calculatorJourney({ ...currentRoute, startBank: 'sc', bank: 'bochk', broker: 'za', route: 'CNH', fxMode: 'bank',
     outcome: 'broker-balance', mainlandMethod: 'swift', senderFeeCny: '' }, D, cibQuotes).selected;
-  assert.equal(cnh.rows.find(x => x.key === 'sender').cny, null);
+  close(cnh.rows.find(x => x.key === 'sender').cny, 5.5);
+  assert.equal(cnh.rows.find(x => x.key === 'entryMiddle').cny, null);
 });
