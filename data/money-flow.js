@@ -45,6 +45,7 @@
       icbcOnline: { name: '工商银行 · 网银个人跨境汇款03040021', url: 'https://v.icbc.com.cn/userfiles/Resources/ICBC/fwjm/images/2026/di3zhangdi3jie20251215.gif' },
       icbcInward: { name: '工商银行 · 个人境外汇入款不收手续费', url: 'https://m.icbc.com.cn/ICBC/业务指南/个人金融/跨境金融/其他个人跨境汇款/其他个人跨境汇入汇款.htm' },
       scCnTariff: { name: '渣打中国 · 2026 Version 2个人银行收费标准', url: 'https://av.sc.com/cn/content/docs/cn-cb-tariff-zh.pdf' },
+      scCnOffers: { name: '渣打中国 · 2026年个人银行收费优惠政策', url: 'https://av.sc.com/cn/content/docs/cn-personal-bank-charges-preferential.pdf' },
       scGlobalFaq: { name: '渣打中国 · 全球账户间汇款仅限外币同币种', url: 'https://www.sc.com/cn/help-centre/faqs-ways-to-bank/' },
       icbcInternational: { name: '工商银行 · 汇出汇款06030023柜面价与渠道折扣', url: 'https://v.icbc.com.cn/userfiles/Resources/ICBC/fwjm/images/2026/di3zhangdi6jie202605.gif' },
       ccbFx: { name: '建设银行 · 个人结售汇参考牌价', url: 'https://ebank1.ccb.com/chn/forex/exchange-quotations.shtml' },
@@ -154,9 +155,10 @@
       { id: 'sc', name: '渣打中国', group: 'sc', rate: 0, minimum: 0, maximum: 0, telegram: 0, inwardCny: 0, linkedCurrencies: ['USD', 'HKD'],
         standardTariff: { currencies: ['USD', 'HKD'], rate: 0, minimum: 0, maximum: 0, telegram: 0 },
         cnhTariff: { currencies: ['CNH'], validFrom: '2026-07-26', telegram: 0, tariffChannel: '优先理财 · 人民币跨境汇款',
+          commissionWaiver: { from: '2026-01-01', until: '2026-12-31', feeText: '2026年优先理财人民币跨境汇出手续费免；代理行费用另计' },
           feeText: '人民币跨境按金额分档：≤5万元0.60元、≤10万元5.50元；外币同名免费渠道不适用人民币',
           bands: [{ upTo: 50000, fixedCny: .6 }, { upTo: 100000, fixedCny: 5.5 }, { upTo: 500000, fixedCny: 8 }, { upTo: 1000000, fixedCny: 10.5 }, { rate: .00001, minimum: 0, maximum: 50 }] },
-        tariffChannel: '优先理财 · 网上外币汇款（SHA）', required: 'sc', thresholdCny: 500000, includedIntermediary: true, feeText: '优先理财网上外币汇款：手续费、电讯费0；同名全球账户渠道OUR代理费另免', condition: '按优先理财客户计算；同名全球账户渠道仅限外币同币种、选OUR代理费免，普通境外汇款SHA不豁免其他银行收费', sources: ['sc', 'scTier', 'scCnTariff', 'scGlobalFaq'] }
+        tariffChannel: '优先理财 · 网上外币汇款（SHA）', required: 'sc', thresholdCny: 500000, includedIntermediary: true, feeText: '优先理财网上外币汇款：手续费、电讯费0；同名全球账户渠道OUR代理费另免', condition: '按优先理财客户计算；2026年人民币跨境汇出手续费免，代理费另计；同名全球账户渠道仅限外币同币种、选OUR代理费免，普通境外汇款SHA不豁免其他银行收费', sources: ['sc', 'scTier', 'scCnTariff', 'scCnOffers', 'scGlobalFaq'] }
     ],
     hkBanks: [
       { id: 'za', name: '众安 ZA Bank', group: 'za', inwardHkd: 0, localHkd: 0, localUsd: 0, acceptsCheques: false, outwardHkd: 0, outwardChanges: [{ from: '2026-11-01', fee: 70 }], monthlyHkd: 0, thresholdHkd: 0, cardForeignPct: 1.95, condition: '在港申请；无账户管理费，不接受支票存款。外币/海外处理港元签账有1.95%费用', sources: ['za', 'zaNov', 'zaOpen', 'zaCard', 'zaAccountTerms'] },

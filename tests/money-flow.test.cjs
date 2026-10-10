@@ -1422,12 +1422,12 @@ test('RMB channels show the correct tariff and repair the old SC foreign-only ch
   const ui = moneyUi({ ...currentRoute, startBank: 'sc', bank: 'sc', route: 'CNH', mainlandMethod: 'linked', count: 1, senderFeeCny: '', outcome: 'broker-balance' });
   const html = ui.render();
   assert.match(html, /优先理财 · 人民币跨境汇款/);
-  assert.match(html, /5.50 CNY/);
+  assert.match(html, /汇出手续费<\/strong><\/div><div><b class="num">0.00 CNY/);
   assert.doesNotMatch(html, /同名速汇 · 免费|汇款渠道：请选择/);
   assert.match(html, /渣打 · 快易理财 CNH\/USD成交价尚未取得/);
   assert.doesNotMatch(html, /转入IBKR|请选择换美元地点/);
   const summary = html.split('id="flow-live-summary"')[1];
-  assert.match(summary, /最后可计余额/); assert.match(summary, /99994.50/); assert.match(summary, /CNH/);
+  assert.match(summary, /最后可计余额/); assert.match(summary, /100000.00/); assert.match(summary, /CNH/);
   ui.act('choose', 'broker', 'za');
   assert.equal(ui.saved().startBank, 'sc'); assert.equal(ui.saved().bank, 'sc'); assert.equal(ui.saved().mainlandMethod, 'swift');
   ui.act('choose', 'route', 'USD');
@@ -1436,7 +1436,7 @@ test('RMB channels show the correct tariff and repair the old SC foreign-only ch
   ui.act('choose', 'route', 'CNH');
   assert.equal(ui.saved().mainlandMethod, 'swift');
   ui.act('pick', '', 'startBank');
-  assert.match(ui.modal(), /人民币跨境按金额分档/);
+  assert.match(ui.modal(), /2026年优先理财人民币跨境汇出手续费免；代理行费用另计/);
   const gap = moneyUi({ ...currentRoute, startBank: 'hang', bank: 'bochk', route: 'CNH', budgetCny: 2004, count: 1, senderFeeCny: '', mainlandMethod: 'swift', outcome: 'broker-balance' }).render();
   assert.match(gap, /留在本账户 2.00 CNY/);
   assert.match(gap, /另留内地账户 2.00 CNY/);
@@ -1725,6 +1725,6 @@ test('SC Priority standard overseas FX remittance waives sender fees without wai
   }
   const cnh = M.calculatorJourney({ ...currentRoute, startBank: 'sc', bank: 'bochk', broker: 'za', route: 'CNH', fxMode: 'bank',
     outcome: 'broker-balance', mainlandMethod: 'swift', senderFeeCny: '' }, D, cibQuotes).selected;
-  close(cnh.rows.find(x => x.key === 'sender').cny, 5.5);
+  close(cnh.rows.find(x => x.key === 'sender').cny, 0);
   assert.equal(cnh.rows.find(x => x.key === 'entryMiddle').cny, null);
 });

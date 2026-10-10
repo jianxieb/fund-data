@@ -40,7 +40,7 @@
   const amount = (value, currency) => '<b class="num">' + num(value) + ' <small>' + esc(currency) + '</small></b>';
   const source = key => D.sources[key] ? '<a class="source-link" target="_blank" rel="noopener noreferrer" href="' + esc(D.sources[key].url) + '">' + esc(D.sources[key].name) + ' ↗</a>' : '';
   const evidenceSources = {
-    mainlandTariff: { boc: ['boc'], cib: ['cib'], cmb: ['cmbTariff'], icbc: ['icbcOnline', 'icbcInternational'], ccb: ['ccbRemit'], comm: ['comm'], hsbc: ['hsbcCnTariff'], hang: ['hangCnTariff'], sc: ['scCnTariff'] },
+    mainlandTariff: { boc: ['boc'], cib: ['cib'], cmb: ['cmbTariff'], icbc: ['icbcOnline', 'icbcInternational'], ccb: ['ccbRemit'], comm: ['comm'], hsbc: ['hsbcCnTariff'], hang: ['hangCnTariff'], sc: ['scCnTariff', 'scCnOffers'] },
     mainlandReceipt: { boc: ['boc'], cib: ['cibInward'], cmb: ['cmbTariff'], icbc: ['icbcInward'], ccb: ['ccbRemit'], comm: ['comm'], hsbc: ['hsbcCnTariff'], hang: ['hangCnTariff'], sc: ['scCnTariff'] },
     mainlandFx: { boc: ['bocFx'], cib: ['cibFx', 'cibCard'], cmb: ['cmbFx'], icbc: ['icbcFx'], ccb: ['ccbFx'], comm: ['commFx'], hsbc: ['hsbcFx'], hang: ['hangCnFx'], sc: ['scFx'] },
     linked: { hsbc: ['hsbcGlobal'], hang: ['hang'], sc: ['sc', 'scGlobalFaq'] },
@@ -131,6 +131,8 @@
   function sourceTariffCopy(bank) {
     if (!bank || !mainland.some(item => item.id === bank.id)) return '请选择目录中的出发银行。';
     if (state.route !== 'CNH') return bank.feeText;
+    const waiver = bank.cnhTariff?.commissionWaiver;
+    if (waiver && today() >= waiver.from && today() <= waiver.until) return waiver.feeText;
     if (bank.cnhTariff?.feeText) return bank.cnhTariff.feeText;
     if (bank.cnhTariff === true) return '人民币跨境' + num(bank.rate * 1000, 0) + '‰，' + bank.minimum + '–' + bank.maximum + '元＋' + bank.telegram + '元电讯费';
     return '人民币跨境汇出手续费／电讯费：尚未取得适用价目';

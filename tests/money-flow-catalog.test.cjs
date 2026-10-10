@@ -197,19 +197,21 @@ test('fees, periods, trading offers, stock prices and vouchers reconcile at nume
   }
 });
 
-test('RMB cross-border tariffs use the actual amount bands and never inherit foreign-wire waivers', () => {
+test('RMB cross-border tariffs apply their own current waiver and restore amount bands after expiry', () => {
   const tariffs = Object.fromEntries(['hang', 'sc'].map(id => [id, D.mainlandBanks.find(b => b.id === id).cnhTariff]));
   for (const [amount, charged] of [[2000, 2], [2000.01, 5], [5000, 5], [5000.01, 10], [10000, 10], [10000.01, 15], [50000, 15], [100000, 30], [1000000, 50]]) {
     close(M.fee(tariffs.hang, amount, 1, config.date), charged);
   }
   for (const [amount, charged] of [[50000, .6], [50000.01, 5.5], [100000, 5.5], [100000.01, 8], [500000, 8], [500000.01, 10.5], [1000000, 10.5], [2000000, 20], [6000000, 50]]) {
-    close(M.fee(tariffs.sc, amount, 1, config.date), charged);
+    close(M.fee(tariffs.sc, amount, 1, config.date), 0);
+    close(M.fee(tariffs.sc, amount, 1, '2026-12-31'), 0);
+    close(M.fee(tariffs.sc, amount, 1, '2027-01-01'), charged);
   }
   for (const startBank of ['hang', 'hsbc', 'sc']) {
     for (const count of [1, 2]) {
       const r = run({ startBank, route: 'CNH', bank: 'bochk', mainlandMethod: 'swift', fxMode: 'bank', count }).selected;
       const sender = r.rows.find(x => x.key === 'sender');
-      close(sender.cny, startBank === 'hang' ? count === 1 ? 100000 - 100000 / 1.0003 : 30 : startBank === 'hsbc' ? count * 220 : count === 1 ? 5.5 : 1.2);
+      close(sender.cny, startBank === 'hang' ? count === 1 ? 100000 - 100000 / 1.0003 : 30 : startBank === 'hsbc' ? count * 220 : 0);
       close(sender.items.reduce((s, row) => s + row.cny, 0), sender.cny);
       close(r.steps.mainlandForeign + sender.cny + r.sourceRemainderCny, 100000);
       close(r.rows.find(x => x.key === 'entryFx').cny, 0);
@@ -239,7 +241,7 @@ test('amounts between fee bands retain source cash instead of overstating fees o
   // The SC fee drops slightly above one million; a global binary search can
   // miss the larger affordable transfer in the next band.
   const sc = D.mainlandBanks.find(b => b.id === 'sc').cnhTariff;
-  const above = M.remitPrincipal(1000010.25, sc, 1, config.date, null);
+  const above = M.remitPrincipal(1000010.25, sc, 1, '2027-01-01', null);
   assert.ok(above.principal > 1000000); close(above.principal + above.fee + above.remainderCny, 1000010.25);
   close(above.fee, above.principal * .00001);
 });

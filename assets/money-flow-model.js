@@ -27,7 +27,9 @@
     if (bank.bands && !band) return null;
     const tariff = band || bank;
     if (!knownFee(bank.telegram) || (!knownFee(tariff.fixedCny) && ![tariff.rate, tariff.minimum, tariff.maximum].every(knownFee))) return null;
-    const commission = knownFee(tariff.fixedCny) ? tariff.fixedCny : Math.min(tariff.maximum, Math.max(tariff.minimum, principalCny * tariff.rate));
+    const waiver = bank.commissionWaiver;
+    const waived = waiver && date >= waiver.from && date <= waiver.until;
+    const commission = waived ? 0 : knownFee(tariff.fixedCny) ? tariff.fixedCny : Math.min(tariff.maximum, Math.max(tariff.minimum, principalCny * tariff.rate));
     const telegram = bank.freeTelegram && index <= bank.freeTelegram ? 0 : bank.telegram;
     return { commission, telegram };
   }
