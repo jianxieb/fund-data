@@ -1,5 +1,7 @@
 # 跨境资金费用测算
 
+> **需求与验收以 [完整清单](money-flow-requirements.md) 为准。** 下文“完整报价目录”描述的是已被用户否定的 16a8d3a 实现，不是后续重构目标。删选项、禁用组合、强制全额到账等规则正在重新设计；现有组合审计不能作为产品验收通过的依据。
+
 核对日期：2026-10-10。数据在 `data/money-flow.js`，牌价在 `data/money-flow-quotes.js`，计算在 `assets/money-flow-model.js`，界面在 `assets/money-flow.js`。
 
 ## 当前可计算范围（2026-10-10）
