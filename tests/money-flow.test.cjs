@@ -1326,7 +1326,8 @@ test('missing source FX keeps independent sender charges without a fabricated fo
   const charged = M.calculatorJourney({ ...config, hsbcBalanceWaiver: false, balanceHkd: 0, monthlyHkd: '' }, D, q).partial;
   close(charged.rows.find(x => x.key === 'account').cny, 1200 * charged.refs.HKD);
   assert.doesNotMatch(html, /全程损耗 · 历史报价/);
-  const allUnknown = moneyUi({ ...config, startBank: 'sc', bank: 'bochk', returnBank: 'bochk' }, q).render();
+  const unquoted = structuredClone(q); delete unquoted.banks.comm;
+  const allUnknown = moneyUi({ ...config, startBank: 'comm', bank: 'bochk', returnBank: 'bochk' }, unquoted).render();
   const unknownTransfer = allUnknown.split('aria-label="内地购美元 → 汇往香港"')[1].split('</section>')[0];
   assert.match(unknownTransfer, /class="num">—</); assert.doesNotMatch(unknownTransfer, /0.00 CNY/);
 });
