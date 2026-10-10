@@ -649,13 +649,16 @@ test('other brokers never inherit IBKR FX commissions; Chief cheque pricing foll
   assert.match(rejected.error, /换汇成交价未公开/);
   const bank = M.journeyPlans({ ...mainlandConfig, broker: 'chief', bank: 'bochk', route: 'CNH', fxMode: 'bank', tradeFeeUsd: '' }, D, richQuotes).selected;
   assert.ok(bank); close(bank.rows.find(row => row.key === 'brokerFx').cny, 0);
-  const cheque = M.journeyPlans({ ...mainlandConfig, broker: 'chief', returnBank: 'hang', returnMethod: 'swift', tradeFeeUsd: '', inwardHkd: '' }, D, richQuotes).selected;
+  const cheque = M.journeyPlans({ ...mainlandConfig, broker: 'chief', returnBank: 'sc', returnMethod: 'swift', tradeFeeUsd: '', inwardHkd: '' }, D, richQuotes).selected;
   assert.equal(cheque.rows.find(row => row.key === 'returnInward').cny, null);
   close(cheque.rows.find(row => row.key === 'withdrawMiddle').cny, 0);
   const hsbc = M.journeyPlans({ ...mainlandConfig, broker: 'chief', returnBank: 'hsbc', tradeFeeUsd: '', inwardHkd: '' }, D, richQuotes).selected;
   close(hsbc.rows.find(row => row.key === 'returnInward').cny, 0);
   const bochk = M.journeyPlans({ ...mainlandConfig, broker: 'chief', returnBank: 'bochk', tradeFeeUsd: '', inwardHkd: '' }, D, richQuotes).selected;
   close(bochk.rows.find(row => row.key === 'returnInward').cny, 0);
+  const hang = M.journeyPlans({ ...mainlandConfig, broker: 'chief', returnBank: 'hang', tradeFeeUsd: '', inwardHkd: '' }, D, richQuotes).selected;
+  close(hang.rows.find(row => row.key === 'returnInward').cny, 0);
+  assert.match(hang.rows.find(row => row.key === 'returnInward').label, /本地USD支票存入/);
 });
 
 

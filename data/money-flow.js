@@ -118,7 +118,7 @@
       paymentHsbc: { name: '汇丰香港 · 跨境支付通使用资格', url: 'https://www.hsbc.com.hk/zh-hk/help/faq/transfers-and-payments/' },
       scHk: { name: '渣打香港 · 2026年10月服务收费', url: 'https://av.sc.com/hk/zh/content/docs/hk-service-charges-zh.pdf' },
       scCard: { name: '渣打香港 · 多货币扣账卡', url: 'https://www.sc.com/hk/zh/bank-with-us/multicurrency-debit-card/' },
-      hangHk: { name: '恒生香港 · 2026年7月服务收费', url: 'https://www.hangseng.com/content/dam/wpb/hase/config/bde/pws/personal/servicecharges/pdfs/zh_HK/tariff_personal_sc.pdf' },
+      hangHk: { name: '恒生香港 · 2026年7月服务收费（B.5本地美元交换票存入免费）', url: 'https://www.hangseng.com/content/dam/hase/config/bde/pws/personal/servicecharges/pdfs/zh_HK/tariff_personal_sc.pdf' },
       hangCard: { name: '恒生香港 · 多货币扣账卡', url: 'https://www.hangseng.com/zh-cn/personal/cards/products/multi-currency-debit-card/' },
       bochkAccount: { name: '中银香港 · 个人账户及扣账卡收费', url: 'https://www.bochk.com/sc/servicecharge.common.html' },
       bochkCard: { name: '中银香港 · 多货币扣账设置', url: 'https://www.bochk.com/dam/more/bocdebitcard/card/sc.html' }
@@ -139,7 +139,7 @@
       { id: 'za', name: '众安 ZA Bank', group: 'za', inwardHkd: 0, localHkd: 0, localUsd: 0, outwardHkd: 0, outwardChanges: [{ from: '2026-11-01', fee: 70 }], monthlyHkd: 0, thresholdHkd: 0, cardForeignPct: 1.95, condition: '在港申请；无账户管理费。外币/海外处理港元签账有1.95%费用', sources: ['za', 'zaNov', 'zaOpen', 'zaCard'] },
       { id: 'hsbc', name: '汇丰 HSBC One', group: 'hsbc', inwardHkd: 0, localHkd: 0, localUsd: 0, localUsdChequeHkd: 0, outwardHkd: 70, monthlyHkd: 100, thresholdHkd: 10000, directUsdCard: true, cardForeignPct: 0, condition: '2026年起新开非香港身份证One：低于1万港元收100港元/月；扣账卡外币交易费免', sources: ['hsbcHk', 'hsbcCard', 'hsbcHkFx'] },
       { id: 'bochk', name: '中银香港', group: 'boc', inwardHkd: 60, inwardSmallLimitHkd: 500, sameGroupWaiver: true, localHkd: 0, localUsd: 0, localUsdChequeHkd: 0, outwardHkd: 65, monthlyHkd: 0, thresholdHkd: 0, directUsdCard: true, cardForeignPct: 0, condition: '普通个人账户免月费；一般汇入超过500港元收60港元，内地中行同名优惠可免。网上同名汇至内地中行的快汇及SWIFT基本手续费豁免，代理费另计', sources: ['bochkAccount', 'bochkSame', 'bochkCard', 'bochkCheque'] },
-      { id: 'hang', name: '恒生 · 优进理财', group: 'hang', inwardHkd: 0, sameGroupWaiver: true, localHkd: 0, localUsd: 0, outwardHkd: 65, monthlyHkd: 0, thresholdHkd: 0, directUsdCard: true, cardForeignPct: 0, condition: '优进理财无最低理财总值/月费；跨域转账须已登记，并经指定页面提交', sources: ['hangHk', 'hangOpen', 'hangCard', 'hangHkFx'] },
+      { id: 'hang', name: '恒生 · 优进理财', group: 'hang', inwardHkd: 0, sameGroupWaiver: true, localHkd: 0, localUsd: 0, localUsdChequeHkd: 0, outwardHkd: 65, monthlyHkd: 0, thresholdHkd: 0, directUsdCard: true, cardForeignPct: 0, condition: '优进理财无最低理财总值/月费；跨域转账须已登记，并经指定页面提交', sources: ['hangHk', 'hangOpen', 'hangCard', 'hangHkFx'] },
       { id: 'sc', name: '渣打 · 快易理财', group: 'sc', inwardHkd: 0, sameGroupWaiver: true, localHkd: 0, localUsd: null, localUsdNative: 22, outwardHkd: 50, monthlyHkd: 0, thresholdHkd: 0, directUsdCard: true, cardForeignPct: 0, condition: '快易理财免服务费；HKD/CNH网上非RTGS转账免；USD本地RTGS标准费22美元，实际豁免可覆盖', sources: ['scHk', 'scCard', 'sc'] }
     ],
     broker: { name: 'IBKR直接客户', depositUsd: 0, manualRate: 0.00002, manualMinimumUsd: 2, autoMarkup: 0.0003, freeWithdrawals: 2, withdrawUsd: 10, withdrawHkdWire: 95, withdrawHkdLocal: 8, sources: ['ibFx', 'ibFees', 'ibFunding', 'ibDeposits', 'ibEdda'] },
