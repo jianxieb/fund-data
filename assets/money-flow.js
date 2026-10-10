@@ -210,7 +210,8 @@
       select('route', '汇出币种', Object.entries(currencyNames)) + select('mainlandMethod', '汇款渠道', entryMethods()), '01',
       state.mainlandMethod === 'linked' ? '两地同名已关联账户' : '' );
     const accounts = bankAccountSet(s), accountCost = row(r, 'account');
-    let accountOptions = action('账户使用 ' + esc(state.months) + '个月 · 管理费 ' + (accountCost ? cost(accountCost.cny) : accounts.map(b => num(b.monthlyHkd) + ' HKD/月').join('、')),
+    const chargingBanks = accountCost?.items?.filter(item => item.cny > 0).map(item => item.label.replace('期间管理费', '')).join('＋');
+    let accountOptions = action('账户使用 ' + esc(state.months) + '个月 · ' + esc(chargingBanks || '银行') + '管理费 ' + (accountCost ? cost(accountCost.cny) : accounts.map(b => num(b.monthlyHkd) + ' HKD/月').join('、')),
       'detail', 'data-value="bank-settings" aria-haspopup="dialog"', 'flow-setting-button');
     if (accounts.some(b => b.id === 'hsbc')) accountOptions += checkbox('hsbcBalanceWaiver', 'HSBC One已满足免管理费条件');
     html += node('02', 'bank', '香港收款银行', s.bank, nodeBalance(r, steps.hongKong, state.route, '汇款到账', transferKeys), accountOptions);

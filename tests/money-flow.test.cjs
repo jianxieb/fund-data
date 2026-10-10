@@ -1189,6 +1189,14 @@ test('every visible calculated plan reproduces its full price after selection an
   }
 });
 
+test('the inline bank management fee identifies HSBC even when the receiving bank is BOCHK', () => {
+  const html = moneyUi({ ...currentRoute, bank: 'bochk', broker: 'hsbc', outcome: 'broker-balance', months: 12, hsbcBalanceWaiver: false }).render();
+  const bankNode = html.split('data-flow-stage="02"')[1].split('</section>')[0];
+  assert.match(bankNode, /香港收款银行：中银香港/);
+  assert.match(bankNode, /账户使用 12个月 · 汇丰 HSBC One管理费/);
+  assert.doesNotMatch(bankNode, /中银香港管理费 [1-9]/);
+});
+
 test('RMB source is not described as free when its sender tariff remains unpriced', () => {
   const ui = moneyUi({ ...currentRoute, startBank: 'cib', route: 'CNH', mainlandMethod: 'swift' }), html = ui.render();
   assert.match(html, /人民币原币汇往香港/);
