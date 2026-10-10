@@ -75,7 +75,7 @@
     const s = selected(), currency = state.fxMode === 'bank' ? 'USD' : state.route;
     if (s.broker.integratedBank) return s.broker.integratedBank === s.bank?.id ? [['internal', '本行存款直接交收']] : [['chats', '本地美元转账 → 本人' + shortName(banks.find(b => b.id === s.broker.integratedBank)) + '账户']];
     return [...(s.broker.internalFundingBanks?.includes(s.bank?.id) ? [['internal', '同行转账 → 券商收款账户 · 免费']] : []),
-      ...(currency === 'USD' ? [['chats', '本地美元转账 · CHATS'], ['swift', '美元电汇 · SWIFT']] : [
+      ...(currency === 'USD' ? s.broker.id === 'ibkr' ? [['chats', '香港收款指示 · USD本地转账'], ['swift', '境外收款指示 · USD电汇']] : [['chats', '本地美元转账 · CHATS'], ['swift', '美元电汇 · SWIFT']] : [
         ...(s.broker.id === 'chief' && currency === 'CNH' ? [] : [['fps', '本地转账 · FPS']]), ['edda', '券商发起扣款 · eDDA'], ['swift', '外币电汇 · SWIFT']])];
   }
   function returnMethods() {
@@ -90,7 +90,7 @@
     { id: 'boc-chief', title: '中行 → 中银香港 → 致富', note: '同名手机汇款；致富同行入金免费、零佣金', config: { startBank: 'boc', bank: 'bochk', broker: 'chief', route: 'USD', mainlandMethod: 'boc-mobile', returnBank: 'bochk' } },
     { id: 'boc-mobile', title: '中行 → 中银香港 → 盈立', note: '手机银行同名双免情景；盈立中银香港同行入金免费', config: { startBank: 'boc', bank: 'bochk', broker: 'usmart', route: 'USD', mainlandMethod: 'boc-mobile', returnBank: 'bochk' } },
     { id: 'hsbc-linked', title: '汇丰两地同名 → 汇丰证券', note: '已连通环球转账的账户；跨境转账免费', config: { startBank: 'hsbc', bank: 'hsbc', broker: 'hsbc', route: 'USD', mainlandMethod: 'linked', returnBank: 'hsbc' } },
-    { id: 'boc-ibkr', title: '中行 → 中银香港 → IBKR', note: '同名手机汇款；IBKR美股按股数计佣', config: { startBank: 'boc', bank: 'bochk', broker: 'ibkr', route: 'USD', mainlandMethod: 'boc-mobile', returnBank: 'bochk' } },
+    { id: 'boc-ibkr', title: '中行 → 中银香港 → IBKR', note: '香港花旗／渣打USD收款指示；本地转账入金', config: { startBank: 'boc', bank: 'bochk', broker: 'ibkr', route: 'USD', mainlandMethod: 'boc-mobile', returnBank: 'bochk' } },
   ];
   function presetState(p) {
     const next = M.calculatorRoute({ ...state, ...p.config, plan: p.id, activeStep: '01', fxMode: '', depositMethod: '', returnMethod: '' });

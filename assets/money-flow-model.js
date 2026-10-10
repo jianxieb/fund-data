@@ -703,10 +703,13 @@
         const charge = own('depositHkd', isSelectedBank);
         add('depositBank', internalDeposit ? settlementBank ? '本人银行账户内部交收' : bank.name + ' → ' + provider.name + '同银行收款账户' : bank.name + ' → ' + (settlementBank?.name || provider.name) + ' · ' + depositMethod.toUpperCase(), internalDeposit ? 0 : charge == null ? depositFee(bank, depositMethod, depositCurrency, refs, config.date) : charge * refs.HKD, 'deposit');
         add('depositBroker', provider.name + '入金费', knownFee(provider.depositUsd) ? provider.depositUsd * refs.USD : null, 'deposit');
-        // Other banks' fees can exist even when the sending bank or IBKR
-        // waives its own fee. FPS has no SWIFT correspondent-bank leg.
+        // A USD instruction naming a Hong Kong receiving bank is a separate
+        // route from a US wire. Published local-route observations do not waive
+        // the sending bank's own fee or any later withdrawal fee.
         const localInward = settlementBank ? localUsdInward(settlementBank) : null;
-        add('depositOther', settlementBank ? settlementBank.name + ' · 本地USD收款' : '入金代理／收款行费', internalDeposit ? 0 : settlementBank ? localInward == null ? null : localInward * refs.USD : own('depositOtherCny', isSelectedBank) ?? (depositMethod === 'fps' || depositMethod === 'edda' ? 0 : null), 'deposit');
+        const localFunding = depositMethod === 'chats' && depositCurrency === 'USD' ? provider.localUsdFunding : null;
+        add('depositOther', settlementBank ? settlementBank.name + ' · 本地USD收款' : localFunding ? provider.name + '香港本地收款' : '入金代理／收款行费', internalDeposit ? 0 : settlementBank ? localInward == null ? null : localInward * refs.USD : own('depositOtherCny', isSelectedBank) ?? (localFunding ? localFunding.otherCny : depositMethod === 'fps' || depositMethod === 'edda' ? 0 : null), 'deposit');
+        if (localFunding && own('depositOtherCny', isSelectedBank) == null) rows[rows.length - 1].estimate = localFunding.evidence;
       };
       const convert = () => {
         const oldBalance = balance, oldUnit = unit;

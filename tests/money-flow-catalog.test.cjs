@@ -144,3 +144,20 @@ test('HKD full-amount cap requires current same-bank USD valuation without a bor
     assert.equal(r.selected, undefined); assert.match(r.error, /兴业USD牌价/); assert.doesNotMatch(r.error, /NaN/);
   }
 });
+
+test('IBKR local USD receiving instructions price the observed route, while overseas wires and withdrawals retain their separate fees', () => {
+  const local = run({ startBank: 'boc', bank: 'bochk', broker: 'ibkr', mainlandMethod: 'boc-mobile', depositMethod: 'chats' }).selected;
+  for (const key of ['depositBank', 'depositBroker', 'depositOther']) close(local.rows.find(x => x.key === key).cny, 0);
+  assert.match(local.rows.find(x => x.key === 'depositOther').estimate, /香港花旗／渣打/);
+  assert.equal(local.complete, true); ledger(local);
+  const international = run({ broker: 'ibkr', depositMethod: 'swift' }).selected;
+  assert.equal(international.rows.find(x => x.key === 'depositOther').cny, null);
+  const sc = run({ broker: 'ibkr', bank: 'sc', depositMethod: 'chats' }).selected;
+  close(sc.rows.find(x => x.key === 'depositBank').cny, 22 * sc.refs.USD);
+  const withdrawn = run({ broker: 'ibkr', depositMethod: 'chats', outcome: 'usd-balance', withdrawalIndex: 3 }).selected;
+  close(withdrawn.rows.find(x => x.key === 'withdraw').cny, 10 * withdrawn.refs.USD);
+  assert.equal(withdrawn.rows.find(x => x.key === 'withdrawMiddle').cny, null);
+  const custom = run({ broker: 'ibkr', depositMethod: 'chats', depositOtherCny: '15' }).selected;
+  close(custom.rows.find(x => x.key === 'depositOther').cny, 15);
+  assert.equal(custom.rows.find(x => x.key === 'depositOther').estimate, undefined);
+});

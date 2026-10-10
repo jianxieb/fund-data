@@ -297,7 +297,7 @@ test('ABC full-amount USD fee is per transfer and never charged twice', () => {
 });
 
 test('unknown bank and correspondent fees remain unknown, and incomplete sender tariffs cannot win', () => {
-  const p = M.journeyPlans({ ...mainlandConfig, startBank: 'comm', entryMiddleCny: '', depositOtherCny: '', intermediaryCny: '', returnExtraCny: '' }, D, richQuotes);
+  const p = M.journeyPlans({ ...mainlandConfig, startBank: 'comm', depositMethod: 'swift', entryMiddleCny: '', depositOtherCny: '', intermediaryCny: '', returnExtraCny: '' }, D, richQuotes);
   assert.equal(p.selected.rankable, false); assert.equal(p.selected.complete, false);
   for (const key of ['sender', 'entryMiddle', 'depositOther', 'withdrawMiddle', 'returnOther']) assert.equal(p.selected.rows.find(row => row.key === key).cny, null);
   assert.ok(p.plans.every(row => row.start.id !== 'comm'));
@@ -1078,6 +1078,15 @@ test('all nodes, action losses, balance summaries and quick plans are visible wi
   assert.equal((html.match(/aria-label="修改人民币本金"/g) || []).length, 1);
   assert.doesNotMatch(html, /money-flow-amount|本金快捷金额/);
   ui.act('detail', '', 'budget'); assert.match(ui.modal(), /data-money-field="budgetCny"[^>]*value="100000"/); assert.match(ui.modal(), /data-money-field="count"/);
+});
+
+test('IBKR USD funding separates Hong Kong receiving instructions from overseas wire instructions', () => {
+  const ui = moneyUi({ ...currentRoute, broker: 'ibkr', route: 'USD', depositMethod: 'chats', depositOtherCny: '', outcome: 'broker-balance' });
+  assert.match(ui.render(), /香港收款指示 · USD本地转账/);
+  assert.match(ui.render(), /香港花旗／渣打收款指示/);
+  assert.match(ui.render(), /参考总损耗/);
+  ui.act('control-pick', '', 'depositMethod');
+  assert.match(ui.modal(), /境外收款指示 · USD电汇/);
 });
 
 test('a stale final quote preserves earlier arrivals and a numeric known-cost total', () => {

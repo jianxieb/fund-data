@@ -1,8 +1,8 @@
 {
   "date": "2026-10-11",
   "combinationsChecked": 151875,
-  "completeQuoteCombinations": 3814,
-  "partialQuoteCombinations": 119936,
+  "completeQuoteCombinations": 3949,
+  "partialQuoteCombinations": 119801,
   "inputOrRouteIssues": 28125,
   "ledgerChecks": 123750,
   "issueCounts": {
@@ -13,7 +13,6 @@
     "渣打中国的HKD现汇卖出价尚未取得；到账金额暂不可算。": 5625
   },
   "missingCounts": {
-    "入金代理／收款行费": 37620,
     "券商出金中转行费": 19125,
     "回内地中转行费": 26250,
     "中国银行USD收款费": 3125,
@@ -28,6 +27,7 @@
     "渣打中国USD现汇买入价尚未取得；已保留结汇前美元余额": 3125,
     "众安 ZA Bank · 本地USD支票存入": 2250,
     "渣打 · 快易理财 · 本地USD支票存入": 3375,
+    "入金代理／收款行费": 29700,
     "众安 ZA Bank HKD换USD点差（缺成交价）": 6336,
     "众安 ZA Bank CNH换USD点差（缺成交价）": 7128,
     "渣打 · 快易理财 HKD换USD点差（缺成交价）": 6336,
@@ -47,6 +47,12 @@
     "渣打中国电讯费": 3960
   },
   "routes": [
+    {
+      "key": "boc/bochk/ibkr///USD/broker-balance",
+      "costCny": 137.1504,
+      "balance": 14901.0109,
+      "currency": "USD"
+    },
     {
       "key": "boc/bochk/hsbc///USD/broker-balance",
       "costCny": 123.7409,
@@ -729,6 +735,12 @@
       "key": "boc/bochk/usmart/sc//HKD/usd-card",
       "costCny": 434.0072,
       "balance": 14856.7154,
+      "currency": "USD"
+    },
+    {
+      "key": "hsbc/hsbc/ibkr///USD/broker-balance",
+      "costCny": 466.5531,
+      "balance": 14851.8591,
       "currency": "USD"
     },
     {
@@ -1488,6 +1500,12 @@
       "currency": "CNY"
     },
     {
+      "key": "hang/hang/ibkr///USD/broker-balance",
+      "costCny": 1353.6639,
+      "balance": 14719.4891,
+      "currency": "USD"
+    },
+    {
       "key": "hang/hang/hsbc///USD/broker-balance",
       "costCny": 1340.2544,
       "balance": 14721.49,
@@ -2244,5 +2262,5 @@
       "currency": "CNY"
     }
   ],
-  "distinctCompleteRoutes": 366
+  "distinctCompleteRoutes": 369
 }
