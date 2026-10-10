@@ -5,90 +5,142 @@ const D = require('../data/money-flow.js');
 const { audit: auditCurrent, config: currentConfig } = require('../scripts/audit_money_flow.cjs');
 const Q = require('./fixtures/money-flow-quotes-20261009.json');
 const config = { ...currentConfig, date: '2026-10-10' };
-const audit = () => auditCurrent({ quotes: Q, date: config.date });
-const close = (a, b) => assert.ok(Math.abs(a - b) < 1e-6, `${a} != ${b}`);
-const base = M.calculatorRoute({ ...config, startBank: 'cib', bank: 'bochk', broker: 'za', returnBank: 'bochk', exitBank: 'hsbc', route: 'USD', outcome: 'usd-balance' });
+const close = (a, b) => assert.ok(Math.abs(a - b) < 1e-6, a + ' != ' + b);
+const base = M.calculatorRoute({ ...config, startBank: 'cib', bank: 'bochk', broker: 'za', returnBank: 'bochk', exitBank: 'hsbc', route: 'USD', outcome: 'broker-balance' });
 const run = changes => M.calculatorJourney({ ...base, ...changes }, D, Q);
+const ledger = r => {
+  assert.ok(Number.isFinite(r.net));
+  close(r.budgetCny + r.profitUsd * r.refs.USD - r.costCny - r.taxCny + r.fxImpactCny, r.netCny);
+  close(r.rows.reduce((sum, x) => sum + (x.cny || 0), 0), r.costCny);
+};
 
-test('every account/currency/endpoint combination has a decision; every selectable route has a reconciled full quote', () => {
-  const r = audit();
-  assert.equal(r.combinationsChecked, 150000);
-  assert.equal(r.pricedCombinations, 610);
-  assert.equal(r.distinctPricedRoutes, 70);
-  assert.equal(r.unpricedSelectableRoutes, 0);
-  assert.equal(Object.values(r.rejected).reduce((a, b) => a + b, 0) + r.pricedCombinations, r.combinationsChecked);
+test('all 151875 catalogue combinations retain selection and either reconcile or name the exact local issue', () => {
+  const r = auditCurrent({ quotes: Q, date: config.date });
+  assert.equal(r.combinationsChecked, 151875);
+  assert.equal(r.completeQuoteCombinations + r.partialQuoteCombinations + r.inputOrRouteIssues, r.combinationsChecked);
+  assert.equal(r.ledgerChecks, r.completeQuoteCombinations + r.partialQuoteCombinations);
+  assert.ok(r.completeQuoteCombinations > 0); assert.ok(r.partialQuoteCombinations > 0);
   assert.ok(r.routes.every(r => !r.key.includes('abc')));
 });
 
-test('SWIFT GO adds exactly 50 CNY per payment and covers overseas fees rather than charging them again', () => {
+test('ordinary CIB wire is the default; the optional full-amount service adds exactly 50 CNY per payment', () => {
+  assert.equal(base.mainlandMethod, 'swift');
+  assert.equal(run({}).selected.rows.find(x => x.key === 'entryMiddle').cny, null);
   for (const bank of D.calculator.hkBanks) for (const broker of D.calculator.brokers) for (const count of [2, 3, 30]) {
-    const r = run({ bank, broker, count }).selected;
-    assert.ok(r?.complete, [bank, broker, count].join('/'));
+    const r = run({ bank, broker, count, mainlandMethod: 'cib-go', depositMethod: broker === 'usmart' && bank === 'bochk' ? 'internal' : 'chats' }).selected;
+    assert.ok(r, [bank, broker, count].join('/'));
     close(r.rows.find(x => x.key === 'sender').cny, count * 50);
     close(r.rows.find(x => x.key === 'entryMiddle').cny, 0);
     close(r.rows.find(x => x.key === 'entryInward').cny, 0);
-    close(r.steps.hongKong, (100000 - count * 50) / r.startSell);
-    close(r.rows.find(x => x.key === 'sender').items.reduce((a, b) => a + b.cny, 0), count * 50);
+    close(r.steps.hongKong, (100000 - count * 50) / r.startSell); ledger(r);
   }
-  const r = run({ count: 2, usedFreeTransfers: 29 }).selected;
-  close(r.rows.find(x => x.key === 'sender').cny, 200); // 100 GO + 100 for the 31st telegram.
+  close(run({ count: 2, usedFreeTransfers: 29, mainlandMethod: 'cib-go' }).selected.rows.find(x => x.key === 'sender').cny, 200);
 });
 
-test('SWIFT GO limits reject over-limit, exhausted budget and invalid numeric inputs without a partial balance', () => {
+test('full-amount limit never silently splits payments and honours exact budget boundaries', () => {
+  const go = changes => run({ mainlandMethod: 'cib-go', ...changes });
   for (const changes of [{ count: 1 }, { count: 0 }, { count: 1.5 }, { count: 121 }, { budgetCny: 50, count: 1 }, { months: -1 }]) {
-    const r = run(changes); assert.ok(r.error); assert.equal(r.selected, undefined); assert.equal(r.partial, undefined);
+    const r = go(changes); assert.ok(r.error); assert.equal(r.selected, undefined);
   }
-  const quote = run({ count: 1, budgetCny: 60000 }).selected.startSell;
-  assert.ok(run({ count: 1, budgetCny: quote * 10000 + 50 }).selected);
-  assert.match(run({ count: 1, budgetCny: quote * 10000 + 50.01 }).error, /上限/);
-  const before = run({ count: 2 });
-  const after = run({ date: '2027-07-01' });
-  assert.ok(before.selected); assert.equal(after.selected, undefined); assert.match(after.error, /有效期/);
+  const quote = go({ count: 1, budgetCny: 60000 }).selected.startSell;
+  assert.ok(go({ count: 1, budgetCny: quote * 10000 + 50 }).selected);
+  assert.match(go({ count: 1, budgetCny: quote * 10000 + 50.01 }).error, /上限/);
+  const after = go({ date: '2027-07-01' });
+  assert.ok(after.error || after.selected?.missing.length);
 });
 
-test('ordinary wires and retired banks cannot regain a complete badge through private zero-fee overrides', () => {
-  for (const startBank of ['abc', 'boc', 'cmb', 'comm', 'hang', 'sc', 'icbc', 'ccb']) {
-    const r = run({ startBank, entryMiddleCny: 0, senderFeeCny: 0, startSell: 6.7 });
-    assert.ok(r.excluded); assert.equal(r.selected, undefined);
+test('source accounts, Hong Kong banks, stock venues and every currency have independent catalogues', () => {
+  assert.deepEqual(D.calculator.mainland, ['boc', 'cib', 'cmb', 'icbc', 'ccb', 'comm', 'hsbc', 'hang', 'sc']);
+  for (const startBank of D.calculator.mainland) for (const bank of D.calculator.hkBanks) for (const broker of D.calculator.brokers) for (const route of D.calculator.currencies) {
+    assert.equal(M.calculatorIssue({ ...base, startBank, bank, broker, route }, D), '');
   }
-  assert.ok(run({ mainlandMethod: 'swift', entryMiddleCny: 0 }).excluded);
-  assert.equal(M.calculatorIssue({ ...base, broker: 'za', bank: 'bochk' }, D), '');
-  assert.equal(M.calculatorIssue({ ...base, broker: 'hsbc', bank: 'bochk' }, D), '');
+  assert.match(M.calculatorIssue({ ...base, startBank: 'abc' }, D), /农业银行/);
 });
 
-test('all kept routes survive fees, account, stock order and promotion boundaries', () => {
+test('the screenshot uses one benchmark: HSBC 0.451% equals 450.87 CNY; the best CIB purchase is zero', () => {
+  const r = run({ startBank: 'hsbc', bank: 'hsbc', broker: 'hsbc', mainlandMethod: 'linked', trade25: true }).selected;
+  const entry = r.rows.find(x => x.key === 'entryFx');
+  close(entry.cny, 100000 * (1 - 6.70175 / Q.banks.hsbc.quotes.USD.sell));
+  assert.equal((entry.cny / 100000 * 100).toFixed(3), '0.451');
+  assert.equal(entry.cny.toFixed(2), '450.87');
+  close(r.fxImpactCny, 0); ledger(r);
+  close(run({}).selected.rows.find(x => x.key === 'entryFx').cny, 0);
+});
+
+test('original RMB transfer has no artificial FX fee; CNY/CNH basis moves to the actual conversion', () => {
+  const r = run({ startBank: 'boc', route: 'CNH', fxMode: 'bank', broker: 'za', mainlandMethod: 'swift' }).selected;
+  close(r.rows.find(x => x.key === 'entryFx').cny, 0);
+  close(r.fxImpactCny, 0); ledger(r);
+  assert.ok(r.rows.find(x => x.key === 'brokerSpread').cny != null);
+});
+
+test('retaining USD in the stock account skips withdrawals, return FX and unused bank management', () => {
+  const r = run({ broker: 'ibkr', returnBank: 'hsbc', hsbcBalanceWaiver: false, withdrawalIndex: 10 }).selected;
+  assert.ok(!r.rows.some(x => ['withdraw', 'returnInward', 'withdrawMiddle', 'returnWire', 'exitFx'].includes(x.key)));
+  assert.ok(!r.rows.find(x => x.key === 'account').items.some(x => x.label.includes('汇丰')));
+  ledger(r);
+  const bankStock = run({ broker: 'hsbc', returnBank: 'hsbc', hsbcBalanceWaiver: false }).selected;
+  const item = bankStock.rows.find(x => x.key === 'account');
+  close(item.cny, 1200 * bankStock.refs.HKD);
+  assert.equal(item.items.filter(x => x.label.includes('汇丰')).length, 1);
+  const oldUnused = run({ exitBank: 'abc', returnBank: 'retired-bank' });
+  assert.ok(oldUnused.selected); ledger(oldUnused.selected);
+  const used = run({ exitBank: 'abc', outcome: 'mainland' });
+  assert.equal(used.errorStage, '04');
+  assert.match(used.error, /内地收款银行/);
+});
+
+test('published uSMART BOCHK internal funding is free, without incorrectly waiving cross-bank payments', () => {
+  const r = run({ broker: 'usmart', depositMethod: 'internal' }).selected;
+  for (const key of ['depositBank', 'depositOther', 'depositBroker']) close(r.rows.find(x => x.key === key).cny, 0);
+  assert.match(run({ broker: 'usmart', bank: 'sc', depositMethod: 'internal' }).error, /同行入金/);
+  assert.equal(run({ broker: 'usmart', bank: 'sc', depositMethod: 'chats' }).selected.rows.find(x => x.key === 'depositOther').cny, null);
+});
+
+test('HSBC China standard wire is priced separately from the free linked service; documented inward fees remain zero', () => {
+  const ordinary = run({ startBank: 'hsbc', bank: 'bochk', mainlandMethod: 'swift', count: 1 }).selected;
+  close(ordinary.rows.find(x => x.key === 'sender').cny, 220);
+  close(ordinary.steps.mainlandForeign, (100000 - 220) / ordinary.startSell);
+  ledger(ordinary);
+  const linked = run({ startBank: 'hsbc', bank: 'hsbc', mainlandMethod: 'linked' }).selected;
+  close(linked.rows.find(x => x.key === 'sender').cny, 0);
+  for (const exitBank of ['cib', 'hsbc']) {
+    const back = run({ outcome: 'mainland', returnBank: 'bochk', exitBank, returnMethod: 'swift' }).selected;
+    const item = back.rows.find(x => x.key === 'returnOther').items.find(x => x.label.endsWith('USD收款费'));
+    close(item.cny, 0);
+    assert.ok(!back.missing.includes(item.label));
+    assert.ok(back.missing.includes('回内地中转行费'));
+    ledger(back);
+  }
+});
+
+test('fees, periods, trading offers, stock prices and vouchers reconcile at numeric boundaries', () => {
   const scenarios = [
-    { months: 0 }, { months: 1 }, { months: 12, hsbcBalanceWaiver: false },
-    { trade25: false }, { usedFreeTransfers: 30 }, { zaLv2: true, usedPromoOrders: 4 },
-    { trade25: true, otherTurnoverHkd: 250001 }, { profitUsd: 1000 },
+    { months: 0 }, { months: 1 }, { months: 12, hsbcBalanceWaiver: false }, { trade25: false }, { usedFreeTransfers: 30 },
+    { zaLv2: true, usedPromoOrders: 4 }, { trade25: true, otherTurnoverHkd: 250001 }, { profitUsd: 1000 },
     { buyOrders: 12, sellOrders: 12 }, { sharePriceUsd: .5 },
     { useVoucher: true, voucherUsd: 10, voucherOrders: 1, voucherScope: 'platform', voucherExpiry: '2026-12-31' }
   ];
-  for (const row of audit().routes) {
-    const [startBank, bank, broker, returnBank, exitBank, route, outcome] = row.key.split('/');
-    for (const changes of scenarios) {
-      const s = M.calculatorRoute({ ...base, ...changes, startBank, bank, broker, returnBank, exitBank: exitBank || 'hsbc', route, outcome });
-      const r = M.calculatorJourney(s, D, Q).selected;
-      assert.ok(r?.complete, row.key + JSON.stringify(changes));
-      assert.ok(r.rows.every(x => Number.isFinite(x.cny) && x.cny >= 0));
-      close(r.budgetCny + r.profitUsd * r.refs.USD - r.costCny - r.taxCny + r.fxImpactCny, r.netCny);
-    }
+  for (const broker of D.calculator.brokers) for (const changes of scenarios) {
+    const r = run({ broker, mainlandMethod: 'cib-go', ...changes }).selected; assert.ok(r); ledger(r);
+    assert.ok(r.rows.every(x => x.cny == null || Number.isFinite(x.cny)));
   }
 });
 
-test('missing or stale source quotes close the whole quote, never downgrade to a partial total', () => {
-  for (const mutate of [q => { delete q.banks.cib; }, q => { q.banks.cib.quotes.USD.asOf = '2020-01-01'; }]) {
-    const q = structuredClone(Q); mutate(q);
-    const r = M.calculatorJourney(base, D, q);
-    assert.ok(r.error); assert.equal(r.selected, undefined); assert.equal(r.partial, undefined);
-  }
+test('stale quotes keep tariff data but cannot claim a complete quote; missing quote preserves selection', () => {
+  const stale = structuredClone(Q); stale.banks.cib.quotes.USD.asOf = '2020-01-01';
+  const r = M.calculatorJourney(base, D, stale);
+  assert.ok(r.selected.rows.length); assert.equal(r.selected.complete, false); assert.match(r.selected.missing.join(), /超过3天/);
+  const missing = structuredClone(Q); delete missing.banks.cib;
+  const absent = M.calculatorJourney(base, D, missing);
+  assert.equal(absent.selection.start.id, 'cib'); assert.match(absent.error, /现汇卖出价/);
+  assert.equal(M.calculatorIssue(base, D), '');
 });
 
-
-test('HKD GO limit requires a current same-bank USD valuation, with no NaN error or borrowed quote', () => {
+test('HKD full-amount cap requires current same-bank USD valuation without a borrowed quote', () => {
   for (const mutate of [q => { delete q.banks.cib.quotes.USD; }, q => { q.banks.cib.quotes.USD.asOf = '2020-01-01'; }]) {
     const q = structuredClone(Q); mutate(q);
-    const r = M.calculatorJourney({ ...base, route: 'HKD', fxMode: 'bank' }, D, q);
+    const r = M.calculatorJourney({ ...base, mainlandMethod: 'cib-go', route: 'HKD', fxMode: 'bank' }, D, q);
     assert.equal(r.selected, undefined); assert.match(r.error, /兴业USD牌价/); assert.doesNotMatch(r.error, /NaN/);
   }
 });
