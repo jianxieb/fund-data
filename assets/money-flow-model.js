@@ -579,10 +579,23 @@
       const account = maintenance(bank, own('balanceHkd', isSelectedBank) ?? 0, number(config.months), own('monthlyHkd', isSelectedBank) ?? (bank.id === 'hsbc' && config.hsbcBalanceWaiver ? 0 : null));
       const returnAccount = keepInBroker || bank.id === returning.id ? 0 : maintenance(returning, own('returnBalanceHkd', isSelectedReturn) ?? 0, number(config.months), own('returnMonthlyHkd', isSelectedReturn) ?? (returning.id === 'hsbc' && config.hsbcBalanceWaiver ? 0 : null));
       const settlementAccount = settlementBank && ![bank.id, ...(keepInBroker ? [] : [returning.id])].includes(settlementBank.id) ? maintenance(settlementBank, 0, number(config.months), settlementBank.id === 'hsbc' && config.hsbcBalanceWaiver ? 0 : null) : 0;
-      const accountCny = account == null || returnAccount == null || settlementAccount == null ? null : (account + returnAccount + settlementAccount) * refs.HKD;
       const accountItems = [{ label: bank.name + '期间管理费', cny: account == null ? null : account * refs.HKD }, ...(keepInBroker || bank.id === returning.id ? [] : [{ label: returning.name + '期间管理费', cny: returnAccount == null ? null : returnAccount * refs.HKD }])];
       if (settlementBank && ![bank.id, ...(keepInBroker ? [] : [returning.id])].includes(settlementBank.id)) accountItems.push({ label: settlementBank.name + '期间管理费', cny: settlementAccount == null ? null : settlementAccount * refs.HKD });
-      accountItems.forEach(item => { item.months = number(config.months); item.monthlyHkd = item.cny == null ? null : item.cny / refs.HKD / (number(config.months) || 1); });
+      accountItems.forEach(item => { item.region = 'hong-kong'; item.months = number(config.months); item.monthlyHkd = item.cny == null ? null : item.cny / refs.HKD / (number(config.months) || 1); });
+      // Mainland premium plans charge in CNY. One account used at both ends
+      // incurs one period fee; an unvisited return account incurs none.
+      const mainlandAccounts = [...new Map([start, ...(outcome === 'mainland' ? [exit] : [])].map(item => [item.id, item])).values()];
+      for (const mainlandBank of mainlandAccounts) {
+        const service = mainlandBank.accountService; if (!service) continue;
+        const months = number(config.months), waived = config[service.waiverField] === true;
+        const freeValue = config[service.freeMonthsField];
+        if (!waived && freeValue != null && String(freeValue).trim() !== '' && (!knownFee(number(freeValue)) || !Number.isInteger(number(freeValue)))) return { error: service.name + '剩余免收费月数须为非负整数。' };
+        const waivedMonths = waived ? months : Math.min(months, number(config[service.freeMonthsField]) ?? 0);
+        const chargedMonths = months - waivedMonths;
+        accountItems.push({ region: 'mainland', bankId: mainlandBank.id, label: service.name + '期间管理费',
+          cny: service.monthlyCny * chargedMonths, monthlyCny: service.monthlyCny, months, chargedMonths, waivedMonths, waived });
+      }
+      const accountCny = accountItems.some(item => item.cny == null) ? null : accountItems.reduce((sum, item) => sum + item.cny, 0);
       const q = start.quotes[currency], quote = currency === 'CNH' ? 1 : own('startSell', isSelectedStart) ?? q?.sell;
       const missingSourceQuote = !positive(quote);
       const linked = ['hang', 'hsbc', 'sc'].includes(start.id);
@@ -712,7 +725,7 @@
         const knownInward = own('entryInwardHkd', isSelectedBank) ?? (swiftGo || bank.inwardHkd === 0 || bank.sameGroupWaiver && sameGroup ? 0 : null);
         rows.push({ key: 'entryInward', label: '香港首次汇入费', cny: knownInward == null ? null : knownInward * refs.HKD * count, step: 'entry',
           status: knownInward == null ? '须先确定外币到账额及适用汇入资费' : '' });
-        rows.push({ key: 'account', label: '香港账户期间管理费', cny: accountCny, step: 'spend', items: accountItems });
+        rows.push({ key: 'account', label: '银行账户期间管理费', cny: accountCny, step: 'spend', items: accountItems });
         return { error, errorStage: '01', missingQuote: currency, rows, steps, route, mainlandMethod, fxMode,
           refs, budgetCny: budget, pricingBasis: config.pricingBasis, sourceRemainderCny, start, bank, returning, exit, broker: provider, quoteFreshness: { source: false } };
       }
@@ -728,7 +741,7 @@
       steps.hongKong = balance;
       let trading = null, taxCny = 0;
       const downstreamError = (error, errorStage = '03', errorAction = errorStage) => ({ error, errorStage, errorAction, rows: [...rows,
-        { key: 'account', label: '香港账户期间管理费', cny: accountCny, step: 'spend', items: accountItems },
+        { key: 'account', label: '银行账户期间管理费', cny: accountCny, step: 'spend', items: accountItems },
         { key: 'extra', label: '开户及资产机会成本', cny: extraCny, step: 'spend' }], steps, startSell: quote, route, mainlandMethod, fxMode, refs, budgetCny: budget, pricingBasis: config.pricingBasis, sourceRemainderCny, start, bank, returning, exit, broker: provider,
         trading: trading?.error ? null : trading, taxCny, indicativeFx: rows.find(x => x.key === 'brokerSpread' && x.cny == null)?.label || '',
         quoteFreshness: { source: currency === 'CNH' || own('startSell', isSelectedStart) != null || quoteFresh(q, config.date) } });
@@ -883,7 +896,8 @@
       } else if (!['usd-balance', 'broker-balance'].includes(outcome)) return downstreamError('请选择有效的资金用途。', '04');
       steps.terminal = balance; steps.settledCny = balance * refs[unit];
       if (unquotedFundingFx) for (const row of rows) if (row.key === 'exitFx' && row.cny != null) row.estimate = '上游美元金额按参考汇率估算';
-      add('account', '香港账户期间管理费', accountCny, 'spend');
+      if (knownFee(accountCny) && accountCny + extraCny > balance * refs[unit] && balance >= 0) return downstreamError('当前余额不足以支付账户期间费及其他固定支出。', '04', 'account');
+      add('account', '银行账户期间管理费', accountCny, 'spend');
       rows[rows.length - 1].items = accountItems;
       add('extra', '开户及资产机会成本', extraCny, 'spend');
       rows[rows.length - 1].items = [{ label: '开户／赴港支出', cny: number(config.openingCny) ?? 0 }, { label: '另留资产机会成本', cny: extraCny - (number(config.openingCny) ?? 0) }];

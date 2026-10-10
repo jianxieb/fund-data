@@ -1095,6 +1095,31 @@ function evidenceLinks(ui, detail) {
   return new Set([...ui.modal().matchAll(/class="source-link"[^>]*href="([^"]+)"/g)].map(match => match[1]));
 }
 
+test('mainland monthly fees appear at their own bank node and keep their currency and waived months in details', () => {
+  const input = { ...currentRoute, startBank: 'hsbc', bank: 'hsbc', broker: 'hsbc', mainlandMethod: 'linked', outcome: 'broker-balance',
+    hsbcBalanceWaiver: true, cnHsbcFreeMonths: 6 };
+  const ui = moneyUi(input), html = ui.render();
+  const sourceNode = html.split('aria-label="内地出发银行"')[1].split('</section>')[0];
+  const hkNode = html.split('aria-label="香港收款银行"')[1].split('</section>')[0];
+  assert.match(sourceNode, /300 CNY\/月 × 6个月；另6个月免收 · 1800.00 CNY/);
+  assert.match(sourceNode, /data-money-check="cnHsbcFeeWaived"/);
+  assert.match(hkNode, /银行管理费 0.00 CNY/); assert.doesNotMatch(hkNode, /1800.00|cnHsbcFeeWaived/);
+  ui.act('detail', '', 'cn-bank-hsbc');
+  assert.match(ui.modal(), /汇丰中国 · 卓越理财 · 账户费用/);
+  assert.match(ui.modal(), /data-money-field="cnHsbcFreeMonths"/);
+  assert.match(ui.modal(), /300 CNY\/月 × 6个月；另6个月免收/);
+  assert.doesNotMatch(ui.modal(), /HSBC One|Trade25|300 HKD/);
+  assert.ok(evidenceLinks(ui, 'cn-bank-hsbc').has(D.sources.hsbcCnTariff.url));
+  assert.ok(!evidenceLinks(ui, 'bank-settings').has(D.sources.hsbcCnTariff.url));
+  ui.act('detail', '', 'all');
+  assert.match(ui.modal(), /300 CNY\/月 × 6个月；另6个月免收/);
+  const full = moneyUi({ ...input, cnHsbcFeeWaived: true }).render();
+  assert.match(full, /本持有期12个月均已满足免月费条件 · 0.00 CNY/);
+  const back = moneyUi({ ...input, startBank: 'boc', mainlandMethod: 'swift', outcome: 'mainland', exitBank: 'hang' });
+  assert.match(back.render(), /data-value="cn-bank-hang"/);
+  assert.ok(evidenceLinks(back, 'all').has(D.sources.hangCnTariff.url));
+});
+
 test('BOC observed correspondent cost is reference-priced without downgrading bank-confirmed fee waivers', () => {
   const config = { ...currentRoute, startBank: 'boc', bank: 'bochk', broker: 'za', mainlandMethod: 'boc-mobile', outcome: 'broker-balance' };
   const ui = moneyUi(config), html = ui.render(), r = M.calculatorJourney(config, D, cibQuotes).selected;

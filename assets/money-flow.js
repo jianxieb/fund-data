@@ -6,6 +6,7 @@
     months: '12', balanceHkd: '0', returnBalanceHkd: '0', profitUsd: '0', taxableCny: '', taxRate: '20', creditCny: '0', withdrawalIndex: '1', tradeFeeUsd: '',
     broker: 'za', buyOrders: '1', sellOrders: '1', sharePriceUsd: '100', trade25: false, chiefMonthly: false, usmartPromo: false, zaLv2: false,
     hsbcBalanceWaiver: false, scCnhAccount: false, otherTurnoverHkd: '0', usedPromoOrders: '0', usmartDays: '0', useVoucher: false, voucherScope: 'platform', voucherUsd: '0', voucherOrders: '1', voucherExpiry: '',
+    cnHsbcFeeWaived: false, cnHangFeeWaived: false, cnScFeeWaived: false, cnHsbcFreeMonths: '0', cnHangFreeMonths: '0', cnScFreeMonths: '0',
     senderFeeCny: '', entryMiddleCny: '', entryInwardHkd: '', depositHkd: '', depositOtherCny: '', inwardHkd: '', intermediaryCny: '',
     returnWireHkd: '', returnExtraCny: '', monthlyHkd: '', returnMonthlyHkd: '', startSell: '', entryPrice: '', exitPrice: '',
     usdCny: '', usdHkd: '', usdCnh: '', openingCny: '0', extraCapitalCny: '0', annualGapPct: '0' };
@@ -97,7 +98,8 @@
   function journeySources(s, r) {
     const stages = ['01', '03', 'trade', ...(state.outcome === 'broker-balance' ? [] : ['withdraw', '04'])];
     return [...new Set([...stages.flatMap(stage => actionSources(stage, s, r)),
-      ...bankAccountSet(s).flatMap(bank => evidenceFor('hkAccount', bank)), 'tax'])];
+      ...bankAccountSet(s).flatMap(bank => evidenceFor('hkAccount', bank)),
+      ...[s.start, ...(state.outcome === 'mainland' ? [s.exit] : [])].flatMap(bank => bank?.accountService?.sources || []), 'tax'])];
   }
   let cacheKey, cacheResult;
   function result() {
@@ -234,7 +236,7 @@
   }
   function detailRows(r, rows) {
     return '<div class="flow-cost-detail">' + rows.flatMap(item => (item.items?.length ? item.items : [item]).map(part =>
-      '<div><span>' + esc(part.label) + (part.months != null ? '<small>' + num(part.monthlyHkd) + ' HKD/月 × ' + num(part.months, 0) + '个月</small>' : '') +
+      '<div><span>' + esc(part.label) + (part.months != null ? '<small>' + esc(accountFeeBasis(part)) + '</small>' : '') +
       '</span><b>' + (part.cny == null ? esc(missingFeeStatus(r, item, part)) : (part.estimate ?? item.estimate ? '估算 ' : '') + cost(part.cny)) + '</b></div>')).join('') + '</div>';
   }
   function loss(r, keys, pending = '') {
@@ -300,13 +302,15 @@
     const sourceControls = '<div class="flow-count">' + select('count', '汇出笔数', [['1', '1笔'], ['2', '2笔'], ['3', '3笔'], ['4', '4笔'], ...(!['1', '2', '3', '4'].includes(String(state.count)) ? [[String(state.count), state.count + '笔']] : []), ['custom', '自定义笔数']], String(state.count)) +
       (r?.sourceRemainderCny > 1e-6 ? '<small>留在本账户 ' + cost(r.sourceRemainderCny) + '</small>' : '') + '</div>';
     const principal = nodeBalance(r, M.number(state.budgetCny), 'CNY', '人民币本金 · 含费用').replace('</div></div>', '</div>' + action('修改', 'detail', 'data-value="budget" aria-label="修改人民币本金" aria-haspopup="dialog"', 'text-link') + '</div>');
-    let html = node('01', 'startBank', '内地出发银行', s.start, principal, sourceControls);
+    let html = node('01', 'startBank', '内地出发银行', s.start, principal, sourceControls + mainlandAccountControl(s.start, r));
     html += edge(data, transferKeys, state.route === 'CNH' ? '人民币原币汇往香港' : '内地购' + currencyNames[state.route] + ' → 汇往香港',
       select('route', '汇出币种', Object.entries(currencyNames)) + select('mainlandMethod', '汇款渠道', entryMethods()), '01',
       state.mainlandMethod === 'linked' ? '两地同名已关联账户' : '' );
     const accounts = bankAccountSet(s), accountCost = row(r, 'account');
-    const chargingBanks = accountCost?.items?.filter(item => item.cny > 0).map(item => item.label.replace('期间管理费', '')).join('＋');
-    let accountOptions = action('账户使用 ' + esc(state.months) + '个月 · ' + esc(chargingBanks || '银行') + '管理费 ' + (accountCost ? cost(accountCost.cny) : accounts.map(b => num(b.monthlyHkd) + ' HKD/月').join('、')),
+    const hkAccountItems = accountCost?.items?.filter(item => item.region !== 'mainland');
+    const chargingBanks = hkAccountItems?.filter(item => item.cny > 0).map(item => item.label.replace('期间管理费', '')).join('＋');
+    const hkAccountCny = hkAccountItems?.some(item => item.cny == null) ? null : hkAccountItems?.reduce((sum, item) => sum + item.cny, 0);
+    let accountOptions = action('账户使用 ' + esc(state.months) + '个月 · ' + esc(chargingBanks || '银行') + '管理费 ' + (accountCost ? cost(hkAccountCny) : accounts.map(b => num(b.monthlyHkd) + ' HKD/月').join('、')),
       'detail', 'data-value="bank-settings" aria-haspopup="dialog"', 'flow-setting-button');
     if (accounts.some(b => b.id === 'hsbc')) accountOptions += checkbox('hsbcBalanceWaiver', 'HSBC One已满足免管理费条件');
     html += node('02', 'bank', '香港收款银行', s.bank, nodeBalance(r, steps.hongKong, state.route, '汇款到账', transferKeys), accountOptions);
@@ -325,7 +329,8 @@
       '</div>' + nodeBalance(r, steps.proceedsUsd, 'USD', '卖出后 · 税前', throughTrade) + '</section>';
     if (state.outcome !== 'broker-balance') html += edge(data, withdrawKeys, '出金 → ' + shortName(s.returning),
       action('本月第' + esc(state.withdrawalIndex) + '次出金', 'detail', 'data-value="profit-settings"', 'flow-setting-button'), 'withdraw');
-    if (state.outcome === 'mainland') html += edge(data, exitKeys, '汇回内地 → 美元结汇', account('exitBank', '内地收款银行', s.exit) + select('returnMethod', '汇回渠道', returnMethods()), '04',
+    if (state.outcome === 'mainland') html += edge(data, exitKeys, '汇回内地 → 美元结汇', account('exitBank', '内地收款银行', s.exit) + select('returnMethod', '汇回渠道', returnMethods()) +
+      (s.exit?.id === s.start?.id ? '' : mainlandAccountControl(s.exit, r)), '04',
       !data.error && !r?.indicativeExit && r?.exitPrice > 1 ? '1 USD = ' + quoteNum(r.exitPrice) + ' CNY' : '');
     if (state.outcome === 'cnh-card' || state.outcome === 'usd-card') html += edge(data, exitKeys, state.outcome === 'cnh-card' ? (row(r, 'exitFx')?.path ? '美元 → 港币 → 人民币 → 消费' : '美元换人民币 → 消费') : '美元余额 → 原币消费',
       state.outcome === 'cnh-card' && s.returning?.cnhCardRequiresHkid ? checkbox('scCnhAccount', '持有效香港身份证，已开通渣打人民币储蓄账户') : '', '04',
@@ -351,6 +356,18 @@
   }
   function bankAccountSet(s) {
     return [...new Map([s.bank, banks.find(b => b.id === s.broker.integratedBank), ...(state.outcome === 'broker-balance' ? [] : [s.returning])].filter(Boolean).map(b => [b.id, b])).values()];
+  }
+  function accountFeeBasis(item) {
+    if (item.region !== 'mainland') return num(item.monthlyHkd) + ' HKD/月 × ' + num(item.months, 0) + '个月';
+    if (item.waived) return '本持有期' + num(item.months, 0) + '个月均已满足免月费条件';
+    return num(item.monthlyCny, 0) + ' CNY/月 × ' + num(item.chargedMonths, 0) + '个月' + (item.waivedMonths > 0 ? '；另' + num(item.waivedMonths, 0) + '个月免收' : '');
+  }
+  function mainlandAccountControl(bank, r) {
+    const service = bank?.accountService; if (!service) return '';
+    const item = row(r, 'account')?.items?.find(item => item.region === 'mainland' && item.bankId === bank.id);
+    return '<div class="flow-bank-service">' + action((item ? accountFeeBasis(item) + ' · ' + cost(item.cny) : service.name + ' · ' + service.monthlyCny + ' CNY/月'),
+      'detail', 'data-value="cn-bank-' + bank.id + '" aria-label="' + esc(service.name + '账户费用与豁免') + '" aria-haspopup="dialog"', 'flow-setting-button') +
+      checkbox(service.waiverField, service.name + '本持有期均免月费') + '</div>';
   }
   function offers(s, r) {
     const id = s.broker.id;
@@ -392,7 +409,7 @@
     const finalHtml = (canBalance ? amount(r.net, r.currency) : lastPoint ? amount(lastPoint.amount, lastPoint.currency) : '<b>—</b>') +
       (r?.sourceRemainderCny > 1e-6 ? '<small>另留内地账户 ' + cost(r.sourceRemainderCny) + '</small>' : '');
     return '<div class="flow-result"><div><span>' + label + '</span><strong class="num">' + (rows.some(x => x.cny != null) ? partial ? cost(total) : pct(total / M.number(state.budgetCny)) : '—') + '</strong>' +
-      '<small>' + (rows.length ? partial ? data.error ? '第' + esc(r?.errorStage || data.errorStage || '01') + '步尚未完成' : '总损耗尚缺：' + esc(gaps.map(x => x.label).join('、') || r?.exitIssue || '有效成交报价') : cost(total) : esc(data.error || '选择有效本金和汇出报价')) + '</small></div><div class="flow-result-equation"><span>其中账户期间费</span><b>' +
+      '<small>' + (rows.length ? partial ? data.error ? r?.errorAction === 'account' ? esc(data.error) : '第' + esc(r?.errorStage || data.errorStage || '01') + '步尚未完成' : '总损耗尚缺：' + esc(gaps.map(x => x.label).join('、') || r?.exitIssue || '有效成交报价') : cost(total) : esc(data.error || '选择有效本金和汇出报价')) + '</small></div><div class="flow-result-equation"><span>其中账户期间费</span><b>' +
       (row(r, 'account') ? cost(row(r, 'account').cny) : '—') + '</b>' + (r?.taxCny ? '<small>另预留税款 ' + cost(r.taxCny) + '</small>' : '<small>已计入合计</small>') + '</div><div><span>' + balanceLabel + '</span>' + finalHtml +
       '</div><div class="flow-result-detail">' +
       action('全程明细', 'detail', 'data-value="cost"', 'text-link') + '</div></div>';
@@ -509,9 +526,19 @@
       title = '本金与汇出笔数'; content = '<div class="flow-form-grid">' + field('budgetCny', '人民币本金 · 含费用', 'CNY') + field('count', '汇出笔数', '笔') + '</div>';
     } else if (key === 'bank-settings') {
       title = '香港银行账户费用'; content = '<div class="flow-form-grid">' + field('months', '账户使用／持有月数', '月') + '</div>';
-      content += row(r, 'account')?.items.map(x => feeLine(x.label, x.cny, num(x.monthlyHkd) + ' HKD/月 × ' + num(x.months, 0) + '个月', num(x.cny / r.refs.HKD) + ' HKD')).join('') || '';
+      content += row(r, 'account')?.items.filter(x => x.region !== 'mainland').map(x => feeLine(x.label, x.cny, accountFeeBasis(x), num(x.cny / r.refs.HKD) + ' HKD')).join('') || '';
       if (bankAccountSet(s).some(b => b.id === 'hsbc')) content += '<p>HSBC One：过去三个月平均理财总值达到10,000 HKD即免管理费，包含汇丰所持美股市值，不仅是现金。2026年前开立的账户、香港身份证开户另获豁免。符合时勾选银行节点的免管理费条件；本次入金不代表过去三个月已达标。</p>';
       keys = bankAccountSet(s).flatMap(b => evidenceFor('hkAccount', b));
+    } else if (key.startsWith('cn-bank-')) {
+      const bank = mainland.find(bank => bank.id === key.slice(8)), service = bank?.accountService;
+      if (!service) return;
+      const item = row(r, 'account')?.items?.find(item => item.region === 'mainland' && item.bankId === bank.id);
+      title = service.name + ' · 账户费用';
+      content = '<div class="flow-form-grid">' + field('months', '账户使用／持有月数', '月') +
+        (state[service.waiverField] ? '' : field(service.freeMonthsField, '剩余免收费月数', '月')) + '</div>' +
+        (item ? feeLine(item.label, item.cny, accountFeeBasis(item)) : '') + checkbox(service.waiverField, '本持有期均已满足免月费条件') +
+        '<p>' + esc(service.condition) + '</p>';
+      keys = service.sources;
     } else if (key === 'trade-settings') {
       title = '美股买卖设置'; content = '<div class="flow-form-grid">' + field('sharePriceUsd', '买入均价', 'USD/股') + field('buyOrders', '买入笔数', '笔') + field('sellOrders', '卖出笔数', '笔') + '</div>';
       content += tradeLine(r, 'buy') + tradeLine(r, 'sell'); keys = actionSources('trade', s, r);

@@ -232,7 +232,7 @@ test('amounts between fee bands retain source cash instead of overstating fees o
   for (const [budgetCny, principal, charge, remainder] of [[2002, 2000, 2, 0], [2004, 2000, 2, 2], [5006, 5000, 5, 1], [10014, 10000, 10, 4]]) {
     const solved = M.remitPrincipal(budgetCny, tariff, 1, config.date, null);
     close(solved.principal, principal); close(solved.fee, charge); close(solved.remainderCny, remainder);
-    const r = run({ budgetCny, count: 1, startBank: 'hang', route: 'CNH', bank: 'bochk', mainlandMethod: 'swift', fxMode: 'bank', outcome: 'mainland' }).selected;
+    const r = run({ budgetCny, count: 1, months: 0, startBank: 'hang', route: 'CNH', bank: 'bochk', mainlandMethod: 'swift', fxMode: 'bank', outcome: 'mainland' }).selected;
     assert.ok(r); close(r.sourceRemainderCny, remainder); close(r.steps.mainlandForeign, principal);
     close(r.rows.find(x => x.key === 'sender').cny, charge);
     close(r.netCny, r.net * r.refs[r.currency] + remainder); ledger(r);
@@ -244,6 +244,53 @@ test('amounts between fee bands retain source cash instead of overstating fees o
   const above = M.remitPrincipal(1000010.25, sc, 1, '2027-01-01', null);
   assert.ok(above.principal > 1000000); close(above.principal + above.fee + above.remainderCny, 1000010.25);
   close(above.fee, above.principal * .00001);
+});
+
+test('mainland premium account fees use CNY, actual charged months and distinct bank-specific waivers', () => {
+  for (const [id, monthly] of [['hsbc', 300], ['hang', 180], ['sc', 150]]) {
+    const service = D.mainlandBanks.find(bank => bank.id === id).accountService;
+    const input = { startBank: id, route: 'CNH', mainlandMethod: 'swift', fxMode: 'bank', months: 12, hsbcBalanceWaiver: true };
+    for (const [changes, chargedMonths] of [[{}, 12], [{ [service.freeMonthsField]: 3 }, 9], [{ [service.freeMonthsField]: 24 }, 0], [{ [service.waiverField]: true }, 0], [{ months: 0 }, 0]]) {
+      const r = run({ ...input, ...changes }).selected;
+      assert.ok(r, id);
+      const account = r.rows.find(row => row.key === 'account');
+      const item = account.items.find(item => item.region === 'mainland');
+      close(item.monthlyCny, monthly); close(item.chargedMonths, chargedMonths); close(item.cny, monthly * chargedMonths);
+      close(account.cny, account.items.reduce((sum, item) => sum + item.cny, 0));
+      assert.equal(item.monthlyHkd, undefined); assert.equal(item.bankId, id);
+      ledger(r);
+    }
+    for (const value of [-1, .5, 'bad']) assert.match(run({ ...input, [service.freeMonthsField]: value }).error, /剩余免收费月数/);
+    const ownCny = run({ ...input, usdCny: 8, usdHkd: 7.5 }).selected.rows.find(row => row.key === 'account').items.find(item => item.region === 'mainland');
+    close(ownCny.cny, monthly * 12);
+  }
+});
+
+test('mainland service fees charge only used accounts once and remain separate from HSBC One', () => {
+  const input = { startBank: 'hsbc', bank: 'hsbc', returnBank: 'hsbc', exitBank: 'hsbc', broker: 'hsbc', route: 'USD', mainlandMethod: 'linked',
+    returnMethod: 'linked', outcome: 'mainland', months: 12, hsbcBalanceWaiver: false, trade25: true };
+  const same = run(input).selected, costs = same.rows.find(row => row.key === 'account');
+  assert.equal(costs.items.filter(item => item.region === 'mainland').length, 1);
+  close(costs.cny, 3600 + 12 * 100 * same.refs.HKD); ledger(same);
+  const hkFree = run({ ...input, hsbcBalanceWaiver: true }).selected;
+  close(hkFree.rows.find(row => row.key === 'account').cny, 3600);
+  const cnFree = run({ ...input, cnHsbcFeeWaived: true }).selected;
+  close(cnFree.rows.find(row => row.key === 'account').cny, 12 * 100 * same.refs.HKD);
+  close(cnFree.rows.find(row => row.key === 'brokerAccount').cny, 0);
+  const separate = run({ ...input, exitBank: 'hang', returnMethod: 'swift', hsbcBalanceWaiver: true }).selected;
+  close(separate.rows.find(row => row.key === 'account').cny, 5760); ledger(separate);
+  const unused = run({ ...input, startBank: 'boc', mainlandMethod: 'swift', exitBank: 'hang', outcome: 'broker-balance', hsbcBalanceWaiver: true }).selected;
+  assert.ok(!unused.rows.find(row => row.key === 'account').items.some(item => item.region === 'mainland'));
+  const missing = run({ ...input, startBank: 'sc', bank: 'bochk', mainlandMethod: 'swift', outcome: 'broker-balance' }).partial;
+  close(missing.rows.find(row => row.key === 'account').items.find(item => item.region === 'mainland').cny, 1800);
+  const insufficient = run({ budgetCny: 2004, count: 1, startBank: 'hang', route: 'CNH', fxMode: 'bank', months: 12 });
+  assert.match(insufficient.error, /不足以支付账户期间费/);
+  close(insufficient.partial.rows.find(row => row.key === 'account').cny, 2160);
+  close(insufficient.partial.sourceRemainderCny, 2);
+  assert.ok(insufficient.partial.steps.proceedsUsd > 0);
+  assert.equal(insufficient.partial.rows.filter(row => row.key === 'account').length, 1);
+  assert.ok(run({ cnScFreeMonths: -1, outcome: 'broker-balance' }).selected);
+  assert.ok(run({ startBank: 'sc', route: 'CNH', fxMode: 'bank', cnScFeeWaived: true, cnScFreeMonths: -1 }).selected);
 });
 
 test('stale quotes keep tariff data but cannot claim a complete quote; missing quote preserves selection', () => {

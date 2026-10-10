@@ -220,3 +220,17 @@ CNY原币到港成为CNH时第一步没有换汇差额；该人民币基准差�
 从[渣打官网收费入口](https://www.sc.com/hk/help/service-charges/)的实际链接取得[2026年10月英文收费表](https://av.sc.com/hk/content/docs/hk-service-charges-en.pdf)。印刷第5页分别列支票买入、外汇托收；第7页为个人CHATS／电汇汇入免费，第9页为每日前30张批量支票存入免费。这些科目不能直接推导“致富的本地USD支票存入渣打必定免费”，该项仍缺本地美元交换票的明确适用规则；没有借此将其改为0。
 
 从[中行现行价目总目录](https://www.boc.cn/custserv/fd5/)继续核对[第一章监管减免](https://pic.bankofchina.com/bocappd/pricelist/202511/P020251110647053422170.pdf)、[第五章电子银行](https://pic.bankofchina.com/bocappd/pricelist/202511/P020251110646093390083.pdf)、[其他综合服务](https://pic.bankofchina.com/bocappd/pricelist/202511/P020251110645832542692.pdf)及[2023年减费公告](https://www.boc.cn/custserv/bi2/bi2o/202310/t20231030_23962499.html)。没有找到个人境外汇入收款费的明确免费条款；电子银行章节说明转账资费归对应业务表，未另给2026年手机境外中行双免条款。目录中没有列出某项不能当作已取得该项0费率的直接证据。现有同名香港基本汇入豁免不受这次反向收款核查影响。
+
+### 内地高等级账户期间费用（2026-10-11补核）
+
+此前只计香港银行月费，遗漏了所选内地账户等级的月费，现独立计入人民币期间成本：
+
+| 所选账户 | 标准月费 | 依据与主要豁免 |
+| --- | --- | --- |
+| 汇丰中国卓越理财 | 300 CNY | [2026-09-29价目表](https://www.hsbc.com.cn/content/dam/hsbc/cn/docs/document-download/tariff-of-accouts-and-services.pdf)第6页2.1.1；第2页注意事项3及第21页优惠。通常上月日均50万元，已确认境外卓越身份、雇员计划等另有豁免；不是持有HSBC One就自动合格。 |
+| 恒生中国优越理财 | 180 CNY | [2026年2月价目表](https://www.hangseng.com.cn/content/dam/wpb/hacn/home/pdf/tariff_personal_banking.pdf)第4页3.2；月内日均50万元，首次开户前6个自然月、符合按揭优惠期间免收。 |
+| 渣打中国优先理财 | 150 CNY | [2026 Version 2价目表](https://av.sc.com/cn/content/docs/cn-cb-tariff-zh.pdf)第3页及[2026优惠表](https://av.sc.com/cn/content/docs/cn-personal-bank-charges-preferential.pdf)第1页；符合优先理财资格等条件免收，首次开户／升级3个月、指定新客户12个月等优惠不可累加。 |
+
+每家银行使用独立豁免状态；标准费用默认计入，不能从本次汇出金额推导月日均资格。剩余免收费月数只抵扣本次持有期内月份，不将阶段性优惠当作终身豁免，也不从当前日期假定账户刚开立。选择同一内地银行出发并收回仅计算一次；终点留在境外时不计未使用的内地收款账户。香港银行费、Trade25及证券托管费分别保留。
+
+期间费用属于整个测算期的持有成本：各转移节点展示当次动作后的余额，底部最终余额再扣除期间费及其他已计固定支出；不是在汇款当天实际一次扣收全部月费。原币CNY直接累计，HKD再按参考价折合，不能将内地月费误作港币。余额不足覆盖期间费时仍保留已发生步骤、费用和最后可计余额，不能清空全页。
