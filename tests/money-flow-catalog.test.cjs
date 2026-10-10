@@ -104,7 +104,7 @@ test('HSBC China standard wire is priced separately from the free linked service
   ledger(ordinary);
   const linked = run({ startBank: 'hsbc', bank: 'hsbc', mainlandMethod: 'linked' }).selected;
   close(linked.rows.find(x => x.key === 'sender').cny, 0);
-  for (const exitBank of ['cib', 'hsbc']) {
+  for (const exitBank of ['cib', 'hsbc', 'comm']) {
     const back = run({ outcome: 'mainland', returnBank: 'bochk', exitBank, returnMethod: 'swift' }).selected;
     const item = back.rows.find(x => x.key === 'returnOther').items.find(x => x.label.endsWith('USD收款费'));
     close(item.cny, 0);
