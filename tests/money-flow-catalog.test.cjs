@@ -82,6 +82,32 @@ test('source accounts, Hong Kong banks, stock venues and every currency have ind
   assert.match(M.calculatorIssue({ ...base, startBank: 'abc' }, D), /农业银行/);
 });
 
+test('ICBC optional USD full-amount service adds 25 USD per transfer without waiving normal sender or receiving tariffs', () => {
+  const bank = D.mainlandBanks.find(x => x.id === 'icbc');
+  assert.equal(bank.fullAmountUsd, 25);
+  const quotes = structuredClone(Q);
+  quotes.banks.icbc = { quotes: { USD: { buy: 6.69, sell: 6.71, asOf: '2026-10-10 10:00:00' } } };
+  const icbcRun = changes => M.calculatorJourney({ ...base, startBank: 'icbc', ...changes }, D, quotes);
+  const ordinaryConfig = M.calculatorRoute({ ...base, startBank: 'icbc', mainlandMethod: '' });
+  assert.equal(ordinaryConfig.mainlandMethod, 'swift');
+  assert.equal(icbcRun(ordinaryConfig).selected.rows.find(x => x.key === 'entryMiddle').cny, null);
+  for (const receiving of D.calculator.hkBanks) for (const broker of D.calculator.brokers) for (const count of [1, 2, 3]) {
+    const r = icbcRun({ bank: receiving, broker, count, mainlandMethod: 'full', depositMethod: 'chats' }).selected;
+    assert.ok(r, [receiving, broker, count].join('/'));
+    const sender = r.rows.find(x => x.key === 'sender');
+    const supplemental = sender.items.find(x => x.label.startsWith('全额到账附加费'));
+    close(supplemental.cny, count * 25 * r.startSell);
+    close(sender.items.find(x => x.label === '汇出电讯费').cny, count * 80);
+    close(sender.items.find(x => x.label === '汇出手续费').cny, count * Math.min(208, Math.max(40, r.steps.mainlandForeign * r.startSell / count * .0008)));
+    close(sender.items.reduce((sum, item) => sum + item.cny, 0), sender.cny);
+    close(r.steps.mainlandForeign * r.startSell + sender.cny, 100000);
+    close(r.rows.find(x => x.key === 'entryMiddle').cny, 0);
+    close(r.rows.find(x => x.key === 'entryInward').cny, receiving === 'bochk' ? count * 60 * r.refs.HKD : 0);
+    ledger(r);
+  }
+  for (const route of ['CNH', 'HKD']) assert.match(run({ startBank: 'icbc', route, fxMode: 'bank', mainlandMethod: 'full' }).error, /USD全额到账/);
+});
+
 test('the screenshot uses one benchmark: HSBC 0.451% equals 450.87 CNY; the best CIB purchase is zero', () => {
   const r = run({ startBank: 'hsbc', bank: 'hsbc', broker: 'hsbc', mainlandMethod: 'linked', trade25: true }).selected;
   const entry = r.rows.find(x => x.key === 'entryFx');
@@ -296,7 +322,7 @@ test('each stock-venue recommendation matches an independent exhaustive route co
   data.calculator.mainland = ['boc', 'cib', 'hsbc']; data.calculator.hkBanks = ['bochk', 'hsbc'];
   const input = { ...base, count: 2, trade25: true, hsbcBalanceWaiver: true, outcome: 'broker-balance' }, minimum = new Map();
   for (const startBank of data.calculator.mainland) for (const bank of data.calculator.hkBanks) for (const broker of data.calculator.brokers)
-    for (const route of ['USD', 'HKD', 'CNH']) for (const mainlandMethod of ['swift', 'boc-mobile', 'linked', 'cib-go'])
+    for (const route of ['USD', 'HKD', 'CNH']) for (const mainlandMethod of ['swift', 'boc-mobile', 'linked', 'cib-go', 'full'])
       for (const fxMode of ['manual', 'auto', 'bank']) for (const depositMethod of ['internal', 'chats', 'fps', 'edda', 'swift']) {
         const r = M.calculatorJourney({ ...input, startBank, bank, broker, route, mainlandMethod, fxMode, depositMethod }, data, Q).selected;
         if (r?.complete && r.quotedCore && (!minimum.has(broker) || r.costCny < minimum.get(broker))) minimum.set(broker, r.costCny);

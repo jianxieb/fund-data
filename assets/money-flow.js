@@ -73,6 +73,7 @@
     const values = [['swift', s.start?.id === 'cib' && state.route !== 'CNH' ? '普通汇款 · 寰宇人生卡' : tariff?.tariffChannel || '普通汇款 · 公开标准价']];
     if (s.start?.id === 'boc' && s.bank?.id === 'bochk' && state.route !== 'CNH') values.unshift(['boc-mobile', '手机银行 · 向同名境外中行汇款']);
     if (s.start?.id === 'cib' && state.route !== 'CNH') values.push(['cib-go', '小额全额到账 · 另加50 CNY/笔']);
+    if (state.route === 'USD' && s.start?.fullAmountUsd != null) values.push(['full', '美元全额到账 · 另加' + s.start.fullAmountUsd + ' USD/笔']);
     if (['hsbc', 'hang', 'sc'].includes(s.start?.id) && s.start.group === s.bank?.group && (!s.start.linkedCurrencies || s.start.linkedCurrencies.includes(state.route))) values.unshift(['linked', ({ hsbc: '同名环球转账', hang: '优越理财 · 同名跨域转账', sc: '优先理财 · 同名速汇' })[s.start.id] + ' · 免费']);
     return values;
   }
@@ -113,7 +114,7 @@
       const r = p.result, config = { ...p.config };
       if (state.outcome === 'broker-balance') config.returnBank = state.returnBank;
       if (state.outcome !== 'mainland') config.exitBank = state.exitBank;
-      const channel = ({ 'boc-mobile': '手机同名汇款', linked: '两地同名转账', 'cib-go': '全额到账50元/笔', swift: '普通电汇' })[r.mainlandMethod];
+      const channel = ({ 'boc-mobile': '手机同名汇款', linked: '两地同名转账', 'cib-go': '全额到账50元/笔', full: '美元全额到账', swift: '普通电汇' })[r.mainlandMethod];
       const funding = r.broker.id === 'ibkr' && r.depositMethod === 'chats' ? '香港花旗／渣打收款指示' :
         r.route !== 'USD' ? (r.fxMode === 'bank' ? routeName(r.bank.id, 'bank') : 'IBKR') + '换美元' : r.depositMethod === 'internal' ? '同行交收' : '本地美元转账';
       const end = state.outcome === 'broker-balance' ? '美元留在' + routeName(r.broker.id, 'broker') :
@@ -271,6 +272,7 @@
   }
   function transferHint() {
     if (state.mainlandMethod === 'cib-go') return '附加服务：每笔≤等值10,000 USD，仅限App提供此服务的收款账户；包含境外行费用。';
+    if (state.mainlandMethod === 'full') return '美元全额到账附加服务按笔收费，汇出手续费、电讯费及收款行本行汇入费分别列示。';
     if (state.mainlandMethod === 'boc-mobile') return '双免按2026年公开报道情景计算；中银香港同名汇入基本费已获官网确认。';
     if (state.mainlandMethod === 'linked') return state.startBank === 'sc' ? '适用于渣打优先理财、两地同名账户及指定渠道。' : state.startBank === 'hang' ? '适用于恒生中国优越理财，经跨域转账页面汇往同名恒生香港账户；优进理财的累计3次本行费用优惠不适用此项。' : '适用于已连通的两地同名账户及指定转账页面。';
     return '';

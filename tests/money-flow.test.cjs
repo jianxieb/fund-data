@@ -1215,6 +1215,41 @@ test('RMB source is not described as free when its sender tariff remains unprice
   ui.act('detail', '', 'cost'); assert.match(ui.modal(), /人民币资费未收录/);
 });
 
+test('ICBC full-amount service is explicitly selected, visibly priced and cleared on currency changes', () => {
+  const quotes = structuredClone(cibQuotes);
+  quotes.banks.icbc = { quotes: { USD: { buy: 6.69, sell: 6.71, asOf: '2026-10-09 10:00:00' } } };
+  const ui = moneyUi({ ...currentRoute, startBank: 'icbc', bank: 'bochk', broker: 'za', count: 1, mainlandMethod: 'swift', route: 'USD', outcome: 'broker-balance' }, quotes);
+  ui.render(); ui.act('control-pick', '', 'mainlandMethod');
+  assert.match(ui.modal(), /美元全额到账 · 另加25 USD\/笔/);
+  ui.act('choose', 'mainlandMethod', 'full');
+  const html = ui.render();
+  assert.match(html, /美元全额到账 · 另加25 USD\/笔/);
+  assert.match(html, /全额到账附加费 · 25 USD/);
+  assert.equal(ui.saved().count, 1);
+  assert.equal(ui.saved().bank, 'bochk'); assert.equal(ui.saved().broker, 'za');
+  ui.act('detail', '', 'edge-01'); assert.match(ui.modal(), /美元全额到账附加服务按笔收费/);
+  ui.act('choose', 'route', 'HKD');
+  assert.equal(ui.saved().mainlandMethod, 'swift');
+  assert.doesNotMatch(ui.render(), /美元全额到账 · 另加25 USD\/笔/);
+});
+
+test('a missing ICBC quote preserves the fixed telegram tariff and named full-amount service instead of clearing known fees', () => {
+  const config = { ...currentRoute, startBank: 'icbc', bank: 'bochk', broker: 'za', count: 1, mainlandMethod: 'full', route: 'USD', outcome: 'broker-balance' };
+  const q = structuredClone(cibQuotes); delete q.banks.icbc;
+  const result = M.calculatorJourney(config, D, q), r = result.partial;
+  assert.match(result.error, /工商银行的USD现汇卖出价/);
+  const sender = r.rows.find(x => x.key === 'sender');
+  assert.ok(sender.estimate);
+  const telegram = sender.items.find(x => x.label === '汇出电讯费');
+  close(telegram.cny, 80); assert.equal(telegram.estimate, false);
+  assert.ok(sender.items.find(x => x.label === '全额到账附加费 · 25 USD').estimate);
+  assert.equal(r.rows.find(x => x.key === 'entryMiddle').cny, 0);
+  assert.equal(r.steps.mainlandForeign, undefined);
+  const ui = moneyUi(config, q), html = ui.render();
+  assert.match(html, /汇出电讯费/); assert.match(html, /全额到账附加费 · 25 USD/);
+  assert.match(html, /费用小计 · 含估算/); assert.doesNotMatch(html, /NaN|undefined/);
+});
+
 test('CIB RMB channel, picker and fee detail agree without an FX-only free-transfer label', () => {
   const ui = moneyUi({ ...currentRoute, startBank: 'cib', bank: 'bochk', route: 'CNH', count: 1, mainlandMethod: 'swift', senderFeeCny: '' });
   const html = ui.render();

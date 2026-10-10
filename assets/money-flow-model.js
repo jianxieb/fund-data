@@ -608,8 +608,8 @@
         (!currencyTariff.currencies || currencyTariff.currencies.includes(currency)) && currencyTariff;
       const senderBank = standardTariff ? { ...start, ...standardTariff } : start;
       const unknownSender = effectiveSender == null && (bocMobile || paymentConnect || fee(senderBank, 0, used + 1, config.date) == null || (linked && mainlandMethod !== 'linked' && !standardTariff) || (currency === 'CNH' && mainlandMethod !== 'linked' && !senderBank.cnhTariff && start.id !== 'abc'));
-      if (missingSourceQuote && mainlandMethod === 'full') return { error: start.name + '的' + currency + '现汇卖出价尚未取得；到账金额暂不可算。', missingQuote: currency };
-      const fullFee = swiftGo ? start.swiftGoCny : mainlandMethod === 'full' ? start.fullAmountUsd * quote : 0;
+      const unquotedFullAmount = missingSourceQuote && mainlandMethod === 'full';
+      const fullFee = swiftGo ? start.swiftGoCny : mainlandMethod === 'full' ? start.fullAmountUsd * (positive(quote) ? quote : refs.USD) : 0;
       let principal = 0, sender = 0, commission = 0, telegram = 0, sourceRemainderCny = 0;
       const senderKey = [start.id, currency, quote, mainlandMethod, senderOverride, unknownSender].join(':');
       const cachedSender = senderCache.get(senderKey);
@@ -681,6 +681,10 @@
       rows[0].items = unknownSender ? [{ label: senderLabel + '汇出手续费', cny: null }, { label: senderLabel + '电讯费', cny: null }] :
         senderOverride == null ? [{ label: '汇出手续费', cny: commission, evidence: reportedMobile ? '2026公开报道' : '' }, { label: '汇出电讯费', cny: telegram, evidence: reportedMobile ? '2026公开报道' : '' }] : [{ label: '本人报价：汇出手续费及电讯费', cny: senderOverride * count }];
       if (fullFee) rows[0].items.push({ label: swiftGo ? 'SWIFT GO全额到账 · 50 CNY/笔' : '全额到账附加费 · ' + (start.fullAmountUsd * count) + ' USD', cny: fullFee * count });
+      if (unquotedFullAmount) {
+        rows[0].estimate = '尚缺内地购汇价，附加服务折人民币及汇出手续费按参考汇率估算';
+        rows[0].items.forEach(item => { item.estimate = item.label === '汇出电讯费' || senderOverride != null && item.label.startsWith('本人报价') ? false : rows[0].estimate; });
+      }
       if (paymentConnect) Object.assign(rows[0], { label: '跨境支付通汇出服务费', items: [{ label: senderOverride == null ? '跨境支付通本次汇出服务费' : '本人报价：跨境支付通汇出服务费', cny: senderOverride == null ? null : senderOverride * count }] });
       if (unknownSender) {
         const rangeCny = mainlandMethod === 'swift' ? senderFeeRange(start, budget, count, used, config.date, currency) : null;
@@ -1120,6 +1124,7 @@
       if (startBank === 'boc' && bank === 'bochk' && route !== 'CNH') methods.push('boc-mobile');
       if (['hsbc', 'hang', 'sc'].includes(startBank) && start.group === incoming.group && (!start.linkedCurrencies || start.linkedCurrencies.includes(route))) methods.push('linked');
       if (startBank === 'cib' && route !== 'CNH') methods.push('cib-go');
+      if (route === 'USD' && knownFee(start.fullAmountUsd)) methods.push('full');
       for (const mainlandMethod of methods) {
         const entry = { startBank, bank, route, mainlandMethod };
         const probe = run({ ...entry, broker: 'za', returnBank: bank, exitBank: startBank, outcome: 'broker-balance', fxMode: 'bank' });
