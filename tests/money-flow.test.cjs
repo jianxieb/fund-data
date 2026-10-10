@@ -1358,3 +1358,18 @@ test('SC RMB debit eligibility is separate from USD debit support and preserves 
   assert.equal((html.match(/渣打人民币原币消费须持有效香港身份证/g) || []).length, 1);
   assert.doesNotMatch(moneyUi({ ...input, outcome: 'usd-card' }).render(), /data-money-check="scCnhAccount"/);
 });
+
+
+test('SC Priority standard overseas FX remittance waives sender fees without waiving other banks', () => {
+  for (const route of ['USD', 'HKD']) {
+    const input = { ...currentRoute, startBank: 'sc', bank: 'bochk', broker: 'za', route, mainlandMethod: 'swift',
+      outcome: 'broker-balance', senderFeeCny: '', entryMiddleCny: '' };
+    const data = M.calculatorJourney(input, D, cibQuotes), r = data.selected || data.partial;
+    close(r.rows.find(x => x.key === 'sender').cny, 0);
+    assert.equal(r.rows.find(x => x.key === 'entryMiddle').cny, null);
+    assert.equal(data.partial.missingQuote, route);
+  }
+  const cnh = M.calculatorJourney({ ...currentRoute, startBank: 'sc', bank: 'bochk', broker: 'za', route: 'CNH', fxMode: 'bank',
+    outcome: 'broker-balance', mainlandMethod: 'swift', senderFeeCny: '' }, D, cibQuotes).selected;
+  assert.equal(cnh.rows.find(x => x.key === 'sender').cny, null);
+});

@@ -571,7 +571,8 @@
       // scenarios. Public reporting does not establish a nationwide guarantee.
       const reportedMobile = bocMobile && !!data.bocMobileEvidence;
       const effectiveSender = senderOverride ?? (reportedMobile ? data.bocMobileEvidence.feeCny + data.bocMobileEvidence.telegramCny : null);
-      const standardTariff = mainlandMethod === 'swift' && start.standardTariff;
+      const standardTariff = mainlandMethod === 'swift' && start.standardTariff &&
+        (!start.standardTariff.currencies || start.standardTariff.currencies.includes(currency)) && start.standardTariff;
       const senderBank = standardTariff ? { ...start, ...standardTariff } : start;
       const unknownSender = effectiveSender == null && (bocMobile || paymentConnect || fee(senderBank, 0, used + 1, config.date) == null || (linked && mainlandMethod !== 'linked' && !standardTariff) || (currency === 'CNH' && !sameGroup && !senderBank.cnhTariff && start.id !== 'abc'));
       if (missingSourceQuote && mainlandMethod === 'full') return { error: start.name + '的' + currency + '现汇卖出价尚未取得；到账金额暂不可算。', missingQuote: currency };
