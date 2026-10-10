@@ -1067,6 +1067,23 @@ function moneyUi(input, quotes = cibQuotes) {
     act: (action, field, value) => context.window.ChanghengMoneyFlow.handleAction({ dataset: { action: 'money-flow-' + action, field, value } }) };
 }
 
+test('saved missing or retired source banks leave a usable selector for every remittance currency', () => {
+  for (const startBank of ['', 'retired-bank', 'abc']) for (const route of ['USD', 'HKD', 'CNH']) {
+    const ui = moneyUi({ ...currentRoute, startBank, route, outcome: 'broker-balance' });
+    const html = ui.render();
+    assert.match(html, /请选择目录中的出发银行/);
+    assert.match(html, /100000.00 <small>CNY/);
+    assert.match(html, /data-value="startBank"/);
+    ui.act('pick', '', 'startBank');
+    assert.match(ui.modal(), /中国银行/);
+    assert.doesNotMatch(ui.modal(), /农业银行/);
+    ui.act('choose', 'startBank', 'boc');
+    assert.doesNotMatch(ui.render(), /请选择目录中的出发银行/);
+    assert.equal(ui.saved().bank, currentRoute.bank);
+    assert.equal(ui.saved().broker, currentRoute.broker);
+  }
+});
+
 test('all nodes, action losses, balance summaries and quick plans are visible without step navigation', () => {
   const ui = moneyUi({ ...currentRoute, outcome: 'broker-balance', activeStep: '04' }), html = ui.render();
   assert.equal((html.match(/data-flow-stage=/g) || []).length, 4);

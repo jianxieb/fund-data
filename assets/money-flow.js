@@ -77,8 +77,8 @@
   function entryMethods() {
     const s = selected(), tariff = state.route === 'CNH' && typeof s.start?.cnhTariff === 'object' ? s.start.cnhTariff : s.start;
     let channel = s.start?.id === 'cib' ? '普通汇款 · 寰宇人生卡' : tariff?.tariffChannel || '普通汇款 · 公开标准价';
-    if (state.route === 'CNH') channel = typeof s.start.cnhTariff === 'object' ? tariff.tariffChannel :
-      s.start.cnhTariff ? '人民币跨境电汇 · 公开标准价' : '人民币跨境汇款';
+    if (state.route === 'CNH') channel = typeof s.start?.cnhTariff === 'object' ? tariff.tariffChannel :
+      s.start?.cnhTariff ? '人民币跨境电汇 · 公开标准价' : '人民币跨境汇款';
     const values = [['swift', channel]];
     if (s.start?.id === 'boc' && s.bank?.id === 'bochk' && state.route !== 'CNH') values.unshift(['boc-mobile', '手机银行 · 向同名境外中行汇款']);
     if (s.start?.id === 'cib' && state.route !== 'CNH') values.push(['cib-go', '小额全额到账 · 另加50 CNY/笔']);
