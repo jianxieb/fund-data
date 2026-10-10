@@ -1075,6 +1075,8 @@ test('saved missing or retired source banks leave a usable selector for every re
     assert.match(html, /请选择目录中的出发银行/);
     assert.match(html, /100000.00 <small>CNY/);
     assert.match(html, /data-value="startBank"/);
+    ui.act('detail', '', 'edge-01');
+    assert.match(ui.modal(), /请选择目录中的出发银行/);
     ui.act('pick', '', 'startBank');
     assert.match(ui.modal(), /中国银行/);
     assert.doesNotMatch(ui.modal(), /农业银行/);
@@ -1083,6 +1085,78 @@ test('saved missing or retired source banks leave a usable selector for every re
     assert.equal(ui.saved().bank, currentRoute.bank);
     assert.equal(ui.saved().broker, currentRoute.broker);
   }
+});
+
+function evidenceLinks(ui, detail) {
+  ui.act('detail', '', detail);
+  return new Set([...ui.modal().matchAll(/class="source-link"[^>]*href="([^"]+)"/g)].map(match => match[1]));
+}
+
+test('remittance evidence follows its own channel and excludes stock, card and expired offer sources', () => {
+  const ui = moneyUi({ ...currentRoute, startBank: 'boc', bank: 'bochk', broker: 'za', mainlandMethod: 'boc-mobile', outcome: 'broker-balance' });
+  ui.render();
+  const mobile = evidenceLinks(ui, 'edge-01');
+  for (const key of ['bocMobile2026', 'bocMobileUsdGuide', 'bocFx', 'bochkSame']) assert.ok(mobile.has(D.sources[key].url), key);
+  for (const key of ['bocMobileHistory', 'bocPaymentConnect', 'bocPaymentGuide', 'zaStocks', 'zaCard', 'secFees']) assert.ok(!mobile.has(D.sources[key].url), key);
+  ui.act('choose', 'mainlandMethod', 'swift');
+  const ordinary = evidenceLinks(ui, 'edge-01');
+  assert.ok(ordinary.has(D.sources.boc.url));
+  assert.ok(!ordinary.has(D.sources.bocMobile2026.url));
+  ui.act('choose', 'startBank', 'cib'); ui.act('choose', 'route', 'CNH');
+  const rmb = evidenceLinks(ui, 'edge-01');
+  assert.ok(rmb.has(D.sources.cib.url));
+  for (const key of ['cibCard', 'cibGo', 'cibFx']) assert.ok(!rmb.has(D.sources[key].url), key);
+});
+
+test('offer eligibility is readable before enabling it and bank management evidence stays with banks', () => {
+  for (const [broker, offer] of [['hsbc', 'trade25Age'], ['za', 'zaStockService'], ['chief', 'chiefMonthlyTerms'], ['usmart', 'usmartPromo']]) {
+    const ui = moneyUi({ ...currentRoute, bank: 'bochk', broker, outcome: 'broker-balance', trade25: false, zaLv2: false, chiefMonthly: false, usmartPromo: false });
+    ui.render();
+    assert.ok(evidenceLinks(ui, 'offers').has(D.sources[offer].url), broker);
+    const trade = evidenceLinks(ui, 'edge-trade');
+    assert.ok(trade.has(D.sources.secFees.url));
+    assert.ok(!trade.has(D.sources.hsbcOne.url));
+    assert.ok(!trade.has(D.sources.bocMobile2026.url));
+    assert.ok(!trade.has(D.sources[offer].url), 'inactive offer: ' + broker);
+    if (broker === 'hsbc') {
+      const bank = evidenceLinks(ui, 'bank-settings');
+      assert.ok(bank.has(D.sources.hsbcOne.url));
+      assert.ok(bank.has(D.sources.hsbcOneBalance.url));
+      assert.ok(!bank.has(D.sources.trade25.url));
+      assert.ok(!bank.has(D.sources.secFees.url));
+    }
+  }
+});
+
+test('funding evidence distinguishes IBKR local USD instructions and the selected bank FX', () => {
+  const ui = moneyUi({ ...currentRoute, bank: 'bochk', broker: 'ibkr', depositMethod: 'chats', outcome: 'broker-balance' });
+  ui.render();
+  const local = evidenceLinks(ui, 'edge-03');
+  for (const key of ['ibDeposits', 'ibLocalUsd', 'ibLocalCiti', 'bochk']) assert.ok(local.has(D.sources[key].url), key);
+  ui.act('choose', 'depositMethod', 'swift');
+  const overseas = evidenceLinks(ui, 'edge-03');
+  for (const key of ['ibLocalUsd', 'ibLocalCiti', 'ibEdda']) assert.ok(!overseas.has(D.sources[key].url), key);
+  ui.act('choose', 'broker', 'hsbc'); ui.act('choose', 'bank', 'hsbc'); ui.act('choose', 'route', 'HKD');
+  const bankFx = evidenceLinks(ui, 'edge-03');
+  assert.ok(bankFx.has(D.sources.hsbcHkFx.url));
+  assert.ok(!bankFx.has(D.sources.ibFx.url));
+  assert.ok(!bankFx.has(D.sources.bochkUsdFx.url));
+});
+
+test('return and full-journey evidence include the actual receiving bank rather than the departure bank', () => {
+  const ui = moneyUi({ ...currentRoute, startBank: 'boc', bank: 'bochk', broker: 'chief', returnBank: 'bochk', exitBank: 'cib', outcome: 'mainland' });
+  ui.render();
+  const returning = evidenceLinks(ui, 'edge-04');
+  for (const key of ['cibInward', 'cibFx', 'bochk']) assert.ok(returning.has(D.sources[key].url), key);
+  for (const key of ['bocMobile2026', 'bocFx', 'chiefStocks']) assert.ok(!returning.has(D.sources[key].url), key);
+  const all = evidenceLinks(ui, 'all');
+  assert.ok(all.has(D.sources.cibInward.url));
+  assert.ok(all.has(D.sources.chiefStocks.url));
+  ui.act('choose', 'returnBank', 'hsbc'); ui.act('choose', 'outcome', 'cnh-card');
+  const card = evidenceLinks(ui, 'edge-04');
+  for (const key of ['hsbcCard', 'hsbcHkFx']) assert.ok(card.has(D.sources[key].url), key);
+  for (const key of ['bochkCard', 'bochkUsdFx', 'cibInward', 'cibFx']) assert.ok(!card.has(D.sources[key].url), key);
+  assert.ok(!evidenceLinks(ui, 'all').has(D.sources.cibInward.url));
 });
 
 test('all nodes, action losses, balance summaries and quick plans are visible without step navigation', () => {
