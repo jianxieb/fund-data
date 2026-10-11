@@ -650,7 +650,7 @@ test('other brokers never inherit IBKR FX commissions; Chief cheque pricing foll
   const bank = M.journeyPlans({ ...mainlandConfig, broker: 'chief', bank: 'bochk', route: 'CNH', fxMode: 'bank', tradeFeeUsd: '' }, D, richQuotes).selected;
   assert.ok(bank); close(bank.rows.find(row => row.key === 'brokerFx').cny, 0);
   const cheque = M.journeyPlans({ ...mainlandConfig, broker: 'chief', returnBank: 'sc', returnMethod: 'swift', tradeFeeUsd: '', inwardHkd: '' }, D, richQuotes).selected;
-  assert.equal(cheque.rows.find(row => row.key === 'returnInward').cny, null);
+  close(cheque.rows.find(row => row.key === 'returnInward').cny, 0);
   close(cheque.rows.find(row => row.key === 'withdrawMiddle').cny, 0);
   const hsbc = M.journeyPlans({ ...mainlandConfig, broker: 'chief', returnBank: 'hsbc', tradeFeeUsd: '', inwardHkd: '' }, D, richQuotes).selected;
   close(hsbc.rows.find(row => row.key === 'returnInward').cny, 0);
@@ -661,6 +661,18 @@ test('other brokers never inherit IBKR FX commissions; Chief cheque pricing foll
   assert.match(hang.rows.find(row => row.key === 'returnInward').label, /本地USD支票存入/);
 });
 
+
+test('SC local USD cheque deposits use the daily free allowance and not foreign-cheque collection fees', () => {
+  for (const index of [1, 29, 30]) for (const preFilled of [false, true]) close(M.localUsdChequeFee(hk('sc'), index, '2026-10-11', preFilled), 0);
+  for (const index of [31, 32, 200]) {
+    close(M.localUsdChequeFee(hk('sc'), index, '2026-10-11'), 2);
+    close(M.localUsdChequeFee(hk('sc'), index, '2026-10-11', true), 1);
+  }
+  for (const index of [0, -1, 1.5, NaN]) assert.equal(M.localUsdChequeFee(hk('sc'), index), null);
+  assert.equal(M.localUsdChequeFee(hk('sc'), 1, '2026-09-30'), null);
+  assert.equal(M.localUsdChequeFee(hk('za')), null);
+  for (const id of ['bochk', 'hsbc', 'hang']) close(M.localUsdChequeFee(hk(id), 200), 0);
+});
 
 test('every displayed leg conserves value, tax and reference effects; coefficients compare equal units', () => {
   for (const id of ['ibkr', 'hsbc', 'chief', 'usmart', 'za']) for (const profitUsd of [0, 1500, -500]) {
@@ -1348,14 +1360,14 @@ test('invalid editable values are explained inside their open dialog instead of 
     ['trade-settings', 'buyOrders', 1.5, /笔数须为1–120的整数/],
     ['trade-settings', 'sharePriceUsd', 'bad', /须为有效正数/],
     ['profit-settings', 'taxRate', 101, /税率须为0–100%/],
-    ['profit-settings', 'withdrawalIndex', 0, /出金次数须为正整数/],
+    ['profit-settings', 'withdrawalIndex', 0, /出金次数须为正整数/, { broker: 'ibkr', outcome: 'usd-balance' }],
     ['bank-settings', 'months', 1201, /账户使用月数须为0–1200的整数/],
     ['offers', 'voucherOrders', 241, /费用券适用订单数须为1–240的整数/],
     ['adjustments', 'senderFeeCny', -1, /须为非负数/],
     ['adjustments', 'entryPrice', 0, /汇率须为有效正数/]
   ];
-  for (const [detail, key, value, message] of cases) {
-    const ui = moneyUi({ ...currentRoute, ...(detail === 'offers' ? { useVoucher: true } : {}), [key]: value }); ui.render(); ui.act('detail', '', detail);
+  for (const [detail, key, value, message, overrides = {}] of cases) {
+    const ui = moneyUi({ ...currentRoute, ...(detail === 'offers' ? { useVoucher: true } : {}), ...overrides, [key]: value }); ui.render(); ui.act('detail', '', detail);
     assert.match(ui.modal(), new RegExp('aria-invalid="true" aria-describedby="flow-error-' + key + '"'), key);
     assert.match(ui.modal(), message, key);
     assert.equal((ui.render().match(/data-flow-stage=/g) || []).length, 4, key);
@@ -1881,4 +1893,67 @@ test('SC Priority standard overseas FX remittance waives sender fees without wai
     outcome: 'broker-balance', mainlandMethod: 'swift', senderFeeCny: '' }, D, cibQuotes).selected;
   close(cnh.rows.find(x => x.key === 'sender').cny, 0);
   assert.equal(cnh.rows.find(x => x.key === 'entryMiddle').cny, null);
+});
+
+const chequeRoute = { budgetCny: 100000, count: 1, months: 12, date: '2026-10-11', usedFreeTransfers: 0,
+  profitUsd: 0, taxRate: 20, creditCny: 0, withdrawalIndex: 1, buyOrders: 1, sellOrders: 1, sharePriceUsd: 100,
+  startBank: 'boc', bank: 'bochk', broker: 'chief', route: 'USD', returnBank: 'sc', exitBank: 'hsbc',
+  outcome: 'usd-balance', mainlandMethod: 'boc-mobile', depositMethod: 'internal' };
+
+test('Chief and uSMART reconcile SC cheque deposits identically and keep bank-specific charges separate', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  for (const broker of ['chief', 'usmart']) {
+    const run = changes => M.calculatorJourney({ ...chequeRoute, broker, ...changes }, D, quotes);
+    const first = run({}).selected;
+    assert.ok(first.complete, first.missing.join(', '));
+    close(first.rows.find(row => row.key === 'returnInward').cny, 0);
+    assert.deepEqual(first.rows.find(row => row.key === 'returnInward').sources, ['scCheque', 'scChequeDeposit']);
+    for (const [chequePreFilled, hkd] of [[false, 2], [true, 1]]) {
+      const paid = run({ chequeIndex: 31, chequePreFilled }).selected;
+      assert.ok(paid.complete, paid.missing.join(', '));
+      close(paid.rows.find(row => row.key === 'returnInward').cny, hkd * paid.refs.HKD);
+      close(paid.costCny - first.costCny, hkd * paid.refs.HKD);
+      close(first.net - paid.net, hkd * paid.refs.HKD / paid.refs.USD);
+      close(paid.budgetCny - paid.costCny + paid.fxImpactCny, paid.netCny);
+      close(paid.rows.find(row => row.key === 'entryInward').cny, 0);
+    }
+    const invalid = run({ chequeIndex: 1.5 });
+    assert.match(invalid.error, /当日存票序号/);
+    assert.equal(invalid.partial.errorAction, 'withdraw');
+    assert.ok(invalid.partial.steps.proceedsUsd > 0);
+    const unused = run({ returnBank: 'bochk', chequeIndex: 'invalid', withdrawalIndex: 0 }).selected;
+    assert.ok(unused.complete, unused.missing.join(', '));
+    close(unused.rows.find(row => row.key === 'returnInward').cny, 0);
+  }
+  const ibkrInvalid = M.calculatorJourney({ ...chequeRoute, broker: 'ibkr', depositMethod: 'chats', withdrawalIndex: 0 }, D, quotes);
+  assert.match(ibkrInvalid.error, /本月券商出金次数/);
+  assert.ok(ibkrInvalid.partial.steps.hongKong > 0);
+  assert.ok(ibkrInvalid.partial.steps.proceedsUsd > 0);
+  const kept = M.calculatorJourney({ ...chequeRoute, outcome: 'broker-balance', withdrawalIndex: 0, chequeIndex: 'invalid' }, D, quotes).selected;
+  assert.ok(kept.complete, kept.missing.join(', '));
+});
+
+test('cheque qualification is visible beside its fee and unused withdrawal controls do not appear', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  const ui = moneyUi({ ...chequeRoute, chequeIndex: 31 }, quotes, '2026-10-11');
+  let html = ui.render();
+  assert.match(html, /存票当日第31张/);
+  assert.match(html, /当日第31张；每日前30张免费/);
+  assert.match(html, /2.00 HKD/);
+  ui.act('detail', '', 'profit-settings');
+  assert.match(ui.modal(), /存票当日第几张支票/);
+  assert.match(ui.modal(), /已预填多支票存款表/);
+  assert.doesNotMatch(ui.modal(), /本月第几次出金/);
+  assert.ok(evidenceLinks(ui, 'edge-withdraw').has(D.sources.scCheque.url));
+  assert.ok(evidenceLinks(ui, 'edge-withdraw').has(D.sources.scChequeDeposit.url));
+  const invalid = moneyUi({ ...chequeRoute, chequeIndex: 0 }, quotes, '2026-10-11');
+  invalid.render(); invalid.act('detail', '', 'profit-settings');
+  assert.match(invalid.modal(), /aria-invalid="true"/);
+  assert.match(invalid.modal(), /当日存票序号须为正整数/);
+  ui.act('choose', 'returnBank', 'bochk'); ui.render(); ui.act('detail', '', 'profit-settings');
+  assert.doesNotMatch(ui.modal(), /存票当日第几张支票|已预填多支票存款表|本月第几次出金/);
+  ui.act('choose', 'broker', 'ibkr'); html = ui.render(); ui.act('detail', '', 'profit-settings');
+  assert.match(html, /本月第1次出金/);
+  assert.match(ui.modal(), /本月第几次出金/);
+  assert.doesNotMatch(ui.modal(), /存票当日第几张支票/);
 });

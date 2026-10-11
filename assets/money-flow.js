@@ -3,7 +3,7 @@
   const D = window.MONEY_FLOW, M = window.ChanghengMoneyFlowModel, STORE = 'changheng.money-flow.v4';
   const defaults = { budgetCny: '100000', currency: 'CNY', plan: 'boc-za', activeStep: '01', startBank: 'boc', route: 'USD', bank: 'bochk', returnBank: 'bochk', exitBank: 'hsbc', outcome: 'broker-balance',
     mainlandMethod: 'boc-mobile', depositMethod: 'chats', fxMode: 'manual', returnMethod: '', comparison: 'start', count: '1', usedFreeTransfers: '0',
-    months: '12', balanceHkd: '0', returnBalanceHkd: '0', profitUsd: '0', taxableCny: '', taxRate: '20', creditCny: '0', withdrawalIndex: '1', tradeFeeUsd: '',
+    months: '12', balanceHkd: '0', returnBalanceHkd: '0', profitUsd: '0', taxableCny: '', taxRate: '20', creditCny: '0', withdrawalIndex: '1', chequeIndex: '1', chequePreFilled: false, tradeFeeUsd: '',
     broker: 'za', buyOrders: '1', sellOrders: '1', sharePriceUsd: '100', trade25: false, chiefMonthly: false, usmartPromo: false, zaLv2: false,
     hsbcBalanceWaiver: false, scCnhAccount: false, otherTurnoverHkd: '0', usedPromoOrders: '0', usmartDays: '0', useVoucher: false, voucherScope: 'platform', voucherUsd: '0', voucherOrders: '1', voucherExpiry: '',
     cnHsbcFeeWaived: false, cnHangFeeWaived: false, cnScFeeWaived: false, cnHsbcFreeMonths: '0', cnHangFreeMonths: '0', cnScFreeMonths: '0',
@@ -55,6 +55,7 @@
     brokerWithdrawal: { ibkr: ['ibFees'], hsbc: ['hsbcStocks'], za: ['zaStockService'], chief: ['chiefFunding'], usmart: ['usmartWithdrawal'] }
   };
   const evidenceFor = (kind, account) => evidenceSources[kind]?.[account?.id] || [];
+  const isChequeReturn = s => state.outcome !== 'broker-balance' && (s.broker?.withdrawalMethod === 'cheque' || s.broker?.localChequeBanks?.includes(s.returning?.id));
   function actionSources(stage, s, r) {
     const broker = s.broker, keys = [], add = (kind, account) => keys.push(...evidenceFor(kind, account));
     const settlement = banks.find(bank => bank.id === broker?.integratedBank);
@@ -84,6 +85,7 @@
       add('brokerWithdrawal', broker); add('hkTariff', settlement); add('hkTariff', s.returning);
       if (s.returning?.id === 'za' && broker?.withdrawalMethod === 'cheque') keys.push('zaAccountTerms');
       if (s.returning?.id === 'bochk' && ['cheque', 'local'].includes(broker?.withdrawalMethod)) keys.push('bochkCheque');
+      if (isChequeReturn(s) && s.returning?.localUsdChequeTariff) keys.push(...s.returning.localUsdChequeTariff.sources);
     } else if (stage === '04') {
       if (state.outcome === 'mainland') {
         add('hkTariff', s.returning); add('mainlandReceipt', s.exit); add('mainlandFx', s.exit);
@@ -113,15 +115,15 @@
   const row = (r, key) => r?.rows?.find(x => x.key === key);
   function field(key, label, unit = '', placeholder = '') {
     const monthField = key === 'months' || key.endsWith('FreeMonths'), value = M.number(state[key]), empty = String(state[key] ?? '').trim() === '';
-    const positiveInteger = ['count', 'buyOrders', 'sellOrders', 'withdrawalIndex'];
+    const positiveInteger = ['count', 'buyOrders', 'sellOrders', 'withdrawalIndex', 'chequeIndex'];
     const nonnegativeInteger = ['usedFreeTransfers', 'usedPromoOrders', 'usmartDays'];
     const positiveValue = ['budgetCny', 'sharePriceUsd'];
     const optionalPrice = ['startSell', 'entryPrice', 'exitPrice', 'usdCny', 'usdHkd', 'usdCnh'];
     let issue = '';
     if (monthField && (key === 'months' || !empty) && (value == null || value < 0 || !Number.isInteger(value))) issue = '月数须为非负整数。';
     else if (key === 'months' && value > 1200) issue = '账户使用月数须为0–1200的整数。';
-    else if (positiveInteger.includes(key) && (value == null || value < 1 || !Number.isInteger(value) || (key !== 'withdrawalIndex' && value > 120)))
-      issue = key === 'withdrawalIndex' ? '出金次数须为正整数。' : '笔数须为1–120的整数。';
+    else if (positiveInteger.includes(key) && (value == null || value < 1 || !Number.isInteger(value) || (!['withdrawalIndex', 'chequeIndex'].includes(key) && value > 120)))
+      issue = key === 'withdrawalIndex' ? '出金次数须为正整数。' : key === 'chequeIndex' ? '当日存票序号须为正整数。' : '笔数须为1–120的整数。';
     else if (key === 'voucherOrders' && (value == null || value < 1 || value > 240 || !Number.isInteger(value))) issue = '费用券适用订单数须为1–240的整数。';
     else if (nonnegativeInteger.includes(key) && !empty && (value == null || value < 0 || !Number.isInteger(value))) issue = '须为非负整数。';
     else if (positiveValue.includes(key) && !(value > 0)) issue = '须为有效正数。';
@@ -300,9 +302,9 @@
         if (exchange) description = num(exchange.input) + ' ' + exchange.from + ' → ' + num(exchange.output) + ' ' + exchange.to;
         if (item.key === 'entryFx' && state.route !== 'CNH' && r.startSell > 0) description = '1 ' + state.route + ' = ' + quoteNum(r.startSell) + ' CNY' + (r.entryDiscount ? ' · 点差五折' : '');
         if (item.key === 'sender' && Number(state.count) > 1) description = (description ? description + ' · ' : '') + state.count + '笔合计';
-        const feeCurrency = item.key === 'depositBank' && r.depositMethod === 'chats' && r.bank?.localUsdNative != null ? 'USD' : 'HKD';
+        const feeCurrency = item.nativeCurrency || (item.key === 'depositBank' && r.depositMethod === 'chats' && r.bank?.localUsdNative != null ? 'USD' : 'HKD');
         let native = part.cny == null ? missingFeeStatus(r, item, part) :
-          ['entryInward', 'depositBank', 'returnWire'].includes(item.key) ? num(part.cny / r.refs[feeCurrency]) + ' ' + feeCurrency : '';
+          ['entryInward', 'depositBank', 'returnWire'].includes(item.key) || item.nativeCurrency ? num(part.cny / r.refs[feeCurrency]) + ' ' + feeCurrency : '';
         if (part.cny != null && (part.estimate ?? item.estimate)) native = '估算 ' + (native || cost(part.cny));
         return feeLine(part.label, part.cny, description, native);
       });
@@ -346,7 +348,8 @@
       (state.outcome === 'broker-balance' ? '<strong>' + esc(shortName(s.broker)) + '</strong><small>美元留在账户</small>' : account('returnBank', '取回／消费银行', s.returning)) +
       '</div>' + (state.outcome === 'broker-balance' ? finalBalance + closingCosts : nodeBalance(r, steps.proceedsUsd - (r?.taxCny || 0) / (r?.refs?.USD || 1), 'USD', '卖出后待出金', throughTrade)) + '</section>';
     if (state.outcome !== 'broker-balance') html += edge(data, withdrawKeys, '出金 → ' + shortName(s.returning),
-      action('本月第' + esc(state.withdrawalIndex) + '次出金', 'detail', 'data-value="profit-settings"', 'flow-setting-button'), 'withdraw');
+      s.broker?.freeWithdrawals ? action('本月第' + esc(state.withdrawalIndex) + '次出金', 'detail', 'data-value="profit-settings"', 'flow-setting-button') :
+        isChequeReturn(s) && s.returning?.localUsdChequeTariff ? action('存票当日第' + esc(state.chequeIndex) + '张', 'detail', 'data-value="profit-settings"', 'flow-setting-button') : '', 'withdraw');
     if (state.outcome === 'mainland') html += edge(data, exitKeys, '汇回内地 → 美元结汇', account('exitBank', '内地收款银行', s.exit) + select('returnMethod', '汇回渠道', returnMethods()) +
       (s.exit?.id === s.start?.id ? '' : mainlandAccountControl(s.exit, r)), '04',
       !data.error && !r?.indicativeExit && r?.exitPrice > 1 ? '1 USD = ' + quoteNum(r.exitPrice) + ' CNY' : '');
@@ -569,8 +572,14 @@
       title = '美股买卖设置'; content = '<div class="flow-form-grid">' + field('sharePriceUsd', '买入均价', 'USD/股') + field('buyOrders', '买入笔数', '笔') + field('sellOrders', '卖出笔数', '笔') + '</div>';
       content += tradeLine(r, 'buy') + tradeLine(r, 'sell'); keys = actionSources('trade', s, r);
     } else if (key === 'profit-settings') {
-      title = '盈亏、出金与税款'; content = '<div class="flow-form-grid">' + field('profitUsd', '卖出盈亏 · 交易费前', 'USD') + field('withdrawalIndex', '本月第几次出金', '次') + field('taxRate', '应税所得税率', '%') + field('taxableCny', '人民币应税所得', 'CNY', '按正净利润估算') + field('creditCny', '税款抵免', 'CNY') + '</div>';
-      keys = [...evidenceFor('brokerWithdrawal', s.broker), 'tax'];
+      const chequeTariff = isChequeReturn(s) && s.returning?.localUsdChequeTariff;
+      title = '盈亏、出金与税款'; content = '<div class="flow-form-grid">' + field('profitUsd', '卖出盈亏 · 交易费前', 'USD') +
+        (state.outcome !== 'broker-balance' && s.broker?.freeWithdrawals ? field('withdrawalIndex', '本月第几次出金', '次') : '') +
+        (chequeTariff ? field('chequeIndex', '存票当日第几张支票', '张') : '') +
+        field('taxRate', '应税所得税率', '%') + field('taxableCny', '人民币应税所得', 'CNY', '按正净利润估算') + field('creditCny', '税款抵免', 'CNY') + '</div>';
+      if (chequeTariff && M.number(state.chequeIndex) > chequeTariff.freePerDay) content += checkbox('chequePreFilled', '已预填多支票存款表');
+      if (chequeTariff) content += feeRow(r, 'returnInward', null, row(r, 'returnInward')?.evidence || '', 'HKD');
+      keys = [...evidenceFor('brokerWithdrawal', s.broker), ...(chequeTariff ? chequeTariff.sources : []), 'tax'];
     } else if (key === 'offers') {
       title = shortName(s.broker) + ' · 优惠与费用券'; content = offers(s, r); keys = actionSources('offers', s, r);
     } else if (key.startsWith('edge-')) {

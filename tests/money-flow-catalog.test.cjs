@@ -25,7 +25,8 @@ test('all 151875 catalogue combinations retain selection and either reconcile or
   assert.equal(r.channelProfiles.length, 3);
   for (const profile of r.channelProfiles) {
     if (profile.profile.id === 'all-relevant-qualifications') assert.ok(profile.checked > 131040);
-    else assert.equal(profile.checked, 131040);
+    else assert.equal(profile.checked - profile.chequeBoundaryChecks, 131040);
+    assert.ok(profile.chequeBoundaryChecks > 0);
     assert.equal(profile.priced + profile.partial + profile.routeIssues, profile.checked);
     assert.equal(profile.ledgerChecks, profile.priced + profile.partial);
     assert.ok(profile.retainedPartialResults > 0);
@@ -38,7 +39,7 @@ test('all 151875 catalogue combinations retain selection and either reconcile or
   }
   assert.equal(r.channelProfiles[0].profile.hsbcBalanceWaiver, false);
   assert.equal(r.channelProfiles[0].profile.trade25, false);
-  assert.deepEqual(r.channelProfiles[2].qualificationCoverage, ['chiefMonthly', 'cnHangFeeWaived', 'cnHsbcFeeWaived', 'cnScFeeWaived',
+  assert.deepEqual(r.channelProfiles[2].qualificationCoverage, ['chequePreFilled', 'chiefMonthly', 'cnHangFeeWaived', 'cnHsbcFeeWaived', 'cnScFeeWaived',
     'hsbcBalanceWaiver', 'scCnhAccount', 'trade25', 'usmartPromo', 'zaLv2']);
 });
 

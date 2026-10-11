@@ -64,7 +64,7 @@ function auditChannels({ quotes = Q, date = config.date } = {}) {
   ];
   return profiles.map(profile => {
     const report = { profile, checked: 0, priced: 0, referencePriced: 0, partial: 0, routeIssues: 0,
-      ledgerChecks: 0, retainedPartialResults: 0, issueCounts: {}, missingCounts: {}, sources: {} };
+      ledgerChecks: 0, retainedPartialResults: 0, chequeBoundaryChecks: 0, issueCounts: {}, missingCounts: {}, sources: {} };
     const coverage = Object.fromEntries(['mainlandMethods', 'fxModes', 'depositMethods', 'returnMethods'].map(key => [key, new Set()]));
     const qualificationCoverage = new Set();
     const record = s => {
@@ -86,7 +86,7 @@ function auditChannels({ quotes = Q, date = config.date } = {}) {
         report.routeIssues++; source.routeIssues++;
         if (r?.rows?.some(row => Number.isFinite(row.cny))) report.retainedPartialResults++;
         report.issueCounts[data.error] = (report.issueCounts[data.error] || 0) + 1;
-        return;
+        return r;
       }
       const expected = r.budgetCny + r.profitUsd * r.refs.USD - r.costCny - r.taxCny + r.fxImpactCny;
       if (!Number.isFinite(r.net) || Math.abs(expected - r.netCny) > 1e-6 || Math.abs(r.rows.reduce((sum, row) => sum + (row.cny ?? 0), 0) - r.costCny) > 1e-6) throw new Error('Branch ledger mismatch: ' + JSON.stringify(s));
@@ -100,6 +100,20 @@ function auditChannels({ quotes = Q, date = config.date } = {}) {
         if (!r.missing.length && r.quotedCore) throw new Error('Unnamed branch gap: ' + JSON.stringify(s));
         for (const gap of r.missing) report.missingCounts[gap] = (report.missingCounts[gap] || 0) + 1;
       }
+      return r;
+    };
+    const recordWithChequeBoundaries = s => {
+      const r = record(s);
+      if (!r?.rows?.some(row => row.key === 'returnInward' && row.sources?.includes('scCheque'))) return;
+      // The calculation is for one withdrawal. Check the daily allowance
+      // at its last free cheque and both published fees for the next cheque.
+      for (const [chequeIndex, chequePreFilled, feeHkd] of [[30, false, 0], [31, false, 2], [31, true, 1]]) {
+        const next = record({ ...s, chequeIndex, chequePreFilled });
+        const fee = next?.rows?.find(row => row.key === 'returnInward');
+        if (!fee || Math.abs(fee.cny - feeHkd * next.refs.HKD) > 1e-6) throw new Error('SC daily cheque tariff mismatch: ' + JSON.stringify(s));
+        report.chequeBoundaryChecks++;
+      }
+      if (profile.id === 'all-relevant-qualifications') qualificationCoverage.add('chequePreFilled');
     };
     for (const startBank of D.calculator.mainland) for (const bank of D.calculator.hkBanks) for (const broker of D.calculator.brokers) for (const route of D.calculator.currencies) {
       const entry = { ...config, ...profile, date, startBank, bank, broker, route };
@@ -113,7 +127,7 @@ function auditChannels({ quotes = Q, date = config.date } = {}) {
             const endpoint = { ...funding, depositMethod, outcome, returnBank, exitBank };
             for (const returnMethod of outcome === 'mainland' ? M.calculatorChannels(endpoint, D).returnMethods : ['']) {
               const s = { ...endpoint, returnMethod };
-              if (profile.id !== 'all-relevant-qualifications') { record(s); continue; }
+              if (profile.id !== 'all-relevant-qualifications') { recordWithChequeBoundaries(s); continue; }
               // Toggle all and only the qualifications that affect this route.
               // Unvisited account flags do not create new operations or fees.
               const fields = new Set();
@@ -128,7 +142,7 @@ function auditChannels({ quotes = Q, date = config.date } = {}) {
               }
               const relevant = [...fields];
               for (const field of relevant) qualificationCoverage.add(field);
-              for (let mask = 0; mask < 2 ** relevant.length; mask++) record({ ...s,
+              for (let mask = 0; mask < 2 ** relevant.length; mask++) recordWithChequeBoundaries({ ...s,
                 ...Object.fromEntries(relevant.map((field, i) => [field, !!(mask & (1 << i))])) });
             }
           }

@@ -224,7 +224,7 @@ CNY原币到港成为CNH时第一步没有换汇差额；该人民币基准差�
 
 ### 收款缺项的交叉核对（2026-10-11）
 
-从[渣打官网收费入口](https://www.sc.com/hk/help/service-charges/)的实际链接取得[2026年10月英文收费表](https://av.sc.com/hk/content/docs/hk-service-charges-en.pdf)。印刷第5页分别列支票买入、外汇托收；第7页为个人CHATS／电汇汇入免费，第9页为每日前30张批量支票存入免费。这些科目不能直接推导“致富的本地USD支票存入渣打必定免费”，该项仍缺本地美元交换票的明确适用规则；没有借此将其改为0。
+先前从[渣打官网收费入口](https://www.sc.com/hk/help/service-charges/)取得[2026年10月英文收费表](https://av.sc.com/hk/content/docs/hk-service-charges-en.pdf)，尚未核对美元支票存款设施，因此当时没有按免费计算。后续补查其[自助存款服务](https://www.sc.com/hk/zh/bank-with-us/automated-banking-services/)明确接受美元支票；一般服务第9页的每日张数收费没有货币限制。本地USD支票现按该一般存票规则计算：同日首30张免费，超过30张的每张2 HKD，预填多支票存款表的每张1 HKD。这是两份官网材料结合的适用判断，不是“所有美元托收免费”；第5页的境外支票购买／托收收费不套到香港本地美元支票。
 
 从[中行现行价目总目录](https://www.boc.cn/custserv/fd5/)继续核对[第一章监管减免](https://pic.bankofchina.com/bocappd/pricelist/202511/P020251110647053422170.pdf)、[第五章电子银行](https://pic.bankofchina.com/bocappd/pricelist/202511/P020251110646093390083.pdf)、[其他综合服务](https://pic.bankofchina.com/bocappd/pricelist/202511/P020251110645832542692.pdf)及[2023年减费公告](https://www.boc.cn/custserv/bi2/bi2o/202310/t20231030_23962499.html)。没有找到个人境外汇入收款费的明确免费条款；电子银行章节说明转账资费归对应业务表，未另给2026年手机境外中行双免条款。目录中没有列出某项不能当作已取得该项0费率的直接证据。现有同名香港基本汇入豁免不受这次反向收款核查影响。
 

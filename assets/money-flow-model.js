@@ -98,6 +98,13 @@
     const change = [...(bank.outwardChanges || [])].reverse().find(row => date >= row.from);
     return change ? change.fee : knownFee(bank.outwardHkd) ? bank.outwardHkd : null;
   }
+  function localUsdChequeFee(bank, index = 1, date = '2026-10-11', preFilled = false) {
+    if (!bank || bank.acceptsCheques === false) return null;
+    const tariff = bank.localUsdChequeTariff;
+    if (!tariff) return knownFee(bank.localUsdChequeHkd) ? bank.localUsdChequeHkd : null;
+    if (!positive(index) || !Number.isInteger(index) || date < tariff.validFrom || (tariff.validUntil && date > tariff.validUntil)) return null;
+    return index <= tariff.freePerDay ? 0 : preFilled ? tariff.preFilledHkd : tariff.standardHkd;
+  }
   function maintenance(bank, balanceHkd, months, override) {
     if (![balanceHkd, months].every(knownFee)) return null;
     if (knownFee(override)) return override * months;
@@ -552,7 +559,6 @@
     const profit = number(config.profitUsd), taxRate = number(config.taxRate), credit = number(config.creditCny) ?? 0;
     if (!finite(profit) || !knownFee(taxRate) || taxRate > 100) return empty('请输入有效盈亏及0–100%的税率。');
     const withdrawalIndex = number(config.withdrawalIndex) ?? 1;
-    if (!positive(withdrawalIndex) || !Number.isInteger(withdrawalIndex)) return empty('本月券商出金次数须为正整数。');
     const mainland = quotedMainlandBanks(data, quotes, config.date);
     const fresh = mainland.filter(bank => positive(bank.quotes.USD?.buy) && positive(bank.quotes.USD?.sell) && quoteFresh(bank.quotes.USD, config.date));
     const refRow = fresh.find(bank => bank.id === 'boc')?.quotes.USD || fresh[0]?.quotes.USD || mainland.find(bank => positive(bank.quotes.USD?.buy) && positive(bank.quotes.USD?.sell))?.quotes.USD;
@@ -839,6 +845,7 @@
       taxCny = taxReserve(taxableCny, taxRate, credit);
       balance -= taxCny / refs.USD;
       if (!keepInBroker) {
+      if (provider.freeWithdrawals && (!positive(withdrawalIndex) || !Number.isInteger(withdrawalIndex))) return downstreamError('本月券商出金次数须为正整数。', '04', 'withdraw');
       const localCheque = provider.localChequeBanks?.includes(returning.id);
       const virtualReturn = provider.withdrawalMethod === 'local' && !localCheque;
       if (provider.withdrawalMethod === 'cheque' && returning.acceptsCheques === false) return downstreamError(returning.name + '不接受支票存款；' + provider.name + '的美元支票不能直接存入该账户。已保留券商美元余额。', '04', 'withdraw');
@@ -847,11 +854,19 @@
         withdrawalIndex <= (provider.freeWithdrawals ?? 0) ? 0 : provider.withdrawUsd;
       add('withdraw', provider.name + '出金费', withdrawal == null ? null : withdrawal * refs.USD, 'withdraw');
       const localReturnCny = settlementBank ? localUsdTransfer(settlementBank, returning, refs, trading?.sellDate || config.date) : null;
+      const chequeReturn = !settlementBank && (localCheque || provider.withdrawalMethod === 'cheque');
+      const chequeIndex = config.chequeIndex == null ? 1 : number(config.chequeIndex);
+      if (chequeReturn && returning.localUsdChequeTariff && own('inwardHkd', isSelectedReturn) == null && (!positive(chequeIndex) || !Number.isInteger(chequeIndex))) return downstreamError('当日存票序号须为正整数。', '04', 'withdraw');
+      const chequeFee = chequeReturn ? localUsdChequeFee(returning, chequeIndex, trading?.sellDate || config.date, config.chequePreFilled === true) : null;
       const returnInward = settlementBank ? localReturnCny == null ? null : localReturnCny / refs.HKD : own('inwardHkd', isSelectedReturn) ??
-        (localCheque ? 0 : virtualReturn ? provider.virtualWithdrawalUsd * refs.USD / refs.HKD : provider.withdrawalMethod === 'cheque' ? returning.localUsdChequeHkd ?? null : inwardFee(returning, balance * refs.USD / refs.HKD, 'broker'));
+        (chequeReturn ? chequeFee : virtualReturn ? provider.virtualWithdrawalUsd * refs.USD / refs.HKD : inwardFee(returning, balance * refs.USD / refs.HKD, 'broker'));
       const returnLabel = settlementBank ? settlementBank.name + ' → ' + returning.name + (settlementBank.id === returning.id ? ' · 内部交收' : ' · USD CHATS') :
         localCheque || provider.withdrawalMethod === 'cheque' ? returning.name + ' · 本地USD支票存入' : virtualReturn ? '数字银行USD提款 · 官网参考7.5 USD' : '券商→香港银行汇入费';
       add('returnInward', returnLabel, returnInward == null ? null : returnInward * refs.HKD, 'withdraw');
+      if (chequeReturn && returning.localUsdChequeTariff && own('inwardHkd', isSelectedReturn) == null) {
+        Object.assign(rows[rows.length - 1], { nativeCurrency: 'HKD', sources: returning.localUsdChequeTariff.sources,
+          evidence: '当日第' + chequeIndex + '张；每日前30张免费，其后' + (config.chequePreFilled ? '预填多支票存款表1' : '未预填多支票存款表2') + ' HKD/张' });
+      }
       if (unquotedFundingFx && !settlementBank && !localCheque && !virtualReturn && provider.withdrawalMethod !== 'cheque' && returning.inwardSmallLimitHkd && own('inwardHkd', isSelectedReturn) == null) {
         rows[rows.length - 1].estimate = '尚缺换汇成交价，汇入收费档位按参考美元金额估算';
       }
@@ -1212,5 +1227,5 @@
     return result;
   }
   function catalogueBroker(id, data) { return data.calculator.brokers.includes(id) ? id : 'za'; }
-  return { calculatorRoute, calculatorChannels, calculatorIssue, calculatorJourney, calculatorRecommendations, number, reference, fee, remitPrincipal, senderFeeRange, inwardFee, outwardFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
+  return { calculatorRoute, calculatorChannels, calculatorIssue, calculatorJourney, calculatorRecommendations, number, reference, fee, remitPrincipal, senderFeeRange, inwardFee, outwardFee, localUsdChequeFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
 }));
