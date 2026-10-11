@@ -17,9 +17,9 @@ function audit({ quotes = Q, date = config.date } = {}) {
   const routes = new Map();
   for (const startBank of D.calculator.mainland) for (const bank of D.calculator.hkBanks) for (const broker of D.calculator.brokers)
     for (const returnBank of D.calculator.hkBanks) for (const exitBank of D.calculator.mainland)
-      for (const route of D.calculator.currencies) for (const outcome of ['broker-balance', 'usd-balance', 'usd-card', 'cnh-card', 'mainland']) {
+      for (const route of D.calculator.currencies) for (const outcome of ['broker-balance', 'usd-balance', 'usd-card', 'cnh-card', 'mainland']) for (const returnCurrency of outcome === 'mainland' ? ['USD', 'HKD'] : ['USD']) {
         result.combinationsChecked++;
-        const s = M.calculatorRoute({ ...config, date, startBank, bank, broker, returnBank, exitBank, route, outcome });
+        const s = M.calculatorRoute({ ...config, date, startBank, bank, broker, returnBank, exitBank, route, outcome, returnCurrency });
         const selectionIssue = M.calculatorIssue(s, D);
         if (selectionIssue) throw new Error('A catalogue account became unavailable: ' + JSON.stringify(s));
         const data = M.calculatorJourney(s, D, quotes), r = data.selected;
@@ -43,7 +43,7 @@ function audit({ quotes = Q, date = config.date } = {}) {
         if (r.missing.length || r.rows.some(x => x.cny == null)) throw new Error('False complete quote: ' + JSON.stringify(s));
         if (Math.abs(r.fxImpactCny) > 1e-6) throw new Error('Mixed percentage benchmarks: ' + JSON.stringify(s));
         result.completeQuoteCombinations++;
-        const key = [startBank, bank, broker, outcome === 'broker-balance' ? '' : returnBank, outcome === 'mainland' ? exitBank : '', route, outcome].join('/');
+        const key = [startBank, bank, broker, outcome === 'broker-balance' ? '' : returnBank, outcome === 'mainland' ? exitBank : '', route, outcome, outcome === 'mainland' ? returnCurrency : ''].join('/');
         routes.set(key, { key, costCny: Number(r.costCny.toFixed(4)), balance: Number(r.net.toFixed(4)), currency: r.currency });
       }
   result.routes = [...routes.values()]; result.distinctCompleteRoutes = routes.size;
@@ -69,8 +69,8 @@ function auditNumericBoundaries({ quotes = Q, date = config.date } = {}) {
     const profile = { id, inputs: changes, checked: 0, priced: 0, referencePriced: 0, partial: 0, routeIssues: 0,
       ledgerChecks: 0, retainedPartialResults: 0, issueCounts: {} };
     for (const startBank of D.calculator.mainland) for (const bank of D.calculator.hkBanks) for (const broker of D.calculator.brokers)
-      for (const route of D.calculator.currencies) for (const outcome of ['broker-balance', 'usd-balance', 'usd-card', 'cnh-card', 'mainland']) {
-        const s = M.calculatorRoute({ ...base, ...changes, startBank, bank, broker, route, outcome, returnBank: bank, exitBank: startBank });
+      for (const route of D.calculator.currencies) for (const outcome of ['broker-balance', 'usd-balance', 'usd-card', 'cnh-card', 'mainland']) for (const returnCurrency of outcome === 'mainland' ? ['USD', 'HKD'] : ['USD']) {
+        const s = M.calculatorRoute({ ...base, ...changes, startBank, bank, broker, route, outcome, returnCurrency, returnBank: bank, exitBank: startBank });
         if (M.calculatorIssue(s, D)) throw new Error('Numeric boundary removed a catalogue choice: ' + JSON.stringify(s));
         report.checked++; profile.checked++;
         const data = M.calculatorJourney(s, D, quotes), r = data.selected || data.partial;
@@ -120,7 +120,7 @@ function auditChannels({ quotes = Q, date = config.date } = {}) {
   return profiles.map(profile => {
     const report = { profile, checked: 0, priced: 0, referencePriced: 0, partial: 0, routeIssues: 0,
       ledgerChecks: 0, retainedPartialResults: 0, chequeBoundaryChecks: 0, issueCounts: {}, missingCounts: {}, sources: {} };
-    const coverage = Object.fromEntries(['mainlandMethods', 'fxModes', 'depositMethods', 'returnMethods'].map(key => [key, new Set()]));
+    const coverage = Object.fromEntries(['mainlandMethods', 'fxModes', 'depositMethods', 'returnMethods', 'returnCurrencies'].map(key => [key, new Set()]));
     const qualificationCoverage = new Set();
     const record = s => {
       if (M.calculatorIssue(s, D)) throw new Error('Offered account rejected by catalogue: ' + JSON.stringify(s));
@@ -128,7 +128,7 @@ function auditChannels({ quotes = Q, date = config.date } = {}) {
       const sourceKey = [s.startBank, s.bank, s.route, s.mainlandMethod].join('/');
       const source = report.sources[sourceKey] ||= { checked: 0, priced: 0, partial: 0, routeIssues: 0 };
       source.checked++;
-      for (const [key, value] of [['mainlandMethods', s.mainlandMethod], ['fxModes', s.fxMode], ['depositMethods', s.depositMethod], ['returnMethods', s.outcome === 'mainland' ? s.returnMethod : '']]) if (value) coverage[key].add(value);
+      for (const [key, value] of [['mainlandMethods', s.mainlandMethod], ['fxModes', s.fxMode], ['depositMethods', s.depositMethod], ['returnMethods', s.outcome === 'mainland' ? s.returnMethod : ''], ['returnCurrencies', s.outcome === 'mainland' ? s.returnCurrency : '']]) if (value) coverage[key].add(value);
       const data = M.calculatorJourney(s, D, quotes), r = data.selected || data.partial;
       for (const row of r?.rows || []) {
         if (row.cny !== null && !Number.isFinite(row.cny)) throw new Error('Non-finite branch fee: ' + JSON.stringify(s));
@@ -184,8 +184,8 @@ function auditChannels({ quotes = Q, date = config.date } = {}) {
           const exits = outcome === 'mainland' ? D.calculator.mainland : [startBank];
           for (const returnBank of returns) for (const exitBank of exits) {
             const endpoint = { ...funding, depositMethod, outcome, returnBank, exitBank };
-            for (const returnMethod of outcome === 'mainland' ? M.calculatorChannels(endpoint, D).returnMethods : ['']) {
-              const s = { ...endpoint, returnMethod };
+            for (const returnMethod of outcome === 'mainland' ? M.calculatorChannels(endpoint, D).returnMethods : ['']) for (const returnCurrency of outcome === 'mainland' ? ['USD', 'HKD'] : ['USD']) {
+              const s = { ...endpoint, returnMethod, returnCurrency };
               if (profile.id !== 'all-relevant-qualifications') { recordWithChequeBoundaries(s); continue; }
               // Toggle all and only the qualifications that affect this route.
               // Unvisited account flags do not create new operations or fees.

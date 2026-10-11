@@ -4,14 +4,14 @@
   const today = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Shanghai' });
   const availableChannels = config => M.calculatorChannels({ ...config, date: today() }, D);
   const defaults = { budgetCny: '100000', currency: 'CNY', plan: 'boc-za', activeStep: '01', startBank: 'boc', route: 'USD', bank: 'bochk', returnBank: 'bochk', exitBank: 'boc', outcome: 'broker-balance',
-    mainlandMethod: 'boc-mobile', depositMethod: 'chats', fxMode: 'manual', returnMethod: '', comparison: 'start', count: '1', usedFreeTransfers: '0',
+    mainlandMethod: 'boc-mobile', depositMethod: 'chats', fxMode: 'manual', returnMethod: '', returnCurrency: 'USD', comparison: 'start', count: '1', usedFreeTransfers: '0',
     months: '12', balanceHkd: '0', returnBalanceHkd: '0', bankBalancesHkd: {}, profitUsd: '0', taxableCny: '', taxRate: '20', creditCny: '0', withdrawalIndex: '1', chequeIndex: '1', chequePreFilled: false, tradeFeeUsd: '',
     broker: 'za', buyOrders: '1', sellOrders: '1', sharePriceUsd: '100', trade25: false, chiefMonthly: false, usmartPromo: false, zaLv2: false,
     hsbcBalanceWaiver: false, hkHsbcFreeMonths: '0', zaPerksLevel: 'standard', zaSwiftUsed: '0', scCnhAccount: false, otherTurnoverHkd: '0', usedPromoOrders: '0', usmartDays: '0', useVoucher: false, voucherScope: 'platform', voucherUsd: '0', voucherOrders: '1', voucherExpiry: '',
     cnHsbcFeeWaived: false, cnHangFeeWaived: false, cnScFeeWaived: false, cnHsbcFreeMonths: '0', cnHangFreeMonths: '0', cnScFreeMonths: '0',
     icbcEAccount: false, icbcCnhAccount: false,
     senderFeeCny: '', entryMiddleCny: '', entryInwardHkd: '', depositHkd: '', depositOtherCny: '', inwardHkd: '', intermediaryCny: '',
-    returnWireHkd: '', returnExtraCny: '', monthlyHkd: '', returnMonthlyHkd: '', startSell: '', entryPrice: '', exitPrice: '',
+    returnWireHkd: '', returnExtraCny: '', monthlyHkd: '', returnMonthlyHkd: '', startSell: '', entryPrice: '', exitPrice: '', returnHkdPrice: '',
     usdCny: '', usdHkd: '', usdCnh: '', openingCny: '0', extraCapitalCny: '0', annualGapPct: '0' };
   let stored = {};
   try { stored = JSON.parse(localStorage.getItem(STORE) || '{}') || {}; } catch (_) {}
@@ -41,13 +41,13 @@
   const catalog = (key, all) => D.calculator[key].map(id => all.find(x => x.id === id)).filter(Boolean);
   const mainland = catalog('mainland', D.mainlandBanks), banks = catalog('hkBanks', D.hkBanks), brokers = catalog('brokers', D.brokers);
   const comparisonData = { ...D, mainlandBanks: mainland };
-  const quoteKeys = ['senderFeeCny', 'entryMiddleCny', 'entryInwardHkd', 'depositHkd', 'depositOtherCny', 'inwardHkd', 'intermediaryCny', 'returnWireHkd', 'returnExtraCny', 'monthlyHkd', 'returnMonthlyHkd', 'startSell', 'entryPrice', 'exitPrice', 'usdCny', 'usdHkd', 'usdCnh'];
+  const quoteKeys = ['senderFeeCny', 'entryMiddleCny', 'entryInwardHkd', 'depositHkd', 'depositOtherCny', 'inwardHkd', 'intermediaryCny', 'returnWireHkd', 'returnExtraCny', 'monthlyHkd', 'returnMonthlyHkd', 'startSell', 'entryPrice', 'exitPrice', 'returnHkdPrice', 'usdCny', 'usdHkd', 'usdCnh'];
   const outcomes = [['broker-balance', '留在买股账户'], ['usd-balance', '取回香港银行 · 保留美元'], ['usd-card', '美元原币消费'], ['cnh-card', '换人民币后消费'], ['mainland', '汇回内地结汇']];
   const currencyNames = { USD: '美元', HKD: '港币', CNH: '人民币原币' };
   const stageNames = ['内地出发', '香港收款', '入金与买股', '卖出后的资金'];
   const stageKeys = [['entryFx', 'sender', 'entryMiddle'], ['entryInward', 'account'],
     ['depositBank', 'depositOther', 'depositBroker', 'brokerSpread', 'brokerFx', 'trade', 'brokerAccount'],
-    ['withdraw', 'returnInward', 'withdrawMiddle', 'returnWire', 'returnOther', 'exitFx', 'card', 'extra']];
+    ['withdraw', 'returnInward', 'withdrawMiddle', 'returnFx', 'returnWire', 'returnOther', 'exitFx', 'card', 'extra']];
   const options = new Map();
   const esc = value => H.esc(value), num = (value, digits = 2) => Number.isFinite(Number(value)) && value != null ? H.money(Number(value), digits) : '—';
   const action = (label, act, extra = '', cls = 'btn') => H.action(label, 'money-flow-' + act, cls, extra);
@@ -117,6 +117,8 @@
     } else if (stage === '04') {
       if (state.outcome === 'mainland') {
         add('hkTariff', s.returning); add('mainlandReceipt', s.exit); add('mainlandFx', s.exit);
+        if (state.returnCurrency === 'HKD') add('hkFx', s.returning);
+        keys.push(...(r?.rows?.find(item => item.key === 'returnOther')?.sources || []));
         if (s.returning?.id === 'bochk' && s.exit?.group === 'boc') keys.push('bochkSame');
         if ((r?.returnMethod || state.returnMethod) === 'linked') add('linked', s.exit);
         if (s.returning?.id === 'za') keys.push('zaNov');
@@ -146,7 +148,7 @@
     const positiveInteger = ['count', 'buyOrders', 'sellOrders', 'withdrawalIndex', 'chequeIndex'];
     const nonnegativeInteger = ['usedFreeTransfers', 'usedPromoOrders', 'usmartDays', 'zaSwiftUsed'];
     const positiveValue = ['budgetCny', 'sharePriceUsd'];
-    const optionalPrice = ['startSell', 'entryPrice', 'exitPrice', 'usdCny', 'usdHkd', 'usdCnh'];
+    const optionalPrice = ['startSell', 'entryPrice', 'exitPrice', 'returnHkdPrice', 'usdCny', 'usdHkd', 'usdCnh'];
     let issue = '';
     if (monthField && (key === 'months' || !empty) && (value == null || value < 0 || !Number.isInteger(value))) issue = '月数须为非负整数。';
     else if (key === 'months' && value > 1200) issue = '账户使用月数须为0–1200的整数。';
@@ -176,7 +178,7 @@
     options.set(key, { label, values });
     const current = values.find(([id]) => id === value);
     if (values.length === 1 && current) return '<div class="flow-field"><span>' + esc(label) + '</span><div class="flow-control-value">' + esc(current[1]) + '</div></div>';
-    return '<div class="flow-field"><span>' + esc(label) + '</span>' + (values.length > 1 && values.length <= 3 && ['route', 'fxMode', 'voucherScope'].includes(key) ?
+    return '<div class="flow-field"><span>' + esc(label) + '</span>' + (values.length > 1 && values.length <= 3 && ['route', 'returnCurrency', 'fxMode', 'voucherScope'].includes(key) ?
       '<div class="flow-segments" role="group" aria-label="' + esc(label) + '">' + values.map(([id, text]) => action(esc(text), 'choose', 'data-field="' + key + '" data-value="' + esc(id) + '" aria-pressed="' + (id === value) + '"', 'flow-segment')).join('') + '</div>' :
       action('<span>' + esc(current?.[1] || '请选择' + label) + '</span><span aria-hidden="true">⌄</span>', 'control-pick', 'data-value="' + key + '" aria-haspopup="dialog" aria-label="' + esc(label + '：' + (current?.[1] || '请选择')) + '"', 'flow-control-button')) + '</div>';
   }
@@ -232,6 +234,7 @@
   }
   function presetState(p) {
     const next = M.calculatorRoute({ ...state, fxMode: '', depositMethod: '', returnMethod: '', ...p.config, plan: p.id, activeStep: '01' });
+    if (state.outcome !== 'mainland') next.returnCurrency = state.returnCurrency;
     for (const key of quoteKeys) next[key] = '';
     next.tradeFeeUsd = '';
     Object.assign(next, M.calculatorAccountState(state, next, D));
@@ -254,7 +257,7 @@
         r.depositMethod === 'internal' ? r.broker.integratedBank ? '银行内交收' : '同行入金' :
         ({ chats: '本地美元转账', fps: 'FPS入金', edda: 'eDDA入金', swift: '电汇入金' })[r.depositMethod];
       const end = state.outcome === 'broker-balance' ? '美元留在买股账户' :
-        state.outcome === 'mainland' ? routeName(r.returning.id, 'bank') + ' → ' + routeName(r.exit.id, 'mainland') + '结汇' :
+        state.outcome === 'mainland' ? routeName(r.returning.id, 'bank') + (r.returnCurrency === 'HKD' ? '换港币' : '美元') + ' → ' + routeName(r.exit.id, 'mainland') + '结汇' :
           routeName(r.returning.id, 'bank') + ' · ' + ({ 'usd-balance': '保留美元', 'usd-card': '美元消费', 'cnh-card': '人民币消费' })[state.outcome];
       const rows = r.rows, accountCny = rows.find(item => item.key === 'account')?.cny || 0;
       return { ...p, config, title: [routeName(r.start.id, 'mainland'), routeName(r.bank.id, 'bank'), ...(r.fundingBank ? ['本人' + routeName(r.fundingBank.id, 'bank')] : []), routeName(r.broker.id, 'broker')].join(' → '),
@@ -273,20 +276,20 @@
           (complete ? pct(total / M.number(state.budgetCny)) : cost(total)) + '</b>' + (complete ? '<small>' + cost(total) + '</small>' : '') + '</span>' : '<span class="flow-preset-price"><small>无法计算总额</small></span>';
         return action('<span class="flow-preset-route"><strong>' + esc(p.title) + '</strong><small>' + esc(p.note) + '</small><small class="flow-preset-outcome">→ ' +
           esc(p.end || outcomes.find(([id]) => id === state.outcome)?.[1] || '') + '</small>' + (p.accountFee ? '<small class="flow-preset-account-fee">' + esc(p.accountFee) + '</small>' : '') + (!complete ? '<small class="flow-preset-gap">总损耗尚缺：' + esc(missing.join('、')) + '</small>' : '') + '</span>' + price,
-          'preset', 'data-value="' + p.id + '" aria-pressed="' + (state.plan === p.id || Object.keys(p.config).filter(key => !(['exitBank', 'returnMethod'].includes(key) && state.outcome !== 'mainland')).every(key => p.config[key] === state[key])) + '" aria-label="优选方案：' + esc(p.title) + '"', 'flow-preset');
+          'preset', 'data-value="' + p.id + '" aria-pressed="' + (state.plan === p.id || Object.keys(p.config).filter(key => !(['exitBank', 'returnMethod', 'returnCurrency'].includes(key) && state.outcome !== 'mainland')).every(key => p.config[key] === state[key])) + '" aria-label="优选方案：' + esc(p.title) + '"', 'flow-preset');
       }).join('') + '</div>' + (!visiblePresets.length ? '<p class="flow-quiet">当前条件没有完整的汇路总价，仍可在下方选择账户与渠道。</p>' : '');
   }
   const transferKeys = ['entryFx', 'sender', 'entryMiddle', 'entryInward'];
   const fundingKeys = ['depositBank', 'depositOther', 'depositBroker', 'brokerSpread', 'brokerFx'];
   const tradingKeys = ['trade', 'brokerAccount'];
   const withdrawKeys = ['withdraw', 'returnInward', 'withdrawMiddle'];
-  const exitKeys = ['returnWire', 'returnOther', 'exitFx', 'card'];
+  const exitKeys = ['returnFx', 'returnWire', 'returnOther', 'exitFx', 'card'];
   const costRows = (r, keys) => (r?.rows || []).filter(x => keys.includes(x.key));
   const sumRows = rows => rows.reduce((sum, x) => sum + (x.cny ?? 0), 0);
   function missingFeeStatus(r, item, part = item) {
     if (item.key === 'brokerSpread') return ((r?.fxMode || state.fxMode) === 'bank' ? shortName(r?.bank) : 'IBKR') + ' ' + state.route + '/USD成交价尚未取得';
     if (part.status || item.status) return part.status || item.status;
-    if (['entryFx', 'exitFx'].includes(item.key)) return '尚缺该银行换汇报价';
+    if (['entryFx', 'returnFx', 'exitFx'].includes(item.key)) return '尚缺该银行换汇报价';
     if (['entryMiddle', 'depositOther', 'withdrawMiddle', 'returnOther'].includes(item.key)) return '此汇路代理／收款行收费未公开';
     return '该项资费依据未取得';
   }
@@ -299,7 +302,7 @@
     const rows = costRows(r, keys), total = sumRows(rows), missing = rows.some(x => x.cny == null);
     const stale = r?.quoteFreshness && (r.quoteFreshness.reference === false || keys.includes('entryFx') && r.quoteFreshness.source === false ||
       keys.includes('brokerSpread') && r.quoteFreshness.entryMarket === false || keys.includes('exitFx') && r.quoteFreshness.exit === false);
-    const variableFx = rows.some(x => x.cny == null && ['entryFx', 'brokerSpread', 'exitFx'].includes(x.key));
+    const variableFx = rows.some(x => x.cny == null && ['entryFx', 'brokerSpread', 'returnFx', 'exitFx'].includes(x.key));
     const partial = !!pending || variableFx || missing;
     const estimated = rows.some(x => x.estimate);
     const label = partial ? estimated ? '费用小计 · 含估算' : '已核费用' : stale ? '历史损耗' : estimated ? '参考损耗' : '损耗';
@@ -309,7 +312,7 @@
       (hasPrice && !partial ? '<small>' + cost(total) + '</small>' : '') + '</div>';
   }
   function nodeBalance(r, value, currency, label, keys = [], blocked = false) {
-    const unknown = costRows(r, keys).some(x => x.cny == null), fx = costRows(r, keys).some(x => x.cny == null && ['entryFx', 'brokerSpread', 'exitFx'].includes(x.key));
+    const unknown = costRows(r, keys).some(x => x.cny == null), fx = costRows(r, keys).some(x => x.cny == null && ['entryFx', 'brokerSpread', 'returnFx', 'exitFx'].includes(x.key));
     const stale = keys.length > 0 && r?.quoteFreshness && (r.quoteFreshness.source === false || keys.includes('brokerSpread') && r.quoteFreshness.entryMarket === false || keys.includes('exitFx') && r.quoteFreshness.exit === false);
     const available = Number.isFinite(value) && !blocked && !fx && !stale;
     return '<div class="flow-node-balance"><small>' + esc(available && unknown && !label.startsWith('已扣') ? '已扣已核费用 · ' + label : label) + '</small><div>' +
@@ -404,9 +407,10 @@
     if (state.outcome !== 'broker-balance') html += edge(data, withdrawKeys, '出金 → ' + shortName(s.returning),
       s.broker?.freeWithdrawals ? action('本月第' + esc(state.withdrawalIndex) + '次出金', 'detail', 'data-value="profit-settings"', 'flow-setting-button') :
         isChequeReturn(s) && s.returning?.localUsdChequeTariff ? action('存票当日第' + esc(state.chequeIndex) + '张', 'detail', 'data-value="profit-settings"', 'flow-setting-button') : '', 'withdraw');
-    if (state.outcome === 'mainland') html += edge(data, exitKeys, '汇回内地 → 美元结汇', account('exitBank', '内地收款银行', s.exit) + select('returnMethod', '汇回渠道', returnMethods()) +
+    if (state.outcome === 'mainland') html += edge(data, exitKeys, state.returnCurrency === 'HKD' ? '香港换港币 → 汇回内地 → 结汇' : '汇回内地 → 美元结汇', account('exitBank', '内地收款银行', s.exit) +
+      select('returnCurrency', '回款币种', [['USD', '美元原币'], ['HKD', '港币 · 香港换汇']]) + select('returnMethod', '汇回渠道', returnMethods()) +
       (s.exit?.id === s.start?.id ? '' : mainlandAccountControl(s.exit, r)), '04',
-      !data.error && !r?.indicativeExit && r?.exitPrice > 1 ? '1 USD = ' + quoteNum(r.exitPrice) + ' CNY' : '');
+      !data.error && !r?.indicativeExit && r?.exitPrice > 0 ? '1 ' + (state.returnCurrency || 'USD') + ' = ' + quoteNum(r.exitPrice) + ' CNY' : '');
     if (state.outcome === 'cnh-card' || state.outcome === 'usd-card') html += edge(data, exitKeys, state.outcome === 'cnh-card' ? (row(r, 'exitFx')?.path ? '美元 → 港币 → 人民币 → 消费' : '美元换人民币 → 消费') : '美元余额 → 原币消费',
       state.outcome === 'cnh-card' && s.returning?.cnhCardRequiresHkid ? checkbox(s.returning.cnhAccountField || 'scCnhAccount', '持香港身份证，已开通' + shortName(s.returning) + '人民币账户') : '', '04',
       data.error || r?.indicativeExit ? '' : esc(state.outcome === 'cnh-card' && r?.exitPrice > 1 ? '1 USD = ' + quoteNum(r.exitPrice) + ' CNH' : '对应币种余额直接扣账'));
@@ -481,17 +485,18 @@
   }
   function balancePresentation(data) {
     const r = data.selected || data.partial, rows = r?.rows || [], total = sumRows(rows), gaps = rows.filter(x => x.cny == null);
-    const incomplete = !data.selected || !!r?.indicativeFx || !!r?.indicativeExit || !!r?.exitIssue;
+    const incomplete = !data.selected || !!r?.indicativeFx || !!r?.indicativeExit || !!r?.indicativeReturnFx || !!r?.exitIssue;
     const stale = !r?.missingQuote && r?.quoteFreshness && (r.quoteFreshness.source === false || r.quoteFreshness.reference === false ||
-      !r.indicativeFx && r.quoteFreshness.entryMarket === false || !r.indicativeExit && r.quoteFreshness.exit === false);
+      !r.indicativeFx && r.quoteFreshness.entryMarket === false || !r.indicativeExit && !r.indicativeReturnFx && r.quoteFreshness.exit === false);
     const partial = incomplete || !!gaps.length;
     const estimated = rows.some(x => x.estimate);
     const label = (stale ? '全程损耗 · 历史报价' : partial ? estimated ? '费用小计 · 含估算' : '全程已核费用' : estimated ? '参考总损耗' : '全程损耗') +
       (r?.trading?.rebateUsd > 0 ? ' · 返还后' : '');
     const canBalance = !!data.selected && !incomplete && !stale && gaps.every(x => ['entryMiddle', 'depositOther', 'withdrawMiddle', 'returnOther'].includes(x.key));
-    const lastBalance = r?.steps?.remitUsd ?? r?.steps?.returnUsd ?? r?.steps?.afterTaxUsd ?? r?.steps?.proceedsUsd ?? r?.steps?.fundedUsd;
+    const actualReturnHkd = !r?.indicativeReturnFx && row(r, 'returnFx')?.cny != null && r?.quoteFreshness?.returnMarket !== false ? r?.steps?.remitHkd ?? r?.steps?.returnHkd : undefined;
+    const lastBalance = actualReturnHkd ?? r?.steps?.remitUsd ?? r?.steps?.returnUsd ?? r?.steps?.afterTaxUsd ?? r?.steps?.proceedsUsd ?? r?.steps?.fundedUsd;
     const canShowLast = Number.isFinite(lastBalance) && !r?.indicativeFx && r?.quoteFreshness?.source !== false && r?.quoteFreshness?.entryMarket !== false;
-    const lastPoint = canShowLast ? { amount: lastBalance, currency: 'USD', rebate: r?.trading?.rebateUsd > 0 && Number.isFinite(r.steps.proceedsUsd), account: shortName(Number.isFinite(r.steps.remitUsd) ? r.exit : Number.isFinite(r.steps.returnUsd) ? r.returning : r.broker) } :
+    const lastPoint = canShowLast ? { amount: lastBalance, currency: actualReturnHkd != null ? 'HKD' : 'USD', rebate: r?.trading?.rebateUsd > 0 && Number.isFinite(r.steps.proceedsUsd), account: shortName(Number.isFinite(r.steps.remitUsd) || actualReturnHkd != null && Number.isFinite(r.steps.remitHkd) ? r.exit : Number.isFinite(r.steps.returnUsd) ? r.returning : r.broker) } :
       r?.indicativeFx && state.fxMode !== 'bank' && Number.isFinite(r?.steps?.brokerOriginal) && r?.quoteFreshness?.source !== false ?
         { amount: r.steps.brokerOriginal, currency: state.route, account: shortName(r.broker) } :
       Number.isFinite(r?.steps?.hongKong) && r?.quoteFreshness?.source !== false ? { amount: r.steps.hongKong, currency: state.route, account: shortName(r.bank) } : null;
@@ -561,10 +566,11 @@
       startBank: ['startSell', 'senderFeeCny', 'entryMiddleCny', 'mainlandMethod'],
       bank: ['entryInwardHkd', 'depositHkd', 'depositOtherCny', 'monthlyHkd', 'entryPrice', 'mainlandMethod', 'depositMethod'],
       broker: ['tradeFeeUsd', 'entryPrice', 'depositHkd', 'depositOtherCny', 'inwardHkd', 'intermediaryCny', 'depositMethod'],
-      returnBank: ['exitPrice', 'inwardHkd', 'intermediaryCny', 'returnWireHkd', 'returnExtraCny', 'returnMonthlyHkd', 'returnMethod'],
+      returnBank: ['exitPrice', 'returnHkdPrice', 'inwardHkd', 'intermediaryCny', 'returnWireHkd', 'returnExtraCny', 'returnMonthlyHkd', 'returnMethod'],
       route: ['startSell', 'entryPrice', 'entryInwardHkd', 'depositHkd', 'depositOtherCny', 'depositMethod', 'mainlandMethod'],
       fxMode: ['entryPrice', 'depositHkd', 'depositOtherCny', 'depositMethod'], depositMethod: ['depositHkd', 'depositOtherCny'],
-      mainlandMethod: ['senderFeeCny', 'entryMiddleCny', 'entryInwardHkd'], outcome: ['exitPrice'],
+      mainlandMethod: ['senderFeeCny', 'entryMiddleCny', 'entryInwardHkd'], outcome: ['exitPrice', 'returnHkdPrice'],
+      returnCurrency: ['exitPrice', 'returnHkdPrice', 'returnWireHkd', 'returnExtraCny'],
       exitBank: ['exitPrice', 'returnExtraCny', 'returnMethod'], returnMethod: ['returnWireHkd', 'returnExtraCny']
     };
     for (const field of reset[key] || []) next[field] = '';
@@ -588,7 +594,7 @@
     return M.calculatorRoute(next);
   }
   function choose(key, value) {
-    const allowed = ['count', 'months', 'startBank', 'bank', 'broker', 'outcome', 'returnBank', 'exitBank', 'route', 'mainlandMethod', 'depositMethod', 'returnMethod', 'fxMode', 'voucherScope', 'zaPerksLevel'];
+    const allowed = ['count', 'months', 'startBank', 'bank', 'broker', 'outcome', 'returnBank', 'exitBank', 'route', 'mainlandMethod', 'depositMethod', 'returnMethod', 'returnCurrency', 'fxMode', 'voucherScope', 'zaPerksLevel'];
     if (!allowed.includes(key)) return;
     if (['startBank', 'exitBank'].includes(key) && !D.calculator.mainland.includes(value)) return;
     if (['bank', 'returnBank'].includes(key) && !D.calculator.hkBanks.includes(value)) return;
@@ -605,13 +611,20 @@
     const small = options.get(key), isMainland = ['startBank', 'exitBank'].includes(key), isBank = ['bank', 'returnBank'].includes(key);
     const list = key === 'outcome' ? outcomes.map(([id, name]) => ({ id, name })) : isMainland ? mainland : isBank ? banks : key === 'broker' ? brokers : (small?.values || []).map(([id, name]) => ({ id, name }));
     const comparison = key === 'startBank' ? M.purchaseComparison({ ...state, date: today() }, comparisonData, window.MONEY_FLOW_QUOTES || {}) : null;
-    const copy = item => key === 'broker' ? item.feeShort : key === 'exitBank' ? '境外USD汇入手续费：' + (item.inwardCny == null ? '尚未取得适用价目' : num(item.inwardCny) + ' CNY') : key === 'startBank' ? sourceTariffCopy(item) : isBank ?
+    const exitCurrency = state.returnCurrency || 'USD', r = key === 'exitBank' ? result().selected || result().partial : null;
+    const exitDate = r?.returnDate || r?.trading?.sellDate || today();
+    const exitQuotes = key === 'exitBank' ? M.quotedMainlandBanks(D, window.MONEY_FLOW_QUOTES || {}, today()) : [];
+    const copy = item => key === 'broker' ? item.feeShort : key === 'exitBank' ? '境外' + exitCurrency + '汇入手续费：' + (item.inwardCny == null ? '尚未取得适用价目' : num(item.inwardCny) + ' CNY') : key === 'startBank' ? sourceTariffCopy(item) : isBank ?
       ({ bochk: '中行同名汇入0；本地美元转账0；账户月费0', hsbc: '汇入及本地美元转账0；One月费按豁免条件', za: '本地美元转账0；账户月费0；可开美股交易', hang: '同名跨域转账0；本地美元转账0；优进月费0', sc: '本地USD转账标准费22 USD；快易月费0', 'icbc-asia': '工行集团汇入60 HKD，绑定e账通优惠期免；本地USD转账50 HKD；综合账户免月费' })[item.id] : '';
     const price = item => {
       if (key === 'exitBank') {
-        const quote = window.MONEY_FLOW_QUOTES?.banks?.[item.id]?.quotes?.USD;
-        return '<span class="flow-picker-price">' + (quote?.buy > 0 && M.quoteFresh(quote, today()) ? '<b>' + quoteNum(quote.buy) + '</b><small>CNY/USD · 结汇</small>' :
-          '<small>' + (quote?.buy > 0 ? 'USD结汇牌价超过3天' : '尚未取得该行USD结汇牌价') + '</small>') + '</span>';
+        const quote = exitQuotes.find(bank => bank.id === item.id)?.quotes?.[exitCurrency];
+        const expired = quote?.spreadDiscount && exitDate > item.fxValidUntil;
+        const actual = item.id === state.exitBank && M.number(state.exitPrice) > 0 ? M.number(state.exitPrice) : null;
+        const buy = actual ?? (expired ? quote.publishedBuy : quote?.buy);
+        return '<span class="flow-picker-price">' + (buy > 0 && (actual != null || M.quoteFresh(quote, today())) ? '<b>' + quoteNum(buy) + '</b><small>CNY/' + exitCurrency +
+          (actual != null ? ' · 实际成交' : ' · 结汇' + (quote?.spreadDiscount && !expired ? ' · 点差五折' : '')) + '</small>' :
+          '<small>' + (buy > 0 ? exitCurrency + '结汇牌价超过3天' : '尚未取得该行' + exitCurrency + '结汇牌价') + '</small>') + '</span>';
       }
       const q = comparison?.rows.find(x => x.bank.id === item.id);
       if (!comparison || state.route === 'CNH') return '';
@@ -626,7 +639,9 @@
   }
   function adjustments() {
     return '<div class="flow-parameter-grid">' + [
-      ['startSell', '每1汇出外币的购入价', 'CNY'], ['entryPrice', '香港每1USD的购入价', state.route], ['exitPrice', '每1USD换回金额', state.outcome === 'cnh-card' ? 'CNH' : 'CNY'],
+      ['startSell', '每1汇出外币的购入价', 'CNY'], ['entryPrice', '香港每1USD的购入价', state.route],
+      ...(state.outcome === 'mainland' && state.returnCurrency === 'HKD' ? [['returnHkdPrice', '回款银行每1USD换回港币', 'HKD']] : []),
+      ['exitPrice', '每1' + (state.outcome === 'mainland' ? state.returnCurrency || 'USD' : 'USD') + '换回金额', state.outcome === 'cnh-card' ? 'CNH' : 'CNY'],
       ['senderFeeCny', '每笔汇出手续费＋电讯费', 'CNY'], ['entryMiddleCny', '每笔跨境代理费', 'CNY'], ['entryInwardHkd', '每笔香港汇入费', 'HKD'],
       ['depositHkd', '股票入金转账费', 'HKD'], ['depositOtherCny', '股票入金收款行／代理费', 'CNY'], ['tradeFeeUsd', '本次买卖实际交易费', 'USD'],
       ['inwardHkd', '出金收款行费', 'HKD'], ['intermediaryCny', '出金代理费', 'CNY'], ['returnWireHkd', '回内地汇出费', 'HKD'], ['returnExtraCny', '回内地其他费用', 'CNY'],

@@ -1,0 +1,43 @@
+{
+  "checkedAt": "2026-10-12",
+  "action": "USD held in a personal Hong Kong bank account -> exchange to HKD at that bank -> remit HKD to the same-name mainland bank account -> settle HKD to CNY at the mainland bank",
+  "officialSources": [
+    {
+      "url": "https://www.bochk.com/tc/crossborder/personal/financialservicehk/remittance.html",
+      "finding": "Personal online/mobile same-name remittances to mainland BOC waive the basic outward fee for supported currencies. The terms exclude agent and other additional charges."
+    },
+    {
+      "url": "https://its.bochk.com/banking/remit/help/ibs_rem_helpApp_boc_s.html",
+      "finding": "BOC Express supports HKD and USD. Its additional fees can include recipient bank costs and BOCHK extra handling; a basic-fee waiver alone does not establish total zero cost."
+    },
+    {
+      "url": "https://www.bochk.com/sc/crossborder/remittance/charges.html",
+      "finding": "Electronic personal BOC Express basic fee is waived. The listed HKD160 USD agent precollection explicitly excludes mainland China; that exclusion is not a universal zero-agent-fee promise."
+    }
+  ],
+  "operationReference": {
+    "url": "https://linux.do/t/topic/2487402",
+    "date": "2026-06-27",
+    "post": 11,
+    "finding": "The author reports several free same-name HKD transfers from BOCHK to mainland BOC followed by mainland settlement, describing transfers within HKD10,000.",
+    "currency": "HKD",
+    "method": "bochk-fast",
+    "maximumReferenceForeign": 10000,
+    "agentCny": 0,
+    "level": "reported",
+    "scope": "Reference for the described small HKD operation only, not an actual bank service cap or fee guarantee for all amounts, USD, ordinary SWIFT, other banks, or reversed directions."
+  },
+  "notAdopted": [
+    "Guide suggestions to misdescribe the real remittance purpose or split transfers to evade checks.",
+    "General marketing claims of unlimited remittances and universal zero fees without actual amount, route or fee evidence.",
+    "A copied third-party article that mixes card balances, account management fees and claims an unrelated HKD60 agent charge."
+  ],
+  "pricing": {
+    "hongKong": "Selected returning bank's actual USD/HKD bidPerUsd",
+    "mainland": "Selected mainland receiving bank's actual HKD cash-transfer buy price in CNY per HKD",
+    "separateRows": ["returnFx", "returnWire", "returnOther", "exitFx"],
+    "retainOnMissingHongKongPrice": "USD before conversion",
+    "retainOnMissingMainlandPrice": "HKD after the priced conversion and known remittance fees",
+    "automaticSplit": false
+  }
+}

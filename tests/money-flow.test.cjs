@@ -1292,6 +1292,71 @@ function moneyUi(input, quotes = cibQuotes, date = '2026-10-09', data = D) {
     act: (action, field, value) => context.window.ChanghengMoneyFlow.handleAction({ dataset: { action: 'money-flow-' + action, field, value } }) };
 }
 
+test('return currency remains in its real action, with two exchange amounts and independent account choices', () => {
+  const input = { ...currentRoute, budgetCny: 5000, count: 1, months: 0, broker: 'za', bank: 'bochk', returnBank: 'bochk', exitBank: 'boc',
+    outcome: 'mainland', returnCurrency: 'HKD', returnMethod: 'bochk-fast', returnHkdPrice: '', exitPrice: '' };
+  const ui = moneyUi(input, require('./fixtures/money-flow-quotes-20261011.json'), '2026-10-12');
+  const html = ui.render();
+  assert.match(html, /香港换港币 → 汇回内地 → 结汇/);
+  assert.match(html, /aria-label="回款币种"/);
+  assert.match(html, /1 HKD = /);
+  assert.match(html, /USD → .* HKD/);
+  assert.match(html, /HKD → .* CNY/);
+  assert.match(html, /USD → HKD换汇差额/);
+  ui.act('choose', 'returnCurrency', 'USD');
+  assert.equal(ui.saved().returnCurrency, 'USD');
+  assert.equal(ui.saved().returnHkdPrice, '');
+  assert.equal(ui.saved().exitPrice, '');
+  for (const key of ['startBank', 'bank', 'broker', 'returnBank', 'exitBank', 'budgetCny', 'count']) assert.equal(ui.saved()[key], input[key], key);
+  assert.match(ui.render(), /汇回内地 → 美元结汇/);
+  assert.doesNotMatch(ui.render(), /USD → HKD换汇差额/);
+  ui.act('choose', 'returnCurrency', 'HKD');
+  const restored = moneyUi(ui.saved(), require('./fixtures/money-flow-quotes-20261011.json'), '2026-10-12');
+  assert.match(restored.render(), /香港换港币 → 汇回内地 → 结汇/);
+});
+
+test('missing return HKD price keeps USD and missing mainland HKD price keeps actual HKD', () => {
+  const q = require('./fixtures/money-flow-quotes-20261011.json');
+  const input = { ...currentRoute, broker: 'za', bank: 'bochk', returnBank: 'sc', exitBank: 'boc', outcome: 'mainland', returnCurrency: 'HKD', returnMethod: 'swift', months: 0 };
+  const ui = moneyUi(input, q, '2026-10-12');
+  const r = M.calculatorJourney(input, D, q).selected;
+  assert.match(ui.render(), new RegExp('最后可计余额 · [^<]*.*?' + r.steps.returnUsd.toFixed(2) + '\\s*<small>USD', 's'));
+  assert.doesNotMatch(ui.render(), /全程损耗 · 历史报价/);
+  const other = { ...input, returnBank: 'bochk', exitBank: 'sc', returnMethod: 'swift' };
+  const actual = M.calculatorJourney(other, D, q).selected;
+  assert.match(moneyUi(other, q, '2026-10-12').render(), new RegExp('最后可计余额 · [^<]*.*?' + actual.steps.remitHkd.toFixed(2) + '\\s*<small>HKD', 's'));
+});
+
+test('preferred cards preserve the selected returning currency and never apply a USD settlement to HKD', () => {
+  const q = require('./fixtures/money-flow-quotes-20261011.json');
+  const input = { ...currentRoute, budgetCny: 5000, count: 1, months: 0, broker: 'za', outcome: 'mainland', returnCurrency: 'HKD' };
+  const offered = M.calculatorRecommendations(input, D, q);
+  assert.ok(offered.plans.length > 1);
+  assert.ok(offered.plans.every(p => p.config.returnCurrency === 'HKD' && p.result.returnCurrency === 'HKD'));
+  const ui = moneyUi(input, q, '2026-10-12'); ui.render();
+  ui.act('preset', '', offered.plans[0].id);
+  assert.equal(ui.saved().returnCurrency, 'HKD');
+  assert.equal(ui.saved().broker, 'za');
+  const actual = M.calculatorJourney(ui.saved(), D, q).selected;
+  close(actual.costCny, offered.plans[0].result.costCny);
+});
+
+test('mainland return picker shows the same currency, discount expiry and actual execution price as settlement', () => {
+  const q = require('./fixtures/money-flow-quotes-20261011.json');
+  const base = { ...currentRoute, broker: 'za', bank: 'bochk', returnBank: 'bochk', exitBank: 'cib', outcome: 'mainland', returnCurrency: 'HKD', returnMethod: 'swift' };
+  for (const changes of [{ months: 1 }, { months: 12 }, { months: 12, exitPrice: .82 }, { months: 1, returnCurrency: 'USD' }]) {
+    const input = { ...base, ...changes }, ui = moneyUi(input, q, '2026-10-12'); ui.render(); ui.act('pick', '', 'exitBank');
+    const r = M.calculatorJourney(input, D, q).selected;
+    const option = ui.modal().match(/data-field="exitBank" data-value="cib"[^>]*>(.*?)<\/button>/s)?.[1];
+    assert.ok(option);
+    assert.ok(option.includes('<b>' + String(Number(r.exitPrice.toFixed(8))) + '</b>'), option);
+    assert.ok(option.includes('CNY/' + input.returnCurrency), option);
+    assert.ok(option.includes('境外' + input.returnCurrency + '汇入'), option);
+    if (input.returnCurrency === 'HKD') assert.doesNotMatch(option, /USD/);
+    assert.equal(option.includes('实际成交'), !!changes.exitPrice);
+  }
+});
+
 test('a service channel is offered only for its evidenced bank, currency and current date; expiry preserves account choices', () => {
   const data = structuredClone(D), quotes = require('./fixtures/money-flow-quotes-20261011.json');
   data.entryServiceRoutes = [{ startBank: 'cib', bank: 'hsbc', method: 'cib-go', currencies: ['USD'],

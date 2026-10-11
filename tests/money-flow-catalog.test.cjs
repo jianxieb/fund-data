@@ -128,9 +128,9 @@ test('uSMART same-bank funding includes the published HSBC account without waivi
   assert.equal(explicitCrossBank.rows.find(row => row.key === 'depositOther').cny, null);
 });
 
-test('all 218700 catalogue combinations retain selection and either reconcile or name the exact local issue', () => {
+test('all 262440 catalogue combinations including USD and HKD returns retain selection and reconcile or name the exact local issue', () => {
   const r = auditCurrent({ quotes: Q, date: config.date });
-  assert.equal(r.combinationsChecked, 218700);
+  assert.equal(r.combinationsChecked, 262440);
   assert.equal(r.completeQuoteCombinations + r.partialQuoteCombinations + r.inputOrRouteIssues, r.combinationsChecked);
   assert.equal(r.ledgerChecks, r.completeQuoteCombinations + r.partialQuoteCombinations);
   assert.ok(r.completeQuoteCombinations > 0); assert.ok(r.partialQuoteCombinations > 0);
@@ -148,6 +148,7 @@ test('all 218700 catalogue combinations retain selection and either reconcile or
     assert.deepEqual(profile.coverage.fxModes, ['auto', 'bank', 'manual']);
     assert.deepEqual(profile.coverage.depositMethods, ['chats', 'chats-citic', 'chats-hang', 'chats-hsbc', 'chats-icbc-asia', 'edda', 'fps', 'internal', 'swift', 'via-bochk', 'via-hang', 'via-hsbc', 'via-icbc-asia']);
     assert.deepEqual(profile.coverage.returnMethods, ['bochk-fast', 'icbc-express', 'linked', 'swift']);
+    assert.deepEqual(profile.coverage.returnCurrencies, ['HKD', 'USD']);
     assert.equal(Object.values(profile.sources).reduce((sum, source) => sum + source.checked, 0), profile.checked);
   }
   assert.equal(r.channelProfiles[0].profile.hsbcBalanceWaiver, false);
@@ -155,11 +156,11 @@ test('all 218700 catalogue combinations retain selection and either reconcile or
   assert.deepEqual(r.channelProfiles[2].qualificationCoverage, ['chequePreFilled', 'chiefMonthly', 'cnHangFeeWaived', 'cnHsbcFeeWaived', 'cnScFeeWaived',
     'hsbcBalanceWaiver', 'icbcCnhAccount', 'icbcEAccount', 'scCnhAccount', 'trade25', 'usmartPromo', 'zaPerksLevel', 'zaSwiftUsed']);
   const bounds = r.numericBoundaries;
-  assert.equal(bounds.checked, 52650);
+  assert.equal(bounds.checked, 63180);
   assert.deepEqual(bounds.profiles.map(p => p.id), ['principal-0.01', 'principal-1', 'principal-100', 'principal-1000', 'principal-100000', 'principal-1000000',
     'transfers-120', 'holding-1200-months', 'share-price-0.01', 'share-price-1000000', 'orders-120-per-side', 'impossible-loss', 'oversized-tax']);
   for (const p of bounds.profiles) {
-    assert.equal(p.checked, 4050); assert.equal(p.priced + p.partial + p.routeIssues, p.checked);
+    assert.equal(p.checked, 4860); assert.equal(p.priced + p.partial + p.routeIssues, p.checked);
     assert.equal(p.ledgerChecks, p.priced + p.partial); assert.ok(p.referencePriced <= p.priced);
     if (p.id === 'impossible-loss' || p.id === 'oversized-tax') {
       assert.equal(p.routeIssues, p.checked); assert.ok(p.retainedPartialResults > 0);

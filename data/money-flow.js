@@ -34,6 +34,12 @@
         estimate: '按2026年美元直达汇丰香港的公开到账记录测算，最小已录金额201 USD；改走代理行可能产生扣费，不属于本行费用豁免',
         sources: ['cibSmallUsdCase', 'cibUsdCase', 'cibHsbcCase', 'cibRouteCounterexample'] }
     ],
+    returnTransferReferences: [
+      { bank: 'bochk', exitBank: 'boc', currencies: ['HKD'], method: 'bochk-fast', maximumReferenceForeign: 10000,
+        intermediaryCny: 0, level: 'reported', checkedAt: '2026-10-12', evidence: '港币同名中银快汇 · 2026年6月多次到账记录',
+        estimate: '按一万港币以内的同名快汇操作记录测算代理费；不扩展到大额、美元或普通SWIFT',
+        sources: ['bochkSame', 'bochk', 'bochkRemitHelp', 'bochkHkdReturnCase', 'bocBankAnswer2026'] }
+    ],
     evidenceGaps: [
       { bank: 'boc', channel: 'boc-mobile', checkedAt: '2026-10-11', items: ['USD/HKD同行路径代理费的银行资费依据'], source: 'bocMobileUsdGuide', finding: '2026-05-29中行山西省分行在新华网的供稿已确认手机银行向境外中行汇款手续费及电报费免；该两项不再仅依赖搜狐转载。2月9日同行SHA操作记录支持代理费0情景，仍不扩展成所有币种／汇路的代理费豁免。' },
       { bank: 'boc', channel: 'payment-connect', checkedAt: '2026-10-09', items: ['中行跨境支付通本次南向汇出服务费', '本人剩余便利化额度及银行交易限额'], source: 'bocPaymentConnect', finding: '中行确认人民币汇出、人民币或港币到账；黄石政府网2025-07-01记录中行南向人民币汇款无额外手续费实例。金管局2026-09-08更新页确认南向受年度等值5万美元便利化额度约束。实例不等同2026年全国账户永久免费承诺；本次费率可按App确认页填写，不套用SWIFT电讯费，不纳入美股入金推荐。' },
@@ -120,6 +126,8 @@
       hangLocal: { name: '恒生香港 · 免费网上本地转账', url: 'https://www.hangseng.com/zh-cn/personal/banking/fps/' },
       bochk: { name: '中银香港 · 汇款收费', url: 'https://www.bochk.com/sc/crossborder/remittance/charges.html' },
       bochkSame: { name: '中银香港 · 内地中行同名汇款豁免', url: 'https://www.bochk.com/sc/crossborder/personal/financialservicehk/remittance.html' },
+      bochkRemitHelp: { name: '中银香港 · 港币／美元快汇及代理费用说明', url: 'https://its.bochk.com/banking/remit/help/ibs_rem_helpApp_boc_s.html' },
+      bochkHkdReturnCase: { name: '2026-06-27操作记录 · 港币同名快汇到内地中行后结汇', url: 'https://linux.do/t/topic/2487402' },
       za: { name: '众安银行 · 2026年6月转账收费更新', url: 'https://bank.za.group/hk/notice-detail/979ca80f-2fb4-4add-b30c-18144d3a757f' },
       zaNov: { name: '众安银行 · 11月1日将调整SWIFT汇出费', url: 'https://bank.za.group/hk/notice-detail/9275c1df-5e53-4327-b0f2-1862361ce630' },
       zaTariff: { name: 'ZA Bank · 个人银行服务收费简介（本地与海外SWIFT）', url: 'https://bank.za.group/agreement/pdf/zh_HK/1000181' },
