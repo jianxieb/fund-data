@@ -526,6 +526,28 @@ test('broker fee caps preserve each provider’s minimum/cap precedence', () => 
   close(M.cappedCharge(broker('usmart').platform, .1, 10), 1.88);
   close(M.cappedCharge(broker('za').platform, .1, 10), 1.99);
 });
+test('sub-one-share orders use the published IBKR and uSMART fractional tariffs', () => {
+  for (const [value, price, expected] of [[5, 10, .05], [.75, 15, .01], [500, 1000, 5]]) {
+    const cash = value + expected + value / price * .000003;
+    const r = M.brokerTradingFees({ ...feeConfig, sharePriceUsd: price }, broker('ibkr'), cash, 0, feeRefs);
+    assert.ok(!r.error); close(r.investUsd, value); close(r.buyFeeUsd, cash - value);
+    close(r.orders[0].commission, expected); close(r.orders[1].commission, expected);
+    close(r.investUsd + r.buyFeeUsd, cash);
+  }
+  for (const usmartPromo of [false, true]) {
+    const r = M.brokerTradingFees({ ...feeConfig, sharePriceUsd: 99, usmartPromo, months: 12 }, broker('usmart'), 10, 0, feeRefs);
+    assert.ok(!r.error); close(r.orders[0].platform, .99); close(r.orders[1].platform, .99);
+    assert.equal(r.orders[0].offer, ''); close(r.investUsd + r.buyFeeUsd, 10);
+    assert.ok(r.orders.every(order => order.clearing > 0 && order.cat > 0));
+  }
+});
+test('fractional pricing does not miss an affordable whole-share order at a tariff boundary', () => {
+  const r = M.brokerTradingFees({ ...feeConfig, sharePriceUsd: 1000 }, broker('ibkr'), 1001.000003, 0, feeRefs);
+  assert.ok(!r.error); close(r.investUsd, 1000); close(r.orders[0].commission, 1);
+  close(r.buyFeeUsd, 1.000003); close(r.investUsd + r.buyFeeUsd, 1001.000003);
+  const tiny = M.brokerTradingFees(feeConfig, broker('ibkr'), .005, 0, feeRefs);
+  assert.match(tiny.error, /不足/);
+});
 test('buy commissions fit inside USD cash; regulatory fees are separate from zero commission', () => {
   for (const id of ['ibkr', 'chief', 'usmart', 'za']) {
     const r = M.brokerTradingFees(feeConfig, broker(id), 10000, 0, feeRefs);

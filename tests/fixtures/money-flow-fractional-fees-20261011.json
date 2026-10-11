@@ -1,0 +1,31 @@
+{
+  "checkedOn": "2026-10-11",
+  "ibkr": {
+    "url": "https://www.interactivebrokers.com/en/pricing/commissions-stocks.php",
+    "section": "United States, disclosure 11",
+    "scope": "美股不足一股订单；普通整股Pro Fixed规则仍独立适用",
+    "commissionRate": 0.01,
+    "minimumUsd": 0.01,
+    "publishedExamples": [
+      { "shares": 0.5, "priceUsd": 10, "valueUsd": 5, "commissionUsd": 0.05 },
+      { "shares": 0.05, "priceUsd": 15, "valueUsd": 0.75, "commissionUsd": 0.01 }
+    ]
+  },
+  "usmart": {
+    "url": "https://hk.usmartglobal.com/zh-cn/charges",
+    "section": "美股碎股收费",
+    "sharesBelow": 1,
+    "commissionUsd": 0,
+    "platformUsd": 0.99,
+    "scope": "数量达到一股按账户所属套餐；不足一股的固定平台费不依赖开户180天推广，清算及监管费另计"
+  },
+  "chiefMonthlyCrossCheck": {
+    "url": "https://chief-website.oss-cn-hongkong.aliyuncs.com/Terms/cn/mip-202601.pdf",
+    "documentVersion": "EBD 20260126 V8",
+    "section": "第6至8页，美股月供条款",
+    "firstContributionWaiverUsd": 500,
+    "excessPlatformRate": 0.0015,
+    "fractionalMinimumContributionUsd": 1,
+    "scope": "保留既有500美元优惠算法；不由收费页简略文案推导全额平台费豁免，也不采用旧FAQ的整股模式限制"
+  }
+}

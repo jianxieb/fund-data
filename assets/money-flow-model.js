@@ -391,7 +391,15 @@
         if (kind === 'sell' && !sameMonth) { turnover = usedTurnover; orderIndex = usedQuota; }
         for (let i = 0; i < count; i++) {
           const value = total / count, qty = shares / count, stockPrice = value / qty;
-          let commission = cappedCharge(broker.commission, qty, value), platform = cappedCharge(broker.platform, qty, value), offer = '';
+          const fractional = qty > 0 && qty < 1 && value > 0;
+          let commission = cappedCharge(broker.commission, qty, value), platform = cappedCharge(broker.platform, qty, value), offer = '', pricing = '';
+          if (fractional && broker.fractionalCommission) {
+            commission = Math.max(broker.fractionalCommission.minimum, value * broker.fractionalCommission.rate);
+            pricing = '不足1股 · 佣金1%，最低0.01 USD';
+          }
+          if (fractional && broker.fractionalPlatformUsd != null) {
+            platform = broker.fractionalPlatformUsd; pricing = '不足1股 · 平台0.99 USD/笔';
+          }
           if (broker.id === 'hsbc') {
             // The entire first order crossing HKD250,000 is exempt (tariff appendix note 3).
             const chargedQty = config.trade25 && turnover <= 250000 ? 0 : qty;
@@ -416,7 +424,7 @@
           const voucherBase = voucher.scope === 'platform' ? platform : voucher.scope === 'both' ? commission + platform : commission;
           const discount = remainingVoucher > 0 && d <= voucher.expiry && couponsUsed < voucher.orders ? Math.min(remainingVoucher, voucherBase) : 0;
           if (discount > 0) { remainingVoucher -= discount; couponsUsed++; }
-          orders.push({ kind, date: d, value, shares: qty, commission, platform, clearing, sec, taf, cat, discount, offer,
+          orders.push({ kind, date: d, value, shares: qty, commission, platform, clearing, sec, taf, cat, discount, offer, pricing,
             feeUsd: commission + platform + clearing + sec + taf + cat - discount });
           turnover += value * refs.USD / refs.HKD; orderIndex++;
         }
@@ -425,6 +433,14 @@
       return orders;
     };
     let low = 0, high = cashUsd;
+    // A sub-one-share IBKR order can cost more than a one-share order. Solve
+    // the affordable whole-share branch first instead of assuming monotonic
+    // fees across that boundary and overlooking a valid purchase.
+    const wholeBoundary = price * buys;
+    if ((broker.fractionalCommission || broker.fractionalPlatformUsd != null) && wholeBoundary <= cashUsd) {
+      const boundaryFee = estimate(wholeBoundary).filter(order => order.kind === 'buy').reduce((sum, order) => sum + order.feeUsd, 0);
+      if (wholeBoundary + boundaryFee <= cashUsd) low = wholeBoundary; else high = wholeBoundary;
+    }
     for (let i = 0; i < 60; i++) {
       const middle = (low + high) / 2;
       const buyFee = estimate(middle).filter(order => order.kind === 'buy').reduce((sum, order) => sum + order.feeUsd, 0);
