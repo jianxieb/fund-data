@@ -75,7 +75,12 @@ class QuoteTable(HTMLParser):
 
 def validate_quote(buy, sell, at, divisor=100):
     buy, sell = round(float(buy) / divisor, 8), round(float(sell) / divisor, 8)
-    timestamp = datetime.fromisoformat(at)
+    # Python 3.9 accepts only three or six fractional second digits, while
+    # the bank API also emits e.g. .07754. Pad for validation only; preserve
+    # the original source timestamp in the saved quote.
+    compatible_at = re.sub(r"(\d{2}:\d{2}:\d{2}\.)(\d{1,6})(?!\d)",
+                           lambda match: match[1] + match[2].ljust(6, "0"), at)
+    timestamp = datetime.fromisoformat(compatible_at)
     if not 0 < buy <= sell or sell / buy > 1.15:
         raise ValueError("invalid bank bid/ask")
     if timestamp.year < 2025:

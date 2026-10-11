@@ -14,6 +14,27 @@ from scripts.refresh_money_flow_quotes import (parse_boc, parse_cmb, parse_bochk
 
 
 class BankQuotesTests(unittest.TestCase):
+    def test_icbc_asia_current_fractional_timestamp_refreshes_on_python_39(self):
+        raw = json.loads((Path(__file__).parent / 'fixtures' / 'icbc-asia-fx-fractional-20261012.json').read_text())
+        quotes = parse_icbc_asia(raw)
+        self.assertEqual(quotes['HKD']['asOf'], '2026-10-12 05:50:05.07754')
+        self.assertEqual(quotes['HKD']['bidPerUsd'], 7.8344)
+        self.assertEqual(quotes['HKD']['askPerUsd'], 7.8644)
+        self.assertEqual(quotes['CNH']['legs'], {
+            'usdBuy': 7.8344, 'usdSell': 7.8644, 'cnhBuy': 1.16501, 'cnhSell': 1.18001})
+        snapshot = {'offshoreUsd': {'icbc-asia': {'quotes': {
+            'HKD': {'bidPerUsd': 7.8344, 'askPerUsd': 7.8644, 'asOf': '2026-10-12 02:40:04.117532'}}}}}
+        merge_bank(snapshot, 'icbc-asia', quotes)
+        self.assertEqual(snapshot['offshoreUsd']['icbc-asia']['quotes']['HKD']['asOf'],
+                         raw['data'][0]['updateTime'])
+        for fraction in ['1', '12', '1234', '12345', '123456']:
+            timestamp = '2026-01-02 10:00:00.' + fraction
+            self.assertEqual(validate_quote(668, 671, timestamp)['asOf'], timestamp)
+        with self.assertRaisesRegex(ValueError, 'future'):
+            validate_quote(668, 671, '2099-01-02 10:00:00.07754')
+        with self.assertRaises(ValueError):
+            validate_quote(668, 671, '2026-01-02 10:00:00.invalid')
+
     def test_icbc_asia_platform_tls_fallback_keeps_certificate_checks_and_does_not_mask_other_errors(self):
         raw = (Path(__file__).parent / 'fixtures' / 'icbc-asia-fx-20261012.json').read_text()
         with patch('scripts.refresh_money_flow_quotes.urlopen', side_effect=URLError('UNSAFE_LEGACY_RENEGOTIATION_DISABLED')), \
