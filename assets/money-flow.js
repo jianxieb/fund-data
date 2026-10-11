@@ -3,7 +3,7 @@
   const D = window.MONEY_FLOW, M = window.ChanghengMoneyFlowModel, STORE = 'changheng.money-flow.v4';
   const defaults = { budgetCny: '100000', currency: 'CNY', plan: 'boc-za', activeStep: '01', startBank: 'boc', route: 'USD', bank: 'bochk', returnBank: 'bochk', exitBank: 'hsbc', outcome: 'broker-balance',
     mainlandMethod: 'boc-mobile', depositMethod: 'chats', fxMode: 'manual', returnMethod: '', comparison: 'start', count: '1', usedFreeTransfers: '0',
-    months: '12', balanceHkd: '0', returnBalanceHkd: '0', profitUsd: '0', taxableCny: '', taxRate: '20', creditCny: '0', withdrawalIndex: '1', chequeIndex: '1', chequePreFilled: false, tradeFeeUsd: '',
+    months: '12', balanceHkd: '0', returnBalanceHkd: '0', bankBalancesHkd: {}, profitUsd: '0', taxableCny: '', taxRate: '20', creditCny: '0', withdrawalIndex: '1', chequeIndex: '1', chequePreFilled: false, tradeFeeUsd: '',
     broker: 'za', buyOrders: '1', sellOrders: '1', sharePriceUsd: '100', trade25: false, chiefMonthly: false, usmartPromo: false, zaLv2: false,
     hsbcBalanceWaiver: false, scCnhAccount: false, otherTurnoverHkd: '0', usedPromoOrders: '0', usmartDays: '0', useVoucher: false, voucherScope: 'platform', voucherUsd: '0', voucherOrders: '1', voucherExpiry: '',
     cnHsbcFeeWaived: false, cnHangFeeWaived: false, cnScFeeWaived: false, cnHsbcFreeMonths: '0', cnHangFreeMonths: '0', cnScFreeMonths: '0',
@@ -201,7 +201,8 @@
   function presetState(p) {
     const next = M.calculatorRoute({ ...state, fxMode: '', depositMethod: '', returnMethod: '', ...p.config, plan: p.id, activeStep: '01' });
     for (const key of quoteKeys) next[key] = '';
-    next.tradeFeeUsd = ''; next.balanceHkd = '0'; next.returnBalanceHkd = '0';
+    next.tradeFeeUsd = '';
+    Object.assign(next, M.calculatorAccountState(state, next, D));
     return next;
   }
   let visiblePresets = [];
@@ -503,8 +504,7 @@
       exitBank: ['exitPrice', 'returnExtraCny', 'returnMethod'], returnMethod: ['returnWireHkd', 'returnExtraCny']
     };
     for (const field of reset[key] || []) next[field] = '';
-    if (key === 'bank') next.balanceHkd = '0';
-    if (key === 'returnBank') next.returnBalanceHkd = '0';
+    Object.assign(next, M.calculatorAccountState(state, next, D));
     if (key === 'broker') next.useVoucher = false;
     if (key === 'bank' || key === 'route') { next.senderFeeCny = ''; next.entryMiddleCny = ''; }
     if (key === 'returnBank' && next.outcome === 'cnh-card') next.exitPrice = '';

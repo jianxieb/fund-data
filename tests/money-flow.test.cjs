@@ -1051,6 +1051,31 @@ test('applying every upstream preset preserves an enabled voucher for the same s
   }
 });
 
+test('presets and bank changes keep asset balances attached to their own bank and use them for securities settlement', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  for (const broker of D.calculator.brokers) {
+    const input = { ...currentRoute, broker, bank: 'hsbc', returnBank: 'bochk', outcome: 'broker-balance', months: 12,
+      balanceHkd: '10000', returnBalanceHkd: '0', hsbcBalanceWaiver: false };
+    const first = moneyUi(input, quotes, '2026-10-11');
+    const cards = [...first.render().matchAll(/<button[^>]*data-action="money-flow-preset"[\s\S]*?<\/button>/g)].map(match => match[0]);
+    assert.ok(cards.length >= 2, broker);
+    for (const card of cards) {
+      const ui = moneyUi(input, quotes, '2026-10-11'); ui.render(); ui.act('preset', '', card.match(/data-value="([^"]+)"/)[1]);
+      const saved = ui.saved(), r = M.calculatorJourney({ ...saved, date: '2026-10-11' }, D, quotes).selected;
+      assert.equal(saved.hsbcBalanceWaiver, false); assert.equal(saved.broker, broker);
+      assert.equal(M.number(saved.balanceHkd), saved.bank === 'hsbc' ? 10000 : 0);
+      assert.ok(card.includes(r.costCny.toFixed(2) + ' CNY'));
+      const hsbc = r.rows.find(row => row.key === 'account').items.find(item => item.bankId === 'hsbc');
+      if (hsbc) close(hsbc.cny, 0);
+    }
+    first.act('choose', 'bank', 'za'); assert.equal(M.number(first.saved().balanceHkd), 0);
+    first.act('choose', 'bank', 'hsbc'); assert.equal(M.number(first.saved().balanceHkd), 10000);
+    assert.equal(first.saved().hsbcBalanceWaiver, false);
+    const restored = moneyUi(first.saved(), quotes, '2026-10-11'); restored.render();
+    assert.equal(M.number(restored.saved().balanceHkd), 10000);
+  }
+});
+
 test('CIB public quotes apply the current card half-spread exactly once, with dated expiry', () => {
   const raw = structuredClone(cibQuotes.banks.cib);
   const r = M.journeyPlans(currentRoute, D, cibQuotes).selected;
@@ -2142,10 +2167,13 @@ test('bank asset assumptions and confirmed quotes stay bound to their selected a
   const quotes = require('./fixtures/money-flow-quotes-20261011.json');
   for (const field of ['bank', 'returnBank']) for (const from of D.calculator.hkBanks) for (const to of D.calculator.hkBanks) {
     if (from === to) continue;
-    const ui = moneyUi({ ...chequeRoute, outcome: 'usd-balance', [field]: from, balanceHkd: '10000', returnBalanceHkd: '20000', mainlandMethod: '' }, quotes, '2026-10-11');
+    const input = { ...chequeRoute, outcome: 'usd-balance', [field]: from, balanceHkd: '10000', returnBalanceHkd: '20000', mainlandMethod: '' };
+    const ui = moneyUi(input, quotes, '2026-10-11');
     ui.render(); ui.act('choose', field, to);
     const bound = field === 'bank' ? 'balanceHkd' : 'returnBalanceHkd', independent = field === 'bank' ? 'returnBalanceHkd' : 'balanceHkd';
-    assert.equal(ui.saved()[bound], '0'); assert.equal(ui.saved()[independent], field === 'bank' ? '20000' : '10000');
+    const alreadyKnown = to === input[field === 'bank' ? 'returnBank' : 'bank'];
+    assert.equal(M.number(ui.saved()[bound]), alreadyKnown ? field === 'bank' ? 20000 : 10000 : 0);
+    assert.equal(ui.saved()[independent], field === 'bank' ? '20000' : '10000');
   }
   const ui = moneyUi({ ...chequeRoute, outcome: 'usd-balance', bank: 'bochk', returnBank: 'bochk', balanceHkd: '10000', returnBalanceHkd: '20000',
     monthlyHkd: '5', returnMonthlyHkd: '6', hsbcBalanceWaiver: false }, quotes, '2026-10-11');

@@ -540,6 +540,24 @@
       rows: legs.flatMap(leg => leg.rows), complete, indicative, missing };
   }
   const bankQuoteKeys = ['senderFeeCny', 'entryMiddleCny', 'entryInwardHkd', 'depositHkd', 'depositOtherCny', 'inwardHkd', 'intermediaryCny', 'returnWireHkd', 'returnExtraCny', 'monthlyHkd', 'returnMonthlyHkd', 'startSell', 'entryPrice', 'exitPrice'];
+  function calculatorAccountState(config, route, data) {
+    // Asset qualification belongs to the bank, including a securities
+    // settlement bank used between the entry and withdrawal accounts.
+    const balances = {};
+    const remember = (id, value) => {
+      if (!data.hkBanks.some(bank => bank.id === id)) return;
+      const amount = number(value);
+      if (positive(amount)) balances[id] = amount;
+      else delete balances[id];
+    };
+    for (const [id, value] of Object.entries(config.bankBalancesHkd || {})) remember(id, value);
+    if (Object.hasOwn(config, 'balanceHkd')) remember(config.bank, config.balanceHkd);
+    if (config.outcome !== 'broker-balance' && config.returnBank !== config.bank && Object.hasOwn(config, 'returnBalanceHkd'))
+      remember(config.returnBank, config.returnBalanceHkd);
+    return { bankBalancesHkd: balances,
+      balanceHkd: route.bank === config.bank ? config.balanceHkd ?? '0' : balances[route.bank] ?? '0',
+      returnBalanceHkd: route.returnBank === config.returnBank ? config.returnBalanceHkd ?? '0' : balances[route.returnBank] ?? '0' };
+  }
   let mainlandPlanCache;
   function routeConfiguration(r) {
     return { startBank: r.start.id, bank: r.bank.id, returnBank: r.returning.id, exitBank: r.exit.id, route: r.route, broker: r.broker.id,
@@ -593,6 +611,7 @@
     if (!refs) return empty('缺少有效的USD/CNY、USD/HKD或USD/CNH参考牌价。');
     const extraCny = (number(config.openingCny) ?? 0) + opportunityCost(number(config.extraCapitalCny) ?? 0, number(config.annualGapPct) ?? 0, number(config.months));
     const broker = selectedBroker(config, data), autoTrade = !!config.broker, tradingCache = new Map(), senderCache = new Map();
+    const bankBalances = calculatorAccountState(config, config, data).bankBalancesHkd;
     function calculate(start, bank, route, fxMode, exit, returning, selections = {}, provider = broker) {
       const settlementBank = data.hkBanks.find(row => row.id === provider.integratedBank);
       const internalDeposit = !!settlementBank && bank.id === settlementBank.id ||
@@ -604,13 +623,14 @@
       const isSelectedReturn = (config.returnBank || config.bank) === returning.id;
       const own = (key, selected) => selected && !selections.public ? number(config[key]) : null;
       const hkAccountItem = (accountBank, balanceHkd, override) => {
+        balanceHkd ??= bankBalances[accountBank.id] ?? 0;
         const monthlyHkd = maintenance(accountBank, balanceHkd, 1, override ?? (accountBank.id === 'hsbc' && config.hsbcBalanceWaiver ? 0 : null));
-        return { region: 'hong-kong', bankId: accountBank.id, label: accountBank.name + '期间管理费', months, monthlyHkd,
+        return { region: 'hong-kong', bankId: accountBank.id, label: accountBank.name + '期间管理费', months, monthlyHkd, balanceHkd,
           cny: monthlyHkd == null ? null : monthlyHkd * months * refs.HKD };
       };
-      const accountItems = [hkAccountItem(bank, own('balanceHkd', isSelectedBank) ?? 0, own('monthlyHkd', isSelectedBank))];
-      if (!keepInBroker && bank.id !== returning.id) accountItems.push(hkAccountItem(returning, own('returnBalanceHkd', isSelectedReturn) ?? 0, own('returnMonthlyHkd', isSelectedReturn)));
-      if (settlementBank && ![bank.id, ...(keepInBroker ? [] : [returning.id])].includes(settlementBank.id)) accountItems.push(hkAccountItem(settlementBank, 0, null));
+      const accountItems = [hkAccountItem(bank, own('balanceHkd', isSelectedBank), own('monthlyHkd', isSelectedBank))];
+      if (!keepInBroker && bank.id !== returning.id) accountItems.push(hkAccountItem(returning, own('returnBalanceHkd', isSelectedReturn), own('returnMonthlyHkd', isSelectedReturn)));
+      if (settlementBank && ![bank.id, ...(keepInBroker ? [] : [returning.id])].includes(settlementBank.id)) accountItems.push(hkAccountItem(settlementBank, null, null));
       // Mainland premium plans charge in CNY. One account used at both ends
       // incurs one period fee; an unvisited return account incurs none.
       const mainlandAccounts = [...new Map([start, ...(outcome === 'mainland' ? [exit] : [])].map(item => [item.id, item])).values()];
@@ -1214,10 +1234,12 @@
     const cleared = [...bankQuoteKeys, 'usdCny', 'usdHkd', 'usdCnh', 'tradeFeeUsd', 'balanceHkd', 'returnBalanceHkd'];
     // The chosen stock account is fixed across these upstream comparisons.
     // Its confirmed coupon remains applicable; bank execution overrides do not.
-    const profile = { ...config, ...Object.fromEntries(cleared.map(key => [key, ''])) };
+    const accountState = calculatorAccountState(config, config, data);
+    const profile = { ...config, ...Object.fromEntries(cleared.map(key => [key, ''])), bankBalancesHkd: accountState.bankBalancesHkd };
     for (const key of [...routeKeys, 'plan', 'activeStep', 'comparison']) delete profile[key];
     profile.broker = catalogueBroker(config.broker, data);
-    const cacheKey = JSON.stringify(profile);
+    const cacheKey = JSON.stringify([profile, config.bank, config.balanceHkd,
+      profile.outcome === 'broker-balance' ? '' : config.returnBank, profile.outcome === 'broker-balance' ? '' : config.returnBalanceHkd]);
     if (recommendationCache?.key === cacheKey && recommendationCache.data === data && recommendationCache.quotes === quotes) return recommendationCache.result;
     // Compare upstream strategies for the chosen stock account. Five copies of
     // one cheap wire with different stock venues are not five useful strategies.
@@ -1226,7 +1248,8 @@
     let checked = 0, complete = 0;
     const run = candidate => {
       checked++;
-      return calculatorJourney(calculatorRoute({ ...profile, ...candidate }), data, quotes);
+      const route = calculatorRoute({ ...profile, ...candidate });
+      return calculatorJourney({ ...route, ...calculatorAccountState(config, route, data) }, data, quotes);
     };
     // Reject incomplete entry legs before expanding stock venues and endpoints.
     // This preserves the entire picker catalogue without rewarding missing fees.
@@ -1270,5 +1293,5 @@
     return result;
   }
   function catalogueBroker(id, data) { return data.calculator.brokers.includes(id) ? id : 'za'; }
-  return { calculatorRoute, calculatorChannels, calculatorIssue, calculatorJourney, calculatorRecommendations, number, reference, fee, remitPrincipal, senderFeeRange, inwardFee, outwardFee, localUsdChequeFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
+  return { calculatorRoute, calculatorChannels, calculatorIssue, calculatorJourney, calculatorRecommendations, calculatorAccountState, number, reference, fee, remitPrincipal, senderFeeRange, inwardFee, outwardFee, localUsdChequeFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
 }));

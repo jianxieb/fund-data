@@ -530,6 +530,39 @@ test('upstream recommendations retain the selected stock account voucher and its
   }
 });
 
+test('upstream comparison retains real bank asset qualification without transferring it to another bank', () => {
+  for (const broker of D.calculator.brokers) {
+    const input = { ...base, date: '2026-10-11', broker, bank: 'hsbc', returnBank: 'bochk', months: 12, count: 1,
+      balanceHkd: 10000, returnBalanceHkd: 0, hsbcBalanceWaiver: false, outcome: 'broker-balance' };
+    const plans = M.calculatorRecommendations(input, D, diversityQuotes).plans;
+    assert.ok(plans.length >= 2, broker);
+    for (const plan of plans) {
+      const item = plan.result.rows.find(row => row.key === 'account').items.find(item => item.bankId === 'hsbc');
+      if (item) close(item.cny, 0);
+      assert.equal(plan.result.broker.id, broker);
+    }
+    const below = M.calculatorRecommendations({ ...input, balanceHkd: 9999.99 }, D, diversityQuotes).plans;
+    const cib = below.find(plan => plan.config.startBank === 'cib');
+    const charged = cib.result.rows.find(row => row.key === 'account').items.find(item => item.bankId === 'hsbc');
+    close(charged.cny, 100 * 12 * cib.result.refs.HKD);
+  }
+  const returning = { ...base, date: '2026-10-11', broker: 'za', bank: 'bochk', returnBank: 'hsbc', months: 12,
+    balanceHkd: 0, returnBalanceHkd: 10000, hsbcBalanceWaiver: false, outcome: 'usd-balance' };
+  const plans = M.calculatorRecommendations(returning, D, diversityQuotes).plans;
+  assert.ok(plans.length >= 2);
+  for (const plan of plans) {
+    const hsbc = plan.result.rows.find(row => row.key === 'account').items.find(item => item.bankId === 'hsbc');
+    if (hsbc) close(hsbc.cny, 0);
+  }
+  for (const balanceHkd of [0, '']) {
+    const input = { ...returning, outcome: 'broker-balance', bank: 'hsbc', count: 1,
+      bankBalancesHkd: { hsbc: 10000 }, balanceHkd };
+    const cib = M.calculatorRecommendations(input, D, diversityQuotes).plans.find(plan => plan.config.startBank === 'cib');
+    const hsbc = cib.result.rows.find(row => row.key === 'account').items.find(item => item.bankId === 'hsbc');
+    close(hsbc.cny, 100 * 12 * cib.result.refs.HKD);
+  }
+});
+
 test('each upstream recommendation matches an independent exhaustive comparison for the selected stock venue', () => {
   const data = structuredClone(D);
   data.calculator.mainland = ['boc', 'cib', 'hsbc']; data.calculator.hkBanks = ['bochk', 'hsbc'];
