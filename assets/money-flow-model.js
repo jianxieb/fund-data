@@ -382,15 +382,19 @@
     if (!knownFee(usmartDays) || !Number.isInteger(usmartDays)) return { error: '开户距今须为非负整数天。' };
     const centsUp = value => value > 0 ? Math.ceil((value - 1e-10) * 100) / 100 : 0;
     const promoDate = d => d >= '2026-04-20' && d <= '2026-12-31';
+    const override = number(config.tradeFeeUsd), wholeSharesOnly = !!broker.wholeSharesOnly;
     const estimate = buyValue => {
-      const shares = buyValue / price, saleValue = buyValue + profitUsd;
+      const shares = wholeSharesOnly ? Math.round(buyValue / price) : buyValue / price, saleValue = buyValue + profitUsd;
       let remainingVoucher = voucher.ready ? voucher.amount : 0, couponsUsed = 0;
       let turnover = usedTurnover, orderIndex = usedQuota;
       const orders = [];
       function side(kind, count, total, d) {
         if (kind === 'sell' && !sameMonth) { turnover = usedTurnover; orderIndex = usedQuota; }
         for (let i = 0; i < count; i++) {
-          const value = total / count, qty = shares / count, stockPrice = value / qty;
+          // Split whole shares as evenly as possible; stock quantity cannot
+          // become fractional just because the user chose several orders.
+          const qty = wholeSharesOnly ? Math.floor(shares / count) + (i < shares % count ? 1 : 0) : shares / count;
+          const value = wholeSharesOnly ? total * qty / shares : total / count, stockPrice = value / qty;
           const fractional = qty > 0 && qty < 1 && value > 0;
           let commission = cappedCharge(broker.commission, qty, value), platform = cappedCharge(broker.platform, qty, value), offer = '', pricing = '';
           if (fractional && broker.fractionalCommission) {
@@ -433,6 +437,17 @@
       return orders;
     };
     let low = 0, high = cashUsd;
+    if (wholeSharesOnly) {
+      const needed = Math.max(buys, sells), maxShares = Math.floor(cashUsd / price + 1e-10);
+      if (!Number.isSafeInteger(maxShares)) return { error: '股数超出可精确测算范围。', errorField: 'sharePriceUsd' };
+      let first = needed, last = maxShares;
+      while (first <= last) {
+        const qty = first + Math.floor((last - first) / 2), value = qty * price;
+        const buyFee = override == null ? estimate(value).filter(order => order.kind === 'buy').reduce((sum, order) => sum + order.feeUsd, 0) : 0;
+        if (value + buyFee <= cashUsd + 1e-9) { low = value; first = qty + 1; } else last = qty - 1;
+      }
+      if (low <= 0) return { error: '美元余额不足以买入ZA普通美股每笔至少1股，并完成' + buys + '笔买入／' + sells + '笔卖出。', errorField: 'budgetCny' };
+    } else {
     // A sub-one-share IBKR order can cost more than a one-share order. Solve
     // the affordable whole-share branch first instead of assuming monotonic
     // fees across that boundary and overlooking a valid purchase.
@@ -446,9 +461,10 @@
       const buyFee = estimate(middle).filter(order => order.kind === 'buy').reduce((sum, order) => sum + order.feeUsd, 0);
       if (middle + buyFee > cashUsd) high = middle; else low = middle;
     }
-    const override = number(config.tradeFeeUsd);
+    }
     if (override == null && low <= 0) return { error: '美元余额不足以支付买入最低费用。', errorField: 'budgetCny' };
-    if (profitUsd < -(override == null ? low : cashUsd)) return { error: '亏损不能超过实际买入金额。', errorField: 'profitUsd' };
+    const investUsd = wholeSharesOnly || override == null ? low : cashUsd;
+    if (profitUsd < -investUsd) return { error: '亏损不能超过实际买入金额。', errorField: 'profitUsd' };
     const orders = estimate(low), buyFeeUsd = orders.filter(order => order.kind === 'buy').reduce((sum, order) => sum + order.feeUsd, 0);
     const sellFeeUsd = orders.filter(order => order.kind === 'sell').reduce((sum, order) => sum + order.feeUsd, 0);
     // September 2026 US tariff explicitly waives Trade25 US monthly fees until further notice.
@@ -460,7 +476,8 @@
     if (broker.id === 'chief' && config.chiefMonthly && date > '2026-12-31') warnings.push('致富2026年月供优惠已过期，按普通网上交易基准测算');
     if (voucher.pending) warnings.push(voucher.message);
     if (voucher.expired) warnings.push(voucher.message);
-    return { investUsd: override == null ? low : cashUsd, buyFeeUsd, sellFeeUsd, orders, monthlyHkd, monthlyUsd, warnings, voucher,
+    return { investUsd, buyFeeUsd, sellFeeUsd, orders, monthlyHkd, monthlyUsd, warnings, voucher, wholeSharesOnly,
+      cashRemainderUsd: wholeSharesOnly ? Math.max(0, cashUsd - investUsd - (override == null ? buyFeeUsd : 0)) : 0,
       totalUsd: override ?? buyFeeUsd + sellFeeUsd, overridden: override != null,
       discountUsd: override == null ? orders.reduce((sum, row) => sum + row.discount, 0) : 0, price, buys, sells, sellDate };
   }

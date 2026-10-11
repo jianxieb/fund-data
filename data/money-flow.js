@@ -137,6 +137,7 @@
       usmartWithdrawal: { name: '盈立 · 美元本地支票免费及数字银行提款收费', url: 'https://hk.usmartglobal.com/zh-hk/help-centre/42/detail/12115' },
       usmartPromo: { name: '盈立 · 0.99美元与非香港客户180天资格', url: 'https://hk.usmartglobal.com/zh-hk/promotion-and-activities/detail/550' },
       zaStocks: { name: 'ZA Bank · 零佣金、平台费与代收费', url: 'https://bank.za.group/faqs/Individuals/Investment_Related/US_Stock_Trading/673c6db59368571c627b50d3' },
+      zaStockUnits: { name: 'ZA Bank · 普通美股交易每股为单位、不提供碎股', url: 'https://bank.za.group/hk/faqs/Individuals/Investment_Related/US_Stock_Trading/68f84177cd872843ca4370f7' },
       zaStockService: { name: 'ZA Bank · 账户直接交易与Lv2每月5笔优惠', url: 'https://bank.za.group/en/usstock' },
       zaCustody: { name: 'ZA Bank · 自2025年6月豁免托管费', url: 'https://bank.za.group/en/notice-detail/02876a13-6e97-41e2-974a-c695070e2160' },
       secFees: { name: 'SEC · 自2026年4月4日每百万20.60美元', url: 'https://www.sec.gov/rules-regulations/fee-rate-advisories/2026-2' },
@@ -232,12 +233,12 @@
         feeShort: '零佣金 · 整股平台每单1.88 USD起；清算/监管另计',
         fundingText: '中银香港／汇丰可同行USD入金；跨行用CHATS。FPS支持HKD/CNH，eDDA仅HKD', withdrawalText: '传统香港银行：USD支票出金免费；数字银行：超过20 USD，银行费用参考7.5 USD',
         sources: ['usmartFees', 'usmartBocFunding', 'usmartFundingAccounts', 'usmartSameFunding', 'usmartFps', 'usmartEdda', 'usmartWithdrawal', 'usmartPromo', 'secFees', 'finraHoliday'] },
-      { id: 'za', name: 'ZA Bank · 美股交易', integratedBank: 'za', platform: { perShare: .0099, minimum: 1.99, cap: .015 },
+      { id: 'za', name: 'ZA Bank · 美股交易', integratedBank: 'za', wholeSharesOnly: true, platform: { perShare: .0099, minimum: 1.99, cap: .015 },
         depositUsd: 0, withdrawUsd: 0, withdrawalMethod: 'internal',
         feeText: '佣金0；平台0.0099 USD/股、最低1.99/单，最高1.5%；托管费已豁免',
         feeShort: '零佣金 · 平台每单1.99 USD起；监管费另计',
         fundingText: '本人ZA USD存款账户直接扣款，无独立券商入金', withdrawalText: '卖出结算直接回ZA USD存款账户，无独立券商出金',
-        sources: ['zaStocks', 'zaStockService', 'zaCustody', 'secFees', 'finraHoliday'] }
+        sources: ['zaStocks', 'zaStockUnits', 'zaStockService', 'zaCustody', 'secFees', 'finraHoliday'] }
     ]
   };
 }));

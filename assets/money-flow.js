@@ -49,7 +49,7 @@
     hkFx: { bochk: ['bochkUsdFx'], hsbc: ['hsbcHkFx'], hang: ['hangHkFx'] },
     hkAccount: { bochk: ['bochkAccount'], hsbc: ['hsbcOne', 'hsbcOneBalance'], za: ['zaOpen'], hang: ['hangHk'], sc: ['scHk'] },
     hkCard: { bochk: ['bochkCard'], hsbc: ['hsbcCard'], za: ['zaCard'], hang: ['hangCard'], sc: ['scCard'] },
-    brokerTrade: { ibkr: ['ibStocks'], hsbc: ['hsbcUsTariff'], za: ['zaStocks', 'zaCustody'], chief: ['chiefStocks'], usmart: ['usmartFees'] },
+    brokerTrade: { ibkr: ['ibStocks'], hsbc: ['hsbcUsTariff'], za: ['zaStocks', 'zaStockUnits', 'zaCustody'], chief: ['chiefStocks'], usmart: ['usmartFees'] },
     brokerOffers: { hsbc: ['trade25', 'trade25Age', 'trade25One'], za: ['zaStockService'], chief: ['chiefMonthly', 'chiefMonthlyTerms'], usmart: ['usmartPromo'] },
     brokerFunding: { ibkr: ['ibDeposits', 'ibFunding'], hsbc: ['hsbcStocks'], za: ['zaStockService'], chief: ['chiefFunding'], usmart: ['usmartFundingAccounts', 'usmartSameFunding'] },
     brokerWithdrawal: { ibkr: ['ibFees'], hsbc: ['hsbcStocks'], za: ['zaStockService'], chief: ['chiefFunding'], usmart: ['usmartWithdrawal'] }
@@ -420,8 +420,10 @@
     if (!r?.trading || r.trading.overridden) return '';
     const orders = r.trading.orders.filter(o => o.kind === kind), sum = key => orders.reduce((n, o) => n + o[key], 0);
     const pricing = [...new Set(orders.map(o => o.pricing).filter(Boolean))].join('；');
+    const quantity = r.trading.wholeSharesOnly ? num(sum('shares'), 0) + '股 · ' +
+      (kind === 'buy' && r.trading.cashRemainderUsd > .005 ? '未买入余款 ' + num(r.trading.cashRemainderUsd) + ' USD · ' : '') : '';
     return feeLine((kind === 'buy' ? '买入' : '卖出') + '美股 · ' + orders.length + '笔', sum('feeUsd') * r.refs.USD,
-      '佣金 ' + num(sum('commission')) + '＋平台 ' + num(sum('platform')) + '＋清算／监管 ' + num(sum('sec') + sum('taf') + sum('cat') + sum('clearing')) +
+      quantity + '佣金 ' + num(sum('commission')) + '＋平台 ' + num(sum('platform')) + '＋清算／监管 ' + num(sum('sec') + sum('taf') + sum('cat') + sum('clearing')) +
       (sum('discount') ? ' − 券抵扣 ' + num(sum('discount')) : '') + ' USD' + (pricing ? ' · ' + pricing : ''), (row(r, 'trade')?.estimate ? '估算 ' : '') + num(sum('feeUsd')) + ' USD');
   }
   function balancePresentation(data) {
@@ -585,6 +587,8 @@
       keys = service.sources;
     } else if (key === 'trade-settings') {
       title = '美股买卖设置'; content = '<div class="flow-form-grid">' + field('sharePriceUsd', '买入均价', 'USD/股') + field('buyOrders', '买入笔数', '笔') + field('sellOrders', '卖出笔数', '笔') + '</div>';
+      if (data.error && r?.errorAction === 'trade' && !['sharePriceUsd', 'buyOrders', 'sellOrders'].includes(r.errorField))
+        content += '<p class="flow-error" role="status">' + esc(data.error) + '</p>';
       content += tradeLine(r, 'buy') + tradeLine(r, 'sell'); keys = actionSources('trade', s, r);
     } else if (key === 'profit-settings') {
       const chequeTariff = isChequeReturn(s) && s.returning?.localUsdChequeTariff;
