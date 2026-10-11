@@ -842,7 +842,7 @@
         missing.push(start.name + '所选渠道汇出收费');
       }
       const recordedTransfer = data.entryTransferReferences?.find(item => item.startBank === start.id && item.bank === bank.id && item.method === mainlandMethod && item.currencies.includes(currency) &&
-        (item.minimumForeign == null || finite(balance) && balance / count >= item.minimumForeign));
+        (item.minimumForeign == null || finite(balance) && balance / count + 1e-8 >= item.minimumForeign));
       const ownMiddle = own('entryMiddleCny', isSelectedEntry);
       const entryMiddle = paymentConnect ? 0 : ownMiddle ?? (reportedMobile ? data.bocMobileEvidence.intermediaryCny ?? null : mainlandMethod === 'linked' && start.includedIntermediary ? 0 : mainlandMethod === 'full' || swiftGo ? 0 : recordedTransfer?.intermediaryCny ?? null);
       const entryMiddleEvidence = reportedMobile && ownMiddle == null && entryMiddle != null ? {

@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-10-11",
+  "source": "https://yunxge.cn/archives/90",
+  "publishedAt": "2026-03-17",
+  "submittedAt": "2026-03-16 16:28",
+  "receivedAt": "2026-03-17 07:00",
+  "sendingBank": "兴业银行",
+  "receivingBank": "汇丰香港",
+  "currency": "USD",
+  "amountSent": 201,
+  "amountReceived": 201,
+  "feeMode": "SHA",
+  "senderCommissionCny": 0,
+  "senderTelegramCny": 0,
+  "principalDeductionUsd": 0,
+  "beneficiaryBankBic": "HSBCHKHHHKH",
+  "specifiedCorrespondentBic": "HSBCHKHHHKH",
+  "level": "reported",
+  "finding": "小于300 USD确有公开全额到账记录，300 USD不能当作银行统一汇款门槛。",
+  "referenceScope": "扩展已收录兴业到汇丰香港普通美元SHA的实录费情景，最低已录金额201 USD；不外推更小汇款、其他收款银行、人民币、GO或可办理承诺。",
+  "excluded": ["攻略填写旅游用途或酒店地址的建议", "旧境外账户行名录作为现行汇出汇路保证", "将一次到账免费宣称为全部账户代理费豁免"]
+}

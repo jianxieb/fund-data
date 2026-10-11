@@ -9,6 +9,7 @@ const fundingEvidence = require('./fixtures/money-flow-ibkr-funding-20261011.jso
 const usmartFundingEvidence = require('./fixtures/money-flow-usmart-same-bank-20261011.json');
 const bocBankAnswer = require('./fixtures/money-flow-boc-bank-answer-20260819.json');
 const swiftGoAvailability = require('./fixtures/money-flow-swift-go-availability-20261011.json');
+const cibSmallUsd = require('./fixtures/money-flow-cib-small-usd-20260317.json');
 const config = { ...currentConfig, date: '2026-10-10' };
 const close = (a, b) => assert.ok(Math.abs(a - b) < 1e-6, a + ' != ' + b);
 const base = M.calculatorRoute({ ...config, startBank: 'cib', bank: 'bochk', broker: 'za', returnBank: 'bochk', exitBank: 'hsbc', route: 'USD', outcome: 'broker-balance' });
@@ -680,6 +681,39 @@ test('CIB USD/HKD direct-to-HSBC references keep their actual scope and countere
   close(own.cny, 50); assert.equal(own.estimate, undefined);
   const go = M.calculatorJourney({ ...input, route: 'HKD', mainlandMethod: 'cib-go', count: 2 }, D, diversityQuotes).selected;
   close(go.rows.find(x => x.key === 'sender').cny, 100); assert.equal(go.rows.find(x => x.key === 'entryMiddle').estimate, undefined);
+});
+
+test('CIB small-USD receipt evidence corrects the reference scope without asserting a universal bank minimum', () => {
+  assert.equal(D.sources.cibSmallUsdCase.url, cibSmallUsd.source);
+  const input = { ...base, date: '2026-10-11', bank: 'hsbc', broker: 'za', count: 1, months: 0, mainlandMethod: 'swift' };
+  const quote = M.calculatorJourney(input, D, diversityQuotes).selected.startSell;
+  for (const [usd, reported] of [[200, false], [200.99, false], [201, true], [250, true], [299, true], [300, true]]) {
+    const s = { ...input, budgetCny: quote * usd }, r = M.calculatorJourney(s, D, diversityQuotes).selected;
+    close(r.steps.hongKong, usd); ledger(r);
+    const middle = r.rows.find(item => item.key === 'entryMiddle');
+    assert.equal(middle.cny, reported ? cibSmallUsd.principalDeductionUsd : null);
+    if (reported) {
+      assert.ok(middle.sources.includes('cibSmallUsdCase'));
+      assert.match(middle.estimate, /最小已录金额201 USD/);
+      assert.equal(r.complete, true); assert.ok(r.rows.some(item => item.estimate));
+      const p = M.calculatorRecommendations(s, D, diversityQuotes).plans.find(p => p.config.startBank === 'cib');
+      assert.ok(p); assert.equal(p.config.mainlandMethod, 'swift'); assert.equal(p.config.bank, 'hsbc');
+      close(p.result.costCny, r.costCny);
+    } else assert.equal(r.complete, false);
+    for (const bank of D.calculator.hkBanks.filter(id => id !== 'hsbc')) {
+      const other = M.calculatorJourney({ ...s, bank }, D, diversityQuotes).selected;
+      assert.equal(other.rows.find(item => item.key === 'entryMiddle').cny, null);
+    }
+    const standard = M.calculatorJourney({ ...s, usedFreeTransfers: 30 }, D, diversityQuotes).selected;
+    assert.ok(standard.rows.find(item => item.key === 'sender').cny > 0);
+    ledger(standard);
+  }
+  for (const [usd, reported] of [[400, false], [402, true]]) {
+    const r = M.calculatorJourney({ ...input, count: 2, budgetCny: quote * usd }, D, diversityQuotes).selected;
+    assert.equal(r.rows.find(item => item.key === 'entryMiddle').cny, reported ? 0 : null);
+    close(r.steps.hongKong, usd); ledger(r);
+  }
+  assert.equal(cibSmallUsd.level, 'reported');
 });
 
 test('a bank that rejects cheques is an unsupported Chief withdrawal route, not an unknown cheque fee', () => {

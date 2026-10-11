@@ -25,10 +25,10 @@
         level: 'reported', checkedAt: '2026-10-11', evidence: 'HKD直达汇丰香港 · SHA公开到账记录',
         estimate: '按港币直达汇丰香港的公开到账记录测算；实际改走其他代理行的扣费不包含在此情景',
         sources: ['cibHkdCase', 'cibHsbcCase', 'cibRouteCounterexample'] },
-      { startBank: 'cib', bank: 'hsbc', currencies: ['USD'], method: 'swift', intermediaryCny: 0, minimumForeign: 300,
+      { startBank: 'cib', bank: 'hsbc', currencies: ['USD'], method: 'swift', intermediaryCny: 0, minimumForeign: 201,
         level: 'reported', checkedAt: '2026-10-11', evidence: 'USD直达汇丰香港 · 2026公开到账记录',
-        estimate: '按2026年美元直达汇丰香港的公开到账记录测算；改走代理行可能产生扣费，不属于本行费用豁免',
-        sources: ['cibUsdCase', 'cibHsbcCase', 'cibRouteCounterexample'] }
+        estimate: '按2026年美元直达汇丰香港的公开到账记录测算，最小已录金额201 USD；改走代理行可能产生扣费，不属于本行费用豁免',
+        sources: ['cibSmallUsdCase', 'cibUsdCase', 'cibHsbcCase', 'cibRouteCounterexample'] }
     ],
     evidenceGaps: [
       { bank: 'boc', channel: 'boc-mobile', checkedAt: '2026-10-11', items: ['USD/HKD同行路径代理费的银行资费依据'], source: 'bocMobileUsdGuide', finding: '2026-05-29中行山西省分行在新华网的供稿已确认手机银行向境外中行汇款手续费及电报费免；该两项不再仅依赖搜狐转载。2月9日同行SHA操作记录支持代理费0情景，仍不扩展成所有币种／汇路的代理费豁免。' },
@@ -75,6 +75,7 @@
       swiftGoBanks: { name: 'SWIFT · Go名单为签约实施名单，可达性以GPI目录为准', url: 'https://www.swift.com/products/swift-go/banks' },
       cibHkdCase: { name: '2025-12-30实录 · 寰宇人生港币SHA直达汇丰香港', url: 'https://baiyakai.com/586.html' },
       cibUsdCase: { name: '2026-05-30实录 · 寰宇人生美元及港币到同名汇丰香港', url: 'https://linux.do/t/topic/2272086' },
+      cibSmallUsdCase: { name: '2026-03-17实录 · 兴业汇出201 USD、汇丰香港收到201 USD', url: 'https://yunxge.cn/archives/90' },
       cibHsbcCase: { name: '2026-09-01实录 · 寰宇人生至汇丰One零费用到账', url: 'https://linux.do/t/topic/2583831/17' },
       cibRouteCounterexample: { name: '汇路反例 · 兴业美元改走其他代理行可能扣费', url: 'https://finvoke.0xv9.com/posts/transfer-money-from-mainland-china-to-hong-kong-for-free/' },
       cibFx: { name: '兴业银行 · 公开外汇牌价查询', url: 'https://personalbank.cib.com.cn/pers/main/pubinfo/ifxQuotationQuery.do' },
