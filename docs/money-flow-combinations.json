@@ -36,2246 +36,2246 @@
   "routes": [
     {
       "key": "boc/bochk/ibkr///USD/broker-balance",
-      "costCny": 137.1504,
-      "balance": 14901.0109,
+      "costCny": 92.8089,
+      "balance": 14898.346,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/hsbc///USD/broker-balance",
-      "costCny": 123.7409,
-      "balance": 14903.0118,
+      "costCny": 79.3911,
+      "balance": 14900.3469,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/hsbc/bochk//USD/usd-balance",
-      "costCny": 123.7409,
-      "balance": 14903.0118,
+      "costCny": 79.3911,
+      "balance": 14900.3469,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/hsbc/bochk//USD/usd-card",
-      "costCny": 123.7409,
-      "balance": 14903.0118,
+      "costCny": 79.3911,
+      "balance": 14900.3469,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/hsbc/bochk//USD/cnh-card",
-      "costCny": 689.8158,
-      "balance": 99195.3405,
+      "costCny": 645.7785,
+      "balance": 99153.7626,
       "currency": "CNH"
     },
     {
       "key": "boc/bochk/hsbc///HKD/broker-balance",
-      "costCny": 402.6996,
-      "balance": 14861.387,
+      "costCny": 354.8449,
+      "balance": 14859.2707,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/hsbc/bochk//HKD/usd-balance",
-      "costCny": 402.6996,
-      "balance": 14861.387,
+      "costCny": 354.8449,
+      "balance": 14859.2707,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/hsbc/bochk//HKD/usd-card",
-      "costCny": 402.6996,
-      "balance": 14861.387,
+      "costCny": 354.8449,
+      "balance": 14859.2707,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/hsbc/bochk//HKD/cnh-card",
-      "costCny": 967.1934,
-      "balance": 98918.2836,
+      "costCny": 919.671,
+      "balance": 98880.4227,
       "currency": "CNH"
     },
     {
       "key": "boc/bochk/hsbc/hsbc//USD/usd-balance",
-      "costCny": 123.7409,
-      "balance": 14903.0118,
+      "costCny": 79.3911,
+      "balance": 14900.3469,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/hsbc/hsbc//USD/usd-card",
-      "costCny": 123.7409,
-      "balance": 14903.0118,
+      "costCny": 79.3911,
+      "balance": 14900.3469,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/hsbc/hsbc//USD/cnh-card",
-      "costCny": 1380.5899,
-      "balance": 98505.3652,
+      "costCny": 1063.1598,
+      "balance": 98737.2234,
       "currency": "CNH"
     },
     {
       "key": "boc/bochk/hsbc/hsbc//HKD/usd-balance",
-      "costCny": 402.6996,
-      "balance": 14861.387,
+      "costCny": 354.8449,
+      "balance": 14859.2707,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/hsbc/hsbc//HKD/usd-card",
-      "costCny": 402.6996,
-      "balance": 14861.387,
+      "costCny": 354.8449,
+      "balance": 14859.2707,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/hsbc/hsbc//HKD/cnh-card",
-      "costCny": 1656.0382,
-      "balance": 98230.2354,
+      "costCny": 1335.9017,
+      "balance": 98465.0318,
       "currency": "CNH"
     },
     {
       "key": "boc/bochk/hsbc/hsbc/hsbc/USD/mainland",
-      "costCny": 4468.1149,
-      "balance": 95531.8851,
+      "costCny": 4474.6318,
+      "balance": 95525.3682,
       "currency": "CNY"
     },
     {
       "key": "boc/bochk/hsbc/hsbc/hsbc/HKD/mainland",
-      "costCny": 4744.9945,
-      "balance": 95255.0055,
+      "costCny": 4747.8934,
+      "balance": 95252.1066,
       "currency": "CNY"
     },
     {
       "key": "boc/bochk/hsbc/za//USD/usd-balance",
-      "costCny": 123.7409,
-      "balance": 14903.0118,
+      "costCny": 79.3911,
+      "balance": 14900.3469,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/hsbc/za//HKD/usd-balance",
-      "costCny": 402.6996,
-      "balance": 14861.387,
+      "costCny": 354.8449,
+      "balance": 14859.2707,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/hsbc/hang//USD/usd-balance",
-      "costCny": 123.7409,
-      "balance": 14903.0118,
+      "costCny": 79.3911,
+      "balance": 14900.3469,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/hsbc/hang//USD/usd-card",
-      "costCny": 123.7409,
-      "balance": 14903.0118,
+      "costCny": 79.3911,
+      "balance": 14900.3469,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/hsbc/hang//USD/cnh-card",
-      "costCny": 1409.9906,
-      "balance": 98475.9985,
+      "costCny": 1342.5571,
+      "balance": 98458.3898,
       "currency": "CNH"
     },
     {
       "key": "boc/bochk/hsbc/hang//HKD/usd-balance",
-      "costCny": 402.6996,
-      "balance": 14861.387,
+      "costCny": 354.8449,
+      "balance": 14859.2707,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/hsbc/hang//HKD/usd-card",
-      "costCny": 402.6996,
-      "balance": 14861.387,
+      "costCny": 354.8449,
+      "balance": 14859.2707,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/hsbc/hang//HKD/cnh-card",
-      "costCny": 1685.3567,
-      "balance": 98200.9508,
+      "costCny": 1614.5288,
+      "balance": 98186.9668,
       "currency": "CNH"
     },
     {
       "key": "boc/bochk/hsbc/hang/hang/USD/mainland",
-      "costCny": 3921.339,
-      "balance": 96078.661,
+      "costCny": 3938.9053,
+      "balance": 96061.0947,
       "currency": "CNY"
     },
     {
       "key": "boc/bochk/hsbc/hang/hang/HKD/mainland",
-      "costCny": 4195.7238,
-      "balance": 95804.2762,
+      "costCny": 4209.674,
+      "balance": 95790.326,
       "currency": "CNY"
     },
     {
       "key": "boc/bochk/hsbc/sc//USD/usd-balance",
-      "costCny": 123.7409,
-      "balance": 14903.0118,
+      "costCny": 79.3911,
+      "balance": 14900.3469,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/hsbc/sc//USD/usd-card",
-      "costCny": 123.7409,
-      "balance": 14903.0118,
+      "costCny": 79.3911,
+      "balance": 14900.3469,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/hsbc/sc//HKD/usd-balance",
-      "costCny": 402.6996,
-      "balance": 14861.387,
+      "costCny": 354.8449,
+      "balance": 14859.2707,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/hsbc/sc//HKD/usd-card",
-      "costCny": 402.6996,
-      "balance": 14861.387,
+      "costCny": 354.8449,
+      "balance": 14859.2707,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/hsbc/icbc-asia//USD/usd-balance",
-      "costCny": 132.2807,
-      "balance": 14901.7375,
+      "costCny": 87.9358,
+      "balance": 14899.0727,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/hsbc/icbc-asia//HKD/usd-balance",
-      "costCny": 411.2393,
-      "balance": 14860.1128,
+      "costCny": 363.3897,
+      "balance": 14857.9965,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/za///USD/broker-balance",
-      "costCny": 150.4139,
-      "balance": 14899.0318,
+      "costCny": 106.0807,
+      "balance": 14896.3669,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/za/bochk//USD/usd-balance",
-      "costCny": 150.4139,
-      "balance": 14899.0318,
+      "costCny": 106.0807,
+      "balance": 14896.3669,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/za/bochk//USD/usd-card",
-      "costCny": 150.4139,
-      "balance": 14899.0318,
+      "costCny": 106.0807,
+      "balance": 14896.3669,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/za/bochk//USD/cnh-card",
-      "costCny": 716.3376,
-      "balance": 99168.8494,
+      "costCny": 672.3168,
+      "balance": 99127.2778,
       "currency": "CNH"
     },
     {
       "key": "boc/bochk/za///HKD/broker-balance",
-      "costCny": 429.3726,
-      "balance": 14857.407,
+      "costCny": 381.5345,
+      "balance": 14855.2907,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/za/bochk//HKD/usd-balance",
-      "costCny": 429.3726,
-      "balance": 14857.407,
+      "costCny": 381.5345,
+      "balance": 14855.2907,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/za/bochk//HKD/usd-card",
-      "costCny": 429.3726,
-      "balance": 14857.407,
+      "costCny": 381.5345,
+      "balance": 14855.2907,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/za/bochk//HKD/cnh-card",
-      "costCny": 993.7152,
-      "balance": 98891.7925,
+      "costCny": 946.2093,
+      "balance": 98853.9379,
       "currency": "CNH"
     },
     {
       "key": "boc/bochk/za/hsbc//USD/usd-balance",
-      "costCny": 150.4139,
-      "balance": 14899.0318,
+      "costCny": 106.0807,
+      "balance": 14896.3669,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/za/hsbc//USD/usd-card",
-      "costCny": 150.4139,
-      "balance": 14899.0318,
+      "costCny": 106.0807,
+      "balance": 14896.3669,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/za/hsbc//USD/cnh-card",
-      "costCny": 1406.9272,
-      "balance": 98479.0583,
+      "costCny": 1089.5866,
+      "balance": 98710.8499,
       "currency": "CNH"
     },
     {
       "key": "boc/bochk/za/hsbc//HKD/usd-balance",
-      "costCny": 429.3726,
-      "balance": 14857.407,
+      "costCny": 381.5345,
+      "balance": 14855.2907,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/za/hsbc//HKD/usd-card",
-      "costCny": 429.3726,
-      "balance": 14857.407,
+      "costCny": 381.5345,
+      "balance": 14855.2907,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/za/hsbc//HKD/cnh-card",
-      "costCny": 1682.3755,
-      "balance": 98203.9286,
+      "costCny": 1362.3285,
+      "balance": 98438.6583,
       "currency": "CNH"
     },
     {
       "key": "boc/bochk/za/hsbc/hsbc/USD/mainland",
-      "costCny": 4494.5891,
-      "balance": 95505.4109,
+      "costCny": 4501.109,
+      "balance": 95498.891,
       "currency": "CNY"
     },
     {
       "key": "boc/bochk/za/hsbc/hsbc/HKD/mainland",
-      "costCny": 4771.4687,
-      "balance": 95228.5313,
+      "costCny": 4774.3706,
+      "balance": 95225.6294,
       "currency": "CNY"
     },
     {
       "key": "boc/bochk/za/za//USD/usd-balance",
-      "costCny": 150.4139,
-      "balance": 14899.0318,
+      "costCny": 106.0807,
+      "balance": 14896.3669,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/za/za//HKD/usd-balance",
-      "costCny": 429.3726,
-      "balance": 14857.407,
+      "costCny": 381.5345,
+      "balance": 14855.2907,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/za/hang//USD/usd-balance",
-      "costCny": 150.4139,
-      "balance": 14899.0318,
+      "costCny": 106.0807,
+      "balance": 14896.3669,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/za/hang//USD/usd-card",
-      "costCny": 150.4139,
-      "balance": 14899.0318,
+      "costCny": 106.0807,
+      "balance": 14896.3669,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/za/hang//USD/cnh-card",
-      "costCny": 1436.3201,
-      "balance": 98449.6995,
+      "costCny": 1368.9093,
+      "balance": 98432.0907,
       "currency": "CNH"
     },
     {
       "key": "boc/bochk/za/hang//HKD/usd-balance",
-      "costCny": 429.3726,
-      "balance": 14857.407,
+      "costCny": 381.5345,
+      "balance": 14855.2907,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/za/hang//HKD/usd-card",
-      "costCny": 429.3726,
-      "balance": 14857.407,
+      "costCny": 381.5345,
+      "balance": 14855.2907,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/za/hang//HKD/cnh-card",
-      "costCny": 1711.6862,
-      "balance": 98174.6518,
+      "costCny": 1640.881,
+      "balance": 98160.6678,
       "currency": "CNH"
     },
     {
       "key": "boc/bochk/za/hang/hang/USD/mainland",
-      "costCny": 3947.5746,
-      "balance": 96052.4254,
+      "costCny": 3965.1409,
+      "balance": 96034.8591,
       "currency": "CNY"
     },
     {
       "key": "boc/bochk/za/hang/hang/HKD/mainland",
-      "costCny": 4221.9594,
-      "balance": 95778.0406,
+      "costCny": 4235.9097,
+      "balance": 95764.0903,
       "currency": "CNY"
     },
     {
       "key": "boc/bochk/za/sc//USD/usd-balance",
-      "costCny": 150.4139,
-      "balance": 14899.0318,
+      "costCny": 106.0807,
+      "balance": 14896.3669,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/za/sc//USD/usd-card",
-      "costCny": 150.4139,
-      "balance": 14899.0318,
+      "costCny": 106.0807,
+      "balance": 14896.3669,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/za/sc//HKD/usd-balance",
-      "costCny": 429.3726,
-      "balance": 14857.407,
+      "costCny": 381.5345,
+      "balance": 14855.2907,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/za/sc//HKD/usd-card",
-      "costCny": 429.3726,
-      "balance": 14857.407,
+      "costCny": 381.5345,
+      "balance": 14855.2907,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/za/icbc-asia//USD/usd-balance",
-      "costCny": 158.9536,
-      "balance": 14897.7575,
+      "costCny": 114.6254,
+      "balance": 14895.0927,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/za/icbc-asia//HKD/usd-balance",
-      "costCny": 437.9123,
-      "balance": 14856.1328,
+      "costCny": 390.0793,
+      "balance": 14854.0165,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/chief///USD/broker-balance",
-      "costCny": 145.7118,
-      "balance": 14899.7334,
+      "costCny": 101.3717,
+      "balance": 14897.0691,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/chief/bochk//USD/usd-balance",
-      "costCny": 145.7118,
-      "balance": 14899.7334,
+      "costCny": 101.3717,
+      "balance": 14897.0691,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/chief/bochk//USD/usd-card",
-      "costCny": 145.7118,
-      "balance": 14899.7334,
+      "costCny": 101.3717,
+      "balance": 14897.0691,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/chief/bochk//USD/cnh-card",
-      "costCny": 711.6621,
-      "balance": 99173.5194,
+      "costCny": 667.6345,
+      "balance": 99131.9507,
       "currency": "CNH"
     },
     {
       "key": "boc/bochk/chief///HKD/broker-balance",
-      "costCny": 424.6091,
-      "balance": 14858.1178,
+      "costCny": 376.765,
+      "balance": 14856.002,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/chief/bochk//HKD/usd-balance",
-      "costCny": 424.6091,
-      "balance": 14858.1178,
+      "costCny": 376.765,
+      "balance": 14856.002,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/chief/bochk//HKD/usd-card",
-      "costCny": 424.6091,
-      "balance": 14858.1178,
+      "costCny": 376.765,
+      "balance": 14856.002,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/chief/bochk//HKD/cnh-card",
-      "costCny": 988.9787,
-      "balance": 98896.5235,
+      "costCny": 941.4667,
+      "balance": 98858.6709,
       "currency": "CNH"
     },
     {
       "key": "boc/bochk/chief/hsbc//USD/usd-balance",
-      "costCny": 145.7118,
-      "balance": 14899.7334,
+      "costCny": 101.3717,
+      "balance": 14897.0691,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/chief/hsbc//USD/usd-card",
-      "costCny": 145.7118,
-      "balance": 14899.7334,
+      "costCny": 101.3717,
+      "balance": 14897.0691,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/chief/hsbc//USD/cnh-card",
-      "costCny": 1402.2843,
-      "balance": 98483.6959,
+      "costCny": 1084.924,
+      "balance": 98715.5031,
       "currency": "CNH"
     },
     {
       "key": "boc/bochk/chief/hsbc//HKD/usd-balance",
-      "costCny": 424.6091,
-      "balance": 14858.1178,
+      "costCny": 376.765,
+      "balance": 14856.002,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/chief/hsbc//HKD/usd-card",
-      "costCny": 424.6091,
-      "balance": 14858.1178,
+      "costCny": 376.765,
+      "balance": 14856.002,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/chief/hsbc//HKD/cnh-card",
-      "costCny": 1677.672,
-      "balance": 98208.6267,
+      "costCny": 1357.6059,
+      "balance": 98443.3714,
       "currency": "CNH"
     },
     {
       "key": "boc/bochk/chief/hsbc/hsbc/USD/mainland",
-      "costCny": 4489.922,
-      "balance": 95510.078,
+      "costCny": 4496.4375,
+      "balance": 95503.5625,
       "currency": "CNY"
     },
     {
       "key": "boc/bochk/chief/hsbc/hsbc/HKD/mainland",
-      "costCny": 4766.7407,
-      "balance": 95233.2593,
+      "costCny": 4769.639,
+      "balance": 95230.361,
       "currency": "CNY"
     },
     {
       "key": "boc/bochk/chief/hang//USD/usd-balance",
-      "costCny": 145.7118,
-      "balance": 14899.7334,
+      "costCny": 101.3717,
+      "balance": 14897.0691,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/chief/hang//USD/usd-card",
-      "costCny": 145.7118,
-      "balance": 14899.7334,
+      "costCny": 101.3717,
+      "balance": 14897.0691,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/chief/hang//USD/cnh-card",
-      "costCny": 1431.6785,
-      "balance": 98454.3357,
+      "costCny": 1364.2599,
+      "balance": 98436.7308,
       "currency": "CNH"
     },
     {
       "key": "boc/bochk/chief/hang//HKD/usd-balance",
-      "costCny": 424.6091,
-      "balance": 14858.1178,
+      "costCny": 376.765,
+      "balance": 14856.002,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/chief/hang//HKD/usd-card",
-      "costCny": 424.6091,
-      "balance": 14858.1178,
+      "costCny": 376.765,
+      "balance": 14856.002,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/chief/hang//HKD/cnh-card",
-      "costCny": 1706.9841,
-      "balance": 98179.3485,
+      "costCny": 1636.1717,
+      "balance": 98165.3676,
       "currency": "CNH"
     },
     {
       "key": "boc/bochk/chief/hang/hang/USD/mainland",
-      "costCny": 3942.9496,
-      "balance": 96057.0504,
+      "costCny": 3960.512,
+      "balance": 96039.488,
       "currency": "CNY"
     },
     {
       "key": "boc/bochk/chief/hang/hang/HKD/mainland",
-      "costCny": 4217.274,
-      "balance": 95782.726,
+      "costCny": 4231.2212,
+      "balance": 95768.7788,
       "currency": "CNY"
     },
     {
       "key": "boc/bochk/chief/sc//USD/usd-balance",
-      "costCny": 145.7118,
-      "balance": 14899.7334,
+      "costCny": 101.3717,
+      "balance": 14897.0691,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/chief/sc//USD/usd-card",
-      "costCny": 145.7118,
-      "balance": 14899.7334,
+      "costCny": 101.3717,
+      "balance": 14897.0691,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/chief/sc//HKD/usd-balance",
-      "costCny": 424.6091,
-      "balance": 14858.1178,
+      "costCny": 376.765,
+      "balance": 14856.002,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/chief/sc//HKD/usd-card",
-      "costCny": 424.6091,
-      "balance": 14858.1178,
+      "costCny": 376.765,
+      "balance": 14856.002,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/chief/icbc-asia//USD/usd-balance",
-      "costCny": 145.7118,
-      "balance": 14899.7334,
+      "costCny": 101.3717,
+      "balance": 14897.0691,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/chief/icbc-asia//HKD/usd-balance",
-      "costCny": 424.6091,
-      "balance": 14858.1178,
+      "costCny": 376.765,
+      "balance": 14856.002,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/usmart///USD/broker-balance",
-      "costCny": 155.0653,
-      "balance": 14898.3377,
+      "costCny": 110.7339,
+      "balance": 14895.673,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/usmart/bochk//USD/usd-balance",
-      "costCny": 155.0653,
-      "balance": 14898.3377,
+      "costCny": 110.7339,
+      "balance": 14895.673,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/usmart/bochk//USD/usd-card",
-      "costCny": 155.0653,
-      "balance": 14898.3377,
+      "costCny": 110.7339,
+      "balance": 14895.673,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/usmart/bochk//USD/cnh-card",
-      "costCny": 720.9626,
-      "balance": 99164.2297,
+      "costCny": 676.9436,
+      "balance": 99122.6603,
       "currency": "CNH"
     },
     {
       "key": "boc/bochk/usmart///HKD/broker-balance",
-      "costCny": 434.0072,
-      "balance": 14856.7154,
+      "costCny": 386.1712,
+      "balance": 14854.5993,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/usmart/bochk//HKD/usd-balance",
-      "costCny": 434.0072,
-      "balance": 14856.7154,
+      "costCny": 386.1712,
+      "balance": 14854.5993,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/usmart/bochk//HKD/usd-card",
-      "costCny": 434.0072,
-      "balance": 14856.7154,
+      "costCny": 386.1712,
+      "balance": 14854.5993,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/usmart/bochk//HKD/cnh-card",
-      "costCny": 998.3236,
-      "balance": 98887.1894,
+      "costCny": 950.8197,
+      "balance": 98849.3368,
       "currency": "CNH"
     },
     {
       "key": "boc/bochk/usmart/hsbc//USD/usd-balance",
-      "costCny": 155.0653,
-      "balance": 14898.3377,
+      "costCny": 110.7339,
+      "balance": 14895.673,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/usmart/hsbc//USD/usd-card",
-      "costCny": 155.0653,
-      "balance": 14898.3377,
+      "costCny": 110.7339,
+      "balance": 14895.673,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/usmart/hsbc//USD/cnh-card",
-      "costCny": 1411.5201,
-      "balance": 98474.4707,
+      "costCny": 1094.194,
+      "balance": 98706.2518,
       "currency": "CNH"
     },
     {
       "key": "boc/bochk/usmart/hsbc//HKD/usd-balance",
-      "costCny": 434.0072,
-      "balance": 14856.7154,
+      "costCny": 386.1712,
+      "balance": 14854.5993,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/usmart/hsbc//HKD/usd-card",
-      "costCny": 434.0072,
-      "balance": 14856.7154,
+      "costCny": 386.1712,
+      "balance": 14854.5993,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/usmart/hsbc//HKD/cnh-card",
-      "costCny": 1686.9519,
-      "balance": 98199.3575,
+      "costCny": 1366.9196,
+      "balance": 98434.0765,
       "currency": "CNH"
     },
     {
       "key": "boc/bochk/usmart/hsbc/hsbc/USD/mainland",
-      "costCny": 4499.2058,
-      "balance": 95500.7942,
+      "costCny": 4505.7252,
+      "balance": 95494.2748,
       "currency": "CNY"
     },
     {
       "key": "boc/bochk/usmart/hsbc/hsbc/HKD/mainland",
-      "costCny": 4776.0688,
-      "balance": 95223.9312,
+      "costCny": 4778.9704,
+      "balance": 95221.0296,
       "currency": "CNY"
     },
     {
       "key": "boc/bochk/usmart/za//USD/usd-balance",
-      "costCny": 205.3284,
-      "balance": 14890.8377,
+      "costCny": 161.0283,
+      "balance": 14888.173,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/usmart/za//HKD/usd-balance",
-      "costCny": 484.2704,
-      "balance": 14849.2154,
+      "costCny": 436.4657,
+      "balance": 14847.0993,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/usmart/hang//USD/usd-balance",
-      "costCny": 155.0653,
-      "balance": 14898.3377,
+      "costCny": 110.7339,
+      "balance": 14895.673,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/usmart/hang//USD/usd-card",
-      "costCny": 155.0653,
-      "balance": 14898.3377,
+      "costCny": 110.7339,
+      "balance": 14895.673,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/usmart/hang//USD/cnh-card",
-      "costCny": 1440.9116,
-      "balance": 98445.1133,
+      "costCny": 1373.5037,
+      "balance": 98427.5056,
       "currency": "CNH"
     },
     {
       "key": "boc/bochk/usmart/hang//HKD/usd-balance",
-      "costCny": 434.0072,
-      "balance": 14856.7154,
+      "costCny": 386.1712,
+      "balance": 14854.5993,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/usmart/hang//HKD/usd-card",
-      "costCny": 434.0072,
-      "balance": 14856.7154,
+      "costCny": 386.1712,
+      "balance": 14854.5993,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/usmart/hang//HKD/cnh-card",
-      "costCny": 1716.2612,
-      "balance": 98170.0821,
+      "costCny": 1645.4591,
+      "balance": 98156.099,
       "currency": "CNH"
     },
     {
       "key": "boc/bochk/usmart/hang/hang/USD/mainland",
-      "costCny": 3952.1498,
-      "balance": 96047.8502,
+      "costCny": 3969.715,
+      "balance": 96030.285,
       "currency": "CNY"
     },
     {
       "key": "boc/bochk/usmart/hang/hang/HKD/mainland",
-      "costCny": 4226.5181,
-      "balance": 95773.4819,
+      "costCny": 4240.4675,
+      "balance": 95759.5325,
       "currency": "CNY"
     },
     {
       "key": "boc/bochk/usmart/sc//USD/usd-balance",
-      "costCny": 155.0653,
-      "balance": 14898.3377,
+      "costCny": 110.7339,
+      "balance": 14895.673,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/usmart/sc//USD/usd-card",
-      "costCny": 155.0653,
-      "balance": 14898.3377,
+      "costCny": 110.7339,
+      "balance": 14895.673,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/usmart/sc//HKD/usd-balance",
-      "costCny": 434.0072,
-      "balance": 14856.7154,
+      "costCny": 386.1712,
+      "balance": 14854.5993,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/usmart/sc//HKD/usd-card",
-      "costCny": 434.0072,
-      "balance": 14856.7154,
+      "costCny": 386.1712,
+      "balance": 14854.5993,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/usmart/icbc-asia//USD/usd-balance",
-      "costCny": 155.0653,
-      "balance": 14898.3377,
+      "costCny": 110.7339,
+      "balance": 14895.673,
       "currency": "USD"
     },
     {
       "key": "boc/bochk/usmart/icbc-asia//HKD/usd-balance",
-      "costCny": 434.0072,
-      "balance": 14856.7154,
+      "costCny": 386.1712,
+      "balance": 14854.5993,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/ibkr///USD/broker-balance",
-      "costCny": 15.6881,
-      "balance": 14919.1348,
+      "costCny": 15.6979,
+      "balance": 14909.845,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/hsbc///USD/broker-balance",
-      "costCny": 2.2786,
-      "balance": 14921.1357,
+      "costCny": 2.28,
+      "balance": 14911.8459,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/hsbc/bochk//USD/usd-balance",
-      "costCny": 2.2786,
-      "balance": 14921.1357,
+      "costCny": 2.28,
+      "balance": 14911.8459,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/hsbc/bochk//USD/usd-card",
-      "costCny": 2.2786,
-      "balance": 14921.1357,
+      "costCny": 2.28,
+      "balance": 14911.8459,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/hsbc/bochk//USD/cnh-card",
-      "costCny": 569.0419,
-      "balance": 99315.9747,
+      "costCny": 569.1045,
+      "balance": 99230.2818,
       "currency": "CNH"
     },
     {
       "key": "cib/hsbc/hsbc///HKD/broker-balance",
-      "costCny": 441.0824,
-      "balance": 14855.6597,
+      "costCny": 408.2942,
+      "balance": 14851.3003,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/hsbc/bochk//HKD/usd-balance",
-      "costCny": 441.0824,
-      "balance": 14855.6597,
+      "costCny": 408.2942,
+      "balance": 14851.3003,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/hsbc/bochk//HKD/usd-card",
-      "costCny": 441.0824,
-      "balance": 14855.6597,
+      "costCny": 408.2942,
+      "balance": 14851.3003,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/hsbc/bochk//HKD/cnh-card",
-      "costCny": 1005.3586,
-      "balance": 98880.1625,
+      "costCny": 972.8172,
+      "balance": 98827.3837,
       "currency": "CNH"
     },
     {
       "key": "cib/hsbc/hsbc/hsbc//USD/usd-balance",
-      "costCny": 2.2786,
-      "balance": 14921.1357,
+      "costCny": 2.28,
+      "balance": 14911.8459,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/hsbc/hsbc//USD/usd-card",
-      "costCny": 2.2786,
-      "balance": 14921.1357,
+      "costCny": 2.28,
+      "balance": 14911.8459,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/hsbc/hsbc//USD/cnh-card",
-      "costCny": 1260.6561,
-      "balance": 98625.1603,
+      "costCny": 986.8079,
+      "balance": 98813.4212,
       "currency": "CNH"
     },
     {
       "key": "cib/hsbc/hsbc/hsbc//HKD/usd-balance",
-      "costCny": 441.0824,
-      "balance": 14855.6597,
+      "costCny": 408.2942,
+      "balance": 14851.3003,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/hsbc/hsbc//HKD/usd-card",
-      "costCny": 441.0824,
-      "balance": 14855.6597,
+      "costCny": 408.2942,
+      "balance": 14851.3003,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/hsbc/hsbc//HKD/cnh-card",
-      "costCny": 1693.938,
-      "balance": 98192.3795,
+      "costCny": 1388.8247,
+      "balance": 98412.2156,
       "currency": "CNH"
     },
     {
       "key": "cib/hsbc/hsbc/hsbc/hsbc/USD/mainland",
-      "costCny": 4347.5578,
-      "balance": 95652.4422,
+      "costCny": 4398.1345,
+      "balance": 95601.8655,
       "currency": "CNY"
     },
     {
       "key": "cib/hsbc/hsbc/hsbc/hsbc/HKD/mainland",
-      "costCny": 4783.0912,
-      "balance": 95216.9088,
+      "costCny": 4800.9173,
+      "balance": 95199.0827,
       "currency": "CNY"
     },
     {
       "key": "cib/hsbc/hsbc/za//USD/usd-balance",
-      "costCny": 2.2786,
-      "balance": 14921.1357,
+      "costCny": 2.28,
+      "balance": 14911.8459,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/hsbc/za//HKD/usd-balance",
-      "costCny": 441.0824,
-      "balance": 14855.6597,
+      "costCny": 408.2942,
+      "balance": 14851.3003,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/hsbc/hang//USD/usd-balance",
-      "costCny": 2.2786,
-      "balance": 14921.1357,
+      "costCny": 2.28,
+      "balance": 14911.8459,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/hsbc/hang//USD/usd-card",
-      "costCny": 2.2786,
-      "balance": 14921.1357,
+      "costCny": 2.28,
+      "balance": 14911.8459,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/hsbc/hang//USD/cnh-card",
-      "costCny": 1290.0925,
-      "balance": 98595.7579,
+      "costCny": 1266.4209,
+      "balance": 98534.3724,
       "currency": "CNH"
     },
     {
       "key": "cib/hsbc/hsbc/hang//HKD/usd-balance",
-      "costCny": 441.0824,
-      "balance": 14855.6597,
+      "costCny": 408.2942,
+      "balance": 14851.3003,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/hsbc/hang//HKD/usd-card",
-      "costCny": 441.0824,
-      "balance": 14855.6597,
+      "costCny": 408.2942,
+      "balance": 14851.3003,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/hsbc/hang//HKD/cnh-card",
-      "costCny": 1723.2452,
-      "balance": 98163.1061,
+      "costCny": 1667.3023,
+      "balance": 98134.2998,
       "currency": "CNH"
     },
     {
       "key": "cib/hsbc/hsbc/hang/hang/USD/mainland",
-      "costCny": 3801.8682,
-      "balance": 96198.1318,
+      "costCny": 3863.1058,
+      "balance": 96136.8942,
       "currency": "CNY"
     },
     {
       "key": "cib/hsbc/hsbc/hang/hang/HKD/mainland",
-      "costCny": 4233.4772,
-      "balance": 95766.5228,
+      "costCny": 4262.2142,
+      "balance": 95737.7858,
       "currency": "CNY"
     },
     {
       "key": "cib/hsbc/hsbc/sc//USD/usd-balance",
-      "costCny": 2.2786,
-      "balance": 14921.1357,
+      "costCny": 2.28,
+      "balance": 14911.8459,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/hsbc/sc//USD/usd-card",
-      "costCny": 2.2786,
-      "balance": 14921.1357,
+      "costCny": 2.28,
+      "balance": 14911.8459,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/hsbc/sc//HKD/usd-balance",
-      "costCny": 441.0824,
-      "balance": 14855.6597,
+      "costCny": 408.2942,
+      "balance": 14851.3003,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/hsbc/sc//HKD/usd-card",
-      "costCny": 441.0824,
-      "balance": 14855.6597,
+      "costCny": 408.2942,
+      "balance": 14851.3003,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/hsbc/icbc-asia//USD/usd-balance",
-      "costCny": 10.8183,
-      "balance": 14919.8615,
+      "costCny": 10.8248,
+      "balance": 14910.5717,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/hsbc/icbc-asia//HKD/usd-balance",
-      "costCny": 449.6221,
-      "balance": 14854.3855,
+      "costCny": 416.8389,
+      "balance": 14850.0261,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/za///USD/broker-balance",
-      "costCny": 28.9516,
-      "balance": 14917.1557,
+      "costCny": 28.9696,
+      "balance": 14907.8659,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/za/bochk//USD/usd-balance",
-      "costCny": 28.9516,
-      "balance": 14917.1557,
+      "costCny": 28.9696,
+      "balance": 14907.8659,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/za/bochk//USD/usd-card",
-      "costCny": 28.9516,
-      "balance": 14917.1557,
+      "costCny": 28.9696,
+      "balance": 14907.8659,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/za/bochk//USD/cnh-card",
-      "costCny": 595.5637,
-      "balance": 99289.4836,
+      "costCny": 595.6428,
+      "balance": 99203.7971,
       "currency": "CNH"
     },
     {
       "key": "cib/hsbc/za///HKD/broker-balance",
-      "costCny": 467.7553,
-      "balance": 14851.6797,
+      "costCny": 434.9837,
+      "balance": 14847.3203,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/za/bochk//HKD/usd-balance",
-      "costCny": 467.7553,
-      "balance": 14851.6797,
+      "costCny": 434.9837,
+      "balance": 14847.3203,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/za/bochk//HKD/usd-card",
-      "costCny": 467.7553,
-      "balance": 14851.6797,
+      "costCny": 434.9837,
+      "balance": 14847.3203,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/za/bochk//HKD/cnh-card",
-      "costCny": 1031.8804,
-      "balance": 98853.6714,
+      "costCny": 999.3555,
+      "balance": 98800.8989,
       "currency": "CNH"
     },
     {
       "key": "cib/hsbc/za/hsbc//USD/usd-balance",
-      "costCny": 28.9516,
-      "balance": 14917.1557,
+      "costCny": 28.9696,
+      "balance": 14907.8659,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/za/hsbc//USD/usd-card",
-      "costCny": 28.9516,
-      "balance": 14917.1557,
+      "costCny": 28.9696,
+      "balance": 14907.8659,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/za/hsbc//USD/cnh-card",
-      "costCny": 1286.9934,
-      "balance": 98598.8534,
+      "costCny": 1013.2347,
+      "balance": 98787.0477,
       "currency": "CNH"
     },
     {
       "key": "cib/hsbc/za/hsbc//HKD/usd-balance",
-      "costCny": 467.7553,
-      "balance": 14851.6797,
+      "costCny": 434.9837,
+      "balance": 14847.3203,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/za/hsbc//HKD/usd-card",
-      "costCny": 467.7553,
-      "balance": 14851.6797,
+      "costCny": 434.9837,
+      "balance": 14847.3203,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/za/hsbc//HKD/cnh-card",
-      "costCny": 1720.2753,
-      "balance": 98166.0727,
+      "costCny": 1415.2515,
+      "balance": 98385.8421,
       "currency": "CNH"
     },
     {
       "key": "cib/hsbc/za/hsbc/hsbc/USD/mainland",
-      "costCny": 4374.032,
-      "balance": 95625.968,
+      "costCny": 4424.6116,
+      "balance": 95575.3884,
       "currency": "CNY"
     },
     {
       "key": "cib/hsbc/za/hsbc/hsbc/HKD/mainland",
-      "costCny": 4809.5654,
-      "balance": 95190.4346,
+      "costCny": 4827.3944,
+      "balance": 95172.6056,
       "currency": "CNY"
     },
     {
       "key": "cib/hsbc/za/za//USD/usd-balance",
-      "costCny": 28.9516,
-      "balance": 14917.1557,
+      "costCny": 28.9696,
+      "balance": 14907.8659,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/za/za//HKD/usd-balance",
-      "costCny": 467.7553,
-      "balance": 14851.6797,
+      "costCny": 434.9837,
+      "balance": 14847.3203,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/za/hang//USD/usd-balance",
-      "costCny": 28.9516,
-      "balance": 14917.1557,
+      "costCny": 28.9696,
+      "balance": 14907.8659,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/za/hang//USD/usd-card",
-      "costCny": 28.9516,
-      "balance": 14917.1557,
+      "costCny": 28.9696,
+      "balance": 14907.8659,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/za/hang//USD/cnh-card",
-      "costCny": 1316.422,
-      "balance": 98569.4589,
+      "costCny": 1292.7731,
+      "balance": 98508.0734,
       "currency": "CNH"
     },
     {
       "key": "cib/hsbc/za/hang//HKD/usd-balance",
-      "costCny": 467.7553,
-      "balance": 14851.6797,
+      "costCny": 434.9837,
+      "balance": 14847.3203,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/za/hang//HKD/usd-card",
-      "costCny": 467.7553,
-      "balance": 14851.6797,
+      "costCny": 434.9837,
+      "balance": 14847.3203,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/za/hang//HKD/cnh-card",
-      "costCny": 1749.5747,
-      "balance": 98136.8071,
+      "costCny": 1693.6545,
+      "balance": 98108.0008,
       "currency": "CNH"
     },
     {
       "key": "cib/hsbc/za/hang/hang/USD/mainland",
-      "costCny": 3828.1038,
-      "balance": 96171.8962,
+      "costCny": 3889.3414,
+      "balance": 96110.6586,
       "currency": "CNY"
     },
     {
       "key": "cib/hsbc/za/hang/hang/HKD/mainland",
-      "costCny": 4259.7129,
-      "balance": 95740.2871,
+      "costCny": 4288.4498,
+      "balance": 95711.5502,
       "currency": "CNY"
     },
     {
       "key": "cib/hsbc/za/sc//USD/usd-balance",
-      "costCny": 28.9516,
-      "balance": 14917.1557,
+      "costCny": 28.9696,
+      "balance": 14907.8659,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/za/sc//USD/usd-card",
-      "costCny": 28.9516,
-      "balance": 14917.1557,
+      "costCny": 28.9696,
+      "balance": 14907.8659,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/za/sc//HKD/usd-balance",
-      "costCny": 467.7553,
-      "balance": 14851.6797,
+      "costCny": 434.9837,
+      "balance": 14847.3203,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/za/sc//HKD/usd-card",
-      "costCny": 467.7553,
-      "balance": 14851.6797,
+      "costCny": 434.9837,
+      "balance": 14847.3203,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/za/icbc-asia//USD/usd-balance",
-      "costCny": 37.4913,
-      "balance": 14915.8815,
+      "costCny": 37.5143,
+      "balance": 14906.5917,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/za/icbc-asia//HKD/usd-balance",
-      "costCny": 476.2951,
-      "balance": 14850.4055,
+      "costCny": 443.5285,
+      "balance": 14846.0461,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/chief///USD/broker-balance",
-      "costCny": 24.2762,
-      "balance": 14917.8534,
+      "costCny": 24.2776,
+      "balance": 14908.5655,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/chief/bochk//USD/usd-balance",
-      "costCny": 24.2762,
-      "balance": 14917.8534,
+      "costCny": 24.2776,
+      "balance": 14908.5655,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/chief/bochk//USD/usd-card",
-      "costCny": 24.2762,
-      "balance": 14917.8534,
+      "costCny": 24.2776,
+      "balance": 14908.5655,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/chief/bochk//USD/cnh-card",
-      "costCny": 590.9148,
-      "balance": 99294.1271,
+      "costCny": 590.9774,
+      "balance": 99208.4531,
       "currency": "CNH"
     },
     {
       "key": "cib/hsbc/chief///HKD/broker-balance",
-      "costCny": 462.9834,
-      "balance": 14852.3918,
+      "costCny": 430.2024,
+      "balance": 14848.0333,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/chief/bochk//HKD/usd-balance",
-      "costCny": 462.9834,
-      "balance": 14852.3918,
+      "costCny": 430.2024,
+      "balance": 14848.0333,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/chief/bochk//HKD/usd-card",
-      "costCny": 462.9834,
-      "balance": 14852.3918,
+      "costCny": 430.2024,
+      "balance": 14848.0333,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/chief/bochk//HKD/cnh-card",
-      "costCny": 1027.1356,
-      "balance": 98858.4108,
+      "costCny": 994.6013,
+      "balance": 98805.6435,
       "currency": "CNH"
     },
     {
       "key": "cib/hsbc/chief/hsbc//USD/usd-balance",
-      "costCny": 24.2762,
-      "balance": 14917.8534,
+      "costCny": 24.2776,
+      "balance": 14908.5655,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/chief/hsbc//USD/usd-card",
-      "costCny": 24.2762,
-      "balance": 14917.8534,
+      "costCny": 24.2776,
+      "balance": 14908.5655,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/chief/hsbc//USD/cnh-card",
-      "costCny": 1282.3769,
-      "balance": 98603.4647,
+      "costCny": 1008.5889,
+      "balance": 98791.6841,
       "currency": "CNH"
     },
     {
       "key": "cib/hsbc/chief/hsbc//HKD/usd-balance",
-      "costCny": 462.9834,
-      "balance": 14852.3918,
+      "costCny": 430.2024,
+      "balance": 14848.0333,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/chief/hsbc//HKD/usd-card",
-      "costCny": 462.9834,
-      "balance": 14852.3918,
+      "costCny": 430.2024,
+      "balance": 14848.0333,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/chief/hsbc//HKD/cnh-card",
-      "costCny": 1715.5634,
-      "balance": 98170.7791,
+      "costCny": 1410.5172,
+      "balance": 98390.5668,
       "currency": "CNH"
     },
     {
       "key": "cib/hsbc/chief/hsbc/hsbc/USD/mainland",
-      "costCny": 4369.3915,
-      "balance": 95630.6085,
+      "costCny": 4419.957,
+      "balance": 95580.043,
       "currency": "CNY"
     },
     {
       "key": "cib/hsbc/chief/hsbc/hsbc/HKD/mainland",
-      "costCny": 4804.8291,
-      "balance": 95195.1709,
+      "costCny": 4822.6512,
+      "balance": 95177.3488,
       "currency": "CNY"
     },
     {
       "key": "cib/hsbc/chief/hang//USD/usd-balance",
-      "costCny": 24.2762,
-      "balance": 14917.8534,
+      "costCny": 24.2776,
+      "balance": 14908.5655,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/chief/hang//USD/usd-card",
-      "costCny": 24.2762,
-      "balance": 14917.8534,
+      "costCny": 24.2776,
+      "balance": 14908.5655,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/chief/hang//USD/cnh-card",
-      "costCny": 1311.8068,
-      "balance": 98574.0687,
+      "costCny": 1288.1404,
+      "balance": 98512.6967,
       "currency": "CNH"
     },
     {
       "key": "cib/hsbc/chief/hang//HKD/usd-balance",
-      "costCny": 462.9834,
-      "balance": 14852.3918,
+      "costCny": 430.2024,
+      "balance": 14848.0333,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/chief/hang//HKD/usd-card",
-      "costCny": 462.9834,
-      "balance": 14852.3918,
+      "costCny": 430.2024,
+      "balance": 14848.0333,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/chief/hang//HKD/cnh-card",
-      "costCny": 1744.8642,
-      "balance": 98141.5121,
+      "costCny": 1688.9336,
+      "balance": 98112.7121,
       "currency": "CNH"
     },
     {
       "key": "cib/hsbc/chief/hang/hang/USD/mainland",
-      "costCny": 3823.5051,
-      "balance": 96176.4949,
+      "costCny": 3884.7292,
+      "balance": 96115.2708,
       "currency": "CNY"
     },
     {
       "key": "cib/hsbc/chief/hang/hang/HKD/mainland",
-      "costCny": 4255.0192,
-      "balance": 95744.9808,
+      "costCny": 4283.7498,
+      "balance": 95716.2502,
       "currency": "CNY"
     },
     {
       "key": "cib/hsbc/chief/sc//USD/usd-balance",
-      "costCny": 24.2762,
-      "balance": 14917.8534,
+      "costCny": 24.2776,
+      "balance": 14908.5655,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/chief/sc//USD/usd-card",
-      "costCny": 24.2762,
-      "balance": 14917.8534,
+      "costCny": 24.2776,
+      "balance": 14908.5655,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/chief/sc//HKD/usd-balance",
-      "costCny": 462.9834,
-      "balance": 14852.3918,
+      "costCny": 430.2024,
+      "balance": 14848.0333,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/chief/sc//HKD/usd-card",
-      "costCny": 462.9834,
-      "balance": 14852.3918,
+      "costCny": 430.2024,
+      "balance": 14848.0333,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/chief/icbc-asia//USD/usd-balance",
-      "costCny": 24.2762,
-      "balance": 14917.8534,
+      "costCny": 24.2776,
+      "balance": 14908.5655,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/chief/icbc-asia//HKD/usd-balance",
-      "costCny": 462.9834,
-      "balance": 14852.3918,
+      "costCny": 430.2024,
+      "balance": 14848.0333,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/usmart///USD/broker-balance",
-      "costCny": 33.6103,
-      "balance": 14916.4606,
+      "costCny": 33.6275,
+      "balance": 14907.1713,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/usmart/bochk//USD/usd-balance",
-      "costCny": 33.6103,
-      "balance": 14916.4606,
+      "costCny": 33.6275,
+      "balance": 14907.1713,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/usmart/bochk//USD/usd-card",
-      "costCny": 33.6103,
-      "balance": 14916.4606,
+      "costCny": 33.6275,
+      "balance": 14907.1713,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/usmart/bochk//USD/cnh-card",
-      "costCny": 600.196,
-      "balance": 99284.8566,
+      "costCny": 600.2743,
+      "balance": 99199.175,
       "currency": "CNH"
     },
     {
       "key": "cib/hsbc/usmart///HKD/broker-balance",
-      "costCny": 472.3877,
-      "balance": 14850.9885,
+      "costCny": 439.6173,
+      "balance": 14846.6293,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/usmart/bochk//HKD/usd-balance",
-      "costCny": 472.3877,
-      "balance": 14850.9885,
+      "costCny": 439.6173,
+      "balance": 14846.6293,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/usmart/bochk//HKD/usd-card",
-      "costCny": 472.3877,
-      "balance": 14850.9885,
+      "costCny": 439.6173,
+      "balance": 14846.6293,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/usmart/bochk//HKD/cnh-card",
-      "costCny": 1036.4866,
-      "balance": 98849.0706,
+      "costCny": 1003.9628,
+      "balance": 98796.301,
       "currency": "CNH"
     },
     {
       "key": "cib/hsbc/usmart/hsbc//USD/usd-balance",
-      "costCny": 33.6103,
-      "balance": 14916.4606,
+      "costCny": 33.6275,
+      "balance": 14907.1713,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/usmart/hsbc//USD/usd-card",
-      "costCny": 33.6103,
-      "balance": 14916.4606,
+      "costCny": 33.6275,
+      "balance": 14907.1713,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/usmart/hsbc//USD/cnh-card",
-      "costCny": 1291.5935,
-      "balance": 98594.2587,
+      "costCny": 1017.8468,
+      "balance": 98782.445,
       "currency": "CNH"
     },
     {
       "key": "cib/hsbc/usmart/hsbc//HKD/usd-balance",
-      "costCny": 472.3877,
-      "balance": 14850.9885,
+      "costCny": 439.6173,
+      "balance": 14846.6293,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/usmart/hsbc//HKD/usd-card",
-      "costCny": 472.3877,
-      "balance": 14850.9885,
+      "costCny": 439.6173,
+      "balance": 14846.6293,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/usmart/hsbc//HKD/cnh-card",
-      "costCny": 1724.8494,
-      "balance": 98161.5039,
+      "costCny": 1419.8394,
+      "balance": 98381.2634,
       "currency": "CNH"
     },
     {
       "key": "cib/hsbc/usmart/hsbc/hsbc/USD/mainland",
-      "costCny": 4378.656,
-      "balance": 95621.344,
+      "costCny": 4429.2324,
+      "balance": 95570.7676,
       "currency": "CNY"
     },
     {
       "key": "cib/hsbc/usmart/hsbc/hsbc/HKD/mainland",
-      "costCny": 4814.1633,
-      "balance": 95185.8367,
+      "costCny": 4831.9911,
+      "balance": 95168.0089,
       "currency": "CNY"
     },
     {
       "key": "cib/hsbc/usmart/za//USD/usd-balance",
-      "costCny": 83.8734,
-      "balance": 14908.9606,
+      "costCny": 83.9219,
+      "balance": 14899.6713,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/usmart/za//HKD/usd-balance",
-      "costCny": 522.6508,
-      "balance": 14843.4885,
+      "costCny": 489.9117,
+      "balance": 14839.1293,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/usmart/hang//USD/usd-balance",
-      "costCny": 33.6103,
-      "balance": 14916.4606,
+      "costCny": 33.6275,
+      "balance": 14907.1713,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/usmart/hang//USD/usd-card",
-      "costCny": 33.6103,
-      "balance": 14916.4606,
+      "costCny": 33.6275,
+      "balance": 14907.1713,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/usmart/hang//USD/cnh-card",
-      "costCny": 1321.0207,
-      "balance": 98564.8655,
+      "costCny": 1297.3721,
+      "balance": 98503.4837,
       "currency": "CNH"
     },
     {
       "key": "cib/hsbc/usmart/hang//HKD/usd-balance",
-      "costCny": 472.3877,
-      "balance": 14850.9885,
+      "costCny": 439.6173,
+      "balance": 14846.6293,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/usmart/hang//HKD/usd-card",
-      "costCny": 472.3877,
-      "balance": 14850.9885,
+      "costCny": 439.6173,
+      "balance": 14846.6293,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/usmart/hang//HKD/cnh-card",
-      "costCny": 1754.1474,
-      "balance": 98132.2397,
+      "costCny": 1698.2294,
+      "balance": 98103.4351,
       "currency": "CNH"
     },
     {
       "key": "cib/hsbc/usmart/hang/hang/USD/mainland",
-      "costCny": 3832.6861,
-      "balance": 96167.3139,
+      "costCny": 3893.92,
+      "balance": 96106.08,
       "currency": "CNY"
     },
     {
       "key": "cib/hsbc/usmart/hang/hang/HKD/mainland",
-      "costCny": 4264.2693,
-      "balance": 95735.7307,
+      "costCny": 4293.0045,
+      "balance": 95706.9955,
       "currency": "CNY"
     },
     {
       "key": "cib/hsbc/usmart/sc//USD/usd-balance",
-      "costCny": 33.6103,
-      "balance": 14916.4606,
+      "costCny": 33.6275,
+      "balance": 14907.1713,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/usmart/sc//USD/usd-card",
-      "costCny": 33.6103,
-      "balance": 14916.4606,
+      "costCny": 33.6275,
+      "balance": 14907.1713,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/usmart/sc//HKD/usd-balance",
-      "costCny": 472.3877,
-      "balance": 14850.9885,
+      "costCny": 439.6173,
+      "balance": 14846.6293,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/usmart/sc//HKD/usd-card",
-      "costCny": 472.3877,
-      "balance": 14850.9885,
+      "costCny": 439.6173,
+      "balance": 14846.6293,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/usmart/icbc-asia//USD/usd-balance",
-      "costCny": 33.6103,
-      "balance": 14916.4606,
+      "costCny": 33.6275,
+      "balance": 14907.1713,
       "currency": "USD"
     },
     {
       "key": "cib/hsbc/usmart/icbc-asia//HKD/usd-balance",
-      "costCny": 472.3877,
-      "balance": 14850.9885,
+      "costCny": 439.6173,
+      "balance": 14846.6293,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/ibkr///USD/broker-balance",
-      "costCny": 262.9716,
-      "balance": 14882.2365,
+      "costCny": 203.8128,
+      "balance": 14881.7929,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/hsbc///USD/broker-balance",
-      "costCny": 249.5621,
-      "balance": 14884.2374,
+      "costCny": 190.3949,
+      "balance": 14883.7938,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/hsbc/bochk//USD/usd-balance",
-      "costCny": 249.5621,
-      "balance": 14884.2374,
+      "costCny": 190.3949,
+      "balance": 14883.7938,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/hsbc/bochk//USD/usd-card",
-      "costCny": 249.5621,
-      "balance": 14884.2374,
+      "costCny": 190.3949,
+      "balance": 14883.7938,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/hsbc/bochk//USD/cnh-card",
-      "costCny": 814.9238,
-      "balance": 99070.3771,
+      "costCny": 756.1531,
+      "balance": 99043.6106,
       "currency": "CNH"
     },
     {
       "key": "icbc/icbc-asia/hsbc///HKD/broker-balance",
-      "costCny": 455.7405,
-      "balance": 14853.4725,
+      "costCny": 393.7256,
+      "balance": 14853.4728,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/hsbc/bochk//HKD/usd-balance",
-      "costCny": 455.7405,
-      "balance": 14853.4725,
+      "costCny": 393.7256,
+      "balance": 14853.4728,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/hsbc/bochk//HKD/usd-card",
-      "costCny": 455.7405,
-      "balance": 14853.4725,
+      "costCny": 393.7256,
+      "balance": 14853.4728,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/hsbc/bochk//HKD/cnh-card",
-      "costCny": 1019.9337,
-      "balance": 98865.6044,
+      "costCny": 958.3313,
+      "balance": 98841.8404,
       "currency": "CNH"
     },
     {
       "key": "icbc/icbc-asia/hsbc/hsbc//USD/usd-balance",
-      "costCny": 249.5621,
-      "balance": 14884.2374,
+      "costCny": 190.3949,
+      "balance": 14883.7938,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/hsbc/hsbc//USD/usd-card",
-      "costCny": 249.5621,
-      "balance": 14884.2374,
+      "costCny": 190.3949,
+      "balance": 14883.7938,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/hsbc/hsbc//USD/cnh-card",
-      "costCny": 1504.8278,
-      "balance": 98381.271,
+      "costCny": 1173.0708,
+      "balance": 98627.5342,
       "currency": "CNH"
     },
     {
       "key": "icbc/icbc-asia/hsbc/hsbc//HKD/usd-balance",
-      "costCny": 455.7405,
-      "balance": 14853.4725,
+      "costCny": 393.7256,
+      "balance": 14853.4728,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/hsbc/hsbc//HKD/usd-card",
-      "costCny": 455.7405,
-      "balance": 14853.4725,
+      "costCny": 393.7256,
+      "balance": 14853.4728,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/hsbc/hsbc//HKD/cnh-card",
-      "costCny": 1708.4116,
-      "balance": 98177.9226,
+      "costCny": 1374.3996,
+      "balance": 98426.6116,
       "currency": "CNH"
     },
     {
       "key": "icbc/icbc-asia/hsbc/hsbc/hsbc/USD/mainland",
-      "costCny": 4592.9983,
-      "balance": 95407.0017,
+      "costCny": 4584.7522,
+      "balance": 95415.2478,
       "currency": "CNY"
     },
     {
       "key": "icbc/icbc-asia/hsbc/hsbc/hsbc/HKD/mainland",
-      "costCny": 4797.6401,
-      "balance": 95202.3599,
+      "costCny": 4786.4647,
+      "balance": 95213.5353,
       "currency": "CNY"
     },
     {
       "key": "icbc/icbc-asia/hsbc/za//USD/usd-balance",
-      "costCny": 249.5621,
-      "balance": 14884.2374,
+      "costCny": 190.3949,
+      "balance": 14883.7938,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/hsbc/za//HKD/usd-balance",
-      "costCny": 455.7405,
-      "balance": 14853.4725,
+      "costCny": 393.7256,
+      "balance": 14853.4728,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/hsbc/hang//USD/usd-balance",
-      "costCny": 249.5621,
-      "balance": 14884.2374,
+      "costCny": 190.3949,
+      "balance": 14883.7938,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/hsbc/hang//USD/usd-card",
-      "costCny": 249.5621,
-      "balance": 14884.2374,
+      "costCny": 190.3949,
+      "balance": 14883.7938,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/hsbc/hang//USD/cnh-card",
-      "costCny": 1534.1914,
-      "balance": 98351.9413,
+      "costCny": 1452.1577,
+      "balance": 98349.0103,
       "currency": "CNH"
     },
     {
       "key": "icbc/icbc-asia/hsbc/hang//HKD/usd-balance",
-      "costCny": 455.7405,
-      "balance": 14853.4725,
+      "costCny": 393.7256,
+      "balance": 14853.4728,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/hsbc/hang//HKD/usd-card",
-      "costCny": 455.7405,
-      "balance": 14853.4725,
+      "costCny": 393.7256,
+      "balance": 14853.4728,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/hsbc/hang//HKD/cnh-card",
-      "costCny": 1737.7145,
-      "balance": 98148.6535,
+      "costCny": 1652.918,
+      "balance": 98148.6551,
       "currency": "CNH"
     },
     {
       "key": "icbc/icbc-asia/hsbc/hang/hang/USD/mainland",
-      "costCny": 4045.0972,
-      "balance": 95954.9028,
+      "costCny": 4048.0211,
+      "balance": 95951.9789,
       "currency": "CNY"
     },
     {
       "key": "icbc/icbc-asia/hsbc/hang/hang/HKD/mainland",
-      "costCny": 4247.895,
-      "balance": 95752.105,
+      "costCny": 4247.8934,
+      "balance": 95752.1066,
       "currency": "CNY"
     },
     {
       "key": "icbc/icbc-asia/hsbc/sc//USD/usd-balance",
-      "costCny": 249.5621,
-      "balance": 14884.2374,
+      "costCny": 190.3949,
+      "balance": 14883.7938,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/hsbc/sc//USD/usd-card",
-      "costCny": 249.5621,
-      "balance": 14884.2374,
+      "costCny": 190.3949,
+      "balance": 14883.7938,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/hsbc/sc//HKD/usd-balance",
-      "costCny": 455.7405,
-      "balance": 14853.4725,
+      "costCny": 393.7256,
+      "balance": 14853.4728,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/hsbc/sc//HKD/usd-card",
-      "costCny": 455.7405,
-      "balance": 14853.4725,
+      "costCny": 393.7256,
+      "balance": 14853.4728,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/hsbc/icbc-asia//USD/usd-balance",
-      "costCny": 258.1018,
-      "balance": 14882.9631,
+      "costCny": 198.9397,
+      "balance": 14882.5196,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/hsbc/icbc-asia//HKD/usd-balance",
-      "costCny": 464.2802,
-      "balance": 14852.1983,
+      "costCny": 402.2704,
+      "balance": 14852.1986,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/za///USD/broker-balance",
-      "costCny": 276.2351,
-      "balance": 14880.2574,
+      "costCny": 217.0845,
+      "balance": 14879.8138,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/za/bochk//USD/usd-balance",
-      "costCny": 276.2351,
-      "balance": 14880.2574,
+      "costCny": 217.0845,
+      "balance": 14879.8138,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/za/bochk//USD/usd-card",
-      "costCny": 276.2351,
-      "balance": 14880.2574,
+      "costCny": 217.0845,
+      "balance": 14879.8138,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/za/bochk//USD/cnh-card",
-      "costCny": 841.4456,
-      "balance": 99043.886,
+      "costCny": 782.6914,
+      "balance": 99017.1259,
       "currency": "CNH"
     },
     {
       "key": "icbc/icbc-asia/za///HKD/broker-balance",
-      "costCny": 482.4134,
-      "balance": 14849.4925,
+      "costCny": 420.4152,
+      "balance": 14849.4928,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/za/bochk//HKD/usd-balance",
-      "costCny": 482.4134,
-      "balance": 14849.4925,
+      "costCny": 420.4152,
+      "balance": 14849.4928,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/za/bochk//HKD/usd-card",
-      "costCny": 482.4134,
-      "balance": 14849.4925,
+      "costCny": 420.4152,
+      "balance": 14849.4928,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/za/bochk//HKD/cnh-card",
-      "costCny": 1046.4555,
-      "balance": 98839.1132,
+      "costCny": 984.8696,
+      "balance": 98815.3556,
       "currency": "CNH"
     },
     {
       "key": "icbc/icbc-asia/za/hsbc//USD/usd-balance",
-      "costCny": 276.2351,
-      "balance": 14880.2574,
+      "costCny": 217.0845,
+      "balance": 14879.8138,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/za/hsbc//USD/usd-card",
-      "costCny": 276.2351,
-      "balance": 14880.2574,
+      "costCny": 217.0845,
+      "balance": 14879.8138,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/za/hsbc//USD/cnh-card",
-      "costCny": 1531.1651,
-      "balance": 98354.9641,
+      "costCny": 1199.4976,
+      "balance": 98601.1607,
       "currency": "CNH"
     },
     {
       "key": "icbc/icbc-asia/za/hsbc//HKD/usd-balance",
-      "costCny": 482.4134,
-      "balance": 14849.4925,
+      "costCny": 420.4152,
+      "balance": 14849.4928,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/za/hsbc//HKD/usd-card",
-      "costCny": 482.4134,
-      "balance": 14849.4925,
+      "costCny": 420.4152,
+      "balance": 14849.4928,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/za/hsbc//HKD/cnh-card",
-      "costCny": 1734.7489,
-      "balance": 98151.6157,
+      "costCny": 1400.8264,
+      "balance": 98400.2381,
       "currency": "CNH"
     },
     {
       "key": "icbc/icbc-asia/za/hsbc/hsbc/USD/mainland",
-      "costCny": 4619.4725,
-      "balance": 95380.5275,
+      "costCny": 4611.2294,
+      "balance": 95388.7706,
       "currency": "CNY"
     },
     {
       "key": "icbc/icbc-asia/za/hsbc/hsbc/HKD/mainland",
-      "costCny": 4824.1143,
-      "balance": 95175.8857,
+      "costCny": 4812.9418,
+      "balance": 95187.0582,
       "currency": "CNY"
     },
     {
       "key": "icbc/icbc-asia/za/za//USD/usd-balance",
-      "costCny": 276.2351,
-      "balance": 14880.2574,
+      "costCny": 217.0845,
+      "balance": 14879.8138,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/za/za//HKD/usd-balance",
-      "costCny": 482.4134,
-      "balance": 14849.4925,
+      "costCny": 420.4152,
+      "balance": 14849.4928,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/za/hang//USD/usd-balance",
-      "costCny": 276.2351,
-      "balance": 14880.2574,
+      "costCny": 217.0845,
+      "balance": 14879.8138,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/za/hang//USD/usd-card",
-      "costCny": 276.2351,
-      "balance": 14880.2574,
+      "costCny": 217.0845,
+      "balance": 14879.8138,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/za/hang//USD/cnh-card",
-      "costCny": 1560.5209,
-      "balance": 98325.6423,
+      "costCny": 1478.5099,
+      "balance": 98322.7113,
       "currency": "CNH"
     },
     {
       "key": "icbc/icbc-asia/za/hang//HKD/usd-balance",
-      "costCny": 482.4134,
-      "balance": 14849.4925,
+      "costCny": 420.4152,
+      "balance": 14849.4928,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/za/hang//HKD/usd-card",
-      "costCny": 482.4134,
-      "balance": 14849.4925,
+      "costCny": 420.4152,
+      "balance": 14849.4928,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/za/hang//HKD/cnh-card",
-      "costCny": 1764.044,
-      "balance": 98122.3545,
+      "costCny": 1679.2702,
+      "balance": 98122.3561,
       "currency": "CNH"
     },
     {
       "key": "icbc/icbc-asia/za/hang/hang/USD/mainland",
-      "costCny": 4071.3328,
-      "balance": 95928.6672,
+      "costCny": 4074.2567,
+      "balance": 95925.7433,
       "currency": "CNY"
     },
     {
       "key": "icbc/icbc-asia/za/hang/hang/HKD/mainland",
-      "costCny": 4274.1306,
-      "balance": 95725.8694,
+      "costCny": 4274.1291,
+      "balance": 95725.8709,
       "currency": "CNY"
     },
     {
       "key": "icbc/icbc-asia/za/sc//USD/usd-balance",
-      "costCny": 276.2351,
-      "balance": 14880.2574,
+      "costCny": 217.0845,
+      "balance": 14879.8138,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/za/sc//USD/usd-card",
-      "costCny": 276.2351,
-      "balance": 14880.2574,
+      "costCny": 217.0845,
+      "balance": 14879.8138,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/za/sc//HKD/usd-balance",
-      "costCny": 482.4134,
-      "balance": 14849.4925,
+      "costCny": 420.4152,
+      "balance": 14849.4928,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/za/sc//HKD/usd-card",
-      "costCny": 482.4134,
-      "balance": 14849.4925,
+      "costCny": 420.4152,
+      "balance": 14849.4928,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/za/icbc-asia//USD/usd-balance",
-      "costCny": 284.7748,
-      "balance": 14878.9831,
+      "costCny": 225.6293,
+      "balance": 14878.5396,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/za/icbc-asia//HKD/usd-balance",
-      "costCny": 490.9532,
-      "balance": 14848.2183,
+      "costCny": 428.96,
+      "balance": 14848.2186,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/chief///USD/broker-balance",
-      "costCny": 284.3121,
-      "balance": 14879.0522,
+      "costCny": 225.1654,
+      "balance": 14878.6088,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/chief/bochk//USD/usd-balance",
-      "costCny": 284.3121,
-      "balance": 14879.0522,
+      "costCny": 225.1654,
+      "balance": 14878.6088,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/chief/bochk//USD/usd-card",
-      "costCny": 284.3121,
-      "balance": 14879.0522,
+      "costCny": 225.1654,
+      "balance": 14878.6088,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/chief/bochk//USD/cnh-card",
-      "costCny": 849.4769,
-      "balance": 99035.864,
+      "costCny": 790.7265,
+      "balance": 99009.107,
       "currency": "CNH"
     },
     {
       "key": "icbc/icbc-asia/chief///HKD/broker-balance",
-      "costCny": 490.4451,
-      "balance": 14848.2941,
+      "costCny": 428.4514,
+      "balance": 14848.2944,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/chief/bochk//HKD/usd-balance",
-      "costCny": 490.4451,
-      "balance": 14848.2941,
+      "costCny": 428.4514,
+      "balance": 14848.2944,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/chief/bochk//HKD/usd-card",
-      "costCny": 490.4451,
-      "balance": 14848.2941,
+      "costCny": 428.4514,
+      "balance": 14848.2944,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/chief/bochk//HKD/cnh-card",
-      "costCny": 1054.4416,
-      "balance": 98831.1363,
+      "costCny": 992.8602,
+      "balance": 98807.3811,
       "currency": "CNH"
     },
     {
       "key": "icbc/icbc-asia/chief/hsbc//USD/usd-balance",
-      "costCny": 284.3121,
-      "balance": 14879.0522,
+      "costCny": 225.1654,
+      "balance": 14878.6088,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/chief/hsbc//USD/usd-card",
-      "costCny": 284.3121,
-      "balance": 14879.0522,
+      "costCny": 225.1654,
+      "balance": 14878.6088,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/chief/hsbc//USD/cnh-card",
-      "costCny": 1539.1405,
-      "balance": 98346.998,
+      "costCny": 1207.4989,
+      "balance": 98593.1755,
       "currency": "CNH"
     },
     {
       "key": "icbc/icbc-asia/chief/hsbc//HKD/usd-balance",
-      "costCny": 490.4451,
-      "balance": 14848.2941,
+      "costCny": 428.4514,
+      "balance": 14848.2944,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/chief/hsbc//HKD/usd-card",
-      "costCny": 490.4451,
-      "balance": 14848.2941,
+      "costCny": 428.4514,
+      "balance": 14848.2944,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/chief/hsbc//HKD/cnh-card",
-      "costCny": 1742.6795,
-      "balance": 98143.6943,
+      "costCny": 1408.7835,
+      "balance": 98392.297,
       "currency": "CNH"
     },
     {
       "key": "icbc/icbc-asia/chief/hsbc/hsbc/USD/mainland",
-      "costCny": 4627.4893,
-      "balance": 95372.5107,
+      "costCny": 4619.246,
+      "balance": 95380.754,
       "currency": "CNY"
     },
     {
       "key": "icbc/icbc-asia/chief/hsbc/hsbc/HKD/mainland",
-      "costCny": 4832.0861,
-      "balance": 95167.9139,
+      "costCny": 4820.9141,
+      "balance": 95179.0859,
       "currency": "CNY"
     },
     {
       "key": "icbc/icbc-asia/chief/hang//USD/usd-balance",
-      "costCny": 284.3121,
-      "balance": 14879.0522,
+      "costCny": 225.1654,
+      "balance": 14878.6088,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/chief/hang//USD/usd-card",
-      "costCny": 284.3121,
-      "balance": 14879.0522,
+      "costCny": 225.1654,
+      "balance": 14878.6088,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/chief/hang//USD/cnh-card",
-      "costCny": 1568.4939,
-      "balance": 98317.6785,
+      "costCny": 1486.4887,
+      "balance": 98314.7486,
       "currency": "CNH"
     },
     {
       "key": "icbc/icbc-asia/chief/hang//HKD/usd-balance",
-      "costCny": 490.4451,
-      "balance": 14848.2941,
+      "costCny": 428.4514,
+      "balance": 14848.2944,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/chief/hang//HKD/usd-card",
-      "costCny": 490.4451,
-      "balance": 14848.2941,
+      "costCny": 428.4514,
+      "balance": 14848.2944,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/chief/hang//HKD/cnh-card",
-      "costCny": 1771.9722,
-      "balance": 98114.4355,
+      "costCny": 1687.2048,
+      "balance": 98114.4375,
       "currency": "CNH"
     },
     {
       "key": "icbc/icbc-asia/chief/hang/hang/USD/mainland",
-      "costCny": 4079.2774,
-      "balance": 95920.7226,
+      "costCny": 4082.2002,
+      "balance": 95917.7998,
       "currency": "CNY"
     },
     {
       "key": "icbc/icbc-asia/chief/hang/hang/HKD/mainland",
-      "costCny": 4282.0306,
-      "balance": 95717.9694,
+      "costCny": 4282.0286,
+      "balance": 95717.9714,
       "currency": "CNY"
     },
     {
       "key": "icbc/icbc-asia/chief/sc//USD/usd-balance",
-      "costCny": 284.3121,
-      "balance": 14879.0522,
+      "costCny": 225.1654,
+      "balance": 14878.6088,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/chief/sc//USD/usd-card",
-      "costCny": 284.3121,
-      "balance": 14879.0522,
+      "costCny": 225.1654,
+      "balance": 14878.6088,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/chief/sc//HKD/usd-balance",
-      "costCny": 490.4451,
-      "balance": 14848.2941,
+      "costCny": 428.4514,
+      "balance": 14848.2944,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/chief/sc//HKD/usd-card",
-      "costCny": 490.4451,
-      "balance": 14848.2941,
+      "costCny": 428.4514,
+      "balance": 14848.2944,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/chief/icbc-asia//USD/usd-balance",
-      "costCny": 284.3121,
-      "balance": 14879.0522,
+      "costCny": 225.1654,
+      "balance": 14878.6088,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/chief/icbc-asia//HKD/usd-balance",
-      "costCny": 490.4451,
-      "balance": 14848.2941,
+      "costCny": 428.4514,
+      "balance": 14848.2944,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/usmart///USD/broker-balance",
-      "costCny": 238.1827,
-      "balance": 14885.9354,
+      "costCny": 179.0099,
+      "balance": 14885.4916,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/usmart/bochk//USD/usd-balance",
-      "costCny": 238.1827,
-      "balance": 14885.9354,
+      "costCny": 179.0099,
+      "balance": 14885.4916,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/usmart/bochk//USD/usd-card",
-      "costCny": 238.1827,
-      "balance": 14885.9354,
+      "costCny": 179.0099,
+      "balance": 14885.4916,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/usmart/bochk//USD/cnh-card",
-      "costCny": 803.609,
-      "balance": 99081.6789,
+      "costCny": 744.8326,
+      "balance": 99054.9083,
       "currency": "CNH"
     },
     {
       "key": "icbc/icbc-asia/usmart///HKD/broker-balance",
-      "costCny": 444.3488,
+      "costCny": 382.3284,
       "balance": 14855.1723,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/usmart/bochk//HKD/usd-balance",
-      "costCny": 444.3488,
+      "costCny": 382.3284,
       "balance": 14855.1723,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/usmart/bochk//HKD/usd-card",
-      "costCny": 444.3488,
+      "costCny": 382.3284,
       "balance": 14855.1723,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/usmart/bochk//HKD/cnh-card",
-      "costCny": 1008.6065,
-      "balance": 98876.9184,
+      "costCny": 946.9987,
+      "balance": 98853.1501,
       "currency": "CNH"
     },
     {
       "key": "icbc/icbc-asia/usmart/hsbc//USD/usd-balance",
-      "costCny": 238.1827,
-      "balance": 14885.9354,
+      "costCny": 179.0099,
+      "balance": 14885.4916,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/usmart/hsbc//USD/usd-card",
-      "costCny": 238.1827,
-      "balance": 14885.9354,
+      "costCny": 179.0099,
+      "balance": 14885.4916,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/usmart/hsbc//USD/cnh-card",
-      "costCny": 1493.5916,
-      "balance": 98392.4942,
+      "costCny": 1161.7978,
+      "balance": 98638.7844,
       "currency": "CNH"
     },
     {
       "key": "icbc/icbc-asia/usmart/hsbc//HKD/usd-balance",
-      "costCny": 444.3488,
+      "costCny": 382.3284,
       "balance": 14855.1723,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/usmart/hsbc//HKD/usd-card",
-      "costCny": 444.3488,
+      "costCny": 382.3284,
       "balance": 14855.1723,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/usmart/hsbc//HKD/cnh-card",
-      "costCny": 1697.1632,
-      "balance": 98189.158,
+      "costCny": 1363.1146,
+      "balance": 98437.8738,
       "currency": "CNH"
     },
     {
       "key": "icbc/icbc-asia/usmart/hsbc/hsbc/USD/mainland",
-      "costCny": 4581.7038,
-      "balance": 95418.2962,
+      "costCny": 4573.4578,
+      "balance": 95426.5422,
       "currency": "CNY"
     },
     {
       "key": "icbc/icbc-asia/usmart/hsbc/hsbc/HKD/mainland",
-      "costCny": 4786.3333,
-      "balance": 95213.6667,
+      "costCny": 4775.1582,
+      "balance": 95224.8418,
       "currency": "CNY"
     },
     {
       "key": "icbc/icbc-asia/usmart/za//USD/usd-balance",
-      "costCny": 288.4459,
-      "balance": 14878.4354,
+      "costCny": 229.3043,
+      "balance": 14877.9916,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/usmart/za//HKD/usd-balance",
-      "costCny": 494.6119,
+      "costCny": 432.6229,
       "balance": 14847.6723,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/usmart/hang//USD/usd-balance",
-      "costCny": 238.1827,
-      "balance": 14885.9354,
+      "costCny": 179.0099,
+      "balance": 14885.4916,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/usmart/hang//USD/usd-card",
-      "costCny": 238.1827,
-      "balance": 14885.9354,
+      "costCny": 179.0099,
+      "balance": 14885.4916,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/usmart/hang//USD/cnh-card",
-      "costCny": 1522.9586,
-      "balance": 98363.1611,
+      "costCny": 1440.9166,
+      "balance": 98360.2287,
       "currency": "CNH"
     },
     {
       "key": "icbc/icbc-asia/usmart/hang//HKD/usd-balance",
-      "costCny": 444.3488,
+      "costCny": 382.3284,
       "balance": 14855.1723,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/usmart/hang//HKD/usd-card",
-      "costCny": 444.3488,
+      "costCny": 382.3284,
       "balance": 14855.1723,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/usmart/hang//HKD/cnh-card",
-      "costCny": 1726.4695,
+      "costCny": 1641.6648,
       "balance": 98159.8855,
       "currency": "CNH"
     },
     {
       "key": "icbc/icbc-asia/usmart/hang/hang/USD/mainland",
-      "costCny": 4033.9044,
-      "balance": 95966.0956,
+      "costCny": 4036.8297,
+      "balance": 95963.1703,
       "currency": "CNY"
     },
     {
@@ -2286,1400 +2286,1400 @@
     },
     {
       "key": "icbc/icbc-asia/usmart/sc//USD/usd-balance",
-      "costCny": 238.1827,
-      "balance": 14885.9354,
+      "costCny": 179.0099,
+      "balance": 14885.4916,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/usmart/sc//USD/usd-card",
-      "costCny": 238.1827,
-      "balance": 14885.9354,
+      "costCny": 179.0099,
+      "balance": 14885.4916,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/usmart/sc//HKD/usd-balance",
-      "costCny": 444.3488,
+      "costCny": 382.3284,
       "balance": 14855.1723,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/usmart/sc//HKD/usd-card",
-      "costCny": 444.3488,
+      "costCny": 382.3284,
       "balance": 14855.1723,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/usmart/icbc-asia//USD/usd-balance",
-      "costCny": 238.1827,
-      "balance": 14885.9354,
+      "costCny": 179.0099,
+      "balance": 14885.4916,
       "currency": "USD"
     },
     {
       "key": "icbc/icbc-asia/usmart/icbc-asia//HKD/usd-balance",
-      "costCny": 444.3488,
+      "costCny": 382.3284,
       "balance": 14855.1723,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/ibkr///USD/broker-balance",
-      "costCny": 4066.5531,
-      "balance": 14314.686,
+      "costCny": 4015.6785,
+      "balance": 14313.3604,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc///USD/broker-balance",
-      "costCny": 4053.1437,
-      "balance": 14316.6869,
+      "costCny": 4002.2607,
+      "balance": 14315.3613,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/bochk//USD/usd-balance",
-      "costCny": 4053.1437,
-      "balance": 14316.6869,
+      "costCny": 4002.2607,
+      "balance": 14315.3613,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/bochk//USD/usd-card",
-      "costCny": 4053.1437,
-      "balance": 14316.6869,
+      "costCny": 4002.2607,
+      "balance": 14315.3613,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/bochk//USD/cnh-card",
-      "costCny": 4617.3516,
-      "balance": 95272.3466,
+      "costCny": 4566.818,
+      "balance": 95240.6343,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/hsbc///HKD/broker-balance",
-      "costCny": 4502.8632,
-      "balance": 14249.5821,
+      "costCny": 4441.4777,
+      "balance": 14249.8645,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/bochk//HKD/usd-balance",
-      "costCny": 4502.8632,
-      "balance": 14249.5821,
+      "costCny": 4441.4777,
+      "balance": 14249.8645,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/bochk//HKD/usd-card",
-      "costCny": 4502.8632,
-      "balance": 14249.5821,
+      "costCny": 4441.4777,
+      "balance": 14249.8645,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/bochk//HKD/cnh-card",
-      "costCny": 5064.5222,
-      "balance": 94825.693,
+      "costCny": 5003.5453,
+      "balance": 94804.7881,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/hsbc///CNH/broker-balance",
-      "costCny": 4720.7941,
-      "balance": 14217.0636,
+      "costCny": 4443.0945,
+      "balance": 14249.6233,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/bochk//CNH/usd-balance",
-      "costCny": 4720.7941,
-      "balance": 14217.0636,
+      "costCny": 4443.0945,
+      "balance": 14249.6233,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/bochk//CNH/usd-card",
-      "costCny": 4720.7941,
-      "balance": 14217.0636,
+      "costCny": 4443.0945,
+      "balance": 14249.6233,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/bochk//CNH/cnh-card",
-      "costCny": 5281.218,
-      "balance": 94609.2479,
+      "costCny": 5005.153,
+      "balance": 94803.1836,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/hsbc/hsbc//USD/usd-balance",
-      "costCny": 4053.1437,
-      "balance": 14316.6869,
+      "costCny": 4002.2607,
+      "balance": 14315.3613,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/hsbc//USD/usd-card",
-      "costCny": 4053.1437,
-      "balance": 14316.6869,
+      "costCny": 4002.2607,
+      "balance": 14315.3613,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/hsbc//USD/cnh-card",
-      "costCny": 5305.8475,
-      "balance": 94584.6469,
+      "costCny": 4982.8506,
+      "balance": 94825.441,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/hsbc/hsbc//HKD/usd-balance",
-      "costCny": 4502.8632,
-      "balance": 14249.5821,
+      "costCny": 4441.4777,
+      "balance": 14249.8645,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/hsbc//HKD/usd-card",
-      "costCny": 4502.8632,
-      "balance": 14249.5821,
+      "costCny": 4441.4777,
+      "balance": 14249.8645,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/hsbc//HKD/cnh-card",
-      "costCny": 5749.9077,
-      "balance": 94141.1001,
+      "costCny": 5417.7433,
+      "balance": 94391.4258,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/hsbc/hsbc//CNH/usd-balance",
-      "costCny": 4720.7941,
-      "balance": 14217.0636,
+      "costCny": 4443.0945,
+      "balance": 14249.6233,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/hsbc//CNH/usd-card",
-      "costCny": 4720.7941,
-      "balance": 14217.0636,
+      "costCny": 4443.0945,
+      "balance": 14249.6233,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/hsbc//CNH/cnh-card",
-      "costCny": 5965.0962,
-      "balance": 93926.1605,
+      "costCny": 5419.3442,
+      "balance": 94389.8281,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/hsbc/hsbc/hsbc/USD/mainland",
-      "costCny": 4795.0626,
-      "balance": 95204.9374,
+      "costCny": 4794.9318,
+      "balance": 95205.0682,
       "currency": "CNY"
     },
     {
       "key": "hsbc/hsbc/hsbc/hsbc/hsbc/HKD/mainland",
-      "costCny": 5241.4304,
-      "balance": 94758.5696,
+      "costCny": 5230.6532,
+      "balance": 94769.3468,
       "currency": "CNY"
     },
     {
       "key": "hsbc/hsbc/hsbc/hsbc/hsbc/CNH/mainland",
-      "costCny": 5457.7371,
-      "balance": 94542.2629,
+      "costCny": 5232.2572,
+      "balance": 94767.7428,
       "currency": "CNY"
     },
     {
       "key": "hsbc/hsbc/hsbc/za//USD/usd-balance",
-      "costCny": 4053.1437,
-      "balance": 14316.6869,
+      "costCny": 4002.2607,
+      "balance": 14315.3613,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/za//HKD/usd-balance",
-      "costCny": 4502.8632,
-      "balance": 14249.5821,
+      "costCny": 4441.4777,
+      "balance": 14249.8645,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/za//CNH/usd-balance",
-      "costCny": 4720.7941,
-      "balance": 14217.0636,
+      "costCny": 4443.0945,
+      "balance": 14249.6233,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/hang//USD/usd-balance",
-      "costCny": 4053.1437,
-      "balance": 14316.6869,
+      "costCny": 4002.2607,
+      "balance": 14315.3613,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/hang//USD/usd-card",
-      "costCny": 4053.1437,
-      "balance": 14316.6869,
+      "costCny": 4002.2607,
+      "balance": 14315.3613,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/hang//USD/cnh-card",
-      "costCny": 5335.1512,
-      "balance": 94555.377,
+      "costCny": 5261.3451,
+      "balance": 94547.5084,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/hsbc/hang//HKD/usd-balance",
-      "costCny": 4502.8632,
-      "balance": 14249.5821,
+      "costCny": 4441.4777,
+      "balance": 14249.8645,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/hang//HKD/usd-card",
-      "costCny": 4502.8632,
-      "balance": 14249.5821,
+      "costCny": 4441.4777,
+      "balance": 14249.8645,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/hang//HKD/cnh-card",
-      "costCny": 5779.079,
-      "balance": 94111.9625,
+      "costCny": 5695.0097,
+      "balance": 94114.7188,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/hsbc/hang//CNH/usd-balance",
-      "costCny": 4720.7941,
-      "balance": 14217.0636,
+      "costCny": 4443.0945,
+      "balance": 14249.6233,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/hang//CNH/usd-card",
-      "costCny": 4720.7941,
-      "balance": 14217.0636,
+      "costCny": 4443.0945,
+      "balance": 14249.6233,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/hang//CNH/cnh-card",
-      "costCny": 5994.2034,
-      "balance": 93897.087,
+      "costCny": 5696.6061,
+      "balance": 94113.1256,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/hsbc/hang/hang/USD/mainland",
-      "costCny": 7845.3408,
-      "balance": 92154.6592,
+      "costCny": 7856.2833,
+      "balance": 92143.7167,
       "currency": "CNY"
     },
     {
       "key": "hsbc/hsbc/hsbc/hang/hang/HKD/mainland",
-      "costCny": 8287.6866,
-      "balance": 91712.3134,
+      "costCny": 8288.0298,
+      "balance": 91711.9702,
       "currency": "CNY"
     },
     {
       "key": "hsbc/hsbc/hsbc/hang/hang/CNH/mainland",
-      "costCny": 8502.0443,
-      "balance": 91497.9557,
+      "costCny": 8289.6192,
+      "balance": 91710.3808,
       "currency": "CNY"
     },
     {
       "key": "hsbc/hsbc/hsbc/sc//USD/usd-balance",
-      "costCny": 4053.1437,
-      "balance": 14316.6869,
+      "costCny": 4002.2607,
+      "balance": 14315.3613,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/sc//USD/usd-card",
-      "costCny": 4053.1437,
-      "balance": 14316.6869,
+      "costCny": 4002.2607,
+      "balance": 14315.3613,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/sc//HKD/usd-balance",
-      "costCny": 4502.8632,
-      "balance": 14249.5821,
+      "costCny": 4441.4777,
+      "balance": 14249.8645,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/sc//HKD/usd-card",
-      "costCny": 4502.8632,
-      "balance": 14249.5821,
+      "costCny": 4441.4777,
+      "balance": 14249.8645,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/sc//CNH/usd-balance",
-      "costCny": 4720.7941,
-      "balance": 14217.0636,
+      "costCny": 4443.0945,
+      "balance": 14249.6233,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/sc//CNH/usd-card",
-      "costCny": 4720.7941,
-      "balance": 14217.0636,
+      "costCny": 4443.0945,
+      "balance": 14249.6233,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/icbc-asia//USD/usd-balance",
-      "costCny": 4061.6834,
-      "balance": 14315.4126,
+      "costCny": 4010.8054,
+      "balance": 14314.0871,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/icbc-asia//HKD/usd-balance",
-      "costCny": 4511.4029,
-      "balance": 14248.3078,
+      "costCny": 4450.0224,
+      "balance": 14248.5903,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/hsbc/icbc-asia//CNH/usd-balance",
-      "costCny": 4729.3339,
-      "balance": 14215.7893,
+      "costCny": 4451.6393,
+      "balance": 14248.3491,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za///USD/broker-balance",
-      "costCny": 4079.8166,
-      "balance": 14312.7069,
+      "costCny": 4028.9503,
+      "balance": 14311.3813,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/bochk//USD/usd-balance",
-      "costCny": 4079.8166,
-      "balance": 14312.7069,
+      "costCny": 4028.9503,
+      "balance": 14311.3813,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/bochk//USD/usd-card",
-      "costCny": 4079.8166,
-      "balance": 14312.7069,
+      "costCny": 4028.9503,
+      "balance": 14311.3813,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/bochk//USD/cnh-card",
-      "costCny": 4643.8734,
-      "balance": 95245.8554,
+      "costCny": 4593.3563,
+      "balance": 95214.1495,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/za///HKD/broker-balance",
-      "costCny": 4529.5362,
-      "balance": 14245.6021,
+      "costCny": 4468.1672,
+      "balance": 14245.8845,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/bochk//HKD/usd-balance",
-      "costCny": 4529.5362,
-      "balance": 14245.6021,
+      "costCny": 4468.1672,
+      "balance": 14245.8845,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/bochk//HKD/usd-card",
-      "costCny": 4529.5362,
-      "balance": 14245.6021,
+      "costCny": 4468.1672,
+      "balance": 14245.8845,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/bochk//HKD/cnh-card",
-      "costCny": 5091.044,
-      "balance": 94799.2019,
+      "costCny": 5030.0836,
+      "balance": 94778.3033,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/za///CNH/broker-balance",
-      "costCny": 4747.4671,
-      "balance": 14213.0836,
+      "costCny": 4469.7841,
+      "balance": 14245.6433,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/bochk//CNH/usd-balance",
-      "costCny": 4747.4671,
-      "balance": 14213.0836,
+      "costCny": 4469.7841,
+      "balance": 14245.6433,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/bochk//CNH/usd-card",
-      "costCny": 4747.4671,
-      "balance": 14213.0836,
+      "costCny": 4469.7841,
+      "balance": 14245.6433,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/bochk//CNH/cnh-card",
-      "costCny": 5307.7397,
-      "balance": 94582.7568,
+      "costCny": 5031.6913,
+      "balance": 94776.6989,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/za/hsbc//USD/usd-balance",
-      "costCny": 4079.8166,
-      "balance": 14312.7069,
+      "costCny": 4028.9503,
+      "balance": 14311.3813,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/hsbc//USD/usd-card",
-      "costCny": 4079.8166,
-      "balance": 14312.7069,
+      "costCny": 4028.9503,
+      "balance": 14311.3813,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/hsbc//USD/cnh-card",
-      "costCny": 5332.1848,
-      "balance": 94558.34,
+      "costCny": 5009.2774,
+      "balance": 94799.0675,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/za/hsbc//HKD/usd-balance",
-      "costCny": 4529.5362,
-      "balance": 14245.6021,
+      "costCny": 4468.1672,
+      "balance": 14245.8845,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/hsbc//HKD/usd-card",
-      "costCny": 4529.5362,
-      "balance": 14245.6021,
+      "costCny": 4468.1672,
+      "balance": 14245.8845,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/hsbc//HKD/cnh-card",
-      "costCny": 5776.245,
-      "balance": 94114.7933,
+      "costCny": 5444.1701,
+      "balance": 94365.0523,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/za/hsbc//CNH/usd-balance",
-      "costCny": 4747.4671,
-      "balance": 14213.0836,
+      "costCny": 4469.7841,
+      "balance": 14245.6433,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/hsbc//CNH/usd-card",
-      "costCny": 4747.4671,
-      "balance": 14213.0836,
+      "costCny": 4469.7841,
+      "balance": 14245.6433,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/hsbc//CNH/cnh-card",
-      "costCny": 5991.4335,
-      "balance": 93899.8537,
+      "costCny": 5445.771,
+      "balance": 94363.4546,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/za/hsbc/hsbc/USD/mainland",
-      "costCny": 4821.5368,
-      "balance": 95178.4632,
+      "costCny": 4821.409,
+      "balance": 95178.591,
       "currency": "CNY"
     },
     {
       "key": "hsbc/hsbc/za/hsbc/hsbc/HKD/mainland",
-      "costCny": 5267.9046,
-      "balance": 94732.0954,
+      "costCny": 5257.1303,
+      "balance": 94742.8697,
       "currency": "CNY"
     },
     {
       "key": "hsbc/hsbc/za/hsbc/hsbc/CNH/mainland",
-      "costCny": 5484.2113,
-      "balance": 94515.7887,
+      "costCny": 5258.7344,
+      "balance": 94741.2656,
       "currency": "CNY"
     },
     {
       "key": "hsbc/hsbc/za/za//USD/usd-balance",
-      "costCny": 4079.8166,
-      "balance": 14312.7069,
+      "costCny": 4028.9503,
+      "balance": 14311.3813,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/za//HKD/usd-balance",
-      "costCny": 4529.5362,
-      "balance": 14245.6021,
+      "costCny": 4468.1672,
+      "balance": 14245.8845,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/za//CNH/usd-balance",
-      "costCny": 4747.4671,
-      "balance": 14213.0836,
+      "costCny": 4469.7841,
+      "balance": 14245.6433,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/hang//USD/usd-balance",
-      "costCny": 4079.8166,
-      "balance": 14312.7069,
+      "costCny": 4028.9503,
+      "balance": 14311.3813,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/hang//USD/usd-card",
-      "costCny": 4079.8166,
-      "balance": 14312.7069,
+      "costCny": 4028.9503,
+      "balance": 14311.3813,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/hang//USD/cnh-card",
-      "costCny": 5361.4806,
-      "balance": 94529.078,
+      "costCny": 5287.6973,
+      "balance": 94521.2094,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/za/hang//HKD/usd-balance",
-      "costCny": 4529.5362,
-      "balance": 14245.6021,
+      "costCny": 4468.1672,
+      "balance": 14245.8845,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/hang//HKD/usd-card",
-      "costCny": 4529.5362,
-      "balance": 14245.6021,
+      "costCny": 4468.1672,
+      "balance": 14245.8845,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/hang//HKD/cnh-card",
-      "costCny": 5805.4085,
-      "balance": 94085.6635,
+      "costCny": 5721.3618,
+      "balance": 94088.4198,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/za/hang//CNH/usd-balance",
-      "costCny": 4747.4671,
-      "balance": 14213.0836,
+      "costCny": 4469.7841,
+      "balance": 14245.6433,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/hang//CNH/usd-card",
-      "costCny": 4747.4671,
-      "balance": 14213.0836,
+      "costCny": 4469.7841,
+      "balance": 14245.6433,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/hang//CNH/cnh-card",
-      "costCny": 6020.5328,
-      "balance": 93870.788,
+      "costCny": 5722.9583,
+      "balance": 94086.8266,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/za/hang/hang/USD/mainland",
-      "costCny": 7871.5764,
-      "balance": 92128.4236,
+      "costCny": 7882.519,
+      "balance": 92117.481,
       "currency": "CNY"
     },
     {
       "key": "hsbc/hsbc/za/hang/hang/HKD/mainland",
-      "costCny": 8313.9222,
-      "balance": 91686.0778,
+      "costCny": 8314.2654,
+      "balance": 91685.7346,
       "currency": "CNY"
     },
     {
       "key": "hsbc/hsbc/za/hang/hang/CNH/mainland",
-      "costCny": 8528.2799,
-      "balance": 91471.7201,
+      "costCny": 8315.8548,
+      "balance": 91684.1452,
       "currency": "CNY"
     },
     {
       "key": "hsbc/hsbc/za/sc//USD/usd-balance",
-      "costCny": 4079.8166,
-      "balance": 14312.7069,
+      "costCny": 4028.9503,
+      "balance": 14311.3813,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/sc//USD/usd-card",
-      "costCny": 4079.8166,
-      "balance": 14312.7069,
+      "costCny": 4028.9503,
+      "balance": 14311.3813,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/sc//HKD/usd-balance",
-      "costCny": 4529.5362,
-      "balance": 14245.6021,
+      "costCny": 4468.1672,
+      "balance": 14245.8845,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/sc//HKD/usd-card",
-      "costCny": 4529.5362,
-      "balance": 14245.6021,
+      "costCny": 4468.1672,
+      "balance": 14245.8845,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/sc//CNH/usd-balance",
-      "costCny": 4747.4671,
-      "balance": 14213.0836,
+      "costCny": 4469.7841,
+      "balance": 14245.6433,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/sc//CNH/usd-card",
-      "costCny": 4747.4671,
-      "balance": 14213.0836,
+      "costCny": 4469.7841,
+      "balance": 14245.6433,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/icbc-asia//USD/usd-balance",
-      "costCny": 4088.3564,
-      "balance": 14311.4326,
+      "costCny": 4037.495,
+      "balance": 14310.1071,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/icbc-asia//HKD/usd-balance",
-      "costCny": 4538.0759,
-      "balance": 14244.3278,
+      "costCny": 4476.712,
+      "balance": 14244.6103,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/za/icbc-asia//CNH/usd-balance",
-      "costCny": 4756.0069,
-      "balance": 14211.8093,
+      "costCny": 4478.3289,
+      "balance": 14244.3691,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief///USD/broker-balance",
-      "costCny": 4075.0421,
-      "balance": 14313.4193,
+      "costCny": 4024.1703,
+      "balance": 14312.0941,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/bochk//USD/usd-balance",
-      "costCny": 4075.0421,
-      "balance": 14313.4193,
+      "costCny": 4024.1703,
+      "balance": 14312.0941,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/bochk//USD/usd-card",
-      "costCny": 4075.0421,
-      "balance": 14313.4193,
+      "costCny": 4024.1703,
+      "balance": 14312.0941,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/bochk//USD/cnh-card",
-      "costCny": 4639.1259,
-      "balance": 95250.5975,
+      "costCny": 4588.6034,
+      "balance": 95218.8928,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/chief///HKD/broker-balance",
-      "costCny": 4524.6627,
-      "balance": 14246.3293,
+      "costCny": 4463.2906,
+      "balance": 14246.6117,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/bochk//HKD/usd-balance",
-      "costCny": 4524.6627,
-      "balance": 14246.3293,
+      "costCny": 4463.2906,
+      "balance": 14246.6117,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/bochk//HKD/usd-card",
-      "costCny": 4524.6627,
-      "balance": 14246.3293,
+      "costCny": 4463.2906,
+      "balance": 14246.6117,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/bochk//HKD/cnh-card",
-      "costCny": 5086.1981,
-      "balance": 94804.0422,
+      "costCny": 5025.2346,
+      "balance": 94783.1425,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/chief///CNH/broker-balance",
-      "costCny": 4742.5457,
-      "balance": 14213.8179,
+      "costCny": 4464.9072,
+      "balance": 14246.3706,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/bochk//CNH/usd-balance",
-      "costCny": 4742.5457,
-      "balance": 14213.8179,
+      "costCny": 4464.9072,
+      "balance": 14246.3706,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/bochk//CNH/usd-card",
-      "costCny": 4742.5457,
-      "balance": 14213.8179,
+      "costCny": 4464.9072,
+      "balance": 14246.3706,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/bochk//CNH/cnh-card",
-      "costCny": 5302.8462,
-      "balance": 94587.6446,
+      "costCny": 5026.842,
+      "balance": 94781.5384,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/chief/hsbc//USD/usd-balance",
-      "costCny": 4075.0421,
-      "balance": 14313.4193,
+      "costCny": 4024.1703,
+      "balance": 14312.0941,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/hsbc//USD/usd-card",
-      "costCny": 4075.0421,
-      "balance": 14313.4193,
+      "costCny": 4024.1703,
+      "balance": 14312.0941,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/hsbc//USD/cnh-card",
-      "costCny": 5327.4703,
-      "balance": 94563.049,
+      "costCny": 5004.5445,
+      "balance": 94803.7909,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/chief/hsbc//HKD/usd-balance",
-      "costCny": 4524.6627,
-      "balance": 14246.3293,
+      "costCny": 4463.2906,
+      "balance": 14246.6117,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/hsbc//HKD/usd-card",
-      "costCny": 4524.6627,
-      "balance": 14246.3293,
+      "costCny": 4463.2906,
+      "balance": 14246.6117,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/hsbc//HKD/cnh-card",
-      "costCny": 5771.4328,
-      "balance": 94119.5999,
+      "costCny": 5439.3415,
+      "balance": 94369.8712,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/chief/hsbc//CNH/usd-balance",
-      "costCny": 4742.5457,
-      "balance": 14213.8179,
+      "costCny": 4464.9072,
+      "balance": 14246.3706,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/hsbc//CNH/usd-card",
-      "costCny": 4742.5457,
-      "balance": 14213.8179,
+      "costCny": 4464.9072,
+      "balance": 14246.3706,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/hsbc//CNH/cnh-card",
-      "costCny": 5986.574,
-      "balance": 93904.7075,
+      "costCny": 5440.9421,
+      "balance": 94368.2738,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/chief/hsbc/hsbc/USD/mainland",
-      "costCny": 4816.7978,
-      "balance": 95183.2022,
+      "costCny": 4816.667,
+      "balance": 95183.333,
       "currency": "CNY"
     },
     {
       "key": "hsbc/hsbc/chief/hsbc/hsbc/HKD/mainland",
-      "costCny": 5263.0674,
-      "balance": 94736.9326,
+      "costCny": 5252.2925,
+      "balance": 94747.7075,
       "currency": "CNY"
     },
     {
       "key": "hsbc/hsbc/chief/hsbc/hsbc/CNH/mainland",
-      "costCny": 5479.3265,
-      "balance": 94520.6735,
+      "costCny": 5253.8962,
+      "balance": 94746.1038,
       "currency": "CNY"
     },
     {
       "key": "hsbc/hsbc/chief/hang//USD/usd-balance",
-      "costCny": 4075.0421,
-      "balance": 14313.4193,
+      "costCny": 4024.1703,
+      "balance": 14312.0941,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/hang//USD/usd-card",
-      "costCny": 4075.0421,
-      "balance": 14313.4193,
+      "costCny": 4024.1703,
+      "balance": 14312.0941,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/hang//USD/cnh-card",
-      "costCny": 5356.7676,
-      "balance": 94533.7856,
+      "costCny": 5282.9778,
+      "balance": 94525.9194,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/chief/hang//HKD/usd-balance",
-      "costCny": 4524.6627,
-      "balance": 14246.3293,
+      "costCny": 4463.2906,
+      "balance": 14246.6117,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/hang//HKD/usd-card",
-      "costCny": 4524.6627,
-      "balance": 14246.3293,
+      "costCny": 4463.2906,
+      "balance": 14246.6117,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/hang//HKD/cnh-card",
-      "costCny": 5800.5978,
-      "balance": 94090.4687,
+      "costCny": 5716.5469,
+      "balance": 94093.2251,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/chief/hang//CNH/usd-balance",
-      "costCny": 4742.5457,
-      "balance": 14213.8179,
+      "costCny": 4464.9072,
+      "balance": 14246.3706,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/hang//CNH/usd-card",
-      "costCny": 4742.5457,
-      "balance": 14213.8179,
+      "costCny": 4464.9072,
+      "balance": 14246.3706,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/hang//CNH/cnh-card",
-      "costCny": 6015.6748,
-      "balance": 93875.6404,
+      "costCny": 5718.143,
+      "balance": 94091.6322,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/chief/hang/hang/USD/mainland",
-      "costCny": 7866.8801,
-      "balance": 92133.1199,
+      "costCny": 7877.8203,
+      "balance": 92122.1797,
       "currency": "CNY"
     },
     {
       "key": "hsbc/hsbc/chief/hang/hang/HKD/mainland",
-      "costCny": 8309.1286,
-      "balance": 91690.8714,
+      "costCny": 8309.4718,
+      "balance": 91690.5282,
       "currency": "CNY"
     },
     {
       "key": "hsbc/hsbc/chief/hang/hang/CNH/mainland",
-      "costCny": 8523.4391,
-      "balance": 91476.5609,
+      "costCny": 8311.0608,
+      "balance": 91688.9392,
       "currency": "CNY"
     },
     {
       "key": "hsbc/hsbc/chief/sc//USD/usd-balance",
-      "costCny": 4075.0421,
-      "balance": 14313.4193,
+      "costCny": 4024.1703,
+      "balance": 14312.0941,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/sc//USD/usd-card",
-      "costCny": 4075.0421,
-      "balance": 14313.4193,
+      "costCny": 4024.1703,
+      "balance": 14312.0941,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/sc//HKD/usd-balance",
-      "costCny": 4524.6627,
-      "balance": 14246.3293,
+      "costCny": 4463.2906,
+      "balance": 14246.6117,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/sc//HKD/usd-card",
-      "costCny": 4524.6627,
-      "balance": 14246.3293,
+      "costCny": 4463.2906,
+      "balance": 14246.6117,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/sc//CNH/usd-balance",
-      "costCny": 4742.5457,
-      "balance": 14213.8179,
+      "costCny": 4464.9072,
+      "balance": 14246.3706,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/sc//CNH/usd-card",
-      "costCny": 4742.5457,
-      "balance": 14213.8179,
+      "costCny": 4464.9072,
+      "balance": 14246.3706,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/icbc-asia//USD/usd-balance",
-      "costCny": 4075.0421,
-      "balance": 14313.4193,
+      "costCny": 4024.1703,
+      "balance": 14312.0941,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/icbc-asia//HKD/usd-balance",
-      "costCny": 4524.6627,
-      "balance": 14246.3293,
+      "costCny": 4463.2906,
+      "balance": 14246.6117,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/chief/icbc-asia//CNH/usd-balance",
-      "costCny": 4742.5457,
-      "balance": 14213.8179,
+      "costCny": 4464.9072,
+      "balance": 14246.3706,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart///USD/broker-balance",
-      "costCny": 4084.4483,
-      "balance": 14312.0158,
+      "costCny": 4033.5842,
+      "balance": 14310.6903,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/bochk//USD/usd-balance",
-      "costCny": 4084.4483,
-      "balance": 14312.0158,
+      "costCny": 4033.5842,
+      "balance": 14310.6903,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/bochk//USD/usd-card",
-      "costCny": 4084.4483,
-      "balance": 14312.0158,
+      "costCny": 4033.5842,
+      "balance": 14310.6903,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/bochk//USD/cnh-card",
-      "costCny": 4648.4788,
-      "balance": 95241.2554,
+      "costCny": 4597.9639,
+      "balance": 95209.5512,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/usmart///HKD/broker-balance",
-      "costCny": 4534.1408,
-      "balance": 14244.915,
+      "costCny": 4472.7748,
+      "balance": 14245.1974,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/bochk//HKD/usd-balance",
-      "costCny": 4534.1408,
-      "balance": 14244.915,
+      "costCny": 4472.7748,
+      "balance": 14245.1974,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/bochk//HKD/usd-card",
-      "costCny": 4534.1408,
-      "balance": 14244.915,
+      "costCny": 4472.7748,
+      "balance": 14245.1974,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/bochk//HKD/cnh-card",
-      "costCny": 5095.6226,
-      "balance": 94794.6286,
+      "costCny": 5034.665,
+      "balance": 94773.7312,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/usmart///CNH/broker-balance",
-      "costCny": 4752.0587,
-      "balance": 14212.3984,
+      "costCny": 4474.3916,
+      "balance": 14244.9563,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/bochk//CNH/usd-balance",
-      "costCny": 4752.0587,
-      "balance": 14212.3984,
+      "costCny": 4474.3916,
+      "balance": 14244.9563,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/bochk//CNH/usd-card",
-      "costCny": 4752.0587,
-      "balance": 14212.3984,
+      "costCny": 4474.3916,
+      "balance": 14244.9563,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/bochk//CNH/cnh-card",
-      "costCny": 5312.3053,
-      "balance": 94578.1965,
+      "costCny": 5036.2726,
+      "balance": 94772.1268,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/usmart/hsbc//USD/usd-balance",
-      "costCny": 4084.4483,
-      "balance": 14312.0158,
+      "costCny": 4033.5842,
+      "balance": 14310.6903,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/hsbc//USD/usd-card",
-      "costCny": 4084.4483,
-      "balance": 14312.0158,
+      "costCny": 4033.5842,
+      "balance": 14310.6903,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/hsbc//USD/cnh-card",
-      "costCny": 5336.7582,
-      "balance": 94553.7719,
+      "costCny": 5013.8657,
+      "balance": 94794.4885,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/usmart/hsbc//HKD/usd-balance",
-      "costCny": 4534.1408,
-      "balance": 14244.915,
+      "costCny": 4472.7748,
+      "balance": 14245.1974,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/hsbc//HKD/usd-card",
-      "costCny": 4534.1408,
-      "balance": 14244.915,
+      "costCny": 4472.7748,
+      "balance": 14245.1974,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/hsbc//HKD/cnh-card",
-      "costCny": 5780.7917,
-      "balance": 94110.2518,
+      "costCny": 5448.7322,
+      "balance": 94360.4994,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/usmart/hsbc//CNH/usd-balance",
-      "costCny": 4752.0587,
-      "balance": 14212.3984,
+      "costCny": 4474.3916,
+      "balance": 14244.9563,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/hsbc//CNH/usd-card",
-      "costCny": 4752.0587,
-      "balance": 14212.3984,
+      "costCny": 4474.3916,
+      "balance": 14244.9563,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/hsbc//CNH/cnh-card",
-      "costCny": 5995.9673,
-      "balance": 93895.3251,
+      "costCny": 5450.3331,
+      "balance": 94358.9017,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/usmart/hsbc/hsbc/USD/mainland",
-      "costCny": 4826.1339,
-      "balance": 95173.8661,
+      "costCny": 4826.006,
+      "balance": 95173.994,
       "currency": "CNY"
     },
     {
       "key": "hsbc/hsbc/usmart/hsbc/hsbc/HKD/mainland",
-      "costCny": 5272.475,
-      "balance": 94727.525,
+      "costCny": 5261.7012,
+      "balance": 94738.2988,
       "currency": "CNY"
     },
     {
       "key": "hsbc/hsbc/usmart/hsbc/hsbc/CNH/mainland",
-      "costCny": 5488.7687,
-      "balance": 94511.2313,
+      "costCny": 5263.3051,
+      "balance": 94736.6949,
       "currency": "CNY"
     },
     {
       "key": "hsbc/hsbc/usmart/za//USD/usd-balance",
-      "costCny": 4134.7114,
-      "balance": 14304.5158,
+      "costCny": 4083.8786,
+      "balance": 14303.1903,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/za//HKD/usd-balance",
-      "costCny": 4584.404,
-      "balance": 14237.415,
+      "costCny": 4523.0692,
+      "balance": 14237.6974,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/za//CNH/usd-balance",
-      "costCny": 4802.3218,
-      "balance": 14204.8984,
+      "costCny": 4524.686,
+      "balance": 14237.4563,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/hang//USD/usd-balance",
-      "costCny": 4084.4483,
-      "balance": 14312.0158,
+      "costCny": 4033.5842,
+      "balance": 14310.6903,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/hang//USD/usd-card",
-      "costCny": 4084.4483,
-      "balance": 14312.0158,
+      "costCny": 4033.5842,
+      "balance": 14310.6903,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/hang//USD/cnh-card",
-      "costCny": 5366.0527,
-      "balance": 94524.5113,
+      "costCny": 5292.2726,
+      "balance": 94516.6433,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/usmart/hang//HKD/usd-balance",
-      "costCny": 4534.1408,
-      "balance": 14244.915,
+      "costCny": 4472.7748,
+      "balance": 14245.1974,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/hang//HKD/usd-card",
-      "costCny": 4534.1408,
-      "balance": 14244.915,
+      "costCny": 4472.7748,
+      "balance": 14245.1974,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/hang//HKD/cnh-card",
-      "costCny": 5809.9539,
-      "balance": 94081.1234,
+      "costCny": 5725.9111,
+      "balance": 94083.8797,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/usmart/hang//CNH/usd-balance",
-      "costCny": 4752.0587,
-      "balance": 14212.3984,
+      "costCny": 4474.3916,
+      "balance": 14244.9563,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/hang//CNH/usd-card",
-      "costCny": 4752.0587,
-      "balance": 14212.3984,
+      "costCny": 4474.3916,
+      "balance": 14244.9563,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/hang//CNH/cnh-card",
-      "costCny": 6025.0653,
-      "balance": 93866.2608,
+      "costCny": 5727.5075,
+      "balance": 94082.2866,
       "currency": "CNH"
     },
     {
       "key": "hsbc/hsbc/usmart/hang/hang/USD/mainland",
-      "costCny": 7876.1321,
-      "balance": 92123.8679,
+      "costCny": 7887.074,
+      "balance": 92112.926,
       "currency": "CNY"
     },
     {
       "key": "hsbc/hsbc/usmart/hang/hang/HKD/mainland",
-      "costCny": 8318.4514,
-      "balance": 91681.5486,
+      "costCny": 8318.7946,
+      "balance": 91681.2054,
       "currency": "CNY"
     },
     {
       "key": "hsbc/hsbc/usmart/hang/hang/CNH/mainland",
-      "costCny": 8532.7962,
-      "balance": 91467.2038,
+      "costCny": 8320.3839,
+      "balance": 91679.6161,
       "currency": "CNY"
     },
     {
       "key": "hsbc/hsbc/usmart/sc//USD/usd-balance",
-      "costCny": 4084.4483,
-      "balance": 14312.0158,
+      "costCny": 4033.5842,
+      "balance": 14310.6903,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/sc//USD/usd-card",
-      "costCny": 4084.4483,
-      "balance": 14312.0158,
+      "costCny": 4033.5842,
+      "balance": 14310.6903,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/sc//HKD/usd-balance",
-      "costCny": 4534.1408,
-      "balance": 14244.915,
+      "costCny": 4472.7748,
+      "balance": 14245.1974,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/sc//HKD/usd-card",
-      "costCny": 4534.1408,
-      "balance": 14244.915,
+      "costCny": 4472.7748,
+      "balance": 14245.1974,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/sc//CNH/usd-balance",
-      "costCny": 4752.0587,
-      "balance": 14212.3984,
+      "costCny": 4474.3916,
+      "balance": 14244.9563,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/sc//CNH/usd-card",
-      "costCny": 4752.0587,
-      "balance": 14212.3984,
+      "costCny": 4474.3916,
+      "balance": 14244.9563,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/icbc-asia//USD/usd-balance",
-      "costCny": 4084.4483,
-      "balance": 14312.0158,
+      "costCny": 4033.5842,
+      "balance": 14310.6903,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/icbc-asia//HKD/usd-balance",
-      "costCny": 4534.1408,
-      "balance": 14244.915,
+      "costCny": 4472.7748,
+      "balance": 14245.1974,
       "currency": "USD"
     },
     {
       "key": "hsbc/hsbc/usmart/icbc-asia//CNH/usd-balance",
-      "costCny": 4752.0587,
-      "balance": 14212.3984,
+      "costCny": 4474.3916,
+      "balance": 14244.9563,
       "currency": "USD"
     },
     {
       "key": "hang/hang/ibkr///USD/broker-balance",
-      "costCny": 3513.6639,
-      "balance": 14397.1852,
+      "costCny": 3452.21,
+      "balance": 14397.3859,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc///USD/broker-balance",
-      "costCny": 3500.2544,
-      "balance": 14399.1861,
+      "costCny": 3438.7922,
+      "balance": 14399.3868,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/bochk//USD/usd-balance",
-      "costCny": 3500.2544,
-      "balance": 14399.1861,
+      "costCny": 3438.7922,
+      "balance": 14399.3868,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/bochk//USD/usd-card",
-      "costCny": 3500.2544,
-      "balance": 14399.1861,
+      "costCny": 3438.7922,
+      "balance": 14399.3868,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/bochk//USD/cnh-card",
-      "costCny": 4059.4344,
-      "balance": 95829.6185,
+      "costCny": 3998.381,
+      "balance": 95807.9243,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/hsbc///HKD/broker-balance",
-      "costCny": 3879.1025,
-      "balance": 14342.6564,
+      "costCny": 3817.8763,
+      "balance": 14342.8571,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/bochk//HKD/usd-balance",
-      "costCny": 3879.1025,
-      "balance": 14342.6564,
+      "costCny": 3817.8763,
+      "balance": 14342.8571,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/bochk//HKD/usd-card",
-      "costCny": 3879.1025,
-      "balance": 14342.6564,
+      "costCny": 3817.8763,
+      "balance": 14342.8571,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/bochk//HKD/cnh-card",
-      "costCny": 4436.1352,
-      "balance": 95453.3533,
+      "costCny": 4375.3162,
+      "balance": 95431.7496,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/hsbc///CNH/broker-balance",
-      "costCny": 3294.8776,
-      "balance": 14429.8314,
+      "costCny": 3233.2874,
+      "balance": 14430.032,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/bochk//CNH/usd-balance",
-      "costCny": 3294.8776,
-      "balance": 14429.8314,
+      "costCny": 3233.2874,
+      "balance": 14430.032,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/bochk//CNH/usd-card",
-      "costCny": 3294.8776,
-      "balance": 14429.8314,
+      "costCny": 3233.2874,
+      "balance": 14430.032,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/bochk//CNH/cnh-card",
-      "costCny": 3855.2216,
-      "balance": 96033.5952,
+      "costCny": 3794.0411,
+      "balance": 96011.852,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/hsbc/hsbc//USD/usd-balance",
-      "costCny": 3500.2544,
-      "balance": 14399.1861,
+      "costCny": 3438.7922,
+      "balance": 14399.3868,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/hsbc//USD/usd-card",
-      "costCny": 3500.2544,
-      "balance": 14399.1861,
+      "costCny": 3438.7922,
+      "balance": 14399.3868,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/hsbc//USD/cnh-card",
-      "costCny": 4741.7948,
-      "balance": 95148.0473,
+      "costCny": 4410.7522,
+      "balance": 95396.3851,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/hsbc/hsbc//HKD/usd-balance",
-      "costCny": 3879.1025,
-      "balance": 14342.6564,
+      "costCny": 3817.8763,
+      "balance": 14342.8571,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/hsbc//HKD/usd-card",
-      "costCny": 3879.1025,
-      "balance": 14342.6564,
+      "costCny": 3817.8763,
+      "balance": 14342.8571,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/hsbc//HKD/cnh-card",
-      "costCny": 5115.8754,
-      "balance": 94774.3993,
+      "costCny": 4786.104,
+      "balance": 95021.7906,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/hsbc/hsbc//CNH/usd-balance",
-      "costCny": 3294.8776,
-      "balance": 14429.8314,
+      "costCny": 3233.2874,
+      "balance": 14430.032,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/hsbc//CNH/usd-card",
-      "costCny": 3294.8776,
-      "balance": 14429.8314,
+      "costCny": 3233.2874,
+      "balance": 14430.032,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/hsbc//CNH/cnh-card",
-      "costCny": 4539.0024,
-      "balance": 95350.6051,
+      "costCny": 4207.2708,
+      "balance": 95599.456,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/hsbc/hsbc/hsbc/USD/mainland",
-      "costCny": 7835.5618,
-      "balance": 92164.4382,
+      "costCny": 7824.4873,
+      "balance": 92175.5127,
       "currency": "CNY"
     },
     {
       "key": "hang/hang/hsbc/hsbc/hsbc/HKD/mainland",
-      "costCny": 8211.5863,
-      "balance": 91788.4137,
+      "costCny": 8200.5543,
+      "balance": 91799.4457,
       "currency": "CNY"
     },
     {
       "key": "hang/hang/hsbc/hsbc/hsbc/CNH/mainland",
-      "costCny": 7631.7156,
-      "balance": 92368.2844,
+      "costCny": 7620.618,
+      "balance": 92379.382,
       "currency": "CNY"
     },
     {
       "key": "hang/hang/hsbc/za//USD/usd-balance",
-      "costCny": 3500.2544,
-      "balance": 14399.1861,
+      "costCny": 3438.7922,
+      "balance": 14399.3868,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/za//HKD/usd-balance",
-      "costCny": 3879.1025,
-      "balance": 14342.6564,
+      "costCny": 3817.8763,
+      "balance": 14342.8571,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/za//CNH/usd-balance",
-      "costCny": 3294.8776,
-      "balance": 14429.8314,
+      "costCny": 3233.2874,
+      "balance": 14430.032,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/hang//USD/usd-balance",
-      "costCny": 3500.2544,
-      "balance": 14399.1861,
+      "costCny": 3438.7922,
+      "balance": 14399.3868,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/hang//USD/usd-card",
-      "costCny": 3500.2544,
-      "balance": 14399.1861,
+      "costCny": 3438.7922,
+      "balance": 14399.3868,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/hang//USD/cnh-card",
-      "costCny": 4770.8374,
-      "balance": 95119.0383,
+      "costCny": 4686.7958,
+      "balance": 95120.8985,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/hsbc/hang//HKD/usd-balance",
-      "costCny": 3879.1025,
-      "balance": 14342.6564,
+      "costCny": 3817.8763,
+      "balance": 14342.8571,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/hang//HKD/usd-card",
-      "costCny": 3879.1025,
-      "balance": 14342.6564,
+      "costCny": 3817.8763,
+      "balance": 14342.8571,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/hang//HKD/cnh-card",
-      "costCny": 5144.8064,
-      "balance": 94745.5017,
+      "costCny": 5061.0876,
+      "balance": 94747.3619,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/hsbc/hang//CNH/usd-balance",
-      "costCny": 3294.8776,
-      "balance": 14429.8314,
+      "costCny": 3233.2874,
+      "balance": 14430.032,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/hang//CNH/usd-card",
-      "costCny": 3294.8776,
-      "balance": 14429.8314,
+      "costCny": 3233.2874,
+      "balance": 14430.032,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/hang//CNH/cnh-card",
-      "costCny": 4568.1055,
-      "balance": 95321.5357,
+      "costCny": 4483.889,
+      "balance": 95323.3959,
       "currency": "CNH"
     },
     {
@@ -3702,272 +3702,272 @@
     },
     {
       "key": "hang/hang/hsbc/sc//USD/usd-balance",
-      "costCny": 3500.2544,
-      "balance": 14399.1861,
+      "costCny": 3438.7922,
+      "balance": 14399.3868,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/sc//USD/usd-card",
-      "costCny": 3500.2544,
-      "balance": 14399.1861,
+      "costCny": 3438.7922,
+      "balance": 14399.3868,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/sc//HKD/usd-balance",
-      "costCny": 3879.1025,
-      "balance": 14342.6564,
+      "costCny": 3817.8763,
+      "balance": 14342.8571,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/sc//HKD/usd-card",
-      "costCny": 3879.1025,
-      "balance": 14342.6564,
+      "costCny": 3817.8763,
+      "balance": 14342.8571,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/sc//CNH/usd-balance",
-      "costCny": 3294.8776,
-      "balance": 14429.8314,
+      "costCny": 3233.2874,
+      "balance": 14430.032,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/sc//CNH/usd-card",
-      "costCny": 3294.8776,
-      "balance": 14429.8314,
+      "costCny": 3233.2874,
+      "balance": 14430.032,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/icbc-asia//USD/usd-balance",
-      "costCny": 3508.7942,
-      "balance": 14397.9119,
+      "costCny": 3447.337,
+      "balance": 14398.1126,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/icbc-asia//HKD/usd-balance",
-      "costCny": 3887.6422,
-      "balance": 14341.3821,
+      "costCny": 3826.421,
+      "balance": 14341.5829,
       "currency": "USD"
     },
     {
       "key": "hang/hang/hsbc/icbc-asia//CNH/usd-balance",
-      "costCny": 3303.4174,
-      "balance": 14428.5571,
+      "costCny": 3241.8322,
+      "balance": 14428.7578,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za///USD/broker-balance",
-      "costCny": 3526.9274,
-      "balance": 14395.2061,
+      "costCny": 3465.4818,
+      "balance": 14395.4068,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/bochk//USD/usd-balance",
-      "costCny": 3526.9274,
-      "balance": 14395.2061,
+      "costCny": 3465.4818,
+      "balance": 14395.4068,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/bochk//USD/usd-card",
-      "costCny": 3526.9274,
-      "balance": 14395.2061,
+      "costCny": 3465.4818,
+      "balance": 14395.4068,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/bochk//USD/cnh-card",
-      "costCny": 4085.9562,
-      "balance": 95803.1274,
+      "costCny": 4024.9193,
+      "balance": 95781.4396,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/za///HKD/broker-balance",
-      "costCny": 3905.7754,
-      "balance": 14338.6764,
+      "costCny": 3844.5659,
+      "balance": 14338.8771,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/bochk//HKD/usd-balance",
-      "costCny": 3905.7754,
-      "balance": 14338.6764,
+      "costCny": 3844.5659,
+      "balance": 14338.8771,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/bochk//HKD/usd-card",
-      "costCny": 3905.7754,
-      "balance": 14338.6764,
+      "costCny": 3844.5659,
+      "balance": 14338.8771,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/bochk//HKD/cnh-card",
-      "costCny": 4462.657,
-      "balance": 95426.8622,
+      "costCny": 4401.8545,
+      "balance": 95405.2649,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/za///CNH/broker-balance",
-      "costCny": 3321.5506,
-      "balance": 14425.8514,
+      "costCny": 3259.977,
+      "balance": 14426.052,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/bochk//CNH/usd-balance",
-      "costCny": 3321.5506,
-      "balance": 14425.8514,
+      "costCny": 3259.977,
+      "balance": 14426.052,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/bochk//CNH/usd-card",
-      "costCny": 3321.5506,
-      "balance": 14425.8514,
+      "costCny": 3259.977,
+      "balance": 14426.052,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/bochk//CNH/cnh-card",
-      "costCny": 3881.7434,
-      "balance": 96007.1041,
+      "costCny": 3820.5794,
+      "balance": 95985.3672,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/za/hsbc//USD/usd-balance",
-      "costCny": 3526.9274,
-      "balance": 14395.2061,
+      "costCny": 3465.4818,
+      "balance": 14395.4068,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/hsbc//USD/usd-card",
-      "costCny": 3526.9274,
-      "balance": 14395.2061,
+      "costCny": 3465.4818,
+      "balance": 14395.4068,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/hsbc//USD/cnh-card",
-      "costCny": 4768.1321,
-      "balance": 95121.7404,
+      "costCny": 4437.1791,
+      "balance": 95370.0116,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/za/hsbc//HKD/usd-balance",
-      "costCny": 3905.7754,
-      "balance": 14338.6764,
+      "costCny": 3844.5659,
+      "balance": 14338.8771,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/hsbc//HKD/usd-card",
-      "costCny": 3905.7754,
-      "balance": 14338.6764,
+      "costCny": 3844.5659,
+      "balance": 14338.8771,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/hsbc//HKD/cnh-card",
-      "costCny": 5142.2127,
-      "balance": 94748.0924,
+      "costCny": 4812.5308,
+      "balance": 94995.4171,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/za/hsbc//CNH/usd-balance",
-      "costCny": 3321.5506,
-      "balance": 14425.8514,
+      "costCny": 3259.977,
+      "balance": 14426.052,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/hsbc//CNH/usd-card",
-      "costCny": 3321.5506,
-      "balance": 14425.8514,
+      "costCny": 3259.977,
+      "balance": 14426.052,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/hsbc//CNH/cnh-card",
-      "costCny": 4565.3397,
-      "balance": 95324.2983,
+      "costCny": 4233.6976,
+      "balance": 95573.0825,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/za/hsbc/hsbc/USD/mainland",
-      "costCny": 7862.036,
-      "balance": 92137.964,
+      "costCny": 7850.9644,
+      "balance": 92149.0356,
       "currency": "CNY"
     },
     {
       "key": "hang/hang/za/hsbc/hsbc/HKD/mainland",
-      "costCny": 8238.0605,
-      "balance": 91761.9395,
+      "costCny": 8227.0315,
+      "balance": 91772.9685,
       "currency": "CNY"
     },
     {
       "key": "hang/hang/za/hsbc/hsbc/CNH/mainland",
-      "costCny": 7658.1898,
-      "balance": 92341.8102,
+      "costCny": 7647.0952,
+      "balance": 92352.9048,
       "currency": "CNY"
     },
     {
       "key": "hang/hang/za/za//USD/usd-balance",
-      "costCny": 3526.9274,
-      "balance": 14395.2061,
+      "costCny": 3465.4818,
+      "balance": 14395.4068,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/za//HKD/usd-balance",
-      "costCny": 3905.7754,
-      "balance": 14338.6764,
+      "costCny": 3844.5659,
+      "balance": 14338.8771,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/za//CNH/usd-balance",
-      "costCny": 3321.5506,
-      "balance": 14425.8514,
+      "costCny": 3259.977,
+      "balance": 14426.052,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/hang//USD/usd-balance",
-      "costCny": 3526.9274,
-      "balance": 14395.2061,
+      "costCny": 3465.4818,
+      "balance": 14395.4068,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/hang//USD/usd-card",
-      "costCny": 3526.9274,
-      "balance": 14395.2061,
+      "costCny": 3465.4818,
+      "balance": 14395.4068,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/hang//USD/cnh-card",
-      "costCny": 4797.1668,
-      "balance": 95092.7393,
+      "costCny": 4713.148,
+      "balance": 95094.5995,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/za/hang//HKD/usd-balance",
-      "costCny": 3905.7754,
-      "balance": 14338.6764,
+      "costCny": 3844.5659,
+      "balance": 14338.8771,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/hang//HKD/usd-card",
-      "costCny": 3905.7754,
-      "balance": 14338.6764,
+      "costCny": 3844.5659,
+      "balance": 14338.8771,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/hang//HKD/cnh-card",
-      "costCny": 5171.1359,
-      "balance": 94719.2027,
+      "costCny": 5087.4398,
+      "balance": 94721.0629,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/za/hang//CNH/usd-balance",
-      "costCny": 3321.5506,
-      "balance": 14425.8514,
+      "costCny": 3259.977,
+      "balance": 14426.052,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/hang//CNH/usd-card",
-      "costCny": 3321.5506,
-      "balance": 14425.8514,
+      "costCny": 3259.977,
+      "balance": 14426.052,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/hang//CNH/cnh-card",
-      "costCny": 4594.4349,
-      "balance": 95295.2367,
+      "costCny": 4510.2411,
+      "balance": 95297.0969,
       "currency": "CNH"
     },
     {
@@ -3990,254 +3990,254 @@
     },
     {
       "key": "hang/hang/za/sc//USD/usd-balance",
-      "costCny": 3526.9274,
-      "balance": 14395.2061,
+      "costCny": 3465.4818,
+      "balance": 14395.4068,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/sc//USD/usd-card",
-      "costCny": 3526.9274,
-      "balance": 14395.2061,
+      "costCny": 3465.4818,
+      "balance": 14395.4068,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/sc//HKD/usd-balance",
-      "costCny": 3905.7754,
-      "balance": 14338.6764,
+      "costCny": 3844.5659,
+      "balance": 14338.8771,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/sc//HKD/usd-card",
-      "costCny": 3905.7754,
-      "balance": 14338.6764,
+      "costCny": 3844.5659,
+      "balance": 14338.8771,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/sc//CNH/usd-balance",
-      "costCny": 3321.5506,
-      "balance": 14425.8514,
+      "costCny": 3259.977,
+      "balance": 14426.052,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/sc//CNH/usd-card",
-      "costCny": 3321.5506,
-      "balance": 14425.8514,
+      "costCny": 3259.977,
+      "balance": 14426.052,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/icbc-asia//USD/usd-balance",
-      "costCny": 3535.4672,
-      "balance": 14393.9319,
+      "costCny": 3474.0266,
+      "balance": 14394.1326,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/icbc-asia//HKD/usd-balance",
-      "costCny": 3914.3152,
-      "balance": 14337.4021,
+      "costCny": 3853.1106,
+      "balance": 14337.6029,
       "currency": "USD"
     },
     {
       "key": "hang/hang/za/icbc-asia//CNH/usd-balance",
-      "costCny": 3330.0903,
-      "balance": 14424.5771,
+      "costCny": 3268.5218,
+      "balance": 14424.7778,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief///USD/broker-balance",
-      "costCny": 3521.9577,
-      "balance": 14395.9477,
+      "costCny": 3460.509,
+      "balance": 14396.1483,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/bochk//USD/usd-balance",
-      "costCny": 3521.9577,
-      "balance": 14395.9477,
+      "costCny": 3460.509,
+      "balance": 14396.1483,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/bochk//USD/usd-card",
-      "costCny": 3521.9577,
-      "balance": 14395.9477,
+      "costCny": 3460.509,
+      "balance": 14396.1483,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/bochk//USD/cnh-card",
-      "costCny": 4081.0147,
-      "balance": 95808.0632,
+      "costCny": 4019.9747,
+      "balance": 95786.3742,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/chief///HKD/broker-balance",
-      "costCny": 3900.7224,
-      "balance": 14339.4304,
+      "costCny": 3839.5097,
+      "balance": 14339.631,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/bochk//HKD/usd-balance",
-      "costCny": 3900.7224,
-      "balance": 14339.4304,
+      "costCny": 3839.5097,
+      "balance": 14339.631,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/bochk//HKD/usd-card",
-      "costCny": 3900.7224,
-      "balance": 14339.4304,
+      "costCny": 3839.5097,
+      "balance": 14339.631,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/bochk//HKD/cnh-card",
-      "costCny": 4457.6326,
-      "balance": 95431.8808,
+      "costCny": 4396.827,
+      "balance": 95410.2822,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/chief///CNH/broker-balance",
-      "costCny": 3316.626,
-      "balance": 14426.5862,
+      "costCny": 3255.0494,
+      "balance": 14426.7868,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/bochk//CNH/usd-balance",
-      "costCny": 3316.626,
-      "balance": 14426.5862,
+      "costCny": 3255.0494,
+      "balance": 14426.7868,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/bochk//CNH/usd-card",
-      "costCny": 3316.626,
-      "balance": 14426.5862,
+      "costCny": 3255.0494,
+      "balance": 14426.7868,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/bochk//CNH/cnh-card",
-      "costCny": 3876.8468,
-      "balance": 96011.995,
+      "costCny": 3815.6797,
+      "balance": 95990.257,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/chief/hsbc//USD/usd-balance",
-      "costCny": 3521.9577,
-      "balance": 14395.9477,
+      "costCny": 3460.509,
+      "balance": 14396.1483,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/hsbc//USD/usd-card",
-      "costCny": 3521.9577,
-      "balance": 14395.9477,
+      "costCny": 3460.509,
+      "balance": 14396.1483,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/hsbc//USD/cnh-card",
-      "costCny": 4763.2249,
-      "balance": 95126.6419,
+      "costCny": 4432.2552,
+      "balance": 95374.9255,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/chief/hsbc//HKD/usd-balance",
-      "costCny": 3900.7224,
-      "balance": 14339.4304,
+      "costCny": 3839.5097,
+      "balance": 14339.631,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/hsbc//HKD/usd-card",
-      "costCny": 3900.7224,
-      "balance": 14339.4304,
+      "costCny": 3839.5097,
+      "balance": 14339.631,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/hsbc//HKD/cnh-card",
-      "costCny": 5137.2232,
-      "balance": 94753.0761,
+      "costCny": 4807.5244,
+      "balance": 95000.4135,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/chief/hsbc//CNH/usd-balance",
-      "costCny": 3316.626,
-      "balance": 14426.5862,
+      "costCny": 3255.0494,
+      "balance": 14426.7868,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/hsbc//CNH/usd-card",
-      "costCny": 3316.626,
-      "balance": 14426.5862,
+      "costCny": 3255.0494,
+      "balance": 14426.7868,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/hsbc//CNH/cnh-card",
-      "costCny": 4560.4772,
-      "balance": 95329.1552,
+      "costCny": 4228.8185,
+      "balance": 95577.9518,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/chief/hsbc/hsbc/USD/mainland",
-      "costCny": 7857.1033,
-      "balance": 92142.8967,
+      "costCny": 7846.0312,
+      "balance": 92153.9688,
       "currency": "CNY"
     },
     {
       "key": "hang/hang/chief/hsbc/hsbc/HKD/mainland",
-      "costCny": 8233.0451,
-      "balance": 91766.9549,
+      "costCny": 8222.0155,
+      "balance": 91777.9845,
       "currency": "CNY"
     },
     {
       "key": "hang/hang/chief/hsbc/hsbc/CNH/mainland",
-      "costCny": 7653.302,
-      "balance": 92346.698,
+      "costCny": 7642.2068,
+      "balance": 92357.7932,
       "currency": "CNY"
     },
     {
       "key": "hang/hang/chief/hang//USD/usd-balance",
-      "costCny": 3521.9577,
-      "balance": 14395.9477,
+      "costCny": 3460.509,
+      "balance": 14396.1483,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/hang//USD/usd-card",
-      "costCny": 3521.9577,
-      "balance": 14395.9477,
+      "costCny": 3460.509,
+      "balance": 14396.1483,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/hang//USD/cnh-card",
-      "costCny": 4792.2611,
-      "balance": 95097.6393,
+      "costCny": 4708.2381,
+      "balance": 95099.4995,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/chief/hang//HKD/usd-balance",
-      "costCny": 3900.7224,
-      "balance": 14339.4304,
+      "costCny": 3839.5097,
+      "balance": 14339.631,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/hang//HKD/usd-card",
-      "costCny": 3900.7224,
-      "balance": 14339.4304,
+      "costCny": 3839.5097,
+      "balance": 14339.631,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/hang//HKD/cnh-card",
-      "costCny": 5166.1479,
-      "balance": 94724.1849,
+      "costCny": 5082.4475,
+      "balance": 94726.0451,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/chief/hang//CNH/usd-balance",
-      "costCny": 3316.626,
-      "balance": 14426.5862,
+      "costCny": 3255.0494,
+      "balance": 14426.7868,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/hang//CNH/usd-card",
-      "costCny": 3316.626,
-      "balance": 14426.5862,
+      "costCny": 3255.0494,
+      "balance": 14426.7868,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/hang//CNH/cnh-card",
-      "costCny": 4589.5738,
-      "balance": 95300.0922,
+      "costCny": 4505.3758,
+      "balance": 95301.9524,
       "currency": "CNH"
     },
     {
@@ -4260,344 +4260,344 @@
     },
     {
       "key": "hang/hang/chief/sc//USD/usd-balance",
-      "costCny": 3521.9577,
-      "balance": 14395.9477,
+      "costCny": 3460.509,
+      "balance": 14396.1483,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/sc//USD/usd-card",
-      "costCny": 3521.9577,
-      "balance": 14395.9477,
+      "costCny": 3460.509,
+      "balance": 14396.1483,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/sc//HKD/usd-balance",
-      "costCny": 3900.7224,
-      "balance": 14339.4304,
+      "costCny": 3839.5097,
+      "balance": 14339.631,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/sc//HKD/usd-card",
-      "costCny": 3900.7224,
-      "balance": 14339.4304,
+      "costCny": 3839.5097,
+      "balance": 14339.631,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/sc//CNH/usd-balance",
-      "costCny": 3316.626,
-      "balance": 14426.5862,
+      "costCny": 3255.0494,
+      "balance": 14426.7868,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/sc//CNH/usd-card",
-      "costCny": 3316.626,
-      "balance": 14426.5862,
+      "costCny": 3255.0494,
+      "balance": 14426.7868,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/icbc-asia//USD/usd-balance",
-      "costCny": 3521.9577,
-      "balance": 14395.9477,
+      "costCny": 3460.509,
+      "balance": 14396.1483,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/icbc-asia//HKD/usd-balance",
-      "costCny": 3900.7224,
-      "balance": 14339.4304,
+      "costCny": 3839.5097,
+      "balance": 14339.631,
       "currency": "USD"
     },
     {
       "key": "hang/hang/chief/icbc-asia//CNH/usd-balance",
-      "costCny": 3316.626,
-      "balance": 14426.5862,
+      "costCny": 3255.0494,
+      "balance": 14426.7868,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart///USD/broker-balance",
-      "costCny": 3544.3147,
-      "balance": 14392.6117,
+      "costCny": 3482.8794,
+      "balance": 14392.8124,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/bochk//USD/usd-balance",
-      "costCny": 3544.3147,
-      "balance": 14392.6117,
+      "costCny": 3482.8794,
+      "balance": 14392.8124,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/bochk//USD/usd-card",
-      "costCny": 3544.3147,
-      "balance": 14392.6117,
+      "costCny": 3482.8794,
+      "balance": 14392.8124,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/bochk//USD/cnh-card",
-      "costCny": 4103.245,
-      "balance": 95785.8587,
+      "costCny": 4042.2183,
+      "balance": 95764.1755,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/usmart///HKD/broker-balance",
-      "costCny": 3923.14,
-      "balance": 14336.0854,
+      "costCny": 3861.9407,
+      "balance": 14336.2861,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/bochk//HKD/usd-balance",
-      "costCny": 3923.14,
-      "balance": 14336.0854,
+      "costCny": 3861.9407,
+      "balance": 14336.2861,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/bochk//HKD/usd-card",
-      "costCny": 3923.14,
-      "balance": 14336.0854,
+      "costCny": 3861.9407,
+      "balance": 14336.2861,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/bochk//HKD/cnh-card",
-      "costCny": 4479.9232,
-      "balance": 95409.616,
+      "costCny": 4419.1309,
+      "balance": 95388.0233,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/usmart///CNH/broker-balance",
-      "costCny": 3338.9502,
-      "balance": 14423.2551,
+      "costCny": 3277.387,
+      "balance": 14423.4558,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/bochk//CNH/usd-balance",
-      "costCny": 3338.9502,
-      "balance": 14423.2551,
+      "costCny": 3277.387,
+      "balance": 14423.4558,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/bochk//CNH/usd-card",
-      "costCny": 3338.9502,
-      "balance": 14423.2551,
+      "costCny": 3277.387,
+      "balance": 14423.4558,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/bochk//CNH/cnh-card",
-      "costCny": 3899.0444,
-      "balance": 95989.8231,
+      "costCny": 3837.8907,
+      "balance": 95968.0909,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/usmart/hsbc//USD/usd-balance",
-      "costCny": 3544.3147,
-      "balance": 14392.6117,
+      "costCny": 3482.8794,
+      "balance": 14392.8124,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/hsbc//USD/usd-card",
-      "costCny": 3544.3147,
-      "balance": 14392.6117,
+      "costCny": 3482.8794,
+      "balance": 14392.8124,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/hsbc//USD/cnh-card",
-      "costCny": 4785.3006,
-      "balance": 95104.5918,
+      "costCny": 4454.4054,
+      "balance": 95352.82,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/usmart/hsbc//HKD/usd-balance",
-      "costCny": 3923.14,
-      "balance": 14336.0854,
+      "costCny": 3861.9407,
+      "balance": 14336.2861,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/hsbc//HKD/usd-card",
-      "costCny": 3923.14,
-      "balance": 14336.0854,
+      "costCny": 3861.9407,
+      "balance": 14336.2861,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/hsbc//HKD/cnh-card",
-      "costCny": 5159.3587,
-      "balance": 94730.9662,
+      "costCny": 4829.7347,
+      "balance": 94978.248,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/usmart/hsbc//CNH/usd-balance",
-      "costCny": 3338.9502,
-      "balance": 14423.2551,
+      "costCny": 3277.387,
+      "balance": 14423.4558,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/hsbc//CNH/usd-card",
-      "costCny": 3338.9502,
-      "balance": 14423.2551,
+      "costCny": 3277.387,
+      "balance": 14423.4558,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/hsbc//CNH/cnh-card",
-      "costCny": 4582.5204,
-      "balance": 95307.1375,
+      "costCny": 4250.9361,
+      "balance": 95555.8788,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/usmart/hsbc/hsbc/USD/mainland",
-      "costCny": 7879.2937,
-      "balance": 92120.7063,
+      "costCny": 7868.2236,
+      "balance": 92131.7764,
       "currency": "CNY"
     },
     {
       "key": "hang/hang/usmart/hsbc/hsbc/HKD/mainland",
-      "costCny": 8255.2956,
-      "balance": 91744.7044,
+      "costCny": 8244.2681,
+      "balance": 91755.7319,
       "currency": "CNY"
     },
     {
       "key": "hang/hang/usmart/hsbc/hsbc/CNH/mainland",
-      "costCny": 7675.4597,
-      "balance": 92324.5403,
+      "costCny": 7664.3666,
+      "balance": 92335.6334,
       "currency": "CNY"
     },
     {
       "key": "hang/hang/usmart/za//USD/usd-balance",
-      "costCny": 3594.5778,
-      "balance": 14385.1117,
+      "costCny": 3533.1739,
+      "balance": 14385.3124,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/za//HKD/usd-balance",
-      "costCny": 3973.4031,
-      "balance": 14328.5854,
+      "costCny": 3912.2352,
+      "balance": 14328.7861,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/za//CNH/usd-balance",
-      "costCny": 3389.2133,
-      "balance": 14415.7551,
+      "costCny": 3327.6814,
+      "balance": 14415.9558,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/hang//USD/usd-balance",
-      "costCny": 3544.3147,
-      "balance": 14392.6117,
+      "costCny": 3482.8794,
+      "balance": 14392.8124,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/hang//USD/usd-card",
-      "costCny": 3544.3147,
-      "balance": 14392.6117,
+      "costCny": 3482.8794,
+      "balance": 14392.8124,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/hang//USD/cnh-card",
-      "costCny": 4814.3302,
-      "balance": 95075.5957,
+      "costCny": 4730.3257,
+      "balance": 95077.4564,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/usmart/hang//HKD/usd-balance",
-      "costCny": 3923.14,
-      "balance": 14336.0854,
+      "costCny": 3861.9407,
+      "balance": 14336.2861,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/hang//HKD/usd-card",
-      "costCny": 3923.14,
-      "balance": 14336.0854,
+      "costCny": 3861.9407,
+      "balance": 14336.2861,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/hang//HKD/cnh-card",
-      "costCny": 5188.2768,
-      "balance": 94702.0815,
+      "costCny": 5104.595,
+      "balance": 94703.9422,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/usmart/hang//CNH/usd-balance",
-      "costCny": 3338.9502,
-      "balance": 14423.2551,
+      "costCny": 3277.387,
+      "balance": 14423.4558,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/hang//CNH/usd-card",
-      "costCny": 3338.9502,
-      "balance": 14423.2551,
+      "costCny": 3277.387,
+      "balance": 14423.4558,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/hang//CNH/cnh-card",
-      "costCny": 4611.6104,
-      "balance": 95278.0811,
+      "costCny": 4527.431,
+      "balance": 95279.9417,
       "currency": "CNH"
     },
     {
       "key": "hang/hang/usmart/hang/hang/USD/mainland",
-      "costCny": 5161.2441,
-      "balance": 94838.7559,
+      "costCny": 5161.2436,
+      "balance": 94838.7564,
       "currency": "CNY"
     },
     {
       "key": "hang/hang/usmart/hang/hang/HKD/mainland",
-      "costCny": 5533.858,
-      "balance": 94466.142,
+      "costCny": 5533.8576,
+      "balance": 94466.1424,
       "currency": "CNY"
     },
     {
       "key": "hang/hang/usmart/hang/hang/CNH/mainland",
-      "costCny": 4959.2468,
-      "balance": 95040.7532,
+      "costCny": 4959.2463,
+      "balance": 95040.7537,
       "currency": "CNY"
     },
     {
       "key": "hang/hang/usmart/sc//USD/usd-balance",
-      "costCny": 3544.3147,
-      "balance": 14392.6117,
+      "costCny": 3482.8794,
+      "balance": 14392.8124,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/sc//USD/usd-card",
-      "costCny": 3544.3147,
-      "balance": 14392.6117,
+      "costCny": 3482.8794,
+      "balance": 14392.8124,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/sc//HKD/usd-balance",
-      "costCny": 3923.14,
-      "balance": 14336.0854,
+      "costCny": 3861.9407,
+      "balance": 14336.2861,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/sc//HKD/usd-card",
-      "costCny": 3923.14,
-      "balance": 14336.0854,
+      "costCny": 3861.9407,
+      "balance": 14336.2861,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/sc//CNH/usd-balance",
-      "costCny": 3338.9502,
-      "balance": 14423.2551,
+      "costCny": 3277.387,
+      "balance": 14423.4558,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/sc//CNH/usd-card",
-      "costCny": 3338.9502,
-      "balance": 14423.2551,
+      "costCny": 3277.387,
+      "balance": 14423.4558,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/icbc-asia//USD/usd-balance",
-      "costCny": 3544.3147,
-      "balance": 14392.6117,
+      "costCny": 3482.8794,
+      "balance": 14392.8124,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/icbc-asia//HKD/usd-balance",
-      "costCny": 3923.14,
-      "balance": 14336.0854,
+      "costCny": 3861.9407,
+      "balance": 14336.2861,
       "currency": "USD"
     },
     {
       "key": "hang/hang/usmart/icbc-asia//CNH/usd-balance",
-      "costCny": 3338.9502,
-      "balance": 14423.2551,
+      "costCny": 3277.387,
+      "balance": 14423.4558,
       "currency": "USD"
     }
   ],
