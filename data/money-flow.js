@@ -47,6 +47,8 @@
       bocPaymentGuide: { name: '2026-06-30用户实录 · 中行跨境支付通人民币汇款', url: 'https://linux.do/t/topic/2632770?tl=zh_CN' },
       bocMobileUsdGuide: { name: '2026-02-09操作记录 · USD/HKD同名境外中行SHA同行路径', url: 'https://www.huigeblog.com/news/operational-guide-for-cross-border-remittance-via-bank-of-china-hong-kong.html' },
       zaLocalUsd: { name: 'ZA官方 · 免费本地美元转账与直连银行名单', url: 'https://cdn.zaticdn.com/if/ipage/prd/data/blog/a1e7a724-9c51-421a-936a-a339d6d18c4e/en/USD-local-bank-transfers.html?v=1758617552695' },
+      zaFx: { name: 'ZA官方 · App买入／卖出换汇报价入口', url: 'https://bank.za.group/en/faqs/Individuals/Bank_services/Money_exchange/671605c5701eb769e4bff53c' },
+      zaExchangeLimits: { name: 'ZA官方 · 每笔换汇金额限制', url: 'https://bank.za.group/en/faqs/Individuals/Bank_services/Money_exchange/671605bb701eb769e4bff52d' },
       hsbcUsTariff: { name: '汇丰2026年9月美股收费表 · 第3、10页月费豁免', url: 'https://www.hsbc.com.hk/content/dam/hsbc/hk/sc/docs/investments/stocks/top-trader-club/us-stocks-product-fact-sheet.pdf' },
       bocPaymentConnect: { name: '中国银行 · 跨境支付通南向人民币／港币到账', url: 'https://www.boc.cn/aboutboc/bi1/202506/t20250620_25390382.html' },
       bocPaymentCase: { name: '黄石政府网 · 中行南向零手续费实例（2025-07-01）', url: 'https://huangshi.gov.cn/xwdt/hsyw/202507/t20250701_1235188.html' },
@@ -213,7 +215,9 @@
         tariffChannel: '优先理财 · 网上外币汇款（SHA）', required: 'sc', thresholdCny: 500000, includedIntermediary: true, feeText: '优先理财网上外币汇款：手续费、电讯费0；同名全球账户渠道OUR代理费另免', condition: '按优先理财客户计算；2026年人民币跨境汇出手续费免，代理费另计；同名全球账户渠道仅限外币同币种、选OUR代理费免，普通境外汇款SHA不豁免其他银行收费', sources: ['sc', 'scTier', 'scCnTariff', 'scCnOffers', 'scGlobalFaq'] }
     ],
     hkBanks: [
-      { id: 'za', name: '众安 ZA Bank', group: 'za', inwardHkd: 0, localHkd: 0, localUsd: 0, acceptsCheques: false, outwardHkd: 0, outwardChanges: [{ from: '2026-11-01', fee: 70 }], monthlyHkd: 0, thresholdHkd: 0, cardForeignPct: 1.95, condition: '在港申请；无账户管理费，不接受支票存款。外币/海外处理港元签账有1.95%费用', sources: ['za', 'zaNov', 'zaOpen', 'zaCard', 'zaAccountTerms'] },
+      { id: 'za', name: '众安 ZA Bank', group: 'za', inwardHkd: 0, localHkd: 0, localUsd: 0, acceptsCheques: false, outwardHkd: 0, outwardChanges: [{ from: '2026-11-01', fee: 70 }], monthlyHkd: 0, thresholdHkd: 0, cardForeignPct: 1.95,
+        exchangeInputLimits: { HKD: { minimum: 35, maximum: 7850000 }, CNH: { minimum: 30, maximum: 7200000 } },
+        condition: '在港申请；无账户管理费，不接受支票存款。外币/海外处理港元签账有1.95%费用', sources: ['za', 'zaNov', 'zaOpen', 'zaCard', 'zaAccountTerms'] },
       { id: 'hsbc', name: '汇丰 HSBC One', group: 'hsbc', inwardHkd: 0, localHkd: 0, localUsd: 0, localUsdChequeHkd: 0, outwardHkd: 70, monthlyHkd: 100, thresholdHkd: 10000, directUsdCard: true, directCnhCard: true, cardForeignPct: 0, condition: '2026年起新开非香港身份证One：低于1万港元收100港元/月；扣账卡外币交易费免', sources: ['hsbcHk', 'hsbcCard', 'hsbcHkFx'] },
       { id: 'bochk', name: '中银香港', group: 'boc', inwardHkd: 60, inwardSmallLimitHkd: 500, sameGroupWaiver: true, localHkd: 0, localUsd: 0, localUsdChequeHkd: 0, outwardHkd: 65, monthlyHkd: 0, thresholdHkd: 0, directUsdCard: true, directCnhCard: true, cardForeignPct: 0, condition: '普通个人账户免月费；一般汇入超过500港元收60港元，内地中行同名优惠可免。网上同名汇至内地中行的快汇及SWIFT基本手续费豁免，代理费另计', sources: ['bochkAccount', 'bochkSame', 'bochkCard', 'bochkCheque'] },
       { id: 'hang', name: '恒生 · 优进理财', group: 'hang', inwardHkd: 0, sameGroupWaiver: true, localHkd: 0, localUsd: 0, localUsdChequeHkd: 0, outwardHkd: 65, monthlyHkd: 0, thresholdHkd: 0, directUsdCard: true, directCnhCard: true, cardForeignPct: 0, condition: '优进理财无最低理财总值/月费；跨域转账须已登记，并经指定页面提交', sources: ['hangHk', 'hangOpen', 'hangCard', 'hangHkFx'] },

@@ -909,6 +909,14 @@
       if (['fps', 'edda'].includes(depositMethod) && depositCurrency === 'USD') return downstreamError('FPS/eDDA不支持USD；美元入金请选本地美元转账或SWIFT。');
       if (provider.id === 'chief' && depositMethod === 'fps' && depositCurrency !== 'HKD') return downstreamError('致富FPS只接受港币；人民币入金请用同行转账或eDDA。');
       if (depositMethod === 'chats' && depositCurrency !== 'USD') return downstreamError('本地美元转账使用USD；HKD/CNH可选FPS或eDDA。');
+      // This stage exchanges the received balance in one bank transaction.
+      // Wire count is not an exchange count; selecting that bank's stock venue
+      // must not impose its FX limits on another bank's conversion.
+      const exchangeLimit = fxMode === 'bank' && currency !== 'USD' && bank.exchangeInputLimits?.[currency];
+      if (exchangeLimit && (balance < exchangeLimit.minimum - 1e-8 || balance > exchangeLimit.maximum + 1e-8)) {
+        const constraint = balance < exchangeLimit.minimum ? '最低' + exchangeLimit.minimum.toLocaleString('en-US') : '最多' + exchangeLimit.maximum.toLocaleString('en-US');
+        return downstreamError(bank.name + '单笔' + currency + '换汇' + constraint + ' ' + currency + '；本次为' + balance.toLocaleString('en-US', { maximumFractionDigits: 2 }) + ' ' + currency + '。已保留香港银行余额。');
+      }
       const bankFxQuote = quotes.offshoreUsd?.[bank.id]?.quotes?.[currency];
       const ownEntryPrice = own('entryPrice', isSelectedBank);
       const unquotedBankFx = currency !== 'USD' && fxMode === 'bank' && ownEntryPrice == null && !positive(bankFxQuote?.askPerUsd);

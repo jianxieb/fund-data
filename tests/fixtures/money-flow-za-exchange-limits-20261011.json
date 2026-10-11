@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-10-11",
+  "source": "https://bank.za.group/en/faqs/Individuals/Bank_services/Money_exchange/671605bb701eb769e4bff52d",
+  "title": "ZA Bank — minimum and maximum amount for each currency exchange transaction",
+  "inputCurrencyLimits": {
+    "HKD": { "minimum": 35, "maximum": 7850000 },
+    "CNH": { "minimum": 30, "maximum": 7200000 }
+  },
+  "currencyNote": "The bank calls its offshore renminbi account CNY; the journey ledger uses CNH. These are input amount limits for an exchange of that balance, not mainland remittance or stock-account limits.",
+  "scope": "The calculator exchanges the received non-USD balance in one transaction at the selected bank. It does not silently split that transaction or infer a different currency's input limit from an output amount."
+}

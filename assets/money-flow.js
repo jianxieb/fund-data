@@ -46,7 +46,7 @@
     mainlandFx: { boc: ['bocFx'], cib: ['cibFx', 'cibCard'], cmb: ['cmbFx'], icbc: ['icbcFx'], ccb: ['ccbFx'], comm: ['commFx'], hsbc: ['hsbcFx'], hang: ['hangCnFx'], sc: ['scFx'] },
     linked: { hsbc: ['hsbcGlobal'], hang: ['hang'], sc: ['sc', 'scGlobalFaq'] },
     hkTariff: { bochk: ['bochk'], hsbc: ['hsbcHk'], za: ['za', 'zaLocalUsd'], hang: ['hangHk'], sc: ['scHk'] },
-    hkFx: { bochk: ['bochkUsdFx'], hsbc: ['hsbcHkFx'], hang: ['hangHkFx'] },
+    hkFx: { bochk: ['bochkUsdFx'], hsbc: ['hsbcHkFx'], hang: ['hangHkFx'], za: ['zaFx', 'zaExchangeLimits'] },
     hkAccount: { bochk: ['bochkAccount'], hsbc: ['hsbcOne', 'hsbcOneBalance'], za: ['zaOpen'], hang: ['hangHk'], sc: ['scHk'] },
     hkCard: { bochk: ['bochkCard'], hsbc: ['hsbcCard'], za: ['zaCard'], hang: ['hangCard'], sc: ['scCard'] },
     brokerTrade: { ibkr: ['ibStocks'], hsbc: ['hsbcUsTariff'], za: ['zaStocks', 'zaStockUnits', 'zaCustody'], chief: ['chiefStocks'], usmart: ['usmartFees', 'usmartStockUnits'] },
