@@ -1481,7 +1481,10 @@ test('personal-bank funding keeps the receiving bank and broker independent and 
     assert.equal((restored.modal().match(new RegExp('data-field="' + field + '"', 'g')) || []).length, 5);
   }
   restored.act('choose', 'bank', 'hsbc');
-  assert.equal(restored.saved().broker, 'usmart'); assert.equal(restored.saved().depositMethod, 'internal');
+  assert.equal(restored.saved().broker, 'usmart'); assert.equal(restored.saved().depositMethod, 'via-bochk');
+  assert.equal(M.calculatorJourney({ ...restored.saved(), date: input.date }, D, quotes).selected.fundingBank.id, 'bochk');
+  assert.match(restored.render(), /本人中银香港 → 盈立 · 个人标准账户 · 同行入金/);
+  restored.act('choose', 'depositMethod', 'internal'); assert.equal(restored.saved().depositMethod, 'internal');
 });
 
 test('an intermediate HSBC account adds the bank fee control while the BOCHK path does not inherit that qualification', () => {
@@ -2119,6 +2122,47 @@ test('CCB full-amount selection shows its branch channel, coverage and evidence 
   ui.act('choose', 'route', 'HKD');
   assert.equal(ui.saved().mainlandMethod, 'swift');
   assert.doesNotMatch(ui.render(), /网点汇得全/);
+});
+
+test('changing independent accounts retains an applicable selected full-amount remittance and its coverage', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  for (const startBank of ['icbc', 'ccb']) for (const broker of D.calculator.brokers) {
+    const ui = moneyUi({ ...currentRoute, startBank, broker, bank: 'bochk', route: 'USD', count: 2,
+      months: 0, mainlandMethod: 'full', outcome: 'broker-balance' }, quotes, '2026-10-12');
+    ui.render();
+    for (const bank of D.calculator.hkBanks) {
+      ui.act('choose', 'bank', bank);
+      assert.equal(ui.saved().mainlandMethod, 'full', [startBank, bank, broker].join('/'));
+      assert.equal(ui.saved().broker, broker); assert.equal(ui.saved().count, 2);
+      const result = M.calculatorJourney({ ...ui.saved(), date: '2026-10-12' }, D, quotes);
+      const r = result.selected || result.partial;
+      close(r.rows.find(row => row.key === 'entryMiddle').cny, 0);
+      close(r.rows.find(row => row.key === 'entryInward').cny, 0);
+      assert.match(ui.render(), /全额到账附加费 · 50 USD/);
+    }
+    ui.act('choose', 'route', 'HKD'); assert.equal(ui.saved().mainlandMethod, 'swift');
+    assert.doesNotMatch(ui.render(), /全额到账附加费/);
+  }
+  const ui = moneyUi({ ...currentRoute, startBank: 'icbc', bank: 'bochk', broker: 'za', route: 'USD',
+    mainlandMethod: 'full', outcome: 'broker-balance' }, quotes, '2026-10-12');
+  ui.render(); ui.act('choose', 'startBank', 'ccb'); assert.equal(ui.saved().mainlandMethod, 'full');
+  ui.act('choose', 'startBank', 'boc'); assert.equal(ui.saved().mainlandMethod, 'boc-mobile');
+});
+
+test('explicit receiving-bank funding and CIB full receipt survive compatible account changes and clear only when inapplicable', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  const ui = moneyUi({ ...currentRoute, startBank: 'cib', bank: 'za', broker: 'usmart', route: 'USD',
+    mainlandMethod: 'cib-go', depositMethod: 'via-bochk', outcome: 'broker-balance' }, quotes, '2026-10-12');
+  ui.render(); ui.act('choose', 'bank', 'hang');
+  assert.equal(ui.saved().mainlandMethod, 'cib-go'); assert.equal(ui.saved().depositMethod, 'via-bochk');
+  ui.act('choose', 'broker', 'chief'); assert.equal(ui.saved().depositMethod, 'via-bochk');
+  ui.act('choose', 'depositMethod', 'chats-hsbc'); ui.act('choose', 'bank', 'za');
+  assert.equal(ui.saved().depositMethod, 'chats-hsbc');
+  ui.act('choose', 'bank', 'hsbc'); assert.equal(ui.saved().depositMethod, 'internal');
+  ui.act('choose', 'bank', 'hang'); ui.act('choose', 'depositMethod', 'via-bochk');
+  ui.act('choose', 'bank', 'bochk'); assert.equal(ui.saved().depositMethod, 'internal');
+  ui.act('choose', 'route', 'CNH'); assert.equal(ui.saved().mainlandMethod, 'swift');
+  ui.act('choose', 'startBank', 'cmb'); assert.equal(ui.saved().mainlandMethod, 'swift');
 });
 
 test('a missing ICBC quote preserves the fixed telegram tariff and named full-amount service instead of clearing known fees', () => {

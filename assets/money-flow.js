@@ -557,6 +557,15 @@
       next.useVoucher = false; next.voucherScope = value === 'za' ? 'platform' : 'commission';
       if (value !== 'ibkr' && next.route !== 'USD') next.fxMode = 'bank';
     }
+    const channels = M.calculatorChannels(next, D);
+    // An optional full-receipt service belongs to the remittance, not to the
+    // current Hong Kong account. Preserve it while the new route supports it.
+    if (['bank', 'startBank', 'route'].includes(key) && ['full', 'cib-go'].includes(state.mainlandMethod) &&
+        channels.mainlandMethods.includes(state.mainlandMethod)) next.mainlandMethod = state.mainlandMethod;
+    // Explicit corporate or personal receiving-bank instructions remain the
+    // same choice when other accounts change and that instruction still fits.
+    if (['bank', 'broker', 'route', 'fxMode'].includes(key) && /^(?:via-|chats-)/.test(state.depositMethod) &&
+        channels.depositMethods.includes(state.depositMethod)) next.depositMethod = state.depositMethod;
     return M.calculatorRoute(next);
   }
   function choose(key, value) {
