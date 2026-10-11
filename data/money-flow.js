@@ -139,6 +139,7 @@
       hsbcBusinessInward: { name: '汇丰香港 · 2026年5月商业账户本地RTGS收款15港元', url: 'https://www.business.hsbc.com.hk/-/media/media/hong-kong/pdfs/regulations/tariff-e-en.pdf' },
       hangBusinessInward: { name: '恒生香港 · 2026年4月商业账户本地CHATS收款15港元', url: 'https://www.hangseng.com/content/dam/wpb/hase/en_hk/business/bank-accounts/PDF/Service%20Charges_new.pdf' },
       icbcAsiaInward: { name: '工银亚洲 · 2026年9月CHATS收款10港元（持有账户）', url: 'https://v.icbc.com.cn/userfiles/resources/icbc/haiwai/asia/download/cn/2026/general_services_charges_260901_sc.pdf' },
+      citicBusinessInward: { name: '中信国际 · 公司业务CHATS收款标准20港元（第3页）', url: 'https://www.cncbinternational.com/_document/bank-service-fees-and-charges/en/wholesale-banking-fees-and-charges.pdf' },
       usmartChatsGuide: { name: '盈立入金操作记录 · ZA至中银香港美元CHATS扣约1.93美元', url: 'https://yikecaiwan.com/broker/usmart-hk-bank-transfer-deposit' },
       chiefStocks: { name: '致富 · 2026年9月美股收费', url: 'https://chief-website.oss-cn-hongkong.aliyuncs.com/Leaflet/cn/global.pdf' },
       chiefFunding: { name: '致富 · 资金提存及USD支票出金', url: 'https://chief-website.oss-cn-hongkong.aliyuncs.com/Leaflet/cn/cash.pdf' },
@@ -245,7 +246,8 @@
     ],
     // Broker recipients do not imply a personal account or its maintenance fee.
     corporateReceivingBanks: [
-      { id: 'icbc-asia', corporateName: '工银亚洲', corporateLocalUsdInward: { feeHkd: 10, sources: ['icbcAsiaInward'] } }
+      { id: 'icbc-asia', corporateName: '工银亚洲', corporateLocalUsdInward: { feeHkd: 10, sources: ['icbcAsiaInward'] } },
+      { id: 'citic', corporateName: '中信国际', corporateLocalUsdInward: { feeHkd: 20, accountType: '公司业务', sources: ['citicBusinessInward'] } }
     ],
     broker: { name: 'IBKR直接客户', depositUsd: 0, depositCurrencies: { fps: ['HKD', 'CNH'], edda: ['HKD', 'CNH'] }, manualRate: 0.00002, manualMinimumUsd: 2, autoMarkup: 0.0003, freeWithdrawals: 2, withdrawUsd: 10, withdrawHkdWire: 95, withdrawHkdLocal: 8, sources: ['ibFx', 'ibFees', 'ibFunding', 'ibDeposits', 'ibEdda'] },
     brokers: [
@@ -268,12 +270,12 @@
         feeShort: '零佣金 · 平台每单0.99 USD起；清算/监管另计',
         fundingText: '中银香港／汇丰／恒生可同行USD入金，也可经本人账户转入；FPS仅HKD，eDDA支持HKD/CNH', withdrawalText: 'USD支票存入登记银行；通常下一工作日约15:00可用',
         sources: ['chiefStocks', 'chiefFees', 'chiefFunding', 'chiefDeposit', 'chiefMonthly', 'chiefMonthlyTerms', 'secFees', 'finraHoliday', 'finraSchedule'] },
-      { id: 'usmart', name: '盈立 · 个人标准账户', swiftDestination: 'hong-kong', internalFundingBanks: ['bochk', 'hsbc'], corporateReceivingBanks: ['bochk', 'hsbc', 'icbc-asia'], shareStep: .0001, minimumBuyUsd: 1, platform: { perShare: .009, minimum: 1.88, cap: .01 }, fractionalPlatformUsd: .99,
+      { id: 'usmart', name: '盈立 · 个人标准账户', swiftDestination: 'hong-kong', internalFundingBanks: ['bochk', 'hsbc'], corporateReceivingBanks: ['bochk', 'hsbc', 'icbc-asia', 'citic'], shareStep: .0001, minimumBuyUsd: 1, platform: { perShare: .009, minimum: 1.88, cap: .01 }, fractionalPlatformUsd: .99,
         clearing: { perShare: .003, minimum: .01, cap: .03 }, catMinimum: .01,
         depositUsd: 0, depositCurrencies: { fps: ['HKD', 'CNH'], edda: ['HKD'] }, withdrawUsd: 0, withdrawalMethod: 'local', localChequeBanks: ['bochk', 'hsbc', 'hang', 'sc'], virtualWithdrawalUsd: 7.5, virtualWithdrawalMinimumUsd: 20,
         feeText: '佣金0；平台0.009 USD/股、最低1.88/单；不足1股平台0.99 USD/单；清算0.003/股',
         feeShort: '零佣金 · 整股平台每单1.88 USD起；清算/监管另计',
-        fundingText: '中银香港／汇丰同行USD入金，也可经本人账户转入；跨行CHATS可选券商的中银香港／汇丰／工银亚洲收款账户。FPS支持HKD/CNH，eDDA仅HKD', withdrawalText: '传统香港银行：USD支票出金免费；数字银行：超过20 USD，银行费用参考7.5 USD',
+        fundingText: '中银香港／汇丰同行USD入金，也可经本人账户转入；跨行CHATS可选券商的中银香港／汇丰／工银亚洲／中信国际收款账户。FPS支持HKD/CNH，eDDA仅HKD', withdrawalText: '传统香港银行：USD支票出金免费；数字银行：超过20 USD，银行费用参考7.5 USD',
         sources: ['usmartFees', 'usmartStockUnits', 'usmartBocFunding', 'usmartFundingAccounts', 'usmartSameFunding', 'usmartFps', 'usmartEdda', 'usmartWithdrawal', 'usmartPromo', 'secFees', 'finraHoliday', 'finraSchedule'] },
       { id: 'za', name: 'ZA Bank · 美股交易', integratedBank: 'za', wholeSharesOnly: true, platform: { perShare: .0099, minimum: 1.99, cap: .015 },
         depositUsd: 0, withdrawUsd: 0, withdrawalMethod: 'internal',

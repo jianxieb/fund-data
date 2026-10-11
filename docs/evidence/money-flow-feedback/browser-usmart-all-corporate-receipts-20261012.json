@@ -1,0 +1,201 @@
+{
+  "checkedAt": "2026-10-12",
+  "page": "http://127.0.0.1:8780/?review=precise-missing-fees-20261012#money-flow",
+  "scope": "Actual local browser; all 18 named corporate USD CHATS choices in the five-bank catalogue, plus reload and tariff detail; not all continuous inputs or personal account eligibility",
+  "records": [
+    {
+      "case": "BOC to BOCHK to uSMART CITIC corporate receipt",
+      "main": "CROSS-BORDER MONEY\n跨境资金\n\n优选方案\n不同汇路 · 买股账户 盈立\n报价与依据\n重置\n中行 → 中银香港 → 盈立\nUSD · 手机同名汇款；同行入金\n→ 美元留在买股账户\n参考总损耗\n0.155%\n155.07 CNY\n工行 → 中银香港 → 盈立\nUSD · 美元全额到账；同行入金\n→ 美元留在买股账户\n全程损耗\n0.463%\n462.81 CNY\n建行 → 中银香港 → 盈立\nUSD · 美元全额到账；同行入金\n→ 美元留在买股账户\n全程损耗\n0.499%\n499.05 CNY\n兴业 → 汇丰香港 → 盈立\nUSD · 普通电汇；同行入金\n→ 美元留在买股账户\n含银行期间费 1,024.77 CNY\n参考总损耗\n1.058%\n1,058.38 CNY\n恒生中国 → 恒生香港 → 本人中银香港 → 盈立\nCNH · 两地同名转账；恒生香港换美元；本人银行转账后同行入金\n→ 美元留在买股账户\n含银行期间费 2,160.00 CNY\n全程损耗\n3.326%\n3,326.14 CNY\n01\n内地出发银行\n中国银行\n更换 ↗\n汇出笔数\n1笔\n⌄\n人民币本金 · 含费用\n100,000.00 CNY\n修改\n↓\n内地购美元 → 汇往香港\n依据\n参考损耗\n0.121%\n121.46 CNY\n汇出币种\n美元\n港币\n人民币原币\n汇款渠道\n手机银行 · 向同名境外中行汇款\n⌄\n汇出手续费\n手机银行双免\n0.00 CNY\n汇出电讯费\n手机银行双免\n0.00 CNY\n内地购汇差额\n1 USD = 6.7099 CNY\n121.46 CNY\n内地→香港中转行费\nUSD/HKD同行SHA路径 · 2026公开操作记录\n估算 0.00 CNY\n香港首次汇入费\n0.00 HKD\n02\n香港收款银行\n中银香港\n更换 ↗\n账户使用 12个月 · 银行管理费 0.00 CNY\n汇款到账\n14,903.35 USD\n累计损耗 0.121%\n↓\n转入买股账户\n依据\n参考损耗\n0.017%\n17.08 CNY\n入金方式\nCHATS → 券商的中信国际收款账户\n⌄\n中银香港 → 盈立 · 个人标准账户的中信国际收款账户 · CHATS\n0.00 HKD\n中信国际 · 券商企业账户CHATS收款\n公司业务 · 企业CHATS收款标准价20 HKD\n估算 20.00 HKD\n≈ 17.08 CNY\n盈立 · 个人标准账户入金费\n0.00 CNY\n03\n买美股的账户\n盈立\n更换 ↗\n买1笔 / 卖1笔 · 股价 100 USD\n优惠与费用券\n入金到账\n14,900.80 USD\n累计损耗 0.139%\n↓\n买入美股 → 卖出\n依据\n损耗\n0.034%\n33.60 CNY\n盈亏 0.00 USD\n买入美股 · 1笔\n148.9846股 · 未买入余款 0.0063 USD · 佣金 0.00＋平台 1.88＋清算／监管 0.46 USD\n2.34 USD\n≈ 15.66 CNY\n卖出美股 · 1笔\n148.9846股 · 佣金 0.00＋平台 1.88＋清算／监管 0.80 USD\n2.68 USD\n≈ 17.94 CNY\n证券账户／托管费\n0.00 USD\n04\n卖出后的资金\n留在买股账户\n⌄\n盈立\n美元留在账户\n按公布参考费计算的余额\n14,895.79 USD\n累计损耗 0.172%\n参考总损耗\n0.172%\n172.14 CNY\n其中账户期间费\n0.00 CNY\n已计入合计\n按公布参考费计算的余额\n14,895.79 USD\n全程明细\n实际成交报价与费用\n便利化购汇不得用于境外证券投资；本页为费用测算。\n适用条件",
+      "summary": "参考总损耗\n0.172%\n172.14 CNY\n其中账户期间费\n0.00 CNY\n已计入合计\n按公布参考费计算的余额\n14,895.79 USD\n全程明细"
+    },
+    {
+      "case": "All named corporate receipts",
+      "chosenBank": "中银香港",
+      "method": "CHATS → 券商的汇丰香港收款账户",
+      "catalogue": "×\n入金方式\n\n同行转账 → 券商收款账户 · 免费\nCHATS → 券商的汇丰香港收款账户\nCHATS → 券商的工银亚洲收款账户\nCHATS → 券商的中信国际收款账户\n✓ 已选\n经本人汇丰香港 USD账户 → 同行入金\n香港收款账户 · USD SWIFT",
+      "bank": "02\n香港收款银行\n中银香港\n更换 ↗\n账户使用 12个月 · 银行管理费 0.00 CNY\n汇款到账\n14,903.35 USD\n累计损耗 0.121%",
+      "broker": "03\n买美股的账户\n盈立\n更换 ↗\n买1笔 / 卖1笔 · 股价 100 USD\n优惠与费用券\n入金到账\n14,901.44 USD\n累计损耗 0.134%",
+      "funding": "↓\n转入买股账户\n依据\n参考损耗\n0.013%\n12.81 CNY\n入金方式\nCHATS → 券商的汇丰香港收款账户\n⌄\n中银香港 → 盈立 · 个人标准账户的汇丰香港收款账户 · CHATS\n0.00 HKD\n汇丰香港 · 券商企业账户CHATS收款\n企业CHATS收款标准价15 HKD\n估算 15.00 HKD\n≈ 12.81 CNY\n盈立 · 个人标准账户入金费\n0.00 CNY",
+      "summary": "参考总损耗\n0.168%\n167.87 CNY\n其中账户期间费\n0.00 CNY\n已计入合计\n按公布参考费计算的余额\n14,896.43 USD\n全程明细"
+    },
+    {
+      "case": "All named corporate receipts",
+      "chosenBank": "中银香港",
+      "method": "CHATS → 券商的工银亚洲收款账户",
+      "catalogue": "×\n入金方式\n\n同行转账 → 券商收款账户 · 免费\nCHATS → 券商的汇丰香港收款账户\n✓ 已选\nCHATS → 券商的工银亚洲收款账户\nCHATS → 券商的中信国际收款账户\n经本人汇丰香港 USD账户 → 同行入金\n香港收款账户 · USD SWIFT",
+      "bank": "02\n香港收款银行\n中银香港\n更换 ↗\n账户使用 12个月 · 银行管理费 0.00 CNY\n汇款到账\n14,903.35 USD\n累计损耗 0.121%",
+      "broker": "03\n买美股的账户\n盈立\n更换 ↗\n买1笔 / 卖1笔 · 股价 100 USD\n优惠与费用券\n入金到账\n14,902.08 USD\n累计损耗 0.130%",
+      "funding": "↓\n转入买股账户\n依据\n参考损耗\n0.009%\n8.54 CNY\n入金方式\nCHATS → 券商的工银亚洲收款账户\n⌄\n中银香港 → 盈立 · 个人标准账户的工银亚洲收款账户 · CHATS\n0.00 HKD\n工银亚洲 · 券商企业账户CHATS收款\n企业CHATS收款标准价10 HKD\n估算 10.00 HKD\n≈ 8.54 CNY\n盈立 · 个人标准账户入金费\n0.00 CNY",
+      "summary": "参考总损耗\n0.164%\n163.60 CNY\n其中账户期间费\n0.00 CNY\n已计入合计\n按公布参考费计算的余额\n14,897.06 USD\n全程明细"
+    },
+    {
+      "case": "All named corporate receipts",
+      "chosenBank": "中银香港",
+      "method": "CHATS → 券商的中信国际收款账户✓ 已选",
+      "catalogue": "×\n入金方式\n\n同行转账 → 券商收款账户 · 免费\nCHATS → 券商的汇丰香港收款账户\nCHATS → 券商的工银亚洲收款账户\n✓ 已选\nCHATS → 券商的中信国际收款账户\n经本人汇丰香港 USD账户 → 同行入金\n香港收款账户 · USD SWIFT",
+      "bank": "02\n香港收款银行\n中银香港\n更换 ↗\n账户使用 12个月 · 银行管理费 0.00 CNY\n汇款到账\n14,903.35 USD\n累计损耗 0.121%",
+      "broker": "03\n买美股的账户\n盈立\n更换 ↗\n买1笔 / 卖1笔 · 股价 100 USD\n优惠与费用券\n入金到账\n14,900.80 USD\n累计损耗 0.139%",
+      "funding": "↓\n转入买股账户\n依据\n参考损耗\n0.017%\n17.08 CNY\n入金方式\nCHATS → 券商的中信国际收款账户\n⌄\n中银香港 → 盈立 · 个人标准账户的中信国际收款账户 · CHATS\n0.00 HKD\n中信国际 · 券商企业账户CHATS收款\n公司业务 · 企业CHATS收款标准价20 HKD\n估算 20.00 HKD\n≈ 17.08 CNY\n盈立 · 个人标准账户入金费\n0.00 CNY",
+      "summary": "参考总损耗\n0.172%\n172.14 CNY\n其中账户期间费\n0.00 CNY\n已计入合计\n按公布参考费计算的余额\n14,895.79 USD\n全程明细"
+    },
+    {
+      "case": "All named corporate receipts",
+      "chosenBank": "汇丰 HSBC One",
+      "method": "CHATS → 券商的中银香港收款账户",
+      "catalogue": "×\n入金方式\n\n同行转账 → 券商收款账户 · 免费\nCHATS → 券商的中银香港收款账户\nCHATS → 券商的工银亚洲收款账户\nCHATS → 券商的中信国际收款账户\n✓ 已选\n经本人中银香港 USD账户 → 同行入金\n香港收款账户 · USD SWIFT",
+      "bank": "02\n香港收款银行\n汇丰 HSBC One\n更换 ↗\n账户使用 12个月 · 汇丰 HSBC One管理费 1,024.77 CNY\nHSBC One本持有期均免管理费\n已扣已核费用 · 汇款到账\n14,879.23 USD\n尚有未报价费用",
+      "broker": "03\n买美股的账户\n盈立\n更换 ↗\n买1笔 / 卖1笔 · 股价 100 USD\n优惠与费用券\n已扣已核费用 · 入金到账\n14,877.32 USD\n尚有未报价费用",
+      "funding": "↓\n转入买股账户\n依据\n参考损耗\n0.013%\n12.81 CNY\n入金方式\nCHATS → 券商的中银香港收款账户\n⌄\n汇丰 HSBC One → 盈立 · 个人标准账户的中银香港收款账户 · CHATS\n0.00 HKD\n中银香港 · 券商企业账户CHATS收款\n企业CHATS收款标准价15 HKD；500 HKD等值或以下免收\n估算 15.00 HKD\n≈ 12.81 CNY\n盈立 · 个人标准账户入金费\n0.00 CNY",
+      "summary": "费用小计 · 含估算\n1,354.29 CNY\n总损耗尚缺：内地→香港中转行费\n其中账户期间费\n1,024.77 CNY\n已计入合计\n已扣已核费用后的余额\n14,719.40 USD\n全程明细"
+    },
+    {
+      "case": "All named corporate receipts",
+      "chosenBank": "汇丰 HSBC One",
+      "method": "CHATS → 券商的工银亚洲收款账户",
+      "catalogue": "×\n入金方式\n\n同行转账 → 券商收款账户 · 免费\nCHATS → 券商的中银香港收款账户\n✓ 已选\nCHATS → 券商的工银亚洲收款账户\nCHATS → 券商的中信国际收款账户\n经本人中银香港 USD账户 → 同行入金\n香港收款账户 · USD SWIFT",
+      "bank": "02\n香港收款银行\n汇丰 HSBC One\n更换 ↗\n账户使用 12个月 · 汇丰 HSBC One管理费 1,024.77 CNY\nHSBC One本持有期均免管理费\n已扣已核费用 · 汇款到账\n14,879.23 USD\n尚有未报价费用",
+      "broker": "03\n买美股的账户\n盈立\n更换 ↗\n买1笔 / 卖1笔 · 股价 100 USD\n优惠与费用券\n已扣已核费用 · 入金到账\n14,877.96 USD\n尚有未报价费用",
+      "funding": "↓\n转入买股账户\n依据\n参考损耗\n0.009%\n8.54 CNY\n入金方式\nCHATS → 券商的工银亚洲收款账户\n⌄\n汇丰 HSBC One → 盈立 · 个人标准账户的工银亚洲收款账户 · CHATS\n0.00 HKD\n工银亚洲 · 券商企业账户CHATS收款\n企业CHATS收款标准价10 HKD\n估算 10.00 HKD\n≈ 8.54 CNY\n盈立 · 个人标准账户入金费\n0.00 CNY",
+      "summary": "费用小计 · 含估算\n1,350.02 CNY\n总损耗尚缺：内地→香港中转行费\n其中账户期间费\n1,024.77 CNY\n已计入合计\n已扣已核费用后的余额\n14,720.03 USD\n全程明细"
+    },
+    {
+      "case": "All named corporate receipts",
+      "chosenBank": "汇丰 HSBC One",
+      "method": "CHATS → 券商的中信国际收款账户✓ 已选",
+      "catalogue": "×\n入金方式\n\n同行转账 → 券商收款账户 · 免费\nCHATS → 券商的中银香港收款账户\nCHATS → 券商的工银亚洲收款账户\n✓ 已选\nCHATS → 券商的中信国际收款账户\n经本人中银香港 USD账户 → 同行入金\n香港收款账户 · USD SWIFT",
+      "bank": "02\n香港收款银行\n汇丰 HSBC One\n更换 ↗\n账户使用 12个月 · 汇丰 HSBC One管理费 1,024.77 CNY\nHSBC One本持有期均免管理费\n已扣已核费用 · 汇款到账\n14,879.23 USD\n尚有未报价费用",
+      "broker": "03\n买美股的账户\n盈立\n更换 ↗\n买1笔 / 卖1笔 · 股价 100 USD\n优惠与费用券\n已扣已核费用 · 入金到账\n14,876.68 USD\n尚有未报价费用",
+      "funding": "↓\n转入买股账户\n依据\n参考损耗\n0.017%\n17.08 CNY\n入金方式\nCHATS → 券商的中信国际收款账户\n⌄\n汇丰 HSBC One → 盈立 · 个人标准账户的中信国际收款账户 · CHATS\n0.00 HKD\n中信国际 · 券商企业账户CHATS收款\n公司业务 · 企业CHATS收款标准价20 HKD\n估算 20.00 HKD\n≈ 17.08 CNY\n盈立 · 个人标准账户入金费\n0.00 CNY",
+      "summary": "费用小计 · 含估算\n1,358.56 CNY\n总损耗尚缺：内地→香港中转行费\n其中账户期间费\n1,024.77 CNY\n已计入合计\n已扣已核费用后的余额\n14,718.76 USD\n全程明细"
+    },
+    {
+      "case": "All named corporate receipts",
+      "chosenBank": "众安 ZA Bank",
+      "method": "CHATS → 券商的中银香港收款账户",
+      "catalogue": "×\n入金方式\n\nCHATS → 券商的中银香港收款账户\nCHATS → 券商的汇丰香港收款账户\nCHATS → 券商的工银亚洲收款账户\nCHATS → 券商的中信国际收款账户\n✓ 已选\n经本人中银香港 USD账户 → 同行入金\n经本人汇丰香港 USD账户 → 同行入金\n香港收款账户 · USD SWIFT",
+      "bank": "02\n香港收款银行\n众安 ZA Bank\n更换 ↗\n账户使用 12个月 · 银行管理费 0.00 CNY\nZA银行权益\nZA Perks · 标准\n⌄\n已扣已核费用 · 汇款到账\n14,879.23 USD\n尚有未报价费用",
+      "broker": "03\n买美股的账户\n盈立\n更换 ↗\n买1笔 / 卖1笔 · 股价 100 USD\n优惠与费用券\n已扣已核费用 · 入金到账\n14,877.32 USD\n尚有未报价费用",
+      "funding": "↓\n转入买股账户\n依据\n参考损耗\n0.013%\n12.81 CNY\n入金方式\nCHATS → 券商的中银香港收款账户\n⌄\n众安 ZA Bank → 盈立 · 个人标准账户的中银香港收款账户 · CHATS\n0.00 HKD\n中银香港 · 券商企业账户CHATS收款\n企业CHATS收款标准价15 HKD；500 HKD等值或以下免收\n估算 15.00 HKD\n≈ 12.81 CNY\n盈立 · 个人标准账户入金费\n0.00 CNY",
+      "summary": "费用小计 · 含估算\n329.52 CNY\n总损耗尚缺：内地→香港中转行费\n其中账户期间费\n0.00 CNY\n已计入合计\n已扣已核费用后的余额\n14,872.31 USD\n全程明细"
+    },
+    {
+      "case": "All named corporate receipts",
+      "chosenBank": "众安 ZA Bank",
+      "method": "CHATS → 券商的汇丰香港收款账户",
+      "catalogue": "×\n入金方式\n\nCHATS → 券商的中银香港收款账户\n✓ 已选\nCHATS → 券商的汇丰香港收款账户\nCHATS → 券商的工银亚洲收款账户\nCHATS → 券商的中信国际收款账户\n经本人中银香港 USD账户 → 同行入金\n经本人汇丰香港 USD账户 → 同行入金\n香港收款账户 · USD SWIFT",
+      "bank": "02\n香港收款银行\n众安 ZA Bank\n更换 ↗\n账户使用 12个月 · 银行管理费 0.00 CNY\nZA银行权益\nZA Perks · 标准\n⌄\n已扣已核费用 · 汇款到账\n14,879.23 USD\n尚有未报价费用",
+      "broker": "03\n买美股的账户\n盈立\n更换 ↗\n买1笔 / 卖1笔 · 股价 100 USD\n优惠与费用券\n已扣已核费用 · 入金到账\n14,877.32 USD\n尚有未报价费用",
+      "funding": "↓\n转入买股账户\n依据\n参考损耗\n0.013%\n12.81 CNY\n入金方式\nCHATS → 券商的汇丰香港收款账户\n⌄\n众安 ZA Bank → 盈立 · 个人标准账户的汇丰香港收款账户 · CHATS\n0.00 HKD\n汇丰香港 · 券商企业账户CHATS收款\n企业CHATS收款标准价15 HKD\n估算 15.00 HKD\n≈ 12.81 CNY\n盈立 · 个人标准账户入金费\n0.00 CNY",
+      "summary": "费用小计 · 含估算\n329.52 CNY\n总损耗尚缺：内地→香港中转行费\n其中账户期间费\n0.00 CNY\n已计入合计\n已扣已核费用后的余额\n14,872.31 USD\n全程明细"
+    },
+    {
+      "case": "All named corporate receipts",
+      "chosenBank": "众安 ZA Bank",
+      "method": "CHATS → 券商的工银亚洲收款账户",
+      "catalogue": "×\n入金方式\n\nCHATS → 券商的中银香港收款账户\nCHATS → 券商的汇丰香港收款账户\n✓ 已选\nCHATS → 券商的工银亚洲收款账户\nCHATS → 券商的中信国际收款账户\n经本人中银香港 USD账户 → 同行入金\n经本人汇丰香港 USD账户 → 同行入金\n香港收款账户 · USD SWIFT",
+      "bank": "02\n香港收款银行\n众安 ZA Bank\n更换 ↗\n账户使用 12个月 · 银行管理费 0.00 CNY\nZA银行权益\nZA Perks · 标准\n⌄\n已扣已核费用 · 汇款到账\n14,879.23 USD\n尚有未报价费用",
+      "broker": "03\n买美股的账户\n盈立\n更换 ↗\n买1笔 / 卖1笔 · 股价 100 USD\n优惠与费用券\n已扣已核费用 · 入金到账\n14,877.96 USD\n尚有未报价费用",
+      "funding": "↓\n转入买股账户\n依据\n参考损耗\n0.009%\n8.54 CNY\n入金方式\nCHATS → 券商的工银亚洲收款账户\n⌄\n众安 ZA Bank → 盈立 · 个人标准账户的工银亚洲收款账户 · CHATS\n0.00 HKD\n工银亚洲 · 券商企业账户CHATS收款\n企业CHATS收款标准价10 HKD\n估算 10.00 HKD\n≈ 8.54 CNY\n盈立 · 个人标准账户入金费\n0.00 CNY",
+      "summary": "费用小计 · 含估算\n325.25 CNY\n总损耗尚缺：内地→香港中转行费\n其中账户期间费\n0.00 CNY\n已计入合计\n已扣已核费用后的余额\n14,872.94 USD\n全程明细"
+    },
+    {
+      "case": "All named corporate receipts",
+      "chosenBank": "众安 ZA Bank",
+      "method": "CHATS → 券商的中信国际收款账户✓ 已选",
+      "catalogue": "×\n入金方式\n\nCHATS → 券商的中银香港收款账户\nCHATS → 券商的汇丰香港收款账户\nCHATS → 券商的工银亚洲收款账户\n✓ 已选\nCHATS → 券商的中信国际收款账户\n经本人中银香港 USD账户 → 同行入金\n经本人汇丰香港 USD账户 → 同行入金\n香港收款账户 · USD SWIFT",
+      "bank": "02\n香港收款银行\n众安 ZA Bank\n更换 ↗\n账户使用 12个月 · 银行管理费 0.00 CNY\nZA银行权益\nZA Perks · 标准\n⌄\n已扣已核费用 · 汇款到账\n14,879.23 USD\n尚有未报价费用",
+      "broker": "03\n买美股的账户\n盈立\n更换 ↗\n买1笔 / 卖1笔 · 股价 100 USD\n优惠与费用券\n已扣已核费用 · 入金到账\n14,876.68 USD\n尚有未报价费用",
+      "funding": "↓\n转入买股账户\n依据\n参考损耗\n0.017%\n17.08 CNY\n入金方式\nCHATS → 券商的中信国际收款账户\n⌄\n众安 ZA Bank → 盈立 · 个人标准账户的中信国际收款账户 · CHATS\n0.00 HKD\n中信国际 · 券商企业账户CHATS收款\n公司业务 · 企业CHATS收款标准价20 HKD\n估算 20.00 HKD\n≈ 17.08 CNY\n盈立 · 个人标准账户入金费\n0.00 CNY",
+      "summary": "费用小计 · 含估算\n333.79 CNY\n总损耗尚缺：内地→香港中转行费\n其中账户期间费\n0.00 CNY\n已计入合计\n已扣已核费用后的余额\n14,871.67 USD\n全程明细"
+    },
+    {
+      "case": "All named corporate receipts",
+      "chosenBank": "恒生 · 优进理财",
+      "method": "CHATS → 券商的中银香港收款账户",
+      "catalogue": "×\n入金方式\n\nCHATS → 券商的中银香港收款账户\nCHATS → 券商的汇丰香港收款账户\nCHATS → 券商的工银亚洲收款账户\nCHATS → 券商的中信国际收款账户\n✓ 已选\n经本人中银香港 USD账户 → 同行入金\n经本人汇丰香港 USD账户 → 同行入金\n香港收款账户 · USD SWIFT",
+      "bank": "02\n香港收款银行\n恒生 · 优进理财\n更换 ↗\n账户使用 12个月 · 银行管理费 0.00 CNY\n已扣已核费用 · 汇款到账\n14,879.23 USD\n尚有未报价费用",
+      "broker": "03\n买美股的账户\n盈立\n更换 ↗\n买1笔 / 卖1笔 · 股价 100 USD\n优惠与费用券\n已扣已核费用 · 入金到账\n14,877.32 USD\n尚有未报价费用",
+      "funding": "↓\n转入买股账户\n依据\n参考损耗\n0.013%\n12.81 CNY\n入金方式\nCHATS → 券商的中银香港收款账户\n⌄\n恒生 · 优进理财 → 盈立 · 个人标准账户的中银香港收款账户 · CHATS\n0.00 HKD\n中银香港 · 券商企业账户CHATS收款\n企业CHATS收款标准价15 HKD；500 HKD等值或以下免收\n估算 15.00 HKD\n≈ 12.81 CNY\n盈立 · 个人标准账户入金费\n0.00 CNY",
+      "summary": "费用小计 · 含估算\n329.52 CNY\n总损耗尚缺：内地→香港中转行费\n其中账户期间费\n0.00 CNY\n已计入合计\n已扣已核费用后的余额\n14,872.31 USD\n全程明细"
+    },
+    {
+      "case": "All named corporate receipts",
+      "chosenBank": "恒生 · 优进理财",
+      "method": "CHATS → 券商的汇丰香港收款账户",
+      "catalogue": "×\n入金方式\n\nCHATS → 券商的中银香港收款账户\n✓ 已选\nCHATS → 券商的汇丰香港收款账户\nCHATS → 券商的工银亚洲收款账户\nCHATS → 券商的中信国际收款账户\n经本人中银香港 USD账户 → 同行入金\n经本人汇丰香港 USD账户 → 同行入金\n香港收款账户 · USD SWIFT",
+      "bank": "02\n香港收款银行\n恒生 · 优进理财\n更换 ↗\n账户使用 12个月 · 银行管理费 0.00 CNY\n已扣已核费用 · 汇款到账\n14,879.23 USD\n尚有未报价费用",
+      "broker": "03\n买美股的账户\n盈立\n更换 ↗\n买1笔 / 卖1笔 · 股价 100 USD\n优惠与费用券\n已扣已核费用 · 入金到账\n14,877.32 USD\n尚有未报价费用",
+      "funding": "↓\n转入买股账户\n依据\n参考损耗\n0.013%\n12.81 CNY\n入金方式\nCHATS → 券商的汇丰香港收款账户\n⌄\n恒生 · 优进理财 → 盈立 · 个人标准账户的汇丰香港收款账户 · CHATS\n0.00 HKD\n汇丰香港 · 券商企业账户CHATS收款\n企业CHATS收款标准价15 HKD\n估算 15.00 HKD\n≈ 12.81 CNY\n盈立 · 个人标准账户入金费\n0.00 CNY",
+      "summary": "费用小计 · 含估算\n329.52 CNY\n总损耗尚缺：内地→香港中转行费\n其中账户期间费\n0.00 CNY\n已计入合计\n已扣已核费用后的余额\n14,872.31 USD\n全程明细"
+    },
+    {
+      "case": "All named corporate receipts",
+      "chosenBank": "恒生 · 优进理财",
+      "method": "CHATS → 券商的工银亚洲收款账户",
+      "catalogue": "×\n入金方式\n\nCHATS → 券商的中银香港收款账户\nCHATS → 券商的汇丰香港收款账户\n✓ 已选\nCHATS → 券商的工银亚洲收款账户\nCHATS → 券商的中信国际收款账户\n经本人中银香港 USD账户 → 同行入金\n经本人汇丰香港 USD账户 → 同行入金\n香港收款账户 · USD SWIFT",
+      "bank": "02\n香港收款银行\n恒生 · 优进理财\n更换 ↗\n账户使用 12个月 · 银行管理费 0.00 CNY\n已扣已核费用 · 汇款到账\n14,879.23 USD\n尚有未报价费用",
+      "broker": "03\n买美股的账户\n盈立\n更换 ↗\n买1笔 / 卖1笔 · 股价 100 USD\n优惠与费用券\n已扣已核费用 · 入金到账\n14,877.96 USD\n尚有未报价费用",
+      "funding": "↓\n转入买股账户\n依据\n参考损耗\n0.009%\n8.54 CNY\n入金方式\nCHATS → 券商的工银亚洲收款账户\n⌄\n恒生 · 优进理财 → 盈立 · 个人标准账户的工银亚洲收款账户 · CHATS\n0.00 HKD\n工银亚洲 · 券商企业账户CHATS收款\n企业CHATS收款标准价10 HKD\n估算 10.00 HKD\n≈ 8.54 CNY\n盈立 · 个人标准账户入金费\n0.00 CNY",
+      "summary": "费用小计 · 含估算\n325.25 CNY\n总损耗尚缺：内地→香港中转行费\n其中账户期间费\n0.00 CNY\n已计入合计\n已扣已核费用后的余额\n14,872.94 USD\n全程明细"
+    },
+    {
+      "case": "All named corporate receipts",
+      "chosenBank": "恒生 · 优进理财",
+      "method": "CHATS → 券商的中信国际收款账户✓ 已选",
+      "catalogue": "×\n入金方式\n\nCHATS → 券商的中银香港收款账户\nCHATS → 券商的汇丰香港收款账户\nCHATS → 券商的工银亚洲收款账户\n✓ 已选\nCHATS → 券商的中信国际收款账户\n经本人中银香港 USD账户 → 同行入金\n经本人汇丰香港 USD账户 → 同行入金\n香港收款账户 · USD SWIFT",
+      "bank": "02\n香港收款银行\n恒生 · 优进理财\n更换 ↗\n账户使用 12个月 · 银行管理费 0.00 CNY\n已扣已核费用 · 汇款到账\n14,879.23 USD\n尚有未报价费用",
+      "broker": "03\n买美股的账户\n盈立\n更换 ↗\n买1笔 / 卖1笔 · 股价 100 USD\n优惠与费用券\n已扣已核费用 · 入金到账\n14,876.68 USD\n尚有未报价费用",
+      "funding": "↓\n转入买股账户\n依据\n参考损耗\n0.017%\n17.08 CNY\n入金方式\nCHATS → 券商的中信国际收款账户\n⌄\n恒生 · 优进理财 → 盈立 · 个人标准账户的中信国际收款账户 · CHATS\n0.00 HKD\n中信国际 · 券商企业账户CHATS收款\n公司业务 · 企业CHATS收款标准价20 HKD\n估算 20.00 HKD\n≈ 17.08 CNY\n盈立 · 个人标准账户入金费\n0.00 CNY",
+      "summary": "费用小计 · 含估算\n333.79 CNY\n总损耗尚缺：内地→香港中转行费\n其中账户期间费\n0.00 CNY\n已计入合计\n已扣已核费用后的余额\n14,871.67 USD\n全程明细"
+    },
+    {
+      "case": "All named corporate receipts",
+      "chosenBank": "渣打 · 快易理财",
+      "method": "CHATS → 券商的中银香港收款账户",
+      "catalogue": "×\n入金方式\n\nCHATS → 券商的中银香港收款账户\nCHATS → 券商的汇丰香港收款账户\nCHATS → 券商的工银亚洲收款账户\nCHATS → 券商的中信国际收款账户\n✓ 已选\n经本人中银香港 USD账户 → 同行入金\n经本人汇丰香港 USD账户 → 同行入金",
+      "bank": "02\n香港收款银行\n渣打 · 快易理财\n更换 ↗\n账户使用 12个月 · 银行管理费 0.00 CNY\n已扣已核费用 · 汇款到账\n14,879.23 USD\n尚有未报价费用",
+      "broker": "03\n买美股的账户\n盈立\n更换 ↗\n买1笔 / 卖1笔 · 股价 100 USD\n优惠与费用券\n已扣已核费用 · 入金到账\n14,855.32 USD\n尚有未报价费用",
+      "funding": "↓\n转入买股账户\n依据\n参考损耗\n0.160%\n160.25 CNY\n入金方式\nCHATS → 券商的中银香港收款账户\n⌄\n渣打 · 快易理财 → 盈立 · 个人标准账户的中银香港收款账户 · CHATS\n22.00 USD\n≈ 147.44 CNY\n中银香港 · 券商企业账户CHATS收款\n企业CHATS收款标准价15 HKD；500 HKD等值或以下免收\n估算 15.00 HKD\n≈ 12.81 CNY\n盈立 · 个人标准账户入金费\n0.00 CNY",
+      "summary": "费用小计 · 含估算\n476.95 CNY\n总损耗尚缺：内地→香港中转行费\n其中账户期间费\n0.00 CNY\n已计入合计\n已扣已核费用后的余额\n14,850.31 USD\n全程明细"
+    },
+    {
+      "case": "All named corporate receipts",
+      "chosenBank": "渣打 · 快易理财",
+      "method": "CHATS → 券商的汇丰香港收款账户",
+      "catalogue": "×\n入金方式\n\nCHATS → 券商的中银香港收款账户\n✓ 已选\nCHATS → 券商的汇丰香港收款账户\nCHATS → 券商的工银亚洲收款账户\nCHATS → 券商的中信国际收款账户\n经本人中银香港 USD账户 → 同行入金\n经本人汇丰香港 USD账户 → 同行入金",
+      "bank": "02\n香港收款银行\n渣打 · 快易理财\n更换 ↗\n账户使用 12个月 · 银行管理费 0.00 CNY\n已扣已核费用 · 汇款到账\n14,879.23 USD\n尚有未报价费用",
+      "broker": "03\n买美股的账户\n盈立\n更换 ↗\n买1笔 / 卖1笔 · 股价 100 USD\n优惠与费用券\n已扣已核费用 · 入金到账\n14,855.32 USD\n尚有未报价费用",
+      "funding": "↓\n转入买股账户\n依据\n参考损耗\n0.160%\n160.25 CNY\n入金方式\nCHATS → 券商的汇丰香港收款账户\n⌄\n渣打 · 快易理财 → 盈立 · 个人标准账户的汇丰香港收款账户 · CHATS\n22.00 USD\n≈ 147.44 CNY\n汇丰香港 · 券商企业账户CHATS收款\n企业CHATS收款标准价15 HKD\n估算 15.00 HKD\n≈ 12.81 CNY\n盈立 · 个人标准账户入金费\n0.00 CNY",
+      "summary": "费用小计 · 含估算\n476.95 CNY\n总损耗尚缺：内地→香港中转行费\n其中账户期间费\n0.00 CNY\n已计入合计\n已扣已核费用后的余额\n14,850.31 USD\n全程明细"
+    },
+    {
+      "case": "All named corporate receipts",
+      "chosenBank": "渣打 · 快易理财",
+      "method": "CHATS → 券商的工银亚洲收款账户",
+      "catalogue": "×\n入金方式\n\nCHATS → 券商的中银香港收款账户\nCHATS → 券商的汇丰香港收款账户\n✓ 已选\nCHATS → 券商的工银亚洲收款账户\nCHATS → 券商的中信国际收款账户\n经本人中银香港 USD账户 → 同行入金\n经本人汇丰香港 USD账户 → 同行入金",
+      "bank": "02\n香港收款银行\n渣打 · 快易理财\n更换 ↗\n账户使用 12个月 · 银行管理费 0.00 CNY\n已扣已核费用 · 汇款到账\n14,879.23 USD\n尚有未报价费用",
+      "broker": "03\n买美股的账户\n盈立\n更换 ↗\n买1笔 / 卖1笔 · 股价 100 USD\n优惠与费用券\n已扣已核费用 · 入金到账\n14,855.96 USD\n尚有未报价费用",
+      "funding": "↓\n转入买股账户\n依据\n参考损耗\n0.156%\n155.98 CNY\n入金方式\nCHATS → 券商的工银亚洲收款账户\n⌄\n渣打 · 快易理财 → 盈立 · 个人标准账户的工银亚洲收款账户 · CHATS\n22.00 USD\n≈ 147.44 CNY\n工银亚洲 · 券商企业账户CHATS收款\n企业CHATS收款标准价10 HKD\n估算 10.00 HKD\n≈ 8.54 CNY\n盈立 · 个人标准账户入金费\n0.00 CNY",
+      "summary": "费用小计 · 含估算\n472.68 CNY\n总损耗尚缺：内地→香港中转行费\n其中账户期间费\n0.00 CNY\n已计入合计\n已扣已核费用后的余额\n14,850.94 USD\n全程明细"
+    },
+    {
+      "case": "All named corporate receipts",
+      "chosenBank": "渣打 · 快易理财",
+      "method": "CHATS → 券商的中信国际收款账户✓ 已选",
+      "catalogue": "×\n入金方式\n\nCHATS → 券商的中银香港收款账户\nCHATS → 券商的汇丰香港收款账户\nCHATS → 券商的工银亚洲收款账户\n✓ 已选\nCHATS → 券商的中信国际收款账户\n经本人中银香港 USD账户 → 同行入金\n经本人汇丰香港 USD账户 → 同行入金",
+      "bank": "02\n香港收款银行\n渣打 · 快易理财\n更换 ↗\n账户使用 12个月 · 银行管理费 0.00 CNY\n已扣已核费用 · 汇款到账\n14,879.23 USD\n尚有未报价费用",
+      "broker": "03\n买美股的账户\n盈立\n更换 ↗\n买1笔 / 卖1笔 · 股价 100 USD\n优惠与费用券\n已扣已核费用 · 入金到账\n14,854.68 USD\n尚有未报价费用",
+      "funding": "↓\n转入买股账户\n依据\n参考损耗\n0.165%\n164.52 CNY\n入金方式\nCHATS → 券商的中信国际收款账户\n⌄\n渣打 · 快易理财 → 盈立 · 个人标准账户的中信国际收款账户 · CHATS\n22.00 USD\n≈ 147.44 CNY\n中信国际 · 券商企业账户CHATS收款\n公司业务 · 企业CHATS收款标准价20 HKD\n估算 20.00 HKD\n≈ 17.08 CNY\n盈立 · 个人标准账户入金费\n0.00 CNY",
+      "summary": "费用小计 · 含估算\n481.22 CNY\n总损耗尚缺：内地→香港中转行费\n其中账户期间费\n0.00 CNY\n已计入合计\n已扣已核费用后的余额\n14,849.67 USD\n全程明细"
+    },
+    {
+      "case": "specified CITIC corporate recipient retained after reload",
+      "main": "CROSS-BORDER MONEY\n跨境资金\n\n优选方案\n不同汇路 · 买股账户 盈立\n报价与依据\n重置\n中行 → 中银香港 → 盈立\nUSD · 手机同名汇款；同行入金\n→ 美元留在买股账户\n参考总损耗\n0.155%\n155.07 CNY\n工行 → 中银香港 → 盈立\nUSD · 美元全额到账；同行入金\n→ 美元留在买股账户\n全程损耗\n0.463%\n462.81 CNY\n建行 → 中银香港 → 盈立\nUSD · 美元全额到账；同行入金\n→ 美元留在买股账户\n全程损耗\n0.499%\n499.05 CNY\n兴业 → 汇丰香港 → 盈立\nUSD · 普通电汇；同行入金\n→ 美元留在买股账户\n含银行期间费 1,024.77 CNY\n参考总损耗\n1.058%\n1,058.38 CNY\n恒生中国 → 恒生香港 → 本人中银香港 → 盈立\nCNH · 两地同名转账；恒生香港换美元；本人银行转账后同行入金\n→ 美元留在买股账户\n含银行期间费 2,160.00 CNY\n全程损耗\n3.326%\n3,326.14 CNY\n01\n内地出发银行\n中国银行\n更换 ↗\n汇出笔数\n1笔\n⌄\n人民币本金 · 含费用\n100,000.00 CNY\n修改\n↓\n内地购美元 → 汇往香港\n依据\n参考损耗\n0.121%\n121.46 CNY\n汇出币种\n美元\n港币\n人民币原币\n汇款渠道\n手机银行 · 向同名境外中行汇款\n⌄\n汇出手续费\n手机银行双免\n0.00 CNY\n汇出电讯费\n手机银行双免\n0.00 CNY\n内地购汇差额\n1 USD = 6.7099 CNY\n121.46 CNY\n内地→香港中转行费\nUSD/HKD同行SHA路径 · 2026公开操作记录\n估算 0.00 CNY\n香港首次汇入费\n0.00 HKD\n02\n香港收款银行\n中银香港\n更换 ↗\n账户使用 12个月 · 银行管理费 0.00 CNY\n汇款到账\n14,903.35 USD\n累计损耗 0.121%\n↓\n转入买股账户\n依据\n参考损耗\n0.017%\n17.08 CNY\n入金方式\nCHATS → 券商的中信国际收款账户\n⌄\n中银香港 → 盈立 · 个人标准账户的中信国际收款账户 · CHATS\n0.00 HKD\n中信国际 · 券商企业账户CHATS收款\n公司业务 · 企业CHATS收款标准价20 HKD\n估算 20.00 HKD\n≈ 17.08 CNY\n盈立 · 个人标准账户入金费\n0.00 CNY\n03\n买美股的账户\n盈立\n更换 ↗\n买1笔 / 卖1笔 · 股价 100 USD\n优惠与费用券\n入金到账\n14,900.80 USD\n累计损耗 0.139%\n↓\n买入美股 → 卖出\n依据\n损耗\n0.034%\n33.60 CNY\n盈亏 0.00 USD\n买入美股 · 1笔\n148.9846股 · 未买入余款 0.0063 USD · 佣金 0.00＋平台 1.88＋清算／监管 0.46 USD\n2.34 USD\n≈ 15.66 CNY\n卖出美股 · 1笔\n148.9846股 · 佣金 0.00＋平台 1.88＋清算／监管 0.80 USD\n2.68 USD\n≈ 17.94 CNY\n证券账户／托管费\n0.00 USD\n04\n卖出后的资金\n留在买股账户\n⌄\n盈立\n美元留在账户\n按公布参考费计算的余额\n14,895.79 USD\n累计损耗 0.172%\n参考总损耗\n0.172%\n172.14 CNY\n其中账户期间费\n0.00 CNY\n已计入合计\n按公布参考费计算的余额\n14,895.79 USD\n全程明细\n实际成交报价与费用\n便利化购汇不得用于境外证券投资；本页为费用测算。\n适用条件",
+      "summary": "参考总损耗\n0.172%\n172.14 CNY\n其中账户期间费\n0.00 CNY\n已计入合计\n按公布参考费计算的余额\n14,895.79 USD\n全程明细"
+    },
+    {
+      "case": "CITIC company tariff source",
+      "detail": "×\n换汇与股票入金\n\n中银香港 → 盈立 · 个人标准账户的中信国际收款账户 · CHATS\n0.00 CNY\n中信国际 · 券商企业账户CHATS收款\n估算 17.08 CNY\n盈立 · 个人标准账户入金费\n0.00 CNY\n换USD佣金／自动加价\n0.00 CNY\n香港换汇差额\n0.00 CNY\n中银香港 · 汇款收费 ↗\n盈立官网 · 中银香港／汇丰／中信国际／工银亚洲收款账户 ↗\n盈立官网 · 同行转账免费、CHATS银行费用另计 ↗\n中信国际 · 公司业务CHATS收款标准20港元（第3页） ↗\n盈立 · 中银香港同行USD入金免费 ↗"
+    }
+  ]
+}

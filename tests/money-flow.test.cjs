@@ -1371,7 +1371,7 @@ test('direct corporate CHATS choices name their receiving bank and retain indepe
       outcome: 'broker-balance', entryMiddleCny: '0', depositHkd: '', depositOtherCny: '', months: '7', count: '2' };
     const ui = moneyUi(input, quotes, '2026-10-11'); ui.render(); ui.act('pick', '', 'depositMethod');
     const methods = M.calculatorChannels(input, D).depositMethods.filter(id => id === 'chats' || id.startsWith('chats-'));
-    const recipientNames = { bochk: '中银香港', hsbc: '汇丰香港', hang: '恒生香港', 'icbc-asia': '工银亚洲' };
+    const recipientNames = { bochk: '中银香港', hsbc: '汇丰香港', hang: '恒生香港', 'icbc-asia': '工银亚洲', citic: '中信国际' };
     for (const method of methods) {
       const target = M.calculatorDepositBank({ ...input, depositMethod: method }, D);
       assert.match(ui.modal(), new RegExp('CHATS → 券商的' + recipientNames[target.id] + '收款账户'));

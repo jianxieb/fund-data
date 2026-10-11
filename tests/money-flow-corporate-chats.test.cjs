@@ -73,6 +73,25 @@ test('uSMART ICBC Asia corporate CHATS charges 10 HKD once and never becomes a p
   assert.deepEqual(D.calculator, catalogue);
 });
 
+test('uSMART CITIC uses the distinct 20 HKD wholesale corporate receipt and does not copy free retail, 15 HKD or 10 HKD tariffs', () => {
+  for (const bank of D.calculator.hkBanks) for (const count of [1, 2, 3]) {
+    const r = run({ bank, count, depositMethod: 'chats-citic' }).selected;
+    assert.ok(r, bank + '/' + count);
+    assert.equal(r.corporateReceivingBank.id, 'citic'); assert.equal(r.fundingBank, null);
+    close(row(r, 'depositOther').cny, 20 * r.refs.HKD);
+    assert.ok(row(r, 'depositOther').sources.includes('citicBusinessInward'));
+    assert.match(row(r, 'depositOther').evidence, /公司业务/);
+    assert.deepEqual(row(r, 'account').items.filter(x => x.region === 'hong-kong').map(x => x.bankId), [bank]);
+    assert.ok(!M.calculatorChannels({ ...input, bank }, D).depositMethods.includes('via-citic'));
+    reconcile(r);
+  }
+  const small = run({ bank: 'za', depositMethod: 'chats-citic', senderFeeCny: '0', entryInwardHkd: '0', budgetCny: 100 }).selected;
+  close(row(small, 'depositOther').cny, 20 * small.refs.HKD);
+  const actual = run({ depositMethod: 'chats-citic', depositOtherCny: '0' }).selected;
+  close(row(actual, 'depositOther').cny, 0); assert.equal(row(actual, 'depositOther').estimate, undefined);
+  assert.equal(M.calculatorDepositBank({ ...input, broker: 'chief', depositMethod: 'chats-citic' }, D), null);
+});
+
 test('corporate receipt, personal-bank bridge, internal funding and overseas SWIFT do not inherit each other\'s fees', () => {
   const direct = run({}).selected, personal = run({ depositMethod: 'via-bochk' }).selected;
   assert.ok(row(direct, 'depositOther').sources.includes('usmartChatsGuide'));

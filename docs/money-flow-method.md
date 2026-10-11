@@ -386,12 +386,15 @@ IBKR[公开入金工具](https://www.interactivebrokers.com/en/support/fund-my-a
 | 汇丰香港 | 15 HKD／笔；不沿用中银的小额档位 | [商业银行收费表](https://www.business.hsbc.com.hk/-/media/media/hong-kong/pdfs/regulations/tariff-e-en.pdf)，2026年5月E3、物理第1页 |
 | 恒生香港 | 15 HKD／笔 | [商业银行收费表](https://www.hangseng.com/content/dam/wpb/hase/en_hk/business/bank-accounts/PDF/Service%20Charges_new.pdf)，2026年4月B.3、物理第10页 |
 | 工银亚洲 | 10 HKD／笔，持有账户；不沿用中银小额豁免 | [2026-09-01收费表](https://v.icbc.com.cn/userfiles/resources/icbc/haiwai/asia/download/cn/2026/general_services_charges_260901_sc.pdf)，VIII(a)、物理第20页／印刷第17页 |
+| 中信国际 | 公司业务部20 HKD／笔；不套通用表的免费规则 | [现行公司业务收费表](https://www.cncbinternational.com/_document/bank-service-fees-and-charges/en/wholesale-banking-fees-and-charges.pdf)，2025-10-30生效、物理第3页 |
 
-四家正式表的费率均按原币保存；产品用同一HKD参考值折算，而不是把攻略的1.93 USD写成固定美元费。中银小额档位按汇出银行收费后的实际本地转账金额判断。内地汇出笔数不会把随后一次CHATS的收款费乘多次。[核查摘要](../tests/fixtures/money-flow-corporate-chats-20261012.json)记录来源和适用范围；汇丰、恒生及工银亚洲PDF已渲染核对表格。
+五家正式表的费率均按原币保存；产品用同一HKD参考值折算，而不是把攻略的1.93 USD写成固定美元费。中银小额档位按汇出银行收费后的实际本地转账金额判断。内地汇出笔数不会把随后一次CHATS的收款费乘多次。[核查摘要](../tests/fixtures/money-flow-corporate-chats-20261012.json)记录来源和适用范围；汇丰、恒生、工银亚洲及中信国际PDF已渲染核对表格。
 
-“入金方式”直接列出已核资费、由券商公布的具体中银／汇丰／恒生／工银亚洲收款账户。旧CHATS设置对应的目标在选择器和正文都写明，其他已核实的跨行收款账户可另选；账户目录仍为9／5／5。“经本人银行→同行入金”继续独立计费，属于本人的银行账户，按个人收款及真实期间管理费核算；不会给券商企业账户增收用户的HSBC One管理费。
+“入金方式”直接列出已核资费、由券商公布的具体中银／汇丰／恒生／工银亚洲／中信国际收款账户。盈立官网表列的四家USD收款银行均已按具名渠道纳入；旧CHATS目标仍保留，新增银行不改原方法含义。致富只使用自身公布的中银／汇丰／恒生账户，不借用盈立的收款账户。本人账户目录仍为9／5／5。“经本人银行→同行入金”继续独立计费，按个人收款及真实期间管理费核算；不会给券商企业账户增收用户的HSBC One管理费。
 
 这些金额采用银行企业标准价情景，正文列具体原币金额，合计标参考损耗。不能据银行标准价承诺券商没有协议减免、全额转嫁每笔费用，或将盈立的一次实例扩大到致富所有账户。同行、本地CHATS、香港SWIFT、境外SWIFT及IBKR本地指示均分别判断。个人已确认回单可覆盖本动作；切换方式会清除旧动作的覆盖值。该项补齐已公开的收费，未关闭其他汇路代理费或个人成交报价的证据缺项。
+
+中信国际的[通用收费表](https://www.cncbinternational.com/_document/bank-service-fees-and-charges/en/bank-service-fees-and-charges.pdf)2026-02-27版第4页写CHATS汇入免费，带“+”注号，第7页明文排除公司业务部客户。继续从[公司业务官网](https://www.cncbinternational.com/corporates/en/index.jsp)打开其正式收费表，四页现行文件第3页列CHATS汇入20 HKD；第4页规定公司业务表优先于通用表。正文因此明确使用“公司业务 · 企业CHATS收款标准价20 HKD”的情景，不能凭通用表或同行攻略给跨行券商收款补0；账户另有协议减免时仍以实际费用覆盖。搜索索引曾仅展示旧的一页网银表，本次取官网链接的完整四页文件核验，内容哈希保存在结构化资费中。
 
 ### 工银亚洲集团汇款及换汇优惠的范围（2026-10-12）
 

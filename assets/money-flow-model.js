@@ -1028,7 +1028,7 @@
           recipientOverride ?? (corporateTariff ? corporateHkd * refs.HKD : localFunding ? localFunding.otherCny : depositMethod === 'fps' || depositMethod === 'edda' ? 0 : null);
         add('depositOther', receivingBank ? (fundingBank ? '本人' : '') + receivingBank.name + ' · 本地USD收款' : internalDeposit ? provider.name + ' · 同行收款' : corporateReceivingBank ? corporateReceivingBank.corporateName + ' · 券商企业账户CHATS收款' : localFunding ? provider.name + '香港本地收款' : '入金代理／收款行费', recipientFee, 'deposit');
         if (corporateTariff && recipientOverride == null) Object.assign(rows[rows.length - 1], { nativeCurrency: 'HKD',
-          estimate: '按所选收款银行企业CHATS标准价计算；不假定券商另获减免', evidence: '企业CHATS收款标准价' + corporateHkd + ' HKD' + (corporateTariff.freeUpToHkd != null ? '；' + corporateTariff.freeUpToHkd + ' HKD等值或以下免收' : ''),
+          estimate: '按所选收款银行企业CHATS标准价计算；不假定券商另获减免', evidence: (corporateTariff.accountType ? corporateTariff.accountType + ' · ' : '') + '企业CHATS收款标准价' + corporateHkd + ' HKD' + (corporateTariff.freeUpToHkd != null ? '；' + corporateTariff.freeUpToHkd + ' HKD等值或以下免收' : ''),
           sources: [...corporateTariff.sources, ...(provider.id === 'usmart' && bank.id === 'za' && corporateReceivingBank.id === 'bochk' ? ['usmartChatsGuide'] : [])] });
         if (localFunding && own('depositOtherCny', isSelectedBank) == null) rows[rows.length - 1].estimate = localFunding.evidence;
         if (fundingBank && finite(balance) && balance >= 0) steps.fundingBankUsd = balance;
