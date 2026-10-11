@@ -1,0 +1,28 @@
+{
+  "checkedAt": "2026-10-12",
+  "supersedesProductScope": "money-flow-swift-go-availability-20261011.json",
+  "tariffSource": "https://www.cib.com.cn/cn/aboutCIB/about/charges/zfNotices/20240204.html",
+  "participantSource": "https://www.swift.com/products/swift-go/banks",
+  "cib": {
+    "additionalFeeCnyPerPayment": 50,
+    "maximumUsdEquivalentPerPayment": 10000,
+    "effectiveFrom": "2024-05-06",
+    "requires": ["汇款金额在单笔服务范围内", "汇款链路所有银行已开通该服务", "银行为所填收款账户实际提供该服务"],
+    "feeScope": "在本行手续费及电讯费基础上另收固定服务费，服务实际适用时不再代收境外银行费用。"
+  },
+  "swift": {
+    "publishedListAsOf": "2025-01",
+    "scope": "公开名单包含已签约、处于不同实施阶段的银行，不是已可交换Go汇款的目录。",
+    "reachabilitySource": "GPI directory / SwiftRefData",
+    "notEvidence": ["普通SWIFT BIC存在", "参加gpi", "银行集团总部签约", "业务价目表公开服务收费", "另行推出的Swift零售支付框架"]
+  },
+  "reviewedHkBanks": ["bochk", "hsbc", "za", "hang", "sc", "icbc-asia"],
+  "verifiedCatalogueReceivingRoutes": [],
+  "researchFinding": "未取得目录中六家香港银行对应USD/HKD的Go可达性记录；公开名单不能证明服务已可办理，也不能证明银行不支持。",
+  "productScope": "主界面仅提供银行、币种及当前日期均匹配已核服务记录的Go渠道。当前没有匹配记录，不再提供无实际适用依据的手动Go选择。保留官方资费及独立研究计算，普通兴业汇款、九家内地银行、六家香港银行和五个买股账户均保留。",
+  "savedSelectionRepair": {
+    "method": "swift",
+    "clearOnly": ["senderFeeCny", "entryMiddleCny", "entryInwardHkd"],
+    "preserve": ["accounts", "principal", "transferCount", "holdingMonths", "fxExecutionQuotes", "brokerFees", "returnFees", "coupon", "qualifications"]
+  }
+}

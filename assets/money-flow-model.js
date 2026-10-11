@@ -814,9 +814,7 @@
       const paymentConnect = mainlandMethod === 'payment-connect';
       const swiftGo = mainlandMethod === 'cib-go';
       if (swiftGo && (start.id !== 'cib' || !['USD', 'HKD'].includes(currency))) return { error: 'SWIFT GO仅收录兴业寰宇人生的USD/HKD全额到账服务。' };
-      const serviceRoute = swiftGo && data.entryServiceRoutes?.find(item => item.startBank === start.id && item.bank === bank.id &&
-        item.method === mainlandMethod && item.currencies.includes(currency) && item.sources?.length &&
-        (!item.validFrom || config.date >= item.validFrom) && (!item.validUntil || config.date <= item.validUntil));
+      const serviceRoute = swiftGo && entryServiceRoute({ ...config, mainlandMethod }, data);
       const unverifiedService = swiftGo && !serviceRoute;
       const serviceAvailability = swiftGo ? { verified: !!serviceRoute, method: mainlandMethod,
         evidence: start.name + ' → ' + bank.name + ' ' + currency + '的SWIFT Go开通记录', sources: serviceRoute?.sources || ['cibGo', 'swiftGoBanks'] } : null;
@@ -1442,6 +1440,11 @@
   }
   // The UI and exhaustive audit share channel availability. Account catalogues
   // stay independent: a channel restriction never removes an account choice.
+  function entryServiceRoute(config, data) {
+    return data.entryServiceRoutes?.find(item => item.startBank === config.startBank && item.bank === config.bank &&
+      item.method === config.mainlandMethod && item.currencies?.includes(config.route) && item.sources?.length &&
+      (!item.validFrom || config.date >= item.validFrom) && (!item.validUntil || config.date <= item.validUntil)) || null;
+  }
   function calculatorChannels(config, data) {
     const s = config, start = data.mainlandBanks.find(x => x.id === s.startBank), bank = data.hkBanks.find(x => x.id === s.bank);
     const broker = data.brokers.find(x => x.id === s.broker), returning = data.hkBanks.find(x => x.id === s.returnBank), exit = data.mainlandBanks.find(x => x.id === s.exitBank);
@@ -1449,7 +1452,8 @@
     if (start?.id === 'boc' && bank?.id === 'bochk' && s.route !== 'CNH') mainlandMethods.unshift('boc-mobile');
     if (start?.id === 'icbc' && bank?.id === 'icbc-asia' && start.groupMobileTariff?.currencies.includes(s.route)) mainlandMethods.unshift('icbc-mobile');
     if (start?.id === 'boc' && bank?.group !== 'boc' && start.onlineTariff?.currencies.includes(s.route)) mainlandMethods.unshift('boc-online');
-    if (start?.id === 'cib' && s.route !== 'CNH') mainlandMethods.push('cib-go');
+    if (start?.id === 'cib' && ['USD', 'HKD'].includes(s.route) &&
+        entryServiceRoute({ ...s, mainlandMethod: 'cib-go' }, data)) mainlandMethods.push('cib-go');
     if (s.route === 'USD' && knownFee(start?.fullAmountUsd)) mainlandMethods.push('full');
     if (['hsbc', 'hang', 'sc'].includes(start?.id) && start.group === bank?.group && (!start.linkedCurrencies || start.linkedCurrencies.includes(s.route))) mainlandMethods.unshift('linked');
     const fxModes = s.route === 'USD' ? ['manual'] : broker?.id === 'ibkr' ? ['manual', 'auto', 'bank'] : ['bank'];

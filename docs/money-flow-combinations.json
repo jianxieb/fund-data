@@ -4616,11 +4616,11 @@
         "cnHangFeeWaived": false,
         "cnScFeeWaived": false
       },
-      "checked": 498927,
+      "checked": 479583,
       "priced": 7408,
       "referencePriced": 4348,
       "partial": 387061,
-      "routeIssues": 104458,
+      "routeIssues": 85114,
       "ledgerChecks": 394469,
       "retainedPartialResults": 85114,
       "chequeBoundaryChecks": 153465,
@@ -4632,8 +4632,6 @@
         "工银亚洲 · 综合账户人民币原币消费须持有效香港身份证，并已开通人民币储蓄账户；已保留出金后的美元余额。": 8399,
         "众安 ZA Bank不接受支票存款；致富 · 网上直属客户的美元支票不能直接存入该账户。已保留券商美元余额。": 13068,
         "工银亚洲 · 综合账户人民币储蓄账户须持香港身份证并已开通；请确认账户条件或选择美元／港币汇出。": 16848,
-        "SWIFT GO单笔上限为等值10,000 USD；当前每笔约14914.01 USD，超出服务范围。": 8268,
-        "SWIFT GO单笔上限为等值10,000 USD；当前每笔约14942.33 USD，超出服务范围。": 11076,
         "渣打中国的USD现汇卖出价尚未取得；到账金额暂不可算。": 9594,
         "渣打中国的HKD现汇卖出价尚未取得；到账金额暂不可算。": 12870
       },
@@ -4842,23 +4840,11 @@
           "partial": 1935,
           "routeIssues": 236
         },
-        "cib/bochk/USD/cib-go": {
-          "checked": 1326,
-          "priced": 0,
-          "partial": 0,
-          "routeIssues": 1326
-        },
         "cib/bochk/HKD/swift": {
           "checked": 2639,
           "priced": 0,
           "partial": 2373,
           "routeIssues": 266
-        },
-        "cib/bochk/HKD/cib-go": {
-          "checked": 1794,
-          "priced": 0,
-          "partial": 0,
-          "routeIssues": 1794
         },
         "cib/bochk/CNH/swift": {
           "checked": 2639,
@@ -4872,23 +4858,11 @@
           "partial": 1643,
           "routeIssues": 236
         },
-        "cib/hsbc/USD/cib-go": {
-          "checked": 1326,
-          "priced": 0,
-          "partial": 0,
-          "routeIssues": 1326
-        },
         "cib/hsbc/HKD/swift": {
           "checked": 2639,
           "priced": 292,
           "partial": 2081,
           "routeIssues": 266
-        },
-        "cib/hsbc/HKD/cib-go": {
-          "checked": 1794,
-          "priced": 0,
-          "partial": 0,
-          "routeIssues": 1794
         },
         "cib/hsbc/CNH/swift": {
           "checked": 2639,
@@ -4902,23 +4876,11 @@
           "partial": 2187,
           "routeIssues": 270
         },
-        "cib/za/USD/cib-go": {
-          "checked": 1482,
-          "priced": 0,
-          "partial": 0,
-          "routeIssues": 1482
-        },
         "cib/za/HKD/swift": {
           "checked": 2925,
           "priced": 0,
           "partial": 2625,
           "routeIssues": 300
-        },
-        "cib/za/HKD/cib-go": {
-          "checked": 1950,
-          "priced": 0,
-          "partial": 0,
-          "routeIssues": 1950
         },
         "cib/za/CNH/swift": {
           "checked": 2925,
@@ -4932,23 +4894,11 @@
           "partial": 2066,
           "routeIssues": 248
         },
-        "cib/hang/USD/cib-go": {
-          "checked": 1404,
-          "priced": 0,
-          "partial": 0,
-          "routeIssues": 1404
-        },
         "cib/hang/HKD/swift": {
           "checked": 2782,
           "priced": 0,
           "partial": 2504,
           "routeIssues": 278
-        },
-        "cib/hang/HKD/cib-go": {
-          "checked": 1872,
-          "priced": 0,
-          "partial": 0,
-          "routeIssues": 1872
         },
         "cib/hang/CNH/swift": {
           "checked": 2782,
@@ -4962,23 +4912,11 @@
           "partial": 1935,
           "routeIssues": 236
         },
-        "cib/sc/USD/cib-go": {
-          "checked": 1326,
-          "priced": 0,
-          "partial": 0,
-          "routeIssues": 1326
-        },
         "cib/sc/HKD/swift": {
           "checked": 2639,
           "priced": 0,
           "partial": 2373,
           "routeIssues": 266
-        },
-        "cib/sc/HKD/cib-go": {
-          "checked": 1794,
-          "priced": 0,
-          "partial": 0,
-          "routeIssues": 1794
         },
         "cib/sc/CNH/swift": {
           "checked": 2639,
@@ -4992,23 +4930,11 @@
           "partial": 2056,
           "routeIssues": 258
         },
-        "cib/icbc-asia/USD/cib-go": {
-          "checked": 1404,
-          "priced": 0,
-          "partial": 0,
-          "routeIssues": 1404
-        },
         "cib/icbc-asia/HKD/swift": {
           "checked": 2782,
           "priced": 0,
           "partial": 2494,
           "routeIssues": 288
-        },
-        "cib/icbc-asia/HKD/cib-go": {
-          "checked": 1872,
-          "priced": 0,
-          "partial": 0,
-          "routeIssues": 1872
         },
         "cib/icbc-asia/CNH/swift": {
           "checked": 1872,
@@ -5909,7 +5835,6 @@
         "mainlandMethods": [
           "boc-mobile",
           "boc-online",
-          "cib-go",
           "full",
           "icbc-mobile",
           "linked",
@@ -5956,47 +5881,35 @@
         "cnHangFeeWaived": true,
         "cnScFeeWaived": true
       },
-      "checked": 517777,
+      "checked": 487773,
       "priced": 8299,
       "referencePriced": 4879,
-      "partial": 457009,
-      "routeIssues": 52469,
-      "ledgerChecks": 465308,
-      "retainedPartialResults": 52469,
-      "chequeBoundaryChecks": 172315,
+      "partial": 428837,
+      "routeIssues": 50637,
+      "ledgerChecks": 437136,
+      "retainedPartialResults": 50637,
+      "chequeBoundaryChecks": 161655,
       "issueCounts": {
-        "众安 ZA Bank不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 2913,
-        "工银亚洲 · 综合账户不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 9443,
-        "众安 ZA Bank扣账卡以港币结算，不支持人民币余额原币消费；已保留出金后的美元余额。": 2913,
-        "众安 ZA Bank不接受支票存款；致富 · 网上直属客户的美元支票不能直接存入该账户。已保留券商美元余额。": 14736,
+        "众安 ZA Bank不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 2741,
+        "工银亚洲 · 综合账户不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 8867,
+        "众安 ZA Bank扣账卡以港币结算，不支持人民币余额原币消费；已保留出金后的美元余额。": 2741,
+        "众安 ZA Bank不接受支票存款；致富 · 网上直属客户的美元支票不能直接存入该账户。已保留券商美元余额。": 13824,
         "渣打中国的USD现汇卖出价尚未取得；到账金额暂不可算。": 9594,
         "渣打中国的HKD现汇卖出价尚未取得；到账金额暂不可算。": 12870
       },
       "missingCounts": {
-        "券商出金中转行费": 81548,
-        "渣打 · 快易理财 USD/CNH换汇价尚未取得；已保留换汇前美元余额": 12094,
-        "回内地中转行费": 345441,
-        "渣打中国USD现汇买入价尚未取得；已保留结汇前美元余额": 48967,
-        "入金代理／收款行费": 75758,
+        "券商出金中转行费": 77108,
+        "渣打 · 快易理财 USD/CNH换汇价尚未取得；已保留换汇前美元余额": 11354,
+        "回内地中转行费": 324529,
+        "渣打中国USD现汇买入价尚未取得；已保留结汇前美元余额": 45995,
+        "入金代理／收款行费": 71298,
         "内地→香港中转行费": 383436,
-        "IBKR HKD/USD实时成交点差": 28350,
+        "IBKR HKD/USD实时成交点差": 25650,
         "IBKR CNH/USD实时成交点差": 25200,
-        "众安 ZA Bank HKD换USD点差（缺成交价）": 23000,
+        "众安 ZA Bank HKD换USD点差（缺成交价）": 20700,
         "众安 ZA Bank CNH换USD点差（缺成交价）": 20700,
-        "渣打 · 快易理财 HKD换USD点差（缺成交价）": 20340,
+        "渣打 · 快易理财 HKD换USD点差（缺成交价）": 18306,
         "渣打 · 快易理财 CNH换USD点差（缺成交价）": 18306,
-        "兴业 · 寰宇人生 → 中银香港 USD的SWIFT Go开通记录": 2034,
-        "兴业 · 寰宇人生 → 中银香港 HKD的SWIFT Go开通记录": 2484,
-        "兴业 · 寰宇人生 → 汇丰 HSBC One USD的SWIFT Go开通记录": 2034,
-        "兴业 · 寰宇人生 → 汇丰 HSBC One HKD的SWIFT Go开通记录": 2484,
-        "兴业 · 寰宇人生 → 众安 ZA Bank USD的SWIFT Go开通记录": 2300,
-        "兴业 · 寰宇人生 → 众安 ZA Bank HKD的SWIFT Go开通记录": 2750,
-        "兴业 · 寰宇人生 → 恒生 · 优进理财 USD的SWIFT Go开通记录": 2172,
-        "兴业 · 寰宇人生 → 恒生 · 优进理财 HKD的SWIFT Go开通记录": 2622,
-        "兴业 · 寰宇人生 → 渣打 · 快易理财 USD的SWIFT Go开通记录": 2034,
-        "兴业 · 寰宇人生 → 渣打 · 快易理财 HKD的SWIFT Go开通记录": 2484,
-        "兴业 · 寰宇人生 → 工银亚洲 · 综合账户 USD的SWIFT Go开通记录": 2162,
-        "兴业 · 寰宇人生 → 工银亚洲 · 综合账户 HKD的SWIFT Go开通记录": 2612,
         "工商银行汇出手续费": 15436,
         "工商银行电讯费": 15436,
         "汇出手续费＋电讯费（地区定价）": 28172,
@@ -6190,19 +6103,7 @@
           "partial": 2034,
           "routeIssues": 137
         },
-        "cib/bochk/USD/cib-go": {
-          "checked": 2171,
-          "priced": 0,
-          "partial": 2034,
-          "routeIssues": 137
-        },
         "cib/bochk/HKD/swift": {
-          "checked": 2639,
-          "priced": 0,
-          "partial": 2484,
-          "routeIssues": 155
-        },
-        "cib/bochk/HKD/cib-go": {
           "checked": 2639,
           "priced": 0,
           "partial": 2484,
@@ -6220,22 +6121,10 @@
           "partial": 1707,
           "routeIssues": 137
         },
-        "cib/hsbc/USD/cib-go": {
-          "checked": 2171,
-          "priced": 0,
-          "partial": 2034,
-          "routeIssues": 137
-        },
         "cib/hsbc/HKD/swift": {
           "checked": 2639,
           "priced": 327,
           "partial": 2157,
-          "routeIssues": 155
-        },
-        "cib/hsbc/HKD/cib-go": {
-          "checked": 2639,
-          "priced": 0,
-          "partial": 2484,
           "routeIssues": 155
         },
         "cib/hsbc/CNH/swift": {
@@ -6250,19 +6139,7 @@
           "partial": 2300,
           "routeIssues": 157
         },
-        "cib/za/USD/cib-go": {
-          "checked": 2457,
-          "priced": 0,
-          "partial": 2300,
-          "routeIssues": 157
-        },
         "cib/za/HKD/swift": {
-          "checked": 2925,
-          "priced": 0,
-          "partial": 2750,
-          "routeIssues": 175
-        },
-        "cib/za/HKD/cib-go": {
           "checked": 2925,
           "priced": 0,
           "partial": 2750,
@@ -6280,19 +6157,7 @@
           "partial": 2172,
           "routeIssues": 142
         },
-        "cib/hang/USD/cib-go": {
-          "checked": 2314,
-          "priced": 0,
-          "partial": 2172,
-          "routeIssues": 142
-        },
         "cib/hang/HKD/swift": {
-          "checked": 2782,
-          "priced": 0,
-          "partial": 2622,
-          "routeIssues": 160
-        },
-        "cib/hang/HKD/cib-go": {
           "checked": 2782,
           "priced": 0,
           "partial": 2622,
@@ -6310,19 +6175,7 @@
           "partial": 2034,
           "routeIssues": 137
         },
-        "cib/sc/USD/cib-go": {
-          "checked": 2171,
-          "priced": 0,
-          "partial": 2034,
-          "routeIssues": 137
-        },
         "cib/sc/HKD/swift": {
-          "checked": 2639,
-          "priced": 0,
-          "partial": 2484,
-          "routeIssues": 155
-        },
-        "cib/sc/HKD/cib-go": {
           "checked": 2639,
           "priced": 0,
           "partial": 2484,
@@ -6340,19 +6193,7 @@
           "partial": 2162,
           "routeIssues": 152
         },
-        "cib/icbc-asia/USD/cib-go": {
-          "checked": 2314,
-          "priced": 0,
-          "partial": 2162,
-          "routeIssues": 152
-        },
         "cib/icbc-asia/HKD/swift": {
-          "checked": 2782,
-          "priced": 0,
-          "partial": 2612,
-          "routeIssues": 170
-        },
-        "cib/icbc-asia/HKD/cib-go": {
           "checked": 2782,
           "priced": 0,
           "partial": 2612,
@@ -7257,7 +7098,6 @@
         "mainlandMethods": [
           "boc-mobile",
           "boc-online",
-          "cib-go",
           "full",
           "icbc-mobile",
           "linked",
@@ -7307,11 +7147,11 @@
         "usmartPromo": false,
         "zaLv2": false
       },
-      "checked": 2918961,
+      "checked": 2826557,
       "priced": 38051,
       "referencePriced": 20685,
       "partial": 2152463,
-      "routeIssues": 728447,
+      "routeIssues": 636043,
       "ledgerChecks": 2190514,
       "retainedPartialResults": 636043,
       "chequeBoundaryChecks": 728720,
@@ -7323,8 +7163,6 @@
         "工银亚洲 · 综合账户人民币原币消费须持有效香港身份证，并已开通人民币储蓄账户；已保留出金后的美元余额。": 27241,
         "众安 ZA Bank不接受支票存款；致富 · 网上直属客户的美元支票不能直接存入该账户。已保留券商美元余额。": 236692,
         "工银亚洲 · 综合账户人民币储蓄账户须持香港身份证并已开通；请确认账户条件或选择美元／港币汇出。": 93798,
-        "SWIFT GO单笔上限为等值10,000 USD；当前每笔约14914.01 USD，超出服务范围。": 42369,
-        "SWIFT GO单笔上限为等值10,000 USD；当前每笔约14942.33 USD，超出服务范围。": 50035,
         "渣打中国的USD现汇卖出价尚未取得；到账金额暂不可算。": 90104,
         "渣打中国的HKD现汇卖出价尚未取得；到账金额暂不可算。": 106200
       },
@@ -7534,23 +7372,11 @@
           "partial": 7630,
           "routeIssues": 1259
         },
-        "cib/bochk/USD/cib-go": {
-          "checked": 6189,
-          "priced": 0,
-          "partial": 0,
-          "routeIssues": 6189
-        },
         "cib/bochk/HKD/swift": {
           "checked": 9891,
           "priced": 0,
           "partial": 8602,
           "routeIssues": 1289
-        },
-        "cib/bochk/HKD/cib-go": {
-          "checked": 7191,
-          "priced": 0,
-          "partial": 0,
-          "routeIssues": 7191
         },
         "cib/bochk/CNH/swift": {
           "checked": 9891,
@@ -7564,23 +7390,11 @@
           "partial": 10734,
           "routeIssues": 2158
         },
-        "cib/hsbc/USD/cib-go": {
-          "checked": 9660,
-          "priced": 0,
-          "partial": 0,
-          "routeIssues": 9660
-        },
         "cib/hsbc/HKD/swift": {
           "checked": 16140,
           "priced": 1448,
           "partial": 12474,
           "routeIssues": 2218
-        },
-        "cib/hsbc/HKD/cib-go": {
-          "checked": 11460,
-          "priced": 0,
-          "partial": 0,
-          "routeIssues": 11460
         },
         "cib/hsbc/CNH/swift": {
           "checked": 16140,
@@ -7594,23 +7408,11 @@
           "partial": 8896,
           "routeIssues": 1449
         },
-        "cib/za/USD/cib-go": {
-          "checked": 7285,
-          "priced": 0,
-          "partial": 0,
-          "routeIssues": 7285
-        },
         "cib/za/HKD/swift": {
           "checked": 12203,
           "priced": 0,
           "partial": 10684,
           "routeIssues": 1519
-        },
-        "cib/za/HKD/cib-go": {
-          "checked": 9143,
-          "priced": 0,
-          "partial": 0,
-          "routeIssues": 9143
         },
         "cib/za/CNH/swift": {
           "checked": 12203,
@@ -7624,23 +7426,11 @@
           "partial": 8120,
           "routeIssues": 1283
         },
-        "cib/hang/USD/cib-go": {
-          "checked": 6523,
-          "priced": 0,
-          "partial": 0,
-          "routeIssues": 6523
-        },
         "cib/hang/HKD/swift": {
           "checked": 10405,
           "priced": 0,
           "partial": 9092,
           "routeIssues": 1313
-        },
-        "cib/hang/HKD/cib-go": {
-          "checked": 7525,
-          "priced": 0,
-          "partial": 0,
-          "routeIssues": 7525
         },
         "cib/hang/CNH/swift": {
           "checked": 10405,
@@ -7654,23 +7444,11 @@
           "partial": 7630,
           "routeIssues": 1259
         },
-        "cib/sc/USD/cib-go": {
-          "checked": 6189,
-          "priced": 0,
-          "partial": 0,
-          "routeIssues": 6189
-        },
         "cib/sc/HKD/swift": {
           "checked": 9891,
           "priced": 0,
           "partial": 8602,
           "routeIssues": 1289
-        },
-        "cib/sc/HKD/cib-go": {
-          "checked": 7191,
-          "priced": 0,
-          "partial": 0,
-          "routeIssues": 7191
         },
         "cib/sc/CNH/swift": {
           "checked": 9891,
@@ -7684,23 +7462,11 @@
           "partial": 7998,
           "routeIssues": 1405
         },
-        "cib/icbc-asia/USD/cib-go": {
-          "checked": 6523,
-          "priced": 0,
-          "partial": 0,
-          "routeIssues": 6523
-        },
         "cib/icbc-asia/HKD/swift": {
           "checked": 10405,
           "priced": 0,
           "partial": 8970,
           "routeIssues": 1435
-        },
-        "cib/icbc-asia/HKD/cib-go": {
-          "checked": 7525,
-          "priced": 0,
-          "partial": 0,
-          "routeIssues": 7525
         },
         "cib/icbc-asia/CNH/swift": {
           "checked": 17772,
@@ -8601,7 +8367,6 @@
         "mainlandMethods": [
           "boc-mobile",
           "boc-online",
-          "cib-go",
           "full",
           "icbc-mobile",
           "linked",

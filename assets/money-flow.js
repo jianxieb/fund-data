@@ -1,6 +1,8 @@
 (function () {
   'use strict';
   const D = window.MONEY_FLOW, M = window.ChanghengMoneyFlowModel, STORE = 'changheng.money-flow.v4';
+  const today = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Shanghai' });
+  const availableChannels = config => M.calculatorChannels({ ...config, date: today() }, D);
   const defaults = { budgetCny: '100000', currency: 'CNY', plan: 'boc-za', activeStep: '01', startBank: 'boc', route: 'USD', bank: 'bochk', returnBank: 'bochk', exitBank: 'boc', outcome: 'broker-balance',
     mainlandMethod: 'boc-mobile', depositMethod: 'chats', fxMode: 'manual', returnMethod: '', comparison: 'start', count: '1', usedFreeTransfers: '0',
     months: '12', balanceHkd: '0', returnBalanceHkd: '0', bankBalancesHkd: {}, profitUsd: '0', taxableCny: '', taxRate: '20', creditCny: '0', withdrawalIndex: '1', chequeIndex: '1', chequePreFilled: false, tradeFeeUsd: '',
@@ -20,12 +22,19 @@
   // Earlier versions incorrectly offered the foreign-currency-only Global
   // Link channel for RMB. Keep all accounts and repair that saved method.
   if (state.startBank === 'sc' && state.route === 'CNH' && state.mainlandMethod === 'linked') state.mainlandMethod = 'swift';
+  // A published service tariff is not evidence that this receiving account
+  // can use it. Repair old hypothetical Go selections without changing accounts,
+  // capital, transfer count, FX quotes or unrelated broker/return fees.
+  const repairStoredGo = state.mainlandMethod === 'cib-go' && !availableChannels(state).mainlandMethods.includes('cib-go');
+  if (repairStoredGo) {
+    state.mainlandMethod = 'swift'; state.senderFeeCny = ''; state.entryMiddleCny = ''; state.entryInwardHkd = '';
+  }
   if (state.route !== 'USD' && state.broker !== 'ibkr') state.fxMode = 'bank';
   // A saved local USD wire must not retain the old overseas tariff. Keep all
   // accounts and use the bank's published local USD clearing channel.
   if (state.depositMethod === 'swift' && D.hkBanks.find(bank => bank.id === state.bank)?.localSwiftExcluded?.length &&
       D.brokers.find(broker => broker.id === state.broker)?.swiftDestination === 'hong-kong' &&
-      !M.calculatorChannels(state, D).depositMethods.includes('swift')) {
+      !availableChannels(state).depositMethods.includes('swift')) {
     state.depositMethod = 'chats'; state.depositHkd = ''; state.depositOtherCny = '';
   }
   if (!['01', '02', '03', '04'].includes(state.activeStep)) state.activeStep = '01';
@@ -42,8 +51,8 @@
   const options = new Map();
   const esc = value => H.esc(value), num = (value, digits = 2) => Number.isFinite(Number(value)) && value != null ? H.money(Number(value), digits) : '—';
   const action = (label, act, extra = '', cls = 'btn') => H.action(label, 'money-flow-' + act, cls, extra);
-  const today = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Shanghai' });
   const save = () => { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (_) {} };
+  if (repairStoredGo) save();
   const pct = value => num(value * 100, 3) + '%';
   const quoteNum = value => num(value, 8).replace(/0+$/, '').replace(/\.$/, '');
   const shortName = value => value?.name?.replace(' · Pro Fixed', '').replace(' · 网上直属客户', '').replace(' · 个人标准账户', '').replace(' · 美股交易', '').replace(' · Trade25 / 普通证券', '证券') || '请选择';
@@ -199,7 +208,7 @@
     if (s.start?.id === 'cib' && state.route !== 'CNH') values.push(['cib-go', '小额全额到账 · 另加50 CNY/笔']);
     if (state.route === 'USD' && s.start?.fullAmountUsd != null) values.push(['full', '美元全额到账 · ' + (s.start.fullAmountChannel ? s.start.fullAmountChannel + ' · ' : '') + '另加' + s.start.fullAmountUsd + ' USD/笔']);
     if (['hsbc', 'hang', 'sc'].includes(s.start?.id) && s.start.group === s.bank?.group && (!s.start.linkedCurrencies || s.start.linkedCurrencies.includes(state.route))) values.unshift(['linked', ({ hsbc: '同名环球转账', hang: '优越理财 · 同名跨域转账', sc: '优先理财 · 同名速汇' })[s.start.id] + ' · 免费']);
-    return values.filter(([id]) => M.calculatorChannels(state, D).mainlandMethods.includes(id));
+    return values.filter(([id]) => availableChannels(state).mainlandMethods.includes(id));
   }
   function depositMethods() {
     const s = selected(), currency = state.fxMode === 'bank' ? 'USD' : state.route;
@@ -212,14 +221,14 @@
     };
     for (const id of s.broker.internalFundingBanks || []) labels['via-' + id] = '经本人' + routeName(id, 'bank') + ' USD账户 → 同行入金';
     for (const id of s.broker.corporateReceivingBanks || s.broker.internalFundingBanks || []) labels['chats-' + id] = 'CHATS → 券商的' + routeName(id, 'bank') + '收款账户';
-    return M.calculatorChannels(state, D).depositMethods.map(id => [id, labels[id]]);
+    return availableChannels(state).depositMethods.map(id => [id, labels[id]]);
   }
   function returnMethods() {
     const s = selected(), values = [['swift', '普通网上电汇']];
     if (s.returning?.id === 'bochk' && s.exit?.group === 'boc') values.unshift(['bochk-fast', '中银快汇 → 同名内地中行']);
     if (s.returning?.id === 'icbc-asia' && s.exit?.group === 'icbc') values.unshift(['icbc-express', '工银速汇 → 同名内地工行']);
     if (['hsbc', 'hang', 'sc'].includes(s.returning?.id) && s.returning.group === s.exit?.group) values.unshift(['linked', '两地同集团 · 同名专用转账']);
-    return values.filter(([id]) => M.calculatorChannels(state, D).returnMethods.includes(id));
+    return values.filter(([id]) => availableChannels(state).returnMethods.includes(id));
   }
   function presetState(p) {
     const next = M.calculatorRoute({ ...state, fxMode: '', depositMethod: '', returnMethod: '', ...p.config, plan: p.id, activeStep: '01' });
@@ -567,7 +576,7 @@
       next.useVoucher = false; next.voucherScope = value === 'za' ? 'platform' : 'commission';
       if (value !== 'ibkr' && next.route !== 'USD') next.fxMode = 'bank';
     }
-    const channels = M.calculatorChannels(next, D);
+    const channels = availableChannels(next);
     // An optional full-receipt service belongs to the remittance, not to the
     // current Hong Kong account. Preserve it while the new route supports it.
     if (['bank', 'startBank', 'route'].includes(key) && ['full', 'cib-go'].includes(state.mainlandMethod) &&
@@ -585,6 +594,7 @@
     if (['bank', 'returnBank'].includes(key) && !D.calculator.hkBanks.includes(value)) return;
     if (key === 'broker' && !D.calculator.brokers.includes(value)) return;
     if (key === 'zaPerksLevel' && !['standard', 'lv1', 'lv2'].includes(value)) return;
+    if (key === 'mainlandMethod' && !availableChannels(state).mainlandMethods.includes(value)) return;
     if (key === 'count' && value === 'custom') { detail('budget'); return; }
     if (state[key] === value) { save(); refresh(); return; }
     state = choiceState(key, value); save(); refresh();

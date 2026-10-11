@@ -8,7 +8,7 @@ const diversityQuotes = require('./fixtures/money-flow-quotes-20261011.json');
 const fundingEvidence = require('./fixtures/money-flow-ibkr-funding-20261011.json');
 const usmartFundingEvidence = require('./fixtures/money-flow-usmart-same-bank-20261011.json');
 const bocBankAnswer = require('./fixtures/money-flow-boc-bank-answer-20260819.json');
-const swiftGoAvailability = require('./fixtures/money-flow-swift-go-availability-20261011.json');
+const swiftGoAvailability = require('./fixtures/money-flow-swift-go-availability-20261012.json');
 const cibSmallUsd = require('./fixtures/money-flow-cib-small-usd-20260317.json');
 const cibTariff = require('./fixtures/money-flow-cib-tariff-20261011.json');
 const config = { ...currentConfig, date: '2026-10-10' };
@@ -144,7 +144,7 @@ test('all 218700 catalogue combinations retain selection and either reconcile or
     assert.equal(profile.ledgerChecks, profile.priced + profile.partial);
     assert.ok(profile.retainedPartialResults > 0);
     assert.ok(profile.referencePriced <= profile.priced);
-    assert.deepEqual(profile.coverage.mainlandMethods, ['boc-mobile', 'boc-online', 'cib-go', 'full', 'icbc-mobile', 'linked', 'swift']);
+    assert.deepEqual(profile.coverage.mainlandMethods, ['boc-mobile', 'boc-online', 'full', 'icbc-mobile', 'linked', 'swift']);
     assert.deepEqual(profile.coverage.fxModes, ['auto', 'bank', 'manual']);
     assert.deepEqual(profile.coverage.depositMethods, ['chats', 'chats-citic', 'chats-hang', 'chats-hsbc', 'chats-icbc-asia', 'edda', 'fps', 'internal', 'swift', 'via-bochk', 'via-hang', 'via-hsbc', 'via-icbc-asia']);
     assert.deepEqual(profile.coverage.returnMethods, ['bochk-fast', 'icbc-express', 'linked', 'swift']);
@@ -623,6 +623,7 @@ test('a current CCB full-amount quote contributes a distinct source route for ea
 });
 
 test('SWIFT Go tariffs never prove all receiving banks are reachable or qualify a preferred route', () => {
+  assert.deepEqual(D.calculator.hkBanks, swiftGoAvailability.reviewedHkBanks);
   assert.deepEqual(D.entryServiceRoutes, swiftGoAvailability.verifiedCatalogueReceivingRoutes);
   assert.equal(D.sources.cibGo.url, swiftGoAvailability.tariffSource);
   assert.equal(D.sources.swiftGoBanks.url, swiftGoAvailability.participantSource);
@@ -639,7 +640,7 @@ test('SWIFT Go tariffs never prove all receiving banks are reachable or qualify 
     assert.equal(sender.items.find(item => item.label === '汇出手续费').estimate, false);
     assert.match(sender.items.find(item => item.label.startsWith('SWIFT GO')).estimate, /服务资费/);
     close(sender.cny, 100); ledger(r);
-    assert.ok(M.calculatorChannels(input, D).mainlandMethods.includes('cib-go'));
+    assert.ok(!M.calculatorChannels(input, D).mainlandMethods.includes('cib-go'));
   }
   const input = { ...base, date: '2026-10-11', broker: 'hsbc', hsbcBalanceWaiver: true, trade25: true, count: 2 };
   const publicOnly = structuredClone(D); publicOnly.entryTransferReferences = [];
@@ -649,12 +650,14 @@ test('SWIFT Go tariffs never prove all receiving banks are reachable or qualify 
   // it is never shipped as a real bank record.
   evidenced.entryServiceRoutes = [{ startBank: 'cib', bank: 'hsbc', method: 'cib-go', currencies: ['USD'],
     validFrom: '2026-10-11', validUntil: '2026-10-11', sources: ['test-only-reachability'] }];
+  assert.ok(M.calculatorChannels({ ...input, bank: 'hsbc', route: 'USD' }, evidenced).mainlandMethods.includes('cib-go'));
   const exact = M.calculatorRecommendations(input, evidenced, diversityQuotes).plans.find(p => p.config.startBank === 'cib');
   assert.equal(exact.config.mainlandMethod, 'cib-go'); assert.equal(exact.config.route, 'USD');
   assert.equal(exact.result.serviceAvailability.verified, true);
   for (const changes of [{ bank: 'bochk' }, { route: 'HKD', fxMode: 'bank' }, { date: '2026-10-10' }, { date: '2026-10-12' }]) {
     const r = M.calculatorJourney({ ...input, bank: 'hsbc', mainlandMethod: 'cib-go', ...changes }, evidenced, diversityQuotes).selected;
     assert.equal(r.serviceAvailability.verified, false); assert.equal(r.quotedCore, false);
+    assert.ok(!M.calculatorChannels({ ...input, bank: 'hsbc', route: 'USD', ...changes }, evidenced).mainlandMethods.includes('cib-go'));
   }
 });
 

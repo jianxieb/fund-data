@@ -1077,28 +1077,32 @@ test('choosing BOC preserves an explicitly selected standard tariff alongside th
   close(mobile.rows.find(row => row.key === 'entryInward').cny, 0);
 });
 
-test('unverified SWIFT Go reachability stays an explicit tariff scenario without changing the account catalogue', () => {
+test('an unavailable saved SWIFT Go channel repairs only its remittance fees and keeps every account and unrelated setting', () => {
   const initial = { ...currentRoute, startBank: 'cib', bank: 'bochk', returnBank: 'bochk', broker: 'za', count: 2,
-    mainlandMethod: 'cib-go', route: 'USD', outcome: 'broker-balance', profitUsd: 0 };
+    mainlandMethod: 'cib-go', route: 'USD', outcome: 'broker-balance', profitUsd: 0,
+    senderFeeCny: '99', entryMiddleCny: '13', entryInwardHkd: '17', startSell: '6.8',
+    depositHkd: '9', inwardHkd: '7', usdCny: '6.7', months: 12, useVoucher: true };
   const ui = moneyUi(initial), html = ui.render();
-  assert.match(html, /此汇路暂无SWIFT Go开通记录/);
-  assert.match(html, /参考总损耗/);
-  assert.match(html, /按公布参考费计算的余额/);
-  assert.match(html, /仅按50元服务资费测算/);
-  assert.equal(ui.saved().count, 2); assert.equal(ui.saved().mainlandMethod, 'cib-go');
+  assert.doesNotMatch(html, /SWIFT Go|SWIFT GO|仅按50元服务资费测算|小额全额到账/);
+  assert.match(html, /普通汇款 · 寰宇人生卡/);
+  assert.equal(ui.saved().mainlandMethod, 'swift');
+  for (const key of ['senderFeeCny', 'entryMiddleCny', 'entryInwardHkd']) assert.equal(ui.saved()[key], '', key);
+  for (const key of ['startBank', 'bank', 'returnBank', 'broker', 'route', 'budgetCny', 'count', 'months',
+    'startSell', 'depositHkd', 'inwardHkd', 'usdCny', 'useVoucher']) assert.equal(ui.saved()[key], initial[key], key);
   for (const [key, ids] of [['startBank', D.calculator.mainland], ['bank', D.calculator.hkBanks], ['broker', D.calculator.brokers]]) {
     ui.act('pick', '', key);
     const picker = ui.modal();
     for (const id of ids) assert.ok(picker.includes('data-value="' + id + '"'), key + '/' + id);
     ui.act('close');
   }
-  ui.act('choose', 'mainlandMethod', 'swift');
-  const normal = ui.render(); assert.doesNotMatch(normal, /此汇路暂无SWIFT Go开通记录/);
+  ui.act('choose', 'mainlandMethod', 'cib-go');
+  assert.equal(ui.saved().mainlandMethod, 'swift');
+  const restored = moneyUi(ui.saved()); assert.doesNotMatch(restored.render(), /SWIFT Go|SWIFT GO|小额全额到账/);
   assert.equal(ui.saved().count, 2); assert.equal(ui.saved().bank, 'bochk'); assert.equal(ui.saved().broker, 'za');
 });
 
 test('only explicitly removed ABC is blocked; ordinary banks, brokers, currencies and channels remain selectable', () => {
-  const initial = { ...mainlandConfig, startBank: 'cib', bank: 'bochk', broker: 'za', count: 2, mainlandMethod: 'cib-go', outcome: 'usd-balance', profitUsd: 0 };
+  const initial = { ...mainlandConfig, startBank: 'cib', bank: 'bochk', broker: 'za', count: 2, mainlandMethod: 'swift', outcome: 'usd-balance', profitUsd: 0 };
   const ui = moneyUi(initial); ui.render();
   ui.act('choose', 'startBank', 'abc'); assert.deepEqual(ui.saved(), initial);
   for (const [field, value] of [['startBank', 'boc'], ['broker', 'ibkr'], ['route', 'CNH'], ['mainlandMethod', 'swift']]) {
@@ -1272,10 +1276,10 @@ test('CMB current personal RMB wire fee is present in the balance and ledger, ne
   assert.ok(!r.missing.some(x => x.includes('招商银行') && x.includes('汇出')));
 });
 
-function moneyUi(input, quotes = cibQuotes, date = '2026-10-09') {
+function moneyUi(input, quotes = cibQuotes, date = '2026-10-09', data = D) {
   const fs = require('node:fs'), vm = require('node:vm');
   let saved = input, modal = '';
-  const context = { window: { MONEY_FLOW: D, MONEY_FLOW_QUOTES: quotes, ChanghengMoneyFlowModel: M },
+  const context = { window: { MONEY_FLOW: data, MONEY_FLOW_QUOTES: quotes, ChanghengMoneyFlowModel: M },
     document: { querySelectorAll: () => [], getElementById: () => null },
     localStorage: { getItem: () => JSON.stringify(saved), setItem: (_, v) => { saved = JSON.parse(v); } },
     Date: class extends Date { constructor(...args) { super(...(args.length ? args : [date + 'T04:00:00Z'])); } } };
@@ -1287,6 +1291,27 @@ function moneyUi(input, quotes = cibQuotes, date = '2026-10-09') {
     check: (moneyCheck, checked) => context.window.ChanghengMoneyFlow.handleChange({ dataset: { moneyCheck }, checked }),
     act: (action, field, value) => context.window.ChanghengMoneyFlow.handleAction({ dataset: { action: 'money-flow-' + action, field, value } }) };
 }
+
+test('a service channel is offered only for its evidenced bank, currency and current date; expiry preserves account choices', () => {
+  const data = structuredClone(D), quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  data.entryServiceRoutes = [{ startBank: 'cib', bank: 'hsbc', method: 'cib-go', currencies: ['USD'],
+    validFrom: '2026-10-12', validUntil: '2026-10-12', sources: ['test-only-reachability'] }];
+  const input = { ...currentRoute, startBank: 'cib', bank: 'hsbc', broker: 'usmart', count: 2,
+    mainlandMethod: 'cib-go', depositMethod: 'internal', route: 'USD', outcome: 'broker-balance' };
+  const active = moneyUi(input, quotes, '2026-10-12', data); active.render();
+  assert.equal(active.saved().mainlandMethod, 'cib-go');
+  active.act('control-pick', '', 'mainlandMethod'); assert.match(active.modal(), /data-value="cib-go"/);
+  active.act('choose', 'broker', 'chief'); assert.equal(active.saved().mainlandMethod, 'cib-go');
+  active.act('choose', 'bank', 'bochk'); assert.equal(active.saved().mainlandMethod, 'swift');
+  assert.equal(active.saved().broker, 'chief'); assert.equal(active.saved().count, 2);
+  active.act('choose', 'mainlandMethod', 'cib-go'); assert.equal(active.saved().mainlandMethod, 'swift');
+  for (const date of ['2026-10-11', '2026-10-13']) {
+    const expired = moneyUi(input, quotes, date, data); const html = expired.render();
+    assert.equal(expired.saved().mainlandMethod, 'swift'); assert.equal(expired.saved().bank, 'hsbc');
+    assert.equal(expired.saved().broker, 'usmart'); assert.equal(expired.saved().count, 2);
+    assert.doesNotMatch(html, /小额全额到账|SWIFT GO/);
+  }
+});
 
 test('ICBC Asia selection, qualification, same-bank funding and return channel remain independent across broker switches and reloads', () => {
   const quotes = require('./fixtures/money-flow-quotes-20261011.json');
@@ -1985,7 +2010,7 @@ test('a different return bank cannot inherit an old bank FX override; vouchers s
 
 test('bank management stays next to the bank and monthly and period prices reconcile', () => {
   for (const broker of ['za', 'hsbc']) {
-    const ui = moneyUi({ ...currentRoute, count: 2, mainlandMethod: 'cib-go', broker, trade25: true, hsbcBalanceWaiver: false }), html = ui.render();
+    const ui = moneyUi({ ...currentRoute, count: 2, mainlandMethod: 'swift', broker, trade25: true, hsbcBalanceWaiver: false }), html = ui.render();
     const bank = html.split('data-flow-stage="02"')[1].split('</section>')[0];
     const trade = html.split('data-flow-stage="03"')[1].split('</section>')[0];
     assert.match(bank, /HSBC One本持有期均免管理费/);
@@ -2250,12 +2275,12 @@ test('changing independent accounts retains an applicable selected full-amount r
   ui.act('choose', 'startBank', 'boc'); assert.equal(ui.saved().mainlandMethod, 'boc-mobile');
 });
 
-test('explicit receiving-bank funding and CIB full receipt survive compatible account changes and clear only when inapplicable', () => {
+test('explicit receiving-bank funding survives compatible account changes and clears only when inapplicable', () => {
   const quotes = require('./fixtures/money-flow-quotes-20261011.json');
   const ui = moneyUi({ ...currentRoute, startBank: 'cib', bank: 'za', broker: 'usmart', route: 'USD',
-    mainlandMethod: 'cib-go', depositMethod: 'via-bochk', outcome: 'broker-balance' }, quotes, '2026-10-12');
+    mainlandMethod: 'swift', depositMethod: 'via-bochk', outcome: 'broker-balance' }, quotes, '2026-10-12');
   ui.render(); ui.act('choose', 'bank', 'hang');
-  assert.equal(ui.saved().mainlandMethod, 'cib-go'); assert.equal(ui.saved().depositMethod, 'via-bochk');
+  assert.equal(ui.saved().mainlandMethod, 'swift'); assert.equal(ui.saved().depositMethod, 'via-bochk');
   ui.act('choose', 'broker', 'chief'); assert.equal(ui.saved().depositMethod, 'via-bochk');
   ui.act('choose', 'depositMethod', 'chats-hsbc'); ui.act('choose', 'bank', 'za');
   assert.equal(ui.saved().depositMethod, 'chats-hsbc');
@@ -2362,7 +2387,7 @@ test('RMB channels show the correct tariff and repair the old SC foreign-only ch
 });
 
 test('missing terminal FX never forces a different bank, erases the total, or shows a zero loss rate', () => {
-  const ui = moneyUi({ ...currentRoute, count: 2, mainlandMethod: 'cib-go', outcome: 'cnh-card', returnBank: 'hsbc' });
+  const ui = moneyUi({ ...currentRoute, count: 2, mainlandMethod: 'swift', outcome: 'cnh-card', returnBank: 'hsbc' });
   const html = ui.render(), edge = html.split('aria-label="美元换人民币 → 消费"')[1].split('</section>')[0];
   assert.equal((html.match(/data-flow-stage=/g) || []).length, 4);
   assert.match(html, /汇丰 HSBC One/); assert.match(html, /费用小计 · 含估算/);
@@ -2472,14 +2497,14 @@ test('old channel settings are repairable with an explicit channel choice', () =
   const ui = moneyUi({ ...currentRoute, mainlandMethod: 'boc-mobile' });
   assert.match(ui.render(), /汇款渠道：请选择/);
   ui.act('control-pick', '', 'mainlandMethod');
-  assert.match(ui.modal(), /data-value="swift"/); assert.match(ui.modal(), /data-value="cib-go"/);
+  assert.match(ui.modal(), /data-value="swift"/); assert.doesNotMatch(ui.modal(), /data-value="cib-go"/);
   ui.act('choose', 'mainlandMethod', 'swift');
   assert.doesNotMatch(ui.render(), /汇款渠道：请选择|向境外中行渠道须/);
 });
 
 
 test('bank and broker lists keep stable order and remain enabled after every choice', () => {
-  const ui = moneyUi({ ...currentRoute, count: 2, mainlandMethod: 'cib-go', bank: 'bochk', returnBank: 'bochk', senderFeeCny: '99', entryMiddleCny: '0' });
+  const ui = moneyUi({ ...currentRoute, count: 2, mainlandMethod: 'swift', bank: 'bochk', returnBank: 'bochk', senderFeeCny: '99', entryMiddleCny: '0' });
   ui.render();
   const ids = modal => [...modal.matchAll(/data-value="([^"]+)"/g)].map(m => m[1]);
   for (const broker of D.calculator.brokers) {
@@ -2494,7 +2519,7 @@ test('bank and broker lists keep stable order and remain enabled after every cho
 
 
 test('incompatible card choices remain editable and never lock unrelated bank selections', () => {
-  const ui = moneyUi({ ...currentRoute, count: 2, mainlandMethod: 'cib-go', bank: 'bochk', returnBank: 'za' });
+  const ui = moneyUi({ ...currentRoute, startBank: 'boc', count: 2, mainlandMethod: 'boc-mobile', bank: 'bochk', returnBank: 'za' });
   ui.render(); ui.act('pick', '', 'outcome'); assert.doesNotMatch(ui.modal(), /\bdisabled\b/);
   ui.act('choose', 'outcome', 'usd-card'); assert.equal(ui.saved().outcome, 'usd-card');
   assert.match(ui.render(), /不支持.*美元/);
