@@ -52,7 +52,7 @@
     hkAccount: { bochk: ['bochkAccount'], hsbc: ['hsbcOne', 'hsbcOneBalance'], za: ['zaOpen', 'zaPerks', 'zaPerksNov'], hang: ['hangHk'], sc: ['scHk'] },
     hkCard: { bochk: ['bochkCard'], hsbc: ['hsbcCard'], za: ['zaCard'], hang: ['hangCard'], sc: ['scCard'] },
     brokerTrade: { ibkr: ['ibStocks'], hsbc: ['hsbcUsTariff'], za: ['zaStocks', 'zaStockUnits', 'zaCustody'], chief: ['chiefStocks'], usmart: ['usmartFees', 'usmartStockUnits'] },
-    brokerOffers: { hsbc: ['trade25', 'trade25Age', 'trade25One'], za: ['zaStockService'], chief: ['chiefMonthly', 'chiefMonthlyTerms'], usmart: ['usmartPromo'] },
+    brokerOffers: { hsbc: ['trade25', 'trade25Age', 'trade25One'], za: ['zaStockService', 'zaPerks'], chief: ['chiefMonthly', 'chiefMonthlyTerms'], usmart: ['usmartPromo'] },
     brokerFunding: { ibkr: ['ibDeposits', 'ibFunding'], hsbc: ['hsbcStocks'], za: ['zaStockService'], chief: ['chiefFunding'], usmart: ['usmartFundingAccounts', 'usmartSameFunding'] },
     brokerWithdrawal: { ibkr: ['ibFees'], hsbc: ['hsbcStocks'], za: ['zaStockService'], chief: ['chiefFunding'], usmart: ['usmartWithdrawal'] }
   };
@@ -246,7 +246,8 @@
       '<div class="flow-presets" aria-label="优选方案">' + visiblePresets.map(p => {
         const { calculated, rows, complete, total } = p, r = calculated.selected || calculated.partial;
         const missing = r?.missing || [calculated.error].filter(Boolean);
-        const price = rows.length ? '<span class="flow-preset-price"><small>' + (complete ? rows.some(x => x.estimate) ? '参考总损耗' : '全程损耗' : '已核费用') + '</small><b>' +
+        const price = rows.length ? '<span class="flow-preset-price"><small>' + (complete ? rows.some(x => x.estimate) ? '参考总损耗' : '全程损耗' : '已核费用') +
+          (r?.trading?.rebateUsd > 0 ? ' · 返还后' : '') + '</small><b>' +
           (complete ? pct(total / M.number(state.budgetCny)) : cost(total)) + '</b>' + (complete ? '<small>' + cost(total) + '</small>' : '') + '</span>' : '<span class="flow-preset-price"><small>无法计算总额</small></span>';
         return action('<span class="flow-preset-route"><strong>' + esc(p.title) + '</strong><small>' + esc(p.note) + '</small><small class="flow-preset-outcome">→ ' +
           esc(p.end || outcomes.find(([id]) => id === state.outcome)?.[1] || '') + '</small>' + (p.accountFee ? '<small class="flow-preset-account-fee">' + esc(p.accountFee) + '</small>' : '') + (!complete ? '<small class="flow-preset-gap">总损耗尚缺：' + esc(missing.join('、')) + '</small>' : '') + '</span>' + price,
@@ -372,7 +373,8 @@
       (r?.taxCny > 0 ? '<div class="flow-closing-tax">预留税款 <b>' + cost(r.taxCny) + '</b></div>' : '');
     html += '<section class="flow-node flow-end" data-flow-stage="04" aria-label="卖出后的资金"><span class="flow-node-number">04</span><div class="flow-end-choice">' + endSelect + '</div><div class="flow-node-options">' +
       (state.outcome === 'broker-balance' ? '<strong>' + esc(shortName(s.broker)) + '</strong><small>美元留在账户</small>' : account('returnBank', '取回／消费银行', s.returning)) +
-      '</div>' + (state.outcome === 'broker-balance' ? finalBalance + closingCosts : nodeBalance(r, steps.proceedsUsd - (r?.taxCny || 0) / (r?.refs?.USD || 1), 'USD', '卖出后待出金', throughTrade)) + '</section>';
+      '</div>' + (state.outcome === 'broker-balance' ? finalBalance + closingCosts : nodeBalance(r, steps.proceedsUsd - (r?.taxCny || 0) / (r?.refs?.USD || 1), 'USD',
+        r?.trading?.rebateUsd > 0 ? '优惠返还后待出金' : '卖出后待出金', throughTrade)) + '</section>';
     if (state.outcome !== 'broker-balance') html += edge(data, withdrawKeys, '出金 → ' + shortName(s.returning),
       s.broker?.freeWithdrawals ? action('本月第' + esc(state.withdrawalIndex) + '次出金', 'detail', 'data-value="profit-settings"', 'flow-setting-button') :
         isChequeReturn(s) && s.returning?.localUsdChequeTariff ? action('存票当日第' + esc(state.chequeIndex) + '张', 'detail', 'data-value="profit-settings"', 'flow-setting-button') : '', 'withdraw');
@@ -437,7 +439,8 @@
   }
   function tradeLine(r, kind) {
     if (!r?.trading || r.trading.overridden) return '';
-    const orders = r.trading.orders.filter(o => o.kind === kind), sum = key => orders.reduce((n, o) => n + o[key], 0);
+    const orders = r.trading.orders.filter(o => o.kind === kind), sum = key => orders.reduce((n, o) => n + (o[key] || 0), 0);
+    const rebate = sum('rebateUsd');
     const pricing = [...new Set(orders.map(o => o.pricing).filter(Boolean))].join('；');
     const unitDigits = r.trading.wholeSharesOnly ? 0 : Math.round(-Math.log10(r.trading.shareStep || .0001)), cashDigits = Math.max(2, unitDigits);
     const quantity = r.trading.shareStep ? num(sum('shares'), unitDigits) + '股 · ' +
@@ -445,7 +448,9 @@
     return feeLine((kind === 'buy' ? '买入' : '卖出') + '美股 · ' + orders.length + '笔', sum('feeUsd') * r.refs.USD,
       quantity + (orders.some(order => order.contributionUsd != null) ? '扣费前供款 ' + num(sum('contributionUsd'), 0) + ' USD · ' : '') +
       '佣金 ' + num(sum('commission')) + '＋平台 ' + num(sum('platform')) + '＋清算／监管 ' + num(sum('sec') + sum('taf') + sum('cat') + sum('clearing')) +
-      (sum('discount') ? ' − 券抵扣 ' + num(sum('discount')) : '') + ' USD' + (pricing ? ' · ' + pricing : ''), (row(r, 'trade')?.estimate ? '估算 ' : '') + num(sum('feeUsd')) + ' USD');
+      (sum('discount') ? ' − 券抵扣 ' + num(sum('discount')) : '') + ' USD' + (pricing ? ' · ' + pricing : '') +
+      (rebate > 0 ? ' · 先扣 ' + num(sum('debitFeeUsd')) + ' USD，5个工作日内返还 ' + num(rebate) + ' USD' : ''),
+      (row(r, 'trade')?.estimate ? '估算 ' : '') + (rebate > 0 ? '返还后 ' : '') + num(sum('feeUsd')) + ' USD');
   }
   function balancePresentation(data) {
     const r = data.selected || data.partial, rows = r?.rows || [], total = sumRows(rows), gaps = rows.filter(x => x.cny == null);
@@ -454,23 +459,25 @@
       !r.indicativeFx && r.quoteFreshness.entryMarket === false || !r.indicativeExit && r.quoteFreshness.exit === false);
     const partial = incomplete || !!gaps.length;
     const estimated = rows.some(x => x.estimate);
-    const label = stale ? '全程损耗 · 历史报价' : partial ? estimated ? '费用小计 · 含估算' : '全程已核费用' : estimated ? '参考总损耗' : '全程损耗';
+    const label = (stale ? '全程损耗 · 历史报价' : partial ? estimated ? '费用小计 · 含估算' : '全程已核费用' : estimated ? '参考总损耗' : '全程损耗') +
+      (r?.trading?.rebateUsd > 0 ? ' · 返还后' : '');
     const canBalance = !!data.selected && !incomplete && !stale && gaps.every(x => ['entryMiddle', 'depositOther', 'withdrawMiddle', 'returnOther'].includes(x.key));
     const lastBalance = r?.steps?.remitUsd ?? r?.steps?.returnUsd ?? r?.steps?.afterTaxUsd ?? r?.steps?.proceedsUsd ?? r?.steps?.fundedUsd;
     const canShowLast = Number.isFinite(lastBalance) && !r?.indicativeFx && r?.quoteFreshness?.source !== false && r?.quoteFreshness?.entryMarket !== false;
-    const lastPoint = canShowLast ? { amount: lastBalance, currency: 'USD', account: shortName(Number.isFinite(r.steps.remitUsd) ? r.exit : Number.isFinite(r.steps.returnUsd) ? r.returning : r.broker) } :
+    const lastPoint = canShowLast ? { amount: lastBalance, currency: 'USD', rebate: r?.trading?.rebateUsd > 0 && Number.isFinite(r.steps.proceedsUsd), account: shortName(Number.isFinite(r.steps.remitUsd) ? r.exit : Number.isFinite(r.steps.returnUsd) ? r.returning : r.broker) } :
       r?.indicativeFx && state.fxMode !== 'bank' && Number.isFinite(r?.steps?.brokerOriginal) && r?.quoteFreshness?.source !== false ?
         { amount: r.steps.brokerOriginal, currency: state.route, account: shortName(r.broker) } :
       Number.isFinite(r?.steps?.hongKong) && r?.quoteFreshness?.source !== false ? { amount: r.steps.hongKong, currency: state.route, account: shortName(r.bank) } : null;
     return { r, rows, total, gaps, partial, estimated, label, canBalance, lastPoint };
   }
-  const lastBalanceLabel = point => '最后可计余额 · ' + point.account;
-  function finalBalanceLabel({ gaps, estimated, canBalance }) {
-    return canBalance ? (gaps.length ? '已扣已核费用后的余额' : estimated ? '按公布参考费计算的余额' : state.outcome.includes('card') ? '可消费金额' : '最终余额') : '最终余额暂不可算';
+  const lastBalanceLabel = point => '最后可计余额' + (point.rebate ? '（优惠返还后）' : '') + ' · ' + point.account;
+  function finalBalanceLabel({ gaps, estimated, canBalance, r }) {
+    const label = canBalance ? (gaps.length ? '已扣已核费用后的余额' : estimated ? '按公布参考费计算的余额' : state.outcome.includes('card') ? '可消费金额' : '最终余额') : '最终余额暂不可算';
+    return canBalance && r?.trading?.rebateUsd > 0 ? '优惠返还后 · ' + label : label;
   }
   function summary(data) {
     const { r, rows, total, gaps, partial, estimated, label, canBalance, lastPoint } = balancePresentation(data);
-    const balanceLabel = canBalance ? finalBalanceLabel({ gaps, estimated, canBalance }) : lastPoint ? lastBalanceLabel(lastPoint) : '最终余额暂不可算';
+    const balanceLabel = canBalance ? finalBalanceLabel({ gaps, estimated, canBalance, r }) : lastPoint ? lastBalanceLabel(lastPoint) : '最终余额暂不可算';
     const finalHtml = (canBalance ? amount(r.net, r.currency) : lastPoint ? amount(lastPoint.amount, lastPoint.currency) : '<b>—</b>') +
       (r?.sourceRemainderCny > 1e-6 ? '<small>另留内地账户 ' + cost(r.sourceRemainderCny) + '</small>' : '');
     return '<div class="flow-result"><div><span>' + label + '</span><strong class="num">' + (rows.some(x => x.cny != null) ? partial ? cost(total) : pct(total / M.number(state.budgetCny)) : '—') + '</strong>' +

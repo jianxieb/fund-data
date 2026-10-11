@@ -590,7 +590,8 @@ test('ZA ordinary trades use whole shares and retain uninvested cash rather than
     assert.match(M.brokerTradingFees({ ...settings, sharePriceUsd: 1000000 }, broker('za'), 10000, 0, feeRefs).error, /不足.*买入.*1股/);
     const r = M.brokerTradingFees(settings, broker('za'), 10000, 0, feeRefs);
     assert.ok(!r.error); assert.ok(r.orders.every(order => Number.isInteger(order.shares) && order.shares >= 1));
-    close(r.investUsd + r.buyFeeUsd + r.cashRemainderUsd, 10000);
+    close(r.investUsd + r.buyDebitFeeUsd + r.cashRemainderUsd, 10000);
+    close(r.buyDebitFeeUsd + r.sellDebitFeeUsd - r.rebateUsd, r.totalUsd);
     assert.ok(r.cashRemainderUsd >= 0 && r.cashRemainderUsd < 102);
   }
   const one = M.brokerTradingFees(feeConfig, broker('za'), 101.99, 0, feeRefs);
@@ -1358,6 +1359,26 @@ test('each visible preferred route retains the unified ZA membership and reprodu
     const plan = plans.find(plan => plan.id === id);
     close(r.costCny, plan.result.costCny); close(r.netCny, plan.result.netCny);
   }
+});
+
+test('ZA standard debits and later refunds are readable beside each trade and the same basis labels the summary and route cards', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  const input = { ...currentRoute, startBank: 'boc', bank: 'bochk', broker: 'za', mainlandMethod: 'boc-mobile',
+    route: 'USD', outcome: 'broker-balance', budgetCny: '7000', entryMiddleCny: '0', months: 1, zaPerksLevel: 'lv2', usedPromoOrders: 4 };
+  const ui = moneyUi(input, quotes, '2026-10-11');
+  const html = ui.render();
+  const r = M.calculatorJourney({ ...ui.saved(), date: '2026-10-11' }, D, quotes).selected;
+  const buys = r.trading.orders.filter(order => order.kind === 'buy');
+  assert.match(html, new RegExp('先扣 ' + buys[0].debitFeeUsd.toFixed(2) + ' USD，5个工作日内返还 1.00 USD'));
+  assert.match(html, /返还后 0.99 USD/); assert.match(html, /全程损耗 · 返还后/);
+  assert.match(html, /优惠返还后 · 最终余额/);
+  assert.ok(evidenceLinks(ui, 'offers').has(D.sources.zaPerks.url));
+  const before = ui.saved(); ui.act('choose', 'zaPerksLevel', 'standard');
+  assert.doesNotMatch(ui.render(), /5个工作日内返还|优惠返还后|损耗 · 返还后/);
+  assert.equal(ui.saved().bank, before.bank); assert.equal(ui.saved().broker, before.broker);
+  const invalid = moneyUi({ ...input, budgetCny: '100.99', startSell: '1', usdCny: '1', senderFeeCny: '0', entryMiddleCny: '0', entryInwardHkd: '0' }, quotes, '2026-10-11');
+  assert.match(invalid.render(), /余额不足.*买入/);
+  invalid.act('detail', '', 'budget'); assert.match(invalid.modal(), /aria-invalid="true"/);
 });
 
 test('CIB expiry keeps standard fees visible and removes only the inactive quota control', () => {

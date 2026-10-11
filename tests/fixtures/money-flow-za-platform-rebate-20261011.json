@@ -1,0 +1,19 @@
+{
+  "reviewedOn": "2026-10-11",
+  "source": "https://bank.za.group/hk/za-perks",
+  "sourceSection": "股票平台费，注4",
+  "standardPlatform": { "perShareUsd": 0.0099, "minimumUsd": 1.99, "cap": 0.015 },
+  "lv2Platform": { "perShareUsd": 0.008, "minimumUsd": 0.99, "cap": 0.015 },
+  "firstEligibleOrdersPerCalendarMonth": 5,
+  "quotaSharedByHongKongAndUsOrders": true,
+  "initialDebitUsesStandardTariff": true,
+  "refundWithinBusinessDays": 5,
+  "refundDestination": "ZA美元或港币储蓄账户",
+  "otherPromotionExcludedFromQuota": true,
+  "promotionsStack": false,
+  "promotionSelection": "只计算价值较高一项；相同价值且已选择费用券时按券抵扣",
+  "rebateCannotFinanceCurrentBuyOrder": true,
+  "priorBuyRefundAvailableForBenchmarkSellOneMonthLater": true,
+  "finalCashBasis": "优惠返还后",
+  "personalVoucherTermsNotReplacedByThisFixture": true
+}

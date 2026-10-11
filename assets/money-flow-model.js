@@ -455,9 +455,11 @@
           if (broker.id === 'usmart' && config.usmartPromo && promoDate(d) && days < 180 && stockPrice >= 100) {
             platform = .99; offer = '合资格0.99 USD';
           }
-          if (broker.id === 'za' && zaLv2 && orderIndex < 5) {
-            platform = cappedCharge({ perShare: .008, minimum: .99, cap: .015 }, qty, value); offer = 'ZA Perks Lv2';
-          }
+          const upfrontPlatform = platform;
+          const zaEligible = broker.id === 'za' && zaLv2 && orderIndex < 5;
+          const zaPromoPlatform = zaEligible ?
+            cappedCharge({ perShare: .008, minimum: .99, cap: .015 }, qty, value) : platform;
+          let rebateUsd = 0;
           const clearing = cappedCharge(broker.clearing, qty, value);
           const sec = kind === 'sell' ? Math.max(.01, centsUp(value * .0000206)) : 0;
           const holiday = d >= '2026-10-01' && d <= '2026-12-31';
@@ -468,11 +470,20 @@
           const taf = kind === 'sell' && !holiday ? Math.max(.01, Math.min(tafCap, centsUp(qty * tafRate))) : 0;
           const cat = broker.catMinimum != null ? Math.max(broker.catMinimum, qty * .000003) : 0;
           const voucherBase = voucher.scope === 'platform' ? platform : voucher.scope === 'both' ? commission + platform : commission;
-          const discount = remainingVoucher > 0 && d <= voucher.expiry && couponsUsed < voucher.orders ? Math.min(remainingVoucher, voucherBase) : 0;
+          let discount = remainingVoucher > 0 && d <= voucher.expiry && couponsUsed < voucher.orders ? Math.min(remainingVoucher, voucherBase) : 0;
+          // ZA first debits the standard platform fee, then refunds the Lv2
+          // difference within five business days. Other platform promotions
+          // do not stack or consume one of its five monthly eligible orders.
+          if (zaEligible && (upfrontPlatform - zaPromoPlatform > discount + 1e-10 || discount === 0)) {
+            platform = zaPromoPlatform; rebateUsd = upfrontPlatform - platform;
+            discount = 0; offer = 'ZA Perks Lv2'; orderIndex++;
+          }
           if (discount > 0) { remainingVoucher -= discount; couponsUsed++; }
           orders.push({ kind, date: d, value, shares: qty, contributionUsd, commission, platform, clearing, sec, taf, cat, discount, offer, pricing,
+            upfrontPlatform, rebateUsd, debitFeeUsd: commission + upfrontPlatform + clearing + sec + taf + cat - discount,
             feeUsd: commission + platform + clearing + sec + taf + cat - discount });
-          turnover += value * refs.USD / refs.HKD; orderIndex++;
+          turnover += value * refs.USD / refs.HKD;
+          if (broker.id !== 'za') orderIndex++;
         }
       }
       side('buy', buys, buyValue, date); side('sell', sells, Math.max(0, saleValue), sellDate);
@@ -509,7 +520,7 @@
       let first = needed, last = maxUnits;
       while (first <= last) {
         const units = first + Math.floor((last - first) / 2), value = units * shareStep * price;
-        const buyFee = override == null ? estimate(value).filter(order => order.kind === 'buy').reduce((sum, order) => sum + order.feeUsd, 0) : 0;
+        const buyFee = override == null ? estimate(value).filter(order => order.kind === 'buy').reduce((sum, order) => sum + order.debitFeeUsd, 0) : 0;
         if (value + buyFee <= cashUsd + 1e-9) { low = value; first = units + 1; } else last = units - 1;
       }
       const service = broker.id === 'za' ? 'ZA普通美股' : broker.id === 'hsbc' ? '汇丰美股' : '盈立美股';
@@ -535,6 +546,14 @@
     if (profitUsd < -investUsd) return { error: '亏损不能超过实际买入金额。', errorField: 'profitUsd' };
     const orders = estimate(low, allocations), buyFeeUsd = orders.filter(order => order.kind === 'buy').reduce((sum, order) => sum + order.feeUsd, 0);
     const sellFeeUsd = orders.filter(order => order.kind === 'sell').reduce((sum, order) => sum + order.feeUsd, 0);
+    const buyDebitFeeUsd = orders.filter(order => order.kind === 'buy').reduce((sum, order) => sum + order.debitFeeUsd, 0);
+    const sellDebitFeeUsd = orders.filter(order => order.kind === 'sell').reduce((sum, order) => sum + order.debitFeeUsd, 0);
+    const cashRemainderUsd = quantizedShares ? Math.max(0, cashUsd - investUsd - (override == null ? buyDebitFeeUsd : 0)) : 0;
+    const rebateUsd = override == null ? orders.reduce((sum, order) => sum + order.rebateUsd, 0) : 0;
+    // Benchmark sell dates are the same day or at least one full month later.
+    // Buy rebates have arrived by the latter; sell rebates are still pending.
+    const buyRebateAvailableUsd = rebateUsd > 0 && !sameMonth ? orders.filter(order => order.kind === 'buy').reduce((sum, order) => sum + order.rebateUsd, 0) : 0;
+    if (rebateUsd > 0 && investUsd + profitUsd + cashRemainderUsd + buyRebateAvailableUsd < sellDebitFeeUsd - 1e-9) return { error: '卖出到账及可用余款不足以支付先扣交易费；尚未返还的优惠不能支付当前费用。', errorField: 'profitUsd' };
     // September 2026 US tariff explicitly waives Trade25 US monthly fees until further notice.
     const monthlyHkd = 0;
     const monthlyUsd = broker.id === 'hsbc' && !config.trade25 ? Array.from({ length: heldMonths }, (_, i) => shiftedMonth(date, i))
@@ -544,8 +563,8 @@
     if (broker.id === 'chief' && config.chiefMonthly && date > '2026-12-31') warnings.push('致富2026年月供优惠已过期，按普通网上交易基准测算');
     if (voucher.pending) warnings.push(voucher.message);
     if (voucher.expired) warnings.push(voucher.message);
-    return { investUsd, buyFeeUsd, sellFeeUsd, orders, monthlyHkd, monthlyUsd, warnings, voucher, wholeSharesOnly, shareStep,
-      cashRemainderUsd: quantizedShares ? Math.max(0, cashUsd - investUsd - (override == null ? buyFeeUsd : 0)) : 0,
+    return { investUsd, buyFeeUsd, sellFeeUsd, buyDebitFeeUsd, sellDebitFeeUsd, rebateUsd, buyRebateAvailableUsd, orders, monthlyHkd, monthlyUsd, warnings, voucher, wholeSharesOnly, shareStep,
+      cashRemainderUsd,
       totalUsd: override ?? buyFeeUsd + sellFeeUsd, overridden: override != null,
       discountUsd: override == null ? orders.reduce((sum, row) => sum + row.discount, 0) : 0, price, buys, sells, sellDate };
   }
