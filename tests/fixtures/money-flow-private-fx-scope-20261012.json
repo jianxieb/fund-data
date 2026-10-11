@@ -1,0 +1,45 @@
+{
+  "checkedOn": "2026-10-12",
+  "scope": "Anonymous public retail/commercial product pages and linked terms, read without customer login or account access.",
+  "observations": [
+    {
+      "id": "scHkFx",
+      "url": "https://www.sc.com/hk/zh/investment/foreign-exchange/",
+      "finding": "Hong Kong personal FX prices are supplied through SC Mobile or online banking. The public product page publishes membership discounts and examples, but no current personal USD/HKD or USD/CNH bid/ask table.",
+      "bytes": 484038,
+      "sha256": "54e181123e4c416cc0d4a27fb8e6206c906b571cea1d8d06d6d7d826449d250e",
+      "resolvedUrl": "https://www.sc.com/hk/zh/investment/foreign-exchange/"
+    },
+    {
+      "id": "scHkMembership",
+      "url": "https://av.sc.com/hk/zh/content/docs/hk-fx-membership-mgm-tnc-zh.pdf",
+      "finding": "The directly retrieved current PDF has two pages and was created 2026-09-29. Both pages confirm the Jul-Dec 2026 membership period, USD/HKD spread discounts 11%, 22%, 28%, 33%, and cumulative tiers 10000, 500000, 2000000, 30000000 HKD. The separate Oct-Dec 2026 newcomer campaign offers 100 HKD after 10000 HKD eligible turnover, payable by 2027-02-28. Neither a spread discount nor a conditional future reward supplies a personal execution rate.",
+      "decision": "Use the actual October PDF, not the search cache's earlier four-page version. Do not add automatic membership discounts or newcomer cash to the calculator. An actual personal execution rate already includes any applicable spread discount; future rewards are not money available in a transfer.",
+      "pages": 2,
+      "visuallyCheckedPages": [1, 2],
+      "pdfCreatedAt": "2026-09-29T09:45:10+08:00",
+      "bytes": 125667,
+      "sha256": "244ad125c4231d2b13303497160f5bbc17b0ae3dbc6be4cc73accdcacddd808c",
+      "resolvedUrl": "https://av.sc.com/hk/zh/content/docs/hk-fx-membership-mgm-tnc-zh.pdf"
+    },
+    {
+      "id": "zaPersonal",
+      "url": "https://bank.za.group/foreignexchange",
+      "finding": "Personal service describes 24/7 exchange and zero separate handling charge. Zero handling charge does not establish a zero FX spread or a public execution rate.",
+      "bytes": 456415,
+      "sha256": "4bd9053fa20c8c4d61c223e75a44fc9f61c4202c8d709e36cac11e8da904b16a",
+      "resolvedUrl": "https://bank.za.group/foreignexchange"
+    },
+    {
+      "id": "zaBusiness",
+      "url": "https://bank.za.group/business/fx",
+      "finding": "The comparison service is business online banking, using other banks at 09:30 on Hong Kong working days. Reference rates exclude promotions and discounts. It is not this product personal ZA quote.",
+      "decision": "Do not import a commercial comparison or another bank price as the personal ZA bid/ask.",
+      "bytes": 1778024,
+      "sha256": "18676e37bc6a2ee0f32636118e3075e34044dfe3c6fa51dbc3f2ba0338f27a36",
+      "resolvedUrl": "https://bank.za.group/business/fx"
+    }
+  ],
+  "productChanges": "Fix the missing SC Hong Kong retail FX source on funding, HKD return and CNH consumption details; separate mainland and Hong Kong SC evidence records. Prices, eligibility, catalogue and default parameters do not change.",
+  "fullResearchAcceptance": false
+}

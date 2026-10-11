@@ -1818,6 +1818,23 @@ function evidenceLinks(ui, detail) {
   return new Set([...ui.modal().matchAll(/class="source-link"[^>]*href="([^"]+)"/g)].map(match => match[1]));
 }
 
+test('Hong Kong SC exchange evidence uses its own retail quote channel in funding, return and consumption', () => {
+  const quoteChannel = 'https://www.sc.com/hk/zh/investment/foreign-exchange/';
+  const cases = [
+    ['edge-03', { ...currentRoute, bank: 'sc', broker: 'za', route: 'HKD', fxMode: 'bank', depositMethod: 'chats', outcome: 'broker-balance' }],
+    ['edge-04', { ...currentRoute, returnBank: 'sc', exitBank: 'cib', outcome: 'mainland', returnCurrency: 'HKD', returnMethod: 'swift' }],
+    ['edge-04', { ...currentRoute, returnBank: 'sc', outcome: 'cnh-card', scCnhAccount: true }]
+  ];
+  for (const [detail, config] of cases) {
+    const ui = moneyUi(config); ui.render();
+    const links = evidenceLinks(ui, detail);
+    assert.ok(links.has(quoteChannel), detail + '/' + config.outcome);
+    assert.ok(links.has(D.sources.scHkFxTerms.url), 'SC discount scope must have its current retail terms');
+    assert.ok(!links.has(D.sources.scFx.url), 'Hong Kong conversion cannot cite mainland SC quote access');
+    assert.ok(!links.has(D.sources.bochkUsdFx.url), 'SC cannot inherit BOCHK FX evidence');
+  }
+});
+
 test('switching uSMART funding to HSBC uses the verified same-bank channel and retains independent account choices', () => {
   const quotes = require('./fixtures/money-flow-quotes-20261011.json');
   const ui = moneyUi({ ...currentRoute, startBank: 'hsbc', bank: 'bochk', broker: 'za', mainlandMethod: 'swift',

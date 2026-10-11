@@ -44,7 +44,9 @@
       { bank: 'boc', channel: 'boc-mobile', checkedAt: '2026-10-11', items: ['USD/HKD同行路径代理费的银行资费依据'], source: 'bocMobileUsdGuide', finding: '2026-05-29中行山西省分行在新华网的供稿已确认手机银行向境外中行汇款手续费及电报费免；该两项不再仅依赖搜狐转载。2月9日同行SHA操作记录支持代理费0情景，仍不扩展成所有币种／汇路的代理费豁免。' },
       { bank: 'boc', channel: 'payment-connect', checkedAt: '2026-10-09', items: ['中行跨境支付通本次南向汇出服务费', '本人剩余便利化额度及银行交易限额'], source: 'bocPaymentConnect', finding: '中行确认人民币汇出、人民币或港币到账；黄石政府网2025-07-01记录中行南向人民币汇款无额外手续费实例。金管局2026-09-08更新页确认南向受年度等值5万美元便利化额度约束。实例不等同2026年全国账户永久免费承诺；本次费率可按App确认页填写，不套用SWIFT电讯费，不纳入美股入金推荐。' },
       { bank: 'comm', kind: 'regional', checkedAt: '2026-10-09', items: ['地区适用费率'], source: 'comm', finding: '2026年5月名录已核实：个人网银／手机银行0.5‰–0.8‰，最低20–40元，最高200元；港澳台电报费80–150元。官方明确各地分行定价不同，显示公开区间，不任取最低价。' },
-      { bank: 'sc', checkedAt: '2026-10-09', items: ['USD/HKD账户成交买卖价'], source: 'scFx', finding: '须本人的账户询价，不能借其他银行价格。' }
+      { bank: 'sc', scope: 'mainland', checkedAt: '2026-10-12', items: ['USD/CNY及HKD/CNY账户成交买卖价'], source: 'scFx', finding: '内地个人外汇报价须账户询价，不能借其他银行价格。' },
+      { bank: 'sc', scope: 'hk', checkedAt: '2026-10-12', items: ['USD/HKD及USD/CNH个人账户成交买卖价'], source: 'scHkFx', finding: '香港个人外汇交易价格经SC Mobile或网上理财提供；会员折扣不是完整成交价，不用内地报价入口替代。' },
+      { bank: 'za', scope: 'hk', checkedAt: '2026-10-12', items: ['个人账户外币买入及卖出价'], source: 'zaFx', finding: '个人牌价经App提供；商用比价页面不属于本产品的个人账户报价。' }
     ],
     sources: {
       safe: { name: '外汇局 · 个人购汇用途与额度', url: 'https://www.safe.gov.cn/shanghai/2019/1213/1198.html' },
@@ -188,6 +190,8 @@
       payment: { name: '香港政府 · 跨境支付通范围与限额', url: 'https://www.info.gov.hk/gia/general/202509/10/P2025090900719.htm' },
       paymentHsbc: { name: '汇丰香港 · 跨境支付通使用资格', url: 'https://www.hsbc.com.hk/zh-hk/help/faq/transfers-and-payments/' },
       scHk: { name: '渣打香港 · 2026年10月服务收费', url: 'https://av.sc.com/hk/zh/content/docs/hk-service-charges-zh.pdf' },
+      scHkFx: { name: '渣打香港 · 个人外汇账户报价与交易渠道', url: 'https://www.sc.com/hk/zh/investment/foreign-exchange/' },
+      scHkFxTerms: { name: '渣打香港 · 2026年10月外汇会员条款', url: 'https://av.sc.com/hk/zh/content/docs/hk-fx-membership-mgm-tnc-zh.pdf' },
       scCheque: { name: '渣打香港 · 2026年10月收费表第9页：每日前30张存票免费', url: 'https://av.sc.com/hk/content/docs/hk-service-charges-en.pdf' },
       scChequeDeposit: { name: '渣打香港 · 自助存款接受美元支票', url: 'https://www.sc.com/hk/zh/bank-with-us/automated-banking-services/' },
       scCard: { name: '渣打香港 · 多货币扣账卡', url: 'https://www.sc.com/hk/zh/bank-with-us/multicurrency-debit-card/' },

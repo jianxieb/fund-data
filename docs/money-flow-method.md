@@ -469,3 +469,11 @@ IBKR[公开入金工具](https://www.interactivebrokers.com/en/support/fund-my-a
 365项全项目JavaScript、267项Python测试及22项资源检查通过。[540个真实返程账户／币种组合](evidence/money-flow-feedback/browser-hkd-return-20261012.json)的费用逐条与模型一致；[额外实际操作](evidence/money-flow-feedback/browser-hkd-return-actions-20261012.json)包括私有价、优惠日期、刷新、Esc及5张不同汇路的HKD方案应用。[5,000元小额完整截图](evidence/money-flow-feedback/local-hkd-small-return-20261012.jpg)记录741.02 USD→5,797.40 HKD→4,935.33 CNY、参考费用64.67 CNY／1.293%；[实际重置截图](evidence/money-flow-feedback/local-hkd-feature-default-20261012.jpg)仍为10万元默认106.08 CNY／0.106%。计算采用完整精度，显示金额四舍五入到分。
 
 本轮目录与渠道审计计数已在前部同步：262,440个目录状态及6,873,990个渠道／资格状态，63,180次数值边界。目录审计配置的2笔及已确认优惠独立于主界面默认1笔／未确认豁免；不能将两组金额混比。A01个人成交报价、普通汇路代理费及地区定价仍未完成，本地交互通过不当作全金融数据齐全或已完成线上验收。
+
+## 香港私人报价不能由宣传折扣或商用比价替代（2026-10-12）
+
+[渣打香港个人外汇入口](https://www.sc.com/hk/zh/investment/foreign-exchange/)的报价来自SC Mobile或网上理财，与内地渣打USD/CNY、HKD/CNY是不同证据。本产品资金入金、港币返程及人民币消费的详情现在都链接正确香港来源；有私人报价缺项时仍保留已核转账收费及各账户选择。
+
+同一[条款PDF](https://av.sc.com/hk/zh/content/docs/hk-fx-membership-mgm-tnc-zh.pdf)实际下载已是两页10月版，搜索缓存的旧四页条款不能当现行原件。逐页渲染核对会员优惠截至2026-12-31、迎新在10–12月、100 HKD奖励最迟2027-02-28发放；折扣不是完整价格，未来奖励不是当前可转账余额，没有自动套用或加入费用合计。
+
+[ZA商用外汇比价](https://bank.za.group/business/fx)属于商用网银，不能替代个人App报价。四个官方原件哈希、适用范围和本次决定保存在[核查记录](../tests/fixtures/money-flow-private-fx-scope-20261012.json)，[真实本地详情](evidence/money-flow-feedback/browser-sc-hk-fx-source-20261012.json)保存来源链接与费用显示。没有由此认定私人买卖价已取得或A01研究完成。
