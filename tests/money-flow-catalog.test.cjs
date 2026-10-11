@@ -4,6 +4,7 @@ const M = require('../assets/money-flow-model.js');
 const D = require('../data/money-flow.js');
 const { audit: auditCurrent, config: currentConfig } = require('../scripts/audit_money_flow.cjs');
 const Q = require('./fixtures/money-flow-quotes-20261009.json');
+const diversityQuotes = require('./fixtures/money-flow-quotes-20261011.json');
 const config = { ...currentConfig, date: '2026-10-10' };
 const close = (a, b) => assert.ok(Math.abs(a - b) < 1e-6, a + ' != ' + b);
 const base = M.calculatorRoute({ ...config, startBank: 'cib', bank: 'bochk', broker: 'za', returnBank: 'bochk', exitBank: 'hsbc', route: 'USD', outcome: 'broker-balance' });
@@ -21,6 +22,24 @@ test('all 151875 catalogue combinations retain selection and either reconcile or
   assert.equal(r.ledgerChecks, r.completeQuoteCombinations + r.partialQuoteCombinations);
   assert.ok(r.completeQuoteCombinations > 0); assert.ok(r.partialQuoteCombinations > 0);
   assert.ok(r.routes.every(r => !r.key.includes('abc')));
+  assert.equal(r.channelProfiles.length, 3);
+  for (const profile of r.channelProfiles) {
+    if (profile.profile.id === 'all-relevant-qualifications') assert.ok(profile.checked > 131040);
+    else assert.equal(profile.checked, 131040);
+    assert.equal(profile.priced + profile.partial + profile.routeIssues, profile.checked);
+    assert.equal(profile.ledgerChecks, profile.priced + profile.partial);
+    assert.ok(profile.retainedPartialResults > 0);
+    assert.ok(profile.referencePriced <= profile.priced);
+    assert.deepEqual(profile.coverage.mainlandMethods, ['boc-mobile', 'cib-go', 'full', 'linked', 'swift']);
+    assert.deepEqual(profile.coverage.fxModes, ['auto', 'bank', 'manual']);
+    assert.deepEqual(profile.coverage.depositMethods, ['chats', 'edda', 'fps', 'internal', 'swift']);
+    assert.deepEqual(profile.coverage.returnMethods, ['bochk-fast', 'linked', 'swift']);
+    assert.equal(Object.values(profile.sources).reduce((sum, source) => sum + source.checked, 0), profile.checked);
+  }
+  assert.equal(r.channelProfiles[0].profile.hsbcBalanceWaiver, false);
+  assert.equal(r.channelProfiles[0].profile.trade25, false);
+  assert.deepEqual(r.channelProfiles[2].qualificationCoverage, ['chiefMonthly', 'cnHangFeeWaived', 'cnHsbcFeeWaived', 'cnScFeeWaived',
+    'hsbcBalanceWaiver', 'scCnhAccount', 'trade25', 'usmartPromo', 'zaLv2']);
 });
 
 test('ordinary CIB wire is the default; the optional full-amount service adds exactly 50 CNY per payment', () => {
@@ -351,27 +370,40 @@ test('IBKR local USD receiving instructions price the observed route, while over
   assert.equal(custom.rows.find(x => x.key === 'depositOther').estimate, undefined);
 });
 
-test('recommendations compare complete routes for all stock venues under the same budget and eligibility', () => {
-  const input = { ...base, count: 1, hsbcBalanceWaiver: false, trade25: false, outcome: 'broker-balance' };
-  const snapshot = structuredClone(input), recommendations = M.calculatorRecommendations(input, D, Q);
+test('recommendations compare distinct upstream routes while retaining the chosen stock venue and eligibility', () => {
+  const input = { ...base, date: '2026-10-11', count: 1, hsbcBalanceWaiver: false, trade25: false, outcome: 'broker-balance' };
+  const snapshot = structuredClone(input), recommendations = M.calculatorRecommendations(input, D, diversityQuotes);
   assert.deepEqual(input, snapshot);
-  assert.equal(new Set(recommendations.plans.map(p => p.config.broker)).size, 5);
+  assert.equal(recommendations.plans.length, 5);
+  assert.equal(new Set(recommendations.plans.map(p => p.config.startBank)).size, 5);
+  assert.deepEqual(new Set(recommendations.plans.map(p => p.config.broker)), new Set(['za']));
   for (const [index, p] of recommendations.plans.entries()) {
     assert.equal(p.result.complete, true); assert.equal(p.result.quotedCore, true);
     assert.ok(p.result.rows.every(x => Number.isFinite(x.cny))); ledger(p.result);
     if (index) assert.ok(p.result.costCny >= recommendations.plans[index - 1].result.costCny);
     assert.notEqual(p.config.mainlandMethod, 'cib-go'); // one 100k-CNY payment exceeds its USD cap
-    const applied = M.calculatorJourney({ ...input, ...p.config }, D, Q).selected;
+    const applied = M.calculatorJourney({ ...input, ...p.config }, D, diversityQuotes).selected;
     close(applied.costCny, p.result.costCny);
     if (p.config.broker === 'hsbc') assert.ok(p.result.rows.find(x => x.key === 'account').cny > 0);
   }
-  const sameProfile = M.calculatorRecommendations({ ...input, startBank: 'cmb', broker: 'chief', plan: 'custom', activeStep: '03' }, D, Q);
+  const sameProfile = M.calculatorRecommendations({ ...input, startBank: 'cmb', plan: 'custom', activeStep: '03' }, D, diversityQuotes);
   assert.equal(sameProfile, recommendations);
-  const two = M.calculatorRecommendations({ ...input, count: 2, hsbcBalanceWaiver: true, trade25: true }, D, Q);
-  assert.equal(two.plans[0].config.startBank, 'cib'); assert.equal(two.plans[0].config.mainlandMethod, 'cib-go');
+  for (const broker of D.calculator.brokers) {
+    const changed = M.calculatorRecommendations({ ...input, broker }, D, diversityQuotes);
+    assert.ok(changed.plans.length >= 2, broker);
+    assert.ok(changed.plans.every(p => p.config.broker === broker));
+    assert.equal(new Set(changed.plans.map(p => p.config.startBank)).size, changed.plans.length);
+  }
+  const two = M.calculatorRecommendations({ ...input, broker: 'hsbc', count: 2, hsbcBalanceWaiver: true, trade25: true }, D, diversityQuotes);
+  assert.equal(two.plans[0].config.startBank, 'cib'); assert.equal(two.plans[0].config.mainlandMethod, 'swift');
   assert.equal(two.plans[0].config.broker, 'hsbc');
-  close(two.plans[0].result.rows.find(x => x.key === 'sender').cny, 100);
+  close(two.plans[0].result.rows.find(x => x.key === 'sender').cny, 0);
   close(two.plans[0].result.rows.find(x => x.key === 'account').cny, 0);
+  assert.match(two.plans[0].result.rows.find(x => x.key === 'entryMiddle').estimate, /2026年美元直达/);
+  const noReports = structuredClone(D); noReports.entryTransferReferences = [];
+  const guaranteed = M.calculatorRecommendations({ ...input, count: 2, broker: 'hsbc', hsbcBalanceWaiver: true, trade25: true }, noReports, diversityQuotes);
+  assert.equal(guaranteed.plans[0].config.mainlandMethod, 'cib-go');
+  close(guaranteed.plans[0].result.rows.find(x => x.key === 'sender').cny, 100);
 });
 
 test('unpriced transfer subtotals and private quote overrides cannot become recommended minima', () => {
@@ -380,7 +412,7 @@ test('unpriced transfer subtotals and private quote overrides cannot become reco
   const overridden = M.calculatorRecommendations({ ...input, startSell: .1, senderFeeCny: 0, entryMiddleCny: 0, depositOtherCny: 0,
     tradeFeeUsd: 0, balanceHkd: 1000000, useVoucher: true, voucherUsd: 999999 }, D, Q);
   assert.deepEqual(overridden.plans.map(x => [x.id, x.result.costCny]), plain.plans.map(x => [x.id, x.result.costCny]));
-  assert.ok(plain.plans.every(p => p.config.startBank !== 'comm' && p.config.mainlandMethod !== 'swift'));
+  assert.ok(plain.plans.every(p => p.config.startBank !== 'comm' && p.result.complete && p.result.rows.every(row => Number.isFinite(row.cny))));
   const stale = structuredClone(Q);
   for (const bank of Object.values(stale.banks)) for (const quote of Object.values(bank.quotes)) quote.asOf = '2020-01-01';
   assert.deepEqual(M.calculatorRecommendations(input, D, stale).plans, []);
@@ -389,19 +421,40 @@ test('unpriced transfer subtotals and private quote overrides cannot become reco
   assert.ok(returns.plans.every(p => p.config.broker !== 'ibkr' && p.result.complete)); // USD withdrawal correspondent fee is still unpriced
 });
 
-test('each stock-venue recommendation matches an independent exhaustive route comparison', () => {
+test('each upstream recommendation matches an independent exhaustive comparison for the selected stock venue', () => {
   const data = structuredClone(D);
   data.calculator.mainland = ['boc', 'cib', 'hsbc']; data.calculator.hkBanks = ['bochk', 'hsbc'];
   const input = { ...base, count: 2, trade25: true, hsbcBalanceWaiver: true, outcome: 'broker-balance' }, minimum = new Map();
-  for (const startBank of data.calculator.mainland) for (const bank of data.calculator.hkBanks) for (const broker of data.calculator.brokers)
+  const broker = input.broker;
+  for (const startBank of data.calculator.mainland) for (const bank of data.calculator.hkBanks)
     for (const route of ['USD', 'HKD', 'CNH']) for (const mainlandMethod of ['swift', 'boc-mobile', 'linked', 'cib-go', 'full'])
       for (const fxMode of ['manual', 'auto', 'bank']) for (const depositMethod of ['internal', 'chats', 'fps', 'edda', 'swift']) {
         const r = M.calculatorJourney({ ...input, startBank, bank, broker, route, mainlandMethod, fxMode, depositMethod }, data, Q).selected;
-        if (r?.complete && r.quotedCore && (!minimum.has(broker) || r.costCny < minimum.get(broker))) minimum.set(broker, r.costCny);
+        if (r?.complete && r.quotedCore && (!minimum.has(startBank) || r.costCny < minimum.get(startBank))) minimum.set(startBank, r.costCny);
       }
   const choices = M.calculatorRecommendations(input, data, Q).plans;
   assert.equal(choices.length, minimum.size);
-  for (const p of choices) close(p.result.costCny, minimum.get(p.config.broker));
+  for (const p of choices) close(p.result.costCny, minimum.get(p.config.startBank));
+});
+
+test('CIB USD/HKD direct-to-HSBC references keep their actual scope and counterexamples', () => {
+  const input = { ...base, date: '2026-10-11', count: 1, startBank: 'cib', bank: 'hsbc', mainlandMethod: 'swift', fxMode: 'bank' };
+  const hkd = M.calculatorJourney({ ...input, route: 'HKD' }, D, diversityQuotes).selected;
+  const middle = hkd.rows.find(x => x.key === 'entryMiddle');
+  close(middle.cny, 0); assert.match(middle.estimate, /港币直达汇丰香港/); assert.ok(middle.sources.includes('cibRouteCounterexample'));
+  assert.equal(hkd.complete, true); ledger(hkd);
+  const usd = M.calculatorJourney({ ...input, route: 'USD' }, D, diversityQuotes).selected;
+  close(usd.rows.find(x => x.key === 'entryMiddle').cny, 0);
+  assert.match(usd.rows.find(x => x.key === 'entryMiddle').estimate, /2026年美元直达/);
+  assert.ok(usd.rows.find(x => x.key === 'entryMiddle').sources.includes('cibUsdCase'));
+  assert.equal(usd.complete, true); ledger(usd);
+  assert.equal(M.calculatorJourney({ ...input, route: 'USD', budgetCny: 1000 }, D, diversityQuotes).selected.rows.find(x => x.key === 'entryMiddle').cny, null);
+  assert.equal(M.calculatorJourney({ ...input, route: 'CNH' }, D, diversityQuotes).selected.rows.find(x => x.key === 'entryMiddle').cny, null);
+  for (const bank of ['bochk', 'za', 'hang', 'sc']) for (const route of ['USD', 'HKD']) assert.equal(M.calculatorJourney({ ...input, bank, route }, D, diversityQuotes).selected.rows.find(x => x.key === 'entryMiddle').cny, null);
+  const own = M.calculatorJourney({ ...input, route: 'HKD', entryMiddleCny: 25, count: 2 }, D, diversityQuotes).selected.rows.find(x => x.key === 'entryMiddle');
+  close(own.cny, 50); assert.equal(own.estimate, undefined);
+  const go = M.calculatorJourney({ ...input, route: 'HKD', mainlandMethod: 'cib-go', count: 2 }, D, diversityQuotes).selected;
+  close(go.rows.find(x => x.key === 'sender').cny, 100); assert.equal(go.rows.find(x => x.key === 'entryMiddle').estimate, undefined);
 });
 
 test('a bank that rejects cheques is an unsupported Chief withdrawal route, not an unknown cheque fee', () => {

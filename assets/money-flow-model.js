@@ -347,8 +347,9 @@
     if (!/^\d{4}-\d{2}-\d{2}$/.test(expiry) || !Number.isFinite(parsed) || new Date(parsed).toISOString().slice(0, 10) !== expiry) missing.push('有效截止日期');
     if (!['commission', 'platform', 'both'].includes(scope)) missing.push('适用费用');
     const pending = !!config.useVoucher && missing.length > 0;
-    return { amount, orders, expiry, scope, ready: !!config.useVoucher && !pending, pending,
-      message: pending ? '费用券待补充：' + missing.join('、') + '；暂按未抵扣计算。' : '' };
+    const expired = !!config.useVoucher && !pending && !!config.date && expiry < config.date;
+    return { amount, orders, expiry, scope, ready: !!config.useVoucher && !pending && !expired, pending, expired,
+      message: pending ? '费用券待补充：' + missing.join('、') + '；暂按未抵扣计算。' : expired ? '费用券已过期，本次未抵扣。' : '' };
   }
   // Equal-size buy orders in the starting month and equal-size sell orders in
   // the final holding month are a fee benchmark, not a return simulation.
@@ -425,7 +426,7 @@
     if (broker.id === 'usmart' && config.usmartPromo && !orders.some(order => order.offer)) warnings.push('盈立0.99优惠未适用：须股价≥100 USD、合资格标的、开户180天内且在推广期');
     if (broker.id === 'chief' && config.chiefMonthly && date > '2026-12-31') warnings.push('致富2026年月供优惠已过期，按普通网上交易基准测算');
     if (voucher.pending) warnings.push(voucher.message);
-    if (voucher.ready && voucher.expiry < date) warnings.push('费用券已过期，未抵扣。');
+    if (voucher.expired) warnings.push(voucher.message);
     return { investUsd: override == null ? low : cashUsd, buyFeeUsd, sellFeeUsd, orders, monthlyHkd, monthlyUsd, warnings, voucher,
       totalUsd: override ?? buyFeeUsd + sellFeeUsd, overridden: override != null,
       discountUsd: override == null ? orders.reduce((sum, row) => sum + row.discount, 0) : 0, price, buys, sells, sellDate };
@@ -715,11 +716,15 @@
         else rows[0].items.forEach(item => { if (item.cny == null) item.status = status; });
         missing.push(start.name + '所选渠道汇出收费');
       }
-      const entryMiddle = paymentConnect ? 0 : own('entryMiddleCny', isSelectedEntry) ?? (reportedMobile ? data.bocMobileEvidence.intermediaryCny ?? null : mainlandMethod === 'linked' && start.includedIntermediary ? 0 : mainlandMethod === 'full' || swiftGo ? 0 : null);
-      const entryMiddleEvidence = reportedMobile && own('entryMiddleCny', isSelectedEntry) == null && entryMiddle != null ? {
+      const recordedTransfer = data.entryTransferReferences?.find(item => item.startBank === start.id && item.bank === bank.id && item.method === mainlandMethod && item.currencies.includes(currency) &&
+        (item.minimumForeign == null || finite(balance) && balance / count >= item.minimumForeign));
+      const ownMiddle = own('entryMiddleCny', isSelectedEntry);
+      const entryMiddle = paymentConnect ? 0 : ownMiddle ?? (reportedMobile ? data.bocMobileEvidence.intermediaryCny ?? null : mainlandMethod === 'linked' && start.includedIntermediary ? 0 : mainlandMethod === 'full' || swiftGo ? 0 : recordedTransfer?.intermediaryCny ?? null);
+      const entryMiddleEvidence = reportedMobile && ownMiddle == null && entryMiddle != null ? {
         evidence: 'USD/HKD同行SHA路径 · 2026公开操作记录',
         ...(data.bocMobileEvidence.intermediaryLevel === 'reported' ? { estimate: '代理费按同名同行SHA操作记录测算' } : {})
-      } : {};
+      } : recordedTransfer && ownMiddle == null ? { evidence: recordedTransfer.evidence, sources: recordedTransfer.sources,
+        ...(recordedTransfer.level === 'reported' ? { estimate: recordedTransfer.estimate } : {}) } : {};
       if (missingSourceQuote) {
         // Sender charges in CNY are independent of the unavailable FX quote.
         // Keep their real values without inventing a converted cash balance.
@@ -932,7 +937,7 @@
       if (!referenceFresh) missing.push('USD/CNY参照牌价超过3天');
       const indicativeFx = unquotedBankFx ? bank.name + ' ' + currency + '/USD成交价（暂按参考中间价）' :
         currency !== 'USD' && fxMode !== 'bank' && ownEntryPrice == null ? 'IBKR ' + currency + '/USD成交价（暂按参考中间价）' : '';
-      if (indicativeFx && !unquotedBankFx) missing.push(indicativeFx);
+      if (indicativeFx && !unquotedBankFx && !rows.some(row => row.key === 'brokerSpread' && row.cny == null)) missing.push(indicativeFx);
       const preciseMissing = [...unpriced.flatMap(row => (row.items || [row]).filter(item => item.cny == null).map(item => item.label)),
         ...missing.filter(reason => !unpriced.some(row => reason === row.label || row.key === 'sender' && reason === start.name + '所选渠道汇出收费'))];
       const requiredEligibility = [...new Set([start.required, ...(returnMethod === 'linked' ? [exit.required] : [])].filter(Boolean))];
@@ -1101,13 +1106,34 @@
     const s = { ...config };
     const paired = ({ boc: 'bochk', hsbc: 'hsbc', hang: 'hang', sc: 'sc' })[s.startBank] === s.bank;
     s.mainlandMethod ||= paired && s.startBank === 'boc' && s.route !== 'CNH' ? 'boc-mobile' : paired && s.startBank !== 'boc' && !(s.startBank === 'sc' && s.route === 'CNH') ? 'linked' : 'swift';
-    s.fxMode = s.route === 'USD' ? 'manual' : s.fxMode || (s.broker === 'ibkr' ? 'manual' : 'bank');
+    s.fxMode = s.route === 'USD' ? 'manual' : s.broker !== 'ibkr' ? 'bank' : s.fxMode || 'manual';
     s.depositMethod ||= ['hsbc', 'za'].includes(s.broker) && s.broker === s.bank ? 'internal' :
       s.broker === 'usmart' && s.bank === 'bochk' || s.broker === 'chief' && ['bochk', 'hsbc', 'hang'].includes(s.bank) ? 'internal' :
       s.route === 'USD' || s.fxMode === 'bank' ? 'chats' : s.broker === 'chief' && s.route === 'CNH' ? 'edda' : 'fps';
     s.returnMethod ||= s.returnBank === 'bochk' && s.exitBank === 'boc' ? 'bochk-fast' :
       ['hsbc', 'hang', 'sc'].includes(s.returnBank) && s.returnBank === s.exitBank ? 'linked' : 'swift';
     return s;
+  }
+  // The UI and exhaustive audit share channel availability. Account catalogues
+  // stay independent: a channel restriction never removes an account choice.
+  function calculatorChannels(config, data) {
+    const s = config, start = data.mainlandBanks.find(x => x.id === s.startBank), bank = data.hkBanks.find(x => x.id === s.bank);
+    const broker = data.brokers.find(x => x.id === s.broker), returning = data.hkBanks.find(x => x.id === s.returnBank), exit = data.mainlandBanks.find(x => x.id === s.exitBank);
+    const mainlandMethods = ['swift'];
+    if (start?.id === 'boc' && bank?.id === 'bochk' && s.route !== 'CNH') mainlandMethods.unshift('boc-mobile');
+    if (start?.id === 'cib' && s.route !== 'CNH') mainlandMethods.push('cib-go');
+    if (s.route === 'USD' && knownFee(start?.fullAmountUsd)) mainlandMethods.push('full');
+    if (['hsbc', 'hang', 'sc'].includes(start?.id) && start.group === bank?.group && (!start.linkedCurrencies || start.linkedCurrencies.includes(s.route))) mainlandMethods.unshift('linked');
+    const fxModes = s.route === 'USD' ? ['manual'] : broker?.id === 'ibkr' ? ['manual', 'auto', 'bank'] : ['bank'];
+    const currency = s.route === 'USD' || s.fxMode === 'bank' ? 'USD' : s.route;
+    const depositMethods = broker?.integratedBank ? [broker.integratedBank === bank?.id ? 'internal' : 'chats'] : [
+      ...(broker?.internalFundingBanks?.includes(bank?.id) ? ['internal'] : []),
+      ...(currency === 'USD' ? ['chats', 'swift'] : [...(broker?.id === 'chief' && currency === 'CNH' ? [] : ['fps']), 'edda', 'swift'])
+    ];
+    const returnMethods = ['swift'];
+    if (returning?.id === 'bochk' && exit?.group === 'boc') returnMethods.unshift('bochk-fast');
+    if (['hsbc', 'hang', 'sc'].includes(returning?.id) && returning.group === exit?.group) returnMethods.unshift('linked');
+    return { mainlandMethods, fxModes, depositMethods, returnMethods };
   }
   function calculatorIssue(config, data) {
     const p = data.calculator, s = config;
@@ -1132,10 +1158,13 @@
     const cleared = [...bankQuoteKeys, 'usdCny', 'usdHkd', 'usdCnh', 'tradeFeeUsd', 'balanceHkd', 'returnBalanceHkd'];
     const profile = { ...config, ...Object.fromEntries(cleared.map(key => [key, ''])), useVoucher: false };
     for (const key of [...routeKeys, 'plan', 'activeStep', 'comparison']) delete profile[key];
+    profile.broker = catalogueBroker(config.broker, data);
     const cacheKey = JSON.stringify(profile);
     if (recommendationCache?.key === cacheKey && recommendationCache.data === data && recommendationCache.quotes === quotes) return recommendationCache.result;
+    // Compare upstream strategies for the chosen stock account. Five copies of
+    // one cheap wire with different stock venues are not five useful strategies.
     const catalogue = data.calculator, entryKeys = ['sender', 'entryFx', 'entryMiddle', 'entryInward'];
-    const entries = [], bestByBroker = new Map();
+    const entries = [], bestBySource = new Map();
     let checked = 0, complete = 0;
     const run = candidate => {
       checked++;
@@ -1144,12 +1173,7 @@
     // Reject incomplete entry legs before expanding stock venues and endpoints.
     // This preserves the entire picker catalogue without rewarding missing fees.
     for (const startBank of catalogue.mainland) for (const bank of catalogue.hkBanks) for (const route of catalogue.currencies) {
-      const start = data.mainlandBanks.find(x => x.id === startBank), incoming = data.hkBanks.find(x => x.id === bank);
-      const methods = ['swift'];
-      if (startBank === 'boc' && bank === 'bochk' && route !== 'CNH') methods.push('boc-mobile');
-      if (['hsbc', 'hang', 'sc'].includes(startBank) && start.group === incoming.group && (!start.linkedCurrencies || start.linkedCurrencies.includes(route))) methods.push('linked');
-      if (startBank === 'cib' && route !== 'CNH') methods.push('cib-go');
-      if (route === 'USD' && knownFee(start.fullAmountUsd)) methods.push('full');
+      const methods = calculatorChannels({ ...profile, startBank, bank, route }, data).mainlandMethods;
       for (const mainlandMethod of methods) {
         const entry = { startBank, bank, route, mainlandMethod };
         const probe = run({ ...entry, broker: 'za', returnBank: bank, exitBank: startBank, outcome: 'broker-balance', fxMode: 'bank' });
@@ -1165,26 +1189,28 @@
     const complexity = r => new Set([r.bank.id, r.broker.integratedBank, ...(profile.outcome === 'broker-balance' ? [] : [r.returning.id])].filter(Boolean)).size + (r.route === 'USD' ? 0 : 1);
     const compare = (a, b) => a.costCny - b.costCny || complexity(a) - complexity(b) || signature(a).localeCompare(signature(b));
     const remember = (map, key, r) => { if (!map.has(key) || compare(r, map.get(key)) < 0) map.set(key, r); };
-    for (const entry of entries) for (const broker of catalogue.brokers) {
-      const modes = entry.route === 'USD' ? ['manual'] : broker === 'ibkr' ? ['manual', 'auto', 'bank'] : ['bank'];
+    for (const entry of entries) {
+      const broker = profile.broker;
+      const modes = calculatorChannels({ ...profile, ...entry }, data).fxModes;
       const returningBanks = profile.outcome === 'broker-balance' ? [entry.bank] : catalogue.hkBanks;
       const exitingBanks = profile.outcome === 'mainland' ? catalogue.mainland : [entry.startBank];
       for (const fxMode of modes) for (const returnBank of returningBanks) for (const exitBank of exitingBanks) {
         const route = calculatorRoute({ ...profile, ...entry, broker, fxMode, returnBank, exitBank });
-        const depositMethods = [...new Set([route.depositMethod, ...(!['hsbc', 'za'].includes(broker) ? [entry.route === 'USD' || fxMode === 'bank' ? 'chats' : 'edda', 'swift'] : [])])];
-        const returnMethods = profile.outcome === 'mainland' ? [...new Set([route.returnMethod, 'swift'])] : [''];
+        const channels = calculatorChannels(route, data), depositMethods = channels.depositMethods;
+        const returnMethods = profile.outcome === 'mainland' ? channels.returnMethods : [''];
         for (const depositMethod of depositMethods) for (const returnMethod of returnMethods) {
           const result = run({ ...route, depositMethod, returnMethod }), r = result.selected;
           if (!r?.complete || !r.quotedCore || !r.rows.every(x => Number.isFinite(x.cny))) continue;
           complete++;
-          remember(bestByBroker, broker, r);
+          remember(bestBySource, entry.startBank, r);
         }
       }
     }
-    const plans = [...bestByBroker.values()].sort(compare);
+    const plans = [...bestBySource.values()].sort(compare).slice(0, 5);
     const result = { plans: plans.map(r => ({ id: 'best:' + signature(r), result: r, config: routeConfiguration(r) })), checked, complete };
     recommendationCache = { key: cacheKey, data, quotes, result };
     return result;
   }
-  return { calculatorRoute, calculatorIssue, calculatorJourney, calculatorRecommendations, number, reference, fee, remitPrincipal, senderFeeRange, inwardFee, outwardFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
+  function catalogueBroker(id, data) { return data.calculator.brokers.includes(id) ? id : 'za'; }
+  return { calculatorRoute, calculatorChannels, calculatorIssue, calculatorJourney, calculatorRecommendations, number, reference, fee, remitPrincipal, senderFeeRange, inwardFee, outwardFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
 }));

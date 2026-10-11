@@ -1275,6 +1275,15 @@
   };
   dialog.addEventListener('pointerdown', event => { dialogBackdropDown = event.button === 0 && outsideDialog(event); });
   dialog.addEventListener('click', event => { if (dialogBackdropDown && outsideDialog(event)) dialog.close(); dialogBackdropDown = false; });
+  dialog.addEventListener('keydown', event => {
+    if (event.key !== 'Tab' || !dialog.open) return;
+    const controls = [...dialog.querySelectorAll('button, a[href], input, select, textarea, [tabindex]')]
+      .filter(element => !element.disabled && element.tabIndex >= 0 && element.getClientRects().length);
+    const first = controls[0], last = controls.at(-1), current = document.activeElement;
+    if (event.shiftKey && current === first || !event.shiftKey && current === last) {
+      event.preventDefault(); (event.shiftKey ? last : first)?.focus();
+    }
+  });
   $('#dialog').addEventListener('close', () => { if (lastFocus && lastFocus.isConnected) lastFocus.focus(); else restoreFocus(lastFocus); });
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {

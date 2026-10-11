@@ -1,0 +1,450 @@
+{
+  "date": "2026-10-11",
+  "url": "http://127.0.0.1:8780/?review=whole-product-audit#money-flow",
+  "conditions": "合成测算输入；主要使用默认100000 CNY、1笔、12个月。各专项条件见记录。",
+  "cards": [
+    {
+      "broker": "买美股的账户：ZA Bank，更换",
+      "card": "参考总损耗\n0.150%\n150.41 CNY",
+      "route": "中行 → 中银香港 → ZA",
+      "sameTerminalBalance": true,
+      "summary": "参考总损耗\n0.150%\n150.41 CNY\n其中账户期间费\n0.00 CNY\n已计入合计\n按公布参考费计算的余额\n14,899.03 USD\n全程明细",
+      "summaryBalance": "14,899.03 USD",
+      "summaryMatches": true,
+      "terminal": "14,899.03 USD"
+    },
+    {
+      "broker": "买美股的账户：ZA Bank，更换",
+      "card": "全程损耗\n0.458%\n458.18 CNY",
+      "route": "工行 → ZA → ZA",
+      "sameTerminalBalance": true,
+      "summary": "全程损耗\n0.458%\n458.18 CNY\n其中账户期间费\n0.00 CNY\n已计入合计\n最终余额\n14,853.11 USD\n全程明细",
+      "summaryBalance": "14,853.11 USD",
+      "summaryMatches": true,
+      "terminal": "14,853.11 USD"
+    },
+    {
+      "broker": "买美股的账户：ZA Bank，更换",
+      "card": "参考总损耗\n1.054%\n1,053.72 CNY",
+      "route": "兴业 → 汇丰香港 → ZA",
+      "sameTerminalBalance": true,
+      "summary": "参考总损耗\n1.054%\n1,053.72 CNY\n其中账户期间费\n1,024.77 CNY\n已计入合计\n按公布参考费计算的余额\n14,764.24 USD\n全程明细",
+      "summaryBalance": "14,764.24 USD",
+      "summaryMatches": true,
+      "terminal": "14,764.24 USD"
+    },
+    {
+      "broker": "买美股的账户：ZA Bank，更换",
+      "card": "全程损耗\n3.322%\n3,321.55 CNY",
+      "route": "恒生中国 → 恒生香港 → ZA",
+      "sameTerminalBalance": true,
+      "summary": "全程损耗\n3.322%\n3,321.55 CNY\n其中账户期间费\n2,160.00 CNY\n已计入合计\n最终余额\n14,425.85 USD\n全程明细",
+      "summaryBalance": "14,425.85 USD",
+      "summaryMatches": true,
+      "terminal": "14,425.85 USD"
+    },
+    {
+      "broker": "买美股的账户：ZA Bank，更换",
+      "card": "全程损耗\n5.105%\n5,104.59 CNY",
+      "route": "汇丰中国 → 汇丰香港 → ZA",
+      "sameTerminalBalance": true,
+      "summary": "全程损耗\n5.105%\n5,104.59 CNY\n其中账户期间费\n4,624.77 CNY\n已计入合计\n最终余额\n14,159.80 USD\n全程明细",
+      "summaryBalance": "14,159.80 USD",
+      "summaryMatches": true,
+      "terminal": "14,159.80 USD"
+    }
+  ],
+  "sourceSelections": [
+    {
+      "name": "中国银行",
+      "options": 9,
+      "keptNodes": 4,
+      "bank": "香港收款银行\n汇丰 HSBC One\n更换 ↗",
+      "broker": "买美股的账户\n汇丰证券\n更换 ↗",
+      "invalidText": false
+    },
+    {
+      "name": "兴业 · 寰宇人生",
+      "options": 9,
+      "keptNodes": 4,
+      "bank": "香港收款银行\n汇丰 HSBC One\n更换 ↗",
+      "broker": "买美股的账户\n汇丰证券\n更换 ↗",
+      "invalidText": false
+    },
+    {
+      "name": "招商银行",
+      "options": 9,
+      "keptNodes": 4,
+      "bank": "香港收款银行\n汇丰 HSBC One\n更换 ↗",
+      "broker": "买美股的账户\n汇丰证券\n更换 ↗",
+      "invalidText": false
+    },
+    {
+      "name": "工商银行",
+      "options": 9,
+      "keptNodes": 4,
+      "bank": "香港收款银行\n汇丰 HSBC One\n更换 ↗",
+      "broker": "买美股的账户\n汇丰证券\n更换 ↗",
+      "invalidText": false
+    },
+    {
+      "name": "建设银行",
+      "options": 9,
+      "keptNodes": 4,
+      "bank": "香港收款银行\n汇丰 HSBC One\n更换 ↗",
+      "broker": "买美股的账户\n汇丰证券\n更换 ↗",
+      "invalidText": false
+    },
+    {
+      "name": "交通银行",
+      "options": 9,
+      "keptNodes": 4,
+      "bank": "香港收款银行\n汇丰 HSBC One\n更换 ↗",
+      "broker": "买美股的账户\n汇丰证券\n更换 ↗",
+      "invalidText": false
+    },
+    {
+      "name": "汇丰中国",
+      "options": 9,
+      "keptNodes": 4,
+      "bank": "香港收款银行\n汇丰 HSBC One\n更换 ↗",
+      "broker": "买美股的账户\n汇丰证券\n更换 ↗",
+      "invalidText": false
+    },
+    {
+      "name": "恒生中国 · 优越理财",
+      "options": 9,
+      "keptNodes": 4,
+      "bank": "香港收款银行\n汇丰 HSBC One\n更换 ↗",
+      "broker": "买美股的账户\n汇丰证券\n更换 ↗",
+      "invalidText": false
+    },
+    {
+      "name": "渣打中国",
+      "options": 9,
+      "keptNodes": 4,
+      "bank": "香港收款银行\n汇丰 HSBC One\n更换 ↗",
+      "broker": "买美股的账户\n汇丰证券\n更换 ↗",
+      "invalidText": false
+    }
+  ],
+  "hkSelections": [
+    {
+      "bank": "中银香港",
+      "options": 5,
+      "keptNodes": 4,
+      "source": "内地出发银行\n渣打中国\n更换 ↗",
+      "broker": "买美股的账户\n汇丰证券\n更换 ↗",
+      "invalidText": false
+    },
+    {
+      "bank": "汇丰 HSBC One",
+      "options": 5,
+      "keptNodes": 4,
+      "source": "内地出发银行\n渣打中国\n更换 ↗",
+      "broker": "买美股的账户\n汇丰证券\n更换 ↗",
+      "invalidText": false
+    },
+    {
+      "bank": "众安 ZA Bank",
+      "options": 5,
+      "keptNodes": 4,
+      "source": "内地出发银行\n渣打中国\n更换 ↗",
+      "broker": "买美股的账户\n汇丰证券\n更换 ↗",
+      "invalidText": false
+    },
+    {
+      "bank": "恒生 · 优进理财",
+      "options": 5,
+      "keptNodes": 4,
+      "source": "内地出发银行\n渣打中国\n更换 ↗",
+      "broker": "买美股的账户\n汇丰证券\n更换 ↗",
+      "invalidText": false
+    },
+    {
+      "bank": "渣打 · 快易理财",
+      "options": 5,
+      "keptNodes": 4,
+      "source": "内地出发银行\n渣打中国\n更换 ↗",
+      "broker": "买美股的账户\n汇丰证券\n更换 ↗",
+      "invalidText": false
+    }
+  ],
+  "brokerSelections": [
+    {
+      "broker": "IBKR · Pro Fixed",
+      "options": 5,
+      "keptNodes": 4,
+      "bank": "香港收款银行\n渣打 · 快易理财\n更换 ↗",
+      "invalidText": false
+    },
+    {
+      "broker": "汇丰 · Trade25 / 普通证券",
+      "options": 5,
+      "keptNodes": 4,
+      "bank": "香港收款银行\n渣打 · 快易理财\n更换 ↗",
+      "invalidText": false
+    },
+    {
+      "broker": "ZA Bank · 美股交易",
+      "options": 5,
+      "keptNodes": 4,
+      "bank": "香港收款银行\n渣打 · 快易理财\n更换 ↗",
+      "invalidText": false
+    },
+    {
+      "broker": "致富 · 网上直属客户",
+      "options": 5,
+      "keptNodes": 4,
+      "bank": "香港收款银行\n渣打 · 快易理财\n更换 ↗",
+      "invalidText": false
+    },
+    {
+      "broker": "盈立 · 个人标准账户",
+      "options": 5,
+      "keptNodes": 4,
+      "bank": "香港收款银行\n渣打 · 快易理财\n更换 ↗",
+      "invalidText": false
+    }
+  ],
+  "sourceOrders": [
+    [
+      "×",
+      "中国银行标准电汇1‰，50–260元＋80元；手机银行同名优惠单列6.7099CNY/USD购汇少得 0.121%",
+      "兴业 · 寰宇人生购结汇点差五折；外汇汇款费免，优惠期前30笔电讯费免6.70175CNY/USD最低可比购汇价",
+      "招商银行个人1‰，50–280元＋100元电讯费6.7104CNY/USD购汇少得 0.129%",
+      "工商银行网银0.8‰，40–208元＋香港电讯费80元；USD全额到账另加25 USD/笔6.7086CNY/USD购汇少得 0.102%",
+      "建设银行本外币跨境1‰，20–300元＋80元电讯费；汇入免费6.7097CNY/USD购汇少得 0.118%",
+      "交通银行0.5‰–0.8‰，最低20–40元、最高200元；电报费80–150元；个人汇入免费6.7109CNY/USD购汇少得 0.136%",
+      "汇丰中国同名环球转账免费；普通电汇1‰、100–500元＋120元电报费6.7321027CNY/USD购汇少得 0.451%✓ 已选",
+      "恒生中国 · 优越理财优越理财同名跨域转账免费；普通外币电汇0.5‰、50–500元＋120元6.7926338CNY/USD购汇少得 1.338%",
+      "渣打中国优先理财网上外币汇款：手续费、电讯费0；同名全球账户渠道OUR代理费另免尚未取得该行USD购汇牌价"
+    ],
+    [
+      "×",
+      "中国银行标准电汇1‰，50–260元＋80元；手机银行同名优惠单列6.7099CNY/USD购汇少得 0.121%",
+      "兴业 · 寰宇人生购结汇点差五折；外汇汇款费免，优惠期前30笔电讯费免6.70175CNY/USD最低可比购汇价",
+      "招商银行个人1‰，50–280元＋100元电讯费6.7104CNY/USD购汇少得 0.129%",
+      "工商银行网银0.8‰，40–208元＋香港电讯费80元；USD全额到账另加25 USD/笔6.7086CNY/USD购汇少得 0.102%",
+      "建设银行本外币跨境1‰，20–300元＋80元电讯费；汇入免费6.7097CNY/USD购汇少得 0.118%",
+      "交通银行0.5‰–0.8‰，最低20–40元、最高200元；电报费80–150元；个人汇入免费6.7109CNY/USD购汇少得 0.136%",
+      "汇丰中国同名环球转账免费；普通电汇1‰、100–500元＋120元电报费6.7321027CNY/USD购汇少得 0.451%✓ 已选",
+      "恒生中国 · 优越理财优越理财同名跨域转账免费；普通外币电汇0.5‰、50–500元＋120元6.7926338CNY/USD购汇少得 1.338%",
+      "渣打中国优先理财网上外币汇款：手续费、电讯费0；同名全球账户渠道OUR代理费另免尚未取得该行USD购汇牌价"
+    ]
+  ],
+  "endpoints": [
+    {
+      "final": "04\n卖出后的资金\n留在买股账户\n⌄\n汇丰证券\n美元留在账户\n最终余额\n14,163.78 USD\n累计损耗 5.078%\n期间及固定费用\n汇丰 HSBC One期间管理费\n100.00 HKD/月 × 12个月\n1,024.77 CNY\n汇丰中国 · 卓越理财期间管理费\n300 CNY/月 × 12个月\n3,600.00 CNY",
+      "hasInvalidText": false,
+      "outcome": "留在买股账户",
+      "summary": "全程损耗\n5.078%\n5,077.91 CNY\n其中账户期间费\n4,624.77 CNY\n已计入合计\n最终余额\n14,163.78 USD\n全程明细"
+    },
+    {
+      "final": "资金终点\n中银香港\n最终余额\n14,163.78 USD\n累计损耗 5.078%\n期间及固定费用\n汇丰 HSBC One期间管理费\n100.00 HKD/月 × 12个月\n1,024.77 CNY\n汇丰中国 · 卓越理财期间管理费\n300 CNY/月 × 12个月\n3,600.00 CNY",
+      "hasInvalidText": false,
+      "outcome": "取回香港银行 · 保留美元",
+      "summary": "全程损耗\n5.078%\n5,077.91 CNY\n其中账户期间费\n4,624.77 CNY\n已计入合计\n最终余额\n14,163.78 USD\n全程明细"
+    },
+    {
+      "final": "资金终点\n中银香港\n可消费金额\n14,163.78 USD\n累计损耗 5.078%\n期间及固定费用\n汇丰 HSBC One期间管理费\n100.00 HKD/月 × 12个月\n1,024.77 CNY\n汇丰中国 · 卓越理财期间管理费\n300 CNY/月 × 12个月\n3,600.00 CNY",
+      "hasInvalidText": false,
+      "outcome": "美元原币消费",
+      "summary": "全程损耗\n5.078%\n5,077.91 CNY\n其中账户期间费\n4,624.77 CNY\n已计入合计\n可消费金额\n14,163.78 USD\n全程明细"
+    },
+    {
+      "final": "资金终点\n中银香港\n可消费金额\n94,248.76 CNH\n累计损耗 5.642%\n期间及固定费用\n汇丰 HSBC One期间管理费\n100.00 HKD/月 × 12个月\n1,024.77 CNY\n汇丰中国 · 卓越理财期间管理费\n300 CNY/月 × 12个月\n3,600.00 CNY",
+      "hasInvalidText": false,
+      "outcome": "换人民币后消费",
+      "summary": "全程损耗\n5.642%\n5,642.12 CNY\n其中账户期间费\n4,624.77 CNY\n已计入合计\n可消费金额\n94,248.76 CNH\n全程明细"
+    },
+    {
+      "final": "资金终点\n汇丰中国\n已扣已核费用后的余额\n94,125.07 CNY\n尚有未报价费用\n期间及固定费用\n汇丰 HSBC One期间管理费\n100.00 HKD/月 × 12个月\n1,024.77 CNY\n汇丰中国 · 卓越理财期间管理费\n300 CNY/月 × 12个月\n3,600.00 CNY",
+      "hasInvalidText": false,
+      "outcome": "汇回内地结汇",
+      "summary": "全程已核费用\n5,874.93 CNY\n总损耗尚缺：回内地中转／收款费\n其中账户期间费\n4,624.77 CNY\n已计入合计\n已扣已核费用后的余额\n94,125.07 CNY\n全程明细"
+    }
+  ],
+  "currencies": [
+    {
+      "accounts": [
+        "内地出发银行：中国银行，更换",
+        "香港收款银行：中银香港，更换",
+        "买美股的账户：IBKR，更换"
+      ],
+      "conversion": [
+        "中银香港换汇"
+      ],
+      "currency": "HKD",
+      "nodes": 4,
+      "summary": "参考总损耗\n0.416%\n416.11 CNY\n其中账户期间费\n0.00 CNY\n已计入合计\n按公布参考费计算的余额\n14,859.39 USD\n全程明细"
+    },
+    {
+      "accounts": [
+        "内地出发银行：中国银行，更换",
+        "香港收款银行：中银香港，更换",
+        "买美股的账户：IBKR，更换"
+      ],
+      "conversion": [
+        "中银香港换汇"
+      ],
+      "currency": "CNH",
+      "nodes": 4,
+      "summary": "费用小计 · 含估算\n643.16 CNY\n总损耗尚缺：内地→香港中转行费\n其中账户期间费\n0.00 CNY\n已计入合计\n已扣已核费用后的余额\n14,825.51 USD\n全程明细"
+    },
+    {
+      "accounts": [
+        "内地出发银行：中国银行，更换",
+        "香港收款银行：中银香港，更换",
+        "买美股的账户：IBKR，更换"
+      ],
+      "conversion": [],
+      "currency": "USD",
+      "nodes": 4,
+      "summary": "参考总损耗\n0.137%\n137.15 CNY\n其中账户期间费\n0.00 CNY\n已计入合计\n按公布参考费计算的余额\n14,901.01 USD\n全程明细"
+    }
+  ],
+  "trade25": {
+    "before": "参考总损耗\n1.261%\n1,260.66 CNY\n其中账户期间费\n0.00 CNY\n已计入合计\n按公布参考费计算的余额\n98,625.16 CNH\n全程明细",
+    "overQuota": "参考总损耗\n1.499%\n1,498.88 CNY\n其中账户期间费\n0.00 CNY\n已计入合计\n按公布参考费计算的余额\n98,387.21 CNH\n全程明细"
+  },
+  "vouchers": {
+    "bankBefore": "↓\n内地购美元 → 汇往香港\n依据\n已核费用\n328.45 CNY\n汇出币种\n美元\n港币\n人民币原币\n汇款渠道\n个人跨境汇款 · 公开标准价\n汇出手续费\n99.80 CNY\n汇出电讯费\n100.00 CNY\n内地购汇差额\n1 USD = 6.7104 CNY\n128.65 CNY\n内地→香港中转行费\n此汇路代理／收款行收费未公开\n香港首次汇入费\n0.00 HKD",
+    "before": "全程已核费用\n1,611.31 CNY\n总损耗尚缺：内地→香港中转行费\n其中账户期间费\n0.00 CNY\n已计入合计\n已扣已核费用后的余额\n98,274.91 CNH\n全程明细",
+    "blank": "全程已核费用\n1,611.31 CNY\n总损耗尚缺：内地→香港中转行费\n其中账户期间费\n0.00 CNY\n已计入合计\n已扣已核费用后的余额\n98,274.91 CNH\n全程明细",
+    "bankBlank": "↓\n内地购美元 → 汇往香港\n依据\n已核费用\n328.45 CNY\n汇出币种\n美元\n港币\n人民币原币\n汇款渠道\n个人跨境汇款 · 公开标准价\n汇出手续费\n99.80 CNY\n汇出电讯费\n100.00 CNY\n内地购汇差额\n1 USD = 6.7104 CNY\n128.65 CNY\n内地→香港中转行费\n此汇路代理／收款行收费未公开\n香港首次汇入费\n0.00 HKD",
+    "valid": "全程已核费用\n1,598.14 CNY\n总损耗尚缺：内地→香港中转行费\n其中账户期间费\n0.00 CNY\n已计入合计\n已扣已核费用后的余额\n98,288.07 CNH\n全程明细",
+    "bankValid": "↓\n内地购美元 → 汇往香港\n依据\n已核费用\n328.45 CNY\n汇出币种\n美元\n港币\n人民币原币\n汇款渠道\n个人跨境汇款 · 公开标准价\n汇出手续费\n99.80 CNY\n汇出电讯费\n100.00 CNY\n内地购汇差额\n1 USD = 6.7104 CNY\n128.65 CNY\n内地→香港中转行费\n此汇路代理／收款行收费未公开\n香港首次汇入费\n0.00 HKD",
+    "expired": "全程已核费用\n1,611.31 CNY\n总损耗尚缺：内地→香港中转行费\n其中账户期间费\n0.00 CNY\n已计入合计\n已扣已核费用后的余额\n98,274.91 CNH\n全程明细",
+    "bankExpired": "↓\n内地购美元 → 汇往香港\n依据\n已核费用\n328.45 CNY\n汇出币种\n美元\n港币\n人民币原币\n汇款渠道\n个人跨境汇款 · 公开标准价\n汇出手续费\n99.80 CNY\n汇出电讯费\n100.00 CNY\n内地购汇差额\n1 USD = 6.7104 CNY\n128.65 CNY\n内地→香港中转行费\n此汇路代理／收款行收费未公开\n香港首次汇入费\n0.00 HKD",
+    "fullPeriod": "全程已核费用\n1,584.97 CNY\n总损耗尚缺：内地→香港中转行费\n其中账户期间费\n0.00 CNY\n已计入合计\n已扣已核费用后的余额\n98,301.22 CNH\n全程明细",
+    "bankFullPeriod": "↓\n内地购美元 → 汇往香港\n依据\n已核费用\n328.45 CNY\n汇出币种\n美元\n港币\n人民币原币\n汇款渠道\n个人跨境汇款 · 公开标准价\n汇出手续费\n99.80 CNY\n汇出电讯费\n100.00 CNY\n内地购汇差额\n1 USD = 6.7104 CNY\n128.65 CNY\n内地→香港中转行费\n此汇路代理／收款行收费未公开\n香港首次汇入费\n0.00 HKD"
+  },
+  "expiredVoucher": {
+    "message": "×\nZA Bank · 优惠与费用券\n\nZA Perks Lv2 · 月前5笔平台费优惠\n使用已获得的费用券\n抵扣范围\n佣金\n平台费\n两者均可\n费用券额度\nUSD\n适用订单数\n笔\n到期日\n\n费用券已过期，本次未抵扣。\n\nZA Bank · 零佣金、平台费与代收费 ↗\nZA Bank · 自2025年6月豁免托管费 ↗\nSEC · 自2026年4月4日每百万20.60美元 ↗\nSEC/FINRA · 2026年第四季度TAF暂停 ↗\nZA Bank · 账户直接交易与Lv2每月5笔优惠 ↗",
+    "summary": "参考总损耗\n0.150%\n150.41 CNY\n其中账户期间费\n0.00 CNY\n已计入合计\n按公布参考费计算的余额\n14,899.03 USD\n全程明细"
+  },
+  "modalOutside": [
+    {
+      "opener": "报价与依据",
+      "title": "× 汇率与收费依据 同一个损耗基准",
+      "closed": true,
+      "focus": "报价与依据"
+    },
+    {
+      "opener": "/^内地出发银行：/",
+      "title": "× 选择出发银行 中国银行",
+      "closed": true,
+      "focus": "内地出发银行：中国银行，更换"
+    },
+    {
+      "opener": "/^香港收款银行：/",
+      "title": "× 选择香港收款银行 中银香港",
+      "closed": true,
+      "focus": "香港收款银行：中银香港，更换"
+    },
+    {
+      "opener": "/^买美股的账户：/",
+      "title": "× 选择买美股的账户 IBKR · Pro Fixed",
+      "closed": true,
+      "focus": "买美股的账户：ZA Bank，更换"
+    },
+    {
+      "opener": "/^卖出后的资金：/",
+      "title": "× 选择资金用途 留在买股账户",
+      "closed": true,
+      "focus": "卖出后的资金：留在买股账户"
+    },
+    {
+      "opener": "/^汇出笔数：/",
+      "title": "× 汇出笔数 1笔",
+      "closed": true,
+      "focus": "汇出笔数：1笔"
+    },
+    {
+      "opener": "修改人民币本金",
+      "title": "× 本金与汇出笔数 人民币本金 · 含费用",
+      "closed": true,
+      "focus": "修改人民币本金"
+    },
+    {
+      "opener": "/^账户使用 12个月/",
+      "title": "× 香港银行账户费用 账户使用／持有月数",
+      "closed": true,
+      "focus": "账户使用 12个月 · 银行管理费 0.00 CNY"
+    },
+    {
+      "opener": "/^汇款渠道：/",
+      "title": "× 汇款渠道 手机银行 · 向同名境外中行汇款",
+      "closed": true,
+      "focus": "汇款渠道：手机银行 · 向同名境外中行汇款"
+    },
+    {
+      "opener": "/^买1笔 \\/ 卖1笔/",
+      "title": "× 美股买卖设置 买入均价",
+      "closed": true,
+      "focus": "买1笔 / 卖1笔 · 股价 100 USD"
+    },
+    {
+      "opener": "优惠与费用券",
+      "title": "× ZA Bank · 优惠与费用券 ZA Perks Lv2 · 月前5笔平台费优惠",
+      "closed": true,
+      "focus": "优惠与费用券"
+    },
+    {
+      "opener": "/^盈亏 0.00 USD/",
+      "title": "× 盈亏、出金与税款 卖出盈亏 · 交易费前",
+      "closed": true,
+      "focus": "盈亏 0.00 USD"
+    },
+    {
+      "opener": "全程明细",
+      "title": "× 全程费用明细 汇出手续费",
+      "closed": true,
+      "focus": "全程明细"
+    },
+    {
+      "opener": "实际成交报价与费用",
+      "title": "× 实际成交报价与费用 仅填写已取得的个人报价或回单。更换对应银行、渠道或币种后，该段覆盖值自动清除。",
+      "closed": true,
+      "focus": "实际成交报价与费用"
+    },
+    {
+      "opener": "适用条件",
+      "title": "× 适用条件 大陆个人便利化购汇不得用于境外证券投资；同名香港账户不改变用途限制。本页比较收费，实际资金来源、用途和汇款资格由相关机构审核。",
+      "closed": true,
+      "focus": "适用条件"
+    }
+  ],
+  "modalKeyboard": {
+    "backward": {
+      "inside": true,
+      "name": "盈立 · 个人标准账户零佣金 · 平台每单1.88 USD起；清算/监管另计"
+    },
+    "forward": {
+      "inside": true,
+      "name": "关闭弹窗"
+    },
+    "outside": {
+      "focus": "买美股的账户：ZA Bank，更换",
+      "open": false
+    },
+    "escape": {
+      "focus": "报价与依据",
+      "open": false
+    },
+    "closeButton": {
+      "focus": "适用条件",
+      "open": false
+    }
+  },
+  "layout": {
+    "documentWidth": 1280,
+    "nodes": 4,
+    "viewport": 1280
+  },
+  "inputLimits": {
+    "month1201": "×\n香港银行账户费用\n\n账户使用／持有月数\n月\n账户使用月数须为0–1200的整数。\n中银香港期间管理费\n0.00 HKD/月 × 1,201个月\n0.00 HKD\n众安 ZA Bank期间管理费\n0.00 HKD/月 × 1,201个月\n0.00 HKD\n中银香港 · 个人账户及扣账卡收费 ↗\n众安银行 · 在港开户与免账户管理费 ↗",
+    "voucherOrders241": "×\nZA Bank · 优惠与费用券\n\nZA Perks Lv2 · 月前5笔平台费优惠\n使用已获得的费用券\n抵扣范围\n佣金\n平台费\n两者均可\n费用券额度\nUSD\n适用订单数\n笔\n费用券适用订单数须为1–240的整数。\n到期日\n\n费用券待补充：抵扣额度、可用订单数（1–240）、有效截止日期；暂按未抵扣计算。\n\nZA Bank · 零佣金、平台费与代收费 ↗\nZA Bank · 自2025年6月豁免托管费 ↗\nSEC · 自2026年4月4日每百万20.60美元 ↗\nSEC/FINRA · 2026年第四季度TAF暂停 ↗\nZA Bank · 账户直接交易与Lv2每月5笔优惠 ↗"
+  }
+}
