@@ -164,7 +164,10 @@
   }
   function sourceTariffCopy(bank) {
     if (!bank || !mainland.some(item => item.id === bank.id)) return '请选择目录中的出发银行。';
-    if (state.route !== 'CNH') return bank.feeText;
+    if (state.route !== 'CNH') {
+      if (bank.id === 'cib' && today() > bank.commissionWaiver.until) return '外汇优惠已到期；按标准1‰、50–200元＋100元电讯费';
+      return bank.feeText;
+    }
     const waiver = bank.cnhTariff?.commissionWaiver;
     if (waiver && today() >= waiver.from && today() <= waiver.until) return waiver.feeText;
     if (bank.cnhTariff?.feeText) return bank.cnhTariff.feeText;
@@ -618,7 +621,9 @@
       if (exchanges.length) content += '<h3>实际兑换顺序</h3><div class="flow-cost-detail">' + exchanges.map(x => '<div><span>' + num(x.input) + ' ' + x.from + ' → ' + num(x.output) + ' ' + x.to + '</span><b>1 ' + x.from + ' = ' + quoteNum(x.rate) + ' ' + x.to + '</b></div>').join('') + '</div>';
       if (stage === '01') {
         content += '<p>' + esc(transferHint() || sourceTariffCopy(s.start)) + '</p>';
-        if (s.start?.id === 'cib' && state.route !== 'CNH') content += field('usedFreeTransfers', '优惠期内已汇出笔数', '笔') + '<p>寰宇人生外汇汇出手续费免，优惠期前30笔电讯费免；优惠至2027-06-30。</p>';
+        if (s.start?.id === 'cib' && state.route !== 'CNH') content += M.telegramAllowance(s.start, today()) ?
+          field('usedFreeTransfers', '优惠期内已汇出笔数', '笔') + '<p>寰宇人生外汇汇出手续费免，优惠期前30笔电讯费免；优惠至2027-06-30。</p>' :
+          '<p>外汇汇款优惠已到期；手续费按标准1‰、50–200元，电讯费100元/笔。未预设优惠续期。</p>';
       }
       if (stage === 'trade') content += tradeLine(r, 'buy') + tradeLine(r, 'sell');
       keys = actionSources(stage, s, r);

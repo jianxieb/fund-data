@@ -24,6 +24,10 @@
     if (![usdCny, usdHkd, usdCnh].every(positive)) return null;
     return { CNY: 1, USD: usdCny, HKD: usdCny / usdHkd, CNH: usdCny / usdCnh };
   }
+  function telegramAllowance(bank, date = '2026-10-08') {
+    const waiver = bank?.telegramWaiver;
+    return bank?.freeTelegram && (!waiver || (date >= waiver.from && date <= waiver.until)) ? bank.freeTelegram : 0;
+  }
   function feeParts(bank, principalCny, index = 1, date = '2026-10-08') {
     if (!bank || !knownFee(principalCny)) return null;
     if ((bank.validFrom && date < bank.validFrom) || (bank.validUntil && date > bank.validUntil)) return null;
@@ -34,7 +38,8 @@
     const waiver = bank.commissionWaiver;
     const waived = waiver && date >= waiver.from && date <= waiver.until;
     const commission = waived ? 0 : knownFee(tariff.fixedCny) ? tariff.fixedCny : Math.min(tariff.maximum, Math.max(tariff.minimum, principalCny * tariff.rate));
-    const telegram = bank.freeTelegram && index <= bank.freeTelegram ? 0 : bank.telegram;
+    const allowance = telegramAllowance(bank, date);
+    const telegram = allowance && index <= allowance ? 0 : bank.telegram;
     return { commission, telegram };
   }
   function fee(bank, principalCny, index = 1, date = '2026-10-08') {
@@ -747,7 +752,7 @@
       const standardTariff = mainlandMethod === 'swift' && currencyTariff &&
         (!currencyTariff.currencies || currencyTariff.currencies.includes(currency)) && currencyTariff;
       const senderBank = bocOnline ? { ...start, ...start.onlineTariff } : standardTariff ? { ...start, ...standardTariff } : start;
-      const usesAllowance = senderBank.freeTelegram && senderOverride == null && !['linked', 'boc-mobile', 'payment-connect'].includes(mainlandMethod);
+      const usesAllowance = telegramAllowance(senderBank, config.date) && senderOverride == null && !['linked', 'boc-mobile', 'payment-connect'].includes(mainlandMethod);
       const used = usesAllowance ? optionalNumber(config, 'usedFreeTransfers') : 0;
       if (!knownFee(used) || !Number.isInteger(used)) return { error: '已用免费笔数须为非负整数。' };
       const unknownSender = effectiveSender == null && (bocMobile || paymentConnect || fee(senderBank, 0, used + 1, config.date) == null || (linked && mainlandMethod !== 'linked' && !standardTariff) || (currency === 'CNH' && mainlandMethod !== 'linked' && !senderBank.cnhTariff && start.id !== 'abc'));
@@ -1391,5 +1396,5 @@
     return result;
   }
   function catalogueBroker(id, data) { return data.calculator.brokers.includes(id) ? id : 'za'; }
-  return { calculatorRoute, calculatorChannels, calculatorFundingBank, calculatorIssue, calculatorJourney, calculatorRecommendations, calculatorAccountState, number, reference, fee, remitPrincipal, senderFeeRange, inwardFee, outwardFee, localUsdChequeFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
+  return { calculatorRoute, calculatorChannels, calculatorFundingBank, calculatorIssue, calculatorJourney, calculatorRecommendations, calculatorAccountState, number, reference, telegramAllowance, fee, remitPrincipal, senderFeeRange, inwardFee, outwardFee, localUsdChequeFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
 }));

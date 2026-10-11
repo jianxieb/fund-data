@@ -10,6 +10,7 @@ const usmartFundingEvidence = require('./fixtures/money-flow-usmart-same-bank-20
 const bocBankAnswer = require('./fixtures/money-flow-boc-bank-answer-20260819.json');
 const swiftGoAvailability = require('./fixtures/money-flow-swift-go-availability-20261011.json');
 const cibSmallUsd = require('./fixtures/money-flow-cib-small-usd-20260317.json');
+const cibTariff = require('./fixtures/money-flow-cib-tariff-20261011.json');
 const config = { ...currentConfig, date: '2026-10-10' };
 const close = (a, b) => assert.ok(Math.abs(a - b) < 1e-6, a + ' != ' + b);
 const base = M.calculatorRoute({ ...config, startBank: 'cib', bank: 'bochk', broker: 'za', returnBank: 'bochk', exitBank: 'hsbc', route: 'USD', outcome: 'broker-balance' });
@@ -217,6 +218,31 @@ test('CIB RMB wire uses retail commission and telegram charges without inheritin
   }
   close(run({ count: 1, usedFreeTransfers: 0 }).selected.rows.find(x => x.key === 'sender').cny, 0);
   close(run({ count: 1, usedFreeTransfers: 30 }).selected.rows.find(x => x.key === 'sender').cny, 100);
+});
+
+test('CIB published standard fees survive the promotion end for every bank, broker and wire currency', () => {
+  const expired = { ...base, date: '2027-07-01', count: 1, months: 0, outcome: 'broker-balance',
+    startSell: 6.75, usdCny: 6.75, usdHkd: 7.8, usdCnh: 7.1, usedFreeTransfers: 'inactive-invalid',
+    mainlandMethod: 'swift', fxMode: 'bank' };
+  const bank = D.mainlandBanks.find(item => item.id === 'cib');
+  assert.equal(D.sources.cib.url, cibTariff.source);
+  assert.equal(bank.rate, cibTariff.standard.rate);
+  assert.equal(bank.commissionWaiver.until, cibTariff.cardCommissionWaiver.until);
+  assert.equal(cibTariff.cardCommissionWaiver.transferLimit, null);
+  assert.equal(M.telegramAllowance(bank, '2027-06-30'), cibTariff.telegram.freeTransfers);
+  assert.equal(M.telegramAllowance(bank, expired.date), 0);
+  for (const receiving of D.calculator.hkBanks) for (const broker of D.calculator.brokers) for (const route of D.calculator.currencies) {
+    const input = M.calculatorRoute({ ...expired, bank: receiving, broker, route, depositMethod: '' });
+    const result = M.calculatorJourney(input, D, Q), r = result.selected || result.partial;
+    assert.ok(r, `${receiving}/${broker}/${route}: ${result.error}`);
+    const sender = r.rows.find(item => item.key === 'sender');
+    const principal = (input.budgetCny - cibTariff.telegram.standardCny) / (1 + cibTariff.standard.rate);
+    close(sender.cny, input.budgetCny - principal);
+    close(sender.items[0].cny, principal * cibTariff.standard.rate);
+    close(sender.items[1].cny, cibTariff.telegram.standardCny);
+    assert.ok(!r.missing.some(item => /兴业.*汇出手续费|兴业.*电讯费/.test(item)));
+    if (result.selected) ledger(r);
+  }
 });
 
 test('source accounts, Hong Kong banks, stock venues and every currency have independent catalogues', () => {

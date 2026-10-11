@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-11",
+  "source": "https://www.cib.com.cn/cn/aboutCIB/about/charges/adjustment/combined.html",
+  "standard": { "item": "000302零售客户境外汇出", "rate": 0.001, "minimumCny": 50, "maximumCny": 200 },
+  "cardCommissionWaiver": { "currencies": ["USD", "HKD"], "from": "2023-01-01", "until": "2027-06-30", "transferLimit": null },
+  "telegram": { "item": "000305零售客户通讯费", "standardCny": 100, "freeTransfers": 30, "from": "2026-07-01", "until": "2027-06-30" },
+  "exclusions": ["人民币原币跨境汇出不享跨境外汇卡优惠", "他行或受益人承担的SWIFT报文费不适用本行客户豁免", "其他银行费用与本行费用分开"],
+  "futureOurNotice": {
+    "source": "https://www.cib.com.cn/cn/aboutCIB/about/notice/2026/20260819.html",
+    "earliestStart": "2026-11-20", "additionalCnyPerTransfer": 200,
+    "actualStartCondition": "如实际上线更晚，以实际上线时间为准",
+    "activeAtCheck": false
+  },
+  "expiryTreatment": "优惠到期后按已公布的普通客户标准价测算，未预设续期，未将未来标准价格视为当日可成交报价"
+}

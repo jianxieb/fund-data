@@ -29,8 +29,25 @@ test('the CIB 30-transfer allowance is shared across the promotion and expires',
   const input = { ...base, enabled: ['cib'], usedFreeTransfers: 29, count: 4 };
   close(M.mainlandTransfer(input, mainland('cib'), hk('za')).sendingFees, 300);
   const expired = { ...input, date: '2027-07-01' };
-  assert.match(M.mainlandTransfer(expired, mainland('cib'), hk('za')).error, /到期/);
+  const standard = M.mainlandTransfer(expired, mainland('cib'), hk('za'));
+  assert.equal(standard.error, undefined);
+  close(standard.sendingFees, 600);
+  close(standard.principal, 99400);
   close(M.mainlandTransfer({ ...expired, senderFeeCny: 140 }, mainland('cib'), hk('za')).sendingFees, 560);
+});
+
+test('CIB card commission and the 30-telegram promotion have independent dates and currency scopes', () => {
+  const bank = mainland('cib');
+  for (const index of [1, 30, 31, 120]) {
+    close(M.fee(bank, 100000, index, '2027-06-30'), index <= 30 ? 0 : 100);
+    close(M.fee(bank, 100000, index, '2027-07-01'), 200);
+    close(M.fee({ ...bank, ...bank.cnhTariff }, 100000, index, '2027-06-30'), 200);
+    close(M.fee({ ...bank, ...bank.cnhTariff }, 100000, index, '2027-07-01'), 200);
+  }
+  for (const [principal, expected] of [[100, 150], [50000, 150], [100000, 200], [200000, 300], [1e6, 300]]) {
+    close(M.fee(bank, principal, 1, '2027-07-01'), expected);
+  }
+  assert.equal(M.fee(bank, 100000, 1, '2026-06-30'), null);
 });
 
 test('free linked-account tariffs require both eligibility and the matching receiving bank', () => {
@@ -1268,6 +1285,22 @@ function moneyUi(input, quotes = cibQuotes, date = '2026-10-09') {
   return { render: () => context.window.ChanghengMoneyFlow.view(helpers), saved: () => saved, modal: () => modal,
     act: (action, field, value) => context.window.ChanghengMoneyFlow.handleAction({ dataset: { action: 'money-flow-' + action, field, value } }) };
 }
+
+test('CIB expiry keeps standard fees visible and removes only the inactive quota control', () => {
+  const input = { ...currentRoute, startBank: 'cib', bank: 'hsbc', broker: 'za', route: 'USD',
+    outcome: 'broker-balance', months: 0, count: 1, mainlandMethod: 'swift', depositMethod: 'chats',
+    date: '2027-07-01', startSell: 6.75, usdCny: 6.75, usdHkd: 7.8, usdCnh: 7.1, usedFreeTransfers: 'inactive-invalid' };
+  const ui = moneyUi(input, cibQuotes, input.date), html = ui.render();
+  const r = M.calculatorJourney(ui.saved(), D, cibQuotes).selected;
+  assert.ok(r); close(r.rows.find(item => item.key === 'sender').cny, 100000 - 99900 / 1.001);
+  assert.match(html, /99.80 CNY/); assert.match(html, /100.00 CNY/);
+  ui.act('detail', '', 'edge-01');
+  assert.match(ui.modal(), /手续费按标准1‰、50–200元，电讯费100元\/笔/);
+  assert.doesNotMatch(ui.modal(), /data-money-field="usedFreeTransfers"|前30笔/);
+  ui.act('pick', '', 'startBank'); assert.match(ui.modal(), /外汇优惠已到期；按标准1‰、50–200元＋100元电讯费/);
+  assert.equal((ui.modal().match(/data-field="startBank"/g) || []).length, 9);
+  assert.equal(ui.saved().bank, 'hsbc'); assert.equal(ui.saved().broker, 'za');
+});
 
 test('personal-bank funding keeps the receiving bank and broker independent and names the intermediate receipt on the same screen', () => {
   const quotes = require('./fixtures/money-flow-quotes-20261011.json');
