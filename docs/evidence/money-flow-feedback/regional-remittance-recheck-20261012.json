@@ -1,0 +1,58 @@
+{
+  "checkedAt": "2026-10-12",
+  "scope": "Official-source recheck; no new fixed customer price or universal fee waiver inferred",
+  "comm": {
+    "tariffIndex": "https://www.bankcomm.com/BankCommSite/shtml/jyjr/cn/7924/2600718/2615550.shtml",
+    "tariffPdf": "https://www.bankcomm.com/BankCommSite/upload/infos/202605/27/2615550/20260527155524_发文附件1：交通银行服务收费名录（2026年5月版）20260526%20官网发布版.pdf",
+    "pdfSha256": "f7627ebc27511f60f5ebf9aaa30b93b3b74ee8eca552ccbd1b2fd83898f7568e",
+    "pdfPages": 90,
+    "personalRemittance": {
+      "physicalPage": 81,
+      "printedPage": 76,
+      "code": "SGJGR001",
+      "electronicRateRange": [0.0005, 0.0008],
+      "minimumCnyRange": [20, 40],
+      "maximumCny": 200,
+      "regionalPricingExplicit": true,
+      "kuaHuiTongTelegramMultiplier": 0.5,
+      "xinHangDaoCard": {
+        "depositThresholdCny": 50000,
+        "discountAppliesToCounterHandlingFee": 0.7,
+        "minimumCny": 20,
+        "counterTelegramCny": 80,
+        "otherBankDeductionsPaidByCustomer": true,
+        "notAUniversalElectronicRate": true
+      }
+    },
+    "telegram": {
+      "physicalPage": 84,
+      "printedPage": 79,
+      "code": "SGJYD003",
+      "hongKongCnyRange": [80, 150],
+      "regionalPricingExplicit": true
+    },
+    "personalProduct": "https://www.bankcomm.com/BankCommSite/shtml/jyjr/cn/7226/7362/7367/list.shtml?channelId=7226",
+    "personalProductIncludesRmbAndUsdFullAmount": true,
+    "productDescriptionDoesNotSetFullAmountFee": true,
+    "latestLinkedNotice": "https://www.bankcomm.com/BankCommSite/shtml/jyjr/cn/7158/7825/7057054.shtml?channelId=7158",
+    "latestLinkedNoticeConcernsCorporateSmsNotPersonalRemittance": true,
+    "unresolved": "Exact applicable regional handling and telegram tariff for the selected personal remittance"
+  },
+  "icbcAsiaPaymentConnect": {
+    "source": "https://www.icbcasia.com/hk/sc/cross-border/cross-border-remittance/payment-connect/default.html",
+    "htmlSha256": "4b24d7b10cd3275b2ccd150b59e9f65da59749ca9f11879f20bc72622f6ac31f",
+    "feeWaived": true,
+    "direction": "Hong Kong to mainland China",
+    "debitCurrency": "CNH",
+    "hongKongResidentRequired": true,
+    "mobileOnly": true,
+    "personalToPersonalOnly": true,
+    "publishedBankDailyLimitHkd": 10000,
+    "publishedBankAnnualLimitHkd": 200000,
+    "bankLimitsNotAdjustable": true,
+    "supportedMainlandBanks": ["icbc", "abc", "boc", "comm", "ccb", "cmb"],
+    "doesNotEstablishMainlandToHongKongOrdinaryCnhWaiver": true,
+    "doesNotEstablishUsdRemittanceWaiver": true,
+    "notAddedAsAutomaticSplitOrInvestmentFundingChannel": true
+  }
+}

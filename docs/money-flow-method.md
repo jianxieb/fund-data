@@ -420,3 +420,13 @@ IBKR[公开入金工具](https://www.interactivebrokers.com/en/support/fund-my-a
 香港本地美元清算支票按柜面每日前30张免费、其后2 HKD／张；没有渣打预填表1港元优惠。美元机存票没有收录；境外美元支票代收／买入为另一资费，不能套本地免费。普通USD往来账户及当地支票范围用[账户说明](https://www.icbcasia.com/hk/sc/personal/banking/deposits/current/default.html)核对。来源、适用范围、原始报价及八项下载内容哈希保存于[独立资费记录](../tests/fixtures/money-flow-icbc-asia-personal-20261012.json)及[原始接口快照](../tests/fixtures/icbc-asia-fx-20261012.json)。
 
 本轮355项全项目JavaScript、266项Python检查通过，无跳过；三个渠道／资格配置共3,935,665个状态，53,758个具备完整数值条件（其中29,912个含公开标准／实录参考费）、2,996,533个部分报价、885,374个具体动作／输入问题。3,050,291个有数值结果逐项对账，数值边界另检查52,650次、23,199个账簿。[新增135个账户／币种状态与45个合资格人民币状态](evidence/money-flow-feedback/browser-icbc-asia-catalog-20261012.json)及[入金／返程／消费／日期／支票／优选／弹窗实际记录](evidence/money-flow-feedback/browser-icbc-asia-actions-20261012.json)来自真实本地页面；不将点击成功当作全部金融费用已经确定。
+
+### 地区收费与跨境支付通不能替代普通汇路证据（2026-10-12）
+
+重新沿[交通银行现行收费目录](https://www.bankcomm.com/BankCommSite/shtml/jyjr/cn/7924/2600718/2615550.shtml)的实际PDF链接下载2026年5月版，核对90页原件及物理第81页／印刷第76页的个人表格。SGJGR001仍明确地区收费不同：网银、手机及智易通为0.5‰–0.8‰、最低20–40 CNY、最高200 CNY。快汇通沿用该手续费，电报费减半；新航道联名卡时点存款达到5万元的七折、最低20元与80元电报费属于柜面优惠，不能据此给所有电子客户定价。SGJYD003物理第84页／印刷第79页的香港电报费仍为80–150 CNY，并有地区说明。
+
+[个人国际汇款介绍](https://www.bankcomm.com/BankCommSite/shtml/jyjr/cn/7226/7362/7367/list.shtml?channelId=7226)列人民币、快汇通、通汇捷及美元全额到账服务，但未给其地区适用费率及全额到账附加费。目录链接的2026年6月最新收费调整是对公银信通短信收费，不是个人汇款豁免。本轮未把企业通知、柜面卡优惠、地区最小收费或2017年电子渠道公告替代现行个人适用费率，也未新增无法定价的全额到账选项。
+
+[工银亚洲跨境支付通说明](https://www.icbcasia.com/hk/sc/cross-border/cross-border-remittance/payment-connect/default.html)确认其香港居民手机银行客户可从香港个人账户转人民币至内地个人账户，手续费豁免。页面当前公布该行每日10,000 HKD等值、每年200,000 HKD等值且不可调高的限额；这里记录的是该行该页面公布范围，不据此替代其他参与行或全机制限额。该服务不证明内地工行普通人民币汇至香港免收，也不适用于美元汇款。没有把它当作证券入金渠道或自动替用户拆笔，工行普通人民币汇出缺项仍保留。
+
+上述页码、具体条件、范围及原始内容哈希存入[本轮结构化核查记录](evidence/money-flow-feedback/regional-remittance-recheck-20261012.json)。这是对适用证据的核查，未取得的具体地区／汇路价格没有被改成0，A01未据此关闭。
