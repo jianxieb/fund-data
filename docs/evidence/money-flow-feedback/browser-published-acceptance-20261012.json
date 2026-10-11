@@ -1,0 +1,63 @@
+{
+  "page": "https://jianxieb.github.io/fund-data/?review=b7320ae#money-flow",
+  "implementation": "b7320ae068bf16ba04ee8689af447b9c704f37e9",
+  "captureMethod": "Actual published tab, UI clicks, screenshot and read-only DOM text",
+  "scope": "Published default and specified ICBC Asia actions only. The full account matrix and financial quote completeness are not claimed to pass by this record.",
+  "screenshots": ["published-default-flow-20261012.jpg"],
+  "observations": [
+    {
+      "action": "Apply the published ICBC to ICBC Asia preferred route",
+      "principalCny": 100000,
+      "transfers": 1,
+      "months": 12,
+      "sender": "工商银行",
+      "bank": "工银亚洲 · 综合账户",
+      "broker": "ZA Bank",
+      "entryHandlingCny": 0,
+      "entryTelegramCny": 0,
+      "inwardHkd": 60,
+      "inwardEquivalentCny": 51.24,
+      "localTransferHkd": 50,
+      "localTransferEquivalentCny": 42.70,
+      "totalCny": 225.00,
+      "lossPercent": 0.225,
+      "finalUsd": 14887.90,
+      "preferredCardMatchesMain": true
+    },
+    {
+      "action": "Check eAccount qualification on the published bank node",
+      "inwardHkd": 0,
+      "localTransferHkd": 50,
+      "arrivalUsd": 14906.24,
+      "fundedUsd": 14899.87,
+      "totalCny": 173.76,
+      "lossPercent": 0.174,
+      "finalUsd": 14895.55,
+      "waiverScope": "Inward basic bank fee only; local transfer and stock fees retained",
+      "preferredCardMatchesMain": true
+    },
+    {
+      "action": "Open the published Hong Kong bank menu and click outside it",
+      "banksInOrder": ["中银香港", "汇丰 HSBC One", "众安 ZA Bank", "恒生 · 优进理财", "渣打 · 快易理财", "工银亚洲 · 综合账户"],
+      "outsideClickCloses": true,
+      "focusReturnedTo": "香港收款银行：工银亚洲 · 综合账户，更换",
+      "selectedBankPreserved": true,
+      "selectedBrokerPreserved": true
+    },
+    {
+      "action": "Inspect the published mainland and stock-account menus",
+      "mainlandBanksInOrder": ["中国银行", "兴业 · 寰宇人生", "招商银行", "工商银行", "建设银行", "交通银行", "汇丰中国", "恒生中国 · 优越理财", "渣打中国"],
+      "stockAccountsInOrder": ["IBKR · Pro Fixed", "汇丰 · Trade25 / 普通证券", "ZA Bank · 美股交易", "致富 · 网上直属客户", "盈立 · 个人标准账户"],
+      "fullPublishedMatrixRetested": false
+    }
+  ],
+  "records": [
+    {
+      "label": "default-after-published-navigation",
+      "main": "CROSS-BORDER MONEY\n跨境资金\n\n优选方案\n不同汇路 · 买股账户 ZA\n报价与依据\n重置\n中行 → 中银香港 → ZA\nUSD · 手机同名汇款；本地美元转账\n→ 美元留在买股账户\n参考总损耗\n0.150%\n150.41 CNY\n工行 → 工银亚洲 → ZA\nUSD · 工行手机集团汇款；本地美元转账\n→ 美元留在买股账户\n参考总损耗\n0.225%\n225.00 CNY\n建行 → ZA → ZA\nUSD · 美元全额到账；银行内交收\n→ 美元留在买股账户\n全程损耗\n0.494%\n494.42 CNY\n兴业 → 汇丰香港 → ZA\nUSD · 普通电汇；本地美元转账\n→ 美元留在买股账户\n含银行期间费 1,024.77 CNY\n参考总损耗\n1.054%\n1,053.72 CNY\n恒生中国 → 恒生香港 → ZA\nCNH · 两地同名转账；恒生香港换美元；本地美元转账\n→ 美元留在买股账户\n含银行期间费 2,160.00 CNY\n全程损耗\n3.322%\n3,321.55 CNY\n01\n内地出发银行\n中国银行\n更换 ↗\n汇出笔数\n1笔\n⌄\n人民币本金 · 含费用\n100,000.00 CNY\n修改\n↓\n内地购美元 → 汇往香港\n依据\n参考损耗\n0.121%\n121.46 CNY\n汇出币种\n美元\n港币\n人民币原币\n汇款渠道\n手机银行 · 向同名境外中行汇款\n⌄\n汇出手续费\n手机银行双免\n0.00 CNY\n汇出电讯费\n手机银行双免\n0.00 CNY\n内地购汇差额\n1 USD = 6.7099 CNY\n121.46 CNY\n内地→香港中转行费\nUSD/HKD同行SHA路径 · 2026公开操作记录\n估算 0.00 CNY\n香港首次汇入费\n0.00 HKD\n02\n香港收款银行\n中银香港\n更换 ↗\n账户使用 12个月 · 银行管理费 0.00 CNY\nZA银行权益\nZA Perks · 标准\n⌄\n汇款到账\n14,903.35 USD\n累计损耗 0.121%\n↓\n转入买股账户\n依据\n损耗\n0.000%\n0.00 CNY\n入金方式\n本地美元转账 → 本人众安 ZA Bank账户\n中银香港 → 众安 ZA Bank · CHATS\n0.00 HKD\n众安 ZA Bank · 本地USD收款\n0.00 CNY\nZA Bank · 美股交易入金费\n0.00 CNY\n03\n买美股的账户\nZA Bank\n更换 ↗\n买1笔 / 卖1笔 · 股价 100 USD\n优惠与费用券\n入金到账\n14,903.35 USD\n累计损耗 0.121%\n↓\n买入美股 → 卖出\n依据\n损耗\n0.029%\n28.95 CNY\n盈亏 0.00 USD\n买入美股 · 1笔\n149股 · 未买入余款 1.36 USD · 佣金 0.00＋平台 1.99＋清算／监管 0.00 USD\n1.99 USD\n≈ 13.34 CNY\n卖出美股 · 1笔\n149股 · 佣金 0.00＋平台 1.99＋清算／监管 0.34 USD\n2.33 USD\n≈ 15.62 CNY\n证券账户／托管费\n0.00 USD\n04\n卖出后的资金\n留在买股账户\n⌄\nZA Bank\n美元留在账户\n按公布参考费计算的余额\n14,899.03 USD\n累计损耗 0.150%\n参考总损耗\n0.150%\n150.41 CNY\n其中账户期间费\n0.00 CNY\n已计入合计\n按公布参考费计算的余额\n14,899.03 USD\n全程明细\n实际成交报价与费用\n便利化购汇不得用于境外证券投资；本页为费用测算。\n适用条件"
+    }
+  ],
+  "observedMismatches": [],
+  "unverifiedActions": ["Final reset and full published account matrix: later automation call timed out without a returned state"],
+  "financialCompleteness": "A01 remains open; reference agent fees are not official universal waivers"
+}
