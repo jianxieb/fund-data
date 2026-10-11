@@ -434,7 +434,11 @@
           const clearing = cappedCharge(broker.clearing, qty, value);
           const sec = kind === 'sell' ? Math.max(.01, centsUp(value * .0000206)) : 0;
           const holiday = d >= '2026-10-01' && d <= '2026-12-31';
-          const taf = kind === 'sell' && !holiday ? Math.max(.01, Math.min(9.79, centsUp(qty * .000195))) : 0;
+          // SEC release 34-106410 postpones the adopted increases to 2029–31.
+          // The sell date determines both the per-share fee and per-order cap.
+          const [tafRate, tafCap] = d >= '2031-01-01' ? [.000249, 12.50] :
+            d >= '2030-01-01' ? [.000240, 12.05] : d >= '2029-01-01' ? [.000232, 11.61] : [.000195, 9.79];
+          const taf = kind === 'sell' && !holiday ? Math.max(.01, Math.min(tafCap, centsUp(qty * tafRate))) : 0;
           const cat = broker.catMinimum != null ? Math.max(broker.catMinimum, qty * .000003) : 0;
           const voucherBase = voucher.scope === 'platform' ? platform : voucher.scope === 'both' ? commission + platform : commission;
           const discount = remainingVoucher > 0 && d <= voucher.expiry && couponsUsed < voucher.orders ? Math.min(remainingVoucher, voucherBase) : 0;

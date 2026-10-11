@@ -1,0 +1,20 @@
+{
+  "checkedAt": "2026-10-11",
+  "source": "https://www.sec.gov/files/rules/sro/finra/2026/34-106410.pdf",
+  "tablePage": 7,
+  "implementationPage": 11,
+  "security": "covered equity security",
+  "direction": "sell",
+  "schedule": [
+    { "from": "2026-01-01", "perShareUsd": 0.000195, "maximumPerTradeUsd": 9.79 },
+    { "from": "2029-01-01", "perShareUsd": 0.000232, "maximumPerTradeUsd": 11.61 },
+    { "from": "2030-01-01", "perShareUsd": 0.000240, "maximumPerTradeUsd": 12.05 },
+    { "from": "2031-01-01", "perShareUsd": 0.000249, "maximumPerTradeUsd": 12.50 }
+  ],
+  "holiday": {
+    "from": "2026-10-01",
+    "until": "2026-12-31",
+    "source": "https://www.sec.gov/files/rules/sro/finra/2026/34-106409.pdf"
+  },
+  "scope": "按已公布规则估算各笔卖出TAF。保留券商现有的美分进位及最低收费，不将TAF当成费用券可抵的佣金或平台费。未来费率按已公布生效日期应用，不预测未来成交汇率。"
+}

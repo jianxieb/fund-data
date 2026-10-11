@@ -86,7 +86,7 @@
       }
       if (broker?.id === 'usmart' && s.bank?.id === 'bochk') keys.push('usmartBocFunding');
     } else if (stage === 'trade' || stage === 'offers') {
-      add('brokerTrade', broker); keys.push('secFees', 'finraHoliday');
+      add('brokerTrade', broker); keys.push('secFees', 'finraHoliday', 'finraSchedule');
       const offerEnabled = ({ hsbc: state.trade25, za: state.zaLv2, chief: state.chiefMonthly, usmart: state.usmartPromo })[broker?.id];
       if (stage === 'offers' || offerEnabled) add('brokerOffers', broker);
     } else if (stage === 'withdraw') {
