@@ -537,7 +537,7 @@ test('sub-one-share orders use the published IBKR and uSMART fractional tariffs'
   for (const usmartPromo of [false, true]) {
     const r = M.brokerTradingFees({ ...feeConfig, sharePriceUsd: 99, usmartPromo, months: 12 }, broker('usmart'), 10, 0, feeRefs);
     assert.ok(!r.error); close(r.orders[0].platform, .99); close(r.orders[1].platform, .99);
-    assert.equal(r.orders[0].offer, ''); close(r.investUsd + r.buyFeeUsd, 10);
+    assert.equal(r.orders[0].offer, ''); close(r.investUsd + r.buyFeeUsd + r.cashRemainderUsd, 10);
     assert.ok(r.orders.every(order => order.clearing > 0 && order.cat > 0));
   }
 });
@@ -587,6 +587,46 @@ test('ZA ordinary trades use whole shares and retain uninvested cash rather than
   close(split.investUsd + split.buyFeeUsd + split.cashRemainderUsd, 750);
   assert.match(M.brokerTradingFees({ ...feeConfig, sellOrders: 4 }, broker('za'), 350, 0, feeRefs).error, /不足.*4笔/);
   assert.match(M.brokerTradingFees({ ...feeConfig, tradeFeeUsd: 0 }, broker('za'), 99, 0, feeRefs).error, /不足.*买入.*1股/);
+});
+test('HSBC ordinary and Trade25 trades require whole shares and preserve uninvested USD', () => {
+  const evidence = require('./fixtures/money-flow-stock-units-20261011.json');
+  assert.equal(D.sources.hsbcUsTariff.url, evidence.hsbc.source);
+  for (const trade25 of [false, true]) for (const useVoucher of [false, true]) {
+    const settings = { ...feeConfig, trade25, useVoucher, voucherUsd: 100, voucherOrders: 2, voucherScope: 'both', voucherExpiry: '2026-12-31' };
+    assert.match(M.brokerTradingFees(settings, broker('hsbc'), 99, 0, feeRefs).error, /不足.*买入.*1股/);
+    const r = M.brokerTradingFees({ ...settings, buyOrders: 3, sellOrders: 4 }, broker('hsbc'), 750, 40, feeRefs);
+    assert.ok(!r.error); assert.ok(r.orders.every(order => Number.isInteger(order.shares) && order.shares >= 1));
+    close(r.investUsd + r.buyFeeUsd + r.cashRemainderUsd, 750);
+    close(r.orders.filter(order => order.kind === 'sell').reduce((sum, order) => sum + order.value, 0), r.investUsd + 40);
+  }
+  const one = M.brokerTradingFees(feeConfig, broker('hsbc'), 118, 0, feeRefs);
+  assert.ok(!one.error); close(one.investUsd, 100); close(one.buyFeeUsd, 18); close(one.cashRemainderUsd, 0);
+  assert.match(M.brokerTradingFees(feeConfig, broker('hsbc'), 117.99, 0, feeRefs).error, /不足.*买入.*1股/);
+  assert.match(M.brokerTradingFees({ ...feeConfig, trade25: true, tradeFeeUsd: 0 }, broker('hsbc'), 99, 0, feeRefs).error, /不足.*买入.*1股/);
+});
+test('uSMART fractional buys respect one-dollar and 0.0001-share minima, including vouchers and split orders', () => {
+  const evidence = require('./fixtures/money-flow-stock-units-20261011.json');
+  assert.equal(D.sources.usmartStockUnits.url, evidence.usmart.source);
+  for (const useVoucher of [false, true]) {
+    const settings = { ...feeConfig, useVoucher, voucherUsd: 10, voucherOrders: 2, voucherScope: 'platform', voucherExpiry: '2026-12-31' };
+    assert.match(M.brokerTradingFees(settings, broker('usmart'), .5, 0, feeRefs).error, /不足.*1 USD/);
+    assert.match(M.brokerTradingFees({ ...settings, sharePriceUsd: 1000000 }, broker('usmart'), 10, 0, feeRefs).error, /不足.*0.0001股/);
+  }
+  const one = M.brokerTradingFees(feeConfig, broker('usmart'), 2.01, 0, feeRefs);
+  assert.ok(!one.error); close(one.investUsd, 1); close(one.buyFeeUsd, 1.01); close(one.cashRemainderUsd, 0);
+  assert.match(M.brokerTradingFees(feeConfig, broker('usmart'), 2, 0, feeRefs).error, /不足.*1 USD/);
+  const split = M.brokerTradingFees({ ...feeConfig, buyOrders: 3, sellOrders: 4 }, broker('usmart'), 105, 10, feeRefs);
+  assert.ok(!split.error);
+  for (const order of split.orders) {
+    assert.ok(Math.abs(order.shares * 10000 - Math.round(order.shares * 10000)) < 1e-8);
+    assert.ok(order.shares >= .0001); if (order.kind === 'buy') assert.ok(order.value >= 1);
+  }
+  close(split.investUsd + split.buyFeeUsd + split.cashRemainderUsd, 105);
+  close(split.orders.filter(order => order.kind === 'sell').reduce((sum, order) => sum + order.value, 0), split.investUsd + 10);
+  const liquidation = M.brokerTradingFees({ ...feeConfig, tradeFeeUsd: 0 }, broker('usmart'), 1.005, -.5, feeRefs);
+  assert.ok(!liquidation.error); close(liquidation.investUsd, 1); close(liquidation.cashRemainderUsd, .005);
+  assert.ok(liquidation.orders[1].value < 1);
+  assert.match(M.brokerTradingFees({ ...feeConfig, tradeFeeUsd: 0, buyOrders: 2 }, broker('usmart'), 1.99, 0, feeRefs).error, /不足.*2笔/);
 });
 test('Trade25 US monthly fee is waived and the whole first quota-crossing order is exempt', () => {
   const ordinary = M.brokerTradingFees(feeConfig, broker('hsbc'), 10000, 0, feeRefs);
@@ -1199,6 +1239,28 @@ test('ZA whole-share limits retain upstream funds and account choices, and the c
   failed.act('detail', '', 'trade-settings'); assert.match(failed.modal(), /不足.*买入.*1股/);
   failed.act('pick', '', 'broker');
   assert.equal((failed.modal().match(/data-field="broker"/g) || []).length, D.calculator.brokers.length);
+});
+
+test('broker unit constraints preserve the bank flow and stable choices, and quantify supported orders in the main view', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  for (const id of ['hsbc', 'usmart']) for (const bank of D.calculator.hkBanks) {
+    const input = { ...currentRoute, date: '2026-10-11', startBank: 'boc', bank, returnBank: bank,
+      broker: id, mainlandMethod: bank === 'bochk' ? 'boc-mobile' : 'boc-online', route: 'USD', outcome: 'broker-balance', months: 0 };
+    const valid = M.calculatorJourney(input, D, quotes).selected;
+    assert.ok(valid); close(valid.steps.proceedsUsd, valid.steps.fundedUsd - valid.trading.totalUsd);
+    const ui = moneyUi(input, quotes, input.date), digits = id === 'hsbc' ? 0 : 4;
+    assert.match(ui.render(), new RegExp(valid.trading.orders[0].shares.toFixed(digits) + '股'));
+    const invalidInput = { ...input, sharePriceUsd: 1e9, useVoucher: true, voucherUsd: 100, voucherOrders: 2,
+      voucherScope: 'both', voucherExpiry: '2026-12-31' };
+    const invalid = M.calculatorJourney(invalidInput, D, quotes), failed = moneyUi(invalidInput, quotes, input.date);
+    assert.match(invalid.error, /不足.*买入/); assert.equal(invalid.partial.errorAction, 'trade');
+    close(invalid.partial.steps.fundedUsd, valid.steps.fundedUsd);
+    close(invalid.partial.rows.find(row => row.key === 'entryFx').cny, valid.rows.find(row => row.key === 'entryFx').cny);
+    assert.equal(M.calculatorRecommendations(invalidInput, D, quotes).plans.length, 0);
+    failed.render(); failed.act('detail', '', 'trade-settings'); assert.match(failed.modal(), /不足.*买入/);
+    failed.act('pick', '', 'bank'); assert.equal((failed.modal().match(/data-field="bank"/g) || []).length, D.calculator.hkBanks.length);
+    failed.act('pick', '', 'broker'); assert.equal((failed.modal().match(/data-field="broker"/g) || []).length, D.calculator.brokers.length);
+  }
 });
 
 test('BOC channel switching renders the same discounted sender fee and keeps group and bank choices independent', () => {
@@ -2285,12 +2347,13 @@ test('cash below a broker minimum never becomes a free zero-value trade', () => 
     const r = M.brokerTradingFees(feeConfig, broker(id), .1, 0, feeRefs);
     assert.match(r.error, /不足.*买入/);
   }
-  for (const [id, offer] of [['ibkr', {}], ['hsbc', { trade25: true }], ['chief', { chiefMonthly: true }],
+  for (const [id, offer] of [['ibkr', {}], ['chief', { chiefMonthly: true }],
     ]) {
     const r = M.brokerTradingFees({ ...feeConfig, ...offer }, broker(id), .1, 0, feeRefs);
     assert.ok(!r.error, id); assert.ok(r.investUsd > 0, id);
     close(r.investUsd + r.buyFeeUsd, .1);
   }
+  assert.match(M.brokerTradingFees({ ...feeConfig, trade25: true }, broker('hsbc'), .1, 0, feeRefs).error, /不足.*买入.*1股/);
   const confirmed = M.brokerTradingFees({ ...feeConfig, tradeFeeUsd: 0 }, broker('za'), .1, 0, feeRefs);
   assert.match(confirmed.error, /不足.*买入.*1股/);
   const coupon = M.brokerTradingFees({ ...feeConfig, useVoucher: true, voucherUsd: 10, voucherOrders: 2,

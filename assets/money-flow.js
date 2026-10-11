@@ -49,7 +49,7 @@
     hkFx: { bochk: ['bochkUsdFx'], hsbc: ['hsbcHkFx'], hang: ['hangHkFx'] },
     hkAccount: { bochk: ['bochkAccount'], hsbc: ['hsbcOne', 'hsbcOneBalance'], za: ['zaOpen'], hang: ['hangHk'], sc: ['scHk'] },
     hkCard: { bochk: ['bochkCard'], hsbc: ['hsbcCard'], za: ['zaCard'], hang: ['hangCard'], sc: ['scCard'] },
-    brokerTrade: { ibkr: ['ibStocks'], hsbc: ['hsbcUsTariff'], za: ['zaStocks', 'zaStockUnits', 'zaCustody'], chief: ['chiefStocks'], usmart: ['usmartFees'] },
+    brokerTrade: { ibkr: ['ibStocks'], hsbc: ['hsbcUsTariff'], za: ['zaStocks', 'zaStockUnits', 'zaCustody'], chief: ['chiefStocks'], usmart: ['usmartFees', 'usmartStockUnits'] },
     brokerOffers: { hsbc: ['trade25', 'trade25Age', 'trade25One'], za: ['zaStockService'], chief: ['chiefMonthly', 'chiefMonthlyTerms'], usmart: ['usmartPromo'] },
     brokerFunding: { ibkr: ['ibDeposits', 'ibFunding'], hsbc: ['hsbcStocks'], za: ['zaStockService'], chief: ['chiefFunding'], usmart: ['usmartFundingAccounts', 'usmartSameFunding'] },
     brokerWithdrawal: { ibkr: ['ibFees'], hsbc: ['hsbcStocks'], za: ['zaStockService'], chief: ['chiefFunding'], usmart: ['usmartWithdrawal'] }
@@ -420,8 +420,9 @@
     if (!r?.trading || r.trading.overridden) return '';
     const orders = r.trading.orders.filter(o => o.kind === kind), sum = key => orders.reduce((n, o) => n + o[key], 0);
     const pricing = [...new Set(orders.map(o => o.pricing).filter(Boolean))].join('；');
-    const quantity = r.trading.wholeSharesOnly ? num(sum('shares'), 0) + '股 · ' +
-      (kind === 'buy' && r.trading.cashRemainderUsd > .005 ? '未买入余款 ' + num(r.trading.cashRemainderUsd) + ' USD · ' : '') : '';
+    const unitDigits = r.trading.wholeSharesOnly ? 0 : 4, cashDigits = r.trading.wholeSharesOnly ? 2 : 4;
+    const quantity = r.trading.shareStep ? num(sum('shares'), unitDigits) + '股 · ' +
+      (kind === 'buy' && r.trading.cashRemainderUsd >= Math.pow(10, -cashDigits) / 2 ? '未买入余款 ' + num(r.trading.cashRemainderUsd, cashDigits) + ' USD · ' : '') : '';
     return feeLine((kind === 'buy' ? '买入' : '卖出') + '美股 · ' + orders.length + '笔', sum('feeUsd') * r.refs.USD,
       quantity + '佣金 ' + num(sum('commission')) + '＋平台 ' + num(sum('platform')) + '＋清算／监管 ' + num(sum('sec') + sum('taf') + sum('cat') + sum('clearing')) +
       (sum('discount') ? ' − 券抵扣 ' + num(sum('discount')) : '') + ' USD' + (pricing ? ' · ' + pricing : ''), (row(r, 'trade')?.estimate ? '估算 ' : '') + num(sum('feeUsd')) + ' USD');

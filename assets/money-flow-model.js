@@ -383,18 +383,20 @@
     const centsUp = value => value > 0 ? Math.ceil((value - 1e-10) * 100) / 100 : 0;
     const promoDate = d => d >= '2026-04-20' && d <= '2026-12-31';
     const override = number(config.tradeFeeUsd), wholeSharesOnly = !!broker.wholeSharesOnly;
+    const shareStep = wholeSharesOnly ? 1 : number(broker.shareStep), quantizedShares = positive(shareStep);
     const estimate = buyValue => {
-      const shares = wholeSharesOnly ? Math.round(buyValue / price) : buyValue / price, saleValue = buyValue + profitUsd;
+      const units = quantizedShares ? Math.round(buyValue / price / shareStep) : null;
+      const shares = quantizedShares ? units * shareStep : buyValue / price, saleValue = buyValue + profitUsd;
       let remainingVoucher = voucher.ready ? voucher.amount : 0, couponsUsed = 0;
       let turnover = usedTurnover, orderIndex = usedQuota;
       const orders = [];
       function side(kind, count, total, d) {
         if (kind === 'sell' && !sameMonth) { turnover = usedTurnover; orderIndex = usedQuota; }
         for (let i = 0; i < count; i++) {
-          // Split whole shares as evenly as possible; stock quantity cannot
-          // become fractional just because the user chose several orders.
-          const qty = wholeSharesOnly ? Math.floor(shares / count) + (i < shares % count ? 1 : 0) : shares / count;
-          const value = wholeSharesOnly ? total * qty / shares : total / count, stockPrice = value / qty;
+          // Allocate integer trading units, preserving the quantity across
+          // different numbers of buys and sells and retaining spare cash.
+          const qty = quantizedShares ? (Math.floor(units / count) + (i < units % count ? 1 : 0)) * shareStep : shares / count;
+          const value = quantizedShares ? total * qty / shares : total / count, stockPrice = kind === 'buy' ? price : value / qty;
           const fractional = qty > 0 && qty < 1 && value > 0;
           let commission = cappedCharge(broker.commission, qty, value), platform = cappedCharge(broker.platform, qty, value), offer = '', pricing = '';
           if (fractional && broker.fractionalCommission) {
@@ -437,16 +439,19 @@
       return orders;
     };
     let low = 0, high = cashUsd;
-    if (wholeSharesOnly) {
-      const needed = Math.max(buys, sells), maxShares = Math.floor(cashUsd / price + 1e-10);
-      if (!Number.isSafeInteger(maxShares)) return { error: '股数超出可精确测算范围。', errorField: 'sharePriceUsd' };
-      let first = needed, last = maxShares;
+    if (quantizedShares) {
+      const minimumBuyUnits = Math.max(1, Math.ceil((broker.minimumBuyUsd || 0) / price / shareStep - 1e-9));
+      const needed = Math.max(buys * minimumBuyUnits, sells), maxUnits = Math.floor(cashUsd / price / shareStep + 1e-9);
+      if (!Number.isSafeInteger(maxUnits)) return { error: '股数超出可精确测算范围。', errorField: 'sharePriceUsd' };
+      let first = needed, last = maxUnits;
       while (first <= last) {
-        const qty = first + Math.floor((last - first) / 2), value = qty * price;
+        const units = first + Math.floor((last - first) / 2), value = units * shareStep * price;
         const buyFee = override == null ? estimate(value).filter(order => order.kind === 'buy').reduce((sum, order) => sum + order.feeUsd, 0) : 0;
-        if (value + buyFee <= cashUsd + 1e-9) { low = value; first = qty + 1; } else last = qty - 1;
+        if (value + buyFee <= cashUsd + 1e-9) { low = value; first = units + 1; } else last = units - 1;
       }
-      if (low <= 0) return { error: '美元余额不足以买入ZA普通美股每笔至少1股，并完成' + buys + '笔买入／' + sells + '笔卖出。', errorField: 'budgetCny' };
+      const service = broker.id === 'za' ? 'ZA普通美股' : broker.id === 'hsbc' ? '汇丰美股' : '盈立美股';
+      const minimum = wholeSharesOnly ? '每笔至少1股' : '每笔买入至少1 USD且股数以0.0001股为单位';
+      if (low <= 0) return { error: '美元余额不足以买入' + service + minimum + '，并完成' + buys + '笔买入／' + sells + '笔卖出。', errorField: 'budgetCny' };
     } else {
     // A sub-one-share IBKR order can cost more than a one-share order. Solve
     // the affordable whole-share branch first instead of assuming monotonic
@@ -463,7 +468,7 @@
     }
     }
     if (override == null && low <= 0) return { error: '美元余额不足以支付买入最低费用。', errorField: 'budgetCny' };
-    const investUsd = wholeSharesOnly || override == null ? low : cashUsd;
+    const investUsd = quantizedShares || override == null ? low : cashUsd;
     if (profitUsd < -investUsd) return { error: '亏损不能超过实际买入金额。', errorField: 'profitUsd' };
     const orders = estimate(low), buyFeeUsd = orders.filter(order => order.kind === 'buy').reduce((sum, order) => sum + order.feeUsd, 0);
     const sellFeeUsd = orders.filter(order => order.kind === 'sell').reduce((sum, order) => sum + order.feeUsd, 0);
@@ -476,8 +481,8 @@
     if (broker.id === 'chief' && config.chiefMonthly && date > '2026-12-31') warnings.push('致富2026年月供优惠已过期，按普通网上交易基准测算');
     if (voucher.pending) warnings.push(voucher.message);
     if (voucher.expired) warnings.push(voucher.message);
-    return { investUsd, buyFeeUsd, sellFeeUsd, orders, monthlyHkd, monthlyUsd, warnings, voucher, wholeSharesOnly,
-      cashRemainderUsd: wholeSharesOnly ? Math.max(0, cashUsd - investUsd - (override == null ? buyFeeUsd : 0)) : 0,
+    return { investUsd, buyFeeUsd, sellFeeUsd, orders, monthlyHkd, monthlyUsd, warnings, voucher, wholeSharesOnly, shareStep,
+      cashRemainderUsd: quantizedShares ? Math.max(0, cashUsd - investUsd - (override == null ? buyFeeUsd : 0)) : 0,
       totalUsd: override ?? buyFeeUsd + sellFeeUsd, overridden: override != null,
       discountUsd: override == null ? orders.reduce((sum, row) => sum + row.discount, 0) : 0, price, buys, sells, sellDate };
   }

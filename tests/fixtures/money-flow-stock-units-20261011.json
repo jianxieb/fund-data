@@ -1,0 +1,21 @@
+{
+  "checkedAt": "2026-10-11",
+  "hsbc": {
+    "source": "https://www.hsbc.com.hk/content/dam/hsbc/hk/sc/docs/investments/stocks/top-trader-club/us-stocks-product-fact-sheet.pdf",
+    "version": "POR-USTS(E)/SEP26",
+    "printedPages": [1, 2],
+    "minimumShares": 1,
+    "scope": "Personal US stock trading, including the Trade25 tariff; stock quantity is independent of fee waivers."
+  },
+  "usmart": {
+    "source": "https://hk.usmartglobal.com/zh-hk/products/financial-investment/fractional-shares",
+    "minimumBuyUsd": 1,
+    "shareStep": 0.0001,
+    "scope": "Hong Kong fractional-stock trading; the purchase minimum is not applied as a one-dollar minimum liquidation value."
+  },
+  "excluded": [
+    "HSBC Taiwan or Singapore trading rules",
+    "uSMART Singapore rules",
+    "Treating IBKR's one-dollar marketing example as a universal minimum despite its published 0.75-dollar commission example"
+  ]
+}
