@@ -11,7 +11,9 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # The complete channel/qualification audit now covers both return currencies.
+    # Keep every check; hosted runners need more than the previous ten minutes.
+    timeout-minutes: 30
     env:
       TZ: Asia/Shanghai
       PYTHONUTF8: '1'
