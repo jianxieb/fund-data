@@ -1,0 +1,56 @@
+{
+  "version": "65ebd408a347cef4381f8d5af9b1c14cc2e77af4",
+  "deployment": "https://github.com/jianxieb/fund-data/actions/runs/38180789682",
+  "page": "https://jianxieb.github.io/fund-data/?review=65ebd40#money-flow",
+  "scope": "Actual published page using refreshed quotes; limited interactions, not all 810 browser states.",
+  "records": [
+    {
+      "label": "preserved qualified ICBC Asia on navigation",
+      "main": "CROSS-BORDER MONEY\n跨境资金\n\n优选方案\n不同汇路 · 买股账户 ZA\n报价与依据\n重置\n中行 → 中银香港 → ZA\nUSD · 手机同名汇款；本地美元转账\n→ 美元留在买股账户\n参考总损耗\n0.106%\n106.08 CNY\n工行 → 工银亚洲 → ZA\nUSD · 工行手机集团汇款；本地美元转账\n→ 美元留在买股账户\n参考总损耗\n0.115%\n114.55 CNY\n建行 → ZA → ZA\nUSD · 美元全额到账；银行内交收\n→ 美元留在买股账户\n全程损耗\n0.535%\n534.92 CNY\n兴业 → 汇丰香港 → ZA\nUSD · 普通电汇；本地美元转账\n→ 美元留在买股账户\n含银行期间费 1,025.37 CNY\n参考总损耗\n1.054%\n1,054.34 CNY\n恒生中国 → 恒生香港 → ZA\nCNH · 两地同名转账；恒生香港换美元；本地美元转账\n→ 美元留在买股账户\n含银行期间费 2,160.00 CNY\n全程损耗\n3.260%\n3,259.98 CNY\n01\n内地出发银行\n工商银行\n更换 ↗\n汇出笔数\n1笔\n⌄\n人民币本金 · 含费用\n100,000.00 CNY\n修改\n↓\n内地购美元 → 汇往香港\n依据\n参考损耗\n0.043%\n42.85 CNY\n汇出币种\n美元\n港币\n人民币原币\n汇款渠道\n手机银行 · 向工银亚洲本行费免\n⌄\n汇出手续费\n手机银行向境外工行 · 手续费及电讯费免\n0.00 CNY\n汇出电讯费\n手机银行向境外工行 · 手续费及电讯费免\n0.00 CNY\n内地购汇差额\n1 USD = 6.7088 CNY\n42.85 CNY\n内地→香港中转行费\n大湾区一类工行卡至工银亚洲 · USD/HKD公开到账记录\n估算 0.00 CNY\n香港首次汇入费\ne账通优惠期 · 本行基本费免\n0.00 HKD\n02\n香港收款银行\n工银亚洲 · 综合账户\n更换 ↗\n账户使用 12个月 · 银行管理费 0.00 CNY\nZA银行权益\nZA Perks · 标准\n⌄\ne账通 · 本人非联名账户已绑定同名内地工行\n汇款到账\n14,905.80 USD\n累计损耗 0.043%\n↓\n转入买股账户\n依据\n损耗\n0.043%\n42.72 CNY\n入金方式\n本地美元转账 → 本人众安 ZA Bank账户\n工银亚洲 · 综合账户 → 众安 ZA Bank · CHATS\n50.00 HKD\n≈ 42.72 CNY\n众安 ZA Bank · 本地USD收款\n0.00 CNY\nZA Bank · 美股交易入金费\n0.00 CNY\n03\n买美股的账户\nZA Bank\n更换 ↗\n买1笔 / 卖1笔 · 股价 100 USD\n优惠与费用券\n入金到账\n14,899.42 USD\n累计损耗 0.086%\n↓\n买入美股 → 卖出\n依据\n损耗\n0.029%\n28.97 CNY\n盈亏 0.00 USD\n买入美股 · 1笔\n148股 · 未买入余款 97.43 USD · 佣金 0.00＋平台 1.99＋清算／监管 0.00 USD\n1.99 USD\n≈ 13.34 CNY\n卖出美股 · 1笔\n148股 · 佣金 0.00＋平台 1.99＋清算／监管 0.34 USD\n2.33 USD\n≈ 15.62 CNY\n证券账户／托管费\n0.00 USD\n04\n卖出后的资金\n留在买股账户\n⌄\nZA Bank\n美元留在账户\n按公布参考费计算的余额\n14,895.10 USD\n累计损耗 0.115%\n参考总损耗\n0.115%\n114.55 CNY\n其中账户期间费\n0.00 CNY\n已计入合计\n按公布参考费计算的余额\n14,895.10 USD\n全程明细\n实际成交报价与费用\n便利化购汇不得用于境外证券投资；本页为费用测算。\n适用条件"
+    },
+    {
+      "label": "default after reset, verified after connection recovery",
+      "observation": {
+        "capitalCny": 100000,
+        "remittances": 1,
+        "months": 12,
+        "startBank": "boc",
+        "hongKongBank": "bochk",
+        "broker": "za",
+        "currency": "USD",
+        "entryFxCny": 77.11,
+        "tradingCny": 28.97,
+        "totalCny": 106.08,
+        "totalPercent": "0.106%",
+        "finalUsd": 14896.37,
+        "bankPeriodFeeCny": 0,
+        "preferredPaths": [
+          "BOC/BOCHK/ZA",
+          "ICBC/ICBC Asia/ZA",
+          "CCB/ZA/ZA",
+          "CIB/HSBC HK/ZA",
+          "Hang Seng CN/Hang Seng HK/ZA"
+        ],
+        "preferredCostCny": [
+          106.08,
+          165.82,
+          534.92,
+          1054.34,
+          3259.98
+        ]
+      },
+      "verification": "Actual published main text returned by the documented browser DOM API after reset. The initial reset call timed out and was not itself counted as verification."
+    }
+  ],
+  "failures": [],
+  "unverifiedAttempts": [
+    {
+      "action": "Apply the published CIB preferred route and read its result",
+      "result": "The combined browser call timed out. No returned result or saved third state exists, so this application is not counted as verified."
+    },
+    {
+      "action": "Recover native accessibility state for published tab 27 after the CIB attempt",
+      "result": "The observation call timed out. The screenshot was saved before these extra attempts; it does not establish the final selection after them. No Mac lock inference was made."
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "checkedOn": "2026-10-12",
+  "scope": "Anonymous official product pages and their published tariff scope. No customer sign-in, account data, transaction or security bypass. This is bounded research evidence, not proof that every possible source has been exhausted.",
+  "observations": [
+    {
+      "topic": "SC China retail FX",
+      "url": "https://www.sc.com/cn/foreign-exchange/wfx/",
+      "bytes": 223783,
+      "sha256": "371a07b170ff6d57611fc91d5e017dbc5350255c83306193ed380c3b51ce6ccd",
+      "linkedProductPages": [
+        "https://www.sc.com/cn/foreign-exchange/cny-conversion/",
+        "https://www.sc.com/cn/foreign-exchange/foreign-currency-conversion/",
+        "https://www.sc.com/cn/investment/foreign-currency-exchange-service/"
+      ],
+      "finding": "The product pages describe customer-requested instant quotes and channel differences. The retrieved public page provides no retail USD/HKD buy/sell table. A maximum bank spread of 300 points does not identify a current customer rate.",
+      "dataDecision": "Keep the exact SC China retail buy/sell evidence gap; do not use another bank or a hypothetical maximum spread as its price. Continue source research without asking the user to collect it."
+    },
+    {
+      "topic": "SC public page utility asset",
+      "url": "https://av.sc.com/assets/global/js/utils.min.js?ver=d90bc92",
+      "bytes": 28072,
+      "sha256": "2e1dd7011e377861c1def285431dbced3677bab9f9294afe6c92dfd889b22ef6",
+      "finding": "The actual public asset is generic utilities and did not supply an anonymous FX quote endpoint. Opaque security resources were not used."
+    },
+    {
+      "topic": "IBKR currency conversion tool",
+      "requestedUrl": "https://www.interactivebrokers.com/en/index.php?f=47638",
+      "resolvedUrl": "https://www.interactivebrokers.com/en/trading/ordertypes.php?m=currencyConvertModal",
+      "bytes": 829389,
+      "sha256": "79ba5dc5c67582aa50d830526fd482e20b0f5b12fde9873caa84aeebce6bfa03",
+      "finding": "Currency Conversion describes a market order in Client Portal and IBKR Mobile. It is a product demonstration, not a public HKD/USD or CNH/USD retail bid/ask feed.",
+      "dataDecision": "Keep known conversion commission separate from the missing executed spread. The tool page does not prove spread is zero."
+    },
+    {
+      "topic": "COMM OTO privileges",
+      "url": "https://www.bankcomm.com/BankCommSite/upload/infos/202001/19/2624305/OTO_PC/exclusive.html",
+      "bytes": 13377,
+      "sha256": "8fa07653605ad532aad7bed5190972697f11baf0b2047df9f2104243b9ecdb61",
+      "publishedOfferEnd": "2026-12-31",
+      "relevantCodes": ["Z0000021", "SGRKJ009"],
+      "finding": "The current free transfer rows cover domestic counter and electronic interbank transfers. No SGJGR001 personal international-remittance waiver is published in this table. Domestic transfer footnotes still mention regional policies.",
+      "dataDecision": "Do not use the domestic OTO waiver to fill the international remittance tariff gap. The page's 2020 URL and 2015 footer do not establish offer age; the current offer text explicitly ends in 2026."
+    },
+    {
+      "topic": "ICBC remittance currency scope",
+      "url": "https://www.icbc.com.cn/page/721852378969309213.html",
+      "finding": "The point-to-point and onward remittance description enumerates foreign currencies and regional electronic-channel availability. The companion electronic banking cross-border page describes FX remittances. These descriptions do not resolve the ordinary personal mainland-to-Hong-Kong CNY tariff.",
+      "dataDecision": "Preserve the already verified foreign-currency mobile group fee waiver, and keep the ordinary CNY tariff evidence separate."
+    }
+  ],
+  "productImplementationChanges": false,
+  "fullResearchAcceptance": false
+}
