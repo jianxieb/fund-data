@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-11",
+  "accountSource": "https://hk.usmartglobal.com/zh-cn/help-centre/42/detail/10540",
+  "feeSource": "https://hk.usmartglobal.com/zh-cn/help-centre/42/detail/10136",
+  "publishedReceivingBanks": [
+    { "name": "中国银行（香港）", "id": "bochk", "currencies": ["HKD", "USD", "CNH"] },
+    { "name": "汇丰银行", "id": "hsbc", "currencies": ["HKD", "USD", "CNH"] },
+    { "name": "中信银行（国际）", "id": "citic", "currencies": ["HKD", "USD", "CNH"] },
+    { "name": "中国工商银行（亚洲）", "id": "icbc-asia", "currencies": ["HKD", "USD", "CNH"] }
+  ],
+  "sameBank": { "fee": 0, "currencies": ["HKD", "USD", "CNH"] },
+  "crossBank": { "fee": null, "finding": "官网说明CHATS可能涉及汇出及收款银行费用，不能套用同行免费。" },
+  "scope": "收款表及同行收费说明的结构化事实，不保存收款账号，也不把入金免费扩展为券商出金免费。"
+}

@@ -6,6 +6,7 @@ const { audit: auditCurrent, config: currentConfig } = require('../scripts/audit
 const Q = require('./fixtures/money-flow-quotes-20261009.json');
 const diversityQuotes = require('./fixtures/money-flow-quotes-20261011.json');
 const fundingEvidence = require('./fixtures/money-flow-ibkr-funding-20261011.json');
+const usmartFundingEvidence = require('./fixtures/money-flow-usmart-same-bank-20261011.json');
 const config = { ...currentConfig, date: '2026-10-10' };
 const close = (a, b) => assert.ok(Math.abs(a - b) < 1e-6, a + ' != ' + b);
 const base = M.calculatorRoute({ ...config, startBank: 'cib', bank: 'bochk', broker: 'za', returnBank: 'bochk', exitBank: 'hsbc', route: 'USD', outcome: 'broker-balance' });
@@ -49,6 +50,34 @@ test('broker local payment channels use their own published currency coverage', 
   }
 });
 
+test('uSMART same-bank funding includes the published HSBC account without waiving cross-bank fees', () => {
+  const usmart = D.brokers.find(b => b.id === 'usmart');
+  const supported = usmartFundingEvidence.publishedReceivingBanks.filter(b => D.calculator.hkBanks.includes(b.id));
+  assert.deepEqual(usmart.internalFundingBanks, supported.map(b => b.id));
+  assert.equal(D.sources.usmartFundingAccounts.url, usmartFundingEvidence.accountSource);
+  assert.equal(D.sources.usmartSameFunding.url, usmartFundingEvidence.feeSource);
+  for (const bank of D.calculator.hkBanks) for (const route of D.calculator.currencies) {
+    const s = M.calculatorRoute({ ...config, bank, startBank: 'hsbc', broker: 'usmart', returnBank: bank,
+      exitBank: 'hsbc', route, outcome: 'broker-balance' });
+    const allowed = supported.some(item => item.id === bank && item.currencies.includes(route));
+    assert.equal(M.calculatorChannels(s, D).depositMethods.includes('internal'), allowed);
+    assert.equal(s.depositMethod === 'internal', allowed);
+    const result = M.calculatorJourney(s, D, diversityQuotes), r = result.selected || result.partial;
+    assert.ok(r, bank + '/' + route);
+    if (allowed) {
+      for (const key of ['depositBank', 'depositOther', 'depositBroker']) close(r.rows.find(row => row.key === key).cny, usmartFundingEvidence.sameBank.fee);
+      assert.ok(!r.missing.includes('入金代理／收款行费'));
+      assert.equal(r.depositMethod, 'internal'); ledger(r);
+    } else {
+      assert.match(M.calculatorJourney({ ...s, depositMethod: 'internal' }, D, diversityQuotes).error, /同行入金/);
+      assert.equal(r.rows.find(row => row.key === 'depositOther').cny, null);
+    }
+  }
+  const explicitCrossBank = M.calculatorJourney(M.calculatorRoute({ ...config, startBank: 'hsbc', bank: 'hsbc',
+    broker: 'usmart', route: 'USD', outcome: 'broker-balance', returnBank: 'hsbc', exitBank: 'hsbc', depositMethod: 'swift' }), D, diversityQuotes).selected;
+  assert.equal(explicitCrossBank.rows.find(row => row.key === 'depositOther').cny, null);
+});
+
 test('all 151875 catalogue combinations retain selection and either reconcile or name the exact local issue', () => {
   const r = auditCurrent({ quotes: Q, date: config.date });
   assert.equal(r.combinationsChecked, 151875);
@@ -58,8 +87,8 @@ test('all 151875 catalogue combinations retain selection and either reconcile or
   assert.ok(r.routes.every(r => !r.key.includes('abc')));
   assert.equal(r.channelProfiles.length, 3);
   for (const profile of r.channelProfiles) {
-    if (profile.profile.id === 'all-relevant-qualifications') assert.ok(profile.checked > 131040);
-    else assert.equal(profile.checked - profile.chequeBoundaryChecks, 131040);
+    if (profile.profile.id === 'all-relevant-qualifications') assert.ok(profile.checked > 133185);
+    else assert.equal(profile.checked - profile.chequeBoundaryChecks, 133185);
     assert.ok(profile.chequeBoundaryChecks > 0);
     assert.equal(profile.priced + profile.partial + profile.routeIssues, profile.checked);
     assert.equal(profile.ledgerChecks, profile.priced + profile.partial);

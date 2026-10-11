@@ -1107,6 +1107,29 @@ function evidenceLinks(ui, detail) {
   return new Set([...ui.modal().matchAll(/class="source-link"[^>]*href="([^"]+)"/g)].map(match => match[1]));
 }
 
+test('switching uSMART funding to HSBC uses the verified same-bank channel and retains independent account choices', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  const ui = moneyUi({ ...currentRoute, startBank: 'hsbc', bank: 'bochk', broker: 'za', mainlandMethod: 'swift',
+    route: 'USD', outcome: 'broker-balance', hsbcBalanceWaiver: true, cnHsbcFeeWaived: true }, quotes, '2026-10-11');
+  ui.render(); ui.act('choose', 'broker', 'usmart'); ui.act('choose', 'bank', 'hsbc');
+  assert.equal(ui.saved().broker, 'usmart'); assert.equal(ui.saved().bank, 'hsbc');
+  assert.equal(ui.saved().depositMethod, 'internal'); assert.equal(ui.saved().mainlandMethod, 'linked');
+  const html = ui.render();
+  assert.match(html.split('id="flow-live-ledger"')[0], /同行入金/);
+  assert.doesNotMatch(html.split('id="flow-live-ledger"')[0], /同行交收/);
+  const funding = html.split('aria-label="转入买股账户"')[1].split('</section>')[0];
+  assert.match(funding, /入金代理／收款行费<\/strong>.*?0.00 CNY/);
+  assert.doesNotMatch(funding, /flow-variable|同行入金须/);
+  const sources = evidenceLinks(ui, 'edge-03');
+  assert.ok(sources.has(D.sources.usmartFundingAccounts.url)); assert.ok(sources.has(D.sources.usmartSameFunding.url));
+  ui.act('pick', '', 'bank');
+  for (const bank of D.calculator.hkBanks) assert.match(ui.modal(), new RegExp('data-value="' + bank + '"'));
+  assert.doesNotMatch(ui.modal(), /\bdisabled\b/);
+  ui.act('choose', 'bank', 'za'); assert.equal(ui.saved().depositMethod, 'chats');
+  assert.equal(ui.saved().broker, 'usmart');
+  assert.match(ui.render(), /入金代理／收款行费/);
+});
+
 test('mainland monthly fees appear at their own bank node and keep their currency and waived months in details', () => {
   const input = { ...currentRoute, startBank: 'hsbc', bank: 'hsbc', broker: 'hsbc', mainlandMethod: 'linked', outcome: 'broker-balance',
     hsbcBalanceWaiver: true, cnHsbcFreeMonths: 6 };

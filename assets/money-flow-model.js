@@ -1164,7 +1164,7 @@
     s.mainlandMethod ||= paired && s.startBank === 'boc' && s.route !== 'CNH' ? 'boc-mobile' : paired && s.startBank !== 'boc' && !(s.startBank === 'sc' && s.route === 'CNH') ? 'linked' : 'swift';
     s.fxMode = s.route === 'USD' ? 'manual' : s.broker !== 'ibkr' ? 'bank' : s.fxMode || 'manual';
     s.depositMethod ||= ['hsbc', 'za'].includes(s.broker) && s.broker === s.bank ? 'internal' :
-      s.broker === 'usmart' && s.bank === 'bochk' || s.broker === 'chief' && ['bochk', 'hsbc', 'hang'].includes(s.bank) ? 'internal' :
+      s.broker === 'usmart' && ['bochk', 'hsbc'].includes(s.bank) || s.broker === 'chief' && ['bochk', 'hsbc', 'hang'].includes(s.bank) ? 'internal' :
       s.route === 'USD' || s.fxMode === 'bank' ? 'chats' : s.broker === 'chief' && s.route === 'CNH' ? 'edda' : 'fps';
     s.returnMethod ||= s.returnBank === 'bochk' && s.exitBank === 'boc' ? 'bochk-fast' :
       ['hsbc', 'hang', 'sc'].includes(s.returnBank) && s.returnBank === s.exitBank ? 'linked' : 'swift';

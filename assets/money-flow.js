@@ -51,7 +51,7 @@
     hkCard: { bochk: ['bochkCard'], hsbc: ['hsbcCard'], za: ['zaCard'], hang: ['hangCard'], sc: ['scCard'] },
     brokerTrade: { ibkr: ['ibStocks'], hsbc: ['hsbcUsTariff'], za: ['zaStocks', 'zaCustody'], chief: ['chiefStocks'], usmart: ['usmartFees'] },
     brokerOffers: { hsbc: ['trade25', 'trade25Age', 'trade25One'], za: ['zaStockService'], chief: ['chiefMonthly', 'chiefMonthlyTerms'], usmart: ['usmartPromo'] },
-    brokerFunding: { ibkr: ['ibDeposits', 'ibFunding'], hsbc: ['hsbcStocks'], za: ['zaStockService'], chief: ['chiefFunding'], usmart: ['usmartFees'] },
+    brokerFunding: { ibkr: ['ibDeposits', 'ibFunding'], hsbc: ['hsbcStocks'], za: ['zaStockService'], chief: ['chiefFunding'], usmart: ['usmartFundingAccounts', 'usmartSameFunding'] },
     brokerWithdrawal: { ibkr: ['ibFees'], hsbc: ['hsbcStocks'], za: ['zaStockService'], chief: ['chiefFunding'], usmart: ['usmartWithdrawal'] }
   };
   const evidenceFor = (kind, account) => evidenceSources[kind]?.[account?.id] || [];
@@ -217,7 +217,8 @@
       const channel = ({ 'boc-mobile': '手机同名汇款', linked: '两地同名转账', 'cib-go': '全额到账50元/笔', full: '美元全额到账', swift: '普通电汇' })[r.mainlandMethod];
       const conversion = r.route !== 'USD' ? (r.fxMode === 'bank' ? routeName(r.bank.id, 'bank') : r.fxMode === 'auto' ? 'IBKR自动' : 'IBKR手动') + '换美元' : '';
       const funding = r.broker.id === 'ibkr' && r.depositMethod === 'chats' ? '香港花旗／渣打收款指示' :
-        ({ internal: '同行交收', chats: '本地美元转账', fps: 'FPS入金', edda: 'eDDA入金', swift: '电汇入金' })[r.depositMethod];
+        r.depositMethod === 'internal' ? r.broker.integratedBank ? '银行内交收' : '同行入金' :
+        ({ chats: '本地美元转账', fps: 'FPS入金', edda: 'eDDA入金', swift: '电汇入金' })[r.depositMethod];
       const end = state.outcome === 'broker-balance' ? '美元留在买股账户' :
         state.outcome === 'mainland' ? routeName(r.returning.id, 'bank') + ' → ' + routeName(r.exit.id, 'mainland') + '结汇' :
           routeName(r.returning.id, 'bank') + ' · ' + ({ 'usd-balance': '保留美元', 'usd-card': '美元消费', 'cnh-card': '人民币消费' })[state.outcome];
