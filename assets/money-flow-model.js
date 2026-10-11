@@ -114,8 +114,14 @@
   }
   // Use the bank's local Hong Kong tariff independently of its overseas tariff.
   // Membership waives only this bank's charge, never another bank's charge.
-  function swiftFee(bank, date, config = {}, index = 1, destination = 'overseas') {
+  function localSwiftIssue(bank, currency, destination) {
+    return destination === 'hong-kong' && bank?.localSwiftExcluded?.includes(currency) ?
+      bank.name + '本地' + currency + '汇款使用CHATS' + (currency === 'USD' ? '，本行标准费' + bank.localUsdNative + ' USD/笔' : '') + '。' : '';
+  }
+  function swiftFee(bank, date, config = {}, index = 1, destination = 'overseas', currency = 'USD') {
     const local = destination === 'hong-kong';
+    const issue = localSwiftIssue(bank, currency, destination);
+    if (issue) return { hkd: null, publishedHkd: null, destination, date, waived: false, status: issue };
     const publishedHkd = local && knownFee(bank?.localSwiftHkd) ? bank.localSwiftHkd : outwardFee(bank, date);
     const result = { hkd: publishedHkd, publishedHkd, destination, date, waived: false,
       ...(local && bank?.localSwiftChannel ? { channel: bank.localSwiftChannel } : {}) };
@@ -346,7 +352,7 @@
   function depositFee(bank, method, currency, refs, date, swift = {}) {
     if (method === 'fps' || method === 'edda') return currency === 'USD' ? null : knownFee(bank.localHkd) ? bank.localHkd * refs.HKD : null;
     if (method === 'chats') return currency === 'USD' ? knownFee(bank.localUsdNative) ? bank.localUsdNative * refs.USD : knownFee(bank.localUsd) ? bank.localUsd * refs.HKD : null : null;
-    if (method === 'swift') { const v = swiftFee(bank, date, swift.config, swift.index, swift.destination).hkd; return v == null ? null : v * refs.HKD; }
+    if (method === 'swift') { const v = swiftFee(bank, date, swift.config, swift.index, swift.destination, currency).hkd; return v == null ? null : v * refs.HKD; }
     return null;
   }
   // Personal local USD CHATS receiving tariffs. Do not reuse SWIFT inward fees.
@@ -735,11 +741,11 @@
     const bankBalances = calculatorAccountState(config, config, data).bankBalancesHkd;
     function calculate(start, bank, route, fxMode, exit, returning, selections = {}, provider = broker) {
       const swiftCounts = new Map();
-      const nextSwift = (account, date, destination = 'overseas') => {
+      const nextSwift = (account, date, destination = 'overseas', currency = 'USD') => {
         const key = account.id + ':' + date.slice(0, 7);
         const index = (swiftCounts.get(key) || 0) + 1;
         if (destination !== 'hong-kong') swiftCounts.set(key, index);
-        return swiftFee(account, date, config, index, destination);
+        return swiftFee(account, date, config, index, destination, currency);
       };
       const swiftEvidence = tariff => tariff.destination === 'hong-kong' ?
         (tariff.channel ? tariff.channel + ' · ' : '') + '香港本地SWIFT · 本行手续费' + tariff.publishedHkd + ' HKD' :
@@ -973,6 +979,8 @@
       if (['fps', 'edda'].includes(depositMethod) && depositCurrency === 'USD') return downstreamError('FPS/eDDA不支持USD；美元入金请选本地美元转账或SWIFT。');
       if (provider.id === 'chief' && depositMethod === 'fps' && depositCurrency !== 'HKD') return downstreamError('致富FPS只接受港币；人民币入金请用同行转账或eDDA。');
       if (depositMethod === 'chats' && depositCurrency !== 'USD') return downstreamError('本地美元转账使用USD；HKD/CNH可选FPS或eDDA。');
+      const unsupportedSwift = depositMethod === 'swift' && localSwiftIssue(bank, depositCurrency, provider.swiftDestination || 'overseas');
+      if (unsupportedSwift) return downstreamError(unsupportedSwift);
       // This stage exchanges the received balance in one bank transaction.
       // Wire count is not an exchange count; selecting that bank's stock venue
       // must not impose its FX limits on another bank's conversion.
@@ -994,7 +1002,7 @@
         const charge = own('depositHkd', isSelectedBank);
         const transferMethod = fundingBank ? 'chats' : depositMethod;
         const receivingBank = settlementBank || fundingBank;
-        const swift = !internalDeposit && transferMethod === 'swift' ? nextSwift(bank, config.date, provider.swiftDestination || 'overseas') : null;
+        const swift = !internalDeposit && transferMethod === 'swift' ? nextSwift(bank, config.date, provider.swiftDestination || 'overseas', depositCurrency) : null;
         const sending = swift ? swift.hkd == null ? null : swift.hkd * refs.HKD : depositFee(bank, transferMethod, depositCurrency, refs, config.date);
         const sendingLabel = internalDeposit ? settlementBank ? '本人银行账户内部交收' : bank.name + ' → ' + provider.name + '同银行收款账户' : bank.name + ' → ' + (fundingBank ? '本人' + fundingBank.name : settlementBank?.name || provider.name) + ' · ' + transferMethod.toUpperCase();
         add('depositBank', sendingLabel, internalDeposit ? 0 : charge == null ? sending : charge * refs.HKD, 'deposit', charge == null && swift?.status || sendingLabel);
@@ -1395,9 +1403,10 @@
     if (['hsbc', 'hang', 'sc'].includes(start?.id) && start.group === bank?.group && (!start.linkedCurrencies || start.linkedCurrencies.includes(s.route))) mainlandMethods.unshift('linked');
     const fxModes = s.route === 'USD' ? ['manual'] : broker?.id === 'ibkr' ? ['manual', 'auto', 'bank'] : ['bank'];
     const currency = s.route === 'USD' || s.fxMode === 'bank' ? 'USD' : s.route;
+    const swiftMethods = localSwiftIssue(bank, currency, broker?.swiftDestination || 'overseas') ? [] : ['swift'];
     const depositMethods = broker?.integratedBank ? [broker.integratedBank === bank?.id ? 'internal' : 'chats'] : [
       ...(broker?.internalFundingBanks?.includes(bank?.id) ? ['internal'] : []),
-      ...(currency === 'USD' ? ['chats', ...(broker?.internalFundingBanks || []).filter(id => id !== bank?.id && data.calculator.hkBanks.includes(id)).map(id => 'via-' + id), 'swift'] : [...['fps', 'edda'].filter(channel => broker?.depositCurrencies?.[channel]?.includes(currency)), 'swift'])
+      ...(currency === 'USD' ? ['chats', ...(broker?.internalFundingBanks || []).filter(id => id !== bank?.id && data.calculator.hkBanks.includes(id)).map(id => 'via-' + id), ...swiftMethods] : [...['fps', 'edda'].filter(channel => broker?.depositCurrencies?.[channel]?.includes(currency)), ...swiftMethods])
     ];
     const returnMethods = ['swift'];
     if (returning?.id === 'bochk' && exit?.group === 'boc') returnMethods.unshift('bochk-fast');

@@ -23,7 +23,11 @@ test('personal-bank bridges are separate offered USD actions, without changing t
     const expected = (evidence.brokerReceivingBanks[broker]?.banks || []).filter(id => id !== bank).map(id => 'via-' + id);
     assert.deepEqual(methods.filter(method => method.startsWith('via-')), expected);
     for (const method of expected) assert.equal(M.calculatorFundingBank({ ...s, depositMethod: method }, D).id, method.slice(4));
-    if (expected.length) assert.ok(methods.includes('chats') && methods.includes('swift'));
+    if (expected.length) {
+      assert.ok(methods.includes('chats'));
+      // SC's local USD tariff is CHATS; its 50 HKD SWIFT fee is overseas.
+      assert.equal(methods.includes('swift'), bank !== 'sc');
+    }
     if (provider.internalFundingBanks) for (const currency of ['HKD', 'CNH']) {
       assert.deepEqual(M.calculatorChannels({ ...s, route: currency, fxMode: 'manual' }, D).depositMethods.filter(method => method.startsWith('via-')), []);
     }

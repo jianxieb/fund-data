@@ -1,0 +1,12 @@
+{
+  "checkedOn": "2026-10-11",
+  "effectiveFrom": "2026-10-01",
+  "source": "https://av.sc.com/hk/zh/content/docs/hk-service-charges-zh.pdf",
+  "pages": [8, 9],
+  "account": "快易理财",
+  "overseasOnlineSwiftHkd": 50,
+  "localUsdChatsUsd": 22,
+  "excludedLocalSwiftCurrencies": ["HKD", "USD", "EUR", "CNH"],
+  "scope": "价目表将海外电汇、本地RTGS和本地其他外币电汇分别列项；不能将50港元海外费套到香港本地美元。",
+  "excluded": ["代理行或收款方费用豁免", "优先理财的海外费豁免", "其他币种本地RTGS收费"]
+}

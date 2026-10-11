@@ -369,3 +369,9 @@ IBKR[公开入金工具](https://www.interactivebrokers.com/en/support/fund-my-a
 [现行个人收费简介](https://www.hangseng.com/content/dam/hase/config/bde/pws/personal/servicecharges/pdfs/zh_HK/tariff_personal_sc.pdf)2026-07-01生效。物理第2页的手机本地外币条款包含USD及CHATS／SWIFT，第9页的网上汇出表亦将香港本地与其他国家分开；本地本行服务费0，境外标准费65 HKD。产品此前只保存境外费，导致恒生汇入致富／盈立的香港账户误收65 HKD，现已按收款地修正并直接注明手机渠道。
 
 本行豁免不包含收款行或代理行扣费，不将它扩展成整个入金动作免费，也不用于IBKR境外美元指示或回内地。本地转账可能由银行以CHATS处理，直接CHATS、经本人香港银行同行入金和SWIFT仍分别计费。来源范围保存于[核查摘要](../tests/fixtures/money-flow-hang-local-swift-20261011.json)；独立检查用固定合成购汇价隔离9家出发银行×3个外部券商×5种用途的135种收费状态，不把这个测试值补入生产渣打牌价。
+
+### 渣打香港本地美元的清算渠道（2026-10-11）
+
+[2026-10-01个人收费表](https://av.sc.com/hk/zh/content/docs/hk-service-charges-zh.pdf)物理第8页分别列海外电汇与本地RTGS：快易理财网上海外电汇50 HKD，本地USD CHATS为22 USD。本地电汇项明文排除HKD、USD、EUR及人民币，不可把海外50港元套在美元汇至香港本地银行的动作上。
+
+渣打向致富／盈立香港USD收款账户保留CHATS及经本人银行同行入金；不再提供此前误列的本地USD SWIFT报价。9家内地银行、5家香港银行和5个买股账户仍独立可选。旧存储只把这个错误方法改为CHATS，并清除附着在旧方法上的汇出／收款费覆盖值，账户、币种、本金、笔数、期间和银行权益均保留。IBKR境外美元电汇及香港回内地仍适用其独立海外收费。直接传入旧错误方法时保留已完成汇款及银行余额，不生成虚假50港元费用或已完成的入金。来源范围见[核查摘要](../tests/fixtures/money-flow-sc-local-usd-20261011.json)。

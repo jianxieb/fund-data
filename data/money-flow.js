@@ -230,6 +230,7 @@
         localSwiftHkd: 0, localSwiftChannel: '恒生Mobile App', swiftSources: ['hangHk'], outwardHkd: 65, monthlyHkd: 0, thresholdHkd: 0,
         directUsdCard: true, directCnhCard: true, cardForeignPct: 0, condition: '优进理财无最低理财总值/月费；手机本地外币CHATS／SWIFT本行费免，其他银行费另计；跨域转账须已登记，并经指定页面提交', sources: ['hangHk', 'hangOpen', 'hangCard', 'hangHkFx'] },
       { id: 'sc', name: '渣打 · 快易理财', group: 'sc', inwardHkd: 0, sameGroupWaiver: true, localHkd: 0, localUsd: null, localUsdNative: 22,
+        localSwiftExcluded: ['HKD', 'USD', 'EUR', 'CNH'],
         localUsdChequeTariff: { validFrom: '2026-10-01', freePerDay: 30, standardHkd: 2, preFilledHkd: 1, sources: ['scCheque', 'scChequeDeposit'] },
         outwardHkd: 50, monthlyHkd: 0, thresholdHkd: 0, directUsdCard: true, directCnhCard: true, cnhCardRequiresHkid: true, cardForeignPct: 0, condition: '快易理财免服务费；HKD/CNH网上非RTGS转账免；USD本地RTGS标准费22美元。本地美元存票每日前30张免费，其后每张2港币，预填多支票存款表每张1港币', sources: ['scHk', 'scCard', 'sc'] }
     ],

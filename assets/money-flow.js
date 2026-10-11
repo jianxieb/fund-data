@@ -20,6 +20,13 @@
   // Link channel for RMB. Keep all accounts and repair that saved method.
   if (state.startBank === 'sc' && state.route === 'CNH' && state.mainlandMethod === 'linked') state.mainlandMethod = 'swift';
   if (state.route !== 'USD' && state.broker !== 'ibkr') state.fxMode = 'bank';
+  // A saved local USD wire must not retain the old overseas tariff. Keep all
+  // accounts and use the bank's published local USD clearing channel.
+  if (state.depositMethod === 'swift' && D.hkBanks.find(bank => bank.id === state.bank)?.localSwiftExcluded?.length &&
+      D.brokers.find(broker => broker.id === state.broker)?.swiftDestination === 'hong-kong' &&
+      !M.calculatorChannels(state, D).depositMethods.includes('swift')) {
+    state.depositMethod = 'chats'; state.depositHkd = ''; state.depositOtherCny = '';
+  }
   if (!['01', '02', '03', '04'].includes(state.activeStep)) state.activeStep = '01';
   const catalog = (key, all) => D.calculator[key].map(id => all.find(x => x.id === id)).filter(Boolean);
   const mainland = catalog('mainland', D.mainlandBanks), banks = catalog('hkBanks', D.hkBanks), brokers = catalog('brokers', D.brokers);

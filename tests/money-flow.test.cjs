@@ -1287,6 +1287,38 @@ function moneyUi(input, quotes = cibQuotes, date = '2026-10-09') {
     act: (action, field, value) => context.window.ChanghengMoneyFlow.handleAction({ dataset: { action: 'money-flow-' + action, field, value } }) };
 }
 
+test('saved SC local USD wires migrate to its published clearing channel without replacing accounts or conditions', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  for (const broker of ['chief', 'usmart']) for (const route of ['USD', 'HKD', 'CNH']) {
+    const input = { ...currentRoute, startBank: 'boc', bank: 'sc', broker, route, fxMode: 'bank', depositMethod: 'swift',
+      returnBank: 'bochk', exitBank: 'cmb', count: '3', months: '5', zaPerksLevel: 'lv1', zaSwiftUsed: '2',
+      depositHkd: '50', depositOtherCny: '8', startSell: '', entryPrice: '', outcome: 'broker-balance' };
+    const ui = moneyUi(input, quotes, '2026-10-11');
+    const html = ui.render();
+    ui.act('choose', 'bank', 'sc');
+    assert.equal(ui.saved().depositMethod, 'chats');
+    assert.equal(ui.saved().depositHkd, ''); assert.equal(ui.saved().depositOtherCny, '');
+    for (const key of ['startBank', 'bank', 'broker', 'route', 'returnBank', 'exitBank', 'count', 'months', 'zaPerksLevel', 'zaSwiftUsed']) assert.equal(ui.saved()[key], input[key]);
+    assert.match(html, /22.00 USD/);
+    ui.act('pick', '', 'depositMethod');
+    assert.doesNotMatch(ui.modal(), /data-value="swift"/);
+    assert.match(ui.modal(), /data-value="chats"/);
+    for (const field of ['bank', 'broker', 'returnBank']) {
+      ui.act('pick', '', field);
+      assert.equal((ui.modal().match(new RegExp('data-field="' + field + '"', 'g')) || []).length, 5);
+    }
+    const restored = moneyUi(ui.saved(), quotes, '2026-10-11'); restored.render();
+    assert.equal(restored.saved().depositMethod, 'chats');
+    restored.act('choose', 'bank', 'hang');
+    restored.render();
+    restored.act('pick', '', 'depositMethod');
+    assert.match(restored.modal(), /data-value="swift"/);
+    assert.equal(restored.saved().broker, broker);
+  }
+  const overseas = moneyUi({ ...currentRoute, bank: 'sc', broker: 'ibkr', route: 'USD', depositMethod: 'swift', depositHkd: '9' }, quotes, '2026-10-11');
+  overseas.render(); assert.equal(overseas.saved().depositMethod, 'swift'); assert.equal(overseas.saved().depositHkd, '9');
+});
+
 test('ZA membership is a bank control that migrates old Lv2 settings and survives every broker switch and reload', () => {
   const quotes = require('./fixtures/money-flow-quotes-20261011.json');
   const ui = moneyUi({ ...currentRoute, startBank: 'boc', bank: 'bochk', mainlandMethod: '', broker: 'za', outcome: 'broker-balance', zaLv2: true }, quotes, '2026-10-11');
