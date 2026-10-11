@@ -183,6 +183,10 @@ CNY原币到港成为CNH时第一步没有换汇差额；该人民币基准差�
 
 ### IBKR香港美元入金（2026-10-11补核）
 
+现行[官网入金工具](https://www.interactivebrokers.com/en/support/fund-my-account.php)按居住地区和币种查询方式，其公开接口参数`colr`对应“My Region of Residence is”，并非汇出银行所在地区。2026-10-11读取的中国内地`CHN`档位返回实体`LLC`，香港`HKG`档位返回`HK`；两者的HKD／CNH均列出`FPS_NOTIFICATION`和`EDDA`，USD均没有这两项。六个币种响应及地区响应保存在[官网原始结果](../tests/fixtures/money-flow-ibkr-funding-20261011.json)，模型渠道逐项和响应核对。旧知识库曾写FPS仅IBHK，和本次现行工具结果不一致，不能据此给中国内地用户取消这两项。该公开工具不表示所有既有账户实体已改变；实际收款银行指示仍由账户生成，未将方法列表当作美元代理费豁免证据。
+
+入金详情按转入股票账户时的真实币种链接相应官网结果：先在香港银行兑换的路线使用USD依据，在IBKR兑换的路线使用HKD／CNH依据。不同券商分别保存支持币种，致富FPS只限HKD、eDDA支持HKD／CNH；盈立FPS支持HKD／CNH、eDDA仅HKD，不从另一券商推导适用范围。
+
 入金方式明确分成“香港收款指示 · USD本地转账”和“境外收款指示 · USD电汇”。[2026年5月香港渣打收款操作记录](https://yolkinsight.hk/ib-funds/)与[香港花旗收款操作记录](https://www.kdkh.com/guide/ibkr/hsbc-ibkr.html)都记载本地USD全额到账。[IBKR官方](https://www.interactivebrokers.com/campus/gabe-funding-demo/)确认券商不收入金费，实际银行指示由账户生成，银行费用另计。
 
 本页仅对香港本地收款指示采用公开操作记录中的0额外扣费，标为参考费用。汇出银行的CHATS标准费独立计入，例如渣打快易理财22 USD不会被免掉。将相同香港收款路线用于其他汇出银行是按已收录汇出资费计算的情景推算，不是各行全组合实测，也不是IBKR保证所有账户都获分配香港收款指示。美国收款指示不能使用这一价格，USD出金的代理费用也不沿用入金0费用。

@@ -1203,6 +1203,21 @@ test('funding evidence distinguishes IBKR local USD instructions and the selecte
   assert.ok(!bankFx.has(D.sources.bochkUsdFx.url));
 });
 
+test('IBKR funding evidence follows the actual deposited currency after bank or broker FX', () => {
+  for (const route of ['USD', 'HKD', 'CNH']) for (const fxMode of ['manual', 'auto', 'bank']) {
+    const ui = moneyUi({ ...currentRoute, bank: 'bochk', broker: 'ibkr', route, fxMode,
+      mainlandMethod: 'swift', depositMethod: route === 'USD' || fxMode === 'bank' ? 'chats' : 'fps', outcome: 'broker-balance' });
+    ui.render();
+    const links = evidenceLinks(ui, 'edge-03'), funded = route === 'USD' || fxMode === 'bank' ? 'USD' : route;
+    for (const currency of ['USD', 'HKD', 'CNH']) {
+      assert.equal(links.has(D.sources['ibFunding' + currency].url), currency === funded, route + '/' + fxMode + '/' + currency);
+    }
+    ui.act('choose', 'broker', 'za');
+    const bankStock = evidenceLinks(ui, 'edge-03');
+    assert.ok(!['USD', 'HKD', 'CNH'].some(c => bankStock.has(D.sources['ibFunding' + c].url)));
+  }
+});
+
 test('return and full-journey evidence include the actual receiving bank rather than the departure bank', () => {
   const ui = moneyUi({ ...currentRoute, startBank: 'boc', bank: 'bochk', broker: 'chief', returnBank: 'bochk', exitBank: 'cib', outcome: 'mainland' });
   ui.render();

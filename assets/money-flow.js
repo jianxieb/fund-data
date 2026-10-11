@@ -73,8 +73,14 @@
       add('hkTariff', s.bank); add('hkTariff', settlement); add('brokerFunding', broker);
       if (state.route !== 'USD') state.fxMode === 'bank' ? add('hkFx', s.bank) : keys.push('ibFx');
       if (broker?.id === 'ibkr') {
+        keys.push('ibFunding' + (state.route === 'USD' || state.fxMode === 'bank' ? 'USD' : state.route));
         if ((r?.depositMethod || state.depositMethod) === 'edda') keys.push('ibEdda');
         if ((r?.depositMethod || state.depositMethod) === 'chats') keys.push('ibLocalUsd', 'ibLocalCiti');
+      }
+      if (broker?.id === 'chief') keys.push('chiefDeposit');
+      if (broker?.id === 'usmart') {
+        if ((r?.depositMethod || state.depositMethod) === 'fps') keys.push('usmartFps');
+        if ((r?.depositMethod || state.depositMethod) === 'edda') keys.push('usmartEdda');
       }
       if (broker?.id === 'usmart' && s.bank?.id === 'bochk') keys.push('usmartBocFunding');
     } else if (stage === 'trade' || stage === 'offers') {

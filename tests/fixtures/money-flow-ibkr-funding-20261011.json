@@ -1,0 +1,179 @@
+{
+  "observedAt": "2026-10-11T07:05:15Z",
+  "page": "https://www.interactivebrokers.com/en/support/fund-my-account.php",
+  "residencyLabel": "My Region of Residence is:",
+  "profiles": [
+    {
+      "region": "CHN",
+      "currenciesSource": "https://www.interactivebrokers.com/aces/Funding/Methods/Currencies?type=DEPOSIT&colr=CHN",
+      "currenciesResponse": {
+        "currencies": [
+          "GBP",
+          "SEK",
+          "TRY",
+          "CAD",
+          "RON",
+          "MXN",
+          "NOK",
+          "DKK",
+          "COP",
+          "NZD",
+          "JPY",
+          "ZAR",
+          "AUD",
+          "PLN",
+          "ILS",
+          "EUR",
+          "USD",
+          "CNH",
+          "CHF",
+          "HKD",
+          "PHP",
+          "MYR",
+          "IDR",
+          "AED",
+          "ARS",
+          "CLP",
+          "SGD",
+          "HUF",
+          "CZK"
+        ],
+        "ibEntity": "LLC",
+        "domestic": "CNH",
+        "errors": {},
+        "requestErrors": {}
+      },
+      "deposits": {
+        "USD": {
+          "source": "https://www.interactivebrokers.com/aces/Funding/Methods?type=DEPOSIT&colr=CHN&currency=USD",
+          "response": {
+            "methods": [
+              "WIRE_NOTIFICATION",
+              "DIRECT_DEPOSIT",
+              "ACH",
+              "WISE_BALANCE",
+              "STABLECOIN",
+              "BILL_PAY_NOTIFICATION",
+              "CHECK_NOTIFICATION",
+              "MOBILE_CHECK"
+            ],
+            "transferType": "DEPOSIT",
+            "errors": {},
+            "requestErrors": {}
+          }
+        },
+        "HKD": {
+          "source": "https://www.interactivebrokers.com/aces/Funding/Methods?type=DEPOSIT&colr=CHN&currency=HKD",
+          "response": {
+            "methods": [
+              "EDDA",
+              "CCB_FUNDS_TRANSFER_NOTIFICATION",
+              "WIRE_NOTIFICATION",
+              "WISE_BALANCE",
+              "FPS_NOTIFICATION"
+            ],
+            "transferType": "DEPOSIT",
+            "errors": {},
+            "requestErrors": {}
+          }
+        },
+        "CNH": {
+          "source": "https://www.interactivebrokers.com/aces/Funding/Methods?type=DEPOSIT&colr=CHN&currency=CNH",
+          "response": {
+            "methods": [
+              "EDDA",
+              "WIRE_NOTIFICATION",
+              "WISE_BALANCE",
+              "FPS_NOTIFICATION"
+            ],
+            "transferType": "DEPOSIT",
+            "errors": {},
+            "requestErrors": {}
+          }
+        }
+      }
+    },
+    {
+      "region": "HKG",
+      "currenciesSource": "https://www.interactivebrokers.com/aces/Funding/Methods/Currencies?type=DEPOSIT&colr=HKG",
+      "currenciesResponse": {
+        "currencies": [
+          "CNH",
+          "CHF",
+          "GBP",
+          "SEK",
+          "HKD",
+          "MYR",
+          "IDR",
+          "CAD",
+          "RON",
+          "MXN",
+          "NOK",
+          "DKK",
+          "NZD",
+          "PLN",
+          "JPY",
+          "ZAR",
+          "AUD",
+          "ILS",
+          "EUR",
+          "SGD",
+          "HUF",
+          "USD",
+          "CZK"
+        ],
+        "ibEntity": "HK",
+        "domestic": "CNH",
+        "errors": {},
+        "requestErrors": {}
+      },
+      "deposits": {
+        "USD": {
+          "source": "https://www.interactivebrokers.com/aces/Funding/Methods?type=DEPOSIT&colr=HKG&currency=USD",
+          "response": {
+            "methods": [
+              "WIRE_NOTIFICATION",
+              "DIRECT_DEPOSIT",
+              "ACH",
+              "WISE_BALANCE",
+              "BILL_PAY_NOTIFICATION"
+            ],
+            "transferType": "DEPOSIT",
+            "errors": {},
+            "requestErrors": {}
+          }
+        },
+        "HKD": {
+          "source": "https://www.interactivebrokers.com/aces/Funding/Methods?type=DEPOSIT&colr=HKG&currency=HKD",
+          "response": {
+            "methods": [
+              "EDDA",
+              "FPS_NOTIFICATION",
+              "WIRE_NOTIFICATION",
+              "WISE_BALANCE",
+              "CHECK_NOTIFICATION"
+            ],
+            "transferType": "DEPOSIT",
+            "errors": {},
+            "requestErrors": {}
+          }
+        },
+        "CNH": {
+          "source": "https://www.interactivebrokers.com/aces/Funding/Methods?type=DEPOSIT&colr=HKG&currency=CNH",
+          "response": {
+            "methods": [
+              "EDDA",
+              "FPS_NOTIFICATION",
+              "WIRE_NOTIFICATION",
+              "WISE_BALANCE"
+            ],
+            "transferType": "DEPOSIT",
+            "errors": {},
+            "requestErrors": {}
+          }
+        }
+      }
+    }
+  ],
+  "residencyLabelSource": "https://www.interactivebrokers.com/am.webapp/i18n/Acct_Mgmt_en.json"
+}

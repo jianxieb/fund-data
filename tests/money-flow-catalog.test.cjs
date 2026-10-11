@@ -5,6 +5,7 @@ const D = require('../data/money-flow.js');
 const { audit: auditCurrent, config: currentConfig } = require('../scripts/audit_money_flow.cjs');
 const Q = require('./fixtures/money-flow-quotes-20261009.json');
 const diversityQuotes = require('./fixtures/money-flow-quotes-20261011.json');
+const fundingEvidence = require('./fixtures/money-flow-ibkr-funding-20261011.json');
 const config = { ...currentConfig, date: '2026-10-10' };
 const close = (a, b) => assert.ok(Math.abs(a - b) < 1e-6, a + ' != ' + b);
 const base = M.calculatorRoute({ ...config, startBank: 'cib', bank: 'bochk', broker: 'za', returnBank: 'bochk', exitBank: 'hsbc', route: 'USD', outcome: 'broker-balance' });
@@ -14,6 +15,39 @@ const ledger = r => {
   close(r.budgetCny + r.profitUsd * r.refs.USD - r.costCny - r.taxCny + r.fxImpactCny, r.netCny);
   close(r.rows.reduce((sum, x) => sum + (x.cny || 0), 0), r.costCny);
 };
+
+test('IBKR funding choices agree with the current public tool for mainland and Hong Kong residents', () => {
+  const ibkr = D.brokers.find(b => b.id === 'ibkr');
+  for (const profile of fundingEvidence.profiles) {
+    assert.equal(Object.keys(profile.currenciesResponse.errors).length, 0);
+    assert.equal(profile.currenciesResponse.ibEntity, profile.region === 'CHN' ? 'LLC' : 'HK');
+    for (const currency of D.calculator.currencies) {
+      const api = profile.deposits[currency].response;
+      assert.deepEqual(api.errors, {}); assert.deepEqual(api.requestErrors, {});
+      for (const [channel, method] of [['fps', 'FPS_NOTIFICATION'], ['edda', 'EDDA']]) {
+        assert.equal(ibkr.depositCurrencies[channel].includes(currency), api.methods.includes(method), profile.region + '/' + currency + '/' + channel);
+      }
+      for (const bank of D.calculator.hkBanks) for (const fxMode of ['manual', 'auto', 'bank']) {
+        const channels = M.calculatorChannels({ ...base, broker: 'ibkr', bank, route: currency, fxMode }, D).depositMethods;
+        const funded = fxMode === 'bank' ? 'USD' : currency;
+        for (const [channel, method] of [['fps', 'FPS_NOTIFICATION'], ['edda', 'EDDA']]) {
+          assert.equal(channels.includes(channel), profile.deposits[funded].response.methods.includes(method));
+        }
+      }
+    }
+  }
+  assert.deepEqual(D.broker.depositCurrencies, ibkr.depositCurrencies);
+});
+
+test('broker local payment channels use their own published currency coverage', () => {
+  for (const bank of D.calculator.hkBanks) for (const [broker, fps, edda] of [
+    ['chief', ['HKD'], ['HKD', 'CNH']], ['usmart', ['HKD', 'CNH'], ['HKD']]
+  ]) for (const route of D.calculator.currencies) {
+    const methods = M.calculatorChannels({ ...base, bank, broker, route, fxMode: 'manual' }, D).depositMethods;
+    assert.equal(methods.includes('fps'), fps.includes(route), bank + '/' + broker + '/' + route);
+    assert.equal(methods.includes('edda'), edda.includes(route), bank + '/' + broker + '/' + route);
+  }
+});
 
 test('all 151875 catalogue combinations retain selection and either reconcile or name the exact local issue', () => {
   const r = auditCurrent({ quotes: Q, date: config.date });

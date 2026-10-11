@@ -1164,7 +1164,7 @@
     const currency = s.route === 'USD' || s.fxMode === 'bank' ? 'USD' : s.route;
     const depositMethods = broker?.integratedBank ? [broker.integratedBank === bank?.id ? 'internal' : 'chats'] : [
       ...(broker?.internalFundingBanks?.includes(bank?.id) ? ['internal'] : []),
-      ...(currency === 'USD' ? ['chats', 'swift'] : [...(broker?.id === 'chief' && currency === 'CNH' ? [] : ['fps']), 'edda', 'swift'])
+      ...(currency === 'USD' ? ['chats', 'swift'] : [...['fps', 'edda'].filter(channel => broker?.depositCurrencies?.[channel]?.includes(currency)), 'swift'])
     ];
     const returnMethods = ['swift'];
     if (returning?.id === 'bochk' && exit?.group === 'boc') returnMethods.unshift('bochk-fast');
