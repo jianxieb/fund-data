@@ -75,6 +75,20 @@ test('all 151875 catalogue combinations retain selection and either reconcile or
   assert.equal(r.channelProfiles[0].profile.trade25, false);
   assert.deepEqual(r.channelProfiles[2].qualificationCoverage, ['chequePreFilled', 'chiefMonthly', 'cnHangFeeWaived', 'cnHsbcFeeWaived', 'cnScFeeWaived',
     'hsbcBalanceWaiver', 'scCnhAccount', 'trade25', 'usmartPromo', 'zaLv2']);
+  const bounds = r.numericBoundaries;
+  assert.equal(bounds.checked, 43875);
+  assert.deepEqual(bounds.profiles.map(p => p.id), ['principal-0.01', 'principal-1', 'principal-100', 'principal-1000', 'principal-100000', 'principal-1000000',
+    'transfers-120', 'holding-1200-months', 'share-price-0.01', 'share-price-1000000', 'orders-120-per-side', 'impossible-loss', 'oversized-tax']);
+  for (const p of bounds.profiles) {
+    assert.equal(p.checked, 3375); assert.equal(p.priced + p.partial + p.routeIssues, p.checked);
+    assert.equal(p.ledgerChecks, p.priced + p.partial); assert.ok(p.referencePriced <= p.priced);
+    if (p.id === 'impossible-loss' || p.id === 'oversized-tax') {
+      assert.equal(p.routeIssues, p.checked); assert.ok(p.retainedPartialResults > 0);
+    }
+  }
+  for (const key of ['checked', 'priced', 'referencePriced', 'partial', 'routeIssues', 'ledgerChecks', 'retainedPartialResults']) {
+    assert.equal(bounds[key], bounds.profiles.reduce((sum, p) => sum + p[key], 0));
+  }
 });
 
 test('ordinary CIB wire is the default; the optional full-amount service adds exactly 50 CNY per payment', () => {

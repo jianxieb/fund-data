@@ -48,7 +48,62 @@ function audit({ quotes = Q, date = config.date } = {}) {
       }
   result.routes = [...routes.values()]; result.distinctCompleteRoutes = routes.size;
   result.channelProfiles = auditChannels({ quotes, date });
+  result.numericBoundaries = auditNumericBoundaries({ quotes, date });
   return result;
+}
+function auditNumericBoundaries({ quotes = Q, date = config.date } = {}) {
+  const cases = [
+    { id: 'principal-0.01', budgetCny: .01 }, { id: 'principal-1', budgetCny: 1 },
+    { id: 'principal-100', budgetCny: 100 }, { id: 'principal-1000', budgetCny: 1000 },
+    { id: 'principal-100000', budgetCny: 100000 }, { id: 'principal-1000000', budgetCny: 1000000 },
+    { id: 'transfers-120', count: 120 }, { id: 'holding-1200-months', months: 1200 },
+    { id: 'share-price-0.01', sharePriceUsd: .01 }, { id: 'share-price-1000000', sharePriceUsd: 1000000 },
+    { id: 'orders-120-per-side', buyOrders: 120, sellOrders: 120 },
+    { id: 'impossible-loss', profitUsd: -1000000 }, { id: 'oversized-tax', taxableCny: 100000000 }
+  ];
+  const report = { checked: 0, priced: 0, referencePriced: 0, partial: 0, routeIssues: 0, ledgerChecks: 0,
+    retainedPartialResults: 0, profiles: [] };
+  const base = { ...config, date, count: 1, months: 0, trade25: false, hsbcBalanceWaiver: false,
+    cnHsbcFeeWaived: false, cnHangFeeWaived: false, cnScFeeWaived: false, scCnhAccount: true };
+  for (const { id, ...changes } of cases) {
+    const profile = { id, inputs: changes, checked: 0, priced: 0, referencePriced: 0, partial: 0, routeIssues: 0,
+      ledgerChecks: 0, retainedPartialResults: 0, issueCounts: {} };
+    for (const startBank of D.calculator.mainland) for (const bank of D.calculator.hkBanks) for (const broker of D.calculator.brokers)
+      for (const route of D.calculator.currencies) for (const outcome of ['broker-balance', 'usd-balance', 'usd-card', 'cnh-card', 'mainland']) {
+        const s = M.calculatorRoute({ ...base, ...changes, startBank, bank, broker, route, outcome, returnBank: bank, exitBank: startBank });
+        if (M.calculatorIssue(s, D)) throw new Error('Numeric boundary removed a catalogue choice: ' + JSON.stringify(s));
+        report.checked++; profile.checked++;
+        const data = M.calculatorJourney(s, D, quotes), r = data.selected || data.partial;
+        for (const row of r?.rows || []) {
+          if (row.cny !== null && !Number.isFinite(row.cny)) throw new Error('Non-finite boundary fee: ' + JSON.stringify(s));
+          if (/NaN|undefined/.test(row.label)) throw new Error('Invalid boundary label: ' + JSON.stringify(s));
+          if (row.items?.every(item => Number.isFinite(item.cny)) && Number.isFinite(row.cny) &&
+            Math.abs(row.items.reduce((sum, item) => sum + item.cny, 0) - row.cny) > 1e-6) throw new Error('Boundary fee item sum mismatch: ' + JSON.stringify(s));
+        }
+        for (const value of Object.values(r?.steps || {})) if (typeof value === 'number' && (!Number.isFinite(value) || value < -1e-6)) throw new Error('Invalid boundary balance: ' + JSON.stringify(s));
+        if (!data.selected) {
+          if (!data.error || /NaN|undefined/.test(data.error)) throw new Error('Unnamed boundary failure: ' + JSON.stringify(s));
+          report.routeIssues++; profile.routeIssues++;
+          if (r?.rows?.some(row => Number.isFinite(row.cny))) { report.retainedPartialResults++; profile.retainedPartialResults++; }
+          profile.issueCounts[data.error] = (profile.issueCounts[data.error] || 0) + 1;
+          continue;
+        }
+        const expected = r.budgetCny + r.profitUsd * r.refs.USD - r.costCny - r.taxCny + r.fxImpactCny;
+        if (!Number.isFinite(r.net) || r.net < -1e-6 || Math.abs(expected - r.netCny) > 1e-6 ||
+          Math.abs(r.rows.reduce((sum, row) => sum + (row.cny ?? 0), 0) - r.costCny) > 1e-6) throw new Error('Boundary ledger mismatch: ' + JSON.stringify(s));
+        report.ledgerChecks++; profile.ledgerChecks++;
+        if (r.complete && r.quotedCore) {
+          if (r.missing.length || r.rows.some(row => row.cny === null)) throw new Error('False complete boundary quote: ' + JSON.stringify(s));
+          report.priced++; profile.priced++;
+          if (r.rows.some(row => row.estimate)) { report.referencePriced++; profile.referencePriced++; }
+        } else {
+          if (!r.missing.length && r.quotedCore) throw new Error('Unnamed boundary price gap: ' + JSON.stringify(s));
+          report.partial++; profile.partial++;
+        }
+      }
+    report.profiles.push(profile);
+  }
+  return report;
 }
 function auditChannels({ quotes = Q, date = config.date } = {}) {
   // Enumerate the channels actually offered by the UI, including each FX
@@ -154,7 +209,7 @@ function auditChannels({ quotes = Q, date = config.date } = {}) {
     return report;
   });
 }
-module.exports = { audit, auditChannels, config, Q };
+module.exports = { audit, auditChannels, auditNumericBoundaries, config, Q };
 if (require.main === module) {
   const result = audit();
   if (process.argv.includes('--write')) fs.writeFileSync(path.join(__dirname, '../docs/money-flow-combinations.json'), JSON.stringify(result, null, 2) + '\n');

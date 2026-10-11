@@ -6011,5 +6011,286 @@
         "zaLv2"
       ]
     }
-  ]
+  ],
+  "numericBoundaries": {
+    "checked": 43875,
+    "priced": 1101,
+    "referencePriced": 441,
+    "partial": 20118,
+    "routeIssues": 22656,
+    "ledgerChecks": 21219,
+    "retainedPartialResults": 16606,
+    "profiles": [
+      {
+        "id": "principal-0.01",
+        "inputs": {
+          "budgetCny": 0.01
+        },
+        "checked": 3375,
+        "priced": 0,
+        "referencePriced": 0,
+        "partial": 0,
+        "routeIssues": 3375,
+        "ledgerChecks": 0,
+        "retainedPartialResults": 1325,
+        "issueCounts": {
+          "卖出资金不足以支付交易及证券账户费用。": 55,
+          "余额不足以支付入金及换汇费用。": 250,
+          "预算不足以支付汇出费，或所选优惠不在有效期内。": 2050,
+          "美元余额不足以支付买入最低费用。": 720,
+          "余额不足以支付入金费用。": 50,
+          "渣打中国的USD现汇卖出价尚未取得；到账金额暂不可算。": 125,
+          "渣打中国的HKD现汇卖出价尚未取得；到账金额暂不可算。": 125
+        }
+      },
+      {
+        "id": "principal-1",
+        "inputs": {
+          "budgetCny": 1
+        },
+        "checked": 3375,
+        "priced": 3,
+        "referencePriced": 3,
+        "partial": 42,
+        "routeIssues": 3330,
+        "ledgerChecks": 45,
+        "retainedPartialResults": 1280,
+        "issueCounts": {
+          "余额不足以支付入金及换汇费用。": 250,
+          "预算不足以支付汇出费，或所选优惠不在有效期内。": 2050,
+          "美元余额不足以支付买入最低费用。": 720,
+          "美元余额不足以支付汇回内地的费用。": 6,
+          "众安 ZA Bank不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 2,
+          "众安 ZA Bank扣账卡以港币结算，不支持人民币余额原币消费；已保留出金后的美元余额。": 2,
+          "余额不足以支付入金费用。": 50,
+          "渣打中国的USD现汇卖出价尚未取得；到账金额暂不可算。": 125,
+          "渣打中国的HKD现汇卖出价尚未取得；到账金额暂不可算。": 125
+        }
+      },
+      {
+        "id": "principal-100",
+        "inputs": {
+          "budgetCny": 100
+        },
+        "checked": 3375,
+        "priced": 95,
+        "referencePriced": 35,
+        "partial": 619,
+        "routeIssues": 2661,
+        "ledgerChecks": 714,
+        "retainedPartialResults": 711,
+        "issueCounts": {
+          "预算不足以支付汇出费，或所选优惠不在有效期内。": 1950,
+          "美元余额不足以支付买入最低费用。": 195,
+          "众安 ZA Bank不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 16,
+          "众安 ZA Bank扣账卡以港币结算，不支持人民币余额原币消费；已保留出金后的美元余额。": 16,
+          "众安 ZA Bank不接受支票存款；致富 · 网上直属客户的美元支票不能直接存入该账户。已保留券商美元余额。": 32,
+          "盈立 · 个人标准账户美元提至数字银行须超过20 USD。": 32,
+          "余额不足以支付入金费用。": 50,
+          "余额不足以支付入金及换汇费用。": 120,
+          "渣打中国的USD现汇卖出价尚未取得；到账金额暂不可算。": 125,
+          "渣打中国的HKD现汇卖出价尚未取得；到账金额暂不可算。": 125
+        }
+      },
+      {
+        "id": "principal-1000",
+        "inputs": {
+          "budgetCny": 1000
+        },
+        "checked": 3375,
+        "priced": 137,
+        "referencePriced": 47,
+        "partial": 2688,
+        "routeIssues": 550,
+        "ledgerChecks": 2825,
+        "retainedPartialResults": 550,
+        "issueCounts": {
+          "众安 ZA Bank不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 100,
+          "众安 ZA Bank扣账卡以港币结算，不支持人民币余额原币消费；已保留出金后的美元余额。": 100,
+          "众安 ZA Bank不接受支票存款；致富 · 网上直属客户的美元支票不能直接存入该账户。已保留券商美元余额。": 100,
+          "渣打中国的USD现汇卖出价尚未取得；到账金额暂不可算。": 125,
+          "渣打中国的HKD现汇卖出价尚未取得；到账金额暂不可算。": 125
+        }
+      },
+      {
+        "id": "principal-100000",
+        "inputs": {
+          "budgetCny": 100000
+        },
+        "checked": 3375,
+        "priced": 150,
+        "referencePriced": 60,
+        "partial": 2675,
+        "routeIssues": 550,
+        "ledgerChecks": 2825,
+        "retainedPartialResults": 550,
+        "issueCounts": {
+          "众安 ZA Bank不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 100,
+          "众安 ZA Bank扣账卡以港币结算，不支持人民币余额原币消费；已保留出金后的美元余额。": 100,
+          "众安 ZA Bank不接受支票存款；致富 · 网上直属客户的美元支票不能直接存入该账户。已保留券商美元余额。": 100,
+          "渣打中国的USD现汇卖出价尚未取得；到账金额暂不可算。": 125,
+          "渣打中国的HKD现汇卖出价尚未取得；到账金额暂不可算。": 125
+        }
+      },
+      {
+        "id": "principal-1000000",
+        "inputs": {
+          "budgetCny": 1000000
+        },
+        "checked": 3375,
+        "priced": 150,
+        "referencePriced": 60,
+        "partial": 2675,
+        "routeIssues": 550,
+        "ledgerChecks": 2825,
+        "retainedPartialResults": 550,
+        "issueCounts": {
+          "众安 ZA Bank不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 100,
+          "众安 ZA Bank扣账卡以港币结算，不支持人民币余额原币消费；已保留出金后的美元余额。": 100,
+          "众安 ZA Bank不接受支票存款；致富 · 网上直属客户的美元支票不能直接存入该账户。已保留券商美元余额。": 100,
+          "渣打中国的USD现汇卖出价尚未取得；到账金额暂不可算。": 125,
+          "渣打中国的HKD现汇卖出价尚未取得；到账金额暂不可算。": 125
+        }
+      },
+      {
+        "id": "transfers-120",
+        "inputs": {
+          "count": 120
+        },
+        "checked": 3375,
+        "priced": 137,
+        "referencePriced": 47,
+        "partial": 2688,
+        "routeIssues": 550,
+        "ledgerChecks": 2825,
+        "retainedPartialResults": 550,
+        "issueCounts": {
+          "众安 ZA Bank不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 100,
+          "众安 ZA Bank扣账卡以港币结算，不支持人民币余额原币消费；已保留出金后的美元余额。": 100,
+          "众安 ZA Bank不接受支票存款；致富 · 网上直属客户的美元支票不能直接存入该账户。已保留券商美元余额。": 100,
+          "渣打中国的USD现汇卖出价尚未取得；到账金额暂不可算。": 125,
+          "渣打中国的HKD现汇卖出价尚未取得；到账金额暂不可算。": 125
+        }
+      },
+      {
+        "id": "holding-1200-months",
+        "inputs": {
+          "months": 1200
+        },
+        "checked": 3375,
+        "priced": 25,
+        "referencePriced": 25,
+        "partial": 1235,
+        "routeIssues": 2115,
+        "ledgerChecks": 1260,
+        "retainedPartialResults": 2115,
+        "issueCounts": {
+          "当前余额不足以支付账户期间费及其他固定支出。": 1565,
+          "众安 ZA Bank不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 100,
+          "众安 ZA Bank扣账卡以港币结算，不支持人民币余额原币消费；已保留出金后的美元余额。": 100,
+          "众安 ZA Bank不接受支票存款；致富 · 网上直属客户的美元支票不能直接存入该账户。已保留券商美元余额。": 100,
+          "渣打中国的USD现汇卖出价尚未取得；到账金额暂不可算。": 125,
+          "渣打中国的HKD现汇卖出价尚未取得；到账金额暂不可算。": 125
+        }
+      },
+      {
+        "id": "share-price-0.01",
+        "inputs": {
+          "sharePriceUsd": 0.01
+        },
+        "checked": 3375,
+        "priced": 104,
+        "referencePriced": 44,
+        "partial": 2146,
+        "routeIssues": 1125,
+        "ledgerChecks": 2250,
+        "retainedPartialResults": 1125,
+        "issueCounts": {
+          "卖出资金不足以支付交易及证券账户费用。": 625,
+          "众安 ZA Bank不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 75,
+          "众安 ZA Bank扣账卡以港币结算，不支持人民币余额原币消费；已保留出金后的美元余额。": 75,
+          "众安 ZA Bank不接受支票存款；致富 · 网上直属客户的美元支票不能直接存入该账户。已保留券商美元余额。": 100,
+          "渣打中国的USD现汇卖出价尚未取得；到账金额暂不可算。": 125,
+          "渣打中国的HKD现汇卖出价尚未取得；到账金额暂不可算。": 125
+        }
+      },
+      {
+        "id": "share-price-1000000",
+        "inputs": {
+          "sharePriceUsd": 1000000
+        },
+        "checked": 3375,
+        "priced": 150,
+        "referencePriced": 60,
+        "partial": 2675,
+        "routeIssues": 550,
+        "ledgerChecks": 2825,
+        "retainedPartialResults": 550,
+        "issueCounts": {
+          "众安 ZA Bank不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 100,
+          "众安 ZA Bank扣账卡以港币结算，不支持人民币余额原币消费；已保留出金后的美元余额。": 100,
+          "众安 ZA Bank不接受支票存款；致富 · 网上直属客户的美元支票不能直接存入该账户。已保留券商美元余额。": 100,
+          "渣打中国的USD现汇卖出价尚未取得；到账金额暂不可算。": 125,
+          "渣打中国的HKD现汇卖出价尚未取得；到账金额暂不可算。": 125
+        }
+      },
+      {
+        "id": "orders-120-per-side",
+        "inputs": {
+          "buyOrders": 120,
+          "sellOrders": 120
+        },
+        "checked": 3375,
+        "priced": 150,
+        "referencePriced": 60,
+        "partial": 2675,
+        "routeIssues": 550,
+        "ledgerChecks": 2825,
+        "retainedPartialResults": 550,
+        "issueCounts": {
+          "众安 ZA Bank不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 100,
+          "众安 ZA Bank扣账卡以港币结算，不支持人民币余额原币消费；已保留出金后的美元余额。": 100,
+          "众安 ZA Bank不接受支票存款；致富 · 网上直属客户的美元支票不能直接存入该账户。已保留券商美元余额。": 100,
+          "渣打中国的USD现汇卖出价尚未取得；到账金额暂不可算。": 125,
+          "渣打中国的HKD现汇卖出价尚未取得；到账金额暂不可算。": 125
+        }
+      },
+      {
+        "id": "impossible-loss",
+        "inputs": {
+          "profitUsd": -1000000
+        },
+        "checked": 3375,
+        "priced": 0,
+        "referencePriced": 0,
+        "partial": 0,
+        "routeIssues": 3375,
+        "ledgerChecks": 0,
+        "retainedPartialResults": 3375,
+        "issueCounts": {
+          "亏损不能超过实际买入金额。": 3125,
+          "渣打中国的USD现汇卖出价尚未取得；到账金额暂不可算。": 125,
+          "渣打中国的HKD现汇卖出价尚未取得；到账金额暂不可算。": 125
+        }
+      },
+      {
+        "id": "oversized-tax",
+        "inputs": {
+          "taxableCny": 100000000
+        },
+        "checked": 3375,
+        "priced": 0,
+        "referencePriced": 0,
+        "partial": 0,
+        "routeIssues": 3375,
+        "ledgerChecks": 0,
+        "retainedPartialResults": 3375,
+        "issueCounts": {
+          "卖出资金不足以支付税款预留。": 3125,
+          "渣打中国的USD现汇卖出价尚未取得；到账金额暂不可算。": 125,
+          "渣打中国的HKD现汇卖出价尚未取得；到账金额暂不可算。": 125
+        }
+      }
+    ]
+  }
 }
