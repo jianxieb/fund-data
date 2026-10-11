@@ -5,7 +5,7 @@
     mainlandMethod: 'boc-mobile', depositMethod: 'chats', fxMode: 'manual', returnMethod: '', comparison: 'start', count: '1', usedFreeTransfers: '0',
     months: '12', balanceHkd: '0', returnBalanceHkd: '0', bankBalancesHkd: {}, profitUsd: '0', taxableCny: '', taxRate: '20', creditCny: '0', withdrawalIndex: '1', chequeIndex: '1', chequePreFilled: false, tradeFeeUsd: '',
     broker: 'za', buyOrders: '1', sellOrders: '1', sharePriceUsd: '100', trade25: false, chiefMonthly: false, usmartPromo: false, zaLv2: false,
-    hsbcBalanceWaiver: false, scCnhAccount: false, otherTurnoverHkd: '0', usedPromoOrders: '0', usmartDays: '0', useVoucher: false, voucherScope: 'platform', voucherUsd: '0', voucherOrders: '1', voucherExpiry: '',
+    hsbcBalanceWaiver: false, hkHsbcFreeMonths: '0', scCnhAccount: false, otherTurnoverHkd: '0', usedPromoOrders: '0', usmartDays: '0', useVoucher: false, voucherScope: 'platform', voucherUsd: '0', voucherOrders: '1', voucherExpiry: '',
     cnHsbcFeeWaived: false, cnHangFeeWaived: false, cnScFeeWaived: false, cnHsbcFreeMonths: '0', cnHangFreeMonths: '0', cnScFreeMonths: '0',
     senderFeeCny: '', entryMiddleCny: '', entryInwardHkd: '', depositHkd: '', depositOtherCny: '', inwardHkd: '', intermediaryCny: '',
     returnWireHkd: '', returnExtraCny: '', monthlyHkd: '', returnMonthlyHkd: '', startSell: '', entryPrice: '', exitPrice: '',
@@ -130,6 +130,7 @@
     let issue = '';
     if (monthField && (key === 'months' || !empty) && (value == null || value < 0 || !Number.isInteger(value))) issue = '月数须为非负整数。';
     else if (key === 'months' && value > 1200) issue = '账户使用月数须为0–1200的整数。';
+    else if (key === 'hkHsbcFreeMonths' && value > 3) issue = 'One剩余免收费月数须为0–3的整数。';
     else if (positiveInteger.includes(key) && (value == null || value < 1 || !Number.isInteger(value) || (!['withdrawalIndex', 'chequeIndex'].includes(key) && value > 120)))
       issue = key === 'withdrawalIndex' ? '出金次数须为正整数。' : key === 'chequeIndex' ? '当日存票序号须为正整数。' : '笔数须为1–120的整数。';
     else if (key === 'voucherOrders' && (value == null || value < 1 || value > 240 || !Number.isInteger(value))) issue = '费用券适用订单数须为1–240的整数。';
@@ -342,7 +343,7 @@
     const hkAccountCny = hkAccountItems?.some(item => item.cny == null) ? null : hkAccountItems?.reduce((sum, item) => sum + item.cny, 0);
     let accountOptions = action('账户使用 ' + esc(state.months) + '个月 · ' + esc(chargingBanks || '银行') + '管理费 ' + (accountCost ? cost(hkAccountCny) : accounts.map(b => num(b.monthlyHkd) + ' HKD/月').join('、')),
       'detail', 'data-value="bank-settings" aria-haspopup="dialog"', 'flow-setting-button');
-    if (accounts.some(b => b.id === 'hsbc')) accountOptions += checkbox('hsbcBalanceWaiver', 'HSBC One已满足免管理费条件');
+    if (accounts.some(b => b.id === 'hsbc')) accountOptions += checkbox('hsbcBalanceWaiver', 'HSBC One本持有期均免管理费');
     html += node('02', 'bank', '香港收款银行', s.bank, nodeBalance(r, steps.hongKong, state.route, '汇款到账', transferKeys), accountOptions);
     const fxControl = state.route === 'USD' ? '' : select('fxMode', '换美元地点', [...(s.broker.id === 'ibkr' ? [['manual', 'IBKR手动换汇'], ['auto', 'IBKR自动换汇']] : []), ['bank', shortName(s.bank) + '换汇']]);
     const fundingPath = row(r, 'brokerSpread')?.path;
@@ -406,7 +407,9 @@
     return [...new Map([s.bank, banks.find(b => b.id === s.broker.integratedBank), M.calculatorFundingBank(state, D), ...(state.outcome === 'broker-balance' ? [] : [s.returning])].filter(Boolean).map(b => [b.id, b])).values()];
   }
   function accountFeeBasis(item) {
-    if (item.region !== 'mainland') return num(item.monthlyHkd) + ' HKD/月 × ' + num(item.months, 0) + '个月';
+    if (item.status) return item.status;
+    if (item.region !== 'mainland') return num(item.monthlyHkd) + ' HKD/月 × ' + num(item.monthlyHkd === 0 ? item.months : item.chargedMonths ?? item.months, 0) + '个月' +
+      (item.monthlyHkd > 0 && item.waivedMonths > 0 ? '；另' + num(item.waivedMonths, 0) + '个月免收' : '');
     if (item.waived) return '本持有期' + num(item.months, 0) + '个月均已满足免月费条件';
     return num(item.monthlyCny, 0) + ' CNY/月 × ' + num(item.chargedMonths, 0) + '个月' + (item.waivedMonths > 0 ? '；另' + num(item.waivedMonths, 0) + '个月免收' : '');
   }
@@ -586,9 +589,11 @@
     if (key === 'budget') {
       title = '本金与汇出笔数'; content = '<div class="flow-form-grid">' + field('budgetCny', '人民币本金 · 含费用', 'CNY') + field('count', '汇出笔数', '笔') + '</div>';
     } else if (key === 'bank-settings') {
-      title = '香港银行账户费用'; content = '<div class="flow-form-grid">' + field('months', '账户使用／持有月数', '月') + '</div>';
-      content += row(r, 'account')?.items.filter(x => x.region !== 'mainland').map(x => feeLine(x.label, x.cny, accountFeeBasis(x), num(x.cny / r.refs.HKD) + ' HKD')).join('') || '';
-      if (bankAccountSet(s).some(b => b.id === 'hsbc')) content += '<p>HSBC One：过去三个月平均理财总值达到10,000 HKD即免管理费，包含汇丰所持美股市值，不仅是现金。2026年前开立的账户、香港身份证开户另获豁免。符合时勾选银行节点的免管理费条件；本次入金不代表过去三个月已达标。</p>';
+      const hsbcUsed = bankAccountSet(s).some(b => b.id === 'hsbc');
+      title = '香港银行账户费用'; content = '<div class="flow-form-grid">' + field('months', '账户使用／持有月数', '月') +
+        (hsbcUsed && !state.hsbcBalanceWaiver ? field('hkHsbcFreeMonths', 'One新户剩余免收费月数', '月') : '') + '</div>';
+      content += row(r, 'account')?.items.filter(x => x.region !== 'mainland').map(x => feeLine(x.label, x.cny, accountFeeBasis(x), x.cny == null ? x.status || '' : num(x.cny / r.refs.HKD) + ' HKD')).join('') || '';
+      if (hsbcUsed) content += '<p>One新户开户后的首三个完整历月评估，随后未达标月份收100 HKD。剩余免收费月数默认0，不假定本次新开户；以后各月均符合豁免时勾选银行节点。过去三个月平均理财总值10,000 HKD含汇丰美股；香港身份证开户、2026年前One另获豁免。</p>';
       keys = bankAccountSet(s).flatMap(b => evidenceFor('hkAccount', b));
     } else if (key.startsWith('cn-bank-')) {
       const bank = mainland.find(bank => bank.id === key.slice(8)), service = bank?.accountService;

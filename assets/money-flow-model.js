@@ -701,8 +701,14 @@
       const hkAccountItem = (accountBank, balanceHkd, override) => {
         balanceHkd ??= bankBalances[accountBank.id] ?? 0;
         const monthlyHkd = maintenance(accountBank, balanceHkd, 1, override ?? (accountBank.id === 'hsbc' && config.hsbcBalanceWaiver ? 0 : null));
-        return { region: 'hong-kong', bankId: accountBank.id, label: accountBank.name + '期间管理费', months, monthlyHkd, balanceHkd,
-          cny: monthlyHkd == null ? null : monthlyHkd * months * refs.HKD };
+        const assessment = accountBank.introductoryAssessment, rawFreeMonths = assessment && config[assessment.freeMonthsField];
+        const freeMonths = rawFreeMonths == null || String(rawFreeMonths).trim() === '' ? 0 : number(rawFreeMonths);
+        const invalidAssessment = monthlyHkd > 0 && assessment && (!knownFee(freeMonths) || !Number.isInteger(freeMonths) || freeMonths > assessment.maximumMonths);
+        const waivedMonths = monthlyHkd === 0 ? months : invalidAssessment ? 0 : Math.min(months, assessment ? freeMonths : 0);
+        const chargedMonths = months - waivedMonths;
+        return { region: 'hong-kong', bankId: accountBank.id, label: accountBank.name + '期间管理费', months, monthlyHkd, balanceHkd, chargedMonths, waivedMonths,
+          ...(invalidAssessment ? { status: accountBank.name + '剩余免收费月数须为0–' + assessment.maximumMonths + '的整数。' } : {}),
+          cny: monthlyHkd == null || invalidAssessment ? null : monthlyHkd * chargedMonths * refs.HKD };
       };
       const accountItems = [hkAccountItem(bank, own('balanceHkd', isSelectedBank), own('monthlyHkd', isSelectedBank))];
       if (!keepInBroker && bank.id !== returning.id) accountItems.push(hkAccountItem(returning, own('returnBalanceHkd', isSelectedReturn), own('returnMonthlyHkd', isSelectedReturn)));
@@ -1127,7 +1133,7 @@
       const indicativeFx = unquotedBankFx ? bank.name + ' ' + currency + '/USD成交价（暂按参考中间价）' :
         currency !== 'USD' && fxMode !== 'bank' && ownEntryPrice == null ? 'IBKR ' + currency + '/USD成交价（暂按参考中间价）' : '';
       if (indicativeFx && !unquotedBankFx && !rows.some(row => row.key === 'brokerSpread' && row.cny == null)) missing.push(indicativeFx);
-      const preciseMissing = [...unpriced.flatMap(row => (row.items || [row]).filter(item => item.cny == null).map(item => item.label)),
+      const preciseMissing = [...unpriced.flatMap(row => (row.items || [row]).filter(item => item.cny == null).map(item => row.key === 'account' ? item.status || item.label : item.label)),
         ...missing.filter(reason => !unpriced.some(row => reason === row.label || row.key === 'sender' && reason === start.name + '所选渠道汇出收费'))];
       const requiredEligibility = [...new Set([start.required, ...(returnMethod === 'linked' ? [exit.required] : [])].filter(Boolean))];
       const eligibilityReasons = requiredEligibility.map(id => mainland.find(row => row.required === id)?.condition).filter(Boolean);

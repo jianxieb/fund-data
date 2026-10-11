@@ -1333,10 +1333,10 @@ test('an intermediate HSBC account adds the bank fee control while the BOCHK pat
   const quotes = require('./fixtures/money-flow-quotes-20261011.json');
   const ui = moneyUi({ ...currentRoute, date: '2026-10-11', startBank: 'hang', bank: 'hang', returnBank: 'bochk', broker: 'usmart',
     outcome: 'broker-balance', mainlandMethod: '', depositMethod: 'via-hsbc', hsbcBalanceWaiver: false }, quotes, '2026-10-11');
-  assert.match(ui.render(), /HSBC One已满足免管理费条件/);
+  assert.match(ui.render(), /HSBC One本持有期均免管理费/);
   ui.act('detail', '', 'bank-settings'); assert.match(ui.modal(), /汇丰 HSBC One期间管理费/); assert.match(ui.modal(), /100.00 HKD\/月 × 12个月/);
   ui.act('choose', 'depositMethod', 'via-bochk');
-  assert.doesNotMatch(ui.render(), /HSBC One已满足免管理费条件/);
+  assert.doesNotMatch(ui.render(), /HSBC One本持有期均免管理费/);
   ui.act('detail', '', 'bank-settings'); assert.doesNotMatch(ui.modal(), /汇丰 HSBC One期间管理费/);
 });
 
@@ -1726,10 +1726,34 @@ test('bank management stays next to the bank and monthly and period prices recon
     const ui = moneyUi({ ...currentRoute, count: 2, mainlandMethod: 'cib-go', broker, trade25: true, hsbcBalanceWaiver: false }), html = ui.render();
     const bank = html.split('data-flow-stage="02"')[1].split('</section>')[0];
     const trade = html.split('data-flow-stage="03"')[1].split('</section>')[0];
-    assert.match(bank, /HSBC One已满足免管理费条件/);
+    assert.match(bank, /HSBC One本持有期均免管理费/);
     assert.doesNotMatch(trade, /data-money-check="hsbcBalanceWaiver"/);
     ui.act('detail', '', 'bank-settings'); assert.match(ui.modal(), /100.00 HKD\/月 × 12个月/); assert.match(ui.modal(), /1200.00 HKD/);
     if (broker === 'hsbc') { assert.match(trade, /Trade25 · 仅美股月费0/); assert.doesNotMatch(trade, /25.00 HKD/); }
+  }
+});
+
+test('HSBC One remaining initial assessment is edited with bank fees and survives stock and account selections', () => {
+  const input = { ...currentRoute, hsbcBalanceWaiver: false, hkHsbcFreeMonths: 3, outcome: 'broker-balance' };
+  const ui = moneyUi(input); ui.render(); ui.act('detail', '', 'bank-settings');
+  assert.equal((ui.modal().match(/data-money-field="hkHsbcFreeMonths"/g) || []).length, 1);
+  assert.match(ui.modal(), /100.00 HKD\/月 × 9个月；另3个月免收/);
+  assert.match(ui.modal(), /900.00 HKD/);
+  ui.act('choose', 'broker', 'hsbc'); ui.act('choose', 'bank', 'bochk');
+  assert.equal(ui.saved().hkHsbcFreeMonths, 3);
+  ui.act('detail', '', 'bank-settings'); assert.match(ui.modal(), /data-money-field="hkHsbcFreeMonths"/);
+  const restored = moneyUi(ui.saved()); restored.render(); restored.act('detail', '', 'bank-settings');
+  assert.match(restored.modal(), /100.00 HKD\/月 × 9个月；另3个月免收/);
+  for (const overrides of [{ hsbcBalanceWaiver: true }, { bank: 'bochk', broker: 'za', outcome: 'broker-balance' }]) {
+    const hidden = moneyUi({ ...input, ...overrides }); hidden.render(); hidden.act('detail', '', 'bank-settings');
+    assert.doesNotMatch(hidden.modal(), /data-money-field="hkHsbcFreeMonths"/);
+  }
+  for (const hkHsbcFreeMonths of [-1, .5, 4, 'bad']) {
+    const invalid = moneyUi({ ...input, hkHsbcFreeMonths }); invalid.render(); invalid.act('detail', '', 'bank-settings');
+    assert.match(invalid.modal(), /aria-invalid="true" aria-describedby="flow-error-hkHsbcFreeMonths"/);
+    const hsbcFee = invalid.modal().split('汇丰 HSBC One期间管理费')[1].split('<div class="flow-fee-line">')[0];
+    assert.doesNotMatch(hsbcFee, /0.00 HKD<|0.00 HKD\/月/);
+    assert.match(invalid.modal(), /月数须为/);
   }
 });
 

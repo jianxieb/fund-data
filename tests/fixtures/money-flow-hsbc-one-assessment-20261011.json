@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-11",
+  "source": "https://www.hsbc.com.hk/content/dam/hsbc/hk/vam/pdf/HSBC_One_FAQ.pdf",
+  "pages": [3, 4, 5, 6],
+  "scope": "Non-Hong-Kong-ID customers opening or converting to HSBC One on or after 2026-01-01.",
+  "initialAssessmentCompleteCalendarMonths": 3,
+  "minimumAverageTrbHkd": 10000,
+  "monthlyBelowBalanceFeeHkd": 100,
+  "example": { "openedOrConverted": "2026-01-15", "assessmentFrom": "2026-02", "assessmentThrough": "2026-04", "firstChargeMonthIfBelowThreshold": "2026-05" },
+  "chargeDay": "Fourth working day of subsequent months, until the preceding three-month average TRB qualifies for the waiver.",
+  "trbIncludes": ["cash deposits", "local and overseas securities market value"],
+  "otherExemptions": ["Opened or converted using a Hong Kong ID", "Opened or converted before 2026-01-01"],
+  "calculationScope": "The holding-period control counts complete billing months. Remaining initial assessment months can be 0–3 and default to 0; the calculator does not assume an existing user is a new customer, treat a partial opening month as a full month, or infer historical TRB from the current principal. Full-period qualification is independent of the introductory phase. This is not an exact bank debit calendar."
+}
