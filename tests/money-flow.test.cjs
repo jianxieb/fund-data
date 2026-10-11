@@ -643,12 +643,41 @@ test('Trade25 US monthly fee is waived and the whole first quota-crossing order 
   const manual = M.brokerTradingFees({ ...feeConfig, trade25: true, tradeFeeUsd: 0 }, broker('hsbc'), 10000, 0, feeRefs);
   close(manual.totalUsd, 0); close(manual.monthlyHkd, 0);
 });
+test('Chief monthly allocations use gross dollar contributions and retain rounded cash, including vouchers', () => {
+  const evidence = require('./fixtures/money-flow-stock-units-20261011.json');
+  assert.equal(D.sources.chiefMonthlyTerms.url, evidence.chiefMonthly.source);
+  const settings = { ...feeConfig, chiefMonthly: true };
+  assert.match(M.brokerTradingFees(settings, broker('chief'), .99, 0, feeRefs).error, /供款.*1 USD/);
+  assert.match(M.brokerTradingFees({ ...settings, tradeFeeUsd: 0 }, broker('chief'), .99, 0, feeRefs).error, /供款.*1 USD/);
+  const minimum = M.brokerTradingFees(settings, broker('chief'), 1, 0, feeRefs);
+  assert.ok(!minimum.error); close(minimum.orders[0].contributionUsd, 1); close(minimum.investUsd, .99);
+  close(minimum.buyFeeUsd, .01); close(minimum.cashRemainderUsd, 0);
+  const threshold = M.brokerTradingFees({ ...settings, buyOrders: 2, sellOrders: 3 }, broker('chief'), 1001.7, 10, feeRefs);
+  assert.ok(!threshold.error);
+  assert.deepEqual(threshold.orders.filter(order => order.kind === 'buy').map(order => order.contributionUsd), [501, 500]);
+  close(threshold.orders[0].platform, .0015); close(threshold.orders[1].platform, 0);
+  for (const order of threshold.orders) {
+    assert.ok(Math.abs(order.shares * 100000 - Math.round(order.shares * 100000)) < 1e-7);
+    assert.ok(order.shares >= .00001);
+    if (order.kind === 'buy') assert.ok(order.value + order.feeUsd <= order.contributionUsd + 1e-8);
+  }
+  close(threshold.investUsd + threshold.buyFeeUsd + threshold.cashRemainderUsd, 1001.7);
+  close(threshold.orders.filter(order => order.kind === 'sell').reduce((sum, order) => sum + order.value, 0), threshold.investUsd + 10);
+  assert.ok(threshold.cashRemainderUsd >= .7);
+  const coupon = M.brokerTradingFees({ ...settings, useVoucher: true, voucherUsd: 2, voucherOrders: 2,
+    voucherScope: 'platform', voucherExpiry: '2026-12-31' }, broker('chief'), 1000.5, 0, feeRefs);
+  assert.ok(!coupon.error); close(coupon.orders[0].contributionUsd, 1000); close(coupon.orders[0].platform, .75);
+  close(coupon.orders[0].discount, .75);
+  close(coupon.investUsd + coupon.buyFeeUsd + coupon.cashRemainderUsd, 1000.5);
+  assert.match(M.brokerTradingFees({ ...settings, buyOrders: 3 }, broker('chief'), 2.99, 0, feeRefs).error, /供款.*1 USD/);
+  assert.match(M.brokerTradingFees({ ...settings, sharePriceUsd: 1000000 }, broker('chief'), 1, 0, feeRefs).error, /0.00001股/);
+});
 test('Chief monthly offer applies to eligible buys, expires and leaves clearing and ordinary sale fees', () => {
   const r = M.brokerTradingFees({ ...feeConfig, chiefMonthly: true }, broker('chief'), 500, 0, feeRefs);
   close(r.orders[0].platform, 0); assert.ok(r.orders[0].clearing > 0);
   close(r.orders[1].platform, .99);
   const large = M.brokerTradingFees({ ...feeConfig, chiefMonthly: true }, broker('chief'), 1000, 0, feeRefs);
-  close(large.orders[0].platform, (large.investUsd - 500) * .0015);
+  close(large.orders[0].platform, .75); close(large.orders[0].contributionUsd, 1000);
   const expired = M.brokerTradingFees({ ...feeConfig, chiefMonthly: true, date: '2027-01-01' }, broker('chief'), 500, 0, feeRefs);
   close(expired.orders[0].platform, .99); assert.match(expired.warnings.join(' '), /过期/);
 });
@@ -1260,6 +1289,32 @@ test('broker unit constraints preserve the bank flow and stable choices, and qua
     failed.render(); failed.act('detail', '', 'trade-settings'); assert.match(failed.modal(), /不足.*买入/);
     failed.act('pick', '', 'bank'); assert.equal((failed.modal().match(/data-field="bank"/g) || []).length, D.calculator.hkBanks.length);
     failed.act('pick', '', 'broker'); assert.equal((failed.modal().match(/data-field="broker"/g) || []).length, D.calculator.brokers.length);
+  }
+});
+
+test('Chief monthly contribution, quantity and cash changes remain visible without erasing bank charges or choices', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  for (const bank of D.calculator.hkBanks) {
+    const input = { ...currentRoute, date: '2026-10-11', startBank: 'boc', bank, returnBank: bank, broker: 'chief',
+      mainlandMethod: bank === 'bochk' ? 'boc-mobile' : 'boc-online', route: 'USD', outcome: 'broker-balance', months: 0,
+      chiefMonthly: true, buyOrders: 3, sellOrders: 2 };
+    const data = M.calculatorJourney(input, D, quotes), r = data.selected;
+    assert.ok(r); close(r.trading.investUsd + r.trading.buyFeeUsd + r.trading.cashRemainderUsd, r.steps.fundedUsd);
+    close(r.steps.proceedsUsd, r.steps.fundedUsd - r.trading.totalUsd);
+    const ui = moneyUi(input, quotes, input.date), buys = r.trading.orders.filter(order => order.kind === 'buy');
+    assert.match(ui.render(), new RegExp('扣费前供款 ' + buys.reduce((sum, order) => sum + order.contributionUsd, 0) + ' USD'));
+    assert.match(ui.render(), new RegExp(buys.reduce((sum, order) => sum + order.shares, 0).toFixed(5) + '股'));
+    assert.match(ui.render(), new RegExp('未买入余款 ' + r.trading.cashRemainderUsd.toFixed(5) + ' USD'));
+    const invalidInput = { ...input, sharePriceUsd: 1e10, useVoucher: true, voucherUsd: 100, voucherOrders: 6,
+      voucherScope: 'both', voucherExpiry: '2026-12-31' };
+    const failed = M.calculatorJourney(invalidInput, D, quotes);
+    assert.match(failed.error, /不足.*0.00001股/); assert.equal(failed.partial.errorAction, 'trade');
+    close(failed.partial.steps.fundedUsd, r.steps.fundedUsd);
+    assert.deepEqual(failed.partial.rows.filter(row => ['entry', 'deposit'].includes(row.step)), r.rows.filter(row => ['entry', 'deposit'].includes(row.step)));
+    assert.equal(M.calculatorRecommendations(invalidInput, D, quotes).plans.length, 0);
+    const failedUi = moneyUi(invalidInput, quotes, input.date); failedUi.render();
+    failedUi.act('detail', '', 'trade-settings'); assert.match(failedUi.modal(), /不足.*0.00001股/);
+    failedUi.act('pick', '', 'broker'); assert.equal((failedUi.modal().match(/data-field="broker"/g) || []).length, D.calculator.brokers.length);
   }
 });
 
@@ -2347,13 +2402,14 @@ test('cash below a broker minimum never becomes a free zero-value trade', () => 
     const r = M.brokerTradingFees(feeConfig, broker(id), .1, 0, feeRefs);
     assert.match(r.error, /不足.*买入/);
   }
-  for (const [id, offer] of [['ibkr', {}], ['chief', { chiefMonthly: true }],
+  for (const [id, offer] of [['ibkr', {}],
     ]) {
     const r = M.brokerTradingFees({ ...feeConfig, ...offer }, broker(id), .1, 0, feeRefs);
     assert.ok(!r.error, id); assert.ok(r.investUsd > 0, id);
     close(r.investUsd + r.buyFeeUsd, .1);
   }
   assert.match(M.brokerTradingFees({ ...feeConfig, trade25: true }, broker('hsbc'), .1, 0, feeRefs).error, /不足.*买入.*1股/);
+  assert.match(M.brokerTradingFees({ ...feeConfig, chiefMonthly: true }, broker('chief'), .1, 0, feeRefs).error, /供款.*1 USD/);
   const confirmed = M.brokerTradingFees({ ...feeConfig, tradeFeeUsd: 0 }, broker('za'), .1, 0, feeRefs);
   assert.match(confirmed.error, /不足.*买入.*1股/);
   const coupon = M.brokerTradingFees({ ...feeConfig, useVoucher: true, voucherUsd: 10, voucherOrders: 2,

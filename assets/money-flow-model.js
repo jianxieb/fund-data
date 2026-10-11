@@ -383,10 +383,12 @@
     const centsUp = value => value > 0 ? Math.ceil((value - 1e-10) * 100) / 100 : 0;
     const promoDate = d => d >= '2026-04-20' && d <= '2026-12-31';
     const override = number(config.tradeFeeUsd), wholeSharesOnly = !!broker.wholeSharesOnly;
-    const shareStep = wholeSharesOnly ? 1 : number(broker.shareStep), quantizedShares = positive(shareStep);
-    const estimate = buyValue => {
-      const units = quantizedShares ? Math.round(buyValue / price / shareStep) : null;
-      const shares = quantizedShares ? units * shareStep : buyValue / price, saleValue = buyValue + profitUsd;
+    const chiefMonthly = broker.id === 'chief' && !!config.chiefMonthly;
+    const shareStep = wholeSharesOnly ? 1 : chiefMonthly ? .00001 : number(broker.shareStep), quantizedShares = positive(shareStep);
+    const estimate = (buyValue, allocations) => {
+      const allocatedShares = allocations?.reduce((sum, allocation) => sum + allocation.shares, 0);
+      const units = quantizedShares ? Math.round((allocatedShares ?? buyValue / price) / shareStep) : null;
+      const shares = quantizedShares ? units * shareStep : buyValue / price, saleValue = (allocations ? shares * price : buyValue) + profitUsd;
       let remainingVoucher = voucher.ready ? voucher.amount : 0, couponsUsed = 0;
       let turnover = usedTurnover, orderIndex = usedQuota;
       const orders = [];
@@ -395,8 +397,10 @@
         for (let i = 0; i < count; i++) {
           // Allocate integer trading units, preserving the quantity across
           // different numbers of buys and sells and retaining spare cash.
-          const qty = quantizedShares ? (Math.floor(units / count) + (i < units % count ? 1 : 0)) * shareStep : shares / count;
-          const value = quantizedShares ? total * qty / shares : total / count, stockPrice = kind === 'buy' ? price : value / qty;
+          const allocation = kind === 'buy' ? allocations?.[i] : null;
+          const qty = allocation ? allocation.shares : quantizedShares ? (Math.floor(units / count) + (i < units % count ? 1 : 0)) * shareStep : shares / count;
+          const value = allocation ? qty * price : quantizedShares ? total * qty / shares : total / count, stockPrice = kind === 'buy' ? price : value / qty;
+          const contributionUsd = allocation?.contributionUsd;
           const fractional = qty > 0 && qty < 1 && value > 0;
           let commission = cappedCharge(broker.commission, qty, value), platform = cappedCharge(broker.platform, qty, value), offer = '', pricing = '';
           if (fractional && broker.fractionalCommission) {
@@ -413,7 +417,7 @@
             if (config.trade25 && commission === 0) offer = 'Trade25月额度';
           }
           if (broker.id === 'chief' && config.chiefMonthly && kind === 'buy' && d >= '2026-01-01' && d <= '2026-12-31') {
-            platform = Math.max(0, value - 500) * .0015; offer = '月供首500 USD';
+            platform = Math.max(0, (contributionUsd ?? value) - 500) * .0015; offer = '月供首500 USD';
           }
           const days = (Date.parse(d) - Date.parse(date)) / 864e5 + usmartDays;
           if (broker.id === 'usmart' && config.usmartPromo && promoDate(d) && days < 180 && stockPrice >= 100) {
@@ -430,7 +434,7 @@
           const voucherBase = voucher.scope === 'platform' ? platform : voucher.scope === 'both' ? commission + platform : commission;
           const discount = remainingVoucher > 0 && d <= voucher.expiry && couponsUsed < voucher.orders ? Math.min(remainingVoucher, voucherBase) : 0;
           if (discount > 0) { remainingVoucher -= discount; couponsUsed++; }
-          orders.push({ kind, date: d, value, shares: qty, commission, platform, clearing, sec, taf, cat, discount, offer, pricing,
+          orders.push({ kind, date: d, value, shares: qty, contributionUsd, commission, platform, clearing, sec, taf, cat, discount, offer, pricing,
             feeUsd: commission + platform + clearing + sec + taf + cat - discount });
           turnover += value * refs.USD / refs.HKD; orderIndex++;
         }
@@ -438,8 +442,31 @@
       side('buy', buys, buyValue, date); side('sell', sells, Math.max(0, saleValue), sellDate);
       return orders;
     };
-    let low = 0, high = cashUsd;
-    if (quantizedShares) {
+    let low = 0, high = cashUsd, allocations;
+    if (chiefMonthly) {
+      // Contributions are whole-dollar amounts BEFORE charges. Applying the
+      // $500 waiver to invested cash understates fees; stock allocations are
+      // rounded down separately to 0.00001 shares by the published terms.
+      const dollars = Math.floor(cashUsd + 1e-9), maxUnits = Math.floor(cashUsd / price / shareStep + 1e-9);
+      if (!Number.isSafeInteger(dollars) || !Number.isSafeInteger(maxUnits)) return { error: '股数超出可精确测算范围。', errorField: 'sharePriceUsd' };
+      if (dollars < buys) return { error: '致富碎股月供每只股票每次供款至少1 USD；余额不足以完成' + buys + '笔买入。', errorField: 'budgetCny' };
+      allocations = Array.from({ length: buys }, (_, i) => ({ contributionUsd: Math.floor(dollars / buys) + (i < dollars % buys ? 1 : 0), shares: 0 }));
+      for (let i = 0; i < buys; i++) {
+        const allocation = allocations[i];
+        let first = 1, last = Math.floor(allocation.contributionUsd / price / shareStep + 1e-9), affordable = 0;
+        while (first <= last) {
+          const units = first + Math.floor((last - first) / 2);
+          allocation.shares = units * shareStep;
+          const buyFee = override == null ? estimate(0, allocations)[i].feeUsd : 0;
+          if (allocation.shares * price + buyFee <= allocation.contributionUsd + 1e-9) { affordable = units; first = units + 1; } else last = units - 1;
+        }
+        if (!affordable) return { error: '致富本次月供扣费后不足以买入0.00001股；第' + (i + 1) + '笔供款为' + allocation.contributionUsd + ' USD。', errorField: 'budgetCny' };
+        allocation.shares = affordable * shareStep;
+      }
+      const units = allocations.reduce((sum, allocation) => sum + Math.round(allocation.shares / shareStep), 0);
+      if (units < sells) return { error: '致富月供买入股数不足以完成' + sells + '笔卖出，每笔股数至少0.00001股。', errorField: 'sellOrders' };
+      low = units * shareStep * price;
+    } else if (quantizedShares) {
       const minimumBuyUnits = Math.max(1, Math.ceil((broker.minimumBuyUsd || 0) / price / shareStep - 1e-9));
       const needed = Math.max(buys * minimumBuyUnits, sells), maxUnits = Math.floor(cashUsd / price / shareStep + 1e-9);
       if (!Number.isSafeInteger(maxUnits)) return { error: '股数超出可精确测算范围。', errorField: 'sharePriceUsd' };
@@ -470,7 +497,7 @@
     if (override == null && low <= 0) return { error: '美元余额不足以支付买入最低费用。', errorField: 'budgetCny' };
     const investUsd = quantizedShares || override == null ? low : cashUsd;
     if (profitUsd < -investUsd) return { error: '亏损不能超过实际买入金额。', errorField: 'profitUsd' };
-    const orders = estimate(low), buyFeeUsd = orders.filter(order => order.kind === 'buy').reduce((sum, order) => sum + order.feeUsd, 0);
+    const orders = estimate(low, allocations), buyFeeUsd = orders.filter(order => order.kind === 'buy').reduce((sum, order) => sum + order.feeUsd, 0);
     const sellFeeUsd = orders.filter(order => order.kind === 'sell').reduce((sum, order) => sum + order.feeUsd, 0);
     // September 2026 US tariff explicitly waives Trade25 US monthly fees until further notice.
     const monthlyHkd = 0;

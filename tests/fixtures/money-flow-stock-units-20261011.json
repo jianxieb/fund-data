@@ -13,6 +13,17 @@
     "shareStep": 0.0001,
     "scope": "Hong Kong fractional-stock trading; the purchase minimum is not applied as a one-dollar minimum liquidation value."
   },
+  "chiefMonthly": {
+    "source": "https://chief-website.oss-cn-hongkong.aliyuncs.com/Terms/cn/mip-202601.pdf",
+    "version": "EBD 20260126 V8",
+    "printedPages": [6, 7, 8],
+    "minimumContributionUsd": 1,
+    "contributionStepUsd": 1,
+    "shareStep": 0.00001,
+    "waiverContributionUsd": 500,
+    "excessPlatformRate": 0.0015,
+    "scope": "Fractional monthly investment: subtract charges from each gross contribution, then round allocated shares down; subsequent sales use ordinary stock tariffs."
+  },
   "excluded": [
     "HSBC Taiwan or Singapore trading rules",
     "uSMART Singapore rules",
