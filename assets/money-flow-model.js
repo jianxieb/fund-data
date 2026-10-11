@@ -679,8 +679,10 @@
     const bankBalances = calculatorAccountState(config, config, data).bankBalancesHkd;
     function calculate(start, bank, route, fxMode, exit, returning, selections = {}, provider = broker) {
       const settlementBank = data.hkBanks.find(row => row.id === provider.integratedBank);
+      const requestedDepositMethod = (Object.hasOwn(selections, 'depositMethod') ? selections.depositMethod : config.depositMethod) || '';
+      const fundingBank = calculatorFundingBank({ broker: provider.id, depositMethod: requestedDepositMethod }, data);
       const internalDeposit = !!settlementBank && bank.id === settlementBank.id ||
-        config.depositMethod === 'internal' && provider.internalFundingBanks?.includes(bank.id);
+        requestedDepositMethod === 'internal' && provider.internalFundingBanks?.includes(bank.id);
       const outcome = config.outcome || 'mainland', keepInBroker = outcome === 'broker-balance';
       if (route !== 'USD' && provider.id !== 'ibkr' && fxMode !== 'bank') return { error: provider.name + '换汇成交价未公开；请选香港银行先换USD，或内地直接换USD。' };
       const currency = route, sameGroup = start.group === bank.group;
@@ -696,6 +698,7 @@
       const accountItems = [hkAccountItem(bank, own('balanceHkd', isSelectedBank), own('monthlyHkd', isSelectedBank))];
       if (!keepInBroker && bank.id !== returning.id) accountItems.push(hkAccountItem(returning, own('returnBalanceHkd', isSelectedReturn), own('returnMonthlyHkd', isSelectedReturn)));
       if (settlementBank && ![bank.id, ...(keepInBroker ? [] : [returning.id])].includes(settlementBank.id)) accountItems.push(hkAccountItem(settlementBank, null, null));
+      if (fundingBank && !accountItems.some(item => item.bankId === fundingBank.id)) accountItems.push(hkAccountItem(fundingBank, null, null));
       // Mainland premium plans charge in CNY. One account used at both ends
       // incurs one period fee; an unvisited return account incurs none.
       const mainlandAccounts = [...new Map([start, ...(outcome === 'mainland' ? [exit] : [])].map(item => [item.id, item])).values()];
@@ -886,6 +889,7 @@
       steps.hongKong = balance;
       const depositMethod = internalDeposit ? 'internal' : settlementBank ? 'chats' : method('depositMethod', currency === 'USD' || fxMode === 'bank' ? 'chats' : 'fps');
       const depositCurrency = fxMode === 'bank' ? 'USD' : currency;
+      if (typeof requestedDepositMethod === 'string' && requestedDepositMethod.startsWith('via-') && (!fundingBank || fundingBank.id === bank.id || depositCurrency !== 'USD')) return downstreamError('经本人银行同行入金须使用券商已公布的同银行USD收款账户；当前银行与渠道不匹配。');
       if (depositMethod === 'internal' && !internalDeposit) return downstreamError('同行入金须使用券商已公布的同银行收款账户；此组合可改选本地转账。');
       if (['fps', 'edda'].includes(depositMethod) && depositCurrency === 'USD') return downstreamError('FPS/eDDA不支持USD；美元入金请选本地美元转账或SWIFT。');
       if (provider.id === 'chief' && depositMethod === 'fps' && depositCurrency !== 'HKD') return downstreamError('致富FPS只接受港币；人民币入金请用同行转账或eDDA。');
@@ -901,15 +905,23 @@
       if (!positive(entryPrice)) return downstreamError(bank.name + '缺少' + currency + '换USD的成交报价。');
       const transfer = () => {
         const charge = own('depositHkd', isSelectedBank);
-        add('depositBank', internalDeposit ? settlementBank ? '本人银行账户内部交收' : bank.name + ' → ' + provider.name + '同银行收款账户' : bank.name + ' → ' + (settlementBank?.name || provider.name) + ' · ' + depositMethod.toUpperCase(), internalDeposit ? 0 : charge == null ? depositFee(bank, depositMethod, depositCurrency, refs, config.date) : charge * refs.HKD, 'deposit');
-        add('depositBroker', provider.name + '入金费', knownFee(provider.depositUsd) ? provider.depositUsd * refs.USD : null, 'deposit');
+        const transferMethod = fundingBank ? 'chats' : depositMethod;
+        const receivingBank = settlementBank || fundingBank;
+        add('depositBank', internalDeposit ? settlementBank ? '本人银行账户内部交收' : bank.name + ' → ' + provider.name + '同银行收款账户' : bank.name + ' → ' + (fundingBank ? '本人' + fundingBank.name : settlementBank?.name || provider.name) + ' · ' + transferMethod.toUpperCase(), internalDeposit ? 0 : charge == null ? depositFee(bank, transferMethod, depositCurrency, refs, config.date) : charge * refs.HKD, 'deposit');
+        if (fundingBank && bank.localUsdNative != null) rows[rows.length - 1].nativeCurrency = 'USD';
         // A USD instruction naming a Hong Kong receiving bank is a separate
         // route from a US wire. Published local-route observations do not waive
         // the sending bank's own fee or any later withdrawal fee.
-        const localInward = settlementBank ? localUsdInward(settlementBank) : null;
+        const localInward = receivingBank ? localUsdInward(receivingBank) : null;
         const localFunding = depositMethod === 'chats' && depositCurrency === 'USD' ? provider.localUsdFunding : null;
-        add('depositOther', settlementBank ? settlementBank.name + ' · 本地USD收款' : localFunding ? provider.name + '香港本地收款' : '入金代理／收款行费', internalDeposit ? 0 : settlementBank ? localInward == null ? null : localInward * refs.USD : own('depositOtherCny', isSelectedBank) ?? (localFunding ? localFunding.otherCny : depositMethod === 'fps' || depositMethod === 'edda' ? 0 : null), 'deposit');
+        const recipientOverride = own('depositOtherCny', isSelectedBank);
+        const recipientFee = internalDeposit ? 0 : receivingBank ?
+          fundingBank && recipientOverride != null ? recipientOverride : localInward == null ? null : localInward * refs.USD :
+          recipientOverride ?? (localFunding ? localFunding.otherCny : depositMethod === 'fps' || depositMethod === 'edda' ? 0 : null);
+        add('depositOther', receivingBank ? (fundingBank ? '本人' : '') + receivingBank.name + ' · 本地USD收款' : localFunding ? provider.name + '香港本地收款' : '入金代理／收款行费', recipientFee, 'deposit');
         if (localFunding && own('depositOtherCny', isSelectedBank) == null) rows[rows.length - 1].estimate = localFunding.evidence;
+        if (fundingBank && finite(balance) && balance >= 0) steps.fundingBankUsd = balance;
+        add('depositBroker', fundingBank ? '本人' + fundingBank.name + ' → ' + provider.name + ' · 同行入金' : provider.name + '入金费', knownFee(provider.depositUsd) ? provider.depositUsd * refs.USD : null, 'deposit');
       };
       const convert = () => {
         const oldBalance = balance, oldUnit = unit;
@@ -1096,7 +1108,7 @@
         ...missing.filter(reason => !unpriced.some(row => reason === row.label || row.key === 'sender' && reason === start.name + '所选渠道汇出收费'))];
       const requiredEligibility = [...new Set([start.required, ...(returnMethod === 'linked' ? [exit.required] : [])].filter(Boolean))];
       const eligibilityReasons = requiredEligibility.map(id => mainland.find(row => row.required === id)?.condition).filter(Boolean);
-      return { budgetCny: budget, origin: 'mainland', permission, currency: unit, outcome, settlementBank, route, start, bank, returning, exit, exitBank: exit.id, broker: provider, trading,
+      return { budgetCny: budget, origin: 'mainland', permission, currency: unit, outcome, settlementBank, fundingBank, route, start, bank, returning, exit, exitBank: exit.id, broker: provider, trading,
         mainlandMethod, serviceAvailability, depositMethod, fxMode, returnMethod, returnDate, indicativeFx, indicativeExit, exitIssue, startSell: quote, entryPrice, exitPrice,
         entryAsOf: currency === 'CNH' ? null : q?.asOf, entryTimeBasis: q?.timeBasis, entryDiscount: own('startSell', isSelectedStart) == null ? q?.spreadDiscount : undefined,
         exitAsOf: outcome === 'cnh-card' ? returnFxQuote?.asOf : exit.quotes.USD?.asOf,
@@ -1270,6 +1282,11 @@
       ['hsbc', 'hang', 'sc'].includes(s.returnBank) && s.returnBank === s.exitBank ? 'linked' : 'swift';
     return s;
   }
+  function calculatorFundingBank(config, data) {
+    if (typeof config.depositMethod !== 'string' || !config.depositMethod.startsWith('via-')) return null;
+    const id = config.depositMethod.slice(4), broker = data.brokers.find(item => item.id === config.broker);
+    return broker?.internalFundingBanks?.includes(id) && data.calculator.hkBanks.includes(id) ? data.hkBanks.find(item => item.id === id) || null : null;
+  }
   // The UI and exhaustive audit share channel availability. Account catalogues
   // stay independent: a channel restriction never removes an account choice.
   function calculatorChannels(config, data) {
@@ -1285,7 +1302,7 @@
     const currency = s.route === 'USD' || s.fxMode === 'bank' ? 'USD' : s.route;
     const depositMethods = broker?.integratedBank ? [broker.integratedBank === bank?.id ? 'internal' : 'chats'] : [
       ...(broker?.internalFundingBanks?.includes(bank?.id) ? ['internal'] : []),
-      ...(currency === 'USD' ? ['chats', 'swift'] : [...['fps', 'edda'].filter(channel => broker?.depositCurrencies?.[channel]?.includes(currency)), 'swift'])
+      ...(currency === 'USD' ? ['chats', ...(broker?.internalFundingBanks || []).filter(id => id !== bank?.id && data.calculator.hkBanks.includes(id)).map(id => 'via-' + id), 'swift'] : [...['fps', 'edda'].filter(channel => broker?.depositCurrencies?.[channel]?.includes(currency)), 'swift'])
     ];
     const returnMethods = ['swift'];
     if (returning?.id === 'bochk' && exit?.group === 'boc') returnMethods.unshift('bochk-fast');
@@ -1348,7 +1365,7 @@
     const signature = r => [r.start.id, r.bank.id, r.broker.id, r.route, r.fxMode, r.mainlandMethod,
       r.depositMethod, profile.outcome === 'broker-balance' ? '' : r.returning.id,
       profile.outcome === 'mainland' ? r.exit.id : '', r.returnMethod].join(':');
-    const complexity = r => new Set([r.bank.id, r.broker.integratedBank, ...(profile.outcome === 'broker-balance' ? [] : [r.returning.id])].filter(Boolean)).size + (r.route === 'USD' ? 0 : 1);
+    const complexity = r => new Set([r.bank.id, r.broker.integratedBank, r.fundingBank?.id, ...(profile.outcome === 'broker-balance' ? [] : [r.returning.id])].filter(Boolean)).size + (r.route === 'USD' ? 0 : 1);
     const compare = (a, b) => a.costCny - b.costCny || complexity(a) - complexity(b) || signature(a).localeCompare(signature(b));
     const remember = (map, key, r) => { if (!map.has(key) || compare(r, map.get(key)) < 0) map.set(key, r); };
     for (const entry of entries) {
@@ -1374,5 +1391,5 @@
     return result;
   }
   function catalogueBroker(id, data) { return data.calculator.brokers.includes(id) ? id : 'za'; }
-  return { calculatorRoute, calculatorChannels, calculatorIssue, calculatorJourney, calculatorRecommendations, calculatorAccountState, number, reference, fee, remitPrincipal, senderFeeRange, inwardFee, outwardFee, localUsdChequeFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
+  return { calculatorRoute, calculatorChannels, calculatorFundingBank, calculatorIssue, calculatorJourney, calculatorRecommendations, calculatorAccountState, number, reference, fee, remitPrincipal, senderFeeRange, inwardFee, outwardFee, localUsdChequeFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
 }));

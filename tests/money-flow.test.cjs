@@ -1269,6 +1269,58 @@ function moneyUi(input, quotes = cibQuotes, date = '2026-10-09') {
     act: (action, field, value) => context.window.ChanghengMoneyFlow.handleAction({ dataset: { action: 'money-flow-' + action, field, value } }) };
 }
 
+test('personal-bank funding keeps the receiving bank and broker independent and names the intermediate receipt on the same screen', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  const input = { ...currentRoute, date: '2026-10-11', startBank: 'hang', bank: 'hang', broker: 'usmart',
+    outcome: 'broker-balance', route: 'USD', mainlandMethod: '', depositMethod: 'chats' };
+  const ui = moneyUi(input, quotes, input.date); ui.render();
+  ui.act('pick', '', 'depositMethod');
+  assert.match(ui.modal(), /经本人中银香港 USD账户 → 同行入金/);
+  assert.match(ui.modal(), /经本人汇丰香港 USD账户 → 同行入金/);
+  ui.act('choose', 'depositMethod', 'via-bochk');
+  const saved = ui.saved(), r = M.calculatorJourney({ ...saved, date: input.date }, D, quotes).selected, html = ui.render();
+  assert.equal(saved.bank, 'hang'); assert.equal(saved.broker, 'usmart');
+  assert.match(html, /经本人中银香港 → 同行入金/);
+  assert.match(html, new RegExp('本人中银香港到账 ' + r.steps.fundingBankUsd.toFixed(2) + ' USD'));
+  assert.match(html, /恒生 · 优进理财 → 本人中银香港 · CHATS/);
+  assert.match(html, /本人中银香港 → 盈立 · 个人标准账户 · 同行入金/);
+  assert.ok(evidenceLinks(ui, 'edge-03').has(D.sources.bochk.url));
+  assert.ok(evidenceLinks(ui, 'edge-03').has(D.sources.usmartSameFunding.url));
+  const restored = moneyUi(saved, quotes, input.date); restored.render();
+  assert.equal(restored.saved().depositMethod, 'via-bochk');
+  for (const field of ['bank', 'broker']) {
+    restored.act('pick', '', field);
+    assert.equal((restored.modal().match(new RegExp('data-field="' + field + '"', 'g')) || []).length, 5);
+  }
+  restored.act('choose', 'bank', 'hsbc');
+  assert.equal(restored.saved().broker, 'usmart'); assert.equal(restored.saved().depositMethod, 'internal');
+});
+
+test('an intermediate HSBC account adds the bank fee control while the BOCHK path does not inherit that qualification', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  const ui = moneyUi({ ...currentRoute, date: '2026-10-11', startBank: 'hang', bank: 'hang', returnBank: 'bochk', broker: 'usmart',
+    outcome: 'broker-balance', mainlandMethod: '', depositMethod: 'via-hsbc', hsbcBalanceWaiver: false }, quotes, '2026-10-11');
+  assert.match(ui.render(), /HSBC One已满足免管理费条件/);
+  ui.act('detail', '', 'bank-settings'); assert.match(ui.modal(), /汇丰 HSBC One期间管理费/); assert.match(ui.modal(), /100.00 HKD\/月 × 12个月/);
+  ui.act('choose', 'depositMethod', 'via-bochk');
+  assert.doesNotMatch(ui.render(), /HSBC One已满足免管理费条件/);
+  ui.act('detail', '', 'bank-settings'); assert.doesNotMatch(ui.modal(), /汇丰 HSBC One期间管理费/);
+});
+
+test('uSMART preferred cards include the distinct Hang Seng route and show the additional personal bank rather than concealing it', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  const input = { ...currentRoute, date: '2026-10-11', startBank: 'boc', bank: 'bochk', broker: 'usmart',
+    outcome: 'broker-balance', mainlandMethod: '', depositMethod: '', hsbcBalanceWaiver: false };
+  const ui = moneyUi(input, quotes, input.date), html = ui.render();
+  assert.match(html, /恒生中国 → 恒生香港 → 本人中银香港 → 盈立/);
+  const plans = M.calculatorRecommendations(input, D, quotes).plans;
+  assert.equal(plans.length, 5);
+  const hang = plans.find(plan => plan.result.start.id === 'hang');
+  ui.act('preset', '', hang.id);
+  assert.equal(ui.saved().bank, 'hang'); assert.equal(ui.saved().broker, 'usmart'); assert.equal(ui.saved().depositMethod, 'via-bochk');
+  close(M.calculatorJourney({ ...ui.saved(), date: input.date }, D, quotes).selected.costCny, hang.result.costCny);
+});
+
 test('ZA whole-share limits retain upstream funds and account choices, and the cash remainder appears beside the buy fee', () => {
   const quotes = require('./fixtures/money-flow-quotes-20261011.json');
   const input = { ...currentRoute, date: '2026-10-11', startBank: 'boc', bank: 'bochk', returnBank: 'bochk',

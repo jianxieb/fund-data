@@ -135,8 +135,8 @@ test('all 151875 catalogue combinations retain selection and either reconcile or
   assert.ok(r.routes.every(r => !r.key.includes('abc')));
   assert.equal(r.channelProfiles.length, 3);
   for (const profile of r.channelProfiles) {
-    if (profile.profile.id === 'all-relevant-qualifications') assert.ok(profile.checked > 139295);
-    else assert.equal(profile.checked - profile.chequeBoundaryChecks, 139295);
+    assert.ok(profile.checked - profile.chequeBoundaryChecks > 139295);
+    for (const method of ['via-bochk', 'via-hsbc', 'via-hang']) assert.ok(profile.coverage.depositMethods.includes(method));
     assert.ok(profile.chequeBoundaryChecks > 0);
     assert.equal(profile.priced + profile.partial + profile.routeIssues, profile.checked);
     assert.equal(profile.ledgerChecks, profile.priced + profile.partial);
@@ -144,7 +144,7 @@ test('all 151875 catalogue combinations retain selection and either reconcile or
     assert.ok(profile.referencePriced <= profile.priced);
     assert.deepEqual(profile.coverage.mainlandMethods, ['boc-mobile', 'boc-online', 'cib-go', 'full', 'linked', 'swift']);
     assert.deepEqual(profile.coverage.fxModes, ['auto', 'bank', 'manual']);
-    assert.deepEqual(profile.coverage.depositMethods, ['chats', 'edda', 'fps', 'internal', 'swift']);
+    assert.deepEqual(profile.coverage.depositMethods, ['chats', 'edda', 'fps', 'internal', 'swift', 'via-bochk', 'via-hang', 'via-hsbc']);
     assert.deepEqual(profile.coverage.returnMethods, ['bochk-fast', 'linked', 'swift']);
     assert.equal(Object.values(profile.sources).reduce((sum, source) => sum + source.checked, 0), profile.checked);
   }

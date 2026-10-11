@@ -71,7 +71,7 @@
       if (s.bank?.id === 'bochk' && s.start?.group === 'boc') keys.push('bochkSame');
       else add('hkTariff', s.bank);
     } else if (stage === '03') {
-      add('hkTariff', s.bank); add('hkTariff', settlement); add('brokerFunding', broker);
+      add('hkTariff', s.bank); add('hkTariff', settlement); add('hkTariff', r?.fundingBank || M.calculatorFundingBank(state, D)); add('brokerFunding', broker);
       if (state.route !== 'USD') state.fxMode === 'bank' ? add('hkFx', s.bank) : keys.push('ibFx');
       if (broker?.id === 'ibkr') {
         keys.push('ibFunding' + (state.route === 'USD' || state.fxMode === 'bank' ? 'USD' : state.route));
@@ -192,6 +192,7 @@
       swift: currency !== 'USD' ? '外币电汇 · SWIFT' : s.broker.id === 'ibkr' ? '境外收款指示 · USD电汇' : '美元电汇 · SWIFT',
       fps: '本地转账 · FPS', edda: '券商发起扣款 · eDDA'
     };
+    for (const id of s.broker.internalFundingBanks || []) labels['via-' + id] = '经本人' + routeName(id, 'bank') + ' USD账户 → 同行入金';
     return M.calculatorChannels(state, D).depositMethods.map(id => [id, labels[id]]);
   }
   function returnMethods() {
@@ -220,13 +221,14 @@
       const channel = ({ 'boc-mobile': '手机同名汇款', 'boc-online': '手机／网银他行9折', linked: '两地同名转账', 'cib-go': '全额到账50元/笔', full: '美元全额到账', swift: '普通电汇' })[r.mainlandMethod];
       const conversion = r.route !== 'USD' ? (r.fxMode === 'bank' ? routeName(r.bank.id, 'bank') : r.fxMode === 'auto' ? 'IBKR自动' : 'IBKR手动') + '换美元' : '';
       const funding = r.broker.id === 'ibkr' && r.depositMethod === 'chats' ? '香港花旗／渣打收款指示' :
+        r.fundingBank ? '本人银行转账后同行入金' :
         r.depositMethod === 'internal' ? r.broker.integratedBank ? '银行内交收' : '同行入金' :
         ({ chats: '本地美元转账', fps: 'FPS入金', edda: 'eDDA入金', swift: '电汇入金' })[r.depositMethod];
       const end = state.outcome === 'broker-balance' ? '美元留在买股账户' :
         state.outcome === 'mainland' ? routeName(r.returning.id, 'bank') + ' → ' + routeName(r.exit.id, 'mainland') + '结汇' :
           routeName(r.returning.id, 'bank') + ' · ' + ({ 'usd-balance': '保留美元', 'usd-card': '美元消费', 'cnh-card': '人民币消费' })[state.outcome];
       const rows = r.rows, accountCny = rows.find(item => item.key === 'account')?.cny || 0;
-      return { ...p, config, title: routeName(r.start.id, 'mainland') + ' → ' + routeName(r.bank.id, 'bank') + ' → ' + routeName(r.broker.id, 'broker'),
+      return { ...p, config, title: [routeName(r.start.id, 'mainland'), routeName(r.bank.id, 'bank'), ...(r.fundingBank ? ['本人' + routeName(r.fundingBank.id, 'bank')] : []), routeName(r.broker.id, 'broker')].join(' → '),
         note: [r.route + ' · ' + channel, conversion, funding].filter(Boolean).join('；'), end,
         accountFee: accountCny > 0 ? '含银行期间费 ' + cost(accountCny) : '', calculated: { selected: r }, rows, complete: true, total: r.costCny };
     });
@@ -340,8 +342,13 @@
     html += node('02', 'bank', '香港收款银行', s.bank, nodeBalance(r, steps.hongKong, state.route, '汇款到账', transferKeys), accountOptions);
     const fxControl = state.route === 'USD' ? '' : select('fxMode', '换美元地点', [...(s.broker.id === 'ibkr' ? [['manual', 'IBKR手动换汇'], ['auto', 'IBKR自动换汇']] : []), ['bank', shortName(s.bank) + '换汇']]);
     const fundingPath = row(r, 'brokerSpread')?.path;
-    html += edge(data, fundingKeys, state.route === 'USD' ? '转入买股账户' : state.fxMode === 'bank' ? (fundingPath ? '人民币 → 港币 → 美元' : '换成美元') + ' → 转入买股账户' : '转入IBKR → 换成美元', fxControl + select('depositMethod', '入金方式', depositMethods()), '03',
-      state.route !== 'USD' && !r?.indicativeFx ? esc(r?.entryPrice ? '1 USD = ' + quoteNum(r.entryPrice) + ' ' + state.route + (fundingPath ? ' · 两次兑换' : '') : '') : '');
+    const fundingBank = r?.fundingBank || M.calculatorFundingBank(state, D);
+    const fundingTitle = (state.route === 'USD' ? '' : state.fxMode === 'bank' ? (fundingPath ? '人民币 → 港币 → 美元' : '换成美元') + ' → ' : '') +
+      (fundingBank ? '经本人' + routeName(fundingBank.id, 'bank') + ' → 同行入金' : state.route === 'USD' || state.fxMode === 'bank' ? '转入买股账户' : '转入IBKR → 换成美元');
+    const pricedFunding = !costRows(r, throughFunding).some(item => item.cny == null) && r?.quoteFreshness?.source !== false && r?.quoteFreshness?.entryMarket !== false;
+    const fundingNote = [state.route !== 'USD' && !r?.indicativeFx && r?.entryPrice ? '1 USD = ' + quoteNum(r.entryPrice) + ' ' + state.route + (fundingPath ? ' · 两次兑换' : '') : '',
+      fundingBank && pricedFunding && steps.fundingBankUsd != null ? '本人' + routeName(fundingBank.id, 'bank') + '到账 ' + num(steps.fundingBankUsd) + ' USD' : ''].filter(Boolean).join(' · ');
+    html += edge(data, fundingKeys, fundingTitle, fxControl + select('depositMethod', '入金方式', depositMethods()), '03', esc(fundingNote));
     html += node('03', 'broker', '买美股的账户', s.broker, nodeBalance(r, steps.fundedUsd, 'USD', '入金到账', throughFunding),
       action('买' + esc(state.buyOrders) + '笔 / 卖' + esc(state.sellOrders) + '笔 · 股价 ' + esc(state.sharePriceUsd) + ' USD', 'detail', 'data-value="trade-settings"', 'flow-setting-button') +
       (s.broker.id === 'hsbc' ? checkbox('trade25', 'Trade25 · 仅美股月费0') : '') +
@@ -390,7 +397,7 @@
     return '';
   }
   function bankAccountSet(s) {
-    return [...new Map([s.bank, banks.find(b => b.id === s.broker.integratedBank), ...(state.outcome === 'broker-balance' ? [] : [s.returning])].filter(Boolean).map(b => [b.id, b])).values()];
+    return [...new Map([s.bank, banks.find(b => b.id === s.broker.integratedBank), M.calculatorFundingBank(state, D), ...(state.outcome === 'broker-balance' ? [] : [s.returning])].filter(Boolean).map(b => [b.id, b])).values()];
   }
   function accountFeeBasis(item) {
     if (item.region !== 'mainland') return num(item.monthlyHkd) + ' HKD/月 × ' + num(item.months, 0) + '个月';

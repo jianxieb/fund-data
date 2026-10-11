@@ -189,7 +189,7 @@ function auditChannels({ quotes = Q, date = config.date } = {}) {
               const fields = new Set();
               const stockOffer = { hsbc: 'trade25', chief: 'chiefMonthly', usmart: 'usmartPromo', za: 'zaLv2' }[broker];
               if (stockOffer) fields.add(stockOffer);
-              const hkAccounts = [bank, ...(outcome === 'broker-balance' ? [] : [returnBank]), D.brokers.find(b => b.id === broker)?.integratedBank];
+              const hkAccounts = [bank, ...(outcome === 'broker-balance' ? [] : [returnBank]), D.brokers.find(b => b.id === broker)?.integratedBank, M.calculatorFundingBank(s, D)?.id];
               if (hkAccounts.includes('hsbc')) fields.add('hsbcBalanceWaiver');
               if (outcome === 'cnh-card' && returnBank === 'sc') fields.add('scCnhAccount');
               for (const id of [startBank, ...(outcome === 'mainland' ? [exitBank] : [])]) {
