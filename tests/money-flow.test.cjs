@@ -2050,3 +2050,51 @@ test('invalid trading settings preserve funded balances and put the error on the
   const summary = moneyUi(input, stale, '2026-10-11').render().split('id="flow-live-summary"')[1];
   assert.doesNotMatch(summary, /最后可计余额 · ZA/); assert.match(summary, /最后可计余额 · 中银香港/);
 });
+
+test('unused exit settings and exchange quotes never invalidate a route that does not use them', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  const returnKeys = ['inwardHkd', 'intermediaryCny', 'returnWireHkd', 'returnExtraCny', 'returnMonthlyHkd', 'returnBalanceHkd', 'exitPrice'];
+  for (const broker of D.calculator.brokers) for (const route of D.calculator.currencies) {
+    const input = M.calculatorRoute({ ...chequeRoute, broker, route, outcome: 'broker-balance', mainlandMethod: '', depositMethod: '', fxMode: 'bank' });
+    const baseline = M.calculatorJourney(input, D, quotes);
+    for (const value of [-1, 'invalid', Infinity]) {
+      const bad = Object.fromEntries(returnKeys.map(key => [key, value]));
+      if (route === 'USD') bad.entryPrice = value;
+      if (route === 'CNH') bad.startSell = value;
+      const r = M.calculatorJourney({ ...input, ...bad }, D, quotes);
+      assert.deepEqual(r.error, baseline.error); assert.deepEqual(r.selected, baseline.selected);
+    }
+  }
+  for (const outcome of ['usd-balance', 'usd-card', 'cnh-card']) {
+    const input = M.calculatorRoute({ ...chequeRoute, outcome, returnBank: 'hsbc', hsbcBalanceWaiver: true });
+    const baseline = M.calculatorJourney(input, D, quotes);
+    const unused = { returnWireHkd: -1, returnExtraCny: 'invalid', ...(outcome !== 'cnh-card' ? { exitPrice: -1 } : {}) };
+    assert.deepEqual(M.calculatorJourney({ ...input, ...unused }, D, quotes).selected, baseline.selected);
+    assert.match(M.calculatorJourney({ ...input, inwardHkd: -1 }, D, quotes).error, /非负数/);
+    if (outcome === 'cnh-card') assert.match(M.calculatorJourney({ ...input, exitPrice: -1 }, D, quotes).error, /汇率/);
+  }
+  assert.match(M.calculatorJourney(M.calculatorRoute({ ...chequeRoute, outcome: 'mainland', returnWireHkd: -1 }), D, quotes).error, /非负数/);
+});
+
+test('bank asset assumptions and confirmed quotes stay bound to their selected accounts', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  for (const field of ['bank', 'returnBank']) for (const from of D.calculator.hkBanks) for (const to of D.calculator.hkBanks) {
+    if (from === to) continue;
+    const ui = moneyUi({ ...chequeRoute, outcome: 'usd-balance', [field]: from, balanceHkd: '10000', returnBalanceHkd: '20000', mainlandMethod: '' }, quotes, '2026-10-11');
+    ui.render(); ui.act('choose', field, to);
+    const bound = field === 'bank' ? 'balanceHkd' : 'returnBalanceHkd', independent = field === 'bank' ? 'returnBalanceHkd' : 'balanceHkd';
+    assert.equal(ui.saved()[bound], '0'); assert.equal(ui.saved()[independent], field === 'bank' ? '20000' : '10000');
+  }
+  const ui = moneyUi({ ...chequeRoute, outcome: 'usd-balance', bank: 'bochk', returnBank: 'bochk', balanceHkd: '10000', returnBalanceHkd: '20000',
+    monthlyHkd: '5', returnMonthlyHkd: '6', hsbcBalanceWaiver: false }, quotes, '2026-10-11');
+  ui.render(); ui.act('choose', 'bank', 'hsbc');
+  assert.equal(ui.saved().balanceHkd, '0'); assert.equal(ui.saved().returnBalanceHkd, '20000');
+  const next = M.calculatorJourney(ui.saved(), D, quotes).selected;
+  assert.ok(next); assert.equal(next.rows.find(row => row.key === 'account').items.find(item => item.bankId === 'hsbc').monthlyHkd, 100);
+  ui.act('choose', 'returnBank', 'hsbc');
+  assert.equal(ui.saved().returnBalanceHkd, '0');
+  const same = moneyUi({ ...chequeRoute, startSell: '6.7', entryMiddleCny: '12', monthlyHkd: '3', balanceHkd: '10000' }, quotes, '2026-10-11');
+  same.render(); same.act('choose', 'bank', 'bochk');
+  assert.equal(same.saved().startSell, '6.7'); assert.equal(same.saved().entryMiddleCny, '12');
+  assert.equal(same.saved().monthlyHkd, '3'); assert.equal(same.saved().balanceHkd, '10000');
+});

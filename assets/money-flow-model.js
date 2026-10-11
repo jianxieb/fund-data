@@ -555,11 +555,19 @@
     const budget = number(config.budgetCny), permission = legalPath('mainland', 'invest', false);
     const empty = error => ({ error, permission, origin: 'mainland', plans: [] });
     if (!positive(budget)) return empty('请输入正数内地银行卡人民币本金。');
+    const outcome = config.outcome || 'mainland';
+    const unused = new Set([
+      ...(outcome === 'broker-balance' ? ['inwardHkd', 'intermediaryCny', 'returnMonthlyHkd', 'returnBalanceHkd'] : []),
+      ...(outcome !== 'mainland' ? ['returnWireHkd', 'returnExtraCny'] : []),
+      ...(!['mainland', 'cnh-card'].includes(outcome) ? ['exitPrice'] : []),
+      ...(config.route === 'USD' ? ['entryPrice'] : []),
+      ...(config.route === 'CNH' ? ['startSell'] : [])
+    ]);
     const overrides = ['senderFeeCny', 'entryMiddleCny', 'entryInwardHkd', 'depositHkd', 'depositOtherCny', 'inwardHkd', 'intermediaryCny', 'returnWireHkd', 'returnExtraCny', 'monthlyHkd', 'returnMonthlyHkd', 'balanceHkd', 'returnBalanceHkd', 'tradeFeeUsd', 'taxableCny', 'creditCny', 'openingCny', 'extraCapitalCny', 'annualGapPct'];
-    if (invalidOptional(config, overrides)) return empty('费用、资产和应税所得须为非负数；未报价请留空。');
+    if (invalidOptional(config, overrides.filter(key => !unused.has(key)))) return empty('费用、资产和应税所得须为非负数；未报价请留空。');
     const months = number(config.months);
     if (!knownFee(months) || !Number.isInteger(months)) return empty('账户使用／持有月数须为非负整数。');
-    if (['startSell', 'usdCny', 'usdHkd', 'usdCnh', 'entryPrice', 'exitPrice'].some(key => config[key] != null && String(config[key]).trim() !== '' && !positive(number(config[key])))) return empty('汇率须为有效正数；留空使用该行官方牌价。');
+    if (['startSell', 'usdCny', 'usdHkd', 'usdCnh', 'entryPrice', 'exitPrice'].filter(key => !unused.has(key)).some(key => config[key] != null && String(config[key]).trim() !== '' && !positive(number(config[key])))) return empty('汇率须为有效正数；留空使用该行官方牌价。');
     const count = optionalNumber(config, 'count', 1);
     if (!positive(count) || !Number.isInteger(count) || count > 120) return empty('汇款笔数须为1–120的整数。');
     const profit = number(config.profitUsd), taxRate = number(config.taxRate), credit = number(config.creditCny) ?? 0;

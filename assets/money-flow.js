@@ -495,6 +495,8 @@
       exitBank: ['exitPrice', 'returnExtraCny', 'returnMethod'], returnMethod: ['returnWireHkd', 'returnExtraCny']
     };
     for (const field of reset[key] || []) next[field] = '';
+    if (key === 'bank') next.balanceHkd = '0';
+    if (key === 'returnBank') next.returnBalanceHkd = '0';
     if (key === 'broker') next.useVoucher = false;
     if (key === 'bank' || key === 'route') { next.senderFeeCny = ''; next.entryMiddleCny = ''; }
     if (key === 'returnBank' && next.outcome === 'cnh-card') next.exitPrice = '';
@@ -511,6 +513,7 @@
     if (['bank', 'returnBank'].includes(key) && !D.calculator.hkBanks.includes(value)) return;
     if (key === 'broker' && !D.calculator.brokers.includes(value)) return;
     if (key === 'count' && value === 'custom') { detail('budget'); return; }
+    if (state[key] === value) { save(); refresh(); return; }
     state = choiceState(key, value); save(); refresh();
   }
   function picker(key) {
