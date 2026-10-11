@@ -366,6 +366,7 @@
   // the final holding month are a fee benchmark, not a return simulation.
   // Buy-side charges fit inside available USD, including voucher allocation.
   function brokerTradingFees(config, broker, cashUsd, profitUsd, refs) {
+    if (!positive(cashUsd) || !finite(profitUsd)) return { error: '买入美元余额须为正数，盈亏须为有限数。' };
     const buys = number(config.buyOrders) ?? 1, sells = number(config.sellOrders) ?? 1;
     const price = number(config.sharePriceUsd) ?? 100, months = number(config.months) ?? 1;
     if (![buys, sells].every(v => positive(v) && Number.isInteger(v) && v <= 120) || !positive(price) || !knownFee(months) || months > 1200) return { error: '交易笔数须为1–120整数，测算股价须为正数，使用月数不超过1200。' };
@@ -429,13 +430,16 @@
       const buyFee = estimate(middle).filter(order => order.kind === 'buy').reduce((sum, order) => sum + order.feeUsd, 0);
       if (middle + buyFee > cashUsd) high = middle; else low = middle;
     }
+    const override = number(config.tradeFeeUsd);
+    if (override == null && low <= 0) return { error: '美元余额不足以支付买入最低费用。', errorField: 'budgetCny' };
+    if (profitUsd < -(override == null ? low : cashUsd)) return { error: '亏损不能超过实际买入金额。', errorField: 'profitUsd' };
     const orders = estimate(low), buyFeeUsd = orders.filter(order => order.kind === 'buy').reduce((sum, order) => sum + order.feeUsd, 0);
     const sellFeeUsd = orders.filter(order => order.kind === 'sell').reduce((sum, order) => sum + order.feeUsd, 0);
     // September 2026 US tariff explicitly waives Trade25 US monthly fees until further notice.
     const monthlyHkd = 0;
     const monthlyUsd = broker.id === 'hsbc' && !config.trade25 ? Array.from({ length: heldMonths }, (_, i) => shiftedMonth(date, i))
       .filter(d => d > '2026-12-31' && d.slice(0, 7) !== date.slice(0, 7) && d.slice(0, 7) !== sellDate.slice(0, 7)).length * 5 : 0;
-    const override = number(config.tradeFeeUsd), warnings = [];
+    const warnings = [];
     if (broker.id === 'usmart' && config.usmartPromo && !orders.some(order => order.offer)) warnings.push('盈立0.99优惠未适用：须股价≥100 USD、合资格标的、开户180天内且在推广期');
     if (broker.id === 'chief' && config.chiefMonthly && date > '2026-12-31') warnings.push('致富2026年月供优惠已过期，按普通网上交易基准测算');
     if (voucher.pending) warnings.push(voucher.message);
@@ -770,9 +774,8 @@
       Object.assign(rows[rows.length - 1], entryMiddleEvidence);
       const inward = own('entryInwardHkd', isSelectedBank) ?? (swiftGo ? 0 : inwardFee(bank, balance * refs[currency] / refs.HKD / count, start.group));
       add('entryInward', '香港首次汇入费', inward == null ? null : inward * refs.HKD * count, 'entry');
-      steps.hongKong = balance;
       let trading = null, taxCny = 0;
-      const downstreamError = (error, errorStage = '03', errorAction = errorStage) => ({ error, errorStage, errorAction, rows: [...rows,
+      const downstreamError = (error, errorStage = '03', errorAction = errorStage, errorField) => ({ error, errorStage, errorAction, errorField, rows: [...rows,
         { key: 'account', label: '银行账户期间管理费', cny: accountCny, step: 'spend', items: accountItems },
         { key: 'extra', label: '开户及资产机会成本', cny: extraCny, step: 'spend' }], steps, startSell: quote, route, mainlandMethod, fxMode, refs, budgetCny: budget, pricingBasis: config.pricingBasis, sourceRemainderCny, start, bank, returning, exit, broker: provider,
         trading: trading?.error ? null : trading, taxCny, indicativeFx: rows.find(x => x.key === 'brokerSpread' && x.cny == null)?.label || '',
@@ -781,6 +784,8 @@
           entryMarket: currency === 'USD' || own('entryPrice', isSelectedBank) != null || quoteFresh(fxMode === 'bank' ? quotes.offshoreUsd?.[bank.id]?.quotes?.[currency] : offshore[currency], config.date),
           reference: number(config.usdCny) != null || quoteFresh(refRow, config.date)
         } });
+      if (!finite(balance) || balance <= 0) return downstreamError('汇出金额不足以支付中转及香港汇入费用。', '01');
+      steps.hongKong = balance;
       const depositMethod = internalDeposit ? 'internal' : settlementBank ? 'chats' : method('depositMethod', currency === 'USD' || fxMode === 'bank' ? 'chats' : 'fps');
       const depositCurrency = fxMode === 'bank' ? 'USD' : currency;
       if (depositMethod === 'internal' && !internalDeposit) return downstreamError('同行入金须使用券商已公布的同银行收款账户；此组合可改选本地转账。');
@@ -828,15 +833,22 @@
         return fx;
       };
       let brokerFxResult;
-      if (fxMode === 'bank') { brokerFxResult = convert(); steps.hkConvertedUsd = balance; if (brokerFxResult) transfer(); }
-      else { transfer(); steps.brokerOriginal = balance; brokerFxResult = convert(); }
-      if (!brokerFxResult || balance <= 0) return { error: '余额不足以支付入金及换汇费用。' };
+      if (fxMode === 'bank') {
+        brokerFxResult = convert();
+        if (brokerFxResult) { steps.hkConvertedUsd = balance; transfer(); }
+      } else {
+        transfer();
+        if (!finite(balance) || balance <= 0) return downstreamError('余额不足以支付入金费用。');
+        steps.brokerOriginal = balance; brokerFxResult = convert();
+      }
+      if (!brokerFxResult || !finite(balance) || balance <= 0) return downstreamError('余额不足以支付入金及换汇费用。');
       steps.fundedUsd = balance;
       const tradingKey = provider.id + ':' + balance.toFixed(8) + ':' + !!selections.public;
       if (autoTrade && !tradingCache.has(tradingKey)) tradingCache.set(tradingKey, brokerTradingFees(provider.id === broker.id && !selections.public ? config : { ...config, useVoucher: false, tradeFeeUsd: '' }, provider, balance, profit, refs));
       trading = autoTrade ? tradingCache.get(tradingKey) : null;
-      if (trading?.error) return downstreamError(trading.error, '03', 'trade');
+      if (trading?.error) return downstreamError(trading.error, '03', 'trade', trading.errorField);
       steps.investUsd = trading?.investUsd ?? balance;
+      if (profit < -steps.investUsd) return downstreamError('亏损不能超过实际买入金额。', '03', 'trade', 'profitUsd');
       balance += profit;
       const trade = trading?.totalUsd ?? number(config.tradeFeeUsd);
       add('trade', '证券买卖交易费', trade == null ? null : trade * refs.USD, 'investment');
@@ -861,10 +873,14 @@
       }
       const brokerAccountCny = (trading?.monthlyHkd ?? 0) * refs.HKD + (trading?.monthlyUsd ?? 0) * refs.USD;
       if (autoTrade) add('brokerAccount', provider.id === 'hsbc' && config.trade25 ? 'Trade25美股月费 · 现行豁免' : '证券账户／托管费', brokerAccountCny, 'investment');
+      if (!finite(balance) || balance < 0) return downstreamError('卖出资金不足以支付交易及证券账户费用。', '03', 'trade', number(config.tradeFeeUsd) == null ? 'profitUsd' : 'tradeFeeUsd');
       steps.proceedsUsd = balance;
       const taxableCny = number(config.taxableCny) ?? Math.max(0, (profit - (trade ?? 0)) * refs.USD);
-      taxCny = taxReserve(taxableCny, taxRate, credit);
+      const reserve = taxReserve(taxableCny, taxRate, credit);
+      if (!knownFee(reserve) || reserve > balance * refs.USD) return downstreamError('卖出资金不足以支付税款预留。', '03', 'trade', 'taxableCny');
+      taxCny = reserve;
       balance -= taxCny / refs.USD;
+      steps.afterTaxUsd = balance;
       if (!keepInBroker) {
       if (provider.freeWithdrawals && (!positive(withdrawalIndex) || !Number.isInteger(withdrawalIndex))) return downstreamError('本月券商出金次数须为正整数。', '04', 'withdraw');
       const localCheque = provider.localChequeBanks?.includes(returning.id);
@@ -894,6 +910,7 @@
       if (virtualReturn && own('inwardHkd', isSelectedReturn) == null) rows[rows.length - 1].estimate = '盈立公布约7.5 USD，由银行收取';
       add('withdrawMiddle', '券商出金中转行费', provider.integratedBank || provider.withdrawalMethod === 'cheque' || provider.withdrawalMethod === 'local' ? 0 : own('intermediaryCny', isSelectedReturn), 'withdraw');
       }
+      if (!finite(balance) || balance < 0) return downstreamError('美元余额不足以支付券商出金及香港收款费用。', '04', 'withdraw');
       steps.returnUsd = balance;
       const returnMethod = outcome !== 'mainland' ? '' : method('returnMethod', returning.id === 'bochk' && exit.group === 'boc' ? 'bochk-fast' : ['hang', 'hsbc', 'sc'].includes(returning.id) && returning.group === exit.group ? 'linked' : 'swift');
       const returningFee = own('returnWireHkd', isSelectedReturn);
@@ -906,6 +923,7 @@
       add('returnWire', '香港→内地汇出费', returningFee == null ? publishedReturnFee : returningFee * refs.HKD, 'return');
       add('returnOther', '回内地中转／收款费', own('returnExtraCny', isSelectedReturn && config.exitBank === exit.id) ?? (returnMethod === 'linked' ? 0 : null), 'return');
       if (rows[rows.length - 1].cny == null) rows[rows.length - 1].items = [{ label: '回内地中转行费', cny: null, status: '按实际汇路收费' }, { label: exit.name + 'USD收款费', cny: exit.inwardCny === 0 ? 0 : null, status: '汇入资费未收录' }];
+      if (!finite(balance) || balance < 0) return downstreamError('美元余额不足以支付汇回内地的费用。', '04');
       steps.remitUsd = balance;
       const exitQuote = exit.quotes.USD;
       const discountExpired = exitQuote?.spreadDiscount && returnDate > exit.fxValidUntil;
@@ -946,7 +964,7 @@
       rows[rows.length - 1].items = accountItems;
       add('extra', '开户及资产机会成本', extraCny, 'spend');
       rows[rows.length - 1].items = [{ label: '开户／赴港支出', cny: number(config.openingCny) ?? 0 }, { label: '另留资产机会成本', cny: extraCny - (number(config.openingCny) ?? 0) }];
-      if (!finite(balance) || balance < 0 || Object.values(steps).some(value => value < 0)) return { error: '资金不足以覆盖所选费用、亏损及税款。' };
+      if (!finite(balance) || balance < 0 || Object.values(steps).some(value => value < 0)) return downstreamError('资金不足以覆盖所选费用、亏损及税款。', '04');
       if (start.condition) requirements.push(start.condition);
       if (swiftGo) requirements.push('仅适用兴业App为该收款账户提供SWIFT GO的交易；50元/笔涵盖境外行费用。普通电汇不适用此报价。');
       if (bocMobile) requirements.push(data.bocMobileEvidence.note);

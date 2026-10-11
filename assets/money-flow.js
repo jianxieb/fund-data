@@ -138,6 +138,7 @@
     else if (key === 'profitUsd' && value == null) issue = '请输入有效盈亏金额。';
     else if (key !== 'voucherExpiry' && !empty && !positiveInteger.includes(key) && !positiveValue.includes(key) && key !== 'profitUsd' &&
       (value == null || value < 0)) issue = '须为非负数；未报价请留空。';
+    if (!issue && result().partial?.errorField === key) issue = result().error;
     return '<label class="flow-field"><span>' + esc(label) + '</span><div class="flow-input"><input ' +
       (key === 'voucherExpiry' ? 'type="date"' : 'type="text" inputmode="' + (monthField ? 'numeric' : 'decimal') + '"') +
       (issue ? ' aria-invalid="true" aria-describedby="flow-error-' + key + '"' : '') +
@@ -426,7 +427,7 @@
     const estimated = rows.some(x => x.estimate);
     const label = stale ? '全程损耗 · 历史报价' : partial ? estimated ? '费用小计 · 含估算' : '全程已核费用' : estimated ? '参考总损耗' : '全程损耗';
     const canBalance = !!data.selected && !incomplete && !stale && gaps.every(x => ['entryMiddle', 'depositOther', 'withdrawMiddle', 'returnOther'].includes(x.key));
-    const lastBalance = r?.steps?.remitUsd ?? r?.steps?.returnUsd ?? r?.steps?.proceedsUsd ?? r?.steps?.fundedUsd;
+    const lastBalance = r?.steps?.remitUsd ?? r?.steps?.returnUsd ?? r?.steps?.afterTaxUsd ?? r?.steps?.proceedsUsd ?? r?.steps?.fundedUsd;
     const canShowLast = Number.isFinite(lastBalance) && !r?.indicativeFx && r?.quoteFreshness?.source !== false && r?.quoteFreshness?.entryMarket !== false;
     const lastPoint = canShowLast ? { amount: lastBalance, currency: 'USD', account: shortName(Number.isFinite(r.steps.remitUsd) ? r.exit : Number.isFinite(r.steps.returnUsd) ? r.returning : r.broker) } :
       r?.indicativeFx && state.fxMode !== 'bank' && Number.isFinite(r?.steps?.brokerOriginal) && r?.quoteFreshness?.source !== false ?

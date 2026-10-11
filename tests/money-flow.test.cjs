@@ -2113,3 +2113,97 @@ test('bank asset assumptions and confirmed quotes stay bound to their selected a
   assert.equal(same.saved().startSell, '6.7'); assert.equal(same.saved().entryMiddleCny, '12');
   assert.equal(same.saved().monthlyHkd, '3'); assert.equal(same.saved().balanceHkd, '10000');
 });
+
+test('cash below a broker minimum never becomes a free zero-value trade', () => {
+  for (const id of ['hsbc', 'za', 'chief', 'usmart']) {
+    const r = M.brokerTradingFees(feeConfig, broker(id), .1, 0, feeRefs);
+    assert.match(r.error, /不足.*买入/);
+  }
+  for (const [id, offer] of [['ibkr', {}], ['hsbc', { trade25: true }], ['chief', { chiefMonthly: true }],
+    ['za', { useVoucher: true, voucherUsd: 10, voucherOrders: 2, voucherScope: 'both', voucherExpiry: '2026-12-31' }]]) {
+    const r = M.brokerTradingFees({ ...feeConfig, ...offer }, broker(id), .1, 0, feeRefs);
+    assert.ok(!r.error, id); assert.ok(r.investUsd > 0, id);
+    close(r.investUsd + r.buyFeeUsd, .1);
+  }
+  const confirmed = M.brokerTradingFees({ ...feeConfig, tradeFeeUsd: 0 }, broker('za'), .1, 0, feeRefs);
+  assert.ok(!confirmed.error); close(confirmed.investUsd, .1); close(confirmed.totalUsd, 0);
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  const input = M.calculatorRoute({ ...chequeRoute, broker: 'za', budgetCny: 1, months: 0, outcome: 'broker-balance', depositMethod: 'chats' });
+  const r = M.calculatorJourney(input, D, quotes);
+  assert.match(r.error, /不足.*买入/); assert.equal(r.partial.errorAction, 'trade');
+  assert.ok(r.partial.steps.fundedUsd > 0);
+});
+
+test('impossible losses and oversized trading fees preserve every completed upstream action', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  for (const id of D.calculator.brokers) for (const route of D.calculator.currencies) for (const outcome of ['broker-balance', 'usd-balance', 'usd-card', 'cnh-card', 'mainland']) {
+    const input = M.calculatorRoute({ ...chequeRoute, broker: id, bank: 'bochk', returnBank: 'bochk', route, outcome,
+      months: 0, mainlandMethod: '', depositMethod: '', fxMode: 'bank' });
+    const baseline = M.calculatorJourney(input, D, quotes).selected;
+    assert.ok(baseline, [id, route, outcome].join('/'));
+    for (const change of [{ profitUsd: -1e6 }, { tradeFeeUsd: 1e6 }]) {
+      const data = M.calculatorJourney({ ...input, ...change }, D, quotes), r = data.partial;
+      assert.ok(data.error); assert.equal(r.errorAction, 'trade');
+      close(r.steps.fundedUsd, baseline.steps.fundedUsd);
+      assert.deepEqual(r.rows.filter(row => ['entry', 'deposit'].includes(row.step)), baseline.rows.filter(row => ['entry', 'deposit'].includes(row.step)));
+      assert.equal(r.steps.proceedsUsd, undefined); assert.equal(r.steps.returnUsd, undefined);
+      assert.ok(Object.values(r.steps).every(value => value >= 0));
+    }
+  }
+});
+
+test('tax cannot consume more than sale proceeds and later errors show the balance after reserved tax', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  for (const id of D.calculator.brokers) for (const route of D.calculator.currencies) {
+    const input = M.calculatorRoute({ ...chequeRoute, broker: id, returnBank: 'bochk', route, outcome: 'broker-balance',
+      profitUsd: 1000, months: 0, mainlandMethod: '', depositMethod: '', fxMode: 'bank' });
+    const baseline = M.calculatorJourney(input, D, quotes).selected;
+    const data = M.calculatorJourney({ ...input, taxableCny: 1e8 }, D, quotes), r = data.partial;
+    assert.match(data.error, /税款/); assert.equal(r.errorAction, 'trade');
+    close(r.steps.fundedUsd, baseline.steps.fundedUsd); close(r.steps.proceedsUsd, baseline.steps.proceedsUsd);
+    assert.equal(r.steps.afterTaxUsd, undefined); assert.equal(r.steps.returnUsd, undefined);
+    assert.equal(r.taxCny, 0); assert.ok(Object.values(r.steps).every(value => value >= 0));
+  }
+  const input = { ...chequeRoute, broker: 'ibkr', depositMethod: 'chats', returnBank: 'bochk', profitUsd: 1000, withdrawalIndex: 0 };
+  const r = M.calculatorJourney(input, D, quotes).partial;
+  assert.equal(r.errorAction, 'withdraw'); assert.ok(r.taxCny > 0);
+  close(r.steps.afterTaxUsd, r.steps.proceedsUsd - r.taxCny / r.refs.USD);
+  const html = moneyUi(input, quotes, '2026-10-11').render();
+  const summary = html.split('id="flow-live-summary"')[1].split('flow-bottom-tools')[0];
+  assert.match(summary, new RegExp(r.steps.afterTaxUsd.toFixed(2) + ' <small>USD<'));
+});
+
+test('fees exceeding cash fail at their own action without erasing earlier balances', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  const base = { ...chequeRoute, broker: 'chief', returnBank: 'bochk', depositMethod: 'chats', outcome: 'mainland', months: 0 };
+  const baseline = M.calculatorJourney(base, D, quotes).selected;
+  for (const [change, stage, previous] of [
+    [{ entryInwardHkd: 1e9 }, '01', 'mainlandForeign'],
+    [{ depositHkd: 1e9 }, '03', 'hongKong'],
+    [{ inwardHkd: 1e9 }, 'withdraw', 'afterTaxUsd'],
+    [{ returnWireHkd: 1e9 }, '04', 'returnUsd']
+  ]) {
+    const data = M.calculatorJourney({ ...base, ...change }, D, quotes), r = data.partial;
+    assert.ok(data.error); assert.equal(r.errorAction, stage);
+    close(r.steps[previous], baseline.steps[previous]);
+    assert.ok(r.rows.length > 0); assert.ok(Object.values(r.steps).every(value => value >= 0));
+    assert.ok(r.rows.some(row => row.cny > 1e8));
+  }
+});
+
+test('impossible financial inputs are explained inside their open editor as well as on the flow', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  const base = { ...chequeRoute, broker: 'za', returnBank: 'bochk', depositMethod: 'chats', outcome: 'broker-balance', months: 0 };
+  for (const [change, editor, field, message] of [
+    [{ budgetCny: 1 }, 'budget', 'budgetCny', /不足.*买入/],
+    [{ profitUsd: -1e6 }, 'profit-settings', 'profitUsd', /亏损不能超过/],
+    [{ taxableCny: 1e8 }, 'profit-settings', 'taxableCny', /税款预留/],
+    [{ tradeFeeUsd: 1e6 }, 'adjustments', 'tradeFeeUsd', /不足.*交易/]
+  ]) {
+    const ui = moneyUi({ ...base, ...change }, quotes, '2026-10-11');
+    const html = ui.render(); assert.match(html, message);
+    ui.act('detail', '', editor);
+    assert.match(ui.modal(), new RegExp('aria-describedby="flow-error-' + field + '"'));
+    assert.match(ui.modal(), message);
+  }
+});
