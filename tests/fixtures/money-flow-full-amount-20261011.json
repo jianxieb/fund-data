@@ -1,0 +1,57 @@
+{
+  "checkedAt": "2026-10-11",
+  "ccb": {
+    "tariffSource": "https://www.ccb.com/chn/html1/office/jiamubiao/2025/personal/index17.html",
+    "tariffImage": "https://www.ccb.com/chn/html1/office/jiamubiao/2025/personal/images/p_list17.jpg",
+    "effectiveFrom": "2026-01-18",
+    "item": "3020101",
+    "productSource": "https://company1.ccb.com/cn/home/company/gjyw/448905.html",
+    "historicPricedDescription": "https://www.ccb.com/cn/corporate/international/20090203_1233650387.html",
+    "serviceName": "汇得全",
+    "customers": [
+      "personal",
+      "corporate"
+    ],
+    "modelCurrency": "USD",
+    "commission": {
+      "rate": 0.001,
+      "minimumCny": 20,
+      "maximumCny": 300
+    },
+    "telegramCny": 80,
+    "supplementUsd": 25,
+    "channel": "开办外汇汇款的网点",
+    "includes": [
+      "intermediary deductions",
+      "recipient bank credit deductions"
+    ],
+    "interpretation": "现行个人价目表与官网汇得全说明结合。25美元不是普通SHA代理费，不能用于HKD或CNH；本行基础手续费及电报费仍另计。",
+    "regressionQuote": {
+      "buy": 6.6809,
+      "sell": 6.7097,
+      "asOf": "2026-10-09 23:05:06"
+    }
+  },
+  "icbc": {
+    "tariffSource": "https://v.icbc.com.cn/userfiles/Resources/ICBC/fwjm/images/2026/di3zhangdi6jie202605.gif",
+    "item": "06030033",
+    "supplementUsd": 25,
+    "scopeSource": "https://www.icbc.com.cn/icbc/html/branches/beijing/guanggao/wh_040831/wh4.htm",
+    "serviceName": "普通境外美元汇款全额到账",
+    "includes": [
+      "intermediary deductions",
+      "recipient bank credit deductions"
+    ],
+    "excludedServiceSource": "https://www.icbc.com.cn/page/721852378969309213.html",
+    "excludedService": "工银速汇转汇",
+    "interpretation": "官网普通美元全额到账说明适用非美国目的地并确保全額进入收款人账户，现行资费06030033列25美元。工银速汇转汇另有香港港币、美元、欧元不支持全额到账限制，不能混为一个渠道；产品当前不提供工银速汇转汇。"
+  },
+  "overrides": "本人已取得的具体收费回单优先，实际收费不由全额到账标签清除。",
+  "notCovered": [
+    "bank maintenance",
+    "subsequent local transfers",
+    "broker fees",
+    "FX execution spread",
+    "other remittance currencies"
+  ]
+}

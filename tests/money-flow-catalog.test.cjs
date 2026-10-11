@@ -253,7 +253,7 @@ test('source accounts, Hong Kong banks, stock venues and every currency have ind
   assert.match(M.calculatorIssue({ ...base, startBank: 'abc' }, D), /农业银行/);
 });
 
-test('ICBC optional USD full-amount service adds 25 USD per transfer without waiving normal sender or receiving tariffs', () => {
+test('ICBC ordinary USD full-amount service includes the recipient fee without waiving normal sender tariffs', () => {
   const bank = D.mainlandBanks.find(x => x.id === 'icbc');
   assert.equal(bank.fullAmountUsd, 25);
   const quotes = structuredClone(Q);
@@ -273,10 +273,48 @@ test('ICBC optional USD full-amount service adds 25 USD per transfer without wai
     close(sender.items.reduce((sum, item) => sum + item.cny, 0), sender.cny);
     close(r.steps.mainlandForeign * r.startSell + sender.cny, 100000);
     close(r.rows.find(x => x.key === 'entryMiddle').cny, 0);
-    close(r.rows.find(x => x.key === 'entryInward').cny, receiving === 'bochk' ? count * 60 * r.refs.HKD : 0);
+    close(r.rows.find(x => x.key === 'entryInward').cny, 0);
     ledger(r);
   }
   for (const route of ['CNH', 'HKD']) assert.match(run({ startBank: 'icbc', route, fxMode: 'bank', mainlandMethod: 'full' }).error, /USD全额到账/);
+});
+
+test('CCB current personal full-amount tariff prices every receiving bank and stock account without deducting a second recipient fee', () => {
+  const evidence = require('./fixtures/money-flow-full-amount-20261011.json');
+  const bank = D.mainlandBanks.find(x => x.id === 'ccb');
+  assert.equal(bank.fullAmountUsd, evidence.ccb.supplementUsd);
+  assert.equal(bank.fullAmountIncludesInward, true);
+  assert.equal(D.sources.ccbFullAmount.url, evidence.ccb.productSource);
+  const quotes = structuredClone(Q);
+  quotes.banks.ccb = { quotes: { USD: { buy: 6.69, sell: 6.71, asOf: '2026-10-10 10:00:00' } } };
+  const ccbRun = changes => M.calculatorJourney(M.calculatorRoute({ ...base, count: 1, startBank: 'ccb', mainlandMethod: 'full', ...changes }), D, quotes);
+  for (const receiving of D.calculator.hkBanks) for (const broker of D.calculator.brokers) for (const count of [1, 2, 3]) {
+    const input = { bank: receiving, broker, count, depositMethod: '', months: 0 };
+    const r = ccbRun(input).selected;
+    assert.ok(r, [receiving, broker, count].join('/'));
+    assert.ok(M.calculatorChannels({ ...base, ...input, startBank: 'ccb', route: 'USD' }, D).mainlandMethods.includes('full'));
+    const sender = r.rows.find(x => x.key === 'sender');
+    close(sender.items.find(x => x.label.startsWith('全额到账附加费')).cny, count * evidence.ccb.supplementUsd * r.startSell);
+    close(sender.items.find(x => x.label === '汇出手续费').cny, count * Math.min(300, Math.max(20, r.steps.mainlandForeign * r.startSell / count * .001)));
+    close(sender.items.find(x => x.label === '汇出电讯费').cny, count * 80);
+    close(r.steps.mainlandForeign * r.startSell + sender.cny, 100000);
+    close(r.rows.find(x => x.key === 'entryMiddle').cny, 0);
+    close(r.rows.find(x => x.key === 'entryInward').cny, 0);
+    close(r.steps.hongKong, r.steps.mainlandForeign);
+    assert.ok(r.rows.find(x => x.key === 'entryInward').sources.includes('ccbFullAmount'));
+    ledger(r);
+  }
+  const ordinary = ccbRun({ bank: 'bochk', mainlandMethod: 'swift' }).selected;
+  close(ordinary.rows.find(x => x.key === 'entryInward').cny, 60 * ordinary.refs.HKD);
+  assert.equal(ordinary.rows.find(x => x.key === 'entryMiddle').cny, null);
+  const actual = ccbRun({ entryInwardHkd: 10, entryMiddleCny: 20 }).selected;
+  close(actual.rows.find(x => x.key === 'entryInward').cny, 10 * actual.refs.HKD);
+  close(actual.rows.find(x => x.key === 'entryMiddle').cny, 20);
+  for (const route of ['HKD', 'CNH']) assert.match(ccbRun({ route }).error, /USD全额到账/);
+  const missingQuote = structuredClone(quotes); delete missingQuote.banks.ccb;
+  const partial = M.calculatorJourney({ ...base, startBank: 'ccb', mainlandMethod: 'full' }, D, missingQuote).partial;
+  close(partial.rows.find(x => x.key === 'entryInward').cny, 0);
+  assert.equal(partial.steps.hongKong, undefined);
 });
 
 test('the screenshot uses one benchmark: HSBC 0.451% equals 450.87 CNY; the best CIB purchase is zero', () => {
@@ -556,6 +594,28 @@ test('recommendations compare distinct upstream routes while retaining the chose
   const publicOnly = M.calculatorRecommendations({ ...input, count: 2, broker: 'hsbc', hsbcBalanceWaiver: true, trade25: true }, noReports, diversityQuotes);
   assert.ok(publicOnly.plans.length > 0);
   assert.ok(publicOnly.plans.every(p => p.config.mainlandMethod !== 'cib-go'));
+});
+
+test('a current CCB full-amount quote contributes a distinct source route for each selected stock venue and each card reproduces its price', () => {
+  const quotes = structuredClone(diversityQuotes);
+  const evidence = require('./fixtures/money-flow-full-amount-20261011.json');
+  quotes.banks.ccb = { quotes: { USD: evidence.ccb.regressionQuote } };
+  for (const broker of D.calculator.brokers) {
+    const input = { ...base, date: '2026-10-11', broker, count: 1, months: 12, hsbcBalanceWaiver: false, trade25: false };
+    const plans = M.calculatorRecommendations(input, D, quotes).plans;
+    assert.equal(plans.length, 5);
+    assert.equal(new Set(plans.map(p => p.config.startBank)).size, 5);
+    const ccb = plans.find(p => p.config.startBank === 'ccb');
+    assert.ok(ccb, broker);
+    assert.equal(ccb.config.mainlandMethod, 'full');
+    assert.equal(ccb.config.broker, broker);
+    close(ccb.result.rows.find(row => row.key === 'entryInward').cny, 0);
+    for (const p of plans) {
+      const r = M.calculatorJourney({ ...input, ...p.config }, D, quotes).selected;
+      close(r.costCny, p.result.costCny); ledger(r);
+      assert.equal(r.broker.id, broker); assert.equal(input.count, 1);
+    }
+  }
 });
 
 test('SWIFT Go tariffs never prove all receiving banks are reachable or qualify a preferred route', () => {

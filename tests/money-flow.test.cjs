@@ -1914,6 +1914,31 @@ test('ICBC full-amount service is explicitly selected, visibly priced and cleare
   assert.doesNotMatch(ui.render(), /美元全额到账 · 另加25 USD\/笔/);
 });
 
+test('CCB full-amount selection shows its branch channel, coverage and evidence while retaining independent accounts and transfer count', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  const ui = moneyUi({ ...currentRoute, startBank: 'ccb', bank: 'bochk', broker: 'za', count: 2, months: 0,
+    mainlandMethod: 'swift', route: 'USD', outcome: 'broker-balance' }, quotes, '2026-10-11');
+  ui.render(); ui.act('control-pick', '', 'mainlandMethod');
+  assert.match(ui.modal(), /美元全额到账 · 网点汇得全 · 另加25 USD\/笔/);
+  ui.act('choose', 'mainlandMethod', 'full');
+  const html = ui.render();
+  assert.match(html, /已包含在25 USD\/笔全额到账附加费中/);
+  assert.match(html, /全额到账附加费 · 50 USD/);
+  const r = M.calculatorJourney(ui.saved(), D, quotes).selected;
+  close(r.steps.hongKong, r.steps.mainlandForeign);
+  close(r.rows.find(row => row.key === 'entryInward').cny, 0);
+  ui.act('detail', '', 'edge-01');
+  assert.match(ui.modal(), /已包含境外中转与收款入账扣费/);
+  assert.match(ui.modal(), /company1\.ccb\.com\/cn\/home\/company\/gjyw\/448905\.html/);
+  assert.equal(ui.saved().count, 2);
+  assert.equal(ui.saved().bank, 'bochk'); assert.equal(ui.saved().broker, 'za');
+  ui.act('choose', 'mainlandMethod', 'swift');
+  close(M.calculatorJourney(ui.saved(), D, quotes).selected.rows.find(row => row.key === 'entryInward').cny, 2 * 60 * r.refs.HKD);
+  ui.act('choose', 'route', 'HKD');
+  assert.equal(ui.saved().mainlandMethod, 'swift');
+  assert.doesNotMatch(ui.render(), /网点汇得全/);
+});
+
 test('a missing ICBC quote preserves the fixed telegram tariff and named full-amount service instead of clearing known fees', () => {
   const config = { ...currentRoute, startBank: 'icbc', bank: 'bochk', broker: 'za', count: 1, mainlandMethod: 'full', route: 'USD', outcome: 'broker-balance' };
   const q = structuredClone(cibQuotes); delete q.banks.icbc;

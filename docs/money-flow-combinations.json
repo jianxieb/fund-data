@@ -3341,30 +3341,30 @@
         "cnHangFeeWaived": false,
         "cnScFeeWaived": false
       },
-      "checked": 234156,
-      "priced": 1995,
-      "referencePriced": 565,
-      "partial": 190653,
-      "routeIssues": 41508,
-      "ledgerChecks": 192648,
-      "retainedPartialResults": 31108,
-      "chequeBoundaryChecks": 51246,
+      "checked": 240136,
+      "priced": 2660,
+      "referencePriced": 580,
+      "partial": 195388,
+      "routeIssues": 42088,
+      "ledgerChecks": 198048,
+      "retainedPartialResults": 31688,
+      "chequeBoundaryChecks": 53001,
       "issueCounts": {
-        "众安 ZA Bank不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 1732,
-        "众安 ZA Bank扣账卡以港币结算，不支持人民币余额原币消费；已保留出金后的美元余额。": 1732,
-        "渣打人民币原币消费须持有效香港身份证，并已开通人民币储蓄账户；已保留出金后的美元余额。": 6404,
-        "众安 ZA Bank不接受支票存款；致富 · 网上直属客户的美元支票不能直接存入该账户。已保留券商美元余额。": 8760,
+        "众安 ZA Bank不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 1772,
+        "众安 ZA Bank扣账卡以港币结算，不支持人民币余额原币消费；已保留出金后的美元余额。": 1772,
+        "渣打人民币原币消费须持有效香港身份证，并已开通人民币储蓄账户；已保留出金后的美元余额。": 6604,
+        "众安 ZA Bank不接受支票存款；致富 · 网上直属客户的美元支票不能直接存入该账户。已保留券商美元余额。": 9060,
         "SWIFT GO单笔上限为等值10,000 USD；当前每笔约14914.01 USD，超出服务范围。": 4225,
         "SWIFT GO单笔上限为等值10,000 USD；当前每笔约14942.33 USD，超出服务范围。": 6175,
         "渣打中国的USD现汇卖出价尚未取得；到账金额暂不可算。": 5070,
         "渣打中国的HKD现汇卖出价尚未取得；到账金额暂不可算。": 7410
       },
       "missingCounts": {
-        "券商出金中转行费": 52216,
-        "回内地中转行费": 142160,
-        "内地结汇差额": 21926,
-        "渣打中国USD现汇买入价尚未取得；已保留结汇前美元余额": 21926,
-        "入金代理／收款行费": 75020,
+        "券商出金中转行费": 52826,
+        "回内地中转行费": 146140,
+        "内地结汇差额": 22561,
+        "渣打中国USD现汇买入价尚未取得；已保留结汇前美元余额": 22561,
+        "入金代理／收款行费": 77190,
         "内地→香港中转行费": 174216,
         "IBKR HKD/USD实时成交点差": 17484,
         "IBKR CNH/USD实时成交点差": 17484,
@@ -3895,6 +3895,12 @@
           "partial": 1080,
           "routeIssues": 116
         },
+        "ccb/bochk/USD/full": {
+          "checked": 1196,
+          "priced": 133,
+          "partial": 947,
+          "routeIssues": 116
+        },
         "ccb/bochk/HKD/swift": {
           "checked": 1586,
           "priced": 0,
@@ -3911,6 +3917,12 @@
           "checked": 1196,
           "priced": 0,
           "partial": 1080,
+          "routeIssues": 116
+        },
+        "ccb/hsbc/USD/full": {
+          "checked": 1196,
+          "priced": 133,
+          "partial": 947,
           "routeIssues": 116
         },
         "ccb/hsbc/HKD/swift": {
@@ -3931,6 +3943,12 @@
           "partial": 1080,
           "routeIssues": 116
         },
+        "ccb/za/USD/full": {
+          "checked": 1196,
+          "priced": 133,
+          "partial": 947,
+          "routeIssues": 116
+        },
         "ccb/za/HKD/swift": {
           "checked": 1586,
           "priced": 0,
@@ -3949,6 +3967,12 @@
           "partial": 1080,
           "routeIssues": 116
         },
+        "ccb/hang/USD/full": {
+          "checked": 1196,
+          "priced": 133,
+          "partial": 947,
+          "routeIssues": 116
+        },
         "ccb/hang/HKD/swift": {
           "checked": 1586,
           "priced": 0,
@@ -3965,6 +3989,12 @@
           "checked": 1196,
           "priced": 0,
           "partial": 1080,
+          "routeIssues": 116
+        },
+        "ccb/sc/USD/full": {
+          "checked": 1196,
+          "priced": 133,
+          "partial": 947,
           "routeIssues": 116
         },
         "ccb/sc/HKD/swift": {
@@ -4430,29 +4460,29 @@
         "cnHangFeeWaived": true,
         "cnScFeeWaived": true
       },
-      "checked": 237666,
-      "priced": 1995,
-      "referencePriced": 565,
-      "partial": 210147,
-      "routeIssues": 25524,
-      "ledgerChecks": 212142,
-      "retainedPartialResults": 25524,
-      "chequeBoundaryChecks": 54756,
+      "checked": 243646,
+      "priced": 2660,
+      "referencePriced": 580,
+      "partial": 215082,
+      "routeIssues": 25904,
+      "ledgerChecks": 217742,
+      "retainedPartialResults": 25904,
+      "chequeBoundaryChecks": 56511,
       "issueCounts": {
-        "众安 ZA Bank不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 1842,
-        "众安 ZA Bank扣账卡以港币结算，不支持人民币余额原币消费；已保留出金后的美元余额。": 1842,
-        "众安 ZA Bank不接受支票存款；致富 · 网上直属客户的美元支票不能直接存入该账户。已保留券商美元余额。": 9360,
+        "众安 ZA Bank不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 1882,
+        "众安 ZA Bank扣账卡以港币结算，不支持人民币余额原币消费；已保留出金后的美元余额。": 1882,
+        "众安 ZA Bank不接受支票存款；致富 · 网上直属客户的美元支票不能直接存入该账户。已保留券商美元余额。": 9660,
         "渣打中国的USD现汇卖出价尚未取得；到账金额暂不可算。": 5070,
         "渣打中国的HKD现汇卖出价尚未取得；到账金额暂不可算。": 7410
       },
       "missingCounts": {
-        "券商出金中转行费": 56172,
-        "渣打 · 快易理财 USD → CNH换汇差额": 6834,
-        "渣打 · 快易理财 USD/CNH换汇价尚未取得；已保留换汇前美元余额": 6834,
-        "回内地中转行费": 151500,
-        "内地结汇差额": 23376,
-        "渣打中国USD现汇买入价尚未取得；已保留结汇前美元余额": 23376,
-        "入金代理／收款行费": 82830,
+        "券商出金中转行费": 56792,
+        "渣打 · 快易理财 USD → CNH换汇差额": 7034,
+        "渣打 · 快易理财 USD/CNH换汇价尚未取得；已保留换汇前美元余额": 7034,
+        "回内地中转行费": 155480,
+        "内地结汇差额": 24011,
+        "渣打中国USD现汇买入价尚未取得；已保留结汇前美元余额": 24011,
+        "入金代理／收款行费": 85085,
         "内地→香港中转行费": 179984,
         "IBKR HKD/USD实时成交点差": 19656,
         "IBKR CNH/USD实时成交点差": 17766,
@@ -4993,6 +5023,12 @@
           "partial": 1120,
           "routeIssues": 76
         },
+        "ccb/bochk/USD/full": {
+          "checked": 1196,
+          "priced": 133,
+          "partial": 987,
+          "routeIssues": 76
+        },
         "ccb/bochk/HKD/swift": {
           "checked": 1586,
           "priced": 0,
@@ -5009,6 +5045,12 @@
           "checked": 1196,
           "priced": 0,
           "partial": 1120,
+          "routeIssues": 76
+        },
+        "ccb/hsbc/USD/full": {
+          "checked": 1196,
+          "priced": 133,
+          "partial": 987,
           "routeIssues": 76
         },
         "ccb/hsbc/HKD/swift": {
@@ -5029,6 +5071,12 @@
           "partial": 1120,
           "routeIssues": 76
         },
+        "ccb/za/USD/full": {
+          "checked": 1196,
+          "priced": 133,
+          "partial": 987,
+          "routeIssues": 76
+        },
         "ccb/za/HKD/swift": {
           "checked": 1586,
           "priced": 0,
@@ -5047,6 +5095,12 @@
           "partial": 1120,
           "routeIssues": 76
         },
+        "ccb/hang/USD/full": {
+          "checked": 1196,
+          "priced": 133,
+          "partial": 987,
+          "routeIssues": 76
+        },
         "ccb/hang/HKD/swift": {
           "checked": 1586,
           "priced": 0,
@@ -5063,6 +5117,12 @@
           "checked": 1196,
           "priced": 0,
           "partial": 1120,
+          "routeIssues": 76
+        },
+        "ccb/sc/USD/full": {
+          "checked": 1196,
+          "priced": 133,
+          "partial": 987,
           "routeIssues": 76
         },
         "ccb/sc/HKD/swift": {
@@ -5531,32 +5591,32 @@
         "usmartPromo": false,
         "zaLv2": false
       },
-      "checked": 997188,
-      "priced": 10470,
-      "referencePriced": 2226,
-      "partial": 809466,
-      "routeIssues": 177252,
-      "ledgerChecks": 819936,
-      "retainedPartialResults": 143148,
-      "chequeBoundaryChecks": 246156,
+      "checked": 1019220,
+      "priced": 12884,
+      "referencePriced": 2264,
+      "partial": 827324,
+      "routeIssues": 179012,
+      "ledgerChecks": 840208,
+      "retainedPartialResults": 144908,
+      "chequeBoundaryChecks": 252852,
       "issueCounts": {
-        "众安 ZA Bank不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 4676,
-        "众安 ZA Bank扣账卡以港币结算，不支持人民币余额原币消费；已保留出金后的美元余额。": 4676,
-        "渣打人民币原币消费须持有效香港身份证，并已开通人民币储蓄账户；已保留出金后的美元余额。": 21312,
-        "众安 ZA Bank不接受支票存款；致富 · 网上直属客户的美元支票不能直接存入该账户。已保留券商美元余额。": 37436,
+        "众安 ZA Bank不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 4776,
+        "众安 ZA Bank扣账卡以港币结算，不支持人民币余额原币消费；已保留出金后的美元余额。": 4776,
+        "渣打人民币原币消费须持有效香港身份证，并已开通人民币储蓄账户；已保留出金后的美元余额。": 21852,
+        "众安 ZA Bank不接受支票存款；致富 · 网上直属客户的美元支票不能直接存入该账户。已保留券商美元余额。": 38456,
         "SWIFT GO单笔上限为等值10,000 USD；当前每笔约14914.01 USD，超出服务范围。": 15336,
         "SWIFT GO单笔上限为等值10,000 USD；当前每笔约14942.33 USD，超出服务范围。": 18768,
         "渣打中国的USD现汇卖出价尚未取得；到账金额暂不可算。": 33768,
         "渣打中国的HKD现汇卖出价尚未取得；到账金额暂不可算。": 41280
       },
       "missingCounts": {
-        "券商出金中转行费": 118888,
-        "渣打 · 快易理财 USD → CNH换汇差额": 21312,
-        "渣打 · 快易理财 USD/CNH换汇价尚未取得；已保留换汇前美元余额": 21312,
-        "回内地中转行费": 595732,
-        "内地结汇差额": 140504,
-        "渣打中国USD现汇买入价尚未取得；已保留结汇前美元余额": 140504,
-        "入金代理／收款行费": 287688,
+        "券商出金中转行费": 119984,
+        "渣打 · 快易理财 USD → CNH换汇差额": 21852,
+        "渣打 · 快易理财 USD/CNH换汇价尚未取得；已保留换汇前美元余额": 21852,
+        "回内地中转行费": 610492,
+        "内地结汇差额": 144016,
+        "渣打中国USD现汇买入价尚未取得；已保留结汇前美元余额": 144016,
+        "入金代理／收款行费": 294810,
         "内地→香港中转行费": 722760,
         "IBKR HKD/USD实时成交点差": 38448,
         "IBKR CNH/USD实时成交点差": 41292,
@@ -6087,6 +6147,12 @@
           "partial": 3702,
           "routeIssues": 312
         },
+        "ccb/bochk/USD/full": {
+          "checked": 4014,
+          "priced": 457,
+          "partial": 3245,
+          "routeIssues": 312
+        },
         "ccb/bochk/HKD/swift": {
           "checked": 4620,
           "priced": 0,
@@ -6103,6 +6169,12 @@
           "checked": 5976,
           "priced": 0,
           "partial": 5464,
+          "routeIssues": 512
+        },
+        "ccb/hsbc/USD/full": {
+          "checked": 5976,
+          "priced": 586,
+          "partial": 4878,
           "routeIssues": 512
         },
         "ccb/hsbc/HKD/swift": {
@@ -6123,6 +6195,12 @@
           "partial": 3702,
           "routeIssues": 312
         },
+        "ccb/za/USD/full": {
+          "checked": 4014,
+          "priced": 457,
+          "partial": 3245,
+          "routeIssues": 312
+        },
         "ccb/za/HKD/swift": {
           "checked": 4620,
           "priced": 0,
@@ -6141,6 +6219,12 @@
           "partial": 3702,
           "routeIssues": 312
         },
+        "ccb/hang/USD/full": {
+          "checked": 4014,
+          "priced": 457,
+          "partial": 3245,
+          "routeIssues": 312
+        },
         "ccb/hang/HKD/swift": {
           "checked": 4620,
           "priced": 0,
@@ -6157,6 +6241,12 @@
           "checked": 4014,
           "priced": 0,
           "partial": 3702,
+          "routeIssues": 312
+        },
+        "ccb/sc/USD/full": {
+          "checked": 4014,
+          "priced": 457,
+          "partial": 3245,
           "routeIssues": 312
         },
         "ccb/sc/HKD/swift": {

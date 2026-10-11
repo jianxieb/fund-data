@@ -66,6 +66,7 @@
       else add('mainlandTariff', s.start);
       if (state.route !== 'CNH') add('mainlandFx', s.start);
       if (mainlandMethod === 'cib-go' && s.start?.id === 'cib') keys.push('cibGo', 'swiftGoBanks');
+      if (mainlandMethod === 'full') keys.push(...(s.start?.fullAmountSources || []));
       if (mainlandMethod === 'linked') add('linked', s.start);
       keys.push(...(r?.rows?.find(item => item.key === 'entryMiddle')?.sources || []));
       if (s.bank?.id === 'bochk' && s.start?.group === 'boc') keys.push('bochkSame');
@@ -183,7 +184,7 @@
     if (s.start?.id === 'boc' && s.bank?.id === 'bochk' && state.route !== 'CNH') values.unshift(['boc-mobile', '手机银行 · 向同名境外中行汇款']);
     if (s.start?.id === 'boc' && s.bank?.group !== 'boc' && state.route !== 'CNH') values.unshift(['boc-online', '手机银行／网银 · 向他行9折']);
     if (s.start?.id === 'cib' && state.route !== 'CNH') values.push(['cib-go', '小额全额到账 · 另加50 CNY/笔']);
-    if (state.route === 'USD' && s.start?.fullAmountUsd != null) values.push(['full', '美元全额到账 · 另加' + s.start.fullAmountUsd + ' USD/笔']);
+    if (state.route === 'USD' && s.start?.fullAmountUsd != null) values.push(['full', '美元全额到账 · ' + (s.start.fullAmountChannel ? s.start.fullAmountChannel + ' · ' : '') + '另加' + s.start.fullAmountUsd + ' USD/笔']);
     if (['hsbc', 'hang', 'sc'].includes(s.start?.id) && s.start.group === s.bank?.group && (!s.start.linkedCurrencies || s.start.linkedCurrencies.includes(state.route))) values.unshift(['linked', ({ hsbc: '同名环球转账', hang: '优越理财 · 同名跨域转账', sc: '优先理财 · 同名速汇' })[s.start.id] + ' · 免费']);
     return values.filter(([id]) => M.calculatorChannels(state, D).mainlandMethods.includes(id));
   }
@@ -393,7 +394,9 @@
   }
   function transferHint() {
     if (state.mainlandMethod === 'cib-go') return '附加服务：每笔≤等值10,000 USD，仅限App提供此服务的收款账户；包含境外行费用。';
-    if (state.mainlandMethod === 'full') return '美元全额到账附加服务按笔收费，汇出手续费、电讯费及收款行本行汇入费分别列示。';
+    if (state.mainlandMethod === 'full') return selected().start?.fullAmountIncludesInward ?
+      '美元全额到账附加服务按笔收费，已包含境外中转与收款入账扣费；本行汇出手续费、电讯费另计。' :
+      '美元全额到账附加服务按笔收费，汇出手续费、电讯费及收款行本行汇入费分别列示。';
     if (state.mainlandMethod === 'boc-mobile') return '手机银行“境外中行”入口双免；中银香港使用BKCHHKHH，香港分行BKCHHKHK不享此优惠。代理费单独按汇路证据计算。';
     if (state.mainlandMethod === 'boc-online') return '向境外他行手机／网银基础费9折；收款行及代理行费用另列。';
     if (state.mainlandMethod === 'linked') return state.startBank === 'sc' ? '适用于渣打优先理财、两地同名账户及指定渠道。' : state.startBank === 'hang' ? '适用于恒生中国优越理财，经跨域转账页面汇往同名恒生香港账户；优进理财的累计3次本行费用优惠不适用此项。' : '适用于已连通的两地同名账户及指定转账页面。';

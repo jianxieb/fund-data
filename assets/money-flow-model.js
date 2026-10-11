@@ -742,6 +742,10 @@
       if (mainlandMethod === 'linked' && !(linked && sameGroup)) return { error: '两地同名专用渠道须选择同一银行集团的香港账户。' };
       if (mainlandMethod === 'linked' && !linkedCurrency) return { error: '渣打全球账户间汇款仅支持外币同币种；人民币原币汇出使用人民币跨境汇款渠道。' };
       if (mainlandMethod === 'full' && !(currency === 'USD' && knownFee(start.fullAmountUsd))) return { error: '所选银行未收录USD全额到账收费，请改用普通汇款。' };
+      const includedEntryInward = mainlandMethod === 'full' && start.fullAmountIncludesInward;
+      const fullAmountEvidence = mainlandMethod === 'full' ? {
+        evidence: '已包含在' + start.fullAmountUsd + ' USD/笔全额到账附加费中', sources: start.fullAmountSources || []
+      } : {};
       const isSelectedEntry = isSelectedStart && isSelectedBank && (!config.route || config.route === currency) && (!config.mainlandMethod || config.mainlandMethod === mainlandMethod);
       const senderOverride = own('senderFeeCny', isSelectedEntry);
       // The bank-authored mobile waiver covers sending fees. The observed
@@ -853,7 +857,7 @@
         (item.minimumForeign == null || finite(balance) && balance / count + 1e-8 >= item.minimumForeign));
       const ownMiddle = own('entryMiddleCny', isSelectedEntry);
       const entryMiddle = paymentConnect ? 0 : ownMiddle ?? (reportedMobile ? data.bocMobileEvidence.intermediaryCny ?? null : mainlandMethod === 'linked' && start.includedIntermediary ? 0 : mainlandMethod === 'full' || swiftGo ? 0 : recordedTransfer?.intermediaryCny ?? null);
-      const entryMiddleEvidence = reportedMobile && ownMiddle == null && entryMiddle != null ? {
+      const entryMiddleEvidence = mainlandMethod === 'full' && ownMiddle == null ? fullAmountEvidence : reportedMobile && ownMiddle == null && entryMiddle != null ? {
         evidence: 'USD/HKD同行SHA路径 · 2026公开操作记录',
         ...(data.bocMobileEvidence.intermediaryLevel === 'reported' ? { estimate: '代理费按同名同行SHA操作记录测算' } : {})
       } : recordedTransfer && ownMiddle == null ? { evidence: recordedTransfer.evidence, sources: recordedTransfer.sources,
@@ -864,8 +868,9 @@
         const error = start.name + '的' + currency + '现汇卖出价尚未取得；到账金额暂不可算。';
         rows.push({ key: 'entryFx', label: '内地购汇差额', cny: null, step: 'entry', status: error });
         rows.push({ key: 'entryMiddle', label: '内地→香港中转行费', cny: entryMiddle == null ? null : entryMiddle * count, step: 'entry', ...entryMiddleEvidence });
-        const knownInward = own('entryInwardHkd', isSelectedBank) ?? (swiftGo || bank.inwardHkd === 0 || bank.sameGroupWaiver && sameGroup ? 0 : null);
+        const knownInward = own('entryInwardHkd', isSelectedBank) ?? (swiftGo || includedEntryInward || bank.inwardHkd === 0 || bank.sameGroupWaiver && sameGroup ? 0 : null);
         rows.push({ key: 'entryInward', label: '香港首次汇入费', cny: knownInward == null ? null : knownInward * refs.HKD * count, step: 'entry',
+          ...(includedEntryInward && own('entryInwardHkd', isSelectedBank) == null ? fullAmountEvidence : {}),
           status: knownInward == null ? '须先确定外币到账额及适用汇入资费' : '' });
         rows.push({ key: 'account', label: '银行账户期间管理费', cny: accountCny, step: 'spend', items: accountItems });
         return { error, errorStage: '01', missingQuote: currency, rows, steps, route, mainlandMethod, fxMode,
@@ -878,8 +883,9 @@
       steps.mainlandForeign = balance;
       add('entryMiddle', paymentConnect ? '跨境支付通直连（无SWIFT中转）' : '内地→香港中转行费', entryMiddle == null ? null : entryMiddle * count, 'entry');
       Object.assign(rows[rows.length - 1], entryMiddleEvidence);
-      const inward = own('entryInwardHkd', isSelectedBank) ?? (swiftGo ? 0 : inwardFee(bank, balance * refs[currency] / refs.HKD / count, start.group));
+      const inward = own('entryInwardHkd', isSelectedBank) ?? (swiftGo || includedEntryInward ? 0 : inwardFee(bank, balance * refs[currency] / refs.HKD / count, start.group));
       add('entryInward', '香港首次汇入费', inward == null ? null : inward * refs.HKD * count, 'entry');
+      if (includedEntryInward && own('entryInwardHkd', isSelectedBank) == null) Object.assign(rows[rows.length - 1], fullAmountEvidence);
       let trading = null, taxCny = 0;
       const downstreamError = (error, errorStage = '03', errorAction = errorStage, errorField) => ({ error, errorStage, errorAction, errorField, rows: [...rows,
         { key: 'account', label: '银行账户期间管理费', cny: accountCny, step: 'spend', items: accountItems },
