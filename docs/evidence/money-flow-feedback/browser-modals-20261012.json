@@ -1,0 +1,651 @@
+{
+  "observedAt": "2026-10-11T17:46:22.644Z",
+  "url": "http://127.0.0.1:8780/?review=corporate-chats-20261012#money-flow",
+  "scope": "实际外点、Esc、关闭按钮、焦点恢复及Shift+Tab／Tab首尾循环；前21个入口为d11bc44，后续为85ba33d工作树。",
+  "checks": [
+    {
+      "trigger": "报价与依据",
+      "title": "汇率与收费依据",
+      "last": {
+        "inside": true,
+        "label": null,
+        "text": "恒生香港 · 外币电汇买卖价 ↗"
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": null,
+          "text": "报价与依据"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    },
+    {
+      "trigger": "内地出发银行：中国银行，更换",
+      "title": "选择出发银行",
+      "last": {
+        "inside": true,
+        "label": null,
+        "text": "渣打中国优先理财网上外币汇款：手续费、电讯费0；同名全球账户渠道OUR代理费另免尚未取得该行USD购汇牌价"
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": "内地出发银行：中国银行，更换",
+          "text": "内地出发银行中国银行更换 ↗"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    },
+    {
+      "trigger": "修改人民币本金",
+      "title": "本金与汇出笔数",
+      "last": {
+        "inside": true,
+        "label": "汇出笔数",
+        "text": ""
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": "修改人民币本金",
+          "text": "修改"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    },
+    {
+      "trigger": "汇出笔数：1笔",
+      "title": "汇出笔数",
+      "last": {
+        "inside": true,
+        "label": null,
+        "text": "自定义笔数"
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": "汇出笔数：1笔",
+          "text": "1笔⌄"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    },
+    {
+      "trigger": "汇款渠道：手机银行 · 向同名境外中行汇款",
+      "title": "汇款渠道",
+      "last": {
+        "inside": true,
+        "label": null,
+        "text": "普通电汇 · 公开标准价"
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": "汇款渠道：手机银行 · 向同名境外中行汇款",
+          "text": "手机银行 · 向同名境外中行汇款⌄"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    },
+    {
+      "trigger": "内地购美元 → 汇往香港收费依据",
+      "title": "内地购汇与跨境汇款",
+      "last": {
+        "inside": true,
+        "label": null,
+        "text": "中银香港 · 内地中行同名汇款豁免 ↗"
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": "内地购美元 → 汇往香港收费依据",
+          "text": "依据"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    },
+    {
+      "trigger": "香港收款银行：中银香港，更换",
+      "title": "选择香港收款银行",
+      "last": {
+        "inside": true,
+        "label": null,
+        "text": "渣打 · 快易理财本地USD转账标准费22 USD；快易月费0"
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": "香港收款银行：中银香港，更换",
+          "text": "香港收款银行中银香港更换 ↗"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    },
+    {
+      "trigger": "账户使用 12个月 · 银行管理费 0.00 CNY",
+      "title": "香港银行账户费用",
+      "last": {
+        "inside": true,
+        "label": null,
+        "text": "中银香港 · 个人账户及扣账卡收费 ↗"
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": null,
+          "text": "账户使用 12个月 · 银行管理费 0.00 CNY"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    },
+    {
+      "trigger": "入金方式：同行转账 → 券商收款账户 · 免费",
+      "title": "入金方式",
+      "last": {
+        "inside": true,
+        "label": null,
+        "text": "香港收款账户 · USD SWIFT"
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": "入金方式：同行转账 → 券商收款账户 · 免费",
+          "text": "同行转账 → 券商收款账户 · 免费⌄"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    },
+    {
+      "trigger": "转入买股账户收费依据",
+      "title": "换汇与股票入金",
+      "last": {
+        "inside": true,
+        "label": null,
+        "text": "盈立 · 中银香港同行USD入金免费 ↗"
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": "转入买股账户收费依据",
+          "text": "依据"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    },
+    {
+      "trigger": "买美股的账户：盈立，更换",
+      "title": "选择买美股的账户",
+      "last": {
+        "inside": true,
+        "label": null,
+        "text": "盈立 · 个人标准账户零佣金 · 整股平台每单1.88 USD起；清算/监管另计✓ 已选"
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": "买美股的账户：盈立，更换",
+          "text": "买美股的账户盈立更换 ↗"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    },
+    {
+      "trigger": "买1笔 / 卖1笔 · 股价 100 USD",
+      "title": "美股买卖设置",
+      "last": {
+        "inside": true,
+        "label": null,
+        "text": "SEC/FINRA · TAF费率在2029、2030、2031年分阶段调整 ↗"
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": null,
+          "text": "买1笔 / 卖1笔 · 股价 100 USD"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    },
+    {
+      "trigger": "优惠与费用券",
+      "title": "盈立 · 优惠与费用券",
+      "last": {
+        "inside": true,
+        "label": null,
+        "text": "盈立 · 0.99美元与非香港客户180天资格 ↗"
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": null,
+          "text": "优惠与费用券"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    },
+    {
+      "trigger": "买入美股 → 卖出收费依据",
+      "title": "美股买卖",
+      "last": {
+        "inside": true,
+        "label": null,
+        "text": "SEC/FINRA · TAF费率在2029、2030、2031年分阶段调整 ↗"
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": "买入美股 → 卖出收费依据",
+          "text": "依据"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    },
+    {
+      "trigger": "盈亏 0.00 USD",
+      "title": "盈亏、出金与税款",
+      "last": {
+        "inside": true,
+        "label": null,
+        "text": "税务总局 · 居民境外所得个人所得税 ↗"
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": null,
+          "text": "盈亏 0.00 USD"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    },
+    {
+      "trigger": "卖出后的资金：取回香港银行 · 保留美元",
+      "title": "选择资金用途",
+      "last": {
+        "inside": true,
+        "label": null,
+        "text": "汇回内地结汇"
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": "卖出后的资金：取回香港银行 · 保留美元",
+          "text": "取回香港银行 · 保留美元⌄"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    },
+    {
+      "trigger": "取回／消费银行：中银香港，更换",
+      "title": "选择取回／消费银行",
+      "last": {
+        "inside": true,
+        "label": null,
+        "text": "渣打 · 快易理财本地USD转账标准费22 USD；快易月费0"
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": "取回／消费银行：中银香港，更换",
+          "text": "取回／消费银行中银香港更换 ↗"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    },
+    {
+      "trigger": "出金 → 中银香港收费依据",
+      "title": "出金至香港银行",
+      "last": {
+        "inside": true,
+        "label": null,
+        "text": "中银香港 · 本地支票存入及一般银行服务收费 ↗"
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": "出金 → 中银香港收费依据",
+          "text": "依据"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    },
+    {
+      "trigger": "全程明细",
+      "title": "全程费用明细",
+      "last": {
+        "inside": true,
+        "label": null,
+        "text": "税务总局 · 居民境外所得个人所得税 ↗"
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": null,
+          "text": "全程明细"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    },
+    {
+      "trigger": "实际成交报价与费用",
+      "title": "实际成交报价与费用",
+      "last": {
+        "inside": true,
+        "label": null,
+        "text": "恢复公开报价"
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": null,
+          "text": "实际成交报价与费用"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    },
+    {
+      "trigger": "适用条件",
+      "title": "适用条件",
+      "last": {
+        "inside": true,
+        "label": null,
+        "text": "证监会 · 2026年跨境证券经营整治 ↗"
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": null,
+          "text": "适用条件"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    },
+    {
+      "trigger": "内地收款银行：中国银行，更换",
+      "title": "选择内地收款银行",
+      "last": {
+        "inside": true,
+        "label": null,
+        "text": "渣打中国境外USD汇入手续费：0.00 CNY尚未取得该行USD结汇牌价"
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": "内地收款银行：中国银行，更换",
+          "text": "内地收款银行中国银行更换 ↗"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    },
+    {
+      "trigger": "汇回渠道：中银快汇 → 同名内地中行",
+      "title": "汇回渠道",
+      "last": {
+        "inside": true,
+        "label": null,
+        "text": "普通网上电汇"
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": "汇回渠道：中银快汇 → 同名内地中行",
+          "text": "中银快汇 → 同名内地中行⌄"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    },
+    {
+      "trigger": "汇回内地 → 美元结汇收费依据",
+      "title": "资金使用",
+      "last": {
+        "inside": true,
+        "label": null,
+        "text": "中银香港 · 内地中行同名汇款豁免 ↗"
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": "汇回内地 → 美元结汇收费依据",
+          "text": "依据"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    },
+    {
+      "trigger": "汇丰中国 · 卓越理财账户费用与豁免",
+      "title": "汇丰中国 · 卓越理财 · 账户费用",
+      "last": {
+        "inside": true,
+        "label": null,
+        "text": "汇丰中国 · 2026年9月29日个人账户与服务价目表 ↗"
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": "汇丰中国 · 卓越理财账户费用与豁免",
+          "text": "300 CNY/月 × 12个月 · 3,600.00 CNY"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    },
+    {
+      "trigger": "ZA银行权益：ZA Perks · 标准",
+      "title": "ZA银行权益",
+      "last": {
+        "inside": true,
+        "label": null,
+        "text": "ZA Perks · Lv2"
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": "ZA银行权益：ZA Perks · 标准",
+          "text": "ZA Perks · 标准⌄"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    },
+    {
+      "trigger": "恒生中国 · 优越理财账户费用与豁免",
+      "title": "恒生中国 · 优越理财 · 账户费用",
+      "last": {
+        "inside": true,
+        "label": null,
+        "text": "恒生中国 · 2026年2月个人账户与服务价目表 ↗"
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": "恒生中国 · 优越理财账户费用与豁免",
+          "text": "180 CNY/月 × 12个月 · 2,160.00 CNY"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    },
+    {
+      "trigger": "渣打中国 · 优先理财账户费用与豁免",
+      "title": "渣打中国 · 优先理财 · 账户费用",
+      "last": {
+        "inside": true,
+        "label": null,
+        "text": "渣打中国 · 优先理财资格 ↗"
+      },
+      "wrapped": {
+        "inside": true,
+        "label": "关闭弹窗"
+      },
+      "afterOutside": {
+        "open": 0,
+        "focus": {
+          "label": "渣打中国 · 优先理财账户费用与豁免",
+          "text": "150 CNY/月 × 12个月 · 1,800.00 CNY"
+        }
+      },
+      "afterEscape": 0,
+      "afterClose": 0,
+      "passed": true
+    }
+  ]
+}
