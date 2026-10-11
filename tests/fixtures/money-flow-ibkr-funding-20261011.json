@@ -175,5 +175,19 @@
       }
     }
   ],
-  "residencyLabelSource": "https://www.interactivebrokers.com/am.webapp/i18n/Acct_Mgmt_en.json"
+  "residencyLabelSource": "https://www.interactivebrokers.com/am.webapp/i18n/Acct_Mgmt_en.json",
+  "publicMethodTypes": {
+    "observedAt": "2026-10-11T13:03:54.599264Z",
+    "source": "https://www.interactivebrokers.com/aces/Funding/Methods/InitData",
+    "response": {
+      "types": [
+        "DEPOSIT",
+        "POSITION_INBOUND",
+        "IRA"
+      ],
+      "errors": {},
+      "requestErrors": {}
+    },
+    "scope": "公开fund-my-account入金工具当前提供的类型；未提供WITHDRAWAL类型。不证明客户登录后的出金服务不存在，也不能以入金方法或费用推导出金。"
+  }
 }

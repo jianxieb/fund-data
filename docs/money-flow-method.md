@@ -233,9 +233,9 @@ CNY原币到港成为CNH时第一步没有换汇差额；该人民币基准差�
 
 ### 工行美元全额到账与人民币收费范围（2026-10-11补核）
 
-[工行现行国际业务价目表06030033](https://v.icbc.com.cn/userfiles/Resources/ICBC/fwjm/images/2026/di3zhangdi6jie202605.gif)列出个人美元汇款全额到账附加费25 USD／笔，基础汇出费另计。已补入USD可选渠道，逐笔计入含费预算；普通网银渠道仍使用0.8‰、40–208元及香港电讯费80元。香港收款行本行汇入费单独按其价目表计算，未因这一附加服务自动清零。
+[工行现行国际业务价目表06030033](https://v.icbc.com.cn/userfiles/Resources/ICBC/fwjm/images/2026/di3zhangdi6jie202605.gif)列出个人美元汇款全额到账附加费25 USD／笔，基础汇出费另计。已补入USD可选渠道，逐笔计入含费预算；普通网银渠道仍使用0.8‰、40–208元及香港电讯费80元。[普通美元全额到账说明](https://www.icbc.com.cn/icbc/html/branches/beijing/guanggao/wh_040831/wh4.htm)确认非美国目的地汇款全额进入收款人账户，该附加服务包含境外中转和收款入账扣费，不再重复扣香港银行本行汇入费。普通SHA汇款不享这一覆盖，仍分别计费。
 
-页面、优选比较及费用详情采用同一渠道。10万元、1笔、工行→中银香港→ZA、美元留在ZA时，按本轮快照计算：汇出手续费79.74 CNY、电讯费80 CNY、附加费25 USD折167.72 CNY，购汇差额101.77 CNY，香港汇入费60 HKD折51.24 CNY；第一段480.46 CNY，全程509.42 CNY／0.509%。不足一分的显示差来自逐项四舍五入，内部按完整精度相加。缺工行牌价时保留电讯费及附加费名目，将依赖换算的金额标为参考估算，不生成美元到账额。
+页面、优选比较及费用详情采用同一渠道。10万元、1笔、12个月、工行→中银香港→ZA、美元留在ZA时，按2026-10-11生产快照计算：汇出手续费79.74 CNY、电讯费80 CNY、附加费25 USD折167.72 CNY，购汇差额101.77 CNY；境外中转及入账费已包含，不重复收60 HKD。第一段429.23 CNY，买卖交易费28.95 CNY，全程458.18 CNY／0.458%。金额先按完整精度相加，显示时分别四舍五入。缺工行购汇价时仍保留已公布的电讯费和25 USD附加费科目，不能生成美元到账额；换算估值不冒充实际成交价。此前509.42 CNY示例多扣入账费，已从当前方法正文撤销，历史修复记录保留其纠正原因。
 
 另读取工行[人民币结算及账户服务表01010021](https://v.icbc.com.cn/userfiles/Resources/ICBC/fwjm/images/2026/di3zhangdi1jie202604.gif)，其服务内容为境内账户及跨行划转，不能作为普通跨境人民币免费依据。交行2026年5月名录第74页跨境人民币条款适用于公司及同业，第76／79页个人国际汇出及邮电价仍注明地区差异。未将公司／境内规则或某一地区最低价套入全国个人人民币路线；两家的该项范围仍需具体证据。
 
@@ -268,8 +268,11 @@ CNY原币到港成为CNH时第一步没有换汇差额；该人民币基准差�
 - [渣打中国外汇平台](https://www.sc.com/cn/foreign-exchange/wfx/)按客户查询即时提供报价，不同交易渠道报价可能不同。页面没有现汇买入／卖出数值；最大点差规则无法反推当次价。
 - 渣打香港外汇产品页的[汇率链接](https://www.sc.com/hk/investment/foreign-exchange/foreign-exchange-rate/)实际为市场现价、支撑及阻力分析，来源为Bloomberg／渣打。它没有银行买卖价，不能把其中USD/CNH市场现价作为渣打个人成交价。[存款帮助的Rate Enquiry FAQs](https://www.sc.com/hk/help/deposits/)还明确查询价供参考，实际交易价在确认时显示；会员折扣比例缺少基础成交价，同样不足以计算。
 - [ZA个人换汇FAQ](https://bank.za.group/en/faqs/Individuals/Bank_services/Money_exchange/671605c5701eb769e4bff53c)指向登录ZA App查看最新价；[个人产品页](https://bank.za.group/en/foreignexchange)的免手续费不等于没有买卖点差。官网页脚Open Banking链接此次返回404；[公开产品目录的搜索索引](https://developer.bank.za.group/en/product)只列存款、定期、个人贷款及账户资料，本次没有发现个人外汇报价接口。没有把沙盒示例、公司换汇产品或别行牌价代入。
+- [香港银行公会开市参考价](https://www.hkab.org.hk/en/rates/exchange-rates)的本次公开说明没有具名供价银行；搜索索引中的2026-09-11记录也已超过本模型三天报价期限。该表的HKD单位、卖出／电汇买入栏不能证明渣打或ZA当前个人渠道报价，未据此填补任何银行成交价。
 
 以上是已查路径和取得结果的记录，不证明银行永远不会提供其他接口。关闭这些缺项需要可授权使用的银行个人报价数据源；具体汇路代理费仍需要银行针对渠道、币种和收款路径的收费依据。现有公开材料不够支持“全目录每条路线均有确定成交损耗”的验收结论。
+
+IBKR[公开入金工具](https://www.interactivebrokers.com/en/support/fund-my-account.php)使用的`/aces/Funding/Methods/InitData`在本次读取中只返回`DEPOSIT`、`POSITION_INBOUND`和`IRA`。响应保存于[已有核查摘要](../tests/fixtures/money-flow-ibkr-funding-20261011.json)的`publicMethodTypes`；此前按CHN／HKG取得的USD、HKD及CNH资料均为入金方法，不能用于证明美元出金路径免费。客户出金能力仍以[官方出金说明](https://www.ibkrguides.com/androidtablet/withdrawal.htm)和[出金收费](https://www.interactivebrokers.com/en/pricing/other-fees.php)分别核查：两次月度免费额度只免IBKR本身的手续费，不证明代理／收款行费为0，HKD／CNH本地支付也不能套入USD电汇。
 
 ### 整体操作验收与资格穷举（2026-10-11）
 

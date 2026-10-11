@@ -1,0 +1,458 @@
+{
+  "date": "2026-10-11",
+  "profiles": [
+    {
+      "broker": "ibkr",
+      "outcome": "broker-balance",
+      "checked": 249,
+      "complete": 20,
+      "sources": [
+        "boc",
+        "icbc",
+        "ccb",
+        "cib",
+        "hang"
+      ],
+      "costsCny": [
+        137.15,
+        444.91,
+        481.16,
+        1040.46,
+        3308.29
+      ]
+    },
+    {
+      "broker": "hsbc",
+      "outcome": "broker-balance",
+      "checked": 193,
+      "complete": 20,
+      "sources": [
+        "cib",
+        "boc",
+        "icbc",
+        "ccb",
+        "hang"
+      ],
+      "costsCny": [
+        1536.38,
+        1657.84,
+        1965.61,
+        2001.85,
+        4828.98
+      ]
+    },
+    {
+      "broker": "za",
+      "outcome": "broker-balance",
+      "checked": 193,
+      "complete": 20,
+      "sources": [
+        "boc",
+        "icbc",
+        "ccb",
+        "cib",
+        "hang"
+      ],
+      "costsCny": [
+        150.41,
+        458.18,
+        494.42,
+        1053.72,
+        3321.55
+      ]
+    },
+    {
+      "broker": "chief",
+      "outcome": "broker-balance",
+      "checked": 273,
+      "complete": 60,
+      "sources": [
+        "boc",
+        "icbc",
+        "ccb",
+        "cib",
+        "hang"
+      ],
+      "costsCny": [
+        145.71,
+        453.41,
+        489.64,
+        1049.05,
+        3316.63
+      ]
+    },
+    {
+      "broker": "usmart",
+      "outcome": "broker-balance",
+      "checked": 253,
+      "complete": 40,
+      "sources": [
+        "boc",
+        "icbc",
+        "ccb",
+        "cib",
+        "hang"
+      ],
+      "costsCny": [
+        155.07,
+        462.81,
+        499.05,
+        1058.38,
+        3326.14
+      ]
+    },
+    {
+      "broker": "ibkr",
+      "outcome": "usd-balance",
+      "checked": 553,
+      "complete": 0,
+      "sources": [],
+      "costsCny": []
+    },
+    {
+      "broker": "hsbc",
+      "outcome": "usd-balance",
+      "checked": 273,
+      "complete": 100,
+      "sources": [
+        "cib",
+        "boc",
+        "icbc",
+        "ccb",
+        "hang"
+      ],
+      "costsCny": [
+        1536.38,
+        1657.84,
+        1965.61,
+        2001.85,
+        4828.98
+      ]
+    },
+    {
+      "broker": "za",
+      "outcome": "usd-balance",
+      "checked": 273,
+      "complete": 100,
+      "sources": [
+        "boc",
+        "icbc",
+        "ccb",
+        "cib",
+        "hang"
+      ],
+      "costsCny": [
+        150.41,
+        458.18,
+        494.42,
+        1053.72,
+        3321.55
+      ]
+    },
+    {
+      "broker": "chief",
+      "outcome": "usd-balance",
+      "checked": 673,
+      "complete": 240,
+      "sources": [
+        "boc",
+        "icbc",
+        "ccb",
+        "cib",
+        "hang"
+      ],
+      "costsCny": [
+        145.71,
+        453.41,
+        489.64,
+        1049.05,
+        3316.63
+      ]
+    },
+    {
+      "broker": "usmart",
+      "outcome": "usd-balance",
+      "checked": 573,
+      "complete": 200,
+      "sources": [
+        "boc",
+        "icbc",
+        "ccb",
+        "cib",
+        "hang"
+      ],
+      "costsCny": [
+        155.07,
+        462.81,
+        499.05,
+        1058.38,
+        3326.14
+      ]
+    },
+    {
+      "broker": "ibkr",
+      "outcome": "usd-card",
+      "checked": 553,
+      "complete": 0,
+      "sources": [],
+      "costsCny": []
+    },
+    {
+      "broker": "hsbc",
+      "outcome": "usd-card",
+      "checked": 273,
+      "complete": 80,
+      "sources": [
+        "cib",
+        "boc",
+        "icbc",
+        "ccb",
+        "hang"
+      ],
+      "costsCny": [
+        1536.38,
+        1657.84,
+        1965.61,
+        2001.85,
+        4828.98
+      ]
+    },
+    {
+      "broker": "za",
+      "outcome": "usd-card",
+      "checked": 273,
+      "complete": 80,
+      "sources": [
+        "boc",
+        "icbc",
+        "ccb",
+        "cib",
+        "hang"
+      ],
+      "costsCny": [
+        150.41,
+        458.18,
+        494.42,
+        1053.72,
+        3321.55
+      ]
+    },
+    {
+      "broker": "chief",
+      "outcome": "usd-card",
+      "checked": 673,
+      "complete": 240,
+      "sources": [
+        "boc",
+        "icbc",
+        "ccb",
+        "cib",
+        "hang"
+      ],
+      "costsCny": [
+        145.71,
+        453.41,
+        489.64,
+        1049.05,
+        3316.63
+      ]
+    },
+    {
+      "broker": "usmart",
+      "outcome": "usd-card",
+      "checked": 573,
+      "complete": 160,
+      "sources": [
+        "boc",
+        "icbc",
+        "ccb",
+        "cib",
+        "hang"
+      ],
+      "costsCny": [
+        155.07,
+        462.81,
+        499.05,
+        1058.38,
+        3326.14
+      ]
+    },
+    {
+      "broker": "ibkr",
+      "outcome": "cnh-card",
+      "checked": 553,
+      "complete": 0,
+      "sources": [],
+      "costsCny": []
+    },
+    {
+      "broker": "hsbc",
+      "outcome": "cnh-card",
+      "checked": 273,
+      "complete": 60,
+      "sources": [
+        "cib",
+        "boc",
+        "icbc",
+        "ccb",
+        "hang"
+      ],
+      "costsCny": [
+        2100.26,
+        2221.03,
+        2527.05,
+        2563.09,
+        5386.44
+      ]
+    },
+    {
+      "broker": "za",
+      "outcome": "cnh-card",
+      "checked": 273,
+      "complete": 60,
+      "sources": [
+        "boc",
+        "icbc",
+        "ccb",
+        "cib",
+        "hang"
+      ],
+      "costsCny": [
+        716.34,
+        1022.36,
+        1058.39,
+        1620.33,
+        3881.74
+      ]
+    },
+    {
+      "broker": "chief",
+      "outcome": "cnh-card",
+      "checked": 673,
+      "complete": 180,
+      "sources": [
+        "boc",
+        "icbc",
+        "ccb",
+        "cib",
+        "hang"
+      ],
+      "costsCny": [
+        711.66,
+        1017.61,
+        1053.64,
+        1615.68,
+        3876.85
+      ]
+    },
+    {
+      "broker": "usmart",
+      "outcome": "cnh-card",
+      "checked": 573,
+      "complete": 120,
+      "sources": [
+        "boc",
+        "icbc",
+        "ccb",
+        "cib",
+        "hang"
+      ],
+      "costsCny": [
+        720.96,
+        1026.96,
+        1063,
+        1624.97,
+        3886.31
+      ]
+    },
+    {
+      "broker": "ibkr",
+      "outcome": "mainland",
+      "checked": 3897,
+      "complete": 0,
+      "sources": [],
+      "costsCny": []
+    },
+    {
+      "broker": "hsbc",
+      "outcome": "mainland",
+      "checked": 1153,
+      "complete": 40,
+      "sources": [
+        "cib",
+        "boc",
+        "icbc",
+        "ccb",
+        "hsbc"
+      ],
+      "costsCny": [
+        5327.62,
+        5447.09,
+        5749.81,
+        5785.46,
+        6325.37
+      ]
+    },
+    {
+      "broker": "za",
+      "outcome": "mainland",
+      "checked": 1153,
+      "complete": 40,
+      "sources": [
+        "boc",
+        "icbc",
+        "ccb",
+        "cib",
+        "hang"
+      ],
+      "costsCny": [
+        3947.57,
+        4250.29,
+        4285.94,
+        4852.87,
+        4942.13
+      ]
+    },
+    {
+      "broker": "chief",
+      "outcome": "mainland",
+      "checked": 5073,
+      "complete": 120,
+      "sources": [
+        "boc",
+        "icbc",
+        "ccb",
+        "cib",
+        "hang"
+      ],
+      "costsCny": [
+        3942.95,
+        4245.6,
+        4281.24,
+        4848.28,
+        4937.29
+      ]
+    },
+    {
+      "broker": "usmart",
+      "outcome": "mainland",
+      "checked": 4093,
+      "complete": 80,
+      "sources": [
+        "boc",
+        "icbc",
+        "ccb",
+        "cib",
+        "hang"
+      ],
+      "costsCny": [
+        3952.15,
+        4254.85,
+        4290.5,
+        4857.46,
+        4946.65
+      ]
+    }
+  ],
+  "applications": 105
+}
