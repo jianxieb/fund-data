@@ -7,6 +7,7 @@
     broker: 'za', buyOrders: '1', sellOrders: '1', sharePriceUsd: '100', trade25: false, chiefMonthly: false, usmartPromo: false, zaLv2: false,
     hsbcBalanceWaiver: false, hkHsbcFreeMonths: '0', zaPerksLevel: 'standard', zaSwiftUsed: '0', scCnhAccount: false, otherTurnoverHkd: '0', usedPromoOrders: '0', usmartDays: '0', useVoucher: false, voucherScope: 'platform', voucherUsd: '0', voucherOrders: '1', voucherExpiry: '',
     cnHsbcFeeWaived: false, cnHangFeeWaived: false, cnScFeeWaived: false, cnHsbcFreeMonths: '0', cnHangFreeMonths: '0', cnScFreeMonths: '0',
+    icbcEAccount: false, icbcCnhAccount: false,
     senderFeeCny: '', entryMiddleCny: '', entryInwardHkd: '', depositHkd: '', depositOtherCny: '', inwardHkd: '', intermediaryCny: '',
     returnWireHkd: '', returnExtraCny: '', monthlyHkd: '', returnMonthlyHkd: '', startSell: '', entryPrice: '', exitPrice: '',
     usdCny: '', usdHkd: '', usdCnh: '', openingCny: '0', extraCapitalCny: '0', annualGapPct: '0' };
@@ -54,10 +55,10 @@
     mainlandReceipt: { boc: ['bocBankAnswer2026'], cib: ['cibInward'], cmb: ['cmbTariff'], icbc: ['icbcInward'], ccb: ['ccbRemit'], comm: ['comm'], hsbc: ['hsbcCnTariff'], hang: ['hangCnTariff'], sc: ['scCnTariff'] },
     mainlandFx: { boc: ['bocFx'], cib: ['cibFx', 'cibCard'], cmb: ['cmbFx'], icbc: ['icbcFx'], ccb: ['ccbFx'], comm: ['commFx'], hsbc: ['hsbcFx'], hang: ['hangCnFx'], sc: ['scFx'] },
     linked: { hsbc: ['hsbcGlobal'], hang: ['hang'], sc: ['sc', 'scGlobalFaq'] },
-    hkTariff: { bochk: ['bochk'], hsbc: ['hsbcHk'], za: ['za', 'zaLocalUsd', 'zaTariff', 'zaPerksNov'], hang: ['hangHk'], sc: ['scHk'] },
-    hkFx: { bochk: ['bochkUsdFx'], hsbc: ['hsbcHkFx'], hang: ['hangHkFx'], za: ['zaFx', 'zaExchangeLimits'] },
-    hkAccount: { bochk: ['bochkAccount'], hsbc: ['hsbcOne', 'hsbcOneBalance'], za: ['zaOpen', 'zaPerks', 'zaPerksNov'], hang: ['hangHk'], sc: ['scHk'] },
-    hkCard: { bochk: ['bochkCard'], hsbc: ['hsbcCard'], za: ['zaCard'], hang: ['hangCard'], sc: ['scCard'] },
+    hkTariff: { bochk: ['bochk'], hsbc: ['hsbcHk'], za: ['za', 'zaLocalUsd', 'zaTariff', 'zaPerksNov'], hang: ['hangHk'], sc: ['scHk'], 'icbc-asia': ['icbcAsiaInward', 'icbcAsiaInwardOffer', 'icbcAsiaOutwardOffer'] },
+    hkFx: { bochk: ['bochkUsdFx'], hsbc: ['hsbcHkFx'], hang: ['hangHkFx'], za: ['zaFx', 'zaExchangeLimits'], 'icbc-asia': ['icbcAsiaFx'] },
+    hkAccount: { bochk: ['bochkAccount'], hsbc: ['hsbcOne', 'hsbcOneBalance'], za: ['zaOpen', 'zaPerks', 'zaPerksNov'], hang: ['hangHk'], sc: ['scHk'], 'icbc-asia': ['icbcAsiaAccount', 'icbcAsiaAccountTerms'] },
+    hkCard: { bochk: ['bochkCard'], hsbc: ['hsbcCard'], za: ['zaCard'], hang: ['hangCard'], sc: ['scCard'], 'icbc-asia': ['icbcAsiaCard', 'icbcAsiaAccountTerms'] },
     brokerTrade: { ibkr: ['ibStocks'], hsbc: ['hsbcUsTariff'], za: ['zaStocks', 'zaStockUnits', 'zaCustody'], chief: ['chiefStocks'], usmart: ['usmartFees', 'usmartStockUnits'] },
     brokerOffers: { hsbc: ['trade25', 'trade25Age', 'trade25One'], za: ['zaStockService', 'zaPerks'], chief: ['chiefMonthly', 'chiefMonthlyTerms'], usmart: ['usmartPromo'] },
     brokerFunding: { ibkr: ['ibDeposits', 'ibFunding'], hsbc: ['hsbcStocks'], za: ['zaStockService'], chief: ['chiefFunding'], usmart: ['usmartFundingAccounts', 'usmartSameFunding'] },
@@ -193,6 +194,7 @@
       s.start?.cnhTariff ? '人民币跨境电汇 · 公开标准价' : '人民币跨境汇款';
     const values = [['swift', channel]];
     if (s.start?.id === 'boc' && s.bank?.id === 'bochk' && state.route !== 'CNH') values.unshift(['boc-mobile', '手机银行 · 向同名境外中行汇款']);
+    if (s.start?.id === 'icbc' && s.bank?.id === 'icbc-asia' && s.start.groupMobileTariff?.currencies.includes(state.route)) values.unshift(['icbc-mobile', '手机银行 · 向工银亚洲本行费免']);
     if (s.start?.id === 'boc' && s.bank?.group !== 'boc' && state.route !== 'CNH') values.unshift(['boc-online', '手机银行／网银 · 向他行9折']);
     if (s.start?.id === 'cib' && state.route !== 'CNH') values.push(['cib-go', '小额全额到账 · 另加50 CNY/笔']);
     if (state.route === 'USD' && s.start?.fullAmountUsd != null) values.push(['full', '美元全额到账 · ' + (s.start.fullAmountChannel ? s.start.fullAmountChannel + ' · ' : '') + '另加' + s.start.fullAmountUsd + ' USD/笔']);
@@ -215,6 +217,7 @@
   function returnMethods() {
     const s = selected(), values = [['swift', '普通网上电汇']];
     if (s.returning?.id === 'bochk' && s.exit?.group === 'boc') values.unshift(['bochk-fast', '中银快汇 → 同名内地中行']);
+    if (s.returning?.id === 'icbc-asia' && s.exit?.group === 'icbc') values.unshift(['icbc-express', '工银速汇 → 同名内地工行']);
     if (['hsbc', 'hang', 'sc'].includes(s.returning?.id) && s.returning.group === s.exit?.group) values.unshift(['linked', '两地同集团 · 同名专用转账']);
     return values.filter(([id]) => M.calculatorChannels(state, D).returnMethods.includes(id));
   }
@@ -235,7 +238,7 @@
       const r = p.result, config = { ...p.config };
       if (state.outcome === 'broker-balance') config.returnBank = state.returnBank;
       if (state.outcome !== 'mainland') config.exitBank = state.exitBank;
-      const channel = ({ 'boc-mobile': '手机同名汇款', 'boc-online': '手机／网银他行9折', linked: '两地同名转账', 'cib-go': '全额到账50元/笔', full: '美元全额到账', swift: '普通电汇' })[r.mainlandMethod];
+      const channel = ({ 'boc-mobile': '手机同名汇款', 'boc-online': '手机／网银他行9折', 'icbc-mobile': '工行手机集团汇款', linked: '两地同名转账', 'cib-go': '全额到账50元/笔', full: '美元全额到账', swift: '普通电汇' })[r.mainlandMethod];
       const conversion = r.route !== 'USD' ? (r.fxMode === 'bank' ? routeName(r.bank.id, 'bank') : r.fxMode === 'auto' ? 'IBKR自动' : 'IBKR手动') + '换美元' : '';
       const funding = r.broker.id === 'ibkr' && r.depositMethod === 'chats' ? '香港花旗／渣打收款指示' :
         r.fundingBank ? '本人银行转账后同行入金' : r.corporateReceivingBank ? 'CHATS至券商的' + routeName(r.corporateReceivingBank.id, 'bank') + '收款账户' :
@@ -358,6 +361,10 @@
       'detail', 'data-value="bank-settings" aria-haspopup="dialog"', 'flow-setting-button');
     if (accounts.some(b => b.id === 'hsbc')) accountOptions += checkbox('hsbcBalanceWaiver', 'HSBC One本持有期均免管理费');
     if (accounts.some(b => b.id === 'za')) accountOptions += select('zaPerksLevel', 'ZA银行权益', [['standard', 'ZA Perks · 标准'], ['lv1', 'ZA Perks · Lv1'], ['lv2', 'ZA Perks · Lv2']]);
+    if (s.bank.id === 'icbc-asia' && s.start.group === 'icbc' || state.outcome === 'mainland' && s.returning.id === 'icbc-asia' && s.exit.group === 'icbc' && state.returnMethod === 'icbc-express')
+      accountOptions += checkbox('icbcEAccount', 'e账通 · 本人非联名账户已绑定同名内地工行');
+    if (s.bank.cnhAccountRequiresHkid && state.route === 'CNH') accountOptions += checkbox(s.bank.cnhAccountField, '持香港身份证，已开通' + shortName(s.bank) + '人民币账户');
+    if (data.error && r?.errorStage === '02') accountOptions += '<p class="flow-error" role="status">' + esc(data.error) + '</p>';
     html += node('02', 'bank', '香港收款银行', s.bank, nodeBalance(r, steps.hongKong, state.route, '汇款到账', transferKeys), accountOptions);
     const fxControl = state.route === 'USD' ? '' : select('fxMode', '换美元地点', [...(s.broker.id === 'ibkr' ? [['manual', 'IBKR手动换汇'], ['auto', 'IBKR自动换汇']] : []), ['bank', shortName(s.bank) + '换汇']]);
     const fundingPath = row(r, 'brokerSpread')?.path;
@@ -392,7 +399,7 @@
       (s.exit?.id === s.start?.id ? '' : mainlandAccountControl(s.exit, r)), '04',
       !data.error && !r?.indicativeExit && r?.exitPrice > 1 ? '1 USD = ' + quoteNum(r.exitPrice) + ' CNY' : '');
     if (state.outcome === 'cnh-card' || state.outcome === 'usd-card') html += edge(data, exitKeys, state.outcome === 'cnh-card' ? (row(r, 'exitFx')?.path ? '美元 → 港币 → 人民币 → 消费' : '美元换人民币 → 消费') : '美元余额 → 原币消费',
-      state.outcome === 'cnh-card' && s.returning?.cnhCardRequiresHkid ? checkbox('scCnhAccount', '持有效香港身份证，已开通渣打人民币储蓄账户') : '', '04',
+      state.outcome === 'cnh-card' && s.returning?.cnhCardRequiresHkid ? checkbox(s.returning.cnhAccountField || 'scCnhAccount', '持香港身份证，已开通' + shortName(s.returning) + '人民币账户') : '', '04',
       data.error || r?.indicativeExit ? '' : esc(state.outcome === 'cnh-card' && r?.exitPrice > 1 ? '1 USD = ' + quoteNum(r.exitPrice) + ' CNH' : '对应币种余额直接扣账'));
     if (state.outcome !== 'broker-balance') html += '<section class="flow-terminal" aria-label="资金终点"><div><small>资金终点</small><strong>' +
       esc(state.outcome === 'mainland' ? shortName(s.exit) : shortName(s.returning)) + '</strong></div>' + finalBalance + closingCosts + '</section>';
@@ -414,6 +421,7 @@
       '美元全额到账附加服务按笔收费，已包含境外中转与收款入账扣费；本行汇出手续费、电讯费另计。' :
       '美元全额到账附加服务按笔收费，汇出手续费、电讯费及收款行本行汇入费分别列示。';
     if (state.mainlandMethod === 'boc-mobile') return '手机银行“境外中行”入口双免；中银香港使用BKCHHKHH，香港分行BKCHHKHK不享此优惠。代理费单独按汇路证据计算。';
+    if (state.mainlandMethod === 'icbc-mobile') return '工行手机银行向境外工行本行费免；工银亚洲汇入费按e账通资格计算，代理费单列。';
     if (state.mainlandMethod === 'boc-online') return '向境外他行手机／网银基础费9折；收款行及代理行费用另列。';
     if (state.mainlandMethod === 'linked') return state.startBank === 'sc' ? '适用于渣打优先理财、两地同名账户及指定渠道。' : state.startBank === 'hang' ? '适用于恒生中国优越理财，经跨域转账页面汇往同名恒生香港账户；优进理财的累计3次本行费用优惠不适用此项。' : '适用于已连通的两地同名账户及指定转账页面。';
     return '';
@@ -588,7 +596,7 @@
     const list = key === 'outcome' ? outcomes.map(([id, name]) => ({ id, name })) : isMainland ? mainland : isBank ? banks : key === 'broker' ? brokers : (small?.values || []).map(([id, name]) => ({ id, name }));
     const comparison = key === 'startBank' ? M.purchaseComparison({ ...state, date: today() }, comparisonData, window.MONEY_FLOW_QUOTES || {}) : null;
     const copy = item => key === 'broker' ? item.feeShort : key === 'exitBank' ? '境外USD汇入手续费：' + (item.inwardCny == null ? '尚未取得适用价目' : num(item.inwardCny) + ' CNY') : key === 'startBank' ? sourceTariffCopy(item) : isBank ?
-      ({ bochk: '中行同名汇入0；本地美元转账0；账户月费0', hsbc: '汇入及本地美元转账0；One月费按豁免条件', za: '本地美元转账0；账户月费0；可开美股交易', hang: '同名跨域转账0；本地美元转账0；优进月费0', sc: '本地USD转账标准费22 USD；快易月费0' })[item.id] : '';
+      ({ bochk: '中行同名汇入0；本地美元转账0；账户月费0', hsbc: '汇入及本地美元转账0；One月费按豁免条件', za: '本地美元转账0；账户月费0；可开美股交易', hang: '同名跨域转账0；本地美元转账0；优进月费0', sc: '本地USD转账标准费22 USD；快易月费0', 'icbc-asia': '工行集团汇入60 HKD，绑定e账通优惠期免；本地USD转账50 HKD；综合账户免月费' })[item.id] : '';
     const price = item => {
       if (key === 'exitBank') {
         const quote = window.MONEY_FLOW_QUOTES?.banks?.[item.id]?.quotes?.USD;
@@ -632,6 +640,7 @@
         if (M.zaPerksLevel(state) === 'lv1' && (state.bank === 'za' && state.depositMethod === 'swift' && s.broker.swiftDestination === 'overseas' || state.outcome === 'mainland' && state.returnBank === 'za')) content += field('zaSwiftUsed', '每个汇款月其他已用海外汇款笔数', '笔');
         content += '<p>ZA Perks等级按银行App已生效权益选择，不根据本次本金自动升级。2026年11月1日起，海外SWIFT本行费70 HKD/笔：Lv1每历月首3笔免，Lv2全免；香港本地SWIFT本行费仍为0。代理／收款行收费另计。</p>';
       }
+      if (bankAccountSet(s).some(b => b.id === 'icbc-asia')) content += '<p>工银亚洲普通综合账户及借记卡年费豁免。本人非联名账户已在e账通绑定同名内地工行账户时，2026年7月1日至12月31日集团汇入基本费、手机集团汇出本行费免；其他银行费独立。人民币账户须香港身份证；未套用客户专属换汇优惠。</p>';
       keys = bankAccountSet(s).flatMap(b => evidenceFor('hkAccount', b));
     } else if (key.startsWith('cn-bank-')) {
       const bank = mainland.find(bank => bank.id === key.slice(8)), service = bank?.accountService;
@@ -654,7 +663,7 @@
         (state.outcome !== 'broker-balance' && s.broker?.freeWithdrawals ? field('withdrawalIndex', '本月第几次出金', '次') : '') +
         (chequeTariff ? field('chequeIndex', '存票当日第几张支票', '张') : '') +
         field('taxRate', '应税所得税率', '%') + field('taxableCny', '人民币应税所得', 'CNY', '按正净利润估算') + field('creditCny', '税款抵免', 'CNY') + '</div>';
-      if (chequeTariff && M.number(state.chequeIndex) > chequeTariff.freePerDay) content += checkbox('chequePreFilled', '已预填多支票存款表');
+      if (chequeTariff?.preFilledHkd != null && M.number(state.chequeIndex) > chequeTariff.freePerDay) content += checkbox('chequePreFilled', '已预填多支票存款表');
       if (chequeTariff) content += feeRow(r, 'returnInward', null, row(r, 'returnInward')?.evidence || '', 'HKD');
       keys = [...evidenceFor('brokerWithdrawal', s.broker), ...(chequeTariff ? chequeTariff.sources : []), 'tax'];
     } else if (key === 'offers') {

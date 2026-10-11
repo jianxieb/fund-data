@@ -96,8 +96,13 @@
     });
     return bounds.every(knownFee) ? bounds : null;
   }
-  function inwardFee(bank, amountHkd, senderGroup, local = false) {
+  function groupMobileWaived(bank, date, config = {}) {
+    const offer = bank?.groupMobileWaiver;
+    return !!offer && config[offer.field] === true && date >= offer.from && date <= offer.until;
+  }
+  function inwardFee(bank, amountHkd, senderGroup, local = false, date = '2026-10-08', config = {}) {
     if (local && knownFee(bank.localHkd)) return bank.localHkd;
+    if (bank.group === senderGroup && groupMobileWaived(bank, date, config)) return 0;
     if (bank.sameGroupWaiver && bank.group === senderGroup) return 0;
     if (bank.inwardSmallLimitHkd && amountHkd <= bank.inwardSmallLimitHkd) return 0;
     return knownFee(bank.inwardHkd) ? bank.inwardHkd : null;
@@ -144,7 +149,7 @@
     const tariff = bank.localUsdChequeTariff;
     if (!tariff) return knownFee(bank.localUsdChequeHkd) ? bank.localUsdChequeHkd : null;
     if (!positive(index) || !Number.isInteger(index) || date < tariff.validFrom || (tariff.validUntil && date > tariff.validUntil)) return null;
-    return index <= tariff.freePerDay ? 0 : preFilled ? tariff.preFilledHkd : tariff.standardHkd;
+    return index <= tariff.freePerDay ? 0 : preFilled && knownFee(tariff.preFilledHkd) ? tariff.preFilledHkd : tariff.standardHkd;
   }
   function maintenance(bank, balanceHkd, months, override) {
     if (![balanceHkd, months].every(knownFee)) return null;
@@ -356,18 +361,21 @@
     return null;
   }
   // Personal local USD CHATS receiving tariffs. Do not reuse SWIFT inward fees.
-  function localUsdInward(bank) { return ['bochk', 'za', 'hsbc', 'hang', 'sc'].includes(bank?.id) ? 0 : null; }
+  function localUsdInward(bank) { return knownFee(bank?.localUsdInwardHkd) ? bank.localUsdInwardHkd : ['bochk', 'za', 'hsbc', 'hang', 'sc'].includes(bank?.id) ? 0 : null; }
   function localUsdTransfer(from, to, refs, date) {
     if (from.id === to.id) return 0;
     const sending = depositFee(from, 'chats', 'USD', refs, date), receiving = localUsdInward(to);
-    return sending == null || receiving == null ? null : sending + receiving * refs.USD;
+    return sending == null || receiving == null ? null : sending + receiving * refs.HKD;
   }
   function returnFee(bank, mainland, method, refs, date, swift = {}) {
     if (method === 'bochk-fast') return bank.id === 'bochk' && mainland.group === 'boc' ? 0 : null;
     if (method === 'linked') return ['hang', 'hsbc', 'sc'].includes(bank.id) && bank.group === mainland.group ? 0 : null;
+    if (method === 'icbc-express') return bank.id === 'icbc-asia' && mainland.group === 'icbc' ?
+      (groupMobileWaived(bank, date, swift.config) ? 0 : bank.expressGroupHkd * refs.HKD) : null;
     // BOCHK's personal same-name waiver also covers online SWIFT to BOC,
     // provided the destination is identified by the required BIC/CNAPS code.
     if (method === 'swift' && bank.id === 'bochk' && mainland.group === 'boc') return 0;
+    if (method === 'swift' && bank.id === 'icbc-asia' && mainland.group === 'icbc') return bank.groupOutwardHkd * refs.HKD;
     if (method === 'swift') { const v = swiftFee(bank, date, swift.config, swift.index).hkd; return v == null ? null : v * refs.HKD; }
     return null;
   }
@@ -797,9 +805,11 @@
       const linked = ['hang', 'hsbc', 'sc'].includes(start.id);
       const method = (key, fallback) => (Object.hasOwn(selections, key) ? selections[key] : config[key]) || fallback;
       const bocMobilePair = start.id === 'boc' && bank.id === 'bochk' && currency !== 'CNH';
+      const icbcMobilePair = start.id === 'icbc' && bank.id === 'icbc-asia' && start.groupMobileTariff?.currencies.includes(currency);
       const linkedCurrency = !start.linkedCurrencies || start.linkedCurrencies.includes(currency);
-      const mainlandMethod = method('mainlandMethod', linked && sameGroup && linkedCurrency ? 'linked' : 'swift');
+      const mainlandMethod = method('mainlandMethod', icbcMobilePair ? 'icbc-mobile' : linked && sameGroup && linkedCurrency ? 'linked' : 'swift');
       const bocMobile = mainlandMethod === 'boc-mobile';
+      const icbcMobile = mainlandMethod === 'icbc-mobile';
       const bocOnline = mainlandMethod === 'boc-online';
       const paymentConnect = mainlandMethod === 'payment-connect';
       const swiftGo = mainlandMethod === 'cib-go';
@@ -811,6 +821,7 @@
       const serviceAvailability = swiftGo ? { verified: !!serviceRoute, method: mainlandMethod,
         evidence: start.name + ' → ' + bank.name + ' ' + currency + '的SWIFT Go开通记录', sources: serviceRoute?.sources || ['cibGo', 'swiftGoBanks'] } : null;
       if (bocMobile && !bocMobilePair) return { error: '中行手机银行向境外中行渠道须选择中国银行→同名中银香港，使用USD或HKD；人民币支付通是另一渠道。' };
+      if (icbcMobile && !icbcMobilePair) return { error: '工行手机集团免费渠道须选择工商银行→工银亚洲，使用USD或HKD；人民币普通跨境资费不能套用。' };
       if (bocOnline && !(start.id === 'boc' && bank.group !== 'boc' && start.onlineTariff?.currencies.includes(currency))) return { error: '中行手机／网银他行9折仅适用于中国银行向境外他行汇出USD/HKD；同名中银香港使用手机银行集团双免渠道。' };
       if (paymentConnect && !(start.id === 'boc' && bank.id === 'bochk' && currency === 'CNH')) return { error: '此跨境支付通测算仅收录中国银行→中银香港、人民币原币到账；其他银行及币种须另核。' };
       if (mainlandMethod === 'linked' && !(linked && sameGroup)) return { error: '两地同名专用渠道须选择同一银行集团的香港账户。' };
@@ -829,7 +840,7 @@
       const currencyTariff = currency === 'CNH' && typeof start.cnhTariff === 'object' ? start.cnhTariff : start.standardTariff;
       const standardTariff = mainlandMethod === 'swift' && currencyTariff &&
         (!currencyTariff.currencies || currencyTariff.currencies.includes(currency)) && currencyTariff;
-      const senderBank = bocOnline ? { ...start, ...start.onlineTariff } : standardTariff ? { ...start, ...standardTariff } : start;
+      const senderBank = icbcMobile ? { ...start, ...start.groupMobileTariff } : bocOnline ? { ...start, ...start.onlineTariff } : standardTariff ? { ...start, ...standardTariff } : start;
       const usesAllowance = telegramAllowance(senderBank, config.date) && senderOverride == null && !['linked', 'boc-mobile', 'payment-connect'].includes(mainlandMethod);
       const used = usesAllowance ? optionalNumber(config, 'usedFreeTransfers') : 0;
       if (!knownFee(used) || !Number.isInteger(used)) return { error: '已用免费笔数须为非负整数。' };
@@ -902,9 +913,9 @@
         }
       };
       rows.push({ key: 'sender', label: '内地汇出手续费＋电讯费' + (fullFee ? '＋全额到账费' : ''), cny: unknownSender ? null : sender, step: 'entry' });
-      const senderEvidence = bocOnline ? '中行2026-08-19答复 · 手机／网银他行9折' : reportedMobile ? data.bocMobileEvidence.senderEvidence : '';
-      if ((reportedMobile || bocOnline) && senderOverride == null) Object.assign(rows[0], { evidence: senderEvidence,
-        ...(bocOnline ? { sources: ['bocBankAnswer2026'] } : {}) });
+      const senderEvidence = icbcMobile ? '手机银行向境外工行 · 手续费及电讯费免' : bocOnline ? '中行2026-08-19答复 · 手机／网银他行9折' : reportedMobile ? data.bocMobileEvidence.senderEvidence : '';
+      if ((reportedMobile || bocOnline || icbcMobile) && senderOverride == null) Object.assign(rows[0], { evidence: senderEvidence,
+        ...(icbcMobile ? { sources: start.groupMobileTariff.sources } : bocOnline ? { sources: ['bocBankAnswer2026'] } : {}) });
       const senderLabel = bocOnline ? '中行手机／网银向境外他行' : bocMobile ? '中行手机银行向境外中行·现行' : start.name;
       rows[0].items = unknownSender ? [{ label: senderLabel + '汇出手续费', cny: null }, { label: senderLabel + '电讯费', cny: null }] :
         senderOverride == null ? [{ label: '汇出手续费', cny: commission, evidence: senderEvidence }, { label: '汇出电讯费', cny: telegram, evidence: senderEvidence }] : [{ label: '本人报价：汇出手续费及电讯费', cny: senderOverride * count }];
@@ -942,7 +953,8 @@
         const error = start.name + '的' + currency + '现汇卖出价尚未取得；到账金额暂不可算。';
         rows.push({ key: 'entryFx', label: '内地购汇差额', cny: null, step: 'entry', status: error });
         rows.push({ key: 'entryMiddle', label: '内地→香港中转行费', cny: entryMiddle == null ? null : entryMiddle * count, step: 'entry', ...entryMiddleEvidence });
-        const knownInward = own('entryInwardHkd', isSelectedBank) ?? (swiftGo || includedEntryInward || bank.inwardHkd === 0 || bank.sameGroupWaiver && sameGroup ? 0 : null);
+        const knownInward = own('entryInwardHkd', isSelectedBank) ?? (swiftGo || includedEntryInward || bank.inwardHkd === 0 || bank.sameGroupWaiver && sameGroup ? 0 :
+          !bank.inwardSmallLimitHkd && knownFee(bank.inwardHkd) ? inwardFee(bank, 0, start.group, false, config.date, config) : null);
         rows.push({ key: 'entryInward', label: '香港首次汇入费', cny: knownInward == null ? null : knownInward * refs.HKD * count, step: 'entry',
           ...(includedEntryInward && own('entryInwardHkd', isSelectedBank) == null ? fullAmountEvidence : {}),
           status: knownInward == null ? '须先确定外币到账额及适用汇入资费' : '' });
@@ -957,8 +969,11 @@
       steps.mainlandForeign = balance;
       add('entryMiddle', paymentConnect ? '跨境支付通直连（无SWIFT中转）' : '内地→香港中转行费', entryMiddle == null ? null : entryMiddle * count, 'entry');
       Object.assign(rows[rows.length - 1], entryMiddleEvidence);
-      const inward = own('entryInwardHkd', isSelectedBank) ?? (swiftGo || includedEntryInward ? 0 : inwardFee(bank, balance * refs[currency] / refs.HKD / count, start.group));
+      const inward = own('entryInwardHkd', isSelectedBank) ?? (swiftGo || includedEntryInward ? 0 : inwardFee(bank, balance * refs[currency] / refs.HKD / count, start.group, false, config.date, config));
       add('entryInward', '香港首次汇入费', inward == null ? null : inward * refs.HKD * count, 'entry');
+      if (own('entryInwardHkd', isSelectedBank) == null && !includedEntryInward && bank.groupMobileWaiver && sameGroup) Object.assign(rows[rows.length - 1], {
+        evidence: groupMobileWaived(bank, config.date, config) ? 'e账通优惠期 · 本行基本费免' : '工银亚洲集团汇入标准60 HKD/笔；e账通绑定优惠独立',
+        sources: ['icbcAsiaInward', 'icbcAsiaInwardOffer'] });
       if (includedEntryInward && own('entryInwardHkd', isSelectedBank) == null) Object.assign(rows[rows.length - 1], fullAmountEvidence);
       let trading = null, taxCny = 0;
       const downstreamError = (error, errorStage = '03', errorAction = errorStage, errorField) => ({ error, errorStage, errorAction, errorField, rows: [...rows,
@@ -971,6 +986,7 @@
           reference: number(config.usdCny) != null || quoteFresh(refRow, config.date)
         } });
       if (!finite(balance) || balance <= 0) return downstreamError('汇出金额不足以支付中转及香港汇入费用。', '01');
+      if (currency === 'CNH' && bank.cnhAccountRequiresHkid && !config[bank.cnhAccountField]) return downstreamError(bank.name + '人民币储蓄账户须持香港身份证并已开通；请确认账户条件或选择美元／港币汇出。', '02');
       steps.hongKong = balance;
       const depositMethod = internalDeposit ? 'internal' : settlementBank ? 'chats' : method('depositMethod', currency === 'USD' || fxMode === 'bank' ? 'chats' : 'fps');
       const depositCurrency = fxMode === 'bank' ? 'USD' : currency;
@@ -1024,7 +1040,7 @@
         // broker has no private bank concession or passes through every charge.
         const corporateHkd = corporateTariff ? (corporateTariff.freeUpToHkd != null && balance * refs[unit] / refs.HKD <= corporateTariff.freeUpToHkd + 1e-8 ? 0 : corporateTariff.feeHkd) : null;
         const recipientFee = internalDeposit ? 0 : receivingBank ?
-          fundingBank && recipientOverride != null ? recipientOverride : localInward == null ? null : localInward * refs.USD :
+          fundingBank && recipientOverride != null ? recipientOverride : localInward == null ? null : localInward * refs.HKD :
           recipientOverride ?? (corporateTariff ? corporateHkd * refs.HKD : localFunding ? localFunding.otherCny : depositMethod === 'fps' || depositMethod === 'edda' ? 0 : null);
         add('depositOther', receivingBank ? (fundingBank ? '本人' : '') + receivingBank.name + ' · 本地USD收款' : internalDeposit ? provider.name + ' · 同行收款' : corporateReceivingBank ? corporateReceivingBank.corporateName + ' · 券商企业账户CHATS收款' : localFunding ? provider.name + '香港本地收款' : '入金代理／收款行费', recipientFee, 'deposit');
         if (corporateTariff && recipientOverride == null) Object.assign(rows[rows.length - 1], { nativeCurrency: 'HKD',
@@ -1125,7 +1141,8 @@
       if (confirmedInward != null) rows[rows.length - 1].evidence = '本人回单费用 · ' + returning.name;
       if (chequeReturn && returning.localUsdChequeTariff && own('inwardHkd', isSelectedReturn) == null) {
         Object.assign(rows[rows.length - 1], { nativeCurrency: 'HKD', sources: returning.localUsdChequeTariff.sources,
-          evidence: '当日第' + chequeIndex + '张；每日前30张免费，其后' + (config.chequePreFilled ? '预填多支票存款表1' : '未预填多支票存款表2') + ' HKD/张' });
+          evidence: '当日第' + chequeIndex + '张；每日前' + returning.localUsdChequeTariff.freePerDay + '张免费，其后' +
+            (config.chequePreFilled && knownFee(returning.localUsdChequeTariff.preFilledHkd) ? '预填多支票存款表' + returning.localUsdChequeTariff.preFilledHkd : returning.localUsdChequeTariff.standardHkd) + ' HKD/张' });
       }
       if (unquotedFundingFx && !settlementBank && !localCheque && !virtualReturn && provider.withdrawalMethod !== 'cheque' && returning.inwardSmallLimitHkd && own('inwardHkd', isSelectedReturn) == null) {
         rows[rows.length - 1].estimate = '尚缺换汇成交价，汇入收费档位按参考美元金额估算';
@@ -1135,16 +1152,23 @@
       }
       if (!finite(balance) || balance < 0) return downstreamError('美元余额不足以支付券商出金及香港收款费用。', '04', 'withdraw');
       steps.returnUsd = balance;
-      const returnMethod = outcome !== 'mainland' ? '' : method('returnMethod', returning.id === 'bochk' && exit.group === 'boc' ? 'bochk-fast' : ['hang', 'hsbc', 'sc'].includes(returning.id) && returning.group === exit.group ? 'linked' : 'swift');
+      const returnMethod = outcome !== 'mainland' ? '' : method('returnMethod', returning.id === 'bochk' && exit.group === 'boc' ? 'bochk-fast' : returning.id === 'icbc-asia' && exit.group === 'icbc' ? 'icbc-express' : ['hang', 'hsbc', 'sc'].includes(returning.id) && returning.group === exit.group ? 'linked' : 'swift');
       const returningFee = own('returnWireHkd', isSelectedReturn);
       const returnDate = trading?.sellDate || config.date;
       const returnSwift = outcome === 'mainland' && returnMethod === 'swift' && returning.id === 'za' ? nextSwift(returning, returnDate) : null;
-      const publishedReturnFee = returnSwift ? returnSwift.hkd == null ? null : returnSwift.hkd * refs.HKD : returnFee(returning, exit, returnMethod, refs, returnDate);
+      const publishedReturnFee = returnSwift ? returnSwift.hkd == null ? null : returnSwift.hkd * refs.HKD : returnFee(returning, exit, returnMethod, refs, returnDate, { config });
       if (outcome === 'mainland' && returnMethod !== 'swift' && publishedReturnFee == null) return downstreamError('所选回款专用渠道与内地收款银行不匹配。', '04');
       let exitPrice = 1, indicativeExit = false, exitIssue = '';
       const returnFxQuote = quotes.offshoreUsd?.[returning.id]?.quotes?.CNH;
       if (outcome === 'mainland') {
       add('returnWire', '香港→内地汇出费', returningFee == null ? publishedReturnFee : returningFee * refs.HKD, 'return', returningFee == null && returnSwift?.status || '香港→内地汇出费');
+      if (returningFee == null && returning.id === 'icbc-asia') Object.assign(rows[rows.length - 1], {
+        nativeCurrency: 'HKD', sources: ['icbcAsiaInward', ...(returnMethod === 'icbc-express' ? ['icbcAsiaOutwardOffer'] : [])],
+        evidence: returnMethod === 'icbc-express' ? groupMobileWaived(returning, returnDate, config) ?
+          '手机e账通向内地工行 · ' + returnDate + '在优惠期内，本行基本费免' :
+          '工银速汇标准80 HKD；汇出日' + returnDate + (config.icbcEAccount ? '已超过当前优惠期' : '未启用e账通优惠') :
+          (exit.group === 'icbc' ? '集团普通网上电汇100 HKD' : '网上电汇至他行140 HKD')
+      });
       if (returnSwift && returningFee == null) Object.assign(rows[rows.length - 1], { swiftTariff: returnSwift, nativeCurrency: 'HKD',
         ...(returnSwift.status ? { status: returnSwift.status } : { evidence: swiftEvidence(returnSwift) }), sources: ['zaTariff', 'zaPerksNov'] });
       add('returnOther', '回内地中转／收款费', own('returnExtraCny', isSelectedReturn && config.exitBank === exit.id) ?? (returnMethod === 'linked' ? 0 : null), 'return');
@@ -1165,7 +1189,7 @@
       steps.settledCny = balance;
       } else if (outcome === 'cnh-card') {
         if (!returning.directCnhCard) return downstreamError(returning.name + '扣账卡以港币结算，不支持人民币余额原币消费；已保留出金后的美元余额。', '04');
-        if (returning.cnhCardRequiresHkid && !config.scCnhAccount) return downstreamError('渣打人民币原币消费须持有效香港身份证，并已开通人民币储蓄账户；已保留出金后的美元余额。', '04');
+        if (returning.cnhCardRequiresHkid && !config[returning.cnhAccountField || 'scCnhAccount']) return downstreamError(returning.name + '人民币原币消费须持有效香港身份证，并已开通人民币储蓄账户；已保留出金后的美元余额。', '04');
         const quotedPrice = own('exitPrice', isSelectedReturn) ?? returnFxQuote?.bidPerUsd;
         indicativeExit = !positive(quotedPrice);
         exitIssue = indicativeExit ? returning.name + ' USD/CNH换汇价尚未取得；已保留换汇前美元余额' : '';
@@ -1386,14 +1410,16 @@
   function calculatorRoute(config) {
     const s = { ...config };
     const paired = ({ boc: 'bochk', hsbc: 'hsbc', hang: 'hang', sc: 'sc' })[s.startBank] === s.bank;
-    s.mainlandMethod ||= paired && s.startBank === 'boc' && s.route !== 'CNH' ? 'boc-mobile' :
+    s.mainlandMethod ||= s.startBank === 'icbc' && s.bank === 'icbc-asia' && ['USD', 'HKD'].includes(s.route) ? 'icbc-mobile' :
+      paired && s.startBank === 'boc' && s.route !== 'CNH' ? 'boc-mobile' :
       s.startBank === 'boc' && !paired && s.route !== 'CNH' ? 'boc-online' :
       paired && s.startBank !== 'boc' && !(s.startBank === 'sc' && s.route === 'CNH') ? 'linked' : 'swift';
     s.fxMode = s.route === 'USD' ? 'manual' : s.broker !== 'ibkr' ? 'bank' : s.fxMode || 'manual';
     s.depositMethod ||= ['hsbc', 'za'].includes(s.broker) && s.broker === s.bank ? 'internal' :
-      s.broker === 'usmart' && ['bochk', 'hsbc'].includes(s.bank) || s.broker === 'chief' && ['bochk', 'hsbc', 'hang'].includes(s.bank) ? 'internal' :
+      s.broker === 'usmart' && ['bochk', 'hsbc', 'icbc-asia'].includes(s.bank) || s.broker === 'chief' && ['bochk', 'hsbc', 'hang'].includes(s.bank) ? 'internal' :
       s.route === 'USD' || s.fxMode === 'bank' ? 'chats' : s.broker === 'chief' && s.route === 'CNH' ? 'edda' : 'fps';
     s.returnMethod ||= s.returnBank === 'bochk' && s.exitBank === 'boc' ? 'bochk-fast' :
+      s.returnBank === 'icbc-asia' && s.exitBank === 'icbc' ? 'icbc-express' :
       ['hsbc', 'hang', 'sc'].includes(s.returnBank) && s.returnBank === s.exitBank ? 'linked' : 'swift';
     return s;
   }
@@ -1421,6 +1447,7 @@
     const broker = data.brokers.find(x => x.id === s.broker), returning = data.hkBanks.find(x => x.id === s.returnBank), exit = data.mainlandBanks.find(x => x.id === s.exitBank);
     const mainlandMethods = ['swift'];
     if (start?.id === 'boc' && bank?.id === 'bochk' && s.route !== 'CNH') mainlandMethods.unshift('boc-mobile');
+    if (start?.id === 'icbc' && bank?.id === 'icbc-asia' && start.groupMobileTariff?.currencies.includes(s.route)) mainlandMethods.unshift('icbc-mobile');
     if (start?.id === 'boc' && bank?.group !== 'boc' && start.onlineTariff?.currencies.includes(s.route)) mainlandMethods.unshift('boc-online');
     if (start?.id === 'cib' && s.route !== 'CNH') mainlandMethods.push('cib-go');
     if (s.route === 'USD' && knownFee(start?.fullAmountUsd)) mainlandMethods.push('full');
@@ -1436,6 +1463,7 @@
     ];
     const returnMethods = ['swift'];
     if (returning?.id === 'bochk' && exit?.group === 'boc') returnMethods.unshift('bochk-fast');
+    if (returning?.id === 'icbc-asia' && exit?.group === 'icbc') returnMethods.unshift('icbc-express');
     if (['hsbc', 'hang', 'sc'].includes(returning?.id) && returning.group === exit?.group) returnMethods.unshift('linked');
     return { mainlandMethods, fxModes, depositMethods, returnMethods };
   }
@@ -1521,5 +1549,5 @@
     return result;
   }
   function catalogueBroker(id, data) { return data.calculator.brokers.includes(id) ? id : 'za'; }
-  return { calculatorRoute, calculatorChannels, calculatorFundingBank, calculatorDepositBank, calculatorIssue, calculatorJourney, calculatorRecommendations, calculatorAccountState, number, reference, telegramAllowance, fee, remitPrincipal, senderFeeRange, inwardFee, outwardFee, zaPerksLevel, swiftFee, localUsdChequeFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
+  return { calculatorRoute, calculatorChannels, calculatorFundingBank, calculatorDepositBank, calculatorIssue, calculatorJourney, calculatorRecommendations, calculatorAccountState, number, reference, telegramAllowance, fee, remitPrincipal, senderFeeRange, inwardFee, groupMobileWaived, outwardFee, zaPerksLevel, swiftFee, localUsdChequeFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
 }));

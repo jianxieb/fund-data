@@ -75,7 +75,7 @@ test('bank tier survives each stock account and receipt/return combination witho
       assert.equal(M.calculatorIssue(M.calculatorRoute({ ...base, bank, broker, returnBank, outcome, zaPerksLevel }), D), '');
       checked++;
     }
-  assert.equal(checked, 1875);
+  assert.equal(checked, 2700);
   for (const zaPerksLevel of ['standard', 'lv1', 'lv2']) {
     const r = run({ zaPerksLevel, zaSwiftUsed: 3 });
     assert.equal(row(r, 'depositOther').cny, null);

@@ -42,7 +42,7 @@ test('all banks and stock accounts stay selectable; only the unsupported SC loca
     if (broker === 'ibkr') assert.ok(channels.depositMethods.includes('swift'));
     checked++;
   }
-  assert.equal(checked, 75);
+  assert.equal(checked, 90);
   for (const broker of ['chief', 'usmart', 'ibkr']) {
     const r = run({ broker });
     close(r.rows.find(row => row.key === 'depositBank').cny, 22 * r.refs.USD);

@@ -14,7 +14,9 @@ from http.cookiejar import CookieJar
 import json
 from pathlib import Path
 import re
+import subprocess
 import xml.etree.ElementTree as ET
+from urllib.error import URLError
 from urllib.request import Request, urlopen, build_opener, HTTPCookieProcessor
 from urllib.parse import urlencode
 
@@ -32,12 +34,14 @@ CIB_URL = "https://personalbank.cib.com.cn/pers/main/pubinfo/ifxQuotationQuery/l
 HANG_HK_URL = "https://rbwm-api.hsbc.com.hk/pws-hk-hase-rates-papi-prod-proxy/v1/fxtt-exchange-rates"
 HSBC_HK_URL = "https://rbwm-api.hsbc.com.hk/digital-pws-tools-investments-eapi-prod-proxy/v1/investments/exchange-rate?locale=en_HK"
 HANG_CN_URL = "https://hacndb-api.hangseng.com.cn/hacn-mobile-experience-platform-papi-prod-proxy/v1/exchange-rate"
+ICBC_ASIA_URL = "https://papi.icbc.com.cn/rest/currencies/asia/foreign"
 BANK_URLS = {"boc": BOC_URL, "cmb": CMB_URL, "icbc": ICBC_URL, "ccb": CCB_URL,
-             "abc": ABC_URL, "comm": COMM_URL, "hsbc": HSBC_URL, "cib": CIB_URL, "bochk": BOCHK_USD_URL, "hanghk": HANG_HK_URL, "hsbchk": HSBC_HK_URL, "hang": HANG_CN_URL}
+             "abc": ABC_URL, "comm": COMM_URL, "hsbc": HSBC_URL, "cib": CIB_URL, "bochk": BOCHK_USD_URL, "hanghk": HANG_HK_URL, "hsbchk": HSBC_HK_URL, "hang": HANG_CN_URL, "icbc-asia": ICBC_ASIA_URL}
 SOURCE_URLS = {**BANK_URLS, "cmb": "https://fx.cmbchina.com/hq/",
                "hang": "https://www.hangseng.com.cn/zh-cn/index/useful-information/deposit-exchange-rates/",
                "hanghk": "https://www.hangseng.com/en-hk/rates/foreign-currency-tt-exchange-rates/",
                "hsbchk": "https://www.hsbc.com.hk/investments/products/foreign-exchange/currency-rate/",
+               "icbc-asia": "https://www.icbcasia.com/hk/sc/personal/banking/rate/foreign-exchange-rate/default.html",
                "cib": "https://personalbank.cib.com.cn/pers/main/pubinfo/ifxQuotationQuery.do",
                "icbc": "https://www.icbc.com.cn/page/721852558099644433.html",
                "ccb": "https://ebank1.ccb.com/chn/forex/exchange-quotations.shtml",
@@ -177,6 +181,18 @@ def parse_icbc(payload):
         for row in payload["data"] if row.get("currencyENName") in CURRENCIES.values()}, "ICBC")
 
 
+def parse_icbc_asia(payload):
+    """The Asia page prices one foreign unit in HKD, unlike mainland /100 quotes."""
+    if payload.get("code") != 0:
+        raise ValueError("ICBC Asia unsuccessful response")
+    rows = {row["currename"]: row for row in payload["data"]}
+    quotes = {}
+    for currency in ("USD", "CNY"):
+        row = rows[currency]
+        quotes[currency] = validate_quote(row["buyrate"], row["salrate"], row["updateTime"], divisor=1)
+    return hkd_cross_quotes(quotes["USD"], quotes["CNY"])
+
+
 def parse_ccb(xml):
     names = {"840": "USD", "344": "HKD", "978": "EUR", "826": "GBP", "392": "JPY"}
     out = {}
@@ -279,15 +295,23 @@ def fetch_bank(bank):
     if bank == "hang":
         headers.update({"Accept": "application/json", "X-HSBC-Locale": "zh_CN", "X-HSBC-Channel-Id": "PWS", "X-HSBC-Chnl-CountryCode": "CN", "Accept-Language": "zh-CN"})
     request = Request(url, data=b"{}" if bank == "icbc" else None, headers=headers)
-    with urlopen(request, timeout=25) as response:
-        body = response.read().decode("utf-8")
+    try:
+        with urlopen(request, timeout=25) as response:
+            body = response.read().decode("utf-8")
+    except URLError as error:
+        # The Asia endpoint is compatible with the platform curl TLS backend.
+        # Keep curl's certificate verification; never enable unsafe SSL options.
+        if bank != "icbc-asia" or "UNSAFE_LEGACY_RENEGOTIATION_DISABLED" not in str(error):
+            raise
+        body = subprocess.run(["curl", "--fail", "--silent", "--show-error", "--location", "--max-time", "25", url],
+                              check=True, capture_output=True, text=True, timeout=30).stdout
     parsers = {"boc": parse_boc, "cmb": parse_cmb, "bochk": parse_bochk, "icbc": parse_icbc,
-               "ccb": parse_ccb, "abc": parse_abc, "comm": parse_comm, "hsbc": parse_hsbc, "hanghk": parse_hang_hk, "hsbchk": parse_hsbc_hk, "hang": parse_hang_cn}
+               "ccb": parse_ccb, "abc": parse_abc, "comm": parse_comm, "hsbc": parse_hsbc, "hanghk": parse_hang_hk, "hsbchk": parse_hsbc_hk, "hang": parse_hang_cn, "icbc-asia": parse_icbc_asia}
     return parsers[bank](body if bank in ("boc", "bochk", "ccb") else json.loads(body))
 
 
 def merge_bank(snapshot, bank, quotes):
-    offshore_ids = {"bochk": "bochk", "hanghk": "hang", "hsbchk": "hsbc"}
+    offshore_ids = {"bochk": "bochk", "hanghk": "hang", "hsbchk": "hsbc", "icbc-asia": "icbc-asia"}
     section = snapshot.setdefault("offshoreUsd" if bank in offshore_ids else "banks", {})
     bank_id = offshore_ids.get(bank, bank)
     previous = section.get(bank_id, {}).get("quotes", {})
@@ -301,12 +325,13 @@ def merge_bank(snapshot, bank, quotes):
 def main():
     args = argparse.ArgumentParser()
     args.add_argument("--output", type=Path, default=ROOT / "data/money-flow-quotes.js")
+    args.add_argument("--banks", nargs="+", choices=list(BANK_URLS), default=list(BANK_URLS))
     options = args.parse_args()
     snapshot = read_snapshot(options.output)
     snapshot.update({"unit": "CNY per 1 foreign currency", "capturedAt": datetime.now(timezone.utc).isoformat(timespec="seconds")})
     success = 0
     with ThreadPoolExecutor(max_workers=8) as pool:
-        jobs = {bank: pool.submit(fetch_bank, bank) for bank in BANK_URLS}
+        jobs = {bank: pool.submit(fetch_bank, bank) for bank in options.banks}
         for bank, job in jobs.items():
             try:
                 merge_bank(snapshot, bank, job.result())

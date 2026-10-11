@@ -3,13 +3,13 @@ const assert = require('node:assert/strict');
 const M = require('../assets/money-flow-model.js');
 const D = require('../data/money-flow.js');
 const Q = require('./fixtures/money-flow-quotes-20261011.json');
-const evidence = require('./fixtures/money-flow-personal-bank-bridge-20261011.json');
+const evidence = require('./fixtures/money-flow-personal-bank-bridge-20261012.json');
 const { config } = require('../scripts/audit_money_flow.cjs');
 const input = { ...config, date: '2026-10-11', budgetCny: 100000, count: 1, months: 12, profitUsd: 0,
   startBank: 'boc', bank: 'bochk', broker: 'usmart', route: 'USD', outcome: 'broker-balance', returnBank: 'bochk', exitBank: 'boc',
   mainlandMethod: '', depositMethod: '', depositHkd: '', depositOtherCny: '', entryMiddleCny: '',
   hsbcBalanceWaiver: false, balanceHkd: '0', returnBalanceHkd: '0', bankBalancesHkd: {},
-  cnHsbcFeeWaived: false, cnHangFeeWaived: false, cnScFeeWaived: false, useVoucher: false };
+  cnHsbcFeeWaived: false, cnHangFeeWaived: false, cnScFeeWaived: false, useVoucher: false, icbcCnhAccount: true };
 const close = (a, b) => assert.ok(Math.abs(a - b) < 1e-6, `${a} != ${b}`);
 const run = changes => M.calculatorJourney(M.calculatorRoute({ ...input, ...changes }), D, Q);
 const fee = (r, key) => r.rows.find(item => item.key === key);
@@ -44,12 +44,12 @@ test('each supported personal-bank bridge charges the sending bank, personal rec
       const r = result.selected || result.partial;
       assert.ok(result.selected, `${bank}/${target}/${broker}/${route}: ${result.error}`);
       assert.equal(r.bank.id, bank); assert.equal(r.broker.id, broker); assert.equal(r.fundingBank.id, target);
-      close(fee(r, 'depositBank').cny, bank === 'sc' ? 22 * r.refs.USD : 0);
-      close(fee(r, 'depositOther').cny, 0); close(fee(r, 'depositBroker').cny, 0);
+      close(fee(r, 'depositBank').cny, bank === 'sc' ? 22 * r.refs.USD : bank === 'icbc-asia' ? 50 * r.refs.HKD : 0);
+      close(fee(r, 'depositOther').cny, evidence.personalReceipt[target].fee * r.refs.HKD); close(fee(r, 'depositBroker').cny, 0);
       assert.match(fee(r, 'depositBank').label, new RegExp('本人' + r.fundingBank.name));
       assert.match(fee(r, 'depositBroker').label, /同行入金/);
       assert.ok(!r.missing.some(item => /入金代理|收款行费/.test(item)));
-      close(r.steps.fundingBankUsd, (r.steps.hkConvertedUsd ?? r.steps.hongKong) - fee(r, 'depositBank').cny / r.refs.USD);
+      close(r.steps.fundingBankUsd, (r.steps.hkConvertedUsd ?? r.steps.hongKong) - (fee(r, 'depositBank').cny + fee(r, 'depositOther').cny) / r.refs.USD);
       reconcile(r);
       if (bank === 'sc') assert.equal(fee(r, 'depositBank').nativeCurrency, 'USD');
     }

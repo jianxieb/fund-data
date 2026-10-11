@@ -8,7 +8,7 @@ const { config } = require('../scripts/audit_money_flow.cjs');
 const input = { ...config, date: '2026-10-11', budgetCny: 100000, count: 1, months: 12,
   startBank: 'boc', bank: 'za', broker: 'usmart', route: 'USD', fxMode: 'bank', outcome: 'broker-balance',
   entryMiddleCny: '0', depositHkd: '', depositOtherCny: '', mainlandMethod: 'swift', depositMethod: 'chats',
-  useVoucher: false, hsbcBalanceWaiver: false, bankBalancesHkd: {}, balanceHkd: '0' };
+  useVoucher: false, hsbcBalanceWaiver: false, bankBalancesHkd: {}, balanceHkd: '0', icbcCnhAccount: true };
 const run = changes => M.calculatorJourney(M.calculatorRoute({ ...input, ...changes }), D, Q);
 const row = (r, key) => r.rows.find(x => x.key === key);
 const close = (a, b) => assert.ok(Math.abs(a - b) < 1e-6, `${a} != ${b}`);
@@ -26,7 +26,7 @@ test('corporate USD CHATS has a named broker recipient and published bank tariff
       const result = run({ ...s, depositMethod: method }), r = result.selected;
       assert.ok(r, `${broker}/${bank}/${route}/${method}: ${result.error}`);
       assert.equal(r.corporateReceivingBank.id, receiving.id); assert.equal(r.fundingBank, null);
-      close(row(r, 'depositBank').cny, bank === 'sc' ? 22 * r.refs.USD : 0);
+      close(row(r, 'depositBank').cny, bank === 'sc' ? 22 * r.refs.USD : bank === 'icbc-asia' ? 50 * r.refs.HKD : 0);
       close(row(r, 'depositOther').cny, tariff.feeHkd * r.refs.HKD);
       assert.equal(row(r, 'depositOther').nativeCurrency, 'HKD');
       assert.match(row(r, 'depositOther').estimate, /企业CHATS标准价/);
@@ -50,9 +50,10 @@ test('the BOCHK small-receipt exemption uses the actual local transfer amount, n
   close(row(hsbc, 'depositOther').cny, 15 * hsbc.refs.HKD);
 });
 
-test('uSMART ICBC Asia corporate CHATS charges 10 HKD once and never becomes a personal account or a free small BOCHK receipt', () => {
+test('uSMART ICBC Asia corporate CHATS charges 10 HKD once without inventing an additional personal account or small-receipt waiver', () => {
   const catalogue = structuredClone(D.calculator);
   for (const bank of D.calculator.hkBanks) for (const count of [1, 2, 3]) {
+    if (bank === 'icbc-asia') continue;
     const r = run({ bank, count, depositMethod: 'chats-icbc-asia' }).selected;
     assert.ok(r, bank + '/' + count);
     assert.equal(r.corporateReceivingBank.id, 'icbc-asia'); assert.equal(r.fundingBank, null);
@@ -61,7 +62,7 @@ test('uSMART ICBC Asia corporate CHATS charges 10 HKD once and never becomes a p
     assert.deepEqual(row(r, 'account').items.filter(x => x.region === 'hong-kong').map(x => x.bankId), [bank]);
     close(row(r, 'account').cny, bank === 'hsbc' ? 1200 * r.refs.HKD : 0);
     const methods = M.calculatorChannels({ ...input, bank }, D).depositMethods;
-    assert.ok(methods.includes('chats-icbc-asia')); assert.ok(!methods.includes('via-icbc-asia'));
+    assert.ok(methods.includes('chats-icbc-asia')); assert.ok(methods.includes('via-icbc-asia'));
     reconcile(r);
   }
   const small = run({ bank: 'za', depositMethod: 'chats-icbc-asia', senderFeeCny: '0', entryInwardHkd: '0', budgetCny: 100 }).selected;
@@ -69,7 +70,9 @@ test('uSMART ICBC Asia corporate CHATS charges 10 HKD once and never becomes a p
   const actual = run({ depositMethod: 'chats-icbc-asia', depositOtherCny: '0' }).selected;
   close(row(actual, 'depositOther').cny, 0); assert.equal(row(actual, 'depositOther').estimate, undefined); reconcile(actual);
   assert.equal(M.calculatorDepositBank({ ...input, broker: 'chief', depositMethod: 'chats-icbc-asia' }, D), null);
-  assert.equal(M.calculatorFundingBank({ ...input, depositMethod: 'via-icbc-asia' }, D), null);
+  assert.equal(M.calculatorFundingBank({ ...input, depositMethod: 'via-icbc-asia' }, D).id, 'icbc-asia');
+  const same = run({ bank: 'icbc-asia', depositMethod: 'internal' }).selected;
+  close(row(same, 'depositBank').cny, 0); close(row(same, 'depositOther').cny, 0);
   assert.deepEqual(D.calculator, catalogue);
 });
 

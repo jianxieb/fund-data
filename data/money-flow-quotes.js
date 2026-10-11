@@ -283,7 +283,7 @@ window.MONEY_FLOW_QUOTES = {
     }
   },
   "unit": "CNY per 1 foreign currency",
-  "capturedAt": "2026-10-09T15:14:24+00:00",
+  "capturedAt": "2026-10-11T20:04:20+00:00",
   "offshoreUsd": {
     "bochk": {
       "quotes": {
@@ -345,6 +345,29 @@ window.MONEY_FLOW_QUOTES = {
         }
       },
       "source": "https://www.hsbc.com.hk/investments/products/foreign-exchange/currency-rate/",
+      "unit": "foreign currency per 1 USD; Hong Kong renminbi is CNH"
+    },
+    "icbc-asia": {
+      "quotes": {
+        "HKD": {
+          "bidPerUsd": 7.8344,
+          "askPerUsd": 7.8644,
+          "asOf": "2026-10-12 03:50:04.088354"
+        },
+        "CNH": {
+          "bidPerUsd": 6.63926577,
+          "askPerUsd": 6.7505,
+          "asOf": "2026-10-12 03:50:04.088354",
+          "path": "via-HKD",
+          "legs": {
+            "usdBuy": 7.8344,
+            "usdSell": 7.8644,
+            "cnhBuy": 1.16501,
+            "cnhSell": 1.18001
+          }
+        }
+      },
+      "source": "https://www.icbcasia.com/hk/sc/personal/banking/rate/foreign-exchange-rate/default.html",
       "unit": "foreign currency per 1 USD; Hong Kong renminbi is CNH"
     }
   }

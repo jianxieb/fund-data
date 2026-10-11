@@ -107,7 +107,7 @@ test('uSMART same-bank funding includes the published HSBC account without waivi
   assert.equal(D.sources.usmartSameFunding.url, usmartFundingEvidence.feeSource);
   for (const bank of D.calculator.hkBanks) for (const route of D.calculator.currencies) {
     const s = M.calculatorRoute({ ...config, bank, startBank: 'hsbc', broker: 'usmart', returnBank: bank,
-      exitBank: 'hsbc', route, outcome: 'broker-balance' });
+      exitBank: 'hsbc', route, outcome: 'broker-balance', icbcCnhAccount: true });
     const allowed = supported.some(item => item.id === bank && item.currencies.includes(route));
     assert.equal(M.calculatorChannels(s, D).depositMethods.includes('internal'), allowed);
     assert.equal(s.depositMethod === 'internal', allowed);
@@ -128,9 +128,9 @@ test('uSMART same-bank funding includes the published HSBC account without waivi
   assert.equal(explicitCrossBank.rows.find(row => row.key === 'depositOther').cny, null);
 });
 
-test('all 151875 catalogue combinations retain selection and either reconcile or name the exact local issue', () => {
+test('all 218700 catalogue combinations retain selection and either reconcile or name the exact local issue', () => {
   const r = auditCurrent({ quotes: Q, date: config.date });
-  assert.equal(r.combinationsChecked, 151875);
+  assert.equal(r.combinationsChecked, 218700);
   assert.equal(r.completeQuoteCombinations + r.partialQuoteCombinations + r.inputOrRouteIssues, r.combinationsChecked);
   assert.equal(r.ledgerChecks, r.completeQuoteCombinations + r.partialQuoteCombinations);
   assert.ok(r.completeQuoteCombinations > 0); assert.ok(r.partialQuoteCombinations > 0);
@@ -144,22 +144,22 @@ test('all 151875 catalogue combinations retain selection and either reconcile or
     assert.equal(profile.ledgerChecks, profile.priced + profile.partial);
     assert.ok(profile.retainedPartialResults > 0);
     assert.ok(profile.referencePriced <= profile.priced);
-    assert.deepEqual(profile.coverage.mainlandMethods, ['boc-mobile', 'boc-online', 'cib-go', 'full', 'linked', 'swift']);
+    assert.deepEqual(profile.coverage.mainlandMethods, ['boc-mobile', 'boc-online', 'cib-go', 'full', 'icbc-mobile', 'linked', 'swift']);
     assert.deepEqual(profile.coverage.fxModes, ['auto', 'bank', 'manual']);
-    assert.deepEqual(profile.coverage.depositMethods, ['chats', 'chats-citic', 'chats-hang', 'chats-hsbc', 'chats-icbc-asia', 'edda', 'fps', 'internal', 'swift', 'via-bochk', 'via-hang', 'via-hsbc']);
-    assert.deepEqual(profile.coverage.returnMethods, ['bochk-fast', 'linked', 'swift']);
+    assert.deepEqual(profile.coverage.depositMethods, ['chats', 'chats-citic', 'chats-hang', 'chats-hsbc', 'chats-icbc-asia', 'edda', 'fps', 'internal', 'swift', 'via-bochk', 'via-hang', 'via-hsbc', 'via-icbc-asia']);
+    assert.deepEqual(profile.coverage.returnMethods, ['bochk-fast', 'icbc-express', 'linked', 'swift']);
     assert.equal(Object.values(profile.sources).reduce((sum, source) => sum + source.checked, 0), profile.checked);
   }
   assert.equal(r.channelProfiles[0].profile.hsbcBalanceWaiver, false);
   assert.equal(r.channelProfiles[0].profile.trade25, false);
   assert.deepEqual(r.channelProfiles[2].qualificationCoverage, ['chequePreFilled', 'chiefMonthly', 'cnHangFeeWaived', 'cnHsbcFeeWaived', 'cnScFeeWaived',
-    'hsbcBalanceWaiver', 'scCnhAccount', 'trade25', 'usmartPromo', 'zaPerksLevel', 'zaSwiftUsed']);
+    'hsbcBalanceWaiver', 'icbcCnhAccount', 'icbcEAccount', 'scCnhAccount', 'trade25', 'usmartPromo', 'zaPerksLevel', 'zaSwiftUsed']);
   const bounds = r.numericBoundaries;
-  assert.equal(bounds.checked, 43875);
+  assert.equal(bounds.checked, 52650);
   assert.deepEqual(bounds.profiles.map(p => p.id), ['principal-0.01', 'principal-1', 'principal-100', 'principal-1000', 'principal-100000', 'principal-1000000',
     'transfers-120', 'holding-1200-months', 'share-price-0.01', 'share-price-1000000', 'orders-120-per-side', 'impossible-loss', 'oversized-tax']);
   for (const p of bounds.profiles) {
-    assert.equal(p.checked, 3375); assert.equal(p.priced + p.partial + p.routeIssues, p.checked);
+    assert.equal(p.checked, 4050); assert.equal(p.priced + p.partial + p.routeIssues, p.checked);
     assert.equal(p.ledgerChecks, p.priced + p.partial); assert.ok(p.referencePriced <= p.priced);
     if (p.id === 'impossible-loss' || p.id === 'oversized-tax') {
       assert.equal(p.routeIssues, p.checked); assert.ok(p.retainedPartialResults > 0);
@@ -224,7 +224,7 @@ test('CIB RMB wire uses retail commission and telegram charges without inheritin
 test('CIB published standard fees survive the promotion end for every bank, broker and wire currency', () => {
   const expired = { ...base, date: '2027-07-01', count: 1, months: 0, outcome: 'broker-balance',
     startSell: 6.75, usdCny: 6.75, usdHkd: 7.8, usdCnh: 7.1, usedFreeTransfers: 'inactive-invalid',
-    mainlandMethod: 'swift', fxMode: 'bank' };
+    mainlandMethod: 'swift', fxMode: 'bank', icbcCnhAccount: true };
   const bank = D.mainlandBanks.find(item => item.id === 'cib');
   assert.equal(D.sources.cib.url, cibTariff.source);
   assert.equal(bank.rate, cibTariff.standard.rate);

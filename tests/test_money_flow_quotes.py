@@ -5,13 +5,55 @@ import sys
 import tempfile
 import unittest
 from unittest.mock import patch
+from types import SimpleNamespace
+from urllib.error import URLError
 
 from scripts.refresh_money_flow_quotes import (parse_boc, parse_cmb, parse_bochk, parse_icbc,
     parse_ccb, parse_abc, parse_comm, parse_hsbc, parse_cib, parse_hsbc_hk, parse_hang_hk,
-    hkd_cross_quotes, parse_hang_cn, validate_quote, merge_bank, read_snapshot, main)
+    hkd_cross_quotes, parse_hang_cn, parse_icbc_asia, validate_quote, merge_bank, read_snapshot, fetch_bank, main)
 
 
 class BankQuotesTests(unittest.TestCase):
+    def test_icbc_asia_platform_tls_fallback_keeps_certificate_checks_and_does_not_mask_other_errors(self):
+        raw = (Path(__file__).parent / 'fixtures' / 'icbc-asia-fx-20261012.json').read_text()
+        with patch('scripts.refresh_money_flow_quotes.urlopen', side_effect=URLError('UNSAFE_LEGACY_RENEGOTIATION_DISABLED')), \
+             patch('scripts.refresh_money_flow_quotes.subprocess.run', return_value=SimpleNamespace(stdout=raw)) as curl:
+            self.assertEqual(fetch_bank('icbc-asia')['HKD']['askPerUsd'], 7.8644)
+            command = curl.call_args.args[0]
+            self.assertIn('--fail', command)
+            self.assertEqual(command[-1], 'https://papi.icbc.com.cn/rest/currencies/asia/foreign')
+            self.assertNotIn('--insecure', command)
+            self.assertNotIn('-k', command)
+        for bank, error in [('icbc-asia', 'CERTIFICATE_VERIFY_FAILED'), ('boc', 'UNSAFE_LEGACY_RENEGOTIATION_DISABLED')]:
+            with patch('scripts.refresh_money_flow_quotes.urlopen', side_effect=URLError(error)), \
+                 patch('scripts.refresh_money_flow_quotes.subprocess.run') as curl:
+                with self.assertRaises(URLError):
+                    fetch_bank(bank)
+                curl.assert_not_called()
+
+    def test_icbc_asia_uses_its_own_per_unit_hkd_quotes_and_two_real_exchange_legs(self):
+        raw = json.loads((Path(__file__).parent / 'fixtures' / 'icbc-asia-fx-20261012.json').read_text())
+        quotes = parse_icbc_asia(raw)
+        self.assertEqual(quotes['HKD']['bidPerUsd'], 7.8344)
+        self.assertEqual(quotes['HKD']['askPerUsd'], 7.8644)
+        self.assertAlmostEqual(quotes['CNH']['bidPerUsd'], 7.8344 / 1.18001, places=7)
+        self.assertAlmostEqual(quotes['CNH']['askPerUsd'], 7.8644 / 1.16501, places=7)
+        self.assertEqual(quotes['CNH']['path'], 'via-HKD')
+        self.assertEqual(quotes['CNH']['asOf'], '2026-10-12 02:40:04.117532')
+        snapshot = {'banks': {'icbc': {'quotes': {'USD': {'sell': 6.8}}}}}
+        before = copy.deepcopy(snapshot['banks'])
+        merge_bank(snapshot, 'icbc-asia', quotes)
+        self.assertEqual(snapshot['banks'], before)
+        self.assertEqual(snapshot['offshoreUsd']['icbc-asia']['quotes'], quotes)
+        bad = copy.deepcopy(raw)
+        bad['data'] = [row for row in raw['data'] if row['currename'] != 'CNY']
+        with self.assertRaises(KeyError):
+            parse_icbc_asia(bad)
+        bad = copy.deepcopy(raw)
+        bad['code'] = 1
+        with self.assertRaisesRegex(ValueError, 'unsuccessful'):
+            parse_icbc_asia(bad)
+
     def test_hang_seng_china_uses_current_api_timestamp_and_one_unit_cny_quotes(self):
         raw = json.loads((Path(__file__).parent / 'fixtures' / 'hang-cn-20261010.json').read_text())
         quotes = parse_hang_cn(raw)

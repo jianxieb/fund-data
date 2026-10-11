@@ -1,0 +1,61 @@
+{
+  "checkedAt": "2026-10-12",
+  "currency": "USD",
+  "personalReceipt": {
+    "bochk": {
+      "fee": 0,
+      "source": "https://www.bochk.com/sc/crossborder/remittance/charges.html",
+      "section": "本地银行转账：个人客户RTGS/CHATS汇入豁免；企业客户不是这个费率"
+    },
+    "hsbc": {
+      "fee": 0,
+      "source": "https://www.hsbc.com.hk/content/dam/hsbc/hk/tc/docs/ways-to-bank/bank-tariff/20260801-guide.pdf",
+      "effective": "2026-08-01",
+      "pdfPage": 12,
+      "printedPage": 20,
+      "section": "C4：本地实时结算汇入个人账户豁免；不使用汇款人承担收款费用的指示"
+    },
+    "hang": {
+      "fee": 0,
+      "source": "https://www.hangseng.com/content/dam/hase/config/bde/pws/personal/servicecharges/pdfs/zh_HK/tariff_personal_sc.pdf",
+      "effective": "2026-07-01"
+    },
+    "icbc-asia": {
+      "fee": 10,
+      "currency": "HKD",
+      "source": "https://v.icbc.com.cn/userfiles/resources/icbc/haiwai/asia/download/cn/2026/general_services_charges_260901_sc.pdf",
+      "effective": "2026-09-01",
+      "pdfPage": 20,
+      "section": "VIII(a)：CHATS汇入10 HKD；不套集团电汇e账通豁免"
+    }
+  },
+  "brokerReceivingBanks": {
+    "usmart": {
+      "banks": [
+        "bochk",
+        "hsbc",
+        "icbc-asia"
+      ],
+      "accountSource": "https://hk.usmartglobal.com/zh-cn/help-centre/42/detail/10540",
+      "sameBankFeeSource": "https://hk.usmartglobal.com/zh-cn/help-centre/42/detail/10136"
+    },
+    "chief": {
+      "banks": [
+        "bochk",
+        "hsbc",
+        "hang"
+      ],
+      "accountSource": "https://chief-website.oss-cn-hongkong.aliyuncs.com/Leaflet/cn/cash.pdf",
+      "pdfPage": 2,
+      "section": "环球股票多种货币收款账户的银行；网上理财须开通第三者转账并上载本人入数证明",
+      "webSource": "https://www.chiefgroup.com.hk/cn/cs/cashdeposit/"
+    }
+  },
+  "excludedInference": {
+    "source": "https://www.business.hsbc.com.hk/-/media/media/hong-kong/pdfs/regulations/complete-tariffs-aug-2026-en.pdf",
+    "effective": "2026-08-01",
+    "corporateInwardRtgsHkd": 15,
+    "reason": "企业收款标准价不是个人中转账户费用，也不能证明券商的实际协商费或向客户转嫁的金额"
+  },
+  "scope": "显式选择本人香港银行USD账户，再同行汇入券商；不修改原香港收款银行，不推导直接券商CHATS或SWIFT免费，不豁免新增银行管理费"
+}

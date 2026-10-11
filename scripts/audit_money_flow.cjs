@@ -64,7 +64,7 @@ function auditNumericBoundaries({ quotes = Q, date = config.date } = {}) {
   const report = { checked: 0, priced: 0, referencePriced: 0, partial: 0, routeIssues: 0, ledgerChecks: 0,
     retainedPartialResults: 0, profiles: [] };
   const base = { ...config, date, count: 1, months: 0, trade25: false, hsbcBalanceWaiver: false,
-    cnHsbcFeeWaived: false, cnHangFeeWaived: false, cnScFeeWaived: false, scCnhAccount: true };
+    cnHsbcFeeWaived: false, cnHangFeeWaived: false, cnScFeeWaived: false, scCnhAccount: true, icbcCnhAccount: true, icbcEAccount: false };
   for (const { id, ...changes } of cases) {
     const profile = { id, inputs: changes, checked: 0, priced: 0, referencePriced: 0, partial: 0, routeIssues: 0,
       ledgerChecks: 0, retainedPartialResults: 0, issueCounts: {} };
@@ -109,11 +109,11 @@ function auditChannels({ quotes = Q, date = config.date } = {}) {
   // Enumerate the channels actually offered by the UI, including each FX
   // location and endpoint. Do not inflate coverage with unused return accounts.
   const profiles = [
-    { id: 'standard', count: 1, trade25: false, hsbcBalanceWaiver: false, scCnhAccount: false,
+    { id: 'standard', count: 1, trade25: false, hsbcBalanceWaiver: false, scCnhAccount: false, icbcCnhAccount: false, icbcEAccount: false,
       cnHsbcFeeWaived: false, cnHangFeeWaived: false, cnScFeeWaived: false },
-    { id: 'confirmed-qualifications', count: 2, trade25: true, hsbcBalanceWaiver: true, scCnhAccount: true,
+    { id: 'confirmed-qualifications', count: 2, trade25: true, hsbcBalanceWaiver: true, scCnhAccount: true, icbcCnhAccount: true, icbcEAccount: true,
       cnHsbcFeeWaived: true, cnHangFeeWaived: true, cnScFeeWaived: true },
-    { id: 'all-relevant-qualifications', count: 1, trade25: false, hsbcBalanceWaiver: false, scCnhAccount: false,
+    { id: 'all-relevant-qualifications', count: 1, trade25: false, hsbcBalanceWaiver: false, scCnhAccount: false, icbcCnhAccount: false, icbcEAccount: false,
       cnHsbcFeeWaived: false, cnHangFeeWaived: false, cnScFeeWaived: false,
       chiefMonthly: false, usmartPromo: false, zaLv2: false }
   ];
@@ -160,16 +160,19 @@ function auditChannels({ quotes = Q, date = config.date } = {}) {
     };
     const recordWithChequeBoundaries = s => {
       const r = record(s);
-      if (!r?.rows?.some(row => row.key === 'returnInward' && row.sources?.includes('scCheque'))) return;
+      const tariff = r?.returning?.localUsdChequeTariff;
+      if (!tariff || !r.rows?.some(row => row.key === 'returnInward' && row.sources?.some(id => tariff.sources.includes(id)))) return;
       // The calculation is for one withdrawal. Check the daily allowance
       // at its last free cheque and both published fees for the next cheque.
-      for (const [chequeIndex, chequePreFilled, feeHkd] of [[30, false, 0], [31, false, 2], [31, true, 1]]) {
+      const cases = [[tariff.freePerDay, false, 0], [tariff.freePerDay + 1, false, tariff.standardHkd],
+        ...(tariff.preFilledHkd != null ? [[tariff.freePerDay + 1, true, tariff.preFilledHkd]] : [])];
+      for (const [chequeIndex, chequePreFilled, feeHkd] of cases) {
         const next = record({ ...s, chequeIndex, chequePreFilled });
         const fee = next?.rows?.find(row => row.key === 'returnInward');
-        if (!fee || Math.abs(fee.cny - feeHkd * next.refs.HKD) > 1e-6) throw new Error('SC daily cheque tariff mismatch: ' + JSON.stringify(s));
+        if (!fee || Math.abs(fee.cny - feeHkd * next.refs.HKD) > 1e-6) throw new Error('Daily cheque tariff mismatch: ' + JSON.stringify(s));
         report.chequeBoundaryChecks++;
       }
-      if (profile.id === 'all-relevant-qualifications') qualificationCoverage.add('chequePreFilled');
+      if (profile.id === 'all-relevant-qualifications' && tariff.preFilledHkd != null) qualificationCoverage.add('chequePreFilled');
     };
     for (const startBank of D.calculator.mainland) for (const bank of D.calculator.hkBanks) for (const broker of D.calculator.brokers) for (const route of D.calculator.currencies) {
       const entry = { ...config, ...profile, date, startBank, bank, broker, route };
@@ -192,6 +195,8 @@ function auditChannels({ quotes = Q, date = config.date } = {}) {
               const hkAccounts = [bank, ...(outcome === 'broker-balance' ? [] : [returnBank]), D.brokers.find(b => b.id === broker)?.integratedBank, M.calculatorFundingBank(s, D)?.id];
               if (hkAccounts.includes('hsbc')) fields.add('hsbcBalanceWaiver');
               if (outcome === 'cnh-card' && returnBank === 'sc') fields.add('scCnhAccount');
+              if (bank === 'icbc-asia' && route === 'CNH' || outcome === 'cnh-card' && returnBank === 'icbc-asia') fields.add('icbcCnhAccount');
+              if (startBank === 'icbc' && bank === 'icbc-asia' || outcome === 'mainland' && returnBank === 'icbc-asia' && exitBank === 'icbc' && returnMethod === 'icbc-express') fields.add('icbcEAccount');
               for (const id of [startBank, ...(outcome === 'mainland' ? [exitBank] : [])]) {
                 const field = D.mainlandBanks.find(b => b.id === id)?.accountService?.waiverField;
                 if (field) fields.add(field);

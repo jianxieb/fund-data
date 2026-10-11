@@ -9,7 +9,7 @@
     calculator: {
       // Account choice is independent of whether a full route has a public quote.
       mainland: ['boc', 'cib', 'cmb', 'icbc', 'ccb', 'comm', 'hsbc', 'hang', 'sc'],
-      hkBanks: ['bochk', 'hsbc', 'za', 'hang', 'sc'], brokers: ['ibkr', 'hsbc', 'za', 'chief', 'usmart'],
+      hkBanks: ['bochk', 'hsbc', 'za', 'hang', 'sc', 'icbc-asia'], brokers: ['ibkr', 'hsbc', 'za', 'chief', 'usmart'],
       fxComparison: ['boc', 'cib', 'cmb', 'icbc', 'ccb', 'comm', 'hsbc', 'hang', 'sc'], currencies: ['USD', 'HKD', 'CNH'],
       excluded: [
         { ids: ['abc'], scope: 'mainland', reason: '按用户要求移除农业银行；其他账户不因报价条件被删除。' }
@@ -21,6 +21,10 @@
     // bank and currency are reachable through that service.
     entryServiceRoutes: [],
     entryTransferReferences: [
+      { startBank: 'icbc', bank: 'icbc-asia', currencies: ['USD', 'HKD'], method: 'icbc-mobile', intermediaryCny: 0,
+        level: 'reported', checkedAt: '2026-10-12', evidence: '大湾区一类工行卡至工银亚洲 · USD/HKD公开到账记录',
+        estimate: '代理费按大湾区工行卡的集团到账记录测算；并非其他开户地区或汇路的豁免承诺',
+        sources: ['icbcAsiaGuide', 'icbcInternational', 'icbcOnline'] },
       { startBank: 'cib', bank: 'hsbc', currencies: ['HKD'], method: 'swift', intermediaryCny: 0,
         level: 'reported', checkedAt: '2026-10-11', evidence: 'HKD直达汇丰香港 · SHA公开到账记录',
         estimate: '按港币直达汇丰香港的公开到账记录测算；实际改走其他代理行的扣费不包含在此情景',
@@ -59,6 +63,14 @@
       icbcFx: { name: '工商银行 · 人民币即期外汇牌价', url: 'https://www.icbc.com.cn/page/721852558099644433.html' },
       icbc: { name: '工商银行 · 2026年8月8日版服务价目表', url: 'https://www.icbc.com.cn/icbc/金融信息/资费公告/default.htm' },
       icbcOnline: { name: '工商银行 · 网银个人跨境汇款03040021', url: 'https://v.icbc.com.cn/userfiles/Resources/ICBC/fwjm/images/2026/di3zhangdi3jie20251215.gif' },
+      icbcAsiaGuide: { name: '2026-08-13工银亚洲开户及集团原币汇款操作记录', url: 'https://www.digitalnomadlc.com/how-to-open-icbc-asia/' },
+      icbcAsiaAccount: { name: '工银亚洲 · 普通综合账户免管理费及借记卡年费', url: 'https://www.icbcasia.com/hk/sc/personal/banking/integrated-account/integrated-account/default.html' },
+      icbcAsiaAccountTerms: { name: '工银亚洲 · 2026年7月综合账户币种及人民币身份条件', url: 'https://v.icbc.com.cn/userfiles/resources/icbc/haiwai/asia/download/cn/2026/descriptive_information_integrated_account_2607_sc.pdf' },
+      icbcAsiaFx: { name: '工银亚洲 · 港元兑外币参考买卖价', url: 'https://www.icbcasia.com/hk/sc/personal/banking/rate/foreign-exchange-rate/default.html' },
+      icbcAsiaInwardOffer: { name: '工银亚洲 · 2026年7–12月e账通集团汇入基本费豁免', url: 'https://v.icbc.com.cn/userfiles/resources/icbc/haiwai/asia/download/cn/2026/inward_remittance_0_handling_charge_tnc_2607_sc.pdf' },
+      icbcAsiaOutwardOffer: { name: '工银亚洲 · 2026年7–12月e账通手机集团汇出本行费豁免', url: 'https://v.icbc.com.cn/userfiles/resources/icbc/haiwai/asia/download/cn/2026/icbc_outward_remittance_0_handling_charge_tnc_2607_sc.pdf' },
+      icbcAsiaCard: { name: '工银亚洲 · 港币／人民币借记卡扣账币种', url: 'https://www.icbcasia.com/hk/sc/personal/banking/others/debit-card/default.html' },
+      icbcAsiaCheque: { name: '工银亚洲 · 本地美元往来账户及支票', url: 'https://www.icbcasia.com/hk/sc/personal/banking/deposits/current/default.html' },
       icbcInward: { name: '工商银行 · 个人境外汇入款不收手续费', url: 'https://m.icbc.com.cn/ICBC/业务指南/个人金融/跨境金融/其他个人跨境汇款/其他个人跨境汇入汇款.htm' },
       scCnTariff: { name: '渣打中国 · 2026 Version 2个人银行收费标准', url: 'https://av.sc.com/cn/content/docs/cn-cb-tariff-zh.pdf' },
       scCnOffers: { name: '渣打中国 · 2026年个人银行收费优惠政策', url: 'https://av.sc.com/cn/content/docs/cn-personal-bank-charges-preferential.pdf' },
@@ -138,7 +150,7 @@
       bochkBusinessInward: { name: '中银香港 · 企业CHATS收款15港元，500港元等值或以下免收', url: 'https://www.bochk.com/tc/servicecharge.common.html' },
       hsbcBusinessInward: { name: '汇丰香港 · 2026年5月商业账户本地RTGS收款15港元', url: 'https://www.business.hsbc.com.hk/-/media/media/hong-kong/pdfs/regulations/tariff-e-en.pdf' },
       hangBusinessInward: { name: '恒生香港 · 2026年4月商业账户本地CHATS收款15港元', url: 'https://www.hangseng.com/content/dam/wpb/hase/en_hk/business/bank-accounts/PDF/Service%20Charges_new.pdf' },
-      icbcAsiaInward: { name: '工银亚洲 · 2026年9月CHATS收款10港元（持有账户）', url: 'https://v.icbc.com.cn/userfiles/resources/icbc/haiwai/asia/download/cn/2026/general_services_charges_260901_sc.pdf' },
+      icbcAsiaInward: { name: '工银亚洲 · 2026年9月一般银行服务收费表', url: 'https://v.icbc.com.cn/userfiles/resources/icbc/haiwai/asia/download/cn/2026/general_services_charges_260901_sc.pdf' },
       citicBusinessInward: { name: '中信国际 · 公司业务CHATS收款标准20港元（第3页）', url: 'https://www.cncbinternational.com/_document/bank-service-fees-and-charges/en/wholesale-banking-fees-and-charges.pdf' },
       usmartChatsGuide: { name: '盈立入金操作记录 · ZA至中银香港美元CHATS扣约1.93美元', url: 'https://yikecaiwan.com/broker/usmart-hk-bank-transfer-deposit' },
       chiefStocks: { name: '致富 · 2026年9月美股收费', url: 'https://chief-website.oss-cn-hongkong.aliyuncs.com/Leaflet/cn/global.pdf' },
@@ -184,7 +196,8 @@
         sources: ['bocBankAnswer2026', 'bocMobile2026', 'bocMobileUsdGuide', 'boc', 'bocMobileHistory', 'bochkSame', 'bocPaymentConnect', 'bocFx'], quoteSource: 'bocFx' },
       { id: 'cmb', name: '招商银行', group: 'cmb', rate: 0.001, minimum: 50, maximum: 280, telegram: 100, cnhTariff: true, inwardCny: 0, validFrom: '2023-09-30', tariffChannel: '个人跨境汇款 · 公开标准价', feeText: '个人1‰，50–280元＋100元电讯费', condition: '个人价目表GJ001/GJ003；跨境人民币参照执行，客户专属减免另计', sources: ['cmbTariff', 'cmbFx'], quoteSource: 'cmbFx' },
       { id: 'icbc', name: '工商银行', group: 'icbc', rate: .0008, minimum: 40, maximum: 208, telegram: 80, fullAmountUsd: 25,
-        fullAmountIncludesInward: true, fullAmountSources: ['icbcInternational', 'icbcFullAmount'], inwardCny: 0, validFrom: '2026-08-08', tariffChannel: '个人网银 · 向境外他行', feeText: '网银0.8‰，40–208元＋香港电讯费80元；普通USD全额到账另加25 USD/笔', condition: '按现行柜面1‰、50–260元的8折；06030033普通美元全额到账另加25美元/笔，已包含境外中转与收款入账扣费；与工银速汇转汇分别处理，未收录后者向香港的全额到账；手机银行折扣及工行集团内渠道另计', sources: ['icbc', 'icbcOnline', 'icbcInternational', 'icbcFullAmount', 'icbcExpress', 'icbcFx', 'icbcInward'], quoteSource: 'icbcFx' },
+        groupMobileTariff: { currencies: ['USD', 'HKD'], rate: 0, minimum: 0, maximum: 0, telegram: 0, sources: ['icbcInternational', 'icbcOnline'] },
+        fullAmountIncludesInward: true, fullAmountSources: ['icbcInternational', 'icbcFullAmount'], inwardCny: 0, validFrom: '2026-08-08', tariffChannel: '个人网银 · 向境外他行', feeText: '向他行网银0.8‰，40–208元＋香港电讯费80元；手机向工银亚洲本行费免；普通USD全额到账另加25 USD/笔', condition: '他行电子渠道按现行柜面1‰、50–260元的8折；手机向境外工行手续费免、境外本行电讯费免。06030033普通美元全额到账另加25美元/笔，已包含境外中转与收款入账扣费；与工银速汇转汇分别处理，未收录后者向香港的全额到账', sources: ['icbc', 'icbcOnline', 'icbcInternational', 'icbcFullAmount', 'icbcExpress', 'icbcFx', 'icbcInward'], quoteSource: 'icbcFx' },
       { id: 'ccb', name: '建设银行', group: 'ccb', rate: 0.001, minimum: 20, maximum: 300, telegram: 80, cnhTariff: true, inwardCny: 0,
         fullAmountUsd: 25, fullAmountIncludesInward: true, fullAmountSources: ['ccbRemit', 'ccbFullAmount'], fullAmountChannel: '网点汇得全',
         validFrom: '2026-01-18', tariffChannel: '本外币跨境电汇 · 公开标准价', feeText: '本外币跨境1‰，20–300元＋80元电讯费；网点USD汇得全另加25 USD/笔', condition: '2026年个人价目表3020101；普通汇款境外中转费另计，网点美元汇得全的25美元附加费已包含境外中转与收款入账扣费；内地本行汇入免费', sources: ['ccb', 'ccbRemit', 'ccbFullAmount', 'ccbFx'], quoteSource: 'ccbFx' },
@@ -242,11 +255,18 @@
       { id: 'sc', name: '渣打 · 快易理财', group: 'sc', inwardHkd: 0, sameGroupWaiver: true, localHkd: 0, localUsd: null, localUsdNative: 22,
         localSwiftExcluded: ['HKD', 'USD', 'EUR', 'CNH'],
         localUsdChequeTariff: { validFrom: '2026-10-01', freePerDay: 30, standardHkd: 2, preFilledHkd: 1, sources: ['scCheque', 'scChequeDeposit'] },
-        outwardHkd: 50, monthlyHkd: 0, thresholdHkd: 0, directUsdCard: true, directCnhCard: true, cnhCardRequiresHkid: true, cardForeignPct: 0, condition: '快易理财免服务费；HKD/CNH网上非RTGS转账免；USD本地RTGS标准费22美元。本地美元存票每日前30张免费，其后每张2港币，预填多支票存款表每张1港币', sources: ['scHk', 'scCard', 'sc'] }
+        outwardHkd: 50, monthlyHkd: 0, thresholdHkd: 0, directUsdCard: true, directCnhCard: true, cnhCardRequiresHkid: true, cnhAccountField: 'scCnhAccount', cardForeignPct: 0, condition: '快易理财免服务费；HKD/CNH网上非RTGS转账免；USD本地RTGS标准费22美元。本地美元存票每日前30张免费，其后每张2港币，预填多支票存款表每张1港币', sources: ['scHk', 'scCard', 'sc'] },
+      { id: 'icbc-asia', name: '工银亚洲 · 综合账户', group: 'icbc', inwardHkd: 60, localHkd: 0, localUsd: 50, localUsdInwardHkd: 10,
+        corporateName: '工银亚洲', corporateLocalUsdInward: { feeHkd: 10, sources: ['icbcAsiaInward'] },
+        localUsdChequeTariff: { validFrom: '2026-09-01', freePerDay: 30, standardHkd: 2, sources: ['icbcAsiaInward', 'icbcAsiaCheque'] },
+        localSwiftHkd: 140, outwardHkd: 140, groupOutwardHkd: 100, expressGroupHkd: 80, monthlyHkd: 0, thresholdHkd: 0,
+        groupMobileWaiver: { field: 'icbcEAccount', from: '2026-07-01', until: '2026-12-31', sources: ['icbcAsiaInwardOffer', 'icbcAsiaOutwardOffer'] },
+        cnhAccountRequiresHkid: true, cnhCardRequiresHkid: true, cnhAccountField: 'icbcCnhAccount', directUsdCard: false, directCnhCard: true, cardForeignPct: 0,
+        condition: '普通综合账户免管理费及借记卡年费；集团汇入基本费60 HKD，本人非联名账户在e账通绑定同名内地工行后优惠期免；本地USD CHATS汇出50、汇入10 HKD。人民币账户须香港身份证，借记卡仅港币／人民币原币扣账',
+        sources: ['icbcAsiaInward', 'icbcAsiaAccount', 'icbcAsiaAccountTerms', 'icbcAsiaInwardOffer', 'icbcAsiaOutwardOffer', 'icbcAsiaCard', 'icbcAsiaCheque', 'icbcAsiaFx'] }
     ],
     // Broker recipients do not imply a personal account or its maintenance fee.
     corporateReceivingBanks: [
-      { id: 'icbc-asia', corporateName: '工银亚洲', corporateLocalUsdInward: { feeHkd: 10, sources: ['icbcAsiaInward'] } },
       { id: 'citic', corporateName: '中信国际', corporateLocalUsdInward: { feeHkd: 20, accountType: '公司业务', sources: ['citicBusinessInward'] } }
     ],
     broker: { name: 'IBKR直接客户', depositUsd: 0, depositCurrencies: { fps: ['HKD', 'CNH'], edda: ['HKD', 'CNH'] }, manualRate: 0.00002, manualMinimumUsd: 2, autoMarkup: 0.0003, freeWithdrawals: 2, withdrawUsd: 10, withdrawHkdWire: 95, withdrawHkdLocal: 8, sources: ['ibFx', 'ibFees', 'ibFunding', 'ibDeposits', 'ibEdda'] },
@@ -270,12 +290,12 @@
         feeShort: '零佣金 · 平台每单0.99 USD起；清算/监管另计',
         fundingText: '中银香港／汇丰／恒生可同行USD入金，也可经本人账户转入；FPS仅HKD，eDDA支持HKD/CNH', withdrawalText: 'USD支票存入登记银行；通常下一工作日约15:00可用',
         sources: ['chiefStocks', 'chiefFees', 'chiefFunding', 'chiefDeposit', 'chiefMonthly', 'chiefMonthlyTerms', 'secFees', 'finraHoliday', 'finraSchedule'] },
-      { id: 'usmart', name: '盈立 · 个人标准账户', swiftDestination: 'hong-kong', internalFundingBanks: ['bochk', 'hsbc'], corporateReceivingBanks: ['bochk', 'hsbc', 'icbc-asia', 'citic'], shareStep: .0001, minimumBuyUsd: 1, platform: { perShare: .009, minimum: 1.88, cap: .01 }, fractionalPlatformUsd: .99,
+      { id: 'usmart', name: '盈立 · 个人标准账户', swiftDestination: 'hong-kong', internalFundingBanks: ['bochk', 'hsbc', 'icbc-asia'], corporateReceivingBanks: ['bochk', 'hsbc', 'icbc-asia', 'citic'], shareStep: .0001, minimumBuyUsd: 1, platform: { perShare: .009, minimum: 1.88, cap: .01 }, fractionalPlatformUsd: .99,
         clearing: { perShare: .003, minimum: .01, cap: .03 }, catMinimum: .01,
-        depositUsd: 0, depositCurrencies: { fps: ['HKD', 'CNH'], edda: ['HKD'] }, withdrawUsd: 0, withdrawalMethod: 'local', localChequeBanks: ['bochk', 'hsbc', 'hang', 'sc'], virtualWithdrawalUsd: 7.5, virtualWithdrawalMinimumUsd: 20,
+        depositUsd: 0, depositCurrencies: { fps: ['HKD', 'CNH'], edda: ['HKD'] }, withdrawUsd: 0, withdrawalMethod: 'local', localChequeBanks: ['bochk', 'hsbc', 'hang', 'sc', 'icbc-asia'], virtualWithdrawalUsd: 7.5, virtualWithdrawalMinimumUsd: 20,
         feeText: '佣金0；平台0.009 USD/股、最低1.88/单；不足1股平台0.99 USD/单；清算0.003/股',
         feeShort: '零佣金 · 整股平台每单1.88 USD起；清算/监管另计',
-        fundingText: '中银香港／汇丰同行USD入金，也可经本人账户转入；跨行CHATS可选券商的中银香港／汇丰／工银亚洲／中信国际收款账户。FPS支持HKD/CNH，eDDA仅HKD', withdrawalText: '传统香港银行：USD支票出金免费；数字银行：超过20 USD，银行费用参考7.5 USD',
+        fundingText: '中银香港／汇丰／工银亚洲同行USD入金，也可经本人账户转入；跨行CHATS可选券商的中银香港／汇丰／工银亚洲／中信国际收款账户。FPS支持HKD/CNH，eDDA仅HKD', withdrawalText: '传统香港银行：USD支票出金免费；数字银行：超过20 USD，银行费用参考7.5 USD',
         sources: ['usmartFees', 'usmartStockUnits', 'usmartBocFunding', 'usmartFundingAccounts', 'usmartSameFunding', 'usmartFps', 'usmartEdda', 'usmartWithdrawal', 'usmartPromo', 'secFees', 'finraHoliday', 'finraSchedule'] },
       { id: 'za', name: 'ZA Bank · 美股交易', integratedBank: 'za', wholeSharesOnly: true, platform: { perShare: .0099, minimum: 1.99, cap: .015 },
         depositUsd: 0, withdrawUsd: 0, withdrawalMethod: 'internal',

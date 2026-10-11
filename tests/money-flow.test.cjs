@@ -899,7 +899,7 @@ test('recommendations compare complete routes across brokers without using unkno
   assert.equal(data.recommended, data.minimum);
   assert.ok(data.recommendationReason.includes(data.recommended.complete ? '费用已核齐' : '缺项另列'));
   if (data.simple) assert.ok(data.simple.net <= data.minimum.net + 1e-7);
-  assert.equal(data.alternatives.start.length, 10); assert.equal(data.alternatives.bank.length, 5);
+  assert.equal(data.alternatives.start.length, 10); assert.equal(data.alternatives.bank.length, 6);
 });
 
 test('ZA return fees use the expected sell month, with publicly announced November changes included', () => {
@@ -1284,8 +1284,63 @@ function moneyUi(input, quotes = cibQuotes, date = '2026-10-09') {
     action: (label, act, cls, extra) => '<button data-action="' + act + '" class="' + cls + '" ' + extra + '>' + label + '</button>',
     openModal: text => { modal = text; }, modalTitle: text => '<h2>' + text + '</h2>' };
   return { render: () => context.window.ChanghengMoneyFlow.view(helpers), saved: () => saved, modal: () => modal,
+    check: (moneyCheck, checked) => context.window.ChanghengMoneyFlow.handleChange({ dataset: { moneyCheck }, checked }),
     act: (action, field, value) => context.window.ChanghengMoneyFlow.handleAction({ dataset: { action: 'money-flow-' + action, field, value } }) };
 }
+
+test('ICBC Asia selection, qualification, same-bank funding and return channel remain independent across broker switches and reloads', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  const ui = moneyUi({ ...currentRoute, startBank: 'icbc', bank: 'icbc-asia', broker: 'usmart', route: 'USD',
+    mainlandMethod: '', depositMethod: '', returnMethod: '', returnBank: 'icbc-asia', exitBank: 'icbc', outcome: 'broker-balance',
+    icbcEAccount: false }, quotes, '2026-10-12');
+  let html = ui.render();
+  ui.act('choose', 'bank', 'bochk'); ui.act('choose', 'bank', 'icbc-asia'); html = ui.render();
+  assert.equal(ui.saved().mainlandMethod, 'icbc-mobile'); assert.equal(ui.saved().depositMethod, 'internal');
+  assert.equal((html.match(/data-money-check="icbcEAccount"/g) || []).length, 1);
+  assert.doesNotMatch(html, /data-money-check="icbcCnhAccount"/);
+  ui.act('pick', '', 'bank');
+  assert.equal((ui.modal().match(/data-field="bank"/g) || []).length, 6);
+  assert.match(ui.modal(), /工行集团汇入60 HKD/); assert.doesNotMatch(ui.modal(), /undefined|NaN/);
+  ui.check('icbcEAccount', true);
+  for (const broker of D.calculator.brokers) {
+    ui.act('choose', 'broker', broker); html = ui.render();
+    assert.equal(ui.saved().bank, 'icbc-asia'); assert.equal(ui.saved().icbcEAccount, true);
+    assert.match(html, /data-money-check="icbcEAccount"/);
+    ui.act('pick', '', 'broker'); assert.equal((ui.modal().match(/data-field="broker"/g) || []).length, 5);
+  }
+  ui.act('choose', 'broker', 'usmart'); ui.act('choose', 'outcome', 'mainland');
+  assert.equal(ui.saved().returnMethod, 'icbc-express');
+  for (const stage of ['edge-01', 'edge-03', 'edge-04', 'bank-settings']) {
+    ui.act('detail', '', stage);
+    assert.ok(ui.modal().includes(D.sources.icbcAsiaInward.url) || stage === 'bank-settings');
+    assert.doesNotMatch(ui.modal(), /undefined|NaN/);
+  }
+  const restored = moneyUi(ui.saved(), quotes, '2026-10-12'); restored.render();
+  for (const key of ['bank', 'broker', 'mainlandMethod', 'depositMethod', 'returnMethod', 'icbcEAccount']) assert.equal(restored.saved()[key], ui.saved()[key]);
+  restored.act('choose', 'bank', 'bochk'); html = restored.render();
+  assert.equal(restored.saved().broker, 'usmart'); assert.equal(restored.saved().icbcEAccount, true);
+  restored.act('choose', 'outcome', 'broker-balance'); html = restored.render();
+  assert.doesNotMatch(html, /data-money-check="icbcEAccount"/);
+});
+
+test('ICBC Asia RMB identity controls belong to receipt or consumption, and do not add SC cheque discounts', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  const ui = moneyUi({ ...currentRoute, startBank: 'boc', bank: 'icbc-asia', broker: 'usmart', route: 'CNH',
+    returnBank: 'icbc-asia', outcome: 'broker-balance', icbcCnhAccount: false }, quotes, '2026-10-12');
+  let html = ui.render();
+  assert.equal((html.match(/data-money-check="icbcCnhAccount"/g) || []).length, 1);
+  assert.match(html, /人民币储蓄账户须持香港身份证/);
+  assert.match(html, /100000.00/); assert.match(html, /第02步尚未完成/);
+  assert.equal((html.match(/class="flow-error"/g) || []).length, 1);
+  ui.check('icbcCnhAccount', true); ui.act('choose', 'route', 'USD');
+  ui.act('choose', 'outcome', 'cnh-card'); html = ui.render();
+  assert.equal((html.match(/data-money-check="icbcCnhAccount"/g) || []).length, 1);
+  ui.act('detail', '', 'edge-04'); assert.ok(ui.modal().includes(D.sources.icbcAsiaCard.url));
+  ui.act('choose', 'outcome', 'usd-balance');
+  const cheques = moneyUi({ ...ui.saved(), chequeIndex: 31 }, quotes, '2026-10-12'); cheques.render(); cheques.act('detail', '', 'profit-settings');
+  assert.match(cheques.modal(), /每日前30张免费/); assert.match(cheques.modal(), /2 HKD/);
+  assert.doesNotMatch(cheques.modal(), /data-money-check="chequePreFilled"/);
+});
 
 test('the default round trip returns to the starting BOC account without adding an unrelated mainland management fee', () => {
   const quotes = require('./fixtures/money-flow-quotes-20261011.json');
@@ -1349,7 +1404,7 @@ test('saved SC local USD wires migrate to its published clearing channel without
     assert.match(ui.modal(), /data-value="chats"/);
     for (const field of ['bank', 'broker', 'returnBank']) {
       ui.act('pick', '', field);
-      assert.equal((ui.modal().match(new RegExp('data-field="' + field + '"', 'g')) || []).length, 5);
+      assert.equal((ui.modal().match(new RegExp('data-field="' + field + '"', 'g')) || []).length, field === 'broker' ? 5 : 6);
     }
     const restored = moneyUi(ui.saved(), quotes, '2026-10-11'); restored.render();
     assert.equal(restored.saved().depositMethod, 'chats');
@@ -1387,7 +1442,7 @@ test('direct corporate CHATS choices name their receiving bank and retain indepe
       assert.equal(restored.saved().depositMethod, method);
       ui.act('pick', '', 'depositMethod');
     }
-    for (const field of ['bank', 'broker', 'returnBank']) { ui.act('pick', '', field); assert.equal((ui.modal().match(new RegExp('data-field="' + field + '"', 'g')) || []).length, 5); }
+    for (const field of ['bank', 'broker', 'returnBank']) { ui.act('pick', '', field); assert.equal((ui.modal().match(new RegExp('data-field="' + field + '"', 'g')) || []).length, field === 'broker' ? 5 : 6); }
     ui.act('pick', '', 'depositMethod');
     assert.match(ui.modal(), /经本人.*USD账户 → 同行入金/);
   }
@@ -1409,7 +1464,7 @@ test('ZA membership is a bank control that migrates old Lv2 settings and survive
       assert.equal(ui.saved().zaPerksLevel, zaPerksLevel); assert.equal(ui.saved().zaLv2, zaPerksLevel === 'lv2');
       assert.equal(ui.saved().bank, 'bochk');
       ui.act('pick', '', 'broker'); assert.equal((ui.modal().match(/data-field="broker"/g) || []).length, 5);
-      ui.act('pick', '', 'bank'); assert.equal((ui.modal().match(/data-field="bank"/g) || []).length, 5);
+      ui.act('pick', '', 'bank'); assert.equal((ui.modal().match(/data-field="bank"/g) || []).length, 6);
     }
     const restored = moneyUi(ui.saved(), quotes, '2026-10-11');
     restored.render(); restored.act('choose', 'broker', 'za');
@@ -1524,7 +1579,7 @@ test('personal-bank funding keeps the receiving bank and broker independent and 
   assert.equal(restored.saved().depositMethod, 'via-bochk');
   for (const field of ['bank', 'broker']) {
     restored.act('pick', '', field);
-    assert.equal((restored.modal().match(new RegExp('data-field="' + field + '"', 'g')) || []).length, 5);
+    assert.equal((restored.modal().match(new RegExp('data-field="' + field + '"', 'g')) || []).length, field === 'broker' ? 5 : 6);
   }
   restored.act('choose', 'bank', 'hsbc');
   assert.equal(restored.saved().broker, 'usmart'); assert.equal(restored.saved().depositMethod, 'via-bochk');
@@ -2186,7 +2241,7 @@ test('changing independent accounts retains an applicable selected full-amount r
       close(r.rows.find(row => row.key === 'entryInward').cny, 0);
       assert.match(ui.render(), /全额到账附加费 · 50 USD/);
     }
-    ui.act('choose', 'route', 'HKD'); assert.equal(ui.saved().mainlandMethod, 'swift');
+    ui.act('choose', 'route', 'HKD'); assert.equal(ui.saved().mainlandMethod, startBank === 'icbc' && ui.saved().bank === 'icbc-asia' ? 'icbc-mobile' : 'swift');
     assert.doesNotMatch(ui.render(), /全额到账附加费/);
   }
   const ui = moneyUi({ ...currentRoute, startBank: 'icbc', bank: 'bochk', broker: 'za', route: 'USD',
@@ -2572,7 +2627,7 @@ test('SC RMB debit eligibility is separate from USD debit support and preserves 
   assert.match(html, /data-money-check="scCnhAccount"/);
   assert.match(html, /最后可计余额/);
   assert.match(html, /买入美股 · 1笔/);
-  assert.equal((html.match(/渣打人民币原币消费须持有效香港身份证/g) || []).length, 1);
+  assert.equal((html.match(/渣打[^<]*人民币原币消费须持有效香港身份证/g) || []).length, 1);
   assert.doesNotMatch(moneyUi({ ...input, outcome: 'usd-card' }).render(), /data-money-check="scCnhAccount"/);
 });
 

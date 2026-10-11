@@ -1,0 +1,102 @@
+{
+  "checkedAt": "2026-10-12",
+  "personalPlan": "普通综合账户；不是私人银行或理财金账户",
+  "mainland": {
+    "source": "https://v.icbc.com.cn/userfiles/Resources/ICBC/fwjm/images/2026/di3zhangdi6jie202605.gif",
+    "electronicSource": "https://v.icbc.com.cn/userfiles/Resources/ICBC/fwjm/images/2026/di3zhangdi3jie20251215.gif",
+    "tariffCodes": [
+      "06030023",
+      "03040021"
+    ],
+    "foreignCurrencyMobileToGroup": {
+      "currency": "CNY",
+      "handling": 0,
+      "telegram": 0,
+      "modelCurrencies": [
+        "USD",
+        "HKD"
+      ]
+    },
+    "otherBankElectronic": {
+      "counterRate": 0.001,
+      "counterMinimumCny": 50,
+      "counterMaximumCny": 260,
+      "discount": 0.8,
+      "telegramHongKongCny": 80
+    },
+    "noOrdinaryPersonalCnhFeeEvidence": true
+  },
+  "hongKong": {
+    "source": "https://v.icbc.com.cn/userfiles/resources/icbc/haiwai/asia/download/cn/2026/general_services_charges_260901_sc.pdf",
+    "validFrom": "2026-09-01",
+    "printedPages": {
+      "counterCheque": 1,
+      "management": 11,
+      "groupWire": 14,
+      "otherWireAndChats": 15,
+      "inward": 17
+    },
+    "physicalPages": {
+      "counterCheque": 4,
+      "management": 14,
+      "groupWire": 17,
+      "otherWireAndChats": 18,
+      "inward": 20
+    },
+    "monthlyHkd": 0,
+    "swiftInwardHkd": 60,
+    "localUsdChatsOutwardHkd": 50,
+    "localUsdChatsInwardHkd": 10,
+    "expressToGroupHkd": 80,
+    "ordinaryOnlineToGroupHkd": 100,
+    "ordinaryOnlineToOtherHkd": 140,
+    "counterLocalCheque": {
+      "freePerDay": 30,
+      "excessPerChequeHkd": 2,
+      "prefilledDiscountPublished": false
+    },
+    "foreignChequeCollectionIsSeparate": true
+  },
+  "eAccountOffer": {
+    "inwardSource": "https://v.icbc.com.cn/userfiles/resources/icbc/haiwai/asia/download/cn/2026/inward_remittance_0_handling_charge_tnc_2607_sc.pdf",
+    "outwardSource": "https://v.icbc.com.cn/userfiles/resources/icbc/haiwai/asia/download/cn/2026/icbc_outward_remittance_0_handling_charge_tnc_2607_sc.pdf",
+    "from": "2026-07-01",
+    "until": "2026-12-31",
+    "requiresNonJointPersonalAccount": true,
+    "requiresAtLeastOneSameNameMainlandIcbcAccountLinkedInApp": true,
+    "inwardMustOriginateFromIcbcGroup": true,
+    "outwardMustUseMobileAndGoToIcbcGroup": true,
+    "basicFeeHkd": 0,
+    "agentFeesIncluded": false,
+    "fxDiscountAppliesToBankProfitOnly": true
+  },
+  "account": {
+    "source": "https://v.icbc.com.cn/userfiles/resources/icbc/haiwai/asia/download/cn/2026/descriptive_information_integrated_account_2607_sc.pdf",
+    "cnhAccountRequiresHongKongId": true,
+    "openingMinimumHkdIsNotManagementFee": 10000,
+    "usdAccountAvailable": true,
+    "debitCardSource": "https://www.icbcasia.com/hk/sc/personal/banking/others/debit-card/default.html",
+    "directUsdDebit": false,
+    "directCnhDebit": true,
+    "localUsdChequeAccountSource": "https://www.icbcasia.com/hk/sc/personal/banking/deposits/current/default.html"
+  },
+  "guide": {
+    "source": "https://www.digitalnomadlc.com/how-to-open-icbc-asia/",
+    "published": "2026-08-13",
+    "groupUsdAndHkdReceiptAgentFeeReportedCny": 0,
+    "level": "reported",
+    "reportedCustomerScope": "大湾区开户行的一类工行卡",
+    "notAnOfficialUniversalAgentWaiver": true,
+    "oldReturn80HkdMustBeCheckedAgainstCurrentEAccountOffer": true
+  },
+  "archivedSourceSha256": {
+    "mainlandInternational": "0a48e142bfe7118780e0def5fb3b30e61bb754d78590266ffc5454e0dac53bfd",
+    "mainlandElectronic": "5ef769257b3ed8ccc39258a8819fe12e9ae17adcd9f29fd597f3435ef0274b57",
+    "hongKongGeneral": "9825d02a63f352de8176dcd66dfc35bdd1b38e6df0fea2e2441238bcf9e147d6",
+    "accountDescription": "f410226a718f442380fb040a0ecdf7124dbb12ab40b1846934812a3518f250d9",
+    "eAccountInward": "d3b88e95d98acd72d4f8248bb4d3bd341826fced9cf0b61c55bc3c0c94fccb45",
+    "eAccountOutward": "9575418a16addf78e3c225afb01faf5bf8d03382b1a9bd79d8a09d5cf0354384",
+    "fxOffer": "5564ea76ee44a83d327b6113b4bfc02b750650a4c4a6eebc94303521421f5f30",
+    "publicFxResponse": "1188ef8a4d7cf392a3d5c42599b9c3f8937e435c1287a9ad1ff42d3c056a802b"
+  }
+}
