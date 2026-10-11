@@ -1,0 +1,14 @@
+{
+  "checkedOn": "2026-10-11",
+  "effectiveFrom": "2026-07-01",
+  "source": "https://www.hangseng.com/content/dam/hase/config/bde/pws/personal/servicecharges/pdfs/zh_HK/tariff_personal_sc.pdf",
+  "pages": [2, 9],
+  "bank": "hang",
+  "channel": "恒生Mobile App",
+  "destination": "hong-kong",
+  "currency": "USD",
+  "localSwiftHkd": 0,
+  "overseasOnlineSwiftHkd": 65,
+  "scope": "手机银行向香港本地银行账户汇出指定外币，本行CHATS/SWIFT服务费豁免；收款行和代理行费用独立计算。",
+  "excluded": ["境外电汇", "收款行费用", "代理行费用", "换汇差额"]
+}

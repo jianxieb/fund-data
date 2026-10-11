@@ -112,12 +112,13 @@
     if (value == null || value === '') return config.zaLv2 ? 'lv2' : 'standard';
     return ['standard', 'lv1', 'lv2'].includes(value) ? value : null;
   }
-  // Local Hong Kong SWIFT and overseas SWIFT have different ZA tariffs.
+  // Use the bank's local Hong Kong tariff independently of its overseas tariff.
   // Membership waives only this bank's charge, never another bank's charge.
   function swiftFee(bank, date, config = {}, index = 1, destination = 'overseas') {
     const local = destination === 'hong-kong';
     const publishedHkd = local && knownFee(bank?.localSwiftHkd) ? bank.localSwiftHkd : outwardFee(bank, date);
-    const result = { hkd: publishedHkd, publishedHkd, destination, date, waived: false };
+    const result = { hkd: publishedHkd, publishedHkd, destination, date, waived: false,
+      ...(local && bank?.localSwiftChannel ? { channel: bank.localSwiftChannel } : {}) };
     const waiver = bank?.swiftMemberWaiver;
     if (local || !positive(publishedHkd) || !waiver || date < waiver.from) return result;
     const level = zaPerksLevel(config);
@@ -740,7 +741,8 @@
         if (destination !== 'hong-kong') swiftCounts.set(key, index);
         return swiftFee(account, date, config, index, destination);
       };
-      const swiftEvidence = tariff => tariff.destination === 'hong-kong' ? '香港本地SWIFT · 本行手续费0' :
+      const swiftEvidence = tariff => tariff.destination === 'hong-kong' ?
+        (tariff.channel ? tariff.channel + ' · ' : '') + '香港本地SWIFT · 本行手续费' + tariff.publishedHkd + ' HKD' :
         tariff.waived ? 'ZA Perks ' + (tariff.level === 'lv2' ? 'Lv2' : 'Lv1 · 当月第' + tariff.monthlyIndex + '笔') + ' · 本行手续费豁免' :
           '海外SWIFT · 本行手续费' + tariff.publishedHkd + ' HKD' + (tariff.monthlyIndex ? ' · 当月第' + tariff.monthlyIndex + '笔' : '');
       const settlementBank = data.hkBanks.find(row => row.id === provider.integratedBank);
@@ -996,8 +998,8 @@
         const sending = swift ? swift.hkd == null ? null : swift.hkd * refs.HKD : depositFee(bank, transferMethod, depositCurrency, refs, config.date);
         const sendingLabel = internalDeposit ? settlementBank ? '本人银行账户内部交收' : bank.name + ' → ' + provider.name + '同银行收款账户' : bank.name + ' → ' + (fundingBank ? '本人' + fundingBank.name : settlementBank?.name || provider.name) + ' · ' + transferMethod.toUpperCase();
         add('depositBank', sendingLabel, internalDeposit ? 0 : charge == null ? sending : charge * refs.HKD, 'deposit', charge == null && swift?.status || sendingLabel);
-        if (swift && bank.id === 'za' && charge == null) Object.assign(rows[rows.length - 1], { swiftTariff: swift, nativeCurrency: 'HKD',
-          ...(swift.status ? { status: swift.status } : { evidence: swiftEvidence(swift) }), sources: ['zaTariff', 'zaPerksNov'] });
+        if (swift && (bank.id === 'za' || bank.swiftSources) && charge == null) Object.assign(rows[rows.length - 1], { swiftTariff: swift, nativeCurrency: 'HKD',
+          ...(swift.status ? { status: swift.status } : { evidence: swiftEvidence(swift) }), sources: bank.swiftSources || ['zaTariff', 'zaPerksNov'] });
         if (fundingBank && bank.localUsdNative != null) rows[rows.length - 1].nativeCurrency = 'USD';
         // A USD instruction naming a Hong Kong receiving bank is a separate
         // route from a US wire. Published local-route observations do not waive
