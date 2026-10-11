@@ -5591,1083 +5591,1083 @@
         "usmartPromo": false,
         "zaLv2": false
       },
-      "checked": 1019220,
-      "priced": 12884,
-      "referencePriced": 2264,
-      "partial": 827324,
-      "routeIssues": 179012,
-      "ledgerChecks": 840208,
-      "retainedPartialResults": 144908,
+      "checked": 1457188,
+      "priced": 13558,
+      "referencePriced": 2376,
+      "partial": 1079372,
+      "routeIssues": 364258,
+      "ledgerChecks": 1092930,
+      "retainedPartialResults": 310594,
       "chequeBoundaryChecks": 252852,
       "issueCounts": {
-        "众安 ZA Bank不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 4776,
-        "众安 ZA Bank扣账卡以港币结算，不支持人民币余额原币消费；已保留出金后的美元余额。": 4776,
-        "渣打人民币原币消费须持有效香港身份证，并已开通人民币储蓄账户；已保留出金后的美元余额。": 21852,
-        "众安 ZA Bank不接受支票存款；致富 · 网上直属客户的美元支票不能直接存入该账户。已保留券商美元余额。": 38456,
-        "SWIFT GO单笔上限为等值10,000 USD；当前每笔约14914.01 USD，超出服务范围。": 15336,
-        "SWIFT GO单笔上限为等值10,000 USD；当前每笔约14942.33 USD，超出服务范围。": 18768,
-        "渣打中国的USD现汇卖出价尚未取得；到账金额暂不可算。": 33768,
-        "渣打中国的HKD现汇卖出价尚未取得；到账金额暂不可算。": 41280
+        "众安 ZA Bank不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 5338,
+        "众安 ZA Bank扣账卡以港币结算，不支持人民币余额原币消费；已保留出金后的美元余额。": 5338,
+        "渣打人民币原币消费须持有效香港身份证，并已开通人民币储蓄账户；已保留出金后的美元余额。": 22414,
+        "众安 ZA Bank不接受支票存款；致富 · 网上直属客户的美元支票不能直接存入该账户。已保留券商美元余额。": 160600,
+        "SWIFT GO单笔上限为等值10,000 USD；当前每笔约14914.01 USD，超出服务范围。": 23896,
+        "SWIFT GO单笔上限为等值10,000 USD；当前每笔约14942.33 USD，超出服务范围。": 29768,
+        "渣打中国的USD现汇卖出价尚未取得；到账金额暂不可算。": 52184,
+        "渣打中国的HKD现汇卖出价尚未取得；到账金额暂不可算。": 64720
       },
       "missingCounts": {
-        "券商出金中转行费": 119984,
-        "渣打 · 快易理财 USD → CNH换汇差额": 21852,
-        "渣打 · 快易理财 USD/CNH换汇价尚未取得；已保留换汇前美元余额": 21852,
-        "回内地中转行费": 610492,
-        "内地结汇差额": 144016,
-        "渣打中国USD现汇买入价尚未取得；已保留结汇前美元余额": 144016,
-        "入金代理／收款行费": 294810,
-        "内地→香港中转行费": 722760,
-        "IBKR HKD/USD实时成交点差": 38448,
-        "IBKR CNH/USD实时成交点差": 41292,
-        "众安 ZA Bank HKD换USD点差（缺成交价）": 39678,
-        "众安 ZA Bank CNH换USD点差（缺成交价）": 42744,
-        "渣打 · 快易理财 HKD换USD点差（缺成交价）": 39678,
-        "渣打 · 快易理财 CNH换USD点差（缺成交价）": 42744,
-        "工商银行汇出手续费": 23596,
-        "工商银行电讯费": 23596,
-        "汇出手续费＋电讯费（地区定价）": 43868,
-        "交通银行汇出手续费": 23596,
-        "交通银行电讯费": 23596
+        "券商出金中转行费": 210112,
+        "渣打 · 快易理财 USD → CNH换汇差额": 22414,
+        "渣打 · 快易理财 USD/CNH换汇价尚未取得；已保留换汇前美元余额": 22414,
+        "回内地中转行费": 849902,
+        "内地结汇差额": 185220,
+        "渣打中国USD现汇买入价尚未取得；已保留结汇前美元余额": 185220,
+        "入金代理／收款行费": 390090,
+        "内地→香港中转行费": 944012,
+        "IBKR HKD/USD实时成交点差": 65824,
+        "IBKR CNH/USD实时成交点差": 70700,
+        "众安 ZA Bank HKD换USD点差（缺成交价）": 52854,
+        "众安 ZA Bank CNH换USD点差（缺成交价）": 56960,
+        "渣打 · 快易理财 HKD换USD点差（缺成交价）": 49174,
+        "渣打 · 快易理财 CNH换USD点差（缺成交价）": 52984,
+        "工商银行汇出手续费": 31278,
+        "工商银行电讯费": 31278,
+        "汇出手续费＋电讯费（地区定价）": 56816,
+        "交通银行汇出手续费": 31278,
+        "交通银行电讯费": 31278
       },
       "sources": {
         "boc/bochk/USD/boc-mobile": {
-          "checked": 4014,
-          "priced": 457,
-          "partial": 3245,
-          "routeIssues": 312
+          "checked": 5483,
+          "priced": 479,
+          "partial": 4113,
+          "routeIssues": 891
         },
         "boc/bochk/USD/swift": {
-          "checked": 4014,
+          "checked": 5483,
           "priced": 0,
-          "partial": 3702,
-          "routeIssues": 312
+          "partial": 4592,
+          "routeIssues": 891
         },
         "boc/bochk/HKD/boc-mobile": {
-          "checked": 4620,
-          "priced": 457,
-          "partial": 3833,
-          "routeIssues": 330
+          "checked": 6377,
+          "priced": 479,
+          "partial": 4989,
+          "routeIssues": 909
         },
         "boc/bochk/HKD/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "boc/bochk/CNH/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "boc/hsbc/USD/boc-online": {
-          "checked": 5976,
+          "checked": 8304,
           "priced": 0,
-          "partial": 5464,
-          "routeIssues": 512
+          "partial": 6826,
+          "routeIssues": 1478
         },
         "boc/hsbc/USD/swift": {
-          "checked": 5976,
+          "checked": 8304,
           "priced": 0,
-          "partial": 5464,
-          "routeIssues": 512
+          "partial": 6826,
+          "routeIssues": 1478
         },
         "boc/hsbc/HKD/boc-online": {
-          "checked": 6984,
+          "checked": 9888,
           "priced": 0,
-          "partial": 6436,
-          "routeIssues": 548
+          "partial": 8374,
+          "routeIssues": 1514
         },
         "boc/hsbc/HKD/swift": {
-          "checked": 6984,
+          "checked": 9888,
           "priced": 0,
-          "partial": 6436,
-          "routeIssues": 548
+          "partial": 8374,
+          "routeIssues": 1514
         },
         "boc/hsbc/CNH/swift": {
-          "checked": 6984,
+          "checked": 9888,
           "priced": 0,
-          "partial": 6436,
-          "routeIssues": 548
+          "partial": 8374,
+          "routeIssues": 1514
         },
         "boc/za/USD/boc-online": {
-          "checked": 4014,
+          "checked": 5839,
           "priced": 0,
-          "partial": 3702,
-          "routeIssues": 312
+          "partial": 4936,
+          "routeIssues": 903
         },
         "boc/za/USD/swift": {
-          "checked": 4014,
+          "checked": 5839,
           "priced": 0,
-          "partial": 3702,
-          "routeIssues": 312
+          "partial": 4936,
+          "routeIssues": 903
         },
         "boc/za/HKD/boc-online": {
-          "checked": 4620,
+          "checked": 7445,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 6500,
+          "routeIssues": 945
         },
         "boc/za/HKD/swift": {
-          "checked": 4620,
+          "checked": 7445,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 6500,
+          "routeIssues": 945
         },
         "boc/za/CNH/swift": {
-          "checked": 4620,
+          "checked": 7445,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 6500,
+          "routeIssues": 945
         },
         "boc/hang/USD/boc-online": {
-          "checked": 4014,
+          "checked": 5483,
           "priced": 0,
-          "partial": 3702,
-          "routeIssues": 312
+          "partial": 4592,
+          "routeIssues": 891
         },
         "boc/hang/USD/swift": {
-          "checked": 4014,
+          "checked": 5483,
           "priced": 0,
-          "partial": 3702,
-          "routeIssues": 312
+          "partial": 4592,
+          "routeIssues": 891
         },
         "boc/hang/HKD/boc-online": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "boc/hang/HKD/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "boc/hang/CNH/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "boc/sc/USD/boc-online": {
-          "checked": 4014,
+          "checked": 5483,
           "priced": 0,
-          "partial": 3702,
-          "routeIssues": 312
+          "partial": 4592,
+          "routeIssues": 891
         },
         "boc/sc/USD/swift": {
-          "checked": 4014,
+          "checked": 5483,
           "priced": 0,
-          "partial": 3702,
-          "routeIssues": 312
+          "partial": 4592,
+          "routeIssues": 891
         },
         "boc/sc/HKD/boc-online": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "boc/sc/HKD/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "boc/sc/CNH/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "cib/bochk/USD/swift": {
-          "checked": 4014,
+          "checked": 5483,
           "priced": 0,
-          "partial": 3702,
-          "routeIssues": 312
+          "partial": 4592,
+          "routeIssues": 891
         },
         "cib/bochk/USD/cib-go": {
-          "checked": 2826,
+          "checked": 4295,
           "priced": 0,
           "partial": 0,
-          "routeIssues": 2826
+          "routeIssues": 4295
         },
         "cib/bochk/HKD/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "cib/bochk/HKD/cib-go": {
-          "checked": 3432,
+          "checked": 5189,
           "priced": 0,
           "partial": 0,
-          "routeIssues": 3432
+          "routeIssues": 5189
         },
         "cib/bochk/CNH/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "cib/hsbc/USD/swift": {
-          "checked": 5976,
-          "priced": 586,
-          "partial": 4878,
-          "routeIssues": 512
+          "checked": 8304,
+          "priced": 620,
+          "partial": 6206,
+          "routeIssues": 1478
         },
         "cib/hsbc/USD/cib-go": {
-          "checked": 4032,
+          "checked": 6360,
           "priced": 0,
           "partial": 0,
-          "routeIssues": 4032
+          "routeIssues": 6360
         },
         "cib/hsbc/HKD/swift": {
-          "checked": 6984,
-          "priced": 586,
-          "partial": 5850,
-          "routeIssues": 548
+          "checked": 9888,
+          "priced": 620,
+          "partial": 7754,
+          "routeIssues": 1514
         },
         "cib/hsbc/HKD/cib-go": {
-          "checked": 5040,
+          "checked": 7944,
           "priced": 0,
           "partial": 0,
-          "routeIssues": 5040
+          "routeIssues": 7944
         },
         "cib/hsbc/CNH/swift": {
-          "checked": 6984,
+          "checked": 9888,
           "priced": 0,
-          "partial": 6436,
-          "routeIssues": 548
+          "partial": 8374,
+          "routeIssues": 1514
         },
         "cib/za/USD/swift": {
-          "checked": 4014,
+          "checked": 5839,
           "priced": 0,
-          "partial": 3702,
-          "routeIssues": 312
+          "partial": 4936,
+          "routeIssues": 903
         },
         "cib/za/USD/cib-go": {
-          "checked": 2826,
+          "checked": 4651,
           "priced": 0,
           "partial": 0,
-          "routeIssues": 2826
+          "routeIssues": 4651
         },
         "cib/za/HKD/swift": {
-          "checked": 4620,
+          "checked": 7445,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 6500,
+          "routeIssues": 945
         },
         "cib/za/HKD/cib-go": {
-          "checked": 3432,
+          "checked": 6257,
           "priced": 0,
           "partial": 0,
-          "routeIssues": 3432
+          "routeIssues": 6257
         },
         "cib/za/CNH/swift": {
-          "checked": 4620,
+          "checked": 7445,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 6500,
+          "routeIssues": 945
         },
         "cib/hang/USD/swift": {
-          "checked": 4014,
+          "checked": 5483,
           "priced": 0,
-          "partial": 3702,
-          "routeIssues": 312
+          "partial": 4592,
+          "routeIssues": 891
         },
         "cib/hang/USD/cib-go": {
-          "checked": 2826,
+          "checked": 4295,
           "priced": 0,
           "partial": 0,
-          "routeIssues": 2826
+          "routeIssues": 4295
         },
         "cib/hang/HKD/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "cib/hang/HKD/cib-go": {
-          "checked": 3432,
+          "checked": 5189,
           "priced": 0,
           "partial": 0,
-          "routeIssues": 3432
+          "routeIssues": 5189
         },
         "cib/hang/CNH/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "cib/sc/USD/swift": {
-          "checked": 4014,
+          "checked": 5483,
           "priced": 0,
-          "partial": 3702,
-          "routeIssues": 312
+          "partial": 4592,
+          "routeIssues": 891
         },
         "cib/sc/USD/cib-go": {
-          "checked": 2826,
+          "checked": 4295,
           "priced": 0,
           "partial": 0,
-          "routeIssues": 2826
+          "routeIssues": 4295
         },
         "cib/sc/HKD/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "cib/sc/HKD/cib-go": {
-          "checked": 3432,
+          "checked": 5189,
           "priced": 0,
           "partial": 0,
-          "routeIssues": 3432
+          "routeIssues": 5189
         },
         "cib/sc/CNH/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "cmb/bochk/USD/swift": {
-          "checked": 4014,
+          "checked": 5483,
           "priced": 0,
-          "partial": 3702,
-          "routeIssues": 312
+          "partial": 4592,
+          "routeIssues": 891
         },
         "cmb/bochk/HKD/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "cmb/bochk/CNH/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "cmb/hsbc/USD/swift": {
-          "checked": 5976,
+          "checked": 8304,
           "priced": 0,
-          "partial": 5464,
-          "routeIssues": 512
+          "partial": 6826,
+          "routeIssues": 1478
         },
         "cmb/hsbc/HKD/swift": {
-          "checked": 6984,
+          "checked": 9888,
           "priced": 0,
-          "partial": 6436,
-          "routeIssues": 548
+          "partial": 8374,
+          "routeIssues": 1514
         },
         "cmb/hsbc/CNH/swift": {
-          "checked": 6984,
+          "checked": 9888,
           "priced": 0,
-          "partial": 6436,
-          "routeIssues": 548
+          "partial": 8374,
+          "routeIssues": 1514
         },
         "cmb/za/USD/swift": {
-          "checked": 4014,
+          "checked": 5839,
           "priced": 0,
-          "partial": 3702,
-          "routeIssues": 312
+          "partial": 4936,
+          "routeIssues": 903
         },
         "cmb/za/HKD/swift": {
-          "checked": 4620,
+          "checked": 7445,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 6500,
+          "routeIssues": 945
         },
         "cmb/za/CNH/swift": {
-          "checked": 4620,
+          "checked": 7445,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 6500,
+          "routeIssues": 945
         },
         "cmb/hang/USD/swift": {
-          "checked": 4014,
+          "checked": 5483,
           "priced": 0,
-          "partial": 3702,
-          "routeIssues": 312
+          "partial": 4592,
+          "routeIssues": 891
         },
         "cmb/hang/HKD/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "cmb/hang/CNH/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "cmb/sc/USD/swift": {
-          "checked": 4014,
+          "checked": 5483,
           "priced": 0,
-          "partial": 3702,
-          "routeIssues": 312
+          "partial": 4592,
+          "routeIssues": 891
         },
         "cmb/sc/HKD/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "cmb/sc/CNH/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "icbc/bochk/USD/swift": {
-          "checked": 4014,
+          "checked": 5483,
           "priced": 0,
-          "partial": 3702,
-          "routeIssues": 312
+          "partial": 4592,
+          "routeIssues": 891
         },
         "icbc/bochk/USD/full": {
-          "checked": 4014,
-          "priced": 457,
-          "partial": 3245,
-          "routeIssues": 312
+          "checked": 5483,
+          "priced": 479,
+          "partial": 4113,
+          "routeIssues": 891
         },
         "icbc/bochk/HKD/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "icbc/bochk/CNH/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "icbc/hsbc/USD/swift": {
-          "checked": 5976,
+          "checked": 8304,
           "priced": 0,
-          "partial": 5464,
-          "routeIssues": 512
+          "partial": 6826,
+          "routeIssues": 1478
         },
         "icbc/hsbc/USD/full": {
-          "checked": 5976,
-          "priced": 586,
-          "partial": 4878,
-          "routeIssues": 512
+          "checked": 8304,
+          "priced": 620,
+          "partial": 6206,
+          "routeIssues": 1478
         },
         "icbc/hsbc/HKD/swift": {
-          "checked": 6984,
+          "checked": 9888,
           "priced": 0,
-          "partial": 6436,
-          "routeIssues": 548
+          "partial": 8374,
+          "routeIssues": 1514
         },
         "icbc/hsbc/CNH/swift": {
-          "checked": 6984,
+          "checked": 9888,
           "priced": 0,
-          "partial": 6436,
-          "routeIssues": 548
+          "partial": 8374,
+          "routeIssues": 1514
         },
         "icbc/za/USD/swift": {
-          "checked": 4014,
+          "checked": 5839,
           "priced": 0,
-          "partial": 3702,
-          "routeIssues": 312
+          "partial": 4936,
+          "routeIssues": 903
         },
         "icbc/za/USD/full": {
-          "checked": 4014,
-          "priced": 457,
-          "partial": 3245,
-          "routeIssues": 312
+          "checked": 5839,
+          "priced": 479,
+          "partial": 4457,
+          "routeIssues": 903
         },
         "icbc/za/HKD/swift": {
-          "checked": 4620,
+          "checked": 7445,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 6500,
+          "routeIssues": 945
         },
         "icbc/za/CNH/swift": {
-          "checked": 4620,
+          "checked": 7445,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 6500,
+          "routeIssues": 945
         },
         "icbc/hang/USD/swift": {
-          "checked": 4014,
+          "checked": 5483,
           "priced": 0,
-          "partial": 3702,
-          "routeIssues": 312
+          "partial": 4592,
+          "routeIssues": 891
         },
         "icbc/hang/USD/full": {
-          "checked": 4014,
-          "priced": 457,
-          "partial": 3245,
-          "routeIssues": 312
+          "checked": 5483,
+          "priced": 479,
+          "partial": 4113,
+          "routeIssues": 891
         },
         "icbc/hang/HKD/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "icbc/hang/CNH/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "icbc/sc/USD/swift": {
-          "checked": 4014,
+          "checked": 5483,
           "priced": 0,
-          "partial": 3702,
-          "routeIssues": 312
+          "partial": 4592,
+          "routeIssues": 891
         },
         "icbc/sc/USD/full": {
-          "checked": 4014,
-          "priced": 457,
-          "partial": 3245,
-          "routeIssues": 312
+          "checked": 5483,
+          "priced": 479,
+          "partial": 4113,
+          "routeIssues": 891
         },
         "icbc/sc/HKD/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "icbc/sc/CNH/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "ccb/bochk/USD/swift": {
-          "checked": 4014,
+          "checked": 5483,
           "priced": 0,
-          "partial": 3702,
-          "routeIssues": 312
+          "partial": 4592,
+          "routeIssues": 891
         },
         "ccb/bochk/USD/full": {
-          "checked": 4014,
-          "priced": 457,
-          "partial": 3245,
-          "routeIssues": 312
+          "checked": 5483,
+          "priced": 479,
+          "partial": 4113,
+          "routeIssues": 891
         },
         "ccb/bochk/HKD/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "ccb/bochk/CNH/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "ccb/hsbc/USD/swift": {
-          "checked": 5976,
+          "checked": 8304,
           "priced": 0,
-          "partial": 5464,
-          "routeIssues": 512
+          "partial": 6826,
+          "routeIssues": 1478
         },
         "ccb/hsbc/USD/full": {
-          "checked": 5976,
-          "priced": 586,
-          "partial": 4878,
-          "routeIssues": 512
+          "checked": 8304,
+          "priced": 620,
+          "partial": 6206,
+          "routeIssues": 1478
         },
         "ccb/hsbc/HKD/swift": {
-          "checked": 6984,
+          "checked": 9888,
           "priced": 0,
-          "partial": 6436,
-          "routeIssues": 548
+          "partial": 8374,
+          "routeIssues": 1514
         },
         "ccb/hsbc/CNH/swift": {
-          "checked": 6984,
+          "checked": 9888,
           "priced": 0,
-          "partial": 6436,
-          "routeIssues": 548
+          "partial": 8374,
+          "routeIssues": 1514
         },
         "ccb/za/USD/swift": {
-          "checked": 4014,
+          "checked": 5839,
           "priced": 0,
-          "partial": 3702,
-          "routeIssues": 312
+          "partial": 4936,
+          "routeIssues": 903
         },
         "ccb/za/USD/full": {
-          "checked": 4014,
-          "priced": 457,
-          "partial": 3245,
-          "routeIssues": 312
+          "checked": 5839,
+          "priced": 479,
+          "partial": 4457,
+          "routeIssues": 903
         },
         "ccb/za/HKD/swift": {
-          "checked": 4620,
+          "checked": 7445,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 6500,
+          "routeIssues": 945
         },
         "ccb/za/CNH/swift": {
-          "checked": 4620,
+          "checked": 7445,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 6500,
+          "routeIssues": 945
         },
         "ccb/hang/USD/swift": {
-          "checked": 4014,
+          "checked": 5483,
           "priced": 0,
-          "partial": 3702,
-          "routeIssues": 312
+          "partial": 4592,
+          "routeIssues": 891
         },
         "ccb/hang/USD/full": {
-          "checked": 4014,
-          "priced": 457,
-          "partial": 3245,
-          "routeIssues": 312
+          "checked": 5483,
+          "priced": 479,
+          "partial": 4113,
+          "routeIssues": 891
         },
         "ccb/hang/HKD/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "ccb/hang/CNH/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "ccb/sc/USD/swift": {
-          "checked": 4014,
+          "checked": 5483,
           "priced": 0,
-          "partial": 3702,
-          "routeIssues": 312
+          "partial": 4592,
+          "routeIssues": 891
         },
         "ccb/sc/USD/full": {
-          "checked": 4014,
-          "priced": 457,
-          "partial": 3245,
-          "routeIssues": 312
+          "checked": 5483,
+          "priced": 479,
+          "partial": 4113,
+          "routeIssues": 891
         },
         "ccb/sc/HKD/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "ccb/sc/CNH/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "comm/bochk/USD/swift": {
-          "checked": 4014,
+          "checked": 5483,
           "priced": 0,
-          "partial": 3702,
-          "routeIssues": 312
+          "partial": 4592,
+          "routeIssues": 891
         },
         "comm/bochk/HKD/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "comm/bochk/CNH/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "comm/hsbc/USD/swift": {
-          "checked": 5976,
+          "checked": 8304,
           "priced": 0,
-          "partial": 5464,
-          "routeIssues": 512
+          "partial": 6826,
+          "routeIssues": 1478
         },
         "comm/hsbc/HKD/swift": {
-          "checked": 6984,
+          "checked": 9888,
           "priced": 0,
-          "partial": 6436,
-          "routeIssues": 548
+          "partial": 8374,
+          "routeIssues": 1514
         },
         "comm/hsbc/CNH/swift": {
-          "checked": 6984,
+          "checked": 9888,
           "priced": 0,
-          "partial": 6436,
-          "routeIssues": 548
+          "partial": 8374,
+          "routeIssues": 1514
         },
         "comm/za/USD/swift": {
-          "checked": 4014,
+          "checked": 5839,
           "priced": 0,
-          "partial": 3702,
-          "routeIssues": 312
+          "partial": 4936,
+          "routeIssues": 903
         },
         "comm/za/HKD/swift": {
-          "checked": 4620,
+          "checked": 7445,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 6500,
+          "routeIssues": 945
         },
         "comm/za/CNH/swift": {
-          "checked": 4620,
+          "checked": 7445,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 6500,
+          "routeIssues": 945
         },
         "comm/hang/USD/swift": {
-          "checked": 4014,
+          "checked": 5483,
           "priced": 0,
-          "partial": 3702,
-          "routeIssues": 312
+          "partial": 4592,
+          "routeIssues": 891
         },
         "comm/hang/HKD/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "comm/hang/CNH/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "comm/sc/USD/swift": {
-          "checked": 4014,
+          "checked": 5483,
           "priced": 0,
-          "partial": 3702,
-          "routeIssues": 312
+          "partial": 4592,
+          "routeIssues": 891
         },
         "comm/sc/HKD/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "comm/sc/CNH/swift": {
-          "checked": 4620,
+          "checked": 6377,
           "priced": 0,
-          "partial": 4290,
-          "routeIssues": 330
+          "partial": 5468,
+          "routeIssues": 909
         },
         "hsbc/bochk/USD/swift": {
-          "checked": 7464,
+          "checked": 10158,
           "priced": 0,
-          "partial": 6864,
-          "routeIssues": 600
+          "partial": 8496,
+          "routeIssues": 1662
         },
         "hsbc/bochk/HKD/swift": {
-          "checked": 8580,
+          "checked": 11802,
           "priced": 0,
-          "partial": 7944,
-          "routeIssues": 636
+          "partial": 10104,
+          "routeIssues": 1698
         },
         "hsbc/bochk/CNH/swift": {
-          "checked": 8580,
+          "checked": 11802,
           "priced": 0,
-          "partial": 7944,
-          "routeIssues": 636
+          "partial": 10104,
+          "routeIssues": 1698
         },
         "hsbc/hsbc/USD/linked": {
-          "checked": 11160,
-          "priced": 1116,
-          "partial": 9060,
-          "routeIssues": 984
+          "checked": 15432,
+          "priced": 1180,
+          "partial": 11496,
+          "routeIssues": 2756
         },
         "hsbc/hsbc/USD/swift": {
-          "checked": 11160,
+          "checked": 15432,
           "priced": 0,
-          "partial": 10176,
-          "routeIssues": 984
+          "partial": 12676,
+          "routeIssues": 2756
         },
         "hsbc/hsbc/HKD/linked": {
-          "checked": 13032,
-          "priced": 1116,
-          "partial": 10860,
-          "routeIssues": 1056
+          "checked": 18360,
+          "priced": 1180,
+          "partial": 14352,
+          "routeIssues": 2828
         },
         "hsbc/hsbc/HKD/swift": {
-          "checked": 13032,
+          "checked": 18360,
           "priced": 0,
-          "partial": 11976,
-          "routeIssues": 1056
+          "partial": 15532,
+          "routeIssues": 2828
         },
         "hsbc/hsbc/CNH/linked": {
-          "checked": 13032,
-          "priced": 1116,
-          "partial": 10860,
-          "routeIssues": 1056
+          "checked": 18360,
+          "priced": 1180,
+          "partial": 14352,
+          "routeIssues": 2828
         },
         "hsbc/hsbc/CNH/swift": {
-          "checked": 13032,
+          "checked": 18360,
           "priced": 0,
-          "partial": 11976,
-          "routeIssues": 1056
+          "partial": 15532,
+          "routeIssues": 2828
         },
         "hsbc/za/USD/swift": {
-          "checked": 7464,
+          "checked": 10814,
           "priced": 0,
-          "partial": 6864,
-          "routeIssues": 600
+          "partial": 9128,
+          "routeIssues": 1686
         },
         "hsbc/za/HKD/swift": {
-          "checked": 8580,
+          "checked": 13770,
           "priced": 0,
-          "partial": 7944,
-          "routeIssues": 636
+          "partial": 12000,
+          "routeIssues": 1770
         },
         "hsbc/za/CNH/swift": {
-          "checked": 8580,
+          "checked": 13770,
           "priced": 0,
-          "partial": 7944,
-          "routeIssues": 636
+          "partial": 12000,
+          "routeIssues": 1770
         },
         "hsbc/hang/USD/swift": {
-          "checked": 7464,
+          "checked": 10158,
           "priced": 0,
-          "partial": 6864,
-          "routeIssues": 600
+          "partial": 8496,
+          "routeIssues": 1662
         },
         "hsbc/hang/HKD/swift": {
-          "checked": 8580,
+          "checked": 11802,
           "priced": 0,
-          "partial": 7944,
-          "routeIssues": 636
+          "partial": 10104,
+          "routeIssues": 1698
         },
         "hsbc/hang/CNH/swift": {
-          "checked": 8580,
+          "checked": 11802,
           "priced": 0,
-          "partial": 7944,
-          "routeIssues": 636
+          "partial": 10104,
+          "routeIssues": 1698
         },
         "hsbc/sc/USD/swift": {
-          "checked": 7464,
+          "checked": 10158,
           "priced": 0,
-          "partial": 6864,
-          "routeIssues": 600
+          "partial": 8496,
+          "routeIssues": 1662
         },
         "hsbc/sc/HKD/swift": {
-          "checked": 8580,
+          "checked": 11802,
           "priced": 0,
-          "partial": 7944,
-          "routeIssues": 636
+          "partial": 10104,
+          "routeIssues": 1698
         },
         "hsbc/sc/CNH/swift": {
-          "checked": 8580,
+          "checked": 11802,
           "priced": 0,
-          "partial": 7944,
-          "routeIssues": 636
+          "partial": 10104,
+          "routeIssues": 1698
         },
         "hang/bochk/USD/swift": {
-          "checked": 7500,
+          "checked": 10196,
           "priced": 0,
-          "partial": 6900,
-          "routeIssues": 600
+          "partial": 8534,
+          "routeIssues": 1662
         },
         "hang/bochk/HKD/swift": {
-          "checked": 8628,
+          "checked": 11852,
           "priced": 0,
-          "partial": 7992,
-          "routeIssues": 636
+          "partial": 10154,
+          "routeIssues": 1698
         },
         "hang/bochk/CNH/swift": {
-          "checked": 8628,
+          "checked": 11852,
           "priced": 0,
-          "partial": 7992,
-          "routeIssues": 636
+          "partial": 10154,
+          "routeIssues": 1698
         },
         "hang/hsbc/USD/swift": {
-          "checked": 11160,
+          "checked": 15432,
           "priced": 0,
-          "partial": 10176,
-          "routeIssues": 984
+          "partial": 12676,
+          "routeIssues": 2756
         },
         "hang/hsbc/HKD/swift": {
-          "checked": 13032,
+          "checked": 18360,
           "priced": 0,
-          "partial": 11976,
-          "routeIssues": 1056
+          "partial": 15532,
+          "routeIssues": 2828
         },
         "hang/hsbc/CNH/swift": {
-          "checked": 13032,
+          "checked": 18360,
           "priced": 0,
-          "partial": 11976,
-          "routeIssues": 1056
+          "partial": 15532,
+          "routeIssues": 2828
         },
         "hang/za/USD/swift": {
-          "checked": 7500,
+          "checked": 10860,
           "priced": 0,
-          "partial": 6900,
-          "routeIssues": 600
+          "partial": 9174,
+          "routeIssues": 1686
         },
         "hang/za/HKD/swift": {
-          "checked": 8628,
+          "checked": 13844,
           "priced": 0,
-          "partial": 7992,
-          "routeIssues": 636
+          "partial": 12074,
+          "routeIssues": 1770
         },
         "hang/za/CNH/swift": {
-          "checked": 8628,
+          "checked": 13844,
           "priced": 0,
-          "partial": 7992,
-          "routeIssues": 636
+          "partial": 12074,
+          "routeIssues": 1770
         },
         "hang/hang/USD/linked": {
-          "checked": 7500,
-          "priced": 874,
-          "partial": 6026,
-          "routeIssues": 600
+          "checked": 10196,
+          "priced": 916,
+          "partial": 7618,
+          "routeIssues": 1662
         },
         "hang/hang/USD/swift": {
-          "checked": 7500,
+          "checked": 10196,
           "priced": 0,
-          "partial": 6900,
-          "routeIssues": 600
+          "partial": 8534,
+          "routeIssues": 1662
         },
         "hang/hang/HKD/linked": {
-          "checked": 8628,
-          "priced": 874,
-          "partial": 7118,
-          "routeIssues": 636
+          "checked": 11852,
+          "priced": 916,
+          "partial": 9238,
+          "routeIssues": 1698
         },
         "hang/hang/HKD/swift": {
-          "checked": 8628,
+          "checked": 11852,
           "priced": 0,
-          "partial": 7992,
-          "routeIssues": 636
+          "partial": 10154,
+          "routeIssues": 1698
         },
         "hang/hang/CNH/linked": {
-          "checked": 8628,
-          "priced": 874,
-          "partial": 7118,
-          "routeIssues": 636
+          "checked": 11852,
+          "priced": 916,
+          "partial": 9238,
+          "routeIssues": 1698
         },
         "hang/hang/CNH/swift": {
-          "checked": 8628,
+          "checked": 11852,
           "priced": 0,
-          "partial": 7992,
-          "routeIssues": 636
+          "partial": 10154,
+          "routeIssues": 1698
         },
         "hang/sc/USD/swift": {
-          "checked": 7500,
+          "checked": 10196,
           "priced": 0,
-          "partial": 6900,
-          "routeIssues": 600
+          "partial": 8534,
+          "routeIssues": 1662
         },
         "hang/sc/HKD/swift": {
-          "checked": 8628,
+          "checked": 11852,
           "priced": 0,
-          "partial": 7992,
-          "routeIssues": 636
+          "partial": 10154,
+          "routeIssues": 1698
         },
         "hang/sc/CNH/swift": {
-          "checked": 8628,
+          "checked": 11852,
           "priced": 0,
-          "partial": 7992,
-          "routeIssues": 636
+          "partial": 10154,
+          "routeIssues": 1698
         },
         "sc/bochk/USD/swift": {
-          "checked": 5256,
+          "checked": 7952,
           "priced": 0,
           "partial": 0,
-          "routeIssues": 5256
+          "routeIssues": 7952
         },
         "sc/bochk/HKD/swift": {
-          "checked": 6384,
+          "checked": 9608,
           "priced": 0,
           "partial": 0,
-          "routeIssues": 6384
+          "routeIssues": 9608
         },
         "sc/bochk/CNH/swift": {
-          "checked": 8496,
+          "checked": 11720,
           "priced": 0,
-          "partial": 7860,
-          "routeIssues": 636
+          "partial": 10022,
+          "routeIssues": 1698
         },
         "sc/hsbc/USD/swift": {
-          "checked": 7488,
+          "checked": 11760,
           "priced": 0,
           "partial": 0,
-          "routeIssues": 7488
+          "routeIssues": 11760
         },
         "sc/hsbc/HKD/swift": {
-          "checked": 9360,
+          "checked": 14688,
           "priced": 0,
           "partial": 0,
-          "routeIssues": 9360
+          "routeIssues": 14688
         },
         "sc/hsbc/CNH/swift": {
-          "checked": 12816,
+          "checked": 18144,
           "priced": 0,
-          "partial": 11760,
-          "routeIssues": 1056
+          "partial": 15316,
+          "routeIssues": 2828
         },
         "sc/za/USD/swift": {
-          "checked": 5256,
+          "checked": 8616,
           "priced": 0,
           "partial": 0,
-          "routeIssues": 5256
+          "routeIssues": 8616
         },
         "sc/za/HKD/swift": {
-          "checked": 6384,
+          "checked": 11600,
           "priced": 0,
           "partial": 0,
-          "routeIssues": 6384
+          "routeIssues": 11600
         },
         "sc/za/CNH/swift": {
-          "checked": 8496,
+          "checked": 13712,
           "priced": 0,
-          "partial": 7860,
-          "routeIssues": 636
+          "partial": 11942,
+          "routeIssues": 1770
         },
         "sc/hang/USD/swift": {
-          "checked": 5256,
+          "checked": 7952,
           "priced": 0,
           "partial": 0,
-          "routeIssues": 5256
+          "routeIssues": 7952
         },
         "sc/hang/HKD/swift": {
-          "checked": 6384,
+          "checked": 9608,
           "priced": 0,
           "partial": 0,
-          "routeIssues": 6384
+          "routeIssues": 9608
         },
         "sc/hang/CNH/swift": {
-          "checked": 8496,
+          "checked": 11720,
           "priced": 0,
-          "partial": 7860,
-          "routeIssues": 636
+          "partial": 10022,
+          "routeIssues": 1698
         },
         "sc/sc/USD/linked": {
-          "checked": 5256,
+          "checked": 7952,
           "priced": 0,
           "partial": 0,
-          "routeIssues": 5256
+          "routeIssues": 7952
         },
         "sc/sc/USD/swift": {
-          "checked": 5256,
+          "checked": 7952,
           "priced": 0,
           "partial": 0,
-          "routeIssues": 5256
+          "routeIssues": 7952
         },
         "sc/sc/HKD/linked": {
-          "checked": 6384,
+          "checked": 9608,
           "priced": 0,
           "partial": 0,
-          "routeIssues": 6384
+          "routeIssues": 9608
         },
         "sc/sc/HKD/swift": {
-          "checked": 6384,
+          "checked": 9608,
           "priced": 0,
           "partial": 0,
-          "routeIssues": 6384
+          "routeIssues": 9608
         },
         "sc/sc/CNH/swift": {
-          "checked": 8496,
+          "checked": 11720,
           "priced": 0,
-          "partial": 7860,
-          "routeIssues": 636
+          "partial": 10022,
+          "routeIssues": 1698
         }
       },
       "coverage": {
@@ -6710,7 +6710,8 @@
         "scCnhAccount",
         "trade25",
         "usmartPromo",
-        "zaLv2"
+        "zaPerksLevel",
+        "zaSwiftUsed"
       ]
     }
   ],

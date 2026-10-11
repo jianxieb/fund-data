@@ -1286,6 +1286,80 @@ function moneyUi(input, quotes = cibQuotes, date = '2026-10-09') {
     act: (action, field, value) => context.window.ChanghengMoneyFlow.handleAction({ dataset: { action: 'money-flow-' + action, field, value } }) };
 }
 
+test('ZA membership is a bank control that migrates old Lv2 settings and survives every broker switch and reload', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  const ui = moneyUi({ ...currentRoute, startBank: 'boc', bank: 'bochk', mainlandMethod: '', broker: 'za', outcome: 'broker-balance', zaLv2: true }, quotes, '2026-10-11');
+  let html = ui.render();
+  const bankNode = html.match(/<section class="flow-node" data-flow-stage="02"[\s\S]*?<\/section>/)[0];
+  assert.match(bankNode, /ZA银行权益/); assert.match(bankNode, /ZA Perks · Lv2/);
+  assert.doesNotMatch(html, /data-money-check="zaLv2"/);
+  ui.act('choose', 'broker', 'za');
+  assert.equal(ui.saved().zaPerksLevel, 'lv2');
+  for (const zaPerksLevel of ['standard', 'lv1', 'lv2']) {
+    ui.act('choose', 'zaPerksLevel', zaPerksLevel);
+    for (const broker of D.calculator.brokers) {
+      ui.act('choose', 'broker', broker); html = ui.render();
+      assert.equal(ui.saved().zaPerksLevel, zaPerksLevel); assert.equal(ui.saved().zaLv2, zaPerksLevel === 'lv2');
+      assert.equal(ui.saved().bank, 'bochk');
+      ui.act('pick', '', 'broker'); assert.equal((ui.modal().match(/data-field="broker"/g) || []).length, 5);
+      ui.act('pick', '', 'bank'); assert.equal((ui.modal().match(/data-field="bank"/g) || []).length, 5);
+    }
+    const restored = moneyUi(ui.saved(), quotes, '2026-10-11');
+    restored.render(); restored.act('choose', 'broker', 'za');
+    assert.equal(restored.saved().zaPerksLevel, zaPerksLevel);
+    assert.match(restored.render(), new RegExp('ZA Perks · ' + (zaPerksLevel === 'standard' ? '标准' : zaPerksLevel === 'lv1' ? 'Lv1' : 'Lv2')));
+  }
+  ui.act('choose', 'broker', 'za'); ui.render(); ui.act('detail', '', 'offers');
+  assert.match(ui.modal(), /Lv2，月前5笔平台费优惠/);
+  assert.doesNotMatch(ui.modal(), /SWIFT|海外汇款笔数/);
+  ui.act('detail', '', 'bank-settings');
+  assert.match(ui.modal(), /2026年11月1日起，海外SWIFT本行费70 HKD/);
+  assert.match(ui.modal(), /ZA银行权益/);
+});
+
+test('ZA Swift quota is edited and validated at its bank while local instructions keep their own fee and source', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  const input = { ...currentRoute, startBank: 'boc', bank: 'za', broker: 'ibkr', returnBank: 'za', exitBank: 'boc', outcome: 'mainland',
+    route: 'USD', mainlandMethod: 'boc-online', depositMethod: 'swift', returnMethod: 'swift', months: 1, zaPerksLevel: 'lv1', zaSwiftUsed: 2 };
+  const ui = moneyUi(input, quotes, '2026-11-01');
+  let html = ui.render();
+  assert.match(html, /ZA Perks Lv1 · 当月第3笔 · 本行手续费豁免/);
+  assert.match(html, /海外SWIFT · 本行手续费70 HKD · 当月第4笔/);
+  ui.act('detail', '', 'bank-settings'); assert.match(ui.modal(), /每个汇款月其他已用海外汇款笔数/);
+  assert.ok(evidenceLinks(ui, 'edge-03').has(D.sources.zaPerksNov.url));
+  assert.ok(evidenceLinks(ui, 'edge-04').has(D.sources.zaTariff.url));
+  for (const zaSwiftUsed of [-1, 1.5, 'bad']) {
+    const invalid = moneyUi({ ...input, zaSwiftUsed }, quotes, '2026-11-01');
+    invalid.render(); invalid.act('detail', '', 'bank-settings');
+    assert.match(invalid.modal(), /aria-invalid="true"/); assert.match(invalid.modal(), /须为非负整数/);
+  }
+  ui.act('choose', 'broker', 'usmart'); ui.act('choose', 'depositMethod', 'swift'); html = ui.render();
+  assert.match(html, /香港收款账户 · USD SWIFT/);
+  assert.match(html, /香港本地SWIFT · 本行手续费0/);
+  const updated = M.calculatorJourney({ ...ui.saved(), date: '2026-11-01' }, D, quotes).selected;
+  assert.equal(updated.rows.find(row => row.key === 'depositBank').swiftTariff.destination, 'hong-kong');
+  assert.equal(updated.rows.find(row => row.key === 'returnWire').swiftTariff.monthlyIndex, 3);
+  assert.equal(ui.saved().zaPerksLevel, 'lv1'); assert.equal(ui.saved().zaSwiftUsed, 2);
+});
+
+test('each visible preferred route retains the unified ZA membership and reproduces the advertised loss after application', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  const input = { ...currentRoute, broker: 'za', outcome: 'broker-balance', zaPerksLevel: 'lv2', zaSwiftUsed: 2, usedPromoOrders: 3 };
+  const ui = moneyUi(input, quotes, '2026-10-11');
+  const cards = ui.render().match(/<button[^>]*data-action="money-flow-preset"[\s\S]*?<\/button>/g) || [];
+  assert.ok(cards.length >= 4);
+  const plans = M.calculatorRecommendations({ ...input, date: '2026-10-11' }, D, quotes).plans;
+  for (const card of cards) {
+    const id = card.match(/data-value="([^"]+)"/)[1];
+    ui.act('preset', '', id);
+    assert.equal(ui.saved().zaPerksLevel, 'lv2'); assert.equal(ui.saved().zaSwiftUsed, 2); assert.equal(ui.saved().usedPromoOrders, 3);
+    assert.equal(ui.saved().broker, 'za');
+    const r = M.calculatorJourney({ ...ui.saved(), date: '2026-10-11' }, D, quotes).selected;
+    const plan = plans.find(plan => plan.id === id);
+    close(r.costCny, plan.result.costCny); close(r.netCny, plan.result.netCny);
+  }
+});
+
 test('CIB expiry keeps standard fees visible and removes only the inactive quota control', () => {
   const input = { ...currentRoute, startBank: 'cib', bank: 'hsbc', broker: 'za', route: 'USD',
     outcome: 'broker-balance', months: 0, count: 1, mainlandMethod: 'swift', depositMethod: 'chats',

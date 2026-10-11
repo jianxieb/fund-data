@@ -5,7 +5,7 @@
     mainlandMethod: 'boc-mobile', depositMethod: 'chats', fxMode: 'manual', returnMethod: '', comparison: 'start', count: '1', usedFreeTransfers: '0',
     months: '12', balanceHkd: '0', returnBalanceHkd: '0', bankBalancesHkd: {}, profitUsd: '0', taxableCny: '', taxRate: '20', creditCny: '0', withdrawalIndex: '1', chequeIndex: '1', chequePreFilled: false, tradeFeeUsd: '',
     broker: 'za', buyOrders: '1', sellOrders: '1', sharePriceUsd: '100', trade25: false, chiefMonthly: false, usmartPromo: false, zaLv2: false,
-    hsbcBalanceWaiver: false, hkHsbcFreeMonths: '0', scCnhAccount: false, otherTurnoverHkd: '0', usedPromoOrders: '0', usmartDays: '0', useVoucher: false, voucherScope: 'platform', voucherUsd: '0', voucherOrders: '1', voucherExpiry: '',
+    hsbcBalanceWaiver: false, hkHsbcFreeMonths: '0', zaPerksLevel: 'standard', zaSwiftUsed: '0', scCnhAccount: false, otherTurnoverHkd: '0', usedPromoOrders: '0', usmartDays: '0', useVoucher: false, voucherScope: 'platform', voucherUsd: '0', voucherOrders: '1', voucherExpiry: '',
     cnHsbcFeeWaived: false, cnHangFeeWaived: false, cnScFeeWaived: false, cnHsbcFreeMonths: '0', cnHangFreeMonths: '0', cnScFreeMonths: '0',
     senderFeeCny: '', entryMiddleCny: '', entryInwardHkd: '', depositHkd: '', depositOtherCny: '', inwardHkd: '', intermediaryCny: '',
     returnWireHkd: '', returnExtraCny: '', monthlyHkd: '', returnMonthlyHkd: '', startSell: '', entryPrice: '', exitPrice: '',
@@ -14,6 +14,8 @@
   try { stored = JSON.parse(localStorage.getItem(STORE) || '{}') || {}; } catch (_) {}
   if (Object.keys(stored).length && !stored.outcome) stored.outcome = 'mainland';
   let state = { ...defaults, ...stored, currency: 'CNY' }, H, timer, modalKey;
+  if (!Object.hasOwn(stored, 'zaPerksLevel') && stored.zaLv2) state.zaPerksLevel = 'lv2';
+  state.zaLv2 = state.zaPerksLevel === 'lv2';
   // Earlier versions incorrectly offered the foreign-currency-only Global
   // Link channel for RMB. Keep all accounts and repair that saved method.
   if (state.startBank === 'sc' && state.route === 'CNH' && state.mainlandMethod === 'linked') state.mainlandMethod = 'swift';
@@ -45,9 +47,9 @@
     mainlandReceipt: { boc: ['bocBankAnswer2026'], cib: ['cibInward'], cmb: ['cmbTariff'], icbc: ['icbcInward'], ccb: ['ccbRemit'], comm: ['comm'], hsbc: ['hsbcCnTariff'], hang: ['hangCnTariff'], sc: ['scCnTariff'] },
     mainlandFx: { boc: ['bocFx'], cib: ['cibFx', 'cibCard'], cmb: ['cmbFx'], icbc: ['icbcFx'], ccb: ['ccbFx'], comm: ['commFx'], hsbc: ['hsbcFx'], hang: ['hangCnFx'], sc: ['scFx'] },
     linked: { hsbc: ['hsbcGlobal'], hang: ['hang'], sc: ['sc', 'scGlobalFaq'] },
-    hkTariff: { bochk: ['bochk'], hsbc: ['hsbcHk'], za: ['za', 'zaLocalUsd'], hang: ['hangHk'], sc: ['scHk'] },
+    hkTariff: { bochk: ['bochk'], hsbc: ['hsbcHk'], za: ['za', 'zaLocalUsd', 'zaTariff', 'zaPerksNov'], hang: ['hangHk'], sc: ['scHk'] },
     hkFx: { bochk: ['bochkUsdFx'], hsbc: ['hsbcHkFx'], hang: ['hangHkFx'], za: ['zaFx', 'zaExchangeLimits'] },
-    hkAccount: { bochk: ['bochkAccount'], hsbc: ['hsbcOne', 'hsbcOneBalance'], za: ['zaOpen'], hang: ['hangHk'], sc: ['scHk'] },
+    hkAccount: { bochk: ['bochkAccount'], hsbc: ['hsbcOne', 'hsbcOneBalance'], za: ['zaOpen', 'zaPerks', 'zaPerksNov'], hang: ['hangHk'], sc: ['scHk'] },
     hkCard: { bochk: ['bochkCard'], hsbc: ['hsbcCard'], za: ['zaCard'], hang: ['hangCard'], sc: ['scCard'] },
     brokerTrade: { ibkr: ['ibStocks'], hsbc: ['hsbcUsTariff'], za: ['zaStocks', 'zaStockUnits', 'zaCustody'], chief: ['chiefStocks'], usmart: ['usmartFees', 'usmartStockUnits'] },
     brokerOffers: { hsbc: ['trade25', 'trade25Age', 'trade25One'], za: ['zaStockService'], chief: ['chiefMonthly', 'chiefMonthlyTerms'], usmart: ['usmartPromo'] },
@@ -87,7 +89,7 @@
       if (broker?.id === 'usmart' && s.bank?.id === 'bochk') keys.push('usmartBocFunding');
     } else if (stage === 'trade' || stage === 'offers') {
       add('brokerTrade', broker); keys.push('secFees', 'finraHoliday', 'finraSchedule');
-      const offerEnabled = ({ hsbc: state.trade25, za: state.zaLv2, chief: state.chiefMonthly, usmart: state.usmartPromo })[broker?.id];
+      const offerEnabled = ({ hsbc: state.trade25, za: M.zaPerksLevel(state) === 'lv2', chief: state.chiefMonthly, usmart: state.usmartPromo })[broker?.id];
       if (stage === 'offers' || offerEnabled) add('brokerOffers', broker);
     } else if (stage === 'withdraw') {
       add('brokerWithdrawal', broker); add('hkTariff', settlement); add('hkTariff', s.returning);
@@ -124,7 +126,7 @@
   function field(key, label, unit = '', placeholder = '') {
     const monthField = key === 'months' || key.endsWith('FreeMonths'), value = M.number(state[key]), empty = String(state[key] ?? '').trim() === '';
     const positiveInteger = ['count', 'buyOrders', 'sellOrders', 'withdrawalIndex', 'chequeIndex'];
-    const nonnegativeInteger = ['usedFreeTransfers', 'usedPromoOrders', 'usmartDays'];
+    const nonnegativeInteger = ['usedFreeTransfers', 'usedPromoOrders', 'usmartDays', 'zaSwiftUsed'];
     const positiveValue = ['budgetCny', 'sharePriceUsd'];
     const optionalPrice = ['startSell', 'entryPrice', 'exitPrice', 'usdCny', 'usdHkd', 'usdCnh'];
     let issue = '';
@@ -194,7 +196,7 @@
     const labels = {
       internal: s.broker.integratedBank ? '本行存款直接交收' : '同行转账 → 券商收款账户 · 免费',
       chats: s.broker.integratedBank ? '本地美元转账 → 本人' + shortName(banks.find(b => b.id === s.broker.integratedBank)) + '账户' : s.broker.id === 'ibkr' ? '香港收款指示 · USD本地转账' : '本地美元转账 · CHATS',
-      swift: currency !== 'USD' ? '外币电汇 · SWIFT' : s.broker.id === 'ibkr' ? '境外收款指示 · USD电汇' : '美元电汇 · SWIFT',
+      swift: currency !== 'USD' ? '外币电汇 · SWIFT' : s.broker.swiftDestination === 'hong-kong' ? '香港收款账户 · USD SWIFT' : '境外收款指示 · USD电汇',
       fps: '本地转账 · FPS', edda: '券商发起扣款 · eDDA'
     };
     for (const id of s.broker.internalFundingBanks || []) labels['via-' + id] = '经本人' + routeName(id, 'bank') + ' USD账户 → 同行入金';
@@ -344,6 +346,7 @@
     let accountOptions = action('账户使用 ' + esc(state.months) + '个月 · ' + esc(chargingBanks || '银行') + '管理费 ' + (accountCost ? cost(hkAccountCny) : accounts.map(b => num(b.monthlyHkd) + ' HKD/月').join('、')),
       'detail', 'data-value="bank-settings" aria-haspopup="dialog"', 'flow-setting-button');
     if (accounts.some(b => b.id === 'hsbc')) accountOptions += checkbox('hsbcBalanceWaiver', 'HSBC One本持有期均免管理费');
+    if (accounts.some(b => b.id === 'za')) accountOptions += select('zaPerksLevel', 'ZA银行权益', [['standard', 'ZA Perks · 标准'], ['lv1', 'ZA Perks · Lv1'], ['lv2', 'ZA Perks · Lv2']]);
     html += node('02', 'bank', '香港收款银行', s.bank, nodeBalance(r, steps.hongKong, state.route, '汇款到账', transferKeys), accountOptions);
     const fxControl = state.route === 'USD' ? '' : select('fxMode', '换美元地点', [...(s.broker.id === 'ibkr' ? [['manual', 'IBKR手动换汇'], ['auto', 'IBKR自动换汇']] : []), ['bank', shortName(s.bank) + '换汇']]);
     const fundingPath = row(r, 'brokerSpread')?.path;
@@ -422,13 +425,13 @@
   }
   function offers(s, r) {
     const id = s.broker.id;
-    let html = id === 'hsbc' ? checkbox('trade25', '已开通Trade25 · 仅美股月费0') : id === 'za' ? checkbox('zaLv2', 'ZA Perks Lv2 · 月前5笔平台费优惠') :
+    let html = id === 'hsbc' ? checkbox('trade25', '已开通Trade25 · 仅美股月费0') : id === 'za' ? action('ZA Perks · ' + (M.zaPerksLevel(state) === 'lv2' ? 'Lv2，月前5笔平台费优惠' : '标准／Lv1，普通平台费'), 'detail', 'data-value="bank-settings"', 'text-link') :
       id === 'chief' ? checkbox('chiefMonthly', 'App月供买入 · 首500 USD免佣／平台费') : id === 'usmart' ? checkbox('usmartPromo', '符合开户180天及指定标的优惠') : '';
     html += checkbox('useVoucher', '使用已获得的费用券');
     if (state.useVoucher) html += '<div class="flow-voucher-fields">' + select('voucherScope', '抵扣范围', [['commission', '佣金'], ['platform', '平台费'], ['both', '两者均可']]) +
       field('voucherUsd', '费用券额度', 'USD') + field('voucherOrders', '适用订单数', '笔') + field('voucherExpiry', '到期日') + '<p>' + esc(M.voucherState({ ...state, date: today() }).message || '本次抵扣 ' + num(r?.trading?.discountUsd || 0) + ' USD') + '</p></div>';
     if (id === 'hsbc' && state.trade25) html += field('otherTurnoverHkd', '每个交易月已用成交额', 'HKD');
-    if (id === 'za' && state.zaLv2) html += field('usedPromoOrders', '每月已用优惠笔数', '笔');
+    if (id === 'za' && M.zaPerksLevel(state) === 'lv2') html += field('usedPromoOrders', '每月已用优惠笔数', '笔');
     if (id === 'usmart' && state.usmartPromo) html += field('usmartDays', '开户距今天数', '天');
     return '<div class="flow-inline-offers">' + html + '</div>';
   }
@@ -517,6 +520,7 @@
   }
   function choiceState(key, value) {
     const next = { ...state, [key]: value, plan: 'custom' };
+    if (key === 'zaPerksLevel') next.zaLv2 = value === 'lv2';
     const reset = {
       startBank: ['startSell', 'senderFeeCny', 'entryMiddleCny', 'mainlandMethod'],
       bank: ['entryInwardHkd', 'depositHkd', 'depositOtherCny', 'monthlyHkd', 'entryPrice', 'mainlandMethod', 'depositMethod'],
@@ -539,11 +543,12 @@
     return M.calculatorRoute(next);
   }
   function choose(key, value) {
-    const allowed = ['count', 'months', 'startBank', 'bank', 'broker', 'outcome', 'returnBank', 'exitBank', 'route', 'mainlandMethod', 'depositMethod', 'returnMethod', 'fxMode', 'voucherScope'];
+    const allowed = ['count', 'months', 'startBank', 'bank', 'broker', 'outcome', 'returnBank', 'exitBank', 'route', 'mainlandMethod', 'depositMethod', 'returnMethod', 'fxMode', 'voucherScope', 'zaPerksLevel'];
     if (!allowed.includes(key)) return;
     if (['startBank', 'exitBank'].includes(key) && !D.calculator.mainland.includes(value)) return;
     if (['bank', 'returnBank'].includes(key) && !D.calculator.hkBanks.includes(value)) return;
     if (key === 'broker' && !D.calculator.brokers.includes(value)) return;
+    if (key === 'zaPerksLevel' && !['standard', 'lv1', 'lv2'].includes(value)) return;
     if (key === 'count' && value === 'custom') { detail('budget'); return; }
     if (state[key] === value) { save(); refresh(); return; }
     state = choiceState(key, value); save(); refresh();
@@ -594,6 +599,11 @@
         (hsbcUsed && !state.hsbcBalanceWaiver ? field('hkHsbcFreeMonths', 'One新户剩余免收费月数', '月') : '') + '</div>';
       content += row(r, 'account')?.items.filter(x => x.region !== 'mainland').map(x => feeLine(x.label, x.cny, accountFeeBasis(x), x.cny == null ? x.status || '' : num(x.cny / r.refs.HKD) + ' HKD')).join('') || '';
       if (hsbcUsed) content += '<p>One新户开户后的首三个完整历月评估，随后未达标月份收100 HKD。剩余免收费月数默认0，不假定本次新开户；以后各月均符合豁免时勾选银行节点。过去三个月平均理财总值10,000 HKD含汇丰美股；香港身份证开户、2026年前One另获豁免。</p>';
+      if (bankAccountSet(s).some(b => b.id === 'za')) {
+        content += select('zaPerksLevel', 'ZA银行权益', [['standard', 'ZA Perks · 标准'], ['lv1', 'ZA Perks · Lv1'], ['lv2', 'ZA Perks · Lv2']]);
+        if (M.zaPerksLevel(state) === 'lv1' && (state.bank === 'za' && state.depositMethod === 'swift' && s.broker.swiftDestination === 'overseas' || state.outcome === 'mainland' && state.returnBank === 'za')) content += field('zaSwiftUsed', '每个汇款月其他已用海外汇款笔数', '笔');
+        content += '<p>ZA Perks等级按银行App已生效权益选择，不根据本次本金自动升级。2026年11月1日起，海外SWIFT本行费70 HKD/笔：Lv1每历月首3笔免，Lv2全免；香港本地SWIFT本行费仍为0。代理／收款行收费另计。</p>';
+      }
       keys = bankAccountSet(s).flatMap(b => evidenceFor('hkAccount', b));
     } else if (key.startsWith('cn-bank-')) {
       const bank = mainland.find(bank => bank.id === key.slice(8)), service = bank?.accountService;
@@ -683,7 +693,7 @@
     state[key] = el.value; state.plan = 'custom'; save(); clearTimeout(timer); timer = setTimeout(refresh, 120); return true;
   }
   function handleChange(el) {
-    if (el.dataset.moneyCheck) { state[el.dataset.moneyCheck] = el.checked; save(); refresh(); return true; }
+    if (el.dataset.moneyCheck) { state[el.dataset.moneyCheck] = el.checked; if (el.dataset.moneyCheck === 'zaLv2') state.zaPerksLevel = el.checked ? 'lv2' : 'standard'; save(); refresh(); return true; }
     if (el.dataset.moneySelect) { choose(el.dataset.moneySelect, el.value); return true; }
     if (el.dataset.moneyField) { clearTimeout(timer); refresh(); return true; }
     return false;

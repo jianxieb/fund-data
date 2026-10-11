@@ -152,7 +152,7 @@ test('all 151875 catalogue combinations retain selection and either reconcile or
   assert.equal(r.channelProfiles[0].profile.hsbcBalanceWaiver, false);
   assert.equal(r.channelProfiles[0].profile.trade25, false);
   assert.deepEqual(r.channelProfiles[2].qualificationCoverage, ['chequePreFilled', 'chiefMonthly', 'cnHangFeeWaived', 'cnHsbcFeeWaived', 'cnScFeeWaived',
-    'hsbcBalanceWaiver', 'scCnhAccount', 'trade25', 'usmartPromo', 'zaLv2']);
+    'hsbcBalanceWaiver', 'scCnhAccount', 'trade25', 'usmartPromo', 'zaPerksLevel', 'zaSwiftUsed']);
   const bounds = r.numericBoundaries;
   assert.equal(bounds.checked, 43875);
   assert.deepEqual(bounds.profiles.map(p => p.id), ['principal-0.01', 'principal-1', 'principal-100', 'principal-1000', 'principal-100000', 'principal-1000000',

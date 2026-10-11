@@ -187,7 +187,7 @@ function auditChannels({ quotes = Q, date = config.date } = {}) {
               // Toggle all and only the qualifications that affect this route.
               // Unvisited account flags do not create new operations or fees.
               const fields = new Set();
-              const stockOffer = { hsbc: 'trade25', chief: 'chiefMonthly', usmart: 'usmartPromo', za: 'zaLv2' }[broker];
+              const stockOffer = { hsbc: 'trade25', chief: 'chiefMonthly', usmart: 'usmartPromo' }[broker];
               if (stockOffer) fields.add(stockOffer);
               const hkAccounts = [bank, ...(outcome === 'broker-balance' ? [] : [returnBank]), D.brokers.find(b => b.id === broker)?.integratedBank, M.calculatorFundingBank(s, D)?.id];
               if (hkAccounts.includes('hsbc')) fields.add('hsbcBalanceWaiver');
@@ -198,8 +198,14 @@ function auditChannels({ quotes = Q, date = config.date } = {}) {
               }
               const relevant = [...fields];
               for (const field of relevant) qualificationCoverage.add(field);
-              for (let mask = 0; mask < 2 ** relevant.length; mask++) recordWithChequeBoundaries({ ...s,
-                ...Object.fromEntries(relevant.map((field, i) => [field, !!(mask & (1 << i))])) });
+              const zaOverseas = bank === 'za' && depositMethod === 'swift' && D.brokers.find(b => b.id === broker)?.swiftDestination === 'overseas' ||
+                outcome === 'mainland' && returnBank === 'za' && returnMethod === 'swift';
+              const zaTiers = broker === 'za' || zaOverseas ? ['standard', 'lv1', 'lv2'] : ['standard'];
+              if (zaTiers.length > 1) qualificationCoverage.add('zaPerksLevel');
+              if (zaOverseas) qualificationCoverage.add('zaSwiftUsed');
+              for (let mask = 0; mask < 2 ** relevant.length; mask++) for (const zaPerksLevel of zaTiers)
+                for (const zaSwiftUsed of zaOverseas && zaPerksLevel === 'lv1' ? [0, 2, 3] : [0]) recordWithChequeBoundaries({ ...s,
+                  ...Object.fromEntries(relevant.map((field, i) => [field, !!(mask & (1 << i))])), zaPerksLevel, zaSwiftUsed });
             }
           }
         }

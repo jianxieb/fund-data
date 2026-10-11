@@ -107,6 +107,31 @@
     const change = [...(bank.outwardChanges || [])].reverse().find(row => date >= row.from);
     return change ? change.fee : knownFee(bank.outwardHkd) ? bank.outwardHkd : null;
   }
+  function zaPerksLevel(config = {}) {
+    const value = config.zaPerksLevel;
+    if (value == null || value === '') return config.zaLv2 ? 'lv2' : 'standard';
+    return ['standard', 'lv1', 'lv2'].includes(value) ? value : null;
+  }
+  // Local Hong Kong SWIFT and overseas SWIFT have different ZA tariffs.
+  // Membership waives only this bank's charge, never another bank's charge.
+  function swiftFee(bank, date, config = {}, index = 1, destination = 'overseas') {
+    const local = destination === 'hong-kong';
+    const publishedHkd = local && knownFee(bank?.localSwiftHkd) ? bank.localSwiftHkd : outwardFee(bank, date);
+    const result = { hkd: publishedHkd, publishedHkd, destination, date, waived: false };
+    const waiver = bank?.swiftMemberWaiver;
+    if (local || !positive(publishedHkd) || !waiver || date < waiver.from) return result;
+    const level = zaPerksLevel(config);
+    if (!level) return { ...result, hkd: null, status: 'ZA Perks等级须为标准、Lv1或Lv2。' };
+    if (level === 'standard') return result;
+    if (level === 'lv2' && waiver.lv2Unlimited) return { ...result, hkd: 0, waived: true, level };
+    const used = optionalNumber(config, 'zaSwiftUsed');
+    if (!knownFee(used) || !Number.isSafeInteger(used) || !positive(index) || !Number.isSafeInteger(index)) {
+      return { ...result, hkd: null, level, status: 'ZA每个汇款月其他已用海外汇款笔数须为非负整数。' };
+    }
+    const monthlyIndex = used + index;
+    return { ...result, level, monthlyIndex, waived: monthlyIndex <= waiver.lv1FreePerMonth,
+      hkd: monthlyIndex <= waiver.lv1FreePerMonth ? 0 : publishedHkd };
+  }
   function localUsdChequeFee(bank, index = 1, date = '2026-10-11', preFilled = false) {
     if (!bank || bank.acceptsCheques === false) return null;
     const tariff = bank.localUsdChequeTariff;
@@ -317,10 +342,10 @@
     const age = (Date.parse(date + 'T23:59:59+08:00') - Date.parse(quote.asOf.replace(' ', 'T') + (quote.asOf.length === 10 ? 'T00:00:00+08:00' : '+08:00'))) / 864e5;
     return finite(age) && age >= 0 && age < 4;
   }
-  function depositFee(bank, method, currency, refs, date) {
+  function depositFee(bank, method, currency, refs, date, swift = {}) {
     if (method === 'fps' || method === 'edda') return currency === 'USD' ? null : knownFee(bank.localHkd) ? bank.localHkd * refs.HKD : null;
     if (method === 'chats') return currency === 'USD' ? knownFee(bank.localUsdNative) ? bank.localUsdNative * refs.USD : knownFee(bank.localUsd) ? bank.localUsd * refs.HKD : null : null;
-    if (method === 'swift') { const v = outwardFee(bank, date); return v == null ? null : v * refs.HKD; }
+    if (method === 'swift') { const v = swiftFee(bank, date, swift.config, swift.index, swift.destination).hkd; return v == null ? null : v * refs.HKD; }
     return null;
   }
   // Personal local USD CHATS receiving tariffs. Do not reuse SWIFT inward fees.
@@ -330,13 +355,13 @@
     const sending = depositFee(from, 'chats', 'USD', refs, date), receiving = localUsdInward(to);
     return sending == null || receiving == null ? null : sending + receiving * refs.USD;
   }
-  function returnFee(bank, mainland, method, refs, date) {
+  function returnFee(bank, mainland, method, refs, date, swift = {}) {
     if (method === 'bochk-fast') return bank.id === 'bochk' && mainland.group === 'boc' ? 0 : null;
     if (method === 'linked') return ['hang', 'hsbc', 'sc'].includes(bank.id) && bank.group === mainland.group ? 0 : null;
     // BOCHK's personal same-name waiver also covers online SWIFT to BOC,
     // provided the destination is identified by the required BIC/CNAPS code.
     if (method === 'swift' && bank.id === 'bochk' && mainland.group === 'boc') return 0;
-    if (method === 'swift') { const v = outwardFee(bank, date); return v == null ? null : v * refs.HKD; }
+    if (method === 'swift') { const v = swiftFee(bank, date, swift.config, swift.index).hkd; return v == null ? null : v * refs.HKD; }
     return null;
   }
   function selectedBroker(config, data) {
@@ -375,7 +400,9 @@
     const buys = number(config.buyOrders) ?? 1, sells = number(config.sellOrders) ?? 1;
     const price = number(config.sharePriceUsd) ?? 100, months = number(config.months) ?? 1;
     if (![buys, sells].every(v => positive(v) && Number.isInteger(v) && v <= 120) || !positive(price) || !knownFee(months) || months > 1200) return { error: '交易笔数须为1–120整数，测算股价须为正数，使用月数不超过1200。' };
-    const usedQuota = broker.id === 'za' && config.zaLv2 ? optionalNumber(config, 'usedPromoOrders') : 0;
+    const zaLv2 = zaPerksLevel(config) === 'lv2';
+    if (broker.id === 'za' && zaPerksLevel(config) == null) return { error: 'ZA Perks等级须为标准、Lv1或Lv2。' };
+    const usedQuota = broker.id === 'za' && zaLv2 ? optionalNumber(config, 'usedPromoOrders') : 0;
     const usedTurnover = broker.id === 'hsbc' && config.trade25 ? optionalNumber(config, 'otherTurnoverHkd') : 0;
     const voucher = voucherState(config);
     if (!knownFee(usedQuota) || !Number.isInteger(usedQuota)) return { error: '优惠已用笔数须为非负整数。' };
@@ -428,7 +455,7 @@
           if (broker.id === 'usmart' && config.usmartPromo && promoDate(d) && days < 180 && stockPrice >= 100) {
             platform = .99; offer = '合资格0.99 USD';
           }
-          if (broker.id === 'za' && config.zaLv2 && orderIndex < 5) {
+          if (broker.id === 'za' && zaLv2 && orderIndex < 5) {
             platform = cappedCharge({ perShare: .008, minimum: .99, cap: .015 }, qty, value); offer = 'ZA Perks Lv2';
           }
           const clearing = cappedCharge(broker.clearing, qty, value);
@@ -687,6 +714,16 @@
     const broker = selectedBroker(config, data), autoTrade = !!config.broker, tradingCache = new Map(), senderCache = new Map();
     const bankBalances = calculatorAccountState(config, config, data).bankBalancesHkd;
     function calculate(start, bank, route, fxMode, exit, returning, selections = {}, provider = broker) {
+      const swiftCounts = new Map();
+      const nextSwift = (account, date, destination = 'overseas') => {
+        const key = account.id + ':' + date.slice(0, 7);
+        const index = (swiftCounts.get(key) || 0) + 1;
+        if (destination !== 'hong-kong') swiftCounts.set(key, index);
+        return swiftFee(account, date, config, index, destination);
+      };
+      const swiftEvidence = tariff => tariff.destination === 'hong-kong' ? '香港本地SWIFT · 本行手续费0' :
+        tariff.waived ? 'ZA Perks ' + (tariff.level === 'lv2' ? 'Lv2' : 'Lv1 · 当月第' + tariff.monthlyIndex + '笔') + ' · 本行手续费豁免' :
+          '海外SWIFT · 本行手续费' + tariff.publishedHkd + ' HKD' + (tariff.monthlyIndex ? ' · 当月第' + tariff.monthlyIndex + '笔' : '');
       const settlementBank = data.hkBanks.find(row => row.id === provider.integratedBank);
       const requestedDepositMethod = (Object.hasOwn(selections, 'depositMethod') ? selections.depositMethod : config.depositMethod) || '';
       const fundingBank = calculatorFundingBank({ broker: provider.id, depositMethod: requestedDepositMethod }, data);
@@ -936,7 +973,12 @@
         const charge = own('depositHkd', isSelectedBank);
         const transferMethod = fundingBank ? 'chats' : depositMethod;
         const receivingBank = settlementBank || fundingBank;
-        add('depositBank', internalDeposit ? settlementBank ? '本人银行账户内部交收' : bank.name + ' → ' + provider.name + '同银行收款账户' : bank.name + ' → ' + (fundingBank ? '本人' + fundingBank.name : settlementBank?.name || provider.name) + ' · ' + transferMethod.toUpperCase(), internalDeposit ? 0 : charge == null ? depositFee(bank, transferMethod, depositCurrency, refs, config.date) : charge * refs.HKD, 'deposit');
+        const swift = !internalDeposit && transferMethod === 'swift' ? nextSwift(bank, config.date, provider.swiftDestination || 'overseas') : null;
+        const sending = swift ? swift.hkd == null ? null : swift.hkd * refs.HKD : depositFee(bank, transferMethod, depositCurrency, refs, config.date);
+        const sendingLabel = internalDeposit ? settlementBank ? '本人银行账户内部交收' : bank.name + ' → ' + provider.name + '同银行收款账户' : bank.name + ' → ' + (fundingBank ? '本人' + fundingBank.name : settlementBank?.name || provider.name) + ' · ' + transferMethod.toUpperCase();
+        add('depositBank', sendingLabel, internalDeposit ? 0 : charge == null ? sending : charge * refs.HKD, 'deposit', charge == null && swift?.status || sendingLabel);
+        if (swift && bank.id === 'za' && charge == null) Object.assign(rows[rows.length - 1], { swiftTariff: swift, nativeCurrency: 'HKD',
+          ...(swift.status ? { status: swift.status } : { evidence: swiftEvidence(swift) }), sources: ['zaTariff', 'zaPerksNov'] });
         if (fundingBank && bank.localUsdNative != null) rows[rows.length - 1].nativeCurrency = 'USD';
         // A USD instruction naming a Hong Kong receiving bank is a separate
         // route from a US wire. Published local-route observations do not waive
@@ -1056,12 +1098,15 @@
       const returnMethod = outcome !== 'mainland' ? '' : method('returnMethod', returning.id === 'bochk' && exit.group === 'boc' ? 'bochk-fast' : ['hang', 'hsbc', 'sc'].includes(returning.id) && returning.group === exit.group ? 'linked' : 'swift');
       const returningFee = own('returnWireHkd', isSelectedReturn);
       const returnDate = trading?.sellDate || config.date;
-      const publishedReturnFee = returnFee(returning, exit, returnMethod, refs, returnDate);
+      const returnSwift = outcome === 'mainland' && returnMethod === 'swift' && returning.id === 'za' ? nextSwift(returning, returnDate) : null;
+      const publishedReturnFee = returnSwift ? returnSwift.hkd == null ? null : returnSwift.hkd * refs.HKD : returnFee(returning, exit, returnMethod, refs, returnDate);
       if (outcome === 'mainland' && returnMethod !== 'swift' && publishedReturnFee == null) return downstreamError('所选回款专用渠道与内地收款银行不匹配。', '04');
       let exitPrice = 1, indicativeExit = false, exitIssue = '';
       const returnFxQuote = quotes.offshoreUsd?.[returning.id]?.quotes?.CNH;
       if (outcome === 'mainland') {
-      add('returnWire', '香港→内地汇出费', returningFee == null ? publishedReturnFee : returningFee * refs.HKD, 'return');
+      add('returnWire', '香港→内地汇出费', returningFee == null ? publishedReturnFee : returningFee * refs.HKD, 'return', returningFee == null && returnSwift?.status || '香港→内地汇出费');
+      if (returnSwift && returningFee == null) Object.assign(rows[rows.length - 1], { swiftTariff: returnSwift, nativeCurrency: 'HKD',
+        ...(returnSwift.status ? { status: returnSwift.status } : { evidence: swiftEvidence(returnSwift) }), sources: ['zaTariff', 'zaPerksNov'] });
       add('returnOther', '回内地中转／收款费', own('returnExtraCny', isSelectedReturn && config.exitBank === exit.id) ?? (returnMethod === 'linked' ? 0 : null), 'return');
       if (rows[rows.length - 1].cny == null) rows[rows.length - 1].items = [{ label: '回内地中转行费', cny: null, status: '按实际汇路收费' }, { label: exit.name + 'USD收款费', cny: exit.inwardCny === 0 ? 0 : null, status: '汇入资费未收录' }];
       if (!finite(balance) || balance < 0) return downstreamError('美元余额不足以支付汇回内地的费用。', '04');
@@ -1420,5 +1465,5 @@
     return result;
   }
   function catalogueBroker(id, data) { return data.calculator.brokers.includes(id) ? id : 'za'; }
-  return { calculatorRoute, calculatorChannels, calculatorFundingBank, calculatorIssue, calculatorJourney, calculatorRecommendations, calculatorAccountState, number, reference, telegramAllowance, fee, remitPrincipal, senderFeeRange, inwardFee, outwardFee, localUsdChequeFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
+  return { calculatorRoute, calculatorChannels, calculatorFundingBank, calculatorIssue, calculatorJourney, calculatorRecommendations, calculatorAccountState, number, reference, telegramAllowance, fee, remitPrincipal, senderFeeRange, inwardFee, outwardFee, zaPerksLevel, swiftFee, localUsdChequeFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
 }));
