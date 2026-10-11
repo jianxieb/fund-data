@@ -1319,6 +1319,34 @@ test('saved SC local USD wires migrate to its published clearing channel without
   overseas.render(); assert.equal(overseas.saved().depositMethod, 'swift'); assert.equal(overseas.saved().depositHkd, '9');
 });
 
+test('direct corporate CHATS choices name their receiving bank and retain independent account and personal-bridge choices', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  for (const broker of ['chief', 'usmart']) for (const bank of D.calculator.hkBanks) {
+    const input = { ...currentRoute, startBank: 'boc', bank, broker, route: 'USD', fxMode: 'bank', depositMethod: 'chats',
+      outcome: 'broker-balance', entryMiddleCny: '0', depositHkd: '', depositOtherCny: '', months: '7', count: '2' };
+    const ui = moneyUi(input, quotes, '2026-10-11'); ui.render(); ui.act('pick', '', 'depositMethod');
+    const methods = M.calculatorChannels(input, D).depositMethods.filter(id => id === 'chats' || id.startsWith('chats-'));
+    const recipientNames = { bochk: '中银香港', hsbc: '汇丰香港', hang: '恒生香港' };
+    for (const method of methods) {
+      const target = M.calculatorDepositBank({ ...input, depositMethod: method }, D);
+      assert.match(ui.modal(), new RegExp('CHATS → 券商的' + recipientNames[target.id] + '收款账户'));
+      ui.act('choose', 'depositMethod', method); const html = ui.render();
+      assert.equal(ui.saved().depositMethod, method);
+      for (const key of ['startBank', 'bank', 'broker', 'months', 'count']) assert.equal(ui.saved()[key], input[key]);
+      const funding = html.split('aria-label="转入买股账户"')[1].split('</section>')[0];
+      assert.match(funding, /券商企业账户CHATS收款/); assert.match(funding, /15.00 HKD/);
+      assert.doesNotMatch(funding, /undefined|NaN|此汇路代理／收款行收费未公开/);
+      ui.act('detail', '', '03'); assert.match(ui.modal(), new RegExp(D.sources[target.corporateLocalUsdInward.sources[0]].url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+      const restored = moneyUi(ui.saved(), quotes, '2026-10-11'); restored.render();
+      assert.equal(restored.saved().depositMethod, method);
+      ui.act('pick', '', 'depositMethod');
+    }
+    for (const field of ['bank', 'broker', 'returnBank']) { ui.act('pick', '', field); assert.equal((ui.modal().match(new RegExp('data-field="' + field + '"', 'g')) || []).length, 5); }
+    ui.act('pick', '', 'depositMethod');
+    assert.match(ui.modal(), /经本人.*USD账户 → 同行入金/);
+  }
+});
+
 test('ZA membership is a bank control that migrates old Lv2 settings and survives every broker switch and reload', () => {
   const quotes = require('./fixtures/money-flow-quotes-20261011.json');
   const ui = moneyUi({ ...currentRoute, startBank: 'boc', bank: 'bochk', mainlandMethod: '', broker: 'za', outcome: 'broker-balance', zaLv2: true }, quotes, '2026-10-11');
@@ -1607,7 +1635,7 @@ test('switching uSMART funding to HSBC uses the verified same-bank channel and r
   assert.match(html.split('id="flow-live-ledger"')[0], /同行入金/);
   assert.doesNotMatch(html.split('id="flow-live-ledger"')[0], /同行交收/);
   const funding = html.split('aria-label="转入买股账户"')[1].split('</section>')[0];
-  assert.match(funding, /入金代理／收款行费<\/strong>.*?0.00 CNY/);
+  assert.match(funding, /同行收款<\/strong>.*?0.00 CNY/);
   assert.doesNotMatch(funding, /flow-variable|同行入金须/);
   const sources = evidenceLinks(ui, 'edge-03');
   assert.ok(sources.has(D.sources.usmartFundingAccounts.url)); assert.ok(sources.has(D.sources.usmartSameFunding.url));
@@ -1616,7 +1644,10 @@ test('switching uSMART funding to HSBC uses the verified same-bank channel and r
   assert.doesNotMatch(ui.modal(), /\bdisabled\b/);
   ui.act('choose', 'bank', 'za'); assert.equal(ui.saved().depositMethod, 'chats');
   assert.equal(ui.saved().broker, 'usmart');
-  assert.match(ui.render(), /入金代理／收款行费/);
+  const cross = ui.render().split('aria-label="转入买股账户"')[1].split('</section>')[0];
+  assert.match(cross, /中银香港 · 券商企业账户CHATS收款/);
+  assert.match(cross, /估算 15.00 HKD/);
+  assert.doesNotMatch(cross, /此汇路代理／收款行收费未公开/);
 });
 
 test('mainland monthly fees appear at their own bank node and keep their currency and waived months in details', () => {

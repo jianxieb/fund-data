@@ -375,3 +375,19 @@ IBKR[公开入金工具](https://www.interactivebrokers.com/en/support/fund-my-a
 [2026-10-01个人收费表](https://av.sc.com/hk/zh/content/docs/hk-service-charges-zh.pdf)物理第8页分别列海外电汇与本地RTGS：快易理财网上海外电汇50 HKD，本地USD CHATS为22 USD。本地电汇项明文排除HKD、USD、EUR及人民币，不可把海外50港元套在美元汇至香港本地银行的动作上。
 
 渣打向致富／盈立香港USD收款账户保留CHATS及经本人银行同行入金；不再提供此前误列的本地USD SWIFT报价。9家内地银行、5家香港银行和5个买股账户仍独立可选。旧存储只把这个错误方法改为CHATS，并清除附着在旧方法上的汇出／收款费覆盖值，账户、币种、本金、笔数、期间和银行权益均保留。IBKR境外美元电汇及香港回内地仍适用其独立海外收费。直接传入旧错误方法时保留已完成汇款及银行余额，不生成虚假50港元费用或已完成的入金。来源范围见[核查摘要](../tests/fixtures/money-flow-sc-local-usd-20261011.json)。
+
+### 券商企业账户的本地美元CHATS收款（2026-10-12）
+
+先从[盈立入金攻略](https://yikecaiwan.com/broker/usmart-hk-bank-transfer-deposit)定位ZA转至盈立中银香港账户扣约1.93 USD的实例，再核对[盈立正式收款账户](https://hk.usmartglobal.com/zh-cn/help-centre/42/detail/10540)和[同行／CHATS规则](https://hk.usmartglobal.com/zh-cn/help-centre/42/detail/10136)。同行转账免费；跨行CHATS可能产生两端银行费用。这不是转入用户的个人储蓄账户，不能套个人免费汇入。
+
+| 企业收款银行 | 当前本地USD CHATS标准价 | 依据 |
+| --- | --- | --- |
+| 中银香港 | 500 HKD等值或以下0，超过后15 HKD／笔 | [本地银行转账表](https://www.bochk.com/tc/servicecharge.common.html)，明确区分个人及企业 |
+| 汇丰香港 | 15 HKD／笔；不沿用中银的小额档位 | [商业银行收费表](https://www.business.hsbc.com.hk/-/media/media/hong-kong/pdfs/regulations/tariff-e-en.pdf)，2026年5月E3、物理第1页 |
+| 恒生香港 | 15 HKD／笔 | [商业银行收费表](https://www.hangseng.com/content/dam/wpb/hase/en_hk/business/bank-accounts/PDF/Service%20Charges_new.pdf)，2026年4月B.3、物理第10页 |
+
+三家正式表的费率均按原币保存；产品用同一HKD参考值折算，而不是把攻略的1.93 USD写成固定美元费。中银小额档位按汇出银行收费后的实际本地转账金额判断。内地汇出笔数不会把随后一次CHATS的收款费乘多次。[核查摘要](../tests/fixtures/money-flow-corporate-chats-20261012.json)记录来源和适用范围；汇丰及恒生PDF已渲染核对表格。
+
+“入金方式”直接列出券商的具体中银／汇丰／恒生收款账户。旧CHATS设置对应的目标在选择器和正文都写明，其他已公布的跨行收款账户可另选；账户目录仍为9／5／5。“经本人银行→同行入金”继续独立计费，属于本人的银行账户，按个人收款及真实期间管理费核算；不会给券商企业账户增收用户的HSBC One管理费。
+
+这些金额采用银行企业标准价情景，正文列具体原币金额，合计标参考损耗。不能据银行标准价承诺券商没有协议减免、全额转嫁每笔费用，或将盈立的一次实例扩大到致富所有账户。同行、本地CHATS、香港SWIFT、境外SWIFT及IBKR本地指示均分别判断。个人已确认回单可覆盖本动作；切换方式会清除旧动作的覆盖值。该项补齐已公开的收费，未关闭其他汇路代理费或个人成交报价的证据缺项。

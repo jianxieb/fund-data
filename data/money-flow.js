@@ -5,7 +5,7 @@
 }(typeof window === 'object' ? window : globalThis, function () {
   'use strict';
   return {
-    verifiedAt: '2026-10-11',
+    verifiedAt: '2026-10-12',
     calculator: {
       // Account choice is independent of whether a full route has a public quote.
       mainland: ['boc', 'cib', 'cmb', 'icbc', 'ccb', 'comm', 'hsbc', 'hang', 'sc'],
@@ -135,6 +135,10 @@
       hsbcOne: { name: '汇丰One · 三个月平均理财总值及月费', url: 'https://www.hsbc.com.hk/accounts/products/one/' },
       hsbcOneBalance: { name: '汇丰One · 理财总值包含海外证券市值，按过去三个月平均值计费', url: 'https://www.hsbc.com.hk/content/dam/hsbc/hk/vam/pdf/HSBC_One_FAQ.pdf' },
       bochkCheque: { name: '中银香港 · 本地支票存入及一般银行服务收费', url: 'https://www.bochk.com/tc/servicecharge.common.html' },
+      bochkBusinessInward: { name: '中银香港 · 企业CHATS收款15港元，500港元等值或以下免收', url: 'https://www.bochk.com/tc/servicecharge.common.html' },
+      hsbcBusinessInward: { name: '汇丰香港 · 2026年5月商业账户本地RTGS收款15港元', url: 'https://www.business.hsbc.com.hk/-/media/media/hong-kong/pdfs/regulations/tariff-e-en.pdf' },
+      hangBusinessInward: { name: '恒生香港 · 2026年4月商业账户本地CHATS收款15港元', url: 'https://www.hangseng.com/content/dam/wpb/hase/en_hk/business/bank-accounts/PDF/Service%20Charges_new.pdf' },
+      usmartChatsGuide: { name: '盈立入金操作记录 · ZA至中银香港美元CHATS扣约1.93美元', url: 'https://yikecaiwan.com/broker/usmart-hk-bank-transfer-deposit' },
       chiefStocks: { name: '致富 · 2026年9月美股收费', url: 'https://chief-website.oss-cn-hongkong.aliyuncs.com/Leaflet/cn/global.pdf' },
       chiefFunding: { name: '致富 · 资金提存及USD支票出金', url: 'https://chief-website.oss-cn-hongkong.aliyuncs.com/Leaflet/cn/cash.pdf' },
       chiefDeposit: { name: '致富官网 · FPS港币／eDDA港币及人民币', url: 'https://www.chiefgroup.com.hk/cn/cs/cashdeposit/' },
@@ -223,10 +227,14 @@
         exchangeInputLimits: { HKD: { minimum: 35, maximum: 7850000 }, CNH: { minimum: 30, maximum: 7200000 } },
         condition: '在港申请；无账户管理费，不接受支票存款。外币/海外处理港元签账有1.95%费用', sources: ['za', 'zaNov', 'zaTariff', 'zaPerks', 'zaPerksNov', 'zaOpen', 'zaCard', 'zaAccountTerms'] },
       { id: 'hsbc', name: '汇丰 HSBC One', group: 'hsbc', inwardHkd: 0, localHkd: 0, localUsd: 0, localUsdChequeHkd: 0, outwardHkd: 70, monthlyHkd: 100, thresholdHkd: 10000,
+        corporateName: '汇丰香港', corporateLocalUsdInward: { feeHkd: 15, sources: ['hsbcBusinessInward'] },
         introductoryAssessment: { freeMonthsField: 'hkHsbcFreeMonths', maximumMonths: 3, sources: ['hsbcOneBalance'] },
         directUsdCard: true, directCnhCard: true, cardForeignPct: 0, condition: '2026年起新开非香港身份证One：首三个完整历月评估后，三个月平均理财总值不足1万港元收100港元/月；扣账卡外币交易费免', sources: ['hsbcHk', 'hsbcCard', 'hsbcHkFx', 'hsbcOneBalance'] },
-      { id: 'bochk', name: '中银香港', group: 'boc', inwardHkd: 60, inwardSmallLimitHkd: 500, sameGroupWaiver: true, localHkd: 0, localUsd: 0, localUsdChequeHkd: 0, outwardHkd: 65, monthlyHkd: 0, thresholdHkd: 0, directUsdCard: true, directCnhCard: true, cardForeignPct: 0, condition: '普通个人账户免月费；一般汇入超过500港元收60港元，内地中行同名优惠可免。网上同名汇至内地中行的快汇及SWIFT基本手续费豁免，代理费另计', sources: ['bochkAccount', 'bochkSame', 'bochkCard', 'bochkCheque'] },
+      { id: 'bochk', name: '中银香港', group: 'boc', inwardHkd: 60, inwardSmallLimitHkd: 500, sameGroupWaiver: true, localHkd: 0, localUsd: 0, localUsdChequeHkd: 0, outwardHkd: 65, monthlyHkd: 0, thresholdHkd: 0, directUsdCard: true, directCnhCard: true, cardForeignPct: 0,
+        corporateName: '中银香港', corporateLocalUsdInward: { feeHkd: 15, freeUpToHkd: 500, sources: ['bochkBusinessInward'] },
+        condition: '普通个人账户免月费；一般汇入超过500港元收60港元，内地中行同名优惠可免。网上同名汇至内地中行的快汇及SWIFT基本手续费豁免，代理费另计', sources: ['bochkAccount', 'bochkSame', 'bochkCard', 'bochkCheque'] },
       { id: 'hang', name: '恒生 · 优进理财', group: 'hang', inwardHkd: 0, sameGroupWaiver: true, localHkd: 0, localUsd: 0, localUsdChequeHkd: 0,
+        corporateName: '恒生香港', corporateLocalUsdInward: { feeHkd: 15, sources: ['hangBusinessInward'] },
         localSwiftHkd: 0, localSwiftChannel: '恒生Mobile App', swiftSources: ['hangHk'], outwardHkd: 65, monthlyHkd: 0, thresholdHkd: 0,
         directUsdCard: true, directCnhCard: true, cardForeignPct: 0, condition: '优进理财无最低理财总值/月费；手机本地外币CHATS／SWIFT本行费免，其他银行费另计；跨域转账须已登记，并经指定页面提交', sources: ['hangHk', 'hangOpen', 'hangCard', 'hangHkFx'] },
       { id: 'sc', name: '渣打 · 快易理财', group: 'sc', inwardHkd: 0, sameGroupWaiver: true, localHkd: 0, localUsd: null, localUsdNative: 22,

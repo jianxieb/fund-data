@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-12",
+  "scope": "Named local USD CHATS into the broker's corporate bank account; standard bank tariff scenario, not universal pass-through proof",
+  "tariffs": {
+    "bochk": { "feeHkd": 15, "freeUpToHkd": 500, "sourceKey": "bochkBusinessInward", "source": "https://www.bochk.com/tc/servicecharge.common.html", "section": "Local bank transfer, corporate inward RTGS/CHATS" },
+    "hsbc": { "feeHkd": 15, "sourceKey": "hsbcBusinessInward", "source": "https://www.business.hsbc.com.hk/-/media/media/hong-kong/pdfs/regulations/tariff-e-en.pdf", "section": "E3 inward RTGS, May 2026, physical page 1" },
+    "hang": { "feeHkd": 15, "sourceKey": "hangBusinessInward", "source": "https://www.hangseng.com/content/dam/wpb/hase/en_hk/business/bank-accounts/PDF/Service%20Charges_new.pdf", "section": "B.3 inward CHATS, April 2026, physical page 10" }
+  },
+  "receivingAccounts": {
+    "usmart": { "banks": ["bochk", "hsbc"], "source": "https://hk.usmartglobal.com/zh-cn/help-centre/42/detail/10540" },
+    "chief": { "banks": ["bochk", "hsbc", "hang"], "source": "https://www.chiefgroup.com.hk/cn/cs/cashdeposit/" }
+  },
+  "reportedDebit": { "broker": "usmart", "sender": "za", "recipientBank": "bochk", "usd": 1.93, "source": "https://yikecaiwan.com/broker/usmart-hk-bank-transfer-deposit", "scope": "One guide's local USD CHATS example, not a fixed USD tariff" }
+}

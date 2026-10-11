@@ -55,8 +55,10 @@ test('each supported personal-bank bridge charges the sending bank, personal rec
     }
   }
   const direct = run({ bank: 'hang', depositMethod: 'chats', entryMiddleCny: '0' }).selected;
-  assert.equal(fee(direct, 'depositOther').cny, null);
-  assert.equal(direct.fundingBank, null); assert.equal(direct.complete, false);
+  close(fee(direct, 'depositOther').cny, 15 * direct.refs.HKD);
+  assert.match(fee(direct, 'depositOther').estimate, /企业CHATS标准价/);
+  assert.equal(direct.corporateReceivingBank.id, 'bochk');
+  assert.equal(direct.fundingBank, null); assert.equal(direct.complete, true);
   const receipt = run({ bank: 'hang', depositMethod: 'via-bochk', entryMiddleCny: '0', depositHkd: '5', depositOtherCny: '9' }).selected;
   close(fee(receipt, 'depositBank').cny, 5 * receipt.refs.HKD); close(fee(receipt, 'depositOther').cny, 9); reconcile(receipt);
 });

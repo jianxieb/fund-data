@@ -82,6 +82,7 @@
       else add('hkTariff', s.bank);
     } else if (stage === '03') {
       add('hkTariff', s.bank); add('hkTariff', settlement); add('hkTariff', r?.fundingBank || M.calculatorFundingBank(state, D)); add('brokerFunding', broker);
+      keys.push(...(r?.rows?.find(item => item.key === 'depositOther')?.sources || []));
       if (state.route !== 'USD') state.fxMode === 'bank' ? add('hkFx', s.bank) : keys.push('ibFx');
       if (broker?.id === 'ibkr') {
         keys.push('ibFunding' + (state.route === 'USD' || state.fxMode === 'bank' ? 'USD' : state.route));
@@ -200,13 +201,15 @@
   }
   function depositMethods() {
     const s = selected(), currency = state.fxMode === 'bank' ? 'USD' : state.route;
+    const recipient = M.calculatorDepositBank({ ...state, depositMethod: 'chats' }, D);
     const labels = {
       internal: s.broker.integratedBank ? '本行存款直接交收' : '同行转账 → 券商收款账户 · 免费',
-      chats: s.broker.integratedBank ? '本地美元转账 → 本人' + shortName(banks.find(b => b.id === s.broker.integratedBank)) + '账户' : s.broker.id === 'ibkr' ? '香港收款指示 · USD本地转账' : '本地美元转账 · CHATS',
+      chats: s.broker.integratedBank ? '本地美元转账 → 本人' + shortName(banks.find(b => b.id === s.broker.integratedBank)) + '账户' : s.broker.id === 'ibkr' ? '香港收款指示 · USD本地转账' : recipient ? 'CHATS → 券商的' + routeName(recipient.id, 'bank') + '收款账户' : '本地美元转账 · CHATS',
       swift: currency !== 'USD' ? '外币电汇 · SWIFT' : s.broker.swiftDestination === 'hong-kong' ? '香港收款账户 · USD SWIFT' : '境外收款指示 · USD电汇',
       fps: '本地转账 · FPS', edda: '券商发起扣款 · eDDA'
     };
     for (const id of s.broker.internalFundingBanks || []) labels['via-' + id] = '经本人' + routeName(id, 'bank') + ' USD账户 → 同行入金';
+    for (const id of s.broker.internalFundingBanks || []) labels['chats-' + id] = 'CHATS → 券商的' + routeName(id, 'bank') + '收款账户';
     return M.calculatorChannels(state, D).depositMethods.map(id => [id, labels[id]]);
   }
   function returnMethods() {
@@ -235,7 +238,7 @@
       const channel = ({ 'boc-mobile': '手机同名汇款', 'boc-online': '手机／网银他行9折', linked: '两地同名转账', 'cib-go': '全额到账50元/笔', full: '美元全额到账', swift: '普通电汇' })[r.mainlandMethod];
       const conversion = r.route !== 'USD' ? (r.fxMode === 'bank' ? routeName(r.bank.id, 'bank') : r.fxMode === 'auto' ? 'IBKR自动' : 'IBKR手动') + '换美元' : '';
       const funding = r.broker.id === 'ibkr' && r.depositMethod === 'chats' ? '香港花旗／渣打收款指示' :
-        r.fundingBank ? '本人银行转账后同行入金' :
+        r.fundingBank ? '本人银行转账后同行入金' : r.corporateReceivingBank ? 'CHATS至券商的' + routeName(r.corporateReceivingBank.id, 'bank') + '收款账户' :
         r.depositMethod === 'internal' ? r.broker.integratedBank ? '银行内交收' : '同行入金' :
         ({ chats: '本地美元转账', fps: 'FPS入金', edda: 'eDDA入金', swift: '电汇入金' })[r.depositMethod];
       const end = state.outcome === 'broker-balance' ? '美元留在买股账户' :

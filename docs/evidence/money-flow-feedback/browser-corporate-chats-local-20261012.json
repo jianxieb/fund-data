@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-12",
+  "version": "corporate-chats-working-tree",
+  "url": "http://127.0.0.1:8780/?review=corporate-chats-20261012#money-flow",
+  "checks": [
+    {
+      "case": "local-corporate-hsbc-receipt",
+      "version": "corporate-chats-working-tree",
+      "bank": "bochk",
+      "broker": "usmart",
+      "funding": "↓\n转入买股账户\n依据\n参考损耗\n0.013%\n12.81 CNY\n入金方式\nCHATS → 券商的汇丰香港收款账户\n⌄\n中银香港 → 盈立 · 个人标准账户的汇丰香港收款账户 · CHATS\n0.00 HKD\n汇丰香港 · 券商企业账户CHATS收款\n企业CHATS收款标准价15 HKD\n估算 15.00 HKD\n≈ 12.81 CNY\n盈立 · 个人标准账户入金费\n0.00 CNY"
+    }
+  ]
+}

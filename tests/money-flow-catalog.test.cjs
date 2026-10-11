@@ -119,7 +119,8 @@ test('uSMART same-bank funding includes the published HSBC account without waivi
       assert.equal(r.depositMethod, 'internal'); ledger(r);
     } else {
       assert.match(M.calculatorJourney({ ...s, depositMethod: 'internal' }, D, diversityQuotes).error, /同行入金/);
-      assert.equal(r.rows.find(row => row.key === 'depositOther').cny, null);
+      close(r.rows.find(row => row.key === 'depositOther').cny, 15 * r.refs.HKD);
+      assert.match(r.rows.find(row => row.key === 'depositOther').estimate, /企业CHATS标准价/);
     }
   }
   const explicitCrossBank = M.calculatorJourney(M.calculatorRoute({ ...config, startBank: 'hsbc', bank: 'hsbc',
@@ -145,7 +146,7 @@ test('all 151875 catalogue combinations retain selection and either reconcile or
     assert.ok(profile.referencePriced <= profile.priced);
     assert.deepEqual(profile.coverage.mainlandMethods, ['boc-mobile', 'boc-online', 'cib-go', 'full', 'linked', 'swift']);
     assert.deepEqual(profile.coverage.fxModes, ['auto', 'bank', 'manual']);
-    assert.deepEqual(profile.coverage.depositMethods, ['chats', 'edda', 'fps', 'internal', 'swift', 'via-bochk', 'via-hang', 'via-hsbc']);
+    assert.deepEqual(profile.coverage.depositMethods, ['chats', 'chats-hang', 'chats-hsbc', 'edda', 'fps', 'internal', 'swift', 'via-bochk', 'via-hang', 'via-hsbc']);
     assert.deepEqual(profile.coverage.returnMethods, ['bochk-fast', 'linked', 'swift']);
     assert.equal(Object.values(profile.sources).reduce((sum, source) => sum + source.checked, 0), profile.checked);
   }
@@ -354,7 +355,10 @@ test('published uSMART BOCHK internal funding is free, without incorrectly waivi
   const r = run({ broker: 'usmart', depositMethod: 'internal' }).selected;
   for (const key of ['depositBank', 'depositOther', 'depositBroker']) close(r.rows.find(x => x.key === key).cny, 0);
   assert.match(run({ broker: 'usmart', bank: 'sc', depositMethod: 'internal' }).error, /同行入金/);
-  assert.equal(run({ broker: 'usmart', bank: 'sc', depositMethod: 'chats' }).selected.rows.find(x => x.key === 'depositOther').cny, null);
+  const cross = run({ broker: 'usmart', bank: 'sc', depositMethod: 'chats' }).selected;
+  close(cross.rows.find(x => x.key === 'depositOther').cny, 15 * cross.refs.HKD);
+  close(cross.rows.find(x => x.key === 'depositBank').cny, 22 * cross.refs.USD);
+  assert.match(cross.rows.find(x => x.key === 'depositOther').estimate, /企业CHATS标准价/);
 });
 
 test('HSBC China standard wire is priced separately from the free linked service; documented inward fees remain zero', () => {

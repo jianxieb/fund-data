@@ -974,11 +974,14 @@
       steps.hongKong = balance;
       const depositMethod = internalDeposit ? 'internal' : settlementBank ? 'chats' : method('depositMethod', currency === 'USD' || fxMode === 'bank' ? 'chats' : 'fps');
       const depositCurrency = fxMode === 'bank' ? 'USD' : currency;
+      if (typeof depositMethod !== 'string') return downstreamError('保存的入金方式无效；请在入金方式中重新选择。');
+      const corporateReceivingBank = calculatorDepositBank({ broker: provider.id, bank: bank.id, depositMethod }, data);
       if (typeof requestedDepositMethod === 'string' && requestedDepositMethod.startsWith('via-') && (!fundingBank || fundingBank.id === bank.id || depositCurrency !== 'USD')) return downstreamError('经本人银行同行入金须使用券商已公布的同银行USD收款账户；当前银行与渠道不匹配。');
       if (depositMethod === 'internal' && !internalDeposit) return downstreamError('同行入金须使用券商已公布的同银行收款账户；此组合可改选本地转账。');
       if (['fps', 'edda'].includes(depositMethod) && depositCurrency === 'USD') return downstreamError('FPS/eDDA不支持USD；美元入金请选本地美元转账或SWIFT。');
       if (provider.id === 'chief' && depositMethod === 'fps' && depositCurrency !== 'HKD') return downstreamError('致富FPS只接受港币；人民币入金请用同行转账或eDDA。');
-      if (depositMethod === 'chats' && depositCurrency !== 'USD') return downstreamError('本地美元转账使用USD；HKD/CNH可选FPS或eDDA。');
+      if ((depositMethod === 'chats' || depositMethod.startsWith('chats-')) && depositCurrency !== 'USD') return downstreamError('本地美元转账使用USD；HKD/CNH可选FPS或eDDA。');
+      if (depositMethod.startsWith('chats-') && !corporateReceivingBank) return downstreamError('请选择券商已公布、与汇出银行不同的USD CHATS收款账户。');
       const unsupportedSwift = depositMethod === 'swift' && localSwiftIssue(bank, depositCurrency, provider.swiftDestination || 'overseas');
       if (unsupportedSwift) return downstreamError(unsupportedSwift);
       // This stage exchanges the received balance in one bank transaction.
@@ -1000,25 +1003,33 @@
       if (!positive(entryPrice)) return downstreamError(bank.name + '缺少' + currency + '换USD的成交报价。');
       const transfer = () => {
         const charge = own('depositHkd', isSelectedBank);
-        const transferMethod = fundingBank ? 'chats' : depositMethod;
+        const transferMethod = fundingBank || corporateReceivingBank ? 'chats' : depositMethod;
         const receivingBank = settlementBank || fundingBank;
         const swift = !internalDeposit && transferMethod === 'swift' ? nextSwift(bank, config.date, provider.swiftDestination || 'overseas', depositCurrency) : null;
         const sending = swift ? swift.hkd == null ? null : swift.hkd * refs.HKD : depositFee(bank, transferMethod, depositCurrency, refs, config.date);
-        const sendingLabel = internalDeposit ? settlementBank ? '本人银行账户内部交收' : bank.name + ' → ' + provider.name + '同银行收款账户' : bank.name + ' → ' + (fundingBank ? '本人' + fundingBank.name : settlementBank?.name || provider.name) + ' · ' + transferMethod.toUpperCase();
+        const sendingLabel = internalDeposit ? settlementBank ? '本人银行账户内部交收' : bank.name + ' → ' + provider.name + '同银行收款账户' : bank.name + ' → ' + (fundingBank ? '本人' + fundingBank.name : corporateReceivingBank ? provider.name + '的' + corporateReceivingBank.corporateName + '收款账户' : settlementBank?.name || provider.name) + ' · ' + transferMethod.toUpperCase();
         add('depositBank', sendingLabel, internalDeposit ? 0 : charge == null ? sending : charge * refs.HKD, 'deposit', charge == null && swift?.status || sendingLabel);
         if (swift && (bank.id === 'za' || bank.swiftSources) && charge == null) Object.assign(rows[rows.length - 1], { swiftTariff: swift, nativeCurrency: 'HKD',
           ...(swift.status ? { status: swift.status } : { evidence: swiftEvidence(swift) }), sources: bank.swiftSources || ['zaTariff', 'zaPerksNov'] });
-        if (fundingBank && bank.localUsdNative != null) rows[rows.length - 1].nativeCurrency = 'USD';
+        if ((fundingBank || corporateReceivingBank) && bank.localUsdNative != null) rows[rows.length - 1].nativeCurrency = 'USD';
         // A USD instruction naming a Hong Kong receiving bank is a separate
         // route from a US wire. Published local-route observations do not waive
         // the sending bank's own fee or any later withdrawal fee.
         const localInward = receivingBank ? localUsdInward(receivingBank) : null;
         const localFunding = depositMethod === 'chats' && depositCurrency === 'USD' ? provider.localUsdFunding : null;
         const recipientOverride = own('depositOtherCny', isSelectedBank);
+        const corporateTariff = corporateReceivingBank?.corporateLocalUsdInward;
+        // Corporate recipient tariffs cannot inherit personal receipt waivers.
+        // Standard published fees are a named scenario, not evidence that a
+        // broker has no private bank concession or passes through every charge.
+        const corporateHkd = corporateTariff ? (corporateTariff.freeUpToHkd != null && balance * refs[unit] / refs.HKD <= corporateTariff.freeUpToHkd + 1e-8 ? 0 : corporateTariff.feeHkd) : null;
         const recipientFee = internalDeposit ? 0 : receivingBank ?
           fundingBank && recipientOverride != null ? recipientOverride : localInward == null ? null : localInward * refs.USD :
-          recipientOverride ?? (localFunding ? localFunding.otherCny : depositMethod === 'fps' || depositMethod === 'edda' ? 0 : null);
-        add('depositOther', receivingBank ? (fundingBank ? '本人' : '') + receivingBank.name + ' · 本地USD收款' : localFunding ? provider.name + '香港本地收款' : '入金代理／收款行费', recipientFee, 'deposit');
+          recipientOverride ?? (corporateTariff ? corporateHkd * refs.HKD : localFunding ? localFunding.otherCny : depositMethod === 'fps' || depositMethod === 'edda' ? 0 : null);
+        add('depositOther', receivingBank ? (fundingBank ? '本人' : '') + receivingBank.name + ' · 本地USD收款' : internalDeposit ? provider.name + ' · 同行收款' : corporateReceivingBank ? corporateReceivingBank.corporateName + ' · 券商企业账户CHATS收款' : localFunding ? provider.name + '香港本地收款' : '入金代理／收款行费', recipientFee, 'deposit');
+        if (corporateTariff && recipientOverride == null) Object.assign(rows[rows.length - 1], { nativeCurrency: 'HKD',
+          estimate: '按所选收款银行企业CHATS标准价计算；不假定券商另获减免', evidence: '企业CHATS收款标准价' + corporateHkd + ' HKD' + (corporateTariff.freeUpToHkd != null ? '；' + corporateTariff.freeUpToHkd + ' HKD等值或以下免收' : ''),
+          sources: [...corporateTariff.sources, ...(provider.id === 'usmart' && bank.id === 'za' && corporateReceivingBank.id === 'bochk' ? ['usmartChatsGuide'] : [])] });
         if (localFunding && own('depositOtherCny', isSelectedBank) == null) rows[rows.length - 1].estimate = localFunding.evidence;
         if (fundingBank && finite(balance) && balance >= 0) steps.fundingBankUsd = balance;
         add('depositBroker', fundingBank ? '本人' + fundingBank.name + ' → ' + provider.name + ' · 同行入金' : provider.name + '入金费', knownFee(provider.depositUsd) ? provider.depositUsd * refs.USD : null, 'deposit');
@@ -1211,7 +1222,7 @@
         ...missing.filter(reason => !unpriced.some(row => reason === row.label || row.key === 'sender' && reason === start.name + '所选渠道汇出收费'))];
       const requiredEligibility = [...new Set([start.required, ...(returnMethod === 'linked' ? [exit.required] : [])].filter(Boolean))];
       const eligibilityReasons = requiredEligibility.map(id => mainland.find(row => row.required === id)?.condition).filter(Boolean);
-      return { budgetCny: budget, origin: 'mainland', permission, currency: unit, outcome, settlementBank, fundingBank, route, start, bank, returning, exit, exitBank: exit.id, broker: provider, trading,
+      return { budgetCny: budget, origin: 'mainland', permission, currency: unit, outcome, settlementBank, fundingBank, corporateReceivingBank, route, start, bank, returning, exit, exitBank: exit.id, broker: provider, trading,
         mainlandMethod, serviceAvailability, depositMethod, fxMode, returnMethod, returnDate, indicativeFx, indicativeExit, exitIssue, startSell: quote, entryPrice, exitPrice,
         entryAsOf: currency === 'CNH' ? null : q?.asOf, entryTimeBasis: q?.timeBasis, entryDiscount: own('startSell', isSelectedStart) == null ? q?.spreadDiscount : undefined,
         exitAsOf: outcome === 'cnh-card' ? returnFxQuote?.asOf : exit.quotes.USD?.asOf,
@@ -1390,6 +1401,13 @@
     const id = config.depositMethod.slice(4), broker = data.brokers.find(item => item.id === config.broker);
     return broker?.internalFundingBanks?.includes(id) && data.calculator.hkBanks.includes(id) ? data.hkBanks.find(item => item.id === id) || null : null;
   }
+  // Name the broker corporate account used by each direct USD CHATS action.
+  function calculatorDepositBank(config, data) {
+    const provider = data.brokers.find(item => item.id === config.broker), method = config.depositMethod || '';
+    if (typeof method !== 'string' || !provider?.internalFundingBanks || (method !== 'chats' && !method.startsWith('chats-'))) return null;
+    const id = method === 'chats' ? provider.internalFundingBanks.find(id => id !== config.bank) : method.slice(6);
+    return id !== config.bank && provider.internalFundingBanks.includes(id) && data.calculator.hkBanks.includes(id) ? data.hkBanks.find(item => item.id === id) || null : null;
+  }
   // The UI and exhaustive audit share channel availability. Account catalogues
   // stay independent: a channel restriction never removes an account choice.
   function calculatorChannels(config, data) {
@@ -1404,9 +1422,10 @@
     const fxModes = s.route === 'USD' ? ['manual'] : broker?.id === 'ibkr' ? ['manual', 'auto', 'bank'] : ['bank'];
     const currency = s.route === 'USD' || s.fxMode === 'bank' ? 'USD' : s.route;
     const swiftMethods = localSwiftIssue(bank, currency, broker?.swiftDestination || 'overseas') ? [] : ['swift'];
+    const corporateBanks = (broker?.internalFundingBanks || []).filter(id => id !== bank?.id && data.calculator.hkBanks.includes(id));
     const depositMethods = broker?.integratedBank ? [broker.integratedBank === bank?.id ? 'internal' : 'chats'] : [
       ...(broker?.internalFundingBanks?.includes(bank?.id) ? ['internal'] : []),
-      ...(currency === 'USD' ? ['chats', ...(broker?.internalFundingBanks || []).filter(id => id !== bank?.id && data.calculator.hkBanks.includes(id)).map(id => 'via-' + id), ...swiftMethods] : [...['fps', 'edda'].filter(channel => broker?.depositCurrencies?.[channel]?.includes(currency)), ...swiftMethods])
+      ...(currency === 'USD' ? ['chats', ...corporateBanks.slice(1).map(id => 'chats-' + id), ...corporateBanks.map(id => 'via-' + id), ...swiftMethods] : [...['fps', 'edda'].filter(channel => broker?.depositCurrencies?.[channel]?.includes(currency)), ...swiftMethods])
     ];
     const returnMethods = ['swift'];
     if (returning?.id === 'bochk' && exit?.group === 'boc') returnMethods.unshift('bochk-fast');
@@ -1495,5 +1514,5 @@
     return result;
   }
   function catalogueBroker(id, data) { return data.calculator.brokers.includes(id) ? id : 'za'; }
-  return { calculatorRoute, calculatorChannels, calculatorFundingBank, calculatorIssue, calculatorJourney, calculatorRecommendations, calculatorAccountState, number, reference, telegramAllowance, fee, remitPrincipal, senderFeeRange, inwardFee, outwardFee, zaPerksLevel, swiftFee, localUsdChequeFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
+  return { calculatorRoute, calculatorChannels, calculatorFundingBank, calculatorDepositBank, calculatorIssue, calculatorJourney, calculatorRecommendations, calculatorAccountState, number, reference, telegramAllowance, fee, remitPrincipal, senderFeeRange, inwardFee, outwardFee, zaPerksLevel, swiftFee, localUsdChequeFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
 }));
