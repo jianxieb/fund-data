@@ -1365,12 +1365,13 @@ test('saved SC local USD wires migrate to its published clearing channel without
 
 test('direct corporate CHATS choices name their receiving bank and retain independent account and personal-bridge choices', () => {
   const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  const evidence = require('./fixtures/money-flow-corporate-chats-20261012.json');
   for (const broker of ['chief', 'usmart']) for (const bank of D.calculator.hkBanks) {
     const input = { ...currentRoute, startBank: 'boc', bank, broker, route: 'USD', fxMode: 'bank', depositMethod: 'chats',
       outcome: 'broker-balance', entryMiddleCny: '0', depositHkd: '', depositOtherCny: '', months: '7', count: '2' };
     const ui = moneyUi(input, quotes, '2026-10-11'); ui.render(); ui.act('pick', '', 'depositMethod');
     const methods = M.calculatorChannels(input, D).depositMethods.filter(id => id === 'chats' || id.startsWith('chats-'));
-    const recipientNames = { bochk: '中银香港', hsbc: '汇丰香港', hang: '恒生香港' };
+    const recipientNames = { bochk: '中银香港', hsbc: '汇丰香港', hang: '恒生香港', 'icbc-asia': '工银亚洲' };
     for (const method of methods) {
       const target = M.calculatorDepositBank({ ...input, depositMethod: method }, D);
       assert.match(ui.modal(), new RegExp('CHATS → 券商的' + recipientNames[target.id] + '收款账户'));
@@ -1378,7 +1379,8 @@ test('direct corporate CHATS choices name their receiving bank and retain indepe
       assert.equal(ui.saved().depositMethod, method);
       for (const key of ['startBank', 'bank', 'broker', 'months', 'count']) assert.equal(ui.saved()[key], input[key]);
       const funding = html.split('aria-label="转入买股账户"')[1].split('</section>')[0];
-      assert.match(funding, /券商企业账户CHATS收款/); assert.match(funding, /15.00 HKD/);
+      assert.match(funding, /券商企业账户CHATS收款/);
+      assert.ok(funding.includes(evidence.tariffs[target.id].feeHkd.toFixed(2) + ' HKD'));
       assert.doesNotMatch(funding, /undefined|NaN|此汇路代理／收款行收费未公开/);
       ui.act('detail', '', '03'); assert.match(ui.modal(), new RegExp(D.sources[target.corporateLocalUsdInward.sources[0]].url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
       const restored = moneyUi(ui.saved(), quotes, '2026-10-11'); restored.render();

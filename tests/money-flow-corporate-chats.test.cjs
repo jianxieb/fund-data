@@ -50,6 +50,29 @@ test('the BOCHK small-receipt exemption uses the actual local transfer amount, n
   close(row(hsbc, 'depositOther').cny, 15 * hsbc.refs.HKD);
 });
 
+test('uSMART ICBC Asia corporate CHATS charges 10 HKD once and never becomes a personal account or a free small BOCHK receipt', () => {
+  const catalogue = structuredClone(D.calculator);
+  for (const bank of D.calculator.hkBanks) for (const count of [1, 2, 3]) {
+    const r = run({ bank, count, depositMethod: 'chats-icbc-asia' }).selected;
+    assert.ok(r, bank + '/' + count);
+    assert.equal(r.corporateReceivingBank.id, 'icbc-asia'); assert.equal(r.fundingBank, null);
+    close(row(r, 'depositOther').cny, 10 * r.refs.HKD);
+    assert.ok(row(r, 'depositOther').sources.includes('icbcAsiaInward'));
+    assert.deepEqual(row(r, 'account').items.filter(x => x.region === 'hong-kong').map(x => x.bankId), [bank]);
+    close(row(r, 'account').cny, bank === 'hsbc' ? 1200 * r.refs.HKD : 0);
+    const methods = M.calculatorChannels({ ...input, bank }, D).depositMethods;
+    assert.ok(methods.includes('chats-icbc-asia')); assert.ok(!methods.includes('via-icbc-asia'));
+    reconcile(r);
+  }
+  const small = run({ bank: 'za', depositMethod: 'chats-icbc-asia', senderFeeCny: '0', entryInwardHkd: '0', budgetCny: 100 }).selected;
+  close(row(small, 'depositOther').cny, 10 * small.refs.HKD);
+  const actual = run({ depositMethod: 'chats-icbc-asia', depositOtherCny: '0' }).selected;
+  close(row(actual, 'depositOther').cny, 0); assert.equal(row(actual, 'depositOther').estimate, undefined); reconcile(actual);
+  assert.equal(M.calculatorDepositBank({ ...input, broker: 'chief', depositMethod: 'chats-icbc-asia' }, D), null);
+  assert.equal(M.calculatorFundingBank({ ...input, depositMethod: 'via-icbc-asia' }, D), null);
+  assert.deepEqual(D.calculator, catalogue);
+});
+
 test('corporate receipt, personal-bank bridge, internal funding and overseas SWIFT do not inherit each other\'s fees', () => {
   const direct = run({}).selected, personal = run({ depositMethod: 'via-bochk' }).selected;
   assert.ok(row(direct, 'depositOther').sources.includes('usmartChatsGuide'));

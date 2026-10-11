@@ -1403,11 +1403,16 @@
     return broker?.internalFundingBanks?.includes(id) && data.calculator.hkBanks.includes(id) ? data.hkBanks.find(item => item.id === id) || null : null;
   }
   // Name the broker corporate account used by each direct USD CHATS action.
+  function corporateDepositBanks(provider, data) {
+    return (provider?.corporateReceivingBanks || provider?.internalFundingBanks || [])
+      .map(id => data.hkBanks.find(item => item.id === id) || data.corporateReceivingBanks?.find(item => item.id === id))
+      .filter(bank => bank?.corporateLocalUsdInward);
+  }
   function calculatorDepositBank(config, data) {
     const provider = data.brokers.find(item => item.id === config.broker), method = config.depositMethod || '';
-    if (typeof method !== 'string' || !provider?.internalFundingBanks || (method !== 'chats' && !method.startsWith('chats-'))) return null;
-    const id = method === 'chats' ? provider.internalFundingBanks.find(id => id !== config.bank) : method.slice(6);
-    return id !== config.bank && provider.internalFundingBanks.includes(id) && data.calculator.hkBanks.includes(id) ? data.hkBanks.find(item => item.id === id) || null : null;
+    if (typeof method !== 'string' || (method !== 'chats' && !method.startsWith('chats-'))) return null;
+    const banks = corporateDepositBanks(provider, data).filter(bank => bank.id !== config.bank);
+    return method === 'chats' ? banks[0] || null : banks.find(bank => bank.id === method.slice(6)) || null;
   }
   // The UI and exhaustive audit share channel availability. Account catalogues
   // stay independent: a channel restriction never removes an account choice.
@@ -1423,10 +1428,11 @@
     const fxModes = s.route === 'USD' ? ['manual'] : broker?.id === 'ibkr' ? ['manual', 'auto', 'bank'] : ['bank'];
     const currency = s.route === 'USD' || s.fxMode === 'bank' ? 'USD' : s.route;
     const swiftMethods = localSwiftIssue(bank, currency, broker?.swiftDestination || 'overseas') ? [] : ['swift'];
-    const corporateBanks = (broker?.internalFundingBanks || []).filter(id => id !== bank?.id && data.calculator.hkBanks.includes(id));
+    const corporateBanks = corporateDepositBanks(broker, data).filter(item => item.id !== bank?.id).map(item => item.id);
+    const fundingBanks = (broker?.internalFundingBanks || []).filter(id => id !== bank?.id && data.calculator.hkBanks.includes(id));
     const depositMethods = broker?.integratedBank ? [broker.integratedBank === bank?.id ? 'internal' : 'chats'] : [
       ...(broker?.internalFundingBanks?.includes(bank?.id) ? ['internal'] : []),
-      ...(currency === 'USD' ? ['chats', ...corporateBanks.slice(1).map(id => 'chats-' + id), ...corporateBanks.map(id => 'via-' + id), ...swiftMethods] : [...['fps', 'edda'].filter(channel => broker?.depositCurrencies?.[channel]?.includes(currency)), ...swiftMethods])
+      ...(currency === 'USD' ? ['chats', ...corporateBanks.slice(1).map(id => 'chats-' + id), ...fundingBanks.map(id => 'via-' + id), ...swiftMethods] : [...['fps', 'edda'].filter(channel => broker?.depositCurrencies?.[channel]?.includes(currency)), ...swiftMethods])
     ];
     const returnMethods = ['swift'];
     if (returning?.id === 'bochk' && exit?.group === 'boc') returnMethods.unshift('bochk-fast');

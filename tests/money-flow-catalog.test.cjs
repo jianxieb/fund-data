@@ -146,7 +146,7 @@ test('all 151875 catalogue combinations retain selection and either reconcile or
     assert.ok(profile.referencePriced <= profile.priced);
     assert.deepEqual(profile.coverage.mainlandMethods, ['boc-mobile', 'boc-online', 'cib-go', 'full', 'linked', 'swift']);
     assert.deepEqual(profile.coverage.fxModes, ['auto', 'bank', 'manual']);
-    assert.deepEqual(profile.coverage.depositMethods, ['chats', 'chats-hang', 'chats-hsbc', 'edda', 'fps', 'internal', 'swift', 'via-bochk', 'via-hang', 'via-hsbc']);
+    assert.deepEqual(profile.coverage.depositMethods, ['chats', 'chats-hang', 'chats-hsbc', 'chats-icbc-asia', 'edda', 'fps', 'internal', 'swift', 'via-bochk', 'via-hang', 'via-hsbc']);
     assert.deepEqual(profile.coverage.returnMethods, ['bochk-fast', 'linked', 'swift']);
     assert.equal(Object.values(profile.sources).reduce((sum, source) => sum + source.checked, 0), profile.checked);
   }

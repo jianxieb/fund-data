@@ -385,9 +385,18 @@ IBKR[公开入金工具](https://www.interactivebrokers.com/en/support/fund-my-a
 | 中银香港 | 500 HKD等值或以下0，超过后15 HKD／笔 | [本地银行转账表](https://www.bochk.com/tc/servicecharge.common.html)，明确区分个人及企业 |
 | 汇丰香港 | 15 HKD／笔；不沿用中银的小额档位 | [商业银行收费表](https://www.business.hsbc.com.hk/-/media/media/hong-kong/pdfs/regulations/tariff-e-en.pdf)，2026年5月E3、物理第1页 |
 | 恒生香港 | 15 HKD／笔 | [商业银行收费表](https://www.hangseng.com/content/dam/wpb/hase/en_hk/business/bank-accounts/PDF/Service%20Charges_new.pdf)，2026年4月B.3、物理第10页 |
+| 工银亚洲 | 10 HKD／笔，持有账户；不沿用中银小额豁免 | [2026-09-01收费表](https://v.icbc.com.cn/userfiles/resources/icbc/haiwai/asia/download/cn/2026/general_services_charges_260901_sc.pdf)，VIII(a)、物理第20页／印刷第17页 |
 
-三家正式表的费率均按原币保存；产品用同一HKD参考值折算，而不是把攻略的1.93 USD写成固定美元费。中银小额档位按汇出银行收费后的实际本地转账金额判断。内地汇出笔数不会把随后一次CHATS的收款费乘多次。[核查摘要](../tests/fixtures/money-flow-corporate-chats-20261012.json)记录来源和适用范围；汇丰及恒生PDF已渲染核对表格。
+四家正式表的费率均按原币保存；产品用同一HKD参考值折算，而不是把攻略的1.93 USD写成固定美元费。中银小额档位按汇出银行收费后的实际本地转账金额判断。内地汇出笔数不会把随后一次CHATS的收款费乘多次。[核查摘要](../tests/fixtures/money-flow-corporate-chats-20261012.json)记录来源和适用范围；汇丰、恒生及工银亚洲PDF已渲染核对表格。
 
-“入金方式”直接列出券商的具体中银／汇丰／恒生收款账户。旧CHATS设置对应的目标在选择器和正文都写明，其他已公布的跨行收款账户可另选；账户目录仍为9／5／5。“经本人银行→同行入金”继续独立计费，属于本人的银行账户，按个人收款及真实期间管理费核算；不会给券商企业账户增收用户的HSBC One管理费。
+“入金方式”直接列出已核资费、由券商公布的具体中银／汇丰／恒生／工银亚洲收款账户。旧CHATS设置对应的目标在选择器和正文都写明，其他已核实的跨行收款账户可另选；账户目录仍为9／5／5。“经本人银行→同行入金”继续独立计费，属于本人的银行账户，按个人收款及真实期间管理费核算；不会给券商企业账户增收用户的HSBC One管理费。
 
 这些金额采用银行企业标准价情景，正文列具体原币金额，合计标参考损耗。不能据银行标准价承诺券商没有协议减免、全额转嫁每笔费用，或将盈立的一次实例扩大到致富所有账户。同行、本地CHATS、香港SWIFT、境外SWIFT及IBKR本地指示均分别判断。个人已确认回单可覆盖本动作；切换方式会清除旧动作的覆盖值。该项补齐已公开的收费，未关闭其他汇路代理费或个人成交报价的证据缺项。
+
+### 工银亚洲集团汇款及换汇优惠的范围（2026-10-12）
+
+从[2026年8月开户及使用攻略](https://www.digitalnomadlc.com/how-to-open-icbc-asia/)定位集团内汇款和盈立收款路径，再查[现行电子账户优惠页](https://www.icbcasia.com/hk/sc/promotion/mobile-banking-e-account-express-service.html)及其2026年7月至12月正式条款。绑定至少一个同名内地工行非联名账户的合资格个人客户，在7月1日至12月31日享集团汇入／汇出基本费用豁免；代理行等额外费用不在豁免内。攻略中的旧80港元回款收费不能代替此条件下的现行本行豁免，也不能据此认定内地工行全部普通跨境汇出免费。
+
+[汇入条款](https://v.icbc.com.cn/userfiles/resources/icbc/haiwai/asia/download/cn/2026/inward_remittance_0_handling_charge_tnc_2607_sc.pdf)、[汇出条款](https://v.icbc.com.cn/userfiles/resources/icbc/haiwai/asia/download/cn/2026/icbc_outward_remittance_0_handling_charge_tnc_2607_sc.pdf)和[换汇条款](https://v.icbc.com.cn/userfiles/resources/icbc/haiwai/asia/download/cn/2026/30_fx_spread_discount_rewards_tnc_2607_sc.pdf)均已下载核对。所谓换汇7折只减银行利润部分，不减成本溢价，不能把公开买卖价差整体乘0.7。[基本综合账户说明](https://www.icbcasia.com/hk/sc/personal/banking/integrated-account/integrated-account/default.html)及现行收费表确认账户服务费豁免；其2026年7月账户说明对人民币往来／储蓄账户另有香港身份证要求。
+
+本次仅将已公布的盈立工银亚洲企业收款账户及10 HKD标准费用于CHATS计算。企业收款账户不套个人绑定优惠，不新增本人账户管理费、不出现“经本人工银亚洲”假选项。工银亚洲个人全流程，包括内地具体卡种豁免、身份对应币种、消费及提款规则，不能由这项企业收款资费替代；上述新证据继续用于A01核查。

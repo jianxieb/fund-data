@@ -209,7 +209,7 @@
       fps: '本地转账 · FPS', edda: '券商发起扣款 · eDDA'
     };
     for (const id of s.broker.internalFundingBanks || []) labels['via-' + id] = '经本人' + routeName(id, 'bank') + ' USD账户 → 同行入金';
-    for (const id of s.broker.internalFundingBanks || []) labels['chats-' + id] = 'CHATS → 券商的' + routeName(id, 'bank') + '收款账户';
+    for (const id of s.broker.corporateReceivingBanks || s.broker.internalFundingBanks || []) labels['chats-' + id] = 'CHATS → 券商的' + routeName(id, 'bank') + '收款账户';
     return M.calculatorChannels(state, D).depositMethods.map(id => [id, labels[id]]);
   }
   function returnMethods() {
@@ -227,7 +227,7 @@
   }
   let visiblePresets = [];
   const routeName = (id, kind) => (kind === 'mainland' ? { boc: '中行', cib: '兴业', cmb: '招行', icbc: '工行', ccb: '建行', comm: '交行', hsbc: '汇丰中国', hang: '恒生中国', sc: '渣打中国' } :
-    kind === 'bank' ? { bochk: '中银香港', hsbc: '汇丰香港', hang: '恒生香港', sc: '渣打香港', za: 'ZA' } :
+    kind === 'bank' ? { bochk: '中银香港', hsbc: '汇丰香港', hang: '恒生香港', sc: '渣打香港', za: 'ZA', 'icbc-asia': '工银亚洲' } :
       { ibkr: 'IBKR', hsbc: '汇丰证券', chief: '致富', usmart: '盈立', za: 'ZA' })[id] || id;
   function candidatePresets() {
     const comparison = M.calculatorRecommendations({ ...state, date: today() }, D, window.MONEY_FLOW_QUOTES || {});
