@@ -499,6 +499,37 @@ test('unpriced transfer subtotals and private quote overrides cannot become reco
   assert.ok(returns.plans.every(p => p.config.broker !== 'ibkr' && p.result.complete)); // USD withdrawal correspondent fee is still unpriced
 });
 
+test('upstream recommendations retain the selected stock account voucher and its actual trade dates', () => {
+  for (const broker of D.calculator.brokers) {
+    const input = { ...base, date: '2026-10-11', count: 1, months: 1, broker, trade25: false, outcome: 'broker-balance',
+      useVoucher: true, voucherUsd: 5, voucherOrders: 2, voucherScope: 'both', voucherExpiry: '2026-12-31' };
+    const before = structuredClone(input), ordinary = M.calculatorRecommendations({ ...input, useVoucher: false }, D, diversityQuotes);
+    const discounted = M.calculatorRecommendations(input, D, diversityQuotes);
+    assert.deepEqual(input, before); assert.equal(discounted.plans.length, ordinary.plans.length);
+    for (const plan of discounted.plans) {
+      assert.equal(plan.config.broker, broker); assert.ok(plan.result.trading.discountUsd > 0, broker);
+      const applied = M.calculatorJourney({ ...input, ...plan.config }, D, diversityQuotes).selected;
+      close(applied.costCny, plan.result.costCny); close(applied.trading.discountUsd, plan.result.trading.discountUsd); ledger(applied);
+      const full = M.calculatorJourney({ ...input, ...plan.config, useVoucher: false }, D, diversityQuotes).selected;
+      assert.ok(applied.costCny < full.costCny);
+      for (const key of ['sender', 'entryMiddle', 'entryInward', 'depositBank', 'depositOther', 'depositBroker', 'account'])
+        close(applied.rows.find(row => row.key === key).cny, full.rows.find(row => row.key === key).cny);
+    }
+    const expiredInput = { ...input, voucherExpiry: '2026-10-10' };
+    const expired = M.calculatorRecommendations(expiredInput, D, diversityQuotes);
+    for (const plan of expired.plans) {
+      close(plan.result.trading.discountUsd, 0);
+      const full = M.calculatorJourney({ ...expiredInput, ...plan.config, useVoucher: false }, D, diversityQuotes).selected;
+      close(plan.result.costCny, full.costCny);
+    }
+    const expiresBeforeSale = M.calculatorRecommendations({ ...input, months: 12 }, D, diversityQuotes);
+    for (const plan of expiresBeforeSale.plans) {
+      assert.ok(plan.result.trading.orders.filter(order => order.kind === 'buy').some(order => order.discount > 0));
+      assert.ok(plan.result.trading.orders.filter(order => order.kind === 'sell').every(order => order.discount === 0));
+    }
+  }
+});
+
 test('each upstream recommendation matches an independent exhaustive comparison for the selected stock venue', () => {
   const data = structuredClone(D);
   data.calculator.mainland = ['boc', 'cib', 'hsbc']; data.calculator.hkBanks = ['bochk', 'hsbc'];

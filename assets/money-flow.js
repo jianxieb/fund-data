@@ -201,7 +201,7 @@
   function presetState(p) {
     const next = M.calculatorRoute({ ...state, fxMode: '', depositMethod: '', returnMethod: '', ...p.config, plan: p.id, activeStep: '01' });
     for (const key of quoteKeys) next[key] = '';
-    next.tradeFeeUsd = ''; next.useVoucher = false; next.balanceHkd = '0'; next.returnBalanceHkd = '0';
+    next.tradeFeeUsd = ''; next.balanceHkd = '0'; next.returnBalanceHkd = '0';
     return next;
   }
   let visiblePresets = [];

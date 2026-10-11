@@ -1027,6 +1027,30 @@ cibQuotes.banks.cib = { quotes: {
 const currentRoute = { ...mainlandConfig, budgetCny: 100000, date: '2026-10-09', selectedOnly: true, startBank: 'cib', bank: 'hsbc', returnBank: 'hsbc',
   broker: 'za', outcome: 'usd-balance', tradeFeeUsd: '', profitUsd: 0, months: 12, hsbcBalanceWaiver: true, entryMiddleCny: '', startSell: '' };
 
+test('applying every upstream preset preserves an enabled voucher for the same stock account and matches its displayed price', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  for (const broker of D.calculator.brokers) {
+    const input = { ...currentRoute, date: '2026-10-11', broker, outcome: 'broker-balance', months: 1,
+      useVoucher: true, voucherUsd: '5', voucherOrders: '2', voucherScope: 'both', voucherExpiry: '2026-12-31' };
+    const first = moneyUi(input, quotes, input.date), html = first.render();
+    const ids = [...html.matchAll(/<button[^>]*data-action="money-flow-preset"[^>]*>/g)].map(match => match[0].match(/data-value="([^"]+)"/)[1]);
+    assert.ok(ids.length >= 2, broker);
+    const plans = M.calculatorRecommendations(input, D, quotes).plans;
+    assert.equal(ids.length, plans.length);
+    for (const id of ids) {
+      const ui = moneyUi(input, quotes, input.date); ui.render(); ui.act('preset', '', id);
+      const saved = ui.saved(), plan = plans.find(item => item.id === id);
+      assert.equal(saved.broker, broker); assert.equal(saved.useVoucher, true);
+      for (const key of ['voucherUsd', 'voucherOrders', 'voucherScope', 'voucherExpiry']) assert.equal(saved[key], input[key]);
+      const result = M.calculatorJourney({ ...saved, date: input.date }, D, quotes).selected;
+      close(result.costCny, plan.result.costCny); close(result.trading.discountUsd, plan.result.trading.discountUsd);
+      assert.ok(result.trading.discountUsd > 0);
+    }
+    first.act('choose', 'broker', broker === 'za' ? 'chief' : 'za');
+    assert.equal(first.saved().useVoucher, false); // a different provider does not inherit this provider's coupon
+  }
+});
+
 test('CIB public quotes apply the current card half-spread exactly once, with dated expiry', () => {
   const raw = structuredClone(cibQuotes.banks.cib);
   const r = M.journeyPlans(currentRoute, D, cibQuotes).selected;

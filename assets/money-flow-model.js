@@ -1212,7 +1212,9 @@
   let recommendationCache;
   function calculatorRecommendations(config, data, quotes) {
     const cleared = [...bankQuoteKeys, 'usdCny', 'usdHkd', 'usdCnh', 'tradeFeeUsd', 'balanceHkd', 'returnBalanceHkd'];
-    const profile = { ...config, ...Object.fromEntries(cleared.map(key => [key, ''])), useVoucher: false };
+    // The chosen stock account is fixed across these upstream comparisons.
+    // Its confirmed coupon remains applicable; bank execution overrides do not.
+    const profile = { ...config, ...Object.fromEntries(cleared.map(key => [key, ''])) };
     for (const key of [...routeKeys, 'plan', 'activeStep', 'comparison']) delete profile[key];
     profile.broker = catalogueBroker(config.broker, data);
     const cacheKey = JSON.stringify(profile);
