@@ -1287,6 +1287,32 @@ function moneyUi(input, quotes = cibQuotes, date = '2026-10-09') {
     act: (action, field, value) => context.window.ChanghengMoneyFlow.handleAction({ dataset: { action: 'money-flow-' + action, field, value } }) };
 }
 
+test('the default round trip returns to the starting BOC account without adding an unrelated mainland management fee', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  const ui = moneyUi({}, quotes, '2026-10-12');
+  ui.render();
+  ui.act('choose', 'outcome', 'mainland');
+  assert.equal(ui.saved().startBank, 'boc');
+  assert.equal(ui.saved().exitBank, 'boc');
+  assert.equal(ui.saved().returnMethod, 'bochk-fast');
+  assert.equal(ui.saved().budgetCny, '100000');
+  assert.equal(ui.saved().count, '1');
+  const r = M.calculatorJourney({ ...ui.saved(), date: '2026-10-12' }, D, quotes).selected;
+  close(r.rows.find(x => x.key === 'account').cny, 0);
+  close(r.rows.find(x => x.key === 'returnWire').cny, 0);
+  assert.equal(r.rows.find(x => x.key === 'returnOther').cny, null); // Do not invent an intermediary waiver.
+  assert.doesNotMatch(ui.render(), /汇丰中国 · 卓越理财期间管理费/);
+
+  const existing = moneyUi({ ...ui.saved(), exitBank: 'hsbc' }, quotes, '2026-10-12');
+  existing.render();
+  existing.act('choose', 'outcome', 'broker-balance');
+  existing.act('choose', 'outcome', 'mainland');
+  assert.equal(existing.saved().exitBank, 'hsbc');
+  assert.match(existing.render(), /汇丰中国 · 卓越理财期间管理费/);
+  existing.act('reset');
+  assert.equal(existing.saved().exitBank, 'boc');
+});
+
 test('saved SC local USD wires migrate to its published clearing channel without replacing accounts or conditions', () => {
   const quotes = require('./fixtures/money-flow-quotes-20261011.json');
   for (const broker of ['chief', 'usmart']) for (const route of ['USD', 'HKD', 'CNH']) {
