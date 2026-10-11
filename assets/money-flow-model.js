@@ -895,11 +895,13 @@
       const chequeIndex = config.chequeIndex == null ? 1 : number(config.chequeIndex);
       if (chequeReturn && returning.localUsdChequeTariff && own('inwardHkd', isSelectedReturn) == null && (!positive(chequeIndex) || !Number.isInteger(chequeIndex))) return downstreamError('当日存票序号须为正整数。', '04', 'withdraw');
       const chequeFee = chequeReturn ? localUsdChequeFee(returning, chequeIndex, trading?.sellDate || config.date, config.chequePreFilled === true) : null;
-      const returnInward = settlementBank ? localReturnCny == null ? null : localReturnCny / refs.HKD : own('inwardHkd', isSelectedReturn) ??
-        (chequeReturn ? chequeFee : virtualReturn ? provider.virtualWithdrawalUsd * refs.USD / refs.HKD : inwardFee(returning, balance * refs.USD / refs.HKD, 'broker'));
+      const confirmedInward = own('inwardHkd', isSelectedReturn);
+      const returnInward = confirmedInward ?? (settlementBank ? localReturnCny == null ? null : localReturnCny / refs.HKD :
+        chequeReturn ? chequeFee : virtualReturn ? provider.virtualWithdrawalUsd * refs.USD / refs.HKD : inwardFee(returning, balance * refs.USD / refs.HKD, 'broker'));
       const returnLabel = settlementBank ? settlementBank.name + ' → ' + returning.name + (settlementBank.id === returning.id ? ' · 内部交收' : ' · USD CHATS') :
-        localCheque || provider.withdrawalMethod === 'cheque' ? returning.name + ' · 本地USD支票存入' : virtualReturn ? '数字银行USD提款 · 官网参考7.5 USD' : '券商→香港银行汇入费';
+        localCheque || provider.withdrawalMethod === 'cheque' ? returning.name + ' · 本地USD支票存入' : virtualReturn ? '数字银行USD提款' + (confirmedInward == null ? ' · 官网参考7.5 USD' : '') : '券商→香港银行汇入费';
       add('returnInward', returnLabel, returnInward == null ? null : returnInward * refs.HKD, 'withdraw');
+      if (confirmedInward != null) rows[rows.length - 1].evidence = '本人回单费用 · ' + returning.name;
       if (chequeReturn && returning.localUsdChequeTariff && own('inwardHkd', isSelectedReturn) == null) {
         Object.assign(rows[rows.length - 1], { nativeCurrency: 'HKD', sources: returning.localUsdChequeTariff.sources,
           evidence: '当日第' + chequeIndex + '张；每日前30张免费，其后' + (config.chequePreFilled ? '预填多支票存款表1' : '未预填多支票存款表2') + ' HKD/张' });

@@ -2207,3 +2207,29 @@ test('impossible financial inputs are explained inside their open editor as well
     assert.match(ui.modal(), message);
   }
 });
+
+test('confirmed withdrawal bank charges override public prices once for every supported stock account', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  for (const id of D.calculator.brokers) for (const returnBank of D.calculator.hkBanks) {
+    const input = M.calculatorRoute({ ...chequeRoute, broker: id, returnBank, depositMethod: '', months: 0 });
+    const before = M.calculatorJourney(input, D, quotes).selected;
+    if (id === 'chief' && returnBank === 'za') { assert.equal(before, undefined); continue; }
+    assert.ok(before, id + '/' + returnBank);
+    const quoted = M.calculatorJourney({ ...input, inwardHkd: 99 }, D, quotes).selected;
+    const oldFee = before.rows.find(row => row.key === 'returnInward');
+    const newFee = quoted.rows.find(row => row.key === 'returnInward');
+    close(newFee.cny, 99 * quoted.refs.HKD);
+    close(quoted.netCny, before.netCny + (oldFee.cny ?? 0) - newFee.cny);
+    assert.deepEqual(quoted.rows.filter(row => row.step === 'entry' || row.step === 'deposit' || row.step === 'investment'),
+      before.rows.filter(row => row.step === 'entry' || row.step === 'deposit' || row.step === 'investment'));
+    assert.match(newFee.evidence, /本人回单/);
+    const restored = M.calculatorJourney({ ...input, inwardHkd: '' }, D, quotes).selected;
+    assert.deepEqual(restored, before);
+  }
+  const input = { ...chequeRoute, broker: 'za', returnBank: 'bochk', depositMethod: 'chats', months: 0, inwardHkd: 99 };
+  const r = M.calculatorJourney(input, D, quotes).selected;
+  const html = moneyUi(input, quotes, '2026-10-11').render();
+  const withdrawal = html.split('aria-label="出金 → 中银香港"')[1].split('</section>')[0];
+  assert.match(withdrawal, new RegExp((99 * r.refs.HKD).toFixed(2) + ' CNY'));
+  assert.match(withdrawal, /本人回单/);
+});
