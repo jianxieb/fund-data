@@ -65,7 +65,7 @@
       else if (mainlandMethod === 'boc-online' && s.start?.id === 'boc') keys.push('bocBankAnswer2026');
       else add('mainlandTariff', s.start);
       if (state.route !== 'CNH') add('mainlandFx', s.start);
-      if (mainlandMethod === 'cib-go' && s.start?.id === 'cib') keys.push('cibGo');
+      if (mainlandMethod === 'cib-go' && s.start?.id === 'cib') keys.push('cibGo', 'swiftGoBanks');
       if (mainlandMethod === 'linked') add('linked', s.start);
       keys.push(...(r?.rows?.find(item => item.key === 'entryMiddle')?.sources || []));
       if (s.bank?.id === 'bochk' && s.start?.group === 'boc') keys.push('bochkSame');
@@ -329,7 +329,7 @@
     let html = node('01', 'startBank', '内地出发银行', s.start, principal, sourceControls + mainlandAccountControl(s.start, r));
     html += edge(data, transferKeys, state.route === 'CNH' ? '人民币原币汇往香港' : '内地购' + currencyNames[state.route] + ' → 汇往香港',
       select('route', '汇出币种', Object.entries(currencyNames)) + select('mainlandMethod', '汇款渠道', entryMethods()), '01',
-      state.mainlandMethod === 'linked' ? '两地同名已关联账户' : '' );
+      r?.serviceAvailability?.verified === false ? '此汇路暂无SWIFT Go开通记录，以下按服务资费测算。' : state.mainlandMethod === 'linked' ? '两地同名已关联账户' : '' );
     const accounts = bankAccountSet(s), accountCost = row(r, 'account');
     const hkAccountItems = accountCost?.items?.filter(item => item.region !== 'mainland');
     const chargingBanks = hkAccountItems?.filter(item => item.cny > 0).map(item => item.label.replace('期间管理费', '')).join('＋');

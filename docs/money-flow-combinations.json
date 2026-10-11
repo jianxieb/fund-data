@@ -4428,9 +4428,9 @@
         "cnScFeeWaived": true
       },
       "checked": 169832,
-      "priced": 1366,
-      "referencePriced": 316,
-      "partial": 151154,
+      "priced": 914,
+      "referencePriced": 304,
+      "partial": 151606,
       "routeIssues": 17312,
       "ledgerChecks": 152520,
       "retainedPartialResults": 17312,
@@ -4457,6 +4457,16 @@
         "众安 ZA Bank CNH换USD点差（缺成交价）": 5760,
         "渣打 · 快易理财 HKD换USD点差（缺成交价）": 6400,
         "渣打 · 快易理财 CNH换USD点差（缺成交价）": 5760,
+        "兴业 · 寰宇人生 → 中银香港 USD的SWIFT Go开通记录": 834,
+        "兴业 · 寰宇人生 → 中银香港 HKD的SWIFT Go开通记录": 1212,
+        "兴业 · 寰宇人生 → 汇丰 HSBC One USD的SWIFT Go开通记录": 834,
+        "兴业 · 寰宇人生 → 汇丰 HSBC One HKD的SWIFT Go开通记录": 1212,
+        "兴业 · 寰宇人生 → 众安 ZA Bank USD的SWIFT Go开通记录": 640,
+        "兴业 · 寰宇人生 → 众安 ZA Bank HKD的SWIFT Go开通记录": 1018,
+        "兴业 · 寰宇人生 → 恒生 · 优进理财 USD的SWIFT Go开通记录": 732,
+        "兴业 · 寰宇人生 → 恒生 · 优进理财 HKD的SWIFT Go开通记录": 1110,
+        "兴业 · 寰宇人生 → 渣打 · 快易理财 USD的SWIFT Go开通记录": 640,
+        "兴业 · 寰宇人生 → 渣打 · 快易理财 HKD的SWIFT Go开通记录": 1018,
         "工商银行汇出手续费": 5570,
         "工商银行电讯费": 5570,
         "汇出手续费＋电讯费（地区定价）": 9250,
@@ -4622,8 +4632,8 @@
         },
         "cib/bochk/USD/cib-go": {
           "checked": 884,
-          "priced": 72,
-          "partial": 762,
+          "priced": 0,
+          "partial": 834,
           "routeIssues": 50
         },
         "cib/bochk/HKD/swift": {
@@ -4634,8 +4644,8 @@
         },
         "cib/bochk/HKD/cib-go": {
           "checked": 1274,
-          "priced": 72,
-          "partial": 1140,
+          "priced": 0,
+          "partial": 1212,
           "routeIssues": 62
         },
         "cib/bochk/CNH/swift": {
@@ -4652,8 +4662,8 @@
         },
         "cib/hsbc/USD/cib-go": {
           "checked": 884,
-          "priced": 72,
-          "partial": 762,
+          "priced": 0,
+          "partial": 834,
           "routeIssues": 50
         },
         "cib/hsbc/HKD/swift": {
@@ -4664,8 +4674,8 @@
         },
         "cib/hsbc/HKD/cib-go": {
           "checked": 1274,
-          "priced": 72,
-          "partial": 1140,
+          "priced": 0,
+          "partial": 1212,
           "routeIssues": 62
         },
         "cib/hsbc/CNH/swift": {
@@ -4682,8 +4692,8 @@
         },
         "cib/za/USD/cib-go": {
           "checked": 676,
-          "priced": 31,
-          "partial": 609,
+          "priced": 0,
+          "partial": 640,
           "routeIssues": 36
         },
         "cib/za/HKD/swift": {
@@ -4712,8 +4722,8 @@
         },
         "cib/hang/USD/cib-go": {
           "checked": 780,
-          "priced": 51,
-          "partial": 681,
+          "priced": 0,
+          "partial": 732,
           "routeIssues": 48
         },
         "cib/hang/HKD/swift": {
@@ -4724,8 +4734,8 @@
         },
         "cib/hang/HKD/cib-go": {
           "checked": 1170,
-          "priced": 51,
-          "partial": 1059,
+          "priced": 0,
+          "partial": 1110,
           "routeIssues": 60
         },
         "cib/hang/CNH/swift": {
@@ -4742,8 +4752,8 @@
         },
         "cib/sc/USD/cib-go": {
           "checked": 676,
-          "priced": 31,
-          "partial": 609,
+          "priced": 0,
+          "partial": 640,
           "routeIssues": 36
         },
         "cib/sc/HKD/swift": {

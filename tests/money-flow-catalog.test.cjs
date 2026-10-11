@@ -8,6 +8,7 @@ const diversityQuotes = require('./fixtures/money-flow-quotes-20261011.json');
 const fundingEvidence = require('./fixtures/money-flow-ibkr-funding-20261011.json');
 const usmartFundingEvidence = require('./fixtures/money-flow-usmart-same-bank-20261011.json');
 const bocBankAnswer = require('./fixtures/money-flow-boc-bank-answer-20260819.json');
+const swiftGoAvailability = require('./fixtures/money-flow-swift-go-availability-20261011.json');
 const config = { ...currentConfig, date: '2026-10-10' };
 const close = (a, b) => assert.ok(Math.abs(a - b) < 1e-6, a + ' != ' + b);
 const base = M.calculatorRoute({ ...config, startBank: 'cib', bank: 'bochk', broker: 'za', returnBank: 'bochk', exitBank: 'hsbc', route: 'USD', outcome: 'broker-balance' });
@@ -525,9 +526,45 @@ test('recommendations compare distinct upstream routes while retaining the chose
   close(two.plans[0].result.rows.find(x => x.key === 'account').cny, 0);
   assert.match(two.plans[0].result.rows.find(x => x.key === 'entryMiddle').estimate, /2026年美元直达/);
   const noReports = structuredClone(D); noReports.entryTransferReferences = [];
-  const guaranteed = M.calculatorRecommendations({ ...input, count: 2, broker: 'hsbc', hsbcBalanceWaiver: true, trade25: true }, noReports, diversityQuotes);
-  assert.equal(guaranteed.plans[0].config.mainlandMethod, 'cib-go');
-  close(guaranteed.plans[0].result.rows.find(x => x.key === 'sender').cny, 100);
+  const publicOnly = M.calculatorRecommendations({ ...input, count: 2, broker: 'hsbc', hsbcBalanceWaiver: true, trade25: true }, noReports, diversityQuotes);
+  assert.ok(publicOnly.plans.length > 0);
+  assert.ok(publicOnly.plans.every(p => p.config.mainlandMethod !== 'cib-go'));
+});
+
+test('SWIFT Go tariffs never prove all receiving banks are reachable or qualify a preferred route', () => {
+  assert.deepEqual(D.entryServiceRoutes, swiftGoAvailability.verifiedCatalogueReceivingRoutes);
+  assert.equal(D.sources.cibGo.url, swiftGoAvailability.tariffSource);
+  assert.equal(D.sources.swiftGoBanks.url, swiftGoAvailability.participantSource);
+  for (const bank of D.calculator.hkBanks) for (const route of ['USD', 'HKD']) {
+    const input = { ...base, bank, route, fxMode: 'bank', count: 2, mainlandMethod: 'cib-go' };
+    const r = M.calculatorJourney(input, D, diversityQuotes).selected;
+    assert.ok(r, bank + '/' + route);
+    assert.equal(r.serviceAvailability.verified, false);
+    assert.match(r.serviceAvailability.evidence, new RegExp(route + '的SWIFT Go开通记录'));
+    assert.deepEqual(r.serviceAvailability.sources, ['cibGo', 'swiftGoBanks']);
+    assert.equal(r.quotedCore, false); assert.equal(r.rankable, false);
+    const sender = r.rows.find(item => item.key === 'sender');
+    assert.match(sender.estimate, /开通记录/);
+    assert.equal(sender.items.find(item => item.label === '汇出手续费').estimate, false);
+    assert.match(sender.items.find(item => item.label.startsWith('SWIFT GO')).estimate, /服务资费/);
+    close(sender.cny, 100); ledger(r);
+    assert.ok(M.calculatorChannels(input, D).mainlandMethods.includes('cib-go'));
+  }
+  const input = { ...base, date: '2026-10-11', broker: 'hsbc', hsbcBalanceWaiver: true, trade25: true, count: 2 };
+  const publicOnly = structuredClone(D); publicOnly.entryTransferReferences = [];
+  assert.ok(M.calculatorRecommendations(input, publicOnly, diversityQuotes).plans.every(p => p.config.mainlandMethod !== 'cib-go'));
+  const evidenced = structuredClone(publicOnly);
+  // Synthetic reachability is scoped to one currency and validity interval;
+  // it is never shipped as a real bank record.
+  evidenced.entryServiceRoutes = [{ startBank: 'cib', bank: 'hsbc', method: 'cib-go', currencies: ['USD'],
+    validFrom: '2026-10-11', validUntil: '2026-10-11', sources: ['test-only-reachability'] }];
+  const exact = M.calculatorRecommendations(input, evidenced, diversityQuotes).plans.find(p => p.config.startBank === 'cib');
+  assert.equal(exact.config.mainlandMethod, 'cib-go'); assert.equal(exact.config.route, 'USD');
+  assert.equal(exact.result.serviceAvailability.verified, true);
+  for (const changes of [{ bank: 'bochk' }, { route: 'HKD', fxMode: 'bank' }, { date: '2026-10-10' }, { date: '2026-10-12' }]) {
+    const r = M.calculatorJourney({ ...input, bank: 'hsbc', mainlandMethod: 'cib-go', ...changes }, evidenced, diversityQuotes).selected;
+    assert.equal(r.serviceAvailability.verified, false); assert.equal(r.quotedCore, false);
+  }
 });
 
 test('unpriced transfer subtotals and private quote overrides cannot become recommended minima', () => {

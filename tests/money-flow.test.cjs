@@ -1059,6 +1059,26 @@ test('choosing BOC preserves an explicitly selected standard tariff alongside th
   close(mobile.rows.find(row => row.key === 'entryInward').cny, 0);
 });
 
+test('unverified SWIFT Go reachability stays an explicit tariff scenario without changing the account catalogue', () => {
+  const initial = { ...currentRoute, startBank: 'cib', bank: 'bochk', returnBank: 'bochk', broker: 'za', count: 2,
+    mainlandMethod: 'cib-go', route: 'USD', outcome: 'broker-balance', profitUsd: 0 };
+  const ui = moneyUi(initial), html = ui.render();
+  assert.match(html, /此汇路暂无SWIFT Go开通记录/);
+  assert.match(html, /参考总损耗/);
+  assert.match(html, /按公布参考费计算的余额/);
+  assert.match(html, /仅按50元服务资费测算/);
+  assert.equal(ui.saved().count, 2); assert.equal(ui.saved().mainlandMethod, 'cib-go');
+  for (const [key, ids] of [['startBank', D.calculator.mainland], ['bank', D.calculator.hkBanks], ['broker', D.calculator.brokers]]) {
+    ui.act('pick', '', key);
+    const picker = ui.modal();
+    for (const id of ids) assert.ok(picker.includes('data-value="' + id + '"'), key + '/' + id);
+    ui.act('close');
+  }
+  ui.act('choose', 'mainlandMethod', 'swift');
+  const normal = ui.render(); assert.doesNotMatch(normal, /此汇路暂无SWIFT Go开通记录/);
+  assert.equal(ui.saved().count, 2); assert.equal(ui.saved().bank, 'bochk'); assert.equal(ui.saved().broker, 'za');
+});
+
 test('only explicitly removed ABC is blocked; ordinary banks, brokers, currencies and channels remain selectable', () => {
   const initial = { ...mainlandConfig, startBank: 'cib', bank: 'bochk', broker: 'za', count: 2, mainlandMethod: 'cib-go', outcome: 'usd-balance', profitUsd: 0 };
   const ui = moneyUi(initial); ui.render();
@@ -1908,7 +1928,7 @@ test('missing terminal FX never forces a different bank, erases the total, or sh
   const ui = moneyUi({ ...currentRoute, count: 2, mainlandMethod: 'cib-go', outcome: 'cnh-card', returnBank: 'hsbc' });
   const html = ui.render(), edge = html.split('aria-label="美元换人民币 → 消费"')[1].split('</section>')[0];
   assert.equal((html.match(/data-flow-stage=/g) || []).length, 4);
-  assert.match(html, /汇丰 HSBC One/); assert.match(html, /全程已核费用|全程损耗 · 历史报价/);
+  assert.match(html, /汇丰 HSBC One/); assert.match(html, /费用小计 · 含估算/);
   assert.match(html, /最后可计余额/); assert.doesNotMatch(edge, /0.000%/);
   assert.doesNotMatch(html, /请选择中银香港消费账户/);
 });
@@ -2042,7 +2062,7 @@ test('incompatible card choices remain editable and never lock unrelated bank se
   ui.act('choose', 'outcome', 'usd-card'); assert.equal(ui.saved().outcome, 'usd-card');
   assert.match(ui.render(), /不支持.*美元/);
   ui.act('choose', 'returnBank', 'bochk'); assert.equal(ui.saved().returnBank, 'bochk');
-  assert.match(ui.render(), /全程损耗/);
+  assert.match(ui.render(), /参考总损耗/);
 });
 
 test('uSMART local USD cheques are free; digital-bank withdrawal uses its separate fee and minimum', () => {

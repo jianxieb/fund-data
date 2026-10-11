@@ -153,7 +153,8 @@ function auditChannels({ quotes = Q, date = config.date } = {}) {
       } else {
         report.partial++; source.partial++;
         if (!r.missing.length && r.quotedCore) throw new Error('Unnamed branch gap: ' + JSON.stringify(s));
-        for (const gap of r.missing) report.missingCounts[gap] = (report.missingCounts[gap] || 0) + 1;
+        const evidenceGaps = [...r.missing, ...(r.serviceAvailability?.verified === false ? [r.serviceAvailability.evidence] : [])];
+        for (const gap of evidenceGaps) report.missingCounts[gap] = (report.missingCounts[gap] || 0) + 1;
       }
       return r;
     };

@@ -17,6 +17,9 @@
     },
     comparisonNotice: '按具体渠道、币种及账户收费计算；购汇点差与转账手续费分别列示。',
     bocMobileEvidence: { feeCny: 0, telegramCny: 0, intermediaryCny: 0, checkedAt: '2026-10-11', level: 'bank-statement', intermediaryLevel: 'reported', senderEvidence: '手机银行双免', sources: ['bocBankAnswer2026', 'bocMobile2026', 'bocMobileUsdGuide', 'bochkSame', 'bocMobileHistory'], note: '中行2026-08-19具名答复及山西省分行2026-05-29供稿均确认手机境外中行入口免手续费及电报费；中银香港使用BKCHHKHH，香港分行BKCHHKHK不享此优惠。USD/HKD同名中银香港的代理费另按2026操作记录的SHA同行路径0元测算；该记录不是所有币种、所有汇路的代理费豁免承诺，跨境支付通实录不作外币电汇证据。' },
+    // A published service tariff is not evidence that a particular receiving
+    // bank and currency are reachable through that service.
+    entryServiceRoutes: [],
     entryTransferReferences: [
       { startBank: 'cib', bank: 'hsbc', currencies: ['HKD'], method: 'swift', intermediaryCny: 0,
         level: 'reported', checkedAt: '2026-10-11', evidence: 'HKD直达汇丰香港 · SHA公开到账记录',
@@ -68,7 +71,8 @@
       commFx: { name: '交通银行 · 境内外汇牌价', url: 'https://www.bankcomm.com/BankCommSite/zonghang/cn/newWhpj/foreignExchangeSearch_Cn.html' },
       cibCard: { name: '兴业银行 · 2026/7–2027/6寰宇人生卡权益及五折点差', url: 'https://mobile.cib.com.cn/netbank/cn/personal/debit/index.html' },
       cmbTariff: { name: '招商银行 · 个人国际汇款GJ001/GJ003及人民币适用范围', url: 'https://s3gw.cmbimg.com/lb5001-cmbweb-prd-1255000097/cmbcms/20241125/2d400cbc-4f03-4966-86d3-f028ba64ae8b.pdf' },
-      cibGo: { name: '兴业银行 · 小额全额到账50元/笔、单笔等值1万美元内', url: 'https://www.cib.com.cn/cn/aboutCIB/about/charges/zfNotices/20240204.html' },
+      cibGo: { name: '兴业银行 · 小额全额到账收费及全链路开通条件', url: 'https://www.cib.com.cn/cn/aboutCIB/about/charges/zfNotices/20240204.html' },
+      swiftGoBanks: { name: 'SWIFT · Go名单为签约实施名单，可达性以GPI目录为准', url: 'https://www.swift.com/products/swift-go/banks' },
       cibHkdCase: { name: '2025-12-30实录 · 寰宇人生港币SHA直达汇丰香港', url: 'https://baiyakai.com/586.html' },
       cibUsdCase: { name: '2026-05-30实录 · 寰宇人生美元及港币到同名汇丰香港', url: 'https://linux.do/t/topic/2272086' },
       cibHsbcCase: { name: '2026-09-01实录 · 寰宇人生至汇丰One零费用到账', url: 'https://linux.do/t/topic/2583831/17' },

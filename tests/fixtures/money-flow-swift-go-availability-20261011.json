@@ -1,0 +1,21 @@
+{
+  "checkedAt": "2026-10-11",
+  "tariffSource": "https://www.cib.com.cn/cn/aboutCIB/about/charges/zfNotices/20240204.html",
+  "participantSource": "https://www.swift.com/products/swift-go/banks",
+  "cib": {
+    "additionalFeeCnyPerPayment": 50,
+    "maximumUsdEquivalentPerPayment": 10000,
+    "effectiveFrom": "2024-05-06",
+    "requires": ["汇款金额在单笔服务范围内", "汇款链路所有银行已开通该服务", "银行为所填收款账户实际提供该服务"],
+    "feeScope": "在本行手续费及电讯费基础上另收固定服务费，服务实际适用时不再代收境外银行费用。"
+  },
+  "swift": {
+    "publishedListAsOf": "2025-01",
+    "scope": "公开姓名名单包含已签约、处于不同实施阶段的银行，不是已可交换Go汇款的目录。",
+    "reachabilitySource": "GPI directory / SwiftRefData",
+    "notEvidence": ["普通SWIFT BIC存在", "参加gpi", "银行集团总部签约", "业务价目表公开服务收费"]
+  },
+  "verifiedCatalogueReceivingRoutes": [],
+  "researchFinding": "未取得目录中五家香港银行对应币种的Go可达性记录；不据此声称银行不支持，也不把服务费50元当作所有组合已能全额到账。",
+  "productScope": "保留手动按附加服务资费测算，不推断实际开通，不纳入优选。普通汇款、账户选择及用户已设定笔数继续保留。"
+}
