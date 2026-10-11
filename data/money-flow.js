@@ -16,7 +16,7 @@
       ]
     },
     comparisonNotice: '按具体渠道、币种及账户收费计算；购汇点差与转账手续费分别列示。',
-    bocMobileEvidence: { feeCny: 0, telegramCny: 0, intermediaryCny: 0, checkedAt: '2026-10-11', level: 'bank-statement', intermediaryLevel: 'reported', senderEvidence: '手机银行双免', sources: ['bocMobile2026', 'bocMobileUsdGuide', 'bochkSame', 'bocMobileHistory'], note: '中行山西省分行2026-05-29在新华网供稿确认：手机银行向境外中行汇款免手续费及电报费。USD/HKD同名中银香港的代理费另按2026操作记录的SHA同行路径0元测算；该记录不是所有币种、所有汇路的代理费豁免承诺，跨境支付通实录不作外币电汇证据。' },
+    bocMobileEvidence: { feeCny: 0, telegramCny: 0, intermediaryCny: 0, checkedAt: '2026-10-11', level: 'bank-statement', intermediaryLevel: 'reported', senderEvidence: '手机银行双免', sources: ['bocBankAnswer2026', 'bocMobile2026', 'bocMobileUsdGuide', 'bochkSame', 'bocMobileHistory'], note: '中行2026-08-19具名答复及山西省分行2026-05-29供稿均确认手机境外中行入口免手续费及电报费；中银香港使用BKCHHKHH，香港分行BKCHHKHK不享此优惠。USD/HKD同名中银香港的代理费另按2026操作记录的SHA同行路径0元测算；该记录不是所有币种、所有汇路的代理费豁免承诺，跨境支付通实录不作外币电汇证据。' },
     entryTransferReferences: [
       { startBank: 'cib', bank: 'hsbc', currencies: ['HKD'], method: 'swift', intermediaryCny: 0,
         level: 'reported', checkedAt: '2026-10-11', evidence: 'HKD直达汇丰香港 · SHA公开到账记录',
@@ -40,6 +40,7 @@
       boc: { name: '中国银行 · 个人金融现行标准价（电子渠道优惠另列）', url: 'https://pic.bankofchina.com/bocappd/pricelist/202511/P020251110646838136627.pdf' },
       bocMobileHistory: { name: '中国银行 · 手机银行向境外中行双免（2025年5–12月）', url: 'https://www.boc.cn/big5/ebanking/bi3/bi31/202504/t20250430_25339098.html' },
       bocMobile2026: { name: '中行山西省分行供稿 · 2026-05-29新华网手机银行双免说明', url: 'https://app.xinhuanet.com/news/article.html?articleId=202605292bb12419965b415d874dba730080d3af' },
+      bocBankAnswer2026: { name: '中国银行股份有限公司 · 2026-08-19集团双免、他行电子渠道9折及个人汇入说明', url: 'https://zhidao.baidu.com/question/696531417821087764.html?qbl=relate_question_4' },
       bocPaymentGuide: { name: '2026-06-30用户实录 · 中行跨境支付通人民币汇款', url: 'https://linux.do/t/topic/2632770?tl=zh_CN' },
       bocMobileUsdGuide: { name: '2026-02-09操作记录 · USD/HKD同名境外中行SHA同行路径', url: 'https://www.huigeblog.com/news/operational-guide-for-cross-border-remittance-via-bank-of-china-hong-kong.html' },
       zaLocalUsd: { name: 'ZA官方 · 免费本地美元转账与直连银行名单', url: 'https://cdn.zaticdn.com/if/ipage/prd/data/blog/a1e7a724-9c51-421a-936a-a339d6d18c4e/en/USD-local-bank-transfers.html?v=1758617552695' },
@@ -154,7 +155,11 @@
       bochkCard: { name: '中银香港 · 多货币扣账设置', url: 'https://www.bochk.com/dam/more/bocdebitcard/card/sc.html' }
     },
     mainlandBanks: [
-      { id: 'boc', name: '中国银行', group: 'boc', rate: 0.001, minimum: 50, maximum: 260, telegram: 80, cnhTariff: true, tariffChannel: '普通电汇 · 公开标准价', feeText: '标准电汇1‰，50–260元＋80元；手机银行同名优惠单列', condition: '中行2026年供稿确认手机银行向境外中行汇款手续费、电报费免；同名中银香港基本汇入费0。普通电汇与代理费用分别计算', sources: ['bocMobile2026', 'bocMobileUsdGuide', 'boc', 'bocMobileHistory', 'bochkSame', 'bocPaymentConnect', 'bocFx'], quoteSource: 'bocFx' },
+      { id: 'boc', name: '中国银行', group: 'boc', rate: 0.001, minimum: 50, maximum: 260, telegram: 80, cnhTariff: true, inwardCny: 0,
+        onlineTariff: { currencies: ['USD', 'HKD'], rate: .0009, minimum: 45, maximum: 234, telegram: 72, validFrom: '2026-08-19' },
+        tariffChannel: '普通电汇 · 公开标准价', feeText: '标准电汇1‰、50–260元＋80元；向他行手机／网银9折，向中银香港手机汇款双免',
+        condition: '中行2026-08-19具名答复：手机银行境外中行入口免手续费、电讯费；向境外他行手机／网银基础费用9折。个人境外汇入原币入账按本行0收费核算，中转费独立；不覆盖转汇、退汇及现钞服务。中银香港收款使用BKCHHKHH，香港分行BKCHHKHK不享此优惠',
+        sources: ['bocBankAnswer2026', 'bocMobile2026', 'bocMobileUsdGuide', 'boc', 'bocMobileHistory', 'bochkSame', 'bocPaymentConnect', 'bocFx'], quoteSource: 'bocFx' },
       { id: 'cmb', name: '招商银行', group: 'cmb', rate: 0.001, minimum: 50, maximum: 280, telegram: 100, cnhTariff: true, inwardCny: 0, validFrom: '2023-09-30', tariffChannel: '个人跨境汇款 · 公开标准价', feeText: '个人1‰，50–280元＋100元电讯费', condition: '个人价目表GJ001/GJ003；跨境人民币参照执行，客户专属减免另计', sources: ['cmbTariff', 'cmbFx'], quoteSource: 'cmbFx' },
       { id: 'icbc', name: '工商银行', group: 'icbc', rate: .0008, minimum: 40, maximum: 208, telegram: 80, fullAmountUsd: 25, inwardCny: 0, validFrom: '2026-08-08', tariffChannel: '个人网银 · 向境外他行', feeText: '网银0.8‰，40–208元＋香港电讯费80元；USD全额到账另加25 USD/笔', condition: '按现行柜面1‰、50–260元的8折；06030033美元全额到账另加25美元/笔，香港收款行本行汇入费另列；手机银行折扣及工行集团内渠道另计', sources: ['icbc', 'icbcOnline', 'icbcInternational', 'icbcFx', 'icbcInward'], quoteSource: 'icbcFx' },
       { id: 'ccb', name: '建设银行', group: 'ccb', rate: 0.001, minimum: 20, maximum: 300, telegram: 80, cnhTariff: true, inwardCny: 0, validFrom: '2026-01-18', tariffChannel: '本外币跨境电汇 · 公开标准价', feeText: '本外币跨境1‰，20–300元＋80元电讯费；汇入免费', condition: '2026年生效价目表明确包含跨境人民币；银行汇入手续费0，中转费用另计', sources: ['ccb', 'ccbRemit', 'ccbFx'], quoteSource: 'ccbFx' },

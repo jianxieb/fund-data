@@ -42,7 +42,7 @@
   const source = key => D.sources[key] ? '<a class="source-link" target="_blank" rel="noopener noreferrer" href="' + esc(D.sources[key].url) + '">' + esc(D.sources[key].name) + ' ↗</a>' : '';
   const evidenceSources = {
     mainlandTariff: { boc: ['boc'], cib: ['cib'], cmb: ['cmbTariff'], icbc: ['icbcOnline', 'icbcInternational'], ccb: ['ccbRemit'], comm: ['comm'], hsbc: ['hsbcCnTariff'], hang: ['hangCnTariff'], sc: ['scCnTariff', 'scCnOffers'] },
-    mainlandReceipt: { boc: ['boc'], cib: ['cibInward'], cmb: ['cmbTariff'], icbc: ['icbcInward'], ccb: ['ccbRemit'], comm: ['comm'], hsbc: ['hsbcCnTariff'], hang: ['hangCnTariff'], sc: ['scCnTariff'] },
+    mainlandReceipt: { boc: ['bocBankAnswer2026'], cib: ['cibInward'], cmb: ['cmbTariff'], icbc: ['icbcInward'], ccb: ['ccbRemit'], comm: ['comm'], hsbc: ['hsbcCnTariff'], hang: ['hangCnTariff'], sc: ['scCnTariff'] },
     mainlandFx: { boc: ['bocFx'], cib: ['cibFx', 'cibCard'], cmb: ['cmbFx'], icbc: ['icbcFx'], ccb: ['ccbFx'], comm: ['commFx'], hsbc: ['hsbcFx'], hang: ['hangCnFx'], sc: ['scFx'] },
     linked: { hsbc: ['hsbcGlobal'], hang: ['hang'], sc: ['sc', 'scGlobalFaq'] },
     hkTariff: { bochk: ['bochk'], hsbc: ['hsbcHk'], za: ['za', 'zaLocalUsd'], hang: ['hangHk'], sc: ['scHk'] },
@@ -62,6 +62,7 @@
     const mainlandMethod = r?.mainlandMethod || state.mainlandMethod;
     if (stage === '01') {
       if (mainlandMethod === 'boc-mobile' && s.start?.id === 'boc') keys.push('bocMobile2026', 'bocMobileUsdGuide');
+      else if (mainlandMethod === 'boc-online' && s.start?.id === 'boc') keys.push('bocBankAnswer2026');
       else add('mainlandTariff', s.start);
       if (state.route !== 'CNH') add('mainlandFx', s.start);
       if (mainlandMethod === 'cib-go' && s.start?.id === 'cib') keys.push('cibGo');
@@ -177,6 +178,7 @@
       s.start?.cnhTariff ? '人民币跨境电汇 · 公开标准价' : '人民币跨境汇款';
     const values = [['swift', channel]];
     if (s.start?.id === 'boc' && s.bank?.id === 'bochk' && state.route !== 'CNH') values.unshift(['boc-mobile', '手机银行 · 向同名境外中行汇款']);
+    if (s.start?.id === 'boc' && s.bank?.group !== 'boc' && state.route !== 'CNH') values.unshift(['boc-online', '手机银行／网银 · 向他行9折']);
     if (s.start?.id === 'cib' && state.route !== 'CNH') values.push(['cib-go', '小额全额到账 · 另加50 CNY/笔']);
     if (state.route === 'USD' && s.start?.fullAmountUsd != null) values.push(['full', '美元全额到账 · 另加' + s.start.fullAmountUsd + ' USD/笔']);
     if (['hsbc', 'hang', 'sc'].includes(s.start?.id) && s.start.group === s.bank?.group && (!s.start.linkedCurrencies || s.start.linkedCurrencies.includes(state.route))) values.unshift(['linked', ({ hsbc: '同名环球转账', hang: '优越理财 · 同名跨域转账', sc: '优先理财 · 同名速汇' })[s.start.id] + ' · 免费']);
@@ -215,7 +217,7 @@
       const r = p.result, config = { ...p.config };
       if (state.outcome === 'broker-balance') config.returnBank = state.returnBank;
       if (state.outcome !== 'mainland') config.exitBank = state.exitBank;
-      const channel = ({ 'boc-mobile': '手机同名汇款', linked: '两地同名转账', 'cib-go': '全额到账50元/笔', full: '美元全额到账', swift: '普通电汇' })[r.mainlandMethod];
+      const channel = ({ 'boc-mobile': '手机同名汇款', 'boc-online': '手机／网银他行9折', linked: '两地同名转账', 'cib-go': '全额到账50元/笔', full: '美元全额到账', swift: '普通电汇' })[r.mainlandMethod];
       const conversion = r.route !== 'USD' ? (r.fxMode === 'bank' ? routeName(r.bank.id, 'bank') : r.fxMode === 'auto' ? 'IBKR自动' : 'IBKR手动') + '换美元' : '';
       const funding = r.broker.id === 'ibkr' && r.depositMethod === 'chats' ? '香港花旗／渣打收款指示' :
         r.depositMethod === 'internal' ? r.broker.integratedBank ? '银行内交收' : '同行入金' :
@@ -382,7 +384,8 @@
   function transferHint() {
     if (state.mainlandMethod === 'cib-go') return '附加服务：每笔≤等值10,000 USD，仅限App提供此服务的收款账户；包含境外行费用。';
     if (state.mainlandMethod === 'full') return '美元全额到账附加服务按笔收费，汇出手续费、电讯费及收款行本行汇入费分别列示。';
-    if (state.mainlandMethod === 'boc-mobile') return '手机银行手续费、电报费双免已获2026年中行供稿确认；同名中银香港基本汇入费免。代理费单独按所列汇路证据计算。';
+    if (state.mainlandMethod === 'boc-mobile') return '手机银行“境外中行”入口双免；中银香港使用BKCHHKHH，香港分行BKCHHKHK不享此优惠。代理费单独按汇路证据计算。';
+    if (state.mainlandMethod === 'boc-online') return '向境外他行手机／网银基础费9折；收款行及代理行费用另列。';
     if (state.mainlandMethod === 'linked') return state.startBank === 'sc' ? '适用于渣打优先理财、两地同名账户及指定渠道。' : state.startBank === 'hang' ? '适用于恒生中国优越理财，经跨域转账页面汇往同名恒生香港账户；优进理财的累计3次本行费用优惠不适用此项。' : '适用于已连通的两地同名账户及指定转账页面。';
     return '';
   }

@@ -669,10 +669,12 @@
       const linkedCurrency = !start.linkedCurrencies || start.linkedCurrencies.includes(currency);
       const mainlandMethod = method('mainlandMethod', linked && sameGroup && linkedCurrency ? 'linked' : 'swift');
       const bocMobile = mainlandMethod === 'boc-mobile';
+      const bocOnline = mainlandMethod === 'boc-online';
       const paymentConnect = mainlandMethod === 'payment-connect';
       const swiftGo = mainlandMethod === 'cib-go';
       if (swiftGo && (start.id !== 'cib' || !['USD', 'HKD'].includes(currency))) return { error: 'SWIFT GO仅收录兴业寰宇人生的USD/HKD全额到账服务。' };
       if (bocMobile && !bocMobilePair) return { error: '中行手机银行向境外中行渠道须选择中国银行→同名中银香港，使用USD或HKD；人民币支付通是另一渠道。' };
+      if (bocOnline && !(start.id === 'boc' && bank.group !== 'boc' && start.onlineTariff?.currencies.includes(currency))) return { error: '中行手机／网银他行9折仅适用于中国银行向境外他行汇出USD/HKD；同名中银香港使用手机银行集团双免渠道。' };
       if (paymentConnect && !(start.id === 'boc' && bank.id === 'bochk' && currency === 'CNH')) return { error: '此跨境支付通测算仅收录中国银行→中银香港、人民币原币到账；其他银行及币种须另核。' };
       if (mainlandMethod === 'linked' && !(linked && sameGroup)) return { error: '两地同名专用渠道须选择同一银行集团的香港账户。' };
       if (mainlandMethod === 'linked' && !linkedCurrency) return { error: '渣打全球账户间汇款仅支持外币同币种；人民币原币汇出使用人民币跨境汇款渠道。' };
@@ -686,7 +688,7 @@
       const currencyTariff = currency === 'CNH' && typeof start.cnhTariff === 'object' ? start.cnhTariff : start.standardTariff;
       const standardTariff = mainlandMethod === 'swift' && currencyTariff &&
         (!currencyTariff.currencies || currencyTariff.currencies.includes(currency)) && currencyTariff;
-      const senderBank = standardTariff ? { ...start, ...standardTariff } : start;
+      const senderBank = bocOnline ? { ...start, ...start.onlineTariff } : standardTariff ? { ...start, ...standardTariff } : start;
       const usesAllowance = senderBank.freeTelegram && senderOverride == null && !['linked', 'boc-mobile', 'payment-connect'].includes(mainlandMethod);
       const used = usesAllowance ? optionalNumber(config, 'usedFreeTransfers') : 0;
       if (!knownFee(used) || !Number.isInteger(used)) return { error: '已用免费笔数须为非负整数。' };
@@ -759,9 +761,10 @@
         }
       };
       rows.push({ key: 'sender', label: '内地汇出手续费＋电讯费' + (fullFee ? '＋全额到账费' : ''), cny: unknownSender ? null : sender, step: 'entry' });
-      const senderEvidence = reportedMobile ? data.bocMobileEvidence.senderEvidence : '';
-      if (reportedMobile && senderOverride == null) rows[0].evidence = senderEvidence;
-      const senderLabel = bocMobile ? '中行手机银行向境外中行·现行' : start.name;
+      const senderEvidence = bocOnline ? '中行2026-08-19答复 · 手机／网银他行9折' : reportedMobile ? data.bocMobileEvidence.senderEvidence : '';
+      if ((reportedMobile || bocOnline) && senderOverride == null) Object.assign(rows[0], { evidence: senderEvidence,
+        ...(bocOnline ? { sources: ['bocBankAnswer2026'] } : {}) });
+      const senderLabel = bocOnline ? '中行手机／网银向境外他行' : bocMobile ? '中行手机银行向境外中行·现行' : start.name;
       rows[0].items = unknownSender ? [{ label: senderLabel + '汇出手续费', cny: null }, { label: senderLabel + '电讯费', cny: null }] :
         senderOverride == null ? [{ label: '汇出手续费', cny: commission, evidence: senderEvidence }, { label: '汇出电讯费', cny: telegram, evidence: senderEvidence }] : [{ label: '本人报价：汇出手续费及电讯费', cny: senderOverride * count }];
       if (fullFee) rows[0].items.push({ label: swiftGo ? 'SWIFT GO全额到账 · 50 CNY/笔' : '全额到账附加费 · ' + (start.fullAmountUsd * count) + ' USD', cny: fullFee * count });
@@ -1070,7 +1073,7 @@
       const returningBanks = provider.integratedBank ? [bank] : data.hkBanks;
       const modes = route === 'USD' ? ['manual'] : [...(provider.id === 'ibkr' ? ['manual', 'auto'] : []), ...(bank.id === 'bochk' && offshore[route] ? ['bank'] : [])];
       const entryMethods = ['hang', 'hsbc', 'sc'].includes(start.id) && start.group === bank.group && (!start.linkedCurrencies || start.linkedCurrencies.includes(route)) ? ['linked', 'swift'] :
-        ['swift', ...(start.id === 'boc' && bank.id === 'bochk' && route !== 'CNH' ? ['boc-mobile'] : []), ...(route === 'USD' && start.fullAmountUsd != null ? ['full'] : [])];
+        ['swift', ...(start.id === 'boc' && route !== 'CNH' ? [bank.id === 'bochk' ? 'boc-mobile' : 'boc-online'] : []), ...(route === 'USD' && start.fullAmountUsd != null ? ['full'] : [])];
       for (const returning of returningBanks) for (const fxMode of modes) for (const exit of fresh) for (const mainlandMethod of entryMethods) {
         const deposits = provider.integratedBank ? ['internal'] : route === 'USD' || fxMode === 'bank' ? ['chats', 'swift'] : ['fps', 'edda', 'swift'];
         for (const depositMethod of deposits) {
@@ -1119,7 +1122,7 @@
         const mode = value === 'USD' ? 'manual' : activeBroker.id !== 'ibkr' ? 'bank' : route === 'USD' ? 'manual' : fxMode;
         const methods = value === 'USD' || mode === 'bank' ? ['chats', 'swift'] : ['fps', 'edda', 'swift'];
         const deposit = methods.includes(selected.depositMethod) ? selected.depositMethod : methods[0];
-        const entry = (selected.mainlandMethod === 'full' && value !== 'USD') || (selected.mainlandMethod === 'boc-mobile' && value === 'CNH') || (selected.mainlandMethod === 'payment-connect' && value !== 'CNH') || (selected.mainlandMethod === 'linked' && start.linkedCurrencies && !start.linkedCurrencies.includes(value)) ? '' : selected.mainlandMethod;
+        const entry = (selected.mainlandMethod === 'full' && value !== 'USD') || (['boc-mobile', 'boc-online'].includes(selected.mainlandMethod) && value === 'CNH') || (selected.mainlandMethod === 'payment-connect' && value !== 'CNH') || (selected.mainlandMethod === 'linked' && start.linkedCurrencies && !start.linkedCurrencies.includes(value)) ? '' : selected.mainlandMethod;
         return { route: value, ...calculate(start, bank, value, mode, exit, returning, { mainlandMethod: entry, depositMethod: deposit }, activeBroker) };
       }),
       returnBank: data.hkBanks.map(row => ({ returning: row, ...calculate(start, bank, route, fxMode, exit, row, { returnMethod: row.id === returning.id ? selected.returnMethod : '' }, activeBroker) })),
@@ -1197,7 +1200,9 @@
   function calculatorRoute(config) {
     const s = { ...config };
     const paired = ({ boc: 'bochk', hsbc: 'hsbc', hang: 'hang', sc: 'sc' })[s.startBank] === s.bank;
-    s.mainlandMethod ||= paired && s.startBank === 'boc' && s.route !== 'CNH' ? 'boc-mobile' : paired && s.startBank !== 'boc' && !(s.startBank === 'sc' && s.route === 'CNH') ? 'linked' : 'swift';
+    s.mainlandMethod ||= paired && s.startBank === 'boc' && s.route !== 'CNH' ? 'boc-mobile' :
+      s.startBank === 'boc' && !paired && s.route !== 'CNH' ? 'boc-online' :
+      paired && s.startBank !== 'boc' && !(s.startBank === 'sc' && s.route === 'CNH') ? 'linked' : 'swift';
     s.fxMode = s.route === 'USD' ? 'manual' : s.broker !== 'ibkr' ? 'bank' : s.fxMode || 'manual';
     s.depositMethod ||= ['hsbc', 'za'].includes(s.broker) && s.broker === s.bank ? 'internal' :
       s.broker === 'usmart' && ['bochk', 'hsbc'].includes(s.bank) || s.broker === 'chief' && ['bochk', 'hsbc', 'hang'].includes(s.bank) ? 'internal' :
@@ -1213,6 +1218,7 @@
     const broker = data.brokers.find(x => x.id === s.broker), returning = data.hkBanks.find(x => x.id === s.returnBank), exit = data.mainlandBanks.find(x => x.id === s.exitBank);
     const mainlandMethods = ['swift'];
     if (start?.id === 'boc' && bank?.id === 'bochk' && s.route !== 'CNH') mainlandMethods.unshift('boc-mobile');
+    if (start?.id === 'boc' && bank?.group !== 'boc' && start.onlineTariff?.currencies.includes(s.route)) mainlandMethods.unshift('boc-online');
     if (start?.id === 'cib' && s.route !== 'CNH') mainlandMethods.push('cib-go');
     if (s.route === 'USD' && knownFee(start?.fullAmountUsd)) mainlandMethods.push('full');
     if (['hsbc', 'hang', 'sc'].includes(start?.id) && start.group === bank?.group && (!start.linkedCurrencies || start.linkedCurrencies.includes(s.route))) mainlandMethods.unshift('linked');

@@ -7,6 +7,7 @@ const Q = require('./fixtures/money-flow-quotes-20261009.json');
 const diversityQuotes = require('./fixtures/money-flow-quotes-20261011.json');
 const fundingEvidence = require('./fixtures/money-flow-ibkr-funding-20261011.json');
 const usmartFundingEvidence = require('./fixtures/money-flow-usmart-same-bank-20261011.json');
+const bocBankAnswer = require('./fixtures/money-flow-boc-bank-answer-20260819.json');
 const config = { ...currentConfig, date: '2026-10-10' };
 const close = (a, b) => assert.ok(Math.abs(a - b) < 1e-6, a + ' != ' + b);
 const base = M.calculatorRoute({ ...config, startBank: 'cib', bank: 'bochk', broker: 'za', returnBank: 'bochk', exitBank: 'hsbc', route: 'USD', outcome: 'broker-balance' });
@@ -16,6 +17,51 @@ const ledger = r => {
   close(r.budgetCny + r.profitUsd * r.refs.USD - r.costCny - r.taxCny + r.fxImpactCny, r.netCny);
   close(r.rows.reduce((sum, x) => sum + (x.cny || 0), 0), r.costCny);
 };
+
+test('BOC electronic transfers to other banks apply the current bank-authored discount per transfer', () => {
+  assert.equal(D.sources.bocBankAnswer2026.url, bocBankAnswer.source);
+  const tariff = bocBankAnswer.otherBankElectronic;
+  for (const bank of D.calculator.hkBanks.filter(id => id !== 'bochk')) for (const broker of D.calculator.brokers) for (const route of tariff.modelCurrencies) {
+    const input = M.calculatorRoute({ ...base, startBank: 'boc', bank, broker, route, count: 1, mainlandMethod: '', depositMethod: '' });
+    assert.equal(input.mainlandMethod, 'boc-online');
+    const result = M.calculatorJourney(input, D, Q), r = result.selected || result.partial;
+    assert.ok(r, bank + '/' + broker + '/' + route);
+    const principal = (100000 - tariff.telegramCny) / (1 + tariff.rate), sender = r.rows.find(item => item.key === 'sender');
+    close(sender.cny, 100000 - principal);
+    close(sender.items[0].cny, principal * tariff.rate); close(sender.items[1].cny, tariff.telegramCny);
+    assert.deepEqual(sender.sources, ['bocBankAnswer2026']);
+    assert.equal(r.rows.find(item => item.key === 'entryMiddle').cny, null);
+    ledger(r);
+  }
+  for (const [budgetCny, count, expected] of [[1000, 2, 234], [1000000, 2, 612]]) {
+    const r = run({ startBank: 'boc', bank: 'hsbc', mainlandMethod: 'boc-online', budgetCny, count }).selected;
+    close(r.rows.find(item => item.key === 'sender').cny, expected);
+    close(r.steps.mainlandForeign * r.startSell + expected, budgetCny); ledger(r);
+  }
+  assert.match(run({ startBank: 'boc', bank: 'hsbc', mainlandMethod: 'boc-online', budgetCny: 112 }).error, /预算不足/);
+});
+
+test('BOC group mobile, other-bank electronic, standard wire and normal inward receipt stay separate', () => {
+  for (const route of ['USD', 'HKD']) {
+    const input = M.calculatorRoute({ ...base, startBank: 'boc', bank: 'bochk', route, mainlandMethod: '' });
+    assert.equal(input.mainlandMethod, 'boc-mobile');
+    close(M.calculatorJourney(input, D, Q).selected.rows.find(item => item.key === 'sender').cny, bocBankAnswer.groupMobile.feeCny);
+    assert.match(run({ ...input, mainlandMethod: 'boc-online' }).error, /向境外他行/);
+  }
+  const normal = run({ startBank: 'boc', bank: 'hsbc', mainlandMethod: 'swift', count: 1 }).selected;
+  close(normal.rows.find(item => item.key === 'sender').cny, 100000 - (100000 - 80) / 1.001);
+  const cnh = M.calculatorRoute({ ...base, startBank: 'boc', bank: 'hsbc', route: 'CNH', mainlandMethod: '' });
+  assert.equal(cnh.mainlandMethod, 'swift');
+  assert.ok(!M.calculatorChannels(cnh, D).mainlandMethods.includes('boc-online'));
+  assert.match(run({ ...cnh, mainlandMethod: 'boc-online' }).error, /USD\/HKD/);
+  const returned = run({ outcome: 'mainland', returnBank: 'bochk', exitBank: 'boc', returnMethod: 'swift' }).selected;
+  const receipt = returned.rows.find(item => item.key === 'returnOther').items.find(item => item.label.endsWith('USD收款费'));
+  close(receipt.cny, bocBankAnswer.normalPersonalInward.bankFeeCny);
+  assert.ok(!returned.missing.includes(receipt.label));
+  assert.ok(returned.missing.includes('回内地中转行费'));
+  assert.equal(returned.rows.find(item => item.key === 'returnOther').items.find(item => item.label === '回内地中转行费').cny, null);
+  ledger(returned);
+});
 
 test('IBKR funding choices agree with the current public tool for mainland and Hong Kong residents', () => {
   const ibkr = D.brokers.find(b => b.id === 'ibkr');
@@ -87,14 +133,14 @@ test('all 151875 catalogue combinations retain selection and either reconcile or
   assert.ok(r.routes.every(r => !r.key.includes('abc')));
   assert.equal(r.channelProfiles.length, 3);
   for (const profile of r.channelProfiles) {
-    if (profile.profile.id === 'all-relevant-qualifications') assert.ok(profile.checked > 133185);
-    else assert.equal(profile.checked - profile.chequeBoundaryChecks, 133185);
+    if (profile.profile.id === 'all-relevant-qualifications') assert.ok(profile.checked > 139295);
+    else assert.equal(profile.checked - profile.chequeBoundaryChecks, 139295);
     assert.ok(profile.chequeBoundaryChecks > 0);
     assert.equal(profile.priced + profile.partial + profile.routeIssues, profile.checked);
     assert.equal(profile.ledgerChecks, profile.priced + profile.partial);
     assert.ok(profile.retainedPartialResults > 0);
     assert.ok(profile.referencePriced <= profile.priced);
-    assert.deepEqual(profile.coverage.mainlandMethods, ['boc-mobile', 'cib-go', 'full', 'linked', 'swift']);
+    assert.deepEqual(profile.coverage.mainlandMethods, ['boc-mobile', 'boc-online', 'cib-go', 'full', 'linked', 'swift']);
     assert.deepEqual(profile.coverage.fxModes, ['auto', 'bank', 'manual']);
     assert.deepEqual(profile.coverage.depositMethods, ['chats', 'edda', 'fps', 'internal', 'swift']);
     assert.deepEqual(profile.coverage.returnMethods, ['bochk-fast', 'linked', 'swift']);

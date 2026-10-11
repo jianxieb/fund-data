@@ -753,7 +753,8 @@ test('unquoted fees remain named in every affected node, while explicit zero cle
   assert.ok(l.legs[0].missing.includes('内地→香港中转行费'));
   assert.ok(l.stops[2].missing.includes('内地→香港中转行费'));
   assert.ok(l.legs[4].missing.includes('回内地中转行费'));
-  assert.ok(l.legs[4].missing.includes('中国银行USD收款费'));
+  assert.ok(!l.legs[4].missing.includes('中国银行USD收款费'));
+  close(l.legs[4].rows.find(item => item.label === '中国银行USD收款费').cny, 0);
   assert.equal(r.complete, false);
   const confirmed = M.journeyPlans({ ...input, entryMiddleCny: 0, depositOtherCny: 0, intermediaryCny: 0, returnExtraCny: 0 }, D, richQuotes).selected;
   assert.equal(confirmed.complete, true); assert.equal(M.flowLedger(confirmed).stops.at(-1).missing.length, 0);
@@ -1153,6 +1154,28 @@ function moneyUi(input, quotes = cibQuotes, date = '2026-10-09') {
   return { render: () => context.window.ChanghengMoneyFlow.view(helpers), saved: () => saved, modal: () => modal,
     act: (action, field, value) => context.window.ChanghengMoneyFlow.handleAction({ dataset: { action: 'money-flow-' + action, field, value } }) };
 }
+
+test('BOC channel switching renders the same discounted sender fee and keeps group and bank choices independent', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  const ui = moneyUi({ ...currentRoute, date: '2026-10-11', startBank: 'boc', bank: 'bochk', broker: 'za',
+    returnBank: 'bochk', mainlandMethod: 'boc-mobile', route: 'USD', outcome: 'broker-balance' }, quotes, '2026-10-11');
+  ui.render(); ui.act('choose', 'bank', 'hsbc');
+  const saved = ui.saved(), r = M.calculatorJourney({ ...saved, date: '2026-10-11' }, D, quotes).selected;
+  assert.equal(saved.broker, 'za'); assert.equal(saved.mainlandMethod, 'boc-online');
+  assert.match(ui.render(), /向他行9折/);
+  assert.match(ui.render(), /72.00 CNY/);
+  close(r.rows.find(item => item.key === 'sender').cny, 100000 - (100000 - 72) / 1.0009);
+  ui.act('pick', '', 'mainlandMethod');
+  assert.match(ui.modal(), /boc-online/); assert.match(ui.modal(), /普通电汇/);
+  ui.act('choose', 'mainlandMethod', 'swift');
+  assert.match(ui.render(), /80.00 CNY/);
+  ui.act('choose', 'bank', 'bochk');
+  assert.equal(ui.saved().mainlandMethod, 'boc-mobile'); assert.equal(ui.saved().broker, 'za');
+  ui.render(); ui.act('detail', '', 'edge-01'); assert.match(ui.modal(), /BKCHHKHH/);
+  ui.act('choose', 'route', 'CNH');
+  assert.equal(ui.saved().mainlandMethod, 'swift');
+  ui.act('pick', '', 'mainlandMethod'); assert.doesNotMatch(ui.modal(), /boc-online/);
+});
 
 test('saved missing or retired source banks leave a usable selector for every remittance currency', () => {
   for (const startBank of ['', 'retired-bank', 'abc']) for (const route of ['USD', 'HKD', 'CNH']) {
@@ -1648,7 +1671,7 @@ test('mainland receiving-bank choices show inward tariffs and USD bid prices reg
     ui.render(); ui.act('pick', '', 'exitBank');
     const modal = ui.modal();
     assert.match(modal, /境外USD汇入手续费：0.00 CNY/);
-    assert.match(modal, /境外USD汇入手续费：尚未取得适用价目/);
+    assert.doesNotMatch(modal, /境外USD汇入手续费：尚未取得适用价目/);
     assert.match(modal, /<b>6.6<\/b><small>CNY\/USD · 结汇/);
     assert.doesNotMatch(modal, /汇出|电讯|全额到账|前30笔/);
   }

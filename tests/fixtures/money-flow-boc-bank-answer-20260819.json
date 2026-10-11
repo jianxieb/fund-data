@@ -1,0 +1,24 @@
+{
+  "checkedAt": "2026-10-11",
+  "answeredAt": "2026-08-19",
+  "source": "https://zhidao.baidu.com/question/696531417821087764.html?qbl=relate_question_4",
+  "author": "中国银行股份有限公司",
+  "identity": "页面具名中国银行答复，带官方标识及boc.cn机构介绍；公开原文与检索文本相符。",
+  "baseHongKongWire": { "rate": 0.001, "minimumCny": 50, "maximumCny": 260, "telegramCny": 80 },
+  "otherBankElectronic": {
+    "channels": ["手机银行", "网上银行"],
+    "discount": 0.9,
+    "rate": 0.0009,
+    "minimumCny": 45,
+    "maximumCny": 234,
+    "telegramCny": 72,
+    "modelCurrencies": ["USD", "HKD"]
+  },
+  "groupMobile": { "feeCny": 0, "telegramCny": 0, "entrance": "出境和外币服务／跨境汇款／境外中行", "bochkBic": "BKCHHKHHXXX", "excludedBic": "BKCHHKHKXXX" },
+  "normalPersonalInward": {
+    "bankFeeCny": 0,
+    "finding": "银行答复描述境内个人境外汇入通常不收本行解付费。本模型用于原币正常入账，不包括转汇、退汇、现钞及其他行收费。",
+    "intermediaryCny": null
+  },
+  "notApplied": ["答复中的理财及财富客户等级折扣", "普通人民币汇出套用外币9折", "由本行双免推导代理行或他行全部免费", "将中国银行香港分行误作中银香港"]
+}
