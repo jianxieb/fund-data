@@ -487,11 +487,13 @@
   }
   function summary(data) {
     const { r, rows, total, gaps, partial, estimated, label, canBalance, lastPoint } = balancePresentation(data);
+    const missingLabels = r?.missing?.length ? r.missing : gaps.flatMap(item =>
+      (item.items || [item]).filter(part => part.cny == null).map(part => part.label));
     const balanceLabel = canBalance ? finalBalanceLabel({ gaps, estimated, canBalance, r }) : lastPoint ? lastBalanceLabel(lastPoint) : '最终余额暂不可算';
     const finalHtml = (canBalance ? amount(r.net, r.currency) : lastPoint ? amount(lastPoint.amount, lastPoint.currency) : '<b>—</b>') +
       (r?.sourceRemainderCny > 1e-6 ? '<small>另留内地账户 ' + cost(r.sourceRemainderCny) + '</small>' : '');
     return '<div class="flow-result"><div><span>' + label + '</span><strong class="num">' + (rows.some(x => x.cny != null) ? partial ? cost(total) : pct(total / M.number(state.budgetCny)) : '—') + '</strong>' +
-      '<small>' + (rows.length ? partial ? data.error ? r?.errorAction === 'account' ? esc(data.error) : '第' + esc(r?.errorStage || data.errorStage || '01') + '步尚未完成' : '总损耗尚缺：' + esc(gaps.map(x => x.label).join('、') || r?.exitIssue || '有效成交报价') : cost(total) : esc(data.error || '选择有效本金和汇出报价')) + '</small></div><div class="flow-result-equation"><span>其中账户期间费</span><b>' +
+      '<small>' + (rows.length ? partial ? data.error ? r?.errorAction === 'account' ? esc(data.error) : '第' + esc(r?.errorStage || data.errorStage || '01') + '步尚未完成' : '总损耗尚缺：' + esc(missingLabels.join('、') || r?.exitIssue || '有效成交报价') : cost(total) : esc(data.error || '选择有效本金和汇出报价')) + '</small></div><div class="flow-result-equation"><span>其中账户期间费</span><b>' +
       (row(r, 'account') ? cost(row(r, 'account').cny) : '—') + '</b>' + (r?.taxCny ? '<small>另预留税款 ' + cost(r.taxCny) + '</small>' : '<small>已计入合计</small>') + '</div><div><span>' + balanceLabel + '</span>' + finalHtml +
       '</div><div class="flow-result-detail">' +
       action('全程明细', 'detail', 'data-value="cost"', 'text-link') + '</div></div>';

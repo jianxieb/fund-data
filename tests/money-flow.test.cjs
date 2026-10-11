@@ -1302,6 +1302,8 @@ test('the default round trip returns to the starting BOC account without adding 
   close(r.rows.find(x => x.key === 'returnWire').cny, 0);
   assert.equal(r.rows.find(x => x.key === 'returnOther').cny, null); // Do not invent an intermediary waiver.
   assert.doesNotMatch(ui.render(), /汇丰中国 · 卓越理财期间管理费/);
+  assert.match(ui.render(), /总损耗尚缺：回内地中转行费<\/small>/);
+  assert.doesNotMatch(ui.render(), /总损耗尚缺：回内地中转／收款费/);
 
   const existing = moneyUi({ ...ui.saved(), exitBank: 'hsbc' }, quotes, '2026-10-12');
   existing.render();
@@ -1311,6 +1313,22 @@ test('the default round trip returns to the starting BOC account without adding 
   assert.match(existing.render(), /汇丰中国 · 卓越理财期间管理费/);
   existing.act('reset');
   assert.equal(existing.saved().exitBank, 'boc');
+});
+
+test('an unquoted SC settlement identifies the missing bank price once without marking its free receipt as unknown', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  const ui = moneyUi({ outcome: 'mainland', exitBank: 'sc' }, quotes, '2026-10-12');
+  ui.render();
+  ui.act('choose', 'exitBank', 'sc');
+  const r = M.calculatorJourney({ ...ui.saved(), date: '2026-10-12' }, D, quotes).selected;
+  assert.equal(r.indicativeExit, true);
+  const receipt = r.rows.find(row => row.key === 'returnOther').items.find(item => item.label === '渣打中国USD收款费');
+  close(receipt.cny, 0);
+  assert.equal(r.missing.filter(label => label === r.exitIssue).length, 1);
+  assert.ok(!r.missing.includes('内地结汇差额'));
+  assert.ok(!r.missing.includes(receipt.label));
+  assert.match(ui.render(), /总损耗尚缺：回内地中转行费、渣打中国USD现汇买入价尚未取得/);
+  assert.doesNotMatch(ui.render(), /总损耗尚缺：[^<]*内地结汇差额/);
 });
 
 test('saved SC local USD wires migrate to its published clearing channel without replacing accounts or conditions', () => {

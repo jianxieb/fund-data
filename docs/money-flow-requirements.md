@@ -850,3 +850,11 @@ IBKR涉及出金的4种用途仍没有完整费用方案；本轮公开工具的
 返程检索另核[中行官方中银快汇说明](https://www.boc.cn/pbservice/pb4/200910/t20091014_855082.html)、[中银香港现行收费](https://www.bochk.com/sc/servicecharge.html)、[2026-06-27港卡回款讨论](https://linux.do/t/topic/2487402)及[IBKR攻略的6月6日提款更新](https://yolkinsight.hk/ib-funds/)。中银快汇基本费豁免已计入；讨论中具名的原币回款为HKD，未拿来证明USD代理费为0。IBKR更新只说小额提款到汇丰免费，没有金额或执行实体范围，未将其套用全目录美元出金。网上攻略中的全路径免费概括、反方向记录、旧活动与官方费用边界分别核对，检索不交给用户代做，A01及完整产品仍未通过。
 
 另找到[中银香港手机银行汇款帮助的费用第4项](https://its.bochk.com/banking/remit/help/ibs_rem_helpApp_boc_s.html)：中银快汇一般涉及收款行及本行额外处理费用；[大湾区指南第26页](https://www.bochk.com/dam/crossborderservices/25GBAserviceguide_southcross.pdf)确认其美元／港币集团内通道及在线基本费豁免。收费表的美元160 HKD代理费预收明确不适用于内地，但“不预收”不是所有附加处理费用必为0的承诺。[美元快汇攻略](https://jiawen.wiki/2bbe0fea1bd480dda001fe574b4ebf9d)的零手续费叙述涉及约5,000 USD分笔，没有可核日期和同额原始回单；[2026年汇路讨论](https://www.flyert.com.cn/forum.php?extra=page%3D1&mobile=2&mod=viewthread&tid=4838435)中的中行无损例子为内地→香港方向，IBKR出金则同时存在10／20 USD代理费记录。这些资料扩充明确的渠道边界，没有据此把当前14,899 USD返程或全部IBKR提款代理费改成0。
+
+### 2026-10-12汇总只列实际缺项（A01／A06／A13）
+
+发布页复验发现，返程正文已明确中国银行USD收款费0，汇总却仍用“回内地中转／收款费”笼统标记缺项。汇总现在使用模型逐项缺失证据，只列真正未报价的中转费。渣打结汇缺价时，保留具体银行USD买入价缺项，去掉重复的“内地结汇差额”；IBKR原有HKD／CNH实时成交点差名称仍完整保留，不能变成没有账户和币种的泛化说明。费用、余额、选择及报价完整性判定没有改变。
+
+先复现默认返程的失败回归，再修正汇总；新增渣打缺价及免费收款的独立检查，原有IBKR末端余额检查一并通过。344项全项目JavaScript检查全部通过，无跳过；22项资源版本检查通过。[九家收款银行的实际记录](evidence/money-flow-feedback/browser-precise-missing-fees-20261012.json)及[中行返程截图](evidence/money-flow-feedback/local-precise-missing-fees-20261012.jpg)保存当前工作树结果。一次批量连接超时的尝试未记为通过，恢复后完成九家切换；渣打刷新后再读取最终去重结果。
+
+此修复消除“已确定的费用也被说成待查”及重复文案，不代表尚无公开成交价或代理费证据已补齐，A01保持未完成；新版发布复验继续按实际部署记录。
