@@ -1957,3 +1957,96 @@ test('cheque qualification is visible beside its fee and unused withdrawal contr
   assert.match(ui.modal(), /本月第几次出金/);
   assert.doesNotMatch(ui.modal(), /存票当日第几张支票/);
 });
+
+test('inactive or other-broker offer inputs never change the selected account fees', () => {
+  const inputs = [['hsbc', 'trade25', 'otherTurnoverHkd'], ['za', 'zaLv2', 'usedPromoOrders'], ['usmart', 'usmartPromo', 'usmartDays']];
+  for (const id of D.calculator.brokers) for (let mask = 0; mask < 8; mask++) {
+    const config = { ...feeConfig, ...Object.fromEntries(inputs.map(([, flag], i) => [flag, !!(mask & (1 << i))])) };
+    const ordinary = M.brokerTradingFees(config, broker(id), 10000, 0, feeRefs);
+    for (const invalid of [-1, 1.5, 'invalid', Infinity]) {
+      const stale = { ...config, ...Object.fromEntries(inputs.filter(([owner, flag]) => owner !== id || !config[flag]).map(([, , key]) => [key, invalid])) };
+      assert.deepEqual(M.brokerTradingFees(stale, broker(id), 10000, 0, feeRefs), ordinary, id + ':' + mask + ':' + invalid);
+    }
+  }
+  for (const [id, flag, key] of inputs) for (const invalid of [-1, 'invalid', Infinity, ...(key === 'otherTurnoverHkd' ? [] : [1.5])]) {
+    const r = M.brokerTradingFees({ ...feeConfig, [flag]: true, [key]: invalid }, broker(id), 10000, 0, feeRefs);
+    assert.ok(r.error, id + ':' + key + ':' + invalid);
+  }
+  assert.ok(!M.brokerTradingFees({ ...feeConfig, trade25: true, otherTurnoverHkd: 1.5 }, broker('hsbc'), 10000, 0, feeRefs).error);
+});
+
+test('unused remittance quota inputs cannot break other banks or CIB RMB calculations', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  for (const startBank of D.calculator.mainland) for (const route of D.calculator.currencies) {
+    if (startBank === 'cib' && route !== 'CNH') continue;
+    for (const bank of D.calculator.hkBanks) for (const id of D.calculator.brokers) {
+      const input = M.calculatorRoute({ ...chequeRoute, broker: id, startBank, bank, route,
+        mainlandMethod: '', depositMethod: '', outcome: 'broker-balance', returnBank: bank, usedFreeTransfers: 0 });
+      const baseline = M.calculatorJourney(input, D, quotes), r = baseline.selected || baseline.partial;
+      for (const usedFreeTransfers of [-1, 1.5, 'invalid']) {
+        const next = M.calculatorJourney({ ...input, usedFreeTransfers }, D, quotes), other = next.selected || next.partial;
+        assert.equal(next.error, baseline.error, startBank + ':' + bank + ':' + id + ':' + route);
+        assert.deepEqual(other?.rows, r?.rows); assert.deepEqual(other?.steps, r?.steps);
+        if (r?.net != null) close(other.net, r.net);
+      }
+    }
+  }
+  for (const route of ['USD', 'HKD']) for (const usedFreeTransfers of [-1, 1.5, 'invalid']) {
+    const active = M.calculatorRoute({ ...chequeRoute, startBank: 'cib', bank: 'hsbc', route, usedFreeTransfers,
+      mainlandMethod: 'swift', depositMethod: '', outcome: 'broker-balance' });
+    assert.match(M.calculatorJourney(active, D, quotes).error, /已用免费笔数/);
+    const confirmed = M.calculatorJourney({ ...active, senderFeeCny: 0 }, D, quotes);
+    assert.equal(confirmed.error, undefined);
+  }
+});
+
+test('switching accounts or disabling an offer restores calculation without erasing the whole route', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  const base = { ...chequeRoute, outcome: 'broker-balance', broker: 'usmart', usmartPromo: true, usmartDays: -1 };
+  for (const id of ['ibkr', 'hsbc', 'za', 'chief']) {
+    const ui = moneyUi(base, quotes, '2026-10-11');
+    assert.match(ui.render(), /开户距今须为非负整数天/);
+    ui.act('choose', 'broker', id);
+    const html = ui.render();
+    assert.doesNotMatch(html, /开户距今须为非负整数天/);
+    assert.equal(ui.saved().bank, base.bank); assert.equal(ui.saved().startBank, base.startBank);
+    assert.match(html, /全程/); assert.match(html, /买入美股 → 卖出/);
+  }
+  const inactive = moneyUi({ ...base, usmartPromo: false }, quotes, '2026-10-11');
+  assert.doesNotMatch(inactive.render(), /开户距今须为非负整数天/);
+  const bank = moneyUi({ ...base, broker: 'za', usmartPromo: false, startBank: 'cib', bank: 'hsbc', mainlandMethod: 'swift', usedFreeTransfers: -1 }, quotes, '2026-10-11');
+  assert.match(bank.render(), /已用免费笔数/);
+  bank.act('choose', 'startBank', 'boc');
+  assert.doesNotMatch(bank.render(), /已用免费笔数/);
+  assert.equal(bank.saved().bank, 'hsbc'); assert.equal(bank.saved().broker, 'za');
+});
+
+test('invalid trading settings preserve funded balances and put the error on the trading action', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  for (const id of D.calculator.brokers) for (const route of D.calculator.currencies) {
+    const input = M.calculatorRoute({ ...chequeRoute, broker: id, route, outcome: 'broker-balance',
+      mainlandMethod: '', depositMethod: '', fxMode: 'bank' });
+    const baseline = M.calculatorJourney(input, D, quotes).selected;
+    assert.ok(baseline.steps.fundedUsd > 0);
+    const invalid = { ...input, buyOrders: 0 };
+    const data = M.calculatorJourney(invalid, D, quotes), r = data.partial;
+    assert.match(data.error, /交易笔数/); assert.equal(r.errorAction, 'trade');
+    close(r.steps.fundedUsd, baseline.steps.fundedUsd);
+    assert.deepEqual(r.rows.filter(row => ['entry', 'deposit'].includes(row.step)), baseline.rows.filter(row => ['entry', 'deposit'].includes(row.step)));
+    const html = moneyUi(invalid, quotes, '2026-10-11').render();
+    const funding = html.split('<section class="flow-edge" aria-label="')[2].split('</section>')[0];
+    const trading = html.split('aria-label="买入美股 → 卖出"')[1].split('</section>')[0];
+    const stock = html.split('data-flow-stage="03"')[1].split('</section>')[0];
+    const summary = html.split('id="flow-live-summary"')[1].split('flow-bottom-tools')[0];
+    assert.doesNotMatch(funding, /交易笔数须为/); assert.match(trading, /交易笔数须为/);
+    assert.match(stock, new RegExp(baseline.steps.fundedUsd.toFixed(2) + ' <small>USD<'));
+    assert.match(summary, /最后可计余额/); assert.match(summary, new RegExp(baseline.steps.fundedUsd.toFixed(2) + ' <small>USD<'));
+  }
+  const stale = structuredClone(quotes);
+  for (const q of Object.values(stale.offshoreUsd.bochk.quotes)) q.asOf = '2026-10-01 12:00:00';
+  const input = M.calculatorRoute({ ...chequeRoute, broker: 'za', route: 'CNH', outcome: 'broker-balance', mainlandMethod: '', depositMethod: '', fxMode: 'bank', buyOrders: 0 });
+  const data = M.calculatorJourney(input, D, stale);
+  assert.equal(data.partial.quoteFreshness.entryMarket, false);
+  const summary = moneyUi(input, stale, '2026-10-11').render().split('id="flow-live-summary"')[1];
+  assert.doesNotMatch(summary, /最后可计余额 · ZA/); assert.match(summary, /最后可计余额 · 中银香港/);
+});

@@ -12,6 +12,10 @@
     const n = typeof value === 'number' ? value : Number(String(value).trim());
     return finite(n) ? n : null;
   }
+  function optionalNumber(config, key, fallback = 0) {
+    const value = config[key];
+    return value == null || String(value).trim() === '' ? fallback : number(value);
+  }
   function invalidOptional(config, keys) {
     return keys.some(key => config[key] != null && String(config[key]).trim() !== '' && !knownFee(number(config[key])));
   }
@@ -365,13 +369,15 @@
     const buys = number(config.buyOrders) ?? 1, sells = number(config.sellOrders) ?? 1;
     const price = number(config.sharePriceUsd) ?? 100, months = number(config.months) ?? 1;
     if (![buys, sells].every(v => positive(v) && Number.isInteger(v) && v <= 120) || !positive(price) || !knownFee(months) || months > 1200) return { error: '交易笔数须为1–120整数，测算股价须为正数，使用月数不超过1200。' };
-    const usedQuota = number(config.usedPromoOrders) ?? 0, usedTurnover = number(config.otherTurnoverHkd) ?? 0;
+    const usedQuota = broker.id === 'za' && config.zaLv2 ? optionalNumber(config, 'usedPromoOrders') : 0;
+    const usedTurnover = broker.id === 'hsbc' && config.trade25 ? optionalNumber(config, 'otherTurnoverHkd') : 0;
     const voucher = voucherState(config);
-    if (!knownFee(usedQuota) || !Number.isInteger(usedQuota) || !knownFee(usedTurnover)) return { error: '优惠已用笔数须为非负整数，月成交额须为非负数。' };
+    if (!knownFee(usedQuota) || !Number.isInteger(usedQuota)) return { error: '优惠已用笔数须为非负整数。' };
+    if (!knownFee(usedTurnover)) return { error: '月成交额须为非负数。' };
     const date = config.date || '2026-10-09', heldMonths = Math.max(1, Math.ceil(months));
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(Date.parse(date))) return { error: '测算日期无效。' };
     const sellDate = shiftedMonth(date, heldMonths - 1), sameMonth = date.slice(0, 7) === sellDate.slice(0, 7);
-    const usmartDays = number(config.usmartDays) ?? 0;
+    const usmartDays = broker.id === 'usmart' && config.usmartPromo ? optionalNumber(config, 'usmartDays') : 0;
     if (!knownFee(usmartDays) || !Number.isInteger(usmartDays)) return { error: '开户距今须为非负整数天。' };
     const centsUp = value => value > 0 ? Math.ceil((value - 1e-10) * 100) / 100 : 0;
     const promoDate = d => d >= '2026-04-20' && d <= '2026-12-31';
@@ -554,8 +560,8 @@
     const months = number(config.months);
     if (!knownFee(months) || !Number.isInteger(months)) return empty('账户使用／持有月数须为非负整数。');
     if (['startSell', 'usdCny', 'usdHkd', 'usdCnh', 'entryPrice', 'exitPrice'].some(key => config[key] != null && String(config[key]).trim() !== '' && !positive(number(config[key])))) return empty('汇率须为有效正数；留空使用该行官方牌价。');
-    const count = number(config.count) ?? 1, used = number(config.usedFreeTransfers) ?? 0;
-    if (!positive(count) || !Number.isInteger(count) || count > 120 || !knownFee(used) || !Number.isInteger(used)) return empty('汇款笔数须为1–120的整数，已用免费笔数须为非负整数。');
+    const count = optionalNumber(config, 'count', 1);
+    if (!positive(count) || !Number.isInteger(count) || count > 120) return empty('汇款笔数须为1–120的整数。');
     const profit = number(config.profitUsd), taxRate = number(config.taxRate), credit = number(config.creditCny) ?? 0;
     if (!finite(profit) || !knownFee(taxRate) || taxRate > 100) return empty('请输入有效盈亏及0–100%的税率。');
     const withdrawalIndex = number(config.withdrawalIndex) ?? 1;
@@ -633,6 +639,9 @@
       const standardTariff = mainlandMethod === 'swift' && currencyTariff &&
         (!currencyTariff.currencies || currencyTariff.currencies.includes(currency)) && currencyTariff;
       const senderBank = standardTariff ? { ...start, ...standardTariff } : start;
+      const usesAllowance = senderBank.freeTelegram && senderOverride == null && !['linked', 'boc-mobile', 'payment-connect'].includes(mainlandMethod);
+      const used = usesAllowance ? optionalNumber(config, 'usedFreeTransfers') : 0;
+      if (!knownFee(used) || !Number.isInteger(used)) return { error: '已用免费笔数须为非负整数。' };
       const unknownSender = effectiveSender == null && (bocMobile || paymentConnect || fee(senderBank, 0, used + 1, config.date) == null || (linked && mainlandMethod !== 'linked' && !standardTariff) || (currency === 'CNH' && mainlandMethod !== 'linked' && !senderBank.cnhTariff && start.id !== 'abc'));
       const unquotedFullAmount = missingSourceQuote && mainlandMethod === 'full';
       const fullFee = swiftGo ? start.swiftGoCny : mainlandMethod === 'full' ? start.fullAmountUsd * (positive(quote) ? quote : refs.USD) : 0;
@@ -759,7 +768,11 @@
         { key: 'account', label: '银行账户期间管理费', cny: accountCny, step: 'spend', items: accountItems },
         { key: 'extra', label: '开户及资产机会成本', cny: extraCny, step: 'spend' }], steps, startSell: quote, route, mainlandMethod, fxMode, refs, budgetCny: budget, pricingBasis: config.pricingBasis, sourceRemainderCny, start, bank, returning, exit, broker: provider,
         trading: trading?.error ? null : trading, taxCny, indicativeFx: rows.find(x => x.key === 'brokerSpread' && x.cny == null)?.label || '',
-        quoteFreshness: { source: currency === 'CNH' || own('startSell', isSelectedStart) != null || quoteFresh(q, config.date) } });
+        quoteFreshness: {
+          source: currency === 'CNH' || own('startSell', isSelectedStart) != null || quoteFresh(q, config.date),
+          entryMarket: currency === 'USD' || own('entryPrice', isSelectedBank) != null || quoteFresh(fxMode === 'bank' ? quotes.offshoreUsd?.[bank.id]?.quotes?.[currency] : offshore[currency], config.date),
+          reference: number(config.usdCny) != null || quoteFresh(refRow, config.date)
+        } });
       const depositMethod = internalDeposit ? 'internal' : settlementBank ? 'chats' : method('depositMethod', currency === 'USD' || fxMode === 'bank' ? 'chats' : 'fps');
       const depositCurrency = fxMode === 'bank' ? 'USD' : currency;
       if (depositMethod === 'internal' && !internalDeposit) return downstreamError('同行入金须使用券商已公布的同银行收款账户；此组合可改选本地转账。');
@@ -810,11 +823,11 @@
       if (fxMode === 'bank') { brokerFxResult = convert(); steps.hkConvertedUsd = balance; if (brokerFxResult) transfer(); }
       else { transfer(); steps.brokerOriginal = balance; brokerFxResult = convert(); }
       if (!brokerFxResult || balance <= 0) return { error: '余额不足以支付入金及换汇费用。' };
+      steps.fundedUsd = balance;
       const tradingKey = provider.id + ':' + balance.toFixed(8) + ':' + !!selections.public;
       if (autoTrade && !tradingCache.has(tradingKey)) tradingCache.set(tradingKey, brokerTradingFees(provider.id === broker.id && !selections.public ? config : { ...config, useVoucher: false, tradeFeeUsd: '' }, provider, balance, profit, refs));
       trading = autoTrade ? tradingCache.get(tradingKey) : null;
-      if (trading?.error) return downstreamError(trading.error);
-      steps.fundedUsd = balance;
+      if (trading?.error) return downstreamError(trading.error, '03', 'trade');
       steps.investUsd = trading?.investUsd ?? balance;
       balance += profit;
       const trade = trading?.totalUsd ?? number(config.tradeFeeUsd);
