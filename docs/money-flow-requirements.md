@@ -1223,3 +1223,9 @@ IBKR官网再次确认每历月前两次现金提款免费，其后USD电汇10 U
 [修复前完整页](evidence/money-flow-feedback/local-acceptance-current-default-20261012.jpg)与[已查看修复后完整页](evidence/money-flow-feedback/local-acceptance-reconciled-default-20261012.jpg)保留，桌面视口未重设。实际[99 HKD回单截图](evidence/money-flow-feedback/local-acceptance-actual-99hkd-20261012.jpg)显示该项≈84.59 CNY，单计一次：106.08＋84.59＝190.67 CNY／0.191%，终点14,883.75 USD。99 HKD是QA输入，未改写银行公开价。最后恢复10万元／1笔／12个月／ZA默认。
 
 全项目398项JavaScript回归通过，失败／取消／跳过0，304.56秒；22项资源版本与语法检查通过。上一阶段提交c7c1b2d、23d3d27、66b6c9a的构建与部署均已成功。新截图与点击证据属于本地页面，正式页版本的部署、截图和点击验收分开记录；不以浏览器读取超时声称Mac被锁定。A01和整体验收继续开放。
+
+### 2026-10-12方案已选与悬停状态继续复核（A04／A06／A11–A12）
+
+全页截图还发现，非选中方案悬停背景与真正选中颜色太近，容易把鼠标位置误认作当前路线。现真正选中方案标题显示勾号，普通悬停改为中性色，不改变路线、费用或推荐算法。自填实际费用与公开方案不同的时候，三个方案均没有已选勾号；点击公开方案恢复后，只给费用和余额均与正文一致的那张标记。
+
+[六个真实页面状态](evidence/money-flow-feedback/browser-preset-selected-status-local-20261012.json)保存默认、中行／工行／建行各方案应用、137 CNY测试回单和公开报价恢复。对应总额106.08／165.82／534.92 CNY与正文、实际账户相符；实际回单状态243.08 CNY没有错标公开方案，恢复为106.08。已查看[勾选状态截图](evidence/money-flow-feedback/local-preset-selected-status-20261012.jpg)。17项既有方案、账户独立性及费用回归通过，22项资源／语法检查通过；此独立视觉改动未重复运行或冒称新增全部金融研究。

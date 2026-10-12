@@ -1,0 +1,180 @@
+{
+  "observedAt": "2026-10-12T07:30:45.670Z",
+  "scope": "Actual default and three distinct preset applications, actual QA receipt fee, public quote restore; existing desktop viewport unchanged",
+  "records": [
+    {
+      "accounts": [
+        "中国银行",
+        "中银香港",
+        "ZA Bank"
+      ],
+      "cards": [
+        {
+          "cost": "参考总损耗0.106%106.08 CNY",
+          "pressed": "true",
+          "tick": "✓ ",
+          "title": "✓ 中行 → 中银香港 → ZA"
+        },
+        {
+          "cost": "参考总损耗0.166%165.82 CNY",
+          "pressed": "false",
+          "tick": "",
+          "title": "工行 → 工银亚洲 → ZA"
+        },
+        {
+          "cost": "全程损耗0.535%534.92 CNY",
+          "pressed": "false",
+          "tick": "",
+          "title": "建行 → ZA → ZA"
+        }
+      ],
+      "summary": "参考总损耗0.106%106.08 CNY其中账户期间费0.00 CNY已计入合计按公布参考费计算的余额14,896.37 USD全程明细",
+      "label": "default"
+    },
+    {
+      "accounts": [
+        "工商银行",
+        "工银亚洲 · 综合账户",
+        "ZA Bank"
+      ],
+      "cards": [
+        {
+          "cost": "参考总损耗0.106%106.08 CNY",
+          "pressed": "false",
+          "tick": "",
+          "title": "中行 → 中银香港 → ZA"
+        },
+        {
+          "cost": "参考总损耗0.166%165.82 CNY",
+          "pressed": "true",
+          "tick": "✓ ",
+          "title": "✓ 工行 → 工银亚洲 → ZA"
+        },
+        {
+          "cost": "全程损耗0.535%534.92 CNY",
+          "pressed": "false",
+          "tick": "",
+          "title": "建行 → ZA → ZA"
+        }
+      ],
+      "summary": "参考总损耗0.166%165.82 CNY其中账户期间费0.00 CNY已计入合计按公布参考费计算的余额14,887.46 USD全程明细",
+      "label": "优选方案：工行 → 工银亚洲 → ZA"
+    },
+    {
+      "accounts": [
+        "建设银行",
+        "众安 ZA Bank",
+        "ZA Bank"
+      ],
+      "cards": [
+        {
+          "cost": "参考总损耗0.106%106.08 CNY",
+          "pressed": "false",
+          "tick": "",
+          "title": "中行 → 中银香港 → ZA"
+        },
+        {
+          "cost": "参考总损耗0.166%165.82 CNY",
+          "pressed": "false",
+          "tick": "",
+          "title": "工行 → 工银亚洲 → ZA"
+        },
+        {
+          "cost": "全程损耗0.535%534.92 CNY",
+          "pressed": "true",
+          "tick": "✓ ",
+          "title": "✓ 建行 → ZA → ZA"
+        }
+      ],
+      "summary": "全程损耗0.535%534.92 CNY其中账户期间费0.00 CNY已计入合计最终余额14,832.42 USD全程明细",
+      "label": "优选方案：建行 → ZA → ZA"
+    },
+    {
+      "accounts": [
+        "中国银行",
+        "中银香港",
+        "ZA Bank"
+      ],
+      "cards": [
+        {
+          "cost": "参考总损耗0.106%106.08 CNY",
+          "pressed": "true",
+          "tick": "✓ ",
+          "title": "✓ 中行 → 中银香港 → ZA"
+        },
+        {
+          "cost": "参考总损耗0.166%165.82 CNY",
+          "pressed": "false",
+          "tick": "",
+          "title": "工行 → 工银亚洲 → ZA"
+        },
+        {
+          "cost": "全程损耗0.535%534.92 CNY",
+          "pressed": "false",
+          "tick": "",
+          "title": "建行 → ZA → ZA"
+        }
+      ],
+      "summary": "参考总损耗0.106%106.08 CNY其中账户期间费0.00 CNY已计入合计按公布参考费计算的余额14,896.37 USD全程明细",
+      "label": "优选方案：中行 → 中银香港 → ZA"
+    },
+    {
+      "accounts": [
+        "中国银行",
+        "中银香港",
+        "ZA Bank"
+      ],
+      "cards": [
+        {
+          "cost": "参考总损耗0.106%106.08 CNY",
+          "pressed": "false",
+          "tick": "",
+          "title": "中行 → 中银香港 → ZA"
+        },
+        {
+          "cost": "参考总损耗0.166%165.82 CNY",
+          "pressed": "false",
+          "tick": "",
+          "title": "工行 → 工银亚洲 → ZA"
+        },
+        {
+          "cost": "全程损耗0.535%534.92 CNY",
+          "pressed": "false",
+          "tick": "",
+          "title": "建行 → ZA → ZA"
+        }
+      ],
+      "summary": "参考总损耗0.243%243.08 CNY其中账户期间费0.00 CNY已计入合计按公布参考费计算的余额14,875.94 USD全程明细",
+      "label": "actual-137-CNY-no-public-preset-selected"
+    },
+    {
+      "accounts": [
+        "中国银行",
+        "中银香港",
+        "ZA Bank"
+      ],
+      "cards": [
+        {
+          "cost": "参考总损耗0.106%106.08 CNY",
+          "pressed": "true",
+          "tick": "✓ ",
+          "title": "✓ 中行 → 中银香港 → ZA"
+        },
+        {
+          "cost": "参考总损耗0.166%165.82 CNY",
+          "pressed": "false",
+          "tick": "",
+          "title": "工行 → 工银亚洲 → ZA"
+        },
+        {
+          "cost": "全程损耗0.535%534.92 CNY",
+          "pressed": "false",
+          "tick": "",
+          "title": "建行 → ZA → ZA"
+        }
+      ],
+      "summary": "参考总损耗0.106%106.08 CNY其中账户期间费0.00 CNY已计入合计按公布参考费计算的余额14,896.37 USD全程明细",
+      "label": "public-preset-restored"
+    }
+  ]
+}
