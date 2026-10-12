@@ -841,7 +841,7 @@ test('CNH transfer has no conversion charge; conversion stays after Hong Kong ar
     const l = M.flowLedger(r);
     close(l.legs[0].rows.find(row => row.key === 'entryFx').cny, 0);
     assert.equal(l.stops[1].currency, 'CNH');
-    assert.ok(l.legs[1].rows.some(row => row.key === 'brokerFx'));
+    assert.ok(l.legs[fxMode === 'auto' ? 2 : 1].rows.some(row => row.key === 'brokerFx'));
     if (fxMode === 'bank') close(r.steps.hkConvertedUsd - 20 * r.refs.HKD / r.refs.USD, r.steps.fundedUsd);
     else close(r.steps.brokerOriginal, r.steps.hongKong - 20 * r.refs.HKD / r.refs.CNH);
     close(l.legs[0].inputCny + l.legs[0].fxImpactCny, l.legs[0].outputCny + l.legs[0].costCny);
@@ -1291,6 +1291,74 @@ function moneyUi(input, quotes = cibQuotes, date = '2026-10-09', data = D) {
     check: (moneyCheck, checked) => context.window.ChanghengMoneyFlow.handleChange({ dataset: { moneyCheck }, checked }),
     act: (action, field, value) => context.window.ChanghengMoneyFlow.handleAction({ dataset: { action: 'money-flow-' + action, field, value } }) };
 }
+
+test('cash-account AutoFX preserves original deposited cash and charges conversion at purchase', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  for (const route of ['HKD', 'CNH']) for (const pricingBasis of ['best-quote', undefined]) for (const profitUsd of [0, 500, -500]) {
+    const config = { ...currentRoute, date: '2026-10-12', startBank: 'boc', bank: 'bochk', broker: 'ibkr', route,
+      fxMode: 'auto', entryPrice: route === 'HKD' ? 7.84 : 6.72, mainlandMethod: 'swift', depositMethod: 'fps',
+      entryMiddleCny: 0, months: 0, outcome: 'broker-balance', pricingBasis, profitUsd };
+    const r = M.journeyPlans(config, D, quotes).selected, ledger = M.flowLedger(r);
+    assert.ok(r, route); assert.equal(ledger.stops[2].currency, route);
+    close(ledger.stops[2].amount, r.steps.brokerOriginal);
+    assert.equal(ledger.stops[2].indicative, false);
+    for (const key of ['brokerFx', 'brokerSpread']) {
+      assert.equal(r.rows.find(row => row.key === key).step, 'investment');
+      assert.ok(!ledger.legs[1].rows.some(row => row.key === key));
+      assert.ok(ledger.legs[2].rows.some(row => row.key === key));
+    }
+    const transferCosts = ['depositBank', 'depositOther', 'depositBroker'].reduce((sum, key) => sum + (r.rows.find(row => row.key === key)?.cny || 0), 0);
+    close(ledger.legs[1].costCny, transferCosts);
+    close(r.steps.brokerOriginal, r.steps.hongKong - transferCosts / r.refs[route]);
+    close(r.brokerFx.usd + r.brokerFx.markupUsd, r.steps.brokerOriginal / r.entryPrice);
+    close(ledger.legs.reduce((sum, leg) => sum + leg.costCny, 0), r.costCny);
+    for (const leg of ledger.legs) close(leg.outputCny + leg.costCny + leg.taxCny, leg.inputCny + leg.profitCny + leg.fxImpactCny);
+    close(r.netCny, r.budgetCny + profitUsd * r.refs.USD - r.costCny - r.taxCny + r.fxImpactCny);
+    // Manual and bank conversions still finish before the displayed USD stop.
+    for (const fxMode of ['manual', 'bank']) {
+      const other = M.journeyPlans({ ...config, fxMode, depositMethod: fxMode === 'bank' ? 'chats' : 'fps' }, D, quotes).selected;
+      const normal = M.flowLedger(other);
+      assert.equal(normal.stops[2].currency, 'USD'); close(normal.stops[2].amount, other.steps.fundedUsd);
+      assert.ok(normal.legs[1].rows.some(row => row.key === 'brokerFx'));
+      assert.ok(!normal.legs[2].rows.some(row => row.key === 'brokerFx'));
+    }
+  }
+});
+
+test('missing AutoFX execution prices do not erase original IBKR cash or move missing evidence into funding', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  for (const route of ['HKD', 'CNH']) {
+    const config = { ...currentRoute, date: '2026-10-12', startBank: 'boc', bank: 'bochk', broker: 'ibkr', route,
+      fxMode: 'auto', entryPrice: '', mainlandMethod: 'swift', depositMethod: 'fps', entryMiddleCny: 0,
+      months: 0, outcome: 'broker-balance' };
+    const r = M.calculatorJourney(config, D, quotes).selected, ledger = M.flowLedger(r);
+    assert.ok(r.indicativeFx); assert.equal(ledger.stops[2].currency, route);
+    assert.equal(ledger.stops[2].indicative, false); assert.equal(ledger.legs[1].indicative, false);
+    assert.equal(ledger.stops[3].indicative, true); assert.equal(ledger.legs[2].indicative, true);
+    assert.ok(!ledger.legs[1].missing.some(label => /IBKR.*\/USD/.test(label)));
+    assert.ok(ledger.legs[2].missing.some(label => /IBKR.*\/USD/.test(label)));
+    const ui = moneyUi(config, quotes, config.date), html = ui.render();
+    const funded = html.split('data-flow-stage="03"')[1].split('</section>')[0];
+    assert.match(funded, /入金到账/);
+    assert.match(funded, new RegExp(r.steps.brokerOriginal.toFixed(2) + ' <small>' + route + '<'));
+    const funding = html.split('aria-label="' + route + '原币转入IBKR"')[1].split('</section>')[0];
+    const trade = html.split('aria-label="买入时自动换美元 → 买入美股 → 卖出"')[1].split('</section>')[0];
+    assert.doesNotMatch(funding, /实时成交点差|自动换USD加价/);
+    assert.match(trade, /实时成交点差/); assert.match(trade, /买入时自动换USD加价/);
+    assert.match(html, /IBKR现金账户自动换汇/);
+    const terminal = html.split('data-flow-stage="04"')[1].split('</section>')[0];
+    assert.match(terminal, route === 'HKD' ? /港币余额/ : /人民币原币余额/);
+    assert.doesNotMatch(terminal, /美元留在账户/);
+    const depositLinks = evidenceLinks(ui, 'edge-03');
+    assert.ok(depositLinks.has(D.sources['ibFunding' + route].url));
+    assert.ok(!depositLinks.has(D.sources.ibFx.url));
+    assert.doesNotMatch(ui.modal(), /自动换USD加价/);
+    const purchaseLinks = evidenceLinks(ui, 'edge-trade');
+    assert.ok(purchaseLinks.has(D.sources.ibFx.url)); assert.ok(purchaseLinks.has(D.sources.ibAutoFxTerms.url));
+    assert.match(ui.modal(), /买入时自动换USD加价/);
+    for (const leg of ledger.legs) close(leg.outputCny + leg.costCny + leg.taxCny, leg.inputCny + leg.profitCny + leg.fxImpactCny);
+  }
+});
 
 test('return currency remains in its real action, with two exchange amounts and independent account choices', () => {
   const input = { ...currentRoute, budgetCny: 5000, count: 1, months: 0, broker: 'za', bank: 'bochk', returnBank: 'bochk', exitBank: 'boc',
@@ -2185,7 +2253,7 @@ test('missing conversion prices keep the same last known balance and account at 
       assert.match(section, new RegExp(r.steps.brokerOriginal.toFixed(2) + ' <small>HKD<'));
     }
     assert.equal(r.missing.filter(label => /IBKR HKD\/USD/.test(label)).length, 1);
-    assert.match(html, /入金代理／收款行费/); assert.match(html, /换USD佣金／自动加价/);
+    assert.match(html, /入金代理／收款行费/); assert.match(html, fxMode === 'auto' ? /买入时自动换USD加价/ : /换USD佣金／自动加价/);
   }
   const bank = M.calculatorRoute({ ...base, bank: 'sc', route: 'CNH', mainlandMethod: 'swift', fxMode: 'bank' });
   const data = M.calculatorJourney(bank, D, quotes), r = data.selected || data.partial, html = moneyUi(bank, quotes, '2026-10-11').render();

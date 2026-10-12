@@ -5,6 +5,7 @@
   "partialQuoteCombinations": 184326,
   "inputOrRouteIssues": 69552,
   "ledgerChecks": 192888,
+  "autoFxTimingChecks": 0,
   "issueCounts": {
     "众安 ZA Bank不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 5076,
     "众安 ZA Bank扣账卡以港币结算，不支持人民币余额原币消费；已保留出金后的美元余额。": 5076,
@@ -5201,6 +5202,7 @@
       "partial": 711595,
       "routeIssues": 124651,
       "ledgerChecks": 719661,
+      "autoFxTimingChecks": 41184,
       "retainedPartialResults": 124651,
       "chequeBoundaryChecks": 271515,
       "issueCounts": {
@@ -6473,6 +6475,7 @@
       "partial": 771848,
       "routeIssues": 77997,
       "ledgerChecks": 780805,
+      "autoFxTimingChecks": 45426,
       "retainedPartialResults": 77997,
       "chequeBoundaryChecks": 286005,
       "issueCounts": {
@@ -7746,6 +7749,7 @@
       "partial": 4020233,
       "routeIssues": 1106688,
       "ledgerChecks": 4064188,
+      "autoFxTimingChecks": 167469,
       "retainedPartialResults": 1106688,
       "chequeBoundaryChecks": 1291872,
       "issueCounts": {
@@ -9023,6 +9027,7 @@
     "partial": 26614,
     "routeIssues": 34950,
     "ledgerChecks": 28230,
+    "autoFxTimingChecks": 0,
     "retainedPartialResults": 26280,
     "profiles": [
       {
@@ -9036,6 +9041,7 @@
         "partial": 0,
         "routeIssues": 4860,
         "ledgerChecks": 0,
+        "autoFxTimingChecks": 0,
         "retainedPartialResults": 1920,
         "issueCounts": {
           "美元余额不足以支付买入最低费用。": 252,
@@ -9063,6 +9069,7 @@
         "partial": 47,
         "routeIssues": 4810,
         "ledgerChecks": 50,
+        "autoFxTimingChecks": 0,
         "retainedPartialResults": 1870,
         "issueCounts": {
           "余额不足以支付入金及换汇费用。": 300,
@@ -9094,6 +9101,7 @@
         "partial": 572,
         "routeIssues": 4178,
         "ledgerChecks": 682,
+        "autoFxTimingChecks": 0,
         "retainedPartialResults": 1388,
         "issueCounts": {
           "预算不足以支付汇出费，或所选优惠不在有效期内。": 2790,
@@ -9125,6 +9133,7 @@
         "partial": 3555,
         "routeIssues": 1077,
         "ledgerChecks": 3783,
+        "autoFxTimingChecks": 0,
         "retainedPartialResults": 1077,
         "issueCounts": {
           "众安 ZA Bank不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 97,
@@ -9148,6 +9157,7 @@
         "partial": 3813,
         "routeIssues": 810,
         "ledgerChecks": 4050,
+        "autoFxTimingChecks": 0,
         "retainedPartialResults": 810,
         "issueCounts": {
           "众安 ZA Bank不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 100,
@@ -9169,6 +9179,7 @@
         "partial": 3813,
         "routeIssues": 810,
         "ledgerChecks": 4050,
+        "autoFxTimingChecks": 0,
         "retainedPartialResults": 810,
         "issueCounts": {
           "众安 ZA Bank不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 100,
@@ -9190,6 +9201,7 @@
         "partial": 3830,
         "routeIssues": 810,
         "ledgerChecks": 4050,
+        "autoFxTimingChecks": 0,
         "retainedPartialResults": 810,
         "issueCounts": {
           "众安 ZA Bank不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 100,
@@ -9211,6 +9223,7 @@
         "partial": 1846,
         "routeIssues": 2970,
         "ledgerChecks": 1890,
+        "autoFxTimingChecks": 0,
         "retainedPartialResults": 2970,
         "issueCounts": {
           "当前余额不足以支付账户期间费及其他固定支出。": 2160,
@@ -9233,6 +9246,7 @@
         "partial": 3046,
         "routeIssues": 1635,
         "ledgerChecks": 3225,
+        "autoFxTimingChecks": 0,
         "retainedPartialResults": 1635,
         "issueCounts": {
           "卖出资金不足以支付交易及证券账户费用。": 900,
@@ -9255,6 +9269,7 @@
         "partial": 2279,
         "routeIssues": 2460,
         "ledgerChecks": 2400,
+        "autoFxTimingChecks": 0,
         "retainedPartialResults": 2460,
         "issueCounts": {
           "美元余额不足以买入汇丰美股每笔至少1股，并完成1笔买入／1笔卖出。": 900,
@@ -9279,6 +9294,7 @@
         "partial": 3813,
         "routeIssues": 810,
         "ledgerChecks": 4050,
+        "autoFxTimingChecks": 0,
         "retainedPartialResults": 810,
         "issueCounts": {
           "众安 ZA Bank不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 100,
@@ -9300,6 +9316,7 @@
         "partial": 0,
         "routeIssues": 4860,
         "ledgerChecks": 0,
+        "autoFxTimingChecks": 0,
         "retainedPartialResults": 4860,
         "issueCounts": {
           "亏损不能超过实际买入金额。": 4500,
@@ -9318,6 +9335,7 @@
         "partial": 0,
         "routeIssues": 4860,
         "ledgerChecks": 0,
+        "autoFxTimingChecks": 0,
         "retainedPartialResults": 4860,
         "issueCounts": {
           "卖出资金不足以支付税款预留。": 4500,

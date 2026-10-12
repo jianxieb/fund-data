@@ -28,6 +28,12 @@
 
 ## 实际动作与资金用途
 
+IBKR现金账户自动换汇发生在买入外币资产时，HKD／CNH原币入金不会先变成美元。因此入金节点保留原币余额，自动加价及成交点差计入买入段；手动换汇与在香港银行先换美元仍各按自己的顺序。人民币原币资金的CNY／CNH估值差随实际换汇时点结转，不在未换汇的入金段制造损耗。
+
+依据为[当前IBUK协议中IBLLC的G3／G4条款](https://gdcdyn.interactivebrokers.com/Universal/servlet/Registration_v2.formSampleView?formdb=6207)物理第45页和[2026年6月成本摘要](https://ndcdyn.interactivebrokers.com/Universal/servlet/Registration_v2.formSampleView?formdb=4378)第5–6页；协议身份不冒充直接美国客户合同。[IBKR现行资费](https://www.interactivebrokers.com/en/pricing/commissions-spot-currencies.php)的自动兑换通常加减0.03%、不另收佣金，并未提供具体成交买卖价。自动选项明确为现金账户，不把保证金借款利息场景当作免费自动兑换。原件与范围见[核查记录](../tests/fixtures/money-flow-ibkr-autofx-timing-20261012.json)。
+
+本测算的IBKR碎股情景使用全部可买资金，修正的是入金币种、费用时点与分段账目，不据此声称之前全程多扣了自动换汇费。没有实际成交价时，原币入金仍可核，购买换汇及后续估值继续明确缺项。
+
 收款银行与买股账户分开。中银香港→本人ZA或汇丰银行USD账户使用本地转账，再由银行证券服务内部交收；换券商不会改收款银行。独立券商使用其公布的收款账户及支持渠道。
 
 盈立与致富另可选择经本人香港银行USD账户后同行入金：先从原香港收款银行本地CHATS转到本人中银香港／汇丰，盈立还支持本人工银亚洲、致富还支持本人恒生，再转至券商已公布的同银行收款账户。原香港收款银行不被改选，新增账户、到账额和两次动作直接列在原入金段；额外银行期间费按实际使用的账户去重，汇丰资格不会自动豁免。直接CHATS／SWIFT入金仍是独立选项，未取得的直接跨行收费不被这条路径改成0。

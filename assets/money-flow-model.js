@@ -586,6 +586,8 @@
   function flowLedger(result) {
     if (!result?.steps || !result.refs) return null;
     const r = result, rates = r.refs;
+    const autoFxAtPurchase = r.broker?.id === 'ibkr' && r.route !== 'USD' && r.fxMode === 'auto';
+    const conversionLeg = autoFxAtPurchase ? 2 : 1;
     // RMB remains at its source value until the actual CNH conversion. The
     // calculator assigns the CNY/CNH basis difference to that conversion row.
     const receivingBasisCny = r.pricingBasis === 'best-quote' && r.route === 'CNH' && finite(r.steps.mainlandForeign) ? r.steps.mainlandForeign * (1 - rates.CNH) : 0;
@@ -604,19 +606,22 @@
     }
     const keys = [
       ['sender', 'entryFx', 'entryMiddle', 'entryInward'],
-      ['depositBank', 'depositBroker', 'depositOther', 'brokerFx', 'brokerSpread'],
-      ['trade', 'brokerAccount'], ['withdraw', 'returnInward', 'withdrawMiddle'],
+      ['depositBank', 'depositBroker', 'depositOther', ...(autoFxAtPurchase ? [] : ['brokerFx', 'brokerSpread'])],
+      ['trade', 'brokerAccount', ...(autoFxAtPurchase ? ['brokerFx', 'brokerSpread'] : [])], ['withdraw', 'returnInward', 'withdrawMiddle'],
       ['returnFx', 'returnWire', 'returnOther', 'exitFx', 'card'], ['account', 'extra']
     ];
     const stops = [
       { id: 'start', amount: r.budgetCny, currency: 'CNY', account: r.start.name },
       { id: 'receiving', amount: r.steps.hongKong, currency: r.route, account: r.bank.name },
-      { id: 'funding', amount: r.steps.fundedUsd, currency: 'USD', account: r.broker.name },
+      { id: 'funding', amount: autoFxAtPurchase ? r.steps.brokerOriginal : r.steps.fundedUsd, currency: autoFxAtPurchase ? r.route : 'USD', account: r.broker.name },
       { id: 'sold', amount: r.steps.proceedsUsd - r.taxCny / rates.USD, currency: 'USD', account: r.broker.name },
       { id: 'return', amount: r.steps.returnUsd, currency: 'USD', account: r.returning.name },
       { id: 'settle', amount: r.steps.terminal ?? r.steps.settledCny, currency: r.currency || 'CNY', account: r.outcome && r.outcome !== 'mainland' ? r.returning.name : r.exit.name },
       { id: 'destination', amount: r.net, currency: r.currency || 'CNY', account: r.outcome && r.outcome !== 'mainland' ? r.returning.name : r.exit.name }
     ];
+    // Original CNH still carries its source CNY basis through cash-account
+    // funding. AutoFX recognizes that difference only when buying the asset.
+    const deferredBasis = index => index === 1 || autoFxAtPurchase && index === 2 ? receivingBasisCny : 0;
     let cumulative = 0, tax = 0, impact = 0, investmentProfit = 0;
     const missing = [];
     stops[0] = { ...stops[0], valueCny: r.budgetCny, cumulativeCostCny: 0, cumulativeTaxCny: 0, cumulativeLossCny: 0, cumulativeImpactCny: 0, missing: [] };
@@ -627,19 +632,19 @@
       const taxCny = i === 2 ? r.taxCny : 0, profitCny = i === 2 ? (r.profitUsd || 0) * rates.USD : 0;
       const fxImpactCny = grouped.reduce((sum, row) => sum + (row.fxImpactCny ?? 0), 0);
       cumulative += costCny; tax += taxCny; impact += fxImpactCny; investmentProfit += profitCny;
-      const inputCny = stops[i].amount * rates[stops[i].currency] + (i > 0 ? r.sourceRemainderCny || 0 : 0) + (i === 1 ? receivingBasisCny : 0);
-      const outputCny = stops[i + 1].amount * rates[stops[i + 1].currency] + (r.sourceRemainderCny || 0) + (i === 0 ? receivingBasisCny : 0);
+      const inputCny = stops[i].amount * rates[stops[i].currency] + (i > 0 ? r.sourceRemainderCny || 0 : 0) + deferredBasis(i);
+      const outputCny = stops[i + 1].amount * rates[stops[i + 1].currency] + (r.sourceRemainderCny || 0) + deferredBasis(i + 1);
       const lossCny = inputCny + profitCny - outputCny;
       const legMissing = rows.filter(row => row.cny == null).map(row => row.label);
-      if (i === 1 && r.indicativeFx && !grouped.some(row => row.key === 'brokerSpread' && row.cny == null)) legMissing.push(r.indicativeFx);
+      if (i === conversionLeg && r.indicativeFx && !grouped.some(row => row.key === 'brokerSpread' && row.cny == null)) legMissing.push(r.indicativeFx);
       missing.push(...legMissing);
-      stops[i + 1] = { ...stops[i + 1], retainedCny: r.sourceRemainderCny || 0, valueCny: outputCny, indicative: i >= 1 && !!r.indicativeFx, cumulativeCostCny: cumulative, cumulativeTaxCny: tax,
+      stops[i + 1] = { ...stops[i + 1], retainedCny: r.sourceRemainderCny || 0, valueCny: outputCny, indicative: i >= conversionLeg && !!r.indicativeFx, cumulativeCostCny: cumulative, cumulativeTaxCny: tax,
         cumulativeLossCny: r.budgetCny + investmentProfit - outputCny, cumulativeImpactCny: impact, missing: [...missing] };
       // Both sides are valued at the SAME reference vector. Subtract scenario
       // profit before measuring channel retention; never divide USD by CNY.
       const coefficient = inputCny > 0 ? (outputCny - profitCny) / inputCny : null;
       return { from: stops[i].id, to: stops[i + 1].id, rows, costCny, taxCny, profitCny, fxImpactCny, lossCny, inputCny, outputCny,
-        coefficient, indicative: i >= 1 && !!r.indicativeFx, lossRate: coefficient == null ? null : 1 - coefficient, missing: legMissing };
+        coefficient, indicative: i >= conversionLeg && !!r.indicativeFx, lossRate: coefficient == null ? null : 1 - coefficient, missing: legMissing };
     });
     return { stops, legs, rates, lossCny: r.budgetCny + (r.profitUsd || 0) * rates.USD - (r.netCny ?? r.net) };
   }
@@ -1056,14 +1061,16 @@
         const fx = brokerFx(balance, unit, entryPrice, fxMode, data.broker);
         if (!fx) return null;
         balance = fx.usd; unit = 'USD';
-        rows.push({ key: 'brokerFx', label: '换USD佣金／自动加价', cny: (fx.commissionUsd + fx.markupUsd) * refs.USD, step: 'deposit' });
+        const autoFxAtPurchase = provider.id === 'ibkr' && currency !== 'USD' && fxMode === 'auto';
+        const fxStep = autoFxAtPurchase ? 'investment' : 'deposit';
+        rows.push({ key: 'brokerFx', label: autoFxAtPurchase ? '买入时自动换USD加价' : '换USD佣金／自动加价', cny: (fx.commissionUsd + fx.markupUsd) * refs.USD, step: fxStep });
         if (unquotedFundingFx && fxMode !== 'bank') rows[rows.length - 1].estimate = '尚缺换汇成交价，换汇佣金／加价按参考汇率估算';
         const grossUsd = balance + fx.commissionUsd + fx.markupUsd;
         const referenceDifference = oldBalance * refs[oldUnit] - grossUsd * refs.USD + deferredCnhBasis;
         const bankMid = fxMode === 'bank' && positive(bankFxQuote?.bidPerUsd) && positive(bankFxQuote?.askPerUsd)
           ? (bankFxQuote.bidPerUsd + bankFxQuote.askPerUsd) / 2 : null;
         fxRow('brokerSpread', relativeBasis ? '香港换汇差额' : fxMode === 'bank' ? '香港银行换汇点差' : '换汇成交点差', referenceDifference,
-          bankMid ? (oldBalance / bankMid - grossUsd) * refs.USD : referenceDifference, 'deposit');
+          bankMid ? (oldBalance / bankMid - grossUsd) * refs.USD : referenceDifference, fxStep);
         if (fxMode === 'bank' && ownEntryPrice == null && !unquotedBankFx) crossLegs(rows[rows.length - 1], bankFxQuote, oldBalance, true, deferredCnhBasis);
         if (unquotedBankFx) Object.assign(rows[rows.length - 1], { cny: null, fxImpactCny: -referenceDifference, label: bank.name + ' ' + currency + '换USD点差（缺成交价）' });
         else if (currency !== 'USD' && fxMode !== 'bank' && ownEntryPrice == null) Object.assign(rows[rows.length - 1], {

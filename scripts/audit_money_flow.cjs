@@ -11,9 +11,24 @@ const Q = context.window.MONEY_FLOW_QUOTES;
 const config = { budgetCny: 100000, count: 2, months: 12, usedFreeTransfers: 0,
   date: new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Shanghai' }), profitUsd: 0, taxRate: 20, creditCny: 0, withdrawalIndex: 1,
   trade25: true, hsbcBalanceWaiver: true, buyOrders: 1, sellOrders: 1, sharePriceUsd: 100 };
+function auditAutoFxTiming(r, s) {
+  if (r.broker?.id !== 'ibkr' || r.route === 'USD' || r.fxMode !== 'auto') return 0;
+  const ledger = M.flowLedger(r), funding = ledger?.stops.find(stop => stop.id === 'funding');
+  const transfer = ledger?.legs.find(leg => leg.to === 'funding'), purchase = ledger?.legs.find(leg => leg.from === 'funding');
+  const fxKeys = ['brokerFx', 'brokerSpread'];
+  if (!funding || funding.currency !== r.route || Math.abs(funding.amount - r.steps.brokerOriginal) > 1e-6 || funding.indicative || transfer.indicative ||
+    transfer.rows.some(row => fxKeys.includes(row.key)) || transfer.missing.some(label => /IBKR.*\/USD/.test(label)) ||
+    fxKeys.some(key => !purchase.rows.some(row => row.key === key) || r.rows.find(row => row.key === key)?.step !== 'investment')) {
+    throw new Error('Cash-account AutoFX occurred before purchase: ' + JSON.stringify(s));
+  }
+  for (const leg of ledger.legs) if (Math.abs(leg.inputCny + leg.profitCny + leg.fxImpactCny - leg.outputCny - leg.costCny - leg.taxCny) > 1e-6) {
+    throw new Error('AutoFX leg value mismatch: ' + JSON.stringify(s));
+  }
+  return 1;
+}
 function audit({ quotes = Q, date = config.date } = {}) {
   const result = { date, combinationsChecked: 0, completeQuoteCombinations: 0, partialQuoteCombinations: 0,
-    inputOrRouteIssues: 0, ledgerChecks: 0, issueCounts: {}, missingCounts: {}, routes: [] };
+    inputOrRouteIssues: 0, ledgerChecks: 0, autoFxTimingChecks: 0, issueCounts: {}, missingCounts: {}, routes: [] };
   const routes = new Map();
   for (const startBank of D.calculator.mainland) for (const bank of D.calculator.hkBanks) for (const broker of D.calculator.brokers)
     for (const returnBank of D.calculator.hkBanks) for (const exitBank of D.calculator.mainland)
@@ -34,6 +49,7 @@ function audit({ quotes = Q, date = config.date } = {}) {
         const expected = r.budgetCny + r.profitUsd * r.refs.USD - r.costCny - r.taxCny + r.fxImpactCny;
         if (Math.abs(expected - r.netCny) > 1e-6) throw new Error('Ledger mismatch: ' + JSON.stringify(s));
         result.ledgerChecks++;
+        result.autoFxTimingChecks += auditAutoFxTiming(r, s);
         if (!r.complete) {
           if (!r.missing.length) throw new Error('Incomplete quote without named evidence: ' + JSON.stringify(s));
           result.partialQuoteCombinations++;
@@ -61,13 +77,13 @@ function auditNumericBoundaries({ quotes = Q, date = config.date } = {}) {
     { id: 'orders-120-per-side', buyOrders: 120, sellOrders: 120 },
     { id: 'impossible-loss', profitUsd: -1000000 }, { id: 'oversized-tax', taxableCny: 100000000 }
   ];
-  const report = { checked: 0, priced: 0, referencePriced: 0, partial: 0, routeIssues: 0, ledgerChecks: 0,
+  const report = { checked: 0, priced: 0, referencePriced: 0, partial: 0, routeIssues: 0, ledgerChecks: 0, autoFxTimingChecks: 0,
     retainedPartialResults: 0, profiles: [] };
   const base = { ...config, date, count: 1, months: 0, trade25: false, hsbcBalanceWaiver: false,
     cnHsbcFeeWaived: false, cnHangFeeWaived: false, cnScFeeWaived: false, scCnhAccount: true, icbcCnhAccount: true, icbcEAccount: false };
   for (const { id, ...changes } of cases) {
     const profile = { id, inputs: changes, checked: 0, priced: 0, referencePriced: 0, partial: 0, routeIssues: 0,
-      ledgerChecks: 0, retainedPartialResults: 0, issueCounts: {} };
+      ledgerChecks: 0, autoFxTimingChecks: 0, retainedPartialResults: 0, issueCounts: {} };
     for (const startBank of D.calculator.mainland) for (const bank of D.calculator.hkBanks) for (const broker of D.calculator.brokers)
       for (const route of D.calculator.currencies) for (const outcome of ['broker-balance', 'usd-balance', 'usd-card', 'cnh-card', 'mainland']) for (const returnCurrency of outcome === 'mainland' ? ['USD', 'HKD'] : ['USD']) {
         const s = M.calculatorRoute({ ...base, ...changes, startBank, bank, broker, route, outcome, returnCurrency, returnBank: bank, exitBank: startBank });
@@ -92,6 +108,8 @@ function auditNumericBoundaries({ quotes = Q, date = config.date } = {}) {
         if (!Number.isFinite(r.net) || r.net < -1e-6 || Math.abs(expected - r.netCny) > 1e-6 ||
           Math.abs(r.rows.reduce((sum, row) => sum + (row.cny ?? 0), 0) - r.costCny) > 1e-6) throw new Error('Boundary ledger mismatch: ' + JSON.stringify(s));
         report.ledgerChecks++; profile.ledgerChecks++;
+        const timingCheck = auditAutoFxTiming(r, s);
+        report.autoFxTimingChecks += timingCheck; profile.autoFxTimingChecks += timingCheck;
         if (r.complete && r.quotedCore) {
           if (r.missing.length || r.rows.some(row => row.cny === null)) throw new Error('False complete boundary quote: ' + JSON.stringify(s));
           report.priced++; profile.priced++;
@@ -119,7 +137,7 @@ function auditChannels({ quotes = Q, date = config.date } = {}) {
   ];
   return profiles.map(profile => {
     const report = { profile, checked: 0, priced: 0, referencePriced: 0, partial: 0, routeIssues: 0,
-      ledgerChecks: 0, retainedPartialResults: 0, chequeBoundaryChecks: 0, issueCounts: {}, missingCounts: {}, sources: {} };
+      ledgerChecks: 0, autoFxTimingChecks: 0, retainedPartialResults: 0, chequeBoundaryChecks: 0, issueCounts: {}, missingCounts: {}, sources: {} };
     const coverage = Object.fromEntries(['mainlandMethods', 'fxModes', 'depositMethods', 'returnMethods', 'returnCurrencies'].map(key => [key, new Set()]));
     const qualificationCoverage = new Set();
     const record = s => {
@@ -146,6 +164,7 @@ function auditChannels({ quotes = Q, date = config.date } = {}) {
       const expected = r.budgetCny + r.profitUsd * r.refs.USD - r.costCny - r.taxCny + r.fxImpactCny;
       if (!Number.isFinite(r.net) || Math.abs(expected - r.netCny) > 1e-6 || Math.abs(r.rows.reduce((sum, row) => sum + (row.cny ?? 0), 0) - r.costCny) > 1e-6) throw new Error('Branch ledger mismatch: ' + JSON.stringify(s));
       report.ledgerChecks++;
+      report.autoFxTimingChecks += auditAutoFxTiming(r, s);
       if (r.complete && r.quotedCore) {
         if (r.missing.length || r.rows.some(row => row.cny === null)) throw new Error('False full branch price: ' + JSON.stringify(s));
         report.priced++; source.priced++;

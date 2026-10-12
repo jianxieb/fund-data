@@ -1,0 +1,45 @@
+{
+  "checkedOn": "2026-10-12",
+  "observations": [
+    {
+      "name": "agreement",
+      "url": "https://gdcdyn.interactivebrokers.com/Universal/servlet/Registration_v2.formSampleView?formdb=6207",
+      "finalUrl": "https://gdcdyn.interactivebrokers.com/Universal/servlet/Registration_v2.formSampleView?formdb=6207",
+      "bytes": 681871,
+      "sha256": "16972475efe7169016bde4cc1da615c614b4c1897588cabc9bc4fe9f97753e97",
+      "pages": 62,
+      "scope": "Current IBUK customer agreement, with IBLLC as carrying broker; G3/G4 describe IBLLC cash-account AutoFX. Not described as a direct-US customer agreement.",
+      "finding": "AutoFX exchanges supported cash currencies for an asset purchase and settles with that purchase. Deposits or sale proceeds in supported custody currencies are not converted immediately upon receipt. Margin accounts ordinarily borrow the trading currency; this product automatic mode represents a cash account.",
+      "physicalPage": 45,
+      "visuallyCheckedPages": [
+        45
+      ]
+    },
+    {
+      "name": "costs",
+      "url": "https://ndcdyn.interactivebrokers.com/Universal/servlet/Registration_v2.formSampleView?formdb=4378",
+      "finalUrl": "https://ndcdyn.interactivebrokers.com/Universal/servlet/Registration_v2.formSampleView?formdb=4378",
+      "bytes": 515335,
+      "sha256": "9ab866c72a90535312b9eccdfbfa7f38a5943af33fd932ecefae0d2d12d98b67",
+      "pages": 6,
+      "scope": "IBUK Costs and Charges Summary dated 1 June 2026, physical pages 5-6.",
+      "finding": "AutoFX is for cash holders who cannot borrow currency. Conversion takes place at purchase using current market prices and possible settlement timing adjustments. This document supplies no current HKD/USD or CNH/USD execution quote."
+    },
+    {
+      "name": "commissions",
+      "url": "https://www.interactivebrokers.com/en/pricing/commissions-spot-currencies.php",
+      "finalUrl": "https://www.interactivebrokers.com/en/pricing/commissions-spot-currencies.php",
+      "bytes": 187391,
+      "sha256": "eada2288a79c8f96799e7a6a7e05a9a3ec242b2080ad4fcd3cdc0454d8ea53d7",
+      "scope": "IBKR published direct-client spot currency commission schedule.",
+      "finding": "Auto conversion typically adjusts the otherwise applicable rate by 0.03% with no separate commission. Manual tier-I conversion charges 0.20 basis point, minimum 2 USD. These fees do not supply a current execution price."
+    }
+  ],
+  "productChanges": "For IBKR cash-account automatic FX, preserve the original HKD/CNH funding stop. Assign conversion markup and execution spread to the asset purchase leg, including deferred CNY/CNH valuation basis. Retain ordinary manual/bank conversion behavior and full-investment total arithmetic.",
+  "doesNotResolve": [
+    "Current IBKR HKD/USD and CNH/USD execution bid/ask",
+    "Margin-account borrowing and interest scenario",
+    "IBKR internal USD-to-HKD local withdrawal path"
+  ],
+  "fullResearchAcceptance": false
+}
