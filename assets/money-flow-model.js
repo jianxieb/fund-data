@@ -1642,7 +1642,7 @@
     // Compare upstream strategies for the chosen stock account. Five copies of
     // one cheap wire with different stock venues are not five useful strategies.
     const catalogue = data.calculator, entryKeys = ['sender', 'entryFx', 'entryMiddle', 'entryInward'];
-    const entries = [], bestBySource = new Map();
+    const entries = [], distinctRoutes = new Map();
     let checked = 0, complete = 0;
     const run = candidate => {
       checked++;
@@ -1682,11 +1682,13 @@
           const result = run({ ...route, depositMethod, returnMethod }), r = result.selected;
           if (!r?.complete || !r.quotedCore || !r.rows.every(x => Number.isFinite(x.cny))) continue;
           complete++;
-          remember(bestBySource, entry.startBank, r);
+          // A sender's cheapest route can use more accounts or estimated fees.
+          // Keep all distinct complete routes until comparing those advantages.
+          remember(distinctRoutes, signature(r), r);
         }
       }
     }
-    const alternatives = [...bestBySource.values()];
+    const alternatives = [...distinctRoutes.values()];
     const bankPeriodFee = r => r.rows.find(row => row.key === 'account').cny;
     // First remove avoidable recurring fees. Then retain only routes that offer
     // a cost, operation, published-fee or special-account advantage. A different

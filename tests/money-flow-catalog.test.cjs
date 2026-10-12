@@ -583,7 +583,7 @@ test('recommendations compare distinct upstream routes while retaining the chose
   const input = { ...base, date: '2026-10-11', count: 1, hsbcBalanceWaiver: false, trade25: false, outcome: 'broker-balance' };
   const snapshot = structuredClone(input), recommendations = M.calculatorRecommendations(input, D, diversityQuotes);
   assert.deepEqual(input, snapshot);
-  assert.deepEqual(new Set(recommendations.plans.map(p => p.config.startBank)), new Set(['boc', 'ccb']));
+  assert.deepEqual(new Set(recommendations.plans.map(p => p.config.startBank)), new Set(['boc', 'icbc']));
   assert.deepEqual(new Set(recommendations.plans.map(p => p.config.broker)), new Set(['za']));
   for (const [index, p] of recommendations.plans.entries()) {
     assert.equal(p.result.complete, true); assert.equal(p.result.quotedCore, true);
@@ -600,7 +600,7 @@ test('recommendations compare distinct upstream routes while retaining the chose
     const changed = M.calculatorRecommendations({ ...input, broker }, D, diversityQuotes);
     assert.ok(changed.plans.length >= 2, broker);
     assert.ok(changed.plans.every(p => p.config.broker === broker));
-    assert.equal(new Set(changed.plans.map(p => p.config.startBank)).size, changed.plans.length);
+    assert.equal(new Set(changed.plans.map(p => p.id)).size, changed.plans.length);
   }
   const two = M.calculatorRecommendations({ ...input, broker: 'hsbc', count: 2, hsbcBalanceWaiver: true, trade25: true }, D, diversityQuotes);
   assert.equal(two.plans[0].config.startBank, 'cib'); assert.equal(two.plans[0].config.mainlandMethod, 'swift');
@@ -614,7 +614,7 @@ test('recommendations compare distinct upstream routes while retaining the chose
   assert.ok(publicOnly.plans.every(p => p.config.mainlandMethod !== 'cib-go'));
 });
 
-test('a current CCB full-amount quote contributes a distinct source route for each selected stock venue and each card reproduces its price', () => {
+test('a current CCB full-amount quote stays calculable but a cheaper complete route can replace its recommendation', () => {
   const quotes = structuredClone(diversityQuotes);
   const evidence = require('./fixtures/money-flow-full-amount-20261011.json');
   quotes.banks.ccb = { quotes: { USD: evidence.ccb.regressionQuote } };
@@ -622,12 +622,15 @@ test('a current CCB full-amount quote contributes a distinct source route for ea
     const input = { ...base, date: '2026-10-11', broker, count: 1, months: 12, hsbcBalanceWaiver: false, trade25: false };
     const plans = M.calculatorRecommendations(input, D, quotes).plans;
     assert.ok(plans.length >= 2);
-    assert.equal(new Set(plans.map(p => p.config.startBank)).size, plans.length);
+    assert.equal(new Set(plans.map(p => p.id)).size, plans.length);
     const ccb = plans.find(p => p.config.startBank === 'ccb');
-    assert.ok(ccb, broker);
-    assert.equal(ccb.config.mainlandMethod, 'full');
-    assert.equal(ccb.config.broker, broker);
-    close(ccb.result.rows.find(row => row.key === 'entryInward').cny, 0);
+    const manual = M.calculatorJourney(M.calculatorRoute({ ...input, startBank: 'ccb',
+      bank: broker === 'za' ? 'za' : broker === 'hsbc' ? 'hsbc' : 'bochk', mainlandMethod: 'full', depositMethod: '' }), D, quotes).selected;
+    assert.ok(manual?.complete, broker); close(manual.rows.find(row => row.key === 'entryInward').cny, 0);
+    if (ccb) {
+      assert.equal(ccb.config.mainlandMethod, 'full'); assert.equal(ccb.config.broker, broker);
+      close(ccb.result.rows.find(row => row.key === 'entryInward').cny, 0);
+    } else assert.ok(plans.some(p => p.config.mainlandMethod === 'full' && p.result.costCny < manual.costCny), broker);
     for (const p of plans) {
       const r = M.calculatorJourney({ ...input, ...p.config }, D, quotes).selected;
       close(r.costCny, p.result.costCny); ledger(r);

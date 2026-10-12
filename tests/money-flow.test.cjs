@@ -2530,10 +2530,10 @@ test('a voucher expired before buying explains zero deduction without changing b
 test('presets preserve amounts, duration and eligibility; every selected bank remains editable', () => {
   const quotes = require('./fixtures/money-flow-quotes-20261011.json');
   const ui = moneyUi({ ...currentRoute, broker: 'za', budgetCny: 150000, count: 2, months: 6, startSell: '8', senderFeeCny: '99', trade25: false, hsbcBalanceWaiver: false }, quotes, '2026-10-11');
-  const html = ui.render(), ccbCard = html.match(/<button[^>]*data-value="(best:ccb:[^"]+)"/);
-  assert.match(html, /损耗从低到高 · 买股账户 ZA/); assert.ok(ccbCard);
-  ui.act('preset', '', ccbCard[1]); const state = ui.saved();
-  assert.equal(state.startBank, 'ccb'); assert.equal(state.broker, 'za');
+  const html = ui.render(), icbcCard = html.match(/<button[^>]*data-value="(best:icbc:[^"]+)"/);
+  assert.match(html, /损耗从低到高 · 买股账户 ZA/); assert.ok(icbcCard);
+  ui.act('preset', '', icbcCard[1]); const state = ui.saved();
+  assert.equal(state.startBank, 'icbc'); assert.equal(state.broker, 'za');
   assert.equal(state.budgetCny, 150000); assert.equal(state.count, 2); assert.equal(state.months, 6);
   assert.equal(state.trade25, false); assert.equal(state.hsbcBalanceWaiver, false);
   assert.equal(state.startSell, ''); assert.equal(state.senderFeeCny, '');
