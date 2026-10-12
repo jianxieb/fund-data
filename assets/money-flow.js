@@ -272,16 +272,20 @@
   }
   function toolbar() {
     visiblePresets = candidatePresets();
-    return '<div class="flow-toolbar"><h2>优选方案</h2><div><span>损耗从低到高 · 买股账户 ' + esc(routeName(state.broker, 'broker')) + '</span>' + action('报价与依据', 'detail', 'data-value="quotes"', 'text-link') + action('重置', 'reset', '', 'text-link') + '</div></div>' +
+    const active = result().selected;
+    const actualQuotes = M.calculatorAdjustmentFields(state, D).some(key => (quoteKeys.includes(key) || key === 'tradeFeeUsd') && String(state[key] ?? '').trim() !== '');
+    return '<div class="flow-toolbar"><h2>优选方案</h2><div><span>' + (actualQuotes ? '公开收费对比 · ' : '') + '损耗从低到高 · 买股账户 ' + esc(routeName(state.broker, 'broker')) + '</span>' + action('报价与依据', 'detail', 'data-value="quotes"', 'text-link') + action('重置', 'reset', '', 'text-link') + '</div></div>' +
       '<div class="flow-presets" aria-label="优选方案">' + visiblePresets.map(p => {
         const { calculated, rows, complete, total } = p, r = calculated.selected || calculated.partial;
+        const sameRoute = Object.keys(p.config).filter(key => !(['exitBank', 'returnMethod', 'returnCurrency'].includes(key) && state.outcome !== 'mainland')).every(key => p.config[key] === state[key]);
+        const applied = !!active && sameRoute && Math.abs(active.costCny - r.costCny) < 1e-7 && Math.abs(active.net - r.net) < 1e-7;
         const missing = r?.missing || [calculated.error].filter(Boolean);
         const price = rows.length ? '<span class="flow-preset-price"><small>' + (complete ? rows.some(x => x.estimate) ? '参考总损耗' : '全程损耗' : '已核费用') +
           (r?.trading?.rebateUsd > 0 ? ' · 返还后' : '') + '</small><b>' +
           (complete ? pct(total / M.number(state.budgetCny)) : cost(total)) + '</b>' + (complete ? '<small>' + cost(total) + '</small>' : '') + '</span>' : '<span class="flow-preset-price"><small>无法计算总额</small></span>';
         return action('<span class="flow-preset-route"><strong>' + esc(p.title) + '</strong><small>' + esc(p.note) + '</small><small class="flow-preset-outcome">→ ' +
           esc(p.end || outcomes.find(([id]) => id === state.outcome)?.[1] || '') + '</small>' + (p.accountFee ? '<small class="flow-preset-account-fee">' + esc(p.accountFee) + '</small>' : '') + (!complete ? '<small class="flow-preset-gap">总损耗尚缺：' + esc(missing.join('、')) + '</small>' : '') + '</span>' + price,
-          'preset', 'data-value="' + p.id + '" aria-pressed="' + (state.plan === p.id || Object.keys(p.config).filter(key => !(['exitBank', 'returnMethod', 'returnCurrency'].includes(key) && state.outcome !== 'mainland')).every(key => p.config[key] === state[key])) + '" aria-label="优选方案：' + esc(p.title) + '"', 'flow-preset');
+          'preset', 'data-value="' + p.id + '" aria-pressed="' + applied + '" aria-label="优选方案：' + esc(p.title) + '"', 'flow-preset');
       }).join('') + '</div>' + (!visiblePresets.length ? '<p class="flow-quiet">当前条件没有完整的汇路总价，仍可在下方选择账户与渠道。</p>' : '');
   }
   const transferKeys = ['entryFx', 'sender', 'entryMiddle', 'entryInward'];
@@ -696,15 +700,18 @@
       (comparison?.best ? '<p class="flow-picker-caption">购汇价按每1外币计；手续费由所选渠道另算。报价时间见详情。</p>' : ''));
   }
   function adjustments() {
+    const s = selected(), active = new Set(M.calculatorAdjustmentFields(state, D));
+    const fxAccount = state.fxMode === 'bank' ? shortName(s.bank) : 'IBKR';
+    const prices = new Set(['startSell', 'entryPrice', 'returnHkdPrice', 'exitPrice']);
     return '<div class="flow-parameter-grid">' + [
-      ['startSell', '每1汇出外币的购入价', 'CNY'], ['entryPrice', autoFxAtPurchase() ? 'IBKR每1USD成交价（含自动加价）' : '香港每1USD的购入价', state.route],
+      ['startSell', shortName(s.start) + '每1' + state.route + '购入价', 'CNY'], ['entryPrice', autoFxAtPurchase() ? 'IBKR每1USD成交价（含自动加价）' : fxAccount + '每1USD购入价', state.route],
       ...(state.outcome === 'mainland' && state.returnCurrency === 'HKD' ? [['returnHkdPrice', '回款银行每1USD换回港币', 'HKD']] : []),
       ['exitPrice', '每1' + (state.outcome === 'mainland' ? state.returnCurrency || 'USD' : 'USD') + '换回金额', state.outcome === 'cnh-card' ? 'CNH' : 'CNY'],
       ['senderFeeCny', '每笔汇出手续费＋电讯费', 'CNY'], ['entryMiddleCny', '每笔跨境代理费', 'CNY'], ['entryInwardHkd', '每笔香港汇入费', 'HKD'],
       ['depositHkd', '股票入金转账费', 'HKD'], ['depositOtherCny', '股票入金收款行／代理费', 'CNY'], ['tradeFeeUsd', '本次买卖实际交易费', 'USD'],
       ['inwardHkd', '出金收款行费', 'HKD'], ['intermediaryCny', '出金代理费', 'CNY'], ['returnWireHkd', '回内地汇出费', 'HKD'], ['returnExtraCny', '回内地其他费用', 'CNY'],
       ['monthlyHkd', '收款银行月费', 'HKD'], ['returnMonthlyHkd', '取回银行月费', 'HKD'], ['balanceHkd', '收款银行保留资产', 'HKD'], ['returnBalanceHkd', '取回银行保留资产', 'HKD'], ['openingCny', '开户实际支出', 'CNY']
-    ].map(args => field(...args, '留空使用公开收费')).join('') + '</div><p>' + action('恢复公开报价', 'clear-quotes') + '</p>';
+    ].filter(([key]) => active.has(key)).map(args => field(...args, prices.has(args[0]) ? '实际成交价' : '留空使用公开收费')).join('') + '</div><p>' + action('恢复公开报价', 'clear-quotes') + '</p>';
   }
   function detail(key, updating = false) {
     modalKey = key;

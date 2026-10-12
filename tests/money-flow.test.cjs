@@ -1295,6 +1295,64 @@ function moneyUi(input, quotes = cibQuotes, date = '2026-10-09', data = D) {
     act: (action, field, value) => context.window.ChanghengMoneyFlow.handleAction({ dataset: { action: 'money-flow-' + action, field, value } }) };
 }
 
+test('actual-price details show relevant currencies and charges across every stock venue, entry currency and endpoint', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  for (const broker of D.calculator.brokers) for (const route of ['USD', 'HKD', 'CNH'])
+    for (const outcome of ['broker-balance', 'usd-balance', 'usd-card', 'cnh-card', 'mainland']) {
+      const input = { ...currentRoute, startBank: 'boc', bank: 'bochk', returnBank: 'bochk', exitBank: 'boc',
+        broker, route, outcome, returnCurrency: 'HKD', fxMode: 'bank', hsbcBalanceWaiver: false };
+      const ui = moneyUi(input, quotes, '2026-10-12'); ui.render(); ui.act('detail', '', 'adjustments');
+      const html = ui.modal(), fields = new Set([...html.matchAll(/data-money-field="([^"]+)"/g)].map(match => match[1]));
+      assert.equal(fields.has('startSell'), route !== 'CNH');
+      assert.equal(fields.has('entryPrice'), route !== 'USD');
+      assert.equal(fields.has('returnHkdPrice'), outcome === 'mainland');
+      assert.equal(fields.has('exitPrice'), ['mainland', 'cnh-card'].includes(outcome));
+      assert.equal(fields.has('inwardHkd'), outcome !== 'broker-balance');
+      assert.equal(fields.has('intermediaryCny'), broker === 'ibkr' && outcome !== 'broker-balance');
+      assert.equal(fields.has('returnWireHkd'), outcome === 'mainland');
+      assert.equal(fields.has('returnExtraCny'), outcome === 'mainland');
+      for (const key of ['returnMonthlyHkd', 'returnBalanceHkd', 'balanceHkd']) assert.ok(!fields.has(key), key);
+      if (route !== 'USD') assert.match(html, /中银香港每1USD购入价/);
+      assert.match(html, /实际成交价/); assert.match(html, /恢复公开报价/);
+    }
+});
+
+test('the actual-fee editor retains a separate bank fee only when that bank is used and hides internal settlement inputs', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  for (const outcome of ['broker-balance', 'usd-balance', 'mainland']) {
+    const ui = moneyUi({ ...currentRoute, broker: 'za', bank: 'za', returnBank: 'hsbc', depositMethod: 'internal',
+      outcome, hsbcBalanceWaiver: false }, quotes, '2026-10-12');
+    ui.render(); ui.act('detail', '', 'adjustments');
+    const fields = new Set([...ui.modal().matchAll(/data-money-field="([^"]+)"/g)].map(match => match[1]));
+    for (const key of ['depositHkd', 'depositOtherCny']) assert.ok(!fields.has(key), key);
+    assert.equal(fields.has('returnMonthlyHkd'), outcome !== 'broker-balance');
+    assert.equal(fields.has('returnBalanceHkd'), outcome !== 'broker-balance');
+  }
+});
+
+test('an actual receipt does not mark a differently priced public recommendation as already applied', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  const ui = moneyUi({ ...currentRoute, startBank: 'boc', bank: 'bochk', returnBank: 'bochk', broker: 'za',
+    route: 'USD', outcome: 'broker-balance', hsbcBalanceWaiver: false }, quotes, '2026-10-12');
+  const card = ui.render().match(/<button[^>]*data-action="money-flow-preset"[^>]*>/)[0];
+  const id = card.match(/data-value="([^"]+)"/)[1];
+  ui.act('preset', '', id);
+  const applied = ui.render();
+  assert.equal([...applied.matchAll(/data-action="money-flow-preset"[^>]*aria-pressed="true"/g)].length, 1);
+  const saved = ui.saved(), before = M.calculatorJourney({ ...saved, date: '2026-10-12' }, D, quotes).selected;
+  const personal = moneyUi({ ...saved, depositOtherCny: '137' }, quotes, '2026-10-12');
+  const actual = personal.render();
+  assert.match(actual, /公开收费对比/);
+  assert.equal([...actual.matchAll(/data-action="money-flow-preset"[^>]*aria-pressed="true"/g)].length, 0);
+  const after = M.calculatorJourney({ ...saved, date: '2026-10-12', depositOtherCny: '137' }, D, quotes).selected;
+  close(after.costCny, before.costCny + 137);
+  personal.act('preset', '', id);
+  assert.equal(personal.saved().depositOtherCny, '');
+  assert.equal([...personal.render().matchAll(/data-action="money-flow-preset"[^>]*aria-pressed="true"/g)].length, 1);
+  const restored = M.calculatorJourney({ ...personal.saved(), date: '2026-10-12' }, D, quotes).selected;
+  close(restored.costCny, before.costCny); close(restored.net, before.net);
+});
+
 test('cash-account AutoFX preserves original deposited cash and charges conversion at purchase', () => {
   const quotes = require('./fixtures/money-flow-quotes-20261011.json');
   for (const route of ['HKD', 'CNH']) for (const pricingBasis of ['best-quote', undefined]) for (const profitUsd of [0, 500, -500]) {
@@ -2270,7 +2328,7 @@ test('invalid editable values are explained inside their open dialog instead of 
     ['bank-settings', 'months', 1201, /账户使用月数须为0–1200的整数/],
     ['offers', 'voucherOrders', 241, /费用券适用订单数须为1–240的整数/],
     ['adjustments', 'senderFeeCny', -1, /须为非负数/],
-    ['adjustments', 'entryPrice', 0, /汇率须为有效正数/]
+    ['adjustments', 'entryPrice', 0, /汇率须为有效正数/, { route: 'HKD', fxMode: 'bank' }]
   ];
   for (const [detail, key, value, message, overrides = {}] of cases) {
     const ui = moneyUi({ ...currentRoute, ...(detail === 'offers' ? { useVoucher: true } : {}), ...overrides, [key]: value }); ui.render(); ui.act('detail', '', detail);

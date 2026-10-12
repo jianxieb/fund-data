@@ -700,6 +700,28 @@
       balanceHkd: route.bank === config.bank ? config.balanceHkd ?? '0' : balances[route.bank] ?? '0',
       returnBalanceHkd: route.returnBank === config.returnBank ? config.returnBalanceHkd ?? '0' : balances[route.returnBank] ?? '0' };
   }
+  function calculatorAdjustmentFields(config, data) {
+    const broker = selectedBroker(config, data), bank = data.hkBanks.find(item => item.id === config.bank);
+    const returning = data.hkBanks.find(item => item.id === (config.returnBank || config.bank));
+    const keep = config.outcome === 'broker-balance', mainland = (config.outcome || 'mainland') === 'mainland';
+    const internal = broker.integratedBank === bank?.id || config.depositMethod === 'internal' && broker.internalFundingBanks?.includes(bank?.id);
+    const separateReturn = !keep && returning?.id !== bank?.id;
+    const assetQualification = account => account?.thresholdHkd > 0 && !(account.id === 'hsbc' && config.hsbcBalanceWaiver);
+    return [
+      ...(config.route !== 'CNH' ? ['startSell'] : []),
+      ...(config.route !== 'USD' ? ['entryPrice'] : []),
+      ...(mainland && config.returnCurrency === 'HKD' ? ['returnHkdPrice'] : []),
+      ...(mainland || config.outcome === 'cnh-card' ? ['exitPrice'] : []),
+      'senderFeeCny', 'entryMiddleCny', 'entryInwardHkd',
+      ...(!internal ? ['depositHkd', 'depositOtherCny'] : []),
+      'tradeFeeUsd', ...(!keep ? ['inwardHkd'] : []),
+      ...(!keep && broker.withdrawalMethod === 'wire' && !broker.integratedBank ? ['intermediaryCny'] : []),
+      ...(mainland ? ['returnWireHkd', 'returnExtraCny'] : []),
+      'monthlyHkd', ...(separateReturn ? ['returnMonthlyHkd'] : []),
+      ...(assetQualification(bank) ? ['balanceHkd'] : []),
+      ...(separateReturn && assetQualification(returning) ? ['returnBalanceHkd'] : []), 'openingCny'
+    ];
+  }
   let mainlandPlanCache;
   function routeConfiguration(r) {
     return { startBank: r.start.id, bank: r.bank.id, returnBank: r.returning.id, exitBank: r.exit.id, route: r.route, broker: r.broker.id,
@@ -730,6 +752,8 @@
       ...(config.route === 'CNH' ? ['startSell'] : []),
       ...(outcome !== 'mainland' || returnCurrency !== 'HKD' ? ['returnHkdPrice'] : [])
     ]);
+    const adjustmentFields = new Set(calculatorAdjustmentFields(config, data));
+    for (const key of [...bankQuoteKeys, 'balanceHkd', 'returnBalanceHkd']) if (!adjustmentFields.has(key)) unused.add(key);
     const overrides = ['senderFeeCny', 'entryMiddleCny', 'entryInwardHkd', 'depositHkd', 'depositOtherCny', 'inwardHkd', 'intermediaryCny', 'returnWireHkd', 'returnExtraCny', 'monthlyHkd', 'returnMonthlyHkd', 'balanceHkd', 'returnBalanceHkd', 'tradeFeeUsd', 'taxableCny', 'creditCny', 'openingCny', 'extraCapitalCny', 'annualGapPct'];
     if (invalidOptional(config, overrides.filter(key => !unused.has(key)))) return empty('费用、资产和应税所得须为非负数；未报价请留空。');
     const months = number(config.months);
@@ -1048,9 +1072,10 @@
         // broker has no private bank concession or passes through every charge.
         const corporateHkd = corporateTariff ? (corporateTariff.freeUpToHkd != null && balance * refs[unit] / refs.HKD <= corporateTariff.freeUpToHkd + 1e-8 ? 0 : corporateTariff.feeHkd) : null;
         const recipientFee = internalDeposit ? 0 : receivingBank ?
-          fundingBank && recipientOverride != null ? recipientOverride : localInward == null ? null : localInward * refs.HKD :
+          recipientOverride != null ? recipientOverride : localInward == null ? null : localInward * refs.HKD :
           recipientOverride ?? (corporateTariff ? corporateHkd * refs.HKD : localFunding ? localFunding.otherCny : depositMethod === 'fps' || depositMethod === 'edda' ? 0 : null);
         add('depositOther', receivingBank ? (fundingBank ? '本人' : '') + receivingBank.name + ' · 本地USD收款' : internalDeposit ? provider.name + ' · 同行收款' : corporateReceivingBank ? corporateReceivingBank.corporateName + ' · 券商企业账户CHATS收款' : localFunding ? provider.name + '香港本地收款' : '入金代理／收款行费', recipientFee, 'deposit');
+        if (!internalDeposit && recipientOverride != null) rows[rows.length - 1].evidence = '本人回单收款费 · ' + (receivingBank?.name || corporateReceivingBank?.corporateName || provider.name);
         if (corporateTariff && recipientOverride == null) Object.assign(rows[rows.length - 1], { nativeCurrency: 'HKD',
           estimate: '按所选收款银行企业CHATS标准价计算；不假定券商另获减免', evidence: (corporateTariff.accountType ? corporateTariff.accountType + ' · ' : '') + '企业CHATS收款标准价' + corporateHkd + ' HKD' + (corporateTariff.freeUpToHkd != null ? '；' + corporateTariff.freeUpToHkd + ' HKD等值或以下免收' : ''),
           sources: [...corporateTariff.sources, ...(provider.id === 'usmart' && bank.id === 'za' && corporateReceivingBank.id === 'bochk' ? ['usmartChatsGuide'] : [])] });
@@ -1611,5 +1636,5 @@
     return result;
   }
   function catalogueBroker(id, data) { return data.calculator.brokers.includes(id) ? id : 'za'; }
-  return { calculatorRoute, calculatorChannels, calculatorFundingBank, calculatorDepositBank, calculatorIssue, calculatorJourney, calculatorRecommendations, calculatorAccountState, number, reference, telegramAllowance, fee, remitPrincipal, senderFeeRange, inwardFee, groupMobileWaived, outwardFee, zaPerksLevel, swiftFee, localUsdChequeFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
+  return { calculatorRoute, calculatorChannels, calculatorFundingBank, calculatorDepositBank, calculatorIssue, calculatorJourney, calculatorRecommendations, calculatorAccountState, calculatorAdjustmentFields, number, reference, telegramAllowance, fee, remitPrincipal, senderFeeRange, inwardFee, groupMobileWaived, outwardFee, zaPerksLevel, swiftFee, localUsdChequeFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
 }));
