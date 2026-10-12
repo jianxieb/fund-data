@@ -281,6 +281,10 @@ CNY原币到港成为CNH时第一步没有换汇差额；该人民币基准差�
 - [ZA个人换汇FAQ](https://bank.za.group/en/faqs/Individuals/Bank_services/Money_exchange/671605c5701eb769e4bff53c)指向登录ZA App查看最新价；[个人产品页](https://bank.za.group/en/foreignexchange)的免手续费不等于没有买卖点差。官网页脚Open Banking链接此次返回404；[公开产品目录的搜索索引](https://developer.bank.za.group/en/product)只列存款、定期、个人贷款及账户资料，本次没有发现个人外汇报价接口。没有把沙盒示例、公司换汇产品或别行牌价代入。
 - [香港银行公会开市参考价](https://www.hkab.org.hk/en/rates/exchange-rates)的本次公开说明没有具名供价银行；搜索索引中的2026-09-11记录也已超过本模型三天报价期限。该表的HKD单位、卖出／电汇买入栏不能证明渣打或ZA当前个人渠道报价，未据此填补任何银行成交价。
 
+2026-10-12继续检查[香港渣打换汇定期存款计算器](https://www.sc.com/hk/deposits/foreign-exchange-time-deposit/)，包括原页嵌入的`fxtd-calc-config`：提供的是存款金额、币种、期限、计息日数和年化利率，没有本次个人USD/HKD或USD/CNH买卖价。不能把定存利息比例当成兑换汇率。另读取[IBKR现行Web API文档](https://www.interactivebrokers.com/campus/ibkr-api-page/webapi-doc/)的个人访问、行情及快照章节，明确个人使用需已开户入金的Pro账户；行情还需授权会话和对应权限。本次没有登录私人账户或取得其执行价。原件响应、哈希与范围均补入[同一研究记录](evidence/money-flow-feedback/retail-fx-and-remittance-scope-20261012.json)，不据公开文档的API方法名伪造报价。
+
+同日核对工银亚洲旧人民币指南和当前综合账户条款：[旧指南](https://m.icbc.com.cn/page/721855142960709635.html)的“非香港居民”政策背景含2012年及2014年资料，不等于没有香港身份证。[当前账户入口](https://www.icbcasia.com/hk/sc/personal/banking/integrated-account/integrated-account/default.html)实际链接的[2026年7月条款](https://v.icbc.com.cn/userfiles/resources/icbc/haiwai/asia/download/cn/2026/descriptive_information_integrated_account_2607_sc.pdf)第1页(d)/(f)/(g)明确人民币定期、往来及储蓄账户的香港身份证要求。保留当前具名综合账户的人民币条件，不能据旧居民描述取消它，也不推断其他账户产品的准入。原件哈希和具体适用结论保存在上述记录。
+
 以上是已查路径和取得结果的记录，不证明银行永远不会提供其他接口。关闭这些缺项需要可授权使用的银行个人报价数据源；具体汇路代理费仍需要银行针对渠道、币种和收款路径的收费依据。现有公开材料不够支持“全目录每条路线均有确定成交损耗”的验收结论。
 
 IBKR[公开入金工具](https://www.interactivebrokers.com/en/support/fund-my-account.php)使用的`/aces/Funding/Methods/InitData`在本次读取中只返回`DEPOSIT`、`POSITION_INBOUND`和`IRA`。响应保存于[已有核查摘要](../tests/fixtures/money-flow-ibkr-funding-20261011.json)的`publicMethodTypes`；此前按CHN／HKG取得的USD、HKD及CNH资料均为入金方法，不能用于证明美元出金路径免费。客户出金能力仍以[官方出金说明](https://www.ibkrguides.com/androidtablet/withdrawal.htm)和[出金收费](https://www.interactivebrokers.com/en/pricing/other-fees.php)分别核查：两次月度免费额度只免IBKR本身的手续费，不证明代理／收款行费为0，HKD／CNH本地支付也不能套入USD电汇。

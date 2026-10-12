@@ -121,6 +121,76 @@
       "finding": "搜索结果的25美元OUR来自OSA离岸业务。读取完整行的适用客户栏并渲染原页后明确排除，不能给普通个人汇款添加招行25美元全额到账承诺。",
       "renderedEvidence": "cmb-osa-our-scope-20261012.png",
       "productionFeeChanged": false
+    },
+    "scHkForeignExchangeDepositCalculator": {
+      "url": "https://www.sc.com/hk/deposits/foreign-exchange-time-deposit/",
+      "finalUrl": "https://www.sc.com/hk/deposits/foreign-exchange-time-deposit/",
+      "status": 200,
+      "bytes": 319190,
+      "sha256": "ce1809a6aa638ba03a1247bf6099b0b65337c92896621ee637dedfafba083011",
+      "scope": "香港渣打个人换汇定期存款计算器",
+      "finding": "页面及嵌入的fxtd-calc-config提供各渠道存款金额、币种、期限、年化利息和计息日数；未提供本次个人USD/HKD或USD/CNH银行买卖价。利率不是外汇成交汇率，不加入报价快照。",
+      "configKeys": [
+        "channels",
+        "interestDays",
+        "interests"
+      ],
+      "productionQuoteChanged": false
+    },
+    "ibkrAuthenticatedMarketData": {
+      "url": "https://www.interactivebrokers.com/campus/ibkr-api-page/webapi-doc/",
+      "finalUrl": "https://www.interactivebrokers.com/campus/ibkr-api-page/webapi-doc/",
+      "status": 200,
+      "bytes": 443927,
+      "sha256": "ebd5b26f6410be6bba4a91f66c9d7f5817fa3489e766919216b5dabc9cbe8395",
+      "scope": "IBKR现行Web API官方文档，个人访问与行情章节",
+      "finding": "个人Web API需IBKR用户名及已开户入金的Pro账户；行情章节还要求授权会话、对应行情权限及brokerage session。公开文档给出访问条件而非匿名HKD/USD、CNH/USD成交数值；本次未登录账户、取得私人行情或把其他银行价格替代为IBKR执行价。",
+      "documentSections": [
+        "Web API Access for Individuals",
+        "Market Data",
+        "Top-of-Book Snapshots"
+      ],
+      "productionQuoteChanged": false
+    },
+    "icbcAsiaCurrentTerms": {
+      "url": "https://v.icbc.com.cn/userfiles/resources/icbc/haiwai/asia/download/cn/2026/descriptive_information_integrated_account_2607_sc.pdf",
+      "status": 200,
+      "bytes": 103315,
+      "sha256": "f410226a718f442380fb040a0ecdf7124dbb12ab40b1846934812a3518f250d9",
+      "finding": "工银亚洲综合账户2026年7月条款；第1页(d)/(f)/(g)人民币定期、往来及储蓄账户要求香港身份证。保留本目录综合账户的人民币资格条件，不把旧指南的非香港居民身份解释为无香港身份证。",
+      "productionFeeChanged": false,
+      "productionEligibilityChanged": false
+    },
+    "icbcAsiaCurrentAccountPage": {
+      "url": "https://www.icbcasia.com/hk/sc/personal/banking/integrated-account/integrated-account/default.html",
+      "status": 200,
+      "bytes": 201533,
+      "sha256": "3fe16ffc4ece8b96b5dbb82161df707720ea68d6bc85de1a58cc90e125988d55",
+      "finding": "当前综合账户页面实际链接指向上述2026年7月条款；不凭猜测旧PDF网址替换当前版本。",
+      "productionFeeChanged": false,
+      "productionEligibilityChanged": false
+    },
+    "icbcAsiaLegacyNonResidentGuide": {
+      "url": "https://m.icbc.com.cn/page/721855142960709635.html",
+      "status": 200,
+      "bytes": 60393,
+      "sha256": "d632a2db09f3d2ab02584a71695314547eaba801a5e4bbba018c3e3b0af7b666",
+      "finding": "旧人民币服务指南含2012年8月非香港居民政策、2014年沪港通等背景；非香港居民与没有香港身份证不同，不能据此否定现行具名综合账户的开户条款。未据此取消资格条件或宣称所有账户现时均支持人民币。",
+      "productionFeeChanged": false,
+      "productionEligibilityChanged": false
+    },
+    "ibkrHkInstitutionalAgreementExcluded": {
+      "url": "https://gdcdyn.interactivebrokers.com/Universal/servlet/Registration_v2.formSampleView?formdb=4146&lang=en",
+      "finalUrl": "https://gdcdyn.interactivebrokers.com/Universal/servlet/Registration_v2.formSampleView?formdb=4146&lang=en",
+      "status": 200,
+      "bytes": 508460,
+      "sha256": "7230b7d4c88df3e81f8c42529966ab2c30b339c8ab0e58b71806979bdef7c533",
+      "scope": "IBHK Institutional Services Client Agreement, 11 September 2026, form 4146",
+      "physicalPdfPage": 1,
+      "pages": 64,
+      "finding": "首页为机构服务客户协议；不能将其条款直接作为本页个人IBKR账户USD换HKD及本地提款的依据。未改变现有个人出金规则，也未取得现时成交报价。",
+      "productionFeeChanged": false,
+      "productionQuoteChanged": false
     }
   },
   "remaining": [
@@ -129,5 +199,6 @@
     "交通银行具体地区个人汇出适用费率",
     "工行／交行普通个人人民币跨境汇出费",
     "IBKR内USD换HKD后本地取回路径的本次报价和实现"
-  ]
+  ],
+  "lastFollowupAt": "2026-10-12T02:49:06.865101+00:00"
 }

@@ -9344,5 +9344,119 @@
         }
       }
     ]
+  },
+  "executedFxPrices": {
+    "syntheticOnly": true,
+    "prices": {
+      "HKD": 8,
+      "CNH": 6.72
+    },
+    "assumptions": {
+      "count": 2,
+      "months": 12,
+      "hsbcBalanceWaiver": true,
+      "scCnhAccount": true,
+      "icbcCnhAccount": true,
+      "withdrawalIndices": [
+        1,
+        3
+      ]
+    },
+    "checked": 163944,
+    "priced": 42,
+    "partial": 149106,
+    "routeIssues": 14796,
+    "ledgerChecks": 149148,
+    "legChecks": 894888,
+    "inclusiveAutoFxChecks": 74574,
+    "manualFxChecks": 74574,
+    "retainedPartialResults": 14796,
+    "issueCounts": {
+      "众安 ZA Bank不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 1224,
+      "工银亚洲 · 综合账户不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。": 1224,
+      "众安 ZA Bank扣账卡以港币结算，不支持人民币余额原币消费；已保留出金后的美元余额。": 1224,
+      "当前余额不足以支付账户期间费及其他固定支出。": 2016,
+      "渣打中国的HKD现汇卖出价尚未取得；到账金额暂不可算。": 9108
+    },
+    "profiles": [
+      {
+        "budgetCny": 5000,
+        "fxMode": "auto",
+        "checked": 27324,
+        "priced": 7,
+        "partial": 24179,
+        "routeIssues": 3138,
+        "ledgerChecks": 24186,
+        "legChecks": 145116,
+        "inclusiveAutoFxChecks": 24186,
+        "manualFxChecks": 0,
+        "retainedPartialResults": 3138
+      },
+      {
+        "budgetCny": 5000,
+        "fxMode": "manual",
+        "checked": 27324,
+        "priced": 7,
+        "partial": 24179,
+        "routeIssues": 3138,
+        "ledgerChecks": 24186,
+        "legChecks": 145116,
+        "inclusiveAutoFxChecks": 0,
+        "manualFxChecks": 24186,
+        "retainedPartialResults": 3138
+      },
+      {
+        "budgetCny": 100000,
+        "fxMode": "auto",
+        "checked": 27324,
+        "priced": 7,
+        "partial": 25187,
+        "routeIssues": 2130,
+        "ledgerChecks": 25194,
+        "legChecks": 151164,
+        "inclusiveAutoFxChecks": 25194,
+        "manualFxChecks": 0,
+        "retainedPartialResults": 2130
+      },
+      {
+        "budgetCny": 100000,
+        "fxMode": "manual",
+        "checked": 27324,
+        "priced": 7,
+        "partial": 25187,
+        "routeIssues": 2130,
+        "ledgerChecks": 25194,
+        "legChecks": 151164,
+        "inclusiveAutoFxChecks": 0,
+        "manualFxChecks": 25194,
+        "retainedPartialResults": 2130
+      },
+      {
+        "budgetCny": 1500000,
+        "fxMode": "auto",
+        "checked": 27324,
+        "priced": 7,
+        "partial": 25187,
+        "routeIssues": 2130,
+        "ledgerChecks": 25194,
+        "legChecks": 151164,
+        "inclusiveAutoFxChecks": 25194,
+        "manualFxChecks": 0,
+        "retainedPartialResults": 2130
+      },
+      {
+        "budgetCny": 1500000,
+        "fxMode": "manual",
+        "checked": 27324,
+        "priced": 7,
+        "partial": 25187,
+        "routeIssues": 2130,
+        "ledgerChecks": 25194,
+        "legChecks": 151164,
+        "inclusiveAutoFxChecks": 0,
+        "manualFxChecks": 25194,
+        "retainedPartialResults": 2130
+      }
+    ]
   }
 }

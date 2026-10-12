@@ -65,7 +65,81 @@ function audit({ quotes = Q, date = config.date } = {}) {
   result.routes = [...routes.values()]; result.distinctCompleteRoutes = routes.size;
   result.channelProfiles = auditChannels({ quotes, date });
   result.numericBoundaries = auditNumericBoundaries({ quotes, date });
+  result.executedFxPrices = auditExecutedFxPrices({ quotes, date });
   return result;
+}
+function auditExecutedFxPrices({ quotes = Q, date = config.date } = {}) {
+  // Explicit QA execution prices exercise the receipt branch. They are not
+  // market quotes, bank concessions, or additional fully researched routes.
+  const prices = { HKD: 8, CNH: 6.72 };
+  const report = { syntheticOnly: true, prices,
+    assumptions: { count: config.count, months: config.months, hsbcBalanceWaiver: config.hsbcBalanceWaiver,
+      scCnhAccount: true, icbcCnhAccount: true, withdrawalIndices: [1, 3] },
+    checked: 0, priced: 0, partial: 0, routeIssues: 0,
+    ledgerChecks: 0, legChecks: 0, inclusiveAutoFxChecks: 0, manualFxChecks: 0, retainedPartialResults: 0,
+    issueCounts: {}, profiles: [] };
+  for (const budgetCny of [5000, 100000, 1500000]) for (const fxMode of ['auto', 'manual']) {
+    const profile = { budgetCny, fxMode, checked: 0, priced: 0, partial: 0, routeIssues: 0,
+      ledgerChecks: 0, legChecks: 0, inclusiveAutoFxChecks: 0, manualFxChecks: 0, retainedPartialResults: 0 };
+    const increment = key => { report[key]++; profile[key]++; };
+    for (const startBank of D.calculator.mainland) for (const bank of D.calculator.hkBanks) for (const route of ['HKD', 'CNH'])
+      for (const outcome of ['broker-balance', 'usd-balance', 'usd-card', 'cnh-card', 'mainland'])
+        for (const returnBank of outcome === 'broker-balance' ? [bank] : D.calculator.hkBanks)
+          for (const exitBank of outcome === 'mainland' ? D.calculator.mainland : [startBank])
+            for (const returnCurrency of outcome === 'mainland' ? ['USD', 'HKD'] : ['USD'])
+              for (const withdrawalIndex of outcome === 'broker-balance' ? [1] : [1, 3]) {
+      const s = M.calculatorRoute({ ...config, date, budgetCny, broker: 'ibkr', startBank, bank, route,
+        outcome, returnBank, exitBank, returnCurrency, withdrawalIndex, fxMode, entryPrice: prices[route],
+        // These are explicit test qualifications, never user defaults.
+        scCnhAccount: true, icbcCnhAccount: true });
+      if (M.calculatorIssue(s, D)) throw new Error('Execution-price audit removed a catalogue choice: ' + JSON.stringify(s));
+      increment('checked');
+      const data = M.calculatorJourney(s, D, quotes), r = data.selected || data.partial;
+      for (const row of r?.rows || []) if (row.cny !== null && !Number.isFinite(row.cny)) throw new Error('Non-finite receipt fee: ' + JSON.stringify(s));
+      for (const value of Object.values(r?.steps || {})) if (!Number.isFinite(value) || value < -1e-6) throw new Error('Invalid receipt balance: ' + JSON.stringify(s));
+      if (!data.selected) {
+        if (!data.error || /NaN|undefined/.test(data.error)) throw new Error('Unnamed receipt-route failure: ' + JSON.stringify(s));
+        increment('routeIssues');
+        report.issueCounts[data.error] = (report.issueCounts[data.error] || 0) + 1;
+        if (r?.rows?.some(row => Number.isFinite(row.cny))) increment('retainedPartialResults');
+        continue;
+      }
+      const expected = r.budgetCny + r.profitUsd * r.refs.USD - r.costCny - r.taxCny + r.fxImpactCny;
+      if (!Number.isFinite(r.net) || Math.abs(expected - r.netCny) > 1e-6 ||
+        Math.abs(r.rows.reduce((sum, row) => sum + (row.cny ?? 0), 0) - r.costCny) > 1e-6) throw new Error('Receipt ledger mismatch: ' + JSON.stringify(s));
+      increment('ledgerChecks');
+      const ledger = M.flowLedger(r);
+      for (const leg of ledger.legs) {
+        if (Math.abs(leg.inputCny + leg.profitCny + leg.fxImpactCny - leg.outputCny - leg.costCny - leg.taxCny) > 1e-6)
+          throw new Error('Receipt leg mismatch: ' + JSON.stringify(s));
+        increment('legChecks');
+      }
+      const fx = r.brokerFx, fee = r.rows.find(row => row.key === 'brokerFx');
+      if (fxMode === 'auto') {
+        if (!fx.priceIncludesAutoMarkup || fx.commissionUsd !== 0 || fx.markupUsd !== 0 || fee.cny !== 0 || fee.step !== 'investment' ||
+          Math.abs(r.steps.fundedUsd - r.steps.brokerOriginal / prices[route]) > 1e-7) throw new Error('Effective AutoFX price charged twice: ' + JSON.stringify(s));
+        auditAutoFxTiming(r, s);
+        increment('inclusiveAutoFxChecks');
+      } else {
+        // The converted trade and its commission share one cash budget.
+        const grossUsd = r.steps.brokerOriginal / prices[route], commission = Math.max(D.broker.manualMinimumUsd, r.steps.fundedUsd * D.broker.manualRate);
+        if (fx.priceIncludesAutoMarkup || fx.markupUsd !== 0 || fee.step !== 'deposit' ||
+          Math.abs(fx.commissionUsd - commission) > 1e-7 || Math.abs(r.steps.fundedUsd - grossUsd + commission) > 1e-7)
+          throw new Error('Actual manual FX commission lost: ' + JSON.stringify(s));
+        increment('manualFxChecks');
+      }
+      if (r.complete) {
+        if (r.missing.length || r.rows.some(row => row.cny === null) || r.indicativeFx || r.indicativeExit || r.indicativeReturnFx)
+          throw new Error('Receipt price concealed another evidence gap: ' + JSON.stringify(s));
+        increment('priced');
+      } else {
+        if (!r.missing.length) throw new Error('Unnamed receipt evidence gap: ' + JSON.stringify(s));
+        increment('partial');
+      }
+    }
+    report.profiles.push(profile);
+  }
+  return report;
 }
 function auditNumericBoundaries({ quotes = Q, date = config.date } = {}) {
   const cases = [
@@ -240,7 +314,7 @@ function auditChannels({ quotes = Q, date = config.date } = {}) {
     return report;
   });
 }
-module.exports = { audit, auditChannels, auditNumericBoundaries, config, Q };
+module.exports = { audit, auditChannels, auditNumericBoundaries, auditExecutedFxPrices, config, Q };
 if (require.main === module) {
   const result = audit();
   if (process.argv.includes('--write')) fs.writeFileSync(path.join(__dirname, '../docs/money-flow-combinations.json'), JSON.stringify(result, null, 2) + '\n');

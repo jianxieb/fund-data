@@ -169,6 +169,20 @@ test('all 262440 catalogue combinations including USD and HKD returns retain sel
   for (const key of ['checked', 'priced', 'referencePriced', 'partial', 'routeIssues', 'ledgerChecks', 'retainedPartialResults']) {
     assert.equal(bounds[key], bounds.profiles.reduce((sum, p) => sum + p[key], 0));
   }
+  const receipts = r.executedFxPrices;
+  assert.equal(receipts.syntheticOnly, true);
+  assert.deepEqual(receipts.prices, { HKD: 8, CNH: 6.72 });
+  assert.equal(receipts.checked, 163944);
+  assert.equal(receipts.profiles.length, 6);
+  assert.equal(receipts.priced + receipts.partial + receipts.routeIssues, receipts.checked);
+  assert.equal(receipts.ledgerChecks, receipts.priced + receipts.partial);
+  assert.equal(receipts.inclusiveAutoFxChecks + receipts.manualFxChecks, receipts.ledgerChecks);
+  assert.equal(receipts.legChecks, receipts.ledgerChecks * 6);
+  assert.ok(receipts.inclusiveAutoFxChecks > 0); assert.ok(receipts.manualFxChecks > 0);
+  assert.ok(receipts.partial > 0); assert.ok(receipts.retainedPartialResults > 0);
+  for (const key of ['checked', 'priced', 'partial', 'routeIssues', 'ledgerChecks', 'legChecks', 'inclusiveAutoFxChecks', 'manualFxChecks', 'retainedPartialResults']) {
+    assert.equal(receipts[key], receipts.profiles.reduce((sum, p) => sum + p[key], 0));
+  }
 });
 
 test('ordinary CIB wire is the default; the optional full-amount service adds exactly 50 CNY per payment', () => {
