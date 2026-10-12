@@ -2500,7 +2500,7 @@ test('a missing ICBC quote preserves the fixed telegram tariff and named full-am
   assert.equal(r.steps.mainlandForeign, undefined);
   const ui = moneyUi(config, q), html = ui.render();
   assert.match(html, /汇出电讯费/); assert.match(html, /全额到账附加费 · 25 USD/);
-  assert.match(html, /费用小计 · 含估算/); assert.doesNotMatch(html, /NaN|undefined/);
+  assert.match(html, /已计费用占本金 · 含估算/); assert.doesNotMatch(html, /NaN|undefined/);
 });
 
 test('mainland receiving-bank choices show inward tariffs and USD bid prices regardless of the initial remittance currency', () => {
@@ -2585,9 +2585,73 @@ test('missing terminal FX never forces a different bank, erases the total, or sh
   const ui = moneyUi({ ...currentRoute, count: 2, mainlandMethod: 'swift', outcome: 'cnh-card', returnBank: 'hsbc' });
   const html = ui.render(), edge = html.split('aria-label="美元换人民币 → 消费"')[1].split('</section>')[0];
   assert.equal((html.match(/data-flow-stage=/g) || []).length, 4);
-  assert.match(html, /汇丰 HSBC One/); assert.match(html, /费用小计 · 含估算/);
+  assert.match(html, /汇丰 HSBC One/); assert.match(html, /已计费用占本金 · 含估算/);
   assert.match(html, /最后可计余额/); assert.doesNotMatch(edge, /0.000%/);
   assert.doesNotMatch(html, /请选择中银香港消费账户/);
+});
+
+test('partial journeys retain the counted cost percentage and amount without calling it a complete loss', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  const cases = [
+    { input: { ...currentRoute, startBank: 'boc', bank: 'bochk', broker: 'ibkr', returnBank: 'bochk', months: 0,
+      mainlandMethod: 'boc-mobile', depositMethod: 'chats', outcome: 'usd-balance', intermediaryCny: '' }, quotes },
+    { input: { ...currentRoute, startBank: 'boc', bank: 'bochk', broker: 'ibkr', returnBank: 'sc', months: 0,
+      mainlandMethod: 'boc-mobile', depositMethod: 'chats', outcome: 'mainland', exitBank: 'boc', returnCurrency: 'HKD',
+      returnHkdPrice: '', intermediaryCny: '', returnExtraCny: '' }, quotes },
+    { input: { ...currentRoute, startBank: 'icbc', bank: 'hsbc', broker: 'za', outcome: 'broker-balance', mainlandMethod: 'full',
+      hsbcBalanceWaiver: false }, quotes: (() => { const q = structuredClone(quotes); delete q.banks.icbc; return q; })() }
+  ];
+  for (const { input, quotes: q } of cases) {
+    const config = { ...input, date: '2026-10-11' }, r0 = M.calculatorJourney(config, D, q), r = r0.selected || r0.partial;
+    const counted = r.rows.reduce((sum, row) => sum + (row.cny ?? 0), 0);
+    assert.ok(counted > 0); assert.ok(r.rows.some(row => row.cny == null) || r0.error);
+    const ui = moneyUi(config, q, config.date), html = ui.render();
+    const total = html.split('id="flow-live-summary"')[1].split('</div><div class="flow-result-equation">')[0];
+    assert.match(total, /已计费用占本金|已核费用占本金/);
+    assert.ok(total.includes((counted / config.budgetCny * 100).toFixed(3) + '%'), total);
+    assert.ok(total.includes(counted.toFixed(2) + ' CNY'), total);
+    assert.doesNotMatch(total, /<span>全程损耗|<span>参考总损耗|NaN|undefined/);
+    assert.match(total, /总损耗尚缺|尚未完成/);
+    const keyGroups = [
+      ['内地购美元 → 汇往香港', ['sender', 'entryFx', 'entryMiddle', 'entryInward']],
+      ['出金 →', ['withdraw', 'returnInward', 'withdrawMiddle']],
+      ['香港换港币 →', ['returnFx', 'returnWire', 'returnOther', 'exitFx']]
+    ];
+    for (const [title, keys] of keyGroups) {
+      const rows = r.rows.filter(row => keys.includes(row.key)), cost = rows.reduce((sum, row) => sum + (row.cny ?? 0), 0);
+      const section = html.match(/<section class="flow-edge"[\s\S]*?<\/section>/g)?.find(section => section.includes('aria-label="' + title));
+      if (!section || !rows.some(row => row.cny == null) || cost === 0) continue;
+      const loss = section.split('class="flow-edge-loss"')[1].split('</div>')[0];
+      assert.match(loss, /费用占本金/);
+      assert.ok(loss.includes((cost / config.budgetCny * 100).toFixed(3) + '%'), loss);
+      assert.ok(loss.includes(cost.toFixed(2) + ' CNY'), loss);
+    }
+  }
+});
+
+test('nonzero costs too small for three percentage decimals never appear as zero percent', () => {
+  const q = require('./fixtures/money-flow-quotes-20261011.json');
+  const config = { ...currentRoute, date: '2026-10-11', startBank: 'boc', bank: 'bochk', broker: 'za',
+    outcome: 'broker-balance', months: 0, mainlandMethod: 'boc-mobile', depositMethod: 'chats', tradeFeeUsd: '.01',
+    senderFeeCny: 0, entryMiddleCny: 0, startSell: '6.7111' };
+  const html = moneyUi(config, q, config.date).render();
+  const trade = html.split('aria-label="买入美股 → 卖出"')[1].split('</section>')[0];
+  const ratio = trade.match(/class="flow-edge-loss"[\s\S]*?<strong class="num">([^<]+)%/)[1];
+  assert.ok(Number(ratio) > 0); assert.ok(Number(ratio) < .0005);
+  assert.doesNotMatch(trade.split('class="flow-edge-loss"')[1].split('</div>')[0], />0\.000%/);
+  const r = M.calculatorJourney(config, D, q).selected;
+  assert.ok(Math.abs(Number(ratio) - r.rows.find(row => row.key === 'trade').cny / config.budgetCny * 100) < 1e-7);
+});
+
+test('stale quotes never make an incomplete fee subtotal look like a complete historical loss', () => {
+  const q = require('./fixtures/money-flow-quotes-20261011.json');
+  const input = { ...currentRoute, startBank: 'boc', bank: 'bochk', broker: 'ibkr', returnBank: 'bochk', months: 0,
+    mainlandMethod: 'boc-mobile', depositMethod: 'chats', outcome: 'usd-balance', intermediaryCny: '' };
+  const html = moneyUi(input, q, '2026-10-20').render();
+  const summary = html.split('id="flow-live-summary"')[1];
+  assert.match(summary, /已计费用占本金 · 含估算 · 历史报价/);
+  assert.match(summary, /总损耗尚缺：/);
+  assert.doesNotMatch(summary, /全程损耗 · 历史报价|参考总损耗/);
 });
 
 test('missing funding FX is named consistently in the flow and details without a fabricated converted balance', () => {
@@ -2610,7 +2674,7 @@ test('missing funding FX is named consistently in the flow and details without a
     assert.match(html, expected);
     const trade = html.split('aria-label="买入美股 → 卖出"')[1].split('</section>')[0];
     assert.match(trade, /参考损耗/); assert.match(trade, /估算 .*? USD/);
-    assert.match(html.split('id="flow-live-summary"')[1], /费用小计 · 含估算/);
+    assert.match(html.split('id="flow-live-summary"')[1], /已计费用占本金 · 含估算/);
     for (const key of ['edge-03', 'cost']) {
       ui.act('detail', '', key);
       assert.match(ui.modal(), expected);

@@ -53,7 +53,11 @@
   const action = (label, act, extra = '', cls = 'btn') => H.action(label, 'money-flow-' + act, cls, extra);
   const save = () => { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (_) {} };
   if (repairStoredGo) save();
-  const pct = value => num(value * 100, 3) + '%';
+  const pct = value => {
+    const percent = value * 100, magnitude = Math.abs(percent);
+    const digits = magnitude > 0 && magnitude < .0005 ? Math.ceil(-Math.log10(magnitude)) + 2 : 3;
+    return (digits > 12 ? percent.toExponential(2) : num(percent, digits)) + '%';
+  };
   const quoteNum = value => num(value, 8).replace(/0+$/, '').replace(/\.$/, '');
   const shortName = value => value?.name?.replace(' · Pro Fixed', '').replace(' · 网上直属客户', '').replace(' · 个人标准账户', '').replace(' · 美股交易', '').replace(' · Trade25 / 普通证券', '证券') || '请选择';
   const cost = value => value == null ? '—' : Math.abs(value) > 0 && Math.abs(value) < .005 ? (value < 0 ? '−' : '') + '＜0.01 CNY' : num(value) + ' CNY';
@@ -290,6 +294,10 @@
   const exitKeys = ['returnFx', 'returnWire', 'returnOther', 'exitFx', 'card'];
   const costRows = (r, keys) => (r?.rows || []).filter(x => keys.includes(x.key));
   const sumRows = rows => rows.reduce((sum, x) => sum + (x.cny ?? 0), 0);
+  function countedRatio(total, partial) {
+    const budget = M.number(state.budgetCny);
+    return budget > 0 && Number.isFinite(total) && (!partial || total !== 0) ? pct(total / budget) : null;
+  }
   function missingFeeStatus(r, item, part = item) {
     if (item.key === 'brokerSpread') return ((r?.fxMode || state.fxMode) === 'bank' ? shortName(r?.bank) : 'IBKR') + ' ' + state.route + '/USD成交价尚未取得';
     if (part.status || item.status) return part.status || item.status;
@@ -309,11 +317,12 @@
     const variableFx = rows.some(x => x.cny == null && ['entryFx', 'brokerSpread', 'returnFx', 'exitFx'].includes(x.key));
     const partial = !!pending || variableFx || missing;
     const estimated = rows.some(x => x.estimate);
-    const label = partial ? estimated ? '费用小计 · 含估算' : '已核费用' : stale ? '历史损耗' : estimated ? '参考损耗' : '损耗';
+    const ratio = countedRatio(total, partial);
+    const label = (partial ? (ratio ? estimated ? '已计费用占本金 · 含估算' : '已核费用占本金' : estimated ? '费用小计 · 含估算' : '已核费用') : stale ? '历史损耗' : estimated ? '参考损耗' : '损耗') + (partial && stale ? ' · 历史报价' : '');
     const hasPrice = rows.some(x => x.cny != null);
     return '<div class="flow-edge-loss"><span>' + label + '</span><strong class="num">' + (hasPrice ?
-      (partial ? cost(total) : pct(total / M.number(state.budgetCny))) : '—') + '</strong>' +
-      (hasPrice && !partial ? '<small>' + cost(total) + '</small>' : '') + '</div>';
+      (ratio || cost(total)) : '—') + '</strong>' +
+      (hasPrice && ratio ? '<small>' + cost(total) + '</small>' : '') + '</div>';
   }
   function nodeBalance(r, value, currency, label, keys = [], blocked = false) {
     const unknown = costRows(r, keys).some(x => x.cny == null), fx = costRows(r, keys).some(x => x.cny == null && ['entryFx', 'brokerSpread', 'returnFx', 'exitFx'].includes(x.key));
@@ -321,7 +330,7 @@
     const available = Number.isFinite(value) && !blocked && !fx && !stale;
     return '<div class="flow-node-balance"><small>' + esc(available && unknown && !label.startsWith('已扣') ? '已扣已核费用 · ' + label : label) + '</small><div>' +
       (available ? amount(value, currency) : '<b>— <small>' + esc(currency) + '</small></b>') + '</div>' +
-      (keys.length && available ? '<small>' + (unknown ? '尚有未报价费用' : '累计损耗 ' + pct(sumRows(costRows(r, keys)) / M.number(state.budgetCny))) + '</small>' : '') + '</div>';
+      (keys.length && available ? '<small>' + (unknown ? '已计费用占本金 ' + pct(sumRows(costRows(r, keys)) / M.number(state.budgetCny)) + ' · 尚有未报价费用' : '累计损耗 ' + pct(sumRows(costRows(r, keys)) / M.number(state.budgetCny))) + '</small>' : '') + '</div>';
   }
   function node(number, key, label, item, balanceHtml, extra = '') {
     return '<section class="flow-node" data-flow-stage="' + number + '" aria-label="' + esc(label) + '"><span class="flow-node-number">' + number + '</span>' +
@@ -497,7 +506,8 @@
       !r.indicativeFx && r.quoteFreshness.entryMarket === false || !r.indicativeExit && !r.indicativeReturnFx && r.quoteFreshness.exit === false);
     const partial = incomplete || !!gaps.length;
     const estimated = rows.some(x => x.estimate);
-    const label = (stale ? '全程损耗 · 历史报价' : partial ? estimated ? '费用小计 · 含估算' : '全程已核费用' : estimated ? '参考总损耗' : '全程损耗') +
+    const ratio = countedRatio(total, partial);
+    const label = (partial ? (ratio ? estimated ? '已计费用占本金 · 含估算' : '已核费用占本金' : estimated ? '费用小计 · 含估算' : '全程已核费用') : stale ? '全程损耗 · 历史报价' : estimated ? '参考总损耗' : '全程损耗') + (partial && stale ? ' · 历史报价' : '') +
       (r?.trading?.rebateUsd > 0 ? ' · 返还后' : '');
     const canBalance = !!data.selected && !incomplete && !stale && gaps.every(x => ['entryMiddle', 'depositOther', 'withdrawMiddle', 'returnOther'].includes(x.key));
     const actualReturnHkd = !r?.indicativeReturnFx && row(r, 'returnFx')?.cny != null && r?.quoteFreshness?.returnMarket !== false ? r?.steps?.remitHkd ?? r?.steps?.returnHkd : undefined;
@@ -521,8 +531,10 @@
     const balanceLabel = canBalance ? finalBalanceLabel({ gaps, estimated, canBalance, r }) : lastPoint ? lastBalanceLabel(lastPoint) : '最终余额暂不可算';
     const finalHtml = (canBalance ? amount(r.net, r.currency) : lastPoint ? amount(lastPoint.amount, lastPoint.currency) : '<b>—</b>') +
       (r?.sourceRemainderCny > 1e-6 ? '<small>另留内地账户 ' + cost(r.sourceRemainderCny) + '</small>' : '');
-    return '<div class="flow-result"><div><span>' + label + '</span><strong class="num">' + (rows.some(x => x.cny != null) ? partial ? cost(total) : pct(total / M.number(state.budgetCny)) : '—') + '</strong>' +
-      '<small>' + (rows.length ? partial ? data.error ? r?.errorAction === 'account' ? esc(data.error) : '第' + esc(r?.errorStage || data.errorStage || '01') + '步尚未完成' : '总损耗尚缺：' + esc(missingLabels.join('、') || r?.exitIssue || '有效成交报价') : cost(total) : esc(data.error || '选择有效本金和汇出报价')) + '</small></div><div class="flow-result-equation"><span>其中账户期间费</span><b>' +
+    const ratio = countedRatio(total, partial), hasPrice = rows.some(x => x.cny != null);
+    return '<div class="flow-result"><div><span>' + label + '</span><strong class="num">' + (hasPrice ? ratio || cost(total) : '—') + '</strong>' +
+      (hasPrice && ratio ? '<small>' + cost(total) + '</small>' : '') +
+      (partial ? '<small>' + (rows.length ? data.error ? r?.errorAction === 'account' ? esc(data.error) : '第' + esc(r?.errorStage || data.errorStage || '01') + '步尚未完成' : '总损耗尚缺：' + esc(missingLabels.join('、') || r?.exitIssue || '有效成交报价') : esc(data.error || '选择有效本金和汇出报价')) + '</small>' : '') + '</div><div class="flow-result-equation"><span>其中账户期间费</span><b>' +
       (row(r, 'account') ? cost(row(r, 'account').cny) : '—') + '</b>' + (r?.taxCny ? '<small>另预留税款 ' + cost(r.taxCny) + '</small>' : '<small>已计入合计</small>') + '</div><div><span>' + balanceLabel + '</span>' + finalHtml +
       '</div><div class="flow-result-detail">' +
       action('全程明细', 'detail', 'data-value="cost"', 'text-link') + '</div></div>';
