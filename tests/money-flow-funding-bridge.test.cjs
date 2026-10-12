@@ -93,14 +93,15 @@ test('invalid and unaffordable bridges preserve the first leg without inventing 
   for (const amount of Object.values(result.partial.steps)) if (typeof amount === 'number') assert.ok(amount >= 0);
 });
 
-test('uSMART preferred routes gain the distinct Hang Seng path and applying every route reproduces its price without replacing the broker', () => {
+test('a qualified Hang Seng bridge remains selectable but does not pad uSMART recommendations, and applying useful routes reproduces their prices', () => {
   const qualified = { ...input, cnHangFeeWaived: true };
   const snapshot = structuredClone(qualified), recommendations = M.calculatorRecommendations(qualified, D, Q);
   assert.deepEqual(qualified, snapshot);
-  assert.equal(recommendations.plans.length, 4);
-  assert.equal(new Set(recommendations.plans.map(plan => plan.result.start.id)).size, 4);
-  const hang = recommendations.plans.find(plan => plan.result.start.id === 'hang');
-  assert.ok(hang); assert.equal(hang.result.bank.id, 'hang'); assert.equal(hang.result.fundingBank.id, 'bochk');
+  assert.equal(new Set(recommendations.plans.map(plan => plan.result.start.id)).size, recommendations.plans.length);
+  assert.ok(!recommendations.plans.some(plan => plan.result.start.id === 'hang'));
+  const hang = M.calculatorJourney(M.calculatorRoute({ ...qualified, startBank: 'hang', bank: 'hang',
+    route: 'CNH', fxMode: 'bank', mainlandMethod: 'linked', depositMethod: 'via-bochk' }), D, Q).selected;
+  assert.ok(hang?.complete); assert.equal(hang.fundingBank.id, 'bochk'); reconcile(hang);
   for (const plan of recommendations.plans) {
     assert.equal(plan.result.broker.id, 'usmart'); assert.ok(plan.result.complete && plan.result.quotedCore);
     const r = M.calculatorJourney({ ...qualified, ...plan.config, ...M.calculatorAccountState(qualified, plan.config, D) }, D, Q).selected;

@@ -1665,7 +1665,8 @@
     const signature = r => [r.start.id, r.bank.id, r.broker.id, r.route, r.fxMode, r.mainlandMethod,
       r.depositMethod, profile.outcome === 'broker-balance' ? '' : r.returning.id,
       profile.outcome === 'mainland' ? r.exit.id : '', r.returnMethod, r.returnCurrency].join(':');
-    const complexity = r => new Set([r.bank.id, r.broker.integratedBank, r.fundingBank?.id, ...(profile.outcome === 'broker-balance' ? [] : [r.returning.id])].filter(Boolean)).size + (r.route === 'USD' ? 0 : 1);
+    const hongKongAccounts = r => new Set([r.bank.id, r.broker.integratedBank, r.fundingBank?.id, ...(profile.outcome === 'broker-balance' ? [] : [r.returning.id])].filter(Boolean)).size;
+    const complexity = r => hongKongAccounts(r) + (r.route === 'USD' ? 0 : 1);
     const compare = (a, b) => a.costCny - b.costCny || complexity(a) - complexity(b) || signature(a).localeCompare(signature(b));
     const remember = (map, key, r) => { if (!map.has(key) || compare(r, map.get(key)) < 0) map.set(key, r); };
     for (const entry of entries) {
@@ -1687,13 +1688,29 @@
     }
     const alternatives = [...bestBySource.values()];
     const bankPeriodFee = r => r.rows.find(row => row.key === 'account').cny;
-    // Distinct banks alone do not make a good recommendation. An avoidable
-    // recurring bank fee must buy lower total cost or a simpler route. Keep
-    // all account pickers intact, and never assume a fee waiver to qualify.
-    const plans = alternatives.filter(r => !alternatives.some(other => other !== r &&
+    // First remove avoidable recurring fees. Then retain only routes that offer
+    // a cost, operation, published-fee or special-account advantage. A different
+    // sender name alone is not an advantage and there is no recommendation quota.
+    const available = alternatives.filter(r => !alternatives.some(other => other !== r &&
       bankPeriodFee(other) < bankPeriodFee(r) - 1e-8 && other.costCny <= r.costCny + 1e-8 &&
-      complexity(other) <= complexity(r))).sort(compare).slice(0, 5);
-    const result = { plans: plans.map(r => ({ id: 'best:' + signature(r), result: r, config: routeConfiguration(r) })), checked, complete };
+      complexity(other) <= complexity(r)));
+    const estimatedFees = r => r.rows.filter(row => row.estimate).length;
+    const specialAccount = r => r.start.required && !profile[r.start.accountService?.waiverField] ? 1 : 0;
+    const plans = available.filter(r => !available.some(other => other !== r &&
+      other.costCny <= r.costCny + 1e-8 && complexity(other) <= complexity(r) &&
+      estimatedFees(other) <= estimatedFees(r) && specialAccount(other) <= specialAccount(r) &&
+      (other.costCny < r.costCny - 1e-8 || complexity(other) < complexity(r) ||
+        estimatedFees(other) < estimatedFees(r) || specialAccount(other) < specialAccount(r) || compare(other, r) < 0))).sort(compare);
+    const benefits = r => {
+      const cheaper = plans.filter(other => other.costCny < r.costCny - 1e-8), labels = [];
+      if (r === plans[0]) labels.push('当前最低损耗');
+      if (cheaper.some(other => hongKongAccounts(other) > hongKongAccounts(r))) labels.push('少用香港账户');
+      if (r.route === 'USD' && cheaper.some(other => other.route !== 'USD')) labels.push('少一次换汇');
+      if (!r.start.required && cheaper.some(other => specialAccount(other) > specialAccount(r))) labels.push('普通出发账户');
+      if (cheaper.some(other => estimatedFees(other) > estimatedFees(r))) labels.push('银行费按官方价');
+      return labels;
+    };
+    const result = { plans: plans.map(r => ({ id: 'best:' + signature(r), result: r, config: routeConfiguration(r), benefits: benefits(r) })), checked, complete };
     recommendationCache = { key: cacheKey, data, quotes, result };
     return result;
   }

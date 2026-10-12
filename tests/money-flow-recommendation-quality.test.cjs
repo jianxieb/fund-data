@@ -15,7 +15,7 @@ test('preferred routes exclude avoidable bank period fees while retaining all ac
   const before = structuredClone(input), catalogue = structuredClone(D.calculator);
   const plans = M.calculatorRecommendations(input, D, Q).plans;
   assert.deepEqual(input, before); assert.deepEqual(D.calculator, catalogue);
-  assert.deepEqual(sources(plans), ['boc', 'icbc', 'ccb']);
+  assert.deepEqual(sources(plans), ['boc', 'ccb']);
   assert.equal(new Set(sources(plans)).size, plans.length);
   for (const plan of plans) {
     assert.equal(plan.config.broker, 'za'); assert.equal(plan.result.budgetCny, 100000);
@@ -33,15 +33,20 @@ test('preferred routes exclude avoidable bank period fees while retaining all ac
 test('a confirmed One fee waiver restores the common CIB route without assuming a mainland fee waiver', () => {
   const qualified = { ...input, hsbcBalanceWaiver: true };
   const plans = M.calculatorRecommendations(qualified, D, Q).plans;
-  assert.deepEqual(sources(plans), ['cib', 'boc', 'icbc', 'ccb']);
+  assert.deepEqual(sources(plans), ['cib', 'boc', 'ccb']);
   close(period(plans[0].result), 0);
   assert.equal(plans[0].config.mainlandMethod, 'swift'); assert.equal(plans[0].config.bank, 'hsbc');
   assert.equal(qualified.cnHangFeeWaived, false);
-  assert.deepEqual(sources(M.calculatorRecommendations(input, D, Q).plans), ['boc', 'icbc', 'ccb']);
+  assert.deepEqual(sources(M.calculatorRecommendations(input, D, Q).plans), ['boc', 'ccb']);
 });
 
-test('confirmed mainland qualification and a zero holding period retain qualified routes without inventing waivers', () => {
-  for (const [profile, requiredSources] of [[{ ...input, cnHangFeeWaived: true }, ['hang']], [{ ...input, months: 0 }, ['cib', 'hsbc']]]) {
+test('a qualified but dominated Hang Seng route remains selectable without padding recommendations, while zero months retain useful routes', () => {
+  const qualified = { ...input, cnHangFeeWaived: true };
+  const hang = M.calculatorJourney(M.calculatorRoute({ ...qualified, startBank: 'hang', bank: 'hang',
+    route: 'CNH', fxMode: 'bank', mainlandMethod: 'linked', depositMethod: '' }), D, Q).selected;
+  assert.ok(hang?.complete); close(period(hang), 0);
+  assert.ok(!sources(M.calculatorRecommendations(qualified, D, Q).plans).includes('hang'));
+  for (const [profile, requiredSources] of [[qualified, ['boc', 'ccb']], [{ ...input, months: 0 }, ['cib', 'hsbc']]]) {
     const plans = M.calculatorRecommendations(profile, D, Q).plans;
     for (const source of requiredSources) assert.ok(sources(plans).includes(source));
     for (const plan of plans) {
@@ -55,7 +60,7 @@ test('confirmed mainland qualification and a zero holding period retain qualifie
 test('a recurring fee common to the selected stock account does not erase all upstream strategies', () => {
   const profile = { ...input, broker: 'hsbc', trade25: true };
   const plans = M.calculatorRecommendations(profile, D, Q).plans;
-  assert.deepEqual(new Set(sources(plans)), new Set(['cib', 'boc', 'icbc', 'ccb']));
+  assert.deepEqual(new Set(sources(plans)), new Set(['cib', 'boc', 'ccb']));
   assert.ok(plans.every(plan => plan.config.broker === 'hsbc' && period(plan.result) > 0));
   close(period(plans[0].result), period(plans[1].result));
   assert.equal(profile.hsbcBalanceWaiver, false);
@@ -73,4 +78,47 @@ test('a route with fewer accounts remains eligible even when its period and tota
   assert.ok(cib && boc); assert.equal(cib.config.bank, 'hsbc'); assert.equal(cib.result.broker.integratedBank, 'hsbc');
   assert.ok(period(cib.result) > period(boc.result)); assert.ok(cib.result.costCny > boc.result.costCny);
   assert.equal(D.mainlandBanks.find(bank => bank.id === 'cib').accountService, undefined);
+});
+
+test('qualified mainland-return recommendations compare settlement banks instead of being driven by unqualified period fees', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261012.json');
+  const qualified = { ...input, date: '2026-10-12', outcome: 'mainland', hsbcBalanceWaiver: true,
+    cnHsbcFeeWaived: true, cnHangFeeWaived: true, cnScFeeWaived: true };
+  const plans = M.calculatorRecommendations(qualified, D, quotes).plans;
+  assert.ok(plans.length > 0 && plans.length < 5);
+  assert.equal(plans[0].config.startBank, 'cib');
+  assert.equal(plans[0].config.returnBank, 'hsbc'); assert.equal(plans[0].config.exitBank, 'hsbc');
+  close(plans[0].result.costCny, 824.6116401177761);
+  assert.ok(plans.every(plan => plan.config.exitBank !== 'hang' && plan.result.costCny / plan.result.budgetCny < .03));
+  assert.ok(plans.every(plan => period(plan.result) === 0));
+  assert.ok(plans.every(plan => plan.benefits.length > 0));
+  const unqualified = { ...qualified, hsbcBalanceWaiver: false, cnHsbcFeeWaived: false,
+    cnHangFeeWaived: false, cnScFeeWaived: false };
+  const old = M.calculatorRecommendations(unqualified, D, quotes).plans[0];
+  assert.equal(old.config.exitBank, 'hang'); close(period(old.result), 180 * 12);
+  close(old.result.costCny, 3965.140896627975);
+  const manualHang = M.calculatorJourney(M.calculatorRoute({ ...qualified, startBank: 'hang', bank: 'hang',
+    route: 'CNH', fxMode: 'bank', mainlandMethod: 'linked', returnBank: 'hang', exitBank: 'hang', returnMethod: 'linked' }), D, quotes).selected;
+  assert.ok(manualHang?.complete); close(period(manualHang), 0);
+});
+
+test('recommendations retain named tradeoffs rather than padding a bank quota, and a dominated extra bank adds no plan', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261012.json');
+  const qualified = { ...input, date: '2026-10-12', hsbcBalanceWaiver: true,
+    cnHsbcFeeWaived: true, cnHangFeeWaived: true, cnScFeeWaived: true };
+  const plans = M.calculatorRecommendations(qualified, D, quotes).plans;
+  assert.ok(plans.find(plan => plan.config.startBank === 'cib').benefits.includes('当前最低损耗'));
+  assert.ok(plans.find(plan => plan.config.startBank === 'boc').benefits.includes('普通出发账户'));
+  assert.ok(plans.find(plan => plan.config.startBank === 'hsbc').benefits.includes('银行费按官方价'));
+  assert.ok(plans.find(plan => plan.config.startBank === 'ccb').benefits.includes('少用香港账户'));
+  const synthetic = structuredClone(D), poorer = structuredClone(quotes);
+  const extra = { ...synthetic.mainlandBanks.find(bank => bank.id === 'ccb'), id: 'qa-worse-ccb', name: 'QA dearer full-amount bank' };
+  synthetic.mainlandBanks.push(extra); synthetic.calculator.mainland.push(extra.id);
+  poorer.banks[extra.id] = structuredClone(poorer.banks.ccb);
+  for (const price of Object.values(poorer.banks[extra.id].quotes)) if (Number.isFinite(price.sell)) price.sell *= 1.01;
+  const revised = M.calculatorRecommendations(qualified, synthetic, poorer).plans;
+  assert.deepEqual(sources(revised), sources(plans));
+  const selected = M.calculatorJourney(M.calculatorRoute({ ...qualified, startBank: extra.id,
+    bank: 'za', mainlandMethod: 'full', depositMethod: 'internal' }), synthetic, poorer).selected;
+  assert.ok(selected?.complete); assert.ok(selected.costCny > plans.find(plan => plan.config.startBank === 'ccb').result.costCny);
 });

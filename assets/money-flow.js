@@ -7,8 +7,8 @@
     mainlandMethod: 'boc-mobile', depositMethod: 'chats', fxMode: 'manual', returnMethod: '', returnCurrency: 'USD', comparison: 'start', count: '1', usedFreeTransfers: '0',
     months: '12', balanceHkd: '0', returnBalanceHkd: '0', bankBalancesHkd: {}, profitUsd: '0', taxableCny: '', taxRate: '20', creditCny: '0', withdrawalIndex: '1', chequeIndex: '1', chequePreFilled: false, hsbcChequeNonCounter: false, tradeFeeUsd: '',
     broker: 'za', buyOrders: '1', sellOrders: '1', sharePriceUsd: '100', trade25: false, chiefMonthly: false, usmartPromo: false, zaLv2: false,
-    hsbcBalanceWaiver: false, hkHsbcFreeMonths: '0', zaPerksLevel: 'standard', zaSwiftUsed: '0', scCnhAccount: false, otherTurnoverHkd: '0', usedPromoOrders: '0', usmartDays: '0', useVoucher: false, voucherScope: 'platform', voucherUsd: '0', voucherOrders: '1', voucherExpiry: '',
-    cnHsbcFeeWaived: false, cnHangFeeWaived: false, cnScFeeWaived: false, cnHsbcFreeMonths: '0', cnHangFreeMonths: '0', cnScFreeMonths: '0',
+    bankFeeDefaultsVersion: 1, hsbcBalanceWaiver: true, hkHsbcFreeMonths: '0', zaPerksLevel: 'standard', zaSwiftUsed: '0', scCnhAccount: false, otherTurnoverHkd: '0', usedPromoOrders: '0', usmartDays: '0', useVoucher: false, voucherScope: 'platform', voucherUsd: '0', voucherOrders: '1', voucherExpiry: '',
+    cnHsbcFeeWaived: true, cnHangFeeWaived: true, cnScFeeWaived: true, cnHsbcFreeMonths: '0', cnHangFreeMonths: '0', cnScFreeMonths: '0',
     icbcEAccount: false, icbcCnhAccount: false,
     senderFeeCny: '', entryMiddleCny: '', entryInwardHkd: '', depositHkd: '', depositOtherCny: '', inwardHkd: '', intermediaryCny: '',
     returnWireHkd: '', returnExtraCny: '', monthlyHkd: '', returnMonthlyHkd: '', startSell: '', entryPrice: '', exitPrice: '', returnHkdPrice: '',
@@ -17,6 +17,13 @@
   try { stored = JSON.parse(localStorage.getItem(STORE) || '{}') || {}; } catch (_) {}
   if (Object.keys(stored).length && !stored.outcome) stored.outcome = 'mainland';
   let state = { ...defaults, ...stored, currency: 'CNY' }, H, timer, modalKey;
+  // The user requested a qualified-account default. Migrate the old automatic
+  // unqualified assumptions once, then preserve any explicitly unchecked fees.
+  const repairBankFeeDefaults = stored.bankFeeDefaultsVersion !== defaults.bankFeeDefaultsVersion;
+  if (repairBankFeeDefaults) {
+    for (const key of ['hsbcBalanceWaiver', 'cnHsbcFeeWaived', 'cnHangFeeWaived', 'cnScFeeWaived']) state[key] = true;
+    state.bankFeeDefaultsVersion = defaults.bankFeeDefaultsVersion;
+  }
   if (!Object.hasOwn(stored, 'zaPerksLevel') && stored.zaLv2) state.zaPerksLevel = 'lv2';
   state.zaLv2 = state.zaPerksLevel === 'lv2';
   // Earlier versions incorrectly offered the foreign-currency-only Global
@@ -56,7 +63,7 @@
   const esc = value => H.esc(value), num = (value, digits = 2) => Number.isFinite(Number(value)) && value != null ? H.money(Number(value), digits) : '—';
   const action = (label, act, extra = '', cls = 'btn') => H.action(label, 'money-flow-' + act, cls, extra);
   const save = () => { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (_) {} };
-  if (repairStoredEntry) save();
+  if (repairStoredEntry || repairBankFeeDefaults) save();
   const pct = value => {
     const percent = value * 100, magnitude = Math.abs(percent);
     const digits = magnitude > 0 && magnitude < .0005 ? Math.ceil(-Math.log10(magnitude)) + 2 : 3;
@@ -270,7 +277,7 @@
           routeName(r.returning.id, 'bank') + ' · ' + ({ 'usd-balance': '保留美元', 'usd-card': '美元消费', 'cnh-card': '人民币消费' })[state.outcome];
       const rows = r.rows, accountCny = displayCny(r, rows.find(item => item.key === 'account')) || 0;
       return { ...p, config, title: [routeName(r.start.id, 'mainland'), routeName(r.bank.id, 'bank'), ...(r.fundingBank ? ['本人' + routeName(r.fundingBank.id, 'bank')] : []), routeName(r.broker.id, 'broker')].join(' → '),
-        note: [r.route + ' · ' + channel, conversion, funding].filter(Boolean).join('；'), end,
+        note: [...(p.benefits || []), r.route + ' · ' + channel, conversion, funding].filter(Boolean).join('；'), end,
         accountFee: accountCny > 0 ? '含银行期间费 ' + cost(accountCny) : '', calculated: { selected: r }, rows, complete: true, total: r.costCny };
     });
   }
@@ -445,9 +452,9 @@
       s.broker?.freeWithdrawals ? action('本月第' + esc(state.withdrawalIndex) + '次出金', 'detail', 'data-value="profit-settings"', 'flow-setting-button') :
         isChequeReturn(s) && s.returning?.localUsdChequeTariff ? action(s.returning.localUsdChequeTariff.nonCounterHkd != null ?
           state.hsbcChequeNonCounter ? '本次非柜台存票' : '本次柜台存票' : '存票当日第' + esc(state.chequeIndex) + '张', 'detail', 'data-value="profit-settings"', 'flow-setting-button') : '', 'withdraw');
-    if (state.outcome === 'mainland') html += edge(data, exitKeys, state.returnCurrency === 'HKD' ? '香港换港币 → 汇回内地 → 结汇' : '汇回内地 → 美元结汇', account('exitBank', '内地收款银行', s.exit) +
+    if (state.outcome === 'mainland') html += edge(data, exitKeys, state.returnCurrency === 'HKD' ? '香港换港币 → 汇回内地 → 结汇' : '汇回内地 → 美元结汇', '<div class="flow-return-controls">' + account('exitBank', '内地收款银行', s.exit) +
       select('returnCurrency', '回款币种', [['USD', '美元原币'], ['HKD', '港币 · 香港换汇']]) + select('returnMethod', '汇回渠道', returnMethods()) +
-      (s.exit?.id === s.start?.id ? '' : mainlandAccountControl(s.exit, r)), '04',
+      (s.exit?.id === s.start?.id ? '' : mainlandAccountControl(s.exit, r)) + '</div>', '04',
       !data.error && !r?.indicativeExit && r?.exitPrice > 0 ? '1 ' + (state.returnCurrency || 'USD') + ' = ' + quoteNum(r.exitPrice) + ' CNY' : '');
     if (state.outcome === 'cnh-card' || state.outcome === 'usd-card') html += edge(data, exitKeys, state.outcome === 'cnh-card' ? (row(r, 'exitFx')?.path ? '美元 → 港币 → 人民币 → 消费' : '美元换人民币 → 消费') : '美元余额 → 原币消费',
       state.outcome === 'cnh-card' && s.returning?.cnhCardRequiresHkid ? checkbox(s.returning.cnhAccountField || 'scCnhAccount', '持香港身份证，已开通' + shortName(s.returning) + '人民币账户') : '', '04',
