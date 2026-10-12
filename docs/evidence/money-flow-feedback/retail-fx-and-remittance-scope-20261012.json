@@ -1,0 +1,133 @@
+{
+  "checkedAt": "2026-10-12T00:57:24.402725+00:00",
+  "scope": "原件读取与适用范围复核；并非所有金融资料或真实页面组合验收通过",
+  "sources": {
+    "commShanghaiAccountWaiver": {
+      "url": "https://www.bankcomm.com/BankCommSite/shtml/jyjr/cn/9433/9437/9441/9443/7048868.shtml?channelId=9433",
+      "finalUrl": "https://www.bankcomm.com/BankCommSite/shtml/jyjr/cn/9433/9437/9441/9443/7048868.shtml?channelId=9433",
+      "status": 200,
+      "bytes": 106293,
+      "sha256": "ec4b0b27a9759a9d2365d85ab263c22b5562ac23e6a0908d2663dbb9f483ecaf",
+      "scope": "上海市分行账户管理费",
+      "finding": "2026-01-01至2026-12-31，不达标交银理财及沃德财富客户免账户管理费。正文没有个人国际汇出SGJGR001的适用金额，不能补跨境汇出手续费或电讯费0。",
+      "productionFeeChanged": false
+    },
+    "zaRetailPricing": {
+      "url": "https://bank.za.group/en/faqs/Individuals/Bank_services/Money_exchange/671605cc701eb769e4bff545",
+      "finalUrl": "https://bank.za.group/en/faqs/Individuals/Bank_services/Money_exchange/671605cc701eb769e4bff545",
+      "status": 200,
+      "bytes": 1989980,
+      "sha256": "029fe1392b16bbccc8740afa643b5b7f61423127251964058fc0a91631cb53a5",
+      "scope": "ZA个人换汇定价说明",
+      "finding": "本行按市场、业务策略、具体兑换及客户关系等因素报价；该公开FAQ没有本次USD/HKD或USD/CNH买卖数值。不能用固定点差或商用报价补个人牌价。",
+      "productionQuoteChanged": false
+    },
+    "zaOpenApiProducts": {
+      "url": "https://developer.bank.za.group/product?apiId=a0000",
+      "error": "HTTPError: HTTP Error 404: Not Found",
+      "scope": "本次旧产品页网址响应",
+      "finding": "此次直接读取返回HTTP404；这只记录这个网址的结果，不证明所有ZA Open API不存在，也不推断已取得个人换汇报价。",
+      "productionQuoteChanged": false
+    },
+    "scHkOpenBanking": {
+      "url": "https://www.sc.com/hk/zh/bank-with-us/open-banking/",
+      "finalUrl": "https://www.sc.com/hk/zh/bank-with-us/open-banking/",
+      "status": 200,
+      "bytes": 341423,
+      "sha256": "7ddebd742a30e73c9bca57e08a2f6e29f6236c7656fa2a4823a0c1e6b6970a65",
+      "scope": "香港个人开放银行／IADS",
+      "finding": "正文介绍取得授权后共享存款户口状态、余额及交易等资料；此次没有取得个人USD/HKD或USD/CNH买卖数值，不能把账户资料互联当匿名成交价接口。",
+      "productionQuoteChanged": false
+    },
+    "scCorporateRateQuotes": {
+      "url": "https://openbanking.sc.com/bank-solutions/banks-financial-institutions",
+      "finalUrl": "https://openbanking.sc.com/bank-solutions/banks-financial-institutions",
+      "status": 200,
+      "bytes": 1158,
+      "sha256": "07f8808c81591cf3b6cb6327cf9fbe070ebb0ec052a82793333a8dbbf84b322e",
+      "scope": "机构银行解决方案页面",
+      "finding": "此次直接HTML仅1158字节应用入口；没有个人香港账户执行报价，不据这个响应填报价。",
+      "productionQuoteChanged": false
+    },
+    "ibkrWithdrawalTariff": {
+      "url": "https://www.interactivebrokers.com/en/pricing/other-fees.php",
+      "finalUrl": "https://www.interactivebrokers.com/en/pricing/other-fees.php",
+      "status": 200,
+      "bytes": 331647,
+      "sha256": "d2dced8ba663803020962205afa937cc57f1fae1bf1c10f08dbef5c110c93024",
+      "scope": "IBKR现行现金提款收费",
+      "facts": {
+        "freeRequestsPerCalendarMonth": 2,
+        "usdWireAfterFreeUsd": 10,
+        "hkdWireAfterFreeHkd": 95,
+        "hkdLocalAfterFreeHkd": 8
+      },
+      "finding": "两次免费按所有方法合计，之后对应提款方法单独定价；现有生产数据已为每月2次，无需改回1次。免费额度不代表USD电汇代理费或收款银行费为0。",
+      "productionFeeChanged": false
+    },
+    "ibkrHkdWithdrawalGuide": {
+      "url": "https://tisztsmartmoney.com/platforms/ib-withdraw-funds/",
+      "finalUrl": "https://tisztsmartmoney.com/platforms/ib-withdraw-funds/",
+      "status": 200,
+      "bytes": 411885,
+      "sha256": "7c531e5f04e0c147bdb3c54349d8fea8d152c933dc858610951ef7ef32f53b07",
+      "scope": "实际攻略，作为路径线索而非银行保证",
+      "facts": {
+        "operation": "IBKR内USD换HKD，再用HKD本地电子转账取回香港银行",
+        "historicIllustration": {
+          "usd": 1280,
+          "hkd": 10027.71,
+          "hkdPerUsd": 7.83415,
+          "fxCommissionUsd": 2
+        }
+      },
+      "finding": "文章提供IBKR内先换港元再本地取回的动作线索；1280USD的成交示例没有当前本行价时间，不能写入生产快照。文中的USD电汇必扣10–30美元说法未被收费表证明，不设为普遍固定代理费。当前产品的HKD回内地是在香港银行先换港元，不称该券商内部兑换路径已接入。",
+      "productionQuoteChanged": false
+    },
+    "cibRetailFutureOur": {
+      "url": "https://m.cib.com.cn/netbank/cn/aboutCIB/about/notice/2026/20260819.html",
+      "finalUrl": "https://m.cib.com.cn/netbank/cn/aboutCIB/about/notice/2026/20260819.html",
+      "status": 200,
+      "bytes": 10812,
+      "sha256": "cecffd93488943d1616694160257345fe6d8e52eef141a8760b9e3c224b3bc40",
+      "scope": "兴业2026-08-17公告／最早11月20日上线后的零售服务",
+      "facts": {
+        "futureRetailOurCnyPerTransfer": 200,
+        "earliestEffectiveDate": "2026-11-20",
+        "lateLaunchControlsEffectiveDate": true,
+        "smallFullAmountCnyPerTransfer": 50,
+        "smallFullAmountMaximumUsdEquivalent": 10000,
+        "requiresAllBanksInChainEnabled": true
+      },
+      "finding": "本次核对与既有兴业tariff fixture相同，没有提前启用200元服务。50元小额服务仍须全链路开通，不按单笔金额合格就作为当前菜单选项。",
+      "productionFeeChanged": false
+    },
+    "cmbCurrentTariff": {
+      "url": "https://s3gw.cmbimg.com/lb5001-cmbweb-prd-1255000097/cmbcms/20241125/2d400cbc-4f03-4966-86d3-f028ba64ae8b.pdf",
+      "finalUrl": "https://s3gw.cmbimg.com/lb5001-cmbweb-prd-1255000097/cmbcms/20241125/2d400cbc-4f03-4966-86d3-f028ba64ae8b.pdf",
+      "status": 200,
+      "bytes": 1000233,
+      "sha256": "6fba71852511359d720d238349b698b8b143be294cad00ea0cfeff7965bf082f",
+      "scope": "招商价格册离岸业务LN001／LN002，不是GJ001个人汇款",
+      "facts": {
+        "physicalPdfPage": 61,
+        "printedPages": [
+          118,
+          119
+        ],
+        "customerType": "离岸（OSA）客户",
+        "osaNonJpyOurUsdPerTransfer": 25
+      },
+      "finding": "搜索结果的25美元OUR来自OSA离岸业务。读取完整行的适用客户栏并渲染原页后明确排除，不能给普通个人汇款添加招行25美元全额到账承诺。",
+      "renderedEvidence": "cmb-osa-our-scope-20261012.png",
+      "productionFeeChanged": false
+    }
+  },
+  "remaining": [
+    "渣打中国及香港、ZA及IBKR实际成交买卖价",
+    "普通SWIFT汇路代理／收款扣费",
+    "交通银行具体地区个人汇出适用费率",
+    "工行／交行普通个人人民币跨境汇出费",
+    "IBKR内USD换HKD后本地取回路径的本次报价和实现"
+  ]
+}
