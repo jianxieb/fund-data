@@ -16,6 +16,57 @@
     const value = config[key];
     return value == null || String(value).trim() === '' ? fallback : number(value);
   }
+  // A presentation projection only: allocate converted CNY cents through the
+  // displayed hierarchy without changing any native fee, balance or FX value.
+  function roundedCosts(result, groups = []) {
+    const rows = result?.rows || [], amounts = new Map(), cents = value => {
+      const absolute = Math.round(Math.abs(value) * 100 + 1e-8);
+      return absolute === 0 ? 0 : Math.sign(value) * absolute;
+    };
+    function allocate(values, target) {
+      const scaled = values.map(value => (finite(value) ? value : 0) * 100);
+      const base = scaled.map(value => Math.floor(value + 1e-8));
+      const remaining = target - base.reduce((sum, value) => sum + value, 0);
+      const order = scaled.map((value, index) => ({ index, remainder: value - base[index] }))
+        .filter(item => Math.abs(item.remainder) > 1e-8).sort((a, b) => b.remainder - a.remainder || a.index - b.index);
+      if (remaining < 0 || remaining > order.length) throw new RangeError('Converted cost rounding exceeds the displayed parts.');
+      for (let i = 0; i < remaining; i++) base[order[i].index]++;
+      return base;
+    }
+    const used = new Set(), sets = groups.map(keys => rows.filter(row => {
+      if (!keys.includes(row.key) || used.has(row)) return false;
+      used.add(row); return true;
+    }));
+    const rest = rows.filter(row => !used.has(row));
+    if (rest.length) sets.push(rest);
+    const totals = sets.map(set => set.reduce((sum, row) => sum + (row.cny ?? 0), 0));
+    const totalCents = cents(totals.reduce((sum, value) => sum + value, 0));
+    const groupCents = allocate(totals, totalCents), byKey = new Map();
+    let tradeCny;
+    sets.forEach((set, group) => {
+      const rowCents = allocate(set.map(row => row.cny), groupCents[group]);
+      set.forEach((row, i) => {
+        const value = row.cny == null ? null : rowCents[i] / 100;
+        amounts.set(row, value); byKey.set(row.key, value);
+        if (row.key === 'trade' && result?.trading && !result.trading.overridden && row.cny != null) {
+          const kinds = ['buy', 'sell'];
+          const sides = kinds.map(kind => result.trading.orders.filter(order => order.kind === kind).reduce((sum, order) => sum + order.feeUsd * result.refs.USD, 0));
+          const sideCents = allocate(sides, rowCents[i]);
+          tradeCny = { buy: sideCents[0] / 100, sell: sideCents[1] / 100 };
+          kinds.forEach((kind, side) => {
+            const parts = row.items?.filter(part => part.kind === kind) || [];
+            if (!parts.length) return;
+            const partCents = allocate(parts.map(part => part.cny), sideCents[side]);
+            parts.forEach((part, j) => amounts.set(part, part.cny == null ? null : partCents[j] / 100));
+          });
+        } else if (row.items?.length) {
+          const partCents = row.cny == null ? row.items.map(part => part.cny == null ? 0 : cents(part.cny)) : allocate(row.items.map(part => part.cny), rowCents[i]);
+          row.items.forEach((part, j) => amounts.set(part, part.cny == null ? null : partCents[j] / 100));
+        }
+      });
+    });
+    return { totalCny: totalCents / 100, groups: groupCents.map(value => value / 100), amounts, byKey, tradeCny };
+  }
   function invalidOptional(config, keys) {
     return keys.some(key => config[key] != null && String(config[key]).trim() !== '' && !knownFee(number(config[key])));
   }
@@ -1143,7 +1194,7 @@
             const amountBased = key === 'commission' ? provider.id === 'hsbc' || !!provider.commission :
               key === 'platform' ? !!provider.platform : key === 'clearing' ? !!provider.clearing :
               key === 'sec' ? kind === 'sell' : key === 'taf' ? orders.some(order => order.date < '2026-10-01' || order.date > '2026-12-31') && kind === 'sell' : provider.catMinimum != null;
-            return { label: label + ({ commission: '佣金', platform: '平台费', clearing: '清算费', sec: 'SEC费', taf: 'TAF费', cat: 'CAT费' }[key]), cny,
+            return { kind, label: label + ({ commission: '佣金', platform: '平台费', clearing: '清算费', sec: 'SEC费', taf: 'TAF费', cat: 'CAT费' }[key]), cny,
               ...(unquotedFundingFx ? { estimate: amountBased ? fundingEstimate : false } : {}) };
           });
         });
@@ -1178,7 +1229,7 @@
       const returnLabel = settlementBank ? settlementBank.name + ' → ' + returning.name + (settlementBank.id === returning.id ? ' · 内部交收' : ' · USD CHATS') :
         localCheque || provider.withdrawalMethod === 'cheque' ? returning.name + ' · 本地USD支票存入' : virtualReturn ? '数字银行USD提款' + (confirmedInward == null ? ' · 官网参考7.5 USD' : '') : '券商→香港银行汇入费';
       add('returnInward', returnLabel, returnInward == null ? null : returnInward * refs.HKD, 'withdraw');
-      if (confirmedInward != null) rows[rows.length - 1].evidence = '本人回单费用 · ' + returning.name;
+      if (confirmedInward != null) Object.assign(rows[rows.length - 1], { nativeCurrency: 'HKD', evidence: '本人回单费用 · ' + returning.name });
       if (chequeReturn && returning.localUsdChequeTariff && own('inwardHkd', isSelectedReturn) == null) {
         Object.assign(rows[rows.length - 1], { nativeCurrency: 'HKD', sources: returning.localUsdChequeTariff.sources,
           evidence: '当日第' + chequeIndex + '张；每日前' + returning.localUsdChequeTariff.freePerDay + '张免费，其后' +
@@ -1639,5 +1690,5 @@
     return result;
   }
   function catalogueBroker(id, data) { return data.calculator.brokers.includes(id) ? id : 'za'; }
-  return { calculatorRoute, calculatorChannels, calculatorFundingBank, calculatorDepositBank, calculatorIssue, calculatorJourney, calculatorRecommendations, calculatorAccountState, calculatorAdjustmentFields, number, reference, telegramAllowance, fee, remitPrincipal, senderFeeRange, inwardFee, groupMobileWaived, outwardFee, zaPerksLevel, swiftFee, localUsdChequeFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
+  return { calculatorRoute, calculatorChannels, calculatorFundingBank, calculatorDepositBank, calculatorIssue, calculatorJourney, calculatorRecommendations, calculatorAccountState, calculatorAdjustmentFields, roundedCosts, number, reference, telegramAllowance, fee, remitPrincipal, senderFeeRange, inwardFee, groupMobileWaived, outwardFee, zaPerksLevel, swiftFee, localUsdChequeFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
 }));

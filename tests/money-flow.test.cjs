@@ -1295,6 +1295,44 @@ function moneyUi(input, quotes = cibQuotes, date = '2026-10-09', data = D) {
     act: (action, field, value) => context.window.ChanghengMoneyFlow.handleAction({ dataset: { action: 'money-flow-' + action, field, value } }) };
 }
 
+test('rendered CNY fee lines add to every visible stage and the whole-flow summary without changing native charges', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261012.json');
+  const cny = html => Number([...html.matchAll(/([−-]?[\d.]+) CNY/g)].at(-1)?.[1]?.replace('−', '-'));
+  let checked = 0;
+  for (const broker of D.calculator.brokers) for (const route of D.calculator.currencies)
+    for (const outcome of ['broker-balance', 'usd-balance', 'usd-card', 'cnh-card', 'mainland']) {
+      const input = M.calculatorRoute({ ...currentRoute, startBank: 'boc', bank: 'bochk', broker, route, outcome,
+        returnBank: 'bochk', exitBank: 'boc', count: 1, months: 12, trade25: true, scCnhAccount: true, icbcCnhAccount: true });
+      const ui = moneyUi(input, quotes, '2026-10-12'), html = ui.render();
+      let stages = 0;
+      for (const edge of html.matchAll(/<section class="flow-edge"[^>]*>([\s\S]*?)<\/section>/g)) {
+        const header = edge[1].match(/<div class="flow-edge-loss">([\s\S]*?)<\/div>/)?.[1], total = cny(header || '');
+        if (!Number.isFinite(total)) continue;
+        const lines = [...edge[1].matchAll(/<div class="flow-fee-line">([\s\S]*?)<\/div><\/div>/g)];
+        const sum = lines.reduce((sum, line) => {
+          const value = cny(line[1].split('</div><div>')[1] || '');
+          return sum + (Number.isFinite(value) ? Math.round(value * 100) : 0);
+        }, 0);
+        assert.equal(sum, Math.round(total * 100), broker + '/' + route + '/' + outcome + ': ' + edge[1]);
+        stages += Math.round(total * 100);
+      }
+      const closing = html.match(/<div class="flow-closing-costs">([\s\S]*?)<\/section>/)?.[1] || '';
+      stages += [...closing.matchAll(/<b>([^<]* CNY)<\/b>/g)].reduce((sum, part) => sum + Math.round(cny(part[1]) * 100), 0);
+      const summary = html.split('id="flow-live-summary"')[1];
+      const total = Number(summary.match(/<small>([−-]?[\d.]+) CNY<\/small>/)?.[1]?.replace('−', '-'));
+      if (Number.isFinite(total)) assert.equal(stages, Math.round(total * 100), broker + '/' + route + '/' + outcome);
+      if (route === 'USD' && broker === 'za' && outcome === 'broker-balance') {
+        assert.match(html, /1\.99 USD/); assert.match(html, /2\.33 USD/);
+        assert.match(html, /≈ 13\.34 CNY/); assert.match(html, /≈ 15\.63 CNY/);
+        ui.act('detail', '', 'cost');
+        const parts = [...ui.modal().matchAll(/<b>([^<]* CNY)<\/b>/g)].reduce((sum, part) => sum + Math.round(cny(part[1]) * 100), 0);
+        assert.equal(parts, Math.round(total * 100));
+      }
+      checked++;
+    }
+  assert.equal(checked, 75);
+});
+
 test('actual-price details show relevant currencies and charges across every stock venue, entry currency and endpoint', () => {
   const quotes = require('./fixtures/money-flow-quotes-20261011.json');
   for (const broker of D.calculator.brokers) for (const route of ['USD', 'HKD', 'CNH'])
@@ -2797,7 +2835,8 @@ test('missing terminal and source FX never leak reference rates or an executable
 test('detail reconciliation stays available for priced routes but not stale FX conversions', () => {
   const config = { ...currentRoute, startBank: 'boc', bank: 'bochk', broker: 'za', mainlandMethod: 'boc-mobile', route: 'USD', outcome: 'broker-balance' };
   const ui = moneyUi(config); ui.render(); ui.act('detail', '', 'cost');
-  assert.match(ui.modal(), /100000.00 本金 ＋/);
+  assert.match(ui.modal(), /最终余额 \d+\.\d{2} USD，折合 \d+\.\d{2} CNY/);
+  assert.match(ui.modal(), /人民币折算尾差按余数分配/);
   const q = structuredClone(cibQuotes); q.banks.boc.quotes.USD.asOf = '2020-01-01';
   const stale = moneyUi(config, q); stale.render(); stale.act('detail', '', 'cost');
   assert.doesNotMatch(stale.modal(), /本金 ＋|最后可计余额/);
@@ -3138,7 +3177,7 @@ test('all mainland/currency/stock combinations preview the incoming bank fee tha
         assert.match(option, /2笔合计/); priced++;
       } else assert.doesNotMatch(option, /0\.00 HKD/);
       const account = r?.rows?.find(row => row.key === 'account')?.items?.find(item => item.region === 'hong-kong' && item.bankId === bank);
-      if (account?.cny > 0) assert.ok(option.includes(account.cny.toFixed(2) + ' CNY'), option);
+      if (account?.cny > 0) assert.ok(option.includes((account.cny / r.refs.HKD).toFixed(2) + ' HKD'), option);
     }
   }
   assert.equal(applied, 810);
@@ -3169,9 +3208,9 @@ test('return bank previews distinguish wire, local transfer, cheque and virtual-
         const expected = provider.integratedBank ? fee.cny.toFixed(2) + ' CNY' : virtual ? (fee.cny / r.refs.USD).toFixed(2) + ' USD' : (fee.cny / r.refs.HKD).toFixed(2) + ' HKD';
         assert.ok(option.includes(expected), broker + ':' + outcome + ':' + returnCurrency + ':' + bank + '\n' + option);
         assert.match(option, cheque ? /存票|支票/ : virtual ? /数字银行USD提款：参考/ : provider.integratedBank ? /USD本地转账|USD内部交收/ : /USD电汇收款费/);
-      } else assert.doesNotMatch(option, /0\.00 HKD|0\.00 CNY/);
+      } else assert.doesNotMatch(option.split('；')[0], /(?:^|[：\s>])0\.00 (?:HKD|CNY)/);
       const account = r?.rows?.find(row => row.key === 'account')?.items?.find(item => item.region === 'hong-kong' && item.bankId === bank);
-      if (account?.cny > 0) assert.ok(option.includes(account.cny.toFixed(2) + ' CNY'), option);
+      if (account?.cny > 0) assert.ok(option.includes((account.cny / r.refs.HKD).toFixed(2) + ' HKD'), option);
     }
   }
   assert.equal(applied, 150);
@@ -3469,6 +3508,9 @@ test('confirmed withdrawal bank charges override public prices once for every su
   const r = M.calculatorJourney(input, D, quotes).selected;
   const html = moneyUi(input, quotes, '2026-10-11').render();
   const withdrawal = html.split('aria-label="出金 → 中银香港"')[1].split('</section>')[0];
-  assert.match(withdrawal, new RegExp((99 * r.refs.HKD).toFixed(2) + ' CNY'));
+  assert.match(withdrawal, /99\.00 HKD/);
+  const converted = Number(withdrawal.match(/≈ ([\d.]+) CNY/)[1]);
+  assert.ok(Math.abs(converted - 99 * r.refs.HKD) < .01);
+  assert.match(withdrawal, new RegExp(converted.toFixed(2) + ' CNY'));
   assert.match(withdrawal, /本人回单/);
 });
