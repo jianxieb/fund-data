@@ -498,3 +498,13 @@ IBKR[公开入金工具](https://www.interactivebrokers.com/en/support/fund-my-a
 一次券商出金对应本次一张支票，以其当日序号计算，不把当天此前所有支票的费用再次从本次余额扣除。致富和盈立在中银香港均使用此规则，1 HKD按HKD参考价折人民币，再从USD余额扣等值金额；不误扣1 USD，也不另加普通SWIFT汇入费或光票托收费。渣打的预填表折扣不适用中银香港。
 
 取回银行选择列表的支票场景现显示本次存票费及当日序号，不能再拿通用本地USD转账费描述这一动作。银行目录、顺序、选中标识与全部账户入口保留；致富至ZA明确不接受支票，盈立至ZA仍采用其另一种数字银行提款方式。个人已核回单只覆盖实际收款动作；换银行清除旧回单，保留当日存票序号。
+
+## IBKR本地港币出金与美元电汇不能混用（2026-10-12）
+
+继续直接核查[香港现行出金价目表](https://www.interactivebrokers.com.hk/en/index.php?f=14718)：各类出金合用每个自然月两次免费额度，按纽约时间计数；之后USD电汇10 USD，HKD电汇95 HKD、本地LVP 8 HKD，CNH电汇60 CNH、本地LVP 7 CNH。券商收费不涵盖收款行和代理行费用。这个额度本页此前已正确采用，本次不是新增优惠，也不把它扩大成全汇路免费。
+
+[Android官方出金说明](https://www.ibkrguides.com/android/withdrawal.htm)把HKD／CNH本地方式列为LVP的GIRO/ACH，要求对应币种的当地收款。该说明里的旧“一次／30天”费率文字与现行价目表冲突，只用其方法及同名范围，费用按现行收费页。2026-09-17更新的[客户门户说明](https://ibkrguides.com/clientportal/transferandpay/withdrawfunds.htm)介绍账户内操作，并未证明所有实体与居住档位均显示同一个港币方法。
+
+[实际港币出金攻略](https://tisztsmartmoney.com/platforms/ib-withdraw-funds/)作为“先在IBKR换HKD再取回”的候选依据，其两次／8港元额度已与官网核对。但其CHATS/FPS合称不能替代官方GIRO/ACH渠道定义，历史兑换示例不能补当前执行价，概括的美元代理扣费不能变成所有汇路固定值。中银香港企业自动付款价目及工银亚洲CHATS收款10港元也都不能直接用于个人GIRO/ACH收款。
+
+[结构化来源及范围记录](evidence/money-flow-feedback/ibkr-withdrawal-method-scope-20261012.json)保存四份200响应、原件哈希、收费数值及取舍。具名银行的个人LVP收款收费与账户执行价尚未取得，此次没有接入含伪造0费或假报价的新路径；A01继续由开发者调查。

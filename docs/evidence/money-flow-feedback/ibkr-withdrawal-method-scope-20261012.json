@@ -1,0 +1,92 @@
+{
+  "checkedAt": "2026-10-12",
+  "purpose": "区分IBKR本地港币出金、美元电汇与攻略渠道叫法，不把收款行或报价缺项改0",
+  "sources": {
+    "ibkrWithdrawalTariff": {
+      "url": "https://www.interactivebrokers.com.hk/en/index.php?f=14718",
+      "finalUrl": "https://www.interactivebrokers.com.hk/en/index.php?f=14718",
+      "status": 200,
+      "bytes": 253862,
+      "sha256": "8a7f655c6827284350a222da68e06183f7b2301318a2c34e9b96b1892420947a"
+    },
+    "ibkrAndroidMethods": {
+      "url": "https://www.ibkrguides.com/android/withdrawal.htm",
+      "finalUrl": "https://www.ibkrguides.com/android/withdrawal.htm",
+      "status": 200,
+      "bytes": 44504,
+      "sha256": "d87ac27bbead20414cdf1a5076fc3698ce62b9974dd2b7b85efe718a6a42fbf3"
+    },
+    "ibkrPortalWithdrawal": {
+      "url": "https://ibkrguides.com/clientportal/transferandpay/withdrawfunds.htm",
+      "finalUrl": "https://ibkrguides.com/clientportal/transferandpay/withdrawfunds.htm",
+      "status": 200,
+      "bytes": 38275,
+      "sha256": "e57c8a27df82359aa1a0baa0d89bfe73685bb99d6de1e87144943c258f5cbe4d"
+    },
+    "actualHkdGuide": {
+      "url": "https://tisztsmartmoney.com/platforms/ib-withdraw-funds/",
+      "finalUrl": "https://tisztsmartmoney.com/platforms/ib-withdraw-funds/",
+      "status": 200,
+      "bytes": 411885,
+      "sha256": "7c531e5f04e0c147bdb3c54349d8fea8d152c933dc858610951ef7ef32f53b07"
+    }
+  },
+  "verifiedFacts": {
+    "withdrawalTariff": {
+      "freeRequestsPerCalendarMonth": 2,
+      "countTimezone": "New York",
+      "countsAllWithdrawalMethodsTogether": true,
+      "afterAllowance": {
+        "USD": {
+          "wire": 10,
+          "currency": "USD"
+        },
+        "HKD": {
+          "wire": 95,
+          "LVP": 8,
+          "currency": "HKD"
+        },
+        "CNH": {
+          "wire": 60,
+          "LVP": 7,
+          "currency": "CNH"
+        }
+      },
+      "thirdPartyFeesIncluded": false
+    },
+    "officialMethods": {
+      "HKD": "LVP GIRO/ACH",
+      "CNH": "LVP GIRO/ACH",
+      "localCurrencyAndJurisdictionRequired": true,
+      "accountHolderNameRequired": true,
+      "guideUpdatedAt": "2026-01-27"
+    },
+    "portalGuideUpdatedAt": "2026-09-17"
+  },
+  "scopeDecisions": [
+    {
+      "source": "ibkrAndroidMethods",
+      "finding": "方法、币种、当地收款及同名要求可作渠道证据。页内每30天一次免费的旧文案与现行收费页冲突，费用额度采用现行价目表，不回改成一次。"
+    },
+    {
+      "source": "actualHkdGuide",
+      "finding": "2026年攻略支持先在券商把USD换HKD再本地取回的候选路线；更新的两次／8港元额度与现行价目表一致。攻略把本地方式合称CHATS/FPS，不能据此证明官方LVP就是其中任一种，也不能证明六家收款银行一律免费。历史兑换成交示例不能作为当前可执行外汇价；美元中转费概括不填进所有账户资费。"
+    },
+    {
+      "source": "ibkrPortalWithdrawal",
+      "finding": "说明在客户账户中选择出金指示，不证明全部实体及居住地账户都提供同一个HKD渠道。"
+    }
+  ],
+  "implementation": {
+    "productionFinancialValuesChanged": false,
+    "newHkdWithdrawalRouteEnabled": false,
+    "stillRequired": [
+      "具名香港个人银行对LVP GIRO/ACH收款的适用收费",
+      "该账户实际提供的方法及当笔USD/HKD执行价"
+    ],
+    "relatedExistingEvidence": [
+      "retail-fx-and-remittance-scope-20261012.json",
+      "../../money-flow-method.md"
+    ]
+  }
+}
