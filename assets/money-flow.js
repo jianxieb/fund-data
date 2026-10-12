@@ -390,7 +390,7 @@
     const fundingTitle = (state.route === 'USD' ? '' : state.fxMode === 'bank' ? (fundingPath ? '人民币 → 港币 → 美元' : '换成美元') + ' → ' : '') +
       (fundingBank ? '经本人' + routeName(fundingBank.id, 'bank') + ' → 同行入金' : automaticPurchase ? state.route + '原币转入IBKR' : state.route === 'USD' || state.fxMode === 'bank' ? '转入买股账户' : '转入IBKR → 换成美元');
     const pricedFunding = !costRows(r, throughFunding).some(item => item.cny == null) && r?.quoteFreshness?.source !== false && r?.quoteFreshness?.entryMarket !== false;
-    const exchangeNote = state.route !== 'USD' && !r?.indicativeFx && r?.entryPrice ? '1 USD = ' + quoteNum(r.entryPrice) + ' ' + state.route + (fundingPath ? ' · 两次兑换' : '') : '';
+    const exchangeNote = state.route !== 'USD' && !r?.indicativeFx && r?.entryPrice ? '1 USD = ' + quoteNum(r.entryPrice) + ' ' + state.route + (r.brokerFx?.priceIncludesAutoMarkup ? ' · 已含自动加价' : '') + (fundingPath ? ' · 两次兑换' : '') : '';
     const fundingNote = [automaticPurchase ? '' : exchangeNote,
       fundingBank && pricedFunding && steps.fundingBankUsd != null ? '本人' + routeName(fundingBank.id, 'bank') + '到账 ' + num(steps.fundingBankUsd) + ' USD' : ''].filter(Boolean).join(' · ');
     html += edge(data, actualFundingKeys, fundingTitle, fxControl + select('depositMethod', '入金方式', depositMethods()), '03', esc(fundingNote));
@@ -646,7 +646,7 @@
   }
   function adjustments() {
     return '<div class="flow-parameter-grid">' + [
-      ['startSell', '每1汇出外币的购入价', 'CNY'], ['entryPrice', '香港每1USD的购入价', state.route],
+      ['startSell', '每1汇出外币的购入价', 'CNY'], ['entryPrice', autoFxAtPurchase() ? 'IBKR每1USD成交价（含自动加价）' : '香港每1USD的购入价', state.route],
       ...(state.outcome === 'mainland' && state.returnCurrency === 'HKD' ? [['returnHkdPrice', '回款银行每1USD换回港币', 'HKD']] : []),
       ['exitPrice', '每1' + (state.outcome === 'mainland' ? state.returnCurrency || 'USD' : 'USD') + '换回金额', state.outcome === 'cnh-card' ? 'CNH' : 'CNY'],
       ['senderFeeCny', '每笔汇出手续费＋电讯费', 'CNY'], ['entryMiddleCny', '每笔跨境代理费', 'CNY'], ['entryInwardHkd', '每笔香港汇入费', 'HKD'],

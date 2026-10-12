@@ -30,6 +30,8 @@
 
 IBKR现金账户自动换汇发生在买入外币资产时，HKD／CNH原币入金不会先变成美元。因此入金节点保留原币余额，自动加价及成交点差计入买入段；手动换汇与在香港银行先换美元仍各按自己的顺序。人民币原币资金的CNY／CNH估值差随实际换汇时点结转，不在未换汇的入金段制造损耗。
 
+IBKR实际AutoFX成交价已经包含自动加价，不再另乘1.0003；实际价与统一基准的差额在买入段计一次。尚缺实际价时，参考汇率场景仍按官网通常0.03%的加价估算，不能把估算称为实际成交。手动兑换的成交价与另收的佣金独立，银行兑换也不另套AutoFX加价。
+
 依据为[当前IBUK协议中IBLLC的G3／G4条款](https://gdcdyn.interactivebrokers.com/Universal/servlet/Registration_v2.formSampleView?formdb=6207)物理第45页和[2026年6月成本摘要](https://ndcdyn.interactivebrokers.com/Universal/servlet/Registration_v2.formSampleView?formdb=4378)第5–6页；协议身份不冒充直接美国客户合同。[IBKR现行资费](https://www.interactivebrokers.com/en/pricing/commissions-spot-currencies.php)的自动兑换通常加减0.03%、不另收佣金，并未提供具体成交买卖价。自动选项明确为现金账户，不把保证金借款利息场景当作免费自动兑换。原件与范围见[核查记录](../tests/fixtures/money-flow-ibkr-autofx-timing-20261012.json)。
 
 本测算的IBKR碎股情景使用全部可买资金，修正的是入金币种、费用时点与分段账目，不据此声称之前全程多扣了自动换汇费。没有实际成交价时，原币入金仍可核，购买换汇及后续估值继续明确缺项。

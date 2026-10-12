@@ -94,6 +94,9 @@ test('manual and automatic broker conversions fit fees into cash without double 
   const auto = M.brokerFx(80000, 'HKD', 8, 'auto', D.broker);
   close(auto.usd, 10000 / 1.0003); close(auto.commissionUsd, 0);
   close(auto.usd + auto.markupUsd, 10000);
+  const executedAuto = M.brokerFx(80000, 'HKD', 8, 'auto', D.broker, true);
+  close(executedAuto.usd, 10000); close(executedAuto.commissionUsd, 0); close(executedAuto.markupUsd, 0);
+  assert.equal(executedAuto.priceIncludesAutoMarkup, true);
   const large = M.brokerFx(1600000, 'HKD', 8, 'manual', D.broker);
   close(large.usd + large.commissionUsd, 200000);
   close(M.brokerFx(1000, 'USD', null, 'manual', D.broker).usd, 1000);
@@ -1357,6 +1360,46 @@ test('missing AutoFX execution prices do not erase original IBKR cash or move mi
     assert.ok(purchaseLinks.has(D.sources.ibFx.url)); assert.ok(purchaseLinks.has(D.sources.ibAutoFxTerms.url));
     assert.match(ui.modal(), /买入时自动换USD加价/);
     for (const leg of ledger.legs) close(leg.outputCny + leg.costCny + leg.taxCny, leg.inputCny + leg.profitCny + leg.fxImpactCny);
+  }
+});
+
+test('actual AutoFX execution prices include the markup once and keep manual commissions separate', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  // These effective prices are synthetic receipt examples, not current market quotes.
+  for (const route of ['HKD', 'CNH']) for (const pricingBasis of ['best-quote', undefined]) for (const budgetCny of [5000, 100000, 1500000]) {
+    const config = { ...currentRoute, date: '2026-10-12', budgetCny, startBank: 'boc', bank: 'bochk', broker: 'ibkr', route,
+      fxMode: 'auto', entryPrice: route === 'HKD' ? 8 : 6.72, mainlandMethod: 'swift', depositMethod: 'fps',
+      entryMiddleCny: 0, months: 0, outcome: 'broker-balance', pricingBasis };
+    const r = M.calculatorJourney(config, D, quotes).selected, ledger = M.flowLedger(r);
+    const original = r.steps.brokerOriginal, actualGrossUsd = original / config.entryPrice;
+    close(r.steps.fundedUsd, actualGrossUsd); close(r.brokerFx.usd, actualGrossUsd);
+    close(r.brokerFx.markupUsd, 0); close(r.brokerFx.commissionUsd, 0);
+    assert.equal(r.brokerFx.priceIncludesAutoMarkup, true);
+    close(r.rows.find(row => row.key === 'brokerFx').cny, 0);
+    assert.match(r.rows.find(row => row.key === 'brokerSpread').label, /含自动加价/);
+    assert.equal(r.indicativeFx, ''); close(ledger.stops[2].amount, original);
+    for (const leg of ledger.legs) close(leg.outputCny + leg.costCny + leg.taxCny, leg.inputCny + leg.profitCny + leg.fxImpactCny);
+    close(ledger.legs.reduce((sum, leg) => sum + leg.costCny, 0), r.costCny);
+    close(r.netCny, r.budgetCny + config.profitUsd * r.refs.USD - r.costCny - r.taxCny + r.fxImpactCny);
+
+    const estimate = M.calculatorJourney({ ...config, entryPrice: '' }, D, quotes).selected;
+    assert.ok(estimate.indicativeFx); assert.ok(estimate.brokerFx.markupUsd > 0);
+    close(estimate.brokerFx.usd, estimate.steps.brokerOriginal / estimate.entryPrice / 1.0003);
+    assert.notEqual(estimate.brokerFx.priceIncludesAutoMarkup, true);
+    for (const mode of ['manual', 'bank']) {
+      const other = M.calculatorJourney({ ...config, fxMode: mode, depositMethod: mode === 'bank' ? 'chats' : 'fps' }, D, quotes).selected;
+      const gross = (mode === 'bank' ? other.steps.hongKong : other.steps.brokerOriginal) / other.entryPrice;
+      close(other.brokerFx.usd + other.brokerFx.commissionUsd, gross);
+      close(other.brokerFx.markupUsd, 0); assert.notEqual(other.brokerFx.priceIncludesAutoMarkup, true);
+      close(other.brokerFx.commissionUsd, mode === 'manual' ? Math.max(2, other.brokerFx.usd * D.broker.manualRate) : 0);
+    }
+    const ui = moneyUi(config, quotes, config.date), html = ui.render();
+    const trade = html.split('aria-label="买入时自动换美元 → 买入美股 → 卖出"')[1].split('</section>')[0];
+    assert.match(trade, /已含自动加价/); assert.match(trade, /自动换汇无单独佣金/);
+    assert.match(trade, /买入换汇差额（含自动加价）/);
+    assert.doesNotMatch(trade, /买入时自动换USD加价|按参考汇率估算/);
+    ui.act('detail', '', 'adjustments');
+    assert.match(ui.modal(), /IBKR每1USD成交价（含自动加价）/);
   }
 });
 

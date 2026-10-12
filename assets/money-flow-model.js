@@ -212,13 +212,15 @@
     return { budget, principal, sendingFees, converted, net, currency, explicitCny, fxCny, costCny: fxCny == null ? null : explicitCny + fxCny, rows, missing: [...new Set(missing)], complete: !missing.length, refs };
   }
   // Price is source units per USD; the commission must fit inside the cash.
-  // Automatic conversion uses a 0.03% price markup, never a second commission.
-  function brokerFx(amount, currency, price, mode, broker) {
+  // A market-rate estimate needs the automatic markup; an executed price
+  // already contains it. Neither case incurs a separate auto-FX commission.
+  function brokerFx(amount, currency, price, mode, broker, priceIncludesAutoMarkup = false) {
     if (!positive(amount)) return null;
     if (currency === 'USD') return { usd: amount, commissionUsd: 0, markupUsd: 0 };
     if (!positive(price)) return null;
     const grossUsd = amount / price;
     if (mode === 'auto') {
+      if (priceIncludesAutoMarkup) return { usd: grossUsd, commissionUsd: 0, markupUsd: 0, priceIncludesAutoMarkup: true };
       const usd = grossUsd / (1 + broker.autoMarkup);
       return { usd, commissionUsd: 0, markupUsd: grossUsd - usd };
     }
@@ -1058,18 +1060,20 @@
       };
       const convert = () => {
         const oldBalance = balance, oldUnit = unit;
-        const fx = brokerFx(balance, unit, entryPrice, fxMode, data.broker);
+        const autoFxAtPurchase = provider.id === 'ibkr' && currency !== 'USD' && fxMode === 'auto';
+        const actualAutoFxPrice = autoFxAtPurchase && ownEntryPrice != null;
+        const fx = brokerFx(balance, unit, entryPrice, fxMode, data.broker, actualAutoFxPrice);
         if (!fx) return null;
         balance = fx.usd; unit = 'USD';
-        const autoFxAtPurchase = provider.id === 'ibkr' && currency !== 'USD' && fxMode === 'auto';
         const fxStep = autoFxAtPurchase ? 'investment' : 'deposit';
-        rows.push({ key: 'brokerFx', label: autoFxAtPurchase ? '买入时自动换USD加价' : '换USD佣金／自动加价', cny: (fx.commissionUsd + fx.markupUsd) * refs.USD, step: fxStep });
+        rows.push({ key: 'brokerFx', label: actualAutoFxPrice ? '自动换汇无单独佣金' : autoFxAtPurchase ? '买入时自动换USD加价' : '换USD佣金／自动加价', cny: (fx.commissionUsd + fx.markupUsd) * refs.USD, step: fxStep });
+        if (actualAutoFxPrice) rows[rows.length - 1].evidence = '加价已含在成交价，计入换汇差额';
         if (unquotedFundingFx && fxMode !== 'bank') rows[rows.length - 1].estimate = '尚缺换汇成交价，换汇佣金／加价按参考汇率估算';
         const grossUsd = balance + fx.commissionUsd + fx.markupUsd;
         const referenceDifference = oldBalance * refs[oldUnit] - grossUsd * refs.USD + deferredCnhBasis;
         const bankMid = fxMode === 'bank' && positive(bankFxQuote?.bidPerUsd) && positive(bankFxQuote?.askPerUsd)
           ? (bankFxQuote.bidPerUsd + bankFxQuote.askPerUsd) / 2 : null;
-        fxRow('brokerSpread', relativeBasis ? '香港换汇差额' : fxMode === 'bank' ? '香港银行换汇点差' : '换汇成交点差', referenceDifference,
+        fxRow('brokerSpread', actualAutoFxPrice ? '买入换汇差额（含自动加价）' : relativeBasis ? '香港换汇差额' : fxMode === 'bank' ? '香港银行换汇点差' : '换汇成交点差', referenceDifference,
           bankMid ? (oldBalance / bankMid - grossUsd) * refs.USD : referenceDifference, fxStep);
         if (fxMode === 'bank' && ownEntryPrice == null && !unquotedBankFx) crossLegs(rows[rows.length - 1], bankFxQuote, oldBalance, true, deferredCnhBasis);
         if (unquotedBankFx) Object.assign(rows[rows.length - 1], { cny: null, fxImpactCny: -referenceDifference, label: bank.name + ' ' + currency + '换USD点差（缺成交价）' });

@@ -1,0 +1,32 @@
+{
+  "checkedOn": "2026-10-12",
+  "source": "https://www.interactivebrokers.com/en/pricing/commissions-spot-currencies.php",
+  "rawSourceRecord": "money-flow-ibkr-autofx-timing-20261012.json",
+  "officialRule": "AutoFX typically adjusts the otherwise applicable rate by 0.03%; no separate commission is charged.",
+  "implementationInference": "An effective executed AutoFX price already incorporates its rate adjustment. The calculator must not apply another 0.03% to an explicitly entered actual execution price. A reference-market estimate still needs the published adjustment and remains an estimate.",
+  "scope": "Live mainland-to-Hong-Kong calculator; the low-level brokerFx helper retains the market-rate default unless an inclusive execution price is explicitly indicated.",
+  "qaInputs": {
+    "HKD": 8,
+    "CNH": 6.72,
+    "syntheticOnly": true,
+    "notCurrentQuotes": true,
+    "notUserReceipts": true
+  },
+  "actualBrowserReproduction": {
+    "budgetCny": 100000,
+    "route": "HKD",
+    "receivedHkdDisplayed": 117000.12,
+    "priceHkdPerUsd": 8,
+    "beforeNetUsdDisplayed": 14618.29,
+    "afterNetUsdDisplayed": 14622.67,
+    "removedExtraChargeCnyDisplayed": 29.41,
+    "remainingOriginalFundingDisplayed": "117,000.12 HKD",
+    "source": "docs/evidence/money-flow-feedback/browser-autofx-effective-price-local-20261012.json"
+  },
+  "doesNotResolve": [
+    "Current IBKR HKD/USD or CNH/USD execution price",
+    "Ordinary SWIFT intermediary fees",
+    "IBKR internal USD-to-HKD local withdrawal implementation"
+  ],
+  "fullResearchAcceptance": false
+}
