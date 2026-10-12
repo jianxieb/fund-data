@@ -1501,8 +1501,10 @@ test('ICBC Asia selection, qualification, same-bank funding and return channel r
   assert.doesNotMatch(html, /data-money-check="icbcCnhAccount"/);
   ui.act('pick', '', 'bank');
   assert.equal((ui.modal().match(/data-field="bank"/g) || []).length, 6);
-  assert.match(ui.modal(), /工行集团汇入60 HKD/); assert.doesNotMatch(ui.modal(), /undefined|NaN/);
+  assert.match(pickerOption(ui.modal(), 'bank', 'icbc-asia'), /USD汇入费：60\.00 HKD/); assert.doesNotMatch(ui.modal(), /undefined|NaN/);
   ui.check('icbcEAccount', true);
+  ui.act('pick', '', 'bank');
+  assert.match(pickerOption(ui.modal(), 'bank', 'icbc-asia'), /USD汇入费：0\.00 HKD/);
   for (const broker of D.calculator.brokers) {
     ui.act('choose', 'broker', broker); html = ui.render();
     assert.equal(ui.saved().bank, 'icbc-asia'); assert.equal(ui.saved().icbcEAccount, true);
@@ -2964,6 +2966,99 @@ test('BOCHK daily cheque allowance survives stock account switches and restores 
     assert.doesNotMatch(restored.modal(), /存票当日第几张支票/);
     restored.act('choose', 'returnBank', 'bochk'); html = restored.render();
     assert.match(html, new RegExp('存票当日第' + chequeIndex + '张'));
+  }
+});
+
+const pickerOption = (html, key, id) => {
+  const option = html.match(new RegExp('data-field="' + key + '" data-value="' + id + '"[^>]*>(.*?)</button>', 's'))?.[1];
+  assert.ok(option, key + ':' + id);
+  return option;
+};
+
+test('all mainland/currency/stock combinations preview the incoming bank fee that is actually applied', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  let applied = 0, priced = 0;
+  for (const startBank of D.calculator.mainland) for (const route of D.calculator.currencies) for (const broker of D.calculator.brokers) {
+    const ui = moneyUi({ ...chequeRoute, startBank, route, broker, count: 2, bank: 'bochk', months: 1,
+      mainlandMethod: '', depositMethod: '', fxMode: route === 'USD' ? 'manual' : 'bank',
+      scCnhAccount: true, icbcCnhAccount: true }, quotes, '2026-10-12');
+    ui.render();
+    for (const bank of D.calculator.hkBanks) {
+      ui.act('pick', '', 'bank');
+      const menu = ui.modal(), option = pickerOption(menu, 'bank', bank);
+      assert.equal((menu.match(/data-field="bank" data-value=/g) || []).length, 6);
+      assert.doesNotMatch(menu, /disabled|中行同名汇入0|本地美元转账0|同名跨域转账0/);
+      ui.act('choose', 'bank', bank); applied++;
+      const result = M.calculatorJourney({ ...ui.saved(), date: '2026-10-12' }, D, quotes), r = result.selected || result.partial;
+      const fee = r?.rows?.find(row => row.key === 'entryInward');
+      if (fee?.cny != null) {
+        assert.ok(option.includes((fee.cny / r.refs.HKD).toFixed(2) + ' HKD'), startBank + ':' + route + ':' + broker + ':' + bank + '\n' + option);
+        assert.match(option, /2笔合计/); priced++;
+      } else assert.doesNotMatch(option, /0\.00 HKD/);
+      const account = r?.rows?.find(row => row.key === 'account')?.items?.find(item => item.region === 'hong-kong' && item.bankId === bank);
+      if (account?.cny > 0) assert.ok(option.includes(account.cny.toFixed(2) + ' CNY'), option);
+    }
+  }
+  assert.equal(applied, 810);
+  assert.ok(priced > 700, 'known incoming fees must remain visible even when another step is missing');
+});
+
+test('return bank previews distinguish wire, local transfer, cheque and virtual-bank withdrawal across all endpoints', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  let applied = 0;
+  for (const broker of D.calculator.brokers) for (const outcome of ['usd-balance', 'usd-card', 'cnh-card', 'mainland']) for (const returnCurrency of outcome === 'mainland' ? ['USD', 'HKD'] : ['USD']) {
+    const ui = moneyUi({ ...chequeRoute, broker, outcome, returnCurrency, returnBank: 'bochk', exitBank: 'boc',
+      chequeIndex: 31, months: 12, inwardHkd: '', hsbcBalanceWaiver: false }, quotes, '2026-10-12');
+    ui.render();
+    const provider = M.selectedBroker(ui.saved(), D);
+    for (const bank of D.calculator.hkBanks) {
+      ui.act('pick', '', 'returnBank');
+      const menu = ui.modal(), option = pickerOption(menu, 'returnBank', bank);
+      assert.equal((menu.match(/data-field="returnBank" data-value=/g) || []).length, 6);
+      assert.doesNotMatch(menu, /disabled|中行同名汇入0|本地美元转账0|同名跨域转账0/);
+      ui.act('choose', 'returnBank', bank); applied++;
+      const result = M.calculatorJourney({ ...ui.saved(), date: '2026-10-12' }, D, quotes), r = result.selected || result.partial;
+      const fee = r?.rows?.find(row => row.key === 'returnInward');
+      if (provider.withdrawalMethod === 'cheque' && hk(bank).acceptsCheques === false) {
+        assert.match(option, /不接受支票/); assert.match(result.error, /不接受支票/);
+      } else if (fee?.cny != null) {
+        const cheque = provider.withdrawalMethod === 'cheque' || provider.localChequeBanks?.includes(bank);
+        const virtual = provider.withdrawalMethod === 'local' && !cheque;
+        const expected = provider.integratedBank ? fee.cny.toFixed(2) + ' CNY' : virtual ? (fee.cny / r.refs.USD).toFixed(2) + ' USD' : (fee.cny / r.refs.HKD).toFixed(2) + ' HKD';
+        assert.ok(option.includes(expected), broker + ':' + outcome + ':' + returnCurrency + ':' + bank + '\n' + option);
+        assert.match(option, cheque ? /存票|支票/ : virtual ? /数字银行USD提款：参考/ : provider.integratedBank ? /USD本地转账|USD内部交收/ : /USD电汇收款费/);
+      } else assert.doesNotMatch(option, /0\.00 HKD|0\.00 CNY/);
+      const account = r?.rows?.find(row => row.key === 'account')?.items?.find(item => item.region === 'hong-kong' && item.bankId === bank);
+      if (account?.cny > 0) assert.ok(option.includes(account.cny.toFixed(2) + ' CNY'), option);
+    }
+  }
+  assert.equal(applied, 150);
+});
+
+test('bank preview keeps personal receipt fees on their selected account and never transfers a waiver to a new account', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  const ui = moneyUi({ ...chequeRoute, broker: 'ibkr', bank: 'bochk', returnBank: 'bochk', entryInwardHkd: 17,
+    inwardHkd: 13, monthlyHkd: 0, returnMonthlyHkd: 0, hsbcBalanceWaiver: false, count: 2, depositMethod: 'chats' }, quotes, '2026-10-12');
+  ui.render(); ui.act('pick', '', 'bank');
+  assert.match(pickerOption(ui.modal(), 'bank', 'bochk'), /本人回单收款费：34\.00 HKD/);
+  assert.match(pickerOption(ui.modal(), 'bank', 'hsbc'), /USD汇入费 · 2笔合计：0\.00 HKD/);
+  assert.match(pickerOption(ui.modal(), 'bank', 'hsbc'), /12个月管理费/);
+  assert.doesNotMatch(pickerOption(ui.modal(), 'bank', 'hsbc'), /本人回单|管理费0/);
+  ui.act('pick', '', 'returnBank');
+  assert.match(pickerOption(ui.modal(), 'returnBank', 'bochk'), /本人回单收款费：13\.00 HKD/);
+  assert.match(pickerOption(ui.modal(), 'returnBank', 'hsbc'), /USD电汇收款费：0\.00 HKD/);
+  assert.match(pickerOption(ui.modal(), 'returnBank', 'hsbc'), /12个月管理费/);
+  ui.act('choose', 'returnBank', 'hsbc');
+  assert.equal(ui.saved().inwardHkd, ''); assert.equal(ui.saved().returnMonthlyHkd, '');
+  ui.act('pick', '', 'returnBank');
+  assert.match(pickerOption(ui.modal(), 'returnBank', 'bochk'), /USD电汇收款费：60\.00 HKD/);
+  assert.doesNotMatch(pickerOption(ui.modal(), 'returnBank', 'bochk'), /本人回单|13\.00 HKD/);
+  for (const [change, key, expected] of [[{ entryInwardHkd: -1 }, 'bank', /须为非负数/],
+    [{ inwardHkd: -1 }, 'returnBank', /须为非负数/], [{ entryInwardHkd: 1, count: '' }, 'bank', /汇出笔数须为正整数/]]) {
+    const invalid = moneyUi({ ...chequeRoute, broker: 'ibkr', bank: 'bochk', returnBank: 'bochk', depositMethod: 'chats', ...change }, quotes, '2026-10-12');
+    invalid.render(); invalid.act('pick', '', key);
+    const option = pickerOption(invalid.modal(), key, 'bochk');
+    assert.match(option, expected); assert.doesNotMatch(option, /0\.00 HKD|-1\.00 HKD/);
   }
 });
 

@@ -620,8 +620,31 @@
     const fee = actual ?? M.localUsdChequeFee(bank, M.number(state.chequeIndex), r?.returnDate || r?.trading?.sellDate || today(), state.chequePreFilled);
     const context = actual != null ? '本人回单收款费' : bank.localUsdChequeTariff ? '本地USD存票 · 当日第' + state.chequeIndex + '张' : '本地USD支票存入';
     const missing = !Number.isSafeInteger(M.number(state.chequeIndex)) || M.number(state.chequeIndex) < 1 ? '当日存票序号须为正整数' : '该日期的本地USD存票资费尚未取得';
-    return context + '：' + (fee == null ? missing : num(fee) + ' HKD') +
-      (bank.id === 'hsbc' ? '；One月费按豁免条件' : '；账户月费0');
+    return context + '：' + (fee == null ? missing : num(fee) + ' HKD');
+  }
+  function bankPickerCopy(key, bank, data, config) {
+    const r = data.selected || data.partial, provider = M.selectedBroker(config, D);
+    const fee = row(r, key === 'bank' ? 'entryInward' : 'returnInward');
+    const ownFee = bank.id === state[key] && M.number(state[key === 'bank' ? 'entryInwardHkd' : 'inwardHkd']) != null;
+    let text = key === 'returnBank' ? chequeBankCopy(bank, provider, r) : null;
+    if (text == null) {
+      const settlement = key === 'returnBank' ? D.hkBanks.find(b => b.id === provider.integratedBank) : null;
+      const virtualReturn = key === 'returnBank' && provider.withdrawalMethod === 'local' && !provider.localChequeBanks?.includes(bank.id);
+      const label = ownFee ? '本人回单收款费' : key === 'bank' ? config.route + '汇入费' + (M.number(config.count) > 1 ? ' · ' + config.count + '笔合计' : '') :
+        settlement ? 'USD' + (settlement.id === bank.id ? '内部交收' : '本地转账') : virtualReturn ? '数字银行USD提款' : 'USD电汇收款费';
+      const actualHkd = ownFee ? M.number(state[key === 'bank' ? 'entryInwardHkd' : 'inwardHkd']) : null;
+      const count = key === 'bank' ? M.number(config.count) : 1;
+      const validCount = Number.isSafeInteger(count) && count > 0;
+      const hkd = actualHkd != null && actualHkd >= 0 && validCount ? actualHkd * count :
+        fee?.cny == null || !(r?.refs?.HKD > 0) ? null : fee.cny / r.refs.HKD;
+      const amount = actualHkd != null && actualHkd < 0 ? '须为非负数' : !validCount ? '汇出笔数须为正整数' :
+        hkd == null ? fee?.status || (key === 'bank' ? '须先确定汇入金额与渠道' : '须先确定可出金金额与方式') :
+        virtualReturn && !ownFee ? '参考 ' + num(fee.cny / r.refs.USD) + ' USD' : settlement && !ownFee ? cost(fee.cny) : (fee.estimate ? '参考 ' : '') + num(hkd) + ' HKD';
+      text = label + '：' + amount;
+    }
+    const account = row(r, 'account')?.items?.find(item => item.region === 'hong-kong' && item.bankId === bank.id);
+    if (account?.cny != null) text += account.cny > 0 ? '；' + account.months + '个月管理费 ' + cost(account.cny) : '；管理费0';
+    return text;
   }
   function picker(key) {
     modalKey = null;
@@ -629,12 +652,16 @@
     const small = options.get(key), isMainland = ['startBank', 'exitBank'].includes(key), isBank = ['bank', 'returnBank'].includes(key);
     const list = key === 'outcome' ? outcomes.map(([id, name]) => ({ id, name })) : isMainland ? mainland : isBank ? banks : key === 'broker' ? brokers : (small?.values || []).map(([id, name]) => ({ id, name }));
     const comparison = key === 'startBank' ? M.purchaseComparison({ ...state, date: today() }, comparisonData, window.MONEY_FLOW_QUOTES || {}) : null;
-    const current = ['exitBank', 'returnBank'].includes(key) ? result() : null;
-    const exitCurrency = state.returnCurrency || 'USD', r = current?.selected || current?.partial, provider = selected().broker;
+    const current = ['exitBank', 'bank', 'returnBank'].includes(key) ? result() : null;
+    const exitCurrency = state.returnCurrency || 'USD', r = current?.selected || current?.partial;
     const exitDate = r?.returnDate || r?.trading?.sellDate || today();
     const exitQuotes = key === 'exitBank' ? M.quotedMainlandBanks(D, window.MONEY_FLOW_QUOTES || {}, today()) : [];
-    const copy = item => key === 'broker' ? item.feeShort : key === 'exitBank' ? '境外' + exitCurrency + '汇入手续费：' + (item.inwardCny == null ? '尚未取得适用价目' : num(item.inwardCny) + ' CNY') : key === 'startBank' ? sourceTariffCopy(item) : key === 'returnBank' && chequeBankCopy(item, provider, r) != null ? chequeBankCopy(item, provider, r) : isBank ?
-      ({ bochk: '中行同名汇入0；本地美元转账0；账户月费0', hsbc: '汇入及本地美元转账0；One月费按豁免条件', za: '本地美元转账0；账户月费0；可开美股交易', hang: '同名跨域转账0；本地美元转账0；优进月费0', sc: '本地USD转账标准费22 USD；快易月费0', 'icbc-asia': '工行集团汇入60 HKD，绑定e账通优惠期免；本地USD转账50 HKD；综合账户免月费' })[item.id] : '';
+    const bankCopies = isBank ? new Map(list.map(item => {
+      const config = { ...(item.id === state[key] ? state : choiceState(key, item.id)), date: today(), selectedOnly: true };
+      const quote = item.id === state[key] ? current : M.calculatorJourney(config, D, window.MONEY_FLOW_QUOTES || {});
+      return [item.id, bankPickerCopy(key, item, quote, config)];
+    })) : null;
+    const copy = item => key === 'broker' ? item.feeShort : key === 'exitBank' ? '境外' + exitCurrency + '汇入手续费：' + (item.inwardCny == null ? '尚未取得适用价目' : num(item.inwardCny) + ' CNY') : key === 'startBank' ? sourceTariffCopy(item) : bankCopies?.get(item.id) || '';
     const price = item => {
       if (key === 'exitBank') {
         const quote = exitQuotes.find(bank => bank.id === item.id)?.quotes?.[exitCurrency];
