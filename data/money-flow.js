@@ -8,14 +8,23 @@
     verifiedAt: '2026-10-12',
     calculator: {
       // Account choice is independent of whether a full route has a public quote.
+      departureBanks: ['boc', 'cib', 'cmb', 'icbc'],
       mainland: ['boc', 'cib', 'cmb', 'icbc', 'ccb', 'comm', 'hsbc', 'hang', 'sc'],
       hkBanks: ['bochk', 'hsbc', 'za', 'hang', 'sc', 'icbc-asia'], brokers: ['ibkr', 'hsbc', 'za', 'chief', 'usmart'],
-      fxComparison: ['boc', 'cib', 'cmb', 'icbc', 'ccb', 'comm', 'hsbc', 'hang', 'sc'], currencies: ['USD', 'HKD', 'CNH'],
+      fxComparison: ['boc', 'cib', 'cmb', 'icbc'], currencies: ['CNH', 'USD', 'HKD'],
       excluded: [
         { ids: ['abc'], scope: 'mainland', reason: '按用户要求移除农业银行；其他账户不因报价条件被删除。' }
       ]
     },
     comparisonNotice: '按具体渠道、币种及账户收费计算；购汇点差与转账手续费分别列示。',
+    preferredPlans: [
+      { id: 'cib-trade25', title: '兴业寰宇人生 → 汇丰Trade25',
+        config: { startBank: 'cib', bank: 'hsbc', broker: 'hsbc', returnBank: 'hsbc', exitBank: 'boc', route: 'USD', mainlandMethod: 'swift', depositMethod: 'internal', outcome: 'usd-balance', trade25: true } },
+      { id: 'cib-za', title: '兴业寰宇人生 → ZA',
+        config: { startBank: 'cib', bank: 'hsbc', broker: 'za', returnBank: 'hsbc', exitBank: 'boc', route: 'USD', mainlandMethod: 'swift', depositMethod: 'chats', outcome: 'usd-balance' } },
+      { id: 'boc-ibkr', title: '中行 → 中银香港 → IBKR',
+        config: { startBank: 'boc', bank: 'bochk', broker: 'ibkr', returnBank: 'bochk', exitBank: 'boc', route: 'USD', mainlandMethod: 'boc-mobile', depositMethod: 'chats', outcome: 'broker-balance' } }
+    ],
     bocMobileEvidence: { feeCny: 0, telegramCny: 0, intermediaryCny: 0, checkedAt: '2026-10-11', level: 'bank-statement', intermediaryLevel: 'reported', senderEvidence: '手机银行双免', sources: ['bocBankAnswer2026', 'bocMobile2026', 'bocMobileUsdGuide', 'bochkSame', 'bocMobileHistory'], note: '中行2026-08-19具名答复及山西省分行2026-05-29供稿均确认手机境外中行入口免手续费及电报费；中银香港使用BKCHHKHH，香港分行BKCHHKHK不享此优惠。USD/HKD同名中银香港的代理费另按2026操作记录的SHA同行路径0元测算；该记录不是所有币种、所有汇路的代理费豁免承诺，跨境支付通实录不作外币电汇证据。' },
     // A published service tariff is not evidence that a particular receiving
     // bank and currency are reachable through that service.

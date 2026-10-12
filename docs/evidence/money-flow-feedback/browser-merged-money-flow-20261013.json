@@ -1,0 +1,464 @@
+{
+  "checkedAt": "2026-10-12T16:42:50.656Z",
+  "checks": [
+    {
+      "name": "waiver-toggle-stability",
+      "before": {
+        "cards": [
+          {
+            "height": 116,
+            "text": "兴业寰宇人生 → 汇丰香港\n汇丰Trade25 → 汇丰香港美元\n参考损耗\n0.002%\n2.08 CNY / 10万元",
+            "top": 231.6953125
+          },
+          {
+            "height": 116,
+            "text": "✓ 兴业寰宇人生 → 汇丰香港\nZA → 汇丰香港美元\n参考损耗\n0.029%\n28.77 CNY / 10万元",
+            "top": 231.6953125
+          },
+          {
+            "height": 116,
+            "text": "中行 → 中银香港\nIBKR Pro · 留美元\n参考损耗\n0.093%\n92.61 CNY / 10万元",
+            "top": 231.6953125
+          }
+        ],
+        "ledger": 478.9453125
+      },
+      "after": {
+        "cards": [
+          {
+            "height": 116,
+            "text": "兴业寰宇人生 → 汇丰香港\n汇丰Trade25 → 汇丰香港美元\n参考损耗\n0.002%\n2.08 CNY / 10万元",
+            "top": 231.6953125
+          },
+          {
+            "height": 116,
+            "text": "兴业寰宇人生 → 汇丰香港\nZA → 汇丰香港美元\n参考损耗\n0.029%\n28.77 CNY / 10万元",
+            "top": 231.6953125
+          },
+          {
+            "height": 116,
+            "text": "中行 → 中银香港\nIBKR Pro · 留美元\n参考损耗\n0.093%\n92.61 CNY / 10万元",
+            "top": 231.6953125
+          }
+        ],
+        "ledger": 478.9453125
+      },
+      "pass": true
+    },
+    {
+      "name": "trade25-plan",
+      "page": {
+        "accounts": [
+          "兴业 · 寰宇人生",
+          "汇丰 HSBC One",
+          "汇丰证券",
+          "汇丰 HSBC One",
+          "取回香港银行 · 保留美元"
+        ],
+        "fourth": [
+          {
+            "height": 76,
+            "y": 1372.53125
+          },
+          {
+            "height": 76,
+            "y": 1372.53125
+          }
+        ],
+        "summary": "参考总损耗\n0.002%\n2.08 CNY\n其中账户期间费\n0.00 CNY\n已计入合计\n按公布参考费计算的余额\n14,911.88 USD\n全程明细"
+      }
+    },
+    {
+      "name": "boc-ibkr-plan",
+      "page": {
+        "accounts": [
+          "中国银行",
+          "中银香港",
+          "IBKR",
+          "IBKR",
+          "留在买股账户"
+        ],
+        "choices": [
+          "兴业寰宇人生 → 汇丰香港\n汇丰Trade25 → 汇丰香港美元\n参考损耗\n0.002%\n2.08 CNY / 10万元",
+          "兴业寰宇人生 → 汇丰香港\nZA → 汇丰香港美元\n参考损耗\n0.029%\n28.77 CNY / 10万元",
+          "✓ 中行 → 中银香港\nIBKR Pro · 留美元\n参考损耗\n0.093%\n92.61 CNY / 10万元"
+        ],
+        "summary": "参考总损耗\n0.093%\n92.61 CNY\n其中账户期间费\n0.00 CNY\n已计入合计\n按公布参考费计算的余额\n14,898.38 USD\n全程明细"
+      }
+    },
+    {
+      "name": "departure-catalogue",
+      "options": [
+        {
+          "enabled": true,
+          "id": "boc"
+        },
+        {
+          "enabled": true,
+          "id": "cib"
+        },
+        {
+          "enabled": true,
+          "id": "cmb"
+        },
+        {
+          "enabled": true,
+          "id": "icbc"
+        }
+      ]
+    },
+    {
+      "name": "cmb-fee-visible",
+      "text": "01\n内地出发银行\n招商银行\n⌄\n人民币本金 · 含费用\n100,000.00 CNY修改\n汇出币种\n人民币原币\n美元\n港币\n汇出笔数\n1笔\n⌄\n汇款渠道\n个人跨境汇款 · 公开标准价\n↓\n已核费用占本金\n0.444%\n443.79 CNY\n汇往香港\n明细\n汇出手续费\n99.80 CNY\n汇出电讯费\n100.00 CNY\n购汇差额\n192.72 CNY\n代理费\n此汇路代理／收款行收费未公开\n香港汇入\n51.27 CNY\n02\n香港收款银行\n中银香港\n⌄\n已扣已核费用 · 汇款到账\n14,846.01 USD\n已计费用占本金 0.444% · 尚有未报价费用\n账户使用月数\n月\n银行管理费\n0.00 CNY\n此账户免管理费\n↓\n参考损耗\n0.000%\n0.00 CNY\n转入买股账户\n明细\n入金方式\n香港收款指示 · USD本地转账\n⌄\n银行转账\n0.00 CNY\n代理／收款费\n参考 0.00 CNY\n入金费\n0.00 CNY\n换汇佣金\n0.00 CNY\n换汇差额\n0.00 CNY\n03\n买美股的账户\nIBKR\n⌄\n已扣已核费用 · 入金到账\n14,846.01 USD\n已计费用占本金 0.444% · 尚有未报价费用\n买卖设置\n买1笔 · 卖1笔\n买入均价 100 USD/股\n优惠与费用券\n设置优惠\nIBKR收费方案\nPro · 固定\n⌄\n↓\n损耗\n0.015%\n15.50 CNY\n买入美股 → 卖出\n明细\n盈亏 0.00 USD\n买入费用\n6.71 CNY\n卖出费用\n8.79 CNY\n证券托管\n0.00 CNY\n04\n资金所在账户\nIBKR\n⌄\n已扣已核费用后的余额\n14,843.70 USD\n已计费用占本金 0.459% · 尚有未报价费用\n卖出后的资金\n留在买股账户\n⌄"
+    },
+    {
+      "name": "broker-catalogue",
+      "options": [
+        {
+          "enabled": true,
+          "id": "ibkr"
+        },
+        {
+          "enabled": true,
+          "id": "hsbc"
+        },
+        {
+          "enabled": true,
+          "id": "za"
+        },
+        {
+          "enabled": true,
+          "id": "chief"
+        },
+        {
+          "enabled": true,
+          "id": "usmart"
+        }
+      ]
+    },
+    {
+      "name": "coupon-order-eligibility",
+      "text": "×\n致富 · 优惠与费用券\n\nApp月供买入 · 首500 USD免佣／平台费\n使用已获得的费用券\n抵扣范围\n佣金\n平台费\n两者均可\n费用券额度\nUSD\n适用订单数\n笔\n到期日\n\n本次抵扣 2.3753 USD\n\n买入 2026-10-13\n抵扣 1.1877 USD\n卖出 2026-10-13\n抵扣 1.1876 USD\n致富 · 2026年9月美股收费 ↗\nSEC · 自2026年4月4日每百万20.60美元 ↗\nSEC/FINRA · 2026年第四季度TAF暂停 ↗\nSEC/FINRA · TAF费率在2029、2030、2031年分阶段调整 ↗\n致富 · 月供每只每次首500美元优惠 ↗\n致富 · 2026年月供推广条款 ↗"
+    },
+    {
+      "name": "coupon-trade-detail",
+      "text": "×\n美股买卖\n\n买入美股 · 1笔\n佣金 0.00＋平台 0.00＋清算／监管 0.45 USD · 券已抵扣 1.1877 USD\n0.45 USD\n≈ 2.99 CNY\n卖出美股 · 1笔\n佣金 0.00＋平台 0.00＋清算／监管 0.76 USD · 券已抵扣 1.1876 USD\n0.76 USD\n≈ 5.06 CNY\n证券账户／托管费\n0.00 USD\n买入美股 · 1笔\n佣金 0.00＋平台 0.00＋清算／监管 0.45 USD · 券已抵扣 1.1877 USD\n0.45 USD\n≈ 2.99 CNY\n卖出美股 · 1笔\n佣金 0.00＋平台 0.00＋清算／监管 0.76 USD · 券已抵扣 1.1876 USD\n0.76 USD\n≈ 5.06 CNY\n致富 · 2026年9月美股收费 ↗\nSEC · 自2026年4月4日每百万20.60美元 ↗\nSEC/FINRA · 2026年第四季度TAF暂停 ↗\nSEC/FINRA · TAF费率在2029、2030、2031年分阶段调整 ↗"
+    },
+    {
+      "name": "six-return-bank-alignment",
+      "states": [
+        {
+          "accounts": [
+            "中银香港",
+            "取回香港银行 · 保留美元"
+          ],
+          "boxes": [
+            {
+              "height": 76,
+              "width": 250,
+              "y": 987.6328125
+            },
+            {
+              "height": 76,
+              "width": 337,
+              "y": 982.1328125
+            }
+          ],
+          "overflow": false
+        },
+        {
+          "accounts": [
+            "汇丰 HSBC One",
+            "取回香港银行 · 保留美元"
+          ],
+          "boxes": [
+            {
+              "height": 76,
+              "width": 250,
+              "y": 987.6328125
+            },
+            {
+              "height": 76,
+              "width": 337,
+              "y": 982.1328125
+            }
+          ],
+          "overflow": false
+        },
+        {
+          "accounts": [
+            "众安 ZA Bank",
+            "取回香港银行 · 保留美元"
+          ],
+          "boxes": [
+            {
+              "height": 76,
+              "width": 250,
+              "y": 871.234375
+            },
+            {
+              "height": 76,
+              "width": 337,
+              "y": 871.234375
+            }
+          ],
+          "overflow": false
+        },
+        {
+          "accounts": [
+            "恒生 · 优进理财",
+            "取回香港银行 · 保留美元"
+          ],
+          "boxes": [
+            {
+              "height": 76,
+              "width": 250,
+              "y": 939.9375
+            },
+            {
+              "height": 76,
+              "width": 337,
+              "y": 934.4375
+            }
+          ],
+          "overflow": false
+        },
+        {
+          "accounts": [
+            "渣打 · 快易理财",
+            "取回香港银行 · 保留美元"
+          ],
+          "boxes": [
+            {
+              "height": 76,
+              "width": 250,
+              "y": 975.1328125
+            },
+            {
+              "height": 76,
+              "width": 337,
+              "y": 969.6328125
+            }
+          ],
+          "overflow": false
+        },
+        {
+          "accounts": [
+            "工银亚洲 · 综合账户",
+            "取回香港银行 · 保留美元"
+          ],
+          "boxes": [
+            {
+              "height": 98,
+              "width": 250,
+              "y": 934.6328125
+            },
+            {
+              "height": 76,
+              "width": 337,
+              "y": 934.6328125
+            }
+          ],
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "name": "six-return-bank-alignment-after-fix",
+      "states": [
+        {
+          "accounts": [
+            "中银香港",
+            "取回香港银行 · 保留美元"
+          ],
+          "boxes": [
+            {
+              "height": 76,
+              "y": 978.1328125
+            },
+            {
+              "height": 76,
+              "y": 978.1328125
+            }
+          ],
+          "overflow": false
+        },
+        {
+          "accounts": [
+            "汇丰 HSBC One",
+            "取回香港银行 · 保留美元"
+          ],
+          "boxes": [
+            {
+              "height": 76,
+              "y": 978.1328125
+            },
+            {
+              "height": 76,
+              "y": 978.1328125
+            }
+          ],
+          "overflow": false
+        },
+        {
+          "accounts": [
+            "众安 ZA Bank",
+            "取回香港银行 · 保留美元"
+          ],
+          "boxes": [
+            {
+              "height": 76,
+              "y": 871.234375
+            },
+            {
+              "height": 76,
+              "y": 871.234375
+            }
+          ],
+          "overflow": false
+        },
+        {
+          "accounts": [
+            "恒生 · 优进理财",
+            "取回香港银行 · 保留美元"
+          ],
+          "boxes": [
+            {
+              "height": 76,
+              "y": 934.4375
+            },
+            {
+              "height": 76,
+              "y": 934.4375
+            }
+          ],
+          "overflow": false
+        },
+        {
+          "accounts": [
+            "渣打 · 快易理财",
+            "取回香港银行 · 保留美元"
+          ],
+          "boxes": [
+            {
+              "height": 76,
+              "y": 969.6328125
+            },
+            {
+              "height": 76,
+              "y": 969.6328125
+            }
+          ],
+          "overflow": false
+        },
+        {
+          "accounts": [
+            "工银亚洲",
+            "取回香港银行 · 保留美元"
+          ],
+          "boxes": [
+            {
+              "height": 76,
+              "y": 934.6328125
+            },
+            {
+              "height": 76,
+              "y": 934.6328125
+            }
+          ],
+          "overflow": false
+        }
+      ],
+      "pass": true
+    },
+    {
+      "name": "detail-backdrop-close",
+      "open": false
+    },
+    {
+      "name": "receiving-bank-catalogue",
+      "options": [
+        {
+          "enabled": true,
+          "id": "bochk"
+        },
+        {
+          "enabled": true,
+          "id": "hsbc"
+        },
+        {
+          "enabled": true,
+          "id": "za"
+        },
+        {
+          "enabled": true,
+          "id": "hang"
+        },
+        {
+          "enabled": true,
+          "id": "sc"
+        },
+        {
+          "enabled": true,
+          "id": "icbc-asia"
+        }
+      ]
+    },
+    {
+      "name": "picker-escape-close",
+      "page": {
+        "focus": "香港收款银行：中银香港，更换",
+        "open": false
+      }
+    },
+    {
+      "name": "final-default-layout",
+      "page": {
+        "images": [
+          {
+            "loaded": true,
+            "src": "assets/institutions/cib.png"
+          },
+          {
+            "loaded": true,
+            "src": "assets/institutions/hsbc.png"
+          },
+          {
+            "loaded": true,
+            "src": "assets/institutions/za.png"
+          },
+          {
+            "loaded": true,
+            "src": "assets/institutions/hsbc.png"
+          }
+        ],
+        "nodes": [
+          "01\n内地出发银行\n兴业 · 寰宇人生\n⌄\n人民币本金 · 含费用\n100,000.00 CNY修改\n汇出币种\n人民币原币\n美元\n港币\n汇出笔数\n1笔\n⌄\n汇款渠道\n普通汇款",
+          "02\n香港收款银行\n汇丰 HSBC One\n⌄\n汇款到账\n14,912.19 USD\n累计损耗 0.000%\n账户使用月数\n月\n银行管理费\n0.00 CNY\n本持有期满足豁免条件\n三个月平均理财总值 ≥ 10,000 HKD，或适用开户豁免 详情",
+          "03\n买美股的账户\nZA Bank\n⌄\n入金到账\n14,912.19 USD\n累计损耗 0.000%\n买卖设置\n买1笔 · 卖1笔\n买入均价 100 USD/股\n优惠与费用券\n设置优惠\nZA交易权益\nZA Perks · 标准\n⌄",
+          "04\n取回银行\n汇丰 HSBC One\n⌄\n出金到账\n14,907.90 USD\n累计损耗 0.029%\n卖出后的资金\n取回香港银行 · 保留美元\n⌄"
+        ],
+        "overflow": false,
+        "presets": [
+          "兴业寰宇人生 → 汇丰香港\n汇丰Trade25 → 汇丰香港美元\n参考损耗\n0.002%\n2.08 CNY / 10万元",
+          "✓ 兴业寰宇人生 → 汇丰香港\nZA → 汇丰香港美元\n参考损耗\n0.029%\n28.77 CNY / 10万元",
+          "中行 → 中银香港\nIBKR Pro · 留美元\n参考损耗\n0.093%\n92.61 CNY / 10万元"
+        ],
+        "summary": "参考总损耗\n0.029%\n28.77 CNY\n其中账户期间费\n0.00 CNY\n已计入合计\n按公布参考费计算的余额\n14,907.90 USD\n全程明细",
+        "viewport": {
+          "height": 1231,
+          "width": 1176
+        }
+      }
+    },
+    {
+      "name": "coupon-trade-detail-after-fix",
+      "text": "×\n美股买卖\n\n买入美股 · 1笔\n佣金 0.00＋平台 0.00＋清算／监管 0.45 USD · 券已抵扣 1.193 USD\n0.45 USD\n≈ 3.00 CNY\n卖出美股 · 1笔\n佣金 0.00＋平台 0.00＋清算／监管 0.76 USD · 券已抵扣 1.1929 USD\n0.76 USD\n≈ 5.08 CNY\n证券账户／托管费\n0.00 USD\n致富 · 2026年9月美股收费 ↗\nSEC · 自2026年4月4日每百万20.60美元 ↗\nSEC/FINRA · 2026年第四季度TAF暂停 ↗\nSEC/FINRA · TAF费率在2029、2030、2031年分阶段调整 ↗",
+      "duplicateCounts": {
+        "buy": 1,
+        "sell": 1
+      }
+    }
+  ],
+  "consoleErrors": []
+}

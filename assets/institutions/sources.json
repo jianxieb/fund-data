@@ -1,0 +1,96 @@
+{
+  "checkedAt": "2026-10-12",
+  "notes": "Official institution website assets; unmodified files used for identification.",
+  "assets": [
+    {
+      "file": "boc.png",
+      "asset": "https://www.boc.cn/images/boc2013_logo.png",
+      "source": "https://www.boc.cn/images/boc2013_common.css",
+      "bytes": 2949,
+      "contentType": "image/png"
+    },
+    {
+      "file": "cib.png",
+      "asset": "https://www.cib.com.cn/cn/resources2023/css/2023/images/new_logo.png",
+      "source": "https://www.cib.com.cn/cn/CibHeader-2023.js",
+      "bytes": 39326,
+      "contentType": "image/png"
+    },
+    {
+      "file": "icbc.png",
+      "asset": "https://v.icbc.com.cn/userfiles/Resources/ICBC/shouye/images/2017/logo.png",
+      "source": "https://v.icbc.com.cn/userfiles/Resources/ICBC/shouye/images/2017/comm.css",
+      "bytes": 5131,
+      "contentType": "image/png"
+    },
+    {
+      "file": "ccb.png",
+      "asset": "https://image4.ccb.com/cn/home/company/v3/images/img/20150828_1440745919/20151201084052927594.png",
+      "source": "https://www.ccb.com/cn/home/indexv3.html",
+      "bytes": 5900,
+      "contentType": "image/png"
+    },
+    {
+      "file": "comm.png",
+      "asset": "https://www.bankcomm.com/BankCommSite/shtml/jyjr/cn/images/logo_img_1004.png",
+      "source": "https://www.bankcomm.com/BankCommSite/shtml/jyjr/cn/css/common.css",
+      "bytes": 8248,
+      "contentType": "image/png"
+    },
+    {
+      "file": "hsbc.png",
+      "asset": "https://www.hsbc.com.hk/etc.clientlibs/dpws/clientlibs-public/clientlib-site/resources/favicons/apple-touch-icon.png",
+      "source": "https://www.hsbc.com.hk/",
+      "bytes": 1910,
+      "contentType": "image/png"
+    },
+    {
+      "file": "hang.svg",
+      "asset": "https://www.hangseng.com/content/dam/wpb/hase/images/rwd/hslogo/HaseLogo_Compact_30px.svg",
+      "source": "https://www.hangseng.com/en-hk/home/",
+      "bytes": 4863,
+      "contentType": "image/svg+xml"
+    },
+    {
+      "file": "sc.png",
+      "asset": "https://av.sc.com/hk/content/images/content/images/cropped-512x512-1-150x150.png",
+      "source": "https://www.sc.com/hk/",
+      "bytes": 5537,
+      "contentType": "image/png"
+    },
+    {
+      "file": "za.png",
+      "asset": "https://cdn.zaticdn.com/if/zaif-cps-seagull-service/20220106/share_logo_9918.png",
+      "source": "https://bank.za.group/",
+      "bytes": 10318,
+      "contentType": "image/png"
+    },
+    {
+      "file": "ibkr.png",
+      "asset": "https://www.interactivebrokers.com/images/web/favicons/home-screen-icon-192x192.png",
+      "source": "https://www.interactivebrokers.com/",
+      "bytes": 7662,
+      "contentType": "image/png"
+    },
+    {
+      "file": "chief.png",
+      "asset": "https://www.chiefgroup.com.hk/Content/images/logo/apple-touch-180.png",
+      "source": "https://www.chiefgroup.com.hk/",
+      "bytes": 9257,
+      "contentType": "image/png"
+    },
+    {
+      "file": "usmart.ico",
+      "asset": "https://hk.usmartglobal.com/hk/favicon/favicon.ico",
+      "source": "https://hk.usmartglobal.com/en/",
+      "bytes": 3709,
+      "contentType": "image/x-icon"
+    },
+    {
+      "file": "cmb.ico",
+      "asset": "https://www.cmbchina.com/cmb.ico",
+      "source": "https://www.cmbchina.com/",
+      "bytes": 17542
+    }
+  ]
+}

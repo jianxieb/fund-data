@@ -470,6 +470,19 @@
     return { amount, orders, expiry, scope, ready: !!config.useVoucher && !pending && !expired, pending, expired,
       message: pending ? '费用券待补充：' + missing.join('、') + '；暂按未抵扣计算。' : expired ? '费用券已过期，本次未抵扣。' : '' };
   }
+  // Coupon fractions are displayed to four decimals; execution cash is unchanged.
+  function displayedTradingFees(trading) {
+    const orders = trading?.overridden ? [] : trading?.orders || [];
+    const values = orders.map(order => order.discount * 10000);
+    const parts = values.map(value => Math.floor(value + 1e-8));
+    const total = Math.round(values.reduce((a, b) => a + b, 0));
+    const remainder = total - parts.reduce((a, b) => a + b, 0);
+    const priority = values.map((value, i) => ({ i, rest: value - parts[i] })).sort((a, b) => b.rest - a.rest || a.i - b.i);
+    for (let i = 0; i < remainder; i++) parts[priority[i].i]++;
+    return { orders: orders.map((order, i) => ({ kind: order.kind, feeUsd: order.feeUsd, netCommission: order.netCommission,
+      netPlatform: order.netPlatform, thirdParty: order.feeUsd - order.netCommission - order.netPlatform, discount: parts[i] / 10000 })),
+      discountUsd: total / 10000 };
+  }
   // Equal-size buy orders in the starting month and equal-size sell orders in
   // the final holding month are a fee benchmark, not a return simulation.
   // Buy-side charges fit inside available USD, including voucher allocation.
@@ -1646,6 +1659,21 @@
     return mainlandJourney({ ...config, pricingBasis: 'best-quote', currency: 'CNY', selectedOnly: true }, data, quotes);
   }
   let recommendationCache;
+  function calculatorPreferredPlans(data, quotes, date) {
+    // A small editorial set of useful real strategies, independent of every
+    // current calculator selection. Prices share a visible fixed benchmark.
+    const benchmark = { budgetCny: 100000, currency: 'CNY', count: 1, months: 12, date, sellDate: date,
+      fxMode: 'bank', returnCurrency: 'USD', profitUsd: 0, taxRate: 20, creditCny: 0,
+      buyOrders: 1, sellOrders: 1, sharePriceUsd: 100, withdrawalIndex: 1, chequeIndex: 1,
+      openingCny: 0, extraCapitalCny: 0, annualGapPct: 0, usedFreeTransfers: 0, usedPromoOrders: 0,
+      otherTurnoverHkd: 0, trade25: false, chiefMonthly: false, usmartPromo: false, useVoucher: false,
+      zaPerksLevel: 'standard', ibkrPricing: 'fixed', hsbcBalanceWaiver: true,
+      cnHsbcFeeWaived: true, cnHangFeeWaived: true, cnScFeeWaived: true };
+    return (data.preferredPlans || []).map(plan => {
+      const config = calculatorRoute({ ...benchmark, ...plan.config });
+      return { ...plan, config, calculated: calculatorJourney(config, data, quotes) };
+    });
+  }
   function calculatorRecommendations(config, data, quotes) {
     const cleared = [...bankQuoteKeys, 'usdCny', 'usdHkd', 'usdCnh', 'tradeFeeUsd', 'balanceHkd', 'returnBalanceHkd'];
     // The chosen stock account is fixed across these upstream comparisons.
@@ -1738,5 +1766,5 @@
     return result;
   }
   function catalogueBroker(id, data) { return data.calculator.brokers.includes(id) ? id : 'za'; }
-  return { calculatorRoute, calculatorChannels, calculatorFundingBank, calculatorDepositBank, calculatorIssue, calculatorJourney, calculatorRecommendations, calculatorAccountState, calculatorAdjustmentFields, roundedCosts, number, reference, telegramAllowance, fee, remitPrincipal, senderFeeRange, inwardFee, groupMobileWaived, outwardFee, zaPerksLevel, swiftFee, localUsdChequeFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
+  return { calculatorRoute, calculatorChannels, calculatorFundingBank, calculatorDepositBank, calculatorIssue, calculatorJourney, calculatorRecommendations, calculatorPreferredPlans, displayedTradingFees, calculatorAccountState, calculatorAdjustmentFields, roundedCosts, number, reference, telegramAllowance, fee, remitPrincipal, senderFeeRange, inwardFee, groupMobileWaived, outwardFee, zaPerksLevel, swiftFee, localUsdChequeFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
 }));
