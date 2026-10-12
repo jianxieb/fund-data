@@ -1709,7 +1709,9 @@
       if (cheaper.some(other => hongKongAccounts(other) > hongKongAccounts(r))) labels.push('少用香港账户');
       if (r.route === 'USD' && cheaper.some(other => other.route !== 'USD')) labels.push('少一次换汇');
       if (!r.start.required && cheaper.some(other => specialAccount(other) > specialAccount(r))) labels.push('普通出发账户');
-      if (cheaper.some(other => estimatedFees(other) > estimatedFees(r))) labels.push('银行费按官方价');
+      if (cheaper.some(other => estimatedFees(other) > estimatedFees(r))) {
+        labels.push(estimatedFees(r) === 0 ? '银行费按官方价' : '参考费项更少');
+      }
       return labels;
     };
     const result = { plans: plans.map(r => ({ id: 'best:' + signature(r), result: r, config: routeConfiguration(r), benefits: benefits(r) })), checked, complete };

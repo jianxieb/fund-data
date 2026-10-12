@@ -156,3 +156,20 @@ test('one sender can retain two genuinely different routes without a bank-name o
     close(applied.costCny, plan.result.costCny); close(applied.net, plan.result.net);
   }
 });
+
+test('fewer estimated fees must not label an IBKR route as having only official bank fees', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261012.json');
+  const profile = { ...input, date: '2026-10-12', broker: 'ibkr', hsbcBalanceWaiver: true,
+    cnHsbcFeeWaived: true, cnHangFeeWaived: true, cnScFeeWaived: true };
+  const plans = M.calculatorRecommendations(profile, D, quotes).plans;
+  const full = plans.find(plan => plan.config.startBank === 'icbc' && plan.config.mainlandMethod === 'full');
+  assert.ok(full);
+  assert.ok(full.result.rows.some(row => row.key === 'depositOther' && row.estimate));
+  assert.ok(plans.some(plan => plan.result.costCny < full.result.costCny &&
+    plan.result.rows.filter(row => row.estimate).length > full.result.rows.filter(row => row.estimate).length));
+  assert.ok(full.benefits.includes('参考费项更少'));
+  assert.ok(!full.benefits.includes('银行费按官方价'));
+  for (const plan of plans.filter(plan => plan.benefits.includes('银行费按官方价'))) {
+    assert.ok(!plan.result.rows.some(row => row.estimate));
+  }
+});
