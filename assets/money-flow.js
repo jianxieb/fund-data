@@ -272,7 +272,7 @@
   }
   function toolbar() {
     visiblePresets = candidatePresets();
-    return '<div class="flow-toolbar"><h2>优选方案</h2><div><span>不同汇路 · 买股账户 ' + esc(routeName(state.broker, 'broker')) + '</span>' + action('报价与依据', 'detail', 'data-value="quotes"', 'text-link') + action('重置', 'reset', '', 'text-link') + '</div></div>' +
+    return '<div class="flow-toolbar"><h2>优选方案</h2><div><span>损耗从低到高 · 买股账户 ' + esc(routeName(state.broker, 'broker')) + '</span>' + action('报价与依据', 'detail', 'data-value="quotes"', 'text-link') + action('重置', 'reset', '', 'text-link') + '</div></div>' +
       '<div class="flow-presets" aria-label="优选方案">' + visiblePresets.map(p => {
         const { calculated, rows, complete, total } = p, r = calculated.selected || calculated.partial;
         const missing = r?.missing || [calculated.error].filter(Boolean);

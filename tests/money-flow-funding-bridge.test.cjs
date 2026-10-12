@@ -94,15 +94,16 @@ test('invalid and unaffordable bridges preserve the first leg without inventing 
 });
 
 test('uSMART preferred routes gain the distinct Hang Seng path and applying every route reproduces its price without replacing the broker', () => {
-  const snapshot = structuredClone(input), recommendations = M.calculatorRecommendations(input, D, Q);
-  assert.deepEqual(input, snapshot);
-  assert.equal(recommendations.plans.length, 5);
-  assert.equal(new Set(recommendations.plans.map(plan => plan.result.start.id)).size, 5);
+  const qualified = { ...input, cnHangFeeWaived: true };
+  const snapshot = structuredClone(qualified), recommendations = M.calculatorRecommendations(qualified, D, Q);
+  assert.deepEqual(qualified, snapshot);
+  assert.equal(recommendations.plans.length, 4);
+  assert.equal(new Set(recommendations.plans.map(plan => plan.result.start.id)).size, 4);
   const hang = recommendations.plans.find(plan => plan.result.start.id === 'hang');
   assert.ok(hang); assert.equal(hang.result.bank.id, 'hang'); assert.equal(hang.result.fundingBank.id, 'bochk');
   for (const plan of recommendations.plans) {
     assert.equal(plan.result.broker.id, 'usmart'); assert.ok(plan.result.complete && plan.result.quotedCore);
-    const r = M.calculatorJourney({ ...input, ...plan.config, ...M.calculatorAccountState(input, plan.config, D) }, D, Q).selected;
+    const r = M.calculatorJourney({ ...qualified, ...plan.config, ...M.calculatorAccountState(qualified, plan.config, D) }, D, Q).selected;
     close(r.costCny, plan.result.costCny); reconcile(r);
   }
 });

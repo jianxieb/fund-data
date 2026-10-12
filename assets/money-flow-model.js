@@ -1598,7 +1598,14 @@
         }
       }
     }
-    const plans = [...bestBySource.values()].sort(compare).slice(0, 5);
+    const alternatives = [...bestBySource.values()];
+    const bankPeriodFee = r => r.rows.find(row => row.key === 'account').cny;
+    // Distinct banks alone do not make a good recommendation. An avoidable
+    // recurring bank fee must buy lower total cost or a simpler route. Keep
+    // all account pickers intact, and never assume a fee waiver to qualify.
+    const plans = alternatives.filter(r => !alternatives.some(other => other !== r &&
+      bankPeriodFee(other) < bankPeriodFee(r) - 1e-8 && other.costCny <= r.costCny + 1e-8 &&
+      complexity(other) <= complexity(r))).sort(compare).slice(0, 5);
     const result = { plans: plans.map(r => ({ id: 'best:' + signature(r), result: r, config: routeConfiguration(r) })), checked, complete };
     recommendationCache = { key: cacheKey, data, quotes, result };
     return result;

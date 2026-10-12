@@ -1805,11 +1805,11 @@ test('an intermediate HSBC account adds the bank fee control while the BOCHK pat
 test('uSMART preferred cards include the distinct Hang Seng route and show the additional personal bank rather than concealing it', () => {
   const quotes = require('./fixtures/money-flow-quotes-20261011.json');
   const input = { ...currentRoute, date: '2026-10-11', startBank: 'boc', bank: 'bochk', broker: 'usmart',
-    outcome: 'broker-balance', mainlandMethod: '', depositMethod: '', hsbcBalanceWaiver: false };
+    outcome: 'broker-balance', mainlandMethod: '', depositMethod: '', hsbcBalanceWaiver: false, cnHangFeeWaived: true };
   const ui = moneyUi(input, quotes, input.date), html = ui.render();
   assert.match(html, /恒生中国 → 恒生香港 → 本人中银香港 → 盈立/);
   const plans = M.calculatorRecommendations(input, D, quotes).plans;
-  assert.equal(plans.length, 5);
+  assert.equal(plans.length, 4);
   const hang = plans.find(plan => plan.result.start.id === 'hang');
   ui.act('preset', '', hang.id);
   assert.equal(ui.saved().bank, 'hang'); assert.equal(ui.saved().broker, 'usmart'); assert.equal(ui.saved().depositMethod, 'via-bochk');
@@ -2104,7 +2104,7 @@ test('return and full-journey evidence include the actual receiving bank rather 
 test('all nodes, action losses, balance summaries and quick plans are visible without step navigation', () => {
   const ui = moneyUi({ ...currentRoute, outcome: 'broker-balance', activeStep: '04' }, require('./fixtures/money-flow-quotes-20261011.json'), '2026-10-11'), html = ui.render();
   assert.equal((html.match(/data-flow-stage=/g) || []).length, 4);
-  assert.equal((html.match(/data-action="money-flow-preset"/g) || []).length, 5);
+  assert.equal((html.match(/data-action="money-flow-preset"/g) || []).length, 4);
   assert.equal((html.match(/class="flow-edge-loss"/g) || []).length, 3);
   for (const label of ['内地出发银行', '香港收款银行', '买美股的账户', '卖出后的资金', '人民币本金', '汇款到账', '入金到账', '全程损耗']) assert.ok(html.includes(label), label);
   assert.doesNotMatch(html, /自由组合|下一步|上一步|data-action="money-flow-step"|data-action="money-flow-presets"/);
@@ -2337,10 +2337,10 @@ test('a voucher expired before buying explains zero deduction without changing b
 test('presets preserve amounts, duration and eligibility; every selected bank remains editable', () => {
   const quotes = require('./fixtures/money-flow-quotes-20261011.json');
   const ui = moneyUi({ ...currentRoute, broker: 'za', budgetCny: 150000, count: 2, months: 6, startSell: '8', senderFeeCny: '99', trade25: false, hsbcBalanceWaiver: false }, quotes, '2026-10-11');
-  const html = ui.render(), cibCard = html.match(/<button[^>]*data-value="(best:cib:[^"]+)"/);
-  assert.match(html, /不同汇路 · 买股账户 ZA/); assert.ok(cibCard);
-  ui.act('preset', '', cibCard[1]); const state = ui.saved();
-  assert.equal(state.startBank, 'cib'); assert.equal(state.broker, 'za');
+  const html = ui.render(), icbcCard = html.match(/<button[^>]*data-value="(best:icbc:[^"]+)"/);
+  assert.match(html, /损耗从低到高 · 买股账户 ZA/); assert.ok(icbcCard);
+  ui.act('preset', '', icbcCard[1]); const state = ui.saved();
+  assert.equal(state.startBank, 'icbc'); assert.equal(state.broker, 'za');
   assert.equal(state.budgetCny, 150000); assert.equal(state.count, 2); assert.equal(state.months, 6);
   assert.equal(state.trade25, false); assert.equal(state.hsbcBalanceWaiver, false);
   assert.equal(state.startSell, ''); assert.equal(state.senderFeeCny, '');
@@ -2352,7 +2352,7 @@ test('presets preserve amounts, duration and eligibility; every selected bank re
 
 test('a non-USD IBKR preset names both its bank conversion and its funding instructions', () => {
   const quotes = require('./fixtures/money-flow-quotes-20261011.json');
-  const ui = moneyUi({ ...currentRoute, broker: 'ibkr', outcome: 'broker-balance', count: 1, months: 12 }, quotes, '2026-10-11');
+  const ui = moneyUi({ ...currentRoute, broker: 'ibkr', outcome: 'broker-balance', count: 1, months: 12, cnHangFeeWaived: true }, quotes, '2026-10-11');
   const card = [...ui.render().matchAll(/<button[^>]*data-action="money-flow-preset"[\s\S]*?<\/button>/g)]
     .map(match => match[0]).find(html => html.includes('best:hang:'));
   assert.ok(card);
@@ -2363,7 +2363,7 @@ test('every visible calculated plan reproduces its full price after selection an
   const initial = { ...currentRoute, budgetCny: 100000, count: 2, months: 12, outcome: 'broker-balance', trade25: true, hsbcBalanceWaiver: true };
   const quotes = require('./fixtures/money-flow-quotes-20261011.json'), ui = moneyUi(initial, quotes, '2026-10-11'), html = ui.render();
   const cards = [...html.matchAll(/<button[^>]*data-action="money-flow-preset"[\s\S]*?<\/button>/g)].map(m => m[0]);
-  assert.equal(cards.length, 5);
+  assert.equal(cards.length, 4);
   for (const card of cards) {
     const id = card.match(/data-value="([^\"]+)"/)[1];
     ui.act('preset', '', id);

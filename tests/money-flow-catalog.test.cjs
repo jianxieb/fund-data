@@ -583,8 +583,8 @@ test('recommendations compare distinct upstream routes while retaining the chose
   const input = { ...base, date: '2026-10-11', count: 1, hsbcBalanceWaiver: false, trade25: false, outcome: 'broker-balance' };
   const snapshot = structuredClone(input), recommendations = M.calculatorRecommendations(input, D, diversityQuotes);
   assert.deepEqual(input, snapshot);
-  assert.equal(recommendations.plans.length, 5);
-  assert.equal(new Set(recommendations.plans.map(p => p.config.startBank)).size, 5);
+  assert.equal(recommendations.plans.length, 3);
+  assert.deepEqual(new Set(recommendations.plans.map(p => p.config.startBank)), new Set(['boc', 'icbc', 'ccb']));
   assert.deepEqual(new Set(recommendations.plans.map(p => p.config.broker)), new Set(['za']));
   for (const [index, p] of recommendations.plans.entries()) {
     assert.equal(p.result.complete, true); assert.equal(p.result.quotedCore, true);
@@ -622,8 +622,8 @@ test('a current CCB full-amount quote contributes a distinct source route for ea
   for (const broker of D.calculator.brokers) {
     const input = { ...base, date: '2026-10-11', broker, count: 1, months: 12, hsbcBalanceWaiver: false, trade25: false };
     const plans = M.calculatorRecommendations(input, D, quotes).plans;
-    assert.equal(plans.length, 5);
-    assert.equal(new Set(plans.map(p => p.config.startBank)).size, 5);
+    assert.equal(plans.length, broker === 'hsbc' ? 4 : 3);
+    assert.equal(new Set(plans.map(p => p.config.startBank)).size, plans.length);
     const ccb = plans.find(p => p.config.startBank === 'ccb');
     assert.ok(ccb, broker);
     assert.equal(ccb.config.mainlandMethod, 'full');
@@ -735,8 +735,11 @@ test('upstream comparison retains real bank asset qualification without transfer
     }
     const below = M.calculatorRecommendations({ ...input, balanceHkd: 9999.99 }, D, diversityQuotes).plans;
     const cib = below.find(plan => plan.config.startBank === 'cib');
-    const charged = cib.result.rows.find(row => row.key === 'account').items.find(item => item.bankId === 'hsbc');
-    close(charged.cny, 100 * 12 * cib.result.refs.HKD);
+    assert.equal(!!cib, broker === 'hsbc');
+    const direct = M.calculatorJourney(M.calculatorRoute({ ...input, balanceHkd: 9999.99,
+      startBank: 'cib', bank: 'hsbc', route: 'USD', mainlandMethod: 'swift', depositMethod: '' }), D, diversityQuotes).selected;
+    const charged = direct.rows.find(row => row.key === 'account').items.find(item => item.bankId === 'hsbc');
+    close(charged.cny, 100 * 12 * direct.refs.HKD);
   }
   const returning = { ...base, date: '2026-10-11', broker: 'za', bank: 'bochk', returnBank: 'hsbc', months: 12,
     balanceHkd: 0, returnBalanceHkd: 10000, hsbcBalanceWaiver: false, outcome: 'usd-balance' };
@@ -750,15 +753,18 @@ test('upstream comparison retains real bank asset qualification without transfer
     const input = { ...returning, outcome: 'broker-balance', bank: 'hsbc', count: 1,
       bankBalancesHkd: { hsbc: 10000 }, balanceHkd };
     const cib = M.calculatorRecommendations(input, D, diversityQuotes).plans.find(plan => plan.config.startBank === 'cib');
-    const hsbc = cib.result.rows.find(row => row.key === 'account').items.find(item => item.bankId === 'hsbc');
-    close(hsbc.cny, 100 * 12 * cib.result.refs.HKD);
+    assert.equal(cib, undefined);
+    const direct = M.calculatorJourney(M.calculatorRoute({ ...input, startBank: 'cib', bank: 'hsbc', route: 'USD',
+      mainlandMethod: 'swift', depositMethod: '' }), D, diversityQuotes).selected;
+    const hsbc = direct.rows.find(row => row.key === 'account').items.find(item => item.bankId === 'hsbc');
+    close(hsbc.cny, 100 * 12 * direct.refs.HKD);
   }
 });
 
-test('each upstream recommendation matches an independent exhaustive comparison for the selected stock venue', () => {
+test('each upstream recommendation matches an independent exhaustive comparison with confirmed bank fee waivers', () => {
   const data = structuredClone(D);
   data.calculator.mainland = ['boc', 'cib', 'hsbc']; data.calculator.hkBanks = ['bochk', 'hsbc'];
-  const input = { ...base, count: 2, trade25: true, hsbcBalanceWaiver: true, outcome: 'broker-balance' }, minimum = new Map();
+  const input = { ...base, count: 2, trade25: true, hsbcBalanceWaiver: true, cnHsbcFeeWaived: true, outcome: 'broker-balance' }, minimum = new Map();
   const broker = input.broker;
   for (const startBank of data.calculator.mainland) for (const bank of data.calculator.hkBanks)
     for (const route of ['USD', 'HKD', 'CNH']) for (const mainlandMethod of ['swift', 'boc-mobile', 'linked', 'cib-go', 'full'])
