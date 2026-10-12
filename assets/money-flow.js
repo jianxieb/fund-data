@@ -25,8 +25,12 @@
   // A published service tariff is not evidence that this receiving account
   // can use it. Repair old hypothetical Go selections without changing accounts,
   // capital, transfer count, FX quotes or unrelated broker/return fees.
-  const repairStoredGo = state.mainlandMethod === 'cib-go' && !availableChannels(state).mainlandMethods.includes('cib-go');
-  if (repairStoredGo) {
+  // Payment Connect was a legacy tariff scenario, not a stock-funding channel.
+  // Its retired saved state must not calculate a direct payment behind an
+  // ordinary-wire label. Preserve accounts, FX prices and unrelated fees.
+  const repairStoredEntry = state.mainlandMethod === 'payment-connect' ||
+    state.mainlandMethod === 'cib-go' && !availableChannels(state).mainlandMethods.includes('cib-go');
+  if (repairStoredEntry) {
     state.mainlandMethod = 'swift'; state.senderFeeCny = ''; state.entryMiddleCny = ''; state.entryInwardHkd = '';
   }
   if (state.route !== 'USD' && state.broker !== 'ibkr') state.fxMode = 'bank';
@@ -52,7 +56,7 @@
   const esc = value => H.esc(value), num = (value, digits = 2) => Number.isFinite(Number(value)) && value != null ? H.money(Number(value), digits) : '—';
   const action = (label, act, extra = '', cls = 'btn') => H.action(label, 'money-flow-' + act, cls, extra);
   const save = () => { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (_) {} };
-  if (repairStoredGo) save();
+  if (repairStoredEntry) save();
   const pct = value => {
     const percent = value * 100, magnitude = Math.abs(percent);
     const digits = magnitude > 0 && magnitude < .0005 ? Math.ceil(-Math.log10(magnitude)) + 2 : 3;

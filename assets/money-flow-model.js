@@ -712,7 +712,7 @@
       ...(config.route !== 'USD' ? ['entryPrice'] : []),
       ...(mainland && config.returnCurrency === 'HKD' ? ['returnHkdPrice'] : []),
       ...(mainland || config.outcome === 'cnh-card' ? ['exitPrice'] : []),
-      'senderFeeCny', 'entryMiddleCny', 'entryInwardHkd',
+      'senderFeeCny', ...(config.mainlandMethod !== 'payment-connect' ? ['entryMiddleCny'] : []), 'entryInwardHkd',
       ...(!internal ? ['depositHkd', 'depositOtherCny'] : []),
       'tradeFeeUsd', ...(!keep ? ['inwardHkd'] : []),
       ...(!keep && broker.withdrawalMethod === 'wire' && !broker.integratedBank ? ['intermediaryCny'] : []),
@@ -991,6 +991,9 @@
           ...(includedEntryInward && own('entryInwardHkd', isSelectedBank) == null ? fullAmountEvidence : {}),
           status: knownInward == null ? '须先确定外币到账额及适用汇入资费' : '' });
         rows.push({ key: 'account', label: '银行账户期间管理费', cny: accountCny, step: 'spend', items: accountItems });
+        rows.push({ key: 'extra', label: '开户及资产机会成本', cny: extraCny, step: 'spend',
+          items: [{ label: '开户／赴港支出', cny: number(config.openingCny) ?? 0 },
+            { label: '另留资产机会成本', cny: extraCny - (number(config.openingCny) ?? 0) }] });
         return { error, errorStage: '01', missingQuote: currency, rows, steps, route, mainlandMethod, fxMode,
           refs, budgetCny: budget, pricingBasis: config.pricingBasis, sourceRemainderCny, start, bank, returning, exit, broker: provider, quoteFreshness: { source: false } };
       }

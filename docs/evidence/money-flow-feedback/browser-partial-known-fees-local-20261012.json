@@ -1,0 +1,119 @@
+{
+  "checkedAt": "2026-10-12T06:18:28.411Z",
+  "url": "http://127.0.0.1:8780/?review=refreshed-quotes-20261012#money-flow",
+  "scope": "local UI only; retired Payment Connect migration is automated evidence",
+  "checks": [
+    {
+      "label": "source-quote-missing-before-opening",
+      "evidence": {
+        "fields": [],
+        "focus": "内地出发银行：渣打中国，更换",
+        "regions": [
+          "01\n内地出发银行\n渣打中国\n更换 ↗\n汇出笔数\n1笔\n⌄\n150 CNY/月 × 12个月 · 1,800.00 CNY\n渣打中国 · 优先理财本持有期均免月费\n人民币本金 · 含费用\n100,000.00 CNY\n修改\n↓\n内地购美元 → 汇往香港\n依据\n已核费用 · 历史报价\n0.00 CNY\n汇出币种\n美元\n港币\n人民币原币\n汇款渠道\n优先理财 · 网上外币汇款（SHA）\n汇出手续费\n0.00 CNY\n汇出电讯费\n0.00 CNY\n内地购汇差额\n渣打中国的USD现汇卖出价尚未取得；到账金额暂不可算。\n内地→香港中转行费\n此汇路代理／收款行收费未公开\n香港首次汇入费\n须先确定外币到账额及适用汇入资费\n02\n香港收款银行\n中银香港\n更换 ↗\n账户使用 12个月 · 银行管理费 0.00 CNY\nZA银行权益\nZA Perks · 标准\n⌄\n汇款到账\n— USD\n↓\n转入买股账户\n依据\n损耗\n—\n入金方式\n本地美元转账 → 本人众安 ZA Bank账户\n03\n买美股的账户\nZA Bank\n更换 ↗\n买1笔 / 卖1笔 · 股价 100 USD\n优惠与费用券\n入金到账\n— USD\n↓\n买入美股 → 卖出\n依据\n损耗\n—\n盈亏 0.00 USD\n04\n卖出后的资金\n留在买股账户\n⌄\nZA Bank\n资金留在账户\n最终余额暂不可算\n— USD\n期间及固定费用\n渣打中国 · 优先理财期间管理费\n150 CNY/月 × 12个月\n1,800.00 CNY"
+        ],
+        "summary": "已核费用占本金\n1.800%\n1,800.00 CNY\n第01步尚未完成\n其中账户期间费\n1,800.00 CNY\n已计入合计\n最终余额暂不可算\n—\n全程明细",
+        "version": [
+          "data/money-flow.js?v=727ce83ae272",
+          "data/money-flow-quotes.js?v=d28668eab34c",
+          "assets/money-flow-model.js?v=496782ea0910",
+          "assets/money-flow.js?v=c1e59b727718"
+        ]
+      }
+    },
+    {
+      "label": "source-quote-missing-with-opening",
+      "evidence": {
+        "fields": [
+          {
+            "key": "startSell",
+            "label": "渣打中国每1USD购入价",
+            "value": ""
+          },
+          {
+            "key": "senderFeeCny",
+            "label": "每笔汇出手续费＋电讯费",
+            "value": ""
+          },
+          {
+            "key": "entryMiddleCny",
+            "label": "每笔跨境代理费",
+            "value": ""
+          },
+          {
+            "key": "entryInwardHkd",
+            "label": "每笔香港汇入费",
+            "value": ""
+          },
+          {
+            "key": "depositHkd",
+            "label": "股票入金转账费",
+            "value": ""
+          },
+          {
+            "key": "depositOtherCny",
+            "label": "股票入金收款行／代理费",
+            "value": ""
+          },
+          {
+            "key": "tradeFeeUsd",
+            "label": "本次买卖实际交易费",
+            "value": ""
+          },
+          {
+            "key": "monthlyHkd",
+            "label": "收款银行月费",
+            "value": ""
+          },
+          {
+            "key": "openingCny",
+            "label": "开户实际支出",
+            "value": "123"
+          }
+        ],
+        "focus": "开户实际支出",
+        "modal": "×\n实际成交报价与费用\n\n仅填写已取得的个人报价或回单。更换对应银行、渠道或币种后，该段覆盖值自动清除。\n\n渣打中国每1USD购入价\nCNY\n每笔汇出手续费＋电讯费\nCNY\n每笔跨境代理费\nCNY\n每笔香港汇入费\nHKD\n股票入金转账费\nHKD\n股票入金收款行／代理费\nCNY\n本次买卖实际交易费\nUSD\n收款银行月费\nHKD\n开户实际支出\nCNY\n\n恢复公开报价",
+        "regions": [
+          "01\n内地出发银行\n渣打中国\n更换 ↗\n汇出笔数\n1笔\n⌄\n150 CNY/月 × 12个月 · 1,800.00 CNY\n渣打中国 · 优先理财本持有期均免月费\n人民币本金 · 含费用\n100,000.00 CNY\n修改\n↓\n内地购美元 → 汇往香港\n依据\n已核费用 · 历史报价\n0.00 CNY\n汇出币种\n美元\n港币\n人民币原币\n汇款渠道\n优先理财 · 网上外币汇款（SHA）\n汇出手续费\n0.00 CNY\n汇出电讯费\n0.00 CNY\n内地购汇差额\n渣打中国的USD现汇卖出价尚未取得；到账金额暂不可算。\n内地→香港中转行费\n此汇路代理／收款行收费未公开\n香港首次汇入费\n须先确定外币到账额及适用汇入资费\n02\n香港收款银行\n中银香港\n更换 ↗\n账户使用 12个月 · 银行管理费 0.00 CNY\nZA银行权益\nZA Perks · 标准\n⌄\n汇款到账\n— USD\n↓\n转入买股账户\n依据\n损耗\n—\n入金方式\n本地美元转账 → 本人众安 ZA Bank账户\n03\n买美股的账户\nZA Bank\n更换 ↗\n买1笔 / 卖1笔 · 股价 100 USD\n优惠与费用券\n入金到账\n— USD\n↓\n买入美股 → 卖出\n依据\n损耗\n—\n盈亏 0.00 USD\n04\n卖出后的资金\n留在买股账户\n⌄\nZA Bank\n资金留在账户\n最终余额暂不可算\n— USD\n期间及固定费用\n渣打中国 · 优先理财期间管理费\n150 CNY/月 × 12个月\n1,800.00 CNY\n开户／赴港支出\n123.00 CNY"
+        ],
+        "summary": "已核费用占本金\n1.923%\n1,923.00 CNY\n第01步尚未完成\n其中账户期间费\n1,800.00 CNY\n已计入合计\n最终余额暂不可算\n—\n全程明细",
+        "version": [
+          "data/money-flow.js?v=727ce83ae272",
+          "data/money-flow-quotes.js?v=d28668eab34c",
+          "assets/money-flow-model.js?v=496782ea0910",
+          "assets/money-flow.js?v=c1e59b727718"
+        ]
+      }
+    },
+    {
+      "label": "source-quote-missing-ledger",
+      "modal": "×\n全程费用明细\n\n汇出手续费\n0.00 CNY\n汇出电讯费\n0.00 CNY\n内地购汇差额\n渣打中国的USD现汇卖出价尚未取得；到账金额暂不可算。\n内地→香港中转行费\n此汇路代理／收款行收费未公开\n香港首次汇入费\n须先确定外币到账额及适用汇入资费\n中银香港期间管理费\n0.00 HKD/月 × 12个月\n0.00 CNY\n众安 ZA Bank期间管理费\n0.00 HKD/月 × 12个月\n0.00 CNY\n渣打中国 · 优先理财期间管理费\n150 CNY/月 × 12个月\n1,800.00 CNY\n开户／赴港支出\n123.00 CNY\n另留资产机会成本\n0.00 CNY\n渣打中国 · 2026 Version 2个人银行收费标准 ↗\n渣打中国 · 2026年个人银行收费优惠政策 ↗\n渣打中国 · 客户外汇报价渠道 ↗\n中银香港 · 汇款收费 ↗\n众安银行 · 2026年6月转账收费更新 ↗\nZA官方 · 免费本地美元转账与直连银行名单 ↗\nZA Bank · 个人银行服务收费简介（本地与海外SWIFT） ↗\nZA Perks · 11月1日起海外SWIFT费用豁免 ↗\nZA Bank · 账户直接交易与Lv2每月5笔优惠 ↗\nZA Bank · 零佣金、平台费与代收费 ↗\nZA Bank · 普通美股交易每股为单位、不提供碎股 ↗\nZA Bank · 自2025年6月豁免托管费 ↗\nSEC · 自2026年4月4日每百万20.60美元 ↗\nSEC/FINRA · 2026年第四季度TAF暂停 ↗\nSEC/FINRA · TAF费率在2029、2030、2031年分阶段调整 ↗\n中银香港 · 个人账户及扣账卡收费 ↗\n众安银行 · 在港开户与免账户管理费 ↗\nZA Perks · 等级资格与银行权益 ↗\n渣打中国 · 优先理财资格 ↗\n税务总局 · 居民境外所得个人所得税 ↗"
+    },
+    {
+      "label": "default-restored",
+      "evidence": {
+        "fields": [],
+        "focus": "重置",
+        "regions": [
+          "01\n内地出发银行\n中国银行\n更换 ↗\n汇出笔数\n1笔\n⌄\n人民币本金 · 含费用\n100,000.00 CNY\n修改\n↓\n内地购美元 → 汇往香港\n依据\n参考损耗\n0.077%\n77.11 CNY\n汇出币种\n美元\n港币\n人民币原币\n汇款渠道\n手机银行 · 向同名境外中行汇款\n⌄\n汇出手续费\n手机银行双免\n0.00 CNY\n汇出电讯费\n手机银行双免\n0.00 CNY\n内地购汇差额\n1 USD = 6.7111 CNY\n77.11 CNY\n内地→香港中转行费\nUSD/HKD同行SHA路径 · 2026公开操作记录\n估算 0.00 CNY\n香港首次汇入费\n0.00 HKD\n02\n香港收款银行\n中银香港\n更换 ↗\n账户使用 12个月 · 银行管理费 0.00 CNY\nZA银行权益\nZA Perks · 标准\n⌄\n汇款到账\n14,900.69 USD\n累计损耗 0.077%\n↓\n转入买股账户\n依据\n损耗\n0.000%\n0.00 CNY\n入金方式\n本地美元转账 → 本人众安 ZA Bank账户\n中银香港 → 众安 ZA Bank · CHATS\n0.00 HKD\n众安 ZA Bank · 本地USD收款\n0.00 CNY\nZA Bank · 美股交易入金费\n0.00 CNY\n03\n买美股的账户\nZA Bank\n更换 ↗\n买1笔 / 卖1笔 · 股价 100 USD\n优惠与费用券\n入金到账\n14,900.69 USD\n累计损耗 0.077%\n↓\n买入美股 → 卖出\n依据\n损耗\n0.029%\n28.97 CNY\n盈亏 0.00 USD\n买入美股 · 1笔\n148股 · 未买入余款 98.70 USD · 佣金 0.00＋平台 1.99＋清算／监管 0.00 USD\n1.99 USD\n≈ 13.34 CNY\n卖出美股 · 1笔\n148股 · 佣金 0.00＋平台 1.99＋清算／监管 0.34 USD\n2.33 USD\n≈ 15.62 CNY\n证券账户／托管费\n0.00 USD\n04\n卖出后的资金\n留在买股账户\n⌄\nZA Bank\n美元留在账户\n按公布参考费计算的余额\n14,896.37 USD\n累计损耗 0.106%"
+        ],
+        "summary": "参考总损耗\n0.106%\n106.08 CNY\n其中账户期间费\n0.00 CNY\n已计入合计\n按公布参考费计算的余额\n14,896.37 USD\n全程明细",
+        "version": [
+          "data/money-flow.js?v=727ce83ae272",
+          "data/money-flow-quotes.js?v=d28668eab34c",
+          "assets/money-flow-model.js?v=496782ea0910",
+          "assets/money-flow.js?v=c1e59b727718"
+        ]
+      }
+    }
+  ],
+  "console": [],
+  "validation": {
+    "checkedStates": 4,
+    "knownCostBeforeCny": 1800,
+    "knownCostAfterCny": 1923,
+    "openingCostCny": 123,
+    "noFabricatedFxBalance": true,
+    "defaultRestored": true,
+    "retiredChannelMigration": "automated regression only"
+  }
+}

@@ -72,3 +72,31 @@ test('real FX and asset qualification inputs still reject invalid numbers and ch
   near(fee(charged, 'account').cny, 1200 * charged.refs.HKD);
   near(fee(qualified, 'account').cny, 0);
 });
+
+test('direct Payment Connect has no editable SWIFT intermediary charge and stale charge inputs cannot break it', () => {
+  const config = M.calculatorRoute({ ...base, route: 'CNH', fxMode: 'bank', mainlandMethod: 'payment-connect' });
+  assert.ok(!M.calculatorAdjustmentFields(config, D).includes('entryMiddleCny'));
+  const before = M.calculatorJourney(config, D, Q).selected;
+  for (const value of ['invalid', -1, 137]) {
+    const after = M.calculatorJourney({ ...config, entryMiddleCny: value }, D, Q).selected;
+    assert.ok(after); near(fee(after, 'entryMiddle').cny, 0);
+    near(after.net, before.net); near(after.costCny, before.costCny);
+  }
+});
+
+test('an unavailable source FX quote retains known opening and asset costs separately from bank charges', () => {
+  for (const route of ['USD', 'HKD']) {
+    const config = M.calculatorRoute({ ...base, startBank: 'sc', bank: 'hsbc', broker: 'hsbc', route,
+      months: 12, openingCny: 123, extraCapitalCny: 50000, annualGapPct: 2, hsbcBalanceWaiver: false });
+    const r = M.calculatorJourney(config, D, Q).partial;
+    assert.ok(r); assert.equal(r.errorStage, '01'); assert.match(r.error, /现汇卖出价/);
+    near(fee(r, 'extra').cny, 1123); near(fee(r, 'extra').items[0].cny, 123);
+    near(fee(r, 'extra').items[1].cny, 1000);
+    near(fee(r, 'account').items.find(item => item.bankId === 'hsbc').cny, 1200 * r.refs.HKD);
+    near(fee(r, 'account').items.find(item => item.region === 'mainland' && item.bankId === 'sc').cny, 1800);
+    assert.equal(r.steps.hongKong, undefined); assert.equal(r.steps.fundedUsd, undefined);
+    const withOtherOpening = M.calculatorJourney({ ...config, openingCny: 321 }, D, Q).partial;
+    near(fee(withOtherOpening, 'extra').cny, 1321);
+    near(fee(withOtherOpening, 'account').cny, fee(r, 'account').cny);
+  }
+});

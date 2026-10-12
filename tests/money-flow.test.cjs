@@ -1353,6 +1353,26 @@ test('an actual receipt does not mark a differently priced public recommendation
   close(restored.costCny, before.costCny); close(restored.net, before.net);
 });
 
+test('retired direct-payment settings repair their channel and known opening costs survive missing source quotes', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  const payment = moneyUi({ ...currentRoute, startBank: 'boc', bank: 'bochk', returnBank: 'bochk', route: 'CNH',
+    fxMode: 'bank', mainlandMethod: 'payment-connect', outcome: 'broker-balance', senderFeeCny: '0',
+    entryMiddleCny: '137', entryInwardHkd: '0', depositHkd: '3', startSell: '6.6', entryPrice: '6.7' }, quotes, '2026-10-12');
+  payment.render(); payment.act('detail', '', 'adjustments');
+  assert.equal(payment.saved().mainlandMethod, 'swift');
+  for (const key of ['senderFeeCny', 'entryMiddleCny', 'entryInwardHkd']) assert.equal(payment.saved()[key], '');
+  assert.equal(payment.saved().bank, 'bochk'); assert.equal(payment.saved().broker, 'za');
+  assert.equal(payment.saved().entryPrice, '6.7'); assert.equal(payment.saved().startSell, '6.6'); assert.equal(payment.saved().depositHkd, '3');
+  assert.match(payment.modal(), /data-money-field="entryMiddleCny"/);
+  assert.match(payment.modal(), /data-money-field="senderFeeCny"/);
+  const missing = moneyUi({ ...currentRoute, startBank: 'sc', bank: 'bochk', returnBank: 'bochk', broker: 'za',
+    route: 'USD', outcome: 'broker-balance', openingCny: '123' }, quotes, '2026-10-12');
+  const html = missing.render(); assert.match(html, /渣打中国的USD现汇卖出价尚未取得/);
+  assert.match(html, /1923\.00 CNY/); assert.match(html, /1\.923%/);
+  missing.act('detail', '', 'ledger'); assert.match(missing.modal(), /开户／赴港支出/); assert.match(missing.modal(), /123\.00 CNY/);
+  assert.doesNotMatch(missing.modal(), /＝ .* CNY/);
+});
+
 test('cash-account AutoFX preserves original deposited cash and charges conversion at purchase', () => {
   const quotes = require('./fixtures/money-flow-quotes-20261011.json');
   for (const route of ['HKD', 'CNH']) for (const pricingBasis of ['best-quote', undefined]) for (const profitUsd of [0, 500, -500]) {
