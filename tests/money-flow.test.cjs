@@ -808,7 +808,7 @@ test('SC local USD cheque deposits use the daily free allowance and not foreign-
   for (const index of [0, -1, 1.5, NaN]) assert.equal(M.localUsdChequeFee(hk('sc'), index), null);
   assert.equal(M.localUsdChequeFee(hk('sc'), 1, '2026-09-30'), null);
   assert.equal(M.localUsdChequeFee(hk('za')), null);
-  for (const id of ['bochk', 'hsbc', 'hang']) close(M.localUsdChequeFee(hk(id), 200), 0);
+  for (const id of ['hsbc', 'hang']) close(M.localUsdChequeFee(hk(id), 200), 0);
 });
 
 test('every displayed leg conserves value, tax and reference effects; coefficients compare equal units', () => {
@@ -2720,7 +2720,7 @@ test('incompatible card choices remain editable and never lock unrelated bank se
   assert.match(ui.render(), /参考总损耗/);
 });
 
-test('uSMART local USD cheques are free; digital-bank withdrawal uses its separate fee and minimum', () => {
+test('uSMART local USD cheques and digital-bank withdrawals retain their separate charges and minimum', () => {
   const config = { ...currentRoute, startBank: 'boc', bank: 'bochk', broker: 'usmart', route: 'USD', mainlandMethod: 'boc-mobile',
     depositMethod: 'internal', outcome: 'usd-balance', returnBank: 'bochk', inwardHkd: '', intermediaryCny: '', months: 0 };
   for (const returnBank of ['bochk', 'hsbc', 'hang', 'sc']) {
@@ -2891,7 +2891,7 @@ test('Chief and uSMART reconcile SC cheque deposits identically and keep bank-sp
     assert.match(invalid.error, /当日存票序号/);
     assert.equal(invalid.partial.errorAction, 'withdraw');
     assert.ok(invalid.partial.steps.proceedsUsd > 0);
-    const unused = run({ returnBank: 'bochk', chequeIndex: 'invalid', withdrawalIndex: 0 }).selected;
+    const unused = run({ returnBank: 'hsbc', hsbcBalanceWaiver: true, chequeIndex: 'invalid', withdrawalIndex: 0 }).selected;
     assert.ok(unused.complete, unused.missing.join(', '));
     close(unused.rows.find(row => row.key === 'returnInward').cny, 0);
   }
@@ -2921,11 +2921,50 @@ test('cheque qualification is visible beside its fee and unused withdrawal contr
   assert.match(invalid.modal(), /aria-invalid="true"/);
   assert.match(invalid.modal(), /当日存票序号须为正整数/);
   ui.act('choose', 'returnBank', 'bochk'); ui.render(); ui.act('detail', '', 'profit-settings');
+  assert.match(ui.modal(), /存票当日第几张支票/);
+  assert.doesNotMatch(ui.modal(), /已预填多支票存款表|本月第几次出金/);
+  ui.act('choose', 'returnBank', 'hsbc'); ui.render(); ui.act('detail', '', 'profit-settings');
   assert.doesNotMatch(ui.modal(), /存票当日第几张支票|已预填多支票存款表|本月第几次出金/);
   ui.act('choose', 'broker', 'ibkr'); html = ui.render(); ui.act('detail', '', 'profit-settings');
   assert.match(html, /本月第1次出金/);
   assert.match(ui.modal(), /本月第几次出金/);
   assert.doesNotMatch(ui.modal(), /存票当日第几张支票/);
+});
+
+test('BOCHK daily cheque allowance survives stock account switches and restores the correct native fee', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
+  for (const broker of ['chief', 'usmart']) for (const chequeIndex of [30, 31]) {
+    const input = { ...chequeRoute, broker, returnBank: 'bochk', chequeIndex };
+    const ui = moneyUi(input, quotes, '2026-10-12');
+    let html = ui.render();
+    assert.match(html, new RegExp('存票当日第' + chequeIndex + '张'));
+    assert.match(html, new RegExp('当日第' + chequeIndex + '张；每日前30张免费，其后1 HKD'));
+    ui.act('detail', '', 'profit-settings');
+    assert.match(ui.modal(), /存票当日第几张支票/);
+    assert.match(ui.modal(), new RegExp((chequeIndex <= 30 ? '0' : '1') + '\\.00 HKD'));
+    assert.doesNotMatch(ui.modal(), /已预填多支票存款表|本月第几次出金/);
+    assert.ok(evidenceLinks(ui, 'edge-withdraw').has(D.sources.bochkChequeTariff.url));
+    ui.act('pick', '', 'returnBank');
+    const bankOption = ui.modal().match(/data-field="returnBank" data-value="bochk"[^>]*>(.*?)<\/button>/s)?.[1];
+    assert.ok(bankOption);
+    assert.match(bankOption, new RegExp('本地USD存票 · 当日第' + chequeIndex + '张：' + (chequeIndex <= 30 ? '0' : '1') + '\\.00 HKD'));
+    assert.doesNotMatch(bankOption, /本地美元转账0|中行同名汇入0/);
+    const scOption = ui.modal().match(/data-field="returnBank" data-value="sc"[^>]*>(.*?)<\/button>/s)?.[1];
+    assert.match(scOption, new RegExp((chequeIndex <= 30 ? '0' : '2') + '\\.00 HKD'));
+    const zaOption = ui.modal().match(/data-field="returnBank" data-value="za"[^>]*>(.*?)<\/button>/s)?.[1];
+    if (broker === 'chief') assert.match(zaOption, /不接受支票/);
+    assert.doesNotMatch(ui.modal(), /disabled/);
+    ui.act('choose', 'broker', broker === 'chief' ? 'usmart' : 'chief');
+    html = ui.render();
+    assert.match(html, new RegExp('存票当日第' + chequeIndex + '张'));
+    assert.equal(ui.saved().returnBank, 'bochk');
+    const restored = moneyUi(ui.saved(), quotes, '2026-10-12');
+    assert.equal(restored.render(), html);
+    restored.act('choose', 'returnBank', 'hsbc'); restored.render(); restored.act('detail', '', 'profit-settings');
+    assert.doesNotMatch(restored.modal(), /存票当日第几张支票/);
+    restored.act('choose', 'returnBank', 'bochk'); html = restored.render();
+    assert.match(html, new RegExp('存票当日第' + chequeIndex + '张'));
+  }
 });
 
 test('inactive or other-broker offer inputs never change the selected account fees', () => {

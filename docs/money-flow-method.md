@@ -93,7 +93,7 @@ ZA卡不适用USD原币扣账，其他消费账户可重新选择。香港银行
 
 中银快汇和网上SWIFT到内地同名中行的基本汇出费均为0；SWIFT须按官网要求以BKCH开头的11位BIC或CNAPS指定收款行。汇至其他银行的普通SWIFT保留65 HKD标准价，代理费用均另列。普通电汇从外部券商汇入中银香港超过500 HKD等值时基本汇入费60 HKD；不能套到本地美元支票或个人CHATS。
 
-[盈立本地美元出金规则](https://hk.usmartglobal.com/zh-hk/help-centre/42/detail/12115)：传统香港银行按支票存款，费用0、没有旧500 HKD起点；数字银行须超过20 USD，银行费公布为“约7.5 USD”。后者在费用行、本段及总额都标参考费用，不能写成固定保证价。致富本地美元支票存入汇丰、中银香港、恒生香港按各银行本地支票规则为0；[恒生2026年7月收费表B.5](https://www.hangseng.com/content/dam/hase/config/bde/pws/personal/servicecharges/pdfs/zh_HK/tariff_personal_sc.pdf)明确本地美元交换票存入美电账户免费。不能把海外支票托收价套到香港本地支票；渣打按一般存票收费及官方美元存款设施结合核算：每日首30张免费，之后每张2 HKD；预填多支票表为1 HKD，详见下文补核。
+[盈立本地美元出金规则](https://hk.usmartglobal.com/zh-hk/help-centre/42/detail/12115)：券商不收本地美元支票出金费，没有旧500 HKD起点；收票银行另按其每日张数收费。数字银行须超过20 USD，银行费公布为“约7.5 USD”。后者在费用行、本段及总额都标参考费用，不能写成固定保证价。汇丰One与恒生优进本地美元存票免费；中银香港每日前30张免费，其后每張1 HKD。[恒生2026年7月收费表B.5](https://www.hangseng.com/content/dam/hase/config/bde/pws/personal/servicecharges/pdfs/zh_HK/tariff_personal_sc.pdf)明确本地美元交换票存入美电账户免费。不能把海外支票托收价套到香港本地支票；渣打每日首30张免费，之后每张2 HKD；预填多支票表为1 HKD，详见下文补核。
 
 [HSBC One官方FAQ](https://www.hsbc.com.hk/content/dam/hsbc/hk/vam/pdf/HSBC_One_FAQ.pdf)第3–6页规定全面理财总值包含本地和海外证券市值。非香港身份证客户于2026-01-01起新开或转换至One，先评估开户／转户后的三个完整历月；示例2026-01-15开户评估2–4月，未达1万港元平均总值时，随后每月第4个工作日扣100 HKD。旧账户、香港身份证及其他豁免按实际资格选择。不能仅凭本次本金大于1万港元就自动认定整个持有期免费，也不能把证券市值排除后算贵。
 
@@ -489,3 +489,12 @@ IBKR[公开入金工具](https://www.interactivebrokers.com/en/support/fund-my-a
 同一[条款PDF](https://av.sc.com/hk/zh/content/docs/hk-fx-membership-mgm-tnc-zh.pdf)实际下载已是两页10月版，搜索缓存的旧四页条款不能当现行原件。逐页渲染核对会员优惠截至2026-12-31、迎新在10–12月、100 HKD奖励最迟2027-02-28发放；折扣不是完整价格，未来奖励不是当前可转账余额，没有自动套用或加入费用合计。
 
 [ZA商用外汇比价](https://bank.za.group/business/fx)属于商用网银，不能替代个人App报价。四个官方原件哈希、适用范围和本次决定保存在[核查记录](../tests/fixtures/money-flow-private-fx-scope-20261012.json)，[真实本地详情](evidence/money-flow-feedback/browser-sc-hk-fx-source-20261012.json)保存来源链接与费用显示。没有由此认定私人买卖价已取得或A01研究完成。
+
+
+### 中银香港本地USD存票每日额度（2026-10-12补核）
+
+[当前官网一般收费表](https://www.bochk.com/tc/servicecharge.common.html)及其[2026年7月版PDF](https://www.bochk.com/dam/document/TnC/DEP/servicecharge_tc.pdf)物理第10页／印刷第7页、第16节，明确每日前30张支票免，超出部分每张1 HKD。原页已渲染、实际查看，[哈希及适用记录](../tests/fixtures/money-flow-bochk-cheque-20261012.json)保存。PDF首页11月16日证券收费公告不影响这条现行存票规则；只记录价目表版本月，没有虚构该项收费的具体生效日。
+
+一次券商出金对应本次一张支票，以其当日序号计算，不把当天此前所有支票的费用再次从本次余额扣除。致富和盈立在中银香港均使用此规则，1 HKD按HKD参考价折人民币，再从USD余额扣等值金额；不误扣1 USD，也不另加普通SWIFT汇入费或光票托收费。渣打的预填表折扣不适用中银香港。
+
+取回银行选择列表的支票场景现显示本次存票费及当日序号，不能再拿通用本地USD转账费描述这一动作。银行目录、顺序、选中标识与全部账户入口保留；致富至ZA明确不接受支票，盈立至ZA仍采用其另一种数字银行提款方式。个人已核回单只覆盖实际收款动作；换银行清除旧回单，保留当日存票序号。

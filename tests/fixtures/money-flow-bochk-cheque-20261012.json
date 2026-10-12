@@ -1,0 +1,36 @@
+{
+  "checkedAt": "2026-10-12",
+  "source": "https://www.bochk.com/tc/servicecharge.common.html",
+  "pdf": {
+    "url": "https://www.bochk.com/dam/document/TnC/DEP/servicecharge_tc.pdf",
+    "bytes": 1030379,
+    "sha256": "02498d9369777a0272f4eee6c8b78fc4ea86026de11ceafac0f7e12b50825135",
+    "pages": 44,
+    "bookletVersion": "2026-07",
+    "physicalPage": 10,
+    "printedPage": 7,
+    "section": "16. Other, large number of cheque deposits",
+    "renderedPage": "docs/evidence/money-flow-feedback/bochk-cheque-page10-20261012.png",
+    "scope": "Current general banking tariff. The PDF's 2026-11-16 future securities notice does not change this cheque-deposit row. Month of booklet version is not an independently evidenced fee commencement day."
+  },
+  "tariff": {
+    "currency": "HKD",
+    "freePerDay": 30,
+    "excessPerChequeHkd": 1,
+    "appliesTo": "One additional local USD clearing cheque deposited into the selected personal BOCHK account",
+    "preFilledDiscount": false
+  },
+  "boundaries": [
+    { "dailyIndex": 1, "feeHkd": 0 },
+    { "dailyIndex": 29, "feeHkd": 0 },
+    { "dailyIndex": 30, "feeHkd": 0 },
+    { "dailyIndex": 31, "feeHkd": 1 },
+    { "dailyIndex": 200, "feeHkd": 1 }
+  ],
+  "exclusions": [
+    "No blanket unlimited free deposits; the withdrawal calculator covers one cheque, not the cumulative fee for all earlier daily cheques.",
+    "Do not apply foreign-cheque collection, purchased bills or corporate direct-debit transaction fees to a local USD clearing cheque.",
+    "Do not copy SC's pre-filled deposit slip discount or ICBC Asia's HKD 2 excess price to BOCHK.",
+    "Do not copy this allowance to HSBC One or Hang Seng."
+  ]
+}

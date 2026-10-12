@@ -148,7 +148,7 @@
     if (!bank || bank.acceptsCheques === false) return null;
     const tariff = bank.localUsdChequeTariff;
     if (!tariff) return knownFee(bank.localUsdChequeHkd) ? bank.localUsdChequeHkd : null;
-    if (!positive(index) || !Number.isInteger(index) || date < tariff.validFrom || (tariff.validUntil && date > tariff.validUntil)) return null;
+    if (!positive(index) || !Number.isSafeInteger(index) || (tariff.validFrom && date < tariff.validFrom) || (tariff.validUntil && date > tariff.validUntil)) return null;
     return index <= tariff.freePerDay ? 0 : preFilled && knownFee(tariff.preFilledHkd) ? tariff.preFilledHkd : tariff.standardHkd;
   }
   function maintenance(bank, balanceHkd, months, override) {
@@ -1142,7 +1142,7 @@
       const localReturnCny = settlementBank ? localUsdTransfer(settlementBank, returning, refs, trading?.sellDate || config.date) : null;
       const chequeReturn = !settlementBank && (localCheque || provider.withdrawalMethod === 'cheque');
       const chequeIndex = config.chequeIndex == null ? 1 : number(config.chequeIndex);
-      if (chequeReturn && returning.localUsdChequeTariff && own('inwardHkd', isSelectedReturn) == null && (!positive(chequeIndex) || !Number.isInteger(chequeIndex))) return downstreamError('当日存票序号须为正整数。', '04', 'withdraw');
+      if (chequeReturn && returning.localUsdChequeTariff && own('inwardHkd', isSelectedReturn) == null && (!positive(chequeIndex) || !Number.isSafeInteger(chequeIndex))) return downstreamError('当日存票序号须为正整数。', '04', 'withdraw');
       const chequeFee = chequeReturn ? localUsdChequeFee(returning, chequeIndex, trading?.sellDate || config.date, config.chequePreFilled === true) : null;
       const confirmedInward = own('inwardHkd', isSelectedReturn);
       const returnInward = confirmedInward ?? (settlementBank ? localReturnCny == null ? null : localReturnCny / refs.HKD :

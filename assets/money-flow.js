@@ -612,16 +612,28 @@
     if (state[key] === value) { save(); refresh(); return; }
     state = choiceState(key, value); save(); refresh();
   }
+  function chequeBankCopy(bank, provider, r) {
+    if (provider.withdrawalMethod !== 'cheque' && !provider.localChequeBanks?.includes(bank.id)) return null;
+    if (bank.acceptsCheques === false) return '不接受支票存款；须使用其他取回银行';
+    const actual = bank.id === state.returnBank ? M.number(state.inwardHkd) : null;
+    if (actual != null && actual < 0) return '本人回单收款费须为非负数';
+    const fee = actual ?? M.localUsdChequeFee(bank, M.number(state.chequeIndex), r?.returnDate || r?.trading?.sellDate || today(), state.chequePreFilled);
+    const context = actual != null ? '本人回单收款费' : bank.localUsdChequeTariff ? '本地USD存票 · 当日第' + state.chequeIndex + '张' : '本地USD支票存入';
+    const missing = !Number.isSafeInteger(M.number(state.chequeIndex)) || M.number(state.chequeIndex) < 1 ? '当日存票序号须为正整数' : '该日期的本地USD存票资费尚未取得';
+    return context + '：' + (fee == null ? missing : num(fee) + ' HKD') +
+      (bank.id === 'hsbc' ? '；One月费按豁免条件' : '；账户月费0');
+  }
   function picker(key) {
     modalKey = null;
     const titles = { startBank: '选择出发银行', bank: '选择香港收款银行', broker: '选择买美股的账户', outcome: '选择资金用途', returnBank: '选择取回／消费银行', exitBank: '选择内地收款银行' };
     const small = options.get(key), isMainland = ['startBank', 'exitBank'].includes(key), isBank = ['bank', 'returnBank'].includes(key);
     const list = key === 'outcome' ? outcomes.map(([id, name]) => ({ id, name })) : isMainland ? mainland : isBank ? banks : key === 'broker' ? brokers : (small?.values || []).map(([id, name]) => ({ id, name }));
     const comparison = key === 'startBank' ? M.purchaseComparison({ ...state, date: today() }, comparisonData, window.MONEY_FLOW_QUOTES || {}) : null;
-    const exitCurrency = state.returnCurrency || 'USD', r = key === 'exitBank' ? result().selected || result().partial : null;
+    const current = ['exitBank', 'returnBank'].includes(key) ? result() : null;
+    const exitCurrency = state.returnCurrency || 'USD', r = current?.selected || current?.partial, provider = selected().broker;
     const exitDate = r?.returnDate || r?.trading?.sellDate || today();
     const exitQuotes = key === 'exitBank' ? M.quotedMainlandBanks(D, window.MONEY_FLOW_QUOTES || {}, today()) : [];
-    const copy = item => key === 'broker' ? item.feeShort : key === 'exitBank' ? '境外' + exitCurrency + '汇入手续费：' + (item.inwardCny == null ? '尚未取得适用价目' : num(item.inwardCny) + ' CNY') : key === 'startBank' ? sourceTariffCopy(item) : isBank ?
+    const copy = item => key === 'broker' ? item.feeShort : key === 'exitBank' ? '境外' + exitCurrency + '汇入手续费：' + (item.inwardCny == null ? '尚未取得适用价目' : num(item.inwardCny) + ' CNY') : key === 'startBank' ? sourceTariffCopy(item) : key === 'returnBank' && chequeBankCopy(item, provider, r) != null ? chequeBankCopy(item, provider, r) : isBank ?
       ({ bochk: '中行同名汇入0；本地美元转账0；账户月费0', hsbc: '汇入及本地美元转账0；One月费按豁免条件', za: '本地美元转账0；账户月费0；可开美股交易', hang: '同名跨域转账0；本地美元转账0；优进月费0', sc: '本地USD转账标准费22 USD；快易月费0', 'icbc-asia': '工行集团汇入60 HKD，绑定e账通优惠期免；本地USD转账50 HKD；综合账户免月费' })[item.id] : '';
     const price = item => {
       if (key === 'exitBank') {
