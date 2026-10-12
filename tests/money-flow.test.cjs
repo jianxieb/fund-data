@@ -1300,6 +1300,21 @@ function moneyUi(input, quotes = cibQuotes, date = '2026-10-09', data = D, legac
     act: (action, field, value) => context.window.ChanghengMoneyFlow.handleAction({ dataset: { action: 'money-flow-' + action, field, value } }) };
 }
 
+test('IBKR pricing choices persist through the actual picker handler without changing banks', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261012.json');
+  const ui = moneyUi({ ...currentRoute, broker: 'ibkr', startBank: 'cib', bank: 'hsbc', outcome: 'broker-balance', sellDate: '2026-10-12' }, quotes, '2026-10-12');
+  ui.render(); ui.act('pick-choice', 'ibkrPricing', 'lite');
+  const saved = ui.saved();
+  assert.equal(saved.ibkrPricing, 'lite');
+  assert.equal(saved.startBank, 'cib'); assert.equal(saved.bank, 'hsbc'); assert.equal(saved.broker, 'ibkr');
+  const r = M.calculatorJourney({ ...saved, date: '2026-10-12' }, D, quotes).selected;
+  assert.ok(r.trading.orders.every(order => order.commission === 0));
+  assert.match(ui.render(), /Lite · 合资格美国居民/);
+  ui.act('pick-choice', 'ibkrPricing', 'invalid'); assert.equal(ui.saved().ibkrPricing, 'lite');
+  ui.act('pick-choice', 'ibkrPricing', 'fixed'); assert.equal(ui.saved().ibkrPricing, 'fixed');
+  assert.ok(M.calculatorJourney({ ...ui.saved(), date: '2026-10-12' }, D, quotes).selected.trading.orders.every(order => order.commission > 0));
+});
+
 test('fresh accounts default to management-fee waivers without enabling other offers or changing accounts', () => {
   const quotes = require('./fixtures/money-flow-quotes-20261012.json');
   const ui = moneyUi(null, quotes, '2026-10-12'); ui.render();
@@ -1835,12 +1850,13 @@ test('direct corporate CHATS choices name their receiving bank and retain indepe
   }
 });
 
-test('ZA membership is a bank control that migrates old Lv2 settings and survives every broker switch and reload', () => {
+test('ZA membership appears with its actual account role and survives every broker switch and reload', () => {
   const quotes = require('./fixtures/money-flow-quotes-20261011.json');
   const ui = moneyUi({ ...currentRoute, startBank: 'boc', bank: 'bochk', mainlandMethod: '', broker: 'za', outcome: 'broker-balance', zaLv2: true }, quotes, '2026-10-11');
   let html = ui.render();
   const bankNode = html.match(/<section class="flow-node" data-flow-stage="02"[\s\S]*?<\/section>/)[0];
-  assert.match(bankNode, /ZA银行权益/); assert.match(bankNode, /ZA Perks · Lv2/);
+  const stockNode = html.match(/<section class="flow-node" data-flow-stage="03"[\s\S]*?<\/section>/)[0];
+  assert.doesNotMatch(bankNode, /zaPerksLevel/); assert.match(stockNode, /ZA交易权益/); assert.match(stockNode, /ZA Perks · Lv2/);
   assert.doesNotMatch(html, /data-money-check="zaLv2"/);
   ui.act('choose', 'broker', 'za');
   assert.equal(ui.saved().zaPerksLevel, 'lv2');
@@ -1859,7 +1875,7 @@ test('ZA membership is a bank control that migrates old Lv2 settings and survive
     assert.match(restored.render(), new RegExp('ZA Perks · ' + (zaPerksLevel === 'standard' ? '标准' : zaPerksLevel === 'lv1' ? 'Lv1' : 'Lv2')));
   }
   ui.act('choose', 'broker', 'za'); ui.render(); ui.act('detail', '', 'offers');
-  assert.match(ui.modal(), /Lv2，月前5笔平台费优惠/);
+  assert.match(ui.modal(), /ZA交易权益/); assert.match(ui.modal(), /ZA Perks · Lv2/);
   assert.doesNotMatch(ui.modal(), /SWIFT|海外汇款笔数/);
   ui.act('detail', '', 'bank-settings');
   assert.match(ui.modal(), /2026年11月1日起，海外SWIFT本行费70 HKD/);
@@ -2171,9 +2187,9 @@ test('mainland monthly fees appear at their own bank node and keep their currenc
   const ui = moneyUi(input), html = ui.render();
   const sourceNode = html.split('aria-label="内地出发银行"')[1].split('</section>')[0];
   const hkNode = html.split('aria-label="香港收款银行"')[1].split('</section>')[0];
-  assert.match(sourceNode, /300 CNY\/月 × 6个月；另6个月免收 · 1800.00 CNY/);
+  assert.match(sourceNode, /汇丰中国 · 卓越理财期间管理费/); assert.match(sourceNode, /1800.00 CNY/);
   assert.match(sourceNode, /data-money-check="cnHsbcFeeWaived"/);
-  assert.match(hkNode, /银行管理费 0.00 CNY/); assert.doesNotMatch(hkNode, /1800.00|cnHsbcFeeWaived/);
+  assert.match(hkNode, /汇丰 HSBC One管理费/); assert.match(hkNode, /0.00 CNY/); assert.doesNotMatch(hkNode, /1800.00|cnHsbcFeeWaived/);
   ui.act('detail', '', 'cn-bank-hsbc');
   assert.match(ui.modal(), /汇丰中国 · 卓越理财 · 账户费用/);
   assert.match(ui.modal(), /data-money-field="cnHsbcFreeMonths"/);
@@ -2184,7 +2200,7 @@ test('mainland monthly fees appear at their own bank node and keep their currenc
   ui.act('detail', '', 'all');
   assert.match(ui.modal(), /300 CNY\/月 × 6个月；另6个月免收/);
   const full = moneyUi({ ...input, cnHsbcFeeWaived: true }).render();
-  assert.match(full, /本持有期12个月均已满足免月费条件 · 0.00 CNY/);
+  assert.match(full, /data-money-check="cnHsbcFeeWaived"[^>]* checked/); assert.match(full, /期间管理费[\s\S]*?0.00 CNY/);
   const back = moneyUi({ ...input, startBank: 'boc', mainlandMethod: 'swift', outcome: 'mainland', exitBank: 'hang' });
   assert.match(back.render(), /data-value="cn-bank-hang"/);
   assert.ok(evidenceLinks(back, 'all').has(D.sources.hangCnTariff.url));
@@ -2323,7 +2339,8 @@ test('the terminal balance reconciles with the summary after bank period fees an
       assert.ok(section.includes((r.costCny / r.budgetCny * 100).toFixed(3) + '%'), outcome);
       assert.match(section, /预留税款/);
     }
-    assert.match(terminal, /期间及固定费用/);
+    assert.doesNotMatch(terminal, /期间管理费/); // Bank fees remain at their bank controls, with no duplicate terminal block.
+    assert.match(html.split('data-flow-stage="02"')[1].split('</section>')[0], /汇丰 HSBC One管理费/);
     assert.doesNotMatch(terminal, /税前/);
   }
 });
@@ -2577,7 +2594,8 @@ test('the inline bank management fee identifies HSBC even when the receiving ban
   const html = moneyUi({ ...currentRoute, bank: 'bochk', broker: 'hsbc', outcome: 'broker-balance', months: 12, hsbcBalanceWaiver: false }).render();
   const bankNode = html.split('data-flow-stage="02"')[1].split('</section>')[0];
   assert.match(bankNode, /香港收款银行：中银香港/);
-  assert.match(bankNode, /账户使用 12个月 · 汇丰 HSBC One管理费/);
+  assert.match(bankNode, /data-money-field="months"[^>]*value="12"/);
+  assert.match(bankNode, /汇丰 HSBC One管理费/); assert.match(bankNode, /data-money-check="hsbcBalanceWaiver"/);
   assert.doesNotMatch(bankNode, /中银香港管理费 [1-9]/);
 });
 

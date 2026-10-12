@@ -435,7 +435,15 @@
     return null;
   }
   function selectedBroker(config, data) {
-    return data.brokers?.find(row => row.id === (config.broker || 'ibkr')) || { ...data.broker, id: 'ibkr', withdrawalMethod: 'wire' };
+    const broker = data.brokers?.find(row => row.id === (config.broker || 'ibkr')) || { ...data.broker, id: 'ibkr', withdrawalMethod: 'wire' };
+    return ibkrPricing(config, broker);
+  }
+  function ibkrPricing(config, broker) {
+    if (broker.id !== 'ibkr' || config.ibkrPricing !== 'lite') return broker;
+    return { ...broker, name: 'IBKR · Lite', pricingPlan: 'lite', commission: null, fractionalCommission: null,
+      feeShort: '合资格美国居民 · 常规上市股免佣金；监管费另计',
+      feeText: 'Lite限合资格美国居民；常规交易时段美国上市股免佣。低价股特殊订单超过月成交量10%时按0.005 USD/股或成交额1%孰低收费；非上市股、隔夜和定期投资按Fixed。',
+      sources: [...new Set([...(broker.sources || []), 'ibLite'])] };
   }
   function cappedCharge(rule, shares, value) {
     if (!rule || value <= 0) return 0;
@@ -466,6 +474,9 @@
   // the final holding month are a fee benchmark, not a return simulation.
   // Buy-side charges fit inside available USD, including voucher allocation.
   function brokerTradingFees(config, broker, cashUsd, profitUsd, refs) {
+    broker = ibkrPricing(config, broker);
+    if (broker.id === 'ibkr' && config.ibkrPricing && !['fixed', 'lite'].includes(config.ibkrPricing))
+      return { error: '请选择IBKR Pro固定或合资格Lite收费方案。', errorField: 'ibkrPricing' };
     if (!positive(cashUsd) || !finite(profitUsd)) return { error: '买入美元余额须为正数，盈亏须为有限数。' };
     const buys = number(config.buyOrders) ?? 1, sells = number(config.sellOrders) ?? 1;
     const price = number(config.sharePriceUsd) ?? 100, months = number(config.months) ?? 1;
@@ -479,7 +490,11 @@
     if (!knownFee(usedTurnover)) return { error: '月成交额须为非负数。' };
     const date = config.date || '2026-10-09', heldMonths = Math.max(1, Math.ceil(months));
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(Date.parse(date))) return { error: '测算日期无效。' };
-    const sellDate = shiftedMonth(date, heldMonths - 1), sameMonth = date.slice(0, 7) === sellDate.slice(0, 7);
+    const sellDate = config.sellDate || shiftedMonth(date, heldMonths - 1);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(sellDate) || !Number.isFinite(Date.parse(sellDate)) || new Date(sellDate).toISOString().slice(0, 10) !== sellDate || sellDate < date)
+      return { error: '卖出日期须为不早于买入日的有效日期。', errorField: 'sellDate' };
+    const sameMonth = date.slice(0, 7) === sellDate.slice(0, 7);
+    const custodyMonths = config.sellDate ? (Number(sellDate.slice(0, 4)) - Number(date.slice(0, 4))) * 12 + Number(sellDate.slice(5, 7)) - Number(date.slice(5, 7)) + 1 : heldMonths;
     const usmartDays = broker.id === 'usmart' && config.usmartPromo ? optionalNumber(config, 'usmartDays') : 0;
     if (!knownFee(usmartDays) || !Number.isInteger(usmartDays)) return { error: '开户距今须为非负整数天。' };
     const centsUp = value => value > 0 ? Math.ceil((value - 1e-10) * 100) / 100 : 0;
@@ -505,6 +520,10 @@
           const contributionUsd = allocation?.contributionUsd;
           const fractional = qty > 0 && qty < 1 && value > 0;
           let commission = cappedCharge(broker.commission, qty, value), platform = cappedCharge(broker.platform, qty, value), offer = '', pricing = '';
+          if (broker.pricingPlan === 'lite' && stockPrice < 1) {
+            commission = Math.min(qty * .005, value * .01);
+            pricing = 'Lite低价股 · 本测算当月仅此标的，特殊订单超过10%';
+          }
           if (fractional && broker.fractionalCommission) {
             commission = Math.max(broker.fractionalCommission.minimum, value * broker.fractionalCommission.rate);
             pricing = '不足1股 · 佣金1%，最低0.01 USD';
@@ -549,7 +568,9 @@
             discount = 0; offer = 'ZA Perks Lv2'; orderIndex++;
           }
           if (discount > 0) { remainingVoucher -= discount; couponsUsed++; }
-          orders.push({ kind, date: d, value, shares: qty, contributionUsd, commission, platform, clearing, sec, taf, cat, discount, offer, pricing,
+          const commissionDiscount = voucher.scope === 'both' ? Math.min(commission, discount) : voucher.scope === 'commission' ? discount : 0;
+          const netCommission = commission - commissionDiscount, netPlatform = platform - (discount - commissionDiscount);
+          orders.push({ kind, date: d, value, shares: qty, contributionUsd, commission, platform, netCommission, netPlatform, clearing, sec, taf, cat, discount, offer, pricing,
             upfrontPlatform, rebateUsd, debitFeeUsd: commission + upfrontPlatform + clearing + sec + taf + cat - discount,
             feeUsd: commission + platform + clearing + sec + taf + cat - discount });
           turnover += value * refs.USD / refs.HKD;
@@ -622,11 +643,12 @@
     const rebateUsd = override == null ? orders.reduce((sum, order) => sum + order.rebateUsd, 0) : 0;
     // Benchmark sell dates are the same day or at least one full month later.
     // Buy rebates have arrived by the latter; sell rebates are still pending.
-    const buyRebateAvailableUsd = rebateUsd > 0 && !sameMonth ? orders.filter(order => order.kind === 'buy').reduce((sum, order) => sum + order.rebateUsd, 0) : 0;
+    const rebateTimeElapsed = !config.sellDate || (Date.parse(sellDate) - Date.parse(date)) / 86400000 >= 28;
+    const buyRebateAvailableUsd = rebateUsd > 0 && !sameMonth && rebateTimeElapsed ? orders.filter(order => order.kind === 'buy').reduce((sum, order) => sum + order.rebateUsd, 0) : 0;
     if (rebateUsd > 0 && investUsd + profitUsd + cashRemainderUsd + buyRebateAvailableUsd < sellDebitFeeUsd - 1e-9) return { error: '卖出到账及可用余款不足以支付先扣交易费；尚未返还的优惠不能支付当前费用。', errorField: 'profitUsd' };
     // September 2026 US tariff explicitly waives Trade25 US monthly fees until further notice.
     const monthlyHkd = 0;
-    const monthlyUsd = broker.id === 'hsbc' && !config.trade25 ? Array.from({ length: heldMonths }, (_, i) => shiftedMonth(date, i))
+    const monthlyUsd = broker.id === 'hsbc' && !config.trade25 ? Array.from({ length: custodyMonths }, (_, i) => shiftedMonth(date, i))
       .filter(d => d > '2026-12-31' && d.slice(0, 7) !== date.slice(0, 7) && d.slice(0, 7) !== sellDate.slice(0, 7)).length * 5 : 0;
     const warnings = [];
     if (broker.id === 'usmart' && config.usmartPromo && !orders.some(order => order.offer)) warnings.push('盈立0.99优惠未适用：须股价≥100 USD、合资格标的、开户180天内且在推广期');
@@ -634,7 +656,7 @@
     if (voucher.pending) warnings.push(voucher.message);
     if (voucher.expired) warnings.push(voucher.message);
     return { investUsd, buyFeeUsd, sellFeeUsd, buyDebitFeeUsd, sellDebitFeeUsd, rebateUsd, buyRebateAvailableUsd, orders, monthlyHkd, monthlyUsd, warnings, voucher, wholeSharesOnly, shareStep,
-      cashRemainderUsd,
+      cashRemainderUsd, buyDate: date,
       totalUsd: override ?? buyFeeUsd + sellFeeUsd, overridden: override != null,
       discountUsd: override == null ? orders.reduce((sum, row) => sum + row.discount, 0) : 0, price, buys, sells, sellDate };
   }
@@ -1189,10 +1211,7 @@
           const orders = trading.orders.filter(order => order.kind === kind), label = kind === 'buy' ? '买入' : '卖出';
           return ['commission', 'platform', 'clearing', 'sec', 'taf', 'cat'].map(key => {
             const cny = orders.reduce((sum, order) => {
-              const discounted = config.voucherScope === 'platform' ? 'platform' : 'commission';
-              const commissionDiscount = config.voucherScope === 'both' ? Math.min(order.commission, order.discount) : discounted === 'commission' ? order.discount : 0;
-              const discount = key === 'commission' ? commissionDiscount : key === 'platform' ? order.discount - commissionDiscount : 0;
-              return sum + order[key] - discount;
+              return sum + (key === 'commission' ? order.netCommission : key === 'platform' ? order.netPlatform : order[key]);
             }, 0) * refs.USD;
             const amountBased = key === 'commission' ? provider.id === 'hsbc' || !!provider.commission :
               key === 'platform' ? !!provider.platform : key === 'clearing' ? !!provider.clearing :
