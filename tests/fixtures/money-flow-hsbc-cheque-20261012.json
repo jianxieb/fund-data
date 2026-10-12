@@ -1,0 +1,52 @@
+{
+  "checkedAt": "2026-10-12",
+  "account": "HSBC One",
+  "currency": "USD",
+  "scope": "香港本地结算美元支票；银行存票费与券商出金费分别计算",
+  "tariff": {
+    "validFrom": "2026-08-01",
+    "counterPerChequeHkd": 5,
+    "nonCounterPerChequeHkd": 0,
+    "waivedBelowEquivalentHkd": 5,
+    "machineUsdLimitExclusive": 500000
+  },
+  "sources": [
+    {
+      "id": "hsbcHk",
+      "url": "https://www.hsbc.com.hk/content/dam/hsbc/hk/docs/ways-to-bank/bank-tariff/20260801-guide.pdf",
+      "bytes": 222698,
+      "sha256": "c03fe2ebea6ef04b9cf01e600d5dbba7d0b574d3fc0dcc72e90ead30805723fe",
+      "physicalPage": 6,
+      "printedPages": "8–9",
+      "finding": "A1存票费One栏每张5 HKD；注2存票机及其他非柜台渠道免，注4票额低于5 HKD等值免。该豁免与汇入电汇费、账户月费无关。已渲染查看列及注释。"
+    },
+    {
+      "id": "hsbcHkNov",
+      "url": "https://www.hsbc.com.hk/content/dam/hsbc/hk/docs/ways-to-bank/bank-tariff/20261101-guide.pdf",
+      "bytes": 215637,
+      "sha256": "37c10a36e3302534c72d7c57a1c9ab03445b4ac775569bd989eed3af263550c1",
+      "validFrom": "2026-11-01",
+      "physicalPages": [6, 10, 11],
+      "finding": "已公布11月版同样列One柜台每张5 HKD、非柜台及小额豁免；Global Transfers免费与普通电汇70 HKD另行说明，不把同集团所有动作一概免费。"
+    },
+    {
+      "id": "hsbcChequeMachine",
+      "url": "https://www.hsbc.com.hk/ways-to-bank/branch/express-banking/",
+      "finding": "存票机接受本地结算USD支票，每次总额须低于500000 USD；不能以港币手机存票替代美元方法，也不能把机器限制推广到所有非柜台渠道。"
+    },
+    {
+      "id": "chiefFunding",
+      "url": "https://chief-website.oss-cn-hongkong.aliyuncs.com/Leaflet/cn/cash.pdf",
+      "bytes": 4930077,
+      "sha256": "cdede704dc99e9090d17e29f632e7d50ad4968b93710179e0d5edc12a40c820a",
+      "physicalPage": 3,
+      "finding": "提款页未承诺使用汇丰非柜台方法，明确客户须承担银行费用。原件字体使Poppler漏字，改用PDFium渲染并查看全文，未据缺字图下结论。"
+    },
+    {
+      "id": "usmartWithdrawal",
+      "url": "https://hk.usmartglobal.com/zh-hk/help-centre/42/detail/12115",
+      "finding": "本地USD支票免券商出金费，银行政策仍独立。不能据此覆盖HSBC One柜台费。"
+    }
+  ],
+  "decision": "默认明确按柜台存票5 HKD计算；已确认本次非柜台存票可选择银行豁免，或以实际回单费用覆盖。更换券商或取回银行清除本次渠道确认。未替客户保证券商自动采用机器或非柜台。"
+}

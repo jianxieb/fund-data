@@ -790,7 +790,7 @@ test('other brokers never inherit IBKR FX commissions; Chief cheque pricing foll
   close(cheque.rows.find(row => row.key === 'returnInward').cny, 0);
   close(cheque.rows.find(row => row.key === 'withdrawMiddle').cny, 0);
   const hsbc = M.journeyPlans({ ...mainlandConfig, broker: 'chief', returnBank: 'hsbc', tradeFeeUsd: '', inwardHkd: '' }, D, richQuotes).selected;
-  close(hsbc.rows.find(row => row.key === 'returnInward').cny, 0);
+  close(hsbc.rows.find(row => row.key === 'returnInward').cny, 5 * hsbc.refs.HKD);
   const bochk = M.journeyPlans({ ...mainlandConfig, broker: 'chief', returnBank: 'bochk', tradeFeeUsd: '', inwardHkd: '' }, D, richQuotes).selected;
   close(bochk.rows.find(row => row.key === 'returnInward').cny, 0);
   const hang = M.journeyPlans({ ...mainlandConfig, broker: 'chief', returnBank: 'hang', tradeFeeUsd: '', inwardHkd: '' }, D, richQuotes).selected;
@@ -808,7 +808,8 @@ test('SC local USD cheque deposits use the daily free allowance and not foreign-
   for (const index of [0, -1, 1.5, NaN]) assert.equal(M.localUsdChequeFee(hk('sc'), index), null);
   assert.equal(M.localUsdChequeFee(hk('sc'), 1, '2026-09-30'), null);
   assert.equal(M.localUsdChequeFee(hk('za')), null);
-  for (const id of ['hsbc', 'hang']) close(M.localUsdChequeFee(hk(id), 200), 0);
+  close(M.localUsdChequeFee(hk('hsbc'), 200), 5);
+  close(M.localUsdChequeFee(hk('hang'), 200), 0);
 });
 
 test('every displayed leg conserves value, tax and reference effects; coefficients compare equal units', () => {
@@ -2908,7 +2909,8 @@ test('uSMART local USD cheques and digital-bank withdrawals retain their separat
     depositMethod: 'internal', outcome: 'usd-balance', returnBank: 'bochk', inwardHkd: '', intermediaryCny: '', months: 0 };
   for (const returnBank of ['bochk', 'hsbc', 'hang', 'sc']) {
     const r = M.calculatorJourney({ ...config, returnBank }, D, cibQuotes).selected;
-    for (const key of ['withdraw', 'returnInward', 'withdrawMiddle']) close(r.rows.find(x => x.key === key).cny, 0);
+    for (const key of ['withdraw', 'withdrawMiddle']) close(r.rows.find(x => x.key === key).cny, 0);
+    close(r.rows.find(x => x.key === 'returnInward').cny, returnBank === 'hsbc' ? 5 * r.refs.HKD : 0);
     assert.match(r.rows.find(x => x.key === 'returnInward').label, /支票/);
   }
   const digital = M.calculatorJourney({ ...config, returnBank: 'za' }, D, cibQuotes).selected;

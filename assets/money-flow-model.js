@@ -195,11 +195,13 @@
     return { ...result, level, monthlyIndex, waived: monthlyIndex <= waiver.lv1FreePerMonth,
       hkd: monthlyIndex <= waiver.lv1FreePerMonth ? 0 : publishedHkd };
   }
-  function localUsdChequeFee(bank, index = 1, date = '2026-10-11', preFilled = false) {
+  function localUsdChequeFee(bank, index = 1, date = '2026-10-11', preFilled = false, options = {}) {
     if (!bank || bank.acceptsCheques === false) return null;
     const tariff = bank.localUsdChequeTariff;
     if (!tariff) return knownFee(bank.localUsdChequeHkd) ? bank.localUsdChequeHkd : null;
-    if (!positive(index) || !Number.isSafeInteger(index) || (tariff.validFrom && date < tariff.validFrom) || (tariff.validUntil && date > tariff.validUntil)) return null;
+    if ((tariff.freePerDay > 0 && (!positive(index) || !Number.isSafeInteger(index))) || (tariff.validFrom && date < tariff.validFrom) || (tariff.validUntil && date > tariff.validUntil)) return null;
+    if (options.nonCounter === true && knownFee(tariff.nonCounterHkd)) return tariff.nonCounterHkd;
+    if (positive(tariff.smallAmountUnderHkd) && knownFee(options.amountHkd) && options.amountHkd < tariff.smallAmountUnderHkd) return 0;
     return index <= tariff.freePerDay ? 0 : preFilled && knownFee(tariff.preFilledHkd) ? tariff.preFilledHkd : tariff.standardHkd;
   }
   function maintenance(bank, balanceHkd, months, override) {
@@ -782,6 +784,7 @@
     // A route card replaces every routing choice and customer-specific quote.
     // General budget, duration, eligibility and trade assumptions survive.
     return { ...config, ...Object.fromEntries(bankQuoteKeys.map(key => [key, ''])), ...routeConfiguration(route),
+      hsbcChequeNonCounter: config.returnBank === route.returning.id && config.broker === route.broker.id && config.hsbcChequeNonCounter === true,
       balanceHkd: '0', returnBalanceHkd: '0', tradeFeeUsd: '', useVoucher: false, voucherUsd: '0', voucherExpiry: '', voucherOrders: '1',
       voucherScope: ['chief', 'usmart', 'za'].includes(route.broker.id) ? 'platform' : 'commission', plan: id };
   }
@@ -1221,8 +1224,10 @@
       const localReturnCny = settlementBank ? localUsdTransfer(settlementBank, returning, refs, trading?.sellDate || config.date) : null;
       const chequeReturn = !settlementBank && (localCheque || provider.withdrawalMethod === 'cheque');
       const chequeIndex = config.chequeIndex == null ? 1 : number(config.chequeIndex);
-      if (chequeReturn && returning.localUsdChequeTariff && own('inwardHkd', isSelectedReturn) == null && (!positive(chequeIndex) || !Number.isSafeInteger(chequeIndex))) return downstreamError('当日存票序号须为正整数。', '04', 'withdraw');
-      const chequeFee = chequeReturn ? localUsdChequeFee(returning, chequeIndex, trading?.sellDate || config.date, config.chequePreFilled === true) : null;
+      if (chequeReturn && returning.localUsdChequeTariff?.freePerDay > 0 && own('inwardHkd', isSelectedReturn) == null && (!positive(chequeIndex) || !Number.isSafeInteger(chequeIndex))) return downstreamError('当日存票序号须为正整数。', '04', 'withdraw');
+      const chequeAmountHkd = balance * refs.USD / refs.HKD;
+      const chequeFee = chequeReturn ? localUsdChequeFee(returning, chequeIndex, trading?.sellDate || config.date, config.chequePreFilled === true,
+        { nonCounter: config.hsbcChequeNonCounter === true, amountHkd: chequeAmountHkd }) : null;
       const confirmedInward = own('inwardHkd', isSelectedReturn);
       const returnInward = confirmedInward ?? (settlementBank ? localReturnCny == null ? null : localReturnCny / refs.HKD :
         chequeReturn ? chequeFee : virtualReturn ? provider.virtualWithdrawalUsd * refs.USD / refs.HKD : inwardFee(returning, balance * refs.USD / refs.HKD, 'broker'));
@@ -1231,8 +1236,11 @@
       add('returnInward', returnLabel, returnInward == null ? null : returnInward * refs.HKD, 'withdraw');
       if (confirmedInward != null) Object.assign(rows[rows.length - 1], { nativeCurrency: 'HKD', evidence: '本人回单费用 · ' + returning.name });
       if (chequeReturn && returning.localUsdChequeTariff && own('inwardHkd', isSelectedReturn) == null) {
+        const tariff = returning.localUsdChequeTariff;
         Object.assign(rows[rows.length - 1], { nativeCurrency: 'HKD', sources: returning.localUsdChequeTariff.sources,
-          evidence: '当日第' + chequeIndex + '张；每日前' + returning.localUsdChequeTariff.freePerDay + '张免费，其后' +
+          evidence: tariff.nonCounterHkd != null ? config.hsbcChequeNonCounter === true ? '本次非柜台存票 · 银行费免' :
+            chequeAmountHkd < tariff.smallAmountUnderHkd ? '票额低于5 HKD等值 · 银行费免' : 'HSBC One柜台存票 · 每张5 HKD；非柜台另有豁免' :
+            '当日第' + chequeIndex + '张；每日前' + returning.localUsdChequeTariff.freePerDay + '张免费，其后' +
             (config.chequePreFilled && knownFee(returning.localUsdChequeTariff.preFilledHkd) ? '预填多支票存款表' + returning.localUsdChequeTariff.preFilledHkd : returning.localUsdChequeTariff.standardHkd) + ' HKD/张' });
       }
       if (unquotedFundingFx && !settlementBank && !localCheque && !virtualReturn && provider.withdrawalMethod !== 'cheque' && returning.inwardSmallLimitHkd && own('inwardHkd', isSelectedReturn) == null) {

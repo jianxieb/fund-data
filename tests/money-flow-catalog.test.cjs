@@ -154,7 +154,7 @@ test('all 262440 catalogue combinations including USD and HKD returns retain sel
   assert.equal(r.channelProfiles[0].profile.hsbcBalanceWaiver, false);
   assert.equal(r.channelProfiles[0].profile.trade25, false);
   assert.deepEqual(r.channelProfiles[2].qualificationCoverage, ['chequePreFilled', 'chiefMonthly', 'cnHangFeeWaived', 'cnHsbcFeeWaived', 'cnScFeeWaived',
-    'hsbcBalanceWaiver', 'icbcCnhAccount', 'icbcEAccount', 'scCnhAccount', 'trade25', 'usmartPromo', 'zaPerksLevel', 'zaSwiftUsed']);
+    'hsbcBalanceWaiver', 'hsbcChequeNonCounter', 'icbcCnhAccount', 'icbcEAccount', 'scCnhAccount', 'trade25', 'usmartPromo', 'zaPerksLevel', 'zaSwiftUsed']);
   const bounds = r.numericBoundaries;
   assert.equal(bounds.checked, 63180);
   assert.deepEqual(bounds.profiles.map(p => p.id), ['principal-0.01', 'principal-1', 'principal-100', 'principal-1000', 'principal-100000', 'principal-1000000',

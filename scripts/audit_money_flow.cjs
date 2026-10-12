@@ -255,17 +255,19 @@ function auditChannels({ quotes = Q, date = config.date } = {}) {
       const r = record(s);
       const tariff = r?.returning?.localUsdChequeTariff;
       if (!tariff || !r.rows?.some(row => row.key === 'returnInward' && row.sources?.some(id => tariff.sources.includes(id)))) return;
-      // The calculation is for one withdrawal. Check the daily allowance
-      // at its last free cheque and both published fees for the next cheque.
-      const cases = [[tariff.freePerDay, false, 0], [tariff.freePerDay + 1, false, tariff.standardHkd],
-        ...(tariff.preFilledHkd != null ? [[tariff.freePerDay + 1, true, tariff.preFilledHkd]] : [])];
-      for (const [chequeIndex, chequePreFilled, feeHkd] of cases) {
-        const next = record({ ...s, chequeIndex, chequePreFilled });
+      // Daily quotas and counter/non-counter waivers are separate tariffs.
+      // Never create a fictitious free "zeroth cheque" for a bank without a quota.
+      const cases = tariff.nonCounterHkd != null ? [[1, false, tariff.standardHkd, false], [1, false, tariff.nonCounterHkd, true]] :
+        [[tariff.freePerDay, false, 0, false], [tariff.freePerDay + 1, false, tariff.standardHkd, false],
+          ...(tariff.preFilledHkd != null ? [[tariff.freePerDay + 1, true, tariff.preFilledHkd, false]] : [])];
+      for (const [chequeIndex, chequePreFilled, feeHkd, hsbcChequeNonCounter] of cases) {
+        const next = record({ ...s, chequeIndex, chequePreFilled, hsbcChequeNonCounter });
         const fee = next?.rows?.find(row => row.key === 'returnInward');
-        if (!fee || Math.abs(fee.cny - feeHkd * next.refs.HKD) > 1e-6) throw new Error('Daily cheque tariff mismatch: ' + JSON.stringify(s));
+        if (!fee || Math.abs(fee.cny - feeHkd * next.refs.HKD) > 1e-6) throw new Error('Cheque channel/quota tariff mismatch: ' + JSON.stringify(s));
         report.chequeBoundaryChecks++;
       }
       if (profile.id === 'all-relevant-qualifications' && tariff.preFilledHkd != null) qualificationCoverage.add('chequePreFilled');
+      if (profile.id === 'all-relevant-qualifications' && tariff.nonCounterHkd != null) qualificationCoverage.add('hsbcChequeNonCounter');
     };
     for (const startBank of D.calculator.mainland) for (const bank of D.calculator.hkBanks) for (const broker of D.calculator.brokers) for (const route of D.calculator.currencies) {
       const entry = { ...config, ...profile, date, startBank, bank, broker, route };

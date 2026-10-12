@@ -5,7 +5,7 @@
   const availableChannels = config => M.calculatorChannels({ ...config, date: today() }, D);
   const defaults = { budgetCny: '100000', currency: 'CNY', plan: 'boc-za', activeStep: '01', startBank: 'boc', route: 'USD', bank: 'bochk', returnBank: 'bochk', exitBank: 'boc', outcome: 'broker-balance',
     mainlandMethod: 'boc-mobile', depositMethod: 'chats', fxMode: 'manual', returnMethod: '', returnCurrency: 'USD', comparison: 'start', count: '1', usedFreeTransfers: '0',
-    months: '12', balanceHkd: '0', returnBalanceHkd: '0', bankBalancesHkd: {}, profitUsd: '0', taxableCny: '', taxRate: '20', creditCny: '0', withdrawalIndex: '1', chequeIndex: '1', chequePreFilled: false, tradeFeeUsd: '',
+    months: '12', balanceHkd: '0', returnBalanceHkd: '0', bankBalancesHkd: {}, profitUsd: '0', taxableCny: '', taxRate: '20', creditCny: '0', withdrawalIndex: '1', chequeIndex: '1', chequePreFilled: false, hsbcChequeNonCounter: false, tradeFeeUsd: '',
     broker: 'za', buyOrders: '1', sellOrders: '1', sharePriceUsd: '100', trade25: false, chiefMonthly: false, usmartPromo: false, zaLv2: false,
     hsbcBalanceWaiver: false, hkHsbcFreeMonths: '0', zaPerksLevel: 'standard', zaSwiftUsed: '0', scCnhAccount: false, otherTurnoverHkd: '0', usedPromoOrders: '0', usmartDays: '0', useVoucher: false, voucherScope: 'platform', voucherUsd: '0', voucherOrders: '1', voucherExpiry: '',
     cnHsbcFeeWaived: false, cnHangFeeWaived: false, cnScFeeWaived: false, cnHsbcFreeMonths: '0', cnHangFreeMonths: '0', cnScFreeMonths: '0',
@@ -443,7 +443,8 @@
         r?.trading?.rebateUsd > 0 ? '优惠返还后待出金' : '卖出后待出金', throughTrade)) + '</section>';
     if (state.outcome !== 'broker-balance') html += edge(data, withdrawKeys, '出金 → ' + shortName(s.returning),
       s.broker?.freeWithdrawals ? action('本月第' + esc(state.withdrawalIndex) + '次出金', 'detail', 'data-value="profit-settings"', 'flow-setting-button') :
-        isChequeReturn(s) && s.returning?.localUsdChequeTariff ? action('存票当日第' + esc(state.chequeIndex) + '张', 'detail', 'data-value="profit-settings"', 'flow-setting-button') : '', 'withdraw');
+        isChequeReturn(s) && s.returning?.localUsdChequeTariff ? action(s.returning.localUsdChequeTariff.nonCounterHkd != null ?
+          state.hsbcChequeNonCounter ? '本次非柜台存票' : '本次柜台存票' : '存票当日第' + esc(state.chequeIndex) + '张', 'detail', 'data-value="profit-settings"', 'flow-setting-button') : '', 'withdraw');
     if (state.outcome === 'mainland') html += edge(data, exitKeys, state.returnCurrency === 'HKD' ? '香港换港币 → 汇回内地 → 结汇' : '汇回内地 → 美元结汇', account('exitBank', '内地收款银行', s.exit) +
       select('returnCurrency', '回款币种', [['USD', '美元原币'], ['HKD', '港币 · 香港换汇']]) + select('returnMethod', '汇回渠道', returnMethods()) +
       (s.exit?.id === s.start?.id ? '' : mainlandAccountControl(s.exit, r)), '04',
@@ -617,6 +618,7 @@
     for (const field of reset[key] || []) next[field] = '';
     Object.assign(next, M.calculatorAccountState(state, next, D));
     if (key === 'broker') next.useVoucher = false;
+    if (key === 'broker' || key === 'returnBank') next.hsbcChequeNonCounter = false;
     if (key === 'bank' || key === 'route') { next.senderFeeCny = ''; next.entryMiddleCny = ''; }
     if (key === 'returnBank' && next.outcome === 'cnh-card') next.exitPrice = '';
     if (key === 'broker') {
@@ -651,8 +653,11 @@
     if (bank.acceptsCheques === false) return '不接受支票存款；须使用其他取回银行';
     const actual = bank.id === state.returnBank ? M.number(state.inwardHkd) : null;
     if (actual != null && actual < 0) return '本人回单收款费须为非负数';
-    const fee = actual ?? M.localUsdChequeFee(bank, M.number(state.chequeIndex), r?.returnDate || r?.trading?.sellDate || today(), state.chequePreFilled);
-    const context = actual != null ? '本人回单收款费' : bank.localUsdChequeTariff ? '本地USD存票 · 当日第' + state.chequeIndex + '张' : '本地USD支票存入';
+    const nonCounter = bank.id === state.returnBank && state.hsbcChequeNonCounter;
+    const fee = actual ?? M.localUsdChequeFee(bank, M.number(state.chequeIndex), r?.returnDate || r?.trading?.sellDate || today(), state.chequePreFilled,
+      { nonCounter, amountHkd: r?.steps?.afterTaxUsd * r?.refs?.USD / r?.refs?.HKD });
+    const context = actual != null ? '本人回单收款费' : bank.localUsdChequeTariff?.nonCounterHkd != null ?
+      '本地USD' + (nonCounter ? '非柜台' : '柜台') + '存票' : bank.localUsdChequeTariff ? '本地USD存票 · 当日第' + state.chequeIndex + '张' : '本地USD支票存入';
     const missing = !Number.isSafeInteger(M.number(state.chequeIndex)) || M.number(state.chequeIndex) < 1 ? '当日存票序号须为正整数' : '该日期的本地USD存票资费尚未取得';
     return context + '：' + (fee == null ? missing : num(fee) + ' HKD');
   }
@@ -769,9 +774,10 @@
       const chequeTariff = isChequeReturn(s) && s.returning?.localUsdChequeTariff;
       title = '盈亏、出金与税款'; content = '<div class="flow-form-grid">' + field('profitUsd', '卖出盈亏 · 交易费前', 'USD') +
         (state.outcome !== 'broker-balance' && s.broker?.freeWithdrawals ? field('withdrawalIndex', '本月第几次出金', '次') : '') +
-        (chequeTariff ? field('chequeIndex', '存票当日第几张支票', '张') : '') +
+        (chequeTariff?.freePerDay > 0 ? field('chequeIndex', '存票当日第几张支票', '张') : '') +
         field('taxRate', '应税所得税率', '%') + field('taxableCny', '人民币应税所得', 'CNY', '按正净利润估算') + field('creditCny', '税款抵免', 'CNY') + '</div>';
       if (chequeTariff?.preFilledHkd != null && M.number(state.chequeIndex) > chequeTariff.freePerDay) content += checkbox('chequePreFilled', '已预填多支票存款表');
+      if (chequeTariff?.nonCounterHkd != null) content += checkbox('hsbcChequeNonCounter', '本次经存票机或其他非柜台渠道存票');
       if (chequeTariff) content += feeRow(r, 'returnInward', null, row(r, 'returnInward')?.evidence || '', 'HKD');
       keys = [...evidenceFor('brokerWithdrawal', s.broker), ...(chequeTariff ? chequeTariff.sources : []), 'tax'];
     } else if (key === 'offers') {

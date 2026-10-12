@@ -30,7 +30,8 @@ test('BOCHK local cheque tariff preserves its daily allowance and source scope',
   close(M.localUsdChequeFee(bank('sc'), 31, E.checkedAt, true), 1);
   close(M.localUsdChequeFee(bank('sc'), 31, E.checkedAt), 2);
   close(M.localUsdChequeFee(bank('icbc-asia'), 31, E.checkedAt, true), 2);
-  for (const id of ['hsbc', 'hang']) close(M.localUsdChequeFee(bank(id), 200, E.checkedAt), 0);
+  close(M.localUsdChequeFee(bank('hsbc'), 200, E.checkedAt), 5);
+  close(M.localUsdChequeFee(bank('hang'), 200, E.checkedAt), 0);
   assert.equal(M.localUsdChequeFee(bank('za'), 1, E.checkedAt), null);
 });
 
