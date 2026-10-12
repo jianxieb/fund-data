@@ -1,6 +1,6 @@
 # 跨境资金费用测算
 
-核对日期：2026-10-12。需求、原始截图和验收记录以[跨境资金需求清单](money-flow-requirements.md)为准。资料在data/money-flow.js，牌价在data/money-flow-quotes.js，模型和界面分别在assets/money-flow-model.js、assets/money-flow.js。
+核对日期：2026-10-12。需求、原始截图和验收记录以[跨境资金需求清单](money-flow-requirements.md)为准。资料在data/money-flow.js，牌价在data/money-flow-quotes.js，模型和界面分别在assets/money-flow-model.js、assets/money-flow.js。默认管理费资格及无配额优选已在正式页逐卡复核，金额、原币余额和9／6／5账户菜单见该清单末节；尚缺的金融报价仍按A01继续研究。
 
 ## 账户选择与报价分别处理
 

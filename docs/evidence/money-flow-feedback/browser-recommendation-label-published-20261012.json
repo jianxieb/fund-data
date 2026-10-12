@@ -1,0 +1,82 @@
+{
+  "checkedOn": "2026-10-12",
+  "scope": "Deployed recommendation wording only; no change to financial price assumptions and no claim of A01 completeness.",
+  "before": {
+    "url": "https://jianxieb.github.io/fund-data/?review=eccc324#money-flow",
+    "cards": [
+      "兴业 → 汇丰香港 → IBKR当前最低损耗；USD · 普通电汇；香港花旗／渣打收款指示→ 美元留在买股账户参考总损耗0.016%15.70 CNY",
+      "中行 → 中银香港 → IBKR普通出发账户；USD · 手机同名汇款；香港花旗／渣打收款指示→ 美元留在买股账户参考总损耗0.093%92.81 CNY",
+      "工行 → 中银香港 → IBKR普通出发账户；银行费按官方价；USD · 美元全额到账；香港花旗／渣打收款指示→ 美元留在买股账户参考总损耗0.386%385.87 CNY"
+    ],
+    "modelAsset": "assets/money-flow-model.js?v=78edcd20348e",
+    "quoteAsset": "data/money-flow-quotes.js?v=d28668eab34c",
+    "summary": "参考总损耗\n0.386%\n385.87 CNY\n其中账户期间费\n0.00 CNY\n已计入合计\n按公布参考费计算的余额\n14,854.64 USD\n全程明细"
+  },
+  "after": {
+    "url": "https://jianxieb.github.io/fund-data/?review=1693eda#money-flow",
+    "cards": [
+      "兴业 → 汇丰香港 → IBKR当前最低损耗；USD · 普通电汇；香港花旗／渣打收款指示→ 美元留在买股账户参考总损耗0.016%15.70 CNY",
+      "中行 → 中银香港 → IBKR普通出发账户；USD · 手机同名汇款；香港花旗／渣打收款指示→ 美元留在买股账户参考总损耗0.093%92.81 CNY",
+      "工行 → 中银香港 → IBKR普通出发账户；参考费项更少；USD · 美元全额到账；香港花旗／渣打收款指示→ 美元留在买股账户参考总损耗0.386%385.87 CNY"
+    ],
+    "modelAsset": "assets/money-flow-model.js?v=f1899fbafe92",
+    "quoteAsset": "data/money-flow-quotes.js?v=d28668eab34c",
+    "summary": "参考总损耗\n0.386%\n385.87 CNY\n其中账户期间费\n0.00 CNY\n已计入合计\n按公布参考费计算的余额\n14,854.64 USD\n全程明细",
+    "nodes": [
+      "01内地出发银行工商银行更换 ↗汇出笔数1笔⌄人民币本金 · 含费用100,000.00 CNY修改",
+      "02香港收款银行汇丰 HSBC One更换 ↗账户使用 12个月 · 银行管理费 0.00 CNYHSBC One本持有期均免管理费汇款到账14,856.99 USD累计损耗 0.370%",
+      "03买美股的账户IBKR更换 ↗买1笔 / 卖1笔 · 股价 100 USD优惠与费用券入金到账14,856.99 USD累计损耗 0.370%",
+      "04卖出后的资金留在买股账户⌄IBKR美元留在账户按公布参考费计算的余额14,854.64 USD累计损耗 0.386%"
+    ],
+    "dialogs": 0
+  },
+  "acceptance": {
+    "sameCardAmounts": true,
+    "sameSummary": true,
+    "keptObservedBankChoices": true,
+    "removedOfficialPriceOverstatement": true,
+    "ibkrCardChecks": 6,
+    "finalReturnCardChecks": 3,
+    "finalReturnEdges": 5,
+    "finalReturnSummary": true,
+    "finalReturnConservation": true,
+    "errors": 0,
+    "scope": "Actual deployed label correction and latest CIB/ZA/mainland numerical parity only; A01 remains open."
+  },
+  "finalReturn": {
+    "url": "https://jianxieb.github.io/fund-data/?review=1693eda#money-flow",
+    "label": "applied:cib-mainland-latest",
+    "config": {
+      "outcome": "mainland",
+      "planId": "best:cib:hsbc:za:USD:manual:swift:chats:hsbc:hsbc:linked:USD"
+    },
+    "cards": [
+      "✓ 兴业 → 汇丰香港 → ZA当前最低损耗；USD · 普通电汇；本地美元转账→ 汇丰香港美元 → 汇丰中国结汇参考总损耗0.825%824.61 CNY",
+      "中行 → 中银香港 → ZA普通出发账户；USD · 手机同名汇款；本地美元转账→ 汇丰香港美元 → 汇丰中国结汇参考总损耗0.901%901.11 CNY",
+      "工行 → 汇丰香港 → ZA少用香港账户；普通出发账户；银行费按官方价；USD · 美元全额到账；本地美元转账→ 汇丰香港美元 → 汇丰中国结汇全程损耗1.192%1,191.84 CNY"
+    ],
+    "summary": "参考总损耗\n0.825%\n824.61 CNY\n其中账户期间费\n0.00 CNY\n已计入合计\n按公布参考费计算的余额\n99,175.39 CNY\n全程明细",
+    "edges": [
+      "↓内地购美元 → 汇往香港依据参考损耗0.000%0.00 CNY汇出币种美元港币人民币原币汇款渠道普通汇款 · 寰宇人生卡汇出手续费0.00 CNY汇出电讯费0.00 CNY内地购汇差额1 USD = 6.705925 CNY · 点差五折0.00 CNY内地→香港中转行费USD直达汇丰香港 · 2026公开到账记录估算 0.00 CNY香港首次汇入费0.00 HKD",
+      "↓转入买股账户依据损耗0.000%0.00 CNY入金方式本地美元转账 → 本人众安 ZA Bank账户汇丰 HSBC One → 众安 ZA Bank · CHATS0.00 HKD众安 ZA Bank · 本地USD收款0.00 CNYZA Bank · 美股交易入金费0.00 CNY",
+      "↓买入美股 → 卖出依据损耗0.029%28.97 CNY盈亏 0.00 USD买入美股 · 1笔149股 · 未买入余款 10.20 USD · 佣金 0.00＋平台 1.99＋清算／监管 0.00 USD1.99 USD≈ 13.34 CNY卖出美股 · 1笔149股 · 佣金 0.00＋平台 1.99＋清算／监管 0.34 USD2.33 USD≈ 15.63 CNY证券账户／托管费0.00 USD",
+      "↓出金 → 汇丰 HSBC One依据损耗0.000%0.00 CNYZA Bank · 美股交易出金费0.00 CNY众安 ZA Bank → 汇丰 HSBC One · USD CHATS0.00 CNY券商出金中转行费0.00 CNY",
+      "↓汇回内地 → 美元结汇依据损耗0.796%795.64 CNY内地收款银行汇丰中国更换 ↗回款币种美元原币港币 · 香港换汇汇回渠道两地同集团 · 同名专用转账⌄本持有期12个月均已满足免月费条件 · 0.00 CNY汇丰中国 · 卓越理财本持有期均免月费1 USD = 6.65255438 CNY香港→内地汇出费0.00 HKD回内地中转／收款费0.00 CNY内地结汇差额795.64 CNY"
+    ],
+    "nodes": [
+      "01内地出发银行兴业 · 寰宇人生更换 ↗汇出笔数1笔⌄人民币本金 · 含费用100,000.00 CNY修改",
+      "02香港收款银行汇丰 HSBC One更换 ↗账户使用 12个月 · 银行管理费 0.00 CNYHSBC One本持有期均免管理费ZA银行权益ZA Perks · 标准⌄汇款到账14,912.19 USD累计损耗 0.000%",
+      "03买美股的账户ZA Bank更换 ↗买1笔 / 卖1笔 · 股价 100 USD优惠与费用券入金到账14,912.19 USD累计损耗 0.000%",
+      "04卖出后的资金汇回内地结汇⌄取回／消费银行汇丰 HSBC One更换 ↗卖出后待出金14,907.87 USD累计损耗 0.029%"
+    ],
+    "selectedId": "best:cib:hsbc:za:USD:manual:swift:chats:hsbc:hsbc:linked:USD",
+    "dialogs": 0,
+    "console": []
+  },
+  "assets": {
+    "model": "assets/money-flow-model.js?v=f1899fbafe92",
+    "frontend": "assets/money-flow.js?v=d3d56f518625",
+    "style": "assets/style.css?v=b9290498f6e2",
+    "quotes": "data/money-flow-quotes.js?v=d28668eab34c"
+  }
+}
