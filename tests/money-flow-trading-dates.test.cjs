@@ -35,7 +35,7 @@ test('explicit sale date controls securities custody and return offer date witho
   assert.equal(sameDay.monthlyUsd,0);
   assert.ok(run('hsbc',{trade25:false}).monthlyUsd>0);
   const Q=require('./fixtures/money-flow-quotes-20261012.json');
-  const profile={...base,budgetCny:100000,count:1,profitUsd:0,taxRate:20,creditCny:0,startBank:'cib',bank:'hsbc',broker:'za',route:'USD',mainlandMethod:'swift',depositMethod:'chats',returnBank:'hsbc',exitBank:'hsbc',outcome:'mainland',returnMethod:'linked',returnCurrency:'USD',hsbcBalanceWaiver:false,cnHsbcFeeWaived:true,sellDate:'2026-10-12'};
+  const profile={...base,budgetCny:100000,count:1,profitUsd:0,taxRate:20,creditCny:0,startBank:'cib',bank:'hsbc',broker:'za',route:'USD',mainlandMethod:'swift',depositMethod:'chats',returnBank:'hsbc',exitBank:'boc',outcome:'mainland',returnMethod:'swift',returnCurrency:'USD',hsbcBalanceWaiver:false,cnHsbcFeeWaived:true,sellDate:'2026-10-12'};
   const r=M.calculatorJourney(M.calculatorRoute(profile),D,Q).selected;
   assert.ok(r);assert.equal(r.returnDate,profile.sellDate);
   assert.equal(r.rows.find(row=>row.key==='account').items.find(item=>item.bankId==='hsbc'&&item.region!=='mainland').months,12);

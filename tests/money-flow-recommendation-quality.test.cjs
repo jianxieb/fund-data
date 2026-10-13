@@ -80,26 +80,26 @@ test('a route with fewer accounts remains eligible even when its period and tota
   assert.equal(D.mainlandBanks.find(bank => bank.id === 'cib').accountService, undefined);
 });
 
-test('qualified mainland-return recommendations compare settlement banks instead of being driven by unqualified period fees', () => {
+test('mainland-return comparisons retain the four receivers and never fill an unpriced return just to produce a plan', () => {
   const quotes = require('./fixtures/money-flow-quotes-20261012.json');
-  const qualified = { ...input, date: '2026-10-12', outcome: 'mainland', hsbcBalanceWaiver: true,
-    cnHsbcFeeWaived: true, cnHangFeeWaived: true, cnScFeeWaived: true };
-  const plans = M.calculatorRecommendations(qualified, D, quotes).plans;
-  assert.ok(plans.length > 0 && plans.length < 5);
-  assert.equal(plans[0].config.startBank, 'cib');
-  assert.equal(plans[0].config.returnBank, 'hsbc'); assert.equal(plans[0].config.exitBank, 'hsbc');
-  close(plans[0].result.costCny, 824.6116401177761);
-  assert.ok(plans.every(plan => plan.config.exitBank !== 'hang' && plan.result.costCny / plan.result.budgetCny < .03));
-  assert.ok(plans.every(plan => period(plan.result) === 0));
-  assert.ok(plans.every(plan => plan.benefits.length > 0));
-  const unqualified = { ...qualified, hsbcBalanceWaiver: false, cnHsbcFeeWaived: false,
-    cnHangFeeWaived: false, cnScFeeWaived: false };
-  const old = M.calculatorRecommendations(unqualified, D, quotes).plans[0];
-  assert.equal(old.config.exitBank, 'hang'); close(period(old.result), 180 * 12);
-  close(old.result.costCny, 3965.140896627975);
-  const manualHang = M.calculatorJourney(M.calculatorRoute({ ...qualified, startBank: 'hang', bank: 'hang',
-    route: 'CNH', fxMode: 'bank', mainlandMethod: 'linked', returnBank: 'hang', exitBank: 'hang', returnMethod: 'linked' }), D, quotes).selected;
-  assert.ok(manualHang?.complete); close(period(manualHang), 0);
+  const qualified = { ...input, date:'2026-10-12', outcome:'mainland', hsbcBalanceWaiver:true,
+    cnHsbcFeeWaived:true, cnHangFeeWaived:true, cnScFeeWaived:true };
+  // Large ordinary USD returns still lack a correspondent tariff. The limited
+  // HKD arrival reference is a different real route, within its recorded cap.
+  assert.deepEqual(M.calculatorRecommendations(qualified,D,quotes).plans,[]);
+  const small={...qualified,budgetCny:5000,returnCurrency:'HKD'};
+  const plans=M.calculatorRecommendations(small,D,quotes).plans;
+  assert.ok(plans.length>0);
+  assert.equal(plans[0].config.startBank,'cib');
+  assert.equal(plans[0].config.returnBank,'bochk'); assert.equal(plans[0].config.exitBank,'boc');
+  close(plans[0].result.costCny,60.84076701648338);
+  assert.ok(plans.every(plan=>D.calculator.departureBanks.includes(plan.config.startBank)&&D.calculator.receivingBanks.includes(plan.config.exitBank)));
+  assert.ok(plans.every(plan=>period(plan.result)===0&&plan.result.complete));
+  const unqualified=M.calculatorRecommendations({...small,hsbcBalanceWaiver:false},D,quotes).plans;
+  assert.ok(unqualified.length>0); assert.equal(unqualified[0].config.startBank,'boc');
+  assert.ok(unqualified.every(plan=>period(plan.result)===0));
+  const retired=M.calculatorJourney(M.calculatorRoute({...qualified,exitBank:'hang'}),D,quotes);
+  assert.match(retired.error,/目录中的内地收款银行/);
 });
 
 test('recommendations retain named tradeoffs rather than padding a bank quota, and a dominated extra bank adds no plan', () => {
@@ -137,7 +137,7 @@ test('a sender cheapest mobile route cannot discard its more certain full-amount
   const plans = M.calculatorRecommendations(profile, D, quotes).plans;
   const chosen = plans.find(plan => plan.config.startBank === 'icbc');
   assert.ok(chosen); assert.equal(chosen.config.bank, 'za'); assert.equal(chosen.config.mainlandMethod, 'full');
-  close(chosen.result.costCny, full.costCny); assert.equal(Math.round(full.costCny * 100) / 100, 399.14);
+  close(chosen.result.costCny, full.costCny); assert.equal(Math.round(full.costCny * 100) / 100, 530.96);
   assert.ok(chosen.benefits.includes('少用香港账户')); assert.ok(chosen.benefits.includes('银行费按官方价'));
   assert.ok(!sources(plans).includes('hsbc') && !sources(plans).includes('ccb'));
 });

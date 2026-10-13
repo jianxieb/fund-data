@@ -62,6 +62,59 @@ test('departure picker has exactly four banks; retired saved senders repair with
     subject.act('choose', 'startBank', 'ccb'); assert.equal(subject.saved().startBank, 'boc');
   }
 });
+test('mainland receiving picker has the same four banks and migrates only retired receiving-bank settings', () => {
+  for (const exitBank of ['ccb','comm','hsbc','hang','sc','abc','missing']) {
+    const subject = ui({ startBank:'cib',bank:'hsbc',broker:'chief',returnBank:'bochk',outcome:'mainland',exitBank,
+      returnMethod:'linked',exitPrice:6.2,returnExtraCny:9,returnWireHkd:17,startSell:6.8,tradeFeeUsd:12,intermediaryCny:3 });
+    subject.render(); const saved=subject.saved();
+    assert.equal(saved.exitBank,'boc');
+    for(const [key,value] of Object.entries({startBank:'cib',bank:'hsbc',broker:'chief',returnBank:'bochk',startSell:6.8,tradeFeeUsd:12,intermediaryCny:3}))
+      assert.equal(saved[key],value,key);
+    for(const key of ['exitPrice','returnExtraCny','returnWireHkd']) assert.equal(saved[key],'');
+    subject.act('pick','','exitBank');
+    const ids=[...subject.modal().matchAll(/data-field="exitBank" data-value="([^"]+)"/g)].map(m=>m[1]);
+    assert.deepEqual(ids,['boc','cib','cmb','icbc']);
+    subject.act('choose','exitBank',exitBank); assert.equal(subject.saved().exitBank,'boc');
+  }
+});
+test('return transfer and settlement own separate fees, rates, details and sources in USD and HKD', () => {
+  for(const returnCurrency of ['USD','HKD']) for(const exitBank of D.calculator.receivingBanks) {
+    const subject=ui({startBank:'cib',bank:'hsbc',broker:'za',returnBank:'hsbc',outcome:'mainland',exitBank,route:'USD',returnCurrency,
+      mainlandMethod:'swift',depositMethod:'chats',returnMethod:'swift',months:0});
+    const html=subject.render(), wire=section(html,'汇回内地'), settlement=section(html,'内地结汇');
+    assert.ok(wire&&settlement); assert.ok(html.indexOf('aria-label="汇回内地"')<html.indexOf('aria-label="内地结汇"'));
+    assert.match(wire,/汇回手续费/); assert.match(wire,/中转费/); assert.match(wire,/本行收款费/);
+    assert.doesNotMatch(wire,/结汇差额|1 (?:USD|HKD) =/);
+    assert.match(settlement,/结汇差额/); assert.doesNotMatch(settlement,/汇回手续费|中转费|本行收款费/);
+    assert.equal((settlement.match(new RegExp('1 '+returnCurrency+' =','g'))||[]).length,1);
+    const wrapper=wire.split('class="flow-account-field"')[1];
+    assert.ok(wrapper.indexOf('内地收款银行')<wrapper.indexOf('class="flow-account-button"'));
+    assert.doesNotMatch(wrapper.split('class="flow-account-button"')[1].split('</button>')[0],/>内地收款银行</);
+    subject.act('detail','','edge-remit'); assert.match(subject.modal(),/香港→内地汇出费/); assert.doesNotMatch(subject.modal(),/内地结汇差额/);
+    subject.act('detail','','edge-settle'); assert.match(subject.modal(),/内地结汇差额/); assert.doesNotMatch(subject.modal(),/香港→内地汇出费|回内地中转行费/);
+    assert.equal((subject.modal().match(new RegExp('1 '+returnCurrency+' =','g'))||[]).length,1);
+    assert.doesNotMatch(subject.modal(),/实际兑换顺序/);
+    if(returnCurrency==='HKD') {
+      assert.ok(html.indexOf('aria-label="美元换港币"')<html.indexOf('aria-label="汇回内地"'));
+      subject.act('detail','','edge-return-fx'); assert.match(subject.modal(),/USD → HKD换汇差额/); assert.doesNotMatch(subject.modal(),/内地结汇差额/);
+    } else assert.doesNotMatch(html,/aria-label="美元换港币"/);
+  }
+});
+test('changing a downstream return currency never reallocates earlier displayed purchase or trading cents', () => {
+  const base={startBank:'cib',bank:'hsbc',broker:'za',returnBank:'hsbc',exitBank:'cib',outcome:'mainland',route:'USD',
+    mainlandMethod:'swift',depositMethod:'chats',returnMethod:'swift',months:12};
+  const usd=ui({...base,returnCurrency:'USD'}).render(), hkd=ui({...base,returnCurrency:'HKD'}).render();
+  for(const label of ['汇往香港','转入买股账户','买入美股 → 卖出','ZA Bank出金 → 汇丰 HSBC One'])
+    assert.equal(section(usd,label),section(hkd,label),label);
+});
+test('purchase and settlement pickers quote actual rates without a competing relative-loss percentage', () => {
+  const subject=ui({startBank:'cib',bank:'hsbc',broker:'za',returnBank:'hsbc',exitBank:'cib',outcome:'mainland',route:'USD',returnCurrency:'USD'});
+  subject.render(); subject.act('pick','','startBank');
+  assert.match(subject.modal(),/最低可比购汇价/); assert.doesNotMatch(subject.modal(),/购汇少得|相对损耗|系数/);
+  subject.act('detail','','quotes');
+  assert.match(subject.modal(),/购汇、香港换汇和结汇均按同一组参考汇率/);
+  assert.doesNotMatch(subject.modal(),/最优购汇差额为0|最低有效卖出价为基准/);
+});
 test('Hong Kong banks and stock venues remain complete and enabled after plan application and manual changes', () => {
   const subject = ui(); subject.render(); subject.act('preset', '', 'cib-trade25');
   for (const [key, expected] of [['bank', D.calculator.hkBanks], ['returnBank', D.calculator.hkBanks], ['broker', D.calculator.brokers]]) {

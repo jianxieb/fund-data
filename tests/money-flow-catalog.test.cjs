@@ -13,8 +13,10 @@ const cibSmallUsd = require('./fixtures/money-flow-cib-small-usd-20260317.json')
 const cibTariff = require('./fixtures/money-flow-cib-tariff-20261011.json');
 const config = { ...currentConfig, date: '2026-10-10' };
 const close = (a, b) => assert.ok(Math.abs(a - b) < 1e-6, a + ' != ' + b);
-const base = M.calculatorRoute({ ...config, startBank: 'cib', bank: 'bochk', broker: 'za', returnBank: 'bochk', exitBank: 'hsbc', route: 'USD', outcome: 'broker-balance' });
+const base = M.calculatorRoute({ ...config, startBank: 'cib', bank: 'bochk', broker: 'za', returnBank: 'bochk', exitBank: 'boc', route: 'USD', outcome: 'broker-balance' });
 const run = changes => M.calculatorJourney({ ...base, ...changes }, D, Q);
+// Historical tariff records remain auditable without reopening retired pickers.
+const tariffAudit = changes => M.mainlandJourney({ ...base, ...changes, currency:'CNY', selectedOnly:true, pricingBasis:'reference-mid' }, D, Q);
 const ledger = r => {
   assert.ok(Number.isFinite(r.net));
   close(r.budgetCny + r.profitUsd * r.refs.USD - r.costCny - r.taxCny + r.fxImpactCny, r.netCny);
@@ -128,39 +130,40 @@ test('uSMART same-bank funding includes the published HSBC account without waivi
   assert.equal(explicitCrossBank.rows.find(row => row.key === 'depositOther').cny, null);
 });
 
-test('all 262440 catalogue combinations including USD and HKD returns retain selection and reconcile or name the exact local issue', () => {
+test('current catalogue model states retain selection and reconcile or name their local issue', () => {
   const r = auditCurrent({ quotes: Q, date: config.date });
-  assert.equal(r.combinationsChecked, 262440);
+  const departure=D.calculator.departureBanks.length, receiving=D.calculator.receivingBanks.length, hk=D.calculator.hkBanks.length;
+  assert.equal(r.combinationsChecked,departure*hk*D.calculator.brokers.length*D.calculator.currencies.length*(1+3*hk+hk*receiving*2));
   assert.equal(r.completeQuoteCombinations + r.partialQuoteCombinations + r.inputOrRouteIssues, r.combinationsChecked);
   assert.equal(r.ledgerChecks, r.completeQuoteCombinations + r.partialQuoteCombinations);
   assert.ok(r.completeQuoteCombinations > 0); assert.ok(r.partialQuoteCombinations > 0);
   assert.ok(r.routes.every(r => !r.key.includes('abc')));
   assert.equal(r.channelProfiles.length, 3);
   for (const profile of r.channelProfiles) {
-    assert.ok(profile.checked - profile.chequeBoundaryChecks > 139295);
+    assert.ok(profile.checked > profile.chequeBoundaryChecks);
     for (const method of ['via-bochk', 'via-hsbc', 'via-hang']) assert.ok(profile.coverage.depositMethods.includes(method));
     assert.ok(profile.chequeBoundaryChecks > 0);
     assert.equal(profile.priced + profile.partial + profile.routeIssues, profile.checked);
     assert.equal(profile.ledgerChecks, profile.priced + profile.partial);
     assert.ok(profile.retainedPartialResults > 0);
     assert.ok(profile.referencePriced <= profile.priced);
-    assert.deepEqual(profile.coverage.mainlandMethods, ['boc-mobile', 'boc-online', 'full', 'icbc-mobile', 'linked', 'swift']);
+    assert.deepEqual(profile.coverage.mainlandMethods, ['boc-mobile', 'boc-online', 'full', 'icbc-mobile', 'swift']);
     assert.deepEqual(profile.coverage.fxModes, ['auto', 'bank', 'manual']);
     assert.deepEqual(profile.coverage.depositMethods, ['chats', 'chats-citic', 'chats-hang', 'chats-hsbc', 'chats-icbc-asia', 'edda', 'fps', 'internal', 'swift', 'via-bochk', 'via-hang', 'via-hsbc', 'via-icbc-asia']);
-    assert.deepEqual(profile.coverage.returnMethods, ['bochk-fast', 'icbc-express', 'linked', 'swift']);
+    assert.deepEqual(profile.coverage.returnMethods, ['bochk-fast', 'icbc-express', 'swift']);
     assert.deepEqual(profile.coverage.returnCurrencies, ['HKD', 'USD']);
     assert.equal(Object.values(profile.sources).reduce((sum, source) => sum + source.checked, 0), profile.checked);
   }
   assert.equal(r.channelProfiles[0].profile.hsbcBalanceWaiver, false);
   assert.equal(r.channelProfiles[0].profile.trade25, false);
-  assert.deepEqual(r.channelProfiles[2].qualificationCoverage, ['chequePreFilled', 'chiefMonthly', 'cnHangFeeWaived', 'cnHsbcFeeWaived', 'cnScFeeWaived',
+  assert.deepEqual(r.channelProfiles[2].qualificationCoverage, ['chequePreFilled', 'chiefMonthly',
     'hsbcBalanceWaiver', 'hsbcChequeNonCounter', 'icbcCnhAccount', 'icbcEAccount', 'scCnhAccount', 'trade25', 'usmartPromo', 'zaPerksLevel', 'zaSwiftUsed']);
   const bounds = r.numericBoundaries;
-  assert.equal(bounds.checked, 63180);
+  assert.equal(bounds.checked,bounds.profiles.reduce((sum,p)=>sum+p.checked,0));
   assert.deepEqual(bounds.profiles.map(p => p.id), ['principal-0.01', 'principal-1', 'principal-100', 'principal-1000', 'principal-100000', 'principal-1000000',
     'transfers-120', 'holding-1200-months', 'share-price-0.01', 'share-price-1000000', 'orders-120-per-side', 'impossible-loss', 'oversized-tax']);
   for (const p of bounds.profiles) {
-    assert.equal(p.checked, 4860); assert.equal(p.priced + p.partial + p.routeIssues, p.checked);
+    assert.equal(p.checked,departure*hk*D.calculator.brokers.length*D.calculator.currencies.length*6); assert.equal(p.priced + p.partial + p.routeIssues, p.checked);
     assert.equal(p.ledgerChecks, p.priced + p.partial); assert.ok(p.referencePriced <= p.priced);
     if (p.id === 'impossible-loss' || p.id === 'oversized-tax') {
       assert.equal(p.routeIssues, p.checked); assert.ok(p.retainedPartialResults > 0);
@@ -172,7 +175,7 @@ test('all 262440 catalogue combinations including USD and HKD returns retain sel
   const receipts = r.executedFxPrices;
   assert.equal(receipts.syntheticOnly, true);
   assert.deepEqual(receipts.prices, { HKD: 8, CNH: 6.72 });
-  assert.equal(receipts.checked, 163944);
+  assert.equal(receipts.checked,receipts.profiles.reduce((sum,p)=>sum+p.checked,0));
   assert.equal(receipts.profiles.length, 6);
   assert.equal(receipts.priced + receipts.partial + receipts.routeIssues, receipts.checked);
   assert.equal(receipts.ledgerChecks, receipts.priced + receipts.partial);
@@ -333,14 +336,16 @@ test('CCB current personal full-amount tariff prices every receiving bank and st
   assert.equal(partial.steps.hongKong, undefined);
 });
 
-test('the screenshot uses one benchmark: HSBC 0.451% equals 450.87 CNY; the best CIB purchase is zero', () => {
+test('purchase loss uses the absolute midpoint even for the best CIB price and historical HSBC quote', () => {
   const r = run({ startBank: 'hsbc', bank: 'hsbc', broker: 'hsbc', mainlandMethod: 'linked', trade25: true }).selected;
   const entry = r.rows.find(x => x.key === 'entryFx');
-  close(entry.cny, 100000 * (1 - 6.70175 / Q.banks.hsbc.quotes.USD.sell));
-  assert.equal((entry.cny / 100000 * 100).toFixed(3), '0.451');
-  assert.equal(entry.cny.toFixed(2), '450.87');
+  const reference=(Q.banks.boc.quotes.USD.buy+Q.banks.boc.quotes.USD.sell)/2;
+  close(entry.cny, 100000 * (1 - reference / Q.banks.hsbc.quotes.USD.sell));
+  close(r.refs.USD,reference);
   close(r.fxImpactCny, 0); ledger(r);
-  close(run({}).selected.rows.find(x => x.key === 'entryFx').cny, 0);
+  const best=run({}).selected;
+  assert.ok(best.rows.find(x=>x.key==='entryFx').cny>0);
+  close(best.rows.find(x=>x.key==='entryFx').cny,best.steps.mainlandForeign*(best.startSell-reference));
 });
 
 test('original RMB transfer has no artificial FX fee; CNY/CNH basis moves to the actual conversion', () => {
@@ -377,14 +382,14 @@ test('published uSMART BOCHK internal funding is free, without incorrectly waivi
 });
 
 test('HSBC China standard wire is priced separately from the free linked service; documented inward fees remain zero', () => {
-  const ordinary = run({ startBank: 'hsbc', bank: 'bochk', mainlandMethod: 'swift', count: 1 }).selected;
+  const ordinary = tariffAudit({ startBank: 'hsbc', bank: 'bochk', mainlandMethod: 'swift', count: 1 }).selected;
   close(ordinary.rows.find(x => x.key === 'sender').cny, 220);
   close(ordinary.steps.mainlandForeign, (100000 - 220) / ordinary.startSell);
   ledger(ordinary);
-  const linked = run({ startBank: 'hsbc', bank: 'hsbc', mainlandMethod: 'linked' }).selected;
+  const linked = tariffAudit({ startBank: 'hsbc', bank: 'hsbc', mainlandMethod: 'linked' }).selected;
   close(linked.rows.find(x => x.key === 'sender').cny, 0);
   for (const exitBank of ['cib', 'hsbc', 'comm']) {
-    const back = run({ outcome: 'mainland', returnBank: 'bochk', exitBank, returnMethod: 'swift' }).selected;
+    const back = tariffAudit({ outcome: 'mainland', returnBank: 'bochk', exitBank, returnMethod: 'swift' }).selected;
     const item = back.rows.find(x => x.key === 'returnOther').items.find(x => x.label.endsWith('USD收款费'));
     close(item.cny, 0);
     assert.ok(!back.missing.includes(item.label));
@@ -395,18 +400,18 @@ test('HSBC China standard wire is priced separately from the free linked service
 
 test('Hang Seng China Prestige uses the current ordinary FX-wire tariff and free inward receipt, separately from linked transfers', () => {
   for (const route of ['USD', 'HKD']) {
-    const ordinary = run({ startBank: 'hang', bank: 'bochk', route, mainlandMethod: 'swift', fxMode: 'bank', count: 2,
+    const ordinary = tariffAudit({ startBank: 'hang', bank: 'bochk', route, mainlandMethod: 'swift', fxMode: 'bank', count: 2,
       startSell: route === 'USD' ? 6.75 : .86 }).selected;
     close(ordinary.rows.find(x => x.key === 'sender').cny, 340);
     close(ordinary.steps.mainlandForeign, (100000 - 340) / ordinary.startSell);
     assert.equal(ordinary.rows.find(x => x.key === 'entryMiddle').cny, null);
     ledger(ordinary);
   }
-  const linked = run({ startBank: 'hang', bank: 'hang', mainlandMethod: 'linked', count: 4, usedFreeTransfers: 3, startSell: 6.75 }).selected;
+  const linked = tariffAudit({ startBank: 'hang', bank: 'hang', mainlandMethod: 'linked', count: 4, usedFreeTransfers: 3, startSell: 6.75 }).selected;
   close(linked.rows.find(x => x.key === 'sender').cny, 0);
   close(linked.rows.find(x => x.key === 'entryMiddle').cny, 0);
   assert.match(linked.start.name, /优越理财/);
-  const back = run({ outcome: 'mainland', returnBank: 'bochk', exitBank: 'hang', returnMethod: 'swift', exitPrice: 6.7 }).selected;
+  const back = tariffAudit({ outcome: 'mainland', returnBank: 'bochk', exitBank: 'hang', returnMethod: 'swift', exitPrice: 6.7 }).selected;
   close(back.rows.find(x => x.key === 'returnOther').items.find(x => x.label.endsWith('USD收款费')).cny, 0);
   assert.ok(back.missing.includes('回内地中转行费'));
   ledger(back);
@@ -520,28 +525,28 @@ test('mainland premium account fees use CNY, actual charged months and distinct 
 test('mainland service fees charge only used accounts once and remain separate from HSBC One', () => {
   const input = { startBank: 'hsbc', bank: 'hsbc', returnBank: 'hsbc', exitBank: 'hsbc', broker: 'hsbc', route: 'USD', mainlandMethod: 'linked',
     returnMethod: 'linked', outcome: 'mainland', months: 12, hsbcBalanceWaiver: false, trade25: true };
-  const same = run(input).selected, costs = same.rows.find(row => row.key === 'account');
+  const same = tariffAudit(input).selected, costs = same.rows.find(row => row.key === 'account');
   assert.equal(costs.items.filter(item => item.region === 'mainland').length, 1);
   close(costs.cny, 3600 + 12 * 100 * same.refs.HKD); ledger(same);
-  const hkFree = run({ ...input, hsbcBalanceWaiver: true }).selected;
+  const hkFree = tariffAudit({ ...input, hsbcBalanceWaiver: true }).selected;
   close(hkFree.rows.find(row => row.key === 'account').cny, 3600);
-  const cnFree = run({ ...input, cnHsbcFeeWaived: true }).selected;
+  const cnFree = tariffAudit({ ...input, cnHsbcFeeWaived: true }).selected;
   close(cnFree.rows.find(row => row.key === 'account').cny, 12 * 100 * same.refs.HKD);
   close(cnFree.rows.find(row => row.key === 'brokerAccount').cny, 0);
-  const separate = run({ ...input, exitBank: 'hang', returnMethod: 'swift', hsbcBalanceWaiver: true }).selected;
+  const separate = tariffAudit({ ...input, exitBank: 'hang', returnMethod: 'swift', hsbcBalanceWaiver: true }).selected;
   close(separate.rows.find(row => row.key === 'account').cny, 5760); ledger(separate);
-  const unused = run({ ...input, startBank: 'boc', mainlandMethod: 'swift', exitBank: 'hang', outcome: 'broker-balance', hsbcBalanceWaiver: true }).selected;
+  const unused = tariffAudit({ ...input, startBank: 'boc', mainlandMethod: 'swift', exitBank: 'hang', outcome: 'broker-balance', hsbcBalanceWaiver: true }).selected;
   assert.ok(!unused.rows.find(row => row.key === 'account').items.some(item => item.region === 'mainland'));
-  const missing = run({ ...input, startBank: 'sc', bank: 'bochk', mainlandMethod: 'swift', outcome: 'broker-balance' }).partial;
+  const missing = tariffAudit({ ...input, startBank: 'sc', bank: 'bochk', mainlandMethod: 'swift', outcome: 'broker-balance' }).partial;
   close(missing.rows.find(row => row.key === 'account').items.find(item => item.region === 'mainland').cny, 1800);
-  const insufficient = run({ budgetCny: 2004, count: 1, startBank: 'hang', route: 'CNH', fxMode: 'bank', months: 12 });
+  const insufficient = tariffAudit({ budgetCny: 2004, count: 1, startBank: 'hang', route: 'CNH', fxMode: 'bank', months: 12 });
   assert.match(insufficient.error, /不足以支付账户期间费/);
   close(insufficient.partial.rows.find(row => row.key === 'account').cny, 2160);
   close(insufficient.partial.sourceRemainderCny, 2);
   assert.ok(insufficient.partial.steps.proceedsUsd > 0);
   assert.equal(insufficient.partial.rows.filter(row => row.key === 'account').length, 1);
-  assert.ok(run({ cnScFreeMonths: -1, outcome: 'broker-balance' }).selected);
-  assert.ok(run({ startBank: 'sc', route: 'CNH', fxMode: 'bank', cnScFeeWaived: true, cnScFreeMonths: -1 }).selected);
+  assert.ok(tariffAudit({ cnScFreeMonths: -1, outcome: 'broker-balance' }).selected);
+  assert.ok(tariffAudit({ startBank: 'sc', route: 'CNH', fxMode: 'bank', cnScFeeWaived: true, cnScFreeMonths: -1 }).selected);
 });
 
 test('stale quotes keep tariff data but cannot claim a complete quote; missing quote preserves selection', () => {
@@ -688,7 +693,7 @@ test('unpriced transfer subtotals and private quote overrides cannot become reco
   const stale = structuredClone(Q);
   for (const bank of Object.values(stale.banks)) for (const quote of Object.values(bank.quotes)) quote.asOf = '2020-01-01';
   assert.deepEqual(M.calculatorRecommendations(input, D, stale).plans, []);
-  const returns = M.calculatorRecommendations({ ...input, outcome: 'mainland' }, D, Q);
+  const returns = M.calculatorRecommendations({ ...input, budgetCny:5000, outcome: 'mainland', returnCurrency:'HKD' }, D, diversityQuotes);
   assert.ok(returns.plans.length > 0);
   assert.ok(returns.plans.every(p => p.config.broker !== 'ibkr' && p.result.complete)); // USD withdrawal correspondent fee is still unpriced
 });
@@ -765,7 +770,7 @@ test('upstream comparison retains real bank asset qualification without transfer
 
 test('each upstream recommendation matches an independent exhaustive comparison with confirmed bank fee waivers', () => {
   const data = structuredClone(D);
-  data.calculator.mainland = ['boc', 'cib', 'hsbc']; data.calculator.hkBanks = ['bochk', 'hsbc'];
+  data.calculator.mainland = ['boc', 'cib']; data.calculator.hkBanks = ['bochk', 'hsbc'];
   const input = { ...base, count: 2, trade25: true, hsbcBalanceWaiver: true, cnHsbcFeeWaived: true, outcome: 'broker-balance' }, minimum = new Map();
   const broker = input.broker;
   for (const startBank of data.calculator.mainland) for (const bank of data.calculator.hkBanks)

@@ -72,7 +72,7 @@ test('a bridge account carries its own period fee and asset qualification and is
   close(hsbcItem(run({ ...s, bankBalancesHkd: { hsbc: 10000 } }).selected)[0].cny, 0);
   close(hsbcItem(run({ ...s, hsbcBalanceWaiver: true }).selected)[0].cny, 0);
   for (const outcome of ['usd-balance', 'usd-card', 'cnh-card', 'mainland']) {
-    const r = run({ ...s, outcome, returnBank: 'hsbc', exitBank: 'hsbc', returnMethod: 'linked' }).selected;
+    const r = run({ ...s, outcome, returnBank: 'hsbc', exitBank: 'boc', returnMethod: 'swift' }).selected;
     assert.ok(r); assert.equal(hsbcItem(r).length, 1); close(hsbcItem(r)[0].cny, 1200 * r.refs.HKD); reconcile(r);
   }
   const unused = run({ ...s, depositMethod: 'via-bochk', returnBank: 'hsbc' }).selected;

@@ -9,6 +9,7 @@
     calculator: {
       // Account choice is independent of whether a full route has a public quote.
       departureBanks: ['boc', 'cib', 'cmb', 'icbc'],
+      receivingBanks: ['boc', 'cib', 'cmb', 'icbc'],
       mainland: ['boc', 'cib', 'cmb', 'icbc', 'ccb', 'comm', 'hsbc', 'hang', 'sc'],
       hkBanks: ['bochk', 'hsbc', 'za', 'hang', 'sc', 'icbc-asia'], brokers: ['ibkr', 'hsbc', 'za', 'chief', 'usmart'],
       fxComparison: ['boc', 'cib', 'cmb', 'icbc'], currencies: ['CNH', 'USD', 'HKD'],

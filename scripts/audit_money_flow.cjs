@@ -5,6 +5,8 @@ const vm = require('node:vm');
 const path = require('node:path');
 const M = require('../assets/money-flow-model.js');
 const D = require('../data/money-flow.js');
+const departureBanks = D.calculator.departureBanks || D.calculator.mainland;
+const receivingBanks = D.calculator.receivingBanks || D.calculator.mainland;
 const context = { window: {} };
 vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../data/money-flow-quotes.js'), 'utf8'), context);
 const Q = context.window.MONEY_FLOW_QUOTES;
@@ -30,9 +32,11 @@ function audit({ quotes = Q, date = config.date } = {}) {
   const result = { date, combinationsChecked: 0, completeQuoteCombinations: 0, partialQuoteCombinations: 0,
     inputOrRouteIssues: 0, ledgerChecks: 0, autoFxTimingChecks: 0, issueCounts: {}, missingCounts: {}, routes: [] };
   const routes = new Map();
-  for (const startBank of D.calculator.mainland) for (const bank of D.calculator.hkBanks) for (const broker of D.calculator.brokers)
-    for (const returnBank of D.calculator.hkBanks) for (const exitBank of D.calculator.mainland)
-      for (const route of D.calculator.currencies) for (const outcome of ['broker-balance', 'usd-balance', 'usd-card', 'cnh-card', 'mainland']) for (const returnCurrency of outcome === 'mainland' ? ['USD', 'HKD'] : ['USD']) {
+  for (const startBank of departureBanks) for (const bank of D.calculator.hkBanks) for (const broker of D.calculator.brokers)
+    for (const route of D.calculator.currencies) for (const outcome of ['broker-balance', 'usd-balance', 'usd-card', 'cnh-card', 'mainland'])
+      for (const returnBank of outcome === 'broker-balance' ? [bank] : D.calculator.hkBanks)
+        for (const exitBank of outcome === 'mainland' ? receivingBanks : [startBank])
+          for (const returnCurrency of outcome === 'mainland' ? ['USD', 'HKD'] : ['USD']) {
         result.combinationsChecked++;
         const s = M.calculatorRoute({ ...config, date, startBank, bank, broker, returnBank, exitBank, route, outcome, returnCurrency });
         const selectionIssue = M.calculatorIssue(s, D);
@@ -82,10 +86,10 @@ function auditExecutedFxPrices({ quotes = Q, date = config.date } = {}) {
     const profile = { budgetCny, fxMode, checked: 0, priced: 0, partial: 0, routeIssues: 0,
       ledgerChecks: 0, legChecks: 0, inclusiveAutoFxChecks: 0, manualFxChecks: 0, retainedPartialResults: 0 };
     const increment = key => { report[key]++; profile[key]++; };
-    for (const startBank of D.calculator.mainland) for (const bank of D.calculator.hkBanks) for (const route of ['HKD', 'CNH'])
+    for (const startBank of departureBanks) for (const bank of D.calculator.hkBanks) for (const route of ['HKD', 'CNH'])
       for (const outcome of ['broker-balance', 'usd-balance', 'usd-card', 'cnh-card', 'mainland'])
         for (const returnBank of outcome === 'broker-balance' ? [bank] : D.calculator.hkBanks)
-          for (const exitBank of outcome === 'mainland' ? D.calculator.mainland : [startBank])
+          for (const exitBank of outcome === 'mainland' ? receivingBanks : [startBank])
             for (const returnCurrency of outcome === 'mainland' ? ['USD', 'HKD'] : ['USD'])
               for (const withdrawalIndex of outcome === 'broker-balance' ? [1] : [1, 3]) {
       const s = M.calculatorRoute({ ...config, date, budgetCny, broker: 'ibkr', startBank, bank, route,
@@ -158,7 +162,7 @@ function auditNumericBoundaries({ quotes = Q, date = config.date } = {}) {
   for (const { id, ...changes } of cases) {
     const profile = { id, inputs: changes, checked: 0, priced: 0, referencePriced: 0, partial: 0, routeIssues: 0,
       ledgerChecks: 0, autoFxTimingChecks: 0, retainedPartialResults: 0, issueCounts: {} };
-    for (const startBank of D.calculator.mainland) for (const bank of D.calculator.hkBanks) for (const broker of D.calculator.brokers)
+    for (const startBank of departureBanks) for (const bank of D.calculator.hkBanks) for (const broker of D.calculator.brokers)
       for (const route of D.calculator.currencies) for (const outcome of ['broker-balance', 'usd-balance', 'usd-card', 'cnh-card', 'mainland']) for (const returnCurrency of outcome === 'mainland' ? ['USD', 'HKD'] : ['USD']) {
         const s = M.calculatorRoute({ ...base, ...changes, startBank, bank, broker, route, outcome, returnCurrency, returnBank: bank, exitBank: startBank });
         if (M.calculatorIssue(s, D)) throw new Error('Numeric boundary removed a catalogue choice: ' + JSON.stringify(s));
@@ -269,14 +273,14 @@ function auditChannels({ quotes = Q, date = config.date } = {}) {
       if (profile.id === 'all-relevant-qualifications' && tariff.preFilledHkd != null) qualificationCoverage.add('chequePreFilled');
       if (profile.id === 'all-relevant-qualifications' && tariff.nonCounterHkd != null) qualificationCoverage.add('hsbcChequeNonCounter');
     };
-    for (const startBank of D.calculator.mainland) for (const bank of D.calculator.hkBanks) for (const broker of D.calculator.brokers) for (const route of D.calculator.currencies) {
+    for (const startBank of departureBanks) for (const bank of D.calculator.hkBanks) for (const broker of D.calculator.brokers) for (const route of D.calculator.currencies) {
       const entry = { ...config, ...profile, date, startBank, bank, broker, route };
       const choices = M.calculatorChannels(entry, D);
       for (const mainlandMethod of choices.mainlandMethods) for (const fxMode of choices.fxModes) {
         const funding = { ...entry, mainlandMethod, fxMode };
         for (const depositMethod of M.calculatorChannels(funding, D).depositMethods) for (const outcome of ['broker-balance', 'usd-balance', 'usd-card', 'cnh-card', 'mainland']) {
           const returns = outcome === 'broker-balance' ? [bank] : D.calculator.hkBanks;
-          const exits = outcome === 'mainland' ? D.calculator.mainland : [startBank];
+          const exits = outcome === 'mainland' ? receivingBanks : [startBank];
           for (const returnBank of returns) for (const exitBank of exits) {
             const endpoint = { ...funding, depositMethod, outcome, returnBank, exitBank };
             for (const returnMethod of outcome === 'mainland' ? M.calculatorChannels(endpoint, D).returnMethods : ['']) for (const returnCurrency of outcome === 'mainland' ? ['USD', 'HKD'] : ['USD']) {

@@ -1273,7 +1273,9 @@ test('fresh accounts default to management-fee waivers without enabling other of
   assert.equal(saved.startBank, 'boc'); assert.equal(saved.bank, 'bochk'); assert.equal(saved.broker, 'za');
   assert.equal(saved.budgetCny, '100000'); assert.equal(saved.count, '1'); assert.equal(saved.months, '12');
   const result = M.calculatorJourney({ ...saved, date: '2026-10-12' }, D, quotes).selected;
-  close(result.costCny, 105.87947306961567);
+  close(result.refs.USD, (quotes.banks.boc.quotes.USD.buy + quotes.banks.boc.quotes.USD.sell) / 2);
+  close(result.rows.find(row => row.key === 'entryFx').cny, 100000 - result.steps.mainlandForeign * result.refs.USD);
+  close(result.costCny, result.budgetCny - result.netCny);
   close(result.rows.find(row => row.key === 'account').cny, 0);
 });
 
@@ -1495,33 +1497,38 @@ test('return currency remains in its real action, with two exchange amounts and 
     outcome: 'mainland', returnCurrency: 'HKD', returnMethod: 'bochk-fast', returnHkdPrice: '', exitPrice: '' };
   const ui = moneyUi(input, require('./fixtures/money-flow-quotes-20261011.json'), '2026-10-12');
   const html = ui.render();
-  assert.match(html, /香港换港币 → 汇回内地 → 结汇/);
+  assert.ok(html.indexOf('aria-label="美元换港币"') < html.indexOf('aria-label="汇回内地"'));
+  assert.ok(html.indexOf('aria-label="汇回内地"') < html.indexOf('aria-label="内地结汇"'));
   assert.match(html, /aria-label="回款币种"/);
   assert.match(html, /1 HKD = /);
-  const detail = moneyDetails(ui, 'edge-04');
+  const detail = moneyDetails(ui, 'edge-return-fx');
   assert.match(detail, /USD → .* HKD/);
-  assert.match(detail, /HKD → .* CNY/);
   assert.match(detail, /USD → HKD换汇差额/);
+  const settlement = moneyDetails(ui, 'edge-settle');
+  assert.match(settlement, /HKD → .* CNY/);
+  assert.doesNotMatch(settlement, /USD → HKD换汇差额|香港→内地汇出费/);
   ui.act('choose', 'returnCurrency', 'USD');
   assert.equal(ui.saved().returnCurrency, 'USD');
   assert.equal(ui.saved().returnHkdPrice, '');
   assert.equal(ui.saved().exitPrice, '');
   for (const key of ['startBank', 'bank', 'broker', 'returnBank', 'exitBank', 'budgetCny', 'count']) assert.equal(ui.saved()[key], input[key], key);
-  assert.match(ui.render(), /汇回内地 → 美元结汇/);
-  assert.doesNotMatch(ui.render(), /USD → HKD换汇差额/);
+  assert.match(ui.render(), /aria-label="汇回内地"/);
+  assert.match(ui.render(), /aria-label="内地结汇"/);
+  assert.doesNotMatch(ui.render(), /aria-label="美元换港币"/);
   ui.act('choose', 'returnCurrency', 'HKD');
   const restored = moneyUi(ui.saved(), require('./fixtures/money-flow-quotes-20261011.json'), '2026-10-12');
-  assert.match(restored.render(), /香港换港币 → 汇回内地 → 结汇/);
+  assert.match(restored.render(), /aria-label="美元换港币"/);
 });
 
 test('missing return HKD price keeps USD and missing mainland HKD price keeps actual HKD', () => {
-  const q = require('./fixtures/money-flow-quotes-20261011.json');
+  const q = structuredClone(require('./fixtures/money-flow-quotes-20261011.json'));
   const input = { ...currentRoute, broker: 'za', bank: 'bochk', returnBank: 'sc', exitBank: 'boc', outcome: 'mainland', returnCurrency: 'HKD', returnMethod: 'swift', months: 0 };
   const ui = moneyUi(input, q, '2026-10-12');
   const r = M.calculatorJourney(input, D, q).selected;
   assert.match(ui.render(), new RegExp('最后可计余额 · [^<]*.*?' + r.steps.returnUsd.toFixed(2) + '\\s*<small>USD', 's'));
   assert.doesNotMatch(ui.render(), /全程损耗 · 历史报价/);
-  const other = { ...input, returnBank: 'bochk', exitBank: 'sc', returnMethod: 'swift' };
+  delete q.banks.cib.quotes.HKD;
+  const other = { ...input, returnBank: 'bochk', exitBank: 'cib', returnMethod: 'swift' };
   const actual = M.calculatorJourney(other, D, q).selected;
   assert.match(moneyUi(other, q, '2026-10-12').render(), new RegExp('最后可计余额 · [^<]*.*?' + actual.steps.remitHkd.toFixed(2) + '\\s*<small>HKD', 's'));
 });
@@ -1641,25 +1648,26 @@ test('the default round trip returns to the starting BOC account without adding 
   existing.render();
   existing.act('choose', 'outcome', 'broker-balance');
   existing.act('choose', 'outcome', 'mainland');
-  assert.equal(existing.saved().exitBank, 'hsbc');
-  assert.match(existing.render(), /汇丰中国 · 卓越理财期间管理费/);
+  assert.equal(existing.saved().exitBank, 'boc');
+  assert.doesNotMatch(existing.render(), /汇丰中国 · 卓越理财期间管理费/);
   existing.act('reset');
   assert.equal(existing.saved().exitBank, 'boc');
 });
 
-test('an unquoted SC settlement identifies the missing bank price once without marking its free receipt as unknown', () => {
-  const quotes = require('./fixtures/money-flow-quotes-20261011.json');
-  const ui = moneyUi({ outcome: 'mainland', exitBank: 'sc' }, quotes, '2026-10-12');
+test('an unquoted retained settlement bank identifies the missing bid once without marking its free receipt as unknown', () => {
+  const quotes = structuredClone(require('./fixtures/money-flow-quotes-20261011.json'));
+  delete quotes.banks.cib.quotes.USD;
+  const ui = moneyUi({ outcome: 'mainland', exitBank: 'cib' }, quotes, '2026-10-12');
   ui.render();
-  ui.act('choose', 'exitBank', 'sc');
+  ui.act('choose', 'exitBank', 'cib');
   const r = M.calculatorJourney({ ...ui.saved(), date: '2026-10-12' }, D, quotes).selected;
   assert.equal(r.indicativeExit, true);
-  const receipt = r.rows.find(row => row.key === 'returnOther').items.find(item => item.label === '渣打中国USD收款费');
+  const receipt = r.rows.find(row => row.key === 'returnOther').items.find(item => item.label === '兴业 · 寰宇人生USD收款费');
   close(receipt.cny, 0);
   assert.equal(r.missing.filter(label => label === r.exitIssue).length, 1);
   assert.ok(!r.missing.includes('内地结汇差额'));
   assert.ok(!r.missing.includes(receipt.label));
-  assert.match(ui.render(), /总损耗尚缺：回内地中转行费、渣打中国USD现汇买入价尚未取得/);
+  assert.match(ui.render(), /总损耗尚缺：回内地中转行费、兴业 · 寰宇人生USD现汇买入价尚未取得/);
   assert.doesNotMatch(ui.render(), /总损耗尚缺：[^<]*内地结汇差额/);
 });
 
@@ -2244,8 +2252,9 @@ test('month controls show zero-period unit prices and report invalid months wher
   }
   const free = moneyUi({ ...input, months: 12, startBank: 'hsbc', mainlandMethod: 'linked', cnHsbcFreeMonths: .5 });
   free.render(); free.act('detail', '', 'cn-bank-hsbc');
-  assert.match(free.modal(), /aria-invalid="true" aria-describedby="flow-error-cnHsbcFreeMonths"/);
-  assert.match(free.modal(), /月数须为非负整数/);
+  assert.equal(free.saved().startBank, 'boc');
+  assert.equal(free.saved().exitBank, 'boc');
+  assert.doesNotMatch(free.modal(), /data-money-field="cnHsbcFreeMonths"/);
 });
 
 test('invalid editable values are explained inside their open dialog instead of behind its backdrop', () => {
@@ -2578,11 +2587,12 @@ test('unquoted funding propagates into amount-based conversion fees without chan
 });
 
 test('missing terminal and source FX never leak reference rates or an executable CNY equation into details', () => {
-  const config = { ...currentRoute, startBank: 'cib', route: 'USD', fxMode: 'bank', outcome: 'mainland', exitBank: 'sc', exitPrice: '', returnMethod: 'swift' };
-  const r = M.calculatorJourney({ ...config, sellDate: '2026-10-09' }, D, cibQuotes).selected;
+  const terminalQuotes = structuredClone(cibQuotes); delete terminalQuotes.banks.icbc;
+  const config = { ...currentRoute, startBank: 'cib', route: 'USD', fxMode: 'bank', outcome: 'mainland', exitBank: 'icbc', exitPrice: '', returnMethod: 'swift' };
+  const r = M.calculatorJourney({ ...config, sellDate: '2026-10-09' }, D, terminalQuotes).selected;
   assert.equal(r?.indicativeExit, true);
-  const ui = moneyUi(config), html = ui.render();
-  const exit = html.split('aria-label="汇回内地 → 美元结汇"')[1].split('</section>')[0];
+  const ui = moneyUi(config, terminalQuotes), html = ui.render();
+  const exit = html.split('aria-label="内地结汇"')[1].split('</section>')[0];
   assert.doesNotMatch(exit, /1 USD =/);
   ui.act('detail', '', 'cost');
   assert.match(ui.modal(), new RegExp('最后可计余额：' + r.steps.remitUsd.toFixed(2) + ' USD'));
@@ -2696,7 +2706,9 @@ test('an only available transfer method is readable without opening an empty cho
 
 test('ICBC and SC China inward bank fees are zero without waiving separate intermediary costs', () => {
   for (const exitBank of ['icbc', 'sc']) {
-    const r = M.calculatorJourney({ ...currentRoute, outcome: 'mainland', returnBank: 'bochk', exitBank,
+    // Keep the historical tariff audit even though SC China is retired from
+    // the product's receiving-bank catalogue. The public picker is tested separately.
+    const r = M.mainlandJourney({ ...currentRoute, outcome: 'mainland', returnBank: 'bochk', exitBank,
       returnMethod: 'swift', returnExtraCny: '' }, D, cibQuotes).selected;
     const fees = r.rows.find(x => x.key === 'returnOther');
     assert.equal(fees.cny, null); assert.equal(fees.items[0].cny, null); close(fees.items[1].cny, 0);
@@ -2789,8 +2801,62 @@ test('SC Priority standard overseas FX remittance waives sender fees without wai
 
 const chequeRoute = { budgetCny: 100000, count: 1, months: 12, date: '2026-10-11', usedFreeTransfers: 0,
   profitUsd: 0, taxRate: 20, creditCny: 0, withdrawalIndex: 1, buyOrders: 1, sellOrders: 1, sharePriceUsd: 100,
-  startBank: 'boc', bank: 'bochk', broker: 'chief', route: 'USD', returnBank: 'sc', exitBank: 'hsbc',
+  startBank: 'boc', bank: 'bochk', broker: 'chief', route: 'USD', returnBank: 'sc', exitBank: 'boc',
   outcome: 'usd-balance', mainlandMethod: 'boc-mobile', depositMethod: 'internal' };
+
+test('the best purchase and settlement banks both use one absolute midpoint reference without resetting either leg to zero', () => {
+  const quotes = require('./fixtures/money-flow-quotes-20261012.json');
+  const config = { ...chequeRoute, date:'2026-10-12', sellDate:'2026-10-12', startBank:'cib', bank:'hsbc', broker:'za', returnBank:'hsbc', exitBank:'cib',
+    outcome:'mainland', route:'USD', mainlandMethod:'swift', depositMethod:'chats', returnMethod:'swift', returnCurrency:'USD',
+    senderFeeCny:0, entryMiddleCny:0, entryInwardHkd:0, depositHkd:0, depositOtherCny:0, inwardHkd:0, intermediaryCny:0,
+    returnWireHkd:0, returnExtraCny:0, tradeFeeUsd:0, months:0 };
+  const r=M.calculatorJourney(config,D,quotes).selected;
+  const reference=(quotes.banks.boc.quotes.USD.buy+quotes.banks.boc.quotes.USD.sell)/2;
+  const bank=M.quotedMainlandBanks(D,quotes,config.date).find(bank=>bank.id==='cib');
+  assert.equal(M.purchaseComparison(config,D,quotes).best.bank.id,'cib');
+  assert.equal(bank.quotes.USD.buy,Math.max(...M.quotedMainlandBanks(D,quotes,config.date).filter(bank=>D.calculator.receivingBanks.includes(bank.id)).map(bank=>bank.quotes.USD.buy)));
+  assert.equal(r.pricingBasis,'reference-mid'); close(r.refs.USD,reference);
+  close(r.steps.mainlandForeign,config.budgetCny/bank.quotes.USD.sell);
+  close(r.steps.mainlandReceived,r.steps.mainlandForeign);
+  close(r.net,config.budgetCny*bank.quotes.USD.buy/bank.quotes.USD.sell);
+  const entry=r.rows.find(row=>row.key==='entryFx'), exit=r.rows.find(row=>row.key==='exitFx');
+  assert.ok(entry.cny>0); assert.ok(exit.cny>0);
+  close(entry.cny,config.budgetCny-r.steps.mainlandForeign*reference);
+  close(exit.cny,r.steps.mainlandReceived*(reference-bank.quotes.USD.buy));
+  close(entry.cny+exit.cny,config.budgetCny-r.net);
+  close(r.costCny,config.budgetCny-r.net); close(r.fxImpactCny,0);
+  for(const startBank of D.calculator.departureBanks) for(const exitBank of D.calculator.receivingBanks) {
+    const other=M.calculatorJourney(M.calculatorRoute({...config,startBank,exitBank,mainlandMethod:'',returnMethod:''}),D,quotes).selected;
+    assert.deepEqual(other.refs,r.refs); // Changing accounts never redefines valuation.
+  }
+  const custom=M.calculatorJourney({...config,startSell:6.6},D,quotes).selected;
+  assert.deepEqual(custom.refs,r.refs); assert.ok(custom.rows.find(row=>row.key==='entryFx').cny<0);
+  close(custom.costCny,custom.budgetCny-custom.netCny); close(custom.fxImpactCny,0);
+});
+
+test('USD, HKD and CNH entry routes and both return currencies reconcile every FX leg at the same reference vector', () => {
+  const quotes=require('./fixtures/money-flow-quotes-20261012.json');
+  // Confirmed zero-fee test inputs isolate valuation from unpriced intermediary
+  // tariffs; these are not assertions that the public routes are all free.
+  const base={...chequeRoute,date:'2026-10-12',sellDate:'2026-10-12',bank:'hsbc',broker:'za',returnBank:'hsbc',outcome:'mainland',fxMode:'bank',
+    senderFeeCny:0,entryMiddleCny:0,entryInwardHkd:0,depositHkd:0,depositOtherCny:0,inwardHkd:0,intermediaryCny:0,
+    returnWireHkd:7,returnExtraCny:3,tradeFeeUsd:5,months:0,profitUsd:250,taxRate:0};
+  for(const startBank of D.calculator.departureBanks) for(const exitBank of D.calculator.receivingBanks)
+    for(const route of D.calculator.currencies) for(const returnCurrency of ['USD','HKD']) {
+      const config=M.calculatorRoute({...base,startBank,exitBank,route,returnCurrency,mainlandMethod:'',depositMethod:'',returnMethod:''});
+      const data=M.calculatorJourney(config,D,quotes), r=data.selected;
+      assert.ok(r,[startBank,exitBank,route,returnCurrency,data.error].join('/'));
+      assert.equal(r.complete,true,r.missing.join('/'));
+      close(r.rows.find(row=>row.key==='entryFx').cny,route==='CNH'?0:(r.steps.mainlandForeign*r.startSell-r.steps.mainlandForeign*r.refs[route]));
+      close(r.rows.find(row=>row.key==='exitFx').cny,r.steps.mainlandReceived*r.refs[returnCurrency]-r.steps.settledCny);
+      const transfer=r.rows.filter(row=>['returnWire','returnOther'].includes(row.key));
+      assert.ok(transfer.every(row=>row.step==='remit')); assert.equal(r.rows.find(row=>row.key==='exitFx').step,'settle');
+      close((returnCurrency==='HKD'?r.steps.returnHkd:r.steps.returnUsd)-r.steps.mainlandReceived,transfer.reduce((sum,row)=>sum+row.cny,0)/r.refs[returnCurrency]);
+      close(r.costCny,r.budgetCny+r.profitUsd*r.refs.USD-r.netCny); close(r.fxImpactCny,0);
+      const ledger=M.flowLedger(r);
+      for(const leg of ledger.legs) close(leg.lossCny,leg.costCny+leg.taxCny-leg.fxImpactCny);
+    }
+});
 
 test('Chief and uSMART reconcile SC cheque deposits identically and keep bank-specific charges separate', () => {
   const quotes = require('./fixtures/money-flow-quotes-20261011.json');

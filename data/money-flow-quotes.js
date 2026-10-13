@@ -4,29 +4,29 @@ window.MONEY_FLOW_QUOTES = {
     "cmb": {
       "quotes": {
         "HKD": {
-          "buy": 0.8515,
-          "sell": 0.8549,
-          "asOf": "2026-10-12 06:00:18"
+          "buy": 0.851,
+          "sell": 0.8545,
+          "asOf": "2026-10-14 00:03:34"
         },
         "USD": {
-          "buy": 6.6764,
-          "sell": 6.7189,
-          "asOf": "2026-10-12 06:00:18"
+          "buy": 6.6802,
+          "sell": 6.7093,
+          "asOf": "2026-10-14 00:03:34"
         },
         "EUR": {
-          "buy": 7.4643,
-          "sell": 7.5242,
-          "asOf": "2026-10-12 06:00:18"
+          "buy": 7.4624,
+          "sell": 7.5223,
+          "asOf": "2026-10-14 00:03:34"
         },
         "GBP": {
-          "buy": 8.8247,
-          "sell": 8.8956,
-          "asOf": "2026-10-12 06:00:18"
+          "buy": 8.8316,
+          "sell": 8.9025,
+          "asOf": "2026-10-14 00:03:34"
         },
         "JPY": {
-          "buy": 0.042119,
-          "sell": 0.042457,
-          "asOf": "2026-10-12 06:00:18"
+          "buy": 0.042098,
+          "sell": 0.042436,
+          "asOf": "2026-10-14 00:03:34"
         }
       },
       "source": "https://fx.cmbchina.com/hq/"
@@ -34,29 +34,29 @@ window.MONEY_FLOW_QUOTES = {
     "boc": {
       "quotes": {
         "EUR": {
-          "buy": 7.4734,
-          "sell": 7.5281,
-          "asOf": "2026-10-12 05:30:00"
+          "buy": 7.4659,
+          "sell": 7.5206,
+          "asOf": "2026-10-14 00:00:05"
         },
         "GBP": {
-          "buy": 8.8293,
-          "sell": 8.8949,
-          "asOf": "2026-10-12 05:30:00"
+          "buy": 8.8384,
+          "sell": 8.904,
+          "asOf": "2026-10-14 00:00:05"
         },
         "HKD": {
-          "buy": 0.8513,
-          "sell": 0.8547,
-          "asOf": "2026-10-12 05:30:00"
+          "buy": 0.8511,
+          "sell": 0.8545,
+          "asOf": "2026-10-14 00:00:05"
         },
         "JPY": {
-          "buy": 0.042116,
-          "sell": 0.042442,
-          "asOf": "2026-10-12 05:30:00"
+          "buy": 0.042098,
+          "sell": 0.042424,
+          "asOf": "2026-10-14 00:00:05"
         },
         "USD": {
-          "buy": 6.683,
-          "sell": 6.7111,
-          "asOf": "2026-10-12 05:30:00"
+          "buy": 6.6808,
+          "sell": 6.7089,
+          "asOf": "2026-10-14 00:00:05"
         }
       },
       "source": "https://www.boc.cn/sourcedb/whpj/"
@@ -64,29 +64,29 @@ window.MONEY_FLOW_QUOTES = {
     "icbc": {
       "quotes": {
         "GBP": {
-          "buy": 8.8181,
-          "sell": 8.8996,
-          "asOf": "2026-10-10 04:03:15"
+          "buy": 8.8232,
+          "sell": 8.9047,
+          "asOf": "2026-10-14 00:01:59"
         },
         "HKD": {
-          "buy": 0.8505,
-          "sell": 0.8548,
-          "asOf": "2026-10-10 04:03:13"
+          "buy": 0.8504,
+          "sell": 0.8547,
+          "asOf": "2026-10-14 00:01:59"
         },
         "USD": {
-          "buy": 6.674,
-          "sell": 6.7088,
-          "asOf": "2026-10-10 03:01:14"
+          "buy": 6.6738,
+          "sell": 6.7086,
+          "asOf": "2026-10-14 00:01:59"
         },
         "JPY": {
-          "buy": 0.04208,
-          "sell": 0.042469,
-          "asOf": "2026-10-10 04:03:15"
+          "buy": 0.042052,
+          "sell": 0.042441,
+          "asOf": "2026-10-14 00:01:59"
         },
         "EUR": {
-          "buy": 7.4591,
-          "sell": 7.5281,
-          "asOf": "2026-10-10 04:03:13"
+          "buy": 7.4547,
+          "sell": 7.5237,
+          "asOf": "2026-10-14 00:01:59"
         }
       },
       "source": "https://www.icbc.com.cn/page/721852558099644433.html"
@@ -219,33 +219,33 @@ window.MONEY_FLOW_QUOTES = {
     "cib": {
       "quotes": {
         "EUR": {
-          "buy": 7.4562,
-          "sell": 7.5341,
-          "asOf": "2026-10-12 05:59:56",
+          "buy": 7.4663,
+          "sell": 7.5262,
+          "asOf": "2026-10-14 00:03:10",
           "timeBasis": "observed"
         },
         "GBP": {
-          "buy": 8.8139,
-          "sell": 8.906,
-          "asOf": "2026-10-12 05:59:56",
+          "buy": 8.837,
+          "sell": 8.9079,
+          "asOf": "2026-10-14 00:03:10",
           "timeBasis": "observed"
         },
         "HKD": {
-          "buy": 0.8505,
-          "sell": 0.8558,
-          "asOf": "2026-10-12 05:59:56",
+          "buy": 0.8515,
+          "sell": 0.8548,
+          "asOf": "2026-10-14 00:03:10",
           "timeBasis": "observed"
         },
         "USD": {
-          "buy": 6.6748,
-          "sell": 6.7163,
-          "asOf": "2026-10-12 05:59:56",
+          "buy": 6.6826,
+          "sell": 6.708,
+          "asOf": "2026-10-14 00:03:10",
           "timeBasis": "observed"
         },
         "JPY": {
           "buy": 0.0421,
           "sell": 0.0425,
-          "asOf": "2026-10-12 05:59:56",
+          "asOf": "2026-10-14 00:03:10",
           "timeBasis": "observed"
         }
       },
@@ -283,19 +283,19 @@ window.MONEY_FLOW_QUOTES = {
     }
   },
   "unit": "CNY per 1 foreign currency",
-  "capturedAt": "2026-10-11T22:02:45+00:00",
+  "capturedAt": "2026-10-13T16:03:10+00:00",
   "offshoreUsd": {
     "bochk": {
       "quotes": {
         "CNH": {
-          "bidPerUsd": 6.65446,
-          "askPerUsd": 6.73033,
-          "asOf": "2026-10-12 05:57:56"
+          "bidPerUsd": 6.65237,
+          "askPerUsd": 6.72823,
+          "asOf": "2026-10-14 00:02:57"
         },
         "HKD": {
-          "bidPerUsd": 7.8235,
-          "askPerUsd": 7.8737,
-          "asOf": "2026-10-12 05:57:56"
+          "bidPerUsd": 7.824,
+          "askPerUsd": 7.8742,
+          "asOf": "2026-10-14 00:02:57"
         }
       },
       "source": "https://www.bochk.com/whk/rates/exchangeRatesUSD/exchangeRatesUSD-input.action?lang=cn",
@@ -304,20 +304,20 @@ window.MONEY_FLOW_QUOTES = {
     "hang": {
       "quotes": {
         "HKD": {
-          "bidPerUsd": 7.819,
-          "askPerUsd": 7.878,
-          "asOf": "2026-10-11 04:08:00"
+          "bidPerUsd": 7.825,
+          "askPerUsd": 7.874,
+          "asOf": "2026-10-13 23:56:00"
         },
         "CNH": {
-          "bidPerUsd": 6.60779177,
-          "askPerUsd": 6.77852349,
-          "asOf": "2026-10-11 04:08:00",
+          "bidPerUsd": 6.63248008,
+          "askPerUsd": 6.75242261,
+          "asOf": "2026-10-13 23:56:00",
           "path": "via-HKD",
           "legs": {
-            "usdBuy": 7.819,
-            "usdSell": 7.878,
-            "cnhBuy": 1.1622,
-            "cnhSell": 1.1833
+            "usdBuy": 7.825,
+            "usdSell": 7.874,
+            "cnhBuy": 1.1661,
+            "cnhSell": 1.1798
           }
         }
       },
@@ -327,20 +327,20 @@ window.MONEY_FLOW_QUOTES = {
     "hsbc": {
       "quotes": {
         "HKD": {
-          "bidPerUsd": 7.8153,
-          "askPerUsd": 7.88,
-          "asOf": "2026-10-12 05:30:59"
+          "bidPerUsd": 7.8161,
+          "askPerUsd": 7.8807,
+          "asOf": "2026-10-13 23:30:30"
         },
         "CNH": {
-          "bidPerUsd": 6.626505,
-          "askPerUsd": 6.7627875,
-          "asOf": "2026-10-12 05:30:59",
+          "bidPerUsd": 6.62493643,
+          "askPerUsd": 6.76164736,
+          "asOf": "2026-10-13 23:30:30",
           "path": "via-HKD",
           "legs": {
-            "usdBuy": 7.8153,
-            "usdSell": 7.88,
-            "cnhBuy": 1.1652,
-            "cnhSell": 1.1794
+            "usdBuy": 7.8161,
+            "usdSell": 7.8807,
+            "cnhBuy": 1.1655,
+            "cnhSell": 1.1798
           }
         }
       },
@@ -350,20 +350,20 @@ window.MONEY_FLOW_QUOTES = {
     "icbc-asia": {
       "quotes": {
         "HKD": {
-          "bidPerUsd": 7.8344,
-          "askPerUsd": 7.8644,
-          "asOf": "2026-10-12 05:50:05.07754"
+          "bidPerUsd": 7.8349,
+          "askPerUsd": 7.8649,
+          "asOf": "2026-10-14 00:00:04.302291"
         },
         "CNH": {
-          "bidPerUsd": 6.63926577,
-          "askPerUsd": 6.7505,
-          "asOf": "2026-10-12 05:50:05.07754",
+          "bidPerUsd": 6.63777693,
+          "askPerUsd": 6.74895954,
+          "asOf": "2026-10-14 00:00:04.302291",
           "path": "via-HKD",
           "legs": {
-            "usdBuy": 7.8344,
-            "usdSell": 7.8644,
-            "cnhBuy": 1.16501,
-            "cnhSell": 1.18001
+            "usdBuy": 7.8349,
+            "usdSell": 7.8649,
+            "cnhBuy": 1.16535,
+            "cnhSell": 1.18035
           }
         }
       },
