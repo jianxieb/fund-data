@@ -1,6 +1,6 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-10-13T19:04:17+00:00",
+  "checkedAt": "2026-10-13T19:35:11+00:00",
   "asOf": "2026-10-14",
   "status": "unverified",
   "summary": {
@@ -1674,7 +1674,7 @@ var DATA_QUALITY={
       "label": "国内指数",
       "asOf": "2026-10-13",
       "dateRange": [
-        "2026-10-12",
+        "2026-10-13",
         "2026-10-13"
       ],
       "records": 13,
