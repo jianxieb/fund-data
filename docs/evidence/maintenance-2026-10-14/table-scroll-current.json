@@ -1,0 +1,42 @@
+{
+  "bodyLeft": 1111.34375,
+  "dock": {
+    "bottom": 619.875,
+    "height": 20,
+    "left": 251,
+    "right": 1215,
+    "top": 599.875,
+    "width": 964,
+    "x": 251,
+    "y": 599.875
+  },
+  "dockValue": "1016",
+  "footer": {
+    "bottom": 588.96875,
+    "height": 59,
+    "left": 250.84375,
+    "right": 1214.84375,
+    "top": 529.96875,
+    "width": 964,
+    "x": 250.84375,
+    "y": 529.96875
+  },
+  "footerText": "已展示 99 / 99已全部展示",
+  "headLeft": 1111.34375,
+  "lastRow": {
+    "bottom": 529.96875,
+    "height": 59.890625,
+    "left": -765,
+    "right": 1214.84375,
+    "top": 470.078125,
+    "width": 1979.84375,
+    "x": -765,
+    "y": 470.078125
+  },
+  "maxScrollLeft": 1016,
+  "maxScrollTop": 4172,
+  "rows": 99,
+  "scrollLeft": 1016,
+  "scrollTop": 4172,
+  "url": "http://127.0.0.1:8765/#funds"
+}

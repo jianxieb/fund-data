@@ -1,0 +1,233 @@
+{
+  "checkedAt": "2026-10-13T19:42:38+00:00",
+  "commit": "aef94aa48ea8ab94eaa25317a789e733119ea8a4",
+  "pagesRun": "https://github.com/jianxieb/fund-data/actions/runs/38452209076",
+  "files": [
+    {
+      "path": "index.html",
+      "url": "https://jianxieb.github.io/fund-data/index.html",
+      "bytes": 5505,
+      "sha256": "692db25d9f14bdd57a9f905bfc04f3cf455035160b362c646e257aa89f263025",
+      "matchesCommit": true
+    },
+    {
+      "path": "assets/brand-mark.svg",
+      "url": "https://jianxieb.github.io/fund-data/assets/brand-mark.svg",
+      "bytes": 339,
+      "sha256": "6b1f64dd8ae4e305b3caaaba03a6f3d4608d67de669c426226a0d5e6a754df05",
+      "matchesCommit": true
+    },
+    {
+      "path": "assets/style.css",
+      "url": "https://jianxieb.github.io/fund-data/assets/style.css?v=9fe26a11e3d0",
+      "bytes": 150117,
+      "sha256": "9fe26a11e3d0afaf42e82005c328e8f5722d73b0bb359b50589b39eb107903f3",
+      "matchesCommit": true
+    },
+    {
+      "path": "assets/table-scroll.css",
+      "url": "https://jianxieb.github.io/fund-data/assets/table-scroll.css?v=1685edd830ff",
+      "bytes": 1375,
+      "sha256": "1685edd830ff6f9f455727b566d66d3a2b3b018024a103273a92f14cc5a59aff",
+      "matchesCommit": true
+    },
+    {
+      "path": "data/snapshot.js",
+      "url": "https://jianxieb.github.io/fund-data/data/snapshot.js?v=986a80e44de9",
+      "bytes": 15795013,
+      "sha256": "986a80e44de975449565c146495ba26043d1761afd139f9e182fdda8c4e5d93d",
+      "matchesCommit": true
+    },
+    {
+      "path": "data/overseas-stocks.js",
+      "url": "https://jianxieb.github.io/fund-data/data/overseas-stocks.js?v=56c7a51bc2a4",
+      "bytes": 3265579,
+      "sha256": "56c7a51bc2a42c5f5d05bf08ddec264b9e27b80b6af1385ae43e582af14e2c5f",
+      "matchesCommit": true
+    },
+    {
+      "path": "data/stock-reports.js",
+      "url": "https://jianxieb.github.io/fund-data/data/stock-reports.js?v=92bcf07197df",
+      "bytes": 788468,
+      "sha256": "92bcf07197df52509e11d46a486c8348b7cb7be6a7a64357e8b49b140526e6a6",
+      "matchesCommit": true
+    },
+    {
+      "path": "data/buy-location.js",
+      "url": "https://jianxieb.github.io/fund-data/data/buy-location.js?v=901e01ab9d52",
+      "bytes": 971215,
+      "sha256": "901e01ab9d52aa71e60d96fe0a50b72a4907b41032ad8dd17bb56b48d80f9b77",
+      "matchesCommit": true
+    },
+    {
+      "path": "data/crossborder.js",
+      "url": "https://jianxieb.github.io/fund-data/data/crossborder.js?v=be61cfde8e90",
+      "bytes": 493784,
+      "sha256": "be61cfde8e90150d397879a634ffe441ddb4f852a4e5694c6d9491028bcc368b",
+      "matchesCommit": true
+    },
+    {
+      "path": "data/indices.js",
+      "url": "https://jianxieb.github.io/fund-data/data/indices.js?v=f5b799a03645",
+      "bytes": 10454,
+      "sha256": "f5b799a03645b8848b4bef078cc5fe141f5a624b9a9600a87569e09e6017e143",
+      "matchesCommit": true
+    },
+    {
+      "path": "data/screening.js",
+      "url": "https://jianxieb.github.io/fund-data/data/screening.js?v=67afe322265d",
+      "bytes": 2874710,
+      "sha256": "67afe322265d0959edf3c99e2d6d3bd9978f8608245b9cfb460fb0fdb07f6244",
+      "matchesCommit": true
+    },
+    {
+      "path": "data/quality.js",
+      "url": "https://jianxieb.github.io/fund-data/data/quality.js?v=935f29a21062",
+      "bytes": 38544,
+      "sha256": "935f29a21062c901ce6d97f7dc3063e0d264d7c92b4852bc4f985480fe4e15ea",
+      "matchesCommit": true
+    },
+    {
+      "path": "data/update-status.js",
+      "url": "https://jianxieb.github.io/fund-data/data/update-status.js?v=334c49ee2046",
+      "bytes": 6649,
+      "sha256": "334c49ee2046c768e68f684213998a7c0db28f4758a8625eb1572c2a0794df18",
+      "matchesCommit": true
+    },
+    {
+      "path": "data/money-flow.js",
+      "url": "https://jianxieb.github.io/fund-data/data/money-flow.js?v=dd36a8176b7f",
+      "bytes": 53433,
+      "sha256": "dd36a8176b7fa334537684b1d4fa62fc2e6c4fa311106dea664eb6589133cc51",
+      "matchesCommit": true
+    },
+    {
+      "path": "data/money-flow-quotes.js",
+      "url": "https://jianxieb.github.io/fund-data/data/money-flow-quotes.js?v=1067f16f13ad",
+      "bytes": 9611,
+      "sha256": "1067f16f13adebdb1e4f7793626dcb8007ea03b1fe8a16f713bcef16ee07eeea",
+      "matchesCommit": true
+    },
+    {
+      "path": "data/strategy-fees.js",
+      "url": "https://jianxieb.github.io/fund-data/data/strategy-fees.js?v=25cdd70da578",
+      "bytes": 4350174,
+      "sha256": "25cdd70da5782246c0e8c440cf6cce6d28df97ed4a8c49a1cf46da6ebd428d91",
+      "matchesCommit": true
+    },
+    {
+      "path": "data/portfolio/catalog.js",
+      "url": "https://jianxieb.github.io/fund-data/data/portfolio/catalog.js?v=a10023dcc4d3",
+      "bytes": 2087227,
+      "sha256": "a10023dcc4d3952c9fcaee704a8a19ef23b240b85deec93d72acd53dee3e452d",
+      "matchesCommit": true
+    },
+    {
+      "path": "assets/model.js",
+      "url": "https://jianxieb.github.io/fund-data/assets/model.js?v=256e2f17066e",
+      "bytes": 31795,
+      "sha256": "256e2f17066e3a7809fcf52431c8a303a01e0074368774ff0851771259ecc1be",
+      "matchesCommit": true
+    },
+    {
+      "path": "assets/portfolio-model.js",
+      "url": "https://jianxieb.github.io/fund-data/assets/portfolio-model.js?v=03a2c6d89397",
+      "bytes": 35972,
+      "sha256": "03a2c6d89397a4be5dfd89a13060b6f4a57ee2b325221d28d06e730fbb30fbea",
+      "matchesCommit": true
+    },
+    {
+      "path": "assets/portfolio-pdf.js",
+      "url": "https://jianxieb.github.io/fund-data/assets/portfolio-pdf.js?v=6729b47b7388",
+      "bytes": 27333,
+      "sha256": "6729b47b7388e28642174797e85b73e17e53b858328f92ad4f811daec5ad1b72",
+      "matchesCommit": true
+    },
+    {
+      "path": "assets/portfolio.js",
+      "url": "https://jianxieb.github.io/fund-data/assets/portfolio.js?v=857498abfda9",
+      "bytes": 58586,
+      "sha256": "857498abfda9b1651c8edc28206295202bc9aad67c7dad6346f2e083211e62c5",
+      "matchesCommit": true
+    },
+    {
+      "path": "assets/overseas-stocks.js",
+      "url": "https://jianxieb.github.io/fund-data/assets/overseas-stocks.js?v=6020cd2bf7f7",
+      "bytes": 19999,
+      "sha256": "6020cd2bf7f7ce3c6396a051626a6b9bbbf5cb80f81ea059a86794620b102a65",
+      "matchesCommit": true
+    },
+    {
+      "path": "assets/money-flow-model.js",
+      "url": "https://jianxieb.github.io/fund-data/assets/money-flow-model.js?v=78d844c51653",
+      "bytes": 163195,
+      "sha256": "78d844c51653b8b983b59e42583b16ecff1d608077852f365156b63e5ed46c72",
+      "matchesCommit": true
+    },
+    {
+      "path": "assets/money-flow.js",
+      "url": "https://jianxieb.github.io/fund-data/assets/money-flow.js?v=3d8be933addd",
+      "bytes": 100495,
+      "sha256": "3d8be933addd7880c86d0f958c3448b8438fcb2fd6a11a74d3967924ce47a50f",
+      "matchesCommit": true
+    },
+    {
+      "path": "assets/table-scroll.js",
+      "url": "https://jianxieb.github.io/fund-data/assets/table-scroll.js?v=bee116948e67",
+      "bytes": 7245,
+      "sha256": "bee116948e675ee6913f76e2b1e577f75b9fb5bae7a82b7f838f736bf58be083",
+      "matchesCommit": true
+    },
+    {
+      "path": "assets/app.js",
+      "url": "https://jianxieb.github.io/fund-data/assets/app.js?v=6c140f7e73e8",
+      "bytes": 176903,
+      "sha256": "6c140f7e73e8b99411090dab5ee9d79fb52e0d85177e06bfe6131fcf366cbda5",
+      "matchesCommit": true
+    },
+    {
+      "path": "data/portfolio/us/SPY-43b374d501298e07.json",
+      "url": "https://jianxieb.github.io/fund-data/data/portfolio/us/SPY-43b374d501298e07.json",
+      "bytes": 250255,
+      "sha256": "43b374d501298e078ab3e3410c52b1a7556a3dc36fc38ccb4cf2cb5e04b60d9e",
+      "matchesCommit": true
+    },
+    {
+      "path": "data/portfolio/stock/MSFT-d46e762474b8fc10.json",
+      "url": "https://jianxieb.github.io/fund-data/data/portfolio/stock/MSFT-d46e762474b8fc10.json",
+      "bytes": 300399,
+      "sha256": "d46e762474b8fc1026e4824bcbf7e91102ed30559fe2cb93fc27db9545fb38d0",
+      "matchesCommit": true
+    },
+    {
+      "path": "data/portfolio/fund/001437-177122fad9397ce3.json",
+      "url": "https://jianxieb.github.io/fund-data/data/portfolio/fund/001437-177122fad9397ce3.json",
+      "bytes": 79640,
+      "sha256": "177122fad9397ce32f961de4f5c22034fb57efb3a6eca9c88467cec9c5cf8ce5",
+      "matchesCommit": true
+    },
+    {
+      "path": "data/portfolio/fund/000603-1d6ba0848f7ca47b.json",
+      "url": "https://jianxieb.github.io/fund-data/data/portfolio/fund/000603-1d6ba0848f7ca47b.json",
+      "bytes": 83241,
+      "sha256": "1d6ba0848f7ca47bcb3af6ae3aaa761186177ddb38acdc81b89bfdddcb6772da",
+      "matchesCommit": true
+    },
+    {
+      "path": "data/portfolio/fund/158042-9d7b65d58629b1d7.json",
+      "url": "https://jianxieb.github.io/fund-data/data/portfolio/fund/158042-9d7b65d58629b1d7.json",
+      "bytes": 778,
+      "sha256": "9d7b65d58629b1d78f500d1cdef99c0c50d32a87bf62f4449dff15e9c449f028",
+      "matchesCommit": true
+    },
+    {
+      "path": "data/portfolio/fx/CNY-d4263fde2513ba1c.json",
+      "url": "https://jianxieb.github.io/fund-data/data/portfolio/fx/CNY-d4263fde2513ba1c.json",
+      "bytes": 183047,
+      "sha256": "d4263fde2513ba1cb7778c66943ba770ef3c5befc71e952de6550a6a48346ed1",
+      "matchesCommit": true
+    }
+  ],
+  "allMatched": true,
+  "browserStatus": "Mac锁屏，线上视觉复核未完成。本地实际交互及截图已完成。"
+}

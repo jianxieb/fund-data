@@ -1,0 +1,191 @@
+{
+  "checkedAt": "2026-10-13T19:46:21+00:00",
+  "run": "https://github.com/jianxieb/fund-data/actions/runs/38452209076",
+  "status": "success",
+  "sourceCommit": "44c45814f11b9b85d33b3799aa7aee44344cac25",
+  "dataCommit": "aef94aa",
+  "tests": {
+    "pythonBeforeRefresh": 287,
+    "nodeBeforeRefresh": 419,
+    "pythonAfterRefresh": 287,
+    "failed": 0
+  },
+  "refresh": {
+    "schemaVersion": 1,
+    "startedAt": "2026-10-13T19:10:51+00:00",
+    "mode": "online",
+    "steps": [
+      {
+        "dataset": "funds",
+        "status": "completed",
+        "exitCode": 0,
+        "seconds": 51.93,
+        "log": ".tmp-snap/refresh-funds.log",
+        "publishedRollback": false
+      },
+      {
+        "dataset": "research_funds",
+        "status": "completed",
+        "exitCode": 0,
+        "seconds": 122.55,
+        "log": ".tmp-snap/refresh-research_funds.log",
+        "publishedRollback": false
+      },
+      {
+        "dataset": "indices",
+        "status": "completed",
+        "exitCode": 0,
+        "seconds": 24.58,
+        "log": ".tmp-snap/refresh-indices.log",
+        "publishedRollback": false
+      },
+      {
+        "dataset": "stocks",
+        "status": "completed",
+        "exitCode": 0,
+        "seconds": 131.44,
+        "log": ".tmp-snap/refresh-stocks.log",
+        "publishedRollback": false
+      },
+      {
+        "dataset": "overseas_stocks",
+        "status": "completed",
+        "exitCode": 0,
+        "seconds": 25.81,
+        "log": ".tmp-snap/refresh-overseas_stocks.log",
+        "publishedRollback": false
+      },
+      {
+        "dataset": "screening",
+        "status": "completed",
+        "exitCode": 0,
+        "seconds": 2.55,
+        "log": ".tmp-snap/refresh-screening.log",
+        "publishedRollback": false
+      },
+      {
+        "dataset": "strategy",
+        "status": "completed",
+        "exitCode": 0,
+        "seconds": 45.1,
+        "log": ".tmp-snap/refresh-strategy.log",
+        "publishedRollback": false
+      },
+      {
+        "dataset": "portfolio",
+        "status": "completed",
+        "exitCode": 0,
+        "seconds": 1054.11,
+        "log": ".tmp-snap/refresh-portfolio.log",
+        "publishedRollback": false
+      },
+      {
+        "dataset": "quality",
+        "status": "completed",
+        "exitCode": 0,
+        "seconds": 1.59,
+        "log": ".tmp-snap/refresh-quality.log",
+        "publishedRollback": false
+      }
+    ],
+    "completedAt": "2026-10-13T19:35:11+00:00",
+    "status": "completed"
+  },
+  "funds": 1623,
+  "fundNavDates": {
+    "2026-10-12": 185,
+    "2026-10-13": 1430,
+    "2026-10-09": 8
+  },
+  "fundReturnDates": {
+    "2026-10-12": 185,
+    "2026-10-13": 1430,
+    "2026-10-09": 8
+  },
+  "returnHistoryEvidence": 1623,
+  "portfolio": {
+    "total": 1774,
+    "available": 1774,
+    "missing": 0
+  },
+  "interfaceWarnings": [
+    {
+      "id": "fund:002563",
+      "asOf": "2026-10-13",
+      "reason": "本次历史接口未更新：The read operation timed out"
+    },
+    {
+      "id": "fund:017737",
+      "asOf": "2026-10-13",
+      "reason": "本次历史接口未更新：The read operation timed out"
+    },
+    {
+      "id": "fund:019547",
+      "asOf": "2026-10-12",
+      "reason": "本次历史接口未更新：The read operation timed out"
+    }
+  ],
+  "quality": {
+    "summary": {
+      "errors": 0,
+      "warnings": 3,
+      "unverified": 4
+    },
+    "issues": [
+      {
+        "dataset": "funds",
+        "code": "fee_source_date",
+        "severity": "unverified",
+        "message": "费率缺生效日期，购买前需以基金正式文件与交易渠道为准",
+        "affectedCount": 46
+      },
+      {
+        "dataset": "overseas_stocks",
+        "code": "overseas_business_review_pending",
+        "severity": "unverified",
+        "message": "PEP经营复核仅覆盖2026-06-13，最新财报2026-09-05尚待经营复核",
+        "affectedCount": 1
+      },
+      {
+        "dataset": "benchmarks",
+        "code": "fx_risk_incomplete",
+        "severity": "warning",
+        "message": "完整人民币日风险缺少实际汇率（2025-04-21、2026-10-12）；未沿用美元风险或填补汇率",
+        "affectedCount": 18
+      },
+      {
+        "dataset": "domestic_funds",
+        "code": "domestic_fee_missing",
+        "severity": "warning",
+        "message": "场外申购或赎回费率缺失，统一显示待核验",
+        "affectedCount": 8
+      },
+      {
+        "dataset": "domestic_funds",
+        "code": "research_scale_date_unverified",
+        "severity": "unverified",
+        "message": "1216只扩展基金的规模缺独立观察日期；不能作为当前规模判断",
+        "affectedCount": 1216
+      },
+      {
+        "dataset": "domestic_funds",
+        "code": "manager_date_unverified",
+        "severity": "unverified",
+        "message": "个人经理任职起点、观察日期或来源未完整核验",
+        "affectedCount": 254
+      },
+      {
+        "dataset": "indices",
+        "code": "index_source_unavailable",
+        "severity": "warning",
+        "message": "万得微盘股指数尚无可复核的完整授权日线，收益与风险留空",
+        "affectedCount": 1
+      }
+    ]
+  },
+  "browserVerification": {
+    "local": "实际加载、滚动、拖动、键盘、弹窗及长说明截图已完成",
+    "publishedFiles": "32份线上入口、资源、快照及代表性历史与aef94aa字节一致",
+    "onlineVisual": "Mac仍锁屏，浏览器状态与截图读取未完成；已请求用户解锁"
+  }
+}
