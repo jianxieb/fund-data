@@ -1,0 +1,53 @@
+[
+  {
+    "group": "美股其他39家",
+    "overflowing": [],
+    "roeNotes": [
+      {
+        "company": "艾伯维\nABBV · 美股\n免疫、神经科学与肿瘤药\n深入报告\n↗",
+        "height": 52.78125,
+        "text": "2026-06净资产非正，ROE不适用；2025-06净资产非正，ROE不适用",
+        "width": 176.8984375
+      },
+      {
+        "company": "菲利普莫里斯\nPM · 美股\n烟草、加热不燃烧与尼古丁产品\n深入报告\n↗",
+        "height": 52.78125,
+        "text": "2026-06净资产非正，ROE不适用；2025-06净资产非正，ROE不适用",
+        "width": 176.8984375
+      },
+      {
+        "company": "SpaceX\nSPCX · 美股\n航天发射、Starlink与AI业务\n深入报告\n↗",
+        "height": 17.59375,
+        "text": "缺连续四季利润",
+        "width": 176.8984375
+      },
+      {
+        "company": "SpaceX\nSPCX · 美股\n航天发射、Starlink与AI业务\n深入报告\n↗",
+        "height": 18.6953125,
+        "text": "经营现金 缺连续四季",
+        "width": 122.0625
+      }
+    ],
+    "total": 430,
+    "unwrapped": 0
+  },
+  {
+    "group": "美股红利8家",
+    "overflowing": [],
+    "roeNotes": [],
+    "total": 32,
+    "unwrapped": 0
+  },
+  {
+    "group": "A股财务",
+    "overflowing": [],
+    "total": 144,
+    "unwrapped": 0
+  },
+  {
+    "group": "A股估值与缺失历史",
+    "overflowing": [],
+    "total": 64,
+    "unwrapped": 0
+  }
+]

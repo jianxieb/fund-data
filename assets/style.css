@@ -444,7 +444,10 @@ html{scrollbar-gutter:stable}
 .stock-table th{position:sticky;top:0;z-index:2}
 .stock-table th:first-child{z-index:4}
 .stock-table td{padding-top:21px;padding-bottom:21px;vertical-align:top}
-.stock-table td .sub{white-space:nowrap}
+.stock-table td .sub{white-space:normal;overflow-wrap:anywhere;max-width:190px}
+.stock-table .stock-annual{white-space:normal;overflow-wrap:anywhere;max-width:190px}
+.stock-table .stock-reason,.stock-table .stock-risk{overflow-wrap:anywhere}
+.stock-table .stock-growth strong{white-space:normal;overflow-wrap:anywhere}
 .stock-table .text-link{font-size:13px}
 .stock-financial-table{min-width:1180px}
 .stock-financial-table td:first-child,.stock-financial-table th:first-child{width:175px;min-width:175px;max-width:205px}
