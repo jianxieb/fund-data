@@ -174,7 +174,9 @@
         const actual = periodKnown && p.status === 'available' && p.years === y && validDate(p.start) && p.end === riskEnd && p.start < p.end && p.observations >= 3 &&
           p.start >= first(risk, 'risk') && (p.partial === true ? !hasWindow(p.start, p.end, y) : hasWindow(p.start, p.end, y));
         n[key] = (periodKnown ? actual : hasWindow(first(risk, 'risk'), riskEnd, y)) && allowed ? v : null;
-        n['risk' + y + 'Period'] = actual ? copy(p) : null;
+        const missing = periodKnown && ['insufficient_history', 'incomplete_history', 'invalid_data', 'incomplete_fx'].includes(p.status) &&
+          p.years === y && validDate(p.end) && p.end === riskEnd && typeof p.reason === 'string' && p.reason.length > 0;
+        n['risk' + y + 'Period'] = actual || missing ? copy(p) : null;
       }
       const fees = [0, 1, 2].map(i => Array.isArray(f.fee) && finite(f.fee[i]) && f.fee[i] >= 0 ? f.fee[i] : null);
       n.fee = fees;

@@ -1,0 +1,133 @@
+{
+  "checkedAt": "2026-10-13T19:05:34+00:00",
+  "hostedRun": "https://github.com/jianxieb/fund-data/actions/runs/38436947614",
+  "remoteDataCommit": "ba270b8",
+  "funds": 1623,
+  "navDates": {
+    "2026-10-12": 185,
+    "2026-10-13": 1430,
+    "2026-10-09": 8
+  },
+  "returnDates": {
+    "2026-10-12": 185,
+    "2026-10-13": 1430,
+    "2026-10-09": 8
+  },
+  "verifiedReturnCurves": 1623,
+  "portfolio": {
+    "total": 1774,
+    "available": 1774,
+    "missing": 0
+  },
+  "quality": {
+    "errors": 0,
+    "warnings": 3,
+    "unverified": 4
+  },
+  "examples": [
+    {
+      "c": "001437",
+      "n": "易方达瑞享混合I",
+      "nav": 9.8288,
+      "navdate": "2026-10-13",
+      "r": [
+        72.54127916708669,
+        253.99676067688165,
+        242.15728574499366,
+        284.27505176663755,
+        680.8338717884683
+      ],
+      "returnAsOf": "2026-10-13",
+      "returnHistoryUrl": "data/portfolio/fund/001437-177122fad9397ce3.json",
+      "returnHistorySha256": "177122fad9397ce32f961de4f5c22034fb57efb3a6eca9c88467cec9c5cf8ce5",
+      "riskAsOf": "2026-10-13",
+      "risk5Period": {
+        "vol": 37.41425313106366,
+        "mdd": -40.25300034849896,
+        "start": "2021-10-13",
+        "end": "2026-10-13",
+        "years": 5,
+        "observations": 1215,
+        "annualization": 250,
+        "partial": false,
+        "actualYears": 4.999418194761015,
+        "status": "available",
+        "reason": null,
+        "windowStart": "2021-10-13",
+        "windowPartial": false,
+        "windowYears": 4.999418194761015,
+        "requiredObservations": 1000
+      }
+    },
+    {
+      "c": "000603",
+      "n": "易方达创新驱动灵活配置混合",
+      "nav": 2.695,
+      "navdate": "2026-10-13",
+      "r": [
+        31.614474067380982,
+        83.764126231672,
+        74.00362086766003,
+        16.683566378129623,
+        180.40584627251297
+      ],
+      "returnAsOf": "2026-10-13",
+      "returnHistoryUrl": "data/portfolio/fund/000603-1d6ba0848f7ca47b.json",
+      "returnHistorySha256": "1d6ba0848f7ca47bcb3af6ae3aaa761186177ddb38acdc81b89bfdddcb6772da",
+      "riskAsOf": "2026-10-13",
+      "risk5Period": {
+        "vol": 31.97782768072095,
+        "mdd": -56.65017846841941,
+        "start": "2021-10-13",
+        "end": "2026-10-13",
+        "years": 5,
+        "observations": 1215,
+        "annualization": 250,
+        "partial": false,
+        "actualYears": 4.999418194761015,
+        "status": "available",
+        "reason": null,
+        "windowStart": "2021-10-13",
+        "windowPartial": false,
+        "windowYears": 4.999418194761015,
+        "requiredObservations": 1000
+      }
+    },
+    {
+      "c": "158042",
+      "n": "恒生科技ETF富国",
+      "nav": 0.9432,
+      "navdate": "2026-10-13",
+      "r": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "returnAsOf": "2026-10-13",
+      "returnHistoryUrl": "data/portfolio/fund/158042-9d7b65d58629b1d7.json",
+      "returnHistorySha256": "9d7b65d58629b1d78f500d1cdef99c0c50d32a87bf62f4449dff15e9c449f028",
+      "riskAsOf": "2026-10-13",
+      "risk5Period": {
+        "vol": null,
+        "mdd": null,
+        "start": null,
+        "end": "2026-10-13",
+        "years": 5,
+        "observations": 11,
+        "annualization": 250,
+        "partial": false,
+        "actualYears": null,
+        "status": "insufficient_history",
+        "reason": "日频风险观测不足（至少3条，且需覆盖实际区间）",
+        "windowStart": "2026-09-16",
+        "windowPartial": true,
+        "windowYears": 0.07392348918868971,
+        "requiredObservations": 14,
+        "missingReason": "日频风险观测不足（11条，至少14条）"
+      }
+    }
+  ],
+  "sourceDatePolicy": "采集/复算时间与单位净值、收益、风险、股票行情和财报实际观察日分别保存"
+}

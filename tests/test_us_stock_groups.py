@@ -52,6 +52,13 @@ class UsStockGroupsTests(unittest.TestCase):
         self.assertIn('最新财报为2026-09-30', '；'.join(row['screening']['otherReasons']))
         self.assertEqual(self.groups(self.company(), '2027-01-01'), ['other'])
 
+    def test_new_bank_report_names_pending_review_before_the_accounting_model(self):
+        row = self.company()
+        row['accountingModel'] = 'bank'
+        row['financials'].update(reportDate='2026-09-30', publishedAt='2026-10-07')
+        self.assertEqual(self.groups(row), ['other'])
+        self.assertIn('经营复核仅覆盖2026-06-30，最新财报为2026-09-30', row['screening']['otherReasons'][0])
+
     def test_prior_loss_is_not_a_positive_growth_base(self):
         row = self.company()
         row['financialHistory']['quarterly']['2025-03']['NetIncome'] = -10
@@ -105,7 +112,7 @@ class UsStockGroupsTests(unittest.TestCase):
         row['research']['incomeReview']['payoutRatio'] = .86
         self.assertEqual(self.groups(row), ['other'])
 
-    def test_published_universe_has_current_evidence_reports_and_bluechip_coverage(self):
+    def test_published_universe_has_dated_evidence_reports_and_bluechip_coverage(self):
         root = Path(__file__).resolve().parents[1]
         values = {}
         for line in (root / 'data/overseas-stocks.js').read_text().splitlines():
@@ -135,7 +142,17 @@ class UsStockGroupsTests(unittest.TestCase):
                 else:
                     self.assertEqual(actual, expected)
         for row in rows:
-            self.assertEqual(row['research']['reportPeriod'], row['financials']['reportDate'])
+            reviewed, latest = row['research']['reportPeriod'], row['financials']['reportDate']
+            self.assertLessEqual(reviewed, latest)
+            if reviewed != latest:
+                # Daily financial updates must remain publishable while a new
+                # business review is pending. They must never inherit a group
+                # qualification or pretend the old dossier covers the new filing.
+                self.assertEqual(row['screening']['groups'], ['other'])
+                self.assertTrue(all(not r['qualified'] for r in row['screening']['reviews'].values()))
+                reasons = '；'.join(row['screening']['otherReasons'])
+                self.assertIn(reviewed, reasons)
+                self.assertIn(latest, reasons)
             self.assertTrue(row['research']['earningsReview']['evidence'])
             assert_screening(classify(deepcopy(row), row['screening']['checkedAt'])['screening'], row['screening'], row['symbol'])
         apple = next(r for r in rows if r['symbol'] == 'AAPL')

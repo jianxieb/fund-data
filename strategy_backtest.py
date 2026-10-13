@@ -170,6 +170,9 @@ def normalize_chart(node, symbol, source_url, max_day=None, observed_at=None):
                 (close_day != day or checked.timestamp() < close_time)):
             missing.append({'date': day, 'timestamp': stamp, 'reason': 'unclosed_exchange_session'})
             continue
+        if symbol != 'CNY=X' and day == today_local and close_day == day and stamp > close_time:
+            missing.append({'date': day, 'timestamp': stamp, 'reason': 'post_session_live_quote'})
+            continue
         observations.append((day, stamp, value, local))
     if symbol == 'CNY=X' and observations:
         trailing = max(item[0] for item in observations)

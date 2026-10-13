@@ -76,7 +76,9 @@ jobs:
         continue-on-error: true
         run: python3 scripts/refresh_money_flow_quotes.py
       - name: Reject incomplete or regressed results
-        run: python3 scripts/check_refresh.py
+        run: |
+          python3 scripts/check_refresh.py
+          python3 -m unittest discover -s tests -q
       - name: Verify generated browser assets
         run: |
           npm run version-assets
@@ -113,6 +115,7 @@ jobs:
             python3 scripts/build_crossborder_data.py
             python3 scripts/refresh_money_flow_quotes.py || echo 'Bank quotes unavailable; retained the previous quote timestamps.'
             python3 scripts/check_refresh.py
+            python3 -m unittest discover -s tests -q
             npm run version-assets
             npm run check
           fi

@@ -20,7 +20,7 @@ sys.path.insert(0, str(ROOT))
 import strategy_backtest
 import update
 from data_status import atomic_text, now_iso, write_status
-from screens.fund_screen import parse_js_record, js_str
+from screens.fund_screen import parse_js_record, js_str, latest_nav_observation
 
 OUTPUT = ROOT / 'data' / 'portfolio'
 END = (datetime.now(ZoneInfo('Asia/Shanghai')).date() - timedelta(days=1)).isoformat()
@@ -338,6 +338,9 @@ def prune():
     source = (OUTPUT / 'catalog.js').read_text(encoding='utf-8')
     catalog = json.loads(source.split('=', 1)[1].strip().rstrip(';'))
     used = {row['historyUrl'] for row in [*catalog['assets'], catalog.get('fx') or {}] if row.get('historyUrl')}
+    snapshot = ROOT / 'data/snapshot.js'
+    if snapshot.exists():
+        used.update(re.findall(r"\b(?:return|risk)HistoryUrl:['\"]([^'\"]+)['\"]", snapshot.read_text(encoding='utf-8')))
     for path in OUTPUT.glob('*/*.json'):
         if path.relative_to(ROOT).as_posix() not in used:
             path.unlink()
@@ -390,6 +393,103 @@ def sync_fund_risk(catalog, snapshot_path=None):
     source = re.sub(r'/\*__DATA_(FUNDS|EXTRA)_BEGIN__\*/.*?/\*__DATA_\1_END__\*/', patch_block, source, flags=re.S)
     if updated: atomic_text(path, source)
     return {'updated': len(updated), 'partialFiveYear': len(partial)}
+
+
+def sync_fund_nav(catalog, snapshot_path=None):
+    """Sync single-day NAV evidence without renewing legacy returns/fees/research."""
+    path = Path(snapshot_path) if snapshot_path else ROOT / 'data/snapshot.js'
+    source = path.read_text(encoding='utf-8')
+    available = {a['code']: a for a in catalog['assets'] if a['id'].startswith('fund:') and a['status'] == 'available'}
+    updated, warnings = set(), {}
+    checked = now_iso()
+    def patch_block(match):
+        lines = []
+        for line in match.group(0).splitlines(keepends=True):
+            cm = re.search(r"\bc:'(\d{6})'", line)
+            if not cm or cm.group(1) not in available:
+                lines.append(line); continue
+            code = cm.group(1)
+            row, asset = parse_js_record(line), available[code]
+            # A newer independently published NAV can precede the simulator's
+            # yesterday-only history boundary. Never move it back to that limit.
+            if (row.get('navdate') or '') > asset['asOf']:
+                lines.append(line); continue
+            try:
+                raw = json.loads((ROOT / '.tmp-hist' / (code + '.json')).read_text(encoding='utf-8'))
+                if not isinstance(raw, list) or any(not isinstance(entry, dict) for entry in raw):
+                    raise ValueError('原始单位净值缓存结构无效')
+                observation = latest_nav_observation(raw, asset['asOf'])
+                if not observation:
+                    raise ValueError('历史末日缺唯一有效单位净值')
+            except (OSError, ValueError, TypeError) as exc:
+                warnings[code] = '缺原始单位净值缓存（截至' + asset['asOf'] + '）' if isinstance(exc, OSError) else str(exc)
+                lines.append(line); continue
+            if all(row.get(k) == v for k, v in observation.items()):
+                lines.append(line); continue
+            row.update(observation, navVerifiedAt=checked,
+                       navSourceUrl='https://fundf10.eastmoney.com/jjjz_' + code + '.html')
+            ending = '\n' if line.endswith('\n') else ''
+            lines.append('{' + ','.join(k + ':' + (js_str(v) if isinstance(v, str) else json.dumps(v, ensure_ascii=False, allow_nan=False, separators=(',', ':'))) for k, v in row.items()) + '},' + ending)
+            updated.add(code)
+        return ''.join(lines)
+    source = re.sub(r'/\*__DATA_(FUNDS|EXTRA)_BEGIN__\*/.*?/\*__DATA_\1_END__\*/', patch_block, source, flags=re.S)
+    if updated: atomic_text(path, source)
+    return {'updated': len(updated), 'warnings': warnings}
+
+
+def sync_fund_returns(catalog, snapshot_path=None):
+    """Recompute every fund's return windows from its validated reinvested path."""
+    path = Path(snapshot_path) if snapshot_path else ROOT / 'data/snapshot.js'
+    source = path.read_text(encoding='utf-8')
+    available = {a['code']: a for a in catalog['assets'] if a['id'].startswith('fund:') and a['status'] == 'available'}
+    updated, retained = set(), {}
+    checked = now_iso()
+    def patch_block(match):
+        lines = []
+        for line in match.group(0).splitlines(keepends=True):
+            cm = re.search(r"\bc:'(\d{6})'", line)
+            if not cm or cm.group(1) not in available:
+                lines.append(line); continue
+            code = cm.group(1)
+            row, asset = parse_js_record(line), available[code]
+            if (row.get('returnAsOf') or '') > asset['asOf']:
+                lines.append(line); continue
+            raw = (ROOT / asset['historyUrl']).read_bytes()
+            history = json.loads(raw)
+            if hashlib.sha256(raw).hexdigest() != asset['sha256'] or history.get('id') != asset['id'] or \
+                    history.get('currency') != 'CNY' or history.get('basis') != 'provider_daily_return_or_explicit_actions' or history.get('dividends') != 'reinvested':
+                raise ValueError('基金收益历史身份、口径或校验和不一致：' + code)
+            boundary = max(row.get('d') or '', row.get('strategySince') or '')
+            series = [(day, value) for day, value in validate_series(history['series']) if day >= boundary]
+            if len(series) < 2:
+                retained[code] = '成立或策略转换后缺至少两条有效净值'
+                lines.append(line); continue
+            days = [day for day, value in series]
+            end, value = series[-1]
+            returns, periods = [], []
+            for years in (1, 2, 3, 5, 10):
+                target = update.add_years(end, -years)
+                index = bisect_right(days, target) - 1
+                complete = index >= 0 and (datetime.fromisoformat(target) - datetime.fromisoformat(days[index])).days <= 14
+                returns.append((value / series[index][1] - 1) * 100 if complete else None)
+                periods.append(dict(years=years, start=days[index] if complete else None, end=end))
+            if row.get('performanceVerifiedAt') and any(old is not None and new is None for old, new in zip(row.get('r') or [], returns)):
+                retained[code] = '本次曲线缺已核验收益窗口，保留原收益及其日期'
+                lines.append(line); continue
+            changes = dict(r=returns, returnAsOf=end, returnFirst=series[0][0], returnPeriods=periods,
+                           basis='provider_daily_return_or_explicit_actions', returnBasis='provider_daily_return_or_explicit_actions',
+                           returnSource='Eastmoney已发布净值收益与公司行为', returnSourceUrl=history['sourceUrl'],
+                           returnHistoryUrl=asset['historyUrl'], returnHistorySha256=asset['sha256'])
+            if all(row.get(k) == v for k, v in changes.items()):
+                lines.append(line); continue
+            row.update(changes, performanceVerifiedAt=checked)
+            ending = '\n' if line.endswith('\n') else ''
+            lines.append('{' + ','.join(k + ':' + (js_str(v) if isinstance(v, str) else json.dumps(v, ensure_ascii=False, allow_nan=False, separators=(',', ':'))) for k, v in row.items()) + '},' + ending)
+            updated.add(code)
+        return ''.join(lines)
+    source = re.sub(r'/\*__DATA_(FUNDS|EXTRA)_BEGIN__\*/.*?/\*__DATA_\1_END__\*/', patch_block, source, flags=re.S)
+    if updated: atomic_text(path, source)
+    return {'updated': len(updated), 'retained': retained}
 
 
 def main():
@@ -469,10 +569,18 @@ def main():
     validate_catalog(catalog, rows)
     atomic_text(prior_path, 'var PORTFOLIO_CATALOG=' + json.dumps(catalog, ensure_ascii=False, allow_nan=False, separators=(',', ':')) + ';\n')
     risk_summary = sync_fund_risk(catalog)
+    nav_summary = sync_fund_nav(catalog)
+    returns_summary = sync_fund_returns(catalog)
+    # Return-dependent candidate rules must follow the newly computed windows.
+    subprocess.run([sys.executable, str(ROOT / 'screens/fund_screen.py'), 'policy'], cwd=ROOT, check=True)
     write_status('portfolio', 'cached' if args.offline else 'success', mode='offline' if args.offline else 'online',
-                 records=len(rows), **catalog['summary'], message='全部研究对象纳入标的库；可用性与实际历史末日逐项保存。')
+                 records=len(rows), **catalog['summary'], navUpdated=nav_summary['updated'], navWarnings=nav_summary['warnings'],
+                 returnsUpdated=returns_summary['updated'], returnsRetained=returns_summary['retained'],
+                 message='全部研究对象纳入标的库；基金收益由已校验净值曲线复算，实际日期逐项保存；费率、规模、经理及经营研究保持独立证据日期。')
     print('组合历史发布：', catalog['summary'], flush=True)
     print('基金风险同步：', risk_summary, flush=True)
+    print('基金单日净值同步：', nav_summary, flush=True)
+    print('基金收益同步：', returns_summary, flush=True)
     return 0
 
 

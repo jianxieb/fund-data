@@ -32,6 +32,14 @@ class ExchangeDailyClose(unittest.TestCase):
         node['meta'].pop('currentTradingPeriod')
         self.assertEqual(len(self.normalize(node, 20, 1)['data']), 1)
 
+    def test_appended_after_hours_quote_cannot_replace_the_daily_close(self):
+        node = self.chart()
+        node['timestamp'].append(int(datetime(2026, 10, 13, 20, 30, tzinfo=timezone.utc).timestamp()))
+        node['indicators']['adjclose'][0]['adjclose'].append(999)
+        result = self.normalize(node, 21)
+        self.assertEqual(result['data'][-1]['adjustedClose'], 101)
+        self.assertEqual(result['missingObservations'][-1]['reason'], 'post_session_live_quote')
+
 
 if __name__ == '__main__':
     unittest.main()

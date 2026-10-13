@@ -131,6 +131,20 @@ test('short fund risk is displayed only with explicit valid window evidence; ret
   assert.equal(missingMarket.risk5Period, null); assert.equal(missingMarket.mdd5, null);
 });
 
+test('a dated missing risk window keeps its evidence while rejecting stale numeric estimates', () => {
+  const period = { years:5, status:'insufficient_history', end:'2026-10-13',
+    reason:'日频风险观测不足', missingReason:'日频风险观测不足（11条，至少14条）',
+    observations:11, requiredObservations:14, windowStart:'2026-09-16', windowPartial:true };
+  const raw = fund({ d:'2026-09-16', riskAsOf:period.end, risk5Period:period, mdd5:-20, vol5:15 });
+  const [normalized] = M.dedupeFunds([], [raw]);
+  assert.equal(normalized.mdd5, null);
+  assert.equal(normalized.vol5, null);
+  assert.equal(normalized.risk5Period.missingReason, period.missingReason);
+  assert.notEqual(normalized.risk5Period, period);
+  const [mismatched] = M.dedupeFunds([], [{...raw,risk5Period:{...period,end:'2026-10-12'}}]);
+  assert.equal(mismatched.risk5Period, null);
+});
+
 test('normalization ignores invalid identities and leaves raw snapshots unchanged', () => {
   const input = fund(); const before = M.copy(input);
   assert.deepEqual(M.dedupeFunds({}, null), []);

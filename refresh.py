@@ -18,7 +18,7 @@ PUBLISHED_OUTPUTS = {
     'overseas_stocks': ('overseas-stocks.js', 'us-financial-history.json'),
     'screening': ('screening.js',),
     'strategy': ('snapshot.js', 'strategy-fees.js'),
-    'portfolio': ('portfolio/catalog.js', 'snapshot.js'),
+    'portfolio': ('portfolio/catalog.js', 'snapshot.js', 'screening.js'),
 }
 
 

@@ -146,7 +146,7 @@ class PortfolioHistoryTests(unittest.TestCase):
         self.assertIn('--refresh', refresh.commands()['portfolio'])
         self.assertIn('--offline', refresh.commands(True)['portfolio'])
         self.assertNotIn('--refresh', refresh.commands(True)['portfolio'])
-        self.assertEqual(refresh.PUBLISHED_OUTPUTS['portfolio'], ('portfolio/catalog.js', 'snapshot.js'))
+        self.assertEqual(refresh.PUBLISHED_OUTPUTS['portfolio'], ('portfolio/catalog.js', 'snapshot.js', 'screening.js'))
 
     def test_risk_sync_uses_own_verified_path_and_preserves_return_and_nav_dates(self):
         with tempfile.TemporaryDirectory() as directory:

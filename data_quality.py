@@ -106,6 +106,14 @@ def audit(snapshot, today=None):
                 issue(od, 'overseas_stale', 'warning', '海外个股行情超过7日未更新', symbol)
             elif age < 0:
                 issue(od, 'overseas_future', 'error', '海外个股行情日期在未来', symbol)
+            reviewed = (row.get('research') or {}).get('reportPeriod')
+            latest = (row.get('financials') or {}).get('reportDate')
+            if reviewed and latest and reviewed < latest:
+                screening = row.get('screening') or {}
+                qualified = screening.get('groups') != ['other'] or any(
+                    r.get('qualified') for r in (screening.get('reviews') or {}).values())
+                issue(od, 'overseas_business_review_pending', 'error' if qualified else 'unverified',
+                      f'{symbol}经营复核仅覆盖{reviewed}，最新财报{latest}尚待经营复核', symbol)
         if len({r.get('symbol') for r in overseas_rows}) != len(overseas_rows):
             issue(od, 'overseas_duplicate', 'error', '海外个股身份重复')
 

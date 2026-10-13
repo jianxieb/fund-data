@@ -191,6 +191,18 @@
           "exitCode": 0,
           "seconds": 598.34
         }
+      },
+      "navUpdated": 1183,
+      "navWarnings": {},
+      "returnsUpdated": 1623,
+      "returnsRetained": {},
+      "derivedCheckedAt": "2026-10-13T18:56:08+00:00",
+      "additionalHistoryBackfill": {
+        "id": "fund:000603",
+        "asOf": "2026-10-13",
+        "sha256": "1d6ba0848f7ca47bcb3af6ae3aaa761186177ddb38acdc81b89bfdddcb6772da",
+        "checkedAt": "2026-10-13T19:02:59+00:00",
+        "reason": "托管请求超时后，以本轮另一次真实抓取的净值历史补齐"
       }
     },
     "overseas_stocks": {

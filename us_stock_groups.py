@@ -119,6 +119,9 @@ def classify(row, asof):
     qualified['breakout'] = qualified['breakout'] and not (qualified['quality'] or qualified['growth'])
     groups = [g for g in LABELS if g != 'other' and qualified.get(g)] or ['other']
     other_reasons = list(dict.fromkeys(next((c['reason'] for c in checks[g] if not c['pass']), review.get(g + 'Rationale') or '未进入本期分组') for g in ('quality', 'growth', 'breakout'))) if groups == ['other'] else []
+    if groups == ['other'] and research.get('reportPeriod', '') < f['reportDate']:
+        pending = '经营复核仅覆盖' + research.get('reportPeriod', '未注明报告期') + '，最新财报为' + f['reportDate']
+        other_reasons = [pending] + [reason for reason in other_reasons if reason != pending]
     row['screening'] = {'basis': 'us_company_quality_growth_v1', 'checkedAt': asof,
         'groups': groups, 'reviews': {g: {'qualified': qualified[g], 'checks': values} for g, values in checks.items()},
         'roe5': roe5, 'quarters': recent, 'dividendYears5': len(full_years & dividend_years), 'payoutRatio': payout,
