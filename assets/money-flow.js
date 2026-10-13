@@ -208,7 +208,7 @@
     options.set(key, { label, values });
     const current = values.find(([id]) => id === value);
     const displayValue = key === 'zaPerksLevel' ? current?.[1]?.replace('ZA Perks · ', '') : current?.[1];
-    if (key === 'outcome') return action('<span class="flow-account-copy"><small>' + esc(label) + '</small><strong>' + esc(current?.[1] || '请选择') + '</strong></span><span aria-hidden="true">⌄</span>',
+    if (key === 'outcome') return action('<span class="flow-account-copy"><small>' + esc(label) + '</small><span class="flow-account-main"><strong>' + esc(current?.[1] || '请选择') + '</strong></span></span><span class="flow-account-change"><i aria-hidden="true">⌄</i></span>',
       'control-pick', 'data-value="outcome" aria-haspopup="dialog" aria-label="' + esc(label + '：' + (current?.[1] || '请选择')) + '"', 'flow-account-button');
     if (values.length === 1 && current) return '<div class="flow-field"><span>' + esc(label) + '</span><div class="flow-control-value">' + esc(current[1]) + '</div></div>';
     return '<div class="flow-field"><span>' + esc(label) + '</span>' + (values.length > 1 && values.length <= 3 && ['route', 'returnCurrency', 'voucherScope'].includes(key) ?
@@ -227,7 +227,7 @@
   }
   function account(key, label, item) {
     const displayName = item?.id === 'icbc-asia' ? '工银亚洲' : key === 'startBank' && item?.id === 'cib' ? '兴业寰宇人生' : shortName(item);
-    return action(accountGlyph(key, item) + '<span class="flow-account-copy"><small>' + esc(label) + '</small><strong>' + esc(displayName) + '</strong></span><span class="flow-account-change"><i aria-hidden="true">⌄</i></span>',
+    return action('<span class="flow-account-copy"><small>' + esc(label) + '</small><span class="flow-account-main">' + accountGlyph(key, item) + '<strong>' + esc(displayName) + '</strong></span></span><span class="flow-account-change"><i aria-hidden="true">⌄</i></span>',
       'pick', 'data-value="' + key + '" aria-haspopup="dialog" aria-label="' + esc(label + '：' + shortName(item) + '，更换') + '"', 'flow-account-button');
   }
   function sourceTariffCopy(bank) {
@@ -305,9 +305,16 @@
         const stock = p.config.broker === 'hsbc' && p.config.trade25 ? '汇丰Trade25' : p.config.broker === 'ibkr' ? 'IBKR Pro' : routeName(p.config.broker, 'broker');
         const stops = [start, routeName(p.config.bank, 'bank'), stock,
           p.config.outcome === 'broker-balance' ? '账户内留美元' : routeName(p.config.returnBank, 'bank') + '美元'];
+        const institutions = [
+          ['startBank', mainland.find(bank => bank.id === p.config.startBank)],
+          ['bank', banks.find(bank => bank.id === p.config.bank)],
+          ['broker', brokers.find(broker => broker.id === p.config.broker)],
+          p.config.outcome === 'broker-balance' ? ['broker', brokers.find(broker => broker.id === p.config.broker)] :
+            ['returnBank', banks.find(bank => bank.id === p.config.returnBank)]
+        ];
         const route = stops.map((name, i) => (i ? '<span class="flow-preset-arrow" aria-hidden="true">' +
           (i === 3 && p.config.outcome === 'broker-balance' ? '·' : '→') + '</span>' : '') +
-          '<span class="flow-preset-node"><strong>' + esc(name) + '</strong></span>').join('');
+          '<span class="flow-preset-node">' + accountGlyph(...institutions[i]) + '<strong>' + esc(name) + '</strong></span>').join('');
         const price = p.complete ? '<span class="flow-preset-price"><small>' + (p.rows.some(x => x.estimate) ? '参考损耗' : '损耗') + '</small><b>' + pct(p.total / 100000) + '</b><small>' + cost(p.total) + ' / 10万元</small></span>' :
           '<span class="flow-preset-price"><small>' + esc(r?.missing?.join('、') || p.calculated.error || '缺报价') + '</small></span>';
         return action('<span class="flow-preset-route">' + route + '</span>' + price,
