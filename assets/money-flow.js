@@ -302,11 +302,14 @@
         const applied = state.plan === p.id && !actualQuotes && !state.useVoucher && Object.entries(original).every(([key, value]) => String(state[key]) === String(value)) && state.hsbcBalanceWaiver;
         const start = p.config.startBank === 'cib' ? '兴业寰宇人生' : routeName(p.config.startBank, 'mainland');
         const stock = p.config.broker === 'hsbc' && p.config.trade25 ? '汇丰Trade25' : p.config.broker === 'ibkr' ? 'IBKR Pro' : routeName(p.config.broker, 'broker');
-        const route = start + ' → ' + routeName(p.config.bank, 'bank');
-        const end = stock + (p.config.outcome === 'broker-balance' ? ' · 留美元' : ' → ' + routeName(p.config.returnBank, 'bank') + '美元');
+        const stops = [start, routeName(p.config.bank, 'bank'), stock,
+          p.config.outcome === 'broker-balance' ? '账户内留美元' : routeName(p.config.returnBank, 'bank') + '美元'];
+        const route = stops.map((name, i) => (i ? '<span class="flow-preset-arrow" aria-hidden="true">' +
+          (i === 3 && p.config.outcome === 'broker-balance' ? '·' : '→') + '</span>' : '') +
+          '<span class="flow-preset-node"><strong>' + esc(name) + '</strong></span>').join('');
         const price = p.complete ? '<span class="flow-preset-price"><small>' + (p.rows.some(x => x.estimate) ? '参考损耗' : '损耗') + '</small><b>' + pct(p.total / 100000) + '</b><small>' + cost(p.total) + ' / 10万元</small></span>' :
           '<span class="flow-preset-price"><small>' + esc(r?.missing?.join('、') || p.calculated.error || '缺报价') + '</small></span>';
-        return action('<span class="flow-preset-route"><strong>' + (applied ? '✓ ' : '') + esc(route) + '</strong><strong>' + esc(end) + '</strong></span>' + price,
+        return action('<span class="flow-preset-route">' + route + '</span>' + price,
           'preset', 'data-value="' + p.id + '" aria-pressed="' + applied + '" aria-label="优选方案：' + esc(p.title) + '"', 'flow-preset');
       }).join('') + '</div>';
   }
