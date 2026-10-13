@@ -21,7 +21,7 @@ function ui(input = {}) {
     check: (moneyCheck, checked) => ctx.window.ChanghengMoneyFlow.handleChange({ dataset: { moneyCheck }, checked }),
     result: () => M.calculatorJourney({ ...saved, date, sellDate: date }, D, quotes) };
 }
-const toolbar = html => html.split('id="flow-live-toolbar"')[1].split('id="flow-live-summary"')[0];
+const toolbar = html => html.split('id="flow-live-toolbar"')[1].split('id="flow-live-ledger"')[0];
 const section = (html, label) => html.split('aria-label="' + label + '"')[1]?.split('</section>')[0];
 test('preferred catalogue, prices and product names are independent of every current account and qualification', () => {
   const baseline = toolbar(ui().render());
@@ -79,6 +79,9 @@ test('principal defaults to 100000 and currency choices are RMB, USD, HKD withou
   assert.doesNotMatch(html, /交易日期|卖出 2027|买入 2026/);
   subject.act('detail','','trade-settings'); assert.doesNotMatch(subject.modal(), /data-money-field="sellDate"/);
   assert.equal(subject.saved().sellDate,date);
+  subject.act('detail','','budget');
+  assert.match(subject.modal(), /人民币本金 · 含费用/);
+  assert.doesNotMatch(subject.modal(), /flow-budget-presets|人民币本金快捷金额/);
 });
 test('withdrawal is between the stock account and return bank, before bank FX or spending', () => {
   const subject = ui({ startBank:'cib',bank:'hsbc',broker:'za',returnBank:'bochk',route:'USD',outcome:'cnh-card',hsbcBalanceWaiver:true });
@@ -86,7 +89,11 @@ test('withdrawal is between the stock account and return bank, before bank FX or
   const bank=html.indexOf('data-flow-stage="04"'), fx=html.indexOf('美元换人民币 → 消费');
   assert.ok(stock<withdrawal && withdrawal<bank && bank<fx);
   assert.match(section(html,'卖出后的资金'), /取回银行：中银香港/);
-  assert.ok(html.indexOf('id="flow-live-summary"')<html.indexOf('id="flow-live-ledger"'));
+  assert.ok(html.indexOf('id="flow-live-summary"')>html.indexOf('id="flow-live-ledger"'));
+  const unfinished=ui({startBank:'boc',bank:'bochk',broker:'ibkr',route:'CNH',fxMode:'manual',outcome:'mainland',mainlandMethod:'swift',depositMethod:'fps',returnBank:'bochk',exitBank:'boc',returnMethod:'boc-express'}).render();
+  const terminal=section(unfinished,'资金终点');
+  assert.match(terminal,/最后可计账户[\s\S]*IBKR/);
+  assert.doesNotMatch(terminal,/<strong>中国银行<\/strong>/);
 });
 test('stage losses precede compact components, which reconcile without duplicate sender fees', () => {
   for (const startBank of D.calculator.departureBanks) {
@@ -112,6 +119,10 @@ test('bank management conditions stay in bank nodes and toggling them does not a
   assert.ok(paid.rows.find(row=>row.key==='account').cny>1000);
   assert.ok(paid.costCny>initial.costCny+1000);
   assert.equal((after.match(/data-money-check="hsbcBalanceWaiver"/g)||[]).length,1);
+  const ownFee=ui({startBank:'cib',bank:'hsbc',broker:'za',route:'USD',outcome:'usd-balance',returnBank:'bochk',returnMonthlyHkd:50,hsbcBalanceWaiver:true,mainlandMethod:'swift',depositMethod:'chats',returnMethod:'swift'});
+  const end=section(ownFee.render(),'卖出后的资金');
+  assert.match(end,/银行管理费[\s\S]*已计本人实际期间费用/);
+  assert.doesNotMatch(end,/此账户免管理费/);
 });
 test('a valid coupon covers current buy and sell fees while bank fees remain unchanged by account months', () => {
   const input={ startBank:'boc',bank:'bochk',broker:'chief',route:'USD',outcome:'broker-balance',months:12,sellDate:'2027-09-12',
