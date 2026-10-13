@@ -1,0 +1,420 @@
+[
+  {
+    "label": "海外指数与ETF/五个收益周期",
+    "url": "http://127.0.0.1:8765/#indices",
+    "tables": [
+      {
+        "class": "table-wrap",
+        "contentWidth": 975,
+        "height": 267,
+        "managed": false,
+        "rows": 3,
+        "scrollHeight": 267,
+        "theadRows": 1,
+        "width": 975
+      },
+      {
+        "class": "table-wrap table-scroll-managed",
+        "contentWidth": 1055,
+        "height": 287,
+        "managed": true,
+        "rows": 3,
+        "scrollHeight": 287,
+        "theadRows": 1,
+        "width": 975
+      },
+      {
+        "class": "table-wrap table-scroll-managed",
+        "contentWidth": 1055,
+        "height": 360,
+        "managed": true,
+        "rows": 4,
+        "scrollHeight": 360,
+        "theadRows": 1,
+        "width": 975
+      }
+    ],
+    "bars": []
+  },
+  {
+    "label": "海外ETF进入视区",
+    "url": "http://127.0.0.1:8765/#indices",
+    "tables": [
+      {
+        "class": "table-wrap",
+        "contentWidth": 975,
+        "height": 267,
+        "managed": false,
+        "rows": 3,
+        "scrollHeight": 267,
+        "theadRows": 1,
+        "width": 975
+      },
+      {
+        "class": "table-wrap table-scroll-managed",
+        "contentWidth": 1055,
+        "height": 287,
+        "managed": true,
+        "rows": 3,
+        "scrollHeight": 287,
+        "theadRows": 1,
+        "width": 975
+      },
+      {
+        "class": "table-wrap table-scroll-managed",
+        "contentWidth": 1055,
+        "height": 360,
+        "managed": true,
+        "rows": 4,
+        "scrollHeight": 360,
+        "theadRows": 1,
+        "width": 975
+      }
+    ],
+    "bars": [
+      {
+        "label": "标普500 ETF横向滚动",
+        "maximum": "80",
+        "top": 363.6171875,
+        "value": "0",
+        "width": 975
+      },
+      {
+        "label": "纳斯达克100 ETF横向滚动",
+        "maximum": "80",
+        "top": 700,
+        "value": "0",
+        "width": 975
+      }
+    ]
+  },
+  {
+    "label": "境内跨境指数基金",
+    "url": "http://127.0.0.1:8765/#indices",
+    "tables": [
+      {
+        "class": "table-wrap cross-table-wrap table-scroll-managed",
+        "contentWidth": 1511,
+        "height": 509,
+        "managed": true,
+        "rows": 15,
+        "scrollHeight": 1310,
+        "theadRows": 1,
+        "width": 964
+      }
+    ],
+    "bars": []
+  },
+  {
+    "label": "境内跨境基金/当前视区",
+    "url": "http://127.0.0.1:8765/#indices",
+    "tables": [
+      {
+        "class": "table-wrap cross-table-wrap table-scroll-managed",
+        "contentWidth": 1511,
+        "height": 509,
+        "managed": true,
+        "rows": 15,
+        "scrollHeight": 1310,
+        "theadRows": 1,
+        "width": 964
+      }
+    ],
+    "bars": [
+      {
+        "label": "跨境基金研究表横向滚动",
+        "maximum": "547",
+        "top": 564.1640625,
+        "value": "0",
+        "width": 964
+      }
+    ]
+  },
+  {
+    "label": "A股财务表",
+    "url": "http://127.0.0.1:8765/#stocks",
+    "tables": [
+      {
+        "class": "table-wrap stock-table-wrap table-scroll-managed",
+        "contentWidth": 1180,
+        "height": 509,
+        "managed": true,
+        "rows": 16,
+        "scrollHeight": 4175,
+        "theadRows": 1,
+        "width": 964
+      }
+    ],
+    "bars": [
+      {
+        "label": "个股研究表横向滚动",
+        "maximum": "216",
+        "top": 700,
+        "value": "0",
+        "width": 964
+      }
+    ]
+  },
+  {
+    "label": "投入策略结果表/延迟加载",
+    "url": "http://127.0.0.1:8765/#strategy",
+    "tables": [
+      {
+        "class": "table-wrap table-scroll-managed",
+        "contentWidth": 1390,
+        "height": 324,
+        "managed": true,
+        "rows": 6,
+        "scrollHeight": 324,
+        "theadRows": 1,
+        "width": 975
+      }
+    ],
+    "bars": [
+      {
+        "label": "投入策略结果表横向滚动",
+        "maximum": "415",
+        "top": 700,
+        "value": "0",
+        "width": 975
+      }
+    ]
+  },
+  {
+    "label": "投资渠道",
+    "url": "http://127.0.0.1:8765/#buy-location",
+    "tables": [
+      {
+        "class": "table-wrap table-scroll-managed",
+        "contentWidth": 1170,
+        "height": 286,
+        "managed": true,
+        "rows": 3,
+        "scrollHeight": 286,
+        "theadRows": 1,
+        "width": 975
+      },
+      {
+        "class": "table-wrap",
+        "contentWidth": 935,
+        "height": 257,
+        "managed": false,
+        "rows": 3,
+        "scrollHeight": 257,
+        "theadRows": 1,
+        "width": 935
+      }
+    ],
+    "bars": []
+  },
+  {
+    "label": "投资渠道/结果进入视区",
+    "url": "http://127.0.0.1:8765/#buy-location",
+    "tables": [
+      {
+        "class": "table-wrap table-scroll-managed",
+        "contentWidth": 1170,
+        "height": 286,
+        "managed": true,
+        "rows": 3,
+        "scrollHeight": 286,
+        "theadRows": 1,
+        "width": 975
+      },
+      {
+        "class": "table-wrap",
+        "contentWidth": 935,
+        "height": 257,
+        "managed": false,
+        "rows": 3,
+        "scrollHeight": 257,
+        "theadRows": 1,
+        "width": 935
+      }
+    ],
+    "bars": [
+      {
+        "label": "购买渠道收益对比表横向滚动",
+        "maximum": "195",
+        "top": 337.328125,
+        "value": "0",
+        "width": 975
+      }
+    ]
+  },
+  {
+    "label": "组合模拟/初始加载",
+    "url": "http://127.0.0.1:8765/#portfolio",
+    "tables": [],
+    "bars": []
+  },
+  {
+    "label": "组合模拟/计算完成",
+    "url": "http://127.0.0.1:8765/#portfolio",
+    "tables": [],
+    "bars": []
+  },
+  {
+    "label": "组合开始模拟",
+    "url": "http://127.0.0.1:8765/#portfolio",
+    "tables": [
+      {
+        "class": "table-wrap",
+        "contentWidth": 975,
+        "height": 410,
+        "managed": false,
+        "rows": 7,
+        "scrollHeight": 410,
+        "theadRows": 1,
+        "width": 975
+      },
+      {
+        "class": "table-wrap table-scroll-managed",
+        "contentWidth": 1160,
+        "height": 477,
+        "managed": true,
+        "rows": 5,
+        "scrollHeight": 477,
+        "theadRows": 2,
+        "width": 975
+      }
+    ],
+    "bars": []
+  },
+  {
+    "label": "组合持仓/双行表头进入视区",
+    "url": "http://127.0.0.1:8765/#portfolio",
+    "tables": [
+      {
+        "class": "table-wrap",
+        "contentWidth": 975,
+        "height": 410,
+        "managed": false,
+        "rows": 7,
+        "scrollHeight": 410,
+        "theadRows": 1,
+        "width": 975
+      },
+      {
+        "class": "table-wrap table-scroll-managed",
+        "contentWidth": 1160,
+        "height": 477,
+        "managed": true,
+        "rows": 5,
+        "scrollHeight": 477,
+        "theadRows": 2,
+        "width": 975
+      }
+    ],
+    "bars": []
+  },
+  {
+    "label": "组合持仓/页面下移后",
+    "url": "http://127.0.0.1:8765/#portfolio",
+    "tables": [
+      {
+        "class": "table-wrap",
+        "contentWidth": 975,
+        "height": 410,
+        "managed": false,
+        "rows": 7,
+        "scrollHeight": 410,
+        "theadRows": 1,
+        "width": 975
+      },
+      {
+        "class": "table-wrap table-scroll-managed",
+        "contentWidth": 1160,
+        "height": 477,
+        "managed": true,
+        "rows": 5,
+        "scrollHeight": 477,
+        "theadRows": 2,
+        "width": 975
+      }
+    ],
+    "bars": [
+      {
+        "label": "持仓收益与风险明细横向滚动",
+        "maximum": "185",
+        "top": 687.75,
+        "value": "185",
+        "width": 975
+      }
+    ]
+  },
+  {
+    "label": "四只基金对比/弹窗",
+    "url": "http://127.0.0.1:8765/#funds",
+    "tables": [
+      {
+        "class": "table-wrap fund-table-wrap table-scroll-managed",
+        "contentWidth": 2116,
+        "height": 509,
+        "managed": true,
+        "rows": 20,
+        "scrollHeight": 1051,
+        "theadRows": 1,
+        "width": 964
+      },
+      {
+        "class": "table-wrap",
+        "contentWidth": 827,
+        "height": 1718,
+        "managed": false,
+        "rows": 21,
+        "scrollHeight": 1718,
+        "theadRows": 1,
+        "width": 827
+      }
+    ],
+    "bars": []
+  },
+  {
+    "label": "个股历史财务/展开详情弹窗",
+    "url": "http://127.0.0.1:8765/#stocks",
+    "tables": [
+      {
+        "class": "table-wrap stock-table-wrap table-scroll-managed",
+        "contentWidth": 1180,
+        "height": 509,
+        "managed": true,
+        "rows": 16,
+        "scrollHeight": 4175,
+        "theadRows": 1,
+        "width": 964
+      },
+      {
+        "class": "table-wrap",
+        "contentWidth": 1107,
+        "height": 322,
+        "managed": false,
+        "rows": 6,
+        "scrollHeight": 322,
+        "theadRows": 1,
+        "width": 1107
+      },
+      {
+        "class": "table-wrap",
+        "contentWidth": 1107,
+        "height": 153,
+        "managed": false,
+        "rows": 2,
+        "scrollHeight": 153,
+        "theadRows": 1,
+        "width": 1107
+      },
+      {
+        "class": "table-wrap",
+        "contentWidth": 1107,
+        "height": 101,
+        "managed": false,
+        "rows": 1,
+        "scrollHeight": 101,
+        "theadRows": 1,
+        "width": 1107
+      }
+    ],
+    "bars": []
+  }
+]

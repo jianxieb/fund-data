@@ -60,7 +60,7 @@
   };
   let lastFocus = null, toastTimer, searchTimer, activeCurve = null, strategyFeeLoading = false, strategyFeeError = false;
   const lazyLists = new Map(), loadedCounts = new Map();
-  let loadObserver;
+  let loadObservers = [];
   function lazyRows(key, rows, rowHtml, batch = 20) {
     const loaded = Math.min(rows.length, loadedCounts.get(key) || batch);
     lazyLists.set(key, { rows, rowHtml, batch, loaded });
@@ -82,12 +82,23 @@
     bindAutoLoad();
   }
   function bindAutoLoad() {
-    loadObserver?.disconnect();
+    window.ChanghengTables?.sync();
+    loadObservers.forEach(observer => observer.disconnect());
+    loadObservers = [];
     if (!('IntersectionObserver' in window)) return;
-    loadObserver = new IntersectionObserver(entries => {
-      entries.filter(entry => entry.isIntersecting && entry.target.isConnected).forEach(entry => loadMore(entry.target.dataset.loadMore));
-    }, { rootMargin: '200px 0px' });
-    $$('[data-load-more]').forEach(el => loadObserver.observe(el));
+    const groups = new Map();
+    $$('[data-load-more]').forEach(el => {
+      const root = el.closest('.table-scroll-managed,.portfolio-library-scroll');
+      if (!groups.has(root)) groups.set(root, []);
+      groups.get(root).push(el);
+    });
+    groups.forEach((targets, root) => {
+      const observer = new IntersectionObserver(entries => {
+        entries.filter(entry => entry.isIntersecting && entry.target.isConnected).forEach(entry => loadMore(entry.target.dataset.loadMore));
+      }, { root, rootMargin: '200px 0px' });
+      targets.forEach(el => observer.observe(el));
+      loadObservers.push(observer);
+    });
   }
   function toast(text) { $('#toast').textContent = text; $('#toast').classList.add('visible'); clearTimeout(toastTimer); toastTimer = setTimeout(() => $('#toast').classList.remove('visible'), 3200); }
   function savePrefs() { try { localStorage.setItem(VIEW, JSON.stringify({ annual: state.annual, periods: state.periods, columns: [...state.columns] })); } catch (_) {} }
