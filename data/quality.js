@@ -1,7 +1,7 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-10-07T17:02:16+00:00",
-  "asOf": "2026-10-08",
+  "checkedAt": "2026-10-13T18:06:33+00:00",
+  "asOf": "2026-10-14",
   "status": "unverified",
   "summary": {
     "errors": 0,
@@ -12,10 +12,10 @@ var DATA_QUALITY={
     {
       "id": "funds",
       "label": "海外基金",
-      "asOf": "2026-09-29",
+      "asOf": "2026-10-12",
       "dateRange": [
-        "2026-09-29",
-        "2026-09-29"
+        "2026-10-12",
+        "2026-10-12"
       ],
       "records": 46,
       "issues": [
@@ -78,10 +78,10 @@ var DATA_QUALITY={
     {
       "id": "overseas_stocks",
       "label": "海外个股",
-      "asOf": "2026-10-06",
+      "asOf": "2026-10-12",
       "dateRange": [
-        "2026-10-06",
-        "2026-10-06"
+        "2026-10-12",
+        "2026-10-12"
       ],
       "records": 62,
       "issues": [],
@@ -90,17 +90,17 @@ var DATA_QUALITY={
     {
       "id": "benchmarks",
       "label": "海外指数与ETF基准",
-      "asOf": "2026-10-06",
+      "asOf": "2026-10-12",
       "dateRange": [
-        "2026-10-01",
-        "2026-10-06"
+        "2026-10-12",
+        "2026-10-12"
       ],
       "records": 21,
       "issues": [
         {
           "code": "fx_risk_incomplete",
           "severity": "warning",
-          "message": "完整人民币日风险缺少实际汇率（2025-04-21）；未沿用美元风险或填补汇率",
+          "message": "完整人民币日风险缺少实际汇率（2025-04-21、2026-10-12）；未沿用美元风险或填补汇率",
           "affected": [
             "标普500指数",
             "SPY",
@@ -128,10 +128,10 @@ var DATA_QUALITY={
     {
       "id": "stocks",
       "label": "股票观察清单",
-      "asOf": "2026-09-30",
+      "asOf": "2026-10-13",
       "dateRange": [
-        "2026-09-30",
-        "2026-09-30"
+        "2026-10-13",
+        "2026-10-13"
       ],
       "records": 71,
       "issues": [],
@@ -140,7 +140,7 @@ var DATA_QUALITY={
     {
       "id": "strategy",
       "label": "买入策略实验",
-      "asOf": "2026-10-01",
+      "asOf": "2026-10-12",
       "dateRange": null,
       "records": 162,
       "issues": [],
@@ -153,10 +153,10 @@ var DATA_QUALITY={
     {
       "id": "domestic_funds",
       "label": "扩展基金研究池",
-      "asOf": "2026-09-30",
+      "asOf": "2026-10-13",
       "dateRange": [
         "2026-09-09",
-        "2026-09-30"
+        "2026-10-13"
       ],
       "records": 1577,
       "issues": [
@@ -4043,10 +4043,10 @@ var DATA_QUALITY={
     {
       "id": "indices",
       "label": "国内指数",
-      "asOf": "2026-09-30",
+      "asOf": "2026-10-13",
       "dateRange": [
-        "2026-09-30",
-        "2026-09-30"
+        "2026-10-12",
+        "2026-10-13"
       ],
       "records": 13,
       "issues": [
@@ -4064,10 +4064,10 @@ var DATA_QUALITY={
     {
       "id": "portfolio",
       "label": "组合每日历史",
-      "asOf": "2026-10-06",
+      "asOf": "2026-10-13",
       "dateRange": [
-        "2026-09-28",
-        "2026-10-06"
+        "2026-09-30",
+        "2026-10-13"
       ],
       "records": 1774,
       "issues": [],
