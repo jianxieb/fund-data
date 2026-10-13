@@ -425,7 +425,7 @@
       '<div class="tabs fund-tabs" aria-label="研究范围">' + tabs.map(([id, n]) => action(n, 'fund-tab', (state.fundTab === id ? 'active ' : '') + (id === 'all' ? 'fund-pool-tab' : ''), 'data-value="' + id + '" aria-pressed="' + (state.fundTab === id) + '"')).join('') + '</div>' +
       fundFilters() + (state.fundTab === 'equity' ? benchmarkPanel() : '') +
       '<div class="fund-controls"><div class="fund-query"><input id="fund-search" type="search" aria-label="搜索基金名称、代码、指数或经理" placeholder="搜索名称、代码、指数或经理" value="' + esc(state.query) + '"></div>' +
-      returnControls() + '</div><div id="fund-results">' + fundTable(fundRows()) + '</div>' + compareBar();
+      returnControls(false) + '</div><div id="fund-results">' + fundTable(fundRows()) + '</div>' + compareBar();
   }
   function compareBar() {
     return '<div id="comparison-bar"' + (!state.selected.size ? ' class="hidden"' : ' class="compare-bar"') + '><span>已选 ' + state.selected.size + ' / 4 &nbsp; ' + [...state.selected].map(c => esc(c)).join(' · ') + '</span>' + action('清空', 'compare-clear', 'quiet') + action('并排比较 →', 'compare-open', 'btn', state.selected.size < 2 ? 'disabled' : '') + '</div>';
