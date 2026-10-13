@@ -207,10 +207,11 @@
   function select(key, label, values, value = state[key]) {
     options.set(key, { label, values });
     const current = values.find(([id]) => id === value);
-    const displayValue = key === 'zaPerksLevel' ? current?.[1]?.replace('ZA Perks · ', '') : current?.[1];
-    if (key === 'outcome') return action('<span class="flow-account-copy"><small>' + esc(label) + '</small><span class="flow-account-main"><strong>' + esc(current?.[1] || '请选择') + '</strong></span></span><span class="flow-account-change"><i aria-hidden="true">⌄</i></span>',
-      'control-pick', 'data-value="outcome" aria-haspopup="dialog" aria-label="' + esc(label + '：' + (current?.[1] || '请选择')) + '"', 'flow-account-button');
-    if (values.length === 1 && current) return '<div class="flow-field"><span>' + esc(label) + '</span><div class="flow-control-value">' + esc(current[1]) + '</div></div>';
+    const channelNames = { 'boc-mobile': '手机银行 · 本行汇款', 'boc-online': '手机／网银 · 他行汇款',
+      'icbc-mobile': '手机银行 · 工银亚洲', 'cib-go': '小额全额到账', full: '美元全额到账', linked: '同名专用转账' };
+    const displayValue = key === 'zaPerksLevel' ? current?.[1]?.replace('ZA Perks · ', '') :
+      key === 'mainlandMethod' ? channelNames[value] || current?.[1]?.replace(' · 公开标准价', '') : current?.[1];
+    if (values.length === 1 && current) return '<div class="flow-field"><span>' + esc(label) + '</span><div class="flow-control-value">' + esc(displayValue) + '</div></div>';
     return '<div class="flow-field"><span>' + esc(label) + '</span>' + (values.length > 1 && values.length <= 3 && ['route', 'returnCurrency', 'voucherScope'].includes(key) ?
       '<div class="flow-segments" role="group" aria-label="' + esc(label) + '">' + values.map(([id, text]) => action(esc(text), 'choose', 'data-field="' + key + '" data-value="' + esc(id) + '" aria-pressed="' + (id === value) + '"', 'flow-segment')).join('') + '</div>' :
       action('<span>' + esc(displayValue || '请选择' + label) + '</span><span aria-hidden="true">⌄</span>', 'control-pick', 'data-value="' + key + '" aria-haspopup="dialog" aria-label="' + esc(label + '：' + (current?.[1] || '请选择')) + '"', 'flow-control-button')) + '</div>';
@@ -227,8 +228,9 @@
   }
   function account(key, label, item) {
     const displayName = item?.id === 'icbc-asia' ? '工银亚洲' : key === 'startBank' && item?.id === 'cib' ? '兴业寰宇人生' : shortName(item);
-    return action('<span class="flow-account-copy"><small>' + esc(label) + '</small><span class="flow-account-main">' + accountGlyph(key, item) + '<strong>' + esc(displayName) + '</strong></span></span><span class="flow-account-change"><i aria-hidden="true">⌄</i></span>',
-      'pick', 'data-value="' + key + '" aria-haspopup="dialog" aria-label="' + esc(label + '：' + shortName(item) + '，更换') + '"', 'flow-account-button');
+    return '<div class="flow-account-field"><span class="flow-account-label">' + esc(label) + '</span>' +
+      action('<span class="flow-account-copy"><span class="flow-account-main">' + accountGlyph(key, item) + '<strong>' + esc(displayName) + '</strong></span></span><span class="flow-account-change"><i aria-hidden="true">⌄</i></span>',
+        'pick', 'data-value="' + key + '" aria-haspopup="dialog" aria-label="' + esc(label + '：' + shortName(item) + '，更换') + '"', 'flow-account-button') + '</div>';
   }
   function sourceTariffCopy(bank) {
     if (!bank || !mainland.some(item => item.id === bank.id)) return '请选择目录中的出发银行。';
@@ -440,9 +442,13 @@
     const r = data.selected || data.partial, s = selected(), steps = r?.steps || {}, automaticPurchase = autoFxAtPurchase(r);
     const actualFundingKeys = fundingRowKeys(r), actualTradingKeys = tradingRowKeys(r);
     const throughFunding = [...transferKeys, ...actualFundingKeys], throughTrade = [...throughFunding, ...actualTradingKeys];
+    const countControl = select('count', '汇出笔数', [['1', '1笔'], ['2', '2笔'], ['3', '3笔'], ['4', '4笔'], ...(!['1', '2', '3', '4'].includes(String(state.count)) ? [[String(state.count), state.count + '笔']] : []), ['custom', '自定义笔数']], String(state.count))
+      .replace('class="flow-field"', 'class="flow-field flow-inline-setting"').replace('<span>汇出笔数</span>', '<span>笔数</span>');
+    const channelControl = select('mainlandMethod', '汇款渠道', entryMethods())
+      .replace('class="flow-field"', 'class="flow-field flow-inline-setting"').replace('<span>汇款渠道</span>', '<span>渠道</span>');
     const sourceControls = '<div class="flow-source-settings">' + select('route', '汇出币种', Object.entries(currencyNames)) +
-      select('count', '汇出笔数', [['1', '1笔'], ['2', '2笔'], ['3', '3笔'], ['4', '4笔'], ...(!['1', '2', '3', '4'].includes(String(state.count)) ? [[String(state.count), state.count + '笔']] : []), ['custom', '自定义笔数']], String(state.count)) +
-      select('mainlandMethod', '汇款渠道', entryMethods()) + '</div>' + (r?.sourceRemainderCny > 1e-6 ? '<small>留在本账户 ' + cost(r.sourceRemainderCny) + '</small>' : '');
+      '<div class="flow-source-secondary">' + countControl + channelControl + '</div></div>' +
+      (r?.sourceRemainderCny > 1e-6 ? '<small>留在本账户 ' + cost(r.sourceRemainderCny) + '</small>' : '');
     const principal = nodeBalance(r, M.number(state.budgetCny), 'CNY', '人民币本金').replace('<small>人民币本金</small>', '<div class="flow-balance-label"><small>人民币本金</small>' + action('修改', 'detail', 'data-value="budget" aria-label="修改人民币本金" aria-haspopup="dialog"', 'text-link') + '</div>');
     let html = node('01', 'startBank', '内地出发银行', s.start, principal, sourceControls + mainlandAccountControl(s.start, r));
     html += edge(data, transferKeys, '汇往香港',
@@ -477,7 +483,7 @@
       (pricingControl ? '<div class="flow-setting-cell"><span>买入均价</span>' + action(esc(state.sharePriceUsd) + ' USD/股', 'detail', 'data-value="trade-settings"', 'flow-setting-button') + '</div>' + pricingControl : '') + '</div>';
     html += node('03', 'broker', '买美股的账户', s.broker, nodeBalance(r, automaticPurchase ? steps.brokerOriginal : steps.fundedUsd, automaticPurchase ? state.route : 'USD', '入金到账', throughFunding), tradeSettings);
     html += edge(data, actualTradingKeys, automaticPurchase ? '买入时自动换美元 → 买入美股 → 卖出' : '买入美股 → 卖出', action('盈亏 ' + num(M.number(state.profitUsd)) + ' USD', 'detail', 'data-value="profit-settings"', 'flow-setting-button'), 'trade', esc([automaticPurchase ? exchangeNote : '', row(r, 'trade')?.estimate || ''].filter(Boolean).join(' · ')));
-    const endSelect = select('outcome', '卖出后的资金', outcomes);
+    const endSelect = select('outcome', '资金用途', outcomes);
     const final = balancePresentation(data), allKeys = (r?.rows || []).map(item => item.key);
     const finalBalance = final.canBalance ? nodeBalance(r, r.net, r.currency, finalBalanceLabel(final), allKeys) :
       final.lastPoint ? nodeBalance(r, final.lastPoint.amount, final.lastPoint.currency, lastBalanceLabel(final.lastPoint)) : nodeBalance(r, null, r?.currency || 'USD', '最终余额暂不可算');
@@ -556,9 +562,10 @@
     const name = shortName(bank);
     const ownBank = bank.id === accountId;
     return '<div class="flow-bank-fee"><div class="flow-bank-fee-top"><strong' + (ownBank ? ' class="flow-bank-fee-label"' : '') + '>' + esc(ownBank ? '银行管理费' : name + ' · 管理费') + '</strong><b class="num">' + fee + '</b></div>' +
-      (bank.id === 'hsbc' ? checkbox('hsbcBalanceWaiver', '本持有期满足豁免条件', 'HSBC One本持有期均免管理费') +
-        '<div class="flow-bank-condition">三个月平均理财总值 ≥ 10,000 HKD，或适用开户豁免 ' + action('详情', 'detail', 'data-value="bank-settings" aria-haspopup="dialog"', 'text-link') + '</div>' :
-        '<div class="flow-bank-condition">' + (item?.cny === 0 || !item && bank.monthlyHkd === 0 ? '此账户免管理费' : item?.cny > 0 ? '已计本人实际期间费用' : '期间费用尚缺折算报价') + '</div>') + '</div>';
+      (bank.id === 'hsbc' ? '<div class="flow-bank-waiver-row">' + checkbox('hsbcBalanceWaiver', '满足豁免', 'HSBC One本持有期均免管理费') +
+        action('3个月均值≥1万HKD／开户豁免', 'detail', 'data-value="bank-settings" aria-haspopup="dialog" aria-label="HSBC One豁免条件：三个月平均理财总值至少10,000 HKD或适用开户豁免"', 'text-link') + '</div>' :
+        item?.cny > 0 ? '<div class="flow-bank-condition">已计本人实际期间费用</div>' :
+          item?.cny == null && bank.monthlyHkd > 0 ? '<div class="flow-bank-condition">期间费用尚缺折算报价</div>' : '') + '</div>';
   }
   function mainlandAccountControl(bank, r) {
     const service = bank?.accountService; if (!service) return '';
