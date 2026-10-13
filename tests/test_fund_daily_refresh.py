@@ -62,7 +62,7 @@ class FundStageFailures(unittest.TestCase):
 
 
 class ResearchFundDailyRefresh(unittest.TestCase):
-    def run_refresh(self, fail_code=None, source_day='2026-09-29'):
+    def run_refresh(self, fail_code=None, source_day='2026-09-29', missing_risk=False, partial=False):
         with tempfile.TemporaryDirectory() as tmp, ExitStack() as stack:
             directory = Path(tmp) / 'data'
             directory.mkdir()
@@ -72,11 +72,16 @@ class ResearchFundDailyRefresh(unittest.TestCase):
                                                      feeSource='original-fee-source')
                                                  for code in ('000001', '000002')]))
             records = [dict(c=code, n=code, r=[1] * 5, mdd5=-20, vol5=15,
+                            risk5Period={'partial': partial},
                             returnAsOf='2026-09-21', riskAsOf='2026-09-21', navdate='2026-09-21')
                        for code in ('000001', '000002')]
             metric = dict(first='2010-01-01', latest=source_day, rows=3000, periods=[],
                           basis='provider_daily_return_or_explicit_actions', ret1=2, ret2=3, ret3=4,
                           ret5=5, ret10=6, mdd5=-21, vol5=16, risk5First='2021-09-28')
+            if missing_risk:
+                metric.update(mdd5=None, vol5=None, risk5Period=dict(partial=partial,
+                    start='2026-09-16' if partial else '2021-09-28', end=source_day,
+                    status='insufficient_history', reason='日频风险观测不足（7条，至少9条）'))
 
             def history(code):
                 if code == fail_code:
@@ -124,6 +129,25 @@ class ResearchFundDailyRefresh(unittest.TestCase):
     def test_old_source_date_cannot_replace_verified_returns(self):
         error, call, evidence, status = self.run_refresh(source_day='2026-09-18')
         self.assertIn('来源日期倒退', error)
+        self.assertIsNone(call)
+        self.assertEqual(evidence[0]['asof'], '2026-09-21')
+
+    def test_short_risk_density_gap_does_not_block_new_nav_and_names_the_gap(self):
+        error, call, evidence, status = self.run_refresh(missing_risk=True, partial=True)
+        self.assertIsNone(error)
+        row = call.args[0]['000001']
+        self.assertEqual(row['navdate'], '2026-09-29')
+        self.assertEqual(row['returnAsOf'], '2026-09-29')
+        self.assertIsNone(row['mdd5'])
+        self.assertIsNone(row['vol5'])
+        self.assertTrue(row['risk5Period']['partial'])
+        self.assertEqual(row['risk5Status'], 'insufficient_history')
+        self.assertIn('7条，至少9条', status.kwargs['riskWarnings']['000001'])
+        self.assertEqual(evidence[0]['risk5Period'], row['risk5Period'])
+
+    def test_complete_risk_window_disappearing_still_rejects_publication(self):
+        error, call, evidence, status = self.run_refresh(missing_risk=True)
+        self.assertIn('五年风险窗口缺少完整历史', error)
         self.assertIsNone(call)
         self.assertEqual(evidence[0]['asof'], '2026-09-21')
 

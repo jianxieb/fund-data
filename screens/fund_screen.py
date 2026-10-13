@@ -1512,7 +1512,15 @@ def cmd_refresh_performance(args):
                 raise ValueError('已核验收益窗口缺少完整历史，拒绝覆盖')
         for field in ('mdd5', 'vol5'):
             if old.get(field) is not None and metrics.get(field) is None:
-                raise ValueError('已核验五年风险窗口缺少完整历史，拒绝覆盖')
+                prior_risk, risk = old.get('risk5Period') or {}, metrics.get('risk5Period') or {}
+                # A young fund's calendar span can grow over a holiday while
+                # its observed NAV count stays below the risk density minimum.
+                # Keep the minimum: publish the exact missing evidence instead
+                # of treating a since-inception estimate as a full five years.
+                if not (prior_risk.get('partial') and (risk.get('partial') or risk.get('windowPartial')) and
+                        risk.get('status') == 'insufficient_history' and
+                        metrics['first'] <= (prior_risk.get('start') or old.get('riskFirst') or metrics['first'])):
+                    raise ValueError('已核验五年风险窗口缺少完整历史，拒绝覆盖')
         observation = latest_nav_observation(rows, endpoint)
         if not observation:
             raise ValueError('收益截止日缺少唯一有效单位净值')
@@ -1523,6 +1531,7 @@ def cmd_refresh_performance(args):
         evidence = dict(baseline, asof=endpoint, first=metrics['first'], rows=len(rows),
                         metricRows=metrics['rows'], historyNote=metrics.get('historyNote'),
                         basis=metrics['basis'], r=returns, mdd5=metrics.get('mdd5'), vol5=metrics.get('vol5'),
+                        risk3Period=metrics.get('risk3Period'), risk5Period=metrics.get('risk5Period'),
                         returnPeriods=periods, sourceUrl=source, navObservation=observation,
                         navSyncStatus='matched_return_endpoint', performanceCheckedAt=checked)
         changes = dict(r=returns, mdd5=metrics.get('mdd5'), vol5=metrics.get('vol5'), basis=metrics['basis'],
@@ -1530,6 +1539,7 @@ def cmd_refresh_performance(args):
                        returnSourceUrl=source, returnFirst=metrics['first'], riskFirst=metrics['first'],
                        returnPeriods=periods, risk5First=metrics.get('risk5First'),
                        risk3Period=metrics.get('risk3Period'), risk5Period=metrics.get('risk5Period'),
+                       risk5Status=(metrics.get('risk5Period') or {}).get('status'),
                        mdd3=metrics.get('mdd3'), v3=metrics.get('vol3'), riskBasis=metrics['basis'],
                        historyNote=metrics.get('historyNote') or '', performanceVerifiedAt=checked,
                        note='复算年度收益（截至%s）：%s' % (endpoint, fmt_yearly(metrics.get('yearly'))))
@@ -1558,9 +1568,11 @@ def cmd_refresh_performance(args):
     previous.update(checks)
     save_json(str(output), list(previous.values()))
     dates = sorted({r['asof'] for r in checks.values()})
+    risk_warnings = {code: r['risk5Period'].get('missingReason') or r['risk5Period']['reason'] for code, r in checks.items()
+                     if r.get('risk5Period') and r['risk5Period']['status'] != 'available'}
     write_status('research_funds', 'cached' if offline else 'success', records=len(checks),
                  requested=len(codes), asOf=dates[-1], dateRange=[dates[0], dates[-1]],
-                 mode='offline' if offline else 'online', failures=[])
+                 mode='offline' if offline else 'online', failures=[], riskWarnings=risk_warnings)
     log('已核验扩展基金每日刷新 %d/%d；截至 %s → %s' % (len(checks), len(codes), dates[0], dates[-1]))
     return list(checks.values())
 

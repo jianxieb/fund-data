@@ -139,7 +139,7 @@ def cache_path(symbol):
     return os.path.join(CACHE_DIR, '%s-adjusted-v3.json' % symbol.lower())
 
 
-def normalize_chart(node, symbol, source_url, max_day=None):
+def normalize_chart(node, symbol, source_url, max_day=None, observed_at=None):
     """A daily bar belongs to the exchange's civil date, not necessarily its UTC date."""
     metadata = node.get('meta', {}) if node else {}
     if metadata.get('symbol', '').upper() != symbol.upper():
@@ -154,15 +154,23 @@ def normalize_chart(node, symbol, source_url, max_day=None):
     adjusted = (node.get('indicators', {}).get('adjclose') or [{}])[0].get('adjclose') or []
     if len(timestamps) != len(adjusted) or not adjusted:
         raise ValueError('缺少显式 adjusted close 字段；不接受普通 close 替代')
-    observations = []
+    checked = observed_at or datetime.now(timezone.utc)
+    today_local = checked.astimezone(local_zone).date().isoformat()
+    regular = (metadata.get('currentTradingPeriod') or {}).get('regular') or {}
+    close_time = regular.get('end')
+    close_day = datetime.fromtimestamp(close_time, local_zone).date().isoformat() if isinstance(close_time, (int, float)) else None
+    observations, missing = [], []
     for stamp, value in zip(timestamps, adjusted):
         local = datetime.fromtimestamp(stamp, local_zone)
         day = local.strftime('%Y-%m-%d')
         # Yahoo can append a live quote even when period2 asks for yesterday.
         if max_day and day > max_day:
             continue
+        if symbol != 'CNY=X' and (day > today_local or day == today_local and
+                (close_day != day or checked.timestamp() < close_time)):
+            missing.append({'date': day, 'timestamp': stamp, 'reason': 'unclosed_exchange_session'})
+            continue
         observations.append((day, stamp, value, local))
-    missing = []
     if symbol == 'CNY=X' and observations:
         trailing = max(item[0] for item in observations)
         # The FX daily series uses London midnight. A later timestamp on the
@@ -184,7 +192,8 @@ def normalize_chart(node, symbol, source_url, max_day=None):
     return {'schemaVersion': 3, 'symbol': symbol, 'basis': 'yahoo_adjusted_close',
             'source': source_url, 'exchangeTimezoneName': zone_name,
             'dateConvention': 'exchange_local_date', 'currency': metadata.get('currency'),
-            'fetchedAt': datetime.now(timezone.utc).isoformat(), 'data': rows,
+            'closedSessionsOnly': symbol != 'CNY=X',
+            'fetchedAt': checked.isoformat(), 'data': rows,
             'missingObservations': missing}
 
 
@@ -200,6 +209,8 @@ def load_history(symbol, refresh=False, offline=False):
             data = json.load(fh)
         if data.get('basis') != 'yahoo_adjusted_close' or data.get('symbol') != symbol:
             raise RuntimeError('缓存未通过标的/复权口径验证：' + symbol)
+        if not offline and symbol != 'CNY=X' and not data.get('closedSessionsOnly'):
+            return load_history(symbol, refresh=True, offline=False)
         if symbol.endswith('=X') and (data.get('schemaVersion', 0) < 3 or data.get('dateConvention') != 'exchange_local_date'):
             raise RuntimeError('旧外汇缓存没有交易时区证明，必须重新获取原始时间戳')
         if symbol in EARLY_CACHE_DEADLINE and (not data.get('data') or data['data'][0]['date'] > EARLY_CACHE_DEADLINE[symbol]):

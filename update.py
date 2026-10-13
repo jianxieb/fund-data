@@ -776,9 +776,12 @@ def risk_window(series, anchor, years=5, allow_partial=False):
         result.update(status='incomplete_history', reason='窗口起点前21日内缺有效观测')
         return result
     window = [(day, value) for day, value in ordered if start <= day <= end]
-    result['observations'] = len(window)
-    if len(window) < max(3, math.floor(actual_years * 200) if partial else years * 200):
+    required = max(3, math.floor(actual_years * 200) if partial else years * 200)
+    result.update(observations=len(window), windowStart=start, windowPartial=partial,
+                  windowYears=actual_years, requiredObservations=required)
+    if len(window) < required:
         result['reason'] = '日频风险观测不足（至少3条，且需覆盖实际区间）'
+        result['missingReason'] = '日频风险观测不足（%d条，至少%d条）' % (len(window), required)
         return result
     if any(not math.isfinite(value) or value <= 0 for _, value in window):
         result.update(status='invalid_data', reason='风险窗口内有无效价格')

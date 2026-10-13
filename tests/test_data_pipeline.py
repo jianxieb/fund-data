@@ -224,6 +224,19 @@ class Benchmarks(unittest.TestCase):
         two = update.risk_window(series[:2], series[1][0], 5, allow_partial=True)
         self.assertIsNone(two['vol'])
 
+    def test_young_fund_holiday_density_gap_keeps_its_real_window_and_minimum(self):
+        fixture = json.loads((Path(__file__).parent / 'fixtures/fund-158042-nav-20261014.json').read_text())
+        series = update.total_return_series(fixture['rows'])
+        risk = update.risk_window(series, '2026-10-13', 5, allow_partial=True)
+        self.assertEqual(risk['status'], 'insufficient_history')
+        self.assertEqual(risk['observations'], 11)
+        self.assertEqual(risk['windowStart'], '2026-09-16')
+        self.assertEqual(risk['end'], '2026-10-13')
+        self.assertTrue(risk['windowPartial'])
+        self.assertIn('11条，至少14条', risk['missingReason'])
+        self.assertIsNone(risk['mdd'])
+        self.assertIsNone(risk['vol'])
+
     def test_risk_period_patch_replaces_nested_evidence_without_duplicate_keys(self):
         line = "{c:'000001',risk5Period:{\"start\":\"2024-01-01\",\"end\":\"2025-01-01\",\"partial\":true},note:'保留'},"
         output = update.patch_field(line, 'risk5Period', '{"start":"2024-01-01","end":"2026-01-01","partial":true}')

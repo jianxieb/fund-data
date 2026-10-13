@@ -4,6 +4,7 @@ import argparse
 import http.cookiejar
 import json
 import math
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -36,8 +37,17 @@ def finite(value):
 
 def request_json(url, client=None):
     opener = client.open if client else urllib.request.urlopen
-    with opener(urllib.request.Request(url, headers=UA), timeout=25) as response:
-        return json.load(response)
+    for attempt in range(3):
+        try:
+            with opener(urllib.request.Request(url, headers=UA), timeout=25) as response:
+                return json.load(response)
+        except (urllib.error.URLError, TimeoutError) as exc:
+            if attempt == 2:
+                endpoint = urllib.parse.urlsplit(url)
+                # Keep the failing symbol/endpoint, never the anonymous crumb.
+                raise ValueError('海外来源三次访问失败：' + endpoint.netloc + endpoint.path +
+                                 '（' + type(exc).__name__ + '）') from exc
+            time.sleep(attempt + 1)
 
 
 def cache_json(symbol, name, value=None):
@@ -49,7 +59,7 @@ def cache_json(symbol, name, value=None):
     return value
 
 
-def fetch_quotes():
+def _fetch_quotes():
     # A fresh anonymous Yahoo session; no account, saved credentials or cookie files.
     client = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
     try:
@@ -66,6 +76,16 @@ def fetch_quotes():
     for row in rows:
         row['_fetchedAt'] = now_iso()
         cache_json(row['symbol'], 'quote', row)
+
+
+def fetch_quotes():
+    for attempt in range(3):
+        try:
+            return _fetch_quotes()
+        except (urllib.error.URLError, TimeoutError) as exc:
+            if attempt == 2:
+                raise ValueError('Yahoo公开报价会话三次建立失败（' + type(exc).__name__ + '）') from exc
+            time.sleep(attempt + 1)
 
 
 def normalize_history(node, company, end):

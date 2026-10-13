@@ -2,8 +2,9 @@ name: Refresh research data and publish
 
 on:
   schedule:
-    # 22:17 in Beijing, Monday through Friday. Scheduled runs may be delayed.
-    - cron: '17 14 * * 1-5'
+    # 06:17 and 22:17 Beijing, every day: US close and Asia NAV publications.
+    # Scheduled runs may be delayed; source observation dates stay unchanged.
+    - cron: '17 14,22 * * *'
   workflow_dispatch:
     inputs:
       cold_start:
@@ -25,7 +26,7 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
     permissions:
       contents: write
     outputs:
@@ -65,7 +66,8 @@ jobs:
           python3 -m unittest discover -s tests -q
           node --test tests/*.test.cjs
       - name: Refresh all scheduled datasets
-        run: python3 refresh.py --timeout 420 --funds-timeout 900
+        id: refresh
+        run: python3 refresh.py --timeout 420 --funds-timeout 900 --portfolio-timeout 1200
       - name: Archive newly observed fund actions
         run: python3 scripts/build_fund_actions.py --apply
       - name: Update cross-border fund return bases and distributions
@@ -80,6 +82,9 @@ jobs:
           npm run version-assets
           npm run check
       - name: Save source caches for later runs
+        # Preserve successfully fetched raw sources even when a later stage
+        # rejects publication, so the next run can complete incrementally.
+        if: ${{ always() && (steps.refresh.outcome == 'success' || steps.refresh.outcome == 'failure') }}
         uses: actions/cache/save@v4
         with:
           path: |
@@ -103,7 +108,7 @@ jobs:
             git merge --ff-only origin/main
             python3 -m unittest discover -s tests -q
             node --test tests/*.test.cjs
-            python3 refresh.py --timeout 420 --funds-timeout 900
+            python3 refresh.py --timeout 420 --funds-timeout 900 --portfolio-timeout 1200
             python3 scripts/build_fund_actions.py --apply
             python3 scripts/build_crossborder_data.py
             python3 scripts/refresh_money_flow_quotes.py || echo 'Bank quotes unavailable; retained the previous quote timestamps.'

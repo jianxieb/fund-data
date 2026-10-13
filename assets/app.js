@@ -344,7 +344,8 @@
   }
   function fundRiskPeriod(f, years = 5, detail = false) {
     const p = f['risk' + years + 'Period'];
-    if (!p || p.status !== 'available') return '';
+    if (!p) return '';
+    if (p.status !== 'available') return '<span class="sub risk-missing">' + esc(p.missingReason || p.reason || '缺风险窗口证据') + '</span>';
     const days = (Date.parse(p.end) - Date.parse(p.start)) / 86400000;
     const span = days >= 365 ? (Math.floor(days / 365.2425 * 100) / 100).toFixed(2) + '年' : days + '天';
     if (!p.partial && !detail) return '';

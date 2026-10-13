@@ -103,11 +103,12 @@ def main():
     parser.add_argument('--datasets', default=','.join(DATASETS), help='逗号分隔：' + ','.join(DATASETS))
     parser.add_argument('--timeout', type=int, default=180, help='每个数据集最大运行秒数（默认180）')
     parser.add_argument('--funds-timeout', type=int, help='基础与已核验扩展基金阶段的运行秒数上限；默认使用 --timeout')
+    parser.add_argument('--portfolio-timeout', type=int, help='组合全库每日历史阶段的运行秒数上限；默认使用 --timeout')
     args = parser.parse_args()
     selected = list(dict.fromkeys(x.strip() for x in args.datasets.split(',') if x.strip()))
     if not selected or set(selected) - set(DATASETS):
         parser.error('未知或空的数据集列表')
-    if args.timeout < 1 or (args.funds_timeout is not None and args.funds_timeout < 1):
+    if any(value is not None and value < 1 for value in (args.timeout, args.funds_timeout, args.portfolio_timeout)):
         parser.error('运行秒数上限必须大于0')
     # Quality always runs after mutations, including unsuccessful refreshes.
     selected = [name for name in selected if name != 'quality'] + ['quality']
@@ -126,6 +127,8 @@ def main():
         for name in selected:
             print('刷新 %s …' % name, flush=True)
             limit = args.funds_timeout if name in ('funds', 'research_funds') and args.funds_timeout else args.timeout
+            if name == 'portfolio' and args.portfolio_timeout:
+                limit = args.portfolio_timeout
             step = execute(name, available[name], limit, args.offline)
             run['steps'].append(step)
             if name == 'portfolio' and step['exitCode'] == 0:

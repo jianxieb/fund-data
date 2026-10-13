@@ -1,0 +1,106 @@
+{
+  "code": "158042",
+  "sourceUrl": "https://fundmobapi.eastmoney.com/FundMNewApi/FundMNHisNetList?FCODE=158042&pageIndex=1&pageSize=10000",
+  "fetchedAt": "2026-10-14",
+  "rows": [
+    {
+      "FSRQ": "2026-10-13",
+      "DWJZ": "0.9432",
+      "JZZZL": "-0.81",
+      "FHFCZ": 0,
+      "SPLIT_FACTOR": 1,
+      "ACTIONS_SOURCE": "Eastmoney dividend and split tables",
+      "ACTIONS_ASOF": "2026-10-14"
+    },
+    {
+      "FSRQ": "2026-10-12",
+      "DWJZ": "0.9509",
+      "JZZZL": "-0.72",
+      "FHFCZ": 0,
+      "SPLIT_FACTOR": 1,
+      "ACTIONS_SOURCE": "Eastmoney dividend and split tables",
+      "ACTIONS_ASOF": "2026-10-14"
+    },
+    {
+      "FSRQ": "2026-10-09",
+      "DWJZ": "0.9578",
+      "JZZZL": "2.99",
+      "FHFCZ": 0,
+      "SPLIT_FACTOR": 1,
+      "ACTIONS_SOURCE": "Eastmoney dividend and split tables",
+      "ACTIONS_ASOF": "2026-10-14"
+    },
+    {
+      "FSRQ": "2026-10-08",
+      "DWJZ": "0.9300",
+      "JZZZL": "-4.26",
+      "FHFCZ": 0,
+      "SPLIT_FACTOR": 1,
+      "ACTIONS_SOURCE": "Eastmoney dividend and split tables",
+      "ACTIONS_ASOF": "2026-10-14"
+    },
+    {
+      "FSRQ": "2026-09-30",
+      "DWJZ": "0.9714",
+      "JZZZL": "-0.01",
+      "FHFCZ": 0,
+      "SPLIT_FACTOR": 1,
+      "ACTIONS_SOURCE": "Eastmoney dividend and split tables",
+      "ACTIONS_ASOF": "2026-10-14"
+    },
+    {
+      "FSRQ": "2026-09-29",
+      "DWJZ": "0.9715",
+      "JZZZL": "-1.08",
+      "FHFCZ": 0,
+      "SPLIT_FACTOR": 1,
+      "ACTIONS_SOURCE": "Eastmoney dividend and split tables",
+      "ACTIONS_ASOF": "2026-10-14"
+    },
+    {
+      "FSRQ": "2026-09-28",
+      "DWJZ": "0.9821",
+      "JZZZL": "-1.64",
+      "FHFCZ": 0,
+      "SPLIT_FACTOR": 1,
+      "ACTIONS_SOURCE": "Eastmoney dividend and split tables",
+      "ACTIONS_ASOF": "2026-10-14"
+    },
+    {
+      "FSRQ": "2026-09-24",
+      "DWJZ": "0.9985",
+      "JZZZL": "-0.32",
+      "FHFCZ": 0,
+      "SPLIT_FACTOR": 1,
+      "ACTIONS_SOURCE": "Eastmoney dividend and split tables",
+      "ACTIONS_ASOF": "2026-10-14"
+    },
+    {
+      "FSRQ": "2026-09-23",
+      "DWJZ": "1.0017",
+      "JZZZL": "--",
+      "FHFCZ": 0,
+      "SPLIT_FACTOR": 1,
+      "ACTIONS_SOURCE": "Eastmoney dividend and split tables",
+      "ACTIONS_ASOF": "2026-10-14"
+    },
+    {
+      "FSRQ": "2026-09-18",
+      "DWJZ": "1.0046",
+      "JZZZL": "--",
+      "FHFCZ": 0,
+      "SPLIT_FACTOR": 1,
+      "ACTIONS_SOURCE": "Eastmoney dividend and split tables",
+      "ACTIONS_ASOF": "2026-10-14"
+    },
+    {
+      "FSRQ": "2026-09-16",
+      "DWJZ": "1.0000",
+      "JZZZL": "--",
+      "FHFCZ": 0,
+      "SPLIT_FACTOR": 1,
+      "ACTIONS_SOURCE": "Eastmoney dividend and split tables",
+      "ACTIONS_ASOF": "2026-10-14"
+    }
+  ]
+}
