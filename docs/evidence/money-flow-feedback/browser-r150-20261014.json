@@ -1,0 +1,472 @@
+{
+  "scope": "Local development checks only. Not user acceptance. No deployed-page verification.",
+  "finalStates": [
+    {
+      "label": "final-long-channel-compact",
+      "accountNumbers": [
+        "01",
+        "02",
+        "03",
+        "04"
+      ],
+      "arrows": [
+        {
+          "arrows": 1,
+          "name": "汇往香港"
+        },
+        {
+          "arrows": 1,
+          "name": "转入买股账户"
+        },
+        {
+          "arrows": 1,
+          "name": "买入美股 → 卖出"
+        },
+        {
+          "arrows": 1,
+          "name": "汇丰证券出金 → 汇丰 HSBC One"
+        },
+        {
+          "arrows": 1,
+          "name": "汇回内地"
+        },
+        {
+          "arrows": 1,
+          "name": "内地结汇"
+        }
+      ],
+      "controls": [
+        {
+          "cx": 954,
+          "cy": 520.6953125,
+          "font": "13.5px",
+          "h": 40,
+          "label": "汇出币种",
+          "padding": "3px",
+          "w": 298
+        },
+        {
+          "cx": 893.5,
+          "cy": 572.6953125,
+          "font": "13.5px",
+          "h": 40,
+          "label": "汇出笔数：1笔",
+          "padding": "7px 12px",
+          "w": 100
+        },
+        {
+          "cx": 1051.5,
+          "cy": 572.6953125,
+          "font": "13.5px",
+          "h": 40,
+          "label": "汇款渠道：手机银行／网银 · 向他行9折",
+          "padding": "7px 12px",
+          "w": 100
+        },
+        {
+          "cx": 848.6640625,
+          "cy": 850.1953125,
+          "font": "12px",
+          "h": 40,
+          "label": "月",
+          "padding": "0px",
+          "w": 87.328125
+        },
+        {
+          "cx": 954,
+          "cy": 1511.6953125,
+          "font": "13.5px",
+          "h": 40,
+          "label": "资金用途：汇回内地结汇",
+          "padding": "7px 12px",
+          "w": 298
+        },
+        {
+          "cx": 954,
+          "cy": 1589.6953125,
+          "font": "13.5px",
+          "h": 40,
+          "label": "回款币种",
+          "padding": "3px",
+          "w": 298
+        },
+        {
+          "cx": 986,
+          "cy": 1759.6953125,
+          "font": "13.5px",
+          "h": 40,
+          "label": "普通网上电汇",
+          "padding": "7px 12px",
+          "w": 234
+        }
+      ],
+      "linePseudoElements": [],
+      "moneyCenters": [
+        702,
+        702,
+        702,
+        702
+      ],
+      "overflow": [
+        ""
+      ],
+      "selectorOffsets": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "viewport": [
+        1175,
+        1233
+      ]
+    },
+    {
+      "label": "final-long-channel-wide",
+      "accountNumbers": [
+        "01",
+        "02",
+        "03",
+        "04"
+      ],
+      "arrows": [
+        {
+          "arrows": 1,
+          "name": "汇往香港"
+        },
+        {
+          "arrows": 1,
+          "name": "转入买股账户"
+        },
+        {
+          "arrows": 1,
+          "name": "买入美股 → 卖出"
+        },
+        {
+          "arrows": 1,
+          "name": "汇丰证券出金 → 汇丰 HSBC One"
+        },
+        {
+          "arrows": 1,
+          "name": "汇回内地"
+        },
+        {
+          "arrows": 1,
+          "name": "内地结汇"
+        }
+      ],
+      "controls": [
+        {
+          "cx": 1402.5,
+          "cy": 512.6953125,
+          "font": "13.5px",
+          "h": 40,
+          "label": "汇出币种",
+          "padding": "3px",
+          "w": 710
+        },
+        {
+          "cx": 1239,
+          "cy": 564.6953125,
+          "font": "13.5px",
+          "h": 40,
+          "label": "汇出笔数：1笔",
+          "padding": "7px 12px",
+          "w": 100
+        },
+        {
+          "cx": 1603,
+          "cy": 564.6953125,
+          "font": "13.5px",
+          "h": 40,
+          "label": "汇款渠道：手机银行／网银 · 向他行9折",
+          "padding": "7px 12px",
+          "w": 180.765625
+        },
+        {
+          "cx": 1159.828125,
+          "cy": 813.6953125,
+          "font": "12px",
+          "h": 40,
+          "label": "月",
+          "padding": "0px",
+          "w": 100
+        },
+        {
+          "cx": 1220.5,
+          "cy": 1491.6953125,
+          "font": "13.5px",
+          "h": 40,
+          "label": "资金用途：汇回内地结汇",
+          "padding": "7px 12px",
+          "w": 346
+        },
+        {
+          "cx": 1584.5,
+          "cy": 1491.6953125,
+          "font": "13.5px",
+          "h": 40,
+          "label": "回款币种",
+          "padding": "3px",
+          "w": 346
+        },
+        {
+          "cx": 1507.5,
+          "cy": 1684.6953125,
+          "font": "13.5px",
+          "h": 40,
+          "label": "普通网上电汇",
+          "padding": "7px 12px",
+          "w": 500
+        }
+      ],
+      "linePseudoElements": [],
+      "moneyCenters": [
+        881.5,
+        881.5,
+        881.5,
+        881.5
+      ],
+      "overflow": [],
+      "selectorOffsets": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "viewport": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "label": "final-hk-usd-terminal-wide",
+      "accountNumbers": [
+        "01",
+        "02",
+        "03",
+        "04"
+      ],
+      "arrows": [
+        {
+          "arrows": 1,
+          "name": "汇往香港"
+        },
+        {
+          "arrows": 1,
+          "name": "转入买股账户"
+        },
+        {
+          "arrows": 1,
+          "name": "买入美股 → 卖出"
+        },
+        {
+          "arrows": 1,
+          "name": "汇丰证券出金 → 汇丰 HSBC One"
+        }
+      ],
+      "controls": [
+        {
+          "cx": 1402.5,
+          "cy": 512.6953125,
+          "font": "13.5px",
+          "h": 40,
+          "label": "汇出币种",
+          "padding": "3px",
+          "w": 710
+        },
+        {
+          "cx": 1239,
+          "cy": 564.6953125,
+          "font": "13.5px",
+          "h": 40,
+          "label": "汇出笔数：1笔",
+          "padding": "7px 12px",
+          "w": 100
+        },
+        {
+          "cx": 1603,
+          "cy": 564.6953125,
+          "font": "13.5px",
+          "h": 40,
+          "label": "普通汇款",
+          "padding": "7px 12px",
+          "w": 100
+        },
+        {
+          "cx": 1159.828125,
+          "cy": 813.6953125,
+          "font": "12px",
+          "h": 40,
+          "label": "月",
+          "padding": "0px",
+          "w": 100
+        },
+        {
+          "cx": 1402.5,
+          "cy": 1491.6953125,
+          "font": "13.5px",
+          "h": 40,
+          "label": "资金用途：取回香港银行 · 保留美元",
+          "padding": "7px 12px",
+          "w": 710
+        }
+      ],
+      "linePseudoElements": [],
+      "moneyCenters": [
+        881.5,
+        881.5,
+        881.5,
+        881.5
+      ],
+      "overflow": [],
+      "selectorOffsets": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "viewport": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "label": "final-restored-mainland-natural",
+      "accountNumbers": [
+        "01",
+        "02",
+        "03",
+        "04"
+      ],
+      "arrows": [
+        {
+          "arrows": 1,
+          "name": "汇往香港"
+        },
+        {
+          "arrows": 1,
+          "name": "转入买股账户"
+        },
+        {
+          "arrows": 1,
+          "name": "买入美股 → 卖出"
+        },
+        {
+          "arrows": 1,
+          "name": "汇丰证券出金 → 汇丰 HSBC One"
+        },
+        {
+          "arrows": 1,
+          "name": "汇回内地"
+        },
+        {
+          "arrows": 1,
+          "name": "内地结汇"
+        }
+      ],
+      "controls": [
+        {
+          "cx": 954,
+          "cy": -107.3046875,
+          "font": "13.5px",
+          "h": 40,
+          "label": "汇出币种",
+          "padding": "3px",
+          "w": 298
+        },
+        {
+          "cx": 893.5,
+          "cy": -55.3046875,
+          "font": "13.5px",
+          "h": 40,
+          "label": "汇出笔数：1笔",
+          "padding": "7px 12px",
+          "w": 100
+        },
+        {
+          "cx": 1051.5,
+          "cy": -55.3046875,
+          "font": "13.5px",
+          "h": 40,
+          "label": "普通汇款",
+          "padding": "7px 12px",
+          "w": 100
+        },
+        {
+          "cx": 848.6640625,
+          "cy": 222.1953125,
+          "font": "12px",
+          "h": 40,
+          "label": "月",
+          "padding": "0px",
+          "w": 87.328125
+        },
+        {
+          "cx": 954,
+          "cy": 883.6953125,
+          "font": "13.5px",
+          "h": 40,
+          "label": "资金用途：汇回内地结汇",
+          "padding": "7px 12px",
+          "w": 298
+        },
+        {
+          "cx": 954,
+          "cy": 961.6953125,
+          "font": "13.5px",
+          "h": 40,
+          "label": "回款币种",
+          "padding": "3px",
+          "w": 298
+        },
+        {
+          "cx": 986,
+          "cy": 1131.6953125,
+          "font": "13.5px",
+          "h": 40,
+          "label": "普通网上电汇",
+          "padding": "7px 12px",
+          "w": 234
+        }
+      ],
+      "linePseudoElements": [],
+      "moneyCenters": [
+        702,
+        702,
+        702,
+        702
+      ],
+      "overflow": [],
+      "selectorOffsets": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "viewport": [
+        1175,
+        1233
+      ]
+    }
+  ],
+  "notes": [
+    "Source count and ordinary channel use 100 × 40 CSS px at both measured widths.",
+    "Narrow long channel uses a single-line ellipsis; full option remains in picker and accessible label. This text span is the intentional scrollWidth overflow recorded as an empty class name.",
+    "Bank-month input margin reset; all measured ordinary controls are 40px high.",
+    "All tested flow node, edge and terminal-row line pseudo-elements absent; independent arrows remain."
+  ]
+}
