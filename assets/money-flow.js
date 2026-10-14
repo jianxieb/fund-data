@@ -239,7 +239,7 @@
   function account(key, label, item) {
     const displayName = item?.id === 'icbc-asia' ? '工银亚洲' : key === 'startBank' && item?.id === 'cib' ? '兴业寰宇人生' : shortName(item);
     return '<div class="flow-account-field"><span class="flow-account-label">' + esc(label) + '</span>' +
-      action('<span class="flow-account-copy"><span class="flow-account-main">' + accountGlyph(key, item) + '<strong>' + esc(displayName) + '</strong></span></span><span class="flow-account-change"><i aria-hidden="true">⌄</i></span>',
+      action('<span class="flow-account-main">' + accountGlyph(key, item) + '<strong>' + esc(displayName) + '</strong><span class="flow-account-change" aria-hidden="true">⌄</span></span>',
         'pick', 'data-value="' + key + '" aria-haspopup="dialog" aria-label="' + esc(label + '：' + shortName(item) + '，更换') + '"', 'flow-account-button') + '</div>';
   }
   function sourceTariffCopy(bank) {
