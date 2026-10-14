@@ -9,7 +9,7 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const page = join(root, 'index.html');
 const source = readFileSync(page, 'utf8');
 const assets = new Set();
-const expected = source.replace(/(\b(?:src|href)=")((?:assets|data)\/[^"?]+\.(?:css|js))(?:\?v=[^"]*)?(")/g,
+const expected = source.replace(/(\b(?:src|href)=")((?:assets|data)\/[^"?]+\.(?:css|js|json))(?:\?v=[^"]*)?(")/g,
   (_match, prefix, asset, suffix) => {
     assets.add(asset);
     const digest = createHash('sha256').update(readFileSync(join(root, asset))).digest('hex').slice(0, 12);

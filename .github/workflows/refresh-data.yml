@@ -56,6 +56,7 @@ jobs:
             .tmp-managers
             .tmp-snap/stocks
             .tmp-snap/overseas-stocks
+            .tmp-snap/market-history
             .tmp-buy-location
             .tmp-portfolio
           key: research-source-${{ runner.os }}-${{ github.run_id }}
@@ -75,6 +76,9 @@ jobs:
       - name: Update bank reference FX quotes with original timestamps
         continue-on-error: true
         run: python3 scripts/refresh_money_flow_quotes.py
+      - name: Update historical market observations with original dates
+        continue-on-error: true
+        run: python3 market_history.py
       - name: Reject incomplete or regressed results
         run: |
           python3 scripts/check_refresh.py
@@ -96,6 +100,7 @@ jobs:
             .tmp-managers
             .tmp-snap/stocks
             .tmp-snap/overseas-stocks
+            .tmp-snap/market-history
             .tmp-buy-location
             .tmp-portfolio
           key: research-source-${{ runner.os }}-${{ github.run_id }}
@@ -114,6 +119,7 @@ jobs:
             python3 scripts/build_fund_actions.py --apply
             python3 scripts/build_crossborder_data.py
             python3 scripts/refresh_money_flow_quotes.py || echo 'Bank quotes unavailable; retained the previous quote timestamps.'
+            python3 market_history.py || echo 'Market history unavailable; retained the previous observations.'
             python3 scripts/check_refresh.py
             python3 -m unittest discover -s tests -q
             npm run version-assets
@@ -125,7 +131,7 @@ jobs:
         id: commit
         if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || inputs.publish) }}
         run: |
-          if git diff --quiet -- data/snapshot.js data/overseas-stocks.js data/indices.js data/index-history.json data/screening.js data/fund-actions.json data/crossborder.js data/money-flow-quotes.js data/*validation.json data/verification*.json data/*reconciliation.json data/portfolio; then
+          if git diff --quiet -- data/snapshot.js data/overseas-stocks.js data/indices.js data/index-history.json data/market-history.json data/screening.js data/fund-actions.json data/crossborder.js data/money-flow-quotes.js data/*validation.json data/verification*.json data/*reconciliation.json data/portfolio; then
             echo 'No research data or evidence changed; keeping the existing published snapshot.'
             echo 'changed=false' >> "$GITHUB_OUTPUT"
             exit 0

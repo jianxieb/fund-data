@@ -30,7 +30,7 @@
     return '<details class="select-menu ' + cls + '"><summary id="' + esc(id) + '" aria-label="' + esc(label + '：' + current[1]) + '"><span>' + esc(current[1]) + '</span></summary>' +
       '<div class="select-menu-list" role="group" aria-label="' + esc(label) + '">' + options.map(([key, text]) => action(esc(text), 'menu-choice', 'select-menu-option' + (key === value ? ' active' : ''), 'data-menu="' + esc(id) + '" data-value="' + esc(key) + '" aria-label="' + esc(text) + '" aria-current="' + (key === value) + '"')).join('') + '</div></details>';
   }
-  const years = [1, 2, 3, 5, 10], titles = { overview: '研究总览', indices: '指数观察', funds: '基金研究', stocks: '个股深入', reports: '深入报告', strategy: '投入策略', 'buy-location': '投资渠道', 'money-flow': '跨境资金', portfolio: '组合模拟', quality: '数据与方法' };
+  const years = [1, 2, 3, 5, 10], titles = { overview: '研究总览', indices: '指数观察', 'market-history': '历史分位', funds: '基金研究', stocks: '个股深入', reports: '深入报告', strategy: '投入策略', 'buy-location': '投资渠道', 'money-flow': '跨境资金', portfolio: '组合模拟', quality: '数据与方法' };
   const funds = M.dedupeFunds(window.FUNDS, window.EXTRA);
   const policy = window.SCREEN_POLICY || { shortlist: [], byCode: {}, rules: [], counts: {} };
   const VIEW = 'changheng.research-view.v2';
@@ -187,6 +187,9 @@
   }
   function moneyFlow() {
     return window.ChanghengMoneyFlow.view({ head, esc, money, action, modalTitle, openModal, render });
+  }
+  function marketHistory() {
+    return window.ChanghengMarketHistory.view({ modalTitle, openModal, download, render });
   }
   function indexRows() {
     return state.indexTab === 'cn' ? window.INDEX_DATA || [] : (window.BM || []).filter(b => state.indexTab === 'other' ? b.section === 'other' : b.section !== 'other');
@@ -993,10 +996,10 @@
     else if (next.closest('details')) next.closest('details').querySelector('summary').focus({ preventScroll: true });
   }
   function render() {
-    const renderers = { overview: home, indices, funds: fundView, stocks, reports: reportsView, strategy: strategies, 'buy-location': buyLocation, 'money-flow': moneyFlow, portfolio, quality };
+    const renderers = { overview: home, indices, 'market-history': marketHistory, funds: fundView, stocks, reports: reportsView, strategy: strategies, 'buy-location': buyLocation, 'money-flow': moneyFlow, portfolio, quality };
     const focus = captureFocus(document.activeElement);
     document.title = '长衡 · ' + titles[state.route];
-    const group = { indices: '研究对象', funds: '研究对象', stocks: '研究对象', reports: '研究对象', strategy: '研究方法', 'buy-location': '研究方法', 'money-flow': '研究方法', portfolio: '组合研究' }[state.route];
+    const group = { indices: '研究对象', 'market-history': '研究对象', funds: '研究对象', stocks: '研究对象', reports: '研究对象', strategy: '研究方法', 'buy-location': '研究方法', 'money-flow': '研究方法', portfolio: '组合研究' }[state.route];
     $('#breadcrumb').innerHTML = (group ? '<span>' + group + '</span><span class="breadcrumb-separator" aria-hidden="true">/</span>' : '') + (state.route === 'reports' ? '<a href="#stocks">个股深入</a><span class="breadcrumb-separator" aria-hidden="true">/</span>' : '') + '<span aria-current="page">' + titles[state.route] + '</span>';
     $$('[data-route]').forEach(a => { const active = a.dataset.route === (state.route === 'reports' ? 'stocks' : state.route); a.classList.toggle('active', active); if (active) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
     $('#main').className = 'page-' + state.route;
