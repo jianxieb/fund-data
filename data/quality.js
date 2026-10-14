@@ -1,7 +1,7 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-10-14T01:33:46+00:00",
-  "asOf": "2026-10-14",
+  "checkedAt": "2026-10-14T19:08:54+00:00",
+  "asOf": "2026-10-15",
   "status": "unverified",
   "summary": {
     "errors": 0,
@@ -12,10 +12,10 @@ var DATA_QUALITY={
     {
       "id": "funds",
       "label": "海外基金",
-      "asOf": "2026-10-12",
+      "asOf": "2026-10-13",
       "dateRange": [
-        "2026-10-12",
-        "2026-10-12"
+        "2026-10-13",
+        "2026-10-13"
       ],
       "records": 46,
       "issues": [
@@ -78,10 +78,10 @@ var DATA_QUALITY={
     {
       "id": "overseas_stocks",
       "label": "海外个股",
-      "asOf": "2026-10-12",
+      "asOf": "2026-10-13",
       "dateRange": [
-        "2026-10-12",
-        "2026-10-12"
+        "2026-10-13",
+        "2026-10-13"
       ],
       "records": 62,
       "issues": [
@@ -99,10 +99,10 @@ var DATA_QUALITY={
       "label": "海外指数与ETF基准",
       "asOf": "2026-10-13",
       "dateRange": [
-        "2026-10-12",
+        "2026-10-13",
         "2026-10-13"
       ],
-      "records": 21,
+      "records": 25,
       "issues": [
         {
           "code": "fx_risk_incomplete",
@@ -126,7 +126,11 @@ var DATA_QUALITY={
             "USD",
             "SOXL",
             "QYLD",
-            "JEPI"
+            "JEPI",
+            "SPMO",
+            "MTUM",
+            "XMMO",
+            "FDMO"
           ]
         }
       ],
@@ -135,10 +139,10 @@ var DATA_QUALITY={
     {
       "id": "stocks",
       "label": "股票观察清单",
-      "asOf": "2026-10-13",
+      "asOf": "2026-10-14",
       "dateRange": [
-        "2026-10-13",
-        "2026-10-13"
+        "2026-10-14",
+        "2026-10-14"
       ],
       "records": 71,
       "issues": [],
@@ -147,7 +151,7 @@ var DATA_QUALITY={
     {
       "id": "strategy",
       "label": "买入策略实验",
-      "asOf": "2026-10-12",
+      "asOf": "2026-10-13",
       "dateRange": null,
       "records": 162,
       "issues": [],
@@ -160,10 +164,10 @@ var DATA_QUALITY={
     {
       "id": "domestic_funds",
       "label": "扩展基金研究池",
-      "asOf": "2026-10-13",
+      "asOf": "2026-10-14",
       "dateRange": [
         "2026-10-09",
-        "2026-10-13"
+        "2026-10-14"
       ],
       "records": 1577,
       "issues": [
@@ -1672,10 +1676,10 @@ var DATA_QUALITY={
     {
       "id": "indices",
       "label": "国内指数",
-      "asOf": "2026-10-13",
+      "asOf": "2026-10-14",
       "dateRange": [
-        "2026-10-13",
-        "2026-10-13"
+        "2026-10-14",
+        "2026-10-14"
       ],
       "records": 13,
       "issues": [
@@ -1693,12 +1697,12 @@ var DATA_QUALITY={
     {
       "id": "portfolio",
       "label": "组合每日历史",
-      "asOf": "2026-10-13",
+      "asOf": "2026-10-14",
       "dateRange": [
         "2026-10-09",
-        "2026-10-13"
+        "2026-10-14"
       ],
-      "records": 1774,
+      "records": 1778,
       "issues": [],
       "status": "checked"
     }
