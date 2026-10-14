@@ -1,0 +1,116 @@
+{
+  "reviewedAt": "2026-10-15",
+  "scope": "Mainland China tax resident, non-US individual, US-domiciled ordinary securities",
+  "sources": {
+    "treaty": {
+      "title": "中美税收协定 · 第9条",
+      "url": "https://www.irs.gov/pub/irs-trty/china.pdf"
+    },
+    "china": {
+      "title": "境外所得抵免 · 2020年第3号公告",
+      "url": "https://www.chinatax.gov.cn/chinatax/n810341/n810765/c101653/202001/c5149318/content.html"
+    },
+    "law": {
+      "title": "个人所得税法",
+      "url": "https://www.chinatax.gov.cn/n810219/n810744/n3752930/n3752974/c3970366/content.html"
+    },
+    "irs": {
+      "title": "IRS · 非居民投资所得",
+      "url": "https://www.irs.gov/individuals/international-taxpayers/federal-income-tax-withholding-and-reporting-on-other-kinds-of-us-source-income-paid-to-nonresident-aliens"
+    },
+    "hsbc": {
+      "title": "汇丰 · 投资常见问题",
+      "url": "https://www.hsbc.com.hk/help/faq/investments/"
+    },
+    "hsbcTerms": {
+      "title": "汇丰综合账户条款 · 5.1.8",
+      "url": "https://www.hsbc.com.hk/content/dam/hsbc/hk/docs/accounts/personal-integrated/terms-and-conditions-3sep.pdf"
+    },
+    "ibkr": {
+      "title": "IBKR · 非美国人士预扣税",
+      "url": "https://www.interactivebrokers.com/en/support/tax-nonus-initial.php"
+    },
+    "ibkrRoc": {
+      "title": "IBKR · ROC重分类官方答复",
+      "url": "https://www.interactivebrokers.com/campus/trading-lessons/what-kind-of-income-is-subject-to-withholding/"
+    },
+    "ibkrForms": {
+      "title": "IBKR · 1042-S与分红报告",
+      "url": "https://www.interactivebrokers.com/en/support/tax-nonus-forms.php"
+    },
+    "qqqi": {
+      "title": "QQQI · 正式Form 8937，第3页",
+      "url": "https://neosfunds.com/wp-content/uploads/NEOS-Nasdaq-100-High-Income-ETF-Form-8937-12.31.25.pdf"
+    },
+    "qqqiProspectus": {
+      "title": "QQQI · 招募说明书",
+      "url": "https://neosfunds.com/wp-content/uploads/QQQI-Prospectus.pdf"
+    },
+    "qqq": {
+      "title": "Invesco · ETF年度税务资料",
+      "url": "https://www.invesco.com/us/en/accounts/tax-center/etf-tax-center.html"
+    },
+    "spy": {
+      "title": "SPY · 发行人资料",
+      "url": "https://www.ssga.com/us/en/individual/etfs/state-street-spdr-sp-500-etf-trust-spy"
+    },
+    "ko": {
+      "title": "可口可乐 · 现金股息记录",
+      "url": "https://investors.coca-colacompany.com/stock-info/dividends"
+    },
+    "refund": {
+      "title": "IRS · 非居民税务指南与退税",
+      "url": "https://www.irs.gov/publications/p519"
+    },
+    "estate": {
+      "title": "IRS · 非居民遗产税",
+      "url": "https://www.irs.gov/businesses/small-businesses-self-employed/estate-tax-for-nonresidents-not-citizens-of-the-united-states"
+    },
+    "hkStamp": {
+      "title": "香港税务局 · 股票印花税定义",
+      "url": "https://www.ird.gov.hk/eng/pdf/sog_pn04a.pdf"
+    },
+    "domestic": {
+      "title": "国内开放式基金税收政策",
+      "url": "https://www.chinatax.gov.cn/chinatax/n810341/n810765/n812203/200207/c1208424/content.html"
+    }
+  },
+  "qqqi8937": {
+    "payableDate": "2025-12-26",
+    "shares": 1000,
+    "distributionPerShare": 0.64128519,
+    "rocPerShare": 0.63870371,
+    "rocPercent": 99.597452,
+    "formDate": "2026-02-27",
+    "pdfPage": 3,
+    "pdfSha256": "eea65b19194f1bb01e2f85a77a6b9a995b2e07c549748304b04c950fa9daadcd",
+    "visuallyChecked": true,
+    "otherDistributionCharacter": null,
+    "chinaRocIncomeClassification": null,
+    "chinaRocBasisTreatment": null
+  },
+  "policyEvidence": {
+    "hsbc": {
+      "section": "Retail Investment Services 5.1.8",
+      "pdfPages": [
+        38,
+        39
+      ],
+      "confirmed": "FAQ allows applicable treaty claims; retail terms do not undertake tax reclaim assistance",
+      "allMainlandTrade25AccountsWithhold30": null,
+      "automaticQqqiRocRefundCommitment": null
+    },
+    "ibkr": {
+      "basis": "Official non-US withholding page and IBKR staff replies on withholding lesson",
+      "confirmed": "Subsequent US-security ROC reclassification can reverse original withholding",
+      "allOrdinaryDividendsRefunded": false
+    },
+    "hkBrokers": {
+      "universalRocRefundPolicy": null
+    },
+    "chinaCredit": {
+      "rule": "2020 notice no.3 article 4 excludes tax not permitted by treaty and refunded tax",
+      "ordinaryUsDividendTreatyCreditCeilingPercent": 10
+    }
+  }
+}

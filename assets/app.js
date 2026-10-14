@@ -53,9 +53,10 @@
     stratPanel: 'initial', stratView: 'results', stratYear: '2010', stratAsset: 'SPY', stratMethod: 'lump_sum', stratMethods: { initial: 'lump_sum', dca: 'dca_month', combined: 'combined_lump_sum' },
     stratCompare: 'assets', stratMetric: 'amount', leverage: true, showLeverageAssets: false, chartHidden: new Set(),
     buyFamily: 'sp', buyYears: 5, buyPlan: 'lump', buyBasis: 'nav', buyLumpAmount: 100000, buyMonthlyAmount: 3000,
+    buyTaxProduct: 'QQQI', buyTaxRate: 10,
     buyFees: { usCommission: 0.02, usMinimum: 1, fxSpread: 0.15,
       exchangeCommission: 0.025, exchangeMinimum: 5, subscription: 0.12, redemption: 0,
-      usDividendTax: 10, cnDividendTax: 20, capitalGainsTax: 20 },
+      usDividendTax: 10, usDividendCreditCap: 10, cnDividendTax: 20, capitalGainsTax: 20 },
     buyFundFees: { '050025': { subscription: 0.12, redemption: 0 }, '270042': { subscription: 0.13, redemption: 0 }, '040046': { subscription: 0.12, redemption: 0 } }
   };
   let lastFocus = null, toastTimer, searchTimer, activeCurve = null, strategyFeeLoading = false, strategyFeeError = false;
@@ -751,7 +752,7 @@
     const config = { family: state.buyFamily, years: state.buyYears, plan: state.buyPlan,
       lumpAmount: state.buyLumpAmount, monthlyAmount: state.buyMonthlyAmount, fees: state.buyFees, fundFees: state.buyFundFees, exchangeBasis: state.buyBasis, annualFeeBasis: state.annualFeeBasis, annualFeeOverrides: state.annualFeeOverrides };
     const result = M.buyLocationResult(data, config);
-    const feeField = (key, label, unit, hint = '') => '<label>' + label + '<span class="buy-field"><input type="number" min="0" max="' + (key.endsWith('Minimum') ? '1000000' : '100') + '" step="any" inputmode="decimal" data-buy-input="' + key + '" value="' + esc(state.buyFees[key]) + '"><span>' + unit + '</span></span>' + (hint ? '<small>' + hint + '</small>' : '') + '</label>';
+    const feeField = (key, label, unit, hint = '') => '<label>' + label + '<span class="buy-field"><input type="number" min="0" max="' + (key.endsWith('Minimum') ? '1000000' : key === 'usDividendCreditCap' ? '10' : '100') + '" step="any" inputmode="decimal" data-buy-input="' + key + '" value="' + esc(state.buyFees[key]) + '"><span>' + unit + '</span></span>' + (hint ? '<small>' + hint + '</small>' : '') + '</label>';
     const fundFeeFields = data.products.filter(p => p.family === state.buyFamily && p.channel === 'off').map(p => {
       const values = state.buyFundFees[p.code];
       return '<div class="buy-fund-fees"><span>' + esc(p.code + ' · ' + p.name) + '</span><div class="buy-fee-grid">' +
@@ -769,34 +770,35 @@
     }).filter(Boolean);
     const availability = constrained.length ? '<p class="notice warn buy-availability"><strong>当前场外申购限制：</strong>' + esc(constrained.join('；')) + '。下方是历史可投资条件模拟，当前无法按输入金额直接复现；状态以基金研究快照为准。</p>' : '';
     const assumptions = '<details class="buy-assumptions" open><summary><strong>自定义交易、换汇与税费</strong><span>当前为示例费率，按你的券商与基金渠道修改</span></summary><div class="buy-assumption-grid">' +
-      '<div><h3>香港券商买美股 ETF</h3><div class="buy-fee-grid">' + feeField('usCommission', '每笔佣金', '%') + feeField('usMinimum', '最低佣金', '美元') + feeField('fxSpread', '换汇单边价差', '%') + '</div></div>' +
+      '<div><h3>境外账户买美股 ETF</h3><div class="buy-fee-grid">' + feeField('usCommission', '每笔佣金', '%') + feeField('usMinimum', '最低佣金', '美元') + feeField('fxSpread', '换汇单边价差', '%') + '</div></div>' +
       '<div><h3>国内场内 ETF</h3><div class="buy-fee-grid">' + feeField('exchangeCommission', '每笔佣金', '%') + feeField('exchangeMinimum', '最低佣金', '元') + '</div><h3>国内场外基金</h3>' + fundFeeFields + '<p>申购费是示例渠道折扣；赎回费对全部份额使用同一费率。定投份额持有期不同，按费档核对。</p></div>' +
-      '<div><h3>大陆税收居民 · 美股 ETF</h3><div class="buy-fee-grid">' + feeField('usDividendTax', '美国分红预扣', '%') + feeField('cnDividendTax', '境内股息税率', '%') + feeField('capitalGainsTax', '卖出收益税率', '%') + '</div><p>默认按 W-8BEN 适用10%美股股息预扣；境内股息按20%并抵免已缴美税，卖出正收益按20%。实际抵免和计税基础以申报结果为准。</p></div>' +
+      '<div><h3>大陆税收居民 · 美股 ETF</h3><div class="buy-fee-grid">' + feeField('usDividendTax', '美国实际股息预扣', '%') + feeField('usDividendCreditCap', '可抵免美税上限', '%', '占税前普通股息；无可用凭证可设0') + feeField('cnDividendTax', '境内股息税率', '%') + feeField('capitalGainsTax', '境内卖出收益税率', '%') + '</div><p>默认符合内地居民的10%协定资格，境内股息20%。仅抵免合法已缴且未退回的美税，不能用超过协定的多扣税抵免。模拟不提前计入未收到的退税；历史分配统一按普通股息情景处理。</p></div>' +
       '</div></details>';
     const feeText = code => {
       const product = data.products.find(p => p.code === code), info = feeInfo(product);
       const f = funds.find(item => item.c === code);
       return M.finite(info.rate) ? pct(info.rate, info.rate < 0.1 ? 4 : 2, false) + (info.custom ? '<span class="sub">自定义有效费率</span>' : '') : f ? ongoingFee(f) : '缺持续年费率';
     };
-    const channelText = { us: '香港券商 · 美股 ETF', exchange: '国内场内 ETF', off: '国内场外基金' };
+    const channelText = { us: '境外账户 · 美股 ETF', exchange: '国内场内 ETF', off: '国内场外基金' };
     const table = result.error ? '<p class="notice red">' + esc(result.error) + '</p>' :
       '<section class="card buy-results"><div class="card-head"><div><h2>同一期间的税后账户结果</h2><p>' + esc(result.start) + ' → ' + esc(result.end) + ' · ' + (state.buyPlan === 'lump' ? '一次投入 ¥' + money(state.buyLumpAmount) : '每月投入 ¥' + money(state.buyMonthlyAmount) + '，共' + result.purchaseDays.length + '笔') + ' · 人民币 · ' + feeBasisLabel() + '</p></div>' + action('导出 CSV', 'buy-export', 'btn sm') + '</div>' +
-      '<div class="table-wrap" tabindex="0" aria-label="购买渠道收益对比表，可横向滚动"><table class="research-table buy-table"><thead><tr><th>产品 / 渠道</th><th>持续费率 / 年<span class="strategy-th-unit">已含在行情中</span></th><th>累计投入</th><th>交易及换汇</th><th>美股股息税<span class="strategy-th-unit">预扣 + 境内补缴</span></th><th>卖出收益税</th><th>税后期末</th><th>累计收益</th><th>资金年化 XIRR</th></tr></thead><tbody>' +
+      '<div class="table-wrap" tabindex="0" aria-label="购买渠道收益对比表，可横向滚动"><table class="research-table buy-table"><thead><tr><th>产品 / 渠道</th><th>持续费率 / 年<span class="strategy-th-unit">已含在行情中</span></th><th>累计投入</th><th>交易及换汇</th><th>美国股息代扣</th><th>境内股息补缴</th><th>境内卖出收益税</th><th>税后期末</th><th>累计收益</th><th>资金年化 XIRR</th></tr></thead><tbody>' +
       result.rows.map(row => {
         const product = data.products.find(p => p.code === row.code);
-        if (row.error) return '<tr><td><strong>' + esc(product.name) + '</strong><span class="sub">' + esc(channelText[product.channel]) + ' · ' + esc(row.code) + '</span></td><td colspan="8">' + esc(row.error) + (state.annualFeeBasis === 'gross_estimate' && product.channel !== 'us' ? ' · ' + action('填写估算有效年费', 'fund-detail', 'text-link small', 'data-code="' + esc(row.code) + '"') : '') + '</td></tr>';
+        if (row.error) return '<tr><td><strong>' + esc(product.name) + '</strong><span class="sub">' + esc(channelText[product.channel]) + ' · ' + esc(row.code) + '</span></td><td colspan="9">' + esc(row.error) + (state.annualFeeBasis === 'gross_estimate' && product.channel !== 'us' ? ' · ' + action('填写估算有效年费', 'fund-detail', 'text-link small', 'data-code="' + esc(row.code) + '"') : '') + '</td></tr>';
         return '<tr><td><strong>' + esc(product.name) + '</strong><span class="sub">' + esc(channelText[row.channel]) + ' · ' + esc(row.code) + '</span>' +
-          (row.channel === 'exchange' ? '<span class="sub buy-premium">' + (state.buyBasis === 'nav' ? '净值模拟 · 已剔除溢价' : '成交价复权 · 含溢价变化') + '</span>' : '') + '</td><td>' + feeText(row.code) + '</td><td>¥' + money(row.contributed) + '</td><td>¥' + money(row.transactionCost + row.fxCost) + '</td><td>¥' + money(row.usDividendTax + row.cnDividendTax) + '</td><td>¥' + money(row.capitalTax) + '</td><td><strong>¥' + money(row.terminal) + '</strong></td><td>' + pc(row.totalReturn) + '</td><td>' + pc(row.xirr) + '</td></tr>';
+          (row.channel === 'exchange' ? '<span class="sub buy-premium">' + (state.buyBasis === 'nav' ? '净值模拟 · 已剔除溢价' : '成交价复权 · 含溢价变化') + '</span>' : '') + '</td><td>' + feeText(row.code) + '</td><td>¥' + money(row.contributed) + '</td><td>¥' + money(row.transactionCost + row.fxCost) + '</td><td>¥' + money(row.usDividendTax) + '</td><td>¥' + money(row.cnDividendTax) + '</td><td>¥' + money(row.capitalTax) + '</td><td><strong>¥' + money(row.terminal) + '</strong></td><td>' + pc(row.totalReturn) + '</td><td>' + pc(row.xirr) + '</td></tr>';
       }).join('') + '</tbody></table></div><div class="panel-foot"><span>' + (state.annualFeeBasis === 'net' ? '年费已含于净值或复权价；现金分红已再投，再扣投资者股息税。' : '按现行有效年费逐笔估算扣费前结果；交易、换汇和投资者税仍扣除。') + '</span></div></section>';
     const distributions = '<details class="buy-method buy-distributions"><summary>各产品分红与拆分</summary><div class="buy-method-body"><div class="table-wrap"><table><thead><tr><th>产品</th><th>本区间现金分红</th><th>本区间拆分</th><th>收益处理</th><th>事件记录</th></tr></thead><tbody>' + data.products.filter(p => p.family === state.buyFamily).map(p => {
       const a = p.actions, within = e => result.start && e.date > result.start && e.date <= result.end;
       return '<tr><td>' + esc(p.name) + '<span class="sub">' + p.code + '</span></td><td>' + (a ? a.cash.filter(within).length + '次' : '缺事件记录') + '</td><td>' + (a ? a.splits.filter(within).map(e => e.date + ' · 1:' + e.factor).join('；') || '无' : '缺事件记录') + '</td><td>分红已再投' + (p.channel === 'us' ? '<span class="sub">已扣美股股息税</span>' : '') + '</td><td>' + action('查看', 'buy-actions', 'text-link', 'data-code="' + p.code + '"') + '</td></tr>';
     }).join('') + '</tbody></table></div><p class="note">统计区间 ' + esc(result.start || '—') + ' → ' + esc(result.end || '—') + '；现金分红进入总回报，份额拆分不创造额外收益。QDII 底层股息已反映在净值中。</p></div></details>';
-    const key = '<div class="buy-key"><div><span class="eyebrow">TAX FIRST</span><h2>卖出时的税，已计入期末金额。</h2><p>以大陆税收居民经香港券商买入美国 ETF 为默认情境。香港账户不会自动免除境内境外所得申报；美国股息预扣、境内股息补缴和卖出正收益分别估算。</p></div><div class="buy-key-number"><strong>20%</strong><span>默认境外财产转让所得税率<br>只对本次卖出的估算正收益计税</span></div></div>';
-    const notes = '<details class="buy-method"><summary>查看数据来源与计算边界</summary><div class="buy-method-body"><p>基于产品每日分红复权收盘价、场外基金分红再投净值及美元兑人民币实际日线。美股 ETF 使用同一日价格与汇率；每月定投在该月第一个共同交易日买入，期间股息税从账户扣除，期末全部卖出。手续费、换汇价差和投资者税费逐笔计算。场外基金按当天净值成交，未模拟申购确认时差、限购；场内默认按分红再投净值模拟买卖，剔除溢价但保留券商佣金；切换成交价后按复权收盘价模拟。净值不保证可成交，未模拟买卖价差、滑点和最小交易单位。汇率、境内纳税申报折算价、抵免及持有期间的费率变化可与个人实际交易不同。</p><p>国内基金投资者层面的申赎差价与分配在现行优惠口径下按0估算；QDII 底层可能已承担境外税，反映在净值中。美股 ETF 的历史复权价含产品运营费用，股息税按分红日折减；境外所得税抵免以简化的逐次股息模型估算。结果是历史条件模拟，不是个人税务申报金额。</p><div class="buy-sources">' +
-      extLink('https://www.chinatax.gov.cn/n810219/n810744/n3752930/n3752974/c3970366/content.html', '个人所得税法') + extLink('https://www.chinatax.gov.cn/chinatax/n810219/n810744/n3752930/n3752974/c5143076/content.html', '境外所得及抵免公告') + extLink('https://www.chinatax.gov.cn/chinatax/n810341/n810765/n812203/200207/c1208424/content.html', '国内基金税收政策') + extLink('https://www.irs.gov/pub/irs-trty/china.pdf', '中美税收协定') + extLink('https://www.irs.gov/individuals/international-taxpayers/federal-income-tax-withholding-and-reporting-on-other-kinds-of-us-source-income-paid-to-nonresident-aliens', '美国税务局') + extLink('https://www.ssga.com/us/en/individual/etfs/state-street-spdr-sp-500-etf-trust-spy', 'SPY 费用') + extLink('https://www.invesco.com/qqq-etf/en/market-outlook/whats-new-about-qqq.html', 'QQQ 费用') + '</div><div class="buy-sources">' + data.products.filter(p => p.family === state.buyFamily).map(p => extLink(p.source, p.code + ' 行情')).join('') + extLink(data.fxSource, '美元兑人民币汇率') + '</div><p>资料快照 ' + esc(data.asOf) + '；原始数据哈希和生成脚本保存在仓库。完整假设见 <a class="inline-link" href="docs/buy-location-method.md" target="_blank" rel="noopener">买入渠道研究方法</a>。</p></div></details>';
-    return head('INVESTMENT CHANNELS', '投资渠道', '把 SPY、QQQ 与国内场内、场外工具放在同一人民币账户中，观察买入节奏、费用与税后的差别。') +
-      key + controls + basisControls + availability + table + distributions + assumptions + notes;
+    const taxGuide = window.ChanghengInvestmentTax.render(state.buyTaxProduct, state.buyTaxRate);
+    const taxAssumption = '<p class="buy-tax-assumption' + (state.buyFees.usDividendTax > 10 ? ' warn' : '') + '">历史模拟：普通股息美国实扣' + esc(state.buyFees.usDividendTax) + '%；可抵免美税上限' + esc(state.buyFees.usDividendCreditCap) + '%；境内股息税率' + esc(state.buyFees.cnDividendTax) + '%；境内卖出正收益税率' + esc(state.buyFees.capitalGainsTax) + '%。' + (state.buyFees.usDividendTax > 10 ? '超出10%协定的预扣不用于抵免，未到账退款不计入结果。' : '') + '可在下方修改税费假设。</p>';
+    const notes = '<details class="buy-method"><summary>查看数据来源与计算边界</summary><div class="buy-method-body"><p>基于产品每日分红复权收盘价、场外基金分红再投净值及美元兑人民币实际日线。美股 ETF 使用同一日价格与汇率；每月定投在该月第一个共同交易日买入，期间股息税从账户扣除，期末全部卖出。手续费、换汇价差和投资者税费逐笔计算。场外基金按当天净值成交，未模拟申购确认时差、限购；场内默认按分红再投净值模拟买卖，剔除溢价但保留券商佣金；切换成交价后按复权收盘价模拟。净值不保证可成交，未模拟买卖价差、滑点和最小交易单位。汇率、境内纳税申报折算价、抵免及持有期间的费率变化可与个人实际交易不同。</p><p>国内基金投资者层面的申赎差价与分配在现行优惠口径下按0估算；QDII 底层可能已承担境外税，反映在净值中。美股 ETF 的历史复权价含产品运营费用，股息税按分红日折减；分配统一按普通股息情景测算，未重建每年基金的特殊税务分类；境外所得税抵免以简化的逐次模型估算，并受协定应征税额与可用凭证上限约束。结果是历史条件模拟，不是个人税务申报金额。</p><div class="buy-sources">' +
+      extLink('https://www.chinatax.gov.cn/n810219/n810744/n3752930/n3752974/c3970366/content.html', '个人所得税法') + extLink('https://www.chinatax.gov.cn/chinatax/n810341/n810765/c101653/202001/c5149318/content.html', '境外所得及抵免公告') + extLink('https://www.chinatax.gov.cn/chinatax/n810341/n810765/n812203/200207/c1208424/content.html', '国内基金税收政策') + extLink('https://www.irs.gov/pub/irs-trty/china.pdf', '中美税收协定') + extLink('https://www.irs.gov/individuals/international-taxpayers/federal-income-tax-withholding-and-reporting-on-other-kinds-of-us-source-income-paid-to-nonresident-aliens', '美国税务局') + extLink('https://www.ssga.com/us/en/individual/etfs/state-street-spdr-sp-500-etf-trust-spy', 'SPY 费用') + extLink('https://www.invesco.com/qqq-etf/en/market-outlook/whats-new-about-qqq.html', 'QQQ 费用') + '</div><div class="buy-sources">' + data.products.filter(p => p.family === state.buyFamily).map(p => extLink(p.source, p.code + ' 行情')).join('') + extLink(data.fxSource, '美元兑人民币汇率') + '</div><p>资料快照 ' + esc(data.asOf) + '；原始数据哈希和生成脚本保存在仓库。完整假设见 <a class="inline-link" href="docs/buy-location-method.md" target="_blank" rel="noopener">买入渠道研究方法</a>。</p></div></details>';
+    return head('INVESTMENT CHANNELS', '投资渠道', '看清股息与卖出税、账户扣缴和退税差别，再比较不同渠道的历史税后收益。') +
+      taxGuide + controls + basisControls + availability + table + taxAssumption + distributions + assumptions + notes;
   }
   function quality() {
     const q = window.DATA_QUALITY || { summary: {}, datasets: [] };
@@ -1173,6 +1175,8 @@
       case 'strategy-view': state.stratView = val; break;
       case 'strategy-compare': state.stratCompare = val; state.chartHidden.clear(); break;
       case 'strategy-metric': state.stratMetric = val; break;
+      case 'buy-tax-product': if (['QQQI', 'QQQ', 'SPY', 'KO'].includes(val)) state.buyTaxProduct = val; break;
+      case 'buy-tax-rate': if ([10, 30].includes(Number(val))) state.buyTaxRate = Number(val); break;
       case 'buy-basis': state.buyBasis = val; break;
       case 'buy-actions': {
         const p = window.BUY_LOCATION_DATA?.products.find(p => p.code === code); if (!p) return;

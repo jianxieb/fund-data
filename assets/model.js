@@ -321,14 +321,26 @@
     }
     return (low + high) * 50;
   }
+  function ordinaryDividendTax(gross, usRate = 10, cnRate = 20, creditCapRate = 10) {
+    if (!finite(gross) || gross < 0 || [usRate, cnRate, creditCapRate].some(rate => !finite(rate) || rate < 0 || rate > 100)) return null;
+    const usWithheld = gross * usRate / 100;
+    // A tax withheld above the treaty entitlement is not a creditable foreign income tax.
+    // Zero creditCapRate also supports the scenario where acceptable tax evidence is absent.
+    const cnCredit = gross * Math.min(usRate, cnRate, creditCapRate) / 100;
+    const cnTopUp = Math.max(0, gross * cnRate / 100 - cnCredit);
+    return { gross, usWithheld, cnCredit, cnTopUp,
+      firstCash: gross - usWithheld, afterTax: gross - usWithheld - cnTopUp };
+  }
   function buyLocationResult(data, config) {
     if (!record(data) || !Array.isArray(data.products) || !Array.isArray(data.fx)) return { error: '比较数据缺失' };
     const products = data.products.filter(p => p.family === config.family);
     if (!products.length || ![1, 2, 3, 5, 10].includes(config.years) || !['lump', 'monthly'].includes(config.plan)) return { error: '比较条件无效' };
     const amount = Number(config.plan === 'lump' ? config.lumpAmount : config.monthlyAmount);
     const fees = config.fees || {};
+    const creditCapRate = Number(fees.usDividendCreditCap ?? 10);
     const keys = ['usCommission', 'usMinimum', 'fxSpread', 'exchangeCommission', 'exchangeMinimum', 'subscription', 'redemption', 'usDividendTax', 'cnDividendTax', 'capitalGainsTax'];
     if (!finite(amount) || amount <= 0 || amount > 1e9 || keys.some(key => !finite(Number(fees[key])) || Number(fees[key]) < 0 || Number(fees[key]) > (key.endsWith('Minimum') ? 1e6 : 100))) return { error: '金额或费用假设无效' };
+    if (!finite(creditCapRate) || creditCapRate < 0 || creditCapRate > 10) return { error: '内地居民普通美股股息的可抵免上限须为0至10%' };
     const fundFees = config.fundFees || {};
     if (Object.values(fundFees).some(pair => !record(pair) || ['subscription', 'redemption'].some(key => !finite(Number(pair[key])) || Number(pair[key]) < 0 || Number(pair[key]) > 100))) return { error: '场外基金费率无效' };
     const fx = new Map(data.fx);
@@ -388,8 +400,9 @@
             const rate = fxAt(day);
             if (!finite(rate) || rate <= 0) return { code: product.code, error: '分红日汇率缺失' };
             const gross = units * price * fraction;
-            const withheld = gross * fees.usDividendTax / 100;
-            const extra = gross * Math.max(0, fees.cnDividendTax - fees.usDividendTax) / 100;
+            const dividendTax = ordinaryDividendTax(gross, Number(fees.usDividendTax), Number(fees.cnDividendTax), creditCapRate);
+            const withheld = dividendTax.usWithheld;
+            const extra = dividendTax.cnTopUp;
             usDividendTax += withheld * rate;
             cnDividendTax += extra * rate;
             units -= (withheld + extra) / price;
@@ -456,5 +469,5 @@
     });
     return { start, end, purchaseDays, rows, exchangeBasis, annualFeeBasis };
   }
-  return { finite, sum, copy, escapeHtml, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, stockMatches, stockResearchStatus, stockBoard, loadWindow, fundScopeMatches, fundFacetMatches, indexFundKind, indexSectors, indexSectorMatches, csv, buyLocationXirr, buyLocationResult, crossborderPerformance, crossborderMatches, isCrossborderIndex, crossborderRegion, annualFeeInfo, annualFeeFactor, returnWithAnnualFees, overseasEtfMatches };
+  return { finite, sum, copy, escapeHtml, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, stockMatches, stockResearchStatus, stockBoard, loadWindow, fundScopeMatches, fundFacetMatches, indexFundKind, indexSectors, indexSectorMatches, csv, buyLocationXirr, buyLocationResult, ordinaryDividendTax, crossborderPerformance, crossborderMatches, isCrossborderIndex, crossborderRegion, annualFeeInfo, annualFeeFactor, returnWithAnnualFees, overseasEtfMatches };
 }));

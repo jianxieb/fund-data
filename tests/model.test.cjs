@@ -260,8 +260,12 @@ test('US dividend withholding and China top-up reduce reinvestment without doubl
   const [row] = M.buyLocationResult(data, buyConfig).rows;
   close(row.usDividendTax, 1); close(row.cnDividendTax, 1);
   close(row.basis, 108); close(row.capitalTax, 0); close(row.terminal, 108);
-  const noTreaty = M.buyLocationResult(data, { ...buyConfig, fees: { ...freeFees, usDividendTax: 30 } }).rows[0];
-  close(noTreaty.usDividendTax, 3); close(noTreaty.cnDividendTax, 0); close(noTreaty.terminal, 107);
+  const overwithheld = M.buyLocationResult(data, { ...buyConfig, fees: { ...freeFees, usDividendTax: 30 } }).rows[0];
+  close(overwithheld.usDividendTax, 3); close(overwithheld.cnDividendTax, 1); close(overwithheld.terminal, 106);
+  close(overwithheld.basis, 106); close(overwithheld.capitalTax, 0);
+  const noEvidence = M.buyLocationResult(data, { ...buyConfig, fees: { ...freeFees, usDividendCreditCap: 0 } }).rows[0];
+  close(noEvidence.usDividendTax, 1); close(noEvidence.cnDividendTax, 2); close(noEvidence.terminal, 107);
+  assert.match(M.buyLocationResult(data, { ...buyConfig, fees: { ...freeFees, usDividendCreditCap: 30 } }).error, /可抵免上限/);
 });
 
 test('monthly investing pays minimum commission each time and rejects unaffordable orders', () => {
