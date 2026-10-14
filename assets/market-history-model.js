@@ -6,6 +6,20 @@
   'use strict';
   const DAY = 86400000;
   const gapDays = { daily: 10, weekly: 15, monthly: 65, quarterly: 140 };
+  function eligibleMetric(marketId, metric) {
+    if (metric.estimated || metric.estimatedDates?.length || metric.caution) return false;
+    const { id, source, evidence } = metric;
+    if (typeof source !== 'string') return false;
+    if (marketId === 'spx' || marketId === 'ndx') {
+      const vol = marketId === 'spx' ? 'vix' : 'vxn';
+      if (id === vol) return source === vol && evidence === 'published';
+      return ['rv21', 'drawdown', 'ma200'].includes(id) && source === 'yahoo-' + marketId && evidence === 'calculated';
+    }
+    if (marketId !== 'macro') return false;
+    if (id === 'nfci') return source === 'nfci' && evidence === 'published';
+    if (id === 'real10y') return source.startsWith('treasury-real-') && evidence === 'published';
+    return ['yield10y', 'curve10_2'].includes(id) && source.startsWith('treasury-nominal-') && evidence === (id === 'curve10_2' ? 'calculated' : 'published');
+  }
   function windowStart(asOf, years) {
     const d = new Date(asOf + 'T00:00:00Z'), month = d.getUTCMonth();
     d.setUTCFullYear(d.getUTCFullYear() - years);
@@ -75,5 +89,5 @@
     summary.points.forEach(([date, value]) => rows.push([market.symbol, metric.id, date, value, metric.unit, metric.source, summary.start, summary.end]));
     return '\uFEFF' + rows.map(row => row.map(cell).join(',')).join('\r\n') + '\r\n';
   }
-  return { windowStart, quantile, percentile, summarize, downsample, segments, histogram, csv };
+  return { eligibleMetric, windowStart, quantile, percentile, summarize, downsample, segments, histogram, csv };
 });

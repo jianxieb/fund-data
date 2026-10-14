@@ -73,19 +73,56 @@ class MarketHistoryTests(unittest.TestCase):
     def test_outage_retains_old_evidence_and_its_dates(self):
         previous = json.loads(mh.OUTPUT.read_text())
         data = copy.deepcopy(previous)
-        data['markets'][1]['metrics'] = [m for m in data['markets'][1]['metrics'] if m['source'] != 'ndx-forward']
-        data['sources']['ndx-forward'] = {'status': 'missing'}
-        mh.retain_unavailable_sources(data, previous, {'ndx-forward'})
+        data['markets'][1]['metrics'] = [m for m in data['markets'][1]['metrics'] if m['source'] != 'vxn']
+        data['sources']['vxn'] = {'status': 'missing'}
+        mh.retain_unavailable_sources(data, previous, {'vxn'})
         self.assertEqual(data['markets'][1]['metrics'], previous['markets'][1]['metrics'])
-        self.assertEqual(data['sources']['ndx-forward'], previous['sources']['ndx-forward'])
+        self.assertEqual(data['sources']['vxn'], previous['sources']['vxn'])
         mh.validate(data)
 
-    def test_published_evidence_valid_and_snapshot_ranks_rejected(self):
+    def test_outage_preserves_original_query_and_crosscheck_dates_across_report_days(self):
+        previous = json.loads(mh.OUTPUT.read_text())
+        data = copy.deepcopy(previous)
+        data['asOf'] = (date.fromisoformat(previous['asOf']) + timedelta(days=1)).isoformat()
+        data['crossChecks'] = []
+        mh.retain_unavailable_sources(data, previous, {'finviz-ndx'})
+        mh.validate(mh.curate_report(data))
+        self.assertEqual(data['sources']['yahoo-ndx'], previous['sources']['yahoo-ndx'])
+        self.assertEqual(data['crossChecks'][0], next(c for c in previous['crossChecks'] if c['id'] == 'ndx-close'))
+
+    def test_published_evidence_valid_and_unverified_fundamentals_rejected(self):
         data = json.loads(mh.OUTPUT.read_text())
         mh.validate(data)
-        data['markets'][1]['snapshots'][0]['percentile'] = 50
-        with self.assertRaisesRegex(ValueError, 'Snapshots'):
+        data['markets'][1]['snapshots'] = [{'id': 'P/E', 'value': 29.3, 'percentile': None}]
+        with self.assertRaisesRegex(ValueError, 'snapshots'):
             mh.validate(data)
+
+    def test_estimates_and_changed_publishers_cannot_pass_publication(self):
+        published = json.loads(mh.OUTPUT.read_text())
+        for field, value in [('estimated', True), ('estimatedDates', ['2026-01-01']), ('caution', 'unverified')]:
+            data = copy.deepcopy(published)
+            data['markets'][0]['metrics'][0][field] = value
+            # Selection must not strip warning flags to make a series pass.
+            with self.assertRaisesRegex(ValueError, 'estimated or unverified'):
+                mh.validate(mh.curate_report(data))
+        data = copy.deepcopy(published)
+        data['sources']['vix']['url'] = 'https://example.com/reposted-vix.csv'
+        with self.assertRaisesRegex(ValueError, 'reviewed publisher'):
+            mh.validate(data)
+
+    def test_old_artifacts_cannot_reintroduce_withdrawn_pe_and_snapshots(self):
+        data = json.loads(mh.OUTPUT.read_text())
+        data['markets'][0]['metrics'].append(mh.metric('forward_pe', 'Forward PE', 'NTM', 'x', 'valuation', 'weekly',
+            [['2026-08-05', 20.12]], 'sp-forward', 'undisclosed terminal'))
+        data['sources']['sp-forward'] = {'url': 'https://example.com', 'status': 'available'}
+        data['markets'][1]['snapshots'] = [{'id': 'P/E', 'value': 29.3}]
+        with self.assertRaisesRegex(ValueError, 'essential series'):
+            mh.validate(data)
+        mh.validate(mh.curate_report(data))
+        self.assertNotIn('sp-forward', data['sources'])
+        self.assertFalse(data['markets'][1]['snapshots'])
+        self.assertTrue(data['markets'][0]['withheld'])
+        self.assertFalse(set(mh.source_specs(data['asOf'])) & {'sp-forward', 'ndx-forward', 'sp-profit', 'multpl-pe'})
 
     def test_truncated_history_cannot_replace_good_snapshot(self):
         previous = json.loads(mh.OUTPUT.read_text())

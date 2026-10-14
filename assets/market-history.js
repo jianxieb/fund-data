@@ -2,7 +2,8 @@
   'use strict';
   const M = window.ChanghengMarketHistoryModel;
   const state = { years: 20, market: 'all', category: 'all', chart: 'history', data: null, loading: false, error: false };
-  const categories = { valuation: '估值', profitability: '盈利能力', risk: '波动与回撤', trend: '价格趋势', macro: '利率与信用' };
+  const categories = { risk: '波动与回撤', trend: '价格趋势', macro: '市场环境' };
+  const evidenceLabels = { published: '官方发布', calculated: '行情计算' };
   const frequencies = { daily: '日频', weekly: '周频', monthly: '月频', quarterly: '季频' };
   let ctx, cachedSummaries = new Map();
   const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -24,7 +25,8 @@
       if (!response.ok) throw new Error('Report unavailable');
       return response.json();
     }).then(data => {
-      if (data.schemaVersion !== 1 || !Array.isArray(data.markets)) throw new Error('Invalid report');
+      if (data.schemaVersion !== 1 || data.publicationPolicy !== 'core-evidence-v1' || !Array.isArray(data.markets) || !data.context) throw new Error('Invalid report');
+      if ([...data.markets, data.context].some(m => m.snapshots?.length || m.metrics.some(metric => !M.eligibleMetric(m.id, metric)))) throw new Error('Unreviewed data');
       state.data = data; cachedSummaries = new Map();
     }).catch(() => { state.error = true; }).finally(() => {
       state.loading = false;
@@ -70,26 +72,19 @@
   function card(market, metric, index) {
     const s = summary(market, metric);
     if (!s) return '';
-    const estimated = metric.estimated || metric.estimatedDates?.includes(s.last[0]);
-    const badges = [s.stale ? '更新滞后' : '', estimated ? '估算' : '', metric.caution ? '转载·未独立核验' : '', s.lateStart ? '起于' + s.points[0][0].slice(0, 7) : '', s.gaps.length ? '历史有缺口' : ''].filter(Boolean);
-    return `<article class="mh-metric" data-metric="${market.id}:${metric.id}"><header><div><span class="mh-figure">FIG. ${String(index + 1).padStart(2, '0')} / ${categories[metric.category]}</span><h3>${esc(metric.label)}</h3><p>${esc(metric.english)}</p></div>${button('↗', 'detail', `${market.id}:${metric.id}`, 'mh-expand', `aria-label="查看${market.name}${metric.label}图表与数据"`)}</header>
+    if (s.stale) return `<article class="mh-metric mh-metric-pending" data-metric="${market.id}:${metric.id}"><h3>${esc(metric.label)}</h3><p>当前读数待更新</p><span>最后观测 ${s.last[0]} · 暂不展示当前分位</span></article>`;
+    const badges = [s.lateStart ? '起于' + s.points[0][0].slice(0, 7) : '', s.gaps.length ? '历史有缺口' : ''].filter(Boolean);
+    const sourceLabel = metric.source.startsWith('yahoo-') ? 'Yahoo Finance' : metric.source.startsWith('treasury-') ? '美国财政部' : metric.source === 'nfci' ? '芝加哥联储' : 'Cboe';
+    return `<article class="mh-metric" data-metric="${market.id}:${metric.id}"><header><div><span class="mh-figure">FIG. ${String(index + 1).padStart(2, '0')} / ${categories[metric.category]}</span><h3>${esc(metric.label)}</h3><p>${esc(metric.english)}<span class="mh-evidence">${evidenceLabels[metric.evidence]}</span></p></div>${button('↗', 'detail', `${market.id}:${metric.id}`, 'mh-expand', `aria-label="查看${market.name}${metric.label}图表与数据"`)}</header>
       <div class="mh-reading"><div><strong>${fmt(s.last[1])}<small>${metric.unit}</small></strong><time datetime="${s.last[0]}">${s.last[0]}${badges.length ? ' <span class="mh-status">' + badges.join(' · ') + '</span>' : ''}</time></div><div class="mh-rank"><span>${rankPeriod(s)}</span><b>${fmt(s.percentile, 1)}<small>%</small></b></div></div>
       ${gauge(s)}${state.chart === 'history' ? svgLine(metric, s) : svgDistribution(metric, s)}
-      <footer><span>${frequencies[metric.frequency]} · ${s.count.toLocaleString()} 个观测</span><span>中位 ${fmt(s.median)}${metric.unit}</span></footer></article>`;
-  }
-  function snapshots(market) {
-    const rows = market.snapshots.filter(s => state.category === 'all' || s.category === state.category);
-    if (!rows.length) return '';
-    const at = rows[0].observedAt ? new Date(rows[0].observedAt).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', hour12: false }) : '未记录';
-    return `<section class="mh-snapshots"><div class="mh-snapshot-head"><div><h3>最新基本面快照 <small>${rows.length} 项</small></h3><p>Finviz汇总口径 · 缺同口径历史，暂不计算分位</p></div><span>采集 ${esc(at)}（北京时间）</span></div><dl>${rows.map(s => `<div><dt>${esc(s.label)}</dt><dd>${fmt(s.value)}<small>${s.unit}</small></dd></div>`).join('')}</dl><div class="mh-snapshot-foot">${link(state.data.sources[rows[0].source].url, '数据来源')}<span>供应商未逐项披露财报截止日及完整聚合算法</span></div></section>`;
+      <footer><span>${sourceLabel} · ${frequencies[metric.frequency]} · ${s.count.toLocaleString()} 个观测</span><span>中位 ${fmt(s.median)}${metric.unit}</span></footer></article>`;
   }
   function marketSection(market) {
-    const metrics = market.metrics.filter(m => state.category === 'all' || m.category === state.category);
-    const snapshotHtml = snapshots(market);
-    if (!metrics.length && !snapshotHtml) return '';
-    return `<section class="mh-market" aria-labelledby="mh-${market.id}-title"><header class="mh-market-head"><div class="mh-market-name"><span class="mh-section-no">${market.id === 'spx' ? '01' : market.id === 'ndx' ? '02' : '03'}</span><div><h2 id="mh-${market.id}-title">${market.name}<span>${market.english}</span></h2><p>${market.id === 'macro' ? '两个指数的共同市场背景' : '与自身历史比较'} · ${metrics.length} 项历史指标</p></div></div>${market.close ? `<div class="mh-index-price"><strong>${fmt(market.close.value)}<small>点</small></strong><span>价格指数 · ${market.close.date}</span></div>` : ''}</header>
-      ${metrics.length ? '<div class="mh-grid">' + metrics.map((m) => card(market, m, market.metrics.indexOf(m))).join('') + '</div>' : '<p class="mh-unavailable">' + esc(market.name) + '盈利指标缺少同口径历史序列，最新可得快照如下。</p>'}
-      ${snapshotHtml}<div class="mh-coverage">尚缺历史：${esc(market.gaps.join('；'))}</div></section>`;
+    const metrics = market.metrics.filter(m => M.eligibleMetric(market.id, m) && (state.category === 'all' || m.category === state.category));
+    if (!metrics.length) return '';
+    return `<section class="mh-market" aria-labelledby="mh-${market.id}-title"><header class="mh-market-head"><div class="mh-market-name"><span class="mh-section-no">${market.id === 'spx' ? '01' : market.id === 'ndx' ? '02' : '03'}</span><div><h2 id="mh-${market.id}-title">${market.name}<span>${market.english}</span></h2><p>${market.id === 'macro' ? '两个指数的共同市场背景' : '与自身历史比较'} · ${metrics.length} 项核心指标</p></div></div>${market.close ? `<div class="mh-index-price"><strong>${fmt(market.close.value)}<small>点</small></strong><span>价格指数 · ${market.close.date}</span></div>` : ''}</header>
+      <div class="mh-grid">${metrics.map(m => card(market, m, market.metrics.indexOf(m))).join('')}</div></section>`;
   }
   function view(context) {
     ctx = context;
@@ -98,16 +93,19 @@
       if (!state.loading && !state.error) load();
       return header + `<div class="mh-loading" role="status">${state.error ? '历史数据加载失败。' + button('重新加载', 'retry', '', 'btn') : '正在载入历史观测数据…'}</div>`;
     }
-    const sections = [...state.data.markets, ...(state.data.context ? [state.data.context] : [])].filter(m => state.market === 'all' || state.market === m.id).map(marketSection).filter(Boolean);
-    return `<div class="mh-report">${header}<div class="mh-toolbar"><div class="mh-control-block"><span>观察对象</span>${group('market', [['all', '全部'], ['spx', '标普500'], ['ndx', '纳斯达克100'], ['macro', '市场环境']], state.market, '选择指数或市场环境')}</div><div class="mh-control-block"><span>历史区间</span>${group('years', [[5, '5年'], [10, '10年'], [20, '20年']], state.years, '历史区间')}</div></div>
-      <div class="mh-filterbar">${group('category', [['all', '全部指标'], ...Object.entries(categories)], state.category, '指标类别')}${group('chart', [['history', '历史走势'], ['distribution', '历史分布']], state.chart, '图表类型')}</div>
+    const selectedMarkets = state.market === 'macro' ? [state.data.context] : state.data.markets.filter(m => state.market === 'all' || state.market === m.id);
+    const sections = selectedMarkets.map(marketSection).filter(Boolean);
+    const categoryOptions = state.market === 'macro' ? [['all', '市场环境']] : [['all', '核心指标'], ['risk', categories.risk], ['trend', categories.trend]];
+    return `<div class="mh-report">${header}<div class="mh-toolbar"><div class="mh-control-block"><span>观察对象</span>${group('market', [['all', '两个指数'], ['spx', '标普500'], ['ndx', '纳斯达克100'], ['macro', '市场环境']], state.market, '选择指数或市场环境')}</div><div class="mh-control-block"><span>历史区间</span>${group('years', [[5, '5年'], [10, '10年'], [20, '20年']], state.years, '历史区间')}</div></div>
+      <div class="mh-filterbar">${group('category', categoryOptions, state.category, '指标类别')}${group('chart', [['history', '历史走势'], ['distribution', '历史分布']], state.chart, '图表类型')}</div>
       <div class="mh-legend"><span>${M.windowStart(state.data.asOf, state.years)} — ${state.data.asOf}</span><div>${state.chart === 'history' ? '<span><i class="mh-key-line"></i>历史值</span><span><i class="mh-key-band"></i>25%—75%区间</span><span><i class="mh-key-median"></i>中位数</span>' : '<span><i class="mh-key-band"></i>历史观测分布</span>'}<span><i class="mh-key-dot"></i>最新可得</span></div></div>
-      ${sections.length ? sections.join('') : '<div class="mh-unavailable">当前观察对象下没有这一类别的指标，请选择“全部指标”。</div>'}
+      ${state.market !== 'macro' ? '<p class="mh-data-gap">PE、预期PE及盈利能力：缺已核验的同口径历史，暂不展示数值与分位。</p>' : ''}
+      ${sections.length ? sections.join('') : '<div class="mh-unavailable">当前类别暂无符合发布要求的数据。</div>'}
       <footer class="mh-report-foot"><span>长衡研究 / ${state.years}年历史观察</span><span>分位表示数值在历史中的位置，不等同于预期回报。</span>${button('打印 / 保存PDF', 'print', '', 'mh-text-button')}</footer></div>`;
   }
   function find(value) {
     const [id, key] = value.split(':'), market = [...state.data.markets, state.data.context].filter(Boolean).find(m => m.id === id);
-    const metric = market?.metrics.find(m => m.id === key);
+    const metric = market?.metrics.find(m => m.id === key && M.eligibleMetric(market.id, m));
     return { market, metric, s: metric && summary(market, metric) };
   }
   function detail(value) {
@@ -123,7 +121,8 @@
   function sources() {
     if (!state.data) return;
     const used = Object.entries(state.data.sources);
-    ctx.openModal(`<div class="mh-detail">${ctx.modalTitle('数据来源与计算口径', '每个指数独立计算；每项指标保留自己的观测日期。')}<section class="mh-method"><h3>历史分位</h3><p>默认观察最近20年，可切换5年或10年。有效原始观测按数值排序，重复值使用中位秩。当前值包含在样本内。高分位只表示数值相对较高，不统一代表贵、便宜或买卖信号。</p><h3>时间与口径</h3><p>图表使用指数数据；实际波动率、回撤、均线偏离和价格动量由该指数收盘价计算。盈利与估值保留月频、季频或周频，不填充成日线。月频估值中的最新估算单独计为一个观测。</p><h3>已知缺口</h3><p>纳斯达克100的滚动PE、PB、PS、股息率及盈利能力暂只有Finviz快照，缺少可复算的同口径20年历史。两项指数的现金流估值、ROE、ROA、ROIC、营业利润率和财务杠杆等快照指标仍缺同口径历史。快照不参与分位计算。</p><p>预期PE使用History of Market转载的周频一致预期序列，原始终端供应商未披露，保留其实际观测日；未与其他口径的每日PE拼接，亦未独立核验其原始终端数据。标普500净利率是DQYDJ重建估算序列。</p><h3>官方序列与修订</h3><p>VIX、VXN、VVIX、SKEW及短期隐含波动率直接使用Cboe数据。VXN、VIX3M、VIX9D及相关派生指标不足20年时，显示实际可用年限。国债利率来自美国财政部；金融条件指数来自芝加哥联储，采用最新修订历史，不用于模拟当时已知的信息。</p><h3>来源清单</h3></section><div class="mh-source-list">${used.map(([key, source]) => `<div><b>${link(source.url, source.name)}</b><span>${esc(key)}</span><small>${source.status === 'available' ? '采集 ' + (source.fetchedAt ? new Date(source.fetchedAt).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', hour12: false }) + ' 北京时间' : '日期未记录') : '来源缺失'}${state.data.refreshFailures?.[key] ? ' · 本次刷新失败，保留旧观测' : ''}</small></div>`).join('')}</div><section class="mh-method"><p>History of Market 数据按 CC BY 4.0 署名使用。采集时间是访问来源的时间；指标卡片日期才是指标实际观测日期。</p></section></div>`);
+    const withheld = state.data.markets.map(m => `<section class="mh-method"><h3>${esc(m.name)} · 暂缺数据</h3><dl class="mh-withheld">${m.withheld.map(g => `<div><dt>${esc(g.label)}</dt><dd>${esc(g.reason)}</dd></div>`).join('')}</dl></section>`).join('');
+    ctx.openModal(`<div class="mh-detail">${ctx.modalTitle('数据来源与计算口径', '每个指数独立计算；保留每项指标的实际观测日期。')}<section class="mh-method"><h3>发布值与计算值</h3><p>“官方发布”表示直接记录Cboe、美国财政部或芝加哥联储发布的序列。“行情计算”表示使用已列明的行情数据与固定公式复算，例如波动率、回撤、均线偏离或同日国债利差。它们均保留原始日期及来源；来源可追溯不等于所有历史观测已经独立复核。</p><p>VIX、VXN记录期权市场对未来波动的定价，不保证未来实际波动等于当前读数。NFCI使用官方最新修订历史，不是各历史时点当时已知的数据。</p><h3>PE的可比条件</h3><p>滚动PE使用过去12个月盈利；预期PE使用未来盈利预测，预测不能当成已实现利润。二者的对比必须确认相同价格日期、指数范围、聚合方法及一致的GAAP或调整后盈利口径，且明确预测是未来12个月还是某一财年。</p><p>已撤下的标普滚动PE为2026-10-13的供应商估算，预期PE却停留在2026-08-05。日期和盈利口径不一致，不能用两者差距推断盈利增长。净利率重建序列及未披露完整聚合方法的基本面快照也已撤下。</p><h3>历史分位</h3><p>默认最近20年，可切换5年、10年。有效原始观测按数值排序，重复值使用中位秩，当前值包含在样本内。不填补缺失日；不足20年时显示实际年限；超过正常更新间隔时暂停展示当前读数与分位。高分位只表示数值相对较高。</p></section>${withheld}<section class="mh-method"><h3>当前来源清单</h3><p>Finviz仅用于最近指数收盘读数的交叉检查，不提供本页基本面数据。收盘交叉检查不代表整段历史已经独立核验。</p></section><div class="mh-source-list">${used.map(([key, source]) => `<div><b>${link(source.url, source.name)}</b><span>${esc(key)}</span><small>${source.status === 'available' ? '采集 ' + (source.fetchedAt ? new Date(source.fetchedAt).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', hour12: false }) + ' 北京时间' : '日期未记录') : '来源缺失'}${state.data.refreshFailures?.[key] ? ' · 本次刷新失败，保留旧观测' : ''}</small></div>`).join('')}</div></div>`);
   }
   document.addEventListener('click', event => {
     const control = event.target.closest('[data-market-action]');

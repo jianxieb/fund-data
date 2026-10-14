@@ -1,7 +1,23 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
+const vm = require('node:vm');
 const M = require('../assets/market-history-model.js');
+
+async function renderReport(data) {
+  let finish;
+  const ready = new Promise(resolve => { finish = resolve; });
+  const sandbox = {
+    window: {ChanghengMarketHistoryModel:M}, location:{hash:'#market-history'},
+    document: {addEventListener() {}, querySelector() { return {dataset:{src:'report.json'}}; }},
+    fetch: async () => ({ok:true, json:async () => data})
+  };
+  vm.runInNewContext(fs.readFileSync(require.resolve('../assets/market-history.js'), 'utf8'), sandbox);
+  const ctx = {render:finish};
+  sandbox.window.ChanghengMarketHistory.view(ctx);
+  await ready;
+  return sandbox.window.ChanghengMarketHistory.view(ctx);
+}
 
 test('historical rank handles ties, endpoints and empty data without a false zero', () => {
   assert.equal(M.percentile([1, 2, 2, 3], 2), 50);
@@ -39,26 +55,58 @@ test('histograms count all observations including repeated maximum and constant 
   assert.equal(equal.counts.reduce((a, b) => a + b), 2);
   assert.ok(equal.max > equal.min);
 });
-test('published indices stay independent and snapshot-only fundamentals have no rank', () => {
+test('the curated report keeps index identity and excludes unverified fundamental values', () => {
   const data = JSON.parse(fs.readFileSync(require.resolve('../data/market-history.json'), 'utf8'));
   assert.deepEqual(data.markets.map(m => m.id), ['spx', 'ndx']);
+  assert.equal(data.publicationPolicy, 'core-evidence-v1');
   for (const market of [...data.markets, data.context]) {
+    assert.equal(market.metrics.length, 4);
+    assert.deepEqual(market.snapshots, []);
     for (const metric of market.metrics) {
+      assert.ok(M.eligibleMetric(market.id, metric));
       const s = M.summarize(metric, data.asOf, 20);
       assert.ok(s.count >= 60, `${market.id} ${metric.id}`);
       assert.ok(s.percentile >= 0 && s.percentile <= 100);
-      const explicitlyShort = (market.id === 'spx' && ['vix9d', 'vix3m', 'vol_term'].includes(metric.id)) || (market.id === 'ndx' && ['vxn', 'vol_gap'].includes(metric.id));
+      const explicitlyShort = market.id === 'ndx' && metric.id === 'vxn';
       assert.equal(s.lateStart, explicitlyShort, `${market.id} ${metric.id}: historical coverage changed`);
       if (s.lateStart) assert.ok(s.coverageYears < 20);
     }
-    market.snapshots.forEach(s => assert.equal(s.percentile, null));
   }
   const spx = data.markets[0], ndx = data.markets[1];
   assert.ok(spx.metrics.some(m => m.id === 'vix'));
   assert.ok(ndx.metrics.some(m => m.id === 'vxn'));
   assert.ok(!ndx.metrics.some(m => m.id === 'vix'));
   assert.equal(ndx.metrics.find(m => m.id === 'vxn').source, 'vxn');
-  assert.equal(ndx.metrics.find(m => m.id === 'forward_pe').source, 'ndx-forward');
+  assert.ok(![...spx.metrics, ...ndx.metrics].some(m => ['pe', 'forward_pe', 'margin'].includes(m.id)));
+});
+test('the client rejects estimate flags, source substitutions and unreviewed PE series', () => {
+  const good = {id:'vix', source:'vix', evidence:'published'};
+  assert.ok(M.eligibleMetric('spx', good));
+  assert.equal(M.eligibleMetric('ndx', good), false);
+  for (const bad of [{estimated:true}, {estimatedDates:['2026-01-01']}, {caution:'unverified'}, {source:'repost'}, {evidence:'calculated'}]) {
+    assert.equal(M.eligibleMetric('spx', {...good, ...bad}), false);
+  }
+  assert.equal(M.eligibleMetric('spx', {id:'forward_pe', source:'sp-forward', evidence:'published'}), false);
+  assert.equal(M.eligibleMetric('macro', {id:'real10y', evidence:'published'}), false);
+  assert.ok(M.eligibleMetric('ndx', {id:'rv21', source:'yahoo-ndx', evidence:'calculated'}));
+});
+test('the default report shows eight index charts and keeps common macro data separate', async () => {
+  const data = JSON.parse(fs.readFileSync(require.resolve('../data/market-history.json'), 'utf8'));
+  const html = await renderReport(data);
+  assert.equal((html.match(/data-metric=/g) || []).length, 8);
+  assert.ok(!html.includes('data-metric="macro:'));
+  assert.ok(!html.includes('mh-snapshots'));
+  assert.ok(html.includes('PE、预期PE及盈利能力'));
+});
+test('overdue observations cannot remain visible as current values and ranks', async () => {
+  const data = JSON.parse(fs.readFileSync(require.resolve('../data/market-history.json'), 'utf8'));
+  const advanced = new Date(data.asOf + 'T00:00:00Z');
+  advanced.setUTCDate(advanced.getUTCDate() + 31);
+  data.asOf = advanced.toISOString().slice(0, 10);
+  const html = await renderReport(data);
+  assert.equal((html.match(/当前读数待更新/g) || []).length, 8);
+  assert.ok(!html.includes('class="mh-rank"'));
+  assert.ok(!html.includes('class="mh-reading"'));
 });
 test('CSV exports the selected original-frequency observations with their window and source', () => {
   const metric = { id: 'pe', source: 'source"name', unit: '倍', frequency: 'monthly', points: [['2025-01-01', 20], ['2025-02-01', 21]] };

@@ -31,7 +31,11 @@
 .mh-market-name h2{font-size:24px;font-weight:550;letter-spacing:.2px}.mh-market-name h2>span{font-size:12px;color:#71816e;letter-spacing:1px;font-weight:400;margin-left:17px}
 .mh-market-name p{font-size:11px;color:#768275;margin-top:3px}
 .mh-index-price{display:flex;flex-direction:column;align-items:flex-end;gap:1px;white-space:nowrap}.mh-index-price strong{font-size:22px;font-weight:500;letter-spacing:-.4px}.mh-index-price small{font-size:11px;margin-left:5px;font-weight:400}.mh-index-price>span{font-size:10px;color:#7b8578}
-.mh-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.mh-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.mh-data-gap{margin:0 0 24px;padding:11px 14px;border-left:2px solid #b9a079;background:#f1efe6;color:#7f7054;font-size:12px;line-height:1.7}
+.mh-evidence{display:inline-block;margin-left:10px;color:#5b7561;letter-spacing:0;font-size:10px}
+.mh-metric-pending{display:flex;flex-direction:column;justify-content:center;min-height:260px}.mh-metric-pending p{margin:18px 0 8px;color:#927b55}.mh-metric-pending>span{font-size:12px;color:#7a8475}
+.mh-withheld{margin:0}.mh-withheld>div{border-top:1px solid #dce3d5;padding:12px 0}.mh-withheld dt{font-weight:550;color:#496242}.mh-withheld dd{margin:3px 0 0}
 .mh-metric{background:#fff;border:1px solid #dce2d8;border-top:2px solid #91a88d;padding:19px 20px 13px;min-width:0;break-inside:avoid;scroll-margin-top:20px}
 .mh-metric header{display:flex;align-items:center;justify-content:space-between;gap:8px}.mh-figure{font-size:9px;letter-spacing:1px;color:#81907c}.mh-metric h3{font-size:17px;font-weight:550;letter-spacing:.2px;margin:5px 0 1px}.mh-metric header p{font-size:9px;letter-spacing:.7px;color:#83907f}.mh-expand{width:30px;height:30px;padding:0;align-self:center;border:1px solid #e0e6da;font-size:18px;line-height:28px;color:#7b8d75;flex:none}.mh-expand:hover{background:#edf2e8;color:#294c36;border-color:#b9cbb1}
 .mh-reading{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-top:19px;min-height:68px}.mh-reading strong{display:block;font-size:30px;font-weight:550;letter-spacing:-1px;line-height:1.2}.mh-reading strong small{font-size:12px;letter-spacing:0;margin-left:5px;font-weight:400}.mh-reading time{display:block;font-size:10px;color:#7a8475;margin-top:5px;line-height:1.8;max-width:205px}.mh-status{color:#9a7847;margin-left:3px;font-size:9px;display:inline-block}

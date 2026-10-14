@@ -28,6 +28,68 @@ ROOT = Path(__file__).resolve().parent
 OUTPUT = ROOT / 'data/market-history.json'
 CACHE = ROOT / '.tmp-snap/market-history'
 START = '2004-01-01'  # Warm-up before the 20-year observation window.
+PUBLICATION_POLICY = 'core-evidence-v1'
+CORE_METRICS = {
+    'spx': ('vix', 'rv21', 'drawdown', 'ma200'),
+    'ndx': ('vxn', 'rv21', 'drawdown', 'ma200'),
+    'macro': ('yield10y', 'real10y', 'curve10_2', 'nfci'),
+}
+WITHHELD = {
+    'spx': [
+        dict(label='滚动PE、CAPE、PB、PS、股息率', reason='现有来源的最新读数含估算或未披露完整财报期；缺独立核验的同口径历史。'),
+        dict(label='预期PE', reason='原始终端供应商未披露；现有观测停留在2026-08-05，与滚动PE日期和盈利口径不一致。'),
+        dict(label='净利率、ROE、ROIC、盈利与营收增长', reason='现有净利率为重建估算；其余数据缺完整指数聚合方法或及时、同口径历史。'),
+    ],
+    'ndx': [
+        dict(label='滚动PE、PB、PS、股息率', reason='现有快照缺完整指数聚合方法和同口径历史；不能与另一来源的预期PE直接比较。'),
+        dict(label='预期PE', reason='原始终端供应商未披露；现有观测停留在2026-08-05，未核实与滚动PE一致的日期和盈利口径。'),
+        dict(label='净利率、ROE、ROIC、盈利与营收增长', reason='缺已核验的指数级财报期、完整聚合方法和同口径历史。'),
+    ],
+    'macro': [],
+}
+
+
+def evidence_kind(market_id, metric):
+    """Only explicitly reviewed source/metric pairs may enter the report."""
+    key, source = metric['id'], metric['source']
+    if key not in CORE_METRICS.get(market_id, ()):
+        raise ValueError(key + ': outside core publication scope')
+    if market_id in ('spx', 'ndx'):
+        vol = 'vix' if market_id == 'spx' else 'vxn'
+        if key == vol and source == vol:
+            return 'published'
+        if key in ('rv21', 'drawdown', 'ma200') and source == 'yahoo-' + market_id:
+            return 'calculated'
+    elif market_id == 'macro':
+        if key == 'nfci' and source == 'nfci':
+            return 'published'
+        if key in ('yield10y', 'curve10_2') and source.startswith('treasury-nominal-'):
+            return 'calculated' if key == 'curve10_2' else 'published'
+        if key == 'real10y' and source.startswith('treasury-real-'):
+            return 'published'
+    raise ValueError(key + ': unreviewed source identity')
+
+
+def curate_report(data):
+    """Remove withdrawn series from the artifact, not merely from the screen."""
+    used = set()
+    for section in data['markets'] + [data['context']]:
+        order = CORE_METRICS[section['id']]
+        section['metrics'] = sorted((m for m in section['metrics'] if m['id'] in order), key=lambda m: order.index(m['id']))
+        section['snapshots'] = []
+        section['withheld'] = WITHHELD[section['id']]
+        section.pop('gaps', None)
+        for m in section['metrics']:
+            m['evidence'] = evidence_kind(section['id'], m)
+            used.update([m['source'], *m.get('dependencies', [])])
+        if section.get('close'):
+            used.add(section['close']['source'])
+    for check in data.get('crossChecks', []):
+        used.update(check['sources'])
+    data['sources'] = {key: source for key, source in data['sources'].items() if key in used}
+    data['refreshFailures'] = {key: error for key, error in data.get('refreshFailures', {}).items() if key in used}
+    data['publicationPolicy'] = PUBLICATION_POLICY
+    return data
 
 
 class Tables(HTMLParser):
@@ -181,24 +243,10 @@ def source_specs(asof):
     end = datetime.combine(date.fromisoformat(asof) + timedelta(days=1), datetime.min.time(), timezone.utc)
     query = urllib.parse.urlencode({'period1': 1072915200, 'period2': int(end.timestamp()), 'interval': '1d'})
     specs = {
-        'multpl-pe': ('Multpl · S&P / Shiller', 'https://www.multpl.com/s-p-500-pe-ratio/table/by-month'),
-        'sp-cape': ('Multpl · Robert Shiller', 'https://www.multpl.com/shiller-pe/table/by-month'),
-        'sp-pb': ('Multpl · S&P', 'https://www.multpl.com/s-p-500-price-to-book/table/by-quarter'),
-        'sp-ps': ('Multpl · S&P', 'https://www.multpl.com/s-p-500-price-to-sales/table/by-quarter'),
-        'sp-dividend': ('Multpl · S&P / Shiller', 'https://www.multpl.com/s-p-500-dividend-yield/table/by-month'),
-        'sp-earnings-growth': ('Multpl · S&P', 'https://www.multpl.com/s-p-500-earnings-growth/table/by-quarter'),
-        'sp-sales-growth': ('Multpl · S&P', 'https://www.multpl.com/s-p-500-sales-growth/table/by-quarter'),
-        'sp-profit': ('DQYDJ · Shiller / reconstructed sales', 'https://dqydj.com/sp-500-profit-margin/'),
-        'vix': ('Cboe', 'https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv'),
+        'vix': ('Cboe · VIX', 'https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv'),
         'vxn': ('Cboe · VXN', 'https://cdn.cboe.com/api/global/us_indices/daily_prices/VXN_History.csv'),
-        'sp-forward': ('History of Market', 'https://historyofmarket.com/api/sp500/forward-pe.json'),
-        'ndx-forward': ('History of Market', 'https://historyofmarket.com/api/ndx/forward-pe.json'),
-        'finviz-ndx': ('Finviz', 'https://finviz.com/index/NDX?p=d'),
-        'finviz-spx': ('Finviz', 'https://finviz.com/index/SPX?p=d'),
-        'vix3m': ('Cboe · VIX3M', 'https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX3M_History.csv'),
-        'vix9d': ('Cboe · VIX9D', 'https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX9D_History.csv'),
-        'vvix': ('Cboe · VVIX', 'https://cdn.cboe.com/api/global/us_indices/daily_prices/VVIX_History.csv'),
-        'skew': ('Cboe · SKEW', 'https://cdn.cboe.com/api/global/us_indices/daily_prices/SKEW_History.csv'),
+        'finviz-ndx': ('Finviz · index close cross-check', 'https://finviz.com/index/NDX?p=d'),
+        'finviz-spx': ('Finviz · index close cross-check', 'https://finviz.com/index/SPX?p=d'),
         'nfci': ('Federal Reserve Bank of Chicago', 'https://api.data.chicagofed.org/NFCI/nfci-data-series-csv.csv'),
     }
     base = 'https://home.treasury.gov/resource-center/data-chart-center/interest-rates/'
@@ -216,52 +264,14 @@ def metric(key, label, english, unit, category, frequency, points, source, basis
                 frequency=frequency, points=points, source=source, basis=basis, **extra)
 
 
-def build(raw, asof, fetched):
+def build(raw, asof, fetched, source_urls=None):
     markets = [dict(id='spx', name='标普500', english='S&P 500', symbol='SPX', metrics=[], snapshots=[]),
                dict(id='ndx', name='纳斯达克100', english='NASDAQ-100', symbol='NDX', metrics=[], snapshots=[])]
     specs = source_specs(asof)
-    sources = {k: dict(name=name, url=url, fetchedAt=fetched.get(k), status='available' if k in raw else 'missing',
+    sources = {k: dict(name=name, url=(source_urls or {}).get(k, url), fetchedAt=fetched.get(k), status='available' if k in raw else 'missing',
                        sha256=hashlib.sha256(raw[k]).hexdigest() if k in raw else None)
                for k, (name, url) in specs.items()}
-    spx, ndx = markets
-    definitions = [
-        ('multpl-pe', 'pe', '滚动市盈率', 'P/E · TTM', '倍', 'valuation', 'monthly', '价格 / 过去12个月GAAP盈利；历史月频值，最近值为供应商估算。'),
-        ('sp-cape', 'cape', '席勒市盈率', 'CAPE', '倍', 'valuation', 'monthly', '价格 / 过去10年经通胀调整的平均盈利。'),
-        ('sp-pb', 'pb', '市净率', 'PRICE / BOOK', '倍', 'valuation', 'quarterly', '价格 / 每股净资产；最近价格读数沿用供应商最新已报告净资产。'),
-        ('sp-ps', 'ps', '市销率', 'PRICE / SALES', '倍', 'valuation', 'quarterly', '价格 / 过去12个月销售额；最近价格读数沿用供应商最新已报告销售额。'),
-        ('sp-dividend', 'dividend', '股息率', 'DIVIDEND YIELD', '%', 'valuation', 'monthly', '过去12个月现金股息 / 价格；不是ETF分红收益率。'),
-        ('sp-earnings-growth', 'earnings_growth', '盈利同比增长', 'EPS GROWTH · TTM', '%', 'profitability', 'quarterly', '名义过去12个月每股收益同比增长，非未来盈利预测。'),
-        ('sp-sales-growth', 'sales_growth', '营收同比增长', 'SALES GROWTH · TTM', '%', 'profitability', 'quarterly', '过去12个月每股销售额同比增长，未经通胀调整。'),
-    ]
-    for source, key, label, english, unit, cat, freq, basis in definitions:
-        if source not in raw:
-            continue
-        points, estimated = multpl(raw[source], asof)
-        if not points:
-            raise ValueError(source + ': no valid observations')
-        spx['metrics'].append(metric(key, label, english, unit, cat, freq, points, source, basis,
-                                     estimatedDates=estimated))
-        if key == 'pe':
-            spx['metrics'].append(metric('earnings_yield', '盈利收益率', 'EARNINGS YIELD', '%', cat, freq,
-                [[d, round(100 / v, 6)] for d, v in points if v > 0], source, '滚动PE的倒数 × 100；与同来源PE共用日期。', estimatedDates=estimated))
-    if 'sp-profit' in raw:
-        points = []
-        for row in rows_of(raw['sp-profit']):
-            if len(row) == 5 and re.fullmatch(r'\d{2}-\d{4}', row[0]):
-                month, year = map(int, row[0].split('-'))
-                value = number(row[-1])
-                if value is not None:
-                    points.append([date(year, month, calendar.monthrange(year, month)[1]).isoformat(), value])
-        spx['metrics'].append(metric('margin', '净利率 · 估算', 'NET MARGIN · EST.', '%', 'profitability', 'monthly',
-            normalize(points, asof), 'sp-profit', 'DQYDJ以Shiller盈利和重建销售序列计算TTM净利率；包含估算及最近季度的数值沿用，不是官方已报告季度净利率。', estimated=True))
     for market in markets:
-        source = 'sp-forward' if market['id'] == 'spx' else 'ndx-forward'
-        if source in raw:
-            data = json.loads(raw[source])
-            points = normalize([[r['date'], r['value']] for r in data['forward']], asof)
-            market['metrics'].insert(1, metric('forward_pe', '预期市盈率', 'FORWARD P/E · NTM', '倍', 'valuation', 'weekly', points, source,
-                '未来12个月混合一致预期PE，使用发布方独立的终端周频序列。未与其自算forwardOwn或其他供应商最新PE拼接。原始终端供应商未披露。',
-                caution='转载周频序列；原始终端来源未披露', attribution='History of Market (historyofmarket.com), CC BY 4.0'))
         source = 'yahoo-' + market['id']
         if source in raw:
             symbol = '^GSPC' if market['id'] == 'spx' else '^NDX'
@@ -269,83 +279,21 @@ def build(raw, asof, fetched):
             market['close'] = dict(date=prices[-1][0], value=prices[-1][1], source=source, basis='price_index')
             derived = price_metrics(prices)
             for key, label, english, basis in [
-                ('rv21', '21日实际波动率', 'REALIZED VOL · 21D', '过去21个交易日对数收益率样本标准差 × √252。'),
-                ('rv63', '63日实际波动率', 'REALIZED VOL · 63D', '过去63个交易日对数收益率样本标准差 × √252。'),
-                ('rv252', '一年实际波动率', 'REALIZED VOL · 252D', '过去252个交易日对数收益率样本标准差 × √252。'),
-                ('downside', '一年下行波动率', 'DOWNSIDE DEVIATION', '过去252个交易日日简单收益相对零收益门槛的下偏标准差 × √252，分母包含全部252个收益。'),
-                ('var95', '单日损失 VaR 95%', 'HISTORICAL VaR · 95%', '过去252个交易日简单收益的5%分位数取负号。采用线性插值分位数；是历史经验单日损失阈值，不是未来损失上限。'),
-                ('es95', '尾部平均损失 ES 95%', 'EXPECTED SHORTFALL · 95%', '过去252个交易日中，所有不高于5%收益分位数的日收益平均值取负号。历史尾部风险统计，不是损失上限。'),
-                ('mdd252', '一年内最大回撤', 'MAX DRAWDOWN · 252D', '过去252个交易日窗口内，从较早收盘高点到其后低点的最大跌幅；不同于当前距高点的距离。'),
-                ('drawdown', '距一年高点', 'DRAWDOWN · 252D', '当前价格 / 过去252个交易日最高收盘价 − 1；越负表示距高点越远。'),
-                ('ma50', '50日均线偏离', 'DISTANCE TO 50D MA', '当前价格 / 过去50个交易日简单平均收盘价 − 1。'),
-                ('ma200', '200日均线偏离', 'DISTANCE TO 200D MA', '当前价格 / 过去200个交易日简单平均收盘价 − 1。'),
-                ('momentum63', '一季价格动量', 'PRICE MOMENTUM · 63D', '当前价格 / 63个交易日前价格 − 1，不含现金分红。'),
-                ('momentum', '一年价格动量', 'PRICE MOMENTUM · 252D', '当前价格 / 252个交易日前价格 − 1，不含现金分红。'),
+                ('rv21', '21日实际波动率', 'REALIZED VOL · 21D', '过去21个交易日对数收益率样本标准差 × √252。由Yahoo Finance的指数收盘序列复算，不预测未来波动。'),
+                ('drawdown', '距一年高点', 'DRAWDOWN · 252D', '当前价格 / 过去252个交易日最高收盘价 − 1；越负表示距高点越远。由指数收盘序列复算。'),
+                ('ma200', '200日均线偏离', 'DISTANCE TO 200D MA', '当前价格 / 过去200个交易日简单平均收盘价 − 1。由指数收盘序列复算。'),
             ]:
-                market['metrics'].append(metric(key, label, english, '%', 'trend' if key.startswith(('ma', 'momentum')) else 'risk',
+                market['metrics'].append(metric(key, label, english, '%', 'trend' if key == 'ma200' else 'risk',
                     'daily', derived[key], source, basis))
-        volsource, volkey = ('vix', 'vix') if market['id'] == 'spx' else ('vxn', 'vxn')
-        if volsource in raw:
-            points = cboe(raw[volsource], asof)
-            market['metrics'].insert(2, metric(volkey, '隐含波动率 ' + volkey.upper(), volkey.upper() + ' · 30D IMPLIED', '点', 'risk', 'daily',
-                points, volsource, ('标普500期权' if volkey == 'vix' else '纳斯达克100期权') + '隐含未来30日年化波动率指数收盘值。'))
-            realized = next((m for m in market['metrics'] if m['id'] == 'rv21'), None)
-            if realized:
-                market['metrics'].append(metric('vol_gap', '隐含与实际波动差', 'IMPLIED − REALIZED VOL', '百分点', 'risk', 'daily',
-                    same_date(points, realized['points'], lambda a, b: a - b), volsource,
-                    '当日' + volkey.upper() + '减去当日过去21交易日年化实际波动率。只配对同一天观测；这是预期与已实现波动的差，不能等同于事后实现的方差风险溢价。',
-                    dependencies=[volsource, source]))
-    for key, label, english, column, basis in [
-        ('vix3m', '三个月隐含波动率', 'VIX3M · 3M IMPLIED', 'CLOSE', 'Cboe标普500未来三个月年化隐含波动率；可用历史始于2009-09-18，不回填20年。'),
-        ('vix9d', '九日隐含波动率', 'VIX9D · 9D IMPLIED', 'CLOSE', 'Cboe标普500未来九日年化隐含波动率；可用历史始于2011-01-04，不回填20年。'),
-        ('vvix', '波动率的波动 VVIX', 'VVIX · VOL OF VOL', 'VVIX', '由VIX期权价格推导的VIX未来波动预期，反映波动率自身的不确定性，不是标普500价格波动率。'),
-        ('skew', '尾部风险偏度 SKEW', 'SKEW · TAIL RISK', 'SKEW', 'Cboe基于标普500期权价格计算的收益分布偏度指标。数值较高表示尾部保护定价较高，不是暴跌概率。'),
-    ]:
-        if key in raw:
-            points = cboe(raw[key], asof, column)
-            spx['metrics'].append(metric(key, label, english, '点', 'risk', 'daily', points, key, basis))
-    if 'vix' in raw and 'vix3m' in raw:
-        spx['metrics'].append(metric('vol_term', '波动率期限结构', 'VIX / VIX3M', '倍', 'risk', 'daily',
-            same_date(cboe(raw['vix'], asof), cboe(raw['vix3m'], asof), lambda a, b: a / b), 'vix3m',
-            '同一天的30天隐含波动率VIX / 3个月隐含波动率VIX3M。大于1表示短端波动预期高于长端，非VIX期货期限结构。始于共同可用日。', dependencies=['vix', 'vix3m']))
-    for market in markets:
-        source = 'finviz-' + market['id']
-        if source not in raw:
-            continue
-        lookup = {row[0]: row[1] for row in rows_of(raw[source]) if len(row) == 2}
-        for field, label, unit, cat in [
-            ('P/E', '滚动市盈率 PE', '倍', 'valuation'), ('Forward P/E', '预期PE · Finviz口径', '倍', 'valuation'),
-            ('P/B', '市净率 PB', '倍', 'valuation'), ('P/S', '市销率 PS', '倍', 'valuation'),
-            ('Dividend Yield', '股息率', '%', 'valuation'), ('P/FCF', '自由现金流市盈率', '倍', 'valuation'),
-            ('PEG', '市盈增长比 PEG', '倍', 'valuation'), ('EV/EBITDA', '企业价值 / EBITDA', '倍', 'valuation'),
-            ('EV/Sales', '企业价值 / 销售额', '倍', 'valuation'), ('P/C', '价格 / 现金', '倍', 'valuation'),
-            ('ROE', '净资产收益率 ROE', '%', 'profitability'), ('ROA', '总资产收益率 ROA', '%', 'profitability'),
-            ('ROIC', '投入资本回报率 ROIC', '%', 'profitability'), ('Gross Margin', '毛利率', '%', 'profitability'),
-            ('Oper. Margin', '营业利润率', '%', 'profitability'), ('Profit Margin', '净利率', '%', 'profitability'),
-            ('EPS next 5Y', '预期5年盈利增速', '%', 'profitability'),
-            ('Debt/Eq', '负债权益比', '倍', 'profitability'), ('LT Debt/Eq', '长期负债权益比', '倍', 'profitability'),
-            ('Quick Ratio', '速动比率', '倍', 'profitability'), ('Current Ratio', '流动比率', '倍', 'profitability'),
-        ]:
-            if market['id'] == 'spx' and field in ('P/E', 'Forward P/E', 'P/B', 'P/S', 'Dividend Yield'):
-                continue
-            value = number(lookup.get(field, ''))
-            if value is not None:
-                market['snapshots'].append(dict(id=field, label=label, value=value, unit=unit, category=cat,
-                    source=source, observedAt=fetched.get(source),
-                    gap='缺少Finviz同口径20年历史序列', percentile=None))
-    ndx['gaps'] = ['滚动PE、PB、PS、股息率与自由现金流估值：缺20年同口径历史',
-                   'ROE、ROA、ROIC、毛利率、营业利润率、净利率：缺20年同口径历史']
-    spx['gaps'] = ['ROE、ROA、ROIC、现金流估值与财务杠杆等快照指标：缺20年同口径历史']
-    order = ['pe', 'forward_pe', 'cape', 'pb', 'ps', 'dividend', 'earnings_yield', 'margin', 'earnings_growth', 'sales_growth', 'vix', 'vxn', 'vix9d', 'vix3m', 'vvix', 'skew', 'vol_term', 'vol_gap', 'rv21', 'rv63', 'rv252', 'downside', 'var95', 'es95', 'drawdown', 'mdd252', 'ma50', 'ma200', 'momentum63', 'momentum']
-    for market in markets:
-        market['metrics'].sort(key=lambda m: order.index(m['id']))
-    context = dict(id='macro', name='利率与金融环境', english='RATES & FINANCIAL CONDITIONS', symbol='MACRO', metrics=[], snapshots=[],
-                   gaps=['高收益与投资级公司债OAS：缺可稳定取得的20年历史序列'])
+        volkey = 'vix' if market['id'] == 'spx' else 'vxn'
+        if volkey in raw:
+            market['metrics'].insert(0, metric(volkey, '隐含波动率 ' + volkey.upper(), volkey.upper() + ' · 30D IMPLIED', '点', 'risk', 'daily',
+                cboe(raw[volkey], asof), volkey, 'Cboe官方发布的' + ('标普500期权' if volkey == 'vix' else '纳斯达克100期权') + '隐含未来30日年化波动率指数收盘值。它记录期权市场对未来波动的定价，不保证未来实际波动等于该值。'))
+    context = dict(id='macro', name='市场环境', english='RATES & FINANCIAL CONDITIONS', symbol='MACRO', metrics=[], snapshots=[])
     nominal_keys = [key for key in specs if key.startswith('treasury-nominal-')]
     real_keys = [key for key in specs if key.startswith('treasury-real-')]
     rates = {}
     for key, label, english, column, xml_column, real in [
-        ('yield3m', '3个月国债收益率', 'U.S. TREASURY · 3M', '3 mo', 'BC_3MONTH', False),
         ('yield2y', '2年国债收益率', 'U.S. TREASURY · 2Y', '2 yr', 'BC_2YEAR', False),
         ('yield10y', '10年国债收益率', 'U.S. TREASURY · 10Y', '10 yr', 'BC_10YEAR', False),
         ('real10y', '10年实际国债收益率', 'U.S. TIPS · 10Y', '10 yr', 'TC_10YEAR', True),
@@ -356,23 +304,13 @@ def build(raw, asof, fetched):
             rates[key] = points
             context['metrics'].append(metric(key, label, english, '%', 'macro', 'daily', points, keys[-1],
                 '美国财政部发布的' + ('通胀保值国债实际' if real else '国债名义') + '平价收益率。同一官方口径的历史档案与年度文件合并，缺值不补齐。', dependencies=keys))
-    for key, label, english, left, right, basis in [
-        ('curve10_2', '10年—2年期限利差', 'YIELD CURVE · 10Y − 2Y', 'yield10y', 'yield2y', '同日10年减2年名义国债收益率。负值表示该段收益率曲线倒挂。'),
-        ('curve10_3m', '10年—3个月期限利差', 'YIELD CURVE · 10Y − 3M', 'yield10y', 'yield3m', '同日10年减3个月名义国债收益率。负值表示该段收益率曲线倒挂。'),
-        ('inflation_comp', '10年名义—实际利差', 'NOMINAL − REAL · 10Y', 'yield10y', 'real10y', '同日10年名义平价收益率减10年TIPS实际平价收益率，是通胀补偿的近似量，含流动性与风险溢价，不是纯通胀预测。'),
-    ]:
-        if left in rates and right in rates:
-            keys = nominal_keys + (real_keys if right == 'real10y' else [])
-            context['metrics'].append(metric(key, label, english, '百分点', 'macro', 'daily', same_date(rates[left], rates[right], lambda a, b: a - b), keys[-1], basis, dependencies=keys))
+    if 'yield10y' in rates and 'yield2y' in rates:
+        context['metrics'].append(metric('curve10_2', '10年—2年期限利差', 'YIELD CURVE · 10Y − 2Y', '百分点', 'macro', 'daily',
+            same_date(rates['yield10y'], rates['yield2y'], lambda a, b: a - b), nominal_keys[-1],
+            '同日10年减2年美国财政部名义国债平价收益率。负值表示该段收益率曲线倒挂。仅配对同日观测。', dependencies=nominal_keys))
     if 'nfci' in raw:
-        for key, label, column, basis in [
-            ('nfci', '金融条件指数 NFCI', 'NFCI', '芝加哥联储综合金融条件指数。正值代表相对历史平均更紧，负值更松。'),
-            ('anfci', '调整后金融条件 ANFCI', 'ANFCI', '芝加哥联储剔除宏观经济条件影响后的金融条件指数。正值相对更紧，负值更松。'),
-            ('credit', '信用条件分项', 'Credit', '芝加哥联储NFCI信用子指数，反映信贷供给和融资条件；不是信用利差，也不是加权贡献值。'),
-            ('leverage', '杠杆条件分项', 'Leverage', '芝加哥联储NFCI杠杆子指数；观察融资杠杆环境，不是企业资产负债率。'),
-            ('nonfinancial_leverage', '非金融杠杆分项', 'Nonfinancial_Leverage', '芝加哥联储非金融部门杠杆子指数，覆盖非金融企业与家庭杠杆条件。'),
-        ]:
-            context['metrics'].append(metric(key, label, column.upper(), '点', 'macro', 'weekly', nfci(raw['nfci'], asof, column), 'nfci', basis + ' 采用最新修订历史，不代表历史当时可获得的数据版本。'))
+        context['metrics'].append(metric('nfci', '金融条件指数 NFCI', 'NFCI', '点', 'macro', 'weekly', nfci(raw['nfci'], asof, 'NFCI'), 'nfci',
+            '芝加哥联储综合金融条件指数。正值代表相对历史平均更紧，负值更松。采用官方最新修订历史，不代表各历史时点当时已知的版本。'))
     checks = []
     for market in markets:
         source = 'finviz-' + market['id']
@@ -384,11 +322,11 @@ def build(raw, asof, fetched):
             matches = [p for p in prices[-3:] if previous_close is not None and abs(p[1] - previous_close) < .02]
             checks.append(dict(id=market['id'] + '-close', sources=[source, price_source], status='matched' if matches else 'date_not_aligned',
                                matchedDate=matches[-1][0] if matches else None, observedValue=previous_close))
-    return dict(schemaVersion=1, asOf=asof, generatedAt=datetime.now(timezone.utc).isoformat(), crossChecks=checks,
+    return curate_report(dict(schemaVersion=1, asOf=asof, generatedAt=datetime.now(timezone.utc).isoformat(), crossChecks=checks,
                 sources=sources, markets=markets, context=context,
                 methodology=dict(percentile='midrank', windowYears=20, reference='each_index_own_history',
                                  sampling='原始发布频率；不把季频/月频前向填充成日频',
-                                 formula='100 × (小于当前值的样本数 + 0.5 × 等于当前值的样本数) / 有效样本数'))
+                                 formula='100 × (小于当前值的样本数 + 0.5 × 等于当前值的样本数) / 有效样本数')))
 
 
 def check_source(key, raw, asof):
@@ -409,8 +347,8 @@ def check_source(key, raw, asof):
         points = normalize([[p['date'], p['value']] for p in data['forward']], asof)
     elif key.startswith('finviz-'):
         fields = {row[0]: number(row[1]) for row in rows_of(raw) if len(row) == 2}
-        if any(fields.get(k) is None for k in ('P/E', 'P/B', 'ROE', 'Profit Margin')):
-            raise ValueError(key + ': missing snapshot fields')
+        if fields.get('Prev Close') is None:
+            raise ValueError(key + ': previous index close missing')
         return
     elif key == 'sp-profit':
         points = [row for row in rows_of(raw) if len(row) == 5 and re.fullmatch(r'\d{2}-\d{4}', row[0]) and number(row[-1]) is not None]
@@ -449,24 +387,42 @@ def fetch_source(key, url, asof, offline=False):
 def validate(data):
     if data.get('schemaVersion') != 1 or [m['id'] for m in data['markets']] != ['spx', 'ndx']:
         raise ValueError('Invalid report identity')
+    if data.get('publicationPolicy') != PUBLICATION_POLICY:
+        raise ValueError('Unreviewed publication policy')
     for market in data['markets'] + ([data['context']] if 'context' in data else []):
-        if market['id'] != 'macro' and (not market.get('close') or len(market['metrics']) < 7):
+        if tuple(m['id'] for m in market['metrics']) != CORE_METRICS[market['id']]:
             raise ValueError(market['id'] + ': essential series missing')
-        if market['id'] != 'macro' and (market['close']['basis'] != 'price_index' or market['close']['date'] > data['asOf']):
+        if market['id'] != 'macro' and (not market.get('close') or market['close']['basis'] != 'price_index' or market['close']['date'] > data['asOf']):
             raise ValueError('Wrong index basis or future close')
         if len({m['id'] for m in market['metrics']}) != len(market['metrics']):
             raise ValueError('Duplicate metric identity')
         for m in market['metrics']:
+            if m.get('estimated') or m.get('estimatedDates') or m.get('caution'):
+                raise ValueError(m['id'] + ': estimated or unverified series cannot be published')
+            if m.get('evidence') != evidence_kind(market['id'], m):
+                raise ValueError(m['id'] + ': evidence classification missing')
             points = m['points']
             if len(points) < 30 or points != normalize(points, data['asOf']):
                 raise ValueError(m['id'] + ': invalid dates or values')
             if m['id'] in ('vix', 'vxn', 'pe', 'forward_pe', 'cape', 'pb', 'ps') and any(v <= 0 for _, v in points):
                 raise ValueError(m['id'] + ': must be positive')
-            if m['source'] not in data['sources'] or not data['sources'][m['source']]['fetchedAt']:
-                raise ValueError(m['id'] + ': source capture date missing')
-        for snapshot in market['snapshots']:
-            if snapshot['percentile'] is not None or not snapshot['observedAt']:
-                raise ValueError('Snapshots cannot carry historical ranks or omit capture dates')
+            for key in [m['source'], *m.get('dependencies', [])]:
+                source = data['sources'].get(key, {})
+                if not source.get('fetchedAt') or source.get('status') != 'available':
+                    raise ValueError(m['id'] + ': source evidence missing')
+                expected_url = source_specs(data['asOf']).get(key, (None, None))[1]
+                actual_url = source.get('url')
+                matches = actual_url == expected_url
+                if key.startswith('yahoo-') and actual_url and expected_url:
+                    actual, expected = urllib.parse.urlsplit(actual_url), urllib.parse.urlsplit(expected_url)
+                    actual_query, expected_query = dict(urllib.parse.parse_qsl(actual.query)), dict(urllib.parse.parse_qsl(expected.query))
+                    actual_end, expected_end = actual_query.pop('period2', ''), expected_query.pop('period2')
+                    matches = (actual._replace(query='') == expected._replace(query='') and actual_query == expected_query
+                               and actual_end.isdigit() and 1072915200 < int(actual_end) <= int(expected_end))
+                if not matches:
+                    raise ValueError(m['id'] + ': source URL does not match the reviewed publisher')
+        if market.get('snapshots'):
+            raise ValueError('Unverified fundamental snapshots cannot be published')
     return data
 
 
@@ -476,6 +432,9 @@ def retain_unavailable_sources(data, previous, missing):
         if key not in previous['sources']:
             raise ValueError(key + ': no previous evidence to retain')
         data['sources'][key] = previous['sources'][key]
+    checks = {check['id'] for check in data.get('crossChecks', [])}
+    data.setdefault('crossChecks', []).extend(check for check in previous.get('crossChecks', [])
+        if check['id'] not in checks and set(check['sources']) & missing)
     sections = data['markets'] + ([data['context']] if 'context' in data and 'context' in previous else [])
     old_sections = previous['markets'] + ([previous['context']] if 'context' in data and 'context' in previous else [])
     for market, old in zip(sections, old_sections):
@@ -516,13 +475,16 @@ def main():
         print('Historical-position dataset valid:', [(m['id'], len(m['metrics'])) for m in data['markets']])
         return
     if args.offline and OUTPUT.exists():
-        validate(json.loads(OUTPUT.read_text()))
-        print('Offline: retained published observations and their source dates.')
+        data = validate(curate_report(json.loads(OUTPUT.read_text())))
+        temporary = OUTPUT.with_suffix('.json.tmp')
+        temporary.write_text(json.dumps(data, ensure_ascii=False, separators=(',', ':')) + '\n')
+        temporary.replace(OUTPUT)
+        print('Offline: applied publication selection; retained original observations and source dates.')
         return
     now = datetime.now(ZoneInfo('America/New_York'))
     asof = args.as_of or (now.date() if now.hour >= 17 else now.date() - timedelta(days=1)).isoformat()
     CACHE.mkdir(parents=True, exist_ok=True)
-    raw, fetched, failures = {}, {}, {}
+    raw, fetched, failures, source_urls = {}, {}, {}, {}
     specs = source_specs(asof)
     with ThreadPoolExecutor(max_workers=6) as pool:
         jobs = {pool.submit(fetch_source, key, url, asof, args.offline): key for key, (_, url) in specs.items()}
@@ -532,19 +494,22 @@ def main():
             if content:
                 raw[key] = content
                 meta = CACHE / (key + '.meta.json')
-                fetched[key] = stamp or (json.loads(meta.read_text()).get('fetchedAt') if meta.exists() else None)
+                metadata = json.loads(meta.read_text()) if meta.exists() else {}
+                fetched[key] = stamp or metadata.get('fetchedAt')
+                source_urls[key] = metadata.get('url', specs[key][1])
             if error:
                 failures[key] = error
-    data = build(raw, asof, fetched)
+    data = build(raw, asof, fetched, source_urls)
     missing = set(specs) - set(raw)
     if missing:
         if not OUTPUT.exists():
             raise ValueError('Missing source evidence: ' + ', '.join(sorted(missing)))
         retain_unavailable_sources(data, json.loads(OUTPUT.read_text()), missing)
+    curate_report(data)
     validate(data)
     if OUTPUT.exists():
-        reject_regression(data, json.loads(OUTPUT.read_text()))
-    data['refreshFailures'] = failures
+        reject_regression(data, curate_report(json.loads(OUTPUT.read_text())))
+    data['refreshFailures'] = {key: error for key, error in failures.items() if key in data['sources']}
     # Only a fully parsed, validated snapshot replaces the published artifact.
     temporary = OUTPUT.with_suffix('.json.tmp')
     temporary.write_text(json.dumps(data, ensure_ascii=False, separators=(',', ':')) + '\n')
