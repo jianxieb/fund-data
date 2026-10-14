@@ -1,6 +1,6 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-10-13T19:35:11+00:00",
+  "checkedAt": "2026-10-14T01:33:46+00:00",
   "asOf": "2026-10-14",
   "status": "unverified",
   "summary": {
@@ -97,17 +97,17 @@ var DATA_QUALITY={
     {
       "id": "benchmarks",
       "label": "海外指数与ETF基准",
-      "asOf": "2026-10-12",
+      "asOf": "2026-10-13",
       "dateRange": [
         "2026-10-12",
-        "2026-10-12"
+        "2026-10-13"
       ],
       "records": 21,
       "issues": [
         {
           "code": "fx_risk_incomplete",
           "severity": "warning",
-          "message": "完整人民币日风险缺少实际汇率（2025-04-21、2026-10-12）；未沿用美元风险或填补汇率",
+          "message": "完整人民币日风险缺少实际汇率（2025-04-21）；未沿用美元风险或填补汇率",
           "affected": [
             "标普500指数",
             "SPY",
