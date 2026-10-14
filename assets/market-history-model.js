@@ -14,7 +14,7 @@
       if (id === 'pe') return source === 'jiucai-' + marketId && evidence === 'provider' && metric.valuationBasis === 'aggregate_ttm' && metric.vintage === 'latest_available' && !!metric.limitations;
       const vol = marketId === 'spx' ? 'vix' : 'vxn';
       if (id === vol) return source === vol && evidence === 'published';
-      return ['rv21', 'drawdown', 'ma200'].includes(id) && source === 'yahoo-' + marketId && evidence === 'calculated';
+      return ['rv21', 'drawdown', 'mdd252', 'ma200', 'momentum'].includes(id) && source === 'yahoo-' + marketId && evidence === 'calculated';
     }
     if (marketId !== 'macro') return false;
     if (id === 'nfci') return source === 'nfci' && evidence === 'published';
@@ -89,6 +89,70 @@
     const rows = [['index', 'metric', 'date', 'value', 'unit', 'source', 'window_start', 'window_end']];
     summary.points.forEach(([date, value]) => rows.push([market.symbol, metric.id, date, value, metric.unit, metric.source, summary.start, summary.end]));
     return '\uFEFF' + rows.map(row => row.map(cell).join(',')).join('\r\n') + '\r\n';
+  }
+  function priceHistory(market, asOf) {
+    const h = market.prices, symbol = {spx:'^GSPC', ndx:'^NDX'}[market.id];
+    if (!symbol || !h || h.symbol !== symbol || h.basis !== 'price_index' || h.currency !== 'USD' || h.source !== 'yahoo-' + market.id) return null;
+    return h.points.filter(([d,v]) => d <= asOf && Number.isFinite(v) && v > 0);
+  }
+  // A shared calendar axis, with exact-date lookups. No interpolation or last-value
+  // carry-forward: a weekly release and a holiday keep their own observation dates.
+  function overlay(market, metric, asOf, years = 20) {
+    const prices = priceHistory(market, asOf);
+    if (!prices) return {error:'缺少同一指数的美元价格历史'};
+    const s = summarize(metric, asOf, years);
+    if (!s) return {error:'所选窗口缺少该指标观测'};
+    const visible = prices.filter(p => p[0] >= s.start);
+    if (!visible.length) return {error:'所选窗口缺少指数价格'};
+    const pMap = new Map(visible), mMap = new Map(s.points);
+    const dates = [...new Set([...pMap.keys(), ...mMap.keys()])].sort();
+    return {start:s.start, end:asOf, summary:s, prices:visible, metricPoints:s.points,
+      timeline:dates.map(date => ({date, price:pMap.get(date) ?? null, value:mMap.get(date) ?? null}))};
+  }
+  function nearestObservation(timeline, date) {
+    if (!timeline.length) return -1;
+    const target = typeof date === 'number' ? date : Date.parse(date);
+    let lo = 0, hi = timeline.length - 1;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (Date.parse(timeline[mid].date) < target) lo = mid + 1; else hi = mid;
+    }
+    if (lo && target - Date.parse(timeline[lo-1].date) <= Date.parse(timeline[lo].date) - target) lo--;
+    return lo;
+  }
+  // Calendar-year returns use the last close of the previous year. The first
+  // visible partial year starts at the first close inside the requested window.
+  function annualRows(market, metric, asOf, years = 20) {
+    const prices = priceHistory(market, asOf);
+    if (!prices?.length) return [];
+    const start = windowStart(asOf, years), currentYear = +asOf.slice(0,4);
+    const lookup = new Map(metric.points.filter(p => p[0] <= asOf && Number.isFinite(p[1])));
+    const rows = [];
+    for (let year = +start.slice(0,4); year <= currentYear; year++) {
+      const from = year + '-01-01', until = year === currentYear ? asOf : year + '-12-31';
+      const first = prices.findIndex(p => p[0] >= (from < start ? start : from) && p[0] <= until);
+      if (first < 0) continue;
+      let last = first;
+      while (last + 1 < prices.length && prices[last+1][0] <= until) last++;
+      const partialStart = from < start;
+      const baseline = partialStart ? first : first - 1;
+      const baselineOK = baseline >= 0 && (partialStart || (prices[baseline][0] < from && (Date.parse(from)-Date.parse(prices[baseline][0]))/DAY <= 10));
+      const endOK = (Date.parse(until)-Date.parse(prices[last][0]))/DAY <= 10;
+      const outcome = baselineOK && endOK ? pathOutcome(prices, baseline, last) : null;
+      const values = metric.points.filter(([d,v]) => d >= (partialStart ? start : from) && d <= prices[last][0] && Number.isFinite(v)).map(p => p[1]).sort((a,b)=>a-b);
+      rows.push({year, partialStart, ytd:year === currentYear && asOf.slice(5) !== '12-31',
+        startDate:baselineOK ? prices[baseline][0] : prices[first][0], endDate:prices[last][0],
+        price:prices[last][1], returnPct:outcome?.returnPct ?? null, drawdownPct:outcome?.drawdownPct ?? null,
+        value:lookup.get(prices[last][0]) ?? null, median:quantile(values,.5), count:values.length,
+        incomplete:!outcome});
+    }
+    return rows;
+  }
+  function annualCSV(market, metric, rows) {
+    const cell = value => '"' + String(value ?? '').replace(/"/g,'""') + '"';
+    const output = [['index','year','partial_start','year_to_date','start_date','end_date','price_index_close','price_return_pct','max_drawdown_pct','metric','metric_unit','same_date_metric','period_metric_median','metric_observations','metric_source','price_source']];
+    rows.forEach(r => output.push([market.symbol,r.year,r.partialStart,r.ytd,r.startDate,r.endDate,r.price,r.returnPct,r.drawdownPct,metric.id,metric.unit,r.value,r.median,r.count,metric.source,market.prices.source]));
+    return '\uFEFF' + output.map(row=>row.map(cell).join(',')).join('\r\n') + '\r\n';
   }
   // Fixed descriptive bands, never calibrated to subsequent returns.
   const stateEdges = {
@@ -256,6 +320,7 @@
     return '\uFEFF'+rows.map(row=>row.map(cell).join(',')).join('\r\n')+'\r\n';
   }
   return { eligibleMetric, windowStart, quantile, percentile, summarize, downsample, segments, histogram, csv,
+    priceHistory, overlay, nearestObservation, annualRows, annualCSV,
     stateBand, inBand, outcomeStats, nonOverlapping, forwardOutcome, study, studyCSV, horizons,
     regression, relationStats, disjointObservations, monthOffset, pathOutcome, relationship, relationshipCSV };
 });

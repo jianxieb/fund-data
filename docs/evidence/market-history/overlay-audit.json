@@ -1,0 +1,49 @@
+{
+  "asOf": "2026-10-13",
+  "original_sources_unchanged": true,
+  "all_previous_metrics_unchanged": true,
+  "index_prices_unchanged": true,
+  "restored_metrics": [
+    {
+      "index": "spx",
+      "metric": "mdd252",
+      "observations": 5480,
+      "last": [
+        "2026-10-13",
+        -9.097525
+      ],
+      "matches_original_history": true
+    },
+    {
+      "index": "spx",
+      "metric": "momentum",
+      "observations": 5479,
+      "last": [
+        "2026-10-13",
+        19.121535
+      ],
+      "matches_original_history": true
+    },
+    {
+      "index": "ndx",
+      "metric": "mdd252",
+      "observations": 5480,
+      "last": [
+        "2026-10-13",
+        -12.122844
+      ],
+      "matches_original_history": true
+    },
+    {
+      "index": "ndx",
+      "metric": "momentum",
+      "observations": 5479,
+      "last": [
+        "2026-10-13",
+        26.206789
+      ],
+      "matches_original_history": true
+    }
+  ],
+  "browser_export_rows_verified": 21
+}

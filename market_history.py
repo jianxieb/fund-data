@@ -30,8 +30,8 @@ CACHE = ROOT / '.tmp-snap/market-history'
 START = '2004-01-01'  # Warm-up before the 20-year observation window.
 PUBLICATION_POLICY = 'research-evidence-v2'
 CORE_METRICS = {
-    'spx': ('pe', 'vix', 'rv21', 'drawdown', 'ma200'),
-    'ndx': ('pe', 'vxn', 'rv21', 'drawdown', 'ma200'),
+    'spx': ('pe', 'vix', 'rv21', 'drawdown', 'mdd252', 'ma200', 'momentum'),
+    'ndx': ('pe', 'vxn', 'rv21', 'drawdown', 'mdd252', 'ma200', 'momentum'),
     'macro': ('yield10y', 'real10y', 'curve10_2', 'nfci'),
 }
 WITHHELD = {
@@ -60,7 +60,7 @@ def evidence_kind(market_id, metric):
         vol = 'vix' if market_id == 'spx' else 'vxn'
         if key == vol and source == vol:
             return 'published'
-        if key in ('rv21', 'drawdown', 'ma200') and source == 'yahoo-' + market_id:
+        if key in ('rv21', 'drawdown', 'mdd252', 'ma200', 'momentum') and source == 'yahoo-' + market_id:
             return 'calculated'
     elif market_id == 'macro':
         if key == 'nfci' and source == 'nfci':
@@ -337,9 +337,11 @@ def build(raw, asof, fetched, source_urls=None):
             for key, label, english, basis in [
                 ('rv21', '21日实际波动率', 'REALIZED VOL · 21D', '过去21个交易日对数收益率样本标准差 × √252。由Yahoo Finance的指数收盘序列复算，不预测未来波动。'),
                 ('drawdown', '距一年高点', 'DRAWDOWN · 252D', '当前价格 / 过去252个交易日最高收盘价 − 1；越负表示距高点越远。由指数收盘序列复算。'),
+                ('mdd252', '一年内最大回撤', 'MAX DRAWDOWN · 252D', '过去252个交易日内，从先前最高收盘到随后最低收盘的最大跌幅；峰值与谷值都在该窗口内。由同一指数收盘序列计算。'),
                 ('ma200', '200日均线偏离', 'DISTANCE TO 200D MA', '当前价格 / 过去200个交易日简单平均收盘价 − 1。由指数收盘序列复算。'),
+                ('momentum', '近一年涨跌幅', 'PRICE RETURN · 252D', '当前收盘 / 252个交易日前收盘 − 1，累计价格涨跌幅，不含分红、税费。交易日窗口不等同于精确日历年。'),
             ]:
-                market['metrics'].append(metric(key, label, english, '%', 'trend' if key == 'ma200' else 'risk',
+                market['metrics'].append(metric(key, label, english, '%', 'trend' if key in ('ma200', 'momentum') else 'risk',
                     'daily', derived[key], source, basis))
         volkey = 'vix' if market['id'] == 'spx' else 'vxn'
         if volkey in raw:
@@ -591,7 +593,7 @@ def main():
                     data['sources'][key] = dict(name=source_specs(data['asOf'])[key][0], status='available',
                         sha256=hashlib.sha256(raw[key]).hexdigest(), **meta)
                 market['metrics'].insert(0, valuation_metric(raw[source], raw[source + '-detail'], market['id'], data['asOf']))
-            if market.get('prices'):
+            if market.get('prices') and {'rv21', 'drawdown', 'mdd252', 'ma200', 'momentum'} <= {m['id'] for m in market['metrics']}:
                 continue
             source = 'yahoo-' + market['id']
             raw = (CACHE / (source + '.raw')).read_bytes()
@@ -599,6 +601,12 @@ def main():
                 raise ValueError(source + ': cached price evidence differs from the published source')
             symbol = '^GSPC' if market['id'] == 'spx' else '^NDX'
             market['prices'] = dict(points=yahoo(raw, symbol, data['asOf']), source=source, symbol=symbol, basis='price_index', currency='USD')
+            # Reuse the normal builder so an offline schema upgrade and scheduled
+            # refresh publish the same formulas, labels and original source dates.
+            rebuilt = build({source: raw}, data['asOf'], {})
+            additions = next(m for m in rebuilt['markets'] if m['id'] == market['id'])['metrics']
+            existing = {m['id'] for m in market['metrics']}
+            market['metrics'].extend(m for m in additions if m['id'] not in existing)
         curate_report(data)
         validate(data)
         data['generatedAt'] = datetime.now(timezone.utc).isoformat()

@@ -60,7 +60,7 @@ test('the curated report keeps index identity and excludes unverified fundamenta
   assert.deepEqual(data.markets.map(m => m.id), ['spx', 'ndx']);
   assert.equal(data.publicationPolicy, 'research-evidence-v2');
   for (const market of [...data.markets, data.context]) {
-    assert.equal(market.metrics.length, market.id==='macro'?4:5);
+    assert.equal(market.metrics.length, market.id==='macro'?4:7);
     assert.deepEqual(market.snapshots, []);
     for (const metric of market.metrics) {
       assert.ok(M.eligibleMetric(market.id, metric));
@@ -91,13 +91,18 @@ test('the client rejects estimate flags, source substitutions and unreviewed PE 
   assert.equal(M.eligibleMetric('macro', {id:'real10y', evidence:'published'}), false);
   assert.ok(M.eligibleMetric('ndx', {id:'rv21', source:'yahoo-ndx', evidence:'calculated'}));
 });
-test('the report separates provider PE from official risk series and keeps macro data separate', async () => {
+test('the report exposes all selected-index metrics and macro context without hiding them', async () => {
   const data = JSON.parse(fs.readFileSync(require.resolve('../data/market-history.json'), 'utf8'));
   const html = await renderReport(data);
-  assert.equal((html.match(/data-metric=/g) || []).length, 10);
-  assert.ok(!html.includes('data-metric="macro:'));
+  assert.equal((html.match(/data-metric=/g) || []).length, 11);
+  assert.ok(html.includes('data-metric="macro:nfci"'));
+  assert.ok(!html.includes('data-metric="ndx:'));
   assert.ok(!html.includes('mh-snapshots'));
-  assert.ok(html.includes('PE公开历史始于2016年10月'));
+  assert.ok(html.includes('历史始于 2016-10'));
+  assert.ok(html.includes('供应商发布'));
+  assert.ok(html.includes('官方发布'));
+  assert.ok(html.includes('一年内最大回撤'));
+  assert.ok(html.includes('近一年涨跌幅'));
 });
 test('overdue observations cannot remain visible as current values and ranks', async () => {
   const data = JSON.parse(fs.readFileSync(require.resolve('../data/market-history.json'), 'utf8'));
@@ -105,7 +110,7 @@ test('overdue observations cannot remain visible as current values and ranks', a
   advanced.setUTCDate(advanced.getUTCDate() + 31);
   data.asOf = advanced.toISOString().slice(0, 10);
   const html = await renderReport(data);
-  assert.equal((html.match(/当前读数待更新/g) || []).length, 10);
+  assert.equal((html.match(/当前读数待更新/g) || []).length, 11);
   assert.ok(!html.includes('class="mh-rank"'));
   assert.ok(!html.includes('class="mh-reading"'));
 });
@@ -197,21 +202,79 @@ test('scenario analysis refuses ETF substitutions, stale conditions, unsupported
   const a=M.study(market,asOf,5);
   assert.ok(a.results.every(r=>r.matched===null && r.matchedEvents.length===0));
 });
-test('research leads with direct input/outcome pairs and keeps standalone histories collapsed', async () => {
+test('the page leads with an actual shared-time overlay, annual combination chart and visible tables', async () => {
   const data=JSON.parse(fs.readFileSync(require.resolve('../data/market-history.json'),'utf8'));
   const html=await renderReport(data);
-  assert.equal((html.match(/data-relation="/g)||[]).length,4);
-  assert.equal((html.match(/class="mh-scatter"/g)||[]).length,4);
-  assert.ok(!html.includes('mh-linked-plot'));
-  assert.equal((html.match(/class="mh-indicators"/g)||[]).length,2);
-  assert.ok(!/<details[^>]+ open/.test(html));
-  assert.ok(html.indexOf('class="mh-scatter"')<html.indexOf('data-metric='));
-  assert.ok(html.includes('不重叠窗口'));
-  assert.ok(html.includes('非预测准确率'));
+  assert.equal((html.match(/class="mh-overlay"/g)||[]).length,1);
+  assert.equal((html.match(/class="mh-annual-chart"/g)||[]).length,1);
+  assert.ok(html.includes('class="mh-price-series"') && html.includes('class="mh-indicator-series"'));
+  assert.ok(html.includes('左轴') && html.includes('右轴'));
+  assert.ok(html.includes('年初至今'));
+  assert.ok(html.includes('mh-overview-table') && html.includes('mh-year-table'));
+  assert.ok(!html.includes('mh-scatter') && !html.includes('R²'));
+  assert.ok(!html.includes('后续持有期') && !html.includes('不重叠窗口'));
+  assert.ok(!html.includes('<details'));
   assert.ok(!html.includes('undefined') && !html.includes('NaN'));
   const missing=structuredClone(data); delete missing.markets[0].prices;
   const missingHTML=await renderReport(missing);
   assert.ok(missingHTML.includes('缺少同一指数的美元价格历史'));
+  assert.ok(missingHTML.includes('data-metric="spx:pe"'));
+});
+
+test('overlay aligns actual calendar dates, retains missing observations and rejects index proxies', () => {
+  const market=studyFixture(), metric={id:'nfci',frequency:'weekly',points:[['2019-01-01',-1],['2019-01-05',2],['2030-01-01',999]]};
+  const a=M.overlay(market,metric,'2019-01-07',5);
+  assert.deepEqual(a.timeline.find(r=>r.date==='2019-01-05'),{date:'2019-01-05',price:null,value:2});
+  assert.deepEqual(a.timeline.find(r=>r.date==='2019-01-02'),{date:'2019-01-02',price:100.1,value:null});
+  assert.equal(a.timeline.at(-1).date,'2019-01-07');
+  assert.equal(a.timeline.at(-1).value,null);
+  assert.equal(a.metricPoints.length,2);
+  assert.equal(M.nearestObservation(a.timeline,'2018-01-01'),0);
+  assert.equal(M.nearestObservation(a.timeline,'2020-01-01'),a.timeline.length-1);
+  assert.equal(a.timeline[M.nearestObservation(a.timeline,'2019-01-05')].date,'2019-01-05');
+  assert.equal(M.nearestObservation([],'2019-01-01'),-1);
+  assert.ok(M.overlay(market,{points:[],frequency:'daily'},'2019-01-07',5).error);
+  for(const patch of [{symbol:'^IXIC'},{basis:'total_return'},{currency:'CNY'},{source:'qqq'}]) {
+    const bad=structuredClone(market);Object.assign(bad.prices,patch);
+    assert.ok(M.overlay(bad,metric,'2019-01-07',5).error);
+  }
+});
+
+test('annual returns use prior-year close, with exact endpoint indicators and genuine peak-to-trough drawdowns', () => {
+  const market=studyFixture();
+  market.prices.points=market.prices.points.map(([d])=>[d,d==='2020-01-02'?200:d==='2020-12-31'?120:100]);
+  const metric={id:'pe',unit:'倍',source:'jiucai-spx',points:[['2020-01-02',10],['2020-12-30',20],['2020-12-31',30],['2022-01-01',999]]};
+  const rows=M.annualRows(market,metric,'2021-06-30',2),year=rows.find(r=>r.year===2020);
+  assert.equal(year.startDate,'2019-12-31');
+  assert.equal(year.endDate,'2020-12-31');
+  assert.ok(Math.abs(year.returnPct-20)<1e-10);
+  assert.equal(year.drawdownPct,-50);
+  assert.equal(year.value,30);assert.equal(year.median,20);assert.equal(year.count,3);
+  assert.equal(year.ytd,false);assert.equal(year.partialStart,false);
+  assert.equal(rows[0].partialStart,true);assert.equal(rows[0].startDate,'2019-07-01');
+  assert.equal(rows.at(-1).ytd,true);assert.equal(rows.at(-1).endDate,'2021-06-30');
+  assert.equal(rows.at(-1).value,null);assert.equal(rows.at(-1).median,null);
+  const missing={...metric,points:metric.points.filter(p=>p[0]!=='2020-12-31')};
+  const missingYear=M.annualRows(market,missing,'2021-06-30',2).find(r=>r.year===2020);
+  assert.equal(missingYear.value,null,'must not carry December 30 value to December 31');
+  assert.equal(missingYear.median,15);
+  const csv=M.annualCSV(market,metric,rows);
+  assert.ok(csv.includes('"partial_start","year_to_date","start_date","end_date"'));
+  assert.ok(csv.includes('"price_return_pct","max_drawdown_pct"'));
+  assert.ok(csv.includes('"2020","false","false","2019-12-31","2020-12-31"'));
+  assert.ok(!csv.includes('"999"'));
+});
+
+test('annual results with a price gap, missing prior close or stale year-end do not claim full-year returns', () => {
+  const market=studyFixture(),metric=market.metrics[0],asOf='2021-06-30';
+  const gap=structuredClone(market);
+  gap.prices.points=gap.prices.points.filter(([d])=>d<'2020-06-01'||d>'2020-07-01');
+  const bad=M.annualRows(gap,metric,asOf,2).find(r=>r.year===2020);
+  assert.equal(bad.returnPct,null);assert.equal(bad.drawdownPct,null);assert.equal(bad.incomplete,true);
+  const noBaseline=structuredClone(market);noBaseline.prices.points=noBaseline.prices.points.filter(p=>p[0]>='2020-01-01');
+  assert.equal(M.annualRows(noBaseline,metric,asOf,5).find(r=>r.year===2020).returnPct,null);
+  const stale=structuredClone(market);stale.prices.points=stale.prices.points.filter(p=>p[0]<'2021-05-01');
+  assert.equal(M.annualRows(stale,metric,asOf,2).at(-1).returnPct,null);
 });
 
 function researchFixture() {
