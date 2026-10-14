@@ -1,0 +1,75 @@
+{
+  "arrows": [
+    {
+      "insideRow": true,
+      "name": "汇往香港",
+      "path": "M10 3v22M4 19l6 6 6-6",
+      "size": [
+        20,
+        28
+      ]
+    },
+    {
+      "insideRow": true,
+      "name": "转入买股账户",
+      "path": "M10 3v22M4 19l6 6 6-6",
+      "size": [
+        20,
+        28
+      ]
+    },
+    {
+      "insideRow": true,
+      "name": "买入美股 → 卖出",
+      "path": "M10 3v22M4 19l6 6 6-6",
+      "size": [
+        20,
+        28
+      ]
+    },
+    {
+      "insideRow": true,
+      "name": "汇丰证券出金 → 汇丰 HSBC One",
+      "path": "M10 3v22M4 19l6 6 6-6",
+      "size": [
+        20,
+        28
+      ]
+    },
+    {
+      "insideRow": true,
+      "name": "汇回内地",
+      "path": "M10 3v22M4 19l6 6 6-6",
+      "size": [
+        20,
+        28
+      ]
+    },
+    {
+      "insideRow": true,
+      "name": "内地结汇",
+      "path": "M10 3v22M4 19l6 6 6-6",
+      "size": [
+        20,
+        28
+      ]
+    }
+  ],
+  "continuousLines": [],
+  "sourceControls": [
+    {
+      "height": 40,
+      "label": "1笔",
+      "width": 100
+    },
+    {
+      "height": 40,
+      "label": "普通汇款",
+      "width": 100
+    }
+  ],
+  "viewport": [
+    1175,
+    1233
+  ]
+}

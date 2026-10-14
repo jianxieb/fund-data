@@ -411,7 +411,7 @@
     const feeNamesIssue = pending && costRows(r, keys).some(item => item.status === pending || item.items?.some(part => part.status === pending));
     const edgeLoss = pending && stage === 'withdraw' && !costRows(r, keys).length ? '<div class="flow-edge-loss"><strong>本次无法出金</strong></div>' : loss(r, keys, pending);
     const inlineControls = controls && !/flow-field|flow-offer|flow-return-controls/.test(controls);
-    return '<section class="flow-edge" aria-label="' + esc(title) + '"><span class="flow-edge-arrow" aria-hidden="true"><svg viewBox="0 0 20 20" width="20" height="20"><path d="M4 7l6 6 6-6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' + edgeLoss + '<div class="flow-edge-main"><div class="flow-edge-title"><h3>' + esc(title) + '</h3>' +
+    return '<section class="flow-edge" aria-label="' + esc(title) + '"><span class="flow-edge-arrow" aria-hidden="true"><svg viewBox="0 0 20 28" width="20" height="28" focusable="false"><path d="M10 3v22M4 19l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' + edgeLoss + '<div class="flow-edge-main"><div class="flow-edge-title"><h3>' + esc(title) + '</h3>' +
       (inlineControls ? '<div class="flow-edge-inline">' + controls + '</div>' : '') +
       action('明细', 'detail', 'data-value="edge-' + stage + '" aria-label="' + esc(title + '收费明细与依据') + '"', 'text-link') + '</div>' +
       (controls && !inlineControls ? '<div class="flow-edge-controls">' + controls + '</div>' : '') + (note ? '<p class="flow-edge-note">' + note + '</p>' : '') +
