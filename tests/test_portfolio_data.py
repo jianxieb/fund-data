@@ -14,6 +14,35 @@ from screens.fund_screen import parse_js_record
 
 
 class PortfolioHistoryTests(unittest.TestCase):
+    def test_momentum_benchmarks_reconcile_to_their_own_published_histories(self):
+        snapshot = (portfolio.ROOT / 'data/snapshot.js').read_text()
+        block = snapshot.split('/*__DATA_BM_BEGIN__*/', 1)[1].split('/*__DATA_BM_END__*/', 1)[0]
+        benchmarks = {r['n']: r for r in (json.loads(line.rstrip(',')) for line in block.splitlines() if line.startswith('{'))}
+        catalog = json.loads((portfolio.OUTPUT / 'catalog.js').read_text().split('=', 1)[1].strip().rstrip(';'))
+        assets = {r['code']: r for r in catalog['assets'] if r['id'].startswith('us:')}
+        for symbol in ('SPMO', 'MTUM', 'XMMO', 'FDMO'):
+            with self.subTest(symbol=symbol):
+                row, asset = benchmarks[symbol], assets[symbol]
+                history = json.loads((portfolio.ROOT / asset['historyUrl']).read_text())
+                self.assertEqual(history['id'], 'us:' + symbol)
+                self.assertEqual(history['basis'], 'provider_adjusted_close')
+                self.assertEqual(history['dividends'], 'reinvested')
+                self.assertEqual(history['currency'], 'USD')
+                self.assertGreaterEqual(row['first'], row['inception'])
+                self.assertEqual(asset['expenseRatio'], row['expenseRatio'])
+                prices = dict(history['series'])
+                for i, period in enumerate(row['periods']):
+                    self.assertIsNotNone(period['start'])
+                    actual = (prices[period['end']] / prices[period['start']] - 1) * 100
+                    self.assertAlmostEqual(row['usd'][i], actual, places=7)
+                    self.assertIsNotNone(row['cny'][i])
+                risk = update.risk_window(history['series'], row['asOf'], 5)
+                self.assertAlmostEqual(row['riskUSD5']['mdd'], risk['mdd'], places=7)
+                if row['riskCNY5']['mdd'] is None:
+                    self.assertTrue(row['riskCNY5']['missingFxDates'])
+                    self.assertEqual(row['riskCNY5']['status'], 'incomplete_fx')
+                self.assertEqual(asset.get('currentIndexSince'), row.get('currentIndexSince'))
+
     def test_every_published_domestic_fund_and_etf_uses_nav_for_the_entire_path(self):
         catalog = json.loads((portfolio.OUTPUT / 'catalog.js').read_text().split('=', 1)[1].strip().rstrip(';'))
         funds = [a for a in catalog['assets'] if a['id'].startswith('fund:') and a['status'] == 'available']

@@ -344,6 +344,24 @@ test('overseas ETF filters combine categories by union and product strategies by
   const qqqi = products.find(p => p.symbol === 'QQQI');
   assert.equal(qqqi.style, '主动期权');
   assert.equal(products.find(p => p.symbol === 'USD').underlying, 'Dow Jones U.S. Semiconductors Index');
+  assert.deepEqual(other.filter(p => M.overseasEtfMatches(p, { categories: ['动量策略'], styles: ['动量指数'] })).map(p => p.symbol), ['SPMO', 'MTUM', 'XMMO', 'FDMO']);
+  assert.deepEqual(other.filter(p => M.overseasEtfMatches(p, { query: 'momentum sr' })).map(p => p.symbol), ['MTUM']);
+});
+
+test('ETF returns flag actual windows before the current index, not a hardcoded ten-year period', () => {
+  const product = { currentIndexSince: '2020-11-23', periods: [
+    { years: 10, start: '2016-10-13', end: '2026-10-13' },
+    { years: 5, start: '2021-10-13', end: '2026-10-13' },
+    { years: 3, start: null, end: '2026-10-13' }
+  ] };
+  assert.equal(M.etfPeriodIncludesPriorIndex(product, 10), true);
+  assert.equal(M.etfPeriodIncludesPriorIndex(product, 5), false);
+  assert.equal(M.etfPeriodIncludesPriorIndex(product, 3), false);
+  assert.equal(M.etfPeriodIncludesPriorIndex(product, 1), false);
+  assert.equal(M.etfPeriodIncludesPriorIndex({ ...product, currentIndexSince: '2016-10-13' }, 10), false);
+  assert.equal(M.etfPeriodIncludesPriorIndex({ ...product, currentIndexSince: '2026-02-30' }, 10), false);
+  assert.equal(M.etfPeriodIncludesPriorIndex(undefined, 10), false);
+  assert.equal(M.etfPeriodIncludesPriorIndex({ ...product, periods: [{ years: 10, start: '2026-10-13', end: '2036-10-13' }] }, 10), false);
 });
 
 test('off-exchange funds use their own subscription and redemption fees', () => {

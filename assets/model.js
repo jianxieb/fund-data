@@ -262,6 +262,11 @@
     const query = (filters.query || '').trim().toLowerCase();
     return !query || [product.n, product.symbol, product.label, product.underlying, product.category, product.style].join(' ').toLowerCase().includes(query);
   }
+  function etfPeriodIncludesPriorIndex(product, years) {
+    const period = product?.periods?.find(p => p.years === years);
+    return !!(validDate(product?.currentIndexSince) && validDate(period?.start) && validDate(period?.end) &&
+      period.start < product.currentIndexSince && period.start < period.end);
+  }
   function isCrossborderIndex(fund) {
     const text = (fund.ix || '') + ' ' + (fund.n || '');
     return !!fund.overseasExposure && !/恒生A股|恒生中国A股/.test(text) && !fund.active && !fund.fixedIncomeOrMixed && fund.asset !== 'gold' && fund.asset !== 'other';
@@ -469,5 +474,5 @@
     });
     return { start, end, purchaseDays, rows, exchangeBasis, annualFeeBasis };
   }
-  return { finite, sum, copy, escapeHtml, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, stockMatches, stockResearchStatus, stockBoard, loadWindow, fundScopeMatches, fundFacetMatches, indexFundKind, indexSectors, indexSectorMatches, csv, buyLocationXirr, buyLocationResult, ordinaryDividendTax, crossborderPerformance, crossborderMatches, isCrossborderIndex, crossborderRegion, annualFeeInfo, annualFeeFactor, returnWithAnnualFees, overseasEtfMatches };
+  return { finite, sum, copy, escapeHtml, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, stockMatches, stockResearchStatus, stockBoard, loadWindow, fundScopeMatches, fundFacetMatches, indexFundKind, indexSectors, indexSectorMatches, csv, buyLocationXirr, buyLocationResult, ordinaryDividendTax, crossborderPerformance, crossborderMatches, isCrossborderIndex, crossborderRegion, annualFeeInfo, annualFeeFactor, returnWithAnnualFees, overseasEtfMatches, etfPeriodIncludesPriorIndex };
 }));

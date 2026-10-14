@@ -7,6 +7,23 @@ import strategy_backtest as strategy
 
 
 class AnnualFeeEstimates(unittest.TestCase):
+    def test_momentum_funds_keep_their_own_identity_and_enter_scheduled_updates(self):
+        from update import BM_DEFS
+        expected = {'SPMO': (.13, '2015-10-09'), 'MTUM': (.15, '2013-04-16'),
+                    'XMMO': (.34, '2005-03-03'), 'FDMO': (.15, '2016-09-12')}
+        for symbol, (fee, inception) in expected.items():
+            with self.subTest(symbol=symbol):
+                data = annual_fees.fee_metadata(symbol)
+                self.assertEqual((data['expenseRatio'], data['inception']), (fee, inception))
+                self.assertEqual(data['category'], '动量策略')
+                self.assertEqual(data['section'], 'other')
+                self.assertEqual(data['leverage'], 1)
+                self.assertEqual(data['feeCheckedAt'], '2026-10-15')
+                self.assertIn('Momentum', data['underlying'])
+                self.assertEqual([row[0] for row in BM_DEFS].count(symbol), 1)
+        self.assertEqual(annual_fees.fee_metadata('MTUM')['currentIndexSince'], '2020-11-23')
+        self.assertEqual(annual_fees.fee_metadata('XMMO')['currentIndexSince'], '2019-06-24')
+
     def test_qqqm_is_a_distinct_lower_fee_nasdaq_product(self):
         qqqm, qqq = annual_fees.fee_metadata('QQQM'), annual_fees.fee_metadata('QQQ')
         self.assertEqual(qqqm['section'], 'main')

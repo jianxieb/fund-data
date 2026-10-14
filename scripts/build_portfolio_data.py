@@ -45,7 +45,8 @@ const us=(s.BM||[]).filter(f=>f.symbol&&f.feesEmbedded).map(f=>({
  id:'us:'+f.symbol,code:f.symbol,name:f.symbol+' · '+(f.label||f.category||f.n),kind:'etf',
  market:'us',currency:'USD',category:f.category,style:f.style,leverage:f.leverage,
  expenseRatio:f.expenseRatio,feeAddbackRate:f.feeAddbackRate,feesEmbedded:true,
- sourceUrl:f.sourceUrl,inception:f.inception,distribution:f.distribution}));
+ sourceUrl:f.sourceUrl,inception:f.inception,distribution:f.distribution,
+ currentIndexSince:f.currentIndexSince,historyNote:f.historyNote,historySourceUrl:f.historySourceUrl}));
 process.stdout.write(JSON.stringify([...us,...foreignStocks,...stocks,...funds]));
 """
     result = subprocess.run(['node', '-e', script], cwd=ROOT, capture_output=True, text=True, check=True)
