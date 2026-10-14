@@ -10,6 +10,67 @@ import market_history as mh
 
 
 class MarketHistoryTests(unittest.TestCase):
+    def test_provider_valuation_requires_identity_positive_values_and_snapshot_alignment(self):
+        payload = dict(code='SPX.GI', metric='pe', latest=25.2089,
+            series=[dict(date='2026-10-12', value=25.19), dict(date='2026-10-13', value=25.2089)])
+        detail = dict(header=dict(code='SPX.GI', name='标普500', metric='pe', value=25.2), update_time='2026-10-13')
+        raw = lambda d: json.dumps(d).encode()
+        metric = mh.valuation_metric(raw(payload), raw(detail), 'spx', '2026-10-13')
+        self.assertEqual(metric['points'][-1], ['2026-10-13', 25.2089])
+        self.assertEqual(metric['valuationBasis'], 'aggregate_ttm')
+        self.assertEqual(metric['vintage'], 'latest_available')
+        self.assertIn('逐成分股', metric['limitations'])
+        for update in [dict(code='NDX.GI'), dict(metric='forward_pe'), dict(latest=26)]:
+            with self.assertRaises(ValueError):
+                mh.valuation_history(raw(dict(payload, **update)), 'spx', '2026-10-13')
+        for value in [float('nan'), float('inf'), -1, 0, True, '25.2', None]:
+            changed = copy.deepcopy(payload)
+            changed['series'][0]['value'] = value
+            with self.assertRaises(ValueError):
+                mh.valuation_history(raw(changed), 'spx', '2026-10-13')
+            with self.assertRaises(ValueError):
+                mh.valuation_history(raw(dict(payload, latest=value)), 'spx', '2026-10-13')
+            changed_detail = copy.deepcopy(detail)
+            changed_detail['header']['value'] = value
+            with self.assertRaises(ValueError):
+                mh.valuation_metric(raw(payload), raw(changed_detail), 'spx', '2026-10-13')
+            with self.assertRaises(ValueError):
+                mh.check_source('jiucai-spx-detail', raw(changed_detail), '2026-10-13')
+        detail['update_time'] = '2026-10-12'
+        with self.assertRaisesRegex(ValueError, 'date or value mismatch'):
+            mh.valuation_metric(raw(payload), raw(detail), 'spx', '2026-10-13')
+
+    def test_rolling_provider_history_preserves_archived_prefix_with_original_provenance(self):
+        previous = json.loads(mh.OUTPUT.read_text())
+        data = copy.deepcopy(previous)
+        old = previous['markets'][0]['metrics'][0]
+        current = data['markets'][0]['metrics'][0]
+        current['points'] = current['points'][2:]
+        current['sourceRange'] = [current['points'][0][0], current['points'][-1][0]]
+        data['sources'][current['source']]['sha256'] = 'new-response'
+        mh.retain_valuation_prefix(data, previous)
+        self.assertEqual(current['points'], old['points'])
+        self.assertEqual(current['archivedSources'][0]['sha256'], previous['sources'][old['source']]['sha256'])
+        self.assertEqual(current['archivedSources'][0]['retainedThrough'], old['points'][1][0])
+        mh.reject_regression(data, previous)
+        next_report = copy.deepcopy(data)
+        next_report['markets'][0]['metrics'][0]['points'] = current['points'][2:]
+        mh.retain_valuation_prefix(next_report, data)
+        self.assertEqual(next_report['markets'][0]['metrics'][0]['archivedSources'], current['archivedSources'])
+
+    def test_published_pe_cannot_lose_method_or_latest_snapshot_evidence(self):
+        published = json.loads(mh.OUTPUT.read_text())
+        for field in ['valuationBasis', 'vintage', 'limitations', 'publisherCheck']:
+            data = copy.deepcopy(published)
+            del data['markets'][0]['metrics'][0][field]
+            with self.assertRaises(ValueError):
+                mh.validate(data)
+        for value in [float('nan'), float('inf'), True, '25.2', None]:
+            data = copy.deepcopy(published)
+            data['markets'][0]['metrics'][0]['publisherCheck']['detailValue'] = value
+            with self.assertRaises(ValueError):
+                mh.validate(data)
+
     def test_parser_retains_estimate_and_negative_sign(self):
         raw = '<table><tr><td>Oct 13, 2026</td><td><abbr>†</abbr>26.64</td></tr><tr><td>Sep 30, 2025</td><td>−16.87%</td></tr></table>'.encode()
         points, estimates = mh.multpl(raw, '2026-10-13')

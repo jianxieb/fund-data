@@ -28,20 +28,20 @@ ROOT = Path(__file__).resolve().parent
 OUTPUT = ROOT / 'data/market-history.json'
 CACHE = ROOT / '.tmp-snap/market-history'
 START = '2004-01-01'  # Warm-up before the 20-year observation window.
-PUBLICATION_POLICY = 'core-evidence-v1'
+PUBLICATION_POLICY = 'research-evidence-v2'
 CORE_METRICS = {
-    'spx': ('vix', 'rv21', 'drawdown', 'ma200'),
-    'ndx': ('vxn', 'rv21', 'drawdown', 'ma200'),
+    'spx': ('pe', 'vix', 'rv21', 'drawdown', 'ma200'),
+    'ndx': ('pe', 'vxn', 'rv21', 'drawdown', 'ma200'),
     'macro': ('yield10y', 'real10y', 'curve10_2', 'nfci'),
 }
 WITHHELD = {
     'spx': [
-        dict(label='滚动PE、CAPE、PB、PS、股息率', reason='现有来源的最新读数含估算或未披露完整财报期；缺独立核验的同口径历史。'),
+        dict(label='20年PE、CAPE、PB、PS、股息率', reason='已接入韭圈整体法TTM PE，公开历史始于2016-10；此前同口径PE及其他估值序列仍缺。'),
         dict(label='预期PE', reason='原始终端供应商未披露；现有观测停留在2026-08-05，与滚动PE日期和盈利口径不一致。'),
         dict(label='净利率、ROE、ROIC、盈利与营收增长', reason='现有净利率为重建估算；其余数据缺完整指数聚合方法或及时、同口径历史。'),
     ],
     'ndx': [
-        dict(label='滚动PE、PB、PS、股息率', reason='现有快照缺完整指数聚合方法和同口径历史；不能与另一来源的预期PE直接比较。'),
+        dict(label='20年PE、PB、PS、股息率', reason='已接入韭圈整体法TTM PE，公开历史始于2016-10；此前同口径PE及其他估值序列仍缺。'),
         dict(label='预期PE', reason='原始终端供应商未披露；现有观测停留在2026-08-05，未核实与滚动PE一致的日期和盈利口径。'),
         dict(label='净利率、ROE、ROIC、盈利与营收增长', reason='缺已核验的指数级财报期、完整聚合方法和同口径历史。'),
     ],
@@ -55,6 +55,8 @@ def evidence_kind(market_id, metric):
     if key not in CORE_METRICS.get(market_id, ()):
         raise ValueError(key + ': outside core publication scope')
     if market_id in ('spx', 'ndx'):
+        if key == 'pe' and source == 'jiucai-' + market_id:
+            return 'provider'
         vol = 'vix' if market_id == 'spx' else 'vxn'
         if key == vol and source == vol:
             return 'published'
@@ -178,6 +180,51 @@ def cboe(raw, asof, column='CLOSE'):
                       for r in csv.DictReader(io.StringIO(raw.decode('utf-8-sig')))], asof)
 
 
+def valid_valuation_number(value):
+    return not isinstance(value, bool) and isinstance(value, (float, int)) and math.isfinite(value) and value > 0
+
+
+def valuation_history(raw, market_id, asof):
+    """Read the publisher's aggregate TTM series, never relabel it index-weighted PE."""
+    payload = json.loads(raw)
+    if payload.get('code') != market_id.upper() + '.GI' or payload.get('metric') != 'pe':
+        raise ValueError('Wrong valuation identity or earnings basis')
+    rows = payload['series']
+    if not rows:
+        raise ValueError('Empty valuation history')
+    points = []
+    for row in rows:
+        value = row['value']
+        if not valid_valuation_number(value):
+            raise ValueError('Invalid valuation observation')
+        date.fromisoformat(row['date'])
+        if points and row['date'] <= points[-1][0]:
+            raise ValueError('Unsorted or duplicate valuation dates')
+        points.append([row['date'], value])
+    if not valid_valuation_number(payload.get('latest')) or abs(payload['latest'] - points[-1][1]) > 1e-6:
+        raise ValueError('Valuation latest/history mismatch')
+    return normalize(points, asof)
+
+
+def valuation_metric(raw, detail_raw, market_id, asof):
+    points = valuation_history(raw, market_id, asof)
+    detail = json.loads(detail_raw)
+    expected_name = '标普500' if market_id == 'spx' else '纳斯达克100'
+    header = detail['header']
+    if header.get('code') != market_id.upper() + '.GI' or header.get('name') != expected_name or header.get('metric') != 'pe':
+        raise ValueError('Wrong valuation detail identity')
+    if not points or not valid_valuation_number(header.get('value')) or detail['update_time'] != points[-1][0] or abs(header['value'] - points[-1][1]) > .015:
+        raise ValueError('Valuation detail/history date or value mismatch')
+    return metric('pe', '整体法 PE · TTM', 'AGGREGATE P/E · TRAILING 12M', '倍', 'valuation', 'daily',
+        points, 'jiucai-' + market_id,
+        '韭圈发布口径：成分股市值之和 / 成分股最近12个月净利润之和。保留供应商发布值，不自行估算或插值；不等同于其他供应商的指数加权PE。公开接口约10年历史。',
+        dependencies=['jiucai-' + market_id + '-detail'], valuationBasis='aggregate_ttm', vintage='latest_available',
+        sourceRange=[points[0][0], points[-1][0]],
+        methodologyUrl='https://www.jiucaishuo.com/indicators?tab=index',
+        limitations='未提供逐成分股财报、GAAP调整清单、亏损股处理明细及各时点发布版本；不能据此复原盈利增长或执行当时可交易的回测。',
+        publisherCheck=dict(date=points[-1][0], historyValue=points[-1][1], detailValue=header['value']))
+
+
 def quantile(values, probability):
     values = sorted(values)
     position = (len(values) - 1) * probability
@@ -256,6 +303,11 @@ def source_specs(asof):
             specs['treasury-' + kind + '-' + str(year)] = ('U.S. Treasury · ' + kind + ' ' + str(year), base + 'pages/xml?data=daily_treasury_' + ('real_' if kind == 'real' else '') + 'yield_curve&field_tdr_date_value=' + str(year))
     for key, symbol in [('yahoo-spx', '^GSPC'), ('yahoo-ndx', '^NDX')]:
         specs[key] = ('Yahoo Finance · ' + symbol, 'https://query1.finance.yahoo.com/v8/finance/chart/' + urllib.parse.quote(symbol, safe='') + '?' + query)
+    for market_id in ('spx', 'ndx'):
+        base = 'https://ai2.jiucaishuo.com/api/index-valuation/'
+        code = market_id.upper() + '.GI'
+        specs['jiucai-' + market_id] = ('韭圈 · ' + code + '整体法TTM PE', base + 'history?code=' + code + '&metric=pe')
+        specs['jiucai-' + market_id + '-detail'] = ('韭圈 · ' + code + '同日快照核对', base + 'detail?code=' + code)
     return specs
 
 
@@ -272,6 +324,9 @@ def build(raw, asof, fetched, source_urls=None):
                        sha256=hashlib.sha256(raw[k]).hexdigest() if k in raw else None)
                for k, (name, url) in specs.items()}
     for market in markets:
+        pe_source = 'jiucai-' + market['id']
+        if pe_source in raw and pe_source + '-detail' in raw:
+            market['metrics'].append(valuation_metric(raw[pe_source], raw[pe_source + '-detail'], market['id'], asof))
         source = 'yahoo-' + market['id']
         if source in raw:
             symbol = '^GSPC' if market['id'] == 'spx' else '^NDX'
@@ -332,7 +387,16 @@ def build(raw, asof, fetched, source_urls=None):
 
 def check_source(key, raw, asof):
     """Reject block pages / changed schemas before replacing a reusable cache."""
-    if key.startswith('yahoo-'):
+    if key.startswith('jiucai-'):
+        market_id = key.split('-')[1]
+        if key.endswith('-detail'):
+            data = json.loads(raw)
+            if data['header']['code'] != market_id.upper() + '.GI' or data['header']['metric'] != 'pe' or not valid_valuation_number(data['header'].get('value')):
+                raise ValueError('Wrong valuation detail identity')
+            date.fromisoformat(data['update_time'])
+            return
+        points = valuation_history(raw, market_id, asof)
+    elif key.startswith('yahoo-'):
         symbol = {'yahoo-spx': '^GSPC', 'yahoo-ndx': '^NDX', 'yahoo-vxn': '^VXN'}[key]
         points = yahoo(raw, symbol, asof)
     elif key in ('vix', 'vxn', 'vix3m', 'vix9d', 'vvix', 'skew'):
@@ -412,6 +476,12 @@ def validate(data):
                 raise ValueError(m['id'] + ': estimated or unverified series cannot be published')
             if m.get('evidence') != evidence_kind(market['id'], m):
                 raise ValueError(m['id'] + ': evidence classification missing')
+            if m['id'] == 'pe':
+                if m.get('valuationBasis') != 'aggregate_ttm' or m.get('vintage') != 'latest_available' or not m.get('limitations'):
+                    raise ValueError('PE methodology or revision boundary missing')
+                check = m.get('publisherCheck', {})
+                if check.get('date') != m['points'][-1][0] or check.get('historyValue') != m['points'][-1][1] or not valid_valuation_number(check.get('detailValue')) or abs(check['detailValue'] - m['points'][-1][1]) > .015:
+                    raise ValueError('PE publisher cross-check missing')
             points = m['points']
             if len(points) < 30 or points != normalize(points, data['asOf']):
                 raise ValueError(m['id'] + ': invalid dates or values')
@@ -480,6 +550,25 @@ def reject_regression(data, previous):
                 raise ValueError(old['id'] + '/' + new['id'] + ': historical evidence regressed')
 
 
+def retain_valuation_prefix(data, previous):
+    """The public endpoint rolls ten years; retain older archived observations, with provenance."""
+    for market, old in zip(data['markets'], previous['markets']):
+        current = next((m for m in market['metrics'] if m['id'] == 'pe'), None)
+        prior = next((m for m in old['metrics'] if m['id'] == 'pe' and current and m['source'] == current['source']), None)
+        if not prior:
+            continue
+        prefix = [p for p in prior['points'] if p[0] < current['points'][0][0]]
+        if prefix:
+            current['points'] = prefix + current['points']
+            archived = list(prior.get('archivedSources', []))
+            new_prefix = [p for p in prefix if p[0] >= prior.get('sourceRange', [prior['points'][0][0]])[0]]
+            if new_prefix:
+                record = dict(**previous['sources'][prior['source']], retainedFrom=new_prefix[0][0], retainedThrough=new_prefix[-1][0])
+                if record not in archived:
+                    archived.append(record)
+            current['archivedSources'] = archived
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--offline', action='store_true')
@@ -493,6 +582,15 @@ def main():
     if args.offline and OUTPUT.exists():
         data = curate_report(json.loads(OUTPUT.read_text()))
         for market in data['markets']:
+            if not any(m['id'] == 'pe' for m in market['metrics']):
+                source = 'jiucai-' + market['id']
+                raw = {}
+                for key in (source, source + '-detail'):
+                    raw[key] = (CACHE / (key + '.raw')).read_bytes()
+                    meta = json.loads((CACHE / (key + '.meta.json')).read_text())
+                    data['sources'][key] = dict(name=source_specs(data['asOf'])[key][0], status='available',
+                        sha256=hashlib.sha256(raw[key]).hexdigest(), **meta)
+                market['metrics'].insert(0, valuation_metric(raw[source], raw[source + '-detail'], market['id'], data['asOf']))
             if market.get('prices'):
                 continue
             source = 'yahoo-' + market['id']
@@ -501,7 +599,9 @@ def main():
                 raise ValueError(source + ': cached price evidence differs from the published source')
             symbol = '^GSPC' if market['id'] == 'spx' else '^NDX'
             market['prices'] = dict(points=yahoo(raw, symbol, data['asOf']), source=source, symbol=symbol, basis='price_index', currency='USD')
+        curate_report(data)
         validate(data)
+        data['generatedAt'] = datetime.now(timezone.utc).isoformat()
         temporary = OUTPUT.with_suffix('.json.tmp')
         temporary.write_text(json.dumps(data, ensure_ascii=False, separators=(',', ':')) + '\n')
         temporary.replace(OUTPUT)
@@ -534,7 +634,10 @@ def main():
     curate_report(data)
     validate(data)
     if OUTPUT.exists():
-        reject_regression(data, curate_report(json.loads(OUTPUT.read_text())))
+        previous = curate_report(json.loads(OUTPUT.read_text()))
+        retain_valuation_prefix(data, previous)
+        validate(data)
+        reject_regression(data, previous)
     data['refreshFailures'] = {key: error for key, error in failures.items() if key in data['sources']}
     # Only a fully parsed, validated snapshot replaces the published artifact.
     temporary = OUTPUT.with_suffix('.json.tmp')

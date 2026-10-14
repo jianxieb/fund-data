@@ -1,0 +1,48 @@
+{
+  "asOf": "2026-10-13",
+  "scope": "Provider response fidelity and calculation audit only; not independent constituent financial verification",
+  "sources": [
+    {
+      "index": "SPX",
+      "source": "https://ai2.jiucaishuo.com/api/index-valuation/history?code=SPX.GI&metric=pe",
+      "rawSHA256": "c136b251c1c64be62d3ebe54797454d7c799256a932dd477b431c7d65b015177",
+      "observations": 2513,
+      "first": [
+        "2016-10-17",
+        22.1859
+      ],
+      "last": [
+        "2026-10-13",
+        25.2089
+      ],
+      "publisherCheck": {
+        "date": "2026-10-13",
+        "historyValue": 25.2089,
+        "detailValue": 25.2
+      },
+      "unchangedPriceAndRiskHistory": true
+    },
+    {
+      "index": "NDX",
+      "source": "https://ai2.jiucaishuo.com/api/index-valuation/history?code=NDX.GI&metric=pe",
+      "rawSHA256": "5c96f5293e9f950216e37056bb11ea791759e34c1aa6d60e9de8d940af9eec91",
+      "observations": 2523,
+      "first": [
+        "2016-10-17",
+        25.4123
+      ],
+      "last": [
+        "2026-10-13",
+        29.1508
+      ],
+      "publisherCheck": {
+        "date": "2026-10-13",
+        "historyValue": 29.1508,
+        "detailValue": 29.15
+      },
+      "unchangedPriceAndRiskHistory": true
+    }
+  ],
+  "csvRows": 108,
+  "unchangedMacroAndExistingSourceMetadata": true
+}

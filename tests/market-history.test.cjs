@@ -58,16 +58,16 @@ test('histograms count all observations including repeated maximum and constant 
 test('the curated report keeps index identity and excludes unverified fundamental values', () => {
   const data = JSON.parse(fs.readFileSync(require.resolve('../data/market-history.json'), 'utf8'));
   assert.deepEqual(data.markets.map(m => m.id), ['spx', 'ndx']);
-  assert.equal(data.publicationPolicy, 'core-evidence-v1');
+  assert.equal(data.publicationPolicy, 'research-evidence-v2');
   for (const market of [...data.markets, data.context]) {
-    assert.equal(market.metrics.length, 4);
+    assert.equal(market.metrics.length, market.id==='macro'?4:5);
     assert.deepEqual(market.snapshots, []);
     for (const metric of market.metrics) {
       assert.ok(M.eligibleMetric(market.id, metric));
       const s = M.summarize(metric, data.asOf, 20);
       assert.ok(s.count >= 60, `${market.id} ${metric.id}`);
       assert.ok(s.percentile >= 0 && s.percentile <= 100);
-      const explicitlyShort = market.id === 'ndx' && metric.id === 'vxn';
+      const explicitlyShort = metric.id==='pe' || (market.id === 'ndx' && metric.id === 'vxn');
       assert.equal(s.lateStart, explicitlyShort, `${market.id} ${metric.id}: historical coverage changed`);
       if (s.lateStart) assert.ok(s.coverageYears < 20);
     }
@@ -77,7 +77,8 @@ test('the curated report keeps index identity and excludes unverified fundamenta
   assert.ok(ndx.metrics.some(m => m.id === 'vxn'));
   assert.ok(!ndx.metrics.some(m => m.id === 'vix'));
   assert.equal(ndx.metrics.find(m => m.id === 'vxn').source, 'vxn');
-  assert.ok(![...spx.metrics, ...ndx.metrics].some(m => ['pe', 'forward_pe', 'margin'].includes(m.id)));
+  assert.ok(![...spx.metrics, ...ndx.metrics].some(m => ['forward_pe', 'margin'].includes(m.id)));
+  assert.ok([spx,ndx].every(m=>m.metrics.find(x=>x.id==='pe').valuationBasis==='aggregate_ttm'));
 });
 test('the client rejects estimate flags, source substitutions and unreviewed PE series', () => {
   const good = {id:'vix', source:'vix', evidence:'published'};
@@ -90,13 +91,13 @@ test('the client rejects estimate flags, source substitutions and unreviewed PE 
   assert.equal(M.eligibleMetric('macro', {id:'real10y', evidence:'published'}), false);
   assert.ok(M.eligibleMetric('ndx', {id:'rv21', source:'yahoo-ndx', evidence:'calculated'}));
 });
-test('the default report shows eight index charts and keeps common macro data separate', async () => {
+test('the report separates provider PE from official risk series and keeps macro data separate', async () => {
   const data = JSON.parse(fs.readFileSync(require.resolve('../data/market-history.json'), 'utf8'));
   const html = await renderReport(data);
-  assert.equal((html.match(/data-metric=/g) || []).length, 8);
+  assert.equal((html.match(/data-metric=/g) || []).length, 10);
   assert.ok(!html.includes('data-metric="macro:'));
   assert.ok(!html.includes('mh-snapshots'));
-  assert.ok(html.includes('PE、预期PE及盈利能力'));
+  assert.ok(html.includes('PE公开历史始于2016年10月'));
 });
 test('overdue observations cannot remain visible as current values and ranks', async () => {
   const data = JSON.parse(fs.readFileSync(require.resolve('../data/market-history.json'), 'utf8'));
@@ -104,7 +105,7 @@ test('overdue observations cannot remain visible as current values and ranks', a
   advanced.setUTCDate(advanced.getUTCDate() + 31);
   data.asOf = advanced.toISOString().slice(0, 10);
   const html = await renderReport(data);
-  assert.equal((html.match(/当前读数待更新/g) || []).length, 8);
+  assert.equal((html.match(/当前读数待更新/g) || []).length, 10);
   assert.ok(!html.includes('class="mh-rank"'));
   assert.ok(!html.includes('class="mh-reading"'));
 });
@@ -196,19 +197,90 @@ test('scenario analysis refuses ETF substitutions, stale conditions, unsupported
   const a=M.study(market,asOf,5);
   assert.ok(a.results.every(r=>r.matched===null && r.matchedEvents.length===0));
 });
-test('the report leads with price-linked outcomes and keeps indicator-only charts collapsed', async () => {
+test('research leads with direct input/outcome pairs and keeps standalone histories collapsed', async () => {
   const data=JSON.parse(fs.readFileSync(require.resolve('../data/market-history.json'),'utf8'));
   const html=await renderReport(data);
-  assert.equal((html.match(/data-study="/g)||[]).length,2);
-  assert.equal((html.match(/data-study-cursor=/g)||[]).length,2);
-  assert.equal((html.match(/class="mh-result-table"/g)||[]).length,2);
+  assert.equal((html.match(/data-relation="/g)||[]).length,4);
+  assert.equal((html.match(/class="mh-scatter"/g)||[]).length,4);
+  assert.ok(!html.includes('mh-linked-plot'));
   assert.equal((html.match(/class="mh-indicators"/g)||[]).length,2);
   assert.ok(!/<details[^>]+ open/.test(html));
-  assert.ok(html.indexOf('class="mh-result-table"')<html.indexOf('data-metric='));
-  assert.ok(html.includes('样本偏少，不据此加减仓'));
-  assert.ok(html.includes('收益区间重叠，不据此择时'));
+  assert.ok(html.indexOf('class="mh-scatter"')<html.indexOf('data-metric='));
+  assert.ok(html.includes('不重叠窗口'));
+  assert.ok(html.includes('非预测准确率'));
   assert.ok(!html.includes('undefined') && !html.includes('NaN'));
   const missing=structuredClone(data); delete missing.markets[0].prices;
   const missingHTML=await renderReport(missing);
   assert.ok(missingHTML.includes('缺少同一指数的美元价格历史'));
+});
+
+function researchFixture() {
+  const market=studyFixture();
+  market.metrics.push({id:'pe',label:'Aggregate PE',unit:'x',source:'jiucai-spx',evidence:'provider',valuationBasis:'aggregate_ttm',vintage:'latest_available',limitations:'No point-in-time constituent statements',points:market.prices.points.map(([d],i)=>[d,20+(i%100)/10])});
+  return market;
+}
+test('monthly research aligns exact dates and calendar horizons without using immature results', () => {
+  const m=researchFixture(),asOf=m.prices.points.at(-1)[0],a=M.relationship(m,asOf,5,{months:12,annual:false});
+  assert.ok(a.events.length>20);
+  assert.ok(a.events.every(e=>e.exitDate.slice(0,7)===M.monthOffset(e.date.slice(0,7),12)));
+  for(const e of a.events){
+    assert.equal(e.entryDate,e.date);
+    assert.ok(Math.abs(e.outcome-(e.exitPrice/e.entryPrice-1)*100)<1e-10);
+    const years=(Date.parse(e.exitDate)-Date.parse(e.entryDate))/86400000/365.2425;
+    assert.ok(Math.abs(e.annualizedPct-((e.exitPrice/e.entryPrice)**(1/years)-1)*100)<1e-10);
+    assert.ok(e.exitDate.slice(0,7)<asOf.slice(0,7));
+  }
+  const removed=a.events[0].date;
+  m.metrics.find(x=>x.id==='pe').points=m.metrics.find(x=>x.id==='pe').points.filter(([d])=>d!==removed);
+  assert.ok(!M.relationship(m,asOf,5).events.some(e=>e.date===removed));
+  const before=M.relationship(m,asOf,5);
+  m.prices.points.push(['2040-01-01',1000000]);
+  m.metrics.forEach(x=>x.points.push(['2040-01-01',1000]));
+  assert.deepEqual(M.relationship(m,asOf,5),before);
+});
+test('relationship risk uses subsequent log-return sample variance and tracks intervening drawdowns', () => {
+  const prices=[100,110,99,108.9].map((p,i)=>[`2024-01-0${i+1}`,p]);
+  const o=M.pathOutcome(prices,0,3),logs=[Math.log(1.1),Math.log(.9),Math.log(1.1)],mean=logs.reduce((a,b)=>a+b)/3;
+  assert.ok(Math.abs(o.realizedVol-Math.sqrt(logs.reduce((s,r)=>s+(r-mean)**2,0)/2*252)*100)<1e-10);
+  assert.ok(Math.abs(o.drawdownPct+10)<1e-10);
+  assert.equal(M.pathOutcome(prices,0,4),null);
+  const gap=structuredClone(prices);gap[2][0]='2024-02-01';gap[3][0]='2024-02-02';
+  assert.equal(M.pathOutcome(gap,0,3),null);
+  const m=researchFixture(),a=M.relationship(m,m.prices.points.at(-1)[0],5,{kind:'risk'});
+  assert.ok(a.events.every(e=>e.exitIndex-e.entryIndex===21 && e.outcome===e.realizedVol));
+});
+test('disjoint research windows do not share daily returns, while sparse bands remain missing', () => {
+  const m=researchFixture(),asOf=m.prices.points.at(-1)[0],a=M.relationship(m,asOf,5,{sampling:'disjoint'});
+  assert.ok(a.events.length<10);
+  assert.ok(a.events.slice(1).every((e,i)=>e.entryIndex>=a.events[i].exitIndex));
+  assert.equal(a.events.length,a.disjointCount);
+  m.metrics.find(x=>x.id==='pe').points.at(-1)[1]=100;
+  const b=M.relationship(m,asOf,5);
+  assert.equal(b.matchedStats,null);
+  assert.equal(b.bands[b.currentBand].count,undefined);
+  assert.equal(M.relationship(m,asOf,5,{months:60}).events.length,0);
+  assert.equal(M.relationship(m,asOf,5,{months:60}).fit,null);
+});
+test('regression reports descriptive fit only and does not manufacture a value for constant data', () => {
+  const fit=M.regression([1,2,3,4].map(x=>({value:x,outcome:2*x+1})));
+  assert.equal(fit.slope,2);assert.equal(fit.intercept,1);assert.equal(fit.r2,1);
+  assert.equal(M.regression([1,1,1].map(x=>({value:x,outcome:x}))),null);
+  assert.equal(M.regression([{value:1,outcome:2},{value:2,outcome:3}]),null);
+});
+test('PE identity, stale observations and unsupported return periods are rejected', () => {
+  const m=researchFixture(),asOf=m.prices.points.at(-1)[0];
+  for(const change of [{valuationBasis:'etf_pe'},{source:'jiucai-ndx'},{evidence:'published'},{vintage:'unknown'},{limitations:''}]){
+    const c=structuredClone(m);Object.assign(c.metrics.find(x=>x.id==='pe'),change);
+    assert.ok(M.relationship(c,asOf,5).error);
+  }
+  assert.ok(M.relationship(m,asOf,5,{months:1}).error);
+  assert.ok(M.relationship(m,'2040-01-01',5).error);
+  const c=structuredClone(m);c.prices.symbol='QQQ';assert.ok(M.relationship(c,asOf,5).error);
+});
+test('relationship CSV reproduces every plotted pair and its calculation basis', () => {
+  const m=researchFixture(),a=M.relationship(m,m.prices.points.at(-1)[0],5),csv=M.relationshipCSV(m,a);
+  assert.equal(csv.trim().split('\r\n').length,a.events.length+1);
+  assert.ok(csv.includes('"aggregate_ttm","latest_available","monthly"'));
+  assert.ok(csv.includes('"'+a.events[0].entryPrice+'","'+a.events[0].exitPrice+'"'));
+  assert.ok(csv.includes('"price_index","USD","yahoo-spx"'));
 });

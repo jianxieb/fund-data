@@ -11,6 +11,7 @@
     const { id, source, evidence } = metric;
     if (typeof source !== 'string') return false;
     if (marketId === 'spx' || marketId === 'ndx') {
+      if (id === 'pe') return source === 'jiucai-' + marketId && evidence === 'provider' && metric.valuationBasis === 'aggregate_ttm' && metric.vintage === 'latest_available' && !!metric.limitations;
       const vol = marketId === 'spx' ? 'vix' : 'vxn';
       if (id === vol) return source === vol && evidence === 'published';
       return ['rv21', 'drawdown', 'ma200'].includes(id) && source === 'yahoo-' + marketId && evidence === 'calculated';
@@ -165,6 +166,96 @@
     }
     return '\uFEFF'+rows.map(r=>r.map(cell).join(',')).join('\r\n')+'\r\n';
   }
+
+  function regression(events) {
+    if (events.length < 3) return null;
+    const meanX = events.reduce((n,e)=>n+e.value,0)/events.length;
+    const meanY = events.reduce((n,e)=>n+e.outcome,0)/events.length;
+    let xx=0, yy=0, xy=0;
+    events.forEach(e=>{ xx+=(e.value-meanX)**2; yy+=(e.outcome-meanY)**2; xy+=(e.value-meanX)*(e.outcome-meanY); });
+    if (xx < 1e-12 || yy < 1e-12) return null;
+    const slope=xy/xx;
+    return {slope,intercept:meanY-slope*meanX,r:xy/Math.sqrt(xx*yy),r2:Math.min(1,xy*xy/(xx*yy))};
+  }
+  function relationStats(events) {
+    if (!events.length) return null;
+    const values=events.map(e=>e.outcome).sort((a,b)=>a-b);
+    const losses=events.filter(e=>e.returnPct<0).length;
+    return {count:events.length,median:quantile(values,.5),q25:quantile(values,.25),q75:quantile(values,.75),
+      min:values[0],max:values.at(-1),lossRate:100*losses/events.length,losses,
+      drawdown:quantile(events.map(e=>e.drawdownPct).sort((a,b)=>a-b),.5)};
+  }
+  function disjointObservations(events) {
+    let lastExit=-1;
+    return events.filter(e=>{if(e.entryIndex<lastExit)return false;lastExit=e.exitIndex;return true;});
+  }
+  function monthOffset(month, months) {
+    const [year,m]=month.split('-').map(Number);
+    return new Date(Date.UTC(year,m-1+months,1)).toISOString().slice(0,7);
+  }
+  function pathOutcome(prices, start, end) {
+    if (end <= start || end >= prices.length) return null;
+    let peak=prices[start][1], drawdown=0;
+    const logs=[];
+    for(let i=start+1;i<=end;i++) {
+      if((Date.parse(prices[i][0])-Date.parse(prices[i-1][0]))/DAY>10) return null;
+      logs.push(Math.log(prices[i][1]/prices[i-1][1]));
+      peak=Math.max(peak,prices[i][1]);drawdown=Math.min(drawdown,prices[i][1]/peak-1);
+    }
+    const mean=logs.reduce((a,b)=>a+b,0)/logs.length;
+    const variance=logs.length>1?logs.reduce((a,b)=>a+(b-mean)**2,0)/(logs.length-1):null;
+    const ratio=prices[end][1]/prices[start][1],years=(Date.parse(prices[end][0])-Date.parse(prices[start][0]))/DAY/365.2425;
+    return {entryDate:prices[start][0],exitDate:prices[end][0],entryIndex:start,exitIndex:end,
+      entryPrice:prices[start][1],exitPrice:prices[end][1],returnPct:(ratio-1)*100,
+      annualizedPct:Math.expm1(Math.log(ratio)/years)*100,drawdownPct:drawdown*100,
+      realizedVol:variance===null?null:Math.sqrt(variance*252)*100};
+  }
+  // Descriptive monthly observations, not a tradeable backtest. PE is the provider's
+  // latest historical vintage, with no assertion of point-in-time financial availability.
+  function relationship(market, asOf, years=20, options={}) {
+    const {kind='valuation',months=12,annual=true,sampling='monthly'}=options;
+    if(!['valuation','risk'].includes(kind)||![12,36,60].includes(months)||!['monthly','disjoint'].includes(sampling)) return {error:'分析参数无效'};
+    const history=market.prices,symbol={spx:'^GSPC',ndx:'^NDX'}[market.id];
+    if(!symbol||!history||history.symbol!==symbol||history.source!=='yahoo-'+market.id||history.currency!=='USD'||history.basis!=='price_index')return {error:'缺少同一指数的美元价格历史'};
+    const id=kind==='valuation'?'pe':market.id==='spx'?'vix':'vxn';
+    const metric=market.metrics.find(m=>m.id===id&&eligibleMetric(market.id,m));
+    if(!metric)return {error:'缺少'+(kind==='valuation'?'整体法TTM PE历史':'官方隐含波动历史')};
+    const prices=history.points.filter(p=>p[0]<=asOf&&Number.isFinite(p[1])&&p[1]>0);
+    const lookup=new Map(metric.points.filter(p=>p[0]<=asOf&&Number.isFinite(p[1])));
+    const current=[...prices].reverse().find(p=>lookup.has(p[0]));
+    if(!current||(Date.parse(asOf)-Date.parse(current[0]))/DAY>10)return {error:'指标与指数缺少近期同日观测'};
+    const start=windowStart(asOf,years),monthEnds=new Map();
+    prices.forEach((p,i)=>{if(p[0].slice(0,7)<asOf.slice(0,7))monthEnds.set(p[0].slice(0,7),i);});
+    const edges=kind==='valuation'?[0,20,25,30,35,Infinity]:stateEdges[id];
+    const bands=edges.slice(0,-1).map((lo,i)=>({lo,hi:edges[i+1]}));
+    const currentValue=lookup.get(current[0]),currentBand=bands.findIndex(b=>inBand(currentValue,b));
+    const candidates=[...monthEnds.values()].filter(i=>prices[i][0]>=start&&lookup.has(prices[i][0]));
+    let incomplete=0, gaps=0;
+    const all=candidates.flatMap(i=>{
+      const end=kind==='risk'?i+21:monthEnds.get(monthOffset(prices[i][0].slice(0,7),months));
+      if(end===undefined||end>=prices.length){incomplete++;return [];}
+      const result=pathOutcome(prices,i,end);
+      if(!result){gaps++;return [];}
+      const value=lookup.get(prices[i][0]),outcome=kind==='risk'?result.realizedVol:annual?result.annualizedPct:result.returnPct;
+      return [{...result,date:prices[i][0],value,outcome,band:bands.findIndex(b=>inBand(value,b))}];
+    });
+    const events=sampling==='disjoint'?disjointObservations(all):all;
+    const matched=events.filter(e=>e.band===currentBand);
+    const points=metric.points.filter(p=>p[0]>=start&&p[0]<=asOf&&lookup.has(p[0])&&Number.isFinite(p[1]));
+    return {kind,months,annual,sampling,start,end:asOf,metric,current:{date:current[0],value:currentValue,price:current[1]},
+      currentBand,bands:bands.map((b,i)=>({...b,...relationStats(events.filter(e=>e.band===i)),current:i===currentBand})),
+      events,matched,stats:relationStats(events),matchedStats:relationStats(matched),fit:regression(events),
+      monthlyCount:all.length,disjointCount:disjointObservations(all).length,matchedDisjointCount:disjointObservations(matched).length,
+      incomplete,gaps,coverageStart:points[0]?.[0],coverageEnd:points.at(-1)?.[0],sampleStart:events[0]?.date,sampleEnd:events.at(-1)?.date,
+      percentile:percentile(points.map(p=>p[1]),currentValue)};
+  }
+  function relationshipCSV(market,a) {
+    const cell=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+    const rows=[['index','metric','metric_source','metric_basis','historical_vintage','sampling','signal_date','metric_value','outcome','outcome_unit','entry_date','exit_date','entry_price','exit_price','price_return_pct','annualized_price_return_pct','realized_vol_pct','max_drawdown_pct','return_basis','currency','price_source']];
+    a.events.forEach(e=>rows.push([market.symbol,a.metric.id,a.metric.source,a.metric.valuationBasis||a.metric.basis,a.metric.vintage||'published_history',a.sampling,e.date,e.value,e.outcome,a.kind==='risk'?'annualized_vol_pct':a.annual?'annualized_price_return_pct':'price_return_pct',e.entryDate,e.exitDate,e.entryPrice,e.exitPrice,e.returnPct,e.annualizedPct,e.realizedVol,e.drawdownPct,'price_index','USD',market.prices.source]));
+    return '\uFEFF'+rows.map(row=>row.map(cell).join(',')).join('\r\n')+'\r\n';
+  }
   return { eligibleMetric, windowStart, quantile, percentile, summarize, downsample, segments, histogram, csv,
-    stateBand, inBand, outcomeStats, nonOverlapping, forwardOutcome, study, studyCSV, horizons };
+    stateBand, inBand, outcomeStats, nonOverlapping, forwardOutcome, study, studyCSV, horizons,
+    regression, relationStats, disjointObservations, monthOffset, pathOutcome, relationship, relationshipCSV };
 });
