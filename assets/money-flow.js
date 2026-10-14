@@ -214,6 +214,9 @@
   function checkbox(key, label, accessibleLabel = label) {
     return '<label class="flow-offer"><input type="checkbox" data-money-check="' + key + '" aria-label="' + esc(accessibleLabel) + '"' + (state[key] ? ' checked' : '') + '><span>' + esc(label) + '</span></label>';
   }
+  function selectChevron() {
+    return '<svg class="flow-select-chevron" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
   function select(key, label, values, value = state[key]) {
     options.set(key, { label, values });
     const current = values.find(([id]) => id === value);
@@ -224,7 +227,7 @@
     if (values.length === 1 && current) return '<div class="flow-field"><span>' + esc(label) + '</span><div class="flow-control-value">' + esc(displayValue) + '</div></div>';
     return '<div class="flow-field"><span>' + esc(label) + '</span>' + (values.length > 1 && values.length <= 3 && ['route', 'returnCurrency', 'voucherScope'].includes(key) ?
       '<div class="flow-segments" role="group" aria-label="' + esc(label) + '">' + values.map(([id, text]) => action(esc(text), 'choose', 'data-field="' + key + '" data-value="' + esc(id) + '" aria-pressed="' + (id === value) + '"', 'flow-segment')).join('') + '</div>' :
-      action('<span>' + esc(displayValue || '请选择' + label) + '</span><span aria-hidden="true">⌄</span>', 'control-pick', 'data-value="' + key + '" aria-haspopup="dialog" aria-label="' + esc(label + '：' + (current?.[1] || '请选择')) + '"', 'flow-control-button')) + '</div>';
+      action('<span>' + esc(displayValue || '请选择' + label) + '</span>' + selectChevron(), 'control-pick', 'data-value="' + key + '" aria-haspopup="dialog" aria-label="' + esc(label + '：' + (current?.[1] || '请选择')) + '"', 'flow-control-button')) + '</div>';
   }
   function zaRights(label) {
     return select('zaPerksLevel', label, [['standard', 'ZA Perks · 标准'], ['lv1', 'ZA Perks · Lv1'], ['lv2', 'ZA Perks · Lv2']]);
@@ -239,7 +242,7 @@
   function account(key, label, item) {
     const displayName = item?.id === 'icbc-asia' ? '工银亚洲' : key === 'startBank' && item?.id === 'cib' ? '兴业寰宇人生' : shortName(item);
     return '<div class="flow-account-field"><span class="flow-account-label">' + esc(label) + '</span>' +
-      action('<span class="flow-account-main">' + accountGlyph(key, item) + '<strong>' + esc(displayName) + '</strong><span class="flow-account-change" aria-hidden="true">⌄</span></span>',
+      action('<span class="flow-account-main">' + accountGlyph(key, item) + '<strong>' + esc(displayName) + '</strong>' + selectChevron() + '</span>',
         'pick', 'data-value="' + key + '" aria-haspopup="dialog" aria-label="' + esc(label + '：' + shortName(item) + '，更换') + '"', 'flow-account-button') + '</div>';
   }
   function sourceTariffCopy(bank) {
