@@ -131,6 +131,36 @@ class MarketHistoryTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'regressed'):
             mh.reject_regression(data, previous)
 
+    def test_price_history_identity_close_and_regression_guards(self):
+        previous = json.loads(mh.OUTPUT.read_text())
+        for field, value in [('symbol', 'SPY'), ('basis', 'etf_price'), ('source', 'yahoo-ndx'), ('currency', 'CNY')]:
+            data = copy.deepcopy(previous)
+            data['markets'][0]['prices'][field] = value
+            with self.assertRaisesRegex(ValueError, 'price history identity'):
+                mh.validate(data)
+        data = copy.deepcopy(previous)
+        data['markets'][0]['prices']['points'][-1][1] += 1
+        with self.assertRaisesRegex(ValueError, 'does not match the displayed close'):
+            mh.validate(data)
+        data = copy.deepcopy(previous)
+        data['markets'][0]['prices']['points'] = data['markets'][0]['prices']['points'][30:]
+        with self.assertRaisesRegex(ValueError, 'price history regressed'):
+            mh.reject_regression(data, previous)
+
+    def test_price_outage_preserves_exact_history_and_original_source_metadata(self):
+        previous = json.loads(mh.OUTPUT.read_text())
+        data = copy.deepcopy(previous)
+        market = data['markets'][0]
+        market['close'] = None
+        del market['prices']
+        market['metrics'] = [m for m in market['metrics'] if m['source'] != 'yahoo-spx']
+        data['sources']['yahoo-spx'] = {'status': 'missing'}
+        mh.retain_unavailable_sources(data, previous, {'yahoo-spx'})
+        mh.validate(data)
+        self.assertEqual(market['prices'], previous['markets'][0]['prices'])
+        self.assertEqual(market['close'], previous['markets'][0]['close'])
+        self.assertEqual(data['sources']['yahoo-spx'], previous['sources']['yahoo-spx'])
+
 
 if __name__ == '__main__':
     unittest.main()

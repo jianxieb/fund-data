@@ -277,6 +277,7 @@ def build(raw, asof, fetched, source_urls=None):
             symbol = '^GSPC' if market['id'] == 'spx' else '^NDX'
             prices = yahoo(raw[source], symbol, asof)
             market['close'] = dict(date=prices[-1][0], value=prices[-1][1], source=source, basis='price_index')
+            market['prices'] = dict(points=prices, source=source, symbol=symbol, basis='price_index', currency='USD')
             derived = price_metrics(prices)
             for key, label, english, basis in [
                 ('rv21', '21日实际波动率', 'REALIZED VOL · 21D', '过去21个交易日对数收益率样本标准差 × √252。由Yahoo Finance的指数收盘序列复算，不预测未来波动。'),
@@ -394,6 +395,16 @@ def validate(data):
             raise ValueError(market['id'] + ': essential series missing')
         if market['id'] != 'macro' and (not market.get('close') or market['close']['basis'] != 'price_index' or market['close']['date'] > data['asOf']):
             raise ValueError('Wrong index basis or future close')
+        if market['id'] != 'macro':
+            prices = market.get('prices', {})
+            points = prices.get('points', [])
+            expected_symbol = '^GSPC' if market['id'] == 'spx' else '^NDX'
+            if prices.get('basis') != 'price_index' or prices.get('currency') != 'USD' or prices.get('symbol') != expected_symbol or prices.get('source') != 'yahoo-' + market['id']:
+                raise ValueError('Wrong price history identity or basis')
+            if len(points) < 252 or points != normalize(points, data['asOf']) or any(v <= 0 for _, v in points):
+                raise ValueError('Invalid price history')
+            if points[-1] != [market['close']['date'], market['close']['value']]:
+                raise ValueError('Price history does not match the displayed close')
         if len({m['id'] for m in market['metrics']}) != len(market['metrics']):
             raise ValueError('Duplicate metric identity')
         for m in market['metrics']:
@@ -443,6 +454,7 @@ def retain_unavailable_sources(data, previous, missing):
         market['snapshots'].extend(m for m in old['snapshots'] if m['source'] in missing)
         if market['id'] != 'macro' and not market.get('close'):
             market['close'] = old['close']
+            market['prices'] = old.get('prices')
         order = {m['id']: i for i, m in enumerate(old['metrics'])}
         market['metrics'].sort(key=lambda m: order.get(m['id'], 100))
     return data
@@ -451,6 +463,10 @@ def retain_unavailable_sources(data, previous, missing):
 def reject_regression(data, previous):
     sections = {s['id']: s for s in data['markets'] + [data['context']]}
     for old in previous['markets'] + ([previous['context']] if 'context' in previous else []):
+        if old.get('prices'):
+            before, after = old['prices']['points'], sections[old['id']].get('prices', {}).get('points', [])
+            if not after or after[-1][0] < before[-1][0] or after[0][0] > before[0][0] or len(after) < .99 * len(before):
+                raise ValueError(old['id'] + ': price history regressed')
         current = {m['id']: m for m in sections[old['id']]['metrics']}
         for old_metric in old['metrics']:
             new = current.get(old_metric['id'])
@@ -475,7 +491,17 @@ def main():
         print('Historical-position dataset valid:', [(m['id'], len(m['metrics'])) for m in data['markets']])
         return
     if args.offline and OUTPUT.exists():
-        data = validate(curate_report(json.loads(OUTPUT.read_text())))
+        data = curate_report(json.loads(OUTPUT.read_text()))
+        for market in data['markets']:
+            if market.get('prices'):
+                continue
+            source = 'yahoo-' + market['id']
+            raw = (CACHE / (source + '.raw')).read_bytes()
+            if hashlib.sha256(raw).hexdigest() != data['sources'][source]['sha256']:
+                raise ValueError(source + ': cached price evidence differs from the published source')
+            symbol = '^GSPC' if market['id'] == 'spx' else '^NDX'
+            market['prices'] = dict(points=yahoo(raw, symbol, data['asOf']), source=source, symbol=symbol, basis='price_index', currency='USD')
+        validate(data)
         temporary = OUTPUT.with_suffix('.json.tmp')
         temporary.write_text(json.dumps(data, ensure_ascii=False, separators=(',', ':')) + '\n')
         temporary.replace(OUTPUT)
