@@ -383,7 +383,7 @@
     add('risk', '近5年内波动率', f => fundRiskCell(f, 'vol5'));
     add('status', '申购状态', f => badge(f.exchange ? '场内交易' : f.st || '未收录', /暂停/.test(f.st) && !f.exchange ? 'warn' : ''));
     add('status', '日限额', f => '<span class="limit-inline">' + (f.exchange || /暂停/.test(f.st) ? '—' : esc(f.lm || '—')) + '</span>');
-    add('size', '规模 / 亿元', f => money(f.sz, 1), 'size');
+    add('size', '规模 / 亿元', f => money(f.sz, 1) + (M.finite(f.sz) ? '<span class="sub">' + esc(f.szdate || '规模日期未核验') + '</span>' : ''), 'size');
     add('fees', '持续费率 / 年', ongoingFee, 'fee');
     add('trade', '买入费率', buyFee);
     add('trade', '卖出费率', f => redemption(f));
@@ -395,12 +395,14 @@
   }
   function fundTable(rows) {
     const cols = fundColumns();
+    const scalePending = state.fundTab === 'equity' ? rows.filter(f => M.finite(f.sz) && !f.szdate).length : 0;
     const sort = (n, k) => action(n + (state.fundSort === k ? (state.descending ? ' ↓' : ' ↑') : ''), 'fund-sort', '', 'data-value="' + k + '"');
     const rowHtml = f => '<tr><td><div class="fund-name-row">' + action(esc(f.n), 'fund-detail', 'text-link', 'data-code="' + f.c + '" title="' + esc(f.c + ' · ' + (f.exchange ? '场内' : '场外') + ' · ' + (f.ix || '策略待核验')) + '"') +
       (state.fundTab === 'income' ? badge(f.dividend ? '红利' : '债券/固收') : '') + action(state.selected.has(f.c) ? '✓' : '＋', 'compare-toggle', 'fund-compare' + (state.selected.has(f.c) ? ' selected' : ''), 'data-code="' + f.c + '" aria-pressed="' + state.selected.has(f.c) + '" aria-label="对比' + esc(f.n) + '"') + '</div>' +
       (state.fundTab === 'passive' ? '<span class="sub">' + esc(f.ix || '跟踪标的未收录') + ' · ' + (f.exchange ? '场内' : '场外') + (/增强/.test(f.n) ? ' · 指数增强' : '') + '</span>' : '') + '</td>' + cols.map(c => '<td class="' + (c.cls || '') + '">' + c.cell(f) + '</td>').join('') + '</tr>';
     const rowsHtml = lazyRows('funds', rows, rowHtml);
     return '<div class="card"><div class="table-caption"><span><b>' + rows.length + '</b>只产品' + (state.query ? ' · 搜索“' + esc(state.query) + '”' : '') + ' · 人民币净值口径 · ' + feeBasisLabel() + (state.fundSort !== 'default' ? ' · ' + action('恢复默认顺序', 'fund-sort-reset', 'text-link small') : '') + '</span>' + columnControl() + '</div>' +
+      (scalePending ? '<div class="panel-foot">' + scalePending + '只的规模日期未核验，保留为研究候选；不能据此确认其当前规模满足门槛。</div>' : '') +
       '<div class="table-wrap fund-table-wrap" tabindex="0" aria-label="基金数据表，可横向滚动"><table class="research-table fund-table"><thead><tr><th>基金 / 跟踪标的</th>' + cols.map(c => '<th' + (c.key ? ' aria-sort="' + (state.fundSort === c.key ? state.descending ? 'descending' : 'ascending' : 'none') + '"' : '') + '>' + (c.key ? sort(c.label, c.key) : c.label) + '</th>').join('') + '</tr></thead><tbody data-list-body="funds">' +
       (rowsHtml || '<tr><td colspan="' + (cols.length + 1) + '"><div class="empty"><b>没有符合条件的产品</b>' + fundSearchAlternatives() + '<p>' + action('清除筛选', 'fund-reset', 'text-link') + '</p></div></td></tr>') +
       '</tbody></table></div>' + loadFooter('funds') + '<div class="panel-foot"><span>— 表示缺失或历史不足。</span>' + action('导出完整字段 CSV', 'export-funds', 'text-link') + '</div></div>';
@@ -819,7 +821,8 @@
       return '<p class="note">最近运行：' + esc(stamp(item.attemptedAt)) + ' · ' + (item.mode === 'offline' ? '离线回放' : '在线更新') + ' · ' + esc(statusLabel(item)) + (online ? '<br>最近在线：' + esc(stamp(online.attemptedAt)) + ' · ' + esc(statusLabel(online)) : '') + '</p>';
     };
     const statusNames = { attention: '发现错误', checked: '计算检查通过', available: '已取得原始序列', error: '发现错误', unavailable: '缺少来源', failed: '更新失败', computed: '已重算' };
-    const issueLabels = { funds: '费率生效日未核', benchmarks: '人民币风险缺汇率', stocks: '估值报告期未核', domestic_funds: '旧池收益待复算', indices: '万得微盘缺日线' };
+    const issueLabels = { fee_source_date: '费率生效日未核', fx_risk_incomplete: '人民币风险缺汇率', domestic_basis_unverified: '收益口径待复算', domestic_fee_missing: '申赎费率缺项', research_scale_date_unverified: '规模日期未核', manager_date_unverified: '经理日期或来源未核', index_source_unavailable: '指数原始日线缺失', overseas_business_review_pending: '最新财报经营复核待补' };
+    const datasetStatus = d => statusNames[d.status] || [...new Set((d.issues || []).map(i => issueLabels[i.code] || i.message || i.code))].join(' / ') || '尚未记录核验结果';
     const coverage = d => {
       if (d.id === 'funds') return '收益已复算 ' + funds.filter(f => f.origin === 'overseas' && verifiedReturn(f)).length + ' / ' + d.records;
       if (d.id === 'stocks') return '历史收益已重算 ' + (window.STOCKS || []).filter(s => s.dataStatus === 'computed').length + ' / ' + d.records;
@@ -839,7 +842,7 @@
     ];
     return head('DATA STATUS', '数据状态与来源', '查看各数据集的日期、覆盖范围和待补证据。', action('导出质量报告', 'export-quality', 'btn')) +
       '<div class="stats-grid">' + stat('公开国内指数', (window.INDEX_DATA || []).filter(r => ['available', 'cached'].includes(r.status)).length, '个', '指数源独立于基金产品') + stat('研究产品', funds.length, '只', '按基金代码去重') + stat('长期主动权益', funds.filter(f => M.fundScopeMatches(f, policy.byCode[f.c], 'equity', defaults)).length, '只', '默认权益筛选条件') + stat('待核验类别', q.summary.unverified || 0, '项', '逐项说明见下方') + '</div>' +
-      '<div class="dataset-grid">' + (q.datasets || []).map(d => '<article class="dataset-card"><header><h3>' + esc(datasetLabel(d)) + '</h3>' + badge(statusNames[d.status] || issueLabels[d.id] || d.status, ['checked', 'available'].includes(d.status) ? 'green' : 'warn') + '</header><p>数据日期 ' + esc(datasetDates(d)) + (d.records != null ? ' · ' + d.records + '条' : '') + '</p>' + (coverage(d) ? '<p class="dataset-coverage">' + coverage(d) + '</p>' : '') + (d.issues && d.issues.length ? '<ul>' + d.issues.map(i => '<li>' + esc(i.message) + '</li>').join('') + '</ul>' : '') + runNote(d) + '</article>').join('') +
+      '<div class="dataset-grid">' + (q.datasets || []).map(d => '<article class="dataset-card"><header><h3>' + esc(datasetLabel(d)) + '</h3>' + badge(datasetStatus(d), ['checked', 'available'].includes(d.status) ? 'green' : 'warn') + '</header><p>数据日期 ' + esc(datasetDates(d)) + (d.records != null ? ' · ' + d.records + '条' : '') + '</p>' + (coverage(d) ? '<p class="dataset-coverage">' + coverage(d) + '</p>' : '') + (d.issues && d.issues.length ? '<ul>' + d.issues.map(i => '<li>' + esc(i.message) + '</li>').join('') + '</ul>' : '') + runNote(d) + '</article>').join('') +
       (window.BUY_LOCATION_DATA ? '<article class="dataset-card"><header><h3>投资渠道</h3>' + badge('固定研究快照', 'warn') + '</header><p>行情截至 ' + esc(window.BUY_LOCATION_DATA.asOf) + ' · ' + window.BUY_LOCATION_DATA.products.length + '只产品</p><p>同日价格、净值及汇率经脚本构建；券商费用可调整，个人税使用已披露的协定与抵免基准，税后结果是模拟值。</p><a class="text-link" href="docs/buy-location-method.md" target="_blank" rel="noopener">查看来源与计算边界 ↗</a></article>' : '') + '</div>' +
       '<div class="section-head"><h2>计算口径</h2></div><div class="quality-principles">' + [
         ['指数与产品', '指数取编制方日线；ETF 和基金按各自行情计算。'],
@@ -881,7 +884,7 @@
         ['卖出费用', redemption(f, true)],
         ['申购状态 / 日限额', f.exchange ? '场内交易；不使用场外申赎限制' : esc(f.st || '未收录') + ' / ' + (/暂停/.test(f.st) ? '暂停期间无可用额度' : esc(f.lm || '未收录'))],
         ['单位净值 / 日期', money(f.nav, 4) + ' / ' + esc(f.navdate || '未收录')],
-        ['规模 / 成立日', money(f.sz, 1) + '亿元 / ' + esc(f.d) + (f.szdate ? '<span class="sub">规模截至：' + esc(f.szdate) + '</span>' : '')],
+        ['规模 / 成立日', money(f.sz, 1) + '亿元 / ' + esc(f.d) + '<span class="sub">' + (f.szdate ? '规模截至：' + esc(f.szdate) : '规模日期未核验，不能作为当前规模证据') + '</span>'],
         ['近5年内最大回撤 / 波动率', pct(perf.mdd5, 2, false) + ' / ' + pct(perf.vol5, 2, false) + (fundRiskPeriod(perf, 5, true) || '<span class="sub">截至：' + esc(metricDate(perf, 'risk')) + '</span>')],
         (Number.isFinite(f.mdd3) || Number.isFinite(f.v3) ?
           ['近3年净值回撤 / 波动率', pct(f.mdd3, 2, false) + ' / ' + pct(f.v3, 2, false) +
