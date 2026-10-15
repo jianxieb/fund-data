@@ -91,6 +91,54 @@ test('buy and hold uses real paths; monthly rebalance has a different hand-calcu
   assert.equal(balanced.rebalances, 1);
 });
 
+test('liquidation rejects a carried closing price and identifies the last common execution day', () => {
+  const input = fixture([
+    { name: '甲市场股票', days: ['2025-01-02', '2025-01-03', '2025-01-06'], values: [100, 110, 130] },
+    { name: '乙市场股票', days: ['2025-01-02', '2025-01-03', '2025-01-07'], values: [100, 100, 200] }
+  ]);
+  const marked = P.simulate(input);
+  assert.equal(marked.error, undefined); assert.equal(marked.end, '2025-01-06'); close(marked.value, 1150);
+  input.config.tax = { liquidate: true };
+  const blocked = P.simulate(input);
+  assert.match(blocked.error, /2025-01-06.*乙市场股票.*缺当日实际报价/);
+  assert.match(blocked.error, /最近共同交易日为 2025-01-03/);
+  assert.equal(blocked.transactions, undefined);
+  Object.assign(input.config, { years: 'custom', start: '2025-01-02', end: '2025-01-03' });
+  const sold = P.simulate(input);
+  assert.equal(sold.error, undefined); close(sold.value, 1050);
+  assert.equal(sold.transactions.filter(t => t.reason === 'liquidation').length, 2);
+  assert.ok(sold.transactions.every(t => input.histories[t.id].series.some(([day]) => day === t.day)));
+  assert.ok(sold.holdings.every(h => Math.abs(h.value) < 1e-8));
+});
+
+test('a closed benchmark market hides only the liquidation comparison, not the valid portfolio', () => {
+  const input = fixture([
+    { name: '持仓市场', days: ['2025-01-02', '2025-01-03', '2025-01-06'], values: [100, 110, 130] },
+    { name: '对照市场', days: ['2025-01-02', '2025-01-03', '2025-01-07'], values: [100, 100, 200] }
+  ]);
+  input.config.positions = [{ id: 'stock:1', weight: 100 }];
+  input.config.benchmarkId = 'stock:2'; input.config.tax = { liquidate: true };
+  const result = P.simulate(input);
+  assert.equal(result.error, undefined); close(result.value, 1300);
+  assert.equal(result.benchmark, null);
+  assert.match(result.benchmarkError, /对照市场.*2025-01-06.*缺当日实际报价/);
+  input.config.tax.liquidate = false;
+  assert.equal(P.simulate(input).benchmarkError, null);
+});
+
+test('cash-flow XIRR becomes available on the calendar anniversary, including non-leap years', () => {
+  const days = [];
+  for (let t = Date.parse('2025-01-02'); t <= Date.parse('2026-01-02'); t += 86400000) days.push(new Date(t).toISOString().slice(0, 10));
+  const input = fixture([{ days, values: days.map((_, i) => 100 + i / 10) }], { monthly: 100 });
+  const result = P.simulate(input);
+  assert.equal(result.error, undefined); assert.ok(Number.isFinite(result.xirr)); assert.equal(result.xirrMissing, null);
+  assert.equal(result.holdings[0].performance.annualBasis, 'money_weighted_xirr');
+  Object.assign(input.config, { years: 'custom', start: '2025-01-02', end: '2026-01-01' });
+  const short = P.simulate(input);
+  assert.equal(short.xirr, null); assert.match(short.xirrMissing, /不足一年/);
+  assert.equal(short.holdings[0].performance.annualBasis, 'under_one_year_total_return');
+});
+
 test('holding returns use actual investment amounts and trade fees', () => {
   const input = fixture([{ values: [100, 120, 90] }, { values: [100, 100, 100] }]);
   const hold = P.simulate(input), metrics = hold.holdings[0].performance;

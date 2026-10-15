@@ -98,8 +98,9 @@ test('single-page PDF has binary-safe xref offsets, contiguous bands and correct
   for (const band of bands) assert.ok(bytes.includes(Buffer.from(band.bytes)));
 });
 
-function uiFixture() {
+function uiFixture(configure) {
   const { input } = fixture(), downloads = [], notices = [], reports = [], renderStates = [];
+  if (configure) configure(input);
   const context = { window: { Changheng: M, ChanghengPortfolioModel: P, PORTFOLIO_CATALOG: input.catalog,
     ChanghengPortfolioPdf: { snapshot: Pdf.snapshot, async create(report) { reports.push(report); return new Blob(['PDF']); } } },
     localStorage: { getItem: () => JSON.stringify(input.config), setItem() {} },
@@ -110,14 +111,59 @@ function uiFixture() {
   const ui = context.window.ChanghengPortfolio;
   const helpers = { esc: String, action: (label, act, cls, extra = '') => '<button data-action="' + act + '" ' + extra + '>' + label + '</button>',
     annual: true, annualControl: '', pct: String, pc: String, money: String, card: (title, subtitle, html) => html,
-    stat: () => '', lazyRows: (key, rows, render) => rows.map(render).join(''), loadFooter: () => '', resetList() {},
+    stat: (label, value, unit, note) => '<article class="stat"><strong>' + label + '</strong><b>' + value + '</b><small>' + note + '</small></article>', lazyRows: (key, rows, render) => rows.map(render).join(''), loadFooter: () => '', resetList() {},
     toast: message => notices.push(message), download: (...args) => downloads.push(args),
     render: () => renderStates.push(ui.view(helpers)) };
   ui.view(helpers);
   const action = (name, extras = {}) => ui.handleAction({ dataset: { action: 'portfolio-' + name, ...extras } });
   const monthly = value => ui.handleInput({ id: 'portfolio-monthly', value: String(value), dataset: { portfolioField: 'monthly' } });
-  return { ui, action, monthly, context, helpers, downloads, notices, reports, renderStates };
+  return { ui, action, monthly, context, helpers, downloads, notices, reports, renderStates, input };
 }
+
+test('funding XIRR stays annualized beside portfolio returns in both display modes and exports', async () => {
+  const f = uiFixture();
+  await f.action('run');
+  const expected = P.simulate(f.input);
+  const summary = html => html.match(/<div class="stats-grid portfolio-result-summary">([\s\S]*?)<\/div>/)[1];
+  const annual = summary(f.ui.view(f.helpers));
+  assert.ok(annual.includes('<strong>资金年化 XIRR</strong><b>' + expected.xirr + '</b>'));
+  assert.ok(annual.includes('<strong>组合年化收益</strong><b>' + expected.annualReturn + '</b>'));
+  assert.match(annual, /按实际投入时间和金额计算/); assert.match(annual, /现金流中性 · 对照持有/);
+  f.helpers.annual = false;
+  const cumulative = summary(f.ui.view(f.helpers));
+  assert.ok(cumulative.includes('<strong>资金年化 XIRR</strong><b>' + expected.xirr + '</b>'));
+  assert.ok(cumulative.includes('<strong>组合累计收益</strong><b>' + expected.totalReturn + '</b>'));
+  assert.doesNotMatch(cumulative, /资金累计|资金年化 XIRR.*组合年化收益/);
+  await f.action('export-result');
+  assert.match(f.downloads[0][1], /组合累计收益%（现金流中性）/);
+  assert.match(f.downloads[0][1], /全区间资金年化XIRR%/);
+  assert.ok(f.downloads[0][1].includes(String(expected.xirr)));
+  await f.action('export-pdf');
+  const document = Pdf.layout(f.reports[0], measure), text = textOf(document);
+  assert.ok(text.indexOf('资金年化 XIRR') < text.indexOf('组合年化收益'));
+  assert.equal(f.reports[0].result.xirr, expected.xirr);
+  assert.match(text, /资金年化 XIRR 使用实际投入日期与金额/);
+});
+
+test('short periods explain unavailable funding XIRR and snapshots retain exact benchmark failures', async () => {
+  const short = uiFixture(input => Object.assign(input.config, { years: 'custom', start: '2025-08-01', end: '2026-01-08' }));
+  await short.action('run');
+  const html = short.ui.view(short.helpers);
+  assert.match(html, /资金年化 XIRR[\s\S]*模拟不足一年，不外推资金年化/);
+  await short.action('export-pdf');
+  assert.match(textOf(Pdf.layout(short.reports[0], measure)), /模拟不足一年，不外推资金年化/);
+  const missing = uiFixture(input => {
+    const benchmarkId = input.catalog.assets[0].id;
+    input.config.positions = [{ id: input.catalog.assets[1].id, weight: 100 }];
+    Object.assign(input.config, { years: 'custom', start: '2025-08-01', end: '2026-01-08', benchmarkId });
+    const history = input.histories[benchmarkId];
+    history.series = history.series.filter(([day]) => day >= '2025-07-01'); history.first = history.series[0][0];
+  });
+  await missing.action('run');
+  const missingHtml = missing.ui.view(missing.helpers);
+  assert.match(missingHtml, /近1年对照：对照标的的历史不覆盖组合区间/);
+  assert.doesNotMatch(missingHtml, />无覆盖</);
+});
 
 test('changed settings are resimulated before export; failures never download old results', async () => {
   const f = uiFixture();

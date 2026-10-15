@@ -137,7 +137,7 @@
     const totalReturn = invested > 0 ? profit / invested * 100 : null;
     const flows = trades.map(t => [t.day, t.side === 'buy' ? -(t.amount + t.fee) : t.amount - t.fee - (t.tax || 0)]);
     flows.push([end, terminalValue]);
-    const short = !start || gap(start, end) < YEAR;
+    const short = !start || end < addYears(start, 1);
     const annual = short ? totalReturn : holdingXirr(flows);
     let peak = 1, mdd = 0;
     for (const [, value] of activeRows) {
@@ -204,6 +204,7 @@
   function run({ catalog, histories, config, fxHistory }) {
     const assets = new Map((catalog?.assets || []).map(a => [a.id, a]));
     const { positions, total, cashWeight } = validateConfig(config, new Set(assets.keys()));
+    const tax = taxConfig(config.tax);
     const series = positions.map(position => {
       const asset = assets.get(position.id);
       if (asset.status !== 'available') fail(asset.name + '：' + (asset.missing || '缺每日历史'));
@@ -240,6 +241,12 @@
     const days = [...new Set([...series.flatMap(s => s.rows.map(r => r[0])), ...(fx ? fx.map(r => r[0]) : [])])].filter(day => day >= start && day <= requestedEnd).sort();
     const end = days.at(-1);
     if (!end || end <= start || gap(end, requestedEnd) > 14) fail('结束日前14日内缺有效估值，无法回测');
+    if (tax.liquidate && !commonSet.has(end)) {
+      const unavailable = series.filter(s => !s.dates.has(end)).map(s => s.asset.name).join('、');
+      const latest = common.filter(day => day > start && day <= end).at(-1);
+      fail('期末 ' + end + '，' + (unavailable || '所选标的') + '缺当日实际报价，不能用沿用估值清仓。' +
+        (latest ? '最近共同交易日为 ' + latest + '，请将结束日改为该日，或取消期末清仓。' : '区间内没有建仓后的共同交易日，请调整区间，或取消期末清仓。'));
+    }
     series.forEach(s => validateDividendEvidence(s.asset, histories[s.asset.id], start, end, s.tax));
     for (const s of series) {
       for (let i = 1; i < s.rows.length; i++) {
@@ -321,7 +328,6 @@
     }
     const units = series.map(() => 0), bought = series.map(() => 0), sold = series.map(() => 0), costs = series.map(() => 0);
     const basis = series.map(() => 0), capitalTaxes = series.map(() => 0), dividendTaxes = series.map(() => 0), taxEvents = [];
-    const tax = taxConfig(config.tax);
     const holdingNav = series.map(() => 1);
     const fee = config.transactionFee / 100, transactions = [], flows = [];
     let cash = 0, contributed = 0, fundUnits = 0, tradeCost = 0, rebalances = 0, deposits = 0;
@@ -473,6 +479,7 @@
         let benchmarkFx = fx;
         if (asset.currency === 'USD' && !benchmarkFx) benchmarkFx = validateHistory(catalog.fx, fxHistory);
         if (rows[0][0] > start || rows.at(-1)[0] < end || benchmarkFx && (benchmarkFx[0][0] > start || benchmarkFx.at(-1)[0] < end)) fail('对照标的的历史不覆盖组合区间');
+        if (tax.liquidate && !rows.some(row => row[0] === end)) fail('对照标的' + asset.name + '在期末 ' + end + ' 缺当日实际报价，无法计算该日的清仓后对照收益');
         const info = M.annualFeeInfo({ ...asset, n: asset.name }, config.feeOverrides?.[asset.code]);
         if (config.feeBasis === 'gross_estimate' && info.applicable && info.rate === null) fail('对照标的' + info.missing);
         const rate = config.feeBasis === 'gross_estimate' && info.applicable ? info.rate : 0;
@@ -499,12 +506,15 @@
           annualReturn: annualReturn(points.at(-1).nav, start, end), taxCost, taxRates: rates, taxBasis: 'same_simulation_rates' };
       } catch (error) { benchmarkError = error.message; }
     }
+    const fullYear = end >= addYears(start, 1);
+    const xirr = fullYear ? M.buyLocationXirr(flows) : null;
+    const xirrMissing = xirr !== null ? null : !fullYear ? '模拟不足一年，不外推资金年化' : '实际资金流缺可用年化解';
     return { start, end, requestedStart, requestedEnd, commonFirst: common[0], commonLast: common.at(-1),
       totalReturn: final.totalReturn, annualReturn: annualReturn(final.nav, start, end), value: final.value,
       contributed, profit: final.profit, mdd, volatility, cash, cashWeight: cashWeight * 100, holdings, curve, annual,
       // A short-period money-weighted figure is left unannualized rather than
       // exaggerating one month's change into a full-year compound rate.
-      xirr: gap(start, end) / YEAR >= 1 ? M.buyLocationXirr(flows) : null,
+      xirr, xirrMissing,
       deposits, rebalances, transactions, tradeCost, initialReserve, timingChanges,
       strategy: { ...strategy, warmupDays, insufficientMaDays, signalBasis: 'prior_common_close_target_weight_reference' },
       plan: { initial: [...initialPlan].map(([day, amount]) => ({ day, amount })), income: [...incomePlan].map(([day, amount]) => ({ day, amount })) }, taxEvents, taxCost: sum(capitalTaxes) + sum(dividendTaxes), capitalTax: sum(capitalTaxes), dividendTax: sum(dividendTaxes), carriedPrices, carriedFx, benchmark, benchmarkError,

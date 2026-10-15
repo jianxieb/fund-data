@@ -171,10 +171,10 @@
     table(['标的 / 类型', '目标权重', '初始预算 / 元', '基础月预算 / 元', '首次买入含费 / 元'], initialRows, [3.1, 1.1, 1.5, 1.5, 1.8], { numeric: [1, 2, 3, 4] });
     if (cfg.feeBasis === 'gross_estimate') paragraph('有效年费假设：' + r.holdings.map(h => h.name + ' ' + pct(h.feeRate)).join('；'));
 
-    section('模拟概览', '组合收益基于现金流中性净值；新增本金不会被计为收益。');
+    section('模拟概览', '资金年化 XIRR 使用实际投入日期与金额；组合收益剔除追加本金影响。');
     cards([
-      ['组合年化收益', pct(r.annualReturn)], ['组合累计收益', pct(r.totalReturn)], ['期末资产 / 元', number(r.value)], ['累计投入 / 元', number(r.contributed)],
-      ['账面盈亏 / 元', number(r.profit)], ['最大回撤', pct(r.mdd)], ['年化波动', pct(r.volatility)], ['资金年化 / XIRR', pct(r.xirr), r.xirr === null ? (Date.parse(r.end) - Date.parse(r.start)) / 86400000 < 365.2425 ? '不足一年不外推' : '缺可用年化解' : '按实际投入日期与金额']
+      ['资金年化 XIRR', pct(r.xirr), r.xirrMissing || '按实际投入时间和金额计算'], ['组合年化收益', pct(r.annualReturn), '现金流中性'], ['组合累计收益', pct(r.totalReturn), '现金流中性'], ['期末资产 / 元', number(r.value)],
+      ['累计投入 / 元', number(r.contributed)], ['账面盈亏 / 元', number(r.profit)], ['最大回撤', pct(r.mdd)], ['年化波动', pct(r.volatility)]
     ]);
     paragraph('入金 ' + r.deposits + '笔    再平衡 ' + r.rebalances + '次    买卖 ' + r.transactions.length + '笔    交易费合计 ' + number(r.tradeCost) + '元    期末现金 ' + number(r.cash) + '元');
     paragraph('投资者税合计 ' + number(r.taxCost) + '元    卖出盈利税 ' + number(r.capitalTax) + '元    分红税 ' + number(r.dividendTax) + '元');
@@ -184,13 +184,14 @@
     if (r.benchmark) paragraph('对照持有回报：年化 ' + pct(r.benchmark.annualReturn) + '，累计 ' + pct(r.benchmark.totalReturn) + '；同区间、同币种、同税率及期末设置，不计用户交易费。');
     if (r.benchmarkError) paragraph('对照数据：' + r.benchmarkError, C.negative);
 
-    section('区间快照', '近1/2/3/5年分别重新建仓，使用相同组合与策略。');
+    section('区间快照', '近1/2/3/5年分别重新建仓，使用相同组合与策略；组合与对照收益均为现金流中性。');
     const windows = r.snapshots || [];
-    table(['指标', ...windows.map(s => '近' + s.years + '年\n' + (s.error ? '历史未覆盖' : s.start + '\n' + s.end))], [
+    table(['指标', ...windows.map(s => '近' + s.years + '年\n' + (s.error ? '无法模拟' : s.start + '\n' + s.end))], [
+      ['资金年化 XIRR', ...windows.map(s => s.error ? '—' : s.xirrMissing || pct(s.xirr))],
       ['组合年化收益', ...windows.map(s => s.error ? '—' : pct(s.annualReturn))],
       ['组合累计收益', ...windows.map(s => s.error ? '—' : pct(s.totalReturn))],
-      ['对照年化收益', ...windows.map(s => s.error || !s.benchmark ? '无覆盖' : pct(s.benchmark.annualReturn))],
-      ['对照累计收益', ...windows.map(s => s.error || !s.benchmark ? '无覆盖' : pct(s.benchmark.totalReturn))],
+      ['对照持有年化', ...windows.map(s => s.error ? '—' : s.benchmark ? pct(s.benchmark.annualReturn) : s.config.benchmarkId ? '缺对照数据' : '未设置')],
+      ['对照持有累计', ...windows.map(s => s.error ? '—' : s.benchmark ? pct(s.benchmark.totalReturn) : s.config.benchmarkId ? '缺对照数据' : '未设置')],
       ['期末资产 / 元', ...windows.map(s => s.error ? '—' : number(s.value))],
       ['累计投入 / 元', ...windows.map(s => s.error ? '—' : number(s.contributed))],
       ['账面盈亏 / 元', ...windows.map(s => s.error ? '—' : number(s.profit))],

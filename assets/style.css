@@ -724,7 +724,10 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-tax-asset input{min-width:0;width:100%;margin:0;font-size:13px}
 @media(max-width:650px){.portfolio-tax-bar{padding:0 18px 18px}.portfolio-tax-top{gap:10px}.portfolio-tax-grid{gap:12px}.portfolio-tax-asset{grid-template-columns:minmax(0,1fr) 90px 90px;gap:10px}.portfolio-tax-asset-single{grid-template-columns:minmax(0,1fr) 90px}}
 .portfolio-results .stats-grid{gap:16px}
+.portfolio-results .portfolio-result-summary{grid-template-columns:repeat(5,minmax(0,1fr))}
 .portfolio-results .stat-foot{line-height:1.7;font-size:11px}
+@media(max-width:1450px){.portfolio-results .stats-grid.portfolio-result-summary{grid-template-columns:repeat(6,minmax(0,1fr))}.portfolio-result-summary>.stat{grid-column:span 2}.portfolio-result-summary>.stat:nth-child(-n+2){grid-column:span 3}}
+@media(max-width:650px){.portfolio-results .stats-grid.portfolio-result-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.portfolio-result-summary>.stat,.portfolio-result-summary>.stat:nth-child(-n+2){grid-column:auto}.portfolio-result-summary>.stat:last-child{grid-column:1/-1}}
 .portfolio-chart-body{padding:17px 19px 14px}
 .portfolio-chart-legend{display:flex;gap:23px;align-items:center;flex-wrap:wrap;font-size:12px;padding:0 12px 13px;color:var(--muted)}
 .portfolio-chart-legend>span{display:flex;align-items:center;gap:7px}
@@ -783,6 +786,7 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-snapshot-table th small{display:block;font-size:11px;font-weight:400;margin-top:7px;color:var(--muted)}
 .portfolio-snapshot-table td{font-size:13px;padding-top:12px;padding-bottom:12px}
 .portfolio-snapshot-table tbody tr:first-child td.num{font-size:21px}
+.portfolio-snapshot-table .muted{font-size:12px;line-height:1.6}
 .portfolio-snapshot-missing{font-size:12px;color:#937043;line-height:1.7;padding:0 24px 16px}
 .stock-selection-detail{padding:18px 22px;background:#f4f5ee;border:1px solid #e4e7db;border-radius:10px;margin-bottom:23px}
 .stock-selection-detail h3{font-size:14px;font-weight:550}
