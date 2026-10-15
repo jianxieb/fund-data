@@ -1,16 +1,54 @@
 (function () {
   'use strict';
   const M = window.ChanghengHoldingPeriodModel;
-  const state = { symbol: 'BRK-B', currency: 'USD', years: 2, catalog: null, loadingCatalog: false, catalogError: '', showAll: false, selected: null };
+  const state = { symbol: 'BRK-B', currency: 'USD', years: 2, annual: true, catalog: null, loadingCatalog: false, catalogError: '', showAll: false, selected: null };
   const histories = new Map(), pending = new Map(), errors = new Map(), studies = new Map();
-  let ctx, plot = null;
+  let ctx, plot = null, routeSignature = null;
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const num = (value, digits = 2) => Number.isFinite(value) ? value.toLocaleString('zh-CN', { minimumFractionDigits: digits, maximumFractionDigits: digits }) : '—';
   const pct = value => Number.isFinite(value) ? (value > 0 ? '+' : '') + num(value) + '%' : '—';
+  const returnLabel = () => state.annual ? '年化' : '累计';
+  const displayReturn = sample => sample?.[state.annual ? 'annualReturn' : 'totalReturn'];
   const code = asset => asset.code === 'BRK-B' ? 'BRK.B' : asset.code;
   const button = (label, action, value = '', cls = '', extra = '') => `<button type="button" class="${cls}" data-hp="${action}" data-value="${esc(value)}" ${extra}>${label}</button>`;
   const link = (url, label) => /^https:\/\//.test(url || '') ? `<a class="hp-text-link" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(label)} ↗</a>` : '';
-  const rerender = () => { if (/^#holding-period(?:\/|$)/.test(location.hash)) ctx?.render(); };
+  const pageLocation = () => window.location || (typeof location !== 'undefined' ? location : null);
+  const pageHistory = () => window.history || (typeof history !== 'undefined' ? history : null);
+  const holdingHash = hash => typeof hash === 'string' && /^#holding-period(?:[/?]|$)/.test(hash);
+  const rerender = () => { const hash = pageLocation()?.hash; if (hash == null || holdingHash(hash)) ctx?.render(); };
+  function writeRoute() {
+    const current = pageLocation()?.hash, navigation = pageHistory();
+    if (!holdingHash(current) || typeof navigation?.replaceState !== 'function') return;
+    const query = new URLSearchParams({ symbol: state.symbol, currency: state.currency, years: String(state.years) });
+    const next = '#holding-period?' + query.toString();
+    if (current !== next) {
+      try { navigation.replaceState(navigation.state ?? null, '', next); }
+      catch (_) { return; }
+    }
+    routeSignature = next;
+  }
+  function readRoute(context) {
+    const hash = pageLocation()?.hash, route = holdingHash(hash) ? hash : null;
+    const signature = route || 'context:' + (context.symbol || 'BRK-B');
+    if (signature === routeSignature) return;
+    let requested = context.symbol || 'BRK-B', currency = 'USD', years = 2;
+    if (route) {
+      const separator = route.indexOf('?'), path = separator < 0 ? route : route.slice(0, separator);
+      const query = new URLSearchParams(separator < 0 ? '' : route.slice(separator + 1));
+      let legacy = path.startsWith('#holding-period/') ? path.slice('#holding-period/'.length) : '';
+      try { legacy = decodeURIComponent(legacy); } catch (_) { /* Keep an invalid symbol visible as unavailable. */ }
+      requested = (query.has('symbol') ? query.get('symbol') : legacy)?.trim() || 'BRK-B';
+      const requestedCurrency = query.get('currency')?.toUpperCase();
+      if (['USD', 'CNY'].includes(requestedCurrency)) currency = requestedCurrency;
+      const requestedYears = query.get('years');
+      if (/^(?:1|2|3|5|10)$/.test(requestedYears || '')) years = Number(requestedYears);
+    }
+    const asset = M.eligibleAssets(state.catalog).find(a => a.code.toUpperCase() === requested.toUpperCase());
+    state.symbol = asset?.code || requested;
+    state.currency = currency; state.years = years; state.selected = null; state.showAll = false;
+    routeSignature = signature;
+    writeRoute();
+  }
   function loadCatalog() {
     if (window.PORTFOLIO_CATALOG) { state.catalog = window.PORTFOLIO_CATALOG; return; }
     if (state.loadingCatalog || state.catalogError) return;
@@ -46,40 +84,40 @@
   function selectedAsset() { return M.eligibleAssets(state.catalog).find(a => a.code === state.symbol); }
   function studyFor(asset) {
     if (!histories.has(asset.id) || state.currency === 'CNY' && !histories.has(state.catalog.fx?.id)) return null;
-    const key = asset.id + ':' + state.currency;
+    const key = asset.id + ':' + state.currency + ':' + returnLabel();
     if (!studies.has(key)) {
-      try { studies.set(key, M.analyze({ asset, history: histories.get(asset.id), currency: state.currency, fxAsset: state.catalog.fx, fxHistory: histories.get(state.catalog.fx?.id) })); }
+      try { studies.set(key, M.analyze({ asset, history: histories.get(asset.id), currency: state.currency, annual: state.annual, fxAsset: state.catalog.fx, fxHistory: histories.get(state.catalog.fx?.id) })); }
       catch (error) { studies.set(key, { error: error.message }); }
     }
     return studies.get(key);
   }
   function controls(asset) {
     const assets = M.eligibleAssets(state.catalog), groups = [['stock', '美股公司'], ['etf', '海外 ETF']];
-    return `<div class="hp-controls"><label class="hp-asset-label">研究标的<select data-hp-select="asset" aria-label="研究标的">${asset ? '' : `<option value="${esc(state.symbol)}">${esc(state.symbol)} · 未收录</option>`}${groups.map(([kind, name]) => `<optgroup label="${name}">${assets.filter(a => a.kind === kind).sort((a, b) => a.code.localeCompare(b.code)).map(a => `<option value="${esc(a.code)}" ${a.code === state.symbol ? 'selected' : ''}>${esc(a.name)}${a.status !== 'available' ? ' · 缺历史' : ''}</option>`).join('')}</optgroup>`).join('')}</select></label><div class="hp-control-group"><span>收益币种</span><div class="hp-segmented" role="group" aria-label="收益币种">${[['USD', '美元'], ['CNY', '人民币']].map(([id, label]) => button(label, 'currency', id, state.currency === id ? 'is-active' : '', `aria-pressed="${state.currency === id}"`)).join('')}</div></div><div class="hp-control-group"><span>持有期限</span><div class="hp-segmented" role="group" aria-label="持有期限">${M.PERIODS.map(y => button(y + '年', 'years', y, state.years === y ? 'is-active' : '', `aria-pressed="${state.years === y}"`)).join('')}</div></div></div>`;
+    return `<div class="hp-controls"><label class="hp-asset-label">研究标的<select data-hp-select="asset" aria-label="研究标的">${asset ? '' : `<option value="${esc(state.symbol)}">${esc(state.symbol)} · 未收录</option>`}${groups.map(([kind, name]) => `<optgroup label="${name}">${assets.filter(a => a.kind === kind).sort((a, b) => a.code.localeCompare(b.code)).map(a => `<option value="${esc(a.code)}" ${a.code === state.symbol ? 'selected' : ''}>${esc(a.name)}${a.status !== 'available' ? ' · 缺历史' : ''}</option>`).join('')}</optgroup>`).join('')}</select></label><div class="hp-control-group"><span>收益币种</span><div class="hp-segmented" role="group" aria-label="收益币种">${[['USD', '美元'], ['CNY', '人民币']].map(([id, label]) => button(label, 'currency', id, state.currency === id ? 'is-active' : '', `aria-pressed="${state.currency === id}"`)).join('')}</div></div><div class="hp-control-group"><span>持有期限</span><div class="hp-segmented" role="group" aria-label="持有期限">${M.PERIODS.map(y => button(y + '年', 'years', y, state.years === y ? 'is-active' : '', `aria-pressed="${state.years === y}"`)).join('')}</div></div><div class="hp-control-group"><span>收益口径</span><div class="hp-segmented" role="group" aria-label="持有期收益口径">${[['annual', '年化'], ['total', '累计']].map(([id, label]) => button(label, 'basis', id, state.annual === (id === 'annual') ? 'is-active' : '', `aria-pressed="${state.annual === (id === 'annual')}"`)).join('')}</div></div></div>`;
   }
   function loading(message, retry = false) { return `<div class="hp-empty" role="status"><p>${esc(message)}</p>${retry ? button('重新加载', 'retry', '', 'btn') : ''}</div>`; }
   function summary(period, study) {
     const latest = period.latest;
-    return `<section class="hp-summary" aria-label="当前区间与历史样本"><div class="hp-current"><span>最近${period.years}年年化</span><strong>${latest ? button(pct(latest.annualReturn), 'window', period.years + ':latest', 'hp-current-link' + (latest.annualReturn < 0 ? ' hp-negative' : ''), 'aria-label="查看最近' + period.years + '年的实际区间与路径"') : '—'}</strong><small>${latest ? latest.start + ' — ' + latest.end : esc(period.latestMissing)}</small>${latest && period.count ? `<p>处于历史月末窗口的 <b>${num(period.latestRank, 1)}%</b> 分位</p>` : ''}</div><div><span>历史窗口年化中位</span><strong>${pct(period.median)}</strong><small>${period.count ? '中间80%：' + pct(period.p10) + ' 至 ' + pct(period.p90) : '没有完整窗口'}</small></div><div><span>历史亏损月份占比</span><strong>${period.count ? num(period.lossShare, 1) + '%' : '—'}</strong><small>${period.count ? period.lossCount + ' / ' + period.count + ' 个买入月份期末亏损' : '没有完整窗口，不计算比例'}</small></div><div><span>完整历史窗口</span><strong>${period.count}<small>个</small></strong><small>${period.count ? period.samples[0].start.slice(0, 7) + ' — ' + period.samples.at(-1).start.slice(0, 7) + ' 买入' : '自身行情不足或端点缺失'}</small></div></section>`;
+    return `<section class="hp-summary" aria-label="当前区间与历史样本"><div class="hp-current"><span>最近${period.years}年${returnLabel()}</span><strong>${latest ? button(pct(displayReturn(latest)), 'window', period.years + ':latest', 'hp-current-link' + (displayReturn(latest) < 0 ? ' hp-negative' : ''), 'aria-label="查看最近' + period.years + '年的实际区间与路径"') : '—'}</strong><small>${latest ? latest.start + ' — ' + latest.end : esc(period.latestMissing)}</small>${latest && period.count ? `<p>处于历史月末窗口的 <b>${num(period.latestRank, 1)}%</b> 分位</p>` : ''}</div><div><span>历史窗口${returnLabel()}中位</span><strong>${pct(period.median)}</strong><small>${period.count ? '中间80%：' + pct(period.p10) + ' 至 ' + pct(period.p90) : '没有完整窗口'}</small></div><div><span>历史亏损月份占比</span><strong>${period.count ? num(period.lossShare, 1) + '%' : '—'}</strong><small>${period.count ? period.lossCount + ' / ' + period.count + ' 个买入月份期末亏损' : '没有完整窗口，不计算比例'}</small></div><div><span>完整历史窗口</span><strong>${period.count}<small>个</small></strong><small>${period.count ? period.samples[0].start.slice(0, 7) + ' — ' + period.samples.at(-1).start.slice(0, 7) + ' 买入' : '自身行情不足或端点缺失'}</small></div></section>`;
   }
   function chart(study, period) {
     const samples = period.samples;
     if (!samples.length) return loading('尚无完整的' + period.years + '年历史月末窗口；可以切换较短期限。');
     const w = 1200, h = 350, l = 65, r = 30, t = 26, b = 299;
-    const values = samples.map(s => s.annualReturn).concat(period.latest ? [period.latest.annualReturn] : [], [0]);
+    const values = samples.map(s => displayReturn(s)).concat(period.latest ? [displayReturn(period.latest)] : [], [0]);
     let low = Math.min(...values), high = Math.max(...values), pad = (high - low) * .12 || 2;
     low -= pad; high += pad;
     const first = Date.parse(samples[0].start), last = Date.parse(samples.at(-1).start), span = last - first || 86400000;
     const x = day => l + (Date.parse(day) - first) / span * (w - l - r), y = value => b - (value - low) / (high - low) * (b - t);
     let path = '';
-    samples.forEach((s, i) => { const disconnected = !i || Date.parse(s.start) - Date.parse(samples[i - 1].start) > 45 * 86400000; path += (disconnected ? ' M' : ' L') + x(s.start).toFixed(2) + ' ' + y(s.annualReturn).toFixed(2); });
+    samples.forEach((s, i) => { const disconnected = !i || Date.parse(s.start) - Date.parse(samples[i - 1].start) > 45 * 86400000; path += (disconnected ? ' M' : ' L') + x(s.start).toFixed(2) + ' ' + y(displayReturn(s)).toFixed(2); });
     const remembered = samples.findIndex(s => s.start === state.selected), index = remembered < 0 ? samples.length - 1 : remembered;
     plot = { study, period, samples, x, y, index, w, l, r, t, b, first, span };
     const selected = samples[index];
-    return `<div class="hp-chart-readout"><time data-hp-read-date>${selected.start} 买入</time><span>持有${period.years}年年化 <b data-hp-read-return>${pct(selected.annualReturn)}</b></span><span data-hp-read-end>截至 ${selected.end}</span>${button('查看这一窗口', 'selected', '', 'hp-text-link')}</div><svg class="hp-chart" viewBox="0 0 ${w} ${h}" data-hp-plot tabindex="0" role="img" aria-label="各买入月份持有${period.years}年的年化收益。横轴为买入月份；左右方向键选择窗口，回车查看详情。"><title>${esc(study.asset.name)}：各买入月份持有${period.years}年的年化收益</title><text x="${l}" y="14">年化收益（%）</text>${Array.from({ length: 5 }, (_, i) => { const v = low + (high - low) * i / 4; return `<line class="hp-gridline" x1="${l}" x2="${w - r}" y1="${y(v)}" y2="${y(v)}"/><text x="${l - 12}" y="${y(v) + 4}" text-anchor="end">${num(v, 0)}%</text>`; }).join('')}<line class="hp-zero" x1="${l}" x2="${w - r}" y1="${y(0)}" y2="${y(0)}"/>${period.latest ? `<line class="hp-latest-line" x1="${l}" x2="${w - r}" y1="${y(period.latest.annualReturn)}" y2="${y(period.latest.annualReturn)}"/>` : ''}<path class="hp-return-line" d="${path}"/>${samples.length === 1 ? `<circle class="hp-return-point" cx="${x(selected.start)}" cy="${y(selected.annualReturn)}" r="4"/>` : ''}${Array.from({ length: samples.length === 1 ? 1 : 6 }, (_, i) => { const s = samples[Math.round((samples.length - 1) * i / 5)]; return `<text x="${x(s.start)}" y="${h - 26}" text-anchor="${i === 0 ? 'start' : i === 5 ? 'end' : 'middle'}">${s.start.slice(0, 7)}</text>`; }).join('')}<text x="${w - r}" y="${h - 6}" text-anchor="end">买入月份</text><g class="hp-cursor" aria-hidden="true"><line data-hp-cursor x1="${x(selected.start)}" x2="${x(selected.start)}" y1="${t}" y2="${b}"/><circle data-hp-point cx="${x(selected.start)}" cy="${y(selected.annualReturn)}" r="4"/></g><rect x="${l}" y="${t}" width="${w - l - r}" height="${b - t}" fill="transparent"/></svg><div class="hp-chart-legend"><span><i></i>每月末买入，持有${period.years}年</span>${period.latest ? `<span><i class="hp-legend-latest"></i>最近${period.years}年 ${pct(period.latest.annualReturn)}</span>` : ''}<small>每一点是一段完整持有期，收益已包含分红再投。</small></div>`;
+    return `<div class="hp-chart-readout"><time data-hp-read-date>${selected.start} 买入</time><span>持有${period.years}年${returnLabel()} <b data-hp-read-return>${pct(displayReturn(selected))}</b></span><span data-hp-read-end>截至 ${selected.end}</span>${button('查看这一窗口', 'selected', '', 'hp-text-link')}</div><svg class="hp-chart" viewBox="0 0 ${w} ${h}" data-hp-plot tabindex="0" role="img" aria-label="各买入月份持有${period.years}年的${returnLabel()}收益。横轴为买入月份；左右方向键选择窗口，回车查看详情。"><title>${esc(study.asset.name)}：各买入月份持有${period.years}年的${returnLabel()}收益</title><text x="${l}" y="14">${returnLabel()}收益（%）</text>${Array.from({ length: 5 }, (_, i) => { const v = low + (high - low) * i / 4; return `<line class="hp-gridline" x1="${l}" x2="${w - r}" y1="${y(v)}" y2="${y(v)}"/><text x="${l - 12}" y="${y(v) + 4}" text-anchor="end">${num(v, 0)}%</text>`; }).join('')}<line class="hp-zero" x1="${l}" x2="${w - r}" y1="${y(0)}" y2="${y(0)}"/>${period.latest ? `<line class="hp-latest-line" x1="${l}" x2="${w - r}" y1="${y(displayReturn(period.latest))}" y2="${y(displayReturn(period.latest))}"/>` : ''}<path class="hp-return-line" d="${path}"/>${samples.length === 1 ? `<circle class="hp-return-point" cx="${x(selected.start)}" cy="${y(displayReturn(selected))}" r="4"/>` : ''}${Array.from({ length: samples.length === 1 ? 1 : 6 }, (_, i) => { const s = samples[Math.round((samples.length - 1) * i / 5)]; return `<text x="${x(s.start)}" y="${h - 26}" text-anchor="${i === 0 ? 'start' : i === 5 ? 'end' : 'middle'}">${s.start.slice(0, 7)}</text>`; }).join('')}<text x="${w - r}" y="${h - 6}" text-anchor="end">买入月份</text><g class="hp-cursor" aria-hidden="true"><line data-hp-cursor x1="${x(selected.start)}" x2="${x(selected.start)}" y1="${t}" y2="${b}"/><circle data-hp-point cx="${x(selected.start)}" cy="${y(displayReturn(selected))}" r="4"/></g><rect x="${l}" y="${t}" width="${w - l - r}" height="${b - t}" fill="transparent"/></svg><div class="hp-chart-legend"><span><i></i>每月末买入，持有${period.years}年</span>${period.latest ? `<span><i class="hp-legend-latest"></i>最近${period.years}年 ${pct(displayReturn(period.latest))}</span>` : ''}<small>每一点是一段完整持有期，收益已包含分红再投。</small></div>`;
   }
   function periodTable(study) {
-    return `<section class="hp-panel"><header class="hp-section-head"><div><span class="hp-kicker">不同期限，结果分散到什么程度</span><h2>持有时间与历史结果</h2></div><span>统一按实际持有天数年化</span></header><div class="hp-table-scroll"><table class="hp-table"><thead><tr><th>持有期限</th><th>最近区间</th><th>历史中位</th><th>历史中间80%</th><th>最差窗口</th><th>最好窗口</th><th>亏损月份占比</th><th>样本数</th></tr></thead><tbody>${study.periods.map(p => `<tr class="${state.years === p.years ? 'is-selected' : ''}"><th scope="row">${button(p.years + '年', 'years', p.years, 'hp-text-link')}</th><td>${pct(p.latest?.annualReturn)}${p.latest ? '' : `<small>${esc(p.latestMissing)}</small>`}</td><td>${pct(p.median)}</td><td>${p.count ? pct(p.p10) + ' 至 ' + pct(p.p90) : '—'}</td><td>${p.worst ? button(pct(p.worst.annualReturn), 'window', p.years + ':' + p.worst.start, 'hp-text-link' + (p.worst.annualReturn < 0 ? ' hp-negative' : '')) : '—'}</td><td>${p.best ? button(pct(p.best.annualReturn), 'window', p.years + ':' + p.best.start, 'hp-text-link' + (p.best.annualReturn < 0 ? ' hp-negative' : '')) : '—'}</td><td>${p.count ? num(p.lossShare, 1) + '%' : '—'}</td><td>${p.count}</td></tr>`).join('')}</tbody></table></div><p class="hp-note">各期限使用各自已走完的窗口，买入月份范围并不相同。没有样本时留空，不能用较短持有期代替。</p></section>`;
+    return `<section class="hp-panel"><header class="hp-section-head"><div><span class="hp-kicker">不同期限，结果分散到什么程度</span><h2>持有时间与历史结果</h2></div><span>${state.annual ? '年化 · 按实际持有天数' : '累计 · 整段持有期'}</span></header><div class="hp-table-scroll"><table class="hp-table"><thead><tr><th>持有期限</th><th>最近区间</th><th>历史中位</th><th>历史中间80%</th><th>最差窗口</th><th>最好窗口</th><th>亏损月份占比</th><th>样本数</th></tr></thead><tbody>${study.periods.map(p => `<tr class="${state.years === p.years ? 'is-selected' : ''}"><th scope="row">${button(p.years + '年', 'years', p.years, 'hp-text-link')}</th><td>${pct(displayReturn(p.latest))}${p.latest ? '' : `<small>${esc(p.latestMissing)}</small>`}</td><td>${pct(p.median)}</td><td>${p.count ? pct(p.p10) + ' 至 ' + pct(p.p90) : '—'}</td><td>${p.worst ? button(pct(displayReturn(p.worst)), 'window', p.years + ':' + p.worst.start, 'hp-text-link' + (displayReturn(p.worst) < 0 ? ' hp-negative' : '')) : '—'}</td><td>${p.best ? button(pct(displayReturn(p.best)), 'window', p.years + ':' + p.best.start, 'hp-text-link' + (displayReturn(p.best) < 0 ? ' hp-negative' : '')) : '—'}</td><td>${p.count ? num(p.lossShare, 1) + '%' : '—'}</td><td>${p.count}</td></tr>`).join('')}</tbody></table></div><p class="hp-note">各期限使用各自已走完的窗口，买入月份范围并不相同。没有样本时留空，不能用较短持有期代替。</p></section>`;
   }
   function samplesTable(study, period) {
     const rows = [...period.samples].reverse(), shown = rows.slice(0, state.showAll ? rows.length : 12);
@@ -87,11 +125,11 @@
   }
   function view(context) {
     ctx = context; plot = null;
-    const requested = context.symbol || 'BRK-B';
-    if (state.symbol !== requested) { state.symbol = requested; state.selected = null; state.showAll = false; }
+    if (typeof context.annual === 'boolean') state.annual = context.annual;
     if (!state.catalog) loadCatalog();
     const header = `<header class="hp-header"><div><div class="eyebrow">HOLDING PERIOD RESEARCH</div><h1>持有期研究</h1><p>换一个买入月份，持有同样久，结果会怎样？</p></div>${button('数据与计算口径', 'method', '', 'hp-text-link')}</header>`;
     if (!state.catalog) return `<div class="hp-report">${header}${loading(state.catalogError || '正在读取研究标的…', !!state.catalogError)}</div>`;
+    readRoute(context);
     const asset = selectedAsset();
     let body = '';
     if (!asset) body = loading(state.symbol + ' 尚未收录为海外ETF或美股，不使用其他产品替代。');
@@ -119,15 +157,21 @@
     for (const [d, value] of points) { if (value === null) { gap = true; continue; } path += (gap ? ' M' : ' L') + x(d).toFixed(2) + ' ' + y(value).toFixed(2); gap = false; }
     return `<svg class="hp-window-chart" viewBox="0 0 ${w} ${h}" role="img" aria-label="${sample.start}投入100份计价货币，持有至${sample.end}的含分红价值路径"><title>初始价值100，${study.currency}计价</title>${Array.from({ length: 4 }, (_, i) => { const v = low + (high - low) * i / 3; return `<line class="hp-gridline" x1="${l}" x2="${w - r}" y1="${y(v)}" y2="${y(v)}"/><text x="${l - 10}" y="${y(v) + 4}" text-anchor="end">${num(v, 0)}</text>`; }).join('')}<line class="hp-zero" x1="${l}" x2="${w - r}" y1="${y(100)}" y2="${y(100)}"/><path class="hp-return-line" d="${path}"/><text x="${l}" y="15">初始价值100 · ${study.currency}</text><text x="${l}" y="${h - 12}">${sample.start}</text><text x="${w - r}" y="${h - 12}" text-anchor="end">${sample.end}</text></svg>${valid.length !== points.length ? '<p class="hp-note">部分中途日期缺7天内汇率，路径断线；起止端点齐全，区间收益仍可计算。</p>' : ''}`;
   }
+  function windowRisk(study, sample) {
+    const risk = M.pathRisk(study, sample), duration = episode => episode.days ? num(episode.days, 0) + '天' : '不足1天';
+    if (!risk.available) return `<section class="hp-window-risk hp-risk-missing"><h3>持有中经历过什么</h3><p>路径风险暂停计算：${esc(risk.reason)}。起止收益仍可核验。</p>${risk.missingDates.length ? `<details><summary>查看缺少估值的 ${risk.missingDates.length} 个日期</summary><p>${risk.missingDates.map(esc).join('、')}</p></details>` : ''}</section>`;
+    const water = risk.longestUnderwater, ending = risk.endingUnderwater;
+    return `<section class="hp-window-risk"><h3>持有中经历过什么</h3><div class="hp-risk-grid"><div><span>最大收盘回撤</span><strong class="${risk.maxDrawdown < 0 ? 'hp-negative' : ''}">${pct(risk.maxDrawdown)}</strong><small>${risk.maxDrawdown < 0 ? '峰值 ' + risk.drawdownPeak + '<br>低点 ' + risk.drawdownTrough : '未出现收盘回撤'}</small></div><div><span>相对初始金额最深亏损</span><strong class="${risk.minimumReturn < 0 ? 'hp-negative' : ''}">${pct(risk.minimumReturn)}</strong><small>${risk.minimumReturn < 0 ? risk.minimumDate + '<br>初始100，最低剩 ' + num(100 + risk.minimumReturn) : '未跌破初始金额'}</small></div><div><span>最长连续低于本金</span><strong>${water ? duration(water) : '0天'}</strong><small>${water ? water.start + ' — ' + water.end + '<br>' + (water.recovered ? '该段结束时已恢复' : '区间结束时仍未恢复') : '没有收盘低于初始金额'}</small></div></div>${ending && ending !== water ? `<p class="hp-risk-ending">期末仍低于初始金额：本次从 ${ending.start} 开始，已观察 ${duration(ending)}，尚未恢复。</p>` : ''}<p class="hp-note">均按含分红收盘估值；回撤从期间高点计算，本金亏损从初始100计算。低于本金的持续时间按日历天记录。</p></section>`;
+  }
   function openWindow(value) {
     const study = currentStudy(); if (!study || study.error) return;
     const [year, start] = value.split(':'), period = study.periods.find(p => p.years === Number(year));
     const sample = start === 'latest' ? period?.latest : period?.samples.find(s => s.start === start);
     if (!sample) return;
-    ctx.openModal(`<div class="hp-detail">${ctx.modalTitle(esc(study.asset.name) + ' · 持有' + sample.years + '年', sample.start + ' — ' + sample.end)}<div class="hp-detail-stats"><div><span>累计收益</span><strong>${pct(sample.totalReturn)}</strong></div><div><span>年化收益</span><strong>${pct(sample.annualReturn)}</strong></div><div><span>实际持有年数</span><strong>${num(sample.actualYears, 3)}</strong></div></div>${pathChart(study, sample)}<dl class="hp-endpoints"><div><dt>买入 / 卖出复权价</dt><dd>${num(sample.startPrice, 6)} / ${num(sample.endPrice, 6)} USD</dd></div><div><dt>周年目标日 / 实际终日</dt><dd>${sample.targetEnd} / ${sample.end}</dd></div>${study.currency === 'CNY' ? `<div><dt>起日USD/CNY</dt><dd>${num(sample.startFx, 6)} · ${sample.fxStart}</dd></div><div><dt>终日USD/CNY</dt><dd>${num(sample.endFx, 6)} · ${sample.fxEnd}</dd></div>` : ''}</dl><p class="hp-note">复权价只用于还原含分红持有回报，不是该日可成交报价；分红已再投，不另加分红。股价与汇率均只取当日或此前观测。</p><div class="hp-detail-links">${link(study.priceSource, '股价来源')}${study.currency === 'CNY' ? link(study.fxSource, '汇率来源') : ''}</div></div>`);
+    ctx.openModal(`<div class="hp-detail">${ctx.modalTitle(esc(study.asset.name) + ' · 持有' + sample.years + '年', sample.start + ' — ' + sample.end)}<div class="hp-detail-stats"><div><span>累计收益</span><strong>${pct(sample.totalReturn)}</strong></div><div><span>年化收益</span><strong>${pct(sample.annualReturn)}</strong></div><div><span>实际持有年数</span><strong>${num(sample.actualYears, 3)}</strong></div></div>${pathChart(study, sample)}${windowRisk(study, sample)}<dl class="hp-endpoints"><div><dt>买入 / 卖出复权价</dt><dd>${num(sample.startPrice, 6)} / ${num(sample.endPrice, 6)} USD</dd></div><div><dt>周年目标日 / 实际终日</dt><dd>${sample.targetEnd} / ${sample.end}</dd></div>${study.currency === 'CNY' ? `<div><dt>起日USD/CNY</dt><dd>${num(sample.startFx, 6)} · ${sample.fxStart}</dd></div><div><dt>终日USD/CNY</dt><dd>${num(sample.endFx, 6)} · ${sample.fxEnd}</dd></div>` : ''}</dl><p class="hp-note">复权价只用于还原含分红持有回报，不是该日可成交报价；分红已再投，不另加分红。股价与汇率均只取当日或此前观测。</p><div class="hp-detail-links">${link(study.priceSource, '股价来源')}${study.currency === 'CNY' ? link(study.fxSource, '汇率来源') : ''}</div></div>`);
   }
   function method() {
-    ctx.openModal(`<div class="hp-detail">${ctx.modalTitle('持有期研究口径', '历史买入月份，不是未来情景概率')}<div class="hp-method"><h3>每个样本怎样形成</h3><p>采用该股票或ETF自身的美元复权收盘历史。每个已结束自然月最后一个真实收盘日买入，周年目标日及此前7天内最近收盘日卖出，只保留已经走完的1、2、3、5、10年窗口。买入日距离月末超过7天，或持有期间行情中断超过14天，均剔除。</p><h3>人民币、分红与费用</h3><p>人民币累计回报＝终点复权价÷起点复权价×终点USD/CNY÷起点USD/CNY−1。汇率取端点当日或此前7天内最近有效观测，不使用未来值；缺端点则排除该窗口。年化按实际持有天数÷365.2425计算；周年日休市可能使一年窗口略短于一年，仍使用真实日期年化，不把日期补到周年日。分红按供应商口径再投，基金运营年费已反映在历史中，不再扣一次；未扣个人税费和交易费用。</p><h3>如何读统计</h3><p>中位数与10%—90%分位使用完整历史月末样本，分位采用线性插值。亏损月份占比只统计该持有期结束时累计收益小于0的月份。最近区间截至最新股价日，起点取周年日前7天内最近收盘；它通常不是月末窗口，因此单列，不混入历史样本数。</p><h3>历史不能回答什么</h3><p>月度窗口大量重叠，不能当作独立试验或未来概率。不同期限的可用起点不相同；当前收录产品有存续证券和人工选择偏差。已退市、清盘的产品不在这个总体中；ETF策略和跟踪基准也可能变化。较长持有期曾经更少亏损，不保证今后保本。</p><p>只研究当前收录证券自身的历史，不将指数点位替换为ETF，不拼接成立前历史。分红复权定义和来源沿用公开组合历史目录；下载文件通过SHA-256与目录校验，计算检查不等于独立核验全部供应商价格。</p><a class="hp-text-link" href="docs/holding-period-method.md" target="_blank" rel="noopener">完整方法记录 ↗</a></div></div>`);
+    ctx.openModal(`<div class="hp-detail">${ctx.modalTitle('持有期研究口径', '历史买入月份，不是未来情景概率')}<div class="hp-method"><h3>每个样本怎样形成</h3><p>采用该股票或ETF自身的美元复权收盘历史。每个已结束自然月最后一个真实收盘日买入，周年目标日及此前7天内最近收盘日卖出，只保留已经走完的1、2、3、5、10年窗口。买入日距离月末超过7天，或持有期间行情中断超过14天，均剔除。</p><h3>人民币、分红与费用</h3><p>人民币累计回报＝终点复权价÷起点复权价×终点USD/CNY÷起点USD/CNY−1。汇率取端点当日或此前7天内最近有效观测，不使用未来值；缺端点则排除该窗口。年化按实际持有天数÷365.2425计算；周年日休市可能使一年窗口略短于一年，仍使用真实日期年化，不把日期补到周年日。分红按供应商口径再投，基金运营年费已反映在历史中，不再扣一次；未扣个人税费和交易费用。</p><h3>如何读统计</h3><p>中位数与10%—90%分位使用完整历史月末样本，分别对所选累计或年化收益计算，分位采用线性插值，不对统计中位数直接换算。亏损月份占比只统计该持有期结束时累计收益小于0的月份。最近区间截至最新股价日，起点取周年日前7天内最近收盘；它通常不是月末窗口，因此单列，不混入历史样本数。</p><h3>窗口内的持有压力</h3><p>最大收盘回撤按区间内先出现的高点到随后低点计算；本金最深亏损与初始100比较。连续低于本金从首次收盘低于100起，记录至首次恢复到100的收盘日；到窗口结束仍未恢复时保留未恢复状态，天数为日历日期差。任何中途估值缺失都暂停路径风险，不跳过空白计算。</p><h3>历史不能回答什么</h3><p>月度窗口大量重叠，不能当作独立试验或未来概率。不同期限的可用起点不相同；当前收录产品有存续证券和人工选择偏差。已退市、清盘的产品不在这个总体中；ETF策略和跟踪基准也可能变化。较长持有期曾经更少亏损，不保证今后保本。</p><p>只研究当前收录证券自身的历史，不将指数点位替换为ETF，不拼接成立前历史。分红复权定义和来源沿用公开组合历史目录；下载文件通过SHA-256与目录校验，计算检查不等于独立核验全部供应商价格。</p><a class="hp-text-link" href="docs/holding-period-method.md" target="_blank" rel="noopener">完整方法记录 ↗</a></div></div>`);
   }
   function inspect(index, svg) {
     if (!plot) return;
@@ -135,28 +179,37 @@
     const sample = plot.samples[plot.index]; state.selected = sample.start;
     const panel = svg.closest('.hp-chart-panel');
     panel.querySelector('[data-hp-read-date]').textContent = sample.start + ' 买入';
-    panel.querySelector('[data-hp-read-return]').textContent = pct(sample.annualReturn);
+    panel.querySelector('[data-hp-read-return]').textContent = pct(displayReturn(sample));
     panel.querySelector('[data-hp-read-end]').textContent = '截至 ' + sample.end;
     const cursor = svg.querySelector('[data-hp-cursor]'), point = svg.querySelector('[data-hp-point]');
     cursor.setAttribute('x1', plot.x(sample.start)); cursor.setAttribute('x2', plot.x(sample.start));
-    point.setAttribute('cx', plot.x(sample.start)); point.setAttribute('cy', plot.y(sample.annualReturn));
+    point.setAttribute('cx', plot.x(sample.start)); point.setAttribute('cy', plot.y(displayReturn(sample)));
   }
   document.addEventListener('click', event => {
     const target = event.target.closest?.('[data-hp]'); if (!target || !ctx) return;
     const action = target.dataset.hp, value = target.dataset.value;
-    if (action === 'currency' && ['USD', 'CNY'].includes(value)) { state.currency = value; state.selected = null; }
+    if (action === 'basis' && ['annual', 'total'].includes(value)) {
+      state.annual = value === 'annual';
+      if (typeof ctx.setAnnual === 'function') { ctx.setAnnual(state.annual); return; }
+    }
+    else if (action === 'currency' && ['USD', 'CNY'].includes(value)) { state.currency = value; state.selected = null; }
     else if (action === 'years' && M.PERIODS.includes(Number(value))) { state.years = Number(value); state.selected = null; state.showAll = false; }
     else if (action === 'all') state.showAll = !state.showAll;
     else if (action === 'method') { method(); return; }
     else if (action === 'window') { openWindow(value); return; }
     else if (action === 'selected' && plot) { openWindow(plot.period.years + ':' + plot.samples[plot.index].start); return; }
-    else if (action === 'csv') { const study = currentStudy(); if (study && !study.error) ctx.download(`${state.symbol}-${state.currency}-${state.years}年持有窗口.csv`, M.toCSV(study, state.years), 'text/csv;charset=utf-8'); return; }
+    else if (action === 'csv') { const study = currentStudy(); if (study && !study.error) ctx.download(`${state.symbol}-${state.currency}-${state.years}年持有窗口-${returnLabel()}.csv`, M.toCSV(study, state.years), 'text/csv;charset=utf-8'); return; }
     else if (action === 'retry') { state.catalogError = ''; errors.clear(); studies.clear(); }
     else return;
+    if (action === 'currency' || action === 'years') writeRoute();
     ctx.render();
   });
   document.addEventListener('change', event => {
-    if (event.target.matches?.('[data-hp-select="asset"]') && ctx) location.hash = 'holding-period/' + encodeURIComponent(event.target.value);
+    if (!event.target.matches?.('[data-hp-select="asset"]') || !ctx) return;
+    const asset = M.eligibleAssets(state.catalog).find(a => a.code === event.target.value);
+    if (!asset) return;
+    state.symbol = asset.code; state.selected = null; state.showAll = false;
+    writeRoute(); ctx.render();
   });
   document.addEventListener('pointermove', event => {
     const svg = event.target.closest?.('[data-hp-plot]'); if (!svg || !plot) return;

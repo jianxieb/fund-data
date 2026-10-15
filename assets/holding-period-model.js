@@ -35,17 +35,19 @@
     const at = (sorted.length - 1) * p, i = Math.floor(at);
     return sorted[i] + (sorted[Math.min(i + 1, sorted.length - 1)] - sorted[i]) * (at - i);
   }
-  function summarize(samples, latest = null) {
-    const sorted = samples.map(s => s.annualReturn).sort((a, b) => a - b);
+  function summarize(samples, latest = null, annual = true) {
+    const key = annual ? 'annualReturn' : 'totalReturn';
+    const sorted = samples.map(s => s[key]).sort((a, b) => a - b);
     if (!samples.length) return { count: 0, median: null, p10: null, p90: null, worst: null, best: null, lossCount: 0, lossShare: null, latestRank: null };
-    const worst = samples.reduce((a, b) => b.annualReturn < a.annualReturn ? b : a);
-    const best = samples.reduce((a, b) => b.annualReturn > a.annualReturn ? b : a);
+    const worst = samples.reduce((a, b) => b[key] < a[key] ? b : a);
+    const best = samples.reduce((a, b) => b[key] > a[key] ? b : a);
     const lossCount = samples.filter(s => s.totalReturn < 0).length;
-    const latestRank = latest ? 100 * (sorted.filter(v => v < latest.annualReturn).length + .5 * sorted.filter(v => v === latest.annualReturn).length) / sorted.length : null;
+    const latestRank = latest ? 100 * (sorted.filter(v => v < latest[key]).length + .5 * sorted.filter(v => v === latest[key]).length) / sorted.length : null;
     return { count: samples.length, median: quantile(sorted, .5), p10: quantile(sorted, .1), p90: quantile(sorted, .9), worst, best, lossCount, lossShare: lossCount / samples.length * 100, latestRank };
   }
-  function analyze({ asset, history, fxAsset, fxHistory, currency = 'USD', asOf }) {
+  function analyze({ asset, history, fxAsset, fxHistory, currency = 'USD', asOf, annual = true }) {
     if (!['USD', 'CNY'].includes(currency)) fail('收益币种仅支持美元或人民币');
+    if (typeof annual !== 'boolean') fail('收益口径须明确为年化或累计');
     const full = validateHistory(asset, history);
     if (asOf !== undefined && !validDate(asOf)) fail('研究截至日期无效');
     const cutoff = asOf && asOf < history.asOf ? asOf : history.asOf;
@@ -85,9 +87,9 @@
       let latest = outcome(indexAt(prices, targetStart), endIndex, lastDay, years);
       if (latest.reason && prices[0][0] > targetStart) latest = { reason: '自身行情不足' + years + '年' };
       return { years, samples, excluded, latest: latest.reason ? null : latest, latestMissing: latest.reason || null,
-        ...summarize(samples, latest.reason ? null : latest) };
+        ...summarize(samples, latest.reason ? null : latest, annual) };
     });
-    return { asset, currency, asOf: prices.at(-1)[0], requestedAsOf: cutoff, first: prices[0][0], prices, fx, periods,
+    return { asset, currency, annual, asOf: prices.at(-1)[0], requestedAsOf: cutoff, first: prices[0][0], prices, fx, periods,
       priceSource: history.sourceUrl || asset.sourceUrl, fxSource: fxHistory?.sourceUrl || null,
       basis: 'provider_adjusted_close', dividends: 'reinvested' };
   }
@@ -98,13 +100,46 @@
       return [day, study.fx && i < 0 ? null : price * (study.fx ? study.fx[i][1] : 1) / base * 100];
     });
   }
+  function pathRisk(study, sample) {
+    const points = windowPath(study, sample), missingDates = points.filter(([, value]) => !Number.isFinite(value) || value <= 0).map(([day]) => day);
+    if (missingDates.length) return { available: false, reason: study.currency === 'CNY' ? '期间缺少7天内的美元兑人民币汇率' : '期间存在无效估值', missingDates };
+    if (points.length < 2) return { available: false, reason: '期间有效收盘不足两条', missingDates: [] };
+    const gapDates = points.flatMap(([day], i) => i && days(points[i - 1][0], day) > 14 ? [day] : []);
+    if (gapDates.length) return { available: false, reason: '期间股价有超过14天的历史缺口', missingDates: gapDates };
+    const EPS = 1e-9;
+    let peak = points[0][1], peakDate = points[0][0], maxDrawdown = 0, drawdownPeak = peakDate, drawdownTrough = peakDate;
+    let minimum = points[0][1], minimumDate = peakDate, active = null;
+    const episodes = [];
+    for (const [day, value] of points) {
+      if (value >= peak) { peak = value; peakDate = day; }
+      const drawdown = (value / peak - 1) * 100;
+      if (drawdown < maxDrawdown - EPS) { maxDrawdown = drawdown; drawdownPeak = peakDate; drawdownTrough = day; }
+      if (value < minimum) { minimum = value; minimumDate = day; }
+      if (value < 100 - EPS) {
+        if (!active) active = { start: day, observations: 0 };
+        active.observations++;
+      } else if (active) {
+        episodes.push({ ...active, end: day, days: days(active.start, day), recovered: true }); active = null;
+      }
+    }
+    const endingUnderwater = active ? { ...active, end: points.at(-1)[0], days: days(active.start, points.at(-1)[0]), recovered: false } : null;
+    if (endingUnderwater) episodes.push(endingUnderwater);
+    const longestUnderwater = episodes.reduce((best, next) => !best || next.days > best.days || next.days === best.days && next.observations > best.observations ? next : best, null);
+    return { available: true, maxDrawdown, drawdownPeak, drawdownTrough, minimumReturn: minimum < 100 - EPS ? minimum - 100 : 0, minimumDate,
+      longestUnderwater, endingUnderwater, underwaterEpisodes: episodes.length, observations: points.length };
+  }
   function toCSV(study, years) {
     const period = study.periods.find(p => p.years === years);
     if (!period) fail('持有期限无效');
-    const rows = [['标的代码', '标的名称', '资产类别', '币种', '持有年数', '买入收盘日', '周年目标日', '卖出收盘日', '实际持有年数', '买入复权价', '卖出复权价', '起日汇率日期', '终日汇率日期', '起日USD/CNY', '终日USD/CNY', '累计收益%', '实际天数年化收益%', '研究截至', '回报口径', '分红', '个人税费', '样本性质', '股价来源', '汇率来源', '当前策略起日', '策略历史说明', '策略变更来源']];
-    for (const s of period.samples) rows.push([study.asset.code, study.asset.name, study.asset.kind, study.currency, years, s.start, s.targetEnd, s.end, s.actualYears,
-      s.startPrice, s.endPrice, s.fxStart, s.fxEnd, s.startFx, s.endFx, s.totalReturn, s.annualReturn, study.asOf, study.basis, '再投资', '未扣', '重叠的历史月末窗口', study.priceSource, study.currency === 'CNY' ? study.fxSource : '', study.asset.currentIndexSince, study.asset.historyNote, study.asset.historySourceUrl]);
+    const rows = [['标的代码', '标的名称', '资产类别', '币种', '持有年数', '买入收盘日', '周年目标日', '卖出收盘日', '实际持有年数', '买入复权价', '卖出复权价', '起日汇率日期', '终日汇率日期', '起日USD/CNY', '终日USD/CNY', '累计收益%', '实际天数年化收益%', '研究截至', '回报口径', '分红', '个人税费', '样本性质', '股价来源', '汇率来源', '当前策略起日', '策略历史说明', '策略变更来源', '当前展示口径', '当前展示收益%', '路径风险状态', '最大收盘回撤%', '回撤峰值日', '回撤谷值日', '距初始金额最深亏损%', '初始金额最深亏损日', '最长低于本金起日', '最长低于本金终日', '最长低于本金日历天数', '该段是否已恢复', '期末仍低于本金起日', '风险缺失日期']];
+    for (const s of period.samples) {
+      const risk = pathRisk(study, s), water = risk.longestUnderwater;
+      rows.push([study.asset.code, study.asset.name, study.asset.kind, study.currency, years, s.start, s.targetEnd, s.end, s.actualYears,
+        s.startPrice, s.endPrice, s.fxStart, s.fxEnd, s.startFx, s.endFx, s.totalReturn, s.annualReturn, study.asOf, study.basis, '再投资', '未扣', '重叠的历史月末窗口', study.priceSource, study.currency === 'CNY' ? study.fxSource : '', study.asset.currentIndexSince, study.asset.historyNote, study.asset.historySourceUrl,
+        study.annual === false ? '累计' : '年化', study.annual === false ? s.totalReturn : s.annualReturn, risk.available ? '完整收盘路径' : risk.reason,
+        risk.maxDrawdown, risk.drawdownPeak, risk.drawdownTrough, risk.minimumReturn, risk.minimumDate, water?.start, water?.end, water?.days, water ? (water.recovered ? '已恢复' : '截至终日未恢复') : risk.available ? '从未低于本金' : '', risk.endingUnderwater?.start, risk.missingDates?.join('、')]);
+    }
     return '\ufeff' + rows.map(row => row.map(value => '"' + String(value ?? '').replace(/"/g, '""') + '"').join(',')).join('\r\n');
   }
-  return { PERIODS, eligibleAssets, validateHistory, indexAt, monthEnd, quantile, summarize, analyze, windowPath, toCSV };
+  return { PERIODS, eligibleAssets, validateHistory, indexAt, monthEnd, quantile, summarize, analyze, windowPath, pathRisk, toCSV };
 });

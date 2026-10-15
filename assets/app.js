@@ -184,7 +184,8 @@
         '<a class="home-secondary-card" href="#' + route + '"><span class="eyebrow">' + group + '</span><span class="home-secondary-title"><strong>' + title + '</strong><span class="home-entry-arrow" aria-hidden="true">' + entryArrow() + '</span></span><p>' + desc + '</p><span class="home-tags">' + tags.map(t => '<span>' + t + '</span>').join('') + '</span></a>').join('') + '</div>';
   }
   function holdingPeriod() {
-    return window.ChanghengHoldingPeriod.view({ render, openModal, modalTitle, download, symbol: state.holdingSymbol });
+    return window.ChanghengHoldingPeriod.view({ render, openModal, modalTitle, download, symbol: state.holdingSymbol,
+      annual: state.annual, setAnnual: value => { state.annual = value; savePrefs(); render(); } });
   }
   function portfolio() {
     return head('PORTFOLIO RESEARCH', '组合模拟', '从标的、权重到投入方式，看看组合会如何表现。') + window.ChanghengPortfolio.view({
