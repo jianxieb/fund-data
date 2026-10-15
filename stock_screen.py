@@ -30,6 +30,8 @@ from data_status import write_status
 from update import add_years
 from stock_fundamentals import fetch_evidence, quality_review
 from stock_groups import long_term_review, growth_review, breakout_review
+from stock_dividends import (eastmoney_dividend_summary, yahoo_dividend_summary,
+                             missing_dividend_summary, update_dividend_fields)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 HTML = os.path.join(HERE, 'data', 'snapshot.js')
@@ -130,7 +132,9 @@ def yahoo_stock(code):
                    'basis': 'yahoo_adjusted_close', 'series': series}, fh, ensure_ascii=False)
     dividends = [{'date': datetime.fromtimestamp(int(event.get('date', stamp)), china).strftime('%Y-%m-%d'),
                   'amount': event.get('amount')} for stamp, event in (node.get('events', {}).get('dividends') or {}).items()]
-    return {'series': series, 'meta': meta, 'sourceUrl': url, 'dividends': dividends}
+    splits = [{'date': datetime.fromtimestamp(int(event.get('date', stamp)), china).strftime('%Y-%m-%d')}
+              for stamp, event in (node.get('events', {}).get('splits') or {}).items()]
+    return {'series': series, 'meta': meta, 'sourceUrl': url, 'dividends': dividends, 'splits': splits}
 
 
 def at_or_before(series, date):
@@ -183,7 +187,7 @@ def risk_metrics(series, latest, years=5):
     return round(volatility, 2), round(max_drawdown * 100, 2)
 
 
-def dividend_stats(code, latest, price):
+def dividend_evidence(code, latest, price):
     url = 'https://datacenter-web.eastmoney.com/api/data/v1/get?' + urllib.parse.urlencode({
         'reportName': 'RPT_SHAREBONUS_DET',
         'columns': 'ALL',
@@ -198,27 +202,14 @@ def dividend_stats(code, latest, price):
     result = fetch_json(url).get('result')
     if not isinstance(result, dict) or not isinstance(result.get('data'), list):
         raise RuntimeError('分红数据缺失，不能按零股息处理')
-    data = result['data']
-    cash = []
-    for row in data:
-        try:
-            amount = float(row.get('PRETAX_BONUS_RMB') or 0) / 10
-        except (TypeError, ValueError):
-            amount = 0.0
-        ex_date = (row.get('EX_DIVIDEND_DATE') or '')[:10]
-        report_date = (row.get('REPORT_DATE') or '')[:10]
-        if amount > 0 and ex_date and ex_date <= latest:
-            cash.append((ex_date, amount, report_date))
-    cash = set(cash)
-    cutoff = add_years(latest, -1)
-    yield_12m = sum(amount for ex_date, amount, _ in cash if cutoff < ex_date <= latest) / price * 100
-    current_year = int(latest[:4])
-    years = {
-        report_date[:4]
-        for _, _, report_date in cash
-        if report_date[:4].isdigit() and current_year - 5 <= int(report_date[:4]) < current_year
-    }
-    return round(yield_12m, 2), len(years)
+    if result.get('count', len(result['data'])) > len(result['data']) or result.get('pages', 1) > 1:
+        raise RuntimeError('分红/送转响应被分页截断')
+    return eastmoney_dividend_summary(result['data'], latest, price, code)
+
+
+def dividend_stats(code, latest, price):
+    result = dividend_evidence(code, latest, price)
+    return result['yield12'], result['divYears']
 
 
 def fetch_stock(item):
@@ -298,18 +289,21 @@ def fetch_stock(item):
     volatility, max_drawdown = risk_metrics(series, latest)
     dividend_source = 'Eastmoney implemented cash dividends by report year'
     try:
-        yield_12m, dividend_years = dividend_stats(code, quote_date, price)
+        dividend = dividend_evidence(code, quote_date, price)
+    except ValueError as exc:
+        # A known corporate-action gap must not be bypassed with cash events
+        # whose own share basis has not been verified.
+        source_errors.append('Eastmoney dividends: ' + str(exc))
+        dividend = missing_dividend_summary(exc)
     except Exception as exc:
         source_errors.append('Eastmoney dividends: ' + str(exc))
         resolved = yahoo()
-        cutoff = add_years(quote_date, -1)
-        dividends = resolved['dividends']
-        yield_12m = round(sum(float(row['amount']) for row in dividends if row.get('amount') is not None and cutoff < row['date'] <= quote_date) / price * 100, 2)
-        dividend_years = None  # ex-dates do not establish fiscal reporting years.
+        dividend = yahoo_dividend_summary(resolved['dividends'], resolved['splits'], quote_date, price)
         dividend_source = 'Yahoo Finance chart cash dividends by ex-date; fiscal years unavailable'
+    yield_12m, dividend_years = dividend['yield12'], dividend['divYears']
     market_cap = number(quote.get('f116'), 1e8, 1)
     long_term = returns[4] is not None and returns[4] >= 80 and returns[3] is not None and returns[3] > 20 and market_cap is not None and market_cap >= 500
-    high_dividend = yield_12m >= 3.2 and dividend_years is not None and dividend_years >= 4
+    high_dividend = yield_12m is not None and yield_12m >= 3.2 and dividend_years is not None and dividend_years >= 4
     styles = (['长期核心'] if long_term else []) + (['高股息'] if high_dividend else [])
     result = {'c': code, 'n': item.get('name') or quote.get('f58') or code, 'ind': quote.get('f127') or item.get('industry') or '',
             'group': item.get('group', 'dividend'),
@@ -323,6 +317,7 @@ def fetch_stock(item):
             'quoteSource': quote_source, 'dividendSource': dividend_source, 'sourceFallbacks': source_errors,
             'dataStatus': 'computed', 'dividendWindow': '%d–%d' % (int(quote_date[:4]) - 5, int(quote_date[:4]) - 1) if dividend_years is not None else None,
             'historyFirst': series[0][0], 'fundamentalsStatus': 'report_period_unverified'}
+    update_dividend_fields(result, dividend)
     result.update(evidence)
     result['ind'] = evidence.get('valuationIndustry') or result['ind']
     apply_research_profile(result, item)

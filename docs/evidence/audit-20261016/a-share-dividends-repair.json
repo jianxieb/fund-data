@@ -1,0 +1,136 @@
+{
+  "audited": 71,
+  "affected": [
+    {
+      "code": "300394",
+      "name": "天孚通信",
+      "asOf": "2026-10-14",
+      "price": 229.0,
+      "before": 0.52,
+      "after": 0.44,
+      "cashDividend12": 1.0,
+      "shareActions": [
+        {
+          "exDate": "2026-06-12",
+          "factor": 1.4
+        }
+      ],
+      "styleBefore": [
+        "长期核心"
+      ],
+      "styleAfter": [
+        "长期核心"
+      ]
+    },
+    {
+      "code": "688188",
+      "name": "柏楚电子",
+      "asOf": "2026-10-14",
+      "price": 90.42,
+      "before": 2.87,
+      "after": 2.05,
+      "cashDividend12": 1.8528571428571432,
+      "shareActions": [
+        {
+          "exDate": "2026-06-29",
+          "factor": 1.4
+        }
+      ],
+      "styleBefore": [],
+      "styleAfter": []
+    },
+    {
+      "code": "300573",
+      "name": "兴齐眼药",
+      "asOf": "2026-10-14",
+      "price": 33.33,
+      "before": 3.9,
+      "after": 2.97,
+      "cashDividend12": 0.9896551724137932,
+      "shareActions": [
+        {
+          "exDate": "2026-05-22",
+          "factor": 1.45
+        }
+      ],
+      "styleBefore": [
+        "高股息"
+      ],
+      "styleAfter": []
+    },
+    {
+      "code": "688019",
+      "name": "安集科技",
+      "asOf": "2026-10-14",
+      "price": 192.33,
+      "before": 0.26,
+      "after": 0.2,
+      "cashDividend12": 0.3846153846153846,
+      "shareActions": [
+        {
+          "exDate": "2026-06-10",
+          "factor": 1.3
+        }
+      ],
+      "styleBefore": [],
+      "styleAfter": []
+    },
+    {
+      "code": "300502",
+      "name": "新易盛",
+      "asOf": "2026-10-14",
+      "price": 330.8,
+      "before": 0.3,
+      "after": 0.22,
+      "cashDividend12": 0.7142857142857143,
+      "shareActions": [
+        {
+          "exDate": "2026-06-11",
+          "factor": 1.4
+        }
+      ],
+      "styleBefore": [],
+      "styleAfter": []
+    },
+    {
+      "code": "605117",
+      "name": "德业股份",
+      "asOf": "2026-10-14",
+      "price": 73.08,
+      "before": 6.17,
+      "after": 5.03,
+      "cashDividend12": 3.6771428571428575,
+      "shareActions": [
+        {
+          "exDate": "2026-05-22",
+          "factor": 1.4
+        }
+      ],
+      "styleBefore": [
+        "高股息"
+      ],
+      "styleAfter": [
+        "高股息"
+      ]
+    },
+    {
+      "code": "300857",
+      "name": "协创数据",
+      "asOf": "2026-10-14",
+      "price": 219.72,
+      "before": 0.15,
+      "after": 0.11,
+      "cashDividend12": 0.24285714285714285,
+      "shareActions": [
+        {
+          "exDate": "2026-04-22",
+          "factor": 1.4
+        }
+      ],
+      "styleBefore": [],
+      "styleAfter": []
+    }
+  ],
+  "updatedRows": [],
+  "verifiedApplied": true
+}

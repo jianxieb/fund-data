@@ -1,7 +1,7 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-10-14T19:08:54+00:00",
-  "asOf": "2026-10-15",
+  "checkedAt": "2026-10-15T17:18:29+00:00",
+  "asOf": "2026-10-16",
   "status": "unverified",
   "summary": {
     "errors": 0,

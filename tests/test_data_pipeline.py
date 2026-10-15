@@ -757,10 +757,12 @@ class FreshnessAndOffline(unittest.TestCase):
         self.assertIn('600900.SS', row['sourceUrl'])
 
     def test_declared_future_dividend_is_not_received_income(self):
+        base = {'SECURITY_CODE': 'test', 'ASSIGN_PROGRESS': '实施分配', 'NOTICE_DATE': '2026-05-20',
+                'BONUS_RATIO': None, 'IT_RATIO': None, 'BONUS_IT_RATIO': None}
         payload = {'result': {'data': [
-            {'PRETAX_BONUS_RMB': 10, 'EX_DIVIDEND_DATE': '2026-06-01', 'REPORT_DATE': '2025-12-31'},
-            {'PRETAX_BONUS_RMB': 20, 'EX_DIVIDEND_DATE': '2027-01-01', 'REPORT_DATE': '2026-12-31'},
-            {'PRETAX_BONUS_RMB': 50, 'EX_DIVIDEND_DATE': '2020-06-01', 'REPORT_DATE': '2019-12-31'},
+            {**base, 'PRETAX_BONUS_RMB': 10, 'EX_DIVIDEND_DATE': '2026-06-01', 'REPORT_DATE': '2025-12-31'},
+            {**base, 'PRETAX_BONUS_RMB': 20, 'EX_DIVIDEND_DATE': '2027-01-01', 'REPORT_DATE': '2026-12-31'},
+            {**base, 'PRETAX_BONUS_RMB': 50, 'EX_DIVIDEND_DATE': '2020-06-01', 'REPORT_DATE': '2019-12-31'},
         ]}}
         with patch.object(stock_screen, 'fetch_json', return_value=payload):
             yield_pct, years = stock_screen.dividend_stats('test', '2026-09-21', 100)
