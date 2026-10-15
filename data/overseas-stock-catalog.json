@@ -446,6 +446,12 @@
     {
       "symbol": "BRK-B",
       "name": "伯克希尔B",
+      "indexReference": {
+        "displaySymbol": "BRK.B",
+        "label": "伯克希尔·哈撒韦",
+        "style": "美国公司股票 · B类股",
+        "identityUrl": "https://www.berkshirehathaway.com/compab.pdf"
+      },
       "issuer": "Berkshire Hathaway Inc.",
       "category": "金融",
       "business": "保险、铁路、能源与投资控股",

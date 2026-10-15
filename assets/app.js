@@ -195,7 +195,9 @@
     return window.ChanghengGlobalFinance.view({ render });
   }
   function indexRows() {
-    return state.indexTab === 'cn' ? window.INDEX_DATA || [] : (window.BM || []).filter(b => state.indexTab === 'other' ? b.section === 'other' : b.section !== 'other');
+    if (state.indexTab === 'cn') return window.INDEX_DATA || [];
+    const benchmarks = (window.BM || []).filter(b => state.indexTab === 'other' ? b.section === 'other' : b.section !== 'other');
+    return state.indexTab === 'us' ? [...benchmarks, ...M.overseasStockReferences(window.OVERSEAS_STOCKS)] : benchmarks;
   }
   function indices() {
     const domestic = window.INDEX_DATA || [], baseRows = indexRows();
@@ -227,8 +229,8 @@
       const risk = isDomestic ? { mdd: r.mdd5, vol: r.vol5 } : r[displayCurrency === 'usd' ? 'riskUSD5' : 'riskCNY5'] || {};
       const availableYears = years.filter(y => M.finite(returns?.[years.indexOf(y)]));
       const shortHistory = r.symbol && availableYears.length && state.periods.every(y => !availableYears.includes(y))
-        ? '<span class="sub">' + esc((r.inception || r.first || '').slice(0, 7)) + '成立 · 可用' + availableYears.join(' / ') + '年收益</span>' : '';
-      return '<tr><td>' + action(esc(r.symbol ? r.symbol + ' · ' + r.label : r.n), 'index-detail', 'text-link', 'data-value="' + i + '"') + (r.status === 'unavailable' ? badge('缺原始日线', 'warn') : '') + '<span class="sub">' + esc(r.symbol ? r.style + (r.leverage > 1 ? ' · 目标按日重设' : '') : isDomestic ? '国内价格指数 · ' + r.c : '海外价格指数') + '</span>' + shortHistory + '</td>' +
+        ? '<span class="sub">' + esc((r.inception || r.first || '').slice(0, 7)) + (r.kind === 'stock' ? '起有行情' : '成立') + ' · 可用' + availableYears.join(' / ') + '年收益</span>' : '';
+      return '<tr><td>' + action(esc(r.symbol ? (r.displaySymbol || r.symbol) + ' · ' + r.label : r.n), 'index-detail', 'text-link', 'data-value="' + i + '"') + (r.status === 'unavailable' ? badge('缺原始日线', 'warn') : '') + '<span class="sub">' + esc(r.symbol ? r.style + (r.leverage > 1 ? ' · 目标按日重设' : '') : isDomestic ? '国内价格指数 · ' + r.c : '海外价格指数') + '</span>' + shortHistory + (displayCurrency === 'cny' && r.fxMissingReason ? '<span class="sub">缺美元兑人民币历史</span>' : '') + '</td>' +
         state.periods.map(y => '<td>' + pc(ret(returns && returns[years.indexOf(y)], y, r)) + ((r.backfilledPeriods || []).includes(y) ? '<span class="sub">含发布前回溯</span>' : '') + etfHistoryLabel(r, y) + '</td>').join('') +
         (products ? '<td class="num">' + pct(r.expenseRatio, r.expenseRatio < 0.1 ? 4 : 2, false) + '<span class="sub">' + esc(r.distribution || '') + '分配</span></td>' : '') + '<td>' + pc(risk.mdd, 1) + (risk.missingFxDates?.length ? '<span class="sub" title="' + esc(risk.reason + '：' + risk.missingFxDates.join('、')) + '">缺' + esc(risk.missingFxDates.length === 1 ? risk.missingFxDates[0] : risk.missingFxDates.length + '日') + '汇率</span>' : '') + '</td><td>' + pct(risk.vol, 1, false) + '</td><td>' + esc(r.asof || r.asOf || (r.status === 'unavailable' ? '—' : '待核验')) + '</td></tr>';
       }).join('');
@@ -241,8 +243,8 @@
     const tables = state.indexTab === 'cn' ? indexTable(domestic, '国内指数', '价格指数 · 不含分红') : state.indexTab === 'other' ? otherFilters + (otherRows.length ? categories.map(category => {
       const rows = otherRows.filter(r => r.category === category);
       return rows.length ? indexTable(rows, category, category === '动量策略' ? '按价格动量选股 · 比较基金实际总回报与回撤，趋势反转时可能落后' : category === '期权收益' ? '股票与期权策略 · 比较含分配总回报' : category === '半导体' ? '不同标的指数分别标明 · 杠杆为每日目标' : category === '纳斯达克100' ? '纳指100低费率产品 · 按各自成立以来的实际历史计算' : '信息科技行业指数 · 与纳指100的选股范围不同') : '';
-    }).join('') : '<div class="empty">没有匹配的海外ETF</div>') : indexTable(baseRows.filter(b => !b.symbol), '海外指数', '价格指数 · 不含分红') + ['标普500', '纳斯达克100'].map(category => indexTable(baseRows.filter(b => b.category === category), category + ' ETF', '普通ETF与每日2倍、3倍产品 · 长期收益不按倍数计算')).join('');
-    return head('MARKET OBSERVATORY', '指数观察', '指数、海外 ETF 与境内跨境基金分别查看。') +
+    }).join('') : '<div class="empty">没有匹配的海外ETF</div>') : indexTable(baseRows.filter(b => !b.symbol), '海外指数', '价格指数 · 不含分红') + indexTable(baseRows.filter(b => b.kind === 'stock'), '公司股票参照', '复权股价回报 · 与指数使用相同收益周期') + ['标普500', '纳斯达克100'].map(category => indexTable(baseRows.filter(b => b.category === category), category + ' ETF', '普通ETF与每日2倍、3倍产品 · 长期收益不按倍数计算')).join('');
+    return head('MARKET OBSERVATORY', '指数观察', '查看指数、股票参照、海外 ETF 与境内跨境基金的长期表现。') +
       '<div class="tabs" role="tablist">' + tabNames.map(([id, n]) => action(n, 'index-tab', state.indexTab === id ? 'active' : '', 'data-value="' + id + '" role="tab" aria-selected="' + (state.indexTab === id) + '"')).join('') + '</div>' +
       (state.indexTab === 'crossborder' ? crossborderView() :
       '<div class="index-controls"><div class="index-currency">' + (state.indexTab !== 'cn' ? '<span>计价币种</span><div class="segmented">' + action('美元', 'currency', state.currency === 'usd' ? 'active' : '', 'data-value="usd"') + action('人民币', 'currency', state.currency === 'cny' ? 'active' : '', 'data-value="cny"') + '</div>' : '<span>人民币口径</span>') + (state.indexSort !== 'default' ? action('恢复默认顺序', 'index-sort-reset', 'text-link small') : '') + '</div>' + returnControls() + '</div>' + tables);
@@ -895,6 +897,7 @@
   function openIndex(i) {
     const rows = indexRows();
     const x = rows[i]; if (!x) return;
+    if (x.kind === 'stock') { openIndexStock(x); return; }
     if (x.symbol) { openOverseasEtf(x); return; }
     const isDomestic = (window.INDEX_DATA || []).includes(x), displayCurrency = isDomestic ? 'cny' : state.currency;
     const r = isDomestic ? x.r : x[displayCurrency];
@@ -904,6 +907,16 @@
       (risk.reason ? '<div class="notice warn">' + esc(risk.reason) + (risk.missingFxDates ? '。缺失日期：' + esc(risk.missingFxDates.join('、')) : '') + '</div>' : '') +
       (x.backfilledPeriods && x.backfilledPeriods.length ? '<div class="notice warn">近' + x.backfilledPeriods.join(' / ') + '年包含发布前回溯；这部分不是当时可投资的指数实绩。</div>' : '') +
       '<div class="actions">' + extLink(x.sourceUrl || x.source, '原始行情来源') + (x.identityUrl ? extLink(x.identityUrl, '官方指数说明') : '') + (displayCurrency === 'cny' && x.fxSourceUrl ? extLink(x.fxSourceUrl, '美元兑人民币汇率') : '') + '</div><div class="dialog-footer">' + action('在基金库搜索此标的', 'find-index-funds', 'btn primary', 'data-value="' + esc(x.n.replace(/指数$/, '')) + '"') + '</div>');
+  }
+  function openIndexStock(x) {
+    const cny = state.currency === 'cny', risk = x[cny ? 'riskCNY5' : 'riskUSD5'] || {};
+    openModal(modalTitle(esc(x.displaySymbol) + ' · ' + esc(x.label), esc(x.style)) +
+      '<p class="notice">' + esc(x.business) + '</p><div class="detail-return-heading"><h3>复权股价回报</h3><span>' + (cny ? '人民币，含汇率变化' : '美元') + '</span></div>' + returnTable(x[state.currency], x) +
+      detailGrid([['收益截至 / 实际行情起点', esc(x.asOf) + ' / ' + esc(x.first)], ['5年最大回撤 / 年化波动率', pct(risk.mdd, 2, false) + ' / ' + pct(risk.vol, 2, false)]]) +
+      (cny && x.fxMissingReason ? '<p class="notice warn">' + esc(x.fxMissingReason) + '</p>' : '') +
+      (risk.reason ? '<p class="notice warn">' + esc(risk.reason) + (risk.missingFxDates?.length ? '。缺失日期：' + esc(risk.missingFxDates.join('、')) : '') + '</p>' : '') +
+      '<details class="annual-fee-details"><summary>实际收益区间与来源口径</summary><p>采用该B类股自身的复权收盘价，未扣个人交易费用与税费。人民币收益按各窗口起止日的实际美元兑人民币汇率折算；非汇率交易日最多取此前7天内最近观测，实际日期列于下方。人民币日频风险要求每个股票交易日都有同日汇率。</p><div class="table-wrap"><table><thead><tr><th>周期</th><th>股价起日 → 截至</th>' + (cny ? '<th>汇率起日 → 截至</th>' : '') + '</tr></thead><tbody>' + (x.periods || []).map(p => '<tr><td>' + p.years + '年</td><td>' + esc(p.start || '历史不足') + ' → ' + esc(p.end) + '</td>' + (cny ? '<td>' + esc(p.fxStart || '缺起日汇率') + ' → ' + esc(p.fxEnd || '缺截至日汇率') + '</td>' : '') + '</tr>').join('') + '</tbody></table></div></details>' +
+      '<div class="actions">' + extLink(x.identityUrl, '公司股类说明') + extLink(x.sourceUrl, '复权行情来源') + (cny && x.fxSourceUrl ? extLink(x.fxSourceUrl, '汇率来源') : '') + '</div><div class="dialog-footer"><a class="btn primary" href="#stock-report/' + esc(x.symbol) + '">查看伯克希尔研究报告</a></div>');
   }
   function openOverseasEtf(x) {
     const risk = x[state.currency === 'usd' ? 'riskUSD5' : 'riskCNY5'] || {};

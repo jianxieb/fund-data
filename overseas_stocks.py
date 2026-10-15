@@ -18,7 +18,7 @@ import overseas_research
 import us_filings
 from us_stock_groups import classify, LABELS
 from data_status import ROOT, DATA, atomic_text, now_iso, write_status
-from update import add_years, risk_window
+from update import add_years, risk_window, currency_risk_window, observation_at, convert_usd_return
 
 CACHE = ROOT / '.tmp-snap' / 'overseas-stocks'
 CATALOG = json.loads((DATA / 'overseas-stock-catalog.json').read_text())['stocks']
@@ -292,6 +292,34 @@ def performance(series, end):
             'first': rows[0][0], 'returnAsOf': rows[-1][0], 'riskAsOf': rows[-1][0]}
 
 
+def comparison_performance(series, usd, fx_series):
+    """Use the stock's own return windows and actual USD/CNY observations."""
+    fx = sorted(fx_series)
+    values, periods = [], []
+    for value, period in zip(usd['r'], usd['periods']):
+        start = observation_at(fx, period['start']) if period['start'] else None
+        end = observation_at(fx, period['end'])
+        values.append(convert_usd_return(value, start[1] if start else None, end[1] if end else None))
+        periods.append({**period, 'fxStart': start[0] if start else None, 'fxEnd': end[0] if end else None})
+    return {'cny': values, 'periods': periods,
+            'riskCNY5': currency_risk_window(series, fx, usd['returnAsOf'], 5),
+            'fxDateConvention': 'exchange_local_date'}
+
+
+def index_comparison(series, usd, offline=False):
+    try:
+        fx = strategy_backtest.load_history('CNY=X', offline=offline)
+        meta = json.loads(Path(strategy_backtest.cache_path('CNY=X')).read_text())
+        if meta.get('currency') != 'CNY':
+            raise ValueError('美元兑人民币历史币种不符')
+        return {**comparison_performance(series, usd, fx.items()), 'fxSourceUrl': meta['source']}
+    except (ValueError, RuntimeError, OSError) as exc:
+        # Missing FX must not hide the independently verified stock/USD return.
+        result = comparison_performance(series, usd, [])
+        result['fxMissingReason'] = '缺可验证的美元兑人民币历史：' + str(exc)[:180]
+        return result
+
+
 def build_stock(company, end, offline=False):
     symbol = company['symbol']
     quote = cache_json(symbol, 'quote')
@@ -343,6 +371,8 @@ def build_stock(company, end, offline=False):
               'dividendRecords': history.get('dividendRecords', []),
               'research': dossier, 'financialSourceStatus': filing_status, '_officialHistory': official,
               'fetchedAt': now_iso()}
+    if company.get('indexReference'):
+        result['indexComparison'] = index_comparison(series, result, offline)
     return classify(overseas_research.enrich(result), reviewed_asof)
 
 

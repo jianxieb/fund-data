@@ -1,5 +1,5 @@
 import unittest
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from unittest.mock import patch
 
 import overseas_stocks as stocks
@@ -33,6 +33,42 @@ class OverseasStockTests(unittest.TestCase):
         self.assertAlmostEqual(result['sinceListing'], 10)
         self.assertAlmostEqual(result['mdd5'], -20)
         self.assertTrue(result['risk5']['partial'])
+
+    def test_index_reference_uses_stock_windows_and_actual_fx_direction(self):
+        series = [('2024-01-05', 100), ('2025-01-06', 110)]
+        usd = stocks.performance(series, '2025-01-06')
+        result = stocks.comparison_performance(series, usd, [('2024-01-05', 7), ('2025-01-03', 6.5)])
+        self.assertAlmostEqual(result['cny'][0], (1.1 * 6.5 / 7 - 1) * 100)
+        self.assertEqual(result['periods'][0]['start'], '2024-01-05')
+        self.assertEqual(result['periods'][0]['end'], '2025-01-06')
+        self.assertEqual(result['periods'][0]['fxEnd'], '2025-01-03')
+        self.assertEqual(result['cny'][1:], [None] * 4)
+        stale = stocks.comparison_performance(series, usd, [('2024-01-05', 7), ('2024-12-27', 6.5)])
+        self.assertIsNone(stale['cny'][0])
+        self.assertIsNone(stale['periods'][0]['fxEnd'])
+
+    def test_reference_risk_does_not_fill_missing_fx_or_replace_stock_path(self):
+        first = date(2020, 1, 1)
+        series = [((first + timedelta(days=i)).isoformat(), 100) for i in range(1828)]
+        fx = [(day, 7) for day, _ in series]
+        fx[1000] = (fx[1000][0], 6.3)
+        usd = stocks.performance(series, series[-1][0])
+        result = stocks.comparison_performance(series, usd, fx)
+        self.assertAlmostEqual(usd['risk5']['mdd'], 0)
+        self.assertAlmostEqual(result['riskCNY5']['mdd'], -10)
+        missing = stocks.comparison_performance(series, usd, fx[:1000] + fx[1001:])
+        self.assertIsNone(missing['riskCNY5']['mdd'])
+        self.assertEqual(missing['riskCNY5']['missingFxDates'], [fx[1000][0]])
+        self.assertEqual(missing['cny'], result['cny'])
+
+    def test_reference_fx_failure_keeps_usd_data_and_names_missing_evidence(self):
+        series = [('2024-01-05', 100), ('2025-01-06', 110)]
+        usd = stocks.performance(series, '2025-01-06')
+        with patch.object(stocks.strategy_backtest, 'load_history', side_effect=RuntimeError('缺少CNY=X缓存')):
+            result = stocks.index_comparison(series, usd, offline=True)
+        self.assertEqual(result['cny'], [None] * 5)
+        self.assertIn('CNY=X', result['fxMissingReason'])
+        self.assertAlmostEqual(usd['r'][0], 10)
 
     def test_four_discontinuous_quarters_do_not_make_ttm_roe(self):
         q = {day: {'period': day, 'NetIncome': 10} for day in ['2025-03', '2025-06', '2026-03', '2026-06']}
@@ -93,6 +129,7 @@ class OverseasStockTests(unittest.TestCase):
             row = assets['stock:' + company['symbol']]
             self.assertEqual((row['kind'], row['market'], row['currency']), ('stock', 'us', 'USD'))
         self.assertEqual(assets['us:QQQM']['kind'], 'etf')
+        self.assertNotIn('us:BRK-B', assets)
 
     def test_daily_refresh_precedes_portfolio_and_gate_tracks_foreign_dates(self):
         self.assertLess(refresh.DATASETS.index('overseas_stocks'), refresh.DATASETS.index('portfolio'))

@@ -333,6 +333,30 @@ test('unpriced fee assumptions retain per-product missing evidence instead of pr
   assert.ok(custom.rows[1].terminal > 100);
 });
 
+test('Berkshire index reference retains stock identity, currencies, dates and no fund fee', () => {
+  const catalog = JSON.parse(fs.readFileSync('data/overseas-stock-catalog.json', 'utf8')).stocks;
+  assert.deepEqual(catalog.filter(s => s.indexReference).map(s => s.symbol), ['BRK-B']);
+  const stocks = JSON.parse(fs.readFileSync('data/overseas-stocks.js', 'utf8').split('\n')[1].slice('var OVERSEAS_STOCKS='.length, -1));
+  const original = stocks.find(s => s.symbol === 'BRK-B');
+  const [reference] = M.overseasStockReferences(stocks);
+  assert.equal(reference.symbol, 'BRK-B');
+  assert.equal(reference.displaySymbol, 'BRK.B');
+  assert.equal(reference.kind, 'stock');
+  assert.equal(M.annualFeeInfo(reference).applicable, false);
+  assert.equal(reference.usd, original.r);
+  assert.equal(reference.cny, original.indexComparison.cny);
+  assert.equal(reference.riskUSD5, original.risk5);
+  assert.equal(reference.riskCNY5, original.indexComparison.riskCNY5);
+  assert.equal(reference.sourceUrl, original.returnSourceUrl);
+  assert.equal(reference.asOf, original.returnAsOf);
+  assert.equal(reference.periods.length, 5);
+  assert.ok(reference.periods.every(p => p.end === reference.asOf));
+  assert.deepEqual(M.overseasStockReferences([{ ...original, currency: 'CNY' }]), []);
+  const [noFx] = M.overseasStockReferences([{ ...original, indexComparison: undefined }]);
+  assert.equal(noFx.usd, original.r);
+  assert.deepEqual(noFx.cny, []);
+});
+
 test('overseas ETF filters combine categories by union and product strategies by intersection', () => {
   const products = JSON.parse(fs.readFileSync('data/overseas-etf-catalog.json', 'utf8')).products;
   assert.equal(new Set(products.map(p => p.symbol)).size, products.length);
