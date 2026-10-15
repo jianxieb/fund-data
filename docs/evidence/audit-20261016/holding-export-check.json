@@ -1,0 +1,11 @@
+{
+  "export": "QQQ-CNY-5年持有窗口-累计.csv",
+  "samples": 237,
+  "completePathRisk": 214,
+  "missingPathRisk": 23,
+  "maximumIndependentRiskErrorPercentagePoints": 2.4868995751603507e-14,
+  "priceFile": "data/portfolio/us/QQQ-614c22d549fca0a3.json",
+  "priceSha256": "614c22d549fca0a39ef8ddf0341687a89c5ca0e95d9dfe2435e874462adff6bd",
+  "fxFile": "data/portfolio/fx/CNY-fb97877f809b52df.json",
+  "method": "Independent Python walk over original daily adjusted prices and backward-only FX <= 7 calendar days; all endpoints reconcile to CSV selected cumulative return."
+}
