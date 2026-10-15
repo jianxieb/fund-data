@@ -1,0 +1,988 @@
+{
+  "asOf": "2026-10-13",
+  "modelVersion": 9,
+  "nonStrategyFieldsSha256": "1bef38684a40ed68c811b2cc75c15fa00324fb4dad7daa4c49e408345961869d",
+  "unchangedNonStrategyFields": true,
+  "historyInput": {
+    "kind": "published_portfolio_files",
+    "catalog": "data/portfolio/catalog.js",
+    "catalogSha256": "05071d1fe2c759ee7ec7568f3e90eabc2fe6e1d50db74bfe31606f7ffc12a912",
+    "assets": [
+      {
+        "id": "us:SPY",
+        "code": "SPY",
+        "currency": "USD",
+        "basis": "provider_adjusted_close",
+        "first": "1993-01-29",
+        "asOf": "2026-10-13",
+        "observations": 8484,
+        "historyUrl": "data/portfolio/us/SPY-27203784fb9084b7.json",
+        "sha256": "27203784fb9084b7e966689862b5fb68d3637957af82ec45a5cf2bfbf1331bd8"
+      },
+      {
+        "id": "us:SSO",
+        "code": "SSO",
+        "currency": "USD",
+        "basis": "provider_adjusted_close",
+        "first": "2006-06-21",
+        "asOf": "2026-10-13",
+        "observations": 5110,
+        "historyUrl": "data/portfolio/us/SSO-9a8997ea2774689b.json",
+        "sha256": "9a8997ea2774689b6cc46da20493c3b486373a3e79030c9f8d4d0dc00544e413"
+      },
+      {
+        "id": "us:UPRO",
+        "code": "UPRO",
+        "currency": "USD",
+        "basis": "provider_adjusted_close",
+        "first": "2009-06-25",
+        "asOf": "2026-10-13",
+        "observations": 4352,
+        "historyUrl": "data/portfolio/us/UPRO-7589fff0a46cb5da.json",
+        "sha256": "7589fff0a46cb5da5123c4b0f737246a7769b70f64e5348dfcd1bdded19df026"
+      },
+      {
+        "id": "us:QQQ",
+        "code": "QQQ",
+        "currency": "USD",
+        "basis": "provider_adjusted_close",
+        "first": "1999-03-10",
+        "asOf": "2026-10-13",
+        "observations": 6942,
+        "historyUrl": "data/portfolio/us/QQQ-614c22d549fca0a3.json",
+        "sha256": "614c22d549fca0a39ef8ddf0341687a89c5ca0e95d9dfe2435e874462adff6bd"
+      },
+      {
+        "id": "us:QLD",
+        "code": "QLD",
+        "currency": "USD",
+        "basis": "provider_adjusted_close",
+        "first": "2006-06-21",
+        "asOf": "2026-10-13",
+        "observations": 5110,
+        "historyUrl": "data/portfolio/us/QLD-38cedff6d794b7c6.json",
+        "sha256": "38cedff6d794b7c6cd28466d0369b87611abbe7a0bc896ce39c39f8d0111f36d"
+      },
+      {
+        "id": "us:TQQQ",
+        "code": "TQQQ",
+        "currency": "USD",
+        "basis": "provider_adjusted_close",
+        "first": "2010-02-11",
+        "asOf": "2026-10-13",
+        "observations": 4193,
+        "historyUrl": "data/portfolio/us/TQQQ-3382b3e8ebc0d1f7.json",
+        "sha256": "3382b3e8ebc0d1f7a4fc2379c2d12ee6c59b54ca6bbb85039f5bb41ff477dc4e"
+      },
+      {
+        "id": "us:SOXX",
+        "code": "SOXX",
+        "currency": "USD",
+        "basis": "provider_adjusted_close",
+        "first": "2001-07-13",
+        "asOf": "2026-10-13",
+        "observations": 6350,
+        "historyUrl": "data/portfolio/us/SOXX-3ee7bb6902788322.json",
+        "sha256": "3ee7bb69027883220b6904067fb0986760c6397fa2cd68221d622b25f044f021"
+      },
+      {
+        "id": "us:USD",
+        "code": "USD",
+        "currency": "USD",
+        "basis": "provider_adjusted_close",
+        "first": "2007-02-01",
+        "asOf": "2026-10-13",
+        "observations": 4956,
+        "historyUrl": "data/portfolio/us/USD-5b49b9b2b84dc6a8.json",
+        "sha256": "5b49b9b2b84dc6a89d22618cbaf3f49e3097420bd29e322c976be75abb1da456"
+      },
+      {
+        "id": "us:SOXL",
+        "code": "SOXL",
+        "currency": "USD",
+        "basis": "provider_adjusted_close",
+        "first": "2010-03-11",
+        "asOf": "2026-10-13",
+        "observations": 4174,
+        "historyUrl": "data/portfolio/us/SOXL-5883f12f774b4917.json",
+        "sha256": "5883f12f774b4917d3309d489d40eee171ff466b5d26f118b748a7d86a41cbc7"
+      }
+    ]
+  },
+  "windows": [
+    {
+      "year": 1993,
+      "start": "1993-01-29",
+      "end": "2026-10-13",
+      "assets": [
+        "SPY"
+      ],
+      "records": 18,
+      "maPriorObservations": {
+        "SPY": 0
+      }
+    },
+    {
+      "year": 1999,
+      "start": "1999-03-10",
+      "end": "2026-10-13",
+      "assets": [
+        "SPY",
+        "QQQ"
+      ],
+      "records": 36,
+      "maPriorObservations": {
+        "SPY": 200,
+        "QQQ": 0
+      }
+    },
+    {
+      "year": 2001,
+      "start": "2001-07-13",
+      "end": "2026-10-13",
+      "assets": [
+        "SPY",
+        "QQQ",
+        "SOXX"
+      ],
+      "records": 54,
+      "maPriorObservations": {
+        "SPY": 200,
+        "QQQ": 200,
+        "SOXX": 0
+      }
+    },
+    {
+      "year": 2010,
+      "start": "2010-03-11",
+      "end": "2026-10-13",
+      "assets": [
+        "SPY",
+        "SSO",
+        "UPRO",
+        "QQQ",
+        "QLD",
+        "TQQQ",
+        "SOXX",
+        "USD",
+        "SOXL"
+      ],
+      "records": 162,
+      "maPriorObservations": {
+        "SPY": 200,
+        "SSO": 200,
+        "UPRO": 178,
+        "QQQ": 200,
+        "QLD": 200,
+        "TQQQ": 19,
+        "SOXX": 200,
+        "USD": 200,
+        "SOXL": 0
+      }
+    },
+    {
+      "year": 2020,
+      "start": "2020-01-02",
+      "end": "2026-10-13",
+      "assets": [
+        "SPY",
+        "SSO",
+        "UPRO",
+        "QQQ",
+        "QLD",
+        "TQQQ",
+        "SOXX",
+        "USD",
+        "SOXL"
+      ],
+      "records": 162,
+      "maPriorObservations": {
+        "SPY": 200,
+        "SSO": 200,
+        "UPRO": 200,
+        "QQQ": 200,
+        "QLD": 200,
+        "TQQQ": 200,
+        "SOXX": 200,
+        "USD": 200,
+        "SOXL": 200
+      }
+    }
+  ],
+  "changedResults": [
+    {
+      "window": 1993,
+      "symbol": "SPY",
+      "method": "ma200_hold",
+      "oldEnd": 1678400.74,
+      "newEnd": 1812169.01,
+      "oldXirr": 8.7284,
+      "newXirr": 8.9761
+    },
+    {
+      "window": 1993,
+      "symbol": "SPY",
+      "method": "combined_ma200_hold",
+      "oldEnd": 3910199.97,
+      "newEnd": 4050468.35,
+      "oldXirr": 8.69,
+      "newXirr": 8.8264
+    },
+    {
+      "window": 1999,
+      "symbol": "SPY",
+      "method": "ma200_hold",
+      "oldEnd": 641878.52,
+      "newEnd": 662461.49,
+      "oldXirr": 6.9696,
+      "newXirr": 7.092
+    },
+    {
+      "window": 1999,
+      "symbol": "SPY",
+      "method": "dca_ma_trend",
+      "oldEnd": 1764827.99,
+      "newEnd": 1759971.73,
+      "oldXirr": 11.4019,
+      "newXirr": 11.4162
+    },
+    {
+      "window": 1999,
+      "symbol": "SPY",
+      "method": "dca_ma_contrarian",
+      "oldEnd": 2744891.41,
+      "newEnd": 2754603.92,
+      "oldXirr": 11.4076,
+      "newXirr": 11.3901
+    },
+    {
+      "window": 1999,
+      "symbol": "SPY",
+      "method": "combined_ma200_hold",
+      "oldEnd": 1907437.76,
+      "newEnd": 1928750.41,
+      "oldXirr": 7.8132,
+      "newXirr": 7.8673
+    },
+    {
+      "window": 1999,
+      "symbol": "QQQ",
+      "method": "ma200_hold",
+      "oldEnd": 1110862.1,
+      "newEnd": 1939589.45,
+      "oldXirr": 9.117,
+      "newXirr": 11.3433
+    },
+    {
+      "window": 1999,
+      "symbol": "QQQ",
+      "method": "combined_ma200_hold",
+      "oldEnd": 3422934.94,
+      "newEnd": 4304051.13,
+      "oldXirr": 10.6189,
+      "newXirr": 11.702
+    },
+    {
+      "window": 2001,
+      "symbol": "SPY",
+      "method": "ma200_hold",
+      "oldEnd": 717695.26,
+      "newEnd": 693996.95,
+      "oldXirr": 8.1176,
+      "newXirr": 7.9739
+    },
+    {
+      "window": 2001,
+      "symbol": "SPY",
+      "method": "dca_ma_trend",
+      "oldEnd": 1605485.48,
+      "newEnd": 1551639.86,
+      "oldXirr": 12.17,
+      "newXirr": 12.3088
+    },
+    {
+      "window": 2001,
+      "symbol": "SPY",
+      "method": "dca_ma_contrarian",
+      "oldEnd": 2296585.83,
+      "newEnd": 2404277.06,
+      "oldXirr": 12.3793,
+      "newXirr": 12.195
+    },
+    {
+      "window": 2001,
+      "symbol": "SPY",
+      "method": "combined_ma200_hold",
+      "oldEnd": 1798213.4,
+      "newEnd": 1772706.47,
+      "oldXirr": 8.5224,
+      "newXirr": 8.4465
+    },
+    {
+      "window": 2001,
+      "symbol": "QQQ",
+      "method": "ma200_hold",
+      "oldEnd": 1392979.18,
+      "newEnd": 1271235.63,
+      "oldXirr": 10.9946,
+      "newXirr": 10.5933
+    },
+    {
+      "window": 2001,
+      "symbol": "QQQ",
+      "method": "dca_ma_trend",
+      "oldEnd": 3245155.58,
+      "newEnd": 3112051.47,
+      "oldXirr": 16.5848,
+      "newXirr": 16.8226
+    },
+    {
+      "window": 2001,
+      "symbol": "QQQ",
+      "method": "dca_ma_contrarian",
+      "oldEnd": 4857649.73,
+      "newEnd": 5123857.95,
+      "oldXirr": 16.7801,
+      "newXirr": 16.4982
+    },
+    {
+      "window": 2001,
+      "symbol": "QQQ",
+      "method": "combined_ma200_hold",
+      "oldEnd": 3387499.66,
+      "newEnd": 3259526.86,
+      "oldXirr": 11.8409,
+      "newXirr": 11.641
+    },
+    {
+      "window": 2001,
+      "symbol": "SOXX",
+      "method": "ma200_hold",
+      "oldEnd": 2185196.93,
+      "newEnd": 1755076.04,
+      "oldXirr": 12.9914,
+      "newXirr": 12.0149
+    },
+    {
+      "window": 2001,
+      "symbol": "SOXX",
+      "method": "combined_ma200_hold",
+      "oldEnd": 5538449,
+      "newEnd": 5085498.39,
+      "oldXirr": 14.3804,
+      "newXirr": 13.9408
+    },
+    {
+      "window": 2010,
+      "symbol": "SPY",
+      "method": "ma200_hold",
+      "oldEnd": 442863.63,
+      "newEnd": 415886.41,
+      "oldXirr": 9.3834,
+      "newXirr": 8.9698
+    },
+    {
+      "window": 2010,
+      "symbol": "SPY",
+      "method": "dca_ma_trend",
+      "oldEnd": 728652.36,
+      "newEnd": 709404.12,
+      "oldXirr": 14.7487,
+      "newXirr": 14.7406
+    },
+    {
+      "window": 2010,
+      "symbol": "SPY",
+      "method": "dca_ma_contrarian",
+      "oldEnd": 885624.3,
+      "newEnd": 924120.78,
+      "oldXirr": 14.9421,
+      "newXirr": 14.9432
+    },
+    {
+      "window": 2010,
+      "symbol": "SPY",
+      "method": "combined_ma200_hold",
+      "oldEnd": 944315.07,
+      "newEnd": 918774.1,
+      "oldXirr": 9.7695,
+      "newXirr": 9.5455
+    },
+    {
+      "window": 2010,
+      "symbol": "SSO",
+      "method": "ma200_hold",
+      "oldEnd": 1201330.27,
+      "newEnd": 1220325.66,
+      "oldXirr": 16.1642,
+      "newXirr": 16.2741
+    },
+    {
+      "window": 2010,
+      "symbol": "SSO",
+      "method": "dca_ma_trend",
+      "oldEnd": 1710767.55,
+      "newEnd": 1639262.48,
+      "oldXirr": 23.3686,
+      "newXirr": 23.3024
+    },
+    {
+      "window": 2010,
+      "symbol": "SSO",
+      "method": "dca_ma_contrarian",
+      "oldEnd": 2151830.06,
+      "newEnd": 2294840.21,
+      "oldXirr": 23.7481,
+      "newXirr": 23.8156
+    },
+    {
+      "window": 2010,
+      "symbol": "SSO",
+      "method": "combined_ma200_hold",
+      "oldEnd": 2223881.46,
+      "newEnd": 2255905.19,
+      "oldXirr": 16.7007,
+      "newXirr": 16.8161
+    },
+    {
+      "window": 2010,
+      "symbol": "UPRO",
+      "method": "ma200_hold",
+      "oldEnd": 2340744.55,
+      "newEnd": 2611850.39,
+      "oldXirr": 20.9295,
+      "newXirr": 21.7309
+    },
+    {
+      "window": 2010,
+      "symbol": "UPRO",
+      "method": "dca_ma_trend",
+      "oldEnd": 3304757.96,
+      "newEnd": 3119839.25,
+      "oldXirr": 29.8966,
+      "newXirr": 29.7538
+    },
+    {
+      "window": 2010,
+      "symbol": "UPRO",
+      "method": "dca_ma_contrarian",
+      "oldEnd": 4221625.83,
+      "newEnd": 4591463.26,
+      "oldXirr": 30.4694,
+      "newXirr": 30.6196
+    },
+    {
+      "window": 2010,
+      "symbol": "UPRO",
+      "method": "combined_ma200_hold",
+      "oldEnd": 3959091.01,
+      "newEnd": 4279171.68,
+      "oldXirr": 21.3694,
+      "newXirr": 22.0022
+    },
+    {
+      "window": 2010,
+      "symbol": "QQQ",
+      "method": "ma200_hold",
+      "oldEnd": 721193.41,
+      "newEnd": 759167.34,
+      "oldXirr": 12.646,
+      "newXirr": 12.9949
+    },
+    {
+      "window": 2010,
+      "symbol": "QQQ",
+      "method": "dca_ma_trend",
+      "oldEnd": 1206175.55,
+      "newEnd": 1186603.02,
+      "oldXirr": 19.7253,
+      "newXirr": 19.7161
+    },
+    {
+      "window": 2010,
+      "symbol": "QQQ",
+      "method": "dca_ma_contrarian",
+      "oldEnd": 1420591.69,
+      "newEnd": 1459736.74,
+      "oldXirr": 19.8819,
+      "newXirr": 19.8915
+    },
+    {
+      "window": 2010,
+      "symbol": "QQQ",
+      "method": "combined_ma200_hold",
+      "oldEnd": 1527382.34,
+      "newEnd": 1571635.84,
+      "oldXirr": 13.6695,
+      "newXirr": 13.9001
+    },
+    {
+      "window": 2010,
+      "symbol": "QLD",
+      "method": "ma200_hold",
+      "oldEnd": 3448475.65,
+      "newEnd": 3609782.39,
+      "oldXirr": 23.7868,
+      "newXirr": 24.1284
+    },
+    {
+      "window": 2010,
+      "symbol": "QLD",
+      "method": "dca_ma_trend",
+      "oldEnd": 4266706.96,
+      "newEnd": 4093858.89,
+      "oldXirr": 32.4526,
+      "newXirr": 32.3784
+    },
+    {
+      "window": 2010,
+      "symbol": "QLD",
+      "method": "dca_ma_contrarian",
+      "oldEnd": 5320831.33,
+      "newEnd": 5666527.46,
+      "oldXirr": 32.7619,
+      "newXirr": 32.8502
+    },
+    {
+      "window": 2010,
+      "symbol": "QLD",
+      "method": "combined_ma200_hold",
+      "oldEnd": 6140147.14,
+      "newEnd": 6353087.11,
+      "oldXirr": 24.9578,
+      "newXirr": 25.2384
+    },
+    {
+      "window": 2010,
+      "symbol": "TQQQ",
+      "method": "ma200_hold",
+      "oldEnd": 7746936.33,
+      "newEnd": 11051907.31,
+      "oldXirr": 29.975,
+      "newXirr": 32.7884
+    },
+    {
+      "window": 2010,
+      "symbol": "TQQQ",
+      "method": "combined_ma200_hold",
+      "oldEnd": 12812423.19,
+      "newEnd": 16453314.4,
+      "oldXirr": 31.0855,
+      "newXirr": 33.2087
+    },
+    {
+      "window": 2010,
+      "symbol": "SOXX",
+      "method": "ma200_hold",
+      "oldEnd": 1412044.81,
+      "newEnd": 1324155.24,
+      "oldXirr": 17.3012,
+      "newXirr": 16.8478
+    },
+    {
+      "window": 2010,
+      "symbol": "SOXX",
+      "method": "dca_ma_trend",
+      "oldEnd": 2632907.17,
+      "newEnd": 2567397.63,
+      "oldXirr": 28.2097,
+      "newXirr": 28.2824
+    },
+    {
+      "window": 2010,
+      "symbol": "SOXX",
+      "method": "dca_ma_contrarian",
+      "oldEnd": 3811171.63,
+      "newEnd": 3942190.7,
+      "oldXirr": 28.5609,
+      "newXirr": 28.4505
+    },
+    {
+      "window": 2010,
+      "symbol": "SOXX",
+      "method": "combined_ma200_hold",
+      "oldEnd": 2945681.91,
+      "newEnd": 2865380.52,
+      "oldXirr": 18.9713,
+      "newXirr": 18.7478
+    },
+    {
+      "window": 2010,
+      "symbol": "USD",
+      "method": "ma200_hold",
+      "oldEnd": 6198290.77,
+      "newEnd": 5591055.2,
+      "oldXirr": 28.2396,
+      "newXirr": 27.4451
+    },
+    {
+      "window": 2010,
+      "symbol": "USD",
+      "method": "dca_ma_trend",
+      "oldEnd": 15693184.73,
+      "newEnd": 15005819.76,
+      "oldXirr": 46.309,
+      "newXirr": 46.4847
+    },
+    {
+      "window": 2010,
+      "symbol": "USD",
+      "method": "dca_ma_contrarian",
+      "oldEnd": 24181155.41,
+      "newEnd": 25555885.34,
+      "oldXirr": 47.2748,
+      "newXirr": 46.9909
+    },
+    {
+      "window": 2010,
+      "symbol": "USD",
+      "method": "combined_ma200_hold",
+      "oldEnd": 12914764.27,
+      "newEnd": 12360684.98,
+      "oldXirr": 31.1527,
+      "newXirr": 30.7825
+    },
+    {
+      "window": 2010,
+      "symbol": "SOXL",
+      "method": "ma200_hold",
+      "oldEnd": 4819416.48,
+      "newEnd": 6082264.51,
+      "oldXirr": 26.3094,
+      "newXirr": 28.0936
+    },
+    {
+      "window": 2010,
+      "symbol": "SOXL",
+      "method": "combined_ma200_hold",
+      "oldEnd": 8697073.48,
+      "newEnd": 10156827.13,
+      "oldXirr": 27.8379,
+      "newXirr": 29.1328
+    },
+    {
+      "window": 2020,
+      "symbol": "SPY",
+      "method": "ma200_hold",
+      "oldEnd": 195196.09,
+      "newEnd": 210479.27,
+      "oldXirr": 10.3693,
+      "newXirr": 11.6034
+    },
+    {
+      "window": 2020,
+      "symbol": "SPY",
+      "method": "dca_ma_trend",
+      "oldEnd": 135371.61,
+      "newEnd": 130755.53,
+      "oldXirr": 16.9776,
+      "newXirr": 16.8787
+    },
+    {
+      "window": 2020,
+      "symbol": "SPY",
+      "method": "dca_ma_contrarian",
+      "oldEnd": 172289.77,
+      "newEnd": 181521.93,
+      "oldXirr": 17.5003,
+      "newXirr": 17.5998
+    },
+    {
+      "window": 2020,
+      "symbol": "SPY",
+      "method": "combined_ma200_hold",
+      "oldEnd": 316137,
+      "newEnd": 333215.38,
+      "oldXirr": 10.7411,
+      "newXirr": 11.7718
+    },
+    {
+      "window": 2020,
+      "symbol": "SSO",
+      "method": "ma200_hold",
+      "oldEnd": 363881.43,
+      "newEnd": 339447.74,
+      "oldXirr": 20.9899,
+      "newXirr": 19.7556
+    },
+    {
+      "window": 2020,
+      "symbol": "SSO",
+      "method": "dca_ma_trend",
+      "oldEnd": 183878.29,
+      "newEnd": 170429.02,
+      "oldXirr": 26.2611,
+      "newXirr": 25.8751
+    },
+    {
+      "window": 2020,
+      "symbol": "SSO",
+      "method": "dca_ma_contrarian",
+      "oldEnd": 245487.54,
+      "newEnd": 272386.07,
+      "oldXirr": 27.45,
+      "newXirr": 27.7683
+    },
+    {
+      "window": 2020,
+      "symbol": "SSO",
+      "method": "combined_ma200_hold",
+      "oldEnd": 542597.84,
+      "newEnd": 520578.26,
+      "oldXirr": 21.5283,
+      "newXirr": 20.6833
+    },
+    {
+      "window": 2020,
+      "symbol": "UPRO",
+      "method": "ma200_hold",
+      "oldEnd": 463078.34,
+      "newEnd": 413450.34,
+      "oldXirr": 25.3698,
+      "newXirr": 23.2908
+    },
+    {
+      "window": 2020,
+      "symbol": "UPRO",
+      "method": "dca_ma_trend",
+      "oldEnd": 236112.21,
+      "newEnd": 211663.03,
+      "oldXirr": 33.9209,
+      "newXirr": 33.2151
+    },
+    {
+      "window": 2020,
+      "symbol": "UPRO",
+      "method": "dca_ma_contrarian",
+      "oldEnd": 326397.89,
+      "newEnd": 375296.24,
+      "oldXirr": 35.6038,
+      "newXirr": 36.1264
+    },
+    {
+      "window": 2020,
+      "symbol": "UPRO",
+      "method": "combined_ma200_hold",
+      "oldEnd": 669598.31,
+      "newEnd": 623405.71,
+      "oldXirr": 25.8702,
+      "newXirr": 24.3844
+    },
+    {
+      "window": 2020,
+      "symbol": "QQQ",
+      "method": "ma200_hold",
+      "oldEnd": 249736.16,
+      "newEnd": 308195.08,
+      "oldXirr": 14.4547,
+      "newXirr": 18.0615
+    },
+    {
+      "window": 2020,
+      "symbol": "QQQ",
+      "method": "dca_ma_trend",
+      "oldEnd": 151587.45,
+      "newEnd": 149471.35,
+      "oldXirr": 20.745,
+      "newXirr": 20.666
+    },
+    {
+      "window": 2020,
+      "symbol": "QQQ",
+      "method": "dca_ma_contrarian",
+      "oldEnd": 203250.68,
+      "newEnd": 207482.88,
+      "oldXirr": 21.6226,
+      "newXirr": 21.7132
+    },
+    {
+      "window": 2020,
+      "symbol": "QQQ",
+      "method": "combined_ma200_hold",
+      "oldEnd": 397131.78,
+      "newEnd": 459764.46,
+      "oldXirr": 15.2383,
+      "newXirr": 18.1685
+    },
+    {
+      "window": 2020,
+      "symbol": "QLD",
+      "method": "ma200_hold",
+      "oldEnd": 521141.28,
+      "newEnd": 666299.29,
+      "oldXirr": 27.5735,
+      "newXirr": 32.2824
+    },
+    {
+      "window": 2020,
+      "symbol": "QLD",
+      "method": "dca_ma_trend",
+      "oldEnd": 216714.31,
+      "newEnd": 211955.93,
+      "oldXirr": 31.5821,
+      "newXirr": 31.3378
+    },
+    {
+      "window": 2020,
+      "symbol": "QLD",
+      "method": "dca_ma_contrarian",
+      "oldEnd": 312391,
+      "newEnd": 321907.77,
+      "oldXirr": 33.9544,
+      "newXirr": 34.2153
+    },
+    {
+      "window": 2020,
+      "symbol": "QLD",
+      "method": "combined_ma200_hold",
+      "oldEnd": 758743.73,
+      "newEnd": 919352.56,
+      "oldXirr": 28.4944,
+      "newXirr": 32.594
+    },
+    {
+      "window": 2020,
+      "symbol": "TQQQ",
+      "method": "ma200_hold",
+      "oldEnd": 659523.64,
+      "newEnd": 874772.12,
+      "oldXirr": 32.0831,
+      "newXirr": 37.7025
+    },
+    {
+      "window": 2020,
+      "symbol": "TQQQ",
+      "method": "dca_ma_trend",
+      "oldEnd": 268214.34,
+      "newEnd": 255052.78,
+      "oldXirr": 37.9795,
+      "newXirr": 37.3866
+    },
+    {
+      "window": 2020,
+      "symbol": "TQQQ",
+      "method": "dca_ma_contrarian",
+      "oldEnd": 407567.86,
+      "newEnd": 433890.98,
+      "oldXirr": 42.0428,
+      "newXirr": 42.5283
+    },
+    {
+      "window": 2020,
+      "symbol": "TQQQ",
+      "method": "combined_ma200_hold",
+      "oldEnd": 917701.08,
+      "newEnd": 1154479.27,
+      "oldXirr": 32.5552,
+      "newXirr": 37.5711
+    },
+    {
+      "window": 2020,
+      "symbol": "SOXX",
+      "method": "ma200_hold",
+      "oldEnd": 381358.02,
+      "newEnd": 439263.74,
+      "oldXirr": 21.83,
+      "newXirr": 24.3971
+    },
+    {
+      "window": 2020,
+      "symbol": "SOXX",
+      "method": "dca_ma_trend",
+      "oldEnd": 255159.02,
+      "newEnd": 250731.73,
+      "oldXirr": 36.2267,
+      "newXirr": 36.149
+    },
+    {
+      "window": 2020,
+      "symbol": "SOXX",
+      "method": "dca_ma_contrarian",
+      "oldEnd": 359989.93,
+      "newEnd": 368844.52,
+      "oldXirr": 38.6377,
+      "newXirr": 38.6718
+    },
+    {
+      "window": 2020,
+      "symbol": "SOXX",
+      "method": "combined_ma200_hold",
+      "oldEnd": 582631,
+      "newEnd": 648434.29,
+      "oldXirr": 22.988,
+      "newXirr": 25.2013
+    },
+    {
+      "window": 2020,
+      "symbol": "USD",
+      "method": "ma200_hold",
+      "oldEnd": 1420704.82,
+      "newEnd": 1581741.87,
+      "oldXirr": 47.9141,
+      "newXirr": 50.2755
+    },
+    {
+      "window": 2020,
+      "symbol": "USD",
+      "method": "dca_ma_trend",
+      "oldEnd": 739126.3,
+      "newEnd": 700768.81,
+      "oldXirr": 69.0215,
+      "newXirr": 68.6416
+    },
+    {
+      "window": 2020,
+      "symbol": "USD",
+      "method": "dca_ma_contrarian",
+      "oldEnd": 1072413.38,
+      "newEnd": 1149128.35,
+      "oldXirr": 74.4537,
+      "newXirr": 74.5303
+    },
+    {
+      "window": 2020,
+      "symbol": "USD",
+      "method": "combined_ma200_hold",
+      "oldEnd": 1964275.15,
+      "newEnd": 2166916.99,
+      "oldXirr": 49.7207,
+      "newXirr": 52.0536
+    },
+    {
+      "window": 2020,
+      "symbol": "SOXL",
+      "method": "ma200_hold",
+      "oldEnd": 781495.33,
+      "newEnd": 479574.81,
+      "oldXirr": 35.4311,
+      "newXirr": 26.0188
+    },
+    {
+      "window": 2020,
+      "symbol": "SOXL",
+      "method": "dca_ma_trend",
+      "oldEnd": 376268.22,
+      "newEnd": 342971.34,
+      "oldXirr": 48.6613,
+      "newXirr": 47.9594
+    },
+    {
+      "window": 2020,
+      "symbol": "SOXL",
+      "method": "dca_ma_contrarian",
+      "oldEnd": 638648.38,
+      "newEnd": 705242.14,
+      "oldXirr": 55.7143,
+      "newXirr": 55.6338
+    },
+    {
+      "window": 2020,
+      "symbol": "SOXL",
+      "method": "combined_ma200_hold",
+      "oldEnd": 1123285.74,
+      "newEnd": 834160.37,
+      "oldXirr": 36.9656,
+      "newXirr": 30.5071
+    }
+  ]
+}

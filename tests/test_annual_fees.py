@@ -57,10 +57,11 @@ class AnnualFeeEstimates(unittest.TestCase):
     def test_fee_scenario_preserves_real_market_signal_and_contribution_schedule(self):
         dates = ['2020-01-01', '2020-02-03', '2021-01-01']
         prices = {'SPY': [100, 70, 100]}
+        warmup = {'SPY': [90] * 199 + [100]}
         asset = {'c': 'SPY'}
         with patch.object(strategy, 'strategy_inputs', wraps=strategy.strategy_inputs) as inputs:
-            result, curves = strategy.build_results(dates, prices, [asset], before_fees=True)
-        inputs.assert_called_once_with(prices['SPY'], dates)
+            result, curves = strategy.build_results(dates, prices, [asset], before_fees=True, warmup=warmup)
+        inputs.assert_called_once_with(prices['SPY'], dates, warmup['SPY'])
         self.assertEqual(len(result), len(strategy.STRATEGIES))
         self.assertEqual(curves['dates'][0], dates[0])
 

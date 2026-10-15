@@ -20,8 +20,10 @@ ETF 买入策略固定快照回测
   python strategy_backtest.py            使用缓存，缺失时联网抓取
   python strategy_backtest.py --refresh  强制刷新历史行情缓存
   python strategy_backtest.py --offline  只用缓存，不联网
+  python strategy_backtest.py --published-history --end YYYY-MM-DD  只用已发布且校验哈希的原始币种历史
 """
 import argparse
+import hashlib
 import json
 import math
 import os
@@ -84,7 +86,7 @@ STRATEGIES = [
     },
     {
         'id': 'ma200_hold', 'panel': 'initial', 'name': '200日均线择时',
-        'desc': '收盘站上 200 日均线时满仓，跌破转现金；信号下一交易日执行，现金收益按 0。',
+        'desc': '收盘站上 200 日均线时满仓，否则转现金；前一交易日信号执行，现金收益按 0。读取起点前历史，历史不足 200 日时正常持有。',
     },
     {
         'id': 'dca_month', 'panel': 'dca', 'name': '每月定投',
@@ -131,8 +133,12 @@ def parse_args():
     p = argparse.ArgumentParser(description='ETF 买入策略固定快照回测')
     p.add_argument('--refresh', action='store_true', help='强制刷新历史行情缓存')
     p.add_argument('--offline', action='store_true', help='只用本地缓存')
+    p.add_argument('--published-history', action='store_true', help='只读已发布的组合历史文件并校验身份和哈希；仅更新策略数据')
     p.add_argument('--end', default=END_DATE, help='回测截止日 YYYY-MM-DD')
-    return p.parse_args()
+    args = p.parse_args()
+    if args.published_history and args.refresh:
+        p.error('--published-history 不能与 --refresh 同时使用')
+    return args
 
 
 def cache_path(symbol):
@@ -258,6 +264,66 @@ def load_all_history(refresh=False, offline=False):
     return {asset['c']: load_history(asset['c'], refresh=refresh, offline=offline) for asset in ASSETS}
 
 
+def load_published_history(evidence=None):
+    """Read whole, content-addressed ETF series; never patch or impersonate caches."""
+    if evidence is None:
+        catalog_path = os.path.join(HERE, 'data', 'portfolio', 'catalog.js')
+        with open(catalog_path, 'rb') as fh:
+            catalog_bytes = fh.read()
+        catalog = json.loads(catalog_bytes.decode('utf-8').split('=', 1)[1].strip().rstrip(';'))
+        catalog_rows = {row['id']: row for row in catalog['assets']}
+        rows = []
+        for asset in ASSETS:
+            row = catalog_rows.get('us:' + asset['c'], {})
+            if row.get('status') != 'available' or row.get('code') != asset['c']:
+                raise ValueError('缺少已发布的完整 ETF 历史：' + asset['c'])
+            rows.append({key: row.get(key) for key in
+                         ('id', 'code', 'currency', 'basis', 'first', 'asOf', 'observations', 'historyUrl', 'sha256')})
+        evidence = {'kind': 'published_portfolio_files', 'catalog': 'data/portfolio/catalog.js',
+                    'catalogSha256': hashlib.sha256(catalog_bytes).hexdigest(), 'assets': rows}
+    if evidence.get('kind') != 'published_portfolio_files':
+        raise ValueError('未识别的策略历史证据来源')
+    by_symbol = {row.get('code'): row for row in evidence.get('assets', [])}
+    root = os.path.realpath(os.path.join(HERE, 'data', 'portfolio', 'us'))
+    raw = {}
+    for asset in ASSETS:
+        symbol = asset['c']
+        row = by_symbol.get(symbol, {})
+        path = os.path.realpath(os.path.join(HERE, row.get('historyUrl') or ''))
+        if not path.startswith(root + os.sep):
+            raise ValueError('ETF 历史路径无效：' + symbol)
+        with open(path, 'rb') as fh:
+            encoded = fh.read()
+        if hashlib.sha256(encoded).hexdigest() != row.get('sha256'):
+            raise ValueError('ETF 历史哈希校验失败：' + symbol)
+        history = json.loads(encoded)
+        expected = {'id': 'us:' + symbol, 'currency': 'USD', 'basis': 'provider_adjusted_close'}
+        if any(row.get(key) != value or history.get(key) != value for key, value in expected.items()):
+            raise ValueError('ETF 历史身份、币种或复权口径不匹配：' + symbol)
+        if history.get('dividends') != 'reinvested':
+            raise ValueError('ETF 历史缺少分红再投口径：' + symbol)
+        series = history.get('series') or []
+        values, last = {}, ''
+        for day, value in series:
+            if not isinstance(day, str) or datetime.strptime(day, '%Y-%m-%d').strftime('%Y-%m-%d') != day or day <= last:
+                raise ValueError('ETF 历史日期无效或不递增：' + symbol)
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or value <= 0:
+                raise ValueError('ETF 历史价格无效：' + symbol)
+            values[day], last = float(value), day
+        if not values or len(values) != row.get('observations') or \
+                any(history.get(key) != value or row.get(key) != value for key, value in
+                    (('first', min(values)), ('asOf', max(values)))):
+            raise ValueError('ETF 历史覆盖范围与目录不匹配：' + symbol)
+        raw[symbol] = values
+    return raw, evidence
+
+
+def window_warmup(raw, dates, assets):
+    """Only the same ETF's actual observations strictly before the first trade."""
+    return {asset['c']: [raw[asset['c']][day] for day in sorted(raw[asset['c']]) if day < dates[0]][-200:]
+            for asset in assets}
+
+
 def window_history(raw, year):
     """Include only ETFs observed by that calendar year; never backfill pre-listing days."""
     earliest = {symbol: min(history) for symbol, history in raw.items() if history}
@@ -309,12 +375,17 @@ def moving_average(values, window):
     return out
 
 
-def previous_ma_signal(prices, window=200):
-    ma = moving_average(prices, window)
-    signal = [0.0] * len(prices)
-    for i in range(1, len(prices)):
-        if ma[i - 1] is not None:
-            signal[i] = 1.0 if prices[i - 1] > ma[i - 1] else 0.0
+def previous_ma_signal(prices, window=200, prior_prices=None):
+    prior = list(prior_prices or [])[-window:]
+    full = prior + list(prices)
+    ma = moving_average(full, window)
+    # Missing history is not a downtrend: use ordinary exposure until a real
+    # prior-close signal exists, as in the interactive portfolio model.
+    signal = [1.0] * len(prices)
+    for i in range(len(prices)):
+        previous = len(prior) + i - 1
+        if previous >= 0 and ma[previous] is not None:
+            signal[i] = 1.0 if full[previous] > ma[previous] else 0.0
     return signal
 
 
@@ -344,7 +415,9 @@ def drawdown_ladder_events(prices, months, budget):
         peak = max(peak, price)
         dd = price / peak - 1.0
         for threshold in (0.10, 0.20, 0.30):
-            if threshold in hit or dd > -threshold or remaining <= 1e-9:
+            # A mathematical 10% drop can be -0.09999999999999998 in a float.
+            # Match the inclusive thresholds used by the portfolio model.
+            if threshold in hit or dd > -threshold + 1e-12 or remaining <= 1e-9:
                 continue
             amount = min(budget * 0.25, remaining)
             if i + 1 >= len(prices):
@@ -358,11 +431,11 @@ def drawdown_ladder_events(prices, months, budget):
 
 
 def drawdown_multiplier(dd):
-    if dd > -0.10:
+    if dd > -0.10 + 1e-12:
         return 1.0
-    if dd > -0.20:
+    if dd > -0.20 + 1e-12:
         return 1.5
-    if dd > -0.30:
+    if dd > -0.30 + 1e-12:
         return 2.0
     return 3.0
 
@@ -380,13 +453,11 @@ def dca_drawdown_events(prices, months):
     return events
 
 
-def dca_ma_events(prices, months, contrarian=False):
-    signal = previous_ma_signal(prices)
+def dca_ma_events(prices, months, contrarian=False, prior_prices=None):
+    signal = previous_ma_signal(prices, prior_prices=prior_prices)
     events = {}
     for i in months:
-        if i < 200:
-            multiplier = 1.0  # Missing history does not constitute a downtrend signal.
-        elif signal[i] == 0.0:
+        if signal[i] == 0.0:
             multiplier = 2.0 if contrarian else 0.5
         else:
             multiplier = 1.0
@@ -394,11 +465,11 @@ def dca_ma_events(prices, months, contrarian=False):
     return events
 
 
-def strategy_inputs(prices, dates):
+def strategy_inputs(prices, dates, prior_prices=None):
     months = first_indices(dates)
     quarters = quarter_indices(dates, months)
     years = year_indices(dates, months)
-    ma_signal = previous_ma_signal(prices)
+    ma_signal = previous_ma_signal(prices, prior_prices=prior_prices)
     return {
         'lump_sum': ({months[0]: INITIAL_CAPITAL}, None),
         'tranche_6': (tranche_events(months, 6, INITIAL_CAPITAL), None),
@@ -410,8 +481,8 @@ def strategy_inputs(prices, dates):
         'dca_quarter': ({i: MONTHLY_CONTRIBUTION * sum(1 for j in months if dates[j][:4] == dates[i][:4] and (int(dates[j][5:7])-1)//3 == (int(dates[i][5:7])-1)//3) for i in quarters}, None),
         'dca_year': ({i: MONTHLY_CONTRIBUTION * sum(1 for j in months if dates[j][:4] == dates[i][:4]) for i in years}, None),
         'dca_drawdown': (dca_drawdown_events(prices, months), None),
-        'dca_ma_trend': (dca_ma_events(prices, months, False), None),
-        'dca_ma_contrarian': (dca_ma_events(prices, months, True), None),
+        'dca_ma_trend': (dca_ma_events(prices, months, False, prior_prices), None),
+        'dca_ma_contrarian': (dca_ma_events(prices, months, True, prior_prices), None),
     }
 
 
@@ -627,7 +698,7 @@ def weekly_sample_indices(dates):
     return sorted(set(indices))
 
 
-def build_results(dates, prices, assets=None, before_fees=False):
+def build_results(dates, prices, assets=None, before_fees=False, warmup=None):
     results, curves = [], {'dates': [], 'series': {}, 'account': {}, 'irrDates': [], 'irr': {}}
     samples = weekly_sample_indices(dates)
     annualized_samples = monthly_sample_indices(dates)
@@ -635,7 +706,7 @@ def build_results(dates, prices, assets=None, before_fees=False):
     curves['irrDates'] = [dates[i] for i in annualized_samples]
     for asset in assets or ASSETS:
         symbol = asset['c']
-        inputs = strategy_inputs(prices[symbol], dates)
+        inputs = strategy_inputs(prices[symbol], dates, (warmup or {}).get(symbol))
         # Keep actual decision dates and cash flows; change only invested prices.
         valued_prices = before_fee_prices(dates, prices[symbol], symbol) if before_fees else prices[symbol]
         curves['series'][symbol] = {}
@@ -661,7 +732,7 @@ def js_data(payload):
     return json.dumps(payload, ensure_ascii=False, separators=(',', ':'))
 
 
-def write_html(results, dates, curves, windows, summaries, asset_starts, fee_estimates=None):
+def write_html(results, dates, curves, windows, summaries, asset_starts, fee_estimates=None, history_evidence=None):
     with open(HTML, 'r', encoding='utf-8') as fh:
         src = fh.read()
 
@@ -671,7 +742,7 @@ def write_html(results, dates, curves, windows, summaries, asset_starts, fee_est
         'requestedEnd': END_DATE,
         'status': 'computed',
         'basis': 'provider_adjusted_close',
-        'modelVersion': 8,
+        'modelVersion': 9,
         'fundingPanels': ['initial', 'dca', 'combined'],
         'combinedContributionStart': 'first_trading_day_of_the_next_calendar_month',
         'annualFeeBasis': 'net_actual_returns_and_current_rate_before_fee_estimates',
@@ -679,7 +750,9 @@ def write_html(results, dates, curves, windows, summaries, asset_starts, fee_est
         'feeEstimateDataFile': 'data/strategy-fees.js',
         'initialCashIncluded': True,
         'curveMetrics': ['account_value_usd', 'since_inception_xirr_minimum_one_year_percent'],
-        'maWarmup': '200 observations; hold cash until first available signal',
+        'maWarmup': 'up to 200 same-ETF observations before window; ordinary exposure/contribution until a valid prior-close signal',
+        'signalExecution': 'prior_close_only; current close never changes the same-day order',
+        'drawdownThresholds': 'inclusive 10/20/30 percent; floating-point tolerance 1e-12',
         'limitations': ['不同起点与可用标的会改变结果', '税费、汇兑及现金收益未建模', '部分年度按样本月数预算；倍数定投资金总额不同'],
         'curveSampling': 'weekly_last_actual_trading_day',
         'annualizedCurveSampling': 'monthly_last_actual_trading_day_and_both_endpoints',
@@ -695,6 +768,8 @@ def write_html(results, dates, curves, windows, summaries, asset_starts, fee_est
         'source': SOURCE_LABEL,
         'generated': datetime.now().strftime('%Y-%m-%d %H:%M'),
     }
+    if history_evidence:
+        meta['historyInput'] = history_evidence
     block = (
         '/*__DATA_STRATEGY_BEGIN__*/\n'
         'var STRATEGY_META=' + js_data(meta) + ';\n'
@@ -738,18 +813,23 @@ def main():
     datetime.strptime(args.end, '%Y-%m-%d')
     END_DATE = args.end
     log('ETF 策略回测: %s -> %s' % (WINDOW_YEARS, END_DATE))
-    raw = load_all_history(refresh=args.refresh, offline=args.offline)
+    if args.published_history:
+        raw, history_evidence = load_published_history()
+    else:
+        raw, history_evidence = load_all_history(refresh=args.refresh, offline=args.offline), None
     asset_starts = {symbol: min(history) for symbol, history in raw.items() if history}
     windows, summaries, fee_estimates = {}, [], {}
     for year in WINDOW_YEARS:
         window_dates, window_prices, eligible = window_history(raw, year)
-        window_results, window_curves = build_results(window_dates, window_prices, eligible)
-        gross_results, gross_curves = build_results(window_dates, window_prices, eligible, before_fees=True)
+        warmup = window_warmup(raw, window_dates, eligible)
+        window_results, window_curves = build_results(window_dates, window_prices, eligible, warmup=warmup)
+        gross_results, gross_curves = build_results(window_dates, window_prices, eligible, before_fees=True, warmup=warmup)
         fee_estimates[str(year)] = {'start': window_dates[0], 'end': window_dates[-1],
                                    'assets': [asset['c'] for asset in eligible],
                                    'results': gross_results, 'curves': gross_curves}
         summaries.append({'year': year, 'start': window_dates[0], 'end': window_dates[-1],
-                          'assets': [asset['c'] for asset in eligible], 'records': len(window_results)})
+                          'assets': [asset['c'] for asset in eligible], 'records': len(window_results),
+                          'maPriorObservations': {symbol: len(values) for symbol, values in warmup.items()}})
         if year == 2010:
             dates, results, curves = window_dates, window_results, window_curves
         else:
@@ -757,9 +837,10 @@ def main():
                                   'assets': [asset['c'] for asset in eligible],
                                   'results': window_results, 'curves': window_curves}
         log('  %s: %s → %s，%d 只ETF，%d组' % (year, window_dates[0], window_dates[-1], len(eligible), len(window_results)))
-    write_html(results, dates, curves, windows, summaries, asset_starts, fee_estimates)
-    write_status('strategy', 'cached' if args.offline else 'success', asOf=dates[-1],
-                 records=sum(item['records'] for item in summaries), basis='provider_adjusted_close')
+    write_html(results, dates, curves, windows, summaries, asset_starts, fee_estimates, history_evidence)
+    if not args.published_history:
+        write_status('strategy', 'cached' if args.offline else 'success', asOf=dates[-1],
+                     records=sum(item['records'] for item in summaries), basis='provider_adjusted_close')
 
     def pick(asset, strategy):
         return next(
@@ -785,6 +866,7 @@ if __name__ == '__main__':
     try:
         sys.exit(main())
     except Exception as exc:  # noqa: BLE001
-        write_status('strategy', 'unavailable', message=str(exc))
+        if '--published-history' not in sys.argv:
+            write_status('strategy', 'unavailable', message=str(exc))
         log('!! 回测失败: %s' % exc)
         sys.exit(1)

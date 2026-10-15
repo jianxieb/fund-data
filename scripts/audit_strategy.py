@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Rebuild shipped strategy endpoints with a separate cash/share ledger.
 
-Run after ``python3 strategy_backtest.py --refresh``. The raw Yahoo cache is
-local by design; this check never downloads data or rewrites the snapshot.
+Use the exact published history evidence when the snapshot records it; otherwise
+use the local Yahoo cache. This check never downloads or rewrites data.
 """
 
 import math
@@ -107,7 +107,10 @@ def audit():
     snapshot = data_quality.read_snapshot()
     meta = snapshot['STRATEGY_META']
     source.END_DATE = meta['end']
-    raw = source.load_all_history(offline=True)
+    if meta.get('historyInput', {}).get('kind') == 'published_portfolio_files':
+        raw, _ = source.load_published_history(meta['historyInput'])
+    else:
+        raw = source.load_all_history(offline=True)
     max_errors = {'invested': 0.0, 'end_value': 0.0, 'xirr_points': 0.0,
                   'worst_paid_points': 0.0, 'below_paid_days': 0,
                   'mdd_points': 0.0, 'underwater_days': 0,
@@ -121,10 +124,11 @@ def audit():
         year = str(summary['year'])
         shipped = {'results': snapshot['STRATEGY_RESULTS']} if year == '2010' else snapshot['STRATEGY_WINDOWS'][year]
         dates, prices, assets = source.window_history(raw, int(year))
+        warmup = source.window_warmup(raw, dates, assets)
         actual = {(row['a'], row['s']): row for row in shipped['results']}
         for asset in assets:
             symbol = asset['c']
-            events_by_strategy = source.strategy_inputs(prices[symbol], dates)
+            events_by_strategy = source.strategy_inputs(prices[symbol], dates, warmup[symbol])
             monthly_budget = sum(events_by_strategy['dca_month'][0].values())
             for method in ('dca_quarter', 'dca_year'):
                 if abs(sum(events_by_strategy[method][0].values()) - monthly_budget) > 0.01:
@@ -155,5 +159,5 @@ if __name__ == '__main__':
         audit()
     except Exception as exc:
         print(f'策略独立核对失败：{exc}', file=sys.stderr)
-        print('先联网运行 python3 strategy_backtest.py --refresh，再运行本脚本。', file=sys.stderr)
+        print('检查快照记录的历史文件和哈希；使用缓存构建的快照另需完整本地缓存。', file=sys.stderr)
         raise SystemExit(1)

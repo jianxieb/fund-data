@@ -1,3 +1,4 @@
+import hashlib
 import json
 import tempfile
 import unittest
@@ -338,6 +339,59 @@ class Benchmarks(unittest.TestCase):
         self.assertEqual(rows['纳斯达克100指数']['usd'], [None] * 5)
 
 
+class PublishedStrategyHistory(unittest.TestCase):
+    def published_fixture(self, root, **changes):
+        path = Path(root) / 'data/portfolio/us/SPY-test.json'
+        path.parent.mkdir(parents=True, exist_ok=True)
+        history = {'id': 'us:SPY', 'currency': 'USD', 'basis': 'provider_adjusted_close',
+                   'dividends': 'reinvested', 'first': '2024-01-02', 'asOf': '2025-01-02',
+                   'series': [['2024-01-02', 100], ['2025-01-02', 110]], **changes}
+        path.write_text(json.dumps(history), encoding='utf-8')
+        row = {key: history[key] for key in ('id', 'currency', 'basis', 'first', 'asOf')}
+        row.update({'code': 'SPY', 'status': 'available', 'observations': len(history['series']),
+                    'historyUrl': 'data/portfolio/us/SPY-test.json',
+                    'sha256': hashlib.sha256(path.read_bytes()).hexdigest()})
+        (path.parent.parent / 'catalog.js').write_text('var PORTFOLIO_CATALOG=' + json.dumps({'assets': [row]}) + ';')
+        return path
+
+    def test_published_history_records_exact_file_and_can_replay_without_current_catalog(self):
+        with tempfile.TemporaryDirectory() as root, patch.object(strategy, 'HERE', root), \
+                patch.object(strategy, 'ASSETS', [{'c': 'SPY'}]):
+            path = self.published_fixture(root)
+            with patch.object(strategy, 'load_history', side_effect=AssertionError('must not use or refresh cache')):
+                raw, proof = strategy.load_published_history()
+                self.assertEqual(raw, {'SPY': {'2024-01-02': 100, '2025-01-02': 110}})
+                self.assertEqual(proof['assets'][0]['sha256'], hashlib.sha256(path.read_bytes()).hexdigest())
+                (path.parent.parent / 'catalog.js').write_text('changed catalog')
+                replay, _ = strategy.load_published_history(proof)
+                self.assertEqual(replay, raw)
+
+    def test_published_history_rejects_tampered_file(self):
+        with tempfile.TemporaryDirectory() as root, patch.object(strategy, 'HERE', root), \
+                patch.object(strategy, 'ASSETS', [{'c': 'SPY'}]):
+            path = self.published_fixture(root)
+            path.write_text(path.read_text() + ' ')
+            with self.assertRaisesRegex(ValueError, '哈希'):
+                strategy.load_published_history()
+
+    def test_published_history_rejects_wrong_currency_basis_and_identity_even_with_valid_hash(self):
+        for changes in ({'currency': 'CNY'}, {'basis': 'unadjusted_close'}, {'id': 'us:QQQ'}):
+            with self.subTest(changes=changes), tempfile.TemporaryDirectory() as root, \
+                    patch.object(strategy, 'HERE', root), patch.object(strategy, 'ASSETS', [{'c': 'SPY'}]):
+                self.published_fixture(root, **changes)
+                with self.assertRaises(ValueError):
+                    strategy.load_published_history()
+
+    def test_published_history_rejects_duplicate_dates_and_invalid_values(self):
+        for series in ([['2024-01-02', 100], ['2024-01-02', 110]],
+                       [['2024-01-02', 100], ['2025-01-02', 0]]):
+            with self.subTest(series=series), tempfile.TemporaryDirectory() as root, \
+                    patch.object(strategy, 'HERE', root), patch.object(strategy, 'ASSETS', [{'c': 'SPY'}]):
+                self.published_fixture(root, series=series)
+                with self.assertRaises(ValueError):
+                    strategy.load_published_history()
+
+
 class StrategyAccounting(unittest.TestCase):
     def test_initial_capital_and_new_income_are_separate_cash_flows(self):
         result = strategy.simulate(['2025-01-02', '2025-02-03', '2025-03-03'],
@@ -387,6 +441,33 @@ class StrategyAccounting(unittest.TestCase):
         for contrarian in (False, True):
             events = strategy.dca_ma_events([100] * 200, [0, 20, 199], contrarian)
             self.assertEqual(list(events.values()), [strategy.MONTHLY_CONTRIBUTION] * 3)
+        self.assertEqual(strategy.previous_ma_signal([100] * 200), [1] * 200)
+
+    def test_moving_average_uses_window_prior_history_without_same_day_lookahead(self):
+        history = list(range(1, 201))
+        # The first decision sees the previous close 200 above its 100.5 mean;
+        # the current close 1 can only change the following day's order.
+        self.assertEqual(strategy.previous_ma_signal([1, 1000], prior_prices=history), [1, 0])
+        self.assertEqual(strategy.previous_ma_signal([1000, 1], prior_prices=history), [1, 1])
+
+    def test_partial_moving_average_history_switches_only_after_two_hundred_prior_closes(self):
+        self.assertEqual(strategy.previous_ma_signal([80, 100], prior_prices=[100] * 199), [1, 0])
+        self.assertEqual(strategy.previous_ma_signal([100, 100], prior_prices=[100] * 200), [0, 0])
+
+    def test_moving_average_contributions_share_the_same_warmed_signal(self):
+        history = [200] * 199 + [100]
+        dates, prices = ['2025-01-02', '2025-02-03'], [100, 300]
+        inputs = strategy.strategy_inputs(prices, dates, history)
+        self.assertEqual(inputs['ma200_hold'][1], [0, 0])
+        self.assertEqual(inputs['dca_ma_trend'][0], {0: 500, 1: 500})
+        self.assertEqual(inputs['dca_ma_contrarian'][0], {0: 2000, 1: 2000})
+
+    def test_window_warmup_is_same_asset_strictly_before_start_and_limited_to_200(self):
+        days = [(date(2024, 1, 1) + timedelta(days=i)).isoformat() for i in range(205)]
+        raw = {'SPY': dict(zip(days, range(1, 206))), 'QQQ': {days[199]: 9, days[200]: 999}}
+        warmup = strategy.window_warmup(raw, days[201:], [{'c': 'SPY'}, {'c': 'QQQ'}])
+        self.assertEqual(warmup['SPY'], list(range(2, 202)))
+        self.assertEqual(warmup['QQQ'], [9, 999])
 
     def test_scheduled_cash_deployment_precedes_same_close_signal(self):
         prices = [100] * 38
@@ -394,6 +475,24 @@ class StrategyAccounting(unittest.TestCase):
         events = strategy.drawdown_ladder_events(prices, list(range(38)), 100)
         self.assertEqual(events[36], 75)
         self.assertNotIn(37, events)
+
+    def test_drawdown_thresholds_include_exact_ten_twenty_and_thirty_percent(self):
+        for price, multiplier, tranches in ((90, 1.5, 1), (80, 2.0, 2), (70, 3.0, 3)):
+            with self.subTest(price=price):
+                self.assertEqual(strategy.drawdown_multiplier(price / 100 - 1), multiplier)
+                events = strategy.drawdown_ladder_events([100, price, price], [0], 100)
+                self.assertEqual(events, {0: 25, 2: tranches * 25})
+                # The contribution uses the previous close, not its execution price.
+                dca = strategy.dca_drawdown_events([100, price, 150], [0, 2])
+                self.assertEqual(dca[2], strategy.MONTHLY_CONTRIBUTION * multiplier)
+
+    def test_drawdown_threshold_tolerance_does_not_trigger_above_boundary(self):
+        for threshold, before, at_or_below in ((.1, 1.0, 1.5), (.2, 1.5, 2.0), (.3, 2.0, 3.0)):
+            with self.subTest(threshold=threshold):
+                self.assertEqual(strategy.drawdown_multiplier(-threshold + 1e-9), before)
+                self.assertEqual(strategy.drawdown_multiplier(-threshold - 1e-9), at_or_below)
+        events = strategy.drawdown_ladder_events([100, 90.000001, 90.000001], [0], 100)
+        self.assertEqual(events, {0: 25})
 
     def test_initial_cash_is_part_of_the_portfolio_before_deployment(self):
         result = strategy.simulate(['2025-01-01', '2026-01-01'], [100, 50], {0: 50, 1: 50}, initial_capital=100)
