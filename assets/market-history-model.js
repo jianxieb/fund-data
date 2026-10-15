@@ -6,6 +6,24 @@
   'use strict';
   const DAY = 86400000;
   const gapDays = { daily: 10, weekly: 15, monthly: 65, quarterly: 140 };
+  function viewFromHash(hash, data) {
+    const [route, query] = String(hash || '').split('?');
+    if (route !== '#market-history' || !query || !data?.markets?.length) return null;
+    const params = new URLSearchParams(query);
+    const market = data.markets.find(m => m.id === params.get('market')) || data.markets[0];
+    let metric = params.get('metric');
+    if (metric === 'vix' || metric === 'vxn') metric = market.id === 'ndx' ? 'vxn' : 'vix';
+    const metrics = [...market.metrics, ...(data.context?.metrics || [])];
+    return {market: market.id, metric: metrics.some(m => m.id === metric) ? metric : market.metrics[0].id,
+      years: [5, 10, 20].includes(Number(params.get('years'))) ? Number(params.get('years')) : 20};
+  }
+  function viewHash(view) {
+    return '#market-history?' + new URLSearchParams({market: view.market, metric: view.metric, years: String(view.years)});
+  }
+  function knowledgeTopic(metric) {
+    return ({pe:'valuation',vix:'vix',vxn:'vix',rv21:'vix',drawdown:'vix',mdd252:'vix',
+      yield10y:'bond',real10y:'realrate',curve10_2:'curve',nfci:'liquidity'})[metric] || null;
+  }
   function shanghaiDate(now = new Date()) {
     const parts = new Intl.DateTimeFormat('en', {timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now);
     const date = Object.fromEntries(parts.map(p => [p.type,p.value]));
@@ -330,7 +348,7 @@
     a.events.forEach(e=>rows.push([market.symbol,a.metric.id,a.metric.source,a.metric.valuationBasis||a.metric.basis,a.metric.vintage||'published_history',a.sampling,e.date,e.value,e.outcome,a.kind==='risk'?'annualized_vol_pct':a.annual?'annualized_price_return_pct':'price_return_pct',e.entryDate,e.exitDate,e.entryPrice,e.exitPrice,e.returnPct,e.annualizedPct,e.realizedVol,e.drawdownPct,'price_index','USD',market.prices.source]));
     return '\uFEFF'+rows.map(row=>row.map(cell).join(',')).join('\r\n')+'\r\n';
   }
-  return { shanghaiDate, observationFreshness, eligibleMetric, windowStart, quantile, percentile, summarize, downsample, segments, histogram, csv,
+  return { viewFromHash, viewHash, knowledgeTopic, shanghaiDate, observationFreshness, eligibleMetric, windowStart, quantile, percentile, summarize, downsample, segments, histogram, csv,
     priceHistory, overlay, nearestObservation, annualRows, annualCSV,
     stateBand, inBand, outcomeStats, nonOverlapping, forwardOutcome, study, studyCSV, horizons,
     regression, relationStats, disjointObservations, monthOffset, pathOutcome, relationship, relationshipCSV };

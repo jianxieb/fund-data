@@ -8,7 +8,19 @@
   const fmt=(v,n=2)=>Number(v).toLocaleString('zh-CN',{minimumFractionDigits:n,maximumFractionDigits:n});
   const signed=(v,n=2)=>(v>0?'+':'')+fmt(v,n);
   const btn=(label,action,value,cls='',attrs='')=>`<button type="button" class="${cls}" data-gf="${action}" data-value="${esc(value)}" ${attrs}>${esc(label)}</button>`;
-  let ctx;
+  let ctx,lastHash;
+  function readLocation() {
+    if(typeof location==='undefined'||location.hash===lastHash)return;
+    const next=M.viewFromHash(location.hash,D,S);
+    if(next)Object.assign(state,next);
+    lastHash=location.hash;
+  }
+  function writeLocation() {
+    if(typeof location==='undefined'||typeof history==='undefined'||location.hash.split('?')[0]!=='#global-finance')return;
+    const hash=M.viewHash(state);
+    if(location.hash!==hash)history.replaceState(history.state,'',hash);
+    lastHash=hash;
+  }
   function refs(ids) {
     return `<div class="gf-refs">${[...new Set(ids)].map(id=>{const s=D.sources[id];return `<a href="${esc(s[1])}" target="_blank" rel="noopener noreferrer">${esc(s[0])} ↗</a>`;}).join('')}</div>`;
   }
@@ -31,7 +43,8 @@
   }
   function topicDetail(t) {
     if(!t)return `<div class="gf-empty"><h2>没有匹配的知识条目</h2><p>试试“美元”“房贷”“PE”“通胀”或英文缩写，也可以清除筛选。</p>${btn('清除筛选','clear','','gf-primary')}</div>`;
-    return `<article class="gf-topic-detail" aria-labelledby="gf-topic-title"><header><span class="gf-caption">${esc(D.categories.find(c=>c.id===t.category).name)} · ${esc(t.en)}</span><h2 id="gf-topic-title">${esc(t.name)}</h2><p class="gf-definition">${esc(t.definition)}</p></header><section><h3>一条具体的传导示例</h3><ol class="gf-topic-chain">${t.chain.map(x=>`<li>${esc(x)}</li>`).join('')}</ol></section><section class="gf-example"><h3>放进一个例子里</h3><p>${esc(t.example)}</p></section><section class="gf-pitfall"><h3>容易误解的地方</h3><p>${esc(t.pitfall)}</p></section><section><h3>观察什么来验证</h3><ul class="gf-watch">${t.watch.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></section><section class="gf-related"><h3>连接到其他知识</h3>${t.related.map(id=>topicLink(id)).join('')}</section><details class="gf-topic-sources"><summary>来源与延伸阅读</summary>${refs(t.refs)}<p>定义依据来源整理；传导判断为条件分析，数字例子除标注日期者外均为教学假设。</p></details></article>`;
+    const study=M.researchLink(t.id);
+    return `<article class="gf-topic-detail" aria-labelledby="gf-topic-title"><header><span class="gf-caption">${esc(D.categories.find(c=>c.id===t.category).name)} · ${esc(t.en)}</span><h2 id="gf-topic-title">${esc(t.name)}</h2><p class="gf-definition">${esc(t.definition)}</p></header><section><h3>一条具体的传导示例</h3><ol class="gf-topic-chain">${t.chain.map(x=>`<li>${esc(x)}</li>`).join('')}</ol></section><section class="gf-example"><h3>放进一个例子里</h3><p>${esc(t.example)}</p></section><section class="gf-pitfall"><h3>容易误解的地方</h3><p>${esc(t.pitfall)}</p></section><section><h3>观察什么来验证</h3><ul class="gf-watch">${t.watch.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>${study?`<a class="gf-study-link" href="${esc(study.href)}">查看历史叠图：${esc(study.label)} ↗</a>`:''}</section><section class="gf-related"><h3>连接到其他知识</h3>${t.related.map(id=>topicLink(id)).join('')}</section><details class="gf-topic-sources"><summary>来源与延伸阅读</summary>${refs(t.refs)}<p>定义依据来源整理；传导判断为条件分析，数字例子除标注日期者外均为教学假设。</p></details></article>`;
   }
   function libraryView() {
     const found=M.searchTopics(D.topics,state.query,state.category);
@@ -84,7 +97,10 @@
   function view(context) {
     ctx=context;
     if(!D||!M||!S)return '<section class="gf-empty"><h1>全球金融</h1><p>知识内容加载失败，请刷新重试。</p></section>';
-    return `<div id="global-finance-root"><header class="gf-page-head"><div><h1>全球金融</h1><p>从美元利率到黄金、房贷与企业利润，看懂金融世界的连接。</p></div><span>${D.categories.length}个领域 · ${D.topics.length}个主题</span></header>${nav(panels,state.panel,'panel','全球金融内容')}<div class="gf-panel" id="gf-panel">${({map:mapView,policy:policyView,library:libraryView,lab:labView})[state.panel]()}</div><footer class="gf-page-footer"><span>机制图解释条件与方向；计算实验采用明确假设。</span><details><summary>资料与更新说明</summary><p>政策快照核对日：${D.checkedAt}。超过${D.reviewAfterDays}天会提示重新核对，不会把旧决定自动当成实时政策。知识条目及情景附有原始来源；机构研究代表作者分析，新华社条目为对人民银行例会的报道。</p><p>当前政策核对与长期知识分别维护，教学示例没有混用成历史数据。</p></details></footer></div>`;
+    readLocation();
+    const panel=({map:mapView,policy:policyView,library:libraryView,lab:labView})[state.panel]();
+    writeLocation();
+    return `<div id="global-finance-root"><header class="gf-page-head"><div><h1>全球金融</h1><p>从美元利率到黄金、房贷与企业利润，看懂金融世界的连接。</p></div><span>${D.categories.length}个领域 · ${D.topics.length}个主题</span></header>${nav(panels,state.panel,'panel','全球金融内容')}<div class="gf-panel" id="gf-panel">${panel}</div><footer class="gf-page-footer"><span>机制图解释条件与方向；计算实验采用明确假设。</span><details><summary>资料与更新说明</summary><p>政策快照核对日：${D.checkedAt}。超过${D.reviewAfterDays}天会提示重新核对，不会把旧决定自动当成实时政策。知识条目及情景附有原始来源；机构研究代表作者分析，新华社条目为对人民银行例会的报道。</p><p>当前政策核对与长期知识分别维护，教学示例没有混用成历史数据。</p></details></footer></div>`;
   }
   document.addEventListener('click',event=>{
     const control=event.target.closest('[data-gf]');
@@ -113,6 +129,7 @@
     const unit=['years','mortgageYears'].includes(key)?'年':'%';
     document.querySelector('#gf-output-'+key).textContent=fmt(state[key],Number.isInteger(Number(el.step))?0:2)+unit;
     document.querySelector('#gf-lab-result').innerHTML=labOutput();
+    writeLocation();
   });
   document.addEventListener('change',event=>{
     if(event.target.dataset.gfInput!=='category'||!ctx)return;

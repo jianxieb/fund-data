@@ -34,7 +34,19 @@
   const button = (label,action,value='',cls='',attrs='') => `<button type="button" data-market-action="${action}" data-value="${esc(value)}" class="${cls}" ${attrs}>${label}</button>`;
   const link = (url,label) => /^https:\/\//.test(url||'') ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(label)} ↗</a>` : esc(label);
   const sourceLabel = metric => metric.source.startsWith('jiucai-')?'韭圈 · 整体法':metric.source.startsWith('yahoo-')?'Yahoo Finance':metric.source.startsWith('treasury-')?'美国财政部':metric.source==='nfci'?'芝加哥联储':'Cboe';
-  let ctx, summaries = new Map(), plots = new Map();
+  let ctx, lastHash, summaries = new Map(), plots = new Map();
+  function readLocation() {
+    if (typeof location === 'undefined' || location.hash === lastHash) return;
+    const next = M.viewFromHash(location.hash,state.data);
+    if (next) { Object.assign(state,next); state.allYears=false; }
+    lastHash=location.hash;
+  }
+  function writeLocation() {
+    if (typeof location === 'undefined' || typeof history === 'undefined' || location.hash.split('?')[0]!=='#market-history') return;
+    const hash=M.viewHash(state);
+    if (location.hash!==hash) history.replaceState(history.state,'',hash);
+    lastHash=hash;
+  }
   function summary(market,metric) {
     const checkedOn = M.shanghaiDate(), key = `${market.id}:${metric.id}:${state.years}:${checkedOn}`;
     if (!summaries.has(key)) summaries.set(key,M.summarize(metric,state.data.asOf,state.years,checkedOn));
@@ -52,7 +64,7 @@
       state.data=data; summaries=new Map();
     }).catch(()=>{state.error=true;}).finally(()=>{
       state.loading=false;
-      if (location.hash==='#market-history') ctx.render();
+      if (location.hash.split('?')[0]==='#market-history') ctx.render();
     });
   }
   function group(action,options,current,label) {
@@ -114,6 +126,7 @@
     if(a.error)return `<section class="mh-panel"><p class="mh-unavailable">${a.error}</p></section>`;
     const s=a.summary,last=a.timeline.at(-1),p=a.prices.at(-1),priceFreshness=M.observationFreshness(p[0],'daily',checkedOn);
     const sameFreshness=priceFreshness.stale&&s.stale&&p[0]===s.last[0]&&priceFreshness.threshold===s.threshold;
+    const topic=M.knowledgeTopic(metric.id);
     const freshnessWarnings=sameFreshness?[freshnessNote('指数与'+metric.label,p[0],s)]:[priceFreshness.stale?freshnessNote('指数',p[0],priceFreshness):'',s.stale?freshnessNote(metric.label,s.last[0],s):''].filter(Boolean);
     return `<section class="mh-panel mh-main-chart" id="mh-main-chart"><header class="mh-section-head"><div><span class="mh-kicker">01 / 同一时间，看价格与指标</span><h2>${market.name} · 价格与${esc(metric.label)}</h2></div>${metricSelect(market,metric)}</header>
       <div class="mh-readings"><div><span>${priceFreshness.stale?'末次指数收盘':'指数收盘'} <small>${p[0]}</small></span><strong>${fmt(p[1])}<small>点</small></strong></div><div><span>${s.stale?'末次观测 · ':''}${esc(metric.label)} <small>${s.last[0]}</small></span><strong class="mh-indicator-ink">${fmt(s.last[1])}<small>${metric.unit}</small></strong></div><div><span>${rankPeriod(s)}</span><strong>${rankLabel(s)}</strong></div><div><span>历史中位数</span><strong>${fmt(s.median)}<small>${metric.unit}</small></strong></div></div>
@@ -122,7 +135,7 @@
       <div class="mh-cross-readout" aria-live="off"><time data-readout-date>${last.date}</time><span class="mh-price-ink">${market.name} <b data-readout-price>${last.price===null?'无同日观测':fmt(last.price)+' 点'}</b></span><span class="mh-indicator-ink">${esc(metric.label)} <b data-readout-metric>${last.value===null?'无同日观测':fmt(last.value)+' '+metric.unit}</b></span><small>移到图上查看同日读数</small></div>
       ${overlayChart(market,metric,a)}
       <p class="mh-chart-reading">${s.stale?`截至 ${s.last[0]} 的历史读数处于可用样本的 <b>${fmt(s.percentile,1)}%</b> 分位。`:`${esc(guides[metric.id]||'')} 当前处于可用历史的 <b>${fmt(s.percentile,1)}%</b> 分位。`}</p>
-      <footer class="mh-chart-foot"><span>${sourceLabel(metric)} · ${frequencies[metric.frequency]} · 指标覆盖 ${s.points[0][0]} — ${s.last[0]}${s.gaps.length?' · 缺口断线':''}</span>${button('本指标数据与口径 ↗','detail',`${owner.id}:${metric.id}`,'mh-text-button')}</footer>
+      <footer class="mh-chart-foot"><span>${sourceLabel(metric)} · ${frequencies[metric.frequency]} · 指标覆盖 ${s.points[0][0]} — ${s.last[0]}${s.gaps.length?' · 缺口断线':''}</span><div class="mh-chart-links">${topic?`<a href="#global-finance?panel=library&topic=${topic}">理解这个指标 ↗</a>`:''}${button('本指标数据与口径 ↗','detail',`${owner.id}:${metric.id}`,'mh-text-button')}</div></footer>
     </section>`;
   }
   function rankCell(s) {
@@ -165,6 +178,7 @@
     ctx=context; plots=new Map();
     const header=`<header class="mh-report-head"><div><div class="eyebrow">MARKET HISTORY / 长衡研究</div><h1>历史分位</h1><p>看当前所处的位置，也看同一时期的价格表现。</p></div><div class="mh-report-meta"><span>数据截至</span><b>${state.data?.asOf||'—'}</b>${button('数据来源与缺口 ↗','sources','','mh-text-button')}</div></header>`;
     if(!state.data){if(!state.loading&&!state.error)load();return header+`<div class="mh-loading" role="status">${state.error?'历史数据加载失败。'+button('重新加载','retry','','btn'):'正在载入历史观测数据…'}</div>`;}
+    readLocation();writeLocation();
     const {market,owner,metric}=active();
     return `<div class="mh-report">${header}<div class="mh-toolbar">${group('market',[['spx','标普500'],['ndx','纳斯达克100']],state.market,'观察指数')}<div class="mh-control-block"><span>历史窗口</span>${group('years',[[5,'5年'],[10,'10年'],[20,'20年']],state.years,'历史区间')}</div></div>${mainChart(market,owner,metric)}${overviewTable(market)}${annualSection(market,metric)}<footer class="mh-report-foot"><span>指数点位与收益均为美元价格口径，不含分红、税费。双轴只对齐时间，不比较两条线的高低或交叉。</span>${button('打印 / 保存PDF','print','','mh-text-button')}</footer></div>`;
   }
@@ -225,7 +239,7 @@
   function selectMetric(value,scroll=false) {
     const market=state.data.markets.find(m=>m.id===state.market);
     if(![...market.metrics,...state.data.context.metrics].some(m=>m.id===value))return;
-    state.metric=value;ctx.render();
+    state.metric=value;writeLocation();ctx.render();
     if(scroll)document.querySelector('#mh-main-chart')?.scrollIntoView({block:'start'});
     document.querySelector('[data-market-select="metric"]')?.focus({preventScroll:true});
   }
@@ -253,7 +267,7 @@
     }else if(action==='years'&&[5,10,20].includes(+value)){state.years=+value;state.allYears=false;}
     else if(action==='all-years')state.allYears=!state.allYears;
     else return;
-    ctx.render();document.querySelector(`[data-market-action="${action}"][data-value="${value}"]`)?.focus({preventScroll:true});
+    writeLocation();ctx.render();document.querySelector(`[data-market-action="${action}"][data-value="${value}"]`)?.focus({preventScroll:true});
   });
   window.ChanghengMarketHistory={view};
 })();

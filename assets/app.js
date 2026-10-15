@@ -1044,7 +1044,7 @@
     bindAutoLoad();
   }
   function route() {
-    const hash = location.hash.replace('#', ''), legacy = { us: 'funds', cn: 'funds', cnidx: 'indices', stock: 'stocks' };
+    const hash = location.hash.replace('#', '').split('?')[0], legacy = { us: 'funds', cn: 'funds', cnidx: 'indices', stock: 'stocks' };
     if (hash === 'main') { $('#main').focus(); return; }
     if (hash === 'us') { state.fundTab = 'all'; state.poolCategory = 'overseas'; }
     if (hash === 'cn') state.fundTab = 'equity';

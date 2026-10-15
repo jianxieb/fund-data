@@ -4,6 +4,27 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const M = require('../assets/market-history-model.js');
 
+test('historical chart links restore index, exact metric and window independently of previous state',()=>{
+  const data=require('../data/market-history.json');
+  for(const market of data.markets)for(const metric of [...market.metrics,...data.context.metrics])for(const years of [5,10,20]) {
+    const view={market:market.id,metric:metric.id,years};
+    assert.deepEqual(M.viewFromHash(M.viewHash(view),data),view);
+  }
+  assert.equal(M.viewFromHash('#market-history',data),null);
+  assert.equal(M.viewFromHash('#funds?market=ndx',data),null);
+});
+test('historical chart URLs cannot request an unpublished metric or mix VIX with Nasdaq 100',()=>{
+  const data=require('../data/market-history.json');
+  assert.deepEqual(M.viewFromHash('#market-history?market=ndx&metric=vix&years=10',data),{market:'ndx',metric:'vxn',years:10});
+  assert.deepEqual(M.viewFromHash('#market-history?market=spx&metric=vxn&years=5',data),{market:'spx',metric:'vix',years:5});
+  assert.deepEqual(M.viewFromHash('#market-history?market=unknown&metric=forward-pe&years=3',data),{market:'spx',metric:'pe',years:20});
+  assert.deepEqual(M.viewFromHash('#market-history?market=%3Cscript%3E&metric=%3Cscript%3E&years=Infinity',data),{market:'spx',metric:'pe',years:20});
+  const topics=require('../data/global-finance.js').topics;
+  for(const market of data.markets)for(const metric of [...market.metrics,...data.context.metrics]) {
+    const id=M.knowledgeTopic(metric.id);if(id)assert.ok(topics.some(t=>t.id===id));
+  }
+});
+
 async function renderReport(data, checkedOn = data.asOf) {
   let finish;
   const ready = new Promise(resolve => { finish = resolve; });

@@ -5,6 +5,35 @@ const D=require('../data/global-finance.js');
 const S=require('../data/global-finance-scenarios.js');
 const close=(a,b,tolerance=1e-8)=>assert.ok(Math.abs(a-b)<tolerance,`${a} differs from ${b}`);
 
+test('knowledge links preserve selected topic and multilingual filters on a fresh visit',()=>{
+  const view={panel:'library',topic:'valuation',category:'equity',query:'PE 与盈利 & 风险'};
+  assert.deepEqual(M.viewFromHash(M.viewHash(view),D,S),view);
+  assert.deepEqual(M.viewFromHash('#global-finance?panel=library&topic=valuation',D,S),{panel:'library',topic:'valuation',category:'all',query:''});
+  assert.equal(M.viewFromHash('#global-finance',D,S),null);
+  assert.equal(M.viewFromHash('#funds?panel=library',D,S),null);
+});
+test('calculation links restore the assumptions that produced the displayed result',()=>{
+  for(const view of [{panel:'lab',lab:'fx',asset:17,fx:-13},{panel:'lab',lab:'inflation',inflation:4.5,years:17},{panel:'lab',lab:'bond',yield:6.25},{panel:'lab',lab:'mortgage',mortgageRate:3.75,mortgageYears:25}]) {
+    assert.deepEqual(M.viewFromHash(M.viewHash(view),D,S),view);
+  }
+  assert.deepEqual(M.viewFromHash('#global-finance?panel=lab&lab=fx&asset=1000&fx=NaN',D,S),{panel:'lab',lab:'fx',asset:10,fx:-8});
+  assert.deepEqual(M.viewFromHash('#global-finance?panel=map&scenario=not-a-scenario',D,S),{panel:'map',scenario:S[0].id});
+  const safe=M.viewFromHash('#global-finance?panel=library&topic=%3Cscript%3E&category=invalid&q='+ 'a'.repeat(300),D,S);
+  assert.equal(safe.topic,'dollar');assert.equal(safe.category,'all');assert.equal(safe.query.length,200);
+});
+test('knowledge research links resolve only to metrics actually published for the named index',()=>{
+  const history=require('../data/market-history.json');
+  const H=require('../assets/market-history-model.js');
+  for(const topic of D.topics){
+    const link=M.researchLink(topic.id);if(!link)continue;
+    const view=H.viewFromHash(link.href,history),market=history.markets.find(m=>m.id===view.market);
+    assert.ok([...market.metrics,...history.context.metrics].some(m=>m.id===new URLSearchParams(link.href.split('?')[1]).get('metric')));
+    assert.ok(link.label.includes('标普500'));assert.equal(view.years,20);
+  }
+  assert.equal(M.researchLink('gold'),null);
+  assert.equal(M.researchLink('unknown'),null);
+});
+
 test('fixed coupon bonds price at par when coupon and yield agree for all displayed maturities',()=>{
   for(const years of [2,10,30]) close(M.bondPrice({coupon:4,yieldRate:4,years}),100);
 });
