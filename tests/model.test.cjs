@@ -277,6 +277,23 @@ test('monthly investing pays minimum commission each time and rejects unaffordab
   assert.match(M.buyLocationResult(data, { ...config, monthlyAmount: 5 }).rows[0].error, /最低手续费/);
 });
 
+test('domestic exchange liquidation rejects proceeds at or below minimum commission', () => {
+  const series = [['2020-01-01', 100], ['2021-01-01', 100]];
+  const data = buyData([{code:'CN',channel:'exchange',series,navSeries:series}]);
+  const config = {...buyConfig,fees:{...freeFees,exchangeMinimum:5}};
+  for (const lumpAmount of [6,10]) {
+    const row=M.buyLocationResult(data,{...config,lumpAmount}).rows[0];
+    assert.match(row.error,/卖出金额不足以支付最低手续费/);
+    assert.equal(row.terminal,undefined);
+    assert.equal(row.totalReturn,undefined);
+  }
+  const row=M.buyLocationResult(data,{...config,lumpAmount:10.01}).rows[0];
+  assert.equal(row.error,undefined);
+  close(row.terminal,0.01);
+  close(row.transactionCost,10);
+  assert.ok(row.totalReturn>-100);
+});
+
 test('already-net NAV and ETF returns are never charged annual expenses twice', () => {
   const p = { fee: [1, 0.2, 0.5], returnPeriods: [{ years: 1, start: '2020-01-01', end: '2021-01-01' }] };
   assert.equal(M.returnWithAnnualFees(10, p, 1), 10);

@@ -461,6 +461,7 @@
         beforeCapitalTax = (gross - fee) * finalFx * (1 - fees.fxSpread / 100);
       } else if (product.channel === 'exchange') {
         const fee = Math.max(gross * fees.exchangeCommission / 100, fees.exchangeMinimum);
+        if (fee >= gross) return { code: product.code, error: '卖出金额不足以支付最低手续费' };
         transactionCost += fee;
         beforeCapitalTax = gross - fee;
       } else {
