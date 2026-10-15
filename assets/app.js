@@ -177,10 +177,10 @@
       ['money-flow', 'CROSS-BORDER MONEY', '跨境资金', '沿内地银行、香港银行、买股账户和回款路径，逐步查看费用与可用余额。', ['汇款与换汇', '账户费用', '回款与消费']],
       ['portfolio', 'PORTFOLIO RESEARCH', '组合模拟', '把ETF、个股和基金组合起来，检验权重、定投和再平衡后的实际资金收益。', ['自由配置', '资金与组合收益', '持仓贡献']]
     ];
-    return head('LONG-TERM INVESTMENT RESEARCH', '长期表现，值得仔细比较。', '在市场、公司与投入方式之间，找到自己的长期尺度。') + marketOverview +
-      '<div class="home-section-title home-research-title"><h2>研究方向</h2><span>回报 · 风险 · 成本</span></div><div class="research-entry-grid home-four">' + entries.map(([route, id, title, desc, no, group, count, topics]) =>
+    return head('GLOBAL INVESTMENT RESEARCH', '理解市场，研究资产，检验方案。', '面向中国个人投资者的全球投资研究工作台。从宏观与公司研究，到历史回测、组合模拟、税费与资金路径，为投资判断提供依据。') + marketOverview +
+      '<div class="home-section-title home-research-title"><h2>从资产与持有期开始</h2><span>回报 · 风险 · 成本</span></div><div class="research-entry-grid home-four">' + entries.map(([route, id, title, desc, no, group, count, topics]) =>
         '<a class="home-entry" href="#' + route + '" data-home-tab="' + id + '"><span class="home-entry-top"><span class="eyebrow">' + no + ' / ' + group + '</span><span class="home-entry-arrow" aria-hidden="true">' + entryArrow() + '</span></span><span class="home-entry-body"><strong>' + title + '</strong><span>' + desc + '</span></span><span class="home-entry-foot"><b>' + count + '</b><span>' + topics + '</span></span></a>').join('') + '</div>' +
-      '<div class="home-section-title home-research-title"><h2>市场背景、公司与资金安排</h2></div><div class="home-secondary">' + followups.map(([route, group, title, desc, tags]) =>
+      '<div class="home-section-title home-research-title"><h2>继续研究市场、公司与投资方案</h2></div><div class="home-secondary">' + followups.map(([route, group, title, desc, tags]) =>
         '<a class="home-secondary-card" href="#' + route + '"><span class="eyebrow">' + group + '</span><span class="home-secondary-title"><strong>' + title + '</strong><span class="home-entry-arrow" aria-hidden="true">' + entryArrow() + '</span></span><p>' + desc + '</p><span class="home-tags">' + tags.map(t => '<span>' + t + '</span>').join('') + '</span></a>').join('') + '</div>';
   }
   function holdingPeriod() {
@@ -1038,7 +1038,7 @@
   function render() {
     const renderers = { overview: home, indices, 'market-history': marketHistory, 'holding-period': holdingPeriod, 'global-finance': globalFinance, funds: fundView, stocks, reports: reportsView, strategy: strategies, 'buy-location': buyLocation, 'money-flow': moneyFlow, portfolio, quality };
     const focus = captureFocus(document.activeElement);
-    document.title = '长衡 · ' + titles[state.route];
+    document.title = '长衡 · ' + (state.route === 'overview' ? '全球投资研究工作台' : titles[state.route]);
     const group = { indices: '研究对象', 'market-history': '研究对象', 'global-finance': '研究方法', 'holding-period': '研究方法', funds: '研究对象', stocks: '研究对象', reports: '研究对象', strategy: '研究方法', 'buy-location': '研究方法', 'money-flow': '研究方法', portfolio: '组合研究' }[state.route];
     $('#breadcrumb').innerHTML = (group ? '<span>' + group + '</span><span class="breadcrumb-separator" aria-hidden="true">/</span>' : '') + (state.route === 'reports' ? '<a href="#stocks">个股深入</a><span class="breadcrumb-separator" aria-hidden="true">/</span>' : '') + '<span aria-current="page">' + titles[state.route] + '</span>';
     $$('[data-route]').forEach(a => { const active = a.dataset.route === (state.route === 'reports' ? 'stocks' : state.route); a.classList.toggle('active', active); if (active) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
