@@ -10,10 +10,31 @@ from urllib.error import URLError
 
 from scripts.refresh_money_flow_quotes import (parse_boc, parse_cmb, parse_bochk, parse_icbc,
     parse_ccb, parse_abc, parse_comm, parse_hsbc, parse_cib, parse_hsbc_hk, parse_hang_hk,
-    hkd_cross_quotes, parse_hang_cn, parse_icbc_asia, validate_quote, merge_bank, read_snapshot, fetch_bank, main)
+    hkd_cross_quotes, parse_hang_cn, parse_icbc_asia, parse_ccb_asia, validate_quote, merge_bank, read_snapshot, fetch_bank, main)
 
 
 class BankQuotesTests(unittest.TestCase):
+    def test_ccb_asia_uses_visible_ordinary_tt_prices_and_preserves_mainland_quotes(self):
+        raw = (Path(__file__).parent / 'fixtures' / 'ccb-asia-fx-20261015.js').read_text()
+        quotes = parse_ccb_asia(raw)
+        self.assertEqual(quotes, {'HKD': {'bidPerUsd': 7.8242, 'askPerUsd': 7.8727, 'asOf': '2026-10-15 10:23:58'}})
+        # The source repeats ExR_Grp: a plain JSON parse would select tier 301.
+        self.assertNotEqual(quotes['HKD']['bidPerUsd'], 7.8268)
+        self.assertNotEqual(quotes['HKD']['bidPerUsd'], 7.8468)  # Interbank price.
+        snapshot = {'banks': {'ccb': {'quotes': {'USD': {'buy': 6.68, 'sell': 6.71}}}}}
+        original = copy.deepcopy(snapshot['banks'])
+        merge_bank(snapshot, 'ccb-asia', quotes)
+        self.assertEqual(snapshot['banks'], original)
+        self.assertEqual(snapshot['offshoreUsd']['ccb-asia']['quotes'], quotes)
+        self.assertNotIn('CNH', quotes)
+        for bad in [raw.replace('"210"', '"999"'), raw.replace('"7.8242"', '"-7.8242"'), 'var x = "not a quote";']:
+            with self.assertRaises(ValueError):
+                parse_ccb_asia(bad)
+        older = copy.deepcopy(quotes)
+        older['HKD']['asOf'] = '2026-10-14 10:23:58'
+        with self.assertRaisesRegex(ValueError, 'regress'):
+            merge_bank(snapshot, 'ccb-asia', older)
+
     def test_icbc_asia_current_fractional_timestamp_refreshes_on_python_39(self):
         raw = json.loads((Path(__file__).parent / 'fixtures' / 'icbc-asia-fx-fractional-20261012.json').read_text())
         quotes = parse_icbc_asia(raw)

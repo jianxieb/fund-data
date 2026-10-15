@@ -1232,7 +1232,7 @@ function moneyUi(input, quotes = cibQuotes, date = '2026-10-09', data = D, legac
   // Existing test scenarios intentionally exercise unqualified accounts. Keep
   // those assumptions explicit; fresh and legacy defaults have their own tests.
   let saved = input == null || legacy ? input : { hsbcBalanceWaiver: false, cnHsbcFeeWaived: false,
-    cnHangFeeWaived: false, cnScFeeWaived: false, ...input, bankFeeDefaultsVersion: 1 }, modal = '';
+    cnHangFeeWaived: false, cnScFeeWaived: false, consumptionVersion: 2, ...input, bankFeeDefaultsVersion: 1 }, modal = '';
   const context = { window: { MONEY_FLOW: data, MONEY_FLOW_QUOTES: quotes, ChanghengMoneyFlowModel: M },
     document: { querySelectorAll: () => [], getElementById: () => null },
     localStorage: { getItem: () => JSON.stringify(saved), setItem: (_, v) => { saved = JSON.parse(v); } },
@@ -1618,6 +1618,8 @@ test('ICBC Asia RMB identity controls belong to receipt or consumption, and do n
   assert.equal((html.match(/class="flow-error"/g) || []).length, 1);
   ui.check('icbcCnhAccount', true); ui.act('choose', 'route', 'USD');
   ui.act('choose', 'outcome', 'cnh-card'); html = ui.render();
+  assert.equal((html.match(/data-money-check="icbcCnhAccount"/g) || []).length, 0);
+  ui.act('choose', 'cardMode', 'cnh'); html = ui.render();
   assert.equal((html.match(/data-money-check="icbcCnhAccount"/g) || []).length, 1);
   ui.act('detail', '', 'edge-04'); assert.ok(ui.modal().includes(D.sources.icbcAsiaCard.url));
   ui.act('choose', 'outcome', 'usd-balance');
@@ -1689,7 +1691,7 @@ test('saved SC local USD wires migrate to its published clearing channel without
     assert.match(ui.modal(), /data-value="chats"/);
     for (const field of ['bank', 'broker', 'returnBank']) {
       ui.act('pick', '', field);
-      assert.equal((ui.modal().match(new RegExp('data-field="' + field + '"', 'g')) || []).length, field === 'broker' ? 5 : 6);
+      assert.equal((ui.modal().match(new RegExp('data-field="' + field + '"', 'g')) || []).length, field === 'broker' ? 5 : field === 'returnBank' ? 7 : 6);
     }
     const restored = moneyUi(ui.saved(), quotes, '2026-10-11'); restored.render();
     assert.equal(restored.saved().depositMethod, 'chats');
@@ -1728,7 +1730,7 @@ test('direct corporate CHATS choices name their receiving bank and retain indepe
       assert.equal(restored.saved().depositMethod, method);
       ui.act('pick', '', 'depositMethod');
     }
-    for (const field of ['bank', 'broker', 'returnBank']) { ui.act('pick', '', field); assert.equal((ui.modal().match(new RegExp('data-field="' + field + '"', 'g')) || []).length, field === 'broker' ? 5 : 6); }
+    for (const field of ['bank', 'broker', 'returnBank']) { ui.act('pick', '', field); assert.equal((ui.modal().match(new RegExp('data-field="' + field + '"', 'g')) || []).length, field === 'broker' ? 5 : field === 'returnBank' ? 7 : 6); }
     ui.act('pick', '', 'depositMethod');
     assert.match(ui.modal(), /经本人.*USD账户 → 同行入金/);
   }
@@ -1849,7 +1851,7 @@ test('personal-bank funding keeps the receiving bank and broker independent and 
   assert.equal(restored.saved().depositMethod, 'via-bochk');
   for (const field of ['bank', 'broker']) {
     restored.act('pick', '', field);
-    assert.equal((restored.modal().match(new RegExp('data-field="' + field + '"', 'g')) || []).length, field === 'broker' ? 5 : 6);
+    assert.equal((restored.modal().match(new RegExp('data-field="' + field + '"', 'g')) || []).length, field === 'broker' ? 5 : field === 'returnBank' ? 7 : 6);
   }
   restored.act('choose', 'bank', 'hsbc');
   assert.equal(restored.saved().broker, 'usmart'); assert.equal(restored.saved().depositMethod, 'via-bochk');
@@ -2118,7 +2120,7 @@ test('the terminal balance reconciles with the summary after bank period fees an
     const input = M.calculatorRoute({ budgetCny: 100000, count: 1, months: 12, date: '2026-10-11',
       startBank: 'cib', bank: 'hsbc', broker: 'hsbc', returnBank: 'hsbc', exitBank: 'cib',
       route: 'USD', mainlandMethod: 'swift', depositMethod: 'internal', returnMethod: 'swift',
-      outcome, profitUsd: 1000, taxRate: 20, returnExtraCny: 0, hsbcBalanceWaiver: false, cnHsbcFeeWaived: false });
+      outcome, profitUsd: 1000, taxRate: 20, returnExtraCny: 0, exitPrice: outcome === 'cnh-card' ? 6.68 : '', hsbcBalanceWaiver: false, cnHsbcFeeWaived: false });
     const ui = moneyUi(input, q, '2026-10-11'), html = ui.render(), r = M.calculatorJourney({ ...ui.saved(), date: '2026-10-11', sellDate: '2026-10-11' }, D, q).selected;
     assert.ok(r, outcome); assert.ok(r.rows.find(row => row.key === 'account').cny > 0); assert.ok(r.taxCny > 0);
     const terminal = html.split(['broker-balance', 'usd-balance'].includes(outcome) ? 'aria-label="卖出后的资金"' : 'aria-label="资金终点"')[1].split('</section>')[0];
@@ -2164,7 +2166,7 @@ test('missing source evidence cannot hide later account choices or the default p
   assert.doesNotMatch(ui.modal(), /\bdisabled\b/);
 });
 
-test('HK bank conversions use the selected bank and reconcile each leg through HKD', () => {
+test('entry HKD cross trades stay explicit and cannot masquerade as a direct RMB consumption quote', () => {
   const q = structuredClone(cibQuotes);
   const market = { bidPerUsd: 6.5, askPerUsd: 8 / 1.1, asOf: '2026-10-09 12:00:00', path: 'via-HKD',
     legs: { usdBuy: 7.8, usdSell: 8, cnhBuy: 1.1, cnhSell: 1.2 } };
@@ -2174,20 +2176,23 @@ test('HK bank conversions use the selected bank and reconcile each leg through H
     months: 0, tradeFeeUsd: 0, entryPrice: '', exitPrice: '' };
   const r = M.calculatorJourney(config, D, q).selected;
   close(r.steps.fundedUsd, 100000 * 1.1 / 8);
-  close(r.net, r.steps.returnUsd * 7.8 / 1.2);
-  close(r.entryPrice, 8 / 1.1); close(r.exitPrice, 6.5);
-  assert.equal(r.indicativeFx, ''); assert.equal(r.indicativeExit, false);
-  for (const key of ['brokerSpread', 'exitFx']) {
-    const row = r.rows.find(x => x.key === key);
-    assert.equal(row.exchanges.length, 2);
-    close(row.items.reduce((sum, x) => sum + x.cny, 0), row.cny);
-    close(row.exchanges[0].output, row.exchanges[1].input);
-    assert.equal(row.path[1], 'HKD');
-  }
+  close(r.entryPrice, 8 / 1.1);
+  assert.equal(r.indicativeFx, ''); assert.equal(r.indicativeExit, true);
+  const entry = r.rows.find(x => x.key === 'brokerSpread');
+  assert.equal(entry.exchanges.length, 2);
+  close(entry.items.reduce((sum, x) => sum + x.cny, 0), entry.cny);
+  close(entry.exchanges[0].output, entry.exchanges[1].input);
+  assert.equal(entry.path[1], 'HKD');
+  assert.equal(r.rows.find(x => x.key === 'exitFx').cny, null);
+  assert.match(r.exitIssue, /USD\/CNH直接报价尚未取得/);
+  const direct = M.calculatorJourney({ ...config, exitPrice: 6.6 }, D, q).selected;
+  close(direct.net, direct.steps.returnUsd * 6.6);
+  assert.deepEqual(direct.rows.find(x => x.key === 'exitFx').exchanges.map(x => [x.from, x.to]), [['USD', 'CNH']]);
   close(r.budgetCny - r.costCny, r.netCny);
   const html = moneyUi(config, q).render();
   assert.match(html, /人民币 → 港币 → 美元/);
-  assert.match(html, /美元 → 港币 → 人民币 → 消费/);
+  assert.match(html, /美元直接换人民币 → 商户刷卡/);
+  assert.doesNotMatch(html, /美元 → 港币 → 人民币 → 消费/);
   assert.doesNotMatch(html, /请选择中银香港消费|NaN|undefined/);
   const without = structuredClone(q); delete without.offshoreUsd.hsbc;
   const unquoted = M.calculatorJourney(config, D, without).selected;
@@ -2469,10 +2474,11 @@ test('CIB RMB channel, picker and fee detail agree without an FX-only free-trans
 
 test('missing terminal FX never forces a different bank, erases the total, or shows a zero loss rate', () => {
   const ui = moneyUi({ ...currentRoute, count: 2, mainlandMethod: 'swift', outcome: 'cnh-card', returnBank: 'hsbc' });
-  const html = ui.render(), edge = html.split('aria-label="美元换人民币 → 消费"')[1].split('</section>')[0];
+  const html = ui.render(), edge = html.split('aria-label="美元直接换人民币 → 商户刷卡"')[1].split('</section>')[0];
   assert.equal((html.match(/data-flow-stage=/g) || []).length, 4);
   assert.match(html, /汇丰 HSBC One/); assert.match(html, /已计费用占本金 · 含估算/);
   assert.match(html, /最后可计余额/); assert.doesNotMatch(edge, /0.000%/);
+  assert.doesNotMatch(edge, /历史报价/);
   assert.doesNotMatch(html, /请选择中银香港消费账户/);
 });
 
@@ -2720,7 +2726,7 @@ test('a published approximate digital-bank withdrawal fee is labeled in both the
     depositMethod: 'internal', outcome: 'usd-balance', returnBank: 'za', inwardHkd: '', intermediaryCny: '', months: 0 });
   const html = ui.render();
   assert.match(html, /参考损耗/); assert.match(html, /参考总损耗/); assert.match(moneyDetails(ui, 'edge-withdraw'), /公布约7.5 USD/);
-  assert.match(html, /按公布参考费计算的余额/);
+  assert.match(html, /按公布参考价费计算的余额/);
 });
 
 test('an incomplete or inapplicable voucher never claims that a discount is active', () => {
@@ -3000,7 +3006,7 @@ test('return bank previews distinguish wire, local transfer, cheque and virtual-
     for (const bank of D.calculator.hkBanks) {
       ui.act('pick', '', 'returnBank');
       const menu = ui.modal(), option = pickerOption(menu, 'returnBank', bank);
-      assert.equal((menu.match(/data-field="returnBank" data-value=/g) || []).length, 6);
+      assert.equal((menu.match(/data-field="returnBank" data-value=/g) || []).length, 7);
       assert.doesNotMatch(menu, /disabled|中行同名汇入0|本地美元转账0|同名跨域转账0/);
       ui.act('choose', 'returnBank', bank); applied++;
       const result = M.calculatorJourney({ ...ui.saved(), date: '2026-10-12' }, D, quotes), r = result.selected || result.partial;

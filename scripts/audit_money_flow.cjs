@@ -34,7 +34,7 @@ function audit({ quotes = Q, date = config.date } = {}) {
   const routes = new Map();
   for (const startBank of departureBanks) for (const bank of D.calculator.hkBanks) for (const broker of D.calculator.brokers)
     for (const route of D.calculator.currencies) for (const outcome of ['broker-balance', 'usd-balance', 'usd-card', 'cnh-card', 'mainland'])
-      for (const returnBank of outcome === 'broker-balance' ? [bank] : D.calculator.hkBanks)
+      for (const returnBank of outcome === 'broker-balance' ? [bank] : (D.calculator.returnBanks || D.calculator.hkBanks))
         for (const exitBank of outcome === 'mainland' ? receivingBanks : [startBank])
           for (const returnCurrency of outcome === 'mainland' ? ['USD', 'HKD'] : ['USD']) {
         result.combinationsChecked++;
@@ -88,7 +88,7 @@ function auditExecutedFxPrices({ quotes = Q, date = config.date } = {}) {
     const increment = key => { report[key]++; profile[key]++; };
     for (const startBank of departureBanks) for (const bank of D.calculator.hkBanks) for (const route of ['HKD', 'CNH'])
       for (const outcome of ['broker-balance', 'usd-balance', 'usd-card', 'cnh-card', 'mainland'])
-        for (const returnBank of outcome === 'broker-balance' ? [bank] : D.calculator.hkBanks)
+        for (const returnBank of outcome === 'broker-balance' ? [bank] : (D.calculator.returnBanks || D.calculator.hkBanks))
           for (const exitBank of outcome === 'mainland' ? receivingBanks : [startBank])
             for (const returnCurrency of outcome === 'mainland' ? ['USD', 'HKD'] : ['USD'])
               for (const withdrawalIndex of outcome === 'broker-balance' ? [1] : [1, 3]) {
@@ -279,7 +279,7 @@ function auditChannels({ quotes = Q, date = config.date } = {}) {
       for (const mainlandMethod of choices.mainlandMethods) for (const fxMode of choices.fxModes) {
         const funding = { ...entry, mainlandMethod, fxMode };
         for (const depositMethod of M.calculatorChannels(funding, D).depositMethods) for (const outcome of ['broker-balance', 'usd-balance', 'usd-card', 'cnh-card', 'mainland']) {
-          const returns = outcome === 'broker-balance' ? [bank] : D.calculator.hkBanks;
+          const returns = outcome === 'broker-balance' ? [bank] : (D.calculator.returnBanks || D.calculator.hkBanks);
           const exits = outcome === 'mainland' ? receivingBanks : [startBank];
           for (const returnBank of returns) for (const exitBank of exits) {
             const endpoint = { ...funding, depositMethod, outcome, returnBank, exitBank };
@@ -293,6 +293,7 @@ function auditChannels({ quotes = Q, date = config.date } = {}) {
               if (stockOffer) fields.add(stockOffer);
               const hkAccounts = [bank, ...(outcome === 'broker-balance' ? [] : [returnBank]), D.brokers.find(b => b.id === broker)?.integratedBank, M.calculatorFundingBank(s, D)?.id];
               if (hkAccounts.includes('hsbc')) fields.add('hsbcBalanceWaiver');
+              if (outcome === 'cnh-card' && returnBank === 'ccb-asia') fields.add('ccbLinkedCard');
               if (outcome === 'cnh-card' && returnBank === 'sc') fields.add('scCnhAccount');
               if (bank === 'icbc-asia' && route === 'CNH' || outcome === 'cnh-card' && returnBank === 'icbc-asia') fields.add('icbcCnhAccount');
               if (startBank === 'icbc' && bank === 'icbc-asia' || outcome === 'mainland' && returnBank === 'icbc-asia' && exitBank === 'icbc' && returnMethod === 'icbc-express') fields.add('icbcEAccount');

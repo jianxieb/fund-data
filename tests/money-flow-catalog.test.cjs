@@ -132,8 +132,8 @@ test('uSMART same-bank funding includes the published HSBC account without waivi
 
 test('current catalogue model states retain selection and reconcile or name their local issue', () => {
   const r = auditCurrent({ quotes: Q, date: config.date });
-  const departure=D.calculator.departureBanks.length, receiving=D.calculator.receivingBanks.length, hk=D.calculator.hkBanks.length;
-  assert.equal(r.combinationsChecked,departure*hk*D.calculator.brokers.length*D.calculator.currencies.length*(1+3*hk+hk*receiving*2));
+  const departure=D.calculator.departureBanks.length, receiving=D.calculator.receivingBanks.length, hk=D.calculator.hkBanks.length, returning=D.calculator.returnBanks.length;
+  assert.equal(r.combinationsChecked,departure*hk*D.calculator.brokers.length*D.calculator.currencies.length*(1+3*returning+returning*receiving*2));
   assert.equal(r.completeQuoteCombinations + r.partialQuoteCombinations + r.inputOrRouteIssues, r.combinationsChecked);
   assert.equal(r.ledgerChecks, r.completeQuoteCombinations + r.partialQuoteCombinations);
   assert.ok(r.completeQuoteCombinations > 0); assert.ok(r.partialQuoteCombinations > 0);
@@ -156,7 +156,7 @@ test('current catalogue model states retain selection and reconcile or name thei
   }
   assert.equal(r.channelProfiles[0].profile.hsbcBalanceWaiver, false);
   assert.equal(r.channelProfiles[0].profile.trade25, false);
-  assert.deepEqual(r.channelProfiles[2].qualificationCoverage, ['chequePreFilled', 'chiefMonthly',
+  assert.deepEqual(r.channelProfiles[2].qualificationCoverage, ['ccbLinkedCard', 'chequePreFilled', 'chiefMonthly',
     'hsbcBalanceWaiver', 'hsbcChequeNonCounter', 'icbcCnhAccount', 'icbcEAccount', 'scCnhAccount', 'trade25', 'usmartPromo', 'zaPerksLevel', 'zaSwiftUsed']);
   const bounds = r.numericBoundaries;
   assert.equal(bounds.checked,bounds.profiles.reduce((sum,p)=>sum+p.checked,0));

@@ -7,7 +7,7 @@ const D = require('../data/money-flow.js');
 const quotes = require('./fixtures/money-flow-quotes-20261012.json');
 const date = '2026-10-12';
 function ui(input = {}) {
-  let saved = { bankFeeDefaultsVersion: 1, ...input }, modal = '';
+  let saved = { bankFeeDefaultsVersion: 1, consumptionVersion: 2, ...input }, modal = '';
   const ctx = { window: { MONEY_FLOW: D, MONEY_FLOW_QUOTES: quotes, ChanghengMoneyFlowModel: M },
     localStorage: { getItem: () => JSON.stringify(saved), setItem: (_, value) => { saved = JSON.parse(value); } },
     document: { querySelectorAll: () => [], getElementById: () => null },
@@ -23,6 +23,36 @@ function ui(input = {}) {
 }
 const toolbar = html => html.split('id="flow-live-toolbar"')[1].split('id="flow-live-ledger"')[0];
 const section = (html, label) => html.split('aria-label="' + label + '"')[1]?.split('</section>')[0];
+test('legacy generic RMB spending becomes a mainland bank endpoint once without replacing user accounts', () => {
+  const subject = ui({ consumptionVersion: undefined, outcome: 'cnh-card', startBank: 'cib', bank: 'hsbc', broker: 'hsbc',
+    returnBank: 'hsbc', exitBank: 'boc', exitPrice: 6.2, returnHkdPrice: 7.8, cardCnyPerHkd: .8 });
+  const html = subject.render(), saved = subject.saved();
+  assert.equal(saved.outcome, 'mainland'); assert.equal(saved.returnCurrency, 'USD'); assert.equal(saved.consumptionVersion, 2);
+  for (const key of ['exitPrice', 'returnHkdPrice', 'cardCnyPerHkd']) assert.equal(saved[key], '');
+  for (const [key, value] of Object.entries({ startBank: 'cib', bank: 'hsbc', broker: 'hsbc', returnBank: 'hsbc', exitBank: 'boc' })) assert.equal(saved[key], value);
+  assert.match(html, /data-flow-stage="05"/); assert.doesNotMatch(html, /aria-label="美元换港币"/);
+  subject.act('choose', 'outcome', 'cnh-card');
+  const reloaded = ui(subject.saved()); reloaded.render(); assert.equal(reloaded.saved().outcome, 'cnh-card');
+});
+test('card payment choices name their coverage and clear FX overrides when the actual payment mechanism changes', () => {
+  const subject = ui({ outcome: 'cnh-card', returnBank: 'icbc-asia', cardCnyPerHkd: .85, returnHkdPrice: 7.8 });
+  let html = subject.render();
+  assert.match(html, /港币扣账 · 银联/); assert.doesNotMatch(html, /data-money-check="icbcCnhAccount"/);
+  assert.match(html, /不等同内地微信／支付宝余额/);
+  subject.act('choose', 'cardMode', 'cnh'); html = subject.render();
+  assert.match(html, /data-money-check="icbcCnhAccount"/);
+  assert.equal(subject.saved().cardCnyPerHkd, ''); assert.equal(subject.saved().returnHkdPrice, '');
+  subject.act('choose', 'cardMode', 'invalid'); assert.equal(subject.saved().cardMode, 'cnh');
+  subject.act('choose', 'returnBank', 'ccb-asia'); html = subject.render();
+  assert.match(html, /data-money-check="ccbLinkedCard"/);
+  assert.match(html, /关联内地账户：中国建设银行/);
+  assert.match(html, /不能推定微信、支付宝或个人收款码都能联动/);
+  subject.check('ccbLinkedCard', true); subject.render(); subject.act('detail', '', 'cost');
+  assert.match(subject.modal(), /龙卡.*年费/); assert.match(subject.modal(), /每个年费周期50 HKD/);
+  assert.doesNotMatch(subject.modal(), /undefined|NaN/);
+  subject.act('choose', 'outcome', 'mainland'); subject.act('choose', 'exitBank', 'ccb'); html = subject.render();
+  assert.equal(subject.saved().exitBank, 'ccb'); assert.match(html, /data-flow-stage="05"/);
+});
 test('preferred catalogue, prices and product names are independent of every current account and qualification', () => {
   const baseline = toolbar(ui().render());
   for (const broker of D.calculator.brokers) {
@@ -62,8 +92,8 @@ test('departure picker has exactly four banks; retired saved senders repair with
     subject.act('choose', 'startBank', 'ccb'); assert.equal(subject.saved().startBank, 'boc');
   }
 });
-test('mainland receiving picker has the same four banks and migrates only retired receiving-bank settings', () => {
-  for (const exitBank of ['ccb','comm','hsbc','hang','sc','abc','missing']) {
+test('mainland receiving picker adds CCB for the return path and migrates only retired receiving-bank settings', () => {
+  for (const exitBank of ['comm','hsbc','hang','sc','abc','missing']) {
     const subject = ui({ startBank:'cib',bank:'hsbc',broker:'chief',returnBank:'bochk',outcome:'mainland',exitBank,
       returnMethod:'linked',exitPrice:6.2,returnExtraCny:9,returnWireHkd:17,startSell:6.8,tradeFeeUsd:12,intermediaryCny:3 });
     subject.render(); const saved=subject.saved();
@@ -73,7 +103,7 @@ test('mainland receiving picker has the same four banks and migrates only retire
     for(const key of ['exitPrice','returnExtraCny','returnWireHkd']) assert.equal(saved[key],'');
     subject.act('pick','','exitBank');
     const ids=[...subject.modal().matchAll(/data-field="exitBank" data-value="([^"]+)"/g)].map(m=>m[1]);
-    assert.deepEqual(ids,['boc','cib','cmb','icbc']);
+    assert.deepEqual(ids,['boc','cib','cmb','icbc','ccb']);
     subject.act('choose','exitBank',exitBank); assert.equal(subject.saved().exitBank,'boc');
   }
 });
@@ -87,9 +117,13 @@ test('return transfer and settlement own separate fees, rates, details and sourc
     assert.doesNotMatch(wire,/结汇差额|1 (?:USD|HKD) =/);
     assert.match(settlement,/结汇差额/); assert.doesNotMatch(settlement,/汇回手续费|中转费|本行收款费/);
     assert.equal((settlement.match(new RegExp('1 '+returnCurrency+' =','g'))||[]).length,1);
-    const wrapper=wire.split('class="flow-account-field"')[1];
-    assert.ok(wrapper.indexOf('内地收款银行')<wrapper.indexOf('class="flow-account-button"'));
-    assert.doesNotMatch(wrapper.split('class="flow-account-button"')[1].split('</button>')[0],/>内地收款银行</);
+    const receiver=section(html,'内地收款／消费银行');
+    assert.ok(html.indexOf('aria-label="汇回内地"')<html.indexOf('data-flow-stage="05"'));
+    assert.ok(html.indexOf('data-flow-stage="05"')<html.indexOf('aria-label="内地结汇"'));
+    const wrapper=receiver.split('class="flow-account-field"')[1];
+    assert.ok(wrapper.indexOf('内地收款／消费银行')<wrapper.indexOf('class="flow-account-button"'));
+    assert.doesNotMatch(wrapper.split('class="flow-account-button"')[1].split('</button>')[0],/>内地收款／消费银行</);
+    assert.match(receiver,/微信／支付宝绑卡、刷卡、缴费及转账/);
     subject.act('detail','','edge-remit'); assert.match(subject.modal(),/香港→内地汇出费/); assert.doesNotMatch(subject.modal(),/内地结汇差额/);
     subject.act('detail','','edge-settle'); assert.match(subject.modal(),/内地结汇差额/); assert.doesNotMatch(subject.modal(),/香港→内地汇出费|回内地中转行费/);
     assert.equal((subject.modal().match(new RegExp('1 '+returnCurrency+' =','g'))||[]).length,1);
@@ -117,7 +151,7 @@ test('purchase and settlement pickers quote actual rates without a competing rel
 });
 test('Hong Kong banks and stock venues remain complete and enabled after plan application and manual changes', () => {
   const subject = ui(); subject.render(); subject.act('preset', '', 'cib-trade25');
-  for (const [key, expected] of [['bank', D.calculator.hkBanks], ['returnBank', D.calculator.hkBanks], ['broker', D.calculator.brokers]]) {
+  for (const [key, expected] of [['bank', D.calculator.hkBanks], ['returnBank', D.calculator.returnBanks], ['broker', D.calculator.brokers]]) {
     subject.act('pick', '', key);
     const ids = [...subject.modal().matchAll(new RegExp('data-field="' + key + '" data-value="([^"]+)"','g'))].map(m => m[1]);
     assert.deepEqual(ids, expected); assert.doesNotMatch(subject.modal(), /\bdisabled\b/);
@@ -139,7 +173,7 @@ test('principal defaults to 100000 and currency choices are RMB, USD, HKD withou
 test('withdrawal is between the stock account and return bank, before bank FX or spending', () => {
   const subject = ui({ startBank:'cib',bank:'hsbc',broker:'za',returnBank:'bochk',route:'USD',outcome:'cnh-card',hsbcBalanceWaiver:true });
   const html=subject.render(); const stock=html.indexOf('data-flow-stage="03"'), withdrawal=html.indexOf('aria-label="ZA Bank出金 → 中银香港"');
-  const bank=html.indexOf('data-flow-stage="04"'), fx=html.indexOf('美元换人民币 → 消费');
+  const bank=html.indexOf('data-flow-stage="04"'), fx=html.indexOf('美元直接换人民币 → 商户刷卡');
   assert.ok(stock<withdrawal && withdrawal<bank && bank<fx);
   assert.match(section(html,'卖出后的资金'), /取回银行：中银香港/);
   assert.ok(html.indexOf('id="flow-live-summary"')>html.indexOf('id="flow-live-ledger"'));

@@ -105,9 +105,11 @@ test('ICBC Asia CNH conversion preserves both actual HKD exchange legs and does 
   close(fx.exchanges[1].output, fx.exchanges[0].output / +usd.salrate);
   close(fx.items.reduce((sum, item) => sum + item.cny, 0), fx.cny);
   close(r.steps.fundedUsd, fx.exchanges[1].output); ledger(r);
-  const back = run({ icbcEAccount: true, icbcCnhAccount: true, outcome: 'cnh-card' }).selected;
-  const exitFx = row(back, 'exitFx'); close(back.exitPrice, +usd.buyrate / +cnh.salrate);
-  assert.equal(exitFx.exchanges.length, 2); close(row(back, 'card').cny, 0); ledger(back);
+  const back = run({ icbcEAccount: true, icbcCnhAccount: true, cardMode: 'cnh', outcome: 'cnh-card' }).selected;
+  assert.equal(row(back, 'exitFx').cny, null); assert.equal(back.indicativeExit, true);
+  assert.match(back.exitIssue, /USD\/CNH直接报价尚未取得/); ledger(back);
+  const direct = run({ icbcEAccount: true, icbcCnhAccount: true, cardMode: 'cnh', outcome: 'cnh-card', exitPrice: 6.65 }).selected;
+  close(direct.exitPrice, 6.65); assert.equal(row(direct, 'exitFx').exchanges.length, 1); ledger(direct);
 });
 
 test('HKID account and card boundaries preserve upstream amounts and all six banks remain selectable for each broker', () => {
@@ -119,7 +121,7 @@ test('HKID account and card boundaries preserve upstream amounts and all six ban
     assert.ok(rejected.partial.rows.some(item => item.key === 'sender'));
     assert.equal(M.calculatorIssue(M.calculatorRoute({ ...input, broker }), D), '');
   }
-  const card = run({ outcome: 'cnh-card' }); assert.match(card.error, /香港身份证/);
+  const card = run({ outcome: 'cnh-card', cardMode: 'cnh' }); assert.match(card.error, /香港身份证/);
   assert.ok(card.partial.steps.returnUsd > 0);
   const usdCard = run({ outcome: 'usd-card' }); assert.match(usdCard.error, /不支持本页美元余额原币刷卡/);
   assert.ok(usdCard.partial.steps.returnUsd > 0);

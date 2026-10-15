@@ -9,15 +9,36 @@
     calculator: {
       // Account choice is independent of whether a full route has a public quote.
       departureBanks: ['boc', 'cib', 'cmb', 'icbc'],
-      receivingBanks: ['boc', 'cib', 'cmb', 'icbc'],
+      receivingBanks: ['boc', 'cib', 'cmb', 'icbc', 'ccb'],
       mainland: ['boc', 'cib', 'cmb', 'icbc', 'ccb', 'comm', 'hsbc', 'hang', 'sc'],
-      hkBanks: ['bochk', 'hsbc', 'za', 'hang', 'sc', 'icbc-asia'], brokers: ['ibkr', 'hsbc', 'za', 'chief', 'usmart'],
+      hkBanks: ['bochk', 'hsbc', 'za', 'hang', 'sc', 'icbc-asia'],
+      returnBanks: ['bochk', 'hsbc', 'za', 'hang', 'sc', 'icbc-asia', 'ccb-asia'], brokers: ['ibkr', 'hsbc', 'za', 'chief', 'usmart'],
       fxComparison: ['boc', 'cib', 'cmb', 'icbc'], currencies: ['CNH', 'USD', 'HKD'],
       excluded: [
         { ids: ['abc'], scope: 'mainland', reason: '按用户要求移除农业银行；其他账户不因报价条件被删除。' }
       ]
     },
     comparisonNotice: '按具体渠道、币种及账户收费计算；购汇点差与转账手续费分别列示。',
+    mainlandSpending: {
+      bank: { title: '内地银行卡', coverage: '微信／支付宝绑卡、刷卡、缴费及转账',
+        note: '人民币实际进入本人内地账户后使用；仍受账户类别、支付渠道限额及入账审核约束。' },
+      hsbc: { title: 'Mastercard借记卡', modes: ['cnh'], coverage: '接受Mastercard的商户；支付宝合资格商户',
+        limitation: '境外卡不等同内地钱包余额；个人收款码、转账及充值不能按通用可用计算。',
+        note: '本页按人民币余额充足的商户刷卡计算。钱包支付的平台收费另按付款页，不计入刷卡结果；余额不足会改扣港币。', sources: ['hsbcCard', 'hsbcDebitFaq'] },
+      bochk: { title: '中银香港多币种扣账卡', modes: ['cnh'], coverage: '卡组织受理商户',
+        limitation: '商户受理与钱包绑卡各有限制，不等同内地银行卡或钱包余额。', note: '按已开通人民币账户且人民币余额充足的原币商户刷卡计算。', sources: ['bochkCard'] },
+      hang: { title: '恒生多币种扣账卡', modes: ['cnh'], coverage: '卡组织受理商户',
+        limitation: '商户受理与钱包绑卡各有限制，不等同内地银行卡或钱包余额。', note: '按已开通人民币账户且人民币余额充足的原币商户刷卡计算。', sources: ['hangCard'] },
+      sc: { title: '渣打多币种扣账卡', modes: ['cnh'], coverage: '卡组织受理商户',
+        limitation: '人民币账户须符合身份条件；不能作为内地全场景支付账户。', note: '按人民币余额充足的原币商户刷卡计算；人民币账户资格单独确认。', sources: ['scCard'] },
+      'icbc-asia': { title: '工银亚洲银联借记卡', modes: ['hkd', 'cnh'], coverage: '银联POS；支持银联二维码的ICBC Pay商户',
+        limitation: '不等同内地微信／支付宝余额；不承诺个人收款码、转账、充值通用。',
+        note: '港币卡不要求先开人民币账户；人民币扣账须具备该行人民币账户资格。内地工行ATM免提款手续费，但仍有汇率折算，取现不纳入本页商户消费费用。湾区账户通是另开的内地II／III类账户，并非香港账户直接通用。', sources: ['icbcAsiaCard', 'icbcAsiaAccountTerms', 'icbcAsiaBayAccount'] },
+      'ccb-asia': { title: '陆港通龙卡 · 两地联动', modes: ['ccb-link'], coverage: '内地银联POS；内地建行账户不足时联动扣香港账户',
+        limitation: '联动是指定ATM／POS功能，不能推定微信、支付宝或个人收款码都能联动。',
+        note: '须已持有陆港通龙卡及关联两地账户。内地先扣建行人民币，余额不足时整笔依次扣建行亚洲人民币、港币。本页按香港港币账户联动POS计算；POS联动手续费免，卡年费50 HKD，消费共用每日等值50,000 HKD限额。ATM联动另收10 CNY/笔，未计入POS。',
+        annualHkd: 50, dailyLimitHkd: 50000, sources: ['ccbAsiaLongCard', 'ccbAsiaTariff', 'ccbAsiaLongTerms'] }
+    },
     preferredPlans: [
       { id: 'cib-trade25', title: '兴业寰宇人生 → 汇丰Trade25',
         config: { startBank: 'cib', bank: 'hsbc', broker: 'hsbc', returnBank: 'hsbc', exitBank: 'boc', route: 'USD', mainlandMethod: 'swift', depositMethod: 'internal', outcome: 'usd-balance', trade25: true } },
@@ -56,7 +77,9 @@
       { bank: 'comm', kind: 'regional', checkedAt: '2026-10-09', items: ['地区适用费率'], source: 'comm', finding: '2026年5月名录已核实：个人网银／手机银行0.5‰–0.8‰，最低20–40元，最高200元；港澳台电报费80–150元。官方明确各地分行定价不同，显示公开区间，不任取最低价。' },
       { bank: 'sc', scope: 'mainland', checkedAt: '2026-10-12', items: ['USD/CNY及HKD/CNY账户成交买卖价'], source: 'scFx', finding: '内地个人外汇报价须账户询价，不能借其他银行价格。' },
       { bank: 'sc', scope: 'hk', checkedAt: '2026-10-12', items: ['USD/HKD及USD/CNH个人账户成交买卖价'], source: 'scHkFx', finding: '香港个人外汇交易价格经SC Mobile或网上理财提供；会员折扣不是完整成交价，不用内地报价入口替代。' },
-      { bank: 'za', scope: 'hk', checkedAt: '2026-10-12', items: ['个人账户外币买入及卖出价'], source: 'zaFx', finding: '个人牌价经App提供；商用比价页面不属于本产品的个人账户报价。' }
+      { bank: 'za', scope: 'hk', checkedAt: '2026-10-12', items: ['个人账户外币买入及卖出价'], source: 'zaFx', finding: '个人牌价经App提供；商用比价页面不属于本产品的个人账户报价。' },
+      { bank: 'ccb-asia', scope: 'hk', checkedAt: '2026-10-15', items: ['本地USD支票存入适用费用', '陆港通当笔联动扣账汇率'], source: 'ccbAsiaTariff', finding: '普通个人USD/HKD现汇买卖价已接入公开牌价；联动HKD/CNY只按内地建行公开现汇买入价作参考，不声称为当笔扣账价。本地美元支票费不套用境外支票托收表。' },
+      { bank: 'icbc-asia', scope: 'hk', checkedAt: '2026-10-15', items: ['银联／ICBC Pay的HKD/CNY实际扣账汇率', 'USD/CNH直接客户成交价'], source: 'icbcAsiaCard', finding: '港币卡可在银联受理商户支付；实际扣账汇率不能用银行现汇牌价或ATM折算规则代替。公开港币交叉汇率是两笔兑换，不作为直接USD/CNH消费报价。' }
     ],
     sources: {
       safe: { name: '外汇局 · 个人购汇用途与额度', url: 'https://www.safe.gov.cn/shanghai/2019/1213/1198.html' },
@@ -87,7 +110,14 @@
       icbcAsiaFx: { name: '工银亚洲 · 港元兑外币参考买卖价', url: 'https://www.icbcasia.com/hk/sc/personal/banking/rate/foreign-exchange-rate/default.html' },
       icbcAsiaInwardOffer: { name: '工银亚洲 · 2026年7–12月e账通集团汇入基本费豁免', url: 'https://v.icbc.com.cn/userfiles/resources/icbc/haiwai/asia/download/cn/2026/inward_remittance_0_handling_charge_tnc_2607_sc.pdf' },
       icbcAsiaOutwardOffer: { name: '工银亚洲 · 2026年7–12月e账通手机集团汇出本行费豁免', url: 'https://v.icbc.com.cn/userfiles/resources/icbc/haiwai/asia/download/cn/2026/icbc_outward_remittance_0_handling_charge_tnc_2607_sc.pdf' },
-      icbcAsiaCard: { name: '工银亚洲 · 港币／人民币借记卡扣账币种', url: 'https://www.icbcasia.com/hk/sc/personal/banking/others/debit-card/default.html' },
+      icbcAsiaCard: { name: '工银亚洲 · 银联借记卡、ICBC Pay及内地取现规则', url: 'https://www.icbcasia.com/hk/sc/personal/banking/others/debit-card/default.html' },
+      icbcAsiaBayAccount: { name: '工银亚洲 · 湾区账户通为内地II／III类账户及其限额', url: 'https://www.icbcasia.com/hk/sc/cross-border/cross-border-services/greater-bay-financial-services/greater-bay-area-account-opening-service/default.html' },
+      ccbAsiaTariff: { name: '建行亚洲 · 个人银行资费（汇入、汇出及陆港通龙卡）', url: 'https://www.asia.ccb.com/hongkong_sc/doc/about_us/F1168-banking-services.pdf' },
+      ccbAsiaLongCard: { name: '建行亚洲 · 陆港通龙卡两地账户联动及限额', url: 'https://www.asia.ccb.com/hongkong_sc/personal/crossborder_services/cblc.html' },
+      ccbAsiaLongTerms: { name: '建行亚洲 · 陆港通龙卡服务条款', url: 'https://www.asia.ccb.com/hongkong_sc/doc/personal/accounts/crossborder/F554AChi.pdf' },
+      ccbAsiaFx: { name: '建行亚洲 · 普通个人账户公开现汇牌价', url: 'https://www.asia.ccb.com/hongkong/personal/accounts/exchange_rate_enquiry.html' },
+      ccbAsiaPaymentConnect: { name: '建行亚洲 · 跨境支付通北向须香港身份证', url: 'https://www.asia.ccb.com/hongkong_sc/personal/banking_channels/faster_payment_system.html' },
+      hsbcDebitFaq: { name: '汇丰 · 扣账卡原币余额不足时的港币扣账规则', url: 'https://www.hsbc.com.hk/help/faq/debit-cards/' },
       icbcAsiaCheque: { name: '工银亚洲 · 本地美元往来账户及支票', url: 'https://www.icbcasia.com/hk/sc/personal/banking/deposits/current/default.html' },
       icbcInward: { name: '工商银行 · 个人境外汇入款不收手续费', url: 'https://m.icbc.com.cn/ICBC/业务指南/个人金融/跨境金融/其他个人跨境汇款/其他个人跨境汇入汇款.htm' },
       scCnTariff: { name: '渣打中国 · 2026 Version 2个人银行收费标准', url: 'https://av.sc.com/cn/content/docs/cn-cb-tariff-zh.pdf' },
@@ -293,7 +323,12 @@
         groupMobileWaiver: { field: 'icbcEAccount', from: '2026-07-01', until: '2026-12-31', sources: ['icbcAsiaInwardOffer', 'icbcAsiaOutwardOffer'] },
         cnhAccountRequiresHkid: true, cnhCardRequiresHkid: true, cnhAccountField: 'icbcCnhAccount', directUsdCard: false, directCnhCard: true, cardForeignPct: 0,
         condition: '普通综合账户免管理费及借记卡年费；集团汇入基本费60 HKD，本人非联名账户在e账通绑定同名内地工行后优惠期免；本地USD CHATS汇出50、汇入10 HKD。人民币账户须香港身份证，借记卡仅港币／人民币原币扣账',
-        sources: ['icbcAsiaInward', 'icbcAsiaAccount', 'icbcAsiaAccountTerms', 'icbcAsiaInwardOffer', 'icbcAsiaOutwardOffer', 'icbcAsiaCard', 'icbcAsiaCheque', 'icbcAsiaFx'] }
+        sources: ['icbcAsiaInward', 'icbcAsiaAccount', 'icbcAsiaAccountTerms', 'icbcAsiaInwardOffer', 'icbcAsiaOutwardOffer', 'icbcAsiaCard', 'icbcAsiaCheque', 'icbcAsiaFx'] },
+      { id: 'ccb-asia', name: '建行亚洲 · 普通个人账户', group: 'ccb', returnOnly: true,
+        inwardHkd: 60, localUsdInwardHkd: 15, localHkd: 0, localUsd: 50, localSwiftHkd: 100,
+        outwardHkd: 100, monthlyHkd: 0, thresholdHkd: 0, directUsdCard: false, directCnhCard: false,
+        condition: '普通个人账户低余额管理费免；电汇汇入60 HKD，本地CHATS汇入15 HKD；网上电汇汇出100 HKD，代理费另计。陆港通龙卡须另持卡并关联两地账户，年费50 HKD；没有把贵宾豁免或跨境支付通资格默认套用。',
+        sources: ['ccbAsiaTariff', 'ccbAsiaLongCard', 'ccbAsiaLongTerms', 'ccbAsiaFx', 'ccbAsiaPaymentConnect'] }
     ],
     // Broker recipients do not imply a personal account or its maintenance fee.
     corporateReceivingBanks: [

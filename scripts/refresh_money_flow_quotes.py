@@ -35,13 +35,15 @@ HANG_HK_URL = "https://rbwm-api.hsbc.com.hk/pws-hk-hase-rates-papi-prod-proxy/v1
 HSBC_HK_URL = "https://rbwm-api.hsbc.com.hk/digital-pws-tools-investments-eapi-prod-proxy/v1/investments/exchange-rate?locale=en_HK"
 HANG_CN_URL = "https://hacndb-api.hangseng.com.cn/hacn-mobile-experience-platform-papi-prod-proxy/v1/exchange-rate"
 ICBC_ASIA_URL = "https://papi.icbc.com.cn/rest/currencies/asia/foreign"
+CCB_ASIA_URL = "https://www.asia.ccb.com/hongkong/js/ho_js/hkwhhl01.js"
 BANK_URLS = {"boc": BOC_URL, "cmb": CMB_URL, "icbc": ICBC_URL, "ccb": CCB_URL,
-             "abc": ABC_URL, "comm": COMM_URL, "hsbc": HSBC_URL, "cib": CIB_URL, "bochk": BOCHK_USD_URL, "hanghk": HANG_HK_URL, "hsbchk": HSBC_HK_URL, "hang": HANG_CN_URL, "icbc-asia": ICBC_ASIA_URL}
+             "abc": ABC_URL, "comm": COMM_URL, "hsbc": HSBC_URL, "cib": CIB_URL, "bochk": BOCHK_USD_URL, "hanghk": HANG_HK_URL, "hsbchk": HSBC_HK_URL, "hang": HANG_CN_URL, "icbc-asia": ICBC_ASIA_URL, "ccb-asia": CCB_ASIA_URL}
 SOURCE_URLS = {**BANK_URLS, "cmb": "https://fx.cmbchina.com/hq/",
                "hang": "https://www.hangseng.com.cn/zh-cn/index/useful-information/deposit-exchange-rates/",
                "hanghk": "https://www.hangseng.com/en-hk/rates/foreign-currency-tt-exchange-rates/",
                "hsbchk": "https://www.hsbc.com.hk/investments/products/foreign-exchange/currency-rate/",
                "icbc-asia": "https://www.icbcasia.com/hk/sc/personal/banking/rate/foreign-exchange-rate/default.html",
+               "ccb-asia": "https://www.asia.ccb.com/hongkong/personal/accounts/exchange_rate_enquiry.html",
                "cib": "https://personalbank.cib.com.cn/pers/main/pubinfo/ifxQuotationQuery.do",
                "icbc": "https://www.icbc.com.cn/page/721852558099644433.html",
                "ccb": "https://ebank1.ccb.com/chn/forex/exchange-quotations.shtml",
@@ -210,6 +212,29 @@ def parse_ccb(xml):
     return required_quotes(out, "CCB")
 
 
+def parse_ccb_asia(body):
+    """Read public TT prices from the visible ordinary-customer table (210).
+
+    Never execute the wrapper, use interbank fields or grant a privileged tier.
+    The source publishes HKD per USD; it is not a direct USD/CNH quote.
+    """
+    match = re.search(r"jqueryHkInfo\((\{.*\})\)", body, re.S)
+    if not match:
+        raise ValueError("CCB Asia quote payload missing")
+    # The bank repeats the top-level key; its own display script joins these
+    # arrays before parsing. A plain JSON parse silently discards the first tier.
+    groups = json.loads(match[1].replace('],"ExR_Grp":[', ','))["ExR_Grp"]
+    rows = [row for group in groups if group.get("Dif_Dmsn_Val") == "210"
+            for row in group["ToCusOfrOutGrp"]
+            if row.get("Ofr_Ccy_CcyCd") == "344" and row.get("Ofrd_Ccy_CcyCd") == "840"]
+    if len(rows) != 1:
+        raise ValueError("CCB Asia ordinary USD/HKD quote missing or ambiguous")
+    row = rows[0]
+    at = datetime.strptime(row["LstPr_Dt"] + row["LstPr_Tm"], "%Y%m%d%H%M%S").isoformat(sep=" ")
+    quote = validate_quote(row["BidRateOfCcy"], row["OfrRateOfCcy"], at, divisor=1)
+    return {"HKD": {"bidPerUsd": quote["buy"], "askPerUsd": quote["sell"], "asOf": at}}
+
+
 def parse_abc(payload):
     if str(payload.get("ErrorCode")) != "0":
         raise ValueError("ABC unsuccessful response")
@@ -311,12 +336,12 @@ def fetch_bank(bank):
         body = subprocess.run(["curl", "--fail", "--silent", "--show-error", "--location", "--max-time", "25", url],
                               check=True, capture_output=True, text=True, timeout=30).stdout
     parsers = {"boc": parse_boc, "cmb": parse_cmb, "bochk": parse_bochk, "icbc": parse_icbc,
-               "ccb": parse_ccb, "abc": parse_abc, "comm": parse_comm, "hsbc": parse_hsbc, "hanghk": parse_hang_hk, "hsbchk": parse_hsbc_hk, "hang": parse_hang_cn, "icbc-asia": parse_icbc_asia}
-    return parsers[bank](body if bank in ("boc", "bochk", "ccb") else json.loads(body))
+               "ccb": parse_ccb, "abc": parse_abc, "comm": parse_comm, "hsbc": parse_hsbc, "hanghk": parse_hang_hk, "hsbchk": parse_hsbc_hk, "hang": parse_hang_cn, "icbc-asia": parse_icbc_asia, "ccb-asia": parse_ccb_asia}
+    return parsers[bank](body if bank in ("boc", "bochk", "ccb", "ccb-asia") else json.loads(body))
 
 
 def merge_bank(snapshot, bank, quotes):
-    offshore_ids = {"bochk": "bochk", "hanghk": "hang", "hsbchk": "hsbc", "icbc-asia": "icbc-asia"}
+    offshore_ids = {"bochk": "bochk", "hanghk": "hang", "hsbchk": "hsbc", "icbc-asia": "icbc-asia", "ccb-asia": "ccb-asia"}
     section = snapshot.setdefault("offshoreUsd" if bank in offshore_ids else "banks", {})
     bank_id = offshore_ids.get(bank, bank)
     previous = section.get(bank_id, {}).get("quotes", {})
