@@ -53,10 +53,9 @@
     stratPanel: 'initial', stratView: 'results', stratYear: '2010', stratAsset: 'SPY', stratMethod: 'lump_sum', stratMethods: { initial: 'lump_sum', dca: 'dca_month', combined: 'combined_lump_sum' },
     stratCompare: 'assets', stratMetric: 'amount', leverage: true, showLeverageAssets: false, chartHidden: new Set(),
     buyFamily: 'sp', buyYears: 5, buyPlan: 'lump', buyBasis: 'nav', buyLumpAmount: 100000, buyMonthlyAmount: 3000,
-    buyTaxProduct: 'QQQI', buyTaxRate: 10,
+    buyView: 'comparison', buyTaxProduct: 'QQQI',
     buyFees: { usCommission: 0.02, usMinimum: 1, fxSpread: 0.15,
-      exchangeCommission: 0.025, exchangeMinimum: 5, subscription: 0.12, redemption: 0,
-      usDividendTax: 10, usDividendCreditCap: 10, cnDividendTax: 20, capitalGainsTax: 20 },
+      exchangeCommission: 0.025, exchangeMinimum: 5, subscription: 0.12, redemption: 0 },
     buyFundFees: { '050025': { subscription: 0.12, redemption: 0 }, '270042': { subscription: 0.13, redemption: 0 }, '040046': { subscription: 0.12, redemption: 0 } }
   };
   let lastFocus = null, toastTimer, searchTimer, activeCurve = null, strategyFeeLoading = false, strategyFeeError = false;
@@ -301,7 +300,7 @@
     const cash = a.cash || [], splits = a.splits || [];
     const reportPeriods = a.verifiedDistributionPeriods || [];
     const reportEvidence = reportPeriods.length ? '<h3 class="detail-section-title">官方报告核对</h3><div class="table-wrap"><table><thead><tr><th>报告区间</th><th>向持有人现金分红</th><th>来源</th></tr></thead><tbody>' + reportPeriods.map(p => '<tr><td>' + esc(p.start) + ' — ' + esc(p.end) + '</td><td>' + (p.cashDistributed === 0 ? '未分红' : money(p.cashDistributed) + '元') + '</td><td>' + extLink(p.sourceUrl, p.sourceTitle + ' · ' + p.section) + '</td></tr>').join('') + '</tbody></table></div>' + reportPeriods.filter(p => M.finite(p.underlyingDividends)).map(p => '<p class="notice">' + esc(p.start) + ' — ' + esc(p.end) + '，基金收到股票股息 ' + money(p.underlyingDividends / 10000) + '万元，已计入基金资产和净值；这不是向ETF持有人另发的现金分红。</p>').join('') : '';
-    return '<p class="notice">收益已计入现金分红再投资，拆分仅调整份额。' + (currency === '美元' ? '投资渠道另按设定税率扣除美股股息税。' : '基金净值已包含底层证券股息及基金承担的税费。') + '</p>' + detailGrid([['已收录现金分红', cash.length + '次'], ['事件截至', esc(a.through)], ['最近现金分红', cash.length ? esc(cash.at(-1).date) + ' · 每份 ' + money(cash.at(-1).perUnit, 4) + currency : '所收录历史未见现金分红'], ['拆分记录', splits.length ? splits.map(e => esc(e.date) + ' · 1份变为' + money(e.factor, 3) + '份').join('<br>') : '所收录历史未见拆分']]) +
+    return '<p class="notice">收益已计入现金分红再投资，拆分仅调整份额。' + (currency === '美元' ? '投资渠道按已披露的协定与抵免基准扣除个人股息税。' : '基金净值已包含底层证券股息及基金承担的税费。') + '</p>' + detailGrid([['已收录现金分红', cash.length + '次'], ['事件截至', esc(a.through)], ['最近现金分红', cash.length ? esc(cash.at(-1).date) + ' · 每份 ' + money(cash.at(-1).perUnit, 4) + currency : '所收录历史未见现金分红'], ['拆分记录', splits.length ? splits.map(e => esc(e.date) + ' · 1份变为' + money(e.factor, 3) + '份').join('<br>') : '所收录历史未见拆分']]) +
       (cash.length ? '<div class="table-wrap"><table><thead><tr><th>除息日</th><th>每份现金分红 / ' + currency + '</th><th>收益处理</th></tr></thead><tbody>' + [...cash].reverse().map(e => '<tr><td>' + esc(e.date) + '</td><td>' + money(e.perUnit, 4) + '</td><td>已计入再投回报</td></tr>').join('') + '</tbody></table></div>' : '') + reportEvidence + '<div class="actions">' + extLink(a.source, '分红 / 拆分原始记录') + (a.verifiedEvents || []).map(e => extLink(e.sourceUrl, e.date + ' 官方公告')).join('') + '</div><p class="note">按所收录历史展示' + (a.observedAt ? '，记录采集于 ' + esc(a.observedAt) : '') + '；不把份额拆分当作分红收益。</p>';
   }
   function openCrossMethod() {
@@ -750,12 +749,15 @@
     }) } : null;
   }
   function buyLocation() {
+    const tax = window.ChanghengInvestmentTax;
+    const header = head('INVESTMENT CHANNELS', '投资渠道', '比较不同渠道的历史收益，分开查看税种、标的实例与账户扣缴。') + tax.navigation(state.buyView);
+    if (state.buyView !== 'comparison') return header + tax.panel(state.buyView, tax.render(state.buyView, state.buyTaxProduct));
     const data = currentBuyData();
-    if (!data) return head('INVESTMENT CHANNELS', '投资渠道', '比较 SPY、QQQ 与国内场内、场外指数工具的历史税后结果。') + '<p class="notice red">比较数据未加载，请检查 data/buy-location.js。</p>';
+    if (!data) return header + tax.panel('comparison', '<p class="notice red">比较数据未加载，请检查 data/buy-location.js。</p>');
     const config = { family: state.buyFamily, years: state.buyYears, plan: state.buyPlan,
-      lumpAmount: state.buyLumpAmount, monthlyAmount: state.buyMonthlyAmount, fees: state.buyFees, fundFees: state.buyFundFees, exchangeBasis: state.buyBasis, annualFeeBasis: state.annualFeeBasis, annualFeeOverrides: state.annualFeeOverrides };
+      lumpAmount: state.buyLumpAmount, monthlyAmount: state.buyMonthlyAmount, fees: window.ChanghengInvestmentTax.historyFees(state.buyFees), fundFees: state.buyFundFees, exchangeBasis: state.buyBasis, annualFeeBasis: state.annualFeeBasis, annualFeeOverrides: state.annualFeeOverrides };
     const result = M.buyLocationResult(data, config);
-    const feeField = (key, label, unit, hint = '') => '<label>' + label + '<span class="buy-field"><input type="number" min="0" max="' + (key.endsWith('Minimum') ? '1000000' : key === 'usDividendCreditCap' ? '10' : '100') + '" step="any" inputmode="decimal" data-buy-input="' + key + '" value="' + esc(state.buyFees[key]) + '"><span>' + unit + '</span></span>' + (hint ? '<small>' + hint + '</small>' : '') + '</label>';
+    const feeField = (key, label, unit, hint = '') => '<label>' + label + '<span class="buy-field"><input type="number" min="0" max="' + (key.endsWith('Minimum') ? '1000000' : '100') + '" step="any" inputmode="decimal" data-buy-input="' + key + '" value="' + esc(state.buyFees[key]) + '"><span>' + unit + '</span></span>' + (hint ? '<small>' + hint + '</small>' : '') + '</label>';
     const fundFeeFields = data.products.filter(p => p.family === state.buyFamily && p.channel === 'off').map(p => {
       const values = state.buyFundFees[p.code];
       return '<div class="buy-fund-fees"><span>' + esc(p.code + ' · ' + p.name) + '</span><div class="buy-fee-grid">' +
@@ -772,10 +774,10 @@
       return f && (/暂停/.test(f.st || '') || /限/.test(f.st || '')) ? p.code + ' ' + (f.st || '交易待核验') + (f.lm && f.lm !== '--' ? '，单日' + f.lm : '') + (f.navdate ? '（快照 ' + f.navdate + '）' : '') : null;
     }).filter(Boolean);
     const availability = constrained.length ? '<p class="notice warn buy-availability"><strong>当前场外申购限制：</strong>' + esc(constrained.join('；')) + '。下方是历史可投资条件模拟，当前无法按输入金额直接复现；状态以基金研究快照为准。</p>' : '';
-    const assumptions = '<details class="buy-assumptions" open><summary><strong>自定义交易、换汇与税费</strong><span>当前为示例费率，按你的券商与基金渠道修改</span></summary><div class="buy-assumption-grid">' +
+    const assumptions = '<details class="buy-assumptions"><summary><strong>交易与换汇费用</strong><span>费用可按渠道修改；税务基准固定展示</span></summary><div class="buy-assumption-grid">' +
       '<div><h3>境外账户买美股 ETF</h3><div class="buy-fee-grid">' + feeField('usCommission', '每笔佣金', '%') + feeField('usMinimum', '最低佣金', '美元') + feeField('fxSpread', '换汇单边价差', '%') + '</div></div>' +
       '<div><h3>国内场内 ETF</h3><div class="buy-fee-grid">' + feeField('exchangeCommission', '每笔佣金', '%') + feeField('exchangeMinimum', '最低佣金', '元') + '</div><h3>国内场外基金</h3>' + fundFeeFields + '<p>申购费是示例渠道折扣；赎回费对全部份额使用同一费率。定投份额持有期不同，按费档核对。</p></div>' +
-      '<div><h3>大陆税收居民 · 美股 ETF</h3><div class="buy-fee-grid">' + feeField('usDividendTax', '美国实际股息预扣', '%') + feeField('usDividendCreditCap', '可抵免美税上限', '%', '占税前普通股息；无可用凭证可设0') + feeField('cnDividendTax', '境内股息税率', '%') + feeField('capitalGainsTax', '境内卖出收益税率', '%') + '</div><p>默认符合内地居民的10%协定资格，境内股息20%。仅抵免合法已缴且未退回的美税，不能用超过协定的多扣税抵免。模拟不提前计入未收到的退税；历史分配统一按普通股息情景处理。</p></div>' +
+      '<div><h3>内地居民 · 已落实协定与抵免</h3><div class="buy-tax-policy"><span>普通股息 · 美国代扣10%＋内地抵免后另缴10%</span><strong>股息合计20%</strong><span>卖出 · 实现的净收益按20%计税</span></div><p>统一研究基准，不代表每家银行、券商的实际扣缴。历史分配统一按普通股息处理，未逐年复原特殊分类；账户真实政策见“银行与券商”页签。</p></div>' +
       '</div></details>';
     const feeText = code => {
       const product = data.products.find(p => p.code === code), info = feeInfo(product);
@@ -796,12 +798,10 @@
       const a = p.actions, within = e => result.start && e.date > result.start && e.date <= result.end;
       return '<tr><td>' + esc(p.name) + '<span class="sub">' + p.code + '</span></td><td>' + (a ? a.cash.filter(within).length + '次' : '缺事件记录') + '</td><td>' + (a ? a.splits.filter(within).map(e => e.date + ' · 1:' + e.factor).join('；') || '无' : '缺事件记录') + '</td><td>分红已再投' + (p.channel === 'us' ? '<span class="sub">已扣美股股息税</span>' : '') + '</td><td>' + action('查看', 'buy-actions', 'text-link', 'data-code="' + p.code + '"') + '</td></tr>';
     }).join('') + '</tbody></table></div><p class="note">统计区间 ' + esc(result.start || '—') + ' → ' + esc(result.end || '—') + '；现金分红进入总回报，份额拆分不创造额外收益。QDII 底层股息已反映在净值中。</p></div></details>';
-    const taxGuide = window.ChanghengInvestmentTax.render(state.buyTaxProduct, state.buyTaxRate);
-    const taxAssumption = '<p class="buy-tax-assumption' + (state.buyFees.usDividendTax > 10 ? ' warn' : '') + '">历史模拟：普通股息美国实扣' + esc(state.buyFees.usDividendTax) + '%；可抵免美税上限' + esc(state.buyFees.usDividendCreditCap) + '%；境内股息税率' + esc(state.buyFees.cnDividendTax) + '%；境内卖出正收益税率' + esc(state.buyFees.capitalGainsTax) + '%。' + (state.buyFees.usDividendTax > 10 ? '超出10%协定的预扣不用于抵免，未到账退款不计入结果。' : '') + '可在下方修改税费假设。</p>';
+    const taxAssumption = '<p class="buy-tax-assumption"><strong>固定税务基准：</strong>内地居民已落实10%协定预扣及有效抵免，普通股息合计20%（美国10%＋内地另缴10%）；卖出净收益20%。历史分配按普通股息处理，结果为统一条件模拟，非具体银行 / 券商的实扣结果。</p>';
     const notes = '<details class="buy-method"><summary>查看数据来源与计算边界</summary><div class="buy-method-body"><p>基于产品每日分红复权收盘价、场外基金分红再投净值及美元兑人民币实际日线。美股 ETF 使用同一日价格与汇率；每月定投在该月第一个共同交易日买入，期间股息税从账户扣除，期末全部卖出。手续费、换汇价差和投资者税费逐笔计算。场外基金按当天净值成交，未模拟申购确认时差、限购；场内默认按分红再投净值模拟买卖，剔除溢价但保留券商佣金；切换成交价后按复权收盘价模拟。净值不保证可成交，未模拟买卖价差、滑点和最小交易单位。汇率、境内纳税申报折算价、抵免及持有期间的费率变化可与个人实际交易不同。</p><p>国内基金投资者层面的申赎差价与分配在现行优惠口径下按0估算；QDII 底层可能已承担境外税，反映在净值中。美股 ETF 的历史复权价含产品运营费用，股息税按分红日折减；分配统一按普通股息情景测算，未重建每年基金的特殊税务分类；境外所得税抵免以简化的逐次模型估算，并受协定应征税额与可用凭证上限约束。结果是历史条件模拟，不是个人税务申报金额。</p><div class="buy-sources">' +
-      extLink('https://www.chinatax.gov.cn/n810219/n810744/n3752930/n3752974/c3970366/content.html', '个人所得税法') + extLink('https://www.chinatax.gov.cn/chinatax/n810341/n810765/c101653/202001/c5149318/content.html', '境外所得及抵免公告') + extLink('https://www.chinatax.gov.cn/chinatax/n810341/n810765/n812203/200207/c1208424/content.html', '国内基金税收政策') + extLink('https://www.irs.gov/pub/irs-trty/china.pdf', '中美税收协定') + extLink('https://www.irs.gov/individuals/international-taxpayers/federal-income-tax-withholding-and-reporting-on-other-kinds-of-us-source-income-paid-to-nonresident-aliens', '美国税务局') + extLink('https://www.ssga.com/us/en/individual/etfs/state-street-spdr-sp-500-etf-trust-spy', 'SPY 费用') + extLink('https://www.invesco.com/qqq-etf/en/market-outlook/whats-new-about-qqq.html', 'QQQ 费用') + '</div><div class="buy-sources">' + data.products.filter(p => p.family === state.buyFamily).map(p => extLink(p.source, p.code + ' 行情')).join('') + extLink(data.fxSource, '美元兑人民币汇率') + '</div><p>资料快照 ' + esc(data.asOf) + '；原始数据哈希和生成脚本保存在仓库。完整假设见 <a class="inline-link" href="docs/buy-location-method.md" target="_blank" rel="noopener">买入渠道研究方法</a>。</p></div></details>';
-    return head('INVESTMENT CHANNELS', '投资渠道', '看清股息与卖出税、账户扣缴和退税差别，再比较不同渠道的历史税后收益。') +
-      taxGuide + controls + basisControls + availability + table + taxAssumption + distributions + assumptions + notes;
+      extLink('https://www.chinatax.gov.cn/n810219/n810744/n3752930/n3752974/c3970366/content.html', '个人所得税法') + extLink('https://www.chinatax.gov.cn/chinatax/n810219/n810744/n3752930/n3752974/c5143076/content.html', '境外所得及抵免公告') + extLink('https://www.chinatax.gov.cn/chinatax/n810341/n810765/n812203/200207/c1208424/content.html', '国内基金税收政策') + extLink('https://www.irs.gov/pub/irs-trty/china.pdf', '中美税收协定') + extLink('https://www.irs.gov/individuals/international-taxpayers/federal-income-tax-withholding-and-reporting-on-other-kinds-of-us-source-income-paid-to-nonresident-aliens', '美国税务局') + extLink('https://www.ssga.com/us/en/individual/etfs/state-street-spdr-sp-500-etf-trust-spy', 'SPY 费用') + extLink('https://www.invesco.com/qqq-etf/en/market-outlook/whats-new-about-qqq.html', 'QQQ 费用') + '</div><div class="buy-sources">' + data.products.filter(p => p.family === state.buyFamily).map(p => extLink(p.source, p.code + ' 行情')).join('') + extLink(data.fxSource, '美元兑人民币汇率') + '</div><p>资料快照 ' + esc(data.asOf) + '；原始数据哈希和生成脚本保存在仓库。完整假设见 <a class="inline-link" href="docs/buy-location-method.md" target="_blank" rel="noopener">买入渠道研究方法</a>。</p></div></details>';
+    return header + tax.panel('comparison', controls + basisControls + availability + taxAssumption + table + distributions + assumptions + notes);
   }
   function quality() {
     const q = window.DATA_QUALITY || { summary: {}, datasets: [] };
@@ -838,7 +838,7 @@
     return head('DATA STATUS', '数据状态与来源', '查看各数据集的日期、覆盖范围和待补证据。', action('导出质量报告', 'export-quality', 'btn')) +
       '<div class="stats-grid">' + stat('公开国内指数', (window.INDEX_DATA || []).filter(r => ['available', 'cached'].includes(r.status)).length, '个', '指数源独立于基金产品') + stat('研究产品', funds.length, '只', '按基金代码去重') + stat('长期主动权益', funds.filter(f => M.fundScopeMatches(f, policy.byCode[f.c], 'equity', defaults)).length, '只', '默认权益筛选条件') + stat('待核验类别', q.summary.unverified || 0, '项', '逐项说明见下方') + '</div>' +
       '<div class="dataset-grid">' + (q.datasets || []).map(d => '<article class="dataset-card"><header><h3>' + esc(datasetLabel(d)) + '</h3>' + badge(statusNames[d.status] || issueLabels[d.id] || d.status, ['checked', 'available'].includes(d.status) ? 'green' : 'warn') + '</header><p>数据日期 ' + esc(datasetDates(d)) + (d.records != null ? ' · ' + d.records + '条' : '') + '</p>' + (coverage(d) ? '<p class="dataset-coverage">' + coverage(d) + '</p>' : '') + (d.issues && d.issues.length ? '<ul>' + d.issues.map(i => '<li>' + esc(i.message) + '</li>').join('') + '</ul>' : '') + runNote(d) + '</article>').join('') +
-      (window.BUY_LOCATION_DATA ? '<article class="dataset-card"><header><h3>投资渠道</h3>' + badge('固定研究快照', 'warn') + '</header><p>行情截至 ' + esc(window.BUY_LOCATION_DATA.asOf) + ' · ' + window.BUY_LOCATION_DATA.products.length + '只产品</p><p>同日价格、净值及汇率经脚本构建；券商费用和投资者税率为可调整假设，税后结果是模拟值。</p><a class="text-link" href="docs/buy-location-method.md" target="_blank" rel="noopener">查看来源与计算边界 ↗</a></article>' : '') + '</div>' +
+      (window.BUY_LOCATION_DATA ? '<article class="dataset-card"><header><h3>投资渠道</h3>' + badge('固定研究快照', 'warn') + '</header><p>行情截至 ' + esc(window.BUY_LOCATION_DATA.asOf) + ' · ' + window.BUY_LOCATION_DATA.products.length + '只产品</p><p>同日价格、净值及汇率经脚本构建；券商费用可调整，个人税使用已披露的协定与抵免基准，税后结果是模拟值。</p><a class="text-link" href="docs/buy-location-method.md" target="_blank" rel="noopener">查看来源与计算边界 ↗</a></article>' : '') + '</div>' +
       '<div class="section-head"><h2>计算口径</h2></div><div class="quality-principles">' + [
         ['指数与产品', '指数取编制方日线；ETF 和基金按各自行情计算。'],
         ['收益周期', '不满完整周期留空；年化与累计可切换。'],
@@ -1183,7 +1183,7 @@
       case 'strategy-compare': state.stratCompare = val; state.chartHidden.clear(); break;
       case 'strategy-metric': state.stratMetric = val; break;
       case 'buy-tax-product': if (['QQQI', 'QQQ', 'SPY', 'KO'].includes(val)) state.buyTaxProduct = val; break;
-      case 'buy-tax-rate': if ([10, 30].includes(Number(val))) state.buyTaxRate = Number(val); break;
+      case 'buy-tab': if (window.ChanghengInvestmentTax.tabs.some(([id]) => id === val)) state.buyView = val; break;
       case 'buy-basis': state.buyBasis = val; break;
       case 'buy-actions': {
         const p = window.BUY_LOCATION_DATA?.products.find(p => p.code === code); if (!p) return;
@@ -1194,12 +1194,12 @@
       case 'buy-plan': state.buyPlan = val; break;
       case 'buy-export': {
         const result = M.buyLocationResult(currentBuyData(), { family: state.buyFamily, years: state.buyYears,
-          plan: state.buyPlan, lumpAmount: state.buyLumpAmount, monthlyAmount: state.buyMonthlyAmount, fees: state.buyFees, fundFees: state.buyFundFees, exchangeBasis: state.buyBasis, annualFeeBasis: state.annualFeeBasis, annualFeeOverrides: state.annualFeeOverrides });
+          plan: state.buyPlan, lumpAmount: state.buyLumpAmount, monthlyAmount: state.buyMonthlyAmount, fees: window.ChanghengInvestmentTax.historyFees(state.buyFees), fundFees: state.buyFundFees, exchangeBasis: state.buyBasis, annualFeeBasis: state.annualFeeBasis, annualFeeOverrides: state.annualFeeOverrides });
         if (result.error) { toast(result.error); return; }
         const columns = ['产品代码', '产品名称', '渠道', '场内收益口径', '分红处理', '开始日', '结束日', '买入笔数', '累计投入CNY', '交易费用CNY', '换汇价差CNY', '美股股息预扣CNY', '境内股息补缴CNY', '卖出收益税CNY', '税后期末CNY', '累计收益%', 'XIRR%', '年费口径', '估算有效年费%', '缺失说明', '费用假设JSON'];
         download('长衡-买入渠道-' + result.end + '.csv', M.csv([columns, ...result.rows.map(r => [r.code, r.name || currentBuyData().products.find(p => p.code === r.code)?.name,
           r.channel || currentBuyData().products.find(p => p.code === r.code)?.channel, r.exchangeBasis || '原渠道', '再投资', result.start, result.end, r.purchases, r.contributed, r.transactionCost, r.fxCost,
-          r.usDividendTax, r.cnDividendTax, r.capitalTax, r.terminal, r.totalReturn, r.xirr, feeBasisLabel(), r.annualFeeRate, r.error, JSON.stringify({ ...state.buyFees, fundFees: state.buyFundFees, annualFeeOverrides: state.annualFeeOverrides })])]), 'text/csv;charset=utf-8');
+          r.usDividendTax, r.cnDividendTax, r.capitalTax, r.terminal, r.totalReturn, r.xirr, feeBasisLabel(), r.annualFeeRate, r.error, JSON.stringify({ ...window.ChanghengInvestmentTax.historyFees(state.buyFees), fundFees: state.buyFundFees, annualFeeOverrides: state.annualFeeOverrides })])]), 'text/csv;charset=utf-8');
         return;
       }
       case 'chart-line': state.chartHidden.has(val) ? state.chartHidden.delete(val) : state.chartHidden.add(val); break;

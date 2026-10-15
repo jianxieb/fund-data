@@ -3,12 +3,12 @@
   "scope": "Mainland China tax resident, non-US individual, US-domiciled ordinary securities",
   "sources": {
     "treaty": {
-      "title": "中美税收协定 · 第9条",
+      "title": "中美税收协定 · 第9、22条",
       "url": "https://www.irs.gov/pub/irs-trty/china.pdf"
     },
     "china": {
-      "title": "境外所得抵免 · 2020年第3号公告",
-      "url": "https://www.chinatax.gov.cn/chinatax/n810341/n810765/c101653/202001/c5149318/content.html"
+      "title": "境外所得与抵免 · 2020年第3号公告",
+      "url": "https://www.chinatax.gov.cn/chinatax/n810219/n810744/n3752930/n3752974/c5143076/content.html"
     },
     "law": {
       "title": "个人所得税法",
@@ -19,55 +19,83 @@
       "url": "https://www.irs.gov/individuals/international-taxpayers/federal-income-tax-withholding-and-reporting-on-other-kinds-of-us-source-income-paid-to-nonresident-aliens"
     },
     "hsbc": {
-      "title": "汇丰 · 投资常见问题",
+      "title": "汇丰 · 投资FAQ",
       "url": "https://www.hsbc.com.hk/help/faq/investments/"
     },
     "hsbcTerms": {
-      "title": "汇丰综合账户条款 · 5.1.8",
+      "title": "汇丰账户条款 · 投资服务5.1.8",
       "url": "https://www.hsbc.com.hk/content/dam/hsbc/hk/docs/accounts/personal-integrated/terms-and-conditions-3sep.pdf"
+    },
+    "futu": {
+      "title": "富途香港 · 股息税查询指引",
+      "url": "https://www.futuhk.com/hans/support/topic2_2337"
+    },
+    "futuDrip": {
+      "title": "富途香港 · 股息再投资计划",
+      "url": "https://www.futuhk.com/support/topic2_1770"
+    },
+    "zheshang": {
+      "title": "浙商国际 · 2025-04-07预扣声明",
+      "url": "https://www.cnzsqh.hk/hk/view.php?id=284"
     },
     "ibkr": {
       "title": "IBKR · 非美国人士预扣税",
       "url": "https://www.interactivebrokers.com/en/support/tax-nonus-initial.php"
     },
     "ibkrRoc": {
-      "title": "IBKR · ROC重分类官方答复",
+      "title": "IBKR · 预扣税课程及员工答复",
       "url": "https://www.interactivebrokers.com/campus/trading-lessons/what-kind-of-income-is-subject-to-withholding/"
     },
+    "ibkrDrip": {
+      "title": "IBKR · DRIP启用与适用条件",
+      "url": "https://www.ibkrguides.com/brokerportal/dividendelection.htm"
+    },
     "ibkrForms": {
-      "title": "IBKR · 1042-S与分红报告",
+      "title": "IBKR · 非美国客户税表",
       "url": "https://www.interactivebrokers.com/en/support/tax-nonus-forms.php"
     },
     "qqqi": {
       "title": "QQQI · 正式Form 8937，第3页",
       "url": "https://neosfunds.com/wp-content/uploads/NEOS-Nasdaq-100-High-Income-ETF-Form-8937-12.31.25.pdf"
     },
+    "qqqiStrategy": {
+      "title": "QQQI · 基金策略与分配",
+      "url": "https://neosfunds.com/qqqi/"
+    },
     "qqqiProspectus": {
       "title": "QQQI · 招募说明书",
       "url": "https://neosfunds.com/wp-content/uploads/QQQI-Prospectus.pdf"
     },
     "qqq": {
-      "title": "Invesco · ETF年度税务资料",
-      "url": "https://www.invesco.com/us/en/accounts/tax-center/etf-tax-center.html"
+      "title": "QQQ · 2025年最终分配分类表",
+      "url": "https://www.invesco.com/content/dam/invesco/us/en/documents/tax-documents/ICI-Primary-and-Secondary-and-NRA-File-IVZ-ETF-2025.xlsx"
     },
     "spy": {
-      "title": "SPY · 发行人资料",
-      "url": "https://www.ssga.com/us/en/individual/etfs/state-street-spdr-sp-500-etf-trust-spy"
+      "title": "SPY · 2025年最终分配分类表",
+      "url": "https://www.ssga.com/library-content/products/fund-docs/etfs/us/tax-documents/SPDR_ICI_Tax_Summary_Primary.xlsx"
     },
     "ko": {
-      "title": "可口可乐 · 现金股息记录",
-      "url": "https://investors.coca-colacompany.com/stock-info/dividends"
+      "title": "可口可乐 · 2025-05-01派息公告",
+      "url": "https://www.coca-colacompany.com/media-center/coca-cola-board-of-directors-declares-regular-quarterly-dividend"
     },
     "refund": {
-      "title": "IRS · 非居民税务指南与退税",
+      "title": "IRS · Publication 519退税规则",
       "url": "https://www.irs.gov/publications/p519"
     },
     "estate": {
-      "title": "IRS · 非居民遗产税",
+      "title": "IRS · 非居民美国遗产税",
       "url": "https://www.irs.gov/businesses/small-businesses-self-employed/estate-tax-for-nonresidents-not-citizens-of-the-united-states"
     },
+    "estateAssets": {
+      "title": "IRS · 境外托管的美国资产",
+      "url": "https://www.irs.gov/individuals/international-taxpayers/some-nonresidents-with-us-assets-must-file-estate-tax-returns"
+    },
+    "chinaEstate": {
+      "title": "财政部未开征遗产税答复 · 政府网站转述",
+      "url": "https://www.pahz.gov.cn/xinfasudi/201711/t20171130_5865341.shtml"
+    },
     "hkStamp": {
-      "title": "香港税务局 · 股票印花税定义",
+      "title": "香港税务局 · 香港股票定义",
       "url": "https://www.ird.gov.hk/eng/pdf/sog_pn04a.pdf"
     },
     "domestic": {
@@ -87,7 +115,9 @@
     "visuallyChecked": true,
     "otherDistributionCharacter": null,
     "chinaRocIncomeClassification": null,
-    "chinaRocBasisTreatment": null
+    "chinaRocBasisTreatment": null,
+    "displayedAccountWithholding": null,
+    "displayedFinalAfterTaxCash": null
   },
   "policyEvidence": {
     "hsbc": {
@@ -101,16 +131,67 @@
       "automaticQqqiRocRefundCommitment": null
     },
     "ibkr": {
-      "basis": "Official non-US withholding page and IBKR staff replies on withholding lesson",
-      "confirmed": "Subsequent US-security ROC reclassification can reverse original withholding",
-      "allOrdinaryDividendsRefunded": false
-    },
-    "hkBrokers": {
-      "universalRocRefundPolicy": null
+      "basis": "Official non-US withholding page; named IBKR staff replies on the withholding lesson",
+      "rocReplyDate": "2025-08-14",
+      "entityAndClearingCaveatDate": "2026-01-13",
+      "confirmed": "US-security ROC reclassification adjusts original withholding; entity and upstream clearing can affect treaty execution",
+      "allEntitiesAlwaysExecuteChina10Percent": false,
+      "allOrdinaryDividendsRefunded": false,
+      "dripEvidence": "Current Dividend Election guide, updated 2026-02-03: enablement, entity and security eligibility, commissions. Historical official KB indexed text and current Futu article confirm net-of-withholding cash; old redirecting link replaced in the UI."
     },
     "chinaCredit": {
       "rule": "2020 notice no.3 article 4 excludes tax not permitted by treaty and refunded tax",
       "ordinaryUsDividendTreatyCreditCeilingPercent": 10
+    },
+    "futu": {
+      "confirmed": "Official tax guide distinguishes Hong Kong tax residents at 30% and treaty-eligible residents; DRIP article explicitly reinvests only net-of-withholding cash",
+      "allMainlandAccountsGuaranteed10Percent": null,
+      "automaticQqqiRocRefundCommitment": null
+    },
+    "zheshang": {
+      "statementDate": "2025-04-07",
+      "confirmed": "Platform expressly announces 30% US dividend withholding and attributes it to its non-QI arrangement",
+      "automaticRocRefundCommitment": null,
+      "generalRuleForAllNonQiIntermediaries": false
     }
-  }
+  },
+  "revision": "Tabs, verified issuer classifications, actual channel evidence, no discretionary withholding controls",
+  "ui": {
+    "defaultView": "comparison",
+    "tabs": [
+      [
+        "comparison",
+        "渠道收益比较"
+      ],
+      [
+        "rules",
+        "税种与抵免"
+      ],
+      [
+        "products",
+        "四只标的实例"
+      ],
+      [
+        "channels",
+        "银行与券商"
+      ]
+    ],
+    "editableWithholding": false,
+    "historicalBaseline": {
+      "usDividendTax": 10,
+      "usDividendCreditCap": 10,
+      "cnDividendTax": 20,
+      "capitalGainsTax": 20
+    }
+  },
+  "issuerDistributions": "issuer-distributions-2025.json",
+  "rejectedClaims": [
+    "Mainland resident dividend tax is automatically 10%+20%=30%",
+    "No US estate tax exposure because China does not levy estate tax",
+    "All mainland Trade25 users must withhold 30% and can never reclaim",
+    "IBKR refunds all ordinary dividend tax",
+    "All Hong Kong brokers have identical withholding and ROC services",
+    "Reinvestment avoids dividend income tax",
+    "QQQI US ROC treatment automatically determines Chinese income tax"
+  ]
 }

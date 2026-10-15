@@ -1,0 +1,27 @@
+{
+  "checkedAt": "2026-10-15",
+  "url": "http://127.0.0.1:8765/#buy-location",
+  "scope": "Local browser only; production page not opened",
+  "viewport": {
+    "width": 1280,
+    "scrollWidth": 1280
+  },
+  "checks": {
+    "defaultComparisonWithExistingResults": true,
+    "fourSeparateTabs": true,
+    "qqqiConfirmedCompositionAndUnknownFinalTax": true,
+    "qqqSpyKoRealPaymentsAndCentLedger": true,
+    "allProductsExplainSaleAndReinvestment": true,
+    "channelPolicyTableAndOfficialLinks": true,
+    "noEditableTaxRateControls": true,
+    "keyboardHomeSelectsComparison": true,
+    "keyboardArrowRightSelectsRules": true
+  },
+  "screenshot": "/tmp/fund-data-tax-rules-20261015.jpg",
+  "tests": [
+    "node --test tests/investment-tax.test.cjs tests/model.test.cjs (53 passed)",
+    "npm run check",
+    "git diff --check"
+  ],
+  "acceptance": "Local implementation verification only; not user acceptance"
+}
