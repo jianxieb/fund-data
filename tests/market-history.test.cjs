@@ -4,11 +4,11 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const M = require('../assets/market-history-model.js');
 
-async function renderReport(data) {
+async function renderReport(data, checkedOn = data.asOf) {
   let finish;
   const ready = new Promise(resolve => { finish = resolve; });
   const sandbox = {
-    window: {ChanghengMarketHistoryModel:M}, location:{hash:'#market-history'},
+    window: {ChanghengMarketHistoryModel:{...M,shanghaiDate:()=>checkedOn}}, location:{hash:'#market-history'},
     document: {addEventListener() {}, querySelector() { return {dataset:{src:'report.json'}}; }},
     fetch: async () => ({ok:true, json:async () => data})
   };
@@ -26,6 +26,30 @@ test('historical rank handles ties, endpoints and empty data without a false zer
   assert.equal(M.percentile([], 5), null);
   assert.equal(M.percentile([1], NaN), null);
   assert.equal(M.quantile([1, 2, 3, 4], .25), 1.75);
+});
+test('freshness follows the Shanghai calendar and each source frequency, independently of the report date', () => {
+  assert.equal(M.shanghaiDate(new Date('2026-10-15T15:59:59Z')), '2026-10-15');
+  assert.equal(M.shanghaiDate(new Date('2026-10-15T16:00:00Z')), '2026-10-16');
+  for (const [frequency,threshold] of [['daily',10],['weekly',15],['monthly',65],['quarterly',140]]) {
+    const base = new Date('2026-01-01T00:00:00Z');
+    const day = offset => new Date(+base+offset*86400000).toISOString().slice(0,10);
+    assert.equal(M.observationFreshness('2026-01-01',frequency,day(threshold)).stale,false);
+    const stale = M.observationFreshness('2026-01-01',frequency,day(threshold+1));
+    assert.equal(stale.stale,true);
+    assert.equal(stale.threshold,threshold);
+    assert.equal(stale.lagDays,threshold+1);
+  }
+  assert.equal(M.observationFreshness('2026-10-16','daily','2026-10-15').future,true);
+  assert.equal(M.observationFreshness('2026-10-16','daily','2026-10-15').stale,true);
+});
+test('an unchanged snapshot expires without changing its historical window, values, rank or exports', () => {
+  const metric = {id:'pe',source:'source',unit:'倍',frequency:'daily',points:[['2025-10-01',10],['2025-10-02',20],['2025-10-03',15]]};
+  const current = M.summarize(metric,'2025-10-03',5,'2025-10-03');
+  const expired = M.summarize(metric,'2025-10-03',5,'2026-10-15');
+  assert.equal(current.stale,false);
+  assert.equal(expired.stale,true);
+  for (const key of ['start','end','points','last','count','min','max','coverageYears','p10','median','p90','percentile','gaps','lateStart']) assert.deepEqual(expired[key],current[key],key);
+  assert.equal(M.csv({symbol:'SPX'},metric,expired),M.csv({symbol:'SPX'},metric,current));
 });
 test('windows use a fixed report date, exclude future samples and preserve leap-day boundaries', () => {
   assert.equal(M.windowStart('2024-02-29', 5), '2019-02-28');
@@ -104,15 +128,34 @@ test('the report exposes all selected-index metrics and macro context without hi
   assert.ok(html.includes('一年内最大回撤'));
   assert.ok(html.includes('近一年涨跌幅'));
 });
-test('overdue observations cannot remain visible as current values and ranks', async () => {
+test('overdue observations are retained as historical values when the published snapshot stops updating', async () => {
   const data = JSON.parse(fs.readFileSync(require.resolve('../data/market-history.json'), 'utf8'));
   const advanced = new Date(data.asOf + 'T00:00:00Z');
   advanced.setUTCDate(advanced.getUTCDate() + 31);
-  data.asOf = advanced.toISOString().slice(0, 10);
-  const html = await renderReport(data);
-  assert.equal((html.match(/当前读数待更新/g) || []).length, 11);
-  assert.ok(!html.includes('class="mh-rank"'));
-  assert.ok(!html.includes('class="mh-reading"'));
+  const checkedOn = advanced.toISOString().slice(0, 10), html = await renderReport(data,checkedOn);
+  assert.equal((html.match(/待更新 · 保留历史值/g) || []).length, 11);
+  assert.equal((html.match(/末次观测分位/g) || []).length, 11);
+  assert.equal((html.match(/data-metric=/g) || []).length, 11);
+  assert.ok(html.includes(`北京时间 ${checkedOn}`));
+  assert.ok(html.includes('超过 10 天更新阈值'));
+  assert.ok(html.includes('末次指数收盘'));
+  assert.ok(!html.includes('当前处于可用历史'));
+  assert.ok(!html.includes('年初至今'));
+  assert.ok(html.includes('年初至'+data.asOf.slice(5)));
+  assert.ok(html.includes('class="mh-price-series"') && html.includes('class="mh-indicator-series"'));
+  const metric = data.markets[0].metrics[0], s = M.summarize(metric,data.asOf,20,checkedOn);
+  assert.ok(html.includes(`<b>${s.last[1].toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2})}</b>`));
+  assert.ok(html.includes(`<b>${s.percentile.toLocaleString('zh-CN',{minimumFractionDigits:1,maximumFractionDigits:1})}%</b>`));
+  assert.ok(html.includes('class="mh-annual-chart"'));
+});
+test('a device date before the published observation is flagged without deleting historical values', async () => {
+  const data = JSON.parse(fs.readFileSync(require.resolve('../data/market-history.json'), 'utf8'));
+  const earlier = new Date(data.asOf+'T00:00:00Z'); earlier.setUTCDate(earlier.getUTCDate()-1);
+  const html = await renderReport(data,earlier.toISOString().slice(0,10));
+  assert.ok(html.includes('晚于设备北京时间'));
+  assert.ok(!html.includes('当前处于可用历史'));
+  assert.ok(html.includes('class="mh-price-series"'));
+  assert.ok(!html.includes('NaN') && !html.includes('undefined'));
 });
 test('CSV exports the selected original-frequency observations with their window and source', () => {
   const metric = { id: 'pe', source: 'source"name', unit: '倍', frequency: 'monthly', points: [['2025-01-01', 20], ['2025-02-01', 21]] };

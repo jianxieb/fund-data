@@ -6,6 +6,17 @@
   'use strict';
   const DAY = 86400000;
   const gapDays = { daily: 10, weekly: 15, monthly: 65, quarterly: 140 };
+  function shanghaiDate(now = new Date()) {
+    const parts = new Intl.DateTimeFormat('en', {timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now);
+    const date = Object.fromEntries(parts.map(p => [p.type,p.value]));
+    return `${date.year}-${date.month}-${date.day}`;
+  }
+  function observationFreshness(observedAt, frequency = 'daily', checkedOn = shanghaiDate()) {
+    const lagDays = Math.floor((Date.parse(checkedOn + 'T00:00:00Z') - Date.parse(observedAt + 'T00:00:00Z')) / DAY);
+    const threshold = gapDays[frequency] || 140;
+    return {checkedOn, threshold, lagDays:Number.isFinite(lagDays)?lagDays:null,
+      future:lagDays<0, stale:!Number.isFinite(lagDays)||lagDays<0||lagDays>threshold};
+  }
   function eligibleMetric(marketId, metric) {
     if (metric.estimated || metric.estimatedDates?.length || metric.caution) return false;
     const { id, source, evidence } = metric;
@@ -38,7 +49,7 @@
     values.forEach(v => { if (v < current) below++; else if (v === current) equal++; });
     return 100 * (below + equal / 2) / values.length;
   }
-  function summarize(metric, asOf, years = 20) {
+  function summarize(metric, asOf, years = 20, checkedOn = shanghaiDate()) {
     const start = windowStart(asOf, years);
     const points = metric.points.filter(p => p[0] >= start && p[0] <= asOf && Number.isFinite(p[1]));
     if (!points.length) return null;
@@ -48,9 +59,9 @@
     return { start, end: asOf, points, last, count: points.length, min: values[0], max: values.at(-1),
       coverageYears: (Date.parse(last[0]) - Date.parse(points[0][0])) / (365.2425 * DAY),
       p10: quantile(values, .1), p25: quantile(values, .25), median: quantile(values, .5), p75: quantile(values, .75), p90: quantile(values, .9),
-      percentile: percentile(values, last[1]), lagDays: Math.floor((Date.parse(asOf) - Date.parse(last[0])) / DAY), gaps,
+      percentile: percentile(values, last[1]), gaps,
       lateStart: (Date.parse(points[0][0]) - Date.parse(start)) / DAY > threshold,
-      stale: (Date.parse(asOf) - Date.parse(last[0])) / DAY > threshold };
+      ...observationFreshness(last[0], metric.frequency, checkedOn) };
   }
   // Retain extrema and both endpoints in time buckets; ranks always use every observation.
   function downsample(points, limit = 300) {
@@ -97,10 +108,10 @@
   }
   // A shared calendar axis, with exact-date lookups. No interpolation or last-value
   // carry-forward: a weekly release and a holiday keep their own observation dates.
-  function overlay(market, metric, asOf, years = 20) {
+  function overlay(market, metric, asOf, years = 20, checkedOn = shanghaiDate()) {
     const prices = priceHistory(market, asOf);
     if (!prices) return {error:'缺少同一指数的美元价格历史'};
-    const s = summarize(metric, asOf, years);
+    const s = summarize(metric, asOf, years, checkedOn);
     if (!s) return {error:'所选窗口缺少该指标观测'};
     const visible = prices.filter(p => p[0] >= s.start);
     if (!visible.length) return {error:'所选窗口缺少指数价格'};
@@ -319,7 +330,7 @@
     a.events.forEach(e=>rows.push([market.symbol,a.metric.id,a.metric.source,a.metric.valuationBasis||a.metric.basis,a.metric.vintage||'published_history',a.sampling,e.date,e.value,e.outcome,a.kind==='risk'?'annualized_vol_pct':a.annual?'annualized_price_return_pct':'price_return_pct',e.entryDate,e.exitDate,e.entryPrice,e.exitPrice,e.returnPct,e.annualizedPct,e.realizedVol,e.drawdownPct,'price_index','USD',market.prices.source]));
     return '\uFEFF'+rows.map(row=>row.map(cell).join(',')).join('\r\n')+'\r\n';
   }
-  return { eligibleMetric, windowStart, quantile, percentile, summarize, downsample, segments, histogram, csv,
+  return { shanghaiDate, observationFreshness, eligibleMetric, windowStart, quantile, percentile, summarize, downsample, segments, histogram, csv,
     priceHistory, overlay, nearestObservation, annualRows, annualCSV,
     stateBand, inBand, outcomeStats, nonOverlapping, forwardOutcome, study, studyCSV, horizons,
     regression, relationStats, disjointObservations, monthOffset, pathOutcome, relationship, relationshipCSV };
