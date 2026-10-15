@@ -602,7 +602,7 @@ html[data-input-mode=pointer] :is(button,a,input,select,summary):focus-visible{o
 html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
 
 /* Portfolio research */
-.home-secondary>:last-child:nth-child(3){grid-column:1/-1}
+.home-secondary>:last-child:nth-child(odd){grid-column:1/-1}
 .portfolio-settings{margin-bottom:22px;overflow:visible}
 .portfolio-settings-top{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:20px 24px 0}
 .portfolio-settings-top h2{font-size:16px}

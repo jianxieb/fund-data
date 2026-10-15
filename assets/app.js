@@ -30,7 +30,7 @@
     return '<details class="select-menu ' + cls + '"><summary id="' + esc(id) + '" aria-label="' + esc(label + '：' + current[1]) + '"><span>' + esc(current[1]) + '</span></summary>' +
       '<div class="select-menu-list" role="group" aria-label="' + esc(label) + '">' + options.map(([key, text]) => action(esc(text), 'menu-choice', 'select-menu-option' + (key === value ? ' active' : ''), 'data-menu="' + esc(id) + '" data-value="' + esc(key) + '" aria-label="' + esc(text) + '" aria-current="' + (key === value) + '"')).join('') + '</div></details>';
   }
-  const years = [1, 2, 3, 5, 10], titles = { overview: '研究总览', indices: '指数观察', 'market-history': '历史分位', 'global-finance': '全球金融', funds: '基金研究', stocks: '个股深入', reports: '深入报告', strategy: '投入策略', 'buy-location': '投资渠道', 'money-flow': '跨境资金', portfolio: '组合模拟', quality: '数据与方法' };
+  const years = [1, 2, 3, 5, 10], titles = { overview: '研究总览', indices: '指数观察', 'market-history': '历史分位', 'holding-period': '持有期研究', 'global-finance': '全球金融', funds: '基金研究', stocks: '个股深入', reports: '深入报告', strategy: '投入策略', 'buy-location': '投资渠道', 'money-flow': '跨境资金', portfolio: '组合模拟', quality: '数据与方法' };
   const funds = M.dedupeFunds(window.FUNDS, window.EXTRA);
   const policy = window.SCREEN_POLICY || { shortlist: [], byCode: {}, rules: [], counts: {} };
   const VIEW = 'changheng.research-view.v2';
@@ -49,7 +49,7 @@
     fundTab: 'equity', poolCategory: 'all', fundFacets: new Set(), fundSectors: new Set(), query: '', channel: 'all', purchasable: false,
     screen: { minA3: defaults.minA3, minA5: defaults.minA5, minA10: null },
     fundSort: 'default', descending: true, selected: new Set(),
-    stockMarket: 'cn', stockTab: 'quality', stockQuery: '', stockCategory: 'all', stockView: 'financials', stockSort: 'default', stockDesc: true, hideGrowthBoards: false, reportCode: null, reportQuery: '',
+    stockMarket: 'cn', stockTab: 'quality', stockQuery: '', stockCategory: 'all', stockView: 'financials', stockSort: 'default', stockDesc: true, holdingSymbol: 'BRK-B', hideGrowthBoards: false, reportCode: null, reportQuery: '',
     stratPanel: 'initial', stratView: 'results', stratYear: '2010', stratAsset: 'SPY', stratMethod: 'lump_sum', stratMethods: { initial: 'lump_sum', dca: 'dca_month', combined: 'combined_lump_sum' },
     stratCompare: 'assets', stratMetric: 'amount', leverage: true, showLeverageAssets: false, chartHidden: new Set(),
     buyFamily: 'sp', buyYears: 5, buyPlan: 'lump', buyBasis: 'nav', buyLumpAmount: 100000, buyMonthlyAmount: 3000,
@@ -151,8 +151,7 @@
   function entryArrow() { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-5-5 5 5-5 5"/></svg>'; }
   function home() {
     const overseasFunds = funds.filter(f => f.origin === 'overseas' && !f.active);
-    const qualityStocks = (window.STOCKS || []).filter(s => M.stockMatches(s, 'quality'));
-    const growthStocks = (window.STOCKS || []).filter(s => M.stockMatches(s, 'growth'));
+    const companyCount = (window.STOCKS || []).length + ' 家A股 · ' + (window.OVERSEAS_STOCKS || []).length + ' 家美股';
     const markets = [
       ['标普500', (window.BM || []).find(b => b.n === '标普500指数')],
       ['纳斯达克100', (window.BM || []).find(b => b.n === '纳斯达克100指数')],
@@ -165,16 +164,27 @@
     }).join('') + '</div></section>';
     const entries = [
       ['indices', 'us', '海外指数', '标普500、纳指100与海外 ETF，连接境内可买的指数基金。', '01', '市场与工具', overseasFunds.length + '只跨境基金', '指数表现 / 基金成本'],
-      ['funds', 'equity', '长期主动权益基金', '多年回报、经理任期与回撤，放在一起衡量。', '02', '基金与经理', funds.filter(f => fundTabPass(f, 'equity')).length + '只当前入选', '长期收益 / 经理任期'],
+      ['funds', 'equity', '长期主动权益基金', '多年回报、经理任期与回撤，放在一起衡量。', '02', '基金与经理', funds.filter(f => fundTabPass(f, 'equity')).length + '只研究候选', '长期收益 / 经理任期'],
       ['funds', 'income', '红利、债券与固收', '从股息到利息，观察不同收益来源的表现与风险。', '03', '收益与防守', funds.filter(f => fundTabPass(f, 'income')).length + '只观察产品', '红利权益 / 债券固收'],
-      ['strategy', 'initial', '投入策略', '同一资产，比较一次投入、分批投入与定投的实际结果。', '04', '投入方式', '3种投入方式', '资金效率 / 回撤路径']
+      ['holding-period', '', '持有期与买入时点', '换个月份买入，持有同样久，看看历史结果差多少。', '04', '时间与回报', '1 / 2 / 3 / 5 / 10年', '回报分布 / 亏损月份']
+    ];
+    const followups = [
+      ['market-history', 'MARKET CONTEXT', '历史分位', '把标普500、纳斯达克100的价格与估值、波动和利率放到同一时间轴。', ['价格与指标叠图', '历史分位', '年度表现']],
+      ['global-finance', 'GLOBAL FINANCE', '全球金融', '从美元、通胀与利率出发，理解政策怎样影响黄金、债券、股票与生活。', ['传导关系', '政策现场', '计算实验']],
+      ['stocks', 'COMPANY RESEARCH', '个股深入', companyCount + '，结合财务、业务证据与深入报告研究长期经营能力。', ['业务与盈利', '估值口径', '收益与股息']],
+      ['strategy', 'INVESTING RHYTHM', '投入策略', '同一资产，比较一次投入、分批投入和定投对账户结果的影响。', ['资金年化', '本金风险', '实际路径']],
+      ['buy-location', 'INVESTMENT CHANNELS', '投资渠道', '比较海外ETF与境内渠道的历史税后结果，分别查看税种、分红实例与账户扣缴。', ['渠道成本', '税种与抵免', '银行与券商']],
+      ['money-flow', 'CROSS-BORDER MONEY', '跨境资金', '沿内地银行、香港银行、买股账户和回款路径，逐步查看费用与可用余额。', ['汇款与换汇', '账户费用', '回款与消费']],
+      ['portfolio', 'PORTFOLIO RESEARCH', '组合模拟', '把ETF、个股和基金组合起来，检验权重、定投和再平衡后的实际资金收益。', ['自由配置', '资金与组合收益', '持仓贡献']]
     ];
     return head('LONG-TERM INVESTMENT RESEARCH', '长期表现，值得仔细比较。', '在市场、公司与投入方式之间，找到自己的长期尺度。') + marketOverview +
       '<div class="home-section-title home-research-title"><h2>研究方向</h2><span>回报 · 风险 · 成本</span></div><div class="research-entry-grid home-four">' + entries.map(([route, id, title, desc, no, group, count, topics]) =>
         '<a class="home-entry" href="#' + route + '" data-home-tab="' + id + '"><span class="home-entry-top"><span class="eyebrow">' + no + ' / ' + group + '</span><span class="home-entry-arrow" aria-hidden="true">' + entryArrow() + '</span></span><span class="home-entry-body"><strong>' + title + '</strong><span>' + desc + '</span></span><span class="home-entry-foot"><b>' + count + '</b><span>' + topics + '</span></span></a>').join('') + '</div>' +
-      '<div class="home-secondary"><a class="home-secondary-card" href="#stocks" data-home-tab="quality"><span class="eyebrow">COMPANY RESEARCH</span><span class="home-secondary-title"><strong>个股深入</strong><span class="home-entry-arrow" aria-hidden="true">' + entryArrow() + '</span></span><p>' + qualityStocks.length + ' 家长期优质企业 · ' + growthStocks.length + ' 家高质成长股，结合深入报告研究业务、估值与风险。</p><span class="home-tags"><span>长期质量</span><span>成长阶段</span><span>盈利与股息</span></span></a>' +
-      '<a class="home-secondary-card" href="#buy-location"><span class="eyebrow">INVESTMENT CHANNELS</span><span class="home-secondary-title"><strong>投资渠道</strong><span class="home-entry-arrow" aria-hidden="true">' + entryArrow() + '</span></span><p>同样投资标普500与纳指100，比较不同渠道扣除费用与税款后的结果。</p><span class="home-tags"><span>海外 ETF</span><span>境内场内</span><span>境内场外</span></span></a>' +
-      '<a class="home-secondary-card" href="#portfolio"><span class="eyebrow">PORTFOLIO RESEARCH</span><span class="home-secondary-title"><strong>组合模拟</strong><span class="home-entry-arrow" aria-hidden="true">' + entryArrow() + '</span></span><p>把已收录的ETF、个股和基金组合起来，观察权重、定投与再平衡如何影响长期结果。</p><span class="home-tags"><span>自由配置</span><span>收益与回撤</span><span>持仓贡献</span></span></a></div>';
+      '<div class="home-section-title home-research-title"><h2>市场背景、公司与资金安排</h2></div><div class="home-secondary">' + followups.map(([route, group, title, desc, tags]) =>
+        '<a class="home-secondary-card" href="#' + route + '"><span class="eyebrow">' + group + '</span><span class="home-secondary-title"><strong>' + title + '</strong><span class="home-entry-arrow" aria-hidden="true">' + entryArrow() + '</span></span><p>' + desc + '</p><span class="home-tags">' + tags.map(t => '<span>' + t + '</span>').join('') + '</span></a>').join('') + '</div>';
+  }
+  function holdingPeriod() {
+    return window.ChanghengHoldingPeriod.view({ render, openModal, modalTitle, download, symbol: state.holdingSymbol });
   }
   function portfolio() {
     return head('PORTFOLIO RESEARCH', '组合模拟', '从标的、权重到投入方式，看看组合会如何表现。') + window.ChanghengPortfolio.view({
@@ -919,7 +929,7 @@
       (cny && x.fxMissingReason ? '<p class="notice warn">' + esc(x.fxMissingReason) + '</p>' : '') +
       (risk.reason ? '<p class="notice warn">' + esc(risk.reason) + (risk.missingFxDates?.length ? '。缺失日期：' + esc(risk.missingFxDates.join('、')) : '') + '</p>' : '') +
       '<details class="annual-fee-details"><summary>实际收益区间与来源口径</summary><p>采用该B类股自身的复权收盘价，未扣个人交易费用与税费。人民币收益按各窗口起止日的实际美元兑人民币汇率折算；非汇率交易日最多取此前7天内最近观测，实际日期列于下方。人民币日频风险要求每个股票交易日都有同日汇率。</p><div class="table-wrap"><table><thead><tr><th>周期</th><th>股价起日 → 截至</th>' + (cny ? '<th>汇率起日 → 截至</th>' : '') + '</tr></thead><tbody>' + (x.periods || []).map(p => '<tr><td>' + p.years + '年</td><td>' + esc(p.start || '历史不足') + ' → ' + esc(p.end) + '</td>' + (cny ? '<td>' + esc(p.fxStart || '缺起日汇率') + ' → ' + esc(p.fxEnd || '缺截至日汇率') + '</td>' : '') + '</tr>').join('') + '</tbody></table></div></details>' +
-      '<div class="actions">' + extLink(x.identityUrl, '公司股类说明') + extLink(x.sourceUrl, '复权行情来源') + (cny && x.fxSourceUrl ? extLink(x.fxSourceUrl, '汇率来源') : '') + '</div><div class="dialog-footer"><a class="btn primary" href="#stock-report/' + esc(x.symbol) + '">查看伯克希尔研究报告</a></div>');
+      '<div class="actions">' + extLink(x.identityUrl, '公司股类说明') + extLink(x.sourceUrl, '复权行情来源') + (cny && x.fxSourceUrl ? extLink(x.fxSourceUrl, '汇率来源') : '') + '</div><div class="dialog-footer"><a class="btn primary" href="#stock-report/' + esc(x.symbol) + '">查看伯克希尔研究报告</a><a class="btn" href="#holding-period/' + esc(x.symbol) + '">研究不同买入月份</a></div>');
   }
   function openOverseasEtf(x) {
     const risk = x[state.currency === 'usd' ? 'riskUSD5' : 'riskCNY5'] || {};
@@ -928,7 +938,7 @@
       detailGrid([['标的指数 / 策略', esc(x.underlying)], ['收益截至 / 实际行情起点', esc(x.asOf) + ' / ' + esc(x.first || '缺首日')], ['成立日期', esc(x.inception)], ['持续运营年费', pct(x.expenseRatio, x.expenseRatio < 0.1 ? 4 : 2, false) + '<span class="sub">来源核对 ' + esc(x.feeCheckedAt) + '</span>'], ['估算还原费率', pct(x.feeAddbackRate ?? x.expenseRatio, 4, false) + '<span class="sub">现行费率固定情景，历史费率未逐日还原</span>'], ['现金分配频率', esc(x.distribution) + '<span class="sub">分配率不是总收益率</span>'], ['每日目标', x.leverage > 1 ? x.leverage + '倍标的每日收益；长期收益不等于该倍数' : '不设杠杆倍数'], ['5年实际回撤 / 波动率', pct(risk.mdd, 2, false) + ' / ' + pct(risk.vol, 2, false) + '<span class="sub">真实扣费后日线；不足5年留空</span>']]) +
       (x.category === '期权收益' ? '<p class="notice warn">分配可能包含期权收益、资本利得或资本返还。这里比较分红再投资总回报，不把月分配率乘12作为投资收益率。</p>' : '') +
       (risk.reason ? '<p class="notice warn">' + esc(risk.reason) + (risk.missingFxDates?.length ? '。缺失日期：' + esc(risk.missingFxDates.join('、')) : '') + '</p>' : '') +
-      '<details class="annual-fee-details"><summary>实际收益区间与费用口径</summary><p>使用供应商明确的分红复权收盘价，产品持续费用已反映在价格中。标示费率用于了解产品成本，不再从历史收益中重复扣除。</p><div class="table-wrap"><table><thead><tr><th>周期</th><th>起日</th><th>截至</th></tr></thead><tbody>' + (x.periods || []).map(p => '<tr><td>' + p.years + '年' + etfHistoryLabel(x, p.years) + '</td><td>' + esc(p.start || '成立或行情不足') + '</td><td>' + esc(p.end) + '</td></tr>').join('') + '</tbody></table></div></details><div class="actions">' + extLink(x.identityUrl, '官方策略与费用') + extLink(x.sourceUrl, '分红复权行情') + (x.historySourceUrl ? extLink(x.historySourceUrl, '基准变更说明') : '') + (state.currency === 'cny' ? extLink(x.fxSourceUrl, '汇率来源') : '') + '</div>');
+      '<details class="annual-fee-details"><summary>实际收益区间与费用口径</summary><p>使用供应商明确的分红复权收盘价，产品持续费用已反映在价格中。标示费率用于了解产品成本，不再从历史收益中重复扣除。</p><div class="table-wrap"><table><thead><tr><th>周期</th><th>起日</th><th>截至</th></tr></thead><tbody>' + (x.periods || []).map(p => '<tr><td>' + p.years + '年' + etfHistoryLabel(x, p.years) + '</td><td>' + esc(p.start || '成立或行情不足') + '</td><td>' + esc(p.end) + '</td></tr>').join('') + '</tbody></table></div></details><div class="actions">' + extLink(x.identityUrl, '官方策略与费用') + extLink(x.sourceUrl, '分红复权行情') + (x.historySourceUrl ? extLink(x.historySourceUrl, '基准变更说明') : '') + (state.currency === 'cny' ? extLink(x.fxSourceUrl, '汇率来源') : '') + '</div><div class="dialog-footer"><a class="btn primary" href="#holding-period/' + esc(x.symbol) + '">研究不同买入月份</a></div>');
   }
   function openEtfDifferences() {
     openModal(modalTitle('QQQ、QQQI、VGT有何不同', '选股范围与回报来源不同') + '<div class="table-wrap"><table class="compare-table"><thead><tr><th>维度</th><th>QQQ</th><th>QQQI</th><th>VGT</th></tr></thead><tbody><tr><td>投资范围</td><td>纳斯达克100非金融企业，跨行业</td><td>纳指100股票组合 + NDX指数期权</td><td>美国信息科技行业，大中小盘</td></tr><tr><td>管理方式</td><td>被动指数跟踪</td><td>主动买卖看涨期权</td><td>被动行业指数跟踪</td></tr><tr><td>回报特征</td><td>主要参与股票上涨和下跌</td><td>偏向月分配；期权改变上涨参与和下跌表现</td><td>软件、硬件、半导体与设备的行业暴露</td></tr><tr><td>现行年费</td><td>0.18%</td><td>0.68%</td><td>0.09%</td></tr><tr><td>分配</td><td>季度</td><td>每月，可含资本返还</td><td>季度</td></tr></tbody></table></div><p class="notice">比较总回报：净值或价格变化 + 现金分配再投资。高分配率不代表高收益，期权策略也不保证本金安全。</p><div class="actions">' + ['QQQ', 'QQQI', 'VGT'].map(symbol => extLink((window.BM || []).find(b => b.symbol === symbol)?.identityUrl, symbol + '官方资料')).join('') + '</div>');
@@ -1021,10 +1031,10 @@
     else if (next.closest('details')) next.closest('details').querySelector('summary').focus({ preventScroll: true });
   }
   function render() {
-    const renderers = { overview: home, indices, 'market-history': marketHistory, 'global-finance': globalFinance, funds: fundView, stocks, reports: reportsView, strategy: strategies, 'buy-location': buyLocation, 'money-flow': moneyFlow, portfolio, quality };
+    const renderers = { overview: home, indices, 'market-history': marketHistory, 'holding-period': holdingPeriod, 'global-finance': globalFinance, funds: fundView, stocks, reports: reportsView, strategy: strategies, 'buy-location': buyLocation, 'money-flow': moneyFlow, portfolio, quality };
     const focus = captureFocus(document.activeElement);
     document.title = '长衡 · ' + titles[state.route];
-    const group = { indices: '研究对象', 'market-history': '研究对象', 'global-finance': '研究方法', funds: '研究对象', stocks: '研究对象', reports: '研究对象', strategy: '研究方法', 'buy-location': '研究方法', 'money-flow': '研究方法', portfolio: '组合研究' }[state.route];
+    const group = { indices: '研究对象', 'market-history': '研究对象', 'global-finance': '研究方法', 'holding-period': '研究方法', funds: '研究对象', stocks: '研究对象', reports: '研究对象', strategy: '研究方法', 'buy-location': '研究方法', 'money-flow': '研究方法', portfolio: '组合研究' }[state.route];
     $('#breadcrumb').innerHTML = (group ? '<span>' + group + '</span><span class="breadcrumb-separator" aria-hidden="true">/</span>' : '') + (state.route === 'reports' ? '<a href="#stocks">个股深入</a><span class="breadcrumb-separator" aria-hidden="true">/</span>' : '') + '<span aria-current="page">' + titles[state.route] + '</span>';
     $$('[data-route]').forEach(a => { const active = a.dataset.route === (state.route === 'reports' ? 'stocks' : state.route); a.classList.toggle('active', active); if (active) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
     $('#main').className = 'page-' + state.route;
@@ -1041,7 +1051,9 @@
     const reportMatch = hash.match(/^stock-report\/(\d{6}|[A-Z]{1,6}(?:-[A-Z])?)$/);
     if (reportMatch) state.stockMarket = /^[A-Z]/.test(reportMatch[1]) ? 'us' : 'cn';
     state.reportCode = reportMatch ? reportMatch[1] : null;
-    state.route = reportMatch ? 'reports' : titles[hash] ? hash : legacy[hash] || 'overview';
+    const holdingMatch = hash.match(/^holding-period(?:\/([A-Z]{1,6}(?:-[A-Z])?))?$/);
+    state.holdingSymbol = holdingMatch?.[1] || 'BRK-B';
+    state.route = holdingMatch ? 'holding-period' : reportMatch ? 'reports' : titles[hash] ? hash : legacy[hash] || 'overview';
     if ($('#dialog').open) $('#dialog').close();
     render(); window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }
