@@ -23,6 +23,7 @@
 - **市场历史**：标普500、纳斯达克100各自与其历史比较；把价格和有真实来源的估值、波动、利率等指标放在同一时间轴。每项指标使用自身可核验的覆盖期。
 - **公司与基金**：基金的经理任期、净值回报、风险和费用；A股与美股的财务、经营、估值、股息及深入报告。可筛选、排序、查看来源和导出研究数据。
 - **持有与投入**：已收录海外ETF及美股的1/2/3/5/10年完整持有窗口，美元或人民币口径；一次投入、分批和定投等历史模拟，分别查看资金收益与净值风险。
+- **收益对比**：按类型、市场、方向及代码选择指数、ETF、基金和个股，使用共同日期叠加累计收益，附加区间年化；查看回报柱状图、逐年收益表和回撤曲线，支持美元、人民币及原币与每日CSV导出。
 - **组合验证**：按自定权重配置已收录ETF、个股和基金，检验投入、再平衡及费用假设，查看资金XIRR、组合走势与持仓贡献；支持配置导入导出及PDF/CSV。模拟配置保存在当前浏览器。
 - **渠道与资金**：国内场内、场外产品与海外ETF的同日人民币历史情景；投资渠道的税种、抵免、QQQI/QQQ/SPY/可口可乐实例及银行券商扣缴依据；内地—香港—证券账户及回款、消费的分步费用测算。
 - **ETF分红与再投**：查看近12月及单次分配率，拆解历年价格与现金回报、分红占收益的比例和分配税情景减少的百分点；比较领取现金与DRIP，以及IBKR、汇丰Trade25、富途香港的支持条件与扣缴规则。普通股息、合资格利息分配和ROC分别解释，最终分类注明适用年度。
@@ -97,7 +98,7 @@ python3 scripts/build_etf_distributions.py --check
 | 定位与产品演进 | [当前定位与决策沿革](docs/product-decisions.md)、[第二轮全站评审](docs/project-review-2026-10-16.md) |
 | 市场与机制 | [历史分位](docs/market-history-method.md)、[全球金融](docs/global-finance-method.md)、[美债ETF](docs/treasury-etfs.md) |
 | 基金与公司 | [跨境指数基金](docs/crossborder-funds-method.md)、[长期优质与高质成长](docs/stock-quality-method.md)、[美股研究](docs/overseas-stocks.md)、[股息口径](docs/stock-dividend-method.md) |
-| 历史与方案 | [持有期研究](docs/holding-period-method.md)、[策略曲线](docs/strategy-curves.md)、[策略独立账本复核](docs/strategy-leverage-audit.md)、[组合模拟](docs/portfolio-method.md) |
+| 历史与方案 | [持有期研究](docs/holding-period-method.md)、[策略曲线](docs/strategy-curves.md)、[策略独立账本复核](docs/strategy-leverage-audit.md)、[组合模拟](docs/portfolio-method.md)、[收益对比](docs/return-comparison-method.md) |
 | 渠道与资金 | [买入渠道](docs/buy-location-method.md)、[ETF现金分配与再投](docs/etf-distributions.md)、[跨境资金方法](docs/money-flow-method.md)、[跨境资金需求与验收清单](docs/money-flow-requirements.md) |
 | 数据与维护 | [维护指南](docs/maintenance.md)、[自动更新](docs/automatic-update-plan.md)、[数据链路审计](docs/data-pipeline-audit.md)、[新环境验证](docs/fresh-clone-validation.md) |
 

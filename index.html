@@ -14,6 +14,8 @@
   <link rel="stylesheet" href="assets/market-history.css?v=5b4bbc469806">
   <link rel="stylesheet" href="assets/global-finance.css?v=edda7bf9c014">
   <link rel="stylesheet" href="assets/holding-period.css?v=e0939c6dbdbe">
+  <link rel="stylesheet" href="assets/return-comparison.css?v=903445c5b1ec">
+  <meta id="return-index-source" data-src="data/return-comparison/catalog.json?v=71b3a73bd0f2">
   <meta id="market-history-source" data-src="data/market-history.json?v=9fa5468fa980">
   <script defer src="data/snapshot.js?v=2f4b42cbbd53"></script>
   <script defer src="data/overseas-stocks.js?v=58ab51d73224"></script>
@@ -47,7 +49,11 @@
   <script defer src="assets/table-scroll.js?v=bee116948e67"></script>
   <script defer src="assets/holding-period-model.js?v=81ffc197820a"></script>
   <script defer src="assets/holding-period.js?v=4e51362d820e"></script>
-  <script defer src="assets/app.js?v=15423157f072"></script>
+  <script defer src="assets/return-comparison-model.js?v=ea31400c9e21"></script>
+  <script defer src="assets/research-history.js?v=c3b4061d05c8"></script>
+  <script defer src="assets/research-charts.js?v=f7e68e11c471"></script>
+  <script defer src="assets/return-comparison.js?v=508a0500bacd"></script>
+  <script defer src="assets/app.js?v=43b5302290f1"></script>
 </head>
 <body>
   <a class="skip" href="#main">跳转到主要内容</a>
@@ -67,6 +73,7 @@
       <a href="#buy-location" data-route="buy-location"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16m-4-4 4 4-4 4M20 17H4m4-4-4 4 4 4"/></svg><span>投资渠道</span></a>
       <a href="#money-flow" data-route="money-flow"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="3" width="7" height="7" rx="1.5"/><rect x="14.5" y="14" width="7" height="7" rx="1.5"/><path d="M10 6.5h7.5V11m-3-3 3 3 3-3M14 17.5H6.5V13m-3 3 3-3 3 3"/></svg><span>跨境资金</span></a>
       <span class="nav-divider">组合研究</span>
+      <a href="#return-comparison" data-route="return-comparison"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v16h17M6 16l4-6 4 3 6-8M6 18l6-3 4 2 4-5"/></svg><span>收益对比</span></a>
       <a href="#portfolio" data-route="portfolio"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v9h9A9 9 0 0 0 12 3ZM8.5 3.7A9 9 0 1 0 20.3 15.5H8.5Z"/></svg><span>组合模拟</span></a>
     </nav>
     <div class="sidebar-bottom">

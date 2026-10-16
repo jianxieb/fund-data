@@ -30,7 +30,7 @@
     return '<details class="select-menu ' + cls + '"><summary id="' + esc(id) + '" aria-label="' + esc(label + '：' + current[1]) + '"><span>' + esc(current[1]) + '</span></summary>' +
       '<div class="select-menu-list" role="group" aria-label="' + esc(label) + '">' + options.map(([key, text]) => action(esc(text), 'menu-choice', 'select-menu-option' + (key === value ? ' active' : ''), 'data-menu="' + esc(id) + '" data-value="' + esc(key) + '" aria-label="' + esc(text) + '" aria-current="' + (key === value) + '"')).join('') + '</div></details>';
   }
-  const years = [1, 2, 3, 5, 10], titles = { overview: '研究总览', indices: '指数观察', 'market-history': '历史分位', 'holding-period': '持有期研究', 'global-finance': '全球金融', funds: '基金研究', stocks: '个股深入', reports: '深入报告', strategy: '投入策略', 'buy-location': '投资渠道', 'money-flow': '跨境资金', portfolio: '组合模拟', quality: '数据与方法' };
+  const years = [1, 2, 3, 5, 10], titles = { overview: '研究总览', indices: '指数观察', 'market-history': '历史分位', 'holding-period': '持有期研究', 'global-finance': '全球金融', funds: '基金研究', stocks: '个股深入', reports: '深入报告', strategy: '投入策略', 'buy-location': '投资渠道', 'money-flow': '跨境资金', portfolio: '组合模拟', 'return-comparison':'收益对比', quality: '数据与方法' };
   const funds = M.dedupeFunds(window.FUNDS, window.EXTRA);
   const policy = window.SCREEN_POLICY || { shortlist: [], byCode: {}, rules: [], counts: {} };
   const VIEW = 'changheng.research-view.v2';
@@ -175,6 +175,7 @@
       ['strategy', 'INVESTING RHYTHM', '投入策略', '同一资产，比较一次投入、分批投入和定投对账户结果的影响。', ['资金年化', '本金风险', '实际路径']],
       ['buy-location', 'INVESTMENT CHANNELS', '投资渠道', '比较海外ETF与境内渠道的历史税后结果，分别查看税种、分红实例与账户扣缴。', ['渠道成本', '税种与抵免', '银行与券商']],
       ['money-flow', 'CROSS-BORDER MONEY', '跨境资金', '沿内地银行、香港银行、买股账户和回款路径，逐步查看费用与可用余额。', ['汇款与换汇', '账户费用', '回款与消费']],
+      ['return-comparison', 'RETURN EXPLORER', '收益对比', '指数、基金、个股的同区间收益曲线、回报柱状图与逐年表现。', ['跨资产叠图', '年化标注', '逐年收益']],
       ['portfolio', 'PORTFOLIO RESEARCH', '组合模拟', '把ETF、个股和基金组合起来，检验权重、定投和再平衡后的实际资金收益。', ['自由配置', '资金与组合收益', '持仓贡献']]
     ];
     return head('GLOBAL INVESTMENT RESEARCH', '理解市场，研究资产，检验方案。', '面向中国个人投资者的全球投资研究工作台。从宏观与公司研究，到历史回测、组合模拟、税费与资金路径，为投资判断提供依据。') + marketOverview +
@@ -187,6 +188,7 @@
     return window.ChanghengHoldingPeriod.view({ render, openModal, modalTitle, download, symbol: state.holdingSymbol,
       annual: state.annual, setAnnual: value => { state.annual = value; savePrefs(); render(); } });
   }
+  function returnComparison() { return window.ChanghengReturnComparison.view({ head, render, download, annual:state.annual, annualControl }); }
   function portfolio() {
     return head('PORTFOLIO RESEARCH', '组合模拟', '从标的、权重到投入方式，看看组合会如何表现。') + window.ChanghengPortfolio.view({
       esc, money, pct, pc, action, stat, card, modalTitle, openModal, toast, download, render,
@@ -1062,10 +1064,10 @@
     }
   }
   function render() {
-    const renderers = { overview: home, indices, 'market-history': marketHistory, 'holding-period': holdingPeriod, 'global-finance': globalFinance, funds: fundView, stocks, reports: reportsView, strategy: strategies, 'buy-location': buyLocation, 'money-flow': moneyFlow, portfolio, quality };
+    const renderers = { overview: home, indices, 'market-history': marketHistory, 'holding-period': holdingPeriod, 'global-finance': globalFinance, funds: fundView, stocks, reports: reportsView, strategy: strategies, 'buy-location': buyLocation, 'money-flow': moneyFlow, portfolio, 'return-comparison':returnComparison, quality };
     const focus = captureFocus(document.activeElement);
     document.title = '长衡 · ' + (state.route === 'overview' ? '全球投资研究工作台' : titles[state.route]);
-    const group = { indices: '研究对象', 'market-history': '研究对象', 'global-finance': '研究方法', 'holding-period': '研究方法', funds: '研究对象', stocks: '研究对象', reports: '研究对象', strategy: '研究方法', 'buy-location': '研究方法', 'money-flow': '研究方法', portfolio: '组合研究' }[state.route];
+    const group = { indices: '研究对象', 'market-history': '研究对象', 'global-finance': '研究方法', 'holding-period': '研究方法', funds: '研究对象', stocks: '研究对象', reports: '研究对象', strategy: '研究方法', 'buy-location': '研究方法', 'money-flow': '研究方法', portfolio: '组合研究', 'return-comparison':'组合研究' }[state.route];
     $('#breadcrumb').innerHTML = (group ? '<span>' + group + '</span><span class="breadcrumb-separator" aria-hidden="true">/</span>' : '') + (state.route === 'reports' ? '<a href="#stocks">个股深入</a><span class="breadcrumb-separator" aria-hidden="true">/</span>' : '') + '<span aria-current="page">' + titles[state.route] + '</span>';
     $$('[data-route]').forEach(a => { const active = a.dataset.route === (state.route === 'reports' ? 'stocks' : state.route); a.classList.toggle('active', active); if (active) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
     $('#main').className = 'page-' + state.route;
