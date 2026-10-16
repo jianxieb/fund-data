@@ -69,6 +69,13 @@
     return `<td class="etf-fee-cell"><span>${fee}</span></td><td class="etf-yield-cell"><button type="button" class="etf-yield-button" data-action="etf-distributions" data-value="${esc(product.symbol)}" aria-label="${esc(product.symbol)}现金分配详情" title="${esc(Number.isFinite(t?.rate) ? '过去12个月每份现金合计 ÷ ' + item.through + ' 美元收盘价；不等于投资收益率' : reason)}"><strong>${percent(t?.rate)}</strong><span>${esc(item?.frequency || product.distribution || '')} · 分红详情</span></button>${item?.status === 'stale' ? `<small>${esc(item.through)}旧记录</small>` : !Number.isFinite(t?.rate) ? `<small>${esc(reason)}</small>` : ''}</td>`;
   }
 
+  function reinvestedComparison(item) {
+    const r = item.metrics?.reinvested;
+    if (r?.status !== 'available') return `<p class="etf-div-caption">${esc(r?.reason || '缺与指数表同区间的复权回报对账')}</p>`;
+    const difference = n => (n < 0 ? '低' : '高') + (Math.abs(n) > 0 && Math.abs(n) < .005 ? '不到0.01个百分点' : pp(Math.abs(n)));
+    return `<div class="etf-return-compare"><div class="etf-div-section-head"><h3>同区间 · 含分红复权</h3><span>与指数表的美元回报口径一致</span></div><div class="etf-return-compare-values"><span>累计回报 <strong>${percent(r.cumulative, true)}</strong></span><span>年化回报 <strong>${percent(r.annualized, true)}</strong></span></div><p>复权累计比现金不再投${difference(r.differenceFromCash)}；年化比累计${difference(r.annualizationDifference)}。</p></div>`;
+  }
+
   function returnBreakdown(item, kind) {
     const row = item.metrics?.trailing?.return;
     if (row?.status !== 'available') return `<p class="notice warn">${esc(row?.reason || item.metricsMissingEvidence || '缺收益拆分所需的首末收盘价')}</p>`;
@@ -76,9 +83,10 @@
     const share = Number.isFinite(row.cashShareOfGain) ? percent(row.cashShareOfGain) : '不适用';
     const shareNote = row.cashShareOfGain > 100 ? '价格下跌抵消部分分配，占比可超过100%' : row.shareReason || '现金分配 ÷ 同期净收益';
     return `<section class="etf-return-section"><div class="etf-div-section-head"><h3>近12个月收益拆分</h3><span>${esc(row.start)} → ${esc(row.end)}</span></div>
-      <p class="etf-return-basis">美元 · 领现金、不再投 · 累计回报，统一除以期初本金</p>
-      <div class="etf-return-equation"><div><span>价格涨跌</span><strong class="${row.priceReturn < 0 ? 'negative' : ''}">${percent(row.priceReturn, true)}</strong></div><b>＋</b><div><span>现金分配回报</span><strong>${percent(row.cashReturn, true)}</strong></div><b>＝</b><div><span>合计回报 · 税前</span><strong class="${row.totalReturn < 0 ? 'negative' : ''}">${percent(row.totalReturn, true)}</strong></div></div>
+      <p class="etf-return-basis">美元 · 领现金、不再投 · 累计回报，统一除以期初本金；分项四舍五入，合计按原始值计算</p>
+      <div class="etf-return-equation"><div><span>价格涨跌</span><strong class="${row.priceReturn < 0 ? 'negative' : ''}">${percent(row.priceReturn, true)}</strong></div><b>＋</b><div><span>现金分配回报</span><strong>${percent(row.cashReturn, true)}</strong></div><b>＝</b><div><span>现金不再投 · 税前合计</span><strong class="${row.totalReturn < 0 ? 'negative' : ''}">${percent(row.totalReturn, true)}</strong></div></div>
       <div class="etf-return-share"><strong>现金占同期净收益 ${share}</strong><span>${esc(shareNote)}</span></div>
+      ${reinvestedComparison(item)}
       <div class="etf-tax-impact"><div class="etf-div-section-head"><h3>分配税对回报的影响${roc ? '' : ' · 情景'}</h3><span>${roc ? 'ROC内地口径待确认' : '美国税＋内地抵免后税额，合计20%'}</span></div>
       ${roc ? `<p>缺这一期间各笔ROC的内地所得分类和成本调整确认，无法计算该持有期的实际税后回报。敏感度：每征收相当于分配金额1%的税，区间回报减少<strong>${pp(impact.sensitivity)}</strong>。</p>` : `<div class="etf-tax-impact-values"><div><span>回报减少</span><strong>${pp(impact.reduction)}</strong></div><div><span>税款占原净收益</span><strong>${percent(impact.gainPercent)}</strong>${impact.gainPercent === null ? `<small>${esc(row.shareReason)}不计算占比</small>` : ''}</div><div><span>仅扣分配税后回报</span><strong>${percent(impact.afterReturn, true)}</strong></div></div><p class="etf-div-caption">${kind === 'qii' ? '假设整笔分配符合QII美国豁免，内地按20%计税。' : '假设整笔分配按普通股息计税，已执行美国10%协定预扣，内地抵免后另缴10%。'}这是固定税务情景，不是账户实扣结果；未计卖出税、汇率和交易费。</p>`}</div></section>`;
   }
@@ -156,8 +164,8 @@
       <p class="etf-div-caption">近12月分配率按截至日美元股价计算，不把单次派息乘次数年化，也不等于投资收益率。${product.category === '期权收益' ? '现金可能包含ROC返还本金。' : ''}</p>
       ${returnBreakdown(item, kind)}${annualTable(item, kind)}${historySection(product.symbol, item)}
       <details class="etf-div-rules"><summary>分配分类、自动再投与三个账户规则</summary>${classification(product, data)}${choices(product, data)}${brokerComparison()}</details>
-      <details class="etf-div-footnote"><summary>这些百分比的分母与回报口径</summary><p>单次分配率＝当次每份现金÷除息前最近交易日收盘价；近12月分配率＝过去12个月每份现金合计÷截至日收盘价。两者不是SEC收益率，不是以你的个人买入成本计算的股息率。</p><p>收益拆分使用同一期初本金：价格回报＝期末价÷期初价−1；现金回报＝期间每份现金合计÷期初价；合计回报为两者之和。现金占净收益＝现金回报÷合计回报；亏损或合计收益不超过0.01%时不计算此占比。价格下跌时，现金占正净收益可超过100%。</p><p>这里是领现金、不再投的美元累计回报。指数表的历史回报假设分红再投，不表示你的账户已启用DRIP；两种处理的结果会不同。现金与普通收盘价使用同一拆分调整口径，未向分红复权价重复加现金。产品运营费已经影响股价，不再次减年费。</p><p>分配税影响＝现金回报×情景税负；例如现金回报5%、分配税20%，总回报减少1个百分点，不是对所有本金或价差扣20%。此处仅分析分配税，未模拟卖出税、交易费、汇率或税款缴付时点。</p><p>年度行按上一年最后交易日到当年末计；当前年为截至日的累计值，不年化。首个数据年不足完整年份会标注“历史起点后”。</p><p class="etf-div-sources">${link('https://investor.vanguard.com/investor-resources-education/portfolio-management/performance-details', 'Vanguard · 价格与现金回报')} ${link('https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/fund-distributions-investor-bulletin', 'SEC · 分配与投资表现')}</p></details>
+      <details class="etf-div-footnote"><summary>这些百分比的分母与回报口径</summary><p>单次分配率＝当次每份现金÷除息前最近交易日收盘价；近12月分配率＝过去12个月每份现金合计÷截至日收盘价。两者不是SEC收益率，不是以你的个人买入成本计算的股息率。</p><p>收益拆分使用同一期初本金：价格回报＝期末价÷期初价−1；现金回报＝期间每份现金合计÷期初价；合计回报为两者之和。现金占净收益＝现金回报÷合计回报；亏损或合计收益不超过0.01%时不计算此占比。价格下跌时，现金占正净收益可超过100%。</p><p>这里是领现金、不再投的美元累计回报。指数表的历史回报假设分红再投，不表示你的账户已启用DRIP；两种处理的结果会不同。并列的复权回报来自已发布历史的相同日期端点，与现金来源的已收盘行情对账；复权差额包含供应商调整方式，不等同于你在实际到账日买入的DRIP收益。年化与指数表一致，按实际天数÷365.2425换算年数，因此完整365天区间的年化也可能略高于累计。现金与普通收盘价使用同一拆分调整口径，未向分红复权价重复加现金。产品运营费已经影响股价，不再次减年费。</p><p>分配税影响＝现金回报×情景税负；例如现金回报5%、分配税20%，总回报减少1个百分点，不是对所有本金或价差扣20%。此处仅分析分配税，未模拟卖出税、交易费、汇率或税款缴付时点。</p><p>年度行按上一年最后交易日到当年末计；当前年为截至日的累计值，不年化。首个数据年不足完整年份会标注“历史起点后”。</p><p class="etf-div-sources">${link('https://investor.vanguard.com/investor-resources-education/portfolio-management/performance-details', 'Vanguard · 价格与现金回报')} ${link('https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/fund-distributions-investor-bulletin', 'SEC · 分配与投资表现')} ${link('https://in.help.yahoo.com/kb/adjusted-close-sln28256.html', 'Yahoo · 复权调整说明')}</p></details>
       <details class="etf-div-footnote"><summary>卖出新份额、申报与来源口径</summary><p>再投形成一次新买入，保存成交价、份数与费用。普通股息不重复计为卖出收益；卖出时按售价减成本及合理费用核算净收益。符合非居民豁免条件的普通证券卖出，美国通常不征资本利得税，内地财产转让所得按20%核算。ROC可能另调原持仓成本，不把美国成本表直接当作内地结论。</p><p>内地境外所得通常在次年3月1日至6月30日申报；已退还或协定不应征的美国税不能继续抵免。保留现金分配、预扣、更正、成交和汇率记录。</p><p>现金表来自Yahoo事件记录，逐笔保留供应商金额，不用复权价格倒算。未提供支付日、客户实际预扣或逐只DRIP资格，均未补造。分配分类以注明年度的发行人最终文件为证，不把19a月度预估当最终税务结论。</p>${sourceLine('irs', 'china')}</details></div>`;
   }
-  return { render, history, brokerComparison, brokers, taxCase, cashChoice, taxImpact, indexCell, annualTable, returnBreakdown, checkedAt };
+  return { render, history, brokerComparison, brokers, taxCase, cashChoice, taxImpact, indexCell, annualTable, returnBreakdown, reinvestedComparison, checkedAt };
 }));

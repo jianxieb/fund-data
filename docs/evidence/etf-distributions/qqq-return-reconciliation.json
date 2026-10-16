@@ -1,0 +1,88 @@
+{
+  "reviewedAt": "2026-10-16",
+  "symbol": "QQQ",
+  "currency": "USD",
+  "start": "2025-10-13",
+  "end": "2026-10-13",
+  "previous": {
+    "commit": "cb1cad26fc06e1020bf3f795221d3c06268865a5",
+    "sourceSha256": "ce83039a49191e4b4a085b73ff230b8501c84a161a7e104c489f49d553212290",
+    "sourceMarketTime": "2026-10-13T16:56:27+00:00",
+    "regularSessionEnd": "2026-10-13T20:00:00+00:00",
+    "return": {
+      "status": "available",
+      "start": "2025-10-13",
+      "end": "2026-10-13",
+      "partialStart": false,
+      "openingPrice": 602.010009765625,
+      "closingPrice": 743.0,
+      "cashPerShare": 3.091,
+      "payments": 4,
+      "priceReturn": 23.41987474415339,
+      "cashReturn": 0.5134466121590554,
+      "totalReturn": 23.933321356312444,
+      "cashShareOfGain": 2.1453211801028744,
+      "shareReason": null
+    }
+  },
+  "corrected": {
+    "sourceSha256": "924795fcc386b17141241952b6fcc162dd0713830413a0ae8023bd309d766fdb",
+    "sourceUrl": "https://finance.yahoo.com/quote/QQQ/history/?filter=div",
+    "closedPriceEvidence": {
+      "through": "2026-10-13",
+      "observedAt": "2026-10-16T15:07:02+00:00",
+      "exchangeTimezoneName": "America/New_York",
+      "closed": true,
+      "sessionEnd": null
+    },
+    "priceReference": {
+      "historyUrl": "data/portfolio/us/QQQ-614c22d549fca0a3.json",
+      "sha256": "614c22d549fca0a39ef8ddf0341687a89c5ca0e95d9dfe2435e874462adff6bd",
+      "basis": "provider_adjusted_close",
+      "observations": 6942,
+      "maxRelativeDrift": 1.2935732038865666e-06,
+      "sourceAdjustedStart": 42.98225402832031,
+      "sourceAdjustedEnd": 743.5700073242188,
+      "publishedAdjustedStart": 42.9822616577,
+      "publishedAdjustedEnd": 743.570007324
+    },
+    "cashReturn": {
+      "status": "available",
+      "start": "2025-10-13",
+      "end": "2026-10-13",
+      "partialStart": false,
+      "openingPrice": 602.010009765625,
+      "closingPrice": 743.5700073242188,
+      "cashPerShare": 3.091,
+      "payments": 4,
+      "priceReturn": 23.514558771822756,
+      "cashReturn": 0.5134466121590554,
+      "totalReturn": 24.02800538398181,
+      "cashShareOfGain": 2.136867392668985,
+      "shareReason": null
+    },
+    "reinvested": {
+      "status": "available",
+      "start": "2025-10-13",
+      "end": "2026-10-13",
+      "adjustedStart": 599.194641113,
+      "adjustedEnd": 743.570007324,
+      "cumulative": 24.094902775302486,
+      "annualized": 24.112702332458525,
+      "differenceFromCash": 0.06689739132067629,
+      "annualizationDifference": 0.01779955715603876
+    }
+  },
+  "differenceInPercentagePoints": {
+    "priceCorrection": 0.09468402766936634,
+    "cashVersusProviderAdjusted": 0.06689739132067629,
+    "annualization": 0.01779955715603876,
+    "total": 0.1793809761460814
+  },
+  "formulas": {
+    "cashCumulative": "(closingPrice + cashPerShare) / openingPrice - 1",
+    "adjustedCumulative": "adjustedEnd / adjustedStart - 1",
+    "annualized": "(1 + adjustedCumulative) ** (365.2425 / elapsedDays) - 1"
+  },
+  "note": "Percentages use unrounded values. Provider adjusted-close treatment is not a guarantee of an investor's actual DRIP execution."
+}

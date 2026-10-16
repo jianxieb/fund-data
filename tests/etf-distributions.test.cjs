@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 const D = require('../assets/etf-distributions.js');
+const M = require('../assets/model.js');
 const context = { window: {} };
 vm.runInNewContext(fs.readFileSync('data/etf-distributions.js', 'utf8'), context);
 const data = context.window.ETF_DISTRIBUTIONS;
@@ -113,4 +114,36 @@ test('published cash histories expose explicit ratios and preserve loss and ROC 
   assert.doesNotMatch(roc, /合计20%|仅扣分配税后回报/);
   assert.match(D.annualTable(data.products.QQQ, 'ordinary-confirmed'), /2026年至今/);
   assert.match(D.annualTable(data.products.QQQI, 'roc'), /待确认/);
+});
+
+test('reinvested comparison reconciles to the index table for the identical dates and currency', () => {
+  const snapshot = {};
+  vm.runInNewContext(fs.readFileSync('data/snapshot.js', 'utf8'), snapshot);
+  for (const product of products) {
+    const item = data.products[product.symbol], r = item.metrics.reinvested;
+    const index = snapshot.BM.find(p => p.symbol === product.symbol), period = index.periods.find(p => p.years === 1);
+    assert.equal(r.start, period.start, product.symbol);
+    assert.equal(r.end, period.end, product.symbol);
+    // Separate vendor snapshots can differ by one float32 ULP, below 0.0001 pp.
+    assert.ok(Math.abs(r.cumulative - index.usd[0]) < 1e-4, product.symbol);
+    const annual = M.annualized(index.usd[0], M.yearsBetween(period.start, period.end));
+    assert.ok(Math.abs(r.annualized - annual) < 1e-4, product.symbol);
+    assert.equal(r.cumulative.toFixed(2), index.usd[0].toFixed(2), product.symbol);
+    assert.equal(r.annualized.toFixed(2), annual.toFixed(2), product.symbol);
+    assert.ok(Math.abs(r.cumulative - item.metrics.trailing.return.totalReturn - r.differenceFromCash) < 1e-9);
+    assert.match(D.reinvestedComparison(item), /累计回报.*年化回报/);
+  }
+});
+
+test('QQQ correction uses its closed price and separates price error, reinvestment and annualization', () => {
+  const item = data.products.QQQ, cash = item.metrics.trailing.return, r = item.metrics.reinvested;
+  // Regression for the 2026-10-13 intraday $743.00 cache, which produced 23.93%.
+  if (item.through === '2026-10-13') {
+    assert.ok(Math.abs(cash.closingPrice - 743.57) < .0001);
+    assert.equal(cash.totalReturn.toFixed(2), '24.03');
+    assert.equal(r.cumulative.toFixed(2), '24.09');
+    assert.equal(r.annualized.toFixed(2), '24.11');
+  }
+  assert.match(D.returnBreakdown(item, 'ordinary-confirmed'), /现金不再投 · 税前合计/);
+  assert.match(D.reinvestedComparison(item), /与指数表的美元回报口径一致/);
 });

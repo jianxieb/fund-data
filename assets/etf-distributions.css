@@ -60,6 +60,12 @@
 .etf-return-equation>b{font-size:20px;color:var(--muted);font-weight:400}
 .etf-return-share{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--green-bg);padding:10px 13px;border-radius:6px;font-size:12px}
 .etf-return-share span{font-size:11px;color:#617165}
+.etf-return-compare{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.etf-return-compare h3{font-size:14px}
+.etf-return-compare-values{display:flex;flex-wrap:wrap;gap:12px 34px;margin:10px 0}
+.etf-return-compare-values span{font-size:12px;color:#617165}
+.etf-return-compare-values strong{font-size:19px;margin-left:10px;color:var(--ink);font-variant-numeric:tabular-nums}
+.etf-return-compare p{font-size:11px;color:#617165;margin:0}
 .etf-tax-impact{padding-top:18px;margin-top:18px;border-top:1px solid var(--line)}
 .etf-tax-impact .etf-div-section-head h3{font-size:14px}
 .etf-tax-impact-values{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin:15px 0;text-align:center}

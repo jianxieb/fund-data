@@ -10,7 +10,9 @@ import hashlib
 import json
 import math
 import sys
-from datetime import date, datetime, timedelta
+import urllib.parse
+import urllib.request
+from datetime import date, datetime, timedelta, timezone
 from bisect import bisect_right
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -23,6 +25,7 @@ OUTPUT = ROOT / 'data/etf-distributions.js'
 PREFIX = 'window.ETF_DISTRIBUTIONS='
 BASIS = 'provider_cash_events_split_adjusted'
 METRIC_BASIS = 'split_adjusted_close_and_cash_no_reinvestment'
+PATH_TOLERANCE = 1e-5  # 0.001% relative: allow vendor float precision, not live prices.
 
 
 def read_js(path):
@@ -97,7 +100,76 @@ def distribution_metrics(prices, records, first, through):
     return {'basis': METRIC_BASIS, 'trailing': trailing, 'annual': annual}
 
 
-def parse_chart(payload, symbol, first, through, digest):
+def closed_price_evidence(meta, through):
+    """Use the quote's own observation time, not today's clock, for old caches."""
+    observed = meta.get('regularMarketTime')
+    if not finite(observed):
+        raise ValueError('缺行情自身观测时间，无法确认收盘价')
+    zone = ZoneInfo(meta['exchangeTimezoneName'])
+    market_day = datetime.fromtimestamp(observed, zone).date().isoformat()
+    regular_end = (meta.get('currentTradingPeriod', {}).get('regular') or {}).get('end')
+    close_day = datetime.fromtimestamp(regular_end, zone).date().isoformat() if finite(regular_end) else None
+    if through > market_day or through == market_day and (close_day != through or observed < regular_end):
+        raise ValueError('缺 ' + through + ' 已收盘行情；当前缓存仍是盘中观测')
+    return {'through': through, 'observedAt': datetime.fromtimestamp(observed, timezone.utc).isoformat(),
+            'exchangeTimezoneName': meta['exchangeTimezoneName'], 'closed': True,
+            'sessionEnd': datetime.fromtimestamp(regular_end, timezone.utc).isoformat() if close_day == through else None}
+
+
+def published_prices(asset):
+    raw = (ROOT / asset['historyUrl']).read_bytes()
+    if hashlib.sha256(raw).hexdigest() != asset['sha256']:
+        raise ValueError('已发布复权行情校验值不符')
+    data = json.loads(raw)
+    if data['id'] != asset['id'] or data['currency'] != 'USD' or data['basis'] != 'provider_adjusted_close':
+        raise ValueError('已发布复权行情身份或口径不符')
+    return dict(data['series'])
+
+
+def reinvested_comparison(row, prices):
+    if row['status'] != 'available':
+        return {'status': 'missing', 'reason': row['reason']}
+    start, end = row['start'], row['end']
+    if start not in prices or end not in prices:
+        raise ValueError('缺同区间复权价格端点')
+    cumulative = (prices[end] / prices[start] - 1) * 100
+    years = (date.fromisoformat(end) - date.fromisoformat(start)).days / 365.2425
+    annualized = ((1 + cumulative / 100) ** (1 / years) - 1) * 100
+    return {'status': 'available', 'start': start, 'end': end,
+            'adjustedStart': prices[start], 'adjustedEnd': prices[end],
+            'cumulative': cumulative, 'annualized': annualized,
+            'differenceFromCash': cumulative - row['totalReturn'],
+            'annualizationDifference': annualized - cumulative}
+
+
+def reconcile_prices(node, item, prices, asset):
+    """Reject same-date, different-session paths, allowing constant rescaling.
+
+    Future distributions/splits can rescale the entire adjusted-price history;
+    matching return paths, rather than absolute adjusted values, is required.
+    """
+    stamps = node['timestamp']
+    adjusted = (node.get('indicators', {}).get('adjclose') or [{}])[0].get('adjclose') or []
+    if len(stamps) != len(adjusted):
+        raise ValueError('缺源复权行情，无法与指数表对账')
+    zone = ZoneInfo(node['meta']['exchangeTimezoneName'])
+    source = {datetime.fromtimestamp(t, zone).date().isoformat(): p for t, p in zip(stamps, adjusted) if finite(p) and p > 0}
+    first, end = item['first'], item['through']
+    days = [day for day in prices if first <= day <= end]
+    if any(day not in source for day in days) or first not in prices or end not in prices:
+        raise ValueError('缺与已发布复权行情一致的完整交易日期')
+    factor = prices[end] / source[end]
+    drift = max(abs(source[day] * factor / prices[day] - 1) for day in days)
+    if drift > PATH_TOLERANCE:
+        raise ValueError('现金来源与已发布复权行情不同步，最大相对偏差 %.6f%%' % (drift * 100))
+    item['priceReference'] = {'historyUrl': asset['historyUrl'], 'sha256': asset['sha256'],
+        'basis': 'provider_adjusted_close', 'observations': len(days), 'maxRelativeDrift': drift,
+        'sourceAdjustedStart': source[first], 'sourceAdjustedEnd': source[end],
+        'publishedAdjustedStart': prices[first], 'publishedAdjustedEnd': prices[end]}
+    item['metrics']['reinvested'] = reinvested_comparison(item['metrics']['trailing']['return'], prices)
+
+
+def parse_chart(payload, symbol, first, through, digest, asset=None, reference=None):
     nodes = payload.get('chart', {}).get('result') or []
     if len(nodes) != 1:
         raise ValueError('缺唯一证券的现金分配行情')
@@ -105,12 +177,15 @@ def parse_chart(payload, symbol, first, through, digest):
     meta = node.get('meta', {})
     if meta.get('symbol') != symbol or meta.get('currency') != 'USD':
         raise ValueError('现金分配证券身份或币种不符')
+    closed = closed_price_evidence(meta, through)
     zone = ZoneInfo(meta['exchangeTimezoneName'])
     local_day = lambda t: datetime.fromtimestamp(t, zone).date().isoformat()
     stamps = node.get('timestamp') or []
     closes = (node.get('indicators', {}).get('quote') or [{}])[0].get('close') or []
     if not stamps or len(stamps) != len(closes):
         raise ValueError('缺完整行情覆盖日期')
+    if closed['sessionEnd'] and any(local_day(t) == through and t > datetime.fromisoformat(closed['sessionEnd']).timestamp() for t in stamps):
+        raise ValueError('收盘后即时行情不能作为历史日线')
     prices = {local_day(t): p for t, p in zip(stamps, closes) if finite(p) and p > 0 and first <= local_day(t) <= through}
     if first not in prices or through not in prices:
         raise ValueError('现金分配来源未覆盖 ' + first + ' 至 ' + through)
@@ -143,11 +218,15 @@ def parse_chart(payload, symbol, first, through, digest):
                         'pricePercent': amount / prices[previous] * 100 if previous else None,
                         'subsequentSplit': any(s['date'] > day for s in splits)})
     records.sort(key=lambda r: r['exDate'], reverse=True)
-    return {'status': 'recorded' if records else 'no_events', 'currency': 'USD',
+    item = {'status': 'recorded' if records else 'no_events', 'currency': 'USD',
             'first': first, 'through': through, 'amountBasis': BASIS,
             'sourceUrl': f'https://finance.yahoo.com/quote/{symbol}/history/?filter=div',
             'sourceSha256': digest, 'records': records, 'splits': splits,
+            'closedPriceEvidence': closed,
             'metrics': distribution_metrics(prices, records, first, through)}
+    if reference is not None:
+        reconcile_prices(node, item, reference, asset)
+    return item
 
 
 def validate_metrics(item):
@@ -189,6 +268,37 @@ def validate_metrics(item):
             raise ValueError('现金占净收益比例错误')
 
 
+def validate_reference(item, asset):
+    if not item.get('metrics'):
+        return
+    closed = item.get('closedPriceEvidence') or {}
+    if closed.get('through') != item['through'] or closed.get('closed') is not True:
+        raise ValueError('缺现金回报使用已收盘行情的证据')
+    observed = datetime.fromisoformat(closed['observedAt'])
+    day = observed.astimezone(ZoneInfo(closed['exchangeTimezoneName'])).date().isoformat()
+    if day < item['through'] or day == item['through'] and (not closed.get('sessionEnd') or observed < datetime.fromisoformat(closed['sessionEnd'])):
+        raise ValueError('盘中价不能作为历史收盘价发布')
+    if 'historyUrl' not in asset:
+        return  # Synthetic parser fixtures do not have a published reference file.
+    ref = item.get('priceReference') or {}
+    if len(ref.get('sha256', '')) != 64 or not finite(ref.get('maxRelativeDrift')) or ref['maxRelativeDrift'] > PATH_TOLERANCE:
+        raise ValueError('缺与已发布复权行情一致的价格证据')
+    prices = published_prices(asset)
+    actual = item['metrics'].get('reinvested')
+    expected = reinvested_comparison(item['metrics']['trailing']['return'], prices)
+    if not actual or actual.get('status') != expected['status']:
+        raise ValueError('缺同区间现金与复权回报对账')
+    if actual['status'] == 'available':
+        if (actual['start'], actual['end']) != (expected['start'], expected['end']):
+            raise ValueError('现金与复权回报区间不一致')
+        for key in ['cumulative', 'annualized', 'differenceFromCash', 'annualizationDifference']:
+            tolerance = 1e-9 if ref['sha256'] == asset['sha256'] else .002
+            if not finite(actual.get(key)) or not math.isclose(actual[key], expected[key], abs_tol=tolerance):
+                raise ValueError('现金与复权回报未对账：' + key)
+        if not math.isclose((actual['adjustedEnd'] / actual['adjustedStart'] - 1) * 100, actual['cumulative'], abs_tol=1e-9):
+            raise ValueError('复权首末价格与累计回报不符')
+
+
 def validate(data, products, assets):
     expected = {p['symbol'] for p in products}
     if data.get('schemaVersion') != 1 or set(data.get('products', {})) != expected:
@@ -227,23 +337,50 @@ def validate(data, products, assets):
                 if not math.isclose(row['pricePercent'], row['perShare'] / row['referencePrice'] * 100, abs_tol=1e-9):
                     raise ValueError(symbol + ' 单次分配率错误')
         validate_metrics(item)
+        validate_reference(item, asset)
 
 
-def build(products, assets, previous, cache_dir):
+def fetch_chart(symbol, first, through):
+    begin = int(datetime.fromisoformat(first).replace(tzinfo=timezone.utc).timestamp())
+    finish = int((datetime.fromisoformat(through).replace(tzinfo=timezone.utc) + timedelta(days=1)).timestamp())
+    url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + urllib.parse.quote(symbol, safe='') + '?' + urllib.parse.urlencode(
+        {'period1': begin, 'period2': finish, 'interval': '1d', 'events': 'div,splits'})
+    with urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'}), timeout=20) as response:
+        return response.read()
+
+
+def build(products, assets, previous, cache_dir, allow_fetch=False):
     output = {}
     for product in products:
         symbol = product['symbol']
         asset = assets['us:' + symbol]
         try:
-            raw = (cache_dir / (symbol + '.json')).read_bytes()
-            output[symbol] = parse_chart(json.loads(raw), symbol, asset['first'], asset['asOf'], hashlib.sha256(raw).hexdigest())
+            reference = published_prices(asset) if 'historyUrl' in asset else None
+            cache = cache_dir / (symbol + '.json')
+            def parse(raw):
+                return parse_chart(json.loads(raw), symbol, asset['first'], asset['asOf'], hashlib.sha256(raw).hexdigest(), asset, reference)
+            try:
+                output[symbol] = parse(cache.read_bytes())
+            except (OSError, ValueError, KeyError):
+                if not allow_fetch:
+                    raise
+                raw = fetch_chart(symbol, asset['first'], asset['asOf'])
+                output[symbol] = parse(raw)
+                cache.parent.mkdir(parents=True, exist_ok=True)
+                atomic_text(cache, raw.decode())
         except (OSError, ValueError, KeyError) as exc:
             old = previous.get('products', {}).get(symbol)
             if not old:
                 raise ValueError(symbol + ' 无可发布现金记录：' + str(exc)) from exc
             output[symbol] = {**old}
-            if not old.get('metrics'):
-                output[symbol]['metricsMissingEvidence'] = '缺普通收盘价记录，无法计算分配率和收益贡献'
+            try:
+                validate_reference(old, asset)
+            except (OSError, ValueError, KeyError):
+                output[symbol].pop('metrics', None)
+                # Cash events remain usable; unverified price-derived percentages do not.
+                output[symbol]['records'] = [{**r, 'referenceDate': None, 'referencePrice': None, 'pricePercent': None} for r in old['records']]
+            if not output[symbol].get('metrics'):
+                output[symbol]['metricsMissingEvidence'] = '缺已收盘且与指数表一致的普通行情：' + str(exc)
             if old['through'] < asset['asOf']:
                 output[symbol].update(status='stale', missingEvidence='缺 ' + old['through'] + ' 之后的现金分配记录')
         output[symbol].update(frequency=product['distribution'], issuerUrl=product['sourceUrl'])
@@ -267,11 +404,12 @@ def qii_evidence():
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--check', action='store_true', help='Validate published data without private caches or network')
+    parser.add_argument('--offline', action='store_true', help='Do not refetch missing, provisional, or inconsistent price caches')
     args = parser.parse_args()
     products = json.loads((ROOT / 'data/overseas-etf-catalog.json').read_text())['products']
     assets = {a['id']: a for a in read_js(ROOT / 'data/portfolio/catalog.js')['assets']}
     previous = read_js(OUTPUT) if OUTPUT.exists() else {}
-    data = previous if args.check else build(products, assets, previous, ROOT / '.tmp-portfolio/dividends')
+    data = previous if args.check else build(products, assets, previous, ROOT / '.tmp-portfolio/dividends', allow_fetch=not args.offline)
     if not args.check:
         data['qiiEvidence'] = qii_evidence()
     if data.get('qiiEvidence') != qii_evidence():
