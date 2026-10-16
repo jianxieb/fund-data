@@ -1,0 +1,699 @@
+{
+  "taxYear": 2025,
+  "checkedAt": "2026-10-16",
+  "issuer": "iShares / BlackRock",
+  "document": "2025 Qualified Interest Income (QII) Summary — NRA",
+  "sourceUrl": "https://www.ishares.com/us/literature/tax-information/2025-ishares-qualified-interest-income-summary-stamped.pdf",
+  "sourceSha256": "dc5fc3d221d8aa1904cd3b82397a8a27d38256feca7dae5067c46f285571a87c",
+  "basis": "NRA-exempt QII per share and percentage of total qualified income distribution; payable dates, not ex-dates. No inference about 2026 distributions or actual custodian withholding. Zero QII rows are not cash payment evidence.",
+  "products": {
+    "SGOV": [
+      {
+        "payableDate": "2025-02-06",
+        "qiiPerShare": 0.363396,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 41
+      },
+      {
+        "payableDate": "2025-03-06",
+        "qiiPerShare": 0.313292,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 41
+      },
+      {
+        "payableDate": "2025-04-04",
+        "qiiPerShare": 0.346022,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 41
+      },
+      {
+        "payableDate": "2025-05-06",
+        "qiiPerShare": 0.334981,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 41
+      },
+      {
+        "payableDate": "2025-06-05",
+        "qiiPerShare": 0.357977,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 41
+      },
+      {
+        "payableDate": "2025-07-07",
+        "qiiPerShare": 0.347169,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 42
+      },
+      {
+        "payableDate": "2025-08-06",
+        "qiiPerShare": 0.362484,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 42
+      },
+      {
+        "payableDate": "2025-09-05",
+        "qiiPerShare": 0.360128,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 42
+      },
+      {
+        "payableDate": "2025-10-06",
+        "qiiPerShare": 0.346643,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 42
+      },
+      {
+        "payableDate": "2025-11-06",
+        "qiiPerShare": 0.347608,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 42
+      },
+      {
+        "payableDate": "2025-12-04",
+        "qiiPerShare": 0.312906,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 42
+      },
+      {
+        "payableDate": "2025-12-24",
+        "qiiPerShare": 0.323046,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 42
+      }
+    ],
+    "SHY": [
+      {
+        "payableDate": "2025-02-06",
+        "qiiPerShare": 0.273496,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-03-06",
+        "qiiPerShare": 0.25314,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-04-04",
+        "qiiPerShare": 0.279789,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-05-06",
+        "qiiPerShare": 0.259195,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-06-05",
+        "qiiPerShare": 0.271801,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-07-07",
+        "qiiPerShare": 0.264081,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-08-06",
+        "qiiPerShare": 0.269837,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-09-05",
+        "qiiPerShare": 0.258369,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-10-06",
+        "qiiPerShare": 0.256251,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-11-06",
+        "qiiPerShare": 0.262737,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-12-04",
+        "qiiPerShare": 0.248818,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-12-24",
+        "qiiPerShare": 0.254847,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      }
+    ],
+    "IEI": [
+      {
+        "payableDate": "2025-02-06",
+        "qiiPerShare": 0.329212,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 28
+      },
+      {
+        "payableDate": "2025-03-06",
+        "qiiPerShare": 0.303826,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 28
+      },
+      {
+        "payableDate": "2025-04-04",
+        "qiiPerShare": 0.341732,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 28
+      },
+      {
+        "payableDate": "2025-05-06",
+        "qiiPerShare": 0.335038,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 28
+      },
+      {
+        "payableDate": "2025-06-05",
+        "qiiPerShare": 0.362877,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 28
+      },
+      {
+        "payableDate": "2025-07-07",
+        "qiiPerShare": 0.342218,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 28
+      },
+      {
+        "payableDate": "2025-08-06",
+        "qiiPerShare": 0.350577,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 28
+      },
+      {
+        "payableDate": "2025-09-05",
+        "qiiPerShare": 0.348455,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 28
+      },
+      {
+        "payableDate": "2025-10-06",
+        "qiiPerShare": 0.34615,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 28
+      },
+      {
+        "payableDate": "2025-11-06",
+        "qiiPerShare": 0.366168,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 28
+      },
+      {
+        "payableDate": "2025-12-04",
+        "qiiPerShare": 0.350184,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 28
+      },
+      {
+        "payableDate": "2025-12-24",
+        "qiiPerShare": 0.371087,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 28
+      }
+    ],
+    "IEF": [
+      {
+        "payableDate": "2025-02-06",
+        "qiiPerShare": 0.296357,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-03-06",
+        "qiiPerShare": 0.275368,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-04-04",
+        "qiiPerShare": 0.303674,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-05-06",
+        "qiiPerShare": 0.313378,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-06-05",
+        "qiiPerShare": 0.310131,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-07-07",
+        "qiiPerShare": 0.30321,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-08-06",
+        "qiiPerShare": 0.308775,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-09-05",
+        "qiiPerShare": 0.314136,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-10-06",
+        "qiiPerShare": 0.294485,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-11-06",
+        "qiiPerShare": 0.303792,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-12-04",
+        "qiiPerShare": 0.288439,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-12-24",
+        "qiiPerShare": 0.312713,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      }
+    ],
+    "TLH": [
+      {
+        "payableDate": "2025-02-06",
+        "qiiPerShare": 0.348575,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 28
+      },
+      {
+        "payableDate": "2025-03-06",
+        "qiiPerShare": 0.246557,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 28
+      },
+      {
+        "payableDate": "2025-04-04",
+        "qiiPerShare": 0.369715,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 28
+      },
+      {
+        "payableDate": "2025-05-06",
+        "qiiPerShare": 0.356145,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 28
+      },
+      {
+        "payableDate": "2025-06-05",
+        "qiiPerShare": 0.346246,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 28
+      },
+      {
+        "payableDate": "2025-07-07",
+        "qiiPerShare": 0.359606,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 28
+      },
+      {
+        "payableDate": "2025-08-06",
+        "qiiPerShare": 0.377287,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 28
+      },
+      {
+        "payableDate": "2025-09-05",
+        "qiiPerShare": 0.372507,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 28
+      },
+      {
+        "payableDate": "2025-10-06",
+        "qiiPerShare": 0.345589,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 28
+      },
+      {
+        "payableDate": "2025-11-06",
+        "qiiPerShare": 0.369262,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 28
+      },
+      {
+        "payableDate": "2025-12-04",
+        "qiiPerShare": 0.366044,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 28
+      },
+      {
+        "payableDate": "2025-12-24",
+        "qiiPerShare": 0.37807,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 28
+      }
+    ],
+    "TLT": [
+      {
+        "payableDate": "2025-02-06",
+        "qiiPerShare": 0.312282,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-03-06",
+        "qiiPerShare": 0.289817,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-04-04",
+        "qiiPerShare": 0.325582,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-05-06",
+        "qiiPerShare": 0.327612,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-06-05",
+        "qiiPerShare": 0.319532,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-07-07",
+        "qiiPerShare": 0.328301,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-08-06",
+        "qiiPerShare": 0.330802,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-09-05",
+        "qiiPerShare": 0.328083,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-10-06",
+        "qiiPerShare": 0.310447,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-11-06",
+        "qiiPerShare": 0.325125,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-12-04",
+        "qiiPerShare": 0.320648,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      },
+      {
+        "payableDate": "2025-12-24",
+        "qiiPerShare": 0.342437,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 25
+      }
+    ],
+    "GOVT": [
+      {
+        "payableDate": "2025-02-06",
+        "qiiPerShare": 0.067404,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 29
+      },
+      {
+        "payableDate": "2025-03-06",
+        "qiiPerShare": 0.06131,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 29
+      },
+      {
+        "payableDate": "2025-04-04",
+        "qiiPerShare": 0.071482,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 29
+      },
+      {
+        "payableDate": "2025-05-06",
+        "qiiPerShare": 0.064132,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 29
+      },
+      {
+        "payableDate": "2025-06-05",
+        "qiiPerShare": 0.068028,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 29
+      },
+      {
+        "payableDate": "2025-07-07",
+        "qiiPerShare": 0.06602,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 29
+      },
+      {
+        "payableDate": "2025-08-06",
+        "qiiPerShare": 0.068044,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 29
+      },
+      {
+        "payableDate": "2025-09-05",
+        "qiiPerShare": 0.068254,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 29
+      },
+      {
+        "payableDate": "2025-10-06",
+        "qiiPerShare": 0.065224,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 29
+      },
+      {
+        "payableDate": "2025-11-06",
+        "qiiPerShare": 0.064461,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 29
+      },
+      {
+        "payableDate": "2025-12-04",
+        "qiiPerShare": 0.067646,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 29
+      },
+      {
+        "payableDate": "2025-12-24",
+        "qiiPerShare": 0.071757,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 29
+      }
+    ],
+    "TIP": [
+      {
+        "payableDate": "2025-02-06",
+        "qiiPerShare": 0,
+        "qiiPercent": 0.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 24
+      },
+      {
+        "payableDate": "2025-03-06",
+        "qiiPerShare": 0,
+        "qiiPercent": 0.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 24
+      },
+      {
+        "payableDate": "2025-04-04",
+        "qiiPerShare": 0.70918,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 24
+      },
+      {
+        "payableDate": "2025-05-06",
+        "qiiPerShare": 0.534953,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 24
+      },
+      {
+        "payableDate": "2025-06-05",
+        "qiiPerShare": 0.273105,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 24
+      },
+      {
+        "payableDate": "2025-07-07",
+        "qiiPerShare": 0.379923,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 24
+      },
+      {
+        "payableDate": "2025-08-06",
+        "qiiPerShare": 0.264488,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 24
+      },
+      {
+        "payableDate": "2025-09-05",
+        "qiiPerShare": 0.417238,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 24
+      },
+      {
+        "payableDate": "2025-10-06",
+        "qiiPerShare": 0.198069,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 24
+      },
+      {
+        "payableDate": "2025-11-06",
+        "qiiPerShare": 0.360933,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 24
+      },
+      {
+        "payableDate": "2025-12-04",
+        "qiiPerShare": 0.322417,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 24
+      },
+      {
+        "payableDate": "2025-12-24",
+        "qiiPerShare": 0.341961,
+        "qiiPercent": 100.0,
+        "exemptShortTermCapitalGainPerShare": 0,
+        "page": 24
+      }
+    ]
+  }
+}

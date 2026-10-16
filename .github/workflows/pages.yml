@@ -32,6 +32,7 @@ jobs:
           python3 -m unittest discover -s tests -q
           node --test tests/*.test.cjs
           python3 scripts/build_portfolio_data.py --check
+          python3 scripts/build_etf_distributions.py --check
           python3 - <<'PY'
           import data_quality
           report = data_quality.audit(data_quality.read_snapshot())

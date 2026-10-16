@@ -25,6 +25,7 @@
 - **持有与投入**：已收录海外ETF及美股的1/2/3/5/10年完整持有窗口，美元或人民币口径；一次投入、分批和定投等历史模拟，分别查看资金收益与净值风险。
 - **组合验证**：按自定权重配置已收录ETF、个股和基金，检验投入、再平衡及费用假设，查看资金XIRR、组合走势与持仓贡献；支持配置导入导出及PDF/CSV。模拟配置保存在当前浏览器。
 - **渠道与资金**：国内场内、场外产品与海外ETF的同日人民币历史情景；投资渠道的税种、抵免、QQQI/QQQ/SPY/可口可乐实例及银行券商扣缴依据；内地—香港—证券账户及回款、消费的分步费用测算。
+- **ETF分红与再投**：在指数观察的ETF详情查看逐年现金分配，比较领取现金与DRIP，以及IBKR、汇丰Trade25、富途香港的支持条件与扣缴规则；分别解释普通股息、合资格利息分配和ROC，注明最终分类的适用年度。
 - **金融机制**：货币、通胀、利率、信用、债券、股票、黄金、房地产与周期产业的关系，通过传导图、例子、反例和计算实验说明成立条件。
 
 “全球”是研究视角，当前资产与指标数据并未覆盖所有国家、证券或历史时期。数量、候选、观测日期与缺口由实际生成数据提供，README不固定滚动更新的数字。
@@ -75,6 +76,7 @@ npm test
 python3 -m unittest discover -s tests -q
 python3 data_quality.py --strict
 python3 scripts/build_portfolio_data.py --check
+python3 scripts/build_etf_distributions.py --check
 ```
 
 `refresh.py`不会自动提交或推送。发布时先同步远端更新，保留定时刷新结果；按独立改动提交并立即推送，由GitHub Actions校验及发布至Pages。失败记录、更新日期与缓存状态可从 `data/update-status.json` 和 `data/refresh-report.json` 追溯。
@@ -96,7 +98,7 @@ python3 scripts/build_portfolio_data.py --check
 | 市场与机制 | [历史分位](docs/market-history-method.md)、[全球金融](docs/global-finance-method.md)、[美债ETF](docs/treasury-etfs.md) |
 | 基金与公司 | [跨境指数基金](docs/crossborder-funds-method.md)、[长期优质与高质成长](docs/stock-quality-method.md)、[美股研究](docs/overseas-stocks.md)、[股息口径](docs/stock-dividend-method.md) |
 | 历史与方案 | [持有期研究](docs/holding-period-method.md)、[策略曲线](docs/strategy-curves.md)、[策略独立账本复核](docs/strategy-leverage-audit.md)、[组合模拟](docs/portfolio-method.md) |
-| 渠道与资金 | [买入渠道](docs/buy-location-method.md)、[跨境资金方法](docs/money-flow-method.md)、[跨境资金需求与验收清单](docs/money-flow-requirements.md) |
+| 渠道与资金 | [买入渠道](docs/buy-location-method.md)、[ETF现金分配与再投](docs/etf-distributions.md)、[跨境资金方法](docs/money-flow-method.md)、[跨境资金需求与验收清单](docs/money-flow-requirements.md) |
 | 数据与维护 | [维护指南](docs/maintenance.md)、[自动更新](docs/automatic-update-plan.md)、[数据链路审计](docs/data-pipeline-audit.md)、[新环境验证](docs/fresh-clone-validation.md) |
 
 历史报告记录当时的研究与取舍；当前产品能力以现有页面、方法文档和对应数据为准。后续优先连接已有研究环节、补足影响判断的证据，并在现有页面完善方案对照。

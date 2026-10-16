@@ -11,7 +11,7 @@
     hsbc: ['汇丰 · 投资FAQ', 'https://www.hsbc.com.hk/help/faq/investments/'],
     hsbcTerms: ['汇丰账户条款 · 投资服务5.1.8', 'https://www.hsbc.com.hk/content/dam/hsbc/hk/docs/accounts/personal-integrated/terms-and-conditions-3sep.pdf'],
     futu: ['富途香港 · 股息税查询指引', 'https://www.futuhk.com/hans/support/topic2_2337'],
-    futuDrip: ['富途香港 · 股息再投资计划', 'https://www.futuhk.com/support/topic2_1770'],
+    futuDrip: ['富途香港 · 股息再投资计划', 'https://www.futuhk.com/hans/support/topic2_1770'],
     zheshang: ['浙商国际 · 2025-04-07预扣声明', 'https://www.cnzsqh.hk/hk/view.php?id=284'],
     ibkr: ['IBKR · 非美国人士预扣税', 'https://www.interactivebrokers.com/en/support/tax-nonus-initial.php'],
     ibkrRoc: ['IBKR · 预扣税课程及员工答复', 'https://www.interactivebrokers.com/campus/trading-lessons/what-kind-of-income-is-subject-to-withholding/'],

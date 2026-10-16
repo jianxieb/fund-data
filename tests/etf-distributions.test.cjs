@@ -1,0 +1,68 @@
+const { test } = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const vm = require('node:vm');
+const D = require('../assets/etf-distributions.js');
+const context = { window: {} };
+vm.runInNewContext(fs.readFileSync('data/etf-distributions.js', 'utf8'), context);
+const data = context.window.ETF_DISTRIBUTIONS;
+const products = JSON.parse(fs.readFileSync('data/overseas-etf-catalog.json')).products;
+
+test('cash versus DRIP changes use of proceeds, never original tax or credit', () => {
+  for (const kind of ['ordinary', 'qii']) {
+    const cash = D.cashChoice(kind, 'cash'), drip = D.cashChoice(kind, 'drip');
+    for (const key of ['gross', 'usWithheld', 'cnTax', 'availableAtPayment', 'afterBothTaxes']) assert.equal(cash[key], drip[key]);
+    assert.equal(cash.afterBothTaxes, 800);
+    assert.equal(drip.cashAtPayment, 0);
+    assert.equal(drip.reinvestBeforeFees, cash.cashAtPayment);
+    assert.equal(cash.reinvestBeforeFees, 0);
+  }
+  assert.equal(D.cashChoice('ordinary', 'drip').cnTax, 100);
+  assert.equal(D.cashChoice('qii', 'drip').cnTax, 200);
+  assert.equal(D.cashChoice('roc', 'drip'), null, 'unknown mainland ROC tax must not become zero');
+});
+
+test('all catalog ETFs have observed cash history with distinct date meanings', () => {
+  for (const product of products) {
+    assert.ok(data.products[product.symbol].records.length);
+    const html = D.render(product, data);
+    assert.match(html, /有现金分配/);
+    assert.match(html, /不是现金到账日/);
+    assert.match(html, /历史回报假设分红再投，不表示你的账户已启用DRIP/);
+    assert.match(html, /IBKR 盈透/);
+    assert.match(html, /汇丰香港 Trade25/);
+    assert.match(html, /富途香港/);
+    assert.doesNotMatch(html, /undefined|NaN/);
+  }
+});
+
+test('final 2025 classifications cannot silently label 2026 events or all ETF distributions', () => {
+  assert.equal(D.taxCase('SGOV', data), 'qii');
+  assert.equal(D.taxCase('QQQ', data), 'ordinary-confirmed');
+  assert.equal(D.taxCase('QQQI', data), 'roc');
+  assert.equal(D.taxCase('JEPQ', data), 'classification-missing');
+  assert.match(D.render(products.find(p => p.symbol === 'SGOV'), data), /不证明2026年每笔均免美国税/);
+  assert.match(D.render(products.find(p => p.symbol === 'QQQI'), data), /尚缺这笔ROC在内地的所得分类和成本调整确认/);
+  assert.match(D.render(products.find(p => p.symbol === 'JEPQ'), data), /不作为这只ETF最新一笔的税款报价/);
+});
+
+test('history year selection preserves source cash precision and split warning', () => {
+  const item = { records: [
+    { exDate: '2026-03-01', perShare: .333, subsequentSplit: false },
+    { exDate: '2025-06-01', perShare: .12345678, subsequentSplit: true }
+  ] };
+  const html = D.history(item, '2025');
+  assert.match(html, /0\.12345678/);
+  assert.match(html, /此后有拆分/);
+  assert.doesNotMatch(html, /2026-03-01/);
+  assert.match(D.history(item, '<script>'), /2026-03-01/);
+});
+
+test('broker comparison never promises uniform ETF eligibility or investor chosen withholding', () => {
+  assert.equal(D.brokers.length, 3);
+  const html = D.brokerComparison();
+  assert.match(html, /不保证本页每只ETF都支持/);
+  assert.match(html, /不能断言Trade25统一扣30%/);
+  assert.match(html, /未确认美股ETF自动再投服务/);
+  assert.doesNotMatch(html, /<input|<select/);
+});

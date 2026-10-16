@@ -243,7 +243,7 @@
         ? '<span class="sub">' + esc((r.inception || r.first || '').slice(0, 7)) + (r.kind === 'stock' ? '起有行情' : '成立') + ' · 可用' + availableYears.join(' / ') + '年收益</span>' : '';
       return '<tr><td>' + action(esc(r.symbol ? (r.displaySymbol || r.symbol) + ' · ' + r.label : r.n), 'index-detail', 'text-link', 'data-value="' + i + '"') + (r.status === 'unavailable' ? badge('缺原始日线', 'warn') : '') + '<span class="sub">' + esc(r.symbol ? r.style + (r.leverage > 1 ? ' · 目标按日重设' : '') : isDomestic ? '国内价格指数 · ' + r.c : '海外价格指数') + '</span>' + shortHistory + (displayCurrency === 'cny' && r.fxMissingReason ? '<span class="sub">缺美元兑人民币历史</span>' : '') + '</td>' +
         state.periods.map(y => '<td>' + pc(ret(returns && returns[years.indexOf(y)], y, r)) + ((r.backfilledPeriods || []).includes(y) ? '<span class="sub">含发布前回溯</span>' : '') + etfHistoryLabel(r, y) + '</td>').join('') +
-        (products ? '<td class="num">' + pct(r.expenseRatio, r.section !== 'treasury' && r.expenseRatio < 0.1 ? 4 : 2, false) + '<span class="sub">' + esc(r.distribution || '') + '分配</span></td>' : '') + '<td>' + pc(risk.mdd, r.section === 'treasury' ? 2 : 1) + (risk.missingFxDates?.length ? '<span class="sub" title="' + esc(risk.reason + '：' + risk.missingFxDates.join('、')) + '">缺' + esc(risk.missingFxDates.length === 1 ? risk.missingFxDates[0] : risk.missingFxDates.length + '日') + '汇率</span>' : '') + '</td><td>' + pct(risk.vol, 1, false) + '</td><td>' + esc(r.asof || r.asOf || (r.status === 'unavailable' ? '—' : '待核验')) + '</td></tr>';
+        (products ? '<td class="num">' + pct(r.expenseRatio, r.section !== 'treasury' && r.expenseRatio < 0.1 ? 4 : 2, false) + action(esc(r.distribution || '') + '现金分配 ↗', 'etf-distributions', 'text-link etf-distribution-link', 'data-value="' + esc(r.symbol) + '"') + '</td>' : '') + '<td>' + pc(risk.mdd, r.section === 'treasury' ? 2 : 1) + (risk.missingFxDates?.length ? '<span class="sub" title="' + esc(risk.reason + '：' + risk.missingFxDates.join('、')) + '">缺' + esc(risk.missingFxDates.length === 1 ? risk.missingFxDates[0] : risk.missingFxDates.length + '日') + '汇率</span>' : '') + '</td><td>' + pct(risk.vol, 1, false) + '</td><td>' + esc(r.asof || r.asOf || (r.status === 'unavailable' ? '—' : '待核验')) + '</td></tr>';
       }).join('');
       return '<section class="card index-section"><div class="index-section-head"><div><h2>' + label + '</h2><p>' + description + '</p></div><span>' + input.length + '条</span></div><div class="table-wrap"><table class="research-table overseas-table"><thead><tr>' + sortHead('指数 / 产品', 'name') + state.periods.map(y => sortHead(periodHead(y), 'return:' + y)).join('') + (products ? '<th>持续年费 / 分配</th>' : '') + sortHead('5年最大回撤', 'mdd') + sortHead('5年波动率', 'vol') + sortHead('截至日', 'date') + '</tr></thead><tbody>' + rowsHtml + '</tbody></table></div>' + (products ? '<div class="panel-foot"><span>' + (state.indexTab === 'treasury' ? '含利息分配再投资' : '含分红再投资') + ' · ' + feeBasisLabel() + '</span>' + '</div>' : '') + '</section>';
     };
@@ -941,14 +941,21 @@
       '<details class="annual-fee-details"><summary>实际收益区间与来源口径</summary><p>采用该B类股自身的复权收盘价，未扣个人交易费用与税费。人民币收益按各窗口起止日的实际美元兑人民币汇率折算；非汇率交易日最多取此前7天内最近观测，实际日期列于下方。人民币日频风险要求每个股票交易日都有同日汇率。</p><div class="table-wrap"><table><thead><tr><th>周期</th><th>股价起日 → 截至</th>' + (cny ? '<th>汇率起日 → 截至</th>' : '') + '</tr></thead><tbody>' + (x.periods || []).map(p => '<tr><td>' + p.years + '年</td><td>' + esc(p.start || '历史不足') + ' → ' + esc(p.end) + '</td>' + (cny ? '<td>' + esc(p.fxStart || '缺起日汇率') + ' → ' + esc(p.fxEnd || '缺截至日汇率') + '</td>' : '') + '</tr>').join('') + '</tbody></table></div></details>' +
       '<div class="actions">' + extLink(x.identityUrl, '公司股类说明') + extLink(x.sourceUrl, '复权行情来源') + (cny && x.fxSourceUrl ? extLink(x.fxSourceUrl, '汇率来源') : '') + '</div><div class="dialog-footer"><a class="btn primary" href="#stock-report/' + esc(x.symbol) + '">查看伯克希尔研究报告</a><a class="btn" href="#holding-period/' + esc(x.symbol) + '">研究不同买入月份</a></div>');
   }
-  function openOverseasEtf(x) {
+  function openOverseasEtf(x, tab = 'performance') {
+    const tabs = '<div class="tabs etf-detail-tabs" role="tablist" aria-label="ETF详情">' + [['performance', '表现与费用'], ['distributions', '分红、再投与税']].map(([id, label]) => action(label, 'etf-detail-tab', id === tab ? 'active' : '', 'id="etf-tab-' + id + '" role="tab" aria-selected="' + (id === tab) + '" tabindex="' + (id === tab ? 0 : -1) + '" aria-controls="etf-detail-panel" data-symbol="' + esc(x.symbol) + '" data-value="' + id + '"')).join('') + '</div>';
+    const heading = modalTitle(esc(x.symbol) + ' · ' + esc(x.label), esc(x.category) + ' / ' + esc(x.style)) + tabs;
+    const panel = '<div id="etf-detail-panel" role="tabpanel" aria-labelledby="etf-tab-' + tab + '">';
+    if (tab === 'distributions') {
+      openModal(heading + panel + window.ChanghengEtfDistributions.render(x, window.ETF_DISTRIBUTIONS) + '</div>');
+      return;
+    }
     const risk = x[state.currency === 'usd' ? 'riskUSD5' : 'riskCNY5'] || {};
-    openModal(modalTitle(esc(x.symbol) + ' · ' + esc(x.label), esc(x.category) + ' / ' + esc(x.style)) +
+    openModal(heading + panel +
       '<p class="notice">' + esc(x.description) + '</p>' + (x.historyNote ? '<p class="notice warn">' + esc(x.historyNote) + '</p>' : '') + '<div class="detail-return-heading"><h3>' + (x.section === 'treasury' ? '含利息分配再投资' : '含分红再投资') + ' · ' + feeBasisLabel() + '</h3><span>' + (state.currency === 'usd' ? '美元' : '人民币，含汇率变化') + '</span></div>' + returnTable(x[state.currency], x) +
       detailGrid([['标的指数 / 策略', esc(x.underlying)], ['收益截至 / 实际行情起点', esc(x.asOf) + ' / ' + esc(x.first || '缺首日')], ['成立日期', esc(x.inception)], ['持续运营年费', pct(x.expenseRatio, x.expenseRatio < 0.1 ? 4 : 2, false) + '<span class="sub">来源核对 ' + esc(x.feeCheckedAt) + '</span>'], ['估算还原费率', pct(x.feeAddbackRate ?? x.expenseRatio, 4, false) + '<span class="sub">现行费率固定情景，历史费率未逐日还原</span>'], ['现金分配频率', esc(x.distribution) + '<span class="sub">分配率不是总收益率</span>'], ['每日目标', x.leverage > 1 ? x.leverage + '倍标的每日收益；长期收益不等于该倍数' : '不设杠杆倍数'], ['5年实际回撤 / 波动率', pct(risk.mdd, 2, false) + ' / ' + pct(risk.vol, 2, false) + '<span class="sub">真实扣费后日线；不足5年留空</span>']]) +
       (x.category === '期权收益' ? '<p class="notice warn">分配可能包含期权收益、资本利得或资本返还。这里比较分红再投资总回报，不把月分配率乘12作为投资收益率。</p>' : '') +
       (risk.reason ? '<p class="notice warn">' + esc(risk.reason) + (risk.missingFxDates?.length ? '。缺失日期：' + esc(risk.missingFxDates.join('、')) : '') + '</p>' : '') +
-      '<details class="annual-fee-details"><summary>实际收益区间与费用口径</summary><p>使用供应商明确的分红复权收盘价，产品持续费用已反映在价格中。标示费率用于了解产品成本，不再从历史收益中重复扣除。</p><div class="table-wrap"><table><thead><tr><th>周期</th><th>起日</th><th>截至</th></tr></thead><tbody>' + (x.periods || []).map(p => '<tr><td>' + p.years + '年' + etfHistoryLabel(x, p.years) + '</td><td>' + esc(p.start || '成立或行情不足') + '</td><td>' + esc(p.end) + '</td></tr>').join('') + '</tbody></table></div></details><div class="actions">' + extLink(x.identityUrl, '官方策略与费用') + extLink(x.sourceUrl, '分红复权行情') + (x.historySourceUrl ? extLink(x.historySourceUrl, '基准变更说明') : '') + (state.currency === 'cny' ? extLink(x.fxSourceUrl, '汇率来源') : '') + '</div><div class="dialog-footer"><a class="btn primary" href="#holding-period/' + esc(x.symbol) + '">研究不同买入月份</a></div>');
+      '<details class="annual-fee-details"><summary>实际收益区间与费用口径</summary><p>使用供应商明确的分红复权收盘价，产品持续费用已反映在价格中。标示费率用于了解产品成本，不再从历史收益中重复扣除。</p><div class="table-wrap"><table><thead><tr><th>周期</th><th>起日</th><th>截至</th></tr></thead><tbody>' + (x.periods || []).map(p => '<tr><td>' + p.years + '年' + etfHistoryLabel(x, p.years) + '</td><td>' + esc(p.start || '成立或行情不足') + '</td><td>' + esc(p.end) + '</td></tr>').join('') + '</tbody></table></div></details><div class="actions">' + extLink(x.identityUrl, '官方策略与费用') + extLink(x.sourceUrl, '分红复权行情') + (x.historySourceUrl ? extLink(x.historySourceUrl, '基准变更说明') : '') + (state.currency === 'cny' ? extLink(x.fxSourceUrl, '汇率来源') : '') + '</div><div class="dialog-footer"><a class="btn primary" href="#holding-period/' + esc(x.symbol) + '">研究不同买入月份</a></div></div>');
   }
   function openEtfDifferences() {
     openModal(modalTitle('QQQ、QQQI、VGT有何不同', '选股范围与回报来源不同') + '<div class="table-wrap"><table class="compare-table"><thead><tr><th>维度</th><th>QQQ</th><th>QQQI</th><th>VGT</th></tr></thead><tbody><tr><td>投资范围</td><td>纳斯达克100非金融企业，跨行业</td><td>纳指100股票组合 + NDX指数期权</td><td>美国信息科技行业，大中小盘</td></tr><tr><td>管理方式</td><td>被动指数跟踪</td><td>主动买卖看涨期权</td><td>被动行业指数跟踪</td></tr><tr><td>回报特征</td><td>主要参与股票上涨和下跌</td><td>偏向月分配；期权改变上涨参与和下跌表现</td><td>软件、硬件、半导体与设备的行业暴露</td></tr><tr><td>现行年费</td><td>0.18%</td><td>0.68%</td><td>0.09%</td></tr><tr><td>分配</td><td>季度</td><td>每月，可含资本返还</td><td>季度</td></tr></tbody></table></div><p class="notice">比较总回报：净值或价格变化 + 现金分配再投资。高分配率不代表高收益，期权策略也不保证本金安全。</p><div class="actions">' + ['QQQ', 'QQQI', 'VGT'].map(symbol => extLink((window.BM || []).find(b => b.symbol === symbol)?.identityUrl, symbol + '官方资料')).join('') + '</div>');
@@ -1186,6 +1193,19 @@
       case 'index-sort-reset': state.indexSort = 'default'; state.indexDescending = true; break;
       case 'currency': state.currency = val; break;
       case 'index-detail': openIndex(Number(val)); return;
+      case 'etf-distributions': {
+        const product = (window.BM || []).find(x => x.symbol === val);
+        if (product) openOverseasEtf(product, 'distributions');
+        return;
+      }
+      case 'etf-detail-tab': {
+        const product = (window.BM || []).find(x => x.symbol === button.dataset.symbol);
+        if (product && ['performance', 'distributions'].includes(val)) {
+          openOverseasEtf(product, val);
+          $('#etf-tab-' + val)?.focus();
+        }
+        return;
+      }
       case 'go-index-funds': state.fundTab = 'passive'; state.fundFacets.clear(); state.fundSectors.clear(); state.channel = 'all'; state.query = ''; go('funds'); return;
       case 'find-index-funds': state.fundTab = 'all'; state.poolCategory = 'all'; state.fundFacets.clear(); state.fundSectors.clear(); state.channel = 'all'; state.purchasable = false; state.query = val; $('#dialog').close(); go('funds'); return;
       case 'fund-tab': state.fundTab = val; state.poolCategory = 'all'; state.fundFacets.clear(); state.fundSectors.clear(); state.channel = 'all'; state.purchasable = false; state.fundSort = 'default'; break;
@@ -1273,6 +1293,11 @@
   });
   document.addEventListener('change', e => {
     const el = e.target;
+    if (el.dataset.etfHistory) {
+      const item = window.ETF_DISTRIBUTIONS?.products[el.dataset.etfHistory];
+      if (item) $('#etf-div-history-rows').innerHTML = window.ChanghengEtfDistributions.history(item, el.value);
+      return;
+    }
     if (el.dataset.moneyField || el.dataset.moneySelect || el.dataset.moneyQuote || el.dataset.moneyEligible || el.dataset.moneyCheck) { window.ChanghengMoneyFlow.handleChange(el); return; }
     if (el.id === 'portfolio-import' || el.id === 'portfolio-hide-boards' || el.id === 'portfolio-liquidate' || el.dataset.portfolioWeight || el.dataset.portfolioAmount || el.dataset.portfolioField || el.dataset.portfolioFee || el.dataset.portfolioTaxAsset) {
       window.ChanghengPortfolio.handleChange(el); return;
@@ -1340,6 +1365,14 @@
   dialog.addEventListener('pointerdown', event => { dialogBackdropDown = event.button === 0 && outsideDialog(event); });
   dialog.addEventListener('click', event => { if (dialogBackdropDown && outsideDialog(event)) dialog.close(); dialogBackdropDown = false; });
   dialog.addEventListener('keydown', event => {
+    if (event.target.matches('[data-action="etf-detail-tab"]') && ['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) {
+      event.preventDefault();
+      const tabs = [...dialog.querySelectorAll('[data-action="etf-detail-tab"]')];
+      const current = tabs.indexOf(event.target);
+      const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (current + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+      tabs[next]?.click();
+      return;
+    }
     if (event.key !== 'Tab' || !dialog.open) return;
     const controls = [...dialog.querySelectorAll('button, a[href], input, select, textarea, [tabindex]')]
       .filter(element => !element.disabled && element.tabIndex >= 0 && element.getClientRects().length);
