@@ -1,0 +1,1197 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-10-17",
+  "sources": {
+    "dotcom": {
+      "label": "美联储历史：大缓和与科技泡沫",
+      "url": "https://www.federalreservehistory.org/essays/great-moderation"
+    },
+    "fed2001": {
+      "label": "美联储：2001-01-03降息声明",
+      "url": "https://www.federalreserve.gov/boarddocs/press/general/2001/20010103/"
+    },
+    "gfc": {
+      "label": "美联储历史：大衰退及其后果",
+      "url": "https://www.federalreservehistory.org/essays/great-recession-and-its-aftermath"
+    },
+    "lehman": {
+      "label": "美联储历史：对特定金融机构的支持",
+      "url": "https://www.federalreservehistory.org/essays/support-for-specific-institutions"
+    },
+    "fed2008": {
+      "label": "美联储：2008-12-16利率与资产购买声明",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20081216b.htm"
+    },
+    "euro2011": {
+      "label": "欧洲央行：2011年主权债务危机演讲",
+      "url": "https://www.ecb.europa.eu/press/key/date/2011/html/sp111104_1.en.html"
+    },
+    "draghi": {
+      "label": "欧洲央行：2012-07-26德拉吉演讲",
+      "url": "https://www.ecb.europa.eu/press/key/date/2012/html/sp120726.en.html"
+    },
+    "omt": {
+      "label": "欧洲央行：2012-09-06 OMT技术条件",
+      "url": "https://www.ecb.europa.eu/press/pr/date/2012/html/pr120906_1.en.html"
+    },
+    "taper": {
+      "label": "美联储：2013-06-19记者会",
+      "url": "https://www.federalreserve.gov/monetarypolicy/fomcpresconf20130619.htm"
+    },
+    "fed2013": {
+      "label": "美联储：2013-06-19政策声明",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20130619a.htm"
+    },
+    "china2015": {
+      "label": "BIS：2015年新兴市场脆弱性",
+      "url": "https://www.bis.org/publications/eme-vulnerabilities-take-centre-stage"
+    },
+    "cny2015": {
+      "label": "BIS：2015年8月人民币波动与远期交易",
+      "url": "https://www.bis.org/publications/ndf-trading-during-august-2015-renminbi-volatility"
+    },
+    "boe2016": {
+      "label": "英格兰银行：2016-06-24公投结果声明",
+      "url": "https://www.bankofengland.co.uk/news/2016/june/statement-from-the-governor-of-the-boe-following-the-eu-referendum-result"
+    },
+    "boe2016fs": {
+      "label": "英格兰银行：2016年7月金融稳定报告",
+      "url": "https://www.bankofengland.co.uk/financial-stability-report/2016/july-2016"
+    },
+    "tariff2018": {
+      "label": "USTR：2018-06-15关税清单及生效日",
+      "url": "https://ustr.gov/about-us/policy-offices/press-office/press-releases/2018/june/ustr-issues-tariffs-chinese-products"
+    },
+    "tariff2018b": {
+      "label": "USTR：2018-07-10后续关税提议",
+      "url": "https://ustr.gov/about-us/policy-offices/press-office/press-releases/2018/july/statement-us-trade-representative"
+    },
+    "trade2019": {
+      "label": "BIS：2019年贸易与货币政策驱动市场",
+      "url": "https://www.bis.org/publications/markets-swing-trade-and-monetary-policy"
+    },
+    "who2020": {
+      "label": "WHO：2020-03-11大流行评估",
+      "url": "https://www.who.int/news-room/speeches/item/who-director-general-s-opening-remarks-at-the-media-briefing-on-covid-19---11-march-2020"
+    },
+    "fed2020": {
+      "label": "美联储：2020-03-15紧急政策声明",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20200315a.htm"
+    },
+    "qe2020": {
+      "label": "美联储：2020年资产负债表政策回顾",
+      "url": "https://www.federalreserve.gov/monetarypolicy/bsd-recent-developments-202008.htm"
+    },
+    "ukraine": {
+      "label": "IMF：2022-03-05乌克兰战争经济影响",
+      "url": "https://www.imf.org/en/news/articles/2022/03/05/pr2261-imf-staff-statement-on-the-economic-impact-of-war-in-ukraine"
+    },
+    "imf2022": {
+      "label": "IMF：战争压低增长、推高通胀",
+      "url": "https://www.imf.org/en/blogs/articles/2022/04/19/blog-weo-war-dims-global-economic-outlook-as-inflation-accelerates"
+    },
+    "hikes2022": {
+      "label": "美联储：2022-03-16首次加息声明",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20220316a.htm"
+    },
+    "hikes2023": {
+      "label": "美联储：2023-07-26政策利率达到5.25%—5.50%",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20230726a.htm"
+    },
+    "svb": {
+      "label": "FDIC：硅谷银行存款转入过桥银行",
+      "url": "https://www.fdic.gov/news/press-releases/2023/pr23019.html"
+    },
+    "fdic2023": {
+      "label": "FDIC：2023-03-29银行倒闭听证",
+      "url": "https://www.fdic.gov/news/speeches/2023/spmar2923.html"
+    },
+    "boj2024": {
+      "label": "日本银行：2024年7月会议纪要",
+      "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2024/g240731.htm"
+    },
+    "carry2024": {
+      "label": "BIS：2024年8月波动与套息交易平仓",
+      "url": "https://www.bis.org/publications/bulletin-90-market-turbulence-and-carry-trade-unwind-august-2024"
+    },
+    "tariff2025": {
+      "label": "美国国会研究处：2025年关税行动时间线",
+      "url": "https://www.congress.gov/crs_external_products/R/PDF/R48549/R48549.2.pdf"
+    },
+    "pause2025": {
+      "label": "白宫：对等关税暂停期的延长",
+      "url": "https://www.whitehouse.gov/presidential-actions/2025/07/extending-the-modification-of-the-reciprocal-tariff-rates/"
+    },
+    "iran2025": {
+      "label": "IEA：2025年6月石油市场报告",
+      "url": "https://www.iea.org/reports/oil-market-report-june-2025"
+    },
+    "iran2025us": {
+      "label": "IAEA：2025-06-22美军袭击伊朗核设施后的更新",
+      "url": "https://www.iaea.org/newscenter/pressreleases/update-on-developments-in-iran-5"
+    },
+    "iran2025after": {
+      "label": "IEA：2025年7月石油市场报告",
+      "url": "https://www.iea.org/reports/oil-market-report-july-2025"
+    },
+    "iran2026": {
+      "label": "IEA：中东冲突与全球能源市场",
+      "url": "https://www.iea.org/topics/the-middle-east-and-global-energy-markets"
+    }
+  },
+  "events": [
+    {
+      "id": "dotcom",
+      "title": "互联网泡沫破裂",
+      "category": "估值与信用",
+      "years": "2000—2003",
+      "question": "技术改变世界，为什么股票仍能多年下跌？",
+      "windowStart": "2000-01-03",
+      "eventDate": "2000-03-10",
+      "marketDate": "2000-03-13",
+      "windowEnd": "2003-03-31",
+      "assetCodes": [
+        "^IXIC",
+        "^GSPC"
+      ],
+      "lead": "把创新的长期价值和买入价格分开：盈利兑现、融资条件和起始估值，共同决定股东回报。",
+      "timeline": [
+        {
+          "date": "2000-03-10",
+          "title": "科技热潮的回望锚点",
+          "body": "用纳斯达克综合指数阶段高点附近作为观察点；它是事后选取的价格位置，不是当天唯一的突发事件。",
+          "sources": [
+            "dotcom"
+          ]
+        },
+        {
+          "date": "2001-01-03",
+          "title": "美联储紧急降息",
+          "body": "联邦基金利率目标下调50个基点至6%，政策开始回应经济走弱。降息日和股市底部不是同一个概念。",
+          "sources": [
+            "fed2001"
+          ]
+        },
+        {
+          "date": "2003-03-31",
+          "title": "观察恢复过程",
+          "body": "图表延伸到2003年一季度，保留泡沫回落和后续衰退冲击；期间还叠加了其他经济与地缘事件。",
+          "sources": [
+            "dotcom"
+          ]
+        }
+      ],
+      "channels": [
+        {
+          "title": "估值先透支，利润后兑现",
+          "body": "如果价格隐含的增长速度高于企业实际能创造的现金流，即使收入继续增长，估值倍数下降也会压低股价。"
+        },
+        {
+          "title": "融资收紧，商业模式接受检验",
+          "body": "依赖不断融资的公司更容易被现金消耗和再融资条件击中；指数会调整成分，不等于当年的每家公司都恢复。"
+        },
+        {
+          "title": "宽基和科技指数暴露不同",
+          "body": "纳综包含更广泛的纳斯达克上市公司，并非纳斯达克100；与标普500同图，观察集中度和行业结构的影响。"
+        }
+      ],
+      "china": "中国投资者买海外科技资产时，需要同时看盈利兑现与持仓集中度；本图使用美元价格指数，尚未加入人民币汇率或分红回报。",
+      "watch": [
+        {
+          "metric": "估值与现金流",
+          "meaning": "把预期增长与自由现金流兑现放在一起看，不能只用低于历史最高价判断便宜。"
+        },
+        {
+          "metric": "回撤与持有期",
+          "meaning": "先检查自己能否承受图中的跌幅和等待时间，再决定仓位和杠杆。"
+        }
+      ],
+      "lesson": "行业最终成功，不保证任何价格买入都有好回报；事后高点无法作为可实时复制的择时信号。",
+      "anchorNote": "事件后回报从2000-03-10收盘起算；首个后续交易日为3月13日。",
+      "ongoing": false
+    },
+    {
+      "id": "gfc",
+      "title": "全球金融危机",
+      "category": "估值与信用",
+      "years": "2007—2009",
+      "question": "银行资产亏损，怎样演变成全球抛售？",
+      "windowStart": "2007-07-02",
+      "eventDate": "2008-09-15",
+      "marketDate": "2008-09-15",
+      "windowEnd": "2009-12-31",
+      "assetCodes": [
+        "SPY",
+        "TLT",
+        "GLD"
+      ],
+      "lead": "房地产损失通过杠杆、短期融资和机构之间的联系传导。救流动性可以减轻挤兑，却不等于股东损失消失。",
+      "timeline": [
+        {
+          "date": "2007-12",
+          "title": "衰退已在发生",
+          "body": "美国衰退起于2007年12月，金融危机在雷曼破产前已经发展，不能把全部跌幅归给单一日期。",
+          "sources": [
+            "gfc"
+          ]
+        },
+        {
+          "date": "2008-09-15",
+          "title": "雷曼申请破产",
+          "body": "对交易对手和融资安全的担忧加深。本页把这一日作为冲击观察点。",
+          "sources": [
+            "lehman"
+          ]
+        },
+        {
+          "date": "2008-12-16",
+          "title": "政策利率接近零",
+          "body": "美联储把目标区间降至0%—0.25%，并讨论通过资产购买支持金融与经济活动。",
+          "sources": [
+            "fed2008"
+          ]
+        }
+      ],
+      "channels": [
+        {
+          "title": "抵押品跌价，杠杆被迫下降",
+          "body": "资产跌价侵蚀资本和抵押品价值，机构为还债或满足保证金出售资产，进一步推动价格下跌。"
+        },
+        {
+          "title": "短期融资依赖放大冲击",
+          "body": "即使长期资产还有价值，无法续借也会触发现金危机；关注融资期限错配比只看账面利润更有帮助。"
+        },
+        {
+          "title": "避险资产也有不同路径",
+          "body": "长期国债受益于利率下降的可能性，黄金还受美元和去杠杆抛售影响；两者不必每天同步上涨。"
+        }
+      ],
+      "china": "美元融资紧张和海外需求下降会同时影响出口、港股和海外资产。香港联系汇率下的资金价格，还会受到本地银行体系流动性影响。",
+      "watch": [
+        {
+          "metric": "信用利差与融资",
+          "meaning": "信用利差、存款和短期融资变化，有助区分估值回落与信用链断裂。"
+        },
+        {
+          "metric": "资产负债期限",
+          "meaning": "长期国债ETF对收益率敏感；不能把TLT当成随时稳定本金的美元现金。"
+        }
+      ],
+      "lesson": "股市后来恢复不代表破产机构的股东获救；持有宽基与押注单家困境银行是两种风险。",
+      "anchorNote": "",
+      "ongoing": false
+    },
+    {
+      "id": "euro",
+      "title": "欧债危机与欧元保卫战",
+      "category": "估值与信用",
+      "years": "2011—2012",
+      "question": "承诺保卫货币，为什么能改变资产价格？",
+      "windowStart": "2011-01-03",
+      "eventDate": "2012-07-26",
+      "marketDate": "2012-07-26",
+      "windowEnd": "2012-12-31",
+      "assetCodes": [
+        "VGK",
+        "SPY",
+        "TLT",
+        "GLD"
+      ],
+      "lead": "主权债务与银行持债相互牵连，市场同时为信用风险和欧元解体风险定价。",
+      "timeline": [
+        {
+          "date": "2011-10-26",
+          "title": "欧洲提出综合应对措施",
+          "body": "政策方案涉及希腊债务、银行资本和融资支持，显示危机同时影响政府与银行。",
+          "sources": [
+            "euro2011"
+          ]
+        },
+        {
+          "date": "2012-07-26",
+          "title": "德拉吉承诺维护欧元",
+          "body": "欧洲央行强调在授权范围内维护欧元。本页以演讲日观察政策承诺如何被市场重新定价。",
+          "sources": [
+            "draghi"
+          ]
+        },
+        {
+          "date": "2012-09-06",
+          "title": "公布OMT条件",
+          "body": "直接货币交易安排有严格政策条件；承诺、制度设计与实际购债不能混为一谈。",
+          "sources": [
+            "omt"
+          ]
+        }
+      ],
+      "channels": [
+        {
+          "title": "政府与银行互相影响",
+          "body": "政府债价格下跌压低银行资产，银行救助又可能增加政府负担，形成负反馈。"
+        },
+        {
+          "title": "可信的后盾改变尾部风险",
+          "body": "若市场降低对货币联盟解体的担忧，风险溢价可能回落；这不要求实体盈利在同一天改善。"
+        },
+        {
+          "title": "政策有条件，效果也有边界",
+          "body": "财政、银行资本与改革进程仍影响后续表现。演讲后的涨跌包含同期其他消息。"
+        }
+      ],
+      "china": "欧洲需求影响中国出口；持有欧洲资产还要区分当地股票收益与欧元汇率。VGK为美元计价欧洲股票ETF，不是欧元区主权债指数。",
+      "watch": [
+        {
+          "metric": "主权利差",
+          "meaning": "观察外围国家相对核心国债的利差，识别货币联盟风险是否真正回落。"
+        },
+        {
+          "metric": "银行资本与盈利",
+          "meaning": "制度后盾不能代替银行资本、坏账和企业盈利修复。"
+        }
+      ],
+      "lesson": "政策承诺可以降低灾难概率，但不能据此推断所有欧洲资产都同时、等幅上涨。",
+      "anchorNote": "",
+      "ongoing": false
+    },
+    {
+      "id": "taper",
+      "title": "缩减购债恐慌",
+      "category": "货币政策",
+      "years": "2013",
+      "question": "央行还在买债，为什么债券已经跌了？",
+      "windowStart": "2013-01-02",
+      "eventDate": "2013-06-19",
+      "marketDate": "2013-06-19",
+      "windowEnd": "2013-12-31",
+      "assetCodes": [
+        "TLT",
+        "GLD",
+        "SPY"
+      ],
+      "lead": "资产价格对未来购债速度与利率路径作出反应，不能只看当期政策利率是否改变。",
+      "timeline": [
+        {
+          "date": "2013-06-19",
+          "title": "维持低利率和购债",
+          "body": "当日政策声明维持0%—0.25%目标区间以及每月400亿美元MBS、450亿美元国债购买。",
+          "sources": [
+            "fed2013"
+          ]
+        },
+        {
+          "date": "2013-06-19",
+          "title": "记者会讨论未来减购路径",
+          "body": "经济前景与未来购买节奏成为焦点。这里观察的是6月会议阶段，不把它当成整轮调整的唯一开端。",
+          "sources": [
+            "taper"
+          ]
+        }
+      ],
+      "channels": [
+        {
+          "title": "预期改变，长端利率先动",
+          "body": "债券价格反映未来利率和期限溢价；少买一点的预期，也可能令长期债券先跌。"
+        },
+        {
+          "title": "黄金机会成本发生变化",
+          "body": "黄金不支付利息，实际收益率和美元变化会影响持有吸引力；短期资金流还会放大波动。"
+        },
+        {
+          "title": "股票面对两股力量",
+          "body": "经济转好有利于盈利，但折现率上升压低估值，因此股票和长债可以不同方向运动。"
+        }
+      ],
+      "china": "外部美元资金价格变化会影响新兴市场资金流和汇率；中国国内货币政策还取决于本地增长、信用与通胀条件。",
+      "watch": [
+        {
+          "metric": "长端实际收益率",
+          "meaning": "同时看名义收益率、通胀预期，避免把名义加息和实际收紧等同。"
+        },
+        {
+          "metric": "久期",
+          "meaning": "相同利率变化下，久期越长，价格敏感度通常越高。"
+        }
+      ],
+      "lesson": "降息与加息按钮不是金融条件的全部；价格往往先于正式政策行动变化。",
+      "anchorNote": "取6月19日会议作为观察点；此前已有缩减购债讨论，完整图保留年初以来走势。",
+      "ongoing": false
+    },
+    {
+      "id": "china2015",
+      "title": "中国股市调整与人民币汇改",
+      "category": "汇率与资本流动",
+      "years": "2015",
+      "question": "A股下跌和人民币贬值，如何传到海外？",
+      "windowStart": "2015-01-05",
+      "eventDate": "2015-08-11",
+      "marketDate": "2015-08-11",
+      "windowEnd": "2015-12-31",
+      "assetCodes": [
+        "000001.SS",
+        "FXI",
+        "SPY",
+        "GLD"
+      ],
+      "lead": "把国内杠杆交易、汇率机制变化和全球增长担忧放在同一时间线，避免把两轮压力当成同一件事。",
+      "timeline": [
+        {
+          "date": "2015-08-11",
+          "title": "人民币中间价机制调整",
+          "body": "人民币汇率变化成为国际市场焦点；BIS记录当日及次日中间价明显调整。",
+          "sources": [
+            "cny2015"
+          ]
+        },
+        {
+          "date": "2015-08-24",
+          "title": "风险担忧扩散",
+          "body": "中国股市波动与增长担忧影响全球风险偏好；此前国内股市已经经历调整。",
+          "sources": [
+            "china2015"
+          ]
+        }
+      ],
+      "channels": [
+        {
+          "title": "杠杆下降加重本地波动",
+          "body": "当融资仓位面对亏损和保证金压力，卖出会由看法变化转为被动去杠杆。"
+        },
+        {
+          "title": "汇率信号被解读为增长信号",
+          "body": "汇率变化既涉及机制，也可能改变市场对出口、资本流动和政策目标的判断。"
+        },
+        {
+          "title": "海外中国资产并非A股复制品",
+          "body": "FXI持有在香港交易的中国大盘股，行业结构和汇率均与上证指数不同，应分别观察。"
+        }
+      ],
+      "china": "海外资产的人民币回报还受美元兑人民币变化影响。本图分别以各资产原币计算收益，不能直接当作人民币账户总回报。",
+      "watch": [
+        {
+          "metric": "人民币即期与远期",
+          "meaning": "关注贬值预期、套保成本和资金流，不只看单日中间价。"
+        },
+        {
+          "metric": "杠杆与交易约束",
+          "meaning": "融资规模、流动性和停牌涨跌停会改变实际减仓能力。"
+        }
+      ],
+      "lesson": "同为“中国资产”也可能有不同走势；这里保留真实上证价格指数，没有用港股ETF补造A股历史。",
+      "anchorNote": "",
+      "ongoing": false
+    },
+    {
+      "id": "brexit",
+      "title": "英国脱欧公投",
+      "category": "政策与贸易",
+      "years": "2016",
+      "question": "同一只英国股票，本币和美元回报为何不同？",
+      "windowStart": "2016-01-04",
+      "eventDate": "2016-06-24",
+      "marketDate": "2016-06-24",
+      "windowEnd": "2016-12-30",
+      "assetCodes": [
+        "EWU",
+        "VGK",
+        "SPY",
+        "GLD"
+      ],
+      "lead": "公投结果改变贸易和投资预期，同时带来英镑波动。海外投资者需要把公司收入货币与持仓计价货币一起看。",
+      "timeline": [
+        {
+          "date": "2016-06-24",
+          "title": "公投结果公布后的首个交易日",
+          "body": "英格兰银行说明市场将经历波动，并表示已准备提供超过2500亿英镑额外流动性。",
+          "sources": [
+            "boe2016"
+          ]
+        },
+        {
+          "date": "2016-07-05",
+          "title": "关注银行放贷与金融稳定",
+          "body": "金融稳定报告讨论公投后的风险，并下调英国逆周期资本缓冲率。",
+          "sources": [
+            "boe2016fs"
+          ]
+        }
+      ],
+      "channels": [
+        {
+          "title": "不确定性影响投资",
+          "body": "企业可能推迟资本开支，金融机构面临业务准入和融资安排变化。"
+        },
+        {
+          "title": "英镑下跌改变海外收入折算",
+          "body": "跨国公司与内需公司暴露不同；美元投资者还要承受英镑转换效果。"
+        },
+        {
+          "title": "政策后盾缓冲流动性风险",
+          "body": "流动性准备能减少被迫抛售，却不能提前消除贸易制度的不确定性。"
+        }
+      ],
+      "china": "购买英国资产时，美元上市的EWU仍包含英国股票与英镑风险；美元交易币种并不意味着底层风险变成纯美元。",
+      "watch": [
+        {
+          "metric": "币种与收入结构",
+          "meaning": "区分交易币种、资产币种和公司收入来源。"
+        },
+        {
+          "metric": "投资与融资条件",
+          "meaning": "观察企业投资、银行融资和政策安排，而不是只看政治标题。"
+        }
+      ],
+      "lesson": "本页EWU是美元口径ETF回报，不能把它的跌幅写成英镑计价FTSE指数的跌幅。",
+      "anchorNote": "英国投票在6月23日；这里用结果公布后的6月24日观察市场反应。",
+      "ongoing": false
+    },
+    {
+      "id": "trade2018",
+      "title": "特朗普对华关税与贸易摩擦",
+      "category": "政策与贸易",
+      "years": "2018—2019",
+      "question": "关税由谁支付，又如何进入企业利润？",
+      "windowStart": "2018-01-02",
+      "eventDate": "2018-07-06",
+      "marketDate": "2018-07-06",
+      "windowEnd": "2019-12-31",
+      "assetCodes": [
+        "FXI",
+        "SPY",
+        "QQQ",
+        "TLT"
+      ],
+      "lead": "法律上的缴税方、经济上的成本承担者和股价受损者并不必然相同；价格调整、供应链和汇率共同分担冲击。",
+      "timeline": [
+        {
+          "date": "2018-06-15",
+          "title": "公布关税清单",
+          "body": "USTR公布约500亿美元中国商品清单，第一批约340亿美元商品安排在7月6日开征25%关税。",
+          "sources": [
+            "tariff2018"
+          ]
+        },
+        {
+          "date": "2018-07-06",
+          "title": "第一批关税生效",
+          "body": "这一天是已提前公布政策的实施日，不是投资者首次得知关税风险。",
+          "sources": [
+            "tariff2018"
+          ]
+        },
+        {
+          "date": "2018-07-10",
+          "title": "提出进一步扩大范围",
+          "body": "USTR提出对更多商品加税，市场面对后续升级与谈判的不确定性。",
+          "sources": [
+            "tariff2018b"
+          ]
+        },
+        {
+          "date": "2019-08",
+          "title": "贸易与货币政策交织",
+          "body": "BIS回顾2019年5月、8月的贸易升级与货币政策预期变化；后续股价不是单一关税变量的实验。",
+          "sources": [
+            "trade2019"
+          ]
+        }
+      ],
+      "channels": [
+        {
+          "title": "进口商缴税，成本沿链条分摊",
+          "body": "能否转嫁给消费者，取决于替代品、议价能力和需求；出口商降价也可能吸收部分成本。"
+        },
+        {
+          "title": "不确定性抑制资本开支",
+          "body": "即使部分订单暂时转移，企业也可能推迟投资、重组供应链，影响长期盈利预期。"
+        },
+        {
+          "title": "利率与汇率改变最终回报",
+          "body": "降息预期可能缓冲估值压力，汇率变化影响竞争力；不能把同期指数涨跌全部算作关税效果。"
+        }
+      ],
+      "china": "对中国投资者，更有用的是核对公司美国收入占比、生产地、客户替代能力和汇率敞口，而不是把所有A股或美股视作同一种关税交易。",
+      "watch": [
+        {
+          "metric": "收入与产能所在地",
+          "meaning": "区分上市地、销售地、生产地，识别实际征税和供应链暴露。"
+        },
+        {
+          "metric": "毛利率与订单",
+          "meaning": "用实际毛利率、订单和资本开支验证成本是否已经传导。"
+        }
+      ],
+      "lesson": "实施日的小幅涨跌不能证明关税没有影响；市场会提前定价，也会同时交易其他政策。",
+      "anchorNote": "以7月6日实施日为锚；消息在6月已公开，短期回报不等于政策的全部影响。",
+      "ongoing": false
+    },
+    {
+      "id": "covid",
+      "title": "疫情冲击与紧急救市",
+      "category": "公共卫生",
+      "years": "2020",
+      "question": "为什么降息后还能暴跌，又为什么经济弱时股市反弹？",
+      "windowStart": "2020-01-02",
+      "eventDate": "2020-03-11",
+      "marketDate": "2020-03-11",
+      "windowEnd": "2020-12-31",
+      "assetCodes": [
+        "SPY",
+        "QQQ",
+        "TLT",
+        "GLD"
+      ],
+      "lead": "疫情同时打击需求、供给与现金周转。市场先交易生存和流动性，之后又交易政策支持与未来复苏。",
+      "timeline": [
+        {
+          "date": "2020-03-11",
+          "title": "WHO将疫情描述为大流行",
+          "body": "全球公共卫生冲击升级。股市下跌此前已发生，声明日只是可核实的时间锚点。",
+          "sources": [
+            "who2020"
+          ]
+        },
+        {
+          "date": "2020-03-15",
+          "title": "美联储紧急降至零附近",
+          "body": "政策利率目标降至0%—0.25%，并宣布扩大国债和MBS购买。",
+          "sources": [
+            "fed2020"
+          ]
+        },
+        {
+          "date": "2020-03-23",
+          "title": "资产购买按需要开展",
+          "body": "美联储转为按市场需要购买国债和MBS，重点支持市场功能和政策传导。",
+          "sources": [
+            "qe2020"
+          ]
+        }
+      ],
+      "channels": [
+        {
+          "title": "停摆使收入与现金周转骤变",
+          "body": "航空、线下服务与数字化企业受影响不同；宽基回报掩盖了行业分化。"
+        },
+        {
+          "title": "抢现金会让多种资产一起跌",
+          "body": "赎回、保证金和美元融资压力会引发出售，短期相关性可能不同于正常时期。"
+        },
+        {
+          "title": "市场贴现未来而非只看当期GDP",
+          "body": "流动性改善和复苏预期可先于当期经济数据转好，但不能保证任何反弹都持续。"
+        }
+      ],
+      "china": "跨境投资需要保留可动用现金并关注海外市场交易时段；QDII净值发布时间、场内价格和海外即时行情可能并不同步。",
+      "watch": [
+        {
+          "metric": "流动性与信用支持",
+          "meaning": "区分政策利率下调与市场融资功能是否真正恢复。"
+        },
+        {
+          "metric": "盈利分化",
+          "meaning": "对照行业盈利和指数权重，避免把科技权重收益视为所有企业都恢复。"
+        }
+      ],
+      "lesson": "只看年末收益会漏掉年中需要承受的巨大回撤；完整曲线和事件后表格回答的是不同问题。",
+      "anchorNote": "",
+      "ongoing": false
+    },
+    {
+      "id": "ukraine",
+      "title": "俄乌战争与能源冲击",
+      "category": "战争与能源",
+      "years": "2022",
+      "question": "油价上涨，为什么可能同时压低股票和债券？",
+      "windowStart": "2022-01-03",
+      "eventDate": "2022-02-24",
+      "marketDate": "2022-02-24",
+      "windowEnd": "2022-12-30",
+      "assetCodes": [
+        "USO",
+        "GLD",
+        "SPY",
+        "TLT"
+      ],
+      "lead": "供给冲击既推高投入成本，又削弱实际购买力。通胀和增长同时承压时，传统股债分散可能失效。",
+      "timeline": [
+        {
+          "date": "2022-02-24",
+          "title": "俄罗斯全面入侵乌克兰",
+          "body": "以战争升级日为观察点；此前市场已面对通胀和加息预期。",
+          "sources": [
+            "ukraine"
+          ]
+        },
+        {
+          "date": "2022-03-05",
+          "title": "IMF评估能源与食品影响",
+          "body": "IMF指出能源、食品价格、制裁和金融条件将通过多条渠道影响经济。",
+          "sources": [
+            "ukraine"
+          ]
+        },
+        {
+          "date": "2022-04-19",
+          "title": "增长与通胀前景恶化",
+          "body": "IMF下调增长展望并讨论更高通胀；股票和债券面对不同于纯需求衰退的冲击。",
+          "sources": [
+            "imf2022"
+          ]
+        }
+      ],
+      "channels": [
+        {
+          "title": "供给损失抬高成本",
+          "body": "能源、运输和食品成本上升，挤压企业利润与居民可支配收入。"
+        },
+        {
+          "title": "通胀令宽松更难",
+          "body": "当央行需要抑制通胀，即使增长变弱，也不一定能迅速降息。"
+        },
+        {
+          "title": "油价资产不是单一现货报价",
+          "body": "USO通过期货获取敞口，换月结构和费用会使其回报偏离现货原油。"
+        }
+      ],
+      "china": "中国能源进口成本、制造业利润和海外需求可能同时变化；香港还承受美元利率传导，不能仅以国内是否降息判断港股融资环境。",
+      "watch": [
+        {
+          "metric": "能源与实际需求",
+          "meaning": "对照价格、供应量和需求，区分供给中断与需求繁荣。"
+        },
+        {
+          "metric": "通胀与久期",
+          "meaning": "若通胀推动收益率上行，长债可能与股票同跌。"
+        }
+      ],
+      "lesson": "战争不机械对应“黄金涨、股票跌”；央行反应、美元、仓位和起始价格会共同改变结果。",
+      "anchorNote": "",
+      "ongoing": false
+    },
+    {
+      "id": "hikes2022",
+      "title": "美联储快速加息",
+      "category": "货币政策",
+      "years": "2022—2023",
+      "question": "加息通过哪几步压低成长股和长债价格？",
+      "windowStart": "2022-01-03",
+      "eventDate": "2022-03-16",
+      "marketDate": "2022-03-16",
+      "windowEnd": "2023-12-29",
+      "assetCodes": [
+        "QQQ",
+        "SPY",
+        "TLT",
+        "GLD"
+      ],
+      "lead": "这一轮同时包含折现率重估、通胀变化与盈利调整。债券有利息收入，价格仍可能大幅下降。",
+      "timeline": [
+        {
+          "date": "2022-03-16",
+          "title": "启动加息",
+          "body": "联邦基金利率目标区间升至0.25%—0.50%，并预计继续上调。",
+          "sources": [
+            "hikes2022"
+          ]
+        },
+        {
+          "date": "2023-07-26",
+          "title": "目标区间升至5.25%—5.50%",
+          "body": "这是本页观察期内的重要政策节点；股价不必在最后一次加息后才开始修复。",
+          "sources": [
+            "hikes2023"
+          ]
+        }
+      ],
+      "channels": [
+        {
+          "title": "折现率上升压低远期现金流现值",
+          "body": "在盈利预测不变时，回报要求提高对远期利润占比较高的资产影响更大。"
+        },
+        {
+          "title": "长债久期放大价格变化",
+          "body": "票息收入并不消除利率风险；TLT的波动不能代表持有到期短期国债。"
+        },
+        {
+          "title": "政策预期与盈利会提前转向",
+          "body": "市场提前交易利率峰值和企业盈利，不能用“央行仍加息”推导股市每天都跌。"
+        }
+      ],
+      "china": "港币联系汇率使香港货币环境受到美元影响，但香港银行报价还取决于本地资金供需；内地政策根据自身增长和通胀调整，不必机械同向。",
+      "watch": [
+        {
+          "metric": "实际收益率与期限溢价",
+          "meaning": "用长端收益率变化解释长债，而非只看一次政策利率变动。"
+        },
+        {
+          "metric": "盈利修正与估值",
+          "meaning": "拆开EPS预期变化和估值倍数，判断反弹由哪一部分驱动。"
+        }
+      ],
+      "lesson": "股票和债券数量各一半，不等于风险各一半；久期和行业集中度会让两边暴露于同一个利率冲击。",
+      "anchorNote": "",
+      "ongoing": false
+    },
+    {
+      "id": "banks2023",
+      "title": "美国地区银行风波",
+      "category": "估值与信用",
+      "years": "2023",
+      "question": "资产账面安全，为什么银行仍会被挤兑？",
+      "windowStart": "2023-01-03",
+      "eventDate": "2023-03-10",
+      "marketDate": "2023-03-10",
+      "windowEnd": "2023-12-29",
+      "assetCodes": [
+        "KRE",
+        "SPY",
+        "TLT",
+        "GLD"
+      ],
+      "lead": "长期资产的利率损失与可随时提取的存款结合，容易把盈利问题变成流动性危机。",
+      "timeline": [
+        {
+          "date": "2023-03-10",
+          "title": "硅谷银行被关闭",
+          "body": "FDIC成为接管人；本页以关闭日观察地区银行板块，而不把KRE当成硅谷银行股票。",
+          "sources": [
+            "svb"
+          ]
+        },
+        {
+          "date": "2023-03-12",
+          "title": "保护存款、处理另一家银行",
+          "body": "系统性风险例外保护存款，Signature Bank也被关闭。存款保护并不意味着股权得到保护。",
+          "sources": [
+            "svb",
+            "fdic2023"
+          ]
+        },
+        {
+          "date": "2023-03-13",
+          "title": "业务转入过桥银行",
+          "body": "存款和主要业务转入过桥银行，以支持客户使用资金。",
+          "sources": [
+            "svb"
+          ]
+        }
+      ],
+      "channels": [
+        {
+          "title": "久期错配积累未实现损失",
+          "body": "利率上升降低长期债券市值；若存款持续流出，银行可能被迫卖出并实现损失。"
+        },
+        {
+          "title": "集中且敏感的存款更易流失",
+          "body": "存款结构、保险覆盖与客户相似性，会影响挤兑速度。"
+        },
+        {
+          "title": "系统救助与股东回报分开",
+          "body": "稳定支付与存款是政策目标，不能据此推断银行股票一定反弹。"
+        }
+      ],
+      "china": "中国投资者持有美资券商或银行账户时，应分别理解客户资产托管、存款保险和股票投资风险；它们不是同一层保护。",
+      "watch": [
+        {
+          "metric": "存款与流动性",
+          "meaning": "关注存款流出、资金成本和可用抵押品，而不只看市盈率低不低。"
+        },
+        {
+          "metric": "未实现损失与资本",
+          "meaning": "结合期限错配、资产质量和资本缓冲解释估值折价。"
+        }
+      ],
+      "lesson": "KRE是地区银行ETF的整体回报，个别银行股可以归零；ETF反弹不能倒推所有股东都被救助。",
+      "anchorNote": "",
+      "ongoing": false
+    },
+    {
+      "id": "carry2024",
+      "title": "日元套息交易平仓",
+      "category": "汇率与资本流动",
+      "years": "2024",
+      "question": "为什么日本利率变化能放大美股波动？",
+      "windowStart": "2024-06-03",
+      "eventDate": "2024-08-05",
+      "marketDate": "2024-08-05",
+      "windowEnd": "2024-09-30",
+      "assetCodes": [
+        "EWJ",
+        "QQQ",
+        "SPY",
+        "TLT"
+      ],
+      "lead": "当借入货币升值、持有资产下跌和保证金要求提高同时发生，跨市场杠杆会被迫收缩。",
+      "timeline": [
+        {
+          "date": "2024-07-31",
+          "title": "日本银行调整政策",
+          "body": "日本银行将短期利率引导至约0.25%，改变低成本日元融资的预期。",
+          "sources": [
+            "boj2024"
+          ]
+        },
+        {
+          "date": "2024-08-02",
+          "title": "美国宏观数据触发再定价",
+          "body": "BIS指出美国较弱宏观数据是初始冲击之一，不能把随后波动全部归因于日本加息。",
+          "sources": [
+            "carry2024"
+          ]
+        },
+        {
+          "date": "2024-08-05",
+          "title": "去杠杆放大波动",
+          "body": "股汇杠杆交易平仓扩大了市场反应；BIS也记录随后较快稳定。",
+          "sources": [
+            "carry2024"
+          ]
+        }
+      ],
+      "channels": [
+        {
+          "title": "融资币升值增加偿债成本",
+          "body": "借日元买其他资产，既承担资产价格风险，也承担将来买回日元的风险。"
+        },
+        {
+          "title": "保证金把波动变成被迫交易",
+          "body": "价格下跌触发追加保证金，持仓被卖出后又影响其他参与者的风险额度。"
+        },
+        {
+          "title": "基本面信号与仓位冲击并存",
+          "body": "美国增长担忧和拥挤仓位共同作用，短期急跌不能单凭一种叙事解释。"
+        }
+      ],
+      "china": "多买几个市场并不自动消除共同融资风险。美元计价EWJ还包含日元变动，不等于日经225的日元涨跌。",
+      "watch": [
+        {
+          "metric": "融资币与杠杆",
+          "meaning": "同时看融资成本、汇率与保证金空间，避免只计算资产预期收益。"
+        },
+        {
+          "metric": "波动率与交易流动性",
+          "meaning": "波动上升时，仓位管理和流动性约束可能比长期估值更快影响价格。"
+        }
+      ],
+      "lesson": "快速反弹不证明杠杆风险不存在；需要检验自己是否能在最差几天避免被动平仓。",
+      "anchorNote": "以8月5日波动阶段为锚；日本政策与美国数据都早于此日公开。",
+      "ongoing": false
+    },
+    {
+      "id": "tariffs2025",
+      "title": "特朗普对等关税冲击",
+      "category": "政策与贸易",
+      "years": "2025",
+      "question": "政策宣布、实施与暂停，市场分别交易什么？",
+      "windowStart": "2025-01-02",
+      "eventDate": "2025-04-02",
+      "marketDate": "2025-04-03",
+      "windowEnd": "2025-06-30",
+      "assetCodes": [
+        "SPY",
+        "QQQ",
+        "FXI",
+        "TLT"
+      ],
+      "lead": "关税路径反复改变增长、通胀和风险溢价预期。把宣布、执行和暂停分开，才能理解急跌与急涨。",
+      "timeline": [
+        {
+          "date": "2025-04-02",
+          "title": "宣布对等关税框架",
+          "body": "国会研究处时间线记录基本税率和差异化安排。本页从4月3日完整交易时段观察反应。",
+          "sources": [
+            "tariff2025"
+          ]
+        },
+        {
+          "date": "2025-04-05",
+          "title": "基础关税开始实施",
+          "body": "宣布日和执行日不同，实际范围还涉及豁免及其他税种。",
+          "sources": [
+            "tariff2025"
+          ]
+        },
+        {
+          "date": "2025-04-09",
+          "title": "部分差异化税率暂缓",
+          "body": "对多数伙伴的差异化税率暂停90天，中国安排不同；不能把暂停理解为所有关税撤销。",
+          "sources": [
+            "pause2025"
+          ]
+        }
+      ],
+      "channels": [
+        {
+          "title": "成本与需求同时承压",
+          "body": "关税可能推高部分价格并压低实际需求；行业供应链和议价能力决定传导差异。"
+        },
+        {
+          "title": "暂停改变概率而非消除风险",
+          "body": "市场根据政策升级或缓和的概率变化重估价格，容易出现幅度很大的双向波动。"
+        },
+        {
+          "title": "债券还受到通胀与期限溢价影响",
+          "body": "即使股票下跌，长债也不必上涨；财政预期、资金流和通胀共同决定债券价格。"
+        }
+      ],
+      "china": "中国公司要按产品、目的地和生产地分析，不能仅凭上市市场判断影响；香港上市中国资产与美国科技股的暴露也不同。",
+      "watch": [
+        {
+          "metric": "有效税率与豁免",
+          "meaning": "读生效范围、原产地与豁免，不把新闻中的最高税率套到所有商品。"
+        },
+        {
+          "metric": "利润率与库存",
+          "meaning": "看提价、抢进口、库存与利润兑现，区别短期订单前置和长期需求。"
+        }
+      ],
+      "lesson": "完整过程到2025年6月底；事件后252日表会包含此后新事件，不能当作关税的纯因果收益。",
+      "anchorNote": "观察从4月3日完整交易时段开始，以4月2日收盘为基准。",
+      "ongoing": false
+    },
+    {
+      "id": "iran2025",
+      "title": "以美袭击伊朗与油价风险溢价",
+      "category": "战争与能源",
+      "years": "2025",
+      "question": "战争升级，为何油价后来仍能回落？",
+      "windowStart": "2025-05-01",
+      "eventDate": "2025-06-13",
+      "marketDate": "2025-06-13",
+      "windowEnd": "2025-07-31",
+      "assetCodes": [
+        "USO",
+        "GLD",
+        "SPY",
+        "TLT"
+      ],
+      "lead": "先区分供给中断的担忧与实际损失，再观察风险溢价的升降。军事升级本身不足以判断油价的持久方向。",
+      "timeline": [
+        {
+          "date": "2025-06-13",
+          "title": "以色列空袭伊朗",
+          "body": "IEA六月报告记录空袭后油价快速上涨，当时伊朗石油出口尚未出现相应中断。",
+          "sources": [
+            "iran2025"
+          ]
+        },
+        {
+          "date": "2025-06-22",
+          "title": "美国袭击伊朗核设施",
+          "body": "IAEA确认福尔多、纳坦兹、伊斯法罕设施在美军空袭中被击中。",
+          "sources": [
+            "iran2025us"
+          ]
+        },
+        {
+          "date": "2025-07-11",
+          "title": "IEA复盘六月油价",
+          "body": "IEA记录停火后价格回落，说明风险溢价可以在物理供应未同等损失时迅速收缩。",
+          "sources": [
+            "iran2025after"
+          ]
+        }
+      ],
+      "channels": [
+        {
+          "title": "供应担忧先进入价格",
+          "body": "海峡运输与产能受到威胁，会提高买方愿意支付的保险性溢价。"
+        },
+        {
+          "title": "实际流量决定能否持续",
+          "body": "若运输和产量未出现持续损失，或替代供应充足，先前溢价可能回吐。"
+        },
+        {
+          "title": "不同资产定价对象不同",
+          "body": "股票关注成本和盈利，黄金还受实际利率影响，原油期货基金还受换月结构影响。"
+        }
+      ],
+      "china": "中国制造、航空与化工的能源敏感度不同；油价上涨不等于所有资源股盈利同比例提高，还要看成本、套保和政策。",
+      "watch": [
+        {
+          "metric": "实际供应与运输",
+          "meaning": "对照出口流量、航运通行与库存，验证风险是否已经落地。"
+        },
+        {
+          "metric": "期限结构",
+          "meaning": "期货近远月价差会影响USO等产品的持有回报。"
+        }
+      ],
+      "lesson": "2025年的回落不能机械套到2026年：必须重新判断运输中断和供应损失是否实际发生。",
+      "anchorNote": "",
+      "ongoing": false
+    },
+    {
+      "id": "iran2026",
+      "title": "伊朗战争与能源供应中断",
+      "category": "战争与能源",
+      "years": "2026 · 持续跟踪",
+      "question": "当风险溢价变成实际供应损失，传导有什么不同？",
+      "windowStart": "2026-01-02",
+      "eventDate": "2026-02-28",
+      "marketDate": "2026-03-02",
+      "windowEnd": null,
+      "assetCodes": [
+        "USO",
+        "GLD",
+        "SPY",
+        "TLT"
+      ],
+      "lead": "截至本页资料复核，IEA仍在报告能源运输和供应压力。这里记录已发生的市场结果，尚不能给出完整一年后的结论。",
+      "timeline": [
+        {
+          "date": "2026-02-28",
+          "title": "新一轮战争开始",
+          "body": "IEA记录战争起于2月28日，霍尔木兹海峡能源贸易受阻。本页从周末后的3月2日观察交易价格。",
+          "sources": [
+            "iran2026"
+          ]
+        },
+        {
+          "date": "2026-03-11",
+          "title": "协调释放紧急库存",
+          "body": "IEA成员同意提供4亿桶紧急石油库存以缓冲供应中断。",
+          "sources": [
+            "iran2026"
+          ]
+        },
+        {
+          "date": "2026-10-07",
+          "title": "供应与运输压力仍受关注",
+          "body": "IEA专题页指向10月7日更新，并继续讨论供应紧张。资料是截至复核日的观察，不代表冲突已结束。",
+          "sources": [
+            "iran2026"
+          ]
+        }
+      ],
+      "channels": [
+        {
+          "title": "物理短缺影响现货与生产",
+          "body": "若原料和燃料无法按时到达，影响不仅是期货价格，还包括减产、运输延迟和营运资金需求。"
+        },
+        {
+          "title": "库存只能争取时间",
+          "body": "释放库存缓冲短期缺口，但不能永久替代恢复生产和航运；持续性取决于流量改善。"
+        },
+        {
+          "title": "通胀与需求破坏拉扯政策",
+          "body": "能源涨价挤压实际收入，也可能延缓降息。紧缩程度还取决于核心通胀和就业变化。"
+        }
+      ],
+      "china": "中国投资者要同时看进口成本、企业利润和人民币购买力；配置美元资产也不能忽视能源通胀、长债久期与行业集中度。",
+      "watch": [
+        {
+          "metric": "流量、库存和炼厂",
+          "meaning": "优先看实际供给是否恢复，再判断价格回落能否持续。"
+        },
+        {
+          "metric": "通胀与政策预期",
+          "meaning": "区分一次性价格冲击和向工资、服务价格的扩散。"
+        }
+      ],
+      "lesson": "仅展示已到达的交易日；未完成252个交易日的收益明确缺失。所有后续推演都是条件分析。",
+      "anchorNote": "2月28日为周六，首个观察交易日为3月2日。",
+      "ongoing": true
+    }
+  ]
+}

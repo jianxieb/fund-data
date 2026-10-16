@@ -10,7 +10,7 @@
 
 | 想弄清楚的问题 | 可以使用的研究工具 |
 | --- | --- |
-| 美元、通胀和利率如何传导到股票、债券、黄金与房地产？当前指标处在自己的什么历史位置？ | **全球金融、历史分位**：条件与反例、政策快照、计算实验，以及价格与指标叠图、历史分位表和年度表现 |
+| 美元、通胀和利率如何传导到股票、债券、黄金与房地产？当前指标处在自己的什么历史位置？ | **金融传导、历史事件、历史分位**：条件与反例、政策快照、计算实验，重大事件时间线与实际回报，以及价格与指标叠图、历史分位表和年度表现 |
 | 研究什么市场和工具？基金收益来自谁的任期，公司盈利能否持续？ | **指数观察、基金研究、个股深入**：区分指数与可投资产品，比较长期收益、风险、费用及财务和经营证据 |
 | 同样买一只资产，换个月份买、持有更久、分批投入会怎样？搭成组合又会怎样？ | **持有期研究、投入策略、组合模拟**：完整历史窗口、过程中的亏损与回撤、现金流、再平衡和持仓贡献 |
 | 通过什么渠道持有？税费怎样影响结果？资金如何汇出、取回或消费？ | **投资渠道、跨境资金**：境内外工具的历史成本比较、税种与扣缴依据、分红实例，以及分步资金和收费路径 |
@@ -27,6 +27,7 @@
 - **组合验证**：按自定权重配置已收录ETF、个股和基金，检验投入、再平衡及费用假设，查看资金XIRR、组合走势与持仓贡献；支持配置导入导出及PDF/CSV。模拟配置保存在当前浏览器。
 - **渠道与资金**：国内场内、场外产品与海外ETF的同日人民币历史情景；投资渠道的税种、抵免、QQQI/QQQ/SPY/可口可乐实例及银行券商扣缴依据；内地—香港—证券账户及回款、消费的分步费用测算。
 - **ETF分红与再投**：查看近12月及单次分配率，拆解历年价格与现金回报、分红占收益的比例和分配税情景减少的百分点；比较领取现金与DRIP，以及IBKR、汇丰Trade25、富途香港的支持条件与扣缴规则。普通股息、合资格利息分配和ROC分别解释，最终分类注明适用年度。
+- **历史事件**：全球金融独立为导航大类，包含金融传导与历史事件。15个阶段串起事件经过、真实累计回报曲线、柱状图、不同交易日期限的回报表和传导分析；涵盖互联网泡沫、金融危机、关税、疫情、加息及伊朗冲突。进行中事件与未完成期限明确区分，事实节点附机构原始来源。
 - **金融机制**：货币、通胀、利率、信用、债券、股票、黄金、房地产与周期产业的关系，通过传导图、例子、反例和计算实验说明成立条件。
 
 “全球”是研究视角，当前资产与指标数据并未覆盖所有国家、证券或历史时期。数量、候选、观测日期与缺口由实际生成数据提供，README不固定滚动更新的数字。
@@ -78,6 +79,8 @@ python3 -m unittest discover -s tests -q
 python3 data_quality.py --strict
 python3 scripts/build_portfolio_data.py --check
 python3 scripts/build_etf_distributions.py --check
+python3 scripts/build_return_indices.py --check
+python3 scripts/build_financial_events.py --check
 ```
 
 `refresh.py`不会自动提交或推送。发布时先同步远端更新，保留定时刷新结果；按独立改动提交并立即推送，由GitHub Actions校验及发布至Pages。失败记录、更新日期与缓存状态可从 `data/update-status.json` 和 `data/refresh-report.json` 追溯。
@@ -96,7 +99,7 @@ python3 scripts/build_etf_distributions.py --check
 | 主题 | 文档 |
 | --- | --- |
 | 定位与产品演进 | [当前定位与决策沿革](docs/product-decisions.md)、[第二轮全站评审](docs/project-review-2026-10-16.md) |
-| 市场与机制 | [历史分位](docs/market-history-method.md)、[全球金融](docs/global-finance-method.md)、[美债ETF](docs/treasury-etfs.md) |
+| 市场与机制 | [历史分位](docs/market-history-method.md)、[金融传导](docs/global-finance-method.md)、[历史事件](docs/financial-events-method.md)、[美债ETF](docs/treasury-etfs.md) |
 | 基金与公司 | [跨境指数基金](docs/crossborder-funds-method.md)、[长期优质与高质成长](docs/stock-quality-method.md)、[美股研究](docs/overseas-stocks.md)、[股息口径](docs/stock-dividend-method.md) |
 | 历史与方案 | [持有期研究](docs/holding-period-method.md)、[策略曲线](docs/strategy-curves.md)、[策略独立账本复核](docs/strategy-leverage-audit.md)、[组合模拟](docs/portfolio-method.md)、[收益对比](docs/return-comparison-method.md) |
 | 渠道与资金 | [买入渠道](docs/buy-location-method.md)、[ETF现金分配与再投](docs/etf-distributions.md)、[跨境资金方法](docs/money-flow-method.md)、[跨境资金需求与验收清单](docs/money-flow-requirements.md) |
