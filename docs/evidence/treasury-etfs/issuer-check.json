@@ -1,0 +1,462 @@
+{
+  "checkedAt": "2026-10-16",
+  "basis": "Issuer market-price total return; nominal years for published annualized comparisons. Site uses actual calendar days.",
+  "results": [
+    {
+      "symbol": "SGOV",
+      "sourceUrl": "https://www.ishares.com/us/products/314116/ishares-0-3-month-treasury-bond-etf",
+      "sourceSha256": "a99636f3ad1cb06cf5d5d8ca229347be77d5f859f1d476799897f0abea99ef92",
+      "reportedAsOf": "Sep 30, 2026",
+      "periods": [
+        1,
+        3,
+        5,
+        10
+      ],
+      "marketPriceAnnual": [
+        3.74,
+        4.53,
+        3.78,
+        null
+      ],
+      "navAnnual": [
+        3.74,
+        4.54,
+        3.78,
+        null
+      ],
+      "comparisons": [
+        {
+          "years": 1,
+          "start": "2025-09-30",
+          "end": "2026-09-30",
+          "calculatedAnnual": 3.7414449172879616,
+          "issuerMarketPriceAnnual": 3.74,
+          "differencePercentagePoints": 0.001444917287961367
+        },
+        {
+          "years": 3,
+          "start": "2023-09-29",
+          "end": "2026-09-30",
+          "calculatedAnnual": 4.531209232721234,
+          "issuerMarketPriceAnnual": 4.53,
+          "differencePercentagePoints": 0.001209232721233633
+        },
+        {
+          "years": 5,
+          "start": "2021-09-30",
+          "end": "2026-09-30",
+          "calculatedAnnual": 3.7777232423326534,
+          "issuerMarketPriceAnnual": 3.78,
+          "differencePercentagePoints": -0.002276757667346363
+        }
+      ]
+    },
+    {
+      "symbol": "SHY",
+      "sourceUrl": "https://www.ishares.com/us/products/239452/ishares-13-year-treasury-bond-etf",
+      "sourceSha256": "42cec4cd149265ff040aa8fd3fd9d40c607e72280c92e4c3b17d25cadd311bbe",
+      "reportedAsOf": "Sep 30, 2026",
+      "periods": [
+        1,
+        3,
+        5,
+        10
+      ],
+      "marketPriceAnnual": [
+        1.46,
+        3.92,
+        1.73,
+        1.62
+      ],
+      "navAnnual": [
+        1.47,
+        3.92,
+        1.73,
+        1.62
+      ],
+      "comparisons": [
+        {
+          "years": 1,
+          "start": "2025-09-30",
+          "end": "2026-09-30",
+          "calculatedAnnual": 1.4561789605545439,
+          "issuerMarketPriceAnnual": 1.46,
+          "differencePercentagePoints": -0.003821039445456087
+        },
+        {
+          "years": 3,
+          "start": "2023-09-29",
+          "end": "2026-09-30",
+          "calculatedAnnual": 3.917295654358055,
+          "issuerMarketPriceAnnual": 3.92,
+          "differencePercentagePoints": -0.002704345641944883
+        },
+        {
+          "years": 5,
+          "start": "2021-09-30",
+          "end": "2026-09-30",
+          "calculatedAnnual": 1.7282597940631472,
+          "issuerMarketPriceAnnual": 1.73,
+          "differencePercentagePoints": -0.0017402059368527567
+        },
+        {
+          "years": 10,
+          "start": "2016-09-30",
+          "end": "2026-09-30",
+          "calculatedAnnual": 1.6166113391111736,
+          "issuerMarketPriceAnnual": 1.62,
+          "differencePercentagePoints": -0.0033886608888265
+        }
+      ]
+    },
+    {
+      "symbol": "IEI",
+      "sourceUrl": "https://www.ishares.com/us/products/239455/ishares-37-year-treasury-bond-etf",
+      "sourceSha256": "91fcda5431477cb9478031624f9bb87970a11c16a295af5657948bc02c1e9e43",
+      "reportedAsOf": "Sep 30, 2026",
+      "periods": [
+        1,
+        3,
+        5,
+        10
+      ],
+      "marketPriceAnnual": [
+        -1.54,
+        3.5,
+        -0.13,
+        0.97
+      ],
+      "navAnnual": [
+        -1.52,
+        3.5,
+        -0.13,
+        0.98
+      ],
+      "comparisons": [
+        {
+          "years": 1,
+          "start": "2025-09-30",
+          "end": "2026-09-30",
+          "calculatedAnnual": -1.541500111940719,
+          "issuerMarketPriceAnnual": -1.54,
+          "differencePercentagePoints": -0.0015001119407189734
+        },
+        {
+          "years": 3,
+          "start": "2023-09-29",
+          "end": "2026-09-30",
+          "calculatedAnnual": 3.4964633780834475,
+          "issuerMarketPriceAnnual": 3.5,
+          "differencePercentagePoints": -0.0035366219165524626
+        },
+        {
+          "years": 5,
+          "start": "2021-09-30",
+          "end": "2026-09-30",
+          "calculatedAnnual": -0.1343664217467011,
+          "issuerMarketPriceAnnual": -0.13,
+          "differencePercentagePoints": -0.004366421746701099
+        },
+        {
+          "years": 10,
+          "start": "2016-09-30",
+          "end": "2026-09-30",
+          "calculatedAnnual": 0.9731883814741549,
+          "issuerMarketPriceAnnual": 0.97,
+          "differencePercentagePoints": 0.0031883814741549
+        }
+      ]
+    },
+    {
+      "symbol": "IEF",
+      "sourceUrl": "https://www.ishares.com/us/products/239456/ishares-710-year-treasury-bond-etf",
+      "sourceSha256": "63f2ae563d36639f8516f665c11d6b3a7ae2b6e45a292b18531b8ba78d670d6b",
+      "reportedAsOf": "Sep 30, 2026",
+      "periods": [
+        1,
+        3,
+        5,
+        10
+      ],
+      "marketPriceAnnual": [
+        -3.74,
+        2.89,
+        -2.06,
+        0.09
+      ],
+      "navAnnual": [
+        -3.73,
+        2.91,
+        -2.05,
+        0.1
+      ],
+      "comparisons": [
+        {
+          "years": 1,
+          "start": "2025-09-30",
+          "end": "2026-09-30",
+          "calculatedAnnual": -3.7471591272409843,
+          "issuerMarketPriceAnnual": -3.74,
+          "differencePercentagePoints": -0.007159127240984109
+        },
+        {
+          "years": 3,
+          "start": "2023-09-29",
+          "end": "2026-09-30",
+          "calculatedAnnual": 2.8918345958549807,
+          "issuerMarketPriceAnnual": 2.89,
+          "differencePercentagePoints": 0.0018345958549805808
+        },
+        {
+          "years": 5,
+          "start": "2021-09-30",
+          "end": "2026-09-30",
+          "calculatedAnnual": -2.05770744130247,
+          "issuerMarketPriceAnnual": -2.06,
+          "differencePercentagePoints": 0.0022925586975302004
+        },
+        {
+          "years": 10,
+          "start": "2016-09-30",
+          "end": "2026-09-30",
+          "calculatedAnnual": 0.09239028316898601,
+          "issuerMarketPriceAnnual": 0.09,
+          "differencePercentagePoints": 0.0023902831689860127
+        }
+      ]
+    },
+    {
+      "symbol": "TLH",
+      "sourceUrl": "https://www.ishares.com/us/products/239453/ishares-10-20-year-treasury-bond-etf",
+      "sourceSha256": "c2e27b7e72a6632edc8924867879350c21a92ad0c73c938fa48190f08917514d",
+      "reportedAsOf": "Sep 30, 2026",
+      "periods": [
+        1,
+        3,
+        5,
+        10
+      ],
+      "marketPriceAnnual": [
+        -6.46,
+        2.03,
+        -5.55,
+        -1.63
+      ],
+      "navAnnual": [
+        -6.43,
+        2.05,
+        -5.54,
+        -1.61
+      ],
+      "comparisons": [
+        {
+          "years": 1,
+          "start": "2025-09-30",
+          "end": "2026-09-30",
+          "calculatedAnnual": -6.466796207057357,
+          "issuerMarketPriceAnnual": -6.46,
+          "differencePercentagePoints": -0.006796207057356618
+        },
+        {
+          "years": 3,
+          "start": "2023-09-29",
+          "end": "2026-09-30",
+          "calculatedAnnual": 2.036109712436174,
+          "issuerMarketPriceAnnual": 2.03,
+          "differencePercentagePoints": 0.006109712436173975
+        },
+        {
+          "years": 5,
+          "start": "2021-09-30",
+          "end": "2026-09-30",
+          "calculatedAnnual": -5.545556213054348,
+          "issuerMarketPriceAnnual": -5.55,
+          "differencePercentagePoints": 0.004443786945651951
+        },
+        {
+          "years": 10,
+          "start": "2016-09-30",
+          "end": "2026-09-30",
+          "calculatedAnnual": -1.6336432757100616,
+          "issuerMarketPriceAnnual": -1.63,
+          "differencePercentagePoints": -0.003643275710061733
+        }
+      ]
+    },
+    {
+      "symbol": "TLT",
+      "sourceUrl": "https://www.ishares.com/us/products/239454/ishares-20-year-treasury-bond-etf",
+      "sourceSha256": "355023e2950eb7bbbd72373c83c14c9f6258f195ca81c0c8dae0488dcfec292c",
+      "reportedAsOf": "Sep 30, 2026",
+      "periods": [
+        1,
+        3,
+        5,
+        10
+      ],
+      "marketPriceAnnual": [
+        -8.97,
+        -0.15,
+        -8.46,
+        -2.82
+      ],
+      "navAnnual": [
+        -8.88,
+        -0.09,
+        -8.44,
+        -2.78
+      ],
+      "comparisons": [
+        {
+          "years": 1,
+          "start": "2025-09-30",
+          "end": "2026-09-30",
+          "calculatedAnnual": -8.981129281426824,
+          "issuerMarketPriceAnnual": -8.97,
+          "differencePercentagePoints": -0.011129281426823567
+        },
+        {
+          "years": 3,
+          "start": "2023-09-29",
+          "end": "2026-09-30",
+          "calculatedAnnual": -0.14089116529859558,
+          "issuerMarketPriceAnnual": -0.15,
+          "differencePercentagePoints": 0.009108834701404417
+        },
+        {
+          "years": 5,
+          "start": "2021-09-30",
+          "end": "2026-09-30",
+          "calculatedAnnual": -8.456451940737486,
+          "issuerMarketPriceAnnual": -8.46,
+          "differencePercentagePoints": 0.003548059262515224
+        },
+        {
+          "years": 10,
+          "start": "2016-09-30",
+          "end": "2026-09-30",
+          "calculatedAnnual": -2.8085311978307437,
+          "issuerMarketPriceAnnual": -2.82,
+          "differencePercentagePoints": 0.011468802169256165
+        }
+      ]
+    },
+    {
+      "symbol": "GOVT",
+      "sourceUrl": "https://www.ishares.com/us/products/239468/ishares-us-treasury-bond-etf",
+      "sourceSha256": "12917f7ae427c744a7518e6d102d4955072e2e72c929ac184c0bba98fb3aba92",
+      "reportedAsOf": "Sep 30, 2026",
+      "periods": [
+        1,
+        3,
+        5,
+        10
+      ],
+      "marketPriceAnnual": [
+        -1.92,
+        3.16,
+        -1.09,
+        0.5
+      ],
+      "navAnnual": [
+        -1.89,
+        3.16,
+        -1.08,
+        0.51
+      ],
+      "comparisons": [
+        {
+          "years": 1,
+          "start": "2025-09-30",
+          "end": "2026-09-30",
+          "calculatedAnnual": -1.9268880907503783,
+          "issuerMarketPriceAnnual": -1.92,
+          "differencePercentagePoints": -0.006888090750378328
+        },
+        {
+          "years": 3,
+          "start": "2023-09-29",
+          "end": "2026-09-30",
+          "calculatedAnnual": 3.161253166273559,
+          "issuerMarketPriceAnnual": 3.16,
+          "differencePercentagePoints": 0.001253166273558648
+        },
+        {
+          "years": 5,
+          "start": "2021-09-30",
+          "end": "2026-09-30",
+          "calculatedAnnual": -1.0910737071547327,
+          "issuerMarketPriceAnnual": -1.09,
+          "differencePercentagePoints": -0.0010737071547326504
+        },
+        {
+          "years": 10,
+          "start": "2016-09-30",
+          "end": "2026-09-30",
+          "calculatedAnnual": 0.49810978911961623,
+          "issuerMarketPriceAnnual": 0.5,
+          "differencePercentagePoints": -0.0018902108803837692
+        }
+      ]
+    },
+    {
+      "symbol": "TIP",
+      "sourceUrl": "https://www.ishares.com/us/products/239467/ishares-tips-bond-etf",
+      "sourceSha256": "d2e2c8255819b31721afe76368fd9530ed456fd6e7019701985c90fff54b1feb",
+      "reportedAsOf": "Sep 30, 2026",
+      "periods": [
+        1,
+        3,
+        5,
+        10
+      ],
+      "marketPriceAnnual": [
+        -2.18,
+        3.55,
+        -0.18,
+        1.95
+      ],
+      "navAnnual": [
+        -2.14,
+        3.59,
+        -0.17,
+        1.98
+      ],
+      "comparisons": [
+        {
+          "years": 1,
+          "start": "2025-09-30",
+          "end": "2026-09-30",
+          "calculatedAnnual": -2.184049394837495,
+          "issuerMarketPriceAnnual": -2.18,
+          "differencePercentagePoints": -0.004049394837494891
+        },
+        {
+          "years": 3,
+          "start": "2023-09-29",
+          "end": "2026-09-30",
+          "calculatedAnnual": 3.554412229679871,
+          "issuerMarketPriceAnnual": 3.55,
+          "differencePercentagePoints": 0.004412229679870983
+        },
+        {
+          "years": 5,
+          "start": "2021-09-30",
+          "end": "2026-09-30",
+          "calculatedAnnual": -0.18431847499725817,
+          "issuerMarketPriceAnnual": -0.18,
+          "differencePercentagePoints": -0.0043184749972581815
+        },
+        {
+          "years": 10,
+          "start": "2016-09-30",
+          "end": "2026-09-30",
+          "calculatedAnnual": 1.9495981000665852,
+          "issuerMarketPriceAnnual": 1.95,
+          "differencePercentagePoints": -0.00040189993341477326
+        }
+      ]
+    }
+  ]
+}

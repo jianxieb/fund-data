@@ -207,12 +207,12 @@
   }
   function indexRows() {
     if (state.indexTab === 'cn') return window.INDEX_DATA || [];
-    const benchmarks = (window.BM || []).filter(b => state.indexTab === 'other' ? b.section === 'other' : b.section !== 'other');
+    const benchmarks = (window.BM || []).filter(b => state.indexTab === 'other' || state.indexTab === 'treasury' ? b.section === state.indexTab : !b.symbol || b.section === 'main');
     return state.indexTab === 'us' ? [...benchmarks, ...M.overseasStockReferences(window.OVERSEAS_STOCKS)] : benchmarks;
   }
   function indices() {
     const domestic = window.INDEX_DATA || [], baseRows = indexRows();
-    const tabNames = [['us', '海外指数'], ['crossborder', '境内跨境指数基金'], ['other', '海外其他ETF'], ['cn', '国内指数']];
+    const tabNames = [['us', '海外指数'], ['crossborder', '境内跨境指数基金'], ['treasury', '美债ETF'], ['other', '海外其他ETF'], ['cn', '国内指数']];
     const metric = (r, key) => {
       const isDomestic = domestic.includes(r), c = isDomestic ? 'cny' : state.currency;
       const risk = isDomestic ? { mdd: r.mdd5, vol: r.vol5 } : r[c === 'usd' ? 'riskUSD5' : 'riskCNY5'] || {};
@@ -243,19 +243,22 @@
         ? '<span class="sub">' + esc((r.inception || r.first || '').slice(0, 7)) + (r.kind === 'stock' ? '起有行情' : '成立') + ' · 可用' + availableYears.join(' / ') + '年收益</span>' : '';
       return '<tr><td>' + action(esc(r.symbol ? (r.displaySymbol || r.symbol) + ' · ' + r.label : r.n), 'index-detail', 'text-link', 'data-value="' + i + '"') + (r.status === 'unavailable' ? badge('缺原始日线', 'warn') : '') + '<span class="sub">' + esc(r.symbol ? r.style + (r.leverage > 1 ? ' · 目标按日重设' : '') : isDomestic ? '国内价格指数 · ' + r.c : '海外价格指数') + '</span>' + shortHistory + (displayCurrency === 'cny' && r.fxMissingReason ? '<span class="sub">缺美元兑人民币历史</span>' : '') + '</td>' +
         state.periods.map(y => '<td>' + pc(ret(returns && returns[years.indexOf(y)], y, r)) + ((r.backfilledPeriods || []).includes(y) ? '<span class="sub">含发布前回溯</span>' : '') + etfHistoryLabel(r, y) + '</td>').join('') +
-        (products ? '<td class="num">' + pct(r.expenseRatio, r.expenseRatio < 0.1 ? 4 : 2, false) + '<span class="sub">' + esc(r.distribution || '') + '分配</span></td>' : '') + '<td>' + pc(risk.mdd, 1) + (risk.missingFxDates?.length ? '<span class="sub" title="' + esc(risk.reason + '：' + risk.missingFxDates.join('、')) + '">缺' + esc(risk.missingFxDates.length === 1 ? risk.missingFxDates[0] : risk.missingFxDates.length + '日') + '汇率</span>' : '') + '</td><td>' + pct(risk.vol, 1, false) + '</td><td>' + esc(r.asof || r.asOf || (r.status === 'unavailable' ? '—' : '待核验')) + '</td></tr>';
+        (products ? '<td class="num">' + pct(r.expenseRatio, r.section !== 'treasury' && r.expenseRatio < 0.1 ? 4 : 2, false) + '<span class="sub">' + esc(r.distribution || '') + '分配</span></td>' : '') + '<td>' + pc(risk.mdd, r.section === 'treasury' ? 2 : 1) + (risk.missingFxDates?.length ? '<span class="sub" title="' + esc(risk.reason + '：' + risk.missingFxDates.join('、')) + '">缺' + esc(risk.missingFxDates.length === 1 ? risk.missingFxDates[0] : risk.missingFxDates.length + '日') + '汇率</span>' : '') + '</td><td>' + pct(risk.vol, 1, false) + '</td><td>' + esc(r.asof || r.asOf || (r.status === 'unavailable' ? '—' : '待核验')) + '</td></tr>';
       }).join('');
-      return '<section class="card index-section"><div class="index-section-head"><div><h2>' + label + '</h2><p>' + description + '</p></div><span>' + input.length + '条</span></div><div class="table-wrap"><table class="research-table overseas-table"><thead><tr>' + sortHead('指数 / 产品', 'name') + state.periods.map(y => sortHead(periodHead(y), 'return:' + y)).join('') + (products ? '<th>持续年费 / 分配</th>' : '') + sortHead('5年最大回撤', 'mdd') + sortHead('5年波动率', 'vol') + sortHead('截至日', 'date') + '</tr></thead><tbody>' + rowsHtml + '</tbody></table></div>' + (products ? '<div class="panel-foot"><span>含分红再投资 · ' + feeBasisLabel() + '</span>' + '</div>' : '') + '</section>';
+      return '<section class="card index-section"><div class="index-section-head"><div><h2>' + label + '</h2><p>' + description + '</p></div><span>' + input.length + '条</span></div><div class="table-wrap"><table class="research-table overseas-table"><thead><tr>' + sortHead('指数 / 产品', 'name') + state.periods.map(y => sortHead(periodHead(y), 'return:' + y)).join('') + (products ? '<th>持续年费 / 分配</th>' : '') + sortHead('5年最大回撤', 'mdd') + sortHead('5年波动率', 'vol') + sortHead('截至日', 'date') + '</tr></thead><tbody>' + rowsHtml + '</tbody></table></div>' + (products ? '<div class="panel-foot"><span>' + (state.indexTab === 'treasury' ? '含利息分配再投资' : '含分红再投资') + ' · ' + feeBasisLabel() + '</span>' + '</div>' : '') + '</section>';
     };
     const categories = [...new Set(baseRows.map(r => r.category).filter(Boolean))], styles = [...new Set(baseRows.map(r => r.style).filter(Boolean))];
     const filterRow = (label, options, selected, act, field) => '<div class="fund-filter-row"><span>' + label + '<small>可多选</small></span><div class="filter-chips">' + action('全部', act, 'filter-chip' + (!selected.size ? ' active' : ''), 'data-value="all" aria-pressed="' + !selected.size + '"') + options.map(value => action(esc(value) + '<small>' + baseRows.filter(r => r[field] === value).length + '</small>', act, 'filter-chip' + (selected.has(value) ? ' active' : ''), 'data-value="' + esc(value) + '" aria-pressed="' + selected.has(value) + '"')).join('') + '</div></div>';
     const otherRows = baseRows.filter(r => M.overseasEtfMatches(r, { categories: [...state.overseasCategories], styles: [...state.overseasStyles], query: state.overseasQuery }));
     const otherFilters = '<section class="fund-filter-panel overseas-filters" aria-label="海外ETF筛选"><div class="fund-filter-heading"><h2>筛选海外ETF</h2>' + action('重置', 'overseas-reset', 'text-link small') + '</div>' + filterRow('投资方向', categories, state.overseasCategories, 'overseas-category', 'category') + filterRow('产品策略', styles, state.overseasStyles, 'overseas-style', 'style') + '<div class="overseas-search-row"><input id="overseas-search" type="search" placeholder="搜索代码、标的指数或策略" aria-label="搜索海外ETF" value="' + esc(state.overseasQuery) + '">' + action('QQQ、QQQI、VGT有何不同', 'etf-differences', 'text-link small') + '</div></section>';
-    const tables = state.indexTab === 'cn' ? indexTable(domestic, '国内指数', '价格指数 · 不含分红') : state.indexTab === 'other' ? otherFilters + (otherRows.length ? categories.map(category => {
+    const treasuryTables = () => '<p class="basis-note">含利息分配再投资的历史回报，非当前到期收益率。长债对利率变化更敏感；ETF持续滚动持仓，没有固定到期兑付日。</p>' +
+      indexTable(baseRows.filter(b => b.category === '美国国债'), '美国国债 ETF', '按持仓期限从短到长排列，另列全期限产品；使用每只基金自身历史') +
+      indexTable(baseRows.filter(b => b.category === '通胀保值国债'), '通胀保值国债 ETF', '底层债券本金随美国通胀调整，基金价格仍受实际利率影响');
+    const tables = state.indexTab === 'cn' ? indexTable(domestic, '国内指数', '价格指数 · 不含分红') : state.indexTab === 'treasury' ? treasuryTables() : state.indexTab === 'other' ? otherFilters + (otherRows.length ? categories.map(category => {
       const rows = otherRows.filter(r => r.category === category);
       return rows.length ? indexTable(rows, category, category === '动量策略' ? '按价格动量选股 · 比较基金实际总回报与回撤，趋势反转时可能落后' : category === '期权收益' ? '股票与期权策略 · 比较含分配总回报' : category === '半导体' ? '不同标的指数分别标明 · 杠杆为每日目标' : category === '纳斯达克100' ? '纳指100低费率产品 · 按各自成立以来的实际历史计算' : '信息科技行业指数 · 与纳指100的选股范围不同') : '';
     }).join('') : '<div class="empty">没有匹配的海外ETF</div>') : indexTable(baseRows.filter(b => !b.symbol), '海外指数', '价格指数 · 不含分红') + indexTable(baseRows.filter(b => b.kind === 'stock'), '公司股票参照', '复权股价回报 · 与指数使用相同收益周期') + ['标普500', '纳斯达克100'].map(category => indexTable(baseRows.filter(b => b.category === category), category + ' ETF', '普通ETF与每日2倍、3倍产品 · 长期收益不按倍数计算')).join('');
-    return head('MARKET OBSERVATORY', '指数观察', '查看指数、股票参照、海外 ETF 与境内跨境基金的长期表现。') +
+    return head('MARKET OBSERVATORY', '指数观察', '查看指数、股票参照、美债与其他海外 ETF，以及境内跨境基金的长期表现。') +
       '<div class="tabs" role="tablist">' + tabNames.map(([id, n]) => action(n, 'index-tab', state.indexTab === id ? 'active' : '', 'data-value="' + id + '" role="tab" aria-selected="' + (state.indexTab === id) + '"')).join('') + '</div>' +
       (state.indexTab === 'crossborder' ? crossborderView() :
       '<div class="index-controls"><div class="index-currency">' + (state.indexTab !== 'cn' ? '<span>计价币种</span><div class="segmented">' + action('美元', 'currency', state.currency === 'usd' ? 'active' : '', 'data-value="usd"') + action('人民币', 'currency', state.currency === 'cny' ? 'active' : '', 'data-value="cny"') + '</div>' : '<span>人民币口径</span>') + (state.indexSort !== 'default' ? action('恢复默认顺序', 'index-sort-reset', 'text-link small') : '') + '</div>' + returnControls() + '</div>' + tables);
@@ -876,6 +879,8 @@
   function modalTitle(title, sub = '') { return '<div class="detail-title"><div><h2 id="dialog-title">' + title + '</h2><p class="detail-sub">' + sub + '</p></div></div>'; }
   function detailGrid(items) { return '<dl class="detail-grid">' + items.map(([k, v]) => '<div><dt>' + k + '</dt><dd>' + v + '</dd></div>').join('') + '</dl>'; }
   function etfHistoryLabel(record, years) {
+    const period = record?.section === 'treasury' && record.periods?.find(p => p.years === years);
+    if (period && !period.start) return '<span class="sub" title="实际行情始于' + esc(record.first) + '">缺完整' + years + '年行情</span>';
     return M.etfPeriodIncludesPriorIndex(record, years) ? '<span class="sub" title="' + esc(record.historyNote || '') + '">含旧基准期</span>' : '';
   }
   function returnTable(r, record) {
@@ -939,7 +944,7 @@
   function openOverseasEtf(x) {
     const risk = x[state.currency === 'usd' ? 'riskUSD5' : 'riskCNY5'] || {};
     openModal(modalTitle(esc(x.symbol) + ' · ' + esc(x.label), esc(x.category) + ' / ' + esc(x.style)) +
-      '<p class="notice">' + esc(x.description) + '</p>' + (x.historyNote ? '<p class="notice warn">' + esc(x.historyNote) + '</p>' : '') + '<div class="detail-return-heading"><h3>含分红再投资 · ' + feeBasisLabel() + '</h3><span>' + (state.currency === 'usd' ? '美元' : '人民币，含汇率变化') + '</span></div>' + returnTable(x[state.currency], x) +
+      '<p class="notice">' + esc(x.description) + '</p>' + (x.historyNote ? '<p class="notice warn">' + esc(x.historyNote) + '</p>' : '') + '<div class="detail-return-heading"><h3>' + (x.section === 'treasury' ? '含利息分配再投资' : '含分红再投资') + ' · ' + feeBasisLabel() + '</h3><span>' + (state.currency === 'usd' ? '美元' : '人民币，含汇率变化') + '</span></div>' + returnTable(x[state.currency], x) +
       detailGrid([['标的指数 / 策略', esc(x.underlying)], ['收益截至 / 实际行情起点', esc(x.asOf) + ' / ' + esc(x.first || '缺首日')], ['成立日期', esc(x.inception)], ['持续运营年费', pct(x.expenseRatio, x.expenseRatio < 0.1 ? 4 : 2, false) + '<span class="sub">来源核对 ' + esc(x.feeCheckedAt) + '</span>'], ['估算还原费率', pct(x.feeAddbackRate ?? x.expenseRatio, 4, false) + '<span class="sub">现行费率固定情景，历史费率未逐日还原</span>'], ['现金分配频率', esc(x.distribution) + '<span class="sub">分配率不是总收益率</span>'], ['每日目标', x.leverage > 1 ? x.leverage + '倍标的每日收益；长期收益不等于该倍数' : '不设杠杆倍数'], ['5年实际回撤 / 波动率', pct(risk.mdd, 2, false) + ' / ' + pct(risk.vol, 2, false) + '<span class="sub">真实扣费后日线；不足5年留空</span>']]) +
       (x.category === '期权收益' ? '<p class="notice warn">分配可能包含期权收益、资本利得或资本返还。这里比较分红再投资总回报，不把月分配率乘12作为投资收益率。</p>' : '') +
       (risk.reason ? '<p class="notice warn">' + esc(risk.reason) + (risk.missingFxDates?.length ? '。缺失日期：' + esc(risk.missingFxDates.join('、')) : '') + '</p>' : '') +

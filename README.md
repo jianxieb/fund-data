@@ -19,7 +19,7 @@
 
 ## 当前能研究什么
 
-- **市场与资产**：以中国内地和美国的指数、ETF、基金及个股为主，覆盖主动权益、红利、债券固收、宽基、行业及海外工具。价格指数、ETF和公司股票参照分别展示；研究池与候选名单的实际范围以页面为准。
+- **市场与资产**：以中国内地和美国的指数、ETF、基金及个股为主，覆盖主动权益、红利、债券固收、宽基、行业及海外工具。指数观察设美债ETF页签，覆盖超短至长债、全期限国债及通胀保值国债。价格指数、ETF和公司股票参照分别展示；研究池与候选名单的实际范围以页面为准。
 - **市场历史**：标普500、纳斯达克100各自与其历史比较；把价格和有真实来源的估值、波动、利率等指标放在同一时间轴。每项指标使用自身可核验的覆盖期。
 - **公司与基金**：基金的经理任期、净值回报、风险和费用；A股与美股的财务、经营、估值、股息及深入报告。可筛选、排序、查看来源和导出研究数据。
 - **持有与投入**：已收录海外ETF及美股的1/2/3/5/10年完整持有窗口，美元或人民币口径；一次投入、分批和定投等历史模拟，分别查看资金收益与净值风险。
@@ -93,7 +93,7 @@ python3 scripts/build_portfolio_data.py --check
 | 主题 | 文档 |
 | --- | --- |
 | 定位与产品演进 | [当前定位与决策沿革](docs/product-decisions.md)、[第二轮全站评审](docs/project-review-2026-10-16.md) |
-| 市场与机制 | [历史分位](docs/market-history-method.md)、[全球金融](docs/global-finance-method.md) |
+| 市场与机制 | [历史分位](docs/market-history-method.md)、[全球金融](docs/global-finance-method.md)、[美债ETF](docs/treasury-etfs.md) |
 | 基金与公司 | [跨境指数基金](docs/crossborder-funds-method.md)、[长期优质与高质成长](docs/stock-quality-method.md)、[美股研究](docs/overseas-stocks.md)、[股息口径](docs/stock-dividend-method.md) |
 | 历史与方案 | [持有期研究](docs/holding-period-method.md)、[策略曲线](docs/strategy-curves.md)、[策略独立账本复核](docs/strategy-leverage-audit.md)、[组合模拟](docs/portfolio-method.md) |
 | 渠道与资金 | [买入渠道](docs/buy-location-method.md)、[跨境资金方法](docs/money-flow-method.md)、[跨境资金需求与验收清单](docs/money-flow-requirements.md) |

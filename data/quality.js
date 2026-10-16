@@ -1,6 +1,6 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-10-15T17:18:29+00:00",
+  "checkedAt": "2026-10-16T08:24:02+00:00",
   "asOf": "2026-10-16",
   "status": "unverified",
   "summary": {
@@ -102,7 +102,7 @@ var DATA_QUALITY={
         "2026-10-13",
         "2026-10-13"
       ],
-      "records": 25,
+      "records": 33,
       "issues": [
         {
           "code": "fx_risk_incomplete",
@@ -130,7 +130,15 @@ var DATA_QUALITY={
             "SPMO",
             "MTUM",
             "XMMO",
-            "FDMO"
+            "FDMO",
+            "SGOV",
+            "SHY",
+            "IEI",
+            "IEF",
+            "TLH",
+            "TLT",
+            "GOVT",
+            "TIP"
           ]
         }
       ],
@@ -1702,7 +1710,7 @@ var DATA_QUALITY={
         "2026-10-09",
         "2026-10-14"
       ],
-      "records": 1778,
+      "records": 1786,
       "issues": [],
       "status": "checked"
     }
