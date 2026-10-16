@@ -10,7 +10,8 @@ import hashlib
 import json
 import math
 import sys
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
+from bisect import bisect_right
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -21,6 +22,7 @@ from data_status import atomic_text
 OUTPUT = ROOT / 'data/etf-distributions.js'
 PREFIX = 'window.ETF_DISTRIBUTIONS='
 BASIS = 'provider_cash_events_split_adjusted'
+METRIC_BASIS = 'split_adjusted_close_and_cash_no_reinvestment'
 
 
 def read_js(path):
@@ -29,6 +31,70 @@ def read_js(path):
 
 def finite(value):
     return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
+
+
+def prior_close(prices, target):
+    days = sorted(prices)
+    index = bisect_right(days, target) - 1
+    if index < 0:
+        return None
+    day = days[index]
+    if (date.fromisoformat(target) - date.fromisoformat(day)).days > 7:
+        return None
+    return day
+
+
+def cash_window(prices, records, start_target, end_target, allow_partial=False):
+    """An unchanged holding, cash retained: price gain + cash / opening capital.
+
+    All source prices and cash use the same split-adjusted share unit. End/start
+    prices are ordinary closes, NOT dividend-adjusted closes; adding dividends
+    to a total-return series would count those dividends twice.
+    """
+    start = prior_close(prices, start_target)
+    partial = False
+    if start is None and allow_partial:
+        candidates = [d for d in prices if start_target < d <= end_target]
+        start = min(candidates) if candidates else None
+        partial = bool(start)
+    end = prior_close(prices, end_target)
+    if start is None or end is None or start >= end:
+        return {'status': 'missing', 'reason': '缺 ' + start_target + ' 至 ' + end_target + ' 的完整首末收盘价'}
+    selected = [r for r in records if start < r['exDate'] <= end]
+    cash = math.fsum(r['perShare'] for r in selected)
+    opening, closing = prices[start], prices[end]
+    price_return = (closing / opening - 1) * 100
+    cash_return = cash / opening * 100
+    total_return = price_return + cash_return
+    share = cash_return / total_return * 100 if total_return > 0.01 else None
+    return {'status': 'available', 'start': start, 'end': end, 'partialStart': partial,
+            'openingPrice': opening, 'closingPrice': closing, 'cashPerShare': cash,
+            'payments': len(selected), 'priceReturn': price_return, 'cashReturn': cash_return,
+            'totalReturn': total_return, 'cashShareOfGain': share,
+            'shareReason': None if share is not None else '亏损期' if total_return < 0 else '净收益接近零'}
+
+
+def distribution_metrics(prices, records, first, through):
+    end = date.fromisoformat(through)
+    try:
+        anniversary = end.replace(year=end.year - 1).isoformat()
+    except ValueError:
+        anniversary = end.replace(year=end.year - 1, day=28).isoformat()
+    full_year = first <= anniversary
+    trailing_records = [r for r in records if anniversary < r['exDate'] <= through]
+    cash = math.fsum(r['perShare'] for r in trailing_records) if full_year else None
+    trailing = {'startExclusive': anniversary, 'end': through, 'cashPerShare': cash,
+                'price': prices[through], 'payments': len(trailing_records),
+                'rate': cash / prices[through] * 100 if cash is not None else None,
+                'reason': None if full_year else '缺满12个月的现金记录',
+                'return': cash_window(prices, records, anniversary, through)}
+    annual = []
+    for year in range(end.year, int(first[:4]) - 1, -1):
+        target_end = min(f'{year}-12-31', through)
+        row = cash_window(prices, records, f'{year - 1}-12-31', target_end, allow_partial=True)
+        row.update(year=year, yearToDate=year == end.year and target_end < f'{year}-12-31')
+        annual.append(row)
+    return {'basis': METRIC_BASIS, 'trailing': trailing, 'annual': annual}
 
 
 def parse_chart(payload, symbol, first, through, digest):
@@ -45,8 +111,8 @@ def parse_chart(payload, symbol, first, through, digest):
     closes = (node.get('indicators', {}).get('quote') or [{}])[0].get('close') or []
     if not stamps or len(stamps) != len(closes):
         raise ValueError('缺完整行情覆盖日期')
-    days = {local_day(t) for t, p in zip(stamps, closes) if finite(p) and p > 0}
-    if first not in days or through not in days:
+    prices = {local_day(t): p for t, p in zip(stamps, closes) if finite(p) and p > 0 and first <= local_day(t) <= through}
+    if first not in prices or through not in prices:
         raise ValueError('现金分配来源未覆盖 ' + first + ' 至 ' + through)
     events = node.get('events') or {}
     # Later splits can change earlier vendor cash amounts; disclose every split
@@ -66,18 +132,61 @@ def parse_chart(payload, symbol, first, through, digest):
             continue
         if not finite(amount) or amount < 0:
             raise ValueError('无效的现金分配金额：' + day)
-        if day not in days or day in seen:
+        if day not in prices or day in seen:
             raise ValueError('除息日期缺行情或重复：' + day)
         seen.add(day)
         if amount == 0:
             continue
+        previous = prior_close(prices, (date.fromisoformat(day) - timedelta(days=1)).isoformat())
         records.append({'exDate': day, 'perShare': amount,
+                        'referenceDate': previous, 'referencePrice': prices[previous] if previous else None,
+                        'pricePercent': amount / prices[previous] * 100 if previous else None,
                         'subsequentSplit': any(s['date'] > day for s in splits)})
     records.sort(key=lambda r: r['exDate'], reverse=True)
     return {'status': 'recorded' if records else 'no_events', 'currency': 'USD',
             'first': first, 'through': through, 'amountBasis': BASIS,
             'sourceUrl': f'https://finance.yahoo.com/quote/{symbol}/history/?filter=div',
-            'sourceSha256': digest, 'records': records, 'splits': splits}
+            'sourceSha256': digest, 'records': records, 'splits': splits,
+            'metrics': distribution_metrics(prices, records, first, through)}
+
+
+def validate_metrics(item):
+    metrics = item.get('metrics')
+    if not metrics:
+        if not item.get('metricsMissingEvidence'):
+            raise ValueError('缺分配率的价格证据与缺口标识')
+        return
+    if metrics.get('basis') != METRIC_BASIS:
+        raise ValueError('分配回报必须使用未复权股息的收盘价')
+    trailing = metrics['trailing']
+    if trailing['end'] != item['through'] or not finite(trailing['price']) or trailing['price'] <= 0:
+        raise ValueError('分配率的价格日期或金额错误')
+    if trailing['rate'] is not None:
+        cash = math.fsum(r['perShare'] for r in item['records'] if trailing['startExclusive'] < r['exDate'] <= trailing['end'])
+        if not math.isclose(cash, trailing['cashPerShare'], abs_tol=1e-9) or not math.isclose(cash / trailing['price'] * 100, trailing['rate'], abs_tol=1e-9):
+            raise ValueError('近12月分配率与现金记录不符')
+    for row in [trailing['return'], *metrics['annual']]:
+        if row['status'] == 'missing':
+            if not row.get('reason'):
+                raise ValueError('缺区间首末价却未说明原因')
+            continue
+        if not item['first'] <= row['start'] < row['end'] <= item['through']:
+            raise ValueError('分红收益区间不符')
+        if any(not finite(row.get(key)) or row[key] <= 0 for key in ['openingPrice', 'closingPrice']):
+            raise ValueError('收益拆分首末价格无效')
+        cash = math.fsum(r['perShare'] for r in item['records'] if row['start'] < r['exDate'] <= row['end'])
+        checks = {
+            'cashPerShare': cash, 'cashReturn': cash / row['openingPrice'] * 100,
+            'priceReturn': (row['closingPrice'] / row['openingPrice'] - 1) * 100,
+            'totalReturn': row['priceReturn'] + row['cashReturn']}
+        if any(not finite(row[k]) or not math.isclose(row[k], value, abs_tol=1e-9) for k, value in checks.items()):
+            raise ValueError('价格与现金回报未正确对账')
+        expected_share = row['cashReturn'] / row['totalReturn'] * 100 if row['totalReturn'] > 0.01 else None
+        if expected_share is None:
+            if row['cashShareOfGain'] is not None:
+                raise ValueError('亏损或近零收益不得生成分配占收益比')
+        elif not finite(row['cashShareOfGain']) or not math.isclose(expected_share, row['cashShareOfGain'], abs_tol=1e-9):
+            raise ValueError('现金占净收益比例错误')
 
 
 def validate(data, products, assets):
@@ -112,6 +221,12 @@ def validate(data, products, assets):
                 raise ValueError(symbol + ' 拆分口径标识错误')
             if 'payableDate' in row:
                 raise ValueError(symbol + ' 行情源不提供支付日，不得补造')
+            if row.get('pricePercent') is not None:
+                if not row['referenceDate'] < row['exDate'] or not finite(row['referencePrice']) or row['referencePrice'] <= 0:
+                    raise ValueError(symbol + ' 单次分配参考价格错误')
+                if not math.isclose(row['pricePercent'], row['perShare'] / row['referencePrice'] * 100, abs_tol=1e-9):
+                    raise ValueError(symbol + ' 单次分配率错误')
+        validate_metrics(item)
 
 
 def build(products, assets, previous, cache_dir):
@@ -127,6 +242,8 @@ def build(products, assets, previous, cache_dir):
             if not old:
                 raise ValueError(symbol + ' 无可发布现金记录：' + str(exc)) from exc
             output[symbol] = {**old}
+            if not old.get('metrics'):
+                output[symbol]['metricsMissingEvidence'] = '缺普通收盘价记录，无法计算分配率和收益贡献'
             if old['through'] < asset['asOf']:
                 output[symbol].update(status='stale', missingEvidence='缺 ' + old['through'] + ' 之后的现金分配记录')
         output[symbol].update(frequency=product['distribution'], issuerUrl=product['sourceUrl'])

@@ -66,3 +66,51 @@ test('broker comparison never promises uniform ETF eligibility or investor chose
   assert.match(html, /未确认美股ETF自动再投服务/);
   assert.doesNotMatch(html, /<input|<select/);
 });
+
+test('distribution tax reduces return in percentage points, not a percentage of all profit', () => {
+  const row = { status: 'available', cashReturn: 5, totalReturn: 15 };
+  const impact = D.taxImpact(row, 'ordinary-confirmed');
+  assert.equal(impact.reduction, 1);
+  assert.equal(impact.afterReturn, 14);
+  assert.ok(Math.abs(impact.gainPercent - 100 / 15) < 1e-9);
+  const loss = D.taxImpact({ ...row, totalReturn: -15 }, 'ordinary-confirmed');
+  assert.equal(loss.afterReturn, -16);
+  assert.equal(loss.gainPercent, null);
+  const roc = D.taxImpact(row, 'roc');
+  assert.equal(roc.reduction, null);
+  assert.equal(roc.afterReturn, null);
+  assert.equal(roc.sensitivity, .05);
+});
+
+test('index separates precise operating fee from trailing cash rate and its detail action', () => {
+  const spy = products.find(p => p.symbol === 'SPY');
+  const html = D.indexCell(spy, data);
+  assert.equal((html.match(/<td /g) || []).length, 2);
+  assert.match(html, /0\.0945%/);
+  assert.match(html, /data-value="SPY"/);
+  assert.match(html, /近12|过去12/);
+  assert.doesNotMatch(html, /持续年费 \/ 分配|↗|undefined|NaN/);
+  const missing = D.indexCell(spy, { products: { SPY: { metricsMissingEvidence: '缺普通收盘价记录' } } });
+  assert.match(missing, /缺普通收盘价记录/);
+  assert.doesNotMatch(missing, /<strong>0\.00%/);
+});
+
+test('published cash histories expose explicit ratios and preserve loss and ROC limitations', () => {
+  for (const product of products) {
+    const item = data.products[product.symbol];
+    assert.ok(Number.isFinite(item.metrics.trailing.rate), product.symbol);
+    assert.ok(item.records.every(r => Number.isFinite(r.pricePercent) || r.referencePrice === null));
+    const html = D.render(product, data);
+    for (const label of ['近12月现金分配率', '最近单次分配率', '历年分红与收益', '现金占同期净收益', '单次分配率', '除息前收盘价']) assert.ok(html.includes(label), label);
+    assert.match(html, /领现金、不再投/);
+    assert.doesNotMatch(html, /undefined|NaN|Infinity/);
+  }
+  const loss = D.returnBreakdown(data.products.TLT, 'qii');
+  assert.match(loss, /现金占同期净收益 不适用/);
+  assert.match(loss, /亏损期/);
+  const roc = D.returnBreakdown(data.products.QQQI, 'roc');
+  assert.match(roc, /敏感度/);
+  assert.doesNotMatch(roc, /合计20%|仅扣分配税后回报/);
+  assert.match(D.annualTable(data.products.QQQ, 'ordinary-confirmed'), /2026年至今/);
+  assert.match(D.annualTable(data.products.QQQI, 'roc'), /待确认/);
+});

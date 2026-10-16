@@ -6,6 +6,8 @@
   const esc = M.escapeHtml;
   const usd = (n, digits = 2) => '$' + n.toLocaleString('en-US', { minimumFractionDigits: digits, maximumFractionDigits: digits });
   const amount = n => '$' + n.toLocaleString('en-US', { maximumFractionDigits: 8 });
+  const percent = (n, signed = false) => Number.isFinite(n) ? (signed && n > 0 ? '+' : '') + n.toFixed(2) + '%' : '—';
+  const pp = n => Number.isFinite(n) ? n.toFixed(2) + '个百分点' : '—';
   const link = (url, title) => `<a class="source-link" target="_blank" rel="noopener noreferrer" href="${esc(url)}">${esc(title)} ↗</a>`;
   const source = key => link(Tax.sources[key][1], Tax.sources[key][0]);
   const sourceLine = (...keys) => `<p class="etf-div-sources">${keys.map(source).join(' ')}</p>`;
@@ -49,17 +51,62 @@
       reinvestBeforeFees: choice === 'drip' ? r.firstCash : 0 };
   }
 
+  function taxImpact(row, kind) {
+    if (row?.status !== 'available' || !Number.isFinite(row.cashReturn) || !Number.isFinite(row.totalReturn)) return null;
+    // Sensitivity is a mathematical change per 1% tax on distributions, not a
+    // statement about classification, actual withholding, or the investor's rate.
+    const sensitivity = row.cashReturn / 100;
+    if (kind === 'roc') return { sensitivity, reduction: null, gainPercent: null, afterReturn: null };
+    const reduction = row.cashReturn * .2;
+    return { sensitivity, reduction, afterReturn: row.totalReturn - reduction,
+      gainPercent: row.totalReturn > .01 ? reduction / row.totalReturn * 100 : null };
+  }
+
+  function indexCell(product, data) {
+    const item = data?.products?.[product.symbol], t = item?.metrics?.trailing;
+    const reason = t?.reason || item?.metricsMissingEvidence || '缺分配率价格证据';
+    const fee = Number.isFinite(product.expenseRatio) ? product.expenseRatio.toFixed(product.expenseRatio < .1 ? 4 : 2) + '%' : '—';
+    return `<td class="etf-fee-cell"><span>${fee}</span></td><td class="etf-yield-cell"><button type="button" class="etf-yield-button" data-action="etf-distributions" data-value="${esc(product.symbol)}" aria-label="${esc(product.symbol)}现金分配详情" title="${esc(Number.isFinite(t?.rate) ? '过去12个月每份现金合计 ÷ ' + item.through + ' 美元收盘价；不等于投资收益率' : reason)}"><strong>${percent(t?.rate)}</strong><span>${esc(item?.frequency || product.distribution || '')} · 分红详情</span></button>${item?.status === 'stale' ? `<small>${esc(item.through)}旧记录</small>` : !Number.isFinite(t?.rate) ? `<small>${esc(reason)}</small>` : ''}</td>`;
+  }
+
+  function returnBreakdown(item, kind) {
+    const row = item.metrics?.trailing?.return;
+    if (row?.status !== 'available') return `<p class="notice warn">${esc(row?.reason || item.metricsMissingEvidence || '缺收益拆分所需的首末收盘价')}</p>`;
+    const impact = taxImpact(row, kind), roc = kind === 'roc';
+    const share = Number.isFinite(row.cashShareOfGain) ? percent(row.cashShareOfGain) : '不适用';
+    const shareNote = row.cashShareOfGain > 100 ? '价格下跌抵消部分分配，占比可超过100%' : row.shareReason || '现金分配 ÷ 同期净收益';
+    return `<section class="etf-return-section"><div class="etf-div-section-head"><h3>近12个月收益拆分</h3><span>${esc(row.start)} → ${esc(row.end)}</span></div>
+      <p class="etf-return-basis">美元 · 领现金、不再投 · 累计回报，统一除以期初本金</p>
+      <div class="etf-return-equation"><div><span>价格涨跌</span><strong class="${row.priceReturn < 0 ? 'negative' : ''}">${percent(row.priceReturn, true)}</strong></div><b>＋</b><div><span>现金分配回报</span><strong>${percent(row.cashReturn, true)}</strong></div><b>＝</b><div><span>合计回报 · 税前</span><strong class="${row.totalReturn < 0 ? 'negative' : ''}">${percent(row.totalReturn, true)}</strong></div></div>
+      <div class="etf-return-share"><strong>现金占同期净收益 ${share}</strong><span>${esc(shareNote)}</span></div>
+      <div class="etf-tax-impact"><div class="etf-div-section-head"><h3>分配税对回报的影响${roc ? '' : ' · 情景'}</h3><span>${roc ? 'ROC内地口径待确认' : '美国税＋内地抵免后税额，合计20%'}</span></div>
+      ${roc ? `<p>缺这一期间各笔ROC的内地所得分类和成本调整确认，无法计算该持有期的实际税后回报。敏感度：每征收相当于分配金额1%的税，区间回报减少<strong>${pp(impact.sensitivity)}</strong>。</p>` : `<div class="etf-tax-impact-values"><div><span>回报减少</span><strong>${pp(impact.reduction)}</strong></div><div><span>税款占原净收益</span><strong>${percent(impact.gainPercent)}</strong>${impact.gainPercent === null ? `<small>${esc(row.shareReason)}不计算占比</small>` : ''}</div><div><span>仅扣分配税后回报</span><strong>${percent(impact.afterReturn, true)}</strong></div></div><p class="etf-div-caption">${kind === 'qii' ? '假设整笔分配符合QII美国豁免，内地按20%计税。' : '假设整笔分配按普通股息计税，已执行美国10%协定预扣，内地抵免后另缴10%。'}这是固定税务情景，不是账户实扣结果；未计卖出税、汇率和交易费。</p>`}</div></section>`;
+  }
+
+  function annualTable(item, kind) {
+    const rows = item.metrics?.annual;
+    if (!rows?.length) return '';
+    const roc = kind === 'roc';
+    return `<section class="etf-annual-section"><div class="etf-div-section-head"><h3>历年分红与收益</h3><span>美元 · 现金不再投 · 各期累计</span></div><p class="etf-div-caption">现金分配回报＝当期每份现金合计÷期初价格；价格涨跌＋现金分配回报＝合计回报。${roc ? 'ROC内地税务口径未确认，税收影响留空。' : '最后两列沿用上方合计20%的分配税情景。'}</p>
+      <div class="table-wrap etf-annual-table" tabindex="0" aria-label="历年现金分配占收益及分配税影响"><table><thead><tr><th>年份</th><th>价格涨跌</th><th>现金分配回报</th><th>合计回报</th><th>现金占净收益</th><th>税使回报减少<br><small>情景 · 百分点</small></th><th>仅扣分配税后<br><small>情景回报</small></th></tr></thead><tbody>${rows.map(r => {
+        const label = r.year + (r.yearToDate ? '年至今' : '年');
+        if (r.status !== 'available') return `<tr><th scope="row">${label}</th><td colspan="6">${esc(r.reason)}</td></tr>`;
+        const t = taxImpact(r, kind);
+        return `<tr><th scope="row" title="${esc(r.start)} → ${esc(r.end)}">${label}${r.partialStart ? '<small>历史起点后</small>' : ''}</th><td class="${r.priceReturn < 0 ? 'negative' : ''}">${percent(r.priceReturn, true)}</td><td>${percent(r.cashReturn)}<small>${amount(r.cashPerShare)} / 份</small></td><td class="${r.totalReturn < 0 ? 'negative' : ''}">${percent(r.totalReturn, true)}</td><td>${Number.isFinite(r.cashShareOfGain) ? percent(r.cashShareOfGain) : `<span class="muted">${esc(r.shareReason)}</span>`}</td><td>${roc ? '<span class="muted">待确认</span>' : t.reduction.toFixed(2)}</td><td>${percent(t.afterReturn, true)}</td></tr>`;
+      }).join('')}</tbody></table></div></section>`;
+  }
+
   function history(item, selectedYear) {
     const years = [...new Set(item.records.map(r => r.exDate.slice(0, 4)))];
     const year = years.includes(String(selectedYear)) ? String(selectedYear) : years[0];
     const rows = item.records.filter(r => r.exDate.startsWith(year));
-    return `<div class="etf-div-history-table table-wrap" tabindex="0" aria-label="${esc(year || '')}年现金分配记录"><table><thead><tr><th>除息日</th><th>每份现金 / 美元</th><th>金额口径</th></tr></thead><tbody>${rows.map(r => `<tr><td>${esc(r.exDate)}</td><td>${amount(r.perShare)}</td><td>${r.subsequentSplit ? '此后有拆分 · 供应商调整值' : '供应商现金记录'}</td></tr>`).join('') || '<tr><td colspan="3">此覆盖区间未记录正现金分配，不能据此承诺以后不分红。</td></tr>'}</tbody></table></div>`;
+    return `<div class="etf-div-history-table table-wrap" tabindex="0" aria-label="${esc(year || '')}年现金分配记录"><table><thead><tr><th>除息日</th><th>每份现金 / 美元</th><th>单次分配率</th><th>除息前收盘价</th><th>金额口径</th></tr></thead><tbody>${rows.map(r => `<tr><td>${esc(r.exDate)}</td><td>${amount(r.perShare)}</td><td>${percent(r.pricePercent)}</td><td>${Number.isFinite(r.referencePrice) ? usd(r.referencePrice) + '<small>' + esc(r.referenceDate) + '</small>' : '缺前收盘价'}</td><td>${r.subsequentSplit ? '此后有拆分 · 供应商调整值' : '供应商现金记录'}</td></tr>`).join('') || '<tr><td colspan="5">此覆盖区间未记录正现金分配，不能据此承诺以后不分红。</td></tr>'}</tbody></table></div>`;
   }
 
   function historySection(symbol, item) {
     const years = [...new Set(item.records.map(r => r.exDate.slice(0, 4)))];
     return `<details class="etf-div-history"><summary>查看历史现金分配 <span>${item.records.length}笔${item.records.length ? ' · 最早除息 ' + esc(item.records[item.records.length - 1].exDate) : ''}</span></summary>
-      <div class="etf-div-history-head"><p>除息日决定分红归属，<strong>不是现金到账日</strong>。</p><label>年份<select data-etf-history="${esc(symbol)}" aria-label="现金分配年份">${years.map(y => `<option value="${y}">${y}</option>`).join('')}</select></label></div>
+      <div class="etf-div-history-head"><p>单次分配率＝每份现金÷除息前收盘价。除息日<strong>不是现金到账日</strong>。</p><label>年份<select data-etf-history="${esc(symbol)}" aria-label="现金分配年份">${years.map(y => `<option value="${y}">${y}</option>`).join('')}</select></label></div>
       <div id="etf-div-history-rows">${history(item)}</div>
       <p class="etf-div-caption">来源未提供支付日；实际到账查看发行人公告和账户派息单。行情源金额可能取整，历史金额可能按后续拆分调整，不能据此反推当年账户到账金额。</p>
       <p class="etf-div-sources">${link(item.sourceUrl, '逐笔现金记录来源')} ${link(item.issuerUrl, '发行人产品资料')}</p></details>`;
@@ -103,12 +150,14 @@
   function render(product, data) {
     const item = data?.products?.[product.symbol];
     if (!item) return '<p class="notice warn">缺这只ETF的逐笔现金分配记录。</p>';
-    const latest = item.records[0];
-    return `<div class="etf-div-detail"><div class="etf-div-summary"><div><span>现金分配</span><strong>${latest ? '有现金分配' : '此区间未记录现金'}</strong><small>${esc(item.frequency)}计划 · 不保证每期都有或金额固定</small></div><div><span>最近记录 · 每份税前（行情源）</span><strong>${latest ? amount(latest.perShare) : '—'}</strong><small>除息日 ${esc(latest?.exDate || '无记录')}${latest?.subsequentSplit ? ' · 后续拆分调整值' : ''}</small></div><div><span>记录覆盖至</span><strong>${esc(item.through)}</strong><small>分配金额不是收益率</small></div></div>
+    const latest = item.records[0], t = item.metrics?.trailing, kind = taxCase(product.symbol, data);
+    return `<div class="etf-div-detail"><div class="etf-div-summary"><div><span>近12月现金分配率</span><strong>${percent(t?.rate)}</strong><small>${Number.isFinite(t?.cashPerShare) ? '每份 ' + amount(t.cashPerShare) + ' ÷ 截至日股价 ' + usd(t.price) : esc(t?.reason || item.metricsMissingEvidence || '缺分配率价格证据')}</small></div><div><span>最近单次分配率</span><strong>${percent(latest?.pricePercent)}</strong><small>${latest ? amount(latest.perShare) + ' / 份 · 除息 ' + esc(latest.exDate) + (Number.isFinite(latest.pricePercent) ? '' : ' · 缺除息前收盘价') : '此区间未记录现金'}</small></div><div><span>${latest ? '有现金分配' : '现金记录'} · 频率</span><strong>${esc(item.frequency)}</strong><small>记录截至 ${esc(item.through)}</small></div></div>
       ${item.status === 'stale' ? `<p class="notice warn">${esc(item.missingEvidence)}</p>` : ''}
-      <p class="etf-div-caption">基金发现金，账户决定是否用净到账额再买入。页面历史回报假设分红再投，不表示你的账户已启用DRIP。</p>
-      ${historySection(product.symbol, item)}${classification(product, data)}${choices(product, data)}${brokerComparison()}
+      <p class="etf-div-caption">近12月分配率按截至日美元股价计算，不把单次派息乘次数年化，也不等于投资收益率。${product.category === '期权收益' ? '现金可能包含ROC返还本金。' : ''}</p>
+      ${returnBreakdown(item, kind)}${annualTable(item, kind)}${historySection(product.symbol, item)}
+      <details class="etf-div-rules"><summary>分配分类、自动再投与三个账户规则</summary>${classification(product, data)}${choices(product, data)}${brokerComparison()}</details>
+      <details class="etf-div-footnote"><summary>这些百分比的分母与回报口径</summary><p>单次分配率＝当次每份现金÷除息前最近交易日收盘价；近12月分配率＝过去12个月每份现金合计÷截至日收盘价。两者不是SEC收益率，不是以你的个人买入成本计算的股息率。</p><p>收益拆分使用同一期初本金：价格回报＝期末价÷期初价−1；现金回报＝期间每份现金合计÷期初价；合计回报为两者之和。现金占净收益＝现金回报÷合计回报；亏损或合计收益不超过0.01%时不计算此占比。价格下跌时，现金占正净收益可超过100%。</p><p>这里是领现金、不再投的美元累计回报。指数表的历史回报假设分红再投，不表示你的账户已启用DRIP；两种处理的结果会不同。现金与普通收盘价使用同一拆分调整口径，未向分红复权价重复加现金。产品运营费已经影响股价，不再次减年费。</p><p>分配税影响＝现金回报×情景税负；例如现金回报5%、分配税20%，总回报减少1个百分点，不是对所有本金或价差扣20%。此处仅分析分配税，未模拟卖出税、交易费、汇率或税款缴付时点。</p><p>年度行按上一年最后交易日到当年末计；当前年为截至日的累计值，不年化。首个数据年不足完整年份会标注“历史起点后”。</p><p class="etf-div-sources">${link('https://investor.vanguard.com/investor-resources-education/portfolio-management/performance-details', 'Vanguard · 价格与现金回报')} ${link('https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/fund-distributions-investor-bulletin', 'SEC · 分配与投资表现')}</p></details>
       <details class="etf-div-footnote"><summary>卖出新份额、申报与来源口径</summary><p>再投形成一次新买入，保存成交价、份数与费用。普通股息不重复计为卖出收益；卖出时按售价减成本及合理费用核算净收益。符合非居民豁免条件的普通证券卖出，美国通常不征资本利得税，内地财产转让所得按20%核算。ROC可能另调原持仓成本，不把美国成本表直接当作内地结论。</p><p>内地境外所得通常在次年3月1日至6月30日申报；已退还或协定不应征的美国税不能继续抵免。保留现金分配、预扣、更正、成交和汇率记录。</p><p>现金表来自Yahoo事件记录，逐笔保留供应商金额，不用复权价格倒算。未提供支付日、客户实际预扣或逐只DRIP资格，均未补造。分配分类以注明年度的发行人最终文件为证，不把19a月度预估当最终税务结论。</p>${sourceLine('irs', 'china')}</details></div>`;
   }
-  return { render, history, brokerComparison, brokers, taxCase, cashChoice, checkedAt };
+  return { render, history, brokerComparison, brokers, taxCase, cashChoice, taxImpact, indexCell, annualTable, returnBreakdown, checkedAt };
 }));

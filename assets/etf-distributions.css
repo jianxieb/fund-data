@@ -1,7 +1,7 @@
 .etf-detail-tabs{margin:4px 0 22px}
 .etf-div-detail{font-size:13px;line-height:1.7}
 .etf-div-detail p+p{margin-top:9px}
-.etf-div-summary{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:20px;padding:22px;background:var(--green-bg);border-radius:12px}
+.etf-div-summary{display:grid;grid-template-columns:1.25fr 1.15fr .8fr;gap:20px;padding:22px;background:var(--green-bg);border-radius:12px}
 .etf-div-summary>div{display:flex;flex-direction:column;gap:5px}
 .etf-div-summary span,.etf-div-summary small{color:#5c6b61;font-size:12px}
 .etf-div-summary strong{font-size:23px;letter-spacing:-.5px;font-variant-numeric:tabular-nums;line-height:1.4}
@@ -43,5 +43,39 @@
 .etf-div-brokers th small{display:block;color:#667564;font-size:11px;font-weight:400;margin-top:8px}
 .etf-div-brokers td p+p{color:#617165}
 .etf-div-footnote{border-top:1px solid var(--line);padding-top:16px;color:#617165}
-.etf-distribution-link{display:block;margin-top:3px;color:var(--green);font-size:11px!important;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+.research-table .etf-fee-cell,.research-table .etf-yield-cell{text-align:center;min-width:100px;white-space:nowrap}
+.research-table .etf-yield-cell{min-width:150px}
+.research-table th.etf-yield-cell .sub{display:block;font-size:10px;color:var(--muted);margin-top:2px}
+.etf-yield-button{display:inline-flex;flex-direction:column;align-items:center;gap:3px;padding:3px 8px;line-height:1.6;border-radius:6px;color:var(--green)}
+.etf-yield-button:hover{background:var(--green-bg)}
+.etf-yield-button strong{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
+.etf-yield-button span{font-size:10px;color:#617165;text-decoration:underline;text-underline-offset:3px}
+.etf-yield-cell>small{display:block;font-size:10px;color:#8a6543}
+.etf-return-section{margin:22px 0;border:1px solid var(--line);border-radius:12px;padding:20px}
+.etf-return-basis{color:#617165;font-size:12px}
+.etf-return-equation{display:grid;grid-template-columns:1fr 22px 1fr 22px 1fr;gap:5px;align-items:center;margin:20px 0 16px;text-align:center}
+.etf-return-equation>div{display:flex;flex-direction:column;gap:7px}
+.etf-return-equation span{font-size:12px;color:#617165}
+.etf-return-equation strong{font-size:26px;line-height:1.4;font-variant-numeric:tabular-nums}
+.etf-return-equation>b{font-size:20px;color:var(--muted);font-weight:400}
+.etf-return-share{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--green-bg);padding:10px 13px;border-radius:6px;font-size:12px}
+.etf-return-share span{font-size:11px;color:#617165}
+.etf-tax-impact{padding-top:18px;margin-top:18px;border-top:1px solid var(--line)}
+.etf-tax-impact .etf-div-section-head h3{font-size:14px}
+.etf-tax-impact-values{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin:15px 0;text-align:center}
+.etf-tax-impact-values>div{display:flex;flex-direction:column;gap:7px}
+.etf-tax-impact-values span,.etf-tax-impact-values small{font-size:11px;color:#617165}
+.etf-tax-impact-values strong{font-size:19px;font-variant-numeric:tabular-nums}
+.etf-tax-impact .etf-div-caption{margin-bottom:0}
+.etf-annual-section{margin:24px 0}
+.etf-annual-table{max-height:365px;overflow:auto;border:1px solid var(--line);border-radius:8px}
+.etf-annual-table table{min-width:780px;font-size:12px}
+.etf-annual-table thead th{position:sticky;top:0;z-index:1;line-height:1.6}
+.etf-annual-table th,.etf-annual-table td{padding:11px 10px}
+.etf-annual-table tbody th{background:transparent;text-align:left;color:var(--ink);font-size:12px}
+.etf-annual-table small,.etf-div-history-table small{display:block;font-size:10px;color:var(--muted);font-weight:400}
+.etf-div-rules{border:1px solid var(--line);padding:14px 18px;border-radius:10px;color:var(--ink)}
+.etf-div-rules>summary{font-size:13px;font-weight:600}
+.etf-div-rules[open]>.etf-div-classification{margin-top:20px}
+@media(max-width:650px){.etf-return-section{padding:15px 12px}.etf-return-equation{grid-template-columns:1fr 14px 1fr 14px 1fr}.etf-return-equation strong{font-size:19px}.etf-return-equation span{font-size:10px}.etf-return-share{align-items:flex-start;flex-direction:column;gap:3px}.etf-tax-impact-values{gap:10px}.etf-tax-impact-values strong{font-size:15px}.etf-div-history-table table{min-width:590px}}
 @media(max-width:650px){.etf-div-summary{grid-template-columns:1fr 1fr;padding:16px;gap:16px}.etf-div-summary>div:first-child{grid-column:1/-1}.etf-div-summary strong{font-size:19px}.etf-div-choices{grid-template-columns:1fr}.etf-div-equation{flex-wrap:wrap;justify-content:flex-start;gap:8px 12px}.etf-div-section-head{align-items:flex-start;flex-direction:column;gap:4px}.etf-div-history summary span{display:block;margin:5px 0 0 15px}.etf-div-history-head{align-items:flex-start}.etf-div-history-table{font-size:11px}}
