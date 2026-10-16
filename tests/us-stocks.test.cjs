@@ -10,7 +10,7 @@ function page() {
   vm.createContext(ctx);
   vm.runInContext(fs.readFileSync('data/overseas-stocks.js', 'utf8'), ctx);
   vm.runInContext(fs.readFileSync('assets/overseas-stocks.js', 'utf8'), ctx);
-  let symbols = [], modal = '';
+  let symbols = [], modal = '', resets = 0;
   const esc = value => String(value ?? '').replace(/[&<>"']/g, x => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[x]);
   const number = x => typeof x === 'number' ? x.toFixed(1) : '—';
   const helpers = { esc, money:number, pct:number, pc:number,
@@ -20,11 +20,11 @@ function page() {
     periods:[1,3,5], periodHead:y => `${y}年`, ret:x => x,
     modalTitle:(name, description) => `<h2>${name}</h2><p>${description}</p>`,
     detailGrid:rows => rows.map(r => r.join(':')).join(' '),
-    openModal:html => { modal=html; }, resetList:() => {}, render:() => {} };
+    openModal:html => { modal=html; }, resetList:() => { resets++; }, render:() => {} };
   const app=ctx.ChanghengOverseasStocks;
   const view=() => app.view(helpers);
   const click=(action, value) => app.handleAction({dataset:{action:'os-stock-'+action, value}});
-  return { ctx, app, view, click, symbols:() => symbols, modal:() => modal };
+  return { ctx, app, view, click, symbols:() => symbols, modal:() => modal, resets:() => resets };
 }
 
 test('US companies use five current groups with other coverage last and overlap colored', () => {
@@ -59,4 +59,16 @@ test('dividend view and detail distinguish REIT AFFO from GAAP earnings', () => 
   assert.ok(p.symbols().includes('O'));
   p.click('detail','O'); assert.match(p.modal(), /74.5%/); assert.match(p.modal(), /5.4倍/);
   assert.doesNotMatch(p.modal(), /没有自动授予国内/);
+});
+
+
+test('switching financial views preserves both directions and loaded rows', () => {
+  const p=page(); p.view(); p.click('group','other'); p.click('view','valuation'); p.click('sort','pe');
+  p.view(); const descending=[...p.symbols()], resets=p.resets();
+  p.click('view','returns'); assert.match(p.view(), /按PE \/ TTM降序/);
+  assert.deepEqual([...p.symbols()],descending); assert.equal(p.resets(),resets);
+  p.click('view','valuation'); p.click('sort','pe'); p.view(); const ascending=[...p.symbols()];
+  assert.notDeepEqual(ascending,descending);
+  p.click('view','financials'); p.view(); assert.deepEqual([...p.symbols()],ascending);
+  p.click('sort-reset'); assert.doesNotMatch(p.view(), /stock-sort-status/);
 });

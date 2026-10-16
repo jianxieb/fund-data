@@ -9,6 +9,11 @@
   const copy = x => JSON.parse(JSON.stringify(x));
   const record = v => v !== null && typeof v === 'object' && !Array.isArray(v);
   const escapeHtml = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  function stockSortLabel(key) {
+    if (key.startsWith('return:')) return '近' + key.split(':')[1] + '年收益';
+    if (key.startsWith('percentile:')) return 'PE分位 / ' + key.split(':')[1] + '年';
+    return ({ latestRoe:'最新报告ROE', roe:'资本回报', 'growth:revenue':'营收同比', 'growth:netProfit':'归母利润同比', 'growth:deductedProfit':'扣非利润同比', revenueGrowth:'营收增长', profitGrowth:'利润增长', cashConversion:'现金回收', pe:'PE / TTM', peDynamic:'动态PE', peStatic:'静态PE', peForward:'预测PE', epsTTM:'每股收益', pb:'PB / MRQ', mcap:'市值', price:'收盘价', yield12:'近12月股息率', sinceListing:'上市以来累计', mdd5:'最大回撤', vol5:'波动率' })[key] || '默认顺序';
+  }
   function stockMatches(stock, group) {
     if (group === 'other') return !['quality', 'growth', 'breakout', 'dividend'].some(id => stockMatches(stock, id));
     if (group === 'dividend') return stock.group === 'dividend';
@@ -487,5 +492,5 @@
     });
     return { start, end, purchaseDays, rows, exchangeBasis, annualFeeBasis };
   }
-  return { finite, sum, copy, escapeHtml, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, stockMatches, stockResearchStatus, stockBoard, loadWindow, fundScopeMatches, fundFacetMatches, indexFundKind, indexSectors, indexSectorMatches, csv, buyLocationXirr, buyLocationResult, ordinaryDividendTax, crossborderPerformance, crossborderMatches, isCrossborderIndex, crossborderRegion, annualFeeInfo, annualFeeFactor, returnWithAnnualFees, overseasStockReferences, overseasEtfMatches, etfPeriodIncludesPriorIndex };
+  return { finite, sum, copy, escapeHtml, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, stockMatches, stockSortLabel, stockResearchStatus, stockBoard, loadWindow, fundScopeMatches, fundFacetMatches, indexFundKind, indexSectors, indexSectorMatches, csv, buyLocationXirr, buyLocationResult, ordinaryDividendTax, crossborderPerformance, crossborderMatches, isCrossborderIndex, crossborderRegion, annualFeeInfo, annualFeeFactor, returnWithAnnualFees, overseasStockReferences, overseasEtfMatches, etfPeriodIncludesPriorIndex };
 }));

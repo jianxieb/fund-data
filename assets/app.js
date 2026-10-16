@@ -49,7 +49,7 @@
     fundTab: 'equity', poolCategory: 'all', fundFacets: new Set(), fundSectors: new Set(), query: '', channel: 'all', purchasable: false,
     screen: { minA3: defaults.minA3, minA5: defaults.minA5, minA10: null },
     fundSort: 'default', descending: true, selected: new Set(),
-    stockMarket: 'cn', stockTab: 'quality', stockQuery: '', stockCategory: 'all', stockView: 'financials', stockSort: 'default', stockDesc: true, holdingSymbol: 'BRK-B', hideGrowthBoards: false, reportCode: null, reportQuery: '',
+    stockMarket: 'us', stockTab: 'quality', stockQuery: '', stockCategory: 'all', stockView: 'financials', stockSort: 'default', stockDesc: true, holdingSymbol: 'BRK-B', hideGrowthBoards: false, reportCode: null, reportQuery: '',
     stratPanel: 'initial', stratView: 'results', stratYear: '2010', stratAsset: 'SPY', stratMethod: 'lump_sum', stratMethods: { initial: 'lump_sum', dca: 'dca_month', combined: 'combined_lump_sum' },
     stratCompare: 'assets', stratMetric: 'amount', leverage: true, showLeverageAssets: false, chartHidden: new Set(),
     buyFamily: 'sp', buyYears: 5, buyPlan: 'lump', buyBasis: 'nav', buyLumpAmount: 100000, buyMonthlyAmount: 3000,
@@ -542,12 +542,12 @@
     return money(s.peDynamic, 2) + '<span class="sub">' + (M.finite(s.peDynamic) ? esc(reportLabel({ reportDate: s.peDynamicBasis?.reportDate })) + '利润年化' : s.peDynamicBasis?.status === 'loss' ? '本期亏损' : '缺当期利润或市值') + '</span>';
   }
   function stockMarkets() {
-    return '<div class="stock-market-nav" role="group" aria-label="个股市场">' + [['cn', 'A股', (window.STOCKS || []).length], ['us', '美股', (window.OVERSEAS_STOCKS || []).length]].map(([id, label, count]) => action('<strong>' + label + '</strong><span>' + count + '家公司</span>', 'stock-market', 'stock-market-choice' + (state.stockMarket === id ? ' active' : ''), 'data-value="' + id + '" aria-pressed="' + (state.stockMarket === id) + '"')).join('') + '<span class="stock-market-context">' + (state.stockMarket === 'cn' ? 'A股 · 人民币' : '美股与ADR · 美元') + '</span></div>';
+    return '<div class="stock-market-nav" role="group" aria-label="个股市场">' + [['us', '美股', (window.OVERSEAS_STOCKS || []).length], ['cn', 'A股', (window.STOCKS || []).length]].map(([id, label, count]) => action('<strong>' + label + '</strong><span>' + count + '家公司</span>', 'stock-market', 'stock-market-choice' + (state.stockMarket === id ? ' active' : ''), 'data-value="' + id + '" aria-pressed="' + (state.stockMarket === id) + '"')).join('') + '<span class="stock-market-context">' + (state.stockMarket === 'cn' ? 'A股 · 人民币' : '美股与ADR · 美元') + '</span></div>';
   }
   function stocks() {
     if (state.stockMarket === 'us') return head('US COMPANY RESEARCH', '个股深入', '从业务、盈利和估值，理解公司的长期价值。', '<a class="btn sm" href="#reports">研究报告</a>' + action('入选标准', 'os-stock-rules', 'btn sm')) + stockMarkets() + window.ChanghengOverseasStocks.view({
       esc, money, pct, pc, action, modalTitle, openModal, detailGrid, render, lazyRows, loadFooter,
-      periods: state.periods, periodHead, ret, returnControls, resetList: () => loadedCounts.delete('overseas-stocks')
+      periods: state.periods, periodHead, ret, returnControls, renderStockView, resetList: () => loadedCounts.delete('overseas-stocks')
     });
     const all = window.STOCKS || [], dividend = state.stockTab === 'dividend', other = state.stockTab === 'other';
     const financials = !dividend && state.stockView === 'financials', valuation = !dividend && state.stockView === 'valuation';
@@ -571,7 +571,7 @@
       stockMarkets() + '<div class="tabs stock-tabs" role="tablist" aria-label="个股研究分组">' + groups.map(([id, label]) => action(label + '<span class="tab-count">' + all.filter(s => stockPass(s, id) && (!state.hideGrowthBoards || M.stockBoard(s.c) === 'main')).length + '</span>', 'stock-tab', (state.stockTab === id ? 'active ' : '') + (id === 'other' ? 'stock-other-tab' : ''), 'data-value="' + id + '" role="tab" aria-selected="' + (state.stockTab === id) + '"')).join('') + '</div>' +
       (dividend ? '' : '<div class="stock-category-filter" role="group" aria-label="企业类别">' + [['all', '全部类别'], ...categories.map(c => [c, c])].map(([id, label]) => action(esc(label), 'stock-category', 'filter-chip' + (state.stockCategory === id ? ' active' : ''), 'data-value="' + esc(id) + '" aria-pressed="' + (state.stockCategory === id) + '"')).join('') + '</div>') +
       '<div class="stock-controls"><div class="filters"><input type="search" id="stock-search" aria-label="搜索公司、代码或业务" placeholder="搜索公司、代码或业务" value="' + esc(state.stockQuery) + '">' + action('隐藏科创／创业板', 'stock-boards', 'board-filter' + (state.hideGrowthBoards ? ' active' : ''), 'aria-pressed="' + state.hideGrowthBoards + '"') + '</div>' + (dividend || state.stockView === 'returns' ? returnControls() : '') + '</div>' +
-      '<div class="card"><div class="table-caption stock-table-caption"><span><b>' + rows.length + '</b> / ' + pool.length + '家公司</span>' + (dividend || other ? '' : '<span class="stock-overlap-legend">绿色公司：长期优质＋高成长</span>') + viewControl + '</div><div class="table-wrap stock-table-wrap" tabindex="0" role="region" aria-label="个股研究表，可横向滚动"><table class="research-table stock-table' + (financials ? ' stock-financial-table' : '') + '"><thead><tr><th>公司 / 主营业务</th>' + (financials ? financialHead : valuation ? valuationHead : returnHead) + '</tr></thead><tbody data-list-body="stocks">' + lazyRows('stocks', rows, s => '<tr>' + stockIdentity(s) + (financials ? financialRow(s) : valuation ? valuationRow(s) : returnRow(s)) + '</tr>') + (rows.length ? '' : '<tr><td colspan="' + (financials ? 7 : valuation ? 9 : (dividend ? 10 : 6) + state.periods.length) + '"><div class="empty">当前分组没有匹配的公司</div></td></tr>') + '</tbody></table></div>' + loadFooter('stocks') + '</div>';
+      '<div class="card"><div class="table-caption stock-table-caption"><span><b>' + rows.length + '</b> / ' + pool.length + '家公司</span>' + (dividend || other ? '' : '<span class="stock-overlap-legend">绿色公司：长期优质＋高成长</span>') + viewControl + (state.stockSort === 'default' ? '' : '<span class="stock-sort-status">按' + M.stockSortLabel(state.stockSort) + (state.stockDesc ? '降序' : '升序') + action('恢复默认', 'stock-sort-reset', 'text-link small') + '</span>') + '</div><div class="table-wrap stock-table-wrap" tabindex="0" role="region" aria-label="个股研究表，可横向滚动"><table class="research-table stock-table' + (financials ? ' stock-financial-table' : '') + '"><thead><tr><th>公司 / 主营业务</th>' + (financials ? financialHead : valuation ? valuationHead : returnHead) + '</tr></thead><tbody data-list-body="stocks">' + lazyRows('stocks', rows, s => '<tr data-stock-row="' + s.c + '">' + stockIdentity(s) + (financials ? financialRow(s) : valuation ? valuationRow(s) : returnRow(s)) + '</tr>') + (rows.length ? '' : '<tr><td colspan="' + (financials ? 7 : valuation ? 9 : (dividend ? 10 : 6) + state.periods.length) + '"><div class="empty">当前分组没有匹配的公司</div></td></tr>') + '</tbody></table></div>' + loadFooter('stocks') + '</div>';
   }
   function reportsView() {
     const reports = [...(window.STOCK_REPORTS?.reports || []), ...(window.OVERSEAS_REPORTS?.reports || [])];
@@ -1049,6 +1049,18 @@
     }
     else if (next.closest('details')) next.closest('details').querySelector('summary').focus({ preventScroll: true });
   }
+  function renderStockView() {
+    const wrap = document.querySelector('.stock-table-wrap');
+    const top = wrap?.querySelector('thead')?.getBoundingClientRect().bottom || 0;
+    const row = [...(wrap?.querySelectorAll('[data-stock-row]') || [])].find(el => el.getBoundingClientRect().bottom > top);
+    const anchor = row && { code: row.dataset.stockRow, offset: row.getBoundingClientRect().top - top };
+    render();
+    if (anchor) {
+      const next = document.querySelector('.stock-table-wrap');
+      const match = [...(next?.querySelectorAll('[data-stock-row]') || [])].find(el => el.dataset.stockRow === anchor.code);
+      if (next && match) next.scrollTop += match.getBoundingClientRect().top - (next.querySelector('thead')?.getBoundingClientRect().bottom || 0) - anchor.offset;
+    }
+  }
   function render() {
     const renderers = { overview: home, indices, 'market-history': marketHistory, 'holding-period': holdingPeriod, 'global-finance': globalFinance, funds: fundView, stocks, reports: reportsView, strategy: strategies, 'buy-location': buyLocation, 'money-flow': moneyFlow, portfolio, quality };
     const focus = captureFocus(document.activeElement);
@@ -1187,7 +1199,8 @@
       case 'index-tab': state.indexTab = val; state.indexSort = 'default'; break;
       case 'stock-tab': state.stockTab = val; state.stockSort = 'default'; state.stockCategory = 'all'; break;
       case 'stock-category': state.stockCategory = val; break;
-      case 'stock-view': state.stockView = val; state.stockSort = 'default'; break;
+      case 'stock-view': state.stockView = val; renderStockView(); return;
+      case 'stock-sort-reset': state.stockSort = 'default'; break;
       case 'index-sort':
         if (state.indexSort === val) { if (state.indexDescending) state.indexDescending = false; else { state.indexSort = 'default'; state.indexDescending = true; } }
         else { state.indexSort = val; state.indexDescending = true; }
