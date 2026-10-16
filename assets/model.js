@@ -14,6 +14,27 @@
     if (key.startsWith('percentile:')) return 'PE分位 / ' + key.split(':')[1] + '年';
     return ({ latestRoe:'最新报告ROE', roe:'资本回报', 'growth:revenue':'营收同比', 'growth:netProfit':'归母利润同比', 'growth:deductedProfit':'扣非利润同比', revenueGrowth:'营收增长', profitGrowth:'利润增长', cashConversion:'现金回收', pe:'PE / TTM', peDynamic:'动态PE', peStatic:'静态PE', peForward:'预测PE', epsTTM:'每股收益', pb:'PB / MRQ', mcap:'市值', price:'收盘价', yield12:'近12月股息率', sinceListing:'上市以来累计', mdd5:'最大回撤', vol5:'波动率' })[key] || '默认顺序';
   }
+  function stockCashQuality(stock) {
+    if (stock.symbol) {
+      if (['bank', 'financial', 'holding', 'reits'].includes(stock.accountingModel)) return { applicable:false, ratio:null, reason:'金融、控股及REIT不套用工业企业现金门槛' };
+      const ratio = stock.analysis?.cashConversion;
+      return { applicable:true, ratio:finite(ratio)?ratio:null, pass:finite(ratio) && ratio >= .5 && stock.financials?.ttmProfit > 0, period:stock.financials?.reportDate,
+        reason:finite(ratio)?'TTM经营现金 / 净利润 '+(ratio*100).toFixed(0)+'%':'缺TTM正利润或经营现金证据' };
+    }
+    if (stock.group === 'dividend' && /银行|保险|证券|金融|租赁/.test(stock.valuationIndustry || stock.ind || '')) return { applicable:false, ratio:null, reason:'金融企业不套用工业企业现金门槛' };
+    const latest = stock.latestFinancials, day = latest?.reportDate, reports = stock.financialReports || [];
+    const ttm = field => {
+      if (!day || !finite(latest[field])) return null;
+      if (day.endsWith('12-31')) return latest[field];
+      const previous = String(Number(day.slice(0,4))-1);
+      const annual = reports.find(r=>r.reportDate===previous+'-12-31');
+      const comparable = reports.find(r=>r.reportDate===previous+day.slice(4));
+      return finite(annual?.[field]) && finite(comparable?.[field]) ? latest[field]+annual[field]-comparable[field] : null;
+    };
+    const cash=ttm('operatingCashFlow'),profit=ttm('netProfit'),ratio=finite(cash)&&finite(profit)&&profit>0?cash/profit:null;
+    return { applicable:true, ratio, cash, profit, pass:finite(ratio)&&ratio>=.5, period:day,
+      reason:finite(ratio)?'TTM经营现金 / 归母净利润 '+(ratio*100).toFixed(0)+'%':'缺TTM正利润或经营现金证据' };
+  }
   function stockMatches(stock, group) {
     if (group === 'other') return !['quality', 'growth', 'breakout', 'dividend'].some(id => stockMatches(stock, id));
     if (group === 'dividend') return stock.group === 'dividend';
@@ -492,5 +513,5 @@
     });
     return { start, end, purchaseDays, rows, exchangeBasis, annualFeeBasis };
   }
-  return { finite, sum, copy, escapeHtml, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, stockMatches, stockSortLabel, stockResearchStatus, stockBoard, loadWindow, fundScopeMatches, fundFacetMatches, indexFundKind, indexSectors, indexSectorMatches, csv, buyLocationXirr, buyLocationResult, ordinaryDividendTax, crossborderPerformance, crossborderMatches, isCrossborderIndex, crossborderRegion, annualFeeInfo, annualFeeFactor, returnWithAnnualFees, overseasStockReferences, overseasEtfMatches, etfPeriodIncludesPriorIndex };
+  return { finite, sum, copy, escapeHtml, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, stockMatches, stockCashQuality, stockSortLabel, stockResearchStatus, stockBoard, loadWindow, fundScopeMatches, fundFacetMatches, indexFundKind, indexSectors, indexSectorMatches, csv, buyLocationXirr, buyLocationResult, ordinaryDividendTax, crossborderPerformance, crossborderMatches, isCrossborderIndex, crossborderRegion, annualFeeInfo, annualFeeFactor, returnWithAnnualFees, overseasStockReferences, overseasEtfMatches, etfPeriodIncludesPriorIndex };
 }));

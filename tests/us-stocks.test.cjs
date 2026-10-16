@@ -29,7 +29,7 @@ function page() {
 
 test('US companies use five current groups with other coverage last and overlap colored', () => {
   const p=page(), html=p.view();
-  const names=['长期优质企业','高质成长股','业绩爆发股','红利价值','其他已收录'];
+  const names=['长期质量候选','盈利成长候选','业绩爆发股','红利价值','其他已收录'];
   let previous=-1;
   for (const name of names) { const i=html.indexOf(name); assert.ok(i>previous); previous=i; }
   assert.match(html, /stock-other-tab/);
