@@ -15,8 +15,8 @@ function page() {
   const number = x => typeof x === 'number' ? x.toFixed(1) : '—';
   const helpers = { esc, money:number, pct:number, pc:number,
     action:(label, action, cls, attrs='') => `<button data-action="${action}" class="${cls || ''}" ${attrs}>${label}</button>`,
-    stockPageRows:(_id, rows, render) => { symbols=rows.map(s => s.symbol); return rows.map(render).join(''); },
-    stockPageFooter:() => '', returnControls:() => '<div>收益周期</div>',
+    stockRows:(rows, render) => { symbols=rows.map(s => s.symbol); return rows.map(render).join(''); },
+    returnControls:() => '<div>收益周期</div>',
     periods:[1,3,5], periodHead:y => `${y}年`, ret:x => x,
     modalTitle:(name, description) => `<h2>${name}</h2><p>${description}</p>`,
     detailGrid:rows => rows.map(r => r.join(':')).join(' '),

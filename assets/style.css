@@ -934,6 +934,7 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .stock-table td>.sub,.stock-table td>.stock-annual{max-width:none;width:100%;margin-inline:0;text-align:inherit;font-size:11px;line-height:1.7}
 .stock-table td>.stock-annual{margin-top:9px}
 .stock-table td.stock-identity>.sub{width:auto}
+.stock-table td>.stock-period{white-space:nowrap;overflow-wrap:normal}
 .stock-financial-table,.overseas-financial-table{table-layout:fixed;min-width:1550px}
 .stock-financial-table th:first-child,.stock-financial-table td:first-child,.overseas-financial-table th:first-child,.overseas-financial-table td:first-child{width:210px;min-width:210px;max-width:none}
 .stock-financial-table th:nth-child(n+2):nth-child(-n+6),.overseas-financial-table th:nth-child(n+2):nth-child(-n+6){width:160px}
