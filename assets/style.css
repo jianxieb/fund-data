@@ -795,6 +795,9 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .stock-selection-detail li{margin:8px 0;font-size:12px;line-height:1.7}
 .stock-selection-detail li strong{font-weight:500}
 .stock-selection-detail li span{display:block;color:var(--muted)}
+.stock-selection-audit th,.stock-selection-audit td{text-align:left;vertical-align:top;white-space:normal;line-height:1.7}
+.stock-selection-audit th:first-child,.stock-selection-audit td:first-child{min-width:105px}
+.stock-selection-audit th:nth-child(2),.stock-selection-audit td:nth-child(2){min-width:86px;white-space:nowrap}
 .portfolio-stock-status{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px}
 .portfolio-library-row .portfolio-stock-status span{color:#937043;margin-top:0}
 

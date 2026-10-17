@@ -285,6 +285,24 @@
           "StockholdersEquity": 27658000000
         }
       }
+    ],
+    "CDNS": [
+      {
+        "providerPeriod": "2026-06",
+        "reportDate": "2026-06-30",
+        "publishedAt": "2026-07-27",
+        "sourceUrl": "https://investor.cadence.com/news/news-details/2026/Cadence-Reports-Second-Quarter-2026-Financial-Results/default.aspx",
+        "currency": "USD",
+        "quarterly": {
+          "TotalRevenue": 1584451000,
+          "NetIncome": 367076000,
+          "TotalOperatingIncomeAsReported": 450315000,
+          "StockholdersEquity": 6857963000,
+          "OperatingCashFlow": 634929000,
+          "DilutedEPS": 1.33
+        },
+        "note": "SEC结构化历史尚未覆盖本季；本季由发行人业绩发布补齐。单季现金为半年990711千美元减Q1 355782千美元。"
+      }
     ]
   }
 }

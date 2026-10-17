@@ -2,6 +2,7 @@ import json
 import unittest
 from copy import deepcopy
 from pathlib import Path
+from unittest.mock import patch
 
 from company_quality import durable_financials, business_decision
 from stock_screen import load_old_rows
@@ -19,7 +20,11 @@ class DurableQualityTests(unittest.TestCase):
         row['analysis']['annual'][-1]['profitGrowth'] = -2
         row['financials']['profitGrowth']['value'] = 4
         row['financials']['operatingGrowth']['value'] = 4
-        self.assertIn('quality', classify(row, '2026-10-17')['screening']['groups'])
+        # The archived numeric policy is still reproducible. It no longer
+        # endorses a company without an explicit current selection decision.
+        with patch('company_selection.apply_us', side_effect=lambda r, day: r):
+            self.assertIn('quality', classify(row, '2026-10-17')['screening']['groups'])
+        self.assertNotIn('quality', classify(row, '2026-10-17')['screening']['groups'])
         self.assertNotIn('quality', classify(row, '2026-10-08')['screening']['groups'])
 
     def test_five_year_roe_floor_cash_and_gaps_cannot_be_bypassed(self):
@@ -45,26 +50,29 @@ class DurableQualityTests(unittest.TestCase):
         self.assertEqual(business_decision('601899','quality','2026-06-30','2026-10-17',old)['decision'],'hold')
         self.assertEqual(business_decision('601899','quality','2026-09-30','2026-10-30',old)['decision'],'pending')
 
-    def test_published_candidates_have_reproducible_rules_and_no_cash_toggle(self):
+    def test_published_selections_have_reproducible_decisions_and_no_cash_toggle(self):
         rows=load_old_rows((ROOT/'data/snapshot.js').read_text())
         for row in rows.values():
             if row['group']=='dividend':continue
             for key,fn in [('longTermReview',long_term_review),('growthReview',growth_review)]:
                 actual=row[key]
                 self.assertEqual(actual,fn(deepcopy(row),actual['checkedAt']),row['c'])
-            if row['c'] in ('601138','300308','601899','603979','000792','300857'):
+            if row['c'] in ('601138','300308'):
+                self.assertTrue(row['growthReview']['qualified'],row['c'])
+            if row['c'] in ('601899','603979','000792','300857'):
                 self.assertFalse(row['growthReview']['qualified'],row['c'])
         for filename in ['assets/app.js','assets/overseas-stocks.js']:
             self.assertNotIn('stockCashOnly',(ROOT/filename).read_text())
 
-    def test_growth_roe_uses_two_complete_years_in_both_markets(self):
+    def test_archived_numeric_growth_rule_uses_two_complete_years(self):
         row=legacy.UsStockGroupsTests().company()
         row['analysis']['annual'][-2]['roe']=9.99
-        self.assertNotIn('growth',classify(row,'2026-10-17')['screening']['groups'])
+        with patch('company_selection.apply_us', side_effect=lambda r, day: r):
+            self.assertNotIn('growth',classify(row,'2026-10-17')['screening']['groups'])
         rows=load_old_rows((ROOT/'data/snapshot.js').read_text())
         row=deepcopy(rows['300750'])
         row['financialHistory5'][1]['roe']=9.99
-        self.assertFalse(growth_review(row,'2026-10-17')['qualified'])
+        self.assertFalse(growth_review.__wrapped__(row,'2026-10-17')['qualified'])
 
 
 if __name__=='__main__':

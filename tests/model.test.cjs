@@ -62,18 +62,20 @@ test('other research is a visible group with exact exclusion evidence and no sel
   vm.createContext(context); vm.runInContext(fs.readFileSync('data/snapshot.js', 'utf8'), context);
   const s = context.STOCKS.find(s => s.c === '002648'), status = M.stockResearchStatus(s);
   assert.equal(status.groups.length, 0); assert.equal(status.label, '未入选当前名单');
-  assert.match(status.exclusions.find(e => e.id === 'quality').checks.at(-1).reason, /2022、2025.*利润回落.*跨周期/);
-  assert.match(status.exclusions.find(e => e.id === 'growth').checks[0].reason, /15.47%.*30%/);
+  assert.match(status.exclusions.find(e => e.id === 'quality').checks[0].reason, /化工.*价差.*周期/);
+  assert.match(status.exclusions.find(e => e.id === 'growth').checks[0].reason, /价差.*周期/);
   assert.equal(M.stockMatches(s, 'other'), true);
   const selectedGroups = ['quality', 'growth', 'breakout', 'dividend'];
   for (const stock of context.STOCKS) {
     const selected = selectedGroups.some(group => M.stockMatches(stock, group));
     assert.equal(M.stockMatches(stock, 'other'), !selected, stock.c);
   }
-  for (const code of ['601138', '601899']) assert.equal(M.stockMatches(context.STOCKS.find(stock => stock.c === code), 'other'), true);
+  assert.equal(M.stockMatches(context.STOCKS.find(stock => stock.c === '601899'), 'other'), true);
+  assert.equal(M.stockMatches(context.STOCKS.find(stock => stock.c === '601138'), 'growth'), true);
   assert.equal(M.stockMatches(context.STOCKS.find(stock => stock.c === '600036'), 'other'), false);
-  const cashFailures = M.stockResearchStatus(context.STOCKS.find(stock => stock.c === '601138')).exclusions;
-  for (const group of ['quality','growth']) assert.ok(cashFailures.find(e => e.id === group).checks.some(c => /23.92%/.test(c.reason)));
+  const industrial = context.STOCKS.find(stock => stock.c === '601138');
+  assert.ok(M.stockCashQuality(industrial).ratio < .5);
+  assert.match(industrial.companySelection.risk, /23.9%.*风险/);
   assert.equal(M.stockResearchStatus({ c:'123456', group:'dividend' }).exclusions.length, 0);
 });
 

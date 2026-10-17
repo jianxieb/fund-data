@@ -139,4 +139,5 @@ def classify(row, asof):
         'groups': groups, 'reviews': {g: {'qualified': qualified[g], 'checks': values} for g, values in checks.items()},
         'roe5': roe5, 'quarters': recent, 'dividendYears5': len(full_years & dividend_years), 'payoutRatio': payout,
         'otherReasons': other_reasons}
-    return row
+    from company_selection import apply_us
+    return apply_us(row, asof)

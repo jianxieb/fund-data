@@ -1,7 +1,7 @@
 (function (root) {
   'use strict';
   const M = root.Changheng;
-  const groups = [['quality', '长期质量候选'], ['growth', '盈利成长候选'], ['breakout', '业绩爆发股'], ['dividend', '红利价值'], ['other', '其他已收录']];
+  const groups = [['quality', '长期优质企业'], ['growth', '盈利成长企业'], ['breakout', '业绩爆发股'], ['dividend', '红利价值'], ['other', '未入选公司']];
   const state = { group: 'quality', view: 'financials', category: 'all', query: '', sort: 'default', descending: true };
   let H;
   const finite = x => typeof x === 'number' && Number.isFinite(x);
@@ -23,6 +23,7 @@
   const matches = s => s.screening.groups.includes(state.group);
   function reason(s) {
     const r = s.research, a = s.analysis;
+    if (s.companySelection && state.group !== 'dividend') return paragraphs([s.companySelection.rationale]) + H.action('查看财报依据', 'os-stock-detail', 'text-link small', 'data-value="' + H.esc(s.symbol) + '"');
     if (state.group === 'other') return paragraphs([r.thesis[0], s.screening.otherReasons[0]]) + H.action('查看分类依据', 'os-stock-detail', 'text-link small', 'data-value="' + H.esc(s.symbol) + '"');
     if (state.group === 'quality') return paragraphs([r.longTerm.durability, '5年平均ROE ' + (finite(s.screening.roe5) ? s.screening.roe5.toFixed(1) + '%' : '—') + ' · 3年利润复合 ' + cagr(a.profitCagr3)]);
     if (state.group === 'dividend') return paragraphs([r.thesis[0], '连续5年现金分红 · 派息比率 ' + (s.screening.payoutRatio * 100).toFixed(1) + '%' + (s.accountingModel === 'reits' ? ' / AFFO' : ' / 报表EPS')]);
@@ -65,7 +66,7 @@
     const f = s.financials, c = s.financialCurrency, revenue = H.esc(s.revenueLabel || '营收');
     const sourceLink = (url, label) => '<a href="' + H.esc(url) + '" target="_blank" rel="noopener noreferrer">' + H.esc(label) + ' ↗</a>';
     const names = Object.fromEntries(groups);
-    const classification = '<div class="overseas-classification"><strong>' + s.screening.groups.map(g => names[g]).join(' · ') + '</strong>' + sub('财务核对 ' + s.screening.checkedAt + ' · 经营研究 ' + s.research.reportPeriod) + '<p>' + H.esc(s.coverageBasis) + '</p></div><details class="overseas-method"><summary>分类依据与未入选原因</summary><div class="table-wrap"><table><thead><tr><th>分类</th><th>当前条件</th></tr></thead><tbody>' + Object.entries(s.screening.reviews).map(([group, review]) => '<tr><td>' + names[group] + sub(review.qualified ? '已入选' : '未入选') + '</td><td>' + H.esc(review.checks.filter(x => !x.pass).map(x => x.reason).join('；') || (review.qualified ? '财务与本期经营证据均成立' : '已进入长期优质或高质成长，展示在对应分组')) + '</td></tr>').join('') + '</tbody></table></div></details>';
+    const classification = '<div class="overseas-classification"><strong>' + s.screening.groups.map(g => names[g]).join(' · ') + '</strong>' + sub('财务核对 ' + s.screening.checkedAt + ' · 经营研究 ' + s.research.reportPeriod) + '<p>' + H.esc(s.companySelection?.rationale || s.coverageBasis) + '</p>' + (s.companySelection ? '<p><strong>重新评估的信号：</strong>' + H.esc(s.companySelection.invalidation) + '</p>' : '') + '</div><details class="overseas-method"><summary>分类依据与未入选原因</summary><div class="table-wrap"><table><thead><tr><th>分类</th><th>当前条件</th></tr></thead><tbody>' + Object.entries(s.screening.reviews).map(([group, review]) => '<tr><td>' + names[group] + sub(review.qualified ? '已入选' : '未入选') + '</td><td>' + H.esc(review.checks.filter(x => !x.pass).map(x => x.reason).join('；') || (review.qualified ? '财务与本期经营证据均成立' : '已进入长期优质或高质成长，展示在对应分组')) + '</td></tr>').join('') + '</tbody></table></div></details>';
     const income = s.research.incomeReview;
     const incomeReview = income ? '<section class="overseas-income"><h3>分红承受能力</h3><p>' + H.esc(income.rationale) + '</p><p>' + H.esc(income.capitalReview) + '</p></section>' : '';
     const financialRows = Object.values(s.financialHistory.quarterly).sort((a, b) => b.period.localeCompare(a.period));
@@ -78,14 +79,14 @@
       '<details class="overseas-method"><summary>数据口径与来源</summary><p>美股按当前财务和本期经营研究独立分类；蓝筹未满足当前条件时保留在其他已收录。同比比较同一公司、同一报告币种的对应季度；亏损基数显示扭亏或亏损变化，不制造增长百分比。ROE为连续四季净利润除以期初期末平均净资产。</p><p>PE使用美元上市证券的TTM每股收益与已收盘股价；TSM使用美元ADR口径。预测PE使用供应商的forward EPS；接口未提供目标财年或未来12个月、参与分析师数量及盈利调整口径，不能把它与TTM的差值直接理解为预期利润增幅。季度年化PE是最新单季EPS乘4，与预测PE不同。尚缺5年、10年逐时点历史EPS，未计算历史PE分位。不同年度的股份稀释会影响单季EPS加总与年度EPS。</p><p>财报按报表口径（美国公司为GAAP、台积电为IFRS）展示；不以Non-GAAP利润代替。标为“季”的历史日期是接口归一化月份。收益含拆分和分红再投资，未扣个人交易费用及税款；SPCX从SpaceX上市首日收盘开始，未使用IPO发行价。</p><div class="actions">' + sourceLink(s.sourceUrl, '公司原始财报') + sourceLink(s.returnSourceUrl, '股价与分红历史') + sourceLink('https://finance.yahoo.com/quote/' + s.symbol + '/financials/', '财报接口对应页面') + sourceLink('https://finance.yahoo.com/quote/' + s.symbol + '/analysis/', '盈利预期') + (s.identitySourceUrl ? sourceLink(s.identitySourceUrl, '证券身份与历史延续公告') : '') + '</div></details><div class="dialog-footer"><a class="btn primary" href="#holding-period/' + H.esc(s.symbol) + '">研究不同买入月份</a></div>');
   }
   function rules() {
-    const rulesRows = [
-      ['长期优质企业', '连续5年正利润与正经营现金；5年平均年度ROE≥15%，每年≥10%，最新年度≥15%；TTM正利润且现金/利润≥50%；当前长期业务研究有明确保留结论。单季增速和3年增速继续展示，不作为质量的10%门槛。'],
-      ['高质成长股', '连续两个相邻单季利润及营业利润均增长≥30%，正基数；近两个完整财年利润与经营现金为正、每年ROE≥10%；TTM ROE≥10%，TTM现金/利润≥50%；本期增长来源已复核。'],
-      ['业绩爆发股', '连续两季利润和营业利润均增长≥100%，正基数；最新完整年度正利润、正现金；年度及TTM ROE≥5%，TTM和最新单季现金/利润≥50%；本期爆发来源已复核。'],
-      ['红利价值', '近12月已除息现金股息率≥3%；最近5个完整年度都有现金分红；派息比率≤85%及本期现金/资本承受能力成立；REIT另用AFFO。'],
-      ['其他已收录', '重要蓝筹与行业研究仍完整保留，列明当前未入选原因。']
+    const rows = [
+      ['长期优质企业', '逐家公司确认竞争优势、重复需求和再投资路径；至少五个完整财年的正利润、正经营现金，以及本期业务证据。ROE、现金转换与估值用于分析，不机械等同于公司好坏。'],
+      ['盈利成长企业', '确认已实现的主营扩张及持续性，最新核心盈利仍增长、TTM利润与经营现金为正；投资估值、税务、并购及低基数单独解释。'],
+      ['业绩爆发股', '已实现的核心盈利快速释放，且已有具体业务证据；明确周期、短盈利记录及失效条件。'],
+      ['红利价值', '按现金分红记录、收益率和派息承受力独立评审；金融及REIT采用适用的资本或AFFO口径。'],
+      ['未入选公司', '当前不在精选名单中，保留原始财务、收益和具体未入选原因，可继续查阅与比较。']
     ];
-    H.openModal(H.modalTitle('美股入选标准', '财务条件与本期经营证据') + '<div class="table-wrap"><table><thead><tr><th>分类</th><th>条件</th></tr></thead><tbody>' + rulesRows.map(([name, criteria]) => '<tr><td>' + name + '</td><td>' + criteria + '</td></tr>').join('') + '</tbody></table></div><p>最新已披露财季距核对日不超过155天，经营复核必须对应本期。营业利润、特殊项、周期与并表交叉核对；新财报不自动继承旧研究结论。金融与投资控股保留专题研究，ROE不适用时不补成正值。爆发股已满足质量或成长时展示在相应分组。</p>');
+    H.openModal(H.modalTitle('美股入选依据', '公司研究结论与原始财报') + '<div class="table-wrap"><table><thead><tr><th>分组</th><th>依据</th></tr></thead><tbody>' + rows.map(([n,t]) => '<tr><td>'+n+'</td><td>'+t+'</td></tr>').join('') + '</tbody></table></div><p>新财报不自动继承旧结论。只靠财务数字过线不能入选，入选也不代表估值便宜。</p>');
   }
   function handleAction(button) {
     const act = button.dataset.action, value = button.dataset.value;

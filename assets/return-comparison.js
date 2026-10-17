@@ -41,7 +41,7 @@
       return select(label,field,[['all','全部'],...values.map(v=>[v,v+' · '+available.filter(a=>a[field]===v).length])],state[field]);
     };
     const preview=a=>{const p=a.performance?.annual?.[1];return p?.value!=null?percent(p.value)+`<small>${p.start} → ${p.end}</small>`:'—';};
-    return `<section class="rc-library card" aria-label="选择对比标的"><div class="rc-library-head"><div><h2>完整标的库</h2><span class="rc-library-count">全部已收录证券都可查找；选择不受研究候选名单限制。</span></div>${button('收起标的库','picker','','text-link')}</div>
+    return `<section class="rc-library card" aria-label="选择对比标的"><div class="rc-library-head"><div><h2>完整标的库</h2><span class="rc-library-count">全部已收录证券都可查找，包括未进入精选名单的公司。</span></div>${button('收起标的库','picker','','text-link')}</div>
       <div class="rc-collection-tabs" role="tablist" aria-label="标的类型">${C.collections.map(([id,name])=>button(`${name}<span>${id==='all'?catalog.assets.length:catalog.assets.filter(a=>a.product===id).length}</span>`,'collection',id,state.collection===id?'active':'',`role="tab" aria-selected="${state.collection===id}"`)).join('')}</div>
       <div class="rc-search-row"><input type="search" data-rc-field="query" id="rc-query" aria-label="搜索对比标的" placeholder="名称、代码、基金经理、行业，例如：黄金 / 中证500 增强 / MSFT" value="${esc(state.query)}">${button('重置筛选','reset-filters','','text-link')}</div>
       <div class="rc-library-filters">${options('assetClass','资产方向')}${options('region','上市 / 投资市场')}${options('strategy','投资策略')}${options('direction',state.collection.endsWith('stock')?'行业':'指数 / 基金类别')}${select('历史长度','minHistory',[['all','不限'],[1,'至少1年'],[3,'至少3年'],[5,'至少5年'],[10,'至少10年'],[20,'至少20年']],state.minHistory)}${select('数据状态','availability',[['all','全部'],['available','日线可用'],['missing','缺少日线']],state.availability)}</div>

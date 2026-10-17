@@ -142,9 +142,9 @@
     }
   },
   "MSFT": {
-    "reviewedAt": "2026-10-07",
+    "reviewedAt": "2026-10-17",
     "reportPeriod": "2026-06-30",
-    "summary": "企业工作流、订阅与Azure形成迁移成本。本季Anthropic投资税前收益32亿美元；调整净利润增约22%，GAAP增31%，OpenAI与其他投资不作为成长门槛的主营证据。",
+    "summary": "Azure及企业软件收入与营业利润持续增长；本季投资收益单列，以营业利润验证主营扩张。",
     "thesis": [
       "企业工作流、订阅与Azure形成迁移成本。",
       "再投资方向：云基础设施和AI产品研发。",
@@ -277,16 +277,16 @@
       ],
       "qualityDecision": "retain",
       "qualityRationale": "Azure与AI服务增长，最新营业利润同比约20%。；本季Anthropic投资税前收益32亿美元；调整净利润增约22%，GAAP增31%，OpenAI与其他投资不作为成长门槛的主营证据。",
-      "growthDecision": "hold",
-      "growthRationale": "Azure与AI服务增长，最新营业利润同比约20%。；本季Anthropic投资税前收益32亿美元；调整净利润增约22%，GAAP增31%，OpenAI与其他投资不作为成长门槛的主营证据。；云收入由使用量、产品组合和汇率影响，不属于商品价格单一周期。",
+      "growthDecision": "retain",
+      "growthRationale": "Azure及企业软件收入与营业利润持续增长；本季投资收益单列，以营业利润验证主营扩张。",
       "breakoutDecision": "hold",
       "breakoutRationale": "Azure与AI服务增长，最新营业利润同比约20%。；本季Anthropic投资税前收益32亿美元；调整净利润增约22%，GAAP增31%，OpenAI与其他投资不作为成长门槛的主营证据。；云收入由使用量、产品组合和汇率影响，不属于商品价格单一周期。"
     }
   },
   "GOOGL": {
-    "reviewedAt": "2026-10-07",
+    "reviewedAt": "2026-10-17",
     "reportPeriod": "2026-06-30",
-    "summary": "搜索分发、广告网络及云客户形成规模优势。本季投资净收益约980亿美元、主要为SpaceX相关估值；净利润约298%增长远高于营业利润，不进入高质成长或爆发。",
+    "summary": "搜索广告与云业务对应营业利润增长；投资估值收益不计入依据，不因净利受特殊项影响而忽略主营。",
     "thesis": [
       "搜索分发、广告网络及云客户形成规模优势。",
       "再投资方向：AI模型、算力与云产品。",
@@ -294,7 +294,7 @@
     ],
     "risks": [
       "AI搜索替代与反垄断；SpaceX投资收益不可外推。",
-      "本季投资净收益约980亿美元、主要为SpaceX相关估值；净利润约298%增长远高于营业利润，不进入高质成长或爆发。"
+      "本季投资净收益约980亿美元、主要为SpaceX相关估值；净利润约298%增长远高于营业利润，投资收益不作为主营增长或爆发的证据。"
     ],
     "watch": [
       "搜索商业化受损且云营业利润不能抵补。",
@@ -323,7 +323,7 @@
     "earningsReview": {
       "reportPeriod": "2026-06-30",
       "driver": "搜索广告与云业务增长；营业利润同比约29.7%。",
-      "nonOperating": "本季投资净收益约980亿美元、主要为SpaceX相关估值；净利润约298%增长远高于营业利润，不进入高质成长或爆发。",
+      "nonOperating": "本季投资净收益约980亿美元、主要为SpaceX相关估值；净利润约298%增长远高于营业利润，投资收益不作为主营增长或爆发的证据。",
       "priceCycle": "广告景气与云算力投入仍有周期，不外推投资估值收益。",
       "consolidation": "投资收益不等于并表营业收入；既有搜索、YouTube和Cloud分开观察。",
       "invalidation": "搜索商业化受损且云营业利润不能抵补",
@@ -418,17 +418,17 @@
         }
       ],
       "qualityDecision": "retain",
-      "qualityRationale": "搜索广告与云业务增长；营业利润同比约29.7%。；本季投资净收益约980亿美元、主要为SpaceX相关估值；净利润约298%增长远高于营业利润，不进入高质成长或爆发。",
-      "growthDecision": "hold",
-      "growthRationale": "搜索广告与云业务增长；营业利润同比约29.7%。；本季投资净收益约980亿美元、主要为SpaceX相关估值；净利润约298%增长远高于营业利润，不进入高质成长或爆发。；广告景气与云算力投入仍有周期，不外推投资估值收益。",
+      "qualityRationale": "搜索广告与云业务增长；营业利润同比约29.7%。；本季投资净收益约980亿美元、主要为SpaceX相关估值；净利润约298%增长远高于营业利润，投资收益不作为主营增长或爆发的证据。",
+      "growthDecision": "retain",
+      "growthRationale": "搜索广告与云业务对应营业利润增长；投资估值收益不计入依据，不因净利受特殊项影响而忽略主营。",
       "breakoutDecision": "hold",
-      "breakoutRationale": "搜索广告与云业务增长；营业利润同比约29.7%。；本季投资净收益约980亿美元、主要为SpaceX相关估值；净利润约298%增长远高于营业利润，不进入高质成长或爆发。；广告景气与云算力投入仍有周期，不外推投资估值收益。"
+      "breakoutRationale": "搜索广告与云业务增长；营业利润同比约29.7%。；本季投资净收益约980亿美元、主要为SpaceX相关估值；净利润约298%增长远高于营业利润，投资收益不作为主营增长或爆发的证据。；广告景气与云算力投入仍有周期，不外推投资估值收益。"
     }
   },
   "AMZN": {
-    "reviewedAt": "2026-10-07",
+    "reviewedAt": "2026-10-17",
     "reportPeriod": "2026-06-30",
-    "summary": "履约网络、会员和AWS客户关系相互增强。投资收益抬高本季净利润；TTM自由现金流约负76亿美元，经营现金流不能替代扣资本支出后的现金。",
+    "summary": "AWS、广告和履约改善对应营业利润增长；资本开支导致自由现金流承压，因此只纳入盈利成长。",
     "thesis": [
       "履约网络、会员和AWS客户关系相互增强。",
       "再投资方向：云算力与物流自动化。",
@@ -561,8 +561,8 @@
       ],
       "qualityDecision": "retain",
       "qualityRationale": "AWS、广告和履约效率分别研究，营业利润改善并未复制净利润的幅度。；投资收益抬高本季净利润；TTM自由现金流约负76亿美元，经营现金流不能替代扣资本支出后的现金。",
-      "growthDecision": "hold",
-      "growthRationale": "AWS、广告和履约效率分别研究，营业利润改善并未复制净利润的幅度。；投资收益抬高本季净利润；TTM自由现金流约负76亿美元，经营现金流不能替代扣资本支出后的现金。；零售与云需求有不同周期，AI投入加速时要看折旧和资金回报。",
+      "growthDecision": "retain",
+      "growthRationale": "AWS、广告和履约改善对应营业利润增长；资本开支导致自由现金流承压，因此只纳入盈利成长。",
       "breakoutDecision": "hold",
       "breakoutRationale": "AWS、广告和履约效率分别研究，营业利润改善并未复制净利润的幅度。；投资收益抬高本季净利润；TTM自由现金流约负76亿美元，经营现金流不能替代扣资本支出后的现金。；零售与云需求有不同周期，AI投入加速时要看折旧和资金回报。"
     }
@@ -1571,7 +1571,7 @@
       "薪酬、人力资源与雇主服务的收入、营业利润与现金回收共同判断，当前报表没有以预测值替代。"
     ],
     "risks": [
-      "就业和利率变化；当前利润增长低于门槛。",
+      "就业和利率变化；利润增长还需结合客户留存与服务规模评估。",
       "保留GAAP利润及费用，未将Non-GAAP调整反填报表。本期未完成全部税务、投资及特殊项目的逐项金额归因，不用净利润增速单独授予高质成长或业绩爆发。"
     ],
     "watch": [
@@ -3347,9 +3347,9 @@
     }
   },
   "LLY": {
-    "reviewedAt": "2026-10-07",
+    "reviewedAt": "2026-10-17",
     "reportPeriod": "2026-06-30",
-    "summary": "临床研发、专利和生产扩张支撑药品平台。本季收购研发费用约28亿美元，摊薄EPS影响约3.03美元；GAAP净利润同比约25%，不是连续两个30%季度。",
+    "summary": "重点糖尿病及肥胖药的销量增长抵消降价压力，营业利润仍增长；研发并购费用完整保留。",
     "thesis": [
       "临床研发、专利和生产扩张支撑药品平台。",
       "再投资方向：临床管线、生产能力与适应症拓展。",
@@ -3357,7 +3357,7 @@
     ],
     "risks": [
       "药价、竞争、专利和收购研发费用。",
-      "本季收购研发费用约28亿美元，摊薄EPS影响约3.03美元；GAAP净利润同比约25%，不是连续两个30%季度。"
+      "本季收购研发费用约28亿美元，摊薄EPS影响约3.03美元；GAAP净利润同比约25%，研发并购费用保留为成本。"
     ],
     "watch": [
       "核心药品销量放缓且研发投入不能补足管线。",
@@ -3386,7 +3386,7 @@
     "earningsReview": {
       "reportPeriod": "2026-06-30",
       "driver": "核心糖尿病和肥胖药增长；本季销量增加约60%，价格下降约13%。",
-      "nonOperating": "本季收购研发费用约28亿美元，摊薄EPS影响约3.03美元；GAAP净利润同比约25%，不是连续两个30%季度。",
+      "nonOperating": "本季收购研发费用约28亿美元，摊薄EPS影响约3.03美元；GAAP净利润同比约25%，研发并购费用保留为成本。",
       "priceCycle": "销量增长与价格下降分开，不能外推本期提价。",
       "consolidation": "收购研发支出不扣出GAAP利润，观察后续管线产出。",
       "invalidation": "核心药品销量放缓且研发投入不能补足管线",
@@ -3459,11 +3459,11 @@
         }
       ],
       "qualityDecision": "retain",
-      "qualityRationale": "核心糖尿病和肥胖药增长；本季销量增加约60%，价格下降约13%。；本季收购研发费用约28亿美元，摊薄EPS影响约3.03美元；GAAP净利润同比约25%，不是连续两个30%季度。",
-      "growthDecision": "hold",
-      "growthRationale": "核心糖尿病和肥胖药增长；本季销量增加约60%，价格下降约13%。；本季收购研发费用约28亿美元，摊薄EPS影响约3.03美元；GAAP净利润同比约25%，不是连续两个30%季度。；销量增长与价格下降分开，不能外推本期提价。",
+      "qualityRationale": "核心糖尿病和肥胖药增长；本季销量增加约60%，价格下降约13%。；本季收购研发费用约28亿美元，摊薄EPS影响约3.03美元；GAAP净利润同比约25%，研发并购费用保留为成本。",
+      "growthDecision": "retain",
+      "growthRationale": "重点糖尿病及肥胖药的销量增长抵消降价压力，营业利润仍增长；研发并购费用完整保留。",
       "breakoutDecision": "hold",
-      "breakoutRationale": "核心糖尿病和肥胖药增长；本季销量增加约60%，价格下降约13%。；本季收购研发费用约28亿美元，摊薄EPS影响约3.03美元；GAAP净利润同比约25%，不是连续两个30%季度。；销量增长与价格下降分开，不能外推本期提价。"
+      "breakoutRationale": "核心糖尿病和肥胖药增长；本季销量增加约60%，价格下降约13%。；本季收购研发费用约28亿美元，摊薄EPS影响约3.03美元；GAAP净利润同比约25%，研发并购费用保留为成本。；销量增长与价格下降分开，不能外推本期提价。"
     }
   },
   "JNJ": {
@@ -3859,17 +3859,17 @@
     }
   },
   "ISRG": {
-    "reviewedAt": "2026-10-07",
+    "reviewedAt": "2026-10-17",
     "reportPeriod": "2026-06-30",
-    "summary": "安装设备、医生训练和耗材形成重复使用收入。最新季度净利润增长约24%；5年ROE严格按精确数值，不把14.87%四舍五入为达标15%。",
+    "summary": "手术量增约16%、装机量增12%，耗材和服务形成重复收入；多年利润与现金支持质量，14.87% ROE不作机械否决。",
     "thesis": [
       "安装设备、医生训练和耗材形成重复使用收入。",
       "再投资方向：新平台、手术适应症与服务网络。",
       "本季手术量约增16%，达芬奇装机约11710台、增12%；耗材与服务支持重复收入。"
     ],
     "risks": [
-      "医院资本预算、竞争和估值；5年平均ROE略低于门槛。",
-      "最新季度净利润增长约24%；5年ROE严格按精确数值，不把14.87%四舍五入为达标15%。"
+      "医院资本预算、竞争和估值；资本回报需结合耗材收入和设备投入评估。",
+      "最新季度净利润增长约24%；五年ROE按精确14.87%展示，结合耗材、装机和多年现金研究。"
     ],
     "watch": [
       "手术量和器械收入增速同时下滑。",
@@ -3893,12 +3893,12 @@
       "durability": "安装设备、医生训练和耗材形成重复使用收入",
       "reinvestment": "新平台、手术适应症与服务网络",
       "invalidation": "手术量和器械收入增速同时下滑",
-      "rationale": "安装设备、医生训练和耗材形成重复使用收入；需同时满足当前财务门槛。"
+      "rationale": "手术量增约16%、装机量增12%，耗材和服务形成重复收入；多年利润与现金支持质量，14.87% ROE不作机械否决。"
     },
     "earningsReview": {
       "reportPeriod": "2026-06-30",
       "driver": "本季手术量约增16%，达芬奇装机约11710台、增12%；耗材与服务支持重复收入。",
-      "nonOperating": "最新季度净利润增长约24%；5年ROE严格按精确数值，不把14.87%四舍五入为达标15%。",
+      "nonOperating": "最新季度净利润增长约24%；五年ROE按精确14.87%展示，结合耗材、装机和多年现金研究。",
       "priceCycle": "医院资本预算影响装机，手术和耗材与一次性设备销售分开。",
       "consolidation": "本期未用重大并购作为增长依据。",
       "invalidation": "手术量和器械收入增速同时下滑",
@@ -3993,11 +3993,11 @@
         }
       ],
       "qualityDecision": "retain",
-      "qualityRationale": "本季手术量约增16%，达芬奇装机约11710台、增12%；耗材与服务支持重复收入。；最新季度净利润增长约24%；5年ROE严格按精确数值，不把14.87%四舍五入为达标15%。",
-      "growthDecision": "hold",
-      "growthRationale": "本季手术量约增16%，达芬奇装机约11710台、增12%；耗材与服务支持重复收入。；最新季度净利润增长约24%；5年ROE严格按精确数值，不把14.87%四舍五入为达标15%。；医院资本预算影响装机，手术和耗材与一次性设备销售分开。",
+      "qualityRationale": "本季手术量约增16%，达芬奇装机约11710台、增12%；耗材与服务支持重复收入。；最新季度净利润增长约24%；五年ROE按精确14.87%展示，结合耗材、装机和多年现金研究。",
+      "growthDecision": "retain",
+      "growthRationale": "手术量增约16%、装机量增12%，耗材和服务形成重复收入；多年利润与现金支持质量，14.87% ROE不作机械否决。",
       "breakoutDecision": "hold",
-      "breakoutRationale": "本季手术量约增16%，达芬奇装机约11710台、增12%；耗材与服务支持重复收入。；最新季度净利润增长约24%；5年ROE严格按精确数值，不把14.87%四舍五入为达标15%。；医院资本预算影响装机，手术和耗材与一次性设备销售分开。"
+      "breakoutRationale": "本季手术量约增16%，达芬奇装机约11710台、增12%；耗材与服务支持重复收入。；最新季度净利润增长约24%；五年ROE按精确14.87%展示，结合耗材、装机和多年现金研究。；医院资本预算影响装机，手术和耗材与一次性设备销售分开。"
     }
   },
   "ABT": {
@@ -5751,9 +5751,9 @@
     }
   },
   "ANET": {
-    "reviewedAt": "2026-10-07",
+    "reviewedAt": "2026-10-17",
     "reportPeriod": "2026-06-30",
-    "summary": "网络操作系统、客户部署与服务形成迁移成本。Q2报表净利润增长36.5%、营业利润增长39.7%；Q1净利润仅增长25.7%，尚未连续两季达到30%。Q2营业外净收益1.263亿美元、所得税2.914亿美元；战略投资收益600万美元，未替代主营营业利润。",
+    "summary": "网络操作系统与高速网络部署形成持续收入，两季营业利润增长34.8%、39.7%；一个季度净利不足30%不否定经营增长。",
     "thesis": [
       "网络操作系统、客户部署与服务形成迁移成本。",
       "再投资方向：高速网络、软件与企业客户。",
@@ -5761,7 +5761,7 @@
     ],
     "risks": [
       "大型云客户集中、供应和竞争。",
-      "Q2报表净利润增长36.5%、营业利润增长39.7%；Q1净利润仅增长25.7%，尚未连续两季达到30%。Q2营业外净收益1.263亿美元、所得税2.914亿美元；战略投资收益600万美元，未替代主营营业利润。"
+      "Q2报表净利润增长36.5%、营业利润增长39.7%；Q1净利润仅增长25.7%，净利润与营业利润分别评估。Q2营业外净收益1.263亿美元、所得税2.914亿美元；战略投资收益600万美元，未替代主营营业利润。"
     ],
     "watch": [
       "网络需求放缓且软件服务无法平滑硬件订单。",
@@ -5796,7 +5796,7 @@
     "earningsReview": {
       "reportPeriod": "2026-06-30",
       "driver": "本季网络收入约30.36亿美元、增37.7%，软件与大客户部署支持增长。",
-      "nonOperating": "Q2报表净利润增长36.5%、营业利润增长39.7%；Q1净利润仅增长25.7%，尚未连续两季达到30%。Q2营业外净收益1.263亿美元、所得税2.914亿美元；战略投资收益600万美元，未替代主营营业利润。",
+      "nonOperating": "Q2报表净利润增长36.5%、营业利润增长39.7%；Q1净利润仅增长25.7%，净利润与营业利润分别评估。Q2营业外净收益1.263亿美元、所得税2.914亿美元；战略投资收益600万美元，未替代主营营业利润。",
       "priceCycle": "硬件网络与大客户资本开支存在周期，已交付收入与未来AI订单分开。",
       "consolidation": "现有网络业务增长核对，未把新并表当全部来源。",
       "invalidation": "网络需求放缓且软件服务无法平滑硬件订单",
@@ -5918,11 +5918,11 @@
         }
       ],
       "qualityDecision": "retain",
-      "qualityRationale": "本季网络收入约30.36亿美元、增37.7%，软件与大客户部署支持增长。；Q2报表净利润增长36.5%、营业利润增长39.7%；Q1净利润仅增长25.7%，尚未连续两季达到30%。Q2营业外净收益1.263亿美元、所得税2.914亿美元；战略投资收益600万美元，未替代主营营业利润。",
-      "growthDecision": "hold",
-      "growthRationale": "本季网络收入约30.36亿美元、增37.7%，软件与大客户部署支持增长。；Q2报表净利润增长36.5%、营业利润增长39.7%；Q1净利润仅增长25.7%，尚未连续两季达到30%。Q2营业外净收益1.263亿美元、所得税2.914亿美元；战略投资收益600万美元，未替代主营营业利润。；硬件网络与大客户资本开支存在周期，已交付收入与未来AI订单分开。",
+      "qualityRationale": "本季网络收入约30.36亿美元、增37.7%，软件与大客户部署支持增长。；Q2报表净利润增长36.5%、营业利润增长39.7%；Q1净利润仅增长25.7%，净利润与营业利润分别评估。Q2营业外净收益1.263亿美元、所得税2.914亿美元；战略投资收益600万美元，未替代主营营业利润。",
+      "growthDecision": "retain",
+      "growthRationale": "网络操作系统与高速网络部署形成持续收入，两季营业利润增长34.8%、39.7%；一个季度净利不足30%不否定经营增长。",
       "breakoutDecision": "hold",
-      "breakoutRationale": "本季网络收入约30.36亿美元、增37.7%，软件与大客户部署支持增长。；Q2报表净利润增长36.5%、营业利润增长39.7%；Q1净利润仅增长25.7%，尚未连续两季达到30%。Q2营业外净收益1.263亿美元、所得税2.914亿美元；战略投资收益600万美元，未替代主营营业利润。；硬件网络与大客户资本开支存在周期，已交付收入与未来AI订单分开。"
+      "breakoutRationale": "本季网络收入约30.36亿美元、增37.7%，软件与大客户部署支持增长。；Q2报表净利润增长36.5%、营业利润增长39.7%；Q1净利润仅增长25.7%，净利润与营业利润分别评估。Q2营业外净收益1.263亿美元、所得税2.914亿美元；战略投资收益600万美元，未替代主营营业利润。；硬件网络与大客户资本开支存在周期，已交付收入与未来AI订单分开。"
     }
   },
   "PLTR": {
@@ -8253,6 +8253,333 @@
       "growthRationale": "Q2报告收入增24%，其中有机18%、收购5%、汇率1%；供电和热管理需求带来已实现收入。；GAAP营业利润约6.38亿美元、增44%；不以调整EPS60%增幅替代GAAP53%，保留并购和股权费用。；AI建设有周期，有机增长与订单兑现需一起观察，不仅看并购后规模。",
       "breakoutDecision": "hold",
       "breakoutRationale": "Q2报告收入增24%，其中有机18%、收购5%、汇率1%；供电和热管理需求带来已实现收入。；GAAP营业利润约6.38亿美元、增44%；不以调整EPS60%增幅替代GAAP53%，保留并购和股权费用。；AI建设有周期，有机增长与订单兑现需一起观察，不仅看并购后规模。"
+    }
+  },
+  "CDNS": {
+    "reviewedAt": "2026-10-17",
+    "reportPeriod": "2026-06-30",
+    "summary": "核心EDA增长18%及IP增长支持扩张；以去年营业利润加回1.28545亿美元法律费用比较，本季营业利润仍约增21.6%，不用129%净利增速外推。",
+    "thesis": [
+      "芯片设计流程和工具认证带来迁移成本；核心EDA与IP已有实际收入增长。",
+      "收入15.84451亿美元；核心EDA同比增长18%，IP超过40%。"
+    ],
+    "risks": [
+      "并购扩大收入，去年法律和解损失压低基数；不能把129%净利增长全当内生增长。",
+      "上年同期1.28545亿美元法律和解损失降低基数；本季投资等非经营收益也须分开。"
+    ],
+    "watch": [
+      "芯片研发投入有周期，不能用AI市场规模替代订单。",
+      "持续检查利润、经营现金和客户订单是否同步增长。"
+    ],
+    "sources": [
+      {
+        "label": "本期公司正式业绩发布",
+        "url": "https://investor.cadence.com/news/news-details/2026/Cadence-Reports-Second-Quarter-2026-Financial-Results/default.aspx",
+        "publishedAt": "2026-07-27",
+        "reportPeriod": "2026-06-30"
+      }
+    ],
+    "longTerm": {
+      "decision": "retain",
+      "durability": "芯片设计流程和工具认证带来迁移成本；核心EDA与IP已有实际收入增长。",
+      "reinvestment": "EDA、IP与系统设计研发及整合",
+      "invalidation": "并购扩大收入，去年法律和解损失压低基数；不能把129%净利增长全当内生增长。",
+      "rationale": "芯片设计流程和工具认证带来迁移成本；核心EDA与IP已有实际收入增长。"
+    },
+    "earningsReview": {
+      "reportPeriod": "2026-06-30",
+      "driver": "收入15.84451亿美元；核心EDA同比增长18%，IP超过40%。",
+      "nonOperating": "上年同期1.28545亿美元法律和解损失降低基数；本季投资等非经营收益也须分开。",
+      "priceCycle": "芯片研发投入有周期，不能用AI市场规模替代订单。",
+      "consolidation": "Hexagon D&E并表增厚系统设计收入，整体24.2%营收增长并非全是有机增长。",
+      "invalidation": "并购扩大收入，去年法律和解损失压低基数；不能把129%净利增长全当内生增长。",
+      "evidence": [
+        {
+          "label": "Q2收入",
+          "value": 1584451000.0,
+          "unit": "USD",
+          "sourceUrl": "https://investor.cadence.com/news/news-details/2026/Cadence-Reports-Second-Quarter-2026-Financial-Results/default.aspx",
+          "location": "合并利润表",
+          "basis": "disclosed",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "Q2报表净利润",
+          "value": 367076000.0,
+          "unit": "USD",
+          "sourceUrl": "https://investor.cadence.com/news/news-details/2026/Cadence-Reports-Second-Quarter-2026-Financial-Results/default.aspx",
+          "location": "合并利润表",
+          "basis": "disclosed",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "Q2营业利润",
+          "value": 450315000.0,
+          "unit": "USD",
+          "sourceUrl": "https://investor.cadence.com/news/news-details/2026/Cadence-Reports-Second-Quarter-2026-Financial-Results/default.aspx",
+          "location": "合并利润表",
+          "basis": "disclosed",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "Q2经营现金流",
+          "value": 634929000.0,
+          "unit": "USD",
+          "sourceUrl": "https://investor.cadence.com/news/news-details/2026/Cadence-Reports-Second-Quarter-2026-Financial-Results/default.aspx",
+          "location": "合并财务报表（第二季度；半年度现金减第一季度）",
+          "basis": "calculated",
+          "reportPeriod": "2026-06-30"
+        }
+      ],
+      "qualityDecision": "retain",
+      "qualityRationale": "芯片设计流程和工具认证带来迁移成本；核心EDA与IP已有实际收入增长。 并购扩大收入，去年法律和解损失压低基数；不能把129%净利增长全当内生增长。",
+      "growthDecision": "retain",
+      "growthRationale": "核心EDA增长18%及IP增长支持扩张；以去年营业利润加回1.28545亿美元法律费用比较，本季营业利润仍约增21.6%，不用129%净利增速外推。",
+      "breakoutDecision": "hold",
+      "breakoutRationale": "芯片设计流程和工具认证带来迁移成本；核心EDA与IP已有实际收入增长。 并购扩大收入，去年法律和解损失压低基数；不能把129%净利增长全当内生增长。"
+    }
+  },
+  "KLAC": {
+    "reviewedAt": "2026-10-17",
+    "reportPeriod": "2026-06-30",
+    "summary": "制程复杂化提高检测需求，工艺数据库和客户验证形成进入壁垒；服务随装机形成重复收入。 FY2026收入135.79476亿美元、净利润48.30771亿美元、经营现金41.43079亿美元；Q4收入同比增长15.2%。",
+    "thesis": [
+      "制程复杂化提高检测需求，工艺数据库和客户验证形成进入壁垒；服务随装机形成重复收入。",
+      "FY2026收入135.79476亿美元、净利润48.30771亿美元、经营现金41.43079亿美元；Q4收入同比增长15.2%。"
+    ],
+    "risks": [
+      "客户晶圆厂资本开支和出口限制会改变交付；回购抬高ROE，拆股不增加价值。",
+      "采用GAAP净利润，不以非GAAP EPS替换；2026年6月十拆一只调整每股口径。"
+    ],
+    "watch": [
+      "晶圆厂投资、先进封装和出口管制共同影响设备需求。",
+      "持续检查利润、经营现金和客户订单是否同步增长。"
+    ],
+    "sources": [
+      {
+        "label": "本期公司正式业绩发布",
+        "url": "https://ir.kla.com/news-events/press-releases/detail/518/kla-corporation-reports-fiscal-2026-fourth-quarter-and-full",
+        "publishedAt": "2026-07-28",
+        "reportPeriod": "2026-06-30"
+      }
+    ],
+    "longTerm": {
+      "decision": "retain",
+      "durability": "制程复杂化提高检测需求，工艺数据库和客户验证形成进入壁垒；服务随装机形成重复收入。",
+      "reinvestment": "检测、量测和装机服务能力",
+      "invalidation": "客户晶圆厂资本开支和出口限制会改变交付；回购抬高ROE，拆股不增加价值。",
+      "rationale": "制程复杂化提高检测需求，工艺数据库和客户验证形成进入壁垒；服务随装机形成重复收入。"
+    },
+    "earningsReview": {
+      "reportPeriod": "2026-06-30",
+      "driver": "FY2026收入135.79476亿美元、净利润48.30771亿美元、经营现金41.43079亿美元；Q4收入同比增长15.2%。",
+      "nonOperating": "采用GAAP净利润，不以非GAAP EPS替换；2026年6月十拆一只调整每股口径。",
+      "priceCycle": "晶圆厂投资、先进封装和出口管制共同影响设备需求。",
+      "consolidation": "本次判断依据现有业务收入、利润和现金，未将订单或收入指引当作已实现业绩。",
+      "invalidation": "客户晶圆厂资本开支和出口限制会改变交付；回购抬高ROE，拆股不增加价值。",
+      "evidence": [
+        {
+          "label": "Q2收入",
+          "value": 3657556000,
+          "unit": "USD",
+          "sourceUrl": "https://ir.kla.com/news-events/press-releases/detail/518/kla-corporation-reports-fiscal-2026-fourth-quarter-and-full",
+          "location": "合并利润表",
+          "basis": "disclosed",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "Q2报表净利润",
+          "value": 1363059000,
+          "unit": "USD",
+          "sourceUrl": "https://ir.kla.com/news-events/press-releases/detail/518/kla-corporation-reports-fiscal-2026-fourth-quarter-and-full",
+          "location": "合并利润表",
+          "basis": "disclosed",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "Q2经营现金流",
+          "value": 906430000,
+          "unit": "USD",
+          "sourceUrl": "https://ir.kla.com/news-events/press-releases/detail/518/kla-corporation-reports-fiscal-2026-fourth-quarter-and-full",
+          "location": "合并财务报表（第二季度；半年度现金减第一季度）",
+          "basis": "calculated",
+          "reportPeriod": "2026-06-30"
+        }
+      ],
+      "qualityDecision": "retain",
+      "qualityRationale": "制程复杂化提高检测需求，工艺数据库和客户验证形成进入壁垒；服务随装机形成重复收入。 客户晶圆厂资本开支和出口限制会改变交付；回购抬高ROE，拆股不增加价值。",
+      "growthDecision": "retain",
+      "growthRationale": "制程复杂化提高检测需求，工艺数据库和客户验证形成进入壁垒；服务随装机形成重复收入。 客户晶圆厂资本开支和出口限制会改变交付；回购抬高ROE，拆股不增加价值。",
+      "breakoutDecision": "hold",
+      "breakoutRationale": "制程复杂化提高检测需求，工艺数据库和客户验证形成进入壁垒；服务随装机形成重复收入。 客户晶圆厂资本开支和出口限制会改变交付；回购抬高ROE，拆股不增加价值。"
+    }
+  },
+  "FTNT": {
+    "reviewedAt": "2026-10-17",
+    "reportPeriod": "2026-06-30",
+    "summary": "安全设备与订阅已有实际增长，营业利润增50.5%、半年现金强劲；不将负净资产年份的ROE编成质量证据。",
+    "thesis": [
+      "自研安全芯片与操作系统结合装机客户和续费，产品增长已转为营业利润及现金。",
+      "Q2营收20.479亿美元、营业利润6.893亿美元，分别同比增长25.6%、50.5%。"
+    ],
+    "risks": [
+      "硬件更新周期与安全服务竞争；回购曾造成负净资产，不能把畸高ROE视为质量证据。",
+      "营业外利息及其他收益分列；本季报表净利润6.063亿美元，不使用调整后6.650亿美元替代。"
+    ],
+    "watch": [
+      "产品收入增长52%包含硬件更新需求，需同时跟踪服务续费与递延收入。",
+      "持续检查利润、经营现金和客户订单是否同步增长。"
+    ],
+    "sources": [
+      {
+        "label": "本期公司正式业绩发布",
+        "url": "https://investor.fortinet.com/static-files/e4ffcc79-194e-4ca3-9a69-8a51bd0a6314",
+        "publishedAt": "2026-07-29",
+        "reportPeriod": "2026-06-30"
+      }
+    ],
+    "longTerm": {
+      "decision": "retain",
+      "durability": "自研安全芯片与操作系统结合装机客户和续费，产品增长已转为营业利润及现金。",
+      "reinvestment": "安全芯片、统一操作系统与订阅产品",
+      "invalidation": "硬件更新周期与安全服务竞争；回购曾造成负净资产，不能把畸高ROE视为质量证据。",
+      "rationale": "自研安全芯片与操作系统结合装机客户和续费，产品增长已转为营业利润及现金。"
+    },
+    "earningsReview": {
+      "reportPeriod": "2026-06-30",
+      "driver": "Q2营收20.479亿美元、营业利润6.893亿美元，分别同比增长25.6%、50.5%。",
+      "nonOperating": "营业外利息及其他收益分列；本季报表净利润6.063亿美元，不使用调整后6.650亿美元替代。",
+      "priceCycle": "产品收入增长52%包含硬件更新需求，需同时跟踪服务续费与递延收入。",
+      "consolidation": "半年现金流表未有企业合并净现金支付；不凭并购叙事解释本期增长。",
+      "invalidation": "硬件更新周期与安全服务竞争；回购曾造成负净资产，不能把畸高ROE视为质量证据。",
+      "evidence": [
+        {
+          "label": "Q2收入",
+          "value": 2047900000,
+          "unit": "USD",
+          "sourceUrl": "https://investor.fortinet.com/static-files/e4ffcc79-194e-4ca3-9a69-8a51bd0a6314",
+          "location": "合并利润表",
+          "basis": "disclosed",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "Q2报表净利润",
+          "value": 606300000,
+          "unit": "USD",
+          "sourceUrl": "https://investor.fortinet.com/static-files/e4ffcc79-194e-4ca3-9a69-8a51bd0a6314",
+          "location": "合并利润表",
+          "basis": "disclosed",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "Q2营业利润",
+          "value": 689300000,
+          "unit": "USD",
+          "sourceUrl": "https://investor.fortinet.com/static-files/e4ffcc79-194e-4ca3-9a69-8a51bd0a6314",
+          "location": "合并利润表",
+          "basis": "disclosed",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "Q2经营现金流",
+          "value": 1043600000,
+          "unit": "USD",
+          "sourceUrl": "https://investor.fortinet.com/static-files/e4ffcc79-194e-4ca3-9a69-8a51bd0a6314",
+          "location": "合并财务报表（第二季度；半年度现金减第一季度）",
+          "basis": "calculated",
+          "reportPeriod": "2026-06-30"
+        }
+      ],
+      "qualityDecision": "retain",
+      "qualityRationale": "自研安全芯片与操作系统结合装机客户和续费，产品增长已转为营业利润及现金。 硬件更新周期与安全服务竞争；回购曾造成负净资产，不能把畸高ROE视为质量证据。",
+      "growthDecision": "retain",
+      "growthRationale": "安全设备与订阅已有实际增长，营业利润增50.5%、半年现金强劲；不将负净资产年份的ROE编成质量证据。",
+      "breakoutDecision": "hold",
+      "breakoutRationale": "自研安全芯片与操作系统结合装机客户和续费，产品增长已转为营业利润及现金。 硬件更新周期与安全服务竞争；回购曾造成负净资产，不能把畸高ROE视为质量证据。"
+    }
+  },
+  "NOW": {
+    "reviewedAt": "2026-10-17",
+    "reportPeriod": "2026-06-30",
+    "summary": "订阅和工作流集成带来迁移成本；新增覆盖企业自动化领域。 订阅收入同比增长24.5%，当期剩余履约义务同比增长21%，合同额与已实现收入分开。",
+    "thesis": [
+      "订阅和工作流集成带来迁移成本；新增覆盖企业自动化领域。",
+      "订阅收入同比增长24.5%，当期剩余履约义务同比增长21%，合同额与已实现收入分开。"
+    ],
+    "risks": [
+      "本季GAAP营业利润明显回落；股份支付、并购及整合费用不能被非GAAP口径掩盖，暂不入选盈利成长。",
+      "Q2 GAAP营业利润1.62亿美元，与非GAAP的11.73亿美元差异很大，利润回落暂不支持盈利成长入选。"
+    ],
+    "watch": [
+      "企业IT支出和AI产品付费转换存在不确定性。",
+      "持续检查利润、经营现金和客户订单是否同步增长。"
+    ],
+    "sources": [
+      {
+        "label": "本期公司正式业绩发布",
+        "url": "https://investor.servicenow.com/news/news-details/2026/ServiceNow-Reports-Second-Quarter-2026-Financial-Results/default.aspx",
+        "publishedAt": "2026-07-22",
+        "reportPeriod": "2026-06-30"
+      }
+    ],
+    "longTerm": {
+      "decision": "hold",
+      "durability": "订阅和工作流集成带来迁移成本；新增覆盖企业自动化领域。",
+      "reinvestment": "企业自动化、AI及跨系统集成",
+      "invalidation": "本季GAAP营业利润明显回落；股份支付、并购及整合费用不能被非GAAP口径掩盖，暂不入选盈利成长。",
+      "rationale": "订阅和工作流集成带来迁移成本；新增覆盖企业自动化领域。"
+    },
+    "earningsReview": {
+      "reportPeriod": "2026-06-30",
+      "driver": "订阅收入同比增长24.5%，当期剩余履约义务同比增长21%，合同额与已实现收入分开。",
+      "nonOperating": "Q2 GAAP营业利润1.62亿美元，与非GAAP的11.73亿美元差异很大，利润回落暂不支持盈利成长入选。",
+      "priceCycle": "企业IT支出和AI产品付费转换存在不确定性。",
+      "consolidation": "Moveworks、Armis等整合及相关费用影响当期报表；不能把剔除成本后的盈利当成报表盈利。",
+      "invalidation": "本季GAAP营业利润明显回落；股份支付、并购及整合费用不能被非GAAP口径掩盖，暂不入选盈利成长。",
+      "evidence": [
+        {
+          "label": "Q2收入",
+          "value": 3987000000,
+          "unit": "USD",
+          "sourceUrl": "https://investor.servicenow.com/news/news-details/2026/ServiceNow-Reports-Second-Quarter-2026-Financial-Results/default.aspx",
+          "location": "合并利润表",
+          "basis": "disclosed",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "Q2报表净利润",
+          "value": 298000000,
+          "unit": "USD",
+          "sourceUrl": "https://investor.servicenow.com/news/news-details/2026/ServiceNow-Reports-Second-Quarter-2026-Financial-Results/default.aspx",
+          "location": "合并利润表",
+          "basis": "disclosed",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "Q2营业利润",
+          "value": 162000000,
+          "unit": "USD",
+          "sourceUrl": "https://investor.servicenow.com/news/news-details/2026/ServiceNow-Reports-Second-Quarter-2026-Financial-Results/default.aspx",
+          "location": "合并利润表",
+          "basis": "disclosed",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "Q2经营现金流",
+          "value": 587000000,
+          "unit": "USD",
+          "sourceUrl": "https://investor.servicenow.com/news/news-details/2026/ServiceNow-Reports-Second-Quarter-2026-Financial-Results/default.aspx",
+          "location": "合并财务报表（第二季度；半年度现金减第一季度）",
+          "basis": "calculated",
+          "reportPeriod": "2026-06-30"
+        }
+      ],
+      "qualityDecision": "hold",
+      "qualityRationale": "订阅和工作流集成带来迁移成本；新增覆盖企业自动化领域。 本季GAAP营业利润明显回落；股份支付、并购及整合费用不能被非GAAP口径掩盖，暂不入选盈利成长。",
+      "growthDecision": "hold",
+      "growthRationale": "订阅和工作流集成带来迁移成本；新增覆盖企业自动化领域。 本季GAAP营业利润明显回落；股份支付、并购及整合费用不能被非GAAP口径掩盖，暂不入选盈利成长。",
+      "breakoutDecision": "hold",
+      "breakoutRationale": "订阅和工作流集成带来迁移成本；新增覆盖企业自动化领域。 本季GAAP营业利润明显回落；股份支付、并购及整合费用不能被非GAAP口径掩盖，暂不入选盈利成长。"
     }
   }
 }

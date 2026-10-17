@@ -3,6 +3,7 @@ from stock_fundamentals import numeric, quality_review, research_evidence_check,
 from company_report import quarter_history, ttm_amount
 from stock_earnings import finite
 from company_quality import POLICY_FROM, durable_financials, business_decision
+from company_selection import reviewed_group
 
 GROWTH_LIMITS = {'revenueGrowth': None, 'netProfitGrowth': 30, 'deductedProfitGrowth': 30,
                  'deductedRatio': .8, 'annualRoe': 10, 'marketCap': 100}
@@ -49,6 +50,7 @@ def operating_review(row, asof, direction):
     return review, check('本期盈利来源已有量化复核', passed, reason)
 
 
+@reviewed_group('quality')
 def long_term_review(row, asof):
     review = row.get('qualityReview') or quality_review(row, asof)
     if review is None:
@@ -89,6 +91,7 @@ def long_term_review(row, asof):
             'basis': 'long_term_quality_v2', 'reasons': review['reasons'], 'watchouts': review['watchouts']}
 
 
+@reviewed_group('growth')
 def growth_review(row, asof):
     if row.get('group') not in ('quality', 'growth'):
         return None
@@ -141,6 +144,7 @@ def growth_review(row, asof):
             'reasons': [business[k] for k in ('driver', 'quality') if business.get(k)], 'watchouts': []}
 
 
+@reviewed_group('breakout')
 def breakout_review(row, asof):
     """Current core earnings expansion, independently of the quality classifications."""
     if row.get('group') not in ('quality', 'growth'):

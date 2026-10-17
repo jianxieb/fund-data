@@ -350,6 +350,8 @@ def refresh_quality_review(row, asof):
             row.pop(key, None)
         else:
             row[key] = classification
+    from company_selection import apply_cn
+    apply_cn(row, asof)
 
 
 def load_old_rows(src):

@@ -29,7 +29,7 @@ function page() {
 
 test('US companies use five current groups with other coverage last and overlap colored', () => {
   const p=page(), html=p.view();
-  const names=['长期质量候选','盈利成长候选','业绩爆发股','红利价值','其他已收录'];
+  const names=['长期优质企业','盈利成长企业','业绩爆发股','红利价值','未入选公司'];
   let previous=-1;
   for (const name of names) { const i=html.indexOf(name); assert.ok(i>previous); previous=i; }
   assert.match(html, /stock-other-tab/);
@@ -52,7 +52,8 @@ test('search persists across groups and mature quality no longer depends on ten 
   assert.equal(p.ctx.OVERSEAS_STOCKS.find(s=>s.symbol==='AAPL').analysis.profitCagr3.value.toFixed(2),'3.92');
   p.click('view','valuation'); assert.match(p.view(), /value="AAPL"/);
   p.click('detail','AAPL'); assert.match(p.modal(), /分类依据与未入选原因/);
-  assert.match(p.modal(), /重要蓝筹/);
+  assert.match(p.modal(), /软硬件生态.*重复服务收入/);
+  assert.match(p.modal(), /重新评估的信号/);
 });
 
 test('dividend view and detail distinguish REIT AFFO from GAAP earnings', () => {

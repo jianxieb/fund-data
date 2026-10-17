@@ -71,6 +71,12 @@ def report_for(s):
     sections = []
     def add(id, title, **values):
         sections.append({'id': id, 'title': title, **values})
+    selection = s.get('companySelection')
+    if selection:
+        add('selection', '本期公司入选结论', paragraphs=[selection['rationale'], '风险：' + selection.get('risk', ''),
+            '需要重新评估的信号：' + selection.get('invalidation', '')],
+            links=[{'label': source.get('label') or '本期原始财报', 'url': source['url']} for source in selection.get('sources', [])],
+            table={'headers': ['财报证据', '数值', '位置'], 'rows': [[e['label'], fmt(e['value'], e['unit']), e['location']] for e in selection.get('evidence', [])]})
     add('thesis', '核心判断', paragraphs=[r['summary'],
         '最新单季' + revenue + '同比' + g(f['revenueGrowth']) + '，净利润同比' + g(f['profitGrowth']) + '；TTM ROE ' + fmt(f.get('roeTTM'), '%') + '，营业利润率' + fmt(f.get('operatingMargin'), '%') + '。'],
         links=[{'label': '对应公司原始财报', 'url': f['sourceUrl']}])
