@@ -64,6 +64,19 @@ test('dividend view and detail distinguish REIT AFFO from GAAP earnings', () => 
   assert.doesNotMatch(p.modal(), /没有自动授予国内/);
 });
 
+test('each market exposes separate quality and growth reasons including a quality hold', () => {
+  const ctx={}; vm.createContext(ctx); vm.runInContext(fs.readFileSync('data/snapshot.js','utf8'),ctx);
+  const fii=ctx.STOCKS.find(s=>s.c==='601138'), zijin=ctx.STOCKS.find(s=>s.c==='601899');
+  assert.match(M.stockSelectionReason(fii,'quality'),/23\.92%/);
+  assert.match(M.stockSelectionReason(fii,'growth'),/230%/);
+  assert.match(M.stockSelectionReason(zijin,'quality'),/1\.53倍/);
+  assert.match(M.stockSelectionReason(zijin,'growth'),/销量增长29\.49%/);
+  const p=page(); p.view(); p.click('detail','AMZN');
+  assert.match(p.modal(),/负76亿美元/);
+  const stale=structuredClone(fii); stale.companySelection.status='pending'; stale.companySelection.rationale='缺新报告业务评审';
+  assert.equal(M.stockSelectionReason(stale,'growth'),'缺新报告业务评审');
+});
+
 
 test('switching financial views preserves both directions and loaded rows', () => {
   const p=page(); p.view(); p.click('group','other'); p.click('view','valuation'); p.click('sort','pe');

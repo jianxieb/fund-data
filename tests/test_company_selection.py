@@ -44,6 +44,28 @@ class CompanySelectionTests(unittest.TestCase):
         row['financials']['reportDate'] = '2026-09-30'
         self.assertEqual(classify(row, '2026-10-30')['screening']['groups'], ['other'])
 
+    def test_zijin_selection_uses_operating_evidence_not_a_previous_label(self):
+        row = self.cn['601899']
+        verdict = cn_selection(row, '2026-10-17')
+        self.assertEqual(verdict['groups'], ['quality', 'growth'])
+        evidence = {e['label']: e for e in verdict['evidence']}
+        self.assertEqual(evidence['矿产金锭销量']['value'], 27424)
+        self.assertEqual(evidence['上年同期矿产金锭销量']['value'], 21178)
+        self.assertEqual(evidence['矿产铜精矿销量']['value'], 353831)
+        self.assertTrue(evidence['矿产金锭销量']['sourceUrl'].endswith('1225550244.PDF'))
+        self.assertIn('售价上升', verdict['reviews']['growth']['rationale'])
+        self.assertNotIn('旧报告', verdict['rationale'])
+        self.assertIn('1.53', verdict['reviews']['quality']['rationale'])
+
+    def test_fii_quality_hold_does_not_pretend_five_year_records_are_missing(self):
+        verdict = cn_selection(self.cn['601138'], '2026-10-17')
+        quality = verdict['reviews']['quality']
+        self.assertEqual(verdict['groups'], ['growth'])
+        self.assertTrue(next(c['pass'] for c in quality['checks'] if c['label'].startswith('连续五个')))
+        self.assertEqual([c['label'] for c in quality['checks'] if not c['pass']], ['逐家公司评审明确入选本组'])
+        for amount in ['52.38', '172.30', '73.91', '90.92', '23.92']:
+            self.assertIn(amount, quality['rationale'])
+
     def test_cash_and_earnings_deterioration_still_vetoes_manual_approval(self):
         row = deepcopy(self.us['ANET'])
         row['financials']['ttmCash'] = -1
