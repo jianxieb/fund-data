@@ -12,7 +12,7 @@
   function stockSortLabel(key) {
     if (key.startsWith('return:')) return '近' + key.split(':')[1] + '年收益';
     if (key.startsWith('percentile:')) return 'PE分位 / ' + key.split(':')[1] + '年';
-    return ({ latestRoe:'最新报告ROE', roe:'资本回报', 'growth:revenue':'营收同比', 'growth:netProfit':'归母利润同比', 'growth:deductedProfit':'扣非利润同比', revenueGrowth:'营收增长', profitGrowth:'利润增长', cashConversion:'现金回收', pe:'PE / TTM', peDynamic:'动态PE', peStatic:'静态PE', peForward:'预测PE', epsTTM:'每股收益', pb:'PB / MRQ', mcap:'市值', price:'收盘价', yield12:'近12月股息率', sinceListing:'上市以来累计', mdd5:'最大回撤', vol5:'波动率' })[key] || '默认顺序';
+    return ({ latestRoe:'最新报告ROE', roe:'资本回报', 'growth:revenue':'营收同比', 'growth:netProfit':'归母利润同比', 'growth:deductedProfit':'扣非利润同比', revenueGrowth:'营收增长', profitGrowth:'利润增长', operatingGrowth:'单季营业利润同比', cashConversion:'现金回收', pe:'PE / TTM', peDynamic:'动态PE', peStatic:'静态PE', peForward:'预测PE', epsTTM:'每股收益', pb:'PB / MRQ', mcap:'市值', price:'收盘价', yield12:'近12月股息率', sinceListing:'上市以来累计', mdd5:'最大回撤', vol5:'波动率' })[key] || '默认顺序';
   }
   function stockCashQuality(stock) {
     if (stock.symbol) {
