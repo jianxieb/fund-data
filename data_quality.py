@@ -363,7 +363,7 @@ def audit(snapshot, today=None):
     if portfolio:
         rows = portfolio.get('assets') or []
         pd = dataset('portfolio', '组合每日历史', rows)
-        expected = ({'fund:' + row['c'] for row in [*funds, *extra]}
+        expected = ({'fund:' + row['c'] for row in [*funds, *extra, *(snapshot.get('XOTHERS') or [])]}
                     | {'stock:' + row['c'] for row in snapshot.get('STOCKS') or []}
                     | {'stock:' + row['symbol'] for row in snapshot.get('OVERSEAS_STOCKS') or []}
                     | {'us:' + row['symbol'] for row in snapshot.get('BM') or [] if row.get('symbol') and row.get('feesEmbedded')})
