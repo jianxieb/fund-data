@@ -80,7 +80,10 @@ test('other research is a visible group with exact exclusion evidence and no sel
     const selected = selectedGroups.some(group => M.stockMatches(stock, group));
     assert.equal(M.stockMatches(stock, 'other'), !selected, stock.c);
   }
-  assert.equal(M.stockMatches(context.STOCKS.find(stock => stock.c === '601899'), 'other'), true);
+  const zijin=context.STOCKS.find(stock => stock.c === '601899');
+  assert.equal(M.stockMatches(zijin, 'other'), false);
+  assert.equal(M.stockMatches(zijin, 'quality'), true);
+  assert.equal(M.stockMatches(zijin, 'growth'), true);
   assert.equal(M.stockMatches(context.STOCKS.find(stock => stock.c === '601138'), 'growth'), true);
   assert.equal(M.stockMatches(context.STOCKS.find(stock => stock.c === '600036'), 'other'), false);
   const industrial = context.STOCKS.find(stock => stock.c === '601138');

@@ -49,8 +49,9 @@
     const review = group === 'quality' ? stock.longTermReview : group === 'growth' ? stock.growthReview : stock.breakoutReview;
     return review?.qualified === true && stock.qualityResearch?.status === 'reviewed' && stock.qualityResearch?.code === stock.c;
   }
-  function stockSelectionReason(stock, group) {
+  function stockSelectionReason(stock, group, compact = false) {
     const selection = stock.companySelection, review = selection?.reviews?.[group];
+    if (compact && selection?.status !== 'pending' && selection?.groupSummaries?.[group]) return selection.groupSummaries[group];
     if (!selection || group === 'other' || selection.status === 'pending') return selection?.rationale || '';
     const failures = (review?.checks || []).filter(c => !c.pass).map(c => c.reason).filter(Boolean);
     return failures.length ? [...new Set(failures)].join('；') : review?.rationale || selection.groupReasons?.[group] || selection.rationale;

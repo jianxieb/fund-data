@@ -108,6 +108,49 @@ class CompanySelectionTests(unittest.TestCase):
             copy = classify(deepcopy(row), '2026-10-17')
             self.assertEqual(copy, row)
 
+    def test_eight_added_us_companies_have_current_filings_and_independent_histories(self):
+        expected = {'MCO':'2026-06-30','MSCI':'2026-06-30','CTAS':'2026-08-31','ROP':'2026-06-30',
+                    'PH':'2026-06-30','FAST':'2026-09-30','CPRT':'2026-07-31','ADSK':'2026-07-31'}
+        catalog = json.loads((ROOT/'data/portfolio/catalog.js').read_text().split('=',1)[1].rstrip(';\n'))
+        assets = {a['id']:a for a in catalog['assets']}
+        reports = json.loads(next(l.split('=',1)[1].rstrip(';') for l in (ROOT/'data/overseas-stocks.js').read_text().splitlines() if l.startswith('var OVERSEAS_REPORTS=')))['reports']
+        for symbol, period in expected.items():
+            with self.subTest(symbol=symbol):
+                row = self.us[symbol]
+                self.assertEqual(row['financials']['reportDate'], period)
+                self.assertEqual(row['research']['reportPeriod'], period)
+                self.assertEqual(row['priceAsOf'], '2026-10-16')
+                self.assertTrue(row['companySelection']['newCoverage'])
+                self.assertTrue(all(v is not None for v in row['r']))
+                self.assertGreaterEqual(len(row['analysis']['annual']), 5)
+                asset=assets['stock:'+symbol]
+                history=json.loads((ROOT/asset['historyUrl']).read_text())
+                self.assertEqual(history['id'], 'stock:'+symbol)
+                self.assertEqual(history['currency'], 'USD')
+                self.assertEqual(history['dividends'], 'reinvested')
+                self.assertEqual(history['series'][-1][0], '2026-10-16')
+                self.assertTrue(any(r['code']==symbol for r in reports))
+
+    def test_new_reviews_do_not_turn_investment_gains_or_falling_profit_into_growth(self):
+        copart=self.us['CPRT']
+        self.assertEqual(copart['screening']['groups'], ['other'])
+        self.assertAlmostEqual(copart['financials']['operatingGrowth']['value'], -10.5884520021)
+        self.assertIn('下降10.6%',copart['companySelection']['groupReasons']['growth'])
+        self.assertIn('经营现金下降18.5%',copart['companySelection']['groupReasons']['quality'])
+        self.assertIn('8.35亿美元',self.us['ROP']['research']['earningsReview']['nonOperating'])
+        self.assertAlmostEqual(self.us['ROP']['financials']['operatingGrowth']['value'],6.6387014408)
+        self.assertIsNone(self.us['MSCI']['financials']['roeTTM'])
+        self.assertIn('quality',self.us['MSCI']['screening']['groups'])
+
+    def test_fastenal_uses_released_q3_and_single_quarter_cash(self):
+        f=self.us['FAST']['financials']
+        self.assertEqual(f['reportDate'],'2026-09-30')
+        self.assertEqual(f['publishedAt'],'2026-10-14')
+        self.assertEqual(f['OperatingCashFlow'],421600000)
+        self.assertNotEqual(f['OperatingCashFlow'],1065700000)
+        self.assertEqual(f['NetIncome'],401600000)
+        self.assertAlmostEqual(f['operatingGrowth']['value'],20.22650056625)
+
     def test_review_does_not_backdate_endorsements(self):
         self.assertIsNone(cn_selection(self.cn['601138'], '2026-10-16'))
         self.assertIsNone(assess('ANET','us','2026-06-30','2026-10-16',100,200,[],50))

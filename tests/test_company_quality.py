@@ -57,9 +57,11 @@ class DurableQualityTests(unittest.TestCase):
             for key,fn in [('longTermReview',long_term_review),('growthReview',growth_review)]:
                 actual=row[key]
                 self.assertEqual(actual,fn(deepcopy(row),actual['checkedAt']),row['c'])
-            if row['c'] in ('601138','300308'):
+            if row['c'] in ('601138','300308','601899'):
                 self.assertTrue(row['growthReview']['qualified'],row['c'])
-            if row['c'] in ('601899','603979','000792','300857'):
+            if row['c']=='601899':
+                self.assertTrue(row['longTermReview']['qualified'],row['c'])
+            if row['c'] in ('603979','000792','300857'):
                 self.assertFalse(row['growthReview']['qualified'],row['c'])
         for filename in ['assets/app.js','assets/overseas-stocks.js']:
             self.assertNotIn('stockCashOnly',(ROOT/filename).read_text())

@@ -23,7 +23,7 @@
   const matches = s => s.screening.groups.includes(state.group);
   function reason(s) {
     const r = s.research, a = s.analysis;
-    if (s.companySelection && state.group !== 'dividend') return paragraphs([M.stockSelectionReason(s, state.group)]) + H.action('查看财报依据', 'os-stock-detail', 'text-link small', 'data-value="' + H.esc(s.symbol) + '"');
+    if (s.companySelection && state.group !== 'dividend') return paragraphs([M.stockSelectionReason(s, state.group, true)]) + H.action('查看财报依据', 'os-stock-detail', 'text-link small', 'data-value="' + H.esc(s.symbol) + '"');
     if (state.group === 'other') return paragraphs([r.thesis[0], s.screening.otherReasons[0]]) + H.action('查看分类依据', 'os-stock-detail', 'text-link small', 'data-value="' + H.esc(s.symbol) + '"');
     if (state.group === 'quality') return paragraphs([r.longTerm.durability, '5年平均ROE ' + (finite(s.screening.roe5) ? s.screening.roe5.toFixed(1) + '%' : '—') + ' · 3年利润复合 ' + cagr(a.profitCagr3)]);
     if (state.group === 'dividend') return paragraphs([r.thesis[0], '连续5年现金分红 · 派息比率 ' + (s.screening.payoutRatio * 100).toFixed(1) + '%' + (s.accountingModel === 'reits' ? ' / AFFO' : ' / 报表EPS')]);

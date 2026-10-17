@@ -303,6 +303,26 @@
         },
         "note": "SEC结构化历史尚未覆盖本季；本季由发行人业绩发布补齐。单季现金为半年990711千美元减Q1 355782千美元。"
       }
+    ],
+    "FAST": [
+      {
+        "providerPeriod": "2026-09",
+        "reportDate": "2026-09-30",
+        "publishedAt": "2026-10-14",
+        "sourceUrl": "https://investor.fastenal.com/news/news-details/2026/Fastenal-Company-Reports-2026-Third-Quarter-Earnings/default.aspx",
+        "currency": "USD",
+        "quarterly": {
+          "TotalRevenue": 2463300000,
+          "NetIncome": 401600000,
+          "TotalOperatingIncomeAsReported": 530800000,
+          "GrossProfit": 1104700000,
+          "StockholdersEquity": 4149200000,
+          "OperatingCashFlow": 421600000,
+          "DilutedEPS": 0.35,
+          "CapitalExpenditures": 74000000
+        },
+        "note": "2026Q3公司原始业绩发布；现金流表直接披露单季金额。结构化SEC未覆盖本期时使用这一明确报告期的正式发布。"
+      }
     ]
   }
 }

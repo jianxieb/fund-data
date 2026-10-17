@@ -534,7 +534,7 @@
   }
   function stockReason(s) {
     const research = s.qualityResearch, growth = s.financialGrowth3;
-    if (s.companySelection && state.stockTab !== 'dividend') return '<td class="stock-reason"><span>' + esc(M.stockSelectionReason(s, state.stockTab)) + '</span>' + stockReportLink(s) + '</td>';
+    if (s.companySelection && state.stockTab !== 'dividend') return '<td class="stock-reason"><span>' + esc(M.stockSelectionReason(s, state.stockTab, true)) + '</span>' + stockReportLink(s) + '</td>';
     if (state.stockTab === 'other') {
       const exclusions = M.stockResearchStatus(s).exclusions.filter(e => e.id !== 'breakout');
       return '<td class="stock-reason"><strong>' + esc(research?.title || '') + '</strong><span>' + esc(research?.thesis?.[0] || '') + '</span>' +
