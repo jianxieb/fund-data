@@ -3,7 +3,7 @@
 .stock-pagination>div{display:flex;align-items:center;gap:16px}
 .stock-pagination button:disabled{opacity:.4;cursor:default}
 .table-wrap.table-scroll-managed{max-height:min(780px,calc(100dvh - 200px));padding-bottom:20px;scroll-padding:var(--table-head-size,40px) 0 20px;overscroll-behavior:contain;scrollbar-width:thin}
-.table-wrap.stock-table-wrap{max-height:min(897px,calc(115dvh - 230px));overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scroll-padding-top:var(--table-head-size,40px)}
+.table-wrap.stock-table-wrap{max-height:min(780px,calc(100dvh - 200px));overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scroll-padding-top:var(--table-head-size,40px)}
 .table-scroll-managed::-webkit-scrollbar{width:10px;height:0}
 .table-scroll-managed::-webkit-scrollbar-thumb{background:#c3cebb;border:2px solid white;border-radius:8px}
 .table-scroll-managed>table>thead>tr>th{position:sticky;top:var(--table-head-top,0px);z-index:2}
