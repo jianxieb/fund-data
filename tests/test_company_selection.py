@@ -112,7 +112,8 @@ class CompanySelectionTests(unittest.TestCase):
 
     def test_eight_added_us_companies_have_current_filings_and_independent_histories(self):
         expected = {'MCO':'2026-06-30','MSCI':'2026-06-30','CTAS':'2026-08-31','ROP':'2026-06-30',
-                    'PH':'2026-06-30','FAST':'2026-09-30','CPRT':'2026-07-31','ADSK':'2026-07-31'}
+                    'PH':'2026-06-30','FAST':'2026-09-30','CPRT':'2026-07-31','ADSK':'2026-07-31',
+                    'JBL':'2026-08-31','LIN':'2026-06-30','WM':'2026-06-30','APH':'2026-06-30','ODFL':'2026-06-30'}
         catalog = json.loads((ROOT/'data/portfolio/catalog.js').read_text().split('=',1)[1].rstrip(';\n'))
         assets = {a['id']:a for a in catalog['assets']}
         reports = json.loads(next(l.split('=',1)[1].rstrip(';') for l in (ROOT/'data/overseas-stocks.js').read_text().splitlines() if l.startswith('var OVERSEAS_REPORTS=')))['reports']
@@ -132,6 +133,22 @@ class CompanySelectionTests(unittest.TestCase):
                 self.assertEqual(history['dividends'], 'reinvested')
                 self.assertEqual(history['series'][-1][0], '2026-10-16')
                 self.assertTrue(any(r['code']==symbol for r in reports))
+
+    def test_latest_manufacturing_results_and_split_per_share_basis_are_not_stale(self):
+        jabil=self.us['JBL']; f=jabil['financials']
+        self.assertEqual(f['NetIncome'],398000000)  # Parent profit, excluding the NCI loss.
+        self.assertEqual(f['ttmProfit'],1042000000)
+        self.assertEqual(f['OperatingCashFlow'],733000000)  # FY 2002m - first nine months 1269m.
+        self.assertEqual(f['CapitalExpenditures'],246000000)
+        self.assertEqual(f['publishedAt'],'2026-09-30')
+        aph=self.us['APH']; original=aph['financials']['DilutedEPS']
+        self.assertEqual(original,1.37)
+        self.assertEqual(aph['financials']['ListingDilutedEPSUSD'],.685)
+        self.assertAlmostEqual(aph['peDynamic'],aph['price']/(.685*4))
+        self.assertAlmostEqual(aph['peStatic'],aph['price']/1.67)
+        self.assertIn('8000万美元',aph['research']['earningsReview']['nonOperating'])
+        self.assertIn('日均吨位仍下降4.1%',self.us['ODFL']['companySelection']['groupReasons']['growth'])
+        self.assertIn('物业',self.us['ODFL']['research']['earningsReview']['nonOperating'])
 
     def test_new_reviews_do_not_turn_investment_gains_or_falling_profit_into_growth(self):
         copart=self.us['CPRT']

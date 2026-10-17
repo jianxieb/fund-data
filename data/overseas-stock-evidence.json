@@ -323,6 +323,76 @@
         },
         "note": "2026Q3公司原始业绩发布；现金流表直接披露单季金额。结构化SEC未覆盖本期时使用这一明确报告期的正式发布。"
       }
+    ],
+    "JBL": [
+      {
+        "providerPeriod": "2026-08",
+        "reportDate": "2026-08-31",
+        "publishedAt": "2026-09-30",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/898293/000162828026063890/jbl-20260930ex991.htm",
+        "currency": "USD",
+        "annual": {
+          "TotalRevenue": 35954000000,
+          "NetIncome": 1042000000,
+          "TotalOperatingIncomeAsReported": 1704000000,
+          "GrossProfit": 3317000000,
+          "StockholdersEquity": 1613000000,
+          "OperatingCashFlow": 2002000000,
+          "DilutedEPS": 9.75,
+          "CapitalExpenditures": 628000000
+        },
+        "quarterly": {
+          "TotalRevenue": 10616000000,
+          "NetIncome": 398000000,
+          "TotalOperatingIncomeAsReported": 602000000,
+          "GrossProfit": 1001000000,
+          "StockholdersEquity": 1613000000,
+          "DilutedEPS": 3.76,
+          "OperatingCashFlow": 733000000,
+          "CapitalExpenditures": 246000000
+        },
+        "note": "公司已发布的未经审计初步业绩；归母利润与包含少数股东的合并净利分列。"
+      }
+    ],
+    "APH": [
+      {
+        "providerPeriod": "2025-12",
+        "reportDate": "2025-12-31",
+        "publishedAt": "2026-02-11",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/820313/000110465926013549/0001104659-26-013549-index.html",
+        "currency": "USD",
+        "annual": {
+          "ListingDilutedEPSUSD": 1.67,
+          "listingEpsBasis": {
+            "effectiveAt": "2026-09-02",
+            "ratio": 2,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/820313/000110465926105485/tm2624775d1_8k.htm",
+            "originalEPS": 3.34,
+            "originalSourceUrl": "https://www.sec.gov/Archives/edgar/data/820313/000110465926013549/0001104659-26-013549-index.html",
+            "originalPublishedAt": "2026-02-11"
+          }
+        },
+        "note": "原始EPS另存，按2026-09-02一拆二换算当前上市每股口径；不改变收入利润或净资产。"
+      },
+      {
+        "providerPeriod": "2026-06",
+        "reportDate": "2026-06-30",
+        "publishedAt": "2026-07-31",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/820313/000110465926089194/0001104659-26-089194-index.html",
+        "currency": "USD",
+        "quarterly": {
+          "ListingDilutedEPSUSD": 0.685,
+          "listingEpsBasis": {
+            "effectiveAt": "2026-09-02",
+            "ratio": 2,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/820313/000110465926105485/tm2624775d1_8k.htm",
+            "originalEPS": 1.37,
+            "originalSourceUrl": "https://www.sec.gov/Archives/edgar/data/820313/000110465926089194/0001104659-26-089194-index.html",
+            "originalPublishedAt": "2026-07-31"
+          }
+        },
+        "note": "原始EPS另存，按2026-09-02一拆二换算当前上市每股口径；不改变收入利润或净资产。"
+      }
     ]
   }
 }

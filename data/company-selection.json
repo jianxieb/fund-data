@@ -7770,6 +7770,423 @@
         "quality",
         "growth"
       ]
+    },
+    "us:JBL": {
+      "name": "捷普",
+      "reportPeriod": "2026-08-31",
+      "reviewedAt": "2026-10-18",
+      "groups": [
+        "quality",
+        "growth"
+      ],
+      "researchGroups": [
+        "quality",
+        "growth"
+      ],
+      "rationale": "工程、供应链管理与全球交付已有长期客户基础，连续五年利润和经营现金为正。FY2026经营现金20.02亿美元、购建设备6.28亿美元；制造业采购占款需结合应付账期、客户和债务判断。 FY2026第四季收入增长28.6%、GAAP营业利润增长78.6%；AI基础设施交付支持增长，但上年0.98亿美元业务剥离损失抬高同比，辅助核对的核心营业利润增长30.1%。",
+      "risk": "客户集中、低利润率和供应链库存影响回款；年末应收与库存扩张较快，供应商账期缩短会增加资金占用。",
+      "invalidation": "客户订单兑现、应收账龄、存货减值和供应商账期持续恶化则撤回对应判断。",
+      "sources": [
+        {
+          "label": "公司本期业绩与经营证据",
+          "url": "https://www.sec.gov/Archives/edgar/data/898293/000162828026063890/jbl-20260930ex991.htm",
+          "publishedAt": "2026-09-30",
+          "reportPeriod": "2026-08-31"
+        }
+      ],
+      "evidence": [
+        {
+          "label": "本季收入",
+          "value": 10616000000,
+          "unit": "USD",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/898293/000162828026063890/jbl-20260930ex991.htm",
+          "location": "合并利润表 / 现金流量表；截至2026-08-31的单季",
+          "basis": "disclosed",
+          "reportPeriod": "2026-08-31"
+        },
+        {
+          "label": "本季归母净利润",
+          "value": 398000000,
+          "unit": "USD",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/898293/000162828026063890/jbl-20260930ex991.htm",
+          "location": "合并利润表 / 现金流量表；截至2026-08-31的单季",
+          "basis": "disclosed",
+          "reportPeriod": "2026-08-31"
+        },
+        {
+          "label": "本季营业利润",
+          "value": 602000000,
+          "unit": "USD",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/898293/000162828026063890/jbl-20260930ex991.htm",
+          "location": "合并利润表 / 现金流量表；截至2026-08-31的单季",
+          "basis": "disclosed",
+          "reportPeriod": "2026-08-31"
+        },
+        {
+          "label": "本季经营现金",
+          "value": 733000000,
+          "unit": "USD",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/898293/000162828026063890/jbl-20260930ex991.htm",
+          "location": "合并利润表 / 现金流量表；截至2026-08-31的单季",
+          "basis": "calculated",
+          "reportPeriod": "2026-08-31"
+        }
+      ],
+      "previousGroups": [],
+      "newCoverage": true,
+      "groupReasons": {
+        "quality": "工程、供应链管理与全球交付已有长期客户基础，连续五年利润和经营现金为正。FY2026经营现金20.02亿美元、购建设备6.28亿美元；制造业采购占款需结合应付账期、客户和债务判断。",
+        "growth": "FY2026第四季收入增长28.6%、GAAP营业利润增长78.6%；AI基础设施交付支持增长，但上年0.98亿美元业务剥离损失抬高同比，辅助核对的核心营业利润增长30.1%。"
+      },
+      "groupSummaries": {
+        "quality": "工程、供应链管理与全球交付已有长期客户基础，连续五年利润和经营现金为正。FY2026经营现金20.02亿美元、购建设备6.28亿美元；制造业采购占款需结合应付账期、客户和债务判断。",
+        "growth": "FY2026第四季收入增长28.6%、GAAP营业利润增长78.6%；AI基础设施交付支持增长，但上年0.98亿美元业务剥离损失抬高同比，辅助核对的核心营业利润增长30.1%。"
+      }
+    },
+    "us:LIN": {
+      "name": "林德",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-18",
+      "groups": [
+        "quality",
+        "growth"
+      ],
+      "researchGroups": [
+        "quality",
+        "growth"
+      ],
+      "rationale": "现场制气长约、管网与客户生产流程连接形成重复需求；多年正利润和经营现金支持项目再投资，质量来自合同和供气能力，不要求每季高增速。 Q2收入增长9.3%，内生增长4%由价格与销量各贡献2%；GAAP营业利润增长8.5%，现金增长约3%。属于有交付依据的温和成长，不把汇率和收购全部计作内生扩张。",
+      "risk": "工业需求、能源传导条款和大项目建设影响盈利；重资产长约仍有客户违约、工期与融资风险。",
+      "invalidation": "长约执行、项目投产、价差与经营现金持续恶化则撤回对应判断。",
+      "sources": [
+        {
+          "label": "公司本期业绩与经营证据",
+          "url": "https://www.sec.gov/Archives/edgar/data/1707925/000165495426007052/lin_ex991.htm",
+          "publishedAt": "2026-07-31",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "SEC本期法定财务报告",
+          "url": "https://www.sec.gov/Archives/edgar/data/1707925/000162828026051289/0001628280-26-051289-index.html",
+          "publishedAt": "2026-07-31",
+          "reportPeriod": "2026-06-30"
+        }
+      ],
+      "evidence": [
+        {
+          "label": "本季收入",
+          "value": 9289000000,
+          "unit": "USD",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1707925/000162828026051289/0001628280-26-051289-index.html",
+          "location": "合并利润表 / 现金流量表；截至2026-06-30的单季",
+          "basis": "disclosed",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "本季归母净利润",
+          "value": 1928000000,
+          "unit": "USD",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1707925/000162828026051289/0001628280-26-051289-index.html",
+          "location": "合并利润表 / 现金流量表；截至2026-06-30的单季",
+          "basis": "disclosed",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "本季营业利润",
+          "value": 2554000000,
+          "unit": "USD",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1707925/000162828026051289/0001628280-26-051289-index.html",
+          "location": "合并利润表 / 现金流量表；截至2026-06-30的单季",
+          "basis": "disclosed",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "本季经营现金",
+          "value": 2271000000,
+          "unit": "USD",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1707925/000162828026051289/0001628280-26-051289-index.html",
+          "location": "合并利润表 / 现金流量表；截至2026-06-30的单季",
+          "basis": "calculated",
+          "reportPeriod": "2026-06-30"
+        }
+      ],
+      "previousGroups": [],
+      "newCoverage": true,
+      "groupReasons": {
+        "quality": "现场制气长约、管网与客户生产流程连接形成重复需求；多年正利润和经营现金支持项目再投资，质量来自合同和供气能力，不要求每季高增速。",
+        "growth": "Q2收入增长9.3%，内生增长4%由价格与销量各贡献2%；GAAP营业利润增长8.5%，现金增长约3%。属于有交付依据的温和成长，不把汇率和收购全部计作内生扩张。"
+      },
+      "groupSummaries": {
+        "quality": "现场制气长约、管网与客户生产流程连接形成重复需求；多年正利润和经营现金支持项目再投资，质量来自合同和供气能力，不要求每季高增速。",
+        "growth": "Q2收入增长9.3%，内生增长4%由价格与销量各贡献2%；GAAP营业利润增长8.5%，现金增长约3%。属于有交付依据的温和成长，不把汇率和收购全部计作内生扩张。"
+      }
+    },
+    "us:WM": {
+      "name": "WM",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-18",
+      "groups": [
+        "quality",
+        "growth"
+      ],
+      "researchGroups": [
+        "quality",
+        "growth"
+      ],
+      "rationale": "填埋许可、收运路线密度和重复处理需求形成业务基础；五年利润与经营现金为正，需同时承担长期封场和环保责任。 Q2收入增长4.0%、GAAP营业利润增长8.9%、经营现金增长11.7%；增长主要由定价、效率及回收能源项目兑现推动。收运处置量下降1.8%，不把收入增速写成销量增长。",
+      "risk": "环保责任、封场支出和扩建影响现金；医疗废物业务整合、再生商品价格与收运量影响盈利。",
+      "invalidation": "实际处理量、定价成本差、环保责任和整合现金持续恶化则撤回对应判断。",
+      "sources": [
+        {
+          "label": "公司本期业绩与经营证据",
+          "url": "https://investors.wm.com/news-releases/news-release-details/wm-announces-second-quarter-2026-earnings/",
+          "publishedAt": "2026-07-28",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "SEC本期法定财务报告",
+          "url": "https://www.sec.gov/Archives/edgar/data/823768/000110465926088016/0001104659-26-088016-index.html",
+          "publishedAt": "2026-07-29",
+          "reportPeriod": "2026-06-30"
+        }
+      ],
+      "evidence": [
+        {
+          "label": "本季收入",
+          "value": 6684000000,
+          "unit": "USD",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/823768/000110465926088016/0001104659-26-088016-index.html",
+          "location": "合并利润表 / 现金流量表；截至2026-06-30的单季",
+          "basis": "disclosed",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "本季归母净利润",
+          "value": 785000000,
+          "unit": "USD",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/823768/000110465926088016/0001104659-26-088016-index.html",
+          "location": "合并利润表 / 现金流量表；截至2026-06-30的单季",
+          "basis": "disclosed",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "本季营业利润",
+          "value": 1253000000,
+          "unit": "USD",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/823768/000110465926088016/0001104659-26-088016-index.html",
+          "location": "合并利润表 / 现金流量表；截至2026-06-30的单季",
+          "basis": "disclosed",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "本季经营现金",
+          "value": 1726000000,
+          "unit": "USD",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/823768/000110465926088016/0001104659-26-088016-index.html",
+          "location": "合并利润表 / 现金流量表；截至2026-06-30的单季",
+          "basis": "calculated",
+          "reportPeriod": "2026-06-30"
+        }
+      ],
+      "previousGroups": [],
+      "newCoverage": true,
+      "groupReasons": {
+        "quality": "填埋许可、收运路线密度和重复处理需求形成业务基础；五年利润与经营现金为正，需同时承担长期封场和环保责任。",
+        "growth": "Q2收入增长4.0%、GAAP营业利润增长8.9%、经营现金增长11.7%；增长主要由定价、效率及回收能源项目兑现推动。收运处置量下降1.8%，不把收入增速写成销量增长。"
+      },
+      "groupSummaries": {
+        "quality": "填埋许可、收运路线密度和重复处理需求形成业务基础；五年利润与经营现金为正，需同时承担长期封场和环保责任。",
+        "growth": "Q2收入增长4.0%、GAAP营业利润增长8.9%、经营现金增长11.7%；增长主要由定价、效率及回收能源项目兑现推动。收运处置量下降1.8%，不把收入增速写成销量增长。"
+      }
+    },
+    "us:APH": {
+      "name": "安费诺",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-18",
+      "groups": [
+        "quality",
+        "growth"
+      ],
+      "researchGroups": [
+        "quality",
+        "growth"
+      ],
+      "rationale": "连接技术、应用工程和客户认证形成产品基础，多终端市场分散单一需求；连续五年利润和现金为正，长期质量仍需检验并购后资本回报。 Q2收入增长55%、剔除汇率并购后有机增长30%，GAAP营业利润增长82.2%；实际交付和15.57亿美元季度经营现金支持成长，8000万美元关税回收另列。",
+      "risk": "数据中心客户扩产与并购整合影响利润；关税回收不能重复外推，新增债务与商誉需要跟踪。",
+      "invalidation": "有机订单兑现、客户集中度、关税回收和并购回报持续恶化则撤回对应判断。",
+      "sources": [
+        {
+          "label": "公司本期业绩与经营证据",
+          "url": "https://investor.amphenol.com/news-and-events/news-details/2026/Amphenol-Reports-Record-Second-Quarter-2026-Results/default.aspx",
+          "publishedAt": "2026-07-29",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "SEC本期法定财务报告",
+          "url": "https://www.sec.gov/Archives/edgar/data/820313/000110465926089194/0001104659-26-089194-index.html",
+          "publishedAt": "2026-07-31",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "已实施的一拆二公告",
+          "url": "https://www.sec.gov/Archives/edgar/data/820313/000110465926105485/tm2624775d1_8k.htm",
+          "publishedAt": "2026-09-04",
+          "reportPeriod": "2026-06-30"
+        }
+      ],
+      "evidence": [
+        {
+          "label": "本季收入",
+          "value": 8758100000,
+          "unit": "USD",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/820313/000110465926089194/0001104659-26-089194-index.html",
+          "location": "合并利润表 / 现金流量表；截至2026-06-30的单季",
+          "basis": "disclosed",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "本季归母净利润",
+          "value": 1769200000,
+          "unit": "USD",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/820313/000110465926089194/0001104659-26-089194-index.html",
+          "location": "合并利润表 / 现金流量表；截至2026-06-30的单季",
+          "basis": "disclosed",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "本季营业利润",
+          "value": 2584600000,
+          "unit": "USD",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/820313/000110465926089194/0001104659-26-089194-index.html",
+          "location": "合并利润表 / 现金流量表；截至2026-06-30的单季",
+          "basis": "disclosed",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "本季经营现金",
+          "value": 1557200000,
+          "unit": "USD",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/820313/000110465926089194/0001104659-26-089194-index.html",
+          "location": "合并利润表 / 现金流量表；截至2026-06-30的单季",
+          "basis": "calculated",
+          "reportPeriod": "2026-06-30"
+        }
+      ],
+      "previousGroups": [],
+      "newCoverage": true,
+      "groupReasons": {
+        "quality": "连接技术、应用工程和客户认证形成产品基础，多终端市场分散单一需求；连续五年利润和现金为正，长期质量仍需检验并购后资本回报。",
+        "growth": "Q2收入增长55%、剔除汇率并购后有机增长30%，GAAP营业利润增长82.2%；实际交付和15.57亿美元季度经营现金支持成长，8000万美元关税回收另列。"
+      },
+      "groupSummaries": {
+        "quality": "连接技术、应用工程和客户认证形成产品基础，多终端市场分散单一需求；连续五年利润和现金为正，长期质量仍需检验并购后资本回报。",
+        "growth": "Q2收入增长55%、剔除汇率并购后有机增长30%，GAAP营业利润增长82.2%；实际交付和15.57亿美元季度经营现金支持成长，8000万美元关税回收另列。"
+      }
+    },
+    "us:ODFL": {
+      "name": "Old Dominion",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-18",
+      "groups": [
+        "quality",
+        "growth"
+      ],
+      "researchGroups": [
+        "quality",
+        "growth"
+      ],
+      "rationale": "一体化零担网络、服务可靠性和成本管理支持重复客户；准时率99%、货损索赔率0.1%，多年利润与现金为正，运量周期不直接否决经营质量。 Q2营业利润增长30.0%，剔除两期物业处置损益后约增长24.6%；定价和成本效率支持盈利改善。日均吨位仍下降4.1%，因此不能把本期盈利成长等同货运需求全面复苏。",
+      "risk": "运量不足会削弱网络密度，燃油附加费抬高收入但不等额增厚利润；场站资本支出、人工与保险成本影响回报。",
+      "invalidation": "吨位和网络密度、非燃油定价、人工成本与资本开支持续恶化则撤回对应判断。",
+      "sources": [
+        {
+          "label": "公司本期业绩与经营证据",
+          "url": "https://ir.odfl.com/sec-filings/quarterly-reports/content/0000878927-26-000023/0000878927-26-000023.pdf",
+          "publishedAt": "2026-08-05",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "SEC本期法定财务报告",
+          "url": "https://www.sec.gov/Archives/edgar/data/878927/000087892726000023/0000878927-26-000023-index.html",
+          "publishedAt": "2026-08-05",
+          "reportPeriod": "2026-06-30"
+        }
+      ],
+      "evidence": [
+        {
+          "label": "本季收入",
+          "value": 1554004000,
+          "unit": "USD",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/878927/000087892726000023/0000878927-26-000023-index.html",
+          "location": "合并利润表 / 现金流量表；截至2026-06-30的单季",
+          "basis": "disclosed",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "本季归母净利润",
+          "value": 350601000,
+          "unit": "USD",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/878927/000087892726000023/0000878927-26-000023-index.html",
+          "location": "合并利润表 / 现金流量表；截至2026-06-30的单季",
+          "basis": "disclosed",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "本季营业利润",
+          "value": 465301000,
+          "unit": "USD",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/878927/000087892726000023/0000878927-26-000023-index.html",
+          "location": "合并利润表 / 现金流量表；截至2026-06-30的单季",
+          "basis": "disclosed",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "本季经营现金",
+          "value": 272701000,
+          "unit": "USD",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/878927/000087892726000023/0000878927-26-000023-index.html",
+          "location": "合并利润表 / 现金流量表；截至2026-06-30的单季",
+          "basis": "calculated",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "本季物业设备处置净收益",
+          "value": 17200000,
+          "unit": "USD",
+          "sourceUrl": "https://ir.odfl.com/sec-filings/quarterly-reports/content/0000878927-26-000023/0000878927-26-000023.pdf",
+          "location": "MD&A 第14–15页",
+          "basis": "disclosed",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "上年同季物业设备处置净损失",
+          "value": 1600000,
+          "unit": "USD",
+          "sourceUrl": "https://ir.odfl.com/sec-filings/quarterly-reports/content/0000878927-26-000023/0000878927-26-000023.pdf",
+          "location": "MD&A 第14–15页",
+          "basis": "disclosed",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "label": "日均零担吨位同比",
+          "value": -4.1,
+          "unit": "%",
+          "sourceUrl": "https://ir.odfl.com/sec-filings/quarterly-reports/content/0000878927-26-000023/0000878927-26-000023.pdf",
+          "location": "MD&A 第14–15页",
+          "basis": "disclosed",
+          "reportPeriod": "2026-06-30"
+        }
+      ],
+      "previousGroups": [],
+      "newCoverage": true,
+      "groupReasons": {
+        "quality": "一体化零担网络、服务可靠性和成本管理支持重复客户；准时率99%、货损索赔率0.1%，多年利润与现金为正，运量周期不直接否决经营质量。",
+        "growth": "Q2营业利润增长30.0%，剔除两期物业处置损益后约增长24.6%；定价和成本效率支持盈利改善。日均吨位仍下降4.1%，因此不能把本期盈利成长等同货运需求全面复苏。"
+      },
+      "groupSummaries": {
+        "quality": "一体化零担网络、服务可靠性和成本管理支持重复客户；准时率99%、货损索赔率0.1%，多年利润与现金为正，运量周期不直接否决经营质量。",
+        "growth": "Q2营业利润增长30.0%，剔除两期物业处置损益后约增长24.6%；定价和成本效率支持盈利改善。日均吨位仍下降4.1%，因此不能把本期盈利成长等同货运需求全面复苏。"
+      }
     }
   }
 }

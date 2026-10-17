@@ -80,6 +80,16 @@ class OverseasResearchTests(unittest.TestCase):
         self.assertIsNone(result['cashDividend12'])
         self.assertIn('统一股本口径', result['dividendMissing'])
 
+    def test_us_split_adjusted_listing_eps_is_used_without_overwriting_original_statements(self):
+        row = self.row()
+        row['financials']['ListingDilutedEPSUSD'] = 1
+        row['financialHistory']['annual']['2025-12']['ListingDilutedEPSUSD'] = 2.5
+        research.enrich(row)
+        self.assertEqual(row['peDynamic'], 50)
+        self.assertEqual(row['peStatic'], 80)
+        self.assertEqual(row['financials']['DilutedEPS'], 2)
+        self.assertEqual(row['analysis']['annual'][-1]['DilutedEPS'], 5)
+
     def test_published_reports_and_downloads_are_regenerated_from_same_snapshot(self):
         values = {}
         for line in (stocks.DATA / 'overseas-stocks.js').read_text().splitlines():

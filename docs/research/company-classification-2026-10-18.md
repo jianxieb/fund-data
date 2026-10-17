@@ -233,4 +233,14 @@
 | [Copart · CPRT](https://www.copart.com/content/us/en/press-releases/copart-reports-fourth-quarter-2026-results) | 盈利成长 | 未入选 | 本季收入增长2.4%、营业利润下降10.6%，新增收入未覆盖成本和车源变化，本期不符合核心盈利增长。 |
 | [欧特克 · ADSK](https://investors.autodesk.com/news-releases/news-release-details/autodesk-inc-announces-fiscal-2027-second-quarter-results) | 长期优质 | 入选 | 设计文件、工程流程与订阅产品形成使用基础；长期正利润及现金支持研发，不能把高股份支付当作免费资金。 |
 | [欧特克 · ADSK](https://investors.autodesk.com/news-releases/news-release-details/autodesk-inc-announces-fiscal-2027-second-quarter-results) | 盈利成长 | 入选 | 截至7月31日财季收入增长16%、恒汇率增长14%，GAAP营业利润增长34.9%；当季经营现金5.75亿美元、增长25%。 |
+| [捷普 · JBL](https://www.sec.gov/Archives/edgar/data/898293/000162828026063890/jbl-20260930ex991.htm) | 长期优质 | 入选 | 工程、供应链管理与全球交付已有长期客户基础，连续五年利润和经营现金为正。FY2026经营现金20.02亿美元、购建设备6.28亿美元；制造业采购占款需结合应付账期、客户和债务判断。 |
+| [捷普 · JBL](https://www.sec.gov/Archives/edgar/data/898293/000162828026063890/jbl-20260930ex991.htm) | 盈利成长 | 入选 | FY2026第四季收入增长28.6%、GAAP营业利润增长78.6%；AI基础设施交付支持增长，但上年0.98亿美元业务剥离损失抬高同比，辅助核对的核心营业利润增长30.1%。 |
+| [林德 · LIN](https://www.sec.gov/Archives/edgar/data/1707925/000165495426007052/lin_ex991.htm) | 长期优质 | 入选 | 现场制气长约、管网与客户生产流程连接形成重复需求；多年正利润和经营现金支持项目再投资，质量来自合同和供气能力，不要求每季高增速。 |
+| [林德 · LIN](https://www.sec.gov/Archives/edgar/data/1707925/000165495426007052/lin_ex991.htm) | 盈利成长 | 入选 | Q2收入增长9.3%，内生增长4%由价格与销量各贡献2%；GAAP营业利润增长8.5%，现金增长约3%。属于有交付依据的温和成长，不把汇率和收购全部计作内生扩张。 |
+| [WM · WM](https://investors.wm.com/news-releases/news-release-details/wm-announces-second-quarter-2026-earnings/) | 长期优质 | 入选 | 填埋许可、收运路线密度和重复处理需求形成业务基础；五年利润与经营现金为正，需同时承担长期封场和环保责任。 |
+| [WM · WM](https://investors.wm.com/news-releases/news-release-details/wm-announces-second-quarter-2026-earnings/) | 盈利成长 | 入选 | Q2收入增长4.0%、GAAP营业利润增长8.9%、经营现金增长11.7%；增长主要由定价、效率及回收能源项目兑现推动。收运处置量下降1.8%，不把收入增速写成销量增长。 |
+| [安费诺 · APH](https://investor.amphenol.com/news-and-events/news-details/2026/Amphenol-Reports-Record-Second-Quarter-2026-Results/default.aspx) | 长期优质 | 入选 | 连接技术、应用工程和客户认证形成产品基础，多终端市场分散单一需求；连续五年利润和现金为正，长期质量仍需检验并购后资本回报。 |
+| [安费诺 · APH](https://investor.amphenol.com/news-and-events/news-details/2026/Amphenol-Reports-Record-Second-Quarter-2026-Results/default.aspx) | 盈利成长 | 入选 | Q2收入增长55%、剔除汇率并购后有机增长30%，GAAP营业利润增长82.2%；实际交付和15.57亿美元季度经营现金支持成长，8000万美元关税回收另列。 |
+| [Old Dominion · ODFL](https://ir.odfl.com/sec-filings/quarterly-reports/content/0000878927-26-000023/0000878927-26-000023.pdf) | 长期优质 | 入选 | 一体化零担网络、服务可靠性和成本管理支持重复客户；准时率99%、货损索赔率0.1%，多年利润与现金为正，运量周期不直接否决经营质量。 |
+| [Old Dominion · ODFL](https://ir.odfl.com/sec-filings/quarterly-reports/content/0000878927-26-000023/0000878927-26-000023.pdf) | 盈利成长 | 入选 | Q2营业利润增长30.0%，剔除两期物业处置损益后约增长24.6%；定价和成本效率支持盈利改善。日均吨位仍下降4.1%，因此不能把本期盈利成长等同货运需求全面复苏。 |
 

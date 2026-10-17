@@ -14,6 +14,13 @@ def change(a, b):
     return ratio(a - b, b) if finite(a) and finite(b) else None
 
 
+def listing_eps(statement, currency):
+    """Prefer source-verified listing EPS (ADR or split-adjusted), preserving raw EPS."""
+    if finite(statement.get('ListingDilutedEPSUSD')):
+        return statement['ListingDilutedEPSUSD']
+    return statement.get('DilutedEPS') if currency == 'USD' else None
+
+
 def enrich(row):
     f = row['financials']
     history = row.get('financialHistory', {}).get('annual', {})
@@ -42,8 +49,8 @@ def enrich(row):
         'ttmNetMargin': ratio(f.get('ttmProfit'), f.get('ttmRevenue')),
         'cashConversion': ratio(f.get('ttmCash'), f.get('ttmProfit'), 1),
         'grossMargin': ratio(f.get('GrossProfit'), f.get('TotalRevenue'))}
-    quarterly_eps = f.get('ListingDilutedEPSUSD') if row['financialCurrency'] != 'USD' else f.get('DilutedEPS')
-    annual_eps = last.get('DilutedEPS') if row['financialCurrency'] == 'USD' else last.get('ListingDilutedEPSUSD')
+    quarterly_eps = listing_eps(f, row['financialCurrency'])
+    annual_eps = listing_eps(last, row['financialCurrency'])
     row['peDynamic'] = ratio(row['price'], quarterly_eps * 4 if finite(quarterly_eps) else None, 1)
     row['peStatic'] = ratio(row['price'], annual_eps, 1)
     row['staticPeriod'] = last.get('reportDate') if last.get('dateBasis') == 'issuer_report_end' else last.get('period')
@@ -66,7 +73,7 @@ def report_for(s):
         if finite(s.get(key)):
             return fmt(s[key])
         base = f if key == 'peDynamic' else a['annual'][-1] if a['annual'] else {}
-        eps = base.get('DilutedEPS' if s['financialCurrency'] == 'USD' else 'ListingDilutedEPSUSD')
+        eps = listing_eps(base, s['financialCurrency'])
         return ('亏损' if eps < 0 else 'EPS为零') if finite(eps) else '缺美元' + ('ADR' if s['financialCurrency'] != 'USD' else '') + ('季度' if key == 'peDynamic' else '年度') + 'EPS'
     sections = []
     def add(id, title, **values):
@@ -127,7 +134,7 @@ def report_for(s):
         '季度年化PE只将最新一季EPS乘4，存在季节性，和分析师预测PE分开。历史5年/10年PE分位缺逐时点已披露EPS序列，未以今天的EPS回填历史。'],
         table={'headers': ['指标', '数值', '说明'], 'rows': [
             ['收盘价', fmt(s['price']), '美元 · ' + s['priceAsOf']], ['PE / TTM', fmt(s['pe']) if s['peStatus'] != 'loss' else '亏损', '收盘价 / TTM EPS'],
-            ['季度年化PE', pe_value('peDynamic'), period(f) + '单季EPS × 4'], ['静态PE', pe_value('peStatic'), (s.get('staticPeriod') or '') + '完整财年；须美元EPS'],
+            ['季度年化PE', pe_value('peDynamic'), period(f) + '单季EPS × 4' + ('；已换算拆股后每股口径' if f.get('listingEpsBasis') else '')], ['静态PE', pe_value('peStatic'), (s.get('staticPeriod') or '') + '完整财年；须美元EPS' + ('；已换算拆股后每股口径' if a['annual'] and a['annual'][-1].get('listingEpsBasis') else '')],
             ['预测PE', fmt(s['peForward']), '分析师年度预期'], ['TTM EPS', fmt(s['epsTTM']), '美元 / 上市证券单位'], ['预测EPS', fmt(s['epsForward']), '美元 / 上市证券单位']]})
     income = r.get('incomeReview') or {}
     income_notes = [income[k] for k in ('rationale', 'capitalReview') if income.get(k)]
