@@ -51,10 +51,18 @@
   }
   function stockSelectionReason(stock, group, compact = false) {
     const selection = stock.companySelection, review = selection?.reviews?.[group];
-    if (compact && selection?.status !== 'pending' && selection?.groupSummaries?.[group]) return selection.groupSummaries[group];
     if (!selection || group === 'other' || selection.status === 'pending') return selection?.rationale || '';
     const failures = (review?.checks || []).filter(c => !c.pass).map(c => c.reason).filter(Boolean);
+    const decisionStillValid = review?.qualified === (selection.groups || []).includes(group);
+    if (compact && decisionStillValid && !failures.length && selection.groupSummaries?.[group]) return selection.groupSummaries[group];
     return failures.length ? [...new Set(failures)].join('；') : review?.rationale || selection.groupReasons?.[group] || selection.rationale;
+  }
+  function stockResearchGroups(stock) {
+    const s = stock.companySelection;
+    return [...new Set([...(s?.researchGroups || []), ...(s?.groups || [])])].filter(g => ['quality','growth','breakout'].includes(g));
+  }
+  function stockVisibleInGroup(stock, group, includeExcluded = false) {
+    return stockMatches(stock, group) || (group !== 'dividend' && includeExcluded && stockResearchGroups(stock).includes(group));
   }
   function stockResearchStatus(stock) {
     const stages = [['quality', '长期优质企业', 'longTermReview'], ['growth', '盈利成长企业', 'growthReview'],
@@ -63,7 +71,7 @@
     const annual = [...(stock.financialHistory5 || stock.financialHistory || [])].sort((a, b) => String(b.reportDate || b.year || '').localeCompare(String(a.reportDate || a.year || '')));
     const percent = v => finite(v) ? (v >= 0 ? '+' : '') + v.toFixed(2) + '%' : '缺可比同比';
     const annualText = r => r.year + '年归母' + percent(r.netProfitGrowth) + '、扣非' + percent(r.deductedProfitGrowth);
-    const exclusions = stages.filter(([id, , key]) => key && !stockMatches(stock, id) && (stock[key] || stock.group !== 'dividend')).map(([id, label, key]) => {
+    const exclusions = stages.filter(([id, , key]) => key && !stockMatches(stock, id) && (stock.companySelection ? stockResearchGroups(stock).includes(id) || (id === 'dividend' && stock.group === 'dividend') : stock[key] || stock.group !== 'dividend')).map(([id, label, key]) => {
       const checks = (stock[key]?.checks || []).filter(c => c.pass === false).map(c => {
         let reason = c.reason || c.label;
         if (id === 'quality' && c.label.startsWith('最新完整年度归母及扣非利润增长') && annual.length) reason = annualText(annual[0]) + '；两项均需≥10%';
@@ -526,5 +534,5 @@
     });
     return { start, end, purchaseDays, rows, exchangeBasis, annualFeeBasis };
   }
-  return { finite, sum, copy, escapeHtml, cycleSort, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, stockMatches, stockCashQuality, stockSortLabel, stockSelectionReason, stockResearchStatus, stockBoard, loadWindow, fundScopeMatches, fundFacetMatches, indexFundKind, indexSectors, indexSectorMatches, csv, buyLocationXirr, buyLocationResult, ordinaryDividendTax, crossborderPerformance, crossborderMatches, isCrossborderIndex, crossborderRegion, annualFeeInfo, annualFeeFactor, returnWithAnnualFees, overseasStockReferences, overseasEtfMatches, etfPeriodIncludesPriorIndex };
+  return { finite, sum, copy, escapeHtml, cycleSort, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, stockMatches, stockCashQuality, stockSortLabel, stockSelectionReason, stockResearchGroups, stockVisibleInGroup, stockResearchStatus, stockBoard, loadWindow, fundScopeMatches, fundFacetMatches, indexFundKind, indexSectors, indexSectorMatches, csv, buyLocationXirr, buyLocationResult, ordinaryDividendTax, crossborderPerformance, crossborderMatches, isCrossborderIndex, crossborderRegion, annualFeeInfo, annualFeeFactor, returnWithAnnualFees, overseasStockReferences, overseasEtfMatches, etfPeriodIncludesPriorIndex };
 }));

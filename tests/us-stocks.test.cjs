@@ -27,14 +27,15 @@ function page() {
   return { ctx, app, view, click, symbols:() => symbols, modal:() => modal, resets:() => resets };
 }
 
-test('US companies use five current groups with other coverage last and overlap colored', () => {
+test('US companies default to selected companies within four groups', () => {
   const p=page(), html=p.view();
-  const names=['长期优质企业','盈利成长企业','业绩爆发股','红利价值','未入选公司'];
+  const names=['长期优质企业','盈利成长企业','业绩爆发股','红利价值'];
   let previous=-1;
   for (const name of names) { const i=html.indexOf(name); assert.ok(i>previous); previous=i; }
-  assert.match(html, /stock-other-tab/);
+  assert.doesNotMatch(html, /data-value="other"/);
+  assert.match(html, /全部相关公司/);
   assert.match(html, /stock-overlap-company/);
-  for (const group of ['quality','growth','breakout','dividend','other']) {
+  for (const group of ['quality','growth','breakout','dividend']) {
     p.click('group',group); p.view();
     assert.deepEqual([...p.symbols()], Array.from(p.ctx.OVERSEAS_STOCKS.filter(s => s.screening.groups.includes(group)), s => s.symbol));
   }
@@ -45,7 +46,10 @@ test('search persists across groups and mature quality no longer depends on ten 
   p.app.handleInput({value:'AAPL'});
   p.click('group','growth');
   assert.match(p.view(), /value="AAPL"/); assert.equal(p.symbols().length,0);
-  p.click('group','other'); p.view(); assert.equal(p.symbols().length,0);
+  p.click('scope','true'); assert.match(p.view(), /入选 \/ 未入选理由/);
+  assert.deepEqual([...p.symbols()],['AAPL']);
+  assert.match(p.view(),/未入选/);
+  p.click('group','breakout'); p.view(); assert.equal(p.symbols().length,0);
   p.click('group','quality');
   const html=p.view(); assert.deepEqual([...p.symbols()],['AAPL']);
   assert.match(html, /苹果/);
@@ -64,10 +68,12 @@ test('dividend view and detail distinguish REIT AFFO from GAAP earnings', () => 
   assert.doesNotMatch(p.modal(), /没有自动授予国内/);
 });
 
-test('each market exposes separate quality and growth reasons including a quality hold', () => {
+test('each market exposes separate quality and growth reasons without treating working capital as insolvency', () => {
   const ctx={}; vm.createContext(ctx); vm.runInContext(fs.readFileSync('data/snapshot.js','utf8'),ctx);
   const fii=ctx.STOCKS.find(s=>s.c==='601138'), zijin=ctx.STOCKS.find(s=>s.c==='601899');
   assert.match(M.stockSelectionReason(fii,'quality'),/23\.92%/);
+  assert.match(M.stockSelectionReason(fii,'quality'),/970\.45/);
+  assert.equal(M.stockMatches(fii,'quality'),true);
   assert.match(M.stockSelectionReason(fii,'growth'),/230%/);
   assert.match(M.stockSelectionReason(zijin,'quality'),/1\.53倍/);
   assert.match(M.stockSelectionReason(zijin,'growth'),/销量增长29\.49%/);
@@ -79,7 +85,7 @@ test('each market exposes separate quality and growth reasons including a qualit
 
 
 test('switching financial views preserves both directions and loaded rows', () => {
-  const p=page(); p.view(); p.click('group','other'); p.click('view','valuation'); p.click('sort','pe');
+  const p=page(); p.view(); p.click('scope','true'); p.click('view','valuation'); p.click('sort','pe');
   p.view(); const descending=[...p.symbols()], resets=p.resets();
   p.click('view','returns'); assert.match(p.view(), /按PE \/ TTM降序/);
   assert.deepEqual([...p.symbols()],descending); assert.equal(p.resets(),resets);
@@ -90,11 +96,35 @@ test('switching financial views preserves both directions and loaded rows', () =
 });
 
 test('US table third header click restores the original companies and keeps the active filter', () => {
-  const p=page(); p.view(); p.click('group','other'); p.click('view','valuation'); p.view();
+  const p=page(); p.view(); p.click('scope','true'); p.click('view','valuation'); p.view();
   const original=[...p.symbols()];
   p.click('sort','pe'); assert.match(p.view(), /按PE \/ TTM降序/);
   p.click('sort','pe'); assert.match(p.view(), /按PE \/ TTM升序/);
   p.click('sort','pe'); assert.doesNotMatch(p.view(), /stock-sort-status/);
   assert.deepEqual([...p.symbols()],original);
-  assert.match(p.view(), /未入选公司/);
+  assert.match(p.view(), /全部相关公司/);
+});
+
+test('related-company scope never duplicates mature firms into breakout or Dongshan into quality/growth', () => {
+  const p=page();p.view();p.click('scope','true');p.click('group','growth');p.view();
+  assert.ok(p.symbols().includes('AAPL'));assert.ok(p.symbols().includes('MSFT'));
+  p.click('group','breakout');p.view();
+  assert.ok(!p.symbols().includes('AAPL'));assert.ok(!p.symbols().includes('MSFT'));
+  const ctx={};vm.createContext(ctx);vm.runInContext(fs.readFileSync('data/snapshot.js','utf8'),ctx);
+  const ds=ctx.STOCKS.find(r=>r.c==='002384');
+  assert.equal(M.stockVisibleInGroup(ds,'breakout'),false);
+  assert.equal(M.stockVisibleInGroup(ds,'breakout',true),true);
+  assert.equal(M.stockVisibleInGroup(ds,'quality',true),false);
+  assert.equal(M.stockVisibleInGroup(ds,'growth',true),false);
+  assert.match(M.stockSelectionReason(ds,'breakout'),/并表/);
+  for(const s of [...ctx.STOCKS,...p.ctx.OVERSEAS_STOCKS]) {
+    if(s.group==='dividend'||(s.companySelection.groups.length===1&&s.companySelection.groups[0]==='dividend'))continue;
+    const groups=M.stockResearchGroups(s);assert.ok(groups.length>0,s.c);
+    for(const g of groups)assert.ok(M.stockSelectionReason(s,g).length>20,s.c+':'+g);
+  }
+});
+
+test('a passing label in another group cannot hide newly failing checks in the compact reason', () => {
+  const s={companySelection:{status:'selected',groups:['quality'],groupSummaries:{growth:'此前增长良好'},reviews:{growth:{qualified:false,checks:[{pass:false,reason:'最新单季营业利润下降'}]}}}};
+  assert.equal(M.stockSelectionReason(s,'growth',true),'最新单季营业利润下降');
 });

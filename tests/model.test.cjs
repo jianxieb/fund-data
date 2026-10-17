@@ -67,13 +67,13 @@ test('calendar coverage rejects impossible dates and handles leap anniversaries'
   assert.equal(M.hasWindow('2010-01-01', '2026-01-01', 1e12), false);
 });
 
-test('other research is a visible group with exact exclusion evidence and no selected companies', () => {
+test('unselected research exposes only its relevant business track and exact exclusion evidence', () => {
   const vm = require('node:vm'), context = {};
   vm.createContext(context); vm.runInContext(fs.readFileSync('data/snapshot.js', 'utf8'), context);
   const s = context.STOCKS.find(s => s.c === '002648'), status = M.stockResearchStatus(s);
   assert.equal(status.groups.length, 0); assert.equal(status.label, '未入选当前名单');
-  assert.match(status.exclusions.find(e => e.id === 'quality').checks[0].reason, /化工.*价差.*周期/);
-  assert.match(status.exclusions.find(e => e.id === 'growth').checks[0].reason, /价差.*周期/);
+  assert.deepEqual(status.exclusions.map(e => e.id), ['breakout']);
+  assert.match(status.exclusions[0].checks[0].reason, /价差.*周期/);
   assert.equal(M.stockMatches(s, 'other'), true);
   const selectedGroups = ['quality', 'growth', 'breakout', 'dividend'];
   for (const stock of context.STOCKS) {
@@ -88,7 +88,8 @@ test('other research is a visible group with exact exclusion evidence and no sel
   assert.equal(M.stockMatches(context.STOCKS.find(stock => stock.c === '600036'), 'other'), false);
   const industrial = context.STOCKS.find(stock => stock.c === '601138');
   assert.ok(M.stockCashQuality(industrial).ratio < .5);
-  assert.match(industrial.companySelection.risk, /23.9%.*风险/);
+  assert.match(industrial.companySelection.risk, /周转和减值.*不能仅据现金\/利润比例断言偿债压力/);
+  assert.equal(M.stockMatches(industrial,'quality'),true);
   assert.equal(M.stockResearchStatus({ c:'123456', group:'dividend' }).exclusions.length, 0);
 });
 

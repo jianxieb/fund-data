@@ -89,8 +89,9 @@ def report_for(s):
         table={'headers':['分类','当前结论','具体依据'], 'rows':[
             [LABELS[group], '入选' if verdict['qualified'] else '未入选',
              '；'.join(check['reason'] for check in verdict['checks'] if not check['pass']) or
-             ('同时符合长期优质或高质成长，已在对应分类收录' if group == 'breakout' and not verdict['qualified'] else '财务条件与当前经营/分红研究均成立')]
-            for group, verdict in screening['reviews'].items()]})
+             verdict.get('rationale') or '财务条件与当前经营/分红研究均成立']
+            for group, verdict in screening['reviews'].items()
+            if not selection or group in selection.get('researchGroups', []) or group in selection['groups']]})
     operating = r['earningsReview']
     add('drivers', '主营增长、特殊项目与周期', paragraphs=[
         operating['driver'], operating['nonOperating'], operating['priceCycle'], operating['consolidation']],
