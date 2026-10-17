@@ -60,6 +60,21 @@
   };
   let lastFocus = null, toastTimer, searchTimer, activeCurve = null, strategyFeeLoading = false, strategyFeeError = false;
   const lazyLists = new Map(), loadedCounts = new Map();
+  const stockPages = new Map(), stockPageWindows = new Map();
+  function stockPageRows(key, rows, rowHtml) {
+    const pages = Math.max(1, Math.ceil(rows.length / 20));
+    const page = Math.min(pages, Math.max(1, stockPages.get(key) || 1));
+    const start = (page - 1) * 20, end = Math.min(start + 20, rows.length);
+    stockPages.set(key, page);
+    stockPageWindows.set(key, { page, pages, start, end, total: rows.length });
+    return rows.slice(start, end).map(rowHtml).join('');
+  }
+  function stockPageFooter(key) {
+    const p = stockPageWindows.get(key);
+    if (!p?.total) return '';
+    const control = (label, page, disabled) => action(label, 'stock-page', 'btn sm', 'data-list="' + key + '" data-value="' + page + '"' + (disabled ? ' disabled' : ''));
+    return '<div class="stock-pagination" role="navigation" aria-label="公司列表分页"><span role="status">第 ' + (p.start + 1) + '–' + p.end + ' 家，共 ' + p.total + ' 家</span><div>' + control('上一页', p.page - 1, p.page === 1) + '<span>' + p.page + ' / ' + p.pages + '</span>' + control('下一页', p.page + 1, p.page === p.pages) + '</div></div>';
+  }
   let loadObservers = [];
   function lazyRows(key, rows, rowHtml, batch = 20) {
     const loaded = Math.min(rows.length, loadedCounts.get(key) || batch);
@@ -563,8 +578,8 @@
   }
   function stocks() {
     if (state.stockMarket === 'us') return head('US COMPANY RESEARCH', '个股深入', '从业务、盈利和估值，理解公司的长期价值。', '<a class="btn sm" href="#reports">研究报告</a>' + action('入选标准', 'os-stock-rules', 'btn sm')) + stockMarkets() + window.ChanghengOverseasStocks.view({
-      esc, money, pct, pc, action, modalTitle, openModal, detailGrid, render, lazyRows, loadFooter,
-      periods: state.periods, periodHead, ret, returnControls, renderStockView, resetList: () => loadedCounts.delete('overseas-stocks')
+      esc, money, pct, pc, action, modalTitle, openModal, detailGrid, render, stockPageRows, stockPageFooter,
+      periods: state.periods, periodHead, ret, returnControls, renderStockView, resetList: () => stockPages.delete('overseas-stocks')
     });
     const all = window.STOCKS || [], dividend = state.stockTab === 'dividend', other = state.stockTab === 'other';
     const financials = !dividend && state.stockView === 'financials', valuation = !dividend && state.stockView === 'valuation';
@@ -588,7 +603,7 @@
       stockMarkets() + '<div class="tabs stock-tabs" role="tablist" aria-label="个股研究分组">' + groups.map(([id, label]) => action(label + '<span class="tab-count">' + all.filter(s => stockPass(s, id) && (!state.hideGrowthBoards || M.stockBoard(s.c) === 'main')).length + '</span>', 'stock-tab', (state.stockTab === id ? 'active ' : '') + (id === 'other' ? 'stock-other-tab' : ''), 'data-value="' + id + '" role="tab" aria-selected="' + (state.stockTab === id) + '"')).join('') + '</div>' +
       (dividend ? '' : '<div class="stock-category-filter" role="group" aria-label="企业类别">' + [['all', '全部类别'], ...categories.map(c => [c, c])].map(([id, label]) => action(esc(label), 'stock-category', 'filter-chip' + (state.stockCategory === id ? ' active' : ''), 'data-value="' + esc(id) + '" aria-pressed="' + (state.stockCategory === id) + '"')).join('') + '</div>') +
       '<div class="stock-controls"><div class="filters"><input type="search" id="stock-search" aria-label="搜索公司、代码或业务" placeholder="搜索公司、代码或业务" value="' + esc(state.stockQuery) + '">' + action('隐藏科创／创业板', 'stock-boards', 'board-filter' + (state.hideGrowthBoards ? ' active' : ''), 'aria-pressed="' + state.hideGrowthBoards + '"') + '</div>' + (dividend || state.stockView === 'returns' ? returnControls() : '') + '</div>' +
-      '<div class="card"><div class="table-caption stock-table-caption"><span><b>' + rows.length + '</b> / ' + pool.length + '家公司</span>' + (dividend || other ? '' : '<span class="stock-overlap-legend">绿色公司：质量与成长同时入选</span>') + viewControl + (state.stockSort === 'default' ? '' : '<span class="stock-sort-status">按' + M.stockSortLabel(state.stockSort) + (state.stockDesc ? '降序' : '升序') + action('恢复默认', 'stock-sort-reset', 'text-link small') + '</span>') + '</div><div class="table-wrap stock-table-wrap" tabindex="0" role="region" aria-label="个股研究表，可横向滚动"><table class="research-table stock-table' + (financials ? ' stock-financial-table' : '') + '"><thead><tr><th>公司 / 主营业务</th>' + (financials ? financialHead : valuation ? valuationHead : returnHead) + '</tr></thead><tbody data-list-body="stocks">' + lazyRows('stocks', rows, s => '<tr data-stock-row="' + s.c + '">' + stockIdentity(s) + (financials ? financialRow(s) : valuation ? valuationRow(s) : returnRow(s)) + '</tr>') + (rows.length ? '' : '<tr><td colspan="' + (financials ? 8 : valuation ? 9 : (dividend ? 10 : 6) + state.periods.length) + '"><div class="empty">当前分组没有匹配的公司</div></td></tr>') + '</tbody></table></div>' + loadFooter('stocks') + '</div>';
+      '<div class="card"><div class="table-caption stock-table-caption"><span><b>' + rows.length + '</b> / ' + pool.length + '家公司</span>' + (dividend || other ? '' : '<span class="stock-overlap-legend">绿色公司：质量与成长同时入选</span>') + viewControl + (state.stockSort === 'default' ? '' : '<span class="stock-sort-status">按' + M.stockSortLabel(state.stockSort) + (state.stockDesc ? '降序' : '升序') + action('恢复默认', 'stock-sort-reset', 'text-link small') + '</span>') + '</div><div class="table-wrap stock-table-wrap" tabindex="0" role="region" aria-label="个股研究表，可横向滚动"><table class="research-table stock-table' + (financials ? ' stock-financial-table' : '') + '"><thead><tr><th>公司 / 主营业务</th>' + (financials ? financialHead : valuation ? valuationHead : returnHead) + '</tr></thead><tbody data-list-body="stocks">' + stockPageRows('stocks', rows, s => '<tr data-stock-row="' + s.c + '">' + stockIdentity(s) + (financials ? financialRow(s) : valuation ? valuationRow(s) : returnRow(s)) + '</tr>') + (rows.length ? '' : '<tr><td colspan="' + (financials ? 8 : valuation ? 9 : (dividend ? 10 : 6) + state.periods.length) + '"><div class="empty">当前分组没有匹配的公司</div></td></tr>') + '</tbody></table></div>' + stockPageFooter('stocks') + '</div>';
   }
   function reportsView() {
     const reports = [...(window.STOCK_REPORTS?.reports || []), ...(window.OVERSEAS_REPORTS?.reports || [])];
@@ -1131,7 +1146,7 @@
     if (act.startsWith('money-flow-')) { window.ChanghengMoneyFlow.handleAction(button); return; }
     if (['fund-tab', 'fund-facet', 'fund-sector', 'fund-channel', 'fund-reset', 'fund-sort', 'fund-sort-reset', 'screen-reset', 'menu-choice', 'go-index-funds', 'find-index-funds'].includes(act)) loadedCounts.delete('funds');
     if (['cross-type', 'cross-region', 'cross-channel', 'cross-premium', 'cross-reset', 'cross-sort', 'cross-basis'].includes(act)) loadedCounts.delete('cross');
-    if (['stock-tab', 'stock-category', 'stock-sort', 'stock-boards'].includes(act)) loadedCounts.delete('stocks');
+    if (['stock-tab', 'stock-category', 'stock-sort', 'stock-sort-reset', 'stock-boards'].includes(act)) stockPages.delete('stocks');
     switch (act) {
       case 'strategy-fees-retry': strategyFeeError = false; break;
       case 'etf-differences': openEtfDifferences(); return;
@@ -1144,6 +1159,7 @@
       case 'overseas-reset': state.overseasCategories.clear(); state.overseasStyles.clear(); state.overseasQuery = ''; break;
       case 'close': $('#dialog').close(); return;
       case 'load-more': loadMore(val); return;
+      case 'stock-page': stockPages.set(button.dataset.list, Number(val)); render(); return;
       case 'fund-facet': if (val === 'all') state.fundFacets.clear(); else if (state.fundFacets.has(val)) state.fundFacets.delete(val); else state.fundFacets.add(val); if (state.fundFacets.size && !state.fundFacets.has('sector')) state.fundSectors.clear(); break;
       case 'fund-sector': if (val === 'all') state.fundSectors.clear(); else if (state.fundSectors.has(val)) state.fundSectors.delete(val); else state.fundSectors.add(val); break;
       case 'fund-channel': state.channel = val; break;
@@ -1320,7 +1336,7 @@
       searchTimer = setTimeout(render, 180);
     }
     if (el.id === 'stock-search') {
-      state.stockQuery = el.value; loadedCounts.delete('stocks'); clearTimeout(searchTimer);
+      state.stockQuery = el.value; stockPages.delete('stocks'); clearTimeout(searchTimer);
       searchTimer = setTimeout(render, 200);
     }
   });

@@ -1,4 +1,8 @@
 /* A shared viewport and visible scroll control for wide research tables. */
+.table-wrap.stock-table-wrap{max-height:min(780px,calc(100dvh - 200px));overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scroll-padding-top:var(--table-head-size,40px)}
+.stock-pagination{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:14px 22px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+.stock-pagination>div{display:flex;align-items:center;gap:16px}
+.stock-pagination button:disabled{opacity:.4;cursor:default}
 .table-wrap.table-scroll-managed{max-height:min(780px,calc(100dvh - 200px));padding-bottom:20px;scroll-padding:var(--table-head-size,40px) 0 20px;overscroll-behavior:contain;scrollbar-width:thin}
 .table-scroll-managed::-webkit-scrollbar{width:10px;height:0}
 .table-scroll-managed::-webkit-scrollbar-thumb{background:#c3cebb;border:2px solid white;border-radius:8px}
@@ -10,4 +14,4 @@
 .table-scroll-thumb{height:8px;background:#839575;border-radius:5px;cursor:grab}
 .table-scroll-dock:active .table-scroll-thumb{cursor:grabbing;background:#536e47}
 .table-scroll-dock:focus-visible{outline:2px solid #426047;outline-offset:-2px}
-@media print{.table-scroll-dock{display:none!important}.table-wrap.table-scroll-managed{max-height:none;padding-bottom:0;overflow:visible}.table-scroll-managed>table>thead>tr>th{position:static}}
+@media print{.table-scroll-dock,.stock-pagination{display:none!important}.table-wrap.table-scroll-managed,.table-wrap.stock-table-wrap{max-height:none;padding-bottom:0;overflow:visible}.table-scroll-managed>table>thead>tr>th{position:static}}
