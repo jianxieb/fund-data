@@ -5,6 +5,7 @@ countries or use price returns to select companies.
 """
 import json
 import math
+from decimal import Decimal
 from pathlib import Path
 
 POLICY_FROM = '2026-10-17'
@@ -25,7 +26,9 @@ def durable_financials(annual, cash_ttm, profit_ttm):
     periods = [int(r['period'][:4]) * 12 + int(r['period'][5:7]) for r in rows]
     complete = len(rows) == 5 and all(b - a == 12 for a, b in zip(periods, periods[1:]))
     roes = [r.get('roe') for r in rows]
-    average = sum(roes) / 5 if complete and all(finite(v) for v in roes) else None
+    # Preserve the decimal observations: Python 3.12 changed binary float sum.
+    # No display rounding is applied before checking the qualification limit.
+    average = float(sum(Decimal(str(v)) for v in roes) / Decimal(5)) if complete and all(finite(v) for v in roes) else None
     last_roe = roes[-1] if roes else None
     cash_ratio = cash_ttm / profit_ttm if finite(cash_ttm) and finite(profit_ttm) and profit_ttm > 0 else None
     profitability_failures = '；'.join(r['period'] + ('缺' if not finite(r.get(k)) else '') + label + ('' if not finite(r.get(k)) else '非正')

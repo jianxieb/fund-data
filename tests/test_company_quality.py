@@ -33,6 +33,12 @@ class DurableQualityTests(unittest.TestCase):
         records[0]['period']='2021-09'
         self.assertFalse(all(c['pass'] for c in durable_financials(records,100,100)[0]))
 
+    def test_mean_is_stable_across_python_float_sum_versions(self):
+        roes=[15.32, 24.67, 25.89, 28.12, 25.27]
+        records=[dict(period=str(y)+'-12',profit=100,cash=100,roe=roe)
+                 for y,roe in zip(range(2021,2026),roes)]
+        self.assertEqual(durable_financials(records,100,100)[1],23.854)
+
     def test_business_reassessment_does_not_backdate_or_approve_new_periods(self):
         old={'decision':'retain'}
         self.assertEqual(business_decision('601899','quality','2026-06-30','2026-10-01',old),old)
