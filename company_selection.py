@@ -126,9 +126,10 @@ def apply_cn(row, asof):
     from stock_income import cn_income_review
     income = cn_income_review(row, asof)
     if not selection.get('name'):
+        reviewed = income.get('businessReview') or {}
         selection.update(name=row.get('n'), previousGroups=['dividend'] if row.get('group') == 'dividend' else [],
-                         reportPeriod=(row.get('latestFinancials') or {}).get('reportDate'), reviewedAt=asof,
-                         risk='分红会随盈利、投资支出和资本约束变化；历史派息不保证未来金额。',
+                         reportPeriod=reviewed.get('reportPeriod'), reviewedAt=reviewed.get('reviewedAt'),
+                         risk=reviewed.get('risk') or '分红会随盈利、投资支出和资本约束变化；历史派息不保证未来金额。',
                          invalidation='股息率、实际派付记录、盈利覆盖或本期资本条件不再满足。')
     selection['reviews']['dividend'] = income
     selection['groups'] = [g for g in selection['groups'] if g not in ('other', 'dividend')]
@@ -158,7 +159,8 @@ def apply_us(row, asof):
     annual = [{'period': r['period'], 'profit': r.get('NetIncome'), 'cash': r.get('OperatingCashFlow')}
               for r in row['analysis']['annual']]
     selection = assess(row.get('symbol', ''), 'us', f['reportDate'], asof, f.get('ttmProfit'), f.get('ttmCash'), annual,
-                       f.get('operatingGrowth', {}).get('value'), core_period=f['reportDate'], core_basis='GAAP营业利润（税前）',
+                       f.get('operatingGrowth', {}).get('value'), core_period=f['reportDate'],
+                       core_basis='IFRS营业利润（税前）' if row.get('symbol') == 'TSM' else 'GAAP营业利润（税前）',
                        published_at=f.get('publishedAt'), eligible=row.get('accountingModel', 'corporate') == 'corporate')
     from stock_income import us_income_review
     income = us_income_review(row, asof)

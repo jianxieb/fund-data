@@ -5,6 +5,7 @@ from pathlib import Path
 
 from stock_income import income_review, cn_income_review, us_income_review
 from stock_screen import load_old_rows
+from company_selection import apply_cn
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -57,6 +58,10 @@ class SharedIncomeTests(unittest.TestCase):
         pep=us_income_review(self.us['PEP'],'2026-10-17')
         self.assertFalse(pep['qualified'])
         self.assertIn('2026-06-13',pep['rationale'])
+        apply_cn(cn,'2026-10-30')
+        self.assertEqual(cn['companySelection']['reviewedAt'],'2026-10-17')
+        self.assertEqual(cn['companySelection']['reportPeriod'],'2026-06-30')
+        self.assertNotIn('dividend',cn['companySelection']['groups'])
 
     def test_catalog_label_and_high_yield_do_not_bypass_missing_evidence(self):
         for code in ('000333','601006','600519','600690'):
