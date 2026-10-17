@@ -14,7 +14,7 @@
       const response = await fetch(document.querySelector('#return-index-source').dataset.src);
       if (!response.ok) throw new Error('指数日线目录加载失败');
       const indices = await response.json();
-      return { assets: [...indices.assets, ...portfolio.assets], fx: portfolio.fx };
+      return { assets: [...indices.assets, ...portfolio.assets].map(window.ChanghengReturnComparisonModel.describeAsset), fx: portfolio.fx };
     })().catch(error => { catalogPromise = null; throw error; });
     return catalogPromise;
   }

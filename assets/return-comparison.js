@@ -2,9 +2,11 @@
   'use strict';
   const M = window.Changheng, C = window.ChanghengReturnComparisonModel, R = window.ChanghengResearchHistory, G = window.ChanghengResearchCharts;
   const key = 'changheng.return-comparison.v1', names = { index:'指数', etf:'ETF', fund:'场外基金', stock:'个股' };
-  let H, catalog, result, error = '', pending = false, token = 0, computed = '', picker = false, shown = 36, cursor = -1;
-  let state = { ids:['us:SPY','us:QQQ','us:TLT'], years:5, start:'', end:'', currency:'native', chart:'line', query:'', kind:'all', market:'all', category:'all' };
+  let H, catalog, result, error = '', pending = false, token = 0, computed = '', picker = true, page = 1, cursor = -1;
+  let state = { ids:['us:SPY','us:QQQ','us:TLT'], years:5, start:'', end:'', currency:'native', chart:'line', query:'', kind:'all', market:'all', category:'all', collection:'all', assetClass:'all', region:'all', strategy:'all', direction:'all', minHistory:'all', availability:'all', sort:'default' };
   try { const saved = JSON.parse(localStorage.getItem(key)); if (saved && Array.isArray(saved.ids)) state = { ...state, ...saved, ids:[...new Set(saved.ids.filter(id => typeof id === 'string'))].slice(0, 8) }; } catch (_) {}
+  // Do not inherit invisible filters from the old picker.
+  state.kind='all'; state.market='all'; state.category='all';
   const esc = M.escapeHtml, percent = v => M.finite(v) ? (v > 0 ? '+' : '') + v.toFixed(2) + '%' : '—';
   const button = (label, act, value = '', cls = '', extra = '') => `<button type="button" class="${cls}" data-rc="${act}" data-value="${esc(value)}" ${extra}>${label}</button>`;
   const asset = id => catalog?.assets.find(a => a.id === id);
@@ -30,9 +32,22 @@
     return `<label class="rc-field"><span>${label}</span><select data-rc-field="${field}" aria-label="${label}">${options.map(([id, name]) => `<option value="${esc(id)}"${String(value) === String(id) ? ' selected' : ''}>${esc(name)}</option>`).join('')}</select></label>`;
   }
   function library() {
-    const rows = C.filterAssets(catalog.assets, state), selected = new Set(state.ids);
-    const categories = [...new Set(C.filterAssets(catalog.assets, { ...state, category:'all', query:'' }).map(a => a.category).filter(Boolean))].sort((a,b) => a.localeCompare(b, 'zh-CN'));
-    return `<section class="rc-library card" aria-label="选择对比标的"><div class="rc-library-head"><h2>选择标的 <small>${state.ids.length} / 8</small></h2>${button('完成选择','picker','','text-link')}</div><div class="rc-library-filters"><input type="search" data-rc-field="query" id="rc-query" aria-label="搜索对比标的" placeholder="名称、代码、指数或行业，例如：纳斯达克、黄金、MSFT" value="${esc(state.query)}">${select('资产类型','kind',[['all','全部类型'],...Object.entries(names)],state.kind)}${select('市场','market',[['all','全部市场'],['us','美股市场'],['cn','境内市场']],state.market)}${select('类别 / 方向','category',[['all','全部方向'],...categories.map(x=>[x,x])],state.category)}</div><div class="rc-library-count">找到 ${rows.length} 个标的 · 已选择的标的保留在上方</div><div class="rc-library-list">${rows.slice(0,shown).map(a=>`<label class="rc-pick ${selected.has(a.id)?'is-selected':''}"><input type="checkbox" data-rc-asset="${esc(a.id)}" ${selected.has(a.id)?'checked':''} ${a.status!=='available'||!selected.has(a.id)&&selected.size>=8?'disabled':''}><span><strong>${esc(a.name)}</strong><small>${esc(a.code)} · ${names[a.kind]} · ${a.currency}</small><small>${a.status==='available'?esc(basis(a))+' · '+a.first+'起':esc(a.missing)}</small></span></label>`).join('')}</div>${rows.length>shown?button('再显示36个','more','','btn sm'):''}${rows.length?'':'<p class="empty">没有匹配的标的，换个代码或清除筛选。</p>'}</section>`;
+    const rows = C.filterAssets(catalog.assets, state), selected = new Set(state.ids), size = 12;
+    page = Math.min(page, Math.max(1,Math.ceil(rows.length/size)));
+    const options = (field,label) => {
+      const available=C.filterAssets(catalog.assets,{...state,[field]:'all',query:''});
+      const values=[...new Set(available.map(a=>a[field]).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'zh-CN'));
+      if(state[field]!=='all'&&!values.includes(state[field]))values.unshift(state[field]);
+      return select(label,field,[['all','全部'],...values.map(v=>[v,v+' · '+available.filter(a=>a[field]===v).length])],state[field]);
+    };
+    const preview=a=>{const p=a.performance?.annual?.[1];return p?.value!=null?percent(p.value)+`<small>${p.start} → ${p.end}</small>`:'—';};
+    return `<section class="rc-library card" aria-label="选择对比标的"><div class="rc-library-head"><div><h2>完整标的库</h2><span class="rc-library-count">全部已收录证券都可查找；选择不受研究候选名单限制。</span></div>${button('收起标的库','picker','','text-link')}</div>
+      <div class="rc-collection-tabs" role="tablist" aria-label="标的类型">${C.collections.map(([id,name])=>button(`${name}<span>${id==='all'?catalog.assets.length:catalog.assets.filter(a=>a.product===id).length}</span>`,'collection',id,state.collection===id?'active':'',`role="tab" aria-selected="${state.collection===id}"`)).join('')}</div>
+      <div class="rc-search-row"><input type="search" data-rc-field="query" id="rc-query" aria-label="搜索对比标的" placeholder="名称、代码、基金经理、行业，例如：黄金 / 中证500 增强 / MSFT" value="${esc(state.query)}">${button('重置筛选','reset-filters','','text-link')}</div>
+      <div class="rc-library-filters">${options('assetClass','资产方向')}${options('region','上市 / 投资市场')}${options('strategy','投资策略')}${options('direction',state.collection.endsWith('stock')?'行业':'指数 / 基金类别')}${select('历史长度','minHistory',[['all','不限'],[1,'至少1年'],[3,'至少3年'],[5,'至少5年'],[10,'至少10年'],[20,'至少20年']],state.minHistory)}${select('数据状态','availability',[['all','全部'],['available','日线可用'],['missing','缺少日线']],state.availability)}</div>
+      <div class="rc-library-result-head"><span class="rc-library-count">找到 <strong>${rows.length}</strong> 个 · 已选 <strong>${state.ids.length} / 8</strong></span>${select('排列','sort',[['default','目录顺序'],['name','名称'],['code','代码'],['history','历史从长到短'],['return1','近1年收益从高到低'],['return5','近5年年化从高到低']],state.sort)}</div>
+      <div class="rc-library-list table-wrap"><table class="research-table rc-pick-table"><thead><tr><th>选择 / 标的</th><th>类别与方向</th><th>近1年收益</th><th>日线覆盖 / 收益口径</th></tr></thead><tbody>${rows.slice((page-1)*size,page*size).map(a=>`<tr class="${selected.has(a.id)?'is-selected':''}"><td><label class="rc-pick"><input type="checkbox" data-rc-asset="${esc(a.id)}" aria-label="选择${esc(a.name)}" ${selected.has(a.id)?'checked':''} ${a.status!=='available'||!selected.has(a.id)&&selected.size>=8?'disabled':''}><span><strong>${esc(a.name)}</strong><small>${esc(a.code)} · ${names[a.kind]}${a.manager?' · '+esc(a.manager):''}</small></span></label></td><td>${esc(a.direction)}<small>${esc(a.region)} · ${esc(a.strategy)}</small></td><td>${preview(a)}</td><td>${a.status==='available'?`${a.first} → ${a.asOf}<small>${esc(basis(a))} · ${a.currency}</small>`:esc(a.missing)}</td></tr>`).join('')}</tbody></table>${rows.length?'':'<p class="empty">没有匹配的标的。可重置筛选后按名称或代码查询。</p>'}</div>
+      <div class="rc-pagination"><span>${rows.length?(page-1)*size+1:0}–${Math.min(page*size,rows.length)} / ${rows.length}</span>${button('上一页','page',String(page-1),'btn sm',page===1?'disabled':'')}<span>第 ${page} / ${Math.max(1,Math.ceil(rows.length/size))} 页</span>${button('下一页','page',String(page+1),'btn sm',page*size>=rows.length?'disabled':'')}</div></section>`;
   }
   function legend() {
     return `<div class="rc-legend">${result.rows.map((r,i)=>`<div class="rc-legend-item"><i style="background:${G.colors[i]}"></i><div><strong>${esc(r.code)}</strong><span>${esc(r.name)}</span><small>${esc(basis(r))} · ${state.currency==='native'?r.currency:state.currency}</small></div><div class="rc-legend-numbers"><b data-rc-value="${i}">${percent(r.total)}</b>${H.annual?`<small>区间年化 <strong>${r.annual===null?'不足1年':percent(r.annual)}</strong></small>`:''}</div></div>`).join('')}</div>`;
@@ -58,7 +73,7 @@
     }
     if (computed !== signature()) calculate();
     const presets = [['equity','美股宽基',['us:SPY','us:QQQ']],['balanced','股票与美债',['us:SPY','us:QQQ','us:TLT','us:SGOV']],['index','中美价格指数',['index:^GSPC','index:^NDX','index:000300']],['companies','美股公司',['stock:BRK-B','stock:MSFT','stock:AAPL','us:SPY']]];
-    return H.head('RETURN EXPLORER','收益对比','同一起止日，看收益积累、年度差异与途中回撤。') + `<div id="return-comparison-root"><section class="card rc-selection"><div class="rc-selection-head"><div><h2>对比哪些资产</h2><span>${catalog.assets.filter(a=>a.status==='available').length.toLocaleString()} 个可用标的 · 每次最多8个</span></div>${button(picker?'收起标的库':'＋ 添加 / 筛选标的','picker','','btn primary')}</div><div class="rc-selected">${state.ids.map((id,i)=>`<span class="rc-selected-chip"><i style="background:${G.colors[i]}"></i>${esc(asset(id)?.name||id)}${button('×','remove',id,'',`aria-label="移除${esc(asset(id)?.name||id)}"`)}</span>`).join('')}${state.ids.length?button('清空','clear','','text-link small'):''}</div><div class="rc-presets"><span>快速开始</span>${presets.map(([id,name,ids])=>button(name,'preset',ids.join('|'),'filter-chip')).join('')}</div></section>${picker?library():''}<section class="rc-controls"><div class="segmented" aria-label="对比区间">${[[1,'近1年'],[2,'近2年'],[3,'近3年'],[5,'近5年'],[10,'近10年'],[20,'近20年'],['common','共同历史'],['custom','自选日期']].map(([id,name])=>button(name,'years',id,String(state.years)===String(id)?'active':'',`aria-pressed="${String(state.years)===String(id)}"`)).join('')}</div><div class="rc-settings">${select('显示币种','currency',[['native','各自原币'],['CNY','人民币'],['USD','美元']],state.currency)}<div><span class="rc-control-label">年化收益</span>${H.annualControl()}</div></div>${state.years==='custom'?`<div class="rc-custom-dates"><label>开始日<input type="date" data-rc-field="start" value="${esc(state.start)}"></label><label>结束日<input type="date" data-rc-field="end" value="${esc(state.end)}"></label></div>`:''}</section>${output()}<details class="rc-method"><summary>收益口径与日期对齐</summary><p>曲线为累计收益，使用每个标的自身的已发布日线，在所有标的都有观测的日期取共同起止点。境内ETF按净值，价格指数不含分红，股票及海外ETF使用供应商含分红复权价格。已计入基金持续年费，个人税费另算；不能再次把分红加到复权回报上。</p><p>年化使用实际天数÷365.2425，不足约一年不外推。跨币种只使用同一当地日历日期的真实汇率，不补造缺失行情；不同市场收盘时刻并不相同。回撤按各自日线计算，缺汇率或存在长缺口时不发布回撤。指数只用正式发布后的点位，历史回算不混入实盘区间。</p><p>当前存续标的的历史含幸存者偏差，过去领先不构成未来收益保证。</p><a href="https://github.com/jianxieb/fund-data/blob/main/docs/return-comparison-method.md" target="_blank" rel="noopener noreferrer">完整计算方法 ↗</a></details></div>`;
+    return H.head('RETURN EXPLORER','收益对比','同一起止日，看收益积累、年度差异与途中回撤。') + `<div id="return-comparison-root"><section class="card rc-selection"><div class="rc-selection-head"><div><h2>对比哪些资产</h2><span>${catalog.assets.filter(a=>a.status==='available').length.toLocaleString()} 个可用标的 · 每次最多8个</span></div>${picker?'':button('＋ 添加 / 筛选标的','picker','','btn primary')}</div><div class="rc-selected">${state.ids.map((id,i)=>`<span class="rc-selected-chip"><i style="background:${G.colors[i]}"></i>${esc(asset(id)?.name||id)}${button('×','remove',id,'',`aria-label="移除${esc(asset(id)?.name||id)}"`)}</span>`).join('')}${state.ids.length?button('清空','clear','','text-link small'):''}</div><div class="rc-presets"><span>快速开始</span>${presets.map(([id,name,ids])=>button(name,'preset',ids.join('|'),'filter-chip')).join('')}</div></section>${picker?library():''}<section class="rc-controls"><div class="segmented" aria-label="对比区间">${[[1,'近1年'],[2,'近2年'],[3,'近3年'],[5,'近5年'],[10,'近10年'],[20,'近20年'],['common','共同历史'],['custom','自选日期']].map(([id,name])=>button(name,'years',id,String(state.years)===String(id)?'active':'',`aria-pressed="${String(state.years)===String(id)}"`)).join('')}</div><div class="rc-settings">${select('显示币种','currency',[['native','各自原币'],['CNY','人民币'],['USD','美元']],state.currency)}<div><span class="rc-control-label">年化收益</span>${H.annualControl()}</div></div>${state.years==='custom'?`<div class="rc-custom-dates"><label>开始日<input type="date" data-rc-field="start" value="${esc(state.start)}"></label><label>结束日<input type="date" data-rc-field="end" value="${esc(state.end)}"></label></div>`:''}</section>${output()}<details class="rc-method"><summary>收益口径与日期对齐</summary><p>曲线为累计收益，使用每个标的自身的已发布日线，在所有标的都有观测的日期取共同起止点。境内ETF按净值，价格指数不含分红，股票及海外ETF使用供应商含分红复权价格。已计入基金持续年费，个人税费另算；不能再次把分红加到复权回报上。</p><p>年化使用实际天数÷365.2425，不足约一年不外推。跨币种只使用同一当地日历日期的真实汇率，不补造缺失行情；不同市场收盘时刻并不相同。回撤按各自日线计算，缺汇率或存在长缺口时不发布回撤。指数只用正式发布后的点位，历史回算不混入实盘区间。</p><p>当前存续标的的历史含幸存者偏差，过去领先不构成未来收益保证。</p><a href="https://github.com/jianxieb/fund-data/blob/main/docs/return-comparison-method.md" target="_blank" rel="noopener noreferrer">完整计算方法 ↗</a></details></div>`;
   }
   document.addEventListener('click', e => {
     const el=e.target.closest('[data-rc]'); if(!el||!H) return;
@@ -69,7 +84,9 @@
     else if(act==='preset') state.ids=v.split('|').filter(id=>asset(id));
     else if(act==='years') { state.years=/^\d+$/.test(v)?+v:v; if(v==='custom'&&!state.start){state.start=result?.start||'2021-01-01';state.end=result?.end||'2026-01-01';} }
     else if(act==='chart') state.chart=v;
-    else if(act==='more') shown+=36;
+    else if(act==='page') page=Number(v);
+    else if(act==='collection'){state.collection=v;state.direction='all';page=1;}
+    else if(act==='reset-filters'){for(const f of ['collection','assetClass','region','strategy','direction','minHistory','availability'])state[f]='all';state.query='';state.sort='default';page=1;}
     else if(act==='retry') { computed=''; error=''; }
     else if(act==='export'&&result){ H.download('长衡-收益对比-'+result.end+'.csv',M.csv([['日期',...result.rows.map(r=>r.code+' '+basis(r)+' 累计收益% ('+(state.currency==='native'?r.currency:state.currency)+')')],...result.dates.map((d,i)=>[d,...result.rows.map(r=>r.points[i][1])])]),'text/csv;charset=utf-8'); return; }
     else return;
@@ -78,13 +95,13 @@
   document.addEventListener('change', e => {
     const el=e.target;if(!el.closest?.('#return-comparison-root'))return;
     if(el.dataset.rcAsset){ const id=el.dataset.rcAsset; if(el.checked&&state.ids.length<8) state.ids.push(id);else state.ids=state.ids.filter(v=>v!==id); }
-    else if(el.dataset.rcField&&el.dataset.rcField!=='query'){state[el.dataset.rcField]=el.value;if(['kind','market'].includes(el.dataset.rcField))state.category='all';shown=36;}
+    else if(el.dataset.rcField&&el.dataset.rcField!=='query'){state[el.dataset.rcField]=el.value;page=1;}
     else return;
     refresh();
   });
   document.addEventListener('input', e => {
     const el=e.target;
-    if(el.id==='rc-query'){state.query=el.value;shown=36;refresh();}
+    if(el.id==='rc-query'){state.query=el.value;page=1;refresh();}
     if(el.id!=='rc-cursor'||!result)return;
     cursor=Number(el.value); const d=result.dates[cursor];document.querySelector('#rc-cursor-date').textContent=d;
     result.rows.forEach((r,i)=>{const v=(state.chart==='drawdown'?r.drawdowns:r.points)[cursor]?.[1];document.querySelector('[data-rc-value="'+i+'"]').textContent=percent(v);});

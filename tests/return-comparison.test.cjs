@@ -48,3 +48,26 @@ test('search intersects type, market, category and every search token',()=>{
   assert.deepEqual(C.filterAssets(rows,{query:'QQQ 纳斯达克',kind:'etf',market:'us'}),[rows[0]]);
   assert.deepEqual(C.filterAssets(rows,{query:'QQQ',market:'cn'}),[]);
 });
+test('complete library separates products, exposure and strategy without hiding alternatives',()=>{
+  const fs=require('node:fs'),vm=require('node:vm'),s={};vm.createContext(s);
+  for(const path of ['data/snapshot.js','data/overseas-stocks.js','data/portfolio/catalog.js'])vm.runInContext(fs.readFileSync(path,'utf8'),s);
+  const rows=s.PORTFOLIO_CATALOG.assets.map(C.describeAsset),ids=new Set(rows.map(a=>a.id));
+  for(const f of [...M.dedupeFunds(s.FUNDS,s.EXTRA),...s.XOTHERS])assert.ok(ids.has('fund:'+f.c),f.n);
+  for(const f of s.STOCKS)assert.ok(ids.has('stock:'+f.c));
+  for(const f of s.OVERSEAS_STOCKS)assert.ok(ids.has('stock:'+f.symbol));
+  for(const [id] of C.collections.slice(2))assert.ok(C.filterAssets(rows,{collection:id}).length>0,id);
+  const treasury=C.filterAssets(rows,{collection:'us-etf',assetClass:'债券'});
+  assert.ok(treasury.some(a=>a.code==='TLT'));assert.ok(!treasury.some(a=>a.code==='SPY'));
+  assert.ok(C.filterAssets(rows,{collection:'fund',query:'中证500 增强'}).some(a=>a.code==='006593'));
+  assert.ok(C.filterAssets(rows,{query:'万琼',region:'美国'}).length>0);
+  assert.ok(C.filterAssets(rows,{collection:'us-stock',query:'苹果'}).some(a=>a.code==='AAPL'));
+  assert.ok(C.filterAssets(rows,{strategy:'动量'}).some(a=>a.code==='SPMO'));
+  assert.ok(C.filterAssets(rows,{assetClass:'黄金'}).length>0);
+  assert.ok(C.filterAssets(rows,{region:'日本'}).length>0);
+  assert.ok(C.filterAssets(rows,{minHistory:'20'}).every(a=>M.yearsBetween(a.first,a.asOf)>=20));
+});
+test('missing histories stay discoverable and missing performance sorts last',()=>{
+  const rows=[{name:'missing',code:'m',status:'unavailable'},{name:'a',code:'a',status:'available',performance:{annual:{1:{value:2}}}},{name:'b',code:'b',status:'available',performance:{annual:{1:{value:10}}}}];
+  assert.deepEqual(C.filterAssets(rows,{availability:'missing'}),[rows[0]]);
+  assert.deepEqual(C.filterAssets(rows,{sort:'return1'}).map(r=>r.code),['b','a','m']);
+});

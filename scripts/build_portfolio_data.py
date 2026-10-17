@@ -32,14 +32,14 @@ def universe():
 const fs=require('fs'),vm=require('vm'),M=require('./assets/model.js');
 const s={};vm.createContext(s);vm.runInContext(fs.readFileSync('data/snapshot.js','utf8'),s);
 vm.runInContext(fs.readFileSync('data/overseas-stocks.js','utf8'),s);
-const foreignStocks=(s.OVERSEAS_STOCKS||[]).map(f=>({id:'stock:'+f.symbol,code:f.symbol,name:f.n+' · '+f.symbol,kind:'stock',market:'us',currency:'USD',category:f.business,sourceUrl:f.returnSourceUrl,inception:f.listingDate||f.first}));
+const foreignStocks=(s.OVERSEAS_STOCKS||[]).map(f=>({id:'stock:'+f.symbol,code:f.symbol,name:f.n+' · '+f.symbol,kind:'stock',market:'us',currency:'USD',category:f.business,sector:f.category,issuer:f.issuer,sourceUrl:f.returnSourceUrl,inception:f.listingDate||f.first}));
 const funds=M.dedupeFunds(s.FUNDS,s.EXTRA).map(f=>({
  id:'fund:'+f.c,code:f.c,name:f.n,kind:f.exchange?'etf':'fund',market:'cn',currency:'CNY',
- category:f.ix||f.asset||'基金',exchange:!!f.exchange,fee:f.fee||null,feesEmbedded:true,
+ category:f.ix||f.asset||'基金',manager:f.mgr||'',exchange:!!f.exchange,fee:f.fee||null,feesEmbedded:true,
  sourceUrl:f.returnSourceUrl||'https://fundf10.eastmoney.com/jjjz_'+f.c+'.html',
  inception:f.d||null,subscriptionStatus:f.st||null}));
 const stocks=(s.STOCKS||[]).map(f=>({id:'stock:'+f.c,code:f.c,name:f.n,kind:'stock',
- market:'cn',currency:'CNY',category:f.businessLabel||f.ind||'个股',board:M.stockBoard(f.c),
+ market:'cn',currency:'CNY',category:f.businessLabel||f.ind||'个股',sector:f.researchCategory||f.ind,board:M.stockBoard(f.c),
  sourceUrl:f.sourceUrl||'https://finance.yahoo.com/quote/'+f.c+( /^[5689]/.test(f.c)?'.SS':'.SZ')+'/history/'}));
 const us=(s.BM||[]).filter(f=>f.symbol&&f.feesEmbedded).map(f=>({
  id:'us:'+f.symbol,code:f.symbol,name:f.symbol+' · '+(f.label||f.category||f.n),kind:'etf',
@@ -47,7 +47,15 @@ const us=(s.BM||[]).filter(f=>f.symbol&&f.feesEmbedded).map(f=>({
  expenseRatio:f.expenseRatio,feeAddbackRate:f.feeAddbackRate,feesEmbedded:true,
  sourceUrl:f.sourceUrl,inception:f.inception,distribution:f.distribution,
  currentIndexSince:f.currentIndexSince,historyNote:f.historyNote,historySourceUrl:f.historySourceUrl}));
-process.stdout.write(JSON.stringify([...us,...foreignStocks,...stocks,...funds]));
+// Alternative products are independent securities, not aliases for the chosen
+// representative fund. Fetch their own NAVs; never borrow the representative's.
+const fundIds=new Set(funds.map(f=>f.id));
+const alternatives=(s.XOTHERS||[]).filter(f=>!fundIds.has('fund:'+f.c)).map(f=>({
+ id:'fund:'+f.c,code:f.c,name:f.n,kind:f.b==='x4'?'etf':'fund',market:'cn',currency:'CNY',
+ category:(funds.find(x=>x.code===f.dup)||{}).category||'指数基金',exchange:f.b==='x4',
+ feesEmbedded:true,sourceUrl:'https://fundf10.eastmoney.com/jjjz_'+f.c+'.html',
+ coverage:'同方向其他产品',referenceCode:f.dup}));
+process.stdout.write(JSON.stringify([...us,...foreignStocks,...stocks,...funds,...alternatives]));
 """
     result = subprocess.run(['node', '-e', script], cwd=ROOT, capture_output=True, text=True, check=True)
     rows = json.loads(result.stdout)
@@ -502,7 +510,25 @@ def main():
     parser.add_argument('--check', action='store_true', help='validate committed coverage and every history checksum without mutation')
     parser.add_argument('--sync-risk', action='store_true', help='recalculate fund risk from already published verified histories')
     parser.add_argument('--sync-preview', action='store_true', help='add picker performance from published histories without fetching data')
+    parser.add_argument('--sync-universe', action='store_true', help='refresh metadata and fetch only newly included securities; preserve existing histories')
     args = parser.parse_args()
+    if args.sync_universe:
+        path = OUTPUT / 'catalog.js'
+        catalog = json.loads(path.read_text(encoding='utf-8').split('=', 1)[1].strip().rstrip(';'))
+        old = {r['id']: r for r in catalog['assets']}
+        rows = universe()
+        new = [r for r in rows if r['id'] not in old]
+        with ThreadPoolExecutor(max_workers=max(1, min(24, args.workers))) as pool:
+            for row in pool.map(lambda r: build_asset(r, args.offline, False), new):
+                old[row['id']] = row
+                print(row['code'], row['status'], row.get('missing', ''), flush=True)
+        catalog['assets'] = [{**old[r['id']], **r} for r in rows]
+        catalog['summary'] = {'total': len(rows), 'available': sum(r['status'] == 'available' for r in catalog['assets']),
+                              'missing': sum(r['status'] != 'available' for r in catalog['assets'])}
+        validate_catalog(catalog, rows)
+        atomic_text(path, 'var PORTFOLIO_CATALOG=' + json.dumps(catalog, ensure_ascii=False, allow_nan=False, separators=(',', ':')) + ';\n')
+        print('标的覆盖同步：', catalog['summary'])
+        return 0
     if args.check:
         catalog = json.loads((OUTPUT / 'catalog.js').read_text(encoding='utf-8').split('=', 1)[1].strip().rstrip(';'))
         validate_catalog(catalog, universe())

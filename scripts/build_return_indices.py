@@ -11,6 +11,7 @@ sys.path.insert(0, str(ROOT))
 import indices
 import strategy_backtest
 from data_status import atomic_text
+from scripts.build_portfolio_data import performance_preview
 
 OUT = ROOT / 'data' / 'return-comparison'
 
@@ -32,7 +33,8 @@ def publish(meta, series):
     atomic_text(OUT / filename, text)
     return {**meta, 'status': 'available', 'basis': 'price_index', 'first': history['first'],
             'asOf': history['asOf'], 'observations': len(series),
-            'historyUrl': 'data/return-comparison/' + filename, 'sha256': sha}
+            'historyUrl': 'data/return-comparison/' + filename, 'sha256': sha,
+            'performance': performance_preview(series)}
 
 
 def build(offline=False):

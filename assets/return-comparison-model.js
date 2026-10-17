@@ -23,9 +23,38 @@
     const points = series.map(([d, v]) => { peak = Math.max(peak, v); const dd = (v / peak - 1) * 100; worst = Math.min(worst, dd); return [d, dd]; });
     return { value: worst, points };
   }
-  function filterAssets(assets, { query = '', kind = 'all', market = 'all', category = 'all' } = {}) {
+  const collections = [['all','全部标的'],['index','指数'],['us-etf','海外ETF'],['cn-etf','境内ETF'],['fund','场外基金'],['us-stock','美股'],['cn-stock','A股']];
+  function describeAsset(a) {
+    const text = [a.name, a.category, a.style].join(' '), stock = a.kind === 'stock';
+    const product = ['etf','stock'].includes(a.kind) ? a.market + '-' + a.kind : a.kind;
+    let assetClass = stock ? '股票' : /黄金|Gold|GOLD|金价/.test(text) && !/黄金股|金矿/.test(text) ? '黄金' : /REIT|房地产/.test(text) ? '房地产' : /原油|期货|QDII-商品|商品型/.test(text) && !/商品股票/.test(text) ? '商品' : /国债|国库券|债券|纯债|利率债|信用债|美债/.test(text) ? '债券' : /混合|FOF|多资产|多元/.test(text) ? '混合资产' : '股票';
+    let region = a.market === 'us' ? '美国' : '中国内地';
+    if (!stock) {
+      if (/A股/.test(text)) region = '中国内地';
+      else if (/沪港深|中美|中韩/.test(text)) region = '跨境多地区';
+      else if (/全球|环球|世界/.test(text)) region = '全球';
+      else if (/恒生|港股|香港/.test(text)) region = '中国香港';
+      else if (/标普|纳斯达克|纳指|美国|美股|道琼斯|NASDAQ|S&P/.test(text)) region = '美国';
+      else if (/日本|日经|东证/.test(text)) region = '日本';
+      else if (/德国|法国|欧洲|英国|DAX|CAC|富时100/.test(text)) region = '欧洲';
+      else if (/印度|东南亚|越南|巴西|沙特|新兴市场|新兴亚洲|Emerging/.test(text)) region = '新兴市场';
+      else if (/QDII|亚太|亚洲/.test(text)) region = '跨境多地区';
+      if (['黄金','商品'].includes(assetClass)) region = '全球';
+    }
+    let strategy = stock ? '公司股票' : a.kind === 'index' ? '价格指数' : /杠杆|每日[23]倍/.test(text) || a.leverage > 1 ? '每日杠杆' : /动量/.test(text) ? '动量' : /备兑|期权/.test(text) ? '期权收益' : /增强|量化/.test(text) ? '指数增强 / 量化' : /红利|股息|高息/.test(text) ? '红利' : /指数|ETF|联接|跟踪|国债|国库券/.test(text) ? '指数跟踪' : '主动管理';
+    return { ...a, product, assetClass, region, strategy, direction:stock ? a.sector || '行业未分类' : a.category || '未分类' };
+  }
+  function filterAssets(assets, { query = '', kind = 'all', market = 'all', category = 'all', collection = 'all', assetClass = 'all', region = 'all', strategy = 'all', direction = 'all', availability = 'all', minHistory = 'all', sort = 'default' } = {}) {
     const q = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
-    return assets.filter(a => (kind === 'all' || a.kind === kind) && (market === 'all' || a.market === market) && (category === 'all' || a.category === category) && q.every(s => [a.name, a.code, a.category, a.style].join(' ').toLowerCase().includes(s)));
+    const rows = assets.filter(a => (kind === 'all' || a.kind === kind) && (market === 'all' || a.market === market) && (category === 'all' || a.category === category) &&
+      (collection === 'all' || a.product === collection) && (assetClass === 'all' || a.assetClass === assetClass) && (region === 'all' || a.region === region) && (strategy === 'all' || a.strategy === strategy) && (direction === 'all' || a.direction === direction) &&
+      (availability === 'all' || (availability === 'available' ? a.status === 'available' : a.status !== 'available')) && (minHistory === 'all' || a.first && a.asOf && M.yearsBetween(a.first,a.asOf) >= +minHistory) &&
+      q.every(s => [a.name, a.code, a.category, a.style, a.direction, a.manager, a.issuer, a.assetClass, a.region, a.strategy].join(' ').toLowerCase().includes(s)));
+    if (sort === 'name') rows.sort((a,b)=>a.name.localeCompare(b.name,'zh-CN'));
+    if (sort === 'code') rows.sort((a,b)=>a.code.localeCompare(b.code));
+    if (sort === 'history') rows.sort((a,b)=>(a.first||'9999').localeCompare(b.first||'9999'));
+    if (sort === 'return1' || sort === 'return5') rows.sort((a,b)=>M.compareNullable(a.performance?.annual?.[sort==='return1'?1:5]?.value,b.performance?.annual?.[sort==='return1'?1:5]?.value,true));
+    return rows;
   }
   function compare({ assets, histories, fx, currency = 'native', years = 5, start = '', end = '' }) {
     if (!assets.length) throw new Error('先选择至少一个标的');
@@ -87,5 +116,5 @@
     return { start: opening, end: closing, requestedStart, requestedEnd, currency, dates: common, rows, calendar,
       shortened: opening > requestedStart, endShortened: (Date.parse(requestedEnd) - Date.parse(closing)) / dayMs > 7, gaps };
   }
-  return { compare, validate, drawdown, filterAssets, priorYear };
+  return { compare, validate, drawdown, filterAssets, priorYear, describeAsset, collections };
 });
