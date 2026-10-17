@@ -83,9 +83,9 @@
     if (act === 'os-stock-detail') { detail(value); return; }
     if (act === 'os-stock-group') { state.group = value; state.category = 'all'; state.sort = 'default'; state.descending = true; if (value === 'dividend') state.view = 'returns'; }
     else if (act === 'os-stock-view') { state.view = value; (H.renderStockView || H.render)(); return; }
-    else if (act === 'os-stock-sort-reset') state.sort = 'default';
+    else if (act === 'os-stock-sort-reset') { state.sort = 'default'; state.descending = true; }
     else if (act === 'os-stock-category') state.category = value;
-    else if (act === 'os-stock-sort') { state.descending = state.sort === value ? !state.descending : true; state.sort = value; }
+    else if (act === 'os-stock-sort') Object.assign(state, M.cycleSort(state.sort, state.descending, value));
     else return;
     H.resetList(); H.render();
   }

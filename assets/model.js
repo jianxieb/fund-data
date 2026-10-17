@@ -9,6 +9,11 @@
   const copy = x => JSON.parse(JSON.stringify(x));
   const record = v => v !== null && typeof v === 'object' && !Array.isArray(v);
   const escapeHtml = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  function cycleSort(sort, descending, key, firstDescending = true) {
+    if (sort !== key) return { sort:key, descending:firstDescending };
+    if (descending === firstDescending) return { sort:key, descending:!firstDescending };
+    return { sort:'default', descending:firstDescending };
+  }
   function stockSortLabel(key) {
     if (key.startsWith('return:')) return '近' + key.split(':')[1] + '年收益';
     if (key.startsWith('percentile:')) return 'PE分位 / ' + key.split(':')[1] + '年';
@@ -514,5 +519,5 @@
     });
     return { start, end, purchaseDays, rows, exchangeBasis, annualFeeBasis };
   }
-  return { finite, sum, copy, escapeHtml, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, stockMatches, stockCashQuality, stockSortLabel, stockResearchStatus, stockBoard, loadWindow, fundScopeMatches, fundFacetMatches, indexFundKind, indexSectors, indexSectorMatches, csv, buyLocationXirr, buyLocationResult, ordinaryDividendTax, crossborderPerformance, crossborderMatches, isCrossborderIndex, crossborderRegion, annualFeeInfo, annualFeeFactor, returnWithAnnualFees, overseasStockReferences, overseasEtfMatches, etfPeriodIncludesPriorIndex };
+  return { finite, sum, copy, escapeHtml, cycleSort, validDate, annualized, yearsBetween, hasWindow, dedupeFunds, visiblePeriods, compareNullable, equityQualifies, stockMatches, stockCashQuality, stockSortLabel, stockResearchStatus, stockBoard, loadWindow, fundScopeMatches, fundFacetMatches, indexFundKind, indexSectors, indexSectorMatches, csv, buyLocationXirr, buyLocationResult, ordinaryDividendTax, crossborderPerformance, crossborderMatches, isCrossborderIndex, crossborderRegion, annualFeeInfo, annualFeeFactor, returnWithAnnualFees, overseasStockReferences, overseasEtfMatches, etfPeriodIncludesPriorIndex };
 }));

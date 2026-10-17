@@ -75,3 +75,13 @@ test('switching financial views preserves both directions and loaded rows', () =
   p.click('view','financials'); p.view(); assert.deepEqual([...p.symbols()],ascending);
   p.click('sort-reset'); assert.doesNotMatch(p.view(), /stock-sort-status/);
 });
+
+test('US table third header click restores the original companies and keeps the active filter', () => {
+  const p=page(); p.view(); p.click('group','other'); p.click('view','valuation'); p.view();
+  const original=[...p.symbols()];
+  p.click('sort','pe'); assert.match(p.view(), /按PE \/ TTM降序/);
+  p.click('sort','pe'); assert.match(p.view(), /按PE \/ TTM升序/);
+  p.click('sort','pe'); assert.doesNotMatch(p.view(), /stock-sort-status/);
+  assert.deepEqual([...p.symbols()],original);
+  assert.match(p.view(), /未入选公司/);
+});

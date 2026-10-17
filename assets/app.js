@@ -1217,7 +1217,7 @@
       case 'cross-premium': state.crossPremium = val === 'all' ? null : Number(val); break;
       case 'cross-basis': state.crossBasis = val; break;
       case 'cross-reset': state.crossTypes.clear(); state.crossRegions.clear(); state.crossMoreTypes = false; state.crossChannels.clear(); state.crossQuery = ''; state.crossPremium = null; state.crossPurchasable = false; state.crossSort = 'default'; break;
-      case 'cross-sort': state.crossDesc = state.crossSort === val ? !state.crossDesc : !['knownOngoingFee', 'prem', 'n'].includes(val); state.crossSort = val; break;
+      case 'cross-sort': ({sort:state.crossSort, descending:state.crossDesc} = M.cycleSort(state.crossSort, state.crossDesc, val, !['knownOngoingFee', 'prem', 'n'].includes(val))); break;
       case 'cross-select':
         if (state.crossSelected.has(code)) state.crossSelected.delete(code);
         else if (state.crossSelected.size < 4) state.crossSelected.add(code);
@@ -1248,10 +1248,9 @@
       case 'stock-tab': state.stockTab = val; state.stockSort = 'default'; state.stockCategory = 'all'; break;
       case 'stock-category': state.stockCategory = val; break;
       case 'stock-view': state.stockView = val; renderStockView(); return;
-      case 'stock-sort-reset': state.stockSort = 'default'; break;
+      case 'stock-sort-reset': state.stockSort = 'default'; state.stockDesc = true; break;
       case 'index-sort':
-        if (state.indexSort === val) { if (state.indexDescending) state.indexDescending = false; else { state.indexSort = 'default'; state.indexDescending = true; } }
-        else { state.indexSort = val; state.indexDescending = true; }
+        ({sort:state.indexSort, descending:state.indexDescending} = M.cycleSort(state.indexSort, state.indexDescending, val));
         break;
       case 'index-sort-reset': state.indexSort = 'default'; state.indexDescending = true; break;
       case 'currency': state.currency = val; break;
@@ -1273,8 +1272,7 @@
       case 'find-index-funds': state.fundTab = 'all'; state.poolCategory = 'all'; state.fundFacets.clear(); state.fundSectors.clear(); state.channel = 'all'; state.purchasable = false; state.query = val; $('#dialog').close(); go('funds'); return;
       case 'fund-tab': state.fundTab = val; state.poolCategory = 'all'; state.fundFacets.clear(); state.fundSectors.clear(); state.channel = 'all'; state.purchasable = false; state.fundSort = 'default'; break;
       case 'fund-sort':
-        if (state.fundSort === val) { if (state.descending) state.descending = false; else { state.fundSort = 'default'; state.descending = true; } }
-        else { state.fundSort = val; state.descending = true; }
+        ({sort:state.fundSort, descending:state.descending} = M.cycleSort(state.fundSort, state.descending, val));
         renderFundResults(); return;
       case 'fund-sort-reset': state.fundSort = 'default'; state.descending = true; renderFundResults(); return;
       case 'fund-reset': state.query = ''; state.poolCategory = 'all'; state.fundFacets.clear(); state.fundSectors.clear(); state.channel = 'all'; state.purchasable = false; state.fundSort = 'default'; state.screen = { minA3: defaults.minA3, minA5: defaults.minA5, minA10: null };  break;
@@ -1288,7 +1286,7 @@
       case 'compare-clear': state.selected.clear(); renderFundResults(); return;
       case 'compare-open': openCompare(); return;
       case 'screen-rules': openModal(modalTitle('长期权益，如何筛选', '规则生成日期 ' + esc(policy.asof || '未记录')) + '<div class="rule-list">' + (policy.rules || []).map((r, i) => '<div class="rule-item"><span class="rule-number">0' + (i + 1) + '</span><p>' + esc(r) + '</p></div>').join('') + '</div><p class="notice">原“综合分”保留为历史研究分；它不是未来概率，也不用于当前默认排序。完整研究池保留检索，研究候选不代表购买建议。</p>'); return;
-      case 'stock-sort': state.stockDesc = state.stockSort === val ? !state.stockDesc : true; state.stockSort = val; break;
+      case 'stock-sort': ({sort:state.stockSort, descending:state.stockDesc} = M.cycleSort(state.stockSort, state.stockDesc, val)); break;
       case 'stock-detail': openStock(code); return;
       case 'strategy-panel': state.stratMethods[state.stratPanel] = state.stratMethod; state.stratPanel = val; state.stratMethod = state.stratMethods[val]; state.chartHidden.clear(); break;
       case 'strategy-year': state.stratYear = val; state.chartHidden.clear(); break;
