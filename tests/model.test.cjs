@@ -13,7 +13,7 @@ function fund(patch = {}) {
     r: [10, 20, 30, 50, 100], mdd5: -20, vol5: 15, mdd3: -15, v3: 12, fee: [0.15, 0.05, 0], ...patch };
 }
 
-test('quality candidates and dividend stocks stay separate even with stale qualification flags', () => {
+test('historical snapshots retain their original groups without a current company selection', () => {
   const growth = {c:'123456', group:'quality', qualityReview:{qualified:true}, longTermReview:{qualified:true}, growthReview:{qualified:true}, qualityResearch:{code:'123456', status:'reviewed'}};
   const failed = {group:'quality', qualityReview:{qualified:false}};
   const dividend = {group:'dividend', qualityReview:{qualified:true}};
@@ -31,6 +31,16 @@ test('quality candidates and dividend stocks stay separate even with stale quali
   assert.deepEqual(rows.filter(s => M.stockMatches(s, 'dividend')), [dividend, dividendWithStaleFailure]);
   assert.deepEqual(rows.filter(s => M.stockMatches(s, 'all', true)), []);
   assert.equal(M.stockMatches({qualityReview:{qualified:true}}, 'quality', true), false);
+});
+
+test('current company decisions override legacy catalog labels in every group', () => {
+  const income = {group:'dividend',companySelection:{groups:['other']},incomeReview:{qualified:false,checks:[{label:'现金派息覆盖',pass:false,reason:'缺同股本证据'}]}};
+  assert.equal(M.stockMatches(income,'dividend'),false);
+  assert.equal(M.stockMatches(income,'other'),true);
+  assert.match(M.stockResearchStatus(income).exclusions.find(e=>e.id==='dividend').checks[0].reason,/同股本/);
+  const company={...income,companySelection:{groups:['quality','growth']}};
+  assert.equal(M.stockMatches(company,'quality'),true);
+  assert.equal(M.stockMatches(company,'growth'),true);
 });
 
 test('earnings breakouts require reviewed evidence and remain separate from quality stages', () => {

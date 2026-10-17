@@ -18,7 +18,7 @@ def finite(value):
     return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
 
 
-def assess(code, market, period, asof, profit, cash, annual, core_growth=None):
+def assess(code, market, period, asof, profit, cash, annual, core_growth=None, *, core_period=None, core_basis=None, published_at=None, eligible=True):
     if asof < FROM:
         return None
     record = json.loads(PATH.read_text()).get('companies', {}).get(market + ':' + code, {})
@@ -42,6 +42,9 @@ def assess(code, market, period, asof, profit, cash, annual, core_growth=None):
              'reason': None if evidenced and record.get('risk') and record.get('invalidation') else '缺本期原始财报金额、风险或退出条件'},
         ]
         if group != 'dividend':
+            checks.append({'label': '已披露的经营企业财报，非特殊行业或风险警示证券',
+                           'pass': eligible and bool(published_at) and period <= published_at <= asof,
+                           'reason': None if eligible and published_at and period <= published_at <= asof else '缺有效公告日，或须使用金融/REIT/投资控股专项模型，或属于风险警示证券'})
             ok = finite(profit) and profit > 0 and finite(cash) and cash > 0
             checks.append({'label': '最近12个月报表利润、经营现金为正', 'pass': ok, 'reason': None if ok else '缺连续12个月正利润与正经营现金'})
         if group == 'quality':
@@ -54,8 +57,9 @@ def assess(code, market, period, asof, profit, cash, annual, core_growth=None):
             ok = contiguous and all(finite(r.get(k)) and r[k] > 0 for r in last for k in ('profit', 'cash'))
             checks.append({'label': '连续五个完整财年有正利润和正经营现金', 'pass': ok, 'reason': None if ok else '缺连续五个完整财年正利润与现金记录'})
         if group in ('growth', 'breakout'):
-            ok = finite(core_growth) and core_growth > 0
-            checks.append({'label': '最新核心经营盈利仍在增长', 'pass': ok, 'reason': None if ok else '最新扣非/营业利润未增长或缺可比数据'})
+            ok = core_period == period and finite(core_growth) and core_growth > 0
+            checks.append({'label': '最新单季核心盈利同比增长，且上年同期为正', 'pass': ok,
+                           'reason': None if ok else '缺最新单季可比核心盈利增长：' + str(core_basis or '扣非/营业利润')})
         reviews[group] = {'qualified': all(c['pass'] for c in checks), 'checks': checks, 'rationale': reason}
     groups = [g for g in GROUPS if reviews[g]['qualified']]
     if 'breakout' in groups and any(g in groups for g in ('quality', 'growth')):
@@ -67,22 +71,26 @@ def assess(code, market, period, asof, profit, cash, annual, core_growth=None):
         rationale = '本期入选条件失效：' + '；'.join(failures)
     return {**record, 'status': 'selected' if groups else 'excluded' if current and evidenced else 'pending',
             'groups': groups or ['other'], 'reviews': reviews, 'checkedAt': asof,
+            'coreGrowth': {'value': core_growth, 'period': core_period, 'basis': core_basis, 'window': 'single_quarter_yoy'},
             'rationale': rationale}
 
 
 def cn_selection(row, asof):
-    from company_report import ttm_amount
+    from company_report import ttm_amount, quarter_history
     from stock_fundamentals import latest_report_review
     latest = row.get('latestFinancials') or {}
     period = latest.get('reportDate')
-    # Income selections use their separate payout/industry model. This review
-    # re-underwrites operating quality and earnings-growth endorsements.
-    if not period or asof < FROM or row.get('group') == 'dividend':
+    if not period or asof < FROM:
         return None
     annual = [{'period': str(r['year']) + '-12', 'profit': r.get('netProfit'), 'cash': r.get('operatingCashFlow')}
               for r in reversed(row.get('financialHistory5') or row.get('financialHistory') or [])]
-    result = assess(row['c'], 'cn', period, asof, ttm_amount(row.get('financialReports') or [], 'netProfit'),
-                    ttm_amount(row.get('financialReports') or [], 'operatingCashFlow'), annual, latest.get('deductedProfitGrowth'))
+    reports = [r for r in row.get('financialReports') or [] if r.get('announcedAt', '') and r['announcedAt'] <= asof]
+    quarter = next((q for q in quarter_history(reports) if q['reportDate'] == period), {})
+    eligible = 'ST' not in row.get('n', '').upper() and not any(k in (row.get('valuationIndustry') or row.get('ind') or '') for k in ('银行', '保险', '证券', '金融', '租赁'))
+    result = assess(row['c'], 'cn', period, asof, ttm_amount(reports, 'netProfit'),
+                    ttm_amount(reports, 'operatingCashFlow'), annual, quarter.get('deductedProfitGrowth'),
+                    core_period=quarter.get('reportDate'), core_basis='扣除非经常性损益后归母净利润（税后）',
+                    published_at=latest.get('announcedAt'), eligible=eligible)
     freshness = latest_report_review(latest, asof)[0]
     eligible = 'ST' not in row.get('n', '').upper()
     for verdict in result['reviews'].values():
@@ -115,7 +123,27 @@ def apply_cn(row, asof):
     selection = cn_selection(row, asof)
     if selection is None:
         return row
+    from stock_income import cn_income_review
+    income = cn_income_review(row, asof)
+    if not selection.get('name'):
+        selection.update(name=row.get('n'), previousGroups=['dividend'] if row.get('group') == 'dividend' else [],
+                         reportPeriod=(row.get('latestFinancials') or {}).get('reportDate'), reviewedAt=asof,
+                         risk='分红会随盈利、投资支出和资本约束变化；历史派息不保证未来金额。',
+                         invalidation='股息率、实际派付记录、盈利覆盖或本期资本条件不再满足。')
+    selection['reviews']['dividend'] = income
+    selection['groups'] = [g for g in selection['groups'] if g not in ('other', 'dividend')]
+    if income['qualified']:
+        selection['groups'].append('dividend')
+        selection['status'] = 'selected'
+        if not selection.get('rationale') or selection['rationale'].startswith('缺对应'):
+            selection['rationale'] = income['rationale']
+    if not selection['groups']:
+        selection['groups'] = ['other']
+        if row.get('group') == 'dividend':
+            selection['status'] = 'pending' if income['missing'] else 'excluded'
+            selection['rationale'] = income['rationale']
     row['companySelection'] = selection
+    row['incomeReview'] = income
     for group, key in [('quality', 'longTermReview'), ('growth', 'growthReview'), ('breakout', 'breakoutReview')]:
         old = row.get(key) or {}
         row[key] = {**old, **selection['reviews'][group], 'checkedAt': asof, 'basis': 'company_selection_v1',
@@ -130,8 +158,12 @@ def apply_us(row, asof):
     annual = [{'period': r['period'], 'profit': r.get('NetIncome'), 'cash': r.get('OperatingCashFlow')}
               for r in row['analysis']['annual']]
     selection = assess(row.get('symbol', ''), 'us', f['reportDate'], asof, f.get('ttmProfit'), f.get('ttmCash'), annual,
-                       f.get('operatingGrowth', {}).get('value'))
-    income = row['screening']['reviews']['dividend']
+                       f.get('operatingGrowth', {}).get('value'), core_period=f['reportDate'], core_basis='GAAP营业利润（税前）',
+                       published_at=f.get('publishedAt'), eligible=row.get('accountingModel', 'corporate') == 'corporate')
+    from stock_income import us_income_review
+    income = us_income_review(row, asof)
+    row['screening']['payoutRatio'] = income['payoutRatio']
+    row['screening']['dividendYears5'] = income['dividendYears5']
     selection['reviews']['dividend'] = income
     selection['groups'] = [g for g in selection['groups'] if g not in ('other', 'dividend')]
     if income['qualified']:

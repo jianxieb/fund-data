@@ -489,11 +489,14 @@
   }
   function stockPass(s, tab) { return M.stockMatches(s, tab); }
   function stockRules() {
-    const growth = state.stockTab === 'growth', breakout = state.stockTab === 'breakout', key = growth ? 'growthReview' : breakout ? 'breakoutReview' : 'longTermReview';
-    const checks = (window.STOCKS || []).find(s => s[key]?.qualified)?.[key]?.checks || [];
-    openModal(modalTitle((growth ? '高质成长股' : breakout ? '业绩爆发股' : '长期优质企业') + '的入选依据', growth ? '主营增长 · 持续性 · 盈利与现金质量' : breakout ? '核心盈利扩张 · 正利润与现金流 · 经营约束' : '五年经营记录 · 业务持续性 · 当前财务条件') +
-      '<p class="notice">先核对增长、资本回报与现金流，再查主营产品、竞争依据和业务风险。完成报告研究且满足当前条件的公司才进入此页。</p><div class="rule-list">' + checks.map((c, i) => '<div class="rule-item"><span class="rule-number">' + String(i + 1).padStart(2, '0') + '</span><p>' + esc(c.label) + '</p></div>').join('') +
-      '</div><p class="note">入选由逐家公司业务复核决定；财务数字不能单独授予入选资格。中报、季报与上年同期比较，不年化ROE；入选不代表估值便宜。</p><div class="actions">' + extLink('https://github.com/jianxieb/fund-data/blob/main/docs/stock-quality-method.md', '名单来源与研究记录') + '</div>');
+    const rows = [
+      ['共同要求', '逐家公司评审最新已披露财报，列出业务依据、风险和失效条件；新报告不能沿用旧结论。经营企业的TTM利润和经营现金流须为正。'],
+      ['长期优质企业', '至少五个连续完整财年利润、经营现金均为正；逐家检查竞争优势、重复需求与再投资能力。'],
+      ['盈利成长企业', '最新单季核心盈利同比增长，上年同期基数为正；评审实际业务扩张、盈利来源和持续性。累计中报不能替代单季。'],
+      ['业绩爆发股', '最新单季核心盈利同比增长，并有具体业务证据支持快速释放；单独解释周期、并购、短盈利记录和退出条件。与质量、成长重叠时在前两组展示。'],
+      ['红利价值', '近12月已实施现金股息率≥3%，最近五个完整日历年均实施现金分红（按除息日），派息比率≤85%。一般企业需正TTM经营现金；银行、金融、REIT及控股公司另查资本或AFFO覆盖。']
+    ];
+    openModal(modalTitle('A股与美股的入选标准', '同一入选流程 · 按公司证据作出决定') + '<div class="table-wrap"><table><thead><tr><th>方向</th><th>两市场共同要求</th></tr></thead><tbody>' + rows.map(([n,t]) => '<tr><td>'+n+'</td><td>'+t+'</td></tr>').join('') + '</tbody></table></div><p>核心盈利仍有会计差异：A股采用税后扣非归母利润，美股采用税前GAAP营业利润，ADR按其报表准则；两者不能作为同一种利润直接横比增速。财报新鲜度按各市场披露周期检查。</p><p>财务过线不能单独授予入选；低于条件或缺少证据会显示具体原因。入选不代表当前价格便宜。</p><div class="actions">' + extLink('https://github.com/jianxieb/fund-data/blob/main/docs/research/stock-rule-alignment-2026-10-17.md', '规则、差异与验证记录') + '</div>');
   }
   function reportLabel(report) {
     const day = report?.reportDate;
@@ -504,6 +507,10 @@
   }
   function stockGrowthCell(s, key) {
     const latest = s.latestFinancials, annual = s.financialHistory?.[0];
+    if (key === 'deductedProfit' && s.companySelection?.coreGrowth) {
+      const core = s.companySelection.coreGrowth;
+      return '<td class="stock-growth"><strong>' + (M.finite(core.value) ? pc(core.value) : '—') + '</strong><span class="sub">' + esc(core.period ? core.period.slice(0, 7) + ' 单季扣非' : '缺最新单季可比扣非利润') + '</span><span class="stock-annual">' + esc(reportLabel(latest)) + '累计 ' + stockGrowth(latest, key) + '</span></td>';
+    }
     return '<td class="stock-growth"><strong>' + stockGrowth(latest, key) + '</strong><span class="sub">' + esc(reportLabel(latest)) + '</span>' +
       (annual && annual.reportDate !== latest?.reportDate ? '<span class="stock-annual">' + esc(reportLabel(annual)) + ' ' + stockGrowth(annual, key) + '</span>' : '') + '</td>';
   }
@@ -577,7 +584,7 @@
     return '<div class="stock-market-nav" role="group" aria-label="个股市场">' + [['us', '美股', (window.OVERSEAS_STOCKS || []).length], ['cn', 'A股', (window.STOCKS || []).length]].map(([id, label, count]) => action('<strong>' + label + '</strong><span>' + '已覆盖 ' + count + ' 家</span>', 'stock-market', 'stock-market-choice' + (state.stockMarket === id ? ' active' : ''), 'data-value="' + id + '" aria-pressed="' + (state.stockMarket === id) + '"')).join('') + '<span class="stock-market-context">' + (state.stockMarket === 'cn' ? 'A股 · 人民币' : '美股与ADR · 美元') + '</span>' + action('公司名单与调整依据','stock-coverage','text-link small') + '</div><p class="stock-coverage-note">逐家公司检查业务、盈利来源与现金；入选理由和风险并列，质量与成长可重叠。</p>';
   }
   function stocks() {
-    if (state.stockMarket === 'us') return head('US COMPANY RESEARCH', '个股深入', '从业务、盈利和估值，理解公司的长期价值。', '<a class="btn sm" href="#reports">研究报告</a>' + action('入选标准', 'os-stock-rules', 'btn sm')) + stockMarkets() + window.ChanghengOverseasStocks.view({
+    if (state.stockMarket === 'us') return head('US COMPANY RESEARCH', '个股深入', '从业务、盈利和估值，理解公司的长期价值。', '<a class="btn sm" href="#reports">研究报告</a>' + action('入选标准', 'stock-rules', 'btn sm')) + stockMarkets() + window.ChanghengOverseasStocks.view({
       esc, money, pct, pc, action, modalTitle, openModal, detailGrid, render, stockPageRows, stockPageFooter,
       periods: state.periods, periodHead, ret, returnControls, renderStockView, resetList: () => stockPages.delete('overseas-stocks')
     });
@@ -589,17 +596,17 @@
     const rows = pool.filter(s => (state.stockCategory === 'all' || (s.researchCategory || s.ind) === state.stockCategory) &&
       (!state.stockQuery || (s.c + s.n + s.ind + (s.businessLabel || '') + (s.researchCategory || '')).toLowerCase().includes(state.stockQuery.toLowerCase())));
     const value = x => state.stockSort.startsWith('return:') ? ret(x.r[years.indexOf(+state.stockSort.split(':')[1])], +state.stockSort.split(':')[1], x) :
-      state.stockSort.startsWith('growth:') ? x.latestFinancials?.[state.stockSort.split(':')[1] + 'Growth'] : state.stockSort.startsWith('percentile:') ? x.pePercentiles?.[state.stockSort.split(':')[1]]?.value : state.stockSort === 'latestRoe' ? x.latestFinancials?.roe : x[state.stockSort];
+      state.stockSort === 'growth:deductedProfit' && x.companySelection ? x.companySelection.coreGrowth?.value : state.stockSort.startsWith('growth:') ? x.latestFinancials?.[state.stockSort.split(':')[1] + 'Growth'] : state.stockSort.startsWith('percentile:') ? x.pePercentiles?.[state.stockSort.split(':')[1]]?.value : state.stockSort === 'latestRoe' ? x.latestFinancials?.roe : x[state.stockSort];
     if (state.stockSort !== 'default') rows.sort((a, b) => M.compareNullable(value(a), value(b), state.stockDesc));
     const sh = (n, k) => action(n + (state.stockSort === k ? state.stockDesc ? ' ↓' : ' ↑' : ''), 'stock-sort', '', 'data-value="' + k + '"');
     const viewControl = dividend ? '' : '<div class="segmented stock-view" aria-label="个股研究视图">' + [['financials', '财务与理由'], ['valuation', '估值分位'], ['returns', '收益与分红']].map(([id, label]) => action(label, 'stock-view', state.stockView === id ? 'active' : '', 'data-value="' + id + '" aria-pressed="' + (state.stockView === id) + '"')).join('') + '</div>';
-    const financialHead = '<th>现金回收 / TTM</th><th>' + sh('最新报告 ROE', 'latestRoe') + '</th><th>' + sh('营收同比', 'growth:revenue') + '</th><th>' + sh('归母利润同比', 'growth:netProfit') + '</th><th>' + sh('扣非利润同比', 'growth:deductedProfit') + '</th><th>' + (other ? '研究要点 / 未入选原因' : '入选理由') + '</th><th>风险</th>';
+    const financialHead = '<th>现金回收 / TTM</th><th>' + sh('最新报告 ROE', 'latestRoe') + '</th><th>' + sh('营收同比', 'growth:revenue') + '</th><th>' + sh('归母利润同比', 'growth:netProfit') + '</th><th>' + sh('单季扣非同比', 'growth:deductedProfit') + '</th><th>' + (other ? '研究要点 / 未入选原因' : '入选理由') + '</th><th>风险</th>';
     const valuationHead = '<th>' + sh('PE / TTM', 'pe') + '</th><th>' + sh('动态PE', 'peDynamic') + '</th><th>' + sh('静态PE', 'peStatic') + '</th><th>' + sh('PE分位 / 5年', 'percentile:5') + '</th><th>' + sh('PE分位 / 10年', 'percentile:10') + '</th><th>' + sh('PB / MRQ', 'pb') + '</th><th>' + sh('市值 / 亿元', 'mcap') + '</th><th>估值截至</th>';
-    const returnHead = '<th>现价</th>' + (dividend ? '<th>' + sh('PE / TTM', 'pe') + '</th><th>' + sh('PB / MRQ', 'pb') + '</th><th>' + sh('最新报告 ROE', 'latestRoe') + '</th><th>' + sh('市值 / 亿元', 'mcap') + '</th>' : '') + '<th>' + sh('近12月股息率', 'yield12') + '</th><th>5年分红年数</th>' + state.periods.map(y => '<th>' + sh(periodHead(y), 'return:' + y) + '</th>').join('') + '<th>' + sh('5年最大回撤', 'mdd5') + '</th><th>收益截至</th>';
+    const returnHead = '<th>现价</th>' + (dividend ? '<th>' + sh('PE / TTM', 'pe') + '</th><th>' + sh('PB / MRQ', 'pb') + '</th><th>' + sh('最新报告 ROE', 'latestRoe') + '</th><th>' + sh('市值 / 亿元', 'mcap') + '</th>' : '') + '<th>' + sh('近12月股息率', 'yield12') + '</th><th>5年分红年数<span class="sub">日历年 · 除息日</span></th>' + (dividend ? '<th>派息比率</th>' : '') + '' + state.periods.map(y => '<th>' + sh(periodHead(y), 'return:' + y) + '</th>').join('') + '<th>' + sh('5年最大回撤', 'mdd5') + '</th><th>收益截至</th>';
     const financialRow = s => '<td>' + stockCashCell(s) + '</td><td class="stock-roe">' + stockRoe(s) + '</td>' + stockGrowthCell(s, 'revenue') + stockGrowthCell(s, 'netProfit') + stockGrowthCell(s, 'deductedProfit') + stockReason(s) + stockRisk(s);
     const valuationRow = s => '<td>' + money(s.pe, 2) + '</td><td>' + stockDynamic(s) + '</td><td>' + money(s.peStatic, 2) + '</td><td>' + stockPercentile(s, 5) + '</td><td>' + stockPercentile(s, 10) + '</td><td>' + money(s.pb, 2) + '</td><td>' + money(s.mcap, 1) + '</td><td>' + esc(s.valuationAsOf || '—') + '</td>';
-    const returnRow = s => '<td>' + money(s.price, 2) + '</td>' + (dividend ? '<td>' + money(s.pe, 2) + '<span class="sub">' + esc(s.valuationAsOf || '缺估值日期') + '</span></td><td>' + money(s.pb, 2) + '</td><td class="stock-roe">' + stockRoe(s) + '</td><td>' + money(s.mcap, 1) + '</td>' : '') + '<td>' + stockDividendYield(s) + '</td><td>' + (s.divYears == null ? '—' : esc(s.divYears) + ' / 5') + '</td>' + state.periods.map(y => '<td>' + pc(ret(s.r?.[years.indexOf(y)], y, s)) + '</td>').join('') + '<td>' + pc(s.mdd5, 1) + '</td><td>' + esc(s.returnAsOf || '—') + '</td>';
-    return head('STOCK WATCHLIST', '个股深入', dividend ? '关注现金分红、股息率与长期收益。' : other ? '查看已收录公司的经营、估值与未入选原因。' : state.stockTab === 'breakout' ? '核心盈利快速扩张，单独检验周期、并购和资本回报。' : state.stockTab === 'growth' ? '研究核心盈利的持续扩张、资本回报与现金回收。' : '长期经营能力，经得起多年财务与当前业绩的检验。', '<a class="btn sm" href="#reports">研究报告</a>' + (dividend || other ? '' : action('入选标准', 'stock-rules', 'btn sm'))) +
+    const returnRow = s => '<td>' + money(s.price, 2) + '</td>' + (dividend ? '<td>' + money(s.pe, 2) + '<span class="sub">' + esc(s.valuationAsOf || '缺估值日期') + '</span></td><td>' + money(s.pb, 2) + '</td><td class="stock-roe">' + stockRoe(s) + '</td><td>' + money(s.mcap, 1) + '</td>' : '') + '<td>' + stockDividendYield(s) + '</td><td>' + (s.incomeReview?.dividendYears5 == null ? '—' : esc(s.incomeReview.dividendYears5) + ' / 5') + '</td>' + (dividend ? '<td>' + pct(M.finite(s.incomeReview?.payoutRatio) ? s.incomeReview.payoutRatio * 100 : null, 1, false) + '<span class="sub">' + esc(s.incomeReview?.payoutBasis) + '</span></td>' : '') + state.periods.map(y => '<td>' + pc(ret(s.r?.[years.indexOf(y)], y, s)) + '</td>').join('') + '<td>' + pc(s.mdd5, 1) + '</td><td>' + esc(s.returnAsOf || '—') + '</td>';
+    return head('STOCK WATCHLIST', '个股深入', dividend ? '关注现金分红、股息率与长期收益。' : other ? '查看已收录公司的经营、估值与未入选原因。' : state.stockTab === 'breakout' ? '核心盈利快速扩张，单独检验周期、并购和资本回报。' : state.stockTab === 'growth' ? '研究核心盈利的持续扩张、资本回报与现金回收。' : '长期经营能力，经得起多年财务与当前业绩的检验。', '<a class="btn sm" href="#reports">研究报告</a>' + action('入选标准', 'stock-rules', 'btn sm')) +
       stockMarkets() + '<div class="tabs stock-tabs" role="tablist" aria-label="个股研究分组">' + groups.map(([id, label]) => action(label + '<span class="tab-count">' + all.filter(s => stockPass(s, id) && (!state.hideGrowthBoards || M.stockBoard(s.c) === 'main')).length + '</span>', 'stock-tab', (state.stockTab === id ? 'active ' : '') + (id === 'other' ? 'stock-other-tab' : ''), 'data-value="' + id + '" role="tab" aria-selected="' + (state.stockTab === id) + '"')).join('') + '</div>' +
       (dividend ? '' : '<div class="stock-category-filter" role="group" aria-label="企业类别">' + [['all', '全部类别'], ...categories.map(c => [c, c])].map(([id, label]) => action(esc(label), 'stock-category', 'filter-chip' + (state.stockCategory === id ? ' active' : ''), 'data-value="' + esc(id) + '" aria-pressed="' + (state.stockCategory === id) + '"')).join('') + '</div>') +
       '<div class="stock-controls"><div class="filters"><input type="search" id="stock-search" aria-label="搜索公司、代码或业务" placeholder="搜索公司、代码或业务" value="' + esc(state.stockQuery) + '">' + action('隐藏科创／创业板', 'stock-boards', 'board-filter' + (state.hideGrowthBoards ? ' active' : ''), 'aria-pressed="' + state.hideGrowthBoards + '"') + '</div>' + (dividend || state.stockView === 'returns' ? returnControls() : '') + '</div>' +
@@ -999,10 +1006,13 @@
     openModal(modalTitle('QQQ、QQQI、VGT有何不同', '选股范围与回报来源不同') + '<div class="table-wrap"><table class="compare-table"><thead><tr><th>维度</th><th>QQQ</th><th>QQQI</th><th>VGT</th></tr></thead><tbody><tr><td>投资范围</td><td>纳斯达克100非金融企业，跨行业</td><td>纳指100股票组合 + NDX指数期权</td><td>美国信息科技行业，大中小盘</td></tr><tr><td>管理方式</td><td>被动指数跟踪</td><td>主动买卖看涨期权</td><td>被动行业指数跟踪</td></tr><tr><td>回报特征</td><td>主要参与股票上涨和下跌</td><td>偏向月分配；期权改变上涨参与和下跌表现</td><td>软件、硬件、半导体与设备的行业暴露</td></tr><tr><td>现行年费</td><td>0.18%</td><td>0.68%</td><td>0.09%</td></tr><tr><td>分配</td><td>季度</td><td>每月，可含资本返还</td><td>季度</td></tr></tbody></table></div><p class="notice">比较总回报：净值或价格变化 + 现金分配再投资。高分配率不代表高收益，期权策略也不保证本金安全。</p><div class="actions">' + ['QQQ', 'QQQI', 'VGT'].map(symbol => extLink((window.BM || []).find(b => b.symbol === symbol)?.identityUrl, symbol + '官方资料')).join('') + '</div>');
   }
   function openDividendStock(s) {
-    openModal('<div class="stock-detail stock-dividend-detail">' + modalTitle(esc(s.n) + stockBoardBadge(s.c), s.c + ' · ' + esc(s.businessLabel || s.ind)) +
+    const income = s.incomeReview;
+    const evidence = income ? '<section class="stock-selection-detail"><h3>' + (income.qualified ? '已入选红利价值' : '未入选红利价值') + '</h3><p>' + esc(income.rationale) + '</p><p>' + esc(income.businessReview?.capitalReview || income.businessReview?.risk) + '</p><details><summary>分红覆盖与本期复核</summary><ul>' + income.checks.map(c => '<li>' + (c.pass ? '✓ ' : '— ') + esc(c.label) + (!c.pass ? '：' + esc(c.reason) : '') + '</li>').join('') + '</ul>' + extLink(income.businessReview?.sourceUrl, '本期复核来源') + '</details></section>' : '';
+    openModal('<div class="stock-detail stock-dividend-detail">' + modalTitle(esc(s.n) + stockBoardBadge(s.c), s.c + ' · ' + esc(s.businessLabel || s.ind)) + evidence +
       '<h3 class="detail-heading">分红与长期收益</h3>' + detailGrid([
         ['近12月股息率', stockDividendYield(s, true) + '<span class="sub">截至 ' + esc(s.dividendAsOf || '缺日期') + '</span>'],
-        ['近5年分红年数', (s.divYears == null ? '缺完整分红年度证据' : s.divYears + ' / 5') + '<span class="sub">' + esc(s.dividendWindow || '缺分红年度') + '</span>'],
+        ['5年分红年数 · 日历年', (income?.dividendYears5 == null ? '缺完整分红年度证据' : income.dividendYears5 + ' / 5') + '<span class="sub">按已实施分红的除息日计年</span>'],
+        ['现金派息比率', pct(M.finite(income?.payoutRatio) ? income.payoutRatio * 100 : null, 1, false) + '<span class="sub">' + esc(income?.payoutBasis) + '</span>'],
         ['现价 / 市值', '¥' + money(s.price, 2) + ' / ' + money(s.mcap, 1) + '亿元'],
         ['5年最大回撤 / 波动率', pct(s.mdd5, 2, false) + ' / ' + pct(s.vol5, 2, false)],
       ]) + returnTable(s.r, s) + '<h3 class="detail-heading">估值与财务</h3>' + detailGrid([
@@ -1012,7 +1022,7 @@
   }
   function openStock(code) {
     const s = (window.STOCKS || []).find(x => x.c === code); if (!s) return;
-    if (s.group === 'dividend') { openDividendStock(s); return; }
+    if (state.stockTab === 'dividend' || s.group === 'dividend') { openDividendStock(s); return; }
     const status = M.stockResearchStatus(s);
     const review = (state.stockTab === 'breakout' ? s.breakoutReview : state.stockTab === 'growth' ? s.growthReview : s.longTermReview?.qualified ? s.longTermReview : s.growthReview || s.breakoutReview) || {}, research = s.qualityResearch || {};
     const selection = '<section class="stock-selection-detail"><h3>' + esc(status.label) + '</h3>' + (s.companySelection ? '<p>' + esc(s.companySelection.rationale) + '</p><p><strong>风险：</strong>' + esc(s.companySelection.risk) + '</p><p><strong>重新评估的信号：</strong>' + esc(s.companySelection.invalidation) + '</p>' : '') + (!status.groups.length ? '<details><summary>各分组未入选依据</summary>' + status.exclusions.map(e => '<div><h4>' + esc(e.label) + ' · 未入选</h4><ul>' + e.checks.map(c => '<li><strong>' + esc(c.label) + '</strong><span>' + esc(c.reason) + '</span></li>').join('') + '</ul></div>').join('') + '</details>' : '') + '</section>';
@@ -1030,7 +1040,7 @@
       return '<tr><td>' + y + '年 · ' + (M.finite(p?.value) ? pct(p.value, 1, false) : esc(p?.reason || '缺历史估值')) + '</td><td>' + esc(p?.start || '—') + ' → ' + esc(p?.end || '—') + '</td><td>' + esc(p?.observedStart || '—') + ' → ' + esc(p?.observedEnd || '—') + '</td><td>' + (p?.samples ?? '—') + '</td><td>' + (p?.excluded ?? '—') + '</td></tr>';
     }).join('') + '</tbody></table></div><p class="note">分位按各交易日当时的PE-TTM计算；低于当前值的样本计1，相等计0.5，除以正PE样本数。PE统一保留两位小数，重复日期去重。2018年起采用东方财富，之前采用通过重叠区间核对的亿牛历史记录；两源历史修订与财报入库时点可能不同。分位越低代表相对自身历史越低，不代表未来收益越高。</p><div class="actions">' + extLink(s.peHistorySourceUrl, '每日PE历史') + (s.pePercentiles?.['10']?.legacySource ? extLink(s.pePercentiles['10'].legacySource, '2018年前历史来源') : '') + '</div></details>';
     openModal('<div class="stock-detail">' + modalTitle(esc(s.n) + stockBoardBadge(s.c), s.c + ' · ' + esc(s.businessLabel || s.ind)) + selection + latestSummary + thesis + financials + checks +
-      '<h3 class="detail-heading">估值与股东回报</h3>' + detailGrid([['PE / TTM', money(s.pe, 2) + '<span class="sub">估值截至 ' + esc(s.valuationAsOf || '缺交易日期') + '</span>'], ['动态PE', stockDynamic(s)], ['静态PE / PB（MRQ）', money(s.peStatic, 2) + ' / ' + money(s.pb, 2)], ['PE-TTM分位 / 5年', stockPercentile(s, 5)], ['PE-TTM分位 / 10年', stockPercentile(s, 10)], ['现价 / 市值', '¥' + money(s.price, 2) + ' / ' + money(s.mcap, 1) + '亿元'], ['近12月股息率', stockDividendYield(s, true)], ['近5年分红年数', s.divYears == null ? '缺完整分红年度证据' : s.divYears + ' / 5']]) + valuationBasis + returnTable(s.r, s) +
+      '<h3 class="detail-heading">估值与股东回报</h3>' + detailGrid([['PE / TTM', money(s.pe, 2) + '<span class="sub">估值截至 ' + esc(s.valuationAsOf || '缺交易日期') + '</span>'], ['动态PE', stockDynamic(s)], ['静态PE / PB（MRQ）', money(s.peStatic, 2) + ' / ' + money(s.pb, 2)], ['PE-TTM分位 / 5年', stockPercentile(s, 5)], ['PE-TTM分位 / 10年', stockPercentile(s, 10)], ['现价 / 市值', '¥' + money(s.price, 2) + ' / ' + money(s.mcap, 1) + '亿元'], ['近12月股息率', stockDividendYield(s, true)], ['5年分红年数 · 日历年', s.incomeReview?.dividendYears5 == null ? '缺完整分红年度证据' : s.incomeReview.dividendYears5 + ' / 5']]) + valuationBasis + returnTable(s.r, s) +
       '<p class="note">' + esc(basisText(s.returnBasis)) + '；收益截至 ' + esc(s.returnAsOf || '未记录') + '，风险截至 ' + esc(s.riskAsOf || '未记录') + '。分红窗口 ' + esc(s.dividendWindow || '未记录') + '，滚动股息截至 ' + esc(s.dividendAsOf || '未记录') + '。价格截至 ' + esc(s.priceAsOf || '未记录') + '。</p><div class="actions">' + (s.businessSourceUrl ? extLink(s.businessSourceUrl, '公司业务来源') : '') + extLink(s.valuationSourceUrl, 'PE / PB 估值来源') + extLink(s.fundamentalsSourceUrl, '财报数据来源') + extLink(s.sourceUrl, '复权日线来源') + '</div></div>');
   }
   function openCompare() {

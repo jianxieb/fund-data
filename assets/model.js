@@ -21,7 +21,7 @@
       return { applicable:true, ratio:finite(ratio)?ratio:null, pass:finite(ratio) && ratio >= .5 && stock.financials?.ttmProfit > 0, period:stock.financials?.reportDate,
         reason:finite(ratio)?'TTM经营现金 / 净利润 '+(ratio*100).toFixed(0)+'%':'缺TTM正利润或经营现金证据' };
     }
-    if (stock.group === 'dividend' && /银行|保险|证券|金融|租赁/.test(stock.valuationIndustry || stock.ind || '')) return { applicable:false, ratio:null, reason:'金融企业不套用工业企业现金门槛' };
+    if (/银行|保险|证券|金融|租赁/.test(stock.valuationIndustry || stock.ind || '')) return { applicable:false, ratio:null, reason:'金融企业不套用工业企业现金门槛' };
     const latest = stock.latestFinancials, day = latest?.reportDate, reports = stock.financialReports || [];
     const ttm = field => {
       if (!day || !finite(latest[field])) return null;
@@ -36,6 +36,7 @@
       reason:finite(ratio)?'TTM经营现金 / 归母净利润 '+(ratio*100).toFixed(0)+'%':'缺TTM正利润或经营现金证据' };
   }
   function stockMatches(stock, group) {
+    if (stock.companySelection) return stock.companySelection.groups.includes(group);
     if (group === 'other') return !['quality', 'growth', 'breakout', 'dividend'].some(id => stockMatches(stock, id));
     if (group === 'dividend') return stock.group === 'dividend';
     if (!['quality', 'growth', 'breakout'].includes(group) || !['quality', 'growth'].includes(stock.group)) return false;
@@ -44,13 +45,13 @@
     return review?.qualified === true && stock.qualityResearch?.status === 'reviewed' && stock.qualityResearch?.code === stock.c;
   }
   function stockResearchStatus(stock) {
-    const stages = [['quality', '长期优质企业', 'longTermReview'], ['growth', '高质成长股', 'growthReview'],
-      ['breakout', '业绩爆发股', 'breakoutReview'], ['dividend', '红利价值', null]];
+    const stages = [['quality', '长期优质企业', 'longTermReview'], ['growth', '盈利成长企业', 'growthReview'],
+      ['breakout', '业绩爆发股', 'breakoutReview'], ['dividend', '红利价值', 'incomeReview']];
     const groups = stages.filter(([group]) => stockMatches(stock, group)).map(([id, label]) => ({ id, label }));
     const annual = [...(stock.financialHistory5 || stock.financialHistory || [])].sort((a, b) => String(b.reportDate || b.year || '').localeCompare(String(a.reportDate || a.year || '')));
     const percent = v => finite(v) ? (v >= 0 ? '+' : '') + v.toFixed(2) + '%' : '缺可比同比';
     const annualText = r => r.year + '年归母' + percent(r.netProfitGrowth) + '、扣非' + percent(r.deductedProfitGrowth);
-    const exclusions = stock.group === 'dividend' ? [] : stages.filter(([id, , key]) => key && !stockMatches(stock, id)).map(([id, label, key]) => {
+    const exclusions = stages.filter(([id, , key]) => key && !stockMatches(stock, id) && (stock[key] || stock.group !== 'dividend')).map(([id, label, key]) => {
       const checks = (stock[key]?.checks || []).filter(c => c.pass === false).map(c => {
         let reason = c.reason || c.label;
         if (id === 'quality' && c.label.startsWith('最新完整年度归母及扣非利润增长') && annual.length) reason = annualText(annual[0]) + '；两项均需≥10%';

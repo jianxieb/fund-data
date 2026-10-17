@@ -58,7 +58,7 @@ test('search persists across groups and mature quality no longer depends on ten 
 
 test('dividend view and detail distinguish REIT AFFO from GAAP earnings', () => {
   const p=page(); p.view(); p.click('group','dividend');
-  const html=p.view(); assert.match(html,/5年分红年数/); assert.match(html,/本季现金股息 \/ AFFO/);
+  const html=p.view(); assert.match(html,/5年分红年数/); assert.match(html,/本季已付普通股股息 \/ AFFO/);
   assert.ok(p.symbols().includes('O'));
   p.click('detail','O'); assert.match(p.modal(), /74.5%/); assert.match(p.modal(), /5.4倍/);
   assert.doesNotMatch(p.modal(), /没有自动授予国内/);

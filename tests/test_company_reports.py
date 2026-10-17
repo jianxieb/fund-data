@@ -126,7 +126,7 @@ class IndependentGroupTests(unittest.TestCase):
         self.assertTrue({'600183', '300604', '001389', '002916', '688183'} <= growth - quality)
         self.assertEqual(sum(r['group'] == 'dividend' for r in self.live_rows.values()), 23)
         for row in self.live_rows.values():
-            asof = (row.get('qualityReview') or {}).get('checkedAt', '2026-09-30')
+            asof = (row.get('companySelection') or {}).get('checkedAt') or (row.get('qualityReview') or {}).get('checkedAt', '2026-09-30')
             self.assertEqual(growth_review(row, asof), row.get('growthReview'))
             self.assertEqual(long_term_review(row, asof), row.get('longTermReview'))
 

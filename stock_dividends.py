@@ -104,7 +104,7 @@ def eastmoney_dividend_summary(rows, asof, price, code=None):
         fiscal = source_day(row.get('REPORT_DATE'), '分红所属报告期')
         if fiscal > asof:
             continue
-        if ex_date <= cutoff and int(fiscal[:4]) < current_year - 5:
+        if ex_date <= cutoff and int(fiscal[:4]) < current_year - 5 and int(ex_date[:4]) < current_year - 5:
             continue
         cash = source_cash(row)
         # Old ratios outside the cash window cannot change any trailing payment.
@@ -133,6 +133,7 @@ def eastmoney_dividend_summary(rows, asof, price, code=None):
     years = {row['fiscalPeriod'][:4] for row in paid.values()
              if row['cashPerShare'] > 0 and current_year - 5 <= int(row['fiscalPeriod'][:4]) < current_year}
     return {'yield12': round(cash12 / price * 100, 2), 'divYears': len(years),
+            'dividendPaidCalendarYears': sorted({int(r['exDate'][:4]) for r in paid.values() if r['cashPerShare'] > 0 and current_year - 5 <= int(r['exDate'][:4]) < current_year}),
             'cashDividend12': cash12, 'dividendBasis': YIELD_BASIS,
             'dividendCashRecords': records,
             'dividendShareActions': [{'exDate': day, 'factor': factor} for day, factor in sorted(actions.items())],
@@ -141,6 +142,7 @@ def eastmoney_dividend_summary(rows, asof, price, code=None):
 
 def missing_dividend_summary(reason):
     return {'yield12': None, 'divYears': None, 'cashDividend12': None,
+            'dividendPaidCalendarYears': None, 'dividendSourceUrl': None,
             'dividendBasis': YIELD_BASIS, 'dividendCashRecords': [],
             'dividendShareActions': [], 'dividendMissing': str(reason)}
 
@@ -161,6 +163,7 @@ def yahoo_dividend_summary(dividends, splits, asof, price):
         missing = 'Yahoo缺有效的每股现金分红金额'
     cash12 = sum(amounts) if missing is None else None
     return {'yield12': round(cash12 / price * 100, 2) if cash12 is not None else None,
+            'dividendPaidCalendarYears': None, 'dividendSourceUrl': None,
             'divYears': None, 'cashDividend12': cash12,
             'dividendBasis': 'Yahoo近12月现金分红 / 未复权股价；窗口内无已收录拆股或送转',
             'dividendMissing': missing}

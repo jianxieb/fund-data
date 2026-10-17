@@ -122,6 +122,9 @@ def parse_evidence(code, valuation, financials, asof):
             if first is not None and first > 0 and last is not None and last > 0:
                 growth[key] = round(((last / first) ** (1 / 3) - 1) * 100, 4)
     return {'pe': numeric(q.get('PE_TTM')), 'peStatic': numeric(q.get('PE_LAR')),
+            'incomeShareEvidence': {'reportPeriod': latest_report.get('reportDate') if latest_report else None,
+                                    'currentShares': numeric(q.get('TOTAL_SHARES')), 'shareAsOf': quote_day,
+                                    'reports': [{'reportDate': r['REPORT_DATE'][:10], 'shares': numeric(r.get('TOTAL_SHARE'))} for r in reports[:8]]},
             'peDynamic': round(dynamic_pe, 4) if dynamic_pe is not None else None,
             'peDynamicBasis': {'method': 'latest_report_profit_annualized', 'reportDate': period or None,
                                'announcedAt': str(known.get('NOTICE_DATE') or '')[:10] or None,

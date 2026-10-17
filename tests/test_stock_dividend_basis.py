@@ -22,6 +22,11 @@ def event(day, cash=1, bonus=0, transfer=0, fiscal='2025-12-31', **overrides):
 
 
 class DividendShareBasisTests(unittest.TestCase):
+    def test_calendar_year_is_ex_dividend_year_not_fiscal_earnings_year(self):
+        result=eastmoney_dividend_summary([event('2021-05-01',fiscal='2020-12-31'),event('2025-05-01',fiscal='2024-12-31')], '2026-10-14',10)
+        self.assertEqual(result['dividendPaidCalendarYears'],[2021,2025])
+        self.assertEqual(result['divYears'],1)
+
     def test_same_day_cash_uses_pre_action_shares(self):
         row = event('2026-05-22', 1.8, transfer=4)
         result = eastmoney_dividend_summary([row], '2026-05-22', 100)

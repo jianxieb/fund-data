@@ -25,7 +25,7 @@ class CompanySelectionTests(unittest.TestCase):
         self.assertEqual(result['status'], 'pending')
 
     def test_actual_a_share_roster_withdrawals_and_growth_restorations(self):
-        removed = [r for r in self.cn.values() if (r.get('companySelection') or {}).get('previousGroups')
+        removed = [r for r in self.cn.values() if any(g in (r.get('companySelection') or {}).get('previousGroups', []) for g in ('quality','growth','breakout'))
                    and r['companySelection']['groups'] == ['other']]
         self.assertEqual(len(removed), 19)
         for code in ['688188','688278','300661','002558','603444','300972','688808']:
@@ -89,6 +89,32 @@ class CompanySelectionTests(unittest.TestCase):
     def test_review_does_not_backdate_endorsements(self):
         self.assertIsNone(cn_selection(self.cn['601138'], '2026-10-16'))
         self.assertIsNone(assess('ANET','us','2026-06-30','2026-10-16',100,200,[],50))
+
+    def test_positive_cumulative_income_cannot_hide_a_falling_single_quarter(self):
+        row = deepcopy(self.cn['601138'])
+        amounts = {'2025-03-31':100, '2025-06-30':200, '2026-03-31':300, '2026-06-30':350}
+        for r in row['financialReports']:
+            if r['reportDate'] in amounts:
+                r['deductedProfit'] = amounts[r['reportDate']]
+        row['latestFinancials']['deductedProfitGrowth'] = 75
+        verdict = cn_selection(row, '2026-10-17')
+        self.assertEqual(verdict['coreGrowth']['value'], -50)
+        self.assertNotIn('growth', verdict['groups'])
+        us = deepcopy(self.us['FTNT'])
+        us['financials']['operatingGrowth']['value'] = -50
+        self.assertNotIn('growth', classify(us, '2026-10-17')['screening']['groups'])
+
+    def test_identical_normalized_evidence_has_identical_rules_in_both_markets(self):
+        record = deepcopy(self.cn['601138']['companySelection'])
+        record['groups'] = ['quality','growth','breakout']
+        annual = [dict(period=str(y)+'-12', profit=100, cash=150) for y in range(2021,2026)]
+        records = {'companies': {'cn:SAME':record,'us:SAME':record}}
+        for cash,growth,published,eligible in [(150,10,'2026-08-20',True),(-1,10,'2026-08-20',True),(150,-1,'2026-08-20',True),(150,10,'2026-11-01',True),(150,10,'2026-08-20',False)]:
+            with self.subTest(cash=cash,growth=growth,published=published,eligible=eligible), patch('company_selection.json.loads', return_value=records):
+                results = [assess('SAME', market, '2026-06-30','2026-10-17',100,cash,annual,growth,
+                                  core_period='2026-06-30',core_basis='test',published_at=published,eligible=eligible)
+                           for market in ('cn','us')]
+                self.assertEqual(results[0],results[1])
 
 
 if __name__ == '__main__':

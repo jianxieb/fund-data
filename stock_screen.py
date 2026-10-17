@@ -204,7 +204,7 @@ def dividend_evidence(code, latest, price):
         raise RuntimeError('分红数据缺失，不能按零股息处理')
     if result.get('count', len(result['data'])) > len(result['data']) or result.get('pages', 1) > 1:
         raise RuntimeError('分红/送转响应被分页截断')
-    return eastmoney_dividend_summary(result['data'], latest, price, code)
+    return {**eastmoney_dividend_summary(result['data'], latest, price, code), 'dividendSourceUrl': url}
 
 
 def dividend_stats(code, latest, price):

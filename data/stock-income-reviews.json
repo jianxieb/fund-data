@@ -1,0 +1,485 @@
+{
+  "reviewedAt": "2026-10-17",
+  "companies": {
+    "603699": {
+      "name": "纽威股份",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-22",
+      "decision": "retain",
+      "rationale": "核对本期盈利、TTM经营现金与实际派息；须同时满足同股本派息覆盖和连续派现检查。",
+      "risk": "工业阀门订单、海外客户与产能投入会改变现金覆盖。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22603699.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22603699%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 1697681891.0299997,
+        "ttmOperatingCash": 1820046606.5500002,
+        "cashDividend12": 1.6099999999999999,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "002558": {
+      "name": "巨人网络",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-27",
+      "decision": "hold",
+      "rationale": "不因现金股息率达标自动转入红利榜：尚缺本期经常性游戏收入、产品集中风险与持续派息的专项复核。",
+      "risk": "利润依赖少数爆款，用户留存和付费衰减可能使业绩回落。；游戏版号、内容监管与渠道成本影响产品运营。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22002558.SZ%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22002558%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 3121770671.3999996,
+        "ttmOperatingCash": 4314153515.05,
+        "cashDividend12": 0.99,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "603444": {
+      "name": "吉比特",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-14",
+      "decision": "hold",
+      "rationale": "不因现金股息率达标自动转入红利榜：尚缺本期经常性游戏收入、产品集中风险与持续派息的专项复核。",
+      "risk": "问道IP与杖剑传说贡献集中，玩家偏好和生命周期影响盈利。；产品开发失败、版号或获客成本变化可能拖累利润。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22603444.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22603444%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 2240521462.6,
+        "ttmOperatingCash": 2991996972.7300005,
+        "cashDividend12": 23.0,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "600900": {
+      "name": "长江电力",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-31",
+      "decision": "retain",
+      "rationale": "核对本期盈利、TTM经营现金与实际派息；须同时满足同股本派息覆盖和连续派现检查。",
+      "risk": "来水变化、电价和新增电站资本开支会影响可分配现金。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600900.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22600900%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 36202151477.369995,
+        "ttmOperatingCash": 60700052833.17,
+        "cashDividend12": 1.0,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "000333": {
+      "name": "美的集团",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-29",
+      "decision": "retain",
+      "rationale": "核对本期盈利、TTM经营现金与实际派息；须同时满足同股本派息覆盖和连续派现检查。",
+      "risk": "分红会随盈利、投资支出和资本约束变化；历史派息不保证未来金额。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22000333.SZ%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22000333%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 44377758000.0,
+        "ttmOperatingCash": 53617005000.0,
+        "cashDividend12": 4.3,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "600901": {
+      "name": "江苏金租",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-19",
+      "decision": "retain",
+      "rationale": "按本期资本、资产质量及实际现金分红覆盖评审；存贷款现金流不按工业企业标准淘汰。",
+      "risk": "资本充足率15.34%、核心一级14.11%，不良融资租赁资产率0.89%、拨备覆盖397.64%；资本充足率较年末下降1.56个百分点，需跟踪扩表后的资本消耗。",
+      "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-19/1225479935.PDF",
+      "sourceType": "issuer",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22600901%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 3385584561.089999,
+        "ttmOperatingCash": 2701999679.0800004,
+        "cashDividend12": 0.3,
+        "dividendAsOf": "2026-10-14"
+      },
+      "location": "半年报第6页",
+      "capitalReview": "资本充足率15.34%、核心一级14.11%，不良融资租赁资产率0.89%、拨备覆盖397.64%；资本充足率较年末下降1.56个百分点，需跟踪扩表后的资本消耗。"
+    },
+    "600941": {
+      "name": "中国移动",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-14",
+      "decision": "retain",
+      "rationale": "核对本期盈利、TTM经营现金与实际派息；须同时满足同股本派息覆盖和连续派现检查。",
+      "risk": "分红会随盈利、投资支出和资本约束变化；历史派息不保证未来金额。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600941.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22600941%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 131794000000.0,
+        "ttmOperatingCash": 263941000000.0,
+        "cashDividend12": 4.7112,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "601088": {
+      "name": "中国神华",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-29",
+      "decision": "retain",
+      "rationale": "核对本期盈利、TTM经营现金与实际派息；须同时满足同股本派息覆盖和连续派现检查。",
+      "risk": "煤价、电量和资本开支会影响盈利；高股息不能替代周期分析。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22601088.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22601088%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 53981000000.0,
+        "ttmOperatingCash": 78178000000.0,
+        "cashDividend12": 2.0100000000000002,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "601225": {
+      "name": "陕西煤业",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-28",
+      "decision": "retain",
+      "rationale": "核对本期盈利、TTM经营现金与实际派息；须同时满足同股本派息覆盖和连续派现检查。",
+      "risk": "煤价回落和安全生产、资本开支会收窄现金覆盖。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22601225.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22601225%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 20398727220.77,
+        "ttmOperatingCash": 39991060476.71,
+        "cashDividend12": 0.909,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "601857": {
+      "name": "中国石油",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-31",
+      "decision": "retain",
+      "rationale": "核对本期盈利、TTM经营现金与实际派息；须同时满足同股本派息覆盖和连续派现检查。",
+      "risk": "油气价格、炼化利润及资本开支会影响派息。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22601857.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22601857%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 176065000000.0,
+        "ttmOperatingCash": 436551000000.0,
+        "cashDividend12": 0.51,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "600938": {
+      "name": "中国海油",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-27",
+      "decision": "retain",
+      "rationale": "核对本期盈利、TTM经营现金与实际派息；须同时满足同股本派息覆盖和连续派现检查。",
+      "risk": "分红会随盈利、投资支出和资本约束变化；历史派息不保证未来金额。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600938.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22600938%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 138367000000.0,
+        "ttmOperatingCash": 241491000000.0,
+        "cashDividend12": 1.14493,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "601398": {
+      "name": "工商银行",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-28",
+      "decision": "retain",
+      "rationale": "按本期资本、资产质量及实际现金分红覆盖评审；存贷款现金流不按工业企业标准淘汰。",
+      "risk": "资本充足率18.57%，不良贷款率1.29%、拨备覆盖217.58%；本期资本与拨备支持分红，净息差及信用成本恶化会收窄覆盖。",
+      "sourceUrl": "https://m.icbc.com.cn/page/1267851085776654336.html",
+      "sourceType": "issuer",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22601398%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 374141000000.0,
+        "ttmOperatingCash": 2473226000000.0,
+        "cashDividend12": 0.3103,
+        "dividendAsOf": "2026-10-14"
+      },
+      "location": "2026年上半年经营发展公告：风险抵补",
+      "capitalReview": "资本充足率18.57%，不良贷款率1.29%、拨备覆盖217.58%；本期资本与拨备支持分红，净息差及信用成本恶化会收窄覆盖。"
+    },
+    "601939": {
+      "name": "建设银行",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-28",
+      "decision": "retain",
+      "rationale": "按本期资本、资产质量及实际现金分红覆盖评审；存贷款现金流不按工业企业标准淘汰。",
+      "risk": "资本充足率19.42%、核心一级14.24%，不良贷款率1.29%、拨备覆盖238.69%；继续跟踪贷款扩张、净息差和信用损失。",
+      "sourceUrl": "https://ccb.com/eng/2026-08/28/article_2026082820363533267.shtml",
+      "sourceType": "issuer",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22601939%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 346394000000.0,
+        "ttmOperatingCash": 1195311000000.0,
+        "cashDividend12": 0.38870000000000005,
+        "dividendAsOf": "2026-10-14"
+      },
+      "location": "2026 interim results: capital and NPL",
+      "capitalReview": "资本充足率19.42%、核心一级14.24%，不良贷款率1.29%、拨备覆盖238.69%；继续跟踪贷款扩张、净息差和信用损失。"
+    },
+    "601288": {
+      "name": "农业银行",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-28",
+      "decision": "retain",
+      "rationale": "按本期资本、资产质量及实际现金分红覆盖评审；存贷款现金流不按工业企业标准淘汰。",
+      "risk": "资本充足率17.50%、核心一级10.80%，不良贷款率1.25%、拨备覆盖290.10%；核心一级资本较年末11.08%下降，扩表与派息的资本消耗需跟踪。",
+      "sourceUrl": "https://www.abchina.com/en/investor-relations/performance-reports/interim-reports/intrp/202608/t20260828_2658921.htm",
+      "sourceType": "issuer",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22601288%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 297912000000.0,
+        "ttmOperatingCash": 1394715000000.0,
+        "cashDividend12": 0.2495,
+        "dividendAsOf": "2026-10-14"
+      },
+      "location": "Interim Report: financial highlights及Capital Adequacy",
+      "capitalReview": "资本充足率17.50%、核心一级10.80%，不良贷款率1.25%、拨备覆盖290.10%；核心一级资本较年末11.08%下降，扩表与派息的资本消耗需跟踪。"
+    },
+    "601988": {
+      "name": "中国银行",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-29",
+      "decision": "retain",
+      "rationale": "按本期资本、资产质量及实际现金分红覆盖评审；存贷款现金流不按工业企业标准淘汰。",
+      "risk": "资本充足率18.31%、TLAC风险加权比率21.66%，不良贷款率1.22%、拨备覆盖200.85%；境内外信用风险、外汇和净息差变化会影响派息能力。",
+      "sourceUrl": "https://wap.boc.cn/bif/bi1/202608/t20260829_25688331.html",
+      "sourceType": "issuer",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22601988%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 249024000000.0,
+        "ttmOperatingCash": 1294191000000.0,
+        "cashDividend12": 0.2263,
+        "dividendAsOf": "2026-10-14"
+      },
+      "location": "2026年中期业绩：资产质量及资本",
+      "capitalReview": "资本充足率18.31%、TLAC风险加权比率21.66%，不良贷款率1.22%、拨备覆盖200.85%；境内外信用风险、外汇和净息差变化会影响派息能力。"
+    },
+    "600036": {
+      "name": "招商银行",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-29",
+      "decision": "retain",
+      "rationale": "按本期资本、资产质量及实际现金分红覆盖评审；存贷款现金流不按工业企业标准淘汰。",
+      "risk": "集团高级法资本充足率18.33%、核心一级14.07%，拨备覆盖385.10%；核心一级较年末下降0.09个百分点，零售信用风险及净息差变化仍须跟踪。",
+      "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225530237.PDF",
+      "sourceType": "issuer",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22600036%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 151696000000.0,
+        "ttmOperatingCash": 621607000000.0,
+        "cashDividend12": 2.016,
+        "dividendAsOf": "2026-10-14"
+      },
+      "location": "半年报第28—30页，集团高级法口径",
+      "capitalReview": "集团高级法资本充足率18.33%、核心一级14.07%，拨备覆盖385.10%；核心一级较年末下降0.09个百分点，零售信用风险及净息差变化仍须跟踪。"
+    },
+    "601668": {
+      "name": "中国建筑",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-29",
+      "decision": "retain",
+      "rationale": "核对本期盈利、TTM经营现金与实际派息；须同时满足同股本派息覆盖和连续派现检查。",
+      "risk": "工程结算、应收和地产相关敞口影响回款；不能只看股息率。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22601668.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22601668%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 31669357000.0,
+        "ttmOperatingCash": 74913877000.0,
+        "cashDividend12": 0.2718,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "601006": {
+      "name": "大秦铁路",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-21",
+      "decision": "retain",
+      "rationale": "核对本期盈利、TTM经营现金与实际派息；须同时满足同股本派息覆盖和连续派现检查。",
+      "risk": "分红会随盈利、投资支出和资本约束变化；历史派息不保证未来金额。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22601006.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22601006%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 6040176242.0,
+        "ttmOperatingCash": 12756903797.0,
+        "cashDividend12": 0.22169,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "600377": {
+      "name": "宁沪高速",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-28",
+      "decision": "retain",
+      "rationale": "核对本期盈利、TTM经营现金与实际派息；须同时满足同股本派息覆盖和连续派现检查。",
+      "risk": "通行量、收费期限及新增路产支出影响现金分红。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600377.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22600377%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 4673318835.71,
+        "ttmOperatingCash": 7087246986.5,
+        "cashDividend12": 0.49000000000000005,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "600886": {
+      "name": "国投电力",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-28",
+      "decision": "retain",
+      "rationale": "核对本期盈利、TTM经营现金与实际派息；须同时满足同股本派息覆盖和连续派现检查。",
+      "risk": "来水、煤价、电价与项目资本开支影响现金覆盖。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600886.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22600886%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 7134224769.210001,
+        "ttmOperatingCash": 28422337754.5,
+        "cashDividend12": 0.5081,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "600674": {
+      "name": "川投能源",
+      "reportPeriod": "2026-09-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-10-14",
+      "decision": "retain",
+      "rationale": "核对本期盈利、TTM经营现金与实际派息；须同时满足同股本派息覆盖和连续派现检查。",
+      "risk": "分红会随盈利、投资支出和资本约束变化；历史派息不保证未来金额。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600674.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22600674%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 4938116124.610001,
+        "ttmOperatingCash": 900120046.5500001,
+        "cashDividend12": 0.5,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "600519": {
+      "name": "贵州茅台",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-15",
+      "decision": "retain",
+      "rationale": "核对本期盈利、TTM经营现金与实际派息；须同时满足同股本派息覆盖和连续派现检查。",
+      "risk": "分红会随盈利、投资支出和资本约束变化；历史派息不保证未来金额。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600519.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22600519%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 81433985225.44,
+        "ttmOperatingCash": 119093894077.08,
+        "cashDividend12": 51.98123,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "000651": {
+      "name": "格力电器",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-27",
+      "decision": "retain",
+      "rationale": "核对本期盈利、TTM经营现金与实际派息；须同时满足同股本派息覆盖和连续派现检查。",
+      "risk": "空调需求、渠道库存、价格竞争和现金使用影响分红持续性。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22000651.SZ%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22000651%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 27868287180.389996,
+        "ttmOperatingCash": 36863384959.28,
+        "cashDividend12": 3.0,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "000895": {
+      "name": "双汇发展",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-29",
+      "decision": "retain",
+      "rationale": "核对本期盈利、TTM经营现金与实际派息；须同时满足同股本派息覆盖和连续派现检查。",
+      "risk": "原料价格、肉制品需求及食品安全风险影响利润和派息。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22000895.SZ%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22000895%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 5087037306.26,
+        "ttmOperatingCash": 6055172577.990001,
+        "cashDividend12": 0.8,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "601728": {
+      "name": "中国电信",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-21",
+      "decision": "retain",
+      "rationale": "核对本期盈利、TTM经营现金与实际派息；须同时满足同股本派息覆盖和连续派现检查。",
+      "risk": "分红会随盈利、投资支出和资本约束变化；历史派息不保证未来金额。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22601728.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22601728%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 29755430909.309998,
+        "ttmOperatingCash": 137859851896.34,
+        "cashDividend12": 0.2514,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "600690": {
+      "name": "海尔智家",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-28",
+      "decision": "retain",
+      "rationale": "核对本期盈利、TTM经营现金与实际派息；须同时满足同股本派息覆盖和连续派现检查。",
+      "risk": "分红会随盈利、投资支出和资本约束变化；历史派息不保证未来金额。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600690.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22600690%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 17836057348.84,
+        "ttmOperatingCash": 24615930166.289997,
+        "cashDividend12": 1.16071,
+        "dividendAsOf": "2026-10-14"
+      }
+    }
+  }
+}
