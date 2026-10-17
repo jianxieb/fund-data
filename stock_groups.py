@@ -2,6 +2,7 @@
 from stock_fundamentals import numeric, quality_review, research_evidence_check, latest_report_review
 from company_report import quarter_history, ttm_amount
 from stock_earnings import finite
+from company_quality import POLICY_FROM, durable_financials, business_decision
 
 GROWTH_LIMITS = {'revenueGrowth': None, 'netProfitGrowth': 30, 'deductedProfitGrowth': 30,
                  'deductedRatio': .8, 'annualRoe': 10, 'marketCap': 100}
@@ -41,8 +42,10 @@ def operating_review(row, asof, direction):
                     ('rationale', 'priceEffect', 'consolidationEffect', 'valuationAssessment'))
     valid = current and bound and quantitative and described
     decision = review.get('growthDecision' if direction == 'growth' else 'breakoutDecision')
+    reassessed = business_decision(row.get('c'), direction, period, asof, {'decision': decision, 'rationale': review.get('rationale')})
+    decision = reassessed.get('decision')
     passed = valid and decision == 'retain'
-    reason = None if passed else review.get('rationale') if valid else '缺本期带数量、金额、来源页及估算口径的盈利贡献复核'
+    reason = None if passed else reassessed.get('rationale') if valid else '缺本期带数量、金额、来源页及估算口径的盈利贡献复核'
     return review, check('本期盈利来源已有量化复核', passed, reason)
 
 
@@ -59,6 +62,23 @@ def long_term_review(row, asof):
     research = row.get('qualityResearch') or {}
     business = research.get('longTerm') or {}
     evidence_current = research.get('reportPeriod') == (row.get('latestFinancials') or {}).get('reportDate')
+    if asof >= POLICY_FROM:
+        reports = row.get('financialReports') or []
+        financial, average, cash_ratio = durable_financials([
+            {'period': str(r['year']) + '-12', 'profit': r.get('netProfit'), 'core': r.get('deductedProfit'),
+             'cash': r.get('operatingCashFlow'), 'roe': r.get('roe')} for r in reversed(history)],
+            ttm_amount(reports, 'operatingCashFlow'), ttm_amount(reports, 'netProfit'))
+        decision = business_decision(row.get('c'), 'quality', research.get('reportPeriod'), asof, business)
+        checks = [review['checks'][0], review['checks'][6],
+                  latest_report_review(row.get('latestFinancials') or {}, asof)[0],
+                  check('最新应披露完整年度已收录', complete, '缺最新应披露年度财报'),
+                  research_evidence_check(row, asof)] + financial + [
+            check('连续5年扣非利润为正', complete and all((numeric(r.get('deductedProfit')) or 0) > 0 for r in history), '历史扣非亏损或缺可比扣非利润'),
+            check('本期长期业务持续性已有明确保留结论', evidence_current and decision.get('decision') == 'retain' and all(business.get(k) for k in ('durability','reinvestment','invalidation')),
+                  decision.get('rationale') or '缺本期明确的长期经营判断；文字说明不等于入选')]
+        return {'qualified': all(c['pass'] for c in checks), 'checks': checks, 'years': years,
+                'roe5': average, 'cashConversion': cash_ratio, 'businessReview': decision, 'checkedAt': asof,
+                'basis': 'durable_quality_v3', 'reasons': [business.get('durability', '')], 'watchouts': review['watchouts']}
     checks = review['checks'] + [
         check('连续5个完整财年归母、扣非利润及经营现金流均为正', complete and all((numeric(r.get(k)) or 0) > 0 for r in history for k in ('netProfit', 'deductedProfit', 'operatingCashFlow')), '缺连续5年正利润、正扣非利润或正经营现金流'),
         check('5年平均年度ROE≥15%，各年ROE均为正', average is not None and average >= 15 and min(roes) > 0, '缺连续5年年度ROE' if average is None else '5年平均年度ROE %.2f%%、最低年度%.2f%%，平均须≥15%%且各年为正' % (average, min(roes))),
@@ -91,6 +111,7 @@ def growth_review(row, asof):
     profit, core = numeric(latest.get('netProfit')), numeric(latest.get('deductedProfit'))
     core_ratio = core / profit if profit is not None and profit > 0 and core is not None else None
     ocf = ttm_amount(reports, 'operatingCashFlow')
+    profit_ttm = ttm_amount(reports, 'netProfit')
     research = row.get('qualityResearch') or {}
     business = research.get('growth') or {}
     # A prior dossier cannot approve newly reported growth without another review.
@@ -109,10 +130,14 @@ def growth_review(row, asof):
         check('本期主营增长、持续性及失效信号有报告依据', evidence_current and all(isinstance(business.get(k), str) and business[k].strip() for k in ('driver', 'quality', 'invalidation')), '缺本期高质成长的主营增长、持续性或失效信号记录'),
         operating_check,
     ]
+    if asof >= POLICY_FROM:
+        checks[6] = check('最近两个完整财年ROE均≥10%', complete and all((numeric(r.get('roe')) or 0) >= 10 for r in annual), '年度ROE：' + '、'.join(str(r['year']) + '年 ' + str(r.get('roe')) + '%' for r in annual))
+        checks[7] = check('TTM正利润，经营现金至少覆盖利润50%', profit_ttm is not None and profit_ttm > 0 and ocf is not None and ocf >= profit_ttm * .5,
+                          'TTM经营现金 / 归母利润 %.2f%%' % (ocf / profit_ttm * 100) if profit_ttm is not None and profit_ttm > 0 and ocf is not None else '缺可比TTM利润或现金')
     return {'qualified': all(c['pass'] for c in checks), 'checks': checks,
             'financialQualified': all(c['pass'] for c in checks[:8]), 'checkedAt': asof,
             'quarters': quarters, 'coreProfitRatio': core_ratio, 'operatingCashFlowTtm': ocf,
-            'basis': 'high_quality_growth_v2', 'thresholds': GROWTH_LIMITS.copy(), 'operatingReview': operating,
+            'basis': 'high_quality_growth_v3' if asof >= POLICY_FROM else 'high_quality_growth_v2', 'thresholds': GROWTH_LIMITS.copy(), 'operatingReview': operating,
             'reasons': [business[k] for k in ('driver', 'quality') if business.get(k)], 'watchouts': []}
 
 
@@ -159,8 +184,12 @@ def breakout_review(row, asof):
         check('本期增长来源、周期/并购/基数影响和失效信号均有报告依据', research.get('reportPeriod') == latest.get('reportDate') and all(isinstance(business.get(k), str) and business[k].strip() for k in ('driver', 'quality', 'invalidation')), '缺本期业绩爆发的增长来源、周期/并购/基数影响或失效信号记录'),
         operating_check,
     ]
+    if asof >= POLICY_FROM:
+        profit_ttm = ttm_amount(reports, 'netProfit')
+        checks.append(check('TTM正利润，经营现金至少覆盖利润50%', profit_ttm is not None and profit_ttm > 0 and ocf is not None and ocf >= profit_ttm * .5,
+                            'TTM经营现金不足归母利润50%，或缺可比TTM金额'))
     return {'qualified': all(c['pass'] for c in checks), 'checks': checks, 'checkedAt': asof,
             'quarters': quarters, 'coreProfitRatio': ratio, 'operatingCashFlowTtm': ocf,
-            'financialQualified': all(c['pass'] for c in checks[:9]),
-            'operatingReview': operating, 'basis': 'core_earnings_breakout_v4', 'thresholds': BREAKOUT_LIMITS.copy(),
+            'financialQualified': all(c['pass'] for c in checks[:9]) and (asof < POLICY_FROM or checks[-1]['pass']),
+            'operatingReview': operating, 'basis': 'core_earnings_breakout_v5' if asof >= POLICY_FROM else 'core_earnings_breakout_v4', 'thresholds': BREAKOUT_LIMITS.copy(),
             'reasons': [business[k] for k in ('driver', 'quality') if business.get(k)], 'watchouts': []}

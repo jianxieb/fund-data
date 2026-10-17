@@ -30,7 +30,7 @@
   }
   function rows() {
     const query = state.query.trim().toLowerCase();
-    const result = (root.OVERSEAS_STOCKS || []).filter(s => matches(s) && (!H.cashOnly || ['dividend','other'].includes(state.group) || M.stockCashQuality(s).pass) && (state.category === 'all' || s.category === state.category) && (!query || [s.symbol, s.name, s.issuer, s.category, s.business].join(' ').toLowerCase().includes(query)));
+    const result = (root.OVERSEAS_STOCKS || []).filter(s => matches(s) && (state.category === 'all' || s.category === state.category) && (!query || [s.symbol, s.name, s.issuer, s.category, s.business].join(' ').toLowerCase().includes(query)));
     const metric = s => state.sort.startsWith('return:') ? s.r[[1, 2, 3, 5, 10].indexOf(+state.sort.split(':')[1])] : state.sort === 'roe' ? s.financials.roeTTM : state.sort === 'revenueGrowth' ? s.financials.revenueGrowth.value : state.sort === 'profitGrowth' ? s.financials.profitGrowth.value : state.sort === 'cashConversion' ? s.analysis.cashConversion : s[state.sort];
     if (state.sort !== 'default') result.sort((a, b) => M.compareNullable(metric(a), metric(b), state.descending));
     return result;
@@ -44,7 +44,7 @@
     const mode = state.view;
     const tabs = '<div class="tabs stock-tabs" role="tablist" aria-label="美股研究分组">' + groups.map(([id, label]) => H.action(label + '<span class="tab-count">' + all.filter(s => s.screening.groups.includes(id)).length + '</span>', 'os-stock-group', (state.group === id ? 'active ' : '') + (id === 'other' ? 'stock-other-tab' : ''), 'data-value="' + id + '" role="tab" aria-selected="' + (state.group === id) + '"')).join('') + '</div>';
     const filters = '<div class="stock-category-filter" role="group" aria-label="美股公司行业">' + [['all', '全部行业'], ...categories.map(c => [c, c])].map(([id, name]) => H.action(H.esc(name), 'os-stock-category', 'filter-chip' + (state.category === id ? ' active' : ''), 'data-value="' + H.esc(id) + '" aria-pressed="' + (state.category === id) + '"')).join('') + '</div>';
-    const controls = '<div class="stock-controls"><div class="filters"><input type="search" id="os-stock-search" aria-label="搜索美股公司、代码或业务" placeholder="搜索美股公司、代码或业务" value="' + H.esc(state.query) + '"></div>' + (!['dividend','other'].includes(state.group) ? H.cashControl || '' : '') + (mode === 'returns' ? H.returnControls(false) : '') + '</div>';
+    const controls = '<div class="stock-controls"><div class="filters"><input type="search" id="os-stock-search" aria-label="搜索美股公司、代码或业务" placeholder="搜索美股公司、代码或业务" value="' + H.esc(state.query) + '"></div>' + (mode === 'returns' ? H.returnControls(false) : '') + '</div>';
     const views = '<div class="segmented stock-view" aria-label="美股研究视图">' + [['financials', '财务与理由'], ['valuation', '估值'], ['returns', '收益与分红']].map(([id, label]) => H.action(label, 'os-stock-view', state.view === id ? 'active' : '', 'data-value="' + id + '" aria-pressed="' + (state.view === id) + '"')).join('') + '</div>';
     let headers, cells;
     if (mode === 'financials') {
@@ -79,8 +79,8 @@
   }
   function rules() {
     const rulesRows = [
-      ['长期优质企业', '连续5年正利润与正经营现金；5年平均年度ROE≥15%，最新年度≥15%；3年利润复合与最新年度增长≥10%；最新单季利润、营业利润增长≥10%，TTM ROE≥10%；当前长期业务研究成立。'],
-      ['高质成长股', '连续两个相邻单季利润及营业利润均增长≥30%，正基数；近两个完整财年利润与经营现金为正；年度及TTM ROE≥10%，TTM现金/利润≥50%；本期增长来源已复核。'],
+      ['长期优质企业', '连续5年正利润与正经营现金；5年平均年度ROE≥15%，每年≥10%，最新年度≥15%；TTM正利润且现金/利润≥50%；当前长期业务研究有明确保留结论。单季增速和3年增速继续展示，不作为质量的10%门槛。'],
+      ['高质成长股', '连续两个相邻单季利润及营业利润均增长≥30%，正基数；近两个完整财年利润与经营现金为正、每年ROE≥10%；TTM ROE≥10%，TTM现金/利润≥50%；本期增长来源已复核。'],
       ['业绩爆发股', '连续两季利润和营业利润均增长≥100%，正基数；最新完整年度正利润、正现金；年度及TTM ROE≥5%，TTM和最新单季现金/利润≥50%；本期爆发来源已复核。'],
       ['红利价值', '近12月已除息现金股息率≥3%；最近5个完整年度都有现金分红；派息比率≤85%及本期现金/资本承受能力成立；REIT另用AFFO。'],
       ['其他已收录', '重要蓝筹与行业研究仍完整保留，列明当前未入选原因。']

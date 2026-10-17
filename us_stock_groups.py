@@ -1,6 +1,7 @@
 """Current, independently evidenced research groups for US listed companies."""
 from datetime import date
 from overseas_research import finite
+from company_quality import POLICY_FROM, durable_financials
 
 LABELS = {'quality': '长期优质', 'growth': '高质成长', 'breakout': '业绩爆发',
           'dividend': '红利价值', 'other': '其他已收录'}
@@ -86,6 +87,16 @@ def classify(row, asof):
           '营业利润同比 ' + metric(f.get('operatingGrowth', {}).get('value')) + '；' + (review.get('qualityRationale') or '缺本期盈利来源研究'))
     long = research.get('longTerm') or {}
     check('quality', '有当前业务持续性、再投资和失效信号研究', reviewed and long.get('decision') == 'retain' and all(long.get(k) for k in ('durability', 'reinvestment', 'invalidation')), long.get('rationale') or '缺本期长期经营研究')
+    if asof >= POLICY_FROM:
+        # A mature compounder does not lose durable quality merely because one
+        # quarter grows less than 10%. Current growth remains its own group.
+        financial, roe5, _ = durable_financials([
+            {'period': q['period'], 'profit': q.get('NetIncome'), 'cash': q.get('OperatingCashFlow'),
+             'roe': q.get('roe'), 'equity': q.get('StockholdersEquity')} for q in last5], f.get('ttmCash'), f.get('ttmProfit'))
+        checks['quality'] = checks['quality'][:3] + financial + [checks['quality'][-1]]
+        # The dated long-term business verdict governs durable quality. The
+        # separate quarterly earnings-attribution verdict still governs growth
+        # and breakout; an unproven short-term profit jump cannot qualify there.
     for group, threshold in [('growth', 30), ('breakout', 100)]:
         common(group)
         check(group, f'连续两个相邻单季报表利润、营业利润均增长≥{threshold}%，基数为正', two_quarters and all(finite(q.get(k)) and q[k] >= threshold for q in recent for k in ('profitGrowth', 'operatingGrowth')),
@@ -99,6 +110,8 @@ def classify(row, asof):
             cash_ok = cash_ok and finite(f.get('OperatingCashFlow')) and f.get('NetIncome', 0) > 0 and f['OperatingCashFlow'] >= f['NetIncome'] * .5
         check(group, 'TTM现金/利润≥50%' + ('，最新单季亦≥50%' if group == 'breakout' else ''), cash_ok, 'TTM现金/利润 ' + metric(a.get('cashConversion'), '倍'))
         check(group, '本期主营、非经营项、周期与并表已有金额复核', operating_review and review.get(group + 'Decision') == 'retain', review.get(group + 'Rationale') or '缺本期盈利来源复核')
+        if group == 'growth' and asof >= POLICY_FROM:
+            check(group, '最近两个完整财年ROE均≥10%', contiguous2 and all(finite(q.get('roe')) and q['roe'] >= 10 for q in last2), '年度ROE：' + '、'.join(q['period'] + ' ' + metric(q.get('roe')) for q in last2))
     # Dividend value is independent of growth. A profitable bank is not rejected
     # because operating cash movements include deposits and securities trading.
     income = research.get('incomeReview') or {}
@@ -122,7 +135,7 @@ def classify(row, asof):
     if groups == ['other'] and research.get('reportPeriod', '') < f['reportDate']:
         pending = '经营复核仅覆盖' + research.get('reportPeriod', '未注明报告期') + '，最新财报为' + f['reportDate']
         other_reasons = [pending] + [reason for reason in other_reasons if reason != pending]
-    row['screening'] = {'basis': 'us_company_quality_growth_v1', 'checkedAt': asof,
+    row['screening'] = {'basis': 'durable_quality_growth_v2' if asof >= POLICY_FROM else 'us_company_quality_growth_v1', 'checkedAt': asof,
         'groups': groups, 'reviews': {g: {'qualified': qualified[g], 'checks': values} for g, values in checks.items()},
         'roe5': roe5, 'quarters': recent, 'dividendYears5': len(full_years & dividend_years), 'payoutRatio': payout,
         'otherReasons': other_reasons}

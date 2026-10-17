@@ -1,0 +1,509 @@
+{
+  "schemaVersion": 1,
+  "policyEffectiveFrom": "2026-10-17",
+  "method": "复核既有具名财报与经营拆分；明确区分业务持续性、周期和当前利润增速，不改写历史报告结论。",
+  "companies": {
+    "601138": {
+      "name": "工业富联",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "sources": [
+        {
+          "title": "工业富联2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-12/1225468066.PDF",
+          "publishedAt": "2026-08-12",
+          "pages": "9、11、19",
+          "businessPage": 9
+        }
+      ],
+      "quality": {
+        "decision": "retain",
+        "rationale": "全球制造、供应链协同和服务器客户交付形成持续经营基础；五年财报覆盖AI服务器放量之前。 本结论需与独立的五年资本回报、盈利和TTM现金门槛同时成立。"
+      }
+    },
+    "601899": {
+      "name": "紫金矿业",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "sources": [
+        {
+          "title": "紫金矿业紫金矿业集团股份有限公司2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225550244.PDF",
+          "publishedAt": "2026-08-22",
+          "reportPeriod": "2026-06-30",
+          "pages": "12—14；财务复算：PDF第6、14页",
+          "sha256": "b934ec8dde5757b3fbd757e6c8c6ae5bd13a09c65e5a7acbfa58430b538d75ad"
+        },
+        {
+          "title": "紫金矿业紫金矿业集团股份有限公司2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-03-21/1225550242.PDF",
+          "publishedAt": "2026-03-21",
+          "reportPeriod": "2025-12-31",
+          "pages": "经营、成本及财务报表",
+          "sha256": "01819e1c7daad939d1779a8aa729f50f02151192e609cb28c2c405634a8f343d"
+        }
+      ],
+      "quality": {
+        "decision": "hold",
+        "rationale": "资源储备和成本优势已有依据，但本期铜金价格与新增并表同时贡献利润，未验证中周期价格下的持续回报。转入周期研究观察，不把商品涨价作为长期质量或持续成长的证明。"
+      },
+      "growth": {
+        "decision": "hold",
+        "rationale": "资源储备和成本优势已有依据，但本期铜金价格与新增并表同时贡献利润，未验证中周期价格下的持续回报。转入周期研究观察，不把商品涨价作为长期质量或持续成长的证明。"
+      },
+      "breakout": {
+        "decision": "hold",
+        "rationale": "资源储备和成本优势已有依据，但本期铜金价格与新增并表同时贡献利润，未验证中周期价格下的持续回报。转入周期研究观察，不把商品涨价作为长期质量或持续成长的证明。"
+      }
+    },
+    "300750": {
+      "name": "宁德时代",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "sources": [
+        {
+          "title": "宁德时代2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-07-25/1225441586.PDF",
+          "publishedAt": "2026-07-25",
+          "pages": "12—14、28—29",
+          "businessPage": 12
+        }
+      ],
+      "quality": {
+        "decision": "retain",
+        "rationale": "动力与储能共用研发、供应链及规模制造能力；中报份额数据与五年利润、现金流互相验证。 本结论需与独立的五年资本回报、盈利和TTM现金门槛同时成立。"
+      }
+    },
+    "300308": {
+      "name": "中际旭创",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "sources": [
+        {
+          "title": "中际旭创2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225491753.PDF",
+          "publishedAt": "2026-08-22",
+          "pages": "8、12、21—24、27；财务复算：PDF第8、25、56页",
+          "businessPage": 24
+        }
+      ],
+      "quality": {
+        "decision": "retain",
+        "rationale": "光模块技术迭代、客户验证和规模交付形成进入门槛；五年盈利为正但2021—2022年ROE低于近年。 本结论需与独立的五年资本回报、盈利和TTM现金门槛同时成立。"
+      }
+    },
+    "002028": {
+      "name": "思源电气",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "sources": [
+        {
+          "title": "思源电气2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-15/1225473691.PDF",
+          "publishedAt": "2026-08-15",
+          "pages": "9—12、20—21；财务复算：PDF第7、11、44页",
+          "businessPage": 9
+        }
+      ],
+      "quality": {
+        "decision": "retain",
+        "rationale": "电网客户认证和多类输配电产品协同有利于连续取得项目；五年盈利和现金流记录支持这一判断。 本结论需与独立的五年资本回报、盈利和TTM现金门槛同时成立。"
+      }
+    },
+    "002463": {
+      "name": "沪电股份",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "sources": [
+        {
+          "title": "沪电股份2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-26/1225502252.PDF",
+          "publishedAt": "2026-08-26",
+          "pages": "7、11、13—14；财务复算：PDF第7、15、46页",
+          "businessPage": 13
+        }
+      ],
+      "quality": {
+        "decision": "retain",
+        "rationale": "高多层PCB制造工艺、客户认证及可靠性交付构成业务积累，五年利润与经营现金流持续为正。 本结论需与独立的五年资本回报、盈利和TTM现金门槛同时成立。"
+      }
+    },
+    "300394": {
+      "name": "天孚通信",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "sources": [
+        {
+          "title": "天孚通信2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-19/1225480328.PDF",
+          "publishedAt": "2026-08-19",
+          "pages": "10、19、36；财务复算：PDF第10、21、61页",
+          "businessPage": 19
+        }
+      ],
+      "quality": {
+        "decision": "retain",
+        "rationale": "精密光器件工艺、封装及客户协同构成产品门槛；高增速后更需核对持续出货能力。 本结论需与独立的五年资本回报、盈利和TTM现金门槛同时成立。"
+      }
+    },
+    "688188": {
+      "name": "柏楚电子",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "sources": [
+        {
+          "title": "柏楚电子2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-18/1225477071.PDF",
+          "publishedAt": "2026-08-18",
+          "pages": "12—13、20；财务复算：PDF第6、7、20页",
+          "businessPage": 12
+        }
+      ],
+      "quality": {
+        "decision": "retain",
+        "rationale": "激光加工控制系统的软件、算法与设备协同构成产品基础，需通过客户使用和持续迭代维持。 本结论需与独立的五年资本回报、盈利和TTM现金门槛同时成立。"
+      }
+    },
+    "688617": {
+      "name": "惠泰医疗",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "sources": [
+        {
+          "title": "惠泰医疗2026年半年度报告（公司公告）",
+          "url": "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESH_STOCK/2026/2026-8/2026-08-20/12505603.PDF",
+          "publishedAt": "2026-08-20",
+          "pages": "7、10—11、25—26；财务复算：PDF第7、28页",
+          "businessPage": 10
+        }
+      ],
+      "quality": {
+        "decision": "retain",
+        "rationale": "介入器械的临床应用、产品注册和销售渠道需要长期积累；五年财务支持持续盈利能力。 本结论需与独立的五年资本回报、盈利和TTM现金门槛同时成立。"
+      }
+    },
+    "300573": {
+      "name": "兴齐眼药",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "sources": [
+        {
+          "title": "兴齐眼药2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-28/1225517259.PDF",
+          "publishedAt": "2026-08-28",
+          "pages": "11—12、25；财务复算：PDF第8、18、49页",
+          "businessPage": 12
+        }
+      ],
+      "quality": {
+        "decision": "retain",
+        "rationale": "眼科制剂注册、研发和专科渠道构成经营基础；增长仍需核对重点产品竞争。 本结论需与独立的五年资本回报、盈利和TTM现金门槛同时成立。"
+      }
+    },
+    "300693": {
+      "name": "盛弘股份",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "sources": [
+        {
+          "title": "盛弘股份2026年半年度报告",
+          "url": "https://disc.static.szse.cn/disc/disk03/finalpage/2026-08-11/bb9494df-9aa5-4222-887e-f9be3aae9e12.PDF",
+          "publishedAt": "2026-08-11",
+          "pages": "9、26—27；财务复算：PDF第9、27、75页",
+          "businessPage": 26
+        }
+      ],
+      "quality": {
+        "decision": "retain",
+        "rationale": "电力电子技术覆盖储能、充电和电能质量，多产品交付提供持续经营基础。 本结论需与独立的五年资本回报、盈利和TTM现金门槛同时成立。"
+      }
+    },
+    "603699": {
+      "name": "纽威股份",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "sources": [
+        {
+          "title": "纽威股份2026年半年度报告（公司公告）",
+          "url": "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESH_STOCK/2026/2026-8/2026-08-22/12515699.PDF",
+          "publishedAt": "2026-08-22",
+          "pages": "8、11、17；财务复算：PDF第5、12页",
+          "businessPage": 11
+        }
+      ],
+      "quality": {
+        "decision": "retain",
+        "rationale": "工业阀门依靠工况适配、认证及客户交付经验积累，五年利润和现金流支持持续经营记录。 本结论需与独立的五年资本回报、盈利和TTM现金门槛同时成立。"
+      }
+    },
+    "002648": {
+      "name": "卫星化学",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "sources": [
+        {
+          "title": "卫星化学2026年半年度报告",
+          "url": "https://disc.static.szse.cn/disc/disk03/finalpage/2026-08-15/8bff6e97-0600-4164-8f2f-895863b23a53.PDF",
+          "publishedAt": "2026-08-15",
+          "pages": "8—17；财务复算：PDF第7、14、52页",
+          "businessPage": 8
+        }
+      ],
+      "quality": {
+        "decision": "hold",
+        "rationale": "轻烃路线有成本基础，但2022、2025年利润回落与化工价差周期同时存在。当前资料尚未证明跨周期回报稳定，保留经营研究。"
+      }
+    },
+    "603259": {
+      "name": "药明康德",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "sources": [
+        {
+          "title": "药明康德2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-04/1225455027.PDF",
+          "publishedAt": "2026-08-04",
+          "pages": "5—7、10—13；财务复算：PDF第7、15页",
+          "businessPage": 5
+        }
+      ],
+      "quality": {
+        "decision": "retain",
+        "rationale": "小分子及TIDES研发生产服务已有长期交付和客户合作基础，五年盈利与资本回报记录另行核验。2024年利润下降继续展示；资产处置和政策风险不能由当期净利润增速掩盖。"
+      }
+    },
+    "002384": {
+      "name": "东山精密",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "sources": [
+        {
+          "title": "东山精密2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225491182.PDF",
+          "publishedAt": "2026-08-22",
+          "reportPeriod": "2026-06-30",
+          "pages": "8、19—20、26；财务复算：PDF第8、20、46页",
+          "sha256": "08d0b0a3e8e5568962c7f825fc4f0c1f837cef3babb6f0d314827d114671f7b8"
+        },
+        {
+          "title": "东山精密2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-04-22/1225139318.PDF",
+          "publishedAt": "2026-04-22",
+          "reportPeriod": "2025-12-31",
+          "pages": "经营数据、财务报表",
+          "sha256": "fe246facade2909e87dafb8d3f027789491fb541714a57bffce0fb6b7fabc9e3"
+        },
+        {
+          "title": "东山精密2025年度及2026Q1业绩会记录",
+          "url": "https://file.finance.sina.com.cn/cn/diaoyan/jgdy/2026/2026-04/2026-04-29/10178599_1.PDF",
+          "publishedAt": "2026-04-29",
+          "reportPeriod": "2026-03-31",
+          "pages": "2—4"
+        }
+      ],
+      "quality": {
+        "decision": "hold",
+        "rationale": "新增并表与原有PCB贡献尚不能完整分离；既有ROE和利润记录未证明持续高回报，保留并购整合观察。"
+      }
+    },
+    "601869": {
+      "name": "长飞光纤",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "sources": [
+        {
+          "title": "长飞光纤2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-22/1225493215.PDF",
+          "publishedAt": "2026-08-22",
+          "pages": "5—13；财务复算：PDF第6、12页",
+          "businessPage": 5
+        }
+      ],
+      "quality": {
+        "decision": "hold",
+        "rationale": "2024年利润回落、2024—2025年ROE不足7%，本期复苏尚不构成长期稳定资本回报证据。"
+      }
+    },
+    "300866": {
+      "name": "安克创新",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "sources": [
+        {
+          "title": "安克创新2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-31/1225533054.PDF",
+          "publishedAt": "2026-08-31",
+          "pages": "9、20、31；财务复算：PDF第7、19、61页",
+          "businessPage": 9,
+          "sha256": "ff81b9e7c2e8eb04bd450fce3c084b28f5b4be4c1e2638250160b7bb813ebac1",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "title": "安克创新2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-04-10/1225090973.PDF",
+          "publishedAt": "2026-04-10",
+          "pages": "42、43、46、67、68、102、103",
+          "sha256": "8dadc4bfd7282738697a5ee82d9b25faa657e053e3f480e71dd6ae9987703202",
+          "reportPeriod": "2025-12-31"
+        }
+      ],
+      "quality": {
+        "decision": "retain",
+        "rationale": "产品迭代、品牌与线上线下渠道组合支撑多年经营；不能以单个新品热度代替持续能力。 本结论需与独立的五年资本回报、盈利和TTM现金门槛同时成立。"
+      }
+    },
+    "603979": {
+      "name": "金诚信",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "sources": [
+        {
+          "title": "金诚信金诚信2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-26/1225502889.PDF",
+          "publishedAt": "2026-08-26",
+          "reportPeriod": "2026-06-30",
+          "pages": "13—17；财务复算：PDF第7、15页",
+          "sha256": "e7e650354c13fcf333da903f3be84c8df5428b496f881a5ab8c6338c7941c350"
+        },
+        {
+          "title": "金诚信金诚信2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225201125.PDF",
+          "publishedAt": "2026-04-28",
+          "reportPeriod": "2025-12-31",
+          "pages": "经营、财务报表",
+          "sha256": "265cb4d469379f2b38802a3254c2228af412c009f4e5f81b1fd78fe4219f42d9"
+        }
+      ],
+      "quality": {
+        "decision": "hold",
+        "rationale": "本期铜销量下降1.72%，矿服毛利增长15.90%、资源开发毛利增长52.59%。尚不能证明剔除铜价和矿山组合后持续满足成长条件；长期资本回报也须覆盖资源转型后的完整周期。"
+      },
+      "growth": {
+        "decision": "hold",
+        "rationale": "本期铜销量下降1.72%，矿服毛利增长15.90%、资源开发毛利增长52.59%。尚不能证明剔除铜价和矿山组合后持续满足成长条件；长期资本回报也须覆盖资源转型后的完整周期。"
+      },
+      "breakout": {
+        "decision": "hold",
+        "rationale": "本期铜销量下降1.72%，矿服毛利增长15.90%、资源开发毛利增长52.59%。尚不能证明剔除铜价和矿山组合后持续满足成长条件；长期资本回报也须覆盖资源转型后的完整周期。"
+      }
+    },
+    "688019": {
+      "name": "安集科技",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "sources": [
+        {
+          "title": "安集科技2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-27/1225513853.PDF",
+          "publishedAt": "2026-08-27",
+          "pages": "9、20、31、32；财务复算：PDF第9、33页",
+          "businessPage": 9,
+          "sha256": "f0cff7c70465fa581da10351cecf5f24ecff30287f62f0770d8309a47fa4aa3f",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "title": "安集科技2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-04-16/1225108553.PDF",
+          "publishedAt": "2026-04-16",
+          "pages": "48、55、79、80、83、113、114",
+          "sha256": "67b5395147988628df51a72089349f79fe22fb36e2ca836e338f3969c65ec4c1",
+          "reportPeriod": "2025-12-31"
+        }
+      ],
+      "quality": {
+        "decision": "retain",
+        "rationale": "抛光液和湿电子化学品的认证及配方积累支撑客户复购，已有五年盈利、现金与资本回报记录。 本结论需与独立的五年资本回报、盈利和TTM现金门槛同时成立。"
+      }
+    },
+    "688278": {
+      "name": "特宝生物",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "sources": [
+        {
+          "title": "特宝生物2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-19/1225480751.PDF",
+          "publishedAt": "2026-08-19",
+          "pages": "7、9、15、39、43；财务复算：PDF第7、43页",
+          "businessPage": 7,
+          "sha256": "fee364db16fd3d3264e30f688d8ab1e1b6fb1624c5d0ff22640b8da34057fc2c",
+          "reportPeriod": "2026-06-30"
+        },
+        {
+          "title": "特宝生物2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-03-27/1225038165.PDF",
+          "publishedAt": "2026-03-27",
+          "pages": "72、80、146、147",
+          "sha256": "6846ec0999ad9c60d4618a32eeac7836fad4563c10baf1cb27474c5fd0d928cb",
+          "reportPeriod": "2025-12-31"
+        }
+      ],
+      "quality": {
+        "decision": "retain",
+        "rationale": "已上市长效蛋白药、药品注册与专业推广网络支持经营持续性，财务记录覆盖多年的产品销售。 本结论需与独立的五年资本回报、盈利和TTM现金门槛同时成立。"
+      }
+    },
+    "000792": {
+      "name": "盐湖股份",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "sources": [
+        {
+          "title": "盐湖股份2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-26/1225504164.PDF",
+          "publishedAt": "2026-08-26",
+          "reportPeriod": "2026-06-30",
+          "pages": "6—8、19—23、27；财务复算：PDF第8、22、54页",
+          "sha256": "7dffb768395a615d67af497501511c056c2aaae77eec86fcdf2eaaf65fc47955"
+        },
+        {
+          "title": "盐湖股份2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-03-31/1225061823.PDF",
+          "publishedAt": "2026-03-31",
+          "reportPeriod": "2025-12-31",
+          "pages": "财务报表、重大并购及经营数据",
+          "sha256": "7b0a93a75d1956235137f94cee3106054524e058ebda42f5850e1a981f24518d"
+        }
+      ],
+      "growth": {
+        "decision": "hold",
+        "rationale": "钾肥与锂盐涨价、投产及同一控制并表共同影响盈利，缺重述后上年同范围锂盐销量，尚不能证明剔除价格周期后的持续成长。保留周期复苏研究。"
+      },
+      "breakout": {
+        "decision": "hold",
+        "rationale": "钾肥与锂盐涨价、投产及同一控制并表共同影响盈利，缺重述后上年同范围锂盐销量，尚不能证明剔除价格周期后的持续成长。保留周期复苏研究。"
+      }
+    },
+    "300857": {
+      "name": "协创数据",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "sources": [
+        {
+          "title": "协创数据2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-28/1225522065.PDF",
+          "publishedAt": "2026-08-28",
+          "reportPeriod": "2026-06-30",
+          "pages": "26—27、38—39；财务复算：PDF第11、26、75页",
+          "sha256": "c2ba6158df416fa4b380a2226e2b8799c2f0363744bc835dc4909df20773a9d8"
+        },
+        {
+          "title": "协创数据2025年年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-03-17/1225012787.PDF",
+          "publishedAt": "2026-03-17",
+          "reportPeriod": "2025-12-31",
+          "pages": "财务报表、重大并购及经营数据",
+          "sha256": "3907f13dc343b95958d646826adcad966e760f55913ba88591ad1aa3e264696a"
+        }
+      ],
+      "growth": {
+        "decision": "hold",
+        "rationale": "存储毛利率上升19.92个百分点，且存储景气、产品组合、服务器再制造、算力资本投入和新增并表同时变化。现有分部毛利桥不能证明剔除周期及并表后的可持续利润增长，暂不授予高质成长。"
+      },
+      "breakout": {
+        "decision": "hold",
+        "rationale": "存储毛利率上升19.92个百分点，且存储景气、产品组合、服务器再制造、算力资本投入和新增并表同时变化。现有分部毛利桥不能证明剔除周期及并表后的可持续利润增长，暂不授予高质成长。"
+      }
+    }
+  }
+}

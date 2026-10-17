@@ -171,8 +171,14 @@ class IndependentGroupTests(unittest.TestCase):
                 self.assertTrue(review['checks'][-1]['reason'])
                 live = self.live_rows[code]
                 self.assertEqual(breakout_review(live, live['breakoutReview']['checkedAt']), live['breakoutReview'])
-                self.assertEqual({k: v for k, v in review.items() if k != 'checkedAt'},
-                                 {k: v for k, v in live['breakoutReview'].items() if k != 'checkedAt'})
+                current = live['breakoutReview']
+                self.assertFalse(current['qualified'])
+                self.assertEqual(current['operatingReview']['breakoutDecision'], 'exclude')
+                self.assertTrue(any(not c['pass'] and c['reason'] for c in current['checks']))
+                # A new dated policy may add cash checks; the historical result
+                # must still reproduce under its own date without rewriting it.
+                historical = breakout_review(live, review['checkedAt'])
+                self.assertEqual(historical, review)
         for change in ('missing', 'future', 'stale', 'no_source', 'prices'):
             row = copy.deepcopy(self.rows['601869'])
             review = row['qualityResearch']['earningsReview']

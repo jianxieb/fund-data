@@ -1,7 +1,7 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-10-16T08:24:02+00:00",
-  "asOf": "2026-10-16",
+  "checkedAt": "2026-10-17T03:18:15+00:00",
+  "asOf": "2026-10-17",
   "status": "unverified",
   "summary": {
     "errors": 0,
@@ -1705,12 +1705,12 @@ var DATA_QUALITY={
     {
       "id": "portfolio",
       "label": "组合每日历史",
-      "asOf": "2026-10-14",
+      "asOf": "2026-10-16",
       "dateRange": [
         "2026-10-09",
-        "2026-10-14"
+        "2026-10-16"
       ],
-      "records": 1786,
+      "records": 1853,
       "issues": [],
       "status": "checked"
     }

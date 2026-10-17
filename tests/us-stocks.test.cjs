@@ -40,14 +40,16 @@ test('US companies use five current groups with other coverage last and overlap 
   }
 });
 
-test('search persists across groups and bluechips remain visible in other coverage', () => {
+test('search persists across groups and mature quality no longer depends on ten percent growth', () => {
   const p=page(); p.view();
   p.app.handleInput({value:'AAPL'});
   p.click('group','growth');
   assert.match(p.view(), /value="AAPL"/); assert.equal(p.symbols().length,0);
-  p.click('group','other');
+  p.click('group','other'); p.view(); assert.equal(p.symbols().length,0);
+  p.click('group','quality');
   const html=p.view(); assert.deepEqual([...p.symbols()],['AAPL']);
-  assert.match(html, /三年利润复合 3.92%/);
+  assert.match(html, /苹果/);
+  assert.equal(p.ctx.OVERSEAS_STOCKS.find(s=>s.symbol==='AAPL').analysis.profitCagr3.value.toFixed(2),'3.92');
   p.click('view','valuation'); assert.match(p.view(), /value="AAPL"/);
   p.click('detail','AAPL'); assert.match(p.modal(), /分类依据与未入选原因/);
   assert.match(p.modal(), /重要蓝筹/);
