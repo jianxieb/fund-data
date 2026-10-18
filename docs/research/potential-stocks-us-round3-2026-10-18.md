@@ -91,6 +91,8 @@ Q2地点数与支付额都增长约22%；GAAP毛利由3.92亿增至5.16亿美元
 
 已有回收期披露并非空白：管理层称核心获客回收期从2019年的22个月降至2023年的14个月，此后维持；新市场低于20个月是目标。**下一项有区分力的证据是回收期是否完整扣硬件补贴、销售、支持和信用成本，以及新市场实际兑现情况**，而不是再次收集总门店和ARR增长。[2025Q4预备稿](https://s28.q4cdn.com/141746709/files/doc_financials/2025/q4/Q4-25-Prepared-Remarks.pdf)
 
+后续更新：[第四轮Toast专题](potential-stocks-tost-2026-10-18.md)已确认硬件、实施和支持进入回收公式，补入正常贷款实际净现金投入与TTM桥，并检验英国餐饮和美国零售使用证据。最新完整成本调节及分市场成熟队列回报仍未取得；本段保留第三轮当时的待验证问题，后续以专题结论为准。
+
 ## PRCT：新产品与小市值仍需通过利润检验
 
 Aquablation的路径是装机后手术耗材复购、医院持续采用及利用率提高。Q2美国手术超过13,100例、增长约21%，耗材ASP约3,550美元、增长11%；已证明有实际使用和收费。医院亦直接披露持续采用和更高单日吞吐，支持机制存在，不能据单个医院一天外推全部设备利用率。[Q2公告](https://www.sec.gov/Archives/edgar/data/1588978/000158897826000028/prct_q22026earningsrelease.htm)、[Gloucestershire医院原文](https://www.gloshospitals.nhs.uk/about-us/news-media/press-releases-statements/robotic-waterjet-ablation-enhances-urology-care-at-cheltenham-general-hospital/)

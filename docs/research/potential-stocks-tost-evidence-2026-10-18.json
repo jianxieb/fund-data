@@ -1,0 +1,352 @@
+{
+  "schemaVersion": 1,
+  "researchDate": "2026-10-18",
+  "round": 4,
+  "company": "Toast (TOST)",
+  "status": "Current public-evidence baseline closed; operating leverage supported, current-price five-year tenfold thesis not established.",
+  "units": "USD million unless otherwise stated; figures as reported in filings, not normalized.",
+  "baseCommit": "d9b4c7042b63fcd3e06bbaf915e9022bdd923cc9",
+  "sources": {
+    "fy2025": "https://www.sec.gov/Archives/edgar/data/1650164/000165016426000057/tost-20251231.htm",
+    "q2_2026": "https://www.sec.gov/Archives/edgar/data/1650164/000165016426000164/tost-20260630.htm",
+    "investor_day_2024": "https://investors.toasttab.com/files/doc_presentations/TOST-Investor-Day-2024-Final-for-Web.pdf",
+    "ipo_2021": "https://www.sec.gov/Archives/edgar/data/1650164/000119312521279379/d166297d424b4.htm",
+    "q4_2025_remarks": "https://s28.q4cdn.com/141746709/files/doc_financials/2025/q4/Q4-25-Prepared-Remarks.pdf",
+    "q1_2026_remarks": "https://s28.q4cdn.com/141746709/files/doc_financials/2026/q1/TOST-1Q26-Prepared-Remarks.pdf",
+    "le_bab_2023": "https://pos.toasttab.com/es-us/news/toast-brings-digital-restaurant-technology-platform-to-uk",
+    "international_advisory_board_2026": "https://pos.toasttab.com/news/2026-2027-toast-international-customer-advisory-board",
+    "le_bab_leat": "https://www.leat.com/customer-stories/le-bab",
+    "district_34_toast": "https://pos.toasttab.com/customers/district-34-boutique-pos",
+    "district_34_customer": "https://www.district34boutique.com/",
+    "district_34_customer_collection": "https://www.district34boutique.com/collections/dresses",
+    "toast_uk_pricing": "https://pos.toasttab.com/uk/pricing",
+    "square_uk_pricing": "https://squareup.com/gb/en/point-of-sale/restaurants/pricing",
+    "shopify_pos_pricing": "https://www.shopify.com/pos/pricing",
+    "bls_722": "https://www.bls.gov/iag/tgs/iag722.htm"
+  },
+  "payback": {
+    "definition_source": "investor_day_2024",
+    "definition_page": 135,
+    "cohort": "New locations going live and product upsells in the specified month.",
+    "acquisition_costs": [
+      "Net hardware and professional-services costs in the go-live month.",
+      "Sales and marketing costs two months before the go-live month, matching the median contract-to-live interval."
+    ],
+    "monthly_contribution": [
+      "Subscription MRR less estimated service cost.",
+      "Average payments MRR in each new location’s first three full months live, less estimated support cost."
+    ],
+    "measurement_limits": [
+      "Uses period attribution and estimated early contribution; not a record of cumulative actual cash payback for every customer.",
+      "Quarterly group financial statements lack the cohort inputs required to independently reproduce this measure."
+    ],
+    "sbc": {
+      "historical_source": "ipo_2021",
+      "historical_page": 96,
+      "historical_footnote": 20,
+      "historical_definition_excludes_sbc": true,
+      "2024_definition_restates_sbc_footnote": false,
+      "2026_full_cost_reconciliation_obtained": false,
+      "inference_limit": "The 2021 exclusion is verified; silence in the 2024 definition does not establish unchanged treatment or inclusion in 2026."
+    },
+    "management_claims": {
+      "source": "q4_2025_remarks",
+      "pages": [
+        9,
+        10
+      ],
+      "core_2019_months": 22,
+      "core_2023_months": 14,
+      "core_2025_reported_still_at_2023_level": true,
+      "2025_portfolio": "mid-teens",
+      "new_markets": "Above core; below 20 months in each new market is a target, not disclosed achieved results by market."
+    },
+    "later_coverage": {
+      "source": "q1_2026_remarks",
+      "actual_months_by_new_market_obtained": false,
+      "q2_2026_prepared_remarks_original_download_obtained": false,
+      "limit": "No claim that all later conference materials were covered; exact Q2 prepared-remarks original URL was not obtained."
+    },
+    "mrr_scope": {
+      "source": "q2_2026",
+      "excludes_toast_capital_fees_and_related_costs": true,
+      "does_not_deduct_saas_credits": true,
+      "implication": "Evaluate core acquisition efficiency separately from Capital lending returns, then bridge both to shareholder outcomes."
+    },
+    "different_measures": {
+      "investor_day_2024_pages": [
+        112,
+        125,
+        135
+      ],
+      "measures": [
+        "Booked ARR Contribution Margin",
+        "Payback contribution profit",
+        "Adjusted EBITDA / Recurring Gross Profit Streams"
+      ],
+      "interchangeable": false
+    },
+    "long_term_target": {
+      "source": "investor_day_2024",
+      "page": 125,
+      "ratio": "Adjusted EBITDA / company-defined adjusted subscription and fintech gross profit",
+      "target_percent_at_least": 40,
+      "scope": "Existing business, excluding potential future initiatives.",
+      "not_gaap_net_margin": true,
+      "not_same_denominator_as_gaap_gross_profit_table": true
+    }
+  },
+  "financials": {
+    "sources": [
+      "fy2025",
+      "q2_2026"
+    ],
+    "periods": {
+      "2025FY": {
+        "group_gross_profit": 1593,
+        "subscription_and_fintech_gaap_gross_profit": 1818,
+        "operating_income": 292,
+        "net_income": 342,
+        "cfo": 661,
+        "capex_including_internal_software_cash": 53,
+        "company_fcf": 608,
+        "performing_loan_purchases_investing": 0,
+        "performing_loan_repayments_investing": 0,
+        "performing_loan_net_investment": 0,
+        "fcf_after_performing_loan_net_investment": 608,
+        "sbc_expense_addback": 242,
+        "repurchase_cash": 107,
+        "equity_issuance_cash": 81,
+        "net_shareholder_financing_cash_outflow": 26,
+        "interest_income_net": 51,
+        "warrant_fair_value_gain_loss": 3,
+        "income_tax_expense": 4,
+        "pretax_income": 346
+      },
+      "2025H1": {
+        "group_gross_profit": 738,
+        "subscription_and_fintech_gaap_gross_profit": 841,
+        "operating_income": 123,
+        "net_income": 136,
+        "cfo": 302,
+        "capex_including_internal_software_cash": 25,
+        "company_fcf": 277,
+        "performing_loan_purchases_investing": 0,
+        "performing_loan_repayments_investing": 0,
+        "performing_loan_net_investment": 0,
+        "fcf_after_performing_loan_net_investment": 277,
+        "sbc_expense_addback": 120,
+        "repurchase_cash": 31,
+        "equity_issuance_cash": 40,
+        "net_shareholder_financing_cash_outflow": -9,
+        "interest_income_net": 23,
+        "warrant_fair_value_gain_loss": -5,
+        "income_tax_expense": 5,
+        "pretax_income": 141
+      },
+      "2026H1": {
+        "group_gross_profit": 963,
+        "subscription_and_fintech_gaap_gross_profit": 1105,
+        "operating_income": 262,
+        "net_income": 280,
+        "cfo": 276,
+        "capex_including_internal_software_cash": 31,
+        "company_fcf": 245,
+        "performing_loan_purchases_investing": 80,
+        "performing_loan_repayments_investing": 30,
+        "performing_loan_net_investment": 50,
+        "fcf_after_performing_loan_net_investment": 195,
+        "sbc_expense_addback": 109,
+        "repurchase_cash": 486,
+        "equity_issuance_cash": 17,
+        "net_shareholder_financing_cash_outflow": 469,
+        "interest_income_net": 24,
+        "warrant_fair_value_gain_loss": 7,
+        "income_tax_expense": 13,
+        "pretax_income": 293
+      },
+      "TTM_20260630": {
+        "group_gross_profit": 1818,
+        "subscription_and_fintech_gaap_gross_profit": 2082,
+        "operating_income": 431,
+        "net_income": 486,
+        "cfo": 635,
+        "capex_including_internal_software_cash": 59,
+        "company_fcf": 576,
+        "performing_loan_purchases_investing": 80,
+        "performing_loan_repayments_investing": 30,
+        "performing_loan_net_investment": 50,
+        "fcf_after_performing_loan_net_investment": 526,
+        "sbc_expense_addback": 231,
+        "repurchase_cash": 562,
+        "equity_issuance_cash": 58,
+        "net_shareholder_financing_cash_outflow": 504,
+        "interest_income_net": 52,
+        "warrant_fair_value_gain_loss": 15,
+        "income_tax_expense": 12,
+        "pretax_income": 498
+      }
+    },
+    "ttm_formula": "2025FY + 2026H1 - 2025H1, using the reported USD-million figures.",
+    "fcf_formula": "CFO - cash capital expenditure including internal-use software.",
+    "loan_adjusted_fcf_formula": "Company FCF - normal loan purchases + normal loan repayments.",
+    "not_final_distributable_owner_cash": true,
+    "growth_interpretation": "H1 net income rose while company FCF and FCF after normal-loan net investment fell; TTM loan-adjusted FCF of 526 remains above reported net income of 486. This is not evidence that TTM cash is below earnings or that the model has failed.",
+    "credit_asset_evidence": {
+      "performing_loan_balance_net_20251231": 0,
+      "performing_loan_balance_net_20260630": 46,
+      "cash_net_purchases_h1_2026": 50,
+      "balance_vs_cash_difference": 4,
+      "difference_not_reconciled": true,
+      "classification": "Non-delinquent loans acquired from bank partner, held for investment until maturity/payoff; no disclosed held-for-sale balance or loan-sale proceeds in the two reviewed cash-flow statements",
+      "old_guarantee_credit_loss_expense_2025FY": 62,
+      "old_guarantee_credit_loss_expense_2025H1": 27,
+      "old_guarantee_credit_loss_expense_2026H1": 35,
+      "contingent_guarantee_liability_20251231": 46,
+      "contingent_guarantee_liability_20260630": 53,
+      "standready_liability_20251231": 18,
+      "standready_liability_20260630": 21,
+      "restricted_cash_20251231": 71,
+      "restricted_cash_20260630": 73,
+      "future_funding_not_estimated": true,
+      "future_retention_ratio_loan_sales_or_committed_external_funding": "Not established by the two reviewed primary filings; no conclusion that all future loans must be self-funded or that every half-year consumes another 50m."
+    },
+    "double_count_controls": [
+      "GAAP earnings already deduct SBC and credit provisions; do not deduct them again from earnings.",
+      "From cash flow adding back SBC, use a consistent compensation-cost or future shares/repurchase framework; do not charge all SBC, all buybacks and the same dilution again.",
+      "Loan-adjusted FCF deducts the actual 50 net investing cash outflow, not the 46 ending carrying value or 80 gross purchases alone.",
+      "Working capital, commissions and loan-guarantee operating effects already in CFO must not be deducted again.",
+      "Net share repurchases are financing/capital allocation, not operating expense. H1 net repurchases exceeded adjusted cash generation but existing liquidity can fund them.",
+      "The new loan portfolio needs actual funding; neither a purely accounting reclassification nor an automatic recurring 50 outflow every half-year is established."
+    ],
+    "income_quality": {
+      "ttm_ni_bridge": "431 operating income + 52 net interest + 15 warrant fair-value gain - 12 income tax = 486 net income.",
+      "ttm_effective_tax_rate": 0.024096385542168676,
+      "prior_round_identified_tariff_refund": 10,
+      "reported_not_normalized": true,
+      "tax_valuation_allowance": "Full allowance against US net deferred tax assets remained at 2026-06-30; some or all may be released within 12 months, timing and amount uncertain. A release is not operating profit growth.",
+      "no_arbitrary_future_tax_interest_or_refund_adjustment": true
+    },
+    "periodic_share_flow_millions_approx": {
+      "2025FY_employee_plan_issuance": 20,
+      "2025FY_repurchased": 3,
+      "2026H1_employee_plan_issuance": 7,
+      "2026H1_repurchased": 19,
+      "not_current_share_count": true
+    }
+  },
+  "new_market_customers": [
+    {
+      "name": "Le Bab",
+      "market": "United Kingdom restaurant",
+      "sources": [
+        "le_bab_2023",
+        "international_advisory_board_2026",
+        "le_bab_leat"
+      ],
+      "evidence": [
+        "Issuer customer quotation in May 2023 describes handheld payments and faster manager closeout.",
+        "Co-founder joined the July 2026 international customer advisory board.",
+        "Undated Leat implementation account describes multi-site Toast POS integration with loyalty and coupons."
+      ],
+      "supports": "Cross-year relationship and specific workflow/integration adoption.",
+      "does_not_establish": [
+        "Continuous paid renewal between the dated observations.",
+        "Renewal net price, ordinary-customer support cost, or supplier cohort return.",
+        "That Toast sold its own loyalty module or that the Leat integration caused a measured retention increase."
+      ],
+      "evidence_bias": "Issuer-selected and implementation-vendor case studies; customer-reported benefits, not a controlled ROI study."
+    },
+    {
+      "name": "District 34 Boutique",
+      "market": "United States apparel retail",
+      "sources": [
+        "district_34_toast",
+        "district_34_customer",
+        "district_34_customer_collection"
+      ],
+      "evidence": [
+        "Undated Toast customer case describes marketing email, pop-up inventory queries, loyalty and checkout.",
+        "Recent search-engine cached customer-site footer states Powered by Shopify; direct page retrieval was unsuccessful."
+      ],
+      "supports": "Specific retail-workflow self-report and possible coexistence with a separate online storefront.",
+      "does_not_establish": [
+        "Live payment routing, payment share or exclusive system replacement.",
+        "Incremental net customer profit, actual subsidy, renewal pricing or supplier unit return."
+      ],
+      "coexistence_interpretation": "Could lower adoption friction while limiting Toast revenue capture; neither success nor failure follows from the footer alone."
+    }
+  ],
+  "competitive_alternatives": {
+    "sources": [
+      "toast_uk_pricing",
+      "square_uk_pricing",
+      "shopify_pos_pricing"
+    ],
+    "supports": "Concrete alternatives exist in the target workflows.",
+    "limits": "Packages, hardware, processing rates, service and billing periods differ. No equivalent total-cost ranking or customer contract terms inferred."
+  },
+  "industry_scale": {
+    "source": "bls_722",
+    "source_data_extracted": "2026-10-16",
+    "period": "2026Q1",
+    "status": "preliminary",
+    "private_naics_722_establishments": 727892,
+    "toast_locations_approx_from_prior_round": 180000,
+    "scope_limit": "Toast global locations include new markets/retail and differ in date/geography/definition. No precise penetration ratio calculated; US restaurant establishments are not a permanent global market ceiling."
+  },
+  "conditional_profit_scale": {
+    "prior_evidence_file": "potential-stocks-us-round3-evidence-2026-10-18.json",
+    "price_date": "2026-10-16",
+    "price_usd": 31.62,
+    "price_source": "https://api.nasdaq.com/api/quote/TOST/historical?assetclass=stocks&fromdate=2026-10-15&todate=2026-10-18&limit=10",
+    "share_date": "2026-07-30",
+    "rounded_basic_shares_millions": 578,
+    "approx_equity_usdm": 18276.36,
+    "approx_reported_profit_multiple": 37.60567901234568,
+    "same_multiple_same_shares_tenfold_net_income_usdm": 4860,
+    "tenfold_net_income_to_current_group_gp": 2.6732673267326734,
+    "gaap_subscription_and_fintech_gp_growth_sensitivity": 4,
+    "net_income_to_that_gp_now": 0.2334293948126801,
+    "net_income_to_that_gp_if_gp_4x_and_ni_10x": 0.5835734870317003,
+    "conversion_improvement_required_in_this_sensitivity": 2.5,
+    "not_a_forecast_or_unique_hurdle": true,
+    "limits": [
+      "Dated rounded basic shares differ from precise same-day diluted or EPS-weighted shares.",
+      "Uses reported earnings, including non-operating items, low tax and the earlier identified refund; not a normalized terminal earnings forecast.",
+      "58.4% conversion is a conditional arithmetic pressure, not an endorsed achievable margin.",
+      "Management adjusted-EBITDA target uses a different denominator and profit measure.",
+      "Revenue need not grow tenfold. Multiple changes and future share changes also affect each share’s outcome."
+    ],
+    "positive_operating_path": [
+      "More effective customers in international and new retail markets.",
+      "More profitable software and payment contribution per customer.",
+      "Lower service cost in mature cohorts.",
+      "Shared product, R&D and organization costs growing more slowly than contribution."
+    ],
+    "valuation_expansion": "Possible contributor if supported by future durable growth and cash returns; not a free plug to reach a target."
+  },
+  "crossReviewChanges": [
+    "Clarified the first three full months AFTER go-live; not the three months before go-live.",
+    "Corrected a potentially over-bearish cash claim: H1 growth diverged, but TTM loan-adjusted cash remains above NI.",
+    "Separated core acquisition payback from Capital loan investment instead of treating metric scope differences as proof of invalidity.",
+    "Narrowed customer evidence to cross-year relationship, self-reported use and possible coexistence; no unsupported paid-retention or payment-share claim.",
+    "Kept GAAP profit, adjusted EBITDA, recurring gross-profit definitions and shareholder cash distinct."
+  ],
+  "closure": {
+    "baseline_closed": [
+      "Published cost definition",
+      "TTM financial bridge",
+      "Actual normal-loan cash use",
+      "Two specified adoption cases",
+      "Dated price/share baseline"
+    ],
+    "new_evidence_triggers": [
+      "Latest full payback cost reconciliation including SBC and shared costs.",
+      "New-market 12/24-month cohort survival, net price, payment share, installation and service cost.",
+      "Actual loan-portfolio collections, funding and retention changes."
+    ],
+    "research_priority": "Retain operating-leverage hypothesis; allocate active US research to other verifiable profit-expansion mechanisms until a named new disclosure changes these questions.",
+    "verified_current_price_five_year_tenbagger": false
+  }
+}
