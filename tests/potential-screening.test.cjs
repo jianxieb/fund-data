@@ -26,37 +26,39 @@ const rowIds = html => [...html.matchAll(/data-stock-row="([^"]+)"/g)].map(x=>x[
 
 test('current research opens the fresh finite screen and changes downloads and counts with history', () => {
   const f=fixture();
-  assert.equal(rowIds(f.html).length,6);
-  assert.ok(rowIds(f.html).includes('PL'));
+  assert.equal(rowIds(f.html).length,27);
+  assert.ok(rowIds(f.html).includes('VKTX'));
   assert.ok(!rowIds(f.html).includes('688050'));
   assert.match(f.html,/利润增长靠什么/);
   assert.match(f.html,/股价快照 \/ 美元/);
   assert.equal(f.api.reportPath(),'docs/research/potential-screening-2026-10-19.md');
-  assert.equal(f.api.companies().length,6);
+  assert.equal(f.api.companies().length,27);
   f.click('potential-history');
   assert.match(f.html,/此前研究 · 2026-10-18/);
   assert.ok(rowIds(f.html).includes('AMPX'));
-  assert.doesNotMatch(f.html,/data-stock-row="PL"/);
+  assert.doesNotMatch(f.html,/data-stock-row="VKTX"/);
   assert.equal(f.api.reportPath(),'docs/research/potential-stocks-2026-10-18.md');
   f.click('potential-current');
-  assert.ok(rowIds(f.html).includes('PL'));
+  assert.ok(rowIds(f.html).includes('VKTX'));
 });
 
 test('industry, priority and business search combine and clearing restores the screen', () => {
   const f=fixture();
   f.click('potential-sector','satellite');
-  assert.deepEqual(rowIds(f.html),['PL','ASTS']);
+  assert.deepEqual(rowIds(f.html),['BKSY','PL','ASTS']);
   f.api.handleInput({value:'普通手机'});f.H.render();
   assert.deepEqual(rowIds(f.html),['ASTS']);
   f.click('potential-reset');
   f.click('potential-status','priority');
-  assert.deepEqual(rowIds(f.html),['PL','ASTS','AUR']);
+  assert.deepEqual(rowIds(f.html),['VKTX','KURA']);
   f.click('potential-status','watch');
-  assert.deepEqual(rowIds(f.html),['CRDO','ALAB','SERV']);
+  assert.equal(rowIds(f.html).length,25);
+  assert.ok(!rowIds(f.html).includes('VKTX'));
+  assert.ok(rowIds(f.html).includes('PL'));
   f.api.handleInput({value:'no such business'});f.H.render();
   assert.match(f.html,/当前条件没有匹配公司/);
   f.click('potential-reset');
-  assert.equal(rowIds(f.html).length,6);
+  assert.equal(rowIds(f.html).length,27);
   assert.match(f.html,/<div class="stock-controls"><div class="filters"><input type="search" id="potential-search"/);
 });
 
@@ -88,7 +90,7 @@ test('market switching respects the existing market control and keeps prior A-sh
   assert.ok(rowIds(f.html).includes('688050'));
   f.click('potential-current');
   f.H.market='us';f.H.render();
-  assert.equal(rowIds(f.html).length,6);
+  assert.equal(rowIds(f.html).length,27);
 });
 
 test('screen escapes source text and exports the same evidence and price time basis', () => {
@@ -106,4 +108,34 @@ test('screen escapes source text and exports the same evidence and price time ba
     assert.ok(md.includes(company.check.answer));
     assert.ok(md.includes(company.quote.tradeTimeUtc));
   }
+});
+
+
+test('completed research and exclusions are visible without reviving prior priority', () => {
+  const f=fixture();
+  assert.equal(f.screen.newScreenCount,21);
+  assert.deepEqual(Array.from(f.screen.companies.filter(c=>c.research), c=>c.id),['VKTX','KURA']);
+  for (const id of ['PL','ASTS','AUR','BKSY','ARDX']) assert.equal(f.screen.companies.find(c=>c.id===id).selected,false);
+  for (const id of ['VKTX','KURA']) {
+    f.click('potential-screen-detail',id);
+    assert.match(f.modal,/2031年条件情景/);
+    assert.match(f.modal,/销量、费用与利润的计算依据/);
+    assert.match(f.modal,/融资与每股分母/);
+    assert.match(f.modal,/上述三项同时发生/);
+    assert.match(f.modal,/全部是研究假设/);
+    assert.doesNotMatch(f.modal,/进入下一轮|下一轮研究重点/);
+    const c=f.screen.companies.find(c=>c.id===id);
+    const md=fs.readFileSync(f.screen.reportPath,'utf8');
+    for (const section of c.research.sections) {
+      for (const row of section.rows) for (const cell of row) {
+        assert.ok(f.modal.includes(f.H.esc(cell)));
+        assert.ok(md.includes(cell));
+      }
+    }
+  }
+  f.click('potential-screen-detail','KURA');
+  assert.match(f.modal,/50%/);
+  assert.match(f.modal,/海外提成/);
+  f.click('potential-screen-detail','VKTX');
+  assert.match(f.modal,/治疗中止率28%/);
 });

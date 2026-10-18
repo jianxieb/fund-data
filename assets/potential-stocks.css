@@ -36,6 +36,9 @@
 .potential-scenario-table th,.potential-scenario-table td{padding:12px 13px;border-bottom:1px solid var(--line);white-space:nowrap;text-align:right}
 .potential-scenario-table th:first-child{text-align:left;font-weight:500}
 .potential-scenario-table thead{background:var(--green-bg)}
+.potential-research-evidence.prose .potential-scenario-table{min-width:600px;table-layout:fixed}
+.potential-research-evidence.prose .potential-scenario-table th,.potential-research-evidence.prose .potential-scenario-table td{white-space:normal;text-align:left;vertical-align:top;line-height:1.8}
+.potential-research-evidence.prose .potential-scenario-table th:first-child{width:25%}
 .potential-stress{display:grid;grid-template-columns:repeat(4,1fr);margin:18px 0 24px;background:var(--bg);border:1px solid var(--line)}
 .potential-stress>div{padding:15px;border-right:1px solid var(--line)}.potential-stress>div:last-child{border-right:0}
 .potential-stress span{font-size:11px;color:var(--muted);display:block}.potential-stress strong{font-size:23px;font-weight:500;display:block;margin-top:4px}

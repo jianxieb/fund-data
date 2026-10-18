@@ -11,6 +11,7 @@ import { sensingAudit, sensingTargets } from './potential_sensing_audit.mjs';
 import { dataServiceAudit, dataServiceFunding, chemicalScreenAudit } from './potential_data_service_audit.mjs';
 import { operatingScreenAudit } from './potential_operating_screen.mjs';
 import { screeningReport } from './potential_screening_report.mjs';
+import { researchSections } from './potential_research_sections.mjs';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const require = createRequire(import.meta.url);
 const M = require('../assets/potential-model.js');
@@ -20,6 +21,10 @@ const screeningQuotes = JSON.parse(readFileSync(resolve(root, screening.quotePat
 for (const c of screening.companies) {
   c.quote = screeningQuotes.quotes.find(q => q.symbol === c.id);
   if (!c.quote || !Number.isFinite(c.quote.priceUsd)) throw new Error('Missing screening quote: ' + c.id);
+  if (c.research) c.research.sections = researchSections(c);
+  for (const id of new Set([...c.sources, ...c.facts.flatMap(f => f.sources), ...c.check.sources])) {
+    if (!screening.sources.some(s => s.id === id)) throw new Error('Missing research source: ' + id);
+  }
 }
 const n = (x, d = 2) => x.toLocaleString('zh-CN', { maximumFractionDigits: d });
 const sources = ids => ids.map(id => { const s = data.sources.find(x => x.id === id); if (!s) throw new Error('Unknown source: ' + id); return `[${s.title}](${s.url})（${s.publishedAt ? `公布 ${s.publishedAt}` : `发布日期未标注；检索 ${s.retrievedAt}`}；报告期 ${s.period}；${s.locator}）`; }).join('；');
@@ -267,4 +272,4 @@ for (const [file, text] of outputs) {
     if (readFileSync(resolve(root, file), 'utf8') !== text) throw new Error(file + ' 与研究数据不同步');
   } else writeFileSync(resolve(root, file), text);
 }
-console.log(`潜力研究：${data.companies.length}家公司，页面数据与研究文档${process.argv.includes('--check') ? '一致' : '已生成'}`);
+console.log(`潜力研究：${screening.companies.length}家研究记录、${screening.companies.filter(c => c.research).length}份完整研究，页面数据与研究文档${process.argv.includes('--check') ? '一致' : '已生成'}`);

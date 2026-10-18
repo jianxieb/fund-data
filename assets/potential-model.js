@@ -174,6 +174,44 @@
     return { newShares, netProceeds: s.atmGross * (1 - s.commissionMax),
       shares: s.juneOutstanding + potential + s.futureAwards + newShares };
   }
-  return { project, hurdle, scenario, select, cycleSort, sortValue, returnPercent, adjustedGrossMargin,
+  // Research assumptions are explicit inputs. Dollars and shares use millions,
+  // except patient counts, annual net receipts and issue prices.
+  function researchCapital(capital, overrides = {}) {
+    const c = { ...capital, ...overrides };
+    const values = [c.outstanding, c.potential, c.futureAwards, c.netFunding, c.issuePrice, c.issueFee];
+    if (!values.every(finite) || c.outstanding <= 0 || c.issuePrice <= 0 ||
+        [c.potential, c.futureAwards, c.netFunding, c.issueFee].some(v => v < 0) || c.issueFee >= 1)
+      throw new RangeError('研究股本与融资假设必须完整且有效');
+    const newShares = c.netFunding / (c.issuePrice * (1 - c.issueFee));
+    return { newShares, shares: c.outstanding + c.potential + c.futureAwards + newShares };
+  }
+  function researchProjection(company, scenario, overrides = {}) {
+    const r = company.research, s = { ...scenario, ...overrides };
+    if (!r || !['owned_drug', 'shared_drug'].includes(r.kind)) throw new RangeError('未知的研究利润路径');
+    if (![s.patientYears, s.netAnnualReceipt, s.contributionMargin, s.operatingExpense,
+      s.interest, s.taxRate, company.quote.priceUsd].every(finite) ||
+      [s.patientYears, s.netAnnualReceipt, s.operatingExpense, s.interest].some(v => v < 0) ||
+      s.contributionMargin < 0 || s.contributionMargin > 1 || s.taxRate < 0 || s.taxRate > 1 || company.quote.priceUsd <= 0 ||
+      !Array.isArray(s.peRange) || s.peRange.length !== 2 || !s.peRange.every(v => finite(v) && v > 0) || s.peRange[1] < s.peRange[0])
+      throw new RangeError('研究经营假设必须完整且有效');
+    const revenue = s.patientYears * s.netAnnualReceipt / 1e6;
+    const commercialProfit = revenue * s.contributionMargin;
+    let retainedProfit = commercialProfit, royalty = 0;
+    if (r.kind === 'shared_drug') {
+      if (![s.profitShare, s.foreignRevenue, s.royaltyRate].every(finite) || s.foreignRevenue < 0 ||
+          s.profitShare < 0 || s.profitShare > 1 || s.royaltyRate < 0 || s.royaltyRate > 1)
+        throw new RangeError('合作分成与海外提成假设必须完整');
+      retainedProfit *= s.profitShare;
+      royalty = s.foreignRevenue * s.royaltyRate;
+    }
+    const pretax = retainedProfit + royalty - s.operatingExpense - s.interest;
+    const netIncome = pretax - Math.max(0, pretax) * s.taxRate;
+    const capital = researchCapital(r.capital, overrides.capital);
+    const eps = netIncome / capital.shares;
+    const prices = netIncome > 0 ? s.peRange.map(pe => eps * pe) : null;
+    return { revenue, commercialProfit, retainedProfit, royalty, pretax, netIncome, ...capital, eps,
+      prices, multiples: prices?.map(p => p / company.quote.priceUsd) ?? null };
+  }
+  return { project, hurdle, scenario, select, cycleSort, sortValue, returnPercent, adjustedGrossMargin, researchCapital, researchProjection,
     investmentProfit, subsidiaryOwnership, fundingStress, liquidityProjection, dataServiceFunding };
 });
