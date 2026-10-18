@@ -1,0 +1,328 @@
+{
+  "schemaVersion": 1,
+  "researchDate": "2026-10-18",
+  "priceDate": "2026-10-16",
+  "status": "Mechanism comparison and conditional hurdles, not forecasts, validated tenbagger probabilities, or exact same-day market caps.",
+  "rklb": {
+    "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/RKLB?period1=1792108800&period2=1792281600&interval=1d&events=div%2Csplits",
+    "retrieved_date": "2026-10-18",
+    "symbol": "RKLB",
+    "events": {},
+    "prices": [
+      {
+        "date": "2026-10-16",
+        "close": 50.84000015258789,
+        "adjusted_close": 50.84000015258789
+      }
+    ],
+    "price_usd": 50.84,
+    "inputs_shares": {
+      "common_20260807": 598459739,
+      "participating_preferred_20260807": 40951250,
+      "atm_new_20260915_approx": 29300000,
+      "forward_underlying_20260630": 7451200,
+      "options_20260807": 3538069,
+      "rsus_20260807": 9449364,
+      "convertible_underlying_20260630": 2607745,
+      "irdm_common_20260818": 105969052
+    },
+    "denominator_status": "Dated disclosed base plus known major subsequent issuance; NOT a complete 2026-10-16 outstanding share count or GAAP fully diluted shares. Gross potential illustration ignores option exercise cash and treasury-stock method, future vesting/cancellation, and interim movements.",
+    "sources": {
+      "q2_10q": "https://www.sec.gov/Archives/edgar/data/1819994/000181999426000062/rklb-20260630.htm",
+      "aug13_atm_424b5": "https://www.sec.gov/Archives/edgar/data/1819994/000175392626001459/g085845_424b5.htm",
+      "sep15_8k": "https://www.sec.gov/Archives/edgar/data/1819994/000175392626001769/g085951_8k.htm",
+      "aug26_final_merger_prospectus": "https://www.sec.gov/Archives/edgar/data/1819994/000175392626001639/g085904_424b3.htm",
+      "irdm_q2_10q_aireon_subsequent_event": "https://www.sec.gov/Archives/edgar/data/1418819/000141881926000045/irdm-20260630.htm"
+    },
+    "capital_bridge": {
+      "estimated_common_after_atm": 627759739,
+      "economic_basic_after_atm": 668710989,
+      "additional_identified_gross_potential": 23046378,
+      "economic_plus_identified_gross_potential": 691757367,
+      "basic_plus_acquisition_range": [
+        694143561.48,
+        711098609.8
+      ],
+      "identified_potential_plus_acquisition_range": [
+        717189939.48,
+        734144987.8
+      ]
+    },
+    "acquisition": {
+      "cash_per_irdm_share_usd": 27,
+      "cash_using_20260818_irdm_shares_usd": 2861164404,
+      "ordinary_share_exchange_ratio_range": [
+        0.24,
+        0.4
+      ],
+      "ordinary_shares_to_be_issued_range": [
+        25432572.48,
+        42387620.800000004
+      ],
+      "reference_price_usd_collar": [
+        67.5,
+        112.5
+      ],
+      "current_price_is_not_closing_10day_vwap": true,
+      "existing_target_term_debt_usd_as_of_20260630": 1775000000,
+      "bridge_cancelled_20260915_usd": 3600000000,
+      "post_close_spread_over_sofr_range": [
+        0.025,
+        0.03
+      ],
+      "debt_annual_interest_sensitivity_per_1pct_usd": 17750000,
+      "target_equity_awards_excluded_from_acquisition_range": true,
+      "target_debt_bridge_status": "Incomplete dated debt inventory; not current total debt or closing net debt. Subsequent repayments, cash use and refinancing are not reconciled. Do not unconditionally sum historical balances/draws.",
+      "aireon_subsequent_acquisition": {
+        "closing_date": "2026-07-02",
+        "additional_interest_acquired_pct": 60.5,
+        "previous_equity_method_interest_pct_20260630": 39.5,
+        "total_seller_consideration_usd_approx": 366700000,
+        "cash_fraction_at_close": 0.5,
+        "consolidated_in_irdm_h1_2026": false,
+        "source": "https://www.sec.gov/Archives/edgar/data/1418819/000141881926000045/irdm-20260630.htm",
+        "period_alignment_note": "H1 2026 Iridium results preceded full Aireon consolidation; include existing equity-method and intercompany business effects. Do not add full Aireon revenue/EBITDA without consolidation eliminations and capital costs."
+      },
+      "target_additional_dated_debt_items": [
+        {
+          "instrument": "Iridium revolver",
+          "event_date": "2026-07-01",
+          "draw_usd": 100000000,
+          "purpose": "Aireon acquisition cash consideration",
+          "scheduled_maturity": "2028-09",
+          "subsequent_balance_or_repayment_status": "2026-10-16 and RKLB acquisition-closing balance not verified"
+        },
+        {
+          "instrument": "Aireon seller deferred consideration term loan",
+          "event_date": "2026-07-02",
+          "principal_usd_approx": 183400000,
+          "interest_rate": 0,
+          "scheduled_maturity": "2027-07-02",
+          "subsequent_balance_or_repayment_status": "2026-10-16 and RKLB acquisition-closing balance not verified; possible pre-closing cash/refinancing need"
+        },
+        {
+          "instrument": "Consolidated Aireon pre-existing term loans",
+          "consolidation_date": "2026-07-02",
+          "principal_usd_at_acquisition_and_10q_filing": 154700000,
+          "scheduled_maturity": "2028-10-10",
+          "sofr_spread": 0.0625,
+          "subsequent_balance_or_repayment_status": "2026-10-16 and RKLB acquisition-closing balance not verified"
+        }
+      ],
+      "target_irdm_h1_2026_existing_profit_usdm": {
+        "net_income": 31.273,
+        "operating_income": 84.721,
+        "not_a_forecast_or_already_attributable_to_rklb": true
+      }
+    },
+    "cash_path": {
+      "h1_2026_rklb_ocf_usdm": -134.407,
+      "h1_2026_rklb_capex_usdm": 53.112,
+      "h1_2026_rklb_ocf_less_capex_usdm": -187.519,
+      "attribution": "Actual cash arithmetic, not annual forecast. Financing proceeds are not operating FCF. Need maintenance/constellation replacement, taxes, debt service, growth spend and SBC ownership effects."
+    },
+    "scale": {
+      "existing_economic_basic_equity_value_usd": 33997266680.760002,
+      "existing_plus_identified_potential_equity_value_usd": 35168944538.28,
+      "acquisition_basic_equity_value_range_usd": [
+        35290258665.6432,
+        36152253322.232
+      ],
+      "acquisition_plus_identified_potential_equity_value_range_usd": [
+        36461936523.1632,
+        37323931179.752
+      ],
+      "tenfold_price_usd": 508.40000000000003,
+      "tenfold_price_acquisition_plus_identified_potential_value_range_usd": [
+        364619365231.632,
+        373239311797.52
+      ],
+      "net_income_hurdles_not_forecasts": [
+        {
+          "terminal_pe_sensitivity_only": 20,
+          "current_price_eps_required": 2.5420000000000003,
+          "current_price_net_income_required_usd_range": [
+            1699863334.038,
+            1758447226.914
+          ],
+          "tenfold_price_eps_required": 25.42,
+          "tenfold_price_net_income_required_usd_range": [
+            18230968261.5816,
+            18661965589.876
+          ]
+        },
+        {
+          "terminal_pe_sensitivity_only": 40,
+          "current_price_eps_required": 1.2710000000000001,
+          "current_price_net_income_required_usd_range": [
+            849931667.019,
+            879223613.457
+          ],
+          "tenfold_price_eps_required": 12.71,
+          "tenfold_price_net_income_required_usd_range": [
+            9115484130.7908,
+            9330982794.938
+          ]
+        },
+        {
+          "terminal_pe_sensitivity_only": 60,
+          "current_price_eps_required": 0.8473333333333334,
+          "current_price_net_income_required_usd_range": [
+            566621111.3460001,
+            586149075.638
+          ],
+          "tenfold_price_eps_required": 8.473333333333334,
+          "tenfold_price_net_income_required_usd_range": [
+            6076989420.527201,
+            6220655196.625334
+          ]
+        }
+      ]
+    },
+    "q2_gaap_usdm": {
+      "2025": {
+        "revenue": 144.498,
+        "gross_profit": 46.388,
+        "rnd": 66.134,
+        "sgna": 39.893,
+        "operating_income": -59.639
+      },
+      "2026": {
+        "revenue": 234.066,
+        "gross_profit": 84.576,
+        "rnd": 82.429,
+        "sgna": 59.661,
+        "operating_income": -57.514,
+        "launch_revenue": 44.586,
+        "launch_gross_profit": 19.11,
+        "space_systems_revenue": 189.48,
+        "space_systems_gross_profit": 65.466,
+        "revenue_cumulative_catchup": 8.089
+      },
+      "catchup_note": "No complete cost/segment bridge; do not subtract the entire revenue catch-up mechanically from gross or operating profit."
+    }
+  },
+  "irdm_acquisition_business": {
+    "h1_2026_usdm": {
+      "revenue": 444.294,
+      "operating_income": 84.721,
+      "net_income": 31.273,
+      "oebitda": 235.448,
+      "ocf": 185.762,
+      "capex": 51.791,
+      "ocf_less_capex": 133.971,
+      "transaction_costs_pretax": 15.024
+    },
+    "period_note": "Pre full consolidation of Aireon on July 2. Not yet acquired by RKLB. OEBITDA and CFO less capex are not net income or perpetual distributable owner cash. Maintenance/growth/replacement capex not separated.",
+    "sources": [
+      "https://www.sec.gov/Archives/edgar/data/1418819/000141881926000045/irdm-20260630.htm",
+      "https://investor.iridium.com/2026-07-22-Iridium-Announces-Second-Quarter-2026-Results"
+    ]
+  },
+  "tost": {
+    "price_usd": 31.62,
+    "price_date": "2026-10-16",
+    "price_source": "https://api.nasdaq.com/api/quote/TOST/historical?assetclass=stocks&fromdate=2026-10-15&todate=2026-10-18&limit=10",
+    "share_date": "2026-07-30",
+    "disclosed_shares_rounded_millions": {
+      "class_a": 514,
+      "class_b": 64,
+      "total": 578
+    },
+    "approx_equity_usd": 18276360000.0,
+    "q2_usdm": {
+      "gross_profit_2025": 392,
+      "gross_profit_2026": 516,
+      "opex_2025": 312,
+      "opex_2026": 364,
+      "operating_income_2025": 80,
+      "operating_income_2026": 152,
+      "tariff_refund": 10,
+      "mechanical_ex_refund_operating_income_2026": 142,
+      "fintech_revenue": 1570,
+      "fintech_costs": 1211,
+      "fintech_gross_profit": 359,
+      "subscription_gross_profit": 226,
+      "hardware_services_gross_loss": 68,
+      "acquired_intangible_amortization": 1
+    },
+    "h1_2026_usdm": {
+      "ocf": 276,
+      "company_defined_capex": 31,
+      "company_defined_fcf": 245
+    },
+    "limitations": [
+      "Shares rounded and dated before price; not exact same-day or fully diluted capitalization.",
+      "Company FCF excludes lending-asset investment cash flows; not automatically owner cash.",
+      "Core payback and new-market payback target are management definitions; complete cost boundary and new-market realized cohort returns remain unverified."
+    ],
+    "sources": [
+      "https://www.sec.gov/Archives/edgar/data/1650164/000165016426000162/tost-20260630xexhibit991.htm",
+      "https://www.sec.gov/Archives/edgar/data/1650164/000165016426000164/tost-20260630.htm",
+      "https://s28.q4cdn.com/141746709/files/doc_financials/2025/q4/Q4-25-Prepared-Remarks.pdf"
+    ]
+  },
+  "prct": {
+    "price_usd": 17.57,
+    "price_date": "2026-10-16",
+    "price_source": "https://api.nasdaq.com/api/quote/PRCT/historical?assetclass=stocks&fromdate=2026-10-15&todate=2026-10-18&limit=10",
+    "shares": 57273659,
+    "share_date": "2026-07-31",
+    "approx_equity_usd": 1006298188.63,
+    "q2_2026": {
+      "us_procedures_more_than": 13100,
+      "procedure_growth_approx_pct": 21,
+      "ending_us_installed_systems": 816,
+      "prior_year_ending_us_installed_systems": 595,
+      "hydros_deliveries": 65,
+      "included_replacements": 14,
+      "handpiece_asp_usd_approx": 3550,
+      "reported_gross_margin_rounded_pct": 66,
+      "mechanical_ex_refund_gross_margin_pct_approx": 62.94,
+      "operating_income_usdm": -27.39,
+      "tariff_refund_usdm": 2.9,
+      "mechanical_ex_refund_operating_income_usdm": -30.29
+    },
+    "h1_2026_usdm": {
+      "cash": 227.914,
+      "ocf": -57.378,
+      "capex": 5.867,
+      "ocf_less_capex": -63.245,
+      "loan_principal_due_20271006": 52
+    },
+    "limitations": [
+      "Ending installed base and full-quarter procedures cannot establish matched-cohort utilization.",
+      "2026 investor-day cohort bridge includes a forecast; not subsequent actual performance.",
+      "Cash and historical burn do not prove mandatory future issuance or permanent funding sufficiency."
+    ],
+    "sources": [
+      "https://www.sec.gov/Archives/edgar/data/1588978/000158897826000028/prct_q22026earningsrelease.htm",
+      "https://www.sec.gov/Archives/edgar/data/1588978/000158897826000030/prct-20260630.htm",
+      "https://www.sec.gov/Archives/edgar/data/1588978/000158897826000007/investordaypresentationf.htm"
+    ]
+  },
+  "industry": {
+    "sia_2025_revenues_usdbn": {
+      "global_space_economy": 429,
+      "satellite_services": 105,
+      "satellite_manufacturing": 20.4,
+      "commercially_procured_launch": 12.4
+    },
+    "sia_source": "https://sia.org/wp-content/uploads/2026/05/SSIR26-One-Pager-Exec-Summary-FINAL.pdf.pdf",
+    "faa_fy2025_licensed_launches": {
+      "total": 195,
+      "spacex": 161,
+      "rocket_lab": 15
+    },
+    "faa_scope": "US licensed activity, not global or revenue shares; do not infer company third-party demand from captive constellation launches.",
+    "faa_source": "https://www.faa.gov/data_research/aviation/aerospace_forecasts/2026_Commercial_Space_2.pdf",
+    "nssl_source": "https://www.ssc.spaceforce.mil/Newsroom/Article/4537936/space-access-awards-2-contracts-to-on-ramp-new-providers-to-national-security-s",
+    "gao_source": "https://www.gao.gov/products/gao-26-107085"
+  },
+  "crossReviewChanges": [
+    "Add acquired IRDM profits and Aireon subsequent debt/period boundaries.",
+    "Do not assign cancellation/research revenue to per-flight unit metrics without their definition; no segment profit ordering from gross-profit shares.",
+    "Normalize PRCT operating income consistently with its tariff refund; separate TOST company FCF from owner cash.",
+    "Treat PRCT cohort forecast as already read, not realized utilization; no inventory explanation for actual procedure slowdown."
+  ]
+}
