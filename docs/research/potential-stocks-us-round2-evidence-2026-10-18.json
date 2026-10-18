@@ -1,0 +1,72 @@
+{
+  "asOf": "2026-10-18",
+  "basis": "价格为指定交易日常规收盘；股数使用最近已披露日期，非同日完全稀释市值。",
+  "IOT": {
+    "retrieved_on": "2026-10-18",
+    "ticker": "IOT",
+    "currency": "USD",
+    "market_session": "2026-10-16 US regular trading session",
+    "source": "Yahoo Finance Chart API",
+    "source_type": "market data vendor direct daily response; not exchange tick data",
+    "url": "https://query1.finance.yahoo.com/v8/finance/chart/IOT?period1=1792108800&period2=1792195200&interval=1d",
+    "daily_bar_timestamp": 1792157400,
+    "close": 39.56999969482422,
+    "adjclose": 39.56999969482422,
+    "open": 43.0,
+    "high": 43.779998779296875,
+    "low": 38.900001525878906,
+    "volume": 5332000,
+    "rounded_close": 39.57,
+    "shares_as_of": "2026-09-01",
+    "class_a": 380273036,
+    "class_b": 205332173,
+    "class_c": 0,
+    "total_basic_common_shares": 585605209,
+    "share_source": "https://www.sec.gov/Archives/edgar/data/1642896/000162828026060909/iot-20260801.htm",
+    "price_times_reported_basic_shares_usd": 23172398120.13,
+    "share_basis_limitation": "Price and shares dates differ by 45 days; not fully diluted and not an exact same-day share count."
+  },
+  "DUOL": {
+    "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/DUOL?period1=1792108800&period2=1792281600&interval=1d&events=div%2Csplits",
+    "retrieved_date": "2026-10-18",
+    "symbol": "DUOL",
+    "events": {},
+    "prices": [
+      {
+        "date": "2026-10-16",
+        "close": 141.75999450683594,
+        "adjusted_close": 141.75999450683594
+      }
+    ],
+    "scope_note": "Market capitalization is approximate: 2026-10-16 close multiplied by latest full Class A and Class B shares found on the 10-Q cover (2026-08-04). Not fully diluted and not same-date shares.",
+    "calculations": {
+      "share_count_date": "2026-08-04",
+      "class_a": 40387012,
+      "class_b": 6399257,
+      "total_common": 46786269,
+      "price_date": "2026-10-16",
+      "close_usd": 141.76,
+      "indicated_equity_value_usd": 6632421493.44,
+      "equity_to_2026_guided_revenue": 5.494963954797017,
+      "shares_date_lag_days": 73,
+      "q2_incremental_gross_profit_usd": 34159000,
+      "q2_incremental_opex_usd": 33577000,
+      "q2_operating_profit_growth": 0.017444474417768197,
+      "q2_net_income_decline_usd": 11623000,
+      "q2_incremental_income_tax_usd": 10539000
+    }
+  },
+  "TMDX": {
+    "sourceUrl": "https://api.nasdaq.com/api/quote/TMDX/historical?assetclass=stocks&fromdate=2026-10-15&todate=2026-10-18&limit=10",
+    "observation": {
+      "date": "2026-10-16",
+      "close": 70.78,
+      "volume": 1068266
+    },
+    "shares": 34675145,
+    "shareDate": "2026-07-30",
+    "shareSource": "https://www.sec.gov/Archives/edgar/data/1756262/000119312526332843/tmdx-20260630.htm",
+    "basicEquityValue": 2454306763.1,
+    "note": "第二轮代理已读取的Nasdaq字段与SEC封面摘录，非完整API响应。"
+  }
+}
