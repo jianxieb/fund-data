@@ -97,10 +97,81 @@ for (const c of data.companies) {
   md += '\n\n尚缺的具体证据：\n\n' + c.gaps.map(t => '- ' + t).join('\n') + '\n\n### 为什么不选常见替代\n\n';
   md += c.alternatives.map(a => `- **${a.name}**：${a.reason} ${sources(a.sources)}`.trimEnd()).join('\n') + '\n';
 }
+const auditTable = (headers, rows) => '| ' + headers.join(' | ') + ' |\n| ' + headers.map(() => '---').join(' | ') + ' |\n' + rows.map(row => '| ' + row.join(' | ') + ' |').join('\n') + '\n\n';
+function reagentPlatformAudit(c) {
+  const a = c.audit, f = a.financials, table = auditTable;
+  const ttm = key => f.annual[key] + f.current[key] - f.prior[key];
+  let out = '#### 历史财务与现金：用TTM复核量级\n\n';
+  out += table(['百万人民币', f.annual.label, f.prior.label, f.current.label, 'TTM至' + f.ttmEnd], [
+    ['收入', 'revenue'], ['归母净利润', 'netIncome'], ['扣非归母净利润', 'adjustedNetIncome'], ['经营现金流', 'operatingCash'], ['购建长期资产现金支出', 'capex']
+  ].map(([label, key]) => [label, ...[f.annual[key], f.prior[key], f.current[key], ttm(key)].map(v => n(v, 3))]));
+  out += `TTM归母净利率 ${n(ttm('netIncome') / ttm('revenue') * 100)}%；经营现金减购建长期资产支出 ${n(ttm('operatingCash') - ttm('capex'), 3)}百万。用10月16日股价与9月30日登记股数计算参考股权价值 ${n(c.price.value * c.shares / 100)}亿元，对应TTM归母PE ${n(c.price.value * c.shares / ttm('netIncome'))}倍、扣非PE ${n(c.price.value * c.shares / ttm('adjustedNetIncome'))}倍；股数包含库存股，未把这个计算称为同日流通市值或精确的加权每股收益估值。\n\n${f.note}\n\n${sources(['snibe', 'snibe-2025'])}\n\n`;
+  const p = a.products;
+  out += '#### 试剂与仪器：复购证据不能只看装机数\n\n';
+  out += table(['百万人民币', ...p.periods.map(x => x + '收入'), '收入同比', ...p.periods.map(x => x + '毛利率')], p.rows.map(r => [r.label, ...r.revenue.map(v => n(v, 3)), n((r.revenue[0] / r.revenue[1] - 1) * 100) + '%', ...r.revenue.map((v, i) => n((1 - r.cost[i] / v) * 100) + '%')]));
+  out += table(['区域收入 / 百万人民币', ...p.periods], p.regions.map(r => [r.label, ...r.revenue.map(v => n(v, 3))]));
+  out += table(['范围', '全口径试剂收入同比', '化学发光试剂销量同比'], p.volumeComparisons.map(r => [r.label, n(r.reagentRevenueGrowth * 100) + '%', n(r.chemiluminescenceVolumeGrowth * 100) + '%']));
+  out += p.note + '\n\n';
+  out += table(['设备口径', '台 / 条', '边界'], p.installations.map(r => [r.label, n(r.count, 0), r.basis]));
+  out += p.installedNote + '\n\n' + sources(['snibe', 'snibe-registration']) + '\n\n';
+  out += '#### 利润结构与汇兑\n\n' + table(['百万人民币', ...a.earnings.periods], a.earnings.rows.map(r => [r.label, ...r.values.map(v => n(v, 3))])) + a.earnings.note + '\n\n' + sources(['snibe']) + '\n\n';
+  const r = a.receivables;
+  out += '#### 应收账款之外，还有分期收款销售\n\n';
+  out += table(['百万人民币', ...r.dates], [
+    ['应收账款原值', r.gross], ['应收账款坏账准备', r.allowance], ['应收账款净额', r.net],
+    ['分期应收非流动部分净额', r.installmentLongNet], ['分期应收一年内到期部分净额', r.installmentCurrentNet],
+    ['分期应收合计净额', r.installmentLongNet.map((v, i) => v + r.installmentCurrentNet[i])],
+    ['普通应收加分期应收净额', r.net.map((v, i) => v + r.installmentLongNet[i] + r.installmentCurrentNet[i])],
+    ['存货', r.inventory], ['应付账款', r.payables], ['合同负债', r.contractLiabilities]
+  ].map(([label, values]) => [label, ...values.map(v => n(v, 3))]));
+  out += table(['应收账款账龄 / 原值 / 百万人民币', ...r.dates], r.agingLabels.map((label, i) => [label, n(r.agingCurrent[i], 3), n(r.agingPrior[i], 3)]));
+  out += r.note + '\n\n';
+  out += `第111页前五名应收合计 ${n(r.topFiveAmount, 3)}百万，除以应收原值为 ${n(r.topFiveAmount / r.gross[0] * 100)}%，与该表19.14%一致；第138页风险段落另称11.89%。未找到两者的范围衔接，因此不采用较小比例证明客户分散。外币应收账款 ${n(r.foreignCurrencyTradeReceivables, 3)}百万，未披露国别期后回款桥。\n\n${sources(['snibe'])}\n\n`;
+  const cash = a.cash, b = a.ocfBridge;
+  out += '#### 现金来源与去向\n\n';
+  out += table(['2026H1项目', '百万人民币'], [
+    ['期初现金及现金等价物', cash.startCashEquivalents], ['经营现金流', cash.operatingCash],
+    ['购建长期资产支出', -cash.capexAndIntangibles], ['收回投资', cash.investmentRecovered], ['投资收益收现', cash.investmentIncomeReceived], ['长期资产处置收现', cash.ppeDisposals], ['投资支付', -cash.investmentPaid], ['投资现金流合计', cash.investingCash],
+    ['股利、利润或利息现金支出', -cash.dividendProfitInterestCashOut], ['回购现金（含费用）', -cash.buybackCashIncludingFees], ['房屋租赁现金', -cash.leaseCash], ['保证金流入', cash.otherFinancingIn], ['保证金流出', -cash.returnedDeposit], ['筹资现金流合计', cash.financingCash], ['汇率变动', cash.fxEffect], ['期末现金及现金等价物', cash.endCashEquivalents], ['经营现金减购建长期资产', cash.operatingCash - cash.capexAndIntangibles]
+  ].map(([label, value]) => [label, n(value, 3)]));
+  out += table(['净利润到经营现金的主要调整', '百万人民币'], [
+    ['净利润', b.netIncome], ['信用减值准备', b.creditLossProvision], ['折旧及各项摊销', b.ppeDepreciation + b.rouDepreciation + b.intangibleAmort + b.longTermDeferredAmort], ['处置损失', b.disposalLoss], ['公允价值收益调整', b.fairValueGains], ['财务费用调整', b.financeExpenseAdjustment], ['投资收益调整', b.investmentGains], ['递延所得税净调整', b.dtaIncrease + b.dtlIncrease], ['存货占用变动', b.inventoryChange], ['经营性应收变动', b.operatingReceivablesChange], ['经营性应付变动', b.operatingPayablesChange]
+  ].map(([label, value]) => [label, n(value, 3)]));
+  out += cash.note + '\n\n';
+  const l = a.liquidity;
+  out += table(['2026-06-30资金资产 / 不可简单全部相加称为现金', '百万人民币'], [['现金及现金等价物', l.cash], ['银行理财', l.bankWealthProducts], ['衍生金融资产', l.derivatives], ['一年内到期债权投资', l.currentDebtInvestments], ['非流动债权投资', l.longDebtInvestments], ['货币资金中的外币计价部分', l.foreignCurrencyCash], ['货币资金中的存放境外部分', l.overseasBankCash]].map(([label, value]) => [label, n(value, 3)]));
+  out += l.note + '\n\n' + sources(['snibe']) + '\n\n';
+  out += '#### 回购、激励与分红：不重复计算股数\n\n';
+  const cap = a.capital, award = cap.award, dividend = cap.dividend;
+  out += table(['回购完成时点', '百万股', '成交额 / 百万人民币 / 不含费用'], cap.buybacks.map(x => [x.date, n(x.shares, 6), n(x.tradeCost, 6)]));
+  out += `截至${cap.treasuryAsOf}库存股 ${n(cap.treasury, 6)}百万；3月回购中 ${n(cap.fromMarch, 6)}百万 + 8月回购中 ${n(cap.fromAugust, 6)}百万 = 授予股份 ${n(award.shares, 6)}百万。扣除全部库存股的外部股数 ${n(cap.registered - cap.treasury, 6)}百万，现有奖励全部归属后的外部股数 ${n(cap.registered - cap.treasury + award.shares, 6)}百万，尚留库存股 ${n(cap.residualTreasury, 6)}百万；这是按已披露回购与奖励计算的静态关系，不是新的实时股份登记。\n\n${cap.note}\n\n`;
+  out += `授予${award.grantees}人，授予价${n(award.price)}元；两期各归属50%，分别自授予满12、24个月后开始。${award.caveat}\n\n`;
+  out += table(['考核年度', '相对2025收入增长触发值', '目标值'], Object.keys(award.revenueTargetVs2025).map(year => [year, n(award.triggerVs2025[year] * 100) + '%', n(award.revenueTargetVs2025[year] * 100) + '%']));
+  out += '公司层面归属：低于触发值为0；达到触发值但未到目标值时，为（实际增长率−触发值）÷（目标值−触发值）×20%+80%；达到目标值为100%，并仍需满足个人考核与任职条件。\n\n';
+  out += table(['预计股权薪酬费用', '百万人民币'], [...award.expenseYearsLabels.map((year, i) => [year, n(award.expenseYears[i], 4)]), ['合计', n(award.expenseTotal, 4)]]);
+  out += `2025年度分红于${dividend.exDate}除息：${n(dividend.eligibleShares, 6)}百万合资格股份 × 每股${n(dividend.perShare)}元 = 含税 ${n(dividend.grossAmount, 3)}百万，占2025归母利润 ${n(dividend.grossAmount / f.annual.netIncome * 100)}%、2025经营现金减资本开支 ${n(dividend.grossAmount / (f.annual.operatingCash - f.annual.capex) * 100)}%。这是历史覆盖率，不保证下一次派息。\n\n${sources(['snibe-buyback-march', 'snibe-buyback-august', 'snibe-grant', 'snibe-dividend', 'snibe-2025'])}\n\n`;
+  out += '#### 原文中尚未对齐的金额\n\n' + table(['项目', '前一口径 / 百万', '后一口径 / 百万', '差额 / 百万', '处理'], a.reconciliationGaps.map(g => [g.label, n(g.left, 6), n(g.right, 6), n(g.left - g.right, 6), g.note])) + sources(['snibe', 'snibe-dividend']) + '\n\n';
+  for (const g of a.governance) out += '#### ' + g.title + '\n\n' + g.text + '\n\n' + sources(g.sources) + '\n\n';
+  out += '#### 估值压力与增长量级\n\n' + a.valuationNote + '\n\n';
+  out += table(['十倍门槛假设', '终点百万股', '归母净利率', 'PE', '所需年收入 / 亿元', '相对TTM'], a.hurdleCases.map(s => {
+    const revenue = c.price.value * 10 * s.shares / s.margin / s.pe;
+    return [s.label, n(s.shares, 6), n(s.margin * 100) + '%', s.pe, n(revenue / 100), n(revenue / c.anchorRevenue) + '×'];
+  }));
+  out += table(['五年量级示例 / 非预测', '年收入 / 亿元', '归母利润 / 亿元', '股价 / 元', '股价倍数', '价格年化变化'], a.scaleCases.map(s => {
+    const revenue = c.anchorRevenue * (1 + s.growth) ** data.horizonYears;
+    const result = M.project({ price: c.price, shares: { value: c.shares }, financials: { anchorRevenue: c.anchorRevenue } }, { ...s, revenue, dividends: 0 });
+    return [s.label, n(revenue / 100), n(revenue * s.margin / 100), n(result.price), n(result.priceMultiple) + '×', n(M.returnPercent(result.priceMultiple, true, data.horizonYears)) + '%'];
+  }));
+  out += '#### 后续验证与公告覆盖\n\n' + a.milestones.map(m => '- ' + m.when + '：' + m.test).join('\n') + '\n\n';
+  const review = a.filingReview;
+  out += `公告检索范围${review.start}至${review.asOf}，${review.pages}页、${review.count}个不同公告，返回的最新发布日期${review.lastPublished}。[保存的公告目录与查询记录](${review.file})。${review.note}\n\n`;
+  return out;
+}
 function comparisonAudit(c) {
   const a = c.audit;
   if (!a) return '';
-  const table = (headers, rows) => '| ' + headers.join(' | ') + ' |\n| ' + headers.map(() => '---').join(' | ') + ' |\n' + rows.map(row => '| ' + row.join(' | ') + ' |').join('\n') + '\n\n';
+  if (a.kind === 'reagent_platform') return reagentPlatformAudit(c);
+  const table = auditTable;
   let out = '#### 财年与过渡期\n\n';
   out += table(['报告期间', '开始', '结束', '长度'], a.periods.map(p => [p.label, p.start, p.end, `${p.days}天 / ${p.days / 7}周`]));
   out += a.periodNote + '\n\n' + sources(['aehr-calendar', 'aehr-next']) + '\n\n';
@@ -147,10 +218,10 @@ function comparisonAudit(c) {
   out += '#### 后续验证\n\n' + a.milestones.map(m => '- ' + m.when + '：' + m.test).join('\n') + '\n\n';
   return out;
 }
-md += '\n## 新增比较：经营证据与买入价格分别检验\n\n以下保留为比较观察，详细核验不会自动升级候选资格。Aehr与新产业默认使用已披露普通股作不再增股的下限压力；Aehr另列未来稀释敏感性。不同财年中点不作为统一五年增长起点。\n\n';
+md += '\n## 新增比较：经营证据与买入价格分别检验\n\n以下保留为比较观察，详细核验不会自动升级候选资格。Aehr使用已披露普通股；新产业使用包含库存股的登记股数，以覆盖现有激励归属回流，两者均另列未来增股压力。不同财年中点不作为统一五年增长起点。\n\n';
 for (const c of data.comparisons) {
   const equity = c.price.value * 10 * c.shares, revenue = equity / c.pe / c.margin;
-  md += `### ${c.name} · ${c.id}\n\n${c.facts}\n\n${sources(c.sources)}\n\n${c.judgment}\n\n起始收盘价 ${c.currency} ${n(c.price.value)}（${c.price.asOf}），[报价接口](${c.price.url})。股数 ${n(c.shares, 6)}百万，${c.shareDate ? '截至' + c.shareDate + '；未计未来稀释，故只是门槛下限' : c.shareBasis}。\n\n按归母净利率 ${n(c.margin * 100)}%、PE ${c.pe} 的研究假设，股价十倍需股权价值 ${n(equity / 100)}亿原币、收入 ${n(revenue / 100)}亿原币；相对“${c.anchorLabel}”的 ${n(c.anchorRevenue / 100)}亿原币为 ${n(revenue / c.anchorRevenue)}倍。不同期间比较仅看量级，不给成功概率。\n\n未完成：${c.gaps}\n\n下次核验：${c.next}\n\n`;
+  md += `### ${c.name} · ${c.id}\n\n${c.facts}\n\n${sources(c.sources)}\n\n${c.judgment}\n\n起始收盘价 ${c.currency} ${n(c.price.value)}（${c.price.asOf}），[报价接口](${c.price.url})。股数 ${n(c.shares, 6)}百万，${c.shareDate ? '截至' + c.shareDate + '；' : ''}${c.shareBasis || '未计未来稀释，故只是门槛下限'}。\n\n按归母净利率 ${n(c.margin * 100)}%、PE ${c.pe} 的研究假设，股价十倍需股权价值 ${n(equity / 100)}亿原币、收入 ${n(revenue / 100)}亿原币；相对“${c.anchorLabel}”的 ${n(c.anchorRevenue / 100)}亿原币为 ${n(revenue / c.anchorRevenue)}倍。不同期间比较仅看量级，不给成功概率。\n\n未完成：${c.gaps}\n\n下次核验：${c.next}\n\n`;
   md += comparisonAudit(c);
 }
 md += '## 剩余研究工作\n\n' + data.remainingWork.map(t => '- [ ] ' + t).join('\n') + '\n';

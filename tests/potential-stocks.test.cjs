@@ -84,8 +84,76 @@ test('the price start, provenance, unit build and scenario claims reconcile for 
     assert.equal(c.price.asOf, q.observations.at(-1).date);
     assert.equal(c.currency, q.currency);
     assert.ok(c.shareDate || c.shareBasis);
-    if (c.audit) [...c.audit.orders, ...c.audit.businessNotes].flatMap(x => x.sources).forEach(id => assert.ok(sourceIds.has(id)));
+    const checkSources = value => {
+      if (!value || typeof value !== 'object') return;
+      for (const [key, child] of Object.entries(value)) {
+        if (key === 'sources') child.forEach(id => assert.ok(sourceIds.has(id), `${c.id}: unknown audit source ${id}`));
+        else checkSources(child);
+      }
+    };
+    checkSources(c.audit);
   }
+});
+
+test('Snibe rolling financials and product totals use matching reporting periods', () => {
+  const c = data.comparisons.find(c => c.id === '300832'), a = c.audit, f = a.financials;
+  const trailing = key => f.annual[key] + f.current[key] - f.prior[key];
+  near(trailing('revenue'), c.anchorRevenue);
+  near(trailing('netIncome'), 1716.88870050);
+  near(trailing('adjustedNetIncome'), 1662.33716328);
+  near(trailing('operatingCash') - trailing('capex'), 1639.65605545);
+  for (const [i, period] of [f.current, f.prior].entries()) {
+    near(a.products.rows.reduce((sum, r) => sum + r.revenue[i], 0), period.revenue);
+    near(a.products.regions.reduce((sum, r) => sum + r.revenue[i], 0), period.revenue);
+  }
+  near(a.products.rows.reduce((sum, r) => sum + r.cost[0], 0), 704.68098521);
+  const review = JSON.parse(fs.readFileSync('docs/research/' + a.filingReview.file, 'utf8'));
+  assert.equal(new Set(review.announcements.map(x => x.id)).size, review.reportedTotal);
+  assert.equal(review.announcements.length, a.filingReview.count);
+  assert.equal(review.pages.at(-1).hasMore, false);
+  assert.ok(review.announcements.every(x => x.date <= data.reviewedAt && x.url.includes('/' + x.date + '/')));
+});
+
+test('Snibe collection analysis includes the current portion of installment receivables once', () => {
+  const r = data.comparisons.find(c => c.id === '300832').audit.receivables;
+  for (let i = 0; i < 2; i++) {
+    near(r.gross[i] - r.allowance[i], r.net[i]);
+    near(r.installmentLongGross[i] - r.installmentAllowance[i], r.installmentLongNet[i]);
+    near((i ? r.agingPrior : r.agingCurrent).reduce((sum, v) => sum + v, 0), r.gross[i]);
+  }
+  near(r.installmentLongGross[0] + r.installmentCurrentNet[0], r.installmentTotalGross);
+  near(r.installmentTotalGross - r.installmentAllowance[0], 676.72684477);
+  near(r.net[0] + r.installmentLongNet[0] + r.installmentCurrentNet[0], 1671.31272673);
+  assert.equal(Math.round(r.topFiveAmount / r.gross[0] * 10000) / 10000, r.topFiveShare);
+  assert.notEqual(r.topFiveShare, r.riskSectionTopFiveShare, 'the two filing disclosures remain separately recorded');
+});
+
+test('Snibe cash sources reconcile without erasing distinct dividend and investment bases', () => {
+  const a = data.comparisons.find(c => c.id === '300832').audit, f = a.cash;
+  near(Object.values(a.ocfBridge).reduce((sum, v) => sum + v, 0), f.operatingCash);
+  near(f.investmentRecovered + f.investmentIncomeReceived + f.ppeDisposals - f.investmentPaid - f.capexAndIntangibles, f.investingCash);
+  near(f.otherFinancingIn - f.dividendProfitInterestCashOut - f.otherFinancingOut, f.financingCash);
+  near(f.buybackCashIncludingFees + f.returnedDeposit + f.leaseCash, f.otherFinancingOut);
+  near(f.startCashEquivalents + f.operatingCash + f.investingCash + f.financingCash + f.fxEffect, f.endCashEquivalents);
+  near(f.startMoneyBalance - f.startRestricted, f.startCashEquivalents);
+  near(f.bankWealthProducts + f.derivatives, f.tradingFinancialAssets[0]);
+  near(a.reconciliationGaps[0].left - a.reconciliationGaps[0].right, 4.87353610);
+  near(a.reconciliationGaps[1].left - a.reconciliationGaps[1].right, .06406288);
+  near(a.reconciliationGaps[2].left - a.reconciliationGaps[2].right, .06229264);
+});
+
+test('Snibe repurchased shares fund awards without a second increase to registered capital', () => {
+  const c = data.comparisons.find(c => c.id === '300832'), s = c.audit.capital, a = s.award;
+  near(s.buybacks.reduce((sum, b) => sum + b.shares, 0), s.treasury);
+  near(s.fromMarch + s.fromAugust, a.shares);
+  near(s.treasury - a.shares, s.residualTreasury);
+  near(s.registered - s.treasury + a.shares + s.residualTreasury, c.shares);
+  near(s.registered - s.dividend.treasury, s.dividend.eligibleShares);
+  near(s.dividend.eligibleShares * s.dividend.perShare, s.dividend.grossAmount);
+  near(a.expenseYears.reduce((sum, v) => sum + v, 0), a.expenseTotal);
+  near(a.vesting.reduce((sum, v) => sum + v, 0), 1);
+  const early = Date.parse(s.dividend.exDate), start = Date.parse(c.price.asOf);
+  assert.ok(early < start, 'the already-paid dividend precedes the future-return start');
 });
 
 test('Aehr separates the fiscal transition and reconciles reported product revenue', () => {

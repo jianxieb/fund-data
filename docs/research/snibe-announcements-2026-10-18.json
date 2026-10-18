@@ -1,0 +1,701 @@
+{
+  "checkedAsOf": "2026-10-18",
+  "queryPeriod": [
+    "2026-01-01",
+    "2026-10-18"
+  ],
+  "uniqueCount": 110,
+  "reportedTotal": 110,
+  "pages": [
+    {
+      "page": 1,
+      "returned": 30,
+      "new": 30,
+      "hasMore": true,
+      "url": "https://www.cninfo.com.cn/new/hisAnnouncement/query?pageNum=1&pageSize=30&column=szse&tabName=fulltext&stock=300832%2C9900027265&searchkey=&seDate=2026-01-01~2026-10-18&isHLtitle=false"
+    },
+    {
+      "page": 2,
+      "returned": 30,
+      "new": 30,
+      "hasMore": true,
+      "url": "https://www.cninfo.com.cn/new/hisAnnouncement/query?pageNum=2&pageSize=30&column=szse&tabName=fulltext&stock=300832%2C9900027265&searchkey=&seDate=2026-01-01~2026-10-18&isHLtitle=false"
+    },
+    {
+      "page": 3,
+      "returned": 30,
+      "new": 30,
+      "hasMore": true,
+      "url": "https://www.cninfo.com.cn/new/hisAnnouncement/query?pageNum=3&pageSize=30&column=szse&tabName=fulltext&stock=300832%2C9900027265&searchkey=&seDate=2026-01-01~2026-10-18&isHLtitle=false"
+    },
+    {
+      "page": 4,
+      "returned": 20,
+      "new": 20,
+      "hasMore": false,
+      "url": "https://www.cninfo.com.cn/new/hisAnnouncement/query?pageNum=4&pageSize=30&column=szse&tabName=fulltext&stock=300832%2C9900027265&searchkey=&seDate=2026-01-01~2026-10-18&isHLtitle=false"
+    }
+  ],
+  "announcements": [
+    {
+      "title": "关于持股5%以上股东减持股份的预披露公告",
+      "date": "2026-09-30",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-09-30/1225591500.PDF",
+      "id": "1225591500"
+    },
+    {
+      "title": "关于获得医疗器械注册证的公告",
+      "date": "2026-09-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-09-28/1225584022.PDF",
+      "id": "1225584022"
+    },
+    {
+      "title": "关于获得医疗器械注册证的公告",
+      "date": "2026-09-16",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-09-16/1225567351.PDF",
+      "id": "1225567351"
+    },
+    {
+      "title": "关于控股股东部分质押股份办理延期购回手续的公告",
+      "date": "2026-08-31",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-31/1225536034.PDF",
+      "id": "1225536034"
+    },
+    {
+      "title": "关于回购股份期限提前届满、回购实施结果暨股份变动的公告",
+      "date": "2026-08-25",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-25/1225504456.PDF",
+      "id": "1225504456"
+    },
+    {
+      "title": "关于获得医疗器械注册证的公告",
+      "date": "2026-08-24",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-24/1225494129.PDF",
+      "id": "1225494129"
+    },
+    {
+      "title": "2026年半年度报告披露提示性公告",
+      "date": "2026-08-14",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-14/1225471109.PDF",
+      "id": "1225471109"
+    },
+    {
+      "title": "关于公司获得发明专利证书的公告",
+      "date": "2026-08-14",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-14/1225471108.PDF",
+      "id": "1225471108"
+    },
+    {
+      "title": "关于开展外汇套期保值业务的可行性分析报告",
+      "date": "2026-08-14",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-14/1225471107.PDF",
+      "id": "1225471107"
+    },
+    {
+      "title": "关于开展外汇套期保值业务的公告",
+      "date": "2026-08-14",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-14/1225471106.PDF",
+      "id": "1225471106"
+    },
+    {
+      "title": "第五届董事会第十一次会议决议公告",
+      "date": "2026-08-14",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-14/1225471105.PDF",
+      "id": "1225471105"
+    },
+    {
+      "title": "2026年半年度非经营性资金占用及其他关联资金往来情况汇总表",
+      "date": "2026-08-14",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-14/1225471104.PDF",
+      "id": "1225471104"
+    },
+    {
+      "title": "2026年半年度报告",
+      "date": "2026-08-14",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-14/1225471103.PDF",
+      "id": "1225471103"
+    },
+    {
+      "title": "2026年半年度报告摘要",
+      "date": "2026-08-14",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-14/1225471102.PDF",
+      "id": "1225471102"
+    },
+    {
+      "title": "北京国枫律师事务所关于公司2026年限制性股票激励计划调整及授予相关事项的法律意见书",
+      "date": "2026-08-06",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-06/1225462064.PDF",
+      "id": "1225462064"
+    },
+    {
+      "title": "第五届董事会第十次会议决议公告",
+      "date": "2026-08-06",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-06/1225462061.PDF",
+      "id": "1225462061"
+    },
+    {
+      "title": "关于调整2026年限制性股票激励计划相关事项的公告",
+      "date": "2026-08-06",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-06/1225462063.PDF",
+      "id": "1225462063"
+    },
+    {
+      "title": "关于控股股东部分质押股份办理延期购回手续的公告",
+      "date": "2026-08-06",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-06/1225462062.PDF",
+      "id": "1225462062"
+    },
+    {
+      "title": "关于向2026年限制性股票激励计划激励对象授予限制性股票的公告",
+      "date": "2026-08-06",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-06/1225462065.PDF",
+      "id": "1225462065"
+    },
+    {
+      "title": "董事会薪酬与考核委员会关于2026年限制性股票激励计划激励对象名单(授予日)的核查意见",
+      "date": "2026-08-06",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-06/1225462060.PDF",
+      "id": "1225462060"
+    },
+    {
+      "title": "北京国枫（深圳）律师事务所关于公司2026年第一次临时股东会的法律意见书",
+      "date": "2026-08-05",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-05/1225460316.PDF",
+      "id": "1225460316"
+    },
+    {
+      "title": "2026年第一次临时股东会决议公告",
+      "date": "2026-08-05",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-05/1225460315.PDF",
+      "id": "1225460315"
+    },
+    {
+      "title": "关于股份回购进展的公告",
+      "date": "2026-08-03",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-03/1225453398.PDF",
+      "id": "1225453398"
+    },
+    {
+      "title": "董事会薪酬与考核委员会关于公司2026年限制性股票激励计划授予激励对象名单的审核意见及公示情况说明",
+      "date": "2026-07-31",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-07-31/1225448854.PDF",
+      "id": "1225448854"
+    },
+    {
+      "title": "关于2026年限制性股票激励计划内幕信息知情人买卖公司股票情况的自查报告",
+      "date": "2026-07-31",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-07-31/1225448853.PDF",
+      "id": "1225448853"
+    },
+    {
+      "title": "关于控股股东部分股份办理质押及解除质押的公告",
+      "date": "2026-07-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-07-28/1225444437.PDF",
+      "id": "1225444437"
+    },
+    {
+      "title": "关于召开2026年第一次临时股东会的通知",
+      "date": "2026-07-21",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-07-21/1225433174.PDF",
+      "id": "1225433174"
+    },
+    {
+      "title": "第五届董事会第九次会议决议公告",
+      "date": "2026-07-20",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-07-20/1225433360.PDF",
+      "id": "1225433360"
+    },
+    {
+      "title": "北京国枫律师事务所关于公司2026年限制性股票激励计划（草案）的法律意见书",
+      "date": "2026-07-20",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-07-20/1225433359.PDF",
+      "id": "1225433359"
+    },
+    {
+      "title": "董事会薪酬与考核委员会关于2026年限制性股票激励计划相关事项的核查意见",
+      "date": "2026-07-20",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-07-20/1225433358.PDF",
+      "id": "1225433358"
+    },
+    {
+      "title": "2026年限制性股票激励计划自查表",
+      "date": "2026-07-20",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-07-20/1225433357.PDF",
+      "id": "1225433357"
+    },
+    {
+      "title": "2026年限制性股票激励计划实施考核管理办法",
+      "date": "2026-07-20",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-07-20/1225433356.PDF",
+      "id": "1225433356"
+    },
+    {
+      "title": "2026年限制性股票激励计划（草案）",
+      "date": "2026-07-20",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-07-20/1225433355.PDF",
+      "id": "1225433355"
+    },
+    {
+      "title": "2026年限制性股票激励计划（草案）摘要",
+      "date": "2026-07-20",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-07-20/1225433354.PDF",
+      "id": "1225433354"
+    },
+    {
+      "title": "关于公司获得发明专利证书的公告",
+      "date": "2026-07-13",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-07-13/1225421506.PDF",
+      "id": "1225421506"
+    },
+    {
+      "title": "关于控股股东部分股份办理补充质押的公告",
+      "date": "2026-07-10",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-07-10/1225418492.PDF",
+      "id": "1225418492"
+    },
+    {
+      "title": "关于以集中竞价方式首次回购股份暨进展的公告",
+      "date": "2026-07-08",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-07-08/1225415211.PDF",
+      "id": "1225415211"
+    },
+    {
+      "title": "回购报告书",
+      "date": "2026-07-08",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-07-08/1225415210.PDF",
+      "id": "1225415210"
+    },
+    {
+      "title": "关于公司产品获得IVDR CE认证的公告",
+      "date": "2026-07-08",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-07-08/1225415213.PDF",
+      "id": "1225415213"
+    },
+    {
+      "title": "关于回购股份事项前十名股东和前十名无限售条件股东持股情况的公告",
+      "date": "2026-07-08",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-07-08/1225415212.PDF",
+      "id": "1225415212"
+    },
+    {
+      "title": "关于回购公司股份方案的公告",
+      "date": "2026-07-07",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-07-07/1225412622.PDF",
+      "id": "1225412622"
+    },
+    {
+      "title": "第五届董事会第八次会议决议公告",
+      "date": "2026-07-07",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-07-07/1225412621.PDF",
+      "id": "1225412621"
+    },
+    {
+      "title": "关于公司实际控制人被留置的公告",
+      "date": "2026-07-06",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-07-06/1225412284.PDF",
+      "id": "1225412284"
+    },
+    {
+      "title": "关于公司获得发明专利证书的公告",
+      "date": "2026-06-25",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-06-25/1225386836.PDF",
+      "id": "1225386836"
+    },
+    {
+      "title": "关于控股股东部分股份办理质押及解除质押的公告",
+      "date": "2026-06-15",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-06-15/1225371132.PDF",
+      "id": "1225371132"
+    },
+    {
+      "title": "关于获得医疗器械注册证的公告",
+      "date": "2026-05-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-05-28/1225335041.PDF",
+      "id": "1225335041"
+    },
+    {
+      "title": "关于控股股东部分股份办理质押及解除质押的公告",
+      "date": "2026-05-27",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-05-27/1225332827.PDF",
+      "id": "1225332827"
+    },
+    {
+      "title": "关于获得医疗器械注册证的公告",
+      "date": "2026-05-22",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-05-22/1225326585.PDF",
+      "id": "1225326585"
+    },
+    {
+      "title": "2025年年度权益分派实施公告",
+      "date": "2026-05-19",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-05-19/1225316087.PDF",
+      "id": "1225316087"
+    },
+    {
+      "title": "北京国枫（深圳）律师事务所关于公司2025年年度股东会的法律意见书",
+      "date": "2026-05-18",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-05-18/1225313929.PDF",
+      "id": "1225313929"
+    },
+    {
+      "title": "2025年年度股东会决议公告",
+      "date": "2026-05-18",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-05-18/1225313928.PDF",
+      "id": "1225313928"
+    },
+    {
+      "title": "关于控股股东部分股份办理质押及解除质押的公告",
+      "date": "2026-05-18",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-05-18/1225312343.PDF",
+      "id": "1225312343"
+    },
+    {
+      "title": "关于公司获得发明专利证书的公告",
+      "date": "2026-05-14",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-05-14/1225306705.PDF",
+      "id": "1225306705"
+    },
+    {
+      "title": "关于获得医疗器械注册证的公告",
+      "date": "2026-05-11",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-05-11/1225291432.PDF",
+      "id": "1225291432"
+    },
+    {
+      "title": "关于公司获得发明专利证书的公告",
+      "date": "2026-05-06",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-05-06/1225278820.PDF",
+      "id": "1225278820"
+    },
+    {
+      "title": "关于为公司及公司董事、高级管理人员购买责任保险的公告",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208447.PDF",
+      "id": "1225208447"
+    },
+    {
+      "title": "2026年第一季度报告披露提示性公告",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208446.PDF",
+      "id": "1225208446"
+    },
+    {
+      "title": "2025年年度报告披露提示性公告",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208445.PDF",
+      "id": "1225208445"
+    },
+    {
+      "title": "关于续聘政旦志远（深圳）会计师事务所为公司2026年度审计机构的公告",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208444.PDF",
+      "id": "1225208444"
+    },
+    {
+      "title": "2025年度独立董事述职报告（沈卫华）",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208443.PDF",
+      "id": "1225208443"
+    },
+    {
+      "title": "2025年度独立董事述职报告（伍前辉）",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208442.PDF",
+      "id": "1225208442"
+    },
+    {
+      "title": "2025年度独立董事述职报告（支毅）",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208441.PDF",
+      "id": "1225208441"
+    },
+    {
+      "title": "2025年度独立董事述职报告（张敏）",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208440.PDF",
+      "id": "1225208440"
+    },
+    {
+      "title": "2025年度环境、社会和公司治理(ESG)报告（英文）",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208439.PDF",
+      "id": "1225208439"
+    },
+    {
+      "title": "2025年度环境、社会和公司治理(ESG)报告（中文）",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208438.PDF",
+      "id": "1225208438"
+    },
+    {
+      "title": "2025年度内部控制审计报告",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208437.PDF",
+      "id": "1225208437"
+    },
+    {
+      "title": "2025年度内部控制自我评价报告",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208436.PDF",
+      "id": "1225208436"
+    },
+    {
+      "title": "董事、高级管理人员薪酬管理制度",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208435.PDF",
+      "id": "1225208435"
+    },
+    {
+      "title": "关于申请银行综合授信额度的公告",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208434.PDF",
+      "id": "1225208434"
+    },
+    {
+      "title": "关于公司会计政策变更的公告",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208433.PDF",
+      "id": "1225208433"
+    },
+    {
+      "title": "关于召开2025年年度股东会的通知",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208432.PDF",
+      "id": "1225208432"
+    },
+    {
+      "title": "2025年度董事会工作报告",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208431.PDF",
+      "id": "1225208431"
+    },
+    {
+      "title": "第五届董事会第七次会议决议公告",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208430.PDF",
+      "id": "1225208430"
+    },
+    {
+      "title": "关于2025年度利润分配预案的公告",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208429.PDF",
+      "id": "1225208429"
+    },
+    {
+      "title": "2026年一季度报告",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208427.PDF",
+      "id": "1225208427"
+    },
+    {
+      "title": "2025年度会计师事务所履职情况评估报告",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208426.PDF",
+      "id": "1225208426"
+    },
+    {
+      "title": "董事会审计委员会对会计师事务所2025年度履职情况评估及履行监督职责情况的报告",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208425.PDF",
+      "id": "1225208425"
+    },
+    {
+      "title": "政旦志远（深圳）会计师事务所（特殊普通合伙）关于公司控股股东及其他关联方资金占用情况的专项说明",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208424.PDF",
+      "id": "1225208424"
+    },
+    {
+      "title": "董事会关于独立董事独立性情况的专项意见",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208423.PDF",
+      "id": "1225208423"
+    },
+    {
+      "title": "2025年年度审计报告",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208422.PDF",
+      "id": "1225208422"
+    },
+    {
+      "title": "2025年年度报告",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208420.PDF",
+      "id": "1225208420"
+    },
+    {
+      "title": "2025年年度报告摘要",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208419.PDF",
+      "id": "1225208419"
+    },
+    {
+      "title": "关于使用闲置自有资金购买理财产品的公告",
+      "date": "2026-04-28",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225208418.PDF",
+      "id": "1225208418"
+    },
+    {
+      "title": "关于获得医疗器械注册证的公告",
+      "date": "2026-04-23",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225158119.PDF",
+      "id": "1225158119"
+    },
+    {
+      "title": "关于举行2025年度业绩说明会及征集相关问题的公告",
+      "date": "2026-04-21",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-21/1225136495.PDF",
+      "id": "1225136495"
+    },
+    {
+      "title": "关于控股股东部分股份办理补充质押的公告",
+      "date": "2026-04-13",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-13/1225097280.PDF",
+      "id": "1225097280"
+    },
+    {
+      "title": "关于公司获得发明专利证书的公告",
+      "date": "2026-03-31",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-03-31/1225065700.PDF",
+      "id": "1225065700"
+    },
+    {
+      "title": "关于获得医疗器械注册证的公告",
+      "date": "2026-03-25",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-03-25/1225031034.PDF",
+      "id": "1225031034"
+    },
+    {
+      "title": "关于获得医疗器械注册证的公告",
+      "date": "2026-03-19",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-03-19/1225018610.PDF",
+      "id": "1225018610"
+    },
+    {
+      "title": "关于获得医疗器械注册证的公告",
+      "date": "2026-03-13",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-03-13/1225008561.PDF",
+      "id": "1225008561"
+    },
+    {
+      "title": "关于回购公司股份实施完成暨股份变动的公告",
+      "date": "2026-03-13",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-03-13/1225008560.PDF",
+      "id": "1225008560"
+    },
+    {
+      "title": "关于控股股东部分股份办理质押及解除质押的公告",
+      "date": "2026-03-11",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-03-11/1225004649.PDF",
+      "id": "1225004649"
+    },
+    {
+      "title": "关于公司获得发明专利证书的公告",
+      "date": "2026-03-06",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-03-06/1224998741.PDF",
+      "id": "1224998741"
+    },
+    {
+      "title": "关于回购股份事项前十名股东和前十名无限售条件股东持股情况的公告",
+      "date": "2026-03-03",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-03-03/1224993308.PDF",
+      "id": "1224993308"
+    },
+    {
+      "title": "关于以集中竞价方式首次回购股份暨进展的公告",
+      "date": "2026-03-03",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-03-03/1224993307.PDF",
+      "id": "1224993307"
+    },
+    {
+      "title": "回购报告书",
+      "date": "2026-03-03",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-03-03/1224993306.PDF",
+      "id": "1224993306"
+    },
+    {
+      "title": "第五届董事会第六次会议决议公告",
+      "date": "2026-03-02",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-03-02/1224990204.PDF",
+      "id": "1224990204"
+    },
+    {
+      "title": "关于回购公司股份方案的公告",
+      "date": "2026-03-02",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-03-02/1224990203.PDF",
+      "id": "1224990203"
+    },
+    {
+      "title": "关于获得医疗器械注册证的公告",
+      "date": "2026-02-27",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-02-27/1224988586.PDF",
+      "id": "1224988586"
+    },
+    {
+      "title": "关于控股股东部分股份办理补充质押的公告",
+      "date": "2026-02-02",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-02-02/1224961549.PDF",
+      "id": "1224961549"
+    },
+    {
+      "title": "关于公司高级管理人员减持计划时间届满暨减持结果的公告",
+      "date": "2026-01-29",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-01-29/1224956549.PDF",
+      "id": "1224956549"
+    },
+    {
+      "title": "关于公司产品获得IVDR CE认证的公告",
+      "date": "2026-01-26",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-01-26/1224950670.PDF",
+      "id": "1224950670"
+    },
+    {
+      "title": "关于持股5%以上股东持股变动比例触及1%整数倍暨减持计划实施完成的公告",
+      "date": "2026-01-23",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-01-23/1224948634.PDF",
+      "id": "1224948634"
+    },
+    {
+      "title": "关于获得医疗器械注册证的公告",
+      "date": "2026-01-22",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-01-22/1224945569.PDF",
+      "id": "1224945569"
+    },
+    {
+      "title": "关于公司获得发明专利证书的公告",
+      "date": "2026-01-22",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-01-22/1224945570.PDF",
+      "id": "1224945570"
+    },
+    {
+      "title": "关于公司产品获得IVDR CE认证的公告",
+      "date": "2026-01-20",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-01-20/1224941269.PDF",
+      "id": "1224941269"
+    },
+    {
+      "title": "关于获得医疗器械注册证的公告",
+      "date": "2026-01-20",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-01-20/1224941270.PDF",
+      "id": "1224941270"
+    },
+    {
+      "title": "关于持股5%以上股东权益变动比例触及1%及5%整数倍的提示性公告",
+      "date": "2026-01-13",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-01-13/1224932663.PDF",
+      "id": "1224932663"
+    },
+    {
+      "title": "简式权益变动报告书",
+      "date": "2026-01-13",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-01-13/1224932662.PDF",
+      "id": "1224932662"
+    },
+    {
+      "title": "关于获得医疗器械注册证的公告",
+      "date": "2026-01-05",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-01-05/1224920002.PDF",
+      "id": "1224920002"
+    }
+  ]
+}
