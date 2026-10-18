@@ -1,10 +1,13 @@
 (function (root) {
   'use strict';
   const M = root.ChanghengPotentialModel;
-  const state = { market: 'us', status: 'all', sector: 'all', query: '', sort: 'default', descending: true, view: 'financials', company: null, detailTab: 'judgment' };
+  const state = { market: 'us', status: 'all', sector: 'all', query: '', sort: 'default', descending: true, view: 'financials', company: null, detailTab: 'judgment', legacy: false };
   const sortNames = { revenue: '营收', netIncome: '归母 / 普通股利润', operatingCash: '经营现金流', price: '收盘价', dilution: '股本增幅', hurdle: '十倍所需营收增速', bear: '悲观收益', base: '基准收益', bull: '乐观收益' };
   let H;
   const data = () => root.POTENTIAL_RESEARCH;
+  const screening = () => root.POTENTIAL_SCREENING;
+  const companies = () => screening() && !state.legacy ? screening().companies : data().companies;
+  const reportPath = () => screening() && !state.legacy ? screening().reportPath : 'docs/research/potential-stocks-2026-10-18.md';
   const e = value => H.esc(value);
   const n = (value, digits = 2) => H.money(value, digits);
   const sub = text => '<span class="sub">' + e(text) + '</span>';
@@ -233,9 +236,36 @@
     const s = M.scenario(c, id), p = M.project(c, s);
     return '<td class="potential-return"><strong>' + H.pc(M.returnPercent(p.priceMultiple, H.annual, data().horizonYears), 1) + '</strong>' + sub('股价 ' + n(p.priceMultiple) + '× · ' + n(p.price) + currency(c)) + '<span class="potential-total">含现金分红 ' + H.pct(M.returnPercent(p.totalMultiple, H.annual, data().horizonYears), 1) + '</span></td>';
   }
+  function screeningSources(ids) {
+    return '<span class="potential-refs">' + ids.map(id => {
+      const s = screening().sources.find(s => s.id === id);
+      if (!s) return '来源缺失：' + e(id);
+      return s.url === screening().quotePath ? '<a href="' + e(s.url) + '" download>' + e(s.title) + '</a>' : link(s.url, s.title);
+    }).join(' · ') + '</span>';
+  }
+  function screeningView() {
+    const d = screening(), pool = d.companies.filter(c => c.market === state.market);
+    const sectors = d.sectors.filter(s => pool.some(c => c.sector === s.id));
+    const query = state.query.trim().toLowerCase();
+    const rows = pool.filter(c => (state.sector === 'all' || c.sector === state.sector) && (state.status === 'all' || (state.status === 'priority') === c.selected) && (!query || [c.id,c.name,c.business,c.opportunity,c.profitMechanism,c.judgment,d.sectors.find(s=>s.id===c.sector)?.name].join(' ').toLowerCase().includes(query)));
+    const filters = '<div class="stock-category-filter" role="group" aria-label="潜力公司行业">' + [['all','全部行业'], ...sectors.map(s => [s.id,s.name])].map(([id,label]) => H.action(e(label),'potential-sector','filter-chip' + (state.sector === id ? ' active' : ''),'data-value="' + e(id) + '" aria-pressed="' + (state.sector === id) + '"')).join('') + '</div>' + '<div class="stock-controls"><div class="filters"><input type="search" id="potential-search" aria-label="搜索公司、代码或业务" placeholder="搜索公司、代码或业务" value="' + e(state.query) + '"></div><div class="segmented stock-scope" aria-label="研究取舍">' + [['all','全部初筛'],['priority','优先研究'],['watch','暂不深入']].map(([id,label]) => H.action(label,'potential-status',state.status === id ? 'active' : '','data-value="' + id + '" aria-pressed="' + (state.status === id) + '"')).join('') + '</div></div>';
+    const industries = sectors.filter(s => state.sector === 'all' || state.sector === s.id).map(s => '<article><h3>' + e(s.name) + '</h3><strong>' + e(s.verdict) + '</strong><p>' + e(s.change) + '</p><p>' + e(s.profit) + '</p><details class="potential-industry-evidence"><summary>行业依据</summary><p>' + e(s.evidence) + '</p>' + screeningSources(s.sources) + '</details></article>').join('');
+    const history = '<div class="panel-foot potential-screen-history">' + H.action('查看此前研究 · 2026-10-18','potential-history','text-link') + '<span>保留当时的情景和依据</span></div>';
+    if (!pool.length) return '<div class="potential-page potential-screening">' + filters + '<section class="card"><div class="empty">本轮初筛从美股的三个方向开始，A股暂无本轮结果。</div>' + history + '</section></div>';
+    return '<div class="potential-page potential-screening">' + filters + '<div class="potential-industry-grid">' + industries + '</div><div class="potential-screen-summary"><strong>' + e(d.summary) + '</strong><span>初筛 ' + e(d.reviewedAt) + ' · 五年视角 · 可能性为定性判断</span></div><section class="card"><div class="table-caption stock-table-caption"><span><b>' + rows.length + '</b> / ' + pool.length + ' 家初筛</span><span>研究优先级与十倍可能性分别判断</span></div><div class="table-wrap stock-table-wrap" tabindex="0" role="region" aria-label="行业初筛公司表，可横向滚动"><table class="research-table stock-table potential-screen-table"><thead><tr><th>公司</th><th>公司做什么</th><th>利润增长靠什么</th><th>五年十倍可能性</th><th>股价快照 / 美元</th><th>研究优先级</th></tr></thead><tbody>' + rows.map(c => '<tr data-stock-row="' + e(c.id) + '"><td class="stock-identity"><span class="stock-name">' + H.action(e(c.name),'potential-screen-detail','text-link','data-value="' + e(c.id) + '" aria-label="查看' + e(c.name) + '公司与机会"') + '</span>' + sub(c.id + ' · ' + d.sectors.find(s=>s.id===c.sector).name) + '</td><td>' + e(c.businessBrief) + '</td><td>' + e(c.profitBrief) + '</td><td><strong class="potential-possibility">' + e(c.tenfold) + '</strong>' + e(c.judgment) + '</td><td class="potential-screen-price">' + n(c.quote.priceUsd, Number.isInteger(c.quote.priceUsd * 100) ? 2 : 3) + sub('10月16日 · 盘后') + '</td><td><span class="potential-status ' + (c.selected ? 'priority' : '') + '">' + e(c.priority) + '</span>' + sub(c.selected ? '进入下一轮' : '本轮暂不深入') + '</td></tr>').join('') + (!rows.length ? '<tr><td colspan="6"><div class="empty">当前条件没有匹配公司。' + H.action('清除筛选','potential-reset','text-link') + '</div></td></tr>' : '') + '</tbody></table></div>' + history + '</section></div>';
+  }
+  function screeningDetail(id) {
+    const d = screening(), c = d?.companies.find(c => c.id === id);
+    if (!c) return;
+    const sector = d.sectors.find(s => s.id === c.sector);
+    const section = (title, body) => '<section><h3>' + title + '</h3>' + body + '</section>';
+    const body = section('公司做什么', paragraphs([c.business])) + section('机会为什么出现', paragraphs([c.opportunity]) + screeningSources(c.sources.filter(id => id !== 'screen-quotes'))) + section('利润如何放大', paragraphs([c.profitMechanism])) + section('当前判断', '<p class="potential-lead">五年十倍可能性：' + e(c.tenfold) + ' · 研究优先级：' + e(c.priority) + '</p>' + paragraphs([c.judgment,c.startingValue]) + '<p class="small">股价 ' + n(c.quote.priceUsd, Number.isInteger(c.quote.priceUsd * 100) ? 2 : 3) + ' 美元 · ' + e(c.quote.tradeTimeUtc) + '（UTC，盘后）</p>' + '<details class="potential-method"><summary>估值与股本口径</summary>' + paragraphs([c.capitalBasis,d.priceBasis]) + screeningSources(['screen-quotes']) + '</details>') + section('关键风险与依据', list(c.risks) + c.facts.map(f => '<p><strong>' + e(f.label) + '</strong><br>' + e(f.text) + screeningSources(f.sources) + '</p>').join('')) + section('本轮已检验：' + e(c.check.question), paragraphs([c.check.answer]) + screeningSources(c.check.sources)) + section('什么会改变判断', '<p><strong>上调：</strong>' + e(c.upgrade) + '</p><p><strong>下调：</strong>' + e(c.downgrade) + '</p>') + section(c.selected ? '下一轮研究重点' : '本轮取舍', paragraphs([c.nextQuestion])) + '<details class="potential-method"><summary>原始来源与定位</summary><ul class="potential-sources">' + [...new Set(c.sources)].map(id => { const s=d.sources.find(s=>s.id===id); return '<li>' + screeningSources([id]) + '<span>' + e(s.publishedAt + ' · ' + s.locator) + '</span></li>'; }).join('') + '</ul></details>';
+    H.openModal('<div class="potential-detail potential-screen-detail">' + H.modalTitle(e(c.name) + ' · ' + e(c.id), '初筛 ' + e(d.reviewedAt) + ' · ' + e(sector.name)) + body + '</div>');
+  }
   function view(helpers) {
     H = helpers;
     if (H.market && state.market !== H.market) { state.market = H.market; state.sector = 'all'; state.sort = 'default'; state.descending = true; }
+    if (screening() && !state.legacy) return screeningView();
     const d = data(), pool = d.companies.filter(c => c.market === state.market), rows = M.select(d.companies, state);
     const sectors = [...new Set(pool.map(c => c.sector))];
     const filters = '<div class="stock-category-filter" role="group" aria-label="潜力公司行业">' + [['all', '全部行业'], ...sectors.map(s => [s, s])].map(([id, label]) => H.action(e(label), 'potential-sector', 'filter-chip' + (state.sector === id ? ' active' : ''), 'data-value="' + e(id) + '" aria-pressed="' + (state.sector === id) + '"')).join('') + '</div>' + '<div class="stock-controls"><div class="filters"><input type="search" id="potential-search" aria-label="搜索公司、代码或业务" placeholder="搜索公司、代码或业务" value="' + e(state.query) + '"></div><div class="segmented stock-scope" aria-label="研究优先级">' + [['all', '全部候选'], ['priority', '重点跟踪'], ['watch', '边界观察']].map(([id, label]) => H.action(label, 'potential-status', state.status === id ? 'active' : '', 'data-value="' + id + '" aria-pressed="' + (state.status === id) + '"')).join('') + '</div></div>';
@@ -255,7 +285,7 @@
       cells = c => ['bear', 'base', 'bull'].map(id => returnCell(c, id)).join('') + '<td class="potential-range-cell">' + scenarioRange(c) + '</td>';
     }
     const foot = state.view === 'financials' ? '财务截至2026-06-30；财报中的事实与研究假设在公司详情中分开。' : state.view === 'valuation' ? '股本与报价各自记录日期；增长锚点为2026全年指引或研究假设，详见公司情景。' : '2026-10-16 → 2031-10-16 · 股票价格收益；分红按税前现金持有、不再投资。未扣税费及汇兑。';
-    return '<div class="potential-page">' + filters + '<div class="potential-warning"><strong>十倍尚未获证据支持</strong><span>经营情景与十倍门槛分开看；具体缺项见各公司判断。</span></div>' + '<section class="card"><div class="table-caption stock-table-caption"><span><b>' + rows.length + '</b> / ' + pool.length + ' 家候选 · 研究 ' + e(d.reviewedAt) + ' · 修订' + d.revision + '</span>' + views + (state.sort !== 'default' ? '<span class="stock-sort-status">按' + e(sortNames[state.sort]) + (state.descending ? '降序' : '升序') + H.action('恢复默认', 'potential-sort-reset', 'text-link small') + '</span>' : '') + '</div>' + (state.view === 'returns' ? '<div class="potential-return-controls"><span>未来五年 · 情景假设</span>' + H.annualControl() + '</div>' : '') + '<div class="table-wrap stock-table-wrap potential-table-wrap" tabindex="0" role="region" aria-label="潜力研究表，可横向滚动"><table class="research-table stock-table potential-table potential-' + state.view + '-table"><thead><tr><th>公司 / 主营业务</th>' + headers + '</tr></thead><tbody>' + rows.map(c => '<tr data-stock-row="' + e(c.id) + '">' + identity(c) + cells(c) + '</tr>').join('') + (!rows.length ? '<tr><td colspan="' + count + '"><div class="empty">当前条件没有匹配公司。' + H.action('清除筛选', 'potential-reset', 'text-link') + '</div></td></tr>' : '') + '</tbody></table></div><div class="panel-foot">' + e(foot) + '</div></section>' + comparisonEntry() + '</div>';
+    return '<div class="potential-page">' + (screening() ? '<div class="potential-screen-history"><strong>此前研究 · ' + e(d.reviewedAt) + '</strong>' + H.action('返回本轮初筛','potential-current','text-link') + '</div>' : '') + filters + '<div class="potential-warning"><strong>十倍尚未获证据支持</strong><span>经营情景与十倍门槛分开看；具体缺项见各公司判断。</span></div>' + '<section class="card"><div class="table-caption stock-table-caption"><span><b>' + rows.length + '</b> / ' + pool.length + ' 家候选 · 研究 ' + e(d.reviewedAt) + ' · 修订' + d.revision + '</span>' + views + (state.sort !== 'default' ? '<span class="stock-sort-status">按' + e(sortNames[state.sort]) + (state.descending ? '降序' : '升序') + H.action('恢复默认', 'potential-sort-reset', 'text-link small') + '</span>' : '') + '</div>' + (state.view === 'returns' ? '<div class="potential-return-controls"><span>未来五年 · 情景假设</span>' + H.annualControl() + '</div>' : '') + '<div class="table-wrap stock-table-wrap potential-table-wrap" tabindex="0" role="region" aria-label="潜力研究表，可横向滚动"><table class="research-table stock-table potential-table potential-' + state.view + '-table"><thead><tr><th>公司 / 主营业务</th>' + headers + '</tr></thead><tbody>' + rows.map(c => '<tr data-stock-row="' + e(c.id) + '">' + identity(c) + cells(c) + '</tr>').join('') + (!rows.length ? '<tr><td colspan="' + count + '"><div class="empty">当前条件没有匹配公司。' + H.action('清除筛选', 'potential-reset', 'text-link') + '</div></td></tr>' : '') + '</tbody></table></div><div class="panel-foot">' + e(foot) + '</div></section>' + comparisonEntry() + '</div>';
   }
   function judgment(c) {
     return '<section><h3>研究判断</h3><p class="potential-lead">' + e(c.decision) + '</p>' + paragraphs(c.thesis) + '</section><div class="potential-detail-columns"><section><h3>已验证事实</h3>' + c.facts.map(f => '<p>' + e(f.text) + sourceLinks(f.sources) + '</p>').join('') + '</section><section><h3>管理层指引</h3>' + (c.guidance.length ? c.guidance.map(g => '<p>' + e(g.text) + sourceLinks(g.sources) + '</p>').join('') : '<p>未将未核实的全年经营目标设为公司指引。</p>') + '<h3>单位经济与竞争</h3><p>' + e(c.economics) + '</p></section></div>' + profitEvidence(c) + cashEvidence(c) + batteryCashEvidence(c) + medicalEvidence(c) + diagnosticEvidence(c) + sensingEvidence(c) + dataServiceEvidence(c) + '<section><h3>管理层与资本配置</h3><p>' + e(c.management) + '</p><h3>融资与现金承受能力</h3><p>' + e(c.funding) + sourceLinks(c.fundingSources) + '</p></section><section><h3>为什么没有优先选常见替代</h3>' + c.alternatives.map(a => '<p><strong>' + e(a.name) + '</strong> — ' + e(a.reason) + sourceLinks(a.sources) + '</p>').join('') + '</section>';
@@ -279,11 +309,17 @@
   }
   function method() {
     const process = data().researchProcess;
+    const current = screening() && !state.legacy;
     const workflow = process ? '<p class="potential-lead">' + e(process.objective) + '</p><ol class="potential-milestones">' + process.stages.map(s => '<li><strong>' + e(s.title) + '</strong><p>' + e(s.body) + '</p></li>').join('') + '</ol><p>' + e(process.history) + '</p><h3>每家公司先讲清楚什么</h3><p>' + e(process.companyReadingOrder) + '</p><p>' + e(process.reset) + '</p>' : '';
-    H.openModal('<div class="potential-detail">' + H.modalTitle('潜力研究口径', process ? '方法确认于 ' + e(process.confirmedAt) : '研究版本 ' + e(data().reviewedAt)) + workflow + '<details class="potential-method"><summary>估值与数据口径</summary>' + paragraphs(Object.values(data().method)) + '</details><p><a href="docs/research/potential-stocks-2026-10-18.md" download>下载完整研究</a> · <a href="data/potential-stocks.json" download>研究数据 JSON</a> · <a href="data/potential-quotes.json" download>报价记录 JSON</a></p></div>');
+    H.openModal('<div class="potential-detail">' + H.modalTitle('潜力研究口径', process ? '方法确认于 ' + e(process.confirmedAt) : '研究版本 ' + e(data().reviewedAt)) + workflow + (screening() ? paragraphs([screening().profitPrinciple,screening().historyLesson,screening().judgmentBasis]) : '') + '<details class="potential-method"><summary>此前情景的估值与数据口径</summary>' + paragraphs(Object.values(data().method)) + '</details><p><a href="' + e(reportPath()) + '" download>下载当前研究</a> · <a href="data/' + (current ? 'potential-screening' : 'potential-stocks') + '.json" download>研究数据 JSON</a> · <a href="' + (current ? e(screening().quotePath) : 'data/potential-quotes.json') + '" download>报价记录 JSON</a></p></div>');
   }
   function handleAction(button) {
     const act = button.dataset.action, value = button.dataset.value;
+    if (act === 'potential-screen-detail') { screeningDetail(value); return; }
+    if (act === 'potential-history' || act === 'potential-current') {
+      Object.assign(state, { legacy: act === 'potential-history', status: 'all', sector: 'all', query: '', sort: 'default', descending: true });
+      H.render(); return;
+    }
     if (act === 'potential-detail') { detail(value); return; }
     if (act === 'potential-detail-tab') {
       detail(state.company, value);
@@ -302,5 +338,5 @@
     H.render();
   }
   function handleInput(input) { state.query = input.value; }
-  root.ChanghengPotential = { view, handleAction, handleInput };
+  root.ChanghengPotential = { view, handleAction, handleInput, companies, reportPath };
 })(window);

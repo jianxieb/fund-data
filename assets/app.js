@@ -565,10 +565,10 @@
     return window.ChanghengPotential.view({ esc, money, pct, pc, action, modalTitle, openModal, render, renderStockView, annualControl, annual: state.annual, market: state.stockMarket });
   }
   function stockActions() {
-    return state.stockPotential ? '<a class="btn sm" href="docs/research/potential-stocks-2026-10-18.md" download>下载研究</a>' + action('研究口径', 'potential-method', 'btn sm') : '<a class="btn sm" href="#reports">研究报告</a>' + action('入选标准', 'stock-rules', 'btn sm');
+    return state.stockPotential ? '<a class="btn sm" href="' + esc(window.ChanghengPotential.reportPath()) + '" download>下载研究</a>' + action('研究口径', 'potential-method', 'btn sm') : '<a class="btn sm" href="#reports">研究报告</a>' + action('入选标准', 'stock-rules', 'btn sm');
   }
   function stockMarkets() {
-    const count = market => new Set([...(market === 'us' ? window.OVERSEAS_STOCKS || [] : window.STOCKS || []).map(s => s.symbol || s.c), ...(window.POTENTIAL_RESEARCH?.companies || []).filter(c => c.market === market).map(c => c.id)]).size;
+    const count = market => new Set([...(market === 'us' ? window.OVERSEAS_STOCKS || [] : window.STOCKS || []).map(s => s.symbol || s.c), ...(window.ChanghengPotential?.companies() || window.POTENTIAL_RESEARCH?.companies || []).filter(c => c.market === market).map(c => c.id)]).size;
     return '<div class="stock-market-nav" role="group" aria-label="个股市场">' + [['us', '美股', count('us')], ['cn', 'A股', count('cn')]].map(([id, label, total]) => action('<strong>' + label + '</strong><span>' + total + ' 家</span>', 'stock-market', 'stock-market-choice' + (state.stockMarket === id ? ' active' : ''), 'data-value="' + id + '" aria-pressed="' + (state.stockMarket === id) + '"')).join('') + '<span class="stock-market-context">' + (state.stockMarket === 'cn' ? 'A股 · 人民币' : '美股与ADR · 美元') + '</span>' + '</div>';
   }
   function stocks() {
@@ -582,7 +582,7 @@
     const groups = [['quality', '长期优质企业'], ['growth', '盈利成长企业'], ['breakout', '业绩爆发股'], ['dividend', '红利价值'], ['potential', '潜力研究']];
     const activeGroup = state.stockPotential ? 'potential' : state.stockTab;
     const tabs = '<div class="tabs stock-tabs" role="tablist" aria-label="个股研究分组">' + groups.map(([id, label]) => {
-      const count = id === 'potential' ? (window.POTENTIAL_RESEARCH?.companies || []).filter(c => c.market === 'cn').length : all.filter(s => stockPass(s, id) && (!state.hideGrowthBoards || M.stockBoard(s.c) === 'main')).length;
+      const count = id === 'potential' ? (window.ChanghengPotential?.companies() || window.POTENTIAL_RESEARCH?.companies || []).filter(c => c.market === 'cn').length : all.filter(s => stockPass(s, id) && (!state.hideGrowthBoards || M.stockBoard(s.c) === 'main')).length;
       return action(label + '<span class="tab-count">' + count + '</span>', 'stock-tab', activeGroup === id ? 'active' : '', 'data-value="' + id + '" role="tab" aria-selected="' + (activeGroup === id) + '"');
     }).join('') + '</div>';
     if (state.stockPotential) return head('STOCK WATCHLIST', '个股深入', '从经营路径出发，检验未来五年每股价值的上限与代价。', stockActions()) + stockMarkets() + tabs + potential();

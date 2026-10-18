@@ -45,7 +45,7 @@
     const mode = state.view;
     const activeGroup = H.potentialActive ? 'potential' : state.group;
     const tabs = '<div class="tabs stock-tabs" role="tablist" aria-label="美股研究分组">' + groups.map(([id, label]) => {
-      const count = id === 'potential' ? (root.POTENTIAL_RESEARCH?.companies || []).filter(c => c.market === 'us').length : all.filter(s => s.screening.groups.includes(id)).length;
+      const count = id === 'potential' ? (root.ChanghengPotential?.companies() || root.POTENTIAL_RESEARCH?.companies || []).filter(c => c.market === 'us').length : all.filter(s => s.screening.groups.includes(id)).length;
       return H.action(label + '<span class="tab-count">' + count + '</span>', 'os-stock-group', activeGroup === id ? 'active' : '', 'data-value="' + id + '" role="tab" aria-selected="' + (activeGroup === id) + '"');
     }).join('') + '</div>';
     if (H.potentialActive) return tabs + H.potentialView();

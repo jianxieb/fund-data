@@ -1,0 +1,13 @@
+{
+  "retrievedAt": "2026-10-19",
+  "source": "web.finance tool snapshot",
+  "basis": "美元行情快照；交易时间均为2026-10-16美股盘后，不是常规交易收盘。marketCapUsd为行情工具返回的市值，股本口径与价格时点可能不同，不作为完全摊薄股权价值。",
+  "quotes": [
+    { "symbol": "CRDO", "priceUsd": 169.7, "marketCapUsd": 32985946600, "tradeTimeUtc": "2026-10-16T23:58:29Z" },
+    { "symbol": "ALAB", "priceUsd": 285.82, "marketCapUsd": 52402238800, "tradeTimeUtc": "2026-10-16T23:38:34Z" },
+    { "symbol": "PL", "priceUsd": 13.56, "marketCapUsd": 4876095345, "tradeTimeUtc": "2026-10-16T23:59:05Z" },
+    { "symbol": "ASTS", "priceUsd": 40.66, "marketCapUsd": 12159847177, "tradeTimeUtc": "2026-10-16T23:46:28Z" },
+    { "symbol": "AUR", "priceUsd": 4.855, "marketCapUsd": 9593480000, "tradeTimeUtc": "2026-10-16T23:27:11Z" },
+    { "symbol": "SERV", "priceUsd": 3.23, "marketCapUsd": 259403183, "tradeTimeUtc": "2026-10-16T22:59:22Z" }
+  ]
+}
