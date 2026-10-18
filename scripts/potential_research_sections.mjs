@@ -9,6 +9,23 @@ const range = values => values ? values.map(v => n(v)).join('–') : '亏损，�
 export function researchSections(c) {
   const r = c.research;
   if (!r) return [];
+  // Withdrawn inputs are retained for accountability, but must never produce
+  // an earnings forecast or valuation table in the product or its export.
+  if (r.modelStatus === 'withdrawn') {
+    const review = r.evidenceReview;
+    const covered = new Set(review.assumptions.flatMap(a => a.inputs));
+    const required = [...new Set(r.cases.flatMap(s => Object.keys(s).filter(k => !['id', 'label', 'story'].includes(k)))), ...Object.keys(r.capital).map(k => 'capital.' + k)];
+    for (const key of required) if (!covered.has(key)) throw new Error(c.id + ': missing input evidence review for ' + key);
+    if (review.assumptions.some(a => !a.evidence || !a.gap || !a.sources?.length)) throw new Error(c.id + ': incomplete input evidence review');
+    return [
+      { title: '原盈利预测已撤回', paragraphs: [review.summary] },
+      ...review.sections,
+      { title: '原利润输入及依据（逐项）', collapsed: true, paragraphs: ['保留原数值以说明撤回原因；这些输入不再生成利润、股价或十倍回报结论。已披露事实与未证实假设分别列明。'],
+        headers: ['原输入（已撤回）', '已知事实', '采用该数字还缺什么', '来源'],
+        rows: review.assumptions.map(a => [a.label + '：' + a.prior, a.evidence, a.gap]), rowSources: review.assumptions.map(a => a.sources), proseTable: true },
+      { title: '重新估算需要的依据', paragraphs: review.reopenBasis }
+    ];
+  }
   const cases = r.cases, results = cases.map(s => M.researchProjection(c, s));
   const shared = r.kind === 'shared_drug';
   const k = r.capital, main = M.researchCapital(k);

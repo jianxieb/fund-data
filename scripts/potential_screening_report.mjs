@@ -16,7 +16,7 @@ export function screeningReport(data, process) {
     for (const f of c.facts) md += `**${f.label}**：${f.text} ${refs(f.sources)}\n\n`;
     for (const s of c.research?.sections || []) {
       md += `### ${s.title}\n\n` + s.paragraphs.join('\n\n') + '\n\n';
-      if (s.headers) md += '| ' + s.headers.join(' | ') + ' |\n| ' + s.headers.map(() => '---').join(' | ') + ' |\n' + s.rows.map(row => '| ' + row.join(' | ') + ' |').join('\n') + '\n\n';
+      if (s.headers) md += '| ' + s.headers.join(' | ') + ' |\n| ' + s.headers.map(() => '---').join(' | ') + ' |\n' + s.rows.map((row, i) => '| ' + [...row, ...(s.rowSources ? [refs(s.rowSources[i])] : [])].join(' | ') + ' |').join('\n') + '\n\n';
       if (s.notes) md += s.notes.map(t => '- ' + t).join('\n') + '\n\n';
       if (s.sources) md += refs(s.sources) + '\n\n';
     }

@@ -22,7 +22,10 @@ for (const c of screening.companies) {
   c.quote = screeningQuotes.quotes.find(q => q.symbol === c.id);
   if (!c.quote || !Number.isFinite(c.quote.priceUsd)) throw new Error('Missing screening quote: ' + c.id);
   if (c.research) c.research.sections = researchSections(c);
-  for (const id of new Set([...c.sources, ...c.facts.flatMap(f => f.sources), ...c.check.sources])) {
+  for (const section of c.research?.sections || []) {
+    if (section.rowSources && (section.rowSources.length !== section.rows.length || section.rows.some(row => row.length + 1 !== section.headers.length))) throw new Error('Mismatched evidence rows: ' + c.id);
+  }
+  for (const id of new Set([...c.sources, ...c.facts.flatMap(f => f.sources), ...c.check.sources, ...(c.research?.sections || []).flatMap(s => [...(s.sources || []), ...(s.rowSources || []).flat()])])) {
     if (!screening.sources.some(s => s.id === id)) throw new Error('Missing research source: ' + id);
   }
 }
@@ -272,4 +275,4 @@ for (const [file, text] of outputs) {
     if (readFileSync(resolve(root, file), 'utf8') !== text) throw new Error(file + ' 与研究数据不同步');
   } else writeFileSync(resolve(root, file), text);
 }
-console.log(`潜力研究：${screening.companies.length}家研究记录、${screening.companies.filter(c => c.research).length}份完整研究，页面数据与研究文档${process.argv.includes('--check') ? '一致' : '已生成'}`);
+console.log(`潜力研究：${screening.companies.length}家研究记录、${screening.companies.filter(c => c.research).length}份公司详析，页面数据与研究文档${process.argv.includes('--check') ? '一致' : '已生成'}`);

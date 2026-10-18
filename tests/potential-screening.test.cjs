@@ -50,10 +50,11 @@ test('industry, priority and business search combine and clearing restores the s
   assert.deepEqual(rowIds(f.html),['ASTS']);
   f.click('potential-reset');
   f.click('potential-status','priority');
-  assert.deepEqual(rowIds(f.html),['VKTX','KURA']);
+  assert.deepEqual(rowIds(f.html),[]);
+  assert.match(f.html,/本轮暂无保留候选/);
   f.click('potential-status','watch');
-  assert.equal(rowIds(f.html).length,25);
-  assert.ok(!rowIds(f.html).includes('VKTX'));
+  assert.equal(rowIds(f.html).length,27);
+  assert.ok(rowIds(f.html).includes('VKTX'));
   assert.ok(rowIds(f.html).includes('PL'));
   f.api.handleInput({value:'no such business'});f.H.render();
   assert.match(f.html,/当前条件没有匹配公司/);
@@ -111,25 +112,33 @@ test('screen escapes source text and exports the same evidence and price time ba
 });
 
 
-test('completed research and exclusions are visible without reviving prior priority', () => {
+test('withdrawn forecasts cannot remain investment priorities or appear in product and report', () => {
   const f=fixture();
   assert.equal(f.screen.newScreenCount,21);
   assert.deepEqual(Array.from(f.screen.companies.filter(c=>c.research), c=>c.id),['VKTX','KURA']);
   for (const id of ['PL','ASTS','AUR','BKSY','ARDX']) assert.equal(f.screen.companies.find(c=>c.id===id).selected,false);
   for (const id of ['VKTX','KURA']) {
     f.click('potential-screen-detail',id);
-    assert.match(f.modal,/2031年条件情景/);
-    assert.match(f.modal,/销量、费用与利润的计算依据/);
-    assert.match(f.modal,/融资与每股分母/);
-    assert.match(f.modal,/上述三项同时发生/);
-    assert.match(f.modal,/全部是研究假设/);
+    assert.match(f.modal,/原盈利预测已撤回/);
+    assert.match(f.modal,/原利润输入及依据（逐项）/);
+    assert.match(f.modal,/重新估算需要的依据/);
+    assert.doesNotMatch(f.modal,/2031年条件情景|PE假设区间|股价倍数<\/th>|份完整研究/);
     assert.doesNotMatch(f.modal,/进入下一轮|下一轮研究重点/);
     const c=f.screen.companies.find(c=>c.id===id);
+    assert.equal(c.selected,false);
+    assert.equal(c.research.modelStatus,'withdrawn');
     const md=fs.readFileSync(f.screen.reportPath,'utf8');
+    assert.doesNotMatch(md,/### 2031年条件情景|\| PE假设区间 \|/);
     for (const section of c.research.sections) {
-      for (const row of section.rows) for (const cell of row) {
+      for (const row of section.rows || []) for (const cell of row) {
         assert.ok(f.modal.includes(f.H.esc(cell)));
         assert.ok(md.includes(cell));
+      }
+      for (const sourceIds of section.rowSources || []) for (const sourceId of sourceIds) {
+        const source=f.screen.sources.find(s=>s.id===sourceId);
+        assert.ok(source,sourceId);
+        assert.ok(f.modal.includes(f.H.esc(source.url)));
+        assert.ok(md.includes(source.url));
       }
     }
   }
@@ -138,4 +147,23 @@ test('completed research and exclusions are visible without reviving prior prior
   assert.match(f.modal,/海外提成/);
   f.click('potential-screen-detail','VKTX');
   assert.match(f.modal,/治疗中止率28%/);
+  assert.match(f.modal,/24.5%/);
+  assert.match(f.modal,/449美元\/28天/);
+  assert.match(f.modal,/不证明有人这样付满一年/);
+  assert.match(f.modal,/50美元\/月/);
+});
+
+test('withdrawal bypasses valuation and requires evidence review for every operating and capital input', async () => {
+  const {researchSections}=await import('../scripts/potential_research_sections.mjs');
+  const c=structuredClone(require('../data/potential-screening.json').companies.find(c=>c.id==='VKTX'));
+  // With no quote or a usable issuance price, an active projection would fail.
+  // A withdrawn case must still show its evidence without calculating prices.
+  c.research.capital.issuePrice=0;
+  const sections=researchSections(c);
+  assert.equal(sections[0].title,'原盈利预测已撤回');
+  c.research.cases[0].unexplainedForecast=1000000;
+  assert.throws(()=>researchSections(c),/missing input evidence review for unexplainedForecast/);
+  delete c.research.cases[0].unexplainedForecast;
+  c.research.evidenceReview.assumptions[0].sources=[];
+  assert.throws(()=>researchSections(c),/incomplete input evidence review/);
 });

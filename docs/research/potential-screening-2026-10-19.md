@@ -1,10 +1,10 @@
 # 行业筛选与公司研究 · 2026-10-19
 
-新筛21家，完成Viking与Kura两份研究；BlackSky退出优先名单。两家保留候选均依赖临床和商业兑现，尚不能判断为高概率十倍股。
+新增21家，本轮暂无保留候选。Viking、Kura的付费销量、净价与费用假设缺少依据，已撤回优先级及原回报测算。
 
 本批新增21家，覆盖新疗法、核燃料、卫星情报、军用无人机、电池、数据中心和金融服务。先筛掉增长、价格、融资或权利归属过不了关的候选；此前6家保留取舍记录，均不再优先。
 
-从2026-10-16报价起，考察未来五年每股价值。优先级由行业利润空间、公司能留下的利润、当前起价及失败代价共同决定。有条件意味着路径成立仍需关键证据；不是统计概率。只有强经营情景配合较高估值才能十倍的公司，明确标为非高概率，不以题材或低市值替代判断。
+从2026-10-16报价起，考察未来五年每股价值。先判断行业变化能否形成可持续利润，再判断公司靠什么取得份额。候选排序必须有支付、竞争、单位利润与资本需求的证据；能用一组数字算出十倍，不构成优先研究的理由。证据不足时撤回预测，保留明确的缺口与重开条件。
 
 ## 已确认的方法
 
@@ -50,15 +50,15 @@ ATRI报告2025年卡车平均运营成本每英里2.336美元；这不是全部�
 
 [ATRI 2026卡车运营成本研究摘要](https://truckingresearch.org/2026/07/new-atri-report-details-accelerating-costs-and-low-profitability-despite-cuts/)；[Aurora 2026投资者日公告（8-K附件）](https://ir.aurora.tech/sec-filings/all-sec-filings/content/0001828108-26-000082/businesswire-aurora2026ana.htm)；[Serve Robotics 2026 Q2业绩公告](https://investors.serverobotics.com/news-releases/news-release-details/serve-robotics-announces-second-quarter-2026-results)
 
-### 新疗法与诊疗 · 本批保留减重药与白血病药
+### 新疗法与诊疗 · 需求存在，尚无通过商业筛选的候选
 
-机会来自有效疗法让更多人开始并持续接受治疗，或把末线用药推进到更早阶段；不需要患病人口增长十倍。
+新疗法可以扩大治疗渗透或推进到更早用药阶段，但要先分清谁支付、持续多久，以及竞争后谁能留下利润。
 
-专利药的研发和销售费用可被更大销量摊薄，但临床失败、医保压价和合作方分成会截断利润。器官移植还需区别服务与设备资本。
+研发投入可被销量摊薄，但停药、净价下降、持续开发费用和合作分成会截断利润增长。临床事件带来的股价上涨不能代替可持续每股盈利。
 
-Lilly减重药已有实收销售；FDA已批准Kura的窄适应症。行业需求存在，不代表Viking获批或Kura一线扩展已经成功。
+减重药已有实际使用与支付，但真实世界持续率和自付负担限制患者年；Kura已有小规模销售，尚不足以支撑原一线扩展假设。两家均撤回优先级。
 
-[Lilly 2026 Q2业绩](https://investor.lilly.com/news-releases/news-release-details/lilly-reports-second-quarter-2026-financial-results-raises-full)；[FDA：ziftomenib获批范围](https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-ziftomenib-relapsed-or-refractory-acute-myeloid-leukemia-npm1-mutation)；[Kyowa Kirin：ziftomenib全球合作](https://www.kkna.kyowakirin.com/media-center/kura-oncology-and-kyowa-kirin-announce-global-strategic-collaboration-to-develop-and-commercialize-ziftomenib-in-acute-leukemias/)
+[KFF：使用目的与支付负担调查](https://www.kff.org/public-opinion/kff-health-tracking-poll-prescription-drug-costs-views-on-trump-administration-actions-and-glp-1-use/)；[JAMA：12个月持续用药研究](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2846157)；[Kura 2026 Q2财报](https://ir.kuraoncology.com/node/13671)
 
 ### 核燃料供应 · 需求明确，五年投产与回报约束更强
 
@@ -114,8 +114,8 @@ Axcelis Q2营业利润率下降；Bel Fuse收入增加、GAAP净利略降，且�
 
 | 公司 | 五年十倍可能性 | 研究优先级 | 研究阶段 | 判断 |
 | --- | --- | --- | --- | --- |
-| Viking Therapeutics VKTX | 有条件 · 非高概率 | 优先跟踪 | 完整研究 | 本批第一优先。约29亿美元起价对比潜在新药利润池，有可讨论的十倍路径；仍须三期成功、获批、付费渗透及融资同时过关。 |
-| Kura Oncology KURA | 有条件 · 强兑现才接近 | 次优先跟踪 | 完整研究 | 约8亿美元起价，已有窄适应症销售，比纯临床资产多一层证据。十倍仍需一线扩展和较长用药时间，并保有较高估值；排在Viking之后，不能称高概率。 |
+| Viking Therapeutics VKTX | 十倍依据不足 | 撤回优先级 | 付费销量、净价与费用缺依据 | 目前不支持把Viking列为优先十倍候选。100万患者年、每年净收入5000美元和75%毛利均未建立公司层面的依据，原利润与回报测算已撤回。临床成功也不自动证明持续付费、渠道准入或份额。 |
+| Kura Oncology KURA | 十倍依据不足 | 撤回优先级 | 付费销量、净价与费用缺依据 | 撤回次优先结论。已获批窄适应症并有销售，但2500／7000患者年、20万美元年净价及未来费用不能由现有披露推出；原盈利和十倍回报测算停止使用。不是所有药企都只有一波行情，但此公司的长期利润路径尚未证明。 |
 | BlackSky BKSY | 低 | 低 | 排除结论 | 从新候选中退出优先。真实订阅机会存在，但现有现金流和资本要求不支持把它按轻资产软件估值。 |
 | Red Cat RCAT | 低 | 低 | 初筛止步 | 增长尚未转化成足够的单机利润，资本消耗很重；低市值不等于高十倍可能性。 |
 | Centrus Energy LEU | 低 | 低 | 初筛止步 | 需求有依据，但五年窗口内建设和资金负担大，不能把远期订单积压算成2031年利润。 |
@@ -150,21 +150,21 @@ Viking是一家研发药物的公司，当前核心资产VK2735同时作用于GL
 
 ### 机会为什么出现
 
-不是让肥胖人数增长十倍，而是让原本未接受药物治疗的人开始治疗，并用更合适的给药方式提高持续使用率。口服剂型和减少维持期注射次数有产品差异化可能。Lilly的Zepbound已有单季约49亿美元销售，证明付费市场存在；它也是强竞争者，不能把整个市场归给Viking。
+减重药已有实际使用者，口服和较少注射次数可能降低使用门槛。Viking的机会取决于能否形成足以让医生、患者和支付方换药的优势；目前没有真实付费和长期留存证据，短期试验不能证明这种优势。
 
 ### 利润如何放大
 
-如果获批且商业化成功，药物知识产权可覆盖更大的销量，单个患者不需要重新做一遍研发。制造、返利、营销仍会随销量增加；只有净价和制造毛利留下足够贡献，才能覆盖持续研发、销售队伍及股权薪酬。这里从患者年数和实收价格出发，费用单独扣除，不给亏损基数套利润增长倍数。
+可持续收入应从Viking各支付渠道的获付治疗时长及药企实收净价推算，扣除制造、渠道和持续开发费用，再计融资稀释。肥胖人口、处方张数和竞争药销售都不能直接变成Viking患者年；现有证据不足以给出可信的盈利区间。
 
 ### 当前判断
 
-**五年十倍可能性：有条件 · 非高概率；研究优先级：优先跟踪。** 本批第一优先。约29亿美元起价对比潜在新药利润池，有可讨论的十倍路径；仍须三期成功、获批、付费渗透及融资同时过关。
+**五年十倍可能性：十倍依据不足；研究优先级：撤回优先级。** 目前不支持把Viking列为优先十倍候选。100万患者年、每年净收入5000美元和75%毛利均未建立公司层面的依据，原利润与回报测算已撤回。临床成功也不自动证明持续付费、渠道准入或份额。
 
 股价25.17美元，行情市值约29.26亿美元。用7月15日披露的1.1665亿股乘此价格，静态约29.36亿美元；差异来自股本口径。未来分母还包括激励和上市前融资，不能按当前市值十倍直接算每股十倍。
 
-股价快照：25.17美元，UTC 2026-10-16T23:39:48Z（盘后）。7月15日116.652937百万股。另计6月底RSU 1.813501百万股及期权5.990015百万股；已发行且可回购的0.030211百万股不再重复加入。模型忽略期权行权收入，并另列未来激励与融资压力。
+股价快照：25.17美元，UTC 2026-10-16T23:39:48Z（盘后）。7月15日116.652937百万股；6月底RSU 1.813501百万股、期权5.990015百万股。已发行且可回购的0.030211百万股不重复加入。披露股数是有日期的事实，原未来激励和融资设定已撤回，不能据此确定2031年股数。
 
-[Viking 2026 Q2财报](https://ir.vikingtherapeutics.com/2026-07-29-Viking-Therapeutics-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Corporate-Update)；[Viking 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1607678/000119312526324219/vktx-20260630.htm)；[Viking口服三期启动公告](https://ir.vikingtherapeutics.com/2026-10-14-Viking-Therapeutics-Announces-Initiation-of-VK2735-Oral-Phase-3-Clinical-Program-in-Patients-with-Obesity)；[Viking维持治疗研究结果](https://ir.vikingtherapeutics.com/2026-09-22-Viking-Therapeutics-Announces-Positive-Topline-Results-from-Maintenance-Study-of-GLP-1-GIP-Agonist-VK2735-Demonstrating-the-Promise-of-Multiple-Maintenance-Dosing-Regimens)；[Lilly 2026 Q2业绩](https://investor.lilly.com/news-releases/news-release-details/lilly-reports-second-quarter-2026-financial-results-raises-full)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)；[Viking：口服二期完整结果](https://ir.vikingtherapeutics.com/2025-08-19-Viking-Therapeutics-Announces-Positive-Top-Line-Results-from-Phase-2-VENTURE-Oral-Dosing-Trial-of-VK2735-Tablet-Formulation-in-Patients-with-Obesity)
+[Viking 2026 Q2财报](https://ir.vikingtherapeutics.com/2026-07-29-Viking-Therapeutics-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Corporate-Update)；[Viking 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1607678/000119312526324219/vktx-20260630.htm)；[Viking口服三期启动公告](https://ir.vikingtherapeutics.com/2026-10-14-Viking-Therapeutics-Announces-Initiation-of-VK2735-Oral-Phase-3-Clinical-Program-in-Patients-with-Obesity)；[Viking维持治疗研究结果](https://ir.vikingtherapeutics.com/2026-09-22-Viking-Therapeutics-Announces-Positive-Topline-Results-from-Maintenance-Study-of-GLP-1-GIP-Agonist-VK2735-Demonstrating-the-Promise-of-Multiple-Maintenance-Dosing-Regimens)；[Lilly 2026 Q2业绩](https://investor.lilly.com/news-releases/news-release-details/lilly-reports-second-quarter-2026-financial-results-raises-full)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)；[Viking：口服二期完整结果](https://ir.vikingtherapeutics.com/2025-08-19-Viking-Therapeutics-Announces-Positive-Top-Line-Results-from-Phase-2-VENTURE-Oral-Dosing-Trial-of-VK2735-Tablet-Formulation-in-Patients-with-Obesity)；[KFF：使用目的与支付负担调查](https://www.kff.org/public-opinion/kff-health-tracking-poll-prescription-drug-costs-views-on-trump-administration-actions-and-glp-1-use/)；[JAMA：12个月持续用药研究](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2846157)；[Lilly：Zepbound自费价格与条件](https://zepbound.lilly.com/hcp/coverage-savings)；[CMS：GLP-1 Bridge支付规则](https://www.cms.gov/medicare/coverage/prescription-drug-coverage/medicare-glp-1-bridge)
 
 ### 关键风险与依据
 
@@ -183,97 +183,64 @@ Viking是一家研发药物的公司，当前核心资产VK2735同时作用于GL
 
 **支持与反证 · 口服二期**：13周研究最高剂量组平均减重12.2%，对照1.3%；但药物组总体治疗中止率28%，对照18%。短期疗效有信号，耐受性和长期坚持仍是商业风险，不能只拿最佳减重数字与竞争药跨试验排名。 [Viking：口服二期完整结果](https://ir.vikingtherapeutics.com/2025-08-19-Viking-Therapeutics-Announces-Positive-Top-Line-Results-from-Phase-2-VENTURE-Oral-Dosing-Trial-of-VK2735-Tablet-Formulation-in-Patients-with-Obesity)
 
-### 2031年条件情景
+**商业证据缺口**：尚无Viking获付患者、分渠道净价和真实世界续方数据。临床受试人数、制造容量合同及竞争药销售均不能补上这三个缺口。 [Viking 2026 Q2财报](https://ir.vikingtherapeutics.com/2026-07-29-Viking-Therapeutics-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Corporate-Update)；[Viking 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1607678/000119312526324219/vktx-20260630.htm)
 
-这是有临床成败风险的新药机会。可行路径是用新增付费治疗形成几十亿美元销售，再摊薄研发和渠道费用；不能把强情景的上沿当作最可能结果。
+### 原盈利预测已撤回
 
-失败路径：三期或审批失利、商业竞争失败，都可能让核心业务没有可持续利润并损失大部分本金。其他管线、现金残值及收购溢价不设保底价格；下表只列获批后的两种条件情景，不代表完整概率分布。
+原100万患者年×5000美元得到的50亿美元销售，以及由此推导的利润和股价倍数，均已撤回。乘法没有错，但两项输入没有足够依据；把它称为“强情景”不能使其成为有概率支撑的投资判断。
 
-以下全部是研究假设。只比较2031年终点股价与2026-10-16盘后价格，未计分红、交易税费、汇率或等待期间收益；不是今天的合理价值或买入目标价。
+### 谁在付钱，能持续多久
 
-| 情景 | 归属净利 / 亿美元 | 期末股数 / 亿股 | PE假设区间 | 每股 / 美元 | 股价倍数 |
-| --- | --- | --- | --- | --- | --- |
-| 获批后温和渗透 | 4.69 | 1.84 | 18–26 | 45.87–66.26 | 1.82–2.63× |
-| 获批后强渗透 | 16.69 | 1.84 | 18–32 | 163.3–290.31 | 6.49–11.53× |
+目前查到的公开资料不能回答：究竟多少人主要为减重、愿意自付约5000美元并连续使用一年。以下证据分别回答使用、价格和持续性，不能相乘成Viking的销量。
 
-- 获批后温和渗透：假设2028–2029年前后开始商业化，到2031年达到40万患者年；这是研究时间表，不是公司批准承诺。净价受竞争压制，研发与渠道费用仍大。
-- 获批后强渗透：到2031年达到100万患者年、年净收入5000美元。需要支付方覆盖、持续用药和合格产能共同兑现；不能仅凭短期减重数据赋予这一路径高概率。
-
-### 销量、费用与利润的计算依据
-
-患者年是累计实际用药时间除以一年，不是开过一次处方的人数。40万/100万患者年是2031年假设；每患者年净收入4500/5000美元已扣返利，尚无Viking商业数据可验证。销量由新增患者和留存共同决定，不把美国肥胖人口乘一个价格当收入。强情景50亿美元年销售约相当于Lilly目前Zepbound一个季度的量级：足以说明市场能容纳，不证明Viking拿得到。
-
-毛利率75%是制造、物流及产品相关成本后的研究假设，不是临床公司的实际毛利。两情景分别扣7亿/15亿美元研发、销售和管理费用（含股权薪酬、折旧），另扣2500万美元净融资成本、按正利润25%税率。未来现金流还受备货和营运资金影响；未把账面利润称作自由现金流。
-
-| 指标 | 获批后温和渗透 | 获批后强渗透 |
-| --- | --- | --- |
-| 付费患者年 / 年 | 400,000 | 1,000,000 |
-| 每患者年净收入 / 美元 | 4,500 | 5,000 |
-| 净产品销售 / 百万美元 | 1,800 | 5,000 |
-| 扣制造等产品成本后毛利率 | 75% | 75% |
-| 产品毛利 / 百万美元 | 1,350 | 3,750 |
-| 再扣研发、管理等费用 / 百万美元 | 700 | 1,500 |
-| 净融资费用 / 百万美元 | 25 | 25 |
-| 税前利润 / 百万美元 | 625 | 2,225 |
-| 正常化正利润税率 | 25% | 25% |
-| 归属股东净利 / 百万美元 | 468.75 | 1,668.75 |
-| 每股利润 / 美元 | 2.55 | 9.07 |
-
-[Viking 2026 Q2财报](https://ir.vikingtherapeutics.com/2026-07-29-Viking-Therapeutics-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Corporate-Update)；[Viking 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1607678/000119312526324219/vktx-20260630.htm)；[Viking口服三期启动公告](https://ir.vikingtherapeutics.com/2026-10-14-Viking-Therapeutics-Announces-Initiation-of-VK2735-Oral-Phase-3-Clinical-Program-in-Patients-with-Obesity)；[Viking维持治疗研究结果](https://ir.vikingtherapeutics.com/2026-09-22-Viking-Therapeutics-Announces-Positive-Topline-Results-from-Maintenance-Study-of-GLP-1-GIP-Agonist-VK2735-Demonstrating-the-Promise-of-Multiple-Maintenance-Dosing-Regimens)；[Lilly 2026 Q2业绩](https://investor.lilly.com/news-releases/news-release-details/lilly-reports-second-quarter-2026-financial-results-raises-full)；[Viking：口服二期完整结果](https://ir.vikingtherapeutics.com/2025-08-19-Viking-Therapeutics-Announces-Positive-Top-Line-Results-from-Phase-2-VENTURE-Oral-Dosing-Trial-of-VK2735-Tablet-Formulation-in-Patients-with-Obesity)
-
-### 融资与每股分母
-
-7月15日116.652937百万股。另计6月底RSU 1.813501百万股及期权5.990015百万股；已发行且可回购的0.030211百万股不再重复加入。模型忽略期权行权收入，并另列未来激励与融资压力。
-
-主情景：在已披露现金之外，假设到规模商业化累计还需净筹12亿美元，发行价25美元、费用3%，另预留1000万股未来激励。按H1现金消耗简单年化约4.78亿美元，试验、制造预付款和上市准备使额外资金需求合理，但12亿美元不是已签融资或精确预算。压力情景改为净筹18亿美元、发行价15美元；合作交易可能减少融资，却也会出让利润权利，不能两头都按最好情况算。
-
-| 股本与融资假设 | 主情景 | 融资压力情景 |
-| --- | --- | --- |
-| 当前已发行 / 百万股 | 116.652937 | 116.652937 |
-| 既有潜在股份 / 百万股 | 7.803516 | 7.803516 |
-| 另预留未来激励 / 百万股 | 10 | 10 |
-| 尚需净融资 / 百万美元 | 1,200 | 1,800 |
-| 发行价假设 / 美元 | 25 | 15 |
-| 发行费用假设 | 3% | 3% |
-| 新增融资股份 / 百万股 | 49.48 | 123.71 |
-| 合计期末股份 / 百万股 | 183.94 | 258.17 |
-
-[Viking 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1607678/000119312526324219/vktx-20260630.htm)
-
-### 估值与失败条件的压力检验
-
-2031年若销售进入常态，压力区间18–26倍PE；若仍在强劲渗透期，18–32倍作敏感性区间。低端允许竞争和降价，高端要求2031年后仍有增长及有效专利保护。均为研究假设，不是行业固定倍数，也没有因为要算到十倍而反算收入；临床失败不使用PE。
-
-下表沿用强情景同一PE区间及费用，仅改变列明变量，隔离销量、价格和融资的影响。现实中销售失利还可能压低PE，因此不是下跌底线。
-
-| 变动 | 归属净利 / 亿美元 | 期末股数 / 亿股 | 股价倍数 |
+| 问题 | 已查到的证据 | 对Viking意味着什么 | 来源 |
 | --- | --- | --- | --- |
-| 原强经营情景 | 16.69 | 1.84 | 6.49–11.53× |
-| 付费患者年数少25% | 9.66 | 1.84 | 3.75–6.67× |
-| 每患者年实收低25% | 9.66 | 1.84 | 3.75–6.67× |
-| 融资额增大且发行价下降 | 16.69 | 2.58 | 4.62–8.22× |
-| 上述三项同时发生 | 4.38 | 2.58 | 1.21–2.16× |
+| 有人愿意使用吗？ | KFF在2025年10—11月调查1,350名美国成人：5%称曾主要为减重使用GLP-1；所有曾使用者中56%称难以负担。 | 证明有使用与支付障碍；“曾使用”不是当前使用，更不是自费满一年的人数。 | [KFF：使用目的与支付负担调查](https://www.kff.org/public-opinion/kff-health-tracking-poll-prescription-drug-costs-views-on-trump-administration-actions-and-glp-1-use/) |
+| 能坚持一年吗？ | 2026年JAMA研究：126,984名无糖尿病、超重或肥胖商业保险患者，12个月持续率24.5%，允许最长60天间断。 | 样本来自2019—2024年且漏掉完全自费记录，可能低估持续率；不能当作2026年全部患者或Viking的留存率，也不能据此把人数机械乘24.5%。 | [JAMA：12个月持续用药研究](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2846157) |
+| 自费要付多少？ | Lilly部分Zepbound剂量优惠449美元/28天，续购需在45天内；5mg常规399美元/28天。 | 若449美元条件一直成立，13份覆盖364天约5837美元。只是按价换算，不证明有人这样付满一年，也不是药企实收净价。 | [Lilly：Zepbound自费价格与条件](https://zepbound.lilly.com/hcp/coverage-savings) |
+| 人人都要自掏5000美元吗？ | CMS Bridge对符合条件的受益人及特定药物，患者自付50美元/月；当前试点到2027年底。 | 患者自付、保险等支付方支出、药企扣返利后的净收入必须分开。没有证据表明Viking未来自动获得同样准入。 | [CMS：GLP-1 Bridge支付规则](https://www.cms.gov/medicare/coverage/prescription-drug-coverage/medicare-glp-1-bridge) |
 
-### 哪些新证据会改变判断
+### 100万患者年实际需要什么
 
+应按同一自然年内、Viking实际获付药品所覆盖的治疗天数加总，再除以365；注射与口服切换不能重复计数。100万人只拿过一次处方，不是100万患者年。200万人每人覆盖半年才约等于100万患者年，这只是单位换算，不是人数预测。
 
+要解释这个量，至少要有可触达并获支付批准的人数、首次获付处方、按月续方与停药/换药、竞争份额及年度爬坡。当前缺少这些公司层面数据，因此不另填一个较小数字替代100万。
 
-| 具体事件 | 要看到的证据 | 判断后果 |
-| --- | --- | --- |
-| 注射剂与口服三期结果 | 看完整疗效、安全性、停药率、缺失数据处理与对照，不只看最佳剂量的新闻稿。 | 失败或明显弱于可用替代品，撤销核心增长情景。 |
-| 制造付款与新融资披露 | 核对现金消耗、Corden预付款节奏、发行净价和新增股数。 | 先更新股数与资金缺口，再判断旧情景是否仍有每股空间。 |
-| 获批后的真实付费治疗 | 核对净价、付费患者年、续方和医保覆盖；开方数不能代替持续付费。 | 达不到40万患者年路径，温和情景也应下调。 |
+药企净销售应分渠道计算：各渠道的获付治疗时长×该渠道扣返利、折扣等后的实收。患者现金价不能直接充当这个均价；不同渠道的支付门槛与持续率也不能混为一个假设。
 
-**本轮已检验：大市场能否自动变成Viking的十倍回报？**
+### 原利润输入及依据（逐项）
 
-不能。把患者、净价、制造贡献、费用和新增股数分别压低后，回报会明显缩水。保留它，是因为付费市场已存在且自有新药有利润扩张路径；十倍只出现在强商业兑现并保有增长估值的组合中。 [Viking 2026 Q2财报](https://ir.vikingtherapeutics.com/2026-07-29-Viking-Therapeutics-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Corporate-Update)；[Viking口服三期启动公告](https://ir.vikingtherapeutics.com/2026-10-14-Viking-Therapeutics-Announces-Initiation-of-VK2735-Oral-Phase-3-Clinical-Program-in-Patients-with-Obesity)；[Lilly 2026 Q2业绩](https://investor.lilly.com/news-releases/news-release-details/lilly-reports-second-quarter-2026-financial-results-raises-full)；[Viking 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1607678/000119312526324219/vktx-20260630.htm)
+保留原数值以说明撤回原因；这些输入不再生成利润、股价或十倍回报结论。已披露事实与未证实假设分别列明。
+
+| 原输入（已撤回） | 已知事实 | 采用该数字还缺什么 | 来源 |
+| --- | --- | --- | --- |
+| 年付费患者年：40万／100万 | 无获批产品或商业销售；短期试验有疗效信号，也有停药。 | 缺获付新患者、留存曲线、换药/份额、上市爬坡；无法从试验人数推出。 | [Viking 2026 Q2财报](https://ir.vikingtherapeutics.com/2026-07-29-Viking-Therapeutics-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Corporate-Update)；[Viking：口服二期完整结果](https://ir.vikingtherapeutics.com/2025-08-19-Viking-Therapeutics-Announces-Positive-Top-Line-Results-from-Phase-2-VENTURE-Oral-Dosing-Trial-of-VK2735-Tablet-Formulation-in-Patients-with-Obesity)；[JAMA：12个月持续用药研究](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2846157) |
+| 每患者年药企净收入：4500／5000美元 | 竞品公布自费优惠；医保存在不同支付规则。Viking没有已披露商业净价。 | 缺支付渠道组合、返利折扣、剂量及竞争降价依据；不能用患者现金价替代。 | [Lilly：Zepbound自费价格与条件](https://zepbound.lilly.com/hcp/coverage-savings)；[CMS：GLP-1 Bridge支付规则](https://www.cms.gov/medicare/coverage/prescription-drug-coverage/medicare-glp-1-bridge)；[Viking 2026 Q2财报](https://ir.vikingtherapeutics.com/2026-07-29-Viking-Therapeutics-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Corporate-Update) |
+| 产品毛利率：75%／75% | 有制造协议，但尚无上市产品成本和商业毛利。 | 缺单位制造、包装配送、良率及不同剂型成本；没有从合同推到75%的桥梁。 | [Viking 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1607678/000119312526324219/vktx-20260630.htm) |
+| 年研发及管理销售费用：7亿／15亿美元 | 2026 H1研发2.659亿、管理0.308亿美元，处于研发阶段。 | 缺上市销售网络、后续开发计划与费用随规模变化的依据；现有研发费用不能证明终点预算。 | [Viking 2026 Q2财报](https://ir.vikingtherapeutics.com/2026-07-29-Viking-Therapeutics-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Corporate-Update) |
+| 年净融资费用：2500万美元 | 当前有现金资产，未来融资结构未定。 | 缺未来债务、利率及现金收益预测；这是原模型设定。 | [Viking 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1607678/000119312526324219/vktx-20260630.htm) |
+| 正常化税率：25% | 当前亏损，未来盈利地区组合与亏损抵扣不确定。 | 缺适用地区、抵扣使用及有效税率依据；不是已知未来税负。 | [Viking 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1607678/000119312526324219/vktx-20260630.htm) |
+| 已发行与既有潜在股数：116.652937＋7.803516百万股 | 已发行股数及RSU/期权来自公司披露，可保留作为有日期的资本事实。 | 潜在股数全额计入属于压力口径，不是当前GAAP摊薄股数；不能据此确定2031年分母。 | [Viking 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1607678/000119312526324219/vktx-20260630.htm) |
+| 额外未来激励：1000万股 | 股权激励会增加股份，但没有对应2031年授予承诺。 | 缺未来授予计划；1000万是原研究预留，不是披露数。 | [Viking 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1607678/000119312526324219/vktx-20260630.htm) |
+| 融资与发行条件：净融资12亿／18亿美元；发行25／15美元；费用3% | 2026 H1经营现金流出约2.391亿美元，6月底现金及短期投资约5.02亿美元。 | 缺逐年现金预算、制造付款和融资工具。需要融资的方向有依据，金额、价格与费用率没有足够依据。 | [Viking 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1607678/000119312526324219/vktx-20260630.htm) |
+| 终点PE：18—26／18—32倍 | 尚无正的持续商业利润，三期成功和专利保护也不保证长久超额回报。 | 缺2031年后利润寿命、再投资回报与增长路径；不能用PE补出十倍。 | [Viking 2026 Q2财报](https://ir.vikingtherapeutics.com/2026-07-29-Viking-Therapeutics-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Corporate-Update)；[Viking 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1607678/000119312526324219/vktx-20260630.htm) |
+
+### 重新估算需要的依据
+
+先证明产品相对替代方案的优势，以及这种优势能换来支付准入、持续使用和份额；再按渠道与患者进入年份估算付费治疗时长。
+
+每个预测输入要有事实锚点、从事实到假设的理由及失败条件；未知项可以做有依据的区间，不能凭所需回报倒填数字。当前临床进展可形成事件行情，但尚不足以作为持续每股盈利的优先候选。
+
+**本轮已检验：100万患者年和5000美元净价，有没有可核对的依据？**
+
+没有足够依据。已查资料不能识别“主要为减重、每年自付约5000美元、持续一整年”的人数，更不能证明其中多少会使用Viking。原数字是未校准的设定；撤回据此给出的优先级、盈利和股价倍数。 [KFF：使用目的与支付负担调查](https://www.kff.org/public-opinion/kff-health-tracking-poll-prescription-drug-costs-views-on-trump-administration-actions-and-glp-1-use/)；[JAMA：12个月持续用药研究](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2846157)；[Lilly：Zepbound自费价格与条件](https://zepbound.lilly.com/hcp/coverage-savings)；[CMS：GLP-1 Bridge支付规则](https://www.cms.gov/medicare/coverage/prescription-drug-coverage/medicare-glp-1-bridge)；[Viking 2026 Q2财报](https://ir.vikingtherapeutics.com/2026-07-29-Viking-Therapeutics-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Corporate-Update)
 
 **改变判断的条件**
 
-- 上调：随机三期完整结果支持获批，随后出现可核对的支付覆盖、净价和持续用药数据，且融资仍在可承受范围。
-- 下调：三期失败或明显延误；净价/坚持治疗率不足以支持商业贡献；为维持项目需要远高于模型的低价融资。
+- 上调：随机三期支持有竞争力的疗效与耐受性，并有可解释的支付准入、分渠道净价、6—12个月续方与份额依据；同时能估算达到该规模的资金需求。
+- 下调：三期失败、差异化不足、支付受限、停药或净价侵蚀明显，或者所需低价融资使每股路径继续恶化。
 
-本轮经营、资本与估值分析已完成。后续只在三期结果、融资或真实净价和用药持续数据改变时重开判断；不靠继续补齐篇幅维持优先级。
+取消本批第一优先；不再靠补齐情景数字维持它的排名。只有三期结果带来明确竞争差异，且支付准入、用药持续或成本证据足以建立商业估算时再重开。
 
 ## Kura Oncology · KURA
 
@@ -287,15 +254,15 @@ Kura研发和销售针对特定癌症机制的药物。KOMZIFTI（ziftomenib）�
 
 ### 利润如何放大
 
-销售放量可摊薄一次性的开发与商业网络投入，但美国商业利润必须先分给Kyowa一半。海外不能计入全部销售，只能计提成；再扣Kura承担的研发、总部费用及税项。里程碑收入不按永久利润估值。这里从患者年到分成后利润逐项计算。
+销量扩大可能摊薄开发投入，但要先证明适用患者中多少人真正开始付费、用药多久和药企实收多少。美国商业利润只归Kura一半，海外只计净提成，再扣持续研发、管理与税项。当前产品收入不能直接除以新增患者人数当成年净价；里程碑收入不能当永久利润。
 
 ### 当前判断
 
-**五年十倍可能性：有条件 · 强兑现才接近；研究优先级：次优先跟踪。** 约8亿美元起价，已有窄适应症销售，比纯临床资产多一层证据。十倍仍需一线扩展和较长用药时间，并保有较高估值；排在Viking之后，不能称高概率。
+**五年十倍可能性：十倍依据不足；研究优先级：撤回优先级。** 撤回次优先结论。已获批窄适应症并有销售，但2500／7000患者年、20万美元年净价及未来费用不能由现有披露推出；原盈利和十倍回报测算停止使用。不是所有药企都只有一波行情，但此公司的长期利润路径尚未证明。
 
 股价9.08美元，行情市值约8.07亿美元；6月底88.954百万已发行股对应静态约8.08亿美元。未来期权、激励和融资使终点股数更大，较小起价只是必要条件，不是十倍保证。
 
-股价快照：9.08美元，UTC 2026-10-16T21:35:00Z（盘后）。采用6月底88.954百万股，另将21.667百万潜在普通股全额计入压力分母（含期权、RSU等，非当前GAAP摊薄股数），不计行权现金。未来融资与激励另列；不得用亏损期基本股数当成2031年分母。
+股价快照：9.08美元，UTC 2026-10-16T21:35:00Z（盘后）。6月底已发行88.954百万股、潜在普通股21.667百万股（含期权、RSU等，非当前GAAP摊薄股数）。原模型曾全额加入潜在股数且不计行权现金，属于压力口径；未来融资和激励设定已撤回，不能据此确定2031年分母。
 
 [Kura 2026 Q2财报](https://ir.kuraoncology.com/node/13671)；[Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm)；[FDA：ziftomenib获批范围](https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-ziftomenib-relapsed-or-refractory-acute-myeloid-leukemia-npm1-mutation)；[Kura 2025年报](https://ir.kuraoncology.com/static-files/37d2d8c3-659e-442a-aeb0-7c5d46326bb3)；[Kyowa Kirin：ziftomenib全球合作](https://www.kkna.kyowakirin.com/media-center/kura-oncology-and-kyowa-kirin-announce-global-strategic-collaboration-to-develop-and-commercialize-ziftomenib-in-acute-leukemias/)；[Kyowa Kirin：KOMET-007一线研究更新](https://www.kyowakirin.com/media_center/news_releases/2026/e20260612_01.html)；[NCI SEER：急性髓系白血病统计](https://seer.cancer.gov/statfacts/html/amyl.html)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)；[FDA：竞争药revumenib获批NPM1适应症](https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-revumenib-relapsed-or-refractory-acute-myeloid-leukemia-susceptible-npm1-mutation)
 
@@ -316,105 +283,56 @@ Kura研发和销售针对特定癌症机制的药物。KOMZIFTI（ziftomenib）�
 
 **竞争已经存在**：FDA于2025-10-24批准revumenib用于相似NPM1复发/难治群体，且包括1岁以上儿童。Kura并不独占该机制或人群，份额假设需要竞争验证。 [FDA：竞争药revumenib获批NPM1适应症](https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-revumenib-relapsed-or-refractory-acute-myeloid-leukemia-susceptible-npm1-mutation)
 
-**还要扣原始许可成本**：年报披露向密歇根大学支付低个位数净销售提成，以及部分再许可对价的分成。海外从Kyowa收到的毛提成不能全部当股东利润；精确净提成组合未完整公开，模型明确作为假设。 [Kura 2025年报](https://ir.kuraoncology.com/static-files/37d2d8c3-659e-442a-aeb0-7c5d46326bb3)
+**还要扣原始许可成本**：年报披露向密歇根大学支付低个位数净销售提成，以及部分再许可对价分成。精确净提成组合未完整公开；原15%海外净提成设定已撤回。 [Kura 2025年报](https://ir.kuraoncology.com/static-files/37d2d8c3-659e-442a-aeb0-7c5d46326bb3)
 
-### 2031年条件情景
+### 原盈利预测已撤回
 
-保留的原因是较小起价、已有产品和扩展治疗范围的路径。限制也很明确：利润要分成，病例数有限，一线扩展尚未被证实；即便药物成功，股价也不自动十倍。
+原2500／7000患者年、20万美元年净收入及未来利润率缺少可推导的依据，原盈利与股价倍数已撤回。Kura的既有批准和小规模销售是真实证据，但不足以支持本批次优先排名。
 
-失败路径：若一线扩展失败，只靠当前复发难治适应症，销售可能长期无法覆盖全部研发和管理费用。可损失大部分本金；不把账面现金或尚未收到的合作款设成残值下限。下表只描述扩展成功后的条件情景。
+### 现有销售能证明什么
 
-以下全部是研究假设。只比较2031年终点股价与2026-10-16盘后价格，未计分红、交易税费、汇率或等待期间收益；不是今天的合理价值或买入目标价。
+Q2净产品销售912.2万美元、约115名新患者开始治疗，证明已经有商业销售；没有披露足以计算全年获付患者年及单位净价的分母，不能把当季收入除以新患者人数。
 
-| 情景 | 归属净利 / 亿美元 | 期末股数 / 亿股 | PE假设区间 | 每股 / 美元 | 股价倍数 |
-| --- | --- | --- | --- | --- | --- |
-| 一线扩展后温和渗透 | 0.83 | 1.36 | 16–24 | 9.73–14.6 | 1.07–1.61× |
-| 一线扩展后强渗透 | 3.62 | 1.36 | 20–35 | 53.07–92.87 | 5.84–10.23× |
+现批准针对复发难治人群。FDA资料中的约5个月中位反应持续时间不是付费疗程，更不能证明一线患者能连续治疗两年。原每年3500名新患者×两年得到7000患者年的设定，仍缺一线获益、市场份额与真实治疗时长。
 
-- 一线扩展后温和渗透：假设一线成功并获批后，美国达到2500患者年；海外较慢推进。平均治疗时间是假设，不把目前末线5个月反应持续时间外推成一线疗程。
-- 一线扩展后强渗透：7000患者年依赖每年3500名新患者和两年平均治疗，需要较高份额及长期获益。强销量与35倍估值同时出现才到十倍附近，不能当作基准情景。
+[Kura 2026 Q2财报](https://ir.kuraoncology.com/node/13671)；[FDA：ziftomenib获批范围](https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-ziftomenib-relapsed-or-refractory-acute-myeloid-leukemia-npm1-mutation)
 
-### 销量、费用与利润的计算依据
+### 原利润输入及依据（逐项）
 
-NCI预计2026年美国新增AML约22,720例；按公司年报NPM1约30%推算，约6,800例是疾病分型量级，尚未扣治疗资格、检测、竞争与可及性。温和情景相当于每年2000名新付费患者×平均1.25年治疗，强情景为3500名×2年；在患者流入稳定时分别约2500/7000患者年。强情景需要覆盖约半数新发NPM1患者且显著延长治疗，不是现有标签已经支持的数据。不另加复发患者，避免重复计数；KMT2A等扩展也未加额外收入。
+保留原数值以说明撤回原因；这些输入不再生成利润、股价或十倍回报结论。已披露事实与未证实假设分别列明。
 
-美国每患者年20万美元净收入是扣折扣后的假设，不是公开标价或已验证平均实收。美国商业利润率70%/72%先扣制造、许可和销售成本，再按50%归Kura；海外2.5亿/6亿美元销售只计净提成。Kyowa合同公开的是分级双位数毛提成；Kura还向密歇根大学支付低个位数销售许可费及部分再许可款分成，具体组合未完整公开。模型15%是扣除这些负担后的净提成假设，并另测10%净提成；不是合同保证。美国许可成本已包含在前述商业利润率中。之后再扣Kura研发与总部费用1亿/1.1亿美元（含激励、折旧），不重复扣已计入美国商业利润的销售费。开发分担改善仍需兑现，25%税率不依赖永久税收优惠。
-
-| 指标 | 一线扩展后温和渗透 | 一线扩展后强渗透 |
-| --- | --- | --- |
-| 付费患者年 / 年 | 2,500 | 7,000 |
-| 每患者年净收入 / 美元 | 200,000 | 200,000 |
-| 美国净产品销售 / 百万美元 | 500 | 1,400 |
-| 扣制造、许可及销售费用后利润率 | 70% | 72% |
-| 美国商业利润 / 百万美元 | 350 | 1,008 |
-| 归Kura的美国商业利润份额 | 50% | 50% |
-| 归Kura的美国商业利润 / 百万美元 | 175 | 504 |
-| 海外销售 / 百万美元（非Kura全额收入） | 250 | 600 |
-| 假设海外净提成比例（扣原始许可负担） | 15% | 15% |
-| 海外净提成 / 百万美元 | 37.5 | 90 |
-| 再扣研发、管理等费用 / 百万美元 | 100 | 110 |
-| 净融资费用 / 百万美元 | 2 | 2 |
-| 税前利润 / 百万美元 | 110.5 | 482 |
-| 正常化正利润税率 | 25% | 25% |
-| 归属股东净利 / 百万美元 | 82.88 | 361.5 |
-| 每股利润 / 美元 | 0.61 | 2.65 |
-
-[Kura 2026 Q2财报](https://ir.kuraoncology.com/node/13671)；[Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm)；[FDA：ziftomenib获批范围](https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-ziftomenib-relapsed-or-refractory-acute-myeloid-leukemia-npm1-mutation)；[Kura 2025年报](https://ir.kuraoncology.com/static-files/37d2d8c3-659e-442a-aeb0-7c5d46326bb3)；[Kyowa Kirin：ziftomenib全球合作](https://www.kkna.kyowakirin.com/media-center/kura-oncology-and-kyowa-kirin-announce-global-strategic-collaboration-to-develop-and-commercialize-ziftomenib-in-acute-leukemias/)；[Kyowa Kirin：KOMET-007一线研究更新](https://www.kyowakirin.com/media_center/news_releases/2026/e20260612_01.html)；[NCI SEER：急性髓系白血病统计](https://seer.cancer.gov/statfacts/html/amyl.html)；[FDA：竞争药revumenib获批NPM1适应症](https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-revumenib-relapsed-or-refractory-acute-myeloid-leukemia-susceptible-npm1-mutation)
-
-### 融资与每股分母
-
-采用6月底88.954百万股，另将21.667百万潜在普通股全额计入压力分母（含期权、RSU等，非当前GAAP摊薄股数），不计行权现金。未来融资与激励另列；不得用亏损期基本股数当成2031年分母。
-
-主情景：既有现金及合作款之后，仍假设累计净融资3亿美元，15美元发行、费用3%，另预留500万股未来激励。潜在股份按全额加入且未计行权现金，属于保守压力口径。压力情景为净融资5亿美元、8美元发行。既有5.19亿美元现金承担试验义务，合同负债也不是全部有息债，不能简单用现金减市值判断便宜。
-
-| 股本与融资假设 | 主情景 | 融资压力情景 |
-| --- | --- | --- |
-| 当前已发行 / 百万股 | 88.954 | 88.954 |
-| 既有潜在股份 / 百万股 | 21.667 | 21.667 |
-| 另预留未来激励 / 百万股 | 5 | 5 |
-| 尚需净融资 / 百万美元 | 300 | 500 |
-| 发行价假设 / 美元 | 15 | 8 |
-| 发行费用假设 | 3% | 3% |
-| 新增融资股份 / 百万股 | 20.62 | 64.43 |
-| 合计期末股份 / 百万股 | 136.24 | 180.05 |
-
-[Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm)；[Kura 2026 Q2财报](https://ir.kuraoncology.com/node/13671)
-
-### 估值与失败条件的压力检验
-
-温和扩展按16–24倍、强扩展按20–35倍PE展示敏感性。高端要求2031年后仍有适应症增长和有效排他保护；公司年报称部分Orange Book专利保护可能到2044年，但NCE监管独占到2030年，二者不等同，更不是保证没有仿制或挑战。若增长成熟、专利或支付不利，应看低端甚至更低；不把35倍当固定终值。
-
-下表沿用强情景同一PE区间及费用，仅改变列明变量，隔离销量、价格和融资的影响。现实中销售失利还可能压低PE，因此不是下跌底线。
-
-| 变动 | 归属净利 / 亿美元 | 期末股数 / 亿股 | 股价倍数 |
+| 原输入（已撤回） | 已知事实 | 采用该数字还缺什么 | 来源 |
 | --- | --- | --- | --- |
-| 原强经营情景 | 3.62 | 1.36 | 5.84–10.23× |
-| 付费患者年数少25% | 2.67 | 1.36 | 4.32–7.55× |
-| 每患者年实收低25% | 2.67 | 1.36 | 4.32–7.55× |
-| 海外净提成降至10% | 3.39 | 1.36 | 5.48–9.59× |
-| 融资额增大且发行价下降 | 3.62 | 1.8 | 4.42–7.74× |
-| 上述三项同时发生 | 1.96 | 1.8 | 2.4–4.2× |
+| 年付费患者年：2500／7000 | Q2约115名新患者；现适应症窄。一线仍在三期开发。 | 缺符合标签的可触达人群、获付新患者、疗程、竞争份额与跨年爬坡。NPM1患病比例不是获付人数。 | [Kura 2026 Q2财报](https://ir.kuraoncology.com/node/13671)；[FDA：ziftomenib获批范围](https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-ziftomenib-relapsed-or-refractory-acute-myeloid-leukemia-npm1-mutation)；[NCI SEER：急性髓系白血病统计](https://seer.cancer.gov/statfacts/html/amyl.html) |
+| 每患者年净收入：20万美元 | 公司披露净产品销售，但未给出对应获付患者年。 | 缺按疗程与支付渠道的净价；收入除新增患者不能验证这个数字。 | [Kura 2026 Q2财报](https://ir.kuraoncology.com/node/13671)；[Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm) |
+| 美国商业利润率：70%／72% | 实际还要扣制造、销售及原始许可成本。 | 缺成熟规模的单位成本及商业费用；现有合同不能确定未来利润率。 | [Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm)；[Kura 2025年报](https://ir.kuraoncology.com/static-files/37d2d8c3-659e-442a-aeb0-7c5d46326bb3) |
+| Kura美国商业利润份额：50% | 合作披露美国商业利润与损失50/50分配。 | 份额有合同依据，可保留；它不证明分成前利润额，也不意味着全部研发费用都减半。 | [Kyowa Kirin：ziftomenib全球合作](https://www.kkna.kyowakirin.com/media-center/kura-oncology-and-kyowa-kirin-announce-global-strategic-collaboration-to-develop-and-commercialize-ziftomenib-in-acute-leukemias/)；[Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm) |
+| 合作方海外销售：2.5亿／6亿美元 | 海外由Kyowa负责，Kura取得提成而非全部销售。 | 缺逐地区批准、获付人数、净价与上市节奏；不是已签销售。 | [Kyowa Kirin：ziftomenib全球合作](https://www.kkna.kyowakirin.com/media-center/kura-oncology-and-kyowa-kirin-announce-global-strategic-collaboration-to-develop-and-commercialize-ziftomenib-in-acute-leukemias/) |
+| 海外净提成率：15% | 合作公布分层双位数毛提成；另有密歇根大学等许可负担。 | 精确净提成组合不完整公开，不能直接写成15%。 | [Kyowa Kirin：ziftomenib全球合作](https://www.kkna.kyowakirin.com/media-center/kura-oncology-and-kyowa-kirin-announce-global-strategic-collaboration-to-develop-and-commercialize-ziftomenib-in-acute-leukemias/)；[Kura 2025年报](https://ir.kuraoncology.com/static-files/37d2d8c3-659e-442a-aeb0-7c5d46326bb3) |
+| 年研发与管理等费用：1亿／1.1亿美元 | Q2研发6190万、销售管理3180万美元；开发资金责任依合作条款。 | 缺具体开发项目结束时间及后续预算；无法证明未来降至这个费用水平。 | [Kura 2026 Q2财报](https://ir.kuraoncology.com/node/13671)；[Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm) |
+| 年净融资费用：200万美元 | 披露了现有债务及现金，未来资本结构未定。 | 缺未来债务、利率及现金收入依据。 | [Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm) |
+| 正常化税率：25% | 当前亏损、未来盈利及抵扣路径不确定。 | 缺地区组合与有效税负依据；是原模型设定。 | [Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm) |
+| 已发行与既有潜在股数：88.954＋21.667百万股 | 6月底已发行及潜在普通股来自披露，保留为资本事实。 | 潜在股数全额加入属压力口径，不是当前GAAP摊薄股数，也不是2031年确定分母。 | [Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm) |
+| 额外未来激励：500万股 | 现有激励不代表未来授予计划。 | 缺未来激励规划；500万是研究预留。 | [Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm) |
+| 融资与发行条件：净融资3亿／5亿美元；发行15／8美元；费用3% | H1经营现金流出约1.484亿美元；合作款部分有条件。 | 缺逐年现金预算、合作款时点及融资工具；不能把现金缺口方向当成精确融资额。 | [Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm) |
+| 终点PE：16—24／20—35倍 | 现有小规模销售尚未形成持续利润；扩大适应症还有临床风险。 | 缺利润持续期、再投资需求和竞争后增长依据；35倍不能用来补足十倍。 | [Kura 2026 Q2财报](https://ir.kuraoncology.com/node/13671)；[FDA：ziftomenib获批范围](https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-ziftomenib-relapsed-or-refractory-acute-myeloid-leukemia-npm1-mutation)；[FDA：竞争药revumenib获批NPM1适应症](https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-revumenib-relapsed-or-refractory-acute-myeloid-leukemia-susceptible-npm1-mutation) |
 
-### 哪些新证据会改变判断
+### 重新估算需要的依据
 
+先看可获付的新患者、实际疗程和净价，再看美国分成、海外净提成与持续开发责任后的利润；初治扩展必须有独立证据。
 
+已有批准使它与纯临床资产不同，但仍可能因临床事件波动。只有可持续利润的形成路径有依据，才重新讨论其是否值得优先研究。
 
-| 具体事件 | 要看到的证据 | 判断后果 |
-| --- | --- | --- |
-| KOMET-017关键终点，当前公司预计2028年 | 核对随机对照、MRD阴性完全缓解与事件无进展生存，不拿早期单臂结果替代。 | 一线扩展失败则撤回强情景和次优先安排。 |
-| 产品销售与持续用药 | 分开产品销售、合作收入、新患者与重复处方，验证实际净价和治疗持续。 | 份额或持续时间弱于温和路径，降低患者年数。 |
-| 合作款、开发分担和股数 | 逐项看实际收到的款、仍由Kura承担的开发成本及融资价格。 | 高于融资压力情景时，重新计算分成后的每股收益。 |
+**本轮已检验：已有销售是否足以支持原患者年和净价？**
 
-**本轮已检验：小市值加上大癌症市场，是否足以支持十倍？**
-
-不够。只纳入NPM1相关患者规模，扣美国50%利润分成并加入融资后，温和扩展远不到十倍。强情景也必须同时有更长治疗持续、份额和较高估值；这是次优先的条件机会，不能用公司的大市场宣传替代患者计算。 [NCI SEER：急性髓系白血病统计](https://seer.cancer.gov/statfacts/html/amyl.html)；[Kura 2025年报](https://ir.kuraoncology.com/static-files/37d2d8c3-659e-442a-aeb0-7c5d46326bb3)；[Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm)
+不够。Q2新增约115名患者和912.2万美元净产品销售不能相除得到全年单人净收入，患者跨期且疗程不同。2500／7000患者年与20万美元年净价未获得独立依据；有批准和销售不等于已验证原扩张预测。 [Kura 2026 Q2财报](https://ir.kuraoncology.com/node/13671)；[FDA：ziftomenib获批范围](https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-ziftomenib-relapsed-or-refractory-acute-myeloid-leukemia-npm1-mutation)；[Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm)
 
 **改变判断的条件**
 
-- 上调：一线随机三期支持临床获益且获批，患者持续用药与付费证据支持更大患者年数，分成后经营现金开始覆盖开发。
-- 下调：一线试验失败、用药时间显著短于情景、竞争压低份额，或资金需求使潜在股份远超模型。
+- 上调：一线随机研究支持临床获益，同时有按队列统计的获付人数、持续时间与净价，及合同分成后费用和现金需求，足以建立盈利区间。
+- 下调：一线失败、疗程短或竞争挤压，或分成与持续研发消耗使规模扩大仍不能形成每股现金流。
 
-本轮已完成分成、患者规模、资本与估值判断。后续以KOMET-017结果及持续付费患者数据为重开条件；Caspian/糖尿病及其他早期管线未加进估值，也不依靠收购溢价补足十倍。
+取消次优先；现有报告只保留业务、权利和已发生销售事实及原假设审查。重开取决于可核对的付费疗程、净价、开发费用责任和一线随机研究结果，不继续为原十倍数字补理由。
 
 ## BlackSky · BKSY
 
@@ -1470,7 +1388,7 @@ Serve让小型机器人执行末端配送，也有医院场景及软件业务。
 
 ## 来源与时点
 
-价格采用2026-10-16盘后美元快照。行情市值仅作初筛；完整研究按披露股数、潜在股份及融资假设另算分母。2031年情景是条件分析，不是公司指引、目标价或成功概率。
+价格采用2026-10-16盘后美元快照。行情市值仅作初筛；披露股数与潜在股份单列。Viking与Kura原2031年输入已撤回，仅留逐项审查，不再显示对应盈利或股价回报。
 
 - [Credo FY2027 Q1业绩公告](https://investors.credosemi.com/news-events/news/news-details/2026/Credo-Technology-Group-Holding-Ltd-Reports-First-Quarter-of-Fiscal-Year-2027-Financial-Results/default.aspx) · 公布/记录 2026-09-01 · GAAP财务亮点及季度营业利润表；截至2026-08-01
 - [Astera Labs 2026 Q2业绩公告](https://ir.asteralabs.com/news-releases/news-release-details/astera-labs-reports-second-quarter-2026-financial-results) · 公布/记录 2026-08-04 · GAAP结果、所得税收益、Q3指引及产品更新
@@ -1521,3 +1439,7 @@ Serve让小型机器人执行末端配送，也有医院场景及软件业务。
 - [dLocal 2026 Q2业绩](https://investor.dlocal.com/news-releases/news-release-details/dlocal-reports-second-quarter-2026-financial-results) · 公布/记录 检索2026-10-19 · TPV、收入、毛利与营业利润分别增长，不能混用
 - [Viking：口服二期完整结果](https://ir.vikingtherapeutics.com/2025-08-19-Viking-Therapeutics-Announces-Positive-Top-Line-Results-from-Phase-2-VENTURE-Oral-Dosing-Trial-of-VK2735-Tablet-Formulation-in-Patients-with-Obesity) · 公布/记录 2025-08-19 · 13周体重变化；各剂量与对照；治疗中止率
 - [FDA：竞争药revumenib获批NPM1适应症](https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-revumenib-relapsed-or-refractory-acute-myeloid-leukemia-susceptible-npm1-mutation) · 公布/记录 2025-10-24 · 成人及1岁以上儿童复发/难治NPM1突变AML
+- [KFF：使用目的与支付负担调查](https://www.kff.org/public-opinion/kff-health-tracking-poll-prescription-drug-costs-views-on-trump-administration-actions-and-glp-1-use/) · 公布/记录 2025-10-27至11-02（调查期） · 全国代表性样本1,350名美国成人；Use, Access and Affordability：5%曾主要为减重使用，56%曾使用者觉得难以负担。不是当前全年自费人数。
+- [JAMA：12个月持续用药研究](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2846157) · 公布/记录 2026-03-10 · Methods / Results / Limitations；2019—2024 MarketScan商业保险理赔，126,984名无糖尿病成人；持续定义允许不超过60天间断；不捕捉完全自费用药。DOI 10.1001/jamanetworkopen.2026.1272。
+- [Lilly：Zepbound自费价格与条件](https://zepbound.lilly.com/hcp/coverage-savings) · 公布/记录 2026-10-19（检索） · Self Pay Journey条款：7.5/10/12.5/15mg优惠449美元/28天，续购需在45天内；5mg常规399美元/28天。报价不披露对应全年自费人数，也不是Viking净价。
+- [CMS：GLP-1 Bridge支付规则](https://www.cms.gov/medicare/coverage/prescription-drug-coverage/medicare-glp-1-bridge) · 公布/记录 2026-10-19（检索） · Overview及copay问答：2026-07-01至2027-12-31试点，符合条件的Part D受益人使用特定药物自付50美元/月。不能假定Viking未来自动获纳入。
