@@ -35,10 +35,40 @@ for (const c of data.companies) {
     md += '\n| 眼科产品 / 百万人民币 | 2026H1 | 2025H1 |\n| --- | ---: | ---: |\n' + a.labels.map((label, i) => `| ${label} | ${n(a.current[i], 4)} | ${n(a.prior[i], 4)} |`).join('\n');
     md += `\n\n同项合计 ${n(total(a.current), 4)} / ${n(total(a.prior), 4)}，增长 ${n((total(a.current) / total(a.prior) - 1) * 100)}%。不含运动医学及“其他收入”，不等同全部并购调整后的有机增长。\n`;
   }
+  if (c.profitCheck) {
+    const a = c.profitCheck, current = M.investmentProfit(a.current), prior = M.investmentProfit(a.prior);
+    const rows = [
+      ['GAAP归母利润', a.current.reportedParentNet, a.prior.reportedParentNet],
+      ['集团未实现投资收益', a.current.consolidatedGain, a.prior.consolidatedGain],
+      ['其中归属于少数股东的调整额', a.current.minorityGain, a.prior.minorityGain],
+      ['归母未实现投资收益调整额', current.parentGain, prior.parentGain],
+      ['扣除上述收益，保留股权薪酬', current.withoutGain, prior.withoutGain],
+      ['公司加回的股权薪酬', a.current.stockComp, a.prior.stockComp],
+      ['公司non-GAAP归母利润', a.current.issuerNonGaap, a.prior.issuerNonGaap],
+      ['集团权益法投资收益（尚未按归母拆分）', a.current.equityIncome, a.prior.equityIncome],
+      ['集团营业利润', a.current.operatingIncome, a.prior.operatingIncome]
+    ];
+    md += `\n### 归母利润复核\n\n| 百万原币 | ${a.current.label} | ${a.prior.label} |\n| --- | ---: | ---: |\n` + rows.map(([label, x, y]) => `| ${label} | ${n(x, 3)} | ${n(y, 3)} |`).join('\n');
+    md += `\n\n扣除上述投资收益后同比增长 ${n((current.withoutGain / prior.withoutGain - 1) * 100)}%，归母利润率 ${n(current.margin * 100)}%；集团营业利润率 ${n(a.current.operatingIncome / a.current.revenue * 100)}%。${a.caveat}\n\n${sources(a.sources)}\n`;
+  }
+  if (c.cashCheck) {
+    const a = c.cashCheck;
+    const rows = [['经营现金流', a.operatingCash], ['购建固定资产支出', -a.capex],
+      ['经营现金减固定资产支出', a.operatingCash - a.capex], ['公司定义FCF（再扣长期投资）', a.issuerFcf],
+      ['母公司发行净筹资', a.parentEquityProceeds], ['出售子公司股权税前收入', a.subsidiarySaleGross],
+      ['银行净借款', a.shortBorrowed - a.shortRepaid + a.longBorrowed - a.longRepaid],
+      ['集团期权行权收入', a.optionProceeds], ['融资现金合计', a.financingTotal]];
+    md += '\n### 现金来源与去向\n\n| 2026H1项目 | 百万原币 |\n| --- | ---: |\n' + rows.map(([label, value]) => `| ${label} | ${n(value, 3)} |`).join('\n');
+    md += `\n\n存货现金占用 ${n(a.inventoryOutflow, 3)}百万，客户预收减少占用 ${n(a.advanceOutflow, 3)}百万。现金及等价物 ${n(a.cash, 3)}百万，短期定存 ${n(a.timeDeposits, 3)}百万，另有受限现金 ${n(a.restrictedCash, 3)}百万。现金及等价物按所在地：${Object.entries(a.jurisdictions).map(([label, v]) => `${label} ${n(v, 3)}百万`).join('；')}。地域不等于法律所有权，不能按所在地直接分配给母公司股东。\n\n${a.caveat}\n\n${sources(a.sources)}\n`;
+  }
   md += '\n### 管理层指引与研究假设\n\n';
   md += c.guidance.length ? c.guidance.map(g => `- 管理层指引：${g.text} ${sources(g.sources)}`).join('\n') : '未将未核实的全年经营目标设为公司指引。';
   md += `\n\n收入增长锚点：${f.anchorLabel}，金额 ${amount(f.anchorRevenue)}。下面所有2031参数、行业份额和里程碑阈值均为研究者假设，不是公司承诺或外部一致预期。\n\n### 经营路径、竞争与资本配置\n\n${c.thesis.join('\n\n')}\n\n${c.economics}\n\n${c.management}\n\n${c.funding}\n\n${sources(c.fundingSources)}\n\n### 股本与稀释\n\n${c.shares.potentialBasis}\n\n${c.shares.futureBasis}\n\n${c.shares.convertibles}\n\n具体缺项：${c.shares.gap}\n\n`;
   md += sources(c.shares.sources || [c.shares.source]) + '\n\n### 五年情景\n\n';
+  if (c.ownershipCheck) {
+    const o = c.ownershipCheck;
+    md += `子公司稀释压力：持股 ${n(o.ownership * 100)}%，若H股占发行后 ${n(o.proposedFraction * 100)}%，新股/原股为 ${n(o.proposedFraction / (1 - o.proposedFraction) * 100, 4)}%。母公司不认购时，持股变为 ${n(M.subsidiaryOwnership(o.ownership, o.proposedFraction) * 100, 4)}%；再按初始H股的 ${n(o.overAllotment * 100)}%超额配售，变为 ${n(M.subsidiaryOwnership(o.ownership, o.proposedFraction, o.overAllotment) * 100, 4)}%。${o.caveat}\n\n${sources(o.sources)}\n\n`;
+  }
   md += '参数根据与未验证条件：\n\n' + c.calibration.map(a => `- **${a.label}**：${a.basis} ${sources(a.sources)}`).join('\n') + '\n\n';
   md += `金额为亿${c.currency === 'USD' ? '美元' : '元'}；股数为百万股；分红为五年累计每股原币现金。\n\n| 情景 | 收入 | 归母净利率 | 归母利润 | 期末股数 | PE | 股权价值 | 每股价格 | 每股现金分红 | 股价倍数 | 含现金分红财富倍数 |\n| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |\n`;
   for (const s of c.scenarios) {
@@ -47,7 +77,7 @@ for (const c of data.companies) {
   }
   md += '\n' + c.scenarios.map(s => `- ${s.label}：${s.story}`).join('\n') + '\n\n';
   const prior = c.priorBull;
-  md += `**已撤回旧乐观组合**：收入 ${amount(prior.revenue)}、净利率 ${n(prior.margin * 100)}%、PE ${prior.pe}、股数 ${n(prior.shares)}百万，原计算 ${n(M.project(c, prior).priceMultiple)}倍；仅供追溯，不与当前经营情景并列。当前乐观情景 ${n(M.project(c, bull).priceMultiple)}倍，未用十倍目标倒逼参数。\n\n`;
+  if (prior) md += `**已撤回旧乐观组合**：收入 ${amount(prior.revenue)}、净利率 ${n(prior.margin * 100)}%、PE ${prior.pe}、股数 ${n(prior.shares)}百万，原计算 ${n(M.project(c, prior).priceMultiple)}倍；仅供追溯，不与当前经营情景并列。当前乐观情景 ${n(M.project(c, bull).priceMultiple)}倍，未用十倍目标倒逼参数。\n\n`;
   if (c.financingCheck) {
     const f = c.financingCheck;
     md += `### 融资敏感性：先检查营运资金\n\n截至${f.asOf}，简化营运资金 = 应收 ${f.receivables} + 存货 ${f.inventory} − 应付 ${f.payables} = ${n(f.receivables + f.inventory - f.payables)}百万原币。收入用H1简单年化 ${f.annualizedRevenue}百万；起点现金 ${f.cash}百万。预留未来激励 ${f.reservedFutureAwards}百万股，既有潜在股份 ${c.shares.knownPotential}百万股也不能当作新增现金发行。\n\n`;
@@ -59,13 +89,15 @@ for (const c of data.companies) {
     md += `\n${f.caveat} 负值说明在这些条件下，仅营运资金就需要更多现金来源；正值也不等于资金已足够。\n\n${sources(f.sources)}\n\n`;
   }
   md += `**十倍反算**：每股价格需 ${n(h.price)}；按乐观期末 ${n(bull.shares)}百万股，股权价值需 ${amount(h.equity)}，相对起始股本折算值为 ${n(h.capitalMultiple)}倍。用 ${bull.pe}倍PE与 ${n(bull.margin * 100)}%归母净利率，需利润 ${amount(h.profit)}、收入 ${amount(h.revenue)}，收入五年CAGR ${n(h.revenueCagr * 100)}%。\n\n若终值PE下降25%，乐观股价倍数变为 ${n(M.project(c, { ...bull, pe: bull.pe * .75 }).priceMultiple)}倍；若期末股数再增20%，变为 ${n(M.project(c, { ...bull, shares: bull.shares * 1.2 }).priceMultiple)}倍。两项同时发生则为 ${n(M.project(c, { ...bull, pe: bull.pe * .75, shares: bull.shares * 1.2 }).priceMultiple)}倍。分红不用于掩盖股价十倍未达标。\n\n### 市场容量与单位经济反查\n\n${c.marketTest.headline}\n\n`;
-  md += '| 收入组成（2031假设） | 数量 | 单位净收入 | 收入 / 亿原币 |\n| --- | ---: | ---: | ---: |\n' + c.marketTest.parts.map(p => `| ${p.label} | ${n(p.units)} ${p.unitLabel} | ${n(p.price)} | ${n(p.revenue / 100)} |`).join('\n');
+  if (c.marketTest.kind === 'segment_growth') {
+    md += '| 产品线 / 亿原币 | 2025H1 | 2026H1 | 同比 | 2026H1简单年化 | 2031假设 | 所需五年增速 |\n| --- | ---: | ---: | ---: | ---: | ---: | ---: |\n' + c.marketTest.parts.map(p => `| ${p.label} | ${n(p.priorRevenue / 100, 3)} | ${n(p.reportedRevenue / 100, 3)} | ${n((p.reportedRevenue / p.priorRevenue - 1) * 100)}% | ${n(p.baseRevenue / 100, 3)} | ${n(p.revenue / 100)} | ${n(((p.revenue / p.baseRevenue) ** (1 / data.horizonYears) - 1) * 100)}% |`).join('\n');
+  } else md += '| 收入组成（2031假设） | 数量 | 单位净收入 | 收入 / 亿原币 |\n| --- | ---: | ---: | ---: |\n' + c.marketTest.parts.map(p => `| ${p.label} | ${n(p.units)} ${p.unitLabel} | ${n(p.price)} | ${n(p.revenue / 100)} |`).join('\n');
   md += `\n\n${c.marketTest.assumptions}\n\n${c.marketTest.boundary}\n\n缺项：${c.marketTest.gap}\n\n${sources(c.marketTest.sources)}\n\n### 验证里程碑与撤回信号\n\n`;
   md += c.milestones.map(m => `- ${m.when}：${m.test}`).join('\n') + '\n\n撤回或下修：\n\n' + c.withdraw.map(t => '- ' + t).join('\n');
   md += '\n\n尚缺的具体证据：\n\n' + c.gaps.map(t => '- ' + t).join('\n') + '\n\n### 为什么不选常见替代\n\n';
   md += c.alternatives.map(a => `- **${a.name}**：${a.reason} ${sources(a.sources)}`.trimEnd()).join('\n') + '\n';
 }
-md += '\n## 新增比较：经营证据与买入价格分别检验\n\n以下尚未达到四家主表相同的核验深度，不直接升级为正式候选。Aehr与新产业使用已披露普通股作不再增股的下限压力；ACMR仍用明确的未来股数假设。没有把不同财年中点当成统一五年增长起点。\n\n';
+md += '\n## 新增比较：经营证据与买入价格分别检验\n\n以下尚未达到主表相同的核验深度，不直接升级为正式候选。Aehr与新产业使用已披露普通股作不再增股的下限压力，没有把不同财年中点当成统一五年增长起点。\n\n';
 for (const c of data.comparisons) {
   const equity = c.price.value * 10 * c.shares, revenue = equity / c.pe / c.margin;
   md += `### ${c.name} · ${c.id}\n\n${c.facts}\n\n${sources(c.sources)}\n\n${c.judgment}\n\n起始收盘价 ${c.currency} ${n(c.price.value)}（${c.price.asOf}），[报价接口](${c.price.url})。股数 ${n(c.shares, 6)}百万，${c.shareDate ? '截至' + c.shareDate + '；未计未来稀释，故只是门槛下限' : c.shareBasis}。\n\n按归母净利率 ${n(c.margin * 100)}%、PE ${c.pe} 的研究假设，股价十倍需股权价值 ${n(equity / 100)}亿原币、收入 ${n(revenue / 100)}亿原币；相对“${c.anchorLabel}”的 ${n(c.anchorRevenue / 100)}亿原币为 ${n(revenue / c.anchorRevenue)}倍。不同期间比较仅看量级，不给成功概率。\n\n未完成：${c.gaps}\n\n下次核验：${c.next}\n\n`;

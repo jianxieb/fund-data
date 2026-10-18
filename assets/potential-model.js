@@ -74,6 +74,25 @@
       throw new RangeError('毛利调整需有效收入、报表成本和成本抵减金额');
     return (revenue - reportedCost - costBenefit) / revenue;
   }
+  // Follow the issuer's parent-attributable adjustment, retaining stock compensation.
+  // This does not remove other investment income or establish core earnings.
+  function investmentProfit(p) {
+    if (![p.revenue, p.reportedParentNet, p.consolidatedGain, p.minorityGain, p.stockComp].every(finite) ||
+        p.revenue <= 0 || p.stockComp < 0)
+      throw new RangeError('利润复核需有效收入、归母利润、集团及少数股东投资收益和股权薪酬');
+    const parentGain = p.consolidatedGain - p.minorityGain;
+    const withoutGain = p.reportedParentNet - parentGain;
+    return { parentGain, withoutGain, margin: withoutGain / p.revenue,
+      issuerNonGaap: withoutGain + p.stockComp };
+  }
+  // Fraction is the new issue's share of post-offering capital, before the greenshoe.
+  // Oversubscription is a fraction of the initial new issue, not total capital.
+  function subsidiaryOwnership(ownership, fraction, overAllotment = 0) {
+    if (![ownership, fraction, overAllotment].every(finite) || ownership <= 0 || ownership > 1 ||
+        fraction < 0 || fraction >= 1 || overAllotment < 0)
+      throw new RangeError('子公司稀释需有效持股比例、发行后新股份比例及超额配售比例');
+    return ownership / (1 + fraction / (1 - fraction) * (1 + overAllotment));
+  }
   // All amounts and shares are in millions. This isolates working-capital risk;
   // it does not model future operating earnings or capital expenditure.
   function fundingStress(company, terminal, workingCapitalRatio, netIssuePrice) {
@@ -94,5 +113,6 @@
       fundingShares, proceeds, additionalWorkingCapital,
       balanceBeforeOtherFlows: f.cash + proceeds - additionalWorkingCapital };
   }
-  return { project, hurdle, scenario, select, cycleSort, sortValue, returnPercent, adjustedGrossMargin, fundingStress };
+  return { project, hurdle, scenario, select, cycleSort, sortValue, returnPercent, adjustedGrossMargin,
+    investmentProfit, subsidiaryOwnership, fundingStress };
 });

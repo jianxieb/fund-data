@@ -57,9 +57,16 @@ test('the price start, provenance, unit build and scenario claims reconcile for 
     assert.equal(q.currency, c.currency);
     assert.equal(c.price.asOf, data.priceDate);
     assert.equal(c.price.basis, 'regular_close_unadjusted');
-    const ids = [c.financials.source, c.shares.source, ...(c.shares.sources || []), ...c.facts.flatMap(f => f.sources), ...c.guidance.flatMap(g => g.sources), ...c.fundingSources, ...c.marketTest.sources, ...c.alternatives.flatMap(a => a.sources), ...c.calibration.flatMap(a => a.sources), ...(c.financingCheck?.sources || []), ...(c.earningsAdjustment?.sources || []), ...(c.productCheck?.sources || [])];
+    const ids = [c.financials.source, c.shares.source, ...(c.shares.sources || []), ...c.facts.flatMap(f => f.sources), ...c.guidance.flatMap(g => g.sources), ...c.fundingSources, ...c.marketTest.sources, ...c.alternatives.flatMap(a => a.sources), ...c.calibration.flatMap(a => a.sources), ...(c.financingCheck?.sources || []), ...(c.earningsAdjustment?.sources || []), ...(c.productCheck?.sources || []), ...(c.profitCheck?.sources || []), ...(c.cashCheck?.sources || []), ...(c.ownershipCheck?.sources || [])];
     ids.forEach(id => assert.ok(sourceIds.has(id), `${c.id}: unknown source ${id}`));
-    for (const p of c.marketTest.parts) near(p.units * p.price / 1e6, p.revenue);
+    if (c.marketTest.kind === 'segment_growth') {
+      near(c.marketTest.parts.reduce((sum, p) => sum + p.reportedRevenue, 0), c.financials.revenue);
+      for (const p of c.marketTest.parts) {
+        near(p.baseRevenue, p.reportedRevenue * 2);
+        assert.ok(p.priorRevenue > 0 && p.revenue > 0);
+        assert.equal(p.units, undefined, 'do not invent device counts from revenue');
+      }
+    } else for (const p of c.marketTest.parts) near(p.units * p.price / 1e6, p.revenue);
     const bull = M.scenario(c, 'bull');
     near(c.marketTest.parts.reduce((sum, p) => sum + p.revenue, 0), bull.revenue);
     // Arithmetic and evidence integrity must not enforce an investment conclusion.
@@ -68,7 +75,7 @@ test('the price start, provenance, unit build and scenario claims reconcile for 
       M.project(c, bull).priceMultiple * .75 / 1.2);
     assert.ok(c.withdraw.length >= 2 && c.gaps.length >= 2 && c.milestones.length >= 2);
     assert.ok(c.shares.futureBasis && c.shares.convertibles && c.marketTest.gap);
-    assert.ok(c.evidenceLabel && c.calibration.length && c.priorBull);
+    assert.ok(c.evidenceLabel && c.calibration.length);
   }
   for (const c of data.comparisons) {
     c.sources.forEach(id => assert.ok(sourceIds.has(id)));
@@ -78,6 +85,54 @@ test('the price start, provenance, unit build and scenario claims reconcile for 
     assert.equal(c.currency, q.currency);
     assert.ok(c.shareDate || c.shareBasis);
   }
+});
+
+test('investment adjustments use the attributable bridge and retain ongoing stock compensation', () => {
+  const c = byId('ACMR'), a = c.profitCheck;
+  const now = M.investmentProfit(a.current), prior = M.investmentProfit(a.prior);
+  near(now.parentGain, 50.011);
+  near(now.withoutGain, 56.280);
+  near(prior.withoutGain, 48.808);
+  near(now.issuerNonGaap, a.current.issuerNonGaap);
+  near(M.investmentProfit(a.prior).issuerNonGaap, a.prior.issuerNonGaap);
+  near(now.margin, 56.280 / 524.182);
+  near(now.withoutGain / prior.withoutGain - 1, .15308965743320746);
+  assert.notEqual(now.withoutGain, c.financials.netIncome - a.current.consolidatedGain);
+  assert.notEqual(now.withoutGain, (c.financials.netIncome - now.parentGain) * c.ownershipCheck.ownership);
+  assert.throws(() => M.investmentProfit({ ...a.current, minorityGain: null }), RangeError);
+});
+
+test('parent shares include both classes and distinguish an award upper bound from a complete balance', () => {
+  const s = byId('ACMR').shares, b = s.issuedBridge, a = s.awardUpperBound;
+  near(b.priorA + b.priorB + b.newIssue + b.optionExercises, b.endA + b.endB);
+  near(b.endA + b.endB + b.laterNetIssue, s.value);
+  near(a.employeeOptions + a.nonEmployeeOptions + a.newOptions - a.exercised + a.newRsu, s.potentialUpperBound);
+  near(s.potentialUpperBound, 5.927590);
+  assert.equal(a.unreportedCancellations, null);
+  assert.equal(s.knownPotential, null);
+  assert.match(s.gap, /取消/);
+});
+
+test('subsidiary post-offering issuance and greenshoe have a separate denominator', () => {
+  const o = byId('ACMR').ownershipCheck;
+  near(M.subsidiaryOwnership(o.ownership, o.proposedFraction), .68076);
+  near(M.subsidiaryOwnership(o.ownership, o.proposedFraction, o.overAllotment), .6736862939139041);
+  near(M.subsidiaryOwnership(.7, .2, .15), .7 / 1.2875);
+  near(M.subsidiaryOwnership(.7, 0, .15), .7);
+  assert.throws(() => M.subsidiaryOwnership(.7, 1), RangeError);
+  assert.throws(() => M.subsidiaryOwnership(.7, null), RangeError);
+});
+
+test('cash reconciliation separates funding proceeds, operating burn and the issuer FCF definition', () => {
+  const c = byId('ACMR'), f = c.cashCheck;
+  near(Object.values(f.jurisdictions).reduce((a, b) => a + b, 0), f.cash);
+  near(f.debtParts.reduce((a, b) => a + b, 0), c.financials.debt);
+  near(f.operatingCash, c.financials.operatingCash);
+  near(f.operatingCash - f.capex, -123.207);
+  near(f.operatingCash - f.capex - f.longTermInvestments, f.issuerFcf);
+  near(f.parentEquityProceeds + f.subsidiarySaleGross + f.shortBorrowed - f.shortRepaid +
+    f.longBorrowed - f.longRepaid + f.optionProceeds, f.financingTotal);
+  near(f.financingTotal, 332.598);
 });
 
 test('reconstructed option balances exclude canceled awards instead of retaining original grants', () => {
@@ -115,14 +170,14 @@ test('financing pressure reserves awards and exposes the feedback from a lower i
 test('filtering and the three-step sort cycle return to the research order', () => {
   let state = { market: 'us', status: 'all', sector: 'all', query: '', sort: 'default', descending: true };
   const ids = () => M.select(data.companies, state).map(c => c.id);
-  assert.deepEqual(ids(), ['AMPX', 'OUST']);
+  assert.deepEqual(ids(), ['AMPX', 'ACMR', 'OUST']);
   state = { ...state, ...M.cycleSort(state.sort, state.descending, 'revenue') };
-  assert.deepEqual(ids(), ['OUST', 'AMPX']);
+  assert.deepEqual(ids(), ['ACMR', 'OUST', 'AMPX']);
   state = { ...state, ...M.cycleSort(state.sort, state.descending, 'revenue') };
-  assert.deepEqual(ids(), ['AMPX', 'OUST']);
+  assert.deepEqual(ids(), ['AMPX', 'OUST', 'ACMR']);
   state = { ...state, ...M.cycleSort(state.sort, state.descending, 'revenue') };
   assert.equal(state.sort, 'default');
-  assert.deepEqual(ids(), ['AMPX', 'OUST']);
+  assert.deepEqual(ids(), ['AMPX', 'ACMR', 'OUST']);
   state.query = ' ampx ';
   assert.deepEqual(ids(), ['AMPX']);
   state.query = ''; state.status = 'watch';
@@ -180,12 +235,24 @@ test('both markets, empty search recovery and every detail tab expose complete e
       f.click('potential-detail', c.id);
       assert.match(f.modal, /已验证事实/);
       assert.match(f.modal, /管理层指引/);
+      if (c.profitCheck) {
+        assert.match(f.modal, /归母利润复核/);
+        assert.match(f.modal, /56\.280/);
+        assert.match(f.modal, /现金来源与去向/);
+        assert.match(f.html, /含未实现投资收益/);
+      }
       f.click('potential-detail-tab', 'scenarios');
       assert.match(f.modal, /期末股数/);
       assert.match(f.modal, /终值PE降低25%/);
       assert.match(f.modal, /缺项/);
       assert.match(f.modal, /参数根据与未验证条件/);
-      assert.match(f.modal, /已撤回的旧乐观假设/);
+      if (c.priorBull) assert.match(f.modal, /已撤回的旧乐观假设/);
+      else assert.doesNotMatch(f.modal, /已撤回的旧乐观假设/);
+      if (c.ownershipCheck) assert.match(f.modal, /子公司融资稀释/);
+      if (c.marketTest.kind === 'segment_growth') {
+        assert.match(f.modal, /H1简单年化/);
+        assert.doesNotMatch(f.modal, /单位净收入<\/th>/);
+      }
       if (c.financingCheck) assert.match(f.modal, /融资敏感性/);
       f.click('potential-detail-tab', 'evidence');
       assert.match(f.modal, /撤回或下修信号/);
