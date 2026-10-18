@@ -286,5 +286,29 @@
         "close": 57.5099983215332
       }
     ]
+  },
+  {
+    "symbol": "RDW",
+    "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/RDW?range=1mo&interval=1d",
+    "retrievedAt": "2026-10-18",
+    "currency": "USD",
+    "basis": "unadjusted_regular_session_close",
+    "observations": [
+      {
+        "timestamp": 1791984600,
+        "date": "2026-10-14",
+        "close": 8.619999885559082
+      },
+      {
+        "timestamp": 1792071000,
+        "date": "2026-10-15",
+        "close": 8.90999984741211
+      },
+      {
+        "timestamp": 1792157400,
+        "date": "2026-10-16",
+        "close": 8.390000343322754
+      }
+    ]
   }
 ]

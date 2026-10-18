@@ -155,13 +155,13 @@ test('Dinglong separates acquisition cash, disposal cash, minorities and convert
 });
 
 test('comparison scenarios and tenfold hurdles use their own diluted denominators', () => {
-  for(const id of ['PDFS','300054']) {
+  for(const id of ['PDFS','300054','RDW']) {
     const c=data.comparisons.find(c=>c.id===id),a=c.audit;
     const company={price:c.price,shares:{value:c.shares},financials:{anchorRevenue:null}};
     assert.deepEqual(a.scenarios.map(s=>s.id),['bear','base','bull']);
     for(const s of a.scenarios) {
       const p=M.project(company,s);
-      near(p.price,s.revenue*s.margin*s.pe/s.shares);
+      near(p.price,(s.margin>0?s.revenue*s.margin*s.pe:s.equityValue)/s.shares);
       near(p.capitalMultiple/(s.shares/c.shares),p.priceMultiple);
       assert.equal(p.revenueCagr,null,'H1 scale references do not silently become full-year growth forecasts');
     }
@@ -177,7 +177,7 @@ test('comparison scenarios and tenfold hurdles use their own diluted denominator
 
 test('new comparison dossiers expose financial evidence and scenario conditions', () => {
   const f=fixture();
-  for(const [id,market,name,amount,source] of [['PDFS','us','PDF Solutions','4.59','pdfs20260630_10q'],['300054','cn','鼎龙股份','2.39','1225596727']]) {
+  for(const [id,market,name,amount,source] of [['PDFS','us','PDF Solutions','4.59','pdfs20260630_10q'],['300054','cn','鼎龙股份','2.39','1225596727'],['RDW','us','Redwire','4.19','000181981026000124']]) {
     f.H.market=market;
     f.api.handleInput({value:id});f.H.render();f.click('potential-comparisons');
     assert.match(f.modal,new RegExp(name));
@@ -187,6 +187,85 @@ test('new comparison dossiers expose financial evidence and scenario conditions'
     assert.match(f.modal,/十倍反算/);
     assert.ok(f.modal.includes(source));
     assert.doesNotMatch(f.modal,/undefined|NaN/);
+  }
+});
+
+test('Redwire reconciles common earnings, cash restrictions and financing without treating equity as operating cash', () => {
+  const c=data.comparisons.find(c=>c.id==='RDW'),a=c.audit,f=a.cash;
+  for(const p of a.periods) {
+    near(p.revenue-p.cost-p.sga-p.rd-p.transactions,p.operating);
+    near(p.operating-p.interest-p.debtLoss-p.other,p.pretax);
+    near(p.pretax-p.tax,p.consolidatedNet);
+    near(p.consolidatedNet-p.preferredDividends,p.net);
+  }
+  near(a.ocfRows.reduce((sum,r)=>sum+r[1],0),f.operating);
+  near(f.ppe+f.intangibles,f.capex);
+  near(f.operating-f.capex,-48.043);
+  near(f.borrowed-f.debtRepaid-f.debtFees-f.financeLeaseCash+f.stockProceeds-f.equityIssueFees+f.stockPlanCash-f.preferredCashDividends,f.financing);
+  near(f.start+f.operating+f.investing+f.financing+f.fx,f.end);
+  near(f.unrestricted+f.restricted,f.end);
+  assert.notEqual(a.periods[1].preferredDividends,f.preferredCashDividends,'EPS allocation is not the cash payment period');
+  near(a.earnings.edgeCost+a.earnings.edgeSga,42.531);
+  near(a.periods[1].operating+42.531,-49.260);
+});
+
+test('Redwire acquisition comparisons, order rollforward and dated capital reconcile', () => {
+  const c=data.comparisons.find(c=>c.id==='RDW'),a=c.audit,g=a.growth,o=a.orders,s=a.capital;
+  near(g.spaceH1+g.defenseH1,g.currentH1);
+  near(g.spacePriorH1+g.defensePriorH1,g.reportedPriorH1);
+  near(g.currentH1/g.proformaPriorH1-1,.019155044923651277);
+  assert.notEqual(g.proformaPriorH1,g.reportedPriorH1);
+  near(o.start+o.additions-o.revenue+o.fx,o.end);
+  near(o.space+o.defense,o.end);
+  near(a.earnings.eacFavorable+a.earnings.eacUnfavorable,a.earnings.eacNet);
+  near(s.decReportedCommon+s.atmIssued+s.awardIssued+s.warrantIssued+s.preferredConverted,s.juneReportedCommon);
+  near(s.coverOutstanding,c.shares);
+  assert.equal(c.shareDate,s.coverDate);
+  near(s.debtPrincipal-s.debtDiscount,s.debtCarrying);
+  near(s.psuTarget*s.psuMaximumFactor,2.024418);
+  assert.equal(s.preferredRemaining,0);
+  assert.equal(s.privateExpiryOutcome,null,'an elapsed expiry date is not evidence of settlement or cash proceeds');
+  assert.equal(a.funding.startCash,a.cash.unrestricted,'restricted cash and undrawn credit cannot fund the scenario');
+});
+
+test('Redwire annual cash shortfalls link to net issuance prices and persistent compensation dilution', () => {
+  const c=data.comparisons.find(c=>c.id==='RDW'),f=c.audit.funding;
+  let cash=f.startCash-f.h2CashUse-f.debtReserved,stressCash=cash,prior=f.anchorRevenue;
+  for(const p of f.years) {
+    near(p.net,p.revenue*p.margin);
+    near(p.da,p.revenue*f.daRatio);
+    near(p.sbc,p.revenue*f.sbcRatio);
+    near(p.capex,p.revenue*f.capexRatio);
+    near(p.workingCapital,(p.revenue-prior)*f.workingCapitalRatio);
+    near(p.stressWorkingCapital,(p.revenue-prior)*f.stressWorkingCapitalRatio);
+    near(p.fcf,p.net+p.da+p.sbc-p.workingCapital-p.capex);
+    near(p.stressFcf,p.net-p.revenue*f.stressMarginReduction+p.da+p.sbc-p.stressWorkingCapital-p.capex);
+    cash+=p.fcf;stressCash+=p.stressFcf;
+    near(p.netRaise,Math.max(0,f.minimumCash-stressCash));
+    stressCash+=p.netRaise;near(p.cashEnd,cash);near(p.stressCashEnd,stressCash);
+    prior=p.revenue;
+  }
+  near(f.years.reduce((sum,p)=>sum+p.netRaise,0),f.netRaise);
+  near(f.years.reduce((sum,p)=>sum+p.sbc,0),f.futureSbc);
+  for(const p of f.priceCases) {
+    near(p.financingShares*p.price*(1-f.feeRate),f.netRaise);
+    near(p.awardShares*p.price,f.futureSbc);
+    near(c.shares+f.knownAwardStress+p.financingShares+p.awardShares,p.totalShares);
+  }
+  assert.ok(f.priceCases[1].totalShares>f.priceCases[0].totalShares,'lower issue and grant prices increase dilution');
+  assert.equal(f.basis,'research_assumptions_not_guidance');
+});
+
+test('Redwire loss valuation and restricted cash labels survive both dossier renderers', () => {
+  const f=fixture();f.H.market='us';f.api.handleInput({value:'RDW'});f.H.render();f.click('potential-comparisons');
+  const md=fs.readFileSync(require('node:path').join(__dirname,'../docs/research/potential-stocks-2026-10-18.md'),'utf8');
+  for(const rendered of [f.modal,md]) {
+    assert.match(rendered,/普通股股东净利/);
+    assert.match(rendered,/期末现金、等价物及受限现金/);
+    assert.match(rendered,/亏损残值法/);
+    assert.match(rendered,/3亿美元普通股残值/);
+    assert.match(rendered,/311\.658/);
+    assert.doesNotMatch(rendered,/NaN|undefined/);
   }
 });
 

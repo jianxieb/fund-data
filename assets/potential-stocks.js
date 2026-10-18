@@ -77,12 +77,12 @@
   function operatingScreenDetail(c) {
     const a=c.audit,f=a.cash,company={price:c.price,shares:{value:c.shares},financials:{anchorRevenue:null}};
     const unit=c.currency==='USD'?'百万美元':'百万元';
-    let html='<details class="potential-method"><summary>查看报表利润与现金</summary>' + evidenceTable(['期间 / '+unit,'收入','毛利率','营业利润','归母净利','经营现金'],a.periods.map(p=>[p.label,n(p.revenue,3),percent(1-p.cost/p.revenue),n(p.operating,3),n(p.net,3),p.operatingCash===null?'未单列季度数':n(p.operatingCash,3)])) + '<p>' + e(a.earningsNote) + '</p>';
-    html+=evidenceTable([f.period+' / '+unit,'金额'],[['期初现金及等价物',f.start],['经营现金',f.operating],['购建长期资产及设备预付款',f.capex+f.capexPrepaid],['经营现金减上述资本投入',f.operating-f.capex-f.capexPrepaid],['投资现金合计',f.investing],['融资现金合计',f.financing],['汇率影响',f.fx],['期末现金及等价物',f.end]].map(([label,v])=>[label,n(v,3)])) + '<p>' + e(a.cashNote) + '</p></details>';
+    let html='<details class="potential-method"><summary>查看报表利润与现金</summary>' + evidenceTable(['期间 / '+unit,'收入','毛利率','营业利润',a.netLabel||'归母净利','经营现金'],a.periods.map(p=>[p.label,n(p.revenue,3),percent(1-p.cost/p.revenue),n(p.operating,3),n(p.net,3),p.operatingCash===null?'未单列季度数':n(p.operatingCash,3)])) + '<p>' + e(a.earningsNote) + '</p>';
+    html+=evidenceTable([f.period+' / '+unit,'金额'],[['期初'+(f.basis||'现金及等价物'),f.start],['经营现金',f.operating],['购建长期资产及设备预付款',f.capex+f.capexPrepaid],['经营现金减上述资本投入',f.operating-f.capex-f.capexPrepaid],['投资现金合计',f.investing],['融资现金合计',f.financing],['汇率影响',f.fx],['期末'+(f.basis||'现金及等价物'),f.end]].map(([label,v])=>[label,n(v,3)])) + '<p>' + e(a.cashNote) + '</p></details>';
     for(const section of a.sections) html+='<details class="potential-method"><summary>' + e(section.title) + '</summary>' + (section.rows?evidenceTable(section.headers,section.rows.map(row=>row.map(v=>typeof v==='number'?n(v,6):v))):'') + paragraphs(section.paragraphs) + sourceLinks(section.sources) + '</details>';
     html+='<h4>五年经营情景 · 2031年终值</h4>' + evidenceTable(['情景','收入 / 亿'+currency(c),'归母净利率','PE','期末股数 / 百万','每股价格','股价倍数'],a.scenarios.map(s=>{
       const p=M.project(company,s);
-      return [s.label,n(s.revenue/100),percent(s.margin),s.pe,n(s.shares),n(p.price)+currency(c),n(p.priceMultiple)+'×'];
+      return [s.label,n(s.revenue/100),percent(s.margin),s.pe??'亏损残值法',n(s.shares),n(p.price)+currency(c),n(p.priceMultiple)+'×'];
     })) + '<p>' + e(a.scenarioNote) + '</p>';
     html+='<details class="potential-method"><summary>查看情景条件与十倍反算</summary>' + list(a.scenarios.map(s=>s.label+'：'+s.story)) + evidenceTable(['假设','期末股数 / 百万','净利率 / PE','十倍所需收入'],a.hurdleCases.map(s=>[s.label,n(s.shares,6),percent(s.margin)+' / '+s.pe,amount(c,c.price.value*10*s.shares/s.margin/s.pe)]));
     const bull=a.scenarios.find(s=>s.id==='bull');
