@@ -551,5 +551,29 @@
         "close": 18.760000228881836
       }
     ]
+  },
+  {
+    "symbol": "688167.SS",
+    "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/688167.SS?range=1mo&interval=1d",
+    "retrievedAt": "2026-10-18",
+    "currency": "CNY",
+    "basis": "unadjusted_regular_session_close",
+    "observations": [
+      {
+        "timestamp": 1791941400,
+        "date": "2026-10-14",
+        "close": 231.22999572753906
+      },
+      {
+        "timestamp": 1792027800,
+        "date": "2026-10-15",
+        "close": 212.97999572753906
+      },
+      {
+        "timestamp": 1792114200,
+        "date": "2026-10-16",
+        "close": 208.8000030517578
+      }
+    ]
   }
 ]
