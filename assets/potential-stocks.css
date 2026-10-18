@@ -1,6 +1,3 @@
-.stock-topic-nav{display:flex;gap:26px;margin:0 0 22px;border-bottom:1px solid var(--line)}
-.stock-topic-nav a{color:var(--muted);padding:0 1px 12px;font-weight:600;font-size:14px;text-decoration:none;border-bottom:2px solid transparent}
-.stock-topic-nav a[aria-current=page]{color:var(--green);border-color:var(--green)}
 .potential-warning{display:flex;align-items:baseline;gap:16px;padding:14px 18px;margin:0 0 22px;background:#f4eee1;border-left:3px solid var(--gold);color:#6f5a30;font-size:13px;line-height:1.8}
 .potential-warning strong{white-space:nowrap}
 .potential-filter-row{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:18px}
@@ -48,4 +45,4 @@
 .potential-sources span{display:block;font-size:11px;color:var(--muted);line-height:1.8}
 .potential-method{border-top:1px solid var(--line);padding-top:20px;margin-top:28px}.potential-method summary{cursor:pointer;margin-bottom:15px}
 @media(max-width:900px){.potential-detail-columns{grid-template-columns:1fr;gap:0}.potential-stress{grid-template-columns:repeat(2,1fr)}.potential-stress>div:nth-child(2){border-right:0}.potential-stress>div:nth-child(-n+2){border-bottom:1px solid var(--line)}}
-@media(max-width:650px){.stock-topic-nav{gap:24px}.stock-topic-nav a{font-size:13px}.potential-warning{display:block;padding:12px 15px;font-size:12px}.potential-warning strong{display:block;margin-bottom:4px}.potential-filter-row{align-items:stretch;flex-direction:column;gap:12px}.potential-filter-row input{min-width:0;width:100%}.potential-return-controls{padding:12px;gap:10px;flex-wrap:wrap}.potential-detail{font-size:13px}.potential-detail-tabs button{padding:9px 11px}.potential-table .potential-identity{min-width:210px;max-width:220px}.potential-table th,.potential-table td{padding:16px 13px}}
+@media(max-width:650px){.potential-warning{display:block;padding:12px 15px;font-size:12px}.potential-warning strong{display:block;margin-bottom:4px}.potential-filter-row{align-items:stretch;flex-direction:column;gap:12px}.potential-filter-row input{min-width:0;width:100%}.potential-return-controls{padding:12px;gap:10px;flex-wrap:wrap}.potential-detail{font-size:13px}.potential-detail-tabs button{padding:9px 11px}.potential-table .potential-identity{min-width:210px;max-width:220px}.potential-table th,.potential-table td{padding:16px 13px}}

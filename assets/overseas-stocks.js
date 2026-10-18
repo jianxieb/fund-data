@@ -1,7 +1,7 @@
 (function (root) {
   'use strict';
   const M = root.Changheng;
-  const groups = [['quality', '长期优质企业'], ['growth', '盈利成长企业'], ['breakout', '业绩爆发股'], ['dividend', '红利价值']];
+  const groups = [['quality', '长期优质企业'], ['growth', '盈利成长企业'], ['breakout', '业绩爆发股'], ['dividend', '红利价值'], ['potential', '潜力研究']];
   const state = { includeExcluded: false, group: 'quality', view: 'financials', category: 'all', query: '', sort: 'default', descending: true };
   let H;
   const finite = x => typeof x === 'number' && Number.isFinite(x);
@@ -43,7 +43,12 @@
     H = helpers;
     const all = root.OVERSEAS_STOCKS || [], pool = all.filter(matches), data = rows(), categories = [...new Set(pool.map(s => s.category))];
     const mode = state.view;
-    const tabs = '<div class="tabs stock-tabs" role="tablist" aria-label="美股研究分组">' + groups.map(([id, label]) => H.action(label + '<span class="tab-count">' + all.filter(s => s.screening.groups.includes(id)).length + '</span>', 'os-stock-group', (state.group === id ? 'active ' : '') + (id === 'other' ? 'stock-other-tab' : ''), 'data-value="' + id + '" role="tab" aria-selected="' + (state.group === id) + '"')).join('') + '</div>';
+    const activeGroup = H.potentialActive ? 'potential' : state.group;
+    const tabs = '<div class="tabs stock-tabs" role="tablist" aria-label="美股研究分组">' + groups.map(([id, label]) => {
+      const count = id === 'potential' ? (root.POTENTIAL_RESEARCH?.companies || []).filter(c => c.market === 'us').length : all.filter(s => s.screening.groups.includes(id)).length;
+      return H.action(label + '<span class="tab-count">' + count + '</span>', 'os-stock-group', activeGroup === id ? 'active' : '', 'data-value="' + id + '" role="tab" aria-selected="' + (activeGroup === id) + '"');
+    }).join('') + '</div>';
+    if (H.potentialActive) return tabs + H.potentialView();
     const filters = '<div class="stock-category-filter" role="group" aria-label="美股公司行业">' + [['all', '全部行业'], ...categories.map(c => [c, c])].map(([id, name]) => H.action(H.esc(name), 'os-stock-category', 'filter-chip' + (state.category === id ? ' active' : ''), 'data-value="' + H.esc(id) + '" aria-pressed="' + (state.category === id) + '"')).join('') + '</div>';
     const controls = '<div class="stock-controls"><div class="filters"><input type="search" id="os-stock-search" aria-label="搜索公司、代码或业务" placeholder="搜索公司、代码或业务" value="' + H.esc(state.query) + '"></div>' + (state.group === 'dividend' ? '' : '<div class="segmented stock-scope" aria-label="入选范围">' + [[false, '仅入选'], [true, '全部相关公司']].map(([id, label]) => H.action(label, 'os-stock-scope', state.includeExcluded === id ? 'active' : '', 'data-value="' + id + '" aria-pressed="' + (state.includeExcluded === id) + '"')).join('') + '</div>') + (mode === 'returns' ? H.returnControls(false) : '') + '</div>';
     const views = '<div class="segmented stock-view" aria-label="美股研究视图">' + [['financials', '财务与理由'], ['valuation', '估值'], ['returns', '收益与分红']].map(([id, label]) => H.action(label, 'os-stock-view', state.view === id ? 'active' : '', 'data-value="' + id + '" aria-pressed="' + (state.view === id) + '"')).join('') + '</div>';
@@ -81,7 +86,10 @@
   function handleAction(button) {
     const act = button.dataset.action, value = button.dataset.value;
     if (act === 'os-stock-detail') { detail(value); return; }
-    if (act === 'os-stock-group') { state.group = value; state.category = 'all'; state.sort = 'default'; state.descending = true; if (value === 'dividend') state.view = 'returns'; }
+    if (act === 'os-stock-group') {
+      H.setPotential?.(value === 'potential');
+      if (value === 'potential') { H.render(); return; }
+      state.group = value; state.category = 'all'; state.sort = 'default'; state.descending = true; if (value === 'dividend') state.view = 'returns'; }
     else if (act === 'os-stock-view') { state.view = value; (H.renderStockView || H.render)(); return; }
     else if (act === 'os-stock-sort-reset') { state.sort = 'default'; state.descending = true; }
     else if (act === 'os-stock-scope') { state.includeExcluded = value === 'true'; state.category = 'all'; }

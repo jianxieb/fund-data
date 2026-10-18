@@ -104,7 +104,7 @@ function fixture() {
     openModal: content => { modal = content; },
     render: () => { renders++; html = api.view(H); },
     renderStockView: () => { preserved++; html = api.view(H); },
-    annual: true, annualControl: () => '<button data-action="annual">累计收益</button>'
+    market: 'us', annual: true, annualControl: () => '<button data-action="annual">累计收益</button>'
   };
   H.render();
   return { api, H, data: context.window.POTENTIAL_RESEARCH, click: (action, value) => api.handleAction({ dataset: { action, value } }), get html() { return html; }, get modal() { return modal; }, get preserved() { return preserved; }, get renders() { return renders; } };
@@ -131,7 +131,8 @@ test('switching financial, valuation and return views preserves sort and uses th
 test('both markets, empty search recovery and every detail tab expose complete evidence', () => {
   const f = fixture();
   for (const market of ['us', 'cn']) {
-    f.click('potential-market', market);
+    f.H.market = market; f.H.render();
+    assert.doesNotMatch(f.html, /stock-market-nav|potential-market/);
     for (const c of data.companies.filter(c => c.market === market)) {
       assert.ok(f.html.includes(c.name));
       f.click('potential-detail', c.id);
