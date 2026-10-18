@@ -334,5 +334,30 @@
         "close": 258.5
       }
     ]
+  },
+  {
+    "symbol": "COHU",
+    "sourceUrl": "https://ir.cohu.com/stock-information/historical-price-lookup",
+    "retrievedAt": "2026-10-18",
+    "currency": "USD",
+    "basis": "issuer_historical_close",
+    "basisNote": "LSEG发行人历史价表按拆股/股息调整，所列三日拆股因子1:1；10/16其他来源close与adjusted close均50.81。未伪称Yahoo未复权数据。",
+    "observations": [
+      {
+        "date": "2026-10-14",
+        "close": 58.24,
+        "splitFactor": "1:1"
+      },
+      {
+        "date": "2026-10-15",
+        "close": 54.9,
+        "splitFactor": "1:1"
+      },
+      {
+        "date": "2026-10-16",
+        "close": 50.81,
+        "splitFactor": "1:1"
+      }
+    ]
   }
 ]

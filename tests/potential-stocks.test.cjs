@@ -107,6 +107,106 @@ test('the price start, provenance, unit build and scenario claims reconcile for 
   }
 });
 
+test('Cohu reconciles GAAP earnings, amortization and cash without treating withholding as a buyback', () => {
+  const a=data.comparisons.find(c=>c.id==='COHU').audit,p=a.periods.at(-1),e=a.earnings,f=a.cash;
+  near(p.revenue-p.cost-e.research-e.sga-e.purchasedAmortization-e.restructuring,p.operating);
+  near(p.operating-e.interestExpense+e.interestIncome-e.fxLoss-e.tax,p.net);
+  near(p.net+e.cashAdjustments.reduce((sum,x)=>sum+x,0),p.operatingCash);
+  near(1-(p.cost+e.costRelatedAmortization)/p.revenue,.421886685077028);
+  near(f.start+f.operating+f.investing+f.financing+f.fx,f.end);
+  near(-f.investmentPurchases+f.investmentMaturities+f.hedgeSettlement-f.capex+f.ppeSale,f.investing);
+  near(-f.employeeTaxNetEspp+f.revolvingNet-f.debtRepaid,f.financing);
+  near(f.operating-f.capex-f.capexPrepaid,16.426);
+  assert.match(a.cashNote,/并非市场回购/);
+  near(a.sections.find(s=>s.title==='利润到现金：增长也占用营运资金').rows.reduce((sum,r)=>sum+r[1],0),f.operating);
+});
+
+test('Cohu keeps non-system revenue, subscription fees, orders and opportunity stages distinct', () => {
+  const a=data.comparisons.find(c=>c.id==='COHU').audit,p=a.products;
+  near(p.systemsH1+p.nonSystemsH1,a.periods.at(-1).revenue);
+  near(p.nonSystemsFY25-p.nonSystemsPriorH1+p.nonSystemsH1,p.ltmNonSystems);
+  near(p.history.at(-1).revenue-a.periods[0].revenue+a.periods[1].revenue,p.ltmRevenue);
+  assert.equal(p.softwareSubscriptionTotal,null,'one customer potential fees are not company ARR');
+  assert.equal(p.cumulativeUnfilledOrders,null,'two dated announcements do not establish current backlog');
+  near(p.aprilSubscriptionPotentialAnnual,.330);
+  near(p.systemsPipelineApprox+p.recurringPipelineApprox,p.pipelineApprox);
+  assert.ok(p.notContributingOpportunityRange[0]>p.hpcGuidance[1]);
+  assert.ok(p.serviceLtmApprox<p.ltmNonSystems,'services are included in recurring business');
+});
+
+test('Cohu reserves cash principal and uses the same-date equity award ledger', () => {
+  const c=data.comparisons.find(c=>c.id==='COHU'),s=c.audit.capital;
+  near(s.issued-s.treasury,s.outstandingJune);
+  near(c.shares,s.coverOutstanding);
+  assert.equal(c.shareDate,s.coverDate);
+  near(s.principal+s.otherDebtPrincipal.reduce((sum,x)=>sum+x,0),s.totalDebtPrincipal);
+  near(s.totalDebtPrincipal-s.debtDiscount-s.currentDebt,s.longDebtCarrying);
+  near(s.outstandingJune+s.rsu+s.psuTarget*s.psuMaxFactor+s.assumedFutureAwardsAndEspp,s.preConversionShares);
+  assert.equal(s.psuMaxFactor,2);
+  assert.equal(s.postJuneConversions,null,'conversion eligibility is not actual conversion');
+  assert.equal(s.postJuneShareReconciliation,null);
+  assert.ok(s.maturity<data.horizonDate,'principal matures before the five-year terminal date');
+  assert.ok(s.preConversionShares<s.authorized,'authorization is not issued capital');
+});
+
+test('Cohu capped call dilution changes at the strike and cap and the tenfold hurdle recomputes shares', () => {
+  const c=data.comparisons.find(c=>c.id==='COHU'),a=c.audit,s=a.capital;
+  near(s.underlyingShares*s.strikePrice,s.principal);
+  for(const row of s.conversionPriceCases) {
+    near(row.excessShares*row.price,Math.max(s.underlyingShares*row.price-s.principal,0));
+    near(row.callShareEquivalent*row.price,row.callValue);
+    near(row.incrementalShares,row.excessShares-row.callShareEquivalent);
+    if(row.price<=s.capPrice) near(row.incrementalShares,0);
+    else near(row.incrementalShares*row.price,s.underlyingShares*(row.price-s.capPrice));
+  }
+  for(const row of s.settlementCases) {
+    const scenario=a.scenarios.find(x=>x.id===row.id);
+    near(row.price*row.totalShares,scenario.revenue*scenario.margin*scenario.pe);
+    near(row.preConversionShares+row.incrementalShares,scenario.shares);
+  }
+  const hurdle=a.hurdleCases[1],bull=a.scenarios.find(x=>x.id==='bull'),target=c.price.value*10;
+  near(hurdle.shares,s.preConversionShares+s.underlyingShares*(1-s.capPrice/target));
+  assert.ok(hurdle.shares>bull.shares,'a tenfold price has more residual dilution than the bull price');
+  near(target*hurdle.shares/hurdle.margin/hurdle.pe,5322.165027908333);
+  assert.ok(a.hurdleCases[2].shares>hurdle.shares,'no hedge recovery raises the share denominator');
+  assert.match(a.scenarioNote,/转换观察期均价等于2031终值价/);
+});
+
+test('Cohu financing stress reserves debt once and translates lower issue prices into additional shares', () => {
+  const a=data.comparisons.find(c=>c.id==='COHU').audit,f=a.funding,s=a.capital;
+  near(f.investmentsDueWithinYear+f.investmentsDueAfterYear,f.investments);
+  near(f.cash+f.investments-f.reservedPrincipal-f.assumedH2NetCashUse,f.start);
+  near(f.reservedPrincipal,s.totalDebtPrincipal);
+  near(f.cash+f.investmentsDueWithinYear*(1-f.stressLiquidationHaircut)-f.reservedPrincipal-f.assumedH2NetCashUse,f.stressStartBeforeRaise);
+  let cash=f.start,stress=f.stressStartBeforeRaise+f.openingNetRaise,previous=f.anchorRevenueAssumed,raised=f.openingNetRaise;
+  for(const row of f.years) {
+    near(row.net,row.revenue*row.margin);
+    near(row.workingCapital,(row.revenue-previous)*f.workingCapitalRatio);
+    near(row.net+row.da-row.capex-row.workingCapital,row.fcf);
+    near(row.stressNet+row.da-row.stressCapex-row.stressWorkingCapital,row.stressFcf);
+    cash+=row.fcf;stress+=row.stressFcf+row.netRaise;raised+=row.netRaise;
+    near(cash,row.cashEnd);near(stress,row.stressCashEnd);
+    assert.ok(stress>=f.minimumCash);previous=row.revenue;
+  }
+  near(raised,f.totalNetRaise);near(raised,267.7116);
+  for(const row of f.priceCases) {
+    near(row.newShares*row.issuePrice*(1-f.feeRate),raised);
+    near(row.preConversionShares,s.preConversionShares+row.newShares);
+    near(row.totalShares*row.price,1500*row.stressTerminalMargin*row.stressTerminalPe);
+  }
+  assert.ok(f.priceCases[2].newShares>f.priceCases[0].newShares);
+  assert.ok(f.priceCases[2].priceMultiple<f.priceCases[0].priceMultiple);
+});
+
+test('Cohu records issuer historical-price provenance instead of labeling it a Yahoo raw quote', () => {
+  const c=data.comparisons.find(c=>c.id==='COHU'),q=quotes.find(x=>x.symbol==='COHU');
+  assert.equal(q.basis,'issuer_historical_close');
+  assert.equal(c.price.url,q.sourceUrl);
+  assert.match(q.sourceUrl,/ir\.cohu\.com/);
+  near(q.observations.at(-1).close,50.81);
+  assert.ok(q.observations.every(x=>x.splitFactor==='1:1'));
+});
+
 test('PDF Solutions reconciles cash, capitalized compensation, primary issuance and debt maturities', () => {
   const c=data.comparisons.find(c=>c.id==='PDFS'),a=c.audit,f=a.cash,s=a.capital;
   near(f.start+f.operating+f.investing+f.financing+f.fx,f.end);
@@ -155,7 +255,7 @@ test('Dinglong separates acquisition cash, disposal cash, minorities and convert
 });
 
 test('comparison scenarios and tenfold hurdles use their own diluted denominators', () => {
-  for(const id of ['PDFS','300054','RDW','603061']) {
+  for(const id of ['PDFS','300054','RDW','603061','COHU']) {
     const c=data.comparisons.find(c=>c.id===id),a=c.audit;
     const company={price:c.price,shares:{value:c.shares},financials:{anchorRevenue:null}};
     assert.deepEqual(a.scenarios.map(s=>s.id),['bear','base','bull']);
@@ -177,7 +277,7 @@ test('comparison scenarios and tenfold hurdles use their own diluted denominator
 
 test('new comparison dossiers expose financial evidence and scenario conditions', () => {
   const f=fixture();
-  for(const [id,market,name,amount,source] of [['PDFS','us','PDF Solutions','4.59','pdfs20260630_10q'],['300054','cn','鼎龙股份','2.39','1225596727'],['RDW','us','Redwire','4.19','000181981026000124'],['603061','cn','金海通','1.65','12607453.PDF']]) {
+  for(const [id,market,name,amount,source] of [['PDFS','us','PDF Solutions','4.59','pdfs20260630_10q'],['300054','cn','鼎龙股份','2.39','1225596727'],['RDW','us','Redwire','4.19','000181981026000124'],['603061','cn','金海通','1.65','12607453.PDF'],['COHU','us','Cohu','2.91','cohu20260627_10q']]) {
     f.H.market=market;
     f.api.handleInput({value:id});f.H.render();f.click('potential-comparisons');
     assert.match(f.modal,new RegExp(name));
