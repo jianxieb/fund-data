@@ -1,0 +1,146 @@
+[
+  {
+    "symbol": "AMPX",
+    "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/AMPX?range=1mo&interval=1d",
+    "retrievedAt": "2026-10-18",
+    "currency": "USD",
+    "basis": "unadjusted_regular_session_close",
+    "observations": [
+      {
+        "timestamp": 1791984600,
+        "date": "2026-10-14",
+        "close": 8.0
+      },
+      {
+        "timestamp": 1792071000,
+        "date": "2026-10-15",
+        "close": 8.4
+      },
+      {
+        "timestamp": 1792157400,
+        "date": "2026-10-16",
+        "close": 7.71
+      }
+    ]
+  },
+  {
+    "symbol": "OUST",
+    "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/OUST?range=1mo&interval=1d",
+    "retrievedAt": "2026-10-18",
+    "currency": "USD",
+    "basis": "unadjusted_regular_session_close",
+    "observations": [
+      {
+        "timestamp": 1791984600,
+        "date": "2026-10-14",
+        "close": 31.870001
+      },
+      {
+        "timestamp": 1792071000,
+        "date": "2026-10-15",
+        "close": 31.33
+      },
+      {
+        "timestamp": 1792157400,
+        "date": "2026-10-16",
+        "close": 28.43
+      }
+    ]
+  },
+  {
+    "symbol": "ACMR",
+    "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/ACMR?range=1mo&interval=1d",
+    "retrievedAt": "2026-10-18",
+    "currency": "USD",
+    "basis": "unadjusted_regular_session_close",
+    "observations": [
+      {
+        "timestamp": 1791984600,
+        "date": "2026-10-14",
+        "close": 61.119999
+      },
+      {
+        "timestamp": 1792071000,
+        "date": "2026-10-15",
+        "close": 58.09
+      },
+      {
+        "timestamp": 1792157400,
+        "date": "2026-10-16",
+        "close": 53.099998
+      }
+    ]
+  },
+  {
+    "symbol": "688389.SS",
+    "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/688389.SS?range=1mo&interval=1d",
+    "retrievedAt": "2026-10-18",
+    "currency": "CNY",
+    "basis": "unadjusted_regular_session_close",
+    "observations": [
+      {
+        "timestamp": 1791941400,
+        "date": "2026-10-14",
+        "close": 11.0
+      },
+      {
+        "timestamp": 1792027800,
+        "date": "2026-10-15",
+        "close": 10.82
+      },
+      {
+        "timestamp": 1792114200,
+        "date": "2026-10-16",
+        "close": 10.82
+      }
+    ]
+  },
+  {
+    "symbol": "688050.SS",
+    "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/688050.SS?range=1mo&interval=1d",
+    "retrievedAt": "2026-10-18",
+    "currency": "CNY",
+    "basis": "unadjusted_regular_session_close",
+    "observations": [
+      {
+        "timestamp": 1791941400,
+        "date": "2026-10-14",
+        "close": 38.310001
+      },
+      {
+        "timestamp": 1792027800,
+        "date": "2026-10-15",
+        "close": 39.900002
+      },
+      {
+        "timestamp": 1792114200,
+        "date": "2026-10-16",
+        "close": 39.73
+      }
+    ]
+  },
+  {
+    "symbol": "688112.SS",
+    "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/688112.SS?range=1mo&interval=1d",
+    "retrievedAt": "2026-10-18",
+    "currency": "CNY",
+    "basis": "unadjusted_regular_session_close",
+    "observations": [
+      {
+        "timestamp": 1791941400,
+        "date": "2026-10-14",
+        "close": 84.349998
+      },
+      {
+        "timestamp": 1792027800,
+        "date": "2026-10-15",
+        "close": 80.199997
+      },
+      {
+        "timestamp": 1792114200,
+        "date": "2026-10-16",
+        "close": 78.900002
+      }
+    ]
+  }
+]
