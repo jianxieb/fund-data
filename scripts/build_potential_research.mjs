@@ -97,10 +97,61 @@ for (const c of data.companies) {
   md += '\n\n尚缺的具体证据：\n\n' + c.gaps.map(t => '- ' + t).join('\n') + '\n\n### 为什么不选常见替代\n\n';
   md += c.alternatives.map(a => `- **${a.name}**：${a.reason} ${sources(a.sources)}`.trimEnd()).join('\n') + '\n';
 }
-md += '\n## 新增比较：经营证据与买入价格分别检验\n\n以下尚未达到主表相同的核验深度，不直接升级为正式候选。Aehr与新产业使用已披露普通股作不再增股的下限压力，没有把不同财年中点当成统一五年增长起点。\n\n';
+function comparisonAudit(c) {
+  const a = c.audit;
+  if (!a) return '';
+  const table = (headers, rows) => '| ' + headers.join(' | ') + ' |\n| ' + headers.map(() => '---').join(' | ') + ' |\n' + rows.map(row => '| ' + row.join(' | ') + ' |').join('\n') + '\n\n';
+  let out = '#### 财年与过渡期\n\n';
+  out += table(['报告期间', '开始', '结束', '长度'], a.periods.map(p => [p.label, p.start, p.end, `${p.days}天 / ${p.days / 7}周`]));
+  out += a.periodNote + '\n\n' + sources(['aehr-calendar', 'aehr-next']) + '\n\n';
+  const r = a.productRevenue;
+  out += '#### 设备、接触器与服务：先核验复购\n\n';
+  out += table(['百万美元', ...r.periods, 'FY2026同比'], [...r.rows, { label: '合计', values: r.total }, { label: '其中随时间确认的服务', values: r.overTime }].map(p => [p.label, ...p.values.map(v => n(v, 3)), n((p.values[0] / p.values[1] - 1) * 100) + '%']));
+  out += r.note + '\n\n' + sources(['aehr-k']) + '\n\n';
+  const e = a.earnings;
+  out += '#### GAAP盈利与税项\n\n';
+  out += table(['FY2026项目', '百万美元'], [
+    ['收入', e.revenue], ['毛利', e.grossProfit], ['研发', -e.rd], ['销售及管理', -e.sga], ['重组费用', -e.restructuring],
+    ['营业利润', e.operating], ['净利息收入', e.interest], ['其他净收入', e.other], ['税前利润', e.pretax], ['所得税收益', e.taxBenefit], ['净利润', e.net], ['股权薪酬（已含在成本费用）', e.stockComp], ['期末净递延税资产（资产余额）', e.deferredTaxAsset]
+  ].map(([label, value]) => [label, n(value, 3)]));
+  out += `Q4营业利润 ${n(e.q4.operating, 3)}百万、税前利润 ${n(e.q4.pretax, 3)}百万、税惠 ${n(e.q4.taxBenefit, 3)}百万，净利润 ${n(e.q4.net, 3)}百万。${e.note}\n\n${sources(['aehr-k', 'aehr-results'])}\n\n`;
+  const f = a.cash;
+  out += '#### 现金桥与履约资金\n\n';
+  out += table([f.period + '项目', '百万美元'], [
+    ['期初现金及受限现金', f.startTotal], ['经营现金流', f.operating], ['固定资产支出', -f.capex], ['收购相关支付', -f.acquisitionPayment],
+    ['投资现金流合计', f.investing], ['ATM发行净筹资', f.atmNet], ['员工计划发行收入', f.employeeProceeds], ['归属代扣税回购', -f.withholdingRepurchase],
+    ['融资现金流合计', f.financing], ['汇兑变动', f.fx], ['期末现金及受限现金', f.endTotal], ['其中受限现金', f.restricted], ['经营现金减固定资产支出', f.operating - f.capex]
+  ].map(([label, value]) => [label, n(value, 3)]));
+  out += `应收 ${n(f.receivables, 3)} + 存货 ${n(f.inventory, 3)} − 应付 ${n(f.payables, 3)} = ${n(f.receivables + f.inventory - f.payables, 3)}百万美元；再减流动递延收入 ${n(f.deferredRevenueCurrent, 3)}，为 ${n(f.receivables + f.inventory - f.payables - f.deferredRevenueCurrent, 3)}百万美元。此为简化占用，未覆盖全部营运资金项目。\n\n${f.note}\n\n${sources(['aehr-k'])}\n\n`;
+  const k = a.concentration;
+  out += '#### 客户集中与订单边界\n\n';
+  out += `前五大客户收入占比：${k.periods.map((p, i) => p + ' ' + n(k.topFiveRevenue[i] * 100) + '%').join('；')}。FY2026收入客户 ${k.revenueCustomers.map(p => p.id + ' ' + n(p.share * 100) + '%').join('、')}；2026-05-29应收客户 ${k.receivableCustomers.map(p => p.id + ' ' + n(p.share * 100) + '%').join('、')}，三者合计 ${n(k.receivableCustomers.reduce((sum, p) => sum + p.share, 0) * 100)}%。${k.note}\n\n${sources(['aehr-k'])}\n\n`;
+  out += table(['时点', '事项', '百万美元', '口径'], a.orders.map(o => [o.date, o.label, (o.approximate ? '约' : '') + n(o.amount), o.basis]));
+  out += a.orderNote + '\n\n' + sources([...new Set(a.orders.flatMap(o => o.sources))]) + '\n\n';
+  const s = a.shareCheck;
+  out += '#### 已发行股份与潜在股份分开\n\n';
+  out += table(['时点', '已发行普通股 / 百万', '证据'], s.snapshots.map(p => [p.asOf, n(p.shares, 6), p.basis]));
+  out += table(['FY2026激励滚动 / 百万股', '期初', '新授', '归属或行权', '取消', '期末'], [
+    ['RSU及业绩RSU', s.rsu.begin, s.rsu.granted, s.rsu.vested, s.rsu.canceled, s.rsu.end],
+    ['期权', s.options.begin, s.options.grantedRounded, s.options.exercised, s.options.canceled, s.options.end]
+  ].map(([label, ...values]) => [label, ...values.map(v => n(v, 3))]));
+  out += `截至${s.periodEnd}，已披露潜在奖励合计 ${n(s.reportedPotential, 3)}百万股；股权计划剩余 ${n(s.equityPlanReserve, 3)}百万、ESPP剩余 ${n(s.esppReserve, 3)}百万属于未来额度。FY2026 ATM分批发行 ${s.atmIssues.map(p => p.month + ' ' + n(p.shares, 6) + '百万股').join('、')}，合计 ${n(s.atmTotal, 6)}百万股，已包含在期末普通股中，不能再次加入。\n\n${s.note}\n\n${sources(['aehr-k', 'aehr-proxy'])}\n\n`;
+  for (const note of a.businessNotes) out += '#### ' + note.title + '\n\n' + note.text + '\n\n' + sources(note.sources) + '\n\n';
+  out += '#### 股价十倍门槛：检验未来分母\n\n' + a.valuationNote + '\n\n';
+  out += table(['压力条件', '终点股数 / 百万', 'GAAP净利率', 'PE', '十倍所需年收入 / 亿美元', '相对FY2027指引中点'], a.hurdleCases.map(s => {
+    const revenue = c.price.value * 10 * s.shares / s.pe / s.margin;
+    return [s.label, n(s.shares, 6), n(s.margin * 100) + '%', s.pe, n(revenue / 100), n(revenue / c.anchorRevenue) + '×'];
+  }));
+  const example = M.project({ price: c.price, shares: { value: c.shares }, financials: { anchorRevenue: null } }, { ...a.scaleExample, dividends: 0 });
+  out += `量级示例：收入 ${n(a.scaleExample.revenue / 100)}亿美元 × GAAP净利率 ${n(a.scaleExample.margin * 100)}% × PE ${a.scaleExample.pe} ÷ ${n(a.scaleExample.shares)}百万股 = 每股 ${n(example.price)}美元，相对起点 ${n(example.priceMultiple)}倍。${a.scaleNote}\n\n`;
+  out += '#### 后续验证\n\n' + a.milestones.map(m => '- ' + m.when + '：' + m.test).join('\n') + '\n\n';
+  return out;
+}
+md += '\n## 新增比较：经营证据与买入价格分别检验\n\n以下保留为比较观察，详细核验不会自动升级候选资格。Aehr与新产业默认使用已披露普通股作不再增股的下限压力；Aehr另列未来稀释敏感性。不同财年中点不作为统一五年增长起点。\n\n';
 for (const c of data.comparisons) {
   const equity = c.price.value * 10 * c.shares, revenue = equity / c.pe / c.margin;
   md += `### ${c.name} · ${c.id}\n\n${c.facts}\n\n${sources(c.sources)}\n\n${c.judgment}\n\n起始收盘价 ${c.currency} ${n(c.price.value)}（${c.price.asOf}），[报价接口](${c.price.url})。股数 ${n(c.shares, 6)}百万，${c.shareDate ? '截至' + c.shareDate + '；未计未来稀释，故只是门槛下限' : c.shareBasis}。\n\n按归母净利率 ${n(c.margin * 100)}%、PE ${c.pe} 的研究假设，股价十倍需股权价值 ${n(equity / 100)}亿原币、收入 ${n(revenue / 100)}亿原币；相对“${c.anchorLabel}”的 ${n(c.anchorRevenue / 100)}亿原币为 ${n(revenue / c.anchorRevenue)}倍。不同期间比较仅看量级，不给成功概率。\n\n未完成：${c.gaps}\n\n下次核验：${c.next}\n\n`;
+  md += comparisonAudit(c);
 }
 md += '## 剩余研究工作\n\n' + data.remainingWork.map(t => '- [ ] ' + t).join('\n') + '\n';
 md += '\n## 复核与更新纪律\n\n报价原始接口、时点及近三个交易日观察另存 `data/potential-quotes.json`。市场报价来自数据供应商，财务来自公司公告；不声称已取得交易所逐笔行情。没有回测“成功率”，没有把财报未披露的单位经济当成已验证事实。已知股本日期落后报价；新增融资发生时先更新分母，再讨论目标价。\n\n候选与既有质量、成长、爆发、红利分类相互独立。本专题不改写既有分类结论。旧候选应保留版本和撤回理由，不因一次模型计算通过而自动升级研究结论。\n';

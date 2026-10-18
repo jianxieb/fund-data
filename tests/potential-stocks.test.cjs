@@ -84,6 +84,52 @@ test('the price start, provenance, unit build and scenario claims reconcile for 
     assert.equal(c.price.asOf, q.observations.at(-1).date);
     assert.equal(c.currency, q.currency);
     assert.ok(c.shareDate || c.shareBasis);
+    if (c.audit) [...c.audit.orders, ...c.audit.businessNotes].flatMap(x => x.sources).forEach(id => assert.ok(sourceIds.has(id)));
+  }
+});
+
+test('Aehr separates the fiscal transition and reconciles reported product revenue', () => {
+  const a = data.comparisons.find(c => c.id === 'AEHR').audit;
+  const inclusiveDays = p => (Date.parse(p.end) - Date.parse(p.start)) / 86400000 + 1;
+  for (const p of a.periods) near(inclusiveDays(p), p.days);
+  const [prior, transition, year, quarter] = a.periods;
+  assert.equal(Date.parse(prior.end) + 86400000, Date.parse(transition.start));
+  assert.equal(Date.parse(transition.end) + 86400000, Date.parse(year.start));
+  assert.equal(year.start, quarter.start);
+  near(year.days / 7, 52);
+  near(quarter.days / 7, 13);
+  near(transition.days, 28);
+  const r = a.productRevenue;
+  r.total.forEach((value, i) => near(r.rows.reduce((sum, p) => sum + p.values[i], 0), value));
+  near(r.total[0], a.earnings.revenue);
+  // Time-based service recognition is a subset, not all service revenue or contactor revenue.
+  r.overTime.forEach((value, i) => assert.ok(value < r.rows.find(p => p.label === '服务').values[i]));
+});
+
+test('Aehr cash funding, tax benefits and award cancellations reconcile independently', () => {
+  const c = data.comparisons.find(c => c.id === 'AEHR'), a = c.audit, e = a.earnings, f = a.cash, s = a.shareCheck;
+  near(e.grossProfit - e.rd - e.sga - e.restructuring, e.operating);
+  near(e.operating + e.interest + e.other, e.pretax);
+  near(e.pretax + e.taxBenefit, e.net);
+  near(e.q4.pretax + e.q4.taxBenefit, e.q4.net);
+  near(f.atmNet + f.employeeProceeds - f.withholdingRepurchase, f.financing);
+  near(-f.capex - f.acquisitionPayment, f.investing);
+  near(f.startTotal + f.operating + f.investing + f.financing + f.fx, f.endTotal);
+  near(f.cash + f.restricted, f.endTotal);
+  near(f.operating - f.capex, -5.376);
+  near(s.rsu.begin + s.rsu.granted - s.rsu.vested - s.rsu.canceled, s.rsu.end);
+  near(s.options.begin + s.options.grantedRounded - s.options.exercised - s.options.canceled, s.options.end);
+  near(s.rsu.end + s.options.end, s.reportedPotential);
+  near(s.atmIssues.reduce((sum, p) => sum + p.shares, 0), s.atmTotal);
+  near(s.snapshots.at(-1).shares, c.shares);
+  assert.equal(s.snapshots.at(-1).asOf, c.shareDate);
+  assert.ok(s.periodEnd < c.shareDate, 'old award balances cannot imply a same-day diluted total');
+  const company = { price: c.price, shares: { value: c.shares }, financials: { anchorRevenue: null } };
+  for (const row of a.hurdleCases) {
+    const revenue = c.price.value * 10 * row.shares / row.pe / row.margin;
+    const result = M.project(company, { ...row, revenue, dividends: 0 });
+    near(result.priceMultiple, 10);
+    assert.equal(result.revenueCagr, null, 'different fiscal anchors must not imply a five-year revenue CAGR');
   }
 });
 
