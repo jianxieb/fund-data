@@ -9,7 +9,7 @@
       {
         "timestamp": 1791984600,
         "date": "2026-10-14",
-        "close": 8.0
+        "close": 8
       },
       {
         "timestamp": 1792071000,
@@ -81,7 +81,7 @@
       {
         "timestamp": 1791941400,
         "date": "2026-10-14",
-        "close": 11.0
+        "close": 11
       },
       {
         "timestamp": 1792027800,
@@ -140,6 +140,54 @@
         "timestamp": 1792114200,
         "date": "2026-10-16",
         "close": 78.900002
+      }
+    ]
+  },
+  {
+    "symbol": "AEHR",
+    "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/AEHR?range=1mo&interval=1d",
+    "retrievedAt": "2026-10-18",
+    "currency": "USD",
+    "basis": "unadjusted_regular_session_close",
+    "observations": [
+      {
+        "timestamp": 1791984600,
+        "date": "2026-10-14",
+        "close": 71.48999786376953
+      },
+      {
+        "timestamp": 1792071000,
+        "date": "2026-10-15",
+        "close": 69.20999908447266
+      },
+      {
+        "timestamp": 1792157400,
+        "date": "2026-10-16",
+        "close": 60.599998474121094
+      }
+    ]
+  },
+  {
+    "symbol": "300832.SZ",
+    "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/300832.SZ?range=1mo&interval=1d",
+    "retrievedAt": "2026-10-18",
+    "currency": "CNY",
+    "basis": "unadjusted_regular_session_close",
+    "observations": [
+      {
+        "timestamp": 1791941400,
+        "date": "2026-10-14",
+        "close": 52.7599983215332
+      },
+      {
+        "timestamp": 1792027800,
+        "date": "2026-10-15",
+        "close": 51.630001068115234
+      },
+      {
+        "timestamp": 1792114200,
+        "date": "2026-10-16",
+        "close": 50.380001068115234
       }
     ]
   }

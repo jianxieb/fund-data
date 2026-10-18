@@ -10,14 +10,14 @@ const near = (a, b) => assert.ok(Math.abs(a - b) < 1e-8, `${a} != ${b}`);
 
 test('stockholder return divides terminal value by diluted shares, not starting shares', () => {
   const c = byId('AMPX'), bull = M.scenario(c, 'bull'), p = M.project(c, bull);
-  near(p.price, 2400 * .2 * 32 / 190);
-  near(p.priceMultiple, p.capitalMultiple / (190 / 146.080618));
+  near(p.price, 1000 * .15 * 30 / 210);
+  near(p.priceMultiple, p.capitalMultiple / (210 / 146.080618));
   const h = M.hurdle(c, bull);
   near(h.price, 77.1);
-  near(h.equity, 14649);
-  near(h.revenue, 2288.90625);
+  near(h.equity, 16191);
+  near(h.revenue, 3598);
   near(M.project(c, { ...bull, revenue: h.revenue }).priceMultiple, 10);
-  assert.ok(h.capitalMultiple > 13);
+  assert.ok(h.capitalMultiple > 14);
 });
 
 test('cash dividends stay separate from the price multiple and compound over five years', () => {
@@ -57,17 +57,59 @@ test('the price start, provenance, unit build and scenario claims reconcile for 
     assert.equal(q.currency, c.currency);
     assert.equal(c.price.asOf, data.priceDate);
     assert.equal(c.price.basis, 'regular_close_unadjusted');
-    const ids = [c.financials.source, c.shares.source, ...c.facts.flatMap(f => f.sources), ...c.guidance.flatMap(g => g.sources), ...c.fundingSources, ...c.marketTest.sources, ...c.alternatives.flatMap(a => a.sources)];
+    const ids = [c.financials.source, c.shares.source, ...(c.shares.sources || []), ...c.facts.flatMap(f => f.sources), ...c.guidance.flatMap(g => g.sources), ...c.fundingSources, ...c.marketTest.sources, ...c.alternatives.flatMap(a => a.sources), ...c.calibration.flatMap(a => a.sources), ...(c.financingCheck?.sources || []), ...(c.earningsAdjustment?.sources || []), ...(c.productCheck?.sources || [])];
     ids.forEach(id => assert.ok(sourceIds.has(id), `${c.id}: unknown source ${id}`));
     for (const p of c.marketTest.parts) near(p.units * p.price / 1e6, p.revenue);
     const bull = M.scenario(c, 'bull');
     near(c.marketTest.parts.reduce((sum, p) => sum + p.revenue, 0), bull.revenue);
-    assert.ok(M.project(c, M.scenario(c, 'base')).priceMultiple < 10);
-    assert.ok(M.project(c, bull).priceMultiple >= 10);
-    assert.ok(M.project(c, { ...bull, pe: bull.pe * .75, shares: bull.shares * 1.2 }).priceMultiple < 7);
+    // Arithmetic and evidence integrity must not enforce an investment conclusion.
+    for (const s of c.scenarios) assert.ok(Number.isFinite(M.project(c, s).priceMultiple));
+    near(M.project(c, { ...bull, pe: bull.pe * .75, shares: bull.shares * 1.2 }).priceMultiple,
+      M.project(c, bull).priceMultiple * .75 / 1.2);
     assert.ok(c.withdraw.length >= 2 && c.gaps.length >= 2 && c.milestones.length >= 2);
     assert.ok(c.shares.futureBasis && c.shares.convertibles && c.marketTest.gap);
+    assert.ok(c.evidenceLabel && c.calibration.length && c.priorBull);
   }
+  for (const c of data.comparisons) {
+    c.sources.forEach(id => assert.ok(sourceIds.has(id)));
+    const q = quotes.find(q => q.symbol === c.price.symbol);
+    near(c.price.value, Math.round(q.observations.at(-1).close * 100) / 100);
+    assert.equal(c.price.asOf, q.observations.at(-1).date);
+    assert.equal(c.currency, q.currency);
+    assert.ok(c.shareDate || c.shareBasis);
+  }
+});
+
+test('reconstructed option balances exclude canceled awards instead of retaining original grants', () => {
+  const c = byId('688389'), plans = c.shares.rollforward;
+  for (const p of plans) near(p.granted - p.exercised - p.canceled.reduce((s, x) => s + x, 0), p.remaining);
+  near(plans.reduce((s, p) => s + p.remaining, 0), c.shares.knownPotential);
+  near(c.shares.knownPotential, 19.994);
+});
+
+test('cost refunds and acquisition-related products cannot silently inflate operating evidence', () => {
+  const a = byId('OUST').earningsAdjustment;
+  near(M.adjustedGrossMargin(a.revenue, a.reportedCost, a.costBenefit), 21.285 / 54.626);
+  near(M.adjustedGrossMargin(a.priorRevenue, a.priorReportedCost, a.priorCostBenefit), 14.142 / 35.049);
+  assert.throws(() => M.adjustedGrossMargin(0, 2, 1), RangeError);
+  assert.throws(() => M.adjustedGrossMargin(10, 2, null), RangeError);
+  const p = byId('688050').productCheck;
+  near(p.current.reduce((s, x) => s + x, 0), 808.13489042);
+  near(p.prior.reduce((s, x) => s + x, 0), 779.25557159);
+});
+
+test('financing pressure reserves awards and exposes the feedback from a lower issue price', () => {
+  const c = byId('AMPX'), bull = M.scenario(c, 'bull');
+  const low = M.fundingStress(c, bull, .25, 4), high = M.fundingStress(c, bull, .25, 8);
+  near(low.workingCapital, 42.4);
+  near(low.fundingShares, 32.031342);
+  near(low.additionalWorkingCapital, 207.6);
+  near(low.balanceBeforeOtherFlows, -4.957632);
+  near(high.balanceBeforeOtherFlows, 123.167736);
+  assert.ok(M.fundingStress(c, bull, low.currentRatio, 4).balanceBeforeOtherFlows < low.balanceBeforeOtherFlows);
+  assert.equal(M.fundingStress(byId('688050'), M.scenario(byId('688050'), 'bull'), .25, 4), null);
+  assert.throws(() => M.fundingStress({ ...c, shares: { ...c.shares, knownPotential: null } }, bull, .25, 4), RangeError);
+  assert.throws(() => M.fundingStress(c, { ...bull, shares: 160 }, .25, 4), RangeError);
 });
 
 test('filtering and the three-step sort cycle return to the research order', () => {
@@ -142,6 +184,9 @@ test('both markets, empty search recovery and every detail tab expose complete e
       assert.match(f.modal, /期末股数/);
       assert.match(f.modal, /终值PE降低25%/);
       assert.match(f.modal, /缺项/);
+      assert.match(f.modal, /参数根据与未验证条件/);
+      assert.match(f.modal, /已撤回的旧乐观假设/);
+      if (c.financingCheck) assert.match(f.modal, /融资敏感性/);
       f.click('potential-detail-tab', 'evidence');
       assert.match(f.modal, /撤回或下修信号/);
       assert.match(f.modal, /原始来源与定位/);

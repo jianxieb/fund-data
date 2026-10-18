@@ -69,5 +69,30 @@
     if (!finite(multiple) || multiple < 0 || !finite(years) || years <= 0) return null;
     return (annual ? multiple ** (1 / years) - 1 : multiple - 1) * 100;
   }
-  return { project, hurdle, scenario, select, cycleSort, sortValue, returnPercent };
+  function adjustedGrossMargin(revenue, reportedCost, costBenefit) {
+    if (![revenue, reportedCost, costBenefit].every(finite) || revenue <= 0 || reportedCost < 0 || costBenefit < 0)
+      throw new RangeError('毛利调整需有效收入、报表成本和成本抵减金额');
+    return (revenue - reportedCost - costBenefit) / revenue;
+  }
+  // All amounts and shares are in millions. This isolates working-capital risk;
+  // it does not model future operating earnings or capital expenditure.
+  function fundingStress(company, terminal, workingCapitalRatio, netIssuePrice) {
+    const f = company.financingCheck;
+    if (!f) return null;
+    const inputs = [f.receivables, f.inventory, f.payables, f.cash, f.annualizedRevenue,
+      f.reservedFutureAwards, company.shares.value, company.shares.knownPotential,
+      terminal.shares, terminal.revenue, workingCapitalRatio, netIssuePrice];
+    if (!inputs.every(finite) || inputs.some(v => v < 0) ||
+        f.annualizedRevenue <= 0 || terminal.shares <= 0 || netIssuePrice <= 0)
+      throw new RangeError('融资压力需明确的营运资金、潜在股份、未来激励与净发行价');
+    const workingCapital = f.receivables + f.inventory - f.payables;
+    const fundingShares = terminal.shares - company.shares.value - company.shares.knownPotential - f.reservedFutureAwards;
+    if (fundingShares < 0) throw new RangeError('终点股数未覆盖现有股份、潜在股份及预留激励');
+    const additionalWorkingCapital = terminal.revenue * workingCapitalRatio - workingCapital;
+    const proceeds = fundingShares * netIssuePrice;
+    return { workingCapital, currentRatio: workingCapital / f.annualizedRevenue,
+      fundingShares, proceeds, additionalWorkingCapital,
+      balanceBeforeOtherFlows: f.cash + proceeds - additionalWorkingCapital };
+  }
+  return { project, hurdle, scenario, select, cycleSort, sortValue, returnPercent, adjustedGrossMargin, fundingStress };
 });
