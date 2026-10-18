@@ -1,0 +1,1445 @@
+# 行业筛选与公司研究 · 2026-10-19
+
+新增21家，本轮暂无保留候选。Viking、Kura的付费销量、净价与费用假设缺少依据，已撤回优先级及原回报测算。
+
+本批新增21家，覆盖新疗法、核燃料、卫星情报、军用无人机、电池、数据中心和金融服务。先筛掉增长、价格、融资或权利归属过不了关的候选；此前6家保留取舍记录，均不再优先。
+
+从2026-10-16报价起，考察未来五年每股价值。先判断行业变化能否形成可持续利润，再判断公司靠什么取得份额。候选排序必须有支付、竞争、单位利润与资本需求的证据；能用一组数字算出十倍，不构成优先研究的理由。证据不足时撤回预测，保留明确的缺口与重开条件。
+
+## 已确认的方法
+
+1. **先选行业变化**：寻找新用途、渗透率跃升、技术改变成本结构或产业利润转移。先判断新增付费需求和利润空间，成熟需求中的小幅降本通常不优先。
+2. **再找利润增长机制**：说明谁付钱、为何付钱，以及份额、产品价值、持续收费、研发复用或固定成本摊薄怎样扩大利润。检验竞争是否把收益让给客户；营收不必增长十倍。
+3. **做简短初筛并明确取舍**：对有限名单说明公司做什么、机会在哪里、利润怎样放大，以及当前规模和价格是否透支机会。给出相对高、中、低的研究优先级及理由，不用待验证代替判断，也不编造精确成功概率。
+4. **只深入最有希望的少数公司**：第一轮最多选两三家公司，围绕最能改变判断的问题研究客户采用、单位利润、竞争、扩张资金和稀释。主要逻辑不成立就调整方向，不为补齐报告继续投入。
+5. **最后建立估值情景**：从有依据的业务路径推导利润和每股结果，分别解释利润增长、估值变化和股数变化。终点PE结合增长阶段、竞争与现金创造能力论证，不统一填30倍，也不为凑十倍调整参数。
+
+股价长期受每股可持续利润或现金流及市场估值影响。收入、利润率、股数和估值可以同时变化，所以十倍股不要求营收也增长十倍。亏损公司不能用负利润作增长倍数；先研究能否形成正的单位利润，再研究规模、融资和每股回报。
+
+历史十倍股只提供机制线索：新市场、份额提升、经营杠杆、周期反转或估值变化可能共同作用。必须同时寻找失败对照；不能把事后赢家的共同点当作事前成功率，也不能把所有终值固定成30倍PE。
+
+## 行业变化
+
+### AI数据互联 · 需求强，当前价格门槛高
+
+AI集群需要芯片之间更快、更省电地交换数据，互联芯片的价值随系统复杂度提升。
+
+技术复用和单机价值量可放大利润；平台自研、光互联替代和客户议价也会分走收益。
+
+NVIDIA已公布Rubin及新一代互联架构；这是行业需求证据，也说明平台自身就是竞争者，不能直接算成CRDO或ALAB的订单。
+
+[NVIDIA Rubin量产与互联架构公告](https://nvidianews.nvidia.com/news/vera-rubin-full-production-agentic-ai-factory)；[Credo FY2027 Q1业绩公告](https://investors.credosemi.com/news-events/news/news-details/2026/Credo-Technology-Group-Holding-Ltd-Reports-First-Quarter-of-Fiscal-Year-2027-Financial-Results/default.aspx)；[Astera Labs 2026 Q2业绩公告](https://ir.asteralabs.com/news-releases/news-release-details/astera-labs-reports-second-quarter-2026-financial-results)
+
+### 卫星通信与数据 · 新增订阅是真机会，资本负担限制回报
+
+把原本无法覆盖的通信和难以持续观测的地表变化变成可购买的服务。
+
+同一套星座服务更多客户，收入有机会快于固定成本增长；发射、补网和定制交付会消耗现金。
+
+BlackSky已有多年影像订阅，但2026上半年收入仅增约4.5%，现金增长含增发。Planet与AST此前已筛，当前价格下不再优先。
+
+[BlackSky 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1753539/000175353926000118/exhibit991-blackskyq22026e.htm)；[BlackSky多年影像订阅合同](https://blacksky.com/press-releases/blacksky-wins-seven-figure-multi-year-international-contract-for-combined-assured-and-on-demand-subscriptions/)；[BlackSky 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1753539/000175353926000124/bksy-20260630.htm)
+
+### 无人驾驶与配送 · 有结构性机会，本批暂无保留候选
+
+自动驾驶尝试把反复发生的人工支出转成可复用的软件与设备投入。
+
+不需要货运量增长十倍：节省部分司机成本、提高车辆利用率，也可能创造新利润。供应商能留下多少才是关键。
+
+ATRI报告2025年卡车平均运营成本每英里2.336美元；这不是全部可节省成本。Aurora已有无人货运，Serve则面临配送需求不足。
+
+[ATRI 2026卡车运营成本研究摘要](https://truckingresearch.org/2026/07/new-atri-report-details-accelerating-costs-and-low-profitability-despite-cuts/)；[Aurora 2026投资者日公告（8-K附件）](https://ir.aurora.tech/sec-filings/all-sec-filings/content/0001828108-26-000082/businesswire-aurora2026ana.htm)；[Serve Robotics 2026 Q2业绩公告](https://investors.serverobotics.com/news-releases/news-release-details/serve-robotics-announces-second-quarter-2026-results)
+
+### 新疗法与诊疗 · 需求存在，尚无通过商业筛选的候选
+
+新疗法可以扩大治疗渗透或推进到更早用药阶段，但要先分清谁支付、持续多久，以及竞争后谁能留下利润。
+
+研发投入可被销量摊薄，但停药、净价下降、持续开发费用和合作分成会截断利润增长。临床事件带来的股价上涨不能代替可持续每股盈利。
+
+减重药已有实际使用与支付，但真实世界持续率和自付负担限制患者年；Kura已有小规模销售，尚不足以支撑原一线扩展假设。两家均撤回优先级。
+
+[KFF：使用目的与支付负担调查](https://www.kff.org/public-opinion/kff-health-tracking-poll-prescription-drug-costs-views-on-trump-administration-actions-and-glp-1-use/)；[JAMA：12个月持续用药研究](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2846157)；[Kura 2026 Q2财报](https://ir.kuraoncology.com/node/13671)
+
+### 核燃料供应 · 需求明确，五年投产与回报约束更强
+
+核电和先进反应堆需要可靠的浓缩燃料供应，建设本土产能形成采购机会。
+
+稀缺产能可能获得定价权；厂房、级联设备、许可和客户预付款决定股东能否拿到利润。
+
+DOE项目有真实拨款，但Centrus的12吨HALEU产能目标在2030年之后；附条件合同不能直接算成五年利润。
+
+[美国能源部HALEU富集项目](https://www.energy.gov/ne/haleu-enrichment-services)；[Centrus 2025年报业绩与扩产安排](https://investors.centrusenergy.com/news-releases/news-release-details/centrus-reports-fourth-quarter-and-full-year-2025-results-and)；[Centrus 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1065059/000162828026053433/ex991-10q2026_08x05.htm)
+
+### 金融与支付 · 先扣信用成本，再看增长
+
+移动渠道、订阅和跨境支付有份额迁移机会，不必依赖全行业十倍扩容。
+
+获客与技术成本可摊薄；坏账、资金成本和商户议价也会吞掉增长。
+
+Sezzle利润增长已有证据；Root保费未同步增长，dLocal交易额增速远高于利润增速。
+
+[Sezzle 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1662991/000166299126000124/sezl-20260806ex9901.htm)；[Root 2026 Q2股东信](https://joinroot.gcs-web.com/static-files/2b181f1d-a77a-4b12-b0d0-1f502333da5e)；[dLocal 2026 Q2业绩](https://investor.dlocal.com/news-releases/news-release-details/dlocal-reports-second-quarter-2026-financial-results)
+
+### 新型电池 · 能量密度有价值，量产证据仍不够
+
+消费电子需要在有限空间里获得更长续航，新材料可能提高单机价值。
+
+稳定良率和客户量产才会摊薄固定成本；研发和扩产也可能先耗尽资本。
+
+Enovix仍在关键手机客户资格验证阶段，现有收入不能证明手机主业已大规模放量。
+
+[Enovix 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1828318/000182831826000055/envx8k-q22026x8122026ex991.htm)
+
+### 军用无人机 · 需求很强，毛利和现金暂不支持优先
+
+低成本无人系统扩大采购场景，供应商有新品量产机会。
+
+产量上升可能改善良率与采购成本；若单机毛利不足，订单越多也可能越占用现金。
+
+Red Cat Q2收入增长527%，但毛利率约16%，费用和经营现金流尚未跨过盈利门槛。
+
+[Red Cat 2026 Q2业绩](https://ir.redcatholdings.com/news-events/press-releases/detail/237/red-cat-reports-q2-2026-revenue-growth-of-527-yy-q2-gross-margins-increase-39-vs-q2-2025-gross-margins-increased-27-sequentially-from-q1-2026)
+
+### 半导体制造与电源 · 收入增长尚未转成同幅利润
+
+晶圆制造和电力需求增加可带来设备与电源订单，但周期、整合与新增股份影响每股回报。
+
+更好的产能利用和产品组合可能摊薄成本；不能把终端AI需求全部计作供应商利润。
+
+Axcelis Q2营业利润率下降；Bel Fuse收入增加、GAAP净利略降，且有股权融资。
+
+[Axcelis 2026 Q2业绩](https://axcelis.gcs-web.com/news-releases/news-release-details/axcelis-announces-financial-results-second-quarter-2026)；[Bel Fuse 2026 Q2业绩](https://ir.belfuse.com/news-releases/news-release-details/bel-reports-second-quarter-and-first-half-2026-results)
+
+## 研究取舍
+
+| 公司 | 五年十倍可能性 | 研究优先级 | 研究阶段 | 判断 |
+| --- | --- | --- | --- | --- |
+| Viking Therapeutics VKTX | 十倍依据不足 | 撤回优先级 | 付费销量、净价与费用缺依据 | 目前不支持把Viking列为优先十倍候选。100万患者年、每年净收入5000美元和75%毛利均未建立公司层面的依据，原利润与回报测算已撤回。临床成功也不自动证明持续付费、渠道准入或份额。 |
+| Kura Oncology KURA | 十倍依据不足 | 撤回优先级 | 付费销量、净价与费用缺依据 | 撤回次优先结论。已获批窄适应症并有销售，但2500／7000患者年、20万美元年净价及未来费用不能由现有披露推出；原盈利和十倍回报测算停止使用。不是所有药企都只有一波行情，但此公司的长期利润路径尚未证明。 |
+| BlackSky BKSY | 低 | 低 | 排除结论 | 从新候选中退出优先。真实订阅机会存在，但现有现金流和资本要求不支持把它按轻资产软件估值。 |
+| Red Cat RCAT | 低 | 低 | 初筛止步 | 增长尚未转化成足够的单机利润，资本消耗很重；低市值不等于高十倍可能性。 |
+| Centrus Energy LEU | 低 | 低 | 初筛止步 | 需求有依据，但五年窗口内建设和资金负担大，不能把远期订单积压算成2031年利润。 |
+| ASP Isotopes ASPI | 缺核心量产利润证据 | 低 | 初筛止步 | 尚不能用现有收入证明核心同位素富集商业化，资金和执行门槛过高。 |
+| Arcutis ARQT | 低 | 低 | 初筛止步 | 利润改善已出现，但约39亿美元起价且毛利已很高；十倍更依赖产品规模继续大扩张，优先级低于本批新适应症机会。 |
+| Sezzle SEZL | 低 | 低 | 初筛止步 | 有增长也有利润，但约44亿美元起价，净利率已经不低；十倍主要依赖长期规模扩张，不能再凭空加十倍利润率。 |
+| Dave DAVE | 低 | 低 | 初筛止步 | 约50亿美元市值下，不能把调整后EBITDA率当净利率再外推；本批不优先。 |
+| Root ROOT | 低 | 低 | 初筛止步 | 承保盈利改善但保费未增长。低估值不是十倍业务扩张的证据，暂不优先。 |
+| Enovix ENVX | 缺核心量产利润证据 | 低 | 初筛止步 | 量产与利润质量尚未过关，低起价不能替代稳定生产和客户付款证据。 |
+| Applied Optoelectronics AAOI | 低 | 低 | 初筛止步 | 需求很强但毛利率下降，约62亿美元起价抬高十倍门槛；不以高营收增速直接升级。 |
+| Bel Fuse BELFB | 低 | 低 | 初筛止步 | 利润没有随收入同步增长，融资也改变了股数；不能忽略分母推十倍。 |
+| Axcelis ACLS | 低 | 低 | 初筛止步 | 行业周期、利润率与合并股本都影响回报，静态小市值不构成本批优先理由。 |
+| TransMedics TMDX | 低 | 低 | 初筛止步 | 商业价值不止卖设备，但约29亿美元起价下，十倍需新的适用范围与规模；运输资产会占用资本，本批不优先。 |
+| Ardelyx ARDX | 低 | 低 | 初筛止步 | 退出优先：销售有增长，但不能给临近核心专利期限的2031年利润随手套高PE；支付障碍也在压低目标。 |
+| CorMedix CRMD | 低 | 低 | 初筛止步 | 支付过渡和并购口径使短期利润不能直接年化，低PE未必代表低风险十倍机会。 |
+| Iovance IOVA | 低 | 低 | 初筛止步 | 新疗法有实收收入，但约61亿美元起价要求极大的后续利润规模；本批优先较小起价且权利路径更清楚的候选。 |
+| Remitly RELY | 低 | 低 | 初筛止步 | 约53亿美元市值下不能按含税收收益的利润推低PE；现有增长未显示十倍优先价值。 |
+| Personalis PSNL | 独立路径不适用 | 低 | 初筛止步 | 独立公司十倍路径已被并购交易改变，本批不沿原股票独立增长逻辑深入。 |
+| dLocal DLO | 低 | 低 | 初筛止步 | 交易规模增长没有等比例落到利润；约43亿美元起价下，暂不把流水增长当十倍股东回报依据。 |
+| Planet Labs PL | 中低 | 低 | 此前初筛 | 撤回此前优先安排。约49亿美元起始市值下，利润和补星现金尚未支持足够大的每股回报。 |
+| AST SpaceMobile ASTS | 中低 | 低 | 此前初筛 | 撤回此前优先安排。完整经济权益量级约158亿美元，建设和融资门槛高，十倍路径过重。 |
+| Aurora Innovation AUR | 中低 | 低 | 此前初筛 | 撤回此前优先安排。约96亿美元起始市值下，无人货运的收费和资本分担尚未支撑十倍利润路径。 |
+| Credo Technology CRDO | 低 | 低 | 此前初筛 | 行业和利润增长真实，但约330亿美元起点已不小，毛利率也不低；本轮不列入优先深挖的十倍候选。 |
+| Astera Labs ALAB | 低 | 低 | 此前初筛 | 产品扩张值得关注，但约524亿美元起点、73.3%毛利率使十倍需要极强持续兑现；本轮不优先。 |
+| Serve Robotics SERV | 低 | 低 | 此前初筛 | 小市值提供价格弹性，却不能抵消需求不足与毛亏损。相对无人重卡，目前更缺可重复盈利的证据。 |
+
+## Viking Therapeutics · VKTX
+
+### 公司做什么
+
+Viking是一家研发药物的公司，当前核心资产VK2735同时作用于GLP-1和GIP受体，开发注射剂和口服剂型用于减重。医生处方后由患者、保险或其他支付方承担费用，药企取得扣除返利后的净销售收入。目前没有获批产品，也没有商业销售。
+
+### 机会为什么出现
+
+减重药已有实际使用者，口服和较少注射次数可能降低使用门槛。Viking的机会取决于能否形成足以让医生、患者和支付方换药的优势；目前没有真实付费和长期留存证据，短期试验不能证明这种优势。
+
+### 利润如何放大
+
+可持续收入应从Viking各支付渠道的获付治疗时长及药企实收净价推算，扣除制造、渠道和持续开发费用，再计融资稀释。肥胖人口、处方张数和竞争药销售都不能直接变成Viking患者年；现有证据不足以给出可信的盈利区间。
+
+### 当前判断
+
+**五年十倍可能性：十倍依据不足；研究优先级：撤回优先级。** 目前不支持把Viking列为优先十倍候选。100万患者年、每年净收入5000美元和75%毛利均未建立公司层面的依据，原利润与回报测算已撤回。临床成功也不自动证明持续付费、渠道准入或份额。
+
+股价25.17美元，行情市值约29.26亿美元。用7月15日披露的1.1665亿股乘此价格，静态约29.36亿美元；差异来自股本口径。未来分母还包括激励和上市前融资，不能按当前市值十倍直接算每股十倍。
+
+股价快照：25.17美元，UTC 2026-10-16T23:39:48Z（盘后）。7月15日116.652937百万股；6月底RSU 1.813501百万股、期权5.990015百万股。已发行且可回购的0.030211百万股不重复加入。披露股数是有日期的事实，原未来激励和融资设定已撤回，不能据此确定2031年股数。
+
+[Viking 2026 Q2财报](https://ir.vikingtherapeutics.com/2026-07-29-Viking-Therapeutics-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Corporate-Update)；[Viking 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1607678/000119312526324219/vktx-20260630.htm)；[Viking口服三期启动公告](https://ir.vikingtherapeutics.com/2026-10-14-Viking-Therapeutics-Announces-Initiation-of-VK2735-Oral-Phase-3-Clinical-Program-in-Patients-with-Obesity)；[Viking维持治疗研究结果](https://ir.vikingtherapeutics.com/2026-09-22-Viking-Therapeutics-Announces-Positive-Topline-Results-from-Maintenance-Study-of-GLP-1-GIP-Agonist-VK2735-Demonstrating-the-Promise-of-Multiple-Maintenance-Dosing-Regimens)；[Lilly 2026 Q2业绩](https://investor.lilly.com/news-releases/news-release-details/lilly-reports-second-quarter-2026-financial-results-raises-full)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)；[Viking：口服二期完整结果](https://ir.vikingtherapeutics.com/2025-08-19-Viking-Therapeutics-Announces-Positive-Top-Line-Results-from-Phase-2-VENTURE-Oral-Dosing-Trial-of-VK2735-Tablet-Formulation-in-Patients-with-Obesity)；[KFF：使用目的与支付负担调查](https://www.kff.org/public-opinion/kff-health-tracking-poll-prescription-drug-costs-views-on-trump-administration-actions-and-glp-1-use/)；[JAMA：12个月持续用药研究](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2846157)；[Lilly：Zepbound自费价格与条件](https://zepbound.lilly.com/hcp/coverage-savings)；[CMS：GLP-1 Bridge支付规则](https://www.cms.gov/medicare/coverage/prescription-drug-coverage/medicare-glp-1-bridge)
+
+### 关键风险与依据
+
+- 三期疗效、安全性或停药率不达标，可直接摧毁核心资产价值，已有早期结果不能消除此风险。 口服二期已出现高于对照的总体治疗中止率。
+- Lilly等厂商的疗效、口服产品、医保渠道和降价，可能让Viking难以取得净价与份额。
+- 多个三期、制造预付款和上市准备先于销售；低价融资可能大幅增加股数。
+- 制造容量合同不等于可出售的合格产品，更不等于订单。知识产权也可能被挑战。
+
+**已发生 · 2026 Q2**：净亏损1.280亿美元；研发1.158亿美元、管理费用1690万美元。6月底现金及短期投资约5.02亿美元。 [Viking 2026 Q2财报](https://ir.vikingtherapeutics.com/2026-07-29-Viking-Therapeutics-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Corporate-Update)
+
+**已发生 · 2026 H1**：经营现金净流出2.391亿美元；这不是收入投入产出已经跑通。现金余额不能直接当作可分配给股东的价值。 [Viking 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1607678/000119312526324219/vktx-20260630.htm)
+
+**进度 · 2026-10-14**：口服SUNRISE三期已经启动：两个研究各目标560人、治疗68周。启动不是结果，也不是监管批准。注射剂三期已完成入组。 [Viking口服三期启动公告](https://ir.vikingtherapeutics.com/2026-10-14-Viking-Therapeutics-Announces-Initiation-of-VK2735-Oral-Phase-3-Clinical-Program-in-Patients-with-Obesity)；[Viking 2026 Q2财报](https://ir.vikingtherapeutics.com/2026-07-29-Viking-Therapeutics-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Corporate-Update)
+
+**早期证据 · 2026-09-22**：维持给药探索支持不同给药间隔的可能，但维持随访只有12周，不能证明多年依从性、安全性或高市占率。 [Viking维持治疗研究结果](https://ir.vikingtherapeutics.com/2026-09-22-Viking-Therapeutics-Announces-Positive-Topline-Results-from-Maintenance-Study-of-GLP-1-GIP-Agonist-VK2735-Demonstrating-the-Promise-of-Multiple-Maintenance-Dosing-Regimens)
+
+**支持与反证 · 口服二期**：13周研究最高剂量组平均减重12.2%，对照1.3%；但药物组总体治疗中止率28%，对照18%。短期疗效有信号，耐受性和长期坚持仍是商业风险，不能只拿最佳减重数字与竞争药跨试验排名。 [Viking：口服二期完整结果](https://ir.vikingtherapeutics.com/2025-08-19-Viking-Therapeutics-Announces-Positive-Top-Line-Results-from-Phase-2-VENTURE-Oral-Dosing-Trial-of-VK2735-Tablet-Formulation-in-Patients-with-Obesity)
+
+**商业证据缺口**：尚无Viking获付患者、分渠道净价和真实世界续方数据。临床受试人数、制造容量合同及竞争药销售均不能补上这三个缺口。 [Viking 2026 Q2财报](https://ir.vikingtherapeutics.com/2026-07-29-Viking-Therapeutics-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Corporate-Update)；[Viking 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1607678/000119312526324219/vktx-20260630.htm)
+
+### 原盈利预测已撤回
+
+原100万患者年×5000美元得到的50亿美元销售，以及由此推导的利润和股价倍数，均已撤回。乘法没有错，但两项输入没有足够依据；把它称为“强情景”不能使其成为有概率支撑的投资判断。
+
+### 谁在付钱，能持续多久
+
+目前查到的公开资料不能回答：究竟多少人主要为减重、愿意自付约5000美元并连续使用一年。以下证据分别回答使用、价格和持续性，不能相乘成Viking的销量。
+
+| 问题 | 已查到的证据 | 对Viking意味着什么 | 来源 |
+| --- | --- | --- | --- |
+| 有人愿意使用吗？ | KFF在2025年10—11月调查1,350名美国成人：5%称曾主要为减重使用GLP-1；所有曾使用者中56%称难以负担。 | 证明有使用与支付障碍；“曾使用”不是当前使用，更不是自费满一年的人数。 | [KFF：使用目的与支付负担调查](https://www.kff.org/public-opinion/kff-health-tracking-poll-prescription-drug-costs-views-on-trump-administration-actions-and-glp-1-use/) |
+| 能坚持一年吗？ | 2026年JAMA研究：126,984名无糖尿病、超重或肥胖商业保险患者，12个月持续率24.5%，允许最长60天间断。 | 样本来自2019—2024年且漏掉完全自费记录，可能低估持续率；不能当作2026年全部患者或Viking的留存率，也不能据此把人数机械乘24.5%。 | [JAMA：12个月持续用药研究](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2846157) |
+| 自费要付多少？ | Lilly部分Zepbound剂量优惠449美元/28天，续购需在45天内；5mg常规399美元/28天。 | 若449美元条件一直成立，13份覆盖364天约5837美元。只是按价换算，不证明有人这样付满一年，也不是药企实收净价。 | [Lilly：Zepbound自费价格与条件](https://zepbound.lilly.com/hcp/coverage-savings) |
+| 人人都要自掏5000美元吗？ | CMS Bridge对符合条件的受益人及特定药物，患者自付50美元/月；当前试点到2027年底。 | 患者自付、保险等支付方支出、药企扣返利后的净收入必须分开。没有证据表明Viking未来自动获得同样准入。 | [CMS：GLP-1 Bridge支付规则](https://www.cms.gov/medicare/coverage/prescription-drug-coverage/medicare-glp-1-bridge) |
+
+### 100万患者年实际需要什么
+
+应按同一自然年内、Viking实际获付药品所覆盖的治疗天数加总，再除以365；注射与口服切换不能重复计数。100万人只拿过一次处方，不是100万患者年。200万人每人覆盖半年才约等于100万患者年，这只是单位换算，不是人数预测。
+
+要解释这个量，至少要有可触达并获支付批准的人数、首次获付处方、按月续方与停药/换药、竞争份额及年度爬坡。当前缺少这些公司层面数据，因此不另填一个较小数字替代100万。
+
+药企净销售应分渠道计算：各渠道的获付治疗时长×该渠道扣返利、折扣等后的实收。患者现金价不能直接充当这个均价；不同渠道的支付门槛与持续率也不能混为一个假设。
+
+### 原利润输入及依据（逐项）
+
+保留原数值以说明撤回原因；这些输入不再生成利润、股价或十倍回报结论。已披露事实与未证实假设分别列明。
+
+| 原输入（已撤回） | 已知事实 | 采用该数字还缺什么 | 来源 |
+| --- | --- | --- | --- |
+| 年付费患者年：40万／100万 | 无获批产品或商业销售；短期试验有疗效信号，也有停药。 | 缺获付新患者、留存曲线、换药/份额、上市爬坡；无法从试验人数推出。 | [Viking 2026 Q2财报](https://ir.vikingtherapeutics.com/2026-07-29-Viking-Therapeutics-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Corporate-Update)；[Viking：口服二期完整结果](https://ir.vikingtherapeutics.com/2025-08-19-Viking-Therapeutics-Announces-Positive-Top-Line-Results-from-Phase-2-VENTURE-Oral-Dosing-Trial-of-VK2735-Tablet-Formulation-in-Patients-with-Obesity)；[JAMA：12个月持续用药研究](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2846157) |
+| 每患者年药企净收入：4500／5000美元 | 竞品公布自费优惠；医保存在不同支付规则。Viking没有已披露商业净价。 | 缺支付渠道组合、返利折扣、剂量及竞争降价依据；不能用患者现金价替代。 | [Lilly：Zepbound自费价格与条件](https://zepbound.lilly.com/hcp/coverage-savings)；[CMS：GLP-1 Bridge支付规则](https://www.cms.gov/medicare/coverage/prescription-drug-coverage/medicare-glp-1-bridge)；[Viking 2026 Q2财报](https://ir.vikingtherapeutics.com/2026-07-29-Viking-Therapeutics-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Corporate-Update) |
+| 产品毛利率：75%／75% | 有制造协议，但尚无上市产品成本和商业毛利。 | 缺单位制造、包装配送、良率及不同剂型成本；没有从合同推到75%的桥梁。 | [Viking 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1607678/000119312526324219/vktx-20260630.htm) |
+| 年研发及管理销售费用：7亿／15亿美元 | 2026 H1研发2.659亿、管理0.308亿美元，处于研发阶段。 | 缺上市销售网络、后续开发计划与费用随规模变化的依据；现有研发费用不能证明终点预算。 | [Viking 2026 Q2财报](https://ir.vikingtherapeutics.com/2026-07-29-Viking-Therapeutics-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Corporate-Update) |
+| 年净融资费用：2500万美元 | 当前有现金资产，未来融资结构未定。 | 缺未来债务、利率及现金收益预测；这是原模型设定。 | [Viking 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1607678/000119312526324219/vktx-20260630.htm) |
+| 正常化税率：25% | 当前亏损，未来盈利地区组合与亏损抵扣不确定。 | 缺适用地区、抵扣使用及有效税率依据；不是已知未来税负。 | [Viking 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1607678/000119312526324219/vktx-20260630.htm) |
+| 已发行与既有潜在股数：116.652937＋7.803516百万股 | 已发行股数及RSU/期权来自公司披露，可保留作为有日期的资本事实。 | 潜在股数全额计入属于压力口径，不是当前GAAP摊薄股数；不能据此确定2031年分母。 | [Viking 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1607678/000119312526324219/vktx-20260630.htm) |
+| 额外未来激励：1000万股 | 股权激励会增加股份，但没有对应2031年授予承诺。 | 缺未来授予计划；1000万是原研究预留，不是披露数。 | [Viking 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1607678/000119312526324219/vktx-20260630.htm) |
+| 融资与发行条件：净融资12亿／18亿美元；发行25／15美元；费用3% | 2026 H1经营现金流出约2.391亿美元，6月底现金及短期投资约5.02亿美元。 | 缺逐年现金预算、制造付款和融资工具。需要融资的方向有依据，金额、价格与费用率没有足够依据。 | [Viking 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1607678/000119312526324219/vktx-20260630.htm) |
+| 终点PE：18—26／18—32倍 | 尚无正的持续商业利润，三期成功和专利保护也不保证长久超额回报。 | 缺2031年后利润寿命、再投资回报与增长路径；不能用PE补出十倍。 | [Viking 2026 Q2财报](https://ir.vikingtherapeutics.com/2026-07-29-Viking-Therapeutics-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Corporate-Update)；[Viking 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1607678/000119312526324219/vktx-20260630.htm) |
+
+### 重新估算需要的依据
+
+先证明产品相对替代方案的优势，以及这种优势能换来支付准入、持续使用和份额；再按渠道与患者进入年份估算付费治疗时长。
+
+每个预测输入要有事实锚点、从事实到假设的理由及失败条件；未知项可以做有依据的区间，不能凭所需回报倒填数字。当前临床进展可形成事件行情，但尚不足以作为持续每股盈利的优先候选。
+
+**本轮已检验：100万患者年和5000美元净价，有没有可核对的依据？**
+
+没有足够依据。已查资料不能识别“主要为减重、每年自付约5000美元、持续一整年”的人数，更不能证明其中多少会使用Viking。原数字是未校准的设定；撤回据此给出的优先级、盈利和股价倍数。 [KFF：使用目的与支付负担调查](https://www.kff.org/public-opinion/kff-health-tracking-poll-prescription-drug-costs-views-on-trump-administration-actions-and-glp-1-use/)；[JAMA：12个月持续用药研究](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2846157)；[Lilly：Zepbound自费价格与条件](https://zepbound.lilly.com/hcp/coverage-savings)；[CMS：GLP-1 Bridge支付规则](https://www.cms.gov/medicare/coverage/prescription-drug-coverage/medicare-glp-1-bridge)；[Viking 2026 Q2财报](https://ir.vikingtherapeutics.com/2026-07-29-Viking-Therapeutics-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Corporate-Update)
+
+**改变判断的条件**
+
+- 上调：随机三期支持有竞争力的疗效与耐受性，并有可解释的支付准入、分渠道净价、6—12个月续方与份额依据；同时能估算达到该规模的资金需求。
+- 下调：三期失败、差异化不足、支付受限、停药或净价侵蚀明显，或者所需低价融资使每股路径继续恶化。
+
+取消本批第一优先；不再靠补齐情景数字维持它的排名。只有三期结果带来明确竞争差异，且支付准入、用药持续或成本证据足以建立商业估算时再重开。
+
+## Kura Oncology · KURA
+
+### 公司做什么
+
+Kura研发和销售针对特定癌症机制的药物。KOMZIFTI（ziftomenib）是口服menin抑制剂，FDA目前批准用于没有满意替代方案的成人复发或难治性NPM1突变急性髓系白血病。公司负责美国商业化，与Kyowa Kirin共享美国商业利润；海外由合作方销售，Kura收取提成。
+
+### 机会为什么出现
+
+想象力是把已经很晚才使用的药物推进到初治阶段，与标准治疗联用，让更多合适患者受益并有机会持续治疗更久。患者总数不必十倍增长。已有末线批准降低了部分药物开发不确定性，但不证明一线联合治疗成功；扩大适应症仍要独立取得随机三期证据。
+
+### 利润如何放大
+
+销量扩大可能摊薄开发投入，但要先证明适用患者中多少人真正开始付费、用药多久和药企实收多少。美国商业利润只归Kura一半，海外只计净提成，再扣持续研发、管理与税项。当前产品收入不能直接除以新增患者人数当成年净价；里程碑收入不能当永久利润。
+
+### 当前判断
+
+**五年十倍可能性：十倍依据不足；研究优先级：撤回优先级。** 撤回次优先结论。已获批窄适应症并有销售，但2500／7000患者年、20万美元年净价及未来费用不能由现有披露推出；原盈利和十倍回报测算停止使用。不是所有药企都只有一波行情，但此公司的长期利润路径尚未证明。
+
+股价9.08美元，行情市值约8.07亿美元；6月底88.954百万已发行股对应静态约8.08亿美元。未来期权、激励和融资使终点股数更大，较小起价只是必要条件，不是十倍保证。
+
+股价快照：9.08美元，UTC 2026-10-16T21:35:00Z（盘后）。6月底已发行88.954百万股、潜在普通股21.667百万股（含期权、RSU等，非当前GAAP摊薄股数）。原模型曾全额加入潜在股数且不计行权现金，属于压力口径；未来融资和激励设定已撤回，不能据此确定2031年分母。
+
+[Kura 2026 Q2财报](https://ir.kuraoncology.com/node/13671)；[Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm)；[FDA：ziftomenib获批范围](https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-ziftomenib-relapsed-or-refractory-acute-myeloid-leukemia-npm1-mutation)；[Kura 2025年报](https://ir.kuraoncology.com/static-files/37d2d8c3-659e-442a-aeb0-7c5d46326bb3)；[Kyowa Kirin：ziftomenib全球合作](https://www.kkna.kyowakirin.com/media-center/kura-oncology-and-kyowa-kirin-announce-global-strategic-collaboration-to-develop-and-commercialize-ziftomenib-in-acute-leukemias/)；[Kyowa Kirin：KOMET-007一线研究更新](https://www.kyowakirin.com/media_center/news_releases/2026/e20260612_01.html)；[NCI SEER：急性髓系白血病统计](https://seer.cancer.gov/statfacts/html/amyl.html)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)；[FDA：竞争药revumenib获批NPM1适应症](https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-revumenib-relapsed-or-refractory-acute-myeloid-leukemia-susceptible-npm1-mutation)
+
+### 关键风险与依据
+
+- 一线三期可能失败；早期单臂联合研究不能证明比现有标准治疗更有效。
+- Revumenib等menin抑制剂竞争、联合治疗顺序和安全性可能限制份额；不能跨试验直接比缓解率判定胜负。
+- 美国利润分成、海外提成、许可成本与开发责任，可能让药物销量增长远快于Kura股东利润。
+- 未来融资和激励会稀释回报；合作款、里程碑与现金余额不能当成持续盈利或股价保底。
+
+**已发生 · 2026 Q2**：KOMZIFTI净产品销售912.2万美元，上季度约580万美元；约115名新患者开始治疗。合作收入另为1175.2万美元，不能混作药物销售。 [Kura 2026 Q2财报](https://ir.kuraoncology.com/node/13671)
+
+**已发生 · 2026 H1**：经营现金净流出1.484亿美元；6月底现金与短期投资5.190亿美元。Q2研发6190万美元、销售及管理3180万美元，当前销售远未覆盖开发投入。 [Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm)；[Kura 2026 Q2财报](https://ir.kuraoncology.com/node/13671)
+
+**监管边界**：FDA批准来自112人的单臂研究，CR+CRh为21.4%、中位反应持续约5个月；这是复发难治群体，不能用于推定初治患者能用两年。 [FDA：ziftomenib获批范围](https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-ziftomenib-relapsed-or-refractory-acute-myeloid-leukemia-npm1-mutation)
+
+**公司预期 · 尚未发生**：KOMET-017一线强化化疗研究首个关键终点数据预期在2028年。公司称现有现金加预期1.8亿美元合作款可支持到该节点；款项有条件，并非全部在账。 [Kura 2026 Q2财报](https://ir.kuraoncology.com/node/13671)；[Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm)
+
+**竞争已经存在**：FDA于2025-10-24批准revumenib用于相似NPM1复发/难治群体，且包括1岁以上儿童。Kura并不独占该机制或人群，份额假设需要竞争验证。 [FDA：竞争药revumenib获批NPM1适应症](https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-revumenib-relapsed-or-refractory-acute-myeloid-leukemia-susceptible-npm1-mutation)
+
+**还要扣原始许可成本**：年报披露向密歇根大学支付低个位数净销售提成，以及部分再许可对价分成。精确净提成组合未完整公开；原15%海外净提成设定已撤回。 [Kura 2025年报](https://ir.kuraoncology.com/static-files/37d2d8c3-659e-442a-aeb0-7c5d46326bb3)
+
+### 原盈利预测已撤回
+
+原2500／7000患者年、20万美元年净收入及未来利润率缺少可推导的依据，原盈利与股价倍数已撤回。Kura的既有批准和小规模销售是真实证据，但不足以支持本批次优先排名。
+
+### 现有销售能证明什么
+
+Q2净产品销售912.2万美元、约115名新患者开始治疗，证明已经有商业销售；没有披露足以计算全年获付患者年及单位净价的分母，不能把当季收入除以新患者人数。
+
+现批准针对复发难治人群。FDA资料中的约5个月中位反应持续时间不是付费疗程，更不能证明一线患者能连续治疗两年。原每年3500名新患者×两年得到7000患者年的设定，仍缺一线获益、市场份额与真实治疗时长。
+
+[Kura 2026 Q2财报](https://ir.kuraoncology.com/node/13671)；[FDA：ziftomenib获批范围](https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-ziftomenib-relapsed-or-refractory-acute-myeloid-leukemia-npm1-mutation)
+
+### 原利润输入及依据（逐项）
+
+保留原数值以说明撤回原因；这些输入不再生成利润、股价或十倍回报结论。已披露事实与未证实假设分别列明。
+
+| 原输入（已撤回） | 已知事实 | 采用该数字还缺什么 | 来源 |
+| --- | --- | --- | --- |
+| 年付费患者年：2500／7000 | Q2约115名新患者；现适应症窄。一线仍在三期开发。 | 缺符合标签的可触达人群、获付新患者、疗程、竞争份额与跨年爬坡。NPM1患病比例不是获付人数。 | [Kura 2026 Q2财报](https://ir.kuraoncology.com/node/13671)；[FDA：ziftomenib获批范围](https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-ziftomenib-relapsed-or-refractory-acute-myeloid-leukemia-npm1-mutation)；[NCI SEER：急性髓系白血病统计](https://seer.cancer.gov/statfacts/html/amyl.html) |
+| 每患者年净收入：20万美元 | 公司披露净产品销售，但未给出对应获付患者年。 | 缺按疗程与支付渠道的净价；收入除新增患者不能验证这个数字。 | [Kura 2026 Q2财报](https://ir.kuraoncology.com/node/13671)；[Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm) |
+| 美国商业利润率：70%／72% | 实际还要扣制造、销售及原始许可成本。 | 缺成熟规模的单位成本及商业费用；现有合同不能确定未来利润率。 | [Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm)；[Kura 2025年报](https://ir.kuraoncology.com/static-files/37d2d8c3-659e-442a-aeb0-7c5d46326bb3) |
+| Kura美国商业利润份额：50% | 合作披露美国商业利润与损失50/50分配。 | 份额有合同依据，可保留；它不证明分成前利润额，也不意味着全部研发费用都减半。 | [Kyowa Kirin：ziftomenib全球合作](https://www.kkna.kyowakirin.com/media-center/kura-oncology-and-kyowa-kirin-announce-global-strategic-collaboration-to-develop-and-commercialize-ziftomenib-in-acute-leukemias/)；[Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm) |
+| 合作方海外销售：2.5亿／6亿美元 | 海外由Kyowa负责，Kura取得提成而非全部销售。 | 缺逐地区批准、获付人数、净价与上市节奏；不是已签销售。 | [Kyowa Kirin：ziftomenib全球合作](https://www.kkna.kyowakirin.com/media-center/kura-oncology-and-kyowa-kirin-announce-global-strategic-collaboration-to-develop-and-commercialize-ziftomenib-in-acute-leukemias/) |
+| 海外净提成率：15% | 合作公布分层双位数毛提成；另有密歇根大学等许可负担。 | 精确净提成组合不完整公开，不能直接写成15%。 | [Kyowa Kirin：ziftomenib全球合作](https://www.kkna.kyowakirin.com/media-center/kura-oncology-and-kyowa-kirin-announce-global-strategic-collaboration-to-develop-and-commercialize-ziftomenib-in-acute-leukemias/)；[Kura 2025年报](https://ir.kuraoncology.com/static-files/37d2d8c3-659e-442a-aeb0-7c5d46326bb3) |
+| 年研发与管理等费用：1亿／1.1亿美元 | Q2研发6190万、销售管理3180万美元；开发资金责任依合作条款。 | 缺具体开发项目结束时间及后续预算；无法证明未来降至这个费用水平。 | [Kura 2026 Q2财报](https://ir.kuraoncology.com/node/13671)；[Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm) |
+| 年净融资费用：200万美元 | 披露了现有债务及现金，未来资本结构未定。 | 缺未来债务、利率及现金收入依据。 | [Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm) |
+| 正常化税率：25% | 当前亏损、未来盈利及抵扣路径不确定。 | 缺地区组合与有效税负依据；是原模型设定。 | [Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm) |
+| 已发行与既有潜在股数：88.954＋21.667百万股 | 6月底已发行及潜在普通股来自披露，保留为资本事实。 | 潜在股数全额加入属压力口径，不是当前GAAP摊薄股数，也不是2031年确定分母。 | [Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm) |
+| 额外未来激励：500万股 | 现有激励不代表未来授予计划。 | 缺未来激励规划；500万是研究预留。 | [Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm) |
+| 融资与发行条件：净融资3亿／5亿美元；发行15／8美元；费用3% | H1经营现金流出约1.484亿美元；合作款部分有条件。 | 缺逐年现金预算、合作款时点及融资工具；不能把现金缺口方向当成精确融资额。 | [Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm) |
+| 终点PE：16—24／20—35倍 | 现有小规模销售尚未形成持续利润；扩大适应症还有临床风险。 | 缺利润持续期、再投资需求和竞争后增长依据；35倍不能用来补足十倍。 | [Kura 2026 Q2财报](https://ir.kuraoncology.com/node/13671)；[FDA：ziftomenib获批范围](https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-ziftomenib-relapsed-or-refractory-acute-myeloid-leukemia-npm1-mutation)；[FDA：竞争药revumenib获批NPM1适应症](https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-revumenib-relapsed-or-refractory-acute-myeloid-leukemia-susceptible-npm1-mutation) |
+
+### 重新估算需要的依据
+
+先看可获付的新患者、实际疗程和净价，再看美国分成、海外净提成与持续开发责任后的利润；初治扩展必须有独立证据。
+
+已有批准使它与纯临床资产不同，但仍可能因临床事件波动。只有可持续利润的形成路径有依据，才重新讨论其是否值得优先研究。
+
+**本轮已检验：已有销售是否足以支持原患者年和净价？**
+
+不够。Q2新增约115名患者和912.2万美元净产品销售不能相除得到全年单人净收入，患者跨期且疗程不同。2500／7000患者年与20万美元年净价未获得独立依据；有批准和销售不等于已验证原扩张预测。 [Kura 2026 Q2财报](https://ir.kuraoncology.com/node/13671)；[FDA：ziftomenib获批范围](https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-ziftomenib-relapsed-or-refractory-acute-myeloid-leukemia-npm1-mutation)；[Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm)
+
+**改变判断的条件**
+
+- 上调：一线随机研究支持临床获益，同时有按队列统计的获付人数、持续时间与净价，及合同分成后费用和现金需求，足以建立盈利区间。
+- 下调：一线失败、疗程短或竞争挤压，或分成与持续研发消耗使规模扩大仍不能形成每股现金流。
+
+取消次优先；现有报告只保留业务、权利和已发生销售事实及原假设审查。重开取决于可核对的付费疗程、净价、开发费用责任和一线随机研究结果，不继续为原十倍数字补理由。
+
+## BlackSky · BKSY
+
+### 公司做什么
+
+BlackSky自己运营地球观测卫星，通过Spectra平台交付影像与分析；还出售专用卫星和工程服务。Q2收入主要来自政府及国际项目，商业客户收入只有约33万美元，不能据此宣称广泛AI商业需求已经兑现。
+
+### 机会为什么出现
+
+高频观测让政府更及时了解地表变化，同一影像可以多次出售。多年订阅说明部分客户愿意付费；专用卫星订单与订阅的资本需求不同，不能混成同一种高毛利业务。
+
+### 利润如何放大
+
+更多订阅可以摊薄已部署星座和软件成本，但星座要补充替换，折旧、股权薪酬及利息都必须由股东承担。调整后EBITDA转正，只是迈过部分费用门槛，尚不是净利润或可持续自由现金流。
+
+### 当前判断
+
+**五年十倍可能性：低；研究优先级：低。** 从新候选中退出优先。真实订阅机会存在，但现有现金流和资本要求不支持把它按轻资产软件估值。
+
+股价17.32美元；8月3日40.924846百万股对应约7.09亿美元。低市值没有消除后续补星资本和融资负担。
+
+股价快照：17.32美元，UTC 2026-10-16T23:44:44Z（盘后）。6月底现金、投资和受限资金合计约2.441亿美元，其中约996.5万美元受限；债务本金约2.172亿美元。1.85亿美元可转债有利息和潜在稀释，不能把全部现金当净现金。
+
+[BlackSky 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1753539/000175353926000118/exhibit991-blackskyq22026e.htm)；[BlackSky 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1753539/000175353926000124/bksy-20260630.htm)；[BlackSky多年影像订阅合同](https://blacksky.com/press-releases/blacksky-wins-seven-figure-multi-year-international-contract-for-combined-assured-and-on-demand-subscriptions/)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
+
+### 关键风险与依据
+
+- 政府预算、交付与客户集中可能放大收入波动。
+- 补网、融资和债务成本会分走订阅增长。
+- 合同积压含未拨款部分，联合项目规模不等于公司订单。
+
+**增长口径 · 2026 H1**：总收入5409万美元，同比增长约4.5%；Q2收入增长50%不能代表整个半年。H1影像与分析服务收入4102.6万美元，同比增长约17.9%。 [BlackSky 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1753539/000175353926000124/bksy-20260630.htm)
+
+**现金 · 2026 H1**：经营现金流为负588.1万美元；设备及卫星在建现金投入3117.9万美元，两项相抵为负3706万美元。融资型资本投入还需另看。 [BlackSky 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1753539/000175353926000124/bksy-20260630.htm)
+
+**融资与支出**：H1 ATM增发净筹约1.602亿美元。2026年资本开支指引5000万–6000万美元，高于调整后EBITDA指引1200万–2400万美元。 [BlackSky 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1753539/000175353926000118/exhibit991-blackskyq22026e.htm)；[BlackSky 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1753539/000175353926000124/bksy-20260630.htm)
+
+**本轮已检验：现金增加与EBITDA转正，能否证明星座利润飞轮形成？**
+
+不能。现金增加主要包含融资，现金资本投入后仍为负；部分服务成本披露不含折旧，不能把表面高毛利率直接当净利率。因此完成排除判断，不继续补报告。 [BlackSky 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1753539/000175353926000124/bksy-20260630.htm)；[BlackSky 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1753539/000175353926000118/exhibit991-blackskyq22026e.htm)
+
+**改变判断的条件**
+
+- 上调：连续披露订阅增长及扣除维持星座投入后的正现金流，并能证明股数增长明显慢于股东利润。
+- 下调：更多定制交付或补网投入拉动增发，收入增长仍无法形成每股现金改善。
+
+退出本批优先名单。只有订阅扩张同时覆盖补星现金和融资成本，才值得重开；现阶段不安排继续深挖。
+
+## Red Cat · RCAT
+
+### 公司做什么
+
+生产军用无人机及相关系统。
+
+### 机会为什么出现
+
+低成本无人系统扩大采购场景，供应商有新品量产机会。
+
+### 利润如何放大
+
+量产和良率改善可摊薄工厂费用。
+
+### 当前判断
+
+**五年十倍可能性：低；研究优先级：低。** 增长尚未转化成足够的单机利润，资本消耗很重；低市值不等于高十倍可能性。
+
+本批以披露的经营证据和当前价格作进入深研的门槛，未为该公司生成目标价。
+
+股价快照：4.72美元，UTC 2026-10-16T23:16:58Z（盘后）。行情市值只用于量级初筛；未作完全摊薄股本和终值预测，不能据此称股价便宜。
+
+[Red Cat 2026 Q2业绩](https://ir.redcatholdings.com/news-events/press-releases/detail/237/red-cat-reports-q2-2026-revenue-growth-of-527-yy-q2-gross-margins-increase-39-vs-q2-2025-gross-margins-increased-27-sequentially-from-q1-2026)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
+
+### 关键风险与依据
+
+- 增长尚未转化成足够的单机利润，资本消耗很重；低市值不等于高十倍可能性。
+
+**本轮证据 · 2026**：Q2收入2018.9万美元、增长527%，毛利率约16.1%；H1经营现金流负7874.9万美元，股权融资净筹约2.45亿美元。 [Red Cat 2026 Q2业绩](https://ir.redcatholdings.com/news-events/press-releases/detail/237/red-cat-reports-q2-2026-revenue-growth-of-527-yy-q2-gross-margins-increase-39-vs-q2-2025-gross-margins-increased-27-sequentially-from-q1-2026)
+
+**本轮已检验：是否进入本批深研？**
+
+增长尚未转化成足够的单机利润，资本消耗很重；低市值不等于高十倍可能性。 [Red Cat 2026 Q2业绩](https://ir.redcatholdings.com/news-events/press-releases/detail/237/red-cat-reports-q2-2026-revenue-growth-of-527-yy-q2-gross-margins-increase-39-vs-q2-2025-gross-margins-increased-27-sequentially-from-q1-2026)
+
+**改变判断的条件**
+
+- 上调：出现能直接解除上述限制的经营或资本证据，再重新比较优先级。
+- 下调：上述限制进一步恶化时，继续排除；不以研究篇幅作为入选理由。
+
+本批止步于初筛，不安排补齐完整报告。
+
+## Centrus Energy · LEU
+
+### 公司做什么
+
+供应浓缩铀并开发美国本土富集产能。
+
+### 机会为什么出现
+
+核电和先进反应堆需要可靠的浓缩燃料供应，建设本土产能形成采购机会。
+
+### 利润如何放大
+
+稀缺供应和新产能交付可形成利润。
+
+### 当前判断
+
+**五年十倍可能性：低；研究优先级：低。** 需求有依据，但五年窗口内建设和资金负担大，不能把远期订单积压算成2031年利润。
+
+本批以披露的经营证据和当前价格作进入深研的门槛，未为该公司生成目标价。
+
+股价快照：114.94美元，UTC 2026-10-16T23:54:20Z（盘后）。行情市值只用于量级初筛；未作完全摊薄股本和终值预测，不能据此称股价便宜。
+
+[Centrus 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1065059/000162828026053433/ex991-10q2026_08x05.htm)；[Centrus 2025年报业绩与扩产安排](https://investors.centrusenergy.com/news-releases/news-release-details/centrus-reports-fourth-quarter-and-full-year-2025-results-and)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
+
+### 关键风险与依据
+
+- 需求有依据，但五年窗口内建设和资金负担大，不能把远期订单积压算成2031年利润。
+
+**本轮证据 · 2026**：Q2收入1.761亿美元；2026年资本部署计划3.5亿–5亿美元，部分订单附条件；12吨HALEU产能目标在2030年之后。 [Centrus 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1065059/000162828026053433/ex991-10q2026_08x05.htm)；[Centrus 2025年报业绩与扩产安排](https://investors.centrusenergy.com/news-releases/news-release-details/centrus-reports-fourth-quarter-and-full-year-2025-results-and)
+
+**本轮已检验：是否进入本批深研？**
+
+需求有依据，但五年窗口内建设和资金负担大，不能把远期订单积压算成2031年利润。 [Centrus 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1065059/000162828026053433/ex991-10q2026_08x05.htm)；[Centrus 2025年报业绩与扩产安排](https://investors.centrusenergy.com/news-releases/news-release-details/centrus-reports-fourth-quarter-and-full-year-2025-results-and)
+
+**改变判断的条件**
+
+- 上调：出现能直接解除上述限制的经营或资本证据，再重新比较优先级。
+- 下调：上述限制进一步恶化时，继续排除；不以研究篇幅作为入选理由。
+
+本批止步于初筛，不安排补齐完整报告。
+
+## ASP Isotopes · ASPI
+
+### 公司做什么
+
+开发同位素富集技术，也经营并购取得的放射药和能源业务。
+
+### 机会为什么出现
+
+核电和先进反应堆需要可靠的浓缩燃料供应，建设本土产能形成采购机会。
+
+### 利润如何放大
+
+只有核心富集量产和稳定良率才能证明技术利润。
+
+### 当前判断
+
+**五年十倍可能性：缺核心量产利润证据；研究优先级：低。** 尚不能用现有收入证明核心同位素富集商业化，资金和执行门槛过高。
+
+本批以披露的经营证据和当前价格作进入深研的门槛，未为该公司生成目标价。
+
+股价快照：2.14美元，UTC 2026-10-16T21:46:22Z（盘后）。行情市值只用于量级初筛；未作完全摊薄股本和终值预测，不能据此称股价便宜。
+
+[ASP Isotopes 2026 Q2 Form 10-Q](https://ir.aspisotopes.com/sec-filings/all-sec-filings/content/0001193125-26-352603/aspi-20260630.htm)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
+
+### 关键风险与依据
+
+- 尚不能用现有收入证明核心同位素富集商业化，资金和执行门槛过高。
+
+**本轮证据 · 2026**：Q2收入512.3万美元、毛利148万美元，运营费用3567.5万美元；收入包含并购和其他业务。 [ASP Isotopes 2026 Q2 Form 10-Q](https://ir.aspisotopes.com/sec-filings/all-sec-filings/content/0001193125-26-352603/aspi-20260630.htm)
+
+**本轮已检验：是否进入本批深研？**
+
+尚不能用现有收入证明核心同位素富集商业化，资金和执行门槛过高。 [ASP Isotopes 2026 Q2 Form 10-Q](https://ir.aspisotopes.com/sec-filings/all-sec-filings/content/0001193125-26-352603/aspi-20260630.htm)
+
+**改变判断的条件**
+
+- 上调：出现能直接解除上述限制的经营或资本证据，再重新比较优先级。
+- 下调：上述限制进一步恶化时，继续排除；不以研究篇幅作为入选理由。
+
+本批止步于初筛，不安排补齐完整报告。
+
+## Arcutis · ARQT
+
+### 公司做什么
+
+销售ZORYVE皮肤病外用药。
+
+### 机会为什么出现
+
+机会来自有效疗法让更多人开始并持续接受治疗，或把末线用药推进到更早阶段；不需要患病人口增长十倍。
+
+### 利润如何放大
+
+扩大处方、摊薄销售队伍及研发费用。
+
+### 当前判断
+
+**五年十倍可能性：低；研究优先级：低。** 利润改善已出现，但约39亿美元起价且毛利已很高；十倍更依赖产品规模继续大扩张，优先级低于本批新适应症机会。
+
+本批以披露的经营证据和当前价格作进入深研的门槛，未为该公司生成目标价。
+
+股价快照：28.82美元，UTC 2026-10-16T22:14:25Z（盘后）。行情市值只用于量级初筛；未作完全摊薄股本和终值预测，不能据此称股价便宜。
+
+[Arcutis 2026 Q2业绩](https://www.arcutis.com/arcutis-announces-second-quarter-2026-financial-results-and-provides-business-update/)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
+
+### 关键风险与依据
+
+- 利润改善已出现，但约39亿美元起价且毛利已很高；十倍更依赖产品规模继续大扩张，优先级低于本批新适应症机会。
+
+**本轮证据 · 2026**：Q2产品销售1.299亿美元、增长59%；产品成本1090万美元，销售管理费用8210万美元，净利1500万美元。 [Arcutis 2026 Q2业绩](https://www.arcutis.com/arcutis-announces-second-quarter-2026-financial-results-and-provides-business-update/)
+
+**本轮已检验：是否进入本批深研？**
+
+利润改善已出现，但约39亿美元起价且毛利已很高；十倍更依赖产品规模继续大扩张，优先级低于本批新适应症机会。 [Arcutis 2026 Q2业绩](https://www.arcutis.com/arcutis-announces-second-quarter-2026-financial-results-and-provides-business-update/)
+
+**改变判断的条件**
+
+- 上调：出现能直接解除上述限制的经营或资本证据，再重新比较优先级。
+- 下调：上述限制进一步恶化时，继续排除；不以研究篇幅作为入选理由。
+
+本批止步于初筛，不安排补齐完整报告。
+
+## Sezzle · SEZL
+
+### 公司做什么
+
+提供先买后付、订阅和消费金融服务。
+
+### 机会为什么出现
+
+移动渠道、订阅和跨境支付有份额迁移机会，不必依赖全行业十倍扩容。
+
+### 利润如何放大
+
+更多活跃付费用户摊薄平台费用，须扣坏账与资金成本。
+
+### 当前判断
+
+**五年十倍可能性：低；研究优先级：低。** 有增长也有利润，但约44亿美元起价，净利率已经不低；十倍主要依赖长期规模扩张，不能再凭空加十倍利润率。
+
+本批以披露的经营证据和当前价格作进入深研的门槛，未为该公司生成目标价。
+
+股价快照：127.65美元，UTC 2026-10-16T22:19:25Z（盘后）。行情市值只用于量级初筛；未作完全摊薄股本和终值预测，不能据此称股价便宜。
+
+[Sezzle 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1662991/000166299126000124/sezl-20260806ex9901.htm)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
+
+### 关键风险与依据
+
+- 有增长也有利润，但约44亿美元起价，净利率已经不低；十倍主要依赖长期规模扩张，不能再凭空加十倍利润率。
+
+**本轮证据 · 2026**：Q2收入1.497亿美元、增长51.7%，净利4076.5万美元；净利率27.2%，低于上年28%。全年调整后净利指引1.85亿美元。 [Sezzle 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1662991/000166299126000124/sezl-20260806ex9901.htm)
+
+**本轮已检验：是否进入本批深研？**
+
+有增长也有利润，但约44亿美元起价，净利率已经不低；十倍主要依赖长期规模扩张，不能再凭空加十倍利润率。 [Sezzle 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1662991/000166299126000124/sezl-20260806ex9901.htm)
+
+**改变判断的条件**
+
+- 上调：出现能直接解除上述限制的经营或资本证据，再重新比较优先级。
+- 下调：上述限制进一步恶化时，继续排除；不以研究篇幅作为入选理由。
+
+本批止步于初筛，不安排补齐完整报告。
+
+## Dave · DAVE
+
+### 公司做什么
+
+通过手机账户提供小额现金预支等服务。
+
+### 机会为什么出现
+
+移动渠道、订阅和跨境支付有份额迁移机会，不必依赖全行业十倍扩容。
+
+### 利润如何放大
+
+获客和技术成本摊薄，但信用损失与资金成本不能省略。
+
+### 当前判断
+
+**五年十倍可能性：低；研究优先级：低。** 约50亿美元市值下，不能把调整后EBITDA率当净利率再外推；本批不优先。
+
+本批以披露的经营证据和当前价格作进入深研的门槛，未为该公司生成目标价。
+
+股价快照：367.4美元，UTC 2026-10-16T21:35:00Z（盘后）。行情市值只用于量级初筛；未作完全摊薄股本和终值预测，不能据此称股价便宜。
+
+[Dave 2026 Q2业绩](https://investors.dave.com/news-releases/news-release-details/dave-reports-second-quarter-2026-financial-results)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
+
+### 关键风险与依据
+
+- 约50亿美元市值下，不能把调整后EBITDA率当净利率再外推；本批不优先。
+
+**本轮证据 · 2026**：Q2收入1.708亿美元、增长30%，GAAP净利670万美元含权证非现金费用；调整后EBITDA7550万美元，且本季定义有变化。 [Dave 2026 Q2业绩](https://investors.dave.com/news-releases/news-release-details/dave-reports-second-quarter-2026-financial-results)
+
+**本轮已检验：是否进入本批深研？**
+
+约50亿美元市值下，不能把调整后EBITDA率当净利率再外推；本批不优先。 [Dave 2026 Q2业绩](https://investors.dave.com/news-releases/news-release-details/dave-reports-second-quarter-2026-financial-results)
+
+**改变判断的条件**
+
+- 上调：出现能直接解除上述限制的经营或资本证据，再重新比较优先级。
+- 下调：上述限制进一步恶化时，继续排除；不以研究篇幅作为入选理由。
+
+本批止步于初筛，不安排补齐完整报告。
+
+## Root · ROOT
+
+### 公司做什么
+
+用数字渠道与驾驶数据承保汽车保险。
+
+### 机会为什么出现
+
+移动渠道、订阅和跨境支付有份额迁移机会，不必依赖全行业十倍扩容。
+
+### 利润如何放大
+
+改善风险定价和费用率，而不是单靠保费涨价。
+
+### 当前判断
+
+**五年十倍可能性：低；研究优先级：低。** 承保盈利改善但保费未增长。低估值不是十倍业务扩张的证据，暂不优先。
+
+本批以披露的经营证据和当前价格作进入深研的门槛，未为该公司生成目标价。
+
+股价快照：50.47美元，UTC 2026-10-16T21:35:00Z（盘后）。行情市值只用于量级初筛；未作完全摊薄股本和终值预测，不能据此称股价便宜。
+
+[Root 2026 Q2股东信](https://joinroot.gcs-web.com/static-files/2b181f1d-a77a-4b12-b0d0-1f502333da5e)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
+
+### 关键风险与依据
+
+- 承保盈利改善但保费未增长。低估值不是十倍业务扩张的证据，暂不优先。
+
+**本轮证据 · 2026**：Q2收入3.89亿美元、增长2%；毛签单保费3.397亿美元、下降2%，净综合成本率92.1%。 [Root 2026 Q2股东信](https://joinroot.gcs-web.com/static-files/2b181f1d-a77a-4b12-b0d0-1f502333da5e)
+
+**本轮已检验：是否进入本批深研？**
+
+承保盈利改善但保费未增长。低估值不是十倍业务扩张的证据，暂不优先。 [Root 2026 Q2股东信](https://joinroot.gcs-web.com/static-files/2b181f1d-a77a-4b12-b0d0-1f502333da5e)
+
+**改变判断的条件**
+
+- 上调：出现能直接解除上述限制的经营或资本证据，再重新比较优先级。
+- 下调：上述限制进一步恶化时，继续排除；不以研究篇幅作为入选理由。
+
+本批止步于初筛，不安排补齐完整报告。
+
+## Enovix · ENVX
+
+### 公司做什么
+
+研发和制造高能量密度硅负极电池。
+
+### 机会为什么出现
+
+消费电子需要在有限空间里获得更长续航，新材料可能提高单机价值。
+
+### 利润如何放大
+
+手机客户规模出货、良率改善后才有经营杠杆。
+
+### 当前判断
+
+**五年十倍可能性：缺核心量产利润证据；研究优先级：低。** 量产与利润质量尚未过关，低起价不能替代稳定生产和客户付款证据。
+
+本批以披露的经营证据和当前价格作进入深研的门槛，未为该公司生成目标价。
+
+股价快照：2.49美元，UTC 2026-10-16T21:35:00Z（盘后）。行情市值只用于量级初筛；未作完全摊薄股本和终值预测，不能据此称股价便宜。
+
+[Enovix 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1828318/000182831826000055/envx8k-q22026x8122026ex991.htm)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
+
+### 关键风险与依据
+
+- 量产与利润质量尚未过关，低起价不能替代稳定生产和客户付款证据。
+
+**本轮证据 · 2026**：Q2收入900万美元、增长21%；毛利率14.4%，上年26%。关键手机项目仍在资格验证。 [Enovix 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1828318/000182831826000055/envx8k-q22026x8122026ex991.htm)
+
+**本轮已检验：是否进入本批深研？**
+
+量产与利润质量尚未过关，低起价不能替代稳定生产和客户付款证据。 [Enovix 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1828318/000182831826000055/envx8k-q22026x8122026ex991.htm)
+
+**改变判断的条件**
+
+- 上调：出现能直接解除上述限制的经营或资本证据，再重新比较优先级。
+- 下调：上述限制进一步恶化时，继续排除；不以研究篇幅作为入选理由。
+
+本批止步于初筛，不安排补齐完整报告。
+
+## Applied Optoelectronics · AAOI
+
+### 公司做什么
+
+制造数据中心等场景的光通信器件和模块。
+
+### 机会为什么出现
+
+AI集群需要芯片之间更快、更省电地交换数据，互联芯片的价值随系统复杂度提升。
+
+### 利润如何放大
+
+高速产品放量与制造良率提升，但须留住毛利。
+
+### 当前判断
+
+**五年十倍可能性：低；研究优先级：低。** 需求很强但毛利率下降，约62亿美元起价抬高十倍门槛；不以高营收增速直接升级。
+
+本批以披露的经营证据和当前价格作进入深研的门槛，未为该公司生成目标价。
+
+股价快照：75.57美元，UTC 2026-10-16T23:54:24Z（盘后）。行情市值只用于量级初筛；未作完全摊薄股本和终值预测，不能据此称股价便宜。
+
+[Applied Optoelectronics 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1158114/000168316826006055/aaoi_ex9901.htm)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
+
+### 关键风险与依据
+
+- 需求很强但毛利率下降，约62亿美元起价抬高十倍门槛；不以高营收增速直接升级。
+
+**本轮证据 · 2026**：Q2收入1.919亿美元，上年1.03亿美元；GAAP毛利率27.7%，上年30.3%。 [Applied Optoelectronics 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1158114/000168316826006055/aaoi_ex9901.htm)
+
+**本轮已检验：是否进入本批深研？**
+
+需求很强但毛利率下降，约62亿美元起价抬高十倍门槛；不以高营收增速直接升级。 [Applied Optoelectronics 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1158114/000168316826006055/aaoi_ex9901.htm)
+
+**改变判断的条件**
+
+- 上调：出现能直接解除上述限制的经营或资本证据，再重新比较优先级。
+- 下调：上述限制进一步恶化时，继续排除；不以研究篇幅作为入选理由。
+
+本批止步于初筛，不安排补齐完整报告。
+
+## Bel Fuse · BELFB
+
+### 公司做什么
+
+销售电源、连接和电路保护产品。
+
+### 机会为什么出现
+
+半导体产能与电源需求变化给供应商带来订单；订单增长是否转成利润，取决于产品组合、工厂利用率、资本支出及竞争。
+
+### 利润如何放大
+
+数据中心和国防需求提升产品组合与产能利用率。
+
+### 当前判断
+
+**五年十倍可能性：低；研究优先级：低。** 利润没有随收入同步增长，融资也改变了股数；不能忽略分母推十倍。
+
+本批以披露的经营证据和当前价格作进入深研的门槛，未为该公司生成目标价。
+
+股价快照：207.72美元，UTC 2026-10-16T21:35:00Z（盘后）。行情市值只用于量级初筛；未作完全摊薄股本和终值预测，不能据此称股价便宜。
+
+[Bel Fuse 2026 Q2业绩](https://ir.belfuse.com/news-releases/news-release-details/bel-reports-second-quarter-and-first-half-2026-results)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
+
+### 关键风险与依据
+
+- 利润没有随收入同步增长，融资也改变了股数；不能忽略分母推十倍。
+
+**本轮证据 · 2026**：Q2收入2.107亿美元、增长25.1%；GAAP净利2550万美元，上年2690万美元；发行股票净筹4.416亿美元并还债。 [Bel Fuse 2026 Q2业绩](https://ir.belfuse.com/news-releases/news-release-details/bel-reports-second-quarter-and-first-half-2026-results)
+
+**本轮已检验：是否进入本批深研？**
+
+利润没有随收入同步增长，融资也改变了股数；不能忽略分母推十倍。 [Bel Fuse 2026 Q2业绩](https://ir.belfuse.com/news-releases/news-release-details/bel-reports-second-quarter-and-first-half-2026-results)
+
+**改变判断的条件**
+
+- 上调：出现能直接解除上述限制的经营或资本证据，再重新比较优先级。
+- 下调：上述限制进一步恶化时，继续排除；不以研究篇幅作为入选理由。
+
+本批止步于初筛，不安排补齐完整报告。
+
+## Axcelis · ACLS
+
+### 公司做什么
+
+向芯片厂销售离子注入设备。
+
+### 机会为什么出现
+
+半导体产能与电源需求变化给供应商带来订单；订单增长是否转成利润，取决于产品组合、工厂利用率、资本支出及竞争。
+
+### 利润如何放大
+
+设备需求周期和服务收入可提高产能利用率。
+
+### 当前判断
+
+**五年十倍可能性：低；研究优先级：低。** 行业周期、利润率与合并股本都影响回报，静态小市值不构成本批优先理由。
+
+本批以披露的经营证据和当前价格作进入深研的门槛，未为该公司生成目标价。
+
+股价快照：108.35美元，UTC 2026-10-16T22:51:17Z（盘后）。行情市值只用于量级初筛；未作完全摊薄股本和终值预测，不能据此称股价便宜。
+
+[Axcelis 2026 Q2业绩](https://axcelis.gcs-web.com/news-releases/news-release-details/axcelis-announces-financial-results-second-quarter-2026)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
+
+### 关键风险与依据
+
+- 行业周期、利润率与合并股本都影响回报，静态小市值不构成本批优先理由。
+
+**本轮证据 · 2026**：Q2收入2.152亿美元、上年1.945亿美元；营业利润率9.4%、上年14.9%，仍有拟议Veeco合并。 [Axcelis 2026 Q2业绩](https://axcelis.gcs-web.com/news-releases/news-release-details/axcelis-announces-financial-results-second-quarter-2026)
+
+**本轮已检验：是否进入本批深研？**
+
+行业周期、利润率与合并股本都影响回报，静态小市值不构成本批优先理由。 [Axcelis 2026 Q2业绩](https://axcelis.gcs-web.com/news-releases/news-release-details/axcelis-announces-financial-results-second-quarter-2026)
+
+**改变判断的条件**
+
+- 上调：出现能直接解除上述限制的经营或资本证据，再重新比较优先级。
+- 下调：上述限制进一步恶化时，继续排除；不以研究篇幅作为入选理由。
+
+本批止步于初筛，不安排补齐完整报告。
+
+## TransMedics · TMDX
+
+### 公司做什么
+
+提供器官保存设备、耗材和器官获取运输服务。
+
+### 机会为什么出现
+
+机会来自有效疗法让更多人开始并持续接受治疗，或把末线用药推进到更早阶段；不需要患病人口增长十倍。
+
+### 利润如何放大
+
+提高可移植器官利用率及扩大服务网络，价值来自成功移植。
+
+### 当前判断
+
+**五年十倍可能性：低；研究优先级：低。** 商业价值不止卖设备，但约29亿美元起价下，十倍需新的适用范围与规模；运输资产会占用资本，本批不优先。
+
+本批以披露的经营证据和当前价格作进入深研的门槛，未为该公司生成目标价。
+
+股价快照：70.78美元，UTC 2026-10-16T22:41:34Z（盘后）。行情市值只用于量级初筛；未作完全摊薄股本和终值预测，不能据此称股价便宜。
+
+[TransMedics 2026 Q2业绩](https://transmedicsinc.gcs-web.com/news-releases/news-release-details/transmedics-reports-second-quarter-2026-financial-results)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
+
+### 关键风险与依据
+
+- 商业价值不止卖设备，但约29亿美元起价下，十倍需新的适用范围与规模；运输资产会占用资本，本批不优先。
+
+**本轮证据 · 2026**：Q2收入1.899亿美元、增长21%；产品1.112亿美元、服务7880万美元，GAAP净利1470万美元。 [TransMedics 2026 Q2业绩](https://transmedicsinc.gcs-web.com/news-releases/news-release-details/transmedics-reports-second-quarter-2026-financial-results)
+
+**本轮已检验：是否进入本批深研？**
+
+商业价值不止卖设备，但约29亿美元起价下，十倍需新的适用范围与规模；运输资产会占用资本，本批不优先。 [TransMedics 2026 Q2业绩](https://transmedicsinc.gcs-web.com/news-releases/news-release-details/transmedics-reports-second-quarter-2026-financial-results)
+
+**改变判断的条件**
+
+- 上调：出现能直接解除上述限制的经营或资本证据，再重新比较优先级。
+- 下调：上述限制进一步恶化时，继续排除；不以研究篇幅作为入选理由。
+
+本批止步于初筛，不安排补齐完整报告。
+
+## Ardelyx · ARDX
+
+### 公司做什么
+
+销售肠道局部作用药tenapanor的两个产品。
+
+### 机会为什么出现
+
+机会来自有效疗法让更多人开始并持续接受治疗，或把末线用药推进到更早阶段；不需要患病人口增长十倍。
+
+### 利润如何放大
+
+扩大处方可摊薄销售费用，但支付限制与专利年限影响价值。
+
+### 当前判断
+
+**五年十倍可能性：低；研究优先级：低。** 退出优先：销售有增长，但不能给临近核心专利期限的2031年利润随手套高PE；支付障碍也在压低目标。
+
+本批以披露的经营证据和当前价格作进入深研的门槛，未为该公司生成目标价。
+
+股价快照：3.09美元，UTC 2026-10-16T21:35:00Z（盘后）。行情市值只用于量级初筛；未作完全摊薄股本和终值预测，不能据此称股价便宜。
+
+[Ardelyx 2026 Q2业绩](https://ir.ardelyx.com/node/14991)；[Ardelyx 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1437402/000143740226000044/ardx-20260630.htm)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
+
+### 关键风险与依据
+
+- 退出优先：销售有增长，但不能给临近核心专利期限的2031年利润随手套高PE；支付障碍也在压低目标。
+
+**本轮证据 · 2026**：Q2产品收入1.181亿美元、增长31%；IBSRELA全年指引下调至3.5亿–3.7亿美元。核心专利延长期到2033-08-01。 [Ardelyx 2026 Q2业绩](https://ir.ardelyx.com/node/14991)；[Ardelyx 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1437402/000143740226000044/ardx-20260630.htm)
+
+**本轮已检验：是否进入本批深研？**
+
+退出优先：销售有增长，但不能给临近核心专利期限的2031年利润随手套高PE；支付障碍也在压低目标。 [Ardelyx 2026 Q2业绩](https://ir.ardelyx.com/node/14991)；[Ardelyx 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1437402/000143740226000044/ardx-20260630.htm)
+
+**改变判断的条件**
+
+- 上调：出现能直接解除上述限制的经营或资本证据，再重新比较优先级。
+- 下调：上述限制进一步恶化时，继续排除；不以研究篇幅作为入选理由。
+
+本批止步于初筛，不安排补齐完整报告。
+
+## CorMedix · CRMD
+
+### 公司做什么
+
+销售防导管感染药DefenCath并经营收购的抗感染药业务。
+
+### 机会为什么出现
+
+机会来自有效疗法让更多人开始并持续接受治疗，或把末线用药推进到更早阶段；不需要患病人口增长十倍。
+
+### 利润如何放大
+
+扩大使用量，但支付过渡可能改变每次实收。
+
+### 当前判断
+
+**五年十倍可能性：低；研究优先级：低。** 支付过渡和并购口径使短期利润不能直接年化，低PE未必代表低风险十倍机会。
+
+本批以披露的经营证据和当前价格作进入深研的门槛，未为该公司生成目标价。
+
+股价快照：7.26美元，UTC 2026-10-16T21:35:00Z（盘后）。行情市值只用于量级初筛；未作完全摊薄股本和终值预测，不能据此称股价便宜。
+
+[CorMedix 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1410098/000141009826000054/crmd_q22026earningspr.htm)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
+
+### 关键风险与依据
+
+- 支付过渡和并购口径使短期利润不能直接年化，低PE未必代表低风险十倍机会。
+
+**本轮证据 · 2026**：Q2收入1.019亿美元，其中DefenCath6610万美元、收购业务3580万美元；DefenCath低于Q1的9750万美元。 [CorMedix 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1410098/000141009826000054/crmd_q22026earningspr.htm)
+
+**本轮已检验：是否进入本批深研？**
+
+支付过渡和并购口径使短期利润不能直接年化，低PE未必代表低风险十倍机会。 [CorMedix 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1410098/000141009826000054/crmd_q22026earningspr.htm)
+
+**改变判断的条件**
+
+- 上调：出现能直接解除上述限制的经营或资本证据，再重新比较优先级。
+- 下调：上述限制进一步恶化时，继续排除；不以研究篇幅作为入选理由。
+
+本批止步于初筛，不安排补齐完整报告。
+
+## Iovance · IOVA
+
+### 公司做什么
+
+生产个体化肿瘤浸润淋巴细胞疗法AMTAGVI。
+
+### 机会为什么出现
+
+机会来自有效疗法让更多人开始并持续接受治疗，或把末线用药推进到更早阶段；不需要患病人口增长十倍。
+
+### 利润如何放大
+
+扩大可接受治疗的患者数，改善制造吞吐与费用摊薄。
+
+### 当前判断
+
+**五年十倍可能性：低；研究优先级：低。** 新疗法有实收收入，但约61亿美元起价要求极大的后续利润规模；本批优先较小起价且权利路径更清楚的候选。
+
+本批以披露的经营证据和当前价格作进入深研的门槛，未为该公司生成目标价。
+
+股价快照：13.62美元，UTC 2026-10-16T23:48:22Z（盘后）。行情市值只用于量级初筛；未作完全摊薄股本和终值预测，不能据此称股价便宜。
+
+[Iovance 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1425205/000110465926091619/tm2622322d1_ex99-1.htm)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
+
+### 关键风险与依据
+
+- 新疗法有实收收入，但约61亿美元起价要求极大的后续利润规模；本批优先较小起价且权利路径更清楚的候选。
+
+**本轮证据 · 2026**：Q2收入9930万美元、增长66%，AMTAGVI约9100万美元；公布的56%毛利口径不含折旧摊销。 [Iovance 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1425205/000110465926091619/tm2622322d1_ex99-1.htm)
+
+**本轮已检验：是否进入本批深研？**
+
+新疗法有实收收入，但约61亿美元起价要求极大的后续利润规模；本批优先较小起价且权利路径更清楚的候选。 [Iovance 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1425205/000110465926091619/tm2622322d1_ex99-1.htm)
+
+**改变判断的条件**
+
+- 上调：出现能直接解除上述限制的经营或资本证据，再重新比较优先级。
+- 下调：上述限制进一步恶化时，继续排除；不以研究篇幅作为入选理由。
+
+本批止步于初筛，不安排补齐完整报告。
+
+## Remitly · RELY
+
+### 公司做什么
+
+向跨境汇款用户提供数字转账服务。
+
+### 机会为什么出现
+
+移动渠道、订阅和跨境支付有份额迁移机会，不必依赖全行业十倍扩容。
+
+### 利润如何放大
+
+份额迁移和网络规模可摊薄获客与技术成本。
+
+### 当前判断
+
+**五年十倍可能性：低；研究优先级：低。** 约53亿美元市值下不能按含税收收益的利润推低PE；现有增长未显示十倍优先价值。
+
+本批以披露的经营证据和当前价格作进入深研的门槛，未为该公司生成目标价。
+
+股价快照：24.16美元，UTC 2026-10-16T21:35:00Z（盘后）。行情市值只用于量级初筛；未作完全摊薄股本和终值预测，不能据此称股价便宜。
+
+[Remitly 2026 Q2业绩](https://ir.remitly.com/news-releases/news-release-details/remitly-reports-record-second-quarter-results-and-raises-full)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
+
+### 关键风险与依据
+
+- 约53亿美元市值下不能按含税收收益的利润推低PE；现有增长未显示十倍优先价值。
+
+**本轮证据 · 2026**：Q2收入4.952亿美元、增长20%；净利2.059亿美元含1.406亿美元一次性税收收益。 [Remitly 2026 Q2业绩](https://ir.remitly.com/news-releases/news-release-details/remitly-reports-record-second-quarter-results-and-raises-full)
+
+**本轮已检验：是否进入本批深研？**
+
+约53亿美元市值下不能按含税收收益的利润推低PE；现有增长未显示十倍优先价值。 [Remitly 2026 Q2业绩](https://ir.remitly.com/news-releases/news-release-details/remitly-reports-record-second-quarter-results-and-raises-full)
+
+**改变判断的条件**
+
+- 上调：出现能直接解除上述限制的经营或资本证据，再重新比较优先级。
+- 下调：上述限制进一步恶化时，继续排除；不以研究篇幅作为入选理由。
+
+本批止步于初筛，不安排补齐完整报告。
+
+## Personalis · PSNL
+
+### 公司做什么
+
+提供癌症基因分析和微小残留病检测。
+
+### 机会为什么出现
+
+机会来自有效疗法让更多人开始并持续接受治疗，或把末线用药推进到更早阶段；不需要患病人口增长十倍。
+
+### 利润如何放大
+
+检测渗透和报销覆盖可能摊薄实验室成本。
+
+### 当前判断
+
+**五年十倍可能性：独立路径不适用；研究优先级：低。** 独立公司十倍路径已被并购交易改变，本批不沿原股票独立增长逻辑深入。
+
+本批以披露的经营证据和当前价格作进入深研的门槛，未为该公司生成目标价。
+
+股价快照：15.65美元，UTC 2026-10-16T21:35:00Z（盘后）。行情市值只用于量级初筛；未作完全摊薄股本和终值预测，不能据此称股价便宜。
+
+[Personalis：Tempus收购协议](https://investors.personalis.com/news-releases/news-release-details/tempus-acquire-personalis-more-tightly-integrating-molecular)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
+
+### 关键风险与依据
+
+- 独立公司十倍路径已被并购交易改变，本批不沿原股票独立增长逻辑深入。
+
+**本轮证据 · 2026**：已签Tempus收购协议，交易定价每股16.25美元，以换股及可选现金支付，尚有交割条件。 [Personalis：Tempus收购协议](https://investors.personalis.com/news-releases/news-release-details/tempus-acquire-personalis-more-tightly-integrating-molecular)
+
+**本轮已检验：是否进入本批深研？**
+
+独立公司十倍路径已被并购交易改变，本批不沿原股票独立增长逻辑深入。 [Personalis：Tempus收购协议](https://investors.personalis.com/news-releases/news-release-details/tempus-acquire-personalis-more-tightly-integrating-molecular)
+
+**改变判断的条件**
+
+- 上调：出现能直接解除上述限制的经营或资本证据，再重新比较优先级。
+- 下调：上述限制进一步恶化时，继续排除；不以研究篇幅作为入选理由。
+
+本批止步于初筛，不安排补齐完整报告。
+
+## dLocal · DLO
+
+### 公司做什么
+
+连接国际商户与新兴市场本地支付方式。
+
+### 机会为什么出现
+
+移动渠道、订阅和跨境支付有份额迁移机会，不必依赖全行业十倍扩容。
+
+### 利润如何放大
+
+更多商户和交易摊薄支付网络成本。
+
+### 当前判断
+
+**五年十倍可能性：低；研究优先级：低。** 交易规模增长没有等比例落到利润；约43亿美元起价下，暂不把流水增长当十倍股东回报依据。
+
+本批以披露的经营证据和当前价格作进入深研的门槛，未为该公司生成目标价。
+
+股价快照：14.67美元，UTC 2026-10-16T23:52:15Z（盘后）。行情市值只用于量级初筛；未作完全摊薄股本和终值预测，不能据此称股价便宜。
+
+[dLocal 2026 Q2业绩](https://investor.dlocal.com/news-releases/news-release-details/dlocal-reports-second-quarter-2026-financial-results)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
+
+### 关键风险与依据
+
+- 交易规模增长没有等比例落到利润；约43亿美元起价下，暂不把流水增长当十倍股东回报依据。
+
+**本轮证据 · 2026**：Q2交易额增长92%，收入增长56%，毛利增长29%，营业利润只增长15%。 [dLocal 2026 Q2业绩](https://investor.dlocal.com/news-releases/news-release-details/dlocal-reports-second-quarter-2026-financial-results)
+
+**本轮已检验：是否进入本批深研？**
+
+交易规模增长没有等比例落到利润；约43亿美元起价下，暂不把流水增长当十倍股东回报依据。 [dLocal 2026 Q2业绩](https://investor.dlocal.com/news-releases/news-release-details/dlocal-reports-second-quarter-2026-financial-results)
+
+**改变判断的条件**
+
+- 上调：出现能直接解除上述限制的经营或资本证据，再重新比较优先级。
+- 下调：上述限制进一步恶化时，继续排除；不以研究篇幅作为入选理由。
+
+本批止步于初筛，不安排补齐完整报告。
+
+## Planet Labs · PL
+
+### 公司做什么
+
+Planet自己造、发射并运营地球观测卫星。政府、农业、林业等客户付钱购买影像、变化监测及相关软件；公司也为政府提供专用卫星服务。它出售的是持续观测和决策信息，收入不只来自卖卫星。
+
+### 机会为什么出现
+
+想象力在于把一张张图片变成可反复收费的监测服务。更频繁、更清晰的影像加上分析工具，可能让原先靠人工、低频或昂贵方式完成的工作变成日常采购；AI应用仍需付费转化，推出产品不等于形成新收入。
+
+### 利润如何放大
+
+同一份影像可服务多个客户，新增数据订阅有机会摊薄星座和研发成本；如果客户需要更多新造卫星或专用容量，增长也会带来资本开支和折旧。利润能否快于收入增长，取决于这两类业务的比例，而不是先填一个高净利率。
+
+### 当前判断
+
+**五年十倍可能性：中低；研究优先级：低。** 撤回此前优先安排。约49亿美元起始市值下，利润和补星现金尚未支持足够大的每股回报。
+
+行情市值约48.8亿美元，已是FY2027公司全年收入指引4.30–4.41亿美元的约11倍。这个比较只反映预期门槛，不把市销率当目标估值；若当前股本不变，十倍还意味着约488亿美元股权规模。
+
+股价快照：13.56美元，UTC 2026-10-16T23:59:05Z（盘后）。市值为行情工具口径，未逐项展开全部潜在股份。公司Q2通过ATM售股净筹约1.20亿美元；现金增长包含融资，不能全部归功于经营。
+
+[Planet FY2027 Q2业绩公告](https://investors.planet.com/news/news-details/2026/Planet-Reports-Financial-Results-for-Second-Quarter-of-Fiscal-Year-2027/default.aspx)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
+
+### 关键风险与依据
+
+- 政府订单的预算、取消条款和交付节奏可能使收入跳动；合同总额不是当期收入。
+- 专用卫星服务占比上升，可能让收入扩张同时要求更多资本投入。
+- 新股发行会分摊未来利润；高收入增长不保证每股回报。
+
+**已发生 · FY2027 Q2，截至2026-07-31**：收入1.161亿美元，同比增长58%；GAAP毛利率57%，上年同期58%；GAAP净亏损约940万美元。 [Planet FY2027 Q2业绩公告](https://investors.planet.com/news/news-details/2026/Planet-Reports-Financial-Results-for-Second-Quarter-of-Fiscal-Year-2027/default.aspx)
+
+**公司指引 · 2026-09-03**：FY2027收入4.30–4.41亿美元，资本开支1.00–1.15亿美元；这是全年目标，不能把强劲单季直接乘四作为预测。 [Planet FY2027 Q2业绩公告](https://investors.planet.com/news/news-details/2026/Planet-Reports-Financial-Results-for-Second-Quarter-of-Fiscal-Year-2027/default.aspx)
+
+**本轮已检验：收入增长是否已证明利润率跃升？**
+
+没有。收入增长58%，GAAP毛利率反而略降；亏损收窄是进展，但尚不足以证明数据平台式利润爆发。可重复销售是值得观察的机制，但现有利润率并未兑现。 这只能支持行业观察，不足以支持优先深研；本批已撤回优先级。 [Planet FY2027 Q2业绩公告](https://investors.planet.com/news/news-details/2026/Planet-Reports-Financial-Results-for-Second-Quarter-of-Fiscal-Year-2027/default.aspx)
+
+**改变判断的条件**
+
+- 上调：可重复数据服务扩张，同时扣除股权薪酬和维持星座投入后的每股盈利改善，才上调判断。
+- 下调：增长主要靠定制造星、资本开支与收入同步放大，或新增股数吞掉经营改善，则下调。
+
+本批不追加报告。已有行业机会不足以抵消当前价格或商业兑现门槛，先把研究资源用于新候选。
+
+## AST SpaceMobile · ASTS
+
+### 公司做什么
+
+AST建设太空中的移动通信网络，让普通手机在地面网络覆盖不足的地方连接卫星。移动运营商是重要渠道，最终收入取决于运营商采购、用户使用和双方商业分配；它也有政府项目及地面网关销售。
+
+### 机会为什么出现
+
+机会不是让全球手机用户再多十倍，而是让已有手机用户在原本无覆盖的地点也能购买连接服务。Vodafone参与的欧洲合资公司说明渠道正在形成；渠道覆盖人口不等于付费卫星用户。
+
+### 利润如何放大
+
+网络建成后，更多付费流量可共用卫星和地面设施，固定成本摊薄可能很快；但单星容量有限，还要承担频谱、运营商分成、卫星寿命及补网成本。只有净服务利润超过这些全生命周期成本，才可能变成股东利润。
+
+### 当前判断
+
+**五年十倍可能性：中低；研究优先级：低。** 撤回此前优先安排。完整经济权益量级约158亿美元，建设和融资门槛高，十倍路径过重。
+
+行情工具约121.6亿美元市值不能代表全集团经济权益。按8月6日约2.998亿股A类及约0.894亿份B/C对应可交换权益、乘40.66美元，仅作静态量级约158亿美元；尚未计可转债、奖励股及其后变动。十倍需要的价值体量已很大。
+
+股价快照：40.66美元，UTC 2026-10-16T23:46:28Z（盘后）。B/C类股份本身的经济权利与其配对AST LLC权益须合并理解；这里按披露的1:1交换关系作量级比较，不把B/C股份再重复计一次。未作完全摊薄目标价。
+
+[AST SpaceMobile 2026 Q2 Form 10-Q](https://app.quotemedia.com/data/downloadFiling?cdn=97b0f90b3039b64b39c17ee3c872f664&companyName=AST+SpaceMobile+Inc.&dateFiled=2026-08-10&formType=10-Q&ref=320259077&symbol=ASTS&type=PDF&webmasterId=102691)；[Vodafone：Satellite Connect Europe成立](https://www.vodafone.com/news/newsroom/technology/satellite-connect-europe-launches-direct-to-device-broadband-satellite-connectivity)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
+
+### 关键风险与依据
+
+- 发射失败、建设延误或可用容量不足，会同时推迟收费并增加资本需求。
+- 运营商议价、其他卫星网络竞争可能压缩实收单价和分成。
+- 可转债、股权融资及存续网络维护可能显著稀释每股回报。
+
+**已发生 · 2026 Q2**：收入3152万美元，其中产品2442.8万美元、服务709.2万美元；不能把总收入都说成手机用户持续订阅。 [AST SpaceMobile 2026 Q2 Form 10-Q](https://app.quotemedia.com/data/downloadFiling?cdn=97b0f90b3039b64b39c17ee3c872f664&companyName=AST+SpaceMobile+Inc.&dateFiled=2026-08-10&formType=10-Q&ref=320259077&symbol=ASTS&type=PDF&webmasterId=102691)
+
+**已发生 · 2026上半年**：经营现金净流出1.452亿美元，购置物业设备8.592亿美元；6月底现金及等价物22.883亿美元，另有受限资金。网络建设明显先于服务收入。 [AST SpaceMobile 2026 Q2 Form 10-Q](https://app.quotemedia.com/data/downloadFiling?cdn=97b0f90b3039b64b39c17ee3c872f664&companyName=AST+SpaceMobile+Inc.&dateFiled=2026-08-10&formType=10-Q&ref=320259077&symbol=ASTS&type=PDF&webmasterId=102691)
+
+**本轮已检验：已有营收能证明直连手机的商业模式跑通吗？**
+
+不能。Q2产品占收入约78%，服务收入也不能全部认定为消费者持续付费。已有运营商渠道和技术进展，但尚缺可用于推算成熟利润的付费用户、实收单价、每星可售容量和补网成本组合。 这只能支持行业观察，不足以支持优先深研；本批已撤回优先级。 [AST SpaceMobile 2026 Q2 Form 10-Q](https://app.quotemedia.com/data/downloadFiling?cdn=97b0f90b3039b64b39c17ee3c872f664&companyName=AST+SpaceMobile+Inc.&dateFiled=2026-08-10&formType=10-Q&ref=320259077&symbol=ASTS&type=PDF&webmasterId=102691)；[Vodafone：Satellite Connect Europe成立](https://www.vodafone.com/news/newsroom/technology/satellite-connect-europe-launches-direct-to-device-broadband-satellite-connectivity)
+
+**改变判断的条件**
+
+- 上调：连续商业服务披露出可重复的实收收入与容量利用率，且补网后的回报仍有吸引力，才上调。
+- 下调：建设持续超支、服务收费推迟，或容量和实收单价无法覆盖全生命周期投入，则下调。
+
+本批不追加报告。已有行业机会不足以抵消当前价格或商业兑现门槛，先把研究资源用于新候选。
+
+## Aurora Innovation · AUR
+
+### 公司做什么
+
+Aurora把传感器、计算硬件和自动驾驶软件装到重卡上。当前运输服务由货运客户付费；计划进一步让客户拥有车辆、购买Driver as a Service驾驶服务，商业模式从提供运力向持续收取驾驶服务费发展。
+
+### 机会为什么出现
+
+同样一车货，若减少驾驶人工并延长可运营时间，就能创造价值，不必等待整个货运行业增长十倍。干线长途运行的经济价值更集中；城市配送每单收费低、环境复杂，不能直接套用相同盈利假设。
+
+### 利润如何放大
+
+若车辆主要由客户持有，Aurora可让同一套驾驶软件服务更多卡车，研发成本被摊薄。但软件之外仍有硬件、运维、远程支持及保险责任。客户愿付的服务费不能超过真实节省的成本，节省额也不会全部归Aurora。
+
+### 当前判断
+
+**五年十倍可能性：中低；研究优先级：低。** 撤回此前优先安排。约96亿美元起始市值下，无人货运的收费和资本分担尚未支撑十倍利润路径。
+
+行情市值约95.9亿美元。即使2030年数十亿美元收入的管理层愿景兑现，也仍需检验可持续利润与股本，不能把它自动等同于从当前起点涨十倍。
+
+股价快照：4.855美元，UTC 2026-10-16T23:27:11Z（盘后）。6月底公司披露现金及短期投资近12亿美元。规模化前仍需研发与车队投入；本轮没有用账面现金除以单季亏损推算精确续航，也没有假设不再增发。
+
+[Aurora 2026 Q2业绩公告](https://ir.aurora.tech/news-events/press-releases/detail/147/aurora-announces-second-quarter-2026-results)；[Aurora 2026投资者日公告（8-K附件）](https://ir.aurora.tech/sec-filings/all-sec-filings/content/0001828108-26-000082/businesswire-aurora2026ana.htm)；[ATRI 2026卡车运营成本研究摘要](https://truckingresearch.org/2026/07/new-atri-report-details-accelerating-costs-and-low-profitability-despite-cuts/)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
+
+### 关键风险与依据
+
+- 扩大路线和复杂天气适用范围可能比现有路线困难，安全事件会影响部署。
+- 高利用率可能增加维护和折旧；车队运力闲置也会削弱节省额。
+- 客户意向、量产能力与真正投入收费运行的车辆数量之间仍有距离。
+
+**公司运营披露 · 2026-09-23**：商业启动以来无人行驶超过50万英里；部分客户车辆折算年化运行超过22.5万英里。年化运行速度不是已经跑满一年的结果。 [Aurora 2026投资者日公告（8-K附件）](https://ir.aurora.tech/sec-filings/all-sec-filings/content/0001828108-26-000082/businesswire-aurora2026ana.htm)
+
+**公司目标与意向 · 非已交付订单**：2030年超过3万辆、数十亿美元收入及DaaS软件式毛利均为公司愿景；Hirschbach的500辆计划涉及非约束性MOU，不能当确定收入。 [Aurora 2026投资者日公告（8-K附件）](https://ir.aurora.tech/sec-filings/all-sec-filings/content/0001828108-26-000082/businesswire-aurora2026ana.htm)
+
+**本轮已检验：省掉司机成本就一定能赚到软件利润吗？**
+
+不一定。ATRI的2.336美元每英里是行业全部运营成本，燃料、车辆和维护并不会因无人驾驶消失。Aurora的硬件降本和高利用率支持研究方向，但DaaS真实收费与支持成本尚不足以证明成熟净利率。 这只能支持行业观察，不足以支持优先深研；本批已撤回优先级。 [ATRI 2026卡车运营成本研究摘要](https://truckingresearch.org/2026/07/new-atri-report-details-accelerating-costs-and-low-profitability-despite-cuts/)；[Aurora 2026 Q2业绩公告](https://ir.aurora.tech/news-events/press-releases/detail/147/aurora-announces-second-quarter-2026-results)；[Aurora 2026投资者日公告（8-K附件）](https://ir.aurora.tech/sec-filings/all-sec-filings/content/0001828108-26-000082/businesswire-aurora2026ana.htm)
+
+**改变判断的条件**
+
+- 上调：DaaS约束性合同与实收收费形成规模，客户总成本下降，同时Aurora每英里贡献利润转正，才上调。
+- 下调：部署主要靠自持车队和补贴，或远程支持、事故及维护费用抵消人工节省，则下调。
+
+本批不追加报告。已有行业机会不足以抵消当前价格或商业兑现门槛，先把研究资源用于新候选。
+
+## Credo Technology · CRDO
+
+### 公司做什么
+
+Credo出售用于铜缆和光连接的高速互联产品，让服务器、交换设备之间的数据传输更快、更可靠，并降低能耗。客户购买的是解决数据传输瓶颈的部件与连接方案，公司不是生产AI模型或GPU。
+
+### 机会为什么出现
+
+AI集群扩大与连接速度升级，可以增加连接数量和每条链路的技术价值。即使服务器数量没有十倍增长，产品组合和份额变化也可能推动利润；但铜与光方案的切换会改变受益产品。
+
+### 利润如何放大
+
+芯片设计与知识产权能够复用，销售扩张可摊薄研发费用。已有64.5%的GAAP毛利率意味着利润想象力不能靠毛利率任意倍增；更应看营业费用、客户集中、竞争降价和股权薪酬。
+
+### 当前判断
+
+**五年十倍可能性：低；研究优先级：低。** 行业和利润增长真实，但约330亿美元起点已不小，毛利率也不低；本轮不列入优先深挖的十倍候选。
+
+行情市值约329.9亿美元；十倍对应约3300亿美元的静态股权规模，还未考虑新增股份。盈利不错并不足以证明这个终点合理，当前价格对长期增长的要求已经很高。
+
+股价快照：169.7美元，UTC 2026-10-16T23:58:29Z（盘后）。用GAAP营业利润观察经营，不用剔除大量股权薪酬后的利润替代股东成本；行情市值不作为完全摊薄估值。
+
+[Credo FY2027 Q1业绩公告](https://investors.credosemi.com/news-events/news/news-details/2026/Credo-Technology-Group-Holding-Ltd-Reports-First-Quarter-of-Fiscal-Year-2027-Financial-Results/default.aspx)；[NVIDIA Rubin量产与互联架构公告](https://nvidianews.nvidia.com/news/vera-rubin-full-production-agentic-ai-factory)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
+
+### 关键风险与依据
+
+- 大客户自研、替代方案和价格谈判可能压缩利润。
+- 产品架构变化和并购费用可能使营收增长与每股利润脱节。
+
+**已发生 · FY2027 Q1，截至2026-08-01**：收入4.790亿美元，同比增长114.7%；GAAP毛利率64.5%，营业利润1.207亿美元。 [Credo FY2027 Q1业绩公告](https://investors.credosemi.com/news-events/news/news-details/2026/Credo-Technology-Group-Holding-Ltd-Reports-First-Quarter-of-Fiscal-Year-2027-Financial-Results/default.aspx)
+
+**利润约束**：GAAP营业利润低于上季1.558亿美元，尽管收入环比增长9.6%；不能用收入加速直接替代利润增速。 [Credo FY2027 Q1业绩公告](https://investors.credosemi.com/news-events/news/news-details/2026/Credo-Technology-Group-Holding-Ltd-Reports-First-Quarter-of-Fiscal-Year-2027-Financial-Results/default.aspx)
+
+**本轮已检验：好行业和高增长是否足以支持当前起点十倍？**
+
+不够。当前已有较高毛利和较大股权规模，仍需多年需求、份额和每股利润持续扩张；本轮相对优先级低，不为补满名单而继续堆报告。 [Credo FY2027 Q1业绩公告](https://investors.credosemi.com/news-events/news/news-details/2026/Credo-Technology-Group-Holding-Ltd-Reports-First-Quarter-of-Fiscal-Year-2027-Financial-Results/default.aspx)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
+
+**改变判断的条件**
+
+- 上调：出现可验证的新利润来源，或价格下降明显降低回报门槛。
+- 下调：收入增长伴随经营利润、每股利润或现金创造持续走弱。
+
+本批不追加报告。已有行业机会不足以抵消当前价格或商业兑现门槛，先把研究资源用于新候选。
+
+## Astera Labs · ALAB
+
+### 公司做什么
+
+Astera Labs设计服务器内部及机架之间的连接芯片，包括信号调理、内存连接和Scorpio交换产品，并配套管理软件。云和AI设备厂商购买这些组件，以减少高速数据交换的瓶颈和故障。
+
+### 机会为什么出现
+
+从卖一段链路的器件到承接更大的互联系统，可能让每个机架需要的Astera产品价值上升。新架构与定制芯片是扩展方向；发布参考设计和获得设计采用，不等于已经形成大额收入。
+
+### 利润如何放大
+
+产品平台与研发复用可能让营业利润快于收入增长。但当前GAAP毛利率已达73.3%，不能再靠毛利率数倍提升解释十倍回报；营业费用、竞争份额、股权薪酬和税收因素都必须保留。
+
+### 当前判断
+
+**五年十倍可能性：低；研究优先级：低。** 产品扩张值得关注，但约524亿美元起点、73.3%毛利率使十倍需要极强持续兑现；本轮不优先。
+
+行情市值约524.0亿美元。即使新产品高速增长，十倍仍意味着约5240亿美元的静态股权规模；本轮没有足够理由把这类终点当高可能性。
+
+股价快照：285.82美元，UTC 2026-10-16T23:38:34Z（盘后）。本季GAAP净利含约5026万美元所得税收益，因此不把净利1.531亿美元直接年化成可持续利润；优先观察营业利润。
+
+[Astera Labs 2026 Q2业绩公告](https://ir.asteralabs.com/news-releases/news-release-details/astera-labs-reports-second-quarter-2026-financial-results)；[NVIDIA Rubin量产与互联架构公告](https://nvidianews.nvidia.com/news/vera-rubin-full-production-agentic-ai-factory)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
+
+### 关键风险与依据
+
+- 平台厂商自研与竞争产品可能影响份额和价格。
+- 新产品结构变化可能增加研发支出；一次性税收收益会夸大表观净利。
+
+**已发生 · 2026 Q2**：收入3.924亿美元，同比增长104%；GAAP毛利率73.3%，营业利润8925万美元，营业利润率22.7%。 [Astera Labs 2026 Q2业绩公告](https://ir.asteralabs.com/news-releases/news-release-details/astera-labs-reports-second-quarter-2026-financial-results)
+
+**公司指引 · 非已实现**：公司预计Q3收入5.40–5.60亿美元，Scorpio交换产品推动增长；预测中的产品放量仍需实际收入检验。 [Astera Labs 2026 Q2业绩公告](https://ir.asteralabs.com/news-releases/news-release-details/astera-labs-reports-second-quarter-2026-financial-results)
+
+**本轮已检验：利润率提高能否单独解释十倍？**
+
+营业利润率仍可能改善，但毛利率起点已经很高。更大产品范围、持续高增和合理购买价格必须共同成立，不能只把终点净利率或PE往上调。 [Astera Labs 2026 Q2业绩公告](https://ir.asteralabs.com/news-releases/news-release-details/astera-labs-reports-second-quarter-2026-financial-results)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
+
+**改变判断的条件**
+
+- 上调：新增互联产品形成可持续的每股利润增长，且起始估值留出足够空间。
+- 下调：产品放量弱于预期，或费用与稀释使每股利润无法跟上收入。
+
+本批不追加报告。已有行业机会不足以抵消当前价格或商业兑现门槛，先把研究资源用于新候选。
+
+## Serve Robotics · SERV
+
+### 公司做什么
+
+Serve让小型机器人执行末端配送，也有医院场景及软件业务。收费来源包括车队服务、软件与广告。它的价值应是让每次配送的总成本下降，不能只比较机器人购买价格和人的工资。
+
+### 机会为什么出现
+
+高密度、短距离、重复路线可能适合机器人；同一台设备多跑订单，可以摊薄硬件和运维成本。但每单价值有限，等待、空驶和远程介入会消耗节省额，行业不会因为机器变便宜就自动出现十倍利润空间。
+
+### 利润如何放大
+
+利润取决于每单实收减去运维、远程支持、折旧等成本，再扣研发和管理费用。广告和软件可改善组合，但如果配送量不足或需要补贴，机器人数量扩大也可能只是扩大亏损。
+
+### 当前判断
+
+**五年十倍可能性：低；研究优先级：低。** 小市值提供价格弹性，却不能抵消需求不足与毛亏损。相对无人重卡，目前更缺可重复盈利的证据。
+
+3.23美元乘公司披露的6月底约8600万已发行股，静态约2.78亿美元；未计其后变动和潜在稀释。起点小，但不是已找到便宜的盈利资产。
+
+股价快照：3.23美元，UTC 2026-10-16T22:59:22Z（盘后）。6月底现金及有价证券2.404亿美元，不代表净清算价值，也不能忽略后续烧钱和承诺。行情商市值与披露股数折算不一致，因此明确采用日期分开的股价×股数。
+
+[Serve Robotics 2026 Q2业绩公告](https://investors.serverobotics.com/news-releases/news-release-details/serve-robotics-announces-second-quarter-2026-results)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
+
+### 关键风险与依据
+
+- 平台合作不保证订单密度，低利用率会让折旧和支持成本难以摊薄。
+- 现金消耗与融资可能让公司规模增长却每股价值不增长。
+
+**已发生 · 2026 Q2**：收入323.8万美元，收入成本1201.7万美元，毛亏损877.9万美元；平均日活跃机器人792台，低于Q1的812台，且包括室内外车队。 [Serve Robotics 2026 Q2业绩公告](https://investors.serverobotics.com/news-releases/news-release-details/serve-robotics-announces-second-quarter-2026-results)
+
+**公司下调指引 · 2026-08-06**：全年收入改为900–1000万美元，原因包括Uber Eats配送需求低于预期；不能将合作平台规模直接当成Serve订单。 [Serve Robotics 2026 Q2业绩公告](https://investors.serverobotics.com/news-releases/news-release-details/serve-robotics-announces-second-quarter-2026-results)
+
+**本轮已检验：机器人便宜、小市值，就更容易十倍吗？**
+
+小市值只降低所需总价值量级。眼下更直接的反证是需求下修、活跃设备环比下降和显著毛亏损；在单位经济改善前，继续外推机器人数没有说服力。 [Serve Robotics 2026 Q2业绩公告](https://investors.serverobotics.com/news-releases/news-release-details/serve-robotics-announces-second-quarter-2026-results)
+
+**改变判断的条件**
+
+- 上调：可重复的订单密度与单位贡献利润改善，而非只增加部署数量。
+- 下调：继续下调需求、靠融资维持低利用率扩张。
+
+本批不追加报告。已有行业机会不足以抵消当前价格或商业兑现门槛，先把研究资源用于新候选。
+
+## 来源与时点
+
+价格采用2026-10-16盘后美元快照。行情市值仅作初筛；披露股数与潜在股份单列。Viking与Kura原2031年输入已撤回，仅留逐项审查，不再显示对应盈利或股价回报。
+
+- [Credo FY2027 Q1业绩公告](https://investors.credosemi.com/news-events/news/news-details/2026/Credo-Technology-Group-Holding-Ltd-Reports-First-Quarter-of-Fiscal-Year-2027-Financial-Results/default.aspx) · 公布/记录 2026-09-01 · GAAP财务亮点及季度营业利润表；截至2026-08-01
+- [Astera Labs 2026 Q2业绩公告](https://ir.asteralabs.com/news-releases/news-release-details/astera-labs-reports-second-quarter-2026-financial-results) · 公布/记录 2026-08-04 · GAAP结果、所得税收益、Q3指引及产品更新
+- [Planet FY2027 Q2业绩公告](https://investors.planet.com/news/news-details/2026/Planet-Reports-Financial-Results-for-Second-Quarter-of-Fiscal-Year-2027/default.aspx) · 公布/记录 2026-09-03 · 截至2026-07-31；GAAP利润、FY27指引、ATM融资和业务介绍
+- [AST SpaceMobile 2026 Q2 Form 10-Q](https://app.quotemedia.com/data/downloadFiling?cdn=97b0f90b3039b64b39c17ee3c872f664&companyName=AST+SpaceMobile+Inc.&dateFiled=2026-08-10&formType=10-Q&ref=320259077&symbol=ASTS&type=PDF&webmasterId=102691) · 公布/记录 2026-08-10 · PDF第1页股数、第3–4页现金及营收、第8页现金流、第19页LLC权益交换
+- [Aurora 2026 Q2业绩公告](https://ir.aurora.tech/news-events/press-releases/detail/147/aurora-announces-second-quarter-2026-results) · 公布/记录 2026-07-29 · 二代硬件、商业客户、现金和短期投资；硬件降本为预期
+- [Aurora 2026投资者日公告（8-K附件）](https://ir.aurora.tech/sec-filings/all-sec-filings/content/0001828108-26-000082/businesswire-aurora2026ana.htm) · 公布/记录 2026-09-23 · 实际运营里程、2030愿景及风险段落中的non-binding MOU
+- [Serve Robotics 2026 Q2业绩公告](https://investors.serverobotics.com/news-releases/news-release-details/serve-robotics-announces-second-quarter-2026-results) · 公布/记录 2026-08-06 · 下调收入指引、日活机器人、分项收入与GAAP毛亏损、股数
+- [NVIDIA Rubin量产与互联架构公告](https://nvidianews.nvidia.com/news/vera-rubin-full-production-agentic-ai-factory) · 公布/记录 2026-05-31 · Rubin、NVLink与Spectrum-X光互联；不构成指定供应商的订单证明
+- [Vodafone：Satellite Connect Europe成立](https://www.vodafone.com/news/newsroom/technology/satellite-connect-europe-launches-direct-to-device-broadband-satellite-connectivity) · 公布/记录 2026-02-27 · 与AST合资、面向移动运营商的服务和地面站投资
+- [ATRI 2026卡车运营成本研究摘要](https://truckingresearch.org/2026/07/new-atri-report-details-accelerating-costs-and-low-profitability-despite-cuts/) · 公布/记录 2026-07-15 · 2025年行业全部运营成本2.336美元/英里；不能等同可节省人工成本
+- [2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json) · 公布/记录 2026-10-19 · web.finance检索记录；保留价格、市值和UTC交易时间
+- [Viking 2026 Q2财报](https://ir.vikingtherapeutics.com/2026-07-29-Viking-Therapeutics-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Corporate-Update) · 公布/记录 2026-07-29 · 财务结果；注射剂VANQUISH入组；现金余额
+- [Viking 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1607678/000119312526324219/vktx-20260630.htm) · 公布/记录 检索2026-10-19 · 封面7月15日股数；现金流表；Note 1反稀释股份；CordenPharma制造预付款
+- [Viking口服三期启动公告](https://ir.vikingtherapeutics.com/2026-10-14-Viking-Therapeutics-Announces-Initiation-of-VK2735-Oral-Phase-3-Clinical-Program-in-Patients-with-Obesity) · 公布/记录 2026-10-14 · SUNRISE-1/2设计、每组目标560人、68周终点
+- [Viking维持治疗研究结果](https://ir.vikingtherapeutics.com/2026-09-22-Viking-Therapeutics-Announces-Positive-Topline-Results-from-Maintenance-Study-of-GLP-1-GIP-Agonist-VK2735-Demonstrating-the-Promise-of-Multiple-Maintenance-Dosing-Regimens) · 公布/记录 2026-09-22 · 21周诱导与12周维持；给药间隔探索，不是长期三期结果
+- [Lilly 2026 Q2业绩](https://investor.lilly.com/news-releases/news-release-details/lilly-reports-second-quarter-2026-financial-results-raises-full) · 公布/记录 2026-08-06 · Zepbound销售与实收价格下降；减重药竞争，不合并糖尿病销售充当市场规模
+- [Kura 2026 Q2财报](https://ir.kuraoncology.com/node/13671) · 公布/记录 2026-08-12 · KOMZIFTI净销售、新患者；费用、现金与2028年试验节点
+- [Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm) · 公布/记录 2026-08-12 · 现金流表；Note 7合作分成；Note 2反稀释股份；融资与开发责任
+- [FDA：ziftomenib获批范围](https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-ziftomenib-relapsed-or-refractory-acute-myeloid-leukemia-npm1-mutation) · 公布/记录 2025-11-13 · 成人复发/难治NPM1突变AML；112人研究；CR+CRh与反应持续时间
+- [Kura 2025年报](https://ir.kuraoncology.com/static-files/37d2d8c3-659e-442a-aeb0-7c5d46326bb3) · 公布/记录 2026-03-05 · NPM1约占AML的30%；印刷页21–23制造、专利与监管独占；密歇根许可
+- [Kyowa Kirin：ziftomenib全球合作](https://www.kkna.kyowakirin.com/media-center/kura-oncology-and-kyowa-kirin-announce-global-strategic-collaboration-to-develop-and-commercialize-ziftomenib-in-acute-leukemias/) · 公布/记录 2024-11-20 · 美国50/50商业利润分配；美国以外分级双位数提成
+- [Kyowa Kirin：KOMET-007一线研究更新](https://www.kyowakirin.com/media_center/news_releases/2026/e20260612_01.html) · 公布/记录 2026-06-12 · 早期联合治疗随访；不能等同随机三期对照结果
+- [NCI SEER：急性髓系白血病统计](https://seer.cancer.gov/statfacts/html/amyl.html) · 公布/记录 检索2026-10-19 · 2026年美国预计新增AML病例22,720例；不是全部可用药患者
+- [BlackSky 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1753539/000175353926000118/exhibit991-blackskyq22026e.htm) · 公布/记录 2026-08-06 · 收入、调整后EBITDA、资本开支指引与ATM融资
+- [BlackSky 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1753539/000175353926000124/bksy-20260630.htm) · 公布/记录 2026-08-06 · 分业务及地域收入；现金流；合同积压；可转债、受限现金与股数
+- [BlackSky多年影像订阅合同](https://blacksky.com/press-releases/blacksky-wins-seven-figure-multi-year-international-contract-for-combined-assured-and-on-demand-subscriptions/) · 公布/记录 2026-08-11 · 七位数多年合同；试用转订阅，未披露逐客户利润
+- [Root 2026 Q2股东信](https://joinroot.gcs-web.com/static-files/2b181f1d-a77a-4b12-b0d0-1f502333da5e) · 公布/记录 2026-08-05 · 收入、签单保费与综合成本率
+- [Red Cat 2026 Q2业绩](https://ir.redcatholdings.com/news-events/press-releases/detail/237/red-cat-reports-q2-2026-revenue-growth-of-527-yy-q2-gross-margins-increase-39-vs-q2-2025-gross-margins-increased-27-sequentially-from-q1-2026) · 公布/记录 2026-08-06 · GAAP收入/毛利、现金流及上半年增发
+- [Centrus 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1065059/000162828026053433/ex991-10q2026_08x05.htm) · 公布/记录 2026-08-05 · 收入；附条件订单；2026资本部署指引
+- [Centrus 2025年报业绩与扩产安排](https://investors.centrusenergy.com/news-releases/news-release-details/centrus-reports-fourth-quarter-and-full-year-2025-results-and) · 公布/记录 检索2026-10-19 · 新产能部署与12吨HALEU目标时间在2030年之后
+- [美国能源部HALEU富集项目](https://www.energy.gov/ne/haleu-enrichment-services) · 公布/记录 检索2026-10-19 · American Centrifuge Operating与General Matter获得项目，政府采购并非独家
+- [ASP Isotopes 2026 Q2 Form 10-Q](https://ir.aspisotopes.com/sec-filings/all-sec-filings/content/0001193125-26-352603/aspi-20260630.htm) · 公布/记录 检索2026-10-19 · 收入构成与运营费用；不能把并购收入算成富集技术量产
+- [Arcutis 2026 Q2业绩](https://www.arcutis.com/arcutis-announces-second-quarter-2026-financial-results-and-provides-business-update/) · 公布/记录 2026-08-05 · ZORYVE销售、销售费用、经营现金流及指引
+- [Sezzle 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1662991/000166299126000124/sezl-20260806ex9901.htm) · 公布/记录 2026-08-06 · GMV、净利率、调整后利润指引与资金成本
+- [Dave 2026 Q2业绩](https://investors.dave.com/news-releases/news-release-details/dave-reports-second-quarter-2026-financial-results) · 公布/记录 2026-08-05 · 收入、GAAP利润、认股权证费用及调整后EBITDA定义变更
+- [Enovix 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1828318/000182831826000055/envx8k-q22026x8122026ex991.htm) · 公布/记录 2026-08-12 · 收入与毛利；智能手机电池资格认证阶段
+- [Applied Optoelectronics 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1158114/000168316826006055/aaoi_ex9901.htm) · 公布/记录 2026-08-06 · 收入、GAAP毛利率与800G需求
+- [Bel Fuse 2026 Q2业绩](https://ir.belfuse.com/news-releases/news-release-details/bel-reports-second-quarter-and-first-half-2026-results) · 公布/记录 2026-07-29 · 收入、毛利、GAAP净利；股权融资与还债
+- [Axcelis 2026 Q2业绩](https://axcelis.gcs-web.com/news-releases/news-release-details/axcelis-announces-financial-results-second-quarter-2026) · 公布/记录 2026-08-06 · 收入、营业利润率与拟议Veeco合并
+- [TransMedics 2026 Q2业绩](https://transmedicsinc.gcs-web.com/news-releases/news-release-details/transmedics-reports-second-quarter-2026-financial-results) · 公布/记录 2026-08-04 · 产品和服务收入、净利润、全年指引与PAD交易
+- [Ardelyx 2026 Q2业绩](https://ir.ardelyx.com/node/14991) · 公布/记录 2026-08-06 · IBSRELA与XPHOZAH收入、下调全年指引
+- [Ardelyx 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1437402/000143740226000044/ardx-20260630.htm) · 公布/记录 2026-08-06 · tenapanor核心专利及延长至2033-08-01；现金与借款
+- [CorMedix 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1410098/000141009826000054/crmd_q22026earningspr.htm) · 公布/记录 2026-08-13 · DefenCath、Melinta收入与支付过渡
+- [Iovance 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1425205/000110465926091619/tm2622322d1_ex99-1.htm) · 公布/记录 2026-08-06 · AMTAGVI销售与毛利口径、治疗中心及产能
+- [Remitly 2026 Q2业绩](https://ir.remitly.com/news-releases/news-release-details/remitly-reports-record-second-quarter-results-and-raises-full) · 公布/记录 2026-08-05 · 收入、净利及1.406亿美元一次性税收收益
+- [Personalis：Tempus收购协议](https://investors.personalis.com/news-releases/news-release-details/tempus-acquire-personalis-more-tightly-integrating-molecular) · 公布/记录 2026-07-20 · 每股16.25美元交易定价、换股及最高50%现金选择；预计交割时间
+- [dLocal 2026 Q2业绩](https://investor.dlocal.com/news-releases/news-release-details/dlocal-reports-second-quarter-2026-financial-results) · 公布/记录 检索2026-10-19 · TPV、收入、毛利与营业利润分别增长，不能混用
+- [Viking：口服二期完整结果](https://ir.vikingtherapeutics.com/2025-08-19-Viking-Therapeutics-Announces-Positive-Top-Line-Results-from-Phase-2-VENTURE-Oral-Dosing-Trial-of-VK2735-Tablet-Formulation-in-Patients-with-Obesity) · 公布/记录 2025-08-19 · 13周体重变化；各剂量与对照；治疗中止率
+- [FDA：竞争药revumenib获批NPM1适应症](https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-revumenib-relapsed-or-refractory-acute-myeloid-leukemia-susceptible-npm1-mutation) · 公布/记录 2025-10-24 · 成人及1岁以上儿童复发/难治NPM1突变AML
+- [KFF：使用目的与支付负担调查](https://www.kff.org/public-opinion/kff-health-tracking-poll-prescription-drug-costs-views-on-trump-administration-actions-and-glp-1-use/) · 公布/记录 2025-10-27至11-02（调查期） · 全国代表性样本1,350名美国成人；Use, Access and Affordability：5%曾主要为减重使用，56%曾使用者觉得难以负担。不是当前全年自费人数。
+- [JAMA：12个月持续用药研究](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2846157) · 公布/记录 2026-03-10 · Methods / Results / Limitations；2019—2024 MarketScan商业保险理赔，126,984名无糖尿病成人；持续定义允许不超过60天间断；不捕捉完全自费用药。DOI 10.1001/jamanetworkopen.2026.1272。
+- [Lilly：Zepbound自费价格与条件](https://zepbound.lilly.com/hcp/coverage-savings) · 公布/记录 2026-10-19（检索） · Self Pay Journey条款：7.5/10/12.5/15mg优惠449美元/28天，续购需在45天内；5mg常规399美元/28天。报价不披露对应全年自费人数，也不是Viking净价。
+- [CMS：GLP-1 Bridge支付规则](https://www.cms.gov/medicare/coverage/prescription-drug-coverage/medicare-glp-1-bridge) · 公布/记录 2026-10-19（检索） · Overview及copay问答：2026-07-01至2027-12-31试点，符合条件的Part D受益人使用特定药物自付50美元/月。不能假定Viking未来自动获纳入。

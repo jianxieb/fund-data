@@ -1,4 +1,5 @@
 import { createRequire } from 'node:module';
+import { operatingReviewSections } from './potential_operating_review.mjs';
 const M = createRequire(import.meta.url)('../assets/potential-model.js');
 const n = (v, digits = 2) => v.toLocaleString('zh-CN', { maximumFractionDigits: digits });
 const pct = v => n(v * 100, 1) + '%';
@@ -9,6 +10,7 @@ const range = values => values ? values.map(v => n(v)).join('–') : '亏损，�
 export function researchSections(c) {
   const r = c.research;
   if (!r) return [];
+  if (r.kind === 'evidence_review') return operatingReviewSections(c);
   // Withdrawn inputs are retained for accountability, but must never produce
   // an earnings forecast or valuation table in the product or its export.
   if (r.modelStatus === 'withdrawn') {

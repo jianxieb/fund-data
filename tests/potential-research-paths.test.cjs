@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const M = require('../assets/potential-model.js');
-const data = require('../data/potential-screening.json');
+const data = require('../data/potential-screening-prior.json');
 const quotes = require('../data/potential-screening-quotes.json');
 const close = (a,b) => assert.ok(Math.abs(a-b)<1e-8, `${a} != ${b}`);
 const capital = {outstanding:100,potential:0,futureAwards:0,netFunding:0,issuePrice:10,issueFee:.03};
@@ -36,7 +36,7 @@ test('net funding includes issue fees, and financing stress dilutes the same ear
   close(stress.newShares,20);close(stress.shares,115);
 });
 
-test('published assumptions stay explicit and stress never improves per-share results', () => {
+test('archived assumptions stay explicit and stress never improves per-share results', () => {
   for(const raw of data.companies.filter(c=>c.research)) {
     const c={...raw,quote:quotes.quotes.find(q=>q.symbol===raw.id)},r=c.research;
     for(const s of r.cases) {

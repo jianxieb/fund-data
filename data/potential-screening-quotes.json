@@ -164,6 +164,124 @@
       "priceUsd": 14.67,
       "marketCapUsd": 4344827367,
       "tradeTimeUtc": "2026-10-16T23:52:15Z"
+    },
+    {
+      "symbol": "IBTA",
+      "priceUsd": 47.84,
+      "marketCapUsd": 1113746392,
+      "tradeTimeUtc": "2026-10-16T23:15:00Z"
+    },
+    {
+      "symbol": "PUBM",
+      "priceUsd": 16.64,
+      "marketCapUsd": 767203840,
+      "tradeTimeUtc": "2026-10-16T21:35:00Z"
+    },
+    {
+      "symbol": "DV",
+      "priceUsd": 13.49,
+      "marketCapUsd": 2129949590,
+      "tradeTimeUtc": "2026-10-16T23:15:00Z"
+    },
+    {
+      "symbol": "TTD",
+      "priceUsd": 12.23,
+      "marketCapUsd": 5747464040,
+      "tradeTimeUtc": "2026-10-16T23:40:31Z"
+    },
+    {
+      "symbol": "TSSI",
+      "priceUsd": 7.07,
+      "marketCapUsd": 199508825,
+      "tradeTimeUtc": "2026-10-16T23:49:20Z"
+    },
+    {
+      "symbol": "POWL",
+      "priceUsd": 165.14,
+      "marketCapUsd": 6044784560,
+      "tradeTimeUtc": "2026-10-16T23:25:10Z"
+    },
+    {
+      "symbol": "SANM",
+      "priceUsd": 175.67,
+      "marketCapUsd": 9685214110,
+      "tradeTimeUtc": "2026-10-16T22:33:52Z"
+    },
+    {
+      "symbol": "AMSC",
+      "priceUsd": 25.67,
+      "marketCapUsd": 1209673080,
+      "tradeTimeUtc": "2026-10-16T23:33:44Z"
+    },
+    {
+      "symbol": "PAYO",
+      "priceUsd": 7.12,
+      "marketCapUsd": 2402754901,
+      "tradeTimeUtc": "2026-10-16T21:35:00Z"
+    },
+    {
+      "symbol": "STNE",
+      "priceUsd": 11.28,
+      "marketCapUsd": 3485517609,
+      "tradeTimeUtc": "2026-10-16T21:35:00Z"
+    },
+    {
+      "symbol": "OPFI",
+      "priceUsd": 5.65,
+      "marketCapUsd": 486109903,
+      "tradeTimeUtc": "2026-10-16T23:15:00Z"
+    },
+    {
+      "symbol": "FINV",
+      "priceUsd": 3.13,
+      "marketCapUsd": 4066574935,
+      "tradeTimeUtc": "2026-10-16T23:15:00Z",
+      "marketCapUse": "excluded",
+      "marketCapNote": "原始工具市值疑似混用普通股与ADS口径，保留快照但不参与估值。"
+    },
+    {
+      "symbol": "GCT",
+      "priceUsd": 57.35,
+      "marketCapUsd": 2095938391,
+      "tradeTimeUtc": "2026-10-16T21:35:37Z"
+    },
+    {
+      "symbol": "AIP",
+      "priceUsd": 18.76,
+      "marketCapUsd": 886907759,
+      "tradeTimeUtc": "2026-10-16T22:16:42Z"
+    },
+    {
+      "symbol": "SIMO",
+      "priceUsd": 211.3,
+      "marketCapUsd": 28467705224,
+      "tradeTimeUtc": "2026-10-16T23:39:46Z",
+      "marketCapUse": "excluded",
+      "marketCapNote": "原始工具市值疑似混用普通股与ADS口径，保留快照但不参与估值。"
+    },
+    {
+      "symbol": "ARQ",
+      "priceUsd": 1.79,
+      "marketCapUsd": 75362580,
+      "tradeTimeUtc": "2026-10-16T21:35:00Z"
+    },
+    {
+      "symbol": "BAND",
+      "priceUsd": 43.34,
+      "marketCapUsd": 1451485941,
+      "tradeTimeUtc": "2026-10-16T22:04:20Z"
+    },
+    {
+      "symbol": "CXDO",
+      "priceUsd": 5.47,
+      "marketCapUsd": 187230951,
+      "tradeTimeUtc": "2026-10-16T21:35:00Z"
+    },
+    {
+      "symbol": "MIND",
+      "priceUsd": 4.31,
+      "marketCapUsd": 39173827,
+      "tradeTimeUtc": "2026-10-16T21:35:00Z"
     }
   ]
 }

@@ -26,40 +26,44 @@ const rowIds = html => [...html.matchAll(/data-stock-row="([^"]+)"/g)].map(x=>x[
 
 test('current research opens the fresh finite screen and changes downloads and counts with history', () => {
   const f=fixture();
-  assert.equal(rowIds(f.html).length,27);
-  assert.ok(rowIds(f.html).includes('VKTX'));
+  assert.equal(rowIds(f.html).length,19);
+  assert.ok(rowIds(f.html).includes('TSSI'));
   assert.ok(!rowIds(f.html).includes('688050'));
   assert.match(f.html,/利润增长靠什么/);
   assert.match(f.html,/股价快照 \/ 美元/);
   assert.equal(f.api.reportPath(),'docs/research/potential-screening-2026-10-19.md');
-  assert.equal(f.api.companies().length,27);
+  assert.equal(f.api.companies().length,19);
   f.click('potential-history');
+  assert.equal(rowIds(f.html).length,27);
+  assert.ok(rowIds(f.html).includes('VKTX'));
+  assert.equal(f.api.reportPath(),'docs/research/potential-screening-prior-2026-10-19.md');
+  f.click('potential-legacy');
   assert.match(f.html,/此前研究 · 2026-10-18/);
   assert.ok(rowIds(f.html).includes('AMPX'));
   assert.doesNotMatch(f.html,/data-stock-row="VKTX"/);
   assert.equal(f.api.reportPath(),'docs/research/potential-stocks-2026-10-18.md');
   f.click('potential-current');
-  assert.ok(rowIds(f.html).includes('VKTX'));
+  assert.ok(rowIds(f.html).includes('TSSI'));
 });
 
 test('industry, priority and business search combine and clearing restores the screen', () => {
   const f=fixture();
-  f.click('potential-sector','satellite');
-  assert.deepEqual(rowIds(f.html),['BKSY','PL','ASTS']);
-  f.api.handleInput({value:'普通手机'});f.H.render();
-  assert.deepEqual(rowIds(f.html),['ASTS']);
+  f.click('potential-sector','compute');
+  assert.deepEqual(rowIds(f.html),['TSSI','SIMO','POWL','SANM','AMSC','AIP']);
+  f.api.handleInput({value:'闪存'});f.H.render();
+  assert.deepEqual(rowIds(f.html),['SIMO']);
   f.click('potential-reset');
   f.click('potential-status','priority');
   assert.deepEqual(rowIds(f.html),[]);
-  assert.match(f.html,/本轮暂无保留候选/);
+  assert.match(f.html,/没有高概率十倍结论/);
   f.click('potential-status','watch');
-  assert.equal(rowIds(f.html).length,27);
-  assert.ok(rowIds(f.html).includes('VKTX'));
-  assert.ok(rowIds(f.html).includes('PL'));
+  assert.equal(rowIds(f.html).length,19);
+  assert.ok(rowIds(f.html).includes('TSSI'));
+  assert.ok(rowIds(f.html).includes('CXDO'));
   f.api.handleInput({value:'no such business'});f.H.render();
   assert.match(f.html,/当前条件没有匹配公司/);
   f.click('potential-reset');
-  assert.equal(rowIds(f.html).length,27);
+  assert.equal(rowIds(f.html).length,19);
   assert.match(f.html,/<div class="stock-controls"><div class="filters"><input type="search" id="potential-search"/);
 });
 
@@ -75,10 +79,12 @@ test('each company explains business and profit before judgement with traceable 
     assert.match(f.modal,/原始来源与定位/);
     for (const id of c.sources) assert.ok(f.screen.sources.some(s=>s.id===id));
   }
-  f.click('potential-screen-detail','ASTS');
-  assert.match(f.modal,/不能把总收入都说成手机用户持续订阅/);
-  f.click('potential-screen-detail','AUR');
-  assert.match(f.modal,/非约束性MOU/);
+  f.click('potential-screen-detail','TSSI');
+  assert.match(f.modal,/每项经营输入：依据、用途与缺口/);
+  assert.match(f.modal,/收入99%来自同一OEM/);
+  f.click('potential-screen-detail','CXDO');
+  assert.match(f.modal,/并发会话/);
+  assert.match(f.modal,/6.83%/);
 });
 
 test('market switching respects the existing market control and keeps prior A-share research reachable', () => {
@@ -88,10 +94,12 @@ test('market switching respects the existing market control and keeps prior A-sh
   assert.match(f.html,/A股暂无本轮结果/);
   assert.doesNotMatch(f.html,/stock-market-nav|potential-market/);
   f.click('potential-history');
+  assert.deepEqual(rowIds(f.html),[]);
+  f.click('potential-legacy');
   assert.ok(rowIds(f.html).includes('688050'));
   f.click('potential-current');
   f.H.market='us';f.H.render();
-  assert.equal(rowIds(f.html).length,27);
+  assert.equal(rowIds(f.html).length,19);
 });
 
 test('screen escapes source text and exports the same evidence and price time basis', () => {
@@ -114,9 +122,11 @@ test('screen escapes source text and exports the same evidence and price time ba
 
 test('withdrawn forecasts cannot remain investment priorities or appear in product and report', () => {
   const f=fixture();
-  assert.equal(f.screen.newScreenCount,21);
-  assert.deepEqual(Array.from(f.screen.companies.filter(c=>c.research), c=>c.id),['VKTX','KURA']);
-  for (const id of ['PL','ASTS','AUR','BKSY','ARDX']) assert.equal(f.screen.companies.find(c=>c.id===id).selected,false);
+  f.click('potential-history');
+  const archived=f.screen.previous;
+  assert.equal(archived.newScreenCount,21);
+  assert.deepEqual(Array.from(archived.companies.filter(c=>c.research), c=>c.id),['VKTX','KURA']);
+  for (const id of ['PL','ASTS','AUR','BKSY','ARDX']) assert.equal(archived.companies.find(c=>c.id===id).selected,false);
   for (const id of ['VKTX','KURA']) {
     f.click('potential-screen-detail',id);
     assert.match(f.modal,/原盈利预测已撤回/);
@@ -124,10 +134,10 @@ test('withdrawn forecasts cannot remain investment priorities or appear in produ
     assert.match(f.modal,/重新估算需要的依据/);
     assert.doesNotMatch(f.modal,/2031年条件情景|PE假设区间|股价倍数<\/th>|份完整研究/);
     assert.doesNotMatch(f.modal,/进入下一轮|下一轮研究重点/);
-    const c=f.screen.companies.find(c=>c.id===id);
+    const c=archived.companies.find(c=>c.id===id);
     assert.equal(c.selected,false);
     assert.equal(c.research.modelStatus,'withdrawn');
-    const md=fs.readFileSync(f.screen.reportPath,'utf8');
+    const md=fs.readFileSync(archived.reportPath,'utf8');
     assert.doesNotMatch(md,/### 2031年条件情景|\| PE假设区间 \|/);
     for (const section of c.research.sections) {
       for (const row of section.rows || []) for (const cell of row) {
@@ -135,7 +145,7 @@ test('withdrawn forecasts cannot remain investment priorities or appear in produ
         assert.ok(md.includes(cell));
       }
       for (const sourceIds of section.rowSources || []) for (const sourceId of sourceIds) {
-        const source=f.screen.sources.find(s=>s.id===sourceId);
+        const source=archived.sources.find(s=>s.id===sourceId);
         assert.ok(source,sourceId);
         assert.ok(f.modal.includes(f.H.esc(source.url)));
         assert.ok(md.includes(source.url));
@@ -155,7 +165,7 @@ test('withdrawn forecasts cannot remain investment priorities or appear in produ
 
 test('withdrawal bypasses valuation and requires evidence review for every operating and capital input', async () => {
   const {researchSections}=await import('../scripts/potential_research_sections.mjs');
-  const c=structuredClone(require('../data/potential-screening.json').companies.find(c=>c.id==='VKTX'));
+  const c=structuredClone(require('../data/potential-screening-prior.json').companies.find(c=>c.id==='VKTX'));
   // With no quote or a usable issuance price, an active projection would fail.
   // A withdrawn case must still show its evidence without calculating prices.
   c.research.capital.issuePrice=0;
