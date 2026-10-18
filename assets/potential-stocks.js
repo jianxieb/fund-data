@@ -278,7 +278,9 @@
     H.openModal('<div class="potential-detail">' + H.modalTitle(e(c.name) + ' · ' + e(c.id), e(c.tagline)) + '<span class="potential-status ' + c.status + '">' + status(c) + '</span>' + tabs + ({ judgment, scenarios, evidence }[tab] || judgment)(c) + '</div>');
   }
   function method() {
-    H.openModal('<div class="potential-detail">' + H.modalTitle('潜力研究口径', '研究版本 ' + e(data().reviewedAt)) + paragraphs(Object.values(data().method)) + '<p><a href="docs/research/potential-stocks-2026-10-18.md" download>下载完整研究</a> · <a href="data/potential-stocks.json" download>研究数据 JSON</a> · <a href="data/potential-quotes.json" download>报价记录 JSON</a></p></div>');
+    const process = data().researchProcess;
+    const workflow = process ? '<p class="potential-lead">' + e(process.objective) + '</p><ol class="potential-milestones">' + process.stages.map(s => '<li><strong>' + e(s.title) + '</strong><p>' + e(s.body) + '</p></li>').join('') + '</ol><p>' + e(process.history) + '</p><h3>每家公司先讲清楚什么</h3><p>' + e(process.companyReadingOrder) + '</p><p>' + e(process.reset) + '</p>' : '';
+    H.openModal('<div class="potential-detail">' + H.modalTitle('潜力研究口径', process ? '方法确认于 ' + e(process.confirmedAt) : '研究版本 ' + e(data().reviewedAt)) + workflow + '<details class="potential-method"><summary>估值与数据口径</summary>' + paragraphs(Object.values(data().method)) + '</details><p><a href="docs/research/potential-stocks-2026-10-18.md" download>下载完整研究</a> · <a href="data/potential-stocks.json" download>研究数据 JSON</a> · <a href="data/potential-quotes.json" download>报价记录 JSON</a></p></div>');
   }
   function handleAction(button) {
     const act = button.dataset.action, value = button.dataset.value;

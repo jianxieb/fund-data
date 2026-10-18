@@ -17,6 +17,10 @@ const data = JSON.parse(readFileSync(resolve(root, 'data/potential-stocks.json')
 const n = (x, d = 2) => x.toLocaleString('zh-CN', { maximumFractionDigits: d });
 const sources = ids => ids.map(id => { const s = data.sources.find(x => x.id === id); if (!s) throw new Error('Unknown source: ' + id); return `[${s.title}](${s.url})（${s.publishedAt ? `公布 ${s.publishedAt}` : `发布日期未标注；检索 ${s.retrievedAt}`}；报告期 ${s.period}；${s.locator}）`; }).join('；');
 let md = `# 五年潜力股研究 · ${data.reviewedAt} · 修订${data.revision}\n\n研究起点：${data.priceDate}收盘；终点：${data.horizonDate}。美国普通股使用美元，A股使用人民币。\n\n${data.summary}\n\n没有可信成功概率，不做概率加权目标价。\n\n`;
+if (data.researchProcess) {
+  const p = data.researchProcess;
+  md += `## 已确认的研究顺序 · ${p.confirmedAt}\n\n${p.objective}\n\n` + p.stages.map((s, i) => `${i + 1}. **${s.title}**：${s.body}`).join('\n') + `\n\n${p.history}\n\n公司内容顺序：${p.companyReadingOrder}。\n\n${p.reset}\n\n`;
+}
 md += '## 本次复核与撤回记录\n\n' + data.revisions.map(r => `${r.date}：${r.reason} 原版见 Git 提交 \`${r.previousCommit}\`。`).join('\n\n') + '\n\n';
 md += '## 口径与取舍\n\n' + Object.values(data.method).join('\n\n') + '\n\n';
 md += '研究先比较商业化、单位经济、竞争与资本配置，再反算终点。不是按市值或过去增长率打分。其余备选公司的证据没有达到同等深度，未入选不意味着公司能力不存在。行业容量部分明确包含研究假设，不能把模型可计算理解为需求已验证。\n\n';
