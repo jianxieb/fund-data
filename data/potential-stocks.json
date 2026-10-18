@@ -1880,6 +1880,114 @@
       "period": "2026-10-14至16",
       "type": "market_price",
       "locator": "保存原始chart.quote.close；纽约交易日，未使用复权收盘"
+    },
+    {
+      "id": "aip-2025",
+      "title": "Arteris 2025 Form 10-K",
+      "url": "https://ir.arteris.com/node/11931/html",
+      "publishedAt": "2026-02-12",
+      "period": "2025全年与2024比较",
+      "type": "annual_report",
+      "locator": "利润、权益、现金流量表；附注3收入分类、递延发行费用与应计费用"
+    },
+    {
+      "id": "aip-h1",
+      "title": "Arteris 2026H1 Form 10-Q",
+      "url": "https://ir.arteris.com/node/12761/html",
+      "publishedAt": "2026-08-06",
+      "period": "2026H1；封面股数2026-07-30",
+      "type": "quarterly_report",
+      "locator": "报表p3–8；附注3不可取消合同、7 Cycuity、12 ATM、13奖励、14 Transchip；MD&A收入成本与ACV/RPO定义"
+    },
+    {
+      "id": "aip-q2-release",
+      "title": "Arteris Q2业绩及2026指引（SEC附件）",
+      "url": "https://www.sec.gov/Archives/edgar/data/1667011/000162828026054325/exhibit991q2fy268-k.htm",
+      "publishedAt": "2026-08-06",
+      "period": "2026Q2/H1与前瞻指引",
+      "type": "earnings_release",
+      "locator": "Q3/FY指引；非GAAP调节和FCF定义；LTM版税及设计启动口径"
+    },
+    {
+      "id": "aip-amd",
+      "title": "AMD取得Arteris FlexGen授权",
+      "url": "https://ir.arteris.com/news-releases/news-release-details/arteris-provide-flexgen-smart-noc-ip-next-generation-amd-ai",
+      "publishedAt": "2025-08-04",
+      "period": "AMD下一代AI chiplet设计",
+      "type": "company_release",
+      "locator": "公告及AMD管理人员引述；未披露授权费、版税率、产品量产收入"
+    },
+    {
+      "id": "aip-arm",
+      "title": "Arm扩大Cycuity Radix使用",
+      "url": "https://www.arteris.com/press-releases/arteris-expands-partnership-with-arm-to-accelerate-semiconductor-cybersecurity/",
+      "publishedAt": "2026-07-14",
+      "period": "Arm处理器开发验证",
+      "type": "company_release",
+      "locator": "已用于部分CPU并扩展至更多项目；非每颗Arm CPU版税合同证据"
+    },
+    {
+      "id": "aip-arm-catalog",
+      "title": "Arm官网合作伙伴目录：Arteris",
+      "url": "https://www.arm.com/partners/catalog/arteris-ip",
+      "publishedAt": "未标注（2026-10-18检索）",
+      "period": "检索日可见合作关系",
+      "type": "partner_release",
+      "locator": "客户方目录支持技术合作；不提供合同金额、公司收入或量产版税"
+    },
+    {
+      "id": "aip-renesas",
+      "title": "Arteris用于Renesas R-Car Gen 5",
+      "url": "https://ir.arteris.com/news-releases/news-release-details/arteris-network-chip-ip-deployed-renesas-next-gen-r-car",
+      "publishedAt": "2026-03-24",
+      "period": "R-Car Gen 5 / X5H",
+      "type": "company_release",
+      "locator": "Renesas负责人引述；X5H当时处于送样阶段，量产计费规模未披露"
+    },
+    {
+      "id": "aip-multidie",
+      "title": "Arteris扩展Multi-Die产品组合",
+      "url": "https://www.arteris.com/press-releases/arteris-accelerates-industry-transition-to-multi-die-chiplet-based-architecture/",
+      "publishedAt": "2026-09-15",
+      "period": "FlexGen Multi-Die产品发布",
+      "type": "company_release",
+      "locator": "产品发布及客户/伙伴应用陈述；不是新增已确认订单金额"
+    },
+    {
+      "id": "aip-security-funding",
+      "title": "硬件设计安全联合项目追加资助",
+      "url": "https://www.arteris.com/press-releases/arteris-wins-funding-to-expand-hardware-design-supply-chain-security-assurance-for-the-trusted-and-assured-microelectronics-program/",
+      "publishedAt": "2026-10-06",
+      "period": "Arteris / BAE Systems / SiFive联合项目",
+      "type": "company_release",
+      "locator": "项目追加3.3百万美元资助；归属Arteris的收入、分包分成和现金时点未披露"
+    },
+    {
+      "id": "aip-cfo",
+      "title": "Arteris CFO任命与股权薪酬安排8-K",
+      "url": "https://www.sec.gov/Archives/edgar/data/1667011/000119312526336887/d148163d8k.htm",
+      "publishedAt": "2026-08-06",
+      "period": "9月8日起生效的聘用安排",
+      "type": "company_filing",
+      "locator": "Item5.02：RSU3.7百万、2026 PSU1百万、拟2027 PSU1百万；2亿美元TTM收入和65美元股价是奖励门槛"
+    },
+    {
+      "id": "aip-filings",
+      "title": "Arteris SEC申报目录快照",
+      "url": "https://data.sec.gov/submissions/CIK0001667011.json",
+      "publishedAt": "2026-10-18",
+      "period": "2026-08-01至10-18财务/融资类目录范围",
+      "type": "filing_index",
+      "locator": "本次返回8月6日10-Q与两份8-K；Form4/144等未用作财务报告，CFO实际授予股数仍列缺口"
+    },
+    {
+      "id": "aip-price",
+      "title": "AIP未复权常规收盘价",
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/AIP?range=1mo&interval=1d",
+      "publishedAt": "2026-10-16",
+      "period": "2026-10-14至16",
+      "type": "market_price",
+      "locator": "保存原始chart.quote.close；纽约交易日；未使用复权收盘"
     }
   ],
   "companies": [
@@ -5224,8 +5332,8 @@
       }
     }
   ],
-  "revision": 21,
-  "summary": "新增Ceva版税组合、授权回款、增发稀释和现金研究；六家完整候选与十五家比较公司。27.50美元起点下基准约1.24倍、强条件乐观约4.76倍；平台授权进展与上调指引尚不足以验证十倍每股价值，保留成长比较观察。",
+  "revision": 22,
+  "summary": "新增Arteris的授权/版税/收购服务、合同兑现、现金融资和股本研究；六家完整候选与十六家比较公司。约18.76美元起点下基准约0.69倍、强条件乐观约3.33倍，保留成长比较观察，尚不支持列入十倍重点候选。",
   "revisions": [
     {
       "date": "2026-10-18",
@@ -5326,6 +5434,11 @@
       "date": "2026-10-18",
       "reason": "新增CEVA：区分授权与版税、技术与终端出货口径，补入2025增发和2026奖励、境外金融资产约束、GAAP经营情景及有条件融资稀释；不将AI协议或全生命周期版税当作已量产年度收入。",
       "previousCommit": "12b82f1ba985e757b68fe41b32ef91144a311557"
+    },
+    {
+      "date": "2026-10-18",
+      "reason": "新增Arteris：拆分不可取消合同与指标RPO、纯版税与收购政府服务、税收益与持续亏损、跨期ATM费用及供应商融资；纳入AMD/Arm采用、10月联合资助、CFO奖励、股数与现金压力后重算每股价值。",
+      "previousCommit": "8b57c4409a07ed890e24d9b7f675f03f903dc425"
     }
   ],
   "comparisons": [
@@ -22345,6 +22458,914 @@
           "管理层预备发言不含Q&A；Q3结果尚未发布。"
         ]
       }
+    },
+    {
+      "id": "AIP",
+      "name": "Arteris",
+      "market": "us",
+      "currency": "USD",
+      "price": {
+        "value": 18.760000228881836,
+        "asOf": "2026-10-16",
+        "symbol": "AIP",
+        "url": "https://query1.finance.yahoo.com/v8/finance/chart/AIP?range=1mo&interval=1d"
+      },
+      "shares": 49.152102,
+      "shareDate": "2026-07-30",
+      "shareBasis": "10-Q封面流通在外普通股；非季度加权平均，也不是10月同日股数。静态反算未计未来新增股份，后文按2031股数重算",
+      "margin": 0.3,
+      "pe": 30,
+      "anchorRevenue": 84.615,
+      "anchorLabel": "LTM截至2026-06-30收入（含收购，非有机口径）",
+      "facts": "H1授权40.096、版税4.606、服务2.368百万美元；版税同比增79.29%。经营亏损23.208百万、现金流2.148百万；ATM净现金72.546百万，现金增强主要来自融资。不可取消合同131.4百万，其中67.5百万预计未来12个月确认。",
+      "judgment": "保留Chiplet互联与安全验证的成长比较观察，暂不进入十倍重点候选。AMD/Arm采用和版税增长有实据，但收购服务与原有业务尚未完整拆分，持续股权费用及未来稀释不能忽略。基准约0.69倍，强条件乐观约3.33倍，尚不足以验证十倍每股价值。",
+      "gaps": "缺有机授权与Cycuity独立盈利、客户量产费率/计费量、完整未来授予及对价股数、逐年经营现金联动。ACV、可取消RPO、不可取消合同和当期收入分别计量，不能混加。",
+      "next": "下一次业绩按纯版税、不可取消合同转收入和回款、收购业务毛利、实际奖励与2027或有对价支付更新；仅有产品或客户公告不自动上调估值。",
+      "sources": [
+        "aip-2025",
+        "aip-h1",
+        "aip-q2-release",
+        "aip-amd",
+        "aip-arm",
+        "aip-arm-catalog",
+        "aip-renesas",
+        "aip-multidie",
+        "aip-security-funding",
+        "aip-cfo",
+        "aip-filings"
+      ],
+      "audit": {
+        "kind": "operating_screen",
+        "unit": "USD million",
+        "periods": [
+          {
+            "label": "2024全年",
+            "revenue": 57.724,
+            "cost": 5.962,
+            "operating": -31.596,
+            "net": -33.638,
+            "operatingCash": -0.72,
+            "capex": 0.324,
+            "sbc": 15.938,
+            "license": 52.815,
+            "royalty": 4.405,
+            "services": 0.504,
+            "vendorPrincipal": 1.749,
+            "newVendorPPE": 0.546,
+            "fcf": -1.044,
+            "afterVendorCash": -2.793
+          },
+          {
+            "label": "2025全年",
+            "revenue": 70.579,
+            "cost": 6.895,
+            "operating": -33.137,
+            "net": -34.746,
+            "operatingCash": 6.733,
+            "capex": 1.388,
+            "sbc": 18.376,
+            "license": 63.859,
+            "royalty": 6.596,
+            "services": 0.124,
+            "vendorPrincipal": 1.503,
+            "newVendorPPE": 1.738,
+            "fcf": 5.345,
+            "afterVendorCash": 3.8419999999999996
+          },
+          {
+            "label": "2025H1",
+            "revenue": 33.034,
+            "cost": 3.268,
+            "operating": -15.956,
+            "net": -17.251,
+            "operatingCash": 0.375,
+            "capex": 0.538,
+            "sbc": 8.809,
+            "license": 30.423,
+            "royalty": 2.569,
+            "services": 0.042,
+            "vendorPrincipal": 0.558,
+            "newVendorPPE": 1.099,
+            "fcf": -0.16300000000000003,
+            "afterVendorCash": -0.7210000000000001
+          },
+          {
+            "label": "2026H1",
+            "revenue": 47.07,
+            "cost": 6.857,
+            "operating": -23.208,
+            "net": -22.024,
+            "operatingCash": 2.148,
+            "capex": 0.89,
+            "sbc": 11.858,
+            "license": 40.096,
+            "royalty": 4.606,
+            "services": 2.368,
+            "vendorPrincipal": 0.681,
+            "newVendorPPE": 2.558,
+            "fcf": 1.258,
+            "afterVendorCash": 0.577
+          },
+          {
+            "label": "LTM截至2026-06-30",
+            "revenue": 84.615,
+            "cost": 10.484,
+            "operating": -40.389,
+            "net": -39.519,
+            "operatingCash": 8.506,
+            "capex": 1.74,
+            "sbc": 21.425,
+            "license": 73.532,
+            "royalty": 8.633,
+            "services": 2.45,
+            "vendorPrincipal": 1.626,
+            "newVendorPPE": 3.197,
+            "fcf": 6.766,
+            "afterVendorCash": 5.14
+          }
+        ],
+        "netLabel": "GAAP净利",
+        "earningsNote": "LTM按2025全年减2025H1加2026H1计算；2025年报将版税和其他合列在利润表，附注3可拆成6.596与0.124百万。收购并表使同比口径发生变化，LTM不是有机收入。H1含一次性税收益4.103百万，GAAP与非GAAP均未因此变成盈利。",
+        "cash": {
+          "period": "2026H1",
+          "basis": "现金、等价物及受限现金",
+          "start": 34.25,
+          "operating": 2.148,
+          "capex": 0.89,
+          "capexPrepaid": 0,
+          "capexPrepaidDisplay": "未单列；不把非现金设备误作已付款",
+          "investing": -16.42,
+          "financing": 73.639,
+          "fx": 0,
+          "end": 93.617
+        },
+        "cashNote": "公司定义FCF为1.258百万；再扣供应商融资本金后0.577百万。期末普通现金93.270、受限0.347；投资中的收购与证券买卖、融资中的ATM均与经营现金分开。",
+        "sections": [
+          {
+            "title": "增长构成：原有授权、版税与收购服务",
+            "headers": [
+              "期间 / 百万美元",
+              "授权及支持",
+              "版税",
+              "专业服务及其他"
+            ],
+            "rows": [
+              [
+                "2024全年",
+                52.815,
+                4.405,
+                0.504
+              ],
+              [
+                "2025全年",
+                63.859,
+                6.596,
+                0.124
+              ],
+              [
+                "2025H1",
+                30.423,
+                2.569,
+                0.042
+              ],
+              [
+                "2026H1",
+                40.096,
+                4.606,
+                2.368
+              ],
+              [
+                "LTM截至2026-06-30",
+                73.532,
+                8.633,
+                2.45
+              ]
+            ],
+            "paragraphs": [
+              "H1收入同比增加14.036百万：授权增加9.673、版税增加2.037、专业服务及其他增加2.326。版税增长79.29%是真实正向信号，但只占本期收入9.79%；不能将整体42.49%增长都解释为版税或AI量产。",
+              "Cycuity自1月14日并表，贡献安全验证授权和美国政府服务合同；Q2服务增量主要来自这些收购合同，且相当一部分由第三方分包商履行。总服务增量约占H1收入增量16.57%，这是分类贡献，不是精确的收购贡献。被收购业务的完整收入/利润未单列，原有业务有机增速仍无法精确计算。",
+              "H1毛利率90.11%→85.43%。毛利增加10.447百万，经营费用增加17.699百万；去掉2.799百万收购相关费用，营业亏损仍为20.409百万，差于上年15.956百万。未来模型因此分别给授权、版税、服务毛利率，不把政府分包服务套用IP高毛利。"
+            ],
+            "sources": [
+              "aip-2025",
+              "aip-h1"
+            ]
+          },
+          {
+            "title": "合同金额、履约时间与回款的区别",
+            "headers": [
+              "2026-06 / 百万美元",
+              "金额"
+            ],
+            "rows": [
+              [
+                "ACV：固定合同费除以合同年限",
+                90.9
+              ],
+              [
+                "ACV＋版税指标",
+                99.5
+              ],
+              [
+                "宣传指标RPO：包含可取消金额",
+                134.9
+              ],
+              [
+                "报表不可取消未履约金额",
+                131.4
+              ],
+              [
+                "其中未来12个月预计确认",
+                67.5
+              ],
+              [
+                "其余以后确认",
+                63.9
+              ],
+              [
+                "其中FSA待选具体产品承诺",
+                2.7
+              ],
+              [
+                "递延收入：已开票、尚未确认",
+                108.857
+              ],
+              [
+                "应收账款",
+                15.222
+              ],
+              [
+                "单列流动合同资产",
+                0.855
+              ]
+            ],
+            "paragraphs": [
+              "互联IP通常签2–3年协议，工具访问与应用工程支持属于同一履约义务，按期确认。安全验证软件亦按期确认；多数SoC集成软件合同允许按月终止并退还未服务部分费用。版税在客户销售发生时按报告或估计确认，不能由设计启动直接推导当季回款。",
+              "134.9百万指标RPO与131.4百万不可取消金额相差3.5百万；67.5百万是不可取消部分未来12个月预计收入，不是全部在2026年确认，也不是同额新现金。108.857百万递延收入是RPO中的重叠部分，不能相加；开票也不自动等于收款。公司允许不披露未来潜在版税，因此不能将其追加为已签订单。",
+              "ACV90.9＋报告LTM版税约8.6≈指标99.5；按报表重建的纯版税为8.633，专业服务及其他另有2.450。指标文字提到other，但没有完整解释本期服务的纳入范围，不能把2.450再加入并改写管理层指标。Q2设计启动26对25仅增4%；公告21%增长使用滚动12个月口径。",
+              "H1从期初递延收入确认35.3百万；递延收入由95.341增至108.857，约3.461来自收购、10.056来自现金流表变动（千美元级舍入差）。支持续约和交付有能见度，但不足以证明2031收入规模。"
+            ],
+            "sources": [
+              "aip-h1",
+              "aip-q2-release"
+            ]
+          },
+          {
+            "title": "现金改善的来源与未付设备投入",
+            "headers": [
+              "期间 / 百万美元",
+              "经营现金",
+              "现金资本开支",
+              "公司定义FCF",
+              "供应商融资本金",
+              "再扣本金后"
+            ],
+            "rows": [
+              [
+                "2024全年",
+                -0.72,
+                0.324,
+                -1.044,
+                1.749,
+                -2.793
+              ],
+              [
+                "2025全年",
+                6.733,
+                1.388,
+                5.345,
+                1.503,
+                3.8419999999999996
+              ],
+              [
+                "2025H1",
+                0.375,
+                0.538,
+                -0.16300000000000003,
+                0.558,
+                -0.7210000000000001
+              ],
+              [
+                "2026H1",
+                2.148,
+                0.89,
+                1.258,
+                0.681,
+                0.577
+              ],
+              [
+                "LTM截至2026-06-30",
+                8.506,
+                1.74,
+                6.766,
+                1.626,
+                5.14
+              ]
+            ],
+            "paragraphs": [
+              "H1现金流口径含受限现金：34.250＋经营2.148－投资16.420＋融资73.639＝93.617。普通现金93.270与受限0.347分开；融资中ATM现金净流入72.546、期权/ESPP1.681，不能算经营创造现金。投资包括收购净付11.179、证券净购买4.351和设备0.890。",
+              "公司定义FCF为经营现金减现金设备支出：H1为1.258百万；再扣融资活动中的供应商本金0.681后仅0.577。另有2.558百万设备通过供应商融资取得，未在当期购建现金中出现。它属于新增负债支持的投入，不能因现金资本开支低就假设持续投资也低；新取得设备不能再当作本期已付款重复扣现金。",
+              "经营现金受应收回收5.376和递延收入增加10.056支持；机械去掉这两项后为-13.284百万，仅是营运资金敏感性。预收本来就是该商业模式的合理融资来源，不能直接定性为不真实经营现金；关键是续约与收款能否持续。LTM经营现金8.506、FCF6.766、再扣供应商本金5.140，与同期股权薪酬21.425需一起看，现金正值尚不等于每股经济盈利。",
+              "权益表ATM净额72.006与现金流净额72.546相差0.540：当前应计发行费0.513，加上上年递延发行费用0.549减上年应计0.522所对应的已付部分0.027，数额可对平。这个跨期解释是报表间推导，未取得逐笔费用明细，不把两种净额混用。"
+            ],
+            "sources": [
+              "aip-2025",
+              "aip-h1",
+              "aip-q2-release"
+            ]
+          },
+          {
+            "title": "收购价格、税收收益与后续对价",
+            "headers": [
+              "Cycuity / 百万美元",
+              "金额"
+            ],
+            "rows": [
+              [
+                "交割现金",
+                14.121
+              ],
+              [
+                "已归属奖励现金",
+                0.971
+              ],
+              [
+                "交割股票公允价值",
+                19.016
+              ],
+              [
+                "初始或有对价",
+                9.018
+              ],
+              [
+                "总收购对价",
+                43.126
+              ],
+              [
+                "取得的现金",
+                3.914
+              ],
+              [
+                "新增商誉",
+                31.121
+              ],
+              [
+                "可辨认无形资产",
+                18.07
+              ],
+              [
+                "一次性递延税收益",
+                4.103
+              ],
+              [
+                "6月底或有对价负债",
+                11.076
+              ],
+              [
+                "或有对价合同上限",
+                12
+              ]
+            ],
+            "paragraphs": [
+              "收购并非只花11.179百万现金：还发行1.096280百万股，并承诺最高12百万后续对价。公允价值增加2.058百万进入Q2收购相关费用。后续金额取决于2026订单目标，若赚取则不晚于2027-03-31支付；对特定原股东用股票、对价内期权持有人和非合格投资者用现金。具体混合比例和最终股数仍未知。",
+              "4.103百万递延税收益是收购触发估值准备释放，没有增加现金。报告H1净亏22.024，去掉该收益为26.127百万；即使把2.799收购费用和2.989 Transchip损失另外列示，也不能把剩余持续股权薪酬忽略。官方非GAAP H1净亏5.904仍保留该税收益，去掉后为10.007百万，不能直接据非GAAP改善宣称商业模式已盈利。",
+              "Transchip权益法投资6月底账面值归零，H1损失2.989百万、Q2不再确认损失；这是停止按账面余额确认损失的边界，不等于被投资公司盈利。Arteris未参与其本次可转债融资；另有三年关联授权，H1收款0.7、确认收入0.2百万。"
+            ],
+            "sources": [
+              "aip-h1",
+              "aip-q2-release"
+            ]
+          },
+          {
+            "title": "流通股、奖励与2026年新CFO授予",
+            "headers": [
+              "股数 / 百万股",
+              "数量"
+            ],
+            "rows": [
+              [
+                "2024年底流通在外",
+                40.724936
+              ],
+              [
+                "2025期权行权＋RSU＋ESPP新增",
+                3.54388
+              ],
+              [
+                "2025年底流通在外",
+                44.268816
+              ],
+              [
+                "H1期权行权",
+                0.390321
+              ],
+              [
+                "H1 RSU归属发行",
+                1.129041
+              ],
+              [
+                "H1 ESPP发行",
+                0.056311
+              ],
+              [
+                "H1收购发行",
+                1.09628
+              ],
+              [
+                "H1 ATM发行",
+                2.111123
+              ],
+              [
+                "2026-06-30流通在外",
+                49.051892
+              ],
+              [
+                "2026-07-30封面股数",
+                49.152102
+              ],
+              [
+                "6月底未归属RSU/PSU",
+                5.231903
+              ],
+              [
+                "6月底期权",
+                1.309075
+              ],
+              [
+                "6月底ESPP承诺",
+                0.028996
+              ],
+              [
+                "6月底普通股＋潜在股简单合计",
+                55.621866000000004
+              ],
+              [
+                "当年PSU全部达200%再增",
+                0.068848
+              ]
+            ],
+            "paragraphs": [
+              "2025总股数增长8.70%，2026H1再增10.80%。75百万ATM在6月底已全部使用，不能再把75百万当成未使用融资额度；200百万S-3登记上限也不等于已经承诺提供现金。报价采用7月30日49.152102百万股估算市值，不用H1加权平均46.415392百万。",
+              "未归属奖励4.355001＋新授2.129849－归属1.129041－取消0.123906＝5.231903百万；其中新授含PSU目标0.068848，最高200%，因此最高压力仅额外加0.068848，不能再次加完整目标和最高额。简单潜在股合计从6月底普通股出发，避免把6月至7月已归属股份再重复算入。期权按全部行权毛股数列示，不假设用所得款回购。",
+              "未确认RSU费用68.9百万预计3.3年确认，PSU1.2百万预计2.6年、期权1.4百万预计2.2年，未来费用有可见压力。9月入职CFO的聘用安排另列RSU目标3.7百万美元、2026 PSU1百万及拟2027 PSU1百万；股数按授予前30日平均价决定，不能拿10月价格冒充实际授予股数。实际Form4读取未成功，确切股数仍缺。",
+              "2026 CFO奖励条件含2030年底前TTM收入达到200百万、其后2031年底前15个交易日平均股价达到65美元。这是薪酬门槛，不是收入指引或保底目标价。情景61/63/72百万股均高于上述55.690714百万简单压力合计；差额用于尚未证实的未来授予、并购与融资，不能称为已完整滚动验证的股本预测。"
+            ],
+            "sources": [
+              "aip-2025",
+              "aip-h1",
+              "aip-cfo"
+            ]
+          },
+          {
+            "title": "客户证据与产品价值如何变为收费",
+            "headers": [
+              "已核实事项",
+              "证据能支持的范围",
+              "仍缺的经济证据"
+            ],
+            "rows": [
+              [
+                "AMD / FlexGen",
+                "2025-08授权及AMD人员引述，面向下一代AI chiplet",
+                "分产品合同费、计费单元、量产版税；没有证据替代全部Infinity Fabric"
+              ],
+              [
+                "Arm / Cycuity Radix",
+                "部分CPU设计已使用，并扩大至更多处理器项目",
+                "安全验证软件费与续约；不能乘全部Arm CPU出货估版税"
+              ],
+              [
+                "Renesas / R-Car Gen 5",
+                "FlexNoC采用，3月公告X5H送样",
+                "量产时点、可计费芯片数量与单价"
+              ],
+              [
+                "FlexGen Multi-Die",
+                "9月15日产品扩展公告",
+                "订单金额和新增公司收入"
+              ],
+              [
+                "T&AM安全项目",
+                "10月6日联合项目追加3.3百万资助",
+                "Arteris实际分成、分包成本、确认和收款时间"
+              ]
+            ],
+            "paragraphs": [
+              "这些证据支持产品被真实采用。AMD、Arm及Renesas的具体商业公告主要来自Arteris并带客户人员引述；本次客户方Arm官网目录只能独立支持合作关系，无法独立验证合同金额。技术生态、设计项目和量产版税属于不同阶段。",
+              "公司披露客户获取通常6–9个月，设计周期通常1–3年；设计完成后进入量产通常还需1–5年，量产版税可持续至约7年。不能把今年设计启动数直接乘一个虚构单价算明年收入，也不能将多年累计芯片出货当成年销量。",
+              "乐观版税110百万是LTM8.633的12.74倍。若仅作算术敏感性，平均每个可计费单元0.05/0.10/0.25美元，需要22亿/11亿/4.4亿单元每年；这些费率不是合同披露值，且一颗chiplet可能包含多个IP、合同计费方式不同。强情景尚缺计费量与费率的客户级证据。"
+            ],
+            "sources": [
+              "aip-amd",
+              "aip-arm",
+              "aip-arm-catalog",
+              "aip-renesas",
+              "aip-multidie",
+              "aip-security-funding",
+              "aip-h1"
+            ]
+          },
+          {
+            "title": "资金压力：保留费用与低价融资的代价",
+            "headers": [
+              "压力假设 / 百万美元",
+              "金额"
+            ],
+            "rows": [
+              [
+                "现金＋证券（受限现金另列）",
+                123.262
+              ],
+              [
+                "证券按95%计值后的可用起点",
+                121.7624
+              ],
+              [
+                "假设2026H2经营及新增设备净耗",
+                15
+              ],
+              [
+                "预留最高现金对价（现金支付边界）",
+                12
+              ],
+              [
+                "预留现有供应商融资本金",
+                3.495
+              ],
+              [
+                "预留未付发行费",
+                0.513
+              ],
+              [
+                "进入2027前压力余额",
+                90.75439999999999
+              ],
+              [
+                "2027年底融资前余额",
+                66.75439999999999
+              ],
+              [
+                "2028年底融资前余额",
+                42.75439999999999
+              ],
+              [
+                "2029年底融资前余额",
+                18.75439999999999
+              ],
+              [
+                "2030年底融资前余额",
+                -5.24560000000001
+              ],
+              [
+                "2031年底融资前余额",
+                -29.24560000000001
+              ],
+              [
+                "最低现金储备假设",
+                25
+              ],
+              [
+                "五年累计需要新增净融资",
+                54.24560000000001
+              ],
+              [
+                "10美元发行、5%费率新增百万股",
+                5.710063157894738
+              ],
+              [
+                "5美元发行、5%费率新增百万股",
+                11.420126315789476
+              ]
+            ],
+            "paragraphs": [
+              "这是独立资金压力测试，不是已验证的经营预测：2027–2031每年经营净流出20、全现金新增设备4百万；经营流出已含税、租赁与利息，不再重复扣。现有设备融资的本金另预留3.495；未来新设备假设全现金，不重复计算新增供应商融资。到2031前必须及时融资维持25百万储备，负数不是允许公司在没有融资时继续经营。",
+              "实际或有对价混合现金和股票。这里把12百万全留现金只为测试现金占用上界，未同时再加12百万股票。如果在相同10美元转换假设下全部以股支付，现金融资需求减至42.2456百万，融资及对价股票合计约5.646905百万股；不是合同规定的实际转换价或最终付款方式。两种边界不能相加。",
+              "基准、乐观终值暂未假设额外外部融资，但并未完成与逐年损益、回款、授予相联的完整资金预算。今后的收购、最低现金要求、股价和新授予会改变结果；本版只证明当前融资增强承受力，同时明确极端压力下每股价值会继续被稀释。"
+            ],
+            "sources": [
+              "aip-h1",
+              "aip-cfo"
+            ]
+          },
+          {
+            "title": "指引、下一步证据与撤回条件",
+            "headers": [
+              "指标",
+              "2026Q3指引",
+              "2026全年指引"
+            ],
+            "rows": [
+              [
+                "收入 / 百万美元",
+                "24–25",
+                "95–98"
+              ],
+              [
+                "ACV＋版税 / 百万美元",
+                "99–103",
+                "102–106"
+              ],
+              [
+                "非GAAP营业亏损 / 百万美元",
+                "1–3",
+                "7–10"
+              ],
+              [
+                "公司定义FCF / 百万美元",
+                "不再提供季度指引",
+                "5–9"
+              ]
+            ],
+            "paragraphs": [
+              "以上是8月6日前瞻指引，不能冒充Q3已实现。非GAAP排除了股权薪酬、收购摊销及收购费用；本研究PE对应保留持续股权薪酬后的利润。H1中国客户占收入23.2%，公司称出口限制可能令中国收入下降；无法把海外AI授权机会全部当成对这一风险的已实现替代。",
+              "H1没有单个客户达到收入10%，但应收前两客户占36%和12%，信用集中仍需看回款。专利诉讼涉及三个客户，公司目前否认赔偿请求，但潜在费用不能量化；不能凭没有计提断言风险为零。",
+              "本次检索8月1日至10月18日财务/融资类SEC目录，定位8月6日10-Q、业绩8-K和CFO任命8-K，并读入10月6日联合项目；这是明确范围的检查，不代表所有非财务申报或未公开合同已穷尽。",
+              "更新触发点是下一次业绩中的不可取消合同转收入/收款、纯版税增长、Cycuity收入与毛利拆分、持续费用和实际奖励/对价支付。若原有授权和版税增长明显回落、收购主要靠低毛利分包撑收入或低价融资超出上述压力，应下调成长判断；若有更大可核实年度版税、GAAP利润和有限稀释，可重新提高估值假设。"
+            ],
+            "sources": [
+              "aip-q2-release",
+              "aip-h1",
+              "aip-filings",
+              "aip-security-funding"
+            ]
+          }
+        ],
+        "scenarios": [
+          {
+            "id": "bear",
+            "label": "悲观：授权停滞、费用刚性",
+            "license": 100,
+            "royalty": 15,
+            "services": 10,
+            "licenseGrossMargin": 0.85,
+            "royaltyGrossMargin": 0.95,
+            "servicesGrossMargin": 0.25,
+            "rd": 85,
+            "salesMarketing": 38,
+            "generalAdministration": 28,
+            "amortization": 2,
+            "financialIncome": 2,
+            "shares": 72,
+            "pe": null,
+            "dividends": 0,
+            "revenue": 125,
+            "grossProfit": 101.75,
+            "opex": 153,
+            "operating": -51.25,
+            "pretax": -49.25,
+            "tax": 1.5,
+            "net": -50.75,
+            "margin": -0.406,
+            "equityValue": 250,
+            "price": 3.4722222222222223,
+            "priceMultiple": 0.18508647014175325,
+            "futureSharesBeyondKnownPool": 16.309285999999993,
+            "fundingSharesIncluded": 5.710063157894738,
+            "futureAwardsAcquisitionAndOtherShares": 10.599222842105256,
+            "story": "授权100、版税15、服务10百万；三类毛利率85%/95%/25%，毛利101.75，研发85、销售38、管理28、单列摊销2，营业亏损51.25；财务收入2、税费下限1.5，净亏50.75。亏损不用PE；假设剩余股权价值250百万、72百万股，每股3.47美元、约0.19倍，250百万不是股价底或净现金。72百万股已容纳10美元融资压力的约5.71百万股，其余新增股数是奖励等假设；更低发行价会进一步稀释。"
+          },
+          {
+            "id": "base",
+            "label": "基准：授权增长但利润率有限",
+            "license": 200,
+            "royalty": 35,
+            "services": 15,
+            "licenseGrossMargin": 0.88,
+            "royaltyGrossMargin": 0.96,
+            "servicesGrossMargin": 0.35,
+            "rd": 95,
+            "salesMarketing": 45,
+            "generalAdministration": 34,
+            "amortization": 2,
+            "financialIncome": 3,
+            "shares": 61,
+            "pe": 25,
+            "dividends": 0,
+            "revenue": 250,
+            "grossProfit": 214.85,
+            "opex": 176,
+            "operating": 38.849999999999994,
+            "pretax": 41.849999999999994,
+            "tax": 10.462499999999999,
+            "net": 31.387499999999996,
+            "margin": 0.12555,
+            "price": 12.86372950819672,
+            "priceMultiple": 0.6856998588087674,
+            "futureSharesBeyondKnownPool": 5.309285999999993,
+            "fundingSharesIncluded": 0,
+            "futureAwardsAcquisitionAndOtherShares": 5.309285999999993,
+            "story": "授权200、版税35、服务15百万；三类毛利率88%/96%/35%，毛利214.85，研发95、销售45、管理34、单列摊销2，营业利润38.85；财务收入3、税10.4625，净利31.3875。61百万股、25倍PE，每股12.86美元、约0.69倍。收入五年较LTM复合增速24.19%仍不能保证起始估值获得正回报。"
+          },
+          {
+            "id": "bull",
+            "label": "乐观：Chiplet授权与版税共同放量",
+            "license": 320,
+            "royalty": 110,
+            "services": 20,
+            "licenseGrossMargin": 0.9,
+            "royaltyGrossMargin": 0.97,
+            "servicesGrossMargin": 0.4,
+            "rd": 140,
+            "salesMarketing": 50,
+            "generalAdministration": 40,
+            "amortization": 2,
+            "financialIncome": 4,
+            "shares": 63,
+            "pe": 30,
+            "dividends": 0,
+            "revenue": 450,
+            "grossProfit": 402.7,
+            "opex": 232,
+            "operating": 170.7,
+            "pretax": 174.7,
+            "tax": 43.675,
+            "net": 131.02499999999998,
+            "margin": 0.29116666666666663,
+            "price": 62.39285714285713,
+            "priceMultiple": 3.32584522290147,
+            "futureSharesBeyondKnownPool": 7.309285999999993,
+            "fundingSharesIncluded": 0,
+            "futureAwardsAcquisitionAndOtherShares": 7.309285999999993,
+            "story": "授权320、版税110、服务20百万；三类毛利率90%/97%/40%，毛利402.7，研发140、销售50、管理40、单列摊销2，营业利润170.7；财务收入4、税43.675，净利131.025。63百万股、30倍PE，每股62.39美元、约3.33倍。总收入五年较LTM复合增速39.69%，版税为LTM的12.74倍，同时要求费用增速慢于收入，属于强条件情景。"
+          }
+        ],
+        "hurdleCases": [
+          {
+            "label": "现有股数不再增加（仅反事实）",
+            "shares": 49.152102,
+            "margin": 0.3,
+            "pe": 30
+          },
+          {
+            "label": "61百万股、25%净利率、25倍PE",
+            "shares": 61,
+            "margin": 0.25,
+            "pe": 25
+          },
+          {
+            "label": "63百万股、30%净利率、30倍PE",
+            "shares": 63,
+            "margin": 0.3,
+            "pe": 30
+          },
+          {
+            "label": "同股数和利润率、40倍PE压力",
+            "shares": 63,
+            "margin": 0.3,
+            "pe": 40
+          }
+        ],
+        "scenarioNote": "以2026-10-16未复权收盘约18.76美元为起点，比较2031年终值。所有未来收入、分业务毛利、费用、税、股数和PE均是研究假设，无可信成功概率，不做概率加权。各功能费用保留持续股权薪酬，收购摊销另列；未来不再确认Transchip账面损失是假设，不代表该投资已盈利。",
+        "valuationNote": "按63百万股、30%净利率、30倍PE反算十倍，需要净利393.960百万、收入1313.200百万，较LTM约15.52倍，五年复合增速约73.05%；即使给40倍PE仍要收入984.900百万。乐观情景收入450、净利131.025百万仍有明显差距。即使强行不计任何新增股份、使用现有49.152102百万股，乐观30倍PE也仅约4.26倍，结论不只依赖稀释假设。PE已是股权价值法，不重复把现金再加到股价。",
+        "fullFundingModelVerified": false,
+        "capital": {
+          "shares2024": 40.724936,
+          "optionsIssued2025": 0.774458,
+          "rsuIssued2025": 2.607741,
+          "esppIssued2025": 0.161681,
+          "shares2025": 44.268816,
+          "optionsIssuedH1": 0.390321,
+          "rsuIssuedH1": 1.129041,
+          "esppIssuedH1": 0.056311,
+          "acquisitionIssuedH1": 1.09628,
+          "atmIssuedH1": 2.111123,
+          "sharesJune": 49.051892,
+          "sharesJuly": 49.152102,
+          "unvestedStart": 4.355001,
+          "granted": 2.129849,
+          "vested": 1.129041,
+          "cancelled": 0.123906,
+          "unvestedEnd": 5.231903,
+          "options": 1.309075,
+          "esppCommitted": 0.028996,
+          "newPsuTarget": 0.068848,
+          "newPsuMaxFactor": 2,
+          "unrecognizedRsuCost": 68.9,
+          "unrecognizedPsuCost": 1.2,
+          "unrecognizedOptionCost": 1.4,
+          "atmGross": 75,
+          "atmNetEquity": 72.006,
+          "atmNetCash": 72.546,
+          "priorDeferredOfferingCost": 0.549,
+          "priorAccruedOfferingCost": 0.522,
+          "currentAccruedOfferingCost": 0.513,
+          "cfoRsuTargetValue": 3.7,
+          "cfo2026PsuTargetValue": 1,
+          "cfo2027PsuTargetValue": 1,
+          "knownPoolAtTarget": 55.621866000000004,
+          "knownPoolNewPsuAtMax": 55.69071400000001,
+          "atmReconciliation": 0.54,
+          "futureGrantSharesVerified": false
+        },
+        "liquiditySensitivity": {
+          "cash": 93.27,
+          "restricted": 0.347,
+          "securities": 29.992,
+          "securitiesHaircut": 0.05,
+          "h2StressBurn": 15,
+          "earnoutCap": 12,
+          "existingVendorPrincipal": 3.495,
+          "unpaidOfferingCost": 0.513,
+          "annualOperatingCash": -20,
+          "annualCashCapex": 4,
+          "years": 5,
+          "minimumReserve": 25,
+          "issueFee": 0.05,
+          "reportedLiquidAssets": 123.262,
+          "stressedStartingAssets": 121.7624,
+          "beforeFiveYearBurn": 90.75439999999999,
+          "afterFiveYears": -29.24560000000001,
+          "netRaise": 54.24560000000001,
+          "sharesAt10": 5.710063157894738,
+          "sharesAt5": 11.420126315789476,
+          "annualRows": [
+            {
+              "year": 2027,
+              "cashBeforeNewFinancing": 66.75439999999999
+            },
+            {
+              "year": 2028,
+              "cashBeforeNewFinancing": 42.75439999999999
+            },
+            {
+              "year": 2029,
+              "cashBeforeNewFinancing": 18.75439999999999
+            },
+            {
+              "year": 2030,
+              "cashBeforeNewFinancing": -5.24560000000001
+            },
+            {
+              "year": 2031,
+              "cashBeforeNewFinancing": -29.24560000000001
+            }
+          ],
+          "allStockEarnoutAlternativeNetRaise": 42.24560000000001,
+          "allStockAlternativeSharesAt10": 5.646905263157896
+        },
+        "revenueQuality": {
+          "acv": 90.9,
+          "priorAcv": 63.9,
+          "acvPlusRoyalty": 99.5,
+          "kpiRpo": 134.9,
+          "nonCancelableRpo": 131.4,
+          "next12Months": 67.5,
+          "thereafter": 63.9,
+          "fsa": 2.7,
+          "deferredStart": 95.341,
+          "deferredEnd": 108.857,
+          "deferredAcquired": 3.461,
+          "deferredCashChange": 10.056,
+          "contractAsset": 0.855,
+          "h1ReceivableCashRelease": 5.376,
+          "q2DesignStarts": 26,
+          "priorQ2DesignStarts": 25,
+          "ttmDesignGrowth": 0.21,
+          "ltmRoyaltyRounded": 8.6,
+          "organicRevenueVerified": false
+        },
+        "profitQuality": {
+          "h1ReportedNet": -22.024,
+          "oneTimeTaxBenefit": 4.103,
+          "acquisitionExpense": 2.799,
+          "earnoutRemeasurement": 2.058,
+          "transchipLoss": 2.989,
+          "h1NonGaapNet": -5.904,
+          "h1NonGaapOperating": -7.088,
+          "h1IntangibleAmortization": 1.463,
+          "netWithoutTaxBenefit": -26.127,
+          "operatingWithoutAcquisitionExpense": -20.409
+        },
+        "acquisition": {
+          "purchaseConsideration": 43.126,
+          "cashClose": 14.121,
+          "cashAwards": 0.971,
+          "stockValue": 19.016,
+          "initialEarnout": 9.018,
+          "cashAcquired": 3.914,
+          "reportedNetCash": 11.179,
+          "currentEarnout": 11.076,
+          "maximumEarnout": 12,
+          "deadline": "2027-03-31"
+        },
+        "guidance": {
+          "actual": false,
+          "date": "2026-08-06",
+          "q3RevenueLow": 24,
+          "q3RevenueHigh": 25,
+          "fyRevenueLow": 95,
+          "fyRevenueHigh": 98,
+          "fyFcfLow": 5,
+          "fyFcfHigh": 9
+        },
+        "sourceLimitations": [
+          "收购业务完整收入与利润、有机增长未单列",
+          "分客户授权额、IP费率、量产计费量不公开",
+          "CFO实际授予股数未读到；未来奖励及或有对价最终混合比例未知",
+          "联合资助3.3百万不等于Arteris全部新增收入",
+          "年度现金、经营和奖励情景尚未形成完整联动预算"
+        ]
+      }
     }
   ],
   "remainingWork": [
@@ -22369,6 +23390,7 @@
     "Vicor：已完成产品/NRE/许可区分、税项与现金桥、LTM、9月厂址及许可指引、8月替代回购授权和年度融资/奖励压力。仍缺正式Q3许可分项回款、合同退出与续约条款、厂址成交/总资本投入及单位产能回报、7月后全部股本与奖励、实际回购；仅凭这些新证据更新，不重复历史基线。",
     "中科飞测：已完成2025/H1利润现金、产品验收政策、库存/预收、募集资金用途与临时补流、股本日期和价格门槛初筛，暂不进入十倍重点候选。仍缺同型号验收回款、先进新品量价毛利、补流归还/理财期限、后续全体激励与融资及YOLE口径解释。仅凭这些新证据或价格实质变化更新，不重复历史基线。",
     "Xperi：已完成2023–2025/H1/LTM、广告成本、保底确认/应收、Q1-Q2现金、Tobii债务人、激励与有条件十倍门槛研究；尚缺分成后单位经济和客户复购、分合同回款、Tobii实际履约、后续完整奖励及五年资金预算。等待这些新证据再升级，当前保留比较观察。",
-    "CEVA：已完成2024–2026H1/LTM、版税组合、现金与金融资产期限、2025增发及奖励、管理层指引和经营估值；仍缺具体NPU量产/费率、分合同回款、全体奖励最高结果和收购后的五年资本回报。仅以这些新证据更新，当前为比较观察，不重复历史基线。"
+    "CEVA：已完成2024–2026H1/LTM、版税组合、现金与金融资产期限、2025增发及奖励、管理层指引和经营估值；仍缺具体NPU量产/费率、分合同回款、全体奖励最高结果和收购后的五年资本回报。仅以这些新证据更新，当前为比较观察，不重复历史基线。",
+    "Arteris：已完成H1/LTM、不可取消RPO、收购服务、ATM现金与股数、奖励和资金压力。仍缺Cycuity独立毛利/有机增长、客户年度计费量与费率、CFO实际授予与未来完整股本、或有对价现金/股票分配及逐年经营现金联动；有具名新披露时再更新。"
   ]
 }
