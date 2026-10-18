@@ -8,6 +8,7 @@ import { batteryAudit, annualFunding } from './potential_battery_audit.mjs';
 import { medicalAudit } from './potential_medical_audit.mjs';
 import { diagnosticAudit } from './potential_diagnostic_audit.mjs';
 import { sensingAudit, sensingTargets } from './potential_sensing_audit.mjs';
+import { dataServiceAudit, dataServiceFunding, chemicalScreenAudit } from './potential_data_service_audit.mjs';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const require = createRequire(import.meta.url);
 const M = require('../assets/potential-model.js');
@@ -27,7 +28,7 @@ for (const c of data.companies) {
   const f = c.financials, bull = M.scenario(c, 'bull'), h = M.hurdle(c, bull);
   const amount = x => n(x / 100) + '亿' + (c.currency === 'USD' ? '美元' : '元');
   md += `\n## ${c.name} · ${c.id}\n\n**${c.decision}**\n\n${c.tagline}。\n\n### 已验证事实与财务\n\n`;
-  md += `股价 ${c.price.value}（${c.price.asOf}常规交易收盘、未复权）；来源：[Yahoo Finance](${c.price.url})。已发行股数 ${n(c.shares.value, 6)}百万股，股本截至 ${c.shares.asOf}；不是同日报价市值。\n\n`;
+  md += `股价 ${c.price.value}（${c.price.asOf}常规交易收盘、未复权）；来源：[Yahoo Finance](${c.price.url})。${c.shares.label || "已发行股数"} ${n(c.shares.value, 6)}百万股，股本截至 ${c.shares.asOf}；不是同日报价市值。\n\n`;
   md += `${f.label}：收入 ${amount(f.revenue)}，归母/普通股利润 ${amount(f.netIncome)}，经营现金流 ${amount(f.operatingCash)}，现金口径 ${amount(f.cash)}，借款口径 ${amount(f.debt)}。利润口径：${f.netIncomeBasis}。债务口径：${f.debtBasis}。\n\n${sources([f.source])}\n\n`;
   for (const fact of c.facts) md += `- 已发生：${fact.text} ${sources(fact.sources)}\n`;
   if (c.earningsAdjustment) {
@@ -69,6 +70,7 @@ for (const c of data.companies) {
   md += medicalAudit(c, sources, n);
   md += diagnosticAudit(c, sources, n);
   md += sensingAudit(c, sources, n);
+  md += dataServiceAudit(c, sources, n);
   md += '\n### 管理层指引与研究假设\n\n';
   md += c.guidance.length ? c.guidance.map(g => `- 管理层指引：${g.text} ${sources(g.sources)}`).join('\n') : '未将未核实的全年经营目标设为公司指引。';
   md += `\n\n收入增长锚点：${f.anchorLabel}，金额 ${amount(f.anchorRevenue)}。下面所有2031参数、行业份额和里程碑阈值均为研究者假设，不是公司承诺或外部一致预期。\n\n### 经营路径、竞争与资本配置\n\n${c.thesis.join('\n\n')}\n\n${c.economics}\n\n${c.management}\n\n${c.funding}\n\n${sources(c.fundingSources)}\n\n### 股本与稀释\n\n${c.shares.potentialBasis}\n\n${c.shares.futureBasis}\n\n${c.shares.convertibles}\n\n具体缺项：${c.shares.gap}\n\n`;
@@ -97,13 +99,14 @@ for (const c of data.companies) {
     md += `\n${f.caveat} 负值说明在这些条件下，仅营运资金就需要更多现金来源；正值也不等于资金已足够。\n\n${sources(f.sources)}\n\n`;
   }
   md += annualFunding(c, M, sources, n);
+  md += dataServiceFunding(c, M, sources, n);
   md += `**十倍反算**：每股价格需 ${n(h.price)}；按乐观期末 ${n(bull.shares)}百万股，股权价值需 ${amount(h.equity)}，相对起始股本折算值为 ${n(h.capitalMultiple)}倍。用 ${bull.pe}倍PE与 ${n(bull.margin * 100)}%归母净利率，需利润 ${amount(h.profit)}、收入 ${amount(h.revenue)}，收入五年CAGR ${n(h.revenueCagr * 100)}%。\n\n若终值PE下降25%，乐观股价倍数变为 ${n(M.project(c, { ...bull, pe: bull.pe * .75 }).priceMultiple)}倍；若期末股数再增20%，变为 ${n(M.project(c, { ...bull, shares: bull.shares * 1.2 }).priceMultiple)}倍。两项同时发生则为 ${n(M.project(c, { ...bull, pe: bull.pe * .75, shares: bull.shares * 1.2 }).priceMultiple)}倍。分红不用于掩盖股价十倍未达标。\n\n### 市场容量与单位经济反查\n\n${c.marketTest.headline}\n\n`;
   if (c.marketTest.kind === 'segment_growth') {
     md += '| 产品线 / 亿原币 | 2025H1 | 2026H1 | 同比 | 2026H1简单年化 | 2031假设 | 所需五年增速 |\n| --- | ---: | ---: | ---: | ---: | ---: | ---: |\n' + c.marketTest.parts.map(p => `| ${p.label} | ${n(p.priorRevenue / 100, 3)} | ${n(p.reportedRevenue / 100, 3)} | ${n((p.reportedRevenue / p.priorRevenue - 1) * 100)}% | ${n(p.baseRevenue / 100, 3)} | ${n(p.revenue / 100)} | ${n(((p.revenue / p.baseRevenue) ** (1 / data.horizonYears) - 1) * 100)}% |`).join('\n');
   } else if (c.marketTest.kind === 'annual_segments') {
     const years = c.marketTest.targetYear - c.marketTest.baseYear;
     md += `| 产品线 / 亿原币 | ${c.marketTest.baseYear}实际 | ${c.marketTest.targetYear}假设 | 所需${years}年增速 |\n| --- | ---: | ---: | ---: |\n` + c.marketTest.parts.map(p => `| ${p.label} | ${n(p.baseRevenue / 100, 4)} | ${n(p.revenue / 100)} | ${n(((p.revenue / p.baseRevenue) ** (1 / years) - 1) * 100)}% |`).join('\n');
-  } else md += '| 收入组成（2031假设） | 数量 | 单位净收入 | 收入 / 亿原币 |\n| --- | ---: | ---: | ---: |\n' + c.marketTest.parts.map(p => `| ${p.label} | ${p.kind === 'annual_revenue' ? '按年度收入假设；计费数量另测' : n(p.units) + ' ' + p.unitLabel} | ${p.kind === 'annual_revenue' ? '未假定已知厂家单价' : n(p.price)} | ${n(p.revenue / 100)} |`).join('\n');
+  } else md += '| 收入组成（2031假设） | 数量 | 单位净收入 | 收入 / 亿原币 |\n| --- | ---: | ---: | ---: |\n' + c.marketTest.parts.map(p => `| ${p.label} | ${p.kind === 'annual_revenue' ? (p.quantityBasis || '按年度收入假设；计费数量另测') : n(p.units) + ' ' + p.unitLabel} | ${p.kind === 'annual_revenue' ? (p.priceBasis || '未假定已知厂家单价') : n(p.price)} | ${n(p.revenue / 100)} |`).join('\n');
   md += sensingTargets(c, sources, n);
   md += `\n\n${c.marketTest.assumptions}\n\n${c.marketTest.boundary}\n\n缺项：${c.marketTest.gap}\n\n${sources(c.marketTest.sources)}\n\n### 验证里程碑与撤回信号\n\n`;
   md += c.milestones.map(m => `- ${m.when}：${m.test}`).join('\n') + '\n\n撤回或下修：\n\n' + c.withdraw.map(t => '- ' + t).join('\n');
@@ -184,6 +187,7 @@ function comparisonAudit(c) {
   const a = c.audit;
   if (!a) return '';
   if (a.kind === 'reagent_platform') return reagentPlatformAudit(c);
+  if (a.kind === 'chemical_screen') return chemicalScreenAudit(c, M, sources, n);
   const table = auditTable;
   let out = '#### 财年与过渡期\n\n';
   out += table(['报告期间', '开始', '结束', '长度'], a.periods.map(p => [p.label, p.start, p.end, `${p.days}天 / ${p.days / 7}周`]));
@@ -231,7 +235,7 @@ function comparisonAudit(c) {
   out += '#### 后续验证\n\n' + a.milestones.map(m => '- ' + m.when + '：' + m.test).join('\n') + '\n\n';
   return out;
 }
-md += '\n## 新增比较：经营证据与买入价格分别检验\n\n以下保留为比较观察，详细核验不会自动升级候选资格。Aehr使用已披露普通股；新产业使用包含库存股的登记股数，以覆盖现有激励归属回流，两者均另列未来增股压力。不同财年中点不作为统一五年增长起点。\n\n';
+md += '\n## 比较观察：经营证据与买入价格分别检验\n\n以下保留为比较观察，详细核验不会自动升级候选资格。普通股、含库存股的登记股数及未来发行压力按公司分别标明；库存股过户不重复计入登记总股本。不同财年指引和激励目标不作为统一五年增长起点。\n\n';
 for (const c of data.comparisons) {
   const equity = c.price.value * 10 * c.shares, revenue = equity / c.pe / c.margin;
   md += `### ${c.name} · ${c.id}\n\n${c.facts}\n\n${sources(c.sources)}\n\n${c.judgment}\n\n起始收盘价 ${c.currency} ${n(c.price.value)}（${c.price.asOf}），[报价接口](${c.price.url})。股数 ${n(c.shares, 6)}百万，${c.shareDate ? '截至' + c.shareDate + '；' : ''}${c.shareBasis || '未计未来稀释，故只是门槛下限'}。\n\n按归母净利率 ${n(c.margin * 100)}%、PE ${c.pe} 的研究假设，股价十倍需股权价值 ${n(equity / 100)}亿原币、收入 ${n(revenue / 100)}亿原币；相对“${c.anchorLabel}”的 ${n(c.anchorRevenue / 100)}亿原币为 ${n(revenue / c.anchorRevenue)}倍。不同期间比较仅看量级，不给成功概率。\n\n未完成：${c.gaps}\n\n下次核验：${c.next}\n\n`;

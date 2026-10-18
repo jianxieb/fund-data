@@ -164,6 +164,16 @@
     return { rows, totalRaised, newShares, shares, cash,
       shareHeadroom: bull.shares - shares, terminal: project(company, terminal) };
   }
+  function dataServiceFunding(company, issuePrice) {
+    const s = company.dataServiceAudit?.capital, potential = company.shares.knownPotential;
+    if (!s || ![issuePrice, s.atmGross, s.commissionMax, s.juneOutstanding, potential, s.futureAwards].every(finite) ||
+        issuePrice <= 0 || s.atmGross < 0 || s.commissionMax < 0 || s.commissionMax >= 1 ||
+        s.juneOutstanding <= 0 || potential < 0 || s.futureAwards < 0)
+      throw new RangeError('发行价格、费用与股本参数必须完整且有效');
+    const newShares = s.atmGross / issuePrice;
+    return { newShares, netProceeds: s.atmGross * (1 - s.commissionMax),
+      shares: s.juneOutstanding + potential + s.futureAwards + newShares };
+  }
   return { project, hurdle, scenario, select, cycleSort, sortValue, returnPercent, adjustedGrossMargin,
-    investmentProfit, subsidiaryOwnership, fundingStress, liquidityProjection };
+    investmentProfit, subsidiaryOwnership, fundingStress, liquidityProjection, dataServiceFunding };
 });

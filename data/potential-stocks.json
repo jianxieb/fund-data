@@ -7,7 +7,7 @@
   "financialUnit": "million",
   "shareUnit": "million_shares",
   "method": {
-    "scope": "有取舍的研究候选，非全市场穷尽筛选。重点跟踪仅表示补证优先级，不代表买入评级或已经验证十倍。另列Aehr、新产业作经营与估值对照，保留其尚未完成的核验项。",
+    "scope": "有取舍的研究候选，非全市场穷尽筛选。重点跟踪仅表示补证优先级，不代表买入评级或已经验证十倍。另列Aehr、新产业、天承科技作经营与估值对照，保留其尚未完成的核验项。",
     "formula": "2031归母净利润 = 收入 × 归母净利率；股权价值 = 归母净利润 × PE；股价 = 股权价值 ÷ 期末稀释后股数。亏损情景使用单列的剩余股权价值，不用负利润乘PE。",
     "returnBasis": "按2026-10-16普通股未复权收盘价买入一股，持有至2031-10-16。股价倍数不含分红；总财富倍数将五年税前现金分红持有为现金、不再投资。未扣交易、税费及汇兑，美元与人民币分别计算。10倍终值相当于累计+900%、五年复合年化约58.49%。",
     "dilution": "起始股本与报价分别记日期。期末股本包括既有潜在股份、未来激励、增发及并购融资；不用亏损公司的GAAP反稀释EPS股数充当完全稀释股本。行权所得用于经营与融资，不假设回购抵销。未发行的授权额度不是已发行股数。",
@@ -817,6 +817,169 @@
       "period": "2026-07-01至2026-10-18",
       "type": "filing_directory",
       "locator": "31项申报下载及内容筛查；相关股本原文复核；固定索引见下载研究"
+    },
+    {
+      "id": "inod-q",
+      "title": "Innodata 2026 Q2 Form 10-Q",
+      "url": "https://www.sec.gov/Archives/edgar/data/903651/000110465926092021/inod-20260630x10q.htm",
+      "publishedAt": "2026-08-06",
+      "period": "2026-06-30",
+      "locator": "财务报表；附注2收入确认、6应付及客户预收、9长期义务、10承诺、11股权薪酬、13客户集中；MD&A流动性",
+      "type": "issuer_filing"
+    },
+    {
+      "id": "inod-q1",
+      "title": "Innodata 2026 Q1 Form 10-Q",
+      "url": "https://www.sec.gov/Archives/edgar/data/903651/000110465926057270/inod-20260331x10q.htm",
+      "publishedAt": "2026-05-07",
+      "period": "2026-03-31",
+      "locator": "附注11普通及业绩RSU滚动，与4月委托书最大业绩股数交叉核对",
+      "type": "issuer_filing"
+    },
+    {
+      "id": "inod-k",
+      "title": "Innodata 2025 Form 10-K",
+      "url": "https://www.sec.gov/Archives/edgar/data/903651/000110465926020655/inod-20251231x10k.htm",
+      "publishedAt": "2026-02-26",
+      "period": "2025-12-31",
+      "locator": "Item 1业务、客户/IP/员工及竞争；Item 1A项目取消与劳动成本；年度报表及收入/分部附注",
+      "type": "issuer_filing"
+    },
+    {
+      "id": "inod-release",
+      "title": "Innodata Q2业绩及2026指引",
+      "url": "https://investor.innodata.com/news/news-details/2026/Innodata-Reports-Record-Second-Quarter-2026-Results/default.aspx",
+      "publishedAt": "2026-08-06",
+      "period": "2026-Q2",
+      "locator": "40%+收入增长指引；自有数据集复用；客户占比；剔项目预收现金约1.34亿美元；GAAP与调整毛利桥",
+      "type": "issuer_release"
+    },
+    {
+      "id": "inod-atm",
+      "title": "Innodata 3亿美元ATM补充招股书",
+      "url": "https://www.sec.gov/Archives/edgar/data/903651/000110465926092131/tm2622086-4_424b5.htm",
+      "publishedAt": "2026-08-06",
+      "period": "2026-08-04股本；8月6日额度",
+      "locator": "封面3亿美元发行总额；Plan of Distribution最高2%佣金；34,382,651普通股，不含未来ATM",
+      "type": "issuer_filing"
+    },
+    {
+      "id": "inod-proxy",
+      "title": "Innodata 2026股东大会委托书",
+      "url": "https://www.sec.gov/Archives/edgar/data/903651/000110465926048201/tm261509d1_def14a.htm",
+      "publishedAt": "2026-04-24",
+      "period": "2026-03-31及2025高管薪酬",
+      "locator": "第35页Full Value Awards及脚注2/3按最高业绩；2026计划新增60万股；高管激励条件",
+      "type": "issuer_filing"
+    },
+    {
+      "id": "inod-ceo",
+      "title": "Innodata CEO交接8-K/A",
+      "url": "https://www.sec.gov/Archives/edgar/data/903651/000110465926112351/tm2626575d1_8ka.htm",
+      "publishedAt": "2026-09-30",
+      "period": "2026-09-30",
+      "locator": "Item 5.02及雇佣协议：Rahul Singhal任CEO，Jack Abuhoff任执行董事长",
+      "type": "issuer_filing"
+    },
+    {
+      "id": "inod-cfo-award",
+      "title": "Innodata CFO 7月授予Form 4",
+      "url": "https://www.sec.gov/Archives/edgar/data/903651/000110465926081295/xslF345X06/tm2619666-2_4seq1.xml",
+      "publishedAt": "2026-07-07",
+      "period": "2026-07-06",
+      "locator": "8889股RSU、2026/2027/2028年末分批归属；不能直接当成已发行普通股",
+      "type": "issuer_filing"
+    },
+    {
+      "id": "inod-exercise-sep4",
+      "title": "Innodata董事9月4日期权行权Form 4",
+      "url": "https://www.sec.gov/Archives/edgar/data/903651/000110465926105529/xslF345X06/tm2624878-1_4seq1.xml",
+      "publishedAt": "2026-09-04",
+      "period": "2026-09-04",
+      "locator": "期权行权与同日出售；已有潜在工具转为普通股",
+      "type": "issuer_filing"
+    },
+    {
+      "id": "inod-exercise-sep14",
+      "title": "Innodata董事9月14日期权行权Form 4",
+      "url": "https://www.sec.gov/Archives/edgar/data/903651/000110465926107933/xslF345X06/tm2625408-2_4seq1.xml",
+      "publishedAt": "2026-09-15",
+      "period": "2026-09-14",
+      "locator": "期权行权与出售；与9月4日合计2万股，不再加到完全稀释总数",
+      "type": "issuer_filing"
+    },
+    {
+      "id": "inod-director-award",
+      "title": "Innodata新任董事10月RSU Form 4",
+      "url": "https://www.sec.gov/Archives/edgar/data/903651/000110465926115510/xslF345X06/tm2627444-1_4seq1.xml",
+      "publishedAt": "2026-10-13",
+      "period": "2026-10-08",
+      "locator": "2159股RSU；脚注所列日期及2027股东大会孰早，实际结算未独立确认",
+      "type": "issuer_filing"
+    },
+    {
+      "id": "inod-next",
+      "title": "Innodata Q3业绩公告日",
+      "url": "https://investor.innodata.com/news/news-details/2026/Innodata-to-Report-Third-Quarter-2026-Results/default.aspx",
+      "publishedAt": "2026-10-15",
+      "period": "2026-Q3公告安排",
+      "locator": "11月5日盘后，尚非第三季度业绩",
+      "type": "issuer_release"
+    },
+    {
+      "id": "inod-market",
+      "title": "Grand View Research数据收集与标注市场预测",
+      "url": "https://www.grandviewresearch.com/press-release/global-data-collection-labeling-market",
+      "publishedAt": "2024-11",
+      "period": "2025–2030预测",
+      "locator": "2030年171亿美元、2025–2030 CAGR 28.4%；外部预测，非已实现规模或INOD可获取市场",
+      "type": "external_forecast",
+      "datePrecision": "month"
+    },
+    {
+      "id": "tiancheng-h1",
+      "title": "天承科技2026半年度报告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225527359.PDF",
+      "publishedAt": "2026-08-29",
+      "period": "2026-06-30",
+      "locator": "财务主表、现金及受限资金；PDF第166页沉铜电镀产品及地区收入成本；研发、产能与风险章节",
+      "type": "issuer_filing"
+    },
+    {
+      "id": "tiancheng-old-vest",
+      "title": "天承科技2024激励归属完成",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-10-16/1225606038.PDF",
+      "publishedAt": "2026-10-16",
+      "period": "2026-10-14过户",
+      "locator": "3页：136113股由库存股转让，登记总股本不变；11人、认购款157.89108万元",
+      "type": "issuer_filing"
+    },
+    {
+      "id": "tiancheng-grant",
+      "title": "天承科技2026激励首次授予",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-09-24/1225579556.PDF",
+      "publishedAt": "2026-09-24",
+      "period": "2026-09-22",
+      "locator": "10页：53.55万股首次授予、50人、66元；PDF第9页预计股份支付费用",
+      "type": "issuer_filing"
+    },
+    {
+      "id": "tiancheng-plan",
+      "title": "天承科技2026限制性股票激励计划",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-09-22/1225575399.PDF",
+      "publishedAt": "2026-09-22",
+      "period": "2026–2029考核",
+      "locator": "34页；第19–20页收入目标与80%触发条件；新发行和/或回购来源，预留尚未授予",
+      "type": "issuer_filing"
+    },
+    {
+      "id": "tiancheng-h",
+      "title": "天承科技筹划H股发行提示公告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-09-16/1225565268.PDF",
+      "publishedAt": "2026-09-16",
+      "period": "2026-09-16",
+      "locator": "1页：筹划、接洽中介，发行规模与条款未定，尚需审批",
+      "type": "issuer_filing"
     }
   ],
   "companies": [
@@ -2501,13 +2664,456 @@
       ]
     },
     {
+      "id": "INOD",
+      "name": "Innodata",
+      "market": "us",
+      "currency": "USD",
+      "sector": "AI数据与评测",
+      "status": "priority",
+      "rank": 4,
+      "tagline": "将数据工程扩张转成可复用产品与每股利润",
+      "decision": "已有GAAP盈利和新大客户放量，优先核验数据集复用、项目现金与发行稀释。乐观经营情景约6.65倍，尚不足十倍。",
+      "evidenceLabel": "待核：复用收入、项目现金与ATM",
+      "price": {
+        "value": 52.82,
+        "asOf": "2026-10-16",
+        "symbol": "INOD",
+        "url": "https://query1.finance.yahoo.com/v8/finance/chart/INOD?range=1mo&interval=1d",
+        "basis": "regular_close_unadjusted"
+      },
+      "shares": {
+        "value": 34.382651,
+        "asOf": "2026-08-04",
+        "source": "inod-atm",
+        "knownPotential": 2.336011,
+        "potentialBasis": "6月底普通股流通在外约34.376百万，已发行37.560百万包含3.184百万库存股；不得拿37.560百万作为外部流通股。既有期权1.199651百万、普通RSU 0.666188百万、业绩RSU 0.470172百万，合计2.336011百万。业绩RSU与3月余额及委托书最高业绩口径对平，已按最高股数计，不再翻倍。",
+        "futureBasis": "悲观5500万、基准4300万、乐观4700万股均为研究假设。融资敏感性从6月底34.376百万外部股数加既有2.336011百万、未来激励300万股起算；ATM可发行总额为3亿美元。若全额按50美元发行，新增600万股，合计45.712011百万，低于4700万；按25美元则为51.712011百万，超出乐观分母。未来激励预留包含已知7月/10月新授予，不能再次相加。",
+        "gap": "缺6月底至10月全体员工授予、归属、取消和ATM实际发行滚动。8月4日普通股数不是10月股本；董事两次合计2万股旧期权行权不新增完全稀释总数，2159股新RSU实际结算未确认。",
+        "convertibles": "6月底未列可转债，银行循环授信未提取。3亿美元ATM为可发行总额，不是已收到现金或保证融资；最高2%销售佣金另加费用。2026计划预留和7500万授权普通股均不等于已授予或已发行股份。",
+        "sources": [
+          "inod-q",
+          "inod-q1",
+          "inod-proxy",
+          "inod-atm",
+          "inod-cfo-award",
+          "inod-exercise-sep4",
+          "inod-exercise-sep14",
+          "inod-director-award"
+        ],
+        "label": "流通在外普通股"
+      },
+      "financials": {
+        "period": "2026-06-30",
+        "label": "2026上半年",
+        "source": "inod-q",
+        "revenue": 182.238,
+        "netIncome": 29.31,
+        "netIncomeBasis": "GAAP归属普通股股东利润，包含持续股权薪酬成本",
+        "operatingCash": 164.441,
+        "operatingCashNote": "含客户项目款流入",
+        "cash": 250.371,
+        "debt": 0,
+        "debtBasis": "现金及等价物加短期投资，含客户项目款；无银行借款，不等于没有义务：长期养老金及软件许可11.199百万、经营租赁3.832百万另列",
+        "revenueGrowth": 0.5610988803892512,
+        "anchorRevenue": 352.3282,
+        "anchorKind": "guidance",
+        "anchorLabel": "2026收入增长40%+指引下限换算，非中点或全年实际"
+      },
+      "facts": [
+        {
+          "text": "2025收入2.51663亿美元、GAAP净利3218.1万美元；2026H1收入1.82238亿美元、净利2931万美元。Q2收入9214.2万美元，GAAP毛利率46.08%、净利1441.2万美元，不能将49%调整毛利当GAAP毛利。",
+          "sources": [
+            "inod-k",
+            "inod-q",
+            "inod-release"
+          ]
+        },
+        {
+          "text": "公司称自有知识产权的现成数据集可重复许可给多个客户，并带动业务结构改善；具体收入占比、复购率与分项利润尚未披露。客户定制数据和模型的所有权不能据此全部视为公司可转售资产。",
+          "sources": [
+            "inod-release",
+            "inod-k"
+          ]
+        },
+        {
+          "text": "Q2最大客户占37%、第二大客户34%，合计约71%；H1前两家占72%、期末应收占66%。第二大客户从Q1的17%增长至34%是进展，仍不是客户已分散。",
+          "sources": [
+            "inod-release",
+            "inod-q"
+          ]
+        },
+        {
+          "text": "H1经营现金1.64441亿美元明显高于利润，期末客户预收6696.2万美元、项目已发生未付成本约6180万美元；报表现金不能全部视为自由部署资金。",
+          "sources": [
+            "inod-q",
+            "inod-release"
+          ]
+        },
+        {
+          "text": "9月30日Rahul Singhal接任CEO，Jack Abuhoff任执行董事长；应以产品复用、客户回款和融资后每股结果衡量交接，不仅看调整EBITDA或营收目标。",
+          "sources": [
+            "inod-ceo",
+            "inod-proxy"
+          ]
+        }
+      ],
+      "guidance": [
+        {
+          "text": "8月6日维持2026全年收入同比增长40%或以上；未最终敲定规模及时间的潜在项目尚未纳入。以2025收入换算的3.523282亿美元是指引下限，不能当全年中点。下一次业绩安排为11月5日盘后。",
+          "sources": [
+            "inod-release",
+            "inod-next"
+          ]
+        }
+      ],
+      "thesis": [
+        "训练、后训练、智能体强化学习与模型评测增加数据复杂度。已有最大客户的长时任务个性化项目扩张和另一项计算机操作强化学习项目；付费数据工程及GAAP盈利提供了比概念合作更强的起点。",
+        "可复用数据集让同一资产服务多个客户，可能改善单位经济；要区分公司自有知识产权与按客户要求制作的专属交付物。产品化收入尚未单列，不能把全部人力外包收入按软件订阅估值。",
+        "2025已服务五家大型科技公司，并不意味着五家都能贡献3亿美元。竞争还包括Scale、Surge、Turing、Mercor、Appen、Telus Digital和大型IT服务商，客户自建与合成数据可压低价格；优势须体现为质量、返工率、交付速度与总成本。"
+      ],
+      "economics": "收入主要按工时、产出单位或固定项目确认，也有订阅及验收时点确认；代付成本报销可能同时计入收入与成本。2025年末员工10107人，与公司另述的12200名雇员及外部专业人员不是同一分母。印度、菲律宾、斯里兰卡交付有成本优势，也受工资、汇率、云资源、数据版权和质量返工影响。Q2 GAAP毛利46.08%、SG&A占28.87%，22%终点净利率需要进一步改善；保留股权薪酬，不能用调整EBITDA直接估归母价值。",
+      "management": "新任CEO来自内部业务团队，创始人保留执行董事长职责；高管考核包含营收、调整EBITDA及相对股东回报，投资者仍需复核GAAP成本。主服务协议通常可提前30–90天取消，部分项目更短；公司披露的政府机会和合作接洽尚不能替代已获资金支持的订单，未计入情景收入。",
+      "funding": "6月底现金及短期投资250.371百万美元含项目款。静态扣除客户预收66.962及未付项目成本61.8后为121.609百万；与管理层约134百万口径相差12.391百万，公开资料未完整衔接。这只是余额压力参照，不是标准化现金流。H1现金增加已包含10.904百万期权款；未提款授信可借基数30.8百万、最高50百万受约束。未来12个月资本开支预期13.1百万不是五年预算；ATM发行与未来经营回款均需实证。",
+      "fundingSources": [
+        "inod-q",
+        "inod-release",
+        "inod-atm"
+      ],
+      "marketTest": {
+        "kind": "mixed_units",
+        "headline": "25亿美元乐观收入需要多家大客户与中型客户共同扩张，现有订单尚不能验证这一终点。",
+        "parts": [
+          {
+            "label": "5家大型AI客户（彼此独立）",
+            "units": 5,
+            "unitLabel": "家",
+            "price": 300000000,
+            "revenue": 1500
+          },
+          {
+            "label": "50家中型AI/行业客户（不含上述5家）",
+            "units": 50,
+            "unitLabel": "家",
+            "price": 12000000,
+            "revenue": 600
+          },
+          {
+            "label": "其余客户及传统平台（不与前两组重复）",
+            "kind": "annual_revenue",
+            "revenue": 400,
+            "quantityBasis": "独立客户组年度收入假设",
+            "priceBasis": "未假设统一客户单价"
+          }
+        ],
+        "assumptions": "各客户组金额均为2031年度收入研究假设，不是已有合同。自有数据集销售包含在客户收入中，不能再作为第四项重复相加。Q2前两大客户对应单季约3409万与3133万美元，简单年化不是全年预测，也未接近单家3亿美元已签订单。",
+        "boundary": "Grand View Research于2024年11月预测2030全球数据收集与标注市场171亿美元、2025–2030复合增长28.4%。这是外部预测；业务定义及2030/2031年份与公司全部收入不一致，只作量级参照。25亿美元约相当于该预测的14.6%，十倍所需约37.61亿美元相当于22.0%；两者均不是可验证市场份额。不得将全部AI算力支出当作数据工程可获取市场。",
+        "gap": "缺客户付费项目数/年支出、重复许可收入及留存、收入中的代付成本、自动化后单位工时/质量成本，以及可获取市场的同范围分母。",
+        "sources": [
+          "inod-k",
+          "inod-q",
+          "inod-release",
+          "inod-market"
+        ]
+      },
+      "scenarios": [
+        {
+          "id": "bear",
+          "label": "悲观",
+          "revenue": 300,
+          "margin": 0.06,
+          "pe": 18,
+          "shares": 55,
+          "dividends": 0,
+          "story": "大客户预算下降、数据服务降价，扩张未形成产品溢价；即使仍盈利，低利润与融资稀释也会造成显著本金损失，极端可能更差。"
+        },
+        {
+          "id": "base",
+          "label": "基准",
+          "revenue": 900,
+          "margin": 0.15,
+          "pe": 25,
+          "shares": 43,
+          "dividends": 0,
+          "story": "客户群与项目数继续增长，GAAP净利率15%，收入约21%复合增长；保持盈利但不假设全部业务软件化。"
+        },
+        {
+          "id": "bull",
+          "label": "乐观",
+          "revenue": 2500,
+          "margin": 0.22,
+          "pe": 30,
+          "shares": 47,
+          "dividends": 0,
+          "story": "大型客户预算扩张、中型客户复购及自有数据集复用同时成立，收入约48%复合增长；仍需承担股权薪酬和发行稀释，股价约6.65倍，未达到十倍。"
+        }
+      ],
+      "calibration": [
+        {
+          "label": "收入与需求",
+          "basis": "从40%+指引下限3.523282亿美元至9亿/25亿美元，五年CAGR约21%/48%；Q2增速58%不保证未来五年延续。25亿收入须由互不重复客户组付费支撑，现有五家大型科技客户关系不是五家3亿美元合同。",
+          "sources": [
+            "inod-release",
+            "inod-k"
+          ]
+        },
+        {
+          "label": "GAAP利润与估值",
+          "basis": "22%净利率对应示例：52%毛利减24.5%经营费用（含SBC）=27.5%营业利润，再按20%税负且净利息为零。当前Q2毛利46.08%、经营费用28.87%，目标仍有很大改善要求。H1税率16%含股权薪酬税收收益，不永久外推；30倍PE要求终点仍有增长，另测下降25%。",
+          "sources": [
+            "inod-q",
+            "inod-proxy"
+          ]
+        },
+        {
+          "label": "融资与股数",
+          "basis": "4700万股容纳部分未来发行和激励，但不是融资上限。3亿美元全额ATM按50美元发行、2%佣金时，发行600万股、净款约2.94亿美元（未扣其他费用）；若发行价25美元则需1200万股，既有工具与未来激励合计后已超4700万。",
+          "sources": [
+            "inod-atm",
+            "inod-q",
+            "inod-q1",
+            "inod-proxy"
+          ]
+        }
+      ],
+      "milestones": [
+        {
+          "when": "2026-11-05",
+          "test": "Q3已公告财报日：核对两大客户收入、GAAP利润与股权薪酬，项目预收/应付/垫付现金桥及ATM实际发行。"
+        },
+        {
+          "when": "随后两个报告期",
+          "test": "寻找自有数据集重复许可收入、客户续约和毛利披露；项目协议/新闻数量不能代替回款，缺披露保留为未知。"
+        },
+        {
+          "when": "2027年报",
+          "test": "检验收入能否向5亿–6亿美元推进、GAAP净利率维持约15%及客户扩张；这是研究检查点，不是公司指引。同步核对稀释和项目款退出后的现金。"
+        }
+      ],
+      "withdraw": [
+        "前两大客户收缩且新客户不足以填补，需下修收入路径；不能以未落地项目自动补齐。",
+        "GAAP毛利持续跌向35%以下，或增长依靠代付成本/预收而缺少利润和回款，应重估产品复用假设。",
+        "低价发行、并购或激励使完全稀释股数超4700万，先改分母；项目负债与现金持续无法衔接时不得提高估值。"
+      ],
+      "gaps": [
+        "自有数据集收入、重复许可/留存及毛利未单列，现有收费不等于全部产品化。",
+        "1.34亿美元管理层现金口径与报表余额压力口径仍差1239.1万美元，缺逐项目的期初/收款/付款/期末桥。",
+        "缺6月底后全体潜在股份及ATM发行滚动；25美元发行压力已突破4700万股。",
+        "缺可获取市场同口径分母和客户年付费证据，25亿美元不是已获订单或被行业预测验证的份额。"
+      ],
+      "alternatives": [
+        {
+          "name": "大型IT服务商与其他数据工程商",
+          "reason": "客户、服务结构与资本回报需逐家核验。Innodata已经实现AI客户扩张及GAAP盈利，因而列为补证优先；这不构成对未完成同口径核验公司的全面排除，也不把私营竞争者直接当成可买的普通股替代。",
+          "sources": [
+            "inod-k"
+          ]
+        },
+        {
+          "name": "Aehr Test Systems / AEHR",
+          "reason": "提供硬件测试与耗材，客户复购及资本周期与数据服务不同；已在比较观察中核验GAAP现金和当前价格门槛。AI需求增长不能自动证明两类公司的同等利润质量。",
+          "sources": [
+            "aehr-k",
+            "aehr-results"
+          ]
+        }
+      ],
+      "dataServiceAudit": {
+        "periods": [
+          {
+            "label": "2025全年",
+            "revenue": 251.663,
+            "cost": 152.184,
+            "sga": 59.606,
+            "operating": 39.873,
+            "interest": 1.552,
+            "pretax": 41.425,
+            "tax": 9.244,
+            "net": 32.181,
+            "sbc": 11.144
+          },
+          {
+            "label": "2026H1",
+            "revenue": 182.238,
+            "cost": 99.986,
+            "sga": 49.492,
+            "operating": 32.76,
+            "interest": 2.137,
+            "pretax": 34.897,
+            "tax": 5.587,
+            "net": 29.31,
+            "sbc": 13.104
+          },
+          {
+            "label": "2026Q2",
+            "revenue": 92.142,
+            "cost": 49.682,
+            "sga": 26.6,
+            "operating": 15.86,
+            "interest": 1.695,
+            "pretax": 17.555,
+            "tax": 3.143,
+            "net": 14.412,
+            "sbc": 7.196
+          }
+        ],
+        "earningsNote": "三段期间分别列示，不能把Q2再加到H1。2026Q1起合并为一个经营分部，2025旧分部收入不可冒充当前AI产品收入拆分；税收优惠和股权薪酬都应留在归母桥中。",
+        "ocfRows": [
+          [
+            "归母净利润",
+            29.31
+          ],
+          [
+            "股权薪酬",
+            13.104
+          ],
+          [
+            "折旧摊销",
+            4.475
+          ],
+          [
+            "递延税",
+            -1.175
+          ],
+          [
+            "养老金成本",
+            0.818
+          ],
+          [
+            "应收变动",
+            -1.228
+          ],
+          [
+            "预付及其他流动资产",
+            -15.384
+          ],
+          [
+            "其他资产",
+            0.236
+          ],
+          [
+            "应付/应计及其他流动负债",
+            135.827
+          ],
+          [
+            "应付薪酬",
+            -0.894
+          ],
+          [
+            "所得税款",
+            -0.532
+          ],
+          [
+            "养老金付款",
+            -0.116
+          ]
+        ],
+        "cash": {
+          "start": 82.216,
+          "operating": 164.441,
+          "capex": 5.309,
+          "investmentPurchases": 10.079,
+          "investing": -15.388,
+          "optionCash": 10.904,
+          "rsuTax": -0.062,
+          "obligationPayments": -0.877,
+          "financing": 9.965,
+          "fx": -0.956,
+          "end": 240.278,
+          "shortInvestments": 10.093,
+          "advances": 66.962,
+          "unpaidProjectCosts": 61.8,
+          "managementNetCash": 134,
+          "receivables": 47.56,
+          "supplierAdvances": 14.049,
+          "otherPrepaids": 8.784,
+          "bankDebt": 0,
+          "pension": 9.534,
+          "softwareObligations": 1.665,
+          "leases": 3.832,
+          "creditLimit": 50,
+          "creditBorrowingBase": 30.8,
+          "creditUsed": 0,
+          "next12MonthsCapex": 13.1
+        },
+        "cashNote": "客户项目资金并非公告列示的法律受限现金，但具有经济用途。静态余额扣减不得冒充标准化OCF；期末负债不等于本期现金流，且应付/应计中的项目成本只能扣一次。管理层约134百万口径与121.609百万压力口径未完整对平，不用供应商预付款强行凑数。2025现金流表末82.230百万，在Q2比较栏分为现金82.216与短投0.014，不能当作数据矛盾。",
+        "capital": {
+          "juneIssued": 37.56,
+          "juneTreasury": 3.184,
+          "juneOutstanding": 34.376,
+          "juneOptions": [
+            {
+              "plan": "2013",
+              "shares": 0.851771,
+              "strike": 1.63
+            },
+            {
+              "plan": "2021",
+              "shares": 0.34788,
+              "strike": 26.51
+            }
+          ],
+          "ordinaryRsu": 0.666188,
+          "performanceRsu": 0.470172,
+          "performanceBasis": "maximum",
+          "marchOrdinaryRsu": 0.682472,
+          "marchPerformanceRsu": 0.470172,
+          "proxyMaximumFullValueAwards": 1.152644,
+          "augOutstanding": 34.382651,
+          "postJuneAwards": [
+            {
+              "date": "2026-07-06",
+              "shares": 0.008889,
+              "kind": "RSU",
+              "source": "inod-cfo-award"
+            },
+            {
+              "date": "2026-10-08",
+              "shares": 0.002159,
+              "kind": "RSU",
+              "source": "inod-director-award"
+            }
+          ],
+          "septemberOldOptionsExercised": 0.02,
+          "newPlanAdditionalReserve": 0.6,
+          "previousUnusedReserve": 0.750986,
+          "futureAwards": 3,
+          "atmGross": 300,
+          "commissionMax": 0.02,
+          "issuePrices": [
+            25,
+            50,
+            75
+          ]
+        },
+        "shareNote": "委托书3月末1152644股Full Value Awards按最高业绩列示，等于Q1普通682472股加业绩470172股；Q1/Q2业绩滚动无授予、归属和取消，因而六月同一470172股已是最大数量，不另加高管子集或再乘2。六月股数以千股披露，八月普通股精确值不能与六月潜在余额冒充同日总账。未来300万激励是五年压力假设，覆盖已知后续授予；未用计划额度替代费用或预测。",
+        "fundingNote": "假定整个3亿美元ATM发行完毕仅作敏感性，不代表已经发行或一定需要全额发行。最高2%佣金下净款294百万，尚未扣其他费用；原有期权行权款不另作保证现金。净营运占用若为乐观收入的10%/20%/30%，余额需求为250/500/750百万，不是新增资金缺口，尚须扣现有占用并建逐年利润、税、资本开支和付款时序。不能把现金加ATM直接当成五年资金充分证明。",
+        "workingCapitalRatios": [
+          0.1,
+          0.2,
+          0.3
+        ],
+        "sources": [
+          "inod-q",
+          "inod-k",
+          "inod-q1",
+          "inod-proxy",
+          "inod-release",
+          "inod-atm",
+          "inod-cfo-award",
+          "inod-exercise-sep4",
+          "inod-exercise-sep14",
+          "inod-director-award"
+        ]
+      }
+    },
+    {
       "id": "OUST",
       "name": "Ouster",
       "market": "us",
       "currency": "USD",
       "sector": "工业感知",
       "status": "watch",
-      "rank": 4,
+      "rank": 5,
       "tagline": "从激光雷达部件走向多传感器与感知软件",
       "decision": "付费软件和项目扩单已有证据，继续观察规模与续费。备考合并H1收入增长42.5%，剔除退款后Q2毛利约39%；当前价格下仍缺支撑十倍的利润与出货规模。",
       "price": {
@@ -3145,7 +3751,7 @@
       "currency": "CNY",
       "sector": "眼科器械",
       "status": "watch",
-      "rank": 5,
+      "rank": 6,
       "tagline": "从高值眼科耗材走向更广的视力产品平台",
       "decision": "边界观察。眼科同项收入仅增3.7%，并购净支出约6.41亿元、银行净债务转正；隐形眼镜产线延期，先验证利润与现金兑现，暂不支持十倍判断。",
       "price": {
@@ -3718,8 +4324,8 @@
       }
     }
   ],
-  "revision": 9,
-  "summary": "目前没有一家获得足以支持“五年股价十倍”的经营证据。Amprius、普门与ACM Research重点跟踪，Ouster与爱博保留观察。Ouster已补到软件收费、客户报价和项目扩单，撤回“收费未证实”的表述；同时核对备考增长、退款现金与稀释。正面商业进展和未验证的五年终点分别呈现，不因补证自动抬高估值。",
+  "revision": 10,
+  "summary": "新增Innodata为优先补证候选、天承科技为比较观察，扩展至六家完整候选与三家比较公司。目前仍无一家有足以支持五年股价十倍的经营证据。Innodata已有GAAP盈利、新客户扩张和自有数据集复用，但项目现金与发行稀释需单列；天承的激励增长目标与H股筹划分别核验，不把目标当业绩。",
   "revisions": [
     {
       "date": "2026-10-18",
@@ -3760,6 +4366,11 @@
       "date": "2026-10-18",
       "previousCommit": "40cd6d2af7dad62e8fe87a65f7c49551c96c363b",
       "reason": "Ouster补入年度软件许可、市政客户合同/报价、犹他扩单及完成部署证据，撤回收费未证实的旧判断。增加备考并购收入、现金/退款/履约余额和31项后续申报核验，精确对平7月股本。删除9万个付费部署的单点基数，改以厂家实收比例演算软件规模；保留12亿美元乐观经营情景及每股回报边界。"
+    },
+    {
+      "date": "2026-10-18",
+      "previousCommit": "117689c6254c01cc8cf01aaade84aac60be774d4",
+      "reason": "新增Innodata完整经营/GAAP利润/项目现金/最高业绩RSU与ATM稀释情景；新增天承科技半年度财务、9月新激励及H股筹划、10月库存股过户比较。比较公司在既有美股/A股潜力研究内可直接查看。保留经营乐观情景与十倍门槛的差距。"
     }
   ],
   "comparisons": [
@@ -4111,7 +4722,8 @@
             "test": "更新在手订单桥、普通股及潜在股份分母；若订单延后、毛利不能修复或现金持续靠发行补充，下调经营假设。"
           }
         ]
-      }
+      },
+      "market": "us"
     },
     {
       "id": "300832",
@@ -4652,6 +5264,186 @@
             "test": "核对实控人事项的正式进展、质押处置及经营影响；单项获证须继续验证销售和回款，不能直接上调市场份额。"
           }
         ]
+      },
+      "market": "cn"
+    },
+    {
+      "id": "688603",
+      "name": "天承科技",
+      "market": "cn",
+      "currency": "CNY",
+      "price": {
+        "value": 90.53,
+        "asOf": "2026-10-16",
+        "symbol": "688603.SS",
+        "url": "https://query1.finance.yahoo.com/v8/finance/chart/688603.SS?range=1mo&interval=1d"
+      },
+      "shares": 124.724524,
+      "shareDate": "2026-10-14",
+      "shareBasis": "9月22日披露的登记总股本，含库存股；10月14日旧激励从库存股过户未改变总股本。H股及未来发行另测",
+      "margin": 0.22,
+      "pe": 30,
+      "anchorRevenue": 700,
+      "anchorLabel": "2026激励收入考核目标7亿元，非业绩指引或已实现收入",
+      "facts": "2026H1收入3.06382亿元、归母6160.90万元、扣非5767.12万元；经营现金仅939.91万元，减资本开支后净流出1837.10万元。沉铜电镀专用化学品收入2.70673亿元，不能把其余收入全部称为半导体材料收入。2026激励给出2026–2029收入7/10.5/15.75/23.63亿元的考核目标；9月另公告筹划H股发行。",
+      "judgment": "保留比较观察。高端PCB及先进封装化学品有增长和客户验证进展，但90.53元起点已要求很大的五年规模。激励目标值得检验；研发验证、营收目标、现金回收与每股回报分别判断，不因半年度增长直接升级为十倍候选。",
+      "gaps": "缺高端PCB/封装材料各自销量、客户验证转批量与单价毛利；缺化学品同范围可获取市场；H股规模、价格和审批未定；旧/新激励全体滚动及期后应收回款未完整取得。仅复核选定原文，未声称覆盖42项公告全部内容。",
+      "next": "下一份季报核对收入结构、应收与现金回收；H股正式方案先更新股本与净款；激励考核达标仍需同时检查利润、费用和实际归属。",
+      "sources": [
+        "tiancheng-h1",
+        "tiancheng-old-vest",
+        "tiancheng-grant",
+        "tiancheng-plan",
+        "tiancheng-h"
+      ],
+      "audit": {
+        "kind": "chemical_screen",
+        "financials": {
+          "revenue": 306.38239709,
+          "priorRevenue": 213.1498952,
+          "net": 61.6090059,
+          "priorNet": 36.73356014,
+          "deducted": 57.67119743,
+          "priorDeducted": 31.74023286,
+          "cost": 193.08184686,
+          "pretax": 66.98672391,
+          "tax": 5.79511492
+        },
+        "products": [
+          {
+            "label": "沉铜电镀专用化学品",
+            "revenue": 270.67268931,
+            "cost": 178.97076348
+          },
+          {
+            "label": "其余收入（未假定均属半导体）",
+            "revenue": 35.70970778,
+            "cost": 14.11108338
+          }
+        ],
+        "cash": {
+          "start": 97.56945271,
+          "operating": 9.39910969,
+          "priorOperating": 28.83786982,
+          "capex": 27.77011986,
+          "investmentRecovered": 1368.75352364,
+          "investmentIncome": 7.89521497,
+          "investmentPaid": 1350.5,
+          "investing": -1.62138125,
+          "borrowed": 41,
+          "repaid": 9,
+          "dividendsInterest": 7.8737239,
+          "otherFinancing": 0.59584656,
+          "financing": 23.53042954,
+          "fx": -0.49006553,
+          "end": 128.38754516,
+          "monetary": 135.63100314,
+          "restricted": 7.24345798,
+          "tradingAssets": 586.28098095,
+          "receivables": 267.09648596,
+          "priorReceivables": 223.92487777,
+          "notes": 32.4235696,
+          "receivablesFinancing": 51.47824115,
+          "inventory": 69.96880843,
+          "shortDebt": 44.01753599
+        },
+        "cashNote": "现金等价物与货币资金相差724.345798万元为保证金等受限资金；交易性金融资产5.86281亿元另列，不全称现金。现金增加包含银行借款与理财到期/购买，不能将全部增加归为经营造血。应收净额增长而经营现金下降，期后回款仍需核验；半年经营现金减资本开支不是全年预测。",
+        "capital": {
+          "registered": 124.724524,
+          "oldTreasuryTransferred": 0.136113,
+          "oldTransferDate": "2026-10-14",
+          "oldCashReceived": 1.5789108,
+          "grantDate": "2026-09-22",
+          "firstGrant": 0.5355,
+          "reserve": 0.133875,
+          "totalPlan": 0.669375,
+          "grantPrice": 66,
+          "grantees": 50,
+          "source": "new_shares_and_or_treasury",
+          "targets": [
+            {
+              "year": 2026,
+              "revenue": 700
+            },
+            {
+              "year": 2027,
+              "revenue": 1050
+            },
+            {
+              "year": 2028,
+              "revenue": 1575
+            },
+            {
+              "year": 2029,
+              "revenue": 2363
+            }
+          ],
+          "threshold": 0.8,
+          "vesting": [
+            0.25,
+            0.25,
+            0.25,
+            0.25
+          ],
+          "expenseTotal": 30.3481,
+          "expenseByYear": [
+            4.3059,
+            13.6214,
+            7.2189,
+            3.7919,
+            1.41
+          ],
+          "hShareStatus": "planning_terms_unknown"
+        },
+        "capitalNote": "旧计划136113股已由回购专户转让，总股本不变；11人缴款157.89108万元已确认。新计划首次53.55万股、预留13.3875万股，来源可为新股和/或回购，不能全视为已发行；66元授予价不等于现时买入价。考核达目标100%时公司层面归属100%，80%至100%按达成比例，低于80%为零，另有个人/任职条件；四期各25%。预计首次授予费用3034.81万元跨2026–2030摊销，预留未计。收入考核目标不是业绩承诺，H股尚未给出发行规模和价格。",
+        "businessNote": "报告披露TSV、RDL、凸点等研发/客户认可及与京东方的TGV合作，不代表各品类均已规模收入；泰国工厂仍在筹备。制造环节化学品用量与售价才能建立市场容量，整个PCB产值不能直接作为化学品TAM。",
+        "hurdleCases": [
+          {
+            "label": "现有登记股本；未含未来新发行",
+            "shares": 124.724524,
+            "margin": 0.22,
+            "pe": 30
+          },
+          {
+            "label": "假设1.4亿股；22%/30倍",
+            "shares": 140,
+            "margin": 0.22,
+            "pe": 30
+          },
+          {
+            "label": "假设1.6亿股；22%/30倍",
+            "shares": 160,
+            "margin": 0.22,
+            "pe": 30
+          },
+          {
+            "label": "假设1.4亿股；18%/25倍",
+            "shares": 140,
+            "margin": 0.18,
+            "pe": 25
+          }
+        ],
+        "scaleExample": {
+          "revenue": 5316.75,
+          "margin": 0.22,
+          "pe": 30,
+          "shares": 140
+        },
+        "scaleNote": "先假定2029激励目标23.63亿元全部达成，再假定2030/2031每年增长50%，得到53.1675亿元收入。这是两层研究假设，仍只约2.77倍股价；1.4亿/1.6亿股不是公司H股方案，不用虚构发行条款。",
+        "milestones": [
+          {
+            "when": "下一份季报",
+            "test": "分品类商业化、应收回款和GAAP股份支付费用。"
+          },
+          {
+            "when": "H股正式方案",
+            "test": "发行比例、价格、净筹资用途及审批；先改股本分母再比较每股回报。"
+          },
+          {
+            "when": "2026–2029激励考核",
+            "test": "逐年区分收入目标、实现比例、个人条件及实际归属；未达标不自动证明商业化失败，须结合具体产品。"
+          }
+        ]
       }
     }
   ],
@@ -4662,6 +5454,9 @@
     "爱博：已完成旧激励归零、并购付款与债务对平、被收购业务及产线延期核验；仍缺消除并表影响的产品收入桥、归母增量与渠道投入回报，以及新增融资后的现金回收。",
     "ACMR：已完成归母调整与两层稀释压力核验；仍缺母公司最新期权取消余额、H股最终方案、分产品订单验收与收款排程。下一份报告应同时核对主营利润和营运资金，不将投资收益或融资到账视为经营改善。",
     "Aehr：已完成FY2026产品收入、客户集中、订单取消条款、财年过渡及截至8月27日普通股核验；仍需接触器复购分母、后续验收回款及5月29日后全体激励滚动。",
-    "新产业：已核对2026年至10月18日110份公告目录及相关原文、现有回购/激励与治理事项；公开资料仍缺同口径试剂量价、活跃设备/退出率、地区及分期应收期后回款、实控人事项后续状态。下一报告期继续核验，不用同业数据替代普门自身证据。"
+    "新产业：已核对2026年至10月18日110份公告目录及相关原文、现有回购/激励与治理事项；公开资料仍缺同口径试剂量价、活跃设备/退出率、地区及分期应收期后回款、实控人事项后续状态。下一报告期继续核验，不用同业数据替代普门自身证据。",
+    "Innodata：已核验GAAP利润、项目负债现金、最高业绩RSU口径及ATM压力；仍缺重复许可收入/留存、逐项目现金桥、6月底后全体股份滚动与ATM实发、同口径可获取市场。下一份Q3披露按实数更新，不能以新客户新闻替代。",
+    "天承科技：已核验H1财务、9月激励目标及H股筹划、10月库存股归属；仍缺高端化学品销量/净价/毛利及客户批量收入、应收回收、H股最终方案和全部激励滚动。",
+    "跨市场扩展：六家完整候选和三家比较公司仍非穷尽覆盖，下一轮优先寻找能用订单、单位经济及稀释后回报同时检验的其他路线；不能为了凑十倍而抬高终值PE。"
   ]
 }

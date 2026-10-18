@@ -22,8 +22,57 @@
     ...(c.financingCheck?.sources || []), ...(c.earningsAdjustment?.sources || []), ...(c.productCheck?.sources || []),
     ...(c.profitCheck?.sources || []), ...(c.cashCheck?.sources || []), ...(c.ownershipCheck?.sources || []),
     ...(c.cashAudit?.sources || []), ...(c.awardAudit?.sources || []), ...(c.dilutionAudit?.sources || []),
-    ...(c.liquidityCheck?.sources || []), ...(c.medicalAudit?.sources || []), ...(c.diagnosticAudit?.sources || []), ...(c.sensingAudit?.sources || [])])];
+    ...(c.liquidityCheck?.sources || []), ...(c.medicalAudit?.sources || []), ...(c.diagnosticAudit?.sources || []), ...(c.sensingAudit?.sources || []), ...(c.dataServiceAudit?.sources || [])])];
   const evidenceTable = (headers, rows) => '<div class="table-wrap"><table class="potential-scenario-table"><thead><tr>' + headers.map(h => '<th>' + e(h) + '</th>').join('') + '</tr></thead><tbody>' + rows.map(row => '<tr>' + row.map((v, i) => i === 0 ? '<th scope="row">' + e(v) + '</th>' : '<td>' + e(v) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>';
+  function dataServiceEvidence(c) {
+    const a = c.dataServiceAudit;
+    if (!a) return '';
+    const f = a.cash;
+    let html = '<section><h3>GAAP盈利与项目现金</h3>' + evidenceTable(['百万美元', '收入', 'GAAP毛利率', '营业利润', '归母净利', '其中SBC成本'], a.periods.map(p=>[p.label,n(p.revenue,3),percent(1-p.cost/p.revenue),n(p.operating,3),n(p.net,3),n(p.sbc,3)])) + '<p>' + e(a.earningsNote) + '</p>';
+    html += '<details class="potential-method"><summary>查看项目款与现金余额</summary>' + evidenceTable(['2026H1 / 百万美元','金额'], [['期初现金及等价物',f.start],['经营现金',f.operating],['投资现金',f.investing],['筹资现金',f.financing],['汇率影响',f.fx],['期末现金及等价物',f.end],['另有短期投资',f.shortInvestments],['客户预收',f.advances],['项目已发生未付成本',f.unpaidProjectCosts],['静态扣除两项余额后',f.end+f.shortInvestments-f.advances-f.unpaidProjectCosts],['管理层剔项目预收现金约数',f.managementNetCash],['未衔接口径差额',f.managementNetCash-(f.end+f.shortInvestments-f.advances-f.unpaidProjectCosts)]].map(([label,v])=>[label,n(v,3)])) + '<p>' + e(a.cashNote) + '</p></details>';
+    html += '<details class="potential-method"><summary>查看利润至经营现金桥</summary>' + evidenceTable(['2026H1 / 百万美元','金额'],a.ocfRows.map(([label,v])=>[label,n(v,3)])) + '<p>经营现金减资本开支 ' + n(f.operating-f.capex,3) + ' 百万美元仍包含项目款，不能作为可持续自由现金。</p></details>';
+    return html + sourceLinks(['inod-q','inod-k','inod-release']) + '</section>';
+  }
+  function dataServiceShares(c) {
+    const a=c.dataServiceAudit;
+    if (!a) return '';
+    const s=a.capital;
+    return '<details class="potential-method"><summary>查看最大业绩RSU与股本口径</summary>' + evidenceTable(['2026-06-30 / 百万股','数量'],[['已发行（含库存股）',s.juneIssued],['库存股',s.juneTreasury],['外部股数',s.juneOutstanding],['期权',s.juneOptions.reduce((v,p)=>v+p.shares,0)],['普通RSU',s.ordinaryRsu],['业绩RSU（已按最大股数）',s.performanceRsu],['既有潜在股份',c.shares.knownPotential]].map(([label,v])=>[label,n(v,6)])) + '<p>' + e(a.shareNote) + '</p>' + sourceLinks(c.shares.sources) + '</details>';
+  }
+  function dataServiceFinancing(c) {
+    if (!c.dataServiceAudit) return '';
+    const a=c.dataServiceAudit,s=a.capital,bull=M.scenario(c,'bull');
+    return '<section><h3>ATM发行价格与营运资金敏感性</h3><p>全额发行仅为研究假设，发行总额 ' + n(s.atmGross) + ' 百万美元；最高佣金 ' + percent(s.commissionMax) + '，另有其他费用。</p>' + evidenceTable(['假设发行价 / 美元','佣金后净款 / 百万美元','新股 / 百万','合计股数 / 百万','同一经营情景股价倍数'],s.issuePrices.map(price=>{
+      const x=M.dataServiceFunding(c,price);
+      return [n(price),n(x.netProceeds),n(x.newShares),n(x.shares,6),n(M.project(c,{...bull,shares:x.shares}).priceMultiple)+'×'];
+    })) + evidenceTable(['净营运占用比例假设','乐观终点占用 / 百万美元'],a.workingCapitalRatios.map(r=>[percent(r),n(bull.revenue*r)])) + '<p>' + e(a.fundingNote) + '</p>' + sourceLinks(['inod-q','inod-atm']) + '</section>';
+  }
+  function comparisonPool() {
+    const query=state.query.trim().toLowerCase();
+    return (data().comparisons || []).filter(c=>c.market===state.market && (!query || [c.id,c.name,c.facts,c.judgment].join(' ').toLowerCase().includes(query)));
+  }
+  function comparisonEntry() {
+    const rows=comparisonPool();
+    if (!rows.length) return '';
+    return '<div class="panel-foot potential-comparisons">' + H.action('比较观察 · ' + rows.length + ' 家', 'potential-comparisons', 'text-link') + '<span>' + e(rows.map(c=>c.name).join('、')) + '</span></div>';
+  }
+  function comparisonDetail() {
+    const rows=comparisonPool();
+    if (!rows.length) return;
+    const sections=rows.map(c=>{
+      const revenue=c.price.value*10*c.shares/c.margin/c.pe;
+      let html='<section><h3>' + e(c.name) + ' · ' + e(c.id) + '</h3><p class="potential-lead">' + e(c.judgment) + '</p><p>' + e(c.facts) + '</p><p>起始收盘 ' + n(c.price.value) + currency(c) + '（' + e(c.price.asOf) + '）；股数 ' + n(c.shares,6) + '百万，截至 ' + e(c.shareDate) + '。' + e(c.shareBasis || '未计未来稀释，只是门槛下限。') + '</p><p>按 ' + percent(c.margin) + '归母净利率、' + c.pe + '倍PE的研究假设，十倍需要收入 ' + amount(c,revenue) + '；相对“' + e(c.anchorLabel) + '”为 ' + n(revenue/c.anchorRevenue) + '倍，期间不同只比较量级。</p>';
+      if (c.audit?.kind==='chemical_screen') {
+        const a=c.audit,f=a.cash,s=a.capital;
+        html+='<details class="potential-method"><summary>查看现金与增长目标</summary>' + evidenceTable(['2026H1 / 百万元','金额'],[['归母净利',a.financials.net],['经营现金',f.operating],['资本开支',f.capex],['经营现金减资本开支',f.operating-f.capex],['期末现金等价物',f.end],['另有受限资金',f.restricted],['期末应收账款净额',f.receivables]].map(([label,v])=>[label,n(v,3)])) + '<p>' + e(a.cashNote) + '</p>' + evidenceTable(['收入考核年度','目标 / 亿元'],s.targets.map(p=>[p.year,n(p.revenue/100)])) + '<p>' + e(a.capitalNote) + '</p><p>' + e(a.businessNote) + '</p></details>';
+        html+='<details class="potential-method"><summary>查看增股压力与收入量级</summary>' + evidenceTable(['研究假设','期末股数 / 百万','净利率 / PE','十倍所需收入'],a.hurdleCases.map(p=>[p.label,n(p.shares,6),percent(p.margin)+' / '+p.pe,amount(c,c.price.value*10*p.shares/p.margin/p.pe)]));
+        const p=M.project({price:c.price,shares:{value:c.shares},financials:{anchorRevenue:null}},{...a.scaleExample,dividends:0});
+        html+='<p>量级示例：收入 ' + amount(c,a.scaleExample.revenue) + '、期末 ' + n(a.scaleExample.shares) + '百万股、' + percent(a.scaleExample.margin) + '净利率、' + a.scaleExample.pe + '倍PE，计算每股 ' + n(p.price) + currency(c) + '，约 ' + n(p.priceMultiple) + '倍。</p><p>' + e(a.scaleNote) + '</p></details>';
+      }
+      return html+'<p class="potential-gap"><strong>具体缺项：</strong>' + e(c.gaps) + '</p><p><strong>下一验证点：</strong>' + e(c.next) + '</p>' + sourceLinks(c.sources) + '</section>';
+    }).join('');
+    H.openModal('<div class="potential-detail">' + H.modalTitle('比较观察','经营进展与当前价格门槛') + sections + '</div>');
+  }
   function sensingEvidence(c) {
     const a = c.sensingAudit;
     if (!a) return '';
@@ -132,7 +181,7 @@
     const m = c.marketTest;
     if (m.kind === 'annual_segments') return evidenceTable(['产品线', m.baseYear + '实际收入', m.targetYear + '收入假设', '所需' + (m.targetYear-m.baseYear) + '年增速'], m.parts.map(p=>[p.label,amount(c,p.baseRevenue),amount(c,p.revenue),percent((p.revenue/p.baseRevenue)**(1/(m.targetYear-m.baseYear))-1)])) + diagnosticTargets(c);
     if (m.kind === 'segment_growth') return '<div class="table-wrap"><table class="potential-scenario-table"><thead><tr><th>产品线</th><th>2026H1</th><th>H1简单年化</th><th>2031收入假设</th><th>隐含五年增速</th></tr></thead><tbody>' + m.parts.map(p => '<tr><th scope="row">' + e(p.label) + '</th><td>' + amount(c, p.reportedRevenue) + '</td><td>' + amount(c, p.baseRevenue) + '</td><td>' + amount(c, p.revenue) + '</td><td>' + percent((p.revenue / p.baseRevenue) ** (1 / data().horizonYears) - 1) + '</td></tr>').join('') + '</tbody></table></div>';
-    return '<div class="table-wrap"><table class="potential-scenario-table"><thead><tr><th>2031收入假设</th><th>数量</th><th>单位净收入</th><th>收入</th></tr></thead><tbody>' + m.parts.map(p => '<tr><th scope="row">' + e(p.label) + '</th><td>' + (p.kind === 'annual_revenue' ? '年度收入假设；计费数量另测' : n(p.units, 0) + e(p.unitLabel)) + '</td><td>' + (p.kind === 'annual_revenue' ? '未假定已知厂家单价' : n(p.price, 0) + currency(c)) + '</td><td>' + amount(c, p.revenue) + '</td></tr>').join('') + '</tbody></table></div>' + sensingTargets(c);
+    return '<div class="table-wrap"><table class="potential-scenario-table"><thead><tr><th>2031收入假设</th><th>数量</th><th>单位净收入</th><th>收入</th></tr></thead><tbody>' + m.parts.map(p => '<tr><th scope="row">' + e(p.label) + '</th><td>' + (p.kind === 'annual_revenue' ? e(p.quantityBasis || '年度收入假设；计费数量另测') : n(p.units, 0) + e(p.unitLabel)) + '</td><td>' + (p.kind === 'annual_revenue' ? e(p.priceBasis || '未假定已知厂家单价') : n(p.price, 0) + currency(c)) + '</td><td>' + amount(c, p.revenue) + '</td></tr>').join('') + '</tbody></table></div>' + sensingTargets(c);
   }
   function parameterEvidence(c) {
     let html = '<section><h3>参数根据与未验证条件</h3>' + c.calibration.map(a => '<p><strong>' + e(a.label) + '：</strong>' + e(a.basis) + sourceLinks(a.sources) + '</p>').join('') + '</section>';
@@ -142,6 +191,7 @@
       const o = c.ownershipCheck;
       html += '<section><h3>子公司融资稀释 · 独立于美股股数</h3><p>起点持股 ' + percent(o.ownership) + '；若新股占发行后 ' + percent(o.proposedFraction) + '，持股约 ' + percent(M.subsidiaryOwnership(o.ownership, o.proposedFraction)) + '；再按初始新股数超额配售 ' + percent(o.overAllotment) + '，约为 ' + percent(M.subsidiaryOwnership(o.ownership, o.proposedFraction, o.overAllotment)) + '。</p><p>' + e(o.caveat) + '</p>' + sourceLinks(o.sources) + '</section>';
     }
+    html += dataServiceFinancing(c);
     if (c.liquidityCheck) return html + liquidityEvidence(c);
     if (!c.financingCheck) return html;
     const f = c.financingCheck, bull = M.scenario(c, 'bull');
@@ -178,27 +228,27 @@
     if (state.view === 'financials') {
       count = 6;
       headers = th('营收 / 2026上半年', 'revenue') + th('归母 / 普通股利润', 'netIncome') + th('经营现金流', 'operatingCash') + th('判断') + th('下个验证点');
-      cells = c => '<td>' + amount(c, c.financials.revenue) + sub(c.financials.label) + '</td><td>' + amount(c, c.financials.netIncome) + sub(c.profitCheck ? '含未实现投资收益' : '报表口径') + '</td><td>' + amount(c, c.financials.operatingCash) + sub('2026上半年') + '</td><td class="potential-prose">' + e(c.decision) + '</td><td class="potential-prose"><strong>' + e(c.milestones[0].when) + '</strong>' + sub(c.milestones[0].test) + '</td>';
+      cells = c => '<td>' + amount(c, c.financials.revenue) + sub(c.financials.label) + '</td><td>' + amount(c, c.financials.netIncome) + sub(c.profitCheck ? '含未实现投资收益' : '报表口径') + '</td><td>' + amount(c, c.financials.operatingCash) + sub(c.financials.operatingCashNote || '2026上半年') + '</td><td class="potential-prose">' + e(c.decision) + '</td><td class="potential-prose"><strong>' + e(c.milestones[0].when) + '</strong>' + sub(c.milestones[0].test) + '</td>';
     } else if (state.view === 'valuation') {
       count = 7;
       headers = th('起始收盘价', 'price') + th('期末股数 / 乐观', 'dilution') + th('十倍目标价') + th('十倍所需营收', 'hurdle') + th('终点估值假设') + th('十倍所需股权价值');
-      cells = c => { const s = M.scenario(c, 'bull'), p = M.project(c, s), h = M.hurdle(c, s); return '<td>' + n(c.price.value) + currency(c) + sub(c.price.asOf) + '</td><td>' + n(s.shares, 1) + '百万股' + sub('较已发行增加 ' + percent(p.dilution)) + '</td><td>' + n(h.price) + currency(c) + sub('不含分红') + '</td><td>' + amount(c, h.revenue) + sub('五年营收CAGR ' + percent(h.revenueCagr)) + '</td><td>归母净利率 ' + percent(s.margin) + sub(s.pe + '倍PE · 研究假设') + '</td><td>' + amount(c, h.equity) + sub('较起始股本折算值 ' + n(h.capitalMultiple) + '×') + '</td>'; };
+      cells = c => { const s = M.scenario(c, 'bull'), p = M.project(c, s), h = M.hurdle(c, s); return '<td>' + n(c.price.value) + currency(c) + sub(c.price.asOf) + '</td><td>' + n(s.shares, 1) + '百万股' + sub('较起始股数增加 ' + percent(p.dilution)) + '</td><td>' + n(h.price) + currency(c) + sub('不含分红') + '</td><td>' + amount(c, h.revenue) + sub('五年营收CAGR ' + percent(h.revenueCagr)) + '</td><td>归母净利率 ' + percent(s.margin) + sub(s.pe + '倍PE · 研究假设') + '</td><td>' + amount(c, h.equity) + sub('较起始股本折算值 ' + n(h.capitalMultiple) + '×') + '</td>'; };
     } else {
       count = 5;
       headers = th('悲观 / ' + (H.annual ? '年化' : '累计'), 'bear') + th('基准 / ' + (H.annual ? '年化' : '累计'), 'base') + th('乐观 / ' + (H.annual ? '年化' : '累计'), 'bull') + th('股价终值倍数');
       cells = c => ['bear', 'base', 'bull'].map(id => returnCell(c, id)).join('') + '<td class="potential-range-cell">' + scenarioRange(c) + '</td>';
     }
     const foot = state.view === 'financials' ? '财务截至2026-06-30；财报中的事实与研究假设在公司详情中分开。' : state.view === 'valuation' ? '股本与报价各自记录日期；增长锚点为2026全年指引或研究假设，详见公司情景。' : '2026-10-16 → 2031-10-16 · 股票价格收益；分红按税前现金持有、不再投资。未扣税费及汇兑。';
-    return '<div class="potential-page"><div class="potential-warning"><strong>十倍尚未获证据支持</strong><span>经营情景与十倍门槛分开看；具体缺项见各公司判断。</span></div>' + filters + '<section class="card"><div class="table-caption stock-table-caption"><span><b>' + rows.length + '</b> / ' + pool.length + ' 家候选 · 研究 ' + e(d.reviewedAt) + ' · 修订' + d.revision + '</span>' + views + (state.sort !== 'default' ? '<span class="stock-sort-status">按' + e(sortNames[state.sort]) + (state.descending ? '降序' : '升序') + H.action('恢复默认', 'potential-sort-reset', 'text-link small') + '</span>' : '') + '</div>' + (state.view === 'returns' ? '<div class="potential-return-controls"><span>未来五年 · 情景假设</span>' + H.annualControl() + '</div>' : '') + '<div class="table-wrap stock-table-wrap potential-table-wrap" tabindex="0" role="region" aria-label="潜力研究表，可横向滚动"><table class="research-table stock-table potential-table potential-' + state.view + '-table"><thead><tr><th>公司 / 主营业务</th>' + headers + '</tr></thead><tbody>' + rows.map(c => '<tr data-stock-row="' + e(c.id) + '">' + identity(c) + cells(c) + '</tr>').join('') + (!rows.length ? '<tr><td colspan="' + count + '"><div class="empty">当前条件没有匹配公司。' + H.action('清除筛选', 'potential-reset', 'text-link') + '</div></td></tr>' : '') + '</tbody></table></div><div class="panel-foot">' + e(foot) + '</div></section></div>';
+    return '<div class="potential-page"><div class="potential-warning"><strong>十倍尚未获证据支持</strong><span>经营情景与十倍门槛分开看；具体缺项见各公司判断。</span></div>' + filters + '<section class="card"><div class="table-caption stock-table-caption"><span><b>' + rows.length + '</b> / ' + pool.length + ' 家候选 · 研究 ' + e(d.reviewedAt) + ' · 修订' + d.revision + '</span>' + views + (state.sort !== 'default' ? '<span class="stock-sort-status">按' + e(sortNames[state.sort]) + (state.descending ? '降序' : '升序') + H.action('恢复默认', 'potential-sort-reset', 'text-link small') + '</span>' : '') + '</div>' + (state.view === 'returns' ? '<div class="potential-return-controls"><span>未来五年 · 情景假设</span>' + H.annualControl() + '</div>' : '') + '<div class="table-wrap stock-table-wrap potential-table-wrap" tabindex="0" role="region" aria-label="潜力研究表，可横向滚动"><table class="research-table stock-table potential-table potential-' + state.view + '-table"><thead><tr><th>公司 / 主营业务</th>' + headers + '</tr></thead><tbody>' + rows.map(c => '<tr data-stock-row="' + e(c.id) + '">' + identity(c) + cells(c) + '</tr>').join('') + (!rows.length ? '<tr><td colspan="' + count + '"><div class="empty">当前条件没有匹配公司。' + H.action('清除筛选', 'potential-reset', 'text-link') + '</div></td></tr>' : '') + '</tbody></table></div><div class="panel-foot">' + e(foot) + '</div></section>' + comparisonEntry() + '</div>';
   }
   function judgment(c) {
-    return '<section><h3>研究判断</h3><p class="potential-lead">' + e(c.decision) + '</p>' + paragraphs(c.thesis) + '</section><div class="potential-detail-columns"><section><h3>已验证事实</h3>' + c.facts.map(f => '<p>' + e(f.text) + sourceLinks(f.sources) + '</p>').join('') + '</section><section><h3>管理层指引</h3>' + (c.guidance.length ? c.guidance.map(g => '<p>' + e(g.text) + sourceLinks(g.sources) + '</p>').join('') : '<p>未将未核实的全年经营目标设为公司指引。</p>') + '<h3>单位经济与竞争</h3><p>' + e(c.economics) + '</p></section></div>' + profitEvidence(c) + cashEvidence(c) + batteryCashEvidence(c) + medicalEvidence(c) + diagnosticEvidence(c) + sensingEvidence(c) + '<section><h3>管理层与资本配置</h3><p>' + e(c.management) + '</p><h3>融资与现金承受能力</h3><p>' + e(c.funding) + sourceLinks(c.fundingSources) + '</p></section><section><h3>为什么没有优先选常见替代</h3>' + c.alternatives.map(a => '<p><strong>' + e(a.name) + '</strong> — ' + e(a.reason) + sourceLinks(a.sources) + '</p>').join('') + '</section>';
+    return '<section><h3>研究判断</h3><p class="potential-lead">' + e(c.decision) + '</p>' + paragraphs(c.thesis) + '</section><div class="potential-detail-columns"><section><h3>已验证事实</h3>' + c.facts.map(f => '<p>' + e(f.text) + sourceLinks(f.sources) + '</p>').join('') + '</section><section><h3>管理层指引</h3>' + (c.guidance.length ? c.guidance.map(g => '<p>' + e(g.text) + sourceLinks(g.sources) + '</p>').join('') : '<p>未将未核实的全年经营目标设为公司指引。</p>') + '<h3>单位经济与竞争</h3><p>' + e(c.economics) + '</p></section></div>' + profitEvidence(c) + cashEvidence(c) + batteryCashEvidence(c) + medicalEvidence(c) + diagnosticEvidence(c) + sensingEvidence(c) + dataServiceEvidence(c) + '<section><h3>管理层与资本配置</h3><p>' + e(c.management) + '</p><h3>融资与现金承受能力</h3><p>' + e(c.funding) + sourceLinks(c.fundingSources) + '</p></section><section><h3>为什么没有优先选常见替代</h3>' + c.alternatives.map(a => '<p><strong>' + e(a.name) + '</strong> — ' + e(a.reason) + sourceLinks(a.sources) + '</p>').join('') + '</section>';
   }
   function scenarios(c) {
     const bull = M.scenario(c, 'bull'), h = M.hurdle(c, bull), f = c.financials;
     const parameters = [['2031营收', s => amount(c, s.revenue)], ['归母净利率', s => percent(s.margin)], ['归母利润', s => amount(c, M.project(c, s).profit)], ['期末股数', s => n(s.shares, 1) + '百万股'], ['期末PE', s => s.pe === null ? '亏损残值法' : s.pe + '倍'], ['股权价值', s => amount(c, M.project(c, s).equity)], ['每股价格', s => n(M.project(c, s).price) + currency(c)], ['五年每股现金分红', s => n(s.dividends) + currency(c)], ['股价倍数', s => n(M.project(c, s).priceMultiple) + '×'], ['含现金分红财富倍数', s => n(M.project(c, s).totalMultiple) + '×']];
     const stress = [['乐观原假设', bull], ['终值PE降低25%', { ...bull, pe: bull.pe * .75 }], ['期末股份再增20%', { ...bull, shares: bull.shares * 1.2 }], ['两项同时发生', { ...bull, pe: bull.pe * .75, shares: bull.shares * 1.2 }]];
-    return '<section><h3>2031年情景 · 全部为研究假设</h3><p>收入增长锚点：' + e(f.anchorLabel) + '，' + amount(c, f.anchorRevenue) + '。价格起点为 ' + e(c.price.asOf) + ' 收盘 ' + n(c.price.value) + currency(c) + '；五年期固定至 ' + e(data().horizonDate) + '。</p><div class="table-wrap"><table class="potential-scenario-table"><thead><tr><th>指标</th>' + c.scenarios.map(s => '<th>' + e(s.label) + '</th>').join('') + '</tr></thead><tbody>' + parameters.map(([label, get]) => '<tr><th scope="row">' + label + '</th>' + c.scenarios.map(s => '<td>' + get(s) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>' + c.scenarios.map(s => '<p><strong>' + e(s.label) + '：</strong>' + e(s.story) + '</p>').join('') + '</section><section><h3>十倍反算 · 先看每股，再看总额</h3><p class="potential-lead">每股 ' + n(h.price) + currency(c) + ' → 股权价值 ' + amount(c, h.equity) + ' → 归母利润 ' + amount(c, h.profit) + ' → 收入 ' + amount(c, h.revenue) + '。</p><p>按 ' + n(bull.shares, 1) + '百万期末股份、' + bull.pe + '倍PE和' + percent(bull.margin) + '归母净利率；所需收入五年复合增速 ' + percent(h.revenueCagr) + '。股权总值需扩大 ' + n(h.capitalMultiple) + '倍，才能让单股价格达到十倍。</p><div class="potential-stress">' + stress.map(([label, s]) => '<div><span>' + label + '</span><strong>' + n(M.project(c, s).priceMultiple) + '×</strong></div>').join('') + '</div></section><section><h3>股本与稀释</h3><p>已发行 ' + n(c.shares.value, 6) + '百万股，截至 ' + e(c.shares.asOf) + '。' + e(c.shares.potentialBasis) + '</p><p>' + e(c.shares.futureBasis) + '</p><p>' + e(c.shares.convertibles) + '</p><p class="potential-gap"><strong>缺项：</strong>' + e(c.shares.gap) + '</p>' + sourceLinks(c.shares.sources || [c.shares.source]) + medicalShareEvidence(c) + sensingShareEvidence(c) + '</section><section><h3>市场容量与单位经济反查</h3><p>' + e(c.marketTest.headline) + '</p>' + marketBuild(c) + paragraphs([c.marketTest.assumptions, c.marketTest.boundary]) + '<p class="potential-gap"><strong>缺项：</strong>' + e(c.marketTest.gap) + '</p>' + sourceLinks(c.marketTest.sources) + '</section><details class="potential-method"><summary>计算口径</summary>' + paragraphs([data().method.formula, data().method.returnBasis, data().method.valuation, data().method.annualization]) + '</details>' + parameterEvidence(c);
+    return '<section><h3>2031年情景 · 全部为研究假设</h3><p>收入增长锚点：' + e(f.anchorLabel) + '，' + amount(c, f.anchorRevenue) + '。价格起点为 ' + e(c.price.asOf) + ' 收盘 ' + n(c.price.value) + currency(c) + '；五年期固定至 ' + e(data().horizonDate) + '。</p><div class="table-wrap"><table class="potential-scenario-table"><thead><tr><th>指标</th>' + c.scenarios.map(s => '<th>' + e(s.label) + '</th>').join('') + '</tr></thead><tbody>' + parameters.map(([label, get]) => '<tr><th scope="row">' + label + '</th>' + c.scenarios.map(s => '<td>' + get(s) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>' + c.scenarios.map(s => '<p><strong>' + e(s.label) + '：</strong>' + e(s.story) + '</p>').join('') + '</section><section><h3>十倍反算 · 先看每股，再看总额</h3><p class="potential-lead">每股 ' + n(h.price) + currency(c) + ' → 股权价值 ' + amount(c, h.equity) + ' → 归母利润 ' + amount(c, h.profit) + ' → 收入 ' + amount(c, h.revenue) + '。</p><p>按 ' + n(bull.shares, 1) + '百万期末股份、' + bull.pe + '倍PE和' + percent(bull.margin) + '归母净利率；所需收入五年复合增速 ' + percent(h.revenueCagr) + '。股权总值需扩大 ' + n(h.capitalMultiple) + '倍，才能让单股价格达到十倍。</p><div class="potential-stress">' + stress.map(([label, s]) => '<div><span>' + label + '</span><strong>' + n(M.project(c, s).priceMultiple) + '×</strong></div>').join('') + '</div></section><section><h3>股本与稀释</h3><p>' + e(c.shares.label || '已发行股数') + ' ' + n(c.shares.value, 6) + '百万股，截至 ' + e(c.shares.asOf) + '。' + e(c.shares.potentialBasis) + '</p><p>' + e(c.shares.futureBasis) + '</p><p>' + e(c.shares.convertibles) + '</p><p class="potential-gap"><strong>缺项：</strong>' + e(c.shares.gap) + '</p>' + sourceLinks(c.shares.sources || [c.shares.source]) + medicalShareEvidence(c) + sensingShareEvidence(c) + dataServiceShares(c) + '</section><section><h3>市场容量与单位经济反查</h3><p>' + e(c.marketTest.headline) + '</p>' + marketBuild(c) + paragraphs([c.marketTest.assumptions, c.marketTest.boundary]) + '<p class="potential-gap"><strong>缺项：</strong>' + e(c.marketTest.gap) + '</p>' + sourceLinks(c.marketTest.sources) + '</section><details class="potential-method"><summary>计算口径</summary>' + paragraphs([data().method.formula, data().method.returnBasis, data().method.valuation, data().method.annualization]) + '</details>' + parameterEvidence(c);
   }
   function evidence(c) {
     const ids = allSources(c);
@@ -223,6 +273,7 @@
       return;
     }
     if (act === 'potential-method') { method(); return; }
+    if (act === 'potential-comparisons') { comparisonDetail(); return; }
     if (act === 'potential-view') { state.view = value; (H.renderStockView || H.render)(); return; }
     if (act === 'potential-status') state.status = value;
     else if (act === 'potential-sector') state.sector = value;

@@ -44,7 +44,7 @@ test('the price start, provenance, unit build and scenario claims reconcile for 
   assert.equal(sourceIds.size, data.sources.length);
   for (const s of data.sources) {
     assert.match(s.url, /^https:\/\//);
-    assert.match(s.publishedAt, /^\d{4}-\d\d-\d\d$/);
+    assert.match(s.publishedAt, s.datePrecision === 'month' ? /^\d{4}-\d\d$/ : /^\d{4}-\d\d-\d\d$/);
     assert.ok(s.publishedAt <= data.reviewedAt);
     assert.ok(s.period && s.locator && s.type);
   }
@@ -56,7 +56,7 @@ test('the price start, provenance, unit build and scenario claims reconcile for 
     assert.equal(c.price.asOf, data.priceDate);
     assert.equal(c.price.basis, 'regular_close_unadjusted');
     const ids = [c.financials.source, c.shares.source, ...(c.shares.sources || []), ...c.facts.flatMap(f => f.sources), ...c.guidance.flatMap(g => g.sources), ...c.fundingSources, ...c.marketTest.sources, ...c.alternatives.flatMap(a => a.sources), ...c.calibration.flatMap(a => a.sources), ...(c.financingCheck?.sources || []), ...(c.earningsAdjustment?.sources || []), ...(c.productCheck?.sources || []), ...(c.profitCheck?.sources || []), ...(c.cashCheck?.sources || []), ...(c.ownershipCheck?.sources || [])];
-    for (const audit of [c.cashAudit, c.awardAudit, c.dilutionAudit, c.liquidityCheck, c.medicalAudit, c.diagnosticAudit, c.sensingAudit]) ids.push(...(audit?.sources || []));
+    for (const audit of [c.cashAudit, c.awardAudit, c.dilutionAudit, c.liquidityCheck, c.medicalAudit, c.diagnosticAudit, c.sensingAudit, c.dataServiceAudit]) ids.push(...(audit?.sources || []));
     ids.forEach(id => assert.ok(sourceIds.has(id), `${c.id}: unknown source ${id}`));
     if (c.marketTest.kind === 'segment_growth') {
       near(c.marketTest.parts.reduce((sum, p) => sum + p.reportedRevenue, 0), c.financials.revenue);
@@ -105,6 +105,118 @@ test('the price start, provenance, unit build and scenario claims reconcile for 
     };
     checkSources(c.audit);
   }
+});
+
+test('Innodata reconciles GAAP earnings and cash without treating project funds as recurring free cash', () => {
+  const c=byId('INOD'),a=c.dataServiceAudit,f=a.cash;
+  for (const p of a.periods) {
+    near(p.revenue-p.cost-p.sga,p.operating);
+    near(p.operating+p.interest,p.pretax);
+    near(p.pretax-p.tax,p.net);
+  }
+  near(a.ocfRows.reduce((sum,[,v])=>sum+v,0),164.441);
+  near(f.start+f.operating+f.investing+f.financing+f.fx,f.end);
+  near(-f.capex-f.investmentPurchases,f.investing);
+  near(f.optionCash+f.rsuTax+f.obligationPayments,f.financing);
+  near(f.end+f.shortInvestments,250.371);
+  near(f.end+f.shortInvestments-f.advances-f.unpaidProjectCosts,121.609);
+  near(f.managementNetCash-121.609,12.391);
+  assert.match(a.cashNote,/期末负债不等于本期现金流/);
+  assert.match(c.financials.operatingCashNote,/项目款/);
+  assert.match(c.financials.anchorLabel,/指引下限/);
+  near(c.financials.anchorRevenue,352.3282);
+  assert.ok(a.periods[2].net/a.periods[2].revenue < .22);
+});
+
+test('Innodata maximum PRSUs reconcile across filings and are not doubled or counted as treasury shares', () => {
+  const c=byId('INOD'),s=c.dataServiceAudit.capital;
+  near(s.juneIssued-s.juneTreasury,s.juneOutstanding);
+  near(s.marchOrdinaryRsu+s.marchPerformanceRsu,s.proxyMaximumFullValueAwards);
+  near(s.marchPerformanceRsu,s.performanceRsu);
+  assert.equal(s.performanceBasis,'maximum');
+  near(s.juneOptions.reduce((sum,p)=>sum+p.shares,0)+s.ordinaryRsu+s.performanceRsu,c.shares.knownPotential);
+  near(c.shares.knownPotential,2.336011);
+  near(c.shares.value,34.382651);
+  assert.ok(c.shares.value<s.juneIssued);
+  assert.match(c.shares.gap,/不是10月股本/);
+  assert.match(c.dataServiceAudit.shareNote,/不另加高管子集或再乘2/);
+});
+
+test('Innodata gross ATM proceeds determine new shares while commission reduces cash only', () => {
+  const c=byId('INOD'),bull=M.scenario(c,'bull');
+  const low=M.dataServiceFunding(c,25),mid=M.dataServiceFunding(c,50),high=M.dataServiceFunding(c,75);
+  near(low.newShares,12); near(mid.newShares,6); near(high.newShares,4);
+  for(const x of [low,mid,high])near(x.netProceeds,294);
+  near(mid.shares,45.712011); near(low.shares,51.712011);
+  assert.ok(mid.shares < bull.shares && low.shares > bull.shares);
+  assert.ok(M.project(c,{...bull,shares:low.shares}).priceMultiple < M.project(c,bull).priceMultiple);
+  const hurdle=M.hurdle(c,bull);
+  near(hurdle.revenue,3761.4242424242425);
+  assert.ok(M.project(c,bull).priceMultiple < 10);
+  assert.match(c.marketTest.assumptions,/不能再作为第四项重复相加/);
+  assert.match(c.marketTest.boundary,/不是可验证市场份额/);
+  assert.throws(()=>M.dataServiceFunding(c,0),RangeError);
+  assert.throws(()=>M.dataServiceFunding({...c,dataServiceAudit:{capital:{...c.dataServiceAudit.capital,commissionMax:1}}},50),RangeError);
+});
+
+test('Tiancheng cash and treasury-funded old vesting stay separate from its new incentive targets and H-share plans', () => {
+  const c=data.comparisons.find(c=>c.id==='688603'),a=c.audit,f=a.cash,s=a.capital;
+  near(a.products.reduce((v,p)=>v+p.revenue,0),a.financials.revenue);
+  near(a.products.reduce((v,p)=>v+p.cost,0),a.financials.cost);
+  near(f.start+f.operating+f.investing+f.financing+f.fx,f.end);
+  near(f.investmentRecovered+f.investmentIncome-f.investmentPaid-f.capex,f.investing);
+  near(f.borrowed-f.repaid-f.dividendsInterest-f.otherFinancing,f.financing);
+  near(f.end+f.restricted,f.monetary);
+  near(f.operating-f.capex,-18.37101017);
+  near(c.shares,s.registered);
+  near(s.oldTreasuryTransferred,.136113);
+  assert.match(c.shareBasis,/未改变总股本/);
+  near(s.firstGrant+s.reserve,s.totalPlan);
+  near(s.expenseByYear.reduce((v,x)=>v+x,0),s.expenseTotal);
+  assert.deepEqual(s.targets.map(p=>p.revenue),[700,1050,1575,2363]);
+  assert.match(c.anchorLabel,/非业绩指引/);
+  assert.equal(s.hShareStatus,'planning_terms_unknown');
+  assert.equal(s.source,'new_shares_and_or_treasury');
+  near(a.scaleExample.revenue,5316.75);
+  const p=M.project({price:c.price,shares:{value:c.shares},financials:{anchorRevenue:null}},{...a.scaleExample,dividends:0});
+  near(p.price,250.64678571428573);
+  assert.ok(p.priceMultiple < 3);
+  near(c.price.value*10*140/.22/30,19203.333333333332);
+});
+
+test('new research details expose the cash caveat, share stress, comparison targets and original evidence', () => {
+  const f=fixture();
+  assert.match(f.html,/Innodata/);
+  assert.match(f.html,/含客户项目款流入/);
+  f.click('potential-detail','INOD');
+  assert.match(f.modal,/GAAP盈利与项目现金/);
+  assert.match(f.modal,/121\.609/);
+  assert.match(f.modal,/12\.391/);
+  f.click('potential-detail-tab','scenarios');
+  assert.match(f.modal,/最大业绩RSU/);
+  assert.match(f.modal,/51\.712011/);
+  assert.match(f.modal,/45\.712011/);
+  assert.match(f.modal,/独立客户组年度收入假设/);
+  f.click('potential-detail-tab','evidence');
+  assert.match(f.modal,/2024-11/);
+  assert.match(f.modal,/tm261509d1_def14a/);
+  assert.doesNotMatch(f.modal,/undefined|NaN/);
+  f.click('potential-comparisons');
+  assert.match(f.modal,/Aehr Test Systems/);
+  assert.doesNotMatch(f.modal,/天承科技/);
+  f.H.market='cn';f.H.render();
+  f.click('potential-comparisons');
+  assert.match(f.modal,/新产业/);
+  assert.match(f.modal,/天承科技/);
+  assert.match(f.modal,/23\.63/);
+  assert.match(f.modal,/1575|15\.75/);
+  assert.match(f.modal,/H股尚未给出发行规模/);
+  assert.match(f.modal,/1225606038/);
+  assert.doesNotMatch(f.modal,/Aehr Test Systems|undefined|NaN/);
+  f.api.handleInput({value:'688603'});f.H.render();
+  f.click('potential-comparisons');
+  assert.match(f.modal,/天承科技/);
+  assert.doesNotMatch(f.modal,/新产业/);
 });
 
 test('Ouster compares both reported and combined historical revenue without inventing software ARR', () => {
@@ -580,14 +692,14 @@ test('warrant lapse and cash exercise are distinct branches and incentive reserv
 test('filtering and the three-step sort cycle return to the research order', () => {
   let state = { market: 'us', status: 'all', sector: 'all', query: '', sort: 'default', descending: true };
   const ids = () => M.select(data.companies, state).map(c => c.id);
-  assert.deepEqual(ids(), ['AMPX', 'ACMR', 'OUST']);
+  assert.deepEqual(ids(), ['AMPX', 'ACMR', 'INOD', 'OUST']);
   state = { ...state, ...M.cycleSort(state.sort, state.descending, 'revenue') };
-  assert.deepEqual(ids(), ['ACMR', 'OUST', 'AMPX']);
+  assert.deepEqual(ids(), ['ACMR', 'INOD', 'OUST', 'AMPX']);
   state = { ...state, ...M.cycleSort(state.sort, state.descending, 'revenue') };
-  assert.deepEqual(ids(), ['AMPX', 'OUST', 'ACMR']);
+  assert.deepEqual(ids(), ['AMPX', 'OUST', 'INOD', 'ACMR']);
   state = { ...state, ...M.cycleSort(state.sort, state.descending, 'revenue') };
   assert.equal(state.sort, 'default');
-  assert.deepEqual(ids(), ['AMPX', 'ACMR', 'OUST']);
+  assert.deepEqual(ids(), ['AMPX', 'ACMR', 'INOD', 'OUST']);
   state.query = ' ampx ';
   assert.deepEqual(ids(), ['AMPX']);
   state.query = ''; state.status = 'watch';
