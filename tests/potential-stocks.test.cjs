@@ -37,8 +37,6 @@ test('losses require an explicit residual value and missing inputs never silentl
   assert.throws(() => M.project({ ...c, shares: { value: null } }, bear), RangeError);
   assert.equal(M.hurdle(c, bear), null);
   assert.equal(M.hurdle({ ...c, financials: { anchorRevenue: null } }, M.scenario(c, 'bull')), null);
-  assert.equal(byId('688050').shares.knownPotential, null);
-  assert.match(byId('688050').shares.gap, /限制|余额|激励/);
 });
 
 test('the price start, provenance, unit build and scenario claims reconcile for every candidate', () => {
@@ -58,7 +56,7 @@ test('the price start, provenance, unit build and scenario claims reconcile for 
     assert.equal(c.price.asOf, data.priceDate);
     assert.equal(c.price.basis, 'regular_close_unadjusted');
     const ids = [c.financials.source, c.shares.source, ...(c.shares.sources || []), ...c.facts.flatMap(f => f.sources), ...c.guidance.flatMap(g => g.sources), ...c.fundingSources, ...c.marketTest.sources, ...c.alternatives.flatMap(a => a.sources), ...c.calibration.flatMap(a => a.sources), ...(c.financingCheck?.sources || []), ...(c.earningsAdjustment?.sources || []), ...(c.productCheck?.sources || []), ...(c.profitCheck?.sources || []), ...(c.cashCheck?.sources || []), ...(c.ownershipCheck?.sources || [])];
-    for (const audit of [c.cashAudit, c.awardAudit, c.dilutionAudit, c.liquidityCheck]) ids.push(...(audit?.sources || []));
+    for (const audit of [c.cashAudit, c.awardAudit, c.dilutionAudit, c.liquidityCheck, c.medicalAudit]) ids.push(...(audit?.sources || []));
     ids.forEach(id => assert.ok(sourceIds.has(id), `${c.id}: unknown source ${id}`));
     if (c.marketTest.kind === 'segment_growth') {
       near(c.marketTest.parts.reduce((sum, p) => sum + p.reportedRevenue, 0), c.financials.revenue);
@@ -94,6 +92,78 @@ test('the price start, provenance, unit build and scenario claims reconcile for 
     };
     checkSources(c.audit);
   }
+});
+
+test('Aibo award rollforward includes the split, final registration and treasury shares once', () => {
+  const c = byId('688050'), a = c.medicalAudit.incentives;
+  assert.equal(a.unit, 'actual_shares');
+  let remaining = a.originalAwards, vested = 0, canceled = 0;
+  for (const r of a.rollforward) {
+    near(r.opening, remaining);
+    remaining = remaining * r.multiplier - r.vested - r.canceled;
+    vested = vested * r.multiplier + r.vested;
+    canceled = canceled * r.multiplier + r.canceled;
+    near(remaining, r.remaining);
+  }
+  near(vested, a.adjustedVested);
+  near(canceled, a.adjustedCanceled);
+  near(vested + canceled + remaining, a.adjustedAwards);
+  near(a.registeredBefore + a.rollforward.at(-1).vested, a.registeredAfter);
+  near(a.registeredAfter / 1e6, c.shares.value);
+  near(a.remaining / 1e6, c.shares.knownPotential);
+  near(a.dividendEligible + a.treasury, a.registeredAfter);
+  near(a.dividendEligible * a.dividendPerShare, a.cashDividend);
+  assert.equal(c.shares.knownPotentialAsOf, '2026-06-30');
+  near(M.scenario(c, 'bull').shares, 230);
+  assert.match(c.shares.futureBasis, /未来融资|未来增股/);
+  const inv = JSON.parse(fs.readFileSync('docs/research/aibo-filings-2026-10-18.json'));
+  assert.equal(inv.records.length, inv.reportedTotal);
+  assert.equal(new Set(inv.records.map(r => r.id)).size, inv.reportedTotal);
+  assert.equal(inv.records.filter(r => r.publishedAt > '2026-06-30').length, a.postJuneCount);
+  assert.ok(inv.records.every(r => r.publishedAt <= data.reviewedAt));
+  assert.deepEqual(inv.pagesFetched, [1, 2, 3]);
+});
+
+test('Aibo cash reconciles net acquisition cash without double counting financing or minorities', () => {
+  const c = byId('688050'), a = c.medicalAudit, f = a.cash, d = a.debt;
+  near(f.acquisitionOutflow - f.acquisitionRelatedReceipt, f.acquisitionNet);
+  near(f.currentCombinationsPaid - f.acquiredCash + f.priorCombinationsPaid, f.acquisitionNet);
+  near(f.start + f.operating + f.investing + f.financing + f.fx, f.end);
+  near(f.equityCash + f.borrowed + f.otherFinanceIn - f.repaid - f.dividendsAndInterest - f.otherFinanceOut, f.financing);
+  near(f.operating - f.capex, 42.06008660);
+  near(f.end, c.financials.cash);
+  near(f.operating, c.financials.operatingCash);
+  const bank = i => d.short[i] + d.long[i] + d.currentLong[i];
+  near(bank(0), c.financials.debt);
+  near(bank(0) - bank(1), f.borrowed - f.repaid + d.bankNonCashIncrease - d.bankNonCashDecrease);
+  near(bank(0) - d.cash[0], 549.37447281);
+  assert.ok(bank(1) - d.cash[1] < 0);
+  assert.ok(f.minorityPurchases < f.otherFinanceOut);
+  assert.ok(f.acquisitionNet > 15 * (f.operating - f.capex));
+});
+
+test('Aibo product mix and acquired goodwill reconcile while source limitations remain visible', () => {
+  const c = byId('688050'), a = c.medicalAudit, h = a.history, g = a.goodwill, p = a.project;
+  near(a.products.reduce((sum, r) => sum + r.revenue, 0), c.financials.revenue);
+  near(a.products.reduce((sum, r) => sum + r.cost, 0), a.totalCost);
+  near(h.annual.revenue + h.current.revenue - h.prior.revenue, 1628.77845593);
+  near(h.annual.netIncome + h.current.netIncome - h.prior.netIncome, 237.46452554);
+  for (const x of a.acquisitions) {
+    near(x.cashCost + x.previousInterest, x.cost);
+    near(x.cost - x.netAssetsShare, x.goodwill);
+  }
+  near(a.acquisitions.reduce((sum, x) => sum + x.goodwill, 0), g.additions);
+  near(g.startGross + g.additions, g.endGross);
+  near(g.endGross - g.impairmentBalance, g.net);
+  near(a.commitment.targets.reduce((s, v) => s + v, 0), a.commitment.cumulative);
+  assert.match(a.acquisitionNote, /未写经营现金流/);
+  assert.match(a.acquisitionNote, /7月15日/);
+  assert.match(a.commitment.note, /未经审计/);
+  assert.match(a.commitment.note, /不是全年违约/);
+  near(p.historicIssueShares * p.historicIssuePrice, p.historicIssueGross);
+  near(p.fundedBudget - p.spentAtJuly, 174.5939);
+  assert.equal(p.newReady, '2028-10');
+  assert.ok(Math.abs(p.spentAtJuly / p.fundedBudget - p.reportedProgress) < .00005);
 });
 
 test('Snibe rolling financials and product totals use matching reporting periods', () => {
@@ -441,6 +511,12 @@ test('both markets, empty search recovery and every detail tab expose complete e
         assert.match(f.modal, /现金复核/);
         assert.match(f.modal, /20\.126/);
       }
+      if (c.medicalAudit) {
+        assert.match(f.modal, /并购现金与债务/);
+        assert.match(f.modal, /640\.716/);
+        assert.match(f.modal, /2028-10/);
+        assert.match(f.modal, /未写经营现金流/);
+      }
       f.click('potential-detail-tab', 'scenarios');
       assert.match(f.modal, /期末股数/);
       assert.match(f.modal, /终值PE降低25%/);
@@ -454,6 +530,11 @@ test('both markets, empty search recovery and every detail tab expose complete e
         assert.doesNotMatch(f.modal, /单位净收入<\/th>/);
       }
       if (c.financingCheck) assert.match(f.modal, /融资敏感性/);
+      if (c.medicalAudit) {
+        assert.match(f.modal, /2021激励计划完整归属记录/);
+        assert.match(f.modal, /193,437,735/);
+        assert.doesNotMatch(f.modal, /潜在余额未知|NaN|undefined/);
+      }
       if (c.liquidityCheck) {
         assert.match(f.modal, /逐年现金与融资/);
         assert.match(f.modal, /216\.929/);

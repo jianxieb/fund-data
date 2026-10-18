@@ -5,6 +5,7 @@ import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { batteryAudit, annualFunding } from './potential_battery_audit.mjs';
+import { medicalAudit } from './potential_medical_audit.mjs';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const require = createRequire(import.meta.url);
 const M = require('../assets/potential-model.js');
@@ -63,6 +64,7 @@ for (const c of data.companies) {
     md += `\n\n存货现金占用 ${n(a.inventoryOutflow, 3)}百万，客户预收减少占用 ${n(a.advanceOutflow, 3)}百万。现金及等价物 ${n(a.cash, 3)}百万，短期定存 ${n(a.timeDeposits, 3)}百万，另有受限现金 ${n(a.restrictedCash, 3)}百万。现金及等价物按所在地：${Object.entries(a.jurisdictions).map(([label, v]) => `${label} ${n(v, 3)}百万`).join('；')}。地域不等于法律所有权，不能按所在地直接分配给母公司股东。\n\n${a.caveat}\n\n${sources(a.sources)}\n`;
   }
   md += batteryAudit(c, sources, n);
+  md += medicalAudit(c, sources, n);
   md += '\n### 管理层指引与研究假设\n\n';
   md += c.guidance.length ? c.guidance.map(g => `- 管理层指引：${g.text} ${sources(g.sources)}`).join('\n') : '未将未核实的全年经营目标设为公司指引。';
   md += `\n\n收入增长锚点：${f.anchorLabel}，金额 ${amount(f.anchorRevenue)}。下面所有2031参数、行业份额和里程碑阈值均为研究者假设，不是公司承诺或外部一致预期。\n\n### 经营路径、竞争与资本配置\n\n${c.thesis.join('\n\n')}\n\n${c.economics}\n\n${c.management}\n\n${c.funding}\n\n${sources(c.fundingSources)}\n\n### 股本与稀释\n\n${c.shares.potentialBasis}\n\n${c.shares.futureBasis}\n\n${c.shares.convertibles}\n\n具体缺项：${c.shares.gap}\n\n`;

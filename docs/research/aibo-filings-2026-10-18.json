@@ -1,0 +1,435 @@
+{
+  "company": "688050 爱博医疗",
+  "reviewedAt": "2026-10-18",
+  "source": "https://www.cninfo.com.cn/new/hisAnnouncement/query",
+  "stock": "688050,9900042736",
+  "queryPeriod": [
+    "2026-01-01",
+    "2026-10-18"
+  ],
+  "pagesFetched": [
+    1,
+    2,
+    3
+  ],
+  "reportedTotal": 69,
+  "recordCount": 69,
+  "postJuneCount": 11,
+  "note": "服务器totalpages字段为2，第三页仍有9项；按69项总数校验去重。发布日期取PDF路径，避免UTC换算提前一天。逐项标题及相关全文未见新上市公司股权激励/发行/转股公告；这不是实时股份登记证明，也不代表未来不会融资。",
+  "records": [
+    {
+      "id": "1225555685",
+      "publishedAt": "2026-09-10",
+      "title": "688050爱博医疗 关于参加科创板2026年半年度医疗器械及医疗设备行业集体业绩说明会的公告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-09-10/1225555685.PDF"
+    },
+    {
+      "id": "1225555701",
+      "publishedAt": "2026-09-10",
+      "title": "688050爱博医疗 关于签订募集资金专户存储四方监管协议的公告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-09-10/1225555701.PDF"
+    },
+    {
+      "id": "1225506966",
+      "publishedAt": "2026-08-26",
+      "title": "688050爱博医疗 关于部分募集资金投资项目增加实施主体、实施地点、延期及使用募集资金向全资子公司提供借款以实施募投项目的公告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-26/1225506966.PDF"
+    },
+    {
+      "id": "1225506989",
+      "publishedAt": "2026-08-26",
+      "title": "中国银河证券股份有限公司关于爱博诺德（北京）医疗科技股份有限公司2026年半年度持续督导跟踪报告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-26/1225506989.PDF"
+    },
+    {
+      "id": "1225506946",
+      "publishedAt": "2026-08-26",
+      "title": "688050爱博医疗 关于调整核心技术人员的公告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-26/1225506946.PDF"
+    },
+    {
+      "id": "1225506958",
+      "publishedAt": "2026-08-26",
+      "title": "688050爱博医疗 2026年半年度报告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-26/1225506958.PDF"
+    },
+    {
+      "id": "1225506964",
+      "publishedAt": "2026-08-26",
+      "title": "爱博医疗关于2026年度“提质增效重回报”行动方案的半年度评估报告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-26/1225506964.PDF"
+    },
+    {
+      "id": "1225506968",
+      "publishedAt": "2026-08-26",
+      "title": "688050爱博医疗 2026年半年度报告摘要",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-26/1225506968.PDF"
+    },
+    {
+      "id": "1225506969",
+      "publishedAt": "2026-08-26",
+      "title": "中国银河证券股份有限公司关于爱博诺德（北京）医疗科技股份有限公司调整核心技术人员的核查意见",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-26/1225506969.PDF"
+    },
+    {
+      "id": "1225506971",
+      "publishedAt": "2026-08-26",
+      "title": "688050爱博医疗 2026年半年度募集资金存放、管理与实际使用情况的专项报告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-26/1225506971.PDF"
+    },
+    {
+      "id": "1225506972",
+      "publishedAt": "2026-08-26",
+      "title": "中国银河证券股份有限公司关于爱博诺德（北京）医疗科技股份有限公司部分募投项目增加实施主体、实施地点、延期及使用募集资金向全资子公司提供借款以实施募投项目的核查意见",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-08-26/1225506972.PDF"
+    },
+    {
+      "id": "1225368666",
+      "publishedAt": "2026-06-13",
+      "title": "中国银河证券股份有限公司关于爱博诺德（北京）医疗科技股份有限公司差异化分红事项的核查意见",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-06-13/1225368666.PDF"
+    },
+    {
+      "id": "1225368664",
+      "publishedAt": "2026-06-13",
+      "title": "688050爱博医疗 2025年年度权益分派实施公告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-06-13/1225368664.PDF"
+    },
+    {
+      "id": "1225339345",
+      "publishedAt": "2026-05-30",
+      "title": "688050爱博医疗 关于调整2025年年度利润分配现金分红总额的公告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-05-30/1225339345.PDF"
+    },
+    {
+      "id": "1225339356",
+      "publishedAt": "2026-05-30",
+      "title": "688050爱博医疗 2021年限制性股票激励计划预留授予部分第四个归属期归属结果暨股票上市公告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-05-30/1225339356.PDF"
+    },
+    {
+      "id": "1225323753",
+      "publishedAt": "2026-05-22",
+      "title": "上海市方达（北京）律师事务所关于爱博诺德（北京）医疗科技股份有限公司2025年年度股东会的法律意见书",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-05-22/1225323753.PDF"
+    },
+    {
+      "id": "1225323759",
+      "publishedAt": "2026-05-22",
+      "title": "688050爱博医疗 关于职工董事离任及补选职工董事的公告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-05-22/1225323759.PDF"
+    },
+    {
+      "id": "1225323767",
+      "publishedAt": "2026-05-22",
+      "title": "688050爱博医疗 2025年年度股东会决议公告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-05-22/1225323767.PDF"
+    },
+    {
+      "id": "1225305009",
+      "publishedAt": "2026-05-14",
+      "title": "爱博医疗2025年年度股东会会议资料",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-05-14/1225305009.PDF"
+    },
+    {
+      "id": "1225259013",
+      "publishedAt": "2026-04-30",
+      "title": "688050爱博医疗 关于参加十五五·科创惠民——科创板企业成果转化与民生赋能之2025年度医疗器械行业集体业绩说明会暨召开2026年第一季度业绩说明会的公告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-30/1225259013.PDF"
+    },
+    {
+      "id": "1225210167",
+      "publishedAt": "2026-04-28",
+      "title": "688050爱博医疗 股东减持股份计划实施结果暨权益变动触及5%刻度的公告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225210167.PDF"
+    },
+    {
+      "id": "1225210190",
+      "publishedAt": "2026-04-28",
+      "title": "爱博医疗简式权益变动报告书（毛立平、白莹）",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-28/1225210190.PDF"
+    },
+    {
+      "id": "1225156004",
+      "publishedAt": "2026-04-23",
+      "title": "688050爱博医疗关于爱博诺德（北京）医疗科技股份有限公司2025年度非经营性资金占用及其他关联资金往来的专项说明",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225156004.PDF"
+    },
+    {
+      "id": "1225156019",
+      "publishedAt": "2026-04-23",
+      "title": "爱博医疗：2025年度独立董事述职报告-李训虎",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225156019.PDF"
+    },
+    {
+      "id": "1225156037",
+      "publishedAt": "2026-04-23",
+      "title": "上海市方达（北京）律师事务所关于爱博诺德（北京）医疗科技股份有限公司2021年限制性股票激励计划调整授予价格、预留授予部分第四个归属期归属条件成就相关事项的法律意见书",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225156037.PDF"
+    },
+    {
+      "id": "1225155874",
+      "publishedAt": "2026-04-23",
+      "title": "688050爱博医疗 关于2025年度募集资金存放、管理与实际使用情况的专项报告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155874.PDF"
+    },
+    {
+      "id": "1225155882",
+      "publishedAt": "2026-04-23",
+      "title": "688050爱博医疗 2026年第一季度报告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155882.PDF"
+    },
+    {
+      "id": "1225155885",
+      "publishedAt": "2026-04-23",
+      "title": "688050爱博医疗 第三届董事会第五次会议决议公告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155885.PDF"
+    },
+    {
+      "id": "1225155908",
+      "publishedAt": "2026-04-23",
+      "title": "爱博医疗2026年度“提质增效重回报”行动方案",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155908.PDF"
+    },
+    {
+      "id": "1225155912",
+      "publishedAt": "2026-04-23",
+      "title": "688050爱博医疗 关于使用暂时闲置募集资金进行现金管理的公告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155912.PDF"
+    },
+    {
+      "id": "1225155920",
+      "publishedAt": "2026-04-23",
+      "title": "爱博医疗：2025年度独立董事述职报告-汪东生",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155920.PDF"
+    },
+    {
+      "id": "1225155924",
+      "publishedAt": "2026-04-23",
+      "title": "爱博医疗2026年度董事、高级管理人员薪酬方案",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155924.PDF"
+    },
+    {
+      "id": "1225155947",
+      "publishedAt": "2026-04-23",
+      "title": "爱博医疗2025年度内部控制审计报告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155947.PDF"
+    },
+    {
+      "id": "1225155952",
+      "publishedAt": "2026-04-23",
+      "title": "688050爱博医疗 2025年度可持续发展报告摘要",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155952.PDF"
+    },
+    {
+      "id": "1225155872",
+      "publishedAt": "2026-04-23",
+      "title": "中国银河证券股份有限公司关于爱博诺德（北京）医疗科技股份有限公司关于使用暂时闲置募集资金进行现金管理的核查意见",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155872.PDF"
+    },
+    {
+      "id": "1225155878",
+      "publishedAt": "2026-04-23",
+      "title": "688050爱博医疗 关于调整2021年限制性股票激励计划授予价格的公告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155878.PDF"
+    },
+    {
+      "id": "1225155892",
+      "publishedAt": "2026-04-23",
+      "title": "688050爱博医疗 关于2021年限制性股票激励计划预留授予部分第四个归属期符合归属条件的公告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155892.PDF"
+    },
+    {
+      "id": "1225155999",
+      "publishedAt": "2026-04-23",
+      "title": "爱博诺德（北京）医疗科技股份有限公司募集资金管理办法",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155999.PDF"
+    },
+    {
+      "id": "1225156000",
+      "publishedAt": "2026-04-23",
+      "title": "688050爱博医疗2025年内部控制评价报告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225156000.PDF"
+    },
+    {
+      "id": "1225156015",
+      "publishedAt": "2026-04-23",
+      "title": "爱博医疗：2025年度独立董事述职报告-王静",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225156015.PDF"
+    },
+    {
+      "id": "1225156028",
+      "publishedAt": "2026-04-23",
+      "title": "中国银河证券股份有限公司关于爱博诺德（北京）医疗科技股份有限公司2025年度募集资金存放、管理与实际使用情况的核查意见",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225156028.PDF"
+    },
+    {
+      "id": "1225156045",
+      "publishedAt": "2026-04-23",
+      "title": "688050爱博医疗 关于召开2025年年度股东会的通知",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225156045.PDF"
+    },
+    {
+      "id": "1225155866",
+      "publishedAt": "2026-04-23",
+      "title": "爱博医疗2025年度审计报告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155866.PDF"
+    },
+    {
+      "id": "1225155870",
+      "publishedAt": "2026-04-23",
+      "title": "中国国际金融股份有限公司关于爱博诺德（北京）医疗科技股份有限公司2021年限制性股票激励计划预留授予部分第四个归属期符合归属条件之独立财务顾问报告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155870.PDF"
+    },
+    {
+      "id": "1225155898",
+      "publishedAt": "2026-04-23",
+      "title": "信永中和会计师事务所（特殊普通合伙）关于爱博诺德（北京）医疗科技股份有限公司2025年度募集资金存放、管理与实际使用情况鉴证报告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155898.PDF"
+    },
+    {
+      "id": "1225155915",
+      "publishedAt": "2026-04-23",
+      "title": "爱博医疗：2025年度独立董事述职报告-王海燕（届满离任）",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155915.PDF"
+    },
+    {
+      "id": "1225155939",
+      "publishedAt": "2026-04-23",
+      "title": "688050爱博医疗 关于2025年度计提资产减值准备的公告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155939.PDF"
+    },
+    {
+      "id": "1225155940",
+      "publishedAt": "2026-04-23",
+      "title": "688050爱博医疗2025年度可持续发展报告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155940.PDF"
+    },
+    {
+      "id": "1225155943",
+      "publishedAt": "2026-04-23",
+      "title": "中国银河证券股份有限公司关于爱博诺德（北京）医疗科技股份有限公司2025年度持续督导跟踪报告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155943.PDF"
+    },
+    {
+      "id": "1225155899",
+      "publishedAt": "2026-04-23",
+      "title": "爱博医疗：2025年度独立董事述职报告-姜峰（届满离任）",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155899.PDF"
+    },
+    {
+      "id": "1225155909",
+      "publishedAt": "2026-04-23",
+      "title": "中国银河证券股份有限公司关于爱博诺德（北京）医疗科技股份有限公司2025年度持续督导工作现场检查报告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155909.PDF"
+    },
+    {
+      "id": "1225155930",
+      "publishedAt": "2026-04-23",
+      "title": "爱博诺德（北京）医疗科技股份有限公司章程",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155930.PDF"
+    },
+    {
+      "id": "1225155931",
+      "publishedAt": "2026-04-23",
+      "title": "爱博医疗2025年度会计师事务所履职情况评估报告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155931.PDF"
+    },
+    {
+      "id": "1225155946",
+      "publishedAt": "2026-04-23",
+      "title": "688050爱博医疗Eyebright2025SustainabilityReport",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155946.PDF"
+    },
+    {
+      "id": "1225156009",
+      "publishedAt": "2026-04-23",
+      "title": "688050爱博医疗 2025年年度报告摘要",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225156009.PDF"
+    },
+    {
+      "id": "1225156021",
+      "publishedAt": "2026-04-23",
+      "title": "688050爱博医疗 关于续聘2026年度审计机构的公告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225156021.PDF"
+    },
+    {
+      "id": "1225156035",
+      "publishedAt": "2026-04-23",
+      "title": "688050爱博医疗 2025年年度利润分配方案的公告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225156035.PDF"
+    },
+    {
+      "id": "1225155875",
+      "publishedAt": "2026-04-23",
+      "title": "688050爱博医疗 关于变更注册资本、修订《公司章程》及修订、制定部分内控制度的公告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155875.PDF"
+    },
+    {
+      "id": "1225155880",
+      "publishedAt": "2026-04-23",
+      "title": "爱博医疗：2025年度独立董事述职报告-冷新宇（届满离任）",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155880.PDF"
+    },
+    {
+      "id": "1225155925",
+      "publishedAt": "2026-04-23",
+      "title": "688050爱博医疗2025年年度报告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155925.PDF"
+    },
+    {
+      "id": "1225155929",
+      "publishedAt": "2026-04-23",
+      "title": "爱博医疗2025年度董事会对独立董事独立性自查情况的专项报告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155929.PDF"
+    },
+    {
+      "id": "1225155935",
+      "publishedAt": "2026-04-23",
+      "title": "爱博医疗董事会薪酬与考核委员会关于公司2021年限制性股票激励计划预留授予部分第四个归属期归属名单的核查意见",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155935.PDF"
+    },
+    {
+      "id": "1225155998",
+      "publishedAt": "2026-04-23",
+      "title": "爱博诺德（北京）医疗科技股份有限公司董事、高级管理人员薪酬管理制度",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225155998.PDF"
+    },
+    {
+      "id": "1225156025",
+      "publishedAt": "2026-04-23",
+      "title": "爱博医疗2025年度审计委员会履职情况报告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225156025.PDF"
+    },
+    {
+      "id": "1225156038",
+      "publishedAt": "2026-04-23",
+      "title": "爱博诺德（北京）医疗科技股份有限公司信息披露管理制度",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-04-23/1225156038.PDF"
+    },
+    {
+      "id": "1225016890",
+      "publishedAt": "2026-03-19",
+      "title": "688050爱博医疗 股东减持股份计划公告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-03-19/1225016890.PDF"
+    },
+    {
+      "id": "1224987184",
+      "publishedAt": "2026-02-28",
+      "title": "688050爱博医疗 2025年度业绩快报",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-02-28/1224987184.PDF"
+    },
+    {
+      "id": "1224984651",
+      "publishedAt": "2026-02-26",
+      "title": "688050爱博医疗 关于收购德美联合（重庆）医疗科技有限公司部分股权的公告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-02-26/1224984651.PDF"
+    },
+    {
+      "id": "1224942598",
+      "publishedAt": "2026-01-21",
+      "title": "688050爱博医疗 关于签订《投资意向书》的自愿披露公告",
+      "url": "https://static.cninfo.com.cn/finalpage/2026-01-21/1224942598.PDF"
+    }
+  ]
+}
