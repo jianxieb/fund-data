@@ -2154,6 +2154,118 @@
       "period": "2026-09-17普通股、2026-08-31奖励及拟议计划",
       "type": "sec_def14a",
       "locator": "Record Date；Proposal 4计划额度、Dilution Analysis、PSU/MSU滚动和Equity Compensation Plan Information；117万股新增额度尚待11月股东批准"
+    },
+    {
+      "id": "himx-2025-20f",
+      "title": "Himax 2025年Form 20-F与年度报告",
+      "url": "https://www.sec.gov/Archives/edgar/data/1342338/000110465926035507/himx-20251231x20f.htm",
+      "publishedAt": "2026-03-27",
+      "period": "2023–2025及2025-12-31",
+      "type": "sec_20f",
+      "locator": "Item 5分部利润；Item 6及注19每RSU对应两普通股；注20、22、27、28；发行人同版PDF https://www.himax.com.tw/wp-content/uploads/2026/06/Himax_2025_Annual_Report.pdf，PDF第69–71、77、138–139、153、156–159、181–185页。"
+    },
+    {
+      "id": "himx-fy2025-results",
+      "title": "Himax 2025全年及第四季业绩",
+      "url": "https://www.himax.com.tw/wp-content/uploads/2026/02/4Q25-Earnings-PR-Final.pdf",
+      "publishedAt": "2026-02-12",
+      "period": "2024–2025",
+      "type": "issuer_results",
+      "locator": "利润表、现金流量表；全年经营现金、资本开支、处置土地与股息。"
+    },
+    {
+      "id": "himx-q2-2026-results",
+      "title": "Himax 2026第二季及半年业绩",
+      "url": "https://www.himax.com.tw/wp-content/uploads/2026/08/2Q26-Earnings-PR-Final.pdf",
+      "publishedAt": "2026-08-06",
+      "period": "2026H1/Q2及Q3指引",
+      "type": "issuer_results",
+      "locator": "PDF第2–4页业务/现金，第9–10页奖金和指引，第13–18页半年利润、资产负债、现金流。"
+    },
+    {
+      "id": "himx-q2-2026-call",
+      "title": "Himax 2026第二季电话会原文及问答",
+      "url": "https://www.himax.com.tw/wp-content/uploads/2026/08/2Q26-EC-Transcript-Himax-Final.pdf",
+      "publishedAt": "2026-08-06",
+      "period": "2026Q2与量产前瞻",
+      "type": "issuer_transcript",
+      "locator": "PDF第14–16页非驱动2027占比约30%展望不含CPO、CPO贡献无法量化；第18–20页竞争/验证链；第20–21页LCoS与WiseEye阶段差异。"
+    },
+    {
+      "id": "himx-qwen-2026",
+      "title": "Himax WiseEye获阿里巴巴千问AI眼镜采用",
+      "url": "https://www.himax.com.tw/wp-content/uploads/2026/10/PR-Himax-WiseEye-Ultralow-Power-AI-Adopted-in-Alibabas-Latest-Qwen-AI-Glasses-Final.pdf",
+      "publishedAt": "2026-10-14",
+      "period": "2026-10产品采用",
+      "type": "issuer_press_release",
+      "locator": "两页原文；HX6538采用事实，没有披露该订单数量、芯片净价或独立利润。"
+    },
+    {
+      "id": "himx-disposal-2026",
+      "title": "Himax拟出售权益法被投资公司股权",
+      "url": "https://www.himax.com.tw/wp-content/uploads/2026/07/PR-Himax-Announces-Proposed-Disposal-of-Investment-in-Equity-Method-Investee.pdf",
+      "publishedAt": "2026-07-01",
+      "period": "拟于2026Q4交割",
+      "type": "issuer_press_release",
+      "locator": "被投公司整体8000万美元现金对价及调整项、Himax约31%全面摊薄持股、预期税前收益2300–2400万美元；非已收款。"
+    },
+    {
+      "id": "himx-insider-grant-cfo",
+      "title": "Himax CFO 9月RSU授予Form 4",
+      "url": "https://www.sec.gov/Archives/edgar/data/1342338/000117184326006227/ownership.xml",
+      "publishedAt": "2026-09-25",
+      "period": "2026-09-24授予",
+      "type": "sec_form4",
+      "locator": "1,629 RSU对应3,258普通股，2027–2029各543 RSU归属；仅该申报人。"
+    },
+    {
+      "id": "himx-insider-grant-ceo",
+      "title": "Himax CEO 9月RSU授予Form 4",
+      "url": "https://www.sec.gov/Archives/edgar/data/1342338/000117184326006228/ownership.xml",
+      "publishedAt": "2026-09-25",
+      "period": "2026-09-24授予",
+      "type": "sec_form4",
+      "locator": "4,797 RSU对应9,594普通股，2027–2029各1,599 RSU归属；仅该申报人。"
+    },
+    {
+      "id": "himx-insider-vest-cfo",
+      "title": "Himax CFO 9月RSU归属Form 4",
+      "url": "https://www.sec.gov/Archives/edgar/data/1342338/000117184326006301/ownership.xml",
+      "publishedAt": "2026-09-30",
+      "period": "2026-09-30归属",
+      "type": "sec_form4",
+      "locator": "1,958 RSU归属为3,916普通股，不能再同时加RSU与对应普通股。"
+    },
+    {
+      "id": "himx-insider-vest-ceo",
+      "title": "Himax CEO 9月RSU归属Form 4",
+      "url": "https://www.sec.gov/Archives/edgar/data/1342338/000117184326006302/ownership.xml",
+      "publishedAt": "2026-09-30",
+      "period": "2026-09-30归属",
+      "type": "sec_form4",
+      "locator": "6,806 RSU归属为13,612普通股；交易代码M为奖励结算，不是公开市场买入。"
+    },
+    {
+      "id": "himx-filing-index",
+      "title": "Himax SEC近期申报目录",
+      "url": "https://data.sec.gov/submissions/CIK0001342338.json",
+      "publishedAt": null,
+      "datePrecision": "unknown",
+      "retrievedAt": "2026-10-18",
+      "period": "截至2026-10-18",
+      "type": "sec_submissions",
+      "locator": "半年后相关6-K为7月1日、8月6日、8月12日，另含9月25/30日四份Form 4；目录本身不证明交易已完成或全体奖励数量。"
+    },
+    {
+      "id": "himx-press-index",
+      "title": "Himax发行人新闻目录",
+      "url": "https://www.himax.com.tw/company/press-releases/",
+      "publishedAt": null,
+      "datePrecision": "unknown",
+      "retrievedAt": "2026-10-18",
+      "period": "截至2026-10-18",
+      "type": "issuer_index",
+      "locator": "最新10月14日千问；10月5日公告第三季业绩会为11月5日。已查目录未见拟出售项目交割公告，不能断言交易仍未发生。"
     }
   ],
   "companies": [
@@ -5498,8 +5610,8 @@
       }
     }
   ],
-  "revision": 24,
-  "summary": "新增AOSL先进计算实际收入占比、主营与合资损益、现金用途、9月股本和五年资金稀释研究；六家完整候选与十八家比较公司。21.75美元起点下基准约2.90倍、强条件乐观约9.90倍，暂保留盈利拐点观察。",
+  "revision": 25,
+  "summary": "新增HIMX显示驱动/非驱动利润、WiseEye与CPO阶段、现金/保证金、9月RSU及五年融资分红研究；六家完整候选与十九家比较公司。11.65美元起点基准约2.15倍、强条件乐观约7.53倍，保留量产观察。",
   "revisions": [
     {
       "date": "2026-10-18",
@@ -5615,6 +5727,11 @@
       "date": "2026-10-18",
       "reason": "新增AOSL：以SEC电话会原文拆分先进计算，核对合资出售和现金、9月普通股及拟增奖励额度，并把年度扩产资金、股份支付和低价融资压力纳入每股价值。",
       "previousCommit": "73afbca6686ce27b91aa3d25e5984f86796883eb"
+    },
+    {
+      "date": "2026-10-18",
+      "reason": "新增HIMX：拆分显示驱动与非驱动亏损，纳入千问采用、CPO工程验证、税款延后、采购承诺与9月实际奖励申报，并按年度资金和上一年利润分红推算每ADS回报。",
+      "previousCommit": "becfc1d4218ba373e9563c1a0c8c2dc016f9bdfd"
     }
   ],
   "comparisons": [
@@ -26287,6 +26404,2926 @@
           "未取得10月全体奖励滚动、未来ESPP/奖励授权、逐季度资金峰值和完整设备产能回报。"
         ]
       }
+    },
+    {
+      "id": "HIMX",
+      "name": "奇景光电（Himax）",
+      "market": "us",
+      "currency": "USD",
+      "price": {
+        "value": 11.65,
+        "asOf": "2026-10-16",
+        "symbol": "HIMX",
+        "url": "https://finance.yahoo.com/quote/HIMX/history/"
+      },
+      "shares": 174.4,
+      "shareDate": "2026-06-30",
+      "shareBasis": "公司6月底披露约174.4百万ADS（舍入数）；1 ADS=2普通股，10月全体股份滚动未核实",
+      "margin": 0.12585714285714286,
+      "pe": 25,
+      "anchorRevenue": 828.627,
+      "anchorLabel": "截至2026-06-30 LTM收入，非2026全年指引",
+      "facts": "2026H1收入426.385百万美元、归母27.868百万、经营现金21.548百万；非驱动2025仍亏损17.611百万。WiseEye获千问采用，CPO仍在工程验证。",
+      "judgment": "保留车用与CPO量产观察，暂不列十倍重点候选。11.65美元起点，基准股价约2.15倍；强条件乐观约7.53倍。",
+      "gaps": "缺CPO可交付量/单价/良率/独立利润与回款、WiseEye及LCoS分项收入毛利、正式Q3现金、全体奖励/ADS滚动和处置交割净款。",
+      "next": "以正式Q3及客户量产披露补产品利润、现金和股本；仅凭新增证据升级，不重复年度基线。",
+      "sources": [
+        "himx-2025-20f",
+        "himx-fy2025-results",
+        "himx-q2-2026-results",
+        "himx-q2-2026-call",
+        "himx-qwen-2026",
+        "himx-disposal-2026",
+        "himx-insider-grant-cfo",
+        "himx-insider-grant-ceo",
+        "himx-insider-vest-cfo",
+        "himx-insider-vest-ceo",
+        "himx-filing-index",
+        "himx-press-index"
+      ],
+      "audit": {
+        "kind": "operating_screen",
+        "unit": "USD million",
+        "netLabel": "归母净利（IFRS）",
+        "periods": [
+          {
+            "label": "2024全年",
+            "revenue": 906.802,
+            "cost": 630.601,
+            "rd": 160.329,
+            "ga": 24.121,
+            "sales": 23.53,
+            "operating": 68.221,
+            "interestIncome": 9.907,
+            "fairValueGain": 1.363,
+            "fxGain": 2.491,
+            "financeCost": 4.014,
+            "associateLoss": 0.831,
+            "otherGain": 0,
+            "otherIncome": 0.198,
+            "tax": -2.435,
+            "nci": 0.015,
+            "net": 79.755,
+            "operatingCash": 115.976,
+            "capex": 13.207,
+            "fcf": 102.769
+          },
+          {
+            "label": "2025全年",
+            "revenue": 832.173,
+            "cost": 577.812,
+            "rd": 161.128,
+            "ga": 25.715,
+            "sales": 23.392,
+            "operating": 44.126,
+            "interestIncome": 9.842,
+            "fairValueGain": 1.472,
+            "fxGain": 2.801,
+            "financeCost": 3.491,
+            "associateLoss": 3.185,
+            "otherGain": 3.205,
+            "otherIncome": 0.097,
+            "tax": 9.592,
+            "nci": 1.338,
+            "net": 43.937,
+            "operatingCash": 140.027,
+            "capex": 20.522,
+            "fcf": 119.505
+          },
+          {
+            "label": "2025上半年",
+            "revenue": 429.931,
+            "cost": 297.372,
+            "rd": 72.529,
+            "ga": 11.363,
+            "sales": 10.752,
+            "operating": 37.915,
+            "interestIncome": 5.049,
+            "fairValueGain": 0.257,
+            "fxGain": 2.741,
+            "financeCost": 1.773,
+            "associateLoss": 1.33,
+            "otherGain": 3.205,
+            "otherIncome": 0.023,
+            "tax": 8.895,
+            "nci": 0.661,
+            "net": 36.531,
+            "operatingCash": 116.521,
+            "capex": 9.869,
+            "fcf": 106.652
+          },
+          {
+            "label": "2026上半年",
+            "revenue": 426.385,
+            "cost": 290.703,
+            "rd": 76.101,
+            "ga": 12.683,
+            "sales": 12.175,
+            "operating": 34.723,
+            "interestIncome": 4.203,
+            "fairValueGain": 0.276,
+            "fxGain": -0.154,
+            "financeCost": 1.622,
+            "associateLoss": 1.886,
+            "otherGain": 0,
+            "otherIncome": 0.008,
+            "tax": 6.754,
+            "nci": 0.926,
+            "net": 27.868,
+            "operatingCash": 21.548,
+            "capex": 7.471,
+            "fcf": 14.076999999999998
+          },
+          {
+            "revenue": 828.627,
+            "cost": 571.143,
+            "rd": 164.7,
+            "ga": 27.035,
+            "sales": 24.814999999999998,
+            "operating": 40.934,
+            "interestIncome": 8.996,
+            "fairValueGain": 1.4909999999999999,
+            "fxGain": -0.09399999999999994,
+            "financeCost": 3.3400000000000003,
+            "associateLoss": 3.7409999999999997,
+            "otherGain": 0.0,
+            "otherIncome": 0.08200000000000002,
+            "tax": 7.4510000000000005,
+            "nci": 1.6030000000000002,
+            "net": 35.274,
+            "operatingCash": 45.05399999999999,
+            "capex": 18.124,
+            "label": "截至2026年6月LTM（推算）",
+            "fcf": 26.92999999999999
+          }
+        ],
+        "earningsNote": "半年收入同比下降0.82%，归母下降23.72%，营业利润下降8.42%。Q2环比/同比改善不等于整个上半年已经增长。半年非营业净收益由8.172降至0.825百万，含上一年土地处置3.205百万不再出现及汇兑变化；2024全年税项为2.435百万净收益，不能沿用负税率预测未来。LTM用2025全年减2025H1加2026H1：收入828.627、营业利润40.934、归母35.274百万。当前约2,031.760百万市值，相当于LTM归母约57.60倍。",
+        "cash": {
+          "period": "2026H1",
+          "basis": "现金及等价物（不含受限存款）",
+          "start": 257.504,
+          "operating": 21.548,
+          "capex": 7.471,
+          "capexPrepaid": 0,
+          "capexPrepaidDisplay": "未单列；保证金回收列投资现金，不视作额外可用现金",
+          "investing": -4.55,
+          "financing": -3.405,
+          "fx": 0.199,
+          "end": 271.296
+        },
+        "cashNote": "自由现金仅指经营现金减固定资产及无形资产；不代表可自由分配给母公司的全部现金。7月股息不在半年现金表内，已在下半年假设桥扣除；约11百万缓缴税于下一年支付。",
+        "cashDetails": {
+          "h1": {
+            "groupNet": 28.794,
+            "da": 11.843,
+            "sbc": 0.148,
+            "disposalLoss": 0.004,
+            "fvGain": -0.276,
+            "interestIncome": -4.203,
+            "financeCost": 1.622,
+            "taxExpense": 6.754,
+            "associateLoss": 1.886,
+            "inventoryWritedown": 4.763,
+            "fxLoss": 0.921,
+            "receivableChange": -19.376,
+            "inventoryChange": -3.564,
+            "relatedReceivableChange": 0.011,
+            "otherCurrentAssetChange": 4.187,
+            "payablesChange": -6.634,
+            "relatedPayablesChange": -0.364,
+            "contractLiabilityChange": 1.097,
+            "otherCurrentLiabilityChange": -8.001,
+            "otherLongLiabilityChange": 0.041,
+            "cashGenerated": 19.653,
+            "interestReceived": 3.984,
+            "interestPaid": -1.368,
+            "taxPaid": -0.721,
+            "operatingCash": 21.548,
+            "ppe": 7.207,
+            "intangibles": 0.264,
+            "investingCash": -4.55,
+            "financingCash": -3.405,
+            "fxCash": 0.199,
+            "cashStart": 257.504,
+            "cashEnd": 271.296
+          },
+          "investing": [
+            [
+              "购建固定资产",
+              -7.207
+            ],
+            [
+              "无形资产",
+              -0.264
+            ],
+            [
+              "摊余成本投资购入",
+              -2.645
+            ],
+            [
+              "摊余成本投资收回",
+              1.291
+            ],
+            [
+              "FVPL投资购入",
+              -21.882
+            ],
+            [
+              "FVPL投资收回",
+              22.507
+            ],
+            [
+              "FVOCI投资",
+              -6.385
+            ],
+            [
+              "权益法投资",
+              -0.244
+            ],
+            [
+              "供应商等可退还保证金收回",
+              10.279
+            ]
+          ],
+          "financing": [
+            [
+              "子公司增资",
+              0.411
+            ],
+            [
+              "短期非抵押借款偿还",
+              -0.14
+            ],
+            [
+              "长期借款偿还",
+              -3
+            ],
+            [
+              "抵押短债借入",
+              1161.8
+            ],
+            [
+              "抵押短债偿还",
+              -1161.8
+            ],
+            [
+              "租赁本金",
+              -1.076
+            ],
+            [
+              "收到保证金",
+              0.4
+            ]
+          ],
+          "priorH1ReceivableChange": 11.6,
+          "priorH1InventoryChange": 13.723,
+          "priorH1PayablesChange": 30.14,
+          "ltmFcf": 26.92999999999999,
+          "taxTimingAdjustedH1Fcf": 3.077,
+          "taxTimingAdjustedLtmFcf": 15.93
+        },
+        "operatingCashBridge": [
+          [
+            "groupNet",
+            28.794
+          ],
+          [
+            "da",
+            11.843
+          ],
+          [
+            "sbc",
+            0.148
+          ],
+          [
+            "disposalLoss",
+            0.004
+          ],
+          [
+            "fvGain",
+            -0.276
+          ],
+          [
+            "interestIncome",
+            -4.203
+          ],
+          [
+            "financeCost",
+            1.622
+          ],
+          [
+            "taxExpense",
+            6.754
+          ],
+          [
+            "associateLoss",
+            1.886
+          ],
+          [
+            "inventoryWritedown",
+            4.763
+          ],
+          [
+            "fxLoss",
+            0.921
+          ],
+          [
+            "receivableChange",
+            -19.376
+          ],
+          [
+            "inventoryChange",
+            -3.564
+          ],
+          [
+            "relatedReceivableChange",
+            0.011
+          ],
+          [
+            "otherCurrentAssetChange",
+            4.187
+          ],
+          [
+            "payablesChange",
+            -6.634
+          ],
+          [
+            "relatedPayablesChange",
+            -0.364
+          ],
+          [
+            "contractLiabilityChange",
+            1.097
+          ],
+          [
+            "otherCurrentLiabilityChange",
+            -8.001
+          ],
+          [
+            "otherLongLiabilityChange",
+            0.041
+          ],
+          [
+            "interestReceived",
+            3.984
+          ],
+          [
+            "interestPaid",
+            -1.368
+          ],
+          [
+            "taxPaid",
+            -0.721
+          ]
+        ],
+        "segments": {
+          "years": [
+            2023,
+            2024,
+            2025
+          ],
+          "driverRevenue": [
+            804.84,
+            751.326,
+            665.797
+          ],
+          "otherRevenue": [
+            140.588,
+            155.476,
+            166.376
+          ],
+          "driverOperating": [
+            75.282,
+            92.699,
+            61.737
+          ],
+          "otherOperating": [
+            -32.07,
+            -24.478,
+            -17.611
+          ],
+          "q2NonDriverShare": 0.202,
+          "automotiveShareLowerBound": 0.5,
+          "standaloneCpoRevenue": null,
+          "standaloneWiseEyeRevenue": null,
+          "standaloneCpoMargin": null
+        },
+        "capital": {
+          "ordinaryPerAds": 2,
+          "rsuOrdinaryShares": 2,
+          "issuedOrdinary2025": 356.699482,
+          "treasuryOrdinary2025": 7.847654,
+          "outstandingOrdinary2025": 348.851828,
+          "outstandingAds2025": 174.425914,
+          "outstandingAdsJuneRounded": 174.4,
+          "weightedAverageAdsH1": 174.426,
+          "unvestedRsu2025": 0.068814,
+          "grantRsu2025": 0.862516,
+          "cashSettlementShare2025": 0.9874,
+          "cashSettledRsuCost2025": 7.368,
+          "totalSbcExpense2025": 8.098,
+          "noncashSbc2025": 0.73,
+          "totalAnnualBonus2025Rounded": 7.7,
+          "expectedAnnualBonus2026": 13,
+          "expectedImmediateBonus2026": 11.7,
+          "actualFullBonus2026Verified": false,
+          "repurchaseAuthorization": 20,
+          "repurchaseSpentThroughFeb2026Rounded": 5.3,
+          "repurchaseAdsThroughFeb2026": 0.822431,
+          "septemberNewCfoRsu": 0.001629,
+          "septemberNewCeoRsu": 0.004797,
+          "septemberVestedCfoRsu": 0.001958,
+          "septemberVestedCeoRsu": 0.006806,
+          "septemberVestedCfoOrdinary": 0.003916,
+          "septemberVestedCeoOrdinary": 0.013612,
+          "insiderForms": [
+            {
+              "accessionSuffix": "6227",
+              "name": "Pan Ming-Feng",
+              "eventDate": "2026-09-24",
+              "transactions": [
+                {
+                  "security": "Restricted Stock Units",
+                  "code": "A",
+                  "shares": 1629.0,
+                  "underlyingOrdinary": "3258",
+                  "remaining": "1629"
+                }
+              ],
+              "footnotes": [
+                "Each RSU represents the contingent right to receive two ordinary shares upon vesting of the unit.",
+                "The RSUs were granted on September 24, 2026, and are subject to an annual vesting schedule, contingent upon continued service at the time of vesting. 543 RSUs vest on September 30, 2027, 543 RSUs vest on September 30, 2028 and 543 RSUs vest on September 30, 2029. They do not have an expiration date."
+              ]
+            },
+            {
+              "accessionSuffix": "6228",
+              "name": "Wu Jordan",
+              "eventDate": "2026-09-24",
+              "transactions": [
+                {
+                  "security": "Restricted Stock Units",
+                  "code": "A",
+                  "shares": 4797.0,
+                  "underlyingOrdinary": "9594",
+                  "remaining": "4797"
+                }
+              ],
+              "footnotes": [
+                "Each RSU represents the contingent right to receive two ordinary shares upon vesting of the unit.",
+                "The RSUs were granted on September 24, 2026, and are subject to an annual vesting schedule, contingent upon continued service at the time of vesting. 1,599 RSUs vest on September 30, 2027, 1,599 RSUs vest on September 30, 2028 and 1,599 RSUs vest on September 30, 2029. They do not have an expiration date."
+              ]
+            },
+            {
+              "accessionSuffix": "6301",
+              "name": "Pan Ming-Feng",
+              "eventDate": "2026-09-30",
+              "transactions": [
+                {
+                  "security": "Ordinary shares, par value at US$0.3 per share",
+                  "code": "M",
+                  "shares": 3916.0,
+                  "underlyingOrdinary": null,
+                  "remaining": "129372"
+                },
+                {
+                  "security": "Restricted Stock Units",
+                  "code": "M",
+                  "shares": 784.0,
+                  "underlyingOrdinary": "1568",
+                  "remaining": "0"
+                },
+                {
+                  "security": "Restricted Stock Units",
+                  "code": "M",
+                  "shares": 1174.0,
+                  "underlyingOrdinary": "2348",
+                  "remaining": "1173"
+                }
+              ],
+              "footnotes": [
+                "The ordinary shares were acquired upon vesting and settlement of restricted stock units (RSUs).",
+                "Each RSU represents the contingent right to receive two ordinary shares upon vesting of the unit.",
+                "The RSUs were vested on September 30, 2026 and do not have an expiration date."
+              ]
+            },
+            {
+              "accessionSuffix": "6302",
+              "name": "Wu Jordan",
+              "eventDate": "2026-09-30",
+              "transactions": [
+                {
+                  "security": "Ordinary shares, par value at US$0.3 per share",
+                  "code": "M",
+                  "shares": 13612.0,
+                  "underlyingOrdinary": null,
+                  "remaining": "540253"
+                },
+                {
+                  "security": "Restricted Stock Units",
+                  "code": "M",
+                  "shares": 1057.0,
+                  "underlyingOrdinary": "2114",
+                  "remaining": "0"
+                },
+                {
+                  "security": "Restricted Stock Units",
+                  "code": "M",
+                  "shares": 4309.0,
+                  "underlyingOrdinary": "8618",
+                  "remaining": "4308"
+                },
+                {
+                  "security": "Restricted Stock Units",
+                  "code": "M",
+                  "shares": 1440.0,
+                  "underlyingOrdinary": "2880",
+                  "remaining": "2881"
+                }
+              ],
+              "footnotes": [
+                "The ordinary shares were acquired upon vesting and settlement of restricted stock units (RSUs).",
+                "Each RSU represents the contingent right to receive two ordinary shares upon vesting of the unit.",
+                "The RSUs were vested on September 30, 2026 and do not have an expiration date."
+              ]
+            }
+          ],
+          "fullOctoberShareLedgerVerified": false
+        },
+        "liquidity": {
+          "cash": 271.296,
+          "shortAmortizedFinancialAssets": 4.113,
+          "shortFvplAssets": 23.328,
+          "receivables": 220.25,
+          "inventory": 151.471,
+          "restrictedDeposits": 568.2,
+          "matchingSecuredBorrowings": 568.2,
+          "longFvplAssets": 26.25,
+          "fvociAssets": 85.796,
+          "equityInvestments": 9.865,
+          "refundableDeposits": 172.69,
+          "currentUnsecuredDebt": 6,
+          "longUnsecuredDebt": 19.5,
+          "accountsPayable": 132.055,
+          "parentEquity": 899.511,
+          "shortFinancialAssets": 27.441,
+          "headlineCashAndFinancialAssets": 298.737,
+          "fiscal2025RefundableDepositsTotal": 203.982,
+          "fiscal2025NoncurrentRefundableDeposits": 185.247,
+          "waferPurchaseCommitmentsApprox": 1059,
+          "within12MonthPurchaseCommitmentsApprox": 423,
+          "ppeSoftwareCommitments": 7.095,
+          "purchaseCommitmentsAsOf": "2025-12-31",
+          "taxDeferredApprox": 11,
+          "subsidiaryEarningsIndefinitelyReinvested": 1589.949,
+          "parentCashFreelyRemittableVerified": false,
+          "currentSupplierDepositTotalVerified": false
+        },
+        "business": {
+          "qwenAdoptionActual": true,
+          "qwenVolume": null,
+          "qwenAsp": null,
+          "qwenMargin": null,
+          "cpoStage": "engineering_validation",
+          "cpoMassProductionTimingVerified": false,
+          "management2027NonDriverShareExCpoApprox": 0.3,
+          "lcOS2027MassProductionNotExpectedAtAugustCall": true,
+          "topTenCustomerShare2025": 0.713,
+          "customerAShare2025Approx": 0.24,
+          "customerARevenue2025": 200.105,
+          "confirmedOrdersLeadMonthsApprox": 1,
+          "rollingForecastBinding": false,
+          "formalAnnualGuidance": false,
+          "outlookIsActual": false
+        },
+        "disposal": {
+          "wholeInvesteeCashConsideration": 80,
+          "himaxOwnershipApprox": 0.31,
+          "estimatedPretaxGainLow": 23,
+          "estimatedPretaxGainHigh": 24,
+          "expectedQuarter": "2026Q4",
+          "completionEvidenceFound": false,
+          "unadjustedProceedsInference": 24.8,
+          "includedInRecurringProfit": false,
+          "includedInFunding": false
+        },
+        "guidance": {
+          "asOf": "2026-08-06",
+          "q3RevenueGrowthQoqLow": 0.07,
+          "q3RevenueGrowthQoqHigh": 0.11,
+          "q3GrossMarginApprox": 0.34,
+          "q3EpsAdsLow": 0.08,
+          "q3EpsAdsHigh": 0.1,
+          "reportedActual": false
+        },
+        "sections": [
+          {
+            "title": "显示驱动盈利与非驱动亏损必须分开",
+            "paragraphs": [
+              "2025年显示驱动收入下降11.38%，营业利润由92.699降至61.737百万；非驱动收入增长7.01%，但仍亏损17.611百万。2026Q2非驱动占总收入20.2%，包括Tcon、CMOS图像传感器等成熟产品，不能全部当作WiseEye、LCoS或CPO收入。车用超过集团一半的口径还包含Tcon，与非驱动类别有交叉，不能直接相加。",
+              "车用增长来自每车屏幕数量和每屏芯片价值：LTDI、HUD去畸变Tcon、OLED驱动等提供升级机会。但2025年前十客户占71.3%，客户A及关联方占约24%；直接客户主要是面板/模组厂，终端品牌采用不等于向终端品牌直接销售。客户滚动预测不具约束力，订单通常在交付前约一个月确认，长期供应采购承诺与订单能见度并不对称。",
+              "2026Q2电话会对2027非驱动占比接近30%的描述明确不含CPO，并非正式全年指引。汽车Tcon、WiseEye与CPO需要分别验证利润，不能把三条增长逻辑共用同一笔收入。"
+            ],
+            "sources": [
+              "himx-2025-20f",
+              "himx-q2-2026-results",
+              "himx-q2-2026-call"
+            ],
+            "headers": [
+              "分部 / 百万美元",
+              "2023收入",
+              "2024收入",
+              "2025收入",
+              "2025营业利润"
+            ],
+            "rows": [
+              [
+                "Driver IC",
+                804.84,
+                751.326,
+                665.797,
+                61.737
+              ],
+              [
+                "Non-driver",
+                140.588,
+                155.476,
+                166.376,
+                -17.611
+              ],
+              [
+                "集团",
+                945.428,
+                906.802,
+                832.173,
+                44.126
+              ]
+            ]
+          },
+          {
+            "title": "WiseEye已获采用，CPO仍需客户与整机验证",
+            "paragraphs": [
+              "10月14日发行人确认WiseEye HX6538获阿里巴巴千问AI眼镜采用，属于具体产品进展。公开原文未提供这一产品的销量、Himax芯片ASP、单机供货金额或独立毛利；不把整副眼镜销售额算为Himax收入，也不把未具名的其他客户猜成某个品牌。",
+              "8月电话会区分WiseEye和LCoS：WiseEye已有产品推出及后续设计项目；LCoS仍在争取design-win，当时未预计成为2027量产业务。不能把WiseEye采用同时解释为LCoS显示屏已随同量产。",
+              "CPO与FOCI的第一代1.6T/3.2T和第二代6.4T方案处于工程爬坡；管理层预期2026下半年准备好量产条件，实际启动取决于终端客户。验证从WLO光学件/FAU延伸到封装、整模块、服务器和系统，单个器件通过并不等于整个生态已放量。公司希望2027对利润有实质贡献，但拒绝量化收入，且承认大规模量产仍待证明。",
+              "这意味着增长选择权存在，但还没有可复算的单位经济：缺每FAU所含Himax器件数量、Himax实际净价、良率、可交付产能、订单/验收/回款与独立利润。FOCI的整个模块收入和融资额不能直接作为Himax收入与可用现金。"
+            ],
+            "sources": [
+              "himx-qwen-2026",
+              "himx-q2-2026-call",
+              "himx-q2-2026-results"
+            ]
+          },
+          {
+            "title": "现金下降来自回款与营运资金，缓缴税不是现金盈利提升",
+            "paragraphs": [
+              "半年经营现金由116.521降至21.548百万，降幅94.973百万。其中应收变动由释放11.600变成占用19.376，差30.976；应付由增加30.140变成减少6.634，差36.774；库存由释放13.723变成占用3.564，差17.287。三项合计解释85.037百万变动，不能只用净利润变化解释现金。Q2 DSO为93天，高于Q1的86天。",
+              "2026H1经营现金21.548减固定资产7.207与无形资产0.264，得到14.077百万自由现金；剔除约11百万税款延后一年支付的暂时帮助，仅约3.077百万。该调整是现金时点敏感性，不能再次从已确认税费后的利润里扣11百万。",
+              "2025全年自由现金119.505百万，但截至2026年6月LTM仅26.930百万，按同样税款时点调整约15.930百万。短期金融资产买卖和10.279百万可退还保证金回收属于投资现金，不能加入经营现金来证明主营改善。2025保证金回收28.403百万也不是可永久重复的利润。"
+            ],
+            "sources": [
+              "himx-q2-2026-results",
+              "himx-fy2025-results"
+            ],
+            "headers": [
+              "半年现金用途 / 百万美元",
+              "金额"
+            ],
+            "rows": [
+              [
+                "经营现金",
+                21.548
+              ],
+              [
+                "固定资产及无形资产",
+                -7.471
+              ],
+              [
+                "自由现金",
+                14.077
+              ],
+              [
+                "排除约11百万缓缴税后的自由现金",
+                3.077
+              ],
+              [
+                "保证金回收（投资现金）",
+                10.279
+              ],
+              [
+                "投资现金合计",
+                -4.55
+              ],
+              [
+                "融资现金合计",
+                -3.405
+              ],
+              [
+                "汇率",
+                0.199
+              ]
+            ]
+          },
+          {
+            "title": "资金可用性：抵押现金、采购承诺与母公司分配",
+            "paragraphs": [
+              "6月底现金271.296百万，短期摊余成本及FVPL金融资产合计27.441百万，构成公司标题里的298.737百万。这不包含另列的568.2百万受限存款；后者与568.2百万抵押短债对应，不能既把受限款当自由现金又遗漏短债，也不能只扣短债而忽略对应抵押资产。模型排除这一资产/负债配对，不代表已核验法律净额结算。另有银行借款25.5百万及租赁负债需要支付。",
+              "2025年底不可无罚取消的晶圆及封装采购承诺约1,059百万，其中未来12个月约423百万，协议最晚到2030年；设备和软件未付承诺7.095百万。采购承诺会逐步进入成本、库存和营运资金，不能把总承诺再全部当额外资本开支重复扣除。",
+              "2025年底可退还保证金合计203.982百万，其中非流动185.247百万；2026H1资产负债表只单列非流动172.690百万，不能把这个数字当全部保证金。退还条件依赖供应商合同与采购，模型不提前释放全部余额。",
+              "年报披露约1,589.949百万子公司未分配收益拟长期再投资，改变汇回意图可能产生税项；控股公司历来使用银行与内部贷款支持分红。因此合并现金不是已证明可自由汇至母公司的钱。部分母公司未用授信还需要等额现金抵押，不能再加成净流动性。资金压力另对期初现金扣75百万可用性折扣；这是研究假设，不是已确认新增受限款。"
+            ],
+            "sources": [
+              "himx-2025-20f",
+              "himx-q2-2026-results"
+            ]
+          },
+          {
+            "title": "处置收益、股息及股份奖励不混入经营成长",
+            "paragraphs": [
+              "7月拟出售公告中的80百万是被投公司整体现金对价，不是Himax到账额。其约31%持股对应未调整的24.8百万只是算术估计，仍受净现金、营运资金和交割条件影响；预期23–24百万税前收益也不是销售收入。已查截至10月18日的发行人和SEC目录未见交割证据，模型既不计出售现金也不把处置收益资本化为持续利润。",
+              "7月10日已支付44百万股息，发生在10月16日价格之前，不计为投资者未来可得股息。2026年8月预计年度奖金13百万、立即归属部分11.7百万；二者是当时估计，不是已核实全年最终奖励账。9月个人Form 4证明部分授予确已发生，但不能据此确认公司整体奖金及全体股本。",
+              "一份ADS对应两普通股；一份RSU也对应两普通股，所以RSU一单位等于一ADS潜在单位。2025年授予862,516 RSU中98.74%立即现金结算，年末未归属68,814 RSU；不能把全年862,516份全部算新增股份。全年奖励相关费用8.098百万，现金流仅加回0.730百万非现金部分，现金奖金仍是经营成本。",
+              "9月24日CFO获1,629 RSU、CEO获4,797 RSU，均在2027–2029分三年归属；9月30日两人分别归属1,958/6,806 RSU为3,916/13,612普通股。对应RSU和结算普通股不能双算，代码M也不是主动市场买入。这里只覆盖两位申报人，不能把这些数直接加到6月底股数后称为10月完整总股本。",
+              "最新公司整体期末口径仍用6月底约174.4百万ADS，并标为舍入数；H1加权平均174.426百万不是精确期末股数。2025年底精确普通股348.851828百万除以二为174.425914百万ADS。库存股已从流通股中扣除，未来用于奖励时增加流通股；模型不把回购授权当成必然减少的股份。"
+            ],
+            "sources": [
+              "himx-disposal-2026",
+              "himx-q2-2026-results",
+              "himx-2025-20f",
+              "himx-insider-grant-cfo",
+              "himx-insider-grant-ceo",
+              "himx-insider-vest-cfo",
+              "himx-insider-vest-ceo",
+              "himx-filing-index",
+              "himx-press-index"
+            ]
+          },
+          {
+            "title": "2031产品收入与利润：明确哪些仍是假设",
+            "paragraphs": [
+              "下面是互不重叠的2031年研究分组，不是公司披露的四个业务分部，也不是管理层预测。车用Tcon只在其他非驱动，车用驱动只在显示驱动。WiseEye/LCoS与CPO从其他非驱动中剔除。公开资料只支持现有Driver/Non-driver两分部总额，尚不能验证这些新产品终值。",
+              "各项营业利润率已经扣除分配后的研发、销售管理、现金奖金及股份费用，避免算出分部利润后再漏集团费用。2025显示驱动营业利润率只有9.27%、非驱动仍亏损；基准显示驱动到14%、乐观18%，已经要求产品组合改善和费用效率。乐观CPO 40%是很强的营业利润率假设，不能冒充已披露毛利率。",
+              "集团按20%所得税、基准3/乐观4百万少数股东利润扣除计算归母，非经营净收益设为零，不依赖股权出售、投资浮盈或2024年的税收利益。基准归母176.2百万、乐观516.4百万，对比当前LTM35.274百万，本身已是显著增长。"
+            ],
+            "sources": [
+              "himx-2025-20f",
+              "himx-q2-2026-call"
+            ],
+            "headers": [
+              "情景",
+              "业务 / 百万美元",
+              "收入",
+              "营业利润率假设",
+              "营业利润"
+            ],
+            "rows": [
+              [
+                "悲观",
+                "显示驱动（含车用）",
+                600,
+                "5.0%",
+                30.0
+              ],
+              [
+                "悲观",
+                "其他非驱动（含Tcon，剔除以下两项）",
+                180,
+                "-3.0%",
+                -5.3999999999999995
+              ],
+              [
+                "悲观",
+                "WiseEye及LCoS",
+                35,
+                "-10.0%",
+                -3.5
+              ],
+              [
+                "悲观",
+                "CPO光学件",
+                20,
+                "-20.0%",
+                -4.0
+              ],
+              [
+                "基准",
+                "显示驱动（含车用）",
+                850,
+                "14.0%",
+                119.00000000000001
+              ],
+              [
+                "基准",
+                "其他非驱动（含Tcon，剔除以下两项）",
+                250,
+                "12.0%",
+                30.0
+              ],
+              [
+                "基准",
+                "WiseEye及LCoS",
+                150,
+                "20.0%",
+                30.0
+              ],
+              [
+                "基准",
+                "CPO光学件",
+                150,
+                "30.0%",
+                45.0
+              ],
+              [
+                "乐观",
+                "显示驱动（含车用）",
+                1000,
+                "18.0%",
+                180.0
+              ],
+              [
+                "乐观",
+                "其他非驱动（含Tcon，剔除以下两项）",
+                350,
+                "18.0%",
+                63.0
+              ],
+              [
+                "乐观",
+                "WiseEye及LCoS",
+                350,
+                "25.0%",
+                87.5
+              ],
+              [
+                "乐观",
+                "CPO光学件",
+                800,
+                "40.0%",
+                320.0
+              ]
+            ]
+          },
+          {
+            "title": "2026下半年假设桥与五年资金安排",
+            "paragraphs": [
+              "截至10月18日尚无正式Q3报表；不能把6月底现金直接当10月底实际现金。下半年桥假设收入500、归母45、折旧摊销12、非现金股份费用1、营运资金占用15、资本开支15、还本3、租赁本金1.1百万，并扣已知7月股息44百万，得到年底现金251.196百万。45百万归母已包含预计现金奖金成本，不能再扣11.7百万一次。出售现金、保证金返还及金融资产变现均不计入。",
+              "同一假设桥把半年426.385/27.868接成年收入926.385、归母72.868百万；这是建模起点，不是全年预测已兑现。未来分红按上一年正归母的50%支付（悲观0%），是为扩产保留现金的假设，并非公司承诺。2027–2031累计分红只对应2026–2030利润；2031利润于2032年可能分红不计入五年持有期。",
+              "2027一次支付此前缓缴的约11百万税款；银行借款剩余本金按6、6、6、4.5、0百万预算，租赁本金每年2.2百万。未来股份费用只加回非现金部分，现金奖金已在营业利润率中。模型用归母利润作可供普通股资金起点，少数股东利润不作为可供母公司分配现金。",
+              "流通ADS从6月底174.4百万起，H2额外预算0.2百万，之后每年基准/悲观0.2、乐观0.4百万；预算覆盖旧奖励结算及未来新奖励，不再另加68,814未归属RSU或两位高管Form 4。这是未来净流通股变化假设，不是已核实授予数量。",
+              "资金表按年度检查100百万最低现金。收入增长每增加一美元，基准占用0.22美元、乐观0.25美元营运资金；下降年份不假定库存和应收自动释放。基础路径无新增股权融资，但仍缺逐季高峰、保证金新缴/退还、母子公司划款和CPO设备合同，不能据年度余额宣布资金链已被证明。"
+            ],
+            "sources": [
+              "himx-q2-2026-results",
+              "himx-2025-20f"
+            ],
+            "headers": [
+              "下半年桥 / 百万美元",
+              "金额"
+            ],
+            "rows": [
+              [
+                "6月底现金",
+                271.296
+              ],
+              [
+                "假设下半年经营现金",
+                43
+              ],
+              [
+                "假设资本开支",
+                -15
+              ],
+              [
+                "假设银行还本",
+                -3
+              ],
+              [
+                "假设租赁本金",
+                -1.1
+              ],
+              [
+                "7月已付股息",
+                -44
+              ],
+              [
+                "假设2026年底现金",
+                251.19599999999997
+              ]
+            ]
+          },
+          {
+            "title": "基准年度现金与ADS变化（全部为假设）",
+            "paragraphs": [
+              "营业利润来自上文同口径产品模型，归母扣除20%所得税与少数股东利润；经营现金=归母+折旧摊销+非现金股份费用−营运资金占用−2027缓缴税支付。自由现金=经营现金−资本开支；期末现金继续扣借款/租赁本金和上一年利润对应股息，再加融资净额。",
+              "股息按当年奖励计入后、当年融资前的ADS数量分配，假设融资发生在分红后；没有逐季记录可验证这一时间安排。新融资按费用率3%和每ADS11.65美元计算，仅在现金低于100百万时触发。没有另把期末现金加到PE终值上，也不计回购授权效果。"
+            ],
+            "sources": [
+              "himx-q2-2026-results"
+            ],
+            "headers": [
+              "年",
+              "收入",
+              "归母",
+              "营运占用",
+              "税款补付",
+              "经营现金",
+              "资本投入",
+              "现金分红",
+              "净融资",
+              "期末现金",
+              "期末ADS百万"
+            ],
+            "rows": [
+              [
+                "2027",
+                1000,
+                62.400000000000006,
+                16.195300000000003,
+                11,
+                63.2047,
+                35,
+                36.434,
+                0,
+                234.7667,
+                174.79999999999998
+              ],
+              [
+                "2028",
+                1090,
+                86.0,
+                19.8,
+                0,
+                97.7,
+                45,
+                31.200000000000003,
+                0,
+                248.06670000000003,
+                174.99999999999997
+              ],
+              [
+                "2029",
+                1180,
+                111.9,
+                19.8,
+                0,
+                127.10000000000001,
+                50,
+                43.0,
+                0,
+                273.96670000000006,
+                175.19999999999996
+              ],
+              [
+                "2030",
+                1290,
+                141.62,
+                24.2,
+                0,
+                155.92000000000002,
+                55,
+                55.95,
+                0,
+                312.2367000000001,
+                175.39999999999995
+              ],
+              [
+                "2031",
+                1400,
+                176.2,
+                24.2,
+                0,
+                194.0,
+                60,
+                70.81,
+                0,
+                373.2267000000001,
+                175.59999999999994
+              ]
+            ]
+          },
+          {
+            "title": "乐观年度现金与ADS变化（全部为假设）",
+            "paragraphs": [
+              "营业利润来自上文同口径产品模型，归母扣除20%所得税与少数股东利润；经营现金=归母+折旧摊销+非现金股份费用−营运资金占用−2027缓缴税支付。自由现金=经营现金−资本开支；期末现金继续扣借款/租赁本金和上一年利润对应股息，再加融资净额。",
+              "股息按当年奖励计入后、当年融资前的ADS数量分配，假设融资发生在分红后；没有逐季记录可验证这一时间安排。新融资按费用率3%和每ADS11.65美元计算，仅在现金低于100百万时触发。没有另把期末现金加到PE终值上，也不计回购授权效果。"
+            ],
+            "sources": [
+              "himx-q2-2026-results"
+            ],
+            "headers": [
+              "年",
+              "收入",
+              "归母",
+              "营运占用",
+              "税款补付",
+              "经营现金",
+              "资本投入",
+              "现金分红",
+              "净融资",
+              "期末现金",
+              "期末ADS百万"
+            ],
+            "rows": [
+              [
+                "2027",
+                1100,
+                83.44,
+                43.40375,
+                11,
+                60.036249999999995,
+                65,
+                36.434,
+                0,
+                201.59824999999998,
+                175.0
+              ],
+              [
+                "2028",
+                1330,
+                133.82,
+                57.5,
+                0,
+                119.32,
+                100,
+                41.72,
+                0,
+                170.99824999999996,
+                175.4
+              ],
+              [
+                "2029",
+                1660,
+                223.4,
+                82.5,
+                0,
+                199.89999999999998,
+                130,
+                66.91,
+                0,
+                165.78824999999998,
+                175.8
+              ],
+              [
+                "2030",
+                2060,
+                347.94,
+                100.0,
+                0,
+                326.94,
+                165,
+                111.7,
+                0,
+                209.32825000000003,
+                176.20000000000002
+              ],
+              [
+                "2031",
+                2500,
+                516.4,
+                110.0,
+                0,
+                508.4,
+                200,
+                173.97,
+                0,
+                341.55824999999993,
+                176.60000000000002
+              ]
+            ]
+          },
+          {
+            "title": "悲观年度现金与ADS变化（全部为假设）",
+            "paragraphs": [
+              "营业利润来自上文同口径产品模型，归母扣除20%所得税与少数股东利润；经营现金=归母+折旧摊销+非现金股份费用−营运资金占用−2027缓缴税支付。自由现金=经营现金−资本开支；期末现金继续扣借款/租赁本金和上一年利润对应股息，再加融资净额。",
+              "股息按当年奖励计入后、当年融资前的ADS数量分配，假设融资发生在分红后；没有逐季记录可验证这一时间安排。新融资按费用率3%和每ADS11.65美元计算，仅在现金低于100百万时触发。没有另把期末现金加到PE终值上，也不计回购授权效果。"
+            ],
+            "sources": [
+              "himx-q2-2026-results"
+            ],
+            "headers": [
+              "年",
+              "收入",
+              "归母",
+              "营运占用",
+              "税款补付",
+              "经营现金",
+              "资本投入",
+              "现金分红",
+              "净融资",
+              "期末现金",
+              "期末ADS百万"
+            ],
+            "rows": [
+              [
+                "2027",
+                895,
+                29.04,
+                0.0,
+                11,
+                45.04,
+                30,
+                0.0,
+                0,
+                258.036,
+                174.79999999999998
+              ],
+              [
+                "2028",
+                866,
+                21.672000000000004,
+                0.0,
+                0,
+                47.672000000000004,
+                30,
+                0.0,
+                0,
+                267.50800000000004,
+                174.99999999999997
+              ],
+              [
+                "2029",
+                849,
+                17.8,
+                0.0,
+                0,
+                42.8,
+                30,
+                0.0,
+                0,
+                272.10800000000006,
+                175.19999999999996
+              ],
+              [
+                "2030",
+                842,
+                14.564000000000004,
+                0.0,
+                0,
+                38.56400000000001,
+                30,
+                0.0,
+                0,
+                273.9720000000001,
+                175.39999999999995
+              ],
+              [
+                "2031",
+                835,
+                11.680000000000001,
+                0.0,
+                0,
+                35.68,
+                30,
+                0.0,
+                0,
+                277.4520000000001,
+                175.59999999999994
+              ]
+            ]
+          },
+          {
+            "title": "扩产与回款压力：暂停分红也不能消除全部资金缺口",
+            "paragraphs": [
+              "保持乐观收入增长，但各业务营业利润率都下降5个百分点、每年资本投入增加60百万、增量营运资金升至收入增量35%，并对期初可用现金扣75百万。以每ADS6美元、3%费用融资补足最低现金；这些都是压力假设，不是已公告融资。",
+              "若仍按上年正归母50%分红，五年需净融资513.803250百万、增加88.282345百万ADS，期末264.882345百万ADS；2031归母416.400百万，股价倍数降至4.0481倍。若立即暂停未来分红，融资需求降为308.269250百万、期末229.567225百万ADS，股价约4.6709倍。暂停分红是可选应对，不应把边融资边分红当成唯一行为。",
+              "该压力揭示扩产和回款对每股回报的影响；它不是最低资金需求证明。缺少分产品产能/良率、净价和季度付款表，资本开支多60百万或营运资金35%的假设都可能偏离实际。若采购需重新缴纳大额保证金、母公司融资或汇款发生税项，仍需额外更新。"
+            ],
+            "sources": [
+              "himx-2025-20f",
+              "himx-q2-2026-results"
+            ],
+            "headers": [
+              "年",
+              "归母",
+              "资本投入",
+              "现金分红",
+              "净融资",
+              "新增融资ADS",
+              "期末ADS"
+            ],
+            "rows": [
+              [
+                "2027",
+                39.43999999999999,
+                125,
+                36.434,
+                94.76325000000004,
+                16.28234536082475,
+                191.28234536082476
+              ],
+              [
+                "2028",
+                80.62,
+                160,
+                19.719999999999995,
+                144.79999999999998,
+                24.87972508591065,
+                216.56207044673542
+              ],
+              [
+                "2029",
+                157.0,
+                190,
+                40.31,
+                138.01,
+                23.713058419243982,
+                240.67512886597942
+              ],
+              [
+                "2030",
+                265.53999999999996,
+                225,
+                78.5,
+                105.66000000000004,
+                18.15463917525774,
+                259.22976804123715
+              ],
+              [
+                "2031",
+                416.4,
+                260,
+                132.76999999999998,
+                30.569999999999993,
+                5.252577319587628,
+                264.88234536082473
+              ]
+            ]
+          },
+          {
+            "title": "十倍需要什么新增证据",
+            "paragraphs": [
+              "按乐观期末176.600百万ADS和30倍PE，11.65美元涨至116.5美元需要归母685.797百万。若其他业务保持乐观结果，税率20%、少数股东利润4百万、CPO营业利润率40%，则仅CPO收入要约1329.365百万，比乐观800百万再高529.365百万。这是固定股数的条件反算，不是已建立的十倍经营路径；额外规模可能增加扩产与融资，门槛还会提高。",
+              "升级研究级别需要：正式CPO量产和稳定良率、Himax器件单价及可交付量、独立利润与客户回款；WiseEye/LCoS分别披露收入及毛利；订单与产能/资本投入匹配；正式Q3现金、全体奖励和期末ADS；拟出售项目实际交割净款。仅发布产品或称机会巨大不足以升级。",
+              "当前定位：有真实车用和WiseEye产品进展，保留CPO量产观察；在11.65美元起点暂不列十倍重点候选。关键不是是否搭上AI，而是高增长能否留下足够归母利润与现金。下一份Q3结果须补上述新证据，已完成的年度基线不重复研究。"
+            ],
+            "sources": [
+              "himx-q2-2026-call",
+              "himx-qwen-2026",
+              "himx-press-index"
+            ]
+          }
+        ],
+        "scenarios": [
+          {
+            "id": "bear",
+            "label": "悲观",
+            "revenue": 835,
+            "margin": 0.01398802395209581,
+            "shares": 175.59999999999994,
+            "pe": 18,
+            "dividends": 0.0,
+            "net": 11.680000000000001,
+            "price": 1.1972665148063788,
+            "priceMultiple": 0.10276965792329432,
+            "totalMultiple": 0.10276965792329432,
+            "story": "显示驱动利润率降至5%，非驱动新品仍亏损，停止未来分红；低盈利价值情景不是股价底。 未来五年每ADS现金分红0.0000美元，含分红总倍数0.1028倍（不复投，未扣投资者税费）。"
+          },
+          {
+            "id": "base",
+            "label": "基准",
+            "revenue": 1400,
+            "margin": 0.12585714285714286,
+            "shares": 175.59999999999994,
+            "pe": 25,
+            "dividends": 1.3543831889255373,
+            "net": 176.2,
+            "price": 25.085421412300693,
+            "priceMultiple": 2.153255056849845,
+            "totalMultiple": 2.2695111245687754,
+            "story": "显示驱动850、其他非驱动250、WiseEye/LCoS150、CPO150百万；归母176.2百万、25倍PE。 未来五年每ADS现金分红1.3544美元，含分红总倍数2.2695倍（不复投，未扣投资者税费）。"
+          },
+          {
+            "id": "bull",
+            "label": "乐观",
+            "revenue": 2500,
+            "margin": 0.20656,
+            "shares": 176.60000000000002,
+            "pe": 30,
+            "dividends": 2.445699865798104,
+            "net": 516.4,
+            "price": 87.72366930917326,
+            "priceMultiple": 7.529928696066374,
+            "totalMultiple": 7.739860015019001,
+            "story": "显示驱动1000、其他非驱动350、WiseEye/LCoS350、CPO800百万；CPO营业利润率40%、归母516.4百万、30倍PE，条件很强。 未来五年每ADS现金分红2.4457美元，含分红总倍数7.7399倍（不复投，未扣投资者税费）。"
+          }
+        ],
+        "hurdleCases": [
+          {
+            "label": "基准净利率与25倍PE",
+            "shares": 175.59999999999994,
+            "margin": 0.12585714285714286,
+            "pe": 25
+          },
+          {
+            "label": "乐观净利率与30倍PE",
+            "shares": 176.60000000000002,
+            "margin": 0.20656,
+            "pe": 30
+          },
+          {
+            "label": "乐观终值PE降至22.5倍",
+            "shares": 176.60000000000002,
+            "margin": 0.20656,
+            "pe": 22.5
+          }
+        ],
+        "scenarioNote": "价格为2026-10-16未复权常规收盘11.65美元；股数统一为百万ADS。以下为2031经营条件推演，不是价格预测或已验证订单。营业利润已计所有研发/管理/销售/奖励费用；未来股息单独计算，7月已付股息排除，2031年度利润次年分红排除。",
+        "valuationNote": "十倍门槛不能靠把非驱动全部标成AI、将投资处置重复资本化、漏除现金奖金或忽视融资稀释达成。2031现金未另加到PE终值，分红不复投且未计个人税费/ADS费用/汇率。现金流按年度而非逐季测算，母公司资金可用性与新增产能回报尚未证明；保留观察，未通过十倍重点候选门槛。",
+        "fullFundingModelVerified": false,
+        "funding": {
+          "h2Bridge": {
+            "period": "2026H2假设桥，非实际业绩",
+            "revenue": 500,
+            "parentNet": 45,
+            "da": 12,
+            "sbc": 1,
+            "workingCapital": 15,
+            "capex": 15,
+            "debtPrincipal": 3,
+            "leasePrincipal": 1.1,
+            "paidJulyDividend": 44,
+            "awardAds": 0.2,
+            "cashStart": 271.296,
+            "sharesStart": 174.4,
+            "saleProceeds": 0,
+            "depositRefund": 0,
+            "operatingCash": 43,
+            "cashEnd": 251.19599999999997,
+            "sharesEnd": 174.6,
+            "fy2026Revenue": 926.385,
+            "fy2026ParentNet": 72.868
+          },
+          "openingCash": 251.19599999999997,
+          "openingShares": 174.6,
+          "openingDate": "2026-12-31假设",
+          "minimumCash": 100,
+          "feeRate": 0.03,
+          "annualTaxRate": 0.2,
+          "openingAssumptionsVerified": false,
+          "paths": {
+            "base": {
+              "id": "base",
+              "rows": [
+                {
+                  "year": 2027,
+                  "parts": [
+                    {
+                      "name": "driver",
+                      "revenue": 720,
+                      "operatingMargin": 0.11,
+                      "operating": 79.2
+                    },
+                    {
+                      "name": "other",
+                      "revenue": 210,
+                      "operatingMargin": 0.03,
+                      "operating": 6.3
+                    },
+                    {
+                      "name": "wise",
+                      "revenue": 40,
+                      "operatingMargin": -0.05,
+                      "operating": -2.0
+                    },
+                    {
+                      "name": "cpo",
+                      "revenue": 30,
+                      "operatingMargin": -0.1,
+                      "operating": -3.0
+                    }
+                  ],
+                  "revenue": 1000,
+                  "operating": 80.5,
+                  "pretax": 80.5,
+                  "tax": 16.1,
+                  "nci": 2,
+                  "net": 62.400000000000006,
+                  "da": 26,
+                  "sbc": 2,
+                  "workingCapital": 16.195300000000003,
+                  "taxRepayment": 11,
+                  "operatingCash": 63.2047,
+                  "capex": 35,
+                  "fcf": 28.204700000000003,
+                  "debtPrincipal": 6,
+                  "leasePrincipal": 2.2,
+                  "dividendProfitYear": 2026,
+                  "dividendProfit": 72.868,
+                  "payout": 0.5,
+                  "dividendCash": 36.434,
+                  "dividendShares": 174.79999999999998,
+                  "dividendPerAds": 0.2084324942791762,
+                  "cashBeforeRaise": 234.7667,
+                  "raiseNet": 0,
+                  "raiseGross": 0.0,
+                  "raiseShares": 0.0,
+                  "awardShares": 0.2,
+                  "sharesEnd": 174.79999999999998,
+                  "cashEnd": 234.7667
+                },
+                {
+                  "year": 2028,
+                  "parts": [
+                    {
+                      "name": "driver",
+                      "revenue": 750,
+                      "operatingMargin": 0.12,
+                      "operating": 90.0
+                    },
+                    {
+                      "name": "other",
+                      "revenue": 220,
+                      "operatingMargin": 0.06,
+                      "operating": 13.2
+                    },
+                    {
+                      "name": "wise",
+                      "revenue": 65,
+                      "operatingMargin": 0.02,
+                      "operating": 1.3
+                    },
+                    {
+                      "name": "cpo",
+                      "revenue": 55,
+                      "operatingMargin": 0.1,
+                      "operating": 5.5
+                    }
+                  ],
+                  "revenue": 1090,
+                  "operating": 110.0,
+                  "pretax": 110.0,
+                  "tax": 22.0,
+                  "nci": 2,
+                  "net": 86.0,
+                  "da": 29,
+                  "sbc": 2.5,
+                  "workingCapital": 19.8,
+                  "taxRepayment": 0,
+                  "operatingCash": 97.7,
+                  "capex": 45,
+                  "fcf": 52.7,
+                  "debtPrincipal": 6,
+                  "leasePrincipal": 2.2,
+                  "dividendProfitYear": 2027,
+                  "dividendProfit": 62.400000000000006,
+                  "payout": 0.5,
+                  "dividendCash": 31.200000000000003,
+                  "dividendShares": 174.99999999999997,
+                  "dividendPerAds": 0.17828571428571433,
+                  "cashBeforeRaise": 248.06670000000003,
+                  "raiseNet": 0,
+                  "raiseGross": 0.0,
+                  "raiseShares": 0.0,
+                  "awardShares": 0.2,
+                  "sharesEnd": 174.99999999999997,
+                  "cashEnd": 248.06670000000003
+                },
+                {
+                  "year": 2029,
+                  "parts": [
+                    {
+                      "name": "driver",
+                      "revenue": 780,
+                      "operatingMargin": 0.13,
+                      "operating": 101.4
+                    },
+                    {
+                      "name": "other",
+                      "revenue": 230,
+                      "operatingMargin": 0.08,
+                      "operating": 18.400000000000002
+                    },
+                    {
+                      "name": "wise",
+                      "revenue": 90,
+                      "operatingMargin": 0.08,
+                      "operating": 7.2
+                    },
+                    {
+                      "name": "cpo",
+                      "revenue": 80,
+                      "operatingMargin": 0.2,
+                      "operating": 16.0
+                    }
+                  ],
+                  "revenue": 1180,
+                  "operating": 143.0,
+                  "pretax": 143.0,
+                  "tax": 28.6,
+                  "nci": 2.5,
+                  "net": 111.9,
+                  "da": 32,
+                  "sbc": 3,
+                  "workingCapital": 19.8,
+                  "taxRepayment": 0,
+                  "operatingCash": 127.10000000000001,
+                  "capex": 50,
+                  "fcf": 77.10000000000001,
+                  "debtPrincipal": 6,
+                  "leasePrincipal": 2.2,
+                  "dividendProfitYear": 2028,
+                  "dividendProfit": 86.0,
+                  "payout": 0.5,
+                  "dividendCash": 43.0,
+                  "dividendShares": 175.19999999999996,
+                  "dividendPerAds": 0.24543378995433796,
+                  "cashBeforeRaise": 273.96670000000006,
+                  "raiseNet": 0,
+                  "raiseGross": 0.0,
+                  "raiseShares": 0.0,
+                  "awardShares": 0.2,
+                  "sharesEnd": 175.19999999999996,
+                  "cashEnd": 273.96670000000006
+                },
+                {
+                  "year": 2030,
+                  "parts": [
+                    {
+                      "name": "driver",
+                      "revenue": 815,
+                      "operatingMargin": 0.135,
+                      "operating": 110.025
+                    },
+                    {
+                      "name": "other",
+                      "revenue": 240,
+                      "operatingMargin": 0.1,
+                      "operating": 24.0
+                    },
+                    {
+                      "name": "wise",
+                      "revenue": 120,
+                      "operatingMargin": 0.15,
+                      "operating": 18.0
+                    },
+                    {
+                      "name": "cpo",
+                      "revenue": 115,
+                      "operatingMargin": 0.25,
+                      "operating": 28.75
+                    }
+                  ],
+                  "revenue": 1290,
+                  "operating": 180.775,
+                  "pretax": 180.775,
+                  "tax": 36.155,
+                  "nci": 3,
+                  "net": 141.62,
+                  "da": 35,
+                  "sbc": 3.5,
+                  "workingCapital": 24.2,
+                  "taxRepayment": 0,
+                  "operatingCash": 155.92000000000002,
+                  "capex": 55,
+                  "fcf": 100.92000000000002,
+                  "debtPrincipal": 4.5,
+                  "leasePrincipal": 2.2,
+                  "dividendProfitYear": 2029,
+                  "dividendProfit": 111.9,
+                  "payout": 0.5,
+                  "dividendCash": 55.95,
+                  "dividendShares": 175.39999999999995,
+                  "dividendPerAds": 0.31898517673888266,
+                  "cashBeforeRaise": 312.2367000000001,
+                  "raiseNet": 0,
+                  "raiseGross": 0.0,
+                  "raiseShares": 0.0,
+                  "awardShares": 0.2,
+                  "sharesEnd": 175.39999999999995,
+                  "cashEnd": 312.2367000000001
+                },
+                {
+                  "year": 2031,
+                  "parts": [
+                    {
+                      "name": "driver",
+                      "revenue": 850,
+                      "operatingMargin": 0.14,
+                      "operating": 119.00000000000001
+                    },
+                    {
+                      "name": "other",
+                      "revenue": 250,
+                      "operatingMargin": 0.12,
+                      "operating": 30.0
+                    },
+                    {
+                      "name": "wise",
+                      "revenue": 150,
+                      "operatingMargin": 0.2,
+                      "operating": 30.0
+                    },
+                    {
+                      "name": "cpo",
+                      "revenue": 150,
+                      "operatingMargin": 0.3,
+                      "operating": 45.0
+                    }
+                  ],
+                  "revenue": 1400,
+                  "operating": 224.0,
+                  "pretax": 224.0,
+                  "tax": 44.800000000000004,
+                  "nci": 3,
+                  "net": 176.2,
+                  "da": 38,
+                  "sbc": 4,
+                  "workingCapital": 24.2,
+                  "taxRepayment": 0,
+                  "operatingCash": 194.0,
+                  "capex": 60,
+                  "fcf": 134.0,
+                  "debtPrincipal": 0,
+                  "leasePrincipal": 2.2,
+                  "dividendProfitYear": 2030,
+                  "dividendProfit": 141.62,
+                  "payout": 0.5,
+                  "dividendCash": 70.81,
+                  "dividendShares": 175.59999999999994,
+                  "dividendPerAds": 0.40324601366742613,
+                  "cashBeforeRaise": 373.2267000000001,
+                  "raiseNet": 0,
+                  "raiseGross": 0.0,
+                  "raiseShares": 0.0,
+                  "awardShares": 0.2,
+                  "sharesEnd": 175.59999999999994,
+                  "cashEnd": 373.2267000000001
+                }
+              ],
+              "openingCash": 251.19599999999997,
+              "openingCashHaircut": 0,
+              "workingCapitalRatio": 0.22,
+              "marginReduction": 0,
+              "extraCapex": 0,
+              "issuePrice": 11.65,
+              "payout": 0.5,
+              "netRaise": 0,
+              "grossRaise": 0.0,
+              "financingShares": 0.0,
+              "futureShares": 175.59999999999994,
+              "price": 25.085421412300693,
+              "priceMultiple": 2.153255056849845,
+              "dividends": 1.3543831889255373,
+              "totalMultiple": 2.2695111245687754,
+              "terminalNet": 176.2,
+              "terminalRevenue": 1400,
+              "terminalMargin": 0.12585714285714286,
+              "pe": 25
+            },
+            "bull": {
+              "id": "bull",
+              "rows": [
+                {
+                  "year": 2027,
+                  "parts": [
+                    {
+                      "name": "driver",
+                      "revenue": 750,
+                      "operatingMargin": 0.12,
+                      "operating": 90.0
+                    },
+                    {
+                      "name": "other",
+                      "revenue": 230,
+                      "operatingMargin": 0.06,
+                      "operating": 13.799999999999999
+                    },
+                    {
+                      "name": "wise",
+                      "revenue": 60,
+                      "operatingMargin": 0,
+                      "operating": 0
+                    },
+                    {
+                      "name": "cpo",
+                      "revenue": 60,
+                      "operatingMargin": 0.05,
+                      "operating": 3.0
+                    }
+                  ],
+                  "revenue": 1100,
+                  "operating": 106.8,
+                  "pretax": 106.8,
+                  "tax": 21.36,
+                  "nci": 2,
+                  "net": 83.44,
+                  "da": 28,
+                  "sbc": 3,
+                  "workingCapital": 43.40375,
+                  "taxRepayment": 11,
+                  "operatingCash": 60.036249999999995,
+                  "capex": 65,
+                  "fcf": -4.9637500000000045,
+                  "debtPrincipal": 6,
+                  "leasePrincipal": 2.2,
+                  "dividendProfitYear": 2026,
+                  "dividendProfit": 72.868,
+                  "payout": 0.5,
+                  "dividendCash": 36.434,
+                  "dividendShares": 175.0,
+                  "dividendPerAds": 0.2081942857142857,
+                  "cashBeforeRaise": 201.59824999999998,
+                  "raiseNet": 0,
+                  "raiseGross": 0.0,
+                  "raiseShares": 0.0,
+                  "awardShares": 0.4,
+                  "sharesEnd": 175.0,
+                  "cashEnd": 201.59824999999998
+                },
+                {
+                  "year": 2028,
+                  "parts": [
+                    {
+                      "name": "driver",
+                      "revenue": 800,
+                      "operatingMargin": 0.14,
+                      "operating": 112.00000000000001
+                    },
+                    {
+                      "name": "other",
+                      "revenue": 260,
+                      "operatingMargin": 0.09,
+                      "operating": 23.4
+                    },
+                    {
+                      "name": "wise",
+                      "revenue": 110,
+                      "operatingMargin": 0.1,
+                      "operating": 11.0
+                    },
+                    {
+                      "name": "cpo",
+                      "revenue": 160,
+                      "operatingMargin": 0.15,
+                      "operating": 24.0
+                    }
+                  ],
+                  "revenue": 1330,
+                  "operating": 170.4,
+                  "pretax": 170.4,
+                  "tax": 34.080000000000005,
+                  "nci": 2.5,
+                  "net": 133.82,
+                  "da": 38,
+                  "sbc": 5,
+                  "workingCapital": 57.5,
+                  "taxRepayment": 0,
+                  "operatingCash": 119.32,
+                  "capex": 100,
+                  "fcf": 19.319999999999993,
+                  "debtPrincipal": 6,
+                  "leasePrincipal": 2.2,
+                  "dividendProfitYear": 2027,
+                  "dividendProfit": 83.44,
+                  "payout": 0.5,
+                  "dividendCash": 41.72,
+                  "dividendShares": 175.4,
+                  "dividendPerAds": 0.23785632839224627,
+                  "cashBeforeRaise": 170.99824999999996,
+                  "raiseNet": 0,
+                  "raiseGross": 0.0,
+                  "raiseShares": 0.0,
+                  "awardShares": 0.4,
+                  "sharesEnd": 175.4,
+                  "cashEnd": 170.99824999999996
+                },
+                {
+                  "year": 2029,
+                  "parts": [
+                    {
+                      "name": "driver",
+                      "revenue": 860,
+                      "operatingMargin": 0.155,
+                      "operating": 133.3
+                    },
+                    {
+                      "name": "other",
+                      "revenue": 290,
+                      "operatingMargin": 0.12,
+                      "operating": 34.8
+                    },
+                    {
+                      "name": "wise",
+                      "revenue": 180,
+                      "operatingMargin": 0.18,
+                      "operating": 32.4
+                    },
+                    {
+                      "name": "cpo",
+                      "revenue": 330,
+                      "operatingMargin": 0.25,
+                      "operating": 82.5
+                    }
+                  ],
+                  "revenue": 1660,
+                  "operating": 283.0,
+                  "pretax": 283.0,
+                  "tax": 56.6,
+                  "nci": 3,
+                  "net": 223.4,
+                  "da": 52,
+                  "sbc": 7,
+                  "workingCapital": 82.5,
+                  "taxRepayment": 0,
+                  "operatingCash": 199.89999999999998,
+                  "capex": 130,
+                  "fcf": 69.89999999999998,
+                  "debtPrincipal": 6,
+                  "leasePrincipal": 2.2,
+                  "dividendProfitYear": 2028,
+                  "dividendProfit": 133.82,
+                  "payout": 0.5,
+                  "dividendCash": 66.91,
+                  "dividendShares": 175.8,
+                  "dividendPerAds": 0.3806029579067121,
+                  "cashBeforeRaise": 165.78824999999998,
+                  "raiseNet": 0,
+                  "raiseGross": 0.0,
+                  "raiseShares": 0.0,
+                  "awardShares": 0.4,
+                  "sharesEnd": 175.8,
+                  "cashEnd": 165.78824999999998
+                },
+                {
+                  "year": 2030,
+                  "parts": [
+                    {
+                      "name": "driver",
+                      "revenue": 930,
+                      "operatingMargin": 0.17,
+                      "operating": 158.10000000000002
+                    },
+                    {
+                      "name": "other",
+                      "revenue": 320,
+                      "operatingMargin": 0.15,
+                      "operating": 48.0
+                    },
+                    {
+                      "name": "wise",
+                      "revenue": 260,
+                      "operatingMargin": 0.22,
+                      "operating": 57.2
+                    },
+                    {
+                      "name": "cpo",
+                      "revenue": 550,
+                      "operatingMargin": 0.32,
+                      "operating": 176.0
+                    }
+                  ],
+                  "revenue": 2060,
+                  "operating": 439.3,
+                  "pretax": 439.3,
+                  "tax": 87.86000000000001,
+                  "nci": 3.5,
+                  "net": 347.94,
+                  "da": 70,
+                  "sbc": 9,
+                  "workingCapital": 100.0,
+                  "taxRepayment": 0,
+                  "operatingCash": 326.94,
+                  "capex": 165,
+                  "fcf": 161.94,
+                  "debtPrincipal": 4.5,
+                  "leasePrincipal": 2.2,
+                  "dividendProfitYear": 2029,
+                  "dividendProfit": 223.4,
+                  "payout": 0.5,
+                  "dividendCash": 111.7,
+                  "dividendShares": 176.20000000000002,
+                  "dividendPerAds": 0.633938706015891,
+                  "cashBeforeRaise": 209.32825000000003,
+                  "raiseNet": 0,
+                  "raiseGross": 0.0,
+                  "raiseShares": 0.0,
+                  "awardShares": 0.4,
+                  "sharesEnd": 176.20000000000002,
+                  "cashEnd": 209.32825000000003
+                },
+                {
+                  "year": 2031,
+                  "parts": [
+                    {
+                      "name": "driver",
+                      "revenue": 1000,
+                      "operatingMargin": 0.18,
+                      "operating": 180.0
+                    },
+                    {
+                      "name": "other",
+                      "revenue": 350,
+                      "operatingMargin": 0.18,
+                      "operating": 63.0
+                    },
+                    {
+                      "name": "wise",
+                      "revenue": 350,
+                      "operatingMargin": 0.25,
+                      "operating": 87.5
+                    },
+                    {
+                      "name": "cpo",
+                      "revenue": 800,
+                      "operatingMargin": 0.4,
+                      "operating": 320.0
+                    }
+                  ],
+                  "revenue": 2500,
+                  "operating": 650.5,
+                  "pretax": 650.5,
+                  "tax": 130.1,
+                  "nci": 4,
+                  "net": 516.4,
+                  "da": 90,
+                  "sbc": 12,
+                  "workingCapital": 110.0,
+                  "taxRepayment": 0,
+                  "operatingCash": 508.4,
+                  "capex": 200,
+                  "fcf": 308.4,
+                  "debtPrincipal": 0,
+                  "leasePrincipal": 2.2,
+                  "dividendProfitYear": 2030,
+                  "dividendProfit": 347.94,
+                  "payout": 0.5,
+                  "dividendCash": 173.97,
+                  "dividendShares": 176.60000000000002,
+                  "dividendPerAds": 0.9851075877689693,
+                  "cashBeforeRaise": 341.55824999999993,
+                  "raiseNet": 0,
+                  "raiseGross": 0.0,
+                  "raiseShares": 0.0,
+                  "awardShares": 0.4,
+                  "sharesEnd": 176.60000000000002,
+                  "cashEnd": 341.55824999999993
+                }
+              ],
+              "openingCash": 251.19599999999997,
+              "openingCashHaircut": 0,
+              "workingCapitalRatio": 0.25,
+              "marginReduction": 0,
+              "extraCapex": 0,
+              "issuePrice": 11.65,
+              "payout": 0.5,
+              "netRaise": 0,
+              "grossRaise": 0.0,
+              "financingShares": 0.0,
+              "futureShares": 176.60000000000002,
+              "price": 87.72366930917326,
+              "priceMultiple": 7.529928696066374,
+              "dividends": 2.445699865798104,
+              "totalMultiple": 7.739860015019001,
+              "terminalNet": 516.4,
+              "terminalRevenue": 2500,
+              "terminalMargin": 0.20656,
+              "pe": 30
+            },
+            "bear": {
+              "id": "bear",
+              "rows": [
+                {
+                  "year": 2027,
+                  "parts": [
+                    {
+                      "name": "driver",
+                      "revenue": 680,
+                      "operatingMargin": 0.075,
+                      "operating": 51.0
+                    },
+                    {
+                      "name": "other",
+                      "revenue": 190,
+                      "operatingMargin": -0.03,
+                      "operating": -5.7
+                    },
+                    {
+                      "name": "wise",
+                      "revenue": 20,
+                      "operatingMargin": -0.2,
+                      "operating": -4.0
+                    },
+                    {
+                      "name": "cpo",
+                      "revenue": 5,
+                      "operatingMargin": -0.5,
+                      "operating": -2.5
+                    }
+                  ],
+                  "revenue": 895,
+                  "operating": 38.8,
+                  "pretax": 38.8,
+                  "tax": 7.76,
+                  "nci": 2,
+                  "net": 29.04,
+                  "da": 25,
+                  "sbc": 2,
+                  "workingCapital": 0.0,
+                  "taxRepayment": 11,
+                  "operatingCash": 45.04,
+                  "capex": 30,
+                  "fcf": 15.04,
+                  "debtPrincipal": 6,
+                  "leasePrincipal": 2.2,
+                  "dividendProfitYear": 2026,
+                  "dividendProfit": 72.868,
+                  "payout": 0,
+                  "dividendCash": 0.0,
+                  "dividendShares": 174.79999999999998,
+                  "dividendPerAds": 0.0,
+                  "cashBeforeRaise": 258.036,
+                  "raiseNet": 0,
+                  "raiseGross": 0.0,
+                  "raiseShares": 0.0,
+                  "awardShares": 0.2,
+                  "sharesEnd": 174.79999999999998,
+                  "cashEnd": 258.036
+                },
+                {
+                  "year": 2028,
+                  "parts": [
+                    {
+                      "name": "driver",
+                      "revenue": 650,
+                      "operatingMargin": 0.065,
+                      "operating": 42.25
+                    },
+                    {
+                      "name": "other",
+                      "revenue": 185,
+                      "operatingMargin": -0.03,
+                      "operating": -5.55
+                    },
+                    {
+                      "name": "wise",
+                      "revenue": 23,
+                      "operatingMargin": -0.17,
+                      "operating": -3.91
+                    },
+                    {
+                      "name": "cpo",
+                      "revenue": 8,
+                      "operatingMargin": -0.4,
+                      "operating": -3.2
+                    }
+                  ],
+                  "revenue": 866,
+                  "operating": 29.590000000000007,
+                  "pretax": 29.590000000000007,
+                  "tax": 5.918000000000002,
+                  "nci": 2,
+                  "net": 21.672000000000004,
+                  "da": 24,
+                  "sbc": 2,
+                  "workingCapital": 0.0,
+                  "taxRepayment": 0,
+                  "operatingCash": 47.672000000000004,
+                  "capex": 30,
+                  "fcf": 17.672000000000004,
+                  "debtPrincipal": 6,
+                  "leasePrincipal": 2.2,
+                  "dividendProfitYear": 2027,
+                  "dividendProfit": 29.04,
+                  "payout": 0,
+                  "dividendCash": 0.0,
+                  "dividendShares": 174.99999999999997,
+                  "dividendPerAds": 0.0,
+                  "cashBeforeRaise": 267.50800000000004,
+                  "raiseNet": 0,
+                  "raiseGross": 0.0,
+                  "raiseShares": 0.0,
+                  "awardShares": 0.2,
+                  "sharesEnd": 174.99999999999997,
+                  "cashEnd": 267.50800000000004
+                },
+                {
+                  "year": 2029,
+                  "parts": [
+                    {
+                      "name": "driver",
+                      "revenue": 630,
+                      "operatingMargin": 0.06,
+                      "operating": 37.8
+                    },
+                    {
+                      "name": "other",
+                      "revenue": 180,
+                      "operatingMargin": -0.03,
+                      "operating": -5.3999999999999995
+                    },
+                    {
+                      "name": "wise",
+                      "revenue": 27,
+                      "operatingMargin": -0.15,
+                      "operating": -4.05
+                    },
+                    {
+                      "name": "cpo",
+                      "revenue": 12,
+                      "operatingMargin": -0.3,
+                      "operating": -3.5999999999999996
+                    }
+                  ],
+                  "revenue": 849,
+                  "operating": 24.75,
+                  "pretax": 24.75,
+                  "tax": 4.95,
+                  "nci": 2,
+                  "net": 17.8,
+                  "da": 23,
+                  "sbc": 2,
+                  "workingCapital": 0.0,
+                  "taxRepayment": 0,
+                  "operatingCash": 42.8,
+                  "capex": 30,
+                  "fcf": 12.799999999999997,
+                  "debtPrincipal": 6,
+                  "leasePrincipal": 2.2,
+                  "dividendProfitYear": 2028,
+                  "dividendProfit": 21.672000000000004,
+                  "payout": 0,
+                  "dividendCash": 0.0,
+                  "dividendShares": 175.19999999999996,
+                  "dividendPerAds": 0.0,
+                  "cashBeforeRaise": 272.10800000000006,
+                  "raiseNet": 0,
+                  "raiseGross": 0.0,
+                  "raiseShares": 0.0,
+                  "awardShares": 0.2,
+                  "sharesEnd": 175.19999999999996,
+                  "cashEnd": 272.10800000000006
+                },
+                {
+                  "year": 2030,
+                  "parts": [
+                    {
+                      "name": "driver",
+                      "revenue": 615,
+                      "operatingMargin": 0.055,
+                      "operating": 33.825
+                    },
+                    {
+                      "name": "other",
+                      "revenue": 180,
+                      "operatingMargin": -0.03,
+                      "operating": -5.3999999999999995
+                    },
+                    {
+                      "name": "wise",
+                      "revenue": 31,
+                      "operatingMargin": -0.12,
+                      "operating": -3.7199999999999998
+                    },
+                    {
+                      "name": "cpo",
+                      "revenue": 16,
+                      "operatingMargin": -0.25,
+                      "operating": -4.0
+                    }
+                  ],
+                  "revenue": 842,
+                  "operating": 20.705000000000005,
+                  "pretax": 20.705000000000005,
+                  "tax": 4.141000000000001,
+                  "nci": 2,
+                  "net": 14.564000000000004,
+                  "da": 22,
+                  "sbc": 2,
+                  "workingCapital": 0.0,
+                  "taxRepayment": 0,
+                  "operatingCash": 38.56400000000001,
+                  "capex": 30,
+                  "fcf": 8.564000000000007,
+                  "debtPrincipal": 4.5,
+                  "leasePrincipal": 2.2,
+                  "dividendProfitYear": 2029,
+                  "dividendProfit": 17.8,
+                  "payout": 0,
+                  "dividendCash": 0.0,
+                  "dividendShares": 175.39999999999995,
+                  "dividendPerAds": 0.0,
+                  "cashBeforeRaise": 273.9720000000001,
+                  "raiseNet": 0,
+                  "raiseGross": 0.0,
+                  "raiseShares": 0.0,
+                  "awardShares": 0.2,
+                  "sharesEnd": 175.39999999999995,
+                  "cashEnd": 273.9720000000001
+                },
+                {
+                  "year": 2031,
+                  "parts": [
+                    {
+                      "name": "driver",
+                      "revenue": 600,
+                      "operatingMargin": 0.05,
+                      "operating": 30.0
+                    },
+                    {
+                      "name": "other",
+                      "revenue": 180,
+                      "operatingMargin": -0.03,
+                      "operating": -5.3999999999999995
+                    },
+                    {
+                      "name": "wise",
+                      "revenue": 35,
+                      "operatingMargin": -0.1,
+                      "operating": -3.5
+                    },
+                    {
+                      "name": "cpo",
+                      "revenue": 20,
+                      "operatingMargin": -0.2,
+                      "operating": -4.0
+                    }
+                  ],
+                  "revenue": 835,
+                  "operating": 17.1,
+                  "pretax": 17.1,
+                  "tax": 3.4200000000000004,
+                  "nci": 2,
+                  "net": 11.680000000000001,
+                  "da": 22,
+                  "sbc": 2,
+                  "workingCapital": 0.0,
+                  "taxRepayment": 0,
+                  "operatingCash": 35.68,
+                  "capex": 30,
+                  "fcf": 5.68,
+                  "debtPrincipal": 0,
+                  "leasePrincipal": 2.2,
+                  "dividendProfitYear": 2030,
+                  "dividendProfit": 14.564000000000004,
+                  "payout": 0,
+                  "dividendCash": 0.0,
+                  "dividendShares": 175.59999999999994,
+                  "dividendPerAds": 0.0,
+                  "cashBeforeRaise": 277.4520000000001,
+                  "raiseNet": 0,
+                  "raiseGross": 0.0,
+                  "raiseShares": 0.0,
+                  "awardShares": 0.2,
+                  "sharesEnd": 175.59999999999994,
+                  "cashEnd": 277.4520000000001
+                }
+              ],
+              "openingCash": 251.19599999999997,
+              "openingCashHaircut": 0,
+              "workingCapitalRatio": 0.25,
+              "marginReduction": 0,
+              "extraCapex": 0,
+              "issuePrice": 11.65,
+              "payout": 0,
+              "netRaise": 0,
+              "grossRaise": 0.0,
+              "financingShares": 0.0,
+              "futureShares": 175.59999999999994,
+              "price": 1.1972665148063788,
+              "priceMultiple": 0.10276965792329432,
+              "dividends": 0.0,
+              "totalMultiple": 0.10276965792329432,
+              "terminalNet": 11.680000000000001,
+              "terminalRevenue": 835,
+              "terminalMargin": 0.01398802395209581,
+              "pe": 18
+            }
+          },
+          "stress": {
+            "id": "bull",
+            "rows": [
+              {
+                "year": 2027,
+                "parts": [
+                  {
+                    "name": "driver",
+                    "revenue": 750,
+                    "operatingMargin": 0.06999999999999999,
+                    "operating": 52.49999999999999
+                  },
+                  {
+                    "name": "other",
+                    "revenue": 230,
+                    "operatingMargin": 0.009999999999999995,
+                    "operating": 2.299999999999999
+                  },
+                  {
+                    "name": "wise",
+                    "revenue": 60,
+                    "operatingMargin": -0.05,
+                    "operating": -3.0
+                  },
+                  {
+                    "name": "cpo",
+                    "revenue": 60,
+                    "operatingMargin": 0.0,
+                    "operating": 0.0
+                  }
+                ],
+                "revenue": 1100,
+                "operating": 51.79999999999999,
+                "pretax": 51.79999999999999,
+                "tax": 10.36,
+                "nci": 2,
+                "net": 39.43999999999999,
+                "da": 28,
+                "sbc": 3,
+                "workingCapital": 60.76525,
+                "taxRepayment": 11,
+                "operatingCash": -1.325250000000004,
+                "capex": 125,
+                "fcf": -126.32525000000001,
+                "debtPrincipal": 6,
+                "leasePrincipal": 2.2,
+                "dividendProfitYear": 2026,
+                "dividendProfit": 72.868,
+                "payout": 0.5,
+                "dividendCash": 36.434,
+                "dividendShares": 175.0,
+                "dividendPerAds": 0.2081942857142857,
+                "cashBeforeRaise": 5.236749999999958,
+                "raiseNet": 94.76325000000004,
+                "raiseGross": 97.6940721649485,
+                "raiseShares": 16.28234536082475,
+                "awardShares": 0.4,
+                "sharesEnd": 191.28234536082476,
+                "cashEnd": 100.0
+              },
+              {
+                "year": 2028,
+                "parts": [
+                  {
+                    "name": "driver",
+                    "revenue": 800,
+                    "operatingMargin": 0.09000000000000001,
+                    "operating": 72.00000000000001
+                  },
+                  {
+                    "name": "other",
+                    "revenue": 260,
+                    "operatingMargin": 0.039999999999999994,
+                    "operating": 10.399999999999999
+                  },
+                  {
+                    "name": "wise",
+                    "revenue": 110,
+                    "operatingMargin": 0.05,
+                    "operating": 5.5
+                  },
+                  {
+                    "name": "cpo",
+                    "revenue": 160,
+                    "operatingMargin": 0.09999999999999999,
+                    "operating": 15.999999999999998
+                  }
+                ],
+                "revenue": 1330,
+                "operating": 103.9,
+                "pretax": 103.9,
+                "tax": 20.78,
+                "nci": 2.5,
+                "net": 80.62,
+                "da": 38,
+                "sbc": 5,
+                "workingCapital": 80.5,
+                "taxRepayment": 0,
+                "operatingCash": 43.120000000000005,
+                "capex": 160,
+                "fcf": -116.88,
+                "debtPrincipal": 6,
+                "leasePrincipal": 2.2,
+                "dividendProfitYear": 2027,
+                "dividendProfit": 39.43999999999999,
+                "payout": 0.5,
+                "dividendCash": 19.719999999999995,
+                "dividendShares": 191.68234536082477,
+                "dividendPerAds": 0.10287854086342103,
+                "cashBeforeRaise": -44.79999999999999,
+                "raiseNet": 144.79999999999998,
+                "raiseGross": 149.2783505154639,
+                "raiseShares": 24.87972508591065,
+                "awardShares": 0.4,
+                "sharesEnd": 216.56207044673542,
+                "cashEnd": 100.0
+              },
+              {
+                "year": 2029,
+                "parts": [
+                  {
+                    "name": "driver",
+                    "revenue": 860,
+                    "operatingMargin": 0.105,
+                    "operating": 90.3
+                  },
+                  {
+                    "name": "other",
+                    "revenue": 290,
+                    "operatingMargin": 0.06999999999999999,
+                    "operating": 20.299999999999997
+                  },
+                  {
+                    "name": "wise",
+                    "revenue": 180,
+                    "operatingMargin": 0.13,
+                    "operating": 23.400000000000002
+                  },
+                  {
+                    "name": "cpo",
+                    "revenue": 330,
+                    "operatingMargin": 0.2,
+                    "operating": 66.0
+                  }
+                ],
+                "revenue": 1660,
+                "operating": 200.0,
+                "pretax": 200.0,
+                "tax": 40.0,
+                "nci": 3,
+                "net": 157.0,
+                "da": 52,
+                "sbc": 7,
+                "workingCapital": 115.49999999999999,
+                "taxRepayment": 0,
+                "operatingCash": 100.50000000000001,
+                "capex": 190,
+                "fcf": -89.49999999999999,
+                "debtPrincipal": 6,
+                "leasePrincipal": 2.2,
+                "dividendProfitYear": 2028,
+                "dividendProfit": 80.62,
+                "payout": 0.5,
+                "dividendCash": 40.31,
+                "dividendShares": 216.96207044673542,
+                "dividendPerAds": 0.18579284350024758,
+                "cashBeforeRaise": -38.010000000000005,
+                "raiseNet": 138.01,
+                "raiseGross": 142.2783505154639,
+                "raiseShares": 23.713058419243982,
+                "awardShares": 0.4,
+                "sharesEnd": 240.67512886597942,
+                "cashEnd": 99.99999999999999
+              },
+              {
+                "year": 2030,
+                "parts": [
+                  {
+                    "name": "driver",
+                    "revenue": 930,
+                    "operatingMargin": 0.12000000000000001,
+                    "operating": 111.60000000000001
+                  },
+                  {
+                    "name": "other",
+                    "revenue": 320,
+                    "operatingMargin": 0.09999999999999999,
+                    "operating": 31.999999999999996
+                  },
+                  {
+                    "name": "wise",
+                    "revenue": 260,
+                    "operatingMargin": 0.16999999999999998,
+                    "operating": 44.199999999999996
+                  },
+                  {
+                    "name": "cpo",
+                    "revenue": 550,
+                    "operatingMargin": 0.27,
+                    "operating": 148.5
+                  }
+                ],
+                "revenue": 2060,
+                "operating": 336.29999999999995,
+                "pretax": 336.29999999999995,
+                "tax": 67.25999999999999,
+                "nci": 3.5,
+                "net": 265.53999999999996,
+                "da": 70,
+                "sbc": 9,
+                "workingCapital": 140.0,
+                "taxRepayment": 0,
+                "operatingCash": 204.53999999999996,
+                "capex": 225,
+                "fcf": -20.460000000000036,
+                "debtPrincipal": 4.5,
+                "leasePrincipal": 2.2,
+                "dividendProfitYear": 2029,
+                "dividendProfit": 157.0,
+                "payout": 0.5,
+                "dividendCash": 78.5,
+                "dividendShares": 241.07512886597942,
+                "dividendPerAds": 0.32562463149668336,
+                "cashBeforeRaise": -5.660000000000039,
+                "raiseNet": 105.66000000000004,
+                "raiseGross": 108.92783505154644,
+                "raiseShares": 18.15463917525774,
+                "awardShares": 0.4,
+                "sharesEnd": 259.22976804123715,
+                "cashEnd": 100.0
+              },
+              {
+                "year": 2031,
+                "parts": [
+                  {
+                    "name": "driver",
+                    "revenue": 1000,
+                    "operatingMargin": 0.13,
+                    "operating": 130.0
+                  },
+                  {
+                    "name": "other",
+                    "revenue": 350,
+                    "operatingMargin": 0.13,
+                    "operating": 45.5
+                  },
+                  {
+                    "name": "wise",
+                    "revenue": 350,
+                    "operatingMargin": 0.2,
+                    "operating": 70.0
+                  },
+                  {
+                    "name": "cpo",
+                    "revenue": 800,
+                    "operatingMargin": 0.35000000000000003,
+                    "operating": 280.0
+                  }
+                ],
+                "revenue": 2500,
+                "operating": 525.5,
+                "pretax": 525.5,
+                "tax": 105.10000000000001,
+                "nci": 4,
+                "net": 416.4,
+                "da": 90,
+                "sbc": 12,
+                "workingCapital": 154.0,
+                "taxRepayment": 0,
+                "operatingCash": 364.4,
+                "capex": 260,
+                "fcf": 104.39999999999998,
+                "debtPrincipal": 0,
+                "leasePrincipal": 2.2,
+                "dividendProfitYear": 2030,
+                "dividendProfit": 265.53999999999996,
+                "payout": 0.5,
+                "dividendCash": 132.76999999999998,
+                "dividendShares": 259.6297680412371,
+                "dividendPerAds": 0.5113820383605321,
+                "cashBeforeRaise": 69.43,
+                "raiseNet": 30.569999999999993,
+                "raiseGross": 31.515463917525768,
+                "raiseShares": 5.252577319587628,
+                "awardShares": 0.4,
+                "sharesEnd": 264.88234536082473,
+                "cashEnd": 100.0
+              }
+            ],
+            "openingCash": 176.19599999999997,
+            "openingCashHaircut": 75,
+            "workingCapitalRatio": 0.35,
+            "marginReduction": 0.05,
+            "extraCapex": 60,
+            "issuePrice": 6,
+            "payout": 0.5,
+            "netRaise": 513.80325,
+            "grossRaise": 529.6940721649485,
+            "financingShares": 88.28234536082475,
+            "futureShares": 264.88234536082473,
+            "price": 47.16056097654717,
+            "priceMultiple": 4.048116822021216,
+            "dividends": 1.3338723399351697,
+            "totalMultiple": 4.162612301843978,
+            "terminalNet": 416.4,
+            "terminalRevenue": 2500,
+            "terminalMargin": 0.16655999999999999,
+            "pe": 30
+          },
+          "stressNoDividend": {
+            "id": "bull",
+            "rows": [
+              {
+                "year": 2027,
+                "parts": [
+                  {
+                    "name": "driver",
+                    "revenue": 750,
+                    "operatingMargin": 0.06999999999999999,
+                    "operating": 52.49999999999999
+                  },
+                  {
+                    "name": "other",
+                    "revenue": 230,
+                    "operatingMargin": 0.009999999999999995,
+                    "operating": 2.299999999999999
+                  },
+                  {
+                    "name": "wise",
+                    "revenue": 60,
+                    "operatingMargin": -0.05,
+                    "operating": -3.0
+                  },
+                  {
+                    "name": "cpo",
+                    "revenue": 60,
+                    "operatingMargin": 0.0,
+                    "operating": 0.0
+                  }
+                ],
+                "revenue": 1100,
+                "operating": 51.79999999999999,
+                "pretax": 51.79999999999999,
+                "tax": 10.36,
+                "nci": 2,
+                "net": 39.43999999999999,
+                "da": 28,
+                "sbc": 3,
+                "workingCapital": 60.76525,
+                "taxRepayment": 11,
+                "operatingCash": -1.325250000000004,
+                "capex": 125,
+                "fcf": -126.32525000000001,
+                "debtPrincipal": 6,
+                "leasePrincipal": 2.2,
+                "dividendProfitYear": 2026,
+                "dividendProfit": 72.868,
+                "payout": 0,
+                "dividendCash": 0.0,
+                "dividendShares": 175.0,
+                "dividendPerAds": 0.0,
+                "cashBeforeRaise": 41.670749999999956,
+                "raiseNet": 58.329250000000044,
+                "raiseGross": 60.13324742268046,
+                "raiseShares": 10.022207903780076,
+                "awardShares": 0.4,
+                "sharesEnd": 185.02220790378007,
+                "cashEnd": 100.0
+              },
+              {
+                "year": 2028,
+                "parts": [
+                  {
+                    "name": "driver",
+                    "revenue": 800,
+                    "operatingMargin": 0.09000000000000001,
+                    "operating": 72.00000000000001
+                  },
+                  {
+                    "name": "other",
+                    "revenue": 260,
+                    "operatingMargin": 0.039999999999999994,
+                    "operating": 10.399999999999999
+                  },
+                  {
+                    "name": "wise",
+                    "revenue": 110,
+                    "operatingMargin": 0.05,
+                    "operating": 5.5
+                  },
+                  {
+                    "name": "cpo",
+                    "revenue": 160,
+                    "operatingMargin": 0.09999999999999999,
+                    "operating": 15.999999999999998
+                  }
+                ],
+                "revenue": 1330,
+                "operating": 103.9,
+                "pretax": 103.9,
+                "tax": 20.78,
+                "nci": 2.5,
+                "net": 80.62,
+                "da": 38,
+                "sbc": 5,
+                "workingCapital": 80.5,
+                "taxRepayment": 0,
+                "operatingCash": 43.120000000000005,
+                "capex": 160,
+                "fcf": -116.88,
+                "debtPrincipal": 6,
+                "leasePrincipal": 2.2,
+                "dividendProfitYear": 2027,
+                "dividendProfit": 39.43999999999999,
+                "payout": 0,
+                "dividendCash": 0.0,
+                "dividendShares": 185.42220790378008,
+                "dividendPerAds": 0.0,
+                "cashBeforeRaise": -25.079999999999995,
+                "raiseNet": 125.08,
+                "raiseGross": 128.94845360824743,
+                "raiseShares": 21.491408934707906,
+                "awardShares": 0.4,
+                "sharesEnd": 206.913616838488,
+                "cashEnd": 100.0
+              },
+              {
+                "year": 2029,
+                "parts": [
+                  {
+                    "name": "driver",
+                    "revenue": 860,
+                    "operatingMargin": 0.105,
+                    "operating": 90.3
+                  },
+                  {
+                    "name": "other",
+                    "revenue": 290,
+                    "operatingMargin": 0.06999999999999999,
+                    "operating": 20.299999999999997
+                  },
+                  {
+                    "name": "wise",
+                    "revenue": 180,
+                    "operatingMargin": 0.13,
+                    "operating": 23.400000000000002
+                  },
+                  {
+                    "name": "cpo",
+                    "revenue": 330,
+                    "operatingMargin": 0.2,
+                    "operating": 66.0
+                  }
+                ],
+                "revenue": 1660,
+                "operating": 200.0,
+                "pretax": 200.0,
+                "tax": 40.0,
+                "nci": 3,
+                "net": 157.0,
+                "da": 52,
+                "sbc": 7,
+                "workingCapital": 115.49999999999999,
+                "taxRepayment": 0,
+                "operatingCash": 100.50000000000001,
+                "capex": 190,
+                "fcf": -89.49999999999999,
+                "debtPrincipal": 6,
+                "leasePrincipal": 2.2,
+                "dividendProfitYear": 2028,
+                "dividendProfit": 80.62,
+                "payout": 0,
+                "dividendCash": 0.0,
+                "dividendShares": 207.313616838488,
+                "dividendPerAds": 0.0,
+                "cashBeforeRaise": 2.3,
+                "raiseNet": 97.7,
+                "raiseGross": 100.72164948453609,
+                "raiseShares": 16.786941580756015,
+                "awardShares": 0.4,
+                "sharesEnd": 224.100558419244,
+                "cashEnd": 100.0
+              },
+              {
+                "year": 2030,
+                "parts": [
+                  {
+                    "name": "driver",
+                    "revenue": 930,
+                    "operatingMargin": 0.12000000000000001,
+                    "operating": 111.60000000000001
+                  },
+                  {
+                    "name": "other",
+                    "revenue": 320,
+                    "operatingMargin": 0.09999999999999999,
+                    "operating": 31.999999999999996
+                  },
+                  {
+                    "name": "wise",
+                    "revenue": 260,
+                    "operatingMargin": 0.16999999999999998,
+                    "operating": 44.199999999999996
+                  },
+                  {
+                    "name": "cpo",
+                    "revenue": 550,
+                    "operatingMargin": 0.27,
+                    "operating": 148.5
+                  }
+                ],
+                "revenue": 2060,
+                "operating": 336.29999999999995,
+                "pretax": 336.29999999999995,
+                "tax": 67.25999999999999,
+                "nci": 3.5,
+                "net": 265.53999999999996,
+                "da": 70,
+                "sbc": 9,
+                "workingCapital": 140.0,
+                "taxRepayment": 0,
+                "operatingCash": 204.53999999999996,
+                "capex": 225,
+                "fcf": -20.460000000000036,
+                "debtPrincipal": 4.5,
+                "leasePrincipal": 2.2,
+                "dividendProfitYear": 2029,
+                "dividendProfit": 157.0,
+                "payout": 0,
+                "dividendCash": 0.0,
+                "dividendShares": 224.50055841924402,
+                "dividendPerAds": 0.0,
+                "cashBeforeRaise": 72.83999999999996,
+                "raiseNet": 27.16000000000004,
+                "raiseGross": 28.000000000000043,
+                "raiseShares": 4.666666666666674,
+                "awardShares": 0.4,
+                "sharesEnd": 229.1672250859107,
+                "cashEnd": 100.0
+              },
+              {
+                "year": 2031,
+                "parts": [
+                  {
+                    "name": "driver",
+                    "revenue": 1000,
+                    "operatingMargin": 0.13,
+                    "operating": 130.0
+                  },
+                  {
+                    "name": "other",
+                    "revenue": 350,
+                    "operatingMargin": 0.13,
+                    "operating": 45.5
+                  },
+                  {
+                    "name": "wise",
+                    "revenue": 350,
+                    "operatingMargin": 0.2,
+                    "operating": 70.0
+                  },
+                  {
+                    "name": "cpo",
+                    "revenue": 800,
+                    "operatingMargin": 0.35000000000000003,
+                    "operating": 280.0
+                  }
+                ],
+                "revenue": 2500,
+                "operating": 525.5,
+                "pretax": 525.5,
+                "tax": 105.10000000000001,
+                "nci": 4,
+                "net": 416.4,
+                "da": 90,
+                "sbc": 12,
+                "workingCapital": 154.0,
+                "taxRepayment": 0,
+                "operatingCash": 364.4,
+                "capex": 260,
+                "fcf": 104.39999999999998,
+                "debtPrincipal": 0,
+                "leasePrincipal": 2.2,
+                "dividendProfitYear": 2030,
+                "dividendProfit": 265.53999999999996,
+                "payout": 0,
+                "dividendCash": 0.0,
+                "dividendShares": 229.5672250859107,
+                "dividendPerAds": 0.0,
+                "cashBeforeRaise": 202.2,
+                "raiseNet": 0,
+                "raiseGross": 0.0,
+                "raiseShares": 0.0,
+                "awardShares": 0.4,
+                "sharesEnd": 229.5672250859107,
+                "cashEnd": 202.2
+              }
+            ],
+            "openingCash": 176.19599999999997,
+            "openingCashHaircut": 75,
+            "workingCapitalRatio": 0.35,
+            "marginReduction": 0.05,
+            "extraCapex": 60,
+            "issuePrice": 6,
+            "payout": 0,
+            "netRaise": 308.26925000000006,
+            "grossRaise": 317.80335051546405,
+            "financingShares": 52.96722508591067,
+            "futureShares": 229.5672250859107,
+            "price": 54.415433193153476,
+            "priceMultiple": 4.670852634605448,
+            "dividends": 0.0,
+            "totalMultiple": 4.670852634605448,
+            "terminalNet": 416.4,
+            "terminalRevenue": 2500,
+            "terminalMargin": 0.16655999999999999,
+            "pe": 30
+          },
+          "conditionalTenfoldCpo": {
+            "targetPrice": 116.5,
+            "shares": 176.60000000000002,
+            "pe": 30,
+            "parentNetRequired": 685.7966666666667,
+            "cpoOperatingMargin": 0.4,
+            "revenueRequired": 1329.3645833333335,
+            "additionalRevenue": 529.3645833333335,
+            "extraFundingModeled": false
+          }
+        },
+        "sourceLimitations": [
+          "公司仅披露两大分部，未披露CPO、WiseEye、LCoS独立量价利润。",
+          "9月四份Form 4只覆盖CEO/CFO，不能证明10月完整总股本或全年奖金总额。",
+          "按现有公告目录未见交割证据，不能据此断言交易尚未发生。",
+          "未来分红/融资/现金可用性及费用分配是假设；缺逐季资金峰值和CPO设备付款合同。"
+        ]
+      }
     }
   ],
   "remainingWork": [
@@ -26303,7 +29340,7 @@
     "鼎龙股份：已核对H1现金、并购剥离和9月底股本/转债/回购，并加入10月9日前三季度业绩预告。光刻胶小规模收入已有预告，尚缺其利润、先进封装独立收入、正式Q3现金、皓飞盈利现金及期权全体滚动。",
     "Redwire：已完成并购备考、订单滚动、现金与普通股损益桥、PSU最高条款及年度融资压力。下一份Q3披露补逐单回款、全体股本/ATM与9月权证结算；分部调整后EBITDA表间0.380百万差额和内控整改仍待解释，不再重复已完成的基线研究。",
     "金海通：已完成H1现金桥、设备量价、产能搬迁、员工持股与拟发转债研究，并纳入10月17日初步净利。仍缺正式Q3收入/现金、同龄回款与Demo转单、新品独立毛利、天津实际结项及新厂爬坡、最终转债发行条款和10月股本；债务不转股时的偿付预算也须按最终条款补全。",
-    "跨市场扩展：六家完整候选与十八家比较公司仍非穷尽覆盖。继续寻找能以产品量价、现金回收和可承受稀释解释五年成长的公司，不为凑十倍抬终值PE。",
+    "跨市场扩展：六家完整候选与十九家比较公司仍非穷尽覆盖。继续寻找能以产品量价、现金回收和可承受稀释解释五年成长的公司，不为凑十倍抬终值PE。",
     "Cohu：已完成H1利润现金、订单阶段、非系统/订阅区别、投资到期、现金偿付转债、PSU最高及封顶对冲模型。仍缺正式Q3现金、7–9月转换/对冲实际结算和全部股本滚动、同批订单验收回款、HPC量价毛利/产能及软件实际付费/留存分母；不再重复已完成的基线研究。",
     "海泰新光：已完成半年财务、产品/客户、IPO用途限制、维修披露差异、奖励库存股与融资模型。仍缺正式Q3现金、10月专款/借款/全部股份滚动、维修近30%口径解释、光器件良率毛利与实际回款、自主品牌同口径盈利和试用转单；以这些新证据更新，不重复基线研究。",
     "GCT：已完成有机/并购口径、季度与LTM现金、平台代收款边界、收购跨期付款、回购和奖励预算。仍缺正式Q3平台款项拆分及同批收款、10月全体股本、New Classic独立净利/整合现金、欧洲物流毛利及复购留存；以新披露更新，不重复基线研究。",
@@ -26314,6 +29351,7 @@
     "CEVA：已完成2024–2026H1/LTM、版税组合、现金与金融资产期限、2025增发及奖励、管理层指引和经营估值；仍缺具体NPU量产/费率、分合同回款、全体奖励最高结果和收购后的五年资本回报。仅以这些新证据更新，当前为比较观察，不重复历史基线。",
     "Arteris：已完成H1/LTM、不可取消RPO、收购服务、ATM现金与股数、奖励和资金压力。仍缺Cycuity独立毛利/有机增长、客户年度计费量与费率、CFO实际授予与未来完整股本、或有对价现金/股票分配及逐年经营现金联动；有具名新披露时再更新。",
     "炬光科技：已完成2025/H1报表、分部与法人差异、减值税项、IPO专款、拟定增和10月激励研究。仍缺光通信独立毛利/许可金额/批量回款、非汽车GPF转盈、可复算单位产能回报、实际定增到账及归属登记、2024普通计划单独调整与五年完整资金预算。仅凭这些新增证据更新，不重复已完成基线。",
-    "AOSL：已完成FY2024–FY2026、先进计算口径、合资出售与现金、9月普通股及奖励、年度资金压力研究。仍缺先进计算独立毛利/量价及实际Q1占比、同批回款、上海封测恢复现金、供应商贷款条款、10月全体奖励及季度资金峰值。取得这些新增证据再更新，当前保留比较观察。"
+    "AOSL：已完成FY2024–FY2026、先进计算口径、合资出售与现金、9月普通股及奖励、年度资金压力研究。仍缺先进计算独立毛利/量价及实际Q1占比、同批回款、上海封测恢复现金、供应商贷款条款、10月全体奖励及季度资金峰值。取得这些新增证据再更新，当前保留比较观察。",
+    "HIMX：已完成2025/H1/LTM、分部利润、千问采用/CPO工程阶段、现金与保证金、9月四份奖励申报及资金分红情景。仍缺CPO量价/良率/独立利润与回款、WiseEye/LCoS分项盈利、正式Q3现金/全体奖励和ADS、处置实际交割与母公司资金可用性。仅凭这些新证据更新，当前保留量产观察。"
   ]
 }
