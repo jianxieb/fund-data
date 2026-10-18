@@ -9,6 +9,7 @@ import { medicalAudit } from './potential_medical_audit.mjs';
 import { diagnosticAudit } from './potential_diagnostic_audit.mjs';
 import { sensingAudit, sensingTargets } from './potential_sensing_audit.mjs';
 import { dataServiceAudit, dataServiceFunding, chemicalScreenAudit } from './potential_data_service_audit.mjs';
+import { operatingScreenAudit } from './potential_operating_screen.mjs';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const require = createRequire(import.meta.url);
 const M = require('../assets/potential-model.js');
@@ -188,6 +189,7 @@ function comparisonAudit(c) {
   if (!a) return '';
   if (a.kind === 'reagent_platform') return reagentPlatformAudit(c);
   if (a.kind === 'chemical_screen') return chemicalScreenAudit(c, M, sources, n);
+  if (a.kind === 'operating_screen') return operatingScreenAudit(c, M, sources, n);
   const table = auditTable;
   let out = '#### 财年与过渡期\n\n';
   out += table(['报告期间', '开始', '结束', '长度'], a.periods.map(p => [p.label, p.start, p.end, `${p.days}天 / ${p.days / 7}周`]));

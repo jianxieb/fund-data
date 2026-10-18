@@ -107,6 +107,89 @@ test('the price start, provenance, unit build and scenario claims reconcile for 
   }
 });
 
+test('PDF Solutions reconciles cash, capitalized compensation, primary issuance and debt maturities', () => {
+  const c=data.comparisons.find(c=>c.id==='PDFS'),a=c.audit,f=a.cash,s=a.capital;
+  near(f.start+f.operating+f.investing+f.financing+f.fx,f.end);
+  near(-f.capex-f.capexPrepaid,f.investing);
+  near(f.operating-f.capex-f.capexPrepaid,-6.507);
+  near(f.issueNet+f.equityPlanCash-f.rsuTaxes-f.debtRepaid-f.debtIssueCosts,f.financing);
+  near(f.sbcExpense+f.sbcCapitalized,f.sbcEquity);
+  near(s.issued-s.treasury,s.outstanding);
+  near(s.rsuStart+s.rsuGranted-s.rsuVested-s.rsuForfeited,s.rsuEnd);
+  assert.ok(Math.abs(s.newIssue*s.offerPrice-f.issueNet-f.issueCosts)<.001, 'primary proceeds reconcile within thousands rounding');
+  assert.notEqual((s.newIssue+s.secondarySale)*s.offerPrice,f.issueNet+f.issueCosts, 'selling holder proceeds are not issuer funding');
+  near(s.debtMaturities.reduce((sum,v)=>sum+v,0),s.debtPrincipal);
+  near(s.debtPrincipal-s.debtDiscount,s.debtCarrying);
+  near(c.shares,s.coverOutstanding);
+  assert.equal(c.shareDate,s.coverDate);
+  assert.match(c.shareBasis,/日期不同不机械相加/);
+  assert.match(a.cashNote,/未担保残值/);
+});
+
+test('Dinglong separates acquisition cash, disposal cash, minorities and convertible dilution', () => {
+  const c=data.comparisons.find(c=>c.id==='300054'),a=c.audit,f=a.cash,s=a.capital,b=a.acquisition;
+  near(f.start+f.operating+f.investing+f.financing+f.fx,f.end);
+  near(f.investRecovered+f.investIncome+f.ppeDisposals-f.capex-f.investPaid-f.acquisitionNet-f.otherInvesting,f.investing);
+  near(f.equityCash+f.borrowed-f.debtRepaid-f.dividendsAndInterest-f.leaseCash,f.financing);
+  near(f.disposalNetOut+f.otherInvestingRest,f.otherInvesting);
+  near(f.operating-f.capex,276.50575984);
+  near(b.cashPaid-b.acquiredCash,f.acquisitionNet);
+  near(b.consideration-b.netAssetsAttributable,b.goodwill);
+  assert.equal(b.netIncome,null,'redacted acquiree earnings must remain unknown');
+  assert.equal(b.operatingCash,null,'redacted acquiree cash must remain unknown');
+  near(s.juneRegistered+s.q3ConvertedShares+s.q3OtherIncrease,s.septRegistered);
+  near(c.shares,s.septRegistered);
+  near(s.convertibleFace/s.conversionPrice,32.04892177589852);
+  assert.match(c.shareBasis,/含138.562万股回购专户股份/);
+  assert.match(a.cashNote,/不能再从净现金重复扣一次/);
+  assert.ok(a.sections.some(s=>s.paragraphs.some(p=>p.includes('未来转股不能再计一次现金'))));
+  const forecast=a.preliminary;
+  assert.equal(forecast.asOf,'2026-10-09');
+  assert.equal(forecast.audited,false);
+  assert.equal(forecast.operatingCash,null,'earnings guidance cannot fill a missing quarter cash flow');
+  near(forecast.parentNetRange[0]-forecast.adjustedNetRange[0],forecast.nonRecurringApprox);
+  near(forecast.parentNetRange[1]-forecast.adjustedNetRange[1],forecast.nonRecurringApprox);
+  near(c.anchorRevenue,forecast.revenueApprox*4/3);
+  near(forecast.photoresistApprox,10.24);
+  assert.ok(a.periods.every(p=>p.label!=='2026前三季度'),'preliminary results stay separate from statement periods');
+});
+
+test('comparison scenarios and tenfold hurdles use their own diluted denominators', () => {
+  for(const id of ['PDFS','300054']) {
+    const c=data.comparisons.find(c=>c.id===id),a=c.audit;
+    const company={price:c.price,shares:{value:c.shares},financials:{anchorRevenue:null}};
+    assert.deepEqual(a.scenarios.map(s=>s.id),['bear','base','bull']);
+    for(const s of a.scenarios) {
+      const p=M.project(company,s);
+      near(p.price,s.revenue*s.margin*s.pe/s.shares);
+      near(p.capitalMultiple/(s.shares/c.shares),p.priceMultiple);
+      assert.equal(p.revenueCagr,null,'H1 scale references do not silently become full-year growth forecasts');
+    }
+    const bull=a.scenarios.find(s=>s.id==='bull');
+    near(a.sections.at(-1).rows.reduce((sum,r)=>sum+r[1],0),bull.revenue);
+    for(const h of a.hurdleCases) {
+      const revenue=c.price.value*10*h.shares/h.margin/h.pe;
+      near(M.project(company,{...h,revenue,dividends:0}).priceMultiple,10);
+    }
+    near(M.project(company,{...bull,pe:bull.pe*.75,shares:bull.shares*1.2}).priceMultiple,M.project(company,bull).priceMultiple*.75/1.2);
+  }
+});
+
+test('new comparison dossiers expose financial evidence and scenario conditions', () => {
+  const f=fixture();
+  for(const [id,market,name,amount,source] of [['PDFS','us','PDF Solutions','4.59','pdfs20260630_10q'],['300054','cn','鼎龙股份','2.39','1225596727']]) {
+    f.H.market=market;
+    f.api.handleInput({value:id});f.H.render();f.click('potential-comparisons');
+    assert.match(f.modal,new RegExp(name));
+    assert.match(f.modal,/查看报表利润与现金/);
+    assert.ok(f.modal.includes(amount+'×'));
+    assert.match(f.modal,/2031年终值/);
+    assert.match(f.modal,/十倍反算/);
+    assert.ok(f.modal.includes(source));
+    assert.doesNotMatch(f.modal,/undefined|NaN/);
+  }
+});
+
 test('Innodata reconciles GAAP earnings and cash without treating project funds as recurring free cash', () => {
   const c=byId('INOD'),a=c.dataServiceAudit,f=a.cash;
   for (const p of a.periods) {
