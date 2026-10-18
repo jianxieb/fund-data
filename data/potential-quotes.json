@@ -383,5 +383,29 @@
         "close": 61.470001
       }
     ]
+  },
+  {
+    "symbol": "GCT",
+    "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/GCT?range=1mo&interval=1d",
+    "retrievedAt": "2026-10-18",
+    "currency": "USD",
+    "basis": "unadjusted_regular_session_close",
+    "observations": [
+      {
+        "timestamp": 1791984600,
+        "date": "2026-10-14",
+        "close": 57.75
+      },
+      {
+        "timestamp": 1792071000,
+        "date": "2026-10-15",
+        "close": 59.34
+      },
+      {
+        "timestamp": 1792157400,
+        "date": "2026-10-16",
+        "close": 57.349998
+      }
+    ]
   }
 ]

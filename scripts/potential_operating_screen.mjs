@@ -9,7 +9,7 @@ export function operatingScreenAudit(c, M, sources, n) {
   out += a.earningsNote + '\n\n';
   const f = a.cash;
   out += table([f.period + ' / 百万' + unit, '金额'], [
-    ['期初' + (f.basis || '现金及等价物'), f.start], ['经营现金', f.operating], ['购建长期资产现金支出', -f.capex], ['设备预付款', -f.capexPrepaid],
+    ['期初' + (f.basis || '现金及等价物'), f.start], ['经营现金', f.operating], ['购建长期资产现金支出', -f.capex], ['设备预付款', f.capexPrepaidDisplay ?? -f.capexPrepaid],
     ['经营现金减上述资本投入', f.operating-f.capex-f.capexPrepaid], ['投资现金合计', f.investing], ['融资现金合计', f.financing], ['汇率影响', f.fx], ['期末' + (f.basis || '现金及等价物'), f.end]
   ]);
   out += f.period + '净增现金 = 经营 + 投资 + 融资 + 汇率 = ' + n(f.end-f.start, 6) + '百万。资本开支已经在投资现金内，不能再次扣期末余额。\n\n' + a.cashNote + '\n\n';
