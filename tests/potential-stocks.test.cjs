@@ -107,6 +107,115 @@ test('the price start, provenance, unit build and scenario claims reconcile for 
   }
 });
 
+test('Novelbeam reconciles consolidated cash with parent profit and keeps all investing and financing uses', () => {
+  const c=data.comparisons.find(c=>c.id==='688677'),a=c.audit,e=a.earnings,f=a.cash,p=a.periods.at(-1);
+  near(p.revenue-p.cost-e.surcharge-e.selling-e.admin-e.research-e.finance+e.otherIncome+e.investment+e.fairValue+e.creditLoss+e.assetLoss+e.disposal,p.operating);
+  near(p.operating+e.nonOperatingIncome-e.nonOperatingExpense-e.tax,e.totalNet);
+  near(e.totalNet-e.minorityNet,p.net);
+  near(e.totalNet+e.cashAdjustments.reduce((s,x)=>s+x,0),f.operating);
+  near(f.assetDisposals-f.capex-f.investPaid,f.investing);
+  near(f.borrowed-f.debtRepaid-f.dividendAndInterest-f.buyback-f.leaseCash-f.dividendFees,f.financing);
+  near(f.start+f.operating+f.investing+f.financing+f.fx,f.end);
+  near(f.operating-f.capex,41.64838203);
+  assert.equal(f.capexPrepaid,0,'a balance-sheet equipment prepayment is not a second cash outflow');
+  assert.match(a.cashNote,/0\.436.*未见独立净额解释/);
+});
+
+test('Novelbeam preserves the repair disclosure gap and separates customer revenue from receivables', () => {
+  const c=data.comparisons.find(c=>c.id==='688677'),a=c.audit,p=a.products;
+  near(p.current.reduce((s,x)=>s+x,0),a.periods[1].revenue);
+  near(p.prior.reduce((s,x)=>s+x,0),a.periods[0].revenue);
+  near(p.cost.reduce((s,x)=>s+x,0),a.periods[1].cost);
+  near(p.largestCustomer/a.periods[1].revenue,.701459353550748);
+  assert.notEqual(p.largestCustomer/a.periods[1].revenue,p.largestReceivableShare);
+  assert.ok(p.current[2]/p.prior[2]-1<.002);
+  assert.ok((p.current[2]+p.current[3])/p.prior[2]-1<.11);
+  assert.equal(p.repairGrowthReconciled,false);
+  assert.equal(p.reportedRepairGrowthApprox,.3);
+  assert.equal(p.newOpticsGrossMarginVerified,null);
+  assert.equal(p.expected2026Units,100000);
+  assert.ok(p.expected2026Units<p.newOpticsOrderUnits);
+  assert.ok(p.ownBrand2025Selling+p.ownBrand2025Research>p.ownBrand2025BroaderScope);
+  for(const parts of p.scenarioParts) near(Object.entries(parts).filter(([k])=>k!=='id').reduce((s,[,v])=>s+v,0),a.scenarios.find(s=>s.id===parts.id).revenue);
+});
+
+test('Novelbeam treasury-funded awards restore outstanding shares once and financing uses a separate denominator', () => {
+  const c=data.comparisons.find(c=>c.id==='688677'),a=c.audit,k=a.capital,f=a.funding;
+  near(k.registered-k.treasuryAfter,k.outstanding);
+  near(k.treasuryBefore+k.newBuyback,k.treasuryAfter);
+  near(k.outstanding+k.treasuryResaleAssumed+k.granted+k.reservedNotGranted+k.futureAwardsAssumed,k.preFinancingShares);
+  near(k.registered+k.newAwardIssuedAssumed,k.preFinancingShares);
+  assert.equal(k.postJuneFullAwardLedgerVerified,false);
+  assert.equal(k.granted,.8);assert.equal(k.reservedNotGranted,.2);
+  assert.ok(!Object.hasOwn(k,'controllerIssuance'),'shareholder transfers do not finance the issuer');
+  for(const s of a.scenarios) {
+    near(s.shares,k.preFinancingShares+f.paths[s.id].netRaise/(1-f.feeRate)/c.price.value);
+    const company={price:c.price,shares:{value:c.shares},financials:{anchorRevenue:null}};
+    near(M.project(company,s).price,s.revenue*s.margin*s.pe/s.shares);
+  }
+  for(const h of a.hurdleCases) {
+    const revenue=c.price.value*10*h.shares/h.margin/h.pe;
+    near(revenue*h.margin*h.pe/h.shares/c.price.value,10);
+  }
+});
+
+test('Novelbeam cash restrictions, lagged dividends and low-price funding stress reconcile', () => {
+  const c=data.comparisons.find(c=>c.id==='688677'),a=c.audit,f=a.funding,k=a.capital;
+  near(f.startCash,f.cashAtJune-f.ipoBankReserved-f.temporaryFundsReturnReserved-f.debtAndLeaseCarryingReserved-f.postJuneBuyback-f.uncalledFundReserved+f.h2FreeCashAssumed);
+  near(f.openingNetRaise,19.73175716);
+  for(const [id,path] of Object.entries(f.paths)) {
+    let cash=f.startCash+f.openingNetRaise,previousRevenue=f.anchorRevenueAssumed,previousNet=680*.23,raised=f.openingNetRaise;
+    for(const y of path.years) {
+      near(y.net,y.revenue*y.margin);near(y.da,y.revenue*f.daRatio);
+      near(y.workingCapital,(y.revenue-previousRevenue)*f.workingCapitalRatio);
+      near(y.dividend,id==='bear'?0:previousNet*.3);
+      near(y.fcf,y.net+y.da-y.capex-y.workingCapital-y.dividend-f.newLeaseCashPerYear);
+      near(y.netRaise,Math.max(0,f.minimumCash-cash-y.fcf));
+      cash+=y.fcf+y.netRaise;raised+=y.netRaise;near(y.cashEnd,cash);
+      previousRevenue=y.revenue;previousNet=y.net;
+    }
+    near(path.netRaise,raised);
+  }
+  let stress=f.startCash+f.openingNetRaise,previousRevenue=f.anchorRevenueAssumed,raised=f.openingNetRaise;
+  for(const y of f.years) {
+    near(y.stressFcf,y.revenue*(y.margin-f.stressMarginReduction)+y.da-y.capex-f.stressExtraCapexPerYear-(y.revenue-previousRevenue)*f.stressWorkingCapitalRatio-f.newLeaseCashPerYear);
+    near(y.stressNetRaise,Math.max(0,f.minimumCash-stress-y.stressFcf));
+    stress+=y.stressFcf+y.stressNetRaise;raised+=y.stressNetRaise;
+    near(stress,y.stressCashEnd);previousRevenue=y.revenue;
+  }
+  near(raised,f.stressNetRaise);near(raised,421.73175716);
+  for(const x of f.priceCases) {
+    near(x.financingShares,raised/(1-f.feeRate)/x.price);
+    near(x.futureAwardShares,Math.max(k.futureAwardsAssumed,k.futureAwardValueStress/x.price));
+    near(x.totalShares,k.outstanding+k.treasuryResaleAssumed+k.granted+k.reservedNotGranted+x.futureAwardShares+x.financingShares);
+    near(x.priceMultiple,2200*.19*22.5/x.totalShares/c.price.value);
+  }
+  assert.ok(f.priceCases.at(-1).priceMultiple<f.priceCases[0].priceMultiple);
+  const bull=a.scenarios.find(s=>s.id==='bull');
+  near(f.paths.bull.dividendCash,427.62);
+  near(f.bullDividendPerOriginalShareConservative,427.62/bull.shares);
+  near(f.bullWealthMultiple,(2200*.27*30/bull.shares+427.62/bull.shares)/c.price.value);
+});
+
+test('Novelbeam new dossier exposes the evidence gaps and scenarios in both outputs', () => {
+  const c=data.comparisons.find(c=>c.id==='688677'),sourceIds=new Set(data.sources.map(s=>s.id));
+  c.sources.forEach(id=>assert.ok(sourceIds.has(id)));
+  c.audit.sections.flatMap(s=>s.sources).forEach(id=>assert.ok(sourceIds.has(id)));
+  const q=quotes.find(q=>q.symbol===c.price.symbol);
+  near(c.price.value,Math.round(q.observations.at(-1).close*100)/100);
+  assert.equal(q.observations.at(-1).date,'2026-10-16');
+  const f=fixture();f.H.market='cn';f.api.handleInput({value:'688677'});f.H.render();f.click('potential-comparisons');
+  const md=fs.readFileSync('docs/research/potential-stocks-2026-10-18.md','utf8').split('海泰新光 · 688677').at(-1);
+  for(const output of [f.modal,md]) {
+    assert.match(output,/维修披露存在未解释差异/);
+    assert.match(output,/70\.15%/);assert.match(output,/93\.05/);
+    assert.match(output,/低利润、垫资与低价融资压力/);
+    assert.match(output,/2\.36×/);
+    assert.match(output,/2032年分红未计入/);
+    assert.doesNotMatch(output,/NaN|undefined/);
+  }
+});
+
 test('Cohu reconciles GAAP earnings, amortization and cash without treating withholding as a buyback', () => {
   const a=data.comparisons.find(c=>c.id==='COHU').audit,p=a.periods.at(-1),e=a.earnings,f=a.cash;
   near(p.revenue-p.cost-e.research-e.sga-e.purchasedAmortization-e.restructuring,p.operating);
