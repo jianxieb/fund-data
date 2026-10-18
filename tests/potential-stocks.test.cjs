@@ -155,7 +155,7 @@ test('Dinglong separates acquisition cash, disposal cash, minorities and convert
 });
 
 test('comparison scenarios and tenfold hurdles use their own diluted denominators', () => {
-  for(const id of ['PDFS','300054','RDW']) {
+  for(const id of ['PDFS','300054','RDW','603061']) {
     const c=data.comparisons.find(c=>c.id===id),a=c.audit;
     const company={price:c.price,shares:{value:c.shares},financials:{anchorRevenue:null}};
     assert.deepEqual(a.scenarios.map(s=>s.id),['bear','base','bull']);
@@ -177,7 +177,7 @@ test('comparison scenarios and tenfold hurdles use their own diluted denominator
 
 test('new comparison dossiers expose financial evidence and scenario conditions', () => {
   const f=fixture();
-  for(const [id,market,name,amount,source] of [['PDFS','us','PDF Solutions','4.59','pdfs20260630_10q'],['300054','cn','鼎龙股份','2.39','1225596727'],['RDW','us','Redwire','4.19','000181981026000124']]) {
+  for(const [id,market,name,amount,source] of [['PDFS','us','PDF Solutions','4.59','pdfs20260630_10q'],['300054','cn','鼎龙股份','2.39','1225596727'],['RDW','us','Redwire','4.19','000181981026000124'],['603061','cn','金海通','1.65','12607453.PDF']]) {
     f.H.market=market;
     f.api.handleInput({value:id});f.H.render();f.click('potential-comparisons');
     assert.match(f.modal,new RegExp(name));
@@ -187,6 +187,69 @@ test('new comparison dossiers expose financial evidence and scenario conditions'
     assert.match(f.modal,/十倍反算/);
     assert.ok(f.modal.includes(source));
     assert.doesNotMatch(f.modal,/undefined|NaN/);
+  }
+});
+
+test('JHT reconciles reported profit, working capital and all cash activities', () => {
+  const a=data.comparisons.find(c=>c.id==='603061').audit,p=a.periods.at(-1),e=a.earnings,f=a.cash;
+  near(p.revenue-p.cost-e.surcharge-e.selling-e.admin-e.research-e.finance+e.otherIncome+e.investment+e.fairValue+e.creditLoss+e.assetLoss+e.disposal,p.operating);
+  near(p.operating+e.nonOperatingIncome-e.nonOperatingExpense-e.tax,p.net);
+  near(p.net+e.cashAdjustments.reduce((sum,v)=>sum+v,0),p.operatingCash);
+  near(e.cashAdjustments.at(-1),e.sbc);
+  near(f.start+f.operating+f.investing+f.financing+f.fx,f.end);
+  near(f.investRecovered+f.investIncome+f.assetDisposals-f.investPaid-f.capex,f.investing);
+  near(f.borrowed-f.debtRepaid-f.dividendAndInterest-f.leaseCash-f.issueFeePrepaid,f.financing);
+  near(f.operating-f.capex,-66.90175688);
+});
+
+test('JHT separates dated preliminary earnings, capacity moves and existing employee shares', () => {
+  const c=data.comparisons.find(c=>c.id==='603061'),a=c.audit,p=a.products,s=a.capital,r=a.collections;
+  near(p.mix.reduce((sum,x)=>sum+x.revenue,0),p.h1DeviceRevenueApprox);
+  near(p.deviceAverageDerived*p.h1Sales,p.h1DeviceRevenueApprox);
+  near(p.h1DeviceRevenueApprox+p.h1OtherRevenueDerived,a.periods.at(-1).revenue);
+  const cap=p.capacity;
+  near(cap.tianjinPlanned+cap.malaysiaPlanned+cap.newShanghaiPlanned,cap.oldMovedTotal);
+  near(cap.oldMovedTotal+cap.oldShanghai,cap.oldRetainedTotal);
+  for(const v of p.scenarioUnits) near(v.units*v.price+v.partsAndOther,a.scenarios.find(s=>s.id===v.id).revenue);
+  near(s.preTransfer*s.transferFactor,c.shares);
+  assert.ok(Math.abs(s.esopBeforeTransfer*s.transferFactor-s.esopIncluded)<=.000001,'transfer rounding within one share');
+  assert.ok(s.esopUnlocked<=s.esopInitialAfterTransfer && s.esopIncluded<c.shares);
+  assert.equal(s.actualConversionPrice,null,'a proposed bond has no assumed actual conversion price');
+  assert.equal(c.shareDate,s.date);
+  assert.equal(r.asOf,'2026-08-18');
+  assert.ok(r.cohorts[0].date>r.cohorts[1].date,'collection cohorts have unequal follow-up windows');
+  assert.equal(r.demoCutoff,null,'the Demo paragraph does not identify a cutoff date');
+  assert.equal(r.demoBasis,'issuer_reported_amount_ratio_not_unit_win_rate');
+  const q=a.preliminary;
+  assert.equal(q.revenue,null);assert.equal(q.operatingCash,null);assert.equal(q.audited,false);
+  assert.ok(q.asOf>c.price.asOf,'post-price disclosure is explicitly dated');
+  q.parentNetRange.forEach((v,i)=>near(v-a.periods.at(-1).net,q.q3NetDerivedRange[i]));
+  assert.ok(a.periods.every(p=>p.label!==q.period),'preliminary earnings do not become a complete quarterly statement');
+});
+
+test('JHT cash stress funds the deficit once and carries conversion and new-award dilution', () => {
+  const c=data.comparisons.find(c=>c.id==='603061'),a=c.audit,f=a.funding;
+  near(f.startCash,f.cashAtJune-f.ipoBankReservedApprox-f.shortDebtReserved-f.h2OtherCashUse);
+  near(f.bondNetAssumed,f.bondGrossAssumed*(1-f.feeRate));
+  let revenue=f.anchorRevenueAssumed,cash=f.startCash+f.bondNetAssumed,stress=cash;
+  for(const y of f.years) {
+    near(y.net,y.revenue*y.margin);near(y.da,y.revenue*f.daRatio);near(y.newSbc,y.revenue*f.newSbcRatio);
+    near(y.workingCapital,(y.revenue-revenue)*f.workingCapitalRatio);
+    near(y.stressWorkingCapital,(y.revenue-revenue)*f.stressWorkingCapitalRatio);
+    near(y.fcf,y.net+y.da+y.newSbc-y.capex-f.leasePrincipalPerYear-y.workingCapital);
+    near(y.stressFcf,y.revenue*(y.margin-f.stressMarginReduction)+y.da+y.newSbc-y.capex-f.leasePrincipalPerYear-y.stressWorkingCapital);
+    near(y.netRaise,Math.max(0,f.minimumCash-stress-y.stressFcf));
+    cash+=y.fcf;stress+=y.stressFcf+y.netRaise;
+    near(cash,y.cashEnd);near(stress,y.stressCashEnd);assert.ok(stress>=f.minimumCash-1e-8);revenue=y.revenue;
+  }
+  near(f.netRaise,f.years.reduce((sum,y)=>sum+y.netRaise,0));
+  near(f.futureSbc,f.years.reduce((sum,y)=>sum+y.newSbc,0));
+  near(a.project.manufacturingTotal+a.project.researchTotal+a.project.workingCapital,f.bondGrossAssumed);
+  for(const p of f.priceCases) {
+    near(p.conversionShares,f.bondGrossAssumed/p.price);
+    near(p.financingShares,f.netRaise/(1-f.feeRate)/p.price);
+    near(p.awardShares,f.futureSbc/p.price);
+    near(p.totalShares,c.shares+p.conversionShares+p.financingShares+p.awardShares);
   }
 });
 
