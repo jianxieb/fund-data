@@ -1,0 +1,97 @@
+{
+  "issuer": "Amprius Technologies",
+  "checkedAt": "2026-10-18",
+  "range": [
+    "2026-08-01",
+    "2026-10-18"
+  ],
+  "indexUrl": "https://ir.amprius.com/sec-filings/all-sec-filings",
+  "pages": [
+    "https://ir.amprius.com/sec-filings/all-sec-filings?page=1",
+    "https://ir.amprius.com/sec-filings/all-sec-filings?page=2"
+  ],
+  "count": 13,
+  "latestDate": "2026-10-09",
+  "earlierBoundary": "2026-07-27",
+  "records": [
+    {
+      "date": "2026-10-09",
+      "form": "S-3ASR",
+      "url": "https://ir.amprius.com/sec-filings/all-sec-filings/content/0001104659-26-115105/tm2626736d1_s3asr.htm",
+      "description": "Form S-3ASR: Automatic shelf registration statement of securities of well-known seasoned issuers"
+    },
+    {
+      "date": "2026-09-28",
+      "form": "8-K",
+      "url": "https://ir.amprius.com/sec-filings/all-sec-filings/content/0001899287-26-000065/ampx-20260923.htm",
+      "description": "Form 8-K: Current report"
+    },
+    {
+      "date": "2026-08-25",
+      "form": "4",
+      "url": "https://ir.amprius.com/sec-filings/all-sec-filings/content/0001476220-26-000034/wk-form4_1787692956.html",
+      "description": "Form 4: Statement of changes in beneficial ownership of securities"
+    },
+    {
+      "date": "2026-08-25",
+      "form": "144",
+      "url": "https://ir.amprius.com/sec-filings/all-sec-filings/content/0001476220-26-000033/primary_doc.html",
+      "description": "Form 144: Report of proposed sale of securities"
+    },
+    {
+      "date": "2026-08-25",
+      "form": "4",
+      "url": "https://ir.amprius.com/sec-filings/all-sec-filings/content/0001940928-26-000024/wk-form4_1787692925.html",
+      "description": "Form 4: Statement of changes in beneficial ownership of securities"
+    },
+    {
+      "date": "2026-08-25",
+      "form": "144",
+      "url": "https://ir.amprius.com/sec-filings/all-sec-filings/content/0001940928-26-000023/primary_doc.html",
+      "description": "Form 144: Report of proposed sale of securities"
+    },
+    {
+      "date": "2026-08-25",
+      "form": "144",
+      "url": "https://ir.amprius.com/sec-filings/all-sec-filings/content/0002067233-26-000018/primary_doc.html",
+      "description": "Form 144: Report of proposed sale of securities"
+    },
+    {
+      "date": "2026-08-25",
+      "form": "4",
+      "url": "https://ir.amprius.com/sec-filings/all-sec-filings/content/0002067233-26-000019/wk-form4_1787692877.html",
+      "description": "Form 4: Statement of changes in beneficial ownership of securities"
+    },
+    {
+      "date": "2026-08-24",
+      "form": "144",
+      "url": "https://ir.amprius.com/sec-filings/all-sec-filings/content/0001950047-26-008579/primary_doc.html",
+      "description": "Form 144: Report of proposed sale of securities"
+    },
+    {
+      "date": "2026-08-13",
+      "form": "8-K",
+      "url": "https://ir.amprius.com/sec-filings/all-sec-filings/content/0001899287-26-000062/ampx-20260807.htm",
+      "description": "Form 8-K: Current report"
+    },
+    {
+      "date": "2026-08-10",
+      "form": "SCHEDULE 13G/A",
+      "url": "https://ir.amprius.com/sec-filings/all-sec-filings/content/0001595888-26-000085/primary_doc.html",
+      "description": "Form SCHEDULE 13G/A: Statement of Beneficial Ownership by Certain Investors"
+    },
+    {
+      "date": "2026-08-06",
+      "form": "10-Q",
+      "url": "https://ir.amprius.com/sec-filings/all-sec-filings/content/0001899287-26-000059/ampx-20260630.htm",
+      "description": "Form 10-Q: Quarterly report [Sections 13 or 15(d)]"
+    },
+    {
+      "date": "2026-08-04",
+      "form": "8-K",
+      "url": "https://ir.amprius.com/sec-filings/all-sec-filings/content/0001899287-26-000056/ampx-20260804.htm",
+      "description": "Form 8-K: Current report"
+    }
+  ],
+  "scope": "发行人目录中该日期范围的13项申报。检查S-3ASR、8-K、10-Q和三份8月25日Form 4；不把机构或个人持股报告当作全体普通股/潜在股份滚动。未发现后续公司层面发行完成文件，不等于其后没有股数变动。"
+}

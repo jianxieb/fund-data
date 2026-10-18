@@ -20,7 +20,35 @@
     ...c.facts.flatMap(f => f.sources), ...c.guidance.flatMap(g => g.sources), ...c.fundingSources,
     ...c.marketTest.sources, ...c.alternatives.flatMap(a => a.sources), ...c.calibration.flatMap(a => a.sources),
     ...(c.financingCheck?.sources || []), ...(c.earningsAdjustment?.sources || []), ...(c.productCheck?.sources || []),
-    ...(c.profitCheck?.sources || []), ...(c.cashCheck?.sources || []), ...(c.ownershipCheck?.sources || [])])];
+    ...(c.profitCheck?.sources || []), ...(c.cashCheck?.sources || []), ...(c.ownershipCheck?.sources || []),
+    ...(c.cashAudit?.sources || []), ...(c.awardAudit?.sources || []), ...(c.dilutionAudit?.sources || []),
+    ...(c.liquidityCheck?.sources || [])])];
+  const evidenceTable = (headers, rows) => '<div class="table-wrap"><table class="potential-scenario-table"><thead><tr>' + headers.map(h => '<th>' + e(h) + '</th>').join('') + '</tr></thead><tbody>' + rows.map(row => '<tr>' + row.map((v, i) => i === 0 ? '<th scope="row">' + e(v) + '</th>' : '<td>' + e(v) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>';
+  function batteryCashEvidence(c) {
+    if (!c.cashAudit) return '';
+    const a = c.cashAudit, f = a.cash;
+    const rows = [['报表经营现金流', f.operating], ['其中：退租付款', -f.leaseTerminationPaid],
+      ['只移除退租后的经营现金', f.ocfExcludingTermination], ['营运项目净占用（不含租赁）', f.workingCapitalExcludingLeases],
+      ['资本开支现金', -f.capexPaid], ['权证与期权行权融资', f.financing], ['期末可用现金', f.endCash]];
+    return '<section><h3>现金复核 · 2026上半年</h3>' + evidenceTable(['项目', '百万美元'], rows.map(([label, v]) => [label, n(v, 3)])) + '<p>' + e(a.note) + '</p>' + sourceLinks(a.sources) + '</section>';
+  }
+  function liquidityEvidence(c) {
+    const f = c.liquidityCheck;
+    if (!f) return '';
+    const summary = f.routes.flatMap(r => f.netIssuePrices.map(price => {
+      const x = M.liquidityProjection(c, r, price);
+      return [r.label, n(price) + '美元', n(x.totalRaised, 3), n(x.shares, 3), n(x.terminal.priceMultiple) + '×'];
+    }));
+    let html = '<section><h3>融资敏感性 · 逐年现金与稀释</h3><p class="potential-lead">' + e(f.headline) + '</p><p>以下均为研究假设。三条路径最终仍假定10亿美元收入、15%净利率、30倍PE；区别在中途盈利和回款。筹资为百万美元，股数为百万股。</p>' + evidenceTable(['现金路径', '净发行价', '累计需筹资', '期末股数', '股价倍数'], summary);
+    html += '<details class="potential-method"><summary>查看逐年现金与融资</summary><p>金额为百万美元；从2026年6月底现金 ' + n(f.cash, 3) + ' 起算，期末最低现金假设 ' + n(f.minimumCash) + '。2026H2为半年流量，后续为全年。</p>';
+    html += evidenceTable(['期间', '收入', '折旧摊销', '非现金SBC', '资本开支'], f.periods.map(p => [p.label, ...[p.revenue, p.depreciation, p.stockComp, p.capex].map(v => n(v, 3))]));
+    for (const r of f.routes) {
+      const x = M.liquidityProjection(c, r, 4);
+      html += '<h4>' + e(r.label) + '</h4>' + evidenceTable(['期间', '净利率', '营运占用/收入', '经营现金', '项目净现金', '新增筹资', '期末现金'], x.rows.map((row, i) => [row.label, percent(r.netMargins[i]), percent(r.workingCapitalRatios[i]), ...[row.operatingCash, row.projectNet, row.raised, row.cash].map(v => n(v, 3))]));
+    }
+    html += '</details><details class="potential-method"><summary>查看假设依据与计算边界</summary>' + paragraphs(f.basis) + '</details><p>' + e(f.caveat) + '</p><p>权证全部失效、原价现金行权和未来激励增加的分支见下载研究；不把行权款或全部项目额度当成保证资金。</p>' + sourceLinks(f.sources) + '</section>';
+    return html;
+  }
   function profitEvidence(c) {
     const a = c.profitCheck;
     if (!a) return '';
@@ -55,6 +83,7 @@
       const o = c.ownershipCheck;
       html += '<section><h3>子公司融资稀释 · 独立于美股股数</h3><p>起点持股 ' + percent(o.ownership) + '；若新股占发行后 ' + percent(o.proposedFraction) + '，持股约 ' + percent(M.subsidiaryOwnership(o.ownership, o.proposedFraction)) + '；再按初始新股数超额配售 ' + percent(o.overAllotment) + '，约为 ' + percent(M.subsidiaryOwnership(o.ownership, o.proposedFraction, o.overAllotment)) + '。</p><p>' + e(o.caveat) + '</p>' + sourceLinks(o.sources) + '</section>';
     }
+    if (c.liquidityCheck) return html + liquidityEvidence(c);
     if (!c.financingCheck) return html;
     const f = c.financingCheck, bull = M.scenario(c, 'bull');
     html += '<section><h3>融资敏感性 · 营运资金压力</h3><p>当前应收加库存减应付为 ' + amount(c, f.receivables + f.inventory - f.payables) + '；现金截至 ' + e(f.asOf) + ' 为 ' + amount(c, f.cash) + '。从乐观股数中先扣除已发行、既有潜在股份及未来激励 ' + n(f.reservedFutureAwards) + '百万股，剩余股份按下列净发行价测算。</p><div class="table-wrap"><table class="potential-scenario-table"><thead><tr><th>营运资金/收入</th><th>净发行价</th><th>假设筹资</th><th>额外营运资金</th><th>其他现金流前余额</th></tr></thead><tbody>';
@@ -104,7 +133,7 @@
     return '<div class="potential-page"><div class="potential-warning"><strong>十倍尚未获证据支持</strong><span>经营情景与十倍门槛分开看；具体缺项见各公司判断。</span></div>' + filters + '<section class="card"><div class="table-caption stock-table-caption"><span><b>' + rows.length + '</b> / ' + pool.length + ' 家候选 · 研究 ' + e(d.reviewedAt) + ' · 修订' + d.revision + '</span>' + views + (state.sort !== 'default' ? '<span class="stock-sort-status">按' + e(sortNames[state.sort]) + (state.descending ? '降序' : '升序') + H.action('恢复默认', 'potential-sort-reset', 'text-link small') + '</span>' : '') + '</div>' + (state.view === 'returns' ? '<div class="potential-return-controls"><span>未来五年 · 情景假设</span>' + H.annualControl() + '</div>' : '') + '<div class="table-wrap stock-table-wrap potential-table-wrap" tabindex="0" role="region" aria-label="潜力研究表，可横向滚动"><table class="research-table stock-table potential-table potential-' + state.view + '-table"><thead><tr><th>公司 / 主营业务</th>' + headers + '</tr></thead><tbody>' + rows.map(c => '<tr data-stock-row="' + e(c.id) + '">' + identity(c) + cells(c) + '</tr>').join('') + (!rows.length ? '<tr><td colspan="' + count + '"><div class="empty">当前条件没有匹配公司。' + H.action('清除筛选', 'potential-reset', 'text-link') + '</div></td></tr>' : '') + '</tbody></table></div><div class="panel-foot">' + e(foot) + '</div></section></div>';
   }
   function judgment(c) {
-    return '<section><h3>研究判断</h3><p class="potential-lead">' + e(c.decision) + '</p>' + paragraphs(c.thesis) + '</section><div class="potential-detail-columns"><section><h3>已验证事实</h3>' + c.facts.map(f => '<p>' + e(f.text) + sourceLinks(f.sources) + '</p>').join('') + '</section><section><h3>管理层指引</h3>' + (c.guidance.length ? c.guidance.map(g => '<p>' + e(g.text) + sourceLinks(g.sources) + '</p>').join('') : '<p>未将未核实的全年经营目标设为公司指引。</p>') + '<h3>单位经济与竞争</h3><p>' + e(c.economics) + '</p></section></div>' + profitEvidence(c) + cashEvidence(c) + '<section><h3>管理层与资本配置</h3><p>' + e(c.management) + '</p><h3>融资与现金承受能力</h3><p>' + e(c.funding) + sourceLinks(c.fundingSources) + '</p></section><section><h3>为什么没有优先选常见替代</h3>' + c.alternatives.map(a => '<p><strong>' + e(a.name) + '</strong> — ' + e(a.reason) + sourceLinks(a.sources) + '</p>').join('') + '</section>';
+    return '<section><h3>研究判断</h3><p class="potential-lead">' + e(c.decision) + '</p>' + paragraphs(c.thesis) + '</section><div class="potential-detail-columns"><section><h3>已验证事实</h3>' + c.facts.map(f => '<p>' + e(f.text) + sourceLinks(f.sources) + '</p>').join('') + '</section><section><h3>管理层指引</h3>' + (c.guidance.length ? c.guidance.map(g => '<p>' + e(g.text) + sourceLinks(g.sources) + '</p>').join('') : '<p>未将未核实的全年经营目标设为公司指引。</p>') + '<h3>单位经济与竞争</h3><p>' + e(c.economics) + '</p></section></div>' + profitEvidence(c) + cashEvidence(c) + batteryCashEvidence(c) + '<section><h3>管理层与资本配置</h3><p>' + e(c.management) + '</p><h3>融资与现金承受能力</h3><p>' + e(c.funding) + sourceLinks(c.fundingSources) + '</p></section><section><h3>为什么没有优先选常见替代</h3>' + c.alternatives.map(a => '<p><strong>' + e(a.name) + '</strong> — ' + e(a.reason) + sourceLinks(a.sources) + '</p>').join('') + '</section>';
   }
   function scenarios(c) {
     const bull = M.scenario(c, 'bull'), h = M.hurdle(c, bull), f = c.financials;

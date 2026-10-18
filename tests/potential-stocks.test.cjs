@@ -58,6 +58,7 @@ test('the price start, provenance, unit build and scenario claims reconcile for 
     assert.equal(c.price.asOf, data.priceDate);
     assert.equal(c.price.basis, 'regular_close_unadjusted');
     const ids = [c.financials.source, c.shares.source, ...(c.shares.sources || []), ...c.facts.flatMap(f => f.sources), ...c.guidance.flatMap(g => g.sources), ...c.fundingSources, ...c.marketTest.sources, ...c.alternatives.flatMap(a => a.sources), ...c.calibration.flatMap(a => a.sources), ...(c.financingCheck?.sources || []), ...(c.earningsAdjustment?.sources || []), ...(c.productCheck?.sources || []), ...(c.profitCheck?.sources || []), ...(c.cashCheck?.sources || []), ...(c.ownershipCheck?.sources || [])];
+    for (const audit of [c.cashAudit, c.awardAudit, c.dilutionAudit, c.liquidityCheck]) ids.push(...(audit?.sources || []));
     ids.forEach(id => assert.ok(sourceIds.has(id), `${c.id}: unknown source ${id}`));
     if (c.marketTest.kind === 'segment_growth') {
       near(c.marketTest.parts.reduce((sum, p) => sum + p.reportedRevenue, 0), c.financials.revenue);
@@ -281,6 +282,87 @@ test('financing pressure reserves awards and exposes the feedback from a lower i
   assert.throws(() => M.fundingStress(c, { ...bull, shares: 160 }, .25, 4), RangeError);
 });
 
+test('Amprius cash reconciles the reported loss, one-time exit cash and existing financing without double counting', () => {
+  const c = byId('AMPX'), a = c.cashAudit, f = a.cash;
+  near(f.netLoss - f.commonStockholderLoss, f.warrantModificationCharge);
+  near(Object.values(a.ocfBridge).reduce((sum, v) => sum + v, 0), f.operating);
+  near(a.workingCapitalKeys.reduce((sum, key) => sum + a.ocfBridge[key], 0), f.workingCapitalExcludingLeases);
+  near(f.operating + f.leaseTerminationPaid, f.ocfExcludingTermination);
+  near(f.ocfExcludingTermination - f.workingCapitalExcludingLeases, -2.193);
+  near(f.assetSale - f.capexPaid, f.investing);
+  near(f.warrantExerciseCash + f.optionExerciseCash, f.financing);
+  near(f.startCashAndRestricted + f.operating + f.investing + f.financing + f.fx, f.endCashAndRestricted);
+  near(f.endCash + f.restrictedCurrent + f.restrictedOther, f.endCashAndRestricted);
+  near(c.liquidityCheck.cash, f.endCash);
+  near(c.awardAudit.obligated + c.awardAudit.unfunded, c.awardAudit.maximum);
+  near(c.awardAudit.maximum, 74.79317311);
+  const inventory = require('../docs/research/ampx-filings-2026-10-18.json');
+  assert.equal(inventory.records.length, inventory.count);
+  assert.equal(new Set(inventory.records.map(r => r.url)).size, inventory.count);
+  assert.ok(inventory.records.every(r => r.date >= inventory.range[0] && r.date <= inventory.range[1]));
+  assert.ok(inventory.earlierBoundary < inventory.range[0]);
+});
+
+test('annual funding includes interim profits and capital expenditure while issue prices affect shares, not cash needs', () => {
+  const c = byId('AMPX'), f = c.liquidityCheck, r = f.routes.find(r => r.id === 'delayed');
+  near(f.periods[0].revenue + c.financials.revenue, f.periods[0].annualRevenue);
+  const low = M.liquidityProjection(c, r, 2), middle = M.liquidityProjection(c, r, 4), high = M.liquidityProjection(c, r, 8);
+  near(middle.totalRaised, 155.8415730724971);
+  near(middle.shares, 216.92905126812425);
+  near(low.totalRaised, high.totalRaised);
+  near(low.newShares, high.newShares * 4);
+  near(middle.terminal.profit, 150);
+  for (const route of f.routes) {
+    const x = M.liquidityProjection(c, route, 4);
+    near(x.totalRaised, x.rows.reduce((sum, row) => sum + row.raised, 0));
+    x.rows.forEach((row, i) => {
+      near(row.openingCash + row.operatingCash - row.capex + row.projectNet + row.exerciseCash + row.raised, row.cash);
+      assert.ok(row.cash >= f.minimumCash - 1e-8);
+      near(row.openingCash, i ? x.rows[i - 1].cash : f.cash);
+      near(row.operatingCash, row.netIncome + f.periods[i].depreciation + f.periods[i].stockComp + f.periods[i].otherCashAdjustment - row.workingCapitalChange);
+    });
+    near(x.rows.reduce((sum, row) => sum + row.projectNet, 0), 0);
+  }
+  // The earlier working-capital-only deficit does not imply the same funding need once profits are included.
+  near(M.liquidityProjection(c, f.routes[0], 4).totalRaised, 3.583);
+  near(M.liquidityProjection(c, f.routes[1], 4).totalRaised, 20.298675744789673);
+  assert.throws(() => M.liquidityProjection(c, { ...r, projectReceipts: [] }, 4), RangeError);
+  assert.throws(() => M.liquidityProjection({ ...c, shares: { ...c.shares, knownPotential: null } }, r, 4), RangeError);
+  assert.throws(() => M.liquidityProjection(c, r, 0), RangeError);
+});
+
+test('a later cash surplus does not erase the shares needed to survive an earlier shortfall', () => {
+  const c = structuredClone(byId('AMPX'));
+  c.shares.value = 4; c.shares.knownPotential = 2;
+  c.liquidityCheck = { cash: 10, workingCapital: 0, minimumCash: 10, futureAwards: 1,
+    periods: ['first', 'second'].map(label => ({ label, revenue: 100, annualRevenue: 100, depreciation: 0, stockComp: 0, otherCashAdjustment: 0, capex: 0 })) };
+  const route = { netMargins: [-.2, 1], workingCapitalRatios: [0, 0], projectSpend: [0, 0], projectReceipts: [0, 0] };
+  const x = M.liquidityProjection(c, route, 2);
+  near(x.rows[0].raised, 20); near(x.rows[1].raised, 0);
+  near(x.cash, 110); near(x.newShares, 10); near(x.shares, 17);
+  // Moving an accepted project receipt earlier can remove that issuance; leaving it later cannot.
+  near(M.liquidityProjection(c, { ...route, projectReceipts: [20, 0] }, 2).newShares, 0);
+  near(M.liquidityProjection(c, { ...route, projectReceipts: [0, 20] }, 2).newShares, 10);
+});
+
+test('warrant lapse and cash exercise are distinct branches and incentive reserves are not counted twice', () => {
+  const c = byId('AMPX'), f = c.liquidityCheck, d = c.dilutionAudit, r = f.routes.find(r => r.id === 'delayed');
+  const warrants = d.warrants.reduce((sum, w) => sum + w.shares, 0);
+  const cashExercise = d.warrants.reduce((sum, w) => sum + w.shares * w.strike, 0);
+  near(warrants + d.options + d.rsus, c.shares.knownPotential);
+  near(cashExercise, 121.4610285);
+  const defaultPressure = M.liquidityProjection(c, r, 4);
+  const lapse = M.liquidityProjection(c, r, 4, { potentialShares: c.shares.knownPotential - warrants });
+  const paid = M.liquidityProjection(c, r, 4, { exerciseCash: [0, cashExercise, 0, 0, 0, 0] });
+  near(lapse.totalRaised, defaultPressure.totalRaised);
+  near(defaultPressure.shares - lapse.shares, warrants);
+  near(defaultPressure.totalRaised - paid.totalRaised, cashExercise);
+  near(paid.totalRaised, 34.380544572497115);
+  near(M.liquidityProjection(c, r, 4, { futureAwards: f.awardSensitivity }).shares - defaultPressure.shares, 10);
+  near(defaultPressure.shares, c.shares.value + c.shares.knownPotential + f.futureAwards + defaultPressure.newShares);
+  assert.equal(d.expiry, '2027-09-14');
+});
+
 test('filtering and the three-step sort cycle return to the research order', () => {
   let state = { market: 'us', status: 'all', sector: 'all', query: '', sort: 'default', descending: true };
   const ids = () => M.select(data.companies, state).map(c => c.id);
@@ -355,6 +437,10 @@ test('both markets, empty search recovery and every detail tab expose complete e
         assert.match(f.modal, /现金来源与去向/);
         assert.match(f.html, /含未实现投资收益/);
       }
+      if (c.cashAudit) {
+        assert.match(f.modal, /现金复核/);
+        assert.match(f.modal, /20\.126/);
+      }
       f.click('potential-detail-tab', 'scenarios');
       assert.match(f.modal, /期末股数/);
       assert.match(f.modal, /终值PE降低25%/);
@@ -368,6 +454,12 @@ test('both markets, empty search recovery and every detail tab expose complete e
         assert.doesNotMatch(f.modal, /单位净收入<\/th>/);
       }
       if (c.financingCheck) assert.match(f.modal, /融资敏感性/);
+      if (c.liquidityCheck) {
+        assert.match(f.modal, /逐年现金与融资/);
+        assert.match(f.modal, /216\.929/);
+        assert.match(f.modal, /255\.889/);
+        assert.doesNotMatch(f.modal, /NaN|undefined/);
+      }
       f.click('potential-detail-tab', 'evidence');
       assert.match(f.modal, /撤回或下修信号/);
       assert.match(f.modal, /原始来源与定位/);

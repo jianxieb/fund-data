@@ -113,6 +113,57 @@
       fundingShares, proceeds, additionalWorkingCapital,
       balanceBeforeOtherFlows: f.cash + proceeds - additionalWorkingCapital };
   }
+  // A period-by-period funding sensitivity, not a forecast or an available credit line.
+  // Later cash surpluses do not undo shares issued to meet an earlier cash shortfall.
+  function liquidityProjection(company, route, netIssuePrice, options = {}) {
+    const f = company.liquidityCheck;
+    if (!f) return null;
+    const periods = f.periods, count = periods.length;
+    const futureAwards = options.futureAwards ?? f.futureAwards;
+    const potentialShares = options.potentialShares ?? company.shares.knownPotential;
+    const exerciseCash = options.exerciseCash ?? periods.map(() => 0);
+    if (!count || ![f.cash, f.workingCapital, f.minimumCash, futureAwards,
+      company.shares.value, potentialShares, netIssuePrice].every(finite) ||
+      [f.cash, f.workingCapital, f.minimumCash, futureAwards, potentialShares].some(v => v < 0) ||
+      company.shares.value <= 0 || netIssuePrice <= 0)
+      throw new RangeError('年度融资需明确起点现金、营运资金、股份、最低现金和净发行价');
+    for (const values of [route.netMargins, route.workingCapitalRatios, route.projectSpend, route.projectReceipts, exerciseCash]) {
+      if (!Array.isArray(values) || values.length !== count || !values.every(finite))
+        throw new RangeError('每期利润率、营运占用和项目现金必须逐项明确');
+    }
+    if ([...route.workingCapitalRatios, ...route.projectSpend, ...route.projectReceipts, ...exerciseCash].some(v => v < 0))
+      throw new RangeError('营运占用比例、项目支出与收款不能为负');
+    let cash = f.cash, workingCapital = f.workingCapital, totalRaised = 0;
+    const rows = periods.map((p, i) => {
+      if (![p.revenue, p.annualRevenue, p.depreciation, p.stockComp, p.otherCashAdjustment, p.capex].every(finite) ||
+          [p.revenue, p.annualRevenue, p.depreciation, p.stockComp, p.capex].some(v => v < 0))
+        throw new RangeError('年度现金参数缺失，不能默认补零');
+      const openingCash = cash;
+      const endingWorkingCapital = p.annualRevenue * route.workingCapitalRatios[i];
+      const workingCapitalChange = endingWorkingCapital - workingCapital;
+      const netIncome = p.revenue * route.netMargins[i];
+      const cashBeforeWorkingCapital = netIncome + p.depreciation + p.stockComp + p.otherCashAdjustment;
+      const operatingCash = cashBeforeWorkingCapital - workingCapitalChange;
+      const projectNet = route.projectReceipts[i] - route.projectSpend[i];
+      const beforeFinancing = cash + operatingCash - p.capex + projectNet + exerciseCash[i];
+      const raised = Math.max(0, f.minimumCash - beforeFinancing);
+      totalRaised += raised;
+      cash = beforeFinancing + raised;
+      workingCapital = endingWorkingCapital;
+      return { label: p.label, openingCash, revenue: p.revenue, netIncome,
+        cashBeforeWorkingCapital, workingCapitalChange, operatingCash, capex: p.capex,
+        projectSpend: route.projectSpend[i], projectReceipts: route.projectReceipts[i],
+        projectNet, exerciseCash: exerciseCash[i], beforeFinancing, raised,
+        newShares: raised / netIssuePrice, cash, workingCapital };
+    });
+    const newShares = totalRaised / netIssuePrice;
+    const shares = company.shares.value + potentialShares + futureAwards + newShares;
+    const bull = scenario(company, 'bull');
+    const terminal = { ...bull, revenue: periods[count - 1].annualRevenue,
+      margin: route.netMargins[count - 1], shares };
+    return { rows, totalRaised, newShares, shares, cash,
+      shareHeadroom: bull.shares - shares, terminal: project(company, terminal) };
+  }
   return { project, hurdle, scenario, select, cycleSort, sortValue, returnPercent, adjustedGrossMargin,
-    investmentProfit, subsidiaryOwnership, fundingStress };
+    investmentProfit, subsidiaryOwnership, fundingStress, liquidityProjection };
 });
