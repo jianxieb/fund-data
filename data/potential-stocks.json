@@ -87,7 +87,7 @@
       "publishedAt": "2026-08-06",
       "period": "2026-06-30",
       "type": "issuer_filing",
-      "locator": "封面；附注6、8、9、10；第37页Q2关税退款、39页H1；July 2026 Offering"
+      "locator": "封面及第5–8页财务表；附注2退款/客户集中、3并购/备考、6权证、8–10股本、12履约余额；MD&A量价及日后融资"
     },
     {
       "id": "oust-release",
@@ -700,6 +700,123 @@
       "period": "2026-07-01/2026-10-18",
       "type": "filing_directory",
       "locator": "28项公告；下载正文筛查权益变动，重点阅读行权、减持、董事会与股东会资料；索引见研究附件"
+    },
+    {
+      "id": "oust-k",
+      "title": "Ouster 2025 Form 10-K",
+      "url": "https://www.sec.gov/Archives/edgar/data/1816581/000162828026013313/oust-20251231.htm",
+      "publishedAt": "2026-03-02",
+      "period": "2025-12-31",
+      "type": "issuer_filing",
+      "locator": "第67–68页收入确认：Gemini功能性许可在可用时确认，维护按期确认；第4–12页产品与竞争"
+    },
+    {
+      "id": "oust-software",
+      "title": "Ouster 2025软件合同及站点进展",
+      "url": "https://investors.ouster.com/node/11396/pdf",
+      "publishedAt": "2026-03-05",
+      "period": "2025-12-31",
+      "type": "issuer_release",
+      "locator": "第1页：软件附带合同翻倍、超过1200个签约站点、七位数年度Gemini许可"
+    },
+    {
+      "id": "oust-nj",
+      "title": "Ouster新泽西40余处完成部署",
+      "url": "https://investors.ouster.com/news-releases/news-release-details/ouster-completes-new-jersey-dot-deployment-ouster-bluecity-ahead",
+      "publishedAt": "2026-06-09",
+      "period": "2026-06-09",
+      "type": "issuer_release",
+      "locator": "完成部署，接入州交通系统；未拆软件收入或回款"
+    },
+    {
+      "id": "oust-atlanta",
+      "title": "Ouster亚特兰大扩展30余个路口",
+      "url": "https://investors.ouster.com/node/11611/pdf",
+      "publishedAt": "2026-04-23",
+      "period": "2026-04-23",
+      "type": "issuer_release",
+      "locator": "第1页：已有6处部署，新增30余处为计划部署"
+    },
+    {
+      "id": "oust-utah",
+      "title": "Ouster犹他州新增160个路口合同",
+      "url": "https://investors.ouster.com/news-releases/news-release-details/ouster-bluecity-rev8-lidar-wins-multimillion-dollar-utah-traffic",
+      "publishedAt": "2026-08-11",
+      "period": "2026-08-11",
+      "type": "issuer_release",
+      "locator": "新增160处、累计接近300处签约；首个Rev8现场已上线；未披露Ouster净收入"
+    },
+    {
+      "id": "oust-nashville",
+      "title": "纳什维尔RS2025-1609采购批准",
+      "url": "https://nashville.legistar.com/LegislationDetail.aspx?FullText=1&GUID=5CCB19B6-398A-4ABC-8297-9C04C527A4FC&ID=7717896&Options=&Search=",
+      "publishedAt": "2025-11-06",
+      "period": "2025-11-06",
+      "type": "customer_record",
+      "locator": "11月4日议会通过、6日市长批准；估值600万美元、60个月，合同对象为Southern Lighting"
+    },
+    {
+      "id": "oust-nashville-contract",
+      "title": "纳什维尔6599268合同及报价附件",
+      "url": "https://nashville.legistar.com/View.ashx?M=F&ID=14896163&GUID=355711D5-AAC6-4803-A99B-D7A5F8A2249C",
+      "publishedAt": "2025-10-23",
+      "period": "2025-10-23",
+      "type": "customer_contract",
+      "locator": "PDF第1–4页：IDIQ、实际交付付款、终止；第17页Exhibit A年度订阅及套件报价"
+    },
+    {
+      "id": "oust-offering",
+      "title": "Ouster 2026年7月发行完成8-K",
+      "url": "https://www.sec.gov/Archives/edgar/data/1816581/000119312526296151/d115877d8k.htm",
+      "publishedAt": "2026-07-06",
+      "period": "2026-07-06",
+      "type": "issuer_filing",
+      "locator": "3621876股、55.22美元公开售价、净额191.9百万（扣承销折佣）；543281股超额配售为权利而非已发行"
+    },
+    {
+      "id": "oust-director-july",
+      "title": "Ouster董事2026年7月薪酬股份Form 4",
+      "url": "https://www.sec.gov/Archives/edgar/data/1816581/000119312526298524/xslF345X06/ownership.xml",
+      "publishedAt": "2026-07-08",
+      "period": "2026-07-06",
+      "type": "issuer_filing",
+      "locator": "Table I及脚注1：660股替代现金董事费，与6月底及7月底总股本对平"
+    },
+    {
+      "id": "oust-exercise-aug",
+      "title": "Ouster CTO 2026年8月期权行权Form 4",
+      "url": "https://www.sec.gov/Archives/edgar/data/1816581/000119312526374910/xslF345X06/ownership.xml",
+      "publishedAt": "2026-08-28",
+      "period": "2026-08-26",
+      "type": "issuer_filing",
+      "locator": "Table I/II：100000股、14.22美元行权价，既有期权转普通股"
+    },
+    {
+      "id": "oust-director-oct",
+      "title": "Ouster董事2026年10月薪酬股份Form 4",
+      "url": "https://www.sec.gov/Archives/edgar/data/1816581/000119312526417009/xslF345X06/ownership.xml",
+      "publishedAt": "2026-10-07",
+      "period": "2026-10-05",
+      "type": "issuer_filing",
+      "locator": "Table I及脚注1：779股替代现金董事费，不是现金融资"
+    },
+    {
+      "id": "oust-rsu-sept",
+      "title": "Ouster CEO 2026年9月RSU税款卖股Form 4",
+      "url": "https://www.sec.gov/Archives/edgar/data/1816581/000119312526393386/xslF345X06/ownership.xml",
+      "publishedAt": "2026-09-16",
+      "period": "2026-09-14",
+      "type": "issuer_filing",
+      "locator": "Table I及脚注1：归属后卖出30385股支付税款，不是全部归属股数或公司融资"
+    },
+    {
+      "id": "oust-filings",
+      "title": "Ouster截至10月18日SEC申报目录",
+      "url": "https://data.sec.gov/submissions/CIK0001816581.json",
+      "publishedAt": "2026-10-18",
+      "period": "2026-07-01至2026-10-18",
+      "type": "filing_directory",
+      "locator": "31项申报下载及内容筛查；相关股本原文复核；固定索引见下载研究"
     }
   ],
   "companies": [
@@ -2392,7 +2509,7 @@
       "status": "watch",
       "rank": 4,
       "tagline": "从激光雷达部件走向多传感器与感知软件",
-      "decision": "边界观察。毛利包含关税退款，收入含并购贡献；还缺有机增长和软件续费证据，不能据报表增速推导十倍。",
+      "decision": "付费软件和项目扩单已有证据，继续观察规模与续费。备考合并H1收入增长42.5%，剔除退款后Q2毛利约39%；当前价格下仍缺支撑十倍的利润与出货规模。",
       "price": {
         "value": 28.43,
         "asOf": "2026-10-16",
@@ -2405,10 +2522,19 @@
         "asOf": "2026-07-31",
         "source": "oust-q",
         "knownPotential": 9.533554,
-        "potentialBasis": "6月底反稀释工具合计1019.3559万股，扣除已发行但待归属Stereolabs股份66.0005万股避免重复。其余包括期权、RSU、ESPP及329.0094万股Amazon权证；该权证已包含在表中，不再加一次。",
-        "futureBasis": "7月发行3.621876百万股已计入7月底普通股，净融资约1.919亿美元不重复增股。基准100百万、乐观105百万、悲观120百万；乐观额外覆盖既有潜在9.533554百万后仍有23.354113百万未来激励/融资空间。Amazon权证已在潜在清单内，不重加。",
-        "gap": "6月底工具清单与7月底普通股日期不同，7月归属可能有重叠；这是保守压力余额，不冒充逐日准确完全稀释股数。",
-        "convertibles": "本次10-Q未列在存可转债；融资仍可能采用新工具，未来增股缓冲及净利率需随实际条款更新。"
+        "potentialBasis": "6月底期权126.6807万、RSU479.2322万、ESPP18.4331万、Amazon权证329.0094万，合计953.3554万股。66.0005万股Stereolabs待服务归属股份已发行，排除出新增潜在股份；不能再加一次。",
+        "futureBasis": "6月底68489797股 + 7月发行3621876股 + 董事费股份660股 = 7月底72112333股，已对平。乐观1.05亿股扣已发行及既有潜在池后，尚留2335.4113万股未来激励/融资；基准1亿、悲观1.2亿仍为假设。已发行7月股份不重复加入。",
+        "gap": "已核验7月以来31项申报。8月10万股旧期权行权、9月RSU税款卖股、10月779股董事费说明7月底股本不是10月名册；仍缺全体奖励授予/取消/归属滚动。旧期权或RSU转普通股不再新增完全稀释总额；不凭个人卖出股数推算全部归属。",
+        "convertibles": "10-Q未列在存可转债。Amazon权证6月底行权价50.30美元、2030-02-04到期，可能继续反稀释调整；低于行权价的起始报价不保证行权现金。公开发行附带的54.3281万股超额配售权未获单独行使确认，授权上限亦不是已发行股数。",
+        "sources": [
+          "oust-q",
+          "oust-offering",
+          "oust-director-july",
+          "oust-exercise-aug",
+          "oust-director-oct",
+          "oust-rsu-sept",
+          "oust-filings"
+        ]
       },
       "financials": {
         "period": "2026-06-30",
@@ -2418,9 +2544,9 @@
         "netIncome": -35.579,
         "netIncomeBasis": "GAAP归属普通股股东亏损",
         "operatingCash": -20.039,
-        "cash": 262.517,
+        "cash": 261.081,
         "debt": 0,
-        "debtBasis": "现金含短期投资及受限资金；无报表有息借款，另有租赁负债",
+        "debtBasis": "现金口径为现金等价物加短期投资，剔除143.6万美元受限资金；无报表有息借款，另有1639.7万美元租赁负债",
         "revenueGrowth": null,
         "anchorRevenue": 220,
         "anchorKind": "assumption",
@@ -2428,25 +2554,33 @@
       },
       "facts": [
         {
-          "text": "Q2营收5462.6万美元、报表毛利率约49%；成本含540万美元IEEPA关税退款。单独扣除退款，毛利率约39.0%，为本研究调整测算而非公司另披露指标。",
+          "text": "软件商业化已有实证：公司披露2025年取得七位数美元年度Gemini许可；纳什维尔客户合同附件单列BlueCity分析平台每年2000美元报价。这不等于全部站点均付费或Ouster实收2000美元。",
+          "sources": [
+            "oust-software",
+            "oust-nashville-contract"
+          ]
+        },
+        {
+          "text": "Q2产品收入5276.3万美元、IP许可费186.3万美元；报表总收入增长55.86%，假设Stereolabs自上年初并入的备考增长44.13%。H1对应为52.49%和42.47%，备考不是有机增长。",
           "sources": [
             "oust-q"
           ]
         },
         {
-          "text": "H1经营现金流-2004万美元，股权薪酬1888万美元；H1 ATM净融资9799万美元，7月又净融资约1.919亿美元。现金增强主要来自融资，不能称已自我造血。",
+          "text": "Q2报表毛利率约48.85%；剔除540万美元关税退款收益后约38.96%。半年内其中仅约60万美元收到现金，余款7月到账；利润调整不能原样再扣现金。",
           "sources": [
             "oust-q"
           ]
         },
         {
-          "text": "与Flyability已有合作，新Rev8仍在评估；合作公告未给采购额，不能把合作关系直接转成2031订单。",
+          "text": "H1经营现金流-2003.9万美元、资本开支520.9万美元；ATM净收款行9798.5万美元，另有2万美元发行费用。7月发行另收约1.919亿美元（扣承销折佣），不能相加后标成10月现金。",
           "sources": [
-            "oust-customer"
+            "oust-q",
+            "oust-offering"
           ]
         },
         {
-          "text": "Q2约1.7万台传感器出货、其中激光雷达约53%；并表Stereolabs带来相机收入，ASP亦有下降。2025Q2成本含170万美元ERC抵减，跨年比较也须调整。",
+          "text": "Q2约1.7万台传感器出货、激光雷达约53%；相机并表及混合售价下降影响比较。客户E占H1收入31%、Q2收入32%，跨行业不等于客户分散。客户身份未披露，不猜作Amazon。",
           "sources": [
             "oust-release",
             "oust-q"
@@ -2463,18 +2597,19 @@
         }
       ],
       "thesis": [
-        "工业物流、测绘与基础设施场景比只押乘用车定点更分散，传感器与感知软件组合可能提高单客户价值。",
-        "与相机平台结合可以降低客户集成复杂度，但也有纯视觉、低价激光雷达和客户自研替代。关键是复杂环境中可靠性和总拥有成本，而非单项分辨率。",
-        "数字架构若能随规模降低物料成本，软硬件产品的组合毛利可改善；收购整合是否产生可收费软件，尚需单列收入和续费验证。"
+        "工业物流、测绘和交通基础设施已有交付与扩单；感知软件可降低客户整合成本，并让硬件之外的许可和维护成为收费项目。纳什维尔客户采购文件提供了独立于发行人宣传的证据。",
+        "犹他州从百余处扩至接近300处签约，且首个Rev8现场已上线，支持产品迭代能进入真实项目。Flyability的新Rev8仍在评估；不同客户阶段不能混为全部量产。",
+        "Gemini含永久或定期功能性许可，可在交付时确认收入，维护另按期确认。已收费不等于高留存SaaS；纯视觉、低价雷达、客户自研仍是替代，竞争应以复杂环境可靠性和客户总成本检验。"
       ],
-      "economics": "剔除Q2关税退款后的毛利率约39.0%，上年Q2剔除ERC成本抵减后约40.3%；这只是可比调整，仍含产品/并购结构变化。20%乐观净利率需要硬件降本和费用大幅摊薄，已低于原26%；软件未披露ARR，不能按成熟订阅平台估值。",
-      "management": "Angus Pacala团队的产品迭代和行业客户是正面证据；收购StereoLabs与多次融资要求检查整合后的有机收入、人员效率与每股价值。管理层的Physical AI叙事必须接受复购、部署和现金流验证。",
-      "funding": "6月底现金及投资约2.625亿美元；7月净融资约1.919亿美元属于日后事件，不把两者相加标为10月现金。当前资金缓冲较充分，仍需承担亏损、SBC和收购投入。模型保留1亿左右股本而非沿用旧的6000多万股。",
+      "economics": "Q2剔除退款后毛利率约39.0%，上年同季剔除ERC抵减后约40.3%，仍受产品和并购结构影响。软件价格和合同已获证实，但总收入、净留存和分部毛利未单列。20%乐观净利率仍须覆盖研发、销售、税和持续股权薪酬，不能直接套用成熟订阅利润率。",
+      "management": "Pacala团队的持续产品交付、软件许可和客户扩单是正面证据。Stereolabs对价5517.2万美元，其中商誉3852.5万美元；收购提供相机与开发者生态，但当前单独利润贡献尚未披露。随收购确认630万美元税务负债、赔偿资产上限190万美元，管理层应同时证明整合收益、履约和每股资本回报。",
+      "funding": "6月底非受限现金及短期投资2.61081亿美元，另有受限143.6万美元；7月发行净收约1.919亿美元（扣承销折佣），是已发生融资而非当前现金余额。H1经营现金减资本开支流出2524.8万美元，另有2749.3万美元净并购支出。缓冲较充分，但还承担4630万美元不可撤销采购承诺、租赁及后续亏损；不把采购承诺重复当银行借款。",
       "fundingSources": [
-        "oust-q"
+        "oust-q",
+        "oust-offering"
       ],
       "marketTest": {
-        "headline": "12亿美元乐观情景仍需较当前大幅扩量，软件收费未获证实。",
+        "headline": "12亿美元乐观终点保留；软件收费已验证，1.8亿美元年度规模仍需检验。",
         "parts": [
           {
             "label": "工业/测绘激光雷达",
@@ -2492,21 +2627,24 @@
           },
           {
             "label": "软件及服务",
-            "units": 90000,
-            "unitLabel": "付费部署",
-            "price": 2000,
+            "kind": "annual_revenue",
             "revenue": 180
           }
         ],
-        "assumptions": "销量、厂家净收入与付费部署均是研究假设；Q2总出货1.7万台，直接年化只有6.8万台，140万台终点要求数量约20.6倍且混合单价下降。此比较不代表产能或需求预测。",
+        "assumptions": "40万台雷达×1800美元、100万台相机×300美元均为2031厂家净收入假设；软件及服务另假设1.8亿美元，计费数量与渠道实收另列敏感性。Q2合计约1.7万台，简单年化6.8万台；140万台约为其20.6倍。硬件数量、ASP与软件重复收费范围都需按合同核验。",
         "boundary": "IFR工业/服务机器人统计不能直接相加为传感器市场。本版删除1000万/3000万台的假设市场分母；工业设施、替换市场等新增需求尚需客户级证据。",
-        "gap": "缺软件ARR与续费、按雷达/相机ASP、有机出货增速及已签量产部署计划。",
+        "gap": "缺雷达/相机完整ASP、剔并购有机增长，以及软件总收入/ARR、续费率、付费计费单位与Ouster净实收比例。已签站点不能一比一换算为年度软件许可数。",
         "sources": [
           "oust-q",
           "oust-release",
+          "oust-k",
+          "oust-software",
+          "oust-nashville-contract",
+          "oust-utah",
           "ifr",
           "ifr-service"
-        ]
+        ],
+        "kind": "mixed_units"
       },
       "scenarios": [
         {
@@ -2518,7 +2656,7 @@
           "pe": null,
           "equityValue": 300,
           "dividends": 0,
-          "story": "硬件降价与纯视觉替代，软件无法收费；持续亏损与稀释后只给3亿美元股权残值，极端可归零。"
+          "story": "硬件价格竞争、软件扩单与续约不及预期；持续亏损及稀释后只给3亿美元股权残值，极端可归零。"
         },
         {
           "id": "base",
@@ -2538,32 +2676,33 @@
           "shares": 105,
           "pe": 30,
           "dividends": 0,
-          "story": "销量扩大、售价下降并形成有限可收费软件，收入12亿美元、净利率20%。所需出货仍远超当前，不再把未披露的软件ARR放大成6亿美元订阅收入。"
+          "story": "硬件放量和软件商业化继续扩张，收入12亿美元、净利率20%。付费已发生，但1.8亿美元软件及服务规模与140万台硬件仍未验证，不因新增合同自动上调终值。"
         }
       ],
       "milestones": [
         {
           "when": "2026-11-03",
-          "test": "Q3已公告财报日：核对产品收入、GAAP毛利、现金消耗与股份，分开收购并表贡献。"
+          "test": "Q3已公告财报日：核对备考/产品增长、退款现金、毛利和最新股本，跟踪犹他新增项目的交付。"
         },
         {
           "when": "2027–2028",
-          "test": "复购及大规模部署把收入推向4亿美元以上；首次披露可收费软件的规模和续费，不能仅有客户Logo。"
+          "test": "复购及部署把收入推向4亿美元以上；软件披露总收入、年度/永久许可结构、客户续费与渠道实收，检验已有收费能否规模化。"
         },
         {
           "when": "2029",
-          "test": "收入能否接近7亿美元、剔除非持续收益后的毛利改善并产生正经营现金；软件未披露付费规模则移除对应终值收入。"
+          "test": "收入接近7亿美元、非一次性毛利改善并产生正经营现金；若软件实际规模持续低于路径，按实数下修1.8亿美元终点，缺披露不直接认作零收入。"
         }
       ],
       "withdraw": [
         "硬件收入增长但毛利和现金流持续恶化，说明价格竞争吞噬规模收益。",
-        "新增产品主要停留在试用与合作公告，付费规模部署连续延后。",
-        "软件收费与客户留存缺口长期未补齐，或股本逼近1.2亿股，下修经营情景而非用估值抵销稀释。"
+        "已签项目的交付或续约连续延后，或客户停止扩单；不能只凭一项新合作覆盖已有项目的恶化。",
+        "软件实收、客户留存持续弱于路径，或股本逼近1.2亿股，应下修每股回报；不以缺披露直接判定软件无法收费，也不用抬估值抵销稀释。"
       ],
       "gaps": [
-        "缺软件ARR、单客户收益、续费率的连续披露。",
-        "缺按雷达、相机拆分的完整ASP与有机增长。",
-        "140万台终点仍缺客户级需求与价格验证；已下修不等于已验证。"
+        "软件收费、客户报价和项目扩单已验证；仍缺整体软件收入/ARR、净留存、渠道实收与分部毛利。",
+        "备考合并收入可比较，但仍缺同口径雷达/相机单价、产品出货和有机增速。",
+        "140万台硬件及1.8亿美元软件终点缺完整客户需求和价格验证；不把已签1200余处一比一当作付费订阅。",
+        "已核验31项半年后申报，仍缺10月全体已发行及潜在工具滚动；已知期权转股不能重复增股。"
       ],
       "alternatives": [
         {
@@ -2601,7 +2740,7 @@
         "dividends": 0,
         "story": "软硬件组合实现30亿美元收入与26%归母净利率，才能刚越十倍；目前销量和订阅证据不足，属于边界情景。"
       },
-      "evidenceLabel": "待验证：有机增长与软件续费",
+      "evidenceLabel": "已见软件收费；待核规模与续费",
       "earningsAdjustment": {
         "period": "2026-Q2",
         "revenue": 54.626,
@@ -2619,10 +2758,12 @@
       "calibration": [
         {
           "label": "需求与增长",
-          "basis": "基准5亿美元约18%年增长；乐观12亿美元约40%。基准下修是因为当期合并增速不等于有机增速；乐观需大量新应用及价格下降下的放量，仍是未验证条件。",
+          "basis": "备考H1合并收入增长42.47%，比未调整的52.49%更能控制并购范围；仍不是有机增速预测。基准5亿美元约18%五年增长、乐观12亿美元约40%；新增付费与扩单支持商业路径，但尚不足以验证2031规模。",
           "sources": [
             "oust-q",
-            "oust-release"
+            "oust-software",
+            "oust-utah",
+            "oust-nashville-contract"
           ]
         },
         {
@@ -2631,8 +2772,371 @@
           "sources": [
             "oust-q"
           ]
+        },
+        {
+          "label": "软件计费与现金",
+          "basis": "客户附件已有2000美元年度订阅报价，不能全算厂家净收入。按100%/80%/60%实收作压力，1.8亿美元需9万/11.25万/15万个年度计费单位；这些不是已签站点预测。许可在时点或期间确认需分开，续约和毛利仍待数据。",
+          "sources": [
+            "oust-k",
+            "oust-nashville-contract"
+          ]
         }
-      ]
+      ],
+      "sensingAudit": {
+        "unit": "million_USD",
+        "sources": [
+          "oust-q",
+          "oust-k",
+          "oust-software",
+          "oust-nj",
+          "oust-atlanta",
+          "oust-utah",
+          "oust-nashville",
+          "oust-nashville-contract",
+          "oust-offering",
+          "oust-director-july",
+          "oust-exercise-aug",
+          "oust-director-oct",
+          "oust-rsu-sept",
+          "oust-filings"
+        ],
+        "revenue": [
+          {
+            "label": "2026Q2 / 上年同季",
+            "reported": 54.626,
+            "priorReported": 35.049,
+            "product": 52.763,
+            "priorProduct": 35.015,
+            "royalty": 1.863,
+            "priorRoyalty": 0.034,
+            "proforma": 54.626,
+            "priorProforma": 37.9
+          },
+          {
+            "label": "2026H1 / 上年同期",
+            "reported": 103.204,
+            "priorReported": 67.681,
+            "product": 100.994,
+            "priorProduct": 66.12,
+            "royalty": 2.21,
+            "priorRoyalty": 1.561,
+            "proforma": 105.189,
+            "priorProforma": 73.831
+          }
+        ],
+        "proformaNote": "备考假设Stereolabs从2025-01-01并入，两年同一组合口径，属于未审计历史演算。H1备考多出198.5万美元收购前收入；没有提供当前独立Stereolabs利润或完整有机增长。IP royalties不是Gemini或BlueCity订阅收入。",
+        "proformaNet": {
+          "reported": -35.579,
+          "proforma": -42.359,
+          "adjustments": [
+            {
+              "label": "新增无形资产摊销",
+              "value": -0.484
+            },
+            {
+              "label": "交易费用时点调整",
+              "value": 4.137
+            },
+            {
+              "label": "新增收购后股权薪酬",
+              "value": -0.303
+            },
+            {
+              "label": "被收购方权证加速归属时点调整",
+              "value": 0.207
+            }
+          ],
+          "note": "这些调整将费用移到假设收购的对应期间，不能把备考损失直接解释成当前Stereolabs单独亏损。"
+        },
+        "software": {
+          "contractedSitesFloor": 1200,
+          "geminiSitesFloor": 550,
+          "blueCitySitesApprox": 700,
+          "softwareAttachedBookingsFactor": 2,
+          "annualLicenseDigits": 7,
+          "asOf": "2026-03-05",
+          "note": "超过1200处为2025年合同覆盖，不是全部已部署或全部当年续费；软件附带合同额包含相关硬件，不是纯软件收入。与后续地方扩单可能重叠，不相加拼成当前总数。",
+          "recognition": "2025年报第68页：Gemini永久或定期功能性许可在软件可用时确认；配套维护为独立履约义务，按维护期确认。年度合同、ARR、确认收入、收到现金不是同一指标。"
+        },
+        "commercial": [
+          {
+            "label": "Gemini年度许可",
+            "date": "2026-03-05",
+            "stage": "公司披露已签",
+            "evidence": "2025年取得七位数美元年度软件许可，客户为未具名全球科技公司；物流场站应用。",
+            "boundary": "支持存在付费；未披露整体ARR、续约、该合同现金或全部站点数。",
+            "sources": [
+              "oust-software"
+            ]
+          },
+          {
+            "label": "纳什维尔采购",
+            "date": "2025-11-06",
+            "stage": "客户采购获批",
+            "evidence": "市政府已批准与渠道商之间估值600万美元、60个月框架；附件列每年2000美元分析订阅。",
+            "boundary": "按采购单及实际满意交付付款，600万美元不是Ouster已确认收入或不可取消订单。",
+            "sources": [
+              "oust-nashville",
+              "oust-nashville-contract"
+            ]
+          },
+          {
+            "label": "新泽西BlueCity",
+            "date": "2026-06-09",
+            "stage": "公司披露已部署",
+            "evidence": "40余个高速公路地点完成部署，接入州交通管理系统，项目在世界杯后继续使用。",
+            "boundary": "未披露单独软件金额、毛利或收款；不再重复算新增站点。",
+            "sources": [
+              "oust-nj"
+            ]
+          },
+          {
+            "label": "犹他州扩单",
+            "date": "2026-08-11",
+            "stage": "扩单，首处Rev8上线",
+            "evidence": "Econolite新增160处合同，使签约范围接近300处；首个Rev8现场已运行。",
+            "boundary": "接近300处是签约总量，不能写成全部完成；渠道合同不等于Ouster净收入。",
+            "sources": [
+              "oust-utah"
+            ]
+          },
+          {
+            "label": "亚特兰大",
+            "date": "2026-04-23",
+            "stage": "既有部署后扩展",
+            "evidence": "初始6处已部署，另有30余个路口拟部署。",
+            "boundary": "公告没有确认新增30余处全部完成，也没有逐项软件回款。",
+            "sources": [
+              "oust-atlanta"
+            ]
+          }
+        ],
+        "customerContract": {
+          "number": "6599268",
+          "estimatedValue": 6,
+          "termMonths": 60,
+          "terminationNoticeDays": 30,
+          "paymentMaximumDays": 60,
+          "subscriptionRetailPrice": 2000,
+          "priceRows": [
+            {
+              "label": "BlueCity双雷达套件",
+              "price": 23000,
+              "shipping": 120
+            },
+            {
+              "label": "BlueCity单雷达套件",
+              "price": 21700,
+              "shipping": 80
+            },
+            {
+              "label": "BlueCity分析平台年度订阅",
+              "price": 2000,
+              "shipping": 0
+            },
+            {
+              "label": "BlueCity分析平台（同SKU另列，期限未写明）",
+              "price": 2880,
+              "shipping": 0
+            },
+            {
+              "label": "Edge与软件套件，不含雷达",
+              "price": 13700,
+              "shipping": 40
+            }
+          ],
+          "note": "客户PDF第17页报价，单位美元，是渠道对客户售价，不是Ouster厂家净收入；第3行2000美元明确为年度订阅，第5行同SKU的2880美元未注明期间，不擅自视作年费或相加。第1页标为IDIQ；采购单和满意交付才触发付款，常规努力30天、最迟60天；可提前30天终止，停拨资金可即终止。框架估值600万美元不等于硬性购买下限。"
+        },
+        "softwareStress": {
+          "annualRevenueTarget": 180,
+          "retailAnnualFee": 2000,
+          "realizationFractions": [
+            1,
+            0.8,
+            0.6
+          ],
+          "note": "只演算全部1.8亿美元都来自该类年度订阅时的数量要求；厂家实收比例为研究假设，不是已知渠道折扣。一个站点可涉及多传感器、平台或许可，公开1200余处与计费单位无已证实的一一关系；若含永久许可或其他服务，则另按实际收费模式重建。"
+        },
+        "cash": {
+          "start": 69.98,
+          "operating": -20.039,
+          "capex": 5.209,
+          "investmentPurchases": 122.307,
+          "investmentMaturities": 94.995,
+          "acquisitionNet": 27.493,
+          "investing": -60.014,
+          "financing": 103.268,
+          "fx": 0,
+          "endIncludingRestricted": 93.195,
+          "cashEquivalents": 91.759,
+          "restrictedCurrent": 0.336,
+          "restrictedNoncurrent": 1.1,
+          "shortInvestments": 169.322,
+          "atmNetLine": 97.985,
+          "extraAtmFees": 0.02,
+          "espp": 1.332,
+          "options": 2.342,
+          "employeeTaxReceipts": 1.629,
+          "tariffProfitBenefit": 5.4,
+          "tariffCashReceived": 0.6,
+          "tariffUnreceivedRounded": 4.8,
+          "tariffReceivableWithInterest": 4.93,
+          "netTaxRefund": 1.64,
+          "julyEquityProceeds": 191.9,
+          "leaseLiabilities": 16.397,
+          "manufacturerCommitments": 24.8,
+          "otherCommitments": 21.5
+        },
+        "cashRows": [
+          [
+            "GAAP净亏损",
+            -35.579
+          ],
+          [
+            "折旧摊销",
+            5.936
+          ],
+          [
+            "股权薪酬",
+            18.879
+          ],
+          [
+            "递延税",
+            -0.571
+          ],
+          [
+            "客户权证冲减收入",
+            2.375
+          ],
+          [
+            "使用权资产摊销",
+            1.663
+          ],
+          [
+            "短期投资折增",
+            -1.115
+          ],
+          [
+            "库存准备转回",
+            -0.052
+          ],
+          [
+            "坏账准备转回",
+            -0.086
+          ],
+          [
+            "出售证券收益",
+            -0.014
+          ],
+          [
+            "应收变动",
+            10.643
+          ],
+          [
+            "库存变动",
+            -5.652
+          ],
+          [
+            "预付及其他资产变动",
+            -9.868
+          ],
+          [
+            "应付变动",
+            0.841
+          ],
+          [
+            "应计及其他负债变动",
+            0.044
+          ],
+          [
+            "合同负债变动",
+            -5.6
+          ],
+          [
+            "租赁负债变动",
+            -1.883
+          ]
+        ],
+        "cashNote": "H1报表经营现金减资本开支为-25.248百万美元。只移除已到账0.6百万关税退款，经营现金为-20.639百万、减资本开支为-25.848百万；这不是完整标准化现金流。4.930百万应收含利息，7月收回不倒灌H1。报表另有1.640百万所得税净退款，未拆毛额及相关付税，保留披露而不编造全退款调整。SBC和客户权证冲减收入为非现金，但仍有股东经济成本。",
+        "acquisition": {
+          "date": "2026-02-04",
+          "cashConsideration": 32.392,
+          "acquiredCash": 4.899,
+          "stockConsideration": 22.78,
+          "totalConsideration": 55.172,
+          "netAssets": 16.647,
+          "goodwill": 38.525,
+          "intangibles": 23.4,
+          "issuedShares": 1847677,
+          "serviceConditionShares": 660005,
+          "taxLiability": 6.3,
+          "indemnificationCap": 1.9,
+          "note": "收购净付现金27.493百万与现金流表一致；66.0005万服务条件股已发行，但后续费用仍需确认。对价不等于当期现金支出，也不能把商誉再加进现金支出。税项赔偿受190万美元托管上限约束，不能把630万美元负债视为全额受保。"
+        },
+        "contracts": {
+          "start": 23.811,
+          "deferred": 4.949,
+          "acquired": 2.279,
+          "recognized": 10.549,
+          "end": 20.49,
+          "licenseCurrent": 0.133,
+          "licenseNoncurrent": 0.354,
+          "otherCurrent": 17.033,
+          "otherNoncurrent": 2.97,
+          "singleContractRevenue": 6.1,
+          "singleContractDeferred": 6.4,
+          "currentUnbilledApprox": 5,
+          "noncurrentUnbilled": 5.254,
+          "contractAssets": 1.289,
+          "note": "多期许可递延主要是IP最低权利金，不能充作软件ARR。其他递延包含2023产品合同，H1确认6.1百万、仍递延6.4百万。部分客户定金可退；20.490百万合同负债不是全部订单积压。5百万当前未开票应收已含应收账款，不重复相加。"
+        },
+        "concentration": {
+          "revenueH1CustomerE": 0.31,
+          "revenueQ2CustomerE": 0.32,
+          "revenueQ2CustomerF": 0.12,
+          "receivableA": 0.3,
+          "receivableE": 0.26
+        },
+        "shares": {
+          "juneIssued": 68489797,
+          "julyIssued": 3621876,
+          "julyDirector": 660,
+          "julyTotal": 72112333,
+          "potentialDate": "2026-06-30",
+          "options": 1266807,
+          "rsu": 4792322,
+          "espp": 184331,
+          "amazon": 3290094,
+          "issuedService": 660005,
+          "totalAntidilutive": 10193559,
+          "amazonStrike": 50.3,
+          "amazonExpiry": "2030-02-04",
+          "amazonVested": 3161365,
+          "augExercise": 100000,
+          "augStrike": 14.22,
+          "octDirector": 779,
+          "optionTranches": [
+            {
+              "shares": 159294,
+              "strike": 1.85
+            },
+            {
+              "shares": 461616,
+              "strike": 2.13
+            },
+            {
+              "shares": 636688,
+              "strike": 14.22
+            },
+            {
+              "shares": 9209,
+              "strike": 52.4
+            }
+          ],
+          "directoryCount": 31,
+          "note": "7月普通股差额可由发行与660股董事费逐项对平；后续10万期权行权是既有潜在股份转普通股，9月税款卖股不是全体归属清单。6月底Amazon权证329.0094万股已计入潜在池，2030年到期早于研究终点；不能同时承诺全部失效和全部融资到账。保留有日期的基数及未来增股缓冲，未称已获得10月实时完全稀释股本。"
+        }
+      }
     },
     {
       "id": "688050",
@@ -3214,8 +3718,8 @@
       }
     }
   ],
-  "revision": 8,
-  "summary": "目前没有一家获得足以支持“五年股价十倍”的经营证据。Amprius、普门与ACM Research继续重点跟踪，Ouster与爱博保留观察。普门新增试剂量价、海外准入与现金证据，区分出货和活跃设备；AMPX须检验融资后的股数，ACMR须剔开投资收益。研究加深不自动上调估值，增长必须落实到每股利润和现金。",
+  "revision": 9,
+  "summary": "目前没有一家获得足以支持“五年股价十倍”的经营证据。Amprius、普门与ACM Research重点跟踪，Ouster与爱博保留观察。Ouster已补到软件收费、客户报价和项目扩单，撤回“收费未证实”的表述；同时核对备考增长、退款现金与稀释。正面商业进展和未验证的五年终点分别呈现，不因补证自动抬高估值。",
   "revisions": [
     {
       "date": "2026-10-18",
@@ -3251,6 +3755,11 @@
       "date": "2026-10-18",
       "previousCommit": "4c5926a",
       "reason": "普门补充问询原文和会计师核查、2025试剂量价/新增装机/境外出货、H1利润与现金桥、Quidel合作和FDA准入。以已披露收入分部替代无法核验的2万活跃设备假设，明确2025至2031六年量价门槛；总股本确认推进至9月4日，核验7月以后28项公告。原23/35亿元情景及未来稀释保留，不以获证抬估值。"
+    },
+    {
+      "date": "2026-10-18",
+      "previousCommit": "40cd6d2af7dad62e8fe87a65f7c49551c96c363b",
+      "reason": "Ouster补入年度软件许可、市政客户合同/报价、犹他扩单及完成部署证据，撤回收费未证实的旧判断。增加备考并购收入、现金/退款/履约余额和31项后续申报核验，精确对平7月股本。删除9万个付费部署的单点基数，改以厂家实收比例演算软件规模；保留12亿美元乐观经营情景及每股回报边界。"
     }
   ],
   "comparisons": [
@@ -4149,7 +4658,7 @@
   "remainingWork": [
     "Amprius：已核对半年现金桥、项目合同删节边界、近期13项申报目录及权证/RSU，并完成年度融资敏感性。仍缺客户交付回款序列、有效产能/良率、项目实际验收与垫资峰值、全体股本滚动；下一份披露应以这些实数替换情景参数，不能把当前假设表当作证实。",
     "普门：已核验2025试剂量价、境内新增装机/境外出货、准入与渠道合作、利润现金桥及半年后28项公告；仍缺活跃设备/退出率、终端实耗、分产品毛利、合作订单及收款条款。下一份披露应以这些数据检验18亿元试剂路径，不把出货或获证当作复购已兑现。",
-    "Ouster：核对剔除退款后的毛利与现金、有机产品增长、软件ARR及续费，未披露前不将软件高估值放入结论。",
+    "Ouster：已核验软件付费、客户采购价/合同、项目扩单、备考合并增长、退款现金与31项半年后申报。公开资料仍缺软件总收入/ARR、续费和渠道净实收、产品ASP/有机增长、10月全体潜在工具滚动。以新披露替换这些参数；不再将收费存在与否列为未解决项。",
     "爱博：已完成旧激励归零、并购付款与债务对平、被收购业务及产线延期核验；仍缺消除并表影响的产品收入桥、归母增量与渠道投入回报，以及新增融资后的现金回收。",
     "ACMR：已完成归母调整与两层稀释压力核验；仍缺母公司最新期权取消余额、H股最终方案、分产品订单验收与收款排程。下一份报告应同时核对主营利润和营运资金，不将投资收益或融资到账视为经营改善。",
     "Aehr：已完成FY2026产品收入、客户集中、订单取消条款、财年过渡及截至8月27日普通股核验；仍需接触器复购分母、后续验收回款及5月29日后全体激励滚动。",

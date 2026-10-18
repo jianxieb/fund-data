@@ -56,7 +56,7 @@ test('the price start, provenance, unit build and scenario claims reconcile for 
     assert.equal(c.price.asOf, data.priceDate);
     assert.equal(c.price.basis, 'regular_close_unadjusted');
     const ids = [c.financials.source, c.shares.source, ...(c.shares.sources || []), ...c.facts.flatMap(f => f.sources), ...c.guidance.flatMap(g => g.sources), ...c.fundingSources, ...c.marketTest.sources, ...c.alternatives.flatMap(a => a.sources), ...c.calibration.flatMap(a => a.sources), ...(c.financingCheck?.sources || []), ...(c.earningsAdjustment?.sources || []), ...(c.productCheck?.sources || []), ...(c.profitCheck?.sources || []), ...(c.cashCheck?.sources || []), ...(c.ownershipCheck?.sources || [])];
-    for (const audit of [c.cashAudit, c.awardAudit, c.dilutionAudit, c.liquidityCheck, c.medicalAudit, c.diagnosticAudit]) ids.push(...(audit?.sources || []));
+    for (const audit of [c.cashAudit, c.awardAudit, c.dilutionAudit, c.liquidityCheck, c.medicalAudit, c.diagnosticAudit, c.sensingAudit]) ids.push(...(audit?.sources || []));
     ids.forEach(id => assert.ok(sourceIds.has(id), `${c.id}: unknown source ${id}`));
     if (c.marketTest.kind === 'segment_growth') {
       near(c.marketTest.parts.reduce((sum, p) => sum + p.reportedRevenue, 0), c.financials.revenue);
@@ -72,7 +72,13 @@ test('the price start, provenance, unit build and scenario claims reconcile for 
         assert.ok(p.baseRevenue > 0 && p.revenue > 0);
         assert.equal(p.units, undefined, 'new installations must not become the active installed base');
       }
-    } else for (const p of c.marketTest.parts) near(p.units * p.price / 1e6, p.revenue);
+    } else for (const p of c.marketTest.parts) {
+      if (p.kind === 'annual_revenue') {
+        assert.equal(c.marketTest.kind, 'mixed_units');
+        assert.equal(p.units, undefined, 'contracted sites must not become paid subscription counts');
+        assert.equal(p.price, undefined, 'a distributor quote is not the manufacturer net revenue');
+      } else near(p.units * p.price / 1e6, p.revenue);
+    }
     const bull = M.scenario(c, 'bull');
     near(c.marketTest.parts.reduce((sum, p) => sum + p.revenue, 0), bull.revenue);
     // Arithmetic and evidence integrity must not enforce an investment conclusion.
@@ -99,6 +105,82 @@ test('the price start, provenance, unit build and scenario claims reconcile for 
     };
     checkSources(c.audit);
   }
+});
+
+test('Ouster compares both reported and combined historical revenue without inventing software ARR', () => {
+  const c = byId('OUST'), a = c.sensingAudit;
+  assert.equal(a.unit, 'million_USD');
+  for (const r of a.revenue) {
+    near(r.product + r.royalty, r.reported);
+    near(r.priorProduct + r.priorRoyalty, r.priorReported);
+    assert.ok(r.proforma / r.priorProforma < r.reported / r.priorReported);
+  }
+  near(a.revenue[1].reported, c.financials.revenue);
+  near(a.revenue[1].proforma-a.revenue[1].reported, 1.985);
+  near(a.revenue[1].proforma/a.revenue[1].priorProforma-1, .4247267407999349);
+  assert.match(a.proformaNote, /不是Gemini或BlueCity订阅收入/);
+  assert.match(a.software.recognition, /永久或定期功能性许可/);
+  assert.match(a.software.recognition, /维护期/);
+  assert.doesNotMatch(c.marketTest.headline + c.thesis.join(' ') + c.scenarios.map(s=>s.story).join(' '), /软件收费未获证实|软件无法收费/);
+});
+
+test('Ouster reconciles cash, acquisition and receivables without deducting an unreceived refund twice', () => {
+  const c = byId('OUST'), a = c.sensingAudit, f = a.cash;
+  near(a.cashRows.reduce((sum,[,v])=>sum+v,0),f.operating);
+  near(f.start+f.operating+f.investing+f.financing+f.fx,f.endIncludingRestricted);
+  near(-f.capex-f.investmentPurchases+f.investmentMaturities-f.acquisitionNet,f.investing);
+  near(f.atmNetLine-f.extraAtmFees+f.espp+f.options+f.employeeTaxReceipts,f.financing);
+  near(f.cashEquivalents+f.restrictedCurrent+f.restrictedNoncurrent,f.endIncludingRestricted);
+  near(f.cashEquivalents+f.shortInvestments,c.financials.cash);
+  near(f.tariffCashReceived+f.tariffUnreceivedRounded,f.tariffProfitBenefit);
+  near(f.operating-f.tariffCashReceived,-20.639);
+  near(f.operating-f.tariffCashReceived-f.capex,-25.848);
+  assert.notEqual(f.tariffCashReceived,f.tariffProfitBenefit);
+  const q=a.acquisition;
+  near(q.cashConsideration-q.acquiredCash,f.acquisitionNet);
+  near(q.cashConsideration+q.stockConsideration,q.totalConsideration);
+  near(q.netAssets+q.goodwill,q.totalConsideration);
+  assert.ok(q.indemnificationCap < q.taxLiability);
+  const k=a.contracts;
+  near(k.start+k.deferred+k.acquired-k.recognized,k.end);
+  near(k.licenseCurrent+k.licenseNoncurrent+k.otherCurrent+k.otherNoncurrent,k.end);
+  assert.match(k.note,/不能充作软件ARR/);
+});
+
+test('Ouster share rollforward excludes already issued acquisition shares and later option conversions', () => {
+  const c=byId('OUST'), s=c.sensingAudit.shares;
+  near(s.juneIssued+s.julyIssued+s.julyDirector,s.julyTotal);
+  near(s.julyTotal/1e6,c.shares.value);
+  near(s.options+s.rsu+s.espp+s.amazon+s.issuedService,s.totalAntidilutive);
+  near((s.totalAntidilutive-s.issuedService)/1e6,c.shares.knownPotential);
+  near(s.optionTranches.reduce((sum,r)=>sum+r.shares,0),s.options);
+  assert.equal(s.augExercise,100000);
+  assert.equal(s.octDirector,779);
+  assert.ok(s.amazonExpiry < data.horizonDate);
+  const index=JSON.parse(fs.readFileSync('docs/research/ouster-filings-2026-10-18.json'));
+  assert.equal(index.records.length,31);
+  assert.equal(index.records.length,s.directoryCount);
+  assert.equal(new Set(index.records.map(r=>r.accessionNumber)).size,31);
+  for(const r of index.records) {
+    assert.match(r.sha256,/^[a-f0-9]{64}$/);
+    assert.ok(r.bytes>0 && r.filingDate>=index.from && r.filingDate<=index.through);
+    assert.match(r.url,/^https:\/\/www.sec.gov\/Archives\/edgar\//);
+  }
+  for(const [form,count] of Object.entries(index.counts)) assert.equal(index.records.filter(r=>r.form===form).length,count);
+});
+
+test('Ouster retail contract price constrains a sensitivity, not an assumed count of paid sites', () => {
+  const a=byId('OUST').sensingAudit, s=a.softwareStress, k=a.customerContract;
+  near(k.subscriptionRetailPrice,s.retailAnnualFee);
+  near(s.annualRevenueTarget,byId('OUST').marketTest.parts.find(p=>p.kind==='annual_revenue').revenue);
+  assert.deepEqual(s.realizationFractions.map(r=>s.annualRevenueTarget*1e6/(s.retailAnnualFee*r)),[90000,112500,150000]);
+  assert.equal(k.estimatedValue,6);
+  assert.equal(k.termMonths,60);
+  assert.equal(k.terminationNoticeDays,30);
+  assert.match(k.note,/不是Ouster厂家净收入/);
+  assert.match(k.note,/硬性购买下限/);
+  assert.match(s.note,/无已证实的一一关系/);
+  assert.match(a.commercial.find(r=>r.label==='犹他州扩单').boundary,/不能写成全部完成/);
 });
 
 test('Pumen price-volume evidence keeps new domestic installations distinct from overseas sell-in', () => {
@@ -586,6 +668,13 @@ test('both markets, empty search recovery and every detail tab expose complete e
         assert.match(f.modal, /64\.660/);
         assert.match(f.modal, /不能直接全部加回归母/);
       }
+      if (c.sensingAudit) {
+        assert.match(f.modal, /软件收费与项目交付/);
+        assert.match(f.modal, /七位数/);
+        assert.match(f.modal, /42\.47/);
+        assert.match(f.modal, /20\.639/);
+        assert.match(f.modal, /不是Ouster厂家净收入/);
+      }
       f.click('potential-detail-tab', 'scenarios');
       assert.match(f.modal, /期末股数/);
       assert.match(f.modal, /终值PE降低25%/);
@@ -603,6 +692,13 @@ test('both markets, empty search recovery and every detail tab expose complete e
         assert.match(f.modal, /试剂增长与降价压力/);
         assert.match(f.modal, /2026-09-04/);
         assert.doesNotMatch(f.modal, /单位净收入<\/th>|NaN|undefined/);
+      }
+      if (c.sensingAudit) {
+        assert.match(f.modal, /渠道实收敏感性/);
+        assert.match(f.modal, /112,?500/);
+        assert.match(f.modal, /72,?112,?333/);
+        assert.match(f.modal, /未假定已知厂家单价/);
+        assert.doesNotMatch(f.modal, /NaN|undefined/);
       }
       if (c.financingCheck) assert.match(f.modal, /融资敏感性/);
       if (c.medicalAudit) {

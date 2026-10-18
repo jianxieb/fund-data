@@ -7,6 +7,7 @@ import { dirname, resolve } from 'node:path';
 import { batteryAudit, annualFunding } from './potential_battery_audit.mjs';
 import { medicalAudit } from './potential_medical_audit.mjs';
 import { diagnosticAudit } from './potential_diagnostic_audit.mjs';
+import { sensingAudit, sensingTargets } from './potential_sensing_audit.mjs';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const require = createRequire(import.meta.url);
 const M = require('../assets/potential-model.js');
@@ -67,6 +68,7 @@ for (const c of data.companies) {
   md += batteryAudit(c, sources, n);
   md += medicalAudit(c, sources, n);
   md += diagnosticAudit(c, sources, n);
+  md += sensingAudit(c, sources, n);
   md += '\n### 管理层指引与研究假设\n\n';
   md += c.guidance.length ? c.guidance.map(g => `- 管理层指引：${g.text} ${sources(g.sources)}`).join('\n') : '未将未核实的全年经营目标设为公司指引。';
   md += `\n\n收入增长锚点：${f.anchorLabel}，金额 ${amount(f.anchorRevenue)}。下面所有2031参数、行业份额和里程碑阈值均为研究者假设，不是公司承诺或外部一致预期。\n\n### 经营路径、竞争与资本配置\n\n${c.thesis.join('\n\n')}\n\n${c.economics}\n\n${c.management}\n\n${c.funding}\n\n${sources(c.fundingSources)}\n\n### 股本与稀释\n\n${c.shares.potentialBasis}\n\n${c.shares.futureBasis}\n\n${c.shares.convertibles}\n\n具体缺项：${c.shares.gap}\n\n`;
@@ -101,7 +103,8 @@ for (const c of data.companies) {
   } else if (c.marketTest.kind === 'annual_segments') {
     const years = c.marketTest.targetYear - c.marketTest.baseYear;
     md += `| 产品线 / 亿原币 | ${c.marketTest.baseYear}实际 | ${c.marketTest.targetYear}假设 | 所需${years}年增速 |\n| --- | ---: | ---: | ---: |\n` + c.marketTest.parts.map(p => `| ${p.label} | ${n(p.baseRevenue / 100, 4)} | ${n(p.revenue / 100)} | ${n(((p.revenue / p.baseRevenue) ** (1 / years) - 1) * 100)}% |`).join('\n');
-  } else md += '| 收入组成（2031假设） | 数量 | 单位净收入 | 收入 / 亿原币 |\n| --- | ---: | ---: | ---: |\n' + c.marketTest.parts.map(p => `| ${p.label} | ${n(p.units)} ${p.unitLabel} | ${n(p.price)} | ${n(p.revenue / 100)} |`).join('\n');
+  } else md += '| 收入组成（2031假设） | 数量 | 单位净收入 | 收入 / 亿原币 |\n| --- | ---: | ---: | ---: |\n' + c.marketTest.parts.map(p => `| ${p.label} | ${p.kind === 'annual_revenue' ? '按年度收入假设；计费数量另测' : n(p.units) + ' ' + p.unitLabel} | ${p.kind === 'annual_revenue' ? '未假定已知厂家单价' : n(p.price)} | ${n(p.revenue / 100)} |`).join('\n');
+  md += sensingTargets(c, sources, n);
   md += `\n\n${c.marketTest.assumptions}\n\n${c.marketTest.boundary}\n\n缺项：${c.marketTest.gap}\n\n${sources(c.marketTest.sources)}\n\n### 验证里程碑与撤回信号\n\n`;
   md += c.milestones.map(m => `- ${m.when}：${m.test}`).join('\n') + '\n\n撤回或下修：\n\n' + c.withdraw.map(t => '- ' + t).join('\n');
   md += '\n\n尚缺的具体证据：\n\n' + c.gaps.map(t => '- ' + t).join('\n') + '\n\n### 为什么不选常见替代\n\n';
