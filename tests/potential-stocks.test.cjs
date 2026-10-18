@@ -56,7 +56,7 @@ test('the price start, provenance, unit build and scenario claims reconcile for 
     assert.equal(c.price.asOf, data.priceDate);
     assert.equal(c.price.basis, 'regular_close_unadjusted');
     const ids = [c.financials.source, c.shares.source, ...(c.shares.sources || []), ...c.facts.flatMap(f => f.sources), ...c.guidance.flatMap(g => g.sources), ...c.fundingSources, ...c.marketTest.sources, ...c.alternatives.flatMap(a => a.sources), ...c.calibration.flatMap(a => a.sources), ...(c.financingCheck?.sources || []), ...(c.earningsAdjustment?.sources || []), ...(c.productCheck?.sources || []), ...(c.profitCheck?.sources || []), ...(c.cashCheck?.sources || []), ...(c.ownershipCheck?.sources || [])];
-    for (const audit of [c.cashAudit, c.awardAudit, c.dilutionAudit, c.liquidityCheck, c.medicalAudit]) ids.push(...(audit?.sources || []));
+    for (const audit of [c.cashAudit, c.awardAudit, c.dilutionAudit, c.liquidityCheck, c.medicalAudit, c.diagnosticAudit]) ids.push(...(audit?.sources || []));
     ids.forEach(id => assert.ok(sourceIds.has(id), `${c.id}: unknown source ${id}`));
     if (c.marketTest.kind === 'segment_growth') {
       near(c.marketTest.parts.reduce((sum, p) => sum + p.reportedRevenue, 0), c.financials.revenue);
@@ -64,6 +64,13 @@ test('the price start, provenance, unit build and scenario claims reconcile for 
         near(p.baseRevenue, p.reportedRevenue * 2);
         assert.ok(p.priorRevenue > 0 && p.revenue > 0);
         assert.equal(p.units, undefined, 'do not invent device counts from revenue');
+      }
+    } else if (c.marketTest.kind === 'annual_segments') {
+      near(c.marketTest.parts.reduce((sum,p)=>sum+p.baseRevenue,0), c.diagnosticAudit.history.annual.revenue);
+      assert.equal(c.marketTest.targetYear - c.marketTest.baseYear, 6, '2025 annual actual to 2031 is six years, independent of five-year stock return');
+      for (const p of c.marketTest.parts) {
+        assert.ok(p.baseRevenue > 0 && p.revenue > 0);
+        assert.equal(p.units, undefined, 'new installations must not become the active installed base');
       }
     } else for (const p of c.marketTest.parts) near(p.units * p.price / 1e6, p.revenue);
     const bull = M.scenario(c, 'bull');
@@ -92,6 +99,61 @@ test('the price start, provenance, unit build and scenario claims reconcile for 
     };
     checkSources(c.audit);
   }
+});
+
+test('Pumen price-volume evidence keeps new domestic installations distinct from overseas sell-in', () => {
+  const c = byId('688389'), a = c.diagnosticAudit;
+  assert.equal(a.unit, 'million_CNY');
+  near(a.mainRevenue.find(p=>p.label==='诊断试剂').current, 528.3995);
+  assert.ok(Math.abs(a.mainRevenue.reduce((s,p)=>s+p.current,0)-a.mainRevenueTotal)<.0002, 'rounded source revenue allows only a small rounding difference');
+  for (const p of a.products) assert.ok(Math.abs((1+p.volumeGrowth)*(1+p.priceGrowth)-1-p.revenueGrowth)<.0002, p.label);
+  const ecl = a.products.find(p=>p.label==='化学发光试剂');
+  assert.ok(ecl.volumeGrowth>0 && ecl.revenueGrowth<0 && ecl.priceGrowth<0);
+  assert.equal(a.installations.find(p=>p.label==='化学发光境内').deviceBasis,'new_domestic_installations');
+  assert.equal(a.installations.find(p=>p.label==='化学发光境外').deviceBasis,'foreign_shipments');
+  assert.deepEqual(a.installations.find(p=>p.label==='特定蛋白境外').devices,[null,null]);
+  near(a.reagentTargets.reduce((s,p)=>s+p.base,0),a.reagentRevenue);
+  near(a.reagentTargets.reduce((s,p)=>s+p.target,0),c.marketTest.parts.find(p=>p.label==='诊断试剂').revenue);
+  near((1800/a.reagentRevenue)**(1/a.targetYears)/.95-1,.291203652511568);
+});
+
+test('Pumen cash, bank debt and signed income rows reconcile without adding restricted deposits or pretax FX twice', () => {
+  const c = byId('688389'), a = c.diagnosticAudit, f = a.cash;
+  near(a.profitRows.reduce((s,p)=>s+p.current,0),a.history.current.netIncome);
+  near(a.profitRows.reduce((s,p)=>s+p.prior,0),a.history.prior.netIncome);
+  near(a.financeRows.reduce((s,p)=>s+p.current,0),23.24441347);
+  near(a.financeRows.reduce((s,p)=>s+p.prior,0),-20.11832897);
+  near(f.start+f.operating+f.investing+f.financing+f.fx,f.end);
+  near(f.end+f.termDeposits+f.accruedInterest+f.frozen,f.monetaryFunds);
+  near(f.investmentReceipts-f.investmentPayments-f.capex+f.assetDisposalCash,f.investing);
+  near(f.borrowed-f.repaid-f.dividendsAndInterest-f.otherFinancingOut,f.financing);
+  near(f.shortDebtStart+f.borrowed-f.repaid,f.shortDebtEnd);
+  near(f.operating-f.capex,64.66006148);
+  near(c.financials.cash,f.end);
+  near(c.financials.debt,f.shortDebtEnd);
+  assert.ok(f.dividendsAndInterest>f.operating-f.capex);
+  assert.ok(f.termDeposits>100*f.frozen, 'term deposits must not all be described as frozen cash');
+  const g=a.goodwill;
+  near(g.openingProvision+g.annualCharge-g.disposedImpaired,g.endingProvision);
+  near(g.selected.reduce((s,p)=>s+p.impairment,0),g.endingProvision);
+  near(g.endingGross-g.endingProvision,g.endingNet);
+});
+
+test('Pumen post-half filing audit advances issued-share evidence but not the date of outstanding options', () => {
+  const c=byId('688389'), a=c.diagnosticAudit.shares;
+  const inv=JSON.parse(fs.readFileSync('docs/research/pumen-filings-2026-10-18.json'));
+  assert.equal(inv.records.length,inv.reportedTotal);
+  assert.equal(inv.records.length,a.directoryCount);
+  assert.equal(new Set(inv.records.map(r=>r.id)).size,28);
+  assert.ok(inv.records.every(r=>r.publishedAt>='2026-07-01' && r.publishedAt<=data.reviewedAt));
+  assert.equal(inv.confirmedIssuedShares.asOf,c.shares.asOf);
+  assert.ok(inv.records.some(r=>r.id===inv.confirmedIssuedShares.sourceId));
+  near(inv.confirmedIssuedShares.value/1e6,c.shares.value);
+  assert.equal(c.shares.knownPotentialAsOf,'2026-06-30');
+  assert.equal(a.q2Exercised,0);
+  assert.ok(a.exercisePrices.every(p=>p>c.price.value));
+  assert.match(c.shares.gap,/登记结算/);
+  assert.equal(a.confirmedDate,'2026-09-04');
 });
 
 test('Aibo award rollforward includes the split, final registration and treasury shares once', () => {
@@ -517,6 +579,13 @@ test('both markets, empty search recovery and every detail tab expose complete e
         assert.match(f.modal, /2028-10/);
         assert.match(f.modal, /未写经营现金流/);
       }
+      if (c.diagnosticAudit) {
+        assert.match(f.modal, /试剂量价/);
+        assert.match(f.modal, /境外出货/);
+        assert.match(f.modal, /H100Plus/);
+        assert.match(f.modal, /64\.660/);
+        assert.match(f.modal, /不能直接全部加回归母/);
+      }
       f.click('potential-detail-tab', 'scenarios');
       assert.match(f.modal, /期末股数/);
       assert.match(f.modal, /终值PE降低25%/);
@@ -528,6 +597,12 @@ test('both markets, empty search recovery and every detail tab expose complete e
       if (c.marketTest.kind === 'segment_growth') {
         assert.match(f.modal, /H1简单年化/);
         assert.doesNotMatch(f.modal, /单位净收入<\/th>/);
+      }
+      if (c.marketTest.kind === 'annual_segments') {
+        assert.match(f.modal, /所需6年增速/);
+        assert.match(f.modal, /试剂增长与降价压力/);
+        assert.match(f.modal, /2026-09-04/);
+        assert.doesNotMatch(f.modal, /单位净收入<\/th>|NaN|undefined/);
       }
       if (c.financingCheck) assert.match(f.modal, /融资敏感性/);
       if (c.medicalAudit) {

@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { batteryAudit, annualFunding } from './potential_battery_audit.mjs';
 import { medicalAudit } from './potential_medical_audit.mjs';
+import { diagnosticAudit } from './potential_diagnostic_audit.mjs';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const require = createRequire(import.meta.url);
 const M = require('../assets/potential-model.js');
@@ -65,6 +66,7 @@ for (const c of data.companies) {
   }
   md += batteryAudit(c, sources, n);
   md += medicalAudit(c, sources, n);
+  md += diagnosticAudit(c, sources, n);
   md += '\n### 管理层指引与研究假设\n\n';
   md += c.guidance.length ? c.guidance.map(g => `- 管理层指引：${g.text} ${sources(g.sources)}`).join('\n') : '未将未核实的全年经营目标设为公司指引。';
   md += `\n\n收入增长锚点：${f.anchorLabel}，金额 ${amount(f.anchorRevenue)}。下面所有2031参数、行业份额和里程碑阈值均为研究者假设，不是公司承诺或外部一致预期。\n\n### 经营路径、竞争与资本配置\n\n${c.thesis.join('\n\n')}\n\n${c.economics}\n\n${c.management}\n\n${c.funding}\n\n${sources(c.fundingSources)}\n\n### 股本与稀释\n\n${c.shares.potentialBasis}\n\n${c.shares.futureBasis}\n\n${c.shares.convertibles}\n\n具体缺项：${c.shares.gap}\n\n`;
@@ -96,6 +98,9 @@ for (const c of data.companies) {
   md += `**十倍反算**：每股价格需 ${n(h.price)}；按乐观期末 ${n(bull.shares)}百万股，股权价值需 ${amount(h.equity)}，相对起始股本折算值为 ${n(h.capitalMultiple)}倍。用 ${bull.pe}倍PE与 ${n(bull.margin * 100)}%归母净利率，需利润 ${amount(h.profit)}、收入 ${amount(h.revenue)}，收入五年CAGR ${n(h.revenueCagr * 100)}%。\n\n若终值PE下降25%，乐观股价倍数变为 ${n(M.project(c, { ...bull, pe: bull.pe * .75 }).priceMultiple)}倍；若期末股数再增20%，变为 ${n(M.project(c, { ...bull, shares: bull.shares * 1.2 }).priceMultiple)}倍。两项同时发生则为 ${n(M.project(c, { ...bull, pe: bull.pe * .75, shares: bull.shares * 1.2 }).priceMultiple)}倍。分红不用于掩盖股价十倍未达标。\n\n### 市场容量与单位经济反查\n\n${c.marketTest.headline}\n\n`;
   if (c.marketTest.kind === 'segment_growth') {
     md += '| 产品线 / 亿原币 | 2025H1 | 2026H1 | 同比 | 2026H1简单年化 | 2031假设 | 所需五年增速 |\n| --- | ---: | ---: | ---: | ---: | ---: | ---: |\n' + c.marketTest.parts.map(p => `| ${p.label} | ${n(p.priorRevenue / 100, 3)} | ${n(p.reportedRevenue / 100, 3)} | ${n((p.reportedRevenue / p.priorRevenue - 1) * 100)}% | ${n(p.baseRevenue / 100, 3)} | ${n(p.revenue / 100)} | ${n(((p.revenue / p.baseRevenue) ** (1 / data.horizonYears) - 1) * 100)}% |`).join('\n');
+  } else if (c.marketTest.kind === 'annual_segments') {
+    const years = c.marketTest.targetYear - c.marketTest.baseYear;
+    md += `| 产品线 / 亿原币 | ${c.marketTest.baseYear}实际 | ${c.marketTest.targetYear}假设 | 所需${years}年增速 |\n| --- | ---: | ---: | ---: |\n` + c.marketTest.parts.map(p => `| ${p.label} | ${n(p.baseRevenue / 100, 4)} | ${n(p.revenue / 100)} | ${n(((p.revenue / p.baseRevenue) ** (1 / years) - 1) * 100)}% |`).join('\n');
   } else md += '| 收入组成（2031假设） | 数量 | 单位净收入 | 收入 / 亿原币 |\n| --- | ---: | ---: | ---: |\n' + c.marketTest.parts.map(p => `| ${p.label} | ${n(p.units)} ${p.unitLabel} | ${n(p.price)} | ${n(p.revenue / 100)} |`).join('\n');
   md += `\n\n${c.marketTest.assumptions}\n\n${c.marketTest.boundary}\n\n缺项：${c.marketTest.gap}\n\n${sources(c.marketTest.sources)}\n\n### 验证里程碑与撤回信号\n\n`;
   md += c.milestones.map(m => `- ${m.when}：${m.test}`).join('\n') + '\n\n撤回或下修：\n\n' + c.withdraw.map(t => '- ' + t).join('\n');

@@ -22,8 +22,24 @@
     ...(c.financingCheck?.sources || []), ...(c.earningsAdjustment?.sources || []), ...(c.productCheck?.sources || []),
     ...(c.profitCheck?.sources || []), ...(c.cashCheck?.sources || []), ...(c.ownershipCheck?.sources || []),
     ...(c.cashAudit?.sources || []), ...(c.awardAudit?.sources || []), ...(c.dilutionAudit?.sources || []),
-    ...(c.liquidityCheck?.sources || []), ...(c.medicalAudit?.sources || [])])];
+    ...(c.liquidityCheck?.sources || []), ...(c.medicalAudit?.sources || []), ...(c.diagnosticAudit?.sources || [])])];
   const evidenceTable = (headers, rows) => '<div class="table-wrap"><table class="potential-scenario-table"><thead><tr>' + headers.map(h => '<th>' + e(h) + '</th>').join('') + '</tr></thead><tbody>' + rows.map(row => '<tr>' + row.map((v, i) => i === 0 ? '<th scope="row">' + e(v) + '</th>' : '<td>' + e(v) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>';
+  function diagnosticEvidence(c) {
+    const a = c.diagnosticAudit;
+    if (!a) return '';
+    const f = a.cash;
+    let html = '<section><h3>试剂量价 · 2025全年</h3>' + evidenceTable(['主要试剂', '收入 / 百万元', '销量变化', '均价变化', '收入变化'], a.products.filter(p => p.label.endsWith('试剂')).map(p => [p.label, n(p.revenue, 3), percent(p.volumeGrowth), percent(p.priceGrowth), percent(p.revenueGrowth)])) + '<p>试剂占IVD收入 ' + percent(a.reagentRevenue / a.ivdRevenue) + '。销量增长仍可能被降价抵消。</p>' + sourceLinks(['pumen-inquiry','pumen-auditor']) + '</section>';
+    html += '<details class="potential-method"><summary>查看新增装机与境外出货</summary>' + evidenceTable(['产品 / 地区', '仪器口径', '2025台数', '2024台数', '2025试剂 / 万人份', '2024试剂 / 万人份'], a.installations.map(p => [p.label, p.deviceBasis === 'new_domestic_installations' ? '当年新增装机' : '境外出货', ...p.devices.map(v => v === null ? '未披露' : n(v,0)), ...p.reagents.map(v=>n(v,2))])) + '<p>' + e(a.installationNote) + '</p><p>' + e(a.regionNote) + '</p>' + sourceLinks(['pumen-inquiry']) + '</details>';
+    html += '<section><h3>海外准入与商业进展</h3>' + a.commercial.map(p => '<p><strong>' + e(p.label) + ' · ' + e(p.date) + '</strong><br>' + e(p.evidence) + ' ' + e(p.boundary) + sourceLinks(p.sources) + '</p>').join('') + '</section>';
+    html += '<details class="potential-method"><summary>查看现金来源与可用资金</summary>' + evidenceTable(['2026H1 / 百万元', '金额'], [['经营现金', f.operating], ['减：长期资产购建', -f.capex], ['两项相抵', f.operating-f.capex], ['分红及付息现金', f.dividendsAndInterest], ['净偿还银行借款', f.repaid-f.borrowed], ['期末现金及等价物', f.end], ['另有定期存款',f.termDeposits], ['另有应计利息',f.accruedInterest], ['诉讼冻结资金',f.frozen], ['期末短期银行借款',f.shortDebtEnd]].map(([label,value])=>[label,n(value,3)])) + '<p>' + e(a.cashNote) + '</p>' + sourceLinks(['pumen','pumen-cash-management']) + '</details>';
+    html += '<details class="potential-method"><summary>查看利润变动与财务费用</summary>' + evidenceTable(['财务费用 / 百万元', '2026H1', '2025H1', '费用变化'], a.financeRows.map(p=>[p.label,n(p.current,3),n(p.prior,3),n(p.current-p.prior,3)])) + '<p>归母利润由 ' + n(a.history.prior.netIncome,3) + ' 降至 ' + n(a.history.current.netIncome,3) + ' 百万元。税项和少数损益已在下载研究中逐项对平；上述财务费用是税前数，不能直接全部加回归母。</p>' + sourceLinks(['pumen','pumen-ir']) + '</details>';
+    return html;
+  }
+  function diagnosticTargets(c) {
+    const a = c.diagnosticAudit;
+    if (!a) return '';
+    return '<details class="potential-method"><summary>查看试剂增长与降价压力</summary><p>' + e(a.targetNote) + '</p>' + evidenceTable(['试剂 / 百万元', '2025实际', '2031假设', '六年收入增速', '均价年降5%时所需销量增速'], a.reagentTargets.map(p=>[p.label,n(p.base,3),n(p.target),percent((p.target/p.base)**(1/a.targetYears)-1),percent((p.target/p.base)**(1/a.targetYears)/.95-1)])) + sourceLinks(['pumen-inquiry','pumen-quidel']) + '</details>';
+  }
   function medicalEvidence(c) {
     const a = c.medicalAudit;
     if (!a) return '';
@@ -94,6 +110,7 @@
   }
   function marketBuild(c) {
     const m = c.marketTest;
+    if (m.kind === 'annual_segments') return evidenceTable(['产品线', m.baseYear + '实际收入', m.targetYear + '收入假设', '所需' + (m.targetYear-m.baseYear) + '年增速'], m.parts.map(p=>[p.label,amount(c,p.baseRevenue),amount(c,p.revenue),percent((p.revenue/p.baseRevenue)**(1/(m.targetYear-m.baseYear))-1)])) + diagnosticTargets(c);
     if (m.kind === 'segment_growth') return '<div class="table-wrap"><table class="potential-scenario-table"><thead><tr><th>产品线</th><th>2026H1</th><th>H1简单年化</th><th>2031收入假设</th><th>隐含五年增速</th></tr></thead><tbody>' + m.parts.map(p => '<tr><th scope="row">' + e(p.label) + '</th><td>' + amount(c, p.reportedRevenue) + '</td><td>' + amount(c, p.baseRevenue) + '</td><td>' + amount(c, p.revenue) + '</td><td>' + percent((p.revenue / p.baseRevenue) ** (1 / data().horizonYears) - 1) + '</td></tr>').join('') + '</tbody></table></div>';
     return '<div class="table-wrap"><table class="potential-scenario-table"><thead><tr><th>2031收入假设</th><th>数量</th><th>单位净收入</th><th>收入</th></tr></thead><tbody>' + m.parts.map(p => '<tr><th scope="row">' + e(p.label) + '</th><td>' + n(p.units, 0) + e(p.unitLabel) + '</td><td>' + n(p.price, 0) + currency(c) + '</td><td>' + amount(c, p.revenue) + '</td></tr>').join('') + '</tbody></table></div>';
   }
@@ -155,7 +172,7 @@
     return '<div class="potential-page"><div class="potential-warning"><strong>十倍尚未获证据支持</strong><span>经营情景与十倍门槛分开看；具体缺项见各公司判断。</span></div>' + filters + '<section class="card"><div class="table-caption stock-table-caption"><span><b>' + rows.length + '</b> / ' + pool.length + ' 家候选 · 研究 ' + e(d.reviewedAt) + ' · 修订' + d.revision + '</span>' + views + (state.sort !== 'default' ? '<span class="stock-sort-status">按' + e(sortNames[state.sort]) + (state.descending ? '降序' : '升序') + H.action('恢复默认', 'potential-sort-reset', 'text-link small') + '</span>' : '') + '</div>' + (state.view === 'returns' ? '<div class="potential-return-controls"><span>未来五年 · 情景假设</span>' + H.annualControl() + '</div>' : '') + '<div class="table-wrap stock-table-wrap potential-table-wrap" tabindex="0" role="region" aria-label="潜力研究表，可横向滚动"><table class="research-table stock-table potential-table potential-' + state.view + '-table"><thead><tr><th>公司 / 主营业务</th>' + headers + '</tr></thead><tbody>' + rows.map(c => '<tr data-stock-row="' + e(c.id) + '">' + identity(c) + cells(c) + '</tr>').join('') + (!rows.length ? '<tr><td colspan="' + count + '"><div class="empty">当前条件没有匹配公司。' + H.action('清除筛选', 'potential-reset', 'text-link') + '</div></td></tr>' : '') + '</tbody></table></div><div class="panel-foot">' + e(foot) + '</div></section></div>';
   }
   function judgment(c) {
-    return '<section><h3>研究判断</h3><p class="potential-lead">' + e(c.decision) + '</p>' + paragraphs(c.thesis) + '</section><div class="potential-detail-columns"><section><h3>已验证事实</h3>' + c.facts.map(f => '<p>' + e(f.text) + sourceLinks(f.sources) + '</p>').join('') + '</section><section><h3>管理层指引</h3>' + (c.guidance.length ? c.guidance.map(g => '<p>' + e(g.text) + sourceLinks(g.sources) + '</p>').join('') : '<p>未将未核实的全年经营目标设为公司指引。</p>') + '<h3>单位经济与竞争</h3><p>' + e(c.economics) + '</p></section></div>' + profitEvidence(c) + cashEvidence(c) + batteryCashEvidence(c) + medicalEvidence(c) + '<section><h3>管理层与资本配置</h3><p>' + e(c.management) + '</p><h3>融资与现金承受能力</h3><p>' + e(c.funding) + sourceLinks(c.fundingSources) + '</p></section><section><h3>为什么没有优先选常见替代</h3>' + c.alternatives.map(a => '<p><strong>' + e(a.name) + '</strong> — ' + e(a.reason) + sourceLinks(a.sources) + '</p>').join('') + '</section>';
+    return '<section><h3>研究判断</h3><p class="potential-lead">' + e(c.decision) + '</p>' + paragraphs(c.thesis) + '</section><div class="potential-detail-columns"><section><h3>已验证事实</h3>' + c.facts.map(f => '<p>' + e(f.text) + sourceLinks(f.sources) + '</p>').join('') + '</section><section><h3>管理层指引</h3>' + (c.guidance.length ? c.guidance.map(g => '<p>' + e(g.text) + sourceLinks(g.sources) + '</p>').join('') : '<p>未将未核实的全年经营目标设为公司指引。</p>') + '<h3>单位经济与竞争</h3><p>' + e(c.economics) + '</p></section></div>' + profitEvidence(c) + cashEvidence(c) + batteryCashEvidence(c) + medicalEvidence(c) + diagnosticEvidence(c) + '<section><h3>管理层与资本配置</h3><p>' + e(c.management) + '</p><h3>融资与现金承受能力</h3><p>' + e(c.funding) + sourceLinks(c.fundingSources) + '</p></section><section><h3>为什么没有优先选常见替代</h3>' + c.alternatives.map(a => '<p><strong>' + e(a.name) + '</strong> — ' + e(a.reason) + sourceLinks(a.sources) + '</p>').join('') + '</section>';
   }
   function scenarios(c) {
     const bull = M.scenario(c, 'bull'), h = M.hurdle(c, bull), f = c.financials;
