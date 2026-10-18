@@ -15,7 +15,7 @@ const require = createRequire(import.meta.url);
 const M = require('../assets/potential-model.js');
 const data = JSON.parse(readFileSync(resolve(root, 'data/potential-stocks.json'), 'utf8'));
 const n = (x, d = 2) => x.toLocaleString('zh-CN', { maximumFractionDigits: d });
-const sources = ids => ids.map(id => { const s = data.sources.find(x => x.id === id); if (!s) throw new Error('Unknown source: ' + id); return `[${s.title}](${s.url})（公布 ${s.publishedAt}；报告期 ${s.period}；${s.locator}）`; }).join('；');
+const sources = ids => ids.map(id => { const s = data.sources.find(x => x.id === id); if (!s) throw new Error('Unknown source: ' + id); return `[${s.title}](${s.url})（${s.publishedAt ? `公布 ${s.publishedAt}` : `发布日期未标注；检索 ${s.retrievedAt}`}；报告期 ${s.period}；${s.locator}）`; }).join('；');
 let md = `# 五年潜力股研究 · ${data.reviewedAt} · 修订${data.revision}\n\n研究起点：${data.priceDate}收盘；终点：${data.horizonDate}。美国普通股使用美元，A股使用人民币。\n\n${data.summary}\n\n没有可信成功概率，不做概率加权目标价。\n\n`;
 md += '## 本次复核与撤回记录\n\n' + data.revisions.map(r => `${r.date}：${r.reason} 原版见 Git 提交 \`${r.previousCommit}\`。`).join('\n\n') + '\n\n';
 md += '## 口径与取舍\n\n' + Object.values(data.method).join('\n\n') + '\n\n';

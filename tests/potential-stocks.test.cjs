@@ -44,8 +44,14 @@ test('the price start, provenance, unit build and scenario claims reconcile for 
   assert.equal(sourceIds.size, data.sources.length);
   for (const s of data.sources) {
     assert.match(s.url, /^https:\/\//);
-    assert.match(s.publishedAt, s.datePrecision === 'month' ? /^\d{4}-\d\d$/ : /^\d{4}-\d\d-\d\d$/);
-    assert.ok(s.publishedAt <= data.reviewedAt);
+    if (s.datePrecision === 'unknown') {
+      assert.equal(s.publishedAt, null, 'an undated page must not use its retrieval date as publication date');
+      assert.match(s.retrievedAt, /^\d{4}-\d\d-\d\d$/);
+      assert.ok(s.retrievedAt <= data.reviewedAt);
+    } else {
+      assert.match(s.publishedAt, s.datePrecision === 'month' ? /^\d{4}-\d\d$/ : /^\d{4}-\d\d-\d\d$/);
+      assert.ok(s.publishedAt <= data.reviewedAt);
+    }
     assert.ok(s.period && s.locator && s.type);
   }
   for (const c of data.companies) {
@@ -92,7 +98,8 @@ test('the price start, provenance, unit build and scenario claims reconcile for 
   for (const c of data.comparisons) {
     c.sources.forEach(id => assert.ok(sourceIds.has(id)));
     const q = quotes.find(q => q.symbol === c.price.symbol);
-    near(c.price.value, Math.round(q.observations.at(-1).close * 100) / 100);
+    // Provider closes may retain binary float precision; compare both at the quoted cent.
+    near(Math.round(c.price.value * 100) / 100, Math.round(q.observations.at(-1).close * 100) / 100);
     assert.equal(c.price.asOf, q.observations.at(-1).date);
     assert.equal(c.currency, q.currency);
     assert.ok(c.shareDate || c.shareBasis);

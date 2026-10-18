@@ -1930,10 +1930,12 @@
       "id": "aip-arm-catalog",
       "title": "Arm官网合作伙伴目录：Arteris",
       "url": "https://www.arm.com/partners/catalog/arteris-ip",
-      "publishedAt": "未标注（2026-10-18检索）",
+      "publishedAt": null,
       "period": "检索日可见合作关系",
       "type": "partner_release",
-      "locator": "客户方目录支持技术合作；不提供合同金额、公司收入或量产版税"
+      "locator": "客户方目录支持技术合作；不提供合同金额、公司收入或量产版税",
+      "datePrecision": "unknown",
+      "retrievedAt": "2026-10-18"
     },
     {
       "id": "aip-renesas",
