@@ -144,6 +144,8 @@ Axcelis Q2营业利润率下降；Bel Fuse收入增加、GAAP净利略降，且�
 
 ## Viking Therapeutics · VKTX
 
+研究更新：2026-10-19
+
 ### 公司做什么
 
 Viking是一家研发药物的公司，当前核心资产VK2735同时作用于GLP-1和GIP受体，开发注射剂和口服剂型用于减重。医生处方后由患者、保险或其他支付方承担费用，药企取得扣除返利后的净销售收入。目前没有获批产品，也没有商业销售。
@@ -231,7 +233,7 @@ Viking是一家研发药物的公司，当前核心资产VK2735同时作用于GL
 
 每个预测输入要有事实锚点、从事实到假设的理由及失败条件；未知项可以做有依据的区间，不能凭所需回报倒填数字。当前临床进展可形成事件行情，但尚不足以作为持续每股盈利的优先候选。
 
-**本轮已检验：100万患者年和5000美元净价，有没有可核对的依据？**
+**已检验问题：100万患者年和5000美元净价，有没有可核对的依据？**
 
 没有足够依据。已查资料不能识别“主要为减重、每年自付约5000美元、持续一整年”的人数，更不能证明其中多少会使用Viking。原数字是未校准的设定；撤回据此给出的优先级、盈利和股价倍数。 [KFF：使用目的与支付负担调查](https://www.kff.org/public-opinion/kff-health-tracking-poll-prescription-drug-costs-views-on-trump-administration-actions-and-glp-1-use/)；[JAMA：12个月持续用药研究](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2846157)；[Lilly：Zepbound自费价格与条件](https://zepbound.lilly.com/hcp/coverage-savings)；[CMS：GLP-1 Bridge支付规则](https://www.cms.gov/medicare/coverage/prescription-drug-coverage/medicare-glp-1-bridge)；[Viking 2026 Q2财报](https://ir.vikingtherapeutics.com/2026-07-29-Viking-Therapeutics-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Corporate-Update)
 
@@ -243,6 +245,8 @@ Viking是一家研发药物的公司，当前核心资产VK2735同时作用于GL
 取消本批第一优先；不再靠补齐情景数字维持它的排名。只有三期结果带来明确竞争差异，且支付准入、用药持续或成本证据足以建立商业估算时再重开。
 
 ## Kura Oncology · KURA
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -323,7 +327,7 @@ Q2净产品销售912.2万美元、约115名新患者开始治疗，证明已经�
 
 已有批准使它与纯临床资产不同，但仍可能因临床事件波动。只有可持续利润的形成路径有依据，才重新讨论其是否值得优先研究。
 
-**本轮已检验：已有销售是否足以支持原患者年和净价？**
+**已检验问题：已有销售是否足以支持原患者年和净价？**
 
 不够。Q2新增约115名患者和912.2万美元净产品销售不能相除得到全年单人净收入，患者跨期且疗程不同。2500／7000患者年与20万美元年净价未获得独立依据；有批准和销售不等于已验证原扩张预测。 [Kura 2026 Q2财报](https://ir.kuraoncology.com/node/13671)；[FDA：ziftomenib获批范围](https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-ziftomenib-relapsed-or-refractory-acute-myeloid-leukemia-npm1-mutation)；[Kura 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1422143/000119312526346884/kura-20260630.htm)
 
@@ -335,6 +339,8 @@ Q2净产品销售912.2万美元、约115名新患者开始治疗，证明已经�
 取消次优先；现有报告只保留业务、权利和已发生销售事实及原假设审查。重开取决于可核对的付费疗程、净价、开发费用责任和一线随机研究结果，不继续为原十倍数字补理由。
 
 ## BlackSky · BKSY
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -370,7 +376,7 @@ BlackSky自己运营地球观测卫星，通过Spectra平台交付影像与分�
 
 **融资与支出**：H1 ATM增发净筹约1.602亿美元。2026年资本开支指引5000万–6000万美元，高于调整后EBITDA指引1200万–2400万美元。 [BlackSky 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1753539/000175353926000118/exhibit991-blackskyq22026e.htm)；[BlackSky 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1753539/000175353926000124/bksy-20260630.htm)
 
-**本轮已检验：现金增加与EBITDA转正，能否证明星座利润飞轮形成？**
+**已检验问题：现金增加与EBITDA转正，能否证明星座利润飞轮形成？**
 
 不能。现金增加主要包含融资，现金资本投入后仍为负；部分服务成本披露不含折旧，不能把表面高毛利率直接当净利率。因此完成排除判断，不继续补报告。 [BlackSky 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1753539/000175353926000124/bksy-20260630.htm)；[BlackSky 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1753539/000175353926000118/exhibit991-blackskyq22026e.htm)
 
@@ -382,6 +388,8 @@ BlackSky自己运营地球观测卫星，通过Spectra平台交付影像与分�
 退出本批优先名单。只有订阅扩张同时覆盖补星现金和融资成本，才值得重开；现阶段不安排继续深挖。
 
 ## Red Cat · RCAT
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -411,7 +419,7 @@ BlackSky自己运营地球观测卫星，通过Spectra平台交付影像与分�
 
 **本轮证据 · 2026**：Q2收入2018.9万美元、增长527%，毛利率约16.1%；H1经营现金流负7874.9万美元，股权融资净筹约2.45亿美元。 [Red Cat 2026 Q2业绩](https://ir.redcatholdings.com/news-events/press-releases/detail/237/red-cat-reports-q2-2026-revenue-growth-of-527-yy-q2-gross-margins-increase-39-vs-q2-2025-gross-margins-increased-27-sequentially-from-q1-2026)
 
-**本轮已检验：是否进入本批深研？**
+**已检验问题：是否进入本批深研？**
 
 增长尚未转化成足够的单机利润，资本消耗很重；低市值不等于高十倍可能性。 [Red Cat 2026 Q2业绩](https://ir.redcatholdings.com/news-events/press-releases/detail/237/red-cat-reports-q2-2026-revenue-growth-of-527-yy-q2-gross-margins-increase-39-vs-q2-2025-gross-margins-increased-27-sequentially-from-q1-2026)
 
@@ -423,6 +431,8 @@ BlackSky自己运营地球观测卫星，通过Spectra平台交付影像与分�
 本批止步于初筛，不安排补齐完整报告。
 
 ## Centrus Energy · LEU
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -452,7 +462,7 @@ BlackSky自己运营地球观测卫星，通过Spectra平台交付影像与分�
 
 **本轮证据 · 2026**：Q2收入1.761亿美元；2026年资本部署计划3.5亿–5亿美元，部分订单附条件；12吨HALEU产能目标在2030年之后。 [Centrus 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1065059/000162828026053433/ex991-10q2026_08x05.htm)；[Centrus 2025年报业绩与扩产安排](https://investors.centrusenergy.com/news-releases/news-release-details/centrus-reports-fourth-quarter-and-full-year-2025-results-and)
 
-**本轮已检验：是否进入本批深研？**
+**已检验问题：是否进入本批深研？**
 
 需求有依据，但五年窗口内建设和资金负担大，不能把远期订单积压算成2031年利润。 [Centrus 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1065059/000162828026053433/ex991-10q2026_08x05.htm)；[Centrus 2025年报业绩与扩产安排](https://investors.centrusenergy.com/news-releases/news-release-details/centrus-reports-fourth-quarter-and-full-year-2025-results-and)
 
@@ -464,6 +474,8 @@ BlackSky自己运营地球观测卫星，通过Spectra平台交付影像与分�
 本批止步于初筛，不安排补齐完整报告。
 
 ## ASP Isotopes · ASPI
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -493,7 +505,7 @@ BlackSky自己运营地球观测卫星，通过Spectra平台交付影像与分�
 
 **本轮证据 · 2026**：Q2收入512.3万美元、毛利148万美元，运营费用3567.5万美元；收入包含并购和其他业务。 [ASP Isotopes 2026 Q2 Form 10-Q](https://ir.aspisotopes.com/sec-filings/all-sec-filings/content/0001193125-26-352603/aspi-20260630.htm)
 
-**本轮已检验：是否进入本批深研？**
+**已检验问题：是否进入本批深研？**
 
 尚不能用现有收入证明核心同位素富集商业化，资金和执行门槛过高。 [ASP Isotopes 2026 Q2 Form 10-Q](https://ir.aspisotopes.com/sec-filings/all-sec-filings/content/0001193125-26-352603/aspi-20260630.htm)
 
@@ -505,6 +517,8 @@ BlackSky自己运营地球观测卫星，通过Spectra平台交付影像与分�
 本批止步于初筛，不安排补齐完整报告。
 
 ## Arcutis · ARQT
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -534,7 +548,7 @@ BlackSky自己运营地球观测卫星，通过Spectra平台交付影像与分�
 
 **本轮证据 · 2026**：Q2产品销售1.299亿美元、增长59%；产品成本1090万美元，销售管理费用8210万美元，净利1500万美元。 [Arcutis 2026 Q2业绩](https://www.arcutis.com/arcutis-announces-second-quarter-2026-financial-results-and-provides-business-update/)
 
-**本轮已检验：是否进入本批深研？**
+**已检验问题：是否进入本批深研？**
 
 利润改善已出现，但约39亿美元起价且毛利已很高；十倍更依赖产品规模继续大扩张，优先级低于本批新适应症机会。 [Arcutis 2026 Q2业绩](https://www.arcutis.com/arcutis-announces-second-quarter-2026-financial-results-and-provides-business-update/)
 
@@ -546,6 +560,8 @@ BlackSky自己运营地球观测卫星，通过Spectra平台交付影像与分�
 本批止步于初筛，不安排补齐完整报告。
 
 ## Sezzle · SEZL
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -575,7 +591,7 @@ BlackSky自己运营地球观测卫星，通过Spectra平台交付影像与分�
 
 **本轮证据 · 2026**：Q2收入1.497亿美元、增长51.7%，净利4076.5万美元；净利率27.2%，低于上年28%。全年调整后净利指引1.85亿美元。 [Sezzle 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1662991/000166299126000124/sezl-20260806ex9901.htm)
 
-**本轮已检验：是否进入本批深研？**
+**已检验问题：是否进入本批深研？**
 
 有增长也有利润，但约44亿美元起价，净利率已经不低；十倍主要依赖长期规模扩张，不能再凭空加十倍利润率。 [Sezzle 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1662991/000166299126000124/sezl-20260806ex9901.htm)
 
@@ -587,6 +603,8 @@ BlackSky自己运营地球观测卫星，通过Spectra平台交付影像与分�
 本批止步于初筛，不安排补齐完整报告。
 
 ## Dave · DAVE
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -616,7 +634,7 @@ BlackSky自己运营地球观测卫星，通过Spectra平台交付影像与分�
 
 **本轮证据 · 2026**：Q2收入1.708亿美元、增长30%，GAAP净利670万美元含权证非现金费用；调整后EBITDA7550万美元，且本季定义有变化。 [Dave 2026 Q2业绩](https://investors.dave.com/news-releases/news-release-details/dave-reports-second-quarter-2026-financial-results)
 
-**本轮已检验：是否进入本批深研？**
+**已检验问题：是否进入本批深研？**
 
 约50亿美元市值下，不能把调整后EBITDA率当净利率再外推；本批不优先。 [Dave 2026 Q2业绩](https://investors.dave.com/news-releases/news-release-details/dave-reports-second-quarter-2026-financial-results)
 
@@ -628,6 +646,8 @@ BlackSky自己运营地球观测卫星，通过Spectra平台交付影像与分�
 本批止步于初筛，不安排补齐完整报告。
 
 ## Root · ROOT
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -657,7 +677,7 @@ BlackSky自己运营地球观测卫星，通过Spectra平台交付影像与分�
 
 **本轮证据 · 2026**：Q2收入3.89亿美元、增长2%；毛签单保费3.397亿美元、下降2%，净综合成本率92.1%。 [Root 2026 Q2股东信](https://joinroot.gcs-web.com/static-files/2b181f1d-a77a-4b12-b0d0-1f502333da5e)
 
-**本轮已检验：是否进入本批深研？**
+**已检验问题：是否进入本批深研？**
 
 承保盈利改善但保费未增长。低估值不是十倍业务扩张的证据，暂不优先。 [Root 2026 Q2股东信](https://joinroot.gcs-web.com/static-files/2b181f1d-a77a-4b12-b0d0-1f502333da5e)
 
@@ -669,6 +689,8 @@ BlackSky自己运营地球观测卫星，通过Spectra平台交付影像与分�
 本批止步于初筛，不安排补齐完整报告。
 
 ## Enovix · ENVX
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -698,7 +720,7 @@ BlackSky自己运营地球观测卫星，通过Spectra平台交付影像与分�
 
 **本轮证据 · 2026**：Q2收入900万美元、增长21%；毛利率14.4%，上年26%。关键手机项目仍在资格验证。 [Enovix 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1828318/000182831826000055/envx8k-q22026x8122026ex991.htm)
 
-**本轮已检验：是否进入本批深研？**
+**已检验问题：是否进入本批深研？**
 
 量产与利润质量尚未过关，低起价不能替代稳定生产和客户付款证据。 [Enovix 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1828318/000182831826000055/envx8k-q22026x8122026ex991.htm)
 
@@ -710,6 +732,8 @@ BlackSky自己运营地球观测卫星，通过Spectra平台交付影像与分�
 本批止步于初筛，不安排补齐完整报告。
 
 ## Applied Optoelectronics · AAOI
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -739,7 +763,7 @@ AI集群需要芯片之间更快、更省电地交换数据，互联芯片的价
 
 **本轮证据 · 2026**：Q2收入1.919亿美元，上年1.03亿美元；GAAP毛利率27.7%，上年30.3%。 [Applied Optoelectronics 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1158114/000168316826006055/aaoi_ex9901.htm)
 
-**本轮已检验：是否进入本批深研？**
+**已检验问题：是否进入本批深研？**
 
 需求很强但毛利率下降，约62亿美元起价抬高十倍门槛；不以高营收增速直接升级。 [Applied Optoelectronics 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1158114/000168316826006055/aaoi_ex9901.htm)
 
@@ -751,6 +775,8 @@ AI集群需要芯片之间更快、更省电地交换数据，互联芯片的价
 本批止步于初筛，不安排补齐完整报告。
 
 ## Bel Fuse · BELFB
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -780,7 +806,7 @@ AI集群需要芯片之间更快、更省电地交换数据，互联芯片的价
 
 **本轮证据 · 2026**：Q2收入2.107亿美元、增长25.1%；GAAP净利2550万美元，上年2690万美元；发行股票净筹4.416亿美元并还债。 [Bel Fuse 2026 Q2业绩](https://ir.belfuse.com/news-releases/news-release-details/bel-reports-second-quarter-and-first-half-2026-results)
 
-**本轮已检验：是否进入本批深研？**
+**已检验问题：是否进入本批深研？**
 
 利润没有随收入同步增长，融资也改变了股数；不能忽略分母推十倍。 [Bel Fuse 2026 Q2业绩](https://ir.belfuse.com/news-releases/news-release-details/bel-reports-second-quarter-and-first-half-2026-results)
 
@@ -792,6 +818,8 @@ AI集群需要芯片之间更快、更省电地交换数据，互联芯片的价
 本批止步于初筛，不安排补齐完整报告。
 
 ## Axcelis · ACLS
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -821,7 +849,7 @@ AI集群需要芯片之间更快、更省电地交换数据，互联芯片的价
 
 **本轮证据 · 2026**：Q2收入2.152亿美元、上年1.945亿美元；营业利润率9.4%、上年14.9%，仍有拟议Veeco合并。 [Axcelis 2026 Q2业绩](https://axcelis.gcs-web.com/news-releases/news-release-details/axcelis-announces-financial-results-second-quarter-2026)
 
-**本轮已检验：是否进入本批深研？**
+**已检验问题：是否进入本批深研？**
 
 行业周期、利润率与合并股本都影响回报，静态小市值不构成本批优先理由。 [Axcelis 2026 Q2业绩](https://axcelis.gcs-web.com/news-releases/news-release-details/axcelis-announces-financial-results-second-quarter-2026)
 
@@ -833,6 +861,8 @@ AI集群需要芯片之间更快、更省电地交换数据，互联芯片的价
 本批止步于初筛，不安排补齐完整报告。
 
 ## TransMedics · TMDX
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -862,7 +892,7 @@ AI集群需要芯片之间更快、更省电地交换数据，互联芯片的价
 
 **本轮证据 · 2026**：Q2收入1.899亿美元、增长21%；产品1.112亿美元、服务7880万美元，GAAP净利1470万美元。 [TransMedics 2026 Q2业绩](https://transmedicsinc.gcs-web.com/news-releases/news-release-details/transmedics-reports-second-quarter-2026-financial-results)
 
-**本轮已检验：是否进入本批深研？**
+**已检验问题：是否进入本批深研？**
 
 商业价值不止卖设备，但约29亿美元起价下，十倍需新的适用范围与规模；运输资产会占用资本，本批不优先。 [TransMedics 2026 Q2业绩](https://transmedicsinc.gcs-web.com/news-releases/news-release-details/transmedics-reports-second-quarter-2026-financial-results)
 
@@ -874,6 +904,8 @@ AI集群需要芯片之间更快、更省电地交换数据，互联芯片的价
 本批止步于初筛，不安排补齐完整报告。
 
 ## Ardelyx · ARDX
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -903,7 +935,7 @@ AI集群需要芯片之间更快、更省电地交换数据，互联芯片的价
 
 **本轮证据 · 2026**：Q2产品收入1.181亿美元、增长31%；IBSRELA全年指引下调至3.5亿–3.7亿美元。核心专利延长期到2033-08-01。 [Ardelyx 2026 Q2业绩](https://ir.ardelyx.com/node/14991)；[Ardelyx 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1437402/000143740226000044/ardx-20260630.htm)
 
-**本轮已检验：是否进入本批深研？**
+**已检验问题：是否进入本批深研？**
 
 退出优先：销售有增长，但不能给临近核心专利期限的2031年利润随手套高PE；支付障碍也在压低目标。 [Ardelyx 2026 Q2业绩](https://ir.ardelyx.com/node/14991)；[Ardelyx 2026 Q2 Form 10-Q](https://www.sec.gov/Archives/edgar/data/1437402/000143740226000044/ardx-20260630.htm)
 
@@ -915,6 +947,8 @@ AI集群需要芯片之间更快、更省电地交换数据，互联芯片的价
 本批止步于初筛，不安排补齐完整报告。
 
 ## CorMedix · CRMD
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -944,7 +978,7 @@ AI集群需要芯片之间更快、更省电地交换数据，互联芯片的价
 
 **本轮证据 · 2026**：Q2收入1.019亿美元，其中DefenCath6610万美元、收购业务3580万美元；DefenCath低于Q1的9750万美元。 [CorMedix 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1410098/000141009826000054/crmd_q22026earningspr.htm)
 
-**本轮已检验：是否进入本批深研？**
+**已检验问题：是否进入本批深研？**
 
 支付过渡和并购口径使短期利润不能直接年化，低PE未必代表低风险十倍机会。 [CorMedix 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1410098/000141009826000054/crmd_q22026earningspr.htm)
 
@@ -956,6 +990,8 @@ AI集群需要芯片之间更快、更省电地交换数据，互联芯片的价
 本批止步于初筛，不安排补齐完整报告。
 
 ## Iovance · IOVA
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -985,7 +1021,7 @@ AI集群需要芯片之间更快、更省电地交换数据，互联芯片的价
 
 **本轮证据 · 2026**：Q2收入9930万美元、增长66%，AMTAGVI约9100万美元；公布的56%毛利口径不含折旧摊销。 [Iovance 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1425205/000110465926091619/tm2622322d1_ex99-1.htm)
 
-**本轮已检验：是否进入本批深研？**
+**已检验问题：是否进入本批深研？**
 
 新疗法有实收收入，但约61亿美元起价要求极大的后续利润规模；本批优先较小起价且权利路径更清楚的候选。 [Iovance 2026 Q2业绩](https://www.sec.gov/Archives/edgar/data/1425205/000110465926091619/tm2622322d1_ex99-1.htm)
 
@@ -997,6 +1033,8 @@ AI集群需要芯片之间更快、更省电地交换数据，互联芯片的价
 本批止步于初筛，不安排补齐完整报告。
 
 ## Remitly · RELY
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -1026,7 +1064,7 @@ AI集群需要芯片之间更快、更省电地交换数据，互联芯片的价
 
 **本轮证据 · 2026**：Q2收入4.952亿美元、增长20%；净利2.059亿美元含1.406亿美元一次性税收收益。 [Remitly 2026 Q2业绩](https://ir.remitly.com/news-releases/news-release-details/remitly-reports-record-second-quarter-results-and-raises-full)
 
-**本轮已检验：是否进入本批深研？**
+**已检验问题：是否进入本批深研？**
 
 约53亿美元市值下不能按含税收收益的利润推低PE；现有增长未显示十倍优先价值。 [Remitly 2026 Q2业绩](https://ir.remitly.com/news-releases/news-release-details/remitly-reports-record-second-quarter-results-and-raises-full)
 
@@ -1038,6 +1076,8 @@ AI集群需要芯片之间更快、更省电地交换数据，互联芯片的价
 本批止步于初筛，不安排补齐完整报告。
 
 ## Personalis · PSNL
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -1067,7 +1107,7 @@ AI集群需要芯片之间更快、更省电地交换数据，互联芯片的价
 
 **本轮证据 · 2026**：已签Tempus收购协议，交易定价每股16.25美元，以换股及可选现金支付，尚有交割条件。 [Personalis：Tempus收购协议](https://investors.personalis.com/news-releases/news-release-details/tempus-acquire-personalis-more-tightly-integrating-molecular)
 
-**本轮已检验：是否进入本批深研？**
+**已检验问题：是否进入本批深研？**
 
 独立公司十倍路径已被并购交易改变，本批不沿原股票独立增长逻辑深入。 [Personalis：Tempus收购协议](https://investors.personalis.com/news-releases/news-release-details/tempus-acquire-personalis-more-tightly-integrating-molecular)
 
@@ -1079,6 +1119,8 @@ AI集群需要芯片之间更快、更省电地交换数据，互联芯片的价
 本批止步于初筛，不安排补齐完整报告。
 
 ## dLocal · DLO
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -1108,7 +1150,7 @@ AI集群需要芯片之间更快、更省电地交换数据，互联芯片的价
 
 **本轮证据 · 2026**：Q2交易额增长92%，收入增长56%，毛利增长29%，营业利润只增长15%。 [dLocal 2026 Q2业绩](https://investor.dlocal.com/news-releases/news-release-details/dlocal-reports-second-quarter-2026-financial-results)
 
-**本轮已检验：是否进入本批深研？**
+**已检验问题：是否进入本批深研？**
 
 交易规模增长没有等比例落到利润；约43亿美元起价下，暂不把流水增长当十倍股东回报依据。 [dLocal 2026 Q2业绩](https://investor.dlocal.com/news-releases/news-release-details/dlocal-reports-second-quarter-2026-financial-results)
 
@@ -1120,6 +1162,8 @@ AI集群需要芯片之间更快、更省电地交换数据，互联芯片的价
 本批止步于初筛，不安排补齐完整报告。
 
 ## Planet Labs · PL
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -1153,7 +1197,7 @@ Planet自己造、发射并运营地球观测卫星。政府、农业、林业�
 
 **公司指引 · 2026-09-03**：FY2027收入4.30–4.41亿美元，资本开支1.00–1.15亿美元；这是全年目标，不能把强劲单季直接乘四作为预测。 [Planet FY2027 Q2业绩公告](https://investors.planet.com/news/news-details/2026/Planet-Reports-Financial-Results-for-Second-Quarter-of-Fiscal-Year-2027/default.aspx)
 
-**本轮已检验：收入增长是否已证明利润率跃升？**
+**已检验问题：收入增长是否已证明利润率跃升？**
 
 没有。收入增长58%，GAAP毛利率反而略降；亏损收窄是进展，但尚不足以证明数据平台式利润爆发。可重复销售是值得观察的机制，但现有利润率并未兑现。 这只能支持行业观察，不足以支持优先深研；本批已撤回优先级。 [Planet FY2027 Q2业绩公告](https://investors.planet.com/news/news-details/2026/Planet-Reports-Financial-Results-for-Second-Quarter-of-Fiscal-Year-2027/default.aspx)
 
@@ -1165,6 +1209,8 @@ Planet自己造、发射并运营地球观测卫星。政府、农业、林业�
 本批不追加报告。已有行业机会不足以抵消当前价格或商业兑现门槛，先把研究资源用于新候选。
 
 ## AST SpaceMobile · ASTS
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -1198,7 +1244,7 @@ AST建设太空中的移动通信网络，让普通手机在地面网络覆盖�
 
 **已发生 · 2026上半年**：经营现金净流出1.452亿美元，购置物业设备8.592亿美元；6月底现金及等价物22.883亿美元，另有受限资金。网络建设明显先于服务收入。 [AST SpaceMobile 2026 Q2 Form 10-Q](https://app.quotemedia.com/data/downloadFiling?cdn=97b0f90b3039b64b39c17ee3c872f664&companyName=AST+SpaceMobile+Inc.&dateFiled=2026-08-10&formType=10-Q&ref=320259077&symbol=ASTS&type=PDF&webmasterId=102691)
 
-**本轮已检验：已有营收能证明直连手机的商业模式跑通吗？**
+**已检验问题：已有营收能证明直连手机的商业模式跑通吗？**
 
 不能。Q2产品占收入约78%，服务收入也不能全部认定为消费者持续付费。已有运营商渠道和技术进展，但尚缺可用于推算成熟利润的付费用户、实收单价、每星可售容量和补网成本组合。 这只能支持行业观察，不足以支持优先深研；本批已撤回优先级。 [AST SpaceMobile 2026 Q2 Form 10-Q](https://app.quotemedia.com/data/downloadFiling?cdn=97b0f90b3039b64b39c17ee3c872f664&companyName=AST+SpaceMobile+Inc.&dateFiled=2026-08-10&formType=10-Q&ref=320259077&symbol=ASTS&type=PDF&webmasterId=102691)；[Vodafone：Satellite Connect Europe成立](https://www.vodafone.com/news/newsroom/technology/satellite-connect-europe-launches-direct-to-device-broadband-satellite-connectivity)
 
@@ -1210,6 +1256,8 @@ AST建设太空中的移动通信网络，让普通手机在地面网络覆盖�
 本批不追加报告。已有行业机会不足以抵消当前价格或商业兑现门槛，先把研究资源用于新候选。
 
 ## Aurora Innovation · AUR
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -1243,7 +1291,7 @@ Aurora把传感器、计算硬件和自动驾驶软件装到重卡上。当前�
 
 **公司目标与意向 · 非已交付订单**：2030年超过3万辆、数十亿美元收入及DaaS软件式毛利均为公司愿景；Hirschbach的500辆计划涉及非约束性MOU，不能当确定收入。 [Aurora 2026投资者日公告（8-K附件）](https://ir.aurora.tech/sec-filings/all-sec-filings/content/0001828108-26-000082/businesswire-aurora2026ana.htm)
 
-**本轮已检验：省掉司机成本就一定能赚到软件利润吗？**
+**已检验问题：省掉司机成本就一定能赚到软件利润吗？**
 
 不一定。ATRI的2.336美元每英里是行业全部运营成本，燃料、车辆和维护并不会因无人驾驶消失。Aurora的硬件降本和高利用率支持研究方向，但DaaS真实收费与支持成本尚不足以证明成熟净利率。 这只能支持行业观察，不足以支持优先深研；本批已撤回优先级。 [ATRI 2026卡车运营成本研究摘要](https://truckingresearch.org/2026/07/new-atri-report-details-accelerating-costs-and-low-profitability-despite-cuts/)；[Aurora 2026 Q2业绩公告](https://ir.aurora.tech/news-events/press-releases/detail/147/aurora-announces-second-quarter-2026-results)；[Aurora 2026投资者日公告（8-K附件）](https://ir.aurora.tech/sec-filings/all-sec-filings/content/0001828108-26-000082/businesswire-aurora2026ana.htm)
 
@@ -1255,6 +1303,8 @@ Aurora把传感器、计算硬件和自动驾驶软件装到重卡上。当前�
 本批不追加报告。已有行业机会不足以抵消当前价格或商业兑现门槛，先把研究资源用于新候选。
 
 ## Credo Technology · CRDO
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -1287,7 +1337,7 @@ AI集群扩大与连接速度升级，可以增加连接数量和每条链路的
 
 **利润约束**：GAAP营业利润低于上季1.558亿美元，尽管收入环比增长9.6%；不能用收入加速直接替代利润增速。 [Credo FY2027 Q1业绩公告](https://investors.credosemi.com/news-events/news/news-details/2026/Credo-Technology-Group-Holding-Ltd-Reports-First-Quarter-of-Fiscal-Year-2027-Financial-Results/default.aspx)
 
-**本轮已检验：好行业和高增长是否足以支持当前起点十倍？**
+**已检验问题：好行业和高增长是否足以支持当前起点十倍？**
 
 不够。当前已有较高毛利和较大股权规模，仍需多年需求、份额和每股利润持续扩张；本轮相对优先级低，不为补满名单而继续堆报告。 [Credo FY2027 Q1业绩公告](https://investors.credosemi.com/news-events/news/news-details/2026/Credo-Technology-Group-Holding-Ltd-Reports-First-Quarter-of-Fiscal-Year-2027-Financial-Results/default.aspx)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
 
@@ -1299,6 +1349,8 @@ AI集群扩大与连接速度升级，可以增加连接数量和每条链路的
 本批不追加报告。已有行业机会不足以抵消当前价格或商业兑现门槛，先把研究资源用于新候选。
 
 ## Astera Labs · ALAB
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -1331,7 +1383,7 @@ Astera Labs设计服务器内部及机架之间的连接芯片，包括信号调
 
 **公司指引 · 非已实现**：公司预计Q3收入5.40–5.60亿美元，Scorpio交换产品推动增长；预测中的产品放量仍需实际收入检验。 [Astera Labs 2026 Q2业绩公告](https://ir.asteralabs.com/news-releases/news-release-details/astera-labs-reports-second-quarter-2026-financial-results)
 
-**本轮已检验：利润率提高能否单独解释十倍？**
+**已检验问题：利润率提高能否单独解释十倍？**
 
 营业利润率仍可能改善，但毛利率起点已经很高。更大产品范围、持续高增和合理购买价格必须共同成立，不能只把终点净利率或PE往上调。 [Astera Labs 2026 Q2业绩公告](https://ir.asteralabs.com/news-releases/news-release-details/astera-labs-reports-second-quarter-2026-financial-results)；[2026-10-16盘后行情快照与口径](../../data/potential-screening-quotes.json)
 
@@ -1343,6 +1395,8 @@ Astera Labs设计服务器内部及机架之间的连接芯片，包括信号调
 本批不追加报告。已有行业机会不足以抵消当前价格或商业兑现门槛，先把研究资源用于新候选。
 
 ## Serve Robotics · SERV
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -1375,7 +1429,7 @@ Serve让小型机器人执行末端配送，也有医院场景及软件业务。
 
 **公司下调指引 · 2026-08-06**：全年收入改为900–1000万美元，原因包括Uber Eats配送需求低于预期；不能将合作平台规模直接当成Serve订单。 [Serve Robotics 2026 Q2业绩公告](https://investors.serverobotics.com/news-releases/news-release-details/serve-robotics-announces-second-quarter-2026-results)
 
-**本轮已检验：机器人便宜、小市值，就更容易十倍吗？**
+**已检验问题：机器人便宜、小市值，就更容易十倍吗？**
 
 小市值只降低所需总价值量级。眼下更直接的反证是需求下修、活跃设备环比下降和显著毛亏损；在单位经济改善前，继续外推机器人数没有说服力。 [Serve Robotics 2026 Q2业绩公告](https://investors.serverobotics.com/news-releases/news-release-details/serve-robotics-announces-second-quarter-2026-results)
 

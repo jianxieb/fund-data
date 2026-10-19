@@ -24,152 +24,104 @@ function fixture() {
 }
 const rowIds = html => [...html.matchAll(/data-stock-row="([^"]+)"/g)].map(x=>x[1]);
 
-test('current research opens the fresh finite screen and changes downloads and counts with history', () => {
-  const f=fixture();
-  assert.equal(rowIds(f.html).length,9);
-  assert.ok(rowIds(f.html).includes('BLZE'));
-  assert.ok(!rowIds(f.html).includes('688050'));
-  assert.match(f.html,/利润增长靠什么/);
-  assert.match(f.html,/股价快照 \/ 美元/);
-  assert.equal(f.api.reportPath(),'docs/research/potential-screening-2026-10-19.md');
-  assert.equal(f.api.companies().length,9);
-  f.click('potential-history');
-  assert.equal(rowIds(f.html).length,19);
-  assert.ok(rowIds(f.html).includes('TSSI'));
-  assert.equal(f.api.reportPath(),'docs/research/potential-screening-round4-2026-10-19.md');
-  f.click('potential-history');
-  assert.equal(rowIds(f.html).length,27);
-  assert.ok(rowIds(f.html).includes('VKTX'));
-  assert.equal(f.api.reportPath(),'docs/research/potential-screening-prior-2026-10-19.md');
-  f.click('potential-legacy');
-  assert.match(f.html,/此前研究 · 2026-10-18/);
-  assert.ok(rowIds(f.html).includes('AMPX'));
-  assert.doesNotMatch(f.html,/data-stock-row="VKTX"/);
-  assert.equal(f.api.reportPath(),'docs/research/potential-stocks-2026-10-18.md');
-  f.click('potential-current');
-  assert.ok(rowIds(f.html).includes('BLZE'));
+test('one cumulative list deduplicates all research and has no round navigation', () => {
+  const f=fixture(), all=f.api.companies();
+  assert.ok(all.length>=80);
+  assert.equal(new Set(all.map(c=>c.market+':'+c.id)).size,all.length);
+  for (const id of ['BLZE','TSSI','VKTX','AMPX','AEHR','GCT']) assert.ok(rowIds(f.html).includes(id),id);
+  assert.equal(all.filter(c=>c.id==='GCT').length,1);
+  assert.equal(all.find(c=>c.id==='GCT').quoteSource,'screen1:screen-quotes');
+  assert.doesNotMatch(f.html,/查看上一轮|返回本轮|查看更早研究|potential-history|potential-current/);
+  assert.equal(f.api.reportPath(),'docs/research/potential-research-catalog.md');
+  assert.match(f.html,/研究优先级/);
 });
 
-test('industry, priority and business search combine and clearing restores the screen', () => {
+test('one search spans previous rounds and legacy comparisons, with priority and industry filters', () => {
   const f=fixture();
-  f.click('potential-sector','ai-storage');
-  assert.deepEqual(rowIds(f.html),['BLZE','PENG','DOCN']);
-  f.api.handleInput({value:'硬盘'});f.H.render();
-  assert.deepEqual(rowIds(f.html),['BLZE']);
-  f.click('potential-reset');
-  f.click('potential-status','priority');
-  assert.deepEqual(rowIds(f.html),['BLZE']);
-  assert.match(f.html,/没有高概率十倍结论/);
-  f.click('potential-status','watch');
-  assert.equal(rowIds(f.html).length,8);
-  assert.ok(!rowIds(f.html).includes('BLZE'));
-  assert.ok(rowIds(f.html).includes('QNST'));
+  for (const id of ['BLZE','TSSI','VKTX','AEHR','AMPX']) {
+    f.api.handleInput({value:id});f.H.render();
+    assert.ok(rowIds(f.html).includes(id),id);
+  }
+  f.click('potential-reset');f.click('potential-status','priority');
+  assert.deepEqual(new Set(rowIds(f.html)),new Set(f.screen.companies.filter(c=>c.market==='us'&&c.selected).map(c=>c.id)));
+  assert.ok(!rowIds(f.html).includes('VKTX'));
+  f.click('potential-reset');f.click('potential-sector','infra');
+  assert.ok(rowIds(f.html).includes('BLZE'));
+  assert.ok(!rowIds(f.html).includes('VKTX'));
   f.api.handleInput({value:'no such business'});f.H.render();
   assert.match(f.html,/当前条件没有匹配公司/);
   f.click('potential-reset');
-  assert.equal(rowIds(f.html).length,9);
   assert.match(f.html,/<div class="stock-controls"><div class="filters"><input type="search" id="potential-search"/);
 });
 
-test('each company explains business and profit before judgement with traceable evidence', () => {
+test('company ordering uses priority or the selected sort, not research round', () => {
+  const f=fixture();
+  const rows=rowIds(f.html).map(id=>f.screen.companies.find(c=>c.id===id));
+  assert.ok(rows.every((c,i)=>!i||c.priorityRank>=rows[i-1].priorityRank));
+  f.click('potential-catalog-sort','name');
+  const names=rowIds(f.html).map(id=>f.screen.companies.find(c=>c.id===id).name);
+  assert.deepEqual(names,[...names].sort((a,b)=>a.localeCompare(b,'zh-CN')));
+  f.click('potential-catalog-sort','recent');
+  const dates=rowIds(f.html).map(id=>f.screen.companies.find(c=>c.id===id).reviewedAt);
+  assert.deepEqual(dates,[...dates].sort().reverse());
+});
+
+test('each company preserves dated evidence, readable business and currency in the common detail', () => {
   const f=fixture();
   for (const c of f.screen.companies) {
-    f.click('potential-screen-detail',c.id);
+    f.H.market=c.market;f.H.render();f.click('potential-screen-detail',c.id);
     const order=['公司做什么','机会为什么出现','利润如何放大','当前判断','关键风险与依据'].map(x=>f.modal.indexOf('<h3>'+x+'</h3>'));
-    assert.ok(order.every((x,i)=>x>=0 && (!i || x>order[i-1])));
-    assert.match(f.modal,/本轮已检验/);
-    assert.match(f.modal,/什么会改变判断/);
-    assert.match(f.modal,/UTC，(盘前|盘后)/);
-    assert.match(f.modal,/原始来源与定位/);
+    assert.ok(order.every((x,i)=>x>=0 && (!i || x>order[i-1])),c.id);
+    assert.match(f.modal,/已检验问题/);
+    assert.ok(f.modal.includes(c.reviewedAt));
+    assert.ok(f.modal.includes(c.quote.tradeTimeUtc || c.quote.date));
+    assert.ok(f.modal.includes(c.market==='cn'?'元':'美元'));
+    assert.doesNotMatch(f.modal,/来源缺失：|undefined|NaN/);
     for (const id of c.sources) assert.ok(f.screen.sources.some(s=>s.id===id));
   }
-  f.click('potential-screen-detail','BLZE');
-  assert.match(f.modal,/每项经营输入：依据、用途与缺口/);
-  assert.match(f.modal,/CoreWeave/);
-  assert.match(f.modal,/636.64/);
-  assert.match(f.modal,/10月19日|2026-10-19/);
-  assert.match(f.modal,/盘前/);
-  f.click('potential-screen-detail','QNST');
-  assert.match(f.modal,/50.025/);
-  assert.match(f.modal,/HomeBuddy/);
-  assert.match(f.modal,/盘后/);
+  f.H.market='us';f.H.render();f.click('potential-screen-detail','BLZE');
+  assert.match(f.modal,/636.64/);assert.match(f.modal,/盘前/);
+  f.click('potential-screen-detail','QNST');assert.match(f.modal,/50.025/);
+  f.click('potential-screen-detail','AMPX');assert.match(f.modal,/打开公司既有材料/);
 });
 
-test('market switching respects the existing market control and keeps prior A-share research reachable', () => {
-  const f=fixture();
-  f.H.market='cn';f.H.render();
-  assert.deepEqual(rowIds(f.html),[]);
-  assert.match(f.html,/A股暂无本轮结果/);
-  assert.doesNotMatch(f.html,/stock-market-nav|potential-market/);
-  f.click('potential-history');
-  assert.deepEqual(rowIds(f.html),[]);
-  f.click('potential-legacy');
-  assert.ok(rowIds(f.html).includes('688050'));
-  f.click('potential-current');
-  f.H.market='us';f.H.render();
-  assert.equal(rowIds(f.html).length,9);
+test('existing market controls expose A shares directly and do not mix currencies', () => {
+  const f=fixture();f.H.market='cn';f.H.render();
+  for (const id of ['688050','688389','300832','688582']) assert.ok(rowIds(f.html).includes(id),id);
+  assert.doesNotMatch(f.html,/A股暂无本轮|stock-market-nav|potential-market/);
+  assert.match(f.html,/股价快照 \/ 人民币/);
+  f.click('potential-screen-detail','688582');
+  assert.match(f.modal,/30.70 元/);assert.doesNotMatch(f.modal,/股价 30.70 美元/);
+  f.H.market='us';f.H.render();assert.ok(!rowIds(f.html).includes('688582'));
 });
 
-test('screen escapes source text and exports the same evidence and price time basis', () => {
-  const f=fixture();
-  const c=f.screen.companies[0];
+test('unified download includes every company and escapes source text in the product', () => {
+  const f=fixture(), md=fs.readFileSync(f.screen.reportPath,'utf8');
+  for (const c of f.screen.companies) {
+    assert.ok(md.includes(c.business),c.id);
+    assert.ok(md.includes(c.check.answer),c.id);
+    assert.ok(md.includes(c.quote.tradeTimeUtc || c.quote.date),c.id);
+  }
+  const c=f.screen.companies.find(c=>c.id==='BLZE');
   c.business='<img src=x onerror=alert(1)>';
   f.click('potential-screen-detail',c.id);
-  assert.doesNotMatch(f.modal,/<img src=x/);
-  assert.match(f.modal,/&lt;img/);
-  const md=fs.readFileSync(f.screen.reportPath,'utf8');
-  assert.match(md,/盘后/);
-  assert.doesNotMatch(md,/十倍所需收入CAGR/);
-  for (const company of f.screen.companies) {
-    assert.ok(md.includes(company.profitMechanism));
-    assert.ok(md.includes(company.check.answer));
-    assert.ok(md.includes(company.quote.tradeTimeUtc));
-  }
+  assert.doesNotMatch(f.modal,/<img src=x/);assert.match(f.modal,/&lt;img/);
 });
 
-
-test('withdrawn forecasts cannot remain investment priorities or appear in product and report', () => {
+test('withdrawn forecasts stay withdrawn after consolidation and keep their source provenance', () => {
   const f=fixture();
-  f.click('potential-history');
-  f.click('potential-history');
-  const archived=f.screen.previous.previous;
-  assert.equal(archived.newScreenCount,21);
-  assert.deepEqual(Array.from(archived.companies.filter(c=>c.research), c=>c.id),['VKTX','KURA']);
-  for (const id of ['PL','ASTS','AUR','BKSY','ARDX']) assert.equal(archived.companies.find(c=>c.id===id).selected,false);
   for (const id of ['VKTX','KURA']) {
+    const c=f.screen.companies.find(c=>c.id===id);
     f.click('potential-screen-detail',id);
+    assert.equal(c.selected,false);assert.equal(c.research.modelStatus,'withdrawn');
     assert.match(f.modal,/原盈利预测已撤回/);
     assert.match(f.modal,/原利润输入及依据（逐项）/);
-    assert.match(f.modal,/重新估算需要的依据/);
-    assert.doesNotMatch(f.modal,/2031年条件情景|PE假设区间|股价倍数<\/th>|份完整研究/);
-    assert.doesNotMatch(f.modal,/进入下一轮|下一轮研究重点/);
-    const c=archived.companies.find(c=>c.id===id);
-    assert.equal(c.selected,false);
-    assert.equal(c.research.modelStatus,'withdrawn');
-    const md=fs.readFileSync(archived.reportPath,'utf8');
-    assert.doesNotMatch(md,/### 2031年条件情景|\| PE假设区间 \|/);
-    for (const section of c.research.sections) {
-      for (const row of section.rows || []) for (const cell of row) {
-        assert.ok(f.modal.includes(f.H.esc(cell)));
-        assert.ok(md.includes(cell));
-      }
-      for (const sourceIds of section.rowSources || []) for (const sourceId of sourceIds) {
-        const source=archived.sources.find(s=>s.id===sourceId);
-        assert.ok(source,sourceId);
-        assert.ok(f.modal.includes(f.H.esc(source.url)));
-        assert.ok(md.includes(source.url));
-      }
+    assert.doesNotMatch(f.modal,/2031年条件情景|PE假设区间|股价倍数<\/th>/);
+    for (const section of c.research.sections) for (const ids of section.rowSources || []) for (const id of ids) {
+      const source=f.screen.sources.find(s=>s.id===id);assert.ok(source);
+      assert.ok(f.modal.includes(f.H.esc(source.url)));
     }
   }
-  f.click('potential-screen-detail','KURA');
-  assert.match(f.modal,/50%/);
-  assert.match(f.modal,/海外提成/);
-  f.click('potential-screen-detail','VKTX');
-  assert.match(f.modal,/治疗中止率28%/);
-  assert.match(f.modal,/24.5%/);
-  assert.match(f.modal,/449美元\/28天/);
-  assert.match(f.modal,/不证明有人这样付满一年/);
-  assert.match(f.modal,/50美元\/月/);
 });
 
 test('withdrawal bypasses valuation and requires evidence review for every operating and capital input', async () => {

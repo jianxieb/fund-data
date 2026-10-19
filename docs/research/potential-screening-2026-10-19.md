@@ -76,6 +76,8 @@ S、GTLB收入均约增长21%，但GAAP毛利率下降，尚不能仅按软件�
 
 ## Backblaze · BLZE
 
+研究更新：2026-10-19
+
 ### 公司做什么
 
 给企业、AI公司保存数据；既卖自有硬盘上的云存储，也开始替客户运行存储软件。
@@ -225,7 +227,7 @@ B2 Q2收入增长34%，备份收入下降2%，新业务占比提高。B2净收�
 | 债务与股份 | 8月实际发行201.25百万美元可转债；已有客户认股权及员工奖励见清单。 | 十倍门槛按90百万股压力，避免仅用当前6190万股。 | 后续新增奖励／融资、最终偿债还是转股取决于价格及公司选择，90不是精算结果。 | [Backblaze 2026Q2 10-Q](https://www.sec.gov/Archives/edgar/data/1462056/000162828026051818/blze-20260630.htm)；[Backblaze可转债实际发行8-K](https://www.sec.gov/Archives/edgar/data/1462056/000114036126034200/ef20080933_8k.htm) |
 | 税项、净利与终点PE | Q2仍GAAP营业亏损；合同未形成可核验净利润轨迹。 | 经营敏感性只算营业利润；估值只列净利润门槛20/30/40倍，不生成目标价。 | 持续税率、融资成本和成熟净利润率缺少预测依据。 | [Backblaze 2026Q2业绩与财务表](https://ir.backblaze.com/news/news-details/2026/Backblaze-Announces-Second-Quarter-2026-Financial-Results/default.aspx)；[Backblaze可转债实际发行8-K](https://www.sec.gov/Archives/edgar/data/1462056/000114036126034200/ef20080933_8k.htm) |
 
-**本轮已检验：已有付费能否转成可持续的每股利润？**
+**已检验问题：已有付费能否转成可持续的每股利润？**
 
 本轮最值得跟进的利润模式变化，但五年十倍仍是中低可能性。订单证明有人付费；它没有证明每份合同高毛利，更没有抵消认股权和可转债稀释。 [Backblaze 2026Q2业绩与财务表](https://ir.backblaze.com/news/news-details/2026/Backblaze-Announces-Second-Quarter-2026-Financial-Results/default.aspx)；[Backblaze 2026Q2 10-Q](https://www.sec.gov/Archives/edgar/data/1462056/000162828026051818/blze-20260630.htm)；[Backblaze 2026Q2演示材料](https://s204.q4cdn.com/590551802/files/doc_financials/2026/q2/Q2-2026-Presentation.pdf)；[Backblaze可转债实际发行8-K](https://www.sec.gov/Archives/edgar/data/1462056/000114036126034200/ef20080933_8k.htm)；[Backblaze与WEKA的数据分层合作](https://ir.backblaze.com/news/news-details/2026/Backblaze-and-WEKA-Simplify-Data-Management-Across-the-AI-Lifecycle/default.aspx)
 
@@ -237,6 +239,8 @@ B2 Q2收入增长34%，备份收入下降2%，新业务占比提高。B2净收�
 下一项只检验新托管业务开始确认收入后，含设备更新的现金回报和新增股份是否改善；在此之前不升级为高概率十倍。
 
 ## QuinStreet · QNST
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -335,7 +339,7 @@ FY2026金融服务收入888.360百万美元，同比约8.71%；家装405.352百�
 | 税惠与现金 | 净利81.235中所得税收益50.025；规范化自由现金88.239仍有股权薪酬加回。 | 分开盈利与现金，避免把一次税惠或股权成本当免费收益。 | 未来正常有效税率与并购现金支出需要另有依据。 | [QuinStreet FY2026业绩](https://www.sec.gov/Archives/edgar/data/1117297/000119312526338042/qnst-ex99_1.htm) |
 | 股份与估值 | FY2026摊薄加权58.163百万股，快照16.32美元。 | 12/18/25倍仅反算净利润门槛；不给未经校准的五年股价。 | 未来新增奖励、并购股份及终点增长率不确定。 | [QuinStreet FY2026业绩](https://www.sec.gov/Archives/edgar/data/1117297/000119312526338042/qnst-ex99_1.htm)；[本轮逐股报价与成交时间](../../data/potential-screening-round5-quotes.json) |
 
-**本轮已检验：已有付费能否转成可持续的每股利润？**
+**已检验问题：已有付费能否转成可持续的每股利润？**
 
 有真实现金与利润率改善，列为次级观察；五年十倍初判低。最新增长含并购，全年税惠显著，不能以低表面PE和一季43%增长就升级。 [QuinStreet FY2026业绩](https://www.sec.gov/Archives/edgar/data/1117297/000119312526338042/qnst-ex99_1.htm)；[QuinStreet FY2026 10-K](https://www.sec.gov/Archives/edgar/data/1117297/000119312526367160/qnst-20260630.htm)；[QuinStreet FY2026Q2：HomeBuddy并购](https://www.sec.gov/Archives/edgar/data/1117297/000119312526039381/qnst-ex99_1.htm)
 
@@ -347,6 +351,8 @@ FY2026金融服务收入888.360百万美元，同比约8.71%；家装405.352百�
 本轮停在上述判断；只有升级条件出现才重开，不因报告篇幅或行业热度继续补齐。
 
 ## Penguin Solutions · PENG
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -381,7 +387,7 @@ FY2026金融服务收入888.360百万美元，同比约8.71%；家装405.352百�
 
 **资金占用**：年末应收7.963亿美元、存货7.488亿美元，较上年合计增加约9.82亿美元；现金6.472亿美元，同时有约7.89亿美元流动及长期债务。 [Penguin FY2026Q4与全年业绩](https://ir.penguinsolutions.com/news/news-details/2026/Penguin-Solutions-Announces-Fourth-Quarter-and-Full-Year-Fiscal-2026-Results/)
 
-**本轮已检验：已有付费能否转成可持续的每股利润？**
+**已检验问题：已有付费能否转成可持续的每股利润？**
 
 本轮不优先：营业利润确实变好，但本季约91%的收入增量来自内存，全年先进计算收入下降，且经营现金流转负。尚不能当作已成功的轻资产AI运维平台。 [Penguin FY2026Q4与全年业绩](https://ir.penguinsolutions.com/news/news-details/2026/Penguin-Solutions-Announces-Fourth-Quarter-and-Full-Year-Fiscal-2026-Results/)
 
@@ -393,6 +399,8 @@ FY2026金融服务收入888.360百万美元，同比约8.71%；家装405.352百�
 本轮停在上述判断；只有升级条件出现才重开，不因报告篇幅或行业热度继续补齐。
 
 ## DigitalOcean · DOCN
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -425,7 +433,7 @@ AI应用从训练走向持续推理，客户需要易用的一体化云服务，
 
 **利润与订单期限**：营业利润2900万美元，同比降18%；RPO8.94亿美元中3.66亿美元预计未来12个月确认，不能一次全计。 [DigitalOcean 2026Q2业绩](https://investors.digitalocean.com/financials/quarterly-results/default.aspx)
 
-**本轮已检验：已有付费能否转成可持续的每股利润？**
+**已检验问题：已有付费能否转成可持续的每股利润？**
 
 保留行业线索但不优先研究现价十倍：AI客户支出增长较强，Q2总营业利润反而下降，约125亿美元起点已要求很大盈利规模。 [DigitalOcean 2026Q2业绩](https://investors.digitalocean.com/financials/quarterly-results/default.aspx)
 
@@ -437,6 +445,8 @@ AI应用从训练走向持续推理，客户需要易用的一体化云服务，
 本轮停在上述判断；只有升级条件出现才重开，不因报告篇幅或行业热度继续补齐。
 
 ## nLIGHT · LASR
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -469,7 +479,7 @@ AI应用从训练走向持续推理，客户需要易用的一体化云服务，
 
 **盈利与交付**：GAAP毛利率31.1%，营业亏损357万美元；Q3约1700万美元预期产品交付因供应链而延后。 [nLIGHT 2026Q2业绩](https://investors.nlight.net/financial-information/financial-results/default.aspx)
 
-**本轮已检验：已有付费能否转成可持续的每股利润？**
+**已检验问题：已有付费能否转成可持续的每股利润？**
 
 新产品需求存在，暂不优先：产品收入增速快，但目前仍营业亏损、交付有供应链约束，约20亿美元起点使五年十倍需要很大批产规模。 [nLIGHT 2026Q2业绩](https://investors.nlight.net/financial-information/financial-results/default.aspx)
 
@@ -481,6 +491,8 @@ AI应用从训练走向持续推理，客户需要易用的一体化云服务，
 本轮停在上述判断；只有升级条件出现才重开，不因报告篇幅或行业热度继续补齐。
 
 ## Spire Global · SPIR
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -515,7 +527,7 @@ NOAA等机构开始以明确任务订单采购商业数据；同一观测数据�
 
 **融资压力**：6月底现金及有价证券约9167万美元；H1经营现金流-4958万美元、设备支出1342万美元，同时股票筹资净额6540万美元。 [Spire 2026Q2业绩](https://ir.spire.com/sec-filings/all-sec-filings/content/0001193125-26-346835/spir-ex99_1.htm)
 
-**本轮已检验：已有付费能否转成可持续的每股利润？**
+**已检验问题：已有付费能否转成可持续的每股利润？**
 
 小市值与订单增量有吸引力，仍不优先：现有毛利太薄、现金消耗大。新订单先要解决亏损和融资，不能直接推出每股十倍。 [Spire 2026Q2业绩](https://ir.spire.com/sec-filings/all-sec-filings/content/0001193125-26-346835/spir-ex99_1.htm)；[Spire获得NOAA两年数据订单](https://ir.spire.com/news-events/press-releases/detail/313/spire-global-awarded-33-2-million-noaa-contract-for/)
 
@@ -527,6 +539,8 @@ NOAA等机构开始以明确任务订单采购商业数据；同一观测数据�
 本轮停在上述判断；只有升级条件出现才重开，不因报告篇幅或行业热度继续补齐。
 
 ## SentinelOne · S
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -559,7 +573,7 @@ AI代理和更多云服务带来新的攻击面与安全管理需求。
 
 **成本约束**：GAAP毛利率72%，上年75%；营业利润率-31%，non-GAAP为10%，差异包含股权薪酬等。 [SentinelOne FY2027Q2业绩](https://investors.sentinelone.com/press-releases/news-details/2026/SentinelOne-Announces-Second-Quarter-Fiscal-Year-2027-Financial-Results/default.aspx)
 
-**本轮已检验：已有付费能否转成可持续的每股利润？**
+**已检验问题：已有付费能否转成可持续的每股利润？**
 
 行业需求真实，但现价十倍暂不优先：约74亿美元起点，21%收入增长伴随GAAP毛利率下降，剔除股权成本后的盈利不能直接属于股东。 [SentinelOne FY2027Q2业绩](https://investors.sentinelone.com/press-releases/news-details/2026/SentinelOne-Announces-Second-Quarter-Fiscal-Year-2027-Financial-Results/default.aspx)
 
@@ -571,6 +585,8 @@ AI代理和更多云服务带来新的攻击面与安全管理需求。
 本轮停在上述判断；只有升级条件出现才重开，不因报告篇幅或行业热度继续补齐。
 
 ## GitLab · GTLB
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -603,7 +619,7 @@ AI生成更多代码，可能增加验证、安全与交付需求；也可能削
 
 **现金口径**：当季经营现金流-310万美元；调整自由现金流980万美元，不能把后者称为未经调整的现金生成。 [GitLab FY2027Q2业绩](https://ir.gitlab.com/news/news-details/2026/GitLab-Reports-Second-Quarter-Fiscal-Year-2027-Financial-Results/default.aspx)
 
-**本轮已检验：已有付费能否转成可持续的每股利润？**
+**已检验问题：已有付费能否转成可持续的每股利润？**
 
 暂不优先：AI机会与收费模式变化并存，收入增长21%时GAAP毛利和营业利润率都下降，不能把代码量增长当利润增长。 [GitLab FY2027Q2业绩](https://ir.gitlab.com/news/news-details/2026/GitLab-Reports-Second-Quarter-Fiscal-Year-2027-Financial-Results/default.aspx)
 
@@ -615,6 +631,8 @@ AI生成更多代码，可能增加验证、安全与交付需求；也可能削
 本轮停在上述判断；只有升级条件出现才重开，不因报告篇幅或行业热度继续补齐。
 
 ## LiveRamp · RAMP
+
+研究更新：2026-10-19
 
 ### 公司做什么
 
@@ -644,7 +662,7 @@ AI生成更多代码，可能增加验证、安全与交付需求；也可能削
 
 **状态已改变**：8月5日公司表示Publicis交易仍预计2026年底前完成，因此不举行季度业绩会、不提供财务指引。 [LiveRamp FY2027Q1业绩与收购状态](https://investors.liveramp.com/news-releases/news-release-details/liveramp-announces-results-first-quarter-fiscal-2027)
 
-**本轮已检验：已有付费能否转成可持续的每股利润？**
+**已检验问题：已有付费能否转成可持续的每股利润？**
 
 止于交易状态筛查：已处于Publicis收购流程，不作为独立经营五年十倍研究对象。交易若失败再按当时条件重新判断。 [LiveRamp FY2027Q1业绩与收购状态](https://investors.liveramp.com/news-releases/news-release-details/liveramp-announces-results-first-quarter-fiscal-2027)
 
