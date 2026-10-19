@@ -16,6 +16,15 @@ export function integrationHurdle(neededProfit, b) {
   return { grossMargin, normalizedAnnualProfit, additionalRevenue: Math.max(0, neededProfit - normalizedAnnualProfit) / (grossMargin * (1 - b.taxRate)) };
 }
 
+export function storageScale(base, scenario) {
+  const inputs = [base.b2Revenue, base.backupRevenue, base.operatingExpenses, base.years, scenario.b2Growth, scenario.backupGrowth, scenario.grossMargin, scenario.expenseGrowth];
+  if (!inputs.every(Number.isFinite) || base.b2Revenue <= 0 || base.backupRevenue < 0 || base.operatingExpenses < 0 || !Number.isInteger(base.years) || base.years <= 0 || scenario.b2Growth <= -1 || scenario.backupGrowth <= -1 || scenario.expenseGrowth <= -1 || scenario.grossMargin < 0 || scenario.grossMargin > 1) throw new Error('Invalid storage operating sensitivity');
+  const revenue = base.b2Revenue * (1 + scenario.b2Growth) ** base.years + base.backupRevenue * (1 + scenario.backupGrowth) ** base.years;
+  const grossProfit = revenue * scenario.grossMargin;
+  const operatingExpenses = base.operatingExpenses * (1 + scenario.expenseGrowth) ** base.years;
+  return { revenue, grossProfit, operatingExpenses, operatingProfit: grossProfit - operatingExpenses };
+}
+
 export function operatingReviewSections(c) {
   const r = c.research, h = r.hurdle;
   const n = (v, d = 2) => v.toLocaleString('zh-CN', { maximumFractionDigits: d });
@@ -29,9 +38,20 @@ export function operatingReviewSections(c) {
     rows: [['合并收入', n(bridge.current, 3)], ['其中收购ESI并入', n(bridge.acquired, 3)], ['扣ESI后原有业务收入', n(bridge.current - bridge.acquired, 3)], ['2025Q2原公司收入', n(bridge.prior, 3)], ['原有业务同比', n(organicGrowth(bridge.current, bridge.acquired, bridge.prior) * 100) + '%']],
     sources: bridge.sources
   }] : [];
-  const sections = [...revenueSections, ...r.evidenceSections, {
+  const scale = r.storageScale;
+  const scaleSections = scale ? [{ title: '收入不必十倍：先看利润如何变化',
+    paragraphs: scale.explanation,
+    headers: ['五年条件组合 / 非预测', 'B2 / 备份年增速', '含折旧毛利率 / 费用年增速', '年收入 / 百万美元', '营业费用 / 百万美元', '营业利润 / 百万美元'],
+    rows: scale.cases.map(s => {
+      if (!s.reason) throw new Error(c.id + ': missing storage sensitivity rationale');
+      const p = storageScale(scale.base, s);
+      return [s.label, n(s.b2Growth * 100) + '% / ' + n(s.backupGrowth * 100) + '%', n(s.grossMargin * 100) + '% / ' + n(s.expenseGrowth * 100) + '%', n(p.revenue), n(p.operatingExpenses), n(p.operatingProfit)];
+    }),
+    notes: scale.cases.map(s => s.label + '：' + s.reason), sources: scale.sources
+  }] : [];
+  const sections = [...revenueSections, ...r.evidenceSections, ...scaleSections, {
     title: '当前价格要求多大的利润',
-    paragraphs: [h.shareBasis, '下表是十倍股价的反算门槛，不是2031年利润或股价预测。10、20、40倍PE用于检验估值依赖，没有选定一个“最终PE”；40倍一列也不表示公司值得40倍。以披露股数保持不变反算，未计未来奖励或融资，不能当作完全摊薄结果。分红、汇率和交易费用不在股价倍数内。'],
+    paragraphs: [h.shareBasis, h.explanation || '下表是十倍股价的反算门槛，不是2031年利润或股价预测。10、20、40倍PE用于检验估值依赖，没有选定一个“最终PE”；40倍一列也不表示公司值得40倍。以披露股数保持不变反算，未计未来奖励或融资，不能当作完全摊薄结果。分红、汇率和交易费用不在股价倍数内。'],
     headers: ['终点PE压力值', '使用这一档要面对什么', '所需年净利润 / 百万美元', '每新增100万股再需净利 / 百万美元'],
     rows: cases.map(p => [p.pe + '倍', p.reason, n(p.profit), n(p.profitPerNewMillionShares)]),
     sources: h.sources, proseTable: true
@@ -47,7 +67,7 @@ export function operatingReviewSections(c) {
     });
   }
   sections.push({ title: '每项经营输入：依据、用途与缺口', collapsed: true,
-    paragraphs: ['只有已披露数字用于财务拆分。缺少客户采用、价格或资金依据的项保持空缺，不用所谓乐观情景补数。'],
+    paragraphs: [r.inputNote || '只有已披露数字用于财务拆分。缺少客户采用、价格或资金依据的项保持空缺，不用所谓乐观情景补数。'],
     headers: ['输入', '已有依据', '本轮如何使用', '尚缺什么', '来源'],
     rows: r.inputs.map(x => [x.label, x.evidence, x.use, x.gap]), rowSources: r.inputs.map(x => x.sources), proseTable: true });
   return sections;

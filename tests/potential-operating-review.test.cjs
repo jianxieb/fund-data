@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const data = require('../data/potential-screening.json');
-const quotes = require('../data/potential-screening-quotes.json');
+const quotes = require('../data/potential-screening-round5-quotes.json');
 const close = (a, b) => assert.ok(Math.abs(a - b) < 1e-8, `${a} != ${b}`);
 
 test('a tenfold share price needs more profit when shares increase; PE is a sensitivity, not a forecast', async () => {
@@ -23,22 +23,22 @@ test('acquired revenue is removed before comparing the original business, withou
 
 test('integration hurdle keeps depreciation in gross profit and normalizes tax without pretending revenue was forecast', async () => {
   const { integrationHurdle } = await import('../scripts/potential_operating_review.mjs');
-  const b = data.companies.find(c=>c.id==='TSSI').research.integrationBridge;
+  const b = require('../data/potential-screening-round4.json').companies.find(c=>c.id==='TSSI').research.integrationBridge;
   const h = integrationHurdle(99.75441245, b);
   close(h.normalizedAnnualProfit, 6.5424);
   close(h.additionalRevenue * (4.439 / 14.169) * .725 + h.normalizedAnnualProfit, 99.75441245);
   assert.ok(h.additionalRevenue > 400);
 });
 
-test('new round has no recycled companies or unexplained forecast inputs and all detail evidence resolves', async () => {
+test('new round excludes every earlier screen and legacy comparison and resolves input evidence', async () => {
   const { researchSections } = await import('../scripts/potential_research_sections.mjs');
-  const old = new Set(require('../data/potential-screening-prior.json').companies.map(c=>c.id));
-  assert.equal(data.companies.length, 19);
-  assert.equal(data.newScreenCount, 19);
+  const prior = require('../data/potential-screening-round4.json');
+  const old = new Set([prior, require('../data/potential-screening-prior.json'), require('../data/potential-stocks.json')].flatMap(d => [...d.companies, ...d.comparisons || []]).map(c=>c.id));
+  assert.equal(data.companies.length, 9);
+  assert.equal(data.newScreenCount, 9);
   assert.ok(data.companies.every(c=>!old.has(c.id)));
+  assert.deepEqual(data.companies.filter(c=>c.selected).map(c=>c.id), ['BLZE']);
   for (const c of data.companies.filter(c=>c.research)) {
-    assert.equal(c.selected, false);
-    assert.equal(c.research.modelStatus, 'no_calibrated_forecast');
     assert.equal(c.research.cases, undefined);
     c.quote = quotes.quotes.find(q=>q.symbol===c.id);
     const sections = researchSections(c);
@@ -49,5 +49,29 @@ test('new round has no recycled companies or unexplained forecast inputs and all
     broken.research.inputs[0].evidence = '';
     assert.throws(()=>researchSections(broken), /incomplete operating input evidence/);
   }
-  for (const symbol of ['SIMO','FINV']) assert.equal(quotes.quotes.find(q=>q.symbol===symbol).marketCapUse, 'excluded');
+});
+
+test('storage sensitivity separates business growth, gross profit and retained operating costs', async () => {
+  const { storageScale } = await import('../scripts/potential_operating_review.mjs');
+  const base={b2Revenue:100,backupRevenue:50,operatingExpenses:80,years:1};
+  const scenario={b2Growth:1,backupGrowth:-.5,grossMargin:.6,expenseGrowth:.2};
+  assert.deepEqual(storageScale(base,scenario),{revenue:225,grossProfit:135,operatingExpenses:96,operatingProfit:39});
+  close(storageScale({...base,operatingExpenses:90},scenario).operatingProfit,27);
+  assert.throws(()=>storageScale(base,{...scenario,grossMargin:1.1}));
+  assert.throws(()=>storageScale(base,{...scenario,b2Growth:-1}));
+  assert.throws(()=>storageScale({...base,years:0},scenario));
+});
+
+test('a strong storage operating case still does not prove tenfold net profit after dilution', async () => {
+  const { storageScale, tenfoldRequirements } = await import('../scripts/potential_operating_review.mjs');
+  const b=data.companies.find(c=>c.id==='BLZE');
+  const r=b.research.storageScale;
+  const result=storageScale(r.base,r.cases.at(-1));
+  close(result.operatingProfit,151.613529);
+  const hurdle=tenfoldRequirements(8.6,b.research.hurdle.shares,40);
+  close(hurdle.profit,193.5);
+  assert.ok(result.operatingProfit<hurdle.profit);
+  // Do not compare a gross contract value or EBITDA with a net-profit requirement.
+  assert.equal(b.research.hurdle.shares,90);
+  assert.ok(b.research.storageScale.cases.every(c=>c.reason));
 });

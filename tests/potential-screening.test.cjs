@@ -26,13 +26,17 @@ const rowIds = html => [...html.matchAll(/data-stock-row="([^"]+)"/g)].map(x=>x[
 
 test('current research opens the fresh finite screen and changes downloads and counts with history', () => {
   const f=fixture();
-  assert.equal(rowIds(f.html).length,19);
-  assert.ok(rowIds(f.html).includes('TSSI'));
+  assert.equal(rowIds(f.html).length,9);
+  assert.ok(rowIds(f.html).includes('BLZE'));
   assert.ok(!rowIds(f.html).includes('688050'));
   assert.match(f.html,/利润增长靠什么/);
   assert.match(f.html,/股价快照 \/ 美元/);
   assert.equal(f.api.reportPath(),'docs/research/potential-screening-2026-10-19.md');
-  assert.equal(f.api.companies().length,19);
+  assert.equal(f.api.companies().length,9);
+  f.click('potential-history');
+  assert.equal(rowIds(f.html).length,19);
+  assert.ok(rowIds(f.html).includes('TSSI'));
+  assert.equal(f.api.reportPath(),'docs/research/potential-screening-round4-2026-10-19.md');
   f.click('potential-history');
   assert.equal(rowIds(f.html).length,27);
   assert.ok(rowIds(f.html).includes('VKTX'));
@@ -43,27 +47,27 @@ test('current research opens the fresh finite screen and changes downloads and c
   assert.doesNotMatch(f.html,/data-stock-row="VKTX"/);
   assert.equal(f.api.reportPath(),'docs/research/potential-stocks-2026-10-18.md');
   f.click('potential-current');
-  assert.ok(rowIds(f.html).includes('TSSI'));
+  assert.ok(rowIds(f.html).includes('BLZE'));
 });
 
 test('industry, priority and business search combine and clearing restores the screen', () => {
   const f=fixture();
-  f.click('potential-sector','compute');
-  assert.deepEqual(rowIds(f.html),['TSSI','SIMO','POWL','SANM','AMSC','AIP']);
-  f.api.handleInput({value:'闪存'});f.H.render();
-  assert.deepEqual(rowIds(f.html),['SIMO']);
+  f.click('potential-sector','ai-storage');
+  assert.deepEqual(rowIds(f.html),['BLZE','PENG','DOCN']);
+  f.api.handleInput({value:'硬盘'});f.H.render();
+  assert.deepEqual(rowIds(f.html),['BLZE']);
   f.click('potential-reset');
   f.click('potential-status','priority');
-  assert.deepEqual(rowIds(f.html),[]);
+  assert.deepEqual(rowIds(f.html),['BLZE']);
   assert.match(f.html,/没有高概率十倍结论/);
   f.click('potential-status','watch');
-  assert.equal(rowIds(f.html).length,19);
-  assert.ok(rowIds(f.html).includes('TSSI'));
-  assert.ok(rowIds(f.html).includes('CXDO'));
+  assert.equal(rowIds(f.html).length,8);
+  assert.ok(!rowIds(f.html).includes('BLZE'));
+  assert.ok(rowIds(f.html).includes('QNST'));
   f.api.handleInput({value:'no such business'});f.H.render();
   assert.match(f.html,/当前条件没有匹配公司/);
   f.click('potential-reset');
-  assert.equal(rowIds(f.html).length,19);
+  assert.equal(rowIds(f.html).length,9);
   assert.match(f.html,/<div class="stock-controls"><div class="filters"><input type="search" id="potential-search"/);
 });
 
@@ -75,16 +79,20 @@ test('each company explains business and profit before judgement with traceable 
     assert.ok(order.every((x,i)=>x>=0 && (!i || x>order[i-1])));
     assert.match(f.modal,/本轮已检验/);
     assert.match(f.modal,/什么会改变判断/);
-    assert.match(f.modal,/UTC，盘后/);
+    assert.match(f.modal,/UTC，(盘前|盘后)/);
     assert.match(f.modal,/原始来源与定位/);
     for (const id of c.sources) assert.ok(f.screen.sources.some(s=>s.id===id));
   }
-  f.click('potential-screen-detail','TSSI');
+  f.click('potential-screen-detail','BLZE');
   assert.match(f.modal,/每项经营输入：依据、用途与缺口/);
-  assert.match(f.modal,/收入99%来自同一OEM/);
-  f.click('potential-screen-detail','CXDO');
-  assert.match(f.modal,/并发会话/);
-  assert.match(f.modal,/6.83%/);
+  assert.match(f.modal,/CoreWeave/);
+  assert.match(f.modal,/636.64/);
+  assert.match(f.modal,/10月19日|2026-10-19/);
+  assert.match(f.modal,/盘前/);
+  f.click('potential-screen-detail','QNST');
+  assert.match(f.modal,/50.025/);
+  assert.match(f.modal,/HomeBuddy/);
+  assert.match(f.modal,/盘后/);
 });
 
 test('market switching respects the existing market control and keeps prior A-share research reachable', () => {
@@ -99,7 +107,7 @@ test('market switching respects the existing market control and keeps prior A-sh
   assert.ok(rowIds(f.html).includes('688050'));
   f.click('potential-current');
   f.H.market='us';f.H.render();
-  assert.equal(rowIds(f.html).length,19);
+  assert.equal(rowIds(f.html).length,9);
 });
 
 test('screen escapes source text and exports the same evidence and price time basis', () => {
@@ -123,7 +131,8 @@ test('screen escapes source text and exports the same evidence and price time ba
 test('withdrawn forecasts cannot remain investment priorities or appear in product and report', () => {
   const f=fixture();
   f.click('potential-history');
-  const archived=f.screen.previous;
+  f.click('potential-history');
+  const archived=f.screen.previous.previous;
   assert.equal(archived.newScreenCount,21);
   assert.deepEqual(Array.from(archived.companies.filter(c=>c.research), c=>c.id),['VKTX','KURA']);
   for (const id of ['PL','ASTS','AUR','BKSY','ARDX']) assert.equal(archived.companies.find(c=>c.id===id).selected,false);

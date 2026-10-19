@@ -11,7 +11,7 @@ export function screeningReport(data, process) {
   for (const s of data.sectors) md += `### ${s.name} · ${s.verdict}\n\n${s.change}\n\n${s.profit}\n\n${s.evidence}\n\n${refs(s.sources)}\n\n`;
   md += '## 研究取舍\n\n| 公司 | 五年十倍可能性 | 研究优先级 | 研究阶段 | 判断 |\n| --- | --- | --- | --- | --- |\n' + data.companies.map(c => `| ${c.name} ${c.id} | ${c.tenfold} | ${c.priority} | ${c.stage} | ${c.judgment} |`).join('\n') + '\n\n';
   for (const c of data.companies) {
-    md += `## ${c.name} · ${c.id}\n\n### 公司做什么\n\n${c.business}\n\n### 机会为什么出现\n\n${c.opportunity}\n\n### 利润如何放大\n\n${c.profitMechanism}\n\n### 当前判断\n\n**五年十倍可能性：${c.tenfold}；研究优先级：${c.priority}。** ${c.judgment}\n\n${c.startingValue}\n\n股价快照：${c.quote.priceUsd}美元，UTC ${c.quote.tradeTimeUtc}（盘后）。${c.capitalBasis}\n\n${refs(c.sources)}\n\n### 关键风险与依据\n\n`;
+    md += `## ${c.name} · ${c.id}\n\n### 公司做什么\n\n${c.business}\n\n### 机会为什么出现\n\n${c.opportunity}\n\n### 利润如何放大\n\n${c.profitMechanism}\n\n### 当前判断\n\n**五年十倍可能性：${c.tenfold}；研究优先级：${c.priority}。** ${c.judgment}\n\n${c.startingValue}\n\n股价快照：${c.quote.priceUsd}美元，UTC ${c.quote.tradeTimeUtc}（${c.quote.sessionLabel || '盘后'}）。${c.capitalBasis}\n\n${refs(c.sources)}\n\n### 关键风险与依据\n\n`;
     md += c.risks.map(r => '- ' + r).join('\n') + '\n\n';
     for (const f of c.facts) md += `**${f.label}**：${f.text} ${refs(f.sources)}\n\n`;
     for (const s of c.research?.sections || []) {

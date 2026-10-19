@@ -1,0 +1,88 @@
+{
+  "retrievedAt": "2026-10-19",
+  "source": "web.finance",
+  "note": "逐项保留供应商最近成交时点；10月19日盘前与10月16日盘后并存，非同一收盘。原始市值仅供量级参考，不使用行情PE；关键估值另用披露股数和稀释压力。",
+  "quotes": [
+    {
+      "symbol": "BLZE",
+      "priceUsd": 8.6,
+      "marketCapUsd": 522828013,
+      "tradeTimeUtc": "2026-10-19 08:00:01",
+      "sessionLabel": "盘前",
+      "label": "10月19日 · 盘前",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "QNST",
+      "priceUsd": 16.32,
+      "marketCapUsd": 947180160,
+      "tradeTimeUtc": "2026-10-16 21:35:00",
+      "sessionLabel": "盘后",
+      "label": "10月16日 · 盘后",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "PENG",
+      "priceUsd": 57.1,
+      "marketCapUsd": 3144097300,
+      "tradeTimeUtc": "2026-10-19 10:19:47",
+      "sessionLabel": "盘前",
+      "label": "10月19日 · 盘前",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "DOCN",
+      "priceUsd": 98.69,
+      "marketCapUsd": 12489022120,
+      "tradeTimeUtc": "2026-10-19 10:06:22",
+      "sessionLabel": "盘前",
+      "label": "10月19日 · 盘前",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "S",
+      "priceUsd": 21.58,
+      "marketCapUsd": 7370166104,
+      "tradeTimeUtc": "2026-10-19 10:10:12",
+      "sessionLabel": "盘前",
+      "label": "10月19日 · 盘前",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "GTLB",
+      "priceUsd": 52.76,
+      "marketCapUsd": 8900770280,
+      "tradeTimeUtc": "2026-10-19 09:09:25",
+      "sessionLabel": "盘前",
+      "label": "10月19日 · 盘前",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "LASR",
+      "priceUsd": 33.67,
+      "marketCapUsd": 2019358250,
+      "tradeTimeUtc": "2026-10-19 08:29:20",
+      "sessionLabel": "盘前",
+      "label": "10月19日 · 盘前",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "SPIR",
+      "priceUsd": 8.95,
+      "marketCapUsd": 342740787,
+      "tradeTimeUtc": "2026-10-16 23:15:00",
+      "sessionLabel": "盘后",
+      "label": "10月16日 · 盘后",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "RAMP",
+      "priceUsd": 37.44,
+      "marketCapUsd": 2276164126,
+      "tradeTimeUtc": "2026-10-16 23:15:00",
+      "sessionLabel": "盘后",
+      "label": "10月16日 · 盘后",
+      "marketCapUse": "reference_only"
+    }
+  ]
+}
