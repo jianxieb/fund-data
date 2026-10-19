@@ -66,7 +66,7 @@ S、GTLB收入均约增长21%，但GAAP毛利率下降，尚不能仅按软件�
 
 业务组合、产能利用率及费用摊薄；必须扣施工、营运资金和设备投入。
 
-undefined
+Sterling和IES已体现项目付费及利润扩张；部分散热公司仍增收不增利。
 
 [Sterling 2026Q2业绩、分部与全年指引](https://www.sec.gov/Archives/edgar/data/874238/000087423826000100/a20260803ex991earningsrele.htm)；[IES FY2026Q3业绩及拆股](https://investors.ies-corporate.com/news-releases/news-release-details/ies-holdings-reports-fiscal-2026-third-quarter-results-and)；[Modine FY2027Q1业绩](https://investors.modine.com/news/news-details/2026/Modine-Reports-First-Quarter-Fiscal-2027-Results/default.aspx)
 
@@ -76,7 +76,7 @@ undefined
 
 高端产品组合及研发复用，而不是假设所有客户数增长十倍。
 
-undefined
+芯碁已出现利润与现金改善，Camtek近期GAAP利润仍下降。
 
 [芯碁微装 2026年半年报](https://static.cninfo.com.cn/finalpage/2026-08-27/1225508738.PDF)；[Camtek 2026Q2业绩](https://www.camtek.com/news-and-events/camtek-announces-results-for-the-second-quarter-of-2026/)；[Nova 2026Q2业绩](https://www.novami.com/investors/press-releases/nova-reports-record-second-quarter-2026-financial-results/)
 
@@ -86,7 +86,7 @@ undefined
 
 研发与渠道复用，保留股权薪酬成本。
 
-undefined
+AvePoint已有SaaS和GAAP利润增长。
 
 [AvePoint 2026Q2业绩](https://www.sec.gov/Archives/edgar/data/1777921/000117184326005319/exh_991.htm)；[A10 Networks 2026Q2业绩](https://www.sec.gov/Archives/edgar/data/1580808/000158080826000042/q2-26exx9918052026earnings.htm)
 
@@ -96,7 +96,7 @@ undefined
 
 材料技术和制造良率的溢价，扣除研发扩产与营运资金。
 
-undefined
+斯瑞部分产品已批量供货，其他材料仍在验证。
 
 [斯瑞新材 2026年半年报](https://static.cninfo.com.cn/finalpage/2026-08-26/1225506189.PDF)
 

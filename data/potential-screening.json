@@ -77,53 +77,53 @@
       "name": "电力施工与散热配套",
       "verdict": "优先找真实利润与现金",
       "change": "机房扩建形成施工与温控开支，但同一行业中的企业利润表现明显不同。",
-      "whyNow": "Sterling和IES已体现项目付费及利润扩张；部分散热公司仍增收不增利。",
       "profit": "业务组合、产能利用率及费用摊薄；必须扣施工、营运资金和设备投入。",
       "risk": "客户投资周期、项目成本超支及收购融资。",
       "sources": [
         "strl-q",
         "iesc-q",
         "mod-q"
-      ]
+      ],
+      "evidence": "Sterling和IES已体现项目付费及利润扩张；部分散热公司仍增收不增利。"
     },
     {
       "id": "semis",
       "name": "半导体与高端电子设备",
       "verdict": "需求增长需通过价格检验",
       "change": "先进封装、量测与高端PCB增加设备价值量，利润兑现和市场定价差异很大。",
-      "whyNow": "芯碁已出现利润与现金改善，Camtek近期GAAP利润仍下降。",
       "profit": "高端产品组合及研发复用，而不是假设所有客户数增长十倍。",
       "risk": "资本开支周期、验收、竞争、股数增加与高估值。",
       "sources": [
         "xinqi-h1",
         "camt-q",
         "nvmi-q"
-      ]
+      ],
+      "evidence": "芯碁已出现利润与现金改善，Camtek近期GAAP利润仍下降。"
     },
     {
       "id": "software",
       "name": "企业数据与网络软件",
       "verdict": "已有订阅优于空泛AI叙事",
       "change": "企业已有备份、治理和安全预算，仍要区分AI新增付费与原业务。",
-      "whyNow": "AvePoint已有SaaS和GAAP利润增长。",
       "profit": "研发与渠道复用，保留股权薪酬成本。",
       "risk": "平台竞争、获客费用和稀释。",
       "sources": [
         "avpt-q",
         "aten-q"
-      ]
+      ],
+      "evidence": "AvePoint已有SaaS和GAAP利润增长。"
     },
     {
       "id": "materials",
       "name": "高端材料",
       "verdict": "逐产品区分验证与量产",
       "change": "光通信和火箭热管理提出新材料要求。",
-      "whyNow": "斯瑞部分产品已批量供货，其他材料仍在验证。",
       "profit": "材料技术和制造良率的溢价，扣除研发扩产与营运资金。",
       "risk": "认证失败、量产放慢及价格提前透支。",
       "sources": [
         "sirui-h1"
-      ]
+      ],
+      "evidence": "斯瑞部分产品已批量供货，其他材料仍在验证。"
     }
   ],
   "companies": [
