@@ -91,6 +91,22 @@
       "asset": "https://www.cmbchina.com/cmb.ico",
       "source": "https://www.cmbchina.com/",
       "bytes": 17542
+    },
+    {
+      "file": "firstrade.png",
+      "asset": "https://www.firstrade.com/apple-touch-icon.png",
+      "source": "https://www.firstrade.com/trading/pricing",
+      "bytes": 5753,
+      "contentType": "image/png",
+      "checkedAt": "2026-10-19"
+    },
+    {
+      "file": "schwab.png",
+      "asset": "https://www.schwab.com/themes/custom/sch_beacon_retail/favicons/apple-icon.png",
+      "source": "https://www.schwab.com/legal/schwab-pricing-guide-for-individual-investors",
+      "bytes": 16764,
+      "contentType": "image/png",
+      "checkedAt": "2026-10-19"
     }
   ]
 }

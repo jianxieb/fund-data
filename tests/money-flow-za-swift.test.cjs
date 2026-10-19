@@ -68,14 +68,17 @@ test('bank tier survives each stock account and receipt/return combination witho
   for (const bank of D.calculator.hkBanks) for (const broker of D.calculator.brokers) for (const returnBank of D.calculator.hkBanks)
     for (const outcome of ['broker-balance', 'usd-balance', 'usd-card', 'cnh-card', 'mainland']) for (const zaPerksLevel of ['standard', 'lv1', 'lv2']) {
       const r = run({ bank, broker, returnBank, outcome, zaPerksLevel, zaSwiftUsed: 2, mainlandMethod: '', depositMethod: '', returnMethod: '' });
-      if (row(r, 'returnWire')?.swiftTariff) close(row(r, 'returnWire').cny / r.refs.HKD, zaPerksLevel === 'standard' ? 70 : 0);
+      if (row(r, 'returnWire')?.swiftTariff) {
+        const usedThirdWire = bank === 'za' && r.depositMethod === 'swift' && r.broker.swiftDestination === 'overseas';
+        close(row(r, 'returnWire').cny / r.refs.HKD, zaPerksLevel === 'standard' || zaPerksLevel === 'lv1' && usedThirdWire ? 70 : 0);
+      }
       const ordinary = run({ bank, broker, returnBank, outcome, zaPerksLevel: 'standard', mainlandMethod: '', depositMethod: '', returnMethod: '' });
       for (const key of ['entryMiddle', 'withdrawMiddle', 'returnOther']) if (row(r, key)) assert.equal(row(r, key).cny, row(ordinary, key).cny);
       if (!r.error) close(r.budgetCny + r.profitUsd * r.refs.USD - r.costCny - r.taxCny + r.fxImpactCny, r.netCny);
       assert.equal(M.calculatorIssue(M.calculatorRoute({ ...base, bank, broker, returnBank, outcome, zaPerksLevel }), D), '');
       checked++;
     }
-  assert.equal(checked, 2700);
+  assert.equal(checked, D.calculator.hkBanks.length ** 2 * D.calculator.brokers.length * 5 * 3);
   for (const zaPerksLevel of ['standard', 'lv1', 'lv2']) {
     const r = run({ zaPerksLevel, zaSwiftUsed: 3 });
     assert.equal(row(r, 'depositOther').cny, null);

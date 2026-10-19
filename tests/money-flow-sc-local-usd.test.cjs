@@ -37,12 +37,13 @@ test('all banks and stock accounts stay selectable; only the unsupported SC loca
     const s = M.calculatorRoute({ ...base, bank, broker, route, depositMethod: '', fxMode: 'bank' });
     const channels = M.calculatorChannels(s, D);
     assert.equal(M.calculatorIssue(s, D), '');
-    assert.ok(channels.depositMethods.includes('chats') || channels.depositMethods.includes('internal'));
+    if (D.brokers.find(row => row.id === broker).usdDepositMethods) assert.deepEqual(channels.depositMethods, ['swift']);
+    else assert.ok(channels.depositMethods.includes('chats') || channels.depositMethods.includes('internal'));
     if (broker === 'chief' || broker === 'usmart') assert.equal(channels.depositMethods.includes('swift'), bank !== 'sc');
     if (broker === 'ibkr') assert.ok(channels.depositMethods.includes('swift'));
     checked++;
   }
-  assert.equal(checked, 90);
+  assert.equal(checked, D.calculator.hkBanks.length * D.calculator.brokers.length * D.calculator.currencies.length);
   for (const broker of ['chief', 'usmart', 'ibkr']) {
     const r = run({ broker });
     close(r.rows.find(row => row.key === 'depositBank').cny, 22 * r.refs.USD);

@@ -730,9 +730,9 @@ test('welcome vouchers cannot double-discount zero commission or pay regulatory 
   assert.match(pending.voucher.message, /截止日期/);
   close(pending.discountUsd, 0); close(pending.totalUsd, commissionOnly.totalUsd);
 });
-test('the five broker journeys reconcile RMB and retain the exact deposit and withdrawal method', () => {
+test('all broker journeys reconcile RMB and retain the exact deposit and withdrawal method', () => {
   for (const provider of D.brokers) {
-    const input = { ...mainlandConfig, broker: provider.id, tradeFeeUsd: '', buyOrders: 3, sellOrders: 2, sharePriceUsd: 100,
+    const input = { ...mainlandConfig, broker: provider.id, depositMethod: provider.usdDepositMethods?.[0] || 'chats', tradeFeeUsd: '', buyOrders: 3, sellOrders: 2, sharePriceUsd: 100,
       trade25: true, hsbcBalanceWaiver: true, chiefMonthly: true, usmartPromo: true, zaLv2: true, months: 12,
       profitUsd: 1000, inwardHkd: 0, intermediaryCny: 0, returnExtraCny: 0 };
     const r = M.journeyPlans(input, D, richQuotes).selected;
@@ -752,7 +752,7 @@ test('the five broker journeys reconcile RMB and retain the exact deposit and wi
 
 test('unfinished vouchers retain every priced leg and all standard trading fees', () => {
   for (const provider of D.brokers) {
-    const input = { ...mainlandConfig, broker: provider.id, tradeFeeUsd: '', profitUsd: 0 };
+    const input = { ...mainlandConfig, broker: provider.id, depositMethod: provider.usdDepositMethods?.[0] || 'chats', tradeFeeUsd: '', profitUsd: 0 };
     const base = M.journeyPlans(input, D, richQuotes).selected;
     for (const draft of [
       { voucherUsd: 0, voucherExpiry: '' },
@@ -976,12 +976,12 @@ test('confirmed free BOC mobile transfers preserve the foreign principal without
   assert.ok(cnh.rows.find(row => row.key === 'sender').cny > 0);
 });
 
-test('all five trading accounts retain fees for USD, HKD and CNH without inventing bank FX quotes', () => {
+test('all trading accounts retain fees for USD, HKD and CNH without inventing bank FX quotes', () => {
   for (const route of ['USD', 'HKD', 'CNH']) {
     const input = { ...mainlandConfig, route, broker: 'ibkr', bank: 'za', returnBank: 'bochk', returnMethod: 'swift',
       fxMode: 'manual', mainlandMethod: 'swift', depositMethod: route === 'USD' ? 'chats' : 'fps', tradeFeeUsd: '', profitUsd: 0 };
     const data = M.journeyPlans(input, D, richQuotes);
-    assert.equal(data.alternatives.broker.length, 5);
+    assert.equal(data.alternatives.broker.length, D.calculator.brokers.length);
     for (const row of data.alternatives.broker) {
       assert.equal(row.error, undefined, route + ':' + row.broker.id);
       assert.ok(row.trading.totalUsd > 0); assert.ok(Number.isFinite(row.net));
@@ -1316,7 +1316,7 @@ test('actual-price details show relevant currencies and charges across every sto
       assert.equal(fields.has('returnHkdPrice'), outcome === 'mainland');
       assert.equal(fields.has('exitPrice'), ['mainland', 'cnh-card'].includes(outcome));
       assert.equal(fields.has('inwardHkd'), outcome !== 'broker-balance');
-      assert.equal(fields.has('intermediaryCny'), broker === 'ibkr' && outcome !== 'broker-balance');
+      assert.equal(fields.has('intermediaryCny'), ['ibkr', 'firstrade', 'schwab'].includes(broker) && outcome !== 'broker-balance');
       assert.equal(fields.has('returnWireHkd'), outcome === 'mainland');
       assert.equal(fields.has('returnExtraCny'), outcome === 'mainland');
       for (const key of ['returnMonthlyHkd', 'returnBalanceHkd', 'balanceHkd']) assert.ok(!fields.has(key), key);
@@ -1590,7 +1590,7 @@ test('ICBC Asia selection, qualification, same-bank funding and return channel r
     ui.act('choose', 'broker', broker); html = ui.render();
     assert.equal(ui.saved().bank, 'icbc-asia'); assert.equal(ui.saved().icbcEAccount, true);
     assert.match(html, /data-money-check="icbcEAccount"/);
-    ui.act('pick', '', 'broker'); assert.equal((ui.modal().match(/data-field="broker"/g) || []).length, 5);
+    ui.act('pick', '', 'broker'); assert.equal((ui.modal().match(/data-field="broker"/g) || []).length, D.calculator.brokers.length);
   }
   ui.act('choose', 'broker', 'usmart'); ui.act('choose', 'outcome', 'mainland');
   assert.equal(ui.saved().returnMethod, 'icbc-express');
@@ -1691,7 +1691,7 @@ test('saved SC local USD wires migrate to its published clearing channel without
     assert.match(ui.modal(), /data-value="chats"/);
     for (const field of ['bank', 'broker', 'returnBank']) {
       ui.act('pick', '', field);
-      assert.equal((ui.modal().match(new RegExp('data-field="' + field + '"', 'g')) || []).length, field === 'broker' ? 5 : field === 'returnBank' ? 7 : 6);
+      assert.equal((ui.modal().match(new RegExp('data-field="' + field + '"', 'g')) || []).length, field === 'broker' ? D.calculator.brokers.length : field === 'returnBank' ? 7 : 6);
     }
     const restored = moneyUi(ui.saved(), quotes, '2026-10-11'); restored.render();
     assert.equal(restored.saved().depositMethod, 'chats');
@@ -1730,7 +1730,7 @@ test('direct corporate CHATS choices name their receiving bank and retain indepe
       assert.equal(restored.saved().depositMethod, method);
       ui.act('pick', '', 'depositMethod');
     }
-    for (const field of ['bank', 'broker', 'returnBank']) { ui.act('pick', '', field); assert.equal((ui.modal().match(new RegExp('data-field="' + field + '"', 'g')) || []).length, field === 'broker' ? 5 : field === 'returnBank' ? 7 : 6); }
+    for (const field of ['bank', 'broker', 'returnBank']) { ui.act('pick', '', field); assert.equal((ui.modal().match(new RegExp('data-field="' + field + '"', 'g')) || []).length, field === 'broker' ? D.calculator.brokers.length : field === 'returnBank' ? 7 : 6); }
     ui.act('pick', '', 'depositMethod');
     assert.match(ui.modal(), /经本人.*USD账户 → 同行入金/);
   }
@@ -1752,7 +1752,7 @@ test('ZA membership appears with its actual account role and survives every brok
       ui.act('choose', 'broker', broker); html = ui.render();
       assert.equal(ui.saved().zaPerksLevel, zaPerksLevel); assert.equal(ui.saved().zaLv2, zaPerksLevel === 'lv2');
       assert.equal(ui.saved().bank, 'bochk');
-      ui.act('pick', '', 'broker'); assert.equal((ui.modal().match(/data-field="broker"/g) || []).length, 5);
+      ui.act('pick', '', 'broker'); assert.equal((ui.modal().match(/data-field="broker"/g) || []).length, D.calculator.brokers.length);
       ui.act('pick', '', 'bank'); assert.equal((ui.modal().match(/data-field="bank"/g) || []).length, 6);
     }
     const restored = moneyUi(ui.saved(), quotes, '2026-10-11');
@@ -1851,7 +1851,7 @@ test('personal-bank funding keeps the receiving bank and broker independent and 
   assert.equal(restored.saved().depositMethod, 'via-bochk');
   for (const field of ['bank', 'broker']) {
     restored.act('pick', '', field);
-    assert.equal((restored.modal().match(new RegExp('data-field="' + field + '"', 'g')) || []).length, field === 'broker' ? 5 : field === 'returnBank' ? 7 : 6);
+    assert.equal((restored.modal().match(new RegExp('data-field="' + field + '"', 'g')) || []).length, field === 'broker' ? D.calculator.brokers.length : field === 'returnBank' ? 7 : 6);
   }
   restored.act('choose', 'bank', 'hsbc');
   assert.equal(restored.saved().broker, 'usmart'); assert.equal(restored.saved().depositMethod, 'via-bochk');
@@ -2045,7 +2045,8 @@ test('remittance evidence follows its own channel and excludes stock, card and e
   ui.act('choose', 'startBank', 'cib'); ui.act('choose', 'route', 'CNH');
   const rmb = evidenceLinks(ui, 'edge-01');
   assert.ok(rmb.has(D.sources.cib.url));
-  for (const key of ['cibCard', 'cibGo', 'cibFx']) assert.ok(!rmb.has(D.sources[key].url), key);
+  assert.ok(rmb.has(D.sources.cibCard.url)); // Explains why the foreign-currency waiver does not apply.
+  for (const key of ['cibGo', 'cibFx']) assert.ok(!rmb.has(D.sources[key].url), key);
 });
 
 test('offer eligibility is readable before enabling it and bank management evidence stays with banks', () => {
@@ -2991,7 +2992,7 @@ test('all mainland/currency/stock combinations preview the incoming bank fee tha
       if (account?.cny > 0) assert.ok(option.includes((account.cny / r.refs.HKD).toFixed(2) + ' HKD'), option);
     }
   }
-  assert.equal(applied, 810);
+  assert.equal(applied, D.calculator.mainland.length * D.calculator.currencies.length * D.calculator.brokers.length * D.calculator.hkBanks.length);
   assert.ok(priced > 700, 'known incoming fees must remain visible even when another step is missing');
 });
 
@@ -3024,7 +3025,7 @@ test('return bank previews distinguish wire, local transfer, cheque and virtual-
       if (account?.cny > 0) assert.ok(option.includes((account.cny / r.refs.HKD).toFixed(2) + ' HKD'), option);
     }
   }
-  assert.equal(applied, 150);
+  assert.equal(applied, D.calculator.brokers.length * 5 * D.calculator.hkBanks.length);
 });
 
 test('bank preview keeps personal receipt fees on their selected account and never transfers a waiver to a new account', () => {

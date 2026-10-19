@@ -14,7 +14,8 @@ const cibTariff = require('./fixtures/money-flow-cib-tariff-20261011.json');
 const config = { ...currentConfig, date: '2026-10-10' };
 const close = (a, b) => assert.ok(Math.abs(a - b) < 1e-6, a + ' != ' + b);
 const base = M.calculatorRoute({ ...config, startBank: 'cib', bank: 'bochk', broker: 'za', returnBank: 'bochk', exitBank: 'boc', route: 'USD', outcome: 'broker-balance' });
-const run = changes => M.calculatorJourney({ ...base, ...changes }, D, Q);
+const depositFor = broker => D.brokers.find(row => row.id === broker).usdDepositMethods?.[0] || 'chats';
+const run = changes => M.calculatorJourney({ ...base, ...(changes.broker ? { depositMethod: depositFor(changes.broker) } : {}), ...changes }, D, Q);
 // Historical tariff records remain auditable without reopening retired pickers.
 const tariffAudit = changes => M.mainlandJourney({ ...base, ...changes, currency:'CNY', selectedOnly:true, pricingBasis:'reference-mid' }, D, Q);
 const ledger = r => {
@@ -192,7 +193,7 @@ test('ordinary CIB wire is the default; the optional full-amount service adds ex
   assert.equal(base.mainlandMethod, 'swift');
   assert.equal(run({}).selected.rows.find(x => x.key === 'entryMiddle').cny, null);
   for (const bank of D.calculator.hkBanks) for (const broker of D.calculator.brokers) for (const count of [2, 3, 30]) {
-    const r = run({ bank, broker, count, mainlandMethod: 'cib-go', depositMethod: broker === 'usmart' && bank === 'bochk' ? 'internal' : 'chats' }).selected;
+    const r = run({ bank, broker, count, mainlandMethod: 'cib-go', depositMethod: broker === 'usmart' && bank === 'bochk' ? 'internal' : depositFor(broker) }).selected;
     assert.ok(r, [bank, broker, count].join('/'));
     close(r.rows.find(x => x.key === 'sender').cny, count * 50);
     close(r.rows.find(x => x.key === 'entryMiddle').cny, 0);
@@ -282,7 +283,7 @@ test('ICBC ordinary USD full-amount service includes the recipient fee without w
   assert.equal(ordinaryConfig.mainlandMethod, 'swift');
   assert.equal(icbcRun(ordinaryConfig).selected.rows.find(x => x.key === 'entryMiddle').cny, null);
   for (const receiving of D.calculator.hkBanks) for (const broker of D.calculator.brokers) for (const count of [1, 2, 3]) {
-    const r = icbcRun({ bank: receiving, broker, count, mainlandMethod: 'full', depositMethod: 'chats' }).selected;
+    const r = icbcRun({ bank: receiving, broker, count, mainlandMethod: 'full', depositMethod: depositFor(broker) }).selected;
     assert.ok(r, [receiving, broker, count].join('/'));
     const sender = r.rows.find(x => x.key === 'sender');
     const supplemental = sender.items.find(x => x.label.startsWith('全额到账附加费'));
@@ -603,6 +604,9 @@ test('recommendations compare distinct upstream routes while retaining the chose
   assert.equal(sameProfile, recommendations);
   for (const broker of D.calculator.brokers) {
     const changed = M.calculatorRecommendations({ ...input, broker }, D, diversityQuotes);
+    if (D.brokers.find(row => row.id === broker).usdDepositMethods) {
+      assert.equal(changed.plans.length, 0, 'unverified US wire intermediary fees cannot become a complete recommendation'); continue;
+    }
     assert.ok(changed.plans.length >= 2, broker);
     assert.ok(changed.plans.every(p => p.config.broker === broker));
     assert.equal(new Set(changed.plans.map(p => p.id)).size, changed.plans.length);
@@ -626,6 +630,7 @@ test('a current CCB full-amount quote stays calculable but a cheaper complete ro
   for (const broker of D.calculator.brokers) {
     const input = { ...base, date: '2026-10-11', broker, count: 1, months: 12, hsbcBalanceWaiver: false, trade25: false };
     const plans = M.calculatorRecommendations(input, D, quotes).plans;
+    if (D.brokers.find(row => row.id === broker).usdDepositMethods) { assert.equal(plans.length, 0); continue; }
     assert.ok(plans.length >= 2);
     assert.equal(new Set(plans.map(p => p.id)).size, plans.length);
     const ccb = plans.find(p => p.config.startBank === 'ccb');
@@ -734,6 +739,7 @@ test('upstream comparison retains real bank asset qualification without transfer
     const input = { ...base, date: '2026-10-11', broker, bank: 'hsbc', returnBank: 'bochk', months: 12, count: 1,
       balanceHkd: 10000, returnBalanceHkd: 0, hsbcBalanceWaiver: false, outcome: 'broker-balance' };
     const plans = M.calculatorRecommendations(input, D, diversityQuotes).plans;
+    if (D.brokers.find(row => row.id === broker).usdDepositMethods) { assert.equal(plans.length, 0); continue; }
     assert.ok(plans.length >= 2, broker);
     for (const plan of plans) {
       const item = plan.result.rows.find(row => row.key === 'account').items.find(item => item.bankId === 'hsbc');

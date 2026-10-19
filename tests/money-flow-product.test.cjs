@@ -43,6 +43,41 @@ test('CIB RMB fee explanation distinguishes an original-currency wire from purch
     assert.equal(subject.saved().bank, 'hsbc');
   }
 });
+test('new US broker pickers retain bank selections, show American wire instructions and recalculate withdrawal channels', () => {
+  const subject = ui({ startBank: 'cib', bank: 'hsbc', broker: 'ibkr', returnBank: 'bochk', outcome: 'usd-balance',
+    mainlandMethod: 'swift', depositMethod: 'chats', depositHkd: 0, depositOtherCny: 0, intermediaryCny: 0 });
+  subject.render(); subject.act('pick', '', 'broker');
+  for (const id of ['firstrade', 'schwab']) assert.ok(subject.modal().includes('data-field="broker" data-value="' + id + '"'));
+  for (const id of ['firstrade', 'schwab']) {
+    subject.act('choose', 'broker', id); const html = subject.render(), saved = subject.saved();
+    assert.equal(saved.bank, 'hsbc'); assert.equal(saved.returnBank, 'bochk'); assert.equal(saved.depositMethod, 'swift');
+    for (const key of ['depositHkd', 'depositOtherCny', 'intermediaryCny']) assert.equal(saved[key], '');
+    assert.match(html, /美国收款账户 · USD SWIFT/);
+    assert.ok(html.includes('assets/institutions/' + id + '.png'));
+    subject.act('detail', '', 'edge-03'); assert.ok(subject.modal().includes(id === 'firstrade' ? D.sources.firstradeWire.url : D.sources.schwabWire.url));
+    subject.act('detail', '', 'edge-withdraw'); assert.match(subject.modal(), /USD/);
+    assert.doesNotMatch(html, /undefined|NaN/);
+  }
+  assert.match(subject.render(), /网上提交 · 15 USD/);
+  const online = subject.result().selected;
+  subject.act('choose', 'brokerWireChannel', 'assisted');
+  assert.match(subject.render(), /人工／表格 · 25 USD/);
+  const assisted = subject.result().selected;
+  assert.ok(Math.abs(assisted.costCny - online.costCny - 10 * online.refs.USD) < 1e-7);
+  subject.act('choose', 'brokerWireChannel', 'invalid'); assert.equal(subject.saved().brokerWireChannel, 'assisted');
+  subject.act('choose', 'outcome', 'broker-balance');
+  assert.doesNotMatch(subject.render(), /出金渠道|人工／表格 · 25 USD/);
+});
+test('saved US brokers repair unsupported local funding without losing unrelated user inputs', () => {
+  for (const broker of ['firstrade', 'schwab']) {
+    const subject = ui({ startBank: 'cib', bank: 'hsbc', broker, route: 'HKD', mainlandMethod: 'swift', depositMethod: 'chats',
+      depositHkd: 0, depositOtherCny: 0, entryPrice: 7.9, intermediaryCny: 12 });
+    subject.render(); const saved = subject.saved();
+    assert.equal(saved.broker, broker); assert.equal(saved.bank, 'hsbc'); assert.equal(saved.depositMethod, 'swift');
+    assert.equal(saved.fxMode, 'bank'); assert.equal(saved.entryPrice, 7.9); assert.equal(saved.intermediaryCny, 12);
+    assert.equal(saved.depositHkd, ''); assert.equal(saved.depositOtherCny, '');
+  }
+});
 test('legacy generic RMB spending becomes a mainland bank endpoint once without replacing user accounts', () => {
   const subject = ui({ consumptionVersion: undefined, outcome: 'cnh-card', startBank: 'cib', bank: 'hsbc', broker: 'hsbc',
     returnBank: 'hsbc', exitBank: 'boc', exitPrice: 6.2, returnHkdPrice: 7.8, cardCnyPerHkd: .8 });

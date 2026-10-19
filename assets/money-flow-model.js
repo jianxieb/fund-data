@@ -627,8 +627,9 @@
       if (units < sells) return { error: '致富月供买入股数不足以完成' + sells + '笔卖出，每笔股数至少0.00001股。', errorField: 'sellOrders' };
       low = units * shareStep * price;
     } else if (quantizedShares) {
-      const minimumBuyUnits = Math.max(1, Math.ceil((broker.minimumBuyUsd || 0) / price / shareStep - 1e-9));
-      const needed = Math.max(buys * minimumBuyUnits, sells), maxUnits = Math.floor(cashUsd / price / shareStep + 1e-9);
+      const minimumTradeUnits = Math.max(1, Math.ceil((broker.minimumTradeShares || 0) / shareStep - 1e-9));
+      const minimumBuyUnits = Math.max(minimumTradeUnits, Math.ceil((broker.minimumBuyUsd || 0) / price / shareStep - 1e-9));
+      const needed = Math.max(buys * minimumBuyUnits, sells * minimumTradeUnits), maxUnits = Math.floor(cashUsd / price / shareStep + 1e-9);
       if (!Number.isSafeInteger(maxUnits)) return { error: '股数超出可精确测算范围。', errorField: 'sharePriceUsd' };
       let first = needed, last = maxUnits;
       while (first <= last) {
@@ -636,8 +637,9 @@
         const buyFee = override == null ? estimate(value).filter(order => order.kind === 'buy').reduce((sum, order) => sum + order.debitFeeUsd, 0) : 0;
         if (value + buyFee <= cashUsd + 1e-9) { low = value; first = units + 1; } else last = units - 1;
       }
-      const service = broker.id === 'za' ? 'ZA普通美股' : broker.id === 'hsbc' ? '汇丰美股' : '盈立美股';
-      const minimum = wholeSharesOnly ? '每笔至少1股' : '每笔买入至少1 USD且股数以0.0001股为单位';
+      const service = broker.id === 'za' ? 'ZA普通美股' : broker.id === 'hsbc' ? '汇丰美股' : broker.id === 'usmart' ? '盈立美股' : broker.name + '美股';
+      const minimum = wholeSharesOnly ? '（整股测算，每笔至少1股）' : '每笔买入至少' + (broker.minimumBuyUsd || 1) + ' USD，股数单位' + shareStep + '股' +
+        (broker.minimumTradeShares ? '、每笔买卖至少' + broker.minimumTradeShares + '股' : '');
       if (low <= 0) return { error: '美元余额不足以买入' + service + minimum + '，并完成' + buys + '笔买入／' + sells + '笔卖出。', errorField: 'budgetCny' };
     } else {
     // A sub-one-share IBKR order can cost more than a one-share order. Solve
@@ -1138,9 +1140,11 @@
       if (!finite(balance) || balance <= 0) return downstreamError('汇出金额不足以支付中转及香港汇入费用。', '01');
       if (currency === 'CNH' && bank.cnhAccountRequiresHkid && !config[bank.cnhAccountField]) return downstreamError(bank.name + '人民币储蓄账户须持香港身份证并已开通；请确认账户条件或选择美元／港币汇出。', '02');
       steps.hongKong = balance;
-      const depositMethod = internalDeposit ? 'internal' : settlementBank ? 'chats' : method('depositMethod', currency === 'USD' || fxMode === 'bank' ? 'chats' : 'fps');
+      const depositMethod = internalDeposit ? 'internal' : settlementBank ? 'chats' : method('depositMethod', provider.usdDepositMethods?.[0] || (currency === 'USD' || fxMode === 'bank' ? 'chats' : 'fps'));
       const depositCurrency = fxMode === 'bank' ? 'USD' : currency;
       if (typeof depositMethod !== 'string') return downstreamError('保存的入金方式无效；请在入金方式中重新选择。');
+      if (provider.usdDepositMethods && (depositCurrency !== 'USD' || !provider.usdDepositMethods.includes(depositMethod)))
+        return downstreamError(provider.name + '的本页入金路线使用美国USD收款指示，须先备妥美元并通过SWIFT国际电汇；不能使用香港CHATS、FPS或eDDA。');
       const corporateReceivingBank = calculatorDepositBank({ broker: provider.id, bank: bank.id, depositMethod }, data);
       if (typeof requestedDepositMethod === 'string' && requestedDepositMethod.startsWith('via-') && (!fundingBank || fundingBank.id === bank.id || depositCurrency !== 'USD')) return downstreamError('经本人银行同行入金须使用券商已公布的同银行USD收款账户；当前银行与渠道不匹配。');
       if (depositMethod === 'internal' && !internalDeposit) return downstreamError('同行入金须使用券商已公布的同银行收款账户；此组合可改选本地转账。');
@@ -1245,7 +1249,7 @@
       const trade = trading?.totalUsd ?? number(config.tradeFeeUsd);
       add('trade', '证券买卖交易费', trade == null ? null : trade * refs.USD, 'investment');
       if (trading && !trading.overridden) {
-        if (unquotedFundingFx) rows[rows.length - 1].estimate = fundingEstimate;
+        if (unquotedFundingFx || provider.tradeEstimate) rows[rows.length - 1].estimate = [unquotedFundingFx && fundingEstimate, provider.tradeEstimate].filter(Boolean).join('；');
         rows[rows.length - 1].items = ['buy', 'sell'].flatMap(kind => {
           const orders = trading.orders.filter(order => order.kind === kind), label = kind === 'buy' ? '买入' : '卖出';
           return ['commission', 'platform', 'clearing', 'sec', 'taf', 'cat'].map(key => {
@@ -1256,7 +1260,8 @@
               key === 'platform' ? !!provider.platform : key === 'clearing' ? !!provider.clearing :
               key === 'sec' ? kind === 'sell' : key === 'taf' ? orders.some(order => order.date < '2026-10-01' || order.date > '2026-12-31') && kind === 'sell' : provider.catMinimum != null;
             return { kind, label: label + ({ commission: '佣金', platform: '平台费', clearing: '清算费', sec: 'SEC费', taf: 'TAF费', cat: 'CAT费' }[key]), cny,
-              ...(unquotedFundingFx ? { estimate: amountBased ? fundingEstimate : false } : {}) };
+              ...((unquotedFundingFx || provider.tradeEstimate) ? { estimate: unquotedFundingFx && amountBased ? fundingEstimate :
+                provider.tradeEstimate && kind === 'sell' && ['sec', 'taf'].includes(key) ? provider.tradeEstimate : false } : {}) };
           });
         });
       }
@@ -1276,9 +1281,12 @@
       const virtualReturn = provider.withdrawalMethod === 'local' && !localCheque;
       if (provider.withdrawalMethod === 'cheque' && returning.acceptsCheques === false) return downstreamError(returning.name + '不接受支票存款；' + provider.name + '的美元支票不能直接存入该账户。已保留券商美元余额。', '04', 'withdraw');
       if (virtualReturn && balance <= provider.virtualWithdrawalMinimumUsd) return downstreamError(provider.name + '美元提至数字银行须超过' + provider.virtualWithdrawalMinimumUsd + ' USD。', '04', 'withdraw');
+      const withdrawalChannel = provider.withdrawalChannels?.[config.brokerWireChannel || 'online'];
+      if (provider.withdrawalChannels && !withdrawalChannel) return downstreamError('请选择有效的券商电汇出金渠道。', '04', 'withdraw', 'brokerWireChannel');
       const withdrawal = provider.withdrawalMinimumHkd && balance * refs.USD / refs.HKD < provider.withdrawalMinimumHkd ? null :
-        withdrawalIndex <= (provider.freeWithdrawals ?? 0) ? 0 : provider.withdrawUsd;
+        withdrawalIndex <= (provider.freeWithdrawals ?? 0) ? 0 : withdrawalChannel?.feeUsd ?? provider.withdrawUsd;
       add('withdraw', provider.name + '出金费', withdrawal == null ? null : withdrawal * refs.USD, 'withdraw');
+      if (provider.usdDepositMethods) Object.assign(rows[rows.length - 1], { evidence: withdrawalChannel?.label || '国际电汇 · ' + withdrawal + ' USD/笔', nativeCurrency: 'USD' });
       const localReturnCny = settlementBank ? localUsdTransfer(settlementBank, returning, refs, trading?.sellDate || config.date) : null;
       const chequeReturn = !settlementBank && (localCheque || provider.withdrawalMethod === 'cheque');
       const chequeIndex = config.chequeIndex == null ? 1 : number(config.chequeIndex);
@@ -1510,7 +1518,7 @@
       const entryMethods = ['hang', 'hsbc', 'sc'].includes(start.id) && start.group === bank.group && (!start.linkedCurrencies || start.linkedCurrencies.includes(route)) ? ['linked', 'swift'] :
         ['swift', ...(start.id === 'boc' && route !== 'CNH' ? [bank.id === 'bochk' ? 'boc-mobile' : 'boc-online'] : []), ...(route === 'USD' && start.fullAmountUsd != null ? ['full'] : [])];
       for (const returning of returningBanks) for (const fxMode of modes) for (const exit of fresh) for (const mainlandMethod of entryMethods) {
-        const deposits = provider.integratedBank ? ['internal'] : route === 'USD' || fxMode === 'bank' ? ['chats', 'swift'] : ['fps', 'edda', 'swift'];
+        const deposits = provider.integratedBank ? ['internal'] : provider.usdDepositMethods || (route === 'USD' || fxMode === 'bank' ? ['chats', 'swift'] : ['fps', 'edda', 'swift']);
         for (const depositMethod of deposits) {
         const r = calculate(start, bank, route, fxMode, exit, returning, {
           public: true, mainlandMethod, depositMethod, returnMethod: '' }, provider);
@@ -1535,7 +1543,7 @@
       ['boc-mobile', '中行 → 中银香港 · 手机银行同名', bocMobileRoute],
       ['recommended', '公开报价基准', recommended], ['simple', '美元直达 · 一个香港账户', simple],
       ['CNH', '人民币到港 · 香港换USD', bestRoute('CNH')], ['HKD', '内地换HKD · 再换USD', bestRoute('HKD')],
-      ...['ibkr', 'hsbc', 'chief', 'usmart', 'za'].map(id => [id, data.brokers?.find(row => row.id === id)?.name, available.find(row => row.broker.id === id) || plans.filter(row => row.broker.id === id && allowed(row) && row.quotedCore && row.route === 'USD').sort((a, b) => b.net - a.net)[0]])
+      ...(data.calculator?.brokers || data.brokers.map(row => row.id)).map(id => [id, data.brokers?.find(row => row.id === id)?.name, available.find(row => row.broker.id === id) || plans.filter(row => row.broker.id === id && allowed(row) && row.quotedCore && row.route === 'USD').sort((a, b) => b.net - a.net)[0]])
     ].filter(([, , row]) => row).map(([id, name, row]) => ({ id, name, result: row, reason: reason(row), evidenceOnly: id === 'boc-mobile', differenceCny: recommended && id !== 'boc-mobile' ? recommended.net - row.net : null }));
     const automatic = config.plan === 'minimum' ? minimum : recommended || minimum;
     // Missing automatic recommendations must not disable a customer's own
@@ -1552,10 +1560,10 @@
     // Counterfactuals vary one step and preserve the rest of the selected route.
     const alternatives = {
       start: mainland.map(row => ({ start: row, ...calculate(row, bank, route, fxMode, exit, returning, { mainlandMethod: row.id === start.id ? selected.mainlandMethod : '' }, activeBroker) })),
-      bank: data.hkBanks.filter(row => !row.returnOnly).map(row => ({ bank: row, ...calculate(start, row, route, fxMode, exit, returning, { mainlandMethod: row.id === bank.id ? selected.mainlandMethod : '', depositMethod: row.id === bank.id ? selected.depositMethod : route === 'USD' || fxMode === 'bank' ? 'chats' : 'fps' }, activeBroker) })),
+      bank: data.hkBanks.filter(row => !row.returnOnly).map(row => ({ bank: row, ...calculate(start, row, route, fxMode, exit, returning, { mainlandMethod: row.id === bank.id ? selected.mainlandMethod : '', depositMethod: row.id === bank.id ? selected.depositMethod : activeBroker.usdDepositMethods?.[0] || (route === 'USD' || fxMode === 'bank' ? 'chats' : 'fps') }, activeBroker) })),
       route: ['USD', 'HKD', 'CNH'].map(value => {
         const mode = value === 'USD' ? 'manual' : activeBroker.id !== 'ibkr' ? 'bank' : route === 'USD' ? 'manual' : fxMode;
-        const methods = value === 'USD' || mode === 'bank' ? ['chats', 'swift'] : ['fps', 'edda', 'swift'];
+        const methods = activeBroker.usdDepositMethods || (value === 'USD' || mode === 'bank' ? ['chats', 'swift'] : ['fps', 'edda', 'swift']);
         const deposit = methods.includes(selected.depositMethod) ? selected.depositMethod : methods[0];
         const entry = (selected.mainlandMethod === 'full' && value !== 'USD') || (['boc-mobile', 'boc-online'].includes(selected.mainlandMethod) && value === 'CNH') || (selected.mainlandMethod === 'payment-connect' && value !== 'CNH') || (selected.mainlandMethod === 'linked' && start.linkedCurrencies && !start.linkedCurrencies.includes(value)) ? '' : selected.mainlandMethod;
         return { route: value, ...calculate(start, bank, value, mode, exit, returning, { mainlandMethod: entry, depositMethod: deposit }, activeBroker) };
@@ -1640,7 +1648,7 @@
       s.startBank === 'boc' && !paired && s.route !== 'CNH' ? 'boc-online' :
       paired && s.startBank !== 'boc' && !(s.startBank === 'sc' && s.route === 'CNH') ? 'linked' : 'swift';
     s.fxMode = s.route === 'USD' ? 'manual' : s.broker !== 'ibkr' ? 'bank' : s.fxMode || 'manual';
-    s.depositMethod ||= ['hsbc', 'za'].includes(s.broker) && s.broker === s.bank ? 'internal' :
+    s.depositMethod ||= ['firstrade', 'schwab'].includes(s.broker) ? 'swift' : ['hsbc', 'za'].includes(s.broker) && s.broker === s.bank ? 'internal' :
       s.broker === 'usmart' && ['bochk', 'hsbc', 'icbc-asia'].includes(s.bank) || s.broker === 'chief' && ['bochk', 'hsbc', 'hang'].includes(s.bank) ? 'internal' :
       s.route === 'USD' || s.fxMode === 'bank' ? 'chats' : s.broker === 'chief' && s.route === 'CNH' ? 'edda' : 'fps';
     s.returnMethod ||= s.returnBank === 'bochk' && s.exitBank === 'boc' ? 'bochk-fast' :
@@ -1689,7 +1697,8 @@
     const swiftMethods = localSwiftIssue(bank, currency, broker?.swiftDestination || 'overseas') ? [] : ['swift'];
     const corporateBanks = corporateDepositBanks(broker, data).filter(item => item.id !== bank?.id).map(item => item.id);
     const fundingBanks = (broker?.internalFundingBanks || []).filter(id => id !== bank?.id && data.calculator.hkBanks.includes(id));
-    const depositMethods = broker?.integratedBank ? [broker.integratedBank === bank?.id ? 'internal' : 'chats'] : [
+    const depositMethods = broker?.usdDepositMethods ? (currency === 'USD' ? broker.usdDepositMethods.filter(method => method !== 'swift' || swiftMethods.includes(method)) : []) :
+      broker?.integratedBank ? [broker.integratedBank === bank?.id ? 'internal' : 'chats'] : [
       ...(broker?.internalFundingBanks?.includes(bank?.id) ? ['internal'] : []),
       ...(currency === 'USD' ? ['chats', ...corporateBanks.slice(1).map(id => 'chats-' + id), ...fundingBanks.map(id => 'via-' + id), ...swiftMethods] : [...['fps', 'edda'].filter(channel => broker?.depositCurrencies?.[channel]?.includes(currency)), ...swiftMethods])
     ];

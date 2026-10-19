@@ -56,7 +56,7 @@ test('all receipt, stock settlement and return bank combinations count the HSBC 
       if (!initial.r.error) close(initial.r.budgetCny + initial.r.profitUsd * initial.r.refs.USD - initial.r.costCny - initial.r.taxCny + initial.r.fxImpactCny, initial.r.netCny);
       checked++;
     }
-  assert.equal(checked, 900);
+  assert.equal(checked, D.calculator.hkBanks.length ** 2 * D.calculator.brokers.length * outcomes.length);
   const bridge = calculate({ bank: 'hang', broker: 'usmart', returnBank: 'hsbc', outcome: 'usd-balance', depositMethod: 'via-hsbc', hkHsbcFreeMonths: 3 });
   assert.equal(bridge.hsbc.length, 1);
   assert.equal(bridge.r.fundingBank.id, 'hsbc');

@@ -30,10 +30,13 @@ test('ZA exchange bounds apply to the received currency before funding every sto
       assert.equal(M.calculatorIssue(s, D), '');
     }
     for (const amount of [limit.minimum, limit.maximum]) {
-      const data = M.calculatorJourney(input(route, amount, broker), D, Q), r = data.selected;
+      const data = M.calculatorJourney(input(route, amount, broker), D, Q), r = data.selected || data.partial;
       assert.ok(r, route + '/' + broker + '/' + amount + ': ' + data.error);
       close(r.steps.hongKong, amount); close(r.steps.hkConvertedUsd, amount / (route === 'HKD' ? 8 : 7.2));
-      close(r.budgetCny + r.profitUsd * r.refs.USD - r.costCny - r.taxCny + r.fxImpactCny, r.netCny);
+      if (data.error) {
+        assert.equal(broker, 'firstrade'); assert.equal(amount, limit.minimum);
+        assert.match(data.error, /每笔买入至少5 USD/); assert.equal(r.errorAction, 'trade');
+      } else close(r.budgetCny + r.profitUsd * r.refs.USD - r.costCny - r.taxCny + r.fxImpactCny, r.netCny);
     }
   }
 });

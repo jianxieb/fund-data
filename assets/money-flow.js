@@ -6,7 +6,7 @@
   const defaults = { budgetCny: '100000', currency: 'CNY', plan: 'boc-za', activeStep: '01', startBank: 'boc', route: 'USD', bank: 'bochk', returnBank: 'bochk', exitBank: 'boc', outcome: 'broker-balance',
     mainlandMethod: 'boc-mobile', depositMethod: 'chats', fxMode: 'manual', returnMethod: '', returnCurrency: 'USD', comparison: 'start', count: '1', usedFreeTransfers: '0',
     months: '12', balanceHkd: '0', returnBalanceHkd: '0', bankBalancesHkd: {}, profitUsd: '0', taxableCny: '', taxRate: '20', creditCny: '0', withdrawalIndex: '1', chequeIndex: '1', chequePreFilled: false, hsbcChequeNonCounter: false, tradeFeeUsd: '',
-    broker: 'za', ibkrPricing: 'fixed', sellDate: '', buyOrders: '1', sellOrders: '1', sharePriceUsd: '100', trade25: false, chiefMonthly: false, usmartPromo: false, zaLv2: false,
+    broker: 'za', ibkrPricing: 'fixed', brokerWireChannel: 'online', sellDate: '', buyOrders: '1', sellOrders: '1', sharePriceUsd: '100', trade25: false, chiefMonthly: false, usmartPromo: false, zaLv2: false,
     bankFeeDefaultsVersion: 1, hsbcBalanceWaiver: true, hkHsbcFreeMonths: '0', zaPerksLevel: 'standard', zaSwiftUsed: '0', scCnhAccount: false, otherTurnoverHkd: '0', usedPromoOrders: '0', usmartDays: '0', useVoucher: false, voucherScope: 'platform', voucherUsd: '0', voucherOrders: '1', voucherExpiry: '',
     cnHsbcFeeWaived: true, cnHangFeeWaived: true, cnScFeeWaived: true, cnHsbcFreeMonths: '0', cnHangFreeMonths: '0', cnScFreeMonths: '0',
     icbcEAccount: false, icbcCnhAccount: false, consumptionVersion: 2, cardMode: '', ccbLinkedCard: false, cardCnyPerHkd: '',
@@ -54,6 +54,9 @@
     state.mainlandMethod = 'swift'; state.senderFeeCny = ''; state.entryMiddleCny = ''; state.entryInwardHkd = '';
   }
   if (state.route !== 'USD' && state.broker !== 'ibkr') state.fxMode = 'bank';
+  const usdFunding = D.brokers.find(broker => broker.id === state.broker)?.usdDepositMethods;
+  const repairUsFunding = usdFunding && !usdFunding.includes(state.depositMethod);
+  if (repairUsFunding) { state.depositMethod = usdFunding[0]; state.depositHkd = ''; state.depositOtherCny = ''; }
   // A saved local USD wire must not retain the old overseas tariff. Keep all
   // accounts and use the bank's published local USD clearing channel.
   if (state.depositMethod === 'swift' && D.hkBanks.find(bank => bank.id === state.bank)?.localSwiftExcluded?.length &&
@@ -90,14 +93,14 @@
   const esc = value => H.esc(value), num = (value, digits = 2) => Number.isFinite(Number(value)) && value != null ? H.money(Number(value), digits) : '—';
   const action = (label, act, extra = '', cls = 'btn') => H.action(label, 'money-flow-' + act, cls, extra);
   const save = () => { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (_) {} };
-  if (repairStoredEntry || repairBankFeeDefaults || repairConsumption) save();
+  if (repairStoredEntry || repairBankFeeDefaults || repairConsumption || repairUsFunding) save();
   const pct = value => {
     const percent = value * 100, magnitude = Math.abs(percent);
     const digits = magnitude > 0 && magnitude < .0005 ? Math.ceil(-Math.log10(magnitude)) + 2 : 3;
     return (digits > 12 ? percent.toExponential(2) : num(percent, digits)) + '%';
   };
   const quoteNum = value => num(value, 8).replace(/0+$/, '').replace(/\.$/, '');
-  const shortName = value => value?.name?.replace(' · Pro Fixed', '').replace(' · 网上直属客户', '').replace(' · 个人标准账户', '').replace(' · 普通个人账户', '').replace(' · 美股交易', '').replace(' · Trade25 / 普通证券', '证券') || '请选择';
+  const shortName = value => value?.name?.replace(' · Pro Fixed', '').replace(' · 网上直属客户', '').replace(' · 个人标准账户', '').replace(' · 普通个人账户', '').replace(' · 美股交易', '').replace(' · Trade25 / 普通证券', '证券').replace(' · Schwab One International', '') || '请选择';
   const cost = value => value == null ? '—' : Math.abs(value) > 0 && Math.abs(value) < .005 ? (value < 0 ? '−' : '') + '＜0.01 CNY' : num(value) + ' CNY';
   const amount = (value, currency) => '<b class="num">' + num(value) + ' <small>' + esc(currency) + '</small></b>';
   const source = key => D.sources[key] ? '<a class="source-link" target="_blank" rel="noopener noreferrer" href="' + esc(D.sources[key].url) + '">' + esc(D.sources[key].name) + ' ↗</a>' : '';
@@ -110,10 +113,10 @@
     hkFx: { bochk: ['bochkUsdFx'], hsbc: ['hsbcHkFx'], hang: ['hangHkFx'], za: ['zaFx', 'zaExchangeLimits'], sc: ['scHkFx', 'scHkFxTerms'], 'icbc-asia': ['icbcAsiaFx'] },
     hkAccount: { bochk: ['bochkAccount'], hsbc: ['hsbcOne', 'hsbcOneBalance'], za: ['zaOpen', 'zaPerks', 'zaPerksNov'], hang: ['hangHk'], sc: ['scHk'], 'icbc-asia': ['icbcAsiaAccount', 'icbcAsiaAccountTerms'] },
     hkCard: { bochk: ['bochkCard'], hsbc: ['hsbcCard'], za: ['zaCard'], hang: ['hangCard'], sc: ['scCard'], 'icbc-asia': ['icbcAsiaCard', 'icbcAsiaAccountTerms'] },
-    brokerTrade: { ibkr: ['ibStocks'], hsbc: ['hsbcUsTariff'], za: ['zaStocks', 'zaStockUnits', 'zaCustody'], chief: ['chiefStocks'], usmart: ['usmartFees', 'usmartStockUnits'] },
+    brokerTrade: { ibkr: ['ibStocks'], hsbc: ['hsbcUsTariff'], za: ['zaStocks', 'zaStockUnits', 'zaCustody'], chief: ['chiefStocks'], usmart: ['usmartFees', 'usmartStockUnits'], firstrade: ['firstradePricing', 'firstradeFractions'], schwab: ['schwabPricing', 'schwabGuide', 'schwabFractions'] },
     brokerOffers: { hsbc: ['trade25', 'trade25Age', 'trade25One'], za: ['zaStockService', 'zaPerks'], chief: ['chiefMonthly', 'chiefMonthlyTerms'], usmart: ['usmartPromo'] },
-    brokerFunding: { ibkr: ['ibDeposits', 'ibFunding'], hsbc: ['hsbcStocks'], za: ['zaStockService'], chief: ['chiefFunding'], usmart: ['usmartFundingAccounts', 'usmartSameFunding'] },
-    brokerWithdrawal: { ibkr: ['ibFees'], hsbc: ['hsbcStocks'], za: ['zaStockService'], chief: ['chiefFunding'], usmart: ['usmartWithdrawal'] }
+    brokerFunding: { ibkr: ['ibDeposits', 'ibFunding'], hsbc: ['hsbcStocks'], za: ['zaStockService'], chief: ['chiefFunding'], usmart: ['usmartFundingAccounts', 'usmartSameFunding'], firstrade: ['firstradeWire'], schwab: ['schwabWire', 'schwabGuide'] },
+    brokerWithdrawal: { ibkr: ['ibFees'], hsbc: ['hsbcStocks'], za: ['zaStockService'], chief: ['chiefFunding'], usmart: ['usmartWithdrawal'], firstrade: ['firstradeWireFees'], schwab: ['schwabGuide'] }
   };
   const evidenceFor = (kind, account) => evidenceSources[kind]?.[account?.id] || (account?.id === 'ccb-asia' ?
     kind === 'hkFx' ? ['ccbAsiaFx'] : kind === 'hkCard' ? D.mainlandSpending['ccb-asia'].sources : ['ccbAsiaTariff', 'ccbAsiaLongCard'] : []);
@@ -247,7 +250,7 @@
     if (!item) return '';
     const brand = key === 'broker' ? item.id : item.group || item.id;
     const logos = { boc: 'boc.png', cib: 'cib.png', cmb: 'cmb.ico', icbc: 'icbc.png', ccb: 'ccb.png', comm: 'comm.png',
-      hsbc: 'hsbc.png', hang: 'hang.svg', sc: 'sc.png', za: 'za.png', ibkr: 'ibkr.png', chief: 'chief.png', usmart: 'usmart.ico' };
+      hsbc: 'hsbc.png', hang: 'hang.svg', sc: 'sc.png', za: 'za.png', ibkr: 'ibkr.png', chief: 'chief.png', usmart: 'usmart.ico', firstrade: 'firstrade.png', schwab: 'schwab.png' };
     return logos[brand] ? '<span class="flow-account-icon" data-brand="' + esc(brand) + '"><img src="assets/institutions/' + logos[brand] + '" alt="' + esc(shortName(item) + '标识') + '" width="40" height="40"></span>' : '';
   }
   function account(key, label, item) {
@@ -288,7 +291,7 @@
     const labels = {
       internal: s.broker.integratedBank ? '本行存款直接交收' : '同行转账 → 券商收款账户 · 免费',
       chats: s.broker.integratedBank ? '本地美元转账 → 本人' + shortName(banks.find(b => b.id === s.broker.integratedBank)) + '账户' : s.broker.id === 'ibkr' ? '香港收款指示 · USD本地转账' : recipient ? 'CHATS → 券商的' + routeName(recipient.id, 'bank') + '收款账户' : '本地美元转账 · CHATS',
-      swift: currency !== 'USD' ? '外币电汇 · SWIFT' : s.broker.swiftDestination === 'hong-kong' ? '香港收款账户 · USD SWIFT' : '境外收款指示 · USD电汇',
+      swift: currency !== 'USD' ? '外币电汇 · SWIFT' : s.broker.usdDepositMethods ? '美国收款账户 · USD SWIFT' : s.broker.swiftDestination === 'hong-kong' ? '香港收款账户 · USD SWIFT' : '境外收款指示 · USD电汇',
       fps: '本地转账 · FPS', edda: '券商发起扣款 · eDDA'
     };
     for (const id of s.broker.internalFundingBanks || []) labels['via-' + id] = '经本人' + routeName(id, 'bank') + ' USD账户 → 同行入金';
@@ -312,7 +315,7 @@
   let visiblePresets = [];
   const routeName = (id, kind) => (kind === 'mainland' ? { boc: '中行', cib: '兴业', cmb: '招行', icbc: '工行', ccb: '建行', comm: '交行', hsbc: '汇丰中国', hang: '恒生中国', sc: '渣打中国' } :
     kind === 'bank' ? { bochk: '中银香港', hsbc: '汇丰香港', hang: '恒生香港', sc: '渣打香港', za: 'ZA', 'icbc-asia': '工银亚洲', 'ccb-asia': '建行亚洲', citic: '中信国际' } :
-      { ibkr: 'IBKR', hsbc: '汇丰证券', chief: '致富', usmart: '盈立', za: 'ZA' })[id] || id;
+      { ibkr: 'IBKR', hsbc: '汇丰证券', chief: '致富', usmart: '盈立', za: 'ZA', firstrade: 'Firstrade', schwab: '嘉信国际' })[id] || id;
   function candidatePresets() {
     return M.calculatorPreferredPlans(D, window.MONEY_FLOW_QUOTES || {}, today()).map(p => {
       const r = p.calculated.selected || p.calculated.partial;
@@ -455,8 +458,8 @@
   function compactFees(r, keys, stage) {
     const rows = costRows(r, keys);
     const components = stage === 'trade' && r?.trading && !r.trading.overridden ? [
-      { label: '买入费用', cny: r.trading.buyFeeUsd * r.refs.USD, display: displayCosts(r)?.tradeCny?.buy },
-      { label: '卖出费用', cny: r.trading.sellFeeUsd * r.refs.USD, display: displayCosts(r)?.tradeCny?.sell },
+      { label: '买入费用', cny: r.trading.buyFeeUsd * r.refs.USD, display: displayCosts(r)?.tradeCny?.buy, estimate: r.trading.buyFeeUsd > 0 && row(r, 'trade')?.estimate },
+      { label: '卖出费用', cny: r.trading.sellFeeUsd * r.refs.USD, display: displayCosts(r)?.tradeCny?.sell, estimate: r.trading.sellFeeUsd > 0 && row(r, 'trade')?.estimate },
       ...rows.filter(item => item.key !== 'trade')
     ] : rows.flatMap(item => item.items?.length ? item.items.map(part => ({ ...part, key: item.key, component: true, display: displayCny(r, part) })) : [item]);
     const labels = { entryFx: '购汇差额', entryMiddle: '代理费', entryInward: '香港汇入', depositBank: '银行转账', depositOther: '代理／收款费', depositBroker: '入金费',
@@ -513,7 +516,7 @@
       (s.broker.id === 'ibkr' ? select('ibkrPricing', 'IBKR收费方案', [['fixed', 'Pro · 固定'], ['lite', 'Lite · 合资格美国居民']]) : '') +
       (s.broker.id === 'hsbc' ? '<div class="flow-field flow-pricing-condition"><span>证券收费方案</span>' + checkbox('trade25', 'Trade25 · 仅美股月费0') + '</div>' : '');
     const tradeSettings = '<div class="flow-trading-settings">' +
-      '<div class="flow-setting-cell"><span>买卖设置</span>' + action('买' + esc(state.buyOrders) + '笔 · 卖' + esc(state.sellOrders) + '笔', 'detail', 'data-value="trade-settings"', 'flow-setting-button') + (!pricingControl ? '<small>均价 ' + esc(state.sharePriceUsd) + ' USD/股</small>' : '') + '</div>' +
+      '<div class="flow-setting-cell"><span>买卖设置</span>' + action('买' + esc(state.buyOrders) + '笔 · 卖' + esc(state.sellOrders) + '笔', 'detail', 'data-value="trade-settings"', 'flow-setting-button') + (!pricingControl ? '<small>均价 ' + esc(state.sharePriceUsd) + ' USD/股' + (s.broker.id === 'schwab' ? ' · 整股' : '') + '</small>' : '') + '</div>' +
       '<div class="flow-setting-cell"><span>优惠与费用券</span>' + action(state.useVoucher ? r?.trading?.discountUsd > 0 ? '已抵扣 ' + quoteNum(M.displayedTradingFees(r.trading).discountUsd) + ' USD' : '费用券 · 未抵扣' : '设置优惠', 'detail', 'data-value="offers"', 'flow-setting-button') + '</div>' +
       (pricingControl ? '<div class="flow-setting-cell"><span>买入均价</span>' + action(esc(state.sharePriceUsd) + ' USD/股', 'detail', 'data-value="trade-settings"', 'flow-setting-button') + '</div>' + pricingControl : '') + '</div>';
     html += node('03', 'broker', '买美股的账户', s.broker, nodeBalance(r, automaticPurchase ? steps.brokerOriginal : steps.fundedUsd, automaticPurchase ? state.route : 'USD', '入金到账', throughFunding), tradeSettings);
@@ -527,6 +530,7 @@
     const closingCosts = (periodRows.length ? '<div class="flow-closing-costs"><small>期间及固定费用</small>' + detailRows(r, periodRows) + '</div>' : '') +
       (r?.taxCny > 0 ? '<div class="flow-closing-tax">预留税款 <b>' + cost(r.taxCny) + '</b></div>' : '');
     if (state.outcome !== 'broker-balance') html += edge(data, withdrawKeys, shortName(s.broker) + '出金 → ' + shortName(s.returning),
+      s.broker?.withdrawalChannels ? select('brokerWireChannel', '出金渠道', Object.entries(s.broker.withdrawalChannels).map(([id, channel]) => [id, channel.label])) :
       s.broker?.freeWithdrawals ? action('本月第' + esc(state.withdrawalIndex) + '次出金', 'detail', 'data-value="profit-settings"', 'flow-setting-button') :
         isChequeReturn(s) && s.returning?.localUsdChequeTariff ? action(s.returning.localUsdChequeTariff.nonCounterHkd != null ?
           state.hsbcChequeNonCounter ? '本次非柜台存票' : '本次柜台存票' : '存票当日第' + esc(state.chequeIndex) + '张', 'detail', 'data-value="profit-settings"', 'flow-setting-button') : '', 'withdraw');
@@ -778,7 +782,7 @@
     return M.calculatorRoute(next);
   }
   function choose(key, value) {
-    const allowed = ['count', 'months', 'startBank', 'bank', 'broker', 'ibkrPricing', 'outcome', 'returnBank', 'exitBank', 'route', 'mainlandMethod', 'depositMethod', 'returnMethod', 'returnCurrency', 'fxMode', 'cardMode', 'voucherScope', 'zaPerksLevel'];
+    const allowed = ['count', 'months', 'startBank', 'bank', 'broker', 'ibkrPricing', 'brokerWireChannel', 'outcome', 'returnBank', 'exitBank', 'route', 'mainlandMethod', 'depositMethod', 'returnMethod', 'returnCurrency', 'fxMode', 'cardMode', 'voucherScope', 'zaPerksLevel'];
     if (!allowed.includes(key)) return;
     if (key === 'startBank' && !mainland.some(bank => bank.id === value)) return;
     if (key === 'exitBank' && !mainlandReceivers.some(bank => bank.id === value)) return;
@@ -786,6 +790,7 @@
     if (key === 'returnBank' && !returnBanks.some(bank => bank.id === value)) return;
     if (key === 'broker' && !D.calculator.brokers.includes(value)) return;
     if (key === 'ibkrPricing' && !['fixed', 'lite'].includes(value)) return;
+    if (key === 'brokerWireChannel' && !selected().broker?.withdrawalChannels?.[value]) return;
     if (key === 'cardMode' && !D.mainlandSpending?.[state.returnBank]?.modes.includes(value)) return;
     if (key === 'zaPerksLevel' && !['standard', 'lv1', 'lv2'].includes(value)) return;
     if (key === 'mainlandMethod' && !availableChannels(state).mainlandMethods.includes(value)) return;
@@ -918,6 +923,7 @@
       if (data.error && r?.errorAction === 'trade' && !['sharePriceUsd', 'buyOrders', 'sellOrders'].includes(r.errorField))
         content += '<p class="flow-error" role="status">' + esc(data.error) + '</p>';
       content += tradeLine(r, 'buy') + tradeLine(r, 'sell'); keys = actionSources('trade', s, r);
+      if (s.broker.usdDepositMethods) content += '<p>' + esc(s.broker.feeText) + '</p>';
     } else if (key === 'profit-settings') {
       const chequeTariff = isChequeReturn(s) && s.returning?.localUsdChequeTariff;
       title = '盈亏、出金与税款'; content = '<div class="flow-form-grid">' + field('profitUsd', '卖出盈亏 · 交易费前', 'USD') +
@@ -936,6 +942,8 @@
       title = ({ '01': '内地购汇与跨境汇款', '03': autoFxAtPurchase(r) ? '股票账户原币入金' : '换汇与股票入金', trade: autoFxAtPurchase(r) ? '买入时换美元与美股买卖' : '美股买卖',
         withdraw: '出金至香港银行', 'return-fx': '美元换港币', remit: '汇回内地', settle: '内地结汇', '04': '资金使用' })[stage];
       content = '<div class="flow-action-details">' + edgeFees(r, edgeKeys, stage) + '</div>';
+      if (s.broker.usdDepositMethods && ['03', 'trade', 'withdraw'].includes(stage)) content += '<p>' +
+        esc(stage === '03' ? s.broker.fundingText : stage === 'trade' ? s.broker.feeText : s.broker.withdrawalText) + '</p>';
       if (stage === '01') {
         content += '<p>' + esc(transferHint() || sourceTariffCopy(s.start)) + '</p>';
         if (s.start?.id === 'cib' && state.route === 'CNH') {
