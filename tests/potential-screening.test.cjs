@@ -26,7 +26,9 @@ const rowIds = html => [...html.matchAll(/data-stock-row="([^"]+)"/g)].map(x=>x[
 
 test('one cumulative list deduplicates all research and has no round navigation', () => {
   const f=fixture(), all=f.api.companies();
-  assert.ok(all.length>=80);
+  assert.ok(all.length>=100);
+  assert.ok(all.every(c=>['us','cn'].includes(c.market)));
+  assert.ok(rowIds(f.html).includes('VICR'), 'legacy US market spelling must remain visible');
   assert.equal(new Set(all.map(c=>c.market+':'+c.id)).size,all.length);
   for (const id of ['BLZE','TSSI','VKTX','AMPX','AEHR','GCT']) assert.ok(rowIds(f.html).includes(id),id);
   assert.equal(all.filter(c=>c.id==='GCT').length,1);

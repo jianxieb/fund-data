@@ -47,6 +47,11 @@ function groupFor(name) {
 const remap = (value, ids) => typeof value === 'string' ? (ids.get(value) || value)
   : Array.isArray(value) ? value.map(v => remap(v, ids))
   : value && typeof value === 'object' ? Object.fromEntries(Object.entries(value).map(([k,v])=>[k,remap(v,ids)])) : value;
+function canonicalMarket(value) {
+  const market=String(value).toLowerCase();
+  if (!['us','cn'].includes(market)) throw new Error('Unsupported research market: '+value);
+  return market;
+}
 export function buildCatalog(history, legacy) {
   const companies = [], sources = [], seen = new Set();
   const attachSources = (items, prefix) => {
@@ -57,14 +62,15 @@ export function buildCatalog(history, legacy) {
   for (const [index,d] of history.entries()) {
     const ids=attachSources(d.sources, 'screen'+index+':');
     for (const original of d.companies) {
-      const key=original.market+':'+original.id;
+      const market=canonicalMarket(original.market);
+      const key=market+':'+original.id;
       if (seen.has(key)) continue;
       seen.add(key);
       const c=remap(structuredClone(original),ids);
       const sector=d.sectors.find(s=>s.id===original.sector);
       const industry=sector?.name || original.sector;
       Object.assign(c, {
-        sector: original.catalogSector || groupFor(industry), industryDetail:industry,
+        market, sector: original.catalogSector || groupFor(industry), industryDetail:industry,
         reviewedAt:original.reviewedAt || d.reviewedAt,
         quoteSource:ids.get('screen-quotes'), priceBasis:d.priceBasis,
         priorityRank:original.priorityRank ?? (c.selected ? 10 : c.priority==='次级观察' ? 30 : c.research?.modelStatus==='withdrawn' ? 100 : 60),
@@ -75,9 +81,10 @@ export function buildCatalog(history, legacy) {
   }
   const legacyIds=attachSources(legacy.sources,'legacy:');
   for (const [kind,items] of [['company',legacy.companies],['comparison',legacy.comparisons]]) for (const c of items) {
-    const key=c.market+':'+c.id;
+    const market=canonicalMarket(c.market);
+    const key=market+':'+c.id;
     if (seen.has(key)) {
-      companies.find(existing=>existing.market===c.market && existing.id===c.id).legacyReference={kind,id:c.id,reportPath:'docs/research/potential-stocks-2026-10-18.md'};
+      companies.find(existing=>existing.market===market && existing.id===c.id).legacyReference={kind,id:c.id,reportPath:'docs/research/potential-stocks-2026-10-18.md'};
       continue;
     }
     seen.add(key);
@@ -90,7 +97,7 @@ export function buildCatalog(history, legacy) {
     const judgment=isCompany ? c.decision : c.judgment;
     const gaps=isCompany ? c.gaps.join('；') : c.gaps;
     companies.push({
-      id:c.id,name:c.name,market:c.market,sector,industryDetail:c.sector || groups.find(g=>g[0]===sector)[1],
+      id:c.id,name:c.name,market,sector,industryDetail:c.sector || groups.find(g=>g[0]===sector)[1],
       selected:false,priority:'保留观察',priorityRank:70,stage:'既有研究；未列当前优先',
       reviewedAt:legacy.reviewedAt,tenfold:'尚不支持',business,businessBrief:business,
       opportunity:isCompany ? c.thesis[0] : c.facts,

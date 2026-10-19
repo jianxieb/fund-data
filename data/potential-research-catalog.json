@@ -10131,7 +10131,7 @@
     {
       "id": "VICR",
       "name": "Vicor",
-      "market": "US",
+      "market": "us",
       "sector": "semis",
       "industryDetail": "半导体与电子",
       "selected": false,
