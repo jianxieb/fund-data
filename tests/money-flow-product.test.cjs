@@ -23,6 +23,70 @@ function ui(input = {}) {
 }
 const toolbar = html => html.split('id="flow-live-toolbar"')[1].split('id="flow-live-ledger"')[0];
 const section = (html, label) => html.split('aria-label="' + label + '"')[1]?.split('</section>')[0];
+test('IBKR CNH withdrawal and cash use expose separate controls, fees, cash and retained bank funds', () => {
+  const subject = ui({ startBank: 'cib', bank: 'hsbc', returnBank: 'hsbc', broker: 'ibkr', route: 'USD', mainlandMethod: 'swift', depositMethod: 'chats',
+    outcome: 'atm', withdrawCurrency: 'CNH', brokerExitPrice: 6.7, inwardHkd: 0, intermediaryCny: 0 });
+  const html = subject.render();
+  assert.match(html, /IBKR换人民币 → CNH出金/);
+  assert.match(html, /券商出金币种/); assert.match(html, /CNH出金渠道/);
+  assert.match(html, /本次计划取现/); assert.match(html, /另有本次计划现金/);
+  assert.match(html, /计划取现后的银行余额/);
+  const action = section(html, '银行余额 → 内地ATM人民币现金');
+  assert.match(action, /提款／联动费/); assert.doesNotMatch(action, /美元直接换人民币/);
+  subject.act('detail', '', 'edge-withdraw');
+  assert.match(subject.modal(), /每单最低2 USD/); assert.match(subject.modal(), /CNH\/USD/);
+  subject.act('detail', '', 'edge-04');
+  assert.match(subject.modal(), /本人已启用的每日限额/); assert.match(subject.modal(), /ATM单笔提款上限/);
+});
+test('missing IBKR exit FX never appears as a spendable CNH bank balance or cash result', () => {
+  const subject = ui({ startBank: 'cib', bank: 'hsbc', returnBank: 'hsbc', broker: 'ibkr', route: 'USD', mainlandMethod: 'swift', depositMethod: 'chats',
+    outcome: 'atm', withdrawCurrency: 'CNH', brokerExitPrice: '', inwardHkd: 0 });
+  const html = subject.render(), endpoint = section(html, '卖出后的资金');
+  assert.match(endpoint, /— <small>CNH/); assert.match(html, /IBKR卖出后USD\/CNH实际成交价尚未取得/);
+  assert.doesNotMatch(html, /另有本次计划现金/); assert.match(html, /最后可计余额.*IBKR/);
+});
+test('card, currency and return bank switches discard only the corresponding execution inputs', () => {
+  const subject = ui({ startBank: 'cib', bank: 'hsbc', returnBank: 'hsbc', broker: 'ibkr', outcome: 'atm', route: 'USD',
+    withdrawCurrency: 'CNH', brokerExitPrice: 6.7, inwardHkd: 8, atmExtraCny: 2, atmCnyPerUnit: .9, atmDailyLimitCny: 10000 });
+  subject.render(); subject.act('choose', 'returnBank', 'icbc-asia');
+  assert.equal(subject.saved().bank, 'hsbc'); assert.equal(subject.saved().brokerExitPrice, 6.7);
+  for (const key of ['atmExtraCny', 'atmCnyPerUnit', 'atmDailyLimitCny', 'inwardHkd']) assert.equal(subject.saved()[key], '');
+  subject.act('choose', 'withdrawCurrency', 'USD'); assert.equal(subject.saved().brokerExitPrice, '');
+  subject.act('choose', 'broker', 'schwab'); assert.equal(subject.saved().withdrawCurrency, 'USD');
+});
+test('direct mainland USD selection clears route confirmation and removes the fictitious Hong Kong return node', () => {
+  const subject = ui({ startBank: 'cib', bank: 'hsbc', returnBank: 'sc', broker: 'ibkr', route: 'USD', outcome: 'mainland', exitBank: 'boc', mainlandMethod: 'swift', depositMethod: 'chats',
+    directReceiptConfirmed: true, brokerExitPrice: 6.7, withdrawCurrency: 'CNH' });
+  subject.render(); subject.act('choose', 'withdrawDestination', 'mainland');
+  assert.equal(subject.saved().outcome, 'mainland-usd'); assert.equal(subject.saved().withdrawCurrency, 'USD');
+  assert.equal(subject.saved().directReceiptConfirmed, false); assert.equal(subject.saved().returnBank, 'sc');
+  const html = subject.render();
+  assert.match(html, /内地美元收款银行/); assert.doesNotMatch(html, /data-flow-stage="05"/);
+  assert.match(html, /出金可用性及收款银行/); assert.doesNotMatch(html, /aria-label="内地结汇"/);
+  subject.check('directReceiptConfirmed', true); subject.act('choose', 'exitBank', 'icbc');
+  assert.equal(subject.saved().directReceiptConfirmed, false);
+  subject.act('choose', 'outcome', 'atm'); assert.equal(subject.saved().withdrawDestination, 'hong-kong');
+  assert.equal(subject.saved().returnBank, 'sc');
+});
+test('BOCHK Apple Pay has a named UnionPay mode and consumes already-converted CNH without another FX leg', () => {
+  const subject = ui({ startBank: 'cib', bank: 'hsbc', returnBank: 'bochk', broker: 'ibkr', route: 'USD', outcome: 'cnh-card',
+    withdrawCurrency: 'CNH', brokerExitPrice: 6.7, inwardHkd: 0, cardMode: 'apple-pay' });
+  const html = subject.render();
+  assert.match(html, /人民币余额 → 银联卡Apple Pay消费/);
+  assert.match(html, /Apple Pay须支持银联闪付/);
+  assert.doesNotMatch(html, /美元直接换人民币 → 商户刷卡/);
+  subject.act('detail', '', 'edge-04');
+  assert.ok(subject.modal().includes(D.sources.bochkApplePay.url));
+  assert.doesNotMatch(subject.modal(), /data-money-field="exitPrice"/);
+});
+test('BOCHK to mainland USD retains a bank node and transfer fee without an automatic CNY settlement', () => {
+  const subject = ui({ startBank: 'cib', bank: 'hsbc', returnBank: 'bochk', exitBank: 'boc', broker: 'ibkr', route: 'USD', outcome: 'mainland-usd', mainlandMethod: 'swift', depositMethod: 'chats' });
+  const html = subject.render();
+  assert.match(html, /汇回内地 · 美元原币/); assert.match(html, /中银快汇/);
+  assert.match(html, /美元现汇保留在内地账户/); assert.doesNotMatch(html, /aria-label="内地结汇"/);
+  subject.act('pick', '', 'exitBank');
+  assert.match(subject.modal(), /保留USD原币/); assert.doesNotMatch(subject.modal(), /结汇牌价|CNY\/USD/);
+});
 test('CIB RMB fee explanation distinguishes an original-currency wire from purchasing foreign currency', () => {
   const subject = ui({ startBank: 'cib', bank: 'hsbc', broker: 'hsbc', route: 'CNH', mainlandMethod: 'swift', outcome: 'broker-balance' });
   const entry = section(subject.render(), '汇往香港');
@@ -172,12 +236,12 @@ test('return transfer and settlement own separate fees, rates, details and sourc
     assert.doesNotMatch(wire,/结汇差额|1 (?:USD|HKD) =/);
     assert.match(settlement,/结汇差额/); assert.doesNotMatch(settlement,/汇回手续费|中转费|本行收款费/);
     assert.equal((settlement.match(new RegExp('1 '+returnCurrency+' =','g'))||[]).length,1);
-    const receiver=section(html,'内地收款／消费银行');
+    const receiver=section(html,'内地收款银行');
     assert.ok(html.indexOf('aria-label="汇回内地"')<html.indexOf('data-flow-stage="05"'));
     assert.ok(html.indexOf('data-flow-stage="05"')<html.indexOf('aria-label="内地结汇"'));
     const wrapper=receiver.split('class="flow-account-field"')[1];
-    assert.ok(wrapper.indexOf('内地收款／消费银行')<wrapper.indexOf('class="flow-account-button"'));
-    assert.doesNotMatch(wrapper.split('class="flow-account-button"')[1].split('</button>')[0],/>内地收款／消费银行</);
+    assert.ok(wrapper.indexOf('内地收款银行')<wrapper.indexOf('class="flow-account-button"'));
+    assert.doesNotMatch(wrapper.split('class="flow-account-button"')[1].split('</button>')[0],/>内地收款银行</);
     assert.match(receiver,/微信／支付宝绑卡、刷卡、缴费及转账/);
     subject.act('detail','','edge-remit'); assert.match(subject.modal(),/香港→内地汇出费/); assert.doesNotMatch(subject.modal(),/内地结汇差额/);
     subject.act('detail','','edge-settle'); assert.match(subject.modal(),/内地结汇差额/); assert.doesNotMatch(subject.modal(),/香港→内地汇出费|回内地中转行费/);

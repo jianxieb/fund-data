@@ -25,8 +25,9 @@
       hsbc: { title: 'Mastercard借记卡', modes: ['cnh'], coverage: '接受Mastercard的商户；支付宝合资格商户',
         limitation: '境外卡不等同内地钱包余额；个人收款码、转账及充值不能按通用可用计算。',
         note: '本页按人民币余额充足的商户刷卡计算。钱包支付的平台收费另按付款页，不计入刷卡结果；余额不足会改扣港币。', sources: ['hsbcCard', 'hsbcDebitFaq'] },
-      bochk: { title: '中银香港多币种扣账卡', modes: ['cnh'], coverage: '卡组织受理商户',
-        limitation: '商户受理与钱包绑卡各有限制，不等同内地银行卡或钱包余额。', note: '按已开通人民币账户且人民币余额充足的原币商户刷卡计算。', sources: ['bochkCard'] },
+      bochk: { title: '中银香港银行卡', modes: ['cnh', 'unionpay', 'apple-pay'], coverage: '银联双币中银卡／Apple Pay：内地银联受理商户；Mastercard：对应受理商户',
+        limitation: 'Apple Pay须支持银联闪付；不能用于任意个人收款码、转账或充值。',
+        note: '银联双币中银卡可加入Apple Pay。已关联港币及人民币账户、人民币余额充足时，内地交易从人民币账户扣账。Mastercard多币种扣账卡为另一卡种。', sources: ['bochkUnionPay', 'bochkApplePay', 'bochkCard'] },
       hang: { title: '恒生多币种扣账卡', modes: ['cnh'], coverage: '卡组织受理商户',
         limitation: '商户受理与钱包绑卡各有限制，不等同内地银行卡或钱包余额。', note: '按已开通人民币账户且人民币余额充足的原币商户刷卡计算。', sources: ['hangCard'] },
       sc: { title: '渣打多币种扣账卡', modes: ['cnh'], coverage: '卡组织受理商户',
@@ -38,6 +39,33 @@
         limitation: '联动是指定ATM／POS功能，不能推定微信、支付宝或个人收款码都能联动。',
         note: '须已持有陆港通龙卡及关联两地账户。内地先扣建行人民币，余额不足时整笔依次扣建行亚洲人民币、港币。本页按香港港币账户联动POS计算；POS联动手续费免，卡年费50 HKD，消费共用每日等值50,000 HKD限额。ATM联动另收10 CNY/笔，未计入POS。',
         annualHkd: 50, dailyLimitHkd: 50000, sources: ['ccbAsiaLongCard', 'ccbAsiaTariff', 'ccbAsiaLongTerms'] }
+    },
+    mainlandCash: {
+      hsbc: [
+        { id: 'hsbc-group', title: 'Mastercard · 内地汇丰ATM', currency: 'CNH', fee: 0, feeCurrency: 'CNH', operatorFeeCny: 0,
+          limitNote: '须启用海外提款；实际每日限额及ATM单笔上限以账户和机器为准，指定One新户首6个月较低。',
+          note: '人民币余额充足，选择人民币原币扣账；不接受ATM动态货币转换。集团ATM本行手续费免。', sources: ['hsbcCard', 'hsbcDebitFaq'] },
+        { id: 'hsbc-other', title: 'Mastercard · 内地其他ATM（One）', currency: 'CNH', fee: 40, feeCurrency: 'HKD', operatorFeeCny: null,
+          limitNote: '海外提款须先启用；实际每日及机器单笔限额独立。', note: 'One每笔40 HKD，ATM运营方附加费另计。人民币余额充足时按原币扣账。', sources: ['hsbcDebitFaq'] }
+      ],
+      bochk: [
+        { id: 'bochk-unionpay', title: '银联双币中银卡 · 内地银联ATM', currency: 'CNH', fee: 50, feeCurrency: 'CNH', operatorFeeCny: null,
+          limitNote: '须启用海外提款，人民币账户须已关联；实际日限额及机器单笔上限另核。',
+          note: '按内地ATM人民币账户扣账计算；现行费表50 RMB/笔，不套香港15元收费。', sources: ['bochkUnionPay', 'bochk'] }
+      ],
+      'icbc-asia': [
+        { id: 'icbc-hkd', title: '港币借记卡 · 内地工行ATM', currency: 'HKD', fee: 0, feeCurrency: 'HKD', operatorFeeCny: 0, dailyLimitHkd: 20000,
+          limitNote: '每日最高等值20,000 HKD，另受已设海外限额及ATM单笔限额约束。',
+          note: '提款手续费免；内地工行先将人民币折成USD，再由工银亚洲折成HKD。需实际扣账汇率，不能按零汇差计算。', sources: ['icbcAsiaCard'] },
+        { id: 'icbc-cnh', title: '人民币借记卡 · 内地银联ATM', currency: 'CNH', fee: 15, feeCurrency: 'CNH', operatorFeeCny: null,
+          limitNote: '须具备人民币账户资格，并确认该ATM支持选择人民币账户；实际日限额与单笔上限另核。',
+          note: '按人民币账户扣账的标准15 RMB/笔，不能套用港币卡在内地工行的免手续费优惠。', sources: ['icbcAsiaCard', 'icbcAsiaAccountTerms'] }
+      ],
+      'ccb-asia': [
+        { id: 'ccb-link-hkd', title: '陆港通龙卡 · 内地建行ATM联动', currency: 'HKD', fee: 10, feeCurrency: 'CNY', operatorFeeCny: 0, dailyLimitHkd: 20000, transactionLimitCny: 3000, annualHkd: 50,
+          limitNote: '联动单笔最高3,000 CNY，每日最高等值20,000 HKD，另受本人已设限额约束。',
+          note: '须关联两地账户。本情景为内地余额不足、香港人民币余额也不足，整笔扣香港港币；集团ATM手续费免，跨境联动另收10 CNY/笔，年费50 HKD。', sources: ['ccbAsiaLongCard', 'ccbAsiaTariff', 'ccbAsiaLongTerms'] }
+      ]
     },
     preferredPlans: [
       { id: 'cib-trade25', title: '兴业寰宇人生 → 汇丰Trade25',
@@ -82,6 +110,9 @@
       { bank: 'icbc-asia', scope: 'hk', checkedAt: '2026-10-15', items: ['银联／ICBC Pay的HKD/CNY实际扣账汇率', 'USD/CNH直接客户成交价'], source: 'icbcAsiaCard', finding: '港币卡可在银联受理商户支付；实际扣账汇率不能用银行现汇牌价或ATM折算规则代替。公开港币交叉汇率是两笔兑换，不作为直接USD/CNH消费报价。' }
     ],
     sources: {
+      bochkUnionPay: { name: '中银香港 · 银联双币中银卡与扣账账户', url: 'https://www.bochk.com/sc/more/boccard/personal.html' },
+      bochkApplePay: { name: '中银香港 · 中银卡Apple Pay常见问题', url: 'https://www.bochk.com/dam/more/boccard/applepay/apay_faq_sc.pdf' },
+      ibCnhWithdrawal: { name: 'IBKR · CNH本地出金与电汇渠道', url: 'https://www.ibkrguides.com/androidtablet/withdrawal.htm' },
       firstradePricing: { name: 'Firstrade · 网上交易及SEC费用', url: 'https://www.firstrade.com/trading/pricing' },
       firstradeWire: { name: 'Firstrade · 国际电汇入金及同名要求', url: 'https://www.firstrade.com/support/funding/wire' },
       firstradeWireFees: { name: 'Firstrade · 电汇入金0／国际出金25 USD', url: 'https://help.firstrade.info/en/articles/9260062-what-are-the-fees-for-wire-transfers' },
