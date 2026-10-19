@@ -23,6 +23,26 @@ function ui(input = {}) {
 }
 const toolbar = html => html.split('id="flow-live-toolbar"')[1].split('id="flow-live-ledger"')[0];
 const section = (html, label) => html.split('aria-label="' + label + '"')[1]?.split('</section>')[0];
+test('CIB RMB fee explanation distinguishes an original-currency wire from purchasing foreign currency', () => {
+  const subject = ui({ startBank: 'cib', bank: 'hsbc', broker: 'hsbc', route: 'CNH', mainlandMethod: 'swift', outcome: 'broker-balance' });
+  const entry = section(subject.render(), '汇往香港');
+  assert.match(entry, /人民币原币电汇：寰宇人生外汇双免不适用/);
+  assert.match(entry, /汇出手续费<\/span><b>99.80 CNY/);
+  assert.match(entry, /汇出电讯费<\/span><b>100.00 CNY/);
+  subject.act('detail', '', 'edge-01');
+  assert.match(subject.modal(), /含费预算 100000.00 CNY ＝ 汇出本金 99800.20 CNY ＋ 本行汇款费用 199.80 CNY/);
+  assert.match(subject.modal(), /VIP等级减免/);
+  assert.ok(subject.modal().includes(D.sources.cib.url));
+  assert.ok(subject.modal().includes(D.sources.cibCard.url));
+  for (const currency of ['USD', 'HKD']) {
+    subject.act('choose', 'route', currency);
+    const html = section(subject.render(), '汇往香港');
+    assert.doesNotMatch(html, /外汇双免不适用/);
+    assert.match(html, /汇出手续费<\/span><b>0.00 CNY/);
+    assert.match(html, /汇出电讯费<\/span><b>0.00 CNY/);
+    assert.equal(subject.saved().bank, 'hsbc');
+  }
+});
 test('legacy generic RMB spending becomes a mainland bank endpoint once without replacing user accounts', () => {
   const subject = ui({ consumptionVersion: undefined, outcome: 'cnh-card', startBank: 'cib', bank: 'hsbc', broker: 'hsbc',
     returnBank: 'hsbc', exitBank: 'boc', exitPrice: 6.2, returnHkdPrice: 7.8, cardCnyPerHkd: .8 });

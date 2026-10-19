@@ -127,6 +127,7 @@
       else if (mainlandMethod === 'boc-online' && s.start?.id === 'boc') keys.push('bocBankAnswer2026');
       else add('mainlandTariff', s.start);
       if (state.route !== 'CNH') add('mainlandFx', s.start);
+      if (s.start?.id === 'cib') keys.push('cibCard');
       if (mainlandMethod === 'cib-go' && s.start?.id === 'cib') keys.push('cibGo', 'swiftGoBanks');
       if (mainlandMethod === 'full') keys.push(...(s.start?.fullAmountSources || []));
       if (mainlandMethod === 'linked') add('linked', s.start);
@@ -486,7 +487,8 @@
     let html = node('01', 'startBank', '内地出发银行', s.start, principal, sourceControls + mainlandAccountControl(s.start, r));
     html += edge(data, transferKeys, '汇往香港',
       '', '01',
-      r?.serviceAvailability?.verified === false ? '此汇路暂无SWIFT Go开通记录，以下按服务资费测算。' : state.mainlandMethod === 'linked' ? '两地同名已关联账户' : '' );
+      r?.serviceAvailability?.verified === false ? '此汇路暂无SWIFT Go开通记录，以下按服务资费测算。' : state.mainlandMethod === 'linked' ? '两地同名已关联账户' :
+        s.start?.id === 'cib' && state.route === 'CNH' ? '人民币原币电汇：寰宇人生外汇双免不适用，手续费与电讯费分别计收。' : '' );
     const accounts = [...new Map([s.bank, banks.find(bank => bank.id === s.broker.integratedBank), M.calculatorFundingBank(state, D)].filter(Boolean).map(bank => [bank.id, bank])).values()];
     const managementBanks = accounts.filter(bank => bank.id === s.bank.id || bank.monthlyHkd > 0);
     let accountOptions = '<div class="flow-bank-settings">' + field('months', '账户使用月数', '月') + '<div class="flow-bank-fees">' + managementBanks.map(bank => bankManagementControl(bank, r)).join('') + '</div></div>';
@@ -936,6 +938,12 @@
       content = '<div class="flow-action-details">' + edgeFees(r, edgeKeys, stage) + '</div>';
       if (stage === '01') {
         content += '<p>' + esc(transferHint() || sourceTariffCopy(s.start)) + '</p>';
+        if (s.start?.id === 'cib' && state.route === 'CNH') {
+          content += '<p>人民币原币汇出不发生购汇；先用人民币购汇再汇出美元／港币，才适用寰宇人生的跨境外汇优惠。这里按普通寰宇人生卡计算，VIP等级减免另按本人实际费用。</p>';
+          const sender = row(r, 'sender');
+          if (r?.steps?.mainlandForeign != null && sender?.cny != null) content += '<p>含费预算 ' + cost(r.budgetCny) + ' ＝ 汇出本金 ' +
+            cost(r.steps.mainlandForeign) + ' ＋ 本行汇款费用 ' + displayCost(r, sender) + '；境外代理费及收款费另列。</p>';
+        }
         if (s.start?.id === 'cib' && state.route !== 'CNH') content += M.telegramAllowance(s.start, today()) ?
           field('usedFreeTransfers', '优惠期内已汇出笔数', '笔') + '<p>寰宇人生外汇汇出手续费免，优惠期前30笔电讯费免；优惠至2027-06-30。</p>' :
           '<p>外汇汇款优惠已到期；手续费按标准1‰、50–200元，电讯费100元/笔。未预设优惠续期。</p>';
