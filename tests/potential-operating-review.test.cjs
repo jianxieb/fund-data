@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const data = require('../data/potential-screening.json');
-const quotes = require('../data/potential-screening-round5-quotes.json');
+const quotes = require('../' + data.quotePath);
 const close = (a, b) => assert.ok(Math.abs(a - b) < 1e-8, `${a} != ${b}`);
 
 test('a tenfold share price needs more profit when shares increase; PE is a sensitivity, not a forecast', async () => {
@@ -30,14 +30,15 @@ test('integration hurdle keeps depreciation in gross profit and normalizes tax w
   assert.ok(h.additionalRevenue > 400);
 });
 
-test('new round excludes every earlier screen and legacy comparison and resolves input evidence', async () => {
+test('new discoveries extend the cumulative input without duplicates and resolve input evidence', async () => {
   const { researchSections } = await import('../scripts/potential_research_sections.mjs');
   const prior = require('../data/potential-screening-round4.json');
   const old = new Set([prior, require('../data/potential-screening-prior.json'), require('../data/potential-stocks.json')].flatMap(d => [...d.companies, ...d.comparisons || []]).map(c=>c.id));
-  assert.equal(data.companies.length, 9);
-  assert.equal(data.newScreenCount, 9);
+  assert.ok(data.companies.length >= 29);
+  assert.equal(data.newScreenCount, data.companies.length);
+  assert.equal(new Set(data.companies.map(c=>c.id)).size, data.companies.length);
   assert.ok(data.companies.every(c=>!old.has(c.id)));
-  assert.deepEqual(data.companies.filter(c=>c.selected).map(c=>c.id), ['BLZE']);
+  assert.deepEqual(new Set(data.companies.filter(c=>c.selected).map(c=>c.id)), new Set(['BLZE','STRL','IESC']));
   for (const c of data.companies.filter(c=>c.research)) {
     assert.equal(c.research.cases, undefined);
     c.quote = quotes.quotes.find(q=>q.symbol===c.id);
@@ -74,4 +75,17 @@ test('a strong storage operating case still does not prove tenfold net profit af
   // Do not compare a gross contract value or EBITDA with a net-profit requirement.
   assert.equal(b.research.hurdle.shares,90);
   assert.ok(b.research.storageScale.cases.every(c=>c.reason));
+});
+
+// Evidence-only reviews must not fabricate a tenfold model just to render facts.
+test('an evidence-only CNY review renders without a dollar quote or PE assumptions', async () => {
+  const { researchSections } = await import('../scripts/potential_research_sections.mjs');
+  const c = structuredClone(data.companies.find(c=>c.id==='688630'));
+  c.quote = quotes.quotes.find(q=>q.symbol===c.id);
+  const sections=researchSections(c);
+  assert.equal(c.quote.priceUsd,undefined);
+  assert.equal(c.research.hurdle,undefined);
+  assert.ok(sections.some(s=>s.title.includes('费用摊薄')));
+  assert.ok(sections.every(s=>s.title!=='当前价格要求多大的利润'));
+  assert.doesNotMatch(JSON.stringify(sections),/NaN|undefined/);
 });

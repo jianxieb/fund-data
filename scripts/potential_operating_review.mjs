@@ -28,9 +28,9 @@ export function storageScale(base, scenario) {
 export function operatingReviewSections(c) {
   const r = c.research, h = r.hurdle;
   const n = (v, d = 2) => v.toLocaleString('zh-CN', { maximumFractionDigits: d });
-  if (!h.sources?.length || !h.shareBasis || h.peCases.some(p => !p.reason)) throw new Error(c.id + ': missing hurdle evidence');
+  if (h && (!h.sources?.length || !h.shareBasis || h.peCases.some(p => !p.reason))) throw new Error(c.id + ': missing hurdle evidence');
   if (r.inputs.some(x => !x.evidence || !x.use || !x.gap || !x.sources?.length)) throw new Error(c.id + ': incomplete operating input evidence');
-  const cases = h.peCases.map(p => ({ ...p, ...tenfoldRequirements(c.quote.priceUsd, h.shares, p.pe) }));
+  const cases = h ? h.peCases.map(p => ({ ...p, ...tenfoldRequirements(c.quote.priceUsd, h.shares, p.pe) })) : [];
   const bridge = r.revenueBridge;
   const revenueSections = bridge ? [{ title: '49%增长中，多少来自原有业务',
     paragraphs: ['按公司披露的ESI并入收入从当期总收入中扣除，再与原公司同期比较。这是报告口径下的并购剔除计算，不代表已消除所有价格、汇率或协同效应。'],
@@ -49,13 +49,13 @@ export function operatingReviewSections(c) {
     }),
     notes: scale.cases.map(s => s.label + '：' + s.reason), sources: scale.sources
   }] : [];
-  const sections = [...revenueSections, ...r.evidenceSections, ...scaleSections, {
+  const sections = [...revenueSections, ...r.evidenceSections, ...scaleSections, ...(h ? [{
     title: '当前价格要求多大的利润',
     paragraphs: [h.shareBasis, h.explanation || '下表是十倍股价的反算门槛，不是2031年利润或股价预测。10、20、40倍PE用于检验估值依赖，没有选定一个“最终PE”；40倍一列也不表示公司值得40倍。以披露股数保持不变反算，未计未来奖励或融资，不能当作完全摊薄结果。分红、汇率和交易费用不在股价倍数内。'],
     headers: ['终点PE压力值', '使用这一档要面对什么', '所需年净利润 / 百万美元', '每新增100万股再需净利 / 百万美元'],
     rows: cases.map(p => [p.pe + '倍', p.reason, n(p.profit), n(p.profitPerNewMillionShares)]),
     sources: h.sources, proseTable: true
-  }];
+  }] : [])];
   if (r.integrationBridge) {
     const b = r.integrationBridge;
     sections.push({ title: '利润率变化能否让收入少于十倍',
@@ -68,7 +68,7 @@ export function operatingReviewSections(c) {
   }
   sections.push({ title: '每项经营输入：依据、用途与缺口', collapsed: true,
     paragraphs: [r.inputNote || '只有已披露数字用于财务拆分。缺少客户采用、价格或资金依据的项保持空缺，不用所谓乐观情景补数。'],
-    headers: ['输入', '已有依据', '本轮如何使用', '尚缺什么', '来源'],
+    headers: ['输入', '已有依据', '如何使用', '尚缺什么', '来源'],
     rows: r.inputs.map(x => [x.label, x.evidence, x.use, x.gap]), rowSources: r.inputs.map(x => x.sources), proseTable: true });
   return sections;
 }

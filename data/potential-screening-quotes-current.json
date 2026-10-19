@@ -1,0 +1,280 @@
+{
+  "retrievedAt": "2026-10-19",
+  "source": "web.finance / Yahoo chart",
+  "note": "美股为逐项标注的盘前／盘后美元报价；新增A股为人民币收盘报价。原始供应商市值不作估值依据：IES、Nova、CECO等存在拆股、收购或稀释后的股数差异；关键估值采用公告股数并注明口径。",
+  "quotes": [
+    {
+      "symbol": "BLZE",
+      "priceUsd": 8.6,
+      "marketCapUsd": 522828013,
+      "tradeTimeUtc": "2026-10-19 08:00:01",
+      "sessionLabel": "盘前",
+      "label": "10月19日 · 盘前",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "QNST",
+      "priceUsd": 16.32,
+      "marketCapUsd": 947180160,
+      "tradeTimeUtc": "2026-10-16 21:35:00",
+      "sessionLabel": "盘后",
+      "label": "10月16日 · 盘后",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "PENG",
+      "priceUsd": 57.1,
+      "marketCapUsd": 3144097300,
+      "tradeTimeUtc": "2026-10-19 10:19:47",
+      "sessionLabel": "盘前",
+      "label": "10月19日 · 盘前",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "DOCN",
+      "priceUsd": 98.69,
+      "marketCapUsd": 12489022120,
+      "tradeTimeUtc": "2026-10-19 10:06:22",
+      "sessionLabel": "盘前",
+      "label": "10月19日 · 盘前",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "S",
+      "priceUsd": 21.58,
+      "marketCapUsd": 7370166104,
+      "tradeTimeUtc": "2026-10-19 10:10:12",
+      "sessionLabel": "盘前",
+      "label": "10月19日 · 盘前",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "GTLB",
+      "priceUsd": 52.76,
+      "marketCapUsd": 8900770280,
+      "tradeTimeUtc": "2026-10-19 09:09:25",
+      "sessionLabel": "盘前",
+      "label": "10月19日 · 盘前",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "LASR",
+      "priceUsd": 33.67,
+      "marketCapUsd": 2019358250,
+      "tradeTimeUtc": "2026-10-19 08:29:20",
+      "sessionLabel": "盘前",
+      "label": "10月19日 · 盘前",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "SPIR",
+      "priceUsd": 8.95,
+      "marketCapUsd": 342740787,
+      "tradeTimeUtc": "2026-10-16 23:15:00",
+      "sessionLabel": "盘后",
+      "label": "10月16日 · 盘后",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "RAMP",
+      "priceUsd": 37.44,
+      "marketCapUsd": 2276164126,
+      "tradeTimeUtc": "2026-10-16 23:15:00",
+      "sessionLabel": "盘后",
+      "label": "10月16日 · 盘后",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "IESC",
+      "priceUsd": 251.96,
+      "currency": "USD",
+      "marketCapUsd": 5089014256,
+      "tradeTimeUtc": "2026-10-19 13:06:46",
+      "sessionLabel": "盘前",
+      "label": "10月19日 · 盘前",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "STRL",
+      "priceUsd": 424.36,
+      "currency": "USD",
+      "marketCapUsd": 13215843480,
+      "tradeTimeUtc": "2026-10-19 13:16:58",
+      "sessionLabel": "盘前",
+      "label": "10月19日 · 盘前",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "MOD",
+      "priceUsd": 148.86,
+      "currency": "USD",
+      "marketCapUsd": 8038440000,
+      "tradeTimeUtc": "2026-10-19 12:48:38",
+      "sessionLabel": "盘前",
+      "label": "10月19日 · 盘前",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "PRIM",
+      "priceUsd": 73.21,
+      "currency": "USD",
+      "marketCapUsd": 3953340000,
+      "tradeTimeUtc": "2026-10-16 23:15:00",
+      "sessionLabel": "盘后",
+      "label": "10月16日 · 盘后",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "CLS",
+      "priceUsd": 303.81,
+      "currency": "USD",
+      "marketCapUsd": 35302722000,
+      "tradeTimeUtc": "2026-10-19 13:19:36",
+      "sessionLabel": "盘前",
+      "label": "10月19日 · 盘前",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "PLAB",
+      "priceUsd": 27.52,
+      "currency": "USD",
+      "marketCapUsd": 1615919360,
+      "tradeTimeUtc": "2026-10-16 23:07:38",
+      "sessionLabel": "盘后",
+      "label": "10月16日 · 盘后",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "FIX",
+      "priceUsd": 1439.07,
+      "currency": "USD",
+      "marketCapUsd": 50732973780,
+      "tradeTimeUtc": "2026-10-19 13:23:46",
+      "sessionLabel": "盘前",
+      "label": "10月19日 · 盘前",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "CAMT",
+      "priceUsd": 129.47,
+      "currency": "USD",
+      "marketCapUsd": 5844709136,
+      "tradeTimeUtc": "2026-10-19 13:25:00",
+      "sessionLabel": "盘前",
+      "label": "10月19日 · 盘前",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "NVMI",
+      "priceUsd": 321.2,
+      "currency": "USD",
+      "marketCapUsd": 9321115756,
+      "tradeTimeUtc": "2026-10-19 13:26:15",
+      "sessionLabel": "盘前",
+      "label": "10月19日 · 盘前",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "AVPT",
+      "priceUsd": 14.33,
+      "currency": "USD",
+      "marketCapUsd": 3164866480,
+      "tradeTimeUtc": "2026-10-19 13:25:00",
+      "sessionLabel": "盘前",
+      "label": "10月19日 · 盘前",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "CECO",
+      "priceUsd": 56.72,
+      "currency": "USD",
+      "marketCapUsd": 1981542354,
+      "tradeTimeUtc": "2026-10-19 13:24:24",
+      "sessionLabel": "盘前",
+      "label": "10月19日 · 盘前",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "ATEN",
+      "priceUsd": 24.46,
+      "currency": "USD",
+      "marketCapUsd": 1850423460,
+      "tradeTimeUtc": "2026-10-19 12:19:08",
+      "sessionLabel": "盘前",
+      "label": "10月19日 · 盘前",
+      "marketCapUse": "reference_only"
+    },
+    {
+      "symbol": "688630",
+      "priceValue": 300.25,
+      "currency": "CNY",
+      "tradeTimeUtc": "2026-10-19 07:00:01",
+      "sessionLabel": "收盘",
+      "label": "10月19日 · 收盘",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/688630.SS?range=5d&interval=1d"
+    },
+    {
+      "symbol": "603929",
+      "priceValue": 114.65,
+      "currency": "CNY",
+      "tradeTimeUtc": "2026-10-19 07:00:00",
+      "sessionLabel": "收盘",
+      "label": "10月19日 · 收盘",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/603929.SS?range=5d&interval=1d"
+    },
+    {
+      "symbol": "688652",
+      "priceValue": 135.54,
+      "currency": "CNY",
+      "tradeTimeUtc": "2026-10-19 07:00:02",
+      "sessionLabel": "收盘",
+      "label": "10月19日 · 收盘",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/688652.SS?range=5d&interval=1d"
+    },
+    {
+      "symbol": "603757",
+      "priceValue": 58.37,
+      "currency": "CNY",
+      "tradeTimeUtc": "2026-10-19 07:00:00",
+      "sessionLabel": "收盘",
+      "label": "10月19日 · 收盘",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/603757.SS?range=5d&interval=1d"
+    },
+    {
+      "symbol": "301018",
+      "priceValue": 74.33,
+      "currency": "CNY",
+      "tradeTimeUtc": "2026-10-19 07:04:40",
+      "sessionLabel": "收盘",
+      "label": "10月19日 · 收盘",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/301018.SZ?range=5d&interval=1d"
+    },
+    {
+      "symbol": "002837",
+      "priceValue": 44.46,
+      "currency": "CNY",
+      "tradeTimeUtc": "2026-10-19 07:04:09",
+      "sessionLabel": "收盘",
+      "label": "10月19日 · 收盘",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/002837.SZ?range=5d&interval=1d"
+    },
+    {
+      "symbol": "300990",
+      "priceValue": 105.07,
+      "currency": "CNY",
+      "tradeTimeUtc": "2026-10-19 07:04:07",
+      "sessionLabel": "收盘",
+      "label": "10月19日 · 收盘",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/300990.SZ?range=5d&interval=1d"
+    },
+    {
+      "symbol": "688102",
+      "priceValue": 24.84,
+      "currency": "CNY",
+      "tradeTimeUtc": "2026-10-19 07:00:00",
+      "sessionLabel": "收盘",
+      "label": "10月19日 · 收盘",
+      "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/688102.SS?range=5d&interval=1d"
+    }
+  ]
+}
