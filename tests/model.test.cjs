@@ -406,6 +406,9 @@ test('overseas ETF filters combine categories by union and product strategies by
   assert.equal(products.find(p => p.symbol === 'USD').underlying, 'Dow Jones U.S. Semiconductors Index');
   assert.deepEqual(other.filter(p => M.overseasEtfMatches(p, { categories: ['动量策略'], styles: ['动量指数'] })).map(p => p.symbol), ['SPMO', 'MTUM', 'XMMO', 'FDMO']);
   assert.deepEqual(other.filter(p => M.overseasEtfMatches(p, { query: 'momentum sr' })).map(p => p.symbol), ['MTUM']);
+  assert.deepEqual(products.filter(p => p.section === 'main' && p.category === '标普500' && p.leverage === 1).map(p => p.symbol), ['SPY', 'VOO', 'IVV']);
+  assert.deepEqual(other.filter(p => M.overseasEtfMatches(p, { categories: ['短期现金管理'], styles: ['箱式期权'], query: 'boxx' })).map(p => p.symbol), ['BOXX']);
+  assert.deepEqual(other.filter(p => M.overseasEtfMatches(p, { query: 'box spread' })).map(p => p.symbol), ['BOXX']);
 });
 
 test('ETF returns flag actual windows before the current index, not a hardcoded ten-year period', () => {

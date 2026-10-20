@@ -1,7 +1,7 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-10-20T15:51:45+00:00",
-  "asOf": "2026-10-20",
+  "checkedAt": "2026-10-20T16:18:34+00:00",
+  "asOf": "2026-10-21",
   "status": "unverified",
   "summary": {
     "errors": 0,
@@ -102,7 +102,7 @@ var DATA_QUALITY={
         "2026-10-19",
         "2026-10-19"
       ],
-      "records": 33,
+      "records": 36,
       "issues": [
         {
           "code": "fx_risk_incomplete",
@@ -111,6 +111,8 @@ var DATA_QUALITY={
           "affected": [
             "标普500指数",
             "SPY",
+            "VOO",
+            "IVV",
             "SSO",
             "UPRO",
             "纳斯达克综合指数",
@@ -1710,7 +1712,7 @@ var DATA_QUALITY={
         "2026-10-16",
         "2026-10-19"
       ],
-      "records": 1870,
+      "records": 1873,
       "issues": [],
       "status": "checked"
     }

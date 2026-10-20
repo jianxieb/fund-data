@@ -94,6 +94,11 @@ test('index separates precise operating fee from trailing cash rate and its deta
   const missing = D.indexCell(spy, { products: { SPY: { metricsMissingEvidence: '缺普通收盘价记录' } } });
   assert.match(missing, /缺普通收盘价记录/);
   assert.doesNotMatch(missing, /<strong>0\.00%/);
+  const boxx = products.find(p => p.symbol === 'BOXX');
+  assert.match(D.indexCell(boxx, data), /0\.1949%/);
+  assert.equal(D.taxCase('BOXX', data), 'classification-missing');
+  assert.match(D.render(boxx, data), /有现金分配/);
+  assert.match(D.history(data.products.BOXX, '2024'), /2024-08-13/);
 });
 
 test('published cash histories expose explicit ratios and preserve loss and ROC limitations', () => {

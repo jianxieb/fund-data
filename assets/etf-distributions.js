@@ -65,7 +65,7 @@
   function indexCell(product, data) {
     const item = data?.products?.[product.symbol], t = item?.metrics?.trailing;
     const reason = t?.reason || item?.metricsMissingEvidence || '缺分配率价格证据';
-    const fee = Number.isFinite(product.expenseRatio) ? product.expenseRatio.toFixed(product.expenseRatio < .1 ? 4 : 2) + '%' : '—';
+    const fee = Number.isFinite(product.expenseRatio) ? product.expenseRatio.toFixed(product.expenseRatio < .1 || Number(product.expenseRatio.toFixed(2)) !== product.expenseRatio ? 4 : 2) + '%' : '—';
     return `<td class="etf-fee-cell"><span>${fee}</span></td><td class="etf-yield-cell"><button type="button" class="etf-yield-button" data-action="etf-distributions" data-value="${esc(product.symbol)}" aria-label="${esc(product.symbol)}现金分配详情" title="${esc(Number.isFinite(t?.rate) ? '过去12个月每份现金合计 ÷ ' + item.through + ' 美元收盘价；不等于投资收益率' : reason)}"><strong>${percent(t?.rate)}</strong><span>${esc(item?.frequency || product.distribution || '')} · 分红详情</span></button>${item?.status === 'stale' ? `<small>${esc(item.through)}旧记录</small>` : !Number.isFinite(t?.rate) ? `<small>${esc(reason)}</small>` : ''}</td>`;
   }
 
