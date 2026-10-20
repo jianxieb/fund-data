@@ -28,7 +28,7 @@ from datetime import datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor
 from data_status import write_status
 from update import add_years
-from stock_fundamentals import fetch_evidence, quality_review
+from stock_fundamentals import fetch_evidence, quality_review, retain_report_evidence
 from stock_groups import long_term_review, growth_review, breakout_review
 from stock_dividends import (eastmoney_dividend_summary, yahoo_dividend_summary,
                              missing_dividend_summary, update_dividend_fields)
@@ -212,9 +212,10 @@ def dividend_stats(code, latest, price):
     return result['yield12'], result['divYears']
 
 
-def fetch_stock(item):
+def fetch_stock(item, previous=None):
     code = item['code']
     evidence = fetch_evidence(code, fetch_json, datetime.now(timezone(timedelta(hours=8))).date().isoformat())
+    evidence = retain_report_evidence(code, evidence, previous)
     alternate = None
     source_errors = []
 
@@ -432,7 +433,7 @@ def main():
     failures = []
     def refreshed(item):
         try:
-            return item, fetch_stock(item), None
+            return item, fetch_stock(item, old.get(item['code'])), None
         except Exception as exc:
             return item, None, exc
     with ThreadPoolExecutor(max_workers=4) as pool:

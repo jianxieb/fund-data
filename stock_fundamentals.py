@@ -1,4 +1,5 @@
 """Dated valuation and annual financial evidence for the stock research pool."""
+import copy
 import json
 import math
 import urllib.parse
@@ -79,6 +80,50 @@ def research_category(industry):
     return industry or '行业未收录'
 
 
+def dynamic_pe(market_cap, quote_day, reports):
+    known = next((r for r in sorted(reports, key=lambda r: r['reportDate'], reverse=True)
+                  if r.get('announcedAt') and r['announcedAt'] <= (quote_day or '')), {})
+    period = known.get('reportDate') or ''
+    months = int(period[5:7]) if period and period[5:] in ('03-31', '06-30', '09-30', '12-31') else 0
+    profit = numeric(known.get('netProfit'))
+    annualized = profit * 12 / months if profit is not None and months else None
+    value = market_cap / annualized if market_cap is not None and market_cap > 0 and annualized is not None and annualized > 0 else None
+    return (round(value, 4) if value is not None else None,
+            {'method': 'latest_report_profit_annualized', 'reportDate': period or None,
+             'announcedAt': known.get('announcedAt') or None, 'valuationAsOf': quote_day or None,
+             'months': months or None, 'profit': profit, 'annualizedProfit': annualized,
+             'status': 'available' if value is not None else 'loss' if profit is not None and profit <= 0 else 'missing_report'})
+
+
+def retain_report_evidence(code, current, previous):
+    """A failed/lagging financial endpoint cannot erase published dated reports."""
+    previous = previous or {}
+    old_day, new_day = previous.get('fundamentalsAsOf'), current.get('fundamentalsAsOf')
+    if not old_day or (new_day and new_day >= old_day):
+        return current
+    if (previous.get('c') != code or not previous.get('fundamentalsSourceUrl')
+            or (previous.get('latestFinancials') or {}).get('reportDate') != old_day
+            or not previous.get('financialReports')):
+        return current
+    for field in ('roe', 'roeAsOf', 'roeBasis', 'financialHistory', 'financialHistory5',
+                  'financialReports', 'latestFinancials', 'financialGrowth3',
+                  'fundamentalsAsOf', 'fundamentalsSourceUrl'):
+        if field in previous:
+            current[field] = copy.deepcopy(previous[field])
+    # Keep today's quote/share count, but use the original dated report shares.
+    shares = current.setdefault('incomeShareEvidence', {})
+    shares['reportPeriod'] = old_day
+    shares['reports'] = copy.deepcopy((previous.get('incomeShareEvidence') or {}).get('reports') or [])
+    cap = numeric(current.get('mcap'))
+    current['peDynamic'], current['peDynamicBasis'] = dynamic_pe(
+        cap * 1e8 if cap is not None else None, current.get('valuationAsOf'), current['financialReports'])
+    current['fundamentalsStatus'] = 'cached_financials'
+    current['fundamentalsRefreshStatus'] = 'retained_previous_report'
+    reason = '财报接口本次未返回有效报告' if not new_day else '财报接口仅返回截至' + new_day + '的旧报告'
+    current['fundamentalsRefreshError'] = reason + '；保留已发布' + old_day + '财报及原公告日期'
+    return current
+
+
 def parse_evidence(code, valuation, financials, asof):
     symbol = code + ('.SH' if code[0] in '5689' else '.SZ')
     def valid(rows, day_key, announcement=False):
@@ -101,13 +146,9 @@ def parse_evidence(code, valuation, financials, asof):
     reports = valid(financials, 'REPORT_DATE', True)
     q = quotes[0] if quotes else {}
     quote_day = str(q.get('TRADE_DATE') or '')[:10]
-    known = next((r for r in reports if str(r['NOTICE_DATE'])[:10] <= quote_day), {})
-    period = str(known.get('REPORT_DATE') or '')[:10]
-    months = int(period[5:7]) if period and period[5:] in ('03-31', '06-30', '09-30', '12-31') else 0
-    profit = numeric(known.get('PARENTNETPROFIT'))
+    parsed_reports = [financial_report(r, reports) for r in reports]
     market_cap = numeric(q.get('TOTAL_MARKET_CAP'))
-    annualized_profit = profit * 12 / months if profit is not None and months else None
-    dynamic_pe = market_cap / annualized_profit if market_cap is not None and market_cap > 0 and annualized_profit is not None and annualized_profit > 0 else None
+    dynamic_value, dynamic_basis = dynamic_pe(market_cap, quote_day, parsed_reports)
     annual = [r for r in reports if str(r['REPORT_DATE'])[:10].endswith('-12-31')][:3]
     history = [financial_report(r, reports) for r in annual]
     latest_report = financial_report(reports[0], reports) if reports else None
@@ -125,12 +166,7 @@ def parse_evidence(code, valuation, financials, asof):
             'incomeShareEvidence': {'reportPeriod': latest_report.get('reportDate') if latest_report else None,
                                     'currentShares': numeric(q.get('TOTAL_SHARES')), 'shareAsOf': quote_day,
                                     'reports': [{'reportDate': r['REPORT_DATE'][:10], 'shares': numeric(r.get('TOTAL_SHARE'))} for r in reports[:8]]},
-            'peDynamic': round(dynamic_pe, 4) if dynamic_pe is not None else None,
-            'peDynamicBasis': {'method': 'latest_report_profit_annualized', 'reportDate': period or None,
-                               'announcedAt': str(known.get('NOTICE_DATE') or '')[:10] or None,
-                               'valuationAsOf': quote_day or None, 'months': months or None,
-                               'profit': profit, 'annualizedProfit': annualized_profit,
-                               'status': 'available' if dynamic_pe is not None else 'loss' if profit is not None and profit <= 0 else 'missing_report'},
+            'peDynamic': dynamic_value, 'peDynamicBasis': dynamic_basis,
             'pb': numeric(q.get('PB_MRQ')),
             'valuationIndustry': q.get('BOARD_NAME') or None,
             'researchCategory': research_category(q.get('BOARD_NAME') or ''),
@@ -143,7 +179,7 @@ def parse_evidence(code, valuation, financials, asof):
             'roeAsOf': latest_report['reportDate'] if latest_report else None,
             'roeBasis': '最新报告期加权平均ROE（不年化）', 'financialHistory': history,
             'financialHistory5': [financial_report(r, reports) for r in reports if r['REPORT_DATE'][:10].endswith('-12-31')][:5],
-            'financialReports': [financial_report(r, reports) for r in reports],
+            'financialReports': parsed_reports,
             'latestFinancials': latest_report,
             'financialGrowth3': growth,
             'fundamentalsAsOf': str(reports[0]['REPORT_DATE'])[:10] if reports else None,

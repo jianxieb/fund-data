@@ -154,6 +154,8 @@ def audit(snapshot, today=None):
     if failed_stocks:
         issue(sd, 'stock_refresh_failed', 'warning', '更新失败，保留旧数据及原日期；详情见最近在线尝试', failed_stocks)
     for row in stocks:
+        if row.get('fundamentalsRefreshStatus') == 'retained_previous_report':
+            issue(sd, 'stock_financials_retained', 'warning', row['fundamentalsRefreshError'], row.get('c'))
         if age_days(row.get('latest'), today) not in range(0, 11):
             issue(sd, 'stale_stock', 'warning', '股票历史日期缺失或超过10日', row.get('c'))
 
