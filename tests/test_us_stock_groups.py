@@ -2,6 +2,7 @@ import json
 import unittest
 from copy import deepcopy
 from pathlib import Path
+from unittest.mock import patch
 
 from us_stock_groups import classify
 
@@ -58,6 +59,24 @@ class UsStockGroupsTests(unittest.TestCase):
         row['financials'].update(reportDate='2026-09-30', publishedAt='2026-10-07')
         self.assertEqual(self.groups(row), ['other'])
         self.assertIn('经营复核仅覆盖2026-06-30，最新财报为2026-09-30', row['screening']['otherReasons'][0])
+
+    def test_shared_company_review_preserves_both_periods_after_a_new_filing(self):
+        row = self.company()
+        row['symbol'] = 'FIXTURE'
+        source = dict(url='https://example.com/filing', reportPeriod='2026-06-30', publishedAt='2026-08-01')
+        record = dict(reportPeriod='2026-06-30', reviewedAt='2026-10-17', groups=['quality'],
+                      sources=[source], risk='订单下降', invalidation='现金流转负', rationale='已复核',
+                      evidence=[dict(sourceUrl=source['url'], label=label, value=100, unit='USD', location='报表')
+                                for label in ('利润', '现金')])
+        with patch('company_selection.json.loads', return_value={'companies': {'us:FIXTURE': record}}):
+            self.assertEqual(self.groups(row, '2026-10-20'), ['quality'])
+            row['financials'].update(reportDate='2026-09-30', publishedAt='2026-10-20')
+            self.assertEqual(self.groups(row, '2026-10-20'), ['other'])
+        self.assertEqual(row['companySelection']['status'], 'pending')
+        self.assertTrue(all(not r['qualified'] for r in row['screening']['reviews'].values()))
+        reason = '；'.join(row['screening']['otherReasons'])
+        self.assertIn('缺对应最新财报的公司入选复核：2026-09-30', reason)
+        self.assertIn('现有复核仅覆盖2026-06-30', reason)
 
     def test_prior_loss_is_not_a_positive_growth_base(self):
         row = self.company()

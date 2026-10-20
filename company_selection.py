@@ -65,7 +65,10 @@ def assess(code, market, period, asof, profit, cash, annual, core_growth=None, *
     if 'breakout' in groups and any(g in groups for g in ('quality', 'growth')):
         groups.remove('breakout')
         reviews['breakout']['qualified'] = False
-    rationale = record.get('rationale') if current and evidenced else '缺对应最新财报的公司入选复核：' + period
+    pending_reason = '缺对应最新财报的公司入选复核：' + period
+    if record.get('reportPeriod') and record['reportPeriod'] != period:
+        pending_reason += '；现有复核仅覆盖' + record['reportPeriod']
+    rationale = record.get('rationale') if current and evidenced else pending_reason
     if not groups and decisions and current and evidenced:
         failures = list(dict.fromkeys(c['reason'] for g in decisions if g in reviews for c in reviews[g]['checks'] if not c['pass']))
         rationale = '本期入选条件失效：' + '；'.join(failures)
