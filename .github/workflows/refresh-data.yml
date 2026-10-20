@@ -89,6 +89,7 @@ jobs:
         run: |
           python3 scripts/check_refresh.py
           python3 -m unittest discover -s tests -q
+          node --test tests/*.test.cjs
       - name: Verify generated browser assets
         run: |
           npm run version-assets
@@ -131,6 +132,7 @@ jobs:
             python3 market_history.py || echo 'Market history unavailable; retained the previous observations.'
             python3 scripts/check_refresh.py
             python3 -m unittest discover -s tests -q
+            node --test tests/*.test.cjs
             npm run version-assets
             npm run check
           fi

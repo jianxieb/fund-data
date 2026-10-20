@@ -118,9 +118,24 @@ test('related-company scope never duplicates mature firms into breakout or Dongs
   assert.equal(M.stockVisibleInGroup(ds,'growth',true),false);
   assert.match(M.stockSelectionReason(ds,'breakout'),/并表/);
   for(const s of [...ctx.STOCKS,...p.ctx.OVERSEAS_STOCKS]) {
-    if(s.group==='dividend'||(s.companySelection.groups.length===1&&s.companySelection.groups[0]==='dividend'))continue;
-    const groups=M.stockResearchGroups(s);assert.ok(groups.length>0,s.c);
+    const groups=M.stockResearchGroups(s);
+    // Dividend eligibility can change with the daily close without creating
+    // quality/growth/breakout research coverage for an income-only company.
+    if(!groups.length&&(s.group==='dividend'||s.companySelection.previousGroups?.includes('dividend')))continue;
+    assert.ok(groups.length>0,s.c);
     for(const g of groups)assert.ok(M.stockSelectionReason(s,g).length>20,s.c+':'+g);
+  }
+});
+
+test('losing dividend eligibility does not create unrelated research coverage', () => {
+  for(const groups of [['dividend'],['other']]) {
+    const s={companySelection:{researchGroups:[],previousGroups:['dividend'],groups}};
+    assert.deepEqual(M.stockResearchGroups(s),[]);
+    assert.equal(M.stockMatches(s,'dividend'),groups.includes('dividend'));
+    for(const g of ['quality','growth','breakout']) {
+      assert.equal(M.stockVisibleInGroup(s,g),false);
+      assert.equal(M.stockVisibleInGroup(s,g,true),false);
+    }
   }
 });
 
