@@ -64,7 +64,11 @@ def default_asof() -> str:
 
 def request_json(url: str, timeout: float = 15):
     last = None
-    for attempt in range(2):
+    # Hosted runners sometimes receive several consecutive connection resets.
+    # Spread bounded retries out; identity and history validation stay outside
+    # this transport retry, and exhausted requests still fail publication.
+    delays = (1, 3, 7)
+    for attempt in range(len(delays) + 1):
         try:
             req = urllib.request.Request(url, headers={
                 'User-Agent': 'Mozilla/5.0', 'Referer': 'https://www.csindex.com.cn/'
@@ -73,8 +77,8 @@ def request_json(url: str, timeout: float = 15):
                 return json.load(response)
         except (OSError, ValueError) as exc:
             last = exc
-            if not attempt:
-                time.sleep(.4)
+            if attempt < len(delays):
+                time.sleep(delays[attempt])
     raise RuntimeError(str(last))
 
 
@@ -320,7 +324,7 @@ def main():
     ap.add_argument('--as-of', help='截至交易日 YYYY-MM-DD；默认仅使用已结束交易日')
     ap.add_argument('--offline', action='store_true', help='只用已保存的原始指数收盘序列重新计算')
     ap.add_argument('--verify', action='store_true', help='用新浪日线抽样交叉核验已保存的官方指数点位')
-    ap.add_argument('--timeout', type=float, default=15, help='单次网络请求超时秒数（每源最多2次）')
+    ap.add_argument('--timeout', type=float, default=15, help='单次网络请求超时秒数（每源最多4次，退避重试）')
     args = ap.parse_args()
     if args.timeout <= 0 or args.timeout > 60:
         ap.error('--timeout 必须大于0且不超过60')

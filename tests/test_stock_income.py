@@ -65,24 +65,37 @@ class SharedIncomeTests(unittest.TestCase):
 
     def test_catalog_label_and_high_yield_do_not_bypass_missing_evidence(self):
         for code in ('000333','601006','600519','600690'):
-            row=self.cn[code]
+            row=deepcopy(self.cn[code])
+            # Recreate missing evidence; a later refresh may legitimately fill it.
+            row.pop('incomeShareEvidence', None)
+            row['yield12']=9
+            apply_cn(row,'2026-10-17')
             self.assertEqual(row['group'],'dividend')
             self.assertNotIn('dividend',row['companySelection']['groups'])
             self.assertIn('同股本',row['incomeReview']['rationale'])
         for code in ('600941','600938','601728'):
-            self.assertIn('2021',self.cn[code]['incomeReview']['rationale'])
+            row=deepcopy(self.cn[code])
+            row['dividendPaidCalendarYears']=[2022,2023,2024,2025]
+            apply_cn(row,'2026-10-17')
+            self.assertNotIn('dividend',row['companySelection']['groups'])
+            self.assertIn('2021',row['incomeReview']['rationale'])
         self.assertNotIn('dividend',self.cn['002558']['companySelection']['groups'])
         self.assertNotIn('dividend',self.cn['603444']['companySelection']['groups'])
 
     def test_banks_are_not_rejected_for_industrial_cash_rules(self):
         for code in ('600901','601398','601939','601288','601988','600036'):
-            review=cn_income_review(self.cn[code],'2026-10-17')
+            row=deepcopy(self.cn[code])
+            row['dividendAsOf']='2026-10-14'
+            row['yield12']=9
+            review=cn_income_review(row,'2026-10-17')
             self.assertTrue(review['qualified'],(code,review['rationale']))
             self.assertTrue(review['businessReview']['capitalReview'])
             self.assertFalse(any(c['label']=='最近12个月经营现金流为正' for c in review['checks']))
 
     def test_share_basis_changes_cannot_be_summed_as_unchanged_eps(self):
         row=deepcopy(self.cn['600900'])
+        row['dividendAsOf']='2026-10-14'
+        row['yield12']=9
         self.assertTrue(cn_income_review(row,'2026-10-17')['qualified'])
         row['incomeShareEvidence']['reports'][0]['shares'] *= 1.1
         review=cn_income_review(row,'2026-10-17')

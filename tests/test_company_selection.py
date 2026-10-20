@@ -1,6 +1,7 @@
 import json
 import unittest
 from copy import deepcopy
+from datetime import date, datetime
 from pathlib import Path
 from unittest.mock import patch
 
@@ -17,6 +18,14 @@ class CompanySelectionTests(unittest.TestCase):
         cls.cn = load_old_rows((ROOT / 'data/snapshot.js').read_text())
         cls.us = {r['symbol']: r for r in json.loads(next(l.split('=', 1)[1].rstrip(';')
             for l in (ROOT / 'data/overseas-stocks.js').read_text().splitlines() if l.startswith('var OVERSEAS_STOCKS=')))}
+
+    def assert_observed_price(self, row, first_observation):
+        # Coverage dates are a lower bound, not a ban on the next daily close.
+        observed = date.fromisoformat(row['priceAsOf'])
+        self.assertGreaterEqual(observed, date.fromisoformat(first_observation))
+        self.assertLessEqual(observed, datetime.fromisoformat(row['fetchedAt']).date())
+        self.assertEqual(row['priceAsOf'], row['returnAsOf'])
+        self.assertGreater(row['price'], 0)
 
     def test_numeric_outperformance_alone_cannot_select_an_unreviewed_company(self):
         annual = [dict(period=str(y)+'-12', profit=100, cash=200) for y in range(2021,2026)]
@@ -93,7 +102,7 @@ class CompanySelectionTests(unittest.TestCase):
             self.assertEqual(row['symbol'], code)
             self.assertIn('/'+code+'/', row['returnSourceUrl'])
             self.assertEqual(row['financials']['reportDate'], '2026-06-30')
-            self.assertEqual(row['priceAsOf'], '2026-10-14')
+            self.assert_observed_price(row, '2026-10-14')
             self.assertTrue(row['companySelection']['newCoverage'])
             self.assertTrue(all(v is not None for v in row['r']))
         self.assertIn('growth', self.us['FTNT']['screening']['groups'])
@@ -108,7 +117,10 @@ class CompanySelectionTests(unittest.TestCase):
                 self.assertEqual(copy.get(key), row.get(key))
         for row in self.us.values():
             copy = classify(deepcopy(row), '2026-10-18')
-            self.assertEqual(copy, row)
+            for key in ['price', 'priceAsOf', 'r', 'returnAsOf', 'riskAsOf', 'financials', 'financialHistory', 'analysis']:
+                self.assertEqual(copy.get(key), row.get(key), (row['symbol'], key))
+            self.assertEqual(copy['companySelection']['checkedAt'], '2026-10-18')
+            self.assertEqual(classify(deepcopy(copy), '2026-10-18'), copy)
 
     def test_eight_added_us_companies_have_current_filings_and_independent_histories(self):
         expected = {'MCO':'2026-06-30','MSCI':'2026-06-30','CTAS':'2026-08-31','ROP':'2026-06-30',
@@ -122,7 +134,7 @@ class CompanySelectionTests(unittest.TestCase):
                 row = self.us[symbol]
                 self.assertEqual(row['financials']['reportDate'], period)
                 self.assertEqual(row['research']['reportPeriod'], period)
-                self.assertEqual(row['priceAsOf'], '2026-10-16')
+                self.assert_observed_price(row, '2026-10-16')
                 self.assertTrue(row['companySelection']['newCoverage'])
                 self.assertTrue(all(v is not None for v in row['r']))
                 self.assertGreaterEqual(len(row['analysis']['annual']), 5)
@@ -131,7 +143,8 @@ class CompanySelectionTests(unittest.TestCase):
                 self.assertEqual(history['id'], 'stock:'+symbol)
                 self.assertEqual(history['currency'], 'USD')
                 self.assertEqual(history['dividends'], 'reinvested')
-                self.assertEqual(history['series'][-1][0], '2026-10-16')
+                self.assertGreaterEqual(history['series'][-1][0], '2026-10-16')
+                self.assertEqual(history['series'][-1][0], asset['asOf'])
                 self.assertTrue(any(r['code']==symbol for r in reports))
 
     def test_latest_manufacturing_results_and_split_per_share_basis_are_not_stale(self):

@@ -175,6 +175,16 @@ class PublishedDividendRepairTests(unittest.TestCase):
     def setUpClass(cls):
         cls.evidence = json.loads((ROOT / 'docs/evidence/audit-20261016/a-share-dividends-source.json').read_text())
 
+    def frozen_snapshot(self):
+        # Exercise the one-time repair against its archived prices, not today's
+        # live snapshot, which the repair correctly refuses to overwrite.
+        rows = [{'c': company['code'], 'n': company['name'], 'price': company['price'],
+                 'priceAsOf': company['asOf'], 'dividendAsOf': company['asOf'],
+                 'yield12': company['previousYield12'], 'style': ['长期核心', '高股息'],
+                 'r': [10, 20, 30, 40, 50], 'financialReports': [{'netProfit': 200}]}
+                for company in self.evidence['companies']]
+        return 'var OTHER_BEFORE=[1];\n' + stock_screen.format_block(rows) + '\nvar OTHER_AFTER=[2];\n'
+
     def test_official_deye_distributions_and_historical_cutoff(self):
         deye = next(row for row in self.evidence['companies'] if row['code'] == '605117')
         current = eastmoney_dividend_summary(deye['records'], '2026-10-14', 73.08, '605117')
@@ -196,13 +206,14 @@ class PublishedDividendRepairTests(unittest.TestCase):
         self.assertEqual(changed, expected)
 
     def test_minimal_repair_preserves_other_blocks_and_nondividend_fields(self):
-        src = (ROOT / 'data/snapshot.js').read_text()
+        src = self.frozen_snapshot()
         output, report = repair(src, self.evidence)
         before, after = stock_screen.load_old_rows(src), stock_screen.load_old_rows(output)
         affected = {row['code'] for row in report['affected']}
         self.assertEqual(len(affected), 7)
+        self.assertEqual(set(report['updatedRows']), affected)
         allowed = {'yield12', 'divYears', 'style', 'cashDividend12', 'dividendBasis',
-                   'dividendCashRecords', 'dividendShareActions', 'dividendMissing'}
+                   'dividendCashRecords', 'dividendShareActions', 'dividendMissing', 'dividendPaidCalendarYears'}
         for code in before:
             if code not in affected:
                 self.assertEqual(before[code], after[code])
@@ -217,7 +228,7 @@ class PublishedDividendRepairTests(unittest.TestCase):
         self.assertEqual(repeated['updatedRows'], [])
 
     def test_repair_refuses_to_overwrite_newer_quotes(self):
-        src = (ROOT / 'data/snapshot.js').read_text()
+        src = self.frozen_snapshot()
         evidence = copy.deepcopy(self.evidence)
         next(row for row in evidence['companies'] if row['code'] == '605117')['asOf'] = '2026-10-13'
         with self.assertRaisesRegex(ValueError, '日期已变化'):

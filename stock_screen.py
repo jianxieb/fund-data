@@ -231,17 +231,24 @@ def fetch_stock(item):
         except (TypeError, ValueError):
             return None
 
+    # The dated valuation close is already identity-checked by fetch_evidence.
+    # A pre-open zero/missing live quote must not invalidate that observation.
+    dated_price = number(evidence.get('valuationPrice'))
+    dated_close = dated_price is not None and dated_price > 0 and bool(evidence.get('valuationAsOf'))
     quote_source = 'Eastmoney quote'
     try:
         quote = fetch_json('https://push2.eastmoney.com/api/qt/stock/get?secid=%s&fields=f43,f57,f58,f86,f116,f127,f164,f167,f170,f173' % secid(code)).get('data') or {}
-        if number(quote.get('f43')) is None or not quote.get('f86'):
-            raise ValueError('行情缺价格或时间戳')
+        quoted_price = number(quote.get('f43'), 100)
+        if not dated_close and (quoted_price is None or quoted_price <= 0 or not quote.get('f86')):
+            raise ValueError('行情缺有效正价格或时间戳')
     except Exception as exc:
         source_errors.append('Eastmoney quote: ' + str(exc))
-        meta = yahoo()['meta']
-        quote_source = 'Yahoo Finance chart metadata'
-        quote = {'f43': meta['regularMarketPrice'] * 100, 'f86': meta['regularMarketTime'],
-                 'f58': item.get('name') or meta.get('longName') or code}
+        quote = {}
+        if not dated_close:
+            meta = yahoo()['meta']
+            quote_source = 'Yahoo Finance chart metadata'
+            quote = {'f43': meta['regularMarketPrice'] * 100, 'f86': meta['regularMarketTime'],
+                     'f58': item.get('name') or meta.get('longName') or code}
 
     series = []
     history_source = 'Eastmoney backward-adjusted daily close'
@@ -275,16 +282,15 @@ def fetch_stock(item):
     if len(series) < 2:
         raise RuntimeError('股票缺少两个有效历史收盘价')
     latest = series[-1][0]
-    price = number(quote.get('f43'), 100)
+    price = dated_price if dated_close else number(quote.get('f43'), 100)
     if price is None or price <= 0:
         raise RuntimeError('现价无效')
-    quoted_at = datetime.fromtimestamp(float(quote['f86']), timezone(timedelta(hours=8))).isoformat(timespec='seconds')
-    quote_date = quoted_at[:10]
-    if evidence.get('valuationPrice') and evidence.get('valuationAsOf'):
-        price = evidence['valuationPrice']
+    if dated_close:
         quoted_at = evidence['valuationAsOf']
-        quote_date = quoted_at
         quote_source = 'Eastmoney RPT_VALUEANALYSIS_DET dated close'
+    else:
+        quoted_at = datetime.fromtimestamp(float(quote['f86']), timezone(timedelta(hours=8))).isoformat(timespec='seconds')
+    quote_date = quoted_at[:10]
     returns = [window_return(series, latest, years) for years in WINDOWS]
     volatility, max_drawdown = risk_metrics(series, latest)
     dividend_source = 'Eastmoney implemented cash dividends by report year'

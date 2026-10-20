@@ -41,7 +41,12 @@ class MarketHistoryTests(unittest.TestCase):
             mh.valuation_metric(raw(payload), raw(detail), 'spx', '2026-10-13')
 
     def test_rolling_provider_history_preserves_archived_prefix_with_original_provenance(self):
-        previous = json.loads(mh.OUTPUT.read_text())
+        # Begin with explicit old provenance, independent of how many rolling
+        # prefixes the daily job has already archived in the published data.
+        previous = {'sources': {'source': {'sha256': 'old-response'}}, 'context': {'id': 'macro', 'metrics': []},
+                    'markets': [{'id': 'spx', 'metrics': [{'id': 'pe', 'source': 'source',
+                        'points': [['2016-10-13', 20], ['2016-10-14', 21], ['2016-10-17', 22], ['2016-10-18', 23]],
+                        'sourceRange': ['2016-10-13', '2016-10-18']}]}]}
         data = copy.deepcopy(previous)
         old = previous['markets'][0]['metrics'][0]
         current = data['markets'][0]['metrics'][0]
