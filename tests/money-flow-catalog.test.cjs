@@ -148,7 +148,7 @@ test('current catalogue model states retain selection and reconcile or name thei
     assert.equal(profile.ledgerChecks, profile.priced + profile.partial);
     assert.ok(profile.retainedPartialResults > 0);
     assert.ok(profile.referencePriced <= profile.priced);
-    assert.deepEqual(profile.coverage.mainlandMethods, ['boc-mobile', 'boc-online', 'full', 'icbc-mobile', 'swift']);
+    assert.deepEqual(profile.coverage.mainlandMethods, ['boc-mobile', 'boc-online', 'full', 'icbc-mobile', 'payment-connect', 'swift']);
     assert.deepEqual(profile.coverage.fxModes, ['auto', 'bank', 'manual']);
     assert.deepEqual(profile.coverage.depositMethods, ['chats', 'chats-citic', 'chats-hang', 'chats-hsbc', 'chats-icbc-asia', 'edda', 'fps', 'internal', 'swift', 'via-bochk', 'via-hang', 'via-hsbc', 'via-icbc-asia']);
     assert.deepEqual(profile.coverage.returnMethods, ['bochk-fast', 'icbc-express', 'swift']);

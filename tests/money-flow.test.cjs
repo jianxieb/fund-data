@@ -458,7 +458,7 @@ test('comparison rows retain known charges but never rank unquoted remittances b
 
 test('a missing settlement quote preserves all upstream trades and fees without inventing final CNY', () => {
   const p = M.journeyPlans({ ...mainlandConfig, bank: 'bochk', route: 'CNH', depositMethod: 'fps',
-    mainlandMethod: 'payment-connect', senderFeeCny: 0, exitBank: 'cib' }, D, richQuotes);
+    mainlandMethod: 'payment-connect', senderFeeCny: 0, entryInwardHkd: 0, exitBank: 'cib' }, D, richQuotes);
   assert.equal(p.error, undefined);
   assert.equal(p.selected.indicativeExit, true);
   assert.match(p.selected.exitIssue, /USD现汇买入价尚未取得/);
@@ -481,7 +481,7 @@ test('Payment Connect does not inherit SWIFT tariffs or pretend a historical fre
   close(r.rows.find(row => row.key === 'entryMiddle').cny, 0);
   close(r.steps.hongKong, input.budgetCny);
   assert.ok(r.missing.includes('跨境支付通本次汇出服务费'));
-  const confirmed = M.journeyPlans({ ...input, senderFeeCny: 0 }, D, richQuotes).selected;
+  const confirmed = M.journeyPlans({ ...input, senderFeeCny: 0, entryInwardHkd: 0 }, D, richQuotes).selected;
   close(confirmed.rows.find(row => row.key === 'sender').cny, 0);
   assert.equal(M.comparisonMetric(confirmed, 'bank', 'step').missing.length, 0);
   assert.equal(confirmed.rankable, false);
@@ -489,9 +489,9 @@ test('Payment Connect does not inherit SWIFT tariffs or pretend a historical fre
   close(paid.rows.find(row => row.key === 'sender').cny, 10);
   close(paid.steps.hongKong, input.budgetCny - 10);
   const badRoute = M.journeyPlans({ ...input, route: 'USD', depositMethod: 'chats' }, D, richQuotes);
-  assert.match(badRoute.error, /人民币原币/);
+  assert.match(badRoute.error, /不支持美元/);
   const otherBank = M.journeyPlans({ ...input, bank: 'za' }, D, richQuotes);
-  assert.match(otherBank.error, /仅收录/);
+  assert.equal(otherBank.error, undefined); assert.equal(otherBank.selected.bank.id, 'za');
 });
 
 test('when all upstream quotes are stale, own confirmed quotes still compute without claiming an automatic recommendation', () => {
@@ -1254,7 +1254,7 @@ test('IBKR pricing choices persist through the actual picker handler without cha
   ui.render(); ui.act('pick-choice', 'ibkrPricing', 'lite');
   const saved = ui.saved();
   assert.equal(saved.ibkrPricing, 'lite');
-  assert.equal(saved.startBank, 'cib'); assert.equal(saved.bank, 'hsbc'); assert.equal(saved.broker, 'ibkr');
+  assert.equal(saved.startBank, 'cib'); assert.equal(saved.bank, 'hsbc'); assert.equal(saved.broker, 'ibkr-lite');
   const r = M.calculatorJourney({ ...saved, date: '2026-10-12' }, D, quotes).selected;
   assert.ok(r.trading.orders.every(order => order.commission === 0));
   assert.match(ui.render(), /Lite · 合资格美国居民/);
@@ -1316,7 +1316,7 @@ test('actual-price details show relevant currencies and charges across every sto
       assert.equal(fields.has('returnHkdPrice'), outcome === 'mainland');
       assert.equal(fields.has('exitPrice'), ['mainland', 'cnh-card'].includes(outcome));
       assert.equal(fields.has('inwardHkd'), outcome !== 'broker-balance');
-      assert.equal(fields.has('intermediaryCny'), ['ibkr', 'firstrade', 'schwab'].includes(broker) && outcome !== 'broker-balance');
+      assert.equal(fields.has('intermediaryCny'), ['ibkr', 'ibkr-lite', 'firstrade', 'schwab'].includes(broker) && outcome !== 'broker-balance');
       assert.equal(fields.has('returnWireHkd'), outcome === 'mainland');
       assert.equal(fields.has('returnExtraCny'), outcome === 'mainland');
       for (const key of ['returnMonthlyHkd', 'returnBalanceHkd', 'balanceHkd']) assert.ok(!fields.has(key), key);
@@ -1361,17 +1361,17 @@ test('an actual receipt does not mark a differently priced public recommendation
   close(restored.costCny, before.costCny); close(restored.net, before.net);
 });
 
-test('retired direct-payment settings repair their channel and known opening costs survive missing source quotes', () => {
+test('supported direct-payment settings preserve their channel and known opening costs survive missing source quotes', () => {
   const quotes = require('./fixtures/money-flow-quotes-20261011.json');
   const payment = moneyUi({ ...currentRoute, startBank: 'boc', bank: 'bochk', returnBank: 'bochk', route: 'CNH',
     fxMode: 'bank', mainlandMethod: 'payment-connect', outcome: 'broker-balance', senderFeeCny: '0',
     entryMiddleCny: '137', entryInwardHkd: '0', depositHkd: '3', startSell: '6.6', entryPrice: '6.7' }, quotes, '2026-10-12');
   payment.render(); payment.act('detail', '', 'adjustments');
-  assert.equal(payment.saved().mainlandMethod, 'swift');
-  for (const key of ['senderFeeCny', 'entryMiddleCny', 'entryInwardHkd']) assert.equal(payment.saved()[key], '');
+  assert.equal(payment.saved().mainlandMethod, 'payment-connect');
+  assert.equal(payment.saved().senderFeeCny, '0'); assert.equal(payment.saved().entryInwardHkd, '0');
   assert.equal(payment.saved().bank, 'bochk'); assert.equal(payment.saved().broker, 'za');
   assert.equal(payment.saved().entryPrice, '6.7'); assert.equal(payment.saved().startSell, '6.6'); assert.equal(payment.saved().depositHkd, '3');
-  assert.match(payment.modal(), /data-money-field="entryMiddleCny"/);
+  assert.doesNotMatch(payment.modal(), /data-money-field="entryMiddleCny"/);
   assert.match(payment.modal(), /data-money-field="senderFeeCny"/);
   const unquoted = structuredClone(quotes); delete unquoted.banks.boc;
   const missing = moneyUi({ ...currentRoute, startBank: 'boc', bank: 'bochk', returnBank: 'bochk', broker: 'za',
@@ -1437,7 +1437,8 @@ test('missing AutoFX execution prices do not erase original IBKR cash or move mi
     assert.match(moneyDetails(ui, 'edge-trade'), /实时成交点差/); assert.match(ui.modal(), /买入时自动换USD加价/);
     assert.match(html, /IBKR现金账户自动换汇/);
     const terminal = html.split('data-flow-stage="04"')[1].split('</section>')[0];
-    assert.match(terminal, new RegExp(r.steps.brokerOriginal.toFixed(2) + ' <small>' + route));
+    assert.match(terminal, /参考最终余额/);
+    assert.match(terminal, new RegExp(r.net.toFixed(2) + ' <small>USD'));
     assert.doesNotMatch(terminal, /美元留在账户/);
     const depositLinks = evidenceLinks(ui, 'edge-03');
     assert.ok(depositLinks.has(D.sources['ibFunding' + route].url));
@@ -2290,7 +2291,7 @@ test('invalid editable values are explained inside their open dialog instead of 
   valid.act('detail', '', 'profit-settings'); assert.doesNotMatch(valid.modal(), /aria-invalid/);
 });
 
-test('missing conversion prices keep the same last known balance and account at the terminal and summary', () => {
+test('missing entry conversion prices keep the same labelled reference balance at the terminal and summary', () => {
   const quotes = require('./fixtures/money-flow-quotes-20261011.json');
   const base = { ...currentRoute, date: '2026-10-11', startBank: 'boc', bank: 'bochk', mainlandMethod: 'boc-mobile',
     broker: 'ibkr', outcome: 'broker-balance', route: 'HKD', depositMethod: 'fps', entryPrice: '', count: 1 };
@@ -2298,18 +2299,20 @@ test('missing conversion prices keep the same last known balance and account at 
     const input = M.calculatorRoute({ ...base, fxMode }), r = M.calculatorJourney(input, D, quotes).selected;
     assert.ok(r.indicativeFx); assert.ok(r.steps.brokerOriginal > 0);
     const ui = moneyUi(input, quotes, '2026-10-11'), html = ui.render();
+    const displayed = M.calculatorJourney({ ...ui.saved(), date: '2026-10-11', sellDate: '2026-10-11' }, D, quotes).selected;
     const terminal = html.split('data-flow-stage="04"')[1].split('</section>')[0];
     const summary = html.split('id="flow-live-summary"')[1].split('flow-bottom-tools')[0];
     for (const section of [terminal, summary]) {
-      assert.match(section, /最后可计余额 · IBKR/);
-      assert.match(section, new RegExp(r.steps.brokerOriginal.toFixed(2) + ' <small>HKD<'));
+      assert.match(section, /参考最终余额/);
+      assert.match(section, new RegExp(displayed.net.toFixed(2) + ' <small>USD<'));
     }
     assert.equal(r.missing.filter(label => /IBKR HKD\/USD/.test(label)).length, 1);
     assert.match(moneyDetails(ui, 'edge-03'), /入金代理／收款行费/);
     assert.match(moneyDetails(ui, fxMode === 'auto' ? 'edge-trade' : 'edge-03'), fxMode === 'auto' ? /买入时自动换USD加价/ : /换USD佣金／自动加价/);
   }
   const bank = M.calculatorRoute({ ...base, bank: 'sc', route: 'CNH', mainlandMethod: 'swift', fxMode: 'bank' });
-  const data = M.calculatorJourney(bank, D, quotes), r = data.selected || data.partial, html = moneyUi(bank, quotes, '2026-10-11').render();
+  const bankUi = moneyUi(bank, quotes, '2026-10-11'), html = bankUi.render();
+  const bankResult = M.calculatorJourney({ ...bankUi.saved(), date: '2026-10-11', sellDate: '2026-10-11' }, D, quotes), r = bankResult.selected || bankResult.partial;
   const terminal = html.split('data-flow-stage="04"')[1].split('</section>')[0];
   assert.match(terminal, /最后可计余额 · 渣打 · 快易理财/);
   assert.match(terminal, new RegExp(r.steps.hongKong.toFixed(2) + ' <small>CNH<'));
@@ -2547,7 +2550,7 @@ test('stale quotes never make an incomplete fee subtotal look like a complete hi
   assert.doesNotMatch(summary, /全程损耗 · 历史报价|参考总损耗/);
 });
 
-test('missing funding FX is named consistently in the flow and details without a fabricated converted balance', () => {
+test('missing funding FX is named consistently alongside explicitly labelled reference balances', () => {
   for (const [broker, fxMode, bank, expected] of [
     ['za', 'bank', 'sc', /渣打 · 快易理财 CNH\/USD成交价尚未取得/],
     ['ibkr', 'manual', 'bochk', /IBKR CNH\/USD成交价尚未取得/]
@@ -2572,7 +2575,7 @@ test('missing funding FX is named consistently in the flow and details without a
       ui.act('detail', '', key);
       assert.match(ui.modal(), expected);
       assert.doesNotMatch(ui.modal(), /换汇.*?<b>按实际汇路收费|未报价换汇估值差额|本金 ＋/);
-      if (key === 'cost') assert.match(ui.modal(), new RegExp('最后可计余额：' + r.steps.hongKong.toFixed(2) + ' CNH'));
+      if (key === 'cost') assert.match(ui.modal(), new RegExp('参考最终余额.*' + r.net.toFixed(2) + ' USD'));
       if (key === 'cost') for (const label of knownParts) assert.doesNotMatch(ui.modal(), new RegExp(label + '</span><b>估算'));
     }
     const quoted = M.calculatorJourney({ ...config, entryPrice: 7 }, D, cibQuotes).selected;
@@ -2613,7 +2616,7 @@ test('missing terminal and source FX never leak reference rates or an executable
 test('detail reconciliation stays available for priced routes but not stale FX conversions', () => {
   const config = { ...currentRoute, startBank: 'boc', bank: 'bochk', broker: 'za', mainlandMethod: 'boc-mobile', route: 'USD', outcome: 'broker-balance' };
   const ui = moneyUi(config); ui.render(); ui.act('detail', '', 'cost');
-  assert.match(ui.modal(), /最终余额 \d+\.\d{2} USD，折合 \d+\.\d{2} CNY/);
+  assert.match(ui.modal(), /余额 \d+\.\d{2} USD，折合 \d+\.\d{2} CNY/);
   assert.match(ui.modal(), /人民币折算尾差按余数分配/);
   const q = structuredClone(cibQuotes); q.banks.boc.quotes.USD.asOf = '2020-01-01';
   const stale = moneyUi(config, q); stale.render(); stale.act('detail', '', 'cost');
@@ -2624,9 +2627,9 @@ test('detail reconciliation stays available for priced routes but not stale FX c
   const r = M.calculatorJourney(fundingConfig, D, fundingQuotes).selected;
   assert.equal(r?.quoteFreshness.entryMarket, false); assert.equal(r?.indicativeFx, '');
   const funding = moneyUi(fundingConfig, fundingQuotes), html = funding.render();
-  assert.match(html.split('id="flow-live-summary"')[1], /最后可计余额[\s\S]*CNH/);
+  assert.match(html.split('id="flow-live-summary"')[1], /参考最终余额[\s\S]*USD/);
   funding.act('detail', '', 'cost');
-  assert.match(funding.modal(), new RegExp('最后可计余额：' + r.steps.hongKong.toFixed(2) + ' CNH'));
+  assert.match(funding.modal(), /参考最终余额.*USD/);
   assert.doesNotMatch(funding.modal(), /本金 ＋/);
 });
 

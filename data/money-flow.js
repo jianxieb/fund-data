@@ -12,11 +12,19 @@
       receivingBanks: ['boc', 'cib', 'cmb', 'icbc', 'ccb'],
       mainland: ['boc', 'cib', 'cmb', 'icbc', 'ccb', 'comm', 'hsbc', 'hang', 'sc'],
       hkBanks: ['bochk', 'hsbc', 'za', 'hang', 'sc', 'icbc-asia'],
-      returnBanks: ['bochk', 'hsbc', 'za', 'hang', 'sc', 'icbc-asia', 'ccb-asia'], brokers: ['ibkr', 'hsbc', 'za', 'chief', 'usmart', 'firstrade', 'schwab'],
+      returnBanks: ['bochk', 'hsbc', 'za', 'hang', 'sc', 'icbc-asia', 'ccb-asia'], brokers: ['ibkr', 'ibkr-lite', 'hsbc', 'za', 'chief', 'usmart', 'firstrade', 'schwab'],
       fxComparison: ['boc', 'cib', 'cmb', 'icbc'], currencies: ['CNH', 'USD', 'HKD'],
       excluded: [
         { ids: ['abc'], scope: 'mainland', reason: '按用户要求移除农业银行；其他账户不因报价条件被删除。' }
       ]
+    },
+    paymentConnect: {
+      checkedAt: '2026-10-21', mainlandBanks: ['boc', 'cib', 'cmb', 'icbc'],
+      hkBanks: ['bochk', 'hsbc', 'za', 'hang', 'sc', 'icbc-asia'], currencies: ['CNH', 'HKD'],
+      inwardHkd: { hsbc: 0 }, inwardSources: { hsbc: ['paymentHsbcReceive'] },
+      sources: ['paymentCurrent', 'bocPaymentConnect', 'paymentHsbcReceive'],
+      condition: '南向共用每人每年等值5万美元便利化额度；单笔、每日及账户限额由银行核定。仅适用获准用途，不作为境外证券入金推荐。',
+      waiverEvidence: '按已享跨境支付通手续费豁免测算；未取得四家出发银行统一适用的现行南向免费公告，不代表所有账户永久免费。'
     },
     comparisonNotice: '按具体渠道、币种及账户收费计算；购汇点差与转账手续费分别列示。',
     mainlandSpending: {
@@ -110,6 +118,8 @@
       { bank: 'icbc-asia', scope: 'hk', checkedAt: '2026-10-15', items: ['银联／ICBC Pay的HKD/CNY实际扣账汇率', 'USD/CNH直接客户成交价'], source: 'icbcAsiaCard', finding: '港币卡可在银联受理商户支付；实际扣账汇率不能用银行现汇牌价或ATM折算规则代替。公开港币交叉汇率是两笔兑换，不作为直接USD/CNH消费报价。' }
     ],
     sources: {
+      paymentHsbcReceive: { name: '汇丰跨境支付通收款及免手续费说明', url: 'https://www.hsbc.com.hk/zh-cn/transfer-payments/products/pay-abroad-with-fps/' },
+      ibFundingUs: { name: 'IBKR美国居民USD入金方式', url: 'https://www.interactivebrokers.com/en/support/fund-my-account.php' },
       bochkUnionPay: { name: '中银香港 · 银联双币中银卡与扣账账户', url: 'https://www.bochk.com/sc/more/boccard/personal.html' },
       bochkApplePay: { name: '中银香港 · 中银卡Apple Pay常见问题', url: 'https://www.bochk.com/dam/more/boccard/applepay/apay_faq_sc.pdf' },
       ibCnhWithdrawal: { name: 'IBKR · CNH本地出金与电汇渠道', url: 'https://www.ibkrguides.com/androidtablet/withdrawal.htm' },
@@ -392,14 +402,22 @@
         fundingText: '本人香港银行先备妥USD，经SWIFT汇至嘉信美国花旗收款账户；券商入金费0，银行及代理费另计。此处为Schwab One International证券账户，非Schwab Bank支票账户。',
         withdrawalText: 'USD国际电汇至本人香港银行：网上15 USD，人工／表格25 USD；中转与香港收款费另计，不默认套用美国境内电汇资产豁免。',
         sources: ['schwabPricing', 'schwabGuide', 'schwabWire', 'schwabFractions', 'secFees', 'finraHoliday', 'finraSchedule'] },
-      { id: 'ibkr', name: 'IBKR', swiftDestination: 'overseas', commission: { perShare: .005, minimum: 1, cap: .01, capWins: true },
+      { id: 'ibkr', name: 'IBKR Pro', swiftDestination: 'overseas', commission: { perShare: .005, minimum: 1, cap: .01, capWins: true },
         fractionalCommission: { rate: .01, minimum: .01 }, catMinimum: 0,
         depositUsd: 0, depositCurrencies: { fps: ['HKD', 'CNH'], edda: ['HKD', 'CNH'] }, freeWithdrawals: 2, withdrawUsd: 10, withdrawalMethod: 'wire',
         localUsdFunding: { otherCny: 0, evidence: '香港花旗／渣打收款指示 · 公开记录0额外扣费', sources: ['ibLocalUsd', 'ibLocalCiti'] },
         feeText: '整股佣金0.005 USD/股，最低1 USD/单，最高成交额1%；不足1股按成交额1%、最低0.01 USD；平台费0',
-        feeShort: 'Pro固定每单1 USD起；Lite限合资格美国居民，常规上市股免佣',
+        feeShort: 'Pro固定 · 每单1 USD起；香港与境外收款指示分开',
         fundingText: 'USD香港收款指示走本地CHATS；美国收款指示走SWIFT。HKD/CNH支持FPS/eDDA', withdrawalText: 'USD电汇到本人香港银行；每月前2次免费，之后10 USD',
         sources: ['ibStocks', 'ibFx', 'ibAutoFxTerms', 'ibFees', 'ibFunding', 'ibDeposits', 'ibLocalUsd', 'ibLocalCiti', 'ibEdda', 'secFees', 'finraHoliday', 'finraSchedule'] },
+      { id: 'ibkr-lite', name: 'IBKR Lite', pricingPlan: 'lite', swiftDestination: 'overseas', usdDepositMethods: ['swift'],
+        commission: null, fractionalCommission: null, catMinimum: 0, depositUsd: 0,
+        freeWithdrawals: 2, withdrawUsd: 10, withdrawalMethod: 'wire',
+        feeText: 'Lite限合资格美国居民；常规交易时段美国上市股免佣。低价股特殊订单超过月成交量10%时按0.005 USD/股或成交额1%孰低收费；非上市股、隔夜和定期投资按Fixed。',
+        feeShort: '合资格美国居民 · 常规上市股免佣金；监管费另计',
+        fundingText: '本页按美国USD收款指示计算SWIFT电汇；不继承Pro的香港USD CHATS、FPS或eDDA。人民币／港币先在香港银行换USD；实际可用币种和收款行以本人账户指示为准。',
+        withdrawalText: 'USD电汇；每月前2次免费，之后10 USD；第三方费用另计',
+        sources: ['ibLite', 'ibFunding', 'ibFundingUs', 'ibFees', 'ibStocks', 'secFees', 'finraHoliday', 'finraSchedule'] },
       { id: 'hsbc', name: '汇丰 · Trade25 / 普通证券', integratedBank: 'hsbc', wholeSharesOnly: true, depositUsd: 0, withdrawUsd: 0, withdrawalMethod: 'internal',
         feeText: 'Trade25：仅美股月费豁免至另行通知；月成交首25万HKD及首次跨额整单免佣，之后每单18 USD起；监管费另计',
         feeShort: 'Trade25仅美股月费0 · 月首25万HKD额度免佣；普通账户每单18 USD起',
