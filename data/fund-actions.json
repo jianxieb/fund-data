@@ -244,6 +244,19 @@
       "splits": {
         "2022-01-13": 5.0
       },
+      "verifiedEvents": [
+        {
+          "code": "513100",
+          "kind": "split",
+          "date": "2022-01-13",
+          "value": 5.0,
+          "announcedAt": "2022-01-14",
+          "verifiedAt": "2026-10-20",
+          "sourceUrl": "https://static.cninfo.com.cn/finalpage/2022-01-14/1212179309.PDF",
+          "sourceTitle": "国泰基金管理有限公司关于纳斯达克100交易型开放式指数证券投资基金基金份额拆分结果及恢复交易和申购、赎回的公告",
+          "note": "公告确认2022年1月13日每1份拆为5份；新供应商列表遗漏该事件时仍保留官方证据。"
+        }
+      ],
       "verifiedDistributionPeriods": [
         {
           "code": "513100",
