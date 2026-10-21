@@ -571,6 +571,39 @@ def retain_valuation_prefix(data, previous):
             current['archivedSources'] = archived
 
 
+def build_with_source_fallback(raw, asof, fetched, source_urls=None, previous=None, failures=None):
+    """Retain an unverified valuation pair without stopping independent sources."""
+    raw, failures = dict(raw), dict(failures or {})
+    for market in ('spx', 'ndx'):
+        history, detail = 'jiucai-' + market, 'jiucai-' + market + '-detail'
+        if history not in raw and detail not in raw:
+            continue
+        try:
+            if history not in raw or detail not in raw:
+                raise ValueError('Valuation history/detail pair incomplete')
+            valuation_metric(raw[history], raw[detail], market, asof)
+        except (ValueError, KeyError, TypeError, IndexError) as error:
+            # Never pair a new response with an old, independently dated half.
+            # Both published source hashes, dates and observations are retained.
+            for key in (history, detail):
+                raw.pop(key, None)
+                failures[key] = str(error)
+    data = build(raw, asof, fetched, source_urls)
+    missing = set(source_specs(asof)) - set(raw)
+    if missing:
+        if previous is None:
+            raise ValueError('Missing source evidence: ' + ', '.join(sorted(missing)))
+        retain_unavailable_sources(data, previous, missing)
+    curate_report(data)
+    validate(data)
+    if previous is not None:
+        retain_valuation_prefix(data, previous)
+        validate(data)
+        reject_regression(data, previous)
+    data['refreshFailures'] = {key: error for key, error in failures.items() if key in data['sources']}
+    return data
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--offline', action='store_true')
@@ -633,25 +666,13 @@ def main():
                 source_urls[key] = metadata.get('url', specs[key][1])
             if error:
                 failures[key] = error
-    data = build(raw, asof, fetched, source_urls)
-    missing = set(specs) - set(raw)
-    if missing:
-        if not OUTPUT.exists():
-            raise ValueError('Missing source evidence: ' + ', '.join(sorted(missing)))
-        retain_unavailable_sources(data, json.loads(OUTPUT.read_text()), missing)
-    curate_report(data)
-    validate(data)
-    if OUTPUT.exists():
-        previous = curate_report(json.loads(OUTPUT.read_text()))
-        retain_valuation_prefix(data, previous)
-        validate(data)
-        reject_regression(data, previous)
-    data['refreshFailures'] = {key: error for key, error in failures.items() if key in data['sources']}
+    previous = curate_report(json.loads(OUTPUT.read_text())) if OUTPUT.exists() else None
+    data = build_with_source_fallback(raw, asof, fetched, source_urls, previous, failures)
     # Only a fully parsed, validated snapshot replaces the published artifact.
     temporary = OUTPUT.with_suffix('.json.tmp')
     temporary.write_text(json.dumps(data, ensure_ascii=False, separators=(',', ':')) + '\n')
     temporary.replace(OUTPUT)
-    print('Saved:', [(m['id'], len(m['metrics']), len(m['snapshots'])) for m in data['markets']], 'source failures:', list(failures))
+    print('Saved:', [(m['id'], len(m['metrics']), len(m['snapshots'])) for m in data['markets']], 'source failures:', data['refreshFailures'])
 
 
 if __name__ == '__main__':

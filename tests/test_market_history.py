@@ -10,6 +10,65 @@ import market_history as mh
 
 
 class MarketHistoryTests(unittest.TestCase):
+    def refresh_inputs(self):
+        previous = json.loads(mh.OUTPUT.read_text())
+        asof = (date.fromisoformat(previous['asOf']) + timedelta(days=1)).isoformat()
+        pe = next(m for m in previous['markets'][0]['metrics'] if m['id'] == 'pe')
+        points = pe['points'] + [[asof, 24.1234]]
+        raw = {'jiucai-spx': json.dumps(dict(code='SPX.GI', metric='pe', latest=points[-1][1],
+                   series=[dict(date=day, value=value) for day, value in points])).encode(),
+               'jiucai-spx-detail': json.dumps(dict(header=dict(code='SPX.GI', name='标普500',
+                   metric='pe', value=24.12), update_time=asof)).encode()}
+        vix = next(m for m in previous['markets'][0]['metrics'] if m['id'] == 'vix')
+        raw['vix'] = ('DATE,CLOSE\n' + '\n'.join(date.fromisoformat(day).strftime('%m/%d/%Y') + ',' + str(value)
+                      for day, value in vix['points'] + [[asof, 21.25]])).encode()
+        fetched = {key: asof + 'T21:00:00+00:00' for key in raw}
+        return previous, asof, raw, fetched
+
+    def test_misaligned_valuation_pair_retains_exact_evidence_while_vix_advances(self):
+        previous, asof, original, fetched = self.refresh_inputs()
+        for failure in ('date', 'value', 'identity', 'missing_history', 'missing_detail'):
+            raw = dict(original)
+            detail = json.loads(raw['jiucai-spx-detail'])
+            if failure == 'date':
+                detail['update_time'] = previous['asOf']
+            elif failure == 'value':
+                detail['header']['value'] = 30
+            elif failure == 'identity':
+                detail['header']['code'] = 'NDX.GI'
+            raw['jiucai-spx-detail'] = json.dumps(detail).encode()
+            if failure == 'missing_history':
+                del raw['jiucai-spx']
+            elif failure == 'missing_detail':
+                del raw['jiucai-spx-detail']
+            with self.subTest(failure=failure):
+                data = mh.build_with_source_fallback(raw, asof, fetched, previous=copy.deepcopy(previous))
+                current = {m['id']: m for m in data['markets'][0]['metrics']}
+                old = {m['id']: m for m in previous['markets'][0]['metrics']}
+                self.assertEqual(current['pe'], old['pe'])
+                for key in ('jiucai-spx', 'jiucai-spx-detail'):
+                    self.assertEqual(data['sources'][key], previous['sources'][key])
+                    self.assertTrue(data['refreshFailures'][key])
+                self.assertEqual(current['vix']['points'][-1], [asof, 21.25])
+                self.assertEqual(data['sources']['vix']['fetchedAt'], fetched['vix'])
+                mh.validate(data)
+                mh.reject_regression(data, previous)
+
+    def test_aligned_valuation_pair_advances_and_missing_prior_evidence_still_fails(self):
+        previous, asof, raw, fetched = self.refresh_inputs()
+        data = mh.build_with_source_fallback(raw, asof, fetched, previous=previous)
+        pe = next(m for m in data['markets'][0]['metrics'] if m['id'] == 'pe')
+        self.assertEqual(pe['points'][-1], [asof, 24.1234])
+        self.assertEqual(pe['publisherCheck']['detailValue'], 24.12)
+        self.assertNotIn('jiucai-spx', data['refreshFailures'])
+        self.assertEqual(data['sources']['jiucai-spx']['fetchedAt'], fetched['jiucai-spx'])
+        del raw['jiucai-spx-detail']
+        with self.assertRaisesRegex(ValueError, 'Missing source evidence'):
+            mh.build_with_source_fallback(raw, asof, fetched)
+        previous['sources'].pop('jiucai-spx-detail')
+        with self.assertRaisesRegex(ValueError, 'no previous evidence'):
+            mh.build_with_source_fallback(raw, asof, fetched, previous=previous)
+
     def test_provider_valuation_requires_identity_positive_values_and_snapshot_alignment(self):
         payload = dict(code='SPX.GI', metric='pe', latest=25.2089,
             series=[dict(date='2026-10-12', value=25.19), dict(date='2026-10-13', value=25.2089)])
