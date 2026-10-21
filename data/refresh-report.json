@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "startedAt": "2026-10-21T17:04:56+00:00",
+  "startedAt": "2026-10-21T18:48:44+00:00",
   "mode": "online",
   "steps": [
     {
       "dataset": "funds",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 54.13,
+      "seconds": 115.11,
       "log": ".tmp-snap/refresh-funds.log",
       "publishedRollback": false
     },
@@ -15,7 +15,7 @@
       "dataset": "research_funds",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 232.81,
+      "seconds": 129.62,
       "log": ".tmp-snap/refresh-research_funds.log",
       "publishedRollback": false
     },
@@ -23,7 +23,7 @@
       "dataset": "indices",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 18.74,
+      "seconds": 19.91,
       "log": ".tmp-snap/refresh-indices.log",
       "publishedRollback": false
     },
@@ -31,7 +31,7 @@
       "dataset": "stocks",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 221.07,
+      "seconds": 192.05,
       "log": ".tmp-snap/refresh-stocks.log",
       "publishedRollback": false
     },
@@ -39,7 +39,7 @@
       "dataset": "overseas_stocks",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 25.35,
+      "seconds": 40.81,
       "log": ".tmp-snap/refresh-overseas_stocks.log",
       "publishedRollback": false
     },
@@ -47,7 +47,7 @@
       "dataset": "screening",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 1.88,
+      "seconds": 2.55,
       "log": ".tmp-snap/refresh-screening.log",
       "publishedRollback": false
     },
@@ -55,7 +55,7 @@
       "dataset": "strategy",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 33.13,
+      "seconds": 44.49,
       "log": ".tmp-snap/refresh-strategy.log",
       "publishedRollback": false
     },
@@ -63,7 +63,7 @@
       "dataset": "portfolio",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 677.55,
+      "seconds": 1106.05,
       "log": ".tmp-snap/refresh-portfolio.log",
       "publishedRollback": false
     },
@@ -71,11 +71,11 @@
       "dataset": "quality",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 1.33,
+      "seconds": 1.67,
       "log": ".tmp-snap/refresh-quality.log",
       "publishedRollback": false
     }
   ],
-  "completedAt": "2026-10-21T17:26:03+00:00",
+  "completedAt": "2026-10-21T19:16:17+00:00",
   "status": "completed"
 }
