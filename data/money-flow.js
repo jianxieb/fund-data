@@ -26,6 +26,13 @@
       condition: '南向共用每人每年等值5万美元便利化额度；单笔、每日及账户限额由银行核定。仅适用获准用途，不作为境外证券入金推荐。',
       waiverEvidence: '按已享跨境支付通手续费豁免测算；未取得四家出发银行统一适用的现行南向免费公告，不代表所有账户永久免费。'
     },
+    wiseFunding: {
+      id: 'wise', name: 'Wise', currency: 'USD', brokers: ['ibkr', 'ibkr-lite'],
+      bankToWiseHkd: 10, wiseToIbkrHkd: 10, checkedAt: '2026-10-22', level: 'user-reported',
+      evidence: '用户提供的收费情景：香港银行USD到本人Wise、Wise到本人IBKR，两段各10 HKD；非官方统一收费。',
+      condition: '须有可接收USD的本人Wise账户，并在本人IBKR入金页提供且关联Transfer from Wise Balance。按一次入金、两段各一笔测算；实际费用以银行及Wise报价为准。普通Wise券商电汇／FFC不适用此路径。',
+      sources: ['ibWise', 'wiseIbkr', 'wiseUsd']
+    },
     comparisonNotice: '按具体渠道、币种及账户收费计算；购汇点差与转账手续费分别列示。',
     mainlandSpending: {
       bank: { title: '内地银行卡', coverage: '微信／支付宝绑卡、刷卡、缴费及转账',
@@ -76,12 +83,18 @@
       ]
     },
     preferredPlans: [
+      { id: 'cnh-ibkr', title: '人民币原币 → 汇丰 → IBKR Pro换美元',
+        note: '原币成本优先 · 支付通用途须核实',
+        config: { startBank: 'boc', bank: 'hsbc', broker: 'ibkr', returnBank: 'hsbc', exitBank: 'boc', route: 'CNH', mainlandMethod: 'payment-connect', paymentConnectFeeWaived: true, fxMode: 'manual', depositMethod: 'fps', outcome: 'broker-balance' } },
       { id: 'cib-trade25', title: '兴业寰宇人生 → 汇丰Trade25',
         config: { startBank: 'cib', bank: 'hsbc', broker: 'hsbc', returnBank: 'hsbc', exitBank: 'boc', route: 'USD', mainlandMethod: 'swift', depositMethod: 'internal', outcome: 'usd-balance', trade25: true } },
       { id: 'cib-za', title: '兴业寰宇人生 → ZA',
         config: { startBank: 'cib', bank: 'hsbc', broker: 'za', returnBank: 'hsbc', exitBank: 'boc', route: 'USD', mainlandMethod: 'swift', depositMethod: 'chats', outcome: 'usd-balance' } },
       { id: 'boc-ibkr', title: '中行 → 中银香港 → IBKR',
-        config: { startBank: 'boc', bank: 'bochk', broker: 'ibkr', returnBank: 'bochk', exitBank: 'boc', route: 'USD', mainlandMethod: 'boc-mobile', depositMethod: 'chats', outcome: 'broker-balance' } }
+        config: { startBank: 'boc', bank: 'bochk', broker: 'ibkr', returnBank: 'bochk', exitBank: 'boc', route: 'USD', mainlandMethod: 'boc-mobile', depositMethod: 'chats', outcome: 'broker-balance' } },
+      { id: 'cib-wise-ibkr', title: '兴业寰宇人生 → 汇丰美元 → Wise → IBKR Pro',
+        note: 'Wise两段参考费 10 + 10 = 20 HKD',
+        config: { startBank: 'cib', bank: 'hsbc', broker: 'ibkr', returnBank: 'hsbc', exitBank: 'boc', route: 'USD', mainlandMethod: 'swift', depositMethod: 'wise', outcome: 'broker-balance' } }
     ],
     bocMobileEvidence: { feeCny: 0, telegramCny: 0, intermediaryCny: 0, checkedAt: '2026-10-11', level: 'bank-statement', intermediaryLevel: 'reported', senderEvidence: '手机银行双免', sources: ['bocBankAnswer2026', 'bocMobile2026', 'bocMobileUsdGuide', 'bochkSame', 'bocMobileHistory'], note: '中行2026-08-19具名答复及山西省分行2026-05-29供稿均确认手机境外中行入口免手续费及电报费；中银香港使用BKCHHKHH，香港分行BKCHHKHK不享此优惠。USD/HKD同名中银香港的代理费另按2026操作记录的SHA同行路径0元测算；该记录不是所有币种、所有汇路的代理费豁免承诺，跨境支付通实录不作外币电汇证据。' },
     // A published service tariff is not evidence that a particular receiving
@@ -121,6 +134,9 @@
       paymentHsbcReceive: { name: '汇丰跨境支付通收款及免手续费说明', url: 'https://www.hsbc.com.hk/zh-cn/transfer-payments/products/pay-abroad-with-fps/' },
       ibConversion: { name: 'IBKR账户换汇权限与交易权限区别', url: 'https://investors.interactivebrokers.com/en/accounts/trading-and-market-data.php' },
       ibCnhDeposits: { name: 'IBKR原币CNH入金与实体对应的收款渠道', url: 'https://www.ibkrguides.com/kb/how-to-deposit-cnh.htm' },
+      ibWise: { name: 'IBKR · 关联本人Wise余额入金与报价', url: 'https://www.ibkrguides.com/clientportal/transferandpay/wise-transfer.htm' },
+      wiseIbkr: { name: 'Wise · 与IBKR合作的余额入金入口', url: 'https://wise.com/us/blog/wise-platform-and-interactive-brokers-team-up' },
+      wiseUsd: { name: 'Wise · USD渠道、费用与普通券商汇款限制', url: 'https://wise.com/help/articles/2932150/guide-to-usd-transfers' },
       ibFundingUs: { name: 'IBKR美国居民USD入金方式', url: 'https://www.interactivebrokers.com/en/support/fund-my-account.php' },
       bochkUnionPay: { name: '中银香港 · 银联双币中银卡与扣账账户', url: 'https://www.bochk.com/sc/more/boccard/personal.html' },
       bochkApplePay: { name: '中银香港 · 中银卡Apple Pay常见问题', url: 'https://www.bochk.com/dam/more/boccard/applepay/apay_faq_sc.pdf' },

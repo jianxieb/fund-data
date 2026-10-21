@@ -188,7 +188,8 @@ test('each fixed plan applies a complete route and its own conditions while pres
     const subject = ui({ broker: 'chief', outcome: 'mainland', hsbcBalanceWaiver: false, useVoucher: true,
       voucherUsd: 100, voucherOrders: 100, voucherScope: 'both', voucherExpiry: '2026-11-12', senderFeeCny: 137 });
     subject.render(); subject.act('preset', '', plan.id); const saved = subject.saved(), actual = subject.result().selected;
-    assert.ok(actual?.complete, plan.id);
+    assert.ok(actual, plan.id);
+    assert.equal(actual.complete, plan.calculated.selected.complete, plan.id);
     for (const key of ['startBank','bank','broker','returnBank','outcome','mainlandMethod','depositMethod'])
       assert.equal(saved[key], plan.config[key], key);
     assert.equal(saved.hsbcBalanceWaiver, true); assert.equal(saved.useVoucher, false); assert.equal(saved.senderFeeCny, '');

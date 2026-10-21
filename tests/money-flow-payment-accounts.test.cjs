@@ -71,7 +71,7 @@ test('IBKR Pro and Lite are distinct accounts with distinct funding and the corr
   assert.equal(lite.broker.id, 'ibkr-lite'); assert.equal(lite.depositMethod, 'swift');
   assert.ok(lite.trading.buyFeeUsd < pro.trading.buyFeeUsd);
   assert.equal(row(lite, 'depositOther').cny, null);
-  assert.deepEqual(M.calculatorChannels({ ...base, broker: 'ibkr-lite', route: 'USD' }, D).depositMethods, ['swift']);
+  assert.deepEqual(M.calculatorChannels({ ...base, broker: 'ibkr-lite', route: 'USD' }, D).depositMethods, ['swift', 'wise']);
   for (const depositMethod of ['chats', 'fps', 'edda']) assert.match(run({ broker: 'ibkr-lite', route: 'USD', depositMethod }).error, /美国USD收款指示/);
 });
 test('legacy Lite state migrates the account and clears inapplicable Pro funding quotes without moving banks', () => {
@@ -172,4 +172,87 @@ test('legacy Lite preserves broker conversion while USD-only venues remain bank-
     const r = run({ broker, fxMode: 'manual', depositMethod: '' }).selected;
     assert.equal(r.fxMode, 'bank'); assert.ok(r.steps.hkConvertedUsd > 0);
   }
+});
+
+
+test('R167 preferred first route keeps RMB intact until IBKR and exposes the unpriced execution spread', () => {
+  const plans = M.calculatorPreferredPlans(D, Q, '2026-10-12'), plan = plans[0], r = plan.calculated.selected;
+  assert.equal(plan.id, 'cnh-ibkr'); assert.equal(plan.config.route, 'CNH');
+  assert.equal(plan.config.broker, 'ibkr'); assert.equal(plan.config.fxMode, 'manual');
+  assert.equal(plan.config.depositMethod, 'fps'); assert.equal(plan.config.mainlandMethod, 'payment-connect');
+  close(r.steps.hongKong, 100000); close(r.steps.brokerOriginal, 100000);
+  assert.equal(r.steps.hkConvertedUsd, undefined); assert.equal(row(r, 'brokerSpread').cny, null);
+  close(row(r, 'brokerFx').cny, 2 * r.refs.USD); assert.equal(r.complete, false); assert.equal(r.rankable, false);
+  assert.ok(r.costCny < plans.slice(1).map(p => p.calculated.selected.costCny).reduce((a,b) => Math.min(a,b)));
+  const subject = ui({ broker: 'ibkr-lite', route: 'CNH', fxMode: 'bank', entryPrice: 7, depositHkd: 88, useVoucher: true });
+  subject.render(); subject.act('preset', '', plan.id); const saved = subject.saved();
+  assert.equal(saved.broker, 'ibkr'); assert.equal(saved.fxMode, 'manual'); assert.equal(saved.depositHkd, ''); assert.equal(saved.entryPrice, '');
+  const header = toolbar(subject.render());
+  assert.match(header, /人民币原币汇出/); assert.match(header, /原币入金 · 手动换美元/);
+  assert.match(header, /已计费用/); assert.match(header, /IBKR CNH\/USD实时成交点差/); assert.match(header, /支付通用途须核实/);
+  assert.equal(ui(saved).saved().fxMode, 'manual');
+});
+
+test('R168 Wise offers USD bridging for Pro and Lite without removing direct or original-currency methods', () => {
+  for (const broker of D.calculator.brokers) for (const bank of D.calculator.hkBanks) for (const route of D.calculator.currencies) {
+    for (const fxMode of ['manual', 'bank']) {
+      const available = M.calculatorChannels({ ...base, broker, bank, route, fxMode }, D).depositMethods;
+      assert.equal(available.includes('wise'), ['ibkr', 'ibkr-lite'].includes(broker) && (route === 'USD' || fxMode === 'bank'));
+    }
+  }
+  for (const broker of ['ibkr', 'ibkr-lite']) for (const route of ['CNH', 'HKD']) {
+    assert.match(run({ broker, route, fxMode: 'manual', depositMethod: 'wise' }).error, /Wise桥接只提供/);
+  }
+  for (const broker of ['hsbc', 'za', 'chief', 'usmart', 'firstrade', 'schwab']) {
+    assert.match(run({ broker, bank: broker === 'za' ? 'za' : 'hsbc', route: 'USD', depositMethod: 'wise' }).error, /Wise桥接只提供/);
+  }
+});
+
+test('R168 each USD Wise leg costs 10 HKD, USD remains USD, with no direct SWIFT fee or repeated charge', () => {
+  for (const broker of ['ibkr', 'ibkr-lite']) for (const bank of D.calculator.hkBanks) for (const count of [1, 3]) {
+    const r = run({ broker, bank, route: 'USD', depositMethod: 'wise', count, entryMiddleCny: 0, hsbcBalanceWaiver: true }).selected;
+    assert.ok(r, broker + bank);
+    for (const key of ['depositBank', 'depositOther']) {
+      close(row(r, key).cny, 10 * r.refs.HKD);
+      assert.equal(row(r, key).nativeCurrency, 'HKD'); assert.match(row(r, key).estimate, /用户提供/);
+    }
+    close(row(r, 'depositBroker').cny, 0); close(row(r, 'brokerFx').cny, 0);
+    close(r.steps.wiseUsd, r.steps.hongKong - 10 * r.refs.HKD / r.refs.USD);
+    close(r.steps.fundedUsd, r.steps.hongKong - 20 * r.refs.HKD / r.refs.USD);
+    close(r.netCny, r.budgetCny - r.costCny - r.taxCny + r.fxImpactCny);
+    assert.equal(r.rankable, false); assert.match(r.requirements.join(' '), /Transfer from Wise Balance/);
+  }
+});
+
+test('Wise accepts bank-converted USD and actual leg quotes, and insufficient balances stay explicit', () => {
+  const converted = run({ route: 'CNH', mainlandMethod: 'payment-connect', paymentConnectFeeWaived: true,
+    fxMode: 'bank', entryPrice: 7, depositMethod: 'wise' }).selected;
+  close(converted.steps.fundedUsd, converted.steps.hkConvertedUsd - 20 * converted.refs.HKD / converted.refs.USD);
+  const actual = run({ route: 'USD', depositMethod: 'wise', depositHkd: 25, depositOtherCny: 13 }).selected;
+  close(row(actual, 'depositBank').cny, 25 * actual.refs.HKD); close(row(actual, 'depositOther').cny, 13);
+  assert.ok(!row(actual, 'depositBank').estimate); assert.ok(!row(actual, 'depositOther').estimate);
+  close(actual.steps.fundedUsd, actual.steps.hongKong - (25 * actual.refs.HKD + 13) / actual.refs.USD);
+  const empty = run({ startBank: 'boc', bank: 'bochk', budgetCny: 10, route: 'USD', mainlandMethod: 'boc-mobile', depositMethod: 'wise' });
+  assert.match(empty.error, /余额不足/); assert.ok(!empty.selected);
+});
+
+test('Wise UI shows both HKD charges, accepts both plans, persists reloads and preserves independent accounts', () => {
+  const subject = ui({ ...base, broker: 'ibkr-lite', route: 'USD', depositMethod: 'swift' }, Q, '2026-10-12');
+  subject.render(); subject.act('choose', 'depositMethod', 'wise');
+  let html = subject.render(), saved = subject.saved();
+  assert.equal(saved.bank, 'hsbc'); assert.equal(saved.broker, 'ibkr-lite'); assert.equal(saved.depositMethod, 'wise');
+  assert.match(html, /美元 → 本人Wise → IBKR/); assert.match(html, /Wise参考到账/);
+  assert.match(html, /按参考情景计算的余额/); assert.doesNotMatch(html, /按公布参考价费计算的余额/);
+  assert.equal((section(html, '美元 → 本人Wise → IBKR').match(/10.00 HKD/g) || []).length, 2);
+  const reloaded = ui(saved); reloaded.render(); assert.equal(reloaded.saved().depositMethod, 'wise');
+  subject.act('detail', '', 'edge-03'); assert.match(subject.modal(), /Transfer from Wise Balance/);
+  assert.match(subject.modal(), /data-money-field="depositHkd"/); assert.match(subject.modal(), /data-money-field="depositOtherCny"/);
+  assert.doesNotMatch(subject.modal(), /须通过SWIFT国际电汇/);
+  subject.act('choose', 'bank', 'bochk'); assert.equal(subject.saved().depositMethod, 'wise'); assert.equal(subject.saved().broker, 'ibkr-lite');
+  subject.act('choose', 'broker', 'ibkr'); assert.equal(subject.saved().depositMethod, 'wise'); assert.equal(subject.saved().bank, 'bochk');
+  subject.act('choose', 'route', 'CNH'); assert.equal(subject.saved().depositMethod, 'fps'); assert.equal(subject.saved().fxMode, 'manual');
+  subject.act('preset', '', 'cib-wise-ibkr'); html = subject.render(); saved = subject.saved();
+  assert.equal(saved.depositMethod, 'wise'); assert.equal(saved.route, 'USD');
+  assert.match(toolbar(html), /assets\/institutions\/wise.png/); assert.match(toolbar(html), /10 \+ 10 = 20 HKD/);
+  subject.act('choose', 'broker', 'firstrade'); assert.equal(subject.saved().depositMethod, 'swift'); assert.equal(subject.saved().bank, 'hsbc');
 });

@@ -37,7 +37,7 @@ test('all banks and stock accounts stay selectable; only the unsupported SC loca
     const s = M.calculatorRoute({ ...base, bank, broker, route, depositMethod: '', fxMode: 'bank' });
     const channels = M.calculatorChannels(s, D);
     assert.equal(M.calculatorIssue(s, D), '');
-    if (D.brokers.find(row => row.id === broker).usdDepositMethods) assert.deepEqual(channels.depositMethods, ['swift']);
+    if (D.brokers.find(row => row.id === broker).usdDepositMethods) assert.deepEqual(channels.depositMethods, broker === 'ibkr-lite' ? ['swift', 'wise'] : ['swift']);
     else assert.ok(channels.depositMethods.includes('chats') || channels.depositMethods.includes('internal'));
     if (broker === 'chief' || broker === 'usmart') assert.equal(channels.depositMethods.includes('swift'), bank !== 'sc');
     if (broker === 'ibkr') assert.ok(channels.depositMethods.includes('swift'));

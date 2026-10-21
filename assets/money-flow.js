@@ -57,8 +57,8 @@
   }
   if (state.route !== 'USD' && !M.supportsBrokerFx(state.broker)) state.fxMode = 'bank';
   const usdFunding = D.brokers.find(broker => broker.id === state.broker)?.usdDepositMethods;
-  const repairUsFunding = usdFunding && !usdFunding.includes(state.depositMethod);
-  if (repairUsFunding) { state.depositMethod = usdFunding[0]; state.depositHkd = ''; state.depositOtherCny = ''; }
+  const repairUsFunding = (usdFunding || state.depositMethod === 'wise') && !availableChannels(state).depositMethods.includes(state.depositMethod);
+  if (repairUsFunding) { state.depositMethod = availableChannels(state).depositMethods[0] || ''; state.depositHkd = ''; state.depositOtherCny = ''; }
   // A saved local USD wire must not retain the old overseas tariff. Keep all
   // accounts and use the bank's published local USD clearing channel.
   if (state.depositMethod === 'swift' && D.hkBanks.find(bank => bank.id === state.bank)?.localSwiftExcluded?.length &&
@@ -142,6 +142,7 @@
       else add('hkTariff', s.bank);
     } else if (stage === '03') {
       add('hkTariff', s.bank); add('hkTariff', settlement); add('hkTariff', r?.fundingBank || M.calculatorFundingBank(state, D)); add('brokerFunding', broker);
+      if ((r?.depositMethod || state.depositMethod) === 'wise') keys.push(...D.wiseFunding.sources);
       keys.push(...(r?.rows?.find(item => item.key === 'depositOther')?.sources || []));
       if (state.route !== 'USD' && !autoFxAtPurchase(r)) state.fxMode === 'bank' ? add('hkFx', s.bank) : keys.push('ibFx');
       if (broker?.id === 'ibkr') {
@@ -257,7 +258,7 @@
     if (!item) return '';
     const brand = key === 'broker' ? item.id : item.group || item.id;
     const logos = { boc: 'boc.png', cib: 'cib.png', cmb: 'cmb.ico', icbc: 'icbc.png', ccb: 'ccb.png', comm: 'comm.png',
-      hsbc: 'hsbc.png', hang: 'hang.svg', sc: 'sc.png', za: 'za.png', ibkr: 'ibkr.png', 'ibkr-lite': 'ibkr.png', chief: 'chief.png', usmart: 'usmart.ico', firstrade: 'firstrade.png', schwab: 'schwab.png' };
+      hsbc: 'hsbc.png', hang: 'hang.svg', sc: 'sc.png', za: 'za.png', ibkr: 'ibkr.png', 'ibkr-lite': 'ibkr.png', chief: 'chief.png', usmart: 'usmart.ico', firstrade: 'firstrade.png', schwab: 'schwab.png', wise: 'wise.png' };
     return logos[brand] ? '<span class="flow-account-icon" data-brand="' + esc(brand) + '"><img src="assets/institutions/' + logos[brand] + '" alt="' + esc(shortName(item) + '标识') + '" width="40" height="40"></span>' : '';
   }
   function account(key, label, item) {
@@ -301,7 +302,7 @@
       internal: s.broker.integratedBank ? '本行存款直接交收' : '同行转账 → 券商收款账户 · 免费',
       chats: s.broker.integratedBank ? '本地美元转账 → 本人' + shortName(banks.find(b => b.id === s.broker.integratedBank)) + '账户' : s.broker.id === 'ibkr' ? '香港收款指示 · USD本地转账' : recipient ? 'CHATS → 券商的' + routeName(recipient.id, 'bank') + '收款账户' : '本地美元转账 · CHATS',
       swift: currency !== 'USD' ? '外币电汇 · SWIFT' : s.broker.usdDepositMethods ? '美国收款账户 · USD SWIFT' : s.broker.swiftDestination === 'hong-kong' ? '香港收款账户 · USD SWIFT' : '境外收款指示 · USD电汇',
-      fps: '本地转账 · FPS', edda: '券商发起扣款 · eDDA'
+      fps: '本地转账 · FPS', edda: '券商发起扣款 · eDDA', wise: 'USD经本人Wise → IBKR'
     };
     for (const id of s.broker.internalFundingBanks || []) labels['via-' + id] = '经本人' + routeName(id, 'bank') + ' USD账户 → 同行入金';
     for (const id of s.broker.corporateReceivingBanks || s.broker.internalFundingBanks || []) labels['chats-' + id] = 'CHATS → 券商的' + routeName(id, 'bank') + '收款账户';
@@ -350,11 +351,25 @@
           p.config.outcome === 'broker-balance' ? ['broker', brokers.find(broker => broker.id === p.config.broker)] :
             ['returnBank', banks.find(bank => bank.id === p.config.returnBank)]
         ];
+        const viaWise = p.config.depositMethod === 'wise';
+        const captions = [p.config.route === 'CNH' ? '人民币原币汇出' : '美元汇出',
+          p.config.route === 'CNH' ? '人民币原币到账' : '美元到账',
+          p.config.route === 'CNH' ? '原币入金 · 手动换美元' : '', ''];
+        if (viaWise) {
+          stops[2] = '本人Wise'; stops[3] = stock;
+          institutions[2] = ['bridge', D.wiseFunding];
+          captions[2] = 'USD原币转入'; captions[3] = 'USD入金 · 账户内留美元';
+        }
         const route = stops.map((name, i) => (i ? '<span class="flow-preset-arrow" aria-hidden="true">' +
-          (i === 3 && p.config.outcome === 'broker-balance' ? '·' : '→') + '</span>' : '') +
-          '<span class="flow-preset-node">' + accountGlyph(...institutions[i]) + '<strong>' + esc(name) + '</strong></span>').join('');
-        const price = p.complete ? '<span class="flow-preset-price"><small>' + (p.rows.some(x => x.estimate) ? '参考损耗' : '损耗') + '</small><b>' + pct(p.total / 100000) + '</b><small>' + cost(p.total) + ' / 10万元</small></span>' :
-          '<span class="flow-preset-price"><small>' + esc(r?.missing?.join('、') || p.calculated.error || '缺报价') + '</small></span>';
+          (i === 3 && p.config.outcome === 'broker-balance' && !viaWise ? '·' : '→') + '</span>' : '') +
+          '<span class="flow-preset-node">' + accountGlyph(...institutions[i]) + '<span><strong>' + esc(name) + '</strong>' +
+          (captions[i] ? '<small>' + esc(captions[i]) + '</small>' : '') + '</span></span>').join('');
+        const hasPrice = !!p.calculated.selected && Number.isFinite(p.total);
+        const priceLabel = !p.complete ? '已计费用' : p.rows.some(x => x.estimate) ? '参考损耗' : '损耗';
+        const missing = !p.complete ? r?.missing?.join('、') || p.calculated.error || '缺报价' : '';
+        const price = '<span class="flow-preset-quote">' + (hasPrice ? '<span class="flow-preset-price"><small>' + priceLabel + '</small><b>' + pct(p.total / 100000) + '</b><small>' + cost(p.total) + ' / 10万元</small></span>' : '') +
+          (missing ? '<small class="flow-preset-missing">缺项：' + esc(missing) + '</small>' : '') +
+          (p.note ? '<small class="flow-preset-note">' + esc(p.note) + '</small>' : '') + '</span>';
         return action('<span class="flow-preset-route">' + route + '</span>' + price,
           'preset', 'data-value="' + p.id + '" aria-pressed="' + applied + '" aria-label="优选方案：' + esc(p.title) + '"', 'flow-preset');
       }).join('') + '</div>';
@@ -484,10 +499,12 @@
       returnFx: '换汇差额', returnWire: '汇回手续费', returnOther: '代理／收款费', exitFx: state.outcome === 'cnh-card' ? '支付折算差额' : '结汇差额', card: '消费费用' };
     return components.filter(item => !(state.route === 'USD' && ['brokerFx', 'brokerSpread'].includes(item.key)) &&
       !(state.route === 'CNH' && item.key === 'entryFx')).map(item => {
-        const label = item.key === 'returnOther' && item.component ? /中转/.test(item.label) ? '中转费' : '本行收款费' :
+        const label = r?.depositMethod === 'wise' && ['depositBank', 'depositOther'].includes(item.key) ? item.key === 'depositBank' ? '银行 → Wise' : 'Wise → IBKR' :
+          item.key === 'returnOther' && item.component ? /中转/.test(item.label) ? '中转费' : '本行收款费' :
           item.component || item.key === 'sender' ? item.label : labels[item.key] || item.label;
         return '<span class="flow-fee-chip"><span>' + esc(label) + '</span><b>' +
-          (item.cny == null ? '<span class="flow-variable">' + esc(missingFeeStatus(r, item)) + '</span>' : (item.estimate ? '参考 ' : '') + cost(item.display ?? displayCny(r, item))) + '</b></span>';
+          (item.cny == null ? '<span class="flow-variable">' + esc(missingFeeStatus(r, item)) + '</span>' : (item.estimate ? '参考 ' : '') +
+            (r?.depositMethod === 'wise' && ['depositBank', 'depositOther'].includes(item.key) ? num(item.cny / r.refs.HKD) + ' HKD · ' : '') + cost(item.display ?? displayCny(r, item))) + '</b></span>';
       }).join('');
   }
   function flow(data) {
@@ -524,11 +541,14 @@
     const fxControl = state.route === 'USD' ? '' : select('fxMode', '换美元地点', [...(M.supportsBrokerFx(s.broker.id) ? [['manual', 'IBKR手动换汇'], ['auto', 'IBKR现金账户自动换汇']] : []), ['bank', shortName(s.bank) + '换汇']]);
     const fundingPath = row(r, 'brokerSpread')?.path;
     const fundingBank = r?.fundingBank || M.calculatorFundingBank(state, D);
+    const viaWise = state.depositMethod === 'wise';
     const fundingTitle = (state.route === 'USD' ? '' : state.fxMode === 'bank' ? (fundingPath ? '人民币 → 港币 → 美元' : '换成美元') + ' → ' : '') +
-      (fundingBank ? '经本人' + routeName(fundingBank.id, 'bank') + ' → 同行入金' : automaticPurchase ? state.route + '原币转入IBKR' : state.route === 'USD' || state.fxMode === 'bank' ? '转入买股账户' : '转入IBKR → 换成美元');
+      (viaWise ? '美元 → 本人Wise → IBKR' : fundingBank ? '经本人' + routeName(fundingBank.id, 'bank') + ' → 同行入金' : automaticPurchase ? state.route + '原币转入IBKR' : state.route === 'USD' || state.fxMode === 'bank' ? '转入买股账户' : '转入IBKR → 换成美元');
     const pricedFunding = !costRows(r, throughFunding).some(item => item.cny == null) && r?.quoteFreshness?.source !== false && r?.quoteFreshness?.entryMarket !== false;
     const exchangeNote = state.route !== 'USD' && !r?.indicativeFx && r?.entryPrice ? '1 USD = ' + quoteNum(r.entryPrice) + ' ' + state.route + (r.brokerFx?.priceIncludesAutoMarkup ? ' · 已含自动加价' : '') + (fundingPath ? ' · 两次兑换' : '') : '';
     const fundingNote = [automaticPurchase ? '' : exchangeNote,
+      viaWise ? '须在IBKR关联本人Wise；到账按下列两段费用测算。' : '',
+      viaWise && Number.isFinite(steps.wiseUsd) ? 'Wise参考到账 ' + num(steps.wiseUsd) + ' USD' : '',
       fundingBank && pricedFunding && steps.fundingBankUsd != null ? '本人' + routeName(fundingBank.id, 'bank') + '到账 ' + num(steps.fundingBankUsd) + ' USD' : ''].filter(Boolean).join(' · ');
     html += edge(data, actualFundingKeys, fundingTitle, fxControl + select('depositMethod', '入金方式', depositMethods()), '03', esc(fundingNote));
     const pricingControl =
@@ -732,7 +752,7 @@
   const lastBalanceLabel = point => '最后可计余额' + (point.rebate ? '（优惠返还后）' : '') + ' · ' + point.account;
   function finalBalanceLabel({ gaps, estimated, canBalance, r }) {
     if (canBalance && (r?.indicativeFx || r?.indicativeEntryFx || r?.quoteFreshness?.source === false || r?.quoteFreshness?.entryMarket === false || r?.quoteFreshness?.exit === false || r?.quoteFreshness?.reference === false)) return '参考最终余额' + (gaps.length ? '（费用未齐）' : '（历史报价）');
-    const label = canBalance ? state.outcome === 'atm' ? '计划取现后的银行余额' : (gaps.length ? '已扣已核费用后的余额' : estimated ? '按公布参考价费计算的余额' : state.outcome === 'mainland' ? '内地人民币可用余额' : state.outcome === 'cnh-card' ? '受理商户可消费金额' : state.outcome === 'usd-card' ? '境外可消费金额' : '最终余额') : '最终余额暂不可算';
+    const label = canBalance ? state.outcome === 'atm' ? '计划取现后的银行余额' : (gaps.length ? '已扣已核费用后的余额' : estimated ? r?.depositMethod === 'wise' ? '按参考情景计算的余额' : '按公布参考价费计算的余额' : state.outcome === 'mainland' ? '内地人民币可用余额' : state.outcome === 'cnh-card' ? '受理商户可消费金额' : state.outcome === 'usd-card' ? '境外可消费金额' : '最终余额') : '最终余额暂不可算';
     return canBalance && r?.trading?.rebateUsd > 0 ? '优惠返还后 · ' + label : label;
   }
   function summary(data) {
@@ -832,7 +852,7 @@
         channels.mainlandMethods.includes(state.mainlandMethod)) next.mainlandMethod = state.mainlandMethod;
     // Explicit corporate or personal receiving-bank instructions remain the
     // same choice when other accounts change and that instruction still fits.
-    if (['bank', 'broker', 'route', 'fxMode'].includes(key) && /^(?:via-|chats-)/.test(state.depositMethod) &&
+    if (['bank', 'broker', 'route', 'fxMode'].includes(key) && /^(?:via-|chats-|wise$)/.test(state.depositMethod) &&
         channels.depositMethods.includes(state.depositMethod)) next.depositMethod = state.depositMethod;
     return M.calculatorRoute(next);
   }
@@ -955,7 +975,7 @@
       ['cardCnyPerHkd', '人民币消费金额 ÷ 港币总扣账（含费）', 'CNY/HKD'],
       ['exitPrice', '每1' + (state.outcome === 'mainland' ? state.returnCurrency || 'USD' : 'USD') + '换回金额', state.outcome === 'cnh-card' ? 'CNH' : 'CNY'],
       ['senderFeeCny', state.mainlandMethod === 'payment-connect' ? '每笔跨境支付通服务费' : '每笔汇出手续费＋电讯费', 'CNY'], ['entryMiddleCny', '每笔跨境代理费', 'CNY'], ['entryInwardHkd', '每笔香港汇入费', 'HKD'],
-      ['depositHkd', '股票入金转账费', 'HKD'], ['depositOtherCny', '股票入金收款行／代理费', 'CNY'], ['tradeFeeUsd', '本次买卖实际交易费', 'USD'],
+      ['depositHkd', state.depositMethod === 'wise' ? '香港银行 → Wise整段费用' : '股票入金转账费', 'HKD'], ['depositOtherCny', state.depositMethod === 'wise' ? 'Wise → IBKR整段费用折人民币' : '股票入金收款行／代理费', 'CNY'], ['tradeFeeUsd', '本次买卖实际交易费', 'USD'],
       ['inwardHkd', '出金收款行费', 'HKD'], ['intermediaryCny', '出金代理费', 'CNY'], ['returnWireHkd', '回内地汇出费', 'HKD'], ['returnExtraCny', '回内地其他费用', 'CNY'],
       ['monthlyHkd', '收款银行月费', 'HKD'], ['returnMonthlyHkd', '取回银行月费', 'HKD'], ['balanceHkd', '收款银行保留资产', 'HKD'], ['returnBalanceHkd', '取回银行保留资产', 'HKD'], ['openingCny', '开户实际支出', 'CNY']
     ].filter(([key]) => active.has(key)).map(args => field(...args, prices.has(args[0]) ? '实际成交价' : '留空使用公开收费')).join('') + '</div><p>' + action('恢复公开报价', 'clear-quotes') + '</p>';
@@ -1013,11 +1033,15 @@
       title = ({ '01': '内地购汇与跨境汇款', '03': autoFxAtPurchase(r) ? '股票账户原币入金' : '换汇与股票入金', trade: autoFxAtPurchase(r) ? '买入时换美元与美股买卖' : '美股买卖',
         withdraw: state.withdrawDestination === 'mainland' ? '券商USD直接电汇内地' : '券商换汇与出金', 'return-fx': '美元换港币', remit: '汇回内地', settle: '内地结汇', '04': '资金使用' })[stage];
       content = '<div class="flow-action-details">' + edgeFees(r, edgeKeys, stage) + '</div>';
-      if (s.broker.usdDepositMethods && ['03', 'trade', 'withdraw'].includes(stage)) content += '<p>' +
+      if (stage === '03' && state.depositMethod === 'wise') content += '<p>' + esc(D.wiseFunding.condition) + '</p><p>' + esc(D.wiseFunding.evidence) + '</p>' +
+        '<div class="flow-form-grid">' + field('depositHkd', '香港银行 → Wise整段费用', 'HKD', '留空按10 HKD参考费') +
+        field('depositOtherCny', 'Wise → IBKR整段费用折人民币', 'CNY', '留空按10 HKD折算') + '</div>';
+      if (s.broker.usdDepositMethods && ['03', 'trade', 'withdraw'].includes(stage) && !(stage === '03' && state.depositMethod === 'wise')) content += '<p>' +
         esc(stage === '03' ? s.broker.fundingText : stage === 'trade' ? s.broker.feeText : s.broker.withdrawalText) + '</p>';
       if (stage === '01') {
         content += '<p>' + esc(transferHint() || sourceTariffCopy(s.start)) + '</p>';
-        if (s.start?.id === 'cib' && state.route === 'CNH') {
+        if (state.mainlandMethod === 'payment-connect') content += '<p>' + esc(D.paymentConnect.condition) + '</p>';
+        if (s.start?.id === 'cib' && state.route === 'CNH' && state.mainlandMethod !== 'payment-connect') {
           content += '<p>人民币原币汇出不发生购汇；先用人民币购汇再汇出美元／港币，才适用寰宇人生的跨境外汇优惠。这里按普通寰宇人生卡计算，VIP等级减免另按本人实际费用。</p>';
           const sender = row(r, 'sender');
           if (r?.steps?.mainlandForeign != null && sender?.cny != null) content += '<p>含费预算 ' + cost(r.budgetCny) + ' ＝ 汇出本金 ' +

@@ -24,7 +24,7 @@ test('a confirmed funding receipt fee changes the named receiving account, funde
       near(after.steps.fundedUsd, before.steps.fundedUsd - (137 - (fee(before, 'depositOther').cny ?? 0)) / after.refs.USD);
       near(after.costCny, before.costCny + 137 - (fee(before, 'depositOther').cny ?? 0));
       assert.equal(fee(after, 'depositOther').estimate, undefined);
-      assert.match(fee(after, 'depositOther').evidence, /本人回单/);
+      assert.match(fee(after, 'depositOther').evidence, /本人(?:回单|报价)/);
       const restored = calc({ broker, bank, depositMethod, depositOtherCny: '' }).selected;
       assert.deepEqual(restored, before);
       checked++;

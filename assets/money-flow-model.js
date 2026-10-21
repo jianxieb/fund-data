@@ -1199,10 +1199,13 @@
       const depositMethod = internalDeposit ? 'internal' : settlementBank ? 'chats' : method('depositMethod', provider.usdDepositMethods?.[0] || (currency === 'USD' || fxMode === 'bank' ? 'chats' : 'fps'));
       const depositCurrency = fxMode === 'bank' ? 'USD' : currency;
       if (typeof depositMethod !== 'string') return downstreamError('保存的入金方式无效；请在入金方式中重新选择。');
+      const wiseFunding = requestedDepositMethod === 'wise' ? data.wiseFunding : null;
+      if (requestedDepositMethod === 'wise' && !(wiseFunding?.brokers.includes(provider.id) && depositCurrency === wiseFunding.currency))
+        return downstreamError('Wise桥接只提供香港银行USD余额经本人Wise转入IBKR；人民币／港币原币入金请选择对应渠道。');
       // Funding instructions restrict the transfer channel/currency, not the
       // broker's ability to convert deposited cash (including IBKR Lite).
       const allowedFunding = depositCurrency === 'USD' ? provider.usdDepositMethods?.includes(depositMethod) : provider.depositCurrencies?.[depositMethod]?.includes(depositCurrency);
-      if (provider.usdDepositMethods && !allowedFunding)
+      if (provider.usdDepositMethods && !allowedFunding && !wiseFunding)
         return downstreamError(provider.name + (depositCurrency === 'USD' ? '的本页美元入金路线使用美国USD收款指示，须通过SWIFT国际电汇' : '的本页' + depositCurrency + '原币入金使用本人账户生成的SWIFT电汇指示') + '；不能使用香港CHATS、FPS或eDDA。');
       const corporateReceivingBank = calculatorDepositBank({ broker: provider.id, bank: bank.id, depositMethod }, data);
       if (typeof requestedDepositMethod === 'string' && requestedDepositMethod.startsWith('via-') && (!fundingBank || fundingBank.id === bank.id || depositCurrency !== 'USD')) return downstreamError('经本人银行同行入金须使用券商已公布的同银行USD收款账户；当前银行与渠道不匹配。');
@@ -1232,6 +1235,21 @@
       if (!positive(entryPrice)) return downstreamError(bank.name + '缺少' + currency + '换USD的成交报价。');
       const transfer = () => {
         const charge = own('depositHkd', isSelectedBank);
+        if (wiseFunding) {
+          // One funding action after the mainland remittances have arrived.
+          // These reported fees cover each whole leg, replacing direct-wire
+          // tariffs. USD is retained throughout both transfers.
+          const onward = own('depositOtherCny', isSelectedBank);
+          add('depositBank', bank.name + ' USD → 本人Wise', (charge ?? wiseFunding.bankToWiseHkd) * refs.HKD, 'deposit');
+          Object.assign(rows[rows.length - 1], { nativeCurrency: 'HKD', sources: wiseFunding.sources,
+            ...(charge == null ? { estimate: wiseFunding.evidence } : { evidence: '本人报价：香港银行 → Wise整段费用' }) });
+          steps.wiseUsd = balance;
+          add('depositOther', '本人Wise USD → ' + provider.name, onward ?? wiseFunding.wiseToIbkrHkd * refs.HKD, 'deposit');
+          Object.assign(rows[rows.length - 1], { nativeCurrency: 'HKD', sources: wiseFunding.sources,
+            ...(onward == null ? { estimate: wiseFunding.evidence } : { evidence: '本人报价：Wise → IBKR整段费用' }) });
+          add('depositBroker', provider.name + '入金费', knownFee(provider.depositUsd) ? provider.depositUsd * refs.USD : null, 'deposit');
+          return;
+        }
         const transferMethod = fundingBank || corporateReceivingBank ? 'chats' : depositMethod;
         const receivingBank = settlementBank || fundingBank;
         const swift = !internalDeposit && transferMethod === 'swift' ? nextSwift(bank, config.date, provider.swiftDestination || 'overseas', depositCurrency) : null;
@@ -1596,6 +1614,7 @@
       if (swiftGo) requirements.push('仅适用兴业App为该收款账户提供SWIFT GO的交易；50元/笔涵盖境外行费用。普通电汇不适用此报价。');
       if (bocMobile) requirements.push(data.bocMobileEvidence.note);
       if (paymentConnect) requirements.push(data.paymentConnect.condition, ...(paymentWaived ? [data.paymentConnect.waiverEvidence] : []));
+      if (wiseFunding) requirements.push(wiseFunding.condition, wiseFunding.evidence);
       if (returnMethod === 'linked') requirements.push('回款须已登记' + returning.name + '两地同名专用转账');
       if (bank.thresholdHkd && accountItems[0].cny > 0) requirements.push(bank.name + '尚未确认免月费资格，已按标准月费计入');
       if (currency === 'CNH') requirements.push('人民币跨境汇款须符合实际用途及银行准入；不能套用香港居民安排');
@@ -1639,7 +1658,7 @@
         missing: [...new Set(preciseMissing)], complete: !preciseMissing.length, requiredEligibility, eligibilityReasons, requirements: [...new Set([...requirements, ...eligibilityReasons])],
         refs, referenceQuote, benchmarks, pricingBasis: config.pricingBasis, costCny, fxCny, fxImpactCny, explicitCny: costCny - fxCny, extraCny, brokerFx: brokerFxResult,
         quotedCore: !indicativeEntryFx && !unverifiedService && !indicativeBrokerExit && !indicativeReturnFx && !indicativeFx && !indicativeExit && !exitIssue && sourceFresh && exitFresh && marketFresh && referenceFresh && !unknownSender && !unpriced.some(row => ['depositBank', 'entryInward', 'returnWire', 'account'].includes(row.key)),
-        rankable: !indicativeEntryFx && !unverifiedService && !indicativeBrokerExit && !(reportedMobile && senderOverride == null) && !paymentConnect && !indicativeReturnFx && !indicativeFx && !indicativeExit && !exitIssue && sourceFresh && exitFresh && marketFresh && referenceFresh && !unknownSender && !unpriced.some(row => ['depositBank', 'entryInward', 'returnInward', 'returnWire', 'account'].includes(row.key)) };
+        rankable: !indicativeEntryFx && !unverifiedService && !indicativeBrokerExit && !(reportedMobile && senderOverride == null) && !paymentConnect && !wiseFunding && !indicativeReturnFx && !indicativeFx && !indicativeExit && !exitIssue && sourceFresh && exitFresh && marketFresh && referenceFresh && !unknownSender && !unpriced.some(row => ['depositBank', 'entryInward', 'returnInward', 'returnWire', 'account'].includes(row.key)) };
     }
     // The interactive calculator evaluates the selected route, not thousands
     // of incomplete counterfactuals presented as recommendations.
@@ -1858,6 +1877,7 @@
       ...(currency === 'USD' ? ['chats', ...corporateBanks.slice(1).map(id => 'chats-' + id), ...fundingBanks.map(id => 'via-' + id), ...swiftMethods] : [...['fps', 'edda'].filter(channel => broker?.depositCurrencies?.[channel]?.includes(currency)), ...swiftMethods])
     ];
     const returnMethods = ['swift'];
+    if (currency === data.wiseFunding?.currency && data.wiseFunding.brokers.includes(broker?.id)) depositMethods.push('wise');
     if (returning?.id === 'bochk' && exit?.group === 'boc') returnMethods.unshift('bochk-fast');
     if (returning?.id === 'icbc-asia' && exit?.group === 'icbc') returnMethods.unshift('icbc-express');
     if (['hsbc', 'hang', 'sc'].includes(returning?.id) && returning.group === exit?.group) returnMethods.unshift('linked');
@@ -1957,6 +1977,9 @@
         const channels = calculatorChannels(route, data), depositMethods = channels.depositMethods;
         const returnMethods = profile.outcome === 'mainland' ? channels.returnMethods : [''];
         for (const depositMethod of depositMethods) for (const returnMethod of returnMethods) {
+          // The user-reported Wise fee scenario is selectable in the fixed
+          // catalogue, not evidence of a universally cheapest bank tariff.
+          if (depositMethod === 'wise') continue;
           const result = run({ ...route, depositMethod, returnMethod }), r = result.selected;
           if (!r?.complete || !r.quotedCore || !r.rows.every(x => Number.isFinite(x.cny))) continue;
           complete++;

@@ -107,6 +107,14 @@
       "bytes": 16764,
       "contentType": "image/png",
       "checkedAt": "2026-10-19"
+    },
+    {
+      "file": "wise.png",
+      "asset": "https://wise.com/public-resources/assets/icons/wise-personal/android_chrome_192x192.png",
+      "source": "https://wise.com/",
+      "bytes": 1237,
+      "contentType": "image/png",
+      "checkedAt": "2026-10-22"
     }
   ]
 }

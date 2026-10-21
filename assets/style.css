@@ -864,6 +864,7 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .flow-preset-node .flow-account-icon,.flow-preset-node .flow-account-icon img{width:22px;height:22px}
 .flow-preset-price{display:grid;grid-template-columns:48px 78px 112px;align-items:center;gap:8px;min-width:0;margin:0;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
 .flow-preset-price b{font-size:22px;line-height:30px;text-align:center}.flow-preset-price small{font-size:12px;line-height:18px;margin:0}.flow-preset-price small:first-child{text-align:left}
+.flow-preset-node>span:last-child{min-width:0}.flow-preset-node small{display:block;font-size:12px;line-height:18px;color:var(--muted);font-weight:400}.flow-preset-quote{min-width:0}.flow-preset-quote>.flow-preset-missing,.flow-preset-quote>.flow-preset-note{display:block;white-space:normal;font-size:12px;line-height:18px;margin-top:4px;text-align:left}.flow-preset-missing{color:#946432}.flow-preset-note{color:var(--muted)}
 .flow-summary-card{position:sticky;top:auto;bottom:12px;z-index:5;margin:12px 0 0;background:#263b32;border:1px solid #263b32;border-radius:9px;color:#fff;box-shadow:0 3px 12px #243c2314}
 .flow-result{display:grid;grid-template-columns:1.15fr .85fr 1.4fr auto;align-items:center;gap:16px;padding:13px 20px}
 .flow-result>div>span,.flow-result>div>small{color:#d0ddd2;font-size:12px;line-height:18px}.flow-result>div>small{margin-top:2px}
