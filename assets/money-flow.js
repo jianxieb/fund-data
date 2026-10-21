@@ -55,7 +55,7 @@
   if (repairStoredEntry) {
     state.mainlandMethod = 'swift'; state.senderFeeCny = ''; state.entryMiddleCny = ''; state.entryInwardHkd = '';
   }
-  if (state.route !== 'USD' && state.broker !== 'ibkr') state.fxMode = 'bank';
+  if (state.route !== 'USD' && !M.supportsBrokerFx(state.broker)) state.fxMode = 'bank';
   const usdFunding = D.brokers.find(broker => broker.id === state.broker)?.usdDepositMethods;
   const repairUsFunding = usdFunding && !usdFunding.includes(state.depositMethod);
   if (repairUsFunding) { state.depositMethod = usdFunding[0]; state.depositHkd = ''; state.depositOtherCny = ''; }
@@ -117,7 +117,7 @@
     hkCard: { bochk: ['bochkCard'], hsbc: ['hsbcCard'], za: ['zaCard'], hang: ['hangCard'], sc: ['scCard'], 'icbc-asia': ['icbcAsiaCard', 'icbcAsiaAccountTerms'] },
     brokerTrade: { 'ibkr-lite': ['ibStocks', 'ibLite'], ibkr: ['ibStocks'], hsbc: ['hsbcUsTariff'], za: ['zaStocks', 'zaStockUnits', 'zaCustody'], chief: ['chiefStocks'], usmart: ['usmartFees', 'usmartStockUnits'], firstrade: ['firstradePricing', 'firstradeFractions'], schwab: ['schwabPricing', 'schwabGuide', 'schwabFractions'] },
     brokerOffers: { hsbc: ['trade25', 'trade25Age', 'trade25One'], za: ['zaStockService', 'zaPerks'], chief: ['chiefMonthly', 'chiefMonthlyTerms'], usmart: ['usmartPromo'] },
-    brokerFunding: { 'ibkr-lite': ['ibFundingUs', 'ibFunding', 'ibLite'], ibkr: ['ibDeposits', 'ibFunding'], hsbc: ['hsbcStocks'], za: ['zaStockService'], chief: ['chiefFunding'], usmart: ['usmartFundingAccounts', 'usmartSameFunding'], firstrade: ['firstradeWire'], schwab: ['schwabWire', 'schwabGuide'] },
+    brokerFunding: { 'ibkr-lite': ['ibFundingUs', 'ibFunding', 'ibLite', 'ibConversion', 'ibCnhDeposits'], ibkr: ['ibDeposits', 'ibFunding'], hsbc: ['hsbcStocks'], za: ['zaStockService'], chief: ['chiefFunding'], usmart: ['usmartFundingAccounts', 'usmartSameFunding'], firstrade: ['firstradeWire'], schwab: ['schwabWire', 'schwabGuide'] },
     brokerWithdrawal: { 'ibkr-lite': ['ibFees'], ibkr: ['ibFees'], hsbc: ['hsbcStocks'], za: ['zaStockService'], chief: ['chiefFunding'], usmart: ['usmartWithdrawal'], firstrade: ['firstradeWireFees'], schwab: ['schwabGuide'] }
   };
   const evidenceFor = (kind, account) => evidenceSources[kind]?.[account?.id] || (account?.id === 'ccb-asia' ?
@@ -362,7 +362,7 @@
   const transferKeys = ['entryFx', 'sender', 'entryMiddle', 'entryInward'];
   const fundingKeys = ['depositBank', 'depositOther', 'depositBroker', 'brokerSpread', 'brokerFx'];
   const tradingKeys = ['trade', 'brokerAccount'];
-  const autoFxAtPurchase = r => (r?.broker?.id || state.broker) === 'ibkr' && (r?.route || state.route) !== 'USD' && (r?.fxMode || state.fxMode) === 'auto';
+  const autoFxAtPurchase = r => M.supportsBrokerFx(r?.broker?.id || state.broker) && (r?.route || state.route) !== 'USD' && (r?.fxMode || state.fxMode) === 'auto';
   const fundingRowKeys = r => autoFxAtPurchase(r) ? fundingKeys.filter(key => !['brokerSpread', 'brokerFx'].includes(key)) : fundingKeys;
   const tradingRowKeys = r => autoFxAtPurchase(r) ? [...tradingKeys, 'brokerSpread', 'brokerFx'] : tradingKeys;
   const withdrawKeys = ['brokerExitCommission', 'brokerExitFx', 'withdraw', 'returnInward', 'withdrawMiddle'];
@@ -521,7 +521,7 @@
     if (s.bank.cnhAccountRequiresHkid && state.route === 'CNH') accountOptions += checkbox(s.bank.cnhAccountField, '持香港身份证，已开通' + shortName(s.bank) + '人民币账户');
     if (data.error && r?.errorStage === '02') accountOptions += '<p class="flow-error" role="status">' + esc(data.error) + '</p>';
     html += node('02', 'bank', '香港收款银行', s.bank, nodeBalance(r, steps.hongKong, state.route, '汇款到账', transferKeys), accountOptions);
-    const fxControl = state.route === 'USD' ? '' : select('fxMode', '换美元地点', [...(s.broker.id === 'ibkr' ? [['manual', 'IBKR手动换汇'], ['auto', 'IBKR现金账户自动换汇']] : []), ['bank', shortName(s.bank) + '换汇']]);
+    const fxControl = state.route === 'USD' ? '' : select('fxMode', '换美元地点', [...(M.supportsBrokerFx(s.broker.id) ? [['manual', 'IBKR手动换汇'], ['auto', 'IBKR现金账户自动换汇']] : []), ['bank', shortName(s.bank) + '换汇']]);
     const fundingPath = row(r, 'brokerSpread')?.path;
     const fundingBank = r?.fundingBank || M.calculatorFundingBank(state, D);
     const fundingTitle = (state.route === 'USD' ? '' : state.fxMode === 'bank' ? (fundingPath ? '人民币 → 港币 → 美元' : '换成美元') + ' → ' : '') +
@@ -820,7 +820,8 @@
     if (key === 'returnBank' && next.outcome === 'cnh-card') next.exitPrice = '';
     if (key === 'broker') {
       next.useVoucher = false; next.voucherScope = value === 'za' ? 'platform' : 'commission';
-      if (value !== 'ibkr') { next.withdrawCurrency = 'USD'; if (next.route !== 'USD') next.fxMode = 'bank'; }
+      if (value !== 'ibkr') next.withdrawCurrency = 'USD';
+      if (!M.supportsBrokerFx(value) && next.route !== 'USD') next.fxMode = 'bank';
       const provider = D.brokers.find(b => b.id === value);
       if (provider.withdrawalMethod !== 'wire' || provider.integratedBank) next.withdrawDestination = 'hong-kong';
     }

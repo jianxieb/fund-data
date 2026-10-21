@@ -988,13 +988,19 @@ test('all trading accounts retain fees for USD, HKD and CNH without inventing ba
       const ledger = M.diagramLedger(row);
       assert.equal(ledger.legs.length, 5);
       close(row.net + row.costCny + row.taxCny, row.budgetCny + row.fxImpactCny);
-      if (route !== 'USD' && row.broker.id !== 'ibkr') {
+      if (route !== 'USD' && !['ibkr', 'ibkr-lite'].includes(row.broker.id)) {
         assert.match(row.indicativeFx, /成交价（暂按参考中间价）/);
         assert.equal(row.rows.find(r => r.key === 'brokerSpread').cny, null);
         assert.equal(row.quotedCore, false); assert.equal(row.rankable, false);
         close(row.rows.find(r => r.key === 'brokerFx').cny, 0);
         assert.equal(ledger.legs[1].indicative, true);
         assert.ok(row.missing.some(text => text.includes(row.bank.name) && text.includes(route)));
+      } else if (route !== 'USD' && row.broker.id === 'ibkr-lite') {
+        assert.equal(row.fxMode, 'manual');
+        assert.equal(row.depositMethod, 'swift');
+        assert.ok(row.rows.find(r => r.key === 'brokerFx').cny > 0);
+        assert.equal(row.rows.find(r => r.key === 'brokerSpread').cny, null);
+        assert.ok(row.missing.some(text => text.includes('IBKR') && text.includes(route)));
       }
     }
   }

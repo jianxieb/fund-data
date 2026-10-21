@@ -443,6 +443,7 @@
     if (method === 'swift') { const v = swiftFee(bank, date, swift.config, swift.index, 'overseas', swift.currency || 'USD').hkd; return v == null ? null : v * refs.HKD; }
     return null;
   }
+  function supportsBrokerFx(id) { return id === 'ibkr' || id === 'ibkr-lite'; }
   function selectedBroker(config, data) {
     const broker = data.brokers?.find(row => row.id === (config.broker || 'ibkr')) || { ...data.broker, id: 'ibkr', withdrawalMethod: 'wire' };
     return ibkrPricing(config, broker);
@@ -450,7 +451,7 @@
   function ibkrPricing(config, broker) {
     if (broker.id !== 'ibkr' || config.ibkrPricing !== 'lite') return broker;
     return { ...broker, id: 'ibkr-lite', name: 'IBKR Lite', pricingPlan: 'lite', commission: null, fractionalCommission: null,
-      usdDepositMethods: ['swift'], depositCurrencies: {}, localUsdFunding: null,
+      usdDepositMethods: ['swift'], depositCurrencies: { swift: ['USD', 'HKD', 'CNH'] }, localUsdFunding: null,
       feeShort: '合资格美国居民 · 常规上市股免佣金；监管费另计',
       feeText: 'Lite限合资格美国居民；常规交易时段美国上市股免佣。低价股特殊订单超过月成交量10%时按0.005 USD/股或成交额1%孰低收费；非上市股、隔夜和定期投资按Fixed。',
       sources: [...new Set([...(broker.sources || []), 'ibLite'])] };
@@ -688,7 +689,7 @@
   function flowLedger(result) {
     if (!result?.steps || !result.refs) return null;
     const r = result, rates = r.refs;
-    const autoFxAtPurchase = r.broker?.id === 'ibkr' && r.route !== 'USD' && r.fxMode === 'auto';
+    const autoFxAtPurchase = supportsBrokerFx(r.broker?.id) && r.route !== 'USD' && r.fxMode === 'auto';
     const conversionLeg = autoFxAtPurchase ? 2 : 1;
     // RMB remains at its source value until the actual CNH conversion. The
     // calculator assigns the CNY/CNH basis difference to that conversion row.
@@ -956,7 +957,7 @@
       let cashPlan = null, indicativeBrokerExit = false;
       const cardMode = outcome === 'atm' ? cashProfile?.currency === 'HKD' ? 'hkd' : 'cnh' : mainlandCardMode(config, data, returning.id);
       const cardProfile = outcome === 'cnh-card' ? data.mainlandSpending?.[returning.id] : cashProfile;
-      if (route !== 'USD' && provider.id !== 'ibkr' && fxMode !== 'bank') return { error: provider.name + '换汇成交价未公开；请选香港银行先换USD，或内地直接换USD。' };
+      if (route !== 'USD' && !supportsBrokerFx(provider.id) && fxMode !== 'bank') return { error: provider.name + '换汇成交价未公开；请选香港银行先换USD，或内地直接换USD。' };
       const currency = route, sameGroup = start.group === bank.group;
       const isSelectedStart = config.startBank === start.id, isSelectedBank = config.bank === bank.id;
       const isSelectedReturn = (config.returnBank || config.bank) === returning.id;
@@ -1198,8 +1199,11 @@
       const depositMethod = internalDeposit ? 'internal' : settlementBank ? 'chats' : method('depositMethod', provider.usdDepositMethods?.[0] || (currency === 'USD' || fxMode === 'bank' ? 'chats' : 'fps'));
       const depositCurrency = fxMode === 'bank' ? 'USD' : currency;
       if (typeof depositMethod !== 'string') return downstreamError('保存的入金方式无效；请在入金方式中重新选择。');
-      if (provider.usdDepositMethods && (depositCurrency !== 'USD' || !provider.usdDepositMethods.includes(depositMethod)))
-        return downstreamError(provider.name + '的本页入金路线使用美国USD收款指示，须先备妥美元并通过SWIFT国际电汇；不能使用香港CHATS、FPS或eDDA。');
+      // Funding instructions restrict the transfer channel/currency, not the
+      // broker's ability to convert deposited cash (including IBKR Lite).
+      const allowedFunding = depositCurrency === 'USD' ? provider.usdDepositMethods?.includes(depositMethod) : provider.depositCurrencies?.[depositMethod]?.includes(depositCurrency);
+      if (provider.usdDepositMethods && !allowedFunding)
+        return downstreamError(provider.name + (depositCurrency === 'USD' ? '的本页美元入金路线使用美国USD收款指示，须通过SWIFT国际电汇' : '的本页' + depositCurrency + '原币入金使用本人账户生成的SWIFT电汇指示') + '；不能使用香港CHATS、FPS或eDDA。');
       const corporateReceivingBank = calculatorDepositBank({ broker: provider.id, bank: bank.id, depositMethod }, data);
       if (typeof requestedDepositMethod === 'string' && requestedDepositMethod.startsWith('via-') && (!fundingBank || fundingBank.id === bank.id || depositCurrency !== 'USD')) return downstreamError('经本人银行同行入金须使用券商已公布的同银行USD收款账户；当前银行与渠道不匹配。');
       if (depositMethod === 'internal' && !internalDeposit) return downstreamError('同行入金须使用券商已公布的同银行收款账户；此组合可改选本地转账。');
@@ -1262,7 +1266,7 @@
       };
       const convert = () => {
         const oldBalance = balance, oldUnit = unit;
-        const autoFxAtPurchase = provider.id === 'ibkr' && currency !== 'USD' && fxMode === 'auto';
+        const autoFxAtPurchase = supportsBrokerFx(provider.id) && currency !== 'USD' && fxMode === 'auto';
         const actualAutoFxPrice = autoFxAtPurchase && ownEntryPrice != null;
         const fx = brokerFx(balance, unit, entryPrice, fxMode, data.broker, actualAutoFxPrice);
         if (!fx) return null;
@@ -1644,7 +1648,7 @@
       const bank = data.hkBanks.find(row => row.id === config.bank) || data.hkBanks.find(row => row.id === 'bochk');
       const returning = data.hkBanks.find(row => row.id === config.returnBank) || bank;
       const exit = mainland.find(row => row.id === config.exitBank) || start;
-      const route = config.route || 'USD', fxMode = route === 'USD' ? 'manual' : broker.id !== 'ibkr' ? 'bank' : config.fxMode || 'manual';
+      const route = config.route || 'USD', fxMode = route === 'USD' ? 'manual' : !supportsBrokerFx(broker.id) ? 'bank' : config.fxMode || 'manual';
       const selected = calculate(start, bank, route, fxMode, exit, returning);
       return { permission, origin: 'mainland', selected: selected.error ? undefined : selected, partial: selected.error ? selected : undefined,
         error: selected.error, selection: { start, bank, returning, exit, route, fxMode, broker }, mainland, refs, plans: [] };
@@ -1658,7 +1662,7 @@
       if (provider.integratedBank && bank.id !== provider.integratedBank) continue;
       if (route === 'CNH' && !(['hang', 'hsbc', 'sc', 'abc', 'boc'].includes(start.id))) continue;
       const returningBanks = provider.integratedBank ? [bank] : data.hkBanks;
-      const modes = route === 'USD' ? ['manual'] : [...(provider.id === 'ibkr' ? ['manual', 'auto'] : []), ...(bank.id === 'bochk' && offshore[route] ? ['bank'] : [])];
+      const modes = route === 'USD' ? ['manual'] : [...(supportsBrokerFx(provider.id) ? ['manual', 'auto'] : []), ...(bank.id === 'bochk' && offshore[route] ? ['bank'] : [])];
       const entryMethods = ['hang', 'hsbc', 'sc'].includes(start.id) && start.group === bank.group && (!start.linkedCurrencies || start.linkedCurrencies.includes(route)) ? ['linked', 'swift'] :
         ['swift', ...(start.id === 'boc' && route !== 'CNH' ? [bank.id === 'bochk' ? 'boc-mobile' : 'boc-online'] : []), ...(route === 'USD' && start.fullAmountUsd != null ? ['full'] : [])];
       for (const returning of returningBanks) for (const fxMode of modes) for (const exit of fresh) for (const mainlandMethod of entryMethods) {
@@ -1706,7 +1710,7 @@
       start: mainland.map(row => ({ start: row, ...calculate(row, bank, route, fxMode, exit, returning, { mainlandMethod: row.id === start.id ? selected.mainlandMethod : '' }, activeBroker) })),
       bank: data.hkBanks.filter(row => !row.returnOnly).map(row => ({ bank: row, ...calculate(start, row, route, fxMode, exit, returning, { mainlandMethod: row.id === bank.id ? selected.mainlandMethod : '', depositMethod: row.id === bank.id ? selected.depositMethod : activeBroker.usdDepositMethods?.[0] || (route === 'USD' || fxMode === 'bank' ? 'chats' : 'fps') }, activeBroker) })),
       route: ['USD', 'HKD', 'CNH'].map(value => {
-        const mode = value === 'USD' ? 'manual' : activeBroker.id !== 'ibkr' ? 'bank' : route === 'USD' ? 'manual' : fxMode;
+        const mode = value === 'USD' ? 'manual' : !supportsBrokerFx(activeBroker.id) ? 'bank' : route === 'USD' ? 'manual' : fxMode;
         const methods = activeBroker.usdDepositMethods || (value === 'USD' || mode === 'bank' ? ['chats', 'swift'] : ['fps', 'edda', 'swift']);
         const deposit = methods.includes(selected.depositMethod) ? selected.depositMethod : methods[0];
         const entry = (selected.mainlandMethod === 'full' && value !== 'USD') || (['boc-mobile', 'boc-online'].includes(selected.mainlandMethod) && value === 'CNH') || (selected.mainlandMethod === 'payment-connect' && value === 'USD') || (selected.mainlandMethod === 'linked' && start.linkedCurrencies && !start.linkedCurrencies.includes(value)) ? '' : selected.mainlandMethod;
@@ -1717,7 +1721,7 @@
       broker: (data.brokers || [broker]).map(provider => {
         const entryBank = bank;
         const returnBank = returning;
-        const mode = route !== 'USD' && provider.id !== 'ibkr' ? 'bank' : fxMode;
+        const mode = route !== 'USD' && !supportsBrokerFx(provider.id) ? 'bank' : fxMode;
         return { broker: provider, ...calculate(start, entryBank, route, mode, exit, returnBank, { mainlandMethod: entryBank.id === bank.id ? selected.mainlandMethod : '', depositMethod: provider.id === activeBroker.id ? selected.depositMethod : '', returnMethod: returnBank.id === returning.id ? selected.returnMethod : '' }, provider) };
       })
     };
@@ -1795,7 +1799,7 @@
       paired && s.startBank === 'boc' && s.route !== 'CNH' ? 'boc-mobile' :
       s.startBank === 'boc' && !paired && s.route !== 'CNH' ? 'boc-online' :
       paired && s.startBank !== 'boc' && !(s.startBank === 'sc' && s.route === 'CNH') ? 'linked' : 'swift';
-    s.fxMode = s.route === 'USD' ? 'manual' : s.broker !== 'ibkr' ? 'bank' : s.fxMode || 'manual';
+    s.fxMode = s.route === 'USD' ? 'manual' : !supportsBrokerFx(s.broker) ? 'bank' : s.fxMode || 'manual';
     s.depositMethod ||= ['ibkr-lite', 'firstrade', 'schwab'].includes(s.broker) ? 'swift' : ['hsbc', 'za'].includes(s.broker) && s.broker === s.bank ? 'internal' :
       s.broker === 'usmart' && ['bochk', 'hsbc', 'icbc-asia'].includes(s.bank) || s.broker === 'chief' && ['bochk', 'hsbc', 'hang'].includes(s.bank) ? 'internal' :
       s.route === 'USD' || s.fxMode === 'bank' ? 'chats' : s.broker === 'chief' && s.route === 'CNH' ? 'edda' : 'fps';
@@ -1842,12 +1846,13 @@
     if (s.route === 'USD' && knownFee(start?.fullAmountUsd)) mainlandMethods.push('full');
     if (['hsbc', 'hang', 'sc'].includes(start?.id) && start.group === bank?.group && (!start.linkedCurrencies || start.linkedCurrencies.includes(s.route))) mainlandMethods.unshift('linked');
     if (data.paymentConnect?.mainlandBanks.includes(start?.id) && data.paymentConnect.hkBanks.includes(bank?.id) && data.paymentConnect.currencies.includes(s.route)) mainlandMethods.push('payment-connect');
-    const fxModes = s.route === 'USD' ? ['manual'] : broker?.id === 'ibkr' ? ['manual', 'auto', 'bank'] : ['bank'];
+    const fxModes = s.route === 'USD' ? ['manual'] : supportsBrokerFx(broker?.id) ? ['manual', 'auto', 'bank'] : ['bank'];
     const currency = s.route === 'USD' || s.fxMode === 'bank' ? 'USD' : s.route;
     const swiftMethods = localSwiftIssue(bank, currency, broker?.swiftDestination || 'overseas') ? [] : ['swift'];
     const corporateBanks = corporateDepositBanks(broker, data).filter(item => item.id !== bank?.id).map(item => item.id);
     const fundingBanks = (broker?.internalFundingBanks || []).filter(id => id !== bank?.id && data.calculator.hkBanks.includes(id));
-    const depositMethods = broker?.usdDepositMethods ? (currency === 'USD' ? broker.usdDepositMethods.filter(method => method !== 'swift' || swiftMethods.includes(method)) : []) :
+    const instructedMethods = currency === 'USD' ? broker?.usdDepositMethods : Object.keys(broker?.depositCurrencies || {}).filter(method => broker.depositCurrencies[method].includes(currency));
+    const depositMethods = broker?.usdDepositMethods ? instructedMethods.filter(method => method !== 'swift' || swiftMethods.includes(method)) :
       broker?.integratedBank ? [broker.integratedBank === bank?.id ? 'internal' : 'chats'] : [
       ...(broker?.internalFundingBanks?.includes(bank?.id) ? ['internal'] : []),
       ...(currency === 'USD' ? ['chats', ...corporateBanks.slice(1).map(id => 'chats-' + id), ...fundingBanks.map(id => 'via-' + id), ...swiftMethods] : [...['fps', 'edda'].filter(channel => broker?.depositCurrencies?.[channel]?.includes(currency)), ...swiftMethods])
@@ -1992,5 +1997,5 @@
     return result;
   }
   function catalogueBroker(id, data) { return data.calculator.brokers.includes(id) ? id : 'za'; }
-  return { mainlandCardMode, cnhCardMode, mainlandCashProfile, cashWithdrawal, calculatorRoute, calculatorChannels, calculatorFundingBank, calculatorDepositBank, calculatorIssue, calculatorJourney, calculatorRecommendations, calculatorPreferredPlans, displayedTradingFees, calculatorAccountState, calculatorAdjustmentFields, roundedCosts, number, reference, telegramAllowance, fee, remitPrincipal, senderFeeRange, inwardFee, groupMobileWaived, outwardFee, zaPerksLevel, swiftFee, localUsdChequeFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
+  return { supportsBrokerFx, mainlandCardMode, cnhCardMode, mainlandCashProfile, cashWithdrawal, calculatorRoute, calculatorChannels, calculatorFundingBank, calculatorDepositBank, calculatorIssue, calculatorJourney, calculatorRecommendations, calculatorPreferredPlans, displayedTradingFees, calculatorAccountState, calculatorAdjustmentFields, roundedCosts, number, reference, telegramAllowance, fee, remitPrincipal, senderFeeRange, inwardFee, groupMobileWaived, outwardFee, zaPerksLevel, swiftFee, localUsdChequeFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
 }));

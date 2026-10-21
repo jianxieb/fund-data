@@ -112,3 +112,64 @@ test('absent source prices keep genuinely uncomputable balances unavailable', ()
   const html = ui({ ...base, route: 'USD', depositMethod: 'chats' }, q).render();
   assert.match(section(html, '香港收款银行'), /<b>—/); assert.match(html, /现汇卖出价尚未取得/);
 });
+
+test('Lite can receive CNH/HKD by wire and convert at IBKR with manual or purchase-time FX', () => {
+  for (const route of ['CNH', 'HKD']) for (const fxMode of ['manual', 'auto']) {
+    const input = { broker: 'ibkr-lite', route, fxMode, depositMethod: 'swift' };
+    const result = run(input), r = result.selected;
+    assert.ok(r, result.error); assert.equal(r.fxMode, fxMode);
+    assert.ok(r.steps.brokerOriginal > 0); assert.ok(r.steps.fundedUsd > 0);
+    assert.equal(r.steps.hkConvertedUsd, undefined);
+    assert.equal(row(r, 'brokerSpread').cny, null);
+    assert.equal(row(r, 'depositOther').cny, null);
+    assert.equal(row(r, 'brokerFx').step, fxMode === 'auto' ? 'investment' : 'deposit');
+    if (fxMode === 'manual') close(row(r, 'brokerFx').cny, 2 * r.refs.USD);
+    const channels = M.calculatorChannels({ ...base, ...input }, D);
+    assert.deepEqual(channels.fxModes, ['manual', 'auto', 'bank']);
+    assert.deepEqual(channels.depositMethods, ['swift']);
+    for (const depositMethod of ['chats', 'fps', 'edda']) assert.match(run({ ...input, depositMethod }).error, /原币入金.*SWIFT/);
+    const ledger = M.flowLedger(r), brokerStop = ledger.stops.find(x => x.id === 'funding');
+    assert.equal(brokerStop.currency, fxMode === 'auto' ? route : 'USD');
+    close(r.netCny, r.budgetCny - r.costCny + r.fxImpactCny);
+  }
+});
+
+test('Lite FX picker can leave the formerly forced bank mode and persist all three modes', () => {
+  for (const route of ['CNH', 'HKD']) {
+    const subject = ui({ ...base, broker: 'ibkr-lite', route, fxMode: 'bank', depositMethod: 'swift', entryPrice: 9 });
+    subject.render();
+    subject.act('pick', '', 'fxMode');
+    for (const label of ['IBKR手动换汇', 'IBKR现金账户自动换汇', '汇丰 HSBC One换汇']) assert.ok(subject.modal().includes(label), label);
+    for (const fxMode of ['manual', 'auto', 'bank']) {
+      subject.act('choose', 'fxMode', fxMode);
+      let html = subject.render();
+      assert.equal(subject.saved().fxMode, fxMode); assert.equal(subject.saved().entryPrice, '');
+      assert.equal(subject.saved().bank, 'hsbc'); assert.equal(subject.saved().startBank, 'cib');
+      assert.equal(subject.result().selected.fxMode, fxMode);
+      const reopened = ui(subject.saved()); html = reopened.render();
+      assert.equal(reopened.result().selected.fxMode, fxMode);
+      const node = section(html, '买美股的账户');
+      assert.match(node, /<b class="num">[\d,.]+/); assert.doesNotMatch(node, /<b>—/);
+      if (fxMode === 'auto') assert.match(node, new RegExp(route));
+      if (fxMode === 'manual') assert.match(node, /参考汇率估算 · 缺换汇成交价/);
+    }
+    subject.act('choose', 'fxMode', 'auto'); subject.render();
+    for (const broker of ['ibkr', 'ibkr-lite']) {
+      subject.act('choose', 'broker', broker); subject.render();
+      assert.equal(subject.saved().fxMode, 'auto'); assert.equal(subject.saved().bank, 'hsbc');
+      assert.equal(subject.result().selected.fxMode, 'auto');
+    }
+  }
+});
+
+test('legacy Lite preserves broker conversion while USD-only venues remain bank-conversion routes', () => {
+  for (const fxMode of ['manual', 'auto']) {
+    const subject = ui({ ...base, ibkrPricing: 'lite', fxMode }); subject.render();
+    assert.equal(subject.saved().broker, 'ibkr-lite'); assert.equal(subject.saved().fxMode, fxMode);
+    assert.equal(subject.saved().depositMethod, 'swift'); assert.equal(subject.result().selected.fxMode, fxMode);
+  }
+  for (const broker of ['firstrade', 'schwab']) {
+    const r = run({ broker, fxMode: 'manual', depositMethod: '' }).selected;
+    assert.equal(r.fxMode, 'bank'); assert.ok(r.steps.hkConvertedUsd > 0);
+  }
+});

@@ -1,0 +1,828 @@
+CNH manual conversion
+
+Browser tab: 5, Title: "长衡 · 跨境资金", URL: "http://127.0.0.1:8766/#money-flow".
+1 AXWebArea 长衡 · 跨境资金, URL: 127.0.0.1:8766/#money-flow
+	2 link Description: 跳转到主要内容, Value: 127.0.0.1:8766/#main
+	3 container
+		4 link Description: 长衡首页, Value: 127.0.0.1:8766/#overview
+		5 container 主导航
+			6 link Description: 研究总览, Value: 127.0.0.1:8766/#overview
+			7 text 研究对象
+			8 link Description: 指数观察, Value: 127.0.0.1:8766/#indices
+			9 link Description: 历史分位, Value: 127.0.0.1:8766/#market-history
+			10 link Description: 基金研究, Value: 127.0.0.1:8766/#funds
+			11 link Description: 个股深入, Value: 127.0.0.1:8766/#stocks
+			12 text 全球金融
+			13 link Description: 金融传导, Value: 127.0.0.1:8766/#global-finance
+			14 link Description: 历史事件, Value: 127.0.0.1:8766/#financial-events
+			15 text 研究方法
+			16 link Description: 持有期研究, Value: 127.0.0.1:8766/#holding-period
+			17 link Description: 投入策略, Value: 127.0.0.1:8766/#strategy
+			18 link Description: 投资渠道, Value: 127.0.0.1:8766/#buy-location
+			19 link Description: 跨境资金, Value: 127.0.0.1:8766/#money-flow
+			20 text 组合研究
+			21 link Description: 收益对比, Value: 127.0.0.1:8766/#return-comparison
+			22 link Description: 组合模拟, Value: 127.0.0.1:8766/#portfolio
+		23 link Description: 数据与方法, Value: 127.0.0.1:8766/#quality
+		24 text 理解市场，检验方案。
+		25 text 资产 · 风险 · 成本
+	26 container
+		27 container breadcrumb
+			28 text 研究方法
+			29 text 跨境资金
+		30 link Description: 数据状态 ↗, Value: 127.0.0.1:8766/#quality
+	31 container main
+		32 text CROSS-BORDER MONEY
+		33 heading 跨境资金, Value: 1
+			34 text 跨境资金
+		35 container flow-live-toolbar
+			36 heading 优选方案, Value: 2
+				37 text 优选方案
+			38 button 报价与依据
+			39 button 重置
+			40 container 优选方案
+				41 checkbox Description: 优选方案：兴业寰宇人生 → 汇丰Trade25, Value: 0
+					42 image 兴业 · 寰宇人生标识
+					43 text 兴业寰宇人生
+					44 image 汇丰 HSBC One标识
+					45 text 汇丰香港
+					46 image 汇丰证券标识
+					47 text 汇丰Trade25
+					48 image 汇丰 HSBC One标识
+					49 text 汇丰香港美元
+					50 text 参考损耗
+					51 text 0.102%
+					52 text 102.26 CNY / 10万元
+				53 checkbox Description: 优选方案：兴业寰宇人生 → ZA, Value: 0
+					54 image 兴业 · 寰宇人生标识
+					55 text 兴业寰宇人生
+					56 image 汇丰 HSBC One标识
+					57 text 汇丰香港
+					58 image ZA Bank标识
+					59 text ZA
+					60 image 汇丰 HSBC One标识
+					61 text 汇丰香港美元
+					62 text 参考损耗
+					63 text 0.129%
+					64 text 128.85 CNY / 10万元
+				65 checkbox Description: 优选方案：中行 → 中银香港 → IBKR, Value: 0
+					66 image 中国银行标识
+					67 text 中行
+					68 image 中银香港标识
+					69 text 中银香港
+					70 image IBKR Pro标识
+					71 text IBKR Pro
+					72 image IBKR Pro标识
+					73 text 账户内留美元
+					74 text 参考损耗
+					75 text 0.225%
+					76 text 225.31 CNY / 10万元
+		77 container 完整资金流
+			78 container 内地出发银行
+				79 text 01 内地出发银行
+				80 pop up button 内地出发银行：兴业 · 寰宇人生，更换
+					81 image 兴业 · 寰宇人生标识
+					82 text 兴业寰宇人生
+				83 text 人民币本金
+				84 pop up button 修改人民币本金
+				85 container
+					86 text 100,000.00  CNY
+				87 text 汇出币种
+				88 container 汇出币种
+					89 checkbox 人民币原币, Value: 1
+					90 checkbox 美元, Value: 0
+					91 checkbox 港币, Value: 0
+				92 text 笔数
+				93 pop up button 汇出笔数：1笔
+				94 text 渠道
+				95 pop up button 汇款渠道：跨境支付通
+				96 container
+					97 checkbox (settable, integer) Description: 已享跨境支付通手续费豁免, Value: 1
+					98 text 已享跨境支付通手续费豁免
+			99 container 汇往香港
+				100 text 参考损耗
+				101 text 0.000%
+				102 text 0.00 CNY
+				103 heading 汇往香港, Value: 3
+					104 text 汇往香港
+				105 button 汇往香港收费明细与依据
+				106 text 单笔／每日可用限额尚未核实；免费与否按上方豁免条件测算。
+				107 text 跨境支付通本次汇出服务费
+				108 text 0.00 CNY
+				109 text 代理费 0.00 CNY 香港汇入
+				110 text 0.00 CNY
+			111 container 香港收款银行
+				112 text 02 香港收款银行
+				113 pop up button 香港收款银行：汇丰 HSBC One，更换
+					114 image 汇丰 HSBC One标识
+					115 text 汇丰 HSBC One
+				116 text 汇款到账
+				117 container
+					118 text 100,000.00  CNH
+				119 text 累计损耗 0.000%
+				120 container
+					121 text 账户使用月数
+					122 text field (settable) Description: 账户使用月数, Value: 12
+					123 text 月
+				124 text 银行管理费
+				125 text 0.00 CNY
+				126 container
+					127 checkbox (settable, integer) Description: HSBC One本持有期均免管理费, Value: 1
+					128 text 满足豁免
+				129 pop up button HSBC One豁免条件：三个月平均理财总值至少10,000 HKD或适用开户豁免
+			130 container 转入IBKR → 换成美元
+				131 text 已计费用占本金 · 含估算
+				132 text 0.073%
+				133 text 72.94 CNY
+				134 heading 转入IBKR → 换成美元, Value: 3
+					135 text 转入IBKR → 换成美元
+				136 button 转入IBKR → 换成美元收费明细与依据
+				137 text 换美元地点
+				138 pop up button 换美元地点：IBKR手动换汇
+				139 text 入金方式 外币电汇 · SWIFT 银行转账
+				140 text 59.58 CNY
+				141 text 代理／收款费 此汇路代理／收款行收费未公开 入金费
+				142 text 0.00 CNY
+				143 text 换汇佣金
+				144 text 参考 13.36 CNY
+				145 text 换汇差额 IBKR CNH/USD成交价尚未取得
+			146 container 买美股的账户
+				147 text 03 买美股的账户
+				148 pop up button 买美股的账户：IBKR Lite，更换
+					149 image IBKR Lite标识
+					150 text IBKR Lite
+				151 text 入金参考金额（费用未齐）
+				152 container
+					153 text 14,974.16  USD
+				154 text 参考汇率估算 · 缺换汇成交价
+				155 text 累计已计损耗 0.073%
+				156 text 买卖设置
+				157 button 买1笔 · 卖1笔
+				158 text 优惠与费用券
+				159 button 设置优惠
+				160 text 买入均价
+				161 button 100 USD/股
+				162 text 账户方案
+				163 text Lite · 合资格美国居民
+			164 container 买入美股 → 卖出
+				165 text 参考损耗
+				166 text 0.002%
+				167 text 2.07 CNY
+				168 heading 买入美股 → 卖出, Value: 3
+					169 text 买入美股 → 卖出
+				170 button 盈亏 0.00 USD
+				171 button 买入美股 → 卖出收费明细与依据
+				172 text 尚缺换汇成交价，交易金额按参考汇率估算
+				173 text 买入费用
+				174 text 参考 0.00 CNY
+				175 text 卖出费用
+				176 text 参考 2.07 CNY
+				177 text 证券托管
+				178 text 0.00 CNY
+			179 container 卖出后的资金
+				180 container
+					181 text 04 资金所在账户
+					182 pop up button 资金所在账户：IBKR Lite，更换
+						183 image IBKR Lite标识
+						184 text IBKR Lite
+					185 text 参考最终余额（费用未齐） 14,973.85  USD 参考汇率估算 · 缺换汇成交价 累计已计损耗 0.075% 资金用途
+					186 pop up button 资金用途：留在买股账户
+		187 container flow-live-summary
+			188 text 已计费用占本金 · 含估算
+			189 text 0.075%
+			190 text 75.01 CNY
+			191 text 总损耗尚缺：入金代理／收款行费、IBKR CNH/USD实时成交点差
+			192 text 其中账户期间费 0.00 CNY
+			193 text 已计入合计
+			194 text 参考最终余额（费用未齐） 14,973.85  USD
+			195 button 全程明细
+		196 button 实际成交报价与费用
+		197 text 便利化购汇不得用于境外证券投资；本页为费用测算。
+		198 button 适用条件
+	199 container
+		200 text 长衡 · 全球投资研究工作台
+		201 link Description: 数据来源与研究方法, Value: 127.0.0.1:8766/#quality
+
+The focused UI element is 138 pop up button 换美元地点：IBKR手动换汇
+
+CNH AutoFX
+
+Browser tab: 5, Title: "长衡 · 跨境资金", URL: "http://127.0.0.1:8766/#money-flow".
+0 AXWebArea 长衡 · 跨境资金, URL: 127.0.0.1:8766/#money-flow
+	1 link Description: 跳转到主要内容, Value: 127.0.0.1:8766/#main
+	2 container
+		3 link Description: 长衡首页, Value: 127.0.0.1:8766/#overview
+		4 container 主导航
+			5 link Description: 研究总览, Value: 127.0.0.1:8766/#overview
+			6 text 研究对象
+			7 link Description: 指数观察, Value: 127.0.0.1:8766/#indices
+			8 link Description: 历史分位, Value: 127.0.0.1:8766/#market-history
+			9 link Description: 基金研究, Value: 127.0.0.1:8766/#funds
+			10 link Description: 个股深入, Value: 127.0.0.1:8766/#stocks
+			11 text 全球金融
+			12 link Description: 金融传导, Value: 127.0.0.1:8766/#global-finance
+			13 link Description: 历史事件, Value: 127.0.0.1:8766/#financial-events
+			14 text 研究方法
+			15 link Description: 持有期研究, Value: 127.0.0.1:8766/#holding-period
+			16 link Description: 投入策略, Value: 127.0.0.1:8766/#strategy
+			17 link Description: 投资渠道, Value: 127.0.0.1:8766/#buy-location
+			18 link Description: 跨境资金, Value: 127.0.0.1:8766/#money-flow
+			19 text 组合研究
+			20 link Description: 收益对比, Value: 127.0.0.1:8766/#return-comparison
+			21 link Description: 组合模拟, Value: 127.0.0.1:8766/#portfolio
+		22 link Description: 数据与方法, Value: 127.0.0.1:8766/#quality
+		23 text 理解市场，检验方案。
+		24 text 资产 · 风险 · 成本
+	25 container
+		26 container breadcrumb
+			27 text 研究方法
+			28 text 跨境资金
+		29 link Description: 数据状态 ↗, Value: 127.0.0.1:8766/#quality
+	30 container main
+		31 text CROSS-BORDER MONEY
+		32 heading 跨境资金, Value: 1
+			33 text 跨境资金
+		34 container flow-live-toolbar
+			35 heading 优选方案, Value: 2
+				36 text 优选方案
+			37 button 报价与依据
+			38 button 重置
+			39 container 优选方案
+				40 checkbox Description: 优选方案：兴业寰宇人生 → 汇丰Trade25, Value: 0
+					41 image 兴业 · 寰宇人生标识
+					42 text 兴业寰宇人生
+					43 image 汇丰 HSBC One标识
+					44 text 汇丰香港
+					45 image 汇丰证券标识
+					46 text 汇丰Trade25
+					47 image 汇丰 HSBC One标识
+					48 text 汇丰香港美元
+					49 text 参考损耗
+					50 text 0.102%
+					51 text 102.26 CNY / 10万元
+				52 checkbox Description: 优选方案：兴业寰宇人生 → ZA, Value: 0
+					53 image 兴业 · 寰宇人生标识
+					54 text 兴业寰宇人生
+					55 image 汇丰 HSBC One标识
+					56 text 汇丰香港
+					57 image ZA Bank标识
+					58 text ZA
+					59 image 汇丰 HSBC One标识
+					60 text 汇丰香港美元
+					61 text 参考损耗
+					62 text 0.129%
+					63 text 128.85 CNY / 10万元
+				64 checkbox Description: 优选方案：中行 → 中银香港 → IBKR, Value: 0
+					65 image 中国银行标识
+					66 text 中行
+					67 image 中银香港标识
+					68 text 中银香港
+					69 image IBKR Pro标识
+					70 text IBKR Pro
+					71 image IBKR Pro标识
+					72 text 账户内留美元
+					73 text 参考损耗
+					74 text 0.225%
+					75 text 225.31 CNY / 10万元
+		76 container 完整资金流
+			77 container 内地出发银行
+				78 text 01 内地出发银行
+				79 pop up button 内地出发银行：兴业 · 寰宇人生，更换
+					80 image 兴业 · 寰宇人生标识
+					81 text 兴业寰宇人生
+				82 text 人民币本金
+				83 pop up button 修改人民币本金
+				84 container
+					85 text 100,000.00  CNY
+				86 text 汇出币种
+				87 container 汇出币种
+					88 checkbox 人民币原币, Value: 1
+					89 checkbox 美元, Value: 0
+					90 checkbox 港币, Value: 0
+				91 text 笔数
+				92 pop up button 汇出笔数：1笔
+				93 text 渠道
+				94 pop up button 汇款渠道：跨境支付通
+				95 container
+					96 checkbox (settable, integer) Description: 已享跨境支付通手续费豁免, Value: 1
+					97 text 已享跨境支付通手续费豁免
+			98 container 汇往香港
+				99 text 参考损耗
+				100 text 0.000%
+				101 text 0.00 CNY
+				102 heading 汇往香港, Value: 3
+					103 text 汇往香港
+				104 button 汇往香港收费明细与依据
+				105 text 单笔／每日可用限额尚未核实；免费与否按上方豁免条件测算。
+				106 text 跨境支付通本次汇出服务费
+				107 text 0.00 CNY
+				108 text 代理费
+				109 text 0.00 CNY
+				110 text 香港汇入
+				111 text 0.00 CNY
+			112 container 香港收款银行
+				113 text 02 香港收款银行
+				114 pop up button 香港收款银行：汇丰 HSBC One，更换
+					115 image 汇丰 HSBC One标识
+					116 text 汇丰 HSBC One
+				117 text 汇款到账
+				118 container
+					119 text 100,000.00  CNH
+				120 text 累计损耗 0.000%
+				121 container
+					122 text 账户使用月数
+					123 text field (settable) Description: 账户使用月数, Value: 12
+					124 text 月
+				125 text 银行管理费
+				126 text 0.00 CNY
+				127 container
+					128 checkbox (settable, integer) Description: HSBC One本持有期均免管理费, Value: 1
+					129 text 满足豁免
+				130 pop up button HSBC One豁免条件：三个月平均理财总值至少10,000 HKD或适用开户豁免
+			131 container CNH原币转入IBKR
+				132 text 已核费用占本金
+				133 text 0.060%
+				134 text 59.57 CNY
+				135 heading CNH原币转入IBKR, Value: 3
+					136 text CNH原币转入IBKR
+				137 button CNH原币转入IBKR收费明细与依据
+				138 text 换美元地点
+				139 pop up button 换美元地点：IBKR现金账户自动换汇
+				140 text 入金方式 外币电汇 · SWIFT 银行转账
+				141 text 59.57 CNY
+				142 text 代理／收款费 此汇路代理／收款行收费未公开 入金费
+				143 text 0.00 CNY
+			144 container 买美股的账户
+				145 text 03 买美股的账户
+				146 pop up button 买美股的账户：IBKR Lite，更换
+					147 image IBKR Lite标识
+					148 text IBKR Lite
+				149 text 入金到账（费用未齐）
+				150 container
+					151 text 99,940.49  CNH
+				152 text 累计已计损耗 0.060%
+				153 text 买卖设置
+				154 button 买1笔 · 卖1笔
+				155 text 优惠与费用券
+				156 button 设置优惠
+				157 text 买入均价
+				158 button 100 USD/股
+				159 text 账户方案
+				160 text Lite · 合资格美国居民
+			161 container 买入时自动换美元 → 买入美股 → 卖出
+				162 text 已计费用占本金 · 含估算
+				163 text 0.032%
+				164 text 32.09 CNY
+				165 heading 买入时自动换美元 → 买入美股 → 卖出, Value: 3
+					166 text 买入时自动换美元 → 买入美股 → 卖出
+				167 button 盈亏 0.00 USD
+				168 button 买入时自动换美元 → 买入美股 → 卖出收费明细与依据
+				169 text 尚缺换汇成交价，交易金额按参考汇率估算
+				170 text 买入费用
+				171 text 参考 0.00 CNY
+				172 text 卖出费用
+				173 text 参考 2.08 CNY
+				174 text 换汇佣金
+				175 text 参考 30.01 CNY
+				176 text 换汇差额 IBKR CNH/USD成交价尚未取得 证券托管
+				177 text 0.00 CNY
+			178 container 卖出后的资金
+				179 container
+					180 text 04 资金所在账户
+					181 pop up button 资金所在账户：IBKR Lite，更换
+						182 image IBKR Lite标识
+						183 text IBKR Lite
+					184 text 参考最终余额（费用未齐） 14,971.36  USD 参考汇率估算 · 缺换汇成交价 累计已计损耗 0.092% 资金用途
+					185 pop up button 资金用途：留在买股账户
+		186 container flow-live-summary
+			187 text 已计费用占本金 · 含估算
+			188 text 0.092%
+			189 text 91.66 CNY
+			190 text 总损耗尚缺：入金代理／收款行费、IBKR CNH/USD实时成交点差
+			191 text 其中账户期间费 0.00 CNY
+			192 text 已计入合计
+			193 text 参考最终余额（费用未齐） 14,971.36  USD
+			194 button 全程明细
+		195 button 实际成交报价与费用
+		196 text 便利化购汇不得用于境外证券投资；本页为费用测算。
+		197 button 适用条件
+	198 container
+		199 text 长衡 · 全球投资研究工作台
+		200 link Description: 数据来源与研究方法, Value: 127.0.0.1:8766/#quality
+
+The focused UI element is 139 pop up button 换美元地点：IBKR现金账户自动换汇
+
+Reloaded AutoFX
+
+Browser tab: 5, Title: "长衡 · 跨境资金", URL: "http://127.0.0.1:8766/#money-flow".
+1 AXWebArea 长衡 · 跨境资金, URL: 127.0.0.1:8766/#money-flow
+	2 link Description: 跳转到主要内容, Value: 127.0.0.1:8766/#main
+	3 container
+		4 link Description: 长衡首页, Value: 127.0.0.1:8766/#overview
+		5 container 主导航
+			6 link Description: 研究总览, Value: 127.0.0.1:8766/#overview
+			7 text 研究对象
+			8 link Description: 指数观察, Value: 127.0.0.1:8766/#indices
+			9 link Description: 历史分位, Value: 127.0.0.1:8766/#market-history
+			10 link Description: 基金研究, Value: 127.0.0.1:8766/#funds
+			11 link Description: 个股深入, Value: 127.0.0.1:8766/#stocks
+			12 text 全球金融
+			13 link Description: 金融传导, Value: 127.0.0.1:8766/#global-finance
+			14 link Description: 历史事件, Value: 127.0.0.1:8766/#financial-events
+			15 text 研究方法
+			16 link Description: 持有期研究, Value: 127.0.0.1:8766/#holding-period
+			17 link Description: 投入策略, Value: 127.0.0.1:8766/#strategy
+			18 link Description: 投资渠道, Value: 127.0.0.1:8766/#buy-location
+			19 link Description: 跨境资金, Value: 127.0.0.1:8766/#money-flow
+			20 text 组合研究
+			21 link Description: 收益对比, Value: 127.0.0.1:8766/#return-comparison
+			22 link Description: 组合模拟, Value: 127.0.0.1:8766/#portfolio
+		23 link Description: 数据与方法, Value: 127.0.0.1:8766/#quality
+		24 text 理解市场，检验方案。
+		25 text 资产 · 风险 · 成本
+	26 container
+		27 container breadcrumb
+			28 text 研究方法
+			29 text 跨境资金
+		30 link Description: 数据状态 ↗, Value: 127.0.0.1:8766/#quality
+	31 container main
+		32 text CROSS-BORDER MONEY
+		33 heading 跨境资金, Value: 1
+			34 text 跨境资金
+		35 container flow-live-toolbar
+			36 heading 优选方案, Value: 2
+				37 text 优选方案
+			38 button 报价与依据
+			39 button 重置
+			40 container 优选方案
+				41 checkbox Description: 优选方案：兴业寰宇人生 → 汇丰Trade25, Value: 0
+					42 image 兴业 · 寰宇人生标识
+					43 text 兴业寰宇人生
+					44 image 汇丰 HSBC One标识
+					45 text 汇丰香港
+					46 image 汇丰证券标识
+					47 text 汇丰Trade25
+					48 image 汇丰 HSBC One标识
+					49 text 汇丰香港美元
+					50 text 参考损耗
+					51 text 0.102%
+					52 text 102.26 CNY / 10万元
+				53 checkbox Description: 优选方案：兴业寰宇人生 → ZA, Value: 0
+					54 image 兴业 · 寰宇人生标识
+					55 text 兴业寰宇人生
+					56 image 汇丰 HSBC One标识
+					57 text 汇丰香港
+					58 image ZA Bank标识
+					59 text ZA
+					60 image 汇丰 HSBC One标识
+					61 text 汇丰香港美元
+					62 text 参考损耗
+					63 text 0.129%
+					64 text 128.85 CNY / 10万元
+				65 checkbox Description: 优选方案：中行 → 中银香港 → IBKR, Value: 0
+					66 image 中国银行标识
+					67 text 中行
+					68 image 中银香港标识
+					69 text 中银香港
+					70 image IBKR Pro标识
+					71 text IBKR Pro
+					72 image IBKR Pro标识
+					73 text 账户内留美元
+					74 text 参考损耗
+					75 text 0.225%
+					76 text 225.31 CNY / 10万元
+		77 container 完整资金流
+			78 container 内地出发银行
+				79 text 01 内地出发银行
+				80 pop up button 内地出发银行：兴业 · 寰宇人生，更换
+					81 image 兴业 · 寰宇人生标识
+					82 text 兴业寰宇人生
+				83 text 人民币本金
+				84 pop up button 修改人民币本金
+				85 container
+					86 text 100,000.00  CNY
+				87 text 汇出币种
+				88 container 汇出币种
+					89 checkbox 人民币原币, Value: 1
+					90 checkbox 美元, Value: 0
+					91 checkbox 港币, Value: 0
+				92 text 笔数
+				93 pop up button 汇出笔数：1笔
+				94 text 渠道
+				95 pop up button 汇款渠道：跨境支付通
+				96 container
+					97 checkbox (settable, integer) Description: 已享跨境支付通手续费豁免, Value: 1
+					98 text 已享跨境支付通手续费豁免
+			99 container 汇往香港
+				100 text 参考损耗
+				101 text 0.000%
+				102 text 0.00 CNY
+				103 heading 汇往香港, Value: 3
+					104 text 汇往香港
+				105 button 汇往香港收费明细与依据
+				106 text 单笔／每日可用限额尚未核实；免费与否按上方豁免条件测算。
+				107 text 跨境支付通本次汇出服务费
+				108 text 0.00 CNY
+				109 text 代理费
+				110 text 0.00 CNY
+				111 text 香港汇入
+				112 text 0.00 CNY
+			113 container 香港收款银行
+				114 text 02 香港收款银行
+				115 pop up button 香港收款银行：汇丰 HSBC One，更换
+					116 image 汇丰 HSBC One标识
+					117 text 汇丰 HSBC One
+				118 text 汇款到账
+				119 container
+					120 text 100,000.00  CNH
+				121 text 累计损耗 0.000%
+				122 container
+					123 text 账户使用月数
+					124 text field (settable) Description: 账户使用月数, Value: 12
+					125 text 月
+				126 text 银行管理费
+				127 text 0.00 CNY
+				128 container
+					129 checkbox (settable, integer) Description: HSBC One本持有期均免管理费, Value: 1
+					130 text 满足豁免
+				131 pop up button HSBC One豁免条件：三个月平均理财总值至少10,000 HKD或适用开户豁免
+			132 container CNH原币转入IBKR
+				133 text 已核费用占本金
+				134 text 0.060%
+				135 text 59.57 CNY
+				136 heading CNH原币转入IBKR, Value: 3
+					137 text CNH原币转入IBKR
+				138 button CNH原币转入IBKR收费明细与依据
+				139 text 换美元地点
+				140 pop up button 换美元地点：IBKR现金账户自动换汇
+				141 text 入金方式 外币电汇 · SWIFT 银行转账
+				142 text 59.57 CNY
+				143 text 代理／收款费 此汇路代理／收款行收费未公开 入金费
+				144 text 0.00 CNY
+			145 container 买美股的账户
+				146 text 03 买美股的账户
+				147 pop up button 买美股的账户：IBKR Lite，更换
+					148 image IBKR Lite标识
+					149 text IBKR Lite
+				150 text 入金到账（费用未齐）
+				151 container
+					152 text 99,940.49  CNH
+				153 text 累计已计损耗 0.060%
+				154 text 买卖设置
+				155 button 买1笔 · 卖1笔
+				156 text 优惠与费用券
+				157 button 设置优惠
+				158 text 买入均价
+				159 button 100 USD/股
+				160 text 账户方案
+				161 text Lite · 合资格美国居民
+			162 container 买入时自动换美元 → 买入美股 → 卖出
+				163 text 已计费用占本金 · 含估算
+				164 text 0.032%
+				165 text 32.09 CNY
+				166 heading 买入时自动换美元 → 买入美股 → 卖出, Value: 3
+					167 text 买入时自动换美元 → 买入美股 → 卖出
+				168 button 盈亏 0.00 USD
+				169 button 买入时自动换美元 → 买入美股 → 卖出收费明细与依据
+				170 text 尚缺换汇成交价，交易金额按参考汇率估算
+				171 text 买入费用
+				172 text 参考 0.00 CNY
+				173 text 卖出费用
+				174 text 参考 2.08 CNY
+				175 text 换汇佣金
+				176 text 参考 30.01 CNY
+				177 text 换汇差额 IBKR CNH/USD成交价尚未取得 证券托管
+				178 text 0.00 CNY
+			179 container 卖出后的资金
+				180 container
+					181 text 04 资金所在账户
+					182 pop up button 资金所在账户：IBKR Lite，更换
+						183 image IBKR Lite标识
+						184 text IBKR Lite
+					185 text 参考最终余额（费用未齐） 14,971.36  USD 参考汇率估算 · 缺换汇成交价 累计已计损耗 0.092% 资金用途
+					186 pop up button 资金用途：留在买股账户
+		187 container flow-live-summary
+			188 text 已计费用占本金 · 含估算
+			189 text 0.092%
+			190 text 91.66 CNY
+			191 text 总损耗尚缺：入金代理／收款行费、IBKR CNH/USD实时成交点差
+			192 text 其中账户期间费 0.00 CNY
+			193 text 已计入合计
+			194 text 参考最终余额（费用未齐） 14,971.36  USD
+			195 button 全程明细
+		196 button 实际成交报价与费用
+		197 text 便利化购汇不得用于境外证券投资；本页为费用测算。
+		198 button 适用条件
+	199 container
+		200 text 长衡 · 全球投资研究工作台
+		201 link Description: 数据来源与研究方法, Value: 127.0.0.1:8766/#quality
+
+The focused UI element is 1 AXWebArea 长衡 · 跨境资金, URL: 127.0.0.1:8766/#money-flow
+
+HKD AutoFX
+
+Browser tab: 5, Title: "长衡 · 跨境资金", URL: "http://127.0.0.1:8766/#money-flow".
+1 AXWebArea 长衡 · 跨境资金, URL: 127.0.0.1:8766/#money-flow
+	2 link Description: 跳转到主要内容, Value: 127.0.0.1:8766/#main
+	3 container
+		4 link Description: 长衡首页, Value: 127.0.0.1:8766/#overview
+		5 container 主导航
+			6 link Description: 研究总览, Value: 127.0.0.1:8766/#overview
+			7 text 研究对象
+			8 link Description: 指数观察, Value: 127.0.0.1:8766/#indices
+			9 link Description: 历史分位, Value: 127.0.0.1:8766/#market-history
+			10 link Description: 基金研究, Value: 127.0.0.1:8766/#funds
+			11 link Description: 个股深入, Value: 127.0.0.1:8766/#stocks
+			12 text 全球金融
+			13 link Description: 金融传导, Value: 127.0.0.1:8766/#global-finance
+			14 link Description: 历史事件, Value: 127.0.0.1:8766/#financial-events
+			15 text 研究方法
+			16 link Description: 持有期研究, Value: 127.0.0.1:8766/#holding-period
+			17 link Description: 投入策略, Value: 127.0.0.1:8766/#strategy
+			18 link Description: 投资渠道, Value: 127.0.0.1:8766/#buy-location
+			19 link Description: 跨境资金, Value: 127.0.0.1:8766/#money-flow
+			20 text 组合研究
+			21 link Description: 收益对比, Value: 127.0.0.1:8766/#return-comparison
+			22 link Description: 组合模拟, Value: 127.0.0.1:8766/#portfolio
+		23 link Description: 数据与方法, Value: 127.0.0.1:8766/#quality
+		24 text 理解市场，检验方案。
+		25 text 资产 · 风险 · 成本
+	26 container
+		27 container breadcrumb
+			28 text 研究方法
+			29 text 跨境资金
+		30 link Description: 数据状态 ↗, Value: 127.0.0.1:8766/#quality
+	31 container main
+		32 text CROSS-BORDER MONEY
+		33 heading 跨境资金, Value: 1
+			34 text 跨境资金
+		35 container flow-live-toolbar
+			36 heading 优选方案, Value: 2
+				37 text 优选方案
+			38 button 报价与依据
+			39 button 重置
+			40 container 优选方案
+				41 checkbox Description: 优选方案：兴业寰宇人生 → 汇丰Trade25, Value: 0
+					42 image 兴业 · 寰宇人生标识
+					43 text 兴业寰宇人生
+					44 image 汇丰 HSBC One标识
+					45 text 汇丰香港
+					46 image 汇丰证券标识
+					47 text 汇丰Trade25
+					48 image 汇丰 HSBC One标识
+					49 text 汇丰香港美元
+					50 text 参考损耗
+					51 text 0.102%
+					52 text 102.26 CNY / 10万元
+				53 checkbox Description: 优选方案：兴业寰宇人生 → ZA, Value: 0
+					54 image 兴业 · 寰宇人生标识
+					55 text 兴业寰宇人生
+					56 image 汇丰 HSBC One标识
+					57 text 汇丰香港
+					58 image ZA Bank标识
+					59 text ZA
+					60 image 汇丰 HSBC One标识
+					61 text 汇丰香港美元
+					62 text 参考损耗
+					63 text 0.129%
+					64 text 128.85 CNY / 10万元
+				65 checkbox Description: 优选方案：中行 → 中银香港 → IBKR, Value: 0
+					66 image 中国银行标识
+					67 text 中行
+					68 image 中银香港标识
+					69 text 中银香港
+					70 image IBKR Pro标识
+					71 text IBKR Pro
+					72 image IBKR Pro标识
+					73 text 账户内留美元
+					74 text 参考损耗
+					75 text 0.225%
+					76 text 225.31 CNY / 10万元
+		77 container 完整资金流
+			78 container 内地出发银行
+				79 text 01 内地出发银行
+				80 pop up button 内地出发银行：兴业 · 寰宇人生，更换
+					81 image 兴业 · 寰宇人生标识
+					82 text 兴业寰宇人生
+				83 text 人民币本金
+				84 pop up button 修改人民币本金
+				85 container
+					86 text 100,000.00  CNY
+				87 text 汇出币种
+				88 container 汇出币种
+					89 checkbox 人民币原币, Value: 0
+					90 checkbox 美元, Value: 0
+					91 checkbox 港币, Value: 1
+				92 text 笔数
+				93 pop up button 汇出笔数：1笔
+				94 text 渠道
+				95 pop up button 汇款渠道：跨境支付通
+				96 container
+					97 checkbox (settable, integer) Description: 已享跨境支付通手续费豁免, Value: 1
+					98 text 已享跨境支付通手续费豁免
+			99 container 汇往香港
+				100 text 费用小计 · 含估算
+				101 text 0.00 CNY
+				103 heading 汇往香港, Value: 3
+					104 text 汇往香港
+				105 button 汇往香港收费明细与依据
+				106 text 单笔／每日可用限额尚未核实；免费与否按上方豁免条件测算。
+				107 text 跨境支付通本次汇出服务费
+				108 text 0.00 CNY
+				109 text 购汇差额 跨境支付通人民币兑港币成交价尚未取得 代理费
+				112 text 0.00 CNY
+				202 text 香港汇入
+				203 text 0.00 CNY
+			113 container 香港收款银行
+				114 text 02 香港收款银行
+				115 pop up button 香港收款银行：汇丰 HSBC One，更换
+					116 image 汇丰 HSBC One标识
+					117 text 汇丰 HSBC One
+				118 text 汇款参考金额（费用未齐）
+				119 container
+					120 text 117,499.57  HKD
+				121 text 参考汇率估算 · 缺换汇成交价
+				204 text 累计已计损耗 0.000%
+				122 container
+					123 text 账户使用月数
+					124 text field (settable) Description: 账户使用月数, Value: 12
+					125 text 月
+				126 text 银行管理费
+				127 text 0.00 CNY
+				128 container
+					129 checkbox (settable, integer) Description: HSBC One本持有期均免管理费, Value: 1
+					130 text 满足豁免
+				131 pop up button HSBC One豁免条件：三个月平均理财总值至少10,000 HKD或适用开户豁免
+			132 container HKD原币转入IBKR
+				133 text 已核费用占本金
+				134 text 0.060%
+				135 text 59.57 CNY
+				136 heading HKD原币转入IBKR, Value: 3
+					137 text HKD原币转入IBKR
+				138 button HKD原币转入IBKR收费明细与依据
+				139 text 换美元地点
+				140 pop up button 换美元地点：IBKR现金账户自动换汇
+				141 text 入金方式 外币电汇 · SWIFT 银行转账
+				142 text 59.57 CNY
+				143 text 代理／收款费 此汇路代理／收款行收费未公开 入金费
+				144 text 0.00 CNY
+			145 container 买美股的账户
+				146 text 03 买美股的账户
+				147 pop up button 买美股的账户：IBKR Lite，更换
+					148 image IBKR Lite标识
+					149 text IBKR Lite
+				150 text 入金参考金额（费用未齐）
+				151 container
+					152 text 117,429.57  HKD
+				153 text 参考汇率估算 · 缺换汇成交价
+				205 text 累计已计损耗 0.060%
+				154 text 买卖设置
+				155 button 买1笔 · 卖1笔
+				156 text 优惠与费用券
+				157 button 设置优惠
+				158 text 买入均价
+				159 button 100 USD/股
+				160 text 账户方案
+				161 text Lite · 合资格美国居民
+			162 container 买入时自动换美元 → 买入美股 → 卖出
+				163 text 已计费用占本金 · 含估算
+				164 text 0.032%
+				165 text 32.05 CNY
+				166 heading 买入时自动换美元 → 买入美股 → 卖出, Value: 3
+					167 text 买入时自动换美元 → 买入美股 → 卖出
+				168 button 盈亏 0.00 USD
+				169 button 买入时自动换美元 → 买入美股 → 卖出收费明细与依据
+				170 text 尚缺换汇成交价，交易金额按参考汇率估算
+				171 text 买入费用
+				172 text 参考 0.00 CNY
+				173 text 卖出费用
+				174 text 参考 2.08 CNY
+				175 text 换汇佣金
+				176 text 参考 29.97 CNY
+				177 text 换汇差额 IBKR HKD/USD成交价尚未取得 证券托管
+				178 text 0.00 CNY
+			179 container 卖出后的资金
+				180 container
+					181 text 04 资金所在账户
+					182 pop up button 资金所在账户：IBKR Lite，更换
+						183 image IBKR Lite标识
+						184 text IBKR Lite
+					185 text 参考最终余额（费用未齐） 14,955.34  USD 参考汇率估算 · 缺换汇成交价 累计已计损耗 0.092% 资金用途
+					186 pop up button 资金用途：留在买股账户
+		187 container flow-live-summary
+			188 text 已计费用占本金 · 含估算
+			189 text 0.092%
+			190 text 91.62 CNY
+			191 text 总损耗尚缺：跨境支付通人民币兑港币差额、入金代理／收款行费、IBKR HKD/USD实时成交点差
+			192 text 其中账户期间费 0.00 CNY
+			193 text 已计入合计
+			194 text 参考最终余额（费用未齐） 14,955.34  USD
+			195 button 全程明细
+		196 button 实际成交报价与费用
+		197 text 便利化购汇不得用于境外证券投资；本页为费用测算。
+		198 button 适用条件
+	199 container
+		200 text 长衡 · 全球投资研究工作台
+		201 link Description: 数据来源与研究方法, Value: 127.0.0.1:8766/#quality
+
+The focused UI element is 91 checkbox 港币, Value: 1
