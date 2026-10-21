@@ -5,7 +5,7 @@ from datetime import date, datetime
 from pathlib import Path
 from unittest.mock import patch
 
-from company_selection import assess, cn_selection, apply_us
+from company_selection import assess, cn_selection
 from stock_screen import load_old_rows, refresh_quality_review
 from us_stock_groups import classify
 
@@ -13,19 +13,20 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class CompanySelectionTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.cn = load_old_rows((ROOT / 'data/snapshot.js').read_text())
-        cls.us = {r['symbol']: r for r in json.loads(next(l.split('=', 1)[1].rstrip(';')
-            for l in (ROOT / 'data/overseas-stocks.js').read_text().splitlines() if l.startswith('var OVERSEAS_STOCKS=')))}
-
-    def assert_observed_price(self, row, first_observation):
-        # Coverage dates are a lower bound, not a ban on the next daily close.
-        observed = date.fromisoformat(row['priceAsOf'])
-        self.assertGreaterEqual(observed, date.fromisoformat(first_observation))
-        self.assertLessEqual(observed, datetime.fromisoformat(row['fetchedAt']).date())
-        self.assertEqual(row['priceAsOf'], row['returnAsOf'])
-        self.assertGreater(row['price'], 0)
+    def setUp(self):
+        # Historical conclusions require historical inputs. New daily filings
+        # must not rewrite these cases or inherit their old group approvals.
+        fixture = ROOT / 'tests/fixtures/company-selection-20261020.json'
+        inputs = json.loads(fixture.read_text())
+        selection = patch('company_selection.PATH', fixture)
+        selection.start()
+        self.addCleanup(selection.stop)
+        self.cn = inputs['cn']
+        self.us = inputs['us']
+        for row in self.cn.values():
+            row['companySelection'] = cn_selection(row, inputs['asOf'])
+        for row in self.us.values():
+            classify(row, inputs['asOf'])
 
     def test_numeric_outperformance_alone_cannot_select_an_unreviewed_company(self):
         annual = [dict(period=str(y)+'-12', profit=100, cash=200) for y in range(2021,2026)]
@@ -33,16 +34,34 @@ class CompanySelectionTests(unittest.TestCase):
         self.assertEqual(result['groups'], ['other'])
         self.assertEqual(result['status'], 'pending')
 
-    def test_actual_a_share_roster_withdrawals_and_growth_restorations(self):
-        removed = [r for r in self.cn.values() if any(g in (r.get('companySelection') or {}).get('previousGroups', []) for g in ('quality','growth','breakout'))
-                   and r['companySelection']['groups'] == ['other']]
-        self.assertEqual(len(removed), 19)
+    def test_reviewed_a_share_withdrawals_and_growth_restorations(self):
         for code in ['688188','688278','300661','002558','603444','300972','688808']:
             self.assertEqual(self.cn[code]['companySelection']['groups'], ['other'])
             self.assertGreater(len(self.cn[code]['companySelection']['rationale']), 30)
         for code in ['601138','300308']:
             self.assertIn('growth', self.cn[code]['companySelection']['groups'])
         self.assertIn('424.25', self.cn['601138']['companySelection']['risk'])
+
+    def test_new_cn_and_us_filings_withdraw_historical_approvals(self):
+        cn = self.cn['601138']
+        us = self.us['MSCI']
+        self.assertIn('growth', cn['companySelection']['groups'])
+        self.assertIn('quality', us['screening']['groups'])
+        cn['latestFinancials']['reportDate'] = '2026-09-30'
+        us['financials'].update(reportDate='2026-09-30', publishedAt='2026-10-20')
+        results = [cn_selection(cn, '2026-10-21'),
+                   classify(us, '2026-10-21')['companySelection']]
+        for result in results:
+            self.assertEqual(result['groups'], ['other'])
+            self.assertEqual(result['status'], 'pending')
+            self.assertIn('2026-06-30', result['rationale'])
+            self.assertIn('2026-09-30', result['rationale'])
+            self.assertTrue(all(not r['qualified'] for r in result['reviews'].values()))
+
+    def test_historical_added_companies_keep_their_reviewed_conclusions(self):
+        self.assertIn('growth', self.us['FTNT']['screening']['groups'])
+        self.assertEqual(self.us['NOW']['screening']['groups'], ['other'])
+        self.assertIn('1.62', self.us['NOW']['companySelection']['rationale'])
 
     def test_a_new_report_or_missed_disclosure_expires_the_decision(self):
         row = deepcopy(self.cn['601138'])
@@ -95,57 +114,6 @@ class CompanySelectionTests(unittest.TestCase):
             result = cn_selection(self.cn['601138'], '2026-10-18')
         self.assertEqual(result['groups'], ['other'])
         self.assertEqual(result['status'], 'pending')
-
-    def test_new_companies_have_independent_identity_history_and_honest_results(self):
-        for code in ['CDNS','KLAC','FTNT','NOW']:
-            row = self.us[code]
-            self.assertEqual(row['symbol'], code)
-            self.assertIn('/'+code+'/', row['returnSourceUrl'])
-            self.assertEqual(row['financials']['reportDate'], '2026-06-30')
-            self.assert_observed_price(row, '2026-10-14')
-            self.assertTrue(row['companySelection']['newCoverage'])
-            self.assertTrue(all(v is not None for v in row['r']))
-        self.assertIn('growth', self.us['FTNT']['screening']['groups'])
-        self.assertEqual(self.us['NOW']['screening']['groups'], ['other'])
-        self.assertIn('1.62', self.us['NOW']['companySelection']['rationale'])
-
-    def test_selection_refresh_preserves_prices_returns_and_financials(self):
-        for row in self.cn.values():
-            copy = deepcopy(row)
-            refresh_quality_review(copy, '2026-10-18')
-            for key in ['r','price','latestFinancials','financialReports','financialHistory5']:
-                self.assertEqual(copy.get(key), row.get(key))
-        for row in self.us.values():
-            copy = classify(deepcopy(row), '2026-10-18')
-            for key in ['price', 'priceAsOf', 'r', 'returnAsOf', 'riskAsOf', 'financials', 'financialHistory', 'analysis']:
-                self.assertEqual(copy.get(key), row.get(key), (row['symbol'], key))
-            self.assertEqual(copy['companySelection']['checkedAt'], '2026-10-18')
-            self.assertEqual(classify(deepcopy(copy), '2026-10-18'), copy)
-
-    def test_eight_added_us_companies_have_current_filings_and_independent_histories(self):
-        expected = {'MCO':'2026-06-30','MSCI':'2026-06-30','CTAS':'2026-08-31','ROP':'2026-06-30',
-                    'PH':'2026-06-30','FAST':'2026-09-30','CPRT':'2026-07-31','ADSK':'2026-07-31',
-                    'JBL':'2026-08-31','LIN':'2026-06-30','WM':'2026-06-30','APH':'2026-06-30','ODFL':'2026-06-30'}
-        catalog = json.loads((ROOT/'data/portfolio/catalog.js').read_text().split('=',1)[1].rstrip(';\n'))
-        assets = {a['id']:a for a in catalog['assets']}
-        reports = json.loads(next(l.split('=',1)[1].rstrip(';') for l in (ROOT/'data/overseas-stocks.js').read_text().splitlines() if l.startswith('var OVERSEAS_REPORTS=')))['reports']
-        for symbol, period in expected.items():
-            with self.subTest(symbol=symbol):
-                row = self.us[symbol]
-                self.assertEqual(row['financials']['reportDate'], period)
-                self.assertEqual(row['research']['reportPeriod'], period)
-                self.assert_observed_price(row, '2026-10-16')
-                self.assertTrue(row['companySelection']['newCoverage'])
-                self.assertTrue(all(v is not None for v in row['r']))
-                self.assertGreaterEqual(len(row['analysis']['annual']), 5)
-                asset=assets['stock:'+symbol]
-                history=json.loads((ROOT/asset['historyUrl']).read_text())
-                self.assertEqual(history['id'], 'stock:'+symbol)
-                self.assertEqual(history['currency'], 'USD')
-                self.assertEqual(history['dividends'], 'reinvested')
-                self.assertGreaterEqual(history['series'][-1][0], '2026-10-16')
-                self.assertEqual(history['series'][-1][0], asset['asOf'])
-                self.assertTrue(any(r['code']==symbol for r in reports))
 
     def test_latest_manufacturing_results_and_split_per_share_basis_are_not_stale(self):
         jabil=self.us['JBL']; f=jabil['financials']
@@ -212,6 +180,93 @@ class CompanySelectionTests(unittest.TestCase):
                                   core_period='2026-06-30',core_basis='test',published_at=published,eligible=eligible)
                            for market in ('cn','us')]
                 self.assertEqual(results[0],results[1])
+
+
+class PublishedCompanySelectionTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.cn = load_old_rows((ROOT / 'data/snapshot.js').read_text())
+        cls.us = {r['symbol']: r for r in json.loads(next(l.split('=', 1)[1].rstrip(';')
+            for l in (ROOT / 'data/overseas-stocks.js').read_text().splitlines() if l.startswith('var OVERSEAS_STOCKS=')))}
+
+    def assert_observed_price(self, row, first_observation):
+        # Coverage dates are a lower bound, not a ban on the next daily close.
+        observed = date.fromisoformat(row['priceAsOf'])
+        self.assertGreaterEqual(observed, date.fromisoformat(first_observation))
+        self.assertLessEqual(observed, datetime.fromisoformat(row['fetchedAt']).date())
+        self.assertEqual(row['priceAsOf'], row['returnAsOf'])
+        self.assertGreater(row['price'], 0)
+
+    def test_new_companies_have_independent_identity_history_and_honest_results(self):
+        for code in ['CDNS','KLAC','FTNT','NOW']:
+            row = self.us[code]
+            self.assertEqual(row['symbol'], code)
+            self.assertIn('/'+code+'/', row['returnSourceUrl'])
+            self.assert_current_filing(row, '2026-06-30')
+            self.assert_observed_price(row, '2026-10-14')
+            self.assertTrue(row['companySelection']['newCoverage'])
+            self.assertTrue(all(v is not None for v in row['r']))
+
+    def test_selection_refresh_preserves_prices_returns_and_financials(self):
+        for row in self.cn.values():
+            copy = deepcopy(row)
+            refresh_quality_review(copy, '2026-10-18')
+            for key in ['r','price','latestFinancials','financialReports','financialHistory5']:
+                self.assertEqual(copy.get(key), row.get(key))
+        for row in self.us.values():
+            copy = classify(deepcopy(row), '2026-10-18')
+            for key in ['price', 'priceAsOf', 'r', 'returnAsOf', 'riskAsOf', 'financials', 'financialHistory', 'analysis']:
+                self.assertEqual(copy.get(key), row.get(key), (row['symbol'], key))
+            self.assertEqual(copy['companySelection']['checkedAt'], '2026-10-18')
+            self.assertEqual(classify(deepcopy(copy), '2026-10-18'), copy)
+
+    def test_added_us_companies_have_current_filings_and_independent_histories(self):
+        expected = {'MCO':'2026-06-30','MSCI':'2026-06-30','CTAS':'2026-08-31','ROP':'2026-06-30',
+                    'PH':'2026-06-30','FAST':'2026-09-30','CPRT':'2026-07-31','ADSK':'2026-07-31',
+                    'JBL':'2026-08-31','LIN':'2026-06-30','WM':'2026-06-30','APH':'2026-06-30','ODFL':'2026-06-30'}
+        catalog = json.loads((ROOT/'data/portfolio/catalog.js').read_text().split('=',1)[1].rstrip(';\n'))
+        assets = {a['id']:a for a in catalog['assets']}
+        reports = json.loads(next(l.split('=',1)[1].rstrip(';') for l in (ROOT/'data/overseas-stocks.js').read_text().splitlines() if l.startswith('var OVERSEAS_REPORTS=')))['reports']
+        for symbol, period in expected.items():
+            with self.subTest(symbol=symbol):
+                row = self.us[symbol]
+                self.assert_current_filing(row, period)
+                self.assert_observed_price(row, '2026-10-16')
+                self.assertTrue(row['companySelection']['newCoverage'])
+                self.assertTrue(all(v is not None for v in row['r']))
+                self.assertGreaterEqual(len(row['analysis']['annual']), 5)
+                asset=assets['stock:'+symbol]
+                history=json.loads((ROOT/asset['historyUrl']).read_text())
+                self.assertEqual(history['id'], 'stock:'+symbol)
+                self.assertEqual(history['currency'], 'USD')
+                self.assertEqual(history['dividends'], 'reinvested')
+                self.assertGreaterEqual(history['series'][-1][0], '2026-10-16')
+                self.assertEqual(history['series'][-1][0], asset['asOf'])
+                self.assertTrue(any(r['code']==symbol for r in reports))
+
+    def assert_current_filing(self, row, first_period):
+        latest = row['financials']['reportDate']
+        self.assertGreaterEqual(date.fromisoformat(latest), date.fromisoformat(first_period))
+        self.assertLessEqual(latest, row['financials']['publishedAt'])
+        self.assertLessEqual(row['financials']['publishedAt'], row['screening']['checkedAt'])
+        self.assertTrue(row['financials']['sourceUrl'])
+        self.assertLessEqual(row['research']['reportPeriod'], latest)
+
+    def test_published_membership_follows_current_evidence_without_fixed_roster_counts(self):
+        for row in [*self.cn.values(), *self.us.values()]:
+            code = row.get('c') or row['symbol']
+            selection = row['companySelection']
+            latest = (row.get('latestFinancials') or row.get('financials'))['reportDate']
+            groups = selection['groups']
+            with self.subTest(code=code):
+                expected = [g for g, review in selection['reviews'].items() if review['qualified']] or ['other']
+                self.assertEqual(groups, expected)
+                if groups == ['other']:
+                    self.assertTrue(selection['rationale'])
+                if selection.get('reportPeriod') != latest:
+                    for group in ('quality', 'growth', 'breakout'):
+                        self.assertNotIn(group, groups)
+                        self.assertFalse(selection['reviews'][group]['qualified'])
 
 
 if __name__ == '__main__':
