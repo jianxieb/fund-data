@@ -209,3 +209,47 @@ test('editing during the export rerun stops the download instead of silently exp
   assert.equal(f.downloads.length, 1);
   assert.equal(f.reports[0].result.config.monthly, 7000);
 });
+
+test('USD settings, tax reserve, PDF and CSV keep the same result currency after draft edits', async () => {
+  const f = uiFixture(input => {
+    input.config.currency = 'USD';
+    input.config.tax = { ...P.taxConfig(), usCapitalGains: 20, usDividend: 20 };
+    input.catalog.assets.forEach(a => { a.currency = 'USD'; a.market = 'us'; });
+    Object.values(input.histories).forEach(h => {
+      h.currency = 'USD';
+      h.dividendEvidence = { status: 'recorded', first: h.first, through: h.asOf, fractions: {} };
+    });
+  });
+  assert.match(f.ui.view(f.helpers), /投入与计价币种：美元 USD/);
+  assert.match(f.ui.view(f.helpers), /初始投入 · 美元/);
+  await f.action('run');
+  const html = f.ui.view(f.helpers), expected = P.simulate(f.input);
+  assert.ok(expected.taxReserve > 0);
+  assert.match(html, /期末税后估值/); assert.match(html, /浮盈预留税/);
+  assert.doesNotMatch(html, /浮盈未征税|期末市值 \/ 元/);
+  assert.match(html, /税后估值 \/ USD/);
+  await f.action('export-pdf');
+  const report = f.reports[0], text = textOf(Pdf.layout(report, measure));
+  assert.equal(report.result.currency, 'USD');
+  assert.equal(report.result.taxReserve, expected.taxReserve);
+  assert.match(text, /初始投入 \/ USD/); assert.match(text, /浮盈预留税 \/ USD/);
+  assert.match(text, /税后估值与累计投入 \/ 美元/);
+  assert.doesNotMatch(text, /人民币现金|\/ 元|NaN|undefined/);
+  await f.action('select', { field: 'currency', value: 'CNY' });
+  const stale = f.ui.view(f.helpers);
+  assert.match(stale, /投入与计价币种：人民币 CNY/); assert.match(stale, /上次模拟结果/);
+  assert.match(stale, /税后估值 \/ USD/);
+  await f.action('export-result');
+  const curveCsv = f.downloads.at(-1)[1];
+  assert.match(curveCsv, /税后估值USD/); assert.match(curveCsv, /当前浮盈预留税USD/);
+  assert.doesNotMatch(curveCsv.split('\n')[0], /CNY/);
+  await f.action('export-holdings');
+  const holdingsCsv = f.downloads.at(-1)[1];
+  assert.match(holdingsCsv, /当前浮盈预留税USD/); assert.match(holdingsCsv, /cash:USD/);
+  assert.doesNotMatch(holdingsCsv.split('\n')[0], /CNY/);
+  await f.action('save');
+  assert.equal(JSON.parse(f.downloads.at(-1)[1]).currency, 'CNY');
+  await f.action('select', { field: 'currency', value: 'USD' });
+  await f.action('save');
+  assert.equal(JSON.parse(f.downloads.at(-1)[1]).currency, 'USD');
+});

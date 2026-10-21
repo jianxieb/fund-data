@@ -381,3 +381,44 @@ test('shipped catalog covers the exact research universe and a real mixed combin
     assert.ok(h.performance.mdd <= 0 && h.performance.mdd > -100);
   }
 });
+
+test('USD denomination keeps USD assets and cash native, without requiring FX', () => {
+  const input = fixture([{ currency: 'USD', values: [10, 12, 12] }], { currency: 'USD', monthly: 100, benchmarkId: 'stock:1' });
+  input.config.positions[0].weight = 80;
+  delete input.fxHistory; delete input.catalog.fx;
+  const r = P.simulate(input); assert.equal(r.error, undefined); assert.equal(r.benchmarkError, null);
+  close(r.value, 1260); close(r.cash, 220); close(r.contributed, 1100); close(r.totalReturn, 16);
+  close(r.benchmark.totalReturn, 20);
+  assert.equal(r.currency, 'USD'); assert.equal(r.holdings[0].performance.currency, 'USD');
+  assert.equal(r.usesFx, false); assert.equal(r.benchmark.usesFx, false);
+});
+test('USD mixed holdings divide CNY prices by historical FX; the benchmark uses the same direction', () => {
+  const input = fixture([{ currency: 'USD', values: [1, 1, 1] }, { currency: 'CNY', values: [7, 7, 7] }],
+    { currency: 'USD', fxValues: [7, 8, 10], benchmarkId: 'stock:2' });
+  const r = P.simulate(input); assert.equal(r.error, undefined); assert.equal(r.benchmarkError, null);
+  close(r.holdings[0].value, 500); close(r.holdings[1].value, 350); close(r.value, 850);
+  close(r.benchmark.totalReturn, -30); assert.equal(r.usesFx, true);
+  delete input.fxHistory;
+  assert.match(P.simulate(input).error, /美元汇率.*历史/);
+});
+test('USD conversion uses only prior FX, and a CNY benchmark can fail independently of USD holdings', () => {
+  const input = fixture([{ currency: 'CNY', values: [7, 7, 7] }], { currency: 'USD' });
+  input.fxHistory.series = [[dates[0], 7], [dates[2], 10]];
+  const r = P.simulate(input); assert.equal(r.error, undefined);
+  close(r.curve.find(p => p.day === dates[1]).value, 1000); close(r.value, 700);
+  const mixed = fixture([{ currency: 'USD', values: [1, 1, 1] }, { currency: 'CNY', values: [1, 1, 1] }], { currency: 'USD', benchmarkId: 'stock:2' });
+  mixed.config.positions = [{ id: 'stock:1', weight: 100 }]; delete mixed.fxHistory;
+  const isolated = P.simulate(mixed); assert.equal(isolated.error, undefined); close(isolated.value, 1000);
+  assert.match(isolated.benchmarkError, /美元汇率.*历史/);
+});
+test('currency imports roundtrip USD, default older configs to CNY, and reject invalid currencies', () => {
+  const input = fixture([{ values: [1, 1, 1] }]);
+  const ids = new Set(['stock:1']), saved = { schemaVersion: 1, ...input.config, currency: 'USD' };
+  assert.equal(P.sanitizeDraft(JSON.parse(JSON.stringify(saved)), ids).currency, 'USD');
+  delete saved.currency;
+  assert.equal(P.sanitizeDraft(saved, ids).currency, 'CNY');
+  for (const currency of ['HKD', '', null, 123]) {
+    assert.match(P.simulate({ ...input, config: { ...input.config, currency } }).error, /币种/);
+    assert.throws(() => P.sanitizeDraft({ ...saved, currency }, ids), /币种/);
+  }
+});

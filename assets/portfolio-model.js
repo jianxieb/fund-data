@@ -9,6 +9,11 @@
   const gap = (a, b) => (time(b) - time(a)) / DAY;
   const sum = values => values.reduce((a, b) => a + b, 0);
   const fail = message => { throw new Error(message); };
+  function currencyInfo(config = {}) {
+    const code = config.currency === undefined ? 'CNY' : config.currency;
+    if (!['CNY', 'USD'].includes(code)) fail('模拟币种须为人民币或美元');
+    return { code, name: code === 'USD' ? '美元' : '人民币', unit: code === 'USD' ? 'USD' : '元' };
+  }
   const initialMethods = [
     ['lump_sum', '一次性投入'], ['tranche_6', '6个月分批投入'], ['tranche_12', '12个月分批投入'],
     ['tranche_24', '24个月分批投入'], ['drawdown_ladder', '回撤阶梯投入'], ['ma200_hold', '200日均线择时']
@@ -128,7 +133,7 @@
     const distinct = roots.filter((r, i) => !i || Math.abs(r - roots[i - 1]) > 1e-7);
     return distinct.length === 1 ? Math.expm1(distinct[0]) * 100 : null;
   }
-  function holdingPerformance(rows, trades, terminalValue) {
+  function holdingPerformance(rows, trades, terminalValue, currency) {
     const start = trades.find(t => t.side === 'buy')?.day, end = rows.at(-1)[0];
     const activeRows = start ? rows.filter(([day]) => day >= start) : [];
     const invested = sum(trades.filter(t => t.side === 'buy').map(t => t.amount + t.fee));
@@ -148,7 +153,7 @@
       annualBasis: short ? 'under_one_year_total_return' : 'money_weighted_xirr',
       annualMissing: !start ? '模拟区间内未买入' : annual === null ? '资金流未找到唯一年化解' : null,
       volatility: annualVolatility(activeRows.map(row => row[1])), observations: activeRows.length,
-      currency: 'CNY', dividends: 'reinvested', transactionFeesIncluded: true,
+      currency, dividends: 'reinvested', transactionFeesIncluded: true, taxReserveIncluded: true,
       riskBasis: 'actual_holding_flow_adjusted_nav' };
   }
   function allocation(positions, assets) {
@@ -183,6 +188,7 @@
     if (!['none', 'month', 'quarter', 'year'].includes(config.rebalance)) fail('再平衡周期无效');
     if (!['net', 'gross_estimate'].includes(config.feeBasis)) fail('年费口径无效');
     strategyConfig(config);
+    currencyInfo(config);
     const tax = taxConfig(config.tax);
     if (Object.keys(tax.overrides).some(id => !ids.has(id))) fail('单项税率含未收录的标的');
     if (![1, 2, 3, 5, 10, 'common', 'custom'].includes(config.years)) fail('回测区间无效');
@@ -205,6 +211,7 @@
     const assets = new Map((catalog?.assets || []).map(a => [a.id, a]));
     const { positions, total, cashWeight } = validateConfig(config, new Set(assets.keys()));
     const tax = taxConfig(config.tax);
+    const currency = currencyInfo(config).code;
     const series = positions.map(position => {
       const asset = assets.get(position.id);
       if (asset.status !== 'available') fail(asset.name + '：' + (asset.missing || '缺每日历史'));
@@ -216,7 +223,7 @@
       return { asset, rows, dividendEvidence: history.dividendEvidence, tax: taxRates(asset, config.tax), dates: new Set(rows.map(r => r[0])), weight: position.weight / 100,
         feeRate: config.feeBasis === 'gross_estimate' && info.applicable ? info.rate : 0 };
     });
-    const needsFx = series.some(s => s.asset.currency === 'USD');
+    const needsFx = series.some(s => s.asset.currency !== currency);
     let fx = null;
     if (needsFx) {
       if (catalog.fx?.status !== 'available') fail(catalog.fx?.missing || '缺美元兑人民币日汇率');
@@ -257,10 +264,10 @@
     const pricesAt = day => series.map(s => {
       const observation = at(s.rows, day);
       if (!observation) fail(s.asset.name + '在 ' + day + ' 前缺14日内有效价格');
-      const quote = s.asset.currency === 'USD' ? at(fx, day, 7) : null;
-      if (s.asset.currency === 'USD' && !quote) fail(day + ' 前缺7日内美元兑人民币实际汇率');
+      const quote = s.asset.currency !== currency ? at(fx, day, 7) : null;
+      if (s.asset.currency !== currency && !quote) fail(day + ' 前缺7日内美元兑人民币实际汇率');
       const feeFactor = s.feeRate ? M.annualFeeFactor(s.feeRate, start, day) : 1;
-      return { value: observation.value * (quote?.value || 1) * feeFactor,
+      return { value: observation.value * (quote ? currency === 'USD' ? 1 / quote.value : quote.value : 1) * feeFactor,
         carried: observation.carried, fxCarried: !!quote?.carried };
     });
     const strategy = strategyConfig(config), strategyDays = common.filter(day => day >= start && day <= end);
@@ -336,6 +343,11 @@
     const timing = config.initial > 0 && strategy.initialMethod === 'ma200_hold';
     let carriedPrices = 0, carriedFx = 0;
     const value = prices => cash + sum(units.map((unit, i) => unit * prices[i]));
+    // A valuation liability, never a cash debit or a daily tax payment. Actual
+    // sales reduce both the position and its reserve, avoiding double taxation.
+    const reserve = (i, price) => Math.max(0, units[i] * price * (1 - fee) - basis[i]) * series[i].tax.gain / 100;
+    const netHolding = (i, price) => units[i] * price - reserve(i, price);
+    const netValue = prices => cash + sum(prices.map((price, i) => netHolding(i, price)));
     const saleTax = (i, amount, price, saleFee) => {
       const disposedBasis = units[i] > EPS ? basis[i] * amount / (units[i] * price) : 0;
       const gain = Math.max(0, amount - saleFee - disposedBasis);
@@ -345,13 +357,14 @@
       let taxCharge = 0;
       deltas.forEach((delta, i) => {
         if (Math.abs(delta) > EPS) {
-          const before = units[i] * prices[i];
+          const before = netHolding(i, prices[i]);
           const sale = delta < 0 ? saleTax(i, -delta, prices[i], fees[i]) : { disposedBasis: 0, gain: 0, tax: 0 };
-          holdingNav[i] *= delta > 0 ? (before + delta) / (before + delta + fees[i]) : (before - fees[i] - sale.tax) / before;
           basis[i] += delta > 0 ? delta + fees[i] : -sale.disposedBasis;
           capitalTaxes[i] += sale.tax; taxCharge += sale.tax;
           if (delta < 0) taxEvents.push({ day, id: series[i].asset.id, type: 'capital', proceeds: -delta, basis: sale.disposedBasis, gain: sale.gain, rate: series[i].tax.gain, tax: sale.tax });
           units[i] += delta / prices[i];
+          const after = netHolding(i, prices[i]);
+          holdingNav[i] *= delta > 0 ? after / (before + delta + fees[i]) : (after - delta - fees[i] - sale.tax) / before;
           if (delta > 0) bought[i] += delta; else sold[i] -= delta;
           costs[i] += fees[i];
           transactions.push({ day, id: series[i].asset.id, side: delta > 0 ? 'buy' : 'sell', amount: Math.abs(delta), fee: fees[i], tax: sale.tax, reason });
@@ -382,7 +395,7 @@
     }
     function deposit(day, amount, prices) {
       if (!amount) return;
-      const before = value(prices), nav = fundUnits ? before / fundUnits : 1;
+      const before = netValue(prices), nav = fundUnits ? before / fundUnits : 1;
       if (!finite(nav) || nav <= 0) fail('组合净值无效');
       fundUnits += amount / nav;
       cash += amount; contributed += amount; deposits++;
@@ -399,7 +412,7 @@
     for (const day of days) {
       const observations = pricesAt(day), prices = observations.map(p => p.value);
       series.forEach((s, i) => {
-        if (lastPrices && units[i] > EPS) holdingNav[i] *= prices[i] / lastPrices[i];
+        const beforeMark = lastPrices && units[i] > EPS ? netHolding(i, lastPrices[i]) : 0;
         const fraction = s.dividendEvidence?.fractions?.[day] || 0;
         if (units[i] > EPS && fraction > 0 && day > start) {
           const before = units[i] * prices[i], gross = before * fraction, charge = gross * s.tax.dividend / 100;
@@ -407,9 +420,9 @@
           // its tax; net reinvestment adds cost basis without a second cash payment.
           units[i] -= charge / prices[i]; basis[i] += gross - charge;
           dividendTaxes[i] += charge;
-          holdingNav[i] *= (before - charge) / before;
           taxEvents.push({ day, id: s.asset.id, type: 'dividend', gross, rate: s.tax.dividend, tax: charge, basisAdded: gross - charge });
         }
+        if (beforeMark > EPS) holdingNav[i] *= netHolding(i, prices[i]) / beforeMark;
       });
       const tradesBefore = transactions.length;
       carriedPrices += observations.filter(p => p.carried).length;
@@ -440,25 +453,27 @@
       series.forEach((s, i) => {
         // Risk observes actual exposure and trade fees; external cash transfers
         // do not create gains or drawdowns. Extra foreign-market dates add no zeros.
-        if (s.dates.has(day) || s.asset.currency === 'USD' && fxDates.has(day) || traded.has(s.asset.id) || day === start || day === end) holdingPaths[i].push([day, holdingNav[i]]);
+        if (s.dates.has(day) || s.asset.currency !== currency && fxDates.has(day) || traded.has(s.asset.id) || day === start || day === end) holdingPaths[i].push([day, holdingNav[i]]);
       });
       lastPrices = prices;
-      const account = value(prices), nav = account / fundUnits;
+      const account = netValue(prices), nav = account / fundUnits;
+      const taxReserve = sum(prices.map((price, i) => reserve(i, price))), paidTax = sum(capitalTaxes) + sum(dividendTaxes);
       peak = Math.max(peak, nav); mdd = Math.min(mdd, (nav / peak - 1) * 100);
       curve.push({ day, value: account, contributed, profit: account - contributed, nav, totalReturn: (nav - 1) * 100,
-        annualReturn: day === start ? (nav - 1) * 100 : annualReturn(nav, start, day), drawdown: (nav / peak - 1) * 100, cash, initialReserve, exposure, taxCost: sum(capitalTaxes) + sum(dividendTaxes) });
+        annualReturn: day === start ? (nav - 1) * 100 : annualReturn(nav, start, day), drawdown: (nav / peak - 1) * 100, cash, initialReserve, exposure,
+        grossValue: value(prices), taxReserve, paidTax, taxCost: paidTax + taxReserve });
     }
     const final = curve.at(-1), prices = pricesAt(end).map(p => p.value);
     flows.push([end, final.value]);
     const volatility = annualVolatility(curve.map(p => p.nav));
     const holdings = series.map((s, i) => ({ id: s.asset.id, code: s.asset.code, name: s.asset.name,
-      targetWeight: s.weight * 100, actualWeight: final.value ? units[i] * prices[i] / final.value * 100 : 0,
-      value: units[i] * prices[i], bought: bought[i], sold: sold[i], transactionCost: costs[i],
-      profit: units[i] * prices[i] + sold[i] - bought[i] - costs[i] - capitalTaxes[i], first: s.rows[0][0], asOf: s.rows.at(-1)[0],
-      capitalTax: capitalTaxes[i], dividendTax: dividendTaxes[i], taxCost: capitalTaxes[i] + dividendTaxes[i], costBasis: basis[i], taxRates: s.tax,
+      targetWeight: s.weight * 100, actualWeight: final.value ? netHolding(i, prices[i]) / final.value * 100 : 0,
+      value: netHolding(i, prices[i]), grossValue: units[i] * prices[i], taxReserve: reserve(i, prices[i]), bought: bought[i], sold: sold[i], transactionCost: costs[i],
+      profit: netHolding(i, prices[i]) + sold[i] - bought[i] - costs[i] - capitalTaxes[i], first: s.rows[0][0], asOf: s.rows.at(-1)[0],
+      capitalTax: capitalTaxes[i], dividendTax: dividendTaxes[i], taxCost: capitalTaxes[i] + dividendTaxes[i] + reserve(i, prices[i]), costBasis: basis[i], taxRates: s.tax,
       basis: histories[s.asset.id].basis, currency: s.asset.currency, feeRate: s.feeRate,
       leveraged: (s.asset.leverage || 1) > 1,
-      performance: holdingPerformance(holdingPaths[i], transactions.filter(t => t.id === s.asset.id), units[i] * prices[i]) }));
+      performance: holdingPerformance(holdingPaths[i], transactions.filter(t => t.id === s.asset.id), netHolding(i, prices[i]), currency) }));
     if (Math.abs(sum(holdings.map(h => h.profit)) - final.profit) > Math.max(1e-4, contributed * 1e-10)) fail('组合持仓盈亏未与账户勾稽');
     const annual = [];
     let base = 1, year = curve[0].day.slice(0, 4), from = start;
@@ -476,40 +491,42 @@
         const asset = assets.get(config.benchmarkId), history = histories[config.benchmarkId];
         if (!asset || asset.status !== 'available') fail('对照标的缺有效每日历史');
         const rows = validateHistory(asset, history);
-        let benchmarkFx = fx;
-        if (asset.currency === 'USD' && !benchmarkFx) benchmarkFx = validateHistory(catalog.fx, fxHistory);
+        let benchmarkFx = asset.currency !== currency ? fx : null;
+        if (asset.currency !== currency && !benchmarkFx) benchmarkFx = validateHistory(catalog.fx, fxHistory);
         if (rows[0][0] > start || rows.at(-1)[0] < end || benchmarkFx && (benchmarkFx[0][0] > start || benchmarkFx.at(-1)[0] < end)) fail('对照标的的历史不覆盖组合区间');
         if (tax.liquidate && !rows.some(row => row[0] === end)) fail('对照标的' + asset.name + '在期末 ' + end + ' 缺当日实际报价，无法计算该日的清仓后对照收益');
         const info = M.annualFeeInfo({ ...asset, n: asset.name }, config.feeOverrides?.[asset.code]);
         if (config.feeBasis === 'gross_estimate' && info.applicable && info.rate === null) fail('对照标的' + info.missing);
         const rate = config.feeBasis === 'gross_estimate' && info.applicable ? info.rate : 0;
         const quote = day => {
-          const p = at(rows, day), f = asset.currency === 'USD' ? at(benchmarkFx, day, 7) : null;
-          if (!p || asset.currency === 'USD' && !f) fail('对照标的在 ' + day + ' 缺可用价格或汇率');
-          return p.value * (f?.value || 1) * (rate ? M.annualFeeFactor(rate, start, day) : 1);
+          const p = at(rows, day), f = asset.currency !== currency ? at(benchmarkFx, day, 7) : null;
+          if (!p || asset.currency !== currency && !f) fail('对照标的在 ' + day + ' 缺可用价格或汇率');
+          return p.value * (f ? currency === 'USD' ? 1 / f.value : f.value : 1) * (rate ? M.annualFeeFactor(rate, start, day) : 1);
         };
         const base = quote(start), rates = taxRates(asset, config.tax);
         validateDividendEvidence(asset, history, start, end, rates);
-        let units = 1, basis = base, taxCost = 0;
+        let units = 1, basis = base, paidTax = 0, taxReserve = 0;
         const values = new Map();
         const quoteDays = [...new Set([...rows.map(r => r[0]), ...curve.map(p => p.day)])].filter(day => day >= start && day <= end).sort();
         for (const day of quoteDays) {
           const price = quote(day), fraction = day > start ? history.dividendEvidence?.fractions?.[day] || 0 : 0;
           const gross = units * price * fraction, charge = gross * rates.dividend / 100;
-          units -= charge / price; basis += gross - charge; taxCost += charge;
+          units -= charge / price; basis += gross - charge; paidTax += charge;
           let value = units * price;
-          if (day === end && tax.liquidate) { const capital = Math.max(0, value - basis) * rates.gain / 100; value -= capital; taxCost += capital; }
+          taxReserve = Math.max(0, value - basis) * rates.gain / 100;
+          value -= taxReserve;
+          if (day === end && tax.liquidate) { paidTax += taxReserve; taxReserve = 0; }
           values.set(day, value);
         }
         const points = curve.map(p => ({ day: p.day, nav: values.get(p.day) / base }));
         benchmark = { id: asset.id, name: asset.name, curve: points, totalReturn: (points.at(-1).nav - 1) * 100,
-          annualReturn: annualReturn(points.at(-1).nav, start, end), taxCost, taxRates: rates, taxBasis: 'same_simulation_rates' };
+          annualReturn: annualReturn(points.at(-1).nav, start, end), taxCost: paidTax + taxReserve, paidTax, taxReserve, usesFx: !!benchmarkFx, taxRates: rates, taxBasis: 'same_simulation_rates' };
       } catch (error) { benchmarkError = error.message; }
     }
     const fullYear = end >= addYears(start, 1);
     const xirr = fullYear ? M.buyLocationXirr(flows) : null;
     const xirrMissing = xirr !== null ? null : !fullYear ? '模拟不足一年，不外推资金年化' : '实际资金流缺可用年化解';
-    return { start, end, requestedStart, requestedEnd, commonFirst: common[0], commonLast: common.at(-1),
+    return { start, end, requestedStart, requestedEnd, commonFirst: common[0], commonLast: common.at(-1), currency, usesFx: needsFx,
       totalReturn: final.totalReturn, annualReturn: annualReturn(final.nav, start, end), value: final.value,
       contributed, profit: final.profit, mdd, volatility, cash, cashWeight: cashWeight * 100, holdings, curve, annual,
       // A short-period money-weighted figure is left unannualized rather than
@@ -517,13 +534,14 @@
       xirr, xirrMissing,
       deposits, rebalances, transactions, tradeCost, initialReserve, timingChanges,
       strategy: { ...strategy, warmupDays, insufficientMaDays, signalBasis: 'prior_common_close_target_weight_reference' },
-      plan: { initial: [...initialPlan].map(([day, amount]) => ({ day, amount })), income: [...incomePlan].map(([day, amount]) => ({ day, amount })) }, taxEvents, taxCost: sum(capitalTaxes) + sum(dividendTaxes), capitalTax: sum(capitalTaxes), dividendTax: sum(dividendTaxes), carriedPrices, carriedFx, benchmark, benchmarkError,
-      config: JSON.parse(JSON.stringify(config)) };
+      plan: { initial: [...initialPlan].map(([day, amount]) => ({ day, amount })), income: [...incomePlan].map(([day, amount]) => ({ day, amount })) }, taxEvents,
+      grossValue: final.grossValue, taxReserve: final.taxReserve, paidTax: final.paidTax, taxCost: final.taxCost, capitalTax: sum(capitalTaxes), dividendTax: sum(dividendTaxes), carriedPrices, carriedFx, benchmark, benchmarkError,
+      config: JSON.parse(JSON.stringify({ ...config, currency })) };
   }
   function sanitizeDraft(value, ids) {
     if (!value || value.schemaVersion !== 1 || !Array.isArray(value.positions)) fail('组合配置格式无效');
     const positions = value.positions.map(p => ({ id: p.id, weight: p.weight }));
-    const config = { positions, initial: value.initial, monthly: value.monthly, rebalance: value.rebalance,
+    const config = { positions, currency: currencyInfo(value).code, initial: value.initial, monthly: value.monthly, rebalance: value.rebalance,
       years: value.years, start: value.start || '', end: value.end || '', transactionFee: value.transactionFee,
       feeBasis: value.feeBasis || 'net', feeOverrides: value.feeOverrides || {}, benchmarkId: value.benchmarkId || '', tax: taxConfig(value.tax), ...strategyConfig(value) };
     validateConfig(config, ids);
@@ -533,5 +551,5 @@
     }
     return config;
   }
-  return { simulate, simulateWindows, validateHistory, validateConfig, sanitizeDraft, allocation, amountFromWeight, weightFromAmount, at, annualReturn, holdingXirr, addYears, taxConfig, taxRates, strategyConfig, strategyNames, initialMethods, contributionMethods };
+  return { simulate, simulateWindows, validateHistory, validateConfig, sanitizeDraft, allocation, amountFromWeight, weightFromAmount, at, annualReturn, holdingXirr, addYears, taxConfig, taxRates, currencyInfo, strategyConfig, strategyNames, initialMethods, contributionMethods };
 });

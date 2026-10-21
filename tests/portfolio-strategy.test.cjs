@@ -35,7 +35,8 @@ test('periodic rebalance excludes reserved principal and keeps tax and fee charg
   Object.assign(input.config, { monthly: 100, transactionFee: 1, tax: { cnStockCapitalGains: 20 } });
   const taxed = simulate(input);
   close(taxed.initialReserve, 400); assert.ok(taxed.cash >= 400 - 1e-7);
-  close(taxed.holdings[0].value, taxed.holdings[1].value);
+  close(taxed.holdings[0].grossValue, taxed.holdings[1].grossValue);
+  close(taxed.grossValue - taxed.taxReserve, taxed.value);
   assert.ok(taxed.tradeCost > 0 && taxed.capitalTax > 0);
   close(taxed.holdings.reduce((a, h) => a + h.profit, 0), taxed.profit);
 });
