@@ -3,32 +3,32 @@ var UPDATE_STATUS={
   "datasets": {
     "strategy": {
       "status": "success",
-      "attemptedAt": "2026-10-20T15:33:18+00:00",
-      "asOf": "2026-10-19",
+      "attemptedAt": "2026-10-21T17:14:43+00:00",
+      "asOf": "2026-10-20",
       "records": 432,
       "basis": "provider_adjusted_close",
       "mode": "online",
       "execution": {
         "exitCode": 0,
-        "seconds": 42.88
+        "seconds": 33.13
       },
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-10-20T15:33:18+00:00",
-        "asOf": "2026-10-19",
+        "attemptedAt": "2026-10-21T17:14:43+00:00",
+        "asOf": "2026-10-20",
         "records": 432,
         "basis": "provider_adjusted_close",
         "mode": "online",
         "execution": {
           "exitCode": 0,
-          "seconds": 42.88
+          "seconds": 33.13
         }
       }
     },
     "funds": {
       "status": "success",
-      "attemptedAt": "2026-10-20T15:25:00+00:00",
-      "asOf": "2026-10-19",
+      "attemptedAt": "2026-10-21T17:05:50+00:00",
+      "asOf": "2026-10-20",
       "records": 46,
       "requested": 46,
       "failures": [],
@@ -36,12 +36,12 @@ var UPDATE_STATUS={
       "mode": "online",
       "execution": {
         "exitCode": 0,
-        "seconds": 84.13
+        "seconds": 54.13
       },
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-10-20T15:25:00+00:00",
-        "asOf": "2026-10-19",
+        "attemptedAt": "2026-10-21T17:05:50+00:00",
+        "asOf": "2026-10-20",
         "records": 46,
         "requested": 46,
         "failures": [],
@@ -49,182 +49,182 @@ var UPDATE_STATUS={
         "mode": "online",
         "execution": {
           "exitCode": 0,
-          "seconds": 84.13
+          "seconds": 54.13
         }
       }
     },
     "indices": {
       "status": "success",
-      "attemptedAt": "2026-10-20T15:27:43+00:00",
+      "attemptedAt": "2026-10-21T17:10:02+00:00",
       "exitCode": 0,
-      "seconds": 24.0,
+      "seconds": 18.74,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-10-20T15:27:43+00:00",
+        "attemptedAt": "2026-10-21T17:10:02+00:00",
         "exitCode": 0,
-        "seconds": 24.0,
+        "seconds": 18.74,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "stocks": {
       "status": "success",
-      "attemptedAt": "2026-10-20T15:32:05+00:00",
+      "attemptedAt": "2026-10-21T17:13:43+00:00",
       "records": 71,
       "failures": [],
-      "asOf": "2026-10-20",
+      "asOf": "2026-10-21",
       "mode": "online",
       "execution": {
         "exitCode": 0,
-        "seconds": 262.87
+        "seconds": 221.07
       },
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-10-20T15:32:05+00:00",
+        "attemptedAt": "2026-10-21T17:13:43+00:00",
         "records": 71,
         "failures": [],
-        "asOf": "2026-10-20",
+        "asOf": "2026-10-21",
         "mode": "online",
         "execution": {
           "exitCode": 0,
-          "seconds": 262.87
+          "seconds": 221.07
         }
       }
     },
     "screening": {
       "status": "checked",
-      "attemptedAt": "2026-10-20T15:32:35+00:00",
+      "attemptedAt": "2026-10-21T17:14:10+00:00",
       "exitCode": 0,
-      "seconds": 2.6,
+      "seconds": 1.88,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "checked",
-        "attemptedAt": "2026-10-20T15:32:35+00:00",
+        "attemptedAt": "2026-10-21T17:14:10+00:00",
         "exitCode": 0,
-        "seconds": 2.6,
+        "seconds": 1.88,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "quality": {
       "status": "checked",
-      "attemptedAt": "2026-10-20T15:51:45+00:00",
+      "attemptedAt": "2026-10-21T17:26:03+00:00",
       "exitCode": 0,
-      "seconds": 1.81,
+      "seconds": 1.33,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "checked",
-        "attemptedAt": "2026-10-20T15:51:45+00:00",
+        "attemptedAt": "2026-10-21T17:26:03+00:00",
         "exitCode": 0,
-        "seconds": 1.81,
+        "seconds": 1.33,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "research_funds": {
       "status": "success",
-      "attemptedAt": "2026-10-20T15:27:19+00:00",
+      "attemptedAt": "2026-10-21T17:09:43+00:00",
       "records": 395,
       "requested": 395,
-      "asOf": "2026-10-20",
+      "asOf": "2026-10-21",
       "dateRange": [
-        "2026-10-16",
-        "2026-10-20"
+        "2026-10-20",
+        "2026-10-21"
       ],
       "failures": [],
       "riskWarnings": {
-        "158042": "日频风险观测不足（16条，至少18条）"
+        "158042": "日频风险观测不足（17条，至少19条）"
       },
       "mode": "online",
       "execution": {
         "exitCode": 0,
-        "seconds": 138.96
+        "seconds": 232.81
       },
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-10-20T15:27:19+00:00",
+        "attemptedAt": "2026-10-21T17:09:43+00:00",
         "records": 395,
         "requested": 395,
-        "asOf": "2026-10-20",
+        "asOf": "2026-10-21",
         "dateRange": [
-          "2026-10-16",
-          "2026-10-20"
+          "2026-10-20",
+          "2026-10-21"
         ],
         "failures": [],
         "riskWarnings": {
-          "158042": "日频风险观测不足（16条，至少18条）"
+          "158042": "日频风险观测不足（17条，至少19条）"
         },
         "mode": "online",
         "execution": {
           "exitCode": 0,
-          "seconds": 138.96
+          "seconds": 232.81
         }
       }
     },
     "portfolio": {
       "status": "success",
-      "attemptedAt": "2026-10-20T15:51:43+00:00",
-      "records": 1870,
-      "total": 1870,
-      "available": 1870,
+      "attemptedAt": "2026-10-21T17:26:01+00:00",
+      "records": 1873,
+      "total": 1873,
+      "available": 1873,
       "missing": 0,
-      "navUpdated": 1249,
+      "navUpdated": 1242,
       "navWarnings": {},
-      "returnsUpdated": 1406,
+      "returnsUpdated": 1683,
       "returnsRetained": {},
       "message": "全部研究对象纳入标的库；基金收益由已校验净值曲线复算，实际日期逐项保存；费率、规模、经理及经营研究保持独立证据日期。",
       "mode": "online",
       "execution": {
         "exitCode": 0,
-        "seconds": 1104.92
+        "seconds": 677.55
       },
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-10-20T15:51:43+00:00",
-        "records": 1870,
-        "total": 1870,
-        "available": 1870,
+        "attemptedAt": "2026-10-21T17:26:01+00:00",
+        "records": 1873,
+        "total": 1873,
+        "available": 1873,
         "missing": 0,
-        "navUpdated": 1249,
+        "navUpdated": 1242,
         "navWarnings": {},
-        "returnsUpdated": 1406,
+        "returnsUpdated": 1683,
         "returnsRetained": {},
         "message": "全部研究对象纳入标的库；基金收益由已校验净值曲线复算，实际日期逐项保存；费率、规模、经理及经营研究保持独立证据日期。",
         "mode": "online",
         "execution": {
           "exitCode": 0,
-          "seconds": 1104.92
+          "seconds": 677.55
         }
       }
     },
     "overseas_stocks": {
       "status": "success",
-      "attemptedAt": "2026-10-20T15:32:32+00:00",
-      "asOf": "2026-10-19",
+      "attemptedAt": "2026-10-21T17:14:08+00:00",
+      "asOf": "2026-10-20",
       "records": 79,
       "message": "发行人、股票类型、币种及上市历史已核对；财报与估值分别标注日期。",
       "mode": "online",
       "execution": {
         "exitCode": 0,
-        "seconds": 26.69
+        "seconds": 25.35
       },
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-10-20T15:32:32+00:00",
-        "asOf": "2026-10-19",
+        "attemptedAt": "2026-10-21T17:14:08+00:00",
+        "asOf": "2026-10-20",
         "records": 79,
         "message": "发行人、股票类型、币种及上市历史已核对；财报与估值分别标注日期。",
         "mode": "online",
         "execution": {
           "exitCode": 0,
-          "seconds": 26.69
+          "seconds": 25.35
         }
       }
     }
   },
-  "checkedAt": "2026-10-20T15:51:45+00:00"
+  "checkedAt": "2026-10-21T17:26:03+00:00"
 };
