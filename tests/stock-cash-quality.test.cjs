@@ -11,11 +11,16 @@ test('zero cash, losses and industrial versus financial models remain distinct',
   assert.equal(M.stockCashQuality({symbol:'BANK',accountingModel:'bank'}).applicable,false);
   assert.equal(M.stockCashQuality({symbol:'TEST',analysis:{cashConversion:.5},financials:{ttmProfit:10}}).pass,true);
 });
-test('published A-share cash constraint exposes two candidates with weaker TTM conversion',()=>{
+test('published A-share cash conversion uses the latest filing and its matching prior period',()=>{
   const s={};vm.createContext(s);vm.runInContext(fs.readFileSync('data/snapshot.js','utf8'),s);
   const f=s.STOCKS.find(x=>x.c==='601138'); const c=M.stockCashQuality(f);
-  const last=f.latestFinancials,previous=f.financialReports.find(x=>x.reportDate==='2025-06-30'),annual=f.financialReports.find(x=>x.reportDate==='2025-12-31');
-  assert.equal(c.cash,last.operatingCashFlow+annual.operatingCashFlow-previous.operatingCashFlow);
-  assert.equal(c.profit,last.netProfit+annual.netProfit-previous.netProfit);
+  const last=f.latestFinancials,priorYear=Number(last.reportDate.slice(0,4))-1;
+  const previous=f.financialReports.find(x=>x.reportDate===priorYear+last.reportDate.slice(4));
+  const annual=f.financialReports.find(x=>x.reportDate===priorYear+'-12-31');
+  for(const [result,key] of [['cash','operatingCashFlow'],['profit','netProfit']]) {
+    const inputs=last.reportDate.endsWith('12-31')?[last[key]]:[last[key],annual?.[key],previous?.[key]];
+    const expected=inputs.every(Number.isFinite)?(inputs.length===1?inputs[0]:inputs[0]+inputs[1]-inputs[2]):null;
+    assert.equal(c[result],expected);
+  }
   assert.equal(c.pass,c.ratio>=.5);
 });

@@ -2,6 +2,7 @@ import json
 import unittest
 from copy import deepcopy
 from pathlib import Path
+from unittest.mock import patch
 
 from stock_income import income_review, cn_income_review, us_income_review
 from stock_screen import load_old_rows
@@ -10,10 +11,16 @@ from company_selection import apply_cn
 ROOT=Path(__file__).resolve().parents[1]
 
 class SharedIncomeTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.cn=load_old_rows((ROOT/'data/snapshot.js').read_text())
-        cls.us={r['symbol']:r for r in json.loads(next(l.split('=',1)[1].rstrip(';') for l in (ROOT/'data/overseas-stocks.js').read_text().splitlines() if l.startswith('var OVERSEAS_STOCKS=')))}
+    def setUp(self):
+        fixture = ROOT / 'tests/fixtures/stock-income-20261020.json'
+        inputs = json.loads(fixture.read_text())
+        for target in ('stock_income.REVIEWS', 'company_selection.PATH'):
+            replacement = patch(target, fixture)
+            replacement.start()
+            self.addCleanup(replacement.stop)
+        self.cn, self.us = inputs['cn'], inputs['us']
+        for row in self.cn.values():
+            apply_cn(row, inputs['asOf'])
 
     def inputs(self):
         return dict(asof='2026-10-17', period='2026-06-30', published='2026-08-20', report_source='https://example.com/report',
@@ -100,5 +107,22 @@ class SharedIncomeTests(unittest.TestCase):
         row['incomeShareEvidence']['reports'][0]['shares'] *= 1.1
         review=cn_income_review(row,'2026-10-17')
         self.assertIsNone(review['payoutRatio']);self.assertFalse(review['qualified'])
+
+
+class PublishedIncomeTests(unittest.TestCase):
+    def test_published_income_reviews_follow_current_financials_and_dates(self):
+        cn = load_old_rows((ROOT / 'data/snapshot.js').read_text()).values()
+        us = json.loads(next(l.split('=', 1)[1].rstrip(';')
+            for l in (ROOT / 'data/overseas-stocks.js').read_text().splitlines()
+            if l.startswith('var OVERSEAS_STOCKS=')))
+        for rows, calculate in [(cn, cn_income_review), (us, us_income_review)]:
+            for row in rows:
+                with self.subTest(company=row.get('c') or row['symbol']):
+                    selection = row['companySelection']
+                    review = selection['reviews']['dividend']
+                    self.assertEqual(calculate(row, selection['checkedAt']), review)
+                    self.assertEqual('dividend' in selection['groups'], review['qualified'])
+                    self.assertEqual(review['qualified'], all(c['pass'] for c in review['checks']))
+
 
 if __name__=='__main__':unittest.main()

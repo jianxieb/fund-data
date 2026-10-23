@@ -71,8 +71,10 @@ class DurableQualityTests(unittest.TestCase):
         row['analysis']['annual'][-2]['roe']=9.99
         with patch('company_selection.apply_us', side_effect=lambda r, day: r):
             self.assertNotIn('growth',classify(row,'2026-10-17')['screening']['groups'])
-        rows=load_old_rows((ROOT/'data/snapshot.js').read_text())
-        row=deepcopy(rows['300750'])
+        # The archived numeric rule needs the archived company's inputs too.
+        from scripts.build_stock_reports import report_row
+        row=report_row(json.loads((ROOT/'company-report/data/300750/summary.json').read_text()))
+        self.assertTrue(growth_review.__wrapped__(row,'2026-10-17')['qualified'])
         row['financialHistory5'][1]['roe']=9.99
         self.assertFalse(growth_review.__wrapped__(row,'2026-10-17')['qualified'])
 

@@ -68,29 +68,39 @@ test('calendar coverage rejects impossible dates and handles leap anniversaries'
 });
 
 test('unselected research exposes only its relevant business track and exact exclusion evidence', () => {
-  const vm = require('node:vm'), context = {};
-  vm.createContext(context); vm.runInContext(fs.readFileSync('data/snapshot.js', 'utf8'), context);
-  const s = context.STOCKS.find(s => s.c === '002648'), status = M.stockResearchStatus(s);
+  const s = {c:'TEST',group:'growth',companySelection:{groups:['other'],researchGroups:['breakout']},
+    breakoutReview:{qualified:false,checks:[{label:'本期盈利来源',pass:false,reason:'价差扩张受周期影响'}]}};
+  const status = M.stockResearchStatus(s);
   assert.equal(status.groups.length, 0); assert.equal(status.label, '未入选当前名单');
   assert.deepEqual(status.exclusions.map(e => e.id), ['breakout']);
   assert.match(status.exclusions[0].checks[0].reason, /价差.*周期/);
   assert.equal(M.stockMatches(s, 'other'), true);
-  const selectedGroups = ['quality', 'growth', 'breakout', 'dividend'];
-  for (const stock of context.STOCKS) {
-    const selected = selectedGroups.some(group => M.stockMatches(stock, group));
-    assert.equal(M.stockMatches(stock, 'other'), !selected, stock.c);
-  }
-  const zijin=context.STOCKS.find(stock => stock.c === '601899');
+  const fixture = require('./fixtures/company-selection-20261020.json');
+  const historical = code => ({...fixture.cn[code],companySelection:fixture.companies['cn:'+code]});
+  const zijin=historical('601899');
   assert.equal(M.stockMatches(zijin, 'other'), false);
   assert.equal(M.stockMatches(zijin, 'quality'), true);
   assert.equal(M.stockMatches(zijin, 'growth'), true);
-  assert.equal(M.stockMatches(context.STOCKS.find(stock => stock.c === '601138'), 'growth'), true);
-  assert.equal(M.stockMatches(context.STOCKS.find(stock => stock.c === '600036'), 'other'), false);
-  const industrial = context.STOCKS.find(stock => stock.c === '601138');
+  const industrial = historical('601138');
+  assert.equal(M.stockMatches(industrial, 'growth'), true);
+  assert.equal(M.stockMatches({group:'dividend',companySelection:{groups:['dividend']}}, 'other'), false);
   assert.ok(M.stockCashQuality(industrial).ratio < .5);
   assert.match(industrial.companySelection.risk, /周转和减值.*不能仅据现金\/利润比例断言偿债压力/);
   assert.equal(M.stockMatches(industrial,'quality'),true);
   assert.equal(M.stockResearchStatus({ c:'123456', group:'dividend' }).exclusions.length, 0);
+});
+
+test('current stock filters follow published decisions as companies enter and leave groups', () => {
+  const vm = require('node:vm'), context = {};
+  vm.createContext(context); vm.runInContext(fs.readFileSync('data/snapshot.js', 'utf8'), context);
+  for (const stock of context.STOCKS) {
+    const groups = stock.companySelection.groups.filter(g => g !== 'other');
+    for (const group of ['quality', 'growth', 'breakout', 'dividend']) {
+      assert.equal(M.stockMatches(stock, group), groups.includes(group), stock.c+' '+group);
+    }
+    assert.deepEqual(M.stockResearchStatus(stock).groups.map(g => g.id), Array.from(groups), stock.c);
+    assert.equal(M.stockMatches(stock, 'other'), groups.length === 0, stock.c);
+  }
 });
 
 test('deduplication keeps NAV, return and risk observation dates independent', () => {

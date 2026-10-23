@@ -111,7 +111,8 @@ class ReportCalculationTests(unittest.TestCase):
 
 class IndependentGroupTests(unittest.TestCase):
     def setUp(self):
-        self.live_rows = load_old_rows((ROOT / 'data/snapshot.js').read_text())
+        # These are dated research cases. Replaying their policy date requires
+        # their frozen financial inputs, never the next daily snapshot.
         self.rows = {}
         for path in (ROOT / 'company-report/data').glob('*/summary.json'):
             data = json.loads(path.read_text())
@@ -119,16 +120,11 @@ class IndependentGroupTests(unittest.TestCase):
                 self.rows[data['code']] = report_row(data)
         self.asof = self.rows['601138']['growthReview']['checkedAt']
 
-    def test_current_groups_overlap_without_importing_dividend_pool(self):
+    def test_historical_groups_overlap_without_importing_dividend_pool(self):
         quality = {c for c, r in self.rows.items() if (r.get('longTermReview') or {}).get('qualified')}
         growth = {c for c, r in self.rows.items() if (r.get('growthReview') or {}).get('qualified')}
         self.assertTrue({'601138', '601899', '300750', '300308', '002463', '603979'} <= quality & growth)
         self.assertTrue({'600183', '300604', '001389', '002916', '688183'} <= growth - quality)
-        self.assertEqual(sum(r['group'] == 'dividend' for r in self.live_rows.values()), 23)
-        for row in self.live_rows.values():
-            asof = (row.get('companySelection') or {}).get('checkedAt') or (row.get('qualityReview') or {}).get('checkedAt', '2026-09-30')
-            self.assertEqual(growth_review(row, asof), row.get('growthReview'))
-            self.assertEqual(long_term_review(row, asof), row.get('longTermReview'))
 
     def test_positive_years_or_halfyear_alone_cannot_admit(self):
         self.assertFalse(self.rows['300693']['growthReview']['qualified'])  # Q1 not yet high growth.
@@ -153,12 +149,9 @@ class IndependentGroupTests(unittest.TestCase):
             self.assertFalse(row['longTermReview']['qualified'])
             self.assertFalse(row['growthReview']['qualified'])
             self.assertEqual(breakout_review(row, self.asof), row['breakoutReview'])
-            live = self.live_rows[code]
-            self.assertEqual(breakout_review(live, live['breakoutReview']['checkedAt']), live['breakoutReview'])
             self.assertTrue(all(c['reason'] for c in row['growthReview']['checks'] if not c['pass']))
         for code in ('002648', '603259'):
             self.assertFalse(self.rows[code]['breakoutReview']['qualified'])
-            self.assertFalse(self.live_rows[code]['breakoutReview']['qualified'])
 
     def test_breakout_financial_growth_cannot_override_prices_or_unseparated_consolidation(self):
         for code in ('002384', '002266', '002756', '600111', '688766'):
@@ -169,15 +162,9 @@ class IndependentGroupTests(unittest.TestCase):
                 self.assertEqual(review['operatingReview']['breakoutDecision'], 'exclude')
                 self.assertFalse(review['checks'][-1]['pass'])
                 self.assertTrue(review['checks'][-1]['reason'])
-                live = self.live_rows[code]
-                self.assertEqual(breakout_review(live, live['breakoutReview']['checkedAt']), live['breakoutReview'])
-                current = live['breakoutReview']
-                self.assertFalse(current['qualified'])
-                self.assertEqual(current['operatingReview']['breakoutDecision'], 'exclude')
-                self.assertTrue(any(not c['pass'] and c['reason'] for c in current['checks']))
                 # A new dated policy may add cash checks; the historical result
-                # must still reproduce under its own date without rewriting it.
-                historical = breakout_review(live, review['checkedAt'])
+                # must reproduce with its own inputs and date.
+                historical = breakout_review(self.rows[code], review['checkedAt'])
                 self.assertEqual(historical, review)
         for change in ('missing', 'future', 'stale', 'no_source', 'prices'):
             row = copy.deepcopy(self.rows['601869'])
@@ -188,6 +175,25 @@ class IndependentGroupTests(unittest.TestCase):
             elif change == 'no_source': review['sourceUrls'] = ['https://example.com/unknown']
             elif change == 'prices': review['breakoutDecision'] = 'exclude'
             self.assertFalse(breakout_review(row, self.asof)['qualified'], change)
+
+    def test_new_filing_does_not_rewrite_or_inherit_a_historical_breakout(self):
+        for code in ('002756', '601869'):
+            with self.subTest(code=code):
+                frozen = self.rows[code]
+                historical = copy.deepcopy(frozen['breakoutReview'])
+                current = copy.deepcopy(frozen)
+                latest = {**current['latestFinancials'], 'reportDate': '2026-09-30',
+                          'announcedAt': '2026-10-22'}
+                current['latestFinancials'] = latest
+                current['financialReports'].insert(0, latest)
+                # A Q3 announcement was not known at the old Q2 research date.
+                self.assertFalse(breakout_review(current, self.asof)['checks'][1]['pass'])
+                self.assertTrue(breakout_review.__wrapped__(current, '2026-10-23')['checks'][1]['pass'])
+                refresh_quality_review(current, '2026-10-23')
+                self.assertFalse(current['breakoutReview']['qualified'])
+                self.assertEqual(current['companySelection']['status'], 'pending')
+                self.assertEqual(current['companySelection']['groups'], ['other'])
+                self.assertEqual(breakout_review(frozen, self.asof), historical)
 
     def test_breakout_rejects_losses_declining_prior_quarter_and_missing_research(self):
         row = copy.deepcopy(self.rows['601869'])
@@ -221,13 +227,30 @@ class IndependentGroupTests(unittest.TestCase):
         manifest = json.loads((ROOT / 'data/stock-report-research.json').read_text())
         self.assertEqual(codes, {r['code'] for r in manifest['companies']})
         self.assertTrue({'300866', '001389', '688019', '688700', '688766'} <= codes)
-        self.assertTrue({c for c, r in self.live_rows.items() if r['group'] != 'dividend'} <= codes)
+        live_rows = load_old_rows((ROOT / 'data/snapshot.js').read_text())
+        self.assertTrue({c for c, r in live_rows.items() if r['group'] != 'dividend'} <= codes)
         for report in reports:
             self.assertTrue((ROOT / report['markdownPath']).is_file())
             self.assertTrue(any(s['id'] == 'sources' and s['links'] for s in report['sections']))
         litong = next(r for r in reports if r['code'] == '603629')
         self.assertEqual(litong['groups'], [])
         self.assertIn('7.65%', json.dumps(litong, ensure_ascii=False))
+
+
+class PublishedGroupTests(unittest.TestCase):
+    def test_every_current_group_reproduces_at_its_own_observation_date(self):
+        rows = load_old_rows((ROOT / 'data/snapshot.js').read_text())
+        for code, row in rows.items():
+            if row['group'] == 'dividend':
+                continue
+            for key, calculate in [('longTermReview', long_term_review),
+                                   ('growthReview', growth_review),
+                                   ('breakoutReview', breakout_review)]:
+                with self.subTest(code=code, group=key):
+                    review = row[key]
+                    self.assertEqual(calculate(row, review['checkedAt']), review)
+                    self.assertEqual(review['qualified'], all(c['pass'] for c in review['checks']))
+                    self.assertTrue(all(c['reason'] for c in review['checks'] if not c['pass']))
 
 
 if __name__ == '__main__':

@@ -1,0 +1,3396 @@
+{
+  "description": "Frozen income evidence for dated 2026-10-17 policy regressions; daily snapshot checks remain separate. companies stores income reviews by code and selection reviews by cn:code.",
+  "sourceCommit": "38b0007a19014280813add48f095337fbf0042a9",
+  "asOf": "2026-10-17",
+  "companies": {
+    "600900": {
+      "name": "长江电力",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-31",
+      "decision": "retain",
+      "rationale": "核对本期盈利、TTM经营现金与实际派息；须同时满足同股本派息覆盖和连续派现检查。",
+      "risk": "来水变化、电价和新增电站资本开支会影响可分配现金。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600900.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22600900%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 36202151477.369995,
+        "ttmOperatingCash": 60700052833.17,
+        "cashDividend12": 1.0,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "000333": {
+      "name": "美的集团",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-29",
+      "decision": "retain",
+      "rationale": "核对本期盈利、TTM经营现金与实际派息；须同时满足同股本派息覆盖和连续派现检查。",
+      "risk": "分红会随盈利、投资支出和资本约束变化；历史派息不保证未来金额。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22000333.SZ%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22000333%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 44377758000.0,
+        "ttmOperatingCash": 53617005000.0,
+        "cashDividend12": 4.3,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "601006": {
+      "name": "大秦铁路",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-21",
+      "decision": "retain",
+      "rationale": "核对本期盈利、TTM经营现金与实际派息；须同时满足同股本派息覆盖和连续派现检查。",
+      "risk": "分红会随盈利、投资支出和资本约束变化；历史派息不保证未来金额。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22601006.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22601006%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 6040176242.0,
+        "ttmOperatingCash": 12756903797.0,
+        "cashDividend12": 0.22169,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "600519": {
+      "name": "贵州茅台",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-15",
+      "decision": "retain",
+      "rationale": "核对本期盈利、TTM经营现金与实际派息；须同时满足同股本派息覆盖和连续派现检查。",
+      "risk": "分红会随盈利、投资支出和资本约束变化；历史派息不保证未来金额。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600519.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22600519%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 81433985225.44,
+        "ttmOperatingCash": 119093894077.08,
+        "cashDividend12": 51.98123,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "600690": {
+      "name": "海尔智家",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-28",
+      "decision": "retain",
+      "rationale": "核对本期盈利、TTM经营现金与实际派息；须同时满足同股本派息覆盖和连续派现检查。",
+      "risk": "分红会随盈利、投资支出和资本约束变化；历史派息不保证未来金额。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600690.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22600690%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 17836057348.84,
+        "ttmOperatingCash": 24615930166.289997,
+        "cashDividend12": 1.16071,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "600941": {
+      "name": "中国移动",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-14",
+      "decision": "retain",
+      "rationale": "核对本期盈利、TTM经营现金与实际派息；须同时满足同股本派息覆盖和连续派现检查。",
+      "risk": "分红会随盈利、投资支出和资本约束变化；历史派息不保证未来金额。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600941.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22600941%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 131794000000.0,
+        "ttmOperatingCash": 263941000000.0,
+        "cashDividend12": 4.7112,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "600938": {
+      "name": "中国海油",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-27",
+      "decision": "retain",
+      "rationale": "核对本期盈利、TTM经营现金与实际派息；须同时满足同股本派息覆盖和连续派现检查。",
+      "risk": "分红会随盈利、投资支出和资本约束变化；历史派息不保证未来金额。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600938.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22600938%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 138367000000.0,
+        "ttmOperatingCash": 241491000000.0,
+        "cashDividend12": 1.14493,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "601728": {
+      "name": "中国电信",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-21",
+      "decision": "retain",
+      "rationale": "核对本期盈利、TTM经营现金与实际派息；须同时满足同股本派息覆盖和连续派现检查。",
+      "risk": "分红会随盈利、投资支出和资本约束变化；历史派息不保证未来金额。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22601728.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22601728%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 29755430909.309998,
+        "ttmOperatingCash": 137859851896.34,
+        "cashDividend12": 0.2514,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "002558": {
+      "name": "巨人网络",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-27",
+      "decision": "hold",
+      "rationale": "不因现金股息率达标自动转入红利榜：尚缺本期经常性游戏收入、产品集中风险与持续派息的专项复核。",
+      "risk": "利润依赖少数爆款，用户留存和付费衰减可能使业绩回落。；游戏版号、内容监管与渠道成本影响产品运营。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22002558.SZ%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22002558%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 3121770671.3999996,
+        "ttmOperatingCash": 4314153515.05,
+        "cashDividend12": 0.99,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "603444": {
+      "name": "吉比特",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-14",
+      "decision": "hold",
+      "rationale": "不因现金股息率达标自动转入红利榜：尚缺本期经常性游戏收入、产品集中风险与持续派息的专项复核。",
+      "risk": "问道IP与杖剑传说贡献集中，玩家偏好和生命周期影响盈利。；产品开发失败、版号或获客成本变化可能拖累利润。",
+      "sourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22603444.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "sourceType": "financial_data_provider",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22603444%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 2240521462.6,
+        "ttmOperatingCash": 2991996972.7300005,
+        "cashDividend12": 23.0,
+        "dividendAsOf": "2026-10-14"
+      }
+    },
+    "600901": {
+      "name": "江苏金租",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-19",
+      "decision": "retain",
+      "rationale": "按本期资本、资产质量及实际现金分红覆盖评审；存贷款现金流不按工业企业标准淘汰。",
+      "risk": "资本充足率15.34%、核心一级14.11%，不良融资租赁资产率0.89%、拨备覆盖397.64%；资本充足率较年末下降1.56个百分点，需跟踪扩表后的资本消耗。",
+      "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-19/1225479935.PDF",
+      "sourceType": "issuer",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22600901%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 3385584561.089999,
+        "ttmOperatingCash": 2701999679.0800004,
+        "cashDividend12": 0.3,
+        "dividendAsOf": "2026-10-14"
+      },
+      "location": "半年报第6页",
+      "capitalReview": "资本充足率15.34%、核心一级14.11%，不良融资租赁资产率0.89%、拨备覆盖397.64%；资本充足率较年末下降1.56个百分点，需跟踪扩表后的资本消耗。"
+    },
+    "601398": {
+      "name": "工商银行",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-28",
+      "decision": "retain",
+      "rationale": "按本期资本、资产质量及实际现金分红覆盖评审；存贷款现金流不按工业企业标准淘汰。",
+      "risk": "资本充足率18.57%，不良贷款率1.29%、拨备覆盖217.58%；本期资本与拨备支持分红，净息差及信用成本恶化会收窄覆盖。",
+      "sourceUrl": "https://m.icbc.com.cn/page/1267851085776654336.html",
+      "sourceType": "issuer",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22601398%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 374141000000.0,
+        "ttmOperatingCash": 2473226000000.0,
+        "cashDividend12": 0.3103,
+        "dividendAsOf": "2026-10-14"
+      },
+      "location": "2026年上半年经营发展公告：风险抵补",
+      "capitalReview": "资本充足率18.57%，不良贷款率1.29%、拨备覆盖217.58%；本期资本与拨备支持分红，净息差及信用成本恶化会收窄覆盖。"
+    },
+    "601939": {
+      "name": "建设银行",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-28",
+      "decision": "retain",
+      "rationale": "按本期资本、资产质量及实际现金分红覆盖评审；存贷款现金流不按工业企业标准淘汰。",
+      "risk": "资本充足率19.42%、核心一级14.24%，不良贷款率1.29%、拨备覆盖238.69%；继续跟踪贷款扩张、净息差和信用损失。",
+      "sourceUrl": "https://ccb.com/eng/2026-08/28/article_2026082820363533267.shtml",
+      "sourceType": "issuer",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22601939%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 346394000000.0,
+        "ttmOperatingCash": 1195311000000.0,
+        "cashDividend12": 0.38870000000000005,
+        "dividendAsOf": "2026-10-14"
+      },
+      "location": "2026 interim results: capital and NPL",
+      "capitalReview": "资本充足率19.42%、核心一级14.24%，不良贷款率1.29%、拨备覆盖238.69%；继续跟踪贷款扩张、净息差和信用损失。"
+    },
+    "601288": {
+      "name": "农业银行",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-28",
+      "decision": "retain",
+      "rationale": "按本期资本、资产质量及实际现金分红覆盖评审；存贷款现金流不按工业企业标准淘汰。",
+      "risk": "资本充足率17.50%、核心一级10.80%，不良贷款率1.25%、拨备覆盖290.10%；核心一级资本较年末11.08%下降，扩表与派息的资本消耗需跟踪。",
+      "sourceUrl": "https://www.abchina.com/en/investor-relations/performance-reports/interim-reports/intrp/202608/t20260828_2658921.htm",
+      "sourceType": "issuer",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22601288%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 297912000000.0,
+        "ttmOperatingCash": 1394715000000.0,
+        "cashDividend12": 0.2495,
+        "dividendAsOf": "2026-10-14"
+      },
+      "location": "Interim Report: financial highlights及Capital Adequacy",
+      "capitalReview": "资本充足率17.50%、核心一级10.80%，不良贷款率1.25%、拨备覆盖290.10%；核心一级资本较年末11.08%下降，扩表与派息的资本消耗需跟踪。"
+    },
+    "601988": {
+      "name": "中国银行",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-29",
+      "decision": "retain",
+      "rationale": "按本期资本、资产质量及实际现金分红覆盖评审；存贷款现金流不按工业企业标准淘汰。",
+      "risk": "资本充足率18.31%、TLAC风险加权比率21.66%，不良贷款率1.22%、拨备覆盖200.85%；境内外信用风险、外汇和净息差变化会影响派息能力。",
+      "sourceUrl": "https://wap.boc.cn/bif/bi1/202608/t20260829_25688331.html",
+      "sourceType": "issuer",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22601988%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 249024000000.0,
+        "ttmOperatingCash": 1294191000000.0,
+        "cashDividend12": 0.2263,
+        "dividendAsOf": "2026-10-14"
+      },
+      "location": "2026年中期业绩：资产质量及资本",
+      "capitalReview": "资本充足率18.31%、TLAC风险加权比率21.66%，不良贷款率1.22%、拨备覆盖200.85%；境内外信用风险、外汇和净息差变化会影响派息能力。"
+    },
+    "600036": {
+      "name": "招商银行",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-17",
+      "publishedAt": "2026-08-29",
+      "decision": "retain",
+      "rationale": "按本期资本、资产质量及实际现金分红覆盖评审；存贷款现金流不按工业企业标准淘汰。",
+      "risk": "集团高级法资本充足率18.33%、核心一级14.07%，拨备覆盖385.10%；核心一级较年末下降0.09个百分点，零售信用风险及净息差变化仍须跟踪。",
+      "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-29/1225530237.PDF",
+      "sourceType": "issuer",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22600036%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "evidence": {
+        "ttmProfit": 151696000000.0,
+        "ttmOperatingCash": 621607000000.0,
+        "cashDividend12": 2.016,
+        "dividendAsOf": "2026-10-14"
+      },
+      "location": "半年报第28—30页，集团高级法口径",
+      "capitalReview": "集团高级法资本充足率18.33%、核心一级14.07%，拨备覆盖385.10%；核心一级较年末下降0.09个百分点，零售信用风险及净息差变化仍须跟踪。"
+    },
+    "cn:002558": {
+      "name": "巨人网络",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-18",
+      "groups": [],
+      "rationale": "爆款流水已兑现，但流水不等于可持续净利润；缺本款产品留存、递延收入释放和获客成本回收的分期证据，尚不能确认爆发利润延续。",
+      "risk": "利润依赖少数爆款，用户留存和付费衰减可能使业绩回落。；游戏版号、内容监管与渠道成本影响产品运营。",
+      "invalidation": "核心游戏流水与活跃用户下降，新产品无法接续且获客成本增加。",
+      "sources": [
+        {
+          "title": "巨人网络2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-27/1225514014.PDF",
+          "publishedAt": "2026-08-27",
+          "pages": "10、13、19；财务复算：PDF第7、13、41页",
+          "businessPage": 10,
+          "sha256": "66cce719b2bc0635f0419e9144ffcdf32337eb2f3363afd83c512a3b68866c1d",
+          "reportPeriod": "2026-06-30"
+        }
+      ],
+      "evidence": [
+        {
+          "label": "本期营业收入",
+          "value": 4688729195.66,
+          "unit": "CNY",
+          "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-27/1225514014.PDF",
+          "location": "主要会计数据与财务报表 / 10、13、19；财务复算：PDF第7、13、41页"
+        },
+        {
+          "label": "本期扣非净利润",
+          "value": 2236204413.42,
+          "unit": "CNY",
+          "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-27/1225514014.PDF",
+          "location": "主要会计数据与财务报表 / 10、13、19；财务复算：PDF第7、13、41页"
+        },
+        {
+          "label": "本期经营现金",
+          "value": 2071810782.09,
+          "unit": "CNY",
+          "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-27/1225514014.PDF",
+          "location": "主要会计数据与财务报表 / 10、13、19；财务复算：PDF第7、13、41页"
+        }
+      ],
+      "previousGroups": [
+        "growth"
+      ],
+      "priceContext": {
+        "pe": 13.49729475,
+        "return5y": 126.8626,
+        "priceAsOf": "2026-10-14",
+        "returnBasis": "provider_adjusted_close"
+      },
+      "groupReasons": {
+        "breakout": "爆款流水已兑现，但流水不等于可持续净利润；缺本款产品留存、递延收入释放和获客成本回收的分期证据，尚不能确认爆发利润延续。"
+      },
+      "researchGroups": [
+        "breakout"
+      ],
+      "groupSummaries": {
+        "breakout": "爆款流水已兑现，但流水不等于可持续净利润；缺本款产品留存、递延收入释放和获客成本回收的分期证据，尚不能确认爆发利润延续。"
+      }
+    },
+    "cn:603444": {
+      "name": "吉比特",
+      "reportPeriod": "2026-06-30",
+      "reviewedAt": "2026-10-18",
+      "groups": [],
+      "rationale": "新游上线及少数IP推动利润反弹；缺新品付费留存、营销回收期与老产品衰减的抵消关系，尚不能确认爆发由可重复的产品运营驱动。",
+      "risk": "问道IP与杖剑传说贡献集中，玩家偏好和生命周期影响盈利。；产品开发失败、版号或获客成本变化可能拖累利润。",
+      "invalidation": "主力产品流水持续衰减且新品不能接续，营销投入增加而现金回收下降。",
+      "sources": [
+        {
+          "title": "吉比特2026年半年度报告",
+          "url": "https://static.cninfo.com.cn/finalpage/2026-08-14/1225471814.PDF",
+          "publishedAt": "2026-08-14",
+          "pages": "19、38；财务复算：PDF第10、32页",
+          "businessPage": 19,
+          "sha256": "fe1efb2738df94ab48990a5c4995870d91cd422980e118053841c7bc3e3a39db",
+          "reportPeriod": "2026-06-30"
+        }
+      ],
+      "evidence": [
+        {
+          "label": "本期营业收入",
+          "value": 3726842297.78,
+          "unit": "CNY",
+          "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-14/1225471814.PDF",
+          "location": "主要会计数据与财务报表 / 19、38；财务复算：PDF第10、32页"
+        },
+        {
+          "label": "本期扣非净利润",
+          "value": 1086707855.97,
+          "unit": "CNY",
+          "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-14/1225471814.PDF",
+          "location": "主要会计数据与财务报表 / 19、38；财务复算：PDF第10、32页"
+        },
+        {
+          "label": "本期经营现金",
+          "value": 1272868463.63,
+          "unit": "CNY",
+          "sourceUrl": "https://static.cninfo.com.cn/finalpage/2026-08-14/1225471814.PDF",
+          "location": "主要会计数据与财务报表 / 19、38；财务复算：PDF第10、32页"
+        }
+      ],
+      "previousGroups": [
+        "growth"
+      ],
+      "priceContext": {
+        "pe": 10.90332664,
+        "return5y": 10.4006,
+        "priceAsOf": "2026-10-14",
+        "returnBasis": "provider_adjusted_close"
+      },
+      "groupReasons": {
+        "breakout": "新游上线及少数IP推动利润反弹；缺新品付费留存、营销回收期与老产品衰减的抵消关系，尚不能确认爆发由可重复的产品运营驱动。"
+      },
+      "researchGroups": [
+        "breakout"
+      ],
+      "groupSummaries": {
+        "breakout": "新游上线及少数IP推动利润反弹；缺新品付费留存、营销回收期与老产品衰减的抵消关系，尚不能确认爆发由可重复的产品运营驱动。"
+      }
+    }
+  },
+  "cn": {
+    "600900": {
+      "c": "600900",
+      "n": "长江电力",
+      "group": "dividend",
+      "ind": "电力",
+      "valuationIndustry": "电力",
+      "yield12": 3.37,
+      "dividendPaidCalendarYears": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "dividendAsOf": "2026-10-20",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22600900%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "cashDividend12": 1.0,
+      "incomeShareEvidence": {
+        "reportPeriod": "2026-06-30",
+        "currentShares": 24468217716.0,
+        "shareAsOf": "2026-10-20",
+        "reports": [
+          {
+            "reportDate": "2026-06-30",
+            "shares": 24468217716.0
+          },
+          {
+            "reportDate": "2026-03-31",
+            "shares": 24468217716.0
+          },
+          {
+            "reportDate": "2025-12-31",
+            "shares": 24468217716.0
+          },
+          {
+            "reportDate": "2025-09-30",
+            "shares": 24468217716.0
+          },
+          {
+            "reportDate": "2025-06-30",
+            "shares": 24468217716.0
+          },
+          {
+            "reportDate": "2025-03-31",
+            "shares": 24468217716.0
+          },
+          {
+            "reportDate": "2024-12-31",
+            "shares": 24468217716.0
+          },
+          {
+            "reportDate": "2024-09-30",
+            "shares": 24468217716.0
+          }
+        ]
+      },
+      "fundamentalsSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600900.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "latestFinancials": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-31",
+        "roe": 6.55,
+        "roePrevious": 6.09,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 6.35,
+        "operatingCashFlow": 24128313774.37,
+        "roeChangePoints": 0.46,
+        "roeChangePercent": 7.5534,
+        "revenue": 37929268927.18,
+        "revenueGrowth": 3.3562,
+        "revenueGrowthStatus": null,
+        "netProfit": 14755694774.53,
+        "netProfitGrowth": 13.0154,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 14294030444.04,
+        "deductedProfitGrowth": 8.3686,
+        "deductedProfitGrowthStatus": null
+      },
+      "financialReports": [
+        {
+          "reportDate": "2026-06-30",
+          "announcedAt": "2026-08-31",
+          "netProfit": 14755694774.53,
+          "deductedProfit": 14294030444.04,
+          "operatingCashFlow": 24128313774.37
+        },
+        {
+          "reportDate": "2026-03-31",
+          "announcedAt": "2026-04-30",
+          "netProfit": 6761006898.48,
+          "deductedProfit": 6237332251.35,
+          "operatingCashFlow": 11710663090.9
+        },
+        {
+          "reportDate": "2025-12-31",
+          "announcedAt": "2026-04-30",
+          "netProfit": 34502809176.39,
+          "deductedProfit": 33445575299.94,
+          "operatingCashFlow": 60562925570.41
+        },
+        {
+          "reportDate": "2025-09-30",
+          "announcedAt": "2025-10-31",
+          "netProfit": 28192874494.95,
+          "deductedProfit": 28206547059.13,
+          "operatingCashFlow": 42895214451.84
+        },
+        {
+          "reportDate": "2025-06-30",
+          "announcedAt": "2025-08-30",
+          "netProfit": 13056352473.55,
+          "deductedProfit": 13190192509.73,
+          "operatingCashFlow": 23991186511.61
+        },
+        {
+          "reportDate": "2025-03-31",
+          "announcedAt": "2025-04-30",
+          "netProfit": 5180785597.87,
+          "deductedProfit": 5232734947.37,
+          "operatingCashFlow": 11847251953.1
+        },
+        {
+          "reportDate": "2024-12-31",
+          "announcedAt": "2025-04-30",
+          "netProfit": 32496172808.65,
+          "deductedProfit": 32507551977.06,
+          "operatingCashFlow": 59648468284.22
+        }
+      ],
+      "financialHistory5": [
+        {
+          "year": 2025,
+          "netProfit": 34502809176.39,
+          "operatingCashFlow": 60562925570.41
+        },
+        {
+          "year": 2024,
+          "netProfit": 32496172808.65,
+          "operatingCashFlow": 59648468284.22
+        },
+        {
+          "year": 2023,
+          "netProfit": 27244616815.27,
+          "operatingCashFlow": 64749448288.66
+        },
+        {
+          "year": 2022,
+          "netProfit": 23725915960.71,
+          "operatingCashFlow": 43476502138.14
+        },
+        {
+          "year": 2021,
+          "netProfit": 26272998503.24,
+          "operatingCashFlow": 35732461733.26
+        }
+      ]
+    },
+    "000333": {
+      "c": "000333",
+      "n": "美的集团",
+      "group": "dividend",
+      "ind": "白色家电",
+      "valuationIndustry": "白色家电",
+      "yield12": 5.04,
+      "dividendPaidCalendarYears": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "dividendAsOf": "2026-10-20",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22000333%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "cashDividend12": 4.3,
+      "incomeShareEvidence": {
+        "reportPeriod": "2026-06-30",
+        "currentShares": 7630236422.0,
+        "shareAsOf": "2026-10-20",
+        "reports": [
+          {
+            "reportDate": "2026-06-30",
+            "shares": 7630236422.0
+          },
+          {
+            "reportDate": "2026-03-31",
+            "shares": 7630236422.0
+          },
+          {
+            "reportDate": "2025-12-31",
+            "shares": 7630236422.0
+          },
+          {
+            "reportDate": "2025-09-30",
+            "shares": 7630236422.0
+          },
+          {
+            "reportDate": "2025-06-30",
+            "shares": 7630236422.0
+          },
+          {
+            "reportDate": "2025-03-31",
+            "shares": 7630236422.0
+          },
+          {
+            "reportDate": "2024-12-31",
+            "shares": 7630236422.0
+          },
+          {
+            "reportDate": "2024-09-30",
+            "shares": 7630236422.0
+          }
+        ]
+      },
+      "fundamentalsSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22000333.SZ%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "latestFinancials": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-29",
+        "roe": 11.33,
+        "roePrevious": 11.29,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 8.4,
+        "operatingCashFlow": 37552090000.0,
+        "roeChangePoints": 0.04,
+        "roeChangePercent": 0.3543,
+        "revenue": 261052379000.0,
+        "revenueGrowth": 3.4561,
+        "revenueGrowthStatus": null,
+        "netProfit": 26446037000.0,
+        "netProfitGrowth": 1.662,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 19595179000.0,
+        "deductedProfitGrowth": -25.3102,
+        "deductedProfitGrowthStatus": null
+      },
+      "financialReports": [
+        {
+          "reportDate": "2026-06-30",
+          "announcedAt": "2026-08-29",
+          "netProfit": 26446037000.0,
+          "deductedProfit": 19595179000.0,
+          "operatingCashFlow": 37552090000.0
+        },
+        {
+          "reportDate": "2026-03-31",
+          "announcedAt": "2026-04-30",
+          "netProfit": 12674556000.0,
+          "deductedProfit": 10961722000.0,
+          "operatingCashFlow": 14529165000.0
+        },
+        {
+          "reportDate": "2025-12-31",
+          "announcedAt": "2026-03-31",
+          "netProfit": 43945411000.0,
+          "deductedProfit": 41267233000.0,
+          "operatingCashFlow": 53345930000.0
+        },
+        {
+          "reportDate": "2025-09-30",
+          "announcedAt": "2025-10-30",
+          "netProfit": 37883383000.0,
+          "deductedProfit": 37140080000.0,
+          "operatingCashFlow": 57066085000.0
+        },
+        {
+          "reportDate": "2025-06-30",
+          "announcedAt": "2025-08-30",
+          "netProfit": 26013690000.0,
+          "deductedProfit": 26235399000.0,
+          "operatingCashFlow": 37281015000.0
+        },
+        {
+          "reportDate": "2025-03-31",
+          "announcedAt": "2025-04-30",
+          "netProfit": 12422233000.0,
+          "deductedProfit": 12749867000.0,
+          "operatingCashFlow": 14320968000.0
+        },
+        {
+          "reportDate": "2024-12-31",
+          "announcedAt": "2025-03-29",
+          "netProfit": 38537237000.0,
+          "deductedProfit": 35741418000.0,
+          "operatingCashFlow": 60511572000.0
+        }
+      ],
+      "financialHistory5": [
+        {
+          "year": 2025,
+          "netProfit": 43945411000.0,
+          "operatingCashFlow": 53345930000.0
+        },
+        {
+          "year": 2024,
+          "netProfit": 38537237000.0,
+          "operatingCashFlow": 60511572000.0
+        },
+        {
+          "year": 2023,
+          "netProfit": 33719935000.0,
+          "operatingCashFlow": 57902611000.0
+        },
+        {
+          "year": 2022,
+          "netProfit": 29553507000.0,
+          "operatingCashFlow": 34657828000.0
+        },
+        {
+          "year": 2021,
+          "netProfit": 28573650000.0,
+          "operatingCashFlow": 35091704000.0
+        }
+      ]
+    },
+    "601006": {
+      "c": "601006",
+      "n": "大秦铁路",
+      "group": "dividend",
+      "ind": "铁路公路",
+      "valuationIndustry": "铁路公路",
+      "yield12": 6.15,
+      "dividendPaidCalendarYears": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "dividendAsOf": "2026-10-20",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22601006%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "cashDividend12": 0.30177,
+      "incomeShareEvidence": {
+        "reportPeriod": "2026-06-30",
+        "currentShares": 19862892778.0,
+        "shareAsOf": "2026-10-20",
+        "reports": [
+          {
+            "reportDate": "2026-06-30",
+            "shares": 19862892778.0
+          },
+          {
+            "reportDate": "2026-03-31",
+            "shares": 20147177716.0
+          },
+          {
+            "reportDate": "2025-12-31",
+            "shares": 19862892778.0
+          },
+          {
+            "reportDate": "2025-09-30",
+            "shares": 20147177716.0
+          },
+          {
+            "reportDate": "2025-06-30",
+            "shares": 19862892778.0
+          },
+          {
+            "reportDate": "2025-03-31",
+            "shares": 20147177716.0
+          },
+          {
+            "reportDate": "2024-12-31",
+            "shares": 20147177716.0
+          },
+          {
+            "reportDate": "2024-09-30",
+            "shares": 20147177716.0
+          }
+        ]
+      },
+      "fundamentalsSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22601006.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "latestFinancials": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-21",
+        "roe": 2.57,
+        "roePrevious": 2.55,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 2.56,
+        "operatingCashFlow": 7191863601.0,
+        "roeChangePoints": 0.02,
+        "roeChangePercent": 0.7843,
+        "revenue": 39597345874.0,
+        "revenueGrowth": 6.2,
+        "revenueGrowthStatus": null,
+        "netProfit": 4254959778.0,
+        "netProfitGrowth": 3.4029,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 4242818601.0,
+        "deductedProfitGrowth": 3.5008,
+        "deductedProfitGrowthStatus": null
+      },
+      "financialReports": [
+        {
+          "reportDate": "2026-06-30",
+          "announcedAt": "2026-08-21",
+          "netProfit": 4254959778.0,
+          "deductedProfit": 4242818601.0,
+          "operatingCashFlow": 7191863601.0
+        },
+        {
+          "reportDate": "2026-03-31",
+          "announcedAt": "2026-04-30",
+          "netProfit": 2384215252.0,
+          "deductedProfit": 2385546444.0,
+          "operatingCashFlow": 694558501.0
+        },
+        {
+          "reportDate": "2025-12-31",
+          "announcedAt": "2026-04-30",
+          "netProfit": 5900148479.0,
+          "deductedProfit": 5860925621.0,
+          "operatingCashFlow": 4986743179.0
+        },
+        {
+          "reportDate": "2025-09-30",
+          "announcedAt": "2025-10-30",
+          "netProfit": 6223959089.0,
+          "deductedProfit": 6188679193.0,
+          "operatingCashFlow": 3588391002.0
+        },
+        {
+          "reportDate": "2025-06-30",
+          "announcedAt": "2025-08-29",
+          "netProfit": 4114932015.0,
+          "deductedProfit": 4099311721.0,
+          "operatingCashFlow": -578297017.0
+        },
+        {
+          "reportDate": "2025-03-31",
+          "announcedAt": "2025-04-30",
+          "netProfit": 2570966279.0,
+          "deductedProfit": 2562746370.0,
+          "operatingCashFlow": -1694615289.0
+        },
+        {
+          "reportDate": "2024-12-31",
+          "announcedAt": "2025-04-30",
+          "netProfit": 9039359180.0,
+          "deductedProfit": 9035894562.0,
+          "operatingCashFlow": 9316632097.0
+        }
+      ],
+      "financialHistory5": [
+        {
+          "year": 2025,
+          "netProfit": 5900148479.0,
+          "operatingCashFlow": 4986743179.0
+        },
+        {
+          "year": 2024,
+          "netProfit": 9039359180.0,
+          "operatingCashFlow": 9316632097.0
+        },
+        {
+          "year": 2023,
+          "netProfit": 11930006082.0,
+          "operatingCashFlow": 17245661426.0
+        },
+        {
+          "year": 2022,
+          "netProfit": 11196257454.0,
+          "operatingCashFlow": 16102106613.0
+        },
+        {
+          "year": 2021,
+          "netProfit": 12181309677.0,
+          "operatingCashFlow": 18898446858.0
+        }
+      ]
+    },
+    "600519": {
+      "c": "600519",
+      "n": "贵州茅台",
+      "group": "dividend",
+      "ind": "白酒Ⅱ",
+      "valuationIndustry": "白酒Ⅱ",
+      "yield12": 3.9,
+      "dividendPaidCalendarYears": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "dividendAsOf": "2026-10-20",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22600519%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "cashDividend12": 51.98123,
+      "incomeShareEvidence": {
+        "reportPeriod": "2026-06-30",
+        "currentShares": 1250081601.0,
+        "shareAsOf": "2026-10-20",
+        "reports": [
+          {
+            "reportDate": "2026-06-30",
+            "shares": 1250081601.0
+          },
+          {
+            "reportDate": "2026-03-31",
+            "shares": 1252270215.0
+          },
+          {
+            "reportDate": "2025-12-31",
+            "shares": 1250081601.0
+          },
+          {
+            "reportDate": "2025-09-30",
+            "shares": 1252270215.0
+          },
+          {
+            "reportDate": "2025-06-30",
+            "shares": 1250081601.0
+          },
+          {
+            "reportDate": "2025-03-31",
+            "shares": 1252270215.0
+          },
+          {
+            "reportDate": "2024-12-31",
+            "shares": 1252270215.0
+          },
+          {
+            "reportDate": "2024-09-30",
+            "shares": 1252270215.0
+          }
+        ]
+      },
+      "fundamentalsSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600519.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "latestFinancials": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-15",
+        "roe": 16.75,
+        "roePrevious": 17.89,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 16.74,
+        "operatingCashFlow": 70690750119.06,
+        "roeChangePoints": -1.14,
+        "roeChangePercent": -6.3723,
+        "revenue": 92278072083.21,
+        "revenueGrowth": 1.3001,
+        "revenueGrowthStatus": null,
+        "netProfit": 44516880421.86,
+        "netProfitGrowth": -1.9516,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 44464207646.01,
+        "deductedProfitGrowth": -2.0402,
+        "deductedProfitGrowthStatus": null
+      },
+      "financialReports": [
+        {
+          "reportDate": "2026-06-30",
+          "announcedAt": "2026-08-15",
+          "netProfit": 44516880421.86,
+          "deductedProfit": 44464207646.01,
+          "operatingCashFlow": 70690750119.06
+        },
+        {
+          "reportDate": "2026-03-31",
+          "announcedAt": "2026-04-25",
+          "netProfit": 27242512886.45,
+          "deductedProfit": 27239985194.41,
+          "operatingCashFlow": 26909891269.13
+        },
+        {
+          "reportDate": "2025-12-31",
+          "announcedAt": "2026-04-17",
+          "netProfit": 82320067101.68,
+          "deductedProfit": 82293107655.25,
+          "operatingCashFlow": 61522204989.35
+        },
+        {
+          "reportDate": "2025-09-30",
+          "announcedAt": "2025-10-30",
+          "netProfit": 64626746712.18,
+          "deductedProfit": 64680616431.2,
+          "operatingCashFlow": 38196802155.27
+        },
+        {
+          "reportDate": "2025-06-30",
+          "announcedAt": "2025-08-13",
+          "netProfit": 45402962298.1,
+          "deductedProfit": 45390247623.82,
+          "operatingCashFlow": 13119061031.33
+        },
+        {
+          "reportDate": "2025-03-31",
+          "announcedAt": "2025-04-30",
+          "netProfit": 26847474238.76,
+          "deductedProfit": 26849883702.9,
+          "operatingCashFlow": 8809195646.38
+        },
+        {
+          "reportDate": "2024-12-31",
+          "announcedAt": "2025-04-03",
+          "netProfit": 86228146421.62,
+          "deductedProfit": 86240905977.42,
+          "operatingCashFlow": 92463692168.43
+        }
+      ],
+      "financialHistory5": [
+        {
+          "year": 2025,
+          "netProfit": 82320067101.68,
+          "operatingCashFlow": 61522204989.35
+        },
+        {
+          "year": 2024,
+          "netProfit": 86228146421.62,
+          "operatingCashFlow": 92463692168.43
+        },
+        {
+          "year": 2023,
+          "netProfit": 74734071550.75,
+          "operatingCashFlow": 66593247721.09
+        },
+        {
+          "year": 2022,
+          "netProfit": 62717467870.12,
+          "operatingCashFlow": 36698595830.03
+        },
+        {
+          "year": 2021,
+          "netProfit": 52460144378.16,
+          "operatingCashFlow": 64028676147.37
+        }
+      ]
+    },
+    "600690": {
+      "c": "600690",
+      "n": "海尔智家",
+      "group": "dividend",
+      "ind": "白色家电",
+      "valuationIndustry": "白色家电",
+      "yield12": 5.77,
+      "dividendPaidCalendarYears": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "dividendAsOf": "2026-10-20",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22600690%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "cashDividend12": 1.16071,
+      "incomeShareEvidence": {
+        "reportPeriod": "2026-06-30",
+        "currentShares": 9298538164.0,
+        "shareAsOf": "2026-10-20",
+        "reports": [
+          {
+            "reportDate": "2026-06-30",
+            "shares": 9298538164.0
+          },
+          {
+            "reportDate": "2026-03-31",
+            "shares": 9298538164.0
+          },
+          {
+            "reportDate": "2025-12-31",
+            "shares": 9298538164.0
+          },
+          {
+            "reportDate": "2025-09-30",
+            "shares": 9298538164.0
+          },
+          {
+            "reportDate": "2025-06-30",
+            "shares": 9298538164.0
+          },
+          {
+            "reportDate": "2025-03-31",
+            "shares": 9298538164.0
+          },
+          {
+            "reportDate": "2024-12-31",
+            "shares": 9298538164.0
+          },
+          {
+            "reportDate": "2024-09-30",
+            "shares": 9298538164.0
+          }
+        ]
+      },
+      "fundamentalsSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600690.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "latestFinancials": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-28",
+        "roe": 8.36,
+        "roePrevious": 10.34,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 7.53,
+        "operatingCashFlow": 9752033977.71,
+        "roeChangePoints": -1.98,
+        "roeChangePercent": -19.1489,
+        "revenue": 152115050237.63,
+        "revenueGrowth": -2.7982,
+        "revenueGrowthStatus": null,
+        "netProfit": 10316254946.26,
+        "netProfitGrowth": -14.2669,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 9298750602.78,
+        "deductedProfitGrowth": -20.5399,
+        "deductedProfitGrowthStatus": null
+      },
+      "financialReports": [
+        {
+          "reportDate": "2026-06-30",
+          "announcedAt": "2026-08-28",
+          "netProfit": 10316254946.26,
+          "deductedProfit": 9298750602.78,
+          "operatingCashFlow": 9752033977.71
+        },
+        {
+          "reportDate": "2026-03-31",
+          "announcedAt": "2026-04-28",
+          "netProfit": 4651612980.68,
+          "deductedProfit": 4441374498.46,
+          "operatingCashFlow": 1611474493.67
+        },
+        {
+          "reportDate": "2025-12-31",
+          "announcedAt": "2026-03-27",
+          "netProfit": 19552798222.85,
+          "deductedProfit": 18603631637.54,
+          "operatingCashFlow": 26002941969.92
+        },
+        {
+          "reportDate": "2025-09-30",
+          "announcedAt": "2025-10-31",
+          "netProfit": 17372697304.12,
+          "deductedProfit": 16892328611.67,
+          "operatingCashFlow": 17491126692.81
+        },
+        {
+          "reportDate": "2025-06-30",
+          "announcedAt": "2025-08-29",
+          "netProfit": 12032995820.27,
+          "deductedProfit": 11702408556.7,
+          "operatingCashFlow": 11139045781.34
+        },
+        {
+          "reportDate": "2025-03-31",
+          "announcedAt": "2025-04-30",
+          "netProfit": 5486615176.18,
+          "deductedProfit": 5364091335.39,
+          "operatingCashFlow": 2284614694.47
+        },
+        {
+          "reportDate": "2024-12-31",
+          "announcedAt": "2025-03-28",
+          "netProfit": 18731046273.17,
+          "deductedProfit": 17804732809.63,
+          "operatingCashFlow": 26318091311.95
+        }
+      ],
+      "financialHistory5": [
+        {
+          "year": 2025,
+          "netProfit": 19552798222.85,
+          "operatingCashFlow": 26002941969.92
+        },
+        {
+          "year": 2024,
+          "netProfit": 18731046273.17,
+          "operatingCashFlow": 26318091311.95
+        },
+        {
+          "year": 2023,
+          "netProfit": 16596615045.87,
+          "operatingCashFlow": 26535780568.36
+        },
+        {
+          "year": 2022,
+          "netProfit": 14712054763.24,
+          "operatingCashFlow": 20256557145.86
+        },
+        {
+          "year": 2021,
+          "netProfit": 13078840517.1,
+          "operatingCashFlow": 23235380690.95
+        }
+      ]
+    },
+    "600941": {
+      "c": "600941",
+      "n": "中国移动",
+      "group": "dividend",
+      "ind": "通信服务",
+      "valuationIndustry": "通信服务",
+      "yield12": 4.63,
+      "dividendPaidCalendarYears": [
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "dividendAsOf": "2026-10-20",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22600941%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "cashDividend12": 4.7112,
+      "incomeShareEvidence": {
+        "reportPeriod": "2026-06-30",
+        "currentShares": 21695890446.0,
+        "shareAsOf": "2026-10-20",
+        "reports": [
+          {
+            "reportDate": "2026-06-30",
+            "shares": 21695890446.0
+          },
+          {
+            "reportDate": "2026-03-31",
+            "shares": 21695890446.0
+          },
+          {
+            "reportDate": "2025-12-31",
+            "shares": 21695890446.0
+          },
+          {
+            "reportDate": "2025-09-30",
+            "shares": 21695890446.0
+          },
+          {
+            "reportDate": "2025-06-30",
+            "shares": 21695890446.0
+          },
+          {
+            "reportDate": "2025-03-31",
+            "shares": 21695890446.0
+          },
+          {
+            "reportDate": "2024-12-31",
+            "shares": 21695890446.0
+          },
+          {
+            "reportDate": "2024-09-30",
+            "shares": 21695890446.0
+          }
+        ]
+      },
+      "fundamentalsSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600941.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "latestFinancials": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-14",
+        "roe": 5.6,
+        "roePrevious": 6.1,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 4.9,
+        "operatingCashFlow": 114854000000.0,
+        "roeChangePoints": -0.5,
+        "roeChangePercent": -8.1967,
+        "revenue": 538035000000.0,
+        "revenueGrowth": -1.0545,
+        "revenueGrowthStatus": null,
+        "netProfit": 78934000000.0,
+        "netProfitGrowth": -6.2931,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 69733000000.0,
+        "deductedProfitGrowth": -11.0163,
+        "deductedProfitGrowthStatus": null
+      },
+      "financialReports": [
+        {
+          "reportDate": "2026-06-30",
+          "announcedAt": "2026-08-14",
+          "netProfit": 78934000000.0,
+          "deductedProfit": 69733000000.0,
+          "operatingCashFlow": 114854000000.0
+        },
+        {
+          "reportDate": "2026-03-31",
+          "announcedAt": "2026-04-21",
+          "netProfit": 29342000000.0,
+          "deductedProfit": 27900000000.0,
+          "operatingCashFlow": 71447000000.0
+        },
+        {
+          "reportDate": "2025-12-31",
+          "announcedAt": "2026-03-27",
+          "netProfit": 137095000000.0,
+          "deductedProfit": 127961000000.0,
+          "operatingCashFlow": 232919000000.0
+        },
+        {
+          "reportDate": "2025-09-30",
+          "announcedAt": "2025-10-21",
+          "netProfit": 115353000000.0,
+          "deductedProfit": 107100000000.0,
+          "operatingCashFlow": 161047000000.0
+        },
+        {
+          "reportDate": "2025-06-30",
+          "announcedAt": "2025-08-08",
+          "netProfit": 84235000000.0,
+          "deductedProfit": 78366000000.0,
+          "operatingCashFlow": 83832000000.0
+        },
+        {
+          "reportDate": "2025-03-31",
+          "announcedAt": "2025-04-23",
+          "netProfit": 30631000000.0,
+          "deductedProfit": 28900000000.0,
+          "operatingCashFlow": 31317000000.0
+        },
+        {
+          "reportDate": "2024-12-31",
+          "announcedAt": "2025-03-21",
+          "netProfit": 138373000000.0,
+          "deductedProfit": 122715000000.0,
+          "operatingCashFlow": 315741000000.0
+        }
+      ],
+      "financialHistory5": [
+        {
+          "year": 2025,
+          "netProfit": 137095000000.0,
+          "operatingCashFlow": 232919000000.0
+        },
+        {
+          "year": 2024,
+          "netProfit": 138373000000.0,
+          "operatingCashFlow": 315741000000.0
+        },
+        {
+          "year": 2023,
+          "netProfit": 131766000000.0,
+          "operatingCashFlow": 303780000000.0
+        },
+        {
+          "year": 2022,
+          "netProfit": 125459000000.0,
+          "operatingCashFlow": 280750000000.0
+        },
+        {
+          "year": 2021,
+          "netProfit": 115937000000.0,
+          "operatingCashFlow": 314764000000.0
+        }
+      ]
+    },
+    "600938": {
+      "c": "600938",
+      "n": "中国海油",
+      "group": "dividend",
+      "ind": "油气开采Ⅱ",
+      "valuationIndustry": "油气开采Ⅱ",
+      "yield12": 3.63,
+      "dividendPaidCalendarYears": [
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "dividendAsOf": "2026-10-20",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22600938%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "cashDividend12": 1.2920500000000001,
+      "incomeShareEvidence": {
+        "reportPeriod": "2026-06-30",
+        "currentShares": 47529953984.0,
+        "shareAsOf": "2026-10-20",
+        "reports": [
+          {
+            "reportDate": "2026-06-30",
+            "shares": 47529953984.0
+          },
+          {
+            "reportDate": "2026-03-31",
+            "shares": 47529953984.0
+          },
+          {
+            "reportDate": "2025-12-31",
+            "shares": 47529953984.0
+          },
+          {
+            "reportDate": "2025-09-30",
+            "shares": 47529953984.0
+          },
+          {
+            "reportDate": "2025-06-30",
+            "shares": 47529953984.0
+          },
+          {
+            "reportDate": "2025-03-31",
+            "shares": 47529953984.0
+          },
+          {
+            "reportDate": "2024-12-31",
+            "shares": 47529953984.0
+          },
+          {
+            "reportDate": "2024-09-30",
+            "shares": 47529953984.0
+          }
+        ]
+      },
+      "fundamentalsSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600938.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "latestFinancials": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-27",
+        "roe": 10.21,
+        "roePrevious": 8.9,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 10.2,
+        "operatingCashFlow": 141631000000.0,
+        "roeChangePoints": 1.31,
+        "roeChangePercent": 14.7191,
+        "revenue": 242660000000.0,
+        "revenueGrowth": 16.8837,
+        "revenueGrowthStatus": null,
+        "netProfit": 85818000000.0,
+        "netProfitGrowth": 23.4205,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 85733000000.0,
+        "deductedProfitGrowth": 23.6183,
+        "deductedProfitGrowthStatus": null
+      },
+      "financialReports": [
+        {
+          "reportDate": "2026-06-30",
+          "announcedAt": "2026-08-27",
+          "netProfit": 85818000000.0,
+          "deductedProfit": 85733000000.0,
+          "operatingCashFlow": 141631000000.0
+        },
+        {
+          "reportDate": "2026-03-31",
+          "announcedAt": "2026-04-29",
+          "netProfit": 39144000000.0,
+          "deductedProfit": 39038000000.0,
+          "operatingCashFlow": 55148000000.0
+        },
+        {
+          "reportDate": "2025-12-31",
+          "announcedAt": "2026-03-27",
+          "netProfit": 122082000000.0,
+          "deductedProfit": 120379000000.0,
+          "operatingCashFlow": 209042000000.0
+        },
+        {
+          "reportDate": "2025-09-30",
+          "announcedAt": "2025-10-31",
+          "netProfit": 101971000000.0,
+          "deductedProfit": 100915000000.0,
+          "operatingCashFlow": 171749000000.0
+        },
+        {
+          "reportDate": "2025-06-30",
+          "announcedAt": "2025-08-28",
+          "netProfit": 69533000000.0,
+          "deductedProfit": 69353000000.0,
+          "operatingCashFlow": 109182000000.0
+        },
+        {
+          "reportDate": "2025-03-31",
+          "announcedAt": "2025-04-30",
+          "netProfit": 36563000000.0,
+          "deductedProfit": 37027000000.0,
+          "operatingCashFlow": 57274000000.0
+        },
+        {
+          "reportDate": "2024-12-31",
+          "announcedAt": "2025-03-28",
+          "netProfit": 137936000000.0,
+          "deductedProfit": 133397000000.0,
+          "operatingCashFlow": 220891000000.0
+        }
+      ],
+      "financialHistory5": [
+        {
+          "year": 2025,
+          "netProfit": 122082000000.0,
+          "operatingCashFlow": 209042000000.0
+        },
+        {
+          "year": 2024,
+          "netProfit": 137936000000.0,
+          "operatingCashFlow": 220891000000.0
+        },
+        {
+          "year": 2023,
+          "netProfit": 123843000000.0,
+          "operatingCashFlow": 209743000000.0
+        },
+        {
+          "year": 2022,
+          "netProfit": 141700000000.0,
+          "operatingCashFlow": 205574000000.0
+        },
+        {
+          "year": 2021,
+          "netProfit": 70320000000.0,
+          "operatingCashFlow": 147893000000.0
+        }
+      ]
+    },
+    "601728": {
+      "c": "601728",
+      "n": "中国电信",
+      "group": "dividend",
+      "ind": "通信服务",
+      "valuationIndustry": "通信服务",
+      "yield12": 3.65,
+      "dividendPaidCalendarYears": [
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "dividendAsOf": "2026-10-20",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22601728%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "cashDividend12": 0.2514,
+      "incomeShareEvidence": {
+        "reportPeriod": "2026-06-30",
+        "currentShares": 91507138699.0,
+        "shareAsOf": "2026-10-20",
+        "reports": [
+          {
+            "reportDate": "2026-06-30",
+            "shares": 91507138699.0
+          },
+          {
+            "reportDate": "2026-03-31",
+            "shares": 91507138699.0
+          },
+          {
+            "reportDate": "2025-12-31",
+            "shares": 91507138699.0
+          },
+          {
+            "reportDate": "2025-09-30",
+            "shares": 91507138699.0
+          },
+          {
+            "reportDate": "2025-06-30",
+            "shares": 91507138699.0
+          },
+          {
+            "reportDate": "2025-03-31",
+            "shares": 91507138699.0
+          },
+          {
+            "reportDate": "2024-12-31",
+            "shares": 91507138699.0
+          },
+          {
+            "reportDate": "2024-09-30",
+            "shares": 91507138699.0
+          }
+        ]
+      },
+      "fundamentalsSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22601728.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "latestFinancials": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-21",
+        "roe": 4.2,
+        "roePrevious": 5.0,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 3.7,
+        "operatingCashFlow": 60375156021.25,
+        "roeChangePoints": -0.8,
+        "roeChangePercent": -16.0,
+        "revenue": 259010338291.03,
+        "revenueGrowth": -3.8643,
+        "revenueGrowthStatus": null,
+        "netProfit": 19587741668.36,
+        "netProfitGrowth": -14.899,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 17489720026.16,
+        "deductedProfitGrowth": -19.4791,
+        "deductedProfitGrowthStatus": null
+      },
+      "financialReports": [
+        {
+          "reportDate": "2026-06-30",
+          "announcedAt": "2026-08-21",
+          "netProfit": 19587741668.36,
+          "deductedProfit": 17489720026.16,
+          "operatingCashFlow": 60375156021.25
+        },
+        {
+          "reportDate": "2026-03-31",
+          "announcedAt": "2026-04-24",
+          "netProfit": 7350127688.98,
+          "deductedProfit": 6573766324.59,
+          "operatingCashFlow": 23215066427.94
+        },
+        {
+          "reportDate": "2025-12-31",
+          "announcedAt": "2026-03-25",
+          "netProfit": 33184733428.28,
+          "deductedProfit": 31328706460.18,
+          "operatingCashFlow": 124518913220.91
+        },
+        {
+          "reportDate": "2025-09-30",
+          "announcedAt": "2025-10-22",
+          "netProfit": 30773321357.4,
+          "deductedProfit": 28697185444.63,
+          "operatingCashFlow": 87311582156.6
+        },
+        {
+          "reportDate": "2025-06-30",
+          "announcedAt": "2025-08-15",
+          "netProfit": 23017044187.33,
+          "deductedProfit": 21720719479.08,
+          "operatingCashFlow": 47034217345.82
+        },
+        {
+          "reportDate": "2025-03-31",
+          "announcedAt": "2025-04-26",
+          "netProfit": 8864251916.54,
+          "deductedProfit": 8797537494.15,
+          "operatingCashFlow": 10825979030.31
+        },
+        {
+          "reportDate": "2024-12-31",
+          "announcedAt": "2025-03-26",
+          "netProfit": 33012069907.9,
+          "deductedProfit": 30742441368.42,
+          "operatingCashFlow": 145268134285.83
+        }
+      ],
+      "financialHistory5": [
+        {
+          "year": 2025,
+          "netProfit": 33184733428.28,
+          "operatingCashFlow": 124518913220.91
+        },
+        {
+          "year": 2024,
+          "netProfit": 33012069907.9,
+          "operatingCashFlow": 145268134285.83
+        },
+        {
+          "year": 2023,
+          "netProfit": 30445686138.83,
+          "operatingCashFlow": 138623058755.73
+        },
+        {
+          "year": 2022,
+          "netProfit": 27593420934.48,
+          "operatingCashFlow": 137218975739.83
+        },
+        {
+          "year": 2021,
+          "netProfit": 25952815819.68,
+          "operatingCashFlow": 139194383644.66
+        }
+      ]
+    },
+    "002558": {
+      "c": "002558",
+      "n": "巨人网络",
+      "group": "growth",
+      "ind": "游戏Ⅱ",
+      "valuationIndustry": "游戏Ⅱ",
+      "yield12": 4.67,
+      "dividendPaidCalendarYears": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "dividendAsOf": "2026-10-20",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22002558%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "cashDividend12": 0.99,
+      "incomeShareEvidence": {
+        "reportPeriod": "2026-06-30",
+        "currentShares": 1900561971.0,
+        "shareAsOf": "2026-10-20",
+        "reports": [
+          {
+            "reportDate": "2026-06-30",
+            "shares": 1900561971.0
+          },
+          {
+            "reportDate": "2026-03-31",
+            "shares": 1900561971.0
+          },
+          {
+            "reportDate": "2025-12-31",
+            "shares": 1900561971.0
+          },
+          {
+            "reportDate": "2025-09-30",
+            "shares": 1900561971.0
+          },
+          {
+            "reportDate": "2025-06-30",
+            "shares": 1900561971.0
+          },
+          {
+            "reportDate": "2025-03-31",
+            "shares": 1900561971.0
+          },
+          {
+            "reportDate": "2024-12-31",
+            "shares": 1900561971.0
+          },
+          {
+            "reportDate": "2024-09-30",
+            "shares": 1900561971.0
+          }
+        ]
+      },
+      "fundamentalsSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22002558.SZ%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "latestFinancials": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-27",
+        "roe": 13.22,
+        "roePrevious": 5.87,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 13.79,
+        "operatingCashFlow": 2071810782.09,
+        "roeChangePoints": 7.35,
+        "roeChangePercent": 125.2129,
+        "revenue": 4688729195.66,
+        "revenueGrowth": 182.0797,
+        "revenueGrowthStatus": null,
+        "netProfit": 2144304578.07,
+        "netProfitGrowth": 175.9552,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 2236204413.42,
+        "deductedProfitGrowth": 177.2308,
+        "deductedProfitGrowthStatus": null
+      },
+      "financialReports": [
+        {
+          "reportDate": "2026-06-30",
+          "announcedAt": "2026-08-27",
+          "netProfit": 2144304578.07,
+          "deductedProfit": 2236204413.42,
+          "operatingCashFlow": 2071810782.09
+        },
+        {
+          "reportDate": "2026-03-31",
+          "announcedAt": "2026-04-28",
+          "netProfit": 1080400017.37,
+          "deductedProfit": 1013521069.07,
+          "operatingCashFlow": 1321579325.51
+        },
+        {
+          "reportDate": "2025-12-31",
+          "announcedAt": "2026-04-27",
+          "netProfit": 1754514184.37,
+          "deductedProfit": 2127472552.49,
+          "operatingCashFlow": 2985105474.41
+        },
+        {
+          "reportDate": "2025-09-30",
+          "announcedAt": "2025-10-29",
+          "netProfit": 1416820995.71,
+          "deductedProfit": 1484383097.79,
+          "operatingCashFlow": 1851250272.84
+        },
+        {
+          "reportDate": "2025-06-30",
+          "announcedAt": "2025-08-28",
+          "netProfit": 777048091.04,
+          "deductedProfit": 806621940.16,
+          "operatingCashFlow": 742762741.45
+        },
+        {
+          "reportDate": "2025-03-31",
+          "announcedAt": "2025-04-30",
+          "netProfit": 347867744.96,
+          "deductedProfit": 362337017.62,
+          "operatingCashFlow": 217568723.5
+        },
+        {
+          "reportDate": "2024-12-31",
+          "announcedAt": "2025-04-25",
+          "netProfit": 1424901718.85,
+          "deductedProfit": 1622746717.13,
+          "operatingCashFlow": 1034206211.93
+        }
+      ],
+      "financialHistory5": [
+        {
+          "year": 2025,
+          "netProfit": 1754514184.37,
+          "operatingCashFlow": 2985105474.41
+        },
+        {
+          "year": 2024,
+          "netProfit": 1424901718.85,
+          "operatingCashFlow": 1034206211.93
+        },
+        {
+          "year": 2023,
+          "netProfit": 1086440305.95,
+          "operatingCashFlow": 1125072143.78
+        },
+        {
+          "year": 2022,
+          "netProfit": 850952891.35,
+          "operatingCashFlow": 736854360.96
+        },
+        {
+          "year": 2021,
+          "netProfit": 994509684.67,
+          "operatingCashFlow": 637938977.44
+        }
+      ]
+    },
+    "603444": {
+      "c": "603444",
+      "n": "吉比特",
+      "group": "growth",
+      "ind": "游戏Ⅱ",
+      "valuationIndustry": "游戏Ⅱ",
+      "yield12": 6.78,
+      "dividendPaidCalendarYears": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "dividendAsOf": "2026-10-20",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22603444%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "cashDividend12": 23.0,
+      "incomeShareEvidence": {
+        "reportPeriod": "2026-06-30",
+        "currentShares": 72041101.0,
+        "shareAsOf": "2026-10-20",
+        "reports": [
+          {
+            "reportDate": "2026-06-30",
+            "shares": 72041101.0
+          },
+          {
+            "reportDate": "2026-03-31",
+            "shares": 72041101.0
+          },
+          {
+            "reportDate": "2025-12-31",
+            "shares": 72041101.0
+          },
+          {
+            "reportDate": "2025-09-30",
+            "shares": 72041101.0
+          },
+          {
+            "reportDate": "2025-06-30",
+            "shares": 72041101.0
+          },
+          {
+            "reportDate": "2025-03-31",
+            "shares": 72041101.0
+          },
+          {
+            "reportDate": "2024-12-31",
+            "shares": 72041101.0
+          },
+          {
+            "reportDate": "2024-09-30",
+            "shares": 72041101.0
+          }
+        ]
+      },
+      "fundamentalsSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22603444.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "latestFinancials": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-14",
+        "roe": 18.57,
+        "roePrevious": 12.54,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 18.49,
+        "operatingCashFlow": 1272868463.63,
+        "roeChangePoints": 6.03,
+        "roeChangePercent": 48.0861,
+        "revenue": 3726842297.78,
+        "revenueGrowth": 48.0138,
+        "revenueGrowthStatus": null,
+        "netProfit": 1091536495.39,
+        "netProfitGrowth": 69.3142,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 1086707855.97,
+        "deductedProfitGrowth": 67.7695,
+        "deductedProfitGrowthStatus": null
+      },
+      "financialReports": [
+        {
+          "reportDate": "2026-06-30",
+          "announcedAt": "2026-08-14",
+          "netProfit": 1091536495.39,
+          "deductedProfit": 1086707855.97,
+          "operatingCashFlow": 1272868463.63
+        },
+        {
+          "reportDate": "2026-03-31",
+          "announcedAt": "2026-04-24",
+          "netProfit": 517544467.11,
+          "deductedProfit": 525579624.86,
+          "operatingCashFlow": 579798113.69
+        },
+        {
+          "reportDate": "2025-12-31",
+          "announcedAt": "2026-03-27",
+          "netProfit": 1793666076.8,
+          "deductedProfit": 1731480486.48,
+          "operatingCashFlow": 2795833396.76
+        },
+        {
+          "reportDate": "2025-09-30",
+          "announcedAt": "2025-10-29",
+          "netProfit": 1214135779.94,
+          "deductedProfit": 1211336064.15,
+          "operatingCashFlow": 1859020368.12
+        },
+        {
+          "reportDate": "2025-06-30",
+          "announcedAt": "2025-08-20",
+          "netProfit": 644681109.59,
+          "deductedProfit": 647738714.52,
+          "operatingCashFlow": 1076704887.66
+        },
+        {
+          "reportDate": "2025-03-31",
+          "announcedAt": "2025-04-24",
+          "netProfit": 283308836.76,
+          "deductedProfit": 274610888.53,
+          "operatingCashFlow": 212744617.25
+        },
+        {
+          "reportDate": "2024-12-31",
+          "announcedAt": "2025-03-28",
+          "netProfit": 944919757.13,
+          "deductedProfit": 877172509.47,
+          "operatingCashFlow": 1248636979.54
+        }
+      ],
+      "financialHistory5": [
+        {
+          "year": 2025,
+          "netProfit": 1793666076.8,
+          "operatingCashFlow": 2795833396.76
+        },
+        {
+          "year": 2024,
+          "netProfit": 944919757.13,
+          "operatingCashFlow": 1248636979.54
+        },
+        {
+          "year": 2023,
+          "netProfit": 1125119212.35,
+          "operatingCashFlow": 1185500983.67
+        },
+        {
+          "year": 2022,
+          "netProfit": 1460874459.68,
+          "operatingCashFlow": 1752393962.54
+        },
+        {
+          "year": 2021,
+          "netProfit": 1468498092.21,
+          "operatingCashFlow": 2418288430.93
+        }
+      ]
+    },
+    "600901": {
+      "c": "600901",
+      "n": "江苏金租",
+      "group": "dividend",
+      "ind": "多元金融",
+      "valuationIndustry": "多元金融",
+      "yield12": 4.14,
+      "dividendPaidCalendarYears": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "dividendAsOf": "2026-10-20",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22600901%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "cashDividend12": 0.3,
+      "incomeShareEvidence": {
+        "reportPeriod": "2026-06-30",
+        "currentShares": 5791866431.0,
+        "shareAsOf": "2026-10-20",
+        "reports": [
+          {
+            "reportDate": "2026-06-30",
+            "shares": 5791866431.0
+          },
+          {
+            "reportDate": "2026-03-31",
+            "shares": 5791866431.0
+          },
+          {
+            "reportDate": "2025-12-31",
+            "shares": 5791866431.0
+          },
+          {
+            "reportDate": "2025-09-30",
+            "shares": 5791866431.0
+          },
+          {
+            "reportDate": "2025-06-30",
+            "shares": 5791866431.0
+          },
+          {
+            "reportDate": "2025-03-31",
+            "shares": 5791866431.0
+          },
+          {
+            "reportDate": "2024-12-31",
+            "shares": 5791866431.0
+          },
+          {
+            "reportDate": "2024-09-30",
+            "shares": 5791866431.0
+          }
+        ]
+      },
+      "fundamentalsSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600901.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "latestFinancials": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-19",
+        "roe": 6.64,
+        "roePrevious": 6.34,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 6.53,
+        "operatingCashFlow": -1392095594.92,
+        "roeChangePoints": 0.3,
+        "roeChangePercent": 4.7319,
+        "revenue": 3514500108.63,
+        "revenueGrowth": 16.9079,
+        "revenueGrowthStatus": null,
+        "netProfit": 1709159567.35,
+        "netProfitGrowth": 9.273,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 1682056900.0,
+        "deductedProfitGrowth": 8.4411,
+        "deductedProfitGrowthStatus": null
+      },
+      "financialReports": [
+        {
+          "reportDate": "2026-06-30",
+          "announcedAt": "2026-08-19",
+          "netProfit": 1709159567.35,
+          "deductedProfit": 1682056900.0,
+          "operatingCashFlow": -1392095594.92
+        },
+        {
+          "reportDate": "2026-03-31",
+          "announcedAt": "2026-04-24",
+          "netProfit": 821834701.53,
+          "deductedProfit": 804793300.0,
+          "operatingCashFlow": -1911871648.58
+        },
+        {
+          "reportDate": "2025-12-31",
+          "announcedAt": "2026-04-24",
+          "netProfit": 3240544113.38,
+          "deductedProfit": 3218727000.0,
+          "operatingCashFlow": -962954047.02
+        },
+        {
+          "reportDate": "2025-09-30",
+          "announcedAt": "2025-10-25",
+          "netProfit": 2445736406.28,
+          "deductedProfit": 2428567600.0,
+          "operatingCashFlow": -4281390732.58
+        },
+        {
+          "reportDate": "2025-06-30",
+          "announcedAt": "2025-08-16",
+          "netProfit": 1564119119.64,
+          "deductedProfit": 1551125500.0,
+          "operatingCashFlow": -5057049321.02
+        },
+        {
+          "reportDate": "2025-03-31",
+          "announcedAt": "2025-04-26",
+          "netProfit": 771756484.01,
+          "deductedProfit": 769069000.0,
+          "operatingCashFlow": -4978225725.21
+        },
+        {
+          "reportDate": "2024-12-31",
+          "announcedAt": "2025-04-26",
+          "netProfit": 2942743496.11,
+          "deductedProfit": 2880923800.0,
+          "operatingCashFlow": 1423777074.16
+        }
+      ],
+      "financialHistory5": [
+        {
+          "year": 2025,
+          "netProfit": 3240544113.38,
+          "operatingCashFlow": -962954047.02
+        },
+        {
+          "year": 2024,
+          "netProfit": 2942743496.11,
+          "operatingCashFlow": 1423777074.16
+        },
+        {
+          "year": 2023,
+          "netProfit": 2660087234.85,
+          "operatingCashFlow": 2729646516.64
+        },
+        {
+          "year": 2022,
+          "netProfit": 2411578298.7,
+          "operatingCashFlow": -213469823.72
+        },
+        {
+          "year": 2021,
+          "netProfit": 2072453335.57,
+          "operatingCashFlow": 1027400673.65
+        }
+      ]
+    },
+    "601398": {
+      "c": "601398",
+      "n": "工商银行",
+      "group": "dividend",
+      "ind": "银行Ⅱ",
+      "valuationIndustry": "银行Ⅱ",
+      "yield12": 3.62,
+      "dividendPaidCalendarYears": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "dividendAsOf": "2026-10-20",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22601398%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "cashDividend12": 0.3103,
+      "incomeShareEvidence": {
+        "reportPeriod": "2026-06-30",
+        "currentShares": 356406257089.0,
+        "shareAsOf": "2026-10-20",
+        "reports": [
+          {
+            "reportDate": "2026-06-30",
+            "shares": 356406257089.0
+          },
+          {
+            "reportDate": "2026-03-31",
+            "shares": 356406257089.0
+          },
+          {
+            "reportDate": "2025-12-31",
+            "shares": 356406257089.0
+          },
+          {
+            "reportDate": "2025-09-30",
+            "shares": 356406257089.0
+          },
+          {
+            "reportDate": "2025-06-30",
+            "shares": 356406257089.0
+          },
+          {
+            "reportDate": "2025-03-31",
+            "shares": 356406257089.0
+          },
+          {
+            "reportDate": "2024-12-31",
+            "shares": 356406257089.0
+          },
+          {
+            "reportDate": "2024-09-30",
+            "shares": 356406257089.0
+          }
+        ]
+      },
+      "fundamentalsSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22601398.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "latestFinancials": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-29",
+        "roe": 4.315,
+        "roePrevious": 4.41,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 4.3,
+        "operatingCashFlow": 1369013000000.0,
+        "roeChangePoints": -0.095,
+        "roeChangePercent": -2.1542,
+        "revenue": 465859000000.0,
+        "revenueGrowth": 9.077,
+        "revenueGrowthStatus": null,
+        "netProfit": 173682000000.0,
+        "netProfitGrowth": 3.3188,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 173082000000.0,
+        "deductedProfitGrowth": 3.1995,
+        "deductedProfitGrowthStatus": null
+      },
+      "financialReports": [
+        {
+          "reportDate": "2026-06-30",
+          "announcedAt": "2026-08-29",
+          "netProfit": 173682000000.0,
+          "deductedProfit": 173082000000.0,
+          "operatingCashFlow": 1369013000000.0
+        },
+        {
+          "reportDate": "2026-03-31",
+          "announcedAt": "2026-04-30",
+          "netProfit": 86941000000.0,
+          "deductedProfit": 86795000000.0,
+          "operatingCashFlow": 1416276000000.0
+        },
+        {
+          "reportDate": "2025-12-31",
+          "announcedAt": "2026-03-28",
+          "netProfit": 368562000000.0,
+          "deductedProfit": 368126000000.0,
+          "operatingCashFlow": 1890530000000.0
+        },
+        {
+          "reportDate": "2025-09-30",
+          "announcedAt": "2025-10-31",
+          "netProfit": 269908000000.0,
+          "deductedProfit": 269404000000.0,
+          "operatingCashFlow": 1549207000000.0
+        },
+        {
+          "reportDate": "2025-06-30",
+          "announcedAt": "2025-08-30",
+          "netProfit": 168103000000.0,
+          "deductedProfit": 167716000000.0,
+          "operatingCashFlow": 786317000000.0
+        },
+        {
+          "reportDate": "2025-03-31",
+          "announcedAt": "2025-04-30",
+          "netProfit": 84156000000.0,
+          "deductedProfit": 83868000000.0,
+          "operatingCashFlow": 942479000000.0
+        },
+        {
+          "reportDate": "2024-12-31",
+          "announcedAt": "2025-03-29",
+          "netProfit": 365863000000.0,
+          "deductedProfit": 364277000000.0,
+          "operatingCashFlow": 579194000000.0
+        }
+      ],
+      "financialHistory5": [
+        {
+          "year": 2025,
+          "netProfit": 368562000000.0,
+          "operatingCashFlow": 1890530000000.0
+        },
+        {
+          "year": 2024,
+          "netProfit": 365863000000.0,
+          "operatingCashFlow": 579194000000.0
+        },
+        {
+          "year": 2023,
+          "netProfit": 363993000000.0,
+          "operatingCashFlow": 1417002000000.0
+        },
+        {
+          "year": 2022,
+          "netProfit": 361132000000.0,
+          "operatingCashFlow": 1404657000000.0
+        },
+        {
+          "year": 2021,
+          "netProfit": 348338000000.0,
+          "operatingCashFlow": 360882000000.0
+        }
+      ]
+    },
+    "601939": {
+      "c": "601939",
+      "n": "建设银行",
+      "group": "dividend",
+      "ind": "银行Ⅱ",
+      "valuationIndustry": "银行Ⅱ",
+      "yield12": 3.38,
+      "dividendPaidCalendarYears": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "dividendAsOf": "2026-10-20",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22601939%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "cashDividend12": 0.38870000000000005,
+      "incomeShareEvidence": {
+        "reportPeriod": "2026-06-30",
+        "currentShares": 261600381459.0,
+        "shareAsOf": "2026-10-20",
+        "reports": [
+          {
+            "reportDate": "2026-06-30",
+            "shares": 261600381459.0
+          },
+          {
+            "reportDate": "2026-03-31",
+            "shares": 261600381459.0
+          },
+          {
+            "reportDate": "2025-12-31",
+            "shares": 261600381459.0
+          },
+          {
+            "reportDate": "2025-09-30",
+            "shares": 261600381459.0
+          },
+          {
+            "reportDate": "2025-06-30",
+            "shares": 261600381459.0
+          },
+          {
+            "reportDate": "2025-03-31",
+            "shares": 261600381459.0
+          },
+          {
+            "reportDate": "2024-12-31",
+            "shares": 261600381459.0
+          },
+          {
+            "reportDate": "2024-09-30",
+            "shares": 261600381459.0
+          }
+        ]
+      },
+      "fundamentalsSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22601939.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "latestFinancials": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-29",
+        "roe": 4.76,
+        "roePrevious": 5.04,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 4.72,
+        "operatingCashFlow": 350683000000.0,
+        "roeChangePoints": -0.28,
+        "roeChangePercent": -5.5556,
+        "revenue": 436529000000.0,
+        "revenueGrowth": 10.7174,
+        "revenueGrowthStatus": null,
+        "netProfit": 169564000000.0,
+        "netProfitGrowth": 4.6201,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 168269000000.0,
+        "deductedProfitGrowth": 4.1281,
+        "deductedProfitGrowthStatus": null
+      },
+      "financialReports": [
+        {
+          "reportDate": "2026-06-30",
+          "announcedAt": "2026-08-29",
+          "netProfit": 169564000000.0,
+          "deductedProfit": 168269000000.0,
+          "operatingCashFlow": 350683000000.0
+        },
+        {
+          "reportDate": "2026-03-31",
+          "announcedAt": "2026-04-30",
+          "netProfit": 86291000000.0,
+          "deductedProfit": 86161000000.0,
+          "operatingCashFlow": 594433000000.0
+        },
+        {
+          "reportDate": "2025-12-31",
+          "announcedAt": "2026-03-28",
+          "netProfit": 338906000000.0,
+          "deductedProfit": 338783000000.0,
+          "operatingCashFlow": 2101242000000.0
+        },
+        {
+          "reportDate": "2025-09-30",
+          "announcedAt": "2025-10-31",
+          "netProfit": 257360000000.0,
+          "deductedProfit": 256728000000.0,
+          "operatingCashFlow": 1817380000000.0
+        },
+        {
+          "reportDate": "2025-06-30",
+          "announcedAt": "2025-08-30",
+          "netProfit": 162076000000.0,
+          "deductedProfit": 161598000000.0,
+          "operatingCashFlow": 1256614000000.0
+        },
+        {
+          "reportDate": "2025-03-31",
+          "announcedAt": "2025-04-30",
+          "netProfit": 83351000000.0,
+          "deductedProfit": 83273000000.0,
+          "operatingCashFlow": 721067000000.0
+        },
+        {
+          "reportDate": "2024-12-31",
+          "announcedAt": "2025-03-29",
+          "netProfit": 335577000000.0,
+          "deductedProfit": 335323000000.0,
+          "operatingCashFlow": 338023000000.0
+        }
+      ],
+      "financialHistory5": [
+        {
+          "year": 2025,
+          "netProfit": 338906000000.0,
+          "operatingCashFlow": 2101242000000.0
+        },
+        {
+          "year": 2024,
+          "netProfit": 335577000000.0,
+          "operatingCashFlow": 338023000000.0
+        },
+        {
+          "year": 2023,
+          "netProfit": 332653000000.0,
+          "operatingCashFlow": 642850000000.0
+        },
+        {
+          "year": 2022,
+          "netProfit": 324727000000.0,
+          "operatingCashFlow": 978419000000.0
+        },
+        {
+          "year": 2021,
+          "netProfit": 302513000000.0,
+          "operatingCashFlow": 436718000000.0
+        }
+      ]
+    },
+    "601288": {
+      "c": "601288",
+      "n": "农业银行",
+      "group": "dividend",
+      "ind": "银行Ⅱ",
+      "valuationIndustry": "银行Ⅱ",
+      "yield12": 3.37,
+      "dividendPaidCalendarYears": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "dividendAsOf": "2026-10-20",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22601288%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "cashDividend12": 0.2495,
+      "incomeShareEvidence": {
+        "reportPeriod": "2026-06-30",
+        "currentShares": 349983033873.0,
+        "shareAsOf": "2026-10-20",
+        "reports": [
+          {
+            "reportDate": "2026-06-30",
+            "shares": 349983033873.0
+          },
+          {
+            "reportDate": "2026-03-31",
+            "shares": 349983033873.0
+          },
+          {
+            "reportDate": "2025-12-31",
+            "shares": 349983033873.0
+          },
+          {
+            "reportDate": "2025-09-30",
+            "shares": 349983033873.0
+          },
+          {
+            "reportDate": "2025-06-30",
+            "shares": 349983033873.0
+          },
+          {
+            "reportDate": "2025-03-31",
+            "shares": 349983033873.0
+          },
+          {
+            "reportDate": "2024-12-31",
+            "shares": 349983033873.0
+          },
+          {
+            "reportDate": "2024-09-30",
+            "shares": 349983033873.0
+          }
+        ]
+      },
+      "fundamentalsSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22601288.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "latestFinancials": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-29",
+        "roe": 5.07,
+        "roePrevious": 5.08,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 5.07,
+        "operatingCashFlow": 287612000000.0,
+        "roeChangePoints": -0.01,
+        "roeChangePercent": -0.1969,
+        "revenue": 410871000000.0,
+        "revenueGrowth": 11.0651,
+        "revenueGrowthStatus": null,
+        "netProfit": 146381000000.0,
+        "netProfitGrowth": 4.9251,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 146449000000.0,
+        "deductedProfitGrowth": 5.068,
+        "deductedProfitGrowthStatus": null
+      },
+      "financialReports": [
+        {
+          "reportDate": "2026-06-30",
+          "announcedAt": "2026-08-29",
+          "netProfit": 146381000000.0,
+          "deductedProfit": 146449000000.0,
+          "operatingCashFlow": 287612000000.0
+        },
+        {
+          "reportDate": "2026-03-31",
+          "announcedAt": "2026-04-30",
+          "netProfit": 75185000000.0,
+          "deductedProfit": 74867000000.0,
+          "operatingCashFlow": 1184837000000.0
+        },
+        {
+          "reportDate": "2025-12-31",
+          "announcedAt": "2026-03-31",
+          "netProfit": 291041000000.0,
+          "deductedProfit": 291366000000.0,
+          "operatingCashFlow": 2112907000000.0
+        },
+        {
+          "reportDate": "2025-09-30",
+          "announcedAt": "2025-10-31",
+          "netProfit": 220859000000.0,
+          "deductedProfit": 220833000000.0,
+          "operatingCashFlow": 2034128000000.0
+        },
+        {
+          "reportDate": "2025-06-30",
+          "announcedAt": "2025-08-30",
+          "netProfit": 139510000000.0,
+          "deductedProfit": 139385000000.0,
+          "operatingCashFlow": 1005804000000.0
+        },
+        {
+          "reportDate": "2025-03-31",
+          "announcedAt": "2025-04-30",
+          "netProfit": 71931000000.0,
+          "deductedProfit": 71991000000.0,
+          "operatingCashFlow": -768830000000.0
+        },
+        {
+          "reportDate": "2024-12-31",
+          "announcedAt": "2025-03-29",
+          "netProfit": 282083000000.0,
+          "deductedProfit": 281561000000.0,
+          "operatingCashFlow": 1353042000000.0
+        }
+      ],
+      "financialHistory5": [
+        {
+          "year": 2025,
+          "netProfit": 291041000000.0,
+          "operatingCashFlow": 2112907000000.0
+        },
+        {
+          "year": 2024,
+          "netProfit": 282083000000.0,
+          "operatingCashFlow": 1353042000000.0
+        },
+        {
+          "year": 2023,
+          "netProfit": 269356000000.0,
+          "operatingCashFlow": 1825282000000.0
+        },
+        {
+          "year": 2022,
+          "netProfit": 259232000000.0,
+          "operatingCashFlow": 1322003000000.0
+        },
+        {
+          "year": 2021,
+          "netProfit": 241183000000.0,
+          "operatingCashFlow": 239615000000.0
+        }
+      ]
+    },
+    "601988": {
+      "c": "601988",
+      "n": "中国银行",
+      "group": "dividend",
+      "ind": "银行Ⅱ",
+      "valuationIndustry": "银行Ⅱ",
+      "yield12": 3.15,
+      "dividendPaidCalendarYears": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "dividendAsOf": "2026-10-20",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22601988%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "cashDividend12": 0.2263,
+      "incomeShareEvidence": {
+        "reportPeriod": "2026-06-30",
+        "currentShares": 322212411814.0,
+        "shareAsOf": "2026-10-20",
+        "reports": [
+          {
+            "reportDate": "2026-06-30",
+            "shares": 322212411814.0
+          },
+          {
+            "reportDate": "2026-03-31",
+            "shares": 322212411814.0
+          },
+          {
+            "reportDate": "2025-12-31",
+            "shares": 322212411814.0
+          },
+          {
+            "reportDate": "2025-09-30",
+            "shares": 322212411814.0
+          },
+          {
+            "reportDate": "2025-06-30",
+            "shares": 322212411814.0
+          },
+          {
+            "reportDate": "2025-03-31",
+            "shares": 322212411814.0
+          },
+          {
+            "reportDate": "2024-12-31",
+            "shares": 322212411814.0
+          },
+          {
+            "reportDate": "2024-09-30",
+            "shares": 322212411814.0
+          }
+        ]
+      },
+      "fundamentalsSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22601988.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "latestFinancials": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-29",
+        "roe": 4.33,
+        "roePrevious": 4.555,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 4.325,
+        "operatingCashFlow": 515800000000.0,
+        "roeChangePoints": -0.225,
+        "roeChangePercent": -4.9396,
+        "revenue": 356903000000.0,
+        "revenueGrowth": 8.4802,
+        "revenueGrowthStatus": null,
+        "netProfit": 123594000000.0,
+        "netProfitGrowth": 5.105,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 123479000000.0,
+        "deductedProfitGrowth": 4.9858,
+        "deductedProfitGrowthStatus": null
+      },
+      "financialReports": [
+        {
+          "reportDate": "2026-06-30",
+          "announcedAt": "2026-08-29",
+          "netProfit": 123594000000.0,
+          "deductedProfit": 123479000000.0,
+          "operatingCashFlow": 515800000000.0
+        },
+        {
+          "reportDate": "2026-03-31",
+          "announcedAt": "2026-04-30",
+          "netProfit": 56631000000.0,
+          "deductedProfit": 56603000000.0,
+          "operatingCashFlow": 196208000000.0
+        },
+        {
+          "reportDate": "2025-12-31",
+          "announcedAt": "2026-03-31",
+          "netProfit": 243021000000.0,
+          "deductedProfit": 242912000000.0,
+          "operatingCashFlow": 812030000000.0
+        },
+        {
+          "reportDate": "2025-09-30",
+          "announcedAt": "2025-10-29",
+          "netProfit": 177660000000.0,
+          "deductedProfit": 177425000000.0,
+          "operatingCashFlow": 51226000000.0
+        },
+        {
+          "reportDate": "2025-06-30",
+          "announcedAt": "2025-08-30",
+          "netProfit": 117591000000.0,
+          "deductedProfit": 117615000000.0,
+          "operatingCashFlow": 33639000000.0
+        },
+        {
+          "reportDate": "2025-03-31",
+          "announcedAt": "2025-04-30",
+          "netProfit": 54364000000.0,
+          "deductedProfit": 54615000000.0,
+          "operatingCashFlow": -40463000000.0
+        },
+        {
+          "reportDate": "2024-12-31",
+          "announcedAt": "2025-03-27",
+          "netProfit": 237841000000.0,
+          "deductedProfit": 236789000000.0,
+          "operatingCashFlow": 550966000000.0
+        }
+      ],
+      "financialHistory5": [
+        {
+          "year": 2025,
+          "netProfit": 243021000000.0,
+          "operatingCashFlow": 812030000000.0
+        },
+        {
+          "year": 2024,
+          "netProfit": 237841000000.0,
+          "operatingCashFlow": 550966000000.0
+        },
+        {
+          "year": 2023,
+          "netProfit": 231904000000.0,
+          "operatingCashFlow": 816446000000.0
+        },
+        {
+          "year": 2022,
+          "netProfit": 226522000000.0,
+          "operatingCashFlow": -21855000000.0
+        },
+        {
+          "year": 2021,
+          "netProfit": 216559000000.0,
+          "operatingCashFlow": 843258000000.0
+        }
+      ]
+    },
+    "600036": {
+      "c": "600036",
+      "n": "招商银行",
+      "group": "dividend",
+      "ind": "银行Ⅱ",
+      "valuationIndustry": "银行Ⅱ",
+      "yield12": 4.74,
+      "dividendPaidCalendarYears": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "dividendAsOf": "2026-10-20",
+      "dividendSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_SHAREBONUS_DET&columns=ALL&filter=%28SECURITY_CODE%3D%22600036%22%29&pageNumber=1&pageSize=100&sortColumns=REPORT_DATE&sortTypes=-1&source=WEB&client=WEB",
+      "cashDividend12": 2.016,
+      "incomeShareEvidence": {
+        "reportPeriod": "2026-06-30",
+        "currentShares": 25219845601.0,
+        "shareAsOf": "2026-10-20",
+        "reports": [
+          {
+            "reportDate": "2026-06-30",
+            "shares": 25219845601.0
+          },
+          {
+            "reportDate": "2026-03-31",
+            "shares": 25219845601.0
+          },
+          {
+            "reportDate": "2025-12-31",
+            "shares": 25219845601.0
+          },
+          {
+            "reportDate": "2025-09-30",
+            "shares": 25219845601.0
+          },
+          {
+            "reportDate": "2025-06-30",
+            "shares": 25219845601.0
+          },
+          {
+            "reportDate": "2025-03-31",
+            "shares": 25219845601.0
+          },
+          {
+            "reportDate": "2024-12-31",
+            "shares": 25219845601.0
+          },
+          {
+            "reportDate": "2024-09-30",
+            "shares": 25219845601.0
+          }
+        ]
+      },
+      "fundamentalsSourceUrl": "https://datacenter-web.eastmoney.com/api/data/v1/get?reportName=RPT_F10_FINANCE_MAINFINADATA&columns=ALL&filter=%28SECUCODE%3D%22600036.SH%22%29&pageSize=40&pageNumber=1&sortColumns=REPORT_DATE&sortTypes=-1",
+      "latestFinancials": {
+        "year": 2026,
+        "reportDate": "2026-06-30",
+        "announcedAt": "2026-08-29",
+        "roe": 6.71,
+        "roePrevious": 6.925,
+        "roePreviousPeriod": "2025-06-30",
+        "deductedRoe": 6.7,
+        "operatingCashFlow": 304611000000.0,
+        "roeChangePoints": -0.215,
+        "roeChangePercent": -3.1047,
+        "revenue": 178181000000.0,
+        "revenueGrowth": 4.8315,
+        "revenueGrowthStatus": null,
+        "netProfit": 76445000000.0,
+        "netProfitGrowth": 2.0219,
+        "netProfitGrowthStatus": null,
+        "deductedProfit": 76339000000.0,
+        "deductedProfitGrowth": 2.0316,
+        "deductedProfitGrowthStatus": null
+      },
+      "financialReports": [
+        {
+          "reportDate": "2026-06-30",
+          "announcedAt": "2026-08-29",
+          "netProfit": 76445000000.0,
+          "deductedProfit": 76339000000.0,
+          "operatingCashFlow": 304611000000.0
+        },
+        {
+          "reportDate": "2026-03-31",
+          "announcedAt": "2026-04-29",
+          "netProfit": 37852000000.0,
+          "deductedProfit": 37795000000.0,
+          "operatingCashFlow": 125849000000.0
+        },
+        {
+          "reportDate": "2025-12-31",
+          "announcedAt": "2026-03-28",
+          "netProfit": 150181000000.0,
+          "deductedProfit": 150007000000.0,
+          "operatingCashFlow": 451457000000.0
+        },
+        {
+          "reportDate": "2025-09-30",
+          "announcedAt": "2025-10-30",
+          "netProfit": 113772000000.0,
+          "deductedProfit": 113690000000.0,
+          "operatingCashFlow": 176134000000.0
+        },
+        {
+          "reportDate": "2025-06-30",
+          "announcedAt": "2025-08-30",
+          "netProfit": 74930000000.0,
+          "deductedProfit": 74819000000.0,
+          "operatingCashFlow": 134461000000.0
+        },
+        {
+          "reportDate": "2025-03-31",
+          "announcedAt": "2025-04-30",
+          "netProfit": 37286000000.0,
+          "deductedProfit": 37136000000.0,
+          "operatingCashFlow": 95026000000.0
+        },
+        {
+          "reportDate": "2024-12-31",
+          "announcedAt": "2025-03-26",
+          "netProfit": 148391000000.0,
+          "deductedProfit": 148011000000.0,
+          "operatingCashFlow": 447023000000.0
+        }
+      ],
+      "financialHistory5": [
+        {
+          "year": 2025,
+          "netProfit": 150181000000.0,
+          "operatingCashFlow": 451457000000.0
+        },
+        {
+          "year": 2024,
+          "netProfit": 148391000000.0,
+          "operatingCashFlow": 447023000000.0
+        },
+        {
+          "year": 2023,
+          "netProfit": 146602000000.0,
+          "operatingCashFlow": 357753000000.0
+        },
+        {
+          "year": 2022,
+          "netProfit": 138012000000.0,
+          "operatingCashFlow": 570143000000.0
+        },
+        {
+          "year": 2021,
+          "netProfit": 119922000000.0,
+          "operatingCashFlow": 182048000000.0
+        }
+      ]
+    }
+  },
+  "us": {
+    "O": {
+      "symbol": "O",
+      "financials": {
+        "reportDate": "2026-06-30",
+        "publishedAt": "2026-08-06",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/726728/000072672826000048/0000726728-26-000048-index.html",
+        "ttmCash": 4166154000
+      },
+      "epsTTM": 1.38,
+      "cashDividend12": 3.248,
+      "dividendRecords": [
+        {
+          "day": "2021-01-29",
+          "amount": 0.227713
+        },
+        {
+          "day": "2021-02-26",
+          "amount": 0.227713
+        },
+        {
+          "day": "2021-03-31",
+          "amount": 0.227713
+        },
+        {
+          "day": "2021-04-30",
+          "amount": 0.227713
+        },
+        {
+          "day": "2021-05-28",
+          "amount": 0.227713
+        },
+        {
+          "day": "2021-06-30",
+          "amount": 0.228682
+        },
+        {
+          "day": "2021-07-30",
+          "amount": 0.228682
+        },
+        {
+          "day": "2021-08-31",
+          "amount": 0.228682
+        },
+        {
+          "day": "2021-09-30",
+          "amount": 0.228682
+        },
+        {
+          "day": "2021-11-01",
+          "amount": 0.228682
+        },
+        {
+          "day": "2021-11-30",
+          "amount": 0.246
+        },
+        {
+          "day": "2021-12-31",
+          "amount": 0.247
+        },
+        {
+          "day": "2022-01-31",
+          "amount": 0.247
+        },
+        {
+          "day": "2022-02-28",
+          "amount": 0.247
+        },
+        {
+          "day": "2022-03-31",
+          "amount": 0.247
+        },
+        {
+          "day": "2022-04-29",
+          "amount": 0.247
+        },
+        {
+          "day": "2022-05-31",
+          "amount": 0.247
+        },
+        {
+          "day": "2022-06-30",
+          "amount": 0.248
+        },
+        {
+          "day": "2022-07-29",
+          "amount": 0.248
+        },
+        {
+          "day": "2022-08-31",
+          "amount": 0.248
+        },
+        {
+          "day": "2022-09-30",
+          "amount": 0.248
+        },
+        {
+          "day": "2022-10-31",
+          "amount": 0.248
+        },
+        {
+          "day": "2022-11-30",
+          "amount": 0.248
+        },
+        {
+          "day": "2022-12-30",
+          "amount": 0.249
+        },
+        {
+          "day": "2023-01-31",
+          "amount": 0.249
+        },
+        {
+          "day": "2023-02-28",
+          "amount": 0.255
+        },
+        {
+          "day": "2023-03-31",
+          "amount": 0.255
+        },
+        {
+          "day": "2023-04-28",
+          "amount": 0.255
+        },
+        {
+          "day": "2023-05-31",
+          "amount": 0.255
+        },
+        {
+          "day": "2023-06-30",
+          "amount": 0.256
+        },
+        {
+          "day": "2023-07-31",
+          "amount": 0.256
+        },
+        {
+          "day": "2023-08-31",
+          "amount": 0.256
+        },
+        {
+          "day": "2023-09-29",
+          "amount": 0.256
+        },
+        {
+          "day": "2023-10-31",
+          "amount": 0.256
+        },
+        {
+          "day": "2023-11-30",
+          "amount": 0.256
+        },
+        {
+          "day": "2023-12-29",
+          "amount": 0.257
+        },
+        {
+          "day": "2024-01-31",
+          "amount": 0.257
+        },
+        {
+          "day": "2024-02-29",
+          "amount": 0.257
+        },
+        {
+          "day": "2024-03-28",
+          "amount": 0.257
+        },
+        {
+          "day": "2024-04-30",
+          "amount": 0.257
+        },
+        {
+          "day": "2024-06-03",
+          "amount": 0.263
+        },
+        {
+          "day": "2024-07-01",
+          "amount": 0.263
+        },
+        {
+          "day": "2024-08-01",
+          "amount": 0.263
+        },
+        {
+          "day": "2024-09-03",
+          "amount": 0.263
+        },
+        {
+          "day": "2024-10-01",
+          "amount": 0.264
+        },
+        {
+          "day": "2024-11-01",
+          "amount": 0.264
+        },
+        {
+          "day": "2024-12-02",
+          "amount": 0.264
+        },
+        {
+          "day": "2025-01-02",
+          "amount": 0.264
+        },
+        {
+          "day": "2025-02-03",
+          "amount": 0.264
+        },
+        {
+          "day": "2025-03-03",
+          "amount": 0.268
+        },
+        {
+          "day": "2025-04-01",
+          "amount": 0.269
+        },
+        {
+          "day": "2025-05-01",
+          "amount": 0.269
+        },
+        {
+          "day": "2025-06-02",
+          "amount": 0.269
+        },
+        {
+          "day": "2025-07-01",
+          "amount": 0.269
+        },
+        {
+          "day": "2025-08-01",
+          "amount": 0.269
+        },
+        {
+          "day": "2025-09-02",
+          "amount": 0.269
+        },
+        {
+          "day": "2025-10-01",
+          "amount": 0.27
+        },
+        {
+          "day": "2025-10-31",
+          "amount": 0.27
+        },
+        {
+          "day": "2025-11-28",
+          "amount": 0.27
+        },
+        {
+          "day": "2025-12-31",
+          "amount": 0.27
+        },
+        {
+          "day": "2026-01-30",
+          "amount": 0.27
+        },
+        {
+          "day": "2026-02-27",
+          "amount": 0.27
+        },
+        {
+          "day": "2026-03-31",
+          "amount": 0.271
+        },
+        {
+          "day": "2026-04-30",
+          "amount": 0.271
+        },
+        {
+          "day": "2026-05-29",
+          "amount": 0.271
+        },
+        {
+          "day": "2026-06-30",
+          "amount": 0.271
+        },
+        {
+          "day": "2026-07-31",
+          "amount": 0.271
+        },
+        {
+          "day": "2026-08-31",
+          "amount": 0.271
+        },
+        {
+          "day": "2026-09-30",
+          "amount": 0.272
+        }
+      ],
+      "research": {
+        "reportPeriod": "2026-06-30",
+        "reviewedAt": "2026-10-07",
+        "sources": [
+          {
+            "label": "本期正式财报",
+            "url": "https://www.sec.gov/Archives/edgar/data/726728/000072672826000048/0000726728-26-000048-index.html",
+            "publishedAt": "2026-08-06",
+            "reportPeriod": "2026-06-30"
+          },
+          {
+            "label": "业绩发布与业务说明",
+            "url": "https://www.realtyincome.com/investors/press-releases/realty-income-announces-operating-results-three-and-six-months-ended-4",
+            "reportPeriod": "2026-06-30"
+          }
+        ],
+        "incomeReview": {
+          "decision": "retain",
+          "rationale": "本季现金股息0.812美元/AFFO1.09美元，公司披露派息比率74.5%；不以GAAP EPS衡量REIT派息。",
+          "capitalReview": "净债务/年化备考调整EBITDAre5.4倍；出租率98.8%，同店租金增1.2%，本期AFFO覆盖现金派息；融资利率和租户信用是后续失效条件。",
+          "payoutRatio": 0.745,
+          "sourceUrl": "https://www.realtyincome.com/investors/press-releases/realty-income-announces-operating-results-three-and-six-months-ended-4",
+          "publishedAt": "2026-08-05",
+          "reportPeriod": "2026-06-30"
+        }
+      },
+      "accountingModel": "reits",
+      "yield12": 5.851198159269354,
+      "priceAsOf": "2026-10-19",
+      "returnSourceUrl": "https://finance.yahoo.com/quote/O/history/"
+    },
+    "PEP": {
+      "symbol": "PEP",
+      "financials": {
+        "reportDate": "2026-09-05",
+        "publishedAt": "2026-10-08",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/77476/000007747626000048/0000077476-26-000048-index.html",
+        "ttmCash": 14569000000
+      },
+      "epsTTM": 7.95,
+      "cashDividend12": 5.806,
+      "dividendRecords": [
+        {
+          "day": "2021-03-04",
+          "amount": 1.023
+        },
+        {
+          "day": "2021-06-03",
+          "amount": 1.075
+        },
+        {
+          "day": "2021-09-02",
+          "amount": 1.075
+        },
+        {
+          "day": "2021-12-02",
+          "amount": 1.075
+        },
+        {
+          "day": "2022-03-03",
+          "amount": 1.075
+        },
+        {
+          "day": "2022-06-02",
+          "amount": 1.15
+        },
+        {
+          "day": "2022-09-01",
+          "amount": 1.15
+        },
+        {
+          "day": "2022-12-01",
+          "amount": 1.15
+        },
+        {
+          "day": "2023-03-02",
+          "amount": 1.15
+        },
+        {
+          "day": "2023-06-01",
+          "amount": 1.265
+        },
+        {
+          "day": "2023-08-31",
+          "amount": 1.265
+        },
+        {
+          "day": "2023-11-30",
+          "amount": 1.265
+        },
+        {
+          "day": "2024-02-29",
+          "amount": 1.265
+        },
+        {
+          "day": "2024-06-07",
+          "amount": 1.355
+        },
+        {
+          "day": "2024-09-06",
+          "amount": 1.355
+        },
+        {
+          "day": "2024-12-06",
+          "amount": 1.355
+        },
+        {
+          "day": "2025-03-07",
+          "amount": 1.355
+        },
+        {
+          "day": "2025-06-06",
+          "amount": 1.423
+        },
+        {
+          "day": "2025-09-05",
+          "amount": 1.423
+        },
+        {
+          "day": "2025-12-05",
+          "amount": 1.423
+        },
+        {
+          "day": "2026-03-06",
+          "amount": 1.423
+        },
+        {
+          "day": "2026-06-05",
+          "amount": 1.48
+        },
+        {
+          "day": "2026-09-04",
+          "amount": 1.48
+        }
+      ],
+      "research": {
+        "reportPeriod": "2026-09-05",
+        "reviewedAt": "2026-10-18",
+        "sources": [
+          {
+            "label": "本期正式财报",
+            "url": "https://www.sec.gov/Archives/edgar/data/77476/000007747626000035/0000077476-26-000035-index.html",
+            "publishedAt": "2026-07-09",
+            "reportPeriod": "2026-06-13"
+          },
+          {
+            "label": "业绩发布与业务说明",
+            "url": "https://www.pepsico.com/en/investors/earnings",
+            "reportPeriod": "2026-06-13"
+          }
+        ],
+        "incomeReview": {
+          "decision": "retain",
+          "rationale": "现金股息历史与本期报告盈利、现金及债务风险分别核对；不是以成长资格决定红利标签。",
+          "capitalReview": "销量压力；上年减值使本期利润同比基数偏低；现金支出后的分红持续性需继续跟踪。",
+          "reportPeriod": "2026-06-13",
+          "reviewedAt": "2026-10-07",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/77476/000007747626000035/0000077476-26-000035-index.html",
+          "publishedAt": "2026-07-09"
+        }
+      },
+      "accountingModel": "corporate",
+      "yield12": 4.346784219234869,
+      "priceAsOf": "2026-10-19",
+      "returnSourceUrl": "https://finance.yahoo.com/quote/PEP/history/"
+    }
+  }
+}
