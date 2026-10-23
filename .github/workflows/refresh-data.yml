@@ -26,7 +26,9 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    # A normal refresh plus full validation takes about 48 minutes. Allow one
+    # complete recomputation when main advances during the first pass.
+    timeout-minutes: 120
     permissions:
       contents: write
     outputs:
