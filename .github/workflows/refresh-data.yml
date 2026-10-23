@@ -177,6 +177,9 @@ jobs:
             data/update-status.json
             data/fund-actions.json
             data/screening-validation.json
+            data/etf-distributions.js
+            data/portfolio/catalog.js
+            data/snapshot.js
             .tmp-snap/refresh-*.log
           if-no-files-found: ignore
           include-hidden-files: true

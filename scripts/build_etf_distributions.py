@@ -383,6 +383,9 @@ def build(products, assets, previous, cache_dir, allow_fetch=False):
                 output[symbol]['metricsMissingEvidence'] = '缺已收盘且与指数表一致的普通行情：' + str(exc)
             if old['through'] < asset['asOf']:
                 output[symbol].update(status='stale', missingEvidence='缺 ' + old['through'] + ' 之后的现金分配记录')
+            print(symbol + ': cash evidence retained through ' + old['through']
+                  + '; price metrics ' + ('retained' if output[symbol].get('metrics') else 'unavailable')
+                  + '; refresh source: ' + str(exc), file=sys.stderr)
         output[symbol].update(frequency=product['distribution'], issuerUrl=product['sourceUrl'])
     return {'schemaVersion': 1, 'products': output}
 

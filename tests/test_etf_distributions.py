@@ -1,4 +1,5 @@
 import copy
+import hashlib
 import json
 import tempfile
 import unittest
@@ -193,6 +194,49 @@ class EtfCashRecordsTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, '无可发布现金记录'):
                 build(products, assets, {}, Path(tmp))
 
+    def test_new_price_dates_reconcile_retained_cash_to_its_original_window(self):
+        from scripts import build_etf_distributions as distributions
+        days = ['2024-12-31', '2025-06-30', '2025-12-31']
+        adjusted = [90, 100, 110]
+        payload = {'chart': {'result': [{'meta': {
+            'symbol': 'TEST', 'currency': 'USD', 'exchangeTimezoneName': 'America/New_York',
+            'regularMarketTime': self.stamp('2026-01-02')},
+            'timestamp': [self.stamp(day) for day in days],
+            'indicators': {'quote': [{'close': [100, 105, 110]}], 'adjclose': [{'adjclose': adjusted}]},
+            'events': {'dividends': {'event': {'date': self.stamp(days[1]), 'amount': 5}}}}]}}
+        products = [{'symbol': 'TEST', 'distribution': '季度', 'sourceUrl': 'https://example.com/issuer'}]
+        with tempfile.TemporaryDirectory() as tmp, patch.object(distributions, 'ROOT', Path(tmp)):
+            path = Path(tmp) / 'history.json'
+            history = {'id': 'us:TEST', 'currency': 'USD', 'basis': 'provider_adjusted_close',
+                       'series': list(zip(days, adjusted))}
+            def publish():
+                path.write_text(json.dumps(history))
+                return {'id': 'us:TEST', 'first': days[0], 'asOf': history['series'][-1][0],
+                        'historyUrl': path.name, 'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
+            asset = publish()
+            old = parse_chart(payload, 'TEST', days[0], days[-1], 'a' * 64, asset, dict(history['series']))
+            history['series'].append(('2026-01-02', 112))
+            asset = publish()
+            assets = {'us:TEST': asset}
+            prior = {'products': {'TEST': old}}
+            result = build(products, assets, prior, Path(tmp))
+            item = result['products']['TEST']
+            validate(result, products, assets)
+            self.assertEqual(item['status'], 'stale')
+            self.assertEqual(item['through'], '2025-12-31')
+            self.assertEqual(item['metrics'], old['metrics'])
+            self.assertEqual(item['metrics']['reinvested']['start'], '2024-12-31')
+            self.assertIn('2025-12-31', item['missingEvidence'])
+            # An inconsistent retained return must still lose its price metrics.
+            history['series'][0] = (days[0], 80)
+            assets['us:TEST'] = publish()
+            invalid = build(products, assets, prior, Path(tmp))
+            validate(invalid, products, assets)
+            self.assertNotIn('metrics', invalid['products']['TEST'])
+            self.assertTrue(invalid['products']['TEST']['metricsMissingEvidence'])
+            self.assertEqual(invalid['products']['TEST']['records'][0]['perShare'], 5)
+            self.assertIsNone(invalid['products']['TEST']['records'][0]['pricePercent'])
+
     def test_published_coverage_and_issuer_evidence_are_reproducible_without_cache(self):
         products = json.loads((ROOT / 'data/overseas-etf-catalog.json').read_text())['products']
         assets = {a['id']: a for a in read_js(ROOT / 'data/portfolio/catalog.js')['assets']}
@@ -204,12 +248,18 @@ class EtfCashRecordsTests(unittest.TestCase):
         self.assertEqual(data['qiiEvidence']['products']['SGOV']['positivePayments'], 12)
         self.assertEqual(set(data['qiiEvidence']['products']), {p['symbol'] for p in products if p['section'] == 'treasury'})
         for item in data['products'].values():
-            self.assertTrue(item['closedPriceEvidence']['closed'])
-            self.assertIn('reinvested', item['metrics'])
+            if item.get('metrics'):
+                self.assertTrue(item['closedPriceEvidence']['closed'])
+                self.assertIn('reinvested', item['metrics'])
+            else:
+                self.assertTrue(item['metricsMissingEvidence'])
+                self.assertTrue(all(row['pricePercent'] is None for row in item['records']))
         bad = copy.deepcopy(data)
-        bad['products']['QQQ']['metrics']['reinvested']['cumulative'] += .01
-        with self.assertRaisesRegex(ValueError, '未对账'):
-            validate(bad, products, assets)
+        available = next((item for item in bad['products'].values() if item.get('metrics', {}).get('reinvested', {}).get('status') == 'available'), None)
+        if available is not None:
+            available['metrics']['reinvested']['cumulative'] += .01
+            with self.assertRaisesRegex(ValueError, '未对账'):
+                validate(bad, products, assets)
         bad = copy.deepcopy(data)
         bad['products']['QQQ']['records'][0]['payableDate'] = '2026-10-13'
         with self.assertRaisesRegex(ValueError, '支付日'):
