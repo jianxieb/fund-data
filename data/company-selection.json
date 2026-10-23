@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "reviewedAt": "2026-10-18",
+  "reviewedAt": "2026-10-23",
   "scope": "逐家公司按相关经营特征指定质量、成长或爆发研究方向；每个方向独立列出入选与未入选理由，红利模型独立。",
   "companies": {
     "cn:601138": {
@@ -3686,17 +3686,21 @@
     "us:ADBE": {
       "name": "Adobe",
       "reportPeriod": "2026-08-28",
-      "reviewedAt": "2026-10-18",
-      "groups": [
-        "quality"
-      ],
-      "rationale": "创意工作流、文件格式和专业用户形成粘性；连续五个完整财年利润与经营现金为正，为业务持续性提供财务验证。；收入增长12.9%，营业利润增长8.3%；生成式AI对新增订阅、定价与成本的净贡献尚未独立量化，当前资料不足以确认AI带来持续盈利加速。",
-      "risk": "AI工具竞争与价格压力；当前利润增速低；保留GAAP利润及费用，未将Non-GAAP调整反填报表。本期未完成全部税务、投资及特殊项目的逐项金额归因，不用净利润增速单独授予高质成长或业绩爆发。",
-      "invalidation": "订阅增长低迷且AI商业化不足以抵补成本",
+      "reviewedAt": "2026-10-23",
+      "groups": [],
+      "rationale": "撤回长期优质入选：历史订阅与文件格式粘性不足以证明AI时代的竞争优势持续。最新单季收入增长12.89%、营业利润增长8.33%，营业利润率由36.29%降至34.82%；现有研究缺付费留存、净新增付费客户、实际定价及AI收入扣推理成本后的可比证据，尚不能排除免费与AI原生工具对付费需求的替代。",
+      "risk": "生成式AI改变创作与编辑入口，可能压低付费席位、提价空间和续订；本期营业利润率同比下降1.47个百分点。股价下跌触发复核，但不作为质量否决或估值便宜的依据。",
+      "invalidation": "重新纳入需本期可核对的付费留存或客户增长、实际定价和AI收入成本证据，说明替代风险已受控；仅收入增长、历史现金或管理层AI叙述不足以关闭质疑。",
       "sources": [
         {
           "label": "本期正式财报",
           "url": "https://www.sec.gov/Archives/edgar/data/796343/000079634326000156/0000796343-26-000156-index.html",
+          "publishedAt": "2026-09-22",
+          "reportPeriod": "2026-08-28"
+        },
+        {
+          "label": "本期10-Q利润表、经营讨论与风险因素",
+          "url": "https://www.sec.gov/Archives/edgar/data/796343/000079634326000156/adbe-20260828.htm",
           "publishedAt": "2026-09-22",
           "reportPeriod": "2026-08-28"
         }
@@ -3722,6 +3726,34 @@
           "unit": "USD",
           "sourceUrl": "https://www.sec.gov/Archives/edgar/data/796343/000079634326000156/0000796343-26-000156-index.html",
           "location": "本期合并利润表"
+        },
+        {
+          "label": "本季利息费用（对净利润的带符号贡献）",
+          "value": -66000000,
+          "unit": "USD",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/796343/000079634326000156/adbe-20260828.htm",
+          "location": "本期合并利润表"
+        },
+        {
+          "label": "本季投资净收益（对净利润的带符号贡献）",
+          "value": 21000000,
+          "unit": "USD",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/796343/000079634326000156/adbe-20260828.htm",
+          "location": "本期合并利润表"
+        },
+        {
+          "label": "本季其他净收益（对净利润的带符号贡献）",
+          "value": 48000000,
+          "unit": "USD",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/796343/000079634326000156/adbe-20260828.htm",
+          "location": "本期合并利润表"
+        },
+        {
+          "label": "本季所得税费用（对净利润的带符号贡献）",
+          "value": -530000000,
+          "unit": "USD",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/796343/000079634326000156/adbe-20260828.htm",
+          "location": "本期合并利润表"
         }
       ],
       "previousGroups": [
@@ -3735,7 +3767,7 @@
         "returnBasis": "provider_adjusted_close"
       },
       "groupReasons": {
-        "quality": "创意工作流、文件格式和专业用户形成粘性；连续五个完整财年利润与经营现金为正，为业务持续性提供财务验证。",
+        "quality": "撤回长期优质入选：AI替代风险未解决；现有研究缺付费留存、实际定价与AI利润贡献的可比证据，历史订阅和现金不足以继续授予质量标签。",
         "growth": "收入增长12.9%，营业利润增长8.3%；生成式AI对新增订阅、定价与成本的净贡献尚未独立量化，当前资料不足以确认AI带来持续盈利加速。",
         "breakout": "本期未授予业绩爆发入选；AI工具竞争与价格压力；当前利润增速低。；保留GAAP利润及费用，未将Non-GAAP调整反填报表。本期未完成全部税务、投资及特殊项目的逐项金额归因，不用净利润增速单独授予高质成长或业绩爆发。"
       },
@@ -3744,9 +3776,86 @@
         "growth"
       ],
       "groupSummaries": {
-        "quality": "创意工作流、文件格式和专业用户形成粘性；连续五个完整财年利润与经营现金为正，为业务持续性提供财务验证。",
+        "quality": "撤回长期优质入选：AI替代风险未解决；现有研究缺付费留存、实际定价与AI利润贡献的可比证据，历史订阅和现金不足以继续授予质量标签。",
         "growth": "收入增长12.9%，营业利润增长8.3%；生成式AI对新增订阅、定价与成本的净贡献尚未独立量化，当前资料不足以确认AI带来持续盈利加速。"
-      }
+      },
+      "decisionHistory": [
+        {
+          "name": "Adobe",
+          "reportPeriod": "2026-08-28",
+          "reviewedAt": "2026-10-18",
+          "groups": [
+            "quality"
+          ],
+          "rationale": "创意工作流、文件格式和专业用户形成粘性；连续五个完整财年利润与经营现金为正，为业务持续性提供财务验证。；收入增长12.9%，营业利润增长8.3%；生成式AI对新增订阅、定价与成本的净贡献尚未独立量化，当前资料不足以确认AI带来持续盈利加速。",
+          "risk": "AI工具竞争与价格压力；当前利润增速低；保留GAAP利润及费用，未将Non-GAAP调整反填报表。本期未完成全部税务、投资及特殊项目的逐项金额归因，不用净利润增速单独授予高质成长或业绩爆发。",
+          "invalidation": "订阅增长低迷且AI商业化不足以抵补成本",
+          "sources": [
+            {
+              "label": "本期正式财报",
+              "url": "https://www.sec.gov/Archives/edgar/data/796343/000079634326000156/0000796343-26-000156-index.html",
+              "publishedAt": "2026-09-22",
+              "reportPeriod": "2026-08-28"
+            }
+          ],
+          "evidence": [
+            {
+              "label": "本季收入",
+              "value": 6760000000,
+              "unit": "USD",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/796343/000079634326000156/0000796343-26-000156-index.html",
+              "location": "本期合并利润表"
+            },
+            {
+              "label": "本季报表净利润",
+              "value": 1827000000,
+              "unit": "USD",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/796343/000079634326000156/0000796343-26-000156-index.html",
+              "location": "本期合并利润表"
+            },
+            {
+              "label": "本季营业利润",
+              "value": 2354000000,
+              "unit": "USD",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/796343/000079634326000156/0000796343-26-000156-index.html",
+              "location": "本期合并利润表"
+            }
+          ],
+          "previousGroups": [
+            "quality"
+          ],
+          "newCoverage": false,
+          "priceContext": {
+            "pe": 13.192629747587764,
+            "return5y": -60.02842050158442,
+            "priceAsOf": "2026-10-13",
+            "returnBasis": "provider_adjusted_close"
+          },
+          "groupReasons": {
+            "quality": "创意工作流、文件格式和专业用户形成粘性；连续五个完整财年利润与经营现金为正，为业务持续性提供财务验证。",
+            "growth": "收入增长12.9%，营业利润增长8.3%；生成式AI对新增订阅、定价与成本的净贡献尚未独立量化，当前资料不足以确认AI带来持续盈利加速。",
+            "breakout": "本期未授予业绩爆发入选；AI工具竞争与价格压力；当前利润增速低。；保留GAAP利润及费用，未将Non-GAAP调整反填报表。本期未完成全部税务、投资及特殊项目的逐项金额归因，不用净利润增速单独授予高质成长或业绩爆发。"
+          },
+          "researchGroups": [
+            "quality",
+            "growth"
+          ],
+          "groupSummaries": {
+            "quality": "创意工作流、文件格式和专业用户形成粘性；连续五个完整财年利润与经营现金为正，为业务持续性提供财务验证。",
+            "growth": "收入增长12.9%，营业利润增长8.3%；生成式AI对新增订阅、定价与成本的净贡献尚未独立量化，当前资料不足以确认AI带来持续盈利加速。"
+          }
+        }
+      ],
+      "qualityChallenges": [
+        {
+          "openedAt": "2026-10-23",
+          "status": "unresolved",
+          "question": "AI及免费工具替代下，付费留存、实际定价和AI增量利润能否维持？现有研究缺同口径留存、付费客户与AI成本贡献证据。",
+          "sourceUrls": [
+            "https://www.sec.gov/Archives/edgar/data/796343/000079634326000156/adbe-20260828.htm"
+          ]
+        }
+      ]
     },
     "us:INTU": {
       "name": "Intuit",
@@ -6158,17 +6267,21 @@
     "us:QCOM": {
       "name": "高通",
       "reportPeriod": "2026-06-28",
-      "reviewedAt": "2026-10-18",
-      "groups": [
-        "quality"
-      ],
-      "rationale": "通信专利授权和芯片设计导入支撑多年现金，手机周期不抹去专利与客户合作基础；客户自研和授权监管是质量失效信号。；收入下降4.0%、营业利润下降41.1%；汽车增长尚不能抵消集团移动业务与费用压力，本期不符合核心盈利增长。",
-      "risk": "手机周期、客户自研、税项及许可监管；税项和前期一次性收益影响同比；最新单季报表净利润下降，不使用预测EPS授予资格。",
-      "invalidation": "许可或芯片份额下滑，新业务盈利无法抵补",
+      "reviewedAt": "2026-10-23",
+      "groups": [],
+      "rationale": "撤回长期优质入选：最近两季营业利润同比下降25.99%、41.13%，营业利润率分别同比下降6.63、10.30个百分点；专利许可与历史现金不能抵消已发生的集团盈利恶化。最新单季手机芯片收入下降19.63%，汽车增长尚不足以抵补；客户自研替代和新业务盈利承接仍未解决。",
+      "risk": "手机需求、客户自研与授权监管；投资收益和递延税项可显著抬高净利润。财年营业利润在2023年后曾恢复，不能描述为逐年单边下跌；当前两季经营恶化仍须撤回质量批准。",
+      "invalidation": "重新纳入需集团营业利润与利润率停止连续同季恶化，并有本期分部利润、客户份额和非手机业务盈利足以承接的证据；投资收益或递延税收益不算经营恢复。",
       "sources": [
         {
           "label": "本期正式财报",
           "url": "https://www.sec.gov/Archives/edgar/data/804328/000080432826000086/0000804328-26-000086-index.html",
+          "publishedAt": "2026-07-29",
+          "reportPeriod": "2026-06-28"
+        },
+        {
+          "label": "本期10-Q利润表、经营讨论与风险因素",
+          "url": "https://www.sec.gov/Archives/edgar/data/804328/000080432826000086/qcom-20260628.htm",
           "publishedAt": "2026-07-29",
           "reportPeriod": "2026-06-28"
         }
@@ -6194,9 +6307,32 @@
           "unit": "USD",
           "sourceUrl": "https://www.sec.gov/Archives/edgar/data/804328/000080432826000086/0000804328-26-000086-index.html",
           "location": "本期合并利润表"
+        },
+        {
+          "label": "本季利息费用（对净利润的带符号贡献）",
+          "value": -178000000,
+          "unit": "USD",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/804328/000080432826000086/qcom-20260628.htm",
+          "location": "本期合并利润表"
+        },
+        {
+          "label": "本季投资及其他净收益（对净利润的带符号贡献）",
+          "value": 1014000000,
+          "unit": "USD",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/804328/000080432826000086/qcom-20260628.htm",
+          "location": "本期合并利润表"
+        },
+        {
+          "label": "本季所得税费用（对净利润的带符号贡献）",
+          "value": -460000000,
+          "unit": "USD",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/804328/000080432826000086/qcom-20260628.htm",
+          "location": "本期合并利润表"
         }
       ],
-      "previousGroups": [],
+      "previousGroups": [
+        "quality"
+      ],
       "newCoverage": false,
       "priceContext": {
         "pe": 20.469907478049947,
@@ -6205,7 +6341,7 @@
         "returnBasis": "provider_adjusted_close"
       },
       "groupReasons": {
-        "quality": "通信专利授权和芯片设计导入支撑多年现金，手机周期不抹去专利与客户合作基础；客户自研和授权监管是质量失效信号。",
+        "quality": "撤回长期优质入选：最近两季营业利润同比下降26.0%和41.1%，利润率也同比下降；手机业务压力、客户自研与新业务盈利承接问题尚未解决。",
         "growth": "收入下降4.0%、营业利润下降41.1%；汽车增长尚不能抵消集团移动业务与费用压力，本期不符合核心盈利增长。"
       },
       "researchGroups": [
@@ -6213,9 +6349,83 @@
         "growth"
       ],
       "groupSummaries": {
-        "quality": "通信专利授权和芯片设计导入支撑多年现金，手机周期不抹去专利与客户合作基础；客户自研和授权监管是质量失效信号。",
+        "quality": "撤回长期优质入选：最近两季营业利润同比下降26.0%和41.1%，利润率也同比下降；手机业务压力、客户自研与新业务盈利承接问题尚未解决。",
         "growth": "收入下降4.0%、营业利润下降41.1%；汽车增长尚不能抵消集团移动业务与费用压力，本期不符合核心盈利增长。"
-      }
+      },
+      "decisionHistory": [
+        {
+          "name": "高通",
+          "reportPeriod": "2026-06-28",
+          "reviewedAt": "2026-10-18",
+          "groups": [
+            "quality"
+          ],
+          "rationale": "通信专利授权和芯片设计导入支撑多年现金，手机周期不抹去专利与客户合作基础；客户自研和授权监管是质量失效信号。；收入下降4.0%、营业利润下降41.1%；汽车增长尚不能抵消集团移动业务与费用压力，本期不符合核心盈利增长。",
+          "risk": "手机周期、客户自研、税项及许可监管；税项和前期一次性收益影响同比；最新单季报表净利润下降，不使用预测EPS授予资格。",
+          "invalidation": "许可或芯片份额下滑，新业务盈利无法抵补",
+          "sources": [
+            {
+              "label": "本期正式财报",
+              "url": "https://www.sec.gov/Archives/edgar/data/804328/000080432826000086/0000804328-26-000086-index.html",
+              "publishedAt": "2026-07-29",
+              "reportPeriod": "2026-06-28"
+            }
+          ],
+          "evidence": [
+            {
+              "label": "本季收入",
+              "value": 9947000000,
+              "unit": "USD",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/804328/000080432826000086/0000804328-26-000086-index.html",
+              "location": "本期合并利润表"
+            },
+            {
+              "label": "本季报表净利润",
+              "value": 2002000000,
+              "unit": "USD",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/804328/000080432826000086/0000804328-26-000086-index.html",
+              "location": "本期合并利润表"
+            },
+            {
+              "label": "本季营业利润",
+              "value": 1626000000,
+              "unit": "USD",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/804328/000080432826000086/0000804328-26-000086-index.html",
+              "location": "本期合并利润表"
+            }
+          ],
+          "previousGroups": [],
+          "newCoverage": false,
+          "priceContext": {
+            "pe": 20.469907478049947,
+            "return5y": 57.68814778858054,
+            "priceAsOf": "2026-10-13",
+            "returnBasis": "provider_adjusted_close"
+          },
+          "groupReasons": {
+            "quality": "通信专利授权和芯片设计导入支撑多年现金，手机周期不抹去专利与客户合作基础；客户自研和授权监管是质量失效信号。",
+            "growth": "收入下降4.0%、营业利润下降41.1%；汽车增长尚不能抵消集团移动业务与费用压力，本期不符合核心盈利增长。"
+          },
+          "researchGroups": [
+            "quality",
+            "growth"
+          ],
+          "groupSummaries": {
+            "quality": "通信专利授权和芯片设计导入支撑多年现金，手机周期不抹去专利与客户合作基础；客户自研和授权监管是质量失效信号。",
+            "growth": "收入下降4.0%、营业利润下降41.1%；汽车增长尚不能抵消集团移动业务与费用压力，本期不符合核心盈利增长。"
+          }
+        }
+      ],
+      "qualityChallenges": [
+        {
+          "openedAt": "2026-10-23",
+          "status": "unresolved",
+          "question": "手机业务与客户自研替代造成的利润损失，能否由汽车、物联网及许可业务的可持续利润补足？最近两季集团营业利润与利润率均下降。",
+          "sourceUrls": [
+            "https://www.sec.gov/Archives/edgar/data/804328/000080432826000086/qcom-20260628.htm"
+          ]
+        }
+      ]
     },
     "us:AMAT": {
       "name": "应用材料",

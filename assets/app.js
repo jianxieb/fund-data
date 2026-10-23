@@ -477,12 +477,12 @@
   function stockRules() {
     const rows = [
       ['共同要求', '逐家公司评审最新已披露财报，列出业务依据、风险和失效条件；新报告不能沿用旧结论。经营企业的TTM利润和经营现金流须为正。'],
-      ['长期优质企业', '至少五个连续完整财年利润、经营现金均为正；逐家检查竞争优势、重复需求与再投资能力。'],
+      ['长期优质企业', '至少五个连续完整财年利润、经营现金均为正。最近两季核心盈利和利润率须可比，连续同时同比下降则撤回；已登记的重大竞争质疑须有本期关闭证据。逐家检查重复需求与再投资能力。'],
       ['盈利成长企业', '最新单季核心盈利同比增长，上年同期基数为正；评审实际业务扩张、盈利来源和持续性。累计中报不能替代单季。'],
       ['业绩爆发股', '最新单季核心盈利同比增长，并有具体业务证据支持快速释放；单独解释周期、并购、短盈利记录和退出条件。与质量、成长重叠时在前两组展示。'],
       ['红利价值', '近12月已实施现金股息率≥3%，最近五个完整日历年均实施现金分红（按除息日），派息比率≤85%。一般企业需正TTM经营现金；银行、金融、REIT及控股公司另查资本或AFFO覆盖。']
     ];
-    openModal(modalTitle('A股与美股的入选标准', '同一入选流程 · 按公司证据作出决定') + '<div class="table-wrap"><table><thead><tr><th>方向</th><th>两市场共同要求</th></tr></thead><tbody>' + rows.map(([n,t]) => '<tr><td>'+n+'</td><td>'+t+'</td></tr>').join('') + '</tbody></table></div><p>核心盈利仍有会计差异：A股采用税后扣非归母利润，美股采用税前GAAP营业利润，ADR按其报表准则；两者不能作为同一种利润直接横比增速。财报新鲜度按各市场披露周期检查。</p><p>财务过线不能单独授予入选；低于条件或缺少证据会显示具体原因。入选不代表当前价格便宜。</p><div class="actions">' + extLink('https://github.com/jianxieb/fund-data/blob/main/docs/research/stock-rule-alignment-2026-10-17.md', '规则、差异与验证记录') + '</div>');
+    openModal(modalTitle('A股与美股的入选标准', '同一入选流程 · 按公司证据作出决定') + '<div class="table-wrap"><table><thead><tr><th>方向</th><th>两市场共同要求</th></tr></thead><tbody>' + rows.map(([n,t]) => '<tr><td>'+n+'</td><td>'+t+'</td></tr>').join('') + '</tbody></table></div><p>核心盈利仍有会计差异：A股采用税后扣非归母利润，美股采用税前GAAP营业利润，ADR按其报表准则；两者不能作为同一种利润直接横比增速。财报新鲜度按各市场披露周期检查。</p><p>财务过线不能单独授予入选；低于条件或缺少证据会显示具体原因。入选不代表当前价格便宜。</p><div class="actions">' + extLink('https://github.com/jianxieb/fund-data/blob/main/docs/research/quality-reassessment-2026-10-23.md', '规则、差异与验证记录') + '</div>');
   }
   function reportLabel(report) {
     const day = report?.reportDate;

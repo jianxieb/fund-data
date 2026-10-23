@@ -173,4 +173,29 @@ test('losing dividend eligibility does not create unrelated research coverage', 
 test('a passing label in another group cannot hide newly failing checks in the compact reason', () => {
   const s={companySelection:{status:'selected',groups:['quality'],groupSummaries:{growth:'此前增长良好'},reviews:{growth:{qualified:false,checks:[{pass:false,reason:'最新单季营业利润下降'}]}}}};
   assert.equal(M.stockSelectionReason(s,'growth',true),'最新单季营业利润下降');
+  s.companySelection.reviews.growth.checks.push({pass:false,reason:'尚缺下一期恢复证据'});
+  assert.equal(M.stockSelectionReason(s,'growth',true),'最新单季营业利润下降');
+  assert.match(M.stockSelectionReason(s,'growth'),/尚缺下一期恢复证据/);
+});
+
+test('profit labels distinguish tax basis and company details reconcile or name the missing evidence', () => {
+  const rows=structuredClone(require('./fixtures/quality-reassessment-20261023.json').us);
+  const missing=structuredClone(rows[0]); missing.symbol='MISSING'; delete missing.profitBridge;
+  const p=page([...rows,missing]); p.view();
+  p.click('scope','true');
+  const html=p.view();
+  assert.match(html,/单季净利润同比/);
+  assert.match(html,/税后 · 含非经营损益/);
+  assert.match(html,/税前 · 经营费用已扣/);
+  assert.doesNotMatch(html,/最新单季报表利润/);
+  for(const symbol of ['ADBE','QCOM']) {
+    p.click('detail',symbol);
+    assert.match(p.modal(),/营业利润与净利润的差异/);
+    assert.match(p.modal(),/所得税费用/);
+    assert.match(p.modal(),/营业利润率/);
+    assert.match(p.modal(),/撤回长期优质入选/);
+    assert.doesNotMatch(p.modal(),/NaN|undefined/);
+  }
+  p.click('detail','MISSING');
+  assert.match(p.modal(),/缺本期利息、投资及其他损益、所得税与归属调整的逐项金额核对/);
 });

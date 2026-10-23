@@ -29,7 +29,11 @@ def run(asof):
         if line.startswith('var '):
             key, value = line[4:].split('=', 1)
             values[key] = json.loads(value.rstrip(';'))
+    dossiers = json.loads((ROOT / 'data/overseas-stock-research.json').read_text())
     for row in values['OVERSEAS_STOCKS']:
+        dossier = dossiers.get(row['symbol'], {})
+        if dossier.get('reportPeriod') == row['financials']['reportDate'] and dossier.get('reviewedAt', '') <= asof:
+            row['research'] = dossier
         classify(row, asof)
     values['OVERSEAS_STOCK_META'].update(screeningAsOf=asof, groupCounts={g: sum(g in r['screening']['groups'] for r in values['OVERSEAS_STOCKS']) for g in LABELS})
     values['OVERSEAS_REPORTS'] = {'reports': [report_for(r) for r in values['OVERSEAS_STOCKS']]}

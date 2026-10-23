@@ -54,6 +54,7 @@
     if (!selection || group === 'other' || selection.status === 'pending') return selection?.rationale || '';
     const failures = (review?.checks || []).filter(c => !c.pass).map(c => c.reason).filter(Boolean);
     const decisionStillValid = review?.qualified === (selection.groups || []).includes(group);
+    if (compact && failures.length) return failures[0];
     if (compact && decisionStillValid && !failures.length && selection.groupSummaries?.[group]) return selection.groupSummaries[group];
     return failures.length ? [...new Set(failures)].join('；') : review?.rationale || selection.groupReasons?.[group] || selection.rationale;
   }

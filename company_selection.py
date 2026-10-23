@@ -18,10 +18,13 @@ def finite(value):
     return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
 
 
-def assess(code, market, period, asof, profit, cash, annual, core_growth=None, *, core_period=None, core_basis=None, published_at=None, eligible=True):
+def assess(code, market, period, asof, profit, cash, annual, core_growth=None, *, core_period=None, core_basis=None, published_at=None, eligible=True, quality_trend=None):
     if asof < FROM:
         return None
-    record = json.loads(PATH.read_text()).get('companies', {}).get(market + ':' + code, {})
+    latest_record = json.loads(PATH.read_text()).get('companies', {}).get(market + ':' + code, {})
+    versions = [*latest_record.get('decisionHistory', []), latest_record]
+    dated = [r for r in versions if r.get('reviewedAt', '') <= asof]
+    record = {k: v for k, v in max(dated, key=lambda r: r.get('reviewedAt', ''), default={}).items() if k != 'decisionHistory'}
     sources = record.get('sources') or []
     source_urls = {s.get('url') for s in sources if s.get('url') and s.get('reportPeriod') == period
                    and period <= s.get('publishedAt', '') <= record.get('reviewedAt', '')}
@@ -56,6 +59,9 @@ def assess(code, market, period, asof, profit, cash, annual, core_growth=None, *
                 contiguous = contiguous and 0 <= months(period) - months(periods[-1]) < 12
             ok = contiguous and all(finite(r.get(k)) and r[k] > 0 for r in last for k in ('profit', 'cash'))
             checks.append({'label': '连续五个完整财年有正利润和正经营现金', 'pass': ok, 'reason': None if ok else '缺连续五个完整财年正利润与现金记录'})
+            from quality_guard import FROM as QUALITY_FROM, quality_checks
+            if asof >= QUALITY_FROM:
+                checks.extend(quality_checks(record, quality_trend, asof, source_urls))
         if group in ('growth', 'breakout'):
             ok = core_period == period and finite(core_growth) and core_growth > 0
             checks.append({'label': '最新单季核心盈利同比增长，且上年同期为正', 'pass': ok,
@@ -72,7 +78,8 @@ def assess(code, market, period, asof, profit, cash, annual, core_growth=None, *
     if not groups and decisions and current and evidenced:
         failures = list(dict.fromkeys(c['reason'] for g in decisions if g in reviews for c in reviews[g]['checks'] if not c['pass']))
         rationale = '本期入选条件失效：' + '；'.join(failures)
-    return {**record, 'status': 'selected' if groups else 'excluded' if current and evidenced else 'pending',
+    return {**record, **({'qualityOperatingTrend': quality_trend} if quality_trend is not None else {}),
+            'status': 'selected' if groups else 'excluded' if current and evidenced else 'pending',
             'groups': groups or ['other'], 'reviews': reviews, 'checkedAt': asof,
             'coreGrowth': {'value': core_growth, 'period': core_period, 'basis': core_basis, 'window': 'single_quarter_yoy'},
             'rationale': rationale}
@@ -89,11 +96,16 @@ def cn_selection(row, asof):
               for r in reversed(row.get('financialHistory5') or row.get('financialHistory') or [])]
     reports = [r for r in row.get('financialReports') or [] if r.get('announcedAt', '') and r['announcedAt'] <= asof]
     quarter = next((q for q in quarter_history(reports) if q['reportDate'] == period), {})
+    from quality_guard import FROM as QUALITY_FROM, operating_trend
+    trend = operating_trend([
+        {'period': q['reportDate'], 'profit': q.get('deductedProfit'), 'revenue': q.get('revenue'),
+         'profitPrevious': q.get('deductedProfitPrevious'), 'revenuePrevious': q.get('revenuePrevious')}
+        for q in quarter_history(reports)], period, '扣非归母净利润（税后）') if asof >= QUALITY_FROM else None
     eligible = 'ST' not in row.get('n', '').upper() and not any(k in (row.get('valuationIndustry') or row.get('ind') or '') for k in ('银行', '保险', '证券', '金融', '租赁'))
     result = assess(row['c'], 'cn', period, asof, ttm_amount(reports, 'netProfit'),
                     ttm_amount(reports, 'operatingCashFlow'), annual, quarter.get('deductedProfitGrowth'),
                     core_period=quarter.get('reportDate'), core_basis='扣除非经常性损益后归母净利润（税后）',
-                    published_at=latest.get('announcedAt'), eligible=eligible)
+                    published_at=latest.get('announcedAt'), eligible=eligible, quality_trend=trend)
     freshness = latest_report_review(latest, asof)[0]
     eligible = 'ST' not in row.get('n', '').upper()
     for verdict in result['reviews'].values():
@@ -161,10 +173,20 @@ def apply_us(row, asof):
     f = row['financials']
     annual = [{'period': r['period'], 'profit': r.get('NetIncome'), 'cash': r.get('OperatingCashFlow')}
               for r in row['analysis']['annual']]
+    from quality_guard import FROM as QUALITY_FROM, operating_trend
+    quarters = row['financialHistory']['quarterly']
+    normalized = []
+    for key, q in sorted(quarters.items()):
+        prior = quarters.get(str(int(key[:4]) - 1) + key[4:], {})
+        normalized.append({'period': q['reportDate'], 'profit': q.get('TotalOperatingIncomeAsReported'),
+                           'revenue': q.get('TotalRevenue'), 'profitPrevious': prior.get('TotalOperatingIncomeAsReported'),
+                           'revenuePrevious': prior.get('TotalRevenue')})
+    trend = operating_trend(normalized, f['reportDate'], '营业利润（税前）') if asof >= QUALITY_FROM else None
     selection = assess(row.get('symbol', ''), 'us', f['reportDate'], asof, f.get('ttmProfit'), f.get('ttmCash'), annual,
                        f.get('operatingGrowth', {}).get('value'), core_period=f['reportDate'],
                        core_basis='IFRS营业利润（税前）' if row.get('symbol') == 'TSM' else 'GAAP营业利润（税前）',
-                       published_at=f.get('publishedAt'), eligible=row.get('accountingModel', 'corporate') == 'corporate')
+                       published_at=f.get('publishedAt'), eligible=row.get('accountingModel', 'corporate') == 'corporate',
+                       quality_trend=trend)
     from stock_income import us_income_review
     income = us_income_review(row, asof)
     row['screening']['payoutRatio'] = income['payoutRatio']
@@ -183,4 +205,6 @@ def apply_us(row, asof):
     row['companySelection'] = selection
     row['screening'].update(groups=selection['groups'], reviews=selection['reviews'], basis='company_selection_v1',
                             otherReasons=[selection['rationale']] if selection['groups'] == ['other'] else [])
+    from overseas_research import profit_bridge
+    row['profitBridge'] = profit_bridge(row, asof)
     return row

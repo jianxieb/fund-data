@@ -62,6 +62,27 @@ def fmt(v, suffix='', scale=1):
     return f'{v / scale:,.2f}{suffix}' if finite(v) else '—'
 
 
+def profit_bridge(row, asof):
+    """Only publish a reconciled explanation for this exact statement and currency."""
+    f = row['financials']
+    raw = row['research'].get('profitBridge') or {}
+    adjustments = raw.get('adjustments') or []
+    operating, net = f.get('TotalOperatingIncomeAsReported'), f.get('NetIncome')
+    valid = (raw.get('reportPeriod') == f['reportDate'] and raw.get('currency') == row['financialCurrency']
+             and f['reportDate'] <= raw.get('publishedAt', '') <= raw.get('reviewedAt', '') <= asof
+             and raw.get('sourceUrl') and raw.get('location')
+             and finite(operating) and finite(net)
+             and raw.get('operatingIncome') == operating and raw.get('netIncome') == net
+             and bool(adjustments) and all(a.get('label') and finite(a.get('value')) for a in adjustments))
+    valid = valid and abs(operating + sum(a['value'] for a in adjustments) - net) < 1
+    if valid:
+        return {**raw, 'status': 'reconciled', 'gap': net - operating}
+    return {'status': 'missing', 'reportPeriod': f['reportDate'],
+            'gap': net - operating if finite(net) and finite(operating) else None,
+            'reason': '缺本期利息、投资及其他损益、所得税与归属调整的逐项金额核对' if finite(operating)
+                      else '缺本期营业利润及其与税后净利润的逐项金额核对'}
+
+
 def report_for(s):
     from us_stock_groups import LABELS
     f, a, r = s['financials'], s['analysis'], s['research']
@@ -107,15 +128,28 @@ def report_for(s):
              e['location'] + (' · 由对应报表金额计算' if e['basis'] == 'calculated' else '')]
             for e in operating['evidence']]},
         links=[{'label':source['label'],'url':source['url']} for source in r['sources']])
+    bridge = profit_bridge(s, screening['checkedAt'])
+    bridge_rows = [['营业利润（税前）', fmt(f.get('TotalOperatingIncomeAsReported'), scale=1e8)]]
+    if bridge['status'] == 'reconciled':
+        bridge_rows += [[x['label'], fmt(x['value'], scale=1e8)] for x in bridge['adjustments']]
+    else:
+        bridge_rows += [['两种利润的净差额（尚未拆分）', fmt(bridge['gap'], scale=1e8)]]
+    bridge_rows += [['净利润（税后）', fmt(f.get('NetIncome'), scale=1e8)]]
+    add('profit-basis', '营业利润怎样变成净利润', paragraphs=[
+        '营业利润为税前经营结果，通常已扣销售成本、研发、营销、管理及股份支付等经营费用；仍可能含重组、减值等一次性经营费用，不等于扣非利润或现金流。',
+        '税后净利润在营业利润上加减利息、投资等非经营损益，再计入所得税、终止经营和归属调整（如有）。两列同比各用自己的上年同季基数，税项或投资收益可使方向相反。',
+        bridge.get('explanation') or bridge.get('reason') or '带符号调整已闭合到本季净利润。'],
+        table={'headers': ['本季利润衔接', c], 'rows': bridge_rows},
+        links=[{'label': '利润表与附注', 'url': bridge['sourceUrl']}] if bridge['status'] == 'reconciled' else [])
     add('quarterly', '最新季度与盈利变化', paragraphs=[f.get('note') or '单季数据与年度数据分开。同比使用同一币种的上年同期；负基数不计算具有误导性的增长百分比。'],
-        table={'headers': ['财季截至', revenue + ' / ' + c, '报表净利润 / ' + c, '营业利润 / ' + c, '经营现金流 / ' + c],
-            'rows': [[period(q)] + [fmt(q.get(k), scale=1e8) for k in ['TotalRevenue', 'NetIncome', 'TotalOperatingIncomeAsReported', 'OperatingCashFlow']] for q in sorted(s['financialHistory']['quarterly'].values(), key=lambda x: x['period'], reverse=True)]})
+        table={'headers': ['财季截至', revenue + ' / ' + c, '净利润（税后） / ' + c, '营业利润（税前） / ' + c, '营业利润率', '经营现金流 / ' + c],
+            'rows': [[period(q)] + [fmt(q.get(k), scale=1e8) for k in ['TotalRevenue', 'NetIncome', 'TotalOperatingIncomeAsReported']] + [fmt(ratio(q.get('TotalOperatingIncomeAsReported'), q.get('TotalRevenue')), '%'), fmt(q.get('OperatingCashFlow'), scale=1e8)] for q in sorted(s['financialHistory']['quarterly'].values(), key=lambda x: x['period'], reverse=True)]})
     add('annual', '年度财务与增长持续性', paragraphs=[
         '三年' + revenue + '复合增长：' + g(a['revenueCagr3']) + '；三年报表利润复合增长：' + g(a['profitCagr3']) + '。',
         '最近三个完整财年平均ROE：' + fmt(a['roe3'], '%') + '；使用各年利润除以该年期初期末平均净资产，不能替代当前TTM。',
         '已收录年度中的亏损期：' + ('、'.join(a['lossYears']) or '无') + '。未收录年度不能据此推断。'],
-        table={'headers': ['财年截至', revenue + ' / ' + c, revenue + '同比', '净利润 / ' + c, '利润同比', '经营现金流 / ' + c, 'ROE'],
-            'rows': [[q['reportDate'] if q.get('dateBasis') == 'issuer_report_end' else q['period'], fmt(q.get('TotalRevenue'), scale=1e8), fmt(q['revenueGrowth'], '%'), fmt(q.get('NetIncome'), scale=1e8), fmt(q['profitGrowth'], '%'), fmt(q.get('OperatingCashFlow'), scale=1e8), fmt(q['roe'], '%')] for q in reversed(a['annual'])]})
+        table={'headers': ['财年截至', revenue + ' / ' + c, revenue + '同比', '净利润（税后） / ' + c, '净利润同比', '营业利润（税前） / ' + c, '营业利润率', '经营现金流 / ' + c, 'ROE'],
+            'rows': [[q['reportDate'] if q.get('dateBasis') == 'issuer_report_end' else q['period'], fmt(q.get('TotalRevenue'), scale=1e8), fmt(q['revenueGrowth'], '%'), fmt(q.get('NetIncome'), scale=1e8), fmt(q['profitGrowth'], '%'), fmt(q.get('TotalOperatingIncomeAsReported'), scale=1e8), fmt(ratio(q.get('TotalOperatingIncomeAsReported'), q.get('TotalRevenue')), '%'), fmt(q.get('OperatingCashFlow'), scale=1e8), fmt(q['roe'], '%')] for q in reversed(a['annual'])]})
     cash_note = 'TTM利润非正或连续季度不足，不计算现金流/净利润倍数。' if a['cashConversion'] is None else ('现金回收暂低于同期利润，应继续核对营运资金、税款和非现金项目。' if a['cashConversion'] < 1 else '经营现金流覆盖同期利润；仍需扣除资本支出后才能判断自由现金流。')
     if s.get('accountingModel') in ('bank', 'financial', 'holding'):
         cash_note = '金融与投资控股公司的经营现金包含存贷款、证券及投资活动变化，现金/净利润只作报表展示，不套经营企业现金回收门槛；需要信用、资本和分部盈利专题判断。'
