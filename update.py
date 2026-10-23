@@ -28,10 +28,13 @@ import argparse
 import hashlib
 import html as html_text
 import json
+import errno
 import math
 import os
 import re
+import socket
 import sys
+import threading
 import time
 import urllib.request
 import urllib.parse
@@ -51,6 +54,11 @@ SNAP_DIR = os.path.join(HERE, '.tmp-snap')   # 上一版 data/snapshot.js 备份
 CHG_KEEP = 40                                # 页面里保留的变动条数
 UA = {'User-Agent': 'Mozilla/5.0'}  # fundmobapi 对完整桌面 UA 会返回 61136403 网络繁忙
 OFFLINE = False
+# A failed fund page host must not consume the whole daily refresh budget
+# once per fund. This state lasts only for this process; the next run probes
+# again. NAV/history hosts and HTTP/parse errors retain their normal retries.
+_unavailable_metadata_hosts = set()
+_metadata_host_lock = threading.Lock()
 
 # 近N年窗口
 WINDOWS = [1, 2, 3, 5, 10]
@@ -87,9 +95,13 @@ def http_get(url, referer=None, tries=2, delay=1.0, timeout=12):
     """带重试的 GET，返回解码后的文本；彻底失败返回 None。"""
     if OFFLINE:
         return None
+    host = urllib.parse.urlsplit(url).hostname
     last = None
     tries = min(max(tries, 1), 4)
     for i in range(tries):
+        with _metadata_host_lock:
+            if host in _unavailable_metadata_hosts:
+                return None
         try:
             req = urllib.request.Request(url, headers=dict(UA, **( {'Referer': referer} if referer else {})))
             with urllib.request.urlopen(req, timeout=timeout) as r:
@@ -100,9 +112,19 @@ def http_get(url, referer=None, tries=2, delay=1.0, timeout=12):
                 return raw.decode('gbk', 'replace')
         except Exception as e:  # noqa: BLE001
             last = e
+            reason = getattr(e, 'reason', e)
+            unreachable = getattr(reason, 'errno', None) in (errno.ENETUNREACH, errno.EHOSTUNREACH)
+            timed_out = isinstance(reason, (TimeoutError, socket.timeout))
+            if host == 'fundf10.eastmoney.com' and (unreachable or (timed_out and i + 1 == tries)):
+                with _metadata_host_lock:
+                    first_failure = host not in _unavailable_metadata_hosts
+                    _unavailable_metadata_hosts.add(host)
+                if first_failure:
+                    log('  !! %s 连接不可用，本进程暂停该主机后续请求；缓存和归档沿用原观察日：%s' % (host, e))
+                break
             if i + 1 < tries:
                 time.sleep(min(delay, 1.0))
-    log('  !! 请求失败（%d 次）: %s (%s)' % (tries, last, url[:90]))
+    log('  !! 请求失败（%d 次）: %s (%s)' % (i + 1, last, url[:90]))
     return None
 
 
