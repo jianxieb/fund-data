@@ -4,11 +4,12 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const M = require('../assets/model.js');
 
-function page() {
+function page(frozenRows) {
   const ctx = { Changheng: M };
   ctx.window = ctx;
   vm.createContext(ctx);
-  vm.runInContext(fs.readFileSync('data/overseas-stocks.js', 'utf8'), ctx);
+  if (frozenRows) ctx.OVERSEAS_STOCKS=structuredClone(frozenRows);
+  else vm.runInContext(fs.readFileSync('data/overseas-stocks.js', 'utf8'), ctx);
   vm.runInContext(fs.readFileSync('assets/overseas-stocks.js', 'utf8'), ctx);
   let symbols = [], modal = '', resets = 0;
   const esc = value => String(value ?? '').replace(/[&<>"']/g, x => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[x]);
@@ -27,6 +28,12 @@ function page() {
   return { ctx, app, view, click, symbols:() => symbols, modal:() => modal, resets:() => resets };
 }
 
+const historicalPage = () => page(require('./fixtures/stock-view-20261020.json').us);
+const historicalCN = code => {
+  const fixture = require('./fixtures/company-selection-20261020.json');
+  return structuredClone({...fixture.cn[code],companySelection:fixture.companies['cn:'+code]});
+};
+
 test('US companies default to selected companies within four groups', () => {
   const p=page(), html=p.view();
   const names=['长期优质企业','盈利成长企业','业绩爆发股','红利价值'];
@@ -34,7 +41,8 @@ test('US companies default to selected companies within four groups', () => {
   for (const name of names) { const i=html.indexOf(name); assert.ok(i>previous); previous=i; }
   assert.doesNotMatch(html, /data-value="other"/);
   assert.match(html, /全部相关公司/);
-  assert.match(html, /stock-overlap-company/);
+  assert.equal(html.includes('stock-overlap-company'), p.ctx.OVERSEAS_STOCKS.some(s =>
+    s.screening.groups.includes('quality') && s.screening.groups.includes('growth')));
   for (const group of ['quality','growth','breakout','dividend']) {
     p.click('group',group); p.view();
     assert.deepEqual([...p.symbols()], Array.from(p.ctx.OVERSEAS_STOCKS.filter(s => s.screening.groups.includes(group)), s => s.symbol));
@@ -42,7 +50,7 @@ test('US companies default to selected companies within four groups', () => {
 });
 
 test('search persists across groups and mature quality no longer depends on ten percent growth', () => {
-  const p=page(); p.view();
+  const p=historicalPage(); p.view();
   p.app.handleInput({value:'AAPL'});
   p.click('group','growth');
   assert.match(p.view(), /value="AAPL"/); assert.equal(p.symbols().length,0);
@@ -60,8 +68,28 @@ test('search persists across groups and mature quality no longer depends on ten 
   assert.match(p.modal(), /重新评估的信号/);
 });
 
+test('new filings can withdraw every selection while preserving related-company research', () => {
+  const rows=structuredClone(require('./fixtures/stock-view-20261020.json').us);
+  for (const row of rows) {
+    row.screening.groups=['other'];
+    Object.assign(row.companySelection,{groups:['other'],status:'pending',rationale:'新财报待逐家公司复核'});
+    for (const review of Object.values(row.screening.reviews)) review.qualified=false;
+  }
+  const p=page(rows);
+  for (const group of ['quality','growth','breakout','dividend']) {
+    p.view(); p.click('group',group);
+    const html=p.view();
+    assert.equal(p.symbols().length,0);
+    assert.doesNotMatch(html,/stock-overlap-company|NaN|undefined/);
+  }
+  p.click('group','quality');p.click('scope','true');
+  assert.match(p.view(),/缺本期评审/);
+  assert.deepEqual([...p.symbols()],rows.filter(s=>M.stockResearchGroups(s).includes('quality')).map(s=>s.symbol));
+  p.click('detail','AAPL');assert.match(p.modal(),/新财报待逐家公司复核/);
+});
+
 test('dividend view and detail distinguish REIT AFFO from GAAP earnings', () => {
-  const p=page(); p.view(); p.click('group','dividend');
+  const p=historicalPage(); p.view(); p.click('group','dividend');
   const html=p.view(); assert.match(html,/5年分红年数/); assert.match(html,/本季已付普通股股息 \/ AFFO/);
   assert.ok(p.symbols().includes('O'));
   p.click('detail','O'); assert.match(p.modal(), /74.5%/); assert.match(p.modal(), /5.4倍/);
@@ -69,15 +97,14 @@ test('dividend view and detail distinguish REIT AFFO from GAAP earnings', () => 
 });
 
 test('each market exposes separate quality and growth reasons without treating working capital as insolvency', () => {
-  const ctx={}; vm.createContext(ctx); vm.runInContext(fs.readFileSync('data/snapshot.js','utf8'),ctx);
-  const fii=ctx.STOCKS.find(s=>s.c==='601138'), zijin=ctx.STOCKS.find(s=>s.c==='601899');
+  const fii=historicalCN('601138'), zijin=historicalCN('601899');
   assert.match(M.stockSelectionReason(fii,'quality'),/23\.92%/);
   assert.match(M.stockSelectionReason(fii,'quality'),/970\.45/);
   assert.equal(M.stockMatches(fii,'quality'),true);
   assert.match(M.stockSelectionReason(fii,'growth'),/230%/);
   assert.match(M.stockSelectionReason(zijin,'quality'),/1\.53倍/);
   assert.match(M.stockSelectionReason(zijin,'growth'),/销量增长29\.49%/);
-  const p=page(); p.view(); p.click('detail','AMZN');
+  const p=historicalPage(); p.view(); p.click('detail','AMZN');
   assert.match(p.modal(),/负76亿美元/);
   const stale=structuredClone(fii); stale.companySelection.status='pending'; stale.companySelection.rationale='缺新报告业务评审';
   assert.equal(M.stockSelectionReason(stale,'growth'),'缺新报告业务评审');
@@ -106,17 +133,21 @@ test('US table third header click restores the original companies and keeps the 
 });
 
 test('related-company scope never duplicates mature firms into breakout or Dongshan into quality/growth', () => {
-  const p=page();p.view();p.click('scope','true');p.click('group','growth');p.view();
+  const p=historicalPage();p.view();p.click('scope','true');p.click('group','growth');p.view();
   assert.ok(p.symbols().includes('AAPL'));assert.ok(p.symbols().includes('MSFT'));
   p.click('group','breakout');p.view();
   assert.ok(!p.symbols().includes('AAPL'));assert.ok(!p.symbols().includes('MSFT'));
-  const ctx={};vm.createContext(ctx);vm.runInContext(fs.readFileSync('data/snapshot.js','utf8'),ctx);
-  const ds=ctx.STOCKS.find(r=>r.c==='002384');
+  const ds={c:'002384',companySelection:{groups:['other'],researchGroups:['breakout'],
+    groupReasons:{breakout:'并表贡献尚未拆分，不据合并利润增速入选'}}};
   assert.equal(M.stockVisibleInGroup(ds,'breakout'),false);
   assert.equal(M.stockVisibleInGroup(ds,'breakout',true),true);
   assert.equal(M.stockVisibleInGroup(ds,'quality',true),false);
   assert.equal(M.stockVisibleInGroup(ds,'growth',true),false);
   assert.match(M.stockSelectionReason(ds,'breakout'),/并表/);
+});
+
+test('every currently published research track has a specific selection or exclusion reason', () => {
+  const p=page(), ctx={};vm.createContext(ctx);vm.runInContext(fs.readFileSync('data/snapshot.js','utf8'),ctx);
   for(const s of [...ctx.STOCKS,...p.ctx.OVERSEAS_STOCKS]) {
     const groups=M.stockResearchGroups(s);
     // Dividend eligibility can change with the daily close without creating

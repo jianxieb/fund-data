@@ -1,0 +1,4142 @@
+{
+  "description": "Frozen rendered company cases; filters and current research coverage are checked separately against the daily snapshot. No financial calculation is replayed from this presentation-only fixture.",
+  "sourceCommit": "38b0007a19014280813add48f095337fbf0042a9",
+  "us": [
+    {
+      "symbol": "AAPL",
+      "name": "苹果",
+      "issuer": "Apple Inc.",
+      "category": "消费科技",
+      "business": "iPhone、设备生态与服务",
+      "reason": "软硬件生态和已安装设备带来重复服务收入。",
+      "risk": "回购放大ROE；设备换机周期与监管限制服务收费。",
+      "sourceUrl": "https://www.apple.com/newsroom/2026/07/apple-reports-third-quarter-results/",
+      "market": "us",
+      "currency": "USD",
+      "selection": "reviewed_us_companies",
+      "cik": 320193,
+      "fiscalYearEndMonth": 9,
+      "financialCurrency": "USD",
+      "accountingStandard": "us-gaap",
+      "accountingModel": "corporate",
+      "coverageBasis": "重要蓝筹，保留独立研究；分类仍按当期财务与经营证据判断",
+      "c": "AAPL",
+      "n": "苹果",
+      "r": [
+        36.43300568042991,
+        47.15267190966448,
+        98.09549093314209,
+        136.35357701837506,
+        1180.4074075049957
+      ],
+      "periods": [
+        {
+          "years": 1,
+          "start": "2025-10-17",
+          "end": "2026-10-19"
+        },
+        {
+          "years": 2,
+          "start": "2024-10-18",
+          "end": "2026-10-19"
+        },
+        {
+          "years": 3,
+          "start": "2023-10-19",
+          "end": "2026-10-19"
+        },
+        {
+          "years": 5,
+          "start": "2021-10-19",
+          "end": "2026-10-19"
+        },
+        {
+          "years": 10,
+          "start": "2016-10-19",
+          "end": "2026-10-19"
+        }
+      ],
+      "risk5": {
+        "vol": 27.821810345257976,
+        "mdd": -33.360517686285604,
+        "start": "2021-10-19",
+        "end": "2026-10-19",
+        "years": 5,
+        "observations": 1255,
+        "annualization": 250,
+        "partial": false,
+        "actualYears": 4.999418194761015,
+        "status": "available",
+        "reason": null,
+        "windowStart": "2021-10-19",
+        "windowPartial": false,
+        "windowYears": 4.999418194761015,
+        "requiredObservations": 1000
+      },
+      "mdd5": -33.360517686285604,
+      "vol5": 27.821810345257976,
+      "sinceListing": 349402.2725766177,
+      "first": "1980-12-12",
+      "returnAsOf": "2026-10-19",
+      "riskAsOf": "2026-10-19",
+      "price": 342.94000244140625,
+      "priceAsOf": "2026-10-19",
+      "valuationAsOf": "2026-10-19",
+      "pe": 39.327981931353925,
+      "peForward": 35.83228002564141,
+      "epsTTM": 8.72,
+      "epsForward": 9.5707,
+      "estimateAsOf": "2026-10-20",
+      "peStatus": "available",
+      "financials": {
+        "period": "2026-06",
+        "reportDate": "2026-06-27",
+        "dateBasis": "issuer_report_end",
+        "currency": "USD",
+        "GrossProfit": 54770000000,
+        "OperatingCashFlow": 34369000000,
+        "NetIncome": 29789000000,
+        "StockholdersEquity": 107520000000,
+        "DilutedEPS": 2.02,
+        "TotalOperatingIncomeAsReported": 35695000000,
+        "TotalRevenue": 109417000000,
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/0000320193-26-000020-index.html",
+        "provenance": {
+          "TotalRevenue": {
+            "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+            "start": "2026-03-29",
+            "end": "2026-06-27",
+            "publishedAt": "2026-07-31",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/0000320193-26-000020-index.html",
+            "value": 109417000000,
+            "basis": "disclosed"
+          },
+          "NetIncome": {
+            "tag": "NetIncomeLoss",
+            "start": "2026-03-29",
+            "end": "2026-06-27",
+            "publishedAt": "2026-07-31",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/0000320193-26-000020-index.html",
+            "value": 29789000000,
+            "basis": "disclosed"
+          },
+          "TotalOperatingIncomeAsReported": {
+            "tag": "OperatingIncomeLoss",
+            "start": "2026-03-29",
+            "end": "2026-06-27",
+            "publishedAt": "2026-07-31",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/0000320193-26-000020-index.html",
+            "value": 35695000000,
+            "basis": "disclosed"
+          },
+          "GrossProfit": {
+            "tag": "GrossProfit",
+            "start": "2026-03-29",
+            "end": "2026-06-27",
+            "publishedAt": "2026-07-31",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/0000320193-26-000020-index.html",
+            "value": 54770000000,
+            "basis": "disclosed"
+          },
+          "StockholdersEquity": {
+            "tag": "StockholdersEquity",
+            "start": null,
+            "end": "2026-06-27",
+            "publishedAt": "2026-07-31",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/0000320193-26-000020-index.html",
+            "value": 107520000000,
+            "basis": "disclosed"
+          },
+          "OperatingCashFlow": {
+            "tag": "NetCashProvidedByUsedInOperatingActivities",
+            "start": "2026-03-29",
+            "end": "2026-06-27",
+            "publishedAt": "2026-07-31",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/0000320193-26-000020-index.html",
+            "value": 116996000000,
+            "basis": "calculated",
+            "operands": [
+              {
+                "tag": "NetCashProvidedByUsedInOperatingActivities",
+                "start": "2025-09-28",
+                "end": "2026-06-27",
+                "publishedAt": "2026-07-31",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/0000320193-26-000020-index.html",
+                "value": 116996000000,
+                "basis": "disclosed"
+              },
+              {
+                "tag": "NetCashProvidedByUsedInOperatingActivities",
+                "start": "2025-09-28",
+                "end": "2026-03-28",
+                "publishedAt": "2026-05-01",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000013/0000320193-26-000013-index.html",
+                "value": 82627000000,
+                "basis": "disclosed"
+              }
+            ]
+          },
+          "DilutedEPS": {
+            "tag": "EarningsPerShareDiluted",
+            "start": "2026-03-29",
+            "end": "2026-06-27",
+            "publishedAt": "2026-07-31",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/0000320193-26-000020-index.html",
+            "value": 2.02,
+            "basis": "disclosed"
+          },
+          "CapitalExpenditures": {
+            "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+            "start": "2026-03-29",
+            "end": "2026-06-27",
+            "publishedAt": "2026-07-31",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/0000320193-26-000020-index.html",
+            "value": 6799000000,
+            "basis": "calculated",
+            "operands": [
+              {
+                "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+                "start": "2025-09-28",
+                "end": "2026-06-27",
+                "publishedAt": "2026-07-31",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/0000320193-26-000020-index.html",
+                "value": 6799000000,
+                "basis": "disclosed"
+              },
+              {
+                "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+                "start": "2025-09-28",
+                "end": "2026-03-28",
+                "publishedAt": "2026-05-01",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000013/0000320193-26-000013-index.html",
+                "value": 4344000000,
+                "basis": "disclosed"
+              }
+            ]
+          }
+        },
+        "publishedAt": "2026-07-31",
+        "CapitalExpenditures": 2455000000,
+        "revenueGrowth": {
+          "value": 16.356501765281383,
+          "status": "available",
+          "label": ""
+        },
+        "profitGrowth": {
+          "value": 27.118716394981647,
+          "status": "available",
+          "label": ""
+        },
+        "ttmRevenue": 466823000000,
+        "ttmProfit": 128930000000,
+        "ttmCash": 146724000000,
+        "roeTTM": 148.75108162676668,
+        "roeMissing": null,
+        "operatingGrowth": {
+          "value": 26.56903765690377,
+          "status": "available",
+          "label": ""
+        },
+        "operatingMargin": 32.62290137729969
+      },
+      "fundamentalsAsOf": "2026-06-27",
+      "financialHistory": {
+        "quarterly": {
+          "2025-09": {
+            "period": "2025-09",
+            "reportDate": "2025-09-27",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "GrossProfit": 48341000000,
+            "OperatingCashFlow": 29728000000,
+            "NetIncome": 27466000000,
+            "StockholdersEquity": 73733000000,
+            "DilutedEPS": 1.85,
+            "TotalOperatingIncomeAsReported": 32427000000,
+            "TotalRevenue": 102466000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/0000320193-25-000079-index.html",
+            "publishedAt": "2026-07-31",
+            "CapitalExpenditures": 3242000000
+          },
+          "2025-12": {
+            "period": "2025-12",
+            "reportDate": "2025-12-27",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "GrossProfit": 69231000000,
+            "OperatingCashFlow": 53925000000,
+            "NetIncome": 42097000000,
+            "StockholdersEquity": 88190000000,
+            "DilutedEPS": 2.84,
+            "TotalOperatingIncomeAsReported": 50852000000,
+            "TotalRevenue": 143756000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000006/0000320193-26-000006-index.html",
+            "publishedAt": "2026-01-30",
+            "CapitalExpenditures": 2373000000
+          },
+          "2026-03": {
+            "period": "2026-03",
+            "reportDate": "2026-03-28",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "GrossProfit": 54781000000,
+            "OperatingCashFlow": 28702000000,
+            "NetIncome": 29578000000,
+            "StockholdersEquity": 106491000000,
+            "DilutedEPS": 2.01,
+            "TotalOperatingIncomeAsReported": 35885000000,
+            "TotalRevenue": 111184000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000013/0000320193-26-000013-index.html",
+            "publishedAt": "2026-05-01",
+            "CapitalExpenditures": 1971000000
+          },
+          "2026-06": {
+            "period": "2026-06",
+            "reportDate": "2026-06-27",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "GrossProfit": 54770000000,
+            "OperatingCashFlow": 34369000000,
+            "NetIncome": 29789000000,
+            "StockholdersEquity": 107520000000,
+            "DilutedEPS": 2.02,
+            "TotalOperatingIncomeAsReported": 35695000000,
+            "TotalRevenue": 109417000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/0000320193-26-000020-index.html",
+            "publishedAt": "2026-07-31",
+            "CapitalExpenditures": 2455000000
+          }
+        }
+      },
+      "returnBasis": "provider_adjusted_close",
+      "returnSourceUrl": "https://finance.yahoo.com/quote/AAPL/history/",
+      "dividends": "reinvested",
+      "investorTaxesIncluded": false,
+      "cashDividend12": 1.06,
+      "yield12": 0.30909196724027804,
+      "dividendMissing": null,
+      "research": {
+        "reviewedAt": "2026-10-18",
+        "reportPeriod": "2026-06-27",
+        "summary": "软硬件生态和已安装设备带来重复服务收入；连续五个完整财年利润与经营现金为正，为业务持续性提供财务验证。；本季收入增长16.4%、营业利润增长26.6%，但三年利润复合约3.92%，关税退款也抬高本季毛利率；现有证据尚未将持续设备与服务扩张同换机周期、退款分开，暂未确认持续盈利成长。",
+        "thesis": [
+          "软硬件生态和已安装设备带来重复服务收入；连续五个完整财年利润与经营现金为正，为业务持续性提供财务验证。",
+          "本季收入增长16.4%、营业利润增长26.6%，但三年利润复合约3.92%，关税退款也抬高本季毛利率；现有证据尚未将持续设备与服务扩张同换机周期、退款分开，暂未确认持续盈利成长。"
+        ],
+        "risks": [
+          "回购放大ROE；设备换机周期与监管限制服务收费。",
+          "关税退款贡献本季EPS约0.11美元、毛利率约2个百分点；净利润与三年增长另核。"
+        ],
+        "watch": [
+          "服务增速与设备留存同时下降，或生态收费受限。",
+          "观察设备出货、均价和服务组合；不能把换机回升直接当作长期增速。"
+        ],
+        "sources": [
+          {
+            "label": "本期正式财报",
+            "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/0000320193-26-000020-index.html",
+            "publishedAt": "2026-07-31",
+            "reportPeriod": "2026-06-27"
+          },
+          {
+            "label": "业绩发布与业务说明",
+            "url": "https://www.apple.com/newsroom/2026/07/apple-reports-third-quarter-results/",
+            "reportPeriod": "2026-06-27"
+          }
+        ],
+        "longTerm": {
+          "decision": "retain",
+          "durability": "软硬件生态和已安装设备带来重复服务收入；连续五个完整财年利润与经营现金为正，为业务持续性提供财务验证。",
+          "reinvestment": "芯片、设备体验与服务研发",
+          "invalidation": "服务增速与设备留存同时下降，或生态收费受限",
+          "rationale": "软硬件生态和已安装设备带来重复服务收入；连续五个完整财年利润与经营现金为正，为业务持续性提供财务验证。"
+        },
+        "earningsReview": {
+          "reportPeriod": "2026-06-27",
+          "driver": "设备生态和服务增长；不能仅以回购后的高ROE证明持续成长。",
+          "nonOperating": "关税退款贡献本季EPS约0.11美元、毛利率约2个百分点；净利润与三年增长另核。",
+          "priceCycle": "观察设备出货、均价和服务组合；不能把换机回升直接当作长期增速。",
+          "consolidation": "本期未以重大收购作为增长依据。",
+          "invalidation": "服务增速与设备留存同时下降，或生态收费受限",
+          "evidence": [
+            {
+              "label": "2026-03 归属母公司报表净利润",
+              "value": 29578000000,
+              "unit": "USD",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000013/0000320193-26-000013-index.html",
+              "location": "合并利润表 / 归属母公司报表净利润",
+              "basis": "disclosed",
+              "reportPeriod": "2026-03-28"
+            },
+            {
+              "label": "2026-03 归属母公司报表净利润同比",
+              "value": 19.362389023405967,
+              "unit": "%",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000013/0000320193-26-000013-index.html",
+              "location": "本季与上年同期合并利润表",
+              "basis": "calculated",
+              "operands": [
+                29578000000,
+                24780000000
+              ],
+              "reportPeriod": "2026-03-28"
+            },
+            {
+              "label": "2026-03 营业利润",
+              "value": 35885000000,
+              "unit": "USD",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000013/0000320193-26-000013-index.html",
+              "location": "合并利润表 / 营业利润",
+              "basis": "disclosed",
+              "reportPeriod": "2026-03-28"
+            },
+            {
+              "label": "2026-03 营业利润同比",
+              "value": 21.27817770117273,
+              "unit": "%",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000013/0000320193-26-000013-index.html",
+              "location": "本季与上年同期合并利润表",
+              "basis": "calculated",
+              "operands": [
+                35885000000,
+                29589000000
+              ],
+              "reportPeriod": "2026-03-28"
+            },
+            {
+              "label": "2026-06 归属母公司报表净利润",
+              "value": 29789000000,
+              "unit": "USD",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/0000320193-26-000020-index.html",
+              "location": "合并利润表 / 归属母公司报表净利润",
+              "basis": "disclosed",
+              "reportPeriod": "2026-06-27"
+            },
+            {
+              "label": "2026-06 归属母公司报表净利润同比",
+              "value": 27.118716394981647,
+              "unit": "%",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/0000320193-26-000020-index.html",
+              "location": "本季与上年同期合并利润表",
+              "basis": "calculated",
+              "operands": [
+                29789000000,
+                23434000000
+              ],
+              "reportPeriod": "2026-06-27"
+            },
+            {
+              "label": "2026-06 营业利润",
+              "value": 35695000000,
+              "unit": "USD",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/0000320193-26-000020-index.html",
+              "location": "合并利润表 / 营业利润",
+              "basis": "disclosed",
+              "reportPeriod": "2026-06-27"
+            },
+            {
+              "label": "2026-06 营业利润同比",
+              "value": 26.56903765690377,
+              "unit": "%",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/0000320193-26-000020-index.html",
+              "location": "本季与上年同期合并利润表",
+              "basis": "calculated",
+              "operands": [
+                35695000000,
+                28202000000
+              ],
+              "reportPeriod": "2026-06-27"
+            }
+          ],
+          "qualityDecision": "retain",
+          "qualityRationale": "软硬件生态和已安装设备带来重复服务收入；连续五个完整财年利润与经营现金为正，为业务持续性提供财务验证。",
+          "growthDecision": "hold",
+          "growthRationale": "本季收入增长16.4%、营业利润增长26.6%，但三年利润复合约3.92%，关税退款也抬高本季毛利率；现有证据尚未将持续设备与服务扩张同换机周期、退款分开，暂未确认持续盈利成长。",
+          "breakoutDecision": "hold",
+          "breakoutRationale": "设备生态和服务增长；不能仅以回购后的高ROE证明持续成长。；关税退款贡献本季EPS约0.11美元、毛利率约2个百分点；净利润与三年增长另核。；观察设备出货、均价和服务组合；不能把换机回升直接当作长期增速。"
+        }
+      },
+      "financialSourceStatus": "live_official_filings",
+      "fetchedAt": "2026-10-20T15:32:07+00:00",
+      "analysis": {
+        "annual": [
+          {
+            "period": "2019-09",
+            "reportDate": "2019-09-28",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "TotalRevenue": 260174000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019321000105/0000320193-21-000105-index.html",
+            "publishedAt": "2021-10-29",
+            "NetIncome": 55256000000,
+            "TotalOperatingIncomeAsReported": 63930000000,
+            "GrossProfit": 98392000000,
+            "StockholdersEquity": 90488000000,
+            "OperatingCashFlow": 69391000000,
+            "DilutedEPS": 2.97,
+            "CapitalExpenditures": 10495000000,
+            "revenueGrowth": null,
+            "profitGrowth": null,
+            "roe": null
+          },
+          {
+            "period": "2020-09",
+            "reportDate": "2020-09-26",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "TotalRevenue": 274515000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019322000108/0000320193-22-000108-index.html",
+            "publishedAt": "2022-10-28",
+            "NetIncome": 57411000000,
+            "TotalOperatingIncomeAsReported": 66288000000,
+            "GrossProfit": 104956000000,
+            "StockholdersEquity": 65339000000,
+            "OperatingCashFlow": 80674000000,
+            "DilutedEPS": 3.28,
+            "CapitalExpenditures": 7309000000,
+            "revenueGrowth": 5.512080376978483,
+            "profitGrowth": 3.9000289561314605,
+            "roe": 73.68556155223422
+          },
+          {
+            "period": "2021-09",
+            "reportDate": "2021-09-25",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "TotalRevenue": 365817000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019323000106/0000320193-23-000106-index.html",
+            "publishedAt": "2023-11-03",
+            "NetIncome": 94680000000,
+            "TotalOperatingIncomeAsReported": 108949000000,
+            "GrossProfit": 152836000000,
+            "StockholdersEquity": 63090000000,
+            "OperatingCashFlow": 104038000000,
+            "DilutedEPS": 5.61,
+            "CapitalExpenditures": 11085000000,
+            "revenueGrowth": 33.25938473307469,
+            "profitGrowth": 64.9161310550243,
+            "roe": 147.44333444938448
+          },
+          {
+            "period": "2022-09",
+            "reportDate": "2022-09-24",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "TotalRevenue": 394328000000,
+            "OperatingCashFlow": 122151000000,
+            "NetIncome": 99803000000,
+            "GrossProfit": 170782000000,
+            "TotalOperatingIncomeAsReported": 119437000000,
+            "StockholdersEquity": 50672000000,
+            "DilutedEPS": 6.11,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019324000123/0000320193-24-000123-index.html",
+            "publishedAt": "2024-11-01",
+            "CapitalExpenditures": 10708000000,
+            "revenueGrowth": 7.7937876041846055,
+            "profitGrowth": 5.410857625686523,
+            "roe": 175.45929220653645
+          },
+          {
+            "period": "2023-09",
+            "reportDate": "2023-09-30",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "TotalRevenue": 383285000000,
+            "OperatingCashFlow": 110543000000,
+            "NetIncome": 96995000000,
+            "GrossProfit": 169148000000,
+            "TotalOperatingIncomeAsReported": 114301000000,
+            "StockholdersEquity": 62146000000,
+            "DilutedEPS": 6.13,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/0000320193-25-000079-index.html",
+            "publishedAt": "2025-10-31",
+            "CapitalExpenditures": 10959000000,
+            "revenueGrowth": -2.8004605303199366,
+            "profitGrowth": -2.8135426790777833,
+            "roe": 171.94951160275843
+          },
+          {
+            "period": "2024-09",
+            "reportDate": "2024-09-28",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "TotalRevenue": 391035000000,
+            "OperatingCashFlow": 118254000000,
+            "NetIncome": 93736000000,
+            "GrossProfit": 180683000000,
+            "TotalOperatingIncomeAsReported": 123216000000,
+            "StockholdersEquity": 56950000000,
+            "DilutedEPS": 6.08,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/0000320193-25-000079-index.html",
+            "publishedAt": "2025-10-31",
+            "CapitalExpenditures": 9447000000,
+            "revenueGrowth": 2.021994077514121,
+            "profitGrowth": -3.3599670086086912,
+            "roe": 157.41250755692886
+          },
+          {
+            "period": "2025-09",
+            "reportDate": "2025-09-27",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "TotalRevenue": 416161000000,
+            "OperatingCashFlow": 111482000000,
+            "NetIncome": 112010000000,
+            "GrossProfit": 195201000000,
+            "TotalOperatingIncomeAsReported": 133050000000,
+            "StockholdersEquity": 73733000000,
+            "DilutedEPS": 7.46,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/0000320193-25-000079-index.html",
+            "publishedAt": "2025-10-31",
+            "CapitalExpenditures": 12715000000,
+            "revenueGrowth": 6.425511782832739,
+            "profitGrowth": 19.495177946573357,
+            "roe": 171.42244974480232
+          }
+        ],
+        "revenueCagr3": {
+          "value": 1.8125357434793932,
+          "start": "2022-09",
+          "end": "2025-09"
+        },
+        "profitCagr3": {
+          "value": 3.9212592033254,
+          "start": "2022-09",
+          "end": "2025-09"
+        },
+        "roe3": 166.92815630149653,
+        "roe3Periods": [
+          "2023-09",
+          "2024-09",
+          "2025-09"
+        ],
+        "lossYears": [],
+        "ttmNetMargin": 27.618604910212223,
+        "cashConversion": 1.138012875203599,
+        "grossMargin": 50.056206987945195
+      },
+      "peDynamic": 42.44306960908493,
+      "peStatic": 45.97050971064427,
+      "staticPeriod": "2025-09-27",
+      "epsForecastGrowth": 9.755733944954127,
+      "screening": {
+        "basis": "company_selection_v1",
+        "checkedAt": "2026-10-20",
+        "groups": [
+          "quality"
+        ],
+        "reviews": {
+          "quality": {
+            "qualified": true,
+            "checks": [
+              {
+                "label": "逐家公司评审明确入选本组",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "评审对应最新已披露财报",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期原始财报、定量证据及风险齐备",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "已披露的经营企业财报，非特殊行业或风险警示证券",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最近12个月报表利润、经营现金为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "连续五个完整财年有正利润和正经营现金",
+                "pass": true,
+                "reason": null
+              }
+            ],
+            "rationale": "软硬件生态和已安装设备带来重复服务收入；连续五个完整财年利润与经营现金为正，为业务持续性提供财务验证。"
+          },
+          "growth": {
+            "qualified": false,
+            "checks": [
+              {
+                "label": "逐家公司评审明确入选本组",
+                "pass": false,
+                "reason": "本季收入增长16.4%、营业利润增长26.6%，但三年利润复合约3.92%，关税退款也抬高本季毛利率；现有证据尚未将持续设备与服务扩张同换机周期、退款分开，暂未确认持续盈利成长。"
+              },
+              {
+                "label": "评审对应最新已披露财报",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期原始财报、定量证据及风险齐备",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "已披露的经营企业财报，非特殊行业或风险警示证券",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最近12个月报表利润、经营现金为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最新单季核心盈利同比增长，且上年同期为正",
+                "pass": true,
+                "reason": null
+              }
+            ],
+            "rationale": "本季收入增长16.4%、营业利润增长26.6%，但三年利润复合约3.92%，关税退款也抬高本季毛利率；现有证据尚未将持续设备与服务扩张同换机周期、退款分开，暂未确认持续盈利成长。"
+          },
+          "breakout": {
+            "qualified": false,
+            "checks": [
+              {
+                "label": "逐家公司评审明确入选本组",
+                "pass": false,
+                "reason": "本期未授予业绩爆发入选；回购放大ROE；设备换机周期与监管限制服务收费。；关税退款贡献本季EPS约0.11美元、毛利率约2个百分点；净利润与三年增长另核。"
+              },
+              {
+                "label": "评审对应最新已披露财报",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期原始财报、定量证据及风险齐备",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "已披露的经营企业财报，非特殊行业或风险警示证券",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最近12个月报表利润、经营现金为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最新单季核心盈利同比增长，且上年同期为正",
+                "pass": true,
+                "reason": null
+              }
+            ],
+            "rationale": "本期未授予业绩爆发入选；回购放大ROE；设备换机周期与监管限制服务收费。；关税退款贡献本季EPS约0.11美元、毛利率约2个百分点；净利润与三年增长另核。"
+          },
+          "dividend": {
+            "qualified": false,
+            "checks": [
+              {
+                "label": "本期财报已公告并有来源",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期分红承受能力已逐家公司复核",
+                "pass": false,
+                "reason": "分红承受能力复核覆盖2026-06-27，当前财报为2026-06-27"
+              },
+              {
+                "label": "现金分红和价格来自同一截至日",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "近12月已付现金股息率≥3%",
+                "pass": false,
+                "reason": "近12月股息率0.31%，低于3%"
+              },
+              {
+                "label": "最近5个完整日历年均实施现金分红（按除息日）",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最近12个月经营现金流为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "现金派息比率≤85%，盈利或AFFO基数为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "当前财报距研究日不超过155天",
+                "pass": true,
+                "reason": null
+              }
+            ],
+            "checkedAt": "2026-10-20",
+            "basis": "shared_cash_income_v1",
+            "payoutRatio": 0.12155963302752293,
+            "dividendYears5": 5,
+            "missing": [
+              "分红承受能力复核覆盖2026-06-27，当前财报为2026-06-27"
+            ],
+            "rationale": "分红承受能力复核覆盖2026-06-27，当前财报为2026-06-27；近12月股息率0.31%，低于3%",
+            "businessReview": {
+              "reportPeriod": "2026-06-27",
+              "reviewedAt": "2026-10-18",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/0000320193-26-000020-index.html",
+              "publishedAt": "2026-07-31"
+            },
+            "payoutBasis": "近12月现金分红 / TTM盈利"
+          }
+        },
+        "roe5": 164.7374191120821,
+        "quarters": [
+          {
+            "period": "2026-03",
+            "reportDate": "2026-03-28",
+            "profitGrowth": 19.362389023405967,
+            "operatingGrowth": 21.27817770117273
+          },
+          {
+            "period": "2026-06",
+            "reportDate": "2026-06-27",
+            "profitGrowth": 27.118716394981647,
+            "operatingGrowth": 26.56903765690377
+          }
+        ],
+        "dividendYears5": 5,
+        "payoutRatio": 0.12155963302752293,
+        "otherReasons": []
+      },
+      "companySelection": {
+        "name": "苹果",
+        "reportPeriod": "2026-06-27",
+        "reviewedAt": "2026-10-18",
+        "groups": [
+          "quality"
+        ],
+        "rationale": "软硬件生态和已安装设备带来重复服务收入；连续五个完整财年利润与经营现金为正，为业务持续性提供财务验证。；本季收入增长16.4%、营业利润增长26.6%，但三年利润复合约3.92%，关税退款也抬高本季毛利率；现有证据尚未将持续设备与服务扩张同换机周期、退款分开，暂未确认持续盈利成长。",
+        "risk": "回购放大ROE；设备换机周期与监管限制服务收费；关税退款贡献本季EPS约0.11美元、毛利率约2个百分点；净利润与三年增长另核。",
+        "invalidation": "服务增速与设备留存同时下降，或生态收费受限",
+        "sources": [
+          {
+            "label": "本期正式财报",
+            "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/0000320193-26-000020-index.html",
+            "publishedAt": "2026-07-31",
+            "reportPeriod": "2026-06-27"
+          }
+        ],
+        "evidence": [
+          {
+            "label": "本季收入",
+            "value": 109417000000,
+            "unit": "USD",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/0000320193-26-000020-index.html",
+            "location": "本期合并利润表"
+          },
+          {
+            "label": "本季报表净利润",
+            "value": 29789000000,
+            "unit": "USD",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/0000320193-26-000020-index.html",
+            "location": "本期合并利润表"
+          },
+          {
+            "label": "本季营业利润",
+            "value": 35695000000,
+            "unit": "USD",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/0000320193-26-000020-index.html",
+            "location": "本期合并利润表"
+          }
+        ],
+        "previousGroups": [
+          "quality"
+        ],
+        "newCoverage": false,
+        "priceContext": {
+          "pe": 39.136466630008236,
+          "return5y": 148.30552939758005,
+          "priceAsOf": "2026-10-13",
+          "returnBasis": "provider_adjusted_close"
+        },
+        "groupReasons": {
+          "quality": "软硬件生态和已安装设备带来重复服务收入；连续五个完整财年利润与经营现金为正，为业务持续性提供财务验证。",
+          "growth": "本季收入增长16.4%、营业利润增长26.6%，但三年利润复合约3.92%，关税退款也抬高本季毛利率；现有证据尚未将持续设备与服务扩张同换机周期、退款分开，暂未确认持续盈利成长。",
+          "breakout": "本期未授予业绩爆发入选；回购放大ROE；设备换机周期与监管限制服务收费。；关税退款贡献本季EPS约0.11美元、毛利率约2个百分点；净利润与三年增长另核。"
+        },
+        "researchGroups": [
+          "quality",
+          "growth"
+        ],
+        "groupSummaries": {
+          "quality": "软硬件生态和已安装设备带来重复服务收入；连续五个完整财年利润与经营现金为正，为业务持续性提供财务验证。",
+          "growth": "本季收入增长16.4%、营业利润增长26.6%，但三年利润复合约3.92%，关税退款也抬高本季毛利率；现有证据尚未将持续设备与服务扩张同换机周期、退款分开，暂未确认持续盈利成长。"
+        },
+        "status": "selected",
+        "reviews": {
+          "quality": {
+            "qualified": true,
+            "checks": [
+              {
+                "label": "逐家公司评审明确入选本组",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "评审对应最新已披露财报",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期原始财报、定量证据及风险齐备",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "已披露的经营企业财报，非特殊行业或风险警示证券",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最近12个月报表利润、经营现金为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "连续五个完整财年有正利润和正经营现金",
+                "pass": true,
+                "reason": null
+              }
+            ],
+            "rationale": "软硬件生态和已安装设备带来重复服务收入；连续五个完整财年利润与经营现金为正，为业务持续性提供财务验证。"
+          },
+          "growth": {
+            "qualified": false,
+            "checks": [
+              {
+                "label": "逐家公司评审明确入选本组",
+                "pass": false,
+                "reason": "本季收入增长16.4%、营业利润增长26.6%，但三年利润复合约3.92%，关税退款也抬高本季毛利率；现有证据尚未将持续设备与服务扩张同换机周期、退款分开，暂未确认持续盈利成长。"
+              },
+              {
+                "label": "评审对应最新已披露财报",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期原始财报、定量证据及风险齐备",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "已披露的经营企业财报，非特殊行业或风险警示证券",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最近12个月报表利润、经营现金为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最新单季核心盈利同比增长，且上年同期为正",
+                "pass": true,
+                "reason": null
+              }
+            ],
+            "rationale": "本季收入增长16.4%、营业利润增长26.6%，但三年利润复合约3.92%，关税退款也抬高本季毛利率；现有证据尚未将持续设备与服务扩张同换机周期、退款分开，暂未确认持续盈利成长。"
+          },
+          "breakout": {
+            "qualified": false,
+            "checks": [
+              {
+                "label": "逐家公司评审明确入选本组",
+                "pass": false,
+                "reason": "本期未授予业绩爆发入选；回购放大ROE；设备换机周期与监管限制服务收费。；关税退款贡献本季EPS约0.11美元、毛利率约2个百分点；净利润与三年增长另核。"
+              },
+              {
+                "label": "评审对应最新已披露财报",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期原始财报、定量证据及风险齐备",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "已披露的经营企业财报，非特殊行业或风险警示证券",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最近12个月报表利润、经营现金为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最新单季核心盈利同比增长，且上年同期为正",
+                "pass": true,
+                "reason": null
+              }
+            ],
+            "rationale": "本期未授予业绩爆发入选；回购放大ROE；设备换机周期与监管限制服务收费。；关税退款贡献本季EPS约0.11美元、毛利率约2个百分点；净利润与三年增长另核。"
+          },
+          "dividend": {
+            "qualified": false,
+            "checks": [
+              {
+                "label": "本期财报已公告并有来源",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期分红承受能力已逐家公司复核",
+                "pass": false,
+                "reason": "分红承受能力复核覆盖2026-06-27，当前财报为2026-06-27"
+              },
+              {
+                "label": "现金分红和价格来自同一截至日",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "近12月已付现金股息率≥3%",
+                "pass": false,
+                "reason": "近12月股息率0.31%，低于3%"
+              },
+              {
+                "label": "最近5个完整日历年均实施现金分红（按除息日）",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最近12个月经营现金流为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "现金派息比率≤85%，盈利或AFFO基数为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "当前财报距研究日不超过155天",
+                "pass": true,
+                "reason": null
+              }
+            ],
+            "checkedAt": "2026-10-20",
+            "basis": "shared_cash_income_v1",
+            "payoutRatio": 0.12155963302752293,
+            "dividendYears5": 5,
+            "missing": [
+              "分红承受能力复核覆盖2026-06-27，当前财报为2026-06-27"
+            ],
+            "rationale": "分红承受能力复核覆盖2026-06-27，当前财报为2026-06-27；近12月股息率0.31%，低于3%",
+            "businessReview": {
+              "reportPeriod": "2026-06-27",
+              "reviewedAt": "2026-10-18",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/0000320193-26-000020-index.html",
+              "publishedAt": "2026-07-31"
+            },
+            "payoutBasis": "近12月现金分红 / TTM盈利"
+          }
+        },
+        "checkedAt": "2026-10-20",
+        "coreGrowth": {
+          "value": 26.56903765690377,
+          "period": "2026-06-27",
+          "basis": "GAAP营业利润（税前）",
+          "window": "single_quarter_yoy"
+        }
+      }
+    },
+    {
+      "symbol": "MSFT",
+      "name": "微软",
+      "issuer": "Microsoft Corporation",
+      "category": "软件与云",
+      "business": "Azure、企业软件与AI服务",
+      "reason": "企业工作流、订阅与Azure形成迁移成本。",
+      "risk": "AI资本开支与折旧增长；投资收益影响GAAP利润。",
+      "sourceUrl": "https://www.microsoft.com/en-us/Investor/earnings/FY-2026-Q4/press-release-webcast",
+      "market": "us",
+      "currency": "USD",
+      "selection": "reviewed_us_companies",
+      "cik": 789019,
+      "fiscalYearEndMonth": 6,
+      "financialCurrency": "USD",
+      "accountingStandard": "us-gaap",
+      "accountingModel": "corporate",
+      "coverageBasis": "重要蓝筹，保留独立研究；分类仍按当期财务与经营证据判断",
+      "c": "MSFT",
+      "n": "微软",
+      "r": [
+        4.7372525844946,
+        29.603024765258134,
+        64.80013544195953,
+        80.35485446378262,
+        944.3820668567266
+      ],
+      "periods": [
+        {
+          "years": 1,
+          "start": "2025-10-17",
+          "end": "2026-10-19"
+        },
+        {
+          "years": 2,
+          "start": "2024-10-18",
+          "end": "2026-10-19"
+        },
+        {
+          "years": 3,
+          "start": "2023-10-19",
+          "end": "2026-10-19"
+        },
+        {
+          "years": 5,
+          "start": "2021-10-19",
+          "end": "2026-10-19"
+        },
+        {
+          "years": 10,
+          "start": "2016-10-19",
+          "end": "2026-10-19"
+        }
+      ],
+      "risk5": {
+        "vol": 27.961015999279105,
+        "mdd": -37.14848580242911,
+        "start": "2021-10-19",
+        "end": "2026-10-19",
+        "years": 5,
+        "observations": 1255,
+        "annualization": 250,
+        "partial": false,
+        "actualYears": 4.999418194761015,
+        "status": "available",
+        "reason": null,
+        "windowStart": "2021-10-19",
+        "windowPartial": false,
+        "windowYears": 4.999418194761015,
+        "requiredObservations": 1000
+      },
+      "mdd5": -37.14848580242911,
+      "vol5": 27.961015999279105,
+      "sinceListing": 903952.8169585768,
+      "first": "1986-03-13",
+      "returnAsOf": "2026-10-19",
+      "riskAsOf": "2026-10-19",
+      "price": 533.52001953125,
+      "priceAsOf": "2026-10-19",
+      "valuationAsOf": "2026-10-19",
+      "pe": 29.72256376218663,
+      "peForward": 22.51252360482446,
+      "epsTTM": 17.95,
+      "epsForward": 23.69881,
+      "estimateAsOf": "2026-10-20",
+      "peStatus": "available",
+      "financials": {
+        "period": "2026-06",
+        "reportDate": "2026-06-30",
+        "dateBasis": "issuer_report_end",
+        "currency": "USD",
+        "TotalOperatingIncomeAsReported": 40603000000,
+        "OperatingCashFlow": 55441000000,
+        "NetIncome": 35766000000,
+        "DilutedEPS": 4.81,
+        "StockholdersEquity": 442387000000,
+        "GrossProfit": 60482000000,
+        "TotalRevenue": 90007000000,
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+        "provenance": {
+          "TotalRevenue": {
+            "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+            "start": "2026-04-01",
+            "end": "2026-06-30",
+            "publishedAt": "2026-07-29",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+            "value": 331839000000,
+            "basis": "calculated",
+            "operands": [
+              {
+                "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+                "start": "2025-07-01",
+                "end": "2026-06-30",
+                "publishedAt": "2026-07-29",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+                "value": 331839000000,
+                "basis": "disclosed"
+              },
+              {
+                "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+                "start": "2025-07-01",
+                "end": "2026-03-31",
+                "publishedAt": "2026-04-29",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526191507/0001193125-26-191507-index.html",
+                "value": 241832000000,
+                "basis": "disclosed"
+              }
+            ]
+          },
+          "NetIncome": {
+            "tag": "NetIncomeLoss",
+            "start": "2026-04-01",
+            "end": "2026-06-30",
+            "publishedAt": "2026-07-29",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+            "value": 133749000000,
+            "basis": "calculated",
+            "operands": [
+              {
+                "tag": "NetIncomeLoss",
+                "start": "2025-07-01",
+                "end": "2026-06-30",
+                "publishedAt": "2026-07-29",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+                "value": 133749000000,
+                "basis": "disclosed"
+              },
+              {
+                "tag": "NetIncomeLoss",
+                "start": "2025-07-01",
+                "end": "2026-03-31",
+                "publishedAt": "2026-04-29",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526191507/0001193125-26-191507-index.html",
+                "value": 97983000000,
+                "basis": "disclosed"
+              }
+            ]
+          },
+          "TotalOperatingIncomeAsReported": {
+            "tag": "OperatingIncomeLoss",
+            "start": "2026-04-01",
+            "end": "2026-06-30",
+            "publishedAt": "2026-07-29",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+            "value": 155237000000,
+            "basis": "calculated",
+            "operands": [
+              {
+                "tag": "OperatingIncomeLoss",
+                "start": "2025-07-01",
+                "end": "2026-06-30",
+                "publishedAt": "2026-07-29",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+                "value": 155237000000,
+                "basis": "disclosed"
+              },
+              {
+                "tag": "OperatingIncomeLoss",
+                "start": "2025-07-01",
+                "end": "2026-03-31",
+                "publishedAt": "2026-04-29",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526191507/0001193125-26-191507-index.html",
+                "value": 114634000000,
+                "basis": "disclosed"
+              }
+            ]
+          },
+          "GrossProfit": {
+            "tag": "GrossProfit",
+            "start": "2026-04-01",
+            "end": "2026-06-30",
+            "publishedAt": "2026-07-29",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+            "value": 225465000000,
+            "basis": "calculated",
+            "operands": [
+              {
+                "tag": "GrossProfit",
+                "start": "2025-07-01",
+                "end": "2026-06-30",
+                "publishedAt": "2026-07-29",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+                "value": 225465000000,
+                "basis": "disclosed"
+              },
+              {
+                "tag": "GrossProfit",
+                "start": "2025-07-01",
+                "end": "2026-03-31",
+                "publishedAt": "2026-04-29",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526191507/0001193125-26-191507-index.html",
+                "value": 164983000000,
+                "basis": "disclosed"
+              }
+            ]
+          },
+          "StockholdersEquity": {
+            "tag": "StockholdersEquity",
+            "start": null,
+            "end": "2026-06-30",
+            "publishedAt": "2026-07-29",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+            "value": 442387000000,
+            "basis": "disclosed"
+          },
+          "OperatingCashFlow": {
+            "tag": "NetCashProvidedByUsedInOperatingActivities",
+            "start": "2026-04-01",
+            "end": "2026-06-30",
+            "publishedAt": "2026-07-29",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+            "value": 182935000000,
+            "basis": "calculated",
+            "operands": [
+              {
+                "tag": "NetCashProvidedByUsedInOperatingActivities",
+                "start": "2025-07-01",
+                "end": "2026-06-30",
+                "publishedAt": "2026-07-29",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+                "value": 182935000000,
+                "basis": "disclosed"
+              },
+              {
+                "tag": "NetCashProvidedByUsedInOperatingActivities",
+                "start": "2025-07-01",
+                "end": "2026-03-31",
+                "publishedAt": "2026-04-29",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526191507/0001193125-26-191507-index.html",
+                "value": 127494000000,
+                "basis": "disclosed"
+              }
+            ]
+          },
+          "CapitalExpenditures": {
+            "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+            "start": "2026-04-01",
+            "end": "2026-06-30",
+            "publishedAt": "2026-07-29",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+            "value": 115948000000,
+            "basis": "calculated",
+            "operands": [
+              {
+                "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+                "start": "2025-07-01",
+                "end": "2026-06-30",
+                "publishedAt": "2026-07-29",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+                "value": 115948000000,
+                "basis": "disclosed"
+              },
+              {
+                "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+                "start": "2025-07-01",
+                "end": "2026-03-31",
+                "publishedAt": "2026-04-29",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526191507/0001193125-26-191507-index.html",
+                "value": 80146000000,
+                "basis": "disclosed"
+              }
+            ]
+          }
+        },
+        "publishedAt": "2026-07-29",
+        "CapitalExpenditures": 35802000000,
+        "revenueGrowth": {
+          "value": 17.74702057796209,
+          "status": "available",
+          "label": ""
+        },
+        "profitGrowth": {
+          "value": 31.333308853229536,
+          "status": "available",
+          "label": ""
+        },
+        "ttmRevenue": 331839000000,
+        "ttmProfit": 133749000000,
+        "ttmCash": 182935000000,
+        "roeTTM": 34.03862745048138,
+        "roeMissing": null,
+        "operatingGrowth": {
+          "value": 18.2967689304548,
+          "status": "available",
+          "label": ""
+        },
+        "operatingMargin": 45.11093581610319
+      },
+      "fundamentalsAsOf": "2026-06-30",
+      "financialHistory": {
+        "quarterly": {
+          "2025-09": {
+            "period": "2025-09",
+            "reportDate": "2025-09-30",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "TotalOperatingIncomeAsReported": 37961000000,
+            "OperatingCashFlow": 45057000000,
+            "NetIncome": 27747000000,
+            "DilutedEPS": 3.72,
+            "StockholdersEquity": 363076000000,
+            "GrossProfit": 53630000000,
+            "TotalRevenue": 77673000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312525256321/0001193125-25-256321-index.html",
+            "publishedAt": "2025-10-29",
+            "CapitalExpenditures": 19394000000
+          },
+          "2025-12": {
+            "period": "2025-12",
+            "reportDate": "2025-12-31",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "TotalOperatingIncomeAsReported": 38275000000,
+            "OperatingCashFlow": 35758000000,
+            "NetIncome": 38458000000,
+            "DilutedEPS": 5.16,
+            "StockholdersEquity": 390875000000,
+            "GrossProfit": 55295000000,
+            "TotalRevenue": 81273000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526027207/0001193125-26-027207-index.html",
+            "publishedAt": "2026-01-28",
+            "CapitalExpenditures": 29876000000
+          },
+          "2026-03": {
+            "period": "2026-03",
+            "reportDate": "2026-03-31",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "TotalOperatingIncomeAsReported": 38398000000,
+            "OperatingCashFlow": 46679000000,
+            "NetIncome": 31778000000,
+            "DilutedEPS": 4.27,
+            "StockholdersEquity": 414367000000,
+            "GrossProfit": 56058000000,
+            "TotalRevenue": 82886000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526191507/0001193125-26-191507-index.html",
+            "publishedAt": "2026-04-29",
+            "CapitalExpenditures": 30876000000
+          },
+          "2026-06": {
+            "period": "2026-06",
+            "reportDate": "2026-06-30",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "TotalOperatingIncomeAsReported": 40603000000,
+            "OperatingCashFlow": 55441000000,
+            "NetIncome": 35766000000,
+            "DilutedEPS": 4.81,
+            "StockholdersEquity": 442387000000,
+            "GrossProfit": 60482000000,
+            "TotalRevenue": 90007000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+            "publishedAt": "2026-07-29",
+            "CapitalExpenditures": 35802000000
+          }
+        }
+      },
+      "returnBasis": "provider_adjusted_close",
+      "returnSourceUrl": "https://finance.yahoo.com/quote/MSFT/history/",
+      "dividends": "reinvested",
+      "investorTaxesIncluded": false,
+      "cashDividend12": 3.64,
+      "yield12": 0.6822611836005891,
+      "dividendMissing": null,
+      "research": {
+        "reviewedAt": "2026-10-18",
+        "reportPeriod": "2026-06-30",
+        "summary": "Azure及企业软件收入与营业利润持续增长；本季投资收益单列，以营业利润验证主营扩张。",
+        "thesis": [
+          "Azure及企业软件收入与营业利润持续增长；本季投资收益单列，以营业利润验证主营扩张。",
+          "Azure及企业软件收入与营业利润持续增长；本季投资收益单列，以营业利润验证主营扩张。"
+        ],
+        "risks": [
+          "AI资本开支与折旧增长；投资收益影响GAAP利润。",
+          "本季Anthropic投资税前收益32亿美元；调整净利润增约22%，GAAP增31%，OpenAI与其他投资不作为成长门槛的主营证据。"
+        ],
+        "watch": [
+          "云收入增长持续低于资本投入及折旧增长。",
+          "云收入由使用量、产品组合和汇率影响，不属于商品价格单一周期。"
+        ],
+        "sources": [
+          {
+            "label": "本期正式财报",
+            "url": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+            "publishedAt": "2026-07-29",
+            "reportPeriod": "2026-06-30"
+          },
+          {
+            "label": "业绩发布与业务说明",
+            "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2026-Q4/press-release-webcast",
+            "reportPeriod": "2026-06-30"
+          }
+        ],
+        "longTerm": {
+          "decision": "retain",
+          "durability": "Azure及企业软件收入与营业利润持续增长；本季投资收益单列，以营业利润验证主营扩张。",
+          "reinvestment": "云基础设施和AI产品研发",
+          "invalidation": "云收入增长持续低于资本投入及折旧增长",
+          "rationale": "Azure及企业软件收入与营业利润持续增长；本季投资收益单列，以营业利润验证主营扩张。"
+        },
+        "earningsReview": {
+          "reportPeriod": "2026-06-30",
+          "driver": "Azure与AI服务增长，最新营业利润同比约20%。",
+          "nonOperating": "本季Anthropic投资税前收益32亿美元；调整净利润增约22%，GAAP增31%，OpenAI与其他投资不作为成长门槛的主营证据。",
+          "priceCycle": "云收入由使用量、产品组合和汇率影响，不属于商品价格单一周期。",
+          "consolidation": "企业软件与云的报告分部核对，未用被投企业价值增长代替主营。",
+          "invalidation": "云收入增长持续低于资本投入及折旧增长",
+          "evidence": [
+            {
+              "label": "2026-03 归属母公司报表净利润",
+              "value": 31778000000,
+              "unit": "USD",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526191507/0001193125-26-191507-index.html",
+              "location": "合并利润表 / 归属母公司报表净利润",
+              "basis": "disclosed",
+              "reportPeriod": "2026-03-31"
+            },
+            {
+              "label": "2026-03 归属母公司报表净利润同比",
+              "value": 23.056071871127635,
+              "unit": "%",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526191507/0001193125-26-191507-index.html",
+              "location": "本季与上年同期合并利润表",
+              "basis": "calculated",
+              "operands": [
+                31778000000,
+                25824000000
+              ],
+              "reportPeriod": "2026-03-31"
+            },
+            {
+              "label": "2026-03 营业利润",
+              "value": 38398000000,
+              "unit": "USD",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526191507/0001193125-26-191507-index.html",
+              "location": "合并利润表 / 营业利润",
+              "basis": "disclosed",
+              "reportPeriod": "2026-03-31"
+            },
+            {
+              "label": "2026-03 营业利润同比",
+              "value": 19.99375000000001,
+              "unit": "%",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526191507/0001193125-26-191507-index.html",
+              "location": "本季与上年同期合并利润表",
+              "basis": "calculated",
+              "operands": [
+                38398000000,
+                32000000000
+              ],
+              "reportPeriod": "2026-03-31"
+            },
+            {
+              "label": "2026-06 归属母公司报表净利润",
+              "value": 35766000000,
+              "unit": "USD",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+              "location": "合并利润表 / 归属母公司报表净利润",
+              "basis": "disclosed",
+              "reportPeriod": "2026-06-30"
+            },
+            {
+              "label": "2026-06 归属母公司报表净利润同比",
+              "value": 31.333308853229536,
+              "unit": "%",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+              "location": "本季与上年同期合并利润表",
+              "basis": "calculated",
+              "operands": [
+                35766000000,
+                27233000000
+              ],
+              "reportPeriod": "2026-06-30"
+            },
+            {
+              "label": "2026-06 营业利润",
+              "value": 40603000000,
+              "unit": "USD",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+              "location": "合并利润表 / 营业利润",
+              "basis": "disclosed",
+              "reportPeriod": "2026-06-30"
+            },
+            {
+              "label": "2026-06 营业利润同比",
+              "value": 18.2967689304548,
+              "unit": "%",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+              "location": "本季与上年同期合并利润表",
+              "basis": "calculated",
+              "operands": [
+                40603000000,
+                34323000000
+              ],
+              "reportPeriod": "2026-06-30"
+            }
+          ],
+          "qualityDecision": "retain",
+          "qualityRationale": "Azure及企业软件收入与营业利润持续增长；本季投资收益单列，以营业利润验证主营扩张。",
+          "growthDecision": "retain",
+          "growthRationale": "Azure及企业软件收入与营业利润持续增长；本季投资收益单列，以营业利润验证主营扩张。",
+          "breakoutDecision": "hold",
+          "breakoutRationale": "Azure与AI服务增长，最新营业利润同比约20%。；本季Anthropic投资税前收益32亿美元；调整净利润增约22%，GAAP增31%，OpenAI与其他投资不作为成长门槛的主营证据。；云收入由使用量、产品组合和汇率影响，不属于商品价格单一周期。"
+        }
+      },
+      "financialSourceStatus": "live_official_filings",
+      "fetchedAt": "2026-10-20T15:32:07+00:00",
+      "analysis": {
+        "annual": [
+          {
+            "period": "2020-06",
+            "reportDate": "2020-06-30",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "TotalRevenue": 143015000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000156459022026876/0001564590-22-026876-index.html",
+            "publishedAt": "2022-07-28",
+            "NetIncome": 44281000000,
+            "TotalOperatingIncomeAsReported": 52959000000,
+            "GrossProfit": 96937000000,
+            "StockholdersEquity": 118304000000,
+            "OperatingCashFlow": 60675000000,
+            "DilutedEPS": 5.76,
+            "CapitalExpenditures": 15441000000,
+            "revenueGrowth": null,
+            "profitGrowth": null,
+            "roe": null
+          },
+          {
+            "period": "2021-06",
+            "reportDate": "2021-06-30",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "TotalRevenue": 168088000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000095017023035122/0000950170-23-035122-index.html",
+            "publishedAt": "2023-07-27",
+            "NetIncome": 61271000000,
+            "TotalOperatingIncomeAsReported": 69916000000,
+            "GrossProfit": 115856000000,
+            "StockholdersEquity": 141988000000,
+            "OperatingCashFlow": 76740000000,
+            "DilutedEPS": 8.05,
+            "CapitalExpenditures": 20622000000,
+            "revenueGrowth": 17.531727441177498,
+            "profitGrowth": 38.36860052844335,
+            "roe": 47.07866549874756
+          },
+          {
+            "period": "2022-06",
+            "reportDate": "2022-06-30",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "TotalRevenue": 198270000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000095017024087843/0000950170-24-087843-index.html",
+            "publishedAt": "2024-07-30",
+            "NetIncome": 72738000000,
+            "TotalOperatingIncomeAsReported": 83383000000,
+            "GrossProfit": 135620000000,
+            "StockholdersEquity": 166542000000,
+            "OperatingCashFlow": 89035000000,
+            "DilutedEPS": 9.65,
+            "CapitalExpenditures": 23886000000,
+            "revenueGrowth": 17.956070629670172,
+            "profitGrowth": 18.715216007572913,
+            "roe": 47.15133050270639
+          },
+          {
+            "period": "2023-06",
+            "reportDate": "2023-06-30",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "NetIncome": 72361000000,
+            "TotalOperatingIncomeAsReported": 88523000000,
+            "OperatingCashFlow": 87582000000,
+            "GrossProfit": 146052000000,
+            "StockholdersEquity": 206223000000,
+            "DilutedEPS": 9.68,
+            "TotalRevenue": 211915000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000095017025100235/0000950170-25-100235-index.html",
+            "publishedAt": "2025-07-30",
+            "CapitalExpenditures": 28107000000,
+            "revenueGrowth": 6.882029555656429,
+            "profitGrowth": -0.5182985509637328,
+            "roe": 38.82392391989591
+          },
+          {
+            "period": "2024-06",
+            "reportDate": "2024-06-30",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "NetIncome": 88136000000,
+            "TotalOperatingIncomeAsReported": 109433000000,
+            "OperatingCashFlow": 118548000000,
+            "GrossProfit": 171008000000,
+            "StockholdersEquity": 268477000000,
+            "DilutedEPS": 11.8,
+            "TotalRevenue": 245122000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+            "publishedAt": "2026-07-29",
+            "CapitalExpenditures": 44477000000,
+            "revenueGrowth": 15.66996201307128,
+            "profitGrowth": 21.80041735188845,
+            "roe": 37.13334737729092
+          },
+          {
+            "period": "2025-06",
+            "reportDate": "2025-06-30",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "NetIncome": 101832000000,
+            "TotalOperatingIncomeAsReported": 128528000000,
+            "OperatingCashFlow": 136162000000,
+            "GrossProfit": 193893000000,
+            "StockholdersEquity": 343479000000,
+            "DilutedEPS": 13.64,
+            "TotalRevenue": 281724000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+            "publishedAt": "2026-07-29",
+            "CapitalExpenditures": 64551000000,
+            "revenueGrowth": 14.93215623240672,
+            "profitGrowth": 15.539620586366523,
+            "roe": 33.280824111537434
+          },
+          {
+            "period": "2026-06",
+            "reportDate": "2026-06-30",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "NetIncome": 133749000000,
+            "TotalOperatingIncomeAsReported": 155237000000,
+            "OperatingCashFlow": 182935000000,
+            "GrossProfit": 225465000000,
+            "StockholdersEquity": 442387000000,
+            "DilutedEPS": 17.95,
+            "TotalRevenue": 331839000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+            "publishedAt": "2026-07-29",
+            "CapitalExpenditures": 115948000000,
+            "revenueGrowth": 17.78868679984666,
+            "profitGrowth": 31.34279990572708,
+            "roe": 34.03862745048138
+          }
+        ],
+        "revenueCagr3": {
+          "value": 16.12397915820203,
+          "start": "2023-06",
+          "end": "2026-06"
+        },
+        "profitCagr3": {
+          "value": 22.723762407374192,
+          "start": "2023-06",
+          "end": "2026-06"
+        },
+        "roe3": 34.81759964643658,
+        "roe3Periods": [
+          "2024-06",
+          "2025-06",
+          "2026-06"
+        ],
+        "lossYears": [],
+        "ttmNetMargin": 40.30538905915218,
+        "cashConversion": 1.367748543914347,
+        "grossMargin": 67.1969957892164
+      },
+      "peDynamic": 27.729730744867467,
+      "peStatic": 29.72256376218663,
+      "staticPeriod": "2026-06-30",
+      "epsForecastGrowth": 32.02679665738163,
+      "screening": {
+        "basis": "company_selection_v1",
+        "checkedAt": "2026-10-20",
+        "groups": [
+          "quality",
+          "growth"
+        ],
+        "reviews": {
+          "quality": {
+            "qualified": true,
+            "checks": [
+              {
+                "label": "逐家公司评审明确入选本组",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "评审对应最新已披露财报",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期原始财报、定量证据及风险齐备",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "已披露的经营企业财报，非特殊行业或风险警示证券",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最近12个月报表利润、经营现金为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "连续五个完整财年有正利润和正经营现金",
+                "pass": true,
+                "reason": null
+              }
+            ],
+            "rationale": "Azure及企业软件收入与营业利润持续增长；本季投资收益单列，以营业利润验证主营扩张。"
+          },
+          "growth": {
+            "qualified": true,
+            "checks": [
+              {
+                "label": "逐家公司评审明确入选本组",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "评审对应最新已披露财报",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期原始财报、定量证据及风险齐备",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "已披露的经营企业财报，非特殊行业或风险警示证券",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最近12个月报表利润、经营现金为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最新单季核心盈利同比增长，且上年同期为正",
+                "pass": true,
+                "reason": null
+              }
+            ],
+            "rationale": "Azure及企业软件收入与营业利润持续增长；本季投资收益单列，以营业利润验证主营扩张。"
+          },
+          "breakout": {
+            "qualified": false,
+            "checks": [
+              {
+                "label": "逐家公司评审明确入选本组",
+                "pass": false,
+                "reason": "本期未授予业绩爆发入选；AI资本开支与折旧增长；投资收益影响GAAP利润。；本季Anthropic投资税前收益32亿美元；调整净利润增约22%，GAAP增31%，OpenAI与其他投资不作为成长门槛的主营证据。"
+              },
+              {
+                "label": "评审对应最新已披露财报",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期原始财报、定量证据及风险齐备",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "已披露的经营企业财报，非特殊行业或风险警示证券",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最近12个月报表利润、经营现金为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最新单季核心盈利同比增长，且上年同期为正",
+                "pass": true,
+                "reason": null
+              }
+            ],
+            "rationale": "本期未授予业绩爆发入选；AI资本开支与折旧增长；投资收益影响GAAP利润。；本季Anthropic投资税前收益32亿美元；调整净利润增约22%，GAAP增31%，OpenAI与其他投资不作为成长门槛的主营证据。"
+          },
+          "dividend": {
+            "qualified": false,
+            "checks": [
+              {
+                "label": "本期财报已公告并有来源",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期分红承受能力已逐家公司复核",
+                "pass": false,
+                "reason": "分红承受能力复核覆盖2026-06-30，当前财报为2026-06-30"
+              },
+              {
+                "label": "现金分红和价格来自同一截至日",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "近12月已付现金股息率≥3%",
+                "pass": false,
+                "reason": "近12月股息率0.68%，低于3%"
+              },
+              {
+                "label": "最近5个完整日历年均实施现金分红（按除息日）",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最近12个月经营现金流为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "现金派息比率≤85%，盈利或AFFO基数为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "当前财报距研究日不超过155天",
+                "pass": true,
+                "reason": null
+              }
+            ],
+            "checkedAt": "2026-10-20",
+            "basis": "shared_cash_income_v1",
+            "payoutRatio": 0.2027855153203343,
+            "dividendYears5": 5,
+            "missing": [
+              "分红承受能力复核覆盖2026-06-30，当前财报为2026-06-30"
+            ],
+            "rationale": "分红承受能力复核覆盖2026-06-30，当前财报为2026-06-30；近12月股息率0.68%，低于3%",
+            "businessReview": {
+              "reportPeriod": "2026-06-30",
+              "reviewedAt": "2026-10-18",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+              "publishedAt": "2026-07-29"
+            },
+            "payoutBasis": "近12月现金分红 / TTM盈利"
+          }
+        },
+        "roe5": 38.08561067238241,
+        "quarters": [
+          {
+            "period": "2026-03",
+            "reportDate": "2026-03-31",
+            "profitGrowth": 23.056071871127635,
+            "operatingGrowth": 19.99375000000001
+          },
+          {
+            "period": "2026-06",
+            "reportDate": "2026-06-30",
+            "profitGrowth": 31.333308853229536,
+            "operatingGrowth": 18.2967689304548
+          }
+        ],
+        "dividendYears5": 5,
+        "payoutRatio": 0.2027855153203343,
+        "otherReasons": []
+      },
+      "companySelection": {
+        "name": "微软",
+        "reportPeriod": "2026-06-30",
+        "reviewedAt": "2026-10-18",
+        "groups": [
+          "quality",
+          "growth"
+        ],
+        "rationale": "Azure及企业软件收入与营业利润持续增长；本季投资收益单列，以营业利润验证主营扩张。",
+        "risk": "AI资本开支与折旧增长；投资收益影响GAAP利润；本季Anthropic投资税前收益32亿美元；调整净利润增约22%，GAAP增31%，OpenAI与其他投资不作为成长门槛的主营证据。",
+        "invalidation": "云收入增长持续低于资本投入及折旧增长",
+        "sources": [
+          {
+            "label": "本期正式财报",
+            "url": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+            "publishedAt": "2026-07-29",
+            "reportPeriod": "2026-06-30"
+          }
+        ],
+        "evidence": [
+          {
+            "label": "本季收入",
+            "value": 90007000000,
+            "unit": "USD",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+            "location": "本期合并利润表"
+          },
+          {
+            "label": "本季报表净利润",
+            "value": 35766000000,
+            "unit": "USD",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+            "location": "本期合并利润表"
+          },
+          {
+            "label": "本季营业利润",
+            "value": 40603000000,
+            "unit": "USD",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+            "location": "本期合并利润表"
+          }
+        ],
+        "previousGroups": [
+          "quality"
+        ],
+        "newCoverage": false,
+        "priceContext": {
+          "pe": 30.275766696770546,
+          "return5y": 91.1020910217022,
+          "priceAsOf": "2026-10-13",
+          "returnBasis": "provider_adjusted_close"
+        },
+        "groupReasons": {
+          "quality": "Azure及企业软件收入与营业利润持续增长；本季投资收益单列，以营业利润验证主营扩张。",
+          "growth": "Azure及企业软件收入与营业利润持续增长；本季投资收益单列，以营业利润验证主营扩张。",
+          "breakout": "本期未授予业绩爆发入选；AI资本开支与折旧增长；投资收益影响GAAP利润。；本季Anthropic投资税前收益32亿美元；调整净利润增约22%，GAAP增31%，OpenAI与其他投资不作为成长门槛的主营证据。"
+        },
+        "researchGroups": [
+          "quality",
+          "growth"
+        ],
+        "groupSummaries": {
+          "quality": "Azure及企业软件收入与营业利润持续增长；本季投资收益单列，以营业利润验证主营扩张。",
+          "growth": "Azure及企业软件收入与营业利润持续增长；本季投资收益单列，以营业利润验证主营扩张。"
+        },
+        "status": "selected",
+        "reviews": {
+          "quality": {
+            "qualified": true,
+            "checks": [
+              {
+                "label": "逐家公司评审明确入选本组",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "评审对应最新已披露财报",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期原始财报、定量证据及风险齐备",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "已披露的经营企业财报，非特殊行业或风险警示证券",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最近12个月报表利润、经营现金为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "连续五个完整财年有正利润和正经营现金",
+                "pass": true,
+                "reason": null
+              }
+            ],
+            "rationale": "Azure及企业软件收入与营业利润持续增长；本季投资收益单列，以营业利润验证主营扩张。"
+          },
+          "growth": {
+            "qualified": true,
+            "checks": [
+              {
+                "label": "逐家公司评审明确入选本组",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "评审对应最新已披露财报",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期原始财报、定量证据及风险齐备",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "已披露的经营企业财报，非特殊行业或风险警示证券",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最近12个月报表利润、经营现金为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最新单季核心盈利同比增长，且上年同期为正",
+                "pass": true,
+                "reason": null
+              }
+            ],
+            "rationale": "Azure及企业软件收入与营业利润持续增长；本季投资收益单列，以营业利润验证主营扩张。"
+          },
+          "breakout": {
+            "qualified": false,
+            "checks": [
+              {
+                "label": "逐家公司评审明确入选本组",
+                "pass": false,
+                "reason": "本期未授予业绩爆发入选；AI资本开支与折旧增长；投资收益影响GAAP利润。；本季Anthropic投资税前收益32亿美元；调整净利润增约22%，GAAP增31%，OpenAI与其他投资不作为成长门槛的主营证据。"
+              },
+              {
+                "label": "评审对应最新已披露财报",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期原始财报、定量证据及风险齐备",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "已披露的经营企业财报，非特殊行业或风险警示证券",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最近12个月报表利润、经营现金为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最新单季核心盈利同比增长，且上年同期为正",
+                "pass": true,
+                "reason": null
+              }
+            ],
+            "rationale": "本期未授予业绩爆发入选；AI资本开支与折旧增长；投资收益影响GAAP利润。；本季Anthropic投资税前收益32亿美元；调整净利润增约22%，GAAP增31%，OpenAI与其他投资不作为成长门槛的主营证据。"
+          },
+          "dividend": {
+            "qualified": false,
+            "checks": [
+              {
+                "label": "本期财报已公告并有来源",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期分红承受能力已逐家公司复核",
+                "pass": false,
+                "reason": "分红承受能力复核覆盖2026-06-30，当前财报为2026-06-30"
+              },
+              {
+                "label": "现金分红和价格来自同一截至日",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "近12月已付现金股息率≥3%",
+                "pass": false,
+                "reason": "近12月股息率0.68%，低于3%"
+              },
+              {
+                "label": "最近5个完整日历年均实施现金分红（按除息日）",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最近12个月经营现金流为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "现金派息比率≤85%，盈利或AFFO基数为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "当前财报距研究日不超过155天",
+                "pass": true,
+                "reason": null
+              }
+            ],
+            "checkedAt": "2026-10-20",
+            "basis": "shared_cash_income_v1",
+            "payoutRatio": 0.2027855153203343,
+            "dividendYears5": 5,
+            "missing": [
+              "分红承受能力复核覆盖2026-06-30，当前财报为2026-06-30"
+            ],
+            "rationale": "分红承受能力复核覆盖2026-06-30，当前财报为2026-06-30；近12月股息率0.68%，低于3%",
+            "businessReview": {
+              "reportPeriod": "2026-06-30",
+              "reviewedAt": "2026-10-18",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+              "publishedAt": "2026-07-29"
+            },
+            "payoutBasis": "近12月现金分红 / TTM盈利"
+          }
+        },
+        "checkedAt": "2026-10-20",
+        "coreGrowth": {
+          "value": 18.2967689304548,
+          "period": "2026-06-30",
+          "basis": "GAAP营业利润（税前）",
+          "window": "single_quarter_yoy"
+        }
+      }
+    },
+    {
+      "symbol": "AMZN",
+      "name": "亚马逊",
+      "issuer": "Amazon.com, Inc.",
+      "category": "互联网平台",
+      "business": "电商履约、AWS与广告",
+      "reason": "履约网络、会员和AWS客户关系相互增强。",
+      "risk": "2022年报表亏损；投资收益与大额AI资本投入。",
+      "sourceUrl": "https://ir.aboutamazon.com/news-release/news-release-details/2026/Amazon-com-Announces-Second-Quarter-Results/default.aspx",
+      "market": "us",
+      "currency": "USD",
+      "selection": "reviewed_us_companies",
+      "cik": 1018724,
+      "fiscalYearEndMonth": 12,
+      "financialCurrency": "USD",
+      "accountingStandard": "us-gaap",
+      "accountingModel": "corporate",
+      "coverageBasis": "重要蓝筹，保留独立研究；分类仍按当期财务与经营证据判断",
+      "c": "AMZN",
+      "n": "亚马逊",
+      "r": [
+        23.19283725029795,
+        38.86978389263251,
+        104.40033074971757,
+        52.40335391644238,
+        541.9303677885383
+      ],
+      "periods": [
+        {
+          "years": 1,
+          "start": "2025-10-17",
+          "end": "2026-10-19"
+        },
+        {
+          "years": 2,
+          "start": "2024-10-18",
+          "end": "2026-10-19"
+        },
+        {
+          "years": 3,
+          "start": "2023-10-19",
+          "end": "2026-10-19"
+        },
+        {
+          "years": 5,
+          "start": "2021-10-19",
+          "end": "2026-10-19"
+        },
+        {
+          "years": 10,
+          "start": "2016-10-19",
+          "end": "2026-10-19"
+        }
+      ],
+      "risk5": {
+        "vol": 36.30955541173005,
+        "mdd": -55.72582563532465,
+        "start": "2021-10-19",
+        "end": "2026-10-19",
+        "years": 5,
+        "observations": 1255,
+        "annualization": 250,
+        "partial": false,
+        "actualYears": 4.999418194761015,
+        "status": "available",
+        "reason": null,
+        "windowStart": "2021-10-19",
+        "windowPartial": false,
+        "windowYears": 4.999418194761015,
+        "requiredObservations": 1000
+      },
+      "mdd5": -55.72582563532465,
+      "vol5": 36.30955541173005,
+      "sinceListing": 267933.1481258423,
+      "first": "1997-05-15",
+      "returnAsOf": "2026-10-19",
+      "riskAsOf": "2026-10-19",
+      "price": 262.45001220703125,
+      "priceAsOf": "2026-10-19",
+      "valuationAsOf": "2026-10-19",
+      "pe": 21.114240724620373,
+      "peForward": 25.131307336103692,
+      "epsTTM": 12.43,
+      "epsForward": 10.44315,
+      "estimateAsOf": "2026-10-20",
+      "peStatus": "available",
+      "financials": {
+        "period": "2026-06",
+        "reportDate": "2026-06-30",
+        "dateBasis": "issuer_report_end",
+        "currency": "USD",
+        "DilutedEPS": 5.75,
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000026/0001018724-26-000026-index.html",
+        "provenance": {
+          "TotalRevenue": {
+            "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+            "start": "2026-04-01",
+            "end": "2026-06-30",
+            "publishedAt": "2026-07-31",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000026/0001018724-26-000026-index.html",
+            "value": 200606000000,
+            "basis": "disclosed"
+          },
+          "NetIncome": {
+            "tag": "NetIncomeLoss",
+            "start": "2026-04-01",
+            "end": "2026-06-30",
+            "publishedAt": "2026-07-31",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000026/0001018724-26-000026-index.html",
+            "value": 62647000000,
+            "basis": "disclosed"
+          },
+          "TotalOperatingIncomeAsReported": {
+            "tag": "OperatingIncomeLoss",
+            "start": "2026-04-01",
+            "end": "2026-06-30",
+            "publishedAt": "2026-07-31",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000026/0001018724-26-000026-index.html",
+            "value": 27461000000,
+            "basis": "disclosed"
+          },
+          "StockholdersEquity": {
+            "tag": "StockholdersEquity",
+            "start": null,
+            "end": "2026-06-30",
+            "publishedAt": "2026-07-31",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000026/0001018724-26-000026-index.html",
+            "value": 551620000000,
+            "basis": "disclosed"
+          },
+          "OperatingCashFlow": {
+            "tag": "NetCashProvidedByUsedInOperatingActivities",
+            "start": "2026-04-01",
+            "end": "2026-06-30",
+            "publishedAt": "2026-07-31",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000026/0001018724-26-000026-index.html",
+            "value": 45387000000,
+            "basis": "disclosed"
+          },
+          "DilutedEPS": {
+            "tag": "EarningsPerShareDiluted",
+            "start": "2026-04-01",
+            "end": "2026-06-30",
+            "publishedAt": "2026-07-31",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000026/0001018724-26-000026-index.html",
+            "value": 5.75,
+            "basis": "disclosed"
+          }
+        },
+        "TotalRevenue": 200606000000,
+        "publishedAt": "2026-07-31",
+        "NetIncome": 62647000000,
+        "TotalOperatingIncomeAsReported": 27461000000,
+        "StockholdersEquity": 551620000000,
+        "OperatingCashFlow": 45387000000,
+        "revenueGrowth": {
+          "value": 19.620517346245126,
+          "status": "available",
+          "label": ""
+        },
+        "profitGrowth": {
+          "value": 244.89649856859722,
+          "status": "available",
+          "label": ""
+        },
+        "ttmRevenue": 775680000000,
+        "ttmProfit": 135281000000,
+        "ttmCash": 161403000000,
+        "roeTTM": 30.55833836875067,
+        "roeMissing": null,
+        "operatingGrowth": {
+          "value": 43.24239737102915,
+          "status": "available",
+          "label": ""
+        },
+        "operatingMargin": 13.689022262544489
+      },
+      "fundamentalsAsOf": "2026-06-30",
+      "financialHistory": {
+        "quarterly": {
+          "2025-09": {
+            "period": "2025-09",
+            "reportDate": "2025-09-30",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "TotalOperatingIncomeAsReported": 17422000000,
+            "OperatingCashFlow": 35525000000,
+            "NetIncome": 21187000000,
+            "StockholdersEquity": 369631000000,
+            "GrossProfit": 91499000000.0,
+            "DilutedEPS": 1.95,
+            "TotalRevenue": 180169000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872425000123/0001018724-25-000123-index.html",
+            "publishedAt": "2025-10-31"
+          },
+          "2025-12": {
+            "period": "2025-12",
+            "reportDate": "2025-12-31",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "TotalOperatingIncomeAsReported": 24977000000,
+            "OperatingCashFlow": 54459000000,
+            "NetIncome": 21192000000,
+            "StockholdersEquity": 411065000000,
+            "GrossProfit": 103427000000.0,
+            "DilutedEPS": 1.95,
+            "TotalRevenue": 213386000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/0001018724-26-000004-index.html",
+            "publishedAt": "2026-02-06"
+          },
+          "2026-03": {
+            "period": "2026-03",
+            "reportDate": "2026-03-31",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "TotalOperatingIncomeAsReported": 23852000000,
+            "OperatingCashFlow": 26032000000,
+            "NetIncome": 30255000000,
+            "StockholdersEquity": 441914000000,
+            "GrossProfit": 94056000000.0,
+            "DilutedEPS": 2.78,
+            "TotalRevenue": 181519000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000014/0001018724-26-000014-index.html",
+            "publishedAt": "2026-04-30"
+          },
+          "2026-06": {
+            "period": "2026-06",
+            "reportDate": "2026-06-30",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "DilutedEPS": 5.75,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000026/0001018724-26-000026-index.html",
+            "TotalRevenue": 200606000000,
+            "publishedAt": "2026-07-31",
+            "NetIncome": 62647000000,
+            "TotalOperatingIncomeAsReported": 27461000000,
+            "StockholdersEquity": 551620000000,
+            "OperatingCashFlow": 45387000000
+          }
+        }
+      },
+      "returnBasis": "provider_adjusted_close",
+      "returnSourceUrl": "https://finance.yahoo.com/quote/AMZN/history/",
+      "dividends": "reinvested",
+      "investorTaxesIncluded": false,
+      "cashDividend12": 0,
+      "yield12": 0.0,
+      "dividendMissing": null,
+      "research": {
+        "reviewedAt": "2026-10-18",
+        "reportPeriod": "2026-06-30",
+        "summary": "本期未授予长期优质入选；2022年报表亏损；投资收益与大额AI资本投入。；投资收益抬高本季净利润；TTM自由现金流约负76亿美元，经营现金流不能替代扣资本支出后的现金。；AWS、广告和履约改善对应营业利润增长；资本开支导致自由现金流承压，因此只纳入盈利成长。",
+        "thesis": [
+          "本期未授予长期优质入选；2022年报表亏损；投资收益与大额AI资本投入。；投资收益抬高本季净利润；TTM自由现金流约负76亿美元，经营现金流不能替代扣资本支出后的现金。",
+          "AWS、广告和履约改善对应营业利润增长；资本开支导致自由现金流承压，因此只纳入盈利成长。"
+        ],
+        "risks": [
+          "2022年报表亏损；投资收益与大额AI资本投入。",
+          "投资收益抬高本季净利润；TTM自由现金流约负76亿美元，经营现金流不能替代扣资本支出后的现金。"
+        ],
+        "watch": [
+          "AWS经营利润放缓同时自由现金流持续为负。",
+          "零售与云需求有不同周期，AI投入加速时要看折旧和资金回报。"
+        ],
+        "sources": [
+          {
+            "label": "本期正式财报",
+            "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000026/0001018724-26-000026-index.html",
+            "publishedAt": "2026-07-31",
+            "reportPeriod": "2026-06-30"
+          },
+          {
+            "label": "业绩发布与业务说明",
+            "url": "https://ir.aboutamazon.com/news-release/news-release-details/2026/Amazon-com-Announces-Second-Quarter-Results/default.aspx",
+            "reportPeriod": "2026-06-30"
+          }
+        ],
+        "longTerm": {
+          "decision": "hold",
+          "durability": "本期未授予长期优质入选；2022年报表亏损；投资收益与大额AI资本投入。；投资收益抬高本季净利润；TTM自由现金流约负76亿美元，经营现金流不能替代扣资本支出后的现金。",
+          "reinvestment": "云算力与物流自动化",
+          "invalidation": "AWS经营利润放缓同时自由现金流持续为负",
+          "rationale": "本期未授予长期优质入选；2022年报表亏损；投资收益与大额AI资本投入。；投资收益抬高本季净利润；TTM自由现金流约负76亿美元，经营现金流不能替代扣资本支出后的现金。"
+        },
+        "earningsReview": {
+          "reportPeriod": "2026-06-30",
+          "driver": "AWS、广告和履约效率分别研究，营业利润改善并未复制净利润的幅度。",
+          "nonOperating": "投资收益抬高本季净利润；TTM自由现金流约负76亿美元，经营现金流不能替代扣资本支出后的现金。",
+          "priceCycle": "零售与云需求有不同周期，AI投入加速时要看折旧和资金回报。",
+          "consolidation": "被投企业公允价值变化不列为AWS经营增长。",
+          "invalidation": "AWS经营利润放缓同时自由现金流持续为负",
+          "evidence": [
+            {
+              "label": "2026-03 归属母公司报表净利润",
+              "value": 30255000000,
+              "unit": "USD",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000014/0001018724-26-000014-index.html",
+              "location": "合并利润表 / 归属母公司报表净利润",
+              "basis": "disclosed",
+              "reportPeriod": "2026-03-31"
+            },
+            {
+              "label": "2026-03 归属母公司报表净利润同比",
+              "value": 76.65090208442808,
+              "unit": "%",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000014/0001018724-26-000014-index.html",
+              "location": "本季与上年同期合并利润表",
+              "basis": "calculated",
+              "operands": [
+                30255000000,
+                17127000000
+              ],
+              "reportPeriod": "2026-03-31"
+            },
+            {
+              "label": "2026-03 营业利润",
+              "value": 23852000000,
+              "unit": "USD",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000014/0001018724-26-000014-index.html",
+              "location": "合并利润表 / 营业利润",
+              "basis": "disclosed",
+              "reportPeriod": "2026-03-31"
+            },
+            {
+              "label": "2026-03 营业利润同比",
+              "value": 29.595218690573223,
+              "unit": "%",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000014/0001018724-26-000014-index.html",
+              "location": "本季与上年同期合并利润表",
+              "basis": "calculated",
+              "operands": [
+                23852000000,
+                18405000000
+              ],
+              "reportPeriod": "2026-03-31"
+            },
+            {
+              "label": "2026-06 归属母公司报表净利润",
+              "value": 62647000000,
+              "unit": "USD",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000026/0001018724-26-000026-index.html",
+              "location": "合并利润表 / 归属母公司报表净利润",
+              "basis": "disclosed",
+              "reportPeriod": "2026-06-30"
+            },
+            {
+              "label": "2026-06 归属母公司报表净利润同比",
+              "value": 244.89649856859722,
+              "unit": "%",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000026/0001018724-26-000026-index.html",
+              "location": "本季与上年同期合并利润表",
+              "basis": "calculated",
+              "operands": [
+                62647000000,
+                18164000000
+              ],
+              "reportPeriod": "2026-06-30"
+            },
+            {
+              "label": "2026-06 营业利润",
+              "value": 27461000000,
+              "unit": "USD",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000026/0001018724-26-000026-index.html",
+              "location": "合并利润表 / 营业利润",
+              "basis": "disclosed",
+              "reportPeriod": "2026-06-30"
+            },
+            {
+              "label": "2026-06 营业利润同比",
+              "value": 43.24239737102915,
+              "unit": "%",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000026/0001018724-26-000026-index.html",
+              "location": "本季与上年同期合并利润表",
+              "basis": "calculated",
+              "operands": [
+                27461000000,
+                19171000000
+              ],
+              "reportPeriod": "2026-06-30"
+            }
+          ],
+          "qualityDecision": "hold",
+          "qualityRationale": "本期未授予长期优质入选；2022年报表亏损；投资收益与大额AI资本投入。；投资收益抬高本季净利润；TTM自由现金流约负76亿美元，经营现金流不能替代扣资本支出后的现金。",
+          "growthDecision": "retain",
+          "growthRationale": "AWS、广告和履约改善对应营业利润增长；资本开支导致自由现金流承压，因此只纳入盈利成长。",
+          "breakoutDecision": "hold",
+          "breakoutRationale": "AWS、广告和履约效率分别研究，营业利润改善并未复制净利润的幅度。；投资收益抬高本季净利润；TTM自由现金流约负76亿美元，经营现金流不能替代扣资本支出后的现金。；零售与云需求有不同周期，AI投入加速时要看折旧和资金回报。"
+        }
+      },
+      "financialSourceStatus": "live_official_filings",
+      "fetchedAt": "2026-10-20T15:32:08+00:00",
+      "analysis": {
+        "annual": [
+          {
+            "period": "2019-12",
+            "reportDate": "2019-12-31",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "TotalRevenue": 280522000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872422000005/0001018724-22-000005-index.html",
+            "publishedAt": "2022-02-04",
+            "NetIncome": 11588000000,
+            "TotalOperatingIncomeAsReported": 14541000000,
+            "StockholdersEquity": 62060000000,
+            "OperatingCashFlow": 38514000000,
+            "DilutedEPS": 23.01,
+            "revenueGrowth": null,
+            "profitGrowth": null,
+            "roe": null
+          },
+          {
+            "period": "2020-12",
+            "reportDate": "2020-12-31",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "TotalRevenue": 386064000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872423000004/0001018724-23-000004-index.html",
+            "publishedAt": "2023-02-03",
+            "NetIncome": 21331000000,
+            "TotalOperatingIncomeAsReported": 22899000000,
+            "StockholdersEquity": 93404000000,
+            "OperatingCashFlow": 66064000000,
+            "DilutedEPS": 2.09,
+            "revenueGrowth": 37.623430604373276,
+            "profitGrowth": 84.07835692095271,
+            "roe": 27.441722842587353
+          },
+          {
+            "period": "2021-12",
+            "reportDate": "2021-12-31",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "TotalRevenue": 469822000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872424000008/0001018724-24-000008-index.html",
+            "publishedAt": "2024-02-02",
+            "NetIncome": 33364000000,
+            "TotalOperatingIncomeAsReported": 24879000000,
+            "StockholdersEquity": 138245000000,
+            "OperatingCashFlow": 46327000000,
+            "DilutedEPS": 3.24,
+            "revenueGrowth": 21.695366571345684,
+            "profitGrowth": 56.41085743753222,
+            "roe": 28.80564992726064
+          },
+          {
+            "period": "2022-12",
+            "reportDate": "2022-12-31",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "NetIncome": -2722000000,
+            "TotalOperatingIncomeAsReported": 12248000000,
+            "OperatingCashFlow": 46752000000,
+            "GrossProfit": 225152000000.0,
+            "StockholdersEquity": 146043000000,
+            "DilutedEPS": -0.27,
+            "TotalRevenue": 513983000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872425000004/0001018724-25-000004-index.html",
+            "publishedAt": "2025-02-07",
+            "revenueGrowth": 9.399517263985084,
+            "profitGrowth": -108.15849418534948,
+            "roe": -1.914959477712742
+          },
+          {
+            "period": "2023-12",
+            "reportDate": "2023-12-31",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "NetIncome": 30425000000,
+            "TotalOperatingIncomeAsReported": 36852000000,
+            "OperatingCashFlow": 84946000000,
+            "GrossProfit": 270046000000.0,
+            "StockholdersEquity": 201875000000,
+            "DilutedEPS": 2.9,
+            "TotalRevenue": 574785000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/0001018724-26-000004-index.html",
+            "publishedAt": "2026-02-06",
+            "revenueGrowth": 11.829574129883673,
+            "profitGrowth": null,
+            "roe": 17.48975333268184
+          },
+          {
+            "period": "2024-12",
+            "reportDate": "2024-12-31",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "NetIncome": 59248000000,
+            "TotalOperatingIncomeAsReported": 68593000000,
+            "OperatingCashFlow": 115877000000,
+            "GrossProfit": 311671000000.0,
+            "StockholdersEquity": 285970000000,
+            "DilutedEPS": 5.53,
+            "TotalRevenue": 637959000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/0001018724-26-000004-index.html",
+            "publishedAt": "2026-02-06",
+            "revenueGrowth": 10.990892246666146,
+            "profitGrowth": 94.73459326211997,
+            "roe": 24.289682173641218
+          },
+          {
+            "period": "2025-12",
+            "reportDate": "2025-12-31",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "NetIncome": 77670000000,
+            "TotalOperatingIncomeAsReported": 79975000000,
+            "OperatingCashFlow": 139514000000,
+            "GrossProfit": 360510000000.0,
+            "StockholdersEquity": 411065000000,
+            "DilutedEPS": 7.17,
+            "TotalRevenue": 716924000000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/0001018724-26-000004-index.html",
+            "publishedAt": "2026-02-06",
+            "revenueGrowth": 12.377754683294695,
+            "profitGrowth": 31.09303267620848,
+            "roe": 22.285824958574533
+          }
+        ],
+        "revenueCagr3": {
+          "value": 11.731283601806396,
+          "start": "2022-12",
+          "end": "2025-12"
+        },
+        "profitCagr3": {
+          "value": null,
+          "reason": "利润端点亏损或为零"
+        },
+        "roe3": 21.35508682163253,
+        "roe3Periods": [
+          "2023-12",
+          "2024-12",
+          "2025-12"
+        ],
+        "lossYears": [
+          "2022-12"
+        ],
+        "ttmNetMargin": 17.44031043729373,
+        "cashConversion": 1.193094373932777,
+        "grossMargin": null
+      },
+      "peDynamic": 11.41087009595788,
+      "peStatic": 36.60390686290533,
+      "staticPeriod": "2025-12-31",
+      "epsForecastGrowth": -15.984312148028968,
+      "screening": {
+        "basis": "company_selection_v1",
+        "checkedAt": "2026-10-20",
+        "groups": [
+          "growth"
+        ],
+        "reviews": {
+          "quality": {
+            "qualified": false,
+            "checks": [
+              {
+                "label": "逐家公司评审明确入选本组",
+                "pass": false,
+                "reason": "本期未授予长期优质入选；2022年报表亏损；投资收益与大额AI资本投入。；投资收益抬高本季净利润；TTM自由现金流约负76亿美元，经营现金流不能替代扣资本支出后的现金。"
+              },
+              {
+                "label": "评审对应最新已披露财报",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期原始财报、定量证据及风险齐备",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "已披露的经营企业财报，非特殊行业或风险警示证券",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最近12个月报表利润、经营现金为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "连续五个完整财年有正利润和正经营现金",
+                "pass": false,
+                "reason": "缺连续五个完整财年正利润与现金记录"
+              }
+            ],
+            "rationale": "本期未授予长期优质入选；2022年报表亏损；投资收益与大额AI资本投入。；投资收益抬高本季净利润；TTM自由现金流约负76亿美元，经营现金流不能替代扣资本支出后的现金。"
+          },
+          "growth": {
+            "qualified": true,
+            "checks": [
+              {
+                "label": "逐家公司评审明确入选本组",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "评审对应最新已披露财报",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期原始财报、定量证据及风险齐备",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "已披露的经营企业财报，非特殊行业或风险警示证券",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最近12个月报表利润、经营现金为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最新单季核心盈利同比增长，且上年同期为正",
+                "pass": true,
+                "reason": null
+              }
+            ],
+            "rationale": "AWS、广告和履约改善对应营业利润增长；资本开支导致自由现金流承压，因此只纳入盈利成长。"
+          },
+          "breakout": {
+            "qualified": false,
+            "checks": [
+              {
+                "label": "逐家公司评审明确入选本组",
+                "pass": false,
+                "reason": "本期未授予业绩爆发入选；2022年报表亏损；投资收益与大额AI资本投入。；投资收益抬高本季净利润；TTM自由现金流约负76亿美元，经营现金流不能替代扣资本支出后的现金。"
+              },
+              {
+                "label": "评审对应最新已披露财报",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期原始财报、定量证据及风险齐备",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "已披露的经营企业财报，非特殊行业或风险警示证券",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最近12个月报表利润、经营现金为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最新单季核心盈利同比增长，且上年同期为正",
+                "pass": true,
+                "reason": null
+              }
+            ],
+            "rationale": "本期未授予业绩爆发入选；2022年报表亏损；投资收益与大额AI资本投入。；投资收益抬高本季净利润；TTM自由现金流约负76亿美元，经营现金流不能替代扣资本支出后的现金。"
+          },
+          "dividend": {
+            "qualified": false,
+            "checks": [
+              {
+                "label": "本期财报已公告并有来源",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期分红承受能力已逐家公司复核",
+                "pass": false,
+                "reason": "分红承受能力复核覆盖2026-06-30，当前财报为2026-06-30"
+              },
+              {
+                "label": "现金分红和价格来自同一截至日",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "近12月已付现金股息率≥3%",
+                "pass": false,
+                "reason": "近12月股息率0.00%，低于3%"
+              },
+              {
+                "label": "最近5个完整日历年均实施现金分红（按除息日）",
+                "pass": false,
+                "reason": "缺已实施现金分红的日历年：2021、2022、2023、2024、2025"
+              },
+              {
+                "label": "最近12个月经营现金流为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "现金派息比率≤85%，盈利或AFFO基数为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "当前财报距研究日不超过155天",
+                "pass": true,
+                "reason": null
+              }
+            ],
+            "checkedAt": "2026-10-20",
+            "basis": "shared_cash_income_v1",
+            "payoutRatio": 0.0,
+            "dividendYears5": 0,
+            "missing": [
+              "分红承受能力复核覆盖2026-06-30，当前财报为2026-06-30"
+            ],
+            "rationale": "分红承受能力复核覆盖2026-06-30，当前财报为2026-06-30；近12月股息率0.00%，低于3%；缺已实施现金分红的日历年：2021、2022、2023、2024、2025",
+            "businessReview": {
+              "reportPeriod": "2026-06-30",
+              "reviewedAt": "2026-10-18",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000026/0001018724-26-000026-index.html",
+              "publishedAt": "2026-07-31"
+            },
+            "payoutBasis": "近12月现金分红 / TTM盈利"
+          }
+        },
+        "roe5": 18.1911901828891,
+        "quarters": [
+          {
+            "period": "2026-03",
+            "reportDate": "2026-03-31",
+            "profitGrowth": 76.65090208442808,
+            "operatingGrowth": 29.595218690573223
+          },
+          {
+            "period": "2026-06",
+            "reportDate": "2026-06-30",
+            "profitGrowth": 244.89649856859722,
+            "operatingGrowth": 43.24239737102915
+          }
+        ],
+        "dividendYears5": 0,
+        "payoutRatio": 0.0,
+        "otherReasons": []
+      },
+      "companySelection": {
+        "name": "亚马逊",
+        "reportPeriod": "2026-06-30",
+        "reviewedAt": "2026-10-18",
+        "groups": [
+          "growth"
+        ],
+        "rationale": "本期未授予长期优质入选；2022年报表亏损；投资收益与大额AI资本投入。；投资收益抬高本季净利润；TTM自由现金流约负76亿美元，经营现金流不能替代扣资本支出后的现金。；AWS、广告和履约改善对应营业利润增长；资本开支导致自由现金流承压，因此只纳入盈利成长。",
+        "risk": "2022年报表亏损；投资收益与大额AI资本投入；投资收益抬高本季净利润；TTM自由现金流约负76亿美元，经营现金流不能替代扣资本支出后的现金。",
+        "invalidation": "AWS经营利润放缓同时自由现金流持续为负",
+        "sources": [
+          {
+            "label": "本期正式财报",
+            "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000026/0001018724-26-000026-index.html",
+            "publishedAt": "2026-07-31",
+            "reportPeriod": "2026-06-30"
+          }
+        ],
+        "evidence": [
+          {
+            "label": "本季收入",
+            "value": 200606000000,
+            "unit": "USD",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000026/0001018724-26-000026-index.html",
+            "location": "本期合并利润表"
+          },
+          {
+            "label": "本季报表净利润",
+            "value": 62647000000,
+            "unit": "USD",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000026/0001018724-26-000026-index.html",
+            "location": "本期合并利润表"
+          },
+          {
+            "label": "本季营业利润",
+            "value": 27461000000,
+            "unit": "USD",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000026/0001018724-26-000026-index.html",
+            "location": "本期合并利润表"
+          }
+        ],
+        "previousGroups": [],
+        "newCoverage": false,
+        "priceContext": {
+          "pe": 20.802895138557172,
+          "return5y": 57.465246239777265,
+          "priceAsOf": "2026-10-13",
+          "returnBasis": "provider_adjusted_close"
+        },
+        "groupReasons": {
+          "growth": "AWS、广告和履约改善对应营业利润增长；资本开支导致自由现金流承压，因此只纳入盈利成长。",
+          "quality": "本期未授予长期优质入选；2022年报表亏损；投资收益与大额AI资本投入。；投资收益抬高本季净利润；TTM自由现金流约负76亿美元，经营现金流不能替代扣资本支出后的现金。",
+          "breakout": "本期未授予业绩爆发入选；2022年报表亏损；投资收益与大额AI资本投入。；投资收益抬高本季净利润；TTM自由现金流约负76亿美元，经营现金流不能替代扣资本支出后的现金。"
+        },
+        "researchGroups": [
+          "quality",
+          "growth"
+        ],
+        "groupSummaries": {
+          "quality": "本期未授予长期优质入选；2022年报表亏损；投资收益与大额AI资本投入。；投资收益抬高本季净利润；TTM自由现金流约负76亿美元，经营现金流不能替代扣资本支出后的现金。",
+          "growth": "AWS、广告和履约改善对应营业利润增长；资本开支导致自由现金流承压，因此只纳入盈利成长。"
+        },
+        "status": "selected",
+        "reviews": {
+          "quality": {
+            "qualified": false,
+            "checks": [
+              {
+                "label": "逐家公司评审明确入选本组",
+                "pass": false,
+                "reason": "本期未授予长期优质入选；2022年报表亏损；投资收益与大额AI资本投入。；投资收益抬高本季净利润；TTM自由现金流约负76亿美元，经营现金流不能替代扣资本支出后的现金。"
+              },
+              {
+                "label": "评审对应最新已披露财报",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期原始财报、定量证据及风险齐备",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "已披露的经营企业财报，非特殊行业或风险警示证券",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最近12个月报表利润、经营现金为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "连续五个完整财年有正利润和正经营现金",
+                "pass": false,
+                "reason": "缺连续五个完整财年正利润与现金记录"
+              }
+            ],
+            "rationale": "本期未授予长期优质入选；2022年报表亏损；投资收益与大额AI资本投入。；投资收益抬高本季净利润；TTM自由现金流约负76亿美元，经营现金流不能替代扣资本支出后的现金。"
+          },
+          "growth": {
+            "qualified": true,
+            "checks": [
+              {
+                "label": "逐家公司评审明确入选本组",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "评审对应最新已披露财报",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期原始财报、定量证据及风险齐备",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "已披露的经营企业财报，非特殊行业或风险警示证券",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最近12个月报表利润、经营现金为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最新单季核心盈利同比增长，且上年同期为正",
+                "pass": true,
+                "reason": null
+              }
+            ],
+            "rationale": "AWS、广告和履约改善对应营业利润增长；资本开支导致自由现金流承压，因此只纳入盈利成长。"
+          },
+          "breakout": {
+            "qualified": false,
+            "checks": [
+              {
+                "label": "逐家公司评审明确入选本组",
+                "pass": false,
+                "reason": "本期未授予业绩爆发入选；2022年报表亏损；投资收益与大额AI资本投入。；投资收益抬高本季净利润；TTM自由现金流约负76亿美元，经营现金流不能替代扣资本支出后的现金。"
+              },
+              {
+                "label": "评审对应最新已披露财报",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期原始财报、定量证据及风险齐备",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "已披露的经营企业财报，非特殊行业或风险警示证券",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最近12个月报表利润、经营现金为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最新单季核心盈利同比增长，且上年同期为正",
+                "pass": true,
+                "reason": null
+              }
+            ],
+            "rationale": "本期未授予业绩爆发入选；2022年报表亏损；投资收益与大额AI资本投入。；投资收益抬高本季净利润；TTM自由现金流约负76亿美元，经营现金流不能替代扣资本支出后的现金。"
+          },
+          "dividend": {
+            "qualified": false,
+            "checks": [
+              {
+                "label": "本期财报已公告并有来源",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期分红承受能力已逐家公司复核",
+                "pass": false,
+                "reason": "分红承受能力复核覆盖2026-06-30，当前财报为2026-06-30"
+              },
+              {
+                "label": "现金分红和价格来自同一截至日",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "近12月已付现金股息率≥3%",
+                "pass": false,
+                "reason": "近12月股息率0.00%，低于3%"
+              },
+              {
+                "label": "最近5个完整日历年均实施现金分红（按除息日）",
+                "pass": false,
+                "reason": "缺已实施现金分红的日历年：2021、2022、2023、2024、2025"
+              },
+              {
+                "label": "最近12个月经营现金流为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "现金派息比率≤85%，盈利或AFFO基数为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "当前财报距研究日不超过155天",
+                "pass": true,
+                "reason": null
+              }
+            ],
+            "checkedAt": "2026-10-20",
+            "basis": "shared_cash_income_v1",
+            "payoutRatio": 0.0,
+            "dividendYears5": 0,
+            "missing": [
+              "分红承受能力复核覆盖2026-06-30，当前财报为2026-06-30"
+            ],
+            "rationale": "分红承受能力复核覆盖2026-06-30，当前财报为2026-06-30；近12月股息率0.00%，低于3%；缺已实施现金分红的日历年：2021、2022、2023、2024、2025",
+            "businessReview": {
+              "reportPeriod": "2026-06-30",
+              "reviewedAt": "2026-10-18",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000026/0001018724-26-000026-index.html",
+              "publishedAt": "2026-07-31"
+            },
+            "payoutBasis": "近12月现金分红 / TTM盈利"
+          }
+        },
+        "checkedAt": "2026-10-20",
+        "coreGrowth": {
+          "value": 43.24239737102915,
+          "period": "2026-06-30",
+          "basis": "GAAP营业利润（税前）",
+          "window": "single_quarter_yoy"
+        }
+      }
+    },
+    {
+      "symbol": "O",
+      "name": "Realty Income",
+      "issuer": "Realty Income Corporation",
+      "category": "不动产",
+      "business": "商业物业净租赁REIT",
+      "reason": "分散的长期净租赁合约支持租金和月度分红。",
+      "risk": "利率、租户信用、增发与杠杆；不能用GAAP PE代替AFFO。",
+      "sourceUrl": "https://www.realtyincome.com/investors/press-releases/realty-income-announces-operating-results-three-and-six-months-ended-4",
+      "market": "us",
+      "currency": "USD",
+      "selection": "reviewed_us_companies",
+      "cik": 726728,
+      "fiscalYearEndMonth": 12,
+      "financialCurrency": "USD",
+      "accountingStandard": "us-gaap",
+      "accountingModel": "reits",
+      "coverageBasis": "行业代表或成长候选；已核对本期财报并保留后续研究",
+      "c": "O",
+      "n": "Realty Income",
+      "r": [
+        -2.2860449318871545,
+        -4.26314676563071,
+        32.690129577837745,
+        6.04062895308255,
+        47.66375160331866
+      ],
+      "periods": [
+        {
+          "years": 1,
+          "start": "2025-10-17",
+          "end": "2026-10-19"
+        },
+        {
+          "years": 2,
+          "start": "2024-10-18",
+          "end": "2026-10-19"
+        },
+        {
+          "years": 3,
+          "start": "2023-10-19",
+          "end": "2026-10-19"
+        },
+        {
+          "years": 5,
+          "start": "2021-10-19",
+          "end": "2026-10-19"
+        },
+        {
+          "years": 10,
+          "start": "2016-10-19",
+          "end": "2026-10-19"
+        }
+      ],
+      "risk5": {
+        "vol": 18.920760719072426,
+        "mdd": -34.47134922302647,
+        "start": "2021-10-19",
+        "end": "2026-10-19",
+        "years": 5,
+        "observations": 1255,
+        "annualization": 250,
+        "partial": false,
+        "actualYears": 4.999418194761015,
+        "status": "available",
+        "reason": null,
+        "windowStart": "2021-10-19",
+        "windowPartial": false,
+        "windowYears": 4.999418194761015,
+        "requiredObservations": 1000
+      },
+      "mdd5": -34.47134922302647,
+      "vol5": 18.920760719072426,
+      "sinceListing": 4898.1137432140895,
+      "first": "1994-10-18",
+      "returnAsOf": "2026-10-19",
+      "riskAsOf": "2026-10-19",
+      "price": 55.5099983215332,
+      "priceAsOf": "2026-10-19",
+      "valuationAsOf": "2026-10-19",
+      "pe": 40.22463646487913,
+      "peForward": 35.743260435495486,
+      "epsTTM": 1.38,
+      "epsForward": 1.55302,
+      "estimateAsOf": "2026-10-20",
+      "peStatus": "available",
+      "financials": {
+        "period": "2026-06",
+        "reportDate": "2026-06-30",
+        "dateBasis": "issuer_report_end",
+        "currency": "USD",
+        "DilutedEPS": 0.37,
+        "TotalRevenue": 1547711000,
+        "GrossProfit": 1314731000.0,
+        "NetIncome": 343955000,
+        "OperatingCashFlow": 1145083000,
+        "StockholdersEquity": 39549557000,
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/726728/000072672826000048/0000726728-26-000048-index.html",
+        "provenance": {
+          "TotalRevenue": {
+            "tag": "Revenues",
+            "start": "2026-04-01",
+            "end": "2026-06-30",
+            "publishedAt": "2026-08-06",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/726728/000072672826000048/0000726728-26-000048-index.html",
+            "value": 1547711000,
+            "basis": "disclosed"
+          },
+          "NetIncome": {
+            "tag": "NetIncomeLossAvailableToCommonStockholdersBasic",
+            "start": "2026-04-01",
+            "end": "2026-06-30",
+            "publishedAt": "2026-08-06",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/726728/000072672826000048/0000726728-26-000048-index.html",
+            "value": 343955000,
+            "basis": "disclosed"
+          },
+          "StockholdersEquity": {
+            "tag": "StockholdersEquity",
+            "start": null,
+            "end": "2026-06-30",
+            "publishedAt": "2026-08-06",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/726728/000072672826000048/0000726728-26-000048-index.html",
+            "value": 39549557000,
+            "basis": "disclosed"
+          },
+          "OperatingCashFlow": {
+            "tag": "NetCashProvidedByUsedInOperatingActivities",
+            "start": "2026-04-01",
+            "end": "2026-06-30",
+            "publishedAt": "2026-08-06",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/726728/000072672826000048/0000726728-26-000048-index.html",
+            "value": 2019585000,
+            "basis": "calculated",
+            "operands": [
+              {
+                "tag": "NetCashProvidedByUsedInOperatingActivities",
+                "start": "2026-01-01",
+                "end": "2026-06-30",
+                "publishedAt": "2026-08-06",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/726728/000072672826000048/0000726728-26-000048-index.html",
+                "value": 2019585000,
+                "basis": "disclosed"
+              },
+              {
+                "tag": "NetCashProvidedByUsedInOperatingActivities",
+                "start": "2026-01-01",
+                "end": "2026-03-31",
+                "publishedAt": "2026-05-07",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/726728/000072672826000030/0000726728-26-000030-index.html",
+                "value": 874502000,
+                "basis": "disclosed"
+              }
+            ]
+          },
+          "DilutedEPS": {
+            "tag": "EarningsPerShareDiluted",
+            "start": "2026-04-01",
+            "end": "2026-06-30",
+            "publishedAt": "2026-08-06",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/726728/000072672826000048/0000726728-26-000048-index.html",
+            "value": 0.37,
+            "basis": "disclosed"
+          }
+        },
+        "publishedAt": "2026-08-06",
+        "providerDifferences": {
+          "TotalRevenue": {
+            "provider": 1427170000.0,
+            "official": 1547711000
+          }
+        },
+        "revenueGrowth": {
+          "value": 9.737318647908566,
+          "status": "available",
+          "label": ""
+        },
+        "profitGrowth": {
+          "value": 74.6682646164159,
+          "status": "available",
+          "label": ""
+        },
+        "ttmRevenue": 6054932000,
+        "ttmProfit": 1267577000,
+        "ttmCash": 4166154000,
+        "roeTTM": 3.2211794409040517,
+        "roeMissing": null,
+        "operatingGrowth": {
+          "value": null,
+          "status": "missing",
+          "label": "缺上年同期数据"
+        },
+        "operatingMargin": null
+      },
+      "fundamentalsAsOf": "2026-06-30",
+      "financialHistory": {
+        "quarterly": {
+          "2025-09": {
+            "period": "2025-09",
+            "reportDate": "2025-09-30",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "DilutedEPS": 0.35,
+            "TotalRevenue": 1470552000,
+            "GrossProfit": 1281010000.0,
+            "NetIncome": 315771000,
+            "OperatingCashFlow": 943135000,
+            "StockholdersEquity": 39050597000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/726728/000072672825000148/0000726728-25-000148-index.html",
+            "publishedAt": "2025-11-04",
+            "providerDifferences": {
+              "TotalRevenue": {
+                "provider": 1387631000.0,
+                "official": 1470552000
+              }
+            }
+          },
+          "2025-12": {
+            "period": "2025-12",
+            "reportDate": "2025-12-31",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "DilutedEPS": 0.32,
+            "TotalRevenue": 1487942000,
+            "GrossProfit": 1600760000.0,
+            "NetIncome": 296085000,
+            "OperatingCashFlow": 1203434000,
+            "StockholdersEquity": 39438695000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/726728/000072672826000011/0000726728-26-000011-index.html",
+            "publishedAt": "2026-02-25",
+            "providerDifferences": {
+              "TotalRevenue": {
+                "provider": 1708836000.0,
+                "official": 1487942000
+              }
+            }
+          },
+          "2026-03": {
+            "period": "2026-03",
+            "reportDate": "2026-03-31",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "DilutedEPS": 0.33,
+            "TotalRevenue": 1548727000,
+            "GrossProfit": 1329644000.0,
+            "NetIncome": 311766000,
+            "OperatingCashFlow": 874502000,
+            "StockholdersEquity": 39147485000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/726728/000072672826000030/0000726728-26-000030-index.html",
+            "publishedAt": "2026-05-07",
+            "providerDifferences": {
+              "TotalRevenue": {
+                "provider": 1446487000.0,
+                "official": 1548727000
+              }
+            }
+          },
+          "2026-06": {
+            "period": "2026-06",
+            "reportDate": "2026-06-30",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "DilutedEPS": 0.37,
+            "TotalRevenue": 1547711000,
+            "GrossProfit": 1314731000.0,
+            "NetIncome": 343955000,
+            "OperatingCashFlow": 1145083000,
+            "StockholdersEquity": 39549557000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/726728/000072672826000048/0000726728-26-000048-index.html",
+            "publishedAt": "2026-08-06",
+            "providerDifferences": {
+              "TotalRevenue": {
+                "provider": 1427170000.0,
+                "official": 1547711000
+              }
+            }
+          }
+        }
+      },
+      "returnBasis": "provider_adjusted_close",
+      "returnSourceUrl": "https://finance.yahoo.com/quote/O/history/",
+      "dividends": "reinvested",
+      "investorTaxesIncluded": false,
+      "cashDividend12": 3.248,
+      "yield12": 5.851198159269354,
+      "dividendMissing": null,
+      "research": {
+        "reviewedAt": "2026-10-07",
+        "reportPeriod": "2026-06-30",
+        "summary": "分散的长期净租赁合约支持租金和月度分红。REIT折旧使GAAP利润不能独立衡量分红覆盖；使用本期AFFO与已付普通股股息。",
+        "thesis": [
+          "分散的长期净租赁合约支持租金和月度分红。",
+          "再投资方向：物业收购、融资与资产管理。",
+          "出租率98.8%，本季同店租金增1.2%、续租租金回收率102.7%。"
+        ],
+        "risks": [
+          "利率、租户信用、增发与杠杆；不能用GAAP PE代替AFFO。",
+          "REIT折旧使GAAP利润不能独立衡量分红覆盖；使用本期AFFO与已付普通股股息。"
+        ],
+        "watch": [
+          "出租率和租金回收下降，AFFO分红覆盖收窄。",
+          "利率、租户信用与融资利差影响新增收购价值。"
+        ],
+        "sources": [
+          {
+            "label": "本期正式财报",
+            "url": "https://www.sec.gov/Archives/edgar/data/726728/000072672826000048/0000726728-26-000048-index.html",
+            "publishedAt": "2026-08-06",
+            "reportPeriod": "2026-06-30"
+          },
+          {
+            "label": "业绩发布与业务说明",
+            "url": "https://www.realtyincome.com/investors/press-releases/realty-income-announces-operating-results-three-and-six-months-ended-4",
+            "reportPeriod": "2026-06-30"
+          }
+        ],
+        "longTerm": {
+          "decision": "hold",
+          "durability": "分散的长期净租赁合约支持租金和月度分红",
+          "reinvestment": "物业收购、融资与资产管理",
+          "invalidation": "出租率和租金回收下降，AFFO分红覆盖收窄",
+          "rationale": "保留公司研究，周期或集团口径尚不能证明长期稳定经营。"
+        },
+        "earningsReview": {
+          "reportPeriod": "2026-06-30",
+          "driver": "出租率98.8%，本季同店租金增1.2%、续租租金回收率102.7%。",
+          "nonOperating": "REIT折旧使GAAP利润不能独立衡量分红覆盖；使用本期AFFO与已付普通股股息。",
+          "priceCycle": "利率、租户信用与融资利差影响新增收购价值。",
+          "consolidation": "季度新增物业与既有同店收入分开，增发会影响每股AFFO。",
+          "invalidation": "出租率和租金回收下降，AFFO分红覆盖收窄",
+          "evidence": [
+            {
+              "label": "2026-03 归属母公司报表净利润",
+              "value": 311766000,
+              "unit": "USD",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/726728/000072672826000030/0000726728-26-000030-index.html",
+              "location": "合并利润表 / 归属母公司报表净利润",
+              "basis": "disclosed",
+              "reportPeriod": "2026-03-31"
+            },
+            {
+              "label": "2026-03 归属母公司报表净利润同比",
+              "value": 24.798751075796098,
+              "unit": "%",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/726728/000072672826000030/0000726728-26-000030-index.html",
+              "location": "本季与上年同期合并利润表",
+              "basis": "calculated",
+              "operands": [
+                311766000,
+                249815000
+              ],
+              "reportPeriod": "2026-03-31"
+            },
+            {
+              "label": "2026-06 归属母公司报表净利润",
+              "value": 343955000,
+              "unit": "USD",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/726728/000072672826000048/0000726728-26-000048-index.html",
+              "location": "合并利润表 / 归属母公司报表净利润",
+              "basis": "disclosed",
+              "reportPeriod": "2026-06-30"
+            },
+            {
+              "label": "2026-06 归属母公司报表净利润同比",
+              "value": 74.6682646164159,
+              "unit": "%",
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/726728/000072672826000048/0000726728-26-000048-index.html",
+              "location": "本季与上年同期合并利润表",
+              "basis": "calculated",
+              "operands": [
+                343955000,
+                196919000
+              ],
+              "reportPeriod": "2026-06-30"
+            }
+          ],
+          "qualityDecision": "hold",
+          "qualityRationale": "出租率98.8%，本季同店租金增1.2%、续租租金回收率102.7%。；REIT折旧使GAAP利润不能独立衡量分红覆盖；使用本期AFFO与已付普通股股息。",
+          "growthDecision": "hold",
+          "growthRationale": "出租率98.8%，本季同店租金增1.2%、续租租金回收率102.7%。；REIT折旧使GAAP利润不能独立衡量分红覆盖；使用本期AFFO与已付普通股股息。；利率、租户信用与融资利差影响新增收购价值。",
+          "breakoutDecision": "hold",
+          "breakoutRationale": "出租率98.8%，本季同店租金增1.2%、续租租金回收率102.7%。；REIT折旧使GAAP利润不能独立衡量分红覆盖；使用本期AFFO与已付普通股股息。；利率、租户信用与融资利差影响新增收购价值。"
+        },
+        "incomeReview": {
+          "decision": "retain",
+          "rationale": "本季现金股息0.812美元/AFFO1.09美元，公司披露派息比率74.5%；不以GAAP EPS衡量REIT派息。",
+          "capitalReview": "净债务/年化备考调整EBITDAre5.4倍；出租率98.8%，同店租金增1.2%，本期AFFO覆盖现金派息；融资利率和租户信用是后续失效条件。",
+          "payoutRatio": 0.745,
+          "sourceUrl": "https://www.realtyincome.com/investors/press-releases/realty-income-announces-operating-results-three-and-six-months-ended-4",
+          "publishedAt": "2026-08-05",
+          "reportPeriod": "2026-06-30"
+        }
+      },
+      "financialSourceStatus": "live_official_filings",
+      "fetchedAt": "2026-10-20T15:32:19+00:00",
+      "analysis": {
+        "annual": [
+          {
+            "period": "2019-12",
+            "reportDate": "2019-12-31",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "TotalRevenue": 1488163000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/726728/000072672822000046/0000726728-22-000046-index.html",
+            "publishedAt": "2022-02-23",
+            "NetIncome": 436482000,
+            "StockholdersEquity": 9774456000,
+            "OperatingCashFlow": 1068937000,
+            "DilutedEPS": 1.38,
+            "revenueGrowth": null,
+            "profitGrowth": null,
+            "roe": null
+          },
+          {
+            "period": "2020-12",
+            "reportDate": "2020-12-31",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "TotalRevenue": 1647087000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/726728/000072672823000044/0000726728-23-000044-index.html",
+            "publishedAt": "2023-02-22",
+            "NetIncome": 395486000,
+            "StockholdersEquity": 10985483000,
+            "OperatingCashFlow": 1115543000,
+            "DilutedEPS": 1.14,
+            "revenueGrowth": 10.679206511652286,
+            "profitGrowth": -9.392368986579056,
+            "roe": 3.810088266637007
+          },
+          {
+            "period": "2021-12",
+            "reportDate": "2021-12-31",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "TotalRevenue": 2080463000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/726728/000072672824000047/0000726728-24-000047-index.html",
+            "publishedAt": "2024-02-21",
+            "NetIncome": 359456000,
+            "StockholdersEquity": 25052574000,
+            "OperatingCashFlow": 1322189000,
+            "DilutedEPS": 0.87,
+            "revenueGrowth": 26.31166416831655,
+            "profitGrowth": -9.110309846619097,
+            "roe": 1.9948689242597069
+          },
+          {
+            "period": "2022-12",
+            "reportDate": "2022-12-31",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "StockholdersEquity": 28713149000,
+            "DilutedEPS": 1.42,
+            "GrossProfit": 3117351000.0,
+            "OperatingCashFlow": 2563856000,
+            "TotalRevenue": 3343681000,
+            "NetIncome": 869408000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/726728/000072672825000055/0000726728-25-000055-index.html",
+            "publishedAt": "2025-02-25",
+            "revenueGrowth": 60.718118995627414,
+            "profitGrowth": 141.8677112080477,
+            "roe": 3.234060481247504
+          },
+          {
+            "period": "2023-12",
+            "reportDate": "2023-12-31",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "StockholdersEquity": 32941467000,
+            "DilutedEPS": 1.26,
+            "GrossProfit": 3762029000.0,
+            "OperatingCashFlow": 2958769000,
+            "TotalRevenue": 4078993000,
+            "NetIncome": 872309000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/726728/000072672826000011/0000726728-26-000011-index.html",
+            "publishedAt": "2026-02-25",
+            "revenueGrowth": 21.991093049845365,
+            "profitGrowth": 0.3336753284993927,
+            "roe": 2.8296632323523028
+          },
+          {
+            "period": "2024-12",
+            "reportDate": "2024-12-31",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "StockholdersEquity": 38840738000,
+            "DilutedEPS": 0.98,
+            "GrossProfit": 4893467000.0,
+            "OperatingCashFlow": 3573276000,
+            "TotalRevenue": 5271142000,
+            "NetIncome": 860772000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/726728/000072672826000011/0000726728-26-000011-index.html",
+            "publishedAt": "2026-02-25",
+            "revenueGrowth": 29.226551749414625,
+            "profitGrowth": -1.3225817915440514,
+            "roe": 2.3982879879491024
+          },
+          {
+            "period": "2025-12",
+            "reportDate": "2025-12-31",
+            "dateBasis": "issuer_report_end",
+            "currency": "USD",
+            "StockholdersEquity": 39438695000,
+            "DilutedEPS": 1.17,
+            "GrossProfit": 5320577000.0,
+            "OperatingCashFlow": 3994754000,
+            "TotalRevenue": 5749377000,
+            "NetIncome": 1058590000,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/726728/000072672826000011/0000726728-26-000011-index.html",
+            "publishedAt": "2026-02-25",
+            "revenueGrowth": 9.072701892682838,
+            "profitGrowth": 22.981463151682444,
+            "roe": 2.7046440154976596
+          }
+        ],
+        "revenueCagr3": {
+          "value": 19.80234435312218,
+          "start": "2022-12",
+          "end": "2025-12"
+        },
+        "profitCagr3": {
+          "value": 6.782819791926609,
+          "start": "2022-12",
+          "end": "2025-12"
+        },
+        "roe3": 2.6441984119330217,
+        "roe3Periods": [
+          "2023-12",
+          "2024-12",
+          "2025-12"
+        ],
+        "lossYears": [],
+        "ttmNetMargin": 20.934619909852,
+        "cashConversion": 3.286706843055688,
+        "grossMargin": 84.94680208385157
+      },
+      "peDynamic": 37.50675562265757,
+      "peStatic": 47.444443009857444,
+      "staticPeriod": "2025-12-31",
+      "epsForecastGrowth": 12.537681159420302,
+      "screening": {
+        "basis": "company_selection_v1",
+        "checkedAt": "2026-10-20",
+        "groups": [
+          "dividend"
+        ],
+        "reviews": {
+          "quality": {
+            "qualified": false,
+            "checks": [
+              {
+                "label": "逐家公司评审明确入选本组",
+                "pass": false,
+                "reason": "本期未授予长期优质入选；利率、租户信用、增发与杠杆；不能用GAAP PE代替AFFO。；REIT折旧使GAAP利润不能独立衡量分红覆盖；使用本期AFFO与已付普通股股息。"
+              },
+              {
+                "label": "评审对应最新已披露财报",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期原始财报、定量证据及风险齐备",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "已披露的经营企业财报，非特殊行业或风险警示证券",
+                "pass": false,
+                "reason": "缺有效公告日，或须使用金融/REIT/投资控股专项模型，或属于风险警示证券"
+              },
+              {
+                "label": "最近12个月报表利润、经营现金为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "连续五个完整财年有正利润和正经营现金",
+                "pass": true,
+                "reason": null
+              }
+            ],
+            "rationale": "本期未授予长期优质入选；利率、租户信用、增发与杠杆；不能用GAAP PE代替AFFO。；REIT折旧使GAAP利润不能独立衡量分红覆盖；使用本期AFFO与已付普通股股息。"
+          },
+          "growth": {
+            "qualified": false,
+            "checks": [
+              {
+                "label": "逐家公司评审明确入选本组",
+                "pass": false,
+                "reason": "本期未授予盈利成长入选；利率、租户信用、增发与杠杆；不能用GAAP PE代替AFFO。；REIT折旧使GAAP利润不能独立衡量分红覆盖；使用本期AFFO与已付普通股股息。"
+              },
+              {
+                "label": "评审对应最新已披露财报",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期原始财报、定量证据及风险齐备",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "已披露的经营企业财报，非特殊行业或风险警示证券",
+                "pass": false,
+                "reason": "缺有效公告日，或须使用金融/REIT/投资控股专项模型，或属于风险警示证券"
+              },
+              {
+                "label": "最近12个月报表利润、经营现金为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最新单季核心盈利同比增长，且上年同期为正",
+                "pass": false,
+                "reason": "缺最新单季可比核心盈利增长：GAAP营业利润（税前）"
+              }
+            ],
+            "rationale": "本期未授予盈利成长入选；利率、租户信用、增发与杠杆；不能用GAAP PE代替AFFO。；REIT折旧使GAAP利润不能独立衡量分红覆盖；使用本期AFFO与已付普通股股息。"
+          },
+          "breakout": {
+            "qualified": false,
+            "checks": [
+              {
+                "label": "逐家公司评审明确入选本组",
+                "pass": false,
+                "reason": "本期未授予业绩爆发入选；利率、租户信用、增发与杠杆；不能用GAAP PE代替AFFO。；REIT折旧使GAAP利润不能独立衡量分红覆盖；使用本期AFFO与已付普通股股息。"
+              },
+              {
+                "label": "评审对应最新已披露财报",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期原始财报、定量证据及风险齐备",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "已披露的经营企业财报，非特殊行业或风险警示证券",
+                "pass": false,
+                "reason": "缺有效公告日，或须使用金融/REIT/投资控股专项模型，或属于风险警示证券"
+              },
+              {
+                "label": "最近12个月报表利润、经营现金为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最新单季核心盈利同比增长，且上年同期为正",
+                "pass": false,
+                "reason": "缺最新单季可比核心盈利增长：GAAP营业利润（税前）"
+              }
+            ],
+            "rationale": "本期未授予业绩爆发入选；利率、租户信用、增发与杠杆；不能用GAAP PE代替AFFO。；REIT折旧使GAAP利润不能独立衡量分红覆盖；使用本期AFFO与已付普通股股息。"
+          },
+          "dividend": {
+            "qualified": true,
+            "checks": [
+              {
+                "label": "本期财报已公告并有来源",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期分红承受能力已逐家公司复核",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "现金分红和价格来自同一截至日",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "近12月已付现金股息率≥3%",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最近5个完整日历年均实施现金分红（按除息日）",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "金融/REIT/控股公司有本期资本或AFFO覆盖复核",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "现金派息比率≤85%，盈利或AFFO基数为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "当前财报距研究日不超过155天",
+                "pass": true,
+                "reason": null
+              }
+            ],
+            "checkedAt": "2026-10-20",
+            "basis": "shared_cash_income_v1",
+            "payoutRatio": 0.745,
+            "dividendYears5": 5,
+            "missing": [],
+            "rationale": "近12月现金股息率5.85%，连续5个日历年实施现金分红（按除息日），派息比率74.5%；本期资本/AFFO覆盖已复核。",
+            "businessReview": {
+              "reportPeriod": "2026-06-30",
+              "reviewedAt": "2026-10-07",
+              "sourceUrl": "https://www.realtyincome.com/investors/press-releases/realty-income-announces-operating-results-three-and-six-months-ended-4",
+              "publishedAt": "2026-08-05",
+              "decision": "retain",
+              "rationale": "本季现金股息0.812美元/AFFO1.09美元，公司披露派息比率74.5%；不以GAAP EPS衡量REIT派息。",
+              "capitalReview": "净债务/年化备考调整EBITDAre5.4倍；出租率98.8%，同店租金增1.2%，本期AFFO覆盖现金派息；融资利率和租户信用是后续失效条件。",
+              "payoutRatio": 0.745,
+              "payoutBasis": "本季已付普通股股息 / AFFO"
+            },
+            "payoutBasis": "本季已付普通股股息 / AFFO"
+          }
+        },
+        "roe5": 2.632304928261255,
+        "quarters": [
+          {
+            "period": "2026-03",
+            "reportDate": "2026-03-31",
+            "profitGrowth": 24.798751075796098,
+            "operatingGrowth": null
+          },
+          {
+            "period": "2026-06",
+            "reportDate": "2026-06-30",
+            "profitGrowth": 74.6682646164159,
+            "operatingGrowth": null
+          }
+        ],
+        "dividendYears5": 5,
+        "payoutRatio": 0.745,
+        "otherReasons": []
+      },
+      "companySelection": {
+        "name": "Realty Income",
+        "reportPeriod": "2026-06-30",
+        "reviewedAt": "2026-10-17",
+        "groups": [
+          "dividend"
+        ],
+        "rationale": "分散的长期净租赁合约支持租金和月度分红。REIT折旧使GAAP利润不能独立衡量分红覆盖；使用本期AFFO与已付普通股股息。",
+        "risk": "利率、租户信用、增发与杠杆；不能用GAAP PE代替AFFO。；REIT折旧使GAAP利润不能独立衡量分红覆盖；使用本期AFFO与已付普通股股息。",
+        "invalidation": "出租率和租金回收下降，AFFO分红覆盖收窄",
+        "sources": [
+          {
+            "label": "本期正式财报",
+            "url": "https://www.sec.gov/Archives/edgar/data/726728/000072672826000048/0000726728-26-000048-index.html",
+            "publishedAt": "2026-08-06",
+            "reportPeriod": "2026-06-30"
+          }
+        ],
+        "evidence": [
+          {
+            "label": "本季收入",
+            "value": 1547711000,
+            "unit": "USD",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/726728/000072672826000048/0000726728-26-000048-index.html",
+            "location": "本期合并利润表"
+          },
+          {
+            "label": "本季报表净利润",
+            "value": 343955000,
+            "unit": "USD",
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/726728/000072672826000048/0000726728-26-000048-index.html",
+            "location": "本期合并利润表"
+          }
+        ],
+        "previousGroups": [
+          "dividend"
+        ],
+        "newCoverage": false,
+        "priceContext": {
+          "pe": 39.84782730323681,
+          "return5y": 7.0027882499940075,
+          "priceAsOf": "2026-10-13",
+          "returnBasis": "provider_adjusted_close"
+        },
+        "groupReasons": {
+          "dividend": "分散的长期净租赁合约支持租金和月度分红。REIT折旧使GAAP利润不能独立衡量分红覆盖；使用本期AFFO与已付普通股股息。",
+          "quality": "本期未授予长期优质入选；利率、租户信用、增发与杠杆；不能用GAAP PE代替AFFO。；REIT折旧使GAAP利润不能独立衡量分红覆盖；使用本期AFFO与已付普通股股息。",
+          "growth": "本期未授予盈利成长入选；利率、租户信用、增发与杠杆；不能用GAAP PE代替AFFO。；REIT折旧使GAAP利润不能独立衡量分红覆盖；使用本期AFFO与已付普通股股息。",
+          "breakout": "本期未授予业绩爆发入选；利率、租户信用、增发与杠杆；不能用GAAP PE代替AFFO。；REIT折旧使GAAP利润不能独立衡量分红覆盖；使用本期AFFO与已付普通股股息。"
+        },
+        "researchGroups": [],
+        "status": "selected",
+        "reviews": {
+          "quality": {
+            "qualified": false,
+            "checks": [
+              {
+                "label": "逐家公司评审明确入选本组",
+                "pass": false,
+                "reason": "本期未授予长期优质入选；利率、租户信用、增发与杠杆；不能用GAAP PE代替AFFO。；REIT折旧使GAAP利润不能独立衡量分红覆盖；使用本期AFFO与已付普通股股息。"
+              },
+              {
+                "label": "评审对应最新已披露财报",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期原始财报、定量证据及风险齐备",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "已披露的经营企业财报，非特殊行业或风险警示证券",
+                "pass": false,
+                "reason": "缺有效公告日，或须使用金融/REIT/投资控股专项模型，或属于风险警示证券"
+              },
+              {
+                "label": "最近12个月报表利润、经营现金为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "连续五个完整财年有正利润和正经营现金",
+                "pass": true,
+                "reason": null
+              }
+            ],
+            "rationale": "本期未授予长期优质入选；利率、租户信用、增发与杠杆；不能用GAAP PE代替AFFO。；REIT折旧使GAAP利润不能独立衡量分红覆盖；使用本期AFFO与已付普通股股息。"
+          },
+          "growth": {
+            "qualified": false,
+            "checks": [
+              {
+                "label": "逐家公司评审明确入选本组",
+                "pass": false,
+                "reason": "本期未授予盈利成长入选；利率、租户信用、增发与杠杆；不能用GAAP PE代替AFFO。；REIT折旧使GAAP利润不能独立衡量分红覆盖；使用本期AFFO与已付普通股股息。"
+              },
+              {
+                "label": "评审对应最新已披露财报",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期原始财报、定量证据及风险齐备",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "已披露的经营企业财报，非特殊行业或风险警示证券",
+                "pass": false,
+                "reason": "缺有效公告日，或须使用金融/REIT/投资控股专项模型，或属于风险警示证券"
+              },
+              {
+                "label": "最近12个月报表利润、经营现金为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最新单季核心盈利同比增长，且上年同期为正",
+                "pass": false,
+                "reason": "缺最新单季可比核心盈利增长：GAAP营业利润（税前）"
+              }
+            ],
+            "rationale": "本期未授予盈利成长入选；利率、租户信用、增发与杠杆；不能用GAAP PE代替AFFO。；REIT折旧使GAAP利润不能独立衡量分红覆盖；使用本期AFFO与已付普通股股息。"
+          },
+          "breakout": {
+            "qualified": false,
+            "checks": [
+              {
+                "label": "逐家公司评审明确入选本组",
+                "pass": false,
+                "reason": "本期未授予业绩爆发入选；利率、租户信用、增发与杠杆；不能用GAAP PE代替AFFO。；REIT折旧使GAAP利润不能独立衡量分红覆盖；使用本期AFFO与已付普通股股息。"
+              },
+              {
+                "label": "评审对应最新已披露财报",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期原始财报、定量证据及风险齐备",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "已披露的经营企业财报，非特殊行业或风险警示证券",
+                "pass": false,
+                "reason": "缺有效公告日，或须使用金融/REIT/投资控股专项模型，或属于风险警示证券"
+              },
+              {
+                "label": "最近12个月报表利润、经营现金为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最新单季核心盈利同比增长，且上年同期为正",
+                "pass": false,
+                "reason": "缺最新单季可比核心盈利增长：GAAP营业利润（税前）"
+              }
+            ],
+            "rationale": "本期未授予业绩爆发入选；利率、租户信用、增发与杠杆；不能用GAAP PE代替AFFO。；REIT折旧使GAAP利润不能独立衡量分红覆盖；使用本期AFFO与已付普通股股息。"
+          },
+          "dividend": {
+            "qualified": true,
+            "checks": [
+              {
+                "label": "本期财报已公告并有来源",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "本期分红承受能力已逐家公司复核",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "现金分红和价格来自同一截至日",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "近12月已付现金股息率≥3%",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "最近5个完整日历年均实施现金分红（按除息日）",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "金融/REIT/控股公司有本期资本或AFFO覆盖复核",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "现金派息比率≤85%，盈利或AFFO基数为正",
+                "pass": true,
+                "reason": null
+              },
+              {
+                "label": "当前财报距研究日不超过155天",
+                "pass": true,
+                "reason": null
+              }
+            ],
+            "checkedAt": "2026-10-20",
+            "basis": "shared_cash_income_v1",
+            "payoutRatio": 0.745,
+            "dividendYears5": 5,
+            "missing": [],
+            "rationale": "近12月现金股息率5.85%，连续5个日历年实施现金分红（按除息日），派息比率74.5%；本期资本/AFFO覆盖已复核。",
+            "businessReview": {
+              "reportPeriod": "2026-06-30",
+              "reviewedAt": "2026-10-07",
+              "sourceUrl": "https://www.realtyincome.com/investors/press-releases/realty-income-announces-operating-results-three-and-six-months-ended-4",
+              "publishedAt": "2026-08-05",
+              "decision": "retain",
+              "rationale": "本季现金股息0.812美元/AFFO1.09美元，公司披露派息比率74.5%；不以GAAP EPS衡量REIT派息。",
+              "capitalReview": "净债务/年化备考调整EBITDAre5.4倍；出租率98.8%，同店租金增1.2%，本期AFFO覆盖现金派息；融资利率和租户信用是后续失效条件。",
+              "payoutRatio": 0.745,
+              "payoutBasis": "本季已付普通股股息 / AFFO"
+            },
+            "payoutBasis": "本季已付普通股股息 / AFFO"
+          }
+        },
+        "checkedAt": "2026-10-20",
+        "coreGrowth": {
+          "value": null,
+          "period": "2026-06-30",
+          "basis": "GAAP营业利润（税前）",
+          "window": "single_quarter_yoy"
+        }
+      }
+    }
+  ]
+}
