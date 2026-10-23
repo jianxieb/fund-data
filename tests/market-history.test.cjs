@@ -171,12 +171,39 @@ test('overdue observations are retained as historical values when the published 
 });
 test('a device date before the published observation is flagged without deleting historical values', async () => {
   const data = JSON.parse(fs.readFileSync(require.resolve('../data/market-history.json'), 'utf8'));
-  const earlier = new Date(data.asOf+'T00:00:00Z'); earlier.setUTCDate(earlier.getUTCDate()-1);
+  const market = data.markets[0], metric = market.metrics.find(m => m.id === 'pe');
+  // Price and PE can advance on different days. This case deliberately puts
+  // the device before BOTH series, not merely before the report's newest day.
+  const firstLastDay = [market.prices.points.at(-1)[0],metric.points.at(-1)[0]].sort()[0];
+  const earlier = new Date(firstLastDay+'T00:00:00Z'); earlier.setUTCDate(earlier.getUTCDate()-1);
   const html = await renderReport(data,earlier.toISOString().slice(0,10));
   assert.ok(html.includes('晚于设备北京时间'));
   assert.ok(!html.includes('当前处于可用历史'));
   assert.ok(html.includes('class="mh-price-series"'));
   assert.ok(!html.includes('NaN') && !html.includes('undefined'));
+});
+test('price and PE freshness stay independent when only one source advances', async () => {
+  for (const futureSource of ['price','pe']) {
+    const data = structuredClone(require('../data/market-history.json'));
+    const market = data.markets[0], metric = market.metrics.find(m => m.id === 'pe');
+    const anchor = new Date(data.asOf+'T00:00:00Z');
+    const day = offset => new Date(+anchor+offset*86400000).toISOString().slice(0,10);
+    const checkedOn = day(1);
+    data.asOf = day(2);
+    market.prices.points.push([day(futureSource==='price'?2:1),market.prices.points.at(-1)[1]]);
+    metric.points.push([day(futureSource==='pe'?2:1),metric.points.at(-1)[1]]);
+    const html = await renderReport(data,checkedOn);
+    const chart = html.match(/<section class="mh-panel mh-main-chart"[\s\S]*?<\/section>/)[0];
+    const label = futureSource==='price'?'指数':metric.label;
+    assert.ok(chart.includes(`${label}观测日 ${day(2)} 晚于设备北京时间 ${checkedOn}`),futureSource);
+    assert.equal((chart.match(/晚于设备北京时间/g)||[]).length,1,futureSource);
+    assert.equal(chart.includes('末次指数收盘'),futureSource==='price',futureSource);
+    assert.equal(chart.includes('当前处于可用历史'),futureSource==='price',futureSource);
+    assert.equal(chart.includes('末次观测 · '+metric.label),futureSource==='pe',futureSource);
+    assert.ok(chart.includes('class="mh-price-series"') && chart.includes('class="mh-indicator-series"'));
+    assert.ok(chart.includes('data-readout-price') && chart.includes('data-readout-metric'));
+    assert.ok(!html.includes('NaN') && !html.includes('undefined'));
+  }
 });
 test('CSV exports the selected original-frequency observations with their window and source', () => {
   const metric = { id: 'pe', source: 'source"name', unit: '倍', frequency: 'monthly', points: [['2025-01-01', 20], ['2025-02-01', 21]] };

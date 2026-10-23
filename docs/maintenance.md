@@ -162,7 +162,7 @@ python3 data_quality.py --strict
 
 发布前运行单元测试和质量检查，在浏览器检查实际变更，再审阅Git差异。全部数据产物确定后运行`npm run version-assets`，它把`index.html`中八个本地CSS/JS资源的版本更新为各文件内容摘要；`npm run check`会拒绝过期的资源引用。最后提交脚本、文档、`index.html`及相互对应的数据产物；不要提交原始大缓存、个人资料或凭据。`refresh.py`本身不提交或推送，直接运行单项更新脚本后也需执行资源版本命令。
 
-手动更新时，提交与推送仍由维护者显式执行。`main` 上的普通代码推送由 `.github/workflows/pages.yml` 校验资源版本并部署；`.github/workflows/refresh-data.yml` 在工作日北京时间22:17定时运行，也可从仓库 Actions 页面手动触发。它安装依赖、运行测试、在线执行八阶段刷新、检查报告和来源日期、更新资源版本，然后只提交生成的数据与 `index.html`；同一次工作流把这些已验证文件部署到 Pages。手动触发时可关闭 `publish` 只验证，也可启用 `cold_start` 忽略源缓存。无实质数据或证据变化时不创建提交。任一步失败都不推送、不部署，并上传最近报告与阶段日志作为 Actions 诊断工件。发布源需要设为 GitHub Actions；详见[自动更新方案](automatic-update-plan.md)。
+手动更新时，提交与推送仍由维护者显式执行。`main` 上的普通代码推送由 `.github/workflows/pages.yml` 校验资源版本并部署；`.github/workflows/refresh-data.yml` 每天北京时间06:17、22:17定时运行，也可从仓库 Actions 页面手动触发。它安装依赖、运行测试、在线执行九阶段刷新、检查报告和来源日期、对新数据重新运行Python与浏览器测试、更新资源版本，然后只提交生成的数据与 `index.html`；同一次工作流把这些已验证文件部署到 Pages。手动触发时可关闭 `publish` 只验证，也可启用 `cold_start` 忽略源缓存。无实质数据或证据变化时不创建提交。任一步失败都不推送、不部署，并上传最近报告与阶段日志作为 Actions 诊断工件。发布源需要设为 GitHub Actions；详见[自动更新方案](automatic-update-plan.md)。
 
 ## 2026-10-01 跨境目录与更新修复
 
