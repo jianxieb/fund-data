@@ -41,8 +41,8 @@
       reason:finite(ratio)?'TTM经营现金 / 归母净利润 '+(ratio*100).toFixed(0)+'%':'缺TTM正利润或经营现金证据' };
   }
   function stockMatches(stock, group) {
-    if (stock.companySelection) return stock.companySelection.groups.includes(group);
     if (group === 'other') return !['quality', 'growth', 'breakout', 'dividend'].some(id => stockMatches(stock, id));
+    if (stock.companySelection) return stock.companySelection.groups.includes(group);
     if (group === 'dividend') return stock.group === 'dividend';
     if (!['quality', 'growth', 'breakout'].includes(group) || !['quality', 'growth'].includes(stock.group)) return false;
     if (group === 'breakout' && (stockMatches(stock, 'quality') || stockMatches(stock, 'growth'))) return false;

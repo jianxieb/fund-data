@@ -34,12 +34,12 @@ const historicalCN = code => {
   return structuredClone({...fixture.cn[code],companySelection:fixture.companies['cn:'+code]});
 };
 
-test('US companies default to selected companies within four groups', () => {
+test('US companies default to selected companies and retain the rightmost unselected tab', () => {
   const p=page(), html=p.view();
-  const names=['长期优质企业','盈利成长企业','业绩爆发股','红利价值'];
+  const names=['长期优质企业','盈利成长企业','业绩爆发股','红利价值','潜力研究','其他已收录'];
   let previous=-1;
   for (const name of names) { const i=html.indexOf(name); assert.ok(i>previous); previous=i; }
-  assert.doesNotMatch(html, /data-value="other"/);
+  assert.match(html, /data-value="other"/);
   assert.match(html, /全部相关公司/);
   assert.equal(html.includes('stock-overlap-company'), p.ctx.OVERSEAS_STOCKS.some(s =>
     s.screening.groups.includes('quality') && s.screening.groups.includes('growth')));
@@ -47,6 +47,38 @@ test('US companies default to selected companies within four groups', () => {
     p.click('group',group); p.view();
     assert.deepEqual([...p.symbols()], Array.from(p.ctx.OVERSEAS_STOCKS.filter(s => s.screening.groups.includes(group)), s => s.symbol));
   }
+});
+
+test('the unselected tab shows the whole remaining roster regardless of the previous selection scope', () => {
+  const p=page(); p.view();
+  const selectedGroups=['quality','growth','breakout','dividend'];
+  const excluded=p.ctx.OVERSEAS_STOCKS.filter(s => !selectedGroups.some(g => s.companySelection.groups.includes(g)));
+  for (const scope of ['false','true']) {
+    p.click('group','quality'); p.click('scope',scope); p.click('group','other');
+    const html=p.view();
+    assert.deepEqual([...p.symbols()],Array.from(excluded,s=>s.symbol));
+    assert.match(html, /未入选原因/);
+    assert.doesNotMatch(html, /stock-scope|stock-decision selected|stock-overlap-legend/);
+  }
+  const first=excluded[0];
+  p.app.handleInput({value:first.symbol});
+  for (const view of ['financials','valuation','returns']) {
+    p.click('view',view); p.view();
+    assert.ok(p.symbols().includes(first.symbol));
+    assert.ok(p.symbols().every(symbol => excluded.some(s => s.symbol === symbol)));
+  }
+});
+
+test('both markets classify every company outside the four selected groups as unselected', () => {
+  const p=page(), ctx={}; vm.createContext(ctx);
+  vm.runInContext(fs.readFileSync('data/snapshot.js','utf8'),ctx);
+  for (const s of [...ctx.STOCKS,...p.ctx.OVERSEAS_STOCKS]) {
+    const selected=['quality','growth','breakout','dividend'].some(g=>s.companySelection.groups.includes(g));
+    assert.equal(M.stockMatches(s,'other'),!selected,s.c || s.symbol);
+  }
+  // Empty pending decisions and stale 'other' tags cannot omit or duplicate a company.
+  assert.equal(M.stockMatches({companySelection:{groups:[],status:'pending'}},'other'),true);
+  assert.equal(M.stockMatches({companySelection:{groups:['other','dividend']}},'other'),false);
 });
 
 test('search persists across groups and mature quality no longer depends on ten percent growth', () => {
