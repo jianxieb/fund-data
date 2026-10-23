@@ -249,7 +249,13 @@ class PublishedGroupTests(unittest.TestCase):
                 with self.subTest(code=code, group=key):
                     review = row[key]
                     self.assertEqual(calculate(row, review['checkedAt']), review)
-                    self.assertEqual(review['qualified'], all(c['pass'] for c in review['checks']))
+                    if review['qualified']:
+                        self.assertTrue(all(c['pass'] for c in review['checks']))
+                    elif all(c['pass'] for c in review['checks']):
+                        # Quality/growth takes precedence over a simultaneous
+                        # breakout approval; this is an explicit group rule.
+                        self.assertEqual(key, 'breakoutReview')
+                        self.assertTrue(row['longTermReview']['qualified'] or row['growthReview']['qualified'])
                     self.assertTrue(all(c['reason'] for c in review['checks'] if not c['pass']))
 
 
