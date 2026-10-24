@@ -1,13 +1,13 @@
 var REFRESH_REPORT={
   "schemaVersion": 1,
-  "startedAt": "2026-10-23T18:31:39+00:00",
+  "startedAt": "2026-10-24T00:48:55+00:00",
   "mode": "online",
   "steps": [
     {
       "dataset": "funds",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 58.17,
+      "seconds": 109.37,
       "log": ".tmp-snap/refresh-funds.log",
       "publishedRollback": false
     },
@@ -15,7 +15,7 @@ var REFRESH_REPORT={
       "dataset": "research_funds",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 139.2,
+      "seconds": 119.22,
       "log": ".tmp-snap/refresh-research_funds.log",
       "publishedRollback": false
     },
@@ -23,7 +23,7 @@ var REFRESH_REPORT={
       "dataset": "indices",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 19.83,
+      "seconds": 19.19,
       "log": ".tmp-snap/refresh-indices.log",
       "publishedRollback": false
     },
@@ -31,7 +31,7 @@ var REFRESH_REPORT={
       "dataset": "stocks",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 204.31,
+      "seconds": 209.68,
       "log": ".tmp-snap/refresh-stocks.log",
       "publishedRollback": false
     },
@@ -39,7 +39,7 @@ var REFRESH_REPORT={
       "dataset": "overseas_stocks",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 27.09,
+      "seconds": 29.06,
       "log": ".tmp-snap/refresh-overseas_stocks.log",
       "publishedRollback": false
     },
@@ -47,7 +47,7 @@ var REFRESH_REPORT={
       "dataset": "screening",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 2.56,
+      "seconds": 1.37,
       "log": ".tmp-snap/refresh-screening.log",
       "publishedRollback": false
     },
@@ -55,7 +55,7 @@ var REFRESH_REPORT={
       "dataset": "strategy",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 43.83,
+      "seconds": 22.85,
       "log": ".tmp-snap/refresh-strategy.log",
       "publishedRollback": false
     },
@@ -63,7 +63,7 @@ var REFRESH_REPORT={
       "dataset": "portfolio",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 1070.94,
+      "seconds": 487.8,
       "log": ".tmp-snap/refresh-portfolio.log",
       "publishedRollback": false
     },
@@ -71,11 +71,11 @@ var REFRESH_REPORT={
       "dataset": "quality",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 1.67,
+      "seconds": 1.01,
       "log": ".tmp-snap/refresh-quality.log",
       "publishedRollback": false
     }
   ],
-  "completedAt": "2026-10-23T18:57:47+00:00",
+  "completedAt": "2026-10-24T01:05:35+00:00",
   "status": "completed"
 };
