@@ -2,9 +2,9 @@ name: Refresh research data and publish
 
 on:
   schedule:
-    # 06:17 and 22:17 Beijing, every day: US close and Asia NAV publications.
+    # 06:17 Beijing, once every day (22:17 UTC on the previous day).
     # Scheduled runs may be delayed; source observation dates stay unchanged.
-    - cron: '17 14,22 * * *'
+    - cron: '17 22 * * *'
   workflow_dispatch:
     inputs:
       cold_start:
