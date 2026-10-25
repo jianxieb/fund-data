@@ -703,6 +703,31 @@ IBKR[公开入金工具](https://www.interactivebrokers.com/en/support/fund-my-a
 - 时间：_updated毫秒转北京时间，timeBasis=snapshot；Z/Y不是实时成交。
 - 复现注意：GET与官网组件一致的8个合约和fields=84,86,6509。无需本次账户登录；仅合约ID的初始化响应最多再请求一次。来源脚本、字段文档及原始样本见前节。
 
+## IBKR入金渠道与收费方案的边界
+
+2026-10-25核实：[Lite官方说明](https://www.interactivebrokers.com/en/trading/why-ibkr-lite.php)将Pro／Lite区分为收费方案，Lite限合资格美国居民。FPS可用性不能只由方案名推导，须区分居住地、服务实体、币种及本人账户的存款指示。尤其不能推断美国居民把Lite切换为Pro后便获得香港FPS。
+
+[官方入金工具](https://www.interactivebrokers.com/en/support/fund-my-account.php)加载[`ibmarketing.funding.website.methods.js`](https://www.interactivebrokers.com/funding.webapp/ibmarketing.funding.website.methods.js)，通过GET `/aces/Funding/Methods`查询。相关参数为`type=DEPOSIT`、`colr=CHN`或`USA`、`currency=CNH`或`HKD`；未传收费方案。响应`methods`为方式代码，`FPS_NOTIFICATION`代表FPS存款通知，`EDDA`代表eDDA。查询本身不会建立存款通知或移动资金。
+
+| 居住地参数 | 币种 | 本次响应包含FPS | 本次响应包含eDDA |
+| --- | --- | --- | --- |
+| CHN（中国内地） | CNH | 是 | 是 |
+| CHN（中国内地） | HKD | 是 | 是 |
+| USA（美国） | CNH | 否 | 是 |
+| USA（美国） | HKD | 否 | 是 |
+
+四次完整响应、来源页、请求头、时间和哈希保存在[核实记录](evidence/money-flow-feedback/ibkr-funding-residency-20261025.json)。这是公开工具的结果，不是已登录账户的权限验证；响应未列出FPS不等于已证明某个个人账户永远不能使用FPS，也不能把FPS与eDDA合并判断。
+
+```sh
+# 复现一种居住地／币种组合；其他组合替换colr及currency，保留响应与时间。
+rtk proxy curl --fail --silent --show-error \
+  -A 'Mozilla/5.0' \
+  -e 'https://www.interactivebrokers.com/en/support/fund-my-account.php' \
+  'https://www.interactivebrokers.com/aces/Funding/Methods?type=DEPOSIT&colr=USA&currency=CNH'
+```
+
+旧[CNH指引](https://www.ibkrguides.com/kb/how-to-deposit-cnh.htm)目前跳转通用FAQ，搜索索引中的IBHK专用FPS／eDDA段落仅保留作历史来源；不能用它覆盖当前响应或本人账户的指示。公开工具查询失败时保留本次记录及日期，不把失败改写成“不支持”。页面现存Pro香港渠道／Lite美国电汇情景的适用边界与未完成事项统一记录于需求清单R181。
+
 ## 收费及规则来源全索引
 
 下表来自`data/money-flow.js`的全部192个`sources`条目，包含汇率、人行／银行规则、费用表、券商收费及具名操作记录。它是现有证据的检索索引，不表示本轮重新抓取了192份材料。适用范围和核查日期以相应数据行及本文件具名小节为准；用户提供费用情景另在Wise小节记录，不伪造外部网址。更新来源时同时更新此索引；网络失败不能删掉上一条来源。

@@ -1,0 +1,91 @@
+{
+  "sourcePage": "https://www.interactivebrokers.com/en/support/fund-my-account.php",
+  "sourceComponent": "https://www.interactivebrokers.com/funding.webapp/ibmarketing.funding.website.methods.js",
+  "pricingPlanSource": "https://www.interactivebrokers.com/en/trading/why-ibkr-lite.php",
+  "scope": "Public funding-tool responses for country of legal residence and currency; not authenticated Client Portal instructions and not a universal Pro/Lite eligibility rule.",
+  "samples": [
+    {
+      "url": "https://www.interactivebrokers.com/aces/Funding/Methods?type=DEPOSIT&colr=CHN&currency=CNH",
+      "method": "GET",
+      "headers": {
+        "User-Agent": "Mozilla/5.0",
+        "Referer": "https://www.interactivebrokers.com/en/support/fund-my-account.php"
+      },
+      "savedAt": "2026-10-25T22:09:08.773433+08:00",
+      "sha256": "e2432ca9c7198fb695e8d4dfda0b5845d648a8c95ec38eff98f1de79d2e980c4",
+      "response": {
+        "methods": [
+          "EDDA",
+          "WIRE_NOTIFICATION",
+          "WISE_BALANCE",
+          "FPS_NOTIFICATION"
+        ],
+        "transferType": "DEPOSIT",
+        "errors": {},
+        "requestErrors": {}
+      }
+    },
+    {
+      "url": "https://www.interactivebrokers.com/aces/Funding/Methods?type=DEPOSIT&colr=CHN&currency=HKD",
+      "method": "GET",
+      "headers": {
+        "User-Agent": "Mozilla/5.0",
+        "Referer": "https://www.interactivebrokers.com/en/support/fund-my-account.php"
+      },
+      "savedAt": "2026-10-25T22:09:08.717981+08:00",
+      "sha256": "2845cc2cb5929334d6be43943356aea349271d066b0845c17cd2e3e9754e0aa4",
+      "response": {
+        "methods": [
+          "EDDA",
+          "CCB_FUNDS_TRANSFER_NOTIFICATION",
+          "WIRE_NOTIFICATION",
+          "WISE_BALANCE",
+          "FPS_NOTIFICATION"
+        ],
+        "transferType": "DEPOSIT",
+        "errors": {},
+        "requestErrors": {}
+      }
+    },
+    {
+      "url": "https://www.interactivebrokers.com/aces/Funding/Methods?type=DEPOSIT&colr=USA&currency=CNH",
+      "method": "GET",
+      "headers": {
+        "User-Agent": "Mozilla/5.0",
+        "Referer": "https://www.interactivebrokers.com/en/support/fund-my-account.php"
+      },
+      "savedAt": "2026-10-25T22:09:08.711775+08:00",
+      "sha256": "abea08c210bdfdbd6fac173232554b1634d05297e40dd77e3344f20fd8185056",
+      "response": {
+        "methods": [
+          "EDDA",
+          "WIRE_NOTIFICATION",
+          "WISE_BALANCE"
+        ],
+        "transferType": "DEPOSIT",
+        "errors": {},
+        "requestErrors": {}
+      }
+    },
+    {
+      "url": "https://www.interactivebrokers.com/aces/Funding/Methods?type=DEPOSIT&colr=USA&currency=HKD",
+      "method": "GET",
+      "headers": {
+        "User-Agent": "Mozilla/5.0",
+        "Referer": "https://www.interactivebrokers.com/en/support/fund-my-account.php"
+      },
+      "savedAt": "2026-10-25T22:09:08.928388+08:00",
+      "sha256": "abea08c210bdfdbd6fac173232554b1634d05297e40dd77e3344f20fd8185056",
+      "response": {
+        "methods": [
+          "EDDA",
+          "WIRE_NOTIFICATION",
+          "WISE_BALANCE"
+        ],
+        "transferType": "DEPOSIT",
+        "errors": {},
+        "requestErrors": {}
+      }
+    }
+  ]
+}
