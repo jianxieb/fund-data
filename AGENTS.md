@@ -5,6 +5,8 @@
 - Commit every completed change. Prefer one independent change per Git commit; keep its required tests, data and documentation together, and avoid combining unrelated changes.
 - In this project, push immediately after every commit. Committing without pushing is not a completed delivery.
 - Before pushing, fetch and integrate any remote updates, including scheduled data refreshes. Preserve their changes and do not force-push over them.
+- Finish the necessary local checks, then commit and push. Do not inspect, poll, or wait for GitHub Actions / GitHub Pages publication status or logs unless the user explicitly asks.
+- Do not perform post-deployment checks of the live website or its resources unless explicitly requested. Leave automatic deployment to GitHub after pushing; it is not a required verification step for task completion.
 
 ## Product UI
 
