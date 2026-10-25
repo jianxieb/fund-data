@@ -707,6 +707,10 @@ IBKR[公开入金工具](https://www.interactivebrokers.com/en/support/fund-my-a
 
 2026-10-25核实：[Lite官方说明](https://www.interactivebrokers.com/en/trading/why-ibkr-lite.php)将Pro／Lite区分为收费方案，Lite限合资格美国居民。FPS可用性不能只由方案名推导，须区分居住地、服务实体、币种及本人账户的存款指示。尤其不能推断美国居民把Lite切换为Pro后便获得香港FPS。
 
+**国籍与居住地必须分开。** 上述美国居民条件不等于美国国籍条件；中国国籍本身不排除Lite。[官方开户帮助](https://gdcdyn.interactivebrokers.com/Universal/servlet/Registration_v3.formHelp)的Country of Legal Residence/Formation说明，法律居住地可与国籍、纳税地不同，并列出永久或不定期在当地工作、就学等情况。符合其美国居住及账户条件的中国籍留学生可以适用Lite；不能据“留学生”称谓推断每个人均符合，也不能把开户居住地直接等同美国税务居民身份。
+
+以下`colr=CHN/USA`是法律居住地参数，不是第一国籍。若中国籍申请人的账户法律居住地是美国，不能因其国籍选用CHN结果；Lite资格与FPS资格仍须分开。用户反馈及页面尚未完成的渠道区分统一维护于需求清单R182。
+
 [官方入金工具](https://www.interactivebrokers.com/en/support/fund-my-account.php)加载[`ibmarketing.funding.website.methods.js`](https://www.interactivebrokers.com/funding.webapp/ibmarketing.funding.website.methods.js)，通过GET `/aces/Funding/Methods`查询。相关参数为`type=DEPOSIT`、`colr=CHN`或`USA`、`currency=CNH`或`HKD`；未传收费方案。响应`methods`为方式代码，`FPS_NOTIFICATION`代表FPS存款通知，`EDDA`代表eDDA。查询本身不会建立存款通知或移动资金。
 
 | 居住地参数 | 币种 | 本次响应包含FPS | 本次响应包含eDDA |
