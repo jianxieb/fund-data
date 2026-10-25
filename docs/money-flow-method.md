@@ -1,6 +1,48 @@
 # 跨境资金费用测算
 
-核对日期：2026-10-22。用户反馈、再次出现的问题、验证证据及剩余工作只在[跨境资金需求清单](money-flow-requirements.md)维护。资料在data/money-flow.js，牌价在data/money-flow-quotes.js，模型和界面分别在assets/money-flow-model.js、assets/money-flow.js。整体目标尚未完成；本轮布局复测不等于金融数据已齐全或用户接受。
+核对日期：2026-10-25。用户反馈、再次出现的问题、验证证据及剩余工作只在[跨境资金需求清单](money-flow-requirements.md)维护。资料在data/money-flow.js，牌价在data/money-flow-quotes.js，模型和界面分别在assets/money-flow-model.js、assets/money-flow.js。整体目标尚未完成；本轮布局复测不等于金融数据已齐全或用户接受。
+
+## 报价来源与可复现采集
+
+本节是采集入口：**先查已保存报价及本节，不因页面修改重新寻找、覆盖或清空来源。** 采集器为[`scripts/refresh_money_flow_quotes.py`](../scripts/refresh_money_flow_quotes.py)，现行价格保存于[`data/money-flow-quotes.js`](../data/money-flow-quotes.js)。文末的[逐源抓取配方](#逐源抓取配方)列出全部15个采集源的页面、接口、请求方式、字段、单位、时间和落盘位置；[收费及规则来源全索引](#收费及规则来源全索引)对应数据目录全部来源ID。现行界面只使用目录中的部分机构，旧报价保留供历史规则和回归复现，不因菜单移除而丢弃。
+
+```sh
+# 先检查已有数据；查看 Git 历史可找回旧价格，不能把刷新失败当成旧价不存在。
+rtk proxy git log -5 --oneline -- data/money-flow-quotes.js
+rtk proxy git diff -- data/money-flow-quotes.js
+
+# 只补缺少的 IBKR，不重抓已有银行报价。默认写入生产快照。
+rtk proxy python3 scripts/refresh_money_flow_quotes.py --banks ibkr
+
+# 研究时输出到临时文件；未批准用于页面的报价不要覆盖生产文件。
+rtk proxy python3 scripts/refresh_money_flow_quotes.py --banks hsbchk --output /tmp/hsbc-reference.js
+
+# 常规数据更新使用全部来源；既有 refresh-data 工作流调用同一个脚本。
+rtk proxy python3 scripts/refresh_money_flow_quotes.py
+rtk proxy python3 -m unittest tests.test_money_flow_quotes
+```
+
+所有银行报价使用机构自己的现汇买卖价：买外币用银行卖出价，卖外币用银行买入价。`banks.*.quotes`单位为CNY／1外币；`offshoreUsd.*.quotes`及`brokerUsd.*.quotes`单位为目标币／1 USD。`bidPerUsd`是客户卖USD所得目标币，`askPerUsd`是客户买USD所付目标币；不能反用、混入现钞价、中间价或其他银行的价格。香港人民币记CNH，即使上游字段写CNY。`capturedAt`只表示采集批次，逐币种`asOf`才是记录的时点；`timeBasis`与`timePrecision`说明该时点的含义，不能改写成“今天发布”。
+
+共同请求头为`User-Agent: Mozilla/5.0`、来源页`Referer`和`Content-Type: application/json`，超时25秒；除工行中国POST `{}`及兴业会话预取外均GET。保留服务器TLS证书校验。返回值须通过`0 < buy ≤ sell`、卖买比不超过1.15、时间不得早于2025或超前本机15分钟的校验。失败源保留**原数值、原时间及原来源**，成功源只合并本机构本币种；旧时间不得覆盖新时间。全部失败则退出且不写文件，有成功才用临时文件原子替换。页面只读保存的JS快照，打开详情或切换方案不发网络请求。个人成交覆盖值优先于公开参考，换路线按既有规则清理不适用的个人值，不能清掉公共快照。
+
+### IBKR：已抓到的直接USD/CNH买卖盘
+
+[官网Global Access](https://portal.interactivebrokers.com/en/whyib/global-access.php)加载[`/lib/fxquotes/index.js`](https://portal.interactivebrokers.com/lib/fxquotes/index.js)。该组件的`conidData`直接声明USD.CNH合约为`113342317`，`mdFields`为84、86、6509；以页面实际声明为准，不猜合约ID。公开接口无需本次账户登录，URL及整组合约参数保存在逐源配方与生产快照的`endpoint`。首次响应可能只有合约ID；采集器按[官方快照接口说明](https://www.interactivebrokers.eu/campus/ibkr-api-page/web-api-trading/)只重试一次初始化响应，不轮询到成功，也不在失败时制造报价。
+
+[官方字段文档](https://www.interactivebrokers.com/docs/web-api/v1/endpoints/market-data/market-data-fields)定义84=bid、86=ask、6509=行情可用性。首字符R=实时，D=延迟，Z=冻结，Y=冻结延迟；N/i等未订阅／不完整状态不接收为有效报价。`_updated`为毫秒快照时间，转北京时间写`asOf`和`timeBasis: snapshot`，**不能当作最后成交或休市收盘时间**。冻结／延迟标识随价格保存，详情明确显示；价格用于费用参考，不宣称账户可执行。
+
+实际取得的[2026-10-25原始JSON](../tests/fixtures/ibkr-public-fx-20261025.json)含USD.CNH bid=6.66889、ask=6.67006，状态ZB，快照21:36:33.432。CNH入金买USD用ask，USD卖出换CNH用bid；手动佣金另按0.20基点、每单最低2 USD。公开盘不含AutoFX通常0.03%的加价，自动情景另计一次；个人AutoFX执行价已含加价时不再叠加。HKD/USD未接入，不借中银香港价格冒充IBKR执行价。
+
+人民币原币刷卡按同额人民币扣账。消费终点用CNY面值；CNH统一估值与面值之间的差额在消费阶段结转，不把CNH估值溢价算成多买到的内地商品，也不改写各段成交价或凭空增加银行手续费。
+
+### 汇丰直接兑换及不能静态填入的费用
+
+汇丰香港公开API已保存USD/HKD和CNY/HKD现汇买卖价。由这些数值计算的CNH行保留`path: via-HKD`和四个原始腿价：`bid=usdBuy/cnhSell`，`ask=usdSell/cnhBuy`，时间取两腿较早者。这能复现两笔兑换的参考金额；**没有证据时不能改名为One账户直接USD/CNH报价，更不能强迫用户走两笔兑换。** 原存值继续保留，不删除、不跨行替代。
+
+[官方换算器页面](https://www.hsbc.com.hk/investments/currency-exchange-rate-calculator/)本次实际浏览只呈现说明和登录入口，没有可用的兑换表单／数值。另找到[官方旧外汇组件](https://mkdlc.ebanking.hsbc.com.hk/hsbcfxwidget/hsbc/ui/fx.html)：`../js/fx.js`请求`../../data/getFXList`，`../js/calculator.js`请求`../../data/calculate`；JSONP参数含`token`，计算参数为`buy_cur`、`sell_cur`、`buy_amt`、`sell_amt`、`compet_rate`和`compet_name`。无token访问`getFXList?callback=quoteCallback`实际返回HTTP 401；这是具体受阻入口，不声称已取得直接价，也不记录或构造私人凭证。后续若官方恢复公开组件，沿上述入口验证来源、买卖方向、金额档位和时间后再接入；个人账户实际询价只覆盖相应路线，不能公开用户凭证。
+
+IBKR美元出金中转费与中银快汇USD返内地的额外处理费不是可从市场行情接口抓出的价格。IBKR[官方费表](https://www.interactivebrokers.com/en/pricing/other-fees.php)明确本方免费提款不包含银行／中转行费；中银[费表](https://www.bochk.com/sc/crossborder/remittance/charges.html)的160 HKD美元代理费明确排除内地，[快汇说明](https://its.bochk.com/banking/remit/help/ibs_rem_helpApp_s.html)仍列收款行与本行额外处理费。没有对应汇路的完整资费或回单时仍未知；不填160、不填0。既有1万HKD以内回款记录不能外推美元大额返程。Wise两段各10 HKD属于用户提供的收费情景，来源范围及实际Quote入口见下文，不写成官网通用价。
 
 ## 现行目录与资金流
 
@@ -14,7 +56,7 @@ Firstrade和嘉信国际按既有证券账户的美国USD电汇路径测算：�
 
 ## 固定优选与费用资格
 
-优选是独立维护的完整策略目录，不随下方银行、券商、资金用途、管理费资格、费用券或本金变化。人民币原币经汇丰、FPS入IBKR Pro后手动换USD的费用情景置首，直接显示各段币种及换汇地点；保留兴业寰宇人生经汇丰香港至Trade25、同一上游至ZA、中行至中银香港再入IBKR的美元路径，并补充兴业购USD→汇丰→Wise→IBKR。没有固定数量配额。每条方案横向显示各步产品名及损耗，各列和箭头对齐；账户内留款用分隔点，不画成出金。不重复整条路线标题或预留空行；只显示影响费用解释的短条件。人民币支付通方案按本次豁免测算，仍需符合银行的获准用途和额度；缺少IBKR实时成交点差时展示已计费用，不能将该小计写成完整损耗或保证最低价。共同参考为10万元、1笔汇出、买卖各1笔、股价100 USD、12个月银行期间、银行管理费条件满足；含公开到账实录的代理费按参考费标记，不能宣称官网保证或全市场最低。
+优选是独立维护的完整策略目录，不随下方银行、券商、资金用途、管理费资格、费用券或本金变化。人民币原币经汇丰、FPS入IBKR Pro后手动换USD的费用情景置首，直接显示各段币种及换汇地点；保留兴业寰宇人生经汇丰香港至Trade25、同一上游至ZA、中行至中银香港再入IBKR的美元路径，并补充兴业购USD→汇丰→Wise→IBKR。没有固定数量配额。每条方案横向显示各步产品名及损耗，各列和箭头对齐；账户内留款用分隔点，不画成出金。不重复整条路线标题或预留空行；只显示影响费用解释的短条件。人民币支付通方案按本次豁免测算，仍需符合银行的获准用途和额度；IBKR USD/CNH现采用已保存的公开买卖盘参考。确实缺价或缺费用的路线只列已计费用，不保证最低价。共同参考为10万元、1笔汇出、买卖各1笔、股价100 USD、12个月银行期间、银行管理费条件满足；含公开到账实录的代理费按参考费标记，不能宣称官网保证或全市场最低。
 
 应用方案替换整套方案账户、渠道、标准交易假设和对应资格，保留用户本金，清除上一条路线的个人报价与费用券启用状态。Trade25方案明确使用Trade25，其余方案使用本身标出的收费模式。方案卡参考费用仍按10万元；正文按用户本金重新核算。应用后其他账户和设置仍可改，不能把当前未办理账户或未勾选条件作为隐藏方案的理由。
 
@@ -40,7 +82,7 @@ IBKR实际AutoFX成交价已经包含自动加价，不再另乘1.0003；实际�
 
 依据为[当前IBUK协议中IBLLC的G3／G4条款](https://gdcdyn.interactivebrokers.com/Universal/servlet/Registration_v2.formSampleView?formdb=6207)物理第45页和[2026年6月成本摘要](https://ndcdyn.interactivebrokers.com/Universal/servlet/Registration_v2.formSampleView?formdb=4378)第5–6页；协议身份不冒充直接美国客户合同。[IBKR现行资费](https://www.interactivebrokers.com/en/pricing/commissions-spot-currencies.php)的自动兑换通常加减0.03%、不另收佣金，并未提供具体成交买卖价。自动选项明确为现金账户，不把保证金借款利息场景当作免费自动兑换。原件与范围见[核查记录](../tests/fixtures/money-flow-ibkr-autofx-timing-20261012.json)。
 
-本测算的IBKR碎股情景使用全部可买资金，修正的是入金币种、费用时点与分段账目，不据此声称之前全程多扣了自动换汇费。没有实际成交价时，原币入金仍可核，购买换汇及后续估值继续明确缺项。
+本测算的IBKR碎股情景使用全部可买资金，修正的是入金币种、费用时点与分段账目，不据此声称之前全程多扣了自动换汇费。没有个人成交价时，优先使用本机构已保存的公开买卖盘参考并注明行情状态；只有本机构公开价也未取得时，才保留具体缺项。
 
 收款银行与买股账户分开。中银香港→本人ZA或汇丰银行USD账户使用本地转账，再由银行证券服务内部交收；换券商不会改收款银行。独立券商使用其公布的收款账户及支持渠道。
 
@@ -51,7 +93,7 @@ IBKR实际AutoFX成交价已经包含自动加价，不再另乘1.0003；实际�
 | 留在买股账户 | 卖出后保留USD；不发生出金、香港回款或内地结汇 |
 | 取回香港银行、保留美元 | 出金至所选本人银行，保留USD |
 | 美元原币消费 | 出金至支持USD扣账的银行，以足额USD直接刷卡 |
-| 换人民币后消费 | 使用所选消费银行自己的USD/CNH报价；中银香港直接兑换，汇丰／恒生／工银亚洲按公开牌价经HKD分两段兑换；工银亚洲人民币账户另须香港身份证 |
+| 换人民币后消费 | 使用所选消费银行自己的直接USD/CNH报价，或使用已经在IBKR换好的CNH余额；不以港币两腿报价替代直接兑换。工银亚洲人民币账户另须香港身份证 |
 | 汇回内地结汇 | 美元原币汇回按内地USD买入价结汇；港币回款先按所选香港银行USD/HKD买入价换港币，再按所选内地银行HKD买入价结汇；两个换汇动作分别计损耗 |
 
 ZA卡不适用USD原币扣账，其他消费账户可重新选择。香港银行没有公开的CNH兑换报价时，不能自动借用中银香港的价。CNY、CNH和USD始终保留真实币种。
@@ -527,3 +569,335 @@ IBKR[公开入金工具](https://www.interactivebrokers.com/en/support/fund-my-a
 目前默认买入1.99 USD、卖出2.33 USD不变，人民币显示13.34＋15.63＝28.97；内地购汇77.11＋交易28.97＝106.08 CNY。详细监管费用按各自买卖分项的已显示金额分配，而不是再独立取整。银行菜单的期间费用用原币HKD总价，实际回单保留输入币种，再给≈CNY等值。所有汇率仍来自同一报价快照，不为凑分项更换汇率。
 
 全程详情的简化“本金＋盈亏−成本−税＝人民币余额”未覆盖所有币种折算影响，已改为实际最终币种余额及人民币等值；完整守恒式仍由账簿及回归验证，包含汇率折算差额。130,302个默认渠道离散状态、75个实际页面状态与新边界测试的范围及证据在[需求与验收清单](money-flow-requirements.md)，不将该显示修正称作金融证据补齐。
+
+
+## 逐源抓取配方
+
+此表述与采集器同次维护。每源复现命令均为`rtk proxy python3 scripts/refresh_money_flow_quotes.py --banks <源ID> --output /tmp/<源ID>-quotes.js`；默认输出为空文件时只含所选源，不能拿它覆盖包含其他机构的生产文件。以下地址为完整接口，浏览器展示页与数据接口分别保存。
+
+### boc · 中国银行
+
+- 来源页：[中国银行](https://www.boc.cn/sourcedb/whpj/)
+- 数据接口：`https://www.boc.cn/sourcedb/whpj/`
+- 请求：GET；解析器`parse_boc`；落盘`banks.boc.quotes`。
+- 字段及单位：HTML表格：货币名row[0]，现汇买入row[1]、现汇卖出row[3]均除100；不用现钞列。须有USD、HKD。
+- 时间：row[6]日期＋row[7]时间，北京时间。
+
+### cmb · 招商银行
+
+- 来源页：[招商银行](https://fx.cmbchina.com/hq/)
+- 数据接口：`https://fx.cmbchina.com/api/v1/fx/rate`
+- 请求：GET；解析器`parse_cmb`；落盘`banks.cmb.quotes`。
+- 字段及单位：returnCode=SUC0000；body[]按ccyNbr中文币名匹配，rthBid/rthOfr除100；rtbBid不是本次现汇买入字段。
+- 时间：ratDat（YYYY年MM月DD日）＋ratTim。
+
+### icbc · 工商银行中国
+
+- 来源页：[工商银行中国](https://www.icbc.com.cn/page/721852558099644433.html)
+- 数据接口：`https://papi.icbc.com.cn/exchanges/ns/getLatest`
+- 请求：POST，JSON请求体`{}`；解析器`parse_icbc`；落盘`banks.icbc.quotes`。
+- 字段及单位：POST空JSON {}。code=0；data[]按currencyENName匹配，foreignBuy/foreignSell除100，不用reference或cashBuy。
+- 时间：publishDate＋publishTime。
+
+### ccb · 建设银行中国
+
+- 来源页：[建设银行中国](https://ebank1.ccb.com/chn/forex/exchange-quotations.shtml)
+- 数据接口：`https://ebank1.ccb.com/cn/home/news/jshckpj_new2.xml`
+- 请求：GET；解析器`parse_ccb`；落盘`banks.ccb.quotes`。
+- 字段及单位：XML ReferencePriceSettlement：Ofr_Ccy_CcyCd=156；Ofrd_Ccy_CcyCd为840 USD、344 HKD、978 EUR、826 GBP、392 JPY。BidRateOfCcy/OfrRateOfCcy已按1外币计价，不能再除100。
+- 时间：LstPr_Dt（YYYYMMDD）＋LstPr_Tm（HHMMSS）。
+
+### abc · 农业银行（历史资料保留）
+
+- 来源页：[农业银行（历史资料保留）](https://ewealth.abchina.com.cn/ForeignExchange/ListPrice/)
+- 数据接口：`https://ewealth.abchina.com.cn/app/data/api/DataService/ExchangeRateV2`
+- 请求：GET；解析器`parse_abc`；落盘`banks.abc.quotes`。
+- 字段及单位：ErrorCode=0；Data.Table[]的CurrName括号内币种；BuyingPrice/SellPrice除100。
+- 时间：PublishTime自带时区，转北京时间。
+
+### comm · 交通银行（内地收款及历史资料）
+
+- 来源页：[交通银行（内地收款及历史资料）](https://www.bankcomm.com/BankCommSite/zonghang/cn/newWhpj/foreignExchangeSearch_Cn.html)
+- 数据接口：`https://www.bankcomm.com/SITE/queryExchangeResult.do`
+- 请求：GET；解析器`parse_comm`；落盘`banks.comm.quotes`。
+- 字段及单位：RSP_BODY.fileContent为HTML：row[0]括号内XXX/CNY币种，row[1]为单位，row[2]/row[3]买卖价除row[1]。
+- 时间：HTML的“更新时间”，不以下载时钟代替。
+
+### hsbc · 汇丰中国
+
+- 来源页：[汇丰中国](https://www.services.cn-banking.hsbc.com.cn/PublicContent/common/rate/zh/exchange-rates.html)
+- 数据接口：`https://www.services.cn-banking.hsbc.com.cn/mobile/channel/digital-proxy/cnyTransfer/ratesInfo/remittanceRate`
+- 请求：GET；解析器`parse_hsbc`；落盘`banks.hsbc.quotes`。
+- 字段及单位：responseCode=000；data.counterForRepeatingBlock[]按exchangeRateCurrency匹配，transferBuyingRate/transferSellingRate分别取倒数得到CNY／1外币。
+- 时间：data.lastUpdateDate只有YYYY-MM-DD，存timePrecision=day；不补造时分秒。
+
+### cib · 兴业银行
+
+- 来源页：[兴业银行](https://personalbank.cib.com.cn/pers/main/pubinfo/ifxQuotationQuery.do)
+- 数据接口：`https://personalbank.cib.com.cn/pers/main/pubinfo/ifxQuotationQuery/list`
+- 请求：GET；解析器`parse_cib`；落盘`banks.cib.quotes`。
+- 字段及单位：rows[].cell：币种[1]，单位[2]，现汇买入[3]、卖出[4]分别除[2]。保存普通牌价；寰宇人生五折点差优惠由模型另按资格计算，不能把优惠价覆盖基础报价。
+- 时间：接口没有发布日期；用北京时间采集时点并存timeBasis=observed。网页时钟不是发布时间。
+- 复现注意：先GET来源页，使用CookieJar保留同一公开会话，再GET接口并附dataSet.page=1、dataSet.rows=80、dataSet.sidx=（空）、dataSet.sord=asc、_search=false；请求头X-Requested-With=XMLHttpRequest和来源页Referer。漏分页参数曾返回520。
+
+### bochk · 中银香港
+
+- 来源页：[中银香港](https://www.bochk.com/whk/rates/exchangeRatesUSD/exchangeRatesUSD-input.action?lang=cn)
+- 数据接口：`https://www.bochk.com/whk/rates/exchangeRatesUSD/exchangeRatesUSD-input.action?lang=cn`
+- 请求：GET；解析器`parse_bochk`；落盘`offshoreUsd.bochk.quotes`。
+- 字段及单位：HTML三列表：美元/人民币映射CNH，美元/港元映射HKD；row[1]/row[2]为bidPerUsd/askPerUsd，单位为目标币／1 USD。
+- 时间：匹配“资料更新于香港时间：YYYY/M/D HH:MM:SS”。
+- 复现注意：lang=cn必须保留，以便解析器匹配中文列名和时间。该页提供直接美元交叉价。
+
+### hanghk · 恒生香港
+
+- 来源页：[恒生香港](https://www.hangseng.com/en-hk/rates/foreign-currency-tt-exchange-rates/)
+- 数据接口：`https://rbwm-api.hsbc.com.hk/pws-hk-hase-rates-papi-prod-proxy/v1/fxtt-exchange-rates`
+- 请求：GET；解析器`parse_hang_hk`；落盘`offshoreUsd.hang.quotes`。
+- 字段及单位：fxttExchangeRates[]按ccyDisplayCode取USD、CNH；ttBuyRate/ttSellRate均为HKD／1外币，调用hkd_cross_quotes保留两腿。
+- 时间：lastUpdateTime ISO时间转北京时间。
+- 复现注意：HKD行直接USD/HKD；CNH行明确path=via-HKD，不作直接客户USD/CNH报价。
+
+### hsbchk · 汇丰香港
+
+- 来源页：[汇丰香港](https://www.hsbc.com.hk/investments/products/foreign-exchange/currency-rate/)
+- 数据接口：`https://rbwm-api.hsbc.com.hk/digital-pws-tools-investments-eapi-prod-proxy/v1/investments/exchange-rate?locale=en_HK`
+- 请求：GET；解析器`parse_hsbc_hk`；落盘`offshoreUsd.hsbc.quotes`。
+- 字段及单位：detailRates[]按ccy取USD、CNY；ttBuyRt/ttSelRt为账户现汇HKD／1外币；bankBuyRt/bankSellRt为现钞，不采用。调用hkd_cross_quotes。
+- 时间：每行lastUpdateDate按YYYY-MM-DD HH:MM:SS %z解析、转北京时间；CNH交叉价取两腿较早时间。
+- 复现注意：locale=en_HK。HKD行是直接USD/HKD，CNH行path=via-HKD；直接兑换组件的401限制见本文前节。
+
+### hang · 恒生中国
+
+- 来源页：[恒生中国](https://www.hangseng.com.cn/zh-cn/index/useful-information/deposit-exchange-rates/)
+- 数据接口：`https://hacndb-api.hangseng.com.cn/hacn-mobile-experience-platform-papi-prod-proxy/v1/exchange-rate`
+- 请求：GET；解析器`parse_hang_cn`；落盘`banks.hang.quotes`。
+- 字段及单位：exchangeRateList[]按currencyCode匹配；ttBuyRate/ttSellRate已按CNY／1外币计价。
+- 时间：payload.time解析到秒。
+- 复现注意：额外请求头Accept=application/json、X-HSBC-Locale=zh_CN、X-HSBC-Channel-Id=PWS、X-HSBC-Chnl-CountryCode=CN、Accept-Language=zh-CN。
+
+### icbc-asia · 工银亚洲
+
+- 来源页：[工银亚洲](https://www.icbcasia.com/hk/sc/personal/banking/rate/foreign-exchange-rate/default.html)
+- 数据接口：`https://papi.icbc.com.cn/rest/currencies/asia/foreign`
+- 请求：GET；解析器`parse_icbc_asia`；落盘`offshoreUsd.icbc-asia.quotes`。
+- 字段及单位：code=0；data[]按currename取USD、CNY；buyrate/salrate为HKD／1外币，不套内地工行/100规则；CNH保留两腿。
+- 时间：updateTime，保留原始小数秒。Python 3.9校验时补足6位，落盘不改原时间。
+- 复现注意：仅当Python报UNSAFE_LEGACY_RENEGOTIATION_DISABLED时，降级为系统curl --fail --silent --show-error --location --max-time 25 URL；不使用-k或关闭证书校验。
+
+### ccb-asia · 建行亚洲
+
+- 来源页：[建行亚洲](https://www.asia.ccb.com/hongkong/personal/accounts/exchange_rate_enquiry.html)
+- 数据接口：`https://www.asia.ccb.com/hongkong/js/ho_js/hkwhhl01.js`
+- 请求：GET；解析器`parse_ccb_asia`；落盘`offshoreUsd.ccb-asia.quotes`。
+- 字段及单位：只解析jqueryHkInfo({...})包装中的JSON，不执行远程JS。先合并重复ExR_Grp数组；Dif_Dmsn_Val=210普通客户，ToCusOfrOutGrp中Ofr_Ccy_CcyCd=344、Ofrd_Ccy_CcyCd=840，BidRateOfCcy/OfrRateOfCcy为HKD／1 USD。
+- 时间：LstPr_Dt＋LstPr_Tm。
+- 复现注意：不能按普通JSON读取后遗失第一个重复键，也不能套301优惠层或银行间字段。只有USD/HKD；无直接CNH价。
+
+### ibkr · IBKR公开外汇组件
+
+- 来源页：[IBKR公开外汇组件](https://portal.interactivebrokers.com/en/whyib/global-access.php)
+- 数据接口：`https://portal.interactivebrokers.com/portal.proxy/v1/mkt/iserver/marketdata/snapshot?conids=12087792,12087797,113342317,15016062,15016059,14433401,12087820,35045199&fields=84,86,6509`
+- 请求：GET；解析器`parse_ibkr`；落盘`brokerUsd.ibkr.quotes`。
+- 字段及单位：合约113342317=USD.CNH；84=bid，86=ask，目标币CNH／1 USD；6509保存行情可用性。只接收R/D/Z/Y，不接收无价、N或i。
+- 时间：_updated毫秒转北京时间，timeBasis=snapshot；Z/Y不是实时成交。
+- 复现注意：GET与官网组件一致的8个合约和fields=84,86,6509。无需本次账户登录；仅合约ID的初始化响应最多再请求一次。来源脚本、字段文档及原始样本见前节。
+
+## 收费及规则来源全索引
+
+下表来自`data/money-flow.js`的全部192个`sources`条目，包含汇率、人行／银行规则、费用表、券商收费及具名操作记录。它是现有证据的检索索引，不表示本轮重新抓取了192份材料。适用范围和核查日期以相应数据行及本文件具名小节为准；用户提供费用情景另在Wise小节记录，不伪造外部网址。更新来源时同时更新此索引；网络失败不能删掉上一条来源。
+
+| 来源ID | 机构及资料 | 原文入口 |
+| --- | --- | --- |
+| `paymentPbc` | 人民银行 · 支付通限经常项目，机构另定单笔／累计限额 | [原文](https://big5.www.gov.cn/gate/big5/www.gov.cn/zhengce/202506/content_7028902.htm) |
+| `paymentParticipants` | 香港银行同业结算公司 · 现行支付通参与机构 | [原文](https://fps.hkicl.com.hk/schi/fps/consumers/payment_connect.php) |
+| `paymentHang` | 恒生 · 支付通收付免费及南北向限额 | [原文](https://www.hangseng.com/zh-cn/personal/banking/payment-connect/) |
+| `paymentZaTariff` | ZA · 2026-06-01个人费表：支付通、FPS及CHATS汇入豁免 | [原文](https://bank.za.group/en/notice-detail/979ca80f-2fb4-4add-b30c-18144d3a757f) |
+| `paymentIcbcAsia` | 工银亚洲 · 北向每日1万／每年20万港币等值 | [原文](https://www.icbcasia.com/hk/sc/cross-border/cross-border-remittance/payment-connect/default.html) |
+| `paymentSouthReport` | 泉州晚报2025-06-24 · 南向单笔1万元操作观察（非现行统一公告） | [原文](https://szb.qzwb.com/qzwb/pc/att/202506/24/96db2871-a77f-4a64-a958-59fe1546e009.pdf) |
+| `paymentCmbCase` | 外汇局深圳分局 · 招行1万元南向汇款实例（非上限公告） | [原文](https://www.safe.gov.cn/shenzhen/2025/0709/2159.html) |
+| `cibPaymentService` | 兴业 · 2026支付通服务公告（未公布限额或费用） | [原文](https://www.cib.com.cn/cn/aboutCIB/about/notice/2026/20260819_1.html) |
+| `bocMobileLimits` | 中行 · 2026手机银行普通转账限额（不能替代支付通） | [原文](https://www.bankofchina.com/ebanking/service/cs1/201609/t20160908_7648060.html) |
+| `icbcMobileLimits` | 工行 · 电子银行认证限额（不能替代支付通） | [原文](https://www.icbc.com.cn/page/721852506174160944.html) |
+| `paymentHsbcReceive` | 汇丰跨境支付通收款及免手续费说明 | [原文](https://www.hsbc.com.hk/zh-cn/transfer-payments/products/pay-abroad-with-fps/) |
+| `ibConversion` | IBKR账户换汇权限与交易权限区别 | [原文](https://investors.interactivebrokers.com/en/accounts/trading-and-market-data.php) |
+| `ibCnhDeposits` | IBKR原币CNH入金与实体对应的收款渠道 | [原文](https://www.ibkrguides.com/kb/how-to-deposit-cnh.htm) |
+| `ibWise` | IBKR · 关联本人Wise余额入金与报价 | [原文](https://www.ibkrguides.com/clientportal/transferandpay/wise-transfer.htm) |
+| `wiseIbkr` | Wise · 与IBKR合作的余额入金入口 | [原文](https://wise.com/us/blog/wise-platform-and-interactive-brokers-team-up) |
+| `wiseUsd` | Wise · USD渠道、费用与普通券商汇款限制 | [原文](https://wise.com/help/articles/2932150/guide-to-usd-transfers) |
+| `ibFundingUs` | IBKR美国居民USD入金方式 | [原文](https://www.interactivebrokers.com/en/support/fund-my-account.php) |
+| `bochkUnionPay` | 中银香港 · 银联双币中银卡与扣账账户 | [原文](https://www.bochk.com/sc/more/boccard/personal.html) |
+| `bochkApplePay` | 中银香港 · 中银卡Apple Pay常见问题 | [原文](https://www.bochk.com/dam/more/boccard/applepay/apay_faq_sc.pdf) |
+| `ibCnhWithdrawal` | IBKR · CNH本地出金与电汇渠道 | [原文](https://www.ibkrguides.com/androidtablet/withdrawal.htm) |
+| `firstradePricing` | Firstrade · 网上交易及SEC费用 | [原文](https://www.firstrade.com/trading/pricing) |
+| `firstradeWire` | Firstrade · 国际电汇入金及同名要求 | [原文](https://www.firstrade.com/support/funding/wire) |
+| `firstradeWireFees` | Firstrade · 电汇入金0／国际出金25 USD | [原文](https://help.firstrade.info/en/articles/9260062-what-are-the-fees-for-wire-transfers) |
+| `firstradeFractions` | Firstrade · 碎股5 USD起与股数精度 | [原文](https://help.firstrade.info/en/articles/9264067-fractional-shares-trading) |
+| `schwabPricing` | 嘉信国际 · 美国上市股票及ETF网上佣金 | [原文](https://international.schwab.com/pricing) |
+| `schwabGuide` | 嘉信 · 个人投资者价目表及国际账户适用范围 | [原文](https://www.schwab.com/legal/schwab-pricing-guide-for-individual-investors) |
+| `schwabWire` | 嘉信国际 · 按币种区分的收款指示 | [原文](https://international.schwab.com/resource/instructions-to-transfer-money-to-your-schwab-account) |
+| `schwabFractions` | 嘉信 · 碎股资格与账户交易限额 | [原文](https://www.schwab.com/fractional-shares-stock-slices) |
+| `safe` | 外汇局 · 个人购汇用途与额度 | [原文](https://www.safe.gov.cn/shanghai/2019/1213/1198.html) |
+| `remit` | 外汇局 · 外汇账户汇出与真实性材料 | [原文](https://www.safe.gov.cn/tianjin/2026/0422/3039.html) |
+| `csrc` | 证监会 · 2026年跨境证券经营整治 | [原文](https://www.csrc.gov.cn/csrc/c100028/c7634324/content.shtml) |
+| `boc` | 中国银行 · 个人金融现行标准价（电子渠道优惠另列） | [原文](https://pic.bankofchina.com/bocappd/pricelist/202511/P020251110646838136627.pdf) |
+| `bocMobileHistory` | 中国银行 · 手机银行向境外中行双免（2025年5–12月） | [原文](https://www.boc.cn/big5/ebanking/bi3/bi31/202504/t20250430_25339098.html) |
+| `bocMobile2026` | 中行山西省分行供稿 · 2026-05-29新华网手机银行双免说明 | [原文](https://app.xinhuanet.com/news/article.html?articleId=202605292bb12419965b415d874dba730080d3af) |
+| `bocBankAnswer2026` | 中国银行股份有限公司 · 2026-08-19集团双免、他行电子渠道9折及个人汇入说明 | [原文](https://zhidao.baidu.com/question/696531417821087764.html?qbl=relate_question_4) |
+| `bocPaymentGuide` | 2026-06-30用户实录 · 中行跨境支付通人民币汇款 | [原文](https://linux.do/t/topic/2632770?tl=zh_CN) |
+| `bocMobileUsdGuide` | 2026-02-09操作记录 · USD/HKD同名境外中行SHA同行路径 | [原文](https://www.huigeblog.com/news/operational-guide-for-cross-border-remittance-via-bank-of-china-hong-kong.html) |
+| `zaLocalUsd` | ZA官方 · 免费本地美元转账与直连银行名单 | [原文](https://cdn.zaticdn.com/if/ipage/prd/data/blog/a1e7a724-9c51-421a-936a-a339d6d18c4e/en/USD-local-bank-transfers.html?v=1758617552695) |
+| `zaFx` | ZA官方 · App买入／卖出换汇报价入口 | [原文](https://bank.za.group/en/faqs/Individuals/Bank_services/Money_exchange/671605c5701eb769e4bff53c) |
+| `zaExchangeLimits` | ZA官方 · 每笔换汇金额限制 | [原文](https://bank.za.group/en/faqs/Individuals/Bank_services/Money_exchange/671605bb701eb769e4bff52d) |
+| `hsbcUsTariff` | 汇丰2026年9月美股收费表 · 第3、10页月费豁免 | [原文](https://www.hsbc.com.hk/content/dam/hsbc/hk/sc/docs/investments/stocks/top-trader-club/us-stocks-product-fact-sheet.pdf) |
+| `bocPaymentConnect` | 中国银行 · 跨境支付通南向人民币／港币到账 | [原文](https://www.boc.cn/aboutboc/bi1/202506/t20250620_25390382.html) |
+| `bocPaymentCase` | 黄石政府网 · 中行南向零手续费实例（2025-07-01） | [原文](https://huangshi.gov.cn/xwdt/hsyw/202507/t20250701_1235188.html) |
+| `paymentCurrent` | 香港金管局 · 跨境支付通资格与额度（2026-09-08） | [原文](https://www.hkma.gov.hk/chi/smart-consumers/payment-connect/) |
+| `bocFx` | 中国银行 · 外汇牌价（每100外币） | [原文](https://www.boc.cn/sourcedb/whpj/) |
+| `cmb` | 招商银行 · 专业版跨境汇款标准价 | [原文](https://www.cmbchina.com/personalbank/gb/page/standfee.htm) |
+| `cmbFx` | 招商银行 · 外汇牌价（每100外币） | [原文](https://fx.cmbchina.com/hq/) |
+| `icbcFx` | 工商银行 · 人民币即期外汇牌价 | [原文](https://www.icbc.com.cn/page/721852558099644433.html) |
+| `icbc` | 工商银行 · 2026年8月8日版服务价目表 | [原文](https://www.icbc.com.cn/icbc/金融信息/资费公告/default.htm) |
+| `icbcOnline` | 工商银行 · 网银个人跨境汇款03040021 | [原文](https://v.icbc.com.cn/userfiles/Resources/ICBC/fwjm/images/2026/di3zhangdi3jie20251215.gif) |
+| `icbcAsiaGuide` | 2026-08-13工银亚洲开户及集团原币汇款操作记录 | [原文](https://www.digitalnomadlc.com/how-to-open-icbc-asia/) |
+| `icbcAsiaAccount` | 工银亚洲 · 普通综合账户免管理费及借记卡年费 | [原文](https://www.icbcasia.com/hk/sc/personal/banking/integrated-account/integrated-account/default.html) |
+| `icbcAsiaAccountTerms` | 工银亚洲 · 2026年7月综合账户币种及人民币身份条件 | [原文](https://v.icbc.com.cn/userfiles/resources/icbc/haiwai/asia/download/cn/2026/descriptive_information_integrated_account_2607_sc.pdf) |
+| `icbcAsiaFx` | 工银亚洲 · 港元兑外币参考买卖价 | [原文](https://www.icbcasia.com/hk/sc/personal/banking/rate/foreign-exchange-rate/default.html) |
+| `icbcAsiaInwardOffer` | 工银亚洲 · 2026年7–12月e账通集团汇入基本费豁免 | [原文](https://v.icbc.com.cn/userfiles/resources/icbc/haiwai/asia/download/cn/2026/inward_remittance_0_handling_charge_tnc_2607_sc.pdf) |
+| `icbcAsiaOutwardOffer` | 工银亚洲 · 2026年7–12月e账通手机集团汇出本行费豁免 | [原文](https://v.icbc.com.cn/userfiles/resources/icbc/haiwai/asia/download/cn/2026/icbc_outward_remittance_0_handling_charge_tnc_2607_sc.pdf) |
+| `icbcAsiaCard` | 工银亚洲 · 银联借记卡、ICBC Pay及内地取现规则 | [原文](https://www.icbcasia.com/hk/sc/personal/banking/others/debit-card/default.html) |
+| `icbcAsiaBayAccount` | 工银亚洲 · 湾区账户通为内地II／III类账户及其限额 | [原文](https://www.icbcasia.com/hk/sc/cross-border/cross-border-services/greater-bay-financial-services/greater-bay-area-account-opening-service/default.html) |
+| `ccbAsiaTariff` | 建行亚洲 · 个人银行资费（汇入、汇出及陆港通龙卡） | [原文](https://www.asia.ccb.com/hongkong_sc/doc/about_us/F1168-banking-services.pdf) |
+| `ccbAsiaLongCard` | 建行亚洲 · 陆港通龙卡两地账户联动及限额 | [原文](https://www.asia.ccb.com/hongkong_sc/personal/crossborder_services/cblc.html) |
+| `ccbAsiaLongTerms` | 建行亚洲 · 陆港通龙卡服务条款 | [原文](https://www.asia.ccb.com/hongkong_sc/doc/personal/accounts/crossborder/F554AChi.pdf) |
+| `ccbAsiaFx` | 建行亚洲 · 普通个人账户公开现汇牌价 | [原文](https://www.asia.ccb.com/hongkong/personal/accounts/exchange_rate_enquiry.html) |
+| `ccbAsiaPaymentConnect` | 建行亚洲 · 跨境支付通北向须香港身份证 | [原文](https://www.asia.ccb.com/hongkong_sc/personal/banking_channels/faster_payment_system.html) |
+| `hsbcDebitFaq` | 汇丰 · 扣账卡原币余额不足时的港币扣账规则 | [原文](https://www.hsbc.com.hk/help/faq/debit-cards/) |
+| `icbcAsiaCheque` | 工银亚洲 · 本地美元往来账户及支票 | [原文](https://www.icbcasia.com/hk/sc/personal/banking/deposits/current/default.html) |
+| `icbcInward` | 工商银行 · 个人境外汇入款不收手续费 | [原文](https://m.icbc.com.cn/ICBC/业务指南/个人金融/跨境金融/其他个人跨境汇款/其他个人跨境汇入汇款.htm) |
+| `scCnTariff` | 渣打中国 · 2026 Version 2个人银行收费标准 | [原文](https://av.sc.com/cn/content/docs/cn-cb-tariff-zh.pdf) |
+| `scCnOffers` | 渣打中国 · 2026年个人银行收费优惠政策 | [原文](https://av.sc.com/cn/content/docs/cn-personal-bank-charges-preferential.pdf) |
+| `scGlobalFaq` | 渣打中国 · 全球账户间汇款仅限外币同币种 | [原文](https://www.sc.com/cn/help-centre/faqs-ways-to-bank/) |
+| `icbcInternational` | 工商银行 · 汇出汇款06030023柜面价与渠道折扣 | [原文](https://v.icbc.com.cn/userfiles/Resources/ICBC/fwjm/images/2026/di3zhangdi6jie202605.gif) |
+| `icbcFullAmount` | 工商银行 · 普通美元汇款全额到账范围 | [原文](https://www.icbc.com.cn/icbc/html/branches/beijing/guanggao/wh_040831/wh4.htm) |
+| `icbcExpress` | 工商银行 · 工银速汇转汇及香港币种限制 | [原文](https://www.icbc.com.cn/page/721852378969309213.html) |
+| `ccbFx` | 建设银行 · 个人结售汇参考牌价 | [原文](https://ebank1.ccb.com/chn/forex/exchange-quotations.shtml) |
+| `ccb` | 建设银行 · 2026年1月18日生效个人价目表 | [原文](https://www3.ccb.com/chn/2025-10/16/article_2025101610400288307.shtml) |
+| `ccbRemit` | 建设银行 · 本外币跨境汇款3020101及汇入免费 | [原文](https://www.ccb.com/chn/html1/office/jiamubiao/2025/personal/index17.html) |
+| `ccbFullAmount` | 建设银行 · 汇得全适用于个人、包含境外中转与入账扣费 | [原文](https://company1.ccb.com/cn/home/company/gjyw/448905.html) |
+| `abcFx` | 农业银行 · 结售汇牌价 | [原文](https://ewealth.abchina.com.cn/ForeignExchange/ListPrice/) |
+| `abc` | 农业银行 · 个人国际汇款收费 | [原文](https://www.abchina.com/cn/PublicPlate/sfbz/fwjgbz/202109/t20210929_2047241.htm) |
+| `comm` | 交通银行 · 2026年5月服务收费名录（免费项目42、个人第76页、电报第79页） | [原文](https://www.bankcomm.com/BankCommSite/shtml/jyjr/cn/7924/2600718/2615550.shtml) |
+| `commFx` | 交通银行 · 境内外汇牌价 | [原文](https://www.bankcomm.com/BankCommSite/zonghang/cn/newWhpj/foreignExchangeSearch_Cn.html) |
+| `cibCard` | 兴业银行 · 2026/7–2027/6寰宇人生卡权益及五折点差 | [原文](https://mobile.cib.com.cn/netbank/cn/personal/debit/index.html) |
+| `cmbTariff` | 招商银行 · 个人国际汇款GJ001/GJ003及人民币适用范围 | [原文](https://s3gw.cmbimg.com/lb5001-cmbweb-prd-1255000097/cmbcms/20241125/2d400cbc-4f03-4966-86d3-f028ba64ae8b.pdf) |
+| `cibGo` | 兴业银行 · 小额全额到账收费及全链路开通条件 | [原文](https://www.cib.com.cn/cn/aboutCIB/about/charges/zfNotices/20240204.html) |
+| `swiftGoBanks` | SWIFT · Go名单为签约实施名单，可达性以GPI目录为准 | [原文](https://www.swift.com/products/swift-go/banks) |
+| `cibHkdCase` | 2025-12-30实录 · 寰宇人生港币SHA直达汇丰香港 | [原文](https://baiyakai.com/586.html) |
+| `cibUsdCase` | 2026-05-30实录 · 寰宇人生美元及港币到同名汇丰香港 | [原文](https://linux.do/t/topic/2272086) |
+| `cibSmallUsdCase` | 2026-03-17实录 · 兴业汇出201 USD、汇丰香港收到201 USD | [原文](https://yunxge.cn/archives/90) |
+| `cibHsbcCase` | 2026-09-01实录 · 寰宇人生至汇丰One零费用到账 | [原文](https://linux.do/t/topic/2583831/17) |
+| `cibRouteCounterexample` | 汇路反例 · 兴业美元改走其他代理行可能扣费 | [原文](https://finvoke.0xv9.com/posts/transfer-money-from-mainland-china-to-hong-kong-for-free/) |
+| `cibFx` | 兴业银行 · 公开外汇牌价查询 | [原文](https://personalbank.cib.com.cn/pers/main/pubinfo/ifxQuotationQuery.do) |
+| `hsbcFx` | 汇丰中国 · 个人现汇牌价 | [原文](https://www.services.cn-banking.hsbc.com.cn/PublicContent/common/rate/zh/exchange-rates.html) |
+| `scFx` | 渣打中国 · 客户外汇报价渠道 | [原文](https://www.sc.com/cn/foreign-exchange/wfx/) |
+| `hangCnFx` | 恒生中国 · 官方外币兑人民币买卖价 | [原文](https://www.hangseng.com.cn/zh-cn/index/useful-information/deposit-exchange-rates/) |
+| `bochkUsdFx` | 中银香港 · 每1USD的CNH/HKD参考买卖价 | [原文](https://www.bochk.com/whk/rates/exchangeRatesUSD/exchangeRatesUSD-input.action?lang=cn) |
+| `hsbcHkFx` | 汇丰香港 · 外币电汇买卖价 | [原文](https://www.hsbc.com.hk/investments/products/foreign-exchange/currency-rate/) |
+| `hangHkFx` | 恒生香港 · 外币电汇买卖价 | [原文](https://www.hangseng.com/en-hk/rates/foreign-currency-tt-exchange-rates/) |
+| `ibCnh` | IBKR · 离岸人民币可作入金币种 | [原文](https://www.interactivebrokers.com/campus/glossary-terms/chinese-offshore-renminbi-cnh/) |
+| `pbcRmb` | 人民银行 · 跨境人民币经常与资本项目规定 | [原文](https://www.pbc.gov.cn/chubanwu/114566/114579/4356052/4356380/2021100915525242238.pdf) |
+| `scCnTerms` | 渣打中国 · 境外转账范围与用途 | [原文](https://www.sc.com/cn/electronic-banking-overseas-transfer-service-terms/) |
+| `cib` | 兴业银行 · 综合服务价目表 | [原文](https://www.cib.com.cn/cn/aboutCIB/about/charges/adjustment/combined.html) |
+| `cibInward` | 兴业银行 · 外汇汇入入账费免费 | [原文](https://mobile.cib.com.cn/netbank/cn/personal/wealth-management/foreign/inward.html) |
+| `hsbcCn` | 汇丰中国 · 卓越理财50万元条件 | [原文](https://www.hsbc.com.cn/premier/) |
+| `hsbcCnTariff` | 汇丰中国 · 2026年9月29日个人账户与服务价目表 | [原文](https://www.hsbc.com.cn/content/dam/hsbc/cn/docs/document-download/tariff-of-accouts-and-services.pdf) |
+| `hsbcGlobal` | 汇丰 · 环球账户间免费转账 | [原文](https://internationalservices.hsbc.com/zh-cn/international-banking/global-view-global-transfers/) |
+| `hsbcHk` | 汇丰香港 · 2026年8月1日收费表 | [原文](https://www.hsbc.com.hk/content/dam/hsbc/hk/tc/docs/ways-to-bank/bank-tariff/20260801-guide.pdf) |
+| `hsbcHkNov` | 汇丰香港 · 2026年11月1日已公布收费表 | [原文](https://www.hsbc.com.hk/content/dam/hsbc/hk/docs/ways-to-bank/bank-tariff/20261101-guide.pdf) |
+| `hsbcChequeMachine` | 汇丰香港 · 本地美元支票存款机及金额限制 | [原文](https://www.hsbc.com.hk/ways-to-bank/branch/express-banking/) |
+| `hsbcCard` | 汇丰香港 · 多币种Mastercard扣账卡 | [原文](https://www.hsbc.com.hk/zh-hk/debit-cards/products/mastercard-debit-card/) |
+| `sc` | 渣打中国 · 优先理财境外汇款及同名速汇豁免 | [原文](https://www.sc.com/cn/bank-with-us/overseas-remittance/) |
+| `scTier` | 渣打中国 · 优先理财资格 | [原文](https://www.sc.com/cn/international-banking-new/) |
+| `hang` | 恒生 · 两地同名跨域转账 | [原文](https://www.hangseng.com/zh-cn/personal/banking/cross-border-view-and-transfer/) |
+| `hangCnTariff` | 恒生中国 · 2026年2月个人账户与服务价目表 | [原文](https://www.hangseng.com.cn/content/dam/wpb/hacn/home/pdf/tariff_personal_banking.pdf) |
+| `hangOpen` | 恒生香港 · 内地居民开户及账户门槛 | [原文](https://www.hangseng.com/zh-cn/cross-border-banking/personal/account-opening/) |
+| `hangLocal` | 恒生香港 · 免费网上本地转账 | [原文](https://www.hangseng.com/zh-cn/personal/banking/fps/) |
+| `bochk` | 中银香港 · 汇款收费 | [原文](https://www.bochk.com/sc/crossborder/remittance/charges.html) |
+| `bochkSame` | 中银香港 · 内地中行同名汇款豁免 | [原文](https://www.bochk.com/sc/crossborder/personal/financialservicehk/remittance.html) |
+| `bochkRemitHelp` | 中银香港 · 港币／美元快汇及代理费用说明 | [原文](https://its.bochk.com/banking/remit/help/ibs_rem_helpApp_boc_s.html) |
+| `bochkHkdReturnCase` | 2026-06-27操作记录 · 港币同名快汇到内地中行后结汇 | [原文](https://linux.do/t/topic/2487402) |
+| `za` | 众安银行 · 2026年6月转账收费更新 | [原文](https://bank.za.group/hk/notice-detail/979ca80f-2fb4-4add-b30c-18144d3a757f) |
+| `zaNov` | 众安银行 · 11月1日将调整SWIFT汇出费 | [原文](https://bank.za.group/hk/notice-detail/9275c1df-5e53-4327-b0f2-1862361ce630) |
+| `zaTariff` | ZA Bank · 个人银行服务收费简介（本地与海外SWIFT） | [原文](https://bank.za.group/agreement/pdf/zh_HK/1000181) |
+| `zaPerks` | ZA Perks · 等级资格与银行权益 | [原文](https://bank.za.group/hk/za-perks) |
+| `zaPerksNov` | ZA Perks · 11月1日起海外SWIFT费用豁免 | [原文](https://bank.za.group/agreement/pdf/zh_HK/1002591) |
+| `zaCard` | 众安银行 · 外币及跨境港元签账费用 | [原文](https://bank.za.group/hk/notice-detail/6db8b52c-bcb3-4d4e-a051-7dc9bae37560) |
+| `zaOpen` | 众安银行 · 在港开户与免账户管理费 | [原文](https://bank.za.group/hk/account-open) |
+| `zaVisit` | 众安银行 · 访港旅客开户材料 | [原文](https://blog.za.group/hk/article/open_a_hong_kong_account) |
+| `ibFx` | IBKR · 手动换汇佣金与自动换汇加价 | [原文](https://www.interactivebrokers.com/en/pricing/commissions-spot-currencies.php) |
+| `ibFxQuotes` | IBKR · 官网公开外汇买卖盘 | [原文](https://portal.interactivebrokers.com/en/whyib/global-access.php) |
+| `ibFxFields` | IBKR · 买卖价及行情状态字段 | [原文](https://www.interactivebrokers.com/docs/web-api/v1/endpoints/market-data/market-data-fields) |
+| `ibAutoFxTerms` | IBUK账户协议 · IBLLC现金账户买入时AutoFX及原币入金（G3／G4） | [原文](https://gdcdyn.interactivebrokers.com/Universal/servlet/Registration_v2.formSampleView?formdb=6207) |
+| `ibFees` | IBKR · 每月两次免费出金及后续收费 | [原文](https://www.interactivebrokers.com/en/pricing/other-fees.php) |
+| `ibFunding` | IBKR · 现行官网入金工具与收款指示 | [原文](https://www.interactivebrokers.com/en/support/fund-my-account.php) |
+| `ibFundingUSD` | IBKR官网入金工具 · 中国内地居住档位／USD | [原文](https://www.interactivebrokers.com/aces/Funding/Methods?type=DEPOSIT&colr=CHN&currency=USD) |
+| `ibFundingHKD` | IBKR官网入金工具 · 中国内地居住档位／HKD（FPS、eDDA） | [原文](https://www.interactivebrokers.com/aces/Funding/Methods?type=DEPOSIT&colr=CHN&currency=HKD) |
+| `ibFundingCNH` | IBKR官网入金工具 · 中国内地居住档位／CNH（FPS、eDDA） | [原文](https://www.interactivebrokers.com/aces/Funding/Methods?type=DEPOSIT&colr=CHN&currency=CNH) |
+| `ibDeposits` | IBKR · 券商不收现金入金费，银行费另计 | [原文](https://www.interactivebrokers.com/campus/gabe-funding-demo/) |
+| `ibLocalUsd` | 2026公开操作记录 · IBKR香港渣打收款、USD CHATS全额到账 | [原文](https://yolkinsight.hk/ib-funds/) |
+| `ibLocalCiti` | 公开操作记录 · IBKR香港花旗USD收款 | [原文](https://www.kdkh.com/guide/ibkr/hsbc-ibkr.html) |
+| `zaAccountTerms` | ZA账户条款 · 储蓄账户不接受支票存款（B.I.1.1） | [原文](https://cdn.za.group/bank/app/info/zh-hans/static/1003322.html) |
+| `ibEdda` | IBKR · 香港HKD/CNH eDDA入金 | [原文](https://ibkrguides.com/clientportal/transferandpay/edda-deposit.htm) |
+| `ibStocks` | IBKR · 美股Pro Fixed／Lite佣金及代收费 | [原文](https://www.interactivebrokers.com/en/pricing/commissions-stocks.php) |
+| `ibLite` | IBKR官方 · Lite美国居民资格及常规上市股范围 | [原文](https://www.interactivebrokers.com/en/trading/why-ibkr-lite.php) |
+| `trade25` | 汇丰 · Trade25资格及每月25万港元额度 | [原文](https://www.hsbc.com.hk/investments/products/stocks/trade25/) |
+| `trade25Age` | 汇丰 · 2026年18–35岁资格及年度交易要求 | [原文](https://www.hsbc.com.hk/content/dam/hsbc/hk/vam/pdf/2026_T25_AgeExtension_TnC_EN.pdf) |
+| `trade25One` | 汇丰 · 2026年36岁以上One+加入条件 | [原文](https://www.hsbc.com.hk/content/dam/hsbc/hk/vam/pdf/2026_T25_AgeExtension36_TnC_EN.pdf) |
+| `hsbcStocks` | 汇丰 · 普通美股收费及综合账户交易 | [原文](https://www.hsbc.com.hk/investments/products/stocks/) |
+| `hsbcOne` | 汇丰One · 三个月平均理财总值及月费 | [原文](https://www.hsbc.com.hk/accounts/products/one/) |
+| `hsbcOneBalance` | 汇丰One · 理财总值包含海外证券市值，按过去三个月平均值计费 | [原文](https://www.hsbc.com.hk/content/dam/hsbc/hk/vam/pdf/HSBC_One_FAQ.pdf) |
+| `bochkCheque` | 中银香港 · 本地支票存入及一般银行服务收费 | [原文](https://www.bochk.com/tc/servicecharge.common.html) |
+| `bochkChequeTariff` | 中银香港 · 2026年7月价目表第7页每日支票额度 | [原文](https://www.bochk.com/dam/document/TnC/DEP/servicecharge_tc.pdf) |
+| `bochkBusinessInward` | 中银香港 · 企业CHATS收款15港元，500港元等值或以下免收 | [原文](https://www.bochk.com/tc/servicecharge.common.html) |
+| `hsbcBusinessInward` | 汇丰香港 · 2026年5月商业账户本地RTGS收款15港元 | [原文](https://www.business.hsbc.com.hk/-/media/media/hong-kong/pdfs/regulations/tariff-e-en.pdf) |
+| `hangBusinessInward` | 恒生香港 · 2026年4月商业账户本地CHATS收款15港元 | [原文](https://www.hangseng.com/content/dam/wpb/hase/en_hk/business/bank-accounts/PDF/Service%20Charges_new.pdf) |
+| `icbcAsiaInward` | 工银亚洲 · 2026年9月一般银行服务收费表 | [原文](https://v.icbc.com.cn/userfiles/resources/icbc/haiwai/asia/download/cn/2026/general_services_charges_260901_sc.pdf) |
+| `citicBusinessInward` | 中信国际 · 公司业务CHATS收款标准20港元（第3页） | [原文](https://www.cncbinternational.com/_document/bank-service-fees-and-charges/en/wholesale-banking-fees-and-charges.pdf) |
+| `usmartChatsGuide` | 盈立入金操作记录 · ZA至中银香港美元CHATS扣约1.93美元 | [原文](https://yikecaiwan.com/broker/usmart-hk-bank-transfer-deposit) |
+| `chiefStocks` | 致富 · 2026年9月美股收费 | [原文](https://chief-website.oss-cn-hongkong.aliyuncs.com/Leaflet/cn/global.pdf) |
+| `chiefFunding` | 致富 · 资金提存及USD支票出金 | [原文](https://chief-website.oss-cn-hongkong.aliyuncs.com/Leaflet/cn/cash.pdf) |
+| `chiefDeposit` | 致富官网 · FPS港币／eDDA港币及人民币 | [原文](https://www.chiefgroup.com.hk/cn/cs/cashdeposit/) |
+| `chiefFees` | 致富 · 网上零佣金与免费资金提存 | [原文](https://www.chiefgroup.com.hk/cn/service/commission) |
+| `chiefMonthly` | 致富 · 月供每只每次首500美元优惠 | [原文](https://www.chiefgroup.com.hk/cn/cs/mip) |
+| `chiefMonthlyTerms` | 致富 · 2026年月供推广条款 | [原文](https://chief-website.oss-cn-hongkong.aliyuncs.com/Terms/cn/mip-202601.pdf) |
+| `usmartFees` | 盈立 · 个人标准账户及资金费用 | [原文](https://hk.usmartglobal.com/zh-hk/charges) |
+| `usmartStockUnits` | 盈立香港 · 美股碎股最低1美元及0.0001股 | [原文](https://hk.usmartglobal.com/zh-hk/products/financial-investment/fractional-shares) |
+| `usmartBocFunding` | 盈立 · 中银香港同行USD入金免费 | [原文](https://hk.usmartglobal.com/zh-hk/helpframe/42/detail/10139) |
+| `usmartFundingAccounts` | 盈立官网 · 中银香港／汇丰／中信国际／工银亚洲收款账户 | [原文](https://hk.usmartglobal.com/zh-cn/help-centre/42/detail/10540) |
+| `usmartSameFunding` | 盈立官网 · 同行转账免费、CHATS银行费用另计 | [原文](https://hk.usmartglobal.com/zh-cn/help-centre/42/detail/10136) |
+| `usmartFps` | 盈立官网 · FPS港币及离岸人民币 | [原文](https://hk.usmartglobal.com/zh-hk/helpframe/42/detail/10136) |
+| `usmartEdda` | 盈立官网 · eDDA港币入金 | [原文](https://hk.usmartglobal.com/en/help-centre/48/detail/11735) |
+| `usmartWithdrawal` | 盈立 · 美元本地支票免费及数字银行提款收费 | [原文](https://hk.usmartglobal.com/zh-hk/help-centre/42/detail/12115) |
+| `usmartPromo` | 盈立 · 0.99美元与非香港客户180天资格 | [原文](https://hk.usmartglobal.com/zh-hk/promotion-and-activities/detail/550) |
+| `zaStocks` | ZA Bank · 零佣金、平台费与代收费 | [原文](https://bank.za.group/faqs/Individuals/Investment_Related/US_Stock_Trading/673c6db59368571c627b50d3) |
+| `zaStockUnits` | ZA Bank · 普通美股交易每股为单位、不提供碎股 | [原文](https://bank.za.group/hk/faqs/Individuals/Investment_Related/US_Stock_Trading/68f84177cd872843ca4370f7) |
+| `zaStockService` | ZA Bank · 账户直接交易与Lv2每月5笔优惠 | [原文](https://bank.za.group/en/usstock) |
+| `zaCustody` | ZA Bank · 自2025年6月豁免托管费 | [原文](https://bank.za.group/en/notice-detail/02876a13-6e97-41e2-974a-c695070e2160) |
+| `secFees` | SEC · 自2026年4月4日每百万20.60美元 | [原文](https://www.sec.gov/rules-regulations/fee-rate-advisories/2026-2) |
+| `finraHoliday` | SEC/FINRA · 2026年第四季度TAF暂停 | [原文](https://www.sec.gov/files/rules/sro/finra/2026/34-106409.pdf) |
+| `finraSchedule` | SEC/FINRA · TAF费率在2029、2030、2031年分阶段调整 | [原文](https://www.sec.gov/files/rules/sro/finra/2026/34-106410.pdf) |
+| `sfc` | 香港证监会 · 指定银行账户远程开户方法 | [原文](https://www.sfc.hk/en/Rules-and-standards/Account-opening/Acceptable-account-opening-approaches) |
+| `tax` | 税务总局 · 居民境外所得个人所得税 | [原文](https://www.chinatax.gov.cn/chinatax/n810219/n810744/n3752930/n3752974/c5143076/content.html) |
+| `payment` | 香港政府 · 跨境支付通范围与限额 | [原文](https://www.info.gov.hk/gia/general/202509/10/P2025090900719.htm) |
+| `paymentHsbc` | 汇丰香港 · 跨境支付通使用资格 | [原文](https://www.hsbc.com.hk/zh-hk/help/faq/transfers-and-payments/) |
+| `scHk` | 渣打香港 · 2026年10月服务收费 | [原文](https://av.sc.com/hk/zh/content/docs/hk-service-charges-zh.pdf) |
+| `scHkFx` | 渣打香港 · 个人外汇账户报价与交易渠道 | [原文](https://www.sc.com/hk/zh/investment/foreign-exchange/) |
+| `scHkFxTerms` | 渣打香港 · 2026年10月外汇会员条款 | [原文](https://av.sc.com/hk/zh/content/docs/hk-fx-membership-mgm-tnc-zh.pdf) |
+| `scCheque` | 渣打香港 · 2026年10月收费表第9页：每日前30张存票免费 | [原文](https://av.sc.com/hk/content/docs/hk-service-charges-en.pdf) |
+| `scChequeDeposit` | 渣打香港 · 自助存款接受美元支票 | [原文](https://www.sc.com/hk/zh/bank-with-us/automated-banking-services/) |
+| `scCard` | 渣打香港 · 多货币扣账卡 | [原文](https://www.sc.com/hk/zh/bank-with-us/multicurrency-debit-card/) |
+| `hangHk` | 恒生香港 · 2026年7月收费：手机本地CHATS／SWIFT免费；B.5本地美元存票免费 | [原文](https://www.hangseng.com/content/dam/hase/config/bde/pws/personal/servicecharges/pdfs/zh_HK/tariff_personal_sc.pdf) |
+| `hangCard` | 恒生香港 · 多货币扣账卡 | [原文](https://www.hangseng.com/zh-cn/personal/cards/products/multi-currency-debit-card/) |
+| `bochkAccount` | 中银香港 · 个人账户及扣账卡收费 | [原文](https://www.bochk.com/sc/servicecharge.common.html) |
+| `bochkCard` | 中银香港 · 多货币扣账设置 | [原文](https://www.bochk.com/dam/more/bocdebitcard/card/sc.html) |

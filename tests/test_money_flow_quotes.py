@@ -1,4 +1,5 @@
 import copy
+import io
 import json
 from pathlib import Path
 import sys
@@ -10,10 +11,52 @@ from urllib.error import URLError
 
 from scripts.refresh_money_flow_quotes import (parse_boc, parse_cmb, parse_bochk, parse_icbc,
     parse_ccb, parse_abc, parse_comm, parse_hsbc, parse_cib, parse_hsbc_hk, parse_hang_hk,
-    hkd_cross_quotes, parse_hang_cn, parse_icbc_asia, parse_ccb_asia, validate_quote, merge_bank, read_snapshot, fetch_bank, main)
+    hkd_cross_quotes, parse_hang_cn, parse_icbc_asia, parse_ccb_asia, parse_ibkr, validate_quote, merge_bank, read_snapshot, fetch_bank, main)
 
 
 class BankQuotesTests(unittest.TestCase):
+    def test_ibkr_public_snapshot_preserves_bid_ask_frozen_status_and_snapshot_time(self):
+        raw = json.loads((Path(__file__).parent / 'fixtures/ibkr-public-fx-20261025.json').read_text())
+        quote = parse_ibkr(raw)['CNH']
+        self.assertEqual((quote['bidPerUsd'], quote['askPerUsd']), (6.66889, 6.67006))
+        self.assertEqual(quote['asOf'], '2026-10-25 21:36:33.432')
+        self.assertEqual(quote['timeBasis'], 'snapshot')
+        self.assertEqual(quote['quoteStatus'], 'frozen')
+        self.assertEqual(quote['marketDataAvailability'], 'ZB')
+        snapshot = {'banks': {'boc': {'quotes': {'USD': {'sell': 6.8}}}}, 'offshoreUsd': {'bochk': {'quotes': {}}}}
+        before = copy.deepcopy(snapshot)
+        merge_bank(snapshot, 'ibkr', {'CNH': quote})
+        self.assertEqual(snapshot['banks'], before['banks'])
+        self.assertEqual(snapshot['offshoreUsd'], before['offshoreUsd'])
+        self.assertEqual(snapshot['brokerUsd']['ibkr']['quotes']['CNH'], quote)
+        self.assertIn('113342317', snapshot['brokerUsd']['ibkr']['endpoint'])
+        for changes in [{'6509': 'NB'}, {'6509': 'iB'}, {'6509': ''}, {'84': '-1'}, {'86': '1'}, {'_updated': 4102444800000}]:
+            bad = copy.deepcopy(raw)
+            next(row for row in bad if row['conid'] == 113342317).update(changes)
+            with self.assertRaises(ValueError):
+                parse_ibkr(bad)
+        with self.assertRaisesRegex(ValueError, 'missing'):
+            parse_ibkr([row for row in raw if row['conid'] != 113342317])
+        older = {**quote, 'asOf': '2026-10-24 21:36:33.432'}
+        with self.assertRaisesRegex(ValueError, 'regress'):
+            merge_bank(snapshot, 'ibkr', {'CNH': older})
+        self.assertEqual(snapshot['brokerUsd']['ibkr']['quotes']['CNH'], quote)
+
+    def test_ibkr_public_fetch_retries_only_the_documented_initialization_response_once(self):
+        raw = (Path(__file__).parent / 'fixtures/ibkr-public-fx-20261025.json').read_bytes()
+        warmup = b'[{"conid":113342317}]'
+        with patch('scripts.refresh_money_flow_quotes.urlopen', side_effect=[io.BytesIO(warmup), io.BytesIO(raw)]) as fetch:
+            self.assertEqual(fetch_bank('ibkr')['CNH']['askPerUsd'], 6.67006)
+            self.assertEqual(fetch.call_count, 2)
+            self.assertIn('fields=84,86,6509', fetch.call_args.args[0].full_url)
+        with patch('scripts.refresh_money_flow_quotes.urlopen', return_value=io.BytesIO(raw)) as fetch:
+            self.assertEqual(fetch_bank('ibkr')['CNH']['quoteStatus'], 'frozen')
+            self.assertEqual(fetch.call_count, 1)
+        with patch('scripts.refresh_money_flow_quotes.urlopen', side_effect=[io.BytesIO(warmup), io.BytesIO(warmup)]) as fetch:
+            with self.assertRaises(ValueError):
+                fetch_bank('ibkr')
+            self.assertEqual(fetch.call_count, 2)
+
     def test_ccb_asia_uses_visible_ordinary_tt_prices_and_preserves_mainland_quotes(self):
         raw = (Path(__file__).parent / 'fixtures' / 'ccb-asia-fx-20261015.js').read_text()
         quotes = parse_ccb_asia(raw)

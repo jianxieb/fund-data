@@ -23,7 +23,7 @@ test('IBKR sells USD into CNH once before withdrawal, with minimum and proportio
     close(r.steps.returnCnh, r.steps.brokerCnh);
     assert.equal(r.steps.returnUsd, undefined);
     assert.equal(row(r, 'exitFx'), undefined);
-    assert.equal(r.currency, 'CNH'); conserved(r);
+    assert.equal(r.currency, 'CNY'); close(r.netCny, r.net); conserved(r);
   }
 });
 
@@ -161,7 +161,7 @@ test('personal zero daily limits, ATM dispensing limits, negative fees and insuf
 test('BOCHK Apple Pay uses the CNH balance without another conversion and ATM uses the current 50 RMB tariff', () => {
   for (const cardMode of ['unionpay', 'apple-pay', 'cnh']) {
     const r = run({ returnBank: 'bochk', outcome: 'cnh-card', withdrawCurrency: 'CNH', cardMode }).selected;
-    assert.equal(r.currency, 'CNH'); assert.equal(row(r, 'exitFx'), undefined);
+    assert.equal(r.currency, 'CNY'); close(r.netCny, r.net); assert.equal(row(r, 'exitFx'), undefined);
     close(row(r, 'card').cny, 0); conserved(r);
   }
   const cash = run({ returnBank: 'bochk', outcome: 'atm', withdrawCurrency: 'CNH', atmExtraCny: 10 }).selected;

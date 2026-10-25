@@ -1,0 +1,55 @@
+{
+  "checkedAt": "2026-10-25T13:54:31+00:00",
+  "files": [
+    {
+      "file": "fund-ibkr-global.html",
+      "bytes": 213847,
+      "sha256": "3b816cb750538bd304835b10d7a13231a117567d4a1ad75aacee32989bbe0e26"
+    },
+    {
+      "file": "fund-ibkr-fxquotes.js",
+      "bytes": 92967,
+      "sha256": "e295e42b8527bf484f8a42fc23936bb4912135149d303ce4297a9f0e7a8b31c7"
+    },
+    {
+      "file": "fund-ibkr-public-quotes.json",
+      "bytes": 1093,
+      "sha256": "5b71aa69a675b7578e4f06772b0b7db7a5ed5ecf9787eb78ec553443d1d287ba"
+    },
+    {
+      "file": "fund-hsbc-fx.html",
+      "bytes": 231498,
+      "sha256": "c2dc32f46a00a312596adbec4397b8402857b9d6390e5eb6bf1f12267f602134"
+    },
+    {
+      "file": "fund-hsbc-calc.html",
+      "bytes": 231369,
+      "sha256": "d1001547cbe1cd15295898ccce0dc39cace143f5795de0f6697279c953bd0f1e"
+    },
+    {
+      "file": "fund-hsbc-widget.html",
+      "bytes": 3141,
+      "sha256": "2d3baa1ed8fc12118bbddbe87b7aace07e61e0b128608f1d9a3cd2079f4ec30c"
+    },
+    {
+      "file": "fund-hsbc-widget-calculator.js",
+      "bytes": 8863,
+      "sha256": "d5623a4c27909fb25360f46664d97b3c9f8762845b3e5cc6c0a924d8378ed9a2"
+    }
+  ],
+  "ibkr": {
+    "source": "https://portal.interactivebrokers.com/en/whyib/global-access.php",
+    "script": "https://portal.interactivebrokers.com/lib/fxquotes/index.js",
+    "contract": 113342317,
+    "rawFixture": "tests/fixtures/ibkr-public-fx-20261025.json",
+    "result": "USD.CNH bid 6.66889 / ask 6.67006; ZB frozen; _updated is snapshot time, not last trade"
+  },
+  "hsbc": {
+    "source": "https://www.hsbc.com.hk/investments/currency-exchange-rate-calculator/",
+    "widget": "https://mkdlc.ebanking.hsbc.com.hk/hsbcfxwidget/hsbc/ui/fx.html",
+    "endpoint": "https://mkdlc.ebanking.hsbc.com.hk/hsbcfxwidget/data/getFXList?callback=quoteCallback",
+    "httpStatus": 401,
+    "result": "No token supplied; no usable public quote. Current official calculator page showed description and login links, without a calculator form or rates."
+  },
+  "preserved": "Existing banks and offshoreUsd values and timestamps unchanged."
+}

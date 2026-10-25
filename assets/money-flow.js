@@ -90,7 +90,7 @@
   const stageNames = ['内地出发', '香港收款', '入金与买股', '卖出后的资金'];
   const stageKeys = [['entryFx', 'sender', 'entryMiddle'], ['entryInward', 'account'],
     ['depositBank', 'depositOther', 'depositBroker', 'brokerSpread', 'brokerFx', 'trade', 'brokerAccount'],
-    ['brokerExitCommission', 'brokerExitFx', 'withdraw', 'returnInward', 'withdrawMiddle', 'cashFx', 'atmFee', 'atmOther', 'returnFx', 'returnWire', 'returnOther', 'exitFx', 'card', 'extra']];
+    ['brokerExitCommission', 'brokerExitFx', 'withdraw', 'returnInward', 'withdrawMiddle', 'cashFx', 'atmFee', 'atmOther', 'returnFx', 'returnWire', 'returnOther', 'exitFx', 'card', 'cardFx', 'extra']];
   const options = new Map();
   const esc = value => H.esc(value), num = (value, digits = 2) => Number.isFinite(Number(value)) && value != null ? H.money(Number(value), digits) : '—';
   const action = (label, act, extra = '', cls = 'btn') => H.action(label, 'money-flow-' + act, cls, extra);
@@ -362,7 +362,7 @@
         const hasPrice = !!p.calculated.selected && Number.isFinite(p.total);
         const priceLabel = !p.complete ? '已计费用' : p.rows.some(x => x.estimate) ? '全程参考' : '全程损耗';
         const missing = !p.complete ? r?.missing?.join('、') || p.calculated.error || '缺报价' : '';
-        const price = '<span class="flow-preset-quote">' + (hasPrice ? '<span class="flow-preset-price"><small>' + priceLabel + '</small><b>' + pct(p.total / 100000) + '</b><small>' + cost(p.total) + ' / 10万元</small></span>' : '') +
+        const price = '<span class="flow-preset-quote">' + (hasPrice ? '<span class="flow-preset-price"><small>' + priceLabel + '</small><b>' + pct(p.total / 100000) + '</b><small>' + cost(p.total) + '</small></span>' : '') +
           (missing ? '<small class="flow-preset-missing">缺项：' + esc(missing) + '</small>' : '') +
           (p.note ? '<small class="flow-preset-note">' + esc(p.note) + '</small>' : '') + '</span>';
         return action('<span class="flow-preset-route">' + route + '</span>' + price,
@@ -376,7 +376,7 @@
   const fundingRowKeys = r => autoFxAtPurchase(r) ? fundingKeys.filter(key => !['brokerSpread', 'brokerFx'].includes(key)) : fundingKeys;
   const tradingRowKeys = r => autoFxAtPurchase(r) ? [...tradingKeys, 'brokerSpread', 'brokerFx'] : tradingKeys;
   const withdrawKeys = ['brokerExitCommission', 'brokerExitFx', 'withdraw', 'returnInward', 'withdrawMiddle'];
-  const exitKeys = ['returnFx', 'returnWire', 'returnOther', 'exitFx', 'card', 'cashFx', 'atmFee', 'atmOther'];
+  const exitKeys = ['returnFx', 'returnWire', 'returnOther', 'exitFx', 'card', 'cardFx', 'cashFx', 'atmFee', 'atmOther'];
   const returnTransferKeys = ['returnWire', 'returnOther'];
   const costRows = (r, keys) => (r?.rows || []).filter(x => keys.includes(x.key));
   const displayCostCache = new WeakMap();
@@ -491,7 +491,7 @@
     ] : rows.flatMap(item => item.items?.length ? item.items.map(part => ({ ...part, key: item.key, component: true, display: displayCny(r, part) })) : [item]);
     const labels = { entryFx: '购汇差额', entryMiddle: '代理费', entryInward: '香港汇入', depositBank: '银行转账', depositOther: '代理／收款费', depositBroker: '入金费',
       brokerExitFx: '券商换汇差额', brokerExitCommission: '换汇佣金', cashFx: '现金估值差额', atmFee: '提款／联动费', atmOther: 'ATM附加费', brokerSpread: '换汇差额', brokerFx: '换汇佣金', brokerAccount: '证券托管', withdraw: '出金费', returnInward: '银行收款', withdrawMiddle: '代理费',
-      returnFx: '换汇差额', returnWire: '汇回手续费', returnOther: '代理／收款费', exitFx: state.outcome === 'cnh-card' ? '支付折算差额' : '结汇差额', card: '消费费用' };
+      returnFx: '换汇差额', returnWire: '汇回手续费', returnOther: '代理／收款费', exitFx: state.outcome === 'cnh-card' ? '支付折算差额' : '结汇差额', card: '消费费用', cardFx: '扣账折算差额' };
     return components.filter(item => !(state.route === 'USD' && ['brokerFx', 'brokerSpread'].includes(item.key)) &&
       !(state.route === 'CNH' && item.key === 'entryFx')).map(item => {
         const label = r?.depositMethod === 'wise' && ['depositBank', 'depositOther'].includes(item.key) ? item.key === 'depositBank' ? '银行 → Wise' : 'Wise → IBKR' :
@@ -1102,9 +1102,14 @@
         Object.entries(bank.quotes || {}).map(([currency, price]) => '<div><span>' + esc(shortName(returnBanks.find(b => b.id === id))) + ' · USD/' + currency +
           '<small>' + esc(price.asOf) + (price.path === 'via-HKD' ? ' · 经HKD两次兑换' : '') + '</small></span><b>卖美元 ' + quoteNum(price.bidPerUsd) +
           '<small>买美元 ' + quoteNum(price.askPerUsd) + '</small></b></div>')).join('') + '</div>';
+      const brokerQuotes = Object.entries(q.brokerUsd?.ibkr?.quotes || {});
+      if (brokerQuotes.length) content += '<h3>IBKR公开换汇价</h3><div class="flow-cost-detail">' + brokerQuotes.map(([currency, price]) =>
+        '<div><span>IBKR · USD/' + esc(currency) + '<small>' + esc(({ live: '实时参考', delayed: '延迟行情', frozen: '休市冻结行情', 'frozen-delayed': '休市延迟行情' })[price.quoteStatus] || '公开参考') +
+        ' · 快照 ' + esc(price.asOf) + '</small></span><b>卖美元 ' + quoteNum(price.bidPerUsd) + '<small>买美元 ' + quoteNum(price.askPerUsd) + '</small></b></div>').join('') +
+        '</div><p>金额按公开买卖盘测算；佣金和自动换汇加价另计。快照时间不是最后成交时间，休市价格不代表实时可成交价。个人成交价优先。</p>';
       if (r?.refs) content += '<p>统一折算：1 USD = ' + num(r.refs.USD, 6) + ' CNY；1 HKD = ' + num(r.refs.HKD, 6) + ' CNY。CNY与CNH分开计价。</p>';
       content += '<h3>同名转账豁免</h3><p>中行山西省分行2026年5月29日新华网供稿确认手机银行向境外中行汇款免手续费及电报费。中银香港官网确认同名基本汇入费免；代理费0另据USD/HKD同行SHA操作记录，不由上述基本费豁免推出。恒生、汇丰、渣打分别适用所列同名渠道和账户条件。</p>';
-      keys.push('bocFx', 'bochkSame', 'bocMobile2026', 'bocMobileUsdGuide', 'hang', 'hsbcGlobal', 'sc', 'bochkUsdFx', 'hsbcHkFx', 'hangHkFx');
+      keys.push('bocFx', 'bochkSame', 'bocMobile2026', 'bocMobileUsdGuide', 'hang', 'hsbcGlobal', 'sc', 'bochkUsdFx', 'hsbcHkFx', 'hangHkFx', 'ibFxQuotes', 'ibFxFields');
       content += paymentConnectDetails() + '<h3>收费与缺项复核 · ' + esc(D.verificationReview.checkedAt) + '</h3><dl class="flow-consumption-detail">' +
         D.verificationReview.items.map(item => '<dt>' + esc(item.title) + '</dt><dd>' + esc(item.finding) +
           (item.remaining ? '<p>仍缺：' + esc(item.remaining) + '</p>' : '') + item.sources.map(source).join(' · ') + '</dd>').join('') + '</dl>';

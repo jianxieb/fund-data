@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read public bank FX reference quotes; never infer customer-specific tariffs.
+"""Read public bank and broker FX references; never infer private tariffs.
 
 Use --output to generate a snapshot. Failed banks keep their previous quote and
 timestamp; a network outage never becomes an invented zero or today's date.
@@ -36,9 +36,12 @@ HSBC_HK_URL = "https://rbwm-api.hsbc.com.hk/digital-pws-tools-investments-eapi-p
 HANG_CN_URL = "https://hacndb-api.hangseng.com.cn/hacn-mobile-experience-platform-papi-prod-proxy/v1/exchange-rate"
 ICBC_ASIA_URL = "https://papi.icbc.com.cn/rest/currencies/asia/foreign"
 CCB_ASIA_URL = "https://www.asia.ccb.com/hongkong/js/ho_js/hkwhhl01.js"
+IBKR_URL = "https://portal.interactivebrokers.com/portal.proxy/v1/mkt/iserver/marketdata/snapshot?conids=12087792,12087797,113342317,15016062,15016059,14433401,12087820,35045199&fields=84,86,6509"
 BANK_URLS = {"boc": BOC_URL, "cmb": CMB_URL, "icbc": ICBC_URL, "ccb": CCB_URL,
              "abc": ABC_URL, "comm": COMM_URL, "hsbc": HSBC_URL, "cib": CIB_URL, "bochk": BOCHK_USD_URL, "hanghk": HANG_HK_URL, "hsbchk": HSBC_HK_URL, "hang": HANG_CN_URL, "icbc-asia": ICBC_ASIA_URL, "ccb-asia": CCB_ASIA_URL}
+BANK_URLS["ibkr"] = IBKR_URL
 SOURCE_URLS = {**BANK_URLS, "cmb": "https://fx.cmbchina.com/hq/",
+               "ibkr": "https://portal.interactivebrokers.com/en/whyib/global-access.php",
                "hang": "https://www.hangseng.com.cn/zh-cn/index/useful-information/deposit-exchange-rates/",
                "hanghk": "https://www.hangseng.com/en-hk/rates/foreign-currency-tt-exchange-rates/",
                "hsbchk": "https://www.hsbc.com.hk/investments/products/foreign-exchange/currency-rate/",
@@ -138,6 +141,28 @@ def parse_bochk(html):
     if "CNH" not in out or "HKD" not in out:
         raise ValueError("BOCHK CNH/HKD rows missing")
     return out
+
+
+def parse_ibkr(payload):
+    """IBKR's public FX widget: 84 bid, 86 ask, 6509 availability.
+
+    The contract is USD.CNH, so prices are CNH per USD. _updated is the
+    snapshot timestamp, NOT the last trade or market-close timestamp.
+    Keep Z/Y frozen prices as explicitly labelled references, never live.
+    """
+    rows = [row for row in payload if row.get("conid") == 113342317]
+    if len(rows) != 1:
+        raise ValueError("IBKR USD.CNH contract missing or ambiguous")
+    row = rows[0]
+    availability = row.get("6509", "")
+    statuses = {"R": "live", "D": "delayed", "Z": "frozen", "Y": "frozen-delayed"}
+    if availability[:1] not in statuses:
+        raise ValueError("IBKR quote unavailable or incomplete")
+    at = datetime.fromtimestamp(float(row["_updated"]) / 1000, timezone(timedelta(hours=8))).replace(tzinfo=None).isoformat(sep=" ", timespec="milliseconds")
+    quote = validate_quote(row["84"], row["86"], at, divisor=1)
+    return {"CNH": {"bidPerUsd": quote["buy"], "askPerUsd": quote["sell"], "asOf": at,
+                    "timeBasis": "snapshot", "marketDataAvailability": availability,
+                    "quoteStatus": statuses[availability[0]], "conid": row["conid"]}}
 
 
 def required_quotes(out, bank):
@@ -328,6 +353,13 @@ def fetch_bank(bank):
     try:
         with urlopen(request, timeout=25) as response:
             body = response.read().decode("utf-8")
+        if bank == "ibkr":
+            payload = json.loads(body)
+            # The documented first request may only initialize a subscription.
+            # Retry that response once; never loop or erase the last good quote.
+            if isinstance(payload, list) and payload and all("84" not in row and "86" not in row for row in payload):
+                with urlopen(request, timeout=25) as response:
+                    body = response.read().decode("utf-8")
     except URLError as error:
         # The Asia endpoint is compatible with the platform curl TLS backend.
         # Keep curl's certificate verification; never enable unsafe SSL options.
@@ -335,21 +367,23 @@ def fetch_bank(bank):
             raise
         body = subprocess.run(["curl", "--fail", "--silent", "--show-error", "--location", "--max-time", "25", url],
                               check=True, capture_output=True, text=True, timeout=30).stdout
-    parsers = {"boc": parse_boc, "cmb": parse_cmb, "bochk": parse_bochk, "icbc": parse_icbc,
+    parsers = {"boc": parse_boc, "cmb": parse_cmb, "bochk": parse_bochk, "ibkr": parse_ibkr, "icbc": parse_icbc,
                "ccb": parse_ccb, "abc": parse_abc, "comm": parse_comm, "hsbc": parse_hsbc, "hanghk": parse_hang_hk, "hsbchk": parse_hsbc_hk, "hang": parse_hang_cn, "icbc-asia": parse_icbc_asia, "ccb-asia": parse_ccb_asia}
     return parsers[bank](body if bank in ("boc", "bochk", "ccb", "ccb-asia") else json.loads(body))
 
 
 def merge_bank(snapshot, bank, quotes):
     offshore_ids = {"bochk": "bochk", "hanghk": "hang", "hsbchk": "hsbc", "icbc-asia": "icbc-asia", "ccb-asia": "ccb-asia"}
-    section = snapshot.setdefault("offshoreUsd" if bank in offshore_ids else "banks", {})
+    section = snapshot.setdefault("brokerUsd" if bank == "ibkr" else "offshoreUsd" if bank in offshore_ids else "banks", {})
     bank_id = offshore_ids.get(bank, bank)
     previous = section.get(bank_id, {}).get("quotes", {})
     if any(key in previous and row["asOf"] < previous[key]["asOf"] for key, row in quotes.items()):
         raise ValueError("bank timestamp would regress")
     section[bank_id] = {"quotes": {**previous, **quotes}, "source": SOURCE_URLS[bank]}
-    if bank in offshore_ids:
+    if bank in offshore_ids or bank == "ibkr":
         section[bank_id]["unit"] = "foreign currency per 1 USD; Hong Kong renminbi is CNH"
+    if bank == "ibkr":
+        section[bank_id]["endpoint"] = IBKR_URL
 
 
 def main():

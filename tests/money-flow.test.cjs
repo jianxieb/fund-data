@@ -1147,7 +1147,7 @@ test('holding, USD debit, CNH debit and mainland settlement each conserve their 
   close(results['usd-balance'].net, results['usd-card'].net);
   close(results['cnh-card'].exitPrice, richQuotes.offshoreUsd.bochk.quotes.CNH.bidPerUsd);
   close(results.mainland.exitPrice, richQuotes.banks.boc.quotes.USD.buy);
-  assert.equal(results['cnh-card'].currency, 'CNH'); assert.equal(results.mainland.currency, 'CNY');
+  assert.equal(results['cnh-card'].currency, 'CNY'); assert.equal(results.mainland.currency, 'CNY');
   assert.match(M.journeyPlans({ ...input, outcome: 'usd-card', returnBank: 'za' }, D, richQuotes).error, /不支持.*美元/);
   const hsbc = M.journeyPlans({ ...input, outcome: 'cnh-card', returnBank: 'hsbc', exitPrice: 6.5 }, D, richQuotes);
   assert.equal(hsbc.error, undefined); assert.equal(hsbc.selected.returning.id, 'hsbc'); close(hsbc.selected.exitPrice, 6.5);

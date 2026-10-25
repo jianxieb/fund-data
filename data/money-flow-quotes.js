@@ -381,5 +381,23 @@ window.MONEY_FLOW_QUOTES = {
       "source": "https://www.asia.ccb.com/hongkong/personal/accounts/exchange_rate_enquiry.html",
       "unit": "foreign currency per 1 USD; Hong Kong renminbi is CNH"
     }
+  },
+  "brokerUsd": {
+    "ibkr": {
+      "quotes": {
+        "CNH": {
+          "bidPerUsd": 6.66889,
+          "askPerUsd": 6.67006,
+          "asOf": "2026-10-25 21:36:33.432",
+          "timeBasis": "snapshot",
+          "marketDataAvailability": "ZB",
+          "quoteStatus": "frozen",
+          "conid": 113342317
+        }
+      },
+      "source": "https://portal.interactivebrokers.com/en/whyib/global-access.php",
+      "unit": "foreign currency per 1 USD; Hong Kong renminbi is CNH",
+      "endpoint": "https://portal.interactivebrokers.com/portal.proxy/v1/mkt/iserver/marketdata/snapshot?conids=12087792,12087797,113342317,15016062,15016059,14433401,12087820,35045199&fields=84,86,6509"
+    }
   }
 };

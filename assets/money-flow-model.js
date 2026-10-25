@@ -712,15 +712,15 @@
     const keys = [
       ['sender', 'entryFx', 'entryMiddle', 'entryInward'],
       ['depositBank', 'depositBroker', 'depositOther', ...(autoFxAtPurchase ? [] : ['brokerFx', 'brokerSpread'])],
-      ['trade', 'brokerAccount', ...(autoFxAtPurchase ? ['brokerFx', 'brokerSpread'] : [])], ['withdraw', 'returnInward', 'withdrawMiddle'],
-      ['returnFx', 'returnWire', 'returnOther', 'exitFx', 'card'], ['account', 'extra']
+      ['trade', 'brokerAccount', ...(autoFxAtPurchase ? ['brokerFx', 'brokerSpread'] : [])], ['brokerExitCommission', 'brokerExitFx', 'withdraw', 'returnInward', 'withdrawMiddle'],
+      ['returnFx', 'returnWire', 'returnOther', 'exitFx', 'card', 'cardFx'], ['account', 'extra']
     ];
     const stops = [
       { id: 'start', amount: r.budgetCny, currency: 'CNY', account: r.start.name },
       { id: 'receiving', amount: r.steps.hongKong, currency: r.route, account: r.bank.name },
       { id: 'funding', amount: autoFxAtPurchase ? r.steps.brokerOriginal : r.steps.fundedUsd, currency: autoFxAtPurchase ? r.route : 'USD', account: r.broker.name },
       { id: 'sold', amount: r.steps.proceedsUsd - r.taxCny / rates.USD, currency: 'USD', account: r.broker.name },
-      { id: 'return', amount: r.steps.returnUsd, currency: 'USD', account: r.returning.name },
+      { id: 'return', amount: r.steps.returnCnh ?? r.steps.returnUsd, currency: r.steps.returnCnh != null ? 'CNH' : 'USD', account: r.returning.name },
       { id: 'settle', amount: r.steps.terminal ?? r.steps.settledCny, currency: r.currency || 'CNY', account: r.outcome && r.outcome !== 'mainland' ? r.returning.name : r.exit.name },
       { id: 'destination', amount: r.net, currency: r.currency || 'CNY', account: r.outcome && r.outcome !== 'mainland' ? r.returning.name : r.exit.name }
     ];
@@ -935,6 +935,7 @@
     const broker = selectedBroker(config, data), autoTrade = !!config.broker, tradingCache = new Map(), senderCache = new Map();
     const bankBalances = calculatorAccountState(config, config, data).bankBalancesHkd;
     function calculate(start, bank, route, fxMode, exit, returning, selections = {}, provider = broker) {
+      const publicBrokerQuotes = supportsBrokerFx(provider.id) ? quotes.brokerUsd?.ibkr?.quotes || {} : {};
       const swiftCounts = new Map();
       const nextSwift = (account, date, destination = 'overseas', currency = 'USD') => {
         const key = account.id + ':' + date.slice(0, 7);
@@ -1189,10 +1190,10 @@
       const downstreamError = (error, errorStage = '03', errorAction = errorStage, errorField) => ({ error, errorStage, errorAction, errorField, rows: [...rows,
         { key: 'account', label: '银行账户期间管理费', cny: accountCny, step: 'spend', items: accountItems },
         { key: 'extra', label: '开户及资产机会成本', cny: extraCny, step: 'spend' }], steps, startSell: quote, route, mainlandMethod, fxMode, refs, budgetCny: budget, pricingBasis: config.pricingBasis, sourceRemainderCny, start, bank, returning, exit, broker: provider,
-        indicativeEntryFx, entryAsOf: sourceQuoteAsOf, fxAsOf: offshore[currency]?.asOf, trading: trading?.error ? null : trading, taxCny, currency: unit, withdrawCurrency, directReturn, cashProfile, cashPlan, indicativeBrokerExit, indicativeFx: rows.find(x => x.key === 'brokerSpread' && x.cny == null)?.label || '',
+        indicativeEntryFx, entryAsOf: sourceQuoteAsOf, fxAsOf: (fxMode === 'bank' ? quotes.offshoreUsd?.[bank.id]?.quotes?.[currency] : publicBrokerQuotes[currency] || offshore[currency])?.asOf, trading: trading?.error ? null : trading, taxCny, currency: unit, withdrawCurrency, directReturn, cashProfile, cashPlan, indicativeBrokerExit, indicativeFx: rows.find(x => x.key === 'brokerSpread' && x.cny == null)?.label || '',
         quoteFreshness: {
           source: sourcePriceFresh,
-          entryMarket: currency === 'USD' || own('entryPrice', isSelectedBank) != null || quoteFresh(fxMode === 'bank' ? quotes.offshoreUsd?.[bank.id]?.quotes?.[currency] : offshore[currency], config.date),
+          entryMarket: currency === 'USD' || own('entryPrice', isSelectedBank) != null || quoteFresh(fxMode === 'bank' ? quotes.offshoreUsd?.[bank.id]?.quotes?.[currency] : publicBrokerQuotes[currency] || offshore[currency], config.date),
           reference: number(config.usdCny) != null || quoteFresh(refRow, config.date)
         } });
       if (!finite(balance) || balance <= 0) return downstreamError('汇出金额不足以支付中转及香港汇入费用。', '01');
@@ -1227,13 +1228,15 @@
         return downstreamError(bank.name + '单笔' + currency + '换汇' + constraint + ' ' + currency + '；本次为' + balance.toLocaleString('en-US', { maximumFractionDigits: 2 }) + ' ' + currency + '。已保留香港银行余额。');
       }
       const bankFxQuote = quotes.offshoreUsd?.[bank.id]?.quotes?.[currency];
+      const brokerFxQuote = publicBrokerQuotes[currency];
+      const brokerCnhQuote = publicBrokerQuotes.CNH;
       const ownEntryPrice = own('entryPrice', isSelectedBank);
       const unquotedBankFx = currency !== 'USD' && fxMode === 'bank' && ownEntryPrice == null && !positive(bankFxQuote?.askPerUsd);
-      const unquotedFundingFx = unquotedBankFx || currency !== 'USD' && fxMode !== 'bank' && ownEntryPrice == null;
+      const unquotedFundingFx = unquotedBankFx || currency !== 'USD' && fxMode !== 'bank' && ownEntryPrice == null && !positive(brokerFxQuote?.askPerUsd);
       const fundingEstimate = '尚缺换汇成交价，交易金额按参考汇率估算';
       // Retain known broker tariffs using the same reference scenario as IBKR.
       // A reference conversion is never an executable bank quote or a ranked route.
-      const entryPrice = currency === 'USD' ? 1 : ownEntryPrice ?? (fxMode === 'bank' && !unquotedBankFx ? bankFxQuote?.askPerUsd : refs.USD / refs[currency]);
+      const entryPrice = currency === 'USD' ? 1 : ownEntryPrice ?? (fxMode === 'bank' ? bankFxQuote?.askPerUsd : brokerFxQuote?.askPerUsd) ?? refs.USD / refs[currency];
       if (!positive(entryPrice)) return downstreamError(bank.name + '缺少' + currency + '换USD的成交报价。');
       const transfer = () => {
         const charge = own('depositHkd', isSelectedBank);
@@ -1303,8 +1306,11 @@
           bankMid ? (oldBalance / bankMid - grossUsd) * refs.USD : referenceDifference, fxStep);
         if (fxMode === 'bank' && ownEntryPrice == null && !unquotedBankFx) crossLegs(rows[rows.length - 1], bankFxQuote, oldBalance, true, deferredCnhBasis);
         if (unquotedBankFx) Object.assign(rows[rows.length - 1], { cny: null, fxImpactCny: -referenceDifference, label: bank.name + ' ' + currency + '换USD点差（缺成交价）' });
-        else if (currency !== 'USD' && fxMode !== 'bank' && ownEntryPrice == null) Object.assign(rows[rows.length - 1], {
+        else if (unquotedFundingFx && fxMode !== 'bank') Object.assign(rows[rows.length - 1], {
           cny: null, fxImpactCny: -referenceDifference, label: 'IBKR ' + currency + '/USD实时成交点差', status: '按实时成交价计算' });
+        else if (currency !== 'USD' && fxMode !== 'bank' && ownEntryPrice == null) Object.assign(rows[rows.length - 1], {
+          estimate: 'IBKR公开买卖盘参考，实际成交以账户为准', quote: brokerFxQuote, sources: ['ibFxQuotes', 'ibFxFields'],
+          exchanges: [{ from: oldUnit, to: 'USD', input: oldBalance, output: grossUsd, rate: 1 / entryPrice }] });
         return fx;
       };
       let brokerFxResult;
@@ -1370,7 +1376,8 @@
           if (balance <= commission) return downstreamError('美元余额不足以支付IBKR最低2 USD换汇佣金。', '04', 'withdraw');
           add('brokerExitCommission', 'IBKR卖出后手动换汇佣金', commission * refs.USD, 'withdraw');
           Object.assign(rows[rows.length - 1], { nativeCurrency: 'USD', evidence: '0.20基点，最低2 USD/单；按月成交额首档', sources: ['ibFx'] });
-          const quote = own('brokerExitPrice', provider.id === config.broker);
+          const actualExitPrice = own('brokerExitPrice', provider.id === config.broker);
+          const quote = actualExitPrice ?? brokerCnhQuote?.bidPerUsd;
           indicativeBrokerExit = !positive(quote);
           const rate = quote ?? refs.USD / refs.CNH, usd = balance;
           balance *= rate; unit = 'CNH';
@@ -1378,7 +1385,11 @@
           if (indicativeBrokerExit) {
             const status = 'IBKR卖出后USD/CNH实际成交价尚未取得';
             Object.assign(rows[rows.length - 1], { cny: null, status, sources: ['ibFx'] }); missing.push(status);
-          } else rows[rows.length - 1].exchanges = [{ from: 'USD', to: 'CNH', input: usd, output: balance, rate }];
+          } else {
+            rows[rows.length - 1].exchanges = [{ from: 'USD', to: 'CNH', input: usd, output: balance, rate }];
+            if (actualExitPrice == null) Object.assign(rows[rows.length - 1], {
+              estimate: 'IBKR公开买卖盘参考，实际成交以账户为准', quote: brokerCnhQuote, sources: ['ibFxQuotes', 'ibFxFields'] });
+          }
           steps.brokerCnh = balance;
           const local = (config.cnhWithdrawalMethod || 'local') === 'local';
           const fee = withdrawalIndex <= provider.freeWithdrawals ? 0 : local ? 7 : 60;
@@ -1589,7 +1600,7 @@
         // A cross rate formed from two HKD trades is not a direct USD/CNH quote.
         const quotedPrice = own('exitPrice', isSelectedReturn) ?? (returnFxQuote?.path === 'via-HKD' ? null : returnFxQuote?.bidPerUsd);
         indicativeExit = !positive(quotedPrice);
-        exitIssue = indicativeExit ? returning.name + ' USD/CNH直接报价尚未取得；已保留换汇前美元余额' : '';
+        exitIssue = indicativeExit ? returning.name + ' USD/CNH直接报价尚未取得' : '';
         // A reference valuation keeps the ledger intact. It is never rendered
         // as a bank quote or a spendable CNH balance when the bank is unpriced.
         exitPrice = indicativeExit ? refs.USD / refs.CNH : quotedPrice;
@@ -1601,6 +1612,13 @@
         if (indicativeExit) { Object.assign(rows[rows.length - 1], { cny: null, status: exitIssue }); missing.push(exitIssue); }
         }
         add('card', cardMode === 'apple-pay' ? '中银银联卡Apple Pay人民币扣账手续费' : '人民币原币刷卡手续费', 0, 'return');
+        if (!indicativeEntryFx && !unquotedFundingFx && !indicativeBrokerExit && !indicativeExit) {
+          // RMB purchases debit the same RMB face amount. A CNH reference
+          // valuation cannot buy extra mainland goods or create FX profit.
+          fxRow('cardFx', '人民币扣账折算差额', balance * (refs.CNH - 1), balance * (refs.CNH - 1), 'return');
+          rows[rows.length - 1].exchanges = [{ from: 'CNH', to: 'CNY', input: balance, output: balance, rate: 1 }];
+          unit = 'CNY';
+        }
         }
       } else if (outcome === 'usd-card') {
         if (!returning.directUsdCard) return downstreamError(returning.name + '不支持本页美元余额原币刷卡；请选择中银香港、汇丰、恒生或渣打。', '04');
@@ -1627,15 +1645,17 @@
       const unpriced = rows.filter(row => row.cny == null);
       const costCny = rows.reduce((sum, row) => sum + (row.cny ?? 0), 0);
       const fxImpactCny = rows.reduce((sum, row) => sum + (row.fxImpactCny ?? 0), 0);
-      const fxKeys = ['entryFx', 'brokerSpread', 'brokerExitFx', 'returnFx', 'exitFx', 'cashFx'];
+      const fxKeys = ['entryFx', 'brokerSpread', 'brokerExitFx', 'returnFx', 'exitFx', 'cashFx', 'cardFx'];
       const fxCny = rows.filter(row => fxKeys.includes(row.key)).reduce((sum, row) => sum + (row.cny ?? 0), 0);
       const sourceFresh = sourcePriceFresh;
       const exitFresh = outcome !== 'mainland' || own('exitPrice', config.exitBank === exit.id) != null || quoteFresh(exit.quotes[returnCurrency], config.date);
-      const entryMarketFresh = currency === 'USD' || own('entryPrice', isSelectedBank) != null || quoteFresh(fxMode === 'bank' ? bankFxQuote : offshore[currency], config.date);
+      const entryMarketFresh = currency === 'USD' || own('entryPrice', isSelectedBank) != null || quoteFresh(fxMode === 'bank' ? bankFxQuote : brokerFxQuote || offshore[currency], config.date);
+      const brokerExitFresh = keepInBroker || withdrawCurrency !== 'CNH' || own('brokerExitPrice', provider.id === config.broker) != null || quoteFresh(brokerCnhQuote, config.date);
       const exitMarketFresh = withdrawCurrency === 'CNH' || !['cnh-card', 'atm'].includes(outcome) || (cnhCardMode(cardMode) ? own('exitPrice', isSelectedReturn) != null ||
         returnFxQuote?.path !== 'via-HKD' && quoteFresh(returnFxQuote, config.date) : outcome === 'atm' ? positive(own('atmCnyPerUnit', isSelectedReturn)) : own('cardCnyPerHkd', isSelectedReturn) != null || quoteFresh(cardSettlementQuote, config.date));
       const returnMarketFresh = !(outcome === 'atm' && cashProfile?.currency === 'HKD' || outcome === 'mainland' && returnCurrency === 'HKD' || outcome === 'cnh-card' && !cnhCardMode(cardMode)) || own('returnHkdPrice', isSelectedReturn) != null || quoteFresh(returnHkdQuote, config.date);
-      const marketFresh = exitMarketFresh && entryMarketFresh && returnMarketFresh;
+      const marketFresh = exitMarketFresh && entryMarketFresh && returnMarketFresh && brokerExitFresh;
+      if (!brokerExitFresh && !indicativeBrokerExit) missing.push('IBKR USD/CNH公开报价快照超过3天');
       if (!sourceFresh) missing.push(start.name + '购汇牌价超过3天');
       if (!exitFresh && !indicativeExit) missing.push(exit.name + '结汇牌价超过3天');
       if ((!entryMarketFresh && !unquotedBankFx) || (!exitMarketFresh && !indicativeExit)) missing.push('香港换汇参考牌价超过3天');
@@ -1643,7 +1663,7 @@
       const referenceFresh = number(config.usdCny) != null || quoteFresh(refRow, config.date);
       if (!referenceFresh) missing.push('USD/CNY参照牌价超过3天');
       const indicativeFx = unquotedBankFx ? bank.name + ' ' + currency + '/USD成交价（暂按参考中间价）' :
-        currency !== 'USD' && fxMode !== 'bank' && ownEntryPrice == null ? 'IBKR ' + currency + '/USD成交价（暂按参考中间价）' : '';
+        unquotedFundingFx && fxMode !== 'bank' ? 'IBKR ' + currency + '/USD成交价（暂按参考中间价）' : '';
       if (indicativeFx && !unquotedBankFx && !rows.some(row => row.key === 'brokerSpread' && row.cny == null)) missing.push(indicativeFx);
       const preciseMissing = [...unpriced.flatMap(row => (row.items || [row]).filter(item => item.cny == null).map(item =>
         ['account', 'returnInward', 'brokerExitFx', 'returnFx', 'exitFx', 'cashFx'].includes(row.key) ? item.status || item.label : item.label)),
@@ -1655,8 +1675,9 @@
         indicativeEntryFx, entryAsOf: sourceQuoteAsOf, entryTimeBasis: paymentFx ? offshore.HKD?.timeBasis : q?.timeBasis, entryDiscount: !paymentFx && own('startSell', isSelectedStart) == null ? q?.spreadDiscount : undefined,
         exitAsOf: outcome === 'cnh-card' ? cnhCardMode(cardMode) ? returnFxQuote?.path === 'via-HKD' ? null : returnFxQuote?.asOf : cardSettlementQuote?.asOf : exit.quotes[returnCurrency]?.asOf,
         returnFxAsOf: outcome === 'mainland' && returnCurrency === 'HKD' || outcome === 'cnh-card' && !cnhCardMode(cardMode) ? returnHkdQuote?.asOf : null,
-        fxAsOf: currency === 'USD' ? null : (fxMode === 'bank' ? bankFxQuote : offshore[currency])?.asOf,
-        quoteFreshness: { source: sourceFresh, exit: exitFresh && exitMarketFresh && returnMarketFresh, returnMarket: returnMarketFresh, entryMarket: entryMarketFresh, market: marketFresh, reference: referenceFresh },
+        fxAsOf: currency === 'USD' ? null : (fxMode === 'bank' ? bankFxQuote : brokerFxQuote || offshore[currency])?.asOf,
+        brokerExitAsOf: withdrawCurrency === 'CNH' && own('brokerExitPrice', provider.id === config.broker) == null ? brokerCnhQuote?.asOf : null,
+        quoteFreshness: { source: sourceFresh, exit: exitFresh && exitMarketFresh && returnMarketFresh && brokerExitFresh, returnMarket: returnMarketFresh, entryMarket: entryMarketFresh, market: marketFresh, reference: referenceFresh },
         sourceAmount: budget, profitUsd: profit, investUsd: steps.investUsd, proceeds: steps.proceedsUsd, bankUsd: steps.returnUsd,
         net: balance, netCny: balance * refs[unit] + (cashPlan?.cash || 0) + sourceRemainderCny, sourceRemainderCny, taxCny, taxableCny, estimatedTax: number(config.taxableCny) == null, rows, steps,
         missing: [...new Set(preciseMissing)], complete: !preciseMissing.length, requiredEligibility, eligibilityReasons, requirements: [...new Set([...requirements, ...eligibilityReasons])],

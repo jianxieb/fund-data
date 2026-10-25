@@ -19,5 +19,6 @@
 
 ## Data integrity
 
+- Before fetching or changing cross-border quotes, read the source recipes in `docs/money-flow-method.md`. Reuse saved prices first; maintain each source's page, endpoint, request parameters, field mapping, units, timestamps and failure fallback in that document alongside the collector. Failed fetches must preserve the last valid values and their original timestamps.
 - Name the exact missing evidence in status labels. Do not hide unresolved data gaps or replace one index with another series.
 - Separate index values, ETF prices and fund net values; label each return basis and date.

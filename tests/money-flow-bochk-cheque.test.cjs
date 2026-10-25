@@ -50,8 +50,8 @@ test('BOCHK cheque fees reconcile every downstream outcome, explicit receipt and
           assert.equal(fee.nativeCurrency, 'HKD');
           assert.ok(fee.sources.includes('bochkChequeTariff'));
           assert.match(fee.evidence, new RegExp('当日第' + chequeIndex + '张；每日前30张免费，其后1 HKD'));
-          close(paid.costCny - free.costCny - (row(paid, 'returnFx')?.cny ?? 0) - (row(paid, 'exitFx')?.cny ?? 0) +
-            (row(free, 'returnFx')?.cny ?? 0) + (row(free, 'exitFx')?.cny ?? 0), paid.refs.HKD);
+          const conversion = r => ['returnFx', 'exitFx', 'cardFx'].reduce((total, key) => total + (row(r, key)?.cny ?? 0), 0);
+          close(paid.costCny - free.costCny - conversion(paid) + conversion(free), paid.refs.HKD);
           close(free.steps.returnUsd - paid.steps.returnUsd, paid.refs.HKD / paid.refs.USD);
           for (const leg of M.flowLedger(paid).legs) {
             close(leg.inputCny + leg.profitCny + leg.fxImpactCny, leg.outputCny + leg.costCny + leg.taxCny);
