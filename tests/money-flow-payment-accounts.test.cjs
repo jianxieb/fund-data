@@ -188,7 +188,7 @@ test('R167 preferred first route keeps RMB intact until IBKR and exposes the unp
   subject.render(); subject.act('preset', '', plan.id); const saved = subject.saved();
   assert.equal(saved.broker, 'ibkr'); assert.equal(saved.fxMode, 'manual'); assert.equal(saved.depositHkd, ''); assert.equal(saved.entryPrice, '');
   const header = toolbar(subject.render());
-  assert.match(header, /人民币原币汇出/); assert.match(header, /原币入金 · 手动换美元/);
+  assert.match(header, /人民币原币/); assert.match(header, /人民币换美元/);
   assert.match(header, /已计费用/); assert.match(header, /IBKR CNH\/USD实时成交点差/); assert.match(header, /支付通限经常项目/);
   assert.equal(ui(saved).saved().fxMode, 'manual');
 });

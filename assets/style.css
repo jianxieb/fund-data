@@ -860,7 +860,7 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .flow-presets{display:grid;grid-template-columns:1fr;grid-auto-flow:row;grid-auto-columns:auto;grid-auto-rows:auto;overflow:visible;gap:9px;margin-bottom:22px;padding:0}
 .flow-preset{height:auto;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 254px;align-items:center;gap:18px;padding:12px 14px;border-radius:7px;background:#fafbf6}
 .flow-preset-route{display:grid;grid-template-columns:minmax(0,1.45fr) 16px minmax(0,1fr) 16px minmax(0,.8fr) 16px minmax(0,1.1fr) 16px minmax(0,1fr) 16px minmax(0,1fr) 16px minmax(0,1.15fr);align-items:center;min-width:0;gap:5px;flex:1}
-.flow-preset-node{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-width:0;text-align:center}.flow-preset-node strong{font-size:15px;line-height:23px;font-weight:550}.flow-preset-arrow{font-size:23px;line-height:30px;text-align:center;color:#637b50}
+.flow-preset-node{display:block;min-width:0;text-align:center}.flow-preset-account{display:flex;align-items:center;justify-content:center;gap:5px;min-width:0}.flow-preset-node strong{font-size:15px;line-height:23px;font-weight:550}.flow-preset-arrow{font-size:23px;line-height:30px;text-align:center;color:#637b50}
 .flow-preset-node .flow-account-icon,.flow-preset-node .flow-account-icon img{width:22px;height:22px}
 .flow-preset-price{display:grid;grid-template-columns:48px 78px 112px;align-items:center;gap:8px;min-width:0;margin:0;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
 .flow-preset-price b{font-size:22px;line-height:30px;text-align:center}.flow-preset-price small{font-size:12px;line-height:18px;margin:0}.flow-preset-price small:first-child{text-align:left}
@@ -947,4 +947,3 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .stock-table .stock-reason,.stock-table .stock-risk{min-width:0;max-width:none;font-size:13px;line-height:1.75}
 @media(max-width:650px){.stock-market-choice{min-width:0;flex:1}.stock-table th,.stock-table td{padding:16px 12px}}
 
-@media(min-width:1101px) and (max-width:1650px){.flow-preset{grid-template-columns:1fr;gap:10px}.flow-preset-price{justify-content:end}}

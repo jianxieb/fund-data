@@ -348,17 +348,17 @@
         // node; a direct transfer spans those tracks as a single arrow.
         const mainlandSpend = p.config.outcome === 'mainland', cnhReturn = p.config.withdrawCurrency === 'CNH';
         const stops = [
-          { column: 1, name: start, caption: p.config.route === 'CNH' ? '人民币原币汇出' : '美元汇出', key: 'startBank', item: mainland.find(bank => bank.id === p.config.startBank) },
-          { column: 3, name: routeName(p.config.bank, 'bank'), caption: p.config.route === 'CNH' ? '人民币原币到账' : '美元到账', key: 'bank', item: banks.find(bank => bank.id === p.config.bank) },
-          ...(p.config.depositMethod === 'wise' ? [{ column: 5, name: '本人Wise', caption: 'USD原币转入', key: 'bridge', item: D.wiseFunding }] : []),
-          { column: 7, name: stock, caption: p.config.route === 'CNH' ? '原币入金 · 手动换美元' : '美元入金 · 买卖美股', key: 'broker', item: brokers.find(broker => broker.id === p.config.broker) },
-          { column: 9, name: routeName(p.config.returnBank, 'bank'), caption: cnhReturn ? 'IBKR换人民币后出金' : mainlandSpend ? '美元出金到账' : '美元取回 · 换人民币', key: 'returnBank', item: returnBanks.find(bank => bank.id === p.config.returnBank) },
-          ...(mainlandSpend ? [{ column: 11, name: '内地' + routeName(p.config.exitBank, 'mainland'), caption: '汇入美元 · 结汇', key: 'exitBank', item: mainlandReceivers.find(bank => bank.id === p.config.exitBank) }] : []),
-          { column: 13, name: mainlandSpend ? '内地消费' : '内地刷卡', caption: mainlandSpend ? '内地银行卡人民币' : 'Mastercard · 人民币扣账' }
+          { column: 1, name: start, caption: p.config.route === 'CNH' ? '人民币原币' : '美元汇出', key: 'startBank', item: mainland.find(bank => bank.id === p.config.startBank) },
+          { column: 3, name: routeName(p.config.bank, 'bank'), caption: p.config.route === 'CNH' ? '人民币到账' : '美元到账', key: 'bank', item: banks.find(bank => bank.id === p.config.bank) },
+          ...(p.config.depositMethod === 'wise' ? [{ column: 5, name: '本人Wise', caption: '美元转入', key: 'bridge', item: D.wiseFunding }] : []),
+          { column: 7, name: stock, caption: p.config.route === 'CNH' ? '人民币换美元' : '美元买卖美股', key: 'broker', item: brokers.find(broker => broker.id === p.config.broker) },
+          { column: 9, name: routeName(p.config.returnBank, 'bank'), caption: cnhReturn ? '人民币取回' : mainlandSpend ? '美元取回' : '美元换人民币', key: 'returnBank', item: returnBanks.find(bank => bank.id === p.config.returnBank) },
+          ...(mainlandSpend ? [{ column: 11, name: '内地' + routeName(p.config.exitBank, 'mainland'), caption: '美元结汇', key: 'exitBank', item: mainlandReceivers.find(bank => bank.id === p.config.exitBank) }] : []),
+          { column: 13, name: mainlandSpend ? '内地消费' : '内地刷卡', caption: mainlandSpend ? '内地银行卡' : 'Mastercard' }
         ];
         const route = stops.map((stop, i) => (i ? '<span class="flow-preset-arrow" style="grid-column:' + (stops[i - 1].column + 1) + '/' + stop.column + '" aria-hidden="true">→</span>' : '') +
-          '<span class="flow-preset-node" style="grid-column:' + stop.column + '" data-route-role="' + (stop.key || 'consumption') + '">' + accountGlyph(stop.key, stop.item) + '<span><strong>' + esc(stop.name) + '</strong>' +
-          '<small>' + esc(stop.caption) + '</small></span></span>').join('');
+          '<span class="flow-preset-node" style="grid-column:' + stop.column + '" data-route-role="' + (stop.key || 'consumption') + '"><span class="flow-preset-account">' + accountGlyph(stop.key, stop.item) + '<strong>' + esc(stop.name) + '</strong></span>' +
+          '<small>' + esc(stop.caption) + '</small></span>').join('');
         const hasPrice = !!p.calculated.selected && Number.isFinite(p.total);
         const priceLabel = !p.complete ? '已计费用' : p.rows.some(x => x.estimate) ? '全程参考' : '全程损耗';
         const missing = !p.complete ? r?.missing?.join('、') || p.calculated.error || '缺报价' : '';

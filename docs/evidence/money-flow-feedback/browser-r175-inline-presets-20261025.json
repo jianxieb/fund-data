@@ -1,0 +1,299 @@
+{
+  "checkedAt": "2026-10-25",
+  "before": [
+    {
+      "height": 198,
+      "id": "cnh-ibkr",
+      "nodes": [
+        {
+          "height": 70,
+          "role": "startBank"
+        },
+        {
+          "height": 70,
+          "role": "bank"
+        },
+        {
+          "height": 88,
+          "role": "broker"
+        },
+        {
+          "height": 88,
+          "role": "returnBank"
+        },
+        {
+          "height": 61,
+          "role": "consumption"
+        }
+      ],
+      "quote": "已计费用0.042%42.12 CNY / 10万元缺项：IBKR CNH/USD实时成交点差、IBKR卖出后USD/CNH实际成交价尚未取得费用情景：支付通限经常项目；10万元单笔未确认可汇"
+    },
+    {
+      "height": 176,
+      "id": "cib-trade25",
+      "nodes": [
+        {
+          "height": 70,
+          "role": "startBank"
+        },
+        {
+          "height": 70,
+          "role": "bank"
+        },
+        {
+          "height": 70,
+          "role": "broker"
+        },
+        {
+          "height": 88,
+          "role": "returnBank"
+        },
+        {
+          "height": 61,
+          "role": "consumption"
+        }
+      ],
+      "quote": "已计费用0.075%74.68 CNY / 10万元缺项：汇丰 HSBC One USD/CNH直接报价尚未取得；已保留换汇前美元余额"
+    },
+    {
+      "height": 176,
+      "id": "cib-za",
+      "nodes": [
+        {
+          "height": 70,
+          "role": "startBank"
+        },
+        {
+          "height": 70,
+          "role": "bank"
+        },
+        {
+          "height": 70,
+          "role": "broker"
+        },
+        {
+          "height": 88,
+          "role": "returnBank"
+        },
+        {
+          "height": 61,
+          "role": "consumption"
+        }
+      ],
+      "quote": "已计费用0.101%101.24 CNY / 10万元缺项：汇丰 HSBC One USD/CNH直接报价尚未取得；已保留换汇前美元余额"
+    },
+    {
+      "height": 158,
+      "id": "boc-ibkr",
+      "nodes": [
+        {
+          "height": 70,
+          "role": "startBank"
+        },
+        {
+          "height": 70,
+          "role": "bank"
+        },
+        {
+          "height": 70,
+          "role": "broker"
+        },
+        {
+          "height": 70,
+          "role": "returnBank"
+        },
+        {
+          "height": 70,
+          "role": "exitBank"
+        },
+        {
+          "height": 43,
+          "role": "consumption"
+        }
+      ],
+      "quote": "已计费用0.485%484.97 CNY / 10万元缺项：券商出金中转行费、回内地中转行费"
+    },
+    {
+      "height": 198,
+      "id": "cib-wise-ibkr",
+      "nodes": [
+        {
+          "height": 70,
+          "role": "startBank"
+        },
+        {
+          "height": 70,
+          "role": "bank"
+        },
+        {
+          "height": 70,
+          "role": "bridge"
+        },
+        {
+          "height": 70,
+          "role": "broker"
+        },
+        {
+          "height": 88,
+          "role": "returnBank"
+        },
+        {
+          "height": 61,
+          "role": "consumption"
+        }
+      ],
+      "quote": "已计费用0.118%118.40 CNY / 10万元缺项：IBKR卖出后USD/CNH实际成交价尚未取得Wise两段参考费 10 + 10 = 20 HKD"
+    }
+  ],
+  "after": [
+    {
+      "height": 136,
+      "id": "cnh-ibkr",
+      "nodes": [
+        {
+          "iconBesideName": true,
+          "role": "startBank"
+        },
+        {
+          "iconBesideName": true,
+          "role": "bank"
+        },
+        {
+          "iconBesideName": true,
+          "role": "broker"
+        },
+        {
+          "iconBesideName": true,
+          "role": "returnBank"
+        },
+        {
+          "iconBesideName": true,
+          "role": "consumption"
+        }
+      ],
+      "quote": "已计费用0.042%42.12 CNY / 10万元缺项：IBKR CNH/USD实时成交点差、IBKR卖出后USD/CNH实际成交价尚未取得费用情景：支付通限经常项目；10万元单笔未确认可汇"
+    },
+    {
+      "height": 110,
+      "id": "cib-trade25",
+      "nodes": [
+        {
+          "iconBesideName": true,
+          "role": "startBank"
+        },
+        {
+          "iconBesideName": true,
+          "role": "bank"
+        },
+        {
+          "iconBesideName": true,
+          "role": "broker"
+        },
+        {
+          "iconBesideName": true,
+          "role": "returnBank"
+        },
+        {
+          "iconBesideName": true,
+          "role": "consumption"
+        }
+      ],
+      "quote": "已计费用0.075%74.68 CNY / 10万元缺项：汇丰 HSBC One USD/CNH直接报价尚未取得；已保留换汇前美元余额"
+    },
+    {
+      "height": 110,
+      "id": "cib-za",
+      "nodes": [
+        {
+          "iconBesideName": true,
+          "role": "startBank"
+        },
+        {
+          "iconBesideName": true,
+          "role": "bank"
+        },
+        {
+          "iconBesideName": true,
+          "role": "broker"
+        },
+        {
+          "iconBesideName": true,
+          "role": "returnBank"
+        },
+        {
+          "iconBesideName": true,
+          "role": "consumption"
+        }
+      ],
+      "quote": "已计费用0.101%101.24 CNY / 10万元缺项：汇丰 HSBC One USD/CNH直接报价尚未取得；已保留换汇前美元余额"
+    },
+    {
+      "height": 92,
+      "id": "boc-ibkr",
+      "nodes": [
+        {
+          "iconBesideName": true,
+          "role": "startBank"
+        },
+        {
+          "iconBesideName": true,
+          "role": "bank"
+        },
+        {
+          "iconBesideName": true,
+          "role": "broker"
+        },
+        {
+          "iconBesideName": true,
+          "role": "returnBank"
+        },
+        {
+          "iconBesideName": true,
+          "role": "exitBank"
+        },
+        {
+          "iconBesideName": true,
+          "role": "consumption"
+        }
+      ],
+      "quote": "已计费用0.485%484.97 CNY / 10万元缺项：券商出金中转行费、回内地中转行费"
+    },
+    {
+      "height": 118,
+      "id": "cib-wise-ibkr",
+      "nodes": [
+        {
+          "iconBesideName": true,
+          "role": "startBank"
+        },
+        {
+          "iconBesideName": true,
+          "role": "bank"
+        },
+        {
+          "iconBesideName": true,
+          "role": "bridge"
+        },
+        {
+          "iconBesideName": true,
+          "role": "broker"
+        },
+        {
+          "iconBesideName": true,
+          "role": "returnBank"
+        },
+        {
+          "iconBesideName": true,
+          "role": "consumption"
+        }
+      ],
+      "quote": "已计费用0.118%118.40 CNY / 10万元缺项：IBKR卖出后USD/CNH实际成交价尚未取得Wise两段参考费 10 + 10 = 20 HKD"
+    }
+  ],
+  "checks": [
+    "全部图标与机构名同行",
+    "各方案行高下降",
+    "所有金额和报价文本原样保留",
+    "第五项保留六个独立节点"
+  ]
+}
