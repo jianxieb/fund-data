@@ -128,7 +128,8 @@
     const settlement = banks.find(bank => bank.id === broker?.integratedBank);
     const mainlandMethod = r?.mainlandMethod || state.mainlandMethod;
     if (stage === '01') {
-      if (mainlandMethod === 'payment-connect') keys.push(...D.paymentConnect.sources);
+      if (mainlandMethod === 'payment-connect') keys.push(...D.paymentConnect.sources, D.paymentConnect.southbound.reportedSource,
+        ...(D.paymentConnect.southbound.bankLimits[s.start?.id]?.sources || []), ...(D.paymentConnect.inwardSources[s.bank?.id] || []));
       if (mainlandMethod === 'boc-mobile' && s.start?.id === 'boc') keys.push('bocMobile2026', 'bocMobileUsdGuide');
       else if (mainlandMethod === 'boc-online' && s.start?.id === 'boc') keys.push('bocBankAnswer2026');
       else add('mainlandTariff', s.start);
@@ -163,6 +164,7 @@
       if (stage === 'offers' || offerEnabled) add('brokerOffers', broker);
     } else if (stage === 'withdraw') {
       if (state.withdrawCurrency === 'CNH') keys.push('ibFx', 'ibCnhWithdrawal');
+      keys.push(...(r?.rows?.find(item => item.key === 'returnInward')?.sources || []));
       if (state.withdrawDestination === 'mainland') add('mainlandReceipt', s.exit);
       add('brokerWithdrawal', broker); add('hkTariff', settlement); add('hkTariff', s.returning);
       if (s.returning?.id === 'za' && broker?.withdrawalMethod === 'cheque') keys.push('zaAccountTerms');
@@ -342,30 +344,23 @@
         const applied = state.plan === p.id && !actualQuotes && !state.useVoucher && Object.entries(original).every(([key, value]) => String(state[key]) === String(value)) && state.hsbcBalanceWaiver;
         const start = p.config.startBank === 'cib' ? '兴业寰宇人生' : routeName(p.config.startBank, 'mainland');
         const stock = p.config.broker === 'hsbc' && p.config.trade25 ? '汇丰Trade25' : p.config.broker === 'ibkr' ? 'IBKR Pro' : routeName(p.config.broker, 'broker');
-        const stops = [start, routeName(p.config.bank, 'bank'), stock,
-          p.config.outcome === 'broker-balance' ? '账户内留美元' : routeName(p.config.returnBank, 'bank') + '美元'];
-        const institutions = [
-          ['startBank', mainland.find(bank => bank.id === p.config.startBank)],
-          ['bank', banks.find(bank => bank.id === p.config.bank)],
-          ['broker', brokers.find(broker => broker.id === p.config.broker)],
-          p.config.outcome === 'broker-balance' ? ['broker', brokers.find(broker => broker.id === p.config.broker)] :
-            ['returnBank', banks.find(bank => bank.id === p.config.returnBank)]
+        // Account roles share columns. An optional intermediary adds its own
+        // node; a direct transfer spans those tracks as a single arrow.
+        const mainlandSpend = p.config.outcome === 'mainland', cnhReturn = p.config.withdrawCurrency === 'CNH';
+        const stops = [
+          { column: 1, name: start, caption: p.config.route === 'CNH' ? '人民币原币汇出' : '美元汇出', key: 'startBank', item: mainland.find(bank => bank.id === p.config.startBank) },
+          { column: 3, name: routeName(p.config.bank, 'bank'), caption: p.config.route === 'CNH' ? '人民币原币到账' : '美元到账', key: 'bank', item: banks.find(bank => bank.id === p.config.bank) },
+          ...(p.config.depositMethod === 'wise' ? [{ column: 5, name: '本人Wise', caption: 'USD原币转入', key: 'bridge', item: D.wiseFunding }] : []),
+          { column: 7, name: stock, caption: p.config.route === 'CNH' ? '原币入金 · 手动换美元' : '美元入金 · 买卖美股', key: 'broker', item: brokers.find(broker => broker.id === p.config.broker) },
+          { column: 9, name: routeName(p.config.returnBank, 'bank'), caption: cnhReturn ? 'IBKR换人民币后出金' : mainlandSpend ? '美元出金到账' : '美元取回 · 换人民币', key: 'returnBank', item: returnBanks.find(bank => bank.id === p.config.returnBank) },
+          ...(mainlandSpend ? [{ column: 11, name: '内地' + routeName(p.config.exitBank, 'mainland'), caption: '汇入美元 · 结汇', key: 'exitBank', item: mainlandReceivers.find(bank => bank.id === p.config.exitBank) }] : []),
+          { column: 13, name: mainlandSpend ? '内地消费' : '内地刷卡', caption: mainlandSpend ? '内地银行卡人民币' : 'Mastercard · 人民币扣账' }
         ];
-        const viaWise = p.config.depositMethod === 'wise';
-        const captions = [p.config.route === 'CNH' ? '人民币原币汇出' : '美元汇出',
-          p.config.route === 'CNH' ? '人民币原币到账' : '美元到账',
-          p.config.route === 'CNH' ? '原币入金 · 手动换美元' : '', ''];
-        if (viaWise) {
-          stops[2] = '本人Wise'; stops[3] = stock;
-          institutions[2] = ['bridge', D.wiseFunding];
-          captions[2] = 'USD原币转入'; captions[3] = 'USD入金 · 账户内留美元';
-        }
-        const route = stops.map((name, i) => (i ? '<span class="flow-preset-arrow" aria-hidden="true">' +
-          (i === 3 && p.config.outcome === 'broker-balance' && !viaWise ? '·' : '→') + '</span>' : '') +
-          '<span class="flow-preset-node">' + accountGlyph(...institutions[i]) + '<span><strong>' + esc(name) + '</strong>' +
-          (captions[i] ? '<small>' + esc(captions[i]) + '</small>' : '') + '</span></span>').join('');
+        const route = stops.map((stop, i) => (i ? '<span class="flow-preset-arrow" style="grid-column:' + (stops[i - 1].column + 1) + '/' + stop.column + '" aria-hidden="true">→</span>' : '') +
+          '<span class="flow-preset-node" style="grid-column:' + stop.column + '" data-route-role="' + (stop.key || 'consumption') + '">' + accountGlyph(stop.key, stop.item) + '<span><strong>' + esc(stop.name) + '</strong>' +
+          '<small>' + esc(stop.caption) + '</small></span></span>').join('');
         const hasPrice = !!p.calculated.selected && Number.isFinite(p.total);
-        const priceLabel = !p.complete ? '已计费用' : p.rows.some(x => x.estimate) ? '参考损耗' : '损耗';
+        const priceLabel = !p.complete ? '已计费用' : p.rows.some(x => x.estimate) ? '全程参考' : '全程损耗';
         const missing = !p.complete ? r?.missing?.join('、') || p.calculated.error || '缺报价' : '';
         const price = '<span class="flow-preset-quote">' + (hasPrice ? '<span class="flow-preset-price"><small>' + priceLabel + '</small><b>' + pct(p.total / 100000) + '</b><small>' + cost(p.total) + ' / 10万元</small></span>' : '') +
           (missing ? '<small class="flow-preset-missing">缺项：' + esc(missing) + '</small>' : '') +
@@ -528,7 +523,7 @@
     html += edge(data, transferKeys, '汇往香港',
       '', '01',
       r?.serviceAvailability?.verified === false ? '此汇路暂无SWIFT Go开通记录，以下按服务资费测算。' : state.mainlandMethod === 'linked' ? '两地同名已关联账户' :
-        state.mainlandMethod === 'payment-connect' ? '单笔／每日可用限额尚未核实；免费与否按上方豁免条件测算。' : s.start?.id === 'cib' && state.route === 'CNH' ? '人民币原币电汇：寰宇人生外汇双免不适用，手续费与电讯费分别计收。' : '' );
+        state.mainlandMethod === 'payment-connect' ? paymentConnectHint(r) : s.start?.id === 'cib' && state.route === 'CNH' ? '人民币原币电汇：寰宇人生外汇双免不适用，手续费与电讯费分别计收。' : '' );
     const accounts = [...new Map([s.bank, banks.find(bank => bank.id === s.broker.integratedBank), M.calculatorFundingBank(state, D)].filter(Boolean).map(bank => [bank.id, bank])).values()];
     const managementBanks = accounts.filter(bank => bank.id === s.bank.id || bank.monthlyHkd > 0);
     let accountOptions = '<div class="flow-bank-settings">' + field('months', '账户使用月数', '月') + '<div class="flow-bank-fees">' + managementBanks.map(bank => bankManagementControl(bank, r)).join('') + '</div></div>';
@@ -663,6 +658,20 @@
     if (state.mainlandMethod === 'boc-online') return '向境外他行手机／网银基础费9折；收款行及代理行费用另列。';
     if (state.mainlandMethod === 'linked') return state.startBank === 'sc' ? '适用于渣打优先理财、两地同名账户及指定渠道。' : state.startBank === 'hang' ? '适用于恒生中国优越理财，经跨域转账页面汇往同名恒生香港账户；优进理财的累计3次本行费用优惠不适用此项。' : '适用于已连通的两地同名账户及指定转账页面。';
     return '';
+  }
+  function paymentConnectHint(r) {
+    const each = Math.max(0, (r?.budgetCny ?? M.number(state.budgetCny)) - (row(r, 'sender')?.cny ?? 0)) / (M.number(state.count) || 1);
+    return '南向年度共用50,000 USD；本次约' + num(each) + ' CNY/笔。' +
+      (each > D.paymentConnect.southbound.reportedTransactionCny ? '超过公开操作参考的单笔1万元，未确认可汇。' : '银行单笔／累计剩余额度未取得。');
+  }
+  function paymentConnectDetails() {
+    const p = D.paymentConnect;
+    return '<h3>支付通限额 · ' + esc(p.checkedAt) + '复核</h3><dl class="flow-consumption-detail">' +
+      '<dt>南向 · 内地→香港</dt><dd>共用每年等值50,000 USD购汇便利化额度，人民币汇出也占额度；服务时间通常07:00–23:00。</dd>' +
+      '<dt>单笔与累计限额</dt><dd>公开操作报道为单笔10,000 CNY，属于历史参考，不是四家银行现行统一承诺。各行支付通上限、非柜面／认证限额及本人剩余额度共同约束；不能将10万元费用情景视为单笔可汇，也不自动拆笔。</dd>' +
+      '<dt>当前出发银行</dt><dd>' + esc(p.southbound.bankLimits[state.startBank]?.status || '未取得该行支付通限额公告') + '；还缺本人年度剩余购汇额度及当日、当月可用金额／笔数。</dd>' +
+      '<dt>北向 · 香港→内地</dt><dd>香港身份证持有人，每人每家参与机构每日等值10,000 HKD、每年200,000 HKD；与每日80,000 CNY同名汇款限额独立。此上限不能套到南向。</dd>' +
+      '<dt>用途</dt><dd>人民银行规定为经常项目汇款，证券投资不因此获准。当前优选保留费用情景，不作渠道资格确认。</dd></dl>';
   }
   function bankAccountSet(s) {
     return [...new Map([s.bank, banks.find(b => b.id === s.broker.integratedBank), M.calculatorFundingBank(state, D), ...(state.outcome === 'broker-balance' || state.withdrawDestination === 'mainland' ? [] : [s.returning])].filter(Boolean).map(b => [b.id, b])).values()];
@@ -1040,7 +1049,7 @@
         esc(stage === '03' ? s.broker.fundingText : stage === 'trade' ? s.broker.feeText : s.broker.withdrawalText) + '</p>';
       if (stage === '01') {
         content += '<p>' + esc(transferHint() || sourceTariffCopy(s.start)) + '</p>';
-        if (state.mainlandMethod === 'payment-connect') content += '<p>' + esc(D.paymentConnect.condition) + '</p>';
+        if (state.mainlandMethod === 'payment-connect') content += paymentConnectDetails() + '<p>' + esc(D.paymentConnect.waiverEvidence) + '</p>';
         if (s.start?.id === 'cib' && state.route === 'CNH' && state.mainlandMethod !== 'payment-connect') {
           content += '<p>人民币原币汇出不发生购汇；先用人民币购汇再汇出美元／港币，才适用寰宇人生的跨境外汇优惠。这里按普通寰宇人生卡计算，VIP等级减免另按本人实际费用。</p>';
           const sender = row(r, 'sender');
@@ -1090,12 +1099,16 @@
       content += '<div class="flow-cost-detail">' + comparison.rows.map(x => '<div><span>' + esc(x.bank.name) + '<small>' + esc(x.quote?.asOf || '尚未取得该行购汇牌价') +
         (x.quote?.timeBasis === 'observed' ? ' · 采集时点' : '') + '</small></span><b>' + (x.sell ? quoteNum(x.sell) + ' CNY/' + state.route : '—') + '</b></div>').join('') + '</div>';
       content += '<h3>香港银行公开换汇价</h3><div class="flow-cost-detail">' + Object.entries(q.offshoreUsd || {}).flatMap(([id, bank]) =>
-        Object.entries(bank.quotes || {}).map(([currency, price]) => '<div><span>' + esc(shortName(banks.find(b => b.id === id))) + ' · USD/' + currency +
+        Object.entries(bank.quotes || {}).map(([currency, price]) => '<div><span>' + esc(shortName(returnBanks.find(b => b.id === id))) + ' · USD/' + currency +
           '<small>' + esc(price.asOf) + (price.path === 'via-HKD' ? ' · 经HKD两次兑换' : '') + '</small></span><b>卖美元 ' + quoteNum(price.bidPerUsd) +
           '<small>买美元 ' + quoteNum(price.askPerUsd) + '</small></b></div>')).join('') + '</div>';
       if (r?.refs) content += '<p>统一折算：1 USD = ' + num(r.refs.USD, 6) + ' CNY；1 HKD = ' + num(r.refs.HKD, 6) + ' CNY。CNY与CNH分开计价。</p>';
       content += '<h3>同名转账豁免</h3><p>中行山西省分行2026年5月29日新华网供稿确认手机银行向境外中行汇款免手续费及电报费。中银香港官网确认同名基本汇入费免；代理费0另据USD/HKD同行SHA操作记录，不由上述基本费豁免推出。恒生、汇丰、渣打分别适用所列同名渠道和账户条件。</p>';
       keys.push('bocFx', 'bochkSame', 'bocMobile2026', 'bocMobileUsdGuide', 'hang', 'hsbcGlobal', 'sc', 'bochkUsdFx', 'hsbcHkFx', 'hangHkFx');
+      content += paymentConnectDetails() + '<h3>收费与缺项复核 · ' + esc(D.verificationReview.checkedAt) + '</h3><dl class="flow-consumption-detail">' +
+        D.verificationReview.items.map(item => '<dt>' + esc(item.title) + '</dt><dd>' + esc(item.finding) +
+          (item.remaining ? '<p>仍缺：' + esc(item.remaining) + '</p>' : '') + item.sources.map(source).join(' · ') + '</dd>').join('') + '</dl>';
+      keys.push(...D.paymentConnect.sources, 'paymentSouthReport', ...Object.values(D.paymentConnect.southbound.bankLimits).flatMap(item => item.sources));
     } else {
       const rows = key === 'stage' ? currentRows(r) : r?.rows || [];
       title = key === 'stage' ? stageNames[Number(state.activeStep) - 1] + ' · 费用明细' : '全程费用明细';

@@ -44,7 +44,7 @@ test('Payment Connect waiver is a named condition, isolated from ordinary wire f
     for (const key of ['sender', 'entryMiddle', 'entryInward']) close(row(r, key).cny, 0);
     close(r.steps.hongKong, 100000); assert.match(row(r, 'sender').estimate, /豁免/);
     assert.equal(r.rankable, false);
-    assert.ok(r.requirements.some(x => x.includes('单笔、每日')));
+    assert.ok(r.requirements.some(x => x.includes('银行单笔、累计')));
   }
   const unknown = run({ mainlandMethod: 'payment-connect', paymentConnectFeeWaived: false }).selected;
   assert.equal(row(unknown, 'sender').cny, null); close(row(unknown, 'entryInward').cny, 0);
@@ -189,8 +189,55 @@ test('R167 preferred first route keeps RMB intact until IBKR and exposes the unp
   assert.equal(saved.broker, 'ibkr'); assert.equal(saved.fxMode, 'manual'); assert.equal(saved.depositHkd, ''); assert.equal(saved.entryPrice, '');
   const header = toolbar(subject.render());
   assert.match(header, /人民币原币汇出/); assert.match(header, /原币入金 · 手动换美元/);
-  assert.match(header, /已计费用/); assert.match(header, /IBKR CNH\/USD实时成交点差/); assert.match(header, /支付通用途须核实/);
+  assert.match(header, /已计费用/); assert.match(header, /IBKR CNH\/USD实时成交点差/); assert.match(header, /支付通限经常项目/);
   assert.equal(ui(saved).saved().fxMode, 'manual');
+});
+
+test('every preferred plan applies its complete consumption route and reproduces all quoted costs independently', () => {
+  const plans = M.calculatorPreferredPlans(D, Q, '2026-10-12');
+  const subject = ui({ budgetCny: 100000, outcome: 'broker-balance', withdrawDestination: 'mainland',
+    withdrawCurrency: 'USD', returnBank: 'ccb-asia', brokerExitPrice: 8, exitPrice: 9, inwardHkd: 90, returnExtraCny: 600 }, Q, '2026-10-12');
+  subject.render();
+  for (const plan of plans) {
+    subject.act('preset', '', plan.id);
+    const actual = subject.result().selected, expected = plan.calculated.selected;
+    assert.ok(actual, plan.id);
+    assert.ok(['cnh-card', 'mainland'].includes(subject.saved().outcome), plan.id);
+    close(actual.costCny, expected.costCny);
+    assert.deepEqual(actual.rows.map(x => [x.key, x.cny]), expected.rows.map(x => [x.key, x.cny]));
+    assert.ok(row(actual, 'withdraw'), plan.id);
+    assert.ok(row(actual, 'card') || row(actual, 'exitFx'), plan.id);
+    if (subject.saved().withdrawCurrency === 'CNH') assert.ok(row(actual, 'brokerExitCommission').cny > 0);
+    assert.ok(actual.rows.some(x => x.cny == null), 'Missing execution evidence stays explicit');
+  }
+  const header = toolbar(subject.render());
+  const route = id => header.split('data-value="' + id + '"')[1].split('</button>')[0];
+  const roles = id => [...route(id).matchAll(/data-route-role="([^"]+)"/g)].map(x => x[1]);
+  assert.deepEqual(roles('cib-wise-ibkr'), ['startBank', 'bank', 'bridge', 'broker', 'returnBank', 'consumption']);
+  assert.deepEqual(roles('boc-ibkr'), ['startBank', 'bank', 'broker', 'returnBank', 'exitBank', 'consumption']);
+  for (const plan of plans) assert.equal(roles(plan.id).at(-1), 'consumption');
+  assert.doesNotMatch(route('cib-wise-ibkr'), /账户内留美元|USD入金 · 账户内/);
+});
+
+test('payment limits separate direction, bank evidence and CNY principal even when receiving HKD', () => {
+  const subject = ui({ ...base, budgetCny: 100000, count: 1, route: 'HKD', mainlandMethod: 'payment-connect', paymentConnectFeeWaived: true });
+  const html = subject.render();
+  assert.match(html, /本次约100000\.00 CNY\/笔/);
+  assert.match(html, /超过公开操作参考的单笔1万元/);
+  subject.act('detail', '', 'quotes');
+  const detail = subject.modal();
+  assert.match(detail, /每人每家参与机构每日等值10,000 HKD、每年200,000 HKD/);
+  assert.match(detail, /历史参考，不是四家银行现行统一承诺/);
+  assert.match(detail, /现行支付通单笔／日／月统一公告/);
+  assert.match(detail, /5个工作日/);
+  for (const item of D.verificationReview.items) for (const key of item.sources) assert.ok(D.sources[key], key);
+  for (const bank of ['hsbc', 'hang', 'za']) {
+    const r = run({ bank, route: 'CNH', fxMode: 'manual', mainlandMethod: 'payment-connect', paymentConnectFeeWaived: false }).selected;
+    assert.ok(r, bank); close(row(r, 'entryInward').cny, 0);
+    assert.ok(row(r, 'entryInward').sources.length);
+    assert.equal(row(r, 'sender').cny, null);
+    assert.match(row(r, 'sender').status, /南向支付通现行服务费条款未取得/);
+  }
 });
 
 test('R168 Wise offers USD bridging for Pro and Lite without removing direct or original-currency methods', () => {

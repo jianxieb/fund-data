@@ -1359,7 +1359,9 @@ test('an actual receipt does not mark a differently priced public recommendation
   assert.match(actual, /优选方案/);
   assert.equal([...actual.matchAll(/data-action="money-flow-preset"[^>]*aria-pressed="true"/g)].length, 0);
   const after = M.calculatorJourney({ ...saved, date: '2026-10-12', depositOtherCny: '137' }, D, quotes).selected;
-  close(after.costCny, before.costCny + 137 + (after.trading.totalUsd - before.trading.totalUsd) * before.refs.USD);
+  close(after.steps.fundedUsd, before.steps.fundedUsd - 137 / before.refs.USD);
+  const settlementChange = after.rows.find(row => row.key === 'exitFx').cny - before.rows.find(row => row.key === 'exitFx').cny;
+  close(after.costCny, before.costCny + 137 + (after.trading.totalUsd - before.trading.totalUsd) * before.refs.USD + settlementChange);
   personal.act('preset', '', id);
   assert.equal(personal.saved().depositOtherCny, '');
   assert.equal([...personal.render().matchAll(/data-action="money-flow-preset"[^>]*aria-pressed="true"/g)].length, 1);
@@ -2375,7 +2377,7 @@ test('RMB source is not described as free when its sender tariff remains unprice
   const ui = moneyUi({ ...currentRoute, startBank: 'icbc', route: 'CNH', mainlandMethod: 'swift' }), html = ui.render();
   assert.match(html, /aria-label="汇出币种"/); assert.match(html, /人民币原币/); assert.match(html, /aria-label="汇往香港"/);
   assert.doesNotMatch(html, /人民币原币跨境渠道未纳入全程报价/);
-  ui.act('detail', '', 'cost'); assert.match(ui.modal(), /人民币资费未收录/);
+  ui.act('detail', '', 'cost'); assert.match(ui.modal(), /个人普通跨境人民币手续费及电讯费适用条款未取得/);
 });
 
 test('ICBC full-amount service is explicitly selected, visibly priced and cleared on currency changes', () => {

@@ -36,7 +36,8 @@ test('IBKR CNH local and wire fees use two monthly free withdrawals and the CNH 
   const unpriced = run({ withdrawCurrency: 'CNH', inwardHkd: '', brokerExitPrice: '' }).selected;
   assert.equal(unpriced.indicativeBrokerExit, true);
   assert.equal(row(unpriced, 'brokerExitFx').cny, null);
-  assert.equal(row(unpriced, 'returnInward').cny, null);
+  assert.equal(row(unpriced, 'returnInward').cny, 0);
+  assert.ok(row(unpriced, 'returnInward').sources.includes('hsbcHk'));
   assert.equal(unpriced.rankable, false);
   assert.ok(unpriced.missing.some(item => /USD\/CNH实际成交价/.test(item)));
   assert.equal(row(unpriced, 'withdrawMiddle').cny, 0);
@@ -52,6 +53,29 @@ test('CNH cannot silently become another broker withdrawal or an unverified main
   }
   const retained = run({ outcome: 'broker-balance', withdrawCurrency: 'CNH', brokerExitPrice: -1 }).selected;
   assert.equal(row(retained, 'brokerExitCommission'), undefined);
+});
+
+test('published local CNH receipt waivers do not leak into wires, other banks or actual quoted charges', () => {
+  for (const returnBank of ['hsbc', 'bochk', 'hang', 'za', 'sc']) {
+    const r = run({ returnBank, scCnhAccount: true, withdrawCurrency: 'CNH', cnhWithdrawalMethod: 'local', inwardHkd: '' }).selected;
+    assert.ok(r, returnBank); close(row(r, 'returnInward').cny, 0);
+    assert.ok(row(r, 'returnInward').sources.length); conserved(r);
+  }
+  const wire = run({ returnBank: 'bochk', withdrawCurrency: 'CNH', cnhWithdrawalMethod: 'wire', inwardHkd: '' }).selected;
+  close(row(wire, 'returnInward').cny, 60 * wire.refs.HKD);
+  for (const [returnBank, fee] of [['icbc-asia', 10], ['ccb-asia', 15]]) {
+    const unknown = run({ returnBank, icbcCnhAccount: true, withdrawCurrency: 'CNH', cnhWithdrawalMethod: 'local', inwardHkd: '' }).selected;
+    assert.ok(unknown, returnBank);
+    assert.equal(row(unknown, 'returnInward').cny, null);
+    assert.match(row(unknown, 'returnInward').status, new RegExp('清算渠道未确定.*CHATS收款' + fee));
+    assert.ok(row(unknown, 'returnInward').sources.length);
+    assert.ok(unknown.missing.some(item => item.includes('清算渠道未确定')));
+    const confirmed = run({ returnBank, icbcCnhAccount: true, withdrawCurrency: 'CNH', cnhWithdrawalMethod: 'local', inwardHkd: fee }).selected;
+    close(row(confirmed, 'returnInward').cny, fee * confirmed.refs.HKD);
+  }
+  const actual = run({ withdrawCurrency: 'CNH', cnhWithdrawalMethod: 'local', inwardHkd: 18 }).selected;
+  close(row(actual, 'returnInward').cny, 18 * actual.refs.HKD);
+  assert.equal(row(actual, 'returnInward').sources, undefined);
 });
 
 test('BOCHK to BOC USD receipt and subsequent settlement are independent choices', () => {

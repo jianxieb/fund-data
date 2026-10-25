@@ -667,10 +667,12 @@
     const sellDebitFeeUsd = orders.filter(order => order.kind === 'sell').reduce((sum, order) => sum + order.debitFeeUsd, 0);
     const cashRemainderUsd = quantizedShares ? Math.max(0, cashUsd - investUsd - (override == null ? buyDebitFeeUsd : 0)) : 0;
     const rebateUsd = override == null ? orders.reduce((sum, order) => sum + order.rebateUsd, 0) : 0;
-    // Benchmark sell dates are the same day or at least one full month later.
-    // Buy rebates have arrived by the latter; sell rebates are still pending.
-    const rebateTimeElapsed = !config.sellDate || (Date.parse(sellDate) - Date.parse(date)) / 86400000 >= 28;
-    const buyRebateAvailableUsd = rebateUsd > 0 && !sameMonth && rebateTimeElapsed ? orders.filter(order => order.kind === 'buy').reduce((sum, order) => sum + order.rebateUsd, 0) : 0;
+    // ZA promises the rebate within five business days. Elapsed calendar days
+    // or a month boundary cannot prove that cash is already in this account.
+    const buyRebateUsd = orders.filter(order => order.kind === 'buy').reduce((sum, order) => sum + order.rebateUsd, 0);
+    const receivedRebate = optionalNumber(config, 'buyRebateReceivedUsd');
+    if (!knownFee(receivedRebate) || receivedRebate > buyRebateUsd) return { error: '已到账的买入返还金额须介于0与本次买入应返金额之间。', errorField: 'buyRebateReceivedUsd' };
+    const buyRebateAvailableUsd = receivedRebate;
     if (rebateUsd > 0 && investUsd + profitUsd + cashRemainderUsd + buyRebateAvailableUsd < sellDebitFeeUsd - 1e-9) return { error: '卖出到账及可用余款不足以支付先扣交易费；尚未返还的优惠不能支付当前费用。', errorField: 'profitUsd' };
     // September 2026 US tariff explicitly waives Trade25 US monthly fees until further notice.
     const monthlyHkd = 0;
@@ -1131,8 +1133,8 @@
         ...(paymentWaived && senderOverride == null ? { estimate: data.paymentConnect.waiverEvidence, evidence: '已享手续费豁免', sources: data.paymentConnect.sources } : {}) });
       if (unknownSender) {
         const rangeCny = mainlandMethod === 'swift' ? senderFeeRange(start, budget, count, used, config.date, currency) : null;
-        const status = rangeCny ? '按地区定价' : bocMobile ? '2026优惠公告未查到' : paymentConnect ? '2026费率未查到' :
-          currency === 'CNH' && !start.cnhTariff ? '人民币资费未收录' : '该渠道资费未收录';
+        const status = rangeCny ? '按地区定价' : bocMobile ? '2026优惠公告未查到' : paymentConnect ? start.name + '南向支付通现行服务费条款未取得' :
+          currency === 'CNH' && !start.cnhTariff ? start.name + '个人普通跨境人民币手续费及电讯费适用条款未取得' : '该渠道资费未收录';
         Object.assign(rows[0], { status, rangeCny });
         if (rangeCny) rows[0].items = [{ label: '汇出手续费＋电讯费（地区定价）', cny: null, rangeCny, status }];
         else rows[0].items.forEach(item => { if (item.cny == null) item.status = status; });
@@ -1382,9 +1384,11 @@
           const fee = withdrawalIndex <= provider.freeWithdrawals ? 0 : local ? 7 : 60;
           add('withdraw', 'IBKR CNH' + (local ? '本地' : '电汇') + '出金费', fee * refs.CNH, 'withdraw');
           Object.assign(rows[rows.length - 1], { nativeCurrency: 'CNH', evidence: '本月第' + withdrawalIndex + '次 · 前两次免，其后' + (local ? 7 : 60) + ' CNH', sources: ['ibFees', 'ibCnhWithdrawal'] });
-          const inward = own('inwardHkd', isSelectedReturn) ?? (local ? null : inwardFee(returning, balance * refs.CNH / refs.HKD, 'broker'));
+          const localReceipt = local && data.localCnhReceipt?.[returning.id];
+          const inward = own('inwardHkd', isSelectedReturn) ?? (local ? localReceipt?.hkd ?? null : inwardFee(returning, balance * refs.CNH / refs.HKD, 'broker'));
           add('returnInward', returning.name + 'CNH' + (local ? '本地转账' : '电汇') + '入账费', inward == null ? null : inward * refs.HKD, 'withdraw');
-          if (inward == null) rows[rows.length - 1].status = returning.name + '接收IBKR CNH本地转账的入账收费尚未取得';
+          if (inward == null) rows[rows.length - 1].status = localReceipt?.missing || returning.name + '接收IBKR CNH' + (local ? '本地转账' : '电汇') + '的入账收费尚未取得';
+          if (localReceipt && own('inwardHkd', isSelectedReturn) == null) Object.assign(rows[rows.length - 1], { evidence: localReceipt.note, sources: localReceipt.sources });
           add('withdrawMiddle', 'CNH出金中转行费', local ? 0 : own('intermediaryCny', isSelectedReturn), 'withdraw');
         } else {
           const channel = provider.withdrawalChannels?.[config.brokerWireChannel || 'online'];

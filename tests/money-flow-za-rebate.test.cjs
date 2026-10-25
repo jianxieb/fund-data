@@ -68,7 +68,8 @@ test('ZA upfront liquidity, month reset and refund reconciliation hold at share 
   close(same.rebateUsd, 1); close(next.rebateUsd, 2);
   assert.match(trade({}, 101.99, -100).error, /尚未返还.*不能支付当前费用/);
   assert.match(trade({ months: 1 }, 101.99, -99).error, /尚未返还.*不能支付当前费用/);
-  const credited = trade({ months: 2 }, 101.99, -99);
+  assert.match(trade({ months: 2 }, 101.99, -99).error, /尚未返还/);
+  const credited = trade({ months: 2, buyRebateReceivedUsd: 1 }, 101.99, -99);
   assert.ok(!credited.error); close(credited.buyRebateAvailableUsd, 1);
   close(credited.investUsd - 99 + credited.cashRemainderUsd + credited.buyRebateAvailableUsd, credited.sellDebitFeeUsd);
   close(credited.investUsd - 99 + credited.cashRemainderUsd - credited.sellDebitFeeUsd + credited.rebateUsd, 1);
@@ -90,4 +91,13 @@ test('ZA rebate accounting keeps independent bank actions and net cash consisten
     close(r.budgetCny + r.profitUsd * r.refs.USD - r.costCny - r.taxCny + r.fxImpactCny, r.netCny);
   }
   assert.ok(member.trading.rebateUsd > 0); assert.ok(coupon.trading.discountUsd > 0);
+});
+
+test('calendar gaps never make an unreceived ZA rebate spendable and confirmed cash is capped by the earned rebate', () => {
+  for (const sellDate of ['2026-10-12', '2026-11-15', '2026-12-20']) {
+    assert.match(trade({ sellDate }, 101.99, -99).error, /尚未返还/);
+    const confirmed = trade({ sellDate, buyRebateReceivedUsd: 1 }, 101.99, -99);
+    assert.ok(!confirmed.error); close(confirmed.buyRebateAvailableUsd, 1);
+  }
+  for (const buyRebateReceivedUsd of [-1, 2, 'NaN']) assert.match(trade({ buyRebateReceivedUsd }).error, /已到账.*返还金额/);
 });
