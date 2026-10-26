@@ -656,6 +656,18 @@ def sync_benchmark_evidence():
     return 0
 
 
+def retained_history_failures(catalog):
+    """Separate failed refreshes from limitations in otherwise valid history."""
+    failures = {}
+    for row in [*catalog.get('assets', []), catalog.get('fx') or {}]:
+        warning = row.get('refreshWarning') or ''
+        if row.get('status') == 'available' and (row.get('missing') or warning.startswith('本次历史接口未更新：')
+                or row.get('id', '').startswith('fx:') and warning):
+            failures[row['id']] = {'error': row.get('missing') or warning, 'asOf': row.get('asOf'),
+                                   'sourceUrl': row.get('sourceUrl')}
+    return failures
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--offline', action='store_true')
@@ -762,9 +774,10 @@ def main():
     # Return-dependent candidate rules must follow the newly computed windows.
     if not os.environ.get('FUND_DATA_REFRESH_TOKEN'):
         subprocess.run([sys.executable, str(ROOT / 'screens/fund_screen.py'), 'policy'], cwd=ROOT, check=True)
-    write_status('portfolio', 'cached' if args.offline else 'success', mode='offline' if args.offline else 'online',
+    history_failures = retained_history_failures(catalog)
+    write_status('portfolio', 'cached' if args.offline else 'partial' if history_failures else 'success', mode='offline' if args.offline else 'online',
                  records=len(rows), **catalog['summary'], navUpdated=nav_summary['updated'], navWarnings=nav_summary['warnings'],
-                 returnsUpdated=returns_summary['updated'], returnsRetained=returns_summary['retained'],
+                 returnsUpdated=returns_summary['updated'], returnsRetained=returns_summary['retained'], historyFailures=history_failures,
                  message='全部研究对象纳入标的库；基金收益由已校验净值曲线复算，实际日期逐项保存；费率、规模、经理及经营研究保持独立证据日期。')
     print('组合历史发布：', catalog['summary'], flush=True)
     print('基金风险同步：', risk_summary, flush=True)

@@ -73,10 +73,16 @@ def audit(snapshot, today=None):
               'etf_distributions': 'ETF分配记录', 'return_indices': '指数比较',
               'financial_events': '金融事件历史'}
     failed = [(name, entry) for name, entry in (snapshot.get('UPDATE_STATUS') or {}).get('datasets', {}).items()
-              if entry.get('status') in ('failed', 'timeout') and name != 'quality']
+              if (entry.get('status') in ('failed', 'timeout') or entry.get('status') == 'partial' and entry.get('historyFailures'))
+              and name != 'quality']
     if failed:
         failures = dataset('source_refresh', '本次未更新的来源', [])
         for name, entry in failed:
+            if entry.get('historyFailures'):
+                for identifier, failure in entry['historyFailures'].items():
+                    issue(failures, 'source_history_retained', 'warning',
+                          identifier + '：' + failure['error'] + '；保留历史截至' + str(failure.get('asOf') or '未知'), identifier)
+                continue
             text = entry.get('error') or entry.get('message') or '来源本次未返回可用数据'
             text = str(text).strip()
             text = text.splitlines()[-1][:180] if text else '来源本次未返回可用数据'

@@ -13,7 +13,7 @@ import refresh
 import data_quality
 import strategy_backtest
 from data_status import atomic_text, file_transaction, replace_snapshot_blocks
-from scripts import check_refresh, post_refresh
+from scripts import build_portfolio_data, check_refresh, post_refresh
 
 
 def block(name, value):
@@ -30,6 +30,28 @@ def increment(path, name):
 
 
 class DailyIsolationTests(unittest.TestCase):
+    def test_individual_retained_histories_name_errors_and_original_dates(self):
+        catalog = {'assets': [
+            {'id': 'fund:020516', 'status': 'available', 'asOf': '2026-10-23',
+             'refreshWarning': '本次历史接口未更新：The read operation timed out'},
+            {'id': 'fund:513650', 'status': 'available', 'asOf': '2026-10-23',
+             'refreshWarning': '本次历史接口未更新：Connection reset by peer'},
+            {'id': 'fund:006111', 'status': 'available', 'asOf': '2026-10-23',
+             'refreshWarning': '早期净值、每日收益或连续历史不完整，仅使用自 2019-06-06 起的已核对历史'},
+            {'id': 'fund:000071', 'status': 'available', 'asOf': '2026-10-26'},
+        ]}
+        failures = build_portfolio_data.retained_history_failures(catalog)
+        self.assertEqual(set(failures), {'fund:020516', 'fund:513650'})
+        self.assertEqual(failures['fund:020516']['asOf'], '2026-10-23')
+        report = data_quality.audit({'UPDATE_STATUS': {'datasets': {'portfolio': {
+            'status': 'partial', 'historyFailures': failures}}}})
+        source = next(d for d in report['datasets'] if d['id'] == 'source_refresh')
+        self.assertEqual(len(source['issues']), 2)
+        issue = next(i for i in source['issues'] if i['affected'] == 'fund:020516')
+        self.assertIn('2026-10-23', issue['message'])
+        self.assertIn('timed out', issue['message'])
+        self.assertEqual(issue['severity'], 'warning')
+
     def test_strategy_commit_rereads_fund_updates_that_arrived_during_calculation(self):
         with tempfile.TemporaryDirectory() as temporary:
             directory = Path(temporary)

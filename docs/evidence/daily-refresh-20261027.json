@@ -1,0 +1,279 @@
+{
+  "schemaVersion": 1,
+  "kind": "normal_daily_refresh_with_source_cache",
+  "runUrl": "https://github.com/jianxieb/fund-data/actions/runs/40373982173",
+  "sourceCommit": "c1143e49db05a5e97c06b5c4a85f9449e077222c",
+  "dataCommit": "9899797b",
+  "createdAt": "2026-10-26T18:01:08Z",
+  "deploymentCompletedAt": "2026-10-26T18:05:12Z",
+  "totalSeconds": 244,
+  "mainRefreshSeconds": 137,
+  "postRefreshSeconds": 12,
+  "batchFundRecords": 1683,
+  "batchFundSeconds": 4.14,
+  "steps": [
+    {
+      "dataset": "funds",
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 34.36,
+      "log": ".tmp-snap/refresh-funds.log",
+      "publishedRollback": false,
+      "retainedPrevious": false,
+      "sourcePartial": false
+    },
+    {
+      "dataset": "research_funds",
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 1.39,
+      "log": ".tmp-snap/refresh-research_funds.log",
+      "publishedRollback": false,
+      "retainedPrevious": false,
+      "sourcePartial": false
+    },
+    {
+      "dataset": "indices",
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 20.01,
+      "log": ".tmp-snap/refresh-indices.log",
+      "publishedRollback": false,
+      "retainedPrevious": false,
+      "sourcePartial": false
+    },
+    {
+      "dataset": "stocks",
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 68.76,
+      "log": ".tmp-snap/refresh-stocks.log",
+      "publishedRollback": false,
+      "retainedPrevious": false,
+      "sourcePartial": false
+    },
+    {
+      "dataset": "overseas_stocks",
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 30.29,
+      "log": ".tmp-snap/refresh-overseas_stocks.log",
+      "publishedRollback": false,
+      "retainedPrevious": false,
+      "sourcePartial": false
+    },
+    {
+      "dataset": "screening",
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 1.46,
+      "log": ".tmp-snap/refresh-screening.log",
+      "publishedRollback": false,
+      "retainedPrevious": false,
+      "sourcePartial": false
+    },
+    {
+      "dataset": "strategy",
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 30.68,
+      "log": ".tmp-snap/refresh-strategy.log",
+      "publishedRollback": false,
+      "retainedPrevious": false,
+      "sourcePartial": false
+    },
+    {
+      "dataset": "portfolio",
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 57.82,
+      "log": ".tmp-snap/refresh-portfolio.log",
+      "publishedRollback": false,
+      "retainedPrevious": false,
+      "sourcePartial": false
+    },
+    {
+      "dataset": "quality",
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 1.31,
+      "log": ".tmp-snap/refresh-quality.log",
+      "publishedRollback": false,
+      "retainedPrevious": false,
+      "sourcePartial": false
+    }
+  ],
+  "postSteps": [
+    {
+      "dataset": "fund_actions",
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 0.17,
+      "log": ".tmp-snap/refresh-fund_actions.log",
+      "publishedRollback": false,
+      "retainedPrevious": false,
+      "sourcePartial": false
+    },
+    {
+      "dataset": "crossborder",
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 9.17,
+      "log": ".tmp-snap/refresh-crossborder.log",
+      "publishedRollback": false,
+      "retainedPrevious": false,
+      "sourcePartial": false
+    },
+    {
+      "dataset": "etf_distributions",
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 1.47,
+      "log": ".tmp-snap/refresh-etf_distributions.log",
+      "publishedRollback": false,
+      "retainedPrevious": false,
+      "sourcePartial": false
+    },
+    {
+      "dataset": "return_indices",
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 1.8,
+      "log": ".tmp-snap/refresh-return_indices.log",
+      "publishedRollback": false,
+      "retainedPrevious": false,
+      "sourcePartial": false
+    },
+    {
+      "dataset": "financial_events",
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 4.26,
+      "log": ".tmp-snap/refresh-financial_events.log",
+      "publishedRollback": false,
+      "retainedPrevious": false,
+      "sourcePartial": false
+    },
+    {
+      "dataset": "bank_fx",
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 4.15,
+      "log": ".tmp-snap/refresh-bank_fx.log",
+      "publishedRollback": false,
+      "retainedPrevious": false,
+      "sourcePartial": false
+    },
+    {
+      "dataset": "market_history",
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 10.56,
+      "log": ".tmp-snap/refresh-market_history.log",
+      "publishedRollback": false,
+      "retainedPrevious": false,
+      "sourcePartial": false
+    },
+    {
+      "dataset": "quality",
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 1.16,
+      "log": ".tmp-snap/refresh-quality.log",
+      "publishedRollback": false,
+      "retainedPrevious": false,
+      "sourcePartial": false
+    }
+  ],
+  "datasets": {
+    "funds": {
+      "count": 1623,
+      "advanced": 1148,
+      "dates": {
+        "2026-10-22": 2,
+        "2026-10-23": 189,
+        "2026-10-26": 1432
+      }
+    },
+    "cn_stocks": {
+      "count": 71,
+      "advanced": 0,
+      "dates": {
+        "2026-10-26": 71
+      }
+    },
+    "us_stocks": {
+      "count": 79,
+      "advanced": 0,
+      "dates": {
+        "2026-10-23": 79
+      }
+    }
+  },
+  "historyDatesAdvanced": 1499,
+  "portfolio": {
+    "count": 1873,
+    "statuses": {
+      "available": 1873
+    },
+    "fx": {
+      "status": "available",
+      "asOf": "2026-10-23"
+    }
+  },
+  "regressions": [],
+  "quality": {
+    "errors": 0,
+    "warnings": 4,
+    "unverified": 24
+  },
+  "partialQuarters": [
+    {
+      "symbol": "JPM",
+      "reportDate": "2026-09-30",
+      "missingEvidence": "2026-09财季来源缺营业收入、净利润",
+      "groups": [
+        "other"
+      ]
+    },
+    {
+      "symbol": "ABT",
+      "reportDate": "2026-09-30",
+      "missingEvidence": "2026-09财季来源缺营业收入、净利润",
+      "groups": [
+        "other"
+      ]
+    },
+    {
+      "symbol": "ROP",
+      "reportDate": "2026-09-30",
+      "missingEvidence": "2026-09财季来源缺营业收入、净利润",
+      "groups": [
+        "other"
+      ]
+    }
+  ],
+  "individualHistoryFailuresRetained": {
+    "fund:020516": {
+      "error": "本次历史接口未更新：The read operation timed out",
+      "asOf": "2026-10-23",
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_020516.html"
+    },
+    "fund:018064": {
+      "error": "本次历史接口未更新：The read operation timed out",
+      "asOf": "2026-10-23",
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_018064.html"
+    },
+    "fund:513650": {
+      "error": "本次历史接口未更新：<urlopen error [Errno 104] Connection reset by peer>",
+      "asOf": "2026-10-23",
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_513650.html"
+    },
+    "fund:159659": {
+      "error": "本次历史接口未更新：The read operation timed out",
+      "asOf": "2026-10-23",
+      "sourceUrl": "https://fundf10.eastmoney.com/jjjz_159659.html"
+    }
+  },
+  "scope": "Manual invocation of the normal daily workflow; no production website request. Four individual history fetch failures retained their original dates. Not proof of the next scheduled trigger."
+}
