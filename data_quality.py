@@ -170,6 +170,8 @@ def audit(snapshot, today=None):
     for row in stocks:
         if row.get('fundamentalsRefreshStatus') == 'retained_previous_report':
             issue(sd, 'stock_financials_retained', 'warning', row['fundamentalsRefreshError'], row.get('c'))
+        if row.get('valuationRefreshStatus') == 'retained_previous_valuation':
+            issue(sd, 'stock_valuation_retained', 'warning', row['valuationRefreshError'], row.get('c'))
         if age_days(row.get('latest'), today) not in range(0, 11):
             issue(sd, 'stale_stock', 'warning', '股票历史日期缺失或超过10日', row.get('c'))
 

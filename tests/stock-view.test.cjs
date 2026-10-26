@@ -4,6 +4,22 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const source = fs.readFileSync('assets/app.js', 'utf8');
 
+test('retained valuation keeps its original date and displays the exact source gap', () => {
+  const fixture = JSON.parse(fs.readFileSync('tests/fixtures/stock-valuation-outage-20261026.json', 'utf8'));
+  const ctx = {esc: value => String(value).replaceAll('<', '&lt;').replaceAll('>', '&gt;')};
+  vm.createContext(ctx);
+  vm.runInContext(source.slice(source.indexOf('  function stockValuationNotice('), source.indexOf('  function stockPercentile(')), ctx);
+  const row = {...fixture.previous, priceAsOf: fixture.failed.priceAsOf,
+    valuationRefreshStatus: 'retained_previous_valuation',
+    valuationRefreshError: '估值接口本次未返回有效记录；保留2026-10-23估值及原PE历史窗口'};
+  assert.match(ctx.stockValuationDate(row), /2026-10-23.*本次估值未更新/);
+  assert.doesNotMatch(ctx.stockValuationDate(row), /2026-10-26/);
+  assert.match(ctx.stockValuationNotice(row), /notice warn.*估值接口本次未返回有效记录/);
+  assert.equal(ctx.stockValuationNotice(fixture.previous), '');
+  assert.equal(ctx.stockValuationDate(fixture.previous), '2026-10-23');
+  assert.doesNotMatch(ctx.stockValuationNotice({...row, valuationRefreshError:'<script>'}), /<script>/);
+});
+
 test('stock lists render every filtered company, including those beyond the former page boundary', () => {
   const ctx = {}; vm.createContext(ctx);
   vm.runInContext(source.match(/function stockRows\([^\n]+/)[0] + ';this.rows=stockRows;', ctx);

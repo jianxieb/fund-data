@@ -28,7 +28,7 @@ from datetime import datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor
 from data_status import write_status
 from update import add_years
-from stock_fundamentals import fetch_evidence, quality_review, retain_report_evidence
+from stock_fundamentals import fetch_evidence, quality_review, retain_report_evidence, retain_valuation_evidence
 from stock_groups import long_term_review, growth_review, breakout_review
 from stock_dividends import (eastmoney_dividend_summary, yahoo_dividend_summary,
                              missing_dividend_summary, update_dividend_fields)
@@ -235,7 +235,8 @@ def fetch_stock(item, previous=None):
     # The dated valuation close is already identity-checked by fetch_evidence.
     # A pre-open zero/missing live quote must not invalidate that observation.
     dated_price = number(evidence.get('valuationPrice'))
-    dated_close = dated_price is not None and dated_price > 0 and bool(evidence.get('valuationAsOf'))
+    dated_close = (dated_price is not None and dated_price > 0 and bool(evidence.get('valuationAsOf'))
+                   and evidence['valuationAsOf'] >= ((previous or {}).get('valuationAsOf') or ''))
     quote_source = 'Eastmoney quote'
     try:
         quote = fetch_json('https://push2.eastmoney.com/api/qt/stock/get?secid=%s&fields=f43,f57,f58,f86,f116,f127,f164,f167,f170,f173' % secid(code)).get('data') or {}
@@ -325,6 +326,9 @@ def fetch_stock(item, previous=None):
             'dataStatus': 'computed', 'dividendWindow': '%d–%d' % (int(quote_date[:4]) - 5, int(quote_date[:4]) - 1) if dividend_years is not None else None,
             'historyFirst': series[0][0], 'fundamentalsStatus': 'report_period_unverified'}
     update_dividend_fields(result, dividend)
+    # Resolve the independent current price first. Retained valuation closes
+    # must not replace a newer verified quote or acquire its observation date.
+    evidence = retain_valuation_evidence(code, evidence, previous)
     result.update(evidence)
     result['ind'] = evidence.get('valuationIndustry') or result['ind']
     apply_research_profile(result, item)
@@ -480,7 +484,10 @@ def main():
         f.write(src)
     os.replace(tmp, HTML)
     log('完成：%d 只股票，数据截至 %s' % (len(rows), rows[0].get('latest', '')))
-    write_status('stocks', 'partial' if failures else 'success', mode='online', records=len(rows), failures=failures,
+    warnings = [{'code': row['c'], 'message': row[field]} for row in rows
+                for field in ('fundamentalsRefreshError', 'valuationRefreshError') if row.get(field)]
+    write_status('stocks', 'partial' if failures or warnings else 'success', mode='online', records=len(rows),
+                 failures=failures, metadataWarnings=warnings,
                  asOf=max((row.get('latest', '') for row in rows), default=''))
     return 3 if failures else 0
 

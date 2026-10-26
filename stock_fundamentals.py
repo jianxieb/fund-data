@@ -124,6 +124,43 @@ def retain_report_evidence(code, current, previous):
     return current
 
 
+def retain_valuation_evidence(code, current, previous):
+    """Retain a published valuation as a dated unit, never as today's quote."""
+    previous = previous or {}
+    old_day, new_day = previous.get('valuationAsOf'), current.get('valuationAsOf')
+    if not old_day or (new_day and new_day >= old_day):
+        return current
+    history = previous.get('pePercentiles') or {}
+    if (previous.get('c') != code
+            or previous.get('valuationSourceUrl') != source_url(code, 'RPT_VALUEANALYSIS_DET', 'TRADE_DATE', 2)
+            or previous.get('peHistorySourceUrl') != source_url(code, 'RPT_VALUEANALYSIS_DET', 'TRADE_DATE', 10000)
+            or numeric(previous.get('pe')) is None
+            or (numeric(previous.get('valuationPrice')) or 0) <= 0
+            or (numeric(previous.get('mcap')) or 0) <= 0
+            or any(not history.get(y) or history[y].get('end') != old_day
+                   or (history[y].get('status') == 'available' and history[y].get('observedEnd') != old_day)
+                   for y in ('5', '10'))):
+        return current
+    for field in ('pe', 'peStatic', 'pb', 'mcap', 'valuationPrice', 'valuationAsOf',
+                  'valuationSource', 'valuationSourceUrl', 'valuationIndustry',
+                  'researchCategory', 'pePercentiles', 'peHistorySourceUrl'):
+        if field in previous:
+            current[field] = copy.deepcopy(previous[field])
+    # New financial reports remain independent. Only shares from the valuation
+    # observation are retained; report shares keep their own report periods.
+    shares = current.setdefault('incomeShareEvidence', {})
+    for field in ('currentShares', 'shareAsOf'):
+        shares[field] = copy.deepcopy((previous.get('incomeShareEvidence') or {}).get(field))
+    current['peDynamic'], current['peDynamicBasis'] = dynamic_pe(
+        current['mcap'] * 1e8, old_day, current.get('financialReports') or [])
+    current['valuationRefreshStatus'] = 'retained_previous_valuation'
+    reason = '估值接口本次未返回有效记录' if not new_day else '估值接口仅返回截至' + new_day + '的旧记录'
+    current['valuationRefreshError'] = reason + '；保留' + old_day + '估值及原PE历史窗口'
+    if current.get('fundamentalsStatus') != 'cached_financials':
+        current['fundamentalsStatus'] = 'cached_valuation'
+    return current
+
+
 def parse_evidence(code, valuation, financials, asof):
     symbol = code + ('.SH' if code[0] in '5689' else '.SZ')
     def valid(rows, day_key, announcement=False):
