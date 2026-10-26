@@ -1,81 +1,100 @@
 {
   "schemaVersion": 1,
-  "startedAt": "2026-10-26T15:17:52+00:00",
+  "startedAt": "2026-10-26T16:27:36+00:00",
   "mode": "online",
+  "dailyMode": true,
   "steps": [
     {
       "dataset": "funds",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 67.95,
+      "seconds": 52.32,
       "log": ".tmp-snap/refresh-funds.log",
-      "publishedRollback": false
+      "publishedRollback": false,
+      "retainedPrevious": false,
+      "sourcePartial": false
     },
     {
       "dataset": "research_funds",
-      "status": "completed",
-      "exitCode": 0,
-      "seconds": 119.43,
+      "status": "timeout",
+      "exitCode": 124,
+      "seconds": 90.15,
       "log": ".tmp-snap/refresh-research_funds.log",
-      "publishedRollback": false
+      "publishedRollback": true,
+      "retainedPrevious": true,
+      "sourcePartial": false
     },
     {
       "dataset": "indices",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 18.36,
+      "seconds": 16.25,
       "log": ".tmp-snap/refresh-indices.log",
-      "publishedRollback": false
+      "publishedRollback": false,
+      "retainedPrevious": false,
+      "sourcePartial": false
     },
     {
       "dataset": "stocks",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 237.61,
+      "seconds": 71.57,
       "log": ".tmp-snap/refresh-stocks.log",
-      "publishedRollback": false
+      "publishedRollback": false,
+      "retainedPrevious": false,
+      "sourcePartial": false
     },
     {
       "dataset": "overseas_stocks",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 26.64,
+      "seconds": 47.46,
       "log": ".tmp-snap/refresh-overseas_stocks.log",
-      "publishedRollback": false
+      "publishedRollback": false,
+      "retainedPrevious": false,
+      "sourcePartial": false
     },
     {
       "dataset": "screening",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 2.57,
+      "seconds": 1.32,
       "log": ".tmp-snap/refresh-screening.log",
-      "publishedRollback": false
+      "publishedRollback": false,
+      "retainedPrevious": false,
+      "sourcePartial": false
     },
     {
       "dataset": "strategy",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 43.27,
+      "seconds": 26.56,
       "log": ".tmp-snap/refresh-strategy.log",
-      "publishedRollback": false
+      "publishedRollback": false,
+      "retainedPrevious": false,
+      "sourcePartial": false
     },
     {
       "dataset": "portfolio",
-      "status": "completed",
-      "exitCode": 0,
-      "seconds": 1106.19,
+      "status": "timeout",
+      "exitCode": 124,
+      "seconds": 90.16,
       "log": ".tmp-snap/refresh-portfolio.log",
-      "publishedRollback": false
+      "publishedRollback": true,
+      "retainedPrevious": true,
+      "sourcePartial": false
     },
     {
       "dataset": "quality",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 1.71,
+      "seconds": 0.99,
       "log": ".tmp-snap/refresh-quality.log",
-      "publishedRollback": false
+      "publishedRollback": false,
+      "retainedPrevious": false,
+      "sourcePartial": false
     }
   ],
-  "completedAt": "2026-10-26T15:44:56+00:00",
-  "status": "completed"
+  "completedAt": "2026-10-26T16:30:39+00:00",
+  "status": "partial"
 }
