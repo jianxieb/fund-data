@@ -13,7 +13,7 @@ const base = { ...config, date: '2026-10-21', sellDate: '2026-10-21', count: 1,
 const run = changes => M.calculatorJourney(M.calculatorRoute({ ...base, ...changes }), D, Q);
 const row = (r, key) => r.rows.find(x => x.key === key);
 function ui(input = {}, quotes = Q, date = '2026-10-21') {
-  let saved = { bankFeeDefaultsVersion: 1, consumptionVersion: 2, ...input }, modal = '';
+  let saved = { bankFeeDefaultsVersion: 1, consumptionVersion: 2, ibkrFundingVersion: 1, ...input }, modal = '';
   const ctx = { window: { MONEY_FLOW: D, MONEY_FLOW_QUOTES: quotes, ChanghengMoneyFlowModel: M },
     localStorage: { getItem: () => JSON.stringify(saved), setItem: (_, value) => { saved = JSON.parse(value); } },
     document: { querySelectorAll: () => [], getElementById: () => null },
@@ -126,8 +126,8 @@ test('Lite can receive CNH/HKD by wire and convert at IBKR with manual or purcha
     if (fxMode === 'manual') close(row(r, 'brokerFx').cny, 2 * r.refs.USD);
     const channels = M.calculatorChannels({ ...base, ...input }, D);
     assert.deepEqual(channels.fxModes, ['manual', 'auto', 'bank']);
-    assert.deepEqual(channels.depositMethods, ['swift']);
-    for (const depositMethod of ['chats', 'fps', 'edda']) assert.match(run({ ...input, depositMethod }).error, /原币入金.*SWIFT/);
+    assert.deepEqual(channels.depositMethods, ['fps', 'edda', 'swift']);
+    assert.match(run({ ...input, depositMethod: 'chats' }).error, /原币入金.*FPS、eDDA或SWIFT/);
     const ledger = M.flowLedger(r), brokerStop = ledger.stops.find(x => x.id === 'funding');
     assert.equal(brokerStop.currency, fxMode === 'auto' ? route : 'USD');
     close(r.netCny, r.budgetCny - r.costCny + r.fxImpactCny);
@@ -166,12 +166,58 @@ test('legacy Lite preserves broker conversion while USD-only venues remain bank-
   for (const fxMode of ['manual', 'auto']) {
     const subject = ui({ ...base, ibkrPricing: 'lite', fxMode }); subject.render();
     assert.equal(subject.saved().broker, 'ibkr-lite'); assert.equal(subject.saved().fxMode, fxMode);
-    assert.equal(subject.saved().depositMethod, 'swift'); assert.equal(subject.result().selected.fxMode, fxMode);
+    assert.equal(subject.saved().depositMethod, 'fps'); assert.equal(subject.result().selected.fxMode, fxMode);
   }
   for (const broker of ['firstrade', 'schwab']) {
     const r = run({ broker, fxMode: 'manual', depositMethod: '' }).selected;
     assert.equal(r.fxMode, 'bank'); assert.ok(r.steps.hkConvertedUsd > 0);
   }
+});
+
+test('Lite offers original CNH/HKD FPS and eDDA without changing the principal or FX mode', () => {
+  const current = require('./fixtures/money-flow-quotes-20261025.json');
+  const preferred = M.calculatorPreferredPlans(D, current, '2026-10-25')[0].config;
+  for (const route of ['CNH', 'HKD']) for (const fxMode of ['manual', 'auto']) for (const depositMethod of ['fps', 'edda']) {
+    const input = { ...preferred, broker: 'ibkr-lite', ibkrPricing: 'lite', route, fxMode, depositMethod,
+      budgetCny: 250000, outcome: 'broker-balance', withdrawCurrency: 'USD' };
+    const result = M.calculatorJourney(input, D, current), r = result.selected;
+    assert.ok(r, result.error); assert.equal(r.depositMethod, depositMethod);
+    close(r.budgetCny, 250000); assert.equal(r.fxMode, fxMode);
+    for (const key of ['depositBank', 'depositOther', 'depositBroker']) close(row(r, key).cny, 0);
+    if (route === 'CNH') {
+      close(r.steps.hongKong, 250000); close(r.steps.brokerOriginal, 250000);
+      close(r.steps.fundedUsd, fxMode === 'manual' ? 250000 / 6.67006 - 2 : 250000 / 6.67006 / 1.0003);
+    }
+    close(r.netCny, r.budgetCny - r.costCny + r.fxImpactCny);
+    const subject = ui(input, current, '2026-10-25'); subject.render();
+    subject.act('pick', '', 'depositMethod');
+    for (const label of ['FPS', 'eDDA', 'SWIFT']) assert.ok(subject.modal().includes(label), label);
+    for (const broker of ['ibkr', 'ibkr-lite']) {
+      subject.act('choose', 'broker', broker); subject.render();
+      assert.equal(subject.saved().depositMethod, depositMethod);
+      assert.equal(subject.saved().budgetCny, 250000); assert.equal(subject.saved().bank, 'hsbc');
+      assert.equal(subject.saved().fxMode, fxMode);
+    }
+    const reopened = ui(subject.saved(), current, '2026-10-25'); reopened.render();
+    assert.equal(reopened.saved().depositMethod, depositMethod); assert.equal(reopened.saved().budgetCny, 250000);
+  }
+});
+
+test('old forced Lite wire migrates once while preserving principal and saved execution prices', () => {
+  for (const route of ['CNH', 'HKD']) {
+    const input = { ...base, broker: 'ibkr-lite', route, budgetCny: 250000, fxMode: 'manual', depositMethod: 'swift',
+      entryPrice: 6.7, depositHkd: 70, depositOtherCny: 50, ibkrFundingVersion: undefined };
+    const subject = ui(input); subject.render();
+    assert.equal(subject.saved().depositMethod, 'fps'); assert.equal(subject.saved().ibkrFundingVersion, 1);
+    assert.equal(subject.saved().budgetCny, 250000); assert.equal(subject.saved().entryPrice, 6.7);
+    assert.equal(subject.saved().bank, 'hsbc'); assert.equal(subject.saved().returnBank, 'bochk');
+    assert.equal(subject.saved().depositHkd, ''); assert.equal(subject.saved().depositOtherCny, '');
+    subject.act('choose', 'depositMethod', 'swift'); subject.render();
+    const reopened = ui(subject.saved()); reopened.render();
+    assert.equal(reopened.saved().depositMethod, 'swift'); assert.equal(reopened.saved().budgetCny, 250000);
+  }
+  const usd = ui({ ...base, broker: 'ibkr-lite', route: 'USD', depositMethod: 'swift', ibkrFundingVersion: undefined });
+  usd.render(); assert.equal(usd.saved().depositMethod, 'swift');
 });
 
 

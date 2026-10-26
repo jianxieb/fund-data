@@ -1,0 +1,424 @@
+{
+  "recordedAt": "2026-10-26T07:05:55.470Z",
+  "scope": "R184截图数值复现与R183渠道修复后的原币金额核对；未重新抓取报价。",
+  "quoteFixture": "tests/fixtures/money-flow-quotes-20261025.json",
+  "quoteFixtureSha256": "b32d83467f197f360cd1b9f80a456878a6f425efb49bb787d7e141a26358f1ab",
+  "productionQuoteFile": "data/money-flow-quotes.js",
+  "productionQuoteSha256": "03f35f9c79c7679ebb7ea9f30a2b1617414c0580b7ef454a771a0021559e0bdb",
+  "userScreenshot": "user-r183-r184-20261026.png",
+  "screenshotKnownValues": {
+    "hongKongCnh": 100000,
+    "fundingCostCny": 4.84,
+    "bankFeeCny": 59.57,
+    "commissionCny": 13.35,
+    "referenceFxDifferenceCny": -68.08
+  },
+  "unresolved": "截图未包含原始本金输入；尚未取得用户预期本金或准确错误节点。未声明R184已修复或用户已接受。",
+  "interpretation": "资金按原币余额和执行价流转；参考汇差仅解释统一估值差异，保留正负号，不再从现金扣一次。",
+  "cases": [
+    {
+      "config": {
+        "budgetCny": 100000,
+        "currency": "CNY",
+        "count": 1,
+        "months": 12,
+        "date": "2026-10-25",
+        "sellDate": "2026-10-25",
+        "fxMode": "manual",
+        "returnCurrency": "USD",
+        "profitUsd": 0,
+        "taxRate": 20,
+        "creditCny": 0,
+        "buyOrders": 1,
+        "sellOrders": 1,
+        "sharePriceUsd": 100,
+        "withdrawalIndex": 1,
+        "chequeIndex": 1,
+        "openingCny": 0,
+        "extraCapitalCny": 0,
+        "annualGapPct": 0,
+        "usedFreeTransfers": 0,
+        "usedPromoOrders": 0,
+        "otherTurnoverHkd": 0,
+        "trade25": false,
+        "chiefMonthly": false,
+        "usmartPromo": false,
+        "useVoucher": false,
+        "zaPerksLevel": "standard",
+        "ibkrPricing": "lite",
+        "hsbcBalanceWaiver": true,
+        "cnHsbcFeeWaived": true,
+        "cnHangFeeWaived": true,
+        "cnScFeeWaived": true,
+        "startBank": "boc",
+        "bank": "hsbc",
+        "broker": "ibkr-lite",
+        "returnBank": "hsbc",
+        "exitBank": "boc",
+        "route": "CNH",
+        "mainlandMethod": "payment-connect",
+        "paymentConnectFeeWaived": true,
+        "depositMethod": "swift",
+        "outcome": "broker-balance",
+        "withdrawCurrency": "USD",
+        "cnhWithdrawalMethod": "local",
+        "cardMode": "cnh",
+        "returnMethod": "swift",
+        "withdrawDestination": "hong-kong"
+      },
+      "refs": {
+        "CNY": 1,
+        "USD": 6.6746,
+        "HKD": 0.8510263929618768,
+        "CNH": 1.0009740398509022
+      },
+      "steps": {
+        "mainlandForeign": 100000,
+        "hongKong": 100000,
+        "brokerOriginal": 99940.48612138213,
+        "fundedUsd": 14981.446344018213,
+        "investUsd": 14981.445894574837,
+        "proceedsUsd": 14981.13544513146,
+        "afterTaxUsd": 14981.13544513146,
+        "returnUsd": 14981.13544513146,
+        "terminal": 14981.13544513146,
+        "settledCny": 99993.08664207444
+      },
+      "fundingRows": [
+        {
+          "key": "depositBank",
+          "label": "汇丰 HSBC One → IBKR Lite · SWIFT",
+          "cny": 59.57184750733138
+        },
+        {
+          "key": "depositOther",
+          "label": "入金代理／收款行费",
+          "cny": null
+        },
+        {
+          "key": "depositBroker",
+          "label": "IBKR Lite入金费",
+          "cny": 0
+        },
+        {
+          "key": "brokerFx",
+          "label": "换USD佣金／自动加价",
+          "cny": 13.3492
+        },
+        {
+          "key": "brokerSpread",
+          "label": "香港换汇差额",
+          "cny": -68.08281529130181
+        }
+      ],
+      "knownFundingCostCny": 4.838232216029567,
+      "expectedFundedUsd": 14981.446344018213,
+      "actualFundedUsd": 14981.446344018213,
+      "principalCny": 100000,
+      "conservationResidualCny": 0
+    },
+    {
+      "config": {
+        "budgetCny": 100000,
+        "currency": "CNY",
+        "count": 1,
+        "months": 12,
+        "date": "2026-10-25",
+        "sellDate": "2026-10-25",
+        "fxMode": "manual",
+        "returnCurrency": "USD",
+        "profitUsd": 0,
+        "taxRate": 20,
+        "creditCny": 0,
+        "buyOrders": 1,
+        "sellOrders": 1,
+        "sharePriceUsd": 100,
+        "withdrawalIndex": 1,
+        "chequeIndex": 1,
+        "openingCny": 0,
+        "extraCapitalCny": 0,
+        "annualGapPct": 0,
+        "usedFreeTransfers": 0,
+        "usedPromoOrders": 0,
+        "otherTurnoverHkd": 0,
+        "trade25": false,
+        "chiefMonthly": false,
+        "usmartPromo": false,
+        "useVoucher": false,
+        "zaPerksLevel": "standard",
+        "ibkrPricing": "lite",
+        "hsbcBalanceWaiver": true,
+        "cnHsbcFeeWaived": true,
+        "cnHangFeeWaived": true,
+        "cnScFeeWaived": true,
+        "startBank": "boc",
+        "bank": "hsbc",
+        "broker": "ibkr-lite",
+        "returnBank": "hsbc",
+        "exitBank": "boc",
+        "route": "CNH",
+        "mainlandMethod": "payment-connect",
+        "paymentConnectFeeWaived": true,
+        "depositMethod": "fps",
+        "outcome": "broker-balance",
+        "withdrawCurrency": "USD",
+        "cnhWithdrawalMethod": "local",
+        "cardMode": "cnh",
+        "returnMethod": "swift",
+        "withdrawDestination": "hong-kong"
+      },
+      "refs": {
+        "CNY": 1,
+        "USD": 6.6746,
+        "HKD": 0.8510263929618768,
+        "CNH": 1.0009740398509022
+      },
+      "steps": {
+        "mainlandForeign": 100000,
+        "hongKong": 100000,
+        "brokerOriginal": 100000,
+        "fundedUsd": 14990.368884237922,
+        "investUsd": 14990.368434526868,
+        "proceedsUsd": 14990.057984815816,
+        "afterTaxUsd": 14990.057984815816,
+        "returnUsd": 14990.057984815816,
+        "terminal": 14990.057984815816,
+        "settledCny": 100052.64102545164
+      },
+      "fundingRows": [
+        {
+          "key": "depositBank",
+          "label": "汇丰 HSBC One → IBKR Lite · FPS",
+          "cny": 0
+        },
+        {
+          "key": "depositOther",
+          "label": "入金代理／收款行费",
+          "cny": 0
+        },
+        {
+          "key": "depositBroker",
+          "label": "IBKR Lite入金费",
+          "cny": 0
+        },
+        {
+          "key": "brokerFx",
+          "label": "换USD佣金／自动加价",
+          "cny": 13.3492
+        },
+        {
+          "key": "brokerSpread",
+          "label": "香港换汇差额",
+          "cny": -68.06535473442636
+        }
+      ],
+      "knownFundingCostCny": -54.71615473442637,
+      "expectedFundedUsd": 14990.368884237922,
+      "actualFundedUsd": 14990.368884237922,
+      "principalCny": 100000,
+      "conservationResidualCny": 0
+    },
+    {
+      "config": {
+        "budgetCny": 250000,
+        "currency": "CNY",
+        "count": 1,
+        "months": 12,
+        "date": "2026-10-25",
+        "sellDate": "2026-10-25",
+        "fxMode": "manual",
+        "returnCurrency": "USD",
+        "profitUsd": 0,
+        "taxRate": 20,
+        "creditCny": 0,
+        "buyOrders": 1,
+        "sellOrders": 1,
+        "sharePriceUsd": 100,
+        "withdrawalIndex": 1,
+        "chequeIndex": 1,
+        "openingCny": 0,
+        "extraCapitalCny": 0,
+        "annualGapPct": 0,
+        "usedFreeTransfers": 0,
+        "usedPromoOrders": 0,
+        "otherTurnoverHkd": 0,
+        "trade25": false,
+        "chiefMonthly": false,
+        "usmartPromo": false,
+        "useVoucher": false,
+        "zaPerksLevel": "standard",
+        "ibkrPricing": "lite",
+        "hsbcBalanceWaiver": true,
+        "cnHsbcFeeWaived": true,
+        "cnHangFeeWaived": true,
+        "cnScFeeWaived": true,
+        "startBank": "boc",
+        "bank": "hsbc",
+        "broker": "ibkr-lite",
+        "returnBank": "hsbc",
+        "exitBank": "boc",
+        "route": "CNH",
+        "mainlandMethod": "payment-connect",
+        "paymentConnectFeeWaived": true,
+        "depositMethod": "swift",
+        "outcome": "broker-balance",
+        "withdrawCurrency": "USD",
+        "cnhWithdrawalMethod": "local",
+        "cardMode": "cnh",
+        "returnMethod": "swift",
+        "withdrawDestination": "hong-kong"
+      },
+      "refs": {
+        "CNY": 1,
+        "USD": 6.6746,
+        "HKD": 0.8510263929618768,
+        "CNH": 1.0009740398509022
+      },
+      "steps": {
+        "mainlandForeign": 250000,
+        "hongKong": 250000,
+        "brokerOriginal": 249940.48612138213,
+        "fundedUsd": 37469.999670375095,
+        "investUsd": 37469.998546275136,
+        "proceedsUsd": 37469.217422175185,
+        "afterTaxUsd": 37469.217422175185,
+        "returnUsd": 37469.217422175185,
+        "terminal": 37469.217422175185,
+        "settledCny": 250092.03860605048
+      },
+      "fundingRows": [
+        {
+          "key": "depositBank",
+          "label": "汇丰 HSBC One → IBKR Lite · SWIFT",
+          "cny": 59.57184750733138
+        },
+        {
+          "key": "depositOther",
+          "label": "入金代理／收款行费",
+          "cny": null
+        },
+        {
+          "key": "depositBroker",
+          "label": "IBKR Lite入金费",
+          "cny": 0
+        },
+        {
+          "key": "brokerFx",
+          "label": "换USD佣金／自动加价",
+          "cny": 13.3492
+        },
+        {
+          "key": "brokerSpread",
+          "label": "香港换汇差额",
+          "cny": -170.18084739291226
+        }
+      ],
+      "knownFundingCostCny": -97.25979988558088,
+      "expectedFundedUsd": 37469.999670375095,
+      "actualFundedUsd": 37469.999670375095,
+      "principalCny": 250000,
+      "conservationResidualCny": 2.9103830456733704e-11
+    },
+    {
+      "config": {
+        "budgetCny": 250000,
+        "currency": "CNY",
+        "count": 1,
+        "months": 12,
+        "date": "2026-10-25",
+        "sellDate": "2026-10-25",
+        "fxMode": "manual",
+        "returnCurrency": "USD",
+        "profitUsd": 0,
+        "taxRate": 20,
+        "creditCny": 0,
+        "buyOrders": 1,
+        "sellOrders": 1,
+        "sharePriceUsd": 100,
+        "withdrawalIndex": 1,
+        "chequeIndex": 1,
+        "openingCny": 0,
+        "extraCapitalCny": 0,
+        "annualGapPct": 0,
+        "usedFreeTransfers": 0,
+        "usedPromoOrders": 0,
+        "otherTurnoverHkd": 0,
+        "trade25": false,
+        "chiefMonthly": false,
+        "usmartPromo": false,
+        "useVoucher": false,
+        "zaPerksLevel": "standard",
+        "ibkrPricing": "lite",
+        "hsbcBalanceWaiver": true,
+        "cnHsbcFeeWaived": true,
+        "cnHangFeeWaived": true,
+        "cnScFeeWaived": true,
+        "startBank": "boc",
+        "bank": "hsbc",
+        "broker": "ibkr-lite",
+        "returnBank": "hsbc",
+        "exitBank": "boc",
+        "route": "CNH",
+        "mainlandMethod": "payment-connect",
+        "paymentConnectFeeWaived": true,
+        "depositMethod": "fps",
+        "outcome": "broker-balance",
+        "withdrawCurrency": "USD",
+        "cnhWithdrawalMethod": "local",
+        "cardMode": "cnh",
+        "returnMethod": "swift",
+        "withdrawDestination": "hong-kong"
+      },
+      "refs": {
+        "CNY": 1,
+        "USD": 6.6746,
+        "HKD": 0.8510263929618768,
+        "CNH": 1.0009740398509022
+      },
+      "steps": {
+        "mainlandForeign": 250000,
+        "hongKong": 250000,
+        "brokerOriginal": 250000,
+        "fundedUsd": 37478.92221059481,
+        "investUsd": 37478.92108622717,
+        "proceedsUsd": 37478.13996185954,
+        "afterTaxUsd": 37478.13996185954,
+        "returnUsd": 37478.13996185954,
+        "terminal": 37478.13996185954,
+        "settledCny": 250151.59298942768
+      },
+      "fundingRows": [
+        {
+          "key": "depositBank",
+          "label": "汇丰 HSBC One → IBKR Lite · FPS",
+          "cny": 0
+        },
+        {
+          "key": "depositOther",
+          "label": "入金代理／收款行费",
+          "cny": 0
+        },
+        {
+          "key": "depositBroker",
+          "label": "IBKR Lite入金费",
+          "cny": 0
+        },
+        {
+          "key": "brokerFx",
+          "label": "换USD佣金／自动加价",
+          "cny": 13.3492
+        },
+        {
+          "key": "brokerSpread",
+          "label": "香港换汇差额",
+          "cny": -170.16338683609501
+        }
+      ],
+      "knownFundingCostCny": -156.81418683609502,
+      "expectedFundedUsd": 37478.92221059481,
+      "actualFundedUsd": 37478.92221059481,
+      "principalCny": 250000,
+      "conservationResidualCny": -2.9103830456733704e-11
+    }
+  ]
+}

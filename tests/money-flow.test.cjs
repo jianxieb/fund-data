@@ -997,7 +997,7 @@ test('all trading accounts retain fees for USD, HKD and CNH without inventing ba
         assert.ok(row.missing.some(text => text.includes(row.bank.name) && text.includes(route)));
       } else if (route !== 'USD' && row.broker.id === 'ibkr-lite') {
         assert.equal(row.fxMode, 'manual');
-        assert.equal(row.depositMethod, 'swift');
+        assert.equal(row.depositMethod, 'fps');
         assert.ok(row.rows.find(r => r.key === 'brokerFx').cny > 0);
         assert.equal(row.rows.find(r => r.key === 'brokerSpread').cny, null);
         assert.ok(row.missing.some(text => text.includes('IBKR') && text.includes(route)));

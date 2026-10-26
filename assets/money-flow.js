@@ -6,7 +6,7 @@
   const defaults = { budgetCny: '100000', currency: 'CNY', plan: 'boc-za', activeStep: '01', startBank: 'boc', route: 'USD', bank: 'bochk', returnBank: 'bochk', exitBank: 'boc', outcome: 'broker-balance',
     paymentConnectFeeWaived: true, mainlandMethod: 'boc-mobile', depositMethod: 'chats', fxMode: 'manual', returnMethod: '', returnCurrency: 'USD', comparison: 'start', count: '1', usedFreeTransfers: '0',
     months: '12', balanceHkd: '0', returnBalanceHkd: '0', bankBalancesHkd: {}, profitUsd: '0', taxableCny: '', taxRate: '20', creditCny: '0', withdrawalIndex: '1', chequeIndex: '1', chequePreFilled: false, hsbcChequeNonCounter: false, tradeFeeUsd: '',
-    broker: 'za', ibkrPricing: 'fixed', brokerWireChannel: 'online', sellDate: '', buyOrders: '1', sellOrders: '1', sharePriceUsd: '100', trade25: false, chiefMonthly: false, usmartPromo: false, zaLv2: false,
+    broker: 'za', ibkrPricing: 'fixed', ibkrFundingVersion: 1, brokerWireChannel: 'online', sellDate: '', buyOrders: '1', sellOrders: '1', sharePriceUsd: '100', trade25: false, chiefMonthly: false, usmartPromo: false, zaLv2: false,
     bankFeeDefaultsVersion: 1, hsbcBalanceWaiver: true, hkHsbcFreeMonths: '0', zaPerksLevel: 'standard', zaSwiftUsed: '0', scCnhAccount: false, otherTurnoverHkd: '0', usedPromoOrders: '0', usmartDays: '0', useVoucher: false, voucherScope: 'platform', voucherUsd: '0', voucherOrders: '1', voucherExpiry: '',
     cnHsbcFeeWaived: true, cnHangFeeWaived: true, cnScFeeWaived: true, cnHsbcFreeMonths: '0', cnHangFreeMonths: '0', cnScFreeMonths: '0',
     icbcEAccount: false, icbcCnhAccount: false, consumptionVersion: 2, cardMode: '', ccbLinkedCard: false, cardCnyPerHkd: '',
@@ -21,6 +21,15 @@
   let state = { ...defaults, ...stored, currency: 'CNY' }, H, timer, modalKey;
   const repairIbkrLite = state.broker === 'ibkr' && state.ibkrPricing === 'lite';
   if (repairIbkrLite) state = M.calculatorRoute(state);
+  // The previous Lite picker offered only SWIFT for original HKD/CNH.
+  // Repair that forced choice once; later explicit wire choices are retained.
+  const repairLiteFunding = stored.ibkrFundingVersion !== defaults.ibkrFundingVersion;
+  if (repairLiteFunding) {
+    if (state.broker === 'ibkr-lite' && ['CNH', 'HKD'].includes(state.route) && state.fxMode !== 'bank' && state.depositMethod === 'swift') {
+      state.depositMethod = 'fps'; state.depositHkd = ''; state.depositOtherCny = '';
+    }
+    state.ibkrFundingVersion = defaults.ibkrFundingVersion;
+  }
   // The former generic RMB spending endpoint did not meet mainland-use needs.
   // Migrate it to a real mainland account, without changing the user's banks.
   const repairConsumption = stored.outcome === 'cnh-card' && stored.consumptionVersion !== 2;
@@ -95,7 +104,7 @@
   const esc = value => H.esc(value), num = (value, digits = 2) => Number.isFinite(Number(value)) && value != null ? H.money(Number(value), digits) : '—';
   const action = (label, act, extra = '', cls = 'btn') => H.action(label, 'money-flow-' + act, cls, extra);
   const save = () => { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (_) {} };
-  if (repairIbkrLite || repairStoredEntry || repairBankFeeDefaults || repairConsumption || repairUsFunding) save();
+  if (repairIbkrLite || repairLiteFunding || repairStoredEntry || repairBankFeeDefaults || repairConsumption || repairUsFunding) save();
   const pct = value => {
     const percent = value * 100, magnitude = Math.abs(percent);
     const digits = magnitude > 0 && magnitude < .0005 ? Math.ceil(-Math.log10(magnitude)) + 2 : 3;
@@ -117,7 +126,7 @@
     hkCard: { bochk: ['bochkCard'], hsbc: ['hsbcCard'], za: ['zaCard'], hang: ['hangCard'], sc: ['scCard'], 'icbc-asia': ['icbcAsiaCard', 'icbcAsiaAccountTerms'] },
     brokerTrade: { 'ibkr-lite': ['ibStocks', 'ibLite'], ibkr: ['ibStocks'], hsbc: ['hsbcUsTariff'], za: ['zaStocks', 'zaStockUnits', 'zaCustody'], chief: ['chiefStocks'], usmart: ['usmartFees', 'usmartStockUnits'], firstrade: ['firstradePricing', 'firstradeFractions'], schwab: ['schwabPricing', 'schwabGuide', 'schwabFractions'] },
     brokerOffers: { hsbc: ['trade25', 'trade25Age', 'trade25One'], za: ['zaStockService', 'zaPerks'], chief: ['chiefMonthly', 'chiefMonthlyTerms'], usmart: ['usmartPromo'] },
-    brokerFunding: { 'ibkr-lite': ['ibFundingUs', 'ibFunding', 'ibLite', 'ibConversion', 'ibCnhDeposits'], ibkr: ['ibDeposits', 'ibFunding'], hsbc: ['hsbcStocks'], za: ['zaStockService'], chief: ['chiefFunding'], usmart: ['usmartFundingAccounts', 'usmartSameFunding'], firstrade: ['firstradeWire'], schwab: ['schwabWire', 'schwabGuide'] },
+    brokerFunding: { 'ibkr-lite': ['ibFundingCNH', 'ibFundingHKD', 'ibFundingUs', 'ibFunding', 'ibLite', 'ibConversion', 'ibCnhDeposits'], ibkr: ['ibDeposits', 'ibFunding'], hsbc: ['hsbcStocks'], za: ['zaStockService'], chief: ['chiefFunding'], usmart: ['usmartFundingAccounts', 'usmartSameFunding'], firstrade: ['firstradeWire'], schwab: ['schwabWire', 'schwabGuide'] },
     brokerWithdrawal: { 'ibkr-lite': ['ibFees'], ibkr: ['ibFees'], hsbc: ['hsbcStocks'], za: ['zaStockService'], chief: ['chiefFunding'], usmart: ['usmartWithdrawal'], firstrade: ['firstradeWireFees'], schwab: ['schwabGuide'] }
   };
   const evidenceFor = (kind, account) => evidenceSources[kind]?.[account?.id] || (account?.id === 'ccb-asia' ?
@@ -862,6 +871,8 @@
     // Explicit corporate or personal receiving-bank instructions remain the
     // same choice when other accounts change and that instruction still fits.
     if (['bank', 'broker', 'route', 'fxMode'].includes(key) && /^(?:via-|chats-|wise$)/.test(state.depositMethod) &&
+        channels.depositMethods.includes(state.depositMethod)) next.depositMethod = state.depositMethod;
+    if (key === 'broker' && ['fps', 'edda'].includes(state.depositMethod) && M.supportsBrokerFx(state.broker) && M.supportsBrokerFx(value) &&
         channels.depositMethods.includes(state.depositMethod)) next.depositMethod = state.depositMethod;
     return M.calculatorRoute(next);
   }

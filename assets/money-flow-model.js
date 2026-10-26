@@ -451,7 +451,7 @@
   function ibkrPricing(config, broker) {
     if (broker.id !== 'ibkr' || config.ibkrPricing !== 'lite') return broker;
     return { ...broker, id: 'ibkr-lite', name: 'IBKR Lite', pricingPlan: 'lite', commission: null, fractionalCommission: null,
-      usdDepositMethods: ['swift'], depositCurrencies: { swift: ['USD', 'HKD', 'CNH'] }, localUsdFunding: null,
+      usdDepositMethods: ['swift'], depositCurrencies: { fps: ['HKD', 'CNH'], edda: ['HKD', 'CNH'], swift: ['USD', 'HKD', 'CNH'] }, localUsdFunding: null,
       feeShort: '合资格美国居民 · 常规上市股免佣金；监管费另计',
       feeText: 'Lite限合资格美国居民；常规交易时段美国上市股免佣。低价股特殊订单超过月成交量10%时按0.005 USD/股或成交额1%孰低收费；非上市股、隔夜和定期投资按Fixed。',
       sources: [...new Set([...(broker.sources || []), 'ibLite'])] };
@@ -1199,8 +1199,8 @@
       if (!finite(balance) || balance <= 0) return downstreamError('汇出金额不足以支付中转及香港汇入费用。', '01');
       if (currency === 'CNH' && bank.cnhAccountRequiresHkid && !config[bank.cnhAccountField]) return downstreamError(bank.name + '人民币储蓄账户须持香港身份证并已开通；请确认账户条件或选择美元／港币汇出。', '02');
       steps.hongKong = balance;
-      const depositMethod = internalDeposit ? 'internal' : settlementBank ? 'chats' : method('depositMethod', provider.usdDepositMethods?.[0] || (currency === 'USD' || fxMode === 'bank' ? 'chats' : 'fps'));
       const depositCurrency = fxMode === 'bank' ? 'USD' : currency;
+      const depositMethod = internalDeposit ? 'internal' : settlementBank ? 'chats' : method('depositMethod', depositCurrency === 'USD' ? provider.usdDepositMethods?.[0] || 'chats' : 'fps');
       if (typeof depositMethod !== 'string') return downstreamError('保存的入金方式无效；请在入金方式中重新选择。');
       const wiseFunding = requestedDepositMethod === 'wise' ? data.wiseFunding : null;
       if (requestedDepositMethod === 'wise' && !(wiseFunding?.brokers.includes(provider.id) && depositCurrency === wiseFunding.currency))
@@ -1209,7 +1209,7 @@
       // broker's ability to convert deposited cash (including IBKR Lite).
       const allowedFunding = depositCurrency === 'USD' ? provider.usdDepositMethods?.includes(depositMethod) : provider.depositCurrencies?.[depositMethod]?.includes(depositCurrency);
       if (provider.usdDepositMethods && !allowedFunding && !wiseFunding)
-        return downstreamError(provider.name + (depositCurrency === 'USD' ? '的本页美元入金路线使用美国USD收款指示，须通过SWIFT国际电汇' : '的本页' + depositCurrency + '原币入金使用本人账户生成的SWIFT电汇指示') + '；不能使用香港CHATS、FPS或eDDA。');
+        return downstreamError(provider.name + (depositCurrency === 'USD' ? '的本页美元入金路线使用美国USD收款指示，须通过SWIFT国际电汇；不能使用香港CHATS、FPS或eDDA。' : '的' + depositCurrency + '原币入金请选择FPS、eDDA或SWIFT，并使用本人账户对应的收款指示。'));
       const corporateReceivingBank = calculatorDepositBank({ broker: provider.id, bank: bank.id, depositMethod }, data);
       if (typeof requestedDepositMethod === 'string' && requestedDepositMethod.startsWith('via-') && (!fundingBank || fundingBank.id === bank.id || depositCurrency !== 'USD')) return downstreamError('经本人银行同行入金须使用券商已公布的同银行USD收款账户；当前银行与渠道不匹配。');
       if (depositMethod === 'internal' && !internalDeposit) return downstreamError('同行入金须使用券商已公布的同银行收款账户；此组合可改选本地转账。');
@@ -1835,7 +1835,10 @@
   function calculatorRoute(config) {
     const s = { ...config };
     if (s.broker === 'ibkr' && s.ibkrPricing === 'lite') {
-      s.broker = 'ibkr-lite'; s.depositMethod = 'swift'; s.depositHkd = ''; s.depositOtherCny = ''; s.entryPrice = '';
+      s.broker = 'ibkr-lite';
+      if (s.route === 'USD' || s.fxMode === 'bank') {
+        if (!['swift', 'wise'].includes(s.depositMethod)) { s.depositMethod = 'swift'; s.depositHkd = ''; s.depositOtherCny = ''; }
+      } else if (!['fps', 'edda', 'swift'].includes(s.depositMethod)) { s.depositMethod = 'fps'; s.depositHkd = ''; s.depositOtherCny = ''; }
       if (s.withdrawCurrency === 'CNH') { s.withdrawCurrency = 'USD'; s.brokerExitPrice = ''; s.inwardHkd = ''; s.intermediaryCny = ''; }
     }
     const paired = ({ boc: 'bochk', hsbc: 'hsbc', hang: 'hang', sc: 'sc' })[s.startBank] === s.bank;
@@ -1844,7 +1847,7 @@
       s.startBank === 'boc' && !paired && s.route !== 'CNH' ? 'boc-online' :
       paired && s.startBank !== 'boc' && !(s.startBank === 'sc' && s.route === 'CNH') ? 'linked' : 'swift';
     s.fxMode = s.route === 'USD' ? 'manual' : !supportsBrokerFx(s.broker) ? 'bank' : s.fxMode || 'manual';
-    s.depositMethod ||= ['ibkr-lite', 'firstrade', 'schwab'].includes(s.broker) ? 'swift' : ['hsbc', 'za'].includes(s.broker) && s.broker === s.bank ? 'internal' :
+    s.depositMethod ||= ['firstrade', 'schwab'].includes(s.broker) || s.broker === 'ibkr-lite' && (s.route === 'USD' || s.fxMode === 'bank') ? 'swift' : ['hsbc', 'za'].includes(s.broker) && s.broker === s.bank ? 'internal' :
       s.broker === 'usmart' && ['bochk', 'hsbc', 'icbc-asia'].includes(s.bank) || s.broker === 'chief' && ['bochk', 'hsbc', 'hang'].includes(s.bank) ? 'internal' :
       s.route === 'USD' || s.fxMode === 'bank' ? 'chats' : s.broker === 'chief' && s.route === 'CNH' ? 'edda' : 'fps';
     s.returnMethod ||= s.returnBank === 'bochk' && s.exitBank === 'boc' ? 'bochk-fast' :
