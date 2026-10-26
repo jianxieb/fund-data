@@ -396,12 +396,12 @@
     const tooltip = document.getElementById(item.querySelector('.flow-preset').getAttribute('aria-describedby'));
     if (!tooltip || item.hasAttribute('data-tooltip-dismissed')) return;
     hidePresetConditions(); tooltip.hidden = false;
-    const layout = item.closest('.flow-presets-layout'), rail = tooltip.parentElement;
+    const layout = item.closest('.flow-presets-layout');
     const offset = item.getBoundingClientRect().top - layout.getBoundingClientRect().top;
-    tooltip.style.top = Math.max(0, Math.min(offset, rail.getBoundingClientRect().height - tooltip.getBoundingClientRect().height)) + 'px';
+    tooltip.style.top = Math.max(0, Math.min(offset, layout.getBoundingClientRect().height - tooltip.getBoundingClientRect().height)) + 'px';
   }
-  // The right rail is outside the scrollable routes. Its width is reserved even
-  // while hidden, so opening conditions never covers or shifts another plan.
+  // Conditions float beyond the full-width routes; no column is reserved for
+  // them. The transparent bridge lets the pointer cross the external gap.
   document.addEventListener?.('keydown', event => {
     if (event.key !== 'Escape') return;
     hidePresetConditions();
@@ -413,7 +413,7 @@
   });
   for (const type of ['pointerout', 'focusout']) document.addEventListener?.(type, event => {
     const layout = event.target.closest?.('.flow-presets-layout');
-    if (layout && !layout.contains(event.relatedTarget)) hidePresetConditions();
+    if (layout && !layout.contains(event.relatedTarget) && !(type === 'pointerout' && layout.contains(document.activeElement))) hidePresetConditions();
   });
   const transferKeys = ['entryFx', 'sender', 'entryMiddle', 'entryInward'];
   const fundingKeys = ['depositBank', 'depositOther', 'depositBroker', 'brokerSpread', 'brokerFx'];
