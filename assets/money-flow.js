@@ -4,7 +4,7 @@
   const today = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Shanghai' });
   const availableChannels = config => M.calculatorChannels({ ...config, date: today() }, D);
   const defaults = { budgetCny: '100000', currency: 'CNY', plan: 'boc-za', activeStep: '01', startBank: 'boc', route: 'USD', bank: 'bochk', returnBank: 'bochk', exitBank: 'boc', outcome: 'broker-balance',
-    paymentConnectFeeWaived: true, mainlandMethod: 'boc-mobile', depositMethod: 'chats', fxMode: 'manual', returnMethod: '', returnCurrency: 'USD', comparison: 'start', count: '1', usedFreeTransfers: '0',
+    mainlandMethod: 'boc-mobile', depositMethod: 'chats', fxMode: 'manual', returnMethod: '', returnCurrency: 'USD', comparison: 'start', count: '1', usedFreeTransfers: '0',
     months: '12', balanceHkd: '0', returnBalanceHkd: '0', bankBalancesHkd: {}, profitUsd: '0', taxableCny: '', taxRate: '20', creditCny: '0', withdrawalIndex: '1', chequeIndex: '1', chequePreFilled: false, hsbcChequeNonCounter: false, tradeFeeUsd: '',
     broker: 'za', ibkrPricing: 'fixed', ibkrFundingVersion: 1, brokerWireChannel: 'online', sellDate: '', buyOrders: '1', sellOrders: '1', sharePriceUsd: '100', trade25: false, chiefMonthly: false, usmartPromo: false, zaLv2: false,
     bankFeeDefaultsVersion: 1, hsbcBalanceWaiver: true, hkHsbcFreeMonths: '0', zaPerksLevel: 'standard', zaSwiftUsed: '0', scCnhAccount: false, otherTurnoverHkd: '0', usedPromoOrders: '0', usmartDays: '0', useVoucher: false, voucherScope: 'platform', voucherUsd: '0', voucherOrders: '1', voucherExpiry: '',
@@ -19,6 +19,8 @@
   try { stored = JSON.parse(localStorage.getItem(STORE) || '{}') || {}; } catch (_) {}
   if (Object.keys(stored).length && !stored.outcome) stored.outcome = 'mainland';
   let state = { ...defaults, ...stored, currency: 'CNY' }, H, timer, modalKey;
+  const repairPaymentConnect = Object.hasOwn(state, 'paymentConnectFeeWaived');
+  if (repairPaymentConnect) delete state.paymentConnectFeeWaived;
   const repairIbkrLite = state.broker === 'ibkr' && state.ibkrPricing === 'lite';
   if (repairIbkrLite) state = M.calculatorRoute(state);
   // The previous Lite picker offered only SWIFT for original HKD/CNH.
@@ -104,7 +106,7 @@
   const esc = value => H.esc(value), num = (value, digits = 2) => Number.isFinite(Number(value)) && value != null ? H.money(Number(value), digits) : '—';
   const action = (label, act, extra = '', cls = 'btn') => H.action(label, 'money-flow-' + act, cls, extra);
   const save = () => { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (_) {} };
-  if (repairIbkrLite || repairLiteFunding || repairStoredEntry || repairBankFeeDefaults || repairConsumption || repairUsFunding) save();
+  if (repairIbkrLite || repairLiteFunding || repairStoredEntry || repairBankFeeDefaults || repairConsumption || repairUsFunding || repairPaymentConnect) save();
   const pct = value => {
     const percent = value * 100, magnitude = Math.abs(percent);
     const digits = magnitude > 0 && magnitude < .0005 ? Math.ceil(-Math.log10(magnitude)) + 2 : 3;
@@ -137,7 +139,7 @@
     const settlement = banks.find(bank => bank.id === broker?.integratedBank);
     const mainlandMethod = r?.mainlandMethod || state.mainlandMethod;
     if (stage === '01') {
-      if (mainlandMethod === 'payment-connect') keys.push(...D.paymentConnect.sources, D.paymentConnect.southbound.reportedSource,
+      if (mainlandMethod === 'payment-connect') keys.push(...D.paymentConnect.sources, ...(r?.rows?.find(item => item.key === 'sender')?.sources || []), D.paymentConnect.southbound.reportedSource,
         ...(D.paymentConnect.southbound.bankLimits[s.start?.id]?.sources || []), ...(D.paymentConnect.inwardSources[s.bank?.id] || []));
       if (mainlandMethod === 'boc-mobile' && s.start?.id === 'boc') keys.push('bocMobile2026', 'bocMobileUsdGuide');
       else if (mainlandMethod === 'boc-online' && s.start?.id === 'boc') keys.push('bocBankAnswer2026');
@@ -280,7 +282,8 @@
   }
   function sourceTariffCopy(bank) {
     if (!bank || !mainland.some(item => item.id === bank.id)) return '请选择目录中的出发银行。';
-    if (state.mainlandMethod === 'payment-connect') return state.paymentConnectFeeWaived ? '跨境支付通 · 按已享手续费豁免测算' : '跨境支付通 · 南向汇出服务费待确认';
+    if (state.mainlandMethod === 'payment-connect') return M.paymentConnectFeeReference({ ...state, startBank: bank.id, date: today() }, D) ?
+      '跨境支付通 · 公开案例参考费，实际报价优先' : '跨境支付通 · 该行该币种汇出服务费未取得';
     if (state.route !== 'CNH') {
       if (bank.id === 'cib' && today() > bank.commissionWaiver.until) return '外汇优惠已到期；按标准1‰、50–200元＋100元电讯费';
       return bank.feeText;
@@ -345,8 +348,7 @@
   }
   function toolbar() {
     visiblePresets = candidatePresets();
-    return '<div class="flow-toolbar"><h2>优选方案</h2><div>' + action('报价与依据', 'detail', 'data-value="quotes"', 'text-link') + action('重置', 'reset', '', 'text-link') + '</div></div>' +
-      '<div class="flow-presets" aria-label="优选方案">' + visiblePresets.map(p => {
+    const cards = visiblePresets.map(p => {
         const r = p.calculated.selected || p.calculated.partial;
         const original = D.preferredPlans.find(plan => plan.id === p.id).config;
         const actualQuotes = M.calculatorAdjustmentFields(state, D).some(key => (quoteKeys.includes(key) || key === 'tradeFeeUsd') && String(state[key] ?? '').trim() !== '');
@@ -376,22 +378,42 @@
         const conditions = [p.note?.replace(/^费用情景：/, ''), ...(p.conditions || []),
           ...(mainlandSpend ? [] : ['仅限支持Mastercard的内地商户；个人收款码、转账和充值不适用。'])].filter(Boolean);
         const tooltipId = 'flow-preset-conditions-' + p.id;
-        const tooltip = '<span class="flow-preset-tooltip" id="' + tooltipId + '" role="tooltip"><strong>方案条件</strong>' +
+        const tooltip = '<span class="flow-preset-tooltip" id="' + tooltipId + '" role="tooltip" hidden><strong>方案条件</strong>' +
           (missing ? '<span class="flow-preset-missing">缺项：' + esc(missing) + '</span>' : '') +
           conditions.map(text => '<span class="flow-preset-condition">' + esc(text) + '</span>').join('') +
           '<small>参考费率按10万元、买卖各1笔、持有12个月及管理费豁免测算。</small></span>';
-        return '<div class="flow-preset-item">' + action('<span class="flow-preset-route">' + route + '</span>' + price,
-          'preset', 'data-value="' + p.id + '" aria-pressed="' + applied + '" aria-describedby="' + tooltipId + '" aria-label="优选方案：' + esc(p.title) + '"', 'flow-preset') + tooltip + '</div>';
-      }).join('') + '</div>';
+        return { card: '<div class="flow-preset-item">' + action('<span class="flow-preset-route">' + route + '</span>' + price,
+          'preset', 'data-value="' + p.id + '" aria-pressed="' + applied + '" aria-describedby="' + tooltipId + '" aria-label="优选方案：' + esc(p.title) + '"', 'flow-preset') + '</div>', tooltip };
+      });
+    return '<div class="flow-toolbar"><h2>优选方案</h2><div>' + action('报价与依据', 'detail', 'data-value="quotes"', 'text-link') + action('重置', 'reset', '', 'text-link') + '</div></div>' +
+      '<div class="flow-presets-layout"><div class="flow-presets" aria-label="优选方案">' + cards.map(item => item.card).join('') +
+      '</div><aside class="flow-preset-details" aria-label="方案条件">' + cards.map(item => item.tooltip).join('') + '</aside></div>';
   }
-  // Conditions are readable on hover or keyboard focus, without changing row
-  // geometry. Escape dismisses them until the user enters the row again.
+  function hidePresetConditions() {
+    document.querySelectorAll('.flow-preset-tooltip').forEach(tooltip => { tooltip.hidden = true; });
+  }
+  function showPresetConditions(item) {
+    const tooltip = document.getElementById(item.querySelector('.flow-preset').getAttribute('aria-describedby'));
+    if (!tooltip || item.hasAttribute('data-tooltip-dismissed')) return;
+    hidePresetConditions(); tooltip.hidden = false;
+    const layout = item.closest('.flow-presets-layout'), rail = tooltip.parentElement;
+    const offset = item.getBoundingClientRect().top - layout.getBoundingClientRect().top;
+    tooltip.style.top = Math.max(0, Math.min(offset, rail.getBoundingClientRect().height - tooltip.getBoundingClientRect().height)) + 'px';
+  }
+  // The right rail is outside the scrollable routes. Its width is reserved even
+  // while hidden, so opening conditions never covers or shifts another plan.
   document.addEventListener?.('keydown', event => {
-    if (event.key === 'Escape') document.querySelectorAll('.flow-preset-item').forEach(item => item.setAttribute('data-tooltip-dismissed', ''));
+    if (event.key !== 'Escape') return;
+    hidePresetConditions();
+    document.querySelectorAll('.flow-preset-item').forEach(item => item.setAttribute('data-tooltip-dismissed', ''));
   });
   for (const type of ['pointerover', 'focusin']) document.addEventListener?.(type, event => {
     const item = event.target.closest?.('.flow-preset-item');
-    if (item && !item.contains(event.relatedTarget)) item.removeAttribute('data-tooltip-dismissed');
+    if (item && !item.contains(event.relatedTarget)) { item.removeAttribute('data-tooltip-dismissed'); showPresetConditions(item); }
+  });
+  for (const type of ['pointerout', 'focusout']) document.addEventListener?.(type, event => {
+    const layout = event.target.closest?.('.flow-presets-layout');
+    if (layout && !layout.contains(event.relatedTarget)) hidePresetConditions();
   });
   const transferKeys = ['entryFx', 'sender', 'entryMiddle', 'entryInward'];
   const fundingKeys = ['depositBank', 'depositOther', 'depositBroker', 'brokerSpread', 'brokerFx'];
@@ -539,8 +561,7 @@
     const channelControl = select('mainlandMethod', '汇款渠道', entryMethods())
       .replace('class="flow-field"', 'class="flow-field flow-inline-setting"').replace('<span>汇款渠道</span>', '<span>渠道</span>');
     const sourceControls = '<div class="flow-source-settings">' + select('route', '汇出币种', Object.entries(currencyNames)) +
-      '<div class="flow-source-secondary">' + countControl + channelControl + '</div>' +
-      (state.mainlandMethod === 'payment-connect' ? checkbox('paymentConnectFeeWaived', '已享跨境支付通手续费豁免') : '') + '</div>' +
+      '<div class="flow-source-secondary">' + countControl + channelControl + '</div></div>' +
       (r?.sourceRemainderCny > 1e-6 ? '<small>留在本账户 ' + cost(r.sourceRemainderCny) + '</small>' : '');
     const principal = nodeBalance(r, M.number(state.budgetCny), 'CNY', '人民币本金').replace('<small>人民币本金</small>', '<div class="flow-balance-label"><small>人民币本金</small>' + action('修改', 'detail', 'data-value="budget" aria-label="修改人民币本金" aria-haspopup="dialog"', 'text-link') + '</div>');
     let html = node('01', 'startBank', '内地出发银行', s.start, principal, sourceControls + mainlandAccountControl(s.start, r));
@@ -1075,7 +1096,7 @@
         esc(stage === '03' ? s.broker.fundingText : stage === 'trade' ? s.broker.feeText : s.broker.withdrawalText) + '</p>';
       if (stage === '01') {
         content += '<p>' + esc(transferHint() || sourceTariffCopy(s.start)) + '</p>';
-        if (state.mainlandMethod === 'payment-connect') content += paymentConnectDetails() + '<p>' + esc(D.paymentConnect.waiverEvidence) + '</p>';
+        if (state.mainlandMethod === 'payment-connect') content += paymentConnectDetails();
         if (s.start?.id === 'cib' && state.route === 'CNH' && state.mainlandMethod !== 'payment-connect') {
           content += '<p>人民币原币汇出不发生购汇；先用人民币购汇再汇出美元／港币，才适用寰宇人生的跨境外汇优惠。这里按普通寰宇人生卡计算，VIP等级减免另按本人实际费用。</p>';
           const sender = row(r, 'sender');

@@ -473,8 +473,8 @@ test('a missing settlement quote preserves all upstream trades and fees without 
   assert.equal(M.comparisonMetric(entry, 'bank').complete, false);
 });
 
-test('Payment Connect does not inherit SWIFT tariffs or pretend a historical free case is a current quote', () => {
-  const input = { ...mainlandConfig, bank: 'bochk', returnBank: 'bochk', route: 'CNH', depositMethod: 'fps', mainlandMethod: 'payment-connect' };
+test('Payment Connect without a scoped reference does not inherit SWIFT tariffs or historical free cases', () => {
+  const input = { ...mainlandConfig, startBank: 'icbc', bank: 'bochk', returnBank: 'bochk', route: 'CNH', depositMethod: 'fps', mainlandMethod: 'payment-connect' };
   const r = M.journeyPlans(input, D, richQuotes).selected;
   assert.ok(r); assert.equal(r.rankable, false);
   const sender = r.rows.find(row => row.key === 'sender');

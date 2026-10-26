@@ -1,0 +1,48 @@
+Browser tab: 9, Title: "长衡 · 跨境资金", URL: "http://127.0.0.1:8765/#money-flow".
+1 AXWebArea 长衡 · 跨境资金, URL: 127.0.0.1:8765/#money-flow
+	2 container 内地购汇与跨境汇款, ID: dialog
+		3 button 关闭弹窗
+		4 container flow-detail-live
+			5 heading 内地购汇与跨境汇款, Value: 2, ID: dialog-title
+				6 text 内地购汇与跨境汇款
+			7 text 跨境支付通本次汇出服务费
+			8 text 按山西中行2026-05-29公开人民币支付通案例参考：手续费及电报费0。不是其他开户地区或本人已获豁免的确认；实际收费可覆盖。
+			9 text 估算 0.00 CNY
+			10 text 人民币原币汇出（未换汇）
+			11 text 0.00 CNY
+			12 text 跨境支付通直连（无SWIFT中转）
+			13 text 0.00 CNY
+			14 text 香港首次汇入费
+			15 text 跨境支付通汇入手续费免
+			16 text 0.00 HKD
+			17 text 跨境支付通 · 公开案例参考费，实际报价优先
+			18 heading 支付通限额 · 2026-10-25复核, Value: 3
+				19 text 支付通限额 · 2026-10-25复核
+			20 definition list
+				21 container 南向 · 内地→香港
+					22 text 南向 · 内地→香港
+				23 text 共用每年等值50,000 USD购汇便利化额度，人民币汇出也占额度；服务时间通常07:00–23:00。
+				24 container 单笔与累计限额
+					25 text 单笔与累计限额
+				26 text 公开操作报道为单笔10,000 CNY，属于历史参考，不是四家银行现行统一承诺。各行支付通上限、非柜面／认证限额及本人剩余额度共同约束；不能将10万元费用情景视为单笔可汇，也不自动拆笔。
+				27 container 当前出发银行
+					28 text 当前出发银行
+				29 text 未取得中行现行支付通单笔／日／月统一公告；还缺本人年度剩余购汇额度及当日、当月可用金额／笔数。
+				30 container 北向 · 香港→内地
+					31 text 北向 · 香港→内地
+				32 text 香港身份证持有人，每人每家参与机构每日等值10,000 HKD、每年200,000 HKD；与每日80,000 CNY同名汇款限额独立。此上限不能套到南向。
+				33 container 用途
+					34 text 用途
+				35 text 人民银行规定为经常项目汇款，证券投资不因此获准。当前优选保留费用情景，不作渠道资格确认。
+			36 link Description: 香港金管局 · 跨境支付通资格与额度（2026-09-08） ↗, Value: hkma.gov.hk/chi/smart-consumers/payment-connect/
+			37 link Description: 人民银行 · 支付通限经常项目，机构另定单笔／累计限额 ↗, Value: big5.www.gov.cn/gate/big5/www.gov.cn/zhengce/202506/content_7028902.htm
+			38 link Description: 香港银行同业结算公司 · 现行支付通参与机构 ↗, Value: fps.hkicl.com.hk/schi/fps/consumers/payment_connect.php
+			39 link Description: 中国银行 · 跨境支付通南向人民币／港币到账 ↗, Value: boc.cn/aboutboc/bi1/202506/t20250620_25390382.html
+			40 link Description: 汇丰跨境支付通收款及免手续费说明 ↗, Value: hsbc.com.hk/zh-cn/transfer-payments/products/pay-abroad-with-fps/
+			41 link Description: 中行山西省分行供稿 · 2026-05-29新华网手机银行双免说明 ↗, Value: app.xinhuanet.com/news/article.html?articleId=202605292bb12419965b415d874dba730080d3af
+			42 link Description: 泉州晚报2025-06-24 · 南向单笔1万元操作观察（非现行统一公告） ↗, Value: szb.qzwb.com/qzwb/pc/att/202506/24/96db2871-a77f-4a64-a958-59fe1546e009.pdf
+			43 link Description: 中行 · 2026手机银行普通转账限额（不能替代支付通） ↗, Value: bankofchina.com/ebanking/service/cs1/201609/t20160908_7648060.html
+			44 link Description: 中国银行 · 个人金融现行标准价（电子渠道优惠另列） ↗, Value: pic.bankofchina.com/bocappd/pricelist/202511/P020251110646838136627.pdf
+			45 link Description: 汇丰香港 · 2026年8月1日收费表 ↗, Value: hsbc.com.hk/content/dam/hsbc/hk/tc/docs/ways-to-bank/bank-tariff/20260801-guide.pdf
+
+The focused UI element is 3 button 关闭弹窗

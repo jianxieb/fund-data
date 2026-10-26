@@ -1,0 +1,126 @@
+{
+  "date": "2026-10-26",
+  "quoteRefresh": false,
+  "quoteFileSha256": "03f35f9c79c7679ebb7ea9f30a2b1617414c0580b7ef454a771a0021559e0bdb",
+  "quoteFileUnchanged": true,
+  "preferredTotalValuesUnchanged": true,
+  "change": "Retire personal waiver flag; replace only the BOC RMB Payment Connect sender fee with an explicitly marked regional published reference. Unmatched unknown fees remain unknown.",
+  "plans": [
+    {
+      "id": "cnh-ibkr",
+      "costCny": 59.67538736647066,
+      "complete": true,
+      "sender": {
+        "key": "sender",
+        "label": "跨境支付通汇出服务费",
+        "cny": 0,
+        "step": "entry",
+        "items": [
+          {
+            "label": "跨境支付通本次汇出服务费",
+            "cny": 0,
+            "estimate": "按山西中行2026-05-29公开人民币支付通案例参考：手续费及电报费0。不是其他开户地区或本人已获豁免的确认；实际收费可覆盖。"
+          }
+        ],
+        "estimate": "按山西中行2026-05-29公开人民币支付通案例参考：手续费及电报费0。不是其他开户地区或本人已获豁免的确认；实际收费可覆盖。",
+        "evidence": "山西中行公开人民币支付通0费案例",
+        "sources": [
+          "bocMobile2026"
+        ]
+      }
+    },
+    {
+      "id": "cib-trade25",
+      "costCny": 1245.28091285655,
+      "complete": true,
+      "sender": {
+        "key": "sender",
+        "label": "内地汇出手续费＋电讯费",
+        "cny": 0,
+        "step": "entry",
+        "items": [
+          {
+            "label": "汇出手续费",
+            "cny": 0,
+            "evidence": ""
+          },
+          {
+            "label": "汇出电讯费",
+            "cny": 0,
+            "evidence": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "cib-za",
+      "costCny": 1271.540589491744,
+      "complete": true,
+      "sender": {
+        "key": "sender",
+        "label": "内地汇出手续费＋电讯费",
+        "cny": 0,
+        "step": "entry",
+        "items": [
+          {
+            "label": "汇出手续费",
+            "cny": 0,
+            "evidence": ""
+          },
+          {
+            "label": "汇出电讯费",
+            "cny": 0,
+            "evidence": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "boc-ibkr",
+      "costCny": 567.2266916971423,
+      "complete": true,
+      "sender": {
+        "key": "sender",
+        "label": "内地汇出手续费＋电讯费",
+        "cny": 0,
+        "step": "entry",
+        "evidence": "手机银行双免",
+        "items": [
+          {
+            "label": "汇出手续费",
+            "cny": 0,
+            "evidence": "手机银行双免"
+          },
+          {
+            "label": "汇出电讯费",
+            "cny": 0,
+            "evidence": "手机银行双免"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cib-wise-ibkr",
+      "costCny": 149.62447517185103,
+      "complete": true,
+      "sender": {
+        "key": "sender",
+        "label": "内地汇出手续费＋电讯费",
+        "cny": 0,
+        "step": "entry",
+        "items": [
+          {
+            "label": "汇出手续费",
+            "cny": 0,
+            "evidence": ""
+          },
+          {
+            "label": "汇出电讯费",
+            "cny": 0,
+            "evidence": ""
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -22,6 +22,11 @@
       checkedAt: '2026-10-25', mainlandBanks: ['boc', 'cib', 'cmb', 'icbc'],
       hkBanks: ['bochk', 'hsbc', 'za', 'hang', 'sc', 'icbc-asia'], currencies: ['CNH', 'HKD'],
       inwardHkd: { hsbc: 0, hang: 0, za: 0 }, inwardSources: { hsbc: ['paymentHsbcReceive'], hang: ['paymentHang'], za: ['paymentZaTariff'] },
+      outwardReferences: [
+        { bank: 'boc', currencies: ['CNH'], from: '2026-05-29', checkedAt: '2026-10-26', feeCny: 0,
+          evidence: '山西中行公开人民币支付通0费案例', sources: ['bocMobile2026'],
+          estimate: '按山西中行2026-05-29公开人民币支付通案例参考：手续费及电报费0。不是其他开户地区或本人已获豁免的确认；实际收费可覆盖。' }
+      ],
       sources: ['paymentCurrent', 'paymentPbc', 'paymentParticipants', 'bocPaymentConnect', 'paymentHsbcReceive'],
       southbound: { annualUsd: 50000, hours: '07:00–23:00', reportedTransactionCny: 10000,
         reportedSource: 'paymentSouthReport', bankLimits: {
@@ -31,8 +36,7 @@
           icbc: { status: '未取得工行现行支付通单笔／日／月统一公告', sources: ['icbcMobileLimits', 'paymentPbc'] }
         } },
       northbound: { dailyHkd: 10000, annualHkd: 200000, scope: '每人、每家参与机构', identity: '香港身份证持有人', sources: ['paymentCurrent', 'paymentHsbcReceive', 'paymentIcbcAsia'] },
-      condition: '南向共用年度等值50,000 USD便利化额度，另受银行单笔、累计及账户剩余额度约束。支付通限经常项目，不能据此认定境外证券入金用途获准。',
-      waiverEvidence: '按已享南向汇出手续费豁免测算；尚缺中行、兴业、招行、工行各自现行完整收费条款，不代表所有账户永久免费。香港收款费按各行证据独立计算。'
+      condition: '南向共用年度等值50,000 USD便利化额度，另受银行单笔、累计及账户剩余额度约束。支付通限经常项目，不能据此认定境外证券入金用途获准。'
     },
     localCnhReceipt: {
       checkedAt: '2026-10-25',
@@ -50,8 +54,8 @@
     },
     verificationReview: {
       checkedAt: '2026-10-26', items: [
-        { title: '支付通收款费', finding: '汇丰、恒生、ZA已核为免费收款，按银行独立计费。南向汇出费的豁免选择仍是本人的适用条件。',
-          remaining: '四家内地出发银行现行南向收费条款；中银香港、渣打、工银亚洲明确适用于南向收款的收费条款。北向发送免费不能替代收款证明。', sources: ['paymentHsbcReceive', 'paymentHang', 'paymentZaTariff'] },
+        { title: '支付通汇出与收款费', finding: '汇丰、恒生、ZA已核为免费收款，按银行独立计费。中行人民币汇出费采用山西分行2026-05-29公开0费案例作参考，实际费优先；取消默认豁免及其对收款费的推导。',
+          remaining: '中行其他开户地区及港币、兴业、招行、工行现行完整南向收费条款；中银香港、渣打、工银亚洲明确适用于南向收款的收费条款。北向发送免费不能替代收款证明。', sources: ['bocMobile2026', 'paymentHsbcReceive', 'paymentHang', 'paymentZaTariff'] },
         { title: 'IBKR人民币本地出金', finding: '每个纽约时间自然月前两次出金免费，之后CNH本地转账7 CNH、电汇60 CNH。汇丰、中银香港、恒生、ZA、渣打个人本地收款费已核为0；工银亚洲综合账户CHATS收款10 HKD、建行亚洲一般个人账户15 HKD。',
           remaining: '本人IBKR实体提供的CNH本地收款指示；工银亚洲、建行亚洲当笔实际清算渠道，确认CHATS后才应用对应费率。电汇第三方费用另列。', sources: ['ibFees', 'ibCnhWithdrawal', 'hsbcHk', 'bochk', 'hangHk', 'paymentZaTariff', 'scHk', 'icbcAsiaInward', 'ccbAsiaTariff'] },
         { title: 'IBKR换汇', finding: '已接入官网USD/CNH公开买卖盘；人民币买美元用ask，美元换人民币用bid。快照保留实时／延迟／休市状态。手动首档0.20基点、最低2 USD；自动换汇通常加减0.03%，不另收佣金。',
@@ -133,8 +137,8 @@
     preferredPlans: [
       { id: 'cnh-ibkr', title: '人民币原币 → 汇丰 → IBKR Pro → 汇丰人民币 → 内地刷卡',
         note: '费用情景：支付通限经常项目；10万元单笔未确认可汇',
-        conditions: ['证券入金用途须获银行确认；按支付通汇出费豁免测算。IBKR入金以本人账户收款指示为准。'],
-        config: { startBank: 'boc', bank: 'hsbc', broker: 'ibkr', returnBank: 'hsbc', exitBank: 'boc', route: 'CNH', mainlandMethod: 'payment-connect', paymentConnectFeeWaived: true, fxMode: 'manual', depositMethod: 'fps', outcome: 'cnh-card', withdrawCurrency: 'CNH', cnhWithdrawalMethod: 'local', cardMode: 'cnh' } },
+        conditions: ['汇出费按山西中行公开人民币0费案例参考，实际收费可覆盖。', '证券入金用途须获银行确认；IBKR入金以本人账户收款指示为准。'],
+        config: { startBank: 'boc', bank: 'hsbc', broker: 'ibkr', returnBank: 'hsbc', exitBank: 'boc', route: 'CNH', mainlandMethod: 'payment-connect', fxMode: 'manual', depositMethod: 'fps', outcome: 'cnh-card', withdrawCurrency: 'CNH', cnhWithdrawalMethod: 'local', cardMode: 'cnh' } },
       { id: 'cib-trade25', title: '兴业寰宇人生 → 汇丰Trade25 → 汇丰人民币 → 内地刷卡',
         conditions: ['须持兴业寰宇人生卡并已开通Trade25；汇款代理费按公开到账记录测算。', '汇丰换人民币使用本行牌价折算参考，实际报价优先。'],
         config: { startBank: 'cib', bank: 'hsbc', broker: 'hsbc', returnBank: 'hsbc', exitBank: 'boc', route: 'USD', mainlandMethod: 'swift', depositMethod: 'internal', outcome: 'cnh-card', withdrawCurrency: 'USD', cardMode: 'cnh', trade25: true } },
@@ -194,7 +198,7 @@
     ],
     evidenceGaps: [
       { bank: 'boc', channel: 'boc-mobile', checkedAt: '2026-10-11', items: ['USD/HKD同行路径代理费的银行资费依据'], source: 'bocMobileUsdGuide', finding: '2026-05-29中行山西省分行在新华网的供稿已确认手机银行向境外中行汇款手续费及电报费免；该两项不再仅依赖搜狐转载。2月9日同行SHA操作记录支持代理费0情景，仍不扩展成所有币种／汇路的代理费豁免。' },
-      { bank: 'boc', channel: 'payment-connect', checkedAt: '2026-10-25', items: ['四家出发银行各自现行南向服务费条款', '银行支付通单笔／日／月上限及本人剩余额度'], source: 'paymentCurrent', finding: '南向年度50,000 USD与北向每机构每日10,000／每年200,000 HKD分别已核。公开报道中的南向单笔10,000 CNY仅作操作参考；普通手机银行转账限额不替代支付通上限，未将10万元情景标作单笔可执行。汇丰、恒生、ZA收款免费已分别核实。' },
+      { bank: 'boc', channel: 'payment-connect', checkedAt: '2026-10-26', items: ['四家出发银行各自现行南向服务费条款', '银行支付通单笔／日／月上限及本人剩余额度'], source: 'paymentCurrent', finding: '限额沿用2026-10-25核查：南向年度50,000 USD，北向每机构每日10,000／每年200,000 HKD；南向单笔10,000 CNY仅为操作参考，未将10万元情景标作单笔可执行。2026-10-26补核山西中行人民币支付通0费供稿，仅作有来源参考，非全国费表或本人豁免。汇丰、恒生、ZA收款免费继续使用各自条款；其他未知收费不归零。' },
       { bank: 'comm', kind: 'regional', checkedAt: '2026-10-09', items: ['地区适用费率'], source: 'comm', finding: '2026年5月名录已核实：个人网银／手机银行0.5‰–0.8‰，最低20–40元，最高200元；港澳台电报费80–150元。官方明确各地分行定价不同，显示公开区间，不任取最低价。' },
       { bank: 'sc', scope: 'mainland', checkedAt: '2026-10-12', items: ['USD/CNY及HKD/CNY账户成交买卖价'], source: 'scFx', finding: '内地个人外汇报价须账户询价，不能借其他银行价格。' },
       { bank: 'sc', scope: 'hk', checkedAt: '2026-10-25', items: ['USD/HKD及USD/CNH个人账户成交买卖价'], source: 'scHkFx', finding: '香港个人外汇交易价格经SC Mobile或网上理财提供；会员折扣不是完整成交价，不用内地报价入口替代。' },

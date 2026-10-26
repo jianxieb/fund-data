@@ -1,0 +1,607 @@
+{
+  "url": "http://127.0.0.1:8765/#money-flow",
+  "date": "2026-10-26",
+  "rows": [
+    {
+      "insideRail": true,
+      "list": {
+        "bottom": 467.1953125,
+        "height": 411,
+        "left": 250,
+        "right": 911,
+        "top": 56.1953125,
+        "width": 661,
+        "x": 250,
+        "y": 56.1953125
+      },
+      "listScrollLeft": 0,
+      "outsideList": true,
+      "rows": [
+        {
+          "rect": {
+            "bottom": 128.1953125,
+            "height": 72,
+            "left": 250,
+            "right": 1350,
+            "top": 56.1953125,
+            "width": 1100,
+            "x": 250,
+            "y": 56.1953125
+          },
+          "topInDocument": 231.6953125
+        },
+        {
+          "rect": {
+            "bottom": 209.1953125,
+            "height": 72,
+            "left": 250,
+            "right": 1350,
+            "top": 137.1953125,
+            "width": 1100,
+            "x": 250,
+            "y": 137.1953125
+          },
+          "topInDocument": 312.6953125
+        },
+        {
+          "rect": {
+            "bottom": 290.1953125,
+            "height": 72,
+            "left": 250,
+            "right": 1350,
+            "top": 218.1953125,
+            "width": 1100,
+            "x": 250,
+            "y": 218.1953125
+          },
+          "topInDocument": 393.6953125
+        },
+        {
+          "rect": {
+            "bottom": 371.1953125,
+            "height": 72,
+            "left": 250,
+            "right": 1350,
+            "top": 299.1953125,
+            "width": 1100,
+            "x": 250,
+            "y": 299.1953125
+          },
+          "topInDocument": 474.6953125
+        },
+        {
+          "rect": {
+            "bottom": 452.1953125,
+            "height": 72,
+            "left": 250,
+            "right": 1350,
+            "top": 380.1953125,
+            "width": 1100,
+            "x": 250,
+            "y": 380.1953125
+          },
+          "topInDocument": 555.6953125
+        }
+      ],
+      "tooltip": "flow-preset-conditions-cnh-ibkr",
+      "tooltipRect": {
+        "bottom": 351.796875,
+        "height": 295.6015625,
+        "left": 927,
+        "right": 1227,
+        "top": 56.1953125,
+        "width": 300,
+        "x": 927,
+        "y": 56.1953125
+      }
+    },
+    {
+      "insideRail": true,
+      "list": {
+        "bottom": 468.1953125,
+        "height": 411,
+        "left": 250,
+        "right": 911,
+        "top": 57.1953125,
+        "width": 661,
+        "x": 250,
+        "y": 57.1953125
+      },
+      "listScrollLeft": 0,
+      "outsideList": true,
+      "rows": [
+        {
+          "rect": {
+            "bottom": 129.1953125,
+            "height": 72,
+            "left": 250,
+            "right": 1350,
+            "top": 57.1953125,
+            "width": 1100,
+            "x": 250,
+            "y": 57.1953125
+          },
+          "topInDocument": 231.6953125
+        },
+        {
+          "rect": {
+            "bottom": 210.1953125,
+            "height": 72,
+            "left": 250,
+            "right": 1350,
+            "top": 138.1953125,
+            "width": 1100,
+            "x": 250,
+            "y": 138.1953125
+          },
+          "topInDocument": 312.6953125
+        },
+        {
+          "rect": {
+            "bottom": 291.1953125,
+            "height": 72,
+            "left": 250,
+            "right": 1350,
+            "top": 219.1953125,
+            "width": 1100,
+            "x": 250,
+            "y": 219.1953125
+          },
+          "topInDocument": 393.6953125
+        },
+        {
+          "rect": {
+            "bottom": 372.1953125,
+            "height": 72,
+            "left": 250,
+            "right": 1350,
+            "top": 300.1953125,
+            "width": 1100,
+            "x": 250,
+            "y": 300.1953125
+          },
+          "topInDocument": 474.6953125
+        },
+        {
+          "rect": {
+            "bottom": 453.1953125,
+            "height": 72,
+            "left": 250,
+            "right": 1350,
+            "top": 381.1953125,
+            "width": 1100,
+            "x": 250,
+            "y": 381.1953125
+          },
+          "topInDocument": 555.6953125
+        }
+      ],
+      "tooltip": "flow-preset-conditions-cib-trade25",
+      "tooltipRect": {
+        "bottom": 405.3515625,
+        "height": 267.15625,
+        "left": 927,
+        "right": 1227,
+        "top": 138.1953125,
+        "width": 300,
+        "x": 927,
+        "y": 138.1953125
+      }
+    },
+    {
+      "insideRail": true,
+      "list": {
+        "bottom": 468.6953125,
+        "height": 411,
+        "left": 250,
+        "right": 911,
+        "top": 57.6953125,
+        "width": 661,
+        "x": 250,
+        "y": 57.6953125
+      },
+      "listScrollLeft": 0,
+      "outsideList": true,
+      "rows": [
+        {
+          "rect": {
+            "bottom": 129.6953125,
+            "height": 72,
+            "left": 250,
+            "right": 1350,
+            "top": 57.6953125,
+            "width": 1100,
+            "x": 250,
+            "y": 57.6953125
+          },
+          "topInDocument": 231.6953125
+        },
+        {
+          "rect": {
+            "bottom": 210.6953125,
+            "height": 72,
+            "left": 250,
+            "right": 1350,
+            "top": 138.6953125,
+            "width": 1100,
+            "x": 250,
+            "y": 138.6953125
+          },
+          "topInDocument": 312.6953125
+        },
+        {
+          "rect": {
+            "bottom": 291.6953125,
+            "height": 72,
+            "left": 250,
+            "right": 1350,
+            "top": 219.6953125,
+            "width": 1100,
+            "x": 250,
+            "y": 219.6953125
+          },
+          "topInDocument": 393.6953125
+        },
+        {
+          "rect": {
+            "bottom": 372.6953125,
+            "height": 72,
+            "left": 250,
+            "right": 1350,
+            "top": 300.6953125,
+            "width": 1100,
+            "x": 250,
+            "y": 300.6953125
+          },
+          "topInDocument": 474.6953125
+        },
+        {
+          "rect": {
+            "bottom": 453.6953125,
+            "height": 72,
+            "left": 250,
+            "right": 1350,
+            "top": 381.6953125,
+            "width": 1100,
+            "x": 250,
+            "y": 381.6953125
+          },
+          "topInDocument": 555.6953125
+        }
+      ],
+      "tooltip": "flow-preset-conditions-cib-za",
+      "tooltipRect": {
+        "bottom": 468.6953125,
+        "height": 267.15625,
+        "left": 927,
+        "right": 1227,
+        "top": 201.5390625,
+        "width": 300,
+        "x": 927,
+        "y": 201.5390625
+      }
+    },
+    {
+      "insideRail": true,
+      "list": {
+        "bottom": 469.6953125,
+        "height": 411,
+        "left": 250,
+        "right": 911,
+        "top": 58.6953125,
+        "width": 661,
+        "x": 250,
+        "y": 58.6953125
+      },
+      "listScrollLeft": 0,
+      "outsideList": true,
+      "rows": [
+        {
+          "rect": {
+            "bottom": 130.6953125,
+            "height": 72,
+            "left": 250,
+            "right": 1350,
+            "top": 58.6953125,
+            "width": 1100,
+            "x": 250,
+            "y": 58.6953125
+          },
+          "topInDocument": 231.6953125
+        },
+        {
+          "rect": {
+            "bottom": 211.6953125,
+            "height": 72,
+            "left": 250,
+            "right": 1350,
+            "top": 139.6953125,
+            "width": 1100,
+            "x": 250,
+            "y": 139.6953125
+          },
+          "topInDocument": 312.6953125
+        },
+        {
+          "rect": {
+            "bottom": 292.6953125,
+            "height": 72,
+            "left": 250,
+            "right": 1350,
+            "top": 220.6953125,
+            "width": 1100,
+            "x": 250,
+            "y": 220.6953125
+          },
+          "topInDocument": 393.6953125
+        },
+        {
+          "rect": {
+            "bottom": 373.6953125,
+            "height": 72,
+            "left": 250,
+            "right": 1350,
+            "top": 301.6953125,
+            "width": 1100,
+            "x": 250,
+            "y": 301.6953125
+          },
+          "topInDocument": 474.6953125
+        },
+        {
+          "rect": {
+            "bottom": 454.6953125,
+            "height": 72,
+            "left": 250,
+            "right": 1350,
+            "top": 382.6953125,
+            "width": 1100,
+            "x": 250,
+            "y": 382.6953125
+          },
+          "topInDocument": 555.6953125
+        }
+      ],
+      "tooltip": "flow-preset-conditions-boc-ibkr",
+      "tooltipRect": {
+        "bottom": 469.6953125,
+        "height": 217.265625,
+        "left": 927,
+        "right": 1227,
+        "top": 252.4296875,
+        "width": 300,
+        "x": 927,
+        "y": 252.4296875
+      }
+    },
+    {
+      "insideRail": true,
+      "list": {
+        "bottom": 470.1953125,
+        "height": 411,
+        "left": 250,
+        "right": 911,
+        "top": 59.1953125,
+        "width": 661,
+        "x": 250,
+        "y": 59.1953125
+      },
+      "listScrollLeft": 0,
+      "outsideList": true,
+      "rows": [
+        {
+          "rect": {
+            "bottom": 131.1953125,
+            "height": 72,
+            "left": 250,
+            "right": 1350,
+            "top": 59.1953125,
+            "width": 1100,
+            "x": 250,
+            "y": 59.1953125
+          },
+          "topInDocument": 231.6953125
+        },
+        {
+          "rect": {
+            "bottom": 212.1953125,
+            "height": 72,
+            "left": 250,
+            "right": 1350,
+            "top": 140.1953125,
+            "width": 1100,
+            "x": 250,
+            "y": 140.1953125
+          },
+          "topInDocument": 312.6953125
+        },
+        {
+          "rect": {
+            "bottom": 293.1953125,
+            "height": 72,
+            "left": 250,
+            "right": 1350,
+            "top": 221.1953125,
+            "width": 1100,
+            "x": 250,
+            "y": 221.1953125
+          },
+          "topInDocument": 393.6953125
+        },
+        {
+          "rect": {
+            "bottom": 374.1953125,
+            "height": 72,
+            "left": 250,
+            "right": 1350,
+            "top": 302.1953125,
+            "width": 1100,
+            "x": 250,
+            "y": 302.1953125
+          },
+          "topInDocument": 474.6953125
+        },
+        {
+          "rect": {
+            "bottom": 455.1953125,
+            "height": 72,
+            "left": 250,
+            "right": 1350,
+            "top": 383.1953125,
+            "width": 1100,
+            "x": 250,
+            "y": 383.1953125
+          },
+          "topInDocument": 555.6953125
+        }
+      ],
+      "tooltip": "flow-preset-conditions-cib-wise-ibkr",
+      "tooltipRect": {
+        "bottom": 470.1953125,
+        "height": 295.6015625,
+        "left": 927,
+        "right": 1227,
+        "top": 174.59375,
+        "width": 300,
+        "x": 927,
+        "y": 174.59375
+      }
+    }
+  ],
+  "escape": true,
+  "keyboard": {
+    "active": "优选方案：兴业寰宇人生 → 汇丰Trade25 → 汇丰人民币 → 内地刷卡",
+    "tooltip": "flow-preset-conditions-cib-trade25"
+  },
+  "horizontal": {
+    "listRight": 911,
+    "prices": [
+      {
+        "rect": {
+          "bottom": 111.1953125,
+          "height": 46,
+          "left": 796,
+          "right": 896,
+          "top": 65.1953125,
+          "width": 100,
+          "x": 796,
+          "y": 65.1953125
+        },
+        "text": "全程参考\n0.060%"
+      },
+      {
+        "rect": {
+          "bottom": 192.1953125,
+          "height": 46,
+          "left": 796,
+          "right": 896,
+          "top": 146.1953125,
+          "width": 100,
+          "x": 796,
+          "y": 146.1953125
+        },
+        "text": "全程参考\n1.245%"
+      },
+      {
+        "rect": {
+          "bottom": 273.1953125,
+          "height": 46,
+          "left": 796,
+          "right": 896,
+          "top": 227.1953125,
+          "width": 100,
+          "x": 796,
+          "y": 227.1953125
+        },
+        "text": "全程参考\n1.272%"
+      },
+      {
+        "rect": {
+          "bottom": 354.1953125,
+          "height": 46,
+          "left": 796,
+          "right": 896,
+          "top": 308.1953125,
+          "width": 100,
+          "x": 796,
+          "y": 308.1953125
+        },
+        "text": "全程参考\n0.567%"
+      },
+      {
+        "rect": {
+          "bottom": 435.1953125,
+          "height": 46,
+          "left": 796,
+          "right": 896,
+          "top": 389.1953125,
+          "width": 100,
+          "x": 796,
+          "y": 389.1953125
+        },
+        "text": "全程参考\n0.150%"
+      }
+    ],
+    "rows": [
+      {
+        "height": 72,
+        "left": -189
+      },
+      {
+        "height": 72,
+        "left": -189
+      },
+      {
+        "height": 72,
+        "left": -189
+      },
+      {
+        "height": 72,
+        "left": -189
+      },
+      {
+        "height": 72,
+        "left": -189
+      }
+    ],
+    "scrollLeft": 439,
+    "tooltipLeft": 927
+  },
+  "leave": true,
+  "payment": {
+    "noWaiverControl": true,
+    "sections": [
+      {
+        "label": "内地出发银行",
+        "rect": {
+          "bottom": 320.6953125,
+          "height": 156,
+          "left": 250,
+          "right": 1227,
+          "top": 164.6953125,
+          "width": 977,
+          "x": 250,
+          "y": 164.6953125
+        },
+        "text": "01\n内地出发银行\n中国银行\n人民币本金\n修改\n250,000.00 CNY\n汇出币种\n人民币原币\n美元\n港币\n笔数\n1笔\n渠道\n跨境支付通"
+      },
+      {
+        "label": "汇往香港",
+        "rect": {
+          "bottom": 469.6953125,
+          "height": 141,
+          "left": 250,
+          "right": 1227,
+          "top": 328.6953125,
+          "width": 977,
+          "x": 250,
+          "y": 328.6953125
+        },
+        "text": "参考费用\n0.000%\n0.00 CNY\n汇往香港\n明细\n\n南向年度共用50,000 USD；本次约250,000.00 CNY/笔。超过公开操作参考的单笔1万元，未确认可汇。\n\n跨境支付通本次汇出服务费\n参考 0.00 CNY\n代理费\n0.00 CNY\n香港汇入\n0.00 CNY"
+      }
+    ],
+    "sourceDetailHasRegionalReference": true,
+    "sourceDetailHasOriginalLink": true
+  },
+  "console": []
+}

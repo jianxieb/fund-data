@@ -1,0 +1,76 @@
+{
+  "checkedAt": "2026-10-26T14:03:10.459448+00:00",
+  "evidenceType": "fee-source-review",
+  "quoteRefresh": false,
+  "activeReference": {
+    "bank": "boc",
+    "currency": "CNH",
+    "channel": "payment-connect",
+    "feeCny": 0,
+    "source": "bocMobile2026",
+    "sourceScope": "Shanxi branch published case",
+    "actualOverride": "senderFeeCny"
+  },
+  "rejectedInference": "paymentConnectFeeWaived does not provide either an outward or inward tariff",
+  "requests": [
+    {
+      "sourceId": "bocMobile2026",
+      "page": "https://app.xinhuanet.com/news/article.html?articleId=202605292bb12419965b415d874dba730080d3af",
+      "method": "GET",
+      "parameters": {
+        "articleId": "202605292bb12419965b415d874dba730080d3af"
+      },
+      "publishedAt": "2026-05-29",
+      "interpretation": "Used only as the Shanxi BOC RMB Payment Connect fee reference. A regional bank-authored report, not a personal waiver or national current tariff.",
+      "status": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "sha256": "edec28c5fa862b74d93830f50652de4e88d6992d67a5a949e66de6d0cca73c3b",
+      "bytes": 19951
+    },
+    {
+      "sourceId": "bocPaymentConnect",
+      "page": "https://www.boc.cn/aboutboc/bi1/202506/t20250620_25390382.html",
+      "method": "GET",
+      "parameters": {},
+      "publishedAt": "2025-06-20",
+      "interpretation": "Describes southbound RMB/HKD access and favourable pricing, but does not specify a sender fee.",
+      "status": 200,
+      "contentType": "text/html",
+      "sha256": "617c0f583e2d1f9c993ebf06bb2c336dd91690b42a9ea3bd6638efc48be01934",
+      "bytes": 28476
+    },
+    {
+      "sourceId": "cibPaymentService",
+      "page": "https://www.cib.com.cn/cn/aboutCIB/about/notice/2026/20260819_1.html",
+      "method": "GET",
+      "parameters": {},
+      "publishedAt": "2026-08-19",
+      "interpretation": "Maintenance notice only; not a fee quote.",
+      "status": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "sha256": "2b59b865a772c31083b9e33950a508f367f3b412952c1e60243a52e5af21a394",
+      "bytes": 5087
+    },
+    {
+      "sourceId": "icbcFujianPaymentReport",
+      "page": "https://money.fjsen.com/2025-06/26/content_31931886.htm",
+      "method": "GET",
+      "parameters": {},
+      "publishedAt": "2025-06-26",
+      "interpretation": "Bank-authored Fujian launch report of temporarily free southbound transfers. Recorded but not promoted to a nationwide current tariff.",
+      "error": "<urlopen error _ssl.c:1112: The handshake operation timed out>"
+    },
+    {
+      "sourceId": "bocElectronicTariff",
+      "page": "https://pic.bankofchina.com/bocappd/pricelist/202511/P020251110646093390083.pdf",
+      "method": "GET",
+      "parameters": {},
+      "publishedAt": "2025-11-11",
+      "interpretation": "Current linked e-banking price chapter has no Payment Connect line in the extracted web text. Not substituted with the ordinary wire tariff.",
+      "status": 200,
+      "contentType": "application/pdf",
+      "sha256": "6990ba5bc0d7603168098867b42785d3ea6b823824a3f6fabcda46dd6c155793",
+      "bytes": 182001
+    }
+  ]
+}

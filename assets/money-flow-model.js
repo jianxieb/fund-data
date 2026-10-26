@@ -1038,8 +1038,8 @@
       // The bank-authored mobile waiver covers sending fees. The observed
       // SHA intermediary charge remains a separate source and fee item.
       const reportedMobile = bocMobile && !!data.bocMobileEvidence;
-      const paymentWaived = paymentConnect && config.paymentConnectFeeWaived === true;
-      const effectiveSender = senderOverride ?? (paymentWaived ? 0 : reportedMobile ? data.bocMobileEvidence.feeCny + data.bocMobileEvidence.telegramCny : null);
+      const paymentFee = paymentConnectFeeReference({ mainlandMethod, startBank: start.id, route: currency, date: config.date }, data);
+      const effectiveSender = senderOverride ?? paymentFee?.feeCny ?? (reportedMobile ? data.bocMobileEvidence.feeCny + data.bocMobileEvidence.telegramCny : null);
       const currencyTariff = currency === 'CNH' && typeof start.cnhTariff === 'object' ? start.cnhTariff : start.standardTariff;
       const standardTariff = mainlandMethod === 'swift' && currencyTariff &&
         (!currencyTariff.currencies || currencyTariff.currencies.includes(currency)) && currencyTariff;
@@ -1138,8 +1138,9 @@
         rows[0].estimate = '所选汇路未取得SWIFT Go开通记录，仅按50元服务资费测算';
         rows[0].items.forEach(item => { item.estimate = item.label.startsWith('SWIFT GO') ? rows[0].estimate : false; });
       }
-      if (paymentConnect) Object.assign(rows[0], { label: '跨境支付通汇出服务费', items: [{ label: senderOverride == null ? '跨境支付通本次汇出服务费' : '本人报价：跨境支付通汇出服务费', cny: effectiveSender == null ? null : effectiveSender * count }],
-        ...(paymentWaived && senderOverride == null ? { estimate: data.paymentConnect.waiverEvidence, evidence: '已享手续费豁免', sources: data.paymentConnect.sources } : {}) });
+      if (paymentConnect) Object.assign(rows[0], { label: '跨境支付通汇出服务费', items: [{ label: senderOverride == null ? '跨境支付通本次汇出服务费' : '本人报价：跨境支付通汇出服务费', cny: effectiveSender == null ? null : effectiveSender * count,
+        ...(paymentFee && senderOverride == null ? { estimate: paymentFee.estimate } : {}) }],
+        ...(paymentFee && senderOverride == null ? { estimate: paymentFee.estimate, evidence: paymentFee.evidence, sources: paymentFee.sources } : {}) });
       if (unknownSender) {
         const rangeCny = mainlandMethod === 'swift' ? senderFeeRange(start, budget, count, used, config.date, currency) : null;
         const status = rangeCny ? '按地区定价' : bocMobile ? '2026优惠公告未查到' : paymentConnect ? start.name + '南向支付通现行服务费条款未取得' :
@@ -1185,14 +1186,13 @@
       add('entryMiddle', paymentConnect ? '跨境支付通直连（无SWIFT中转）' : '内地→香港中转行费', entryMiddle == null ? null : entryMiddle * count, 'entry');
       Object.assign(rows[rows.length - 1], entryMiddleEvidence);
       const paymentInward = paymentConnect ? data.paymentConnect.inwardHkd?.[bank.id] : null;
-      const inward = own('entryInwardHkd', isSelectedBank) ?? (paymentConnect ? paymentInward ?? (paymentWaived ? 0 : null) : swiftGo || includedEntryInward ? 0 : inwardFee(bank, balance * refs[currency] / refs.HKD / count, start.group, false, config.date, config));
+      const inward = own('entryInwardHkd', isSelectedBank) ?? (paymentConnect ? paymentInward ?? null : swiftGo || includedEntryInward ? 0 : inwardFee(bank, balance * refs[currency] / refs.HKD / count, start.group, false, config.date, config));
       add('entryInward', '香港首次汇入费', inward == null ? null : inward * refs.HKD * count, 'entry');
       if (own('entryInwardHkd', isSelectedBank) == null && !includedEntryInward && !paymentConnect && bank.groupMobileWaiver && sameGroup) Object.assign(rows[rows.length - 1], {
         evidence: groupMobileWaived(bank, config.date, config) ? 'e账通优惠期 · 本行基本费免' : '工银亚洲集团汇入标准60 HKD/笔；e账通绑定优惠独立',
         sources: ['icbcAsiaInward', 'icbcAsiaInwardOffer'] });
       if (paymentConnect && own('entryInwardHkd', isSelectedBank) == null) Object.assign(rows[rows.length - 1], paymentInward != null ?
-        { evidence: '跨境支付通汇入手续费免', sources: data.paymentConnect.inwardSources[bank.id] } :
-        paymentWaived ? { estimate: data.paymentConnect.waiverEvidence, sources: data.paymentConnect.sources } : {});
+        { evidence: '跨境支付通汇入手续费免', sources: data.paymentConnect.inwardSources[bank.id] } : {});
       if (includedEntryInward && own('entryInwardHkd', isSelectedBank) == null) Object.assign(rows[rows.length - 1], fullAmountEvidence);
       let trading = null, taxCny = 0;
       const downstreamError = (error, errorStage = '03', errorAction = errorStage, errorField) => ({ error, errorStage, errorAction, errorField, rows: [...rows.map(row =>
@@ -1683,7 +1683,7 @@
       if (start.condition) requirements.push(start.condition);
       if (swiftGo) requirements.push('仅适用兴业App为该收款账户提供SWIFT GO的交易；50元/笔涵盖境外行费用。普通电汇不适用此报价。');
       if (bocMobile) requirements.push(data.bocMobileEvidence.note);
-      if (paymentConnect) requirements.push(data.paymentConnect.condition, ...(paymentWaived ? [data.paymentConnect.waiverEvidence] : []));
+      if (paymentConnect) requirements.push(data.paymentConnect.condition, ...(paymentFee ? [paymentFee.estimate] : []));
       if (wiseFunding) requirements.push(wiseFunding.condition, wiseFunding.evidence);
       if (returnMethod === 'linked') requirements.push('回款须已登记' + returning.name + '两地同名专用转账');
       if (bank.thresholdHkd && accountItems[0].cny > 0) requirements.push(bank.name + '尚未确认免月费资格，已按标准月费计入');
@@ -1974,6 +1974,11 @@
     if (s.outcome === 'mainland' && !['USD', 'HKD'].includes(s.returnCurrency || 'USD')) return '回款币种须为美元或港币。';
     return '';
   }
+  function paymentConnectFeeReference(config, data) {
+    if (config.mainlandMethod !== 'payment-connect') return null;
+    return data.paymentConnect?.outwardReferences?.find(item => item.bank === config.startBank && item.currencies.includes(config.route) &&
+      config.date >= item.from && knownFee(item.feeCny)) || null;
+  }
   function calculatorJourney(config, data, quotes) {
     if (config.broker === 'ibkr' && config.ibkrPricing === 'lite') config = calculatorRoute(config);
     const issue = calculatorIssue(config, data);
@@ -2099,5 +2104,5 @@
     return result;
   }
   function catalogueBroker(id, data) { return data.calculator.brokers.includes(id) ? id : 'za'; }
-  return { supportsBrokerFx, mainlandCardMode, cnhCardMode, mainlandCashProfile, cashWithdrawal, calculatorRoute, calculatorChannels, calculatorFundingBank, calculatorDepositBank, calculatorIssue, calculatorJourney, calculatorRecommendations, calculatorPreferredPlans, displayedTradingFees, calculatorAccountState, calculatorAdjustmentFields, roundedCosts, number, reference, telegramAllowance, fee, remitPrincipal, senderFeeRange, inwardFee, groupMobileWaived, outwardFee, zaPerksLevel, swiftFee, localUsdChequeFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
+  return { paymentConnectFeeReference, supportsBrokerFx, mainlandCardMode, cnhCardMode, mainlandCashProfile, cashWithdrawal, calculatorRoute, calculatorChannels, calculatorFundingBank, calculatorDepositBank, calculatorIssue, calculatorJourney, calculatorRecommendations, calculatorPreferredPlans, displayedTradingFees, calculatorAccountState, calculatorAdjustmentFields, roundedCosts, number, reference, telegramAllowance, fee, remitPrincipal, senderFeeRange, inwardFee, groupMobileWaived, outwardFee, zaPerksLevel, swiftFee, localUsdChequeFee, maintenance, legalPath, eligible, opportunityCost, fxRoundTripLoss, mainlandTransfer, brokerFx, taxReserve, offshoreTransfer, consumption, journeyPlans, mainlandJourney, depositFee, localUsdTransfer, returnFee, quoteFresh, quotedMainlandBanks, purchaseComparison, selectedBroker, cappedCharge, brokerTradingFees, voucherState, flowLedger, diagramLedger, comparisonMetric, routeConfiguration, applyRoute, routeKeys, bankQuoteKeys };
 }));

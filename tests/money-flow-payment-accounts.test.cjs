@@ -37,23 +37,53 @@ test('Payment Connect participants support CNH/HKD but never a USD transfer', ()
   }
   assert.match(run({ route: 'USD', mainlandMethod: 'payment-connect' }).error, /不支持美元/);
 });
-test('Payment Connect waiver is a named condition, isolated from ordinary wire fees and overrides', () => {
-  for (const startBank of D.calculator.departureBanks) for (const bank of ['bochk', 'hsbc', 'hang']) {
-    const r = run({ startBank, bank, mainlandMethod: 'payment-connect', paymentConnectFeeWaived: true, count: 3 }).selected;
-    assert.ok(r, startBank + bank);
-    for (const key of ['sender', 'entryMiddle', 'entryInward']) close(row(r, key).cny, 0);
-    close(r.steps.hongKong, 100000); assert.match(row(r, 'sender').estimate, /豁免/);
-    assert.equal(r.rankable, false);
-    assert.ok(r.requirements.some(x => x.includes('银行单笔、累计')));
+test('Payment Connect never turns missing sender or receiving tariffs into zero through the retired waiver', () => {
+  for (const startBank of ['cib', 'cmb', 'icbc']) for (const bank of ['bochk', 'hsbc', 'hang']) {
+    for (const paymentConnectFeeWaived of [true, false, undefined]) {
+      const r = run({ startBank, bank, mainlandMethod: 'payment-connect', paymentConnectFeeWaived, count: 3 }).selected;
+      assert.ok(r, startBank + bank);
+      assert.equal(row(r, 'sender').cny, null);
+      close(row(r, 'entryMiddle').cny, 0);
+      assert.equal(row(r, 'entryInward').cny, bank === 'bochk' ? null : 0);
+      assert.equal(r.complete, false); assert.equal(r.rankable, false);
+      assert.ok(r.requirements.some(x => x.includes('银行单笔、累计')));
+    }
   }
-  const unknown = run({ mainlandMethod: 'payment-connect', paymentConnectFeeWaived: false }).selected;
-  assert.equal(row(unknown, 'sender').cny, null); close(row(unknown, 'entryInward').cny, 0);
-  assert.ok(row(unknown, 'entryInward').sources.includes('paymentHsbcReceive'));
-  const other = run({ bank: 'bochk', mainlandMethod: 'payment-connect', paymentConnectFeeWaived: false }).selected;
-  assert.equal(row(other, 'entryInward').cny, null);
   const paid = run({ mainlandMethod: 'payment-connect', paymentConnectFeeWaived: true, count: 2, senderFeeCny: 5, entryInwardHkd: 10 }).selected;
   close(row(paid, 'sender').cny, 10); close(row(paid, 'entryInward').cny, 20 * paid.refs.HKD);
   close(row(run({ paymentConnectFeeWaived: true }).selected, 'sender').cny, 100 + (100000 - 100) / 1.001 * .001);
+});
+test('BOC RMB Payment Connect uses a dated regional reference and actual charges take precedence', () => {
+  const config = { ...base, startBank: 'boc', mainlandMethod: 'payment-connect' };
+  const reference = M.paymentConnectFeeReference(config, D);
+  assert.equal(reference.feeCny, 0); assert.deepEqual(reference.currencies, ['CNH']);
+  assert.deepEqual(reference.sources, ['bocMobile2026']); assert.match(reference.estimate, /山西中行2026-05-29/);
+  for (const changes of [{ route: 'HKD' }, { startBank: 'cib' }, { date: '2026-05-28' }, { mainlandMethod: 'swift' }]) {
+    assert.equal(M.paymentConnectFeeReference({ ...config, ...changes }, D), null);
+  }
+  for (const paymentConnectFeeWaived of [true, false, undefined]) {
+    const r = run({ ...config, paymentConnectFeeWaived }).selected;
+    close(row(r, 'sender').cny, 0); assert.equal(row(r, 'sender').estimate, reference.estimate);
+    assert.equal(row(r, 'sender').items[0].estimate, reference.estimate);
+    assert.deepEqual(row(r, 'sender').sources, reference.sources);
+  }
+  const otherBank = run({ ...config, bank: 'bochk', paymentConnectFeeWaived: true }).selected;
+  assert.equal(row(otherBank, 'entryInward').cny, null);
+  const actual = run({ ...config, count: 2, senderFeeCny: 7 }).selected;
+  close(row(actual, 'sender').cny, 14); assert.equal(row(actual, 'sender').estimate, undefined);
+});
+test('retired Payment Connect defaults are removed without changing principal or actual charges', () => {
+  const subject = ui({ ...base, budgetCny: 250000, mainlandMethod: 'payment-connect', paymentConnectFeeWaived: true,
+    senderFeeCny: 7, entryInwardHkd: 10 });
+  assert.equal(Object.hasOwn(subject.saved(), 'paymentConnectFeeWaived'), false);
+  assert.equal(subject.saved().budgetCny, 250000); assert.equal(subject.saved().senderFeeCny, 7); assert.equal(subject.saved().entryInwardHkd, 10);
+  assert.doesNotMatch(subject.render(), /已享跨境支付通手续费豁免|data-money-check="paymentConnectFeeWaived"/);
+  subject.act('preset', '', 'cnh-ibkr');
+  assert.equal(Object.hasOwn(subject.saved(), 'paymentConnectFeeWaived'), false);
+  assert.equal(subject.saved().budgetCny, 250000);
+  assert.match(section(subject.render(), '汇往香港'), /跨境支付通本次汇出服务费<\/span><b>参考 0\.00 CNY/);
+  subject.act('detail', '', 'edge-01'); assert.match(subject.modal(), /山西中行2026-05-29/);
+  assert.match(subject.modal(), /app\.xinhuanet\.com/);
 });
 test('Payment Connect HKD uses a separately labelled reference or actual rate, never a standard bank ask', () => {
   const r = run({ mainlandMethod: 'payment-connect', paymentConnectFeeWaived: true, route: 'HKD' }).selected;
