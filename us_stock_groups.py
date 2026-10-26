@@ -32,7 +32,7 @@ def classify(row, asof):
     roe5 = sum(roes5) / 5 if contiguous5 and all(finite(v) for v in roes5) else None
     f_age = (date.fromisoformat(asof) - date.fromisoformat(f['reportDate'])).days
     published = f.get('publishedAt')
-    current = 0 <= f_age <= 155 and bool(published) and f['reportDate'] <= published <= asof
+    current = not f.get('missingFields') and 0 <= f_age <= 155 and bool(published) and f['reportDate'] <= published <= asof
     sources = research.get('sources') or []
     reviewed = (research.get('reportPeriod') == f['reportDate']
                 and f['reportDate'] <= research.get('reviewedAt', '') <= asof
@@ -72,7 +72,7 @@ def classify(row, asof):
         return all(finite(q.get(k)) and q[k] > 0 for q in rows for k in ('NetIncome', 'OperatingCashFlow'))
     def common(group):
         check(group, '非金融、非REIT的经营企业', corporate, '采用' + {'bank': '银行资本与信用风险', 'financial': '金融业务', 'reits': 'REIT的AFFO', 'holding': '投资控股分部'}.get(sector, sector) + '模型，保留专题研究，不套工业企业门槛')
-        check(group, '当前财季已披露且距研究日不超过155天', current, f['reportDate'] + '；' + ('缺公告日' if not published else '公告' + published))
+        check(group, '当前财季已披露且距研究日不超过155天', current, f.get('missingEvidence') or f['reportDate'] + '；' + ('缺公告日' if not published else '公告' + published))
         check(group, '本期经营复核对应最新财报', reviewed, '经营复核仅覆盖' + research.get('reportPeriod', '未注明报告期') + '，最新财报为' + f['reportDate'])
     common('quality')
     check('quality', '连续5个完整财年报表利润和经营现金流均为正', contiguous5 and positive_years(last5), '缺连续5年正利润/正经营现金流；亏损期：' + ('、'.join(q['period'] for q in last5 if finite(q.get('NetIncome')) and q['NetIncome'] <= 0) or '见年度表'))
@@ -107,7 +107,7 @@ def classify(row, asof):
         check(group, f'最新年度与当前TTM ROE均≥{minimum}%', (last.get('roe') or 0) >= minimum and (f.get('roeTTM') or 0) >= minimum, '年度ROE ' + latest_roe_reason + '；TTM ROE ' + (metric(f.get('roeTTM')) if finite(f.get('roeTTM')) else f.get('roeMissing', '缺连续四季利润与期初期末净资产')))
         cash_ok = finite(a.get('cashConversion')) and a['cashConversion'] >= .5
         if group == 'breakout':
-            cash_ok = cash_ok and finite(f.get('OperatingCashFlow')) and f.get('NetIncome', 0) > 0 and f['OperatingCashFlow'] >= f['NetIncome'] * .5
+            cash_ok = cash_ok and finite(f.get('OperatingCashFlow')) and finite(f.get('NetIncome')) and f['NetIncome'] > 0 and f['OperatingCashFlow'] >= f['NetIncome'] * .5
         check(group, 'TTM现金/利润≥50%' + ('，最新单季亦≥50%' if group == 'breakout' else ''), cash_ok, 'TTM现金/利润 ' + metric(a.get('cashConversion'), '倍'))
         check(group, '本期主营、非经营项、周期与并表已有金额复核', operating_review and review.get(group + 'Decision') == 'retain', review.get(group + 'Rationale') or '缺本期盈利来源复核')
         if group == 'growth' and asof >= POLICY_FROM:

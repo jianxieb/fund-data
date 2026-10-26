@@ -202,6 +202,12 @@ def apply_us(row, asof):
             selection['rationale'] = '红利入选条件失效：' + '；'.join(c['reason'] for c in income['checks'] if not c['pass'])
     elif income['qualified'] or selection['status'] == 'excluded':
         selection['status'] = 'selected'
+    if f.get('missingFields'):
+        reason = f['missingEvidence']
+        for verdict in selection['reviews'].values():
+            verdict['checks'].append({'label': '当前财季营业收入和净利润来源齐备', 'pass': False, 'reason': reason})
+            verdict['qualified'] = False
+        selection.update(groups=['other'], status='pending', rationale=reason)
     row['companySelection'] = selection
     row['screening'].update(groups=selection['groups'], reviews=selection['reviews'], basis='company_selection_v1',
                             otherReasons=[selection['rationale']] if selection['groups'] == ['other'] else [])

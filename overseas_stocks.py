@@ -251,8 +251,13 @@ def financial_summary(facts):
     if not quarters:
         raise ValueError('缺最近季度收入利润')
     latest = quarters[max(quarters)]
-    if not all(finite(latest.get(key)) for key in ['TotalRevenue', 'NetIncome']):
-        raise ValueError('最近季度缺收入或利润')
+    # Providers can publish EPS before the income statement. Keep that observed
+    # quarter and its missing fields; never relabel last quarter's income or
+    # infer net profit from EPS. The selection and quality gates reject approval
+    # until the current quarter's required evidence is complete.
+    labels = {'TotalRevenue': '营业收入', 'NetIncome': '净利润'}
+    missing_fields = [key for key in labels if not finite(latest.get(key))]
+    missing_evidence = latest['period'] + '财季来源缺' + '、'.join(labels[key] for key in missing_fields) if missing_fields else None
     year, month = map(int, latest['period'].split('-'))
     previous = quarters.get(f'{year-1:04}-{month:02}', {})
     ttm_profit = trailing_total(quarters, 'NetIncome')
@@ -268,12 +273,18 @@ def financial_summary(facts):
             missing.append('缺' + period + '母公司净资产')
         elif value <= 0:
             missing.append(period + '净资产非正，ROE不适用')
-    return {**latest, 'revenueGrowth': growth(latest.get('TotalRevenue'), previous.get('TotalRevenue')),
-            'profitGrowth': growth(latest.get('NetIncome'), previous.get('NetIncome')),
+    def quarter_growth(metric, label):
+        if not finite(latest.get(metric)):
+            return {'value': None, 'status': 'missing', 'label': '缺本季' + label}
+        return growth(latest.get(metric), previous.get(metric))
+    return {**latest, 'dataStatus': 'partial' if missing_fields else 'complete',
+            'missingFields': missing_fields, 'missingEvidence': missing_evidence,
+            'revenueGrowth': quarter_growth('TotalRevenue', '营业收入'),
+            'profitGrowth': quarter_growth('NetIncome', '净利润'),
             'ttmRevenue': ttm_revenue, 'ttmProfit': ttm_profit, 'ttmCash': ttm_cash,
             'roeTTM': roe, 'roeMissing': None if roe is not None else '；'.join(missing),
-            'operatingGrowth': growth(latest.get('TotalOperatingIncomeAsReported'), previous.get('TotalOperatingIncomeAsReported')),
-            'operatingMargin': latest.get('TotalOperatingIncomeAsReported') / latest['TotalRevenue'] * 100 if finite(latest.get('TotalOperatingIncomeAsReported')) and latest['TotalRevenue'] > 0 else None}
+            'operatingGrowth': quarter_growth('TotalOperatingIncomeAsReported', '营业利润'),
+            'operatingMargin': latest.get('TotalOperatingIncomeAsReported') / latest['TotalRevenue'] * 100 if finite(latest.get('TotalOperatingIncomeAsReported')) and finite(latest.get('TotalRevenue')) and latest['TotalRevenue'] > 0 else None}
 
 
 def performance(series, end):
@@ -347,7 +358,10 @@ def build_stock(company, end, offline=False):
                 rows[key].update(entry.get(prefix, {}))
                 rows[key].update(reportDate=entry['reportDate'], dateBasis='issuer_report_end',
                     sourceUrl=entry['sourceUrl'], publishedAt=entry.get('publishedAt'), note=entry.get('note'))
-    financials = financial_summary(facts)
+    try:
+        financials = financial_summary(facts)
+    except ValueError as exc:
+        raise ValueError(symbol + '：' + str(exc)) from exc
     if date.fromisoformat(financials['reportDate']) > date.fromisoformat(end):
         raise ValueError(symbol + ' 财报日期在行情截至日之后')
     price = history['close']
@@ -419,8 +433,15 @@ def main():
         reports = {'reports': [overseas_research.report_for(row) for row in rows]}
         atomic_text(HISTORY_PATH, json.dumps(history, ensure_ascii=False, allow_nan=False, separators=(',', ':')) + '\n')
         atomic_text(DATA / 'overseas-stocks.js', 'var OVERSEAS_STOCK_META=' + json.dumps(meta, ensure_ascii=False) + ';\nvar OVERSEAS_STOCKS=' + json.dumps(rows, ensure_ascii=False, allow_nan=False, separators=(',', ':')) + ';\nvar OVERSEAS_REPORTS=' + json.dumps(reports, ensure_ascii=False, allow_nan=False, separators=(',', ':')) + ';\n')
-        write_status('overseas_stocks', 'cached' if args.offline else 'success', mode='offline' if args.offline else 'online',
-                     asOf=meta['asOf'], records=len(rows), message='发行人、股票类型、币种及上市历史已核对；财报与估值分别标注日期。')
+        missing = [{'symbol': row['symbol'], 'period': row['financials']['period'],
+                    'missingFields': row['financials']['missingFields'], 'message': row['financials']['missingEvidence']}
+                   for row in rows if row['financials'].get('missingFields')]
+        write_status('overseas_stocks', 'partial' if missing else 'cached' if args.offline else 'success', mode='offline' if args.offline else 'online',
+                     asOf=meta['asOf'], records=len(rows), metadataWarnings=missing,
+                     message='发行人、股票类型、币种及上市历史已核对；财报与估值分别标注日期。' +
+                     ('待补财报：' + '；'.join(item['symbol'] + ' ' + item['message'] for item in missing) if missing else ''))
+        for item in missing:
+            print(item['symbol'] + '：' + item['message'] + '；行情保留，暂停当前财季入选。')
         print(json.dumps({'companies': len(rows), 'asOf': meta['asOf'], 'financials': {r['symbol']: r['fundamentalsAsOf'] for r in rows}}, ensure_ascii=False))
         return 0
     except Exception as exc:

@@ -108,6 +108,20 @@ def audit(snapshot, today=None):
                 issue(od, 'overseas_future', 'error', '海外个股行情日期在未来', symbol)
             reviewed = (row.get('research') or {}).get('reportPeriod')
             latest = (row.get('financials') or {}).get('reportDate')
+            financials = row.get('financials') or {}
+            missing = {key: label for key, label in (('TotalRevenue', '营业收入'), ('NetIncome', '净利润'))
+                       if not finite(financials.get(key))}
+            if missing:
+                screening = row.get('screening') or {}
+                selected = screening.get('groups') != ['other'] or any(
+                    r.get('qualified') for r in (screening.get('reviews') or {}).values())
+                evidence = financials.get('missingEvidence') or ''
+                labelled = (financials.get('dataStatus') == 'partial'
+                            and set(financials.get('missingFields') or []) == set(missing)
+                            and str(financials.get('period')) in evidence
+                            and all(label in evidence for label in missing.values()))
+                issue(od, 'overseas_financial_fields_missing', 'error' if selected or not labelled else 'unverified',
+                      str(symbol) + ' ' + str(latest) + '财季来源缺' + '、'.join(missing.values()), symbol)
             if reviewed and latest and reviewed < latest:
                 screening = row.get('screening') or {}
                 qualified = screening.get('groups') != ['other'] or any(

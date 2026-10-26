@@ -141,7 +141,7 @@ def report_for(s):
         bridge.get('explanation') or bridge.get('reason') or '带符号调整已闭合到本季净利润。'],
         table={'headers': ['本季利润衔接', c], 'rows': bridge_rows},
         links=[{'label': '利润表与附注', 'url': bridge['sourceUrl']}] if bridge['status'] == 'reconciled' else [])
-    add('quarterly', '最新季度与盈利变化', paragraphs=[f.get('note') or '单季数据与年度数据分开。同比使用同一币种的上年同期；负基数不计算具有误导性的增长百分比。'],
+    add('quarterly', '最新季度与盈利变化', paragraphs=([f['missingEvidence']] if f.get('missingEvidence') else []) + [f.get('note') or '单季数据与年度数据分开。同比使用同一币种的上年同期；负基数不计算具有误导性的增长百分比。'],
         table={'headers': ['财季截至', revenue + ' / ' + c, '净利润（税后） / ' + c, '营业利润（税前） / ' + c, '营业利润率', '经营现金流 / ' + c],
             'rows': [[period(q)] + [fmt(q.get(k), scale=1e8) for k in ['TotalRevenue', 'NetIncome', 'TotalOperatingIncomeAsReported']] + [fmt(ratio(q.get('TotalOperatingIncomeAsReported'), q.get('TotalRevenue')), '%'), fmt(q.get('OperatingCashFlow'), scale=1e8)] for q in sorted(s['financialHistory']['quarterly'].values(), key=lambda x: x['period'], reverse=True)]})
     add('annual', '年度财务与增长持续性', paragraphs=[

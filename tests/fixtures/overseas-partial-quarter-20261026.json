@@ -1,0 +1,1340 @@
+{
+  "capturedAt": "2026-10-26T12:41:03+00:00",
+  "failureRun": "https://github.com/jianxieb/fund-data/actions/runs/40249081785",
+  "cases": [
+    {
+      "symbol": "JPM",
+      "currency": "USD",
+      "sourceUrl": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/JPM",
+      "sourceResponseSha256": "61f571aa6eb6f31152ff4c9703a3fa7fb5b338ab35658ffd1734d2bafcf1fce1",
+      "secResponseSha256": "887b40d87764978350cb189d317e687117b110b624f783407b353983527c60b0",
+      "scope": "Only provider entries for the 2026-09-30 quarter; current SEC normalization also lacks that quarter revenue and net income.",
+      "expectedMissingFields": [
+        "TotalRevenue",
+        "NetIncome"
+      ],
+      "response": {
+        "timeseries": {
+          "result": [
+            {
+              "meta": {
+                "symbol": [
+                  "JPM"
+                ],
+                "type": [
+                  "quarterlyDilutedEPS"
+                ]
+              },
+              "quarterlyDilutedEPS": [
+                {
+                  "dataId": 29009,
+                  "asOfDate": "2026-09-30",
+                  "periodType": "3M",
+                  "currencyCode": "USD",
+                  "reportedValue": {
+                    "raw": 5.57,
+                    "fmt": "5.57"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "previous": {
+        "financialHistory": {
+          "quarterly": {
+            "2025-06": {
+              "period": "2025-06",
+              "reportDate": "2025-06-30",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "NetIncome": 14987000000,
+              "TotalRevenue": 44912000000,
+              "OperatingCashFlow": 29547000000,
+              "DilutedEPS": 5.24,
+              "StockholdersEquity": 356924000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/19617/000162828026054343/0001628280-26-054343-index.html",
+              "publishedAt": "2026-08-06"
+            },
+            "2025-09": {
+              "period": "2025-09",
+              "reportDate": "2025-09-30",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "NetIncome": 14393000000,
+              "TotalRevenue": 46427000000,
+              "OperatingCashFlow": -45214000000,
+              "DilutedEPS": 5.07,
+              "StockholdersEquity": 360212000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/19617/000162828025048859/0001628280-25-048859-index.html",
+              "publishedAt": "2025-11-04"
+            },
+            "2025-12": {
+              "period": "2025-12",
+              "reportDate": "2025-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "NetIncome": 13025000000,
+              "TotalRevenue": 45798000000,
+              "OperatingCashFlow": 119724000000,
+              "DilutedEPS": 4.63,
+              "StockholdersEquity": 362438000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/0001628280-26-008131-index.html",
+              "publishedAt": "2026-02-13"
+            },
+            "2026-03": {
+              "period": "2026-03",
+              "reportDate": "2026-03-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "NetIncome": 16494000000,
+              "TotalRevenue": 49836000000,
+              "OperatingCashFlow": -211761000000,
+              "DilutedEPS": 5.94,
+              "StockholdersEquity": 364038000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/19617/000162828026029344/0001628280-26-029344-index.html",
+              "publishedAt": "2026-05-01"
+            },
+            "2026-06": {
+              "period": "2026-06",
+              "reportDate": "2026-06-30",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "NetIncome": 21155000000,
+              "TotalRevenue": 57347000000,
+              "OperatingCashFlow": -25283000000,
+              "DilutedEPS": 7.7,
+              "StockholdersEquity": 374598000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/19617/000162828026054343/0001628280-26-054343-index.html",
+              "publishedAt": "2026-08-06",
+              "providerDifferences": {
+                "TotalRevenue": {
+                  "provider": 52852000000.0,
+                  "official": 57347000000
+                }
+              }
+            },
+            "2023-09": {
+              "period": "2023-09",
+              "reportDate": "2023-09-30",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 39874000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/19617/000001961724000611/0000019617-24-000611-index.html",
+              "publishedAt": "2024-10-30",
+              "NetIncome": 13151000000,
+              "StockholdersEquity": 317371000000,
+              "OperatingCashFlow": 45119000000,
+              "DilutedEPS": 4.33
+            },
+            "2023-12": {
+              "period": "2023-12",
+              "reportDate": "2023-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 38574000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/0001628280-26-008131-index.html",
+              "publishedAt": "2026-02-13",
+              "NetIncome": 9307000000,
+              "StockholdersEquity": 327878000000,
+              "OperatingCashFlow": 60231000000
+            },
+            "2024-03": {
+              "period": "2024-03",
+              "reportDate": "2024-03-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 41934000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/19617/000001961725000421/0000019617-25-000421-index.html",
+              "publishedAt": "2025-05-01",
+              "NetIncome": 13419000000,
+              "StockholdersEquity": 336637000000,
+              "OperatingCashFlow": -154158000000,
+              "DilutedEPS": 4.44
+            },
+            "2024-06": {
+              "period": "2024-06",
+              "reportDate": "2024-06-30",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 50200000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/19617/000001961725000615/0000019617-25-000615-index.html",
+              "publishedAt": "2025-08-05",
+              "NetIncome": 18149000000,
+              "StockholdersEquity": 340552000000,
+              "OperatingCashFlow": 38469000000,
+              "DilutedEPS": 6.12
+            },
+            "2024-09": {
+              "period": "2024-09",
+              "reportDate": "2024-09-30",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 42654000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/19617/000162828025048859/0001628280-25-048859-index.html",
+              "publishedAt": "2025-11-04",
+              "NetIncome": 12898000000,
+              "StockholdersEquity": 345836000000,
+              "OperatingCashFlow": -74081000000,
+              "DilutedEPS": 4.37
+            },
+            "2024-12": {
+              "period": "2024-12",
+              "reportDate": "2024-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 42768000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/0001628280-26-008131-index.html",
+              "publishedAt": "2026-02-13",
+              "NetIncome": 14005000000,
+              "StockholdersEquity": 344758000000,
+              "OperatingCashFlow": 147758000000
+            },
+            "2025-03": {
+              "period": "2025-03",
+              "reportDate": "2025-03-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 45310000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/19617/000162828026029344/0001628280-26-029344-index.html",
+              "publishedAt": "2026-05-01",
+              "NetIncome": 14643000000,
+              "StockholdersEquity": 351420000000,
+              "OperatingCashFlow": -251839000000,
+              "DilutedEPS": 5.07
+            }
+          },
+          "annual": {
+            "2022-12": {
+              "period": "2022-12",
+              "reportDate": "2022-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 128695000000,
+              "OperatingCashFlow": 107119000000,
+              "NetIncome": 37676000000,
+              "DilutedEPS": 12.09,
+              "StockholdersEquity": 292332000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/19617/000001961725000270/0000019617-25-000270-index.html",
+              "publishedAt": "2025-02-14",
+              "providerDifferences": {
+                "TotalRevenue": {
+                  "provider": 127727000000.0,
+                  "official": 128695000000
+                }
+              }
+            },
+            "2023-12": {
+              "period": "2023-12",
+              "reportDate": "2023-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 158104000000,
+              "OperatingCashFlow": 12974000000,
+              "NetIncome": 49552000000,
+              "DilutedEPS": 16.23,
+              "StockholdersEquity": 327878000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/0001628280-26-008131-index.html",
+              "publishedAt": "2026-02-13",
+              "providerDifferences": {
+                "TotalRevenue": {
+                  "provider": 154952000000.0,
+                  "official": 158104000000
+                }
+              }
+            },
+            "2024-12": {
+              "period": "2024-12",
+              "reportDate": "2024-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 177556000000,
+              "OperatingCashFlow": -42012000000,
+              "NetIncome": 58471000000,
+              "DilutedEPS": 19.75,
+              "StockholdersEquity": 344758000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/0001628280-26-008131-index.html",
+              "publishedAt": "2026-02-13",
+              "providerDifferences": {
+                "TotalRevenue": {
+                  "provider": 169439000000.0,
+                  "official": 177556000000
+                }
+              }
+            },
+            "2025-12": {
+              "period": "2025-12",
+              "reportDate": "2025-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 182447000000,
+              "OperatingCashFlow": -147782000000,
+              "NetIncome": 57048000000,
+              "DilutedEPS": 20.02,
+              "StockholdersEquity": 362438000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/0001628280-26-008131-index.html",
+              "publishedAt": "2026-02-13"
+            },
+            "2019-12": {
+              "period": "2019-12",
+              "reportDate": "2019-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 115720000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/19617/000001961722000272/0000019617-22-000272-index.html",
+              "publishedAt": "2022-02-22",
+              "NetIncome": 36431000000,
+              "StockholdersEquity": 261330000000,
+              "OperatingCashFlow": 4092000000,
+              "DilutedEPS": 10.72
+            },
+            "2020-12": {
+              "period": "2020-12",
+              "reportDate": "2020-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 119951000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/19617/000001961723000231/0000019617-23-000231-index.html",
+              "publishedAt": "2023-02-21",
+              "NetIncome": 29131000000,
+              "StockholdersEquity": 279354000000,
+              "OperatingCashFlow": -79910000000,
+              "DilutedEPS": 8.88
+            },
+            "2021-12": {
+              "period": "2021-12",
+              "reportDate": "2021-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 121649000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/19617/000001961724000225/0000019617-24-000225-index.html",
+              "publishedAt": "2024-02-16",
+              "NetIncome": 48334000000,
+              "StockholdersEquity": 294127000000,
+              "OperatingCashFlow": 78084000000,
+              "DilutedEPS": 15.36
+            }
+          }
+        },
+        "research": {
+          "reviewedAt": "2026-10-18",
+          "reportPeriod": "2026-06-30",
+          "summary": "存款、支付和信用卡网络具备长期研究价值；当前研究未逐项核对CET1缓冲、信贷损失、拨备和有形股东回报，不能套工业企业现金/利润门槛授予或否决银行质量。；银行净利受净息差、信用成本、交易与投行收入共同影响；缺剔除市场和拨备波动后的分部盈利桥，普通工业营业利润缺值不代表银行没有盈利。",
+          "thesis": [
+            "存款、支付和信用卡网络具备长期研究价值；当前研究未逐项核对CET1缓冲、信贷损失、拨备和有形股东回报，不能套工业企业现金/利润门槛授予或否决银行质量。",
+            "银行净利受净息差、信用成本、交易与投行收入共同影响；缺剔除市场和拨备波动后的分部盈利桥，普通工业营业利润缺值不代表银行没有盈利。"
+          ],
+          "risks": [
+            "信用损失、利率和监管；投资收益使本季净利润偏高。",
+            "本季净利润211.55亿美元；剔显著项目核心净利润约169亿美元，约42亿美元税后投资项目不外推。"
+          ],
+          "watch": [
+            "信用损失和资本消耗上升，核心ROTCE下滑。",
+            "利率与信用周期重要，经营现金流含存款和交易资产，不用于工业企业现金回收门槛。"
+          ],
+          "sources": [
+            {
+              "label": "本期正式财报",
+              "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026054343/0001628280-26-054343-index.html",
+              "publishedAt": "2026-08-06",
+              "reportPeriod": "2026-06-30"
+            },
+            {
+              "label": "业绩发布与业务说明",
+              "url": "https://www.jpmorganchase.com/content/dam/jpmc/jpmorgan-chase-and-co/investor-relations/documents/quarterly-earnings/2026/2nd-quarter/6cded9fd-a164-4e6c-8cff-377357cf105c.pdf",
+              "reportPeriod": "2026-06-30"
+            }
+          ],
+          "longTerm": {
+            "decision": "hold",
+            "durability": "存款、支付和信用卡网络具备长期研究价值；当前研究未逐项核对CET1缓冲、信贷损失、拨备和有形股东回报，不能套工业企业现金/利润门槛授予或否决银行质量。",
+            "reinvestment": "风控、支付、数字化与资本储备",
+            "invalidation": "信用损失和资本消耗上升，核心ROTCE下滑",
+            "rationale": "存款、支付和信用卡网络具备长期研究价值；当前研究未逐项核对CET1缓冲、信贷损失、拨备和有形股东回报，不能套工业企业现金/利润门槛授予或否决银行质量。"
+          },
+          "earningsReview": {
+            "reportPeriod": "2026-06-30",
+            "driver": "存款、贷款、信用卡、支付与资管分别看盈利和风险。",
+            "nonOperating": "本季净利润211.55亿美元；剔显著项目核心净利润约169亿美元，约42亿美元税后投资项目不外推。",
+            "priceCycle": "利率与信用周期重要，经营现金流含存款和交易资产，不用于工业企业现金回收门槛。",
+            "consolidation": "报告整体与核心ROTCE分开，资本适用银行模型。",
+            "invalidation": "信用损失和资本消耗上升，核心ROTCE下滑",
+            "evidence": [
+              {
+                "label": "2026-03 归属母公司报表净利润",
+                "value": 16494000000,
+                "unit": "USD",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/19617/000162828026029344/0001628280-26-029344-index.html",
+                "location": "合并利润表 / 归属母公司报表净利润",
+                "basis": "disclosed",
+                "reportPeriod": "2026-03-31"
+              },
+              {
+                "label": "2026-03 归属母公司报表净利润同比",
+                "value": 12.640852284367954,
+                "unit": "%",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/19617/000162828026029344/0001628280-26-029344-index.html",
+                "location": "本季与上年同期合并利润表",
+                "basis": "calculated",
+                "operands": [
+                  16494000000,
+                  14643000000
+                ],
+                "reportPeriod": "2026-03-31"
+              },
+              {
+                "label": "2026-06 归属母公司报表净利润",
+                "value": 21155000000,
+                "unit": "USD",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/19617/000162828026054343/0001628280-26-054343-index.html",
+                "location": "合并利润表 / 归属母公司报表净利润",
+                "basis": "disclosed",
+                "reportPeriod": "2026-06-30"
+              },
+              {
+                "label": "2026-06 归属母公司报表净利润同比",
+                "value": 41.15566824581305,
+                "unit": "%",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/19617/000162828026054343/0001628280-26-054343-index.html",
+                "location": "本季与上年同期合并利润表",
+                "basis": "calculated",
+                "operands": [
+                  21155000000,
+                  14987000000
+                ],
+                "reportPeriod": "2026-06-30"
+              }
+            ],
+            "qualityDecision": "hold",
+            "qualityRationale": "存款、支付和信用卡网络具备长期研究价值；当前研究未逐项核对CET1缓冲、信贷损失、拨备和有形股东回报，不能套工业企业现金/利润门槛授予或否决银行质量。",
+            "growthDecision": "hold",
+            "growthRationale": "银行净利受净息差、信用成本、交易与投行收入共同影响；缺剔除市场和拨备波动后的分部盈利桥，普通工业营业利润缺值不代表银行没有盈利。",
+            "breakoutDecision": "hold",
+            "breakoutRationale": "存款、贷款、信用卡、支付与资管分别看盈利和风险。；本季净利润211.55亿美元；剔显著项目核心净利润约169亿美元，约42亿美元税后投资项目不外推。；利率与信用周期重要，经营现金流含存款和交易资产，不用于工业企业现金回收门槛。"
+          }
+        }
+      }
+    },
+    {
+      "symbol": "ABT",
+      "currency": "USD",
+      "sourceUrl": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/ABT",
+      "sourceResponseSha256": "0ff7bfe37ec557f02f83667c7b5c28dcb52f8f22840453c5db8e58dc628e14d6",
+      "secResponseSha256": "8e554cbf0831c28add7dd24fa17fa8b1dc2925d66d9d947a583b91b24a10ac8a",
+      "scope": "Only provider entries for the 2026-09-30 quarter; current SEC normalization also lacks that quarter revenue and net income.",
+      "expectedMissingFields": [
+        "TotalRevenue",
+        "NetIncome"
+      ],
+      "response": {
+        "timeseries": {
+          "result": [
+            {
+              "meta": {
+                "symbol": [
+                  "ABT"
+                ],
+                "type": [
+                  "quarterlyDilutedEPS"
+                ]
+              },
+              "quarterlyDilutedEPS": [
+                {
+                  "dataId": 29009,
+                  "asOfDate": "2026-09-30",
+                  "periodType": "3M",
+                  "currencyCode": "USD",
+                  "reportedValue": {
+                    "raw": 0.53,
+                    "fmt": "0.53"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "previous": {
+        "financialHistory": {
+          "quarterly": {
+            "2025-03": {
+              "period": "2025-03",
+              "reportDate": "2025-03-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "NetIncome": 1325000000,
+              "TotalOperatingIncomeAsReported": 1693000000,
+              "TotalRevenue": 10358000000,
+              "StockholdersEquity": 48811000000,
+              "OperatingCashFlow": 1417000000,
+              "GrossProfit": 5890000000.0,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1800/000162828026028357/0001628280-26-028357-index.html",
+              "publishedAt": "2026-04-29",
+              "DilutedEPS": 0.76,
+              "CapitalExpenditures": 484000000
+            },
+            "2025-06": {
+              "period": "2025-06",
+              "reportDate": "2025-06-30",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "NetIncome": 1779000000,
+              "TotalOperatingIncomeAsReported": 2052000000,
+              "DilutedEPS": 1.01,
+              "TotalRevenue": 11142000000,
+              "StockholdersEquity": 50565000000,
+              "OperatingCashFlow": 2047000000,
+              "GrossProfit": 6288000000.0,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1800/000162828025036720/0001628280-25-036720-index.html",
+              "publishedAt": "2025-07-30",
+              "CapitalExpenditures": 502000000
+            },
+            "2025-09": {
+              "period": "2025-09",
+              "reportDate": "2025-09-30",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "NetIncome": 1644000000,
+              "TotalOperatingIncomeAsReported": 2057000000,
+              "DilutedEPS": 0.94,
+              "TotalRevenue": 11369000000,
+              "StockholdersEquity": 50954000000,
+              "OperatingCashFlow": 2787000000,
+              "GrossProfit": 6294000000.0,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1800/000162828025047131/0001628280-25-047131-index.html",
+              "publishedAt": "2025-10-29",
+              "CapitalExpenditures": 496000000
+            },
+            "2025-12": {
+              "period": "2025-12",
+              "reportDate": "2025-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "NetIncome": 1776000000,
+              "TotalOperatingIncomeAsReported": 2251000000,
+              "DilutedEPS": 1.01,
+              "TotalRevenue": 11459000000,
+              "StockholdersEquity": 52130000000,
+              "OperatingCashFlow": 3315000000,
+              "GrossProfit": 6537000000.0,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1800/000162828026010185/0001628280-26-010185-index.html",
+              "publishedAt": "2026-02-20",
+              "CapitalExpenditures": 689000000
+            },
+            "2026-03": {
+              "period": "2026-03",
+              "reportDate": "2026-03-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "NetIncome": 1077000000,
+              "TotalOperatingIncomeAsReported": 1345000000,
+              "DilutedEPS": 0.61,
+              "TotalRevenue": 11164000000,
+              "StockholdersEquity": 52061000000,
+              "OperatingCashFlow": 1315000000,
+              "GrossProfit": 6274000000.0,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1800/000162828026028357/0001628280-26-028357-index.html",
+              "publishedAt": "2026-04-29",
+              "CapitalExpenditures": 399000000
+            },
+            "2026-06": {
+              "period": "2026-06",
+              "reportDate": "2026-06-30",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "DilutedEPS": 0.53,
+              "TotalRevenue": 12593000000,
+              "NetIncome": 928000000,
+              "TotalOperatingIncomeAsReported": 1693000000,
+              "GrossProfit": 6610000000,
+              "StockholdersEquity": 51110000000,
+              "OperatingCashFlow": 2488000000,
+              "sourceUrl": "https://www.abbottinvestor.com/static-files/6050fc59-d0ce-4bd6-afea-8a2f2ab80208",
+              "publishedAt": "2026-07-16",
+              "note": "2026年3月23日起并表Exact Sciences；营收报告增速13.0%，可比增速4.8%。单季经营现金流为半年38.03亿减一季度13.15亿美元；净资产使用归属母公司511.10亿美元。GAAP净利与调整净利不混用。"
+            },
+            "2023-06": {
+              "period": "2023-06",
+              "reportDate": "2023-06-30",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 9978000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1800/000162828024033740/0001628280-24-033740-index.html",
+              "publishedAt": "2024-07-31",
+              "NetIncome": 1375000000,
+              "TotalOperatingIncomeAsReported": 1542000000,
+              "StockholdersEquity": 37174000000,
+              "OperatingCashFlow": 1203000000,
+              "DilutedEPS": 0.78,
+              "CapitalExpenditures": 507000000
+            },
+            "2023-09": {
+              "period": "2023-09",
+              "reportDate": "2023-09-30",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 10143000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1800/000162828024044602/0001628280-24-044602-index.html",
+              "publishedAt": "2024-10-31",
+              "NetIncome": 1436000000,
+              "TotalOperatingIncomeAsReported": 1647000000,
+              "StockholdersEquity": 37481000000,
+              "OperatingCashFlow": 1877000000,
+              "DilutedEPS": 0.82,
+              "CapitalExpenditures": 560000000
+            },
+            "2023-12": {
+              "period": "2023-12",
+              "reportDate": "2023-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 10241000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1800/000162828026010185/0001628280-26-010185-index.html",
+              "publishedAt": "2026-02-20",
+              "NetIncome": 1594000000,
+              "TotalOperatingIncomeAsReported": 1780000000,
+              "StockholdersEquity": 38603000000,
+              "OperatingCashFlow": 3038000000,
+              "CapitalExpenditures": 755000000
+            },
+            "2024-03": {
+              "period": "2024-03",
+              "reportDate": "2024-03-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 9964000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1800/000162828025021090/0001628280-25-021090-index.html",
+              "publishedAt": "2025-04-30",
+              "NetIncome": 1225000000,
+              "TotalOperatingIncomeAsReported": 1386000000,
+              "StockholdersEquity": 38810000000,
+              "OperatingCashFlow": 1025000000,
+              "DilutedEPS": 0.7,
+              "CapitalExpenditures": 398000000
+            },
+            "2024-06": {
+              "period": "2024-06",
+              "reportDate": "2024-06-30",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 10377000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1800/000162828025036720/0001628280-25-036720-index.html",
+              "publishedAt": "2025-07-30",
+              "NetIncome": 1302000000,
+              "TotalOperatingIncomeAsReported": 1669000000,
+              "StockholdersEquity": 39318000000,
+              "OperatingCashFlow": 1960000000,
+              "DilutedEPS": 0.74,
+              "CapitalExpenditures": 533000000
+            },
+            "2024-09": {
+              "period": "2024-09",
+              "reportDate": "2024-09-30",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 10635000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1800/000162828025047131/0001628280-25-047131-index.html",
+              "publishedAt": "2025-10-29",
+              "NetIncome": 1646000000,
+              "TotalOperatingIncomeAsReported": 1859000000,
+              "StockholdersEquity": 39796000000,
+              "OperatingCashFlow": 2705000000,
+              "DilutedEPS": 0.94,
+              "CapitalExpenditures": 556000000
+            },
+            "2024-12": {
+              "period": "2024-12",
+              "reportDate": "2024-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 10974000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1800/000162828026010185/0001628280-26-010185-index.html",
+              "publishedAt": "2026-02-20",
+              "NetIncome": 9229000000,
+              "TotalOperatingIncomeAsReported": 1911000000,
+              "StockholdersEquity": 47664000000,
+              "OperatingCashFlow": 2868000000,
+              "CapitalExpenditures": 720000000
+            }
+          },
+          "annual": {
+            "2022-12": {
+              "period": "2022-12",
+              "reportDate": "2022-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "GrossProfit": 24511000000.0,
+              "StockholdersEquity": 36686000000,
+              "OperatingCashFlow": 9581000000,
+              "DilutedEPS": 3.91,
+              "TotalRevenue": 43653000000,
+              "NetIncome": 6933000000,
+              "TotalOperatingIncomeAsReported": 8362000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1800/000162828025007110/0001628280-25-007110-index.html",
+              "publishedAt": "2025-02-21",
+              "CapitalExpenditures": 1777000000
+            },
+            "2023-12": {
+              "period": "2023-12",
+              "reportDate": "2023-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "GrossProfit": 22134000000.0,
+              "StockholdersEquity": 38603000000,
+              "OperatingCashFlow": 7261000000,
+              "DilutedEPS": 3.26,
+              "TotalRevenue": 40109000000,
+              "NetIncome": 5723000000,
+              "TotalOperatingIncomeAsReported": 6478000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1800/000162828026010185/0001628280-26-010185-index.html",
+              "publishedAt": "2026-02-20",
+              "CapitalExpenditures": 2202000000
+            },
+            "2024-12": {
+              "period": "2024-12",
+              "reportDate": "2024-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "GrossProfit": 23244000000.0,
+              "StockholdersEquity": 47664000000,
+              "OperatingCashFlow": 8558000000,
+              "DilutedEPS": 7.64,
+              "TotalRevenue": 41950000000,
+              "NetIncome": 13402000000,
+              "TotalOperatingIncomeAsReported": 6825000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1800/000162828026010185/0001628280-26-010185-index.html",
+              "publishedAt": "2026-02-20",
+              "CapitalExpenditures": 2207000000
+            },
+            "2025-12": {
+              "period": "2025-12",
+              "reportDate": "2025-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "GrossProfit": 25009000000.0,
+              "StockholdersEquity": 52130000000,
+              "OperatingCashFlow": 9566000000,
+              "DilutedEPS": 3.72,
+              "TotalRevenue": 44328000000,
+              "NetIncome": 6524000000,
+              "TotalOperatingIncomeAsReported": 8053000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1800/000162828026010185/0001628280-26-010185-index.html",
+              "publishedAt": "2026-02-20",
+              "CapitalExpenditures": 2171000000
+            },
+            "2019-12": {
+              "period": "2019-12",
+              "reportDate": "2019-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 31904000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1800/000110465922025141/0001104659-22-025141-index.html",
+              "publishedAt": "2022-02-18",
+              "NetIncome": 3687000000,
+              "TotalOperatingIncomeAsReported": 4532000000,
+              "StockholdersEquity": 31088000000,
+              "OperatingCashFlow": 6136000000,
+              "DilutedEPS": 2.06,
+              "CapitalExpenditures": 1638000000
+            },
+            "2020-12": {
+              "period": "2020-12",
+              "reportDate": "2020-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 34608000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1800/000162828023004026/0001628280-23-004026-index.html",
+              "publishedAt": "2023-02-17",
+              "NetIncome": 4495000000,
+              "TotalOperatingIncomeAsReported": 5357000000,
+              "StockholdersEquity": 32784000000,
+              "OperatingCashFlow": 7901000000,
+              "DilutedEPS": 2.5,
+              "CapitalExpenditures": 2177000000
+            },
+            "2021-12": {
+              "period": "2021-12",
+              "reportDate": "2021-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 43075000000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1800/000162828024005348/0001628280-24-005348-index.html",
+              "publishedAt": "2024-02-16",
+              "NetIncome": 7071000000,
+              "TotalOperatingIncomeAsReported": 8425000000,
+              "StockholdersEquity": 35802000000,
+              "OperatingCashFlow": 10533000000,
+              "DilutedEPS": 3.94,
+              "CapitalExpenditures": 1885000000
+            }
+          }
+        },
+        "research": {
+          "reviewedAt": "2026-10-18",
+          "reportPeriod": "2026-06-30",
+          "summary": "医疗器械、诊断与耗材的多产品渠道及多年现金支持质量；并购改变短期利润，但不直接抹去重复经营能力。；Exact Sciences并表后收入增长13.0%，可比增长仅4.8%，营业利润下降17.5%；收入规模上升尚未转为核心利润增长。",
+          "thesis": [
+            "医疗器械、诊断与耗材的多产品渠道及多年现金支持质量；并购改变短期利润，但不直接抹去重复经营能力。",
+            "Exact Sciences并表后收入增长13.0%，可比增长仅4.8%，营业利润下降17.5%；收入规模上升尚未转为核心利润增长。"
+          ],
+          "risks": [
+            "收购与无形资产摊销；本季GAAP利润下降。",
+            "GAAP EPS0.53美元与调整EPS1.31美元分开；净利润下降，收购摊销等调整不反填。"
+          ],
+          "watch": [
+            "同口径有机增长低迷且并购现金回报不足。",
+            "不把并表增速当有机需求，器械和诊断分开观察。"
+          ],
+          "sources": [
+            {
+              "label": "本期正式财报",
+              "url": "https://www.abbottinvestor.com/static-files/6050fc59-d0ce-4bd6-afea-8a2f2ab80208",
+              "publishedAt": "2026-07-16",
+              "reportPeriod": "2026-06-30"
+            },
+            {
+              "label": "业绩发布与业务说明",
+              "url": "https://www.abbottinvestor.com/static-files/6050fc59-d0ce-4bd6-afea-8a2f2ab80208",
+              "reportPeriod": "2026-06-30"
+            }
+          ],
+          "longTerm": {
+            "decision": "retain",
+            "durability": "医疗器械、诊断与耗材的多产品渠道及多年现金支持质量；并购改变短期利润，但不直接抹去重复经营能力。",
+            "reinvestment": "诊断、糖尿病产品与Exact Sciences整合",
+            "invalidation": "同口径有机增长低迷且并购现金回报不足",
+            "rationale": "医疗器械、诊断与耗材的多产品渠道及多年现金支持质量；并购改变短期利润，但不直接抹去重复经营能力。"
+          },
+          "earningsReview": {
+            "reportPeriod": "2026-06-30",
+            "driver": "Exact Sciences并表后报告营收增13.0%，可比营收仅增4.8%。",
+            "nonOperating": "GAAP EPS0.53美元与调整EPS1.31美元分开；净利润下降，收购摊销等调整不反填。",
+            "priceCycle": "不把并表增速当有机需求，器械和诊断分开观察。",
+            "consolidation": "Exact Sciences自3月23日纳入，本季收入含被购业务。",
+            "invalidation": "同口径有机增长低迷且并购现金回报不足",
+            "evidence": [
+              {
+                "label": "2026-03 归属母公司报表净利润",
+                "value": 1077000000,
+                "unit": "USD",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1800/000162828026028357/0001628280-26-028357-index.html",
+                "location": "合并利润表 / 归属母公司报表净利润",
+                "basis": "disclosed",
+                "reportPeriod": "2026-03-31"
+              },
+              {
+                "label": "2026-03 归属母公司报表净利润同比",
+                "value": -18.71698113207547,
+                "unit": "%",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1800/000162828026028357/0001628280-26-028357-index.html",
+                "location": "本季与上年同期合并利润表",
+                "basis": "calculated",
+                "operands": [
+                  1077000000,
+                  1325000000
+                ],
+                "reportPeriod": "2026-03-31"
+              },
+              {
+                "label": "2026-03 营业利润",
+                "value": 1345000000,
+                "unit": "USD",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1800/000162828026028357/0001628280-26-028357-index.html",
+                "location": "合并利润表 / 营业利润",
+                "basis": "disclosed",
+                "reportPeriod": "2026-03-31"
+              },
+              {
+                "label": "2026-03 营业利润同比",
+                "value": -20.555227406969877,
+                "unit": "%",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1800/000162828026028357/0001628280-26-028357-index.html",
+                "location": "本季与上年同期合并利润表",
+                "basis": "calculated",
+                "operands": [
+                  1345000000,
+                  1693000000
+                ],
+                "reportPeriod": "2026-03-31"
+              },
+              {
+                "label": "2026-06 归属母公司报表净利润",
+                "value": 928000000,
+                "unit": "USD",
+                "sourceUrl": "https://www.abbottinvestor.com/static-files/6050fc59-d0ce-4bd6-afea-8a2f2ab80208",
+                "location": "合并利润表 / 归属母公司报表净利润",
+                "basis": "disclosed",
+                "reportPeriod": "2026-06-30"
+              },
+              {
+                "label": "2026-06 归属母公司报表净利润同比",
+                "value": -47.83586284429455,
+                "unit": "%",
+                "sourceUrl": "https://www.abbottinvestor.com/static-files/6050fc59-d0ce-4bd6-afea-8a2f2ab80208",
+                "location": "本季与上年同期合并利润表",
+                "basis": "calculated",
+                "operands": [
+                  928000000,
+                  1779000000
+                ],
+                "reportPeriod": "2026-06-30"
+              },
+              {
+                "label": "2026-06 营业利润",
+                "value": 1693000000,
+                "unit": "USD",
+                "sourceUrl": "https://www.abbottinvestor.com/static-files/6050fc59-d0ce-4bd6-afea-8a2f2ab80208",
+                "location": "合并利润表 / 营业利润",
+                "basis": "disclosed",
+                "reportPeriod": "2026-06-30"
+              },
+              {
+                "label": "2026-06 营业利润同比",
+                "value": -17.495126705653018,
+                "unit": "%",
+                "sourceUrl": "https://www.abbottinvestor.com/static-files/6050fc59-d0ce-4bd6-afea-8a2f2ab80208",
+                "location": "本季与上年同期合并利润表",
+                "basis": "calculated",
+                "operands": [
+                  1693000000,
+                  2052000000
+                ],
+                "reportPeriod": "2026-06-30"
+              }
+            ],
+            "qualityDecision": "retain",
+            "qualityRationale": "医疗器械、诊断与耗材的多产品渠道及多年现金支持质量；并购改变短期利润，但不直接抹去重复经营能力。",
+            "growthDecision": "hold",
+            "growthRationale": "Exact Sciences并表后收入增长13.0%，可比增长仅4.8%，营业利润下降17.5%；收入规模上升尚未转为核心利润增长。",
+            "breakoutDecision": "hold",
+            "breakoutRationale": "Exact Sciences并表后报告营收增13.0%，可比营收仅增4.8%。；GAAP EPS0.53美元与调整EPS1.31美元分开；净利润下降，收购摊销等调整不反填。；不把并表增速当有机需求，器械和诊断分开观察。"
+          }
+        }
+      }
+    },
+    {
+      "symbol": "ROP",
+      "currency": "USD",
+      "sourceUrl": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/ROP",
+      "sourceResponseSha256": "8377642e5a713efa61fa66fdf6b35a24086b2fb5f21c01ef7514502406b0bc9c",
+      "secResponseSha256": "9814e90707022ea7ca624bc677ff2c37c9c3e20de3bfe2306bdca03277d4b36d",
+      "scope": "Only provider entries for the 2026-09-30 quarter; current SEC normalization also lacks that quarter revenue and net income.",
+      "expectedMissingFields": [
+        "TotalRevenue",
+        "NetIncome"
+      ],
+      "response": {
+        "timeseries": {
+          "result": [
+            {
+              "meta": {
+                "symbol": [
+                  "ROP"
+                ],
+                "type": [
+                  "quarterlyDilutedEPS"
+                ]
+              },
+              "quarterlyDilutedEPS": [
+                {
+                  "dataId": 29009,
+                  "asOfDate": "2026-09-30",
+                  "periodType": "3M",
+                  "currencyCode": "USD",
+                  "reportedValue": {
+                    "raw": 4.88,
+                    "fmt": "4.88"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "previous": {
+        "financialHistory": {
+          "quarterly": {
+            "2025-06": {
+              "period": "2025-06",
+              "reportDate": "2025-06-30",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "StockholdersEquity": 19633900000,
+              "GrossProfit": 1345400000,
+              "TotalRevenue": 1943600000,
+              "TotalOperatingIncomeAsReported": 548300000,
+              "OperatingCashFlow": 404100000,
+              "NetIncome": 378300000,
+              "DilutedEPS": 3.49,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/882835/000088283526000036/0000882835-26-000036-index.html",
+              "publishedAt": "2026-07-31"
+            },
+            "2025-09": {
+              "period": "2025-09",
+              "reportDate": "2025-09-30",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "StockholdersEquity": 19992800000,
+              "GrossProfit": 1403000000,
+              "TotalRevenue": 2017500000,
+              "TotalOperatingIncomeAsReported": 573000000,
+              "OperatingCashFlow": 869500000,
+              "NetIncome": 398500000,
+              "DilutedEPS": 3.68,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/882835/000088283525000045/0000882835-25-000045-index.html",
+              "publishedAt": "2025-10-31"
+            },
+            "2025-12": {
+              "period": "2025-12",
+              "reportDate": "2025-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "StockholdersEquity": 19881500000,
+              "GrossProfit": 1429900000,
+              "TotalRevenue": 2058600000,
+              "TotalOperatingIncomeAsReported": 588300000,
+              "OperatingCashFlow": 738000000,
+              "NetIncome": 428400000,
+              "DilutedEPS": 3.97,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/882835/000088283526000009/0000882835-26-000009-index.html",
+              "publishedAt": "2026-02-24"
+            },
+            "2026-03": {
+              "period": "2026-03",
+              "reportDate": "2026-03-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "StockholdersEquity": 18818000000,
+              "GrossProfit": 1453800000,
+              "TotalRevenue": 2095300000,
+              "TotalOperatingIncomeAsReported": 569600000,
+              "OperatingCashFlow": 592100000,
+              "NetIncome": 508900000,
+              "DilutedEPS": 4.87,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/882835/000088283526000019/0000882835-26-000019-index.html",
+              "publishedAt": "2026-05-01"
+            },
+            "2026-06": {
+              "period": "2026-06",
+              "reportDate": "2026-06-30",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "StockholdersEquity": 18700300000,
+              "GrossProfit": 1470200000,
+              "TotalRevenue": 2108900000,
+              "TotalOperatingIncomeAsReported": 584700000,
+              "OperatingCashFlow": 469500000,
+              "NetIncome": 1168500000,
+              "DilutedEPS": 11.62,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/882835/000088283526000036/0000882835-26-000036-index.html",
+              "publishedAt": "2026-07-31"
+            },
+            "2023-09": {
+              "period": "2023-09",
+              "reportDate": "2023-09-30",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 1563400000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/882835/000088283525000008/0000882835-25-000008-index.html",
+              "publishedAt": "2025-02-24",
+              "NetIncome": 347200000,
+              "TotalOperatingIncomeAsReported": 446100000,
+              "GrossProfit": 1096300000,
+              "StockholdersEquity": 17038700000,
+              "OperatingCashFlow": 630000000,
+              "DilutedEPS": 3.23
+            },
+            "2023-12": {
+              "period": "2023-12",
+              "reportDate": "2023-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 1613500000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/882835/000088283525000008/0000882835-25-000008-index.html",
+              "publishedAt": "2025-02-24",
+              "NetIncome": 389000000,
+              "TotalOperatingIncomeAsReported": 462800000,
+              "GrossProfit": 1125200000,
+              "StockholdersEquity": 17444800000,
+              "OperatingCashFlow": 621800000,
+              "DilutedEPS": 3.61
+            },
+            "2024-03": {
+              "period": "2024-03",
+              "reportDate": "2024-03-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 1680700000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/882835/000088283525000020/0000882835-25-000020-index.html",
+              "publishedAt": "2025-05-02",
+              "NetIncome": 382000000,
+              "TotalOperatingIncomeAsReported": 481300000,
+              "GrossProfit": 1181000000,
+              "StockholdersEquity": 17797600000,
+              "OperatingCashFlow": 531500000,
+              "DilutedEPS": 3.54
+            },
+            "2024-06": {
+              "period": "2024-06",
+              "reportDate": "2024-06-30",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 1716800000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/882835/000088283525000036/0000882835-25-000036-index.html",
+              "publishedAt": "2025-08-01",
+              "NetIncome": 337100000,
+              "TotalOperatingIncomeAsReported": 494200000,
+              "GrossProfit": 1193300000,
+              "StockholdersEquity": 18139000000,
+              "OperatingCashFlow": 384100000,
+              "DilutedEPS": 3.12
+            },
+            "2024-09": {
+              "period": "2024-09",
+              "reportDate": "2024-09-30",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 1764600000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/882835/000088283525000045/0000882835-25-000045-index.html",
+              "publishedAt": "2025-10-31",
+              "NetIncome": 367900000,
+              "TotalOperatingIncomeAsReported": 496600000,
+              "GrossProfit": 1221700000,
+              "StockholdersEquity": 18515500000,
+              "OperatingCashFlow": 755400000,
+              "DilutedEPS": 3.4
+            },
+            "2024-12": {
+              "period": "2024-12",
+              "reportDate": "2024-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 1877100000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/882835/000088283525000008/0000882835-25-000008-index.html",
+              "publishedAt": "2025-02-24",
+              "NetIncome": 462300000,
+              "TotalOperatingIncomeAsReported": 524700000,
+              "GrossProfit": 1282300000,
+              "StockholdersEquity": 18867600000,
+              "OperatingCashFlow": 722200000,
+              "DilutedEPS": 4.28
+            },
+            "2025-03": {
+              "period": "2025-03",
+              "reportDate": "2025-03-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 1882800000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/882835/000088283526000019/0000882835-26-000019-index.html",
+              "publishedAt": "2026-05-01",
+              "NetIncome": 331100000,
+              "TotalOperatingIncomeAsReported": 525800000,
+              "GrossProfit": 1293700000,
+              "StockholdersEquity": 19223600000,
+              "OperatingCashFlow": 528700000,
+              "DilutedEPS": 3.06
+            }
+          },
+          "annual": {
+            "2022-12": {
+              "period": "2022-12",
+              "reportDate": "2022-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "DilutedEPS": 42.55,
+              "TotalRevenue": 5371800000,
+              "NetIncome": 4544700000,
+              "OperatingCashFlow": 734600000,
+              "TotalOperatingIncomeAsReported": 1524500000,
+              "GrossProfit": 3752800000,
+              "StockholdersEquity": 16037800000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/882835/000088283525000008/0000882835-25-000008-index.html",
+              "publishedAt": "2025-02-24"
+            },
+            "2023-12": {
+              "period": "2023-12",
+              "reportDate": "2023-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "DilutedEPS": 12.89,
+              "TotalRevenue": 6177800000,
+              "NetIncome": 1384200000,
+              "OperatingCashFlow": 2035100000,
+              "TotalOperatingIncomeAsReported": 1745200000,
+              "GrossProfit": 4307200000,
+              "StockholdersEquity": 17444800000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/882835/000088283526000009/0000882835-26-000009-index.html",
+              "publishedAt": "2026-02-24"
+            },
+            "2024-12": {
+              "period": "2024-12",
+              "reportDate": "2024-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "DilutedEPS": 14.35,
+              "TotalRevenue": 7039200000,
+              "NetIncome": 1549300000,
+              "OperatingCashFlow": 2393200000,
+              "TotalOperatingIncomeAsReported": 1996800000,
+              "GrossProfit": 4878300000,
+              "StockholdersEquity": 18867600000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/882835/000088283526000009/0000882835-26-000009-index.html",
+              "publishedAt": "2026-02-24"
+            },
+            "2025-12": {
+              "period": "2025-12",
+              "reportDate": "2025-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "DilutedEPS": 14.2,
+              "TotalRevenue": 7902500000,
+              "NetIncome": 1536300000,
+              "OperatingCashFlow": 2540300000,
+              "TotalOperatingIncomeAsReported": 2235400000,
+              "GrossProfit": 5472000000,
+              "StockholdersEquity": 19881500000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/882835/000088283526000009/0000882835-26-000009-index.html",
+              "publishedAt": "2026-02-24"
+            },
+            "2019-12": {
+              "period": "2019-12",
+              "reportDate": "2019-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 4727700000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/882835/000088283522000012/0000882835-22-000012-index.html",
+              "publishedAt": "2022-02-22",
+              "NetIncome": 1767900000,
+              "TotalOperatingIncomeAsReported": 1328300000,
+              "GrossProfit": 3140100000,
+              "StockholdersEquity": 9491900000,
+              "OperatingCashFlow": 1461800000,
+              "DilutedEPS": 16.82
+            },
+            "2020-12": {
+              "period": "2020-12",
+              "reportDate": "2020-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 4022400000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/882835/000088283523000016/0000882835-23-000016-index.html",
+              "publishedAt": "2023-02-27",
+              "NetIncome": 949700000,
+              "TotalOperatingIncomeAsReported": 1082900000,
+              "GrossProfit": 2828300000,
+              "StockholdersEquity": 10479800000,
+              "OperatingCashFlow": 1525100000,
+              "DilutedEPS": 8.98
+            },
+            "2021-12": {
+              "period": "2021-12",
+              "reportDate": "2021-12-31",
+              "dateBasis": "issuer_report_end",
+              "currency": "USD",
+              "TotalRevenue": 4833800000,
+              "sourceUrl": "https://www.sec.gov/Archives/edgar/data/882835/000088283524000008/0000882835-24-000008-index.html",
+              "publishedAt": "2024-02-22",
+              "NetIncome": 1152600000,
+              "TotalOperatingIncomeAsReported": 1241200000,
+              "GrossProfit": 3407600000,
+              "StockholdersEquity": 11563800000,
+              "OperatingCashFlow": 2011900000,
+              "DilutedEPS": 10.82
+            }
+          }
+        },
+        "research": {
+          "reviewedAt": "2026-10-18",
+          "reportPeriod": "2026-06-30",
+          "summary": "垂直行业软件嵌入客户业务流程，重复收入和持续经营现金支持研发与收购；资本配置质量需结合并购回报判断。；Q2有机收入增长5%、收购贡献约3%，GAAP营业利润增长6.6%、自由现金流增长11%；属于温和经营增长，不以投资收益造成的净利跳升入选爆发。",
+          "thesis": [
+            "垂直行业软件嵌入客户业务流程，重复收入和持续经营现金支持研发与收购；资本配置质量需结合并购回报判断。",
+            "Q2有机收入增长5%、收购贡献约3%，GAAP营业利润增长6.6%、自由现金流增长11%；属于温和经营增长，不以投资收益造成的净利跳升入选爆发。"
+          ],
+          "risks": [
+            "收购溢价、商誉与整合影响资本回报；少数股权投资收益会大幅扭曲报表净利润。",
+            "本季少数股权投资财务影响税前约8.35亿美元、税后约7.91亿美元；不将该项或233%的EPS增速作为经营成长证据。"
+          ],
+          "watch": [
+            "有机增长、收购后投入资本回报、商誉和现金转换。"
+          ],
+          "sources": [
+            {
+              "label": "公司本期业绩发布",
+              "url": "https://www.ropertech.com/node/19171/html",
+              "publishedAt": "2026-07-23",
+              "reportPeriod": "2026-06-30"
+            },
+            {
+              "label": "SEC本期法定财务报告",
+              "url": "https://www.sec.gov/Archives/edgar/data/882835/000088283526000036/0000882835-26-000036-index.html",
+              "publishedAt": "2026-07-31",
+              "reportPeriod": "2026-06-30"
+            }
+          ],
+          "longTerm": {
+            "decision": "retain",
+            "durability": "垂直行业软件嵌入客户业务流程，重复收入和持续经营现金支持研发与收购；资本配置质量需结合并购回报判断。",
+            "reinvestment": "垂直软件研发及收购后经营现金再投入。",
+            "invalidation": "收购溢价、商誉与整合影响资本回报；少数股权投资收益会大幅扭曲报表净利润。",
+            "rationale": "垂直行业软件嵌入客户业务流程，重复收入和持续经营现金支持研发与收购；资本配置质量需结合并购回报判断。"
+          },
+          "earningsReview": {
+            "reportPeriod": "2026-06-30",
+            "driver": "Q2有机收入增长5%、收购贡献约3%，GAAP营业利润增长6.6%、自由现金流增长11%；属于温和经营增长，不以投资收益造成的净利跳升入选爆发。",
+            "nonOperating": "本季少数股权投资财务影响税前约8.35亿美元、税后约7.91亿美元；不将该项或233%的EPS增速作为经营成长证据。",
+            "priceCycle": "垂直软件客户预算与技术产品需求仍有周期；5%有机增长不能被整体收入和投资收益放大。",
+            "consolidation": "公司披露收入增长约9%，其中有机5%、并购约3%，四舍五入后不必精确相加。",
+            "invalidation": "有机增长、收购后投入资本回报、商誉和现金转换。持续恶化则重新评估。",
+            "evidence": [
+              {
+                "label": "最新单季收入",
+                "value": 2108900000,
+                "unit": "USD",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/882835/000088283526000036/0000882835-26-000036-index.html",
+                "location": "合并利润表 / 现金流量表；截至2026-06-30的单季",
+                "basis": "disclosed",
+                "reportPeriod": "2026-06-30"
+              },
+              {
+                "label": "最新单季净利润",
+                "value": 1168500000,
+                "unit": "USD",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/882835/000088283526000036/0000882835-26-000036-index.html",
+                "location": "合并利润表 / 现金流量表；截至2026-06-30的单季",
+                "basis": "disclosed",
+                "reportPeriod": "2026-06-30"
+              },
+              {
+                "label": "最新单季营业利润",
+                "value": 584700000,
+                "unit": "USD",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/882835/000088283526000036/0000882835-26-000036-index.html",
+                "location": "合并利润表 / 现金流量表；截至2026-06-30的单季",
+                "basis": "disclosed",
+                "reportPeriod": "2026-06-30"
+              },
+              {
+                "label": "最新单季经营现金",
+                "value": 469500000,
+                "unit": "USD",
+                "sourceUrl": "https://www.sec.gov/Archives/edgar/data/882835/000088283526000036/0000882835-26-000036-index.html",
+                "location": "合并利润表 / 现金流量表；截至2026-06-30的单季",
+                "basis": "calculated",
+                "reportPeriod": "2026-06-30"
+              }
+            ],
+            "qualityDecision": "retain",
+            "qualityRationale": "垂直行业软件嵌入客户业务流程，重复收入和持续经营现金支持研发与收购；资本配置质量需结合并购回报判断。",
+            "growthDecision": "retain",
+            "growthRationale": "Q2有机收入增长5%、收购贡献约3%，GAAP营业利润增长6.6%、自由现金流增长11%；属于温和经营增长，不以投资收益造成的净利跳升入选爆发。",
+            "breakoutDecision": "hold",
+            "breakoutRationale": "按长期优质及盈利成长分别评估，不由单季净利跳升直接授予独立爆发标签。"
+          }
+        }
+      }
+    }
+  ],
+  "previousSnapshotCommit": "325b721112b6e759c03b28016f6ac929205bc543"
+}

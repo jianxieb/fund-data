@@ -120,6 +120,31 @@ test('new filings can withdraw every selection while preserving related-company 
   p.click('detail','AAPL');assert.match(p.modal(),/新财报待逐家公司复核/);
 });
 
+test('an EPS-only quarter names missing income while prices and prior quarters remain visible', () => {
+  const row=structuredClone(require('./fixtures/stock-view-20261020.json').us.find(s=>s.symbol==='AAPL'));
+  const missing='2026-09财季来源缺营业收入、净利润';
+  row.financialHistory.quarterly['2026-09']={period:'2026-09',reportDate:'2026-09-30',dateBasis:'provider_month_end',currency:'USD',DilutedEPS:1};
+  row.financials={...row.financialHistory.quarterly['2026-09'],dataStatus:'partial',missingFields:['TotalRevenue','NetIncome'],missingEvidence:missing,
+    revenueGrowth:{value:null,label:'缺本季营业收入'},profitGrowth:{value:null,label:'缺本季净利润'},operatingGrowth:{value:null,label:'缺本季营业利润'},
+    roeTTM:null,roeMissing:'缺连续四季利润',ttmRevenue:null,ttmProfit:null,ttmCash:null,operatingMargin:null};
+  Object.assign(row.analysis,{ttmNetMargin:null,cashConversion:null});
+  Object.assign(row.companySelection,{groups:['other'],status:'pending',rationale:missing});
+  row.screening.groups=['other'];
+  for (const verdict of Object.values(row.screening.reviews)) verdict.qualified=false;
+  const p=page([row]);p.view();p.click('group','other');
+  const html=p.view();
+  assert.match(html,/缺本季营业收入/);assert.match(html,/缺本季净利润/);
+  assert.match(html,/2026-09财季来源缺营业收入、净利润/);
+  assert.doesNotMatch(html,/NaN|undefined/);
+  p.click('detail','AAPL');
+  assert.match(p.modal(),/<p class="notice warn">2026-09财季来源缺营业收入、净利润<\/p>/);
+  assert.match(p.modal(),/2026-09季/);assert.match(p.modal(),/2026-06/);
+  assert.doesNotMatch(p.modal(),/NaN|undefined/);
+  p.click('view','valuation');assert.match(p.view(),new RegExp(row.price.toFixed(1)));
+  p.click('group','quality');p.click('scope','true');
+  assert.match(p.view(),/财报缺项/);assert.doesNotMatch(p.view(),/缺本期评审/);
+});
+
 test('dividend view and detail distinguish REIT AFFO from GAAP earnings', () => {
   const p=historicalPage(); p.view(); p.click('group','dividend');
   const html=p.view(); assert.match(html,/5年分红年数/); assert.match(html,/本季已付普通股股息 \/ AFFO/);
