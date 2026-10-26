@@ -33,7 +33,7 @@ import time
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
-from data_status import write_status
+from data_status import write_status, file_transaction, replace_snapshot_blocks
 from annual_fees import fee_metadata, before_fee_prices
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -792,10 +792,14 @@ def write_html(results, dates, curves, windows, summaries, asset_starts, fee_est
             raise RuntimeError('data/snapshot.js 缺少 DATA_META_END 标记')
         out = src.replace(marker, marker + '\n\n' + block, 1)
 
-    tmp = HTML + '.tmp'
-    with open(tmp, 'w', encoding='utf-8') as fh:
-        fh.write(out)
-    os.replace(tmp, HTML)
+    with file_transaction(HTML):
+        with open(HTML, encoding='utf-8') as fh:
+            latest = fh.read()
+        out = replace_snapshot_blocks(latest, out, ('STRATEGY',)) if pattern.search(latest) else out
+        tmp = HTML + '.tmp'
+        with open(tmp, 'w', encoding='utf-8') as fh:
+            fh.write(out)
+        os.replace(tmp, HTML)
     # Fee scenarios load only when requested by the strategy view. The legacy
     # unit-NAV curve is not rendered there; retain account and XIRR curves.
     estimates = fee_estimates or {}

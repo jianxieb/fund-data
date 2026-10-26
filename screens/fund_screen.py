@@ -37,7 +37,7 @@ CACHE = os.path.join(HERE, '.cache')
 DATA = os.path.join(HERE, 'data')
 sys.path.insert(0, ROOT)
 import update as U  # noqa: E402  复用 history_fetch / fhsp_fetch / http_get
-from data_status import atomic_text, write_status
+from data_status import atomic_text, write_status, file_transaction
 
 UA = {'User-Agent': 'Mozilla/5.0'}
 AS_OF = date.today().isoformat()
@@ -1009,6 +1009,11 @@ def parse_snapshot_extra(path=SNAPSHOT, text=None):
 
 def write_extra_fields(changes, expected_return_asof=None, expected_scale=None):
     """Patch only successful EXTRA rows, re-reading other agents' blocks at commit."""
+    with file_transaction(SNAPSHOT):
+        return _write_extra_fields(changes, expected_return_asof, expected_scale)
+
+
+def _write_extra_fields(changes, expected_return_asof=None, expected_scale=None):
     src = Path(SNAPSHOT).read_text(encoding='utf-8')
     match = re.search(r'/\*__DATA_EXTRA_BEGIN__\*/.*?/\*__DATA_EXTRA_END__\*/', src, re.S)
     if not match:

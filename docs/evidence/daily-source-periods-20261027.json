@@ -1,0 +1,32 @@
+{
+  "checkedAt": "2026-10-27T00:11:21+08:00",
+  "source": "https://fund.eastmoney.com/data/fundranking.html",
+  "endpoint": "https://fund.eastmoney.com/data/rankhandler.aspx",
+  "parameters": {
+    "op": "ph",
+    "dt": "kf",
+    "ft": "all",
+    "sc": "6yzf",
+    "st": "desc",
+    "sd": "2016-10-26",
+    "ed": "2026-10-26",
+    "pi": 1,
+    "pn": 5000
+  },
+  "httpStatus": 200,
+  "seconds": 11.562,
+  "responseBytes": 830645,
+  "returnedRows": 5000,
+  "allRecords": 24693,
+  "rowFields": 25,
+  "responseSha256": "1d576add321260c1ab8e17b627239a7eb2bc186698625a36028c24f44e554eee",
+  "fieldMappingSource": "screens/fund_screen.py: KF_FIELDS and cmd_universe",
+  "periodsAvailable": [
+    "1y",
+    "2y",
+    "3y",
+    "5y",
+    "custom interval"
+  ],
+  "limitation": "Custom interval can fall back to since-inception for younger funds. This probe records availability; it does not relabel such a result as a complete ten-year return."
+}

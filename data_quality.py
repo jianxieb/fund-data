@@ -20,7 +20,7 @@ def read_snapshot():
     script = """
 const fs=require('fs'),vm=require('vm'),path=require('path');
 const context={}; vm.createContext(context);
-for(const name of ['snapshot.js','strategy-fees.js','indices.js','screening.js','overseas-stocks.js','portfolio/catalog.js']) {
+for(const name of ['snapshot.js','strategy-fees.js','indices.js','screening.js','overseas-stocks.js','portfolio/catalog.js','update-status.js']) {
   const file=path.join(process.argv[1],name);
   if(fs.existsSync(file)) vm.runInContext(fs.readFileSync(file,'utf8'),context,{timeout:1000});
 }
@@ -63,6 +63,24 @@ def audit(snapshot, today=None):
         if affected is not None:
             item['affected'] = affected
         target['issues'].append(item)
+
+    # Failed independent sources remain visible even though their last valid
+    # observations can still be published alongside successful updates.
+    labels = {'funds': '海外基金', 'research_funds': '扩展基金', 'stocks': 'A股',
+              'overseas_stocks': '美股', 'indices': '国内指数', 'portfolio': '标的行情',
+              'strategy': '投入策略', 'crossborder': '跨境基金', 'bank_fx': '银行参考牌价',
+              'market_history': '市场历史', 'fund_actions': '基金分红记录',
+              'etf_distributions': 'ETF分配记录', 'return_indices': '指数比较',
+              'financial_events': '金融事件历史'}
+    failed = [(name, entry) for name, entry in (snapshot.get('UPDATE_STATUS') or {}).get('datasets', {}).items()
+              if entry.get('status') in ('failed', 'timeout') and name != 'quality']
+    if failed:
+        failures = dataset('source_refresh', '本次未更新的来源', [])
+        for name, entry in failed:
+            text = entry.get('error') or entry.get('message') or '来源本次未返回可用数据'
+            text = str(text).strip()
+            text = text.splitlines()[-1][:180] if text else '来源本次未返回可用数据'
+            issue(failures, 'source_refresh_retained', 'warning', labels.get(name, name) + '：' + text + '；保留已发布数据及原日期', name)
 
     funds = snapshot.get('FUNDS', [])
     fd = dataset('funds', '海外基金', funds, snapshot.get('META', {}).get('navdate'))

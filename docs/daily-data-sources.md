@@ -1,0 +1,33 @@
+# 每日数据的来源与更新配方
+
+更新于2026-10-27。用户要求正常每日更新在3–5分钟内完成、单个来源失败保留旧值和原日期、修复先按失败部分最小验证。调度仍为每天北京时间06:17一次。本文件记录原有来源和字段，不将代码检查时间冒充行情日期。
+
+## 原数据从哪里来
+
+| 内容 | 已使用的接口、请求与字段 | 日期、口径及保存位置 |
+| --- | --- | --- |
+| 基金净值与日收益 | `fundmobapi.eastmoney.com/FundMNewApi/FundMNHisNetList`；`FCODE`、`pageIndex=1`、有缓存时`pageSize=20`，首次或缺口才`10000`。`Datas[].FSRQ/DWJZ/JZZZL`为日期、单位净值和每日收益百分数。明确的分红拆分证据单独归档 | 原始记录在`.tmp-hist/{code}.json`。一次请求返回多条记录，并非逐个交易日请求。已有历史只合并最新尾段，历史日期不改成采集日 |
+| 基金批量当前净值 | 同站`FundMNFInfo`；`Fcodes`批量代码；`FCODE/NAV/PDATE/NAVCHGRT` | 净值和行情各使用来源日期；基金资料失败不能清除有效净值 |
+| 已有近N年收益字段 | 同站`FundMNBasicInformation`：`SYL_1N/SYL_2N/SYL_3N`。`fund.eastmoney.com/data/rankhandler.aspx`的`op=ph`、`dt=kf/fb`、`ft=all`榜单包含1/2/3/5年及自定义区间；`sd/ed`指定区间。现有解析位置见`screens/fund_screen.py`的`BASIC_KEEP/KF_FIELDS/FB_FIELDS`和`cmd_universe` | 原研究池使用过这些现成字段。榜单对成立不足十年的基金可能返回成立以来值，因此不能把该值标成十年收益；当前正式收益仍绑定已校验的含分红曲线与实际日期。现成收益率不能提供任意用户组合、税费、回撤的完整路径 |
+| A股估值和财报 | `datacenter-web.eastmoney.com/api/data/v1/get`；`reportName=RPT_VALUEANALYSIS_DET`或`RPT_F10_FINANCE_MAINFINADATA`，证券过滤为`SECUCODE`。`PE_TTM/PE_LAR/PB_MRQ/TRADE_DATE`与财报`REPORT_DATE/NOTICE_DATE`分别保存 | `stock_fundamentals.py`定义请求和身份校验。估值接口失败保留已发布估值、PE历史和原估值日；新财报不得放回早于其公告的估值日 |
+| A股行情 | 东方财富`push2`实时报价、`push2his`后复权日线；腾讯后复权日线及Yahoo明确的`adjclose`为已有备用源 | `stock_screen.py`校验证券身份、币种、有效价格和来源时间。主源失败按原有口径回退，不能使用未复权价格替代含分红收益 |
+| 美股与海外ETF、指数 | Yahoo chart按证券一次请求区间数据；`timestamp`、`indicators.adjclose`及币种、交易所时区元数据；财报另用Yahoo财务字段及SEC companyfacts | `overseas_stocks.py/strategy_backtest.py`；按交易所实际收盘过滤，保留价格、估值、财报各自日期。季度仅有EPS时标明缺收入/净利润，行情仍可更新 |
+| 国内指数 | 中证、国证等原指数来源，身份与序列规范见`indices.py`的`SPECS`及各解析器 | `data/indices.js`、`data/index-history.json`。授权指数缺原始日线时明确保留缺项，不拿另一指数或ETF代替 |
+| 银行与券商换汇参考 | 逐来源的官方页面/接口、参数、字段、单位和失败处理已记录在[money-flow-method.md](money-flow-method.md)的逐源配方 | `scripts/refresh_money_flow_quotes.py`；逐币种保留原价格、原时间、原来源，失败不写新零值 |
+| 市场历史与估值位置 | `market_history.py`的`source_specs`定义各行情与估值来源，估值快照和历史成对核验 | `data/market-history.json`包含原来源、哈希、时间及`refreshFailures`；一对证据不同步时保留原一对，不交叉拼接 |
+
+## 页面与每日任务各做什么
+
+组合模拟在用户选择资产、权重、金额等参数后，由`assets/portfolio.js`按需加载选中标的历史，调用`portfolio-model.js`计算组合。每日后台准备的是单个标的的基础行情及预览指标。此前“组合历史”这一称呼不准确，不代表每天预先计算用户组合。
+
+日更不再前后重复跑整个代码回归。完整代码检查保留在源码推送流程；每日检查新数据的身份、日期、缺项、标的集合、历史哈希及生成后的公司/股票显示契约。相同日期和相同周年日期的解析结果在进程内有界复用，算法及数值结果不变。
+
+独立数据源并行抓取，网络阶段不持有共享文件锁；仅在合并各自数据块时短暂加锁。单个来源失败写明原因，恢复其原有效数据及日期，其他有效更新继续。缺少可保留证据、质量错误、身份变化或日期倒退仍明确拒绝相应结果。派生来源的失败与保留在`update-status`、质量报告和`post-refresh-report.json`中记录。
+
+## 性能证据与验收
+
+同样1873个标的的只读历史验证，性能分析记录为57.6秒，965万次日期解析占45.5秒；复用解析后为9.8秒，原历史文件、哈希、日期和指标均通过同样检查。跨境基金周年日期也移到逐行筛选之外。
+
+这项局部加速不等于整轮已达3–5分钟。整轮验收必须同时记录实际耗时、更新数量、各失败来源和实际机器人数据提交。首次缺缓存或主动全量研究与正常日更分开计时。
+
+已实际请求上述榜单首批数据：一次返回5000条、830645字节，用时11.562秒，HTTP 200；当时全样本数24693。参数、响应哈希和实际取得时间见[来源探测记录](evidence/daily-source-periods-20261027.json)。这证明现成多周期字段的可取得性，不能把首批5000条误记为完整覆盖，也不能把成立以来结果改成十年结果。

@@ -47,11 +47,15 @@ def baseline_snapshot(ref='HEAD'):
 def check_results(report, quality):
     problems = []
     steps = report.get('steps') or []
-    if report.get('status') != 'completed' or tuple(item.get('dataset') for item in steps) != EXPECTED_STEPS:
+    if report.get('status') not in ('completed', 'partial') or tuple(item.get('dataset') for item in steps) != EXPECTED_STEPS:
         problems.append('刷新报告不是完整九阶段成功结果')
     for item in steps:
         if item.get('exitCode') != 0 or item.get('status') != 'completed':
-            problems.append('阶段失败：' + str(item.get('dataset')))
+            retained = report.get('dailyMode') and item.get('retainedPrevious') and item.get('dataset') != 'quality'
+            isolated = (report.get('dailyMode') and item.get('sourcePartial') and item.get('exitCode') == 3
+                        and item.get('dataset') in ('funds', 'stocks'))
+            if not retained and not isolated:
+                problems.append('阶段失败且无可保留证据：' + str(item.get('dataset')))
     if quality.get('summary', {}).get('errors') != 0:
         problems.append('质量检查仍有错误')
     return problems
@@ -116,7 +120,10 @@ def main():
         for item in problems:
             print('拒绝发布：' + item)
         return 1
-    print('刷新通过：九阶段成功、质量错误为零、标的集合及来源日期未倒退。')
+    retained = [s['dataset'] for s in report['steps'] if s['exitCode'] != 0]
+    print('刷新通过：质量错误为零、标的集合及来源日期未倒退。')
+    if retained:
+        print('来源本次未完全更新，沿用原数据及日期：' + '、'.join(retained))
     return 0
 
 

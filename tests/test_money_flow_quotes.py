@@ -328,6 +328,26 @@ class BankQuotesTests(unittest.TestCase):
             self.assertEqual(path.read_text(), source)
             self.assertEqual(read_snapshot(path), {'banks': {}})
 
+    def test_slow_bank_preserves_original_quote_while_another_bank_updates(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'quotes.js'
+            previous = {'buy': 6.60, 'sell': 6.70, 'asOf': '2026-10-23 10:00:00'}
+            snapshot = {'banks': {'boc': {'quotes': {'USD': previous}, 'source': 'original-source'}}}
+            path.write_text('window.MONEY_FLOW_QUOTES = ' + json.dumps(snapshot) + ';\n')
+            fresh = {'buy': 6.61, 'sell': 6.71, 'asOf': '2026-10-26 10:00:00'}
+            def fetch(bank, timeout):
+                self.assertEqual(timeout, 8)
+                if bank == 'boc':
+                    raise TimeoutError('bank endpoint timed out')
+                return {'USD': fresh}
+            with patch.object(sys, 'argv', ['refresh', '--output', str(path), '--banks', 'boc', 'cmb', '--timeout', '8']), \
+                    patch('scripts.refresh_money_flow_quotes.fetch_bank', side_effect=fetch):
+                main()
+            result = read_snapshot(path)
+            self.assertEqual(result['banks']['boc'], snapshot['banks']['boc'])
+            self.assertEqual(result['banks']['cmb']['quotes']['USD'], fresh)
+            self.assertIn('bank endpoint timed out', result['refreshFailures']['boc']['error'])
+
 
 if __name__ == '__main__':
     unittest.main()

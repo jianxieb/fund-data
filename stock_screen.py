@@ -26,7 +26,7 @@ import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor
-from data_status import write_status
+from data_status import write_status, file_transaction
 from update import add_years
 from stock_fundamentals import fetch_evidence, quality_review, retain_report_evidence, retain_valuation_evidence
 from stock_groups import long_term_review, growth_review, breakout_review
@@ -419,6 +419,7 @@ def main():
     parser = argparse.ArgumentParser(description='股票观察清单数据刷新')
     parser.add_argument('--offline', action='store_true', help='只检查已有快照，不联网')
     parser.add_argument('--only', help='限定股票代码，以逗号分隔')
+    parser.add_argument('--workers', type=int, default=4)
     args = parser.parse_args()
     OFFLINE = args.offline
     with open(HTML, encoding='utf-8') as f:
@@ -440,7 +441,7 @@ def main():
             return item, fetch_stock(item, old.get(item['code'])), None
         except Exception as exc:
             return item, None, exc
-    with ThreadPoolExecutor(max_workers=4) as pool:
+    with ThreadPoolExecutor(max_workers=max(1, min(12, args.workers))) as pool:
         outcomes = list(pool.map(refreshed, universe))
     for item, row, error in outcomes:
         code = item['code']
@@ -476,13 +477,14 @@ def main():
     if not pattern.search(src):
         log('index.html 未找到 STOCKS 数据块，放弃写回')
         return 2
-    with open(HTML, encoding='utf-8') as fh:
-        src = fh.read()  # Other independent datasets may have refreshed since this job began.
-    src = pattern.sub(block, src, count=1)
-    tmp = HTML + '.tmp'
-    with open(tmp, 'w', encoding='utf-8') as f:
-        f.write(src)
-    os.replace(tmp, HTML)
+    with file_transaction(HTML):
+        with open(HTML, encoding='utf-8') as fh:
+            src = fh.read()
+        src = pattern.sub(lambda _: block, src, count=1)
+        tmp = HTML + '.tmp'
+        with open(tmp, 'w', encoding='utf-8') as f:
+            f.write(src)
+        os.replace(tmp, HTML)
     log('完成：%d 只股票，数据截至 %s' % (len(rows), rows[0].get('latest', '')))
     warnings = [{'code': row['c'], 'message': row[field]} for row in rows
                 for field in ('fundamentalsRefreshError', 'valuationRefreshError') if row.get(field)]

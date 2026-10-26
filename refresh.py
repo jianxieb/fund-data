@@ -6,8 +6,9 @@ import os
 import subprocess
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from data_status import DATA, ROOT, atomic_text, now_iso, write_status
+from data_status import DATA, ROOT, atomic_text, now_iso, write_status, file_transaction, replace_snapshot_blocks
 
 DATASETS = ('funds', 'research_funds', 'indices', 'stocks', 'overseas_stocks', 'screening', 'strategy', 'portfolio', 'quality')
 PUBLISHED_OUTPUTS = {
@@ -20,6 +21,8 @@ PUBLISHED_OUTPUTS = {
     'strategy': ('snapshot.js', 'strategy-fees.js'),
     'portfolio': ('portfolio/catalog.js', 'snapshot.js', 'screening.js'),
 }
+SNAPSHOT_BLOCKS = {'funds': ('FUNDS', 'META', 'BM', 'CHG'), 'research_funds': ('EXTRA',),
+                   'stocks': ('STOCKS',), 'strategy': ('STRATEGY',), 'portfolio': ('FUNDS', 'EXTRA')}
 
 
 def commands(offline=False):
@@ -39,7 +42,7 @@ def commands(offline=False):
     }
 
 
-def execute(dataset, command, timeout, offline=False):
+def execute(dataset, command, timeout, offline=False, allow_partial=False):
     started = time.monotonic()
     attempted = now_iso()
     published_before = {}
@@ -60,17 +63,29 @@ def execute(dataset, command, timeout, offline=False):
     except OSError as exc:
         status, code, log = 'failed', 1, str(exc)
     restored = []
-    if code != 0:
+    # These collectors validate their output and preserve failed individual rows
+    # themselves. Exit 3 reports the source failures without discarding good rows.
+    source_partial = allow_partial and code == 3 and dataset in ('funds', 'stocks')
+    error = next((line.strip() for line in reversed(log.splitlines()) if line.strip()), '')[:240] if code else None
+    if source_partial:
+        status = 'partial'
+    if code != 0 and not source_partial:
         for path, previous in published_before.items():
-            if previous is None:
-                if path.exists():
-                    path.unlink()
+            with file_transaction(path):
+                if previous is None:
+                    if path.exists():
+                        path.unlink()
+                        restored.append(path.name)
+                elif not path.exists() or path.read_bytes() != previous:
+                    if allow_partial and path.name == 'snapshot.js' and path.exists():
+                        merged = replace_snapshot_blocks(path.read_text(encoding='utf-8'),
+                            previous.decode('utf-8'), SNAPSHOT_BLOCKS[dataset])
+                        atomic_text(path, merged)
+                    else:
+                        temporary = path.with_name(path.name + '.rollback.tmp')
+                        temporary.write_bytes(previous)
+                        os.replace(temporary, path)
                     restored.append(path.name)
-            elif not path.exists() or path.read_bytes() != previous:
-                temporary = path.with_name(path.name + '.rollback.tmp')
-                temporary.write_bytes(previous)
-                os.replace(temporary, path)
-                restored.append(path.name)
         if restored:
             log += '\n本阶段未成功，已恢复页面数据：%s。\n' % ', '.join(restored)
     duration = round(time.monotonic() - started, 2)
@@ -78,8 +93,9 @@ def execute(dataset, command, timeout, offline=False):
     directory.mkdir(exist_ok=True)
     atomic_text(directory / ('refresh-' + dataset + '.log'), log)
     # A zero exit code can mean cache-only validation: do not replace it with 'fresh'.
-    if code != 0:
-        write_status(dataset, status, exitCode=code, seconds=duration, message=log[-1200:], mode='offline' if offline else 'online')
+    if code != 0 and not source_partial:
+        write_status(dataset, status, exitCode=code, seconds=duration, message=log[-1200:], error=error,
+                     mode='offline' if offline else 'online')
     else:
         try:
             existing = json.loads((DATA / 'update-status.json').read_text(encoding='utf-8')).get('datasets', {}).get(dataset, {})
@@ -88,18 +104,26 @@ def execute(dataset, command, timeout, offline=False):
         if existing.get('attemptedAt', '') >= attempted:
             details = {key: value for key, value in existing.items() if key not in ('status', 'attemptedAt', 'execution', 'mode', 'lastOnlineAttempt')}
             details['mode'] = 'offline' if offline else 'online'
-            write_status(dataset, existing['status'], **details, execution={'exitCode': 0, 'seconds': duration})
+            write_status(dataset, existing['status'], **details, execution={'exitCode': code, 'seconds': duration})
         else:
             write_status(dataset, 'cached' if offline and dataset not in ('quality', 'screening') else 'checked' if dataset in ('quality', 'screening') else 'success',
                          exitCode=0, seconds=duration, mode='offline' if offline else 'online', message='执行成功；数据准确性与日期由质量报告单独说明。')
+    retained = allow_partial and code != 0 and not source_partial and bool(published_before) and all(
+        previous is not None and path.exists() and (
+            replace_snapshot_blocks(path.read_text(encoding='utf-8'), previous.decode('utf-8'), SNAPSHOT_BLOCKS[dataset])
+            == path.read_text(encoding='utf-8') if path.name == 'snapshot.js'
+            else path.read_bytes() == previous)
+        for path, previous in published_before.items())
     return {'dataset': dataset, 'status': status, 'exitCode': code, 'seconds': duration,
             'log': '.tmp-snap/refresh-' + dataset + '.log',
-            'publishedRollback': bool(restored)}
+            'publishedRollback': bool(restored), 'retainedPrevious': bool(retained),
+            'sourcePartial': source_partial}
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--offline', action='store_true', help='所有被选的数据集严格不联网')
+    parser.add_argument('--daily', action='store_true', help='并行更新独立来源；局部失败保留原数据和日期')
     parser.add_argument('--datasets', default=','.join(DATASETS), help='逗号分隔：' + ','.join(DATASETS))
     parser.add_argument('--timeout', type=int, default=180, help='每个数据集最大运行秒数（默认180）')
     parser.add_argument('--funds-timeout', type=int, help='基础与已核验扩展基金阶段的运行秒数上限；默认使用 --timeout')
@@ -122,26 +146,47 @@ def main():
     try:
         os.write(descriptor, json.dumps({'pid': os.getpid(), 'startedAt': now_iso()}).encode())
         os.close(descriptor)
-        run = {'schemaVersion': 1, 'startedAt': now_iso(), 'mode': 'offline' if args.offline else 'online', 'steps': []}
+        run = {'schemaVersion': 1, 'startedAt': now_iso(), 'mode': 'offline' if args.offline else 'online',
+               'dailyMode': args.daily, 'steps': []}
         available = commands(args.offline)
-        for name in selected:
+        if args.daily and not args.offline:
+            available['stocks'].extend(['--workers', '12'])
+        results = {}
+        def run_one(name):
             print('刷新 %s …' % name, flush=True)
             limit = args.funds_timeout if name in ('funds', 'research_funds') and args.funds_timeout else args.timeout
             if name == 'portfolio' and args.portfolio_timeout:
                 limit = args.portfolio_timeout
-            step = execute(name, available[name], limit, args.offline)
-            run['steps'].append(step)
-            if name == 'portfolio' and step['exitCode'] == 0:
+            step = (execute(name, available[name], limit, args.offline, allow_partial=True)
+                    if args.daily else execute(name, available[name], limit, args.offline))
+            if name == 'portfolio' and step['exitCode'] == 0 and not (args.daily and not args.offline):
                 from scripts.build_portfolio_data import prune
                 prune()
             print('  %s（exit=%d，%.1fs）' % (step['status'], step['exitCode'], step['seconds']), flush=True)
+            return step
+        if args.daily and not args.offline:
+            for phase in (('funds', 'research_funds', 'indices', 'stocks', 'overseas_stocks'),
+                          ('strategy', 'portfolio'), ('screening',), ('quality',)):
+                names = [name for name in phase if name in selected]
+                with ThreadPoolExecutor(max_workers=max(1, len(names))) as pool:
+                    futures = {pool.submit(run_one, name): name for name in names}
+                    for future in as_completed(futures):
+                        results[futures[future]] = future.result()
+                if 'portfolio' in names and results['portfolio']['exitCode'] == 0:
+                    from scripts.build_portfolio_data import prune
+                    prune()  # Strategy readers have finished using the previous catalog.
+            run['steps'] = [results[name] for name in selected]
+        else:
+            run['steps'] = [run_one(name) for name in selected]
         run['completedAt'] = now_iso()
         run['status'] = 'completed' if all(step['exitCode'] == 0 for step in run['steps']) else 'partial'
         encoded = json.dumps(run, ensure_ascii=False, indent=2)
         atomic_text(DATA / 'refresh-report.json', encoded + '\n')
         atomic_text(DATA / 'refresh-report.js', 'var REFRESH_REPORT=' + encoded + ';\n')
         print('刷新结果：%s；数据质量详见 data/quality.json。' % run['status'])
-        return 0 if run['status'] == 'completed' else 1
+        safe_partial = args.daily and all(step['exitCode'] == 0 or step.get('retainedPrevious')
+                                         or step.get('sourcePartial') for step in run['steps'])
+        return 0 if run['status'] == 'completed' or safe_partial else 1
     finally:
         lock.unlink(missing_ok=True)
 

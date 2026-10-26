@@ -25,7 +25,8 @@ def summarize(series, end):
     last = series[-1][0]
     returns, periods = [], []
     for years in (1, 2, 3, 5, 10):
-        prior = [(d, v) for d, v in series if d <= add_years(last, -years)]
+        anniversary = add_years(last, -years)
+        prior = [(d, v) for d, v in series if d <= anniversary]
         baseline = prior[-1] if prior else None
         returns.append(round((series[-1][1] / baseline[1] - 1) * 100, 6) if baseline else None)
         periods.append({'years': years, 'start': baseline[0] if baseline else None, 'end': last})

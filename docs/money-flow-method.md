@@ -26,6 +26,8 @@ rtk proxy python3 -m unittest tests.test_money_flow_quotes
 
 共同请求头为`User-Agent: Mozilla/5.0`、来源页`Referer`和`Content-Type: application/json`，超时25秒；除工行中国POST `{}`及兴业会话预取外均GET。保留服务器TLS证书校验。返回值须通过`0 < buy ≤ sell`、卖买比不超过1.15、时间不得早于2025或超前本机15分钟的校验。失败源保留**原数值、原时间及原来源**，成功源只合并本机构本币种；旧时间不得覆盖新时间。全部失败则退出且不写文件，有成功才用临时文件原子替换。页面只读保存的JS快照，打开详情或切换方案不发网络请求。个人成交覆盖值优先于公开参考，换路线按既有规则清理不适用的个人值，不能清掉公共快照。
 
+2026-10-27日更使用同一采集器的`--timeout 8`，将单请求等待限制为8秒；手动复查默认仍为25秒。IBKR初始化仍只追加一次请求，curl兼容分支沿用相同请求预算并保留证书检查。单行失败在`refreshFailures`记录机构、具体异常和本次尝试时间，价格、来源及逐币种`asOf`保持原值；其他机构成功结果照常合并。失败记录不能充当新的行情时点。
+
 ### IBKR：已抓到的直接USD/CNH买卖盘
 
 [官网Global Access](https://portal.interactivebrokers.com/en/whyib/global-access.php)加载[`/lib/fxquotes/index.js`](https://portal.interactivebrokers.com/lib/fxquotes/index.js)。该组件的`conidData`直接声明USD.CNH合约为`113342317`，`mdFields`为84、86、6509；以页面实际声明为准，不猜合约ID。公开接口无需本次账户登录，URL及整组合约参数保存在逐源配方与生产快照的`endpoint`。首次响应可能只有合约ID；采集器按[官方快照接口说明](https://www.interactivebrokers.eu/campus/ibkr-api-page/web-api-trading/)只重试一次初始化响应，不轮询到成功，也不在失败时制造报价。

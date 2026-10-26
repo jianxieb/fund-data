@@ -26,9 +26,8 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    # A normal refresh plus full validation takes about 48 minutes. Allow one
-    # complete recomputation when main advances during the first pass.
-    timeout-minutes: 120
+    # Daily data checks are separate from full code regression on source pushes.
+    timeout-minutes: 10
     permissions:
       contents: write
     outputs:
@@ -64,38 +63,15 @@ jobs:
           key: research-source-${{ runner.os }}-${{ github.run_id }}
           restore-keys: |
             research-source-${{ runner.os }}-
-      - name: Test calculations and source guards
-        run: |
-          python3 -m unittest discover -s tests -q
-          node --test tests/*.test.cjs
-      - name: Refresh all scheduled datasets
+      - name: Check collector syntax
+        run: python3 -m compileall -q refresh.py scripts update.py stock_screen.py overseas_stocks.py
+      - name: Refresh scheduled datasets with isolated failures
         id: refresh
-        run: python3 refresh.py --timeout 420 --funds-timeout 900 --portfolio-timeout 1200
-      - name: Archive newly observed fund actions
-        run: python3 scripts/build_fund_actions.py --apply
-      - name: Update cross-border fund return bases and distributions
-        run: python3 scripts/build_crossborder_data.py
-      - name: Publish observed US ETF cash distributions
-        run: python3 scripts/build_etf_distributions.py
-      - name: Publish genuine index histories for return comparison
-        run: python3 scripts/build_return_indices.py
-      - name: Publish observed histories for financial events
-        run: python3 scripts/build_financial_events.py
-      - name: Update bank reference FX quotes with original timestamps
-        continue-on-error: true
-        run: python3 scripts/refresh_money_flow_quotes.py
-      - name: Update historical market observations with original dates
-        continue-on-error: true
-        run: python3 market_history.py
-      - name: Reject incomplete or regressed results
-        run: |
-          python3 scripts/check_refresh.py
-          python3 -m unittest discover -s tests -q
-          node --test tests/*.test.cjs
-      - name: Verify generated browser assets
-        run: |
-          npm run version-assets
-          npm run check
+        run: python3 refresh.py --daily --timeout 90 --funds-timeout 90 --portfolio-timeout 90
+      - name: Update independent derived data and reference sources
+        run: python3 scripts/post_refresh.py
+      - name: Validate generated data and browser assets
+        run: python3 -c "from scripts.publish_refresh import ROOT, validate_outputs; validate_outputs(ROOT)"
       - name: Save source caches for later runs
         # Preserve successfully fetched raw sources even when a later stage
         # rejects publication, so the next run can complete incrementally.
@@ -139,6 +115,8 @@ jobs:
           name: refresh-diagnosis-${{ github.run_id }}
           path: |
             data/refresh-report.json
+            data/post-refresh-report.json
+            data/overseas-stocks.js
             data/quality.json
             data/update-status.json
             data/fund-actions.json

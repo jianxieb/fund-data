@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 import strategy_backtest
 import update
-from data_status import atomic_text, now_iso, write_status
+from data_status import atomic_text, now_iso, write_status, file_transaction
 from screens.fund_screen import parse_js_record, js_str, latest_nav_observation
 
 OUTPUT = ROOT / 'data' / 'portfolio'
@@ -218,7 +218,7 @@ def validate_series(series, end=END):
     valid = []
     previous = None
     for day, value in series:
-        datetime.strptime(day, '%Y-%m-%d')
+        update.history_day(day)
         if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or value <= 0:
             raise ValueError('无效历史值：' + day)
         if previous and day <= previous:
@@ -357,6 +357,11 @@ def prune():
 
 def sync_fund_risk(catalog, snapshot_path=None):
     """Publish risk from each fund's proven daily wealth path, never changing NAV/returns."""
+    with file_transaction(snapshot_path or ROOT / 'data/snapshot.js'):
+        return _sync_fund_risk(catalog, snapshot_path)
+
+
+def _sync_fund_risk(catalog, snapshot_path=None):
     path = Path(snapshot_path) if snapshot_path else ROOT / 'data/snapshot.js'
     source = path.read_text(encoding='utf-8')
     available = {a['code']: a for a in catalog['assets'] if a['id'].startswith('fund:') and a['status'] == 'available'}
@@ -406,6 +411,11 @@ def sync_fund_risk(catalog, snapshot_path=None):
 
 def sync_fund_nav(catalog, snapshot_path=None):
     """Sync single-day NAV evidence without renewing legacy returns/fees/research."""
+    with file_transaction(snapshot_path or ROOT / 'data/snapshot.js'):
+        return _sync_fund_nav(catalog, snapshot_path)
+
+
+def _sync_fund_nav(catalog, snapshot_path=None):
     path = Path(snapshot_path) if snapshot_path else ROOT / 'data/snapshot.js'
     source = path.read_text(encoding='utf-8')
     available = {a['code']: a for a in catalog['assets'] if a['id'].startswith('fund:') and a['status'] == 'available'}
@@ -448,6 +458,11 @@ def sync_fund_nav(catalog, snapshot_path=None):
 
 def sync_fund_returns(catalog, snapshot_path=None):
     """Recompute every fund's return windows from its validated reinvested path."""
+    with file_transaction(snapshot_path or ROOT / 'data/snapshot.js'):
+        return _sync_fund_returns(catalog, snapshot_path)
+
+
+def _sync_fund_returns(catalog, snapshot_path=None):
     path = Path(snapshot_path) if snapshot_path else ROOT / 'data/snapshot.js'
     source = path.read_text(encoding='utf-8')
     available = {a['code']: a for a in catalog['assets'] if a['id'].startswith('fund:') and a['status'] == 'available'}

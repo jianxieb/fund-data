@@ -67,6 +67,19 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Skip a source build superseded by newer data or code
+        id: current
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          current="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')"
+          if [ "$current" = "$GITHUB_SHA" ]; then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "current=false" >> "$GITHUB_OUTPUT"
+            echo "Main advanced; the older source build will not replace the newer published data."
+          fi
       - name: Deploy the committed site
+        if: ${{ steps.current.outputs.current == 'true' }}
         id: deployment
         uses: actions/deploy-pages@v4

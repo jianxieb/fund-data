@@ -40,8 +40,9 @@ import urllib.request
 import urllib.parse
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
+from functools import lru_cache
 from zoneinfo import ZoneInfo
-from data_status import write_status
+from data_status import write_status, file_transaction
 from annual_fees import ETFS, fee_metadata
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -139,6 +140,7 @@ def get_json(url, referer=None, tries=4, delay=1.5):
         return None
 
 
+@lru_cache(maxsize=16384)
 def add_years(dstr, n):
     d = datetime.strptime(dstr, '%Y-%m-%d')
     y, m, dd = d.year + n, d.month, d.day
@@ -728,6 +730,12 @@ def finite_number(value):
         return None
 
 
+@lru_cache(maxsize=16384)
+def history_day(day):
+    """Parse shared trading dates once per process, keeping the same validation."""
+    return datetime.strptime(day, '%Y-%m-%d')
+
+
 def total_return_series(rows):
     """Return [(date, wealth_index)] without treating cumulative NAV as total return.
 
@@ -742,7 +750,7 @@ def total_return_series(rows):
         date = row.get('FSRQ')
         if not date:
             continue
-        datetime.strptime(date, '%Y-%m-%d')
+        history_day(date)
         if date in unique and unique[date] != row:
             raise ValueError('历史净值日期冲突：' + date)
         unique[date] = row
@@ -755,7 +763,7 @@ def total_return_series(rows):
             daily = finite_number(row.get('JZZZL'))
             dividend = finite_number(row.get('FHFCZ'))
             split = finite_number(row.get('SPLIT_FACTOR'))
-            gap = (datetime.strptime(date, '%Y-%m-%d') - datetime.strptime(previous_date, '%Y-%m-%d')).days
+            gap = (history_day(date) - history_day(previous_date)).days
             if gap > 21:
                 raise ValueError('净值历史存在超过21日的缺口：' + date)
             if split is not None or (dividend is not None and dividend > 0):
@@ -795,8 +803,8 @@ def risk_window(series, anchor, years=5, allow_partial=False):
         return result
     start = before[-1][0] if before else ordered[0][0]
     partial = start > anniversary
-    actual_years = (datetime.strptime(end, '%Y-%m-%d') - datetime.strptime(start, '%Y-%m-%d')).days / 365.2425
-    if before and (datetime.strptime(anniversary, '%Y-%m-%d') - datetime.strptime(start, '%Y-%m-%d')).days > 21:
+    actual_years = (history_day(end) - history_day(start)).days / 365.2425
+    if before and (history_day(anniversary) - history_day(start)).days > 21:
         result.update(status='incomplete_history', reason='窗口起点前21日内缺有效观测')
         return result
     window = [(day, value) for day, value in ordered if start <= day <= end]
@@ -810,7 +818,7 @@ def risk_window(series, anchor, years=5, allow_partial=False):
     if any(not math.isfinite(value) or value <= 0 for _, value in window):
         result.update(status='invalid_data', reason='风险窗口内有无效价格')
         return result
-    gaps = [(datetime.strptime(b[0], '%Y-%m-%d') - datetime.strptime(a[0], '%Y-%m-%d')).days
+    gaps = [(history_day(b[0]) - history_day(a[0])).days
             for a, b in zip(window, window[1:])]
     if any(gap <= 0 or gap > 21 for gap in gaps):
         result.update(status='incomplete_history', reason='风险窗口内有重复日期或超过21日的缺口')
@@ -1073,6 +1081,11 @@ def apply_fund_patches(src, fund_patches):
 
 
 def write_patches(fund_patches, bench, meta, quick, changes=None):
+    with file_transaction(HTML):
+        return _write_patches(fund_patches, bench, meta, quick, changes)
+
+
+def _write_patches(fund_patches, bench, meta, quick, changes=None):
     with open(HTML, encoding='utf-8') as f:
         src = f.read()
     expect_funds = len(parse_fund_lines(src))  # 以写回前的行数为基准，避免因只补丁部分基金而误判

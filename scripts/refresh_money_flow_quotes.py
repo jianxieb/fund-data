@@ -331,17 +331,17 @@ def read_snapshot(path):
     return json.loads(match.group(1))
 
 
-def fetch_bank(bank):
+def fetch_bank(bank, timeout=25):
     if bank == "cib":
         opener = build_opener(HTTPCookieProcessor(CookieJar()))
         opener.addheaders = [("User-Agent", "Mozilla/5.0")]
-        with opener.open(SOURCE_URLS[bank], timeout=25) as response:
+        with opener.open(SOURCE_URLS[bank], timeout=timeout) as response:
             response.read()
         # Match getPrmNames('dataSet') in the bank's own jqGrid script. Without
         # pagination parameters the endpoint returns 520, not an empty quote.
         query = urlencode({"dataSet.page": 1, "dataSet.rows": 80, "dataSet.sidx": "", "dataSet.sord": "asc", "_search": "false"})
         request = Request(CIB_URL + "?" + query, headers={"Referer": SOURCE_URLS[bank], "X-Requested-With": "XMLHttpRequest"})
-        with opener.open(request, timeout=25) as response:
+        with opener.open(request, timeout=timeout) as response:
             payload = json.load(response)
         observed_at = datetime.now(timezone(timedelta(hours=8))).replace(tzinfo=None).isoformat(sep=" ", timespec="seconds")
         return parse_cib(payload, observed_at)
@@ -351,22 +351,22 @@ def fetch_bank(bank):
         headers.update({"Accept": "application/json", "X-HSBC-Locale": "zh_CN", "X-HSBC-Channel-Id": "PWS", "X-HSBC-Chnl-CountryCode": "CN", "Accept-Language": "zh-CN"})
     request = Request(url, data=b"{}" if bank == "icbc" else None, headers=headers)
     try:
-        with urlopen(request, timeout=25) as response:
+        with urlopen(request, timeout=timeout) as response:
             body = response.read().decode("utf-8")
         if bank == "ibkr":
             payload = json.loads(body)
             # The documented first request may only initialize a subscription.
             # Retry that response once; never loop or erase the last good quote.
             if isinstance(payload, list) and payload and all("84" not in row and "86" not in row for row in payload):
-                with urlopen(request, timeout=25) as response:
+                with urlopen(request, timeout=timeout) as response:
                     body = response.read().decode("utf-8")
     except URLError as error:
         # The Asia endpoint is compatible with the platform curl TLS backend.
         # Keep curl's certificate verification; never enable unsafe SSL options.
         if bank != "icbc-asia" or "UNSAFE_LEGACY_RENEGOTIATION_DISABLED" not in str(error):
             raise
-        body = subprocess.run(["curl", "--fail", "--silent", "--show-error", "--location", "--max-time", "25", url],
-                              check=True, capture_output=True, text=True, timeout=30).stdout
+        body = subprocess.run(["curl", "--fail", "--silent", "--show-error", "--location", "--max-time", str(timeout), url],
+                              check=True, capture_output=True, text=True, timeout=timeout + 5).stdout
     parsers = {"boc": parse_boc, "cmb": parse_cmb, "bochk": parse_bochk, "ibkr": parse_ibkr, "icbc": parse_icbc,
                "ccb": parse_ccb, "abc": parse_abc, "comm": parse_comm, "hsbc": parse_hsbc, "hanghk": parse_hang_hk, "hsbchk": parse_hsbc_hk, "hang": parse_hang_cn, "icbc-asia": parse_icbc_asia, "ccb-asia": parse_ccb_asia}
     return parsers[bank](body if bank in ("boc", "bochk", "ccb", "ccb-asia") else json.loads(body))
@@ -390,21 +390,29 @@ def main():
     args = argparse.ArgumentParser()
     args.add_argument("--output", type=Path, default=ROOT / "data/money-flow-quotes.js")
     args.add_argument("--banks", nargs="+", choices=list(BANK_URLS), default=list(BANK_URLS))
+    args.add_argument("--timeout", type=float, default=25, help="per-request timeout in seconds (max 25)")
     options = args.parse_args()
+    if not 0 < options.timeout <= 25:
+        args.error("timeout must be greater than 0 and no more than 25 seconds")
     snapshot = read_snapshot(options.output)
     snapshot.update({"unit": "CNY per 1 foreign currency", "capturedAt": datetime.now(timezone.utc).isoformat(timespec="seconds")})
     success = 0
+    failures = dict(snapshot.get("refreshFailures", {}))
     with ThreadPoolExecutor(max_workers=8) as pool:
-        jobs = {bank: pool.submit(fetch_bank, bank) for bank in options.banks}
+        jobs = {bank: pool.submit(fetch_bank, bank, options.timeout) for bank in options.banks}
         for bank, job in jobs.items():
             try:
                 merge_bank(snapshot, bank, job.result())
                 success += 1
+                failures.pop(bank, None)
                 print(f"{bank}: reference quotes updated")
             except Exception as error:
-                print(f"{bank}: keeping previous timestamp ({type(error).__name__})")
+                failures[bank] = {"error": type(error).__name__ + ": " + str(error)[:180],
+                                  "attemptedAt": snapshot["capturedAt"]}
+                print(f"{bank}: keeping previous timestamp ({failures[bank]['error']})")
     if not success:
         raise SystemExit("No bank quote refreshed; existing snapshot unchanged")
+    snapshot["refreshFailures"] = failures
     options.output.parent.mkdir(parents=True, exist_ok=True)
     temporary = options.output.with_suffix(".tmp")
     temporary.write_text("// Public reference prices, not executable customer quotes.\nwindow.MONEY_FLOW_QUOTES = " + json.dumps(snapshot, ensure_ascii=False, indent=2) + ";\n", encoding="utf-8")

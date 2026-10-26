@@ -71,31 +71,26 @@ def discard_generated(root):
         (root / name).unlink()
 
 
-def test_outputs(root):
-    command([sys.executable, '-m', 'unittest', 'discover', '-s', 'tests', '-q'], root)
-    command(['node', '--test', *sorted(str(p.relative_to(root)) for p in (root / 'tests').glob('*.test.cjs'))], root)
+def test_generated_data(root):
+    # Full code regression already runs on source pushes (pages.yml). Daily
+    # publication checks the contracts whose inputs actually changed: the data.
+    command([sys.executable, '-m', 'unittest', 'discover', '-s', 'tests',
+             '-p', 'test_company_selection.py', '-q'], root)
+    command(['node', '--test', 'tests/model.test.cjs', 'tests/us-stocks.test.cjs',
+             'tests/stock-view.test.cjs'], root)
 
 
 def validate_outputs(root):
     command([sys.executable, 'scripts/check_refresh.py'], root)
-    test_outputs(root)
+    test_generated_data(root)
     command(['npm', 'run', 'version-assets'], root)
     command(['npm', 'run', 'check'], root)
 
 
 def recompute_outputs(root):
-    test_outputs(root)
-    command([sys.executable, 'refresh.py', '--timeout', '420', '--funds-timeout', '900',
-             '--portfolio-timeout', '1200'], root)
-    for script, args in (
-        ('build_fund_actions.py', ['--apply']), ('build_crossborder_data.py', []),
-        ('build_etf_distributions.py', []), ('build_return_indices.py', []),
-        ('build_financial_events.py', []),
-    ):
-        command([sys.executable, 'scripts/' + script, *args], root)
-    for script in ('scripts/refresh_money_flow_quotes.py', 'market_history.py'):
-        if command([sys.executable, script], root, check=False).returncode:
-            print(script + ': unavailable; previous observations and timestamps retained.', flush=True)
+    command([sys.executable, 'refresh.py', '--daily', '--timeout', '90',
+             '--funds-timeout', '90', '--portfolio-timeout', '90'], root)
+    command([sys.executable, 'scripts/post_refresh.py'], root)
 
 
 def publish(root=ROOT, validate=validate_outputs, recompute=recompute_outputs,
