@@ -1,11 +1,11 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-10-26T16:30:50+00:00",
+  "checkedAt": "2026-10-26T17:30:02+00:00",
   "asOf": "2026-10-27",
   "status": "unverified",
   "summary": {
     "errors": 0,
-    "warnings": 6,
+    "warnings": 5,
     "unverified": 24
   },
   "datasets": [
@@ -16,12 +16,6 @@ var DATA_QUALITY={
       "dateRange": null,
       "records": 0,
       "issues": [
-        {
-          "code": "source_refresh_retained",
-          "severity": "warning",
-          "message": "扩展基金：执行超过 90 秒，子进程已终止；该数据集不能视为更新成功。；保留已发布数据及原日期",
-          "affected": "research_funds"
-        },
         {
           "code": "source_refresh_retained",
           "severity": "warning",
