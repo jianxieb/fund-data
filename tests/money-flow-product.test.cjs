@@ -180,7 +180,17 @@ test('preferred catalogue, prices and product names are independent of every cur
     assert.equal(toolbar(subject.render()), baseline, broker);
   }
   assert.match(baseline, /兴业寰宇人生/); assert.match(baseline, /汇丰Trade25/);
-  assert.doesNotMatch(baseline, /损耗从低到高|买股账户 ZA|已开通|寰宇人生卡|data-value="best:/);
+  const cards = [...baseline.matchAll(/<button[^>]*class="flow-preset"[^>]*>([\s\S]*?)<\/button>/g)];
+  assert.equal(cards.length, D.preferredPlans.length);
+  for (const [card] of cards) {
+    assert.doesNotMatch(card, /损耗从低到高|买股账户 ZA|已开通|寰宇人生卡|data-value="best:|CNY|HKD|\/10万元|费用情景/);
+    assert.match(card, /aria-describedby="flow-preset-conditions-/);
+    assert.match(card, /[\d.]+%/);
+  }
+  assert.equal([...baseline.matchAll(/role="tooltip"/g)].length, D.preferredPlans.length);
+  assert.match(baseline, /10万元单笔未确认可汇/);
+  assert.match(baseline, /须持兴业寰宇人生卡并已开通Trade25/);
+  assert.match(baseline, /参考费率按10万元/);
 });
 test('each fixed plan applies a complete route and its own conditions while preserving principal and editable accounts', () => {
   const plans = M.calculatorPreferredPlans(D, quotes, date);

@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-26",
+  "comparison": "Before and after presentation-only changes",
+  "files": [
+    {
+      "path": "assets/money-flow-model.js",
+      "unchanged": true,
+      "sha256": "b1a4a83bb412a51a4fbf60afa7aa3f26079b44636e049df43b1c456f665363a3"
+    },
+    {
+      "path": "data/money-flow-quotes.js",
+      "unchanged": true,
+      "sha256": "03f35f9c79c7679ebb7ea9f30a2b1617414c0580b7ef454a771a0021559e0bdb"
+    }
+  ],
+  "planConfigurationsUnchanged": true,
+  "allCalculatedFieldsUnchanged": true,
+  "plans": [
+    {
+      "id": "cnh-ibkr",
+      "costCny": 59.67538736647066,
+      "complete": true
+    },
+    {
+      "id": "cib-trade25",
+      "costCny": 1245.28091285655,
+      "complete": true
+    },
+    {
+      "id": "cib-za",
+      "costCny": 1271.540589491744,
+      "complete": true
+    },
+    {
+      "id": "boc-ibkr",
+      "costCny": 567.2266916971423,
+      "complete": true
+    },
+    {
+      "id": "cib-wise-ibkr",
+      "costCny": 149.62447517185103,
+      "complete": true
+    }
+  ]
+}

@@ -371,13 +371,28 @@
         const hasPrice = !!p.calculated.selected && Number.isFinite(p.total);
         const priceLabel = !p.complete ? '已计费用' : p.rows.some(x => x.estimate) ? '全程参考' : '全程费用';
         const missing = !p.complete ? r?.missing?.join('、') || p.calculated.error || '缺报价' : '';
-        const price = '<span class="flow-preset-quote">' + (hasPrice ? '<span class="flow-preset-price"><small>' + priceLabel + '</small><b>' + pct(p.total / 100000) + '</b><small>' + cost(p.total) + '</small></span>' : '') +
-          (missing ? '<small class="flow-preset-missing">缺项：' + esc(missing) + '</small>' : '') +
-          (p.note ? '<small class="flow-preset-note">' + esc(p.note) + '</small>' : '') + '</span>';
-        return action('<span class="flow-preset-route">' + route + '</span>' + price,
-          'preset', 'data-value="' + p.id + '" aria-pressed="' + applied + '" aria-label="优选方案：' + esc(p.title) + '"', 'flow-preset');
+        const price = '<span class="flow-preset-quote"><span class="flow-preset-price"><small>' + priceLabel + '</small><b>' +
+          (hasPrice ? pct(p.total / 100000) : '—') + '</b></span></span>';
+        const conditions = [p.note?.replace(/^费用情景：/, ''), ...(p.conditions || []),
+          ...(mainlandSpend ? [] : ['仅限支持Mastercard的内地商户；个人收款码、转账和充值不适用。'])].filter(Boolean);
+        const tooltipId = 'flow-preset-conditions-' + p.id;
+        const tooltip = '<span class="flow-preset-tooltip" id="' + tooltipId + '" role="tooltip"><strong>方案条件</strong>' +
+          (missing ? '<span class="flow-preset-missing">缺项：' + esc(missing) + '</span>' : '') +
+          conditions.map(text => '<span class="flow-preset-condition">' + esc(text) + '</span>').join('') +
+          '<small>参考费率按10万元、买卖各1笔、持有12个月及管理费豁免测算。</small></span>';
+        return '<div class="flow-preset-item">' + action('<span class="flow-preset-route">' + route + '</span>' + price,
+          'preset', 'data-value="' + p.id + '" aria-pressed="' + applied + '" aria-describedby="' + tooltipId + '" aria-label="优选方案：' + esc(p.title) + '"', 'flow-preset') + tooltip + '</div>';
       }).join('') + '</div>';
   }
+  // Conditions are readable on hover or keyboard focus, without changing row
+  // geometry. Escape dismisses them until the user enters the row again.
+  document.addEventListener?.('keydown', event => {
+    if (event.key === 'Escape') document.querySelectorAll('.flow-preset-item').forEach(item => item.setAttribute('data-tooltip-dismissed', ''));
+  });
+  for (const type of ['pointerover', 'focusin']) document.addEventListener?.(type, event => {
+    const item = event.target.closest?.('.flow-preset-item');
+    if (item && !item.contains(event.relatedTarget)) item.removeAttribute('data-tooltip-dismissed');
+  });
   const transferKeys = ['entryFx', 'sender', 'entryMiddle', 'entryInward'];
   const fundingKeys = ['depositBank', 'depositOther', 'depositBroker', 'brokerSpread', 'brokerFx'];
   const tradingKeys = ['trade', 'brokerAccount'];
