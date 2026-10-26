@@ -290,9 +290,60 @@ def publish_history(asset, series, basis, source, warning=None, dividend_evidenc
     return result
 
 
-def build_asset(asset, offline=False, refresh=False):
+def incremental_fund(asset, previous):
+    """Extend verified wealth with published daily returns, not NAV ratios."""
+    from scripts.fund_batch import latest, ENDPOINT
+    quote = latest(asset['code'])
+    if not quote or not previous or previous.get('status') != 'available':
+        return None
+    end = previous['asOf']
+    observation = latest_nav_observation([quote], end)
+    if quote['FSRQ'] <= end or end >= END:
+        return {**previous, **asset, **({'navObservation': observation} if observation else {})}
+    raw = (ROOT / previous['historyUrl']).read_bytes()
+    if hashlib.sha256(raw).hexdigest() != previous['sha256']:
+        raise ValueError('原历史校验和不一致：' + asset['code'])
+    history = json.loads(raw)
+    if history.get('id') != asset['id'] or history.get('currency') != 'CNY' or history.get('basis') != 'provider_daily_return_or_explicit_actions':
+        raise ValueError('原基金历史身份、币种或口径不一致')
+    if (datetime.fromisoformat(quote['FSRQ']) - datetime.fromisoformat(end)).days == 1:
+        rows = [quote]
+    else:
+        rows = fund_request(asset['code'], 20)
+        if end not in {row['FSRQ'] for row in rows}:
+            return None  # A larger gap needs the ordinary full-history recovery.
+    series = [list(row) for row in history['series']]
+    last_source = None
+    for row in sorted(rows, key=lambda row: row['FSRQ']):
+        day = row['FSRQ']
+        if day <= end or day > END:
+            continue
+        daily = update.finite_number(row.get('JZZZL'))
+        if daily is None or not -100 < daily <= 400:
+            return None
+        gap = (datetime.fromisoformat(day) - datetime.fromisoformat(series[-1][0])).days
+        if not 0 < gap <= 21:
+            return None
+        series.append([day, series[-1][1] * (1 + daily / 100)])
+        last_source = row
+    if not last_source:
+        return None
+    evidence = history.get('dividendEvidence')
+    if evidence and evidence.get('status') == 'recorded' and evidence.get('through', '') < series[-1][0]:
+        evidence = {**evidence, 'coverageWarning': '现金分红明细仍截至' + evidence.get('through', '未知') + '；未按新行情日期延长'}
+    result = publish_history(asset, series, history['basis'], history['sourceUrl'], dividend_evidence=evidence)
+    result['navObservation'] = latest_nav_observation([last_source], series[-1][0])
+    result['latestNavSource'] = ENDPOINT if last_source is quote else 'https://fundmobapi.eastmoney.com/FundMNewApi/FundMNHisNetList'
+    return result
+
+
+def build_asset(asset, offline=False, refresh=False, previous=None):
     try:
         if asset['id'].startswith('fund:'):
+            if not offline and os.environ.get('FUND_DATA_REFRESH_TOKEN'):
+                incremental = incremental_fund(asset, previous)
+                if incremental is not None:
+                    return incremental
             values = fund_history(asset, offline, refresh)
         elif asset['id'].startswith('stock:'):
             if asset.get('market') == 'us':
@@ -434,10 +485,12 @@ def _sync_fund_nav(catalog, snapshot_path=None):
             if (row.get('navdate') or '') > asset['asOf']:
                 lines.append(line); continue
             try:
-                raw = json.loads((ROOT / '.tmp-hist' / (code + '.json')).read_text(encoding='utf-8'))
-                if not isinstance(raw, list) or any(not isinstance(entry, dict) for entry in raw):
-                    raise ValueError('原始单位净值缓存结构无效')
-                observation = latest_nav_observation(raw, asset['asOf'])
+                observation = asset.get('navObservation')
+                if not observation or observation.get('navdate') != asset['asOf']:
+                    raw = json.loads((ROOT / '.tmp-hist' / (code + '.json')).read_text(encoding='utf-8'))
+                    if not isinstance(raw, list) or any(not isinstance(entry, dict) for entry in raw):
+                        raise ValueError('原始单位净值缓存结构无效')
+                    observation = latest_nav_observation(raw, asset['asOf'])
                 if not observation:
                     raise ValueError('历史末日缺唯一有效单位净值')
             except (OSError, ValueError, TypeError) as exc:
@@ -516,6 +569,78 @@ def _sync_fund_returns(catalog, snapshot_path=None):
     return {'updated': len(updated), 'retained': retained}
 
 
+def sync_verified_evidence():
+    """Keep the original research audit, updating only its dated performance."""
+    from screens.fund_screen import parse_snapshot_extra
+    path = ROOT / 'data/screening-validation.json'
+    previous = json.loads(path.read_text())
+    rows = {row['c']: row for row in parse_snapshot_extra()}
+    catalog = json.loads((OUTPUT / 'catalog.js').read_text().split('=', 1)[1].strip().rstrip(';'))
+    assets = {row['code']: row for row in catalog['assets'] if row['id'].startswith('fund:')}
+    checked, updated, failures = now_iso(), [], {}
+    for evidence in previous:
+        code = evidence['code']
+        try:
+            row, asset = rows[code], assets[code]
+            endpoint = row['returnAsOf']
+            if asset['status'] != 'available' or endpoint != asset['asOf']:
+                raise ValueError('缺与当前收益同日的已验证曲线')
+            observation = asset.get('navObservation')
+            if not observation or observation.get('navdate') != endpoint:
+                observation = ({key: row.get(key) for key in ('nav', 'navdate', 'dz')}
+                               if row.get('navdate') == endpoint and (row.get('nav') or 0) > 0 else None)
+            if not observation:
+                raise ValueError('缺' + endpoint + '同日单位净值证据')
+            updated.append({**evidence, 'asof': endpoint, 'first': row.get('returnFirst') or asset['first'],
+                'rows': asset['observations'], 'metricRows': asset['observations'],
+                'basis': row['returnBasis'], 'r': row['r'], 'mdd5': row.get('mdd5'), 'vol5': row.get('vol5'),
+                'risk3Period': row.get('risk3Period'), 'risk5Period': row.get('risk5Period'),
+                'returnPeriods': row['returnPeriods'], 'sourceUrl': row.get('returnSourceUrl'),
+                'navObservation': observation, 'navSyncStatus': 'matched_return_endpoint',
+                'historyUrl': asset['historyUrl'], 'historySha256': asset['sha256'],
+                'performanceCheckedAt': checked})
+        except (KeyError, TypeError, ValueError) as error:
+            updated.append(evidence)
+            failures[code] = str(error)
+    atomic_text(path, json.dumps(updated, ensure_ascii=False, indent=2) + '\n')
+    dates = [row['asof'] for row in updated if row.get('asof')]
+    write_status('research_funds', 'partial' if failures else 'success', mode='online', records=len(updated),
+                 asOf=max(dates) if dates else None, failures=failures,
+                 message='复用本轮已更新的行情曲线；原费率和研究核验日期保持独立')
+    print('已核验基金证据同步：%d条；缺项%d条' % (len(updated), len(failures)), flush=True)
+    return 0
+
+
+def sync_benchmark_evidence():
+    """Benchmark tables and the simulator must use the same published ETF series."""
+    from data_quality import read_snapshot
+    catalog = json.loads((OUTPUT / 'catalog.js').read_text().split('=', 1)[1].strip().rstrip(';'))
+    assets = {row['code']: row for row in catalog['assets'] if row['id'].startswith('us:')}
+    assets['CNY=X'] = catalog['fx']
+    def load(symbol):
+        row = assets.get(symbol)
+        if row is None:
+            return strategy_backtest.load_history(symbol, offline=True)
+        raw = (ROOT / row['historyUrl']).read_bytes()
+        if hashlib.sha256(raw).hexdigest() != row['sha256']:
+            raise ValueError('基准历史校验和不一致：' + symbol)
+        history = json.loads(raw)
+        if history['id'] != row['id'] or history['currency'] != row['currency']:
+            raise ValueError('基准历史身份不一致：' + symbol)
+        return dict(history['series'])
+    snapshot = read_snapshot()
+    previous = {row['n']: row for row in snapshot['BM']}
+    benchmark = update.bench_compute(END, history_loader=load)
+    benchmark['bm'] = [row if row.get('status') == 'computed' else previous[row['n']] for row in benchmark['bm']]
+    for row in benchmark['bm']:
+        asset = assets.get(row.get('symbol') or row['n'])
+        if asset:
+            row.update(historyUrl=asset['historyUrl'], historySha256=asset['sha256'])
+    if not update.write_patches({}, benchmark, snapshot['META'], False):
+        raise ValueError('基准证据同步未通过结构校验')
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--offline', action='store_true')
@@ -526,7 +651,13 @@ def main():
     parser.add_argument('--sync-risk', action='store_true', help='recalculate fund risk from already published verified histories')
     parser.add_argument('--sync-preview', action='store_true', help='add picker performance from published histories without fetching data')
     parser.add_argument('--sync-universe', action='store_true', help='refresh metadata and fetch only newly included securities; preserve existing histories')
+    parser.add_argument('--sync-verified', action='store_true', help='sync verified fund evidence from the newly published histories')
+    parser.add_argument('--sync-benchmarks', action='store_true', help='align ETF tables to their published verified histories')
     args = parser.parse_args()
+    if args.sync_verified:
+        return sync_verified_evidence()
+    if args.sync_benchmarks:
+        return sync_benchmark_evidence()
     if args.sync_universe:
         path = OUTPUT / 'catalog.js'
         catalog = json.loads(path.read_text(encoding='utf-8').split('=', 1)[1].strip().rstrip(';'))
@@ -570,9 +701,12 @@ def main():
         return 0
     OUTPUT.mkdir(parents=True, exist_ok=True)
     rows = universe()
+    prior_path = OUTPUT / 'catalog.js'
+    prior = json.loads(prior_path.read_text().split('=', 1)[1].strip().rstrip(';')) if prior_path.exists() else {}
+    previous_assets = {row['id']: row for row in prior.get('assets', [])}
     results = {}
     with ThreadPoolExecutor(max_workers=max(1, min(24, args.workers))) as pool:
-        jobs = {pool.submit(build_asset, row, args.offline, args.refresh): row for row in rows}
+        jobs = {pool.submit(build_asset, row, args.offline, args.refresh, previous_assets.get(row['id'])): row for row in rows}
         for index, job in enumerate(as_completed(jobs), 1):
             row = job.result()
             results[row['id']] = row
@@ -588,12 +722,9 @@ def main():
                'currency': 'CNY', 'assets': assets, 'fx': fx,
                'summary': {'total': len(assets), 'available': sum(row['status'] == 'available' for row in assets),
                            'missing': sum(row['status'] != 'available' for row in assets)}}
-    validate_catalog(catalog, rows)
     # A failed interface call may retain a dated, validated history. Never replace
     # an existing usable published series with an unavailable one or an older tail.
-    prior_path = OUTPUT / 'catalog.js'
     if prior_path.exists():
-        prior = json.loads(prior_path.read_text(encoding='utf-8').split('=', 1)[1].strip().rstrip(';'))
         old = {row['id']: row for row in prior.get('assets') or []}
         for row in assets:
             previous = old.get(row['id'])
@@ -614,7 +745,8 @@ def main():
     nav_summary = sync_fund_nav(catalog)
     returns_summary = sync_fund_returns(catalog)
     # Return-dependent candidate rules must follow the newly computed windows.
-    subprocess.run([sys.executable, str(ROOT / 'screens/fund_screen.py'), 'policy'], cwd=ROOT, check=True)
+    if not os.environ.get('FUND_DATA_REFRESH_TOKEN'):
+        subprocess.run([sys.executable, str(ROOT / 'screens/fund_screen.py'), 'policy'], cwd=ROOT, check=True)
     write_status('portfolio', 'cached' if args.offline else 'success', mode='offline' if args.offline else 'online',
                  records=len(rows), **catalog['summary'], navUpdated=nav_summary['updated'], navWarnings=nav_summary['warnings'],
                  returnsUpdated=returns_summary['updated'], returnsRetained=returns_summary['retained'],

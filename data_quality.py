@@ -66,7 +66,7 @@ def audit(snapshot, today=None):
 
     # Failed independent sources remain visible even though their last valid
     # observations can still be published alongside successful updates.
-    labels = {'funds': '海外基金', 'research_funds': '扩展基金', 'stocks': 'A股',
+    labels = {'fund_batch': '基金批量净值接口', 'funds': '海外基金', 'research_funds': '扩展基金', 'stocks': 'A股',
               'overseas_stocks': '美股', 'indices': '国内指数', 'portfolio': '标的行情',
               'strategy': '投入策略', 'crossborder': '跨境基金', 'bank_fx': '银行参考牌价',
               'market_history': '市场历史', 'fund_actions': '基金分红记录',

@@ -76,6 +76,9 @@ def test_generated_data(root):
     # publication checks the contracts whose inputs actually changed: the data.
     command([sys.executable, '-m', 'unittest', 'discover', '-s', 'tests',
              '-p', 'test_company_selection.py', '-q'], root)
+    command([sys.executable, '-c',
+        "import sys,unittest;sys.path.insert(0,'tests');unittest.main(module=None,argv=['daily',"
+        "'test_portfolio_data.PortfolioHistoryTests.test_momentum_benchmarks_reconcile_to_their_own_published_histories','-q'])"], root)
     command(['node', '--test', 'tests/model.test.cjs', 'tests/us-stocks.test.cjs',
              'tests/stock-view.test.cjs'], root)
 

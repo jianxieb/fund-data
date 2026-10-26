@@ -499,6 +499,15 @@ def jjfl_fetch(code):
 def fund_mnfinfo(codes):
     """批量净值：{code:{nav,navdate,dz,price,pct}}；网络繁忙（ErrCode!=0）时等待重试。"""
     out = {}
+    from scripts.fund_batch import latest
+    for code in codes:
+        quote = latest(code)
+        if quote:
+            out[code] = dict(nav=quote['DWJZ'], navdate=quote['FSRQ'], dz=quote['JZZZL'],
+                             price=quote.get('NEWPRICE'), pct=quote.get('CHANGERATIO'))
+    codes = [code for code in codes if code not in out]
+    if not codes:
+        return out
     for attempt in range(2):
         got = False
         for i in range(0, len(codes), 15):
@@ -654,6 +663,15 @@ def history_fetch(code):
                 old = {r.get('FSRQ'): r for r in json.load(f)}
         except Exception:  # noqa: BLE001
             old = {}
+    if not OFFLINE and old:
+        from scripts.fund_batch import cached_tail
+        reused = cached_tail(code, list(old.values()))
+        if reused is not None:
+            merged = attach_corporate_actions(code, sorted(reused, key=lambda row: row['FSRQ'], reverse=True))
+            if len(merged) != len(old):
+                with open(cache, 'w', encoding='utf-8') as f:
+                    json.dump(merged, f, ensure_ascii=False)
+            return merged
     rows = None
     if not OFFLINE:
         # 有缓存 → 先取最近 20 行做增量；无缓存或缺口 → 全量
@@ -974,7 +992,7 @@ def convert_usd_return(usd_return, start_usdcny, end_usdcny):
     return ((1 + usd_return / 100) * end_usdcny / start_usdcny - 1) * 100
 
 
-def bench_compute(anchor, fx_old=None):
+def bench_compute(anchor, fx_old=None, history_loader=None):
     """Keep basis, identity, and actual endpoint dates for every benchmark.
 
     An unavailable adjusted ETF series is missing, never unadjusted fallback.
@@ -982,18 +1000,19 @@ def bench_compute(anchor, fx_old=None):
     """
     # This endpoint exposes adjclose explicitly, unlike the former third-party close field.
     import strategy_backtest as strategy_source
+    load = history_loader or (lambda symbol: strategy_source.load_history(symbol, refresh=not OFFLINE, offline=OFFLINE))
     symbols = {'标普500指数': '^GSPC', '纳斯达克综合指数': '^IXIC', '纳斯达克100指数': '^NDX'}
     closes, source = {}, {}
     for name, tp, secids, note, fqt in BM_DEFS:
         symbol = symbols.get(name, name)
         try:
-            values = list(strategy_source.load_history(symbol, refresh=not OFFLINE, offline=OFFLINE).items())
+            values = list(load(symbol).items())
             source[name] = 'Yahoo Finance chart indicators.adjclose: ' + symbol
         except Exception as exc:
             log('  ~ %s Yahoo 数据不可用：%s' % (name, exc))
-            values = kline_closes(secids, anchor, fqt) if not OFFLINE else None
+            values = kline_closes(secids, anchor, fqt) if not OFFLINE and history_loader is None else None
             source[name] = 'Eastmoney adjusted close' if fqt else 'Eastmoney index close'
-        if not values and fqt == 0 and name in SINA_SYM and not OFFLINE:
+        if not values and fqt == 0 and name in SINA_SYM and not OFFLINE and history_loader is None:
             values = sina_us_kline(SINA_SYM[name])
             source[name] = 'Sina index close'
         if values:
@@ -1005,7 +1024,7 @@ def bench_compute(anchor, fx_old=None):
         closes.pop('纳斯达克100指数')
         log('  !! 纳综与纳指100行情完全相同，拒绝展示两条可疑基准')
     try:
-        fxk = sorted(strategy_source.load_history('CNY=X', refresh=not OFFLINE, offline=OFFLINE).items())
+        fxk = sorted(load('CNY=X').items())
     except Exception as exc:
         # A replacement must prove both currency and calendar convention first.
         # Do not silently switch to an unvalidated FX endpoint after a source failure.

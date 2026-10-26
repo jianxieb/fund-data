@@ -1,0 +1,15 @@
+{
+  "endpoint": "https://fundmobapi.eastmoney.com/FundMNewApi/FundMNFInfo",
+  "pageSize": 100,
+  "returnedRecords": 100,
+  "ErrCode": 0,
+  "measuredSeconds": 0.167,
+  "normalizedPayloadSha256": "d27f4770e531f89e5971d0e7d236d396d6cfecaff28ff37e72d01d908b563634",
+  "fields": {
+    "FCODE": "fund identity",
+    "PDATE": "published NAV date",
+    "NAV": "unit NAV",
+    "NAVCHGRT": "published daily total return, percent"
+  },
+  "use": "Only append a directly adjacent published day; gaps request a recent history segment and require a verified overlap. No NAV-ratio substitute."
+}

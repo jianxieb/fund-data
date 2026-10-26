@@ -6,6 +6,7 @@ import os
 import subprocess
 import sys
 import time
+import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from data_status import DATA, ROOT, atomic_text, now_iso, write_status, file_transaction, replace_snapshot_blocks
@@ -20,9 +21,17 @@ PUBLISHED_OUTPUTS = {
     'screening': ('screening.js',),
     'strategy': ('snapshot.js', 'strategy-fees.js'),
     'portfolio': ('portfolio/catalog.js', 'snapshot.js', 'screening.js'),
+    'benchmark_sync': ('snapshot.js',),
 }
 SNAPSHOT_BLOCKS = {'funds': ('FUNDS', 'META', 'BM', 'CHG'), 'research_funds': ('EXTRA',),
-                   'stocks': ('STOCKS',), 'strategy': ('STRATEGY',), 'portfolio': ('FUNDS', 'EXTRA')}
+                   'stocks': ('STOCKS',), 'strategy': ('STRATEGY',), 'portfolio': ('FUNDS', 'EXTRA'),
+                   'benchmark_sync': ('BM', 'META')}
+
+
+def prepare_daily_funds(token):
+    from scripts.build_portfolio_data import universe
+    from scripts.fund_batch import prepare
+    return prepare([row['code'] for row in universe() if row['id'].startswith('fund:')], token)
 
 
 def commands(offline=False):
@@ -108,12 +117,17 @@ def execute(dataset, command, timeout, offline=False, allow_partial=False):
         else:
             write_status(dataset, 'cached' if offline and dataset not in ('quality', 'screening') else 'checked' if dataset in ('quality', 'screening') else 'success',
                          exitCode=0, seconds=duration, mode='offline' if offline else 'online', message='执行成功；数据准确性与日期由质量报告单独说明。')
+    def retained_file(path, previous):
+        with file_transaction(path):
+            if previous is None or not path.exists():
+                return False
+            current = path.read_bytes()
+        if path.name == 'snapshot.js':
+            text = current.decode('utf-8')
+            return replace_snapshot_blocks(text, previous.decode('utf-8'), SNAPSHOT_BLOCKS[dataset]) == text
+        return current == previous
     retained = allow_partial and code != 0 and not source_partial and bool(published_before) and all(
-        previous is not None and path.exists() and (
-            replace_snapshot_blocks(path.read_text(encoding='utf-8'), previous.decode('utf-8'), SNAPSHOT_BLOCKS[dataset])
-            == path.read_text(encoding='utf-8') if path.name == 'snapshot.js'
-            else path.read_bytes() == previous)
-        for path, previous in published_before.items())
+        retained_file(path, previous) for path, previous in published_before.items())
     return {'dataset': dataset, 'status': status, 'exitCode': code, 'seconds': duration,
             'log': '.tmp-snap/refresh-' + dataset + '.log',
             'publishedRollback': bool(restored), 'retainedPrevious': bool(retained),
@@ -149,8 +163,17 @@ def main():
         run = {'schemaVersion': 1, 'startedAt': now_iso(), 'mode': 'offline' if args.offline else 'online',
                'dailyMode': args.daily, 'steps': []}
         available = commands(args.offline)
+        previous_token = os.environ.get('FUND_DATA_REFRESH_TOKEN')
         if args.daily and not args.offline:
+            token = uuid.uuid4().hex
+            os.environ['FUND_DATA_REFRESH_TOKEN'] = token
+            batch_start = time.monotonic()
+            run['batchFundRecords'] = (prepare_daily_funds(token)
+                if set(selected) & {'funds', 'research_funds', 'portfolio'} else 0)
+            run['batchFundSeconds'] = round(time.monotonic() - batch_start, 2)
+            print('批量净值：%d条，%.2fs' % (run['batchFundRecords'], run['batchFundSeconds']), flush=True)
             available['stocks'].extend(['--workers', '12'])
+            available['research_funds'] = [sys.executable, str(ROOT / 'scripts/build_portfolio_data.py'), '--sync-verified']
         results = {}
         def run_one(name):
             print('刷新 %s …' % name, flush=True)
@@ -165,8 +188,8 @@ def main():
             print('  %s（exit=%d，%.1fs）' % (step['status'], step['exitCode'], step['seconds']), flush=True)
             return step
         if args.daily and not args.offline:
-            for phase in (('funds', 'research_funds', 'indices', 'stocks', 'overseas_stocks'),
-                          ('strategy', 'portfolio'), ('screening',), ('quality',)):
+            for phase in (('funds', 'indices', 'stocks', 'overseas_stocks'),
+                          ('strategy', 'portfolio'), ('research_funds', 'screening'), ('quality',)):
                 names = [name for name in phase if name in selected]
                 with ThreadPoolExecutor(max_workers=max(1, len(names))) as pool:
                     futures = {pool.submit(run_one, name): name for name in names}
@@ -175,6 +198,10 @@ def main():
                 if 'portfolio' in names and results['portfolio']['exitCode'] == 0:
                     from scripts.build_portfolio_data import prune
                     prune()  # Strategy readers have finished using the previous catalog.
+                if 'portfolio' in names:
+                    run['benchmarkSync'] = execute('benchmark_sync',
+                        [sys.executable, str(ROOT / 'scripts/build_portfolio_data.py'), '--sync-benchmarks'],
+                        15, args.offline, allow_partial=True)
             run['steps'] = [results[name] for name in selected]
         else:
             run['steps'] = [run_one(name) for name in selected]
@@ -188,6 +215,11 @@ def main():
                                          or step.get('sourcePartial') for step in run['steps'])
         return 0 if run['status'] == 'completed' or safe_partial else 1
     finally:
+        if 'previous_token' in locals():
+            if previous_token is None:
+                os.environ.pop('FUND_DATA_REFRESH_TOKEN', None)
+            else:
+                os.environ['FUND_DATA_REFRESH_TOKEN'] = previous_token
         lock.unlink(missing_ok=True)
 
 

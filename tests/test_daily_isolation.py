@@ -133,9 +133,9 @@ class DailyIsolationTests(unittest.TestCase):
     def test_daily_phases_run_independent_sources_together_and_quality_last(self):
         with tempfile.TemporaryDirectory() as temporary:
             directory = Path(temporary)
-            barrier = threading.Barrier(5)
+            barrier = threading.Barrier(4)
             done, guard = set(), threading.Lock()
-            first = {'funds', 'research_funds', 'indices', 'stocks', 'overseas_stocks'}
+            first = {'funds', 'indices', 'stocks', 'overseas_stocks'}
 
             def execute(name, command, timeout, offline, allow_partial=False):
                 self.assertTrue(allow_partial)
@@ -144,13 +144,14 @@ class DailyIsolationTests(unittest.TestCase):
                 else:
                     self.assertTrue(first <= done)
                 if name == 'quality':
-                    self.assertEqual(done, set(refresh.DATASETS) - {'quality'})
+                    self.assertEqual(done, (set(refresh.DATASETS) - {'quality'}) | {'benchmark_sync'})
                 with guard:
                     done.add(name)
                 return dict(dataset=name, status='completed', exitCode=0, seconds=0)
 
             with patch.object(refresh, 'ROOT', directory), patch.object(refresh, 'DATA', directory / 'data'), \
-                    patch.object(refresh, 'execute', side_effect=execute), patch('scripts.build_portfolio_data.prune'), \
+                    patch.object(refresh, 'execute', side_effect=execute), patch.object(refresh, 'prepare_daily_funds', return_value=2), \
+                    patch('scripts.build_portfolio_data.prune'), \
                     patch('sys.argv', ['refresh.py', '--daily', '--timeout', '90']):
                 self.assertEqual(refresh.main(), 0)
             report = json.loads((directory / 'data/refresh-report.json').read_text())
