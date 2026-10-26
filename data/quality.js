@@ -1,21 +1,21 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-10-24T01:05:35+00:00",
-  "asOf": "2026-10-24",
+  "checkedAt": "2026-10-26T15:44:56+00:00",
+  "asOf": "2026-10-26",
   "status": "unverified",
   "summary": {
     "errors": 0,
     "warnings": 4,
-    "unverified": 16
+    "unverified": 24
   },
   "datasets": [
     {
       "id": "funds",
       "label": "海外基金",
-      "asOf": "2026-10-22",
+      "asOf": "2026-10-23",
       "dateRange": [
-        "2026-10-22",
-        "2026-10-22"
+        "2026-10-23",
+        "2026-10-23"
       ],
       "records": 46,
       "issues": [
@@ -78,10 +78,10 @@ var DATA_QUALITY={
     {
       "id": "overseas_stocks",
       "label": "海外个股",
-      "asOf": "2026-10-22",
+      "asOf": "2026-10-23",
       "dateRange": [
-        "2026-10-22",
-        "2026-10-22"
+        "2026-10-23",
+        "2026-10-23"
       ],
       "records": 79,
       "issues": [
@@ -104,6 +104,18 @@ var DATA_QUALITY={
           "affected": "PG"
         },
         {
+          "code": "overseas_financial_fields_missing",
+          "severity": "unverified",
+          "message": "JPM 2026-09-30财季来源缺营业收入、净利润",
+          "affected": "JPM"
+        },
+        {
+          "code": "overseas_business_review_pending",
+          "severity": "unverified",
+          "message": "JPM经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
+          "affected": "JPM"
+        },
+        {
           "code": "overseas_business_review_pending",
           "severity": "unverified",
           "message": "JNJ经营复核仅覆盖2026-06-28，最新财报2026-09-27尚待经营复核",
@@ -114,6 +126,24 @@ var DATA_QUALITY={
           "severity": "unverified",
           "message": "ISRG经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
           "affected": "ISRG"
+        },
+        {
+          "code": "overseas_financial_fields_missing",
+          "severity": "unverified",
+          "message": "ABT 2026-09-30财季来源缺营业收入、净利润",
+          "affected": "ABT"
+        },
+        {
+          "code": "overseas_business_review_pending",
+          "severity": "unverified",
+          "message": "ABT经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
+          "affected": "ABT"
+        },
+        {
+          "code": "overseas_business_review_pending",
+          "severity": "unverified",
+          "message": "NEE经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
+          "affected": "NEE"
         },
         {
           "code": "overseas_business_review_pending",
@@ -142,6 +172,12 @@ var DATA_QUALITY={
         {
           "code": "overseas_business_review_pending",
           "severity": "unverified",
+          "message": "TSM经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
+          "affected": "TSM"
+        },
+        {
+          "code": "overseas_business_review_pending",
+          "severity": "unverified",
           "message": "TSLA经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
           "affected": "TSLA"
         },
@@ -162,6 +198,18 @@ var DATA_QUALITY={
           "severity": "unverified",
           "message": "MSCI经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
           "affected": "MSCI"
+        },
+        {
+          "code": "overseas_financial_fields_missing",
+          "severity": "unverified",
+          "message": "ROP 2026-09-30财季来源缺营业收入、净利润",
+          "affected": "ROP"
+        },
+        {
+          "code": "overseas_business_review_pending",
+          "severity": "unverified",
+          "message": "ROP经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
+          "affected": "ROP"
         }
       ],
       "status": "unverified"
@@ -171,7 +219,7 @@ var DATA_QUALITY={
       "label": "海外指数与ETF基准",
       "asOf": "2026-10-23",
       "dateRange": [
-        "2026-10-22",
+        "2026-10-23",
         "2026-10-23"
       ],
       "records": 36,
@@ -179,7 +227,7 @@ var DATA_QUALITY={
         {
           "code": "fx_risk_incomplete",
           "severity": "warning",
-          "message": "完整人民币日风险缺少实际汇率（2025-04-21、2026-10-23）；未沿用美元风险或填补汇率",
+          "message": "完整人民币日风险缺少实际汇率（2025-04-21）；未沿用美元风险或填补汇率",
           "affected": [
             "标普500指数",
             "SPY",
@@ -221,10 +269,10 @@ var DATA_QUALITY={
     {
       "id": "stocks",
       "label": "股票观察清单",
-      "asOf": "2026-10-23",
+      "asOf": "2026-10-26",
       "dateRange": [
-        "2026-10-23",
-        "2026-10-23"
+        "2026-10-26",
+        "2026-10-26"
       ],
       "records": 71,
       "issues": [],
@@ -233,7 +281,7 @@ var DATA_QUALITY={
     {
       "id": "strategy",
       "label": "买入策略实验",
-      "asOf": "2026-10-22",
+      "asOf": "2026-10-23",
       "dateRange": null,
       "records": 162,
       "issues": [],
@@ -246,10 +294,10 @@ var DATA_QUALITY={
     {
       "id": "domestic_funds",
       "label": "扩展基金研究池",
-      "asOf": "2026-10-23",
+      "asOf": "2026-10-26",
       "dateRange": [
-        "2026-10-21",
-        "2026-10-23"
+        "2026-10-22",
+        "2026-10-26"
       ],
       "records": 1577,
       "issues": [
@@ -3002,10 +3050,10 @@ var DATA_QUALITY={
     {
       "id": "indices",
       "label": "国内指数",
-      "asOf": "2026-10-23",
+      "asOf": "2026-10-26",
       "dateRange": [
         "2026-10-23",
-        "2026-10-23"
+        "2026-10-26"
       ],
       "records": 13,
       "issues": [
@@ -3025,7 +3073,7 @@ var DATA_QUALITY={
       "label": "组合每日历史",
       "asOf": "2026-10-23",
       "dateRange": [
-        "2026-10-21",
+        "2026-10-22",
         "2026-10-23"
       ],
       "records": 1873,
