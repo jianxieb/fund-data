@@ -99,6 +99,37 @@ class RefreshPublicationTests(unittest.TestCase):
         self.assertEqual(self.recomputations, [])
         self.assertEqual(self.remote_file('index.html'), 'new page layout\nvalidated asset hash')
 
+    def test_concurrent_browser_calculator_changes_are_validated_without_refetching_markets(self):
+        for name, value in {
+            'assets/money-flow.js': 'new browser view\n',
+            'assets/money-flow-model.js': 'new browser fee calculation\n',
+            'data/money-flow.js': 'new calculator configuration\n',
+            'docs/evidence/money-flow-feedback/browser.json': 'new UI validation\n',
+        }.items():
+            self.remote_commit(name, value)
+
+        def validate(root):
+            self.validate(root)
+            self.assertEqual((root / 'data/money-flow.js').read_text(), 'new calculator configuration\n')
+            self.assertEqual((root / 'assets/money-flow-model.js').read_text(), 'new browser fee calculation\n')
+            if len(self.validations) == 1:
+                self.remote_commit('assets/money-flow.js', 'newer browser view\n')
+
+        self.assertTrue(self.publish(validate=validate))
+        self.assertEqual(self.recomputations, [])
+        self.assertEqual(len(self.validations), 2)
+        self.assertEqual(self.remote_file('assets/money-flow.js'), 'newer browser view')
+        self.assertEqual(self.remote_file('data/money-flow.js'), 'new calculator configuration')
+        self.assertEqual(self.remote_file('data/snapshot.js'), 'fresh data')
+
+    def test_money_flow_market_quotes_still_require_recomputation_alongside_ui_edits(self):
+        self.remote_commit('assets/money-flow.js', 'new view\n')
+        self.remote_commit('data/money-flow-quotes.js', 'new remote FX evidence\n')
+        self.assertTrue(self.publish())
+        self.assertEqual(len(self.recomputations), 1)
+        self.assertEqual(self.remote_file('data/money-flow-quotes.js'), 'new remote FX evidence')
+        self.assertEqual(self.remote_file('data/snapshot.js'), 'fresh data from new source')
+
     def test_source_change_discards_only_unpublished_outputs_then_recomputes(self):
         self.write(self.runner, '.tmp-snap/source-cache.json', 'retained cache\n')
         self.remote_commit('collector.py', 'new source\n')
@@ -163,11 +194,15 @@ class RefreshPublicationTests(unittest.TestCase):
     def test_inputs_and_evidence_are_not_mistaken_for_display_only_changes(self):
         for name in ('assets/model.js', 'collector.py', 'data/snapshot.js', 'data/catalog.json',
                      'requirements.txt', '.github/workflows/refresh-data.yml',
-                     'docs/evidence/source.md', 'docs/evidence/source.json'):
+                     'docs/evidence/source.md', 'docs/evidence/source.json',
+                     'data/money-flow-quotes.js', 'scripts/refresh_money_flow_quotes.py',
+                     'docs/evidence/money-flow-feedback/collector.py'):
             with self.subTest(path=name):
                 self.assertFalse(publisher.reusable_change(name))
         for name in ('AGENTS.md', 'README.md', 'docs/maintenance.md', 'assets/styles.css',
-                     'index.html', 'tests/test_refresh_publish.py'):
+                     'index.html', 'tests/test_refresh_publish.py', 'assets/money-flow.js',
+                     'assets/money-flow-model.js', 'data/money-flow.js',
+                     'docs/evidence/money-flow-feedback/browser.json'):
             with self.subTest(path=name):
                 self.assertTrue(publisher.reusable_change(name))
 

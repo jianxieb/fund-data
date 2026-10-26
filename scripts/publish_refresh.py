@@ -17,6 +17,10 @@ MEANINGFUL_PATHS = (
     ':(top,glob)data/verification*.json', ':(top,glob)data/*reconciliation.json', 'data/portfolio', 'data/return-comparison',
     'data/financial-events-history.json',
 )
+# These files configure/render the browser calculator. Neither the nine refresh
+# collectors nor their post-refresh builders read them; the full test suite does.
+CLIENT_ONLY_FILES = frozenset(('assets/money-flow.js', 'assets/money-flow-model.js',
+                               'data/money-flow.js'))
 
 
 def command(args, root=ROOT, capture=False, check=True):
@@ -38,13 +42,14 @@ def paths(result):
 def reusable_change(path):
     """Only known non-input files may reuse the already calculated data.
 
-    Python, JavaScript (including assets/model.js), data, source evidence,
+    Unlisted Python/JavaScript (including assets/model.js), data, source evidence,
     dependencies and workflow changes conservatively require a new calculation.
     Changed tests and documentation are still checked against the final data.
     """
     p = Path(path)
-    return (path in ('AGENTS.md', 'README.md', 'index.html') or
+    return (path in ('AGENTS.md', 'README.md', 'index.html') or path in CLIENT_ONLY_FILES or
             path.startswith('tests/') or
+            (path.startswith('docs/evidence/money-flow-feedback/') and p.suffix in ('.json', '.png', '.md')) or
             (path.startswith('docs/') and not path.startswith('docs/evidence/') and p.suffix == '.md') or
             (path.startswith('assets/') and p.suffix in
              ('.css', '.svg', '.png', '.jpg', '.jpeg', '.webp', '.ico', '.woff', '.woff2')))
