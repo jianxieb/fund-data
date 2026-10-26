@@ -4,29 +4,29 @@ window.MONEY_FLOW_QUOTES = {
     "cmb": {
       "quotes": {
         "HKD": {
-          "buy": 0.84864,
-          "sell": 0.85204,
-          "asOf": "2026-10-27 01:29:46"
+          "buy": 0.84866,
+          "sell": 0.85206,
+          "asOf": "2026-10-27 02:03:45"
         },
         "USD": {
           "buy": 6.65916,
           "sell": 6.68818,
-          "asOf": "2026-10-27 01:29:46"
+          "asOf": "2026-10-27 02:03:45"
         },
         "EUR": {
-          "buy": 7.43821,
-          "sell": 7.49795,
-          "asOf": "2026-10-27 01:29:46"
+          "buy": 7.43622,
+          "sell": 7.49594,
+          "asOf": "2026-10-27 02:03:45"
         },
         "GBP": {
-          "buy": 8.87548,
-          "sell": 8.94676,
-          "asOf": "2026-10-27 01:29:46"
+          "buy": 8.87614,
+          "sell": 8.94744,
+          "asOf": "2026-10-27 02:03:45"
         },
         "JPY": {
           "buy": 0.0422108,
           "sell": 0.0425498,
-          "asOf": "2026-10-27 01:29:46"
+          "asOf": "2026-10-27 02:03:45"
         }
       },
       "source": "https://fx.cmbchina.com/hq/"
@@ -34,29 +34,29 @@ window.MONEY_FLOW_QUOTES = {
     "boc": {
       "quotes": {
         "EUR": {
-          "buy": 7.4408,
-          "sell": 7.4953,
-          "asOf": "2026-10-27 01:23:35"
+          "buy": 7.4395,
+          "sell": 7.494,
+          "asOf": "2026-10-27 01:58:35"
         },
         "GBP": {
           "buy": 8.8791,
           "sell": 8.9451,
-          "asOf": "2026-10-27 01:23:35"
+          "asOf": "2026-10-27 01:58:35"
         },
         "HKD": {
           "buy": 0.8486,
           "sell": 0.852,
-          "asOf": "2026-10-27 01:23:35"
+          "asOf": "2026-10-27 01:58:35"
         },
         "JPY": {
-          "buy": 0.04221,
-          "sell": 0.042536,
-          "asOf": "2026-10-27 01:23:35"
+          "buy": 0.042212,
+          "sell": 0.042538,
+          "asOf": "2026-10-27 01:58:35"
         },
         "USD": {
           "buy": 6.6583,
           "sell": 6.6863,
-          "asOf": "2026-10-27 01:23:35"
+          "asOf": "2026-10-27 01:58:35"
         }
       },
       "source": "https://www.boc.cn/sourcedb/whpj/"
@@ -219,33 +219,33 @@ window.MONEY_FLOW_QUOTES = {
     "cib": {
       "quotes": {
         "EUR": {
-          "buy": 7.4412,
-          "sell": 7.5009,
-          "asOf": "2026-10-27 01:29:50",
+          "buy": 7.4399,
+          "sell": 7.4996,
+          "asOf": "2026-10-27 02:03:52",
           "timeBasis": "observed"
         },
         "GBP": {
           "buy": 8.879,
           "sell": 8.9503,
-          "asOf": "2026-10-27 01:29:50",
+          "asOf": "2026-10-27 02:03:52",
           "timeBasis": "observed"
         },
         "HKD": {
           "buy": 0.8489,
-          "sell": 0.8522,
-          "asOf": "2026-10-27 01:29:50",
+          "sell": 0.8521,
+          "asOf": "2026-10-27 02:03:52",
           "timeBasis": "observed"
         },
         "USD": {
           "buy": 6.6601,
           "sell": 6.6855,
-          "asOf": "2026-10-27 01:29:50",
+          "asOf": "2026-10-27 02:03:52",
           "timeBasis": "observed"
         },
         "JPY": {
           "buy": 0.0422,
           "sell": 0.0426,
-          "asOf": "2026-10-27 01:29:50",
+          "asOf": "2026-10-27 02:03:52",
           "timeBasis": "observed"
         }
       },
@@ -283,19 +283,19 @@ window.MONEY_FLOW_QUOTES = {
     }
   },
   "unit": "CNY per 1 foreign currency",
-  "capturedAt": "2026-10-26T17:29:47+00:00",
+  "capturedAt": "2026-10-26T18:03:50+00:00",
   "offshoreUsd": {
     "bochk": {
       "quotes": {
         "CNH": {
-          "bidPerUsd": 6.62818,
-          "askPerUsd": 6.70383,
-          "asOf": "2026-10-27 01:27:58"
+          "bidPerUsd": 6.62828,
+          "askPerUsd": 6.70394,
+          "asOf": "2026-10-27 02:02:59"
         },
         "HKD": {
-          "bidPerUsd": 7.8211,
-          "askPerUsd": 7.8713,
-          "asOf": "2026-10-27 01:27:58"
+          "bidPerUsd": 7.8213,
+          "askPerUsd": 7.8715,
+          "asOf": "2026-10-27 02:02:59"
         }
       },
       "source": "https://www.bochk.com/whk/rates/exchangeRatesUSD/exchangeRatesUSD-input.action?lang=cn",
@@ -329,12 +329,12 @@ window.MONEY_FLOW_QUOTES = {
         "HKD": {
           "bidPerUsd": 7.813,
           "askPerUsd": 7.8776,
-          "asOf": "2026-10-27 01:09:23"
+          "asOf": "2026-10-27 01:43:24"
         },
         "CNH": {
           "bidPerUsd": 6.60048999,
           "askPerUsd": 6.73587003,
-          "asOf": "2026-10-27 01:09:23",
+          "asOf": "2026-10-27 01:43:24",
           "path": "via-HKD",
           "legs": {
             "usdBuy": 7.813,
@@ -386,9 +386,9 @@ window.MONEY_FLOW_QUOTES = {
     "ibkr": {
       "quotes": {
         "CNH": {
-          "bidPerUsd": 6.66874,
-          "askPerUsd": 6.66881,
-          "asOf": "2026-10-27 00:30:42.103",
+          "bidPerUsd": 6.66762,
+          "askPerUsd": 6.6677,
+          "asOf": "2026-10-27 02:03:42.104",
           "timeBasis": "snapshot",
           "marketDataAvailability": "RB",
           "quoteStatus": "live",
@@ -403,31 +403,27 @@ window.MONEY_FLOW_QUOTES = {
   "refreshFailures": {
     "icbc": {
       "error": "URLError: <urlopen error [SSL: UNSAFE_LEGACY_RENEGOTIATION_DISABLED] unsafe legacy renegotiation disabled (_ssl.c:1010)>",
-      "attemptedAt": "2026-10-26T17:29:47+00:00"
+      "attemptedAt": "2026-10-26T18:03:50+00:00"
     },
     "ccb": {
       "error": "URLError: <urlopen error [SSL: UNSAFE_LEGACY_RENEGOTIATION_DISABLED] unsafe legacy renegotiation disabled (_ssl.c:1010)>",
-      "attemptedAt": "2026-10-26T17:29:47+00:00"
+      "attemptedAt": "2026-10-26T18:03:50+00:00"
     },
     "abc": {
       "error": "URLError: <urlopen error [SSL: UNSAFE_LEGACY_RENEGOTIATION_DISABLED] unsafe legacy renegotiation disabled (_ssl.c:1010)>",
-      "attemptedAt": "2026-10-26T17:29:47+00:00"
+      "attemptedAt": "2026-10-26T18:03:50+00:00"
     },
     "comm": {
       "error": "URLError: <urlopen error [SSL: UNSAFE_LEGACY_RENEGOTIATION_DISABLED] unsafe legacy renegotiation disabled (_ssl.c:1010)>",
-      "attemptedAt": "2026-10-26T17:29:47+00:00"
+      "attemptedAt": "2026-10-26T18:03:50+00:00"
     },
     "hsbc": {
       "error": "ValueError: time data '0000-00-00' does not match format '%Y-%m-%d'",
-      "attemptedAt": "2026-10-26T17:29:47+00:00"
+      "attemptedAt": "2026-10-26T18:03:50+00:00"
     },
     "icbc-asia": {
       "error": "CalledProcessError: Command '['curl', '--fail', '--silent', '--show-error', '--location', '--max-time', '8.0', 'https://papi.icbc.com.cn/rest/currencies/asia/foreign']' returned non-zero exit status 3",
-      "attemptedAt": "2026-10-26T17:29:47+00:00"
-    },
-    "ibkr": {
-      "error": "ValueError: IBKR quote unavailable or incomplete",
-      "attemptedAt": "2026-10-26T17:29:47+00:00"
+      "attemptedAt": "2026-10-26T18:03:50+00:00"
     }
   }
 };

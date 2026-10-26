@@ -1,30 +1,14 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-10-26T17:30:02+00:00",
+  "checkedAt": "2026-10-26T18:04:02+00:00",
   "asOf": "2026-10-27",
   "status": "unverified",
   "summary": {
     "errors": 0,
-    "warnings": 5,
+    "warnings": 4,
     "unverified": 24
   },
   "datasets": [
-    {
-      "id": "source_refresh",
-      "label": "本次未更新的来源",
-      "asOf": null,
-      "dateRange": null,
-      "records": 0,
-      "issues": [
-        {
-          "code": "source_refresh_retained",
-          "severity": "warning",
-          "message": "标的行情：执行超过 90 秒，子进程已终止；该数据集不能视为更新成功。；保留已发布数据及原日期",
-          "affected": "portfolio"
-        }
-      ],
-      "status": "warning"
-    },
     {
       "id": "funds",
       "label": "海外基金",
@@ -3068,7 +3052,7 @@
       "label": "国内指数",
       "asOf": "2026-10-26",
       "dateRange": [
-        "2026-10-23",
+        "2026-10-26",
         "2026-10-26"
       ],
       "records": 13,
@@ -3087,10 +3071,10 @@
     {
       "id": "portfolio",
       "label": "组合每日历史",
-      "asOf": "2026-10-23",
+      "asOf": "2026-10-26",
       "dateRange": [
         "2026-10-22",
-        "2026-10-23"
+        "2026-10-26"
       ],
       "records": 1873,
       "issues": [],
