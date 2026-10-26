@@ -50,6 +50,15 @@ class FundBatchTests(unittest.TestCase):
                 self.assertIsNone(batch.latest('000001'))
             batch._load.cache_clear()
 
+    def test_weekend_shortcut_requires_matching_nav_and_excludes_period_boundary_or_money_funds(self):
+        old = [dict(FSRQ='2026-10-23', DWJZ='2', JZZZL='0')]
+        quote = dict(FSRQ='2026-10-26', DWJZ=2.01, JZZZL=.5)
+        self.assertTrue(batch.ordinary_weekend('2026-10-23', quote, old, {'name': '普通基金'}))
+        self.assertFalse(batch.ordinary_weekend('2026-10-23', {**quote, 'DWJZ': .4}, old, {}))
+        self.assertFalse(batch.ordinary_weekend('2026-10-23', quote, old, {'name': '货币基金'}))
+        self.assertFalse(batch.ordinary_weekend('2026-01-30', {**quote, 'FSRQ': '2026-02-02'},
+            [dict(FSRQ='2026-01-30', DWJZ='2')], {}))
+
 
 class IncrementalFundHistoryTests(unittest.TestCase):
     def setUp(self):
@@ -60,6 +69,8 @@ class IncrementalFundHistoryTests(unittest.TestCase):
             patcher = patch.object(portfolio, target, value)
             patcher.start(); self.addCleanup(patcher.stop)
         self.asset = dict(id='fund:000001', code='000001', currency='CNY', name='fixture')
+        patcher = patch.object(batch, 'ROOT', self.root)
+        patcher.start(); self.addCleanup(patcher.stop)
         self.previous = portfolio.publish_history(self.asset, [['2026-10-21', 1.9], ['2026-10-22', 2]],
             'provider_daily_return_or_explicit_actions', 'https://fund.eastmoney.com/000001.html')
 
@@ -86,6 +97,30 @@ class IncrementalFundHistoryTests(unittest.TestCase):
         with patch.object(batch, 'latest', return_value=quote), patch.object(portfolio, 'fund_request', return_value=raw[1:]):
             self.assertIsNone(portfolio.incremental_fund(self.asset, self.previous))
 
+    def test_saved_raw_tail_confirmed_by_batch_quote_is_not_requested_again(self):
+        quote = dict(FCODE='000001', FSRQ='2026-10-26', DWJZ=2.2, JZZZL=10)
+        raw = [dict(FSRQ='2026-10-26', DWJZ=2.2, JZZZL=10),
+               dict(FSRQ='2026-10-23', DWJZ=2, JZZZL=0),
+               dict(FSRQ='2026-10-22', DWJZ=2, JZZZL=0)]
+        with patch.object(batch, 'latest', return_value=quote), patch.object(batch, 'cached_rows', return_value=raw), \
+                patch.object(portfolio, 'fund_request') as request:
+            row = portfolio.incremental_fund(self.asset, self.previous)
+        request.assert_not_called()
+        history = json.loads((self.root / row['historyUrl']).read_text())
+        self.assertEqual(history['series'][-1], ['2026-10-26', 2.2])
+
+    def test_cached_explicit_cash_distribution_keeps_precedence_over_rounded_daily_return(self):
+        quote = dict(FCODE='000001', FSRQ='2026-10-26', DWJZ=1.8, JZZZL=9.52)
+        raw = [dict(FSRQ='2026-10-26', DWJZ=1.8, JZZZL=9.52, FHFCZ=.5, SPLIT_FACTOR=1),
+               dict(FSRQ='2026-10-23', DWJZ=2.1, JZZZL=5),
+               dict(FSRQ='2026-10-22', DWJZ=2, JZZZL=0)]
+        with patch.object(batch, 'latest', return_value=quote), patch.object(batch, 'cached_rows', return_value=raw), \
+                patch.object(portfolio, 'fund_request') as request:
+            row = portfolio.incremental_fund(self.asset, self.previous)
+        request.assert_not_called()
+        history = json.loads((self.root / row['historyUrl']).read_text())
+        self.assertEqual(history['series'][-1], ['2026-10-26', 2.3])
+
     def test_unchanged_date_reuses_verified_file_without_rebuilding_it(self):
         quote = dict(FCODE='000001', FSRQ='2026-10-22', DWJZ=2, JZZZL=5.26)
         with patch.object(batch, 'latest', return_value=quote), patch.object(portfolio, 'fund_request') as request:
@@ -93,6 +128,15 @@ class IncrementalFundHistoryTests(unittest.TestCase):
         request.assert_not_called()
         self.assertEqual(row['sha256'], self.previous['sha256'])
         self.assertEqual(row['asOf'], '2026-10-22')
+
+    def test_lagging_batch_cannot_hide_a_newer_already_published_fund_observation(self):
+        quote = dict(FCODE='000001', FSRQ='2026-10-22', DWJZ=2, JZZZL=0)
+        raw = [dict(FSRQ='2026-10-22', DWJZ='2', JZZZL='0'),
+               dict(FSRQ='2026-10-23', DWJZ='2.1', JZZZL='5')]
+        with patch.object(batch, 'latest', return_value=quote), patch.object(portfolio, 'fund_request', return_value=raw) as request:
+            row = portfolio.incremental_fund({**self.asset, 'knownThrough': '2026-10-23'}, self.previous)
+        request.assert_called_once_with('000001', 20)
+        self.assertEqual(row['asOf'], '2026-10-23')
 
     def test_wrong_history_identity_is_not_used_for_a_new_fund_return(self):
         path = self.root / self.previous['historyUrl']

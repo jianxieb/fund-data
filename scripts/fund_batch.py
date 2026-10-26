@@ -24,6 +24,8 @@ def observation(row, expected, today=None):
     parsed = date.fromisoformat(day)
     if parsed > (today or date.today()):
         raise ValueError('批量净值日期在未来：' + code)
+    if isinstance(row.get('NAV'), bool) or isinstance(row.get('NAVCHGRT'), bool):
+        raise ValueError('净值和收益不能为布尔值')
     nav, daily = float(row['NAV']), float(row['NAVCHGRT'])
     if not math.isfinite(nav) or nav <= 0 or not math.isfinite(daily) or not -100 < daily <= 400:
         raise ValueError('批量净值或日收益无效：' + code)
@@ -99,6 +101,59 @@ def latest(code):
     return _load(os.environ.get('FUND_DATA_REFRESH_TOKEN')).get(code)
 
 
+def cached_rows(code):
+    """Read just the existing raw tail, not megabytes of unchanged history."""
+    try:
+        with (ROOT / '.tmp-hist' / (code + '.json')).open(encoding='utf-8') as source:
+            text = source.read(32768).lstrip()
+        if not text.startswith('['):
+            return []
+        decoder, position, rows = json.JSONDecoder(), 1, []
+        while len(rows) < 20:
+            while position < len(text) and text[position] in ' \r\n\t,':
+                position += 1
+            if position >= len(text) or text[position] == ']':
+                break
+            try:
+                row, position = decoder.raw_decode(text, position)
+            except ValueError:
+                break
+            if isinstance(row, dict) and row.get('FSRQ'):
+                rows.append(row)
+        return rows
+    except (OSError, ValueError, TypeError):
+        return []
+
+
+def matches_latest(row, quote):
+    try:
+        if isinstance(row.get('DWJZ'), bool) or isinstance(row.get('JZZZL'), bool):
+            return False
+        return (row['FSRQ'] == quote['FSRQ'] and abs(float(row['DWJZ']) - quote['DWJZ']) < 1e-8
+                and round(float(row['JZZZL']), 2) == round(quote['JZZZL'], 2))
+    except (KeyError, TypeError, ValueError):
+        return False
+
+
+def ordinary_weekend(end, quote, rows, asset):
+    """Use the official return only when NAV also confirms the entire interval."""
+    old_day, new_day = date.fromisoformat(end), date.fromisoformat(quote['FSRQ'])
+    if ((new_day - old_day).days != 3 or old_day.weekday() != 4 or new_day.weekday() != 0
+            or old_day.month != new_day.month or '货币' in asset.get('name', '')
+            or any(date.fromisoformat(r['FSRQ']).weekday() >= 5 for r in rows)):
+        return False
+    previous = next((r for r in rows if r['FSRQ'] == end), None)
+    if previous is None:
+        return False
+    try:
+        if isinstance(previous.get('DWJZ'), bool):
+            return False
+        raw_change = (quote['DWJZ'] / float(previous['DWJZ']) - 1) * 100
+        return abs(raw_change - quote['JZZZL']) <= 0.00500001
+    except (KeyError, TypeError, ValueError, ZeroDivisionError):
+        return False
+
+
 def cached_tail(code, rows):
     """An unchanged observation or exactly one new calendar day needs no history request."""
     quote = latest(code)
@@ -106,11 +161,8 @@ def cached_tail(code, rows):
         return None
     last = max(rows, key=lambda row: row['FSRQ'])
     if quote['FSRQ'] == last['FSRQ']:
-        try:
-            if abs(float(last['DWJZ']) - quote['DWJZ']) < 1e-8 and round(float(last['JZZZL']), 2) == round(quote['JZZZL'], 2):
-                return rows
-        except (KeyError, TypeError, ValueError):
-            pass
+        if matches_latest(last, quote):
+            return rows
     if (date.fromisoformat(quote['FSRQ']) - date.fromisoformat(last['FSRQ'])).days == 1:
         return [{**quote, 'NAV_SOURCE': ENDPOINT}, *rows]
     return None

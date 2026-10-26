@@ -173,6 +173,7 @@ def main():
             run['batchFundSeconds'] = round(time.monotonic() - batch_start, 2)
             print('批量净值：%d条，%.2fs' % (run['batchFundRecords'], run['batchFundSeconds']), flush=True)
             available['stocks'].extend(['--workers', '12'])
+            available['portfolio'].extend(['--workers', '24'])
             available['research_funds'] = [sys.executable, str(ROOT / 'scripts/build_portfolio_data.py'), '--sync-verified']
         results = {}
         def run_one(name):

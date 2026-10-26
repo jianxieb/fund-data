@@ -37,6 +37,7 @@ const funds=M.dedupeFunds(s.FUNDS,s.EXTRA).map(f=>({
  id:'fund:'+f.c,code:f.c,name:f.n,kind:f.exchange?'etf':'fund',market:'cn',currency:'CNY',
  category:f.ix||f.asset||'基金',manager:f.mgr||'',exchange:!!f.exchange,fee:f.fee||null,feesEmbedded:true,
  sourceUrl:f.returnSourceUrl||'https://fundf10.eastmoney.com/jjjz_'+f.c+'.html',
+ knownThrough:[f.returnAsOf||'',f.navdate||''].sort().pop(),
  inception:f.d||null,subscriptionStatus:f.st||null}));
 const stocks=(s.STOCKS||[]).map(f=>({id:'stock:'+f.c,code:f.c,name:f.n,kind:'stock',
  market:'cn',currency:'CNY',category:f.businessLabel||f.ind||'个股',sector:f.researchCategory||f.ind,board:M.stockBoard(f.c),
@@ -292,13 +293,14 @@ def publish_history(asset, series, basis, source, warning=None, dividend_evidenc
 
 def incremental_fund(asset, previous):
     """Extend verified wealth with published daily returns, not NAV ratios."""
-    from scripts.fund_batch import latest, ENDPOINT
+    from scripts.fund_batch import latest, cached_rows, matches_latest, ordinary_weekend, ENDPOINT
     quote = latest(asset['code'])
     if not quote or not previous or previous.get('status') != 'available':
         return None
     end = previous['asOf']
     observation = latest_nav_observation([quote], end)
-    if quote['FSRQ'] <= end or end >= END:
+    target = min(END, max(quote['FSRQ'], asset.get('knownThrough') or ''))
+    if target <= end:
         return {**previous, **asset, **({'navObservation': observation} if observation else {})}
     raw = (ROOT / previous['historyUrl']).read_bytes()
     if hashlib.sha256(raw).hexdigest() != previous['sha256']:
@@ -306,14 +308,23 @@ def incremental_fund(asset, previous):
     history = json.loads(raw)
     if history.get('id') != asset['id'] or history.get('currency') != 'CNY' or history.get('basis') != 'provider_daily_return_or_explicit_actions':
         raise ValueError('原基金历史身份、币种或口径不一致')
-    if (datetime.fromisoformat(quote['FSRQ']) - datetime.fromisoformat(end)).days == 1:
+    if quote['FSRQ'] == target and (datetime.fromisoformat(quote['FSRQ']) - datetime.fromisoformat(end)).days == 1:
         rows = [quote]
     else:
-        rows = fund_request(asset['code'], 20)
-        if end not in {row['FSRQ'] for row in rows}:
-            return None  # A larger gap needs the ordinary full-history recovery.
+        cached = cached_rows(asset['code'])
+        dates = {r['FSRQ'] for r in cached}
+        newest = max(cached, key=lambda row: row['FSRQ']) if cached else None
+        if newest and end in dates and matches_latest(newest, quote):
+            rows = cached
+        elif quote['FSRQ'] == target and ordinary_weekend(end, quote, cached, asset):
+            rows = [quote]
+        else:
+            rows = fund_request(asset['code'], 20)
+            if end not in {row['FSRQ'] for row in rows}:
+                return None  # A larger gap needs the ordinary full-history recovery.
     series = [list(row) for row in history['series']]
     last_source = None
+    previous_source = next((row for row in rows if row['FSRQ'] == end), None)
     for row in sorted(rows, key=lambda row: row['FSRQ']):
         day = row['FSRQ']
         if day <= end or day > END:
@@ -324,8 +335,12 @@ def incremental_fund(asset, previous):
         gap = (datetime.fromisoformat(day) - datetime.fromisoformat(series[-1][0])).days
         if not 0 < gap <= 21:
             return None
-        series.append([day, series[-1][1] * (1 + daily / 100)])
+        factor = 1 + daily / 100
+        if previous_source and (row.get('SPLIT_FACTOR') is not None or (update.finite_number(row.get('FHFCZ')) or 0) > 0):
+            factor = update.total_return_series([previous_source, row])[-1][1]
+        series.append([day, series[-1][1] * factor])
         last_source = row
+        previous_source = row
     if not last_source:
         return None
     evidence = history.get('dividendEvidence')
