@@ -1,0 +1,309 @@
+Browser tab: 7, Title: "长衡 · 跨境资金", URL: "http://127.0.0.1:8765/#money-flow".
+1 AXWebArea 长衡 · 跨境资金, URL: 127.0.0.1:8765/#money-flow
+	2 link Description: 跳转到主要内容, Value: 127.0.0.1:8765/#main
+	3 container
+		4 link Description: 长衡首页, Value: 127.0.0.1:8765/#overview
+		5 container 主导航
+			6 link Description: 研究总览, Value: 127.0.0.1:8765/#overview
+			7 text 研究对象
+			8 link Description: 指数观察, Value: 127.0.0.1:8765/#indices
+			9 link Description: 历史分位, Value: 127.0.0.1:8765/#market-history
+			10 link Description: 基金研究, Value: 127.0.0.1:8765/#funds
+			11 link Description: 个股深入, Value: 127.0.0.1:8765/#stocks
+			12 text 全球金融
+			13 link Description: 金融传导, Value: 127.0.0.1:8765/#global-finance
+			14 link Description: 历史事件, Value: 127.0.0.1:8765/#financial-events
+			15 text 研究方法
+			16 link Description: 持有期研究, Value: 127.0.0.1:8765/#holding-period
+			17 link Description: 投入策略, Value: 127.0.0.1:8765/#strategy
+			18 link Description: 投资渠道, Value: 127.0.0.1:8765/#buy-location
+			19 link Description: 跨境资金, Value: 127.0.0.1:8765/#money-flow
+			20 text 组合研究
+			21 link Description: 收益对比, Value: 127.0.0.1:8765/#return-comparison
+			22 link Description: 组合模拟, Value: 127.0.0.1:8765/#portfolio
+		23 link Description: 数据与方法, Value: 127.0.0.1:8765/#quality
+		24 text 理解市场，检验方案。
+		25 text 资产 · 风险 · 成本
+	26 container
+		27 container breadcrumb
+			28 text 研究方法
+			29 text 跨境资金
+		30 link Description: 数据状态 ↗, Value: 127.0.0.1:8765/#quality
+	31 container main
+		32 text CROSS-BORDER MONEY
+		33 heading 跨境资金, Value: 1
+			34 text 跨境资金
+		35 container flow-live-toolbar
+			36 heading 优选方案, Value: 2
+				37 text 优选方案
+			38 button 报价与依据
+			39 button 重置
+			40 container 优选方案
+				41 checkbox Description: 优选方案：人民币原币 → 汇丰 → IBKR Pro → 汇丰人民币 → 内地刷卡, Value: 0
+					42 image 中国银行标识
+					43 text 中行
+					44 text 人民币原币
+					45 image 汇丰 HSBC One标识
+					46 text 汇丰香港
+					47 text 人民币到账
+					48 image IBKR Pro标识
+					49 text IBKR Pro
+					50 text 人民币换美元
+					51 image 汇丰 HSBC One标识
+					52 text 汇丰香港
+					53 text 人民币取回
+					54 text 内地刷卡
+					55 text Mastercard
+					56 text 全程参考
+					57 text 0.060%
+					58 text 59.68 CNY
+					59 text 费用情景：支付通限经常项目；10万元单笔未确认可汇
+				60 checkbox Description: 优选方案：兴业寰宇人生 → 汇丰Trade25 → 汇丰人民币 → 内地刷卡, Value: 0
+					61 image 兴业 · 寰宇人生标识
+					62 text 兴业寰宇人生
+					63 text 美元汇出
+					64 image 汇丰 HSBC One标识
+					65 text 汇丰香港
+					66 text 美元到账
+					67 image 汇丰证券标识
+					68 text 汇丰Trade25
+					69 text 美元买卖美股
+					70 image 汇丰 HSBC One标识
+					71 text 汇丰香港
+					72 text 美元换人民币
+					73 text 内地刷卡
+					74 text Mastercard
+					75 text 全程参考
+					76 text 1.245%
+					77 text 1,245.28 CNY
+				78 checkbox Description: 优选方案：兴业寰宇人生 → ZA → 汇丰人民币 → 内地刷卡, Value: 0
+					79 image 兴业 · 寰宇人生标识
+					80 text 兴业寰宇人生
+					81 text 美元汇出
+					82 image 汇丰 HSBC One标识
+					83 text 汇丰香港
+					84 text 美元到账
+					85 image ZA Bank标识
+					86 text ZA
+					87 text 美元买卖美股
+					88 image 汇丰 HSBC One标识
+					89 text 汇丰香港
+					90 text 美元换人民币
+					91 text 内地刷卡
+					92 text Mastercard
+					93 text 全程参考
+					94 text 1.272%
+					95 text 1,271.54 CNY
+				96 checkbox Description: 优选方案：中行 → 中银香港 → IBKR → 中银香港 → 内地中行 → 消费, Value: 0
+					97 image 中国银行标识
+					98 text 中行
+					99 text 美元汇出
+					100 image 中银香港标识
+					101 text 中银香港
+					102 text 美元到账
+					103 image IBKR Pro标识
+					104 text IBKR Pro
+					105 text 美元买卖美股
+					106 image 中银香港标识
+					107 text 中银香港
+					108 text 美元取回
+					109 image 中国银行标识
+					110 text 内地中行
+					111 text 美元结汇
+					112 text 内地消费
+					113 text 内地银行卡
+					114 text 全程参考
+					115 text 0.567%
+					116 text 567.23 CNY
+				117 checkbox Description: 优选方案：兴业寰宇人生 → 汇丰美元 → Wise → IBKR Pro → 汇丰人民币 → 内地刷卡, Value: 0
+					118 image 兴业 · 寰宇人生标识
+					119 text 兴业寰宇人生
+					120 text 美元汇出
+					121 image 汇丰 HSBC One标识
+					122 text 汇丰香港
+					123 text 美元到账
+					124 image Wise标识
+					125 text 本人Wise
+					126 text 美元转入
+					127 image IBKR Pro标识
+					128 text IBKR Pro
+					129 text 美元买卖美股
+					130 image 汇丰 HSBC One标识
+					131 text 汇丰香港
+					132 text 人民币取回
+					133 text 内地刷卡
+					134 text Mastercard
+					135 text 全程参考
+					136 text 0.150%
+					137 text 149.62 CNY
+					138 text Wise两段参考费 10 + 10 = 20 HKD
+		139 container 完整资金流
+			140 container 内地出发银行
+				141 text 01 内地出发银行
+				142 pop up button 内地出发银行：中国银行，更换
+					143 image 中国银行标识
+					144 text 中国银行
+				145 text 人民币本金
+				146 pop up button 修改人民币本金
+				147 container
+					148 text 250,000.00  CNY
+				149 text 汇出币种
+				150 container 汇出币种
+					151 checkbox 人民币原币, Value: 1
+					152 checkbox 美元, Value: 0
+					153 checkbox 港币, Value: 0
+				154 text 笔数
+				155 pop up button 汇出笔数：1笔
+				156 text 渠道
+				157 pop up button 汇款渠道：跨境支付通
+				158 container
+					159 checkbox (settable, integer) Description: 已享跨境支付通手续费豁免, Value: 1
+					160 text 已享跨境支付通手续费豁免
+			161 container 汇往香港
+				162 text 参考费用
+				163 text 0.000%
+				164 text 0.00 CNY
+				165 heading 汇往香港, Value: 3
+					166 text 汇往香港
+				167 button 汇往香港收费明细与依据
+				168 text 南向年度共用50,000 USD；本次约250,000.00 CNY/笔。超过公开操作参考的单笔1万元，未确认可汇。
+				169 text 跨境支付通本次汇出服务费
+				170 text 0.00 CNY
+				171 text 代理费
+				172 text 0.00 CNY
+				173 text 香港汇入
+				174 text 0.00 CNY
+			175 container 香港收款银行
+				176 text 02 香港收款银行
+				177 pop up button 香港收款银行：汇丰 HSBC One，更换
+					178 image 汇丰 HSBC One标识
+					179 text 汇丰 HSBC One
+				180 text 汇款到账
+				181 container
+					182 text 250,000.00  CNH
+				183 text 累计费用 0.000%
+				184 container
+					185 text 账户使用月数
+					186 text field (settable) Description: 账户使用月数, Value: 12
+					187 text 月
+				188 text 银行管理费
+				189 text 0.00 CNY
+				190 container
+					191 checkbox (settable, integer) Description: HSBC One本持有期均免管理费, Value: 1
+					192 text 满足豁免
+				193 pop up button HSBC One豁免条件：三个月平均理财总值至少10,000 HKD或适用开户豁免
+			194 container 转入IBKR → 换成美元
+				195 text 参考费用
+				196 text 0.014%
+				197 text 35.29 CNY
+				198 heading 转入IBKR → 换成美元, Value: 3
+					199 text 转入IBKR → 换成美元
+				200 button 转入IBKR → 换成美元收费明细与依据
+				201 text 换美元地点
+				202 pop up button 换美元地点：IBKR手动换汇
+				203 text 入金方式
+				204 pop up button 入金方式：本地转账 · FPS
+				205 text 1 USD = 6.67006 CNH
+				206 text 银行转账
+				207 text 0.00 CNY
+				208 text 代理／收款费
+				209 text 0.00 CNY
+				210 text 入金费
+				211 text 0.00 CNY
+				212 text 换汇佣金
+				213 text 13.35 CNY
+				214 text 换汇点差
+				215 text 参考 21.94 CNY
+			216 container 买美股的账户
+				217 text 03 买美股的账户
+				218 pop up button 买美股的账户：IBKR Lite，更换
+					219 image IBKR Lite标识
+					220 text IBKR Lite
+				221 text 入金到账
+				222 container
+					223 text 37,478.92  USD
+				224 text 累计费用 0.014%
+				225 text 买卖设置
+				226 button 买1笔 · 卖1笔
+				227 text 优惠与费用券
+				228 button 设置优惠
+				229 text 买入均价
+				230 button 100 USD/股
+				231 text 账户方案
+				232 text Lite · 合资格美国居民
+			233 container 买入美股 → 卖出
+				234 text 费用
+				235 text 0.002%
+				236 text 5.22 CNY
+				237 heading 买入美股 → 卖出, Value: 3
+					238 text 买入美股 → 卖出
+				239 button 盈亏 0.00 USD
+				240 button 买入美股 → 卖出收费明细与依据
+				241 text 买入费用
+				242 text 0.01 CNY
+				243 text 卖出费用
+				244 text 5.21 CNY
+				245 text 证券托管
+				246 text 0.00 CNY
+			247 container IBKR Lite出金 → 汇丰 HSBC One
+				248 text 参考费用
+				249 text 0.027%
+				250 text 66.75 CNY
+				251 heading IBKR Lite出金 → 汇丰 HSBC One, Value: 3
+					252 text IBKR Lite出金 → 汇丰 HSBC One
+				253 button IBKR Lite出金 → 汇丰 HSBC One收费明细与依据
+				254 text 出金目的地
+				255 pop up button 出金目的地：香港银行
+				256 button 本月第1次出金
+				257 text 出金费
+				258 text 0.00 CNY
+				259 text 银行收款
+				260 text 0.00 CNY
+				261 text 代理费
+				262 text 参考 66.75 CNY
+			263 container 卖出后的资金
+				264 container
+					265 text 04 取回银行
+					266 pop up button 取回银行：汇丰 HSBC One，更换
+						267 image 汇丰 HSBC One标识
+						268 text 汇丰 HSBC One
+					269 text 出金到账 37,468.14  USD 累计费用 0.043% 资金用途
+					270 pop up button 资金用途：内地商户消费 · 香港卡
+					271 text 内地支付方式 人民币原币扣账
+			272 container 美元换人民币 → 商户刷卡
+				273 text 参考费用
+				274 text 1.149%
+				275 text 2,873.48 CNY
+				276 heading 美元换人民币 → 商户刷卡, Value: 3
+					277 text 美元换人民币 → 商户刷卡
+				278 button 美元换人民币 → 商户刷卡收费明细与依据
+				279 text 接受Mastercard的商户；支付宝合资格商户
+				280 text 境外卡不等同内地钱包余额；个人收款码、转账及充值不能按通用可用计算。
+				281 text 参考 1 USD = 6.59321175 CNH · 本行牌价折算
+				282 text 换汇点差
+				283 text 参考 2,873.48 CNY
+				284 text 消费费用
+				285 text 0.00 CNY
+			286 container 资金终点
+				287 text 香港卡 · 限受理商户
+				288 text 汇丰 HSBC One
+				289 text 按公布参考价费计算的余额
+				290 container
+					291 text 247,035.38  CNY
+				292 text 累计费用 1.192%
+		293 container flow-live-summary
+			294 text 参考总费用
+			295 text 1.192%
+			296 text 2,980.74 CNY
+			297 text 其中账户期间费 0.00 CNY
+			298 text 已计入合计
+			299 text 按公布参考价费计算的余额 247,035.38  CNY
+			300 button 全程明细
+		301 button 实际成交报价与费用
+		302 text 便利化购汇不得用于境外证券投资；本页为费用测算。
+		303 button 适用条件
+	304 container
+		305 text 长衡 · 全球投资研究工作台
+		306 link Description: 数据来源与研究方法, Value: 127.0.0.1:8765/#quality
+
+The focused UI element is 1 AXWebArea 长衡 · 跨境资金, URL: 127.0.0.1:8765/#money-flow

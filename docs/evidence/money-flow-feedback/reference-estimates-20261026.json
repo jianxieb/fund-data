@@ -1,0 +1,57 @@
+{
+  "checkedAt": "2026-10-26T12:35:21.951876+00:00",
+  "authorization": "2026-10-26 用户接受有来源的估算，保留实际报价覆盖",
+  "sources": [
+    {
+      "source": "ibkrUsdWithdrawalReport",
+      "url": "https://www.kdkh.com/guide/ibkr/usdchujin.html",
+      "request": {
+        "method": "GET",
+        "headers": {
+          "User-Agent": "Mozilla/5.0"
+        },
+        "parameters": {}
+      },
+      "status": 200,
+      "finalUrl": "https://www.kdkh.com/guide/ibkr/usdchujin.html",
+      "bytes": 110555,
+      "sha256": "7aba15609ecead0e6b8d2f7881a3cfa6b582dab92fb9722316ef8153f2a99dac"
+    },
+    {
+      "source": "bochk",
+      "url": "https://www.bochk.com/sc/crossborder/remittance/charges.html",
+      "request": {
+        "method": "GET",
+        "headers": {
+          "User-Agent": "Mozilla/5.0"
+        },
+        "parameters": {}
+      },
+      "status": 200,
+      "finalUrl": "https://www.bochk.com/sc/crossborder/remittance/charges.html",
+      "bytes": 35969,
+      "sha256": "ceceaab507398aa8801144bbf375c193088ae37063e82b21e0d40d678240f71c"
+    },
+    {
+      "source": "bochkRemitHelp",
+      "url": "https://its.bochk.com/banking/remit/help/ibs_rem_helpApp_boc_s.html",
+      "request": {
+        "method": "GET",
+        "headers": {
+          "User-Agent": "Mozilla/5.0"
+        },
+        "parameters": {}
+      },
+      "status": 200,
+      "finalUrl": "https://its.bochk.com/banking/remit/help/ibs_rem_helpApp_boc_s.html",
+      "bytes": 54954,
+      "sha256": "99a3403d6bf8f5a5e80c97a847c85c2de2ea9936651d66bf23e6095d4e530f6a"
+    }
+  ],
+  "interpretation": {
+    "hsbcCnh": "Reuse saved HSBC USD/HKD and CNH/HKD legs; bid=usdBuy/cnhSell, ask=usdSell/cnhBuy. Preserve via-HKD and oldest-leg asOf. Reference for direct conversion only, not a direct executable quote or two required trades.",
+    "ibkrUsdWithdrawalReport": "Published 2026-02-08: report of HSBC USD wire third-party charge 0 below USD1000, otherwise USD10; general receiving+intermediary range USD10–30. BOCHK uses USD20 midpoint less published receiving fee. Do not copy the outdated one-free-withdrawal statement: current official IBKR fee table remains authoritative.",
+    "bochkUsdReturn": "Scenario assumption: personal electronic BOCHK fast remittance to mainland BOC, ordinary group route, no extra processing/messages. Estimated additional fee 0, not confirmed exemption. Official conditional extra message fee HKD100 each is not a total upper bound."
+  },
+  "failurePolicy": "Keep saved quotes and original timestamps; estimates only in authorized bank/currency/channel scope; actual execution and receipt overrides win. Failed source checks do not replace saved values."
+}

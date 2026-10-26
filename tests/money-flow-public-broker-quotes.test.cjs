@@ -19,7 +19,7 @@ test('public IBKR ask funds USD, bid returns CNH, and RMB purchases use face amo
   close(r.steps.brokerCnh, (r.steps.afterTaxUsd - 2) * 6.66889);
   close(r.net, r.steps.returnCnh); close(r.netCny, r.net);
   assert.equal(r.currency, 'CNY');
-  close(r.costCny, r.budgetCny - r.net);
+  close(r.costCny - r.fxImpactCny, r.budgetCny - r.net);
   // A closed RMB -> USD -> RMB loop has a spread and commissions; the
   // CNH valuation benchmark must not manufacture a mainland spending gain.
   assert.ok(r.costCny > 0);
@@ -36,15 +36,22 @@ test('public IBKR ask funds USD, bid returns CNH, and RMB purchases use face amo
   }
 });
 
-test('public prices fill first and fifth plans without filling HSBC direct rates or wire deductions', () => {
-  assert.equal(plans[0].calculated.selected.complete, true);
-  assert.equal(plans[4].calculated.selected.complete, true);
-  for (const plan of plans.slice(1, 3)) {
-    assert.ok(plan.calculated.selected.missing.some(x => /汇丰.*USD\/CNH直接报价/.test(x)));
-    assert.equal(row(plan.calculated.selected, 'exitFx').cny, null);
-    assert.equal(row(plan.calculated.selected, 'cardFx'), undefined);
+test('saved quotes and explicitly authorized estimates price all five preferred routes', () => {
+  for (const plan of plans) {
+    assert.equal(plan.calculated.selected.complete, true);
+    assert.deepEqual(plan.calculated.selected.missing, []);
   }
-  assert.deepEqual(plans[3].calculated.selected.missing, ['券商出金中转行费', '回内地中转行费']);
+  for (const plan of plans.slice(1, 3)) {
+    const r = plan.calculated.selected;
+    assert.equal(r.estimatedExitFx, true);
+    assert.match(row(r, 'exitFx').estimate, /汇丰本行/);
+    assert.equal(row(r, 'exitFx').quoteBasis, 'bank-cross-estimate');
+    assert.equal(row(r, 'exitFx').exchanges.length, 1);
+    assert.equal(r.exitAsOf, Q.offshoreUsd.hsbc.quotes.CNH.asOf);
+    close(r.exitPrice, Q.offshoreUsd.hsbc.quotes.CNH.bidPerUsd);
+    close(row(r, 'cardFx').cny, 0);
+  }
+  for (const key of ['withdrawMiddle', 'returnOther']) assert.ok(row(plans[3].calculated.selected, key).estimate);
   for (const plan of plans) conserved(plan.calculated.selected);
 });
 
@@ -76,4 +83,73 @@ test('absent and stale broker quotes remain explicit and never borrow a bank quo
   assert.equal(old.quoteFreshness.exit, false);
   assert.ok(old.missing.some(x => /IBKR USD\/CNH.*超过3天/.test(x)));
   assert.equal(run({ entryPrice: 6.71, brokerExitPrice: 6.69 }, stale).complete, true);
+});
+
+test('10万 and 25万 Lite FPS funding retain cash and never present valuation gains as negative fees', () => {
+  for (const budgetCny of [100000, 250000]) {
+    const r = run({ budgetCny, broker: 'ibkr-lite', outcome: 'broker-balance' });
+    close(r.steps.hongKong, budgetCny); close(r.steps.brokerOriginal, budgetCny);
+    close(r.steps.fundedUsd, budgetCny / 6.67006 - 2);
+    close(row(r, 'brokerFx').cny, 13.3492);
+    close(row(r, 'brokerSpread').cny, (budgetCny / ((6.67006 + 6.66889) / 2) - budgetCny / 6.67006) * r.refs.USD);
+    assert.ok(r.rows.every(x => x.cny >= 0));
+    assert.ok(r.fxImpactCny > 0, 'The signed valuation effect is preserved outside costs');
+    conserved(r);
+    for (const leg of M.flowLedger(r).legs) {
+      assert.ok(leg.costCny >= 0);
+      close(leg.inputCny + leg.profitCny + leg.fxImpactCny, leg.outputCny + leg.costCny + leg.taxCny);
+    }
+    const betterExecution = run({ budgetCny, broker: 'ibkr-lite', outcome: 'broker-balance', entryPrice: 6.6 });
+    close(row(betterExecution, 'brokerSpread').cny, 0);
+    close(row(betterExecution, 'brokerFx').cny, 13.3492);
+    close(betterExecution.steps.fundedUsd, budgetCny / 6.6 - 2);
+    conserved(betterExecution);
+  }
+});
+
+test('HSBC estimate preserves saved legs and timestamps, is scoped to HSBC, and yields to actual prices', () => {
+  const original = JSON.stringify(Q), config = plans[1].config;
+  const calculate = (changes = {}, quotes = Q, data = D) => M.calculatorJourney({ ...config, ...changes }, data, quotes).selected;
+  const actual = calculate({ exitPrice: 6.7 });
+  assert.equal(actual.estimatedExitFx, false); assert.equal(row(actual, 'exitFx').estimate, undefined);
+  close(actual.net, actual.steps.returnUsd * 6.7);
+  assert.equal(row(actual, 'exitFx').exchanges.length, 1); conserved(actual);
+  const unapproved = structuredClone(D); delete unapproved.referenceEstimates;
+  assert.equal(row(calculate({}, Q, unapproved), 'exitFx').cny, null);
+  const absent = structuredClone(Q); delete absent.offshoreUsd.hsbc;
+  assert.equal(row(calculate({}, absent), 'exitFx').cny, null);
+  const other = structuredClone(Q); other.offshoreUsd.hang = structuredClone(Q.offshoreUsd.hsbc);
+  assert.equal(row(calculate({ returnBank: 'hang' }, other), 'exitFx').cny, null);
+  const stale = structuredClone(Q); stale.offshoreUsd.hsbc.quotes.CNH.asOf = '2026-10-01';
+  assert.equal(calculate({}, stale).complete, false);
+  assert.equal(calculate({ exitPrice: 6.7 }, stale).complete, true);
+  const cash = calculate({ outcome: 'atm', atmProfile: 'hsbc-group', atmAmountCny: 1000, atmTransactions: 1 });
+  assert.equal(row(cash, 'exitFx').quoteBasis, 'bank-cross-estimate'); conserved(cash);
+  assert.equal(JSON.stringify(Q), original);
+});
+
+test('wire estimates avoid double counting receiving fees and actual receipts override each component', () => {
+  const config = plans[3].config;
+  const calculate = changes => M.calculatorJourney({ ...config, ...changes }, D, Q).selected;
+  const r = calculate({});
+  close(row(r, 'returnInward').cny, 60 * r.refs.HKD);
+  close(row(r, 'withdrawMiddle').cny + row(r, 'returnInward').cny, 20 * r.refs.USD);
+  assert.deepEqual(row(r, 'withdrawMiddle').combinedRangeUsd, [10, 30]);
+  assert.match(row(r, 'returnOther').estimate, /无额外报文/);
+  const actual = calculate({ intermediaryCny: 7, returnExtraCny: 8, inwardHkd: 9 });
+  close(row(actual, 'withdrawMiddle').cny, 7); close(row(actual, 'returnOther').cny, 8);
+  close(row(actual, 'returnInward').cny, 9 * actual.refs.HKD);
+  assert.equal(row(actual, 'withdrawMiddle').estimate, undefined);
+  assert.equal(row(actual, 'returnOther').estimate, undefined); conserved(actual);
+  const bankActual = calculate({ inwardHkd: 99 });
+  close(row(bankActual, 'withdrawMiddle').cny, row(r, 'withdrawMiddle').cny);
+  const swift = calculate({ returnMethod: 'swift' });
+  assert.equal(row(swift, 'returnOther').cny, null);
+  const other = calculate({ returnBank: 'hang', returnMethod: 'swift' });
+  assert.equal(row(other, 'withdrawMiddle').cny, null);
+  for (const [budgetCny, expectedUsd] of [[5000, 0], [100000, 10]]) {
+    const hsbc = calculate({ budgetCny, returnBank: 'hsbc', outcome: 'usd-balance' });
+    close(row(hsbc, 'withdrawMiddle').cny, expectedUsd * hsbc.refs.USD);
+    assert.ok(row(hsbc, 'withdrawMiddle').estimate); conserved(hsbc);
+  }
 });

@@ -49,19 +49,19 @@
         missing: '建行亚洲CNH本地出金清算渠道未确定；已核一般个人账户CHATS收款15 HKD／笔' }
     },
     verificationReview: {
-      checkedAt: '2026-10-25', items: [
+      checkedAt: '2026-10-26', items: [
         { title: '支付通收款费', finding: '汇丰、恒生、ZA已核为免费收款，按银行独立计费。南向汇出费的豁免选择仍是本人的适用条件。',
           remaining: '四家内地出发银行现行南向收费条款；中银香港、渣打、工银亚洲明确适用于南向收款的收费条款。北向发送免费不能替代收款证明。', sources: ['paymentHsbcReceive', 'paymentHang', 'paymentZaTariff'] },
         { title: 'IBKR人民币本地出金', finding: '每个纽约时间自然月前两次出金免费，之后CNH本地转账7 CNH、电汇60 CNH。汇丰、中银香港、恒生、ZA、渣打个人本地收款费已核为0；工银亚洲综合账户CHATS收款10 HKD、建行亚洲一般个人账户15 HKD。',
           remaining: '本人IBKR实体提供的CNH本地收款指示；工银亚洲、建行亚洲当笔实际清算渠道，确认CHATS后才应用对应费率。电汇第三方费用另列。', sources: ['ibFees', 'ibCnhWithdrawal', 'hsbcHk', 'bochk', 'hangHk', 'paymentZaTariff', 'scHk', 'icbcAsiaInward', 'ccbAsiaTariff'] },
         { title: 'IBKR换汇', finding: '已接入官网USD/CNH公开买卖盘；人民币买美元用ask，美元换人民币用bid。快照保留实时／延迟／休市状态。手动首档0.20基点、最低2 USD；自动换汇通常加减0.03%，不另收佣金。',
           remaining: 'HKD/USD公开买卖盘尚未接入。公开参考与个人成交价不同，个人报价覆盖对应参考价。', sources: ['ibFx', 'ibFxQuotes', 'ibFxFields'] },
-        { title: '香港银行换汇', finding: '渣打个人价格在SC Mobile／网银、ZA个人价格在App提供。汇丰、恒生、工银亚洲已采集的港币交叉价代表两次换汇。',
-          remaining: '渣打、ZA个人USD/HKD及USD/CNH成交价；汇丰、恒生、工银亚洲直接USD/CNH客户价。', sources: ['scHkFx', 'zaFx', 'hsbcHkFx', 'hangHkFx', 'icbcAsiaFx'] },
+        { title: '香港银行换汇', finding: '渣打、ZA个人价格由银行App提供。汇丰已按用户授权，用已存本行牌价折算USD/CNH参考值并保留实际价覆盖；交叉价来源仍标清，不强制两次实兑。',
+          remaining: '渣打、ZA个人USD/HKD及USD/CNH价；恒生、工银亚洲直接USD/CNH价。汇丰当笔实际价可覆盖参考值，不再据此显示费用缺项。', sources: ['scHkFx', 'zaFx', 'hsbcHkFx', 'hangHkFx', 'icbcAsiaFx'] },
         { title: 'Wise两段收费', finding: 'IBKR官方要求关联本人Wise，并在报价页显示费用、汇率和到账额。两段各10 HKD保留为用户提供的费用情景。',
           remaining: '本人的银行→Wise、Wise→IBKR两段当笔报价；未取得全球统一10＋10 HKD官方费表。', sources: ['ibWise', 'wiseUsd'] },
-        { title: '普通电汇及中银快汇代理费', finding: '银行和券商基本手续费豁免不包含所有代理收费。中银香港160 HKD美元代理费条款明确排除汇往内地，不能直接套到美元回国路径。',
-          remaining: '各币种实际中转行扣费，尤其IBKR美元出金和中银香港美元汇回内地。已有0元到账实录仅作为对应路径参考。', sources: ['bochk', 'ibFees', 'hsbcHk'] },
+        { title: '普通电汇及中银快汇代理费', finding: 'IBKR美元至汇丰按公开记录估算，至中银香港按第三方合计10–30 USD区间中点测算并扣除单列收款费；中银快汇USD至内地中行按无额外处理情景估算，实际回单可覆盖。',
+          remaining: '其他银行／币种／普通SWIFT尚缺对应汇路价格；已有估算的当笔实际扣费由回单覆盖，不声称已获得统一官方保证价。', sources: ['bochk', 'bochkRemitHelp', 'ibFees', 'hsbcHk', 'ibkrUsdWithdrawalReport'] },
         { title: '盈立与建行亚洲支票', finding: '盈立本地传统银行美元支票提款免费；数字银行大于20 USD的提款费官方仅给约7.5 USD。建行亚洲费表另列外币票据买入／托收费用。',
           remaining: '盈立数字银行当笔最终银行扣费；建行亚洲适用于本地美元清算支票存入的明确费率，不能套境外票据托收。', sources: ['usmartWithdrawal', 'ccbAsiaTariff'] },
         { title: '工行普通人民币电汇', finding: '已复核工行国际汇款及电子银行费表；外币汇款优惠和企业跨境人民币服务不证明个人CNH普通电汇同价。',
@@ -162,11 +162,30 @@
         estimate: '按2026年美元直达汇丰香港的公开到账记录测算，最小已录金额201 USD；改走代理行可能产生扣费，不属于本行费用豁免',
         sources: ['cibSmallUsdCase', 'cibUsdCase', 'cibHsbcCase', 'cibRouteCounterexample'] }
     ],
+    referenceEstimates: {
+      authorizedAt: '2026-10-26',
+      hsbcCnh: { bank: 'hsbc', path: 'via-HKD', sources: ['hsbcHkFx'],
+        estimate: '按汇丰本行已存USD/HKD、CNH/HKD买卖牌价折算；直接兑换参考值，实际报价优先',
+        evidence: '本行牌价折算 · 非直接成交报价' },
+      ibkrUsdWithdrawal: [
+        { bank: 'hsbc', belowUsd: 1000, belowCombinedUsd: 0, combinedUsd: 10,
+          estimate: '按2026-02-08公开操作记录估算：不足1,000 USD为0，其余10 USD；不是汇丰收费承诺',
+          evidence: 'IBKR→汇丰USD电汇 · 公开操作记录', sources: ['ibkrUsdWithdrawalReport', 'ibFees', 'hsbcHk'] },
+        { bank: 'bochk', combinedUsd: 20, rangeUsd: [10, 30],
+          estimate: '中转及收款合计按公开10–30 USD区间的中点20 USD估算；已扣除单列的中银收款费，避免重复计费',
+          evidence: 'IBKR→中银香港USD电汇 · 第三方费用区间估算', sources: ['ibkrUsdWithdrawalReport', 'ibFees', 'bochk'] }
+      ]
+    },
     returnTransferReferences: [
       { bank: 'bochk', exitBank: 'boc', currencies: ['HKD'], method: 'bochk-fast', maximumReferenceForeign: 10000,
         intermediaryCny: 0, level: 'reported', checkedAt: '2026-10-12', evidence: '港币同名中银快汇 · 2026年6月多次到账记录',
         estimate: '按一万港币以内的同名快汇操作记录测算代理费；不扩展到大额、美元或普通SWIFT',
-        sources: ['bochkSame', 'bochk', 'bochkRemitHelp', 'bochkHkdReturnCase', 'bocBankAnswer2026'] }
+        sources: ['bochkSame', 'bochk', 'bochkRemitHelp', 'bochkHkdReturnCase', 'bocBankAnswer2026'] },
+      { bank: 'bochk', exitBank: 'boc', currencies: ['USD'], method: 'bochk-fast',
+        intermediaryCny: 0, level: 'scenario-estimate', checkedAt: '2026-10-26',
+        evidence: '个人电子中银快汇 · 集团内正常汇路情景',
+        estimate: '按无额外报文／处理的集团汇路估算0；官方未保证代理费全免。若需额外报文，每个100 HKD，其他实际扣费以回单覆盖',
+        sources: ['bochk', 'bochkRemitHelp', 'bocBankAnswer2026'] }
     ],
     evidenceGaps: [
       { bank: 'boc', channel: 'boc-mobile', checkedAt: '2026-10-11', items: ['USD/HKD同行路径代理费的银行资费依据'], source: 'bocMobileUsdGuide', finding: '2026-05-29中行山西省分行在新华网的供稿已确认手机银行向境外中行汇款手续费及电报费免；该两项不再仅依赖搜狐转载。2月9日同行SHA操作记录支持代理费0情景，仍不扩展成所有币种／汇路的代理费豁免。' },
@@ -179,6 +198,7 @@
       { bank: 'icbc-asia', scope: 'hk', checkedAt: '2026-10-15', items: ['银联／ICBC Pay的HKD/CNY实际扣账汇率', 'USD/CNH直接客户成交价'], source: 'icbcAsiaCard', finding: '港币卡可在银联受理商户支付；实际扣账汇率不能用银行现汇牌价或ATM折算规则代替。公开港币交叉汇率是两笔兑换，不作为直接USD/CNH消费报价。' }
     ],
     sources: {
+      ibkrUsdWithdrawalReport: { name: '口袋开户2026-02-08 · IBKR美元出金银行费用操作记录（估算来源）', url: 'https://www.kdkh.com/guide/ibkr/usdchujin.html' },
       paymentPbc: { name: '人民银行 · 支付通限经常项目，机构另定单笔／累计限额', url: 'https://big5.www.gov.cn/gate/big5/www.gov.cn/zhengce/202506/content_7028902.htm' },
       paymentParticipants: { name: '香港银行同业结算公司 · 现行支付通参与机构', url: 'https://fps.hkicl.com.hk/schi/fps/consumers/payment_connect.php' },
       paymentHang: { name: '恒生 · 支付通收付免费及南北向限额', url: 'https://www.hangseng.com/zh-cn/personal/banking/payment-connect/' },

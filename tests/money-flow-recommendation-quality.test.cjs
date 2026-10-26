@@ -80,19 +80,20 @@ test('a route with fewer accounts remains eligible even when its period and tota
   assert.equal(D.mainlandBanks.find(bank => bank.id === 'cib').accountService, undefined);
 });
 
-test('mainland-return comparisons retain the four receivers and never fill an unpriced return just to produce a plan', () => {
+test('mainland-return comparisons only include the scoped, sourced USD estimate or capped HKD record', () => {
   const quotes = require('./fixtures/money-flow-quotes-20261012.json');
   const qualified = { ...input, date:'2026-10-12', outcome:'mainland', hsbcBalanceWaiver:true,
     cnHsbcFeeWaived:true, cnHangFeeWaived:true, cnScFeeWaived:true };
-  // Large ordinary USD returns still lack a correspondent tariff. The limited
-  // HKD arrival reference is a different real route, within its recorded cap.
-  assert.deepEqual(M.calculatorRecommendations(qualified,D,quotes).plans,[]);
+  const usdPlans=M.calculatorRecommendations(qualified,D,quotes).plans;
+  assert.ok(usdPlans.length>0);
+  assert.ok(usdPlans.every(p=>p.config.returnBank==='bochk'&&p.config.exitBank==='boc'&&p.config.returnMethod==='bochk-fast'));
+  assert.ok(usdPlans.every(p=>p.result.rows.find(row=>row.key==='returnOther').estimate));
   const small={...qualified,budgetCny:5000,returnCurrency:'HKD'};
   const plans=M.calculatorRecommendations(small,D,quotes).plans;
   assert.ok(plans.length>0);
   assert.equal(plans[0].config.startBank,'cib');
   assert.equal(plans[0].config.returnBank,'bochk'); assert.equal(plans[0].config.exitBank,'boc');
-  close(plans[0].result.costCny,60.84076701648338);
+  close(plans[0].result.costCny,60.3371676643);
   assert.ok(plans.every(plan=>D.calculator.departureBanks.includes(plan.config.startBank)&&D.calculator.receivingBanks.includes(plan.config.exitBank)));
   assert.ok(plans.every(plan=>period(plan.result)===0&&plan.result.complete));
   const unqualified=M.calculatorRecommendations({...small,hsbcBalanceWaiver:false},D,quotes).plans;
@@ -137,7 +138,7 @@ test('a sender cheapest mobile route cannot discard its more certain full-amount
   const plans = M.calculatorRecommendations(profile, D, quotes).plans;
   const chosen = plans.find(plan => plan.config.startBank === 'icbc');
   assert.ok(chosen); assert.equal(chosen.config.bank, 'za'); assert.equal(chosen.config.mainlandMethod, 'full');
-  close(chosen.result.costCny, full.costCny); assert.equal(Math.round(full.costCny * 100) / 100, 530.96);
+  close(chosen.result.costCny, full.costCny); assert.equal(Math.round(full.costCny * 100) / 100, 614.90);
   assert.ok(chosen.benefits.includes('少用香港账户')); assert.ok(chosen.benefits.includes('银行费按官方价'));
   assert.ok(!sources(plans).includes('hsbc') && !sources(plans).includes('ccb'));
 });

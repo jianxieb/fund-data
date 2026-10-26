@@ -26,13 +26,13 @@ test('HKD return applies the chosen HK bank USD bid and mainland HKD buy separat
   near(r.exitPrice, mainlandBuy);
   assert.equal(r.steps.remitUsd, undefined);
   const fx = r.rows.find(row => row.key === 'returnFx'), settle = r.rows.find(row => row.key === 'exitFx');
-  near(fx.cny, r.steps.returnUsd * r.refs.USD - r.steps.returnHkd * r.refs.HKD);
-  near(settle.cny, r.steps.remitHkd * r.refs.HKD - r.steps.terminal);
+  near(fx.cny, r.steps.returnUsd * (Q.offshoreUsd.bochk.quotes.HKD.askPerUsd - hkdBid) / 2 * r.refs.HKD);
+  near(settle.cny, r.steps.remitHkd * (Q.banks.boc.quotes.HKD.sell - mainlandBuy) / 2);
   assert.deepEqual(fx.exchanges.map(x => [x.from, x.to]), [['USD', 'HKD']]);
   assert.deepEqual(settle.exchanges.map(x => [x.from, x.to]), [['HKD', 'CNY']]);
   const ledger = M.flowLedger(r);
   near(ledger.legs[4].costCny, fx.cny + settle.cny);
-  near(r.netCny, r.budgetCny - r.costCny);
+  near(r.netCny, r.budgetCny - r.costCny + r.fxImpactCny);
   assert.equal(r.complete, true);
   assert.ok(r.rows.find(row => row.key === 'returnOther').estimate);
 });
@@ -47,11 +47,11 @@ test('HKD and USD returning amounts use different actual prices and do not inher
   near(actual.steps.returnHkd, actual.steps.returnUsd * 7.6);
   near(actual.steps.remitHkd, actual.steps.returnHkd - 20 - 15 / actual.refs.HKD);
   near(actual.steps.terminal, actual.steps.remitHkd * .82);
-  near(actual.netCny, actual.budgetCny - actual.costCny);
+  near(actual.netCny, actual.budgetCny - actual.costCny + actual.fxImpactCny);
 });
 
-test('small HKD arrival records do not make large transfers, USD or SWIFT intermediary fees free', () => {
-  for (const changes of [{ budgetCny: 100000 }, { returnCurrency: 'USD' }, { returnMethod: 'swift' }, { exitBank: 'icbc', returnMethod: 'swift' }]) {
+test('small HKD arrival records do not make large transfers or SWIFT intermediary fees free', () => {
+  for (const changes of [{ budgetCny: 100000 }, { returnMethod: 'swift' }, { exitBank: 'icbc', returnMethod: 'swift' }]) {
     const r = calc(changes).selected;
     assert.equal(r.rows.find(row => row.key === 'returnOther').cny, null, JSON.stringify(changes));
     assert.equal(r.complete, false);

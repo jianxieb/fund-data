@@ -61,7 +61,8 @@ function audit({ quotes = Q, date = config.date } = {}) {
           continue;
         }
         if (r.missing.length || r.rows.some(x => x.cny == null)) throw new Error('False complete quote: ' + JSON.stringify(s));
-        if (Math.abs(r.fxImpactCny) > 1e-6) throw new Error('Mixed percentage benchmarks: ' + JSON.stringify(s));
+        if (r.pricingBasis !== 'transaction-cost' || r.rows.some(row => row.cny < -1e-6))
+          throw new Error('Valuation gain treated as a negative transaction cost: ' + JSON.stringify(s));
         result.completeQuoteCombinations++;
         const key = [startBank, bank, broker, outcome === 'broker-balance' ? '' : returnBank, outcome === 'mainland' ? exitBank : '', route, outcome, outcome === 'mainland' ? returnCurrency : ''].join('/');
         routes.set(key, { key, costCny: Number(r.costCny.toFixed(4)), balance: Number(r.net.toFixed(4)), currency: r.currency });

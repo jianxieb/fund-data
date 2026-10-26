@@ -1,0 +1,10 @@
+{
+  "url": "http://127.0.0.1:8765/#money-flow",
+  "principalReload": true,
+  "fundedReload": true,
+  "positiveFunding": true,
+  "valuationVisible": true,
+  "reportSourceVisible": true,
+  "missingPriceLabels": false,
+  "errors": []
+}

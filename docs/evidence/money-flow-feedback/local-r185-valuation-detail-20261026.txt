@@ -1,0 +1,107 @@
+Browser tab: 7, Title: "长衡 · 跨境资金", URL: "http://127.0.0.1:8765/#money-flow".
+1 AXWebArea 长衡 · 跨境资金, URL: 127.0.0.1:8765/#money-flow
+	2 container 全程费用明细, ID: dialog
+		3 button 关闭弹窗
+		4 container flow-detail-live
+			5 heading 全程费用明细, Value: 2, ID: dialog-title
+				6 text 全程费用明细
+			7 text 跨境支付通本次汇出服务费
+			8 text 估算 0.00 CNY
+			9 text 人民币原币汇出（未换汇）
+			10 text 0.00 CNY
+			11 text 跨境支付通直连（无SWIFT中转）
+			12 text 0.00 CNY
+			13 text 香港首次汇入费
+			14 text 0.00 CNY
+			15 text 汇丰 HSBC One → IBKR Lite · FPS
+			16 text 0.00 CNY
+			17 text 入金代理／收款行费
+			18 text 0.00 CNY
+			19 text IBKR Lite入金费
+			20 text 0.00 CNY
+			21 text 换USD佣金／自动加价
+			22 text 13.35 CNY
+			23 text 换汇成交点差
+			24 text 估算 21.94 CNY
+			25 text 买入佣金
+			26 text 0.00 CNY
+			27 text 买入平台费
+			28 text 0.00 CNY
+			29 text 买入清算费
+			30 text 0.00 CNY
+			31 text 买入SEC费
+			32 text 0.00 CNY
+			33 text 买入TAF费
+			34 text 0.00 CNY
+			35 text 买入CAT费
+			36 text 0.01 CNY
+			37 text 卖出佣金
+			38 text 0.00 CNY
+			39 text 卖出平台费
+			40 text 0.00 CNY
+			41 text 卖出清算费
+			42 text 0.00 CNY
+			43 text 卖出SEC费
+			44 text 5.20 CNY
+			45 text 卖出TAF费
+			46 text 0.00 CNY
+			47 text 卖出CAT费
+			48 text 0.01 CNY
+			49 text 证券账户／托管费
+			50 text 0.00 CNY
+			51 text IBKR Lite出金费
+			52 text 0.00 CNY
+			53 text 券商→香港银行汇入费
+			54 text 0.00 CNY
+			55 text 券商出金中转行费
+			56 text 估算 66.75 CNY
+			57 text 汇丰 HSBC One USD → CNH换汇差额
+			58 text 估算 2,873.48 CNY
+			59 text 人民币原币刷卡手续费
+			60 text 0.00 CNY
+			61 text 人民币扣账折算差额
+			62 text 0.00 CNY
+			63 text 汇丰 HSBC One期间管理费
+			64 text 0.00 HKD/月 × 12个月
+			65 text 0.00 CNY
+			66 text 开户／赴港支出
+			67 text 0.00 CNY
+			68 text 另留资产机会成本
+			69 text 0.00 CNY
+			70 heading 估值变化（不计入费用）, Value: 3
+				71 text 估值变化（不计入费用）
+			72 text +16.12 CNY。来自不同币种、银行及报价时点的人民币估值差异，不是银行返现，也没有增加原币余额。
+			73 text 按公布参考价费计算的余额 247,035.38 CNY，折合 247,035.38 CNY。人民币折算尾差按余数分配，分项与合计一致；原币费用与余额按完整精度计算。
+			74 link Description: 香港金管局 · 跨境支付通资格与额度（2026-09-08） ↗, Value: hkma.gov.hk/chi/smart-consumers/payment-connect/
+			75 link Description: 人民银行 · 支付通限经常项目，机构另定单笔／累计限额 ↗, Value: big5.www.gov.cn/gate/big5/www.gov.cn/zhengce/202506/content_7028902.htm
+			76 link Description: 香港银行同业结算公司 · 现行支付通参与机构 ↗, Value: fps.hkicl.com.hk/schi/fps/consumers/payment_connect.php
+			77 link Description: 中国银行 · 跨境支付通南向人民币／港币到账 ↗, Value: boc.cn/aboutboc/bi1/202506/t20250620_25390382.html
+			78 link Description: 汇丰跨境支付通收款及免手续费说明 ↗, Value: hsbc.com.hk/zh-cn/transfer-payments/products/pay-abroad-with-fps/
+			79 link Description: 泉州晚报2025-06-24 · 南向单笔1万元操作观察（非现行统一公告） ↗, Value: szb.qzwb.com/qzwb/pc/att/202506/24/96db2871-a77f-4a64-a958-59fe1546e009.pdf
+			80 link Description: 中行 · 2026手机银行普通转账限额（不能替代支付通） ↗, Value: bankofchina.com/ebanking/service/cs1/201609/t20160908_7648060.html
+			81 link Description: 中国银行 · 个人金融现行标准价（电子渠道优惠另列） ↗, Value: pic.bankofchina.com/bocappd/pricelist/202511/P020251110646838136627.pdf
+			82 link Description: 汇丰香港 · 2026年8月1日收费表 ↗, Value: hsbc.com.hk/content/dam/hsbc/hk/tc/docs/ways-to-bank/bank-tariff/20260801-guide.pdf
+			83 link Description: IBKR官网入金工具 · 中国内地居住档位／CNH（FPS、eDDA） ↗, Value: interactivebrokers.com/aces/Funding/Methods?type=DEPOSIT&colr=CHN&currency=CNH
+			84 link Description: IBKR官网入金工具 · 中国内地居住档位／HKD（FPS、eDDA） ↗, Value: interactivebrokers.com/aces/Funding/Methods?type=DEPOSIT&colr=CHN&currency=HKD
+			85 link Description: IBKR美国居民USD入金方式 ↗, Value: interactivebrokers.com/en/support/fund-my-account.php
+			86 link Description: IBKR · 现行官网入金工具与收款指示 ↗, Value: interactivebrokers.com/en/support/fund-my-account.php
+			87 link Description: IBKR官方 · Lite美国居民资格及常规上市股范围 ↗, Value: interactivebrokers.com/en/trading/why-ibkr-lite.php
+			88 link Description: IBKR账户换汇权限与交易权限区别 ↗, Value: investors.interactivebrokers.com/en/accounts/trading-and-market-data.php
+			89 link Description: IBKR原币CNH入金与实体对应的收款渠道 ↗, Value: ibkrguides.com/kb/how-to-deposit-cnh.htm
+			90 link Description: IBKR · 手动换汇佣金与自动换汇加价 ↗, Value: interactivebrokers.com/en/pricing/commissions-spot-currencies.php
+			91 link Description: IBKR · 美股Pro Fixed／Lite佣金及代收费 ↗, Value: interactivebrokers.com/en/pricing/commissions-stocks.php
+			92 link Description: SEC · 自2026年4月4日每百万20.60美元 ↗, Value: sec.gov/rules-regulations/fee-rate-advisories/2026-2
+			93 link Description: SEC/FINRA · 2026年第四季度TAF暂停 ↗, Value: sec.gov/files/rules/sro/finra/2026/34-106409.pdf
+			94 link Description: SEC/FINRA · TAF费率在2029、2030、2031年分阶段调整 ↗, Value: sec.gov/files/rules/sro/finra/2026/34-106410.pdf
+			95 link Description: IBKR · 每月两次免费出金及后续收费 ↗, Value: interactivebrokers.com/en/pricing/other-fees.php
+			96 link Description: 汇丰香港 · 多币种Mastercard扣账卡 ↗, Value: hsbc.com.hk/zh-hk/debit-cards/products/mastercard-debit-card/
+			97 link Description: 汇丰 · 扣账卡原币余额不足时的港币扣账规则 ↗, Value: hsbc.com.hk/help/faq/debit-cards/
+			98 link Description: 汇丰香港 · 外币电汇买卖价 ↗, Value: hsbc.com.hk/investments/products/foreign-exchange/currency-rate/
+			99 link Description: 汇丰One · 三个月平均理财总值及月费 ↗, Value: hsbc.com.hk/accounts/products/one/
+			100 link Description: 汇丰One · 理财总值包含海外证券市值，按过去三个月平均值计费 ↗, Value: hsbc.com.hk/content/dam/hsbc/hk/vam/pdf/HSBC_One_FAQ.pdf
+			101 link Description: 税务总局 · 居民境外所得个人所得税 ↗, Value: chinatax.gov.cn/chinatax/n810219/n810744/n3752930/n3752974/c5143076/content.html
+			102 link Description: IBKR · 官网公开外汇买卖盘 ↗, Value: portal.interactivebrokers.com/en/whyib/global-access.php
+			103 link Description: IBKR · 买卖价及行情状态字段 ↗, Value: interactivebrokers.com/docs/web-api/v1/endpoints/market-data/market-data-fields
+			104 link Description: 口袋开户2026-02-08 · IBKR美元出金银行费用操作记录（估算来源） ↗, Value: kdkh.com/guide/ibkr/usdchujin.html
+
+The focused UI element is 3 button 关闭弹窗

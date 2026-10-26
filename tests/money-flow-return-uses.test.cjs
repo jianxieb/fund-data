@@ -82,7 +82,8 @@ test('BOCHK to BOC USD receipt and subsequent settlement are independent choices
   const dollars = run({ outcome: 'mainland-usd', returnBank: 'bochk', returnMethod: 'bochk-fast' }).selected;
   assert.equal(dollars.currency, 'USD'); close(row(dollars, 'returnWire').cny, 0);
   assert.equal(row(dollars, 'exitFx'), undefined);
-  assert.equal(row(dollars, 'returnOther').cny, null);
+  close(row(dollars, 'returnOther').cny, 0);
+  assert.match(row(dollars, 'returnOther').estimate, /无额外报文/);
   close(dollars.net, dollars.steps.mainlandReceived); conserved(dollars);
   const yuan = run({ outcome: 'mainland', returnBank: 'bochk', returnMethod: 'bochk-fast', returnExtraCny: 25 }).selected;
   assert.equal(yuan.currency, 'CNY'); assert.ok(row(yuan, 'exitFx')); conserved(yuan);

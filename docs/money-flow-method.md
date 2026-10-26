@@ -1,6 +1,6 @@
 # 跨境资金费用测算
 
-核对日期：2026-10-25。用户反馈、再次出现的问题、验证证据及剩余工作只在[跨境资金需求清单](money-flow-requirements.md)维护。资料在data/money-flow.js，牌价在data/money-flow-quotes.js，模型和界面分别在assets/money-flow-model.js、assets/money-flow.js。整体目标尚未完成；本轮布局复测不等于金融数据已齐全或用户接受。
+核对日期：2026-10-26。用户反馈、再次出现的问题、验证证据及剩余工作只在[跨境资金需求清单](money-flow-requirements.md)维护。资料在data/money-flow.js，牌价在data/money-flow-quotes.js，模型和界面分别在assets/money-flow-model.js、assets/money-flow.js。当前费用与估算口径见下文；实现和本地验证不等于所有个人成交资料已核实或用户接受。
 
 ## 报价来源与可复现采集
 
@@ -36,13 +36,28 @@ rtk proxy python3 -m unittest tests.test_money_flow_quotes
 
 人民币原币刷卡按同额人民币扣账。消费终点用CNY面值；CNH统一估值与面值之间的差额在消费阶段结转，不把CNH估值溢价算成多买到的内地商品，也不改写各段成交价或凭空增加银行手续费。
 
-### 汇丰直接兑换及不能静态填入的费用
+### 汇丰直接兑换与经授权的参考估算
 
 汇丰香港公开API已保存USD/HKD和CNY/HKD现汇买卖价。由这些数值计算的CNH行保留`path: via-HKD`和四个原始腿价：`bid=usdBuy/cnhSell`，`ask=usdSell/cnhBuy`，时间取两腿较早者。这能复现两笔兑换的参考金额；**没有证据时不能改名为One账户直接USD/CNH报价，更不能强迫用户走两笔兑换。** 原存值继续保留，不删除、不跨行替代。
 
 [官方换算器页面](https://www.hsbc.com.hk/investments/currency-exchange-rate-calculator/)本次实际浏览只呈现说明和登录入口，没有可用的兑换表单／数值。另找到[官方旧外汇组件](https://mkdlc.ebanking.hsbc.com.hk/hsbcfxwidget/hsbc/ui/fx.html)：`../js/fx.js`请求`../../data/getFXList`，`../js/calculator.js`请求`../../data/calculate`；JSONP参数含`token`，计算参数为`buy_cur`、`sell_cur`、`buy_amt`、`sell_amt`、`compet_rate`和`compet_name`。无token访问`getFXList?callback=quoteCallback`实际返回HTTP 401；这是具体受阻入口，不声称已取得直接价，也不记录或构造私人凭证。后续若官方恢复公开组件，沿上述入口验证来源、买卖方向、金额档位和时间后再接入；个人账户实际询价只覆盖相应路线，不能公开用户凭证。
 
-IBKR美元出金中转费与中银快汇USD返内地的额外处理费不是可从市场行情接口抓出的价格。IBKR[官方费表](https://www.interactivebrokers.com/en/pricing/other-fees.php)明确本方免费提款不包含银行／中转行费；中银[费表](https://www.bochk.com/sc/crossborder/remittance/charges.html)的160 HKD美元代理费明确排除内地，[快汇说明](https://its.bochk.com/banking/remit/help/ibs_rem_helpApp_s.html)仍列收款行与本行额外处理费。没有对应汇路的完整资费或回单时仍未知；不填160、不填0。既有1万HKD以内回款记录不能外推美元大额返程。Wise两段各10 HKD属于用户提供的收费情景，来源范围及实际Quote入口见下文，不写成官网通用价。
+IBKR美元出金中转费与中银快汇USD返内地的额外处理费不是可从市场行情接口抓出的价格。IBKR[官方费表](https://www.interactivebrokers.com/en/pricing/other-fees.php)明确本方免费提款不包含银行／中转行费；中银[费表](https://www.bochk.com/sc/crossborder/remittance/charges.html)的160 HKD美元代理费明确排除内地，[快汇说明](https://its.bochk.com/banking/remit/help/ibs_rem_helpApp_s.html)仍列收款行与本行额外处理费。没有对应汇路的完整资费或回单时，不能称为银行确定收费。2026-10-26用户接受有来源的估算后，采用下面限定范围的参考情景；不填160，也不把旧1万HKD以内回款记录外推美元大额返程。Wise两段各10 HKD属于用户提供的收费情景，来源范围及实际Quote入口见下文，不写成官网通用价。
+
+### 2026-10-26授权估算的来源、计算与覆盖
+
+用户明确选择“接受有来源的估算，保留实际报价覆盖”。这些值用于费用参考，不能标作直接成交报价或银行保证收费；界面主流程标“参考”，完整依据归属于对应费用明细。既有`data/money-flow-quotes.js`未被刷新或改写。
+
+| 使用场景／配置 | 来源及取值 | 计算、单位与时间 | 个人覆盖及失败行为 |
+| --- | --- | --- | --- |
+| 汇丰USD换CNH；`referenceEstimates.hsbcCnh` | 已存`offshoreUsd.hsbc.quotes.CNH`及四腿；官方源`hsbcHkFx`，接口配方见下文 | 卖USD用`usdBuy/cnhSell`，买USD参考用`usdSell/cnhBuy`，单位CNH/USD；保留原`path: via-HKD`、较早腿的`asOf`。用于直接兑换的折算参考，不宣称直接报价，也不强制两次实兑 | `exitPrice`优先；无本行有效腿价仍保留具体缺项，超过3天保留历史状态；不可借给其他银行 |
+| IBKR Pro／Lite的USD电汇至汇丰 | [口袋开户2026-02-08操作记录](https://www.kdkh.com/guide/ibkr/usdchujin.html)，来源ID `ibkrUsdWithdrawalReport` | 该报道记录出金不足1,000 USD时第三方费0，其余10 USD；按券商扣本方费用后的电汇金额判断。是操作记录估算，不是汇丰资费承诺 | `intermediaryCny`覆盖中转费，`inwardHkd`独立覆盖收款费；其他券商／银行／CNH出金不套用 |
+| IBKR Pro／Lite的USD电汇至中银香港 | 同报道给出的银行与中转合计10–30 USD范围；[中银费表](https://www.bochk.com/sc/crossborder/remittance/charges.html)提供收款费 | 取区间中点20 USD作情景假设；中转估算=`max(0, 20×USD参考值 − 公布收款费HKD×HKD参考值)`，收款费仍独立列示，避免把合计区间再叠加60 HKD。20并非一张中银回单实录 | 收款费个人覆盖只改收款行，不被中转估算反向吸收；中转实际值独立优先。缺少本行收款资费时不能求余量 |
+| 中银香港USD经个人电子中银快汇至内地中行 | [中银快汇说明](https://its.bochk.com/banking/remit/help/ibs_rem_helpApp_boc_s.html)：一般为收款行及本行额外处理费；中银电子渠道基本费免、内地中行个人汇入费依据沿用`bocBankAnswer2026` | 采用集团内正常汇路、无额外报文／处理的**0 CNY假设**，标记`scenario-estimate`，不作为代理费全免证明。若需额外报文，官方价每个100 HKD；这不是全部第三方费用的上限 | `returnExtraCny`优先；只匹配BOCHK→BOC、USD、bochk-fast，不扩展普通SWIFT、其他银行或大额HKD |
+
+费用来源为GET公开页面，无查询参数或身份凭证；UTF-8 HTML以费用段／表格语义人工核验，未部署自动从攻略改费率的采集器。复核日期为2026-10-26，文章发布日期与核验日期分开保存。[请求、HTTP状态、响应哈希、解释和排除规则](evidence/money-flow-feedback/reference-estimates-20261026.json)可复核。数据存放在`referenceEstimates`、`returnTransferReferences`及`sources`，不是行情快照。复查失败保留上次情景、来源与日期，不能把失败当0收费或覆盖报价。
+
+该报道的“每月一次免费提款”已经过时，**不采用**；本方出金费继续按IBKR官方当前每月前两次免费。其他攻略对中银跨境代理费的笼统60 HKD说法没有对应美元回单，不作为确定扣费；中银USD的0仅是用户授权的正常汇路假设，不伪装已核实豁免。详细缺口及用户反馈只维护在需求清单R185–R187。
 
 ## 现行目录与资金流
 
@@ -68,7 +83,7 @@ Firstrade和嘉信国际按既有证券账户的美国USD电汇路径测算：�
 
 ## Wise美元桥接
 
-香港银行已有USD可经本人Wise余额，再从IBKR的Transfer from Wise Balance关联入口入金。Pro与Lite均保留该可选费用情景，实际可用性由本人账户入口和Wise收款资料决定；不会给Lite恢复Pro香港CHATS／FPS指示。CNH／HKD原币入IBKR换汇仍走原本支持渠道；若用户主动先在香港银行换USD，再可选Wise。其他券商不套该合作路径。
+香港银行已有USD可经本人Wise余额，再从IBKR的Transfer from Wise Balance关联入口入金。Pro与Lite均保留该可选费用情景，实际可用性由本人账户入口和Wise收款资料决定；美元入金仍按对应账户的USD收款指示；CNH／HKD原币FPS不按Pro／Lite名称区分。CNH／HKD原币入IBKR换汇仍走原本支持渠道；若用户主动先在香港银行换USD，再可选Wise。其他券商不套该合作路径。
 
 两段默认各10 HKD，合计20 HKD，来自R168用户提供的收费情景，不是银行或Wise官方通用费表。香港银行→Wise整段费、Wise→IBKR整段费独立扣除USD等值，港币费用以HKD参考汇率折人民币；不叠加直接银行到券商的SWIFT／CHATS费用，不新增USD换汇。显示Wise参考到账及IBKR到账，明细可填写两段实际费用；第一段输入HKD、第二段输入折人民币费用，并明确单位。内地汇出笔数仅改变内地汇出，不隐含多次Wise入金：本情景为到港汇总后一次入金、两段各一笔。
 
@@ -93,7 +108,7 @@ IBKR实际AutoFX成交价已经包含自动加价，不再另乘1.0003；实际�
 | 留在买股账户 | 卖出后保留USD；不发生出金、香港回款或内地结汇 |
 | 取回香港银行、保留美元 | 出金至所选本人银行，保留USD |
 | 美元原币消费 | 出金至支持USD扣账的银行，以足额USD直接刷卡 |
-| 换人民币后消费 | 使用所选消费银行自己的直接USD/CNH报价，或使用已经在IBKR换好的CNH余额；不以港币两腿报价替代直接兑换。工银亚洲人民币账户另须香港身份证 |
+| 换人民币后消费 | 使用所选消费银行自己的直接USD/CNH报价，或已经在IBKR换好的CNH余额；汇丰无直接价时允许上述明确标记的本行折算参考，不强制两腿交易。工银亚洲人民币账户另须香港身份证 |
 | 汇回内地结汇 | 美元原币汇回按内地USD买入价结汇；港币回款先按所选香港银行USD/HKD买入价换港币，再按所选内地银行HKD买入价结汇；两个换汇动作分别计损耗 |
 
 ZA卡不适用USD原币扣账，其他消费账户可重新选择。香港银行没有公开的CNH兑换报价时，不能自动借用中银香港的价。CNY、CNH和USD始终保留真实币种。
@@ -186,15 +201,19 @@ Trade25须已获得资格：2026年18–35岁及36岁以上One+安排条件不�
 
 汇款预算内扣公式：`每笔汇出主金额CNY + 本笔手续费 + 电讯费 + 全额到账附加费 = 人民币本金 / 汇出笔数`。手续费按实际主金额逐笔应用最低、最高费。兴业Go历史资费50 CNY为每笔，当前没有匹配的开通依据，不计入主界面可选渠道；农行25 USD旧模型仅保留历史测试，不在可选目录。
 
-买入佣金从可用美元内求解。损耗分析只解释余额变化，不再扣一次换汇差额。新版页面使用相同参考值计入所有实际换汇差额，保留正负方向，避免把有利价差藏到另一套指标。
+买入佣金从可用美元内求解。2026-10-26 R185纠正“负数参考损耗”：主流程、优选与汇总统一使用`transaction-cost`，只合计手续费与同机构、同币对买卖中间价的非负点差。各行自身点差不能与跨银行、跨币种或不同时点的估值差额混算。报价仍按实际买卖方向执行，点差只是成本分析，不从原币余额再扣一次。
 
-    内地购汇差额 = 扣汇出费后的人民币 − 实际买到外币 × 同币种人民币参考值
-    内地结汇差额 = 实际结汇外币 × 同币种人民币参考值 − 实收人民币
-    本步损耗率 = 本步换汇差额及手续费CNY / 人民币本金
-    全程损耗率 = 所有步骤差额及手续费CNY / 人民币本金
-    最终余额折合CNY + 成本CNY + 税款 = 人民币本金 + 交易费前盈亏折合CNY
+    内地购汇点差 = max(0, 实付人民币 − 实得外币 × 本行同币对中间价)
+    内地结汇点差 = max(0, 实兑外币 × 本行同币对中间价 − 实收人民币)
+    买USD点差 = max(0, 来源币余额 / 本机构币对中间价 − 成交毛USD) × USD人民币参考值
+    卖USD点差 = max(0, USD金额 × (本机构币对中间价 − 成交价)) × 目标币人民币参考值
+    本步／全程费用率 = 对应手续费及点差CNY / 人民币本金
+    估值变化 = 点差成本 − (换汇前人民币估值 − 换汇后人民币估值)
+    最终余额折合CNY + 成本CNY + 税款 = 人民币本金 + 交易费前盈亏折合CNY + 估值变化
 
-CNY原币到港成为CNH时第一步没有换汇差额；该人民币基准差异在真正兑换USD的步骤计入。原有研究API保留历史“各行自身中间价点差”和“最优购汇价”计算，以核查旧记录；当前页面统一走reference-mid计算，不再让最优购汇归零、而把买卖价差全部归到回程。选择器比较实际报价，删除“购汇少得”等另一套相对百分比；最优标记仅代表报价排名。
+IBKR用自己的bid/ask，银行换汇用该行买卖牌价；实兑两腿的各腿点差用各自币对中间价相加。AutoFX实际价已含加价时只算价差，无个人价时通常0.03%加价另列一次。优于公开中间价的个人成交不会制造负手续费：该段点差为0，有利估值影响仍完整保存在`fxImpactCny`。人民币原币到港、CNH原币刷卡／ATM的面值转换不收费，估值差不能减少佣金。统一人民币折算基准保留，切换银行不能自行改变它。
+
+不同时间／币种的估值变化只在全程明细中单列“估值变化（不计入费用）”，可能有正负；不是银行补贴，不会凭空改变原币到账金额。缺价时只核对已知现金，未知费用不能留下虚假的估值抵扣。历史研究API的`reference-mid`与`best-quote`保留以复现旧记录；R137将全部估值差计入“损耗”的主界面做法已被R185否定，不再作为当前验收要求。选择器仍比较实际报价，不因采用自身点差重排实际汇率排名。
 
 历史截图的450.87元／0.451%曾采用最优购汇价归零口径，已按R137撤销，不再是当前页面的验收目标。2026-10-12快照的兴业寰宇人生USD卖出／买入价为6.705925／6.685175，中行参考中间价6.69705：10万元购汇差额132.35元；兴业→汇丰→ZA→汇丰→兴业内地USD结汇例中，买卖费28.73元、汇回手续费59.73元、结汇差额176.92元，已计合计397.73元、已扣已核费用后余额99,602.27元。汇回中转费尚无该汇路确定报价，不能把这个已计合计称为完整总损耗。报价时点改变后重新计算，不沿用这组固定金额。
 
@@ -736,10 +755,11 @@ rtk proxy curl --fail --silent --show-error \
 
 ## 收费及规则来源全索引
 
-下表来自`data/money-flow.js`的全部192个`sources`条目，包含汇率、人行／银行规则、费用表、券商收费及具名操作记录。它是现有证据的检索索引，不表示本轮重新抓取了192份材料。适用范围和核查日期以相应数据行及本文件具名小节为准；用户提供费用情景另在Wise小节记录，不伪造外部网址。更新来源时同时更新此索引；网络失败不能删掉上一条来源。
+下表来自`data/money-flow.js`的全部193个`sources`条目，包含汇率、人行／银行规则、费用表、券商收费及具名操作记录。它是现有证据的检索索引，不表示本轮重新抓取了193份材料。适用范围和核查日期以相应数据行及本文件具名小节为准；用户提供费用情景另在Wise小节记录，不伪造外部网址。更新来源时同时更新此索引；网络失败不能删掉上一条来源。
 
 | 来源ID | 机构及资料 | 原文入口 |
 | --- | --- | --- |
+| `ibkrUsdWithdrawalReport` | 口袋开户2026-02-08 · IBKR美元出金第三方费用操作记录，仅用于估算 | [原文](https://www.kdkh.com/guide/ibkr/usdchujin.html) |
 | `paymentPbc` | 人民银行 · 支付通限经常项目，机构另定单笔／累计限额 | [原文](https://big5.www.gov.cn/gate/big5/www.gov.cn/zhengce/202506/content_7028902.htm) |
 | `paymentParticipants` | 香港银行同业结算公司 · 现行支付通参与机构 | [原文](https://fps.hkicl.com.hk/schi/fps/consumers/payment_connect.php) |
 | `paymentHang` | 恒生 · 支付通收付免费及南北向限额 | [原文](https://www.hangseng.com/zh-cn/personal/banking/payment-connect/) |

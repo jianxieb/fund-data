@@ -1,0 +1,1212 @@
+{
+  "date": "2026-10-26",
+  "quoteSha256": "03f35f9c79c7679ebb7ea9f30a2b1617414c0580b7ef454a771a0021559e0bdb",
+  "quotePolicy": "Reuse existing snapshot; no quote refresh in this change.",
+  "pricingBasis": "transaction-cost",
+  "plans": [
+    {
+      "id": "cnh-ibkr",
+      "config": {
+        "budgetCny": 100000,
+        "currency": "CNY",
+        "count": 1,
+        "months": 12,
+        "date": "2026-10-26",
+        "sellDate": "2026-10-26",
+        "fxMode": "manual",
+        "returnCurrency": "USD",
+        "profitUsd": 0,
+        "taxRate": 20,
+        "creditCny": 0,
+        "buyOrders": 1,
+        "sellOrders": 1,
+        "sharePriceUsd": 100,
+        "withdrawalIndex": 1,
+        "chequeIndex": 1,
+        "openingCny": 0,
+        "extraCapitalCny": 0,
+        "annualGapPct": 0,
+        "usedFreeTransfers": 0,
+        "usedPromoOrders": 0,
+        "otherTurnoverHkd": 0,
+        "trade25": false,
+        "chiefMonthly": false,
+        "usmartPromo": false,
+        "useVoucher": false,
+        "zaPerksLevel": "standard",
+        "ibkrPricing": "fixed",
+        "hsbcBalanceWaiver": true,
+        "cnHsbcFeeWaived": true,
+        "cnHangFeeWaived": true,
+        "cnScFeeWaived": true,
+        "startBank": "boc",
+        "bank": "hsbc",
+        "broker": "ibkr",
+        "returnBank": "hsbc",
+        "exitBank": "boc",
+        "route": "CNH",
+        "mainlandMethod": "payment-connect",
+        "paymentConnectFeeWaived": true,
+        "depositMethod": "fps",
+        "outcome": "cnh-card",
+        "withdrawCurrency": "CNH",
+        "cnhWithdrawalMethod": "local",
+        "cardMode": "cnh",
+        "returnMethod": "swift",
+        "withdrawDestination": "hong-kong"
+      },
+      "result": {
+        "budgetCny": 100000,
+        "net": 99940.37223475848,
+        "currency": "CNY",
+        "costCny": 59.67538736647066,
+        "fxImpactCny": 0.04762212495049312,
+        "missing": [],
+        "steps": {
+          "mainlandForeign": 100000,
+          "hongKong": 100000,
+          "brokerOriginal": 100000,
+          "fundedUsd": 14990.368884237922,
+          "investUsd": 14989.368434556869,
+          "proceedsUsd": 14988.057984875815,
+          "afterTaxUsd": 14988.057984875815,
+          "brokerCnh": 99940.37223475848,
+          "returnCnh": 99940.37223475848,
+          "terminal": 99940.37223475848,
+          "settledCny": 99940.37223475848
+        },
+        "ledgerResidual": 4.575895218295045e-12,
+        "rows": [
+          {
+            "key": "sender",
+            "cny": 0,
+            "estimate": "按已享南向汇出手续费豁免测算；尚缺中行、兴业、招行、工行各自现行完整收费条款，不代表所有账户永久免费。香港收款费按各行证据独立计算。",
+            "sources": [
+              "paymentCurrent",
+              "paymentPbc",
+              "paymentParticipants",
+              "bocPaymentConnect",
+              "paymentHsbcReceive"
+            ]
+          },
+          {
+            "key": "entryFx",
+            "cny": 0,
+            "referenceDifferenceCny": -97.40398509021907,
+            "fxImpactCny": 97.40398509021907
+          },
+          {
+            "key": "entryMiddle",
+            "cny": 0
+          },
+          {
+            "key": "entryInward",
+            "cny": 0,
+            "sources": [
+              "paymentHsbcReceive"
+            ]
+          },
+          {
+            "key": "depositBank",
+            "cny": 0
+          },
+          {
+            "key": "depositOther",
+            "cny": 0
+          },
+          {
+            "key": "depositBroker",
+            "cny": 0
+          },
+          {
+            "key": "brokerFx",
+            "cny": 13.3492
+          },
+          {
+            "key": "brokerSpread",
+            "cny": 8.777275307658396,
+            "referenceDifferenceCny": 29.338630355792702,
+            "fxImpactCny": -20.561355048134306,
+            "estimate": "IBKR公开买卖盘参考，实际成交以账户为准",
+            "sources": [
+              "ibFxQuotes",
+              "ibFxFields"
+            ],
+            "exchanges": [
+              {
+                "from": "CNH",
+                "to": "USD",
+                "input": 100000,
+                "output": 14992.368884237922,
+                "rate": 0.14992368884237922
+              }
+            ]
+          },
+          {
+            "key": "trade",
+            "cny": 15.4243288823132
+          },
+          {
+            "key": "brokerAccount",
+            "cny": 0
+          },
+          {
+            "key": "brokerExitCommission",
+            "cny": 13.3492,
+            "sources": [
+              "ibFx"
+            ]
+          },
+          {
+            "key": "brokerExitFx",
+            "cny": 8.77538317649906,
+            "referenceDifferenceCny": -11.775514177017612,
+            "fxImpactCny": 20.550897353516675,
+            "estimate": "IBKR公开买卖盘参考，实际成交以账户为准",
+            "sources": [
+              "ibFxQuotes",
+              "ibFxFields"
+            ],
+            "exchanges": [
+              {
+                "from": "USD",
+                "to": "CNH",
+                "input": 14986.057984875815,
+                "output": 99940.37223475848,
+                "rate": 6.66889
+              }
+            ]
+          },
+          {
+            "key": "withdraw",
+            "cny": 0,
+            "sources": [
+              "ibFees",
+              "ibCnhWithdrawal"
+            ]
+          },
+          {
+            "key": "returnInward",
+            "cny": 0,
+            "sources": [
+              "hsbcHk"
+            ]
+          },
+          {
+            "key": "withdrawMiddle",
+            "cny": 0
+          },
+          {
+            "key": "card",
+            "cny": 0
+          },
+          {
+            "key": "cardFx",
+            "cny": 0,
+            "referenceDifferenceCny": 97.34590527065095,
+            "fxImpactCny": -97.34590527065095,
+            "exchanges": [
+              {
+                "from": "CNH",
+                "to": "CNY",
+                "input": 99940.37223475848,
+                "output": 99940.37223475848,
+                "rate": 1
+              }
+            ]
+          },
+          {
+            "key": "account",
+            "cny": 0
+          },
+          {
+            "key": "extra",
+            "cny": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "cib-trade25",
+      "config": {
+        "budgetCny": 100000,
+        "currency": "CNY",
+        "count": 1,
+        "months": 12,
+        "date": "2026-10-26",
+        "sellDate": "2026-10-26",
+        "fxMode": "manual",
+        "returnCurrency": "USD",
+        "profitUsd": 0,
+        "taxRate": 20,
+        "creditCny": 0,
+        "buyOrders": 1,
+        "sellOrders": 1,
+        "sharePriceUsd": 100,
+        "withdrawalIndex": 1,
+        "chequeIndex": 1,
+        "openingCny": 0,
+        "extraCapitalCny": 0,
+        "annualGapPct": 0,
+        "usedFreeTransfers": 0,
+        "usedPromoOrders": 0,
+        "otherTurnoverHkd": 0,
+        "trade25": true,
+        "chiefMonthly": false,
+        "usmartPromo": false,
+        "useVoucher": false,
+        "zaPerksLevel": "standard",
+        "ibkrPricing": "fixed",
+        "hsbcBalanceWaiver": true,
+        "cnHsbcFeeWaived": true,
+        "cnHangFeeWaived": true,
+        "cnScFeeWaived": true,
+        "startBank": "cib",
+        "bank": "hsbc",
+        "broker": "hsbc",
+        "returnBank": "hsbc",
+        "exitBank": "boc",
+        "route": "USD",
+        "mainlandMethod": "swift",
+        "depositMethod": "internal",
+        "outcome": "cnh-card",
+        "withdrawCurrency": "USD",
+        "cardMode": "cnh",
+        "returnMethod": "swift",
+        "withdrawDestination": "hong-kong",
+        "cnhWithdrawalMethod": "local"
+      },
+      "result": {
+        "budgetCny": 100000,
+        "net": 98706.85803490567,
+        "currency": "CNY",
+        "costCny": 1245.28091285655,
+        "fxImpactCny": -47.86105223777446,
+        "missing": [],
+        "steps": {
+          "mainlandForeign": 14971.292546542005,
+          "hongKong": 14971.292546542005,
+          "brokerOriginal": 14971.292546542005,
+          "fundedUsd": 14971.292546542005,
+          "investUsd": 14900,
+          "proceedsUsd": 14970.982546542005,
+          "afterTaxUsd": 14970.982546542005,
+          "returnUsd": 14970.982546542005,
+          "terminal": 98706.85803490567,
+          "settledCny": 98706.85803490567
+        },
+        "ledgerResidual": -3.581135388230905e-12,
+        "rows": [
+          {
+            "key": "sender",
+            "cny": 0
+          },
+          {
+            "key": "entryFx",
+            "cny": 95.06770767054695,
+            "referenceDifferenceCny": 72.61076885073271,
+            "fxImpactCny": 22.45693881981424
+          },
+          {
+            "key": "entryMiddle",
+            "cny": 0,
+            "estimate": "按2026年美元直达汇丰香港的公开到账记录测算，最小已录金额201 USD；改走代理行可能产生扣费，不属于本行费用豁免",
+            "sources": [
+              "cibSmallUsdCase",
+              "cibUsdCase",
+              "cibHsbcCase",
+              "cibRouteCounterexample"
+            ]
+          },
+          {
+            "key": "entryInward",
+            "cny": 0
+          },
+          {
+            "key": "depositBank",
+            "cny": 0
+          },
+          {
+            "key": "depositOther",
+            "cny": 0
+          },
+          {
+            "key": "depositBroker",
+            "cny": 0
+          },
+          {
+            "key": "brokerFx",
+            "cny": 0
+          },
+          {
+            "key": "brokerSpread",
+            "cny": 0,
+            "referenceDifferenceCny": 0,
+            "fxImpactCny": 0
+          },
+          {
+            "key": "trade",
+            "cny": 2.069126
+          },
+          {
+            "key": "brokerAccount",
+            "cny": 0
+          },
+          {
+            "key": "withdraw",
+            "cny": 0
+          },
+          {
+            "key": "returnInward",
+            "cny": 0
+          },
+          {
+            "key": "withdrawMiddle",
+            "cny": 0
+          },
+          {
+            "key": "exitFx",
+            "cny": 1148.144079186003,
+            "referenceDifferenceCny": 1122.317656960251,
+            "fxImpactCny": 25.826422225751912,
+            "estimate": "按汇丰本行已存USD/HKD、CNH/HKD买卖牌价折算；直接兑换参考值，实际报价优先",
+            "sources": [
+              "hsbcHkFx"
+            ],
+            "exchanges": [
+              {
+                "from": "USD",
+                "to": "CNH",
+                "input": 14970.982546542005,
+                "output": 98706.85803490567,
+                "rate": 6.59321175
+              }
+            ],
+            "quoteAsOf": "2026-10-24 04:57:10"
+          },
+          {
+            "key": "card",
+            "cny": 0
+          },
+          {
+            "key": "cardFx",
+            "cny": 0,
+            "referenceDifferenceCny": 96.14441328334061,
+            "fxImpactCny": -96.14441328334061,
+            "exchanges": [
+              {
+                "from": "CNH",
+                "to": "CNY",
+                "input": 98706.85803490567,
+                "output": 98706.85803490567,
+                "rate": 1
+              }
+            ]
+          },
+          {
+            "key": "account",
+            "cny": 0
+          },
+          {
+            "key": "extra",
+            "cny": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "cib-za",
+      "config": {
+        "budgetCny": 100000,
+        "currency": "CNY",
+        "count": 1,
+        "months": 12,
+        "date": "2026-10-26",
+        "sellDate": "2026-10-26",
+        "fxMode": "manual",
+        "returnCurrency": "USD",
+        "profitUsd": 0,
+        "taxRate": 20,
+        "creditCny": 0,
+        "buyOrders": 1,
+        "sellOrders": 1,
+        "sharePriceUsd": 100,
+        "withdrawalIndex": 1,
+        "chequeIndex": 1,
+        "openingCny": 0,
+        "extraCapitalCny": 0,
+        "annualGapPct": 0,
+        "usedFreeTransfers": 0,
+        "usedPromoOrders": 0,
+        "otherTurnoverHkd": 0,
+        "trade25": false,
+        "chiefMonthly": false,
+        "usmartPromo": false,
+        "useVoucher": false,
+        "zaPerksLevel": "standard",
+        "ibkrPricing": "fixed",
+        "hsbcBalanceWaiver": true,
+        "cnHsbcFeeWaived": true,
+        "cnHangFeeWaived": true,
+        "cnScFeeWaived": true,
+        "startBank": "cib",
+        "bank": "hsbc",
+        "broker": "za",
+        "returnBank": "hsbc",
+        "exitBank": "boc",
+        "route": "USD",
+        "mainlandMethod": "swift",
+        "depositMethod": "chats",
+        "outcome": "cnh-card",
+        "withdrawCurrency": "USD",
+        "cardMode": "cnh",
+        "returnMethod": "swift",
+        "withdrawDestination": "hong-kong",
+        "cnhWithdrawalMethod": "local"
+      },
+      "result": {
+        "budgetCny": 100000,
+        "net": 98680.61705214066,
+        "currency": "CNY",
+        "costCny": 1271.540589491744,
+        "fxImpactCny": -47.84235836759569,
+        "missing": [],
+        "steps": {
+          "mainlandForeign": 14971.292546542005,
+          "hongKong": 14971.292546542005,
+          "brokerOriginal": 14971.292546542005,
+          "fundedUsd": 14971.292546542005,
+          "investUsd": 14900,
+          "proceedsUsd": 14967.002546542004,
+          "afterTaxUsd": 14967.002546542004,
+          "returnUsd": 14967.002546542004,
+          "terminal": 98680.61705214066,
+          "settledCny": 98680.61705214066
+        },
+        "ledgerResidual": -1.1368683772161603e-13,
+        "rows": [
+          {
+            "key": "sender",
+            "cny": 0
+          },
+          {
+            "key": "entryFx",
+            "cny": 95.06770767054695,
+            "referenceDifferenceCny": 72.61076885073271,
+            "fxImpactCny": 22.45693881981424
+          },
+          {
+            "key": "entryMiddle",
+            "cny": 0,
+            "estimate": "按2026年美元直达汇丰香港的公开到账记录测算，最小已录金额201 USD；改走代理行可能产生扣费，不属于本行费用豁免",
+            "sources": [
+              "cibSmallUsdCase",
+              "cibUsdCase",
+              "cibHsbcCase",
+              "cibRouteCounterexample"
+            ]
+          },
+          {
+            "key": "entryInward",
+            "cny": 0
+          },
+          {
+            "key": "depositBank",
+            "cny": 0
+          },
+          {
+            "key": "depositOther",
+            "cny": 0
+          },
+          {
+            "key": "depositBroker",
+            "cny": 0
+          },
+          {
+            "key": "brokerFx",
+            "cny": 0
+          },
+          {
+            "key": "brokerSpread",
+            "cny": 0,
+            "referenceDifferenceCny": 0,
+            "fxImpactCny": 0
+          },
+          {
+            "key": "trade",
+            "cny": 28.634034
+          },
+          {
+            "key": "brokerAccount",
+            "cny": 0
+          },
+          {
+            "key": "withdraw",
+            "cny": 0
+          },
+          {
+            "key": "returnInward",
+            "cny": 0
+          },
+          {
+            "key": "withdrawMiddle",
+            "cny": 0
+          },
+          {
+            "key": "exitFx",
+            "cny": 1147.838847821197,
+            "referenceDifferenceCny": 1122.0192914882064,
+            "fxImpactCny": 25.819556332990715,
+            "estimate": "按汇丰本行已存USD/HKD、CNH/HKD买卖牌价折算；直接兑换参考值，实际报价优先",
+            "sources": [
+              "hsbcHkFx"
+            ],
+            "exchanges": [
+              {
+                "from": "USD",
+                "to": "CNH",
+                "input": 14967.002546542004,
+                "output": 98680.61705214066,
+                "rate": 6.59321175
+              }
+            ],
+            "quoteAsOf": "2026-10-24 04:57:10"
+          },
+          {
+            "key": "card",
+            "cny": 0
+          },
+          {
+            "key": "cardFx",
+            "cny": 0,
+            "referenceDifferenceCny": 96.11885352040065,
+            "fxImpactCny": -96.11885352040065,
+            "exchanges": [
+              {
+                "from": "CNH",
+                "to": "CNY",
+                "input": 98680.61705214066,
+                "output": 98680.61705214066,
+                "rate": 1
+              }
+            ]
+          },
+          {
+            "key": "account",
+            "cny": 0
+          },
+          {
+            "key": "extra",
+            "cny": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "boc-ibkr",
+      "config": {
+        "budgetCny": 100000,
+        "currency": "CNY",
+        "count": 1,
+        "months": 12,
+        "date": "2026-10-26",
+        "sellDate": "2026-10-26",
+        "fxMode": "manual",
+        "returnCurrency": "USD",
+        "profitUsd": 0,
+        "taxRate": 20,
+        "creditCny": 0,
+        "buyOrders": 1,
+        "sellOrders": 1,
+        "sharePriceUsd": 100,
+        "withdrawalIndex": 1,
+        "chequeIndex": 1,
+        "openingCny": 0,
+        "extraCapitalCny": 0,
+        "annualGapPct": 0,
+        "usedFreeTransfers": 0,
+        "usedPromoOrders": 0,
+        "otherTurnoverHkd": 0,
+        "trade25": false,
+        "chiefMonthly": false,
+        "usmartPromo": false,
+        "useVoucher": false,
+        "zaPerksLevel": "standard",
+        "ibkrPricing": "fixed",
+        "hsbcBalanceWaiver": true,
+        "cnHsbcFeeWaived": true,
+        "cnHangFeeWaived": true,
+        "cnScFeeWaived": true,
+        "startBank": "boc",
+        "bank": "bochk",
+        "broker": "ibkr",
+        "returnBank": "bochk",
+        "exitBank": "boc",
+        "route": "USD",
+        "mainlandMethod": "boc-mobile",
+        "depositMethod": "chats",
+        "outcome": "mainland",
+        "withdrawCurrency": "USD",
+        "returnMethod": "bochk-fast",
+        "withdrawDestination": "hong-kong",
+        "cnhWithdrawalMethod": "local"
+      },
+      "result": {
+        "budgetCny": 100000,
+        "net": 99432.77330830286,
+        "currency": "CNY",
+        "costCny": 567.2266916971423,
+        "fxImpactCny": -9.890754881780595e-12,
+        "missing": [],
+        "steps": {
+          "mainlandForeign": 14950.811829082319,
+          "hongKong": 14950.811829082319,
+          "brokerOriginal": 14950.811829082319,
+          "fundedUsd": 14950.811829082319,
+          "investUsd": 14949.811380587977,
+          "proceedsUsd": 14948.500932093635,
+          "afterTaxUsd": 14948.500932093635,
+          "returnUsd": 14928.500932093635,
+          "remitUsd": 14928.500932093635,
+          "mainlandReceived": 14928.500932093635,
+          "settledCny": 99432.77330830286,
+          "terminal": 99432.77330830286
+        },
+        "ledgerResidual": 1.0118128557223827e-11,
+        "rows": [
+          {
+            "key": "sender",
+            "cny": 0
+          },
+          {
+            "key": "entryFx",
+            "cny": 209.3113656071655,
+            "referenceDifferenceCny": 209.3113656071655,
+            "fxImpactCny": 0
+          },
+          {
+            "key": "entryMiddle",
+            "cny": 0,
+            "estimate": "代理费按同名同行SHA操作记录测算"
+          },
+          {
+            "key": "entryInward",
+            "cny": 0
+          },
+          {
+            "key": "depositBank",
+            "cny": 0
+          },
+          {
+            "key": "depositOther",
+            "cny": 0,
+            "estimate": "香港花旗／渣打收款指示 · 公开记录0额外扣费"
+          },
+          {
+            "key": "depositBroker",
+            "cny": 0
+          },
+          {
+            "key": "brokerFx",
+            "cny": 0
+          },
+          {
+            "key": "brokerSpread",
+            "cny": 0,
+            "referenceDifferenceCny": 0,
+            "fxImpactCny": 0
+          },
+          {
+            "key": "trade",
+            "cny": 15.424313040662451
+          },
+          {
+            "key": "brokerAccount",
+            "cny": 0
+          },
+          {
+            "key": "withdraw",
+            "cny": 0
+          },
+          {
+            "key": "returnInward",
+            "cny": 51.061583577712604
+          },
+          {
+            "key": "withdrawMiddle",
+            "cny": 82.43041642228738,
+            "estimate": "中转及收款合计按公开10–30 USD区间的中点20 USD估算；已扣除单列的中银收款费，避免重复计费",
+            "sources": [
+              "ibkrUsdWithdrawalReport",
+              "ibFees",
+              "bochk"
+            ]
+          },
+          {
+            "key": "returnWire",
+            "cny": 0
+          },
+          {
+            "key": "returnOther",
+            "cny": 0,
+            "estimate": "按无额外报文／处理的集团汇路估算0；官方未保证代理费全免。若需额外报文，每个100 HKD，其他实际扣费以回单覆盖",
+            "sources": [
+              "bochk",
+              "bochkRemitHelp",
+              "bocBankAnswer2026"
+            ]
+          },
+          {
+            "key": "exitFx",
+            "cny": 208.99901304931439,
+            "referenceDifferenceCny": 208.99901304932428,
+            "fxImpactCny": -9.890754881780595e-12,
+            "exchanges": [
+              {
+                "from": "USD",
+                "to": "CNY",
+                "input": 14928.500932093635,
+                "output": 99432.77330830286,
+                "rate": 6.6606
+              }
+            ]
+          },
+          {
+            "key": "account",
+            "cny": 0
+          },
+          {
+            "key": "extra",
+            "cny": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "cib-wise-ibkr",
+      "config": {
+        "budgetCny": 100000,
+        "currency": "CNY",
+        "count": 1,
+        "months": 12,
+        "date": "2026-10-26",
+        "sellDate": "2026-10-26",
+        "fxMode": "manual",
+        "returnCurrency": "USD",
+        "profitUsd": 0,
+        "taxRate": 20,
+        "creditCny": 0,
+        "buyOrders": 1,
+        "sellOrders": 1,
+        "sharePriceUsd": 100,
+        "withdrawalIndex": 1,
+        "chequeIndex": 1,
+        "openingCny": 0,
+        "extraCapitalCny": 0,
+        "annualGapPct": 0,
+        "usedFreeTransfers": 0,
+        "usedPromoOrders": 0,
+        "otherTurnoverHkd": 0,
+        "trade25": false,
+        "chiefMonthly": false,
+        "usmartPromo": false,
+        "useVoucher": false,
+        "zaPerksLevel": "standard",
+        "ibkrPricing": "fixed",
+        "hsbcBalanceWaiver": true,
+        "cnHsbcFeeWaived": true,
+        "cnHangFeeWaived": true,
+        "cnScFeeWaived": true,
+        "startBank": "cib",
+        "bank": "hsbc",
+        "broker": "ibkr",
+        "returnBank": "hsbc",
+        "exitBank": "boc",
+        "route": "USD",
+        "mainlandMethod": "swift",
+        "depositMethod": "wise",
+        "outcome": "cnh-card",
+        "withdrawCurrency": "CNH",
+        "cnhWithdrawalMethod": "local",
+        "cardMode": "cnh",
+        "returnMethod": "swift",
+        "withdrawDestination": "hong-kong"
+      },
+      "result": {
+        "budgetCny": 100000,
+        "net": 99796.14827861059,
+        "currency": "CNY",
+        "costCny": 149.62447517185103,
+        "fxImpactCny": -54.22724621755695,
+        "missing": [],
+        "steps": {
+          "mainlandForeign": 14971.292546542005,
+          "hongKong": 14971.292546542005,
+          "wiseUsd": 14970.017524229115,
+          "brokerOriginal": 14968.742501916226,
+          "fundedUsd": 14968.742501916226,
+          "investUsd": 14967.742052883965,
+          "proceedsUsd": 14966.431603851703,
+          "afterTaxUsd": 14966.431603851703,
+          "brokerCnh": 99796.14827861059,
+          "returnCnh": 99796.14827861059,
+          "terminal": 99796.14827861059,
+          "settledCny": 99796.14827861059
+        },
+        "ledgerResidual": -3.552713678800501e-13,
+        "rows": [
+          {
+            "key": "sender",
+            "cny": 0
+          },
+          {
+            "key": "entryFx",
+            "cny": 95.06770767054695,
+            "referenceDifferenceCny": 72.61076885073271,
+            "fxImpactCny": 22.45693881981424
+          },
+          {
+            "key": "entryMiddle",
+            "cny": 0,
+            "estimate": "按2026年美元直达汇丰香港的公开到账记录测算，最小已录金额201 USD；改走代理行可能产生扣费，不属于本行费用豁免",
+            "sources": [
+              "cibSmallUsdCase",
+              "cibUsdCase",
+              "cibHsbcCase",
+              "cibRouteCounterexample"
+            ]
+          },
+          {
+            "key": "entryInward",
+            "cny": 0
+          },
+          {
+            "key": "depositBank",
+            "cny": 8.510263929618768,
+            "estimate": "用户提供的收费情景：香港银行USD到本人Wise、Wise到本人IBKR，两段各10 HKD；非官方统一收费。",
+            "sources": [
+              "ibWise",
+              "wiseIbkr",
+              "wiseUsd"
+            ]
+          },
+          {
+            "key": "depositOther",
+            "cny": 8.510263929618768,
+            "estimate": "用户提供的收费情景：香港银行USD到本人Wise、Wise到本人IBKR，两段各10 HKD；非官方统一收费。",
+            "sources": [
+              "ibWise",
+              "wiseIbkr",
+              "wiseUsd"
+            ]
+          },
+          {
+            "key": "depositBroker",
+            "cny": 0
+          },
+          {
+            "key": "brokerFx",
+            "cny": 0
+          },
+          {
+            "key": "brokerSpread",
+            "cny": 0,
+            "referenceDifferenceCny": 0,
+            "fxImpactCny": 0
+          },
+          {
+            "key": "trade",
+            "cny": 15.42432022146637
+          },
+          {
+            "key": "brokerAccount",
+            "cny": 0
+          },
+          {
+            "key": "brokerExitCommission",
+            "cny": 13.3492,
+            "sources": [
+              "ibFx"
+            ]
+          },
+          {
+            "key": "brokerExitFx",
+            "cny": 8.762719420600137,
+            "referenceDifferenceCny": -11.7585209319368,
+            "fxImpactCny": 20.521240352536935,
+            "estimate": "IBKR公开买卖盘参考，实际成交以账户为准",
+            "sources": [
+              "ibFxQuotes",
+              "ibFxFields"
+            ],
+            "exchanges": [
+              {
+                "from": "USD",
+                "to": "CNH",
+                "input": 14964.431603851703,
+                "output": 99796.14827861059,
+                "rate": 6.66889
+              }
+            ]
+          },
+          {
+            "key": "withdraw",
+            "cny": 0,
+            "sources": [
+              "ibFees",
+              "ibCnhWithdrawal"
+            ]
+          },
+          {
+            "key": "returnInward",
+            "cny": 0,
+            "sources": [
+              "hsbcHk"
+            ]
+          },
+          {
+            "key": "withdrawMiddle",
+            "cny": 0
+          },
+          {
+            "key": "card",
+            "cny": 0
+          },
+          {
+            "key": "cardFx",
+            "cny": 0,
+            "referenceDifferenceCny": 97.20542538990813,
+            "fxImpactCny": -97.20542538990813,
+            "exchanges": [
+              {
+                "from": "CNH",
+                "to": "CNY",
+                "input": 99796.14827861059,
+                "output": 99796.14827861059,
+                "rate": 1
+              }
+            ]
+          },
+          {
+            "key": "account",
+            "cny": 0
+          },
+          {
+            "key": "extra",
+            "cny": 0
+          }
+        ]
+      }
+    }
+  ],
+  "liteFunding": [
+    {
+      "budgetCny": 100000,
+      "net": 14990.057984815816,
+      "currency": "USD",
+      "costCny": 24.20160459044758,
+      "fxImpactCny": 76.84263004208476,
+      "missing": [],
+      "steps": {
+        "mainlandForeign": 100000,
+        "hongKong": 100000,
+        "brokerOriginal": 100000,
+        "fundedUsd": 14990.368884237922,
+        "investUsd": 14990.368434526868,
+        "proceedsUsd": 14990.057984815816,
+        "afterTaxUsd": 14990.057984815816,
+        "returnUsd": 14990.057984815816,
+        "terminal": 14990.057984815816,
+        "settledCny": 100052.64102545164
+      },
+      "ledgerResidual": 4.973799150320701e-13,
+      "rows": [
+        {
+          "key": "sender",
+          "cny": 0,
+          "estimate": "按已享南向汇出手续费豁免测算；尚缺中行、兴业、招行、工行各自现行完整收费条款，不代表所有账户永久免费。香港收款费按各行证据独立计算。",
+          "sources": [
+            "paymentCurrent",
+            "paymentPbc",
+            "paymentParticipants",
+            "bocPaymentConnect",
+            "paymentHsbcReceive"
+          ]
+        },
+        {
+          "key": "entryFx",
+          "cny": 0,
+          "referenceDifferenceCny": -97.40398509021907,
+          "fxImpactCny": 97.40398509021907
+        },
+        {
+          "key": "entryMiddle",
+          "cny": 0
+        },
+        {
+          "key": "entryInward",
+          "cny": 0,
+          "sources": [
+            "paymentHsbcReceive"
+          ]
+        },
+        {
+          "key": "depositBank",
+          "cny": 0
+        },
+        {
+          "key": "depositOther",
+          "cny": 0
+        },
+        {
+          "key": "depositBroker",
+          "cny": 0
+        },
+        {
+          "key": "brokerFx",
+          "cny": 13.3492
+        },
+        {
+          "key": "brokerSpread",
+          "cny": 8.777275307658396,
+          "referenceDifferenceCny": 29.338630355792702,
+          "fxImpactCny": -20.561355048134306,
+          "estimate": "IBKR公开买卖盘参考，实际成交以账户为准",
+          "sources": [
+            "ibFxQuotes",
+            "ibFxFields"
+          ],
+          "exchanges": [
+            {
+              "from": "CNH",
+              "to": "USD",
+              "input": 100000,
+              "output": 14992.368884237922,
+              "rate": 0.14992368884237922
+            }
+          ]
+        },
+        {
+          "key": "trade",
+          "cny": 2.075129282789186
+        },
+        {
+          "key": "brokerAccount",
+          "cny": 0
+        },
+        {
+          "key": "account",
+          "cny": 0
+        },
+        {
+          "key": "extra",
+          "cny": 0
+        }
+      ]
+    },
+    {
+      "budgetCny": 250000,
+      "net": 37478.13996185954,
+      "currency": "USD",
+      "costCny": 40.51358567753478,
+      "fxImpactCny": 192.10657510522887,
+      "missing": [],
+      "steps": {
+        "mainlandForeign": 250000,
+        "hongKong": 250000,
+        "brokerOriginal": 250000,
+        "fundedUsd": 37478.92221059481,
+        "investUsd": 37478.92108622717,
+        "proceedsUsd": 37478.13996185954,
+        "afterTaxUsd": 37478.13996185954,
+        "returnUsd": 37478.13996185954,
+        "terminal": 37478.13996185954,
+        "settledCny": 250151.59298942768
+      },
+      "ledgerResidual": -1.6285639503621496e-11,
+      "rows": [
+        {
+          "key": "sender",
+          "cny": 0,
+          "estimate": "按已享南向汇出手续费豁免测算；尚缺中行、兴业、招行、工行各自现行完整收费条款，不代表所有账户永久免费。香港收款费按各行证据独立计算。",
+          "sources": [
+            "paymentCurrent",
+            "paymentPbc",
+            "paymentParticipants",
+            "bocPaymentConnect",
+            "paymentHsbcReceive"
+          ]
+        },
+        {
+          "key": "entryFx",
+          "cny": 0,
+          "referenceDifferenceCny": -243.5099627255404,
+          "fxImpactCny": 243.5099627255404
+        },
+        {
+          "key": "entryMiddle",
+          "cny": 0
+        },
+        {
+          "key": "entryInward",
+          "cny": 0,
+          "sources": [
+            "paymentHsbcReceive"
+          ]
+        },
+        {
+          "key": "depositBank",
+          "cny": 0
+        },
+        {
+          "key": "depositOther",
+          "cny": 0
+        },
+        {
+          "key": "depositBroker",
+          "cny": 0
+        },
+        {
+          "key": "brokerFx",
+          "cny": 13.3492
+        },
+        {
+          "key": "brokerSpread",
+          "cny": 21.943188269133852,
+          "referenceDifferenceCny": 73.34657588944538,
+          "fxImpactCny": -51.40338762031152,
+          "estimate": "IBKR公开买卖盘参考，实际成交以账户为准",
+          "sources": [
+            "ibFxQuotes",
+            "ibFxFields"
+          ],
+          "exchanges": [
+            {
+              "from": "CNH",
+              "to": "USD",
+              "input": 250000,
+              "output": 37480.92221059481,
+              "rate": 0.14992368884237922
+            }
+          ]
+        },
+        {
+          "key": "trade",
+          "cny": 5.221197408400928
+        },
+        {
+          "key": "brokerAccount",
+          "cny": 0
+        },
+        {
+          "key": "account",
+          "cny": 0
+        },
+        {
+          "key": "extra",
+          "cny": 0
+        }
+      ]
+    }
+  ]
+}

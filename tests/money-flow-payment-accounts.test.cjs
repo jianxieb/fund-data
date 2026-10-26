@@ -254,7 +254,9 @@ test('every preferred plan applies its complete consumption route and reproduces
     assert.ok(row(actual, 'withdraw'), plan.id);
     assert.ok(row(actual, 'card') || row(actual, 'exitFx'), plan.id);
     if (subject.saved().withdrawCurrency === 'CNH') assert.ok(row(actual, 'brokerExitCommission').cny > 0);
-    assert.ok(actual.rows.some(x => x.cny == null), 'Missing execution evidence stays explicit');
+    assert.deepEqual(actual.missing, expected.missing);
+    if (['cnh-ibkr', 'cib-wise-ibkr'].includes(plan.id)) assert.ok(row(actual, 'brokerExitFx').cny == null, 'Absent IBKR snapshot stays explicit');
+    else assert.ok(actual.complete && actual.rows.some(x => x.estimate), 'Authorized estimates remain labelled');
   }
   const header = toolbar(subject.render());
   const route = id => header.split('data-value="' + id + '"')[1].split('</button>')[0];

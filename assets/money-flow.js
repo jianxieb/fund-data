@@ -369,7 +369,7 @@
           '<span class="flow-preset-node" style="grid-column:' + stop.column + '" data-route-role="' + (stop.key || 'consumption') + '"><span class="flow-preset-account">' + accountGlyph(stop.key, stop.item) + '<strong>' + esc(stop.name) + '</strong></span>' +
           '<small>' + esc(stop.caption) + '</small></span>').join('');
         const hasPrice = !!p.calculated.selected && Number.isFinite(p.total);
-        const priceLabel = !p.complete ? '已计费用' : p.rows.some(x => x.estimate) ? '全程参考' : '全程损耗';
+        const priceLabel = !p.complete ? '已计费用' : p.rows.some(x => x.estimate) ? '全程参考' : '全程费用';
         const missing = !p.complete ? r?.missing?.join('、') || p.calculated.error || '缺报价' : '';
         const price = '<span class="flow-preset-quote">' + (hasPrice ? '<span class="flow-preset-price"><small>' + priceLabel + '</small><b>' + pct(p.total / 100000) + '</b><small>' + cost(p.total) + '</small></span>' : '') +
           (missing ? '<small class="flow-preset-missing">缺项：' + esc(missing) + '</small>' : '') +
@@ -427,7 +427,7 @@
     const partial = !!pending || variableFx || missing;
     const estimated = rows.some(x => x.estimate);
     const ratio = countedRatio(sumRows(rows), partial);
-    const label = (partial ? (ratio ? estimated ? '已计费用占本金 · 含估算' : '已核费用占本金' : estimated ? '费用小计 · 含估算' : '已核费用') : stale ? '历史损耗' : estimated ? '参考损耗' : '损耗') + (partial && stale ? ' · 历史报价' : '');
+    const label = (partial ? (ratio ? estimated ? '已计费用占本金 · 含估算' : '已核费用占本金' : estimated ? '费用小计 · 含估算' : '已核费用') : stale ? '历史费用' : estimated ? '参考费用' : '费用') + (partial && stale ? ' · 历史报价' : '');
     const hasPrice = rows.some(x => x.cny != null);
     return '<div class="flow-edge-loss"><span>' + label + '</span><strong class="num">' + (hasPrice ?
       (ratio || displaySum(rows, r)) : '—') + '</strong>' +
@@ -447,7 +447,7 @@
     return '<div class="flow-node-balance"><small>' + esc(available && unknown && !title.startsWith('已扣') && !title.includes('费用未齐') ? title + '（费用未齐）' : title) + '</small><div>' +
       (available ? amount(value, currency) : '<b>— <small>' + esc(currency) + '</small></b>') + '</div>' +
       notes.map(note => '<small>' + esc(note) + '</small>').join('') +
-      (keys.length && available ? '<small>' + (unknown ? '累计已计损耗 ' : '累计损耗 ') + pct(sumRows(rows) / M.number(state.budgetCny)) + '</small>' : '') + '</div>';
+      (keys.length && available ? '<small>' + (unknown ? '累计已计费用 ' : '累计费用 ') + pct(sumRows(rows) / M.number(state.budgetCny)) + '</small>' : '') + '</div>';
   }
   function node(number, key, label, item, balanceHtml, extra = '', additions = '') {
     const content = '<span class="flow-node-number">' + number + '</span><div class="flow-node-identity">' + account(key, label, item) + '</div>' + balanceHtml + '<div class="flow-node-options">' + extra + '</div>';
@@ -498,11 +498,11 @@
       { label: '卖出费用', cny: r.trading.sellFeeUsd * r.refs.USD, display: displayCosts(r)?.tradeCny?.sell, estimate: r.trading.sellFeeUsd > 0 && row(r, 'trade')?.estimate },
       ...rows.filter(item => item.key !== 'trade')
     ] : rows.flatMap(item => item.items?.length ? item.items.map(part => ({ ...part, key: item.key, component: true, display: displayCny(r, part) })) : [item]);
-    const labels = { entryFx: '购汇差额', entryMiddle: '代理费', entryInward: '香港汇入', depositBank: '银行转账', depositOther: '代理／收款费', depositBroker: '入金费',
-      brokerExitFx: '券商换汇差额', brokerExitCommission: '换汇佣金', cashFx: '现金估值差额', atmFee: '提款／联动费', atmOther: 'ATM附加费', brokerSpread: '换汇差额', brokerFx: '换汇佣金', brokerAccount: '证券托管', withdraw: '出金费', returnInward: '银行收款', withdrawMiddle: '代理费',
-      returnFx: '换汇差额', returnWire: '汇回手续费', returnOther: '代理／收款费', exitFx: state.outcome === 'cnh-card' ? '支付折算差额' : '结汇差额', card: '消费费用', cardFx: '扣账折算差额' };
+    const labels = { entryFx: '购汇点差', entryMiddle: '代理费', entryInward: '香港汇入', depositBank: '银行转账', depositOther: '代理／收款费', depositBroker: '入金费',
+      brokerExitFx: '换汇点差', brokerExitCommission: '换汇佣金', cashFx: '现金估值差额', atmFee: '提款／联动费', atmOther: 'ATM附加费', brokerSpread: '换汇点差', brokerFx: '换汇佣金', brokerAccount: '证券托管', withdraw: '出金费', returnInward: '银行收款', withdrawMiddle: '代理费',
+      returnFx: '换汇点差', returnWire: '汇回手续费', returnOther: '代理／收款费', exitFx: state.outcome === 'cnh-card' ? '换汇点差' : '结汇点差', card: '消费费用', cardFx: '扣账折算差额' };
     return components.filter(item => !(state.route === 'USD' && ['brokerFx', 'brokerSpread'].includes(item.key)) &&
-      !(state.route === 'CNH' && item.key === 'entryFx')).map(item => {
+      !(state.route === 'CNH' && item.key === 'entryFx') && !(['cardFx', 'cashFx'].includes(item.key) && item.cny === 0)).map(item => {
         const label = r?.depositMethod === 'wise' && ['depositBank', 'depositOther'].includes(item.key) ? item.key === 'depositBank' ? '银行 → Wise' : 'Wise → IBKR' :
           item.key === 'returnOther' && item.component ? /中转/.test(item.label) ? '中转费' : '本行收款费' :
           item.component || item.key === 'sender' ? item.label : labels[item.key] || item.label;
@@ -625,12 +625,12 @@
       if (cashProfile) html += '<section class="flow-linked-account" aria-label="ATM取现条件"><strong>' + esc(cashProfile.currency + '账户扣账') + '</strong><span>' + esc(cashProfile.currency === 'HKD' ? '按实际ATM扣账汇率折算；免提款费不等于免汇差。' : '人民币账户余额须充足，确认ATM从人民币账户原币扣账。') + '</span></section>';
     }
     if (state.outcome === 'cnh-card') {
-      const title = cardMode === 'ccb-link' ? '美元换港币 → 陆港通联动消费' : cardMode === 'hkd' ? '美元换港币 → 银联商户消费' : (withdrawCurrency === 'CNH' ? '人民币余额 → ' : '美元直接换人民币 → ') + (cardMode === 'apple-pay' ? '银联卡Apple Pay消费' : '商户刷卡');
+      const title = cardMode === 'ccb-link' ? '美元换港币 → 陆港通联动消费' : cardMode === 'hkd' ? '美元换港币 → 银联商户消费' : (withdrawCurrency === 'CNH' ? '人民币余额 → ' : '美元换人民币 → ') + (cardMode === 'apple-pay' ? '银联卡Apple Pay消费' : '商户刷卡');
       const conditions = cardMode === 'ccb-link' ? checkbox('ccbLinkedCard', '已持陆港通龙卡并开通两地联动 · 年费50 HKD') :
         M.cnhCardMode(cardMode) && s.returning.cnhCardRequiresHkid ? checkbox(s.returning.cnhAccountField || 'scCnhAccount', '持香港身份证，已开通' + shortName(s.returning) + '人民币账户') : '';
       const scope = spending ? '<div class="flow-consumption-scope"><strong>' + esc(spending.coverage) + '</strong><span>' + esc(spending.limitation) + '</span></div>' : '';
       html += edge(data, exitKeys, title, conditions + scope, '04',
-        data.error || r?.indicativeExit || r?.indicativeReturnFx || withdrawCurrency === 'CNH' ? '' : esc(M.cnhCardMode(cardMode) ? '1 USD = ' + quoteNum(r.exitPrice) + ' CNH' :
+        data.error || r?.indicativeExit || r?.indicativeReturnFx || withdrawCurrency === 'CNH' ? '' : esc(M.cnhCardMode(cardMode) ? (r.estimatedExitFx ? '参考 ' : '') + '1 USD = ' + quoteNum(r.exitPrice) + ' CNH' + (r.estimatedExitFx ? ' · 本行牌价折算' : '') :
           '1 USD = ' + quoteNum(r.returnHkdPrice) + ' HKD · 消费扣账1 HKD = ' + quoteNum(r.exitPrice) + ' CNY'));
       if (cardMode === 'ccb-link') html += '<section class="flow-linked-account" aria-label="陆港通两地账户"><strong>关联内地账户：中国建设银行 · 陆港通龙卡</strong><span>先扣内地人民币；不足时整笔联动香港账户。消费每日累计限等值50,000 HKD；以下为可分日使用的总额，资金未预先汇入内地账户。</span></section>';
     }
@@ -752,7 +752,7 @@
     const partial = incomplete || !!gaps.length;
     const estimated = rows.some(x => x.estimate);
     const ratio = countedRatio(total, partial);
-    const label = (partial ? (ratio ? estimated ? '已计费用占本金 · 含估算' : '已核费用占本金' : estimated ? '费用小计 · 含估算' : '全程已核费用') : stale ? '全程损耗 · 历史报价' : estimated ? '参考总损耗' : '全程损耗') + (partial && stale ? ' · 历史报价' : '') +
+    const label = (partial ? (ratio ? estimated ? '已计费用占本金 · 含估算' : '已核费用占本金' : estimated ? '费用小计 · 含估算' : '全程已核费用') : stale ? '全程费用 · 历史报价' : estimated ? '参考总费用' : '全程费用') + (partial && stale ? ' · 历史报价' : '') +
       (r?.trading?.rebateUsd > 0 ? ' · 返还后' : '');
     const canBalance = !!data.selected && !r?.indicativeBrokerExit && !r?.indicativeExit && !r?.indicativeReturnFx && !r?.exitIssue && gaps.every(x => ['entryMiddle', 'depositOther', 'withdrawMiddle', 'returnOther', 'atmOther'].includes(x.key) || x.key === 'brokerSpread' && r.indicativeFx || x.key === 'entryFx' && r.indicativeEntryFx);
     const actualReturnHkd = !r?.indicativeReturnFx && row(r, 'returnFx')?.cny != null && r?.quoteFreshness?.returnMarket !== false ? r?.steps?.remitHkd ?? r?.steps?.returnHkd : undefined;
@@ -784,7 +784,7 @@
     const ratio = countedRatio(total, partial), hasPrice = rows.some(x => x.cny != null);
     return '<div class="flow-result"><div><span>' + label + '</span><strong class="num">' + (hasPrice ? ratio || cost(total) : '—') + '</strong>' +
       (hasPrice && ratio ? '<small>' + cost(total) + '</small>' : '') +
-      (partial ? '<small>' + (rows.length ? data.error ? r?.errorAction === 'account' ? esc(data.error) : '第' + esc(r?.errorStage || data.errorStage || '01') + '步尚未完成' : '总损耗尚缺：' + esc(missingLabels.join('、') || r?.exitIssue || '有效成交报价') : esc(data.error || '选择有效本金和汇出报价')) + '</small>' : '') + '</div><div class="flow-result-equation"><span>其中账户期间费</span><b>' +
+      (partial ? '<small>' + (rows.length ? data.error ? r?.errorAction === 'account' ? esc(data.error) : '第' + esc(r?.errorStage || data.errorStage || '01') + '步尚未完成' : '总费用尚缺：' + esc(missingLabels.join('、') || r?.exitIssue || '有效成交报价') : esc(data.error || '选择有效本金和汇出报价')) + '</small>' : '') + '</div><div class="flow-result-equation"><span>其中账户期间费</span><b>' +
       (row(r, 'account') ? displayCost(r, row(r, 'account')) : '—') + '</b>' + (r?.taxCny ? '<small>另预留税款 ' + cost(r.taxCny) + '</small>' : '<small>已计入合计</small>') + '</div><div><span>' + balanceLabel + '</span>' + finalHtml +
       '</div><div class="flow-result-detail">' +
       action('全程明细', 'detail', 'data-value="cost"', 'text-link') + '</div></div>';
@@ -1071,13 +1071,14 @@
           field('usedFreeTransfers', '优惠期内已汇出笔数', '笔') + '<p>寰宇人生外汇汇出手续费免，优惠期前30笔电讯费免；优惠至2027-06-30。</p>' :
           '<p>外汇汇款优惠已到期；手续费按标准1‰、50–200元，电讯费100元/笔。未预设优惠续期。</p>';
       }
-      keys = actionSources(stage, s, r);
-      if (stage === 'withdraw' && state.withdrawCurrency === 'CNH') content += '<div class="flow-form-grid">' + field('brokerExitPrice', 'IBKR卖出后USD/CNH实际成交价', 'CNH/USD', '留空则保留美元余额') + field('inwardHkd', '香港CNH收款行费用', 'HKD', '仅填已确认费用') + '</div><p>手动换汇按每月首档0.20基点、每单最低2 USD计算，金额大时佣金超过2美元；未取得可成交报价，不宣称汇率最优。每月前两次出金免费，之后CNH本地转账7 CNH、电汇60 CNH。IBKR账户可选币种／渠道及收款银行实际支持情况仍须匹配。</p>';
+      keys = [...actionSources(stage, s, r), ...(r?.rows || []).filter(item => edgeKeys.includes(item.key))
+        .flatMap(item => [...(item.sources || []), ...(item.items || []).flatMap(part => part.sources || [])])];
+      if (stage === 'withdraw' && state.withdrawCurrency === 'CNH') content += '<div class="flow-form-grid">' + field('brokerExitPrice', 'IBKR卖出后USD/CNH实际成交价', 'CNH/USD', '留空使用已存公开参考价') + field('inwardHkd', '香港CNH收款行费用', 'HKD', '仅填已确认费用') + '</div><p>手动换汇按每月首档0.20基点、每单最低2 USD计算，金额大时佣金超过2美元；未取得可成交报价，不宣称汇率最优。每月前两次出金免费，之后CNH本地转账7 CNH、电汇60 CNH。IBKR账户可选币种／渠道及收款银行实际支持情况仍须匹配。</p>';
       if (stage === 'withdraw' && state.withdrawDestination === 'mainland') content += '<div class="flow-form-grid">' + field('directInwardCny', '内地收款行费', 'CNY', '留空使用本行收费') + field('intermediaryCny', '券商直达内地的中转费', 'CNY', '尚未取得请留空') + '</div><p>这里展示本人账户已确认可出金及收款的条件情景。境外投资资金原币入账不代表自动符合结汇资格；不得将其改报为工资、赡家款或其他用途。未确认时保留券商余额。</p>';
       if (stage === '04' && state.outcome === 'atm') {
         const profile = M.mainlandCashProfile(state, D);
         content += '<p>' + esc(profile?.note || '尚缺该银行卡的内地ATM资费依据。') + '</p><div class="flow-form-grid">' +
-          (state.withdrawCurrency === 'USD' ? profile?.currency === 'HKD' ? field('returnHkdPrice', '本行USD/HKD实际兑换价', 'HKD/USD', '留空使用本行直接价') : field('exitPrice', '本行USD/CNH直接兑换价', 'CNH/USD', '留空使用本行直接价') : '') +
+          (state.withdrawCurrency === 'USD' ? profile?.currency === 'HKD' ? field('returnHkdPrice', '本行USD/HKD实际兑换价', 'HKD/USD', '留空使用本行直接价') : field('exitPrice', '本行USD/CNH直接兑换价', 'CNH/USD', '留空使用本行参考价') : '') +
           (profile?.currency === 'HKD' ? field('atmCnyPerUnit', '人民币现金 ÷ 港币本金扣账（不含另列费用）', 'CNY/HKD', '不得用银行现汇价替代') : '') +
           field('atmExtraCny', '本次全部ATM运营方附加费', 'CNY', '未取得请留空') + field('atmDailyLimitCny', '本人已启用的每日限额', 'CNY', '未确认请留空') + field('atmPerTransactionCny', 'ATM单笔提款上限', 'CNY', '未确认请留空') + '</div>' +
           '<p>' + esc(profile?.limitNote || '') + '本页为一笔或多笔计划提款费用，剩余资金保留在银行，不保证当天可执行；未启用海外提款时实际限额为0。不同银行的额度不相加为免审核额度，重复或异常交易仍可能被审核。现金估值差额按统一CNH／HKD及CNY参照价对账，原币提款的估值差不属于另收的银行手续费。</p>';
@@ -1092,7 +1093,7 @@
         }
         content += '<div class="flow-form-grid">' + (M.cnhCardMode(mode) ? state.withdrawCurrency === 'CNH' ? '' : field('exitPrice', '本行USD直接兑换人民币成交价', 'CNH/USD', '仅填直接兑换价') :
           field('returnHkdPrice', '本行USD兑换HKD成交价', 'HKD/USD', '本行直接报价') + field('cardCnyPerHkd', '人民币消费金额 ÷ 港币总扣账', 'CNY/HKD', '含该笔支付的全部扣费')) + '</div>';
-        content += '<p>直接USD/CNH报价缺失时不使用港币交叉价补齐。港币卡消费使用其实际扣账汇率；银行普通换汇价不能替代卡组织结算价。</p>';
+        content += '<p>汇丰未填实际USD/CNH价时，按已存本行牌价折算作参考，不代表直接成交报价；实际价优先。其他银行不套用汇丰估算。港币卡消费使用其实际扣账汇率。</p>';
       }
       if (stage === 'settle') content += '<p>' + esc(D.mainlandSpending.bank.note) + '</p>';
     } else if (key === 'mainland') {
@@ -1103,15 +1104,15 @@
     } else if (key === 'quotes') {
       title = '汇率与收费依据'; keys = mainland.flatMap(bank => evidenceFor('mainlandFx', bank));
       const q = window.MONEY_FLOW_QUOTES || {}, comparison = M.purchaseComparison({ ...state, date: today() }, comparisonData, q);
-      content = '<h3>统一估值基准</h3><p>购汇、香港换汇和结汇均按同一组参考汇率计算人民币差额：换汇前的人民币估值减去换汇后的人民币估值。默认USD/CNY参考值取中行现汇买入价与卖出价的平均值；USD/HKD、USD/CNH参考值取中银香港相应买卖价平均值。它们是估值基准，不是可成交报价，也不随所选银行改变。</p>' +
-        '<p>购汇差额 = 购汇人民币 − 买到的外币 × 参考汇率；结汇差额 = 结汇外币 × 参考汇率 − 实收人民币。最优银行是同币种成交价的排名，仍可能有买卖价差。转账费另计，各段差额与手续费合计除以人民币本金。差额为负表示相对参考价的折算增益，不填0隐藏差异。</p>';
+      content = '<h3>交易费用与换汇点差</h3><p>费用合计包含实际手续费，以及成交价相对同机构、同币对买卖中间价的点差。IBKR手动换汇的点差与佣金分开计算；自动换汇加价只计一次。原币余额始终按成交方向的买卖价计算。</p>' +
+        '<h3>人民币估值</h3><p>不同币种的费用共用人民币折算基准：USD/CNY取中行现汇买卖价平均值，USD/HKD与USD/CNH取中银香港买卖价平均值。银行、币种及报价时点之间的估值变化在全程明细单列，不抵扣手续费，也不作为负费用或返现。</p>';
       if (r?.referenceQuote) content += '<p>本次USD/CNY基准：' + (r.referenceQuote.custom ? '实际设置的参照价' : esc(r.referenceQuote.bank) + '现汇买卖价平均值') +
         ' ' + quoteNum(r.refs.USD) + ' CNY/USD' + (r.referenceQuote.custom ? '' : ' · ' + esc(r.referenceQuote.asOf)) + '。</p>';
       content += '<div class="flow-cost-detail">' + comparison.rows.map(x => '<div><span>' + esc(x.bank.name) + '<small>' + esc(x.quote?.asOf || '尚未取得该行购汇牌价') +
         (x.quote?.timeBasis === 'observed' ? ' · 采集时点' : '') + '</small></span><b>' + (x.sell ? quoteNum(x.sell) + ' CNY/' + state.route : '—') + '</b></div>').join('') + '</div>';
       content += '<h3>香港银行公开换汇价</h3><div class="flow-cost-detail">' + Object.entries(q.offshoreUsd || {}).flatMap(([id, bank]) =>
         Object.entries(bank.quotes || {}).map(([currency, price]) => '<div><span>' + esc(shortName(returnBanks.find(b => b.id === id))) + ' · USD/' + currency +
-          '<small>' + esc(price.asOf) + (price.path === 'via-HKD' ? ' · 经HKD两次兑换' : '') + '</small></span><b>卖美元 ' + quoteNum(price.bidPerUsd) +
+          '<small>' + esc(price.asOf) + (price.path === 'via-HKD' ? ' · 港币两腿牌价折算' : '') + '</small></span><b>卖美元 ' + quoteNum(price.bidPerUsd) +
           '<small>买美元 ' + quoteNum(price.askPerUsd) + '</small></b></div>')).join('') + '</div>';
       const brokerQuotes = Object.entries(q.brokerUsd?.ibkr?.quotes || {});
       if (brokerQuotes.length) content += '<h3>IBKR公开换汇价</h3><div class="flow-cost-detail">' + brokerQuotes.map(([currency, price]) =>
@@ -1130,12 +1131,14 @@
       title = key === 'stage' ? stageNames[Number(state.activeStep) - 1] + ' · 费用明细' : '全程费用明细';
       content = rows.length ? detailRows(r, rows) :
         '<p>' + esc(data.error || '选择对应账户后显示资费') + '</p>';
+      const valuation = rows.reduce((sum, item) => sum + (item.fxImpactCny || 0), 0);
+      if (Math.abs(valuation) >= .005) content += '<h3>估值变化（不计入费用）</h3><p>' + (valuation > 0 ? '+' : '') + cost(valuation) + '。来自不同币种、银行及报价时点的人民币估值差异，不是银行返现，也没有增加原币余额。</p>';
       if (r?.missing?.length) content += '<h3>影响最终金额的项目</h3><ul>' + r.missing.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>';
       const presentation = balancePresentation(data), { canBalance, lastPoint } = presentation;
       if (canBalance && Number.isFinite(r?.netCny)) content += '<p>' + esc(finalBalanceLabel(presentation)) + ' ' + num(r.net) + ' ' + esc(r.currency) + '，折合 ' + num(r.netCny) + ' CNY。' +
         (r.complete ? '' : '未报价项目未扣除。') + '人民币折算尾差按余数分配，分项与合计一致；原币费用与余额按完整精度计算。</p>';
       else if (lastPoint) content += '<p>最后可计余额：' + num(lastPoint.amount) + ' ' + esc(lastPoint.currency) + '</p>';
-      keys = journeySources(s, r);
+      keys = [...journeySources(s, r), ...rows.flatMap(item => [...(item.sources || []), ...(item.items || []).flatMap(part => part.sources || [])])];
     }
     const html = H.modalTitle(title) + '<div class="flow-detail">' + content + '<div class="flow-detail-sources">' + [...new Set(keys)].filter(Boolean).map(source).join('') + '</div></div>';
     if (updating) patch(document.getElementById('flow-detail-live'), html);

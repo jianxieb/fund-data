@@ -337,22 +337,24 @@ test('CCB current personal full-amount tariff prices every receiving bank and st
   assert.equal(partial.steps.hongKong, undefined);
 });
 
-test('purchase loss uses the absolute midpoint even for the best CIB price and historical HSBC quote', () => {
+test('purchase spreads use each bank midpoint while CNY valuation stays common', () => {
   const r = run({ startBank: 'hsbc', bank: 'hsbc', broker: 'hsbc', mainlandMethod: 'linked', trade25: true }).selected;
   const entry = r.rows.find(x => x.key === 'entryFx');
   const reference=(Q.banks.boc.quotes.USD.buy+Q.banks.boc.quotes.USD.sell)/2;
-  close(entry.cny, 100000 * (1 - reference / Q.banks.hsbc.quotes.USD.sell));
+  const hsbcMid = (Q.banks.hsbc.quotes.USD.buy + Q.banks.hsbc.quotes.USD.sell) / 2;
+  close(entry.cny, 100000 * (1 - hsbcMid / Q.banks.hsbc.quotes.USD.sell));
   close(r.refs.USD,reference);
-  close(r.fxImpactCny, 0); ledger(r);
+  assert.ok(Number.isFinite(r.fxImpactCny)); ledger(r);
   const best=run({}).selected;
   assert.ok(best.rows.find(x=>x.key==='entryFx').cny>0);
-  close(best.rows.find(x=>x.key==='entryFx').cny,best.steps.mainlandForeign*(best.startSell-reference));
+  const bestMid=(best.start.quotes.USD.buy+best.start.quotes.USD.sell)/2;
+  close(best.rows.find(x=>x.key==='entryFx').cny,best.steps.mainlandForeign*(best.startSell-bestMid));
 });
 
 test('original RMB transfer has no artificial FX fee; CNY/CNH basis moves to the actual conversion', () => {
   const r = run({ startBank: 'boc', route: 'CNH', fxMode: 'bank', broker: 'za', mainlandMethod: 'swift' }).selected;
   close(r.rows.find(x => x.key === 'entryFx').cny, 0);
-  close(r.fxImpactCny, 0); ledger(r);
+  assert.ok(Number.isFinite(r.fxImpactCny)); ledger(r);
   assert.ok(r.rows.find(x => x.key === 'brokerSpread').cny != null);
 });
 
@@ -579,7 +581,8 @@ test('IBKR local USD receiving instructions price the observed route, while over
   close(sc.rows.find(x => x.key === 'depositBank').cny, 22 * sc.refs.USD);
   const withdrawn = run({ broker: 'ibkr', depositMethod: 'chats', outcome: 'usd-balance', withdrawalIndex: 3 }).selected;
   close(withdrawn.rows.find(x => x.key === 'withdraw').cny, 10 * withdrawn.refs.USD);
-  assert.equal(withdrawn.rows.find(x => x.key === 'withdrawMiddle').cny, null);
+  assert.ok(withdrawn.rows.find(x => x.key === 'withdrawMiddle').estimate);
+  assert.ok(withdrawn.rows.find(x => x.key === 'withdrawMiddle').cny > 0);
   const custom = run({ broker: 'ibkr', depositMethod: 'chats', depositOtherCny: '15' }).selected;
   close(custom.rows.find(x => x.key === 'depositOther').cny, 15);
   assert.equal(custom.rows.find(x => x.key === 'depositOther').estimate, undefined);
@@ -623,7 +626,7 @@ test('recommendations compare distinct upstream routes while retaining the chose
   assert.ok(publicOnly.plans.every(p => p.config.mainlandMethod !== 'cib-go'));
 });
 
-test('a current CCB full-amount quote stays calculable but a cheaper complete route can replace its recommendation', () => {
+test('a historical CCB full-amount quote stays calculable while recommendations follow the current departure catalogue', () => {
   const quotes = structuredClone(diversityQuotes);
   const evidence = require('./fixtures/money-flow-full-amount-20261011.json');
   quotes.banks.ccb = { quotes: { USD: evidence.ccb.regressionQuote } };
@@ -640,7 +643,10 @@ test('a current CCB full-amount quote stays calculable but a cheaper complete ro
     if (ccb) {
       assert.equal(ccb.config.mainlandMethod, 'full'); assert.equal(ccb.config.broker, broker);
       close(ccb.result.rows.find(row => row.key === 'entryInward').cny, 0);
-    } else assert.ok(plans.some(p => p.config.mainlandMethod === 'full' && p.result.costCny < manual.costCny), broker);
+    } else {
+      assert.ok(plans.every(p => D.calculator.departureBanks.includes(p.config.startBank)));
+      assert.ok(plans.some(p => p.result.complete && p.result.costCny < manual.costCny), broker);
+    }
     for (const p of plans) {
       const r = M.calculatorJourney({ ...input, ...p.config }, D, quotes).selected;
       close(r.costCny, p.result.costCny); ledger(r);

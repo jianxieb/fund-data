@@ -32,7 +32,7 @@ test('IBKR CNH withdrawal and cash use expose separate controls, fees, cash and 
   assert.match(html, /本次计划取现/); assert.match(html, /另有本次计划现金/);
   assert.match(html, /计划取现后的银行余额/);
   const action = section(html, '银行余额 → 内地ATM人民币现金');
-  assert.match(action, /提款／联动费/); assert.doesNotMatch(action, /美元直接换人民币/);
+  assert.match(action, /提款／联动费/); assert.doesNotMatch(action, /美元换人民币/);
   subject.act('detail', '', 'edge-withdraw');
   assert.match(subject.modal(), /每单最低2 USD/); assert.match(subject.modal(), /CNH\/USD/);
   subject.act('detail', '', 'edge-04');
@@ -74,7 +74,7 @@ test('BOCHK Apple Pay has a named UnionPay mode and consumes already-converted C
   const html = subject.render();
   assert.match(html, /人民币余额 → 银联卡Apple Pay消费/);
   assert.match(html, /Apple Pay须支持银联闪付/);
-  assert.doesNotMatch(html, /美元直接换人民币 → 商户刷卡/);
+  assert.doesNotMatch(html, /美元换人民币 → 商户刷卡/);
   subject.act('detail', '', 'edge-04');
   assert.ok(subject.modal().includes(D.sources.bochkApplePay.url));
   assert.doesNotMatch(subject.modal(), /data-money-field="exitPrice"/);
@@ -234,8 +234,8 @@ test('return transfer and settlement own separate fees, rates, details and sourc
     const html=subject.render(), wire=section(html,'汇回内地'), settlement=section(html,'内地结汇');
     assert.ok(wire&&settlement); assert.ok(html.indexOf('aria-label="汇回内地"')<html.indexOf('aria-label="内地结汇"'));
     assert.match(wire,/汇回手续费/); assert.match(wire,/中转费/); assert.match(wire,/本行收款费/);
-    assert.doesNotMatch(wire,/结汇差额|1 (?:USD|HKD) =/);
-    assert.match(settlement,/结汇差额/); assert.doesNotMatch(settlement,/汇回手续费|中转费|本行收款费/);
+    assert.doesNotMatch(wire,/结汇点差|1 (?:USD|HKD) =/);
+    assert.match(settlement,/结汇点差/); assert.doesNotMatch(settlement,/汇回手续费|中转费|本行收款费/);
     assert.equal((settlement.match(new RegExp('1 '+returnCurrency+' =','g'))||[]).length,1);
     const receiver=section(html,'内地收款银行');
     assert.ok(html.indexOf('aria-label="汇回内地"')<html.indexOf('data-flow-stage="05"'));
@@ -244,13 +244,13 @@ test('return transfer and settlement own separate fees, rates, details and sourc
     assert.ok(wrapper.indexOf('内地收款银行')<wrapper.indexOf('class="flow-account-button"'));
     assert.doesNotMatch(wrapper.split('class="flow-account-button"')[1].split('</button>')[0],/>内地收款银行</);
     assert.match(receiver,/微信／支付宝绑卡、刷卡、缴费及转账/);
-    subject.act('detail','','edge-remit'); assert.match(subject.modal(),/香港→内地汇出费/); assert.doesNotMatch(subject.modal(),/内地结汇差额/);
-    subject.act('detail','','edge-settle'); assert.match(subject.modal(),/内地结汇差额/); assert.doesNotMatch(subject.modal(),/香港→内地汇出费|回内地中转行费/);
+    subject.act('detail','','edge-remit'); assert.match(subject.modal(),/香港→内地汇出费/); assert.doesNotMatch(subject.modal(),/内地结汇点差/);
+    subject.act('detail','','edge-settle'); assert.match(subject.modal(),/内地结汇点差/); assert.doesNotMatch(subject.modal(),/香港→内地汇出费|回内地中转行费/);
     assert.equal((subject.modal().match(new RegExp('1 '+returnCurrency+' =','g'))||[]).length,1);
     assert.doesNotMatch(subject.modal(),/实际兑换顺序/);
     if(returnCurrency==='HKD') {
       assert.ok(html.indexOf('aria-label="美元换港币"')<html.indexOf('aria-label="汇回内地"'));
-      subject.act('detail','','edge-return-fx'); assert.match(subject.modal(),/USD → HKD换汇差额/); assert.doesNotMatch(subject.modal(),/内地结汇差额/);
+      subject.act('detail','','edge-return-fx'); assert.match(subject.modal(),/USD → HKD换汇差额/); assert.doesNotMatch(subject.modal(),/内地结汇点差/);
     } else assert.doesNotMatch(html,/aria-label="美元换港币"/);
   }
 });
@@ -266,8 +266,27 @@ test('purchase and settlement pickers quote actual rates without a competing rel
   subject.render(); subject.act('pick','','startBank');
   assert.match(subject.modal(),/最低可比购汇价/); assert.doesNotMatch(subject.modal(),/购汇少得|相对损耗|系数/);
   subject.act('detail','','quotes');
-  assert.match(subject.modal(),/购汇、香港换汇和结汇均按同一组参考汇率/);
+  assert.match(subject.modal(),/同机构、同币对买卖中间价/);
+  assert.match(subject.modal(),/估值变化.*不抵扣手续费/);
   assert.doesNotMatch(subject.modal(),/最优购汇差额为0|最低有效卖出价为基准/);
+});
+
+test('sourced estimates expose their evidence in action and total details and keep actual overrides available', () => {
+  const subject = ui({ startBank:'boc', bank:'bochk', broker:'ibkr', returnBank:'bochk', exitBank:'boc', route:'USD',
+    outcome:'mainland', mainlandMethod:'boc-mobile', depositMethod:'chats', returnMethod:'bochk-fast', returnCurrency:'USD' });
+  const html = subject.render();
+  assert.doesNotMatch(html.split('id="flow-live-summary"')[1], /缺项：|总费用尚缺|参考 -[\d.]+ CNY/);
+  subject.act('detail','','edge-withdraw');
+  assert.match(subject.modal(), /10–30 USD.*20 USD/);
+  assert.match(subject.modal(), /https:\/\/www.kdkh.com\/guide\/ibkr\/usdchujin.html/);
+  subject.act('detail','','edge-remit');
+  assert.match(subject.modal(), /无额外报文／处理/);
+  assert.match(subject.modal(), /ibs_rem_helpApp_boc_s.html/);
+  subject.act('detail','','all');
+  assert.match(subject.modal(), /https:\/\/www.kdkh.com\/guide\/ibkr\/usdchujin.html/);
+  subject.act('detail','','adjustments');
+  assert.match(subject.modal(), /data-money-field="intermediaryCny"/);
+  assert.match(subject.modal(), /data-money-field="returnExtraCny"/);
 });
 test('Hong Kong banks and stock venues remain complete and enabled after plan application and manual changes', () => {
   const subject = ui(); subject.render(); subject.act('preset', '', 'cib-trade25');
@@ -293,7 +312,7 @@ test('principal defaults to 100000 and currency choices are RMB, USD, HKD withou
 test('withdrawal is between the stock account and return bank, before bank FX or spending', () => {
   const subject = ui({ startBank:'cib',bank:'hsbc',broker:'za',returnBank:'bochk',route:'USD',outcome:'cnh-card',hsbcBalanceWaiver:true });
   const html=subject.render(); const stock=html.indexOf('data-flow-stage="03"'), withdrawal=html.indexOf('aria-label="ZA Bank出金 → 中银香港"');
-  const bank=html.indexOf('data-flow-stage="04"'), fx=html.indexOf('美元直接换人民币 → 商户刷卡');
+  const bank=html.indexOf('data-flow-stage="04"'), fx=html.indexOf('美元换人民币 → 商户刷卡');
   assert.ok(stock<withdrawal && withdrawal<bank && bank<fx);
   assert.match(section(html,'卖出后的资金'), /取回银行：中银香港/);
   assert.ok(html.indexOf('id="flow-live-summary"')>html.indexOf('id="flow-live-ledger"'));
