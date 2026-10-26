@@ -204,10 +204,12 @@ def apply_us(row, asof):
         selection['status'] = 'selected'
     if f.get('missingFields'):
         reason = f['missingEvidence']
-        for verdict in selection['reviews'].values():
+        for group in ('quality', 'growth', 'breakout'):
+            verdict = selection['reviews'][group]
             verdict['checks'].append({'label': '当前财季营业收入和净利润来源齐备', 'pass': False, 'reason': reason})
             verdict['qualified'] = False
-        selection.update(groups=['other'], status='pending', rationale=reason)
+        selection.update(groups=['other'], status='pending', rationale=reason + '；最新财季为' + f['reportDate']
+                         + '，经营复核仅覆盖' + row['research'].get('reportPeriod', '未注明报告期'))
     row['companySelection'] = selection
     row['screening'].update(groups=selection['groups'], reviews=selection['reviews'], basis='company_selection_v1',
                             otherReasons=[selection['rationale']] if selection['groups'] == ['other'] else [])

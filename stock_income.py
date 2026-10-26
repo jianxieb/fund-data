@@ -124,4 +124,10 @@ def us_income_review(row, asof):
         result['qualified'] = False
         result['missing'].append('财报超过155天，缺更新报告')
         result['rationale'] = '财报超过155天，缺更新报告'
+    if f.get('missingFields'):
+        reason = f['missingEvidence']
+        result['checks'].append({'label': '当前财季营业收入和净利润来源齐备', 'pass': False, 'reason': reason})
+        result['qualified'] = False
+        result['missing'].append(reason)
+        result['rationale'] += '；' + reason
     return result

@@ -9,6 +9,7 @@ from unittest.mock import patch
 import data_quality
 import overseas_stocks as stocks
 from us_stock_groups import classify
+from stock_income import us_income_review
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / 'tests/fixtures/company-selection-20261020.json'
@@ -78,6 +79,10 @@ class PartialOverseasQuarterTests(unittest.TestCase):
                 self.assertEqual(row['companySelection']['status'], 'pending')
                 self.assertTrue(all(not r['qualified'] for r in row['screening']['reviews'].values()))
                 self.assertIn('营业收入、净利润', row['companySelection']['rationale'])
+                self.assertIn(row['research']['reportPeriod'], row['companySelection']['rationale'])
+                self.assertIn(row['financials']['reportDate'], row['companySelection']['rationale'])
+                self.assertEqual(row['companySelection']['reviews']['dividend'],
+                                 us_income_review(row, row['companySelection']['checkedAt']))
                 report = stocks.overseas_research.report_for(row)
                 quarterly = next(s for s in report['sections'] if s['id'] == 'quarterly')
                 self.assertEqual(quarterly['paragraphs'][0], row['financials']['missingEvidence'])

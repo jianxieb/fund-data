@@ -247,8 +247,20 @@ class PublishedCompanySelectionTests(unittest.TestCase):
     def assert_current_filing(self, row, first_period):
         latest = row['financials']['reportDate']
         self.assertGreaterEqual(date.fromisoformat(latest), date.fromisoformat(first_period))
-        self.assertLessEqual(latest, row['financials']['publishedAt'])
-        self.assertLessEqual(row['financials']['publishedAt'], row['screening']['checkedAt'])
+        published = row['financials'].get('publishedAt')
+        if published is None:
+            # A provider's new EPS period is not an issuer filing or publication
+            # date. It may be shown only as an explicitly incomplete quarter.
+            self.assertEqual(row['financials'].get('dataStatus'), 'partial')
+            self.assertEqual(row['financials']['dateBasis'], 'provider_month_end')
+            self.assertTrue(row['financials']['missingFields'])
+            self.assertIn('财季来源缺', row['financials']['missingEvidence'])
+            self.assertEqual(row['screening']['groups'], ['other'])
+            self.assertTrue(all(not r['qualified'] for r in row['screening']['reviews'].values()))
+        else:
+            self.assertLessEqual(latest, published)
+            self.assertLessEqual(published, row['screening']['checkedAt'])
+        self.assertLessEqual(latest, row['screening']['checkedAt'])
         self.assertTrue(row['financials']['sourceUrl'])
         self.assertLessEqual(row['research']['reportPeriod'], latest)
 
