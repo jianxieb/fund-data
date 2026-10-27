@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 import strategy_backtest
 import update
-from data_status import atomic_text, now_iso, write_status, file_transaction
+from data_status import atomic_text, now_iso, write_status, file_transaction, published_event_sources
 from screens.fund_screen import parse_js_record, js_str, latest_nav_observation
 
 OUTPUT = ROOT / 'data' / 'portfolio'
@@ -413,6 +413,7 @@ def prune():
     source = (OUTPUT / 'catalog.js').read_text(encoding='utf-8')
     catalog = json.loads(source.split('=', 1)[1].strip().rstrip(';'))
     used = {row['historyUrl'] for row in [*catalog['assets'], catalog.get('fx') or {}] if row.get('historyUrl')}
+    used.update(published_event_sources(ROOT))
     snapshot = ROOT / 'data/snapshot.js'
     if snapshot.exists():
         used.update(re.findall(r"\b(?:return|risk)HistoryUrl:['\"]([^'\"]+)['\"]", snapshot.read_text(encoding='utf-8')))

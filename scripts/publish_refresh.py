@@ -85,6 +85,8 @@ def test_generated_data(root):
 
 def validate_outputs(root):
     command([sys.executable, 'scripts/check_refresh.py'], root)
+    command([sys.executable, 'scripts/build_return_indices.py', '--check'], root)
+    command([sys.executable, 'scripts/build_financial_events.py', '--check'], root)
     test_generated_data(root)
     command(['npm', 'run', 'version-assets'], root)
     command(['npm', 'run', 'check'], root)

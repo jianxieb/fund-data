@@ -36,9 +36,12 @@ def run_task(name, timeout=60):
 def main():
     report = {'startedAt': now_iso(), 'steps': []}
     report['steps'].append(run_task('fund_actions'))
-    names = [name for name in TASKS if name != 'fund_actions']
+    # Event chapters consume the new index catalog; do not race its atomic
+    # catalog replacement and old-file cleanup. Unrelated sources stay parallel.
+    names = [name for name in TASKS if name not in ('fund_actions', 'financial_events')]
     with ThreadPoolExecutor(max_workers=len(names)) as pool:
         report['steps'].extend(pool.map(run_task, names))
+    report['steps'].append(run_task('financial_events'))
     report['steps'].append(refresh.execute('quality', [sys.executable, str(ROOT / 'data_quality.py'), '--strict'],
                                            30, allow_partial=True))
     report['completedAt'] = now_iso()

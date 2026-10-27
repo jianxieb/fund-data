@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 import indices
 import strategy_backtest
-from data_status import atomic_text
+from data_status import atomic_text, published_event_sources
 from scripts.build_portfolio_data import performance_preview
 
 OUT = ROOT / 'data' / 'return-comparison'
@@ -61,6 +61,8 @@ def build(offline=False):
             rows.append({**meta, 'status': 'unavailable', 'missing': '缺可复核的授权指数日线'})
     atomic_text(OUT / 'catalog.json', encode({'schemaVersion': 1, 'assets': rows}))
     used = {Path(row['historyUrl']).name for row in rows if row.get('historyUrl')} | {'catalog.json'}
+    used.update(Path(path).name for path in published_event_sources(ROOT)
+                if Path(path).parent == OUT.relative_to(ROOT))
     for path in OUT.glob('*.json'):
         if path.name not in used:
             path.unlink()

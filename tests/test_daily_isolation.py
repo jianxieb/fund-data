@@ -13,7 +13,7 @@ import refresh
 import data_quality
 import strategy_backtest
 from data_status import atomic_text, file_transaction, replace_snapshot_blocks
-from scripts import build_portfolio_data, check_refresh, post_refresh
+from scripts import build_portfolio_data, build_return_indices, check_refresh, post_refresh
 
 
 def block(name, value):
@@ -203,6 +203,81 @@ class DailyIsolationTests(unittest.TestCase):
             self.assertTrue(step['retainedPrevious'])
             self.assertEqual((folder / 'catalog.json').read_text(), 'old catalog')
             self.assertEqual((folder / 'old.json').read_text(), 'old referenced history')
+
+    def test_event_chapters_wait_for_the_new_index_catalog_while_unrelated_tasks_run_together(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            independent = set(post_refresh.TASKS) - {'fund_actions', 'financial_events'}
+            barrier = threading.Barrier(len(independent))
+            done, guard = set(), threading.Lock()
+
+            def run_task(name):
+                if name in independent:
+                    barrier.wait(3)
+                if name == 'financial_events':
+                    self.assertTrue(independent <= done)
+                with guard:
+                    done.add(name)
+                return dict(dataset=name, status='completed', exitCode=0, seconds=0)
+
+            def quality(name, *args, **kwargs):
+                self.assertEqual(name, 'quality')
+                self.assertEqual(done, set(post_refresh.TASKS))
+                return dict(dataset=name, status='completed', exitCode=0, seconds=0)
+
+            with patch.object(post_refresh, 'DATA', Path(temporary)), \
+                    patch.object(post_refresh, 'run_task', side_effect=run_task), \
+                    patch.object(refresh, 'execute', side_effect=quality):
+                self.assertEqual(post_refresh.main(), 0)
+
+    def test_index_cleanup_preserves_histories_used_by_retained_event_chapters(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            folder = root / 'data/return-comparison'
+            folder.mkdir(parents=True)
+            old = folder / 'IXIC-old.json'
+            old.write_text('previous source still used by published chapters')
+            unused = folder / 'IXIC-unreferenced.json'
+            unused.write_text('no published consumer')
+            event_path = root / 'data/financial-events-history.json'
+            event_path.write_text(json.dumps({'events': {'kept': [{'sourceFile': old.relative_to(root).as_posix()}]}}))
+            indices_path = root / 'indices.json'
+            indices_path.write_text('{"indices":{}}')
+            with patch.object(build_return_indices, 'ROOT', root), patch.object(build_return_indices, 'OUT', folder), \
+                    patch.object(build_return_indices.indices, 'HISTORY_PATH', indices_path), \
+                    patch.object(build_return_indices.indices, 'SPECS', []), \
+                    patch.object(build_return_indices.strategy_backtest, 'load_history', return_value={'2026-10-23': 100, '2026-10-26': 101}):
+                rows = build_return_indices.build(offline=True)
+                self.assertTrue(old.exists())
+                self.assertFalse(unused.exists())
+                self.assertEqual(len(build_return_indices.check()), 3)
+                # Once the consumer advances, the next cleanup may collect the
+                # superseded file; protection is tied to live references.
+                event_path.write_text(json.dumps({'events': {'fresh': [{'sourceFile': rows[2]['historyUrl']}]}}))
+                build_return_indices.build(offline=True)
+                self.assertFalse(old.exists())
+                self.assertTrue((root / rows[2]['historyUrl']).exists())
+
+    def test_portfolio_cleanup_preserves_event_sources_until_the_consumer_advances(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            folder = root / 'data/portfolio'
+            (folder / 'us').mkdir(parents=True)
+            paths = {name: folder / 'us' / (name + '.json') for name in ('new', 'old', 'unused')}
+            for name, path in paths.items():
+                path.write_text(name)
+            current = paths['new'].relative_to(root).as_posix()
+            (folder / 'catalog.js').write_text('var PORTFOLIO_CATALOG=' + json.dumps({'assets': [{'historyUrl': current}]}))
+            event_path = root / 'data/financial-events-history.json'
+            event_path.write_text(json.dumps({'events': {'kept': [{'sourceFile': paths['old'].relative_to(root).as_posix()}]}}))
+            with patch.object(build_portfolio_data, 'ROOT', root), patch.object(build_portfolio_data, 'OUTPUT', folder):
+                build_portfolio_data.prune()
+                self.assertTrue(paths['new'].exists())
+                self.assertTrue(paths['old'].exists())
+                self.assertFalse(paths['unused'].exists())
+                event_path.write_text(json.dumps({'events': {'fresh': [{'sourceFile': current}]}}))
+                build_portfolio_data.prune()
+                self.assertTrue(paths['new'].exists())
+                self.assertFalse(paths['old'].exists())
 
 
 if __name__ == '__main__':

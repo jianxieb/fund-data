@@ -23,6 +23,15 @@ def atomic_text(path, text):
     os.replace(temporary, path)
 
 
+def published_event_sources(root):
+    """Keep histories alive while the published event chapters still use them."""
+    path = Path(root) / 'data/financial-events-history.json'
+    if not path.exists():
+        return set()
+    events = json.loads(path.read_text(encoding='utf-8'))['events']
+    return {row['sourceFile'] for rows in events.values() for row in rows if row.get('sourceFile')}
+
+
 @contextmanager
 def file_transaction(path):
     """Serialize only short file commits; network requests stay outside the lock."""

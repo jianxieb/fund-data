@@ -1,0 +1,65 @@
+{
+  "date": "2026-10-27",
+  "failedRun": {
+    "id": 40509092578,
+    "url": "https://github.com/jianxieb/fund-data/actions/runs/40509092578",
+    "head": "a591fd37aa100424ff51ca3c96c932adee1acedf",
+    "failedCommand": "python3 scripts/build_financial_events.py --check",
+    "failure": "FileNotFoundError: data/return-comparison/IXIC-dab3e7f83cc1c4d1.json",
+    "pythonTestsPassed": 480,
+    "javascriptTestsPassed": 822,
+    "deployment": "skipped"
+  },
+  "cause": [
+    "return_indices and financial_events ran concurrently although event chapters consume the index catalog",
+    "history pruning did not retain sourceFile paths still referenced by the published event dataset",
+    "daily data validation did not check the event-history artifact against its linked sources"
+  ],
+  "repair": {
+    "usesSavedDataOnly": true,
+    "originalLinkedSources": {
+      "data/return-comparison/IXIC-dab3e7f83cc1c4d1.json": "dab3e7f83cc1c4d18879d81634906eb8b87d5f25c6106412ba7f0041077d7fb7",
+      "data/return-comparison/GSPC-30b4a4a6deca3dc8.json": "30b4a4a6deca3dc84bbf9831c461735902ee9a90849e57cfb758dd48ae98a0e4",
+      "data/portfolio/us/SPY-b535f7e7a5ddd55c.json": "b535f7e7a5ddd55c77dc022be91e324b02db77f2c5c8376f5433439feee39c6e",
+      "data/portfolio/us/TLT-4ae7f75cac5c2551.json": "4ae7f75cac5c2551406ade87847017071857201424d9d8e6be6b0c28f421eaa6",
+      "data/portfolio/us/QQQ-71642ec79a802091.json": "71642ec79a8020910a3cd6e0f736de4380ba43e9d50244dafa23d73e9a2e8178"
+    },
+    "currentVerifiedLinkedSources": {
+      "data/return-comparison/IXIC-d0fa93d4551aa9e5.json": "d0fa93d4551aa9e550a7917ad9f9e96dc590f21429ffbf31c1901614b018a816",
+      "data/return-comparison/GSPC-440c0e839d4417da.json": "440c0e839d4417da1e12757989d0c194400b60e416c7fc23678a61335d461cf2",
+      "data/portfolio/us/SPY-f96daba8fdec33e1.json": "f96daba8fdec33e16c965b79457ef957ead4e3f29fb6040d14d288b7c4178aeb",
+      "data/portfolio/us/TLT-462ba1ba7b277b90.json": "462ba1ba7b277b9069bd62a358ccd344767e6d02651f7589e06ce6479f91cfac",
+      "data/portfolio/us/QQQ-3c9586be12a46132.json": "3c9586be12a4613223caa853f4f60dc4cf9b06384c4b562e8fb3e04609b4f9a4"
+    },
+    "selfContainedRowsUnchanged": 23,
+    "chapters": 15,
+    "assetRows": 56,
+    "referencesValid": true,
+    "eventDataSha256": "2bf64b6f789395160c56115f76aeadc453b0aede2b1dd1b1b5199099b0e53cad"
+  },
+  "localChecks": {
+    "pythonTests": {
+      "dailyIsolation": 14,
+      "portfolioData": 12,
+      "refreshPublication": 10,
+      "refreshGate": 3
+    },
+    "javascriptFinancialEventTests": 7,
+    "sourceChecks": [
+      "return_indices",
+      "financial_events",
+      "portfolio_data",
+      "etf_distributions"
+    ],
+    "qualityErrors": 0,
+    "retainedSnapshotGate": "passed",
+    "resourceVersions": 57
+  },
+  "unchangedMoneyFlowFiles": {
+    "assets/money-flow.js": "9c90a1f5dfd08df259917811fc2c2ff219ee8b5b813627cecc355b708e484cfb",
+    "assets/money-flow-model.js": "0afc210291f001a802de96de53cbfd51f52b4abb54c324fd765776d9fd962710",
+    "assets/style.css": "bf0347eae974510eba67fe745461b40fdd603a6a3e68f02cd26982aadb60b45d",
+    "data/money-flow.js": "f4ebedd80b13eb798c4e02d205ef0f6fd6d5ee82cc6e860d827b0d664a1da492",
+    "data/money-flow-quotes.js": "958b3186eddad8cf02a0d37a3bc436450530ec98dc82c30f8c14a5ff22927be9"
+  }
+}
