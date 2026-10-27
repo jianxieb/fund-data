@@ -1,11 +1,11 @@
 {
-  "startedAt": "2026-10-26T18:03:50+00:00",
+  "startedAt": "2026-10-27T01:31:42+00:00",
   "steps": [
     {
       "dataset": "fund_actions",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 0.17,
+      "seconds": 0.26,
       "log": ".tmp-snap/refresh-fund_actions.log",
       "publishedRollback": false,
       "retainedPrevious": false,
@@ -15,7 +15,7 @@
       "dataset": "crossborder",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 9.17,
+      "seconds": 8.78,
       "log": ".tmp-snap/refresh-crossborder.log",
       "publishedRollback": false,
       "retainedPrevious": false,
@@ -25,7 +25,7 @@
       "dataset": "etf_distributions",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 1.47,
+      "seconds": 2.95,
       "log": ".tmp-snap/refresh-etf_distributions.log",
       "publishedRollback": false,
       "retainedPrevious": false,
@@ -35,7 +35,7 @@
       "dataset": "return_indices",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 1.8,
+      "seconds": 1.74,
       "log": ".tmp-snap/refresh-return_indices.log",
       "publishedRollback": false,
       "retainedPrevious": false,
@@ -43,19 +43,19 @@
     },
     {
       "dataset": "financial_events",
-      "status": "completed",
-      "exitCode": 0,
-      "seconds": 4.26,
+      "status": "failed",
+      "exitCode": 1,
+      "seconds": 3.07,
       "log": ".tmp-snap/refresh-financial_events.log",
-      "publishedRollback": false,
-      "retainedPrevious": false,
+      "publishedRollback": true,
+      "retainedPrevious": true,
       "sourcePartial": false
     },
     {
       "dataset": "bank_fx",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 4.15,
+      "seconds": 3.38,
       "log": ".tmp-snap/refresh-bank_fx.log",
       "publishedRollback": false,
       "retainedPrevious": false,
@@ -65,7 +65,7 @@
       "dataset": "market_history",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 10.56,
+      "seconds": 16.22,
       "log": ".tmp-snap/refresh-market_history.log",
       "publishedRollback": false,
       "retainedPrevious": false,
@@ -75,13 +75,13 @@
       "dataset": "quality",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 1.16,
+      "seconds": 1.73,
       "log": ".tmp-snap/refresh-quality.log",
       "publishedRollback": false,
       "retainedPrevious": false,
       "sourcePartial": false
     }
   ],
-  "completedAt": "2026-10-26T18:04:02+00:00",
-  "status": "completed"
+  "completedAt": "2026-10-27T01:32:01+00:00",
+  "status": "partial"
 }

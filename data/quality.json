@@ -1,14 +1,54 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-10-26T18:04:02+00:00",
+  "checkedAt": "2026-10-27T01:32:01+00:00",
   "asOf": "2026-10-27",
   "status": "unverified",
   "summary": {
     "errors": 0,
-    "warnings": 4,
+    "warnings": 9,
     "unverified": 24
   },
   "datasets": [
+    {
+      "id": "source_refresh",
+      "label": "本次未更新的来源",
+      "asOf": null,
+      "dateRange": null,
+      "records": 0,
+      "issues": [
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:020516：本次历史接口未更新：The read operation timed out；保留历史截至2026-10-23",
+          "affected": "fund:020516"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:018064：本次历史接口未更新：The read operation timed out；保留历史截至2026-10-23",
+          "affected": "fund:018064"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:513650：本次历史接口未更新：<urlopen error [Errno 104] Connection reset by peer>；保留历史截至2026-10-23",
+          "affected": "fund:513650"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:159659：本次历史接口未更新：The read operation timed out；保留历史截至2026-10-23",
+          "affected": "fund:159659"
+        },
+        {
+          "code": "source_refresh_retained",
+          "severity": "warning",
+          "message": "金融事件历史：FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/fund-data/fund-data/data/return-comparison/IXIC-dab3e7f83cc1c4d1.json'；保留已发布数据及原日期",
+          "affected": "financial_events"
+        }
+      ],
+      "status": "warning"
+    },
     {
       "id": "funds",
       "label": "海外基金",
@@ -217,10 +257,10 @@
     {
       "id": "benchmarks",
       "label": "海外指数与ETF基准",
-      "asOf": "2026-10-23",
+      "asOf": "2026-10-26",
       "dateRange": [
         "2026-10-23",
-        "2026-10-23"
+        "2026-10-26"
       ],
       "records": 36,
       "issues": [
@@ -269,10 +309,10 @@
     {
       "id": "stocks",
       "label": "股票观察清单",
-      "asOf": "2026-10-26",
+      "asOf": "2026-10-27",
       "dateRange": [
         "2026-10-26",
-        "2026-10-26"
+        "2026-10-27"
       ],
       "records": 71,
       "issues": [],
