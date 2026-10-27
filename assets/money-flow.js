@@ -344,7 +344,8 @@
     return M.calculatorPreferredPlans(D, window.MONEY_FLOW_QUOTES || {}, today()).map(p => {
       const r = p.calculated.selected || p.calculated.partial;
       return { ...p, rows: r?.rows || [], complete: !!p.calculated.selected && !!r?.complete, total: r?.costCny };
-    });
+    }).sort((a, b) => Number(b.complete) - Number(a.complete) ||
+      (Number.isFinite(a.total) ? a.total : Infinity) - (Number.isFinite(b.total) ? b.total : Infinity));
   }
   function toolbar() {
     visiblePresets = candidatePresets();
@@ -371,7 +372,7 @@
           '<span class="flow-preset-node" style="grid-column:' + stop.column + '" data-route-role="' + (stop.key || 'consumption') + '"><span class="flow-preset-account">' + accountGlyph(stop.key, stop.item) + '<strong>' + esc(stop.name) + '</strong></span>' +
           '<small>' + esc(stop.caption) + '</small></span>').join('');
         const hasPrice = !!p.calculated.selected && Number.isFinite(p.total);
-        const priceLabel = !p.complete ? '已计费用' : p.rows.some(x => x.estimate) ? '全程参考' : '全程费用';
+        const priceLabel = !p.complete ? '已计费用' : p.rows.some(x => x.estimate) ? '全程参考损耗' : '全程费用';
         const missing = !p.complete ? r?.missing?.join('、') || p.calculated.error || '缺报价' : '';
         const price = '<span class="flow-preset-quote"><span class="flow-preset-price"><small>' + priceLabel + '</small><b>' +
           (hasPrice ? pct(p.total / 100000) : '—') + '</b></span></span>';

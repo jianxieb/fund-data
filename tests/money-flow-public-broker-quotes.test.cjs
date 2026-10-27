@@ -36,12 +36,12 @@ test('public IBKR ask funds USD, bid returns CNH, and RMB purchases use face amo
   }
 });
 
-test('saved quotes and explicitly authorized estimates price all five preferred routes', () => {
+test('saved quotes and explicitly authorized estimates price every remaining preferred route', () => {
   for (const plan of plans) {
     assert.equal(plan.calculated.selected.complete, true);
     assert.deepEqual(plan.calculated.selected.missing, []);
   }
-  for (const plan of plans.slice(1, 3)) {
+  for (const plan of plans.filter(plan => plan.config.broker === 'hsbc')) {
     const r = plan.calculated.selected;
     assert.equal(r.estimatedExitFx, true);
     assert.match(row(r, 'exitFx').estimate, /汇丰本行/);
@@ -51,7 +51,7 @@ test('saved quotes and explicitly authorized estimates price all five preferred 
     close(r.exitPrice, Q.offshoreUsd.hsbc.quotes.CNH.bidPerUsd);
     close(row(r, 'cardFx').cny, 0);
   }
-  for (const key of ['withdrawMiddle', 'returnOther']) assert.ok(row(plans[3].calculated.selected, key).estimate);
+  for (const key of ['withdrawMiddle', 'returnOther']) assert.ok(row(plans.find(plan => plan.id === 'boc-ibkr').calculated.selected, key).estimate);
   for (const plan of plans) conserved(plan.calculated.selected);
 });
 
@@ -129,7 +129,7 @@ test('HSBC estimate preserves saved legs and timestamps, is scoped to HSBC, and 
 });
 
 test('wire estimates avoid double counting receiving fees and actual receipts override each component', () => {
-  const config = plans[3].config;
+  const config = plans.find(plan => plan.id === 'boc-ibkr').config;
   const calculate = changes => M.calculatorJourney({ ...config, ...changes }, D, Q).selected;
   const r = calculate({});
   close(row(r, 'returnInward').cny, 60 * r.refs.HKD);

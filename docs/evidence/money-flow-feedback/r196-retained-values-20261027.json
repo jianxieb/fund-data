@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-27",
+  "removed": "cib-za",
+  "integratedRemote": "35716706",
+  "quoteHash": "958b3186eddad8cf02a0d37a3bc436450530ec98dc82c30f8c14a5ff22927be9",
+  "quoteFileUnchangedFromIntegratedRemote": true,
+  "retainedConfigurationsAndCostsUnchanged": true,
+  "plans": [
+    {
+      "id": "cnh-ibkr",
+      "costCny": 43.61489895894453,
+      "complete": true
+    },
+    {
+      "id": "cib-wise-ibkr",
+      "costCny": 141.6309677678305,
+      "complete": true
+    },
+    {
+      "id": "boc-ibkr",
+      "costCny": 567.2790682551542,
+      "complete": true
+    },
+    {
+      "id": "cib-trade25",
+      "costCny": 1112.1759137832232,
+      "complete": true
+    }
+  ]
+}
