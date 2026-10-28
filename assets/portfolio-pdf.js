@@ -185,6 +185,43 @@
     if (r.benchmark) paragraph('对照持有回报：年化 ' + pct(r.benchmark.annualReturn) + '，累计 ' + pct(r.benchmark.totalReturn) + '；同区间、同币种、同税率及期末设置，不计用户交易费。');
     if (r.benchmarkError) paragraph('对照数据：' + r.benchmarkError, C.negative);
 
+    if (r.timing) {
+      const timing = r.timing, q = timing.latest;
+      section('买卖时机与长期位置', q ? '截至 ' + timing.end + ' 共同收盘 · 参考历史 ' + timing.first + ' - ' + timing.end : '历史证据不足');
+      if (timing.historical) paragraph('历史时点复盘，不能代表今天的买卖时机。', C.gold);
+      if (timing.missing) paragraph(timing.missing, C.negative);
+      if (q) {
+        const position = { low: '偏低', middle: '中间区间', high: '偏高' }[timing.band] || '样本不足';
+        const trend = q.trend === 'above' ? '高于200日均线' : q.trend === 'below' ? '低于200日均线' : q.trend === 'flat' ? '接近200日均线' : '均线历史不足';
+        paragraph('目标组合' + trend + '，偏离历史分位处于' + position + '；分位衡量相对均线的位置，不代表估值。', C.ink);
+        cards([
+          ['200日均线偏离', pct(q.deviation), trend], ['偏离历史分位', pct(q.percentile), '只使用此前历史'],
+          ['距历史高点', pct(q.drawdown), '目标权重参考组合'], ['近一年波动', pct(q.volatility1y), name + '计价']
+        ]);
+        paragraph('参考组合按目标权重在每个共同收盘复位，现金零息，已含产品年费和分红，未计交易费与投资者税；与实际投入和不再平衡后的账户分开。');
+        const evidenceRows = (timing.horizons || []).flatMap(h => [['类似月份', h.matched], ['全部可比月份', h.baseline]].map(([group, s]) =>
+          ['随后' + h.years + '年\n' + group, pct(s.median), pct(s.positiveRate), pct(s.worstReturn), pct(s.worstDrawdown), String(s.n), String(s.nonOverlappingN)]));
+        if (evidenceRows.length) table(['持有期 / 样本', '收益中位数', '正收益比例', '最差收益', '期间最深回撤', '月份数', '不重叠窗口'], evidenceRows, [1.8, 1.25, 1.2, 1.25, 1.3, .8, .9], { numeric: [1, 2, 3, 4, 5, 6] });
+        (timing.horizons || []).filter(h => h.matched.n === 0).forEach(h => paragraph('类似位置缺完整' + h.years + '年后续样本，无法比较该持有期的历史结果。', C.gold));
+        paragraph('随后1年和3年均为累计收益；使用当时可见的分位分组，从信号后的下一共同收盘进入，只纳入截至分析日已经完整结束的持有期。');
+        paragraph('月度持有期重叠，历史正收益比例不是未来胜率；不重叠窗口较少，尚未验证扣税费后的择时优势，不能据此认定买点更优或应当清仓。', C.gold);
+        const grossCashWeight = r.grossValue > 0 ? r.cash / r.grossValue * 100 : null;
+        const holdings = r.holdings.map(h => ({ ...h, grossWeight: r.grossValue > 0 ? h.grossValue / r.grossValue * 100 : null }));
+        const overweight = holdings.some(h => finite(h.grossWeight) && h.grossWeight - h.targetWeight >= 5);
+        const cashShortfall = finite(grossCashWeight) && r.cashWeight - grossCashWeight >= 5;
+        paragraph('模拟账户期末仓位 · ' + r.end + ' · 使用未减浮盈预留税的市值计算', C.ink);
+        table(['持仓 / 现金', '目标权重', '实际市值权重', '偏离 / 百分点'], [
+          ...holdings.map(h => [h.name + '\n' + h.code, pct(h.targetWeight), pct(h.grossWeight), finite(h.grossWeight) ? number(h.grossWeight - h.targetWeight) : '—']),
+          [name + '现金', pct(r.cashWeight), pct(grossCashWeight), finite(grossCashWeight) ? number(grossCashWeight - r.cashWeight) : '—']
+        ], [2.4, 1, 1.2, 1.2], { numeric: [1, 2, 3] });
+        const commonDays = new Set((timing.curve || []).map(row => row.day)), account = r.curve.filter(row => commonDays.has(row.day));
+        const mean = account.length >= 200 ? account.slice(-200).reduce((sum, row) => sum + row.nav, 0) / 200 : null;
+        paragraph('账户共同收盘 ' + (account.at(-1)?.day || '缺数据') + '：净值相对200日均线 ' + pct(mean ? (account.at(-1).nav / mean - 1) * 100 : null) + '；该日回撤 ' + pct(account.at(-1)?.drawdown) + (account.length < 200 ? '；账户区间不足200个共同收盘，均线留空。' : '。'));
+        if (cfg.tax?.liquidate) paragraph('此模拟已期末清仓，账户为现金；不把清仓后的仓位差异作为超配信号。');
+        else if (overweight || cashShortfall) paragraph((cashShortfall ? '现金低于目标至少5个百分点；每笔投入预留现金不代表账户始终保持目标现金比例。' : '部分持仓高于目标至少5个百分点。') + '若原目标不变，配置复核应关注恢复目标权重；这是仓位管理，与买卖时机判断分开。', C.negative);
+      }
+    }
+
     section('区间快照', '近1/2/3/5年分别重新建仓，使用相同组合与策略；组合与对照收益均为现金流中性。');
     const windows = r.snapshots || [];
     table(['指标', ...windows.map(s => '近' + s.years + '年\n' + (s.error ? '无法模拟' : s.start + '\n' + s.end))], [

@@ -101,7 +101,7 @@ test('single-page PDF has binary-safe xref offsets, contiguous bands and correct
 function uiFixture(configure) {
   const { input } = fixture(), downloads = [], notices = [], reports = [], renderStates = [];
   if (configure) configure(input);
-  const context = { window: { Changheng: M, ChanghengPortfolioModel: P, PORTFOLIO_CATALOG: input.catalog,
+  const context = { window: { Changheng: M, ChanghengPortfolioModel: P, ChanghengPortfolioTimingModel: require('../assets/portfolio-timing-model.js'), PORTFOLIO_CATALOG: input.catalog,
     ChanghengPortfolioPdf: { snapshot: Pdf.snapshot, async create(report) { reports.push(report); return new Blob(['PDF']); } } },
     localStorage: { getItem: () => JSON.stringify(input.config), setItem() {} },
     document: { getElementById: () => null, querySelectorAll: () => [] }, TextEncoder,
@@ -119,6 +119,113 @@ function uiFixture(configure) {
   const monthly = value => ui.handleInput({ id: 'portfolio-monthly', value: String(value), dataset: { portfolioField: 'monthly' } });
   return { ui, action, monthly, context, helpers, downloads, notices, reports, renderStates, input };
 }
+
+function timingUiFixture(configure) {
+  const f = uiFixture(input => {
+    Object.assign(input.config, { monthly: 0, rebalance: 'none', transactionFee: 0 });
+    input.config.positions.forEach((position, index) => { position.weight = index < 2 ? 30 : 0; });
+    // Sustained asset growth makes the difference between contribution weights
+    // and the account's actual exposure material, without stubbing the account.
+    input.histories[input.config.positions[0].id].series.forEach((row, index) => { row[1] = 100 * Math.exp(index * .004); });
+    if (configure) configure(input);
+  });
+  f.helpers.pct = value => M.finite(value) ? value.toFixed(2) + '%' : '—';
+  f.helpers.card = (title, subtitle, html) => '<section><h2>' + title + '</h2><p>' + subtitle + '</p>' + html + '</section>';
+  return f;
+}
+
+test('historical timing review labels its date and suppresses present-day buy and sell advice', async () => {
+  const f = timingUiFixture(input => Object.assign(input.config, { years: 'custom', start: '2024-01-01', end: '2025-01-08' }));
+  const T = require('../assets/portfolio-timing-model.js');
+  let timing;
+  f.context.window.ChanghengPortfolioTimingModel = { analyze(input, options) {
+    timing = T.analyze(input, { ...options, today: '2026-10-28' }); return timing;
+  } };
+  await f.action('run');
+  const html = f.ui.view(f.helpers), account = P.simulate(f.input);
+  assert.equal(timing.historical, true);
+  assert.ok(account.holdings.some(h => h.actualWeight - h.targetWeight > 5));
+  assert.match(html, /截至 2025-01-08 共同收盘 · 历史时点复盘/);
+  assert.match(html, /历史时点复盘，不能代表今天的买卖时机/);
+  assert.match(html, /不能用于判断今天的买入时机/);
+  assert.match(html, /不能用于判断今天是否卖出/);
+  assert.doesNotMatch(html, /优先考虑卖出超配部分|可按原计划分批投入|缺最近行情/);
+});
+
+test('stale quotes suppress the overweight sell recommendation while retaining dated exposure evidence', async () => {
+  const f = timingUiFixture(), T = require('../assets/portfolio-timing-model.js');
+  let timing;
+  f.context.window.ChanghengPortfolioTimingModel = { analyze(input, options) {
+    timing = T.analyze(input, { ...options, today: '2026-10-28' }); return timing;
+  } };
+  await f.action('run');
+  const html = f.ui.view(f.helpers), account = P.simulate(f.input);
+  assert.equal(timing.status, 'stale'); assert.equal(timing.historical, false);
+  assert.ok(account.cashWeight - account.cash / account.grossValue * 100 > 5);
+  assert.match(html, /最新共同报价为 2026-01-08/);
+  assert.match(html, /暂不从当前数据推导卖出信号/);
+  assert.match(html, /模拟账户的期末风险 · 2026-01-08/);
+  assert.match(html, /每笔投入预留现金，不代表账户一直保持该现金比例/);
+  assert.doesNotMatch(html, /优先考虑卖出超配部分|可按原计划分批投入/);
+});
+
+test('timing evidence names each missing forward horizon even when current position metrics are available', async () => {
+  const f = timingUiFixture(), T = require('../assets/portfolio-timing-model.js');
+  f.context.window.ChanghengPortfolioTimingModel = { analyze(input, options) {
+    const timing = T.analyze(input, { ...options, today: options.end });
+    // Isolate rendering of a valid current diagnostic with no matured matches.
+    return { ...timing, status: 'available', missing: null, band: 'low', latest: { ...timing.latest, percentile: 10 } };
+  } };
+  await f.action('run');
+  const html = f.ui.view(f.helpers);
+  assert.match(html, /当前分组尚无完整1年后续样本，不能比较该持有期的买入优势/);
+  assert.match(html, /当前分组尚无完整3年后续样本，不能比较该持有期的买入优势/);
+  assert.match(html, /0个月<small>不重叠窗口 0 个/);
+  assert.match(html, /正收益比例不是未来胜率/);
+  const diagnostic = html.match(/<section><h2>买卖时机<\/h2>[\s\S]*?<\/section>/)[0];
+  assert.doesNotMatch(diagnostic, /NaN|undefined/);
+});
+
+test('mixed-market timing labels the common close separately from the later account valuation date', async () => {
+  const f = timingUiFixture(input => {
+    const asset = input.catalog.assets[1], history = input.histories[asset.id];
+    history.series = history.series.filter(([day]) => day !== '2026-01-08');
+    history.series.push(['2026-01-09', history.series.at(-1)[1] * 1.01]);
+    history.asOf = asset.asOf = '2026-01-09';
+  });
+  const T = require('../assets/portfolio-timing-model.js');
+  let timing;
+  f.context.window.ChanghengPortfolioTimingModel = { analyze(input, options) {
+    timing = T.analyze(input, { ...options, today: '2026-01-09' }); return timing;
+  } };
+  await f.action('run');
+  const html = f.ui.view(f.helpers), account = P.simulate(f.input);
+  assert.equal(account.end, '2026-01-08'); assert.equal(timing.end, '2026-01-07');
+  assert.match(html, /截至 2026-01-07 共同收盘/);
+  assert.match(html, /模拟账户的期末风险 · 2026-01-08/);
+  assert.match(html, /账户净值相对200日均线 [^<]+ · 回撤 [^<]+（2026-01-07）/);
+});
+
+test('timing renders distinct reference metrics and the actual drifting account instead of reusing target weights', async () => {
+  const f = timingUiFixture(), T = require('../assets/portfolio-timing-model.js');
+  let timing;
+  f.context.window.ChanghengPortfolioTimingModel = { analyze(input, options) {
+    timing = T.analyze(input, { ...options, today: options.end }); return timing;
+  } };
+  await f.action('run');
+  const html = f.ui.view(f.helpers), account = P.simulate(f.input), fmt = f.helpers.pct;
+  const latest = account.curve.at(-1), ma = account.curve.slice(-200).reduce((total, point) => total + point.nav, 0) / 200;
+  const accountDeviation = (latest.nav / ma - 1) * 100;
+  assert.notEqual(fmt(timing.latest.deviation), fmt(accountDeviation));
+  assert.ok(html.includes('<span>200日均线偏离</span><strong>' + fmt(timing.latest.deviation)));
+  assert.ok(html.includes('账户净值相对200日均线 ' + fmt(accountDeviation) + ' · 回撤 ' + fmt(latest.drawdown)));
+  for (const holding of account.holdings) {
+    assert.ok(html.includes(holding.code + ' ' + fmt(holding.grossValue / account.grossValue * 100) + '（目标 ' + fmt(holding.targetWeight) + '）'));
+  }
+  assert.ok(html.includes('现金 ' + fmt(account.cash / account.grossValue * 100) + '（目标 40.00%）'));
+  assert.match(html, /参考组合使用目标权重、每个共同收盘复位、零息现金/);
+  assert.match(html, /它与上面的模拟账户不同/);
+});
 
 test('running with a cleared or saved blank allocation fills zero and preserves the 40% cash budget', async () => {
   for (const mode of ['weight', 'amount', 'saved']) {
