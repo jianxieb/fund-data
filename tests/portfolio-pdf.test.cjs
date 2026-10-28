@@ -104,7 +104,7 @@ function uiFixture(configure) {
   const context = { window: { Changheng: M, ChanghengPortfolioModel: P, PORTFOLIO_CATALOG: input.catalog,
     ChanghengPortfolioPdf: { snapshot: Pdf.snapshot, async create(report) { reports.push(report); return new Blob(['PDF']); } } },
     localStorage: { getItem: () => JSON.stringify(input.config), setItem() {} },
-    document: { getElementById: () => null }, TextEncoder,
+    document: { getElementById: () => null, querySelectorAll: () => [] }, TextEncoder,
     fetch: async url => ({ ok: true, text: async () => JSON.stringify(Object.values(input.histories).find(h => input.catalog.assets.find(a => a.id === h.id).historyUrl === url)) }) };
   vm.createContext(context);
   vm.runInContext(fs.readFileSync(path.resolve(__dirname, '../assets/portfolio.js'), 'utf8'), context);
@@ -119,6 +119,37 @@ function uiFixture(configure) {
   const monthly = value => ui.handleInput({ id: 'portfolio-monthly', value: String(value), dataset: { portfolioField: 'monthly' } });
   return { ui, action, monthly, context, helpers, downloads, notices, reports, renderStates, input };
 }
+
+test('running with a cleared or saved blank allocation fills zero and preserves the 40% cash budget', async () => {
+  for (const mode of ['weight', 'amount', 'saved']) {
+    const f = uiFixture(input => {
+      input.config.monthly = 0;
+      input.config.positions.forEach((p, i) => { p.weight = i < 2 ? 30 : mode === 'saved' ? null : 0; });
+    });
+    const id = f.input.config.positions[2].id;
+    if (mode !== 'saved') f.ui.handleInput({ id: '', value: '', validity: { badInput: false },
+      dataset: mode === 'amount' ? { portfolioAmount: id } : { portfolioWeight: id } });
+    await f.action('run');
+    const html = f.ui.view(f.helpers);
+    assert.doesNotMatch(html, /请修正无效权重|每项权重须/);
+    assert.ok(html.includes('value="0" data-portfolio-weight="' + id + '"'));
+    await f.action('export-pdf');
+    assert.equal(f.reports.length, 1, mode);
+    assert.equal(f.reports[0].result.config.positions[2].weight, 0);
+    assert.equal(f.reports[0].result.cashWeight, 40);
+    assert.equal(f.reports[0].result.holdings.length, 2);
+  }
+});
+
+test('blank allocation defaults never hide malformed, negative or excessive weights', async () => {
+  for (const [value, badInput, message] of [['', true, /每项权重须/], ['-1', false, /每项权重须/],
+    ['101', false, /每项权重须/], ['80', false, /权重合计超过100/]]) {
+    const f = uiFixture();
+    f.ui.handleInput({ id: '', value, validity: { badInput }, dataset: { portfolioWeight: f.input.config.positions[2].id } });
+    await f.action('run');
+    assert.match(f.ui.view(f.helpers), message);
+  }
+});
 
 test('funding XIRR stays annualized beside portfolio returns in both display modes and exports', async () => {
   const f = uiFixture();

@@ -66,6 +66,10 @@
   }
   async function run() {
     if (running || !catalog) return;
+    for (const position of draft.positions) {
+      if (position.weight == null || typeof position.weight === 'string' && !position.weight.trim()) position.weight = 0;
+    }
+    persist();
     const params = config(), token = ++runId;
     try { P.validateConfig(params, new Set(catalog.assets.map(a => a.id))); }
     catch (e) { error = e.message; update(); return; }
@@ -359,7 +363,7 @@
     }
     if (el.dataset.portfolioWeight || el.dataset.portfolioAmount) {
       const p = draft.positions.find(p => p.id === (el.dataset.portfolioWeight || el.dataset.portfolioAmount));
-      const value = el.value.trim() ? Number(el.value) : NaN;
+      const value = el.value.trim() ? Number(el.value) : el.validity?.badInput ? NaN : 0;
       if (p) p.weight = el.dataset.portfolioAmount ? P.weightFromAmount(draft.initial, value) : value;
       touch();
       syncBudget(el);

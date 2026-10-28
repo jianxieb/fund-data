@@ -1,0 +1,81 @@
+{
+  "date": "2026-10-28",
+  "scenario": "Two holdings at 30% each and a blank fund weight; other holdings at zero",
+  "before": {
+    "alerts": [],
+    "allocation": "标的合计 60.00%\n现金 40,000.00 元\nETF\n60.00%\n个股\n0.00%\n基金\n0.00%\n现金\n40.00%\n其中2x ETF\n30.00%\n其中3x ETF\n30.00%",
+    "weights": [
+      {
+        "id": "us:SPY",
+        "value": "0"
+      },
+      {
+        "id": "stock:601138",
+        "value": "0"
+      },
+      {
+        "id": "fund:050025",
+        "value": ""
+      },
+      {
+        "id": "us:SSO",
+        "value": "30"
+      },
+      {
+        "id": "us:UPRO",
+        "value": "30"
+      }
+    ]
+  },
+  "after": {
+    "alerts": [],
+    "allocation": "标的合计 60.00%\n现金 40,000.00 元\nETF\n60.00%\n个股\n0.00%\n基金\n0.00%\n现金\n40.00%\n其中2x ETF\n30.00%\n其中3x ETF\n30.00%",
+    "inputs": [
+      {
+        "id": "us:SPY",
+        "value": "0"
+      },
+      {
+        "id": "stock:601138",
+        "value": "0"
+      },
+      {
+        "id": "fund:050025",
+        "value": "0"
+      },
+      {
+        "id": "us:SSO",
+        "value": "30000"
+      },
+      {
+        "id": "us:UPRO",
+        "value": "30000"
+      }
+    ],
+    "result": "资金年化 XIRR\n12.32%\n按实际投入时间和金额计算\n组合年化收益\n9.83%\n现金流中性 · 对照持有 +11.09%\n期末税后估值\n423,418元\n累计投入 280,000 元\n税后盈亏\n143,418元\n已减浮盈预留税 26,249.89 元\n最大回撤\n-31.72%\n年化波动 22.47%",
+    "weights": [
+      {
+        "id": "us:SPY",
+        "value": "0"
+      },
+      {
+        "id": "stock:601138",
+        "value": "0"
+      },
+      {
+        "id": "fund:050025",
+        "value": "0"
+      },
+      {
+        "id": "us:SSO",
+        "value": "30"
+      },
+      {
+        "id": "us:UPRO",
+        "value": "30"
+      }
+    ]
+  },
+  "console": [],
+  "originalDraftRestored": true
+}
