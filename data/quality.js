@@ -1,11 +1,11 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-10-27T01:32:01+00:00",
-  "asOf": "2026-10-27",
+  "checkedAt": "2026-10-28T01:24:35+00:00",
+  "asOf": "2026-10-28",
   "status": "unverified",
   "summary": {
     "errors": 0,
-    "warnings": 9,
+    "warnings": 5,
     "unverified": 24
   },
   "datasets": [
@@ -17,34 +17,10 @@ var DATA_QUALITY={
       "records": 0,
       "issues": [
         {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:020516：本次历史接口未更新：The read operation timed out；保留历史截至2026-10-23",
-          "affected": "fund:020516"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:018064：本次历史接口未更新：The read operation timed out；保留历史截至2026-10-23",
-          "affected": "fund:018064"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:513650：本次历史接口未更新：<urlopen error [Errno 104] Connection reset by peer>；保留历史截至2026-10-23",
-          "affected": "fund:513650"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:159659：本次历史接口未更新：The read operation timed out；保留历史截至2026-10-23",
-          "affected": "fund:159659"
-        },
-        {
           "code": "source_refresh_retained",
           "severity": "warning",
-          "message": "金融事件历史：FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/fund-data/fund-data/data/return-comparison/IXIC-dab3e7f83cc1c4d1.json'；保留已发布数据及原日期",
-          "affected": "financial_events"
+          "message": "标的行情：执行超过 90 秒，子进程已终止；该数据集不能视为更新成功。；保留已发布数据及原日期",
+          "affected": "portfolio"
         }
       ],
       "status": "warning"
@@ -52,10 +28,10 @@ var DATA_QUALITY={
     {
       "id": "funds",
       "label": "海外基金",
-      "asOf": "2026-10-23",
+      "asOf": "2026-10-26",
       "dateRange": [
-        "2026-10-23",
-        "2026-10-23"
+        "2026-10-26",
+        "2026-10-26"
       ],
       "records": 46,
       "issues": [
@@ -118,10 +94,10 @@ var DATA_QUALITY={
     {
       "id": "overseas_stocks",
       "label": "海外个股",
-      "asOf": "2026-10-23",
+      "asOf": "2026-10-26",
       "dateRange": [
-        "2026-10-23",
-        "2026-10-23"
+        "2026-10-26",
+        "2026-10-26"
       ],
       "records": 79,
       "issues": [
@@ -257,17 +233,17 @@ var DATA_QUALITY={
     {
       "id": "benchmarks",
       "label": "海外指数与ETF基准",
-      "asOf": "2026-10-26",
+      "asOf": "2026-10-27",
       "dateRange": [
         "2026-10-23",
-        "2026-10-26"
+        "2026-10-27"
       ],
       "records": 36,
       "issues": [
         {
           "code": "fx_risk_incomplete",
           "severity": "warning",
-          "message": "完整人民币日风险缺少实际汇率（2025-04-21）；未沿用美元风险或填补汇率",
+          "message": "完整人民币日风险缺少实际汇率（2025-04-21、2026-10-27）；未沿用美元风险或填补汇率",
           "affected": [
             "标普500指数",
             "SPY",
@@ -311,7 +287,7 @@ var DATA_QUALITY={
       "label": "股票观察清单",
       "asOf": "2026-10-27",
       "dateRange": [
-        "2026-10-26",
+        "2026-10-27",
         "2026-10-27"
       ],
       "records": 71,
@@ -321,7 +297,7 @@ var DATA_QUALITY={
     {
       "id": "strategy",
       "label": "买入策略实验",
-      "asOf": "2026-10-23",
+      "asOf": "2026-10-26",
       "dateRange": null,
       "records": 162,
       "issues": [],
@@ -3090,10 +3066,10 @@ var DATA_QUALITY={
     {
       "id": "indices",
       "label": "国内指数",
-      "asOf": "2026-10-26",
+      "asOf": "2026-10-27",
       "dateRange": [
-        "2026-10-26",
-        "2026-10-26"
+        "2026-10-27",
+        "2026-10-27"
       ],
       "records": 13,
       "issues": [
