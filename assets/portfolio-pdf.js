@@ -130,6 +130,23 @@
       days.forEach((day, i) => text(day, plot.x + (Date.parse(day) - first) / Math.max(1, last - first) * plot.w, plot.y + plot.h + 12, 12, C.muted, 400, i === 0 ? 'left' : i === 2 ? 'right' : 'center'));
       y += plot.h + 66;
     }
+    function scoreChart(history, end) {
+      const rows = (history || []).filter(row => row.day <= end && finite(row.value) && row.value >= 0 && row.value <= 100 && Number.isFinite(Date.parse(row.day)));
+      if (!rows.length) { paragraph('历史评分：缺满足长期分位条件的每日样本。', C.gold); return; }
+      text('历史加仓评分 · 0-100分', MARGIN, y, 19, C.ink, 700); y += 34;
+      const plot = { x: MARGIN + 54, y, w: width - 68, h: 170 };
+      const first = Date.parse(rows[0].day), last = Date.parse(rows.at(-1).day);
+      for (const value of [0, 40, 60, 80, 100]) {
+        const yy = plot.y + (100 - value) / 100 * plot.h;
+        line(plot.x, yy, plot.w); text(String(value), plot.x - 12, yy - 8, 12, C.muted, 400, 'right');
+      }
+      const points = rows.map(row => [plot.x + (Date.parse(row.day) - first) / Math.max(1, last - first) * plot.w, plot.y + (100 - row.value) / 100 * plot.h]);
+      if (points.length > 1) ops.push({ type: 'path', role: 'score-history', points, y: plot.y - 2, h: plot.h + 4, color: C.green, dash: false });
+      else rect(points[0][0] - 3, points[0][1] - 3, 6, 6, C.green);
+      text(rows[0].day, plot.x, plot.y + plot.h + 12, 12, C.muted);
+      if (rows.length > 1) text(rows.at(-1).day, plot.x + plot.w, plot.y + plot.h + 12, 12, C.muted, 400, 'right');
+      y += plot.h + 48;
+    }
     rect(MARGIN, y, 44, 44, C.lime); text('衡', MARGIN + 22, y + 8, 25, C.ink, 700, 'center');
     text('长衡', MARGIN + 60, y + 6, 28, C.ink, 700); text('PORTFOLIO RESEARCH', WIDTH - MARGIN, y + 16, 12, C.muted, 600, 'right');
     y += 76; text('组合模拟报告', MARGIN, y, 36, C.ink, 700); y += 56;
@@ -186,10 +203,38 @@
     if (r.benchmarkError) paragraph('对照数据：' + r.benchmarkError, C.negative);
 
     if (r.timing) {
-      const timing = r.timing, q = timing.latest;
-      section('买卖时机与长期位置', q ? '截至 ' + timing.end + ' 共同收盘 · 参考历史 ' + timing.first + ' - ' + timing.end : '历史证据不足');
+      const timing = r.timing, q = timing.latest, scoring = timing.scoring;
+      const validScore = timing.status === 'available' && finite(scoring?.value) && scoring.value >= 0 && scoring.value <= 100 && !timing.missing && !scoring.missing;
+      section('加仓评分', q ? '截至 ' + timing.end + ' 共同收盘 · 参考历史 ' + timing.first + ' - ' + timing.end : '历史证据不足');
       if (timing.historical) paragraph('历史时点复盘，不能代表今天的买卖时机。', C.gold);
       if (timing.missing) paragraph(timing.missing, C.negative);
+      if (scoring) {
+        paragraph('评分版本 ' + (scoring.version || '未记录') + ' · 固定规则的条件评分，不是上涨概率。', C.ink);
+        const componentCards = validScore ? (scoring.components || []).map(c => [c.label, number(c.points) + ' / ' + c.max + '分']) : [];
+        cards([[(timing.historical ? '指定历史时点评分' : '当前加仓评分'), validScore ? String(scoring.value) + ' / 100分' : '暂无有效评分', validScore ? scoring.band?.label : scoring.missing || timing.missing || '缺完整评分依据'], ...componentCards]);
+        if (validScore) {
+          const change = scoring.change20;
+          paragraph('较20个共同收盘前：' + (finite(change?.value) ? (change.value > 0 ? '+' : '') + change.value + '分（' + change.day + '：' + change.previous + '分）' : '缺20个共同收盘前的有效评分') + '。', C.ink);
+          paragraph(scoring.gate?.active ? '下行保护：' + scoring.gate.reason + '；原始分 ' + number(scoring.raw) + '，封顶扣减 ' + number(scoring.gate.deduction) + '分。' : '下行保护未触发；净值低于200日均线且均线下降时，评分上限39分。', scoring.gate?.active ? C.negative : C.muted);
+          (scoring.components || []).forEach(c => paragraph(c.label + '：' + c.detail, C.muted, 13));
+        }
+        const evidence = scoring.evidence || {}, assessment = evidence.assessment;
+        paragraph('历史检验：' + (assessment?.label || '缺足够历史样本'), assessment?.status === 'favorable' ? C.green : C.negative, 18);
+        if (assessment?.detail) paragraph(assessment.detail);
+        if (assessment?.status !== 'favorable') paragraph('当前历史证据不足以支持“高分就是更好的加仓点”；评分只提供固定条件参考。', C.gold);
+        scoreChart(scoring.history, timing.end);
+        const evidenceRows = (evidence.horizons || []).flatMap(h => [
+          ...(h.bands || []).map(b => ({ ...b, group: b.min + '-' + b.max + '分 · ' + b.label })),
+          ...(h.baseline ? [{ ...h.baseline, group: '全部可比月份' }] : [])
+        ].map(s => ['随后' + h.years + '年\n' + s.group, pct(s.median), pct(s.positiveRate), pct(s.worstReturn), pct(s.worstDrawdown), String(s.n), String(s.nonOverlappingN)]));
+        if (evidenceRows.length) table(['持有期 / 评分档', '收益中位数', '正收益比例', '最差收益', '期间最深回撤', '月份数', '不重叠窗口'], evidenceRows, [2.5, 1.2, 1.2, 1.2, 1.3, .7, .9], { numeric: [1, 2, 3, 4, 5, 6] });
+        (evidence.horizons || []).forEach(h => {
+          const empty = (h.bands || []).filter(b => b.n === 0);
+          if (empty.length) paragraph('随后' + h.years + '年：' + empty.map(b => b.min + '-' + b.max + '分').join('、') + '缺完整后续样本。', C.gold);
+        });
+        paragraph('随后1年和3年均为累计收益；按当日评分分档，从信号后的下一共同收盘进入，只纳入截至分析日已经完整结束的持有期。');
+        paragraph('月度持有期重叠，历史正收益比例不是未来胜率；属于回溯描述，尚未验证扣税费后的择时优势。', C.gold);
+      } else paragraph('此旧报告未包含加仓评分；重新运行模拟后可生成评分和历史检验。下列保留原报告的历史位置与账户信息。', C.gold);
       if (q) {
         const position = { low: '偏低', middle: '中间区间', high: '偏高' }[timing.band] || '样本不足';
         const trend = q.trend === 'above' ? '高于200日均线' : q.trend === 'below' ? '低于200日均线' : q.trend === 'flat' ? '接近200日均线' : '均线历史不足';
@@ -199,12 +244,13 @@
           ['距历史高点', pct(q.drawdown), '目标权重参考组合'], ['近一年波动', pct(q.volatility1y), name + '计价']
         ]);
         paragraph('参考组合按目标权重在每个共同收盘复位，现金零息，已含产品年费和分红，未计交易费与投资者税；与实际投入和不再平衡后的账户分开。');
-        const evidenceRows = (timing.horizons || []).flatMap(h => [['类似月份', h.matched], ['全部可比月份', h.baseline]].map(([group, s]) =>
-          ['随后' + h.years + '年\n' + group, pct(s.median), pct(s.positiveRate), pct(s.worstReturn), pct(s.worstDrawdown), String(s.n), String(s.nonOverlappingN)]));
-        if (evidenceRows.length) table(['持有期 / 样本', '收益中位数', '正收益比例', '最差收益', '期间最深回撤', '月份数', '不重叠窗口'], evidenceRows, [1.8, 1.25, 1.2, 1.25, 1.3, .8, .9], { numeric: [1, 2, 3, 4, 5, 6] });
-        (timing.horizons || []).filter(h => h.matched.n === 0).forEach(h => paragraph('类似位置缺完整' + h.years + '年后续样本，无法比较该持有期的历史结果。', C.gold));
-        paragraph('随后1年和3年均为累计收益；使用当时可见的分位分组，从信号后的下一共同收盘进入，只纳入截至分析日已经完整结束的持有期。');
-        paragraph('月度持有期重叠，历史正收益比例不是未来胜率；不重叠窗口较少，尚未验证扣税费后的择时优势，不能据此认定买点更优或应当清仓。', C.gold);
+        if (!scoring) {
+          const evidenceRows = (timing.horizons || []).flatMap(h => [['类似月份', h.matched], ['全部可比月份', h.baseline]].filter(([, s]) => s).map(([group, s]) =>
+            ['随后' + h.years + '年\n' + group, pct(s.median), pct(s.positiveRate), pct(s.worstReturn), pct(s.worstDrawdown), String(s.n), String(s.nonOverlappingN)]));
+          if (evidenceRows.length) table(['持有期 / 旧位置分组', '收益中位数', '正收益比例', '最差收益', '期间最深回撤', '月份数', '不重叠窗口'], evidenceRows, [1.8, 1.25, 1.2, 1.25, 1.3, .8, .9], { numeric: [1, 2, 3, 4, 5, 6] });
+          paragraph('旧位置分组采用完整1年和3年后续累计收益；历史月份及持有期重叠，正收益比例不是未来胜率。');
+        }
+      }
         const grossCashWeight = r.grossValue > 0 ? r.cash / r.grossValue * 100 : null;
         const holdings = r.holdings.map(h => ({ ...h, grossWeight: r.grossValue > 0 ? h.grossValue / r.grossValue * 100 : null }));
         const overweight = holdings.some(h => finite(h.grossWeight) && h.grossWeight - h.targetWeight >= 5);
@@ -219,7 +265,6 @@
         paragraph('账户共同收盘 ' + (account.at(-1)?.day || '缺数据') + '：净值相对200日均线 ' + pct(mean ? (account.at(-1).nav / mean - 1) * 100 : null) + '；该日回撤 ' + pct(account.at(-1)?.drawdown) + (account.length < 200 ? '；账户区间不足200个共同收盘，均线留空。' : '。'));
         if (cfg.tax?.liquidate) paragraph('此模拟已期末清仓，账户为现金；不把清仓后的仓位差异作为超配信号。');
         else if (overweight || cashShortfall) paragraph((cashShortfall ? '现金低于目标至少5个百分点；每笔投入预留现金不代表账户始终保持目标现金比例。' : '部分持仓高于目标至少5个百分点。') + '若原目标不变，配置复核应关注恢复目标权重；这是仓位管理，与买卖时机判断分开。', C.negative);
-      }
     }
 
     section('区间快照', '近1/2/3/5年分别重新建仓，使用相同组合与策略；组合与对照收益均为现金流中性。');

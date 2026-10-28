@@ -1341,7 +1341,7 @@
     const el = e.target;
     if (e.isComposing) { clearTimeout(searchTimer); return; }
     if (el.dataset.moneyField || el.dataset.moneyQuote) { window.ChanghengMoneyFlow.handleInput(el); return; }
-    if (el.id === 'portfolio-search' || el.dataset.portfolioWeight || el.dataset.portfolioAmount || el.dataset.portfolioField || el.dataset.portfolioTaxAsset) {
+    if (el.id === 'portfolio-search' || el.dataset.portfolioScoreDay !== undefined || el.dataset.portfolioWeight || el.dataset.portfolioAmount || el.dataset.portfolioField || el.dataset.portfolioTaxAsset) {
       if (window.ChanghengPortfolio.handleInput(el)) { clearTimeout(searchTimer); searchTimer = setTimeout(render, 120); }
       return;
     }

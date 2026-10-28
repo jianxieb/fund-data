@@ -20,7 +20,7 @@ function fixture() {
     series: days.map((day, i) => [day, 100 * Math.exp(i * (k ? .0004 : .0007)) * (1 + .06 * Math.sin(i / 21 + k))]) }]));
   const config = { positions: [{ id: assets[0].id, weight: 47.12345678 }, { id: assets[1].id, weight: 42.87654322 }, { id: assets[2].id, weight: 0 }],
     initial: 100000, monthly: 3000, rebalance: 'quarter', transactionFee: .025, feeBasis: 'net', years: 'common', benchmarkId: assets[0].id };
-  const input = { catalog: { assets, summary: { total: assets.length } }, histories, config };
+  const input = { catalog: { schemaVersion: 1, assets, fx: { id: 'fx:CNY', currency: 'CNY', status: 'available' }, summary: { total: assets.length } }, histories, config };
   const result = P.simulate(input);
   assert.equal(result.error, undefined);
   result.snapshots = P.simulateWindows(input, result.end);
@@ -101,11 +101,11 @@ test('single-page PDF has binary-safe xref offsets, contiguous bands and correct
 function uiFixture(configure) {
   const { input } = fixture(), downloads = [], notices = [], reports = [], renderStates = [];
   if (configure) configure(input);
-  const context = { window: { Changheng: M, ChanghengPortfolioModel: P, ChanghengPortfolioTimingModel: require('../assets/portfolio-timing-model.js'), PORTFOLIO_CATALOG: input.catalog,
+  const context = { window: { Changheng: M, ChanghengPortfolioModel: P, ChanghengPortfolioTimingModel: require('../assets/portfolio-timing-model.js'), ChanghengPortfolioScoreView: require('../assets/portfolio-score-view.js'), PORTFOLIO_CATALOG: input.catalog,
     ChanghengPortfolioPdf: { snapshot: Pdf.snapshot, async create(report) { reports.push(report); return new Blob(['PDF']); } } },
     localStorage: { getItem: () => JSON.stringify(input.config), setItem() {} },
     document: { getElementById: () => null, querySelectorAll: () => [] }, TextEncoder,
-    fetch: async url => ({ ok: true, text: async () => JSON.stringify(Object.values(input.histories).find(h => input.catalog.assets.find(a => a.id === h.id).historyUrl === url)) }) };
+    fetch: async url => ({ ok: true, text: async () => url === 'data/portfolio/catalog.js' ? 'var PORTFOLIO_CATALOG=' + JSON.stringify(input.catalog) + ';' : JSON.stringify(Object.values(input.histories).find(h => input.catalog.assets.find(a => a.id === h.id).historyUrl === url)) }) };
   vm.createContext(context);
   vm.runInContext(fs.readFileSync(path.resolve(__dirname, '../assets/portfolio.js'), 'utf8'), context);
   const ui = context.window.ChanghengPortfolio;
@@ -145,10 +145,9 @@ test('historical timing review labels its date and suppresses present-day buy an
   const html = f.ui.view(f.helpers), account = P.simulate(f.input);
   assert.equal(timing.historical, true);
   assert.ok(account.holdings.some(h => h.actualWeight - h.targetWeight > 5));
-  assert.match(html, /截至 2025-01-08 共同收盘 · 历史时点复盘/);
-  assert.match(html, /历史时点复盘，不能代表今天的买卖时机/);
-  assert.match(html, /不能用于判断今天的买入时机/);
-  assert.match(html, /不能用于判断今天是否卖出/);
+  assert.match(html, /截至 2025-01-08 共同收盘/);
+  assert.match(html, /历史时点加仓评分/);
+  assert.match(html, /缺可靠长期分位/);
   assert.doesNotMatch(html, /优先考虑卖出超配部分|可按原计划分批投入|缺最近行情/);
 });
 
@@ -163,7 +162,7 @@ test('stale quotes suppress the overweight sell recommendation while retaining d
   assert.equal(timing.status, 'stale'); assert.equal(timing.historical, false);
   assert.ok(account.cashWeight - account.cash / account.grossValue * 100 > 5);
   assert.match(html, /最新共同报价为 2026-01-08/);
-  assert.match(html, /暂不从当前数据推导卖出信号/);
+  assert.match(html, /当前评分不可用/);
   assert.match(html, /模拟账户的期末风险 · 2026-01-08/);
   assert.match(html, /每笔投入预留现金，不代表账户一直保持该现金比例/);
   assert.doesNotMatch(html, /优先考虑卖出超配部分|可按原计划分批投入/);
@@ -178,11 +177,11 @@ test('timing evidence names each missing forward horizon even when current posit
   } };
   await f.action('run');
   const html = f.ui.view(f.helpers);
-  assert.match(html, /当前分组尚无完整1年后续样本，不能比较该持有期的买入优势/);
-  assert.match(html, /当前分组尚无完整3年后续样本，不能比较该持有期的买入优势/);
-  assert.match(html, /0个月<small>不重叠窗口 0 个/);
+  assert.match(html, /分组缺完整 1 年后续样本/);
+  assert.match(html, /分组缺完整 3 年后续样本/);
+  assert.match(html, /0 个月<small>不重叠 0 个/);
   assert.match(html, /正收益比例不是未来胜率/);
-  const diagnostic = html.match(/<section><h2>买卖时机<\/h2>[\s\S]*?<\/section>/)[0];
+  const diagnostic = html.match(/<section><h2>加仓评分<\/h2>[\s\S]*?<\/section>/)[0];
   assert.doesNotMatch(diagnostic, /NaN|undefined/);
 });
 
@@ -217,14 +216,111 @@ test('timing renders distinct reference metrics and the actual drifting account 
   const latest = account.curve.at(-1), ma = account.curve.slice(-200).reduce((total, point) => total + point.nav, 0) / 200;
   const accountDeviation = (latest.nav / ma - 1) * 100;
   assert.notEqual(fmt(timing.latest.deviation), fmt(accountDeviation));
-  assert.ok(html.includes('<span>200日均线偏离</span><strong>' + fmt(timing.latest.deviation)));
+  assert.match(html, /不参与加仓评分/);
   assert.ok(html.includes('账户净值相对200日均线 ' + fmt(accountDeviation) + ' · 回撤 ' + fmt(latest.drawdown)));
   for (const holding of account.holdings) {
     assert.ok(html.includes(holding.code + ' ' + fmt(holding.grossValue / account.grossValue * 100) + '（目标 ' + fmt(holding.targetWeight) + '）'));
   }
   assert.ok(html.includes('现金 ' + fmt(account.cash / account.grossValue * 100) + '（目标 40.00%）'));
-  assert.match(html, /参考组合使用目标权重、每个共同收盘复位、零息现金/);
-  assert.match(html, /它与上面的模拟账户不同/);
+  assert.match(html, /目标组合 · 人民币 · 每次模拟按行情重算/);
+});
+
+function scoreUiFixture() {
+  return uiFixture(input => {
+    Object.assign(input.config, { monthly: 0, rebalance: 'none', transactionFee: 0 });
+    input.config.positions.forEach((p, i) => { p.weight = i < 2 ? 30 : 0; });
+    for (const [k, a] of input.catalog.assets.entries()) {
+      const series = [];
+      for (let t = Date.parse('2010-01-01'), i = 0; t <= Date.parse('2026-01-08'); t += 86400000, i++) {
+        if ([0, 6].includes(new Date(t).getUTCDay())) continue;
+        series.push([new Date(t).toISOString().slice(0, 10), 100 * Math.exp(i / 5000 + .2 * Math.sin(i / (90 + k * 20)))]);
+      }
+      Object.assign(input.histories[a.id], { series, first: series[0][0], asOf: series.at(-1)[0] });
+      Object.assign(a, { first: series[0][0], asOf: series.at(-1)[0], sha256: 'v1-' + a.id });
+    }
+  });
+}
+
+test('a page kept open revalidates the manifest and recomputes from new histories 100 days later', async () => {
+  const f = scoreUiFixture(), T = require('../assets/portfolio-timing-model.js'), fetches = [], originalFetch = f.context.fetch;
+  f.context.fetch = async (url, options) => { fetches.push({ url, options }); return originalFetch(url); };
+  let today = '2026-01-08', timing;
+  f.context.window.ChanghengPortfolioTimingModel = { ...T, analyze(input, options) { timing = T.analyze(input, { ...options, today }); return timing; } };
+  await f.action('run');
+  const firstScore = timing.scoring.value, priorHistory = JSON.stringify(timing.scoring.history);
+  assert.equal(timing.status, 'available'); assert.ok(Number.isFinite(firstScore));
+  await f.action('run');
+  assert.equal(fetches.filter(r => r.url.endsWith('.json')).length, 2, 'unchanged hashes reuse the two selected histories');
+  assert.equal(fetches.filter(r => r.url === 'data/portfolio/catalog.js').length, 2);
+  assert.ok(fetches.filter(r => r.url === 'data/portfolio/catalog.js').every(r => r.options.cache === 'no-store'));
+  today = '2026-04-18';
+  for (const [k, a] of f.input.catalog.assets.entries()) {
+    const h = f.input.histories[a.id], base = h.series.at(-1)[1];
+    for (let t = Date.parse('2026-01-09'), i = 1; t <= Date.parse(today); t += 86400000, i++) {
+      if ([0, 6].includes(new Date(t).getUTCDay())) continue;
+      h.series.push([new Date(t).toISOString().slice(0, 10), base * Math.exp(-i * .009 - .02 * Math.sin(i * (1 + k)))]);
+    }
+    h.asOf = a.asOf = h.series.at(-1)[0]; a.sha256 = 'v2-' + a.id;
+    a.historyUrl = a.historyUrl.replace('.json', '-v2.json');
+  }
+  await f.action('run');
+  assert.equal(fetches.filter(r => r.url.endsWith('.json')).length, 4, 'changed content reloads selected histories');
+  assert.equal(timing.end, '2026-04-17'); assert.equal(timing.status, 'available');
+  assert.notEqual(timing.scoring.value, firstScore); assert.ok(timing.scoring.value <= 39);
+  assert.equal(JSON.stringify(timing.scoring.history.filter(p => p.day <= '2026-01-08')), priorHistory);
+  await f.action('export-pdf');
+  assert.equal(f.reports.at(-1).result.timing.scoring.value, timing.scoring.value);
+  await f.action('export-score');
+  const exported = f.downloads.find(row => row[0].includes('加仓评分'));
+  assert.match(exported[1], /add-score-v1/); assert.match(exported[1], /2026-04-17/);
+  assert.match(exported[1], /长期位置分\/40/); assert.match(exported[1], /上限39分/);
+});
+
+test('failed freshness checks retain historical results but disable current score, band and gate', async () => {
+  const f = scoreUiFixture(), T = require('../assets/portfolio-timing-model.js'), originalFetch = f.context.fetch;
+  f.context.window.ChanghengPortfolioTimingModel = { ...T, analyze: (input, options) => T.analyze(input, { ...options, today: options.end }) };
+  await f.action('run');
+  f.context.fetch = async url => url === 'data/portfolio/catalog.js' ? { ok: false, status: 503 } : originalFetch(url);
+  await f.action('run'); await f.action('export-pdf');
+  const t = f.reports.at(-1).result.timing;
+  assert.equal(t.status, 'stale'); assert.equal(t.scoring.value, null); assert.equal(t.scoring.band, null);
+  assert.equal(t.scoring.gate.active, false); assert.ok(t.scoring.evidence.horizons.every(h => h.current === null));
+  assert.ok(t.scoring.history.length > 0); assert.match(t.scoring.missing, /未能确认最新行情.*503/);
+  const html = f.ui.view(f.helpers);
+  assert.match(html, /当前评分不可用/); assert.match(html, /过往评分记录/);
+  assert.equal(f.reports.at(-1).result.catalogRefresh.available, false);
+});
+
+test('history slider changes only its dated readout and cursor, leaving the current score and configuration intact', async () => {
+  const f = scoreUiFixture(), T = require('../assets/portfolio-timing-model.js');
+  let timing;
+  f.context.window.ChanghengPortfolioTimingModel = { ...T, analyze(input, options) { timing = T.analyze(input, { ...options, today: options.end }); return timing; } };
+  await f.action('run');
+  const nodes = Object.fromEntries(['portfolio-score-readout', 'portfolio-score-cursor', 'portfolio-score-point'].map(id => [id, { setAttribute(k, v) { this[k] = v; } }]));
+  f.context.document.getElementById = id => nodes[id] || null;
+  const slider = { dataset: { portfolioScoreDay: '' }, value: '0', setAttribute(k, v) { this[k] = v; } };
+  const before = JSON.stringify(timing), renders = f.renderStates.length;
+  f.ui.handleInput(slider);
+  assert.match(nodes['portfolio-score-readout'].textContent, new RegExp(timing.scoring.history[0].day));
+  assert.equal(nodes['portfolio-score-cursor'].x1, 44); assert.equal(nodes['portfolio-score-point'].cx, 44);
+  assert.equal(slider['aria-valuetext'], nodes['portfolio-score-readout'].textContent);
+  assert.equal(JSON.stringify(timing), before); assert.equal(f.renderStates.length, renders);
+});
+
+test('failure downloading a newly published history invalidates the previous current score until a successful rerun', async () => {
+  const f = scoreUiFixture(), T = require('../assets/portfolio-timing-model.js'), originalFetch = f.context.fetch;
+  f.context.window.ChanghengPortfolioTimingModel = { ...T, analyze: (input, options) => T.analyze(input, { ...options, today: options.end }) };
+  await f.action('run');
+  f.input.catalog.assets[0].sha256 = 'updated-content';
+  f.context.fetch = async url => url === f.input.catalog.assets[0].historyUrl ? { ok: false, status: 503 } : originalFetch(url);
+  await f.action('run');
+  const html = f.ui.view(f.helpers);
+  assert.match(html, /本次行情更新失败：两倍测试ETF：历史文件请求失败（503）/);
+  assert.match(html, /当前评分不可用/); assert.doesNotMatch(html, /<strong>\d+<\/strong><span>\/ 100/);
+  f.context.fetch = originalFetch;
+  await f.action('run'); await f.action('export-pdf');
+  assert.equal(f.reports.at(-1).result.timing.status, 'available');
+  assert.ok(Number.isFinite(f.reports.at(-1).result.timing.scoring.value));
 });
 
 test('running with a cleared or saved blank allocation fills zero and preserves the 40% cash budget', async () => {

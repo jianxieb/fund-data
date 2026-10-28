@@ -19,21 +19,37 @@ function fixture() {
   return { input, result };
 }
 
-test('PDF preserves dated reference metrics, both evidence groups and sample limitations', () => {
+test('PDF freezes current scoring, all four mature evidence bands, reference metrics and sample limitations', () => {
   const { input, result } = fixture(), report = Pdf.snapshot(result, input.catalog, '2026-10-28T02:00:00Z');
   const timing = JSON.parse(JSON.stringify(result.timing));
   result.timing.latest.deviation = -999; result.timing.horizons[0].matched.n = -999;
+  result.timing.scoring.value = -999; result.timing.scoring.components[0].points = -999; result.timing.scoring.history[0].value = -999;
   assert.deepEqual(report.result.timing, timing);
   const document = Pdf.layout(report, measure), text = textOf(document);
-  assert.match(text, /买卖时机与长期位置/); assert.match(text, /截至 2026-10-27 共同收盘/);
+  assert.match(text, /加仓评分/); assert.match(text, /截至 2026-10-27 共同收盘/);
+  assert.match(text, /当前加仓评分/); assert.match(text, /add-score-v1/);
+  assert.ok(text.includes(timing.scoring.value + ' / 100分'));
+  for (const component of timing.scoring.components) {
+    assert.ok(text.includes(component.label));
+    assert.ok(text.includes(component.points.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' / ' + component.max + '分'));
+  }
+  assert.match(text, /较20个共同收盘前/); assert.ok(text.includes(timing.scoring.change20.day));
+  assert.ok(text.includes(timing.scoring.evidence.assessment.label));
   for (const key of ['deviation', 'percentile', 'drawdown', 'volatility1y']) assert.ok(text.includes(pct(timing.latest[key])), key);
   assert.match(text, /全部可比月份/); assert.match(text, /不重叠窗口/);
-  for (const horizon of timing.horizons) for (const group of [horizon.matched, horizon.baseline]) {
+  for (const horizon of timing.scoring.evidence.horizons) for (const group of [...horizon.bands, horizon.baseline]) {
+    if (group.min !== undefined) assert.ok(text.replace(/\n/g, '').includes(group.min + '-' + group.max + '分 · ' + group.label), group.label);
     ['median', 'positiveRate', 'worstReturn', 'worstDrawdown'].forEach(key => { if (group[key] !== null) assert.ok(text.includes(pct(group[key])), key); });
     assert.ok(text.includes('\n' + group.n + '\n')); assert.ok(text.includes('\n' + group.nonOverlappingN + '\n'));
   }
   assert.match(text, /均为累计收益/); assert.match(text, /下一共同收盘进入/);
   assert.match(text, /历史正收益比例不是未来胜率/); assert.match(text, /尚未验证扣税费后的择时优势/);
+  const history = document.ops.find(op => op.role === 'score-history');
+  assert.equal(history.points.length, timing.scoring.history.length);
+  assert.ok(history.points.flat().every(Number.isFinite));
+  const ys = history.points.map(p => p[1]);
+  assert.ok(Math.min(...ys) >= history.y && Math.max(...ys) <= history.y + history.h);
+  assert.ok(text.includes(timing.scoring.history[0].day));
   assert.doesNotMatch(text, /NaN|Infinity|undefined/);
   for (const op of document.ops.filter(op => op.type === 'text')) {
     measure.font = op.weight + ' ' + op.size + 'px Arial';
@@ -66,23 +82,57 @@ test('PDF states missing/stale evidence and liquidated accounts without suggesti
   Object.assign(result, { cash: 100000, grossValue: 100000 }); result.holdings.forEach(h => { h.grossValue = 0; });
   const text = textOf(Pdf.layout(Pdf.snapshot(result, input.catalog), measure));
   assert.match(text, /缺最近行情，不能判断今天的买卖时机/);
+  assert.match(text, /暂无有效评分/);
+  assert.ok(!text.includes(result.timing.scoring.value + ' / 100分'));
+  assert.doesNotMatch(text, /较20个共同收盘前/);
+  assert.match(text, /历史加仓评分/); // Keep dated history without republishing a current score.
   assert.match(text, /不把清仓后的仓位差异作为超配信号/);
   assert.doesNotMatch(text, /配置复核应关注恢复目标权重/);
   result.timing = { status: 'error', missing: '所选基金缺200个共同收盘' };
   assert.match(textOf(Pdf.layout(Pdf.snapshot(result, input.catalog), measure)), /所选基金缺200个共同收盘/);
+  assert.match(textOf(Pdf.layout(Pdf.snapshot(result, input.catalog), measure)), /模拟账户期末仓位/);
   delete result.timing;
-  assert.doesNotMatch(textOf(Pdf.layout(Pdf.snapshot(result, input.catalog), measure)), /买卖时机与长期位置/);
+  assert.doesNotMatch(textOf(Pdf.layout(Pdf.snapshot(result, input.catalog), measure)), /加仓评分/);
 });
 
-test('PDF labels historical reviews, unmatured matched samples and differing account dates explicitly', () => {
+test('PDF labels historical scores, each unmatured band and differing account dates explicitly', () => {
   const { input, result } = fixture();
   result.timing.historical = true; result.timing.end = '2026-10-23';
   result.timing.curve = result.timing.curve.filter(row => row.day <= result.timing.end);
-  result.timing.horizons.forEach(h => { h.matched = { n: 0, positiveRate: null, median: null, p10: null, worstReturn: null, worstDrawdown: null, nonOverlappingN: 0 }; });
+  result.timing.scoring.evidence.horizons.forEach(h => { h.bands.forEach(b => Object.assign(b, { n: 0, positiveRate: null, median: null, p10: null, worstReturn: null, worstDrawdown: null, nonOverlappingN: 0 })); });
   const text = textOf(Pdf.layout(Pdf.snapshot(result, input.catalog), measure)).replace(/\n/g, '');
   assert.match(text, /历史时点复盘，不能代表今天的买卖时机/);
-  assert.match(text, /类似位置缺完整1年后续样本/); assert.match(text, /类似位置缺完整3年后续样本/);
+  assert.match(text, /指定历史时点评分/); assert.doesNotMatch(text, /当前加仓评分/);
+  for (const years of [1, 3]) assert.ok(text.includes('随后' + years + '年：0-39分、40-59分、60-79分、80-100分缺完整后续样本。'));
   assert.match(text, /截至 2026-10-23 共同收盘/);
   assert.match(text, /模拟账户期末仓位 · 2026-10-27/);
   assert.match(text, /账户共同收盘 2026-10-23/);
+});
+
+test('PDF makes unsupported historical evidence and trend caps explicit instead of implying a proven buy point', () => {
+  const { input, result } = fixture();
+  Object.assign(result.timing.scoring, T.scoreFromMetrics({ value: 80, ma200: 100, ma200Prior20: 110, ma50: 90, percentile: 0, volatilityPercentile: 0 }));
+  result.timing.scoring.evidence.assessment = { status: 'not_supported', label: '暂未证实高分更好', detail: '高分组一年收益中位数较低分组低 12.34 个百分点。属于回溯描述，未做样本外验证。' };
+  const text = textOf(Pdf.layout(Pdf.snapshot(result, input.catalog), measure)).replace(/\n/g, '');
+  assert.match(text, /39 \/ 100分/); assert.match(text, /评分上限39分/);
+  assert.match(text, /原始分 60\.00，封顶扣减 21\.00分/);
+  assert.match(text, /历史检验：暂未证实高分更好/); assert.match(text, /低 12\.34 个百分点/);
+  assert.match(text, /当前历史证据不足以支持“高分就是更好的加仓点”/);
+  assert.match(text, /固定规则的条件评分，不是上涨概率/);
+  assert.doesNotMatch(text, /适合加仓|已验证的加仓|未来胜率为/);
+});
+
+test('PDF remains compatible with old snapshots without a scoring payload and with short-history scoring', () => {
+  const { input, result } = fixture();
+  delete result.timing.scoring;
+  let text = textOf(Pdf.layout(Pdf.snapshot(result, input.catalog), measure));
+  assert.match(text, /此旧报告未包含加仓评分/); assert.match(text, /旧位置分组/);
+  assert.match(text, /类似月份/); assert.match(text, /模拟账户期末仓位/);
+  assert.doesNotMatch(text, /当前加仓评分|NaN|Infinity|undefined/);
+  result.timing.scoring = { version: 'add-score-v1', value: null, missing: '缺可靠长期分位', history: [], components: [] };
+  result.timing.status = 'insufficient';
+  text = textOf(Pdf.layout(Pdf.snapshot(result, input.catalog), measure));
+  assert.match(text, /暂无有效评分/); assert.match(text, /缺可靠长期分位/);
+  assert.match(text, /历史评分：缺满足长期分位条件的每日样本/);
+  assert.doesNotMatch(text, /NaN|Infinity|undefined/);
 });
