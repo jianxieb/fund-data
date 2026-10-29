@@ -29,6 +29,9 @@ def merge_history(previous, rows, observed_at, sources):
                                      'NAV': row.get('DWJZ'), 'NAVCHGRT': row.get('JZZZL')}, {code})
             except (KeyError, TypeError, ValueError):
                 continue
+            earlier = saved.get(clean['FSRQ'])
+            if earlier and matches_latest(clean, earlier):
+                clean.update({k: earlier[k] for k in ('sourceObservedAt', 'sourceSha256') if earlier.get(k)})
             clean.update({k: row[k] for k in ('sourceObservedAt', 'sourceSha256') if row.get(k)})
             if row is rows.get(code):
                 clean['sourceObservedAt'] = observed_at

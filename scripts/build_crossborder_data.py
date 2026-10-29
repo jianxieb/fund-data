@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Build dated NAV/market total-return summaries and distribution evidence."""
 import argparse
+import hashlib
 import json
 import math
 import subprocess
@@ -14,6 +15,7 @@ sys.path.insert(0, str(ROOT))
 from update import add_years, total_return_series, risk_window, history_fetch
 from fund_evidence import fund_actions
 from scripts.build_buy_location_data import chart
+from data_status import write_status
 
 
 def summarize(series, end):
@@ -35,7 +37,25 @@ def summarize(series, end):
             'first': series[0][0], 'mdd5': risk['mdd'], 'vol5': risk['vol'], 'riskAsOf': last, 'risk5Period': risk}
 
 
-def build(fund, offline):
+def published_nav(fund, end):
+    relative, digest = fund.get('returnHistoryUrl'), fund.get('returnHistorySha256')
+    if not relative:
+        return None
+    if not relative.startswith('data/portfolio/fund/') or '..' in relative or not digest:
+        raise ValueError('已发布净值历史引用无效')
+    raw = (ROOT / relative).read_bytes()
+    history = json.loads(raw)
+    if (hashlib.sha256(raw).hexdigest() != digest or history.get('id') != 'fund:' + fund['c']
+            or history.get('currency') != 'CNY' or history.get('basis') != 'provider_daily_return_or_explicit_actions'
+            or history.get('dividends') != 'reinvested'):
+        raise ValueError('已发布净值历史身份、口径或哈希不符')
+    series = [(day, value) for day, value in history['series'] if (fund.get('returnFirst') or '') <= day <= end]
+    if not series or series[-1][0] != end:
+        raise ValueError('已发布净值历史缺收益截至日')
+    return series
+
+
+def build(fund, offline, previous=None):
     code, end = fund['c'], fund['returnAsOf']
     out = {'errors': []}
     if not end:
@@ -44,15 +64,14 @@ def build(fund, offline):
                     'mdd5': None, 'vol5': None, 'missing': '缺独立复算净值历史'},
             'actions': {'status': 'unavailable', 'missing': '缺独立复算截至日'}}
     try:
-        path = ROOT / '.tmp-hist' / (code + '.json')
-        rows = json.loads(path.read_text()) if path.exists() else []
-        if not offline and max((r.get('FSRQ', '') for r in rows), default='') < end:
-            rows = history_fetch(code) or rows
-        first = fund.get('returnFirst') or ''
-        # Use the same independently verified history boundary as the snapshot.
-        # An invalid source observation before all displayed windows cannot turn
-        # an otherwise valid ten-year series into a missing NAV result.
-        nav = total_return_series([row for row in rows if first <= row.get('FSRQ', '') <= end])
+        nav = published_nav(fund, end)
+        if nav is None:
+            path = ROOT / '.tmp-hist' / (code + '.json')
+            rows = json.loads(path.read_text()) if path.exists() else []
+            if not offline and max((r.get('FSRQ', '') for r in rows), default='') < end:
+                rows = history_fetch(code) or rows
+            first = fund.get('returnFirst') or ''
+            nav = total_return_series([row for row in rows if first <= row.get('FSRQ', '') <= end])
         out['nav'] = {**summarize(nav, end), 'basis': 'fund_nav_total_return',
                       'source': 'https://fundf10.eastmoney.com/jjjz_' + code + '.html'}
     except (OSError, ValueError) as exc:
@@ -76,6 +95,12 @@ def build(fund, offline):
                              'source': source, 'sourceSha256': digest}
         except Exception as exc:
             out['errors'].append('成交价历史：' + str(exc))
+            if previous and previous.get('nav') and previous.get('market'):
+                out.update(nav=previous['nav'], market=previous['market'], retainedAsOf=previous['nav']['returnAsOf'])
+                if previous.get('actions'):
+                    out['actions'] = previous['actions']
+    if 'nav' not in out and previous and previous.get('nav'):
+        out.update(nav=previous['nav'], retainedAsOf=previous['nav']['returnAsOf'])
     return code, out
 
 
@@ -85,13 +110,19 @@ def main():
     args = parser.parse_args()
     code = "const fs=require('fs'),vm=require('vm'),M=require('./assets/model.js'),ctx={};vm.createContext(ctx);vm.runInContext(fs.readFileSync('data/snapshot.js','utf8'),ctx);console.log(JSON.stringify(M.dedupeFunds(ctx.FUNDS,ctx.EXTRA).filter(f=>M.isCrossborderIndex(f)&&f.returnAsOf)))"
     funds = json.loads(subprocess.check_output(['node', '-e', code], cwd=ROOT, text=True))
-    with ThreadPoolExecutor(max_workers=4) as pool:
-        entries = list(pool.map(lambda f: build(f, args.offline), funds))
-    out = {'schemaVersion': 1, 'builtAt': datetime.now(timezone.utc).isoformat(timespec='seconds'), 'byCode': dict(entries)}
     path = ROOT / 'data/crossborder.js'
+    previous = json.loads(path.read_text().split('=', 1)[1].strip().rstrip(';'))['byCode'] if path.exists() else {}
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        entries = list(pool.map(lambda f: build(f, args.offline, previous.get(f['c'])), funds))
+    out = {'schemaVersion': 1, 'builtAt': datetime.now(timezone.utc).isoformat(timespec='seconds'), 'byCode': dict(entries)}
     temp = path.with_suffix('.js.tmp')
     temp.write_text('window.CROSSBORDER_DATA=' + json.dumps(out, ensure_ascii=False, separators=(',', ':')) + ';\n')
     temp.replace(path)
+    failures = {c: {'error': '；'.join(row['errors']), 'asOf': row.get('retainedAsOf') or (row.get('nav') or {}).get('returnAsOf')}
+                for c, row in entries if row['errors']}
+    write_status('crossborder', 'cached' if args.offline else 'partial' if failures else 'success',
+                 mode='offline' if args.offline else 'online', records=len(entries), historyFailures=failures,
+                 message='净值复用已发布且哈希核对的曲线；成交价失败保留原同期比较及日期。')
     print('跨境基金 %d；场内成交价 %d；分红记录 %d' % (len(entries), sum('market' in row for _, row in entries), sum(row['actions']['status'] == 'recorded' for _, row in entries)))
     for c, row in entries:
         if row['errors']:

@@ -1,11 +1,11 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-10-29T11:28:18+00:00",
+  "checkedAt": "2026-10-29T11:37:52+00:00",
   "asOf": "2026-10-29",
   "status": "unverified",
   "summary": {
     "errors": 0,
-    "warnings": 8,
+    "warnings": 5,
     "unverified": 37
   },
   "datasets": [
@@ -19,26 +19,8 @@ var DATA_QUALITY={
         {
           "code": "source_history_retained",
           "severity": "warning",
-          "message": "fund:019495：The read operation timed out；保留历史截至2026-10-23",
-          "affected": "fund:019495"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:021773：The read operation timed out；保留历史截至2026-10-23",
-          "affected": "fund:021773"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:513730：<urlopen error [Errno 104] Connection reset by peer>；保留历史截至2026-10-23",
-          "affected": "fund:513730"
-        },
-        {
-          "code": "source_refresh_retained",
-          "severity": "warning",
-          "message": "跨境基金：执行超过 60 秒，子进程已终止；该数据集不能视为更新成功。；保留已发布数据及原日期",
-          "affected": "crossborder"
+          "message": "158042：成交价历史：成交价历史落后净值超过7日；保留历史截至2026-10-26",
+          "affected": "158042"
         }
       ],
       "status": "warning"

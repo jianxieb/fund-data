@@ -1093,5 +1093,233 @@
       "expectedOfficialReturnWealth": 1.3630539548340002,
       "networkRequests": 0
     }
-  ]
+  ],
+  "individualRetryEvidence": [
+    {
+      "code": "019495",
+      "sourceUrl": "https://fundmobapi.eastmoney.com/FundMNewApi/FundMNHisNetList?FCODE=019495&pageIndex=1&pageSize=20&startDate=&endDate=&plat=Android&appType=ttjj&product=EFund&Version=1&deviceid=1",
+      "retrievedAt": "2026-10-29T11:31:31.561741+00:00",
+      "normalizedRowsSha256": "0e06ab65b8ffdca3a934dc2403d8a52e66a23a5524f67657ee2730b8722ce453",
+      "before": "2026-10-23",
+      "after": "2026-10-28",
+      "historyUrl": "data/portfolio/fund/019495-34180b2b1c1f8421.json",
+      "historySha256": "34180b2b1c1f84217525fa2c422f285da784b8d5a3321b1aa81f18a7726d9184"
+    },
+    {
+      "code": "021773",
+      "sourceUrl": "https://fundmobapi.eastmoney.com/FundMNewApi/FundMNHisNetList?FCODE=021773&pageIndex=1&pageSize=20&startDate=&endDate=&plat=Android&appType=ttjj&product=EFund&Version=1&deviceid=1",
+      "retrievedAt": "2026-10-29T11:31:31.567203+00:00",
+      "normalizedRowsSha256": "549120b1bd88d270ac1cd6fdc2b8a93841f95de6198ffb9505b9e1e0200bd661",
+      "before": "2026-10-23",
+      "after": "2026-10-28",
+      "historyUrl": "data/portfolio/fund/021773-5634a8e64f29ce79.json",
+      "historySha256": "5634a8e64f29ce798ee7d1089423e33190e194d83c646c319981db3ee5cff173"
+    },
+    {
+      "code": "513730",
+      "sourceUrl": "https://fundmobapi.eastmoney.com/FundMNewApi/FundMNHisNetList?FCODE=513730&pageIndex=1&pageSize=20&startDate=&endDate=&plat=Android&appType=ttjj&product=EFund&Version=1&deviceid=1",
+      "retrievedAt": "2026-10-29T11:31:31.557659+00:00",
+      "normalizedRowsSha256": "3d5ca983691a8278205764239743f0a311260b9ca98451f5cd3e8b2fd4f9be9e",
+      "before": "2026-10-23",
+      "after": "2026-10-28",
+      "historyUrl": "data/portfolio/fund/513730-4ea13200f230c2bb.json",
+      "historySha256": "4ea13200f230c2bbeff59d4a034e6a75894e2b8810baeb14077af242ff941a31"
+    }
+  ],
+  "individualRetrySync": {
+    "risk": {
+      "updated": 3,
+      "partialFiveYear": 3
+    },
+    "nav": {
+      "updated": 3,
+      "warnings": {}
+    },
+    "returns": {
+      "updated": 3,
+      "retained": {}
+    }
+  },
+  "targetedHostedRepair": {
+    "url": "https://github.com/jianxieb/fund-data/actions/runs/40865087756",
+    "sourceCommit": "fd2ddb08",
+    "dataCommit": "fcca2d49",
+    "createdAt": "2026-10-29T11:23:59Z",
+    "deploymentCompletedAt": "2026-10-29T11:29:51Z",
+    "seconds": 352,
+    "refreshReport": {
+      "schemaVersion": 1,
+      "startedAt": "2026-10-29T11:24:26+00:00",
+      "mode": "online",
+      "dailyMode": true,
+      "scope": "targeted",
+      "datasets": [
+        "research_funds",
+        "portfolio",
+        "quality"
+      ],
+      "steps": [
+        {
+          "dataset": "research_funds",
+          "status": "completed",
+          "exitCode": 0,
+          "seconds": 2.57,
+          "log": ".tmp-snap/refresh-research_funds.log",
+          "publishedRollback": false,
+          "retainedPrevious": false,
+          "sourcePartial": false,
+          "checkpointValidated": false
+        },
+        {
+          "dataset": "portfolio",
+          "status": "partial",
+          "exitCode": 124,
+          "seconds": 107.06,
+          "log": ".tmp-snap/refresh-portfolio.log",
+          "publishedRollback": false,
+          "retainedPrevious": false,
+          "sourcePartial": true,
+          "checkpointValidated": true
+        },
+        {
+          "dataset": "quality",
+          "status": "completed",
+          "exitCode": 0,
+          "seconds": 1.9,
+          "log": ".tmp-snap/refresh-quality.log",
+          "publishedRollback": false,
+          "retainedPrevious": false,
+          "sourcePartial": false,
+          "checkpointValidated": false
+        }
+      ],
+      "batchFundRecords": 1683,
+      "batchFundSeconds": 3.91,
+      "portfolioSync": {
+        "dataset": "portfolio_sync",
+        "status": "completed",
+        "exitCode": 0,
+        "seconds": 51.71,
+        "log": ".tmp-snap/refresh-portfolio_sync.log",
+        "publishedRollback": false,
+        "retainedPrevious": false,
+        "sourcePartial": false,
+        "checkpointValidated": false
+      },
+      "benchmarkSync": {
+        "dataset": "benchmark_sync",
+        "status": "completed",
+        "exitCode": 0,
+        "seconds": 3.18,
+        "log": ".tmp-snap/refresh-benchmark_sync.log",
+        "publishedRollback": false,
+        "retainedPrevious": false,
+        "sourcePartial": false,
+        "checkpointValidated": false
+      },
+      "completedAt": "2026-10-29T11:27:16+00:00",
+      "status": "partial"
+    },
+    "postReport": {
+      "startedAt": "2026-10-29T11:27:16+00:00",
+      "datasets": [
+        "crossborder"
+      ],
+      "steps": [
+        {
+          "dataset": "crossborder",
+          "status": "timeout",
+          "exitCode": 124,
+          "seconds": 60.07,
+          "log": ".tmp-snap/refresh-crossborder.log",
+          "publishedRollback": false,
+          "retainedPrevious": true,
+          "sourcePartial": false,
+          "checkpointValidated": false
+        },
+        {
+          "dataset": "quality",
+          "status": "completed",
+          "exitCode": 0,
+          "seconds": 1.94,
+          "log": ".tmp-snap/refresh-quality.log",
+          "publishedRollback": false,
+          "retainedPrevious": false,
+          "sourcePartial": false,
+          "checkpointValidated": false
+        }
+      ],
+      "completedAt": "2026-10-29T11:28:18+00:00",
+      "status": "partial"
+    }
+  },
+  "finalVerification": {
+    "fundCount": 1623,
+    "fundReturnDates": {
+      "2026-10-28": 1583,
+      "2026-10-27": 31,
+      "2026-10-23": 8,
+      "2026-10-26": 1
+    },
+    "benchmarkDates": {
+      "2026-10-28": 36
+    },
+    "historyCount": 1873,
+    "historyDates": {
+      "2026-10-28": 1833,
+      "2026-10-27": 31,
+      "2026-10-23": 8,
+      "2026-10-26": 1
+    },
+    "crossborderDates": {
+      "2026-10-28": 280,
+      "2026-10-27": 24,
+      "2026-10-26": 1
+    },
+    "crossborderErrors": {
+      "158042": [
+        "成交价历史：成交价历史落后净值超过7日"
+      ]
+    },
+    "quality": {
+      "errors": 0,
+      "warnings": 5,
+      "unverified": 37
+    },
+    "regressions": [],
+    "postReport": {
+      "startedAt": "2026-10-29T11:37:18+00:00",
+      "datasets": [
+        "crossborder"
+      ],
+      "steps": [
+        {
+          "dataset": "crossborder",
+          "status": "completed",
+          "exitCode": 0,
+          "seconds": 32.93,
+          "log": ".tmp-snap/refresh-crossborder.log",
+          "publishedRollback": false,
+          "retainedPrevious": false,
+          "sourcePartial": false,
+          "checkpointValidated": false
+        },
+        {
+          "dataset": "quality",
+          "status": "completed",
+          "exitCode": 0,
+          "seconds": 0.83,
+          "log": ".tmp-snap/refresh-quality.log",
+          "publishedRollback": false,
+          "retainedPrevious": false,
+          "sourcePartial": false,
+          "checkpointValidated": false
+        }
+      ],
+      "completedAt": "2026-10-29T11:37:52+00:00",
+      "status": "completed"
+    },
+    "knownNewerBatchObservationsStillMissingThrough20261028": []
+  },
+  "verificationScope": "Targeted history recovery, three individual history retries, derived crossborder summaries, strict quality, checksums for repaired files and no backward source dates. No production website requests. The 352-second hosted recovery included timeout/checkpoint recovery, so it is not a fully completed sub-five-minute timing proof."
 }

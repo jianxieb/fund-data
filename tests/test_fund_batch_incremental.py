@@ -66,6 +66,9 @@ class FundBatchTests(unittest.TestCase):
         self.assertEqual([r['FSRQ'] for r in history['000001']], ['2026-10-27', '2026-10-28'])
         self.assertEqual(history['000001'][-1]['sourceObservedAt'], '2026-10-29T01:00:00+00:00')
         self.assertNotIn('sourceObservedAt', history['000001'][0])
+        newer = {'000001': dict(FCODE='000001', FSRQ='2026-10-29', DWJZ=2.03, JZZZL=.5)}
+        next_history = batch.merge_history({'history': history, 'rows': new}, newer, '2026-10-30T01:00:00+00:00', [])
+        self.assertEqual(next_history['000001'][1]['sourceObservedAt'], '2026-10-29T01:00:00+00:00')
 
     def test_a_newer_nav_does_not_hide_the_saved_observation_at_the_history_limit(self):
         newer = dict(FCODE='000001', FSRQ='2026-10-29', DWJZ=2.1, JZZZL=1)
@@ -207,6 +210,15 @@ class IncrementalFundHistoryTests(unittest.TestCase):
         self.assertEqual(json.loads(path.read_text())[0], current)
         self.assertEqual(status.call_args.args[:2], ('research_funds', 'partial'))
         self.assertIn('收益历史仍截至2026-10-22', status.call_args.kwargs['failures']['000001'])
+        untouched = dict(code='000002', asof='2026-10-21', performanceCheckedAt='2026-10-22', checkedAt='2026-09-01')
+        path.write_text(json.dumps([current, untouched]))
+        (self.root / 'data/update-status.json').write_text(json.dumps({'datasets': {'research_funds': {
+            'failures': {'000002': 'unchanged failure'}}}}))
+        with patch('screens.fund_screen.parse_snapshot_extra', return_value=[row]), \
+                patch.object(batch, 'latest', return_value=None), patch.object(portfolio, 'write_status') as status:
+            self.assertEqual(portfolio.sync_verified_evidence({'000001'}), 0)
+        self.assertEqual(json.loads(path.read_text())[1], untouched)
+        self.assertEqual(status.call_args.kwargs['failures'], {'000002': 'unchanged failure'})
 
 
 if __name__ == '__main__':

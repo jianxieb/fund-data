@@ -1,17 +1,17 @@
 {
-  "startedAt": "2026-10-29T11:27:16+00:00",
+  "startedAt": "2026-10-29T11:37:18+00:00",
   "datasets": [
     "crossborder"
   ],
   "steps": [
     {
       "dataset": "crossborder",
-      "status": "timeout",
-      "exitCode": 124,
-      "seconds": 60.07,
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 32.93,
       "log": ".tmp-snap/refresh-crossborder.log",
       "publishedRollback": false,
-      "retainedPrevious": true,
+      "retainedPrevious": false,
       "sourcePartial": false,
       "checkpointValidated": false
     },
@@ -19,7 +19,7 @@
       "dataset": "quality",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 1.94,
+      "seconds": 0.83,
       "log": ".tmp-snap/refresh-quality.log",
       "publishedRollback": false,
       "retainedPrevious": false,
@@ -27,6 +27,6 @@
       "checkpointValidated": false
     }
   ],
-  "completedAt": "2026-10-29T11:28:18+00:00",
-  "status": "partial"
+  "completedAt": "2026-10-29T11:37:52+00:00",
+  "status": "completed"
 }

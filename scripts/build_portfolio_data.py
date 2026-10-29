@@ -596,7 +596,7 @@ def _sync_fund_returns(catalog, snapshot_path=None):
     return {'updated': len(updated), 'retained': retained}
 
 
-def sync_verified_evidence():
+def sync_verified_evidence(codes=None):
     """Keep the original research audit, updating only its dated performance."""
     from screens.fund_screen import parse_snapshot_extra
     path = ROOT / 'data/screening-validation.json'
@@ -605,8 +605,15 @@ def sync_verified_evidence():
     catalog = json.loads((OUTPUT / 'catalog.js').read_text().split('=', 1)[1].strip().rstrip(';'))
     assets = {row['code']: row for row in catalog['assets'] if row['id'].startswith('fund:')}
     checked, updated, failures = now_iso(), [], {}
+    if codes is not None:
+        status_path = ROOT / 'data/update-status.json'
+        statuses = json.loads(status_path.read_text()).get('datasets', {}) if status_path.exists() else {}
+        failures = {code: reason for code, reason in statuses.get('research_funds', {}).get('failures', {}).items() if code not in codes}
     for evidence in previous:
         code = evidence['code']
+        if codes is not None and code not in codes:
+            updated.append(evidence)
+            continue
         try:
             row, asset = rows[code], assets[code]
             endpoint = row['returnAsOf']
@@ -636,7 +643,7 @@ def sync_verified_evidence():
     atomic_text(path, json.dumps(updated, ensure_ascii=False, indent=2) + '\n')
     dates = [row['asof'] for row in updated if row.get('asof')]
     write_status('research_funds', 'partial' if failures else 'success', mode='online', records=len(updated),
-                 asOf=max(dates) if dates else None, failures=failures,
+                 asOf=max(dates) if dates else None, failures=failures, refreshedCodes=sorted(codes) if codes is not None else None,
                  message='复用本轮已更新的行情曲线；原费率和研究核验日期保持独立')
     print('已核验基金证据同步：%d条；缺项%d条' % (len(updated), len(failures)), flush=True)
     return 0

@@ -113,114 +113,88 @@ var UPDATE_STATUS={
     },
     "quality": {
       "status": "checked",
-      "attemptedAt": "2026-10-29T11:28:18+00:00",
+      "attemptedAt": "2026-10-29T11:37:52+00:00",
       "exitCode": 0,
-      "seconds": 1.94,
+      "seconds": 0.83,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "checked",
-        "attemptedAt": "2026-10-29T11:28:18+00:00",
+        "attemptedAt": "2026-10-29T11:37:52+00:00",
         "exitCode": 0,
-        "seconds": 1.94,
+        "seconds": 0.83,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "research_funds": {
-      "status": "partial",
-      "attemptedAt": "2026-10-29T11:27:14+00:00",
+      "status": "success",
+      "attemptedAt": "2026-10-29T11:36:54+00:00",
+      "mode": "online",
       "records": 395,
       "asOf": "2026-10-28",
-      "failures": {
-        "019495": "已取得2026-10-28净值，收益历史仍截至2026-10-23",
-        "021773": "已取得2026-10-28净值，收益历史仍截至2026-10-23",
-        "513730": "已取得2026-10-28净值，收益历史仍截至2026-10-23"
-      },
+      "failures": {},
+      "refreshedCodes": [
+        "019495",
+        "021773",
+        "513730"
+      ],
       "message": "复用本轮已更新的行情曲线；原费率和研究核验日期保持独立",
-      "mode": "online",
-      "execution": {
-        "exitCode": 0,
-        "seconds": 2.57
-      },
       "lastOnlineAttempt": {
-        "status": "partial",
-        "attemptedAt": "2026-10-29T11:27:14+00:00",
+        "status": "success",
+        "attemptedAt": "2026-10-29T11:36:54+00:00",
+        "mode": "online",
         "records": 395,
         "asOf": "2026-10-28",
-        "failures": {
-          "019495": "已取得2026-10-28净值，收益历史仍截至2026-10-23",
-          "021773": "已取得2026-10-28净值，收益历史仍截至2026-10-23",
-          "513730": "已取得2026-10-28净值，收益历史仍截至2026-10-23"
-        },
-        "message": "复用本轮已更新的行情曲线；原费率和研究核验日期保持独立",
-        "mode": "online",
-        "execution": {
-          "exitCode": 0,
-          "seconds": 2.57
-        }
+        "failures": {},
+        "refreshedCodes": [
+          "019495",
+          "021773",
+          "513730"
+        ],
+        "message": "复用本轮已更新的行情曲线；原费率和研究核验日期保持独立"
       }
     },
     "portfolio": {
-      "status": "partial",
-      "attemptedAt": "2026-10-29T11:27:08+00:00",
+      "status": "success",
+      "attemptedAt": "2026-10-29T11:36:53+00:00",
       "mode": "online",
       "records": 1873,
       "total": 1873,
       "available": 1873,
       "missing": 0,
-      "historyFailures": {
-        "fund:019495": {
-          "error": "The read operation timed out",
-          "asOf": "2026-10-23",
-          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_019495.html"
-        },
-        "fund:021773": {
-          "error": "The read operation timed out",
-          "asOf": "2026-10-23",
-          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_021773.html"
-        },
-        "fund:513730": {
-          "error": "<urlopen error [Errno 104] Connection reset by peer>",
-          "asOf": "2026-10-23",
-          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_513730.html"
-        }
-      },
+      "historyFailures": {},
       "navUpdated": 1672,
       "navWarnings": {},
       "returnsUpdated": 1679,
       "returnsRetained": {},
       "message": "逐标的保存已验证历史；失败项保留原日期，收益与净值按同一份历史同步。",
+      "scope": "targeted",
+      "repairedCodes": [
+        "019495",
+        "021773",
+        "513730"
+      ],
       "lastOnlineAttempt": {
-        "status": "partial",
-        "attemptedAt": "2026-10-29T11:27:08+00:00",
+        "status": "success",
+        "attemptedAt": "2026-10-29T11:36:53+00:00",
         "mode": "online",
         "records": 1873,
         "total": 1873,
         "available": 1873,
         "missing": 0,
-        "historyFailures": {
-          "fund:019495": {
-            "error": "The read operation timed out",
-            "asOf": "2026-10-23",
-            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_019495.html"
-          },
-          "fund:021773": {
-            "error": "The read operation timed out",
-            "asOf": "2026-10-23",
-            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_021773.html"
-          },
-          "fund:513730": {
-            "error": "<urlopen error [Errno 104] Connection reset by peer>",
-            "asOf": "2026-10-23",
-            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_513730.html"
-          }
-        },
+        "historyFailures": {},
         "navUpdated": 1672,
         "navWarnings": {},
         "returnsUpdated": 1679,
         "returnsRetained": {},
-        "message": "逐标的保存已验证历史；失败项保留原日期，收益与净值按同一份历史同步。"
+        "message": "逐标的保存已验证历史；失败项保留原日期，收益与净值按同一份历史同步。",
+        "scope": "targeted",
+        "repairedCodes": [
+          "019495",
+          "021773",
+          "513730"
+        ]
       }
     },
     "overseas_stocks": {
@@ -422,21 +396,37 @@ var UPDATE_STATUS={
       }
     },
     "crossborder": {
-      "status": "timeout",
-      "attemptedAt": "2026-10-29T11:28:16+00:00",
-      "exitCode": 124,
-      "seconds": 60.07,
-      "message": "\n执行超过 60 秒，子进程已终止；该数据集不能视为更新成功。\n",
-      "error": "执行超过 60 秒，子进程已终止；该数据集不能视为更新成功。",
+      "status": "partial",
+      "attemptedAt": "2026-10-29T11:37:51+00:00",
+      "records": 305,
+      "historyFailures": {
+        "158042": {
+          "error": "成交价历史：成交价历史落后净值超过7日",
+          "asOf": "2026-10-26"
+        }
+      },
+      "message": "净值复用已发布且哈希核对的曲线；成交价失败保留原同期比较及日期。",
       "mode": "online",
+      "execution": {
+        "exitCode": 0,
+        "seconds": 32.93
+      },
       "lastOnlineAttempt": {
-        "status": "timeout",
-        "attemptedAt": "2026-10-29T11:28:16+00:00",
-        "exitCode": 124,
-        "seconds": 60.07,
-        "message": "\n执行超过 60 秒，子进程已终止；该数据集不能视为更新成功。\n",
-        "error": "执行超过 60 秒，子进程已终止；该数据集不能视为更新成功。",
-        "mode": "online"
+        "status": "partial",
+        "attemptedAt": "2026-10-29T11:37:51+00:00",
+        "records": 305,
+        "historyFailures": {
+          "158042": {
+            "error": "成交价历史：成交价历史落后净值超过7日",
+            "asOf": "2026-10-26"
+          }
+        },
+        "message": "净值复用已发布且哈希核对的曲线；成交价失败保留原同期比较及日期。",
+        "mode": "online",
+        "execution": {
+          "exitCode": 0,
+          "seconds": 32.93
+        }
       }
     },
     "market_history": {
@@ -522,5 +512,5 @@ var UPDATE_STATUS={
       }
     }
   },
-  "checkedAt": "2026-10-29T11:28:18+00:00"
+  "checkedAt": "2026-10-29T11:37:52+00:00"
 };

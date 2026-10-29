@@ -26863,45 +26863,45 @@
     "name": "摩根富时发达市场REITs指数(QDII)人民币C",
     "sourceUrl": "https://fundf10.eastmoney.com/jjjz_019495.html",
     "feeSource": "https://fundf10.eastmoney.com/jjfl_019495.html",
-    "asof": "2026-10-23",
+    "asof": "2026-10-28",
     "first": "2023-09-15",
-    "rows": 742,
-    "metricRows": 742,
+    "rows": 745,
+    "metricRows": 745,
     "basis": "provider_daily_return_or_explicit_actions",
     "r": [
-      -0.9282992721617034,
-      0.5696202535434569,
-      32.37989447382053,
+      -0.06777289824598798,
+      0.9214452164262754,
+      33.595282637153055,
       null,
       null
     ],
     "mdd5": -15.817271418038459,
-    "vol5": 13.824991817955404,
+    "vol5": 13.806302762879888,
     "returnPeriods": [
       {
         "years": 1,
-        "start": "2025-10-23",
-        "end": "2026-10-23"
+        "start": "2025-10-28",
+        "end": "2026-10-28"
       },
       {
         "years": 2,
-        "start": "2024-10-23",
-        "end": "2026-10-23"
+        "start": "2024-10-28",
+        "end": "2026-10-28"
       },
       {
         "years": 3,
-        "start": "2023-10-23",
-        "end": "2026-10-23"
+        "start": "2023-10-27",
+        "end": "2026-10-28"
       },
       {
         "years": 5,
         "start": null,
-        "end": "2026-10-23"
+        "end": "2026-10-28"
       },
       {
         "years": 10,
         "start": null,
-        "end": "2026-10-23"
+        "end": "2026-10-28"
       }
     ],
     "fees": [
@@ -26911,52 +26911,52 @@
     ],
     "checkedAt": "2026-10-01T14:08:18.780161+00:00",
     "navObservation": {
-      "nav": 1.4301,
-      "navdate": "2026-10-23",
-      "dz": -0.09
+      "nav": 1.4274,
+      "navdate": "2026-10-28",
+      "dz": -0.59
     },
     "navSyncStatus": "matched_return_endpoint",
     "comparisonStatus": "initial_full_history",
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "127cb10d2b6e857fdabfed871637121ba1fd7efc76835d03ee231f882029a5b9",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
+    "performanceCheckedAt": "2026-10-29T11:36:54+00:00",
     "risk3Period": {
-      "vol": 13.692395426012153,
+      "vol": 13.63322305609417,
       "mdd": -15.817271418038459,
-      "start": "2023-10-23",
-      "end": "2026-10-23",
+      "start": "2023-10-27",
+      "end": "2026-10-28",
       "years": 3,
-      "observations": 722,
+      "observations": 721,
       "annualization": 250,
       "partial": false,
-      "actualYears": 3.0007460796594043,
+      "actualYears": 3.0034839866663927,
       "status": "available",
       "reason": null,
-      "windowStart": "2023-10-23",
+      "windowStart": "2023-10-27",
       "windowPartial": false,
-      "windowYears": 3.0007460796594043,
+      "windowYears": 3.0034839866663927,
       "requiredObservations": 600
     },
     "risk5Period": {
-      "vol": 13.824991817955404,
+      "vol": 13.806302762879888,
       "mdd": -15.817271418038459,
       "start": "2023-09-15",
-      "end": "2026-10-23",
+      "end": "2026-10-28",
       "years": 5,
-      "observations": 742,
+      "observations": 745,
       "annualization": 250,
       "partial": true,
-      "actualYears": 3.1047865459249677,
+      "actualYears": 3.11847608095991,
       "status": "available",
       "reason": null,
       "windowStart": "2023-09-15",
       "windowPartial": true,
-      "windowYears": 3.1047865459249677,
-      "requiredObservations": 620
+      "windowYears": 3.11847608095991,
+      "requiredObservations": 623
     },
-    "historyUrl": "data/portfolio/fund/019495-85f488bbb3f319c0.json",
-    "historySha256": "85f488bbb3f319c03de14806ff98a2207b69f85bbbe0e0bdaf1c829a506b0f82"
+    "historyUrl": "data/portfolio/fund/019495-34180b2b1c1f8421.json",
+    "historySha256": "34180b2b1c1f84217525fa2c422f285da784b8d5a3321b1aa81f18a7726d9184"
   },
   {
     "code": "019525",
@@ -30463,45 +30463,45 @@
     "name": "汇添富纳斯达克100ETF发起式联接(QDII)人民币E",
     "sourceUrl": "https://fundf10.eastmoney.com/jjjz_021773.html",
     "feeSource": "https://fundf10.eastmoney.com/jjfl_021773.html",
-    "asof": "2026-10-23",
+    "asof": "2026-10-28",
     "first": "2024-07-04",
-    "rows": 558,
-    "metricRows": 558,
+    "rows": 561,
+    "metricRows": 561,
     "basis": "provider_daily_return_or_explicit_actions",
     "r": [
-      5.605095541669369,
-      26.139184752099553,
+      5.349537102550106,
+      27.927410090259407,
       null,
       null,
       null
     ],
     "mdd5": -21.82269970028008,
-    "vol5": 20.665857400409717,
+    "vol5": 20.63865159702199,
     "returnPeriods": [
       {
         "years": 1,
-        "start": "2025-10-23",
-        "end": "2026-10-23"
+        "start": "2025-10-28",
+        "end": "2026-10-28"
       },
       {
         "years": 2,
-        "start": "2024-10-23",
-        "end": "2026-10-23"
+        "start": "2024-10-28",
+        "end": "2026-10-28"
       },
       {
         "years": 3,
         "start": null,
-        "end": "2026-10-23"
+        "end": "2026-10-28"
       },
       {
         "years": 5,
         "start": null,
-        "end": "2026-10-23"
+        "end": "2026-10-28"
       },
       {
         "years": 10,
         "start": null,
-        "end": "2026-10-23"
+        "end": "2026-10-28"
       }
     ],
     "fees": [
@@ -30511,52 +30511,52 @@
     ],
     "checkedAt": "2026-10-01T14:08:31.181091+00:00",
     "navObservation": {
-      "nav": 1.5751,
-      "navdate": "2026-10-23",
-      "dz": -0.02
+      "nav": 1.6194,
+      "navdate": "2026-10-28",
+      "dz": 0.52
     },
     "navSyncStatus": "matched_return_endpoint",
     "comparisonStatus": "initial_full_history",
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "4a11f805c8782d795bd595f229a17e6bf85bd604145a0d21703c5130e37facef",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
+    "performanceCheckedAt": "2026-10-29T11:36:54+00:00",
     "risk3Period": {
-      "vol": 20.665857400409717,
+      "vol": 20.63865159702199,
       "mdd": -21.82269970028008,
       "start": "2024-07-04",
-      "end": "2026-10-23",
+      "end": "2026-10-28",
       "years": 3,
-      "observations": 558,
+      "observations": 561,
       "annualization": 250,
       "partial": true,
-      "actualYears": 2.302579792877335,
+      "actualYears": 2.3162693279122775,
       "status": "available",
       "reason": null,
       "windowStart": "2024-07-04",
       "windowPartial": true,
-      "windowYears": 2.302579792877335,
-      "requiredObservations": 460
+      "windowYears": 2.3162693279122775,
+      "requiredObservations": 463
     },
     "risk5Period": {
-      "vol": 20.665857400409717,
+      "vol": 20.63865159702199,
       "mdd": -21.82269970028008,
       "start": "2024-07-04",
-      "end": "2026-10-23",
+      "end": "2026-10-28",
       "years": 5,
-      "observations": 558,
+      "observations": 561,
       "annualization": 250,
       "partial": true,
-      "actualYears": 2.302579792877335,
+      "actualYears": 2.3162693279122775,
       "status": "available",
       "reason": null,
       "windowStart": "2024-07-04",
       "windowPartial": true,
-      "windowYears": 2.302579792877335,
-      "requiredObservations": 460
+      "windowYears": 2.3162693279122775,
+      "requiredObservations": 463
     },
-    "historyUrl": "data/portfolio/fund/021773-93e9dd2e1c951204.json",
-    "historySha256": "93e9dd2e1c9512044a524265d9c7a404d7bc3c09ad89cd044d79e46c3c18e96c"
+    "historyUrl": "data/portfolio/fund/021773-5634a8e64f29ce79.json",
+    "historySha256": "5634a8e64f29ce798ee7d1089423e33190e194d83c646c319981db3ee5cff173"
   },
   {
     "code": "021838",
@@ -41263,45 +41263,45 @@
     "name": "东南亚科技ETF华泰柏瑞",
     "sourceUrl": "https://fundf10.eastmoney.com/jjjz_513730.html",
     "feeSource": "https://fundf10.eastmoney.com/jjfl_513730.html",
-    "asof": "2026-10-23",
+    "asof": "2026-10-28",
     "first": "2023-11-15",
-    "rows": 706,
-    "metricRows": 706,
+    "rows": 709,
+    "metricRows": 709,
     "basis": "provider_daily_return_or_explicit_actions",
     "r": [
-      -25.266838383255685,
-      -16.178446687508284,
+      -27.925951311926312,
+      -16.17248770334252,
       null,
       null,
       null
     ],
-    "mdd5": -28.278900983290622,
-    "vol5": 18.502665207914855,
+    "mdd5": -29.59798505152814,
+    "vol5": 18.516757460441983,
     "returnPeriods": [
       {
         "years": 1,
-        "start": "2025-10-23",
-        "end": "2026-10-23"
+        "start": "2025-10-28",
+        "end": "2026-10-28"
       },
       {
         "years": 2,
-        "start": "2024-10-23",
-        "end": "2026-10-23"
+        "start": "2024-10-28",
+        "end": "2026-10-28"
       },
       {
         "years": 3,
         "start": null,
-        "end": "2026-10-23"
+        "end": "2026-10-28"
       },
       {
         "years": 5,
         "start": null,
-        "end": "2026-10-23"
+        "end": "2026-10-28"
       },
       {
         "years": 10,
         "start": null,
-        "end": "2026-10-23"
+        "end": "2026-10-28"
       }
     ],
     "fees": [
@@ -41311,52 +41311,52 @@
     ],
     "checkedAt": "2026-10-01T14:09:18.547689+00:00",
     "navObservation": {
-      "nav": 1.0367,
-      "navdate": "2026-10-23",
-      "dz": -0.02
+      "nav": 1.0268,
+      "navdate": "2026-10-28",
+      "dz": 1.47
     },
     "navSyncStatus": "matched_return_endpoint",
     "comparisonStatus": "initial_full_history",
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "8264ed05f6782c3ad03741198ccdc8328b45bcd6deed31a3072a9eb00bd023a4",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
+    "performanceCheckedAt": "2026-10-29T11:36:54+00:00",
     "risk3Period": {
-      "vol": 18.502665207914855,
-      "mdd": -28.278900983290622,
+      "vol": 18.516757460441983,
+      "mdd": -29.59798505152814,
       "start": "2023-11-15",
-      "end": "2026-10-23",
+      "end": "2026-10-28",
       "years": 3,
-      "observations": 706,
+      "observations": 709,
       "annualization": 250,
       "partial": true,
-      "actualYears": 2.9377742184986686,
+      "actualYears": 2.951463753533611,
       "status": "available",
       "reason": null,
       "windowStart": "2023-11-15",
       "windowPartial": true,
-      "windowYears": 2.9377742184986686,
-      "requiredObservations": 587
+      "windowYears": 2.951463753533611,
+      "requiredObservations": 590
     },
     "risk5Period": {
-      "vol": 18.502665207914855,
-      "mdd": -28.278900983290622,
+      "vol": 18.516757460441983,
+      "mdd": -29.59798505152814,
       "start": "2023-11-15",
-      "end": "2026-10-23",
+      "end": "2026-10-28",
       "years": 5,
-      "observations": 706,
+      "observations": 709,
       "annualization": 250,
       "partial": true,
-      "actualYears": 2.9377742184986686,
+      "actualYears": 2.951463753533611,
       "status": "available",
       "reason": null,
       "windowStart": "2023-11-15",
       "windowPartial": true,
-      "windowYears": 2.9377742184986686,
-      "requiredObservations": 587
+      "windowYears": 2.951463753533611,
+      "requiredObservations": 590
     },
-    "historyUrl": "data/portfolio/fund/513730-219960cc00f48209.json",
-    "historySha256": "219960cc00f48209b17abb83a116f2e4bb536aee1c978b3fe8623ab4ffb0ec31"
+    "historyUrl": "data/portfolio/fund/513730-4ea13200f230c2bb.json",
+    "historySha256": "4ea13200f230c2bbeff59d4a034e6a75894e2b8810baeb14077af242ff941a31"
   },
   {
     "code": "513800",
