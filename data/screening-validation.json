@@ -103,7 +103,7 @@
       "dz": -0.32
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 11.760255805991058,
       "mdd": -14.617408802371312,
@@ -245,7 +245,7 @@
       "dz": 0.02
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 1.909681624612974,
       "mdd": -1.298701298894922,
@@ -387,7 +387,7 @@
       "dz": 0.03
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 0.9866962804732057,
       "mdd": -0.9121662437279299,
@@ -529,7 +529,7 @@
       "dz": 0.03
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 2.2037486616900264,
       "mdd": -1.2066365006751956,
@@ -671,7 +671,7 @@
       "dz": 0.02
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 1.1153269460022623,
       "mdd": -1.2817113053713136,
@@ -813,7 +813,7 @@
       "dz": 0.14
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 4.711227747960745,
       "mdd": -5.6592765460274475,
@@ -956,7 +956,7 @@
       "dz": 1.41
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 14.814140532995355,
       "mdd": -13.981615868408326,
@@ -1098,7 +1098,7 @@
       "dz": 1.15
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 12.656759168672831,
       "mdd": -11.647835169040254,
@@ -1240,7 +1240,7 @@
       "dz": -0.36
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 12.44387116366539,
       "mdd": -17.168612138080018,
@@ -1382,7 +1382,7 @@
       "dz": 0.56
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 15.69204824962668,
       "mdd": -17.376521938892708,
@@ -1524,7 +1524,7 @@
       "dz": -0.51
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 8.057525253434102,
       "mdd": -6.45297342893294,
@@ -1666,7 +1666,7 @@
       "dz": 1.16
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 14.723707093967425,
       "mdd": -14.120022167729651,
@@ -1808,7 +1808,7 @@
       "dz": 0.05
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 16.166201844537458,
       "mdd": -18.0582524273306,
@@ -1950,7 +1950,7 @@
       "dz": 1.1
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 14.182011448930984,
       "mdd": -17.17512411414711,
@@ -2092,7 +2092,7 @@
       "dz": -0.22
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 21.482764781560288,
       "mdd": -17.880562060889925,
@@ -2234,7 +2234,7 @@
       "dz": 0.24
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 15.895564550578634,
       "mdd": -16.14316660093279,
@@ -2377,7 +2377,7 @@
       "dz": -0.29
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 19.038227634149962,
       "mdd": -15.160880843313663,
@@ -2519,7 +2519,7 @@
       "dz": 1.39
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 13.929524666917645,
       "mdd": -11.909262759926698,
@@ -2661,7 +2661,7 @@
       "dz": -0.93
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 12.717358499815159,
       "mdd": -10.586776320083558,
@@ -2804,7 +2804,7 @@
       "dz": 0.13
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 16.471862216685558,
       "mdd": -13.138440098052905,
@@ -2947,7 +2947,7 @@
       "dz": -1.12
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 24.70181649898985,
       "mdd": -20.43643672385327,
@@ -3089,7 +3089,7 @@
       "dz": 0.43
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 15.006133222686191,
       "mdd": -14.141660171484528,
@@ -3231,7 +3231,7 @@
       "dz": -1.65
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 18.70326057656088,
       "mdd": -18.48523100227215,
@@ -3373,7 +3373,7 @@
       "dz": -6.25
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 40.03410223039664,
       "mdd": -49.11032028469751,
@@ -3515,7 +3515,7 @@
       "dz": -6.18
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 39.90793665928739,
       "mdd": -49.62968394808242,
@@ -3658,7 +3658,7 @@
       "dz": -0.85
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.7290301814144,
       "mdd": -29.717988632661196,
@@ -3801,7 +3801,7 @@
       "dz": 0.3
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 19.085928496050528,
       "mdd": -20.585860398349187,
@@ -3944,7 +3944,7 @@
       "dz": -3.15
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 38.06333763101479,
       "mdd": -42.968977076753156,
@@ -4087,7 +4087,7 @@
       "dz": -6.78
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 48.72808108075431,
       "mdd": -53.10285393294443,
@@ -4230,7 +4230,7 @@
       "dz": -3.75
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.85577510599991,
       "mdd": -37.23095395092953,
@@ -4372,7 +4372,7 @@
       "dz": -1.19
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 26.025809942961693,
       "mdd": -31.337881108172073,
@@ -4514,7 +4514,7 @@
       "dz": -4.26
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 43.98770186296791,
       "mdd": -48.50095683595326,
@@ -4657,7 +4657,7 @@
       "dz": -3.58
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.66371289053629,
       "mdd": -34.56954192446202,
@@ -4800,7 +4800,7 @@
       "dz": -1.03
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 25.189467851092385,
       "mdd": -32.449954005823066,
@@ -4942,7 +4942,7 @@
       "dz": -1.43
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 25.4383252179102,
       "mdd": -22.86936492267194,
@@ -5084,7 +5084,7 @@
       "dz": 0.53
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 35.814081680711034,
       "mdd": -35.84745762711864,
@@ -5226,7 +5226,7 @@
       "dz": 0.05
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 29.936861517822276,
       "mdd": -27.30769230769232,
@@ -5368,7 +5368,7 @@
       "dz": -3.05
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 29.135742331962682,
       "mdd": -42.8796595476459,
@@ -5510,7 +5510,7 @@
       "dz": 0.03
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 27.591460681436004,
       "mdd": -27.94463172967315,
@@ -5652,7 +5652,7 @@
       "dz": -1.22
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 31.08558367854156,
       "mdd": -28.764619883040933,
@@ -5794,7 +5794,7 @@
       "dz": -1.5
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.314034568192838,
       "mdd": -37.6143717920107,
@@ -5936,7 +5936,7 @@
       "dz": -0.14
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 28.176795930931398,
       "mdd": -35.070599138530575,
@@ -6078,7 +6078,7 @@
       "dz": -3.92
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 35.0585092337351,
       "mdd": -41.29117259552031,
@@ -6220,7 +6220,7 @@
       "dz": -1.98
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 25.75752129640229,
       "mdd": -33.44575604272062,
@@ -6362,7 +6362,7 @@
       "dz": -2.88
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 39.517835132434854,
       "mdd": -51.81199253634217,
@@ -6504,7 +6504,7 @@
       "dz": -6.11
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 44.40074017806603,
       "mdd": -53.869154676259,
@@ -6646,7 +6646,7 @@
       "dz": 0.03
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.802499394974408,
       "mdd": -37.91658351621536,
@@ -6788,7 +6788,7 @@
       "dz": -2.58
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.44776744172601,
       "mdd": -32.915516840110385,
@@ -6930,7 +6930,7 @@
       "dz": -0.58
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 24.459946595974603,
       "mdd": -30.93969006020698,
@@ -7073,7 +7073,7 @@
       "dz": -3.24
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 38.93713211638994,
       "mdd": -44.46272493563719,
@@ -7216,7 +7216,7 @@
       "dz": -2.16
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.31274629688106,
       "mdd": -37.09449929478137,
@@ -7358,7 +7358,7 @@
       "dz": -3.8
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 40.0172955674514,
       "mdd": -39.9279214047098,
@@ -7500,7 +7500,7 @@
       "dz": 0.67
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 28.493425488818623,
       "mdd": -29.723901935967756,
@@ -7642,7 +7642,7 @@
       "dz": -3.09
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 49.663528962990036,
       "mdd": -51.64485817152995,
@@ -7784,7 +7784,7 @@
       "dz": -1.17
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.28020319647574,
       "mdd": -35.803726528710186,
@@ -7926,7 +7926,7 @@
       "dz": -4.09
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.99572161590216,
       "mdd": -39.1206313416009,
@@ -8068,7 +8068,7 @@
       "dz": -3.92
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 36.76321890364625,
       "mdd": -44.885383288143956,
@@ -8210,7 +8210,7 @@
       "dz": -3.47
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 38.11554751238415,
       "mdd": -44.604332901407176,
@@ -8353,7 +8353,7 @@
       "dz": -3.53
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.32294287512313,
       "mdd": -42.624728850325376,
@@ -8495,7 +8495,7 @@
       "dz": -3.87
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 41.52301166240112,
       "mdd": -46.27836310453526,
@@ -8637,7 +8637,7 @@
       "dz": -3.53
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 37.1492503878548,
       "mdd": -45.285766290350715,
@@ -8779,7 +8779,7 @@
       "dz": 0.46
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 18.05964221006109,
       "mdd": -18.885448916577154,
@@ -8921,7 +8921,7 @@
       "dz": 0.37
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 23.932378361690628,
       "mdd": -24.284207169145567,
@@ -9063,7 +9063,7 @@
       "dz": -1.2
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 25.73298629709779,
       "mdd": -31.376880193541602,
@@ -9205,7 +9205,7 @@
       "dz": -4.24
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 48.701850671404124,
       "mdd": -49.40641038055582,
@@ -9347,7 +9347,7 @@
       "dz": -3.15
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 35.33962634885461,
       "mdd": -42.99051570830264,
@@ -9489,7 +9489,7 @@
       "dz": -2.34
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 36.81318153037566,
       "mdd": -42.69602670774568,
@@ -9631,7 +9631,7 @@
       "dz": -3.1
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 38.055901922653,
       "mdd": -45.5550145338114,
@@ -9773,7 +9773,7 @@
       "dz": 1.04
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 18.18952454892066,
       "mdd": -13.479559262550445,
@@ -9915,7 +9915,7 @@
       "dz": 0.79
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 34.19448832699512,
       "mdd": -50.42594248599802,
@@ -10057,7 +10057,7 @@
       "dz": -4.35
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 45.756140371444495,
       "mdd": -42.71057573398067,
@@ -10199,7 +10199,7 @@
       "dz": 1.05
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 31.670096404282646,
       "mdd": -35.80253692823019,
@@ -10341,7 +10341,7 @@
       "dz": -6.5
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 47.95834564087366,
       "mdd": -52.34262802286243,
@@ -10483,7 +10483,7 @@
       "dz": 0.55
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 31.875611119333975,
       "mdd": -37.73849304732133,
@@ -10625,7 +10625,7 @@
       "dz": -4.78
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 37.49725884588146,
       "mdd": -45.73497954741622,
@@ -10768,7 +10768,7 @@
       "dz": -0.17
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 34.567056725131735,
       "mdd": -31.821387879116703,
@@ -10910,7 +10910,7 @@
       "dz": -2.84
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 33.58269920835353,
       "mdd": -45.3060465610433,
@@ -11052,7 +11052,7 @@
       "dz": -1.99
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 31.823484436152206,
       "mdd": -40.493938466987586,
@@ -11194,7 +11194,7 @@
       "dz": -4.52
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 42.75668650117697,
       "mdd": -45.59540932073961,
@@ -11336,7 +11336,7 @@
       "dz": -1.65
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 31.14983011353874,
       "mdd": -38.74599391910877,
@@ -11478,7 +11478,7 @@
       "dz": -2.86
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.60687809999413,
       "mdd": -33.10142804833395,
@@ -11620,7 +11620,7 @@
       "dz": -2.17
     },
     "navSyncStatus": "matched_return_endpoint",
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 31.344808706960688,
       "mdd": -40.28312510654365,
@@ -11720,7 +11720,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "1e41b802f67eb1282c63c1b3bc44e7410baff11d088fba0cdf84825024474735",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 15.881317967263639,
       "mdd": -12.285961550466206,
@@ -11820,7 +11820,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "2da070119402836f2df901af0e619b3b0fb1c54b46c3e42c509296b8dda38428",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 25.14669870439979,
       "mdd": -25.740315790917922,
@@ -11920,7 +11920,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "c5620368c40b7d2a41c62deb16c11b490676a435287386d1bdf1bde3dd5cf9aa",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 27.722950517819616,
       "mdd": -31.298195405040154,
@@ -12020,7 +12020,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "2c66bcb601fbe2eb7842f2ef392f5dfb02d0ebb1f9678cd19ce3e95476b0efcd",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.282707534223256,
       "mdd": -32.89561328385193,
@@ -12120,7 +12120,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "6ab9ee7416c1c9846c9435bebf2647eb40f4c23733e076d650221c8e48d32055",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 19.710885614339702,
       "mdd": -22.18692279275951,
@@ -12220,7 +12220,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "57cb3a8b5972a6f0d2c65039cf3f0c8f4b6c06e3ade5cec89eefaee9f2667be7",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 24.42376212818748,
       "mdd": -30.998877665544335,
@@ -12320,7 +12320,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "161464232f7b27542ba81e750e5dcd9f6f3b0fa4e7aa2c7794239a3924b73fc9",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 27.866289850735665,
       "mdd": -37.28100910990215,
@@ -12420,7 +12420,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "720efd236df1225dd925f7ddb31f4cf4910f0fab1ff5fee31d7a48e7e8f6d0d6",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 28.74513432946476,
       "mdd": -34.22774143478682,
@@ -12520,7 +12520,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "82efa441fcaa3d4b98b394e643fdc13dfe742eae93fdeeb84116d39f4a20f370",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 26.66911666831775,
       "mdd": -34.74025974025974,
@@ -12620,7 +12620,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "0ae0d4be827a5da442901059b7c42c96e1ebb08cb8e0f7d1fc8f59e7657927a0",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 16.244811430545266,
       "mdd": -18.961700243411773,
@@ -12720,7 +12720,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "61a4cda85a3c3f5640c4ef72897d5cb22fad5e96a20f3ab3c63d543e4d250593",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 26.83336396014852,
       "mdd": -27.648878576952818,
@@ -12820,7 +12820,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "6e0db8d5d456a3643215dfd2a255c170f955d448df28ed3af0d4db9c5f5f796c",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 28.823299038301208,
       "mdd": -38.38971880492091,
@@ -12920,7 +12920,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "48cf8b8f99a2319c6a4cfc5068c0547cc2863bd6bdd2e911088cd6362510da14",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.406725641680552,
       "mdd": -34.412339778505356,
@@ -13020,7 +13020,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "8b2210f87fcfe5934e1bb33d86f5a0757896e4f553f6ce98b2c44d8f6b5b12c3",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.299985646409276,
       "mdd": -21.575502571295,
@@ -13120,7 +13120,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "0c1587c5a4c265f1c89cd3d09207769569dc2dd20f669c156896a887124278e5",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 21.789302796816287,
       "mdd": -36.269276393831554,
@@ -13220,7 +13220,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "ad15da712b5f7003a0bef23f6fe0f2cfeb508f054a3515aeb6fe1bd2f1d44cd4",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 25.011722079503613,
       "mdd": -50.471028519765525,
@@ -13320,7 +13320,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "27778242491c472a6cbb0bb8eae988786bd9ae7d4958776e900081916f18cb47",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 40.91160945714505,
       "mdd": -48.00735381330803,
@@ -13420,7 +13420,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "ccebf217247a483ba67847c65a30e54e4b58dcb0c7aab9bdecdab01a0f6ce914",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 34.6316455843391,
       "mdd": -34.98311400959007,
@@ -13520,7 +13520,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "c5b330fddff2dfc076a2917aebf018413525caca048dd794408892d5c32cf328",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 36.82702708537604,
       "mdd": -41.64251207729468,
@@ -13620,7 +13620,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "ef661cc6b91c6a5f03dd310cc11ebcccb30998a1eea850eeadf6a4df4118953c",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 37.99413830106258,
       "mdd": -30.631546832095992,
@@ -13720,7 +13720,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "ef5fee7e31dcec5f789cdb026f97a6653de8bc04d86314ea0ae33c10cebbd282",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 37.79004623026789,
       "mdd": -35.4877701934016,
@@ -13820,7 +13820,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "50e59cfbacd89f420d83e757e7c704e5b62a66350499dde34404f89e9cd931aa",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 38.69280448245768,
       "mdd": -42.42208792510961,
@@ -13920,7 +13920,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "93e23ba1c5b2b0f724fd8643dd834ac5aa23fb576fc6377b0cccecb5f1897e9e",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.433076268389904,
       "mdd": -37.517425298502936,
@@ -14020,7 +14020,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "6fbd4fea0129947f315ba7e22345a0836af575ae57d054b0b8a5f74d80156a1c",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 34.064830847745355,
       "mdd": -38.237836988131725,
@@ -14120,7 +14120,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "2ba632331287250c61f4732ec32c0628e12347aa1042b38730917e0676cd599a",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 22.159587210734074,
       "mdd": -35.02763140984448,
@@ -14220,7 +14220,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "56a27821b099a6840a8bd1a661c95f322e63c7486a1414266abde6562d61f7a4",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 37.19764055062478,
       "mdd": -36.05785988149181,
@@ -14320,7 +14320,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "453526676cd5d24794de3c51f364085e4f8515e95d48b12267217fe1459ff23f",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 33.26877650276961,
       "mdd": -40.23853831838944,
@@ -14420,7 +14420,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "bb04c933d53930763ae31754983c7315d07ab3d8db5aec9717b3821972dd3314",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.30939379191369,
       "mdd": -42.50711671403875,
@@ -14520,7 +14520,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "2b444be62bbd3dad75a9954a289e74dc3311741845ceaad9969768a5b1f43e2d",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 33.27693888443981,
       "mdd": -42.56559766763848,
@@ -14620,7 +14620,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "a715e429b66b879a401e1244ef58b6f956f38bbba27f2eea675f7c1a71a025fa",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 31.206348408448303,
       "mdd": -42.46567234843312,
@@ -14720,7 +14720,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "acb11c6fcda169ddd2710ae7d3db5d2b5596458a3250a5ab0ab354da96f29d98",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.96493399590275,
       "mdd": -37.43266724587316,
@@ -14820,7 +14820,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "80d23684625c443e3a3cce91a6f2b158bceddf49f0dae5149bd96cfdb1feddbf",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.91055716562678,
       "mdd": -41.44482739819999,
@@ -14920,7 +14920,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "8825097e4af13427086f2bf258a676b1b0ac76d52f49549c85240e1fff19f0c7",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 23.062227075464943,
       "mdd": -35.55250923829219,
@@ -15020,7 +15020,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "42bf96455fe43540550a5e714baa570b928b42a1f07d2a3adc04ebf9b62f1b37",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 25.173942594561478,
       "mdd": -30.22739877981143,
@@ -15120,7 +15120,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "4befa2a68552163f753de7a997c7f0febf213e444c604bd323858faa9f23a4e0",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 27.171832556132795,
       "mdd": -28.449778180514464,
@@ -15220,7 +15220,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "cd94cb1bcceb8108d8a3176245e78add353767f855e302dc914cc24e09e0f0a4",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 22.116277906750646,
       "mdd": -28.899889988998908,
@@ -15320,7 +15320,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "85fe5c1a23da973fe6d23a4ec53219c9f0e2d42bca3170a33fc9c1a4dead8228",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 16.169571488114332,
       "mdd": -16.078032544378694,
@@ -15420,7 +15420,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "ced23590f7a066e45ad6f5eb82022e01c8182dad4d2b5987c447c97c91b86ae6",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 21.33223969511173,
       "mdd": -23.634587934790773,
@@ -15520,7 +15520,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "1bc4dc73129c94afac9f4ddd3ac4204f74852343242a6be438273b9836d99a1e",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 17.744642239853423,
       "mdd": -19.61983832176797,
@@ -15620,7 +15620,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "becddd0a916dee709583063110f1f77b03bd5a3daffd67ad9f78df5a2a815dac",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 24.184575497158868,
       "mdd": -38.29435388613277,
@@ -15720,7 +15720,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "2c8b467a7ec580673464427758b83e4b3c07cdf4167ac17f8019f6909b794d9d",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 19.639173559122504,
       "mdd": -21.511207519884312,
@@ -15820,7 +15820,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "9006f84fadb2b6accdf1d3ad414c7074bced23780bf11f7a41acd12a936f7610",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 22.797561403811244,
       "mdd": -23.6270133902581,
@@ -15920,7 +15920,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "06eb182ed81a17f9ad0275bf3677da217000d634981fd8a6a06b258677bad586",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 23.600665250054767,
       "mdd": -32.59794090119,
@@ -16020,7 +16020,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "48fef95e8558949436c36efcc49e2b63b8f0a5d76a5ccd7350c35400cb33d525",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 17.767213941314264,
       "mdd": -19.837407366441763,
@@ -16120,7 +16120,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "9c8f9ac58464f7a4623bef81752f1e6701937a1b9b864561df7225d6c006e39b",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 25.465826036985394,
       "mdd": -32.754056072228636,
@@ -16220,7 +16220,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "73ff1e6ac1fc4aee13d9c1750db3bf6cf26e484b337331bc97ad460473db620d",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 24.531024368046044,
       "mdd": -30.793378995433784,
@@ -16320,7 +16320,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "79148581c3a5f2f0318f874a343208a9823fcbc9d40353ca070a714b0413059a",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.450672545855443,
       "mdd": -37.25187302077701,
@@ -16420,7 +16420,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "bbbc6d5e956246d956b8309c67cbdae9499b520fab5de93a8556c8430d163365",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 17.89360897741929,
       "mdd": -19.708203779000232,
@@ -16520,7 +16520,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "ed31479db9187a0ec39cdc546cbe3d6267030f91b7cf692c289d729b95493833",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 21.391338619553686,
       "mdd": -31.031984702602077,
@@ -16620,7 +16620,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "da6bf3ebb18fbb3d71c1c53ad7bba4009be0749670f63ea1c3a017cc3a9b729c",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 21.39428153156596,
       "mdd": -31.0305230717271,
@@ -16720,7 +16720,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "4d26b0359e5f6c7cc695c9dafbe18b21ec86cc59738195b258e6c0e54af4a23a",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 12.993823077972234,
       "mdd": -26.567844925883698,
@@ -16820,7 +16820,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "ff3bb27eb944b07da446d3fb15df6571305371e18b3adbaaaf4d484897b41308",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 1.2362889637581522,
       "mdd": -1.5545210891790506,
@@ -16920,7 +16920,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "58ed6b45009682c5ba5ae412babdf9a69b59f8a137cb567158e7e3353dfe1e62",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 33.91067056632357,
       "mdd": -34.870383115393444,
@@ -17020,7 +17020,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "687afbfb48fb05807acdb22e6d442c19c5f47cc6b8fd73c7c5e2fbcbc2235d7b",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 18.29629837448579,
       "mdd": -16.984917669849175,
@@ -17120,7 +17120,7 @@
     "comparisonNote": "首次补齐，未声称旧快照收益已重演",
     "rawHistorySha256": "62885d8ec4812233c885ef8dde1c18027a2c32ea36e34c5542f113ab5df001bd",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 24.731929370362046,
       "mdd": -26.021332260012077,
@@ -17220,7 +17220,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "eecaf5a8dbca90c22e43d9331df898678a7afc4516a56276bc4d6258a92779de",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 12.66469239001642,
       "mdd": -15.132605304351522,
@@ -17320,7 +17320,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "bd867ad10ac308cecf071b323716ad96cc819663f62da0fabee7e1a0f4d2cd8e",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 15.72609034208425,
       "mdd": -18.171041490445806,
@@ -17420,7 +17420,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "d846cdefdf309fd077814771ca39e76c67a926c2ee876768df748dad82a9adbc",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 21.05568160527664,
       "mdd": -19.723162834907626,
@@ -17520,7 +17520,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "c8421f4dcc9a30c762925b06f246127e2afe40b6a99aa1047f8af308a1a2ea9a",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 15.66404594085725,
       "mdd": -14.136025909697093,
@@ -17620,7 +17620,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "22be75773bdb3d0e330ead5426a958f4a223987cff825d10b5a8217a0f6b0e72",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 24.900414420319212,
       "mdd": -29.386278868251516,
@@ -17720,7 +17720,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "5a882a0d5e1cdad2f8b7edca991f3eff06e833368bddd915d9e45faf9215f609",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.580351913537964,
       "mdd": -22.24753227031131,
@@ -17820,7 +17820,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "f3a7a45b1bf774fcce101b4a514ac4d5837ad1fa85855086e80a3631d6b071d7",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 13.70592576450575,
       "mdd": -15.695803956465193,
@@ -17920,7 +17920,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "02cdc703c0fb89116327a414ed5fc5f487ccade1393ec2b3a75c6bcc25880c38",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 22.54919710858309,
       "mdd": -24.797865459293998,
@@ -18020,7 +18020,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "8bf4ae8e8084e80de8425add445b064dd07e26745e5195b17a1052205f3c2330",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 17.17965123621854,
       "mdd": -21.737766624516254,
@@ -18120,7 +18120,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "d60f98351fecc46043f4602a11adda1ab5d01f565d54d7f583a2aed23cd34157",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 29.610371269119028,
       "mdd": -44.242649795310754,
@@ -18220,7 +18220,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "d8c4119791fae8090174c396bb453f779e23b852de06c37c19ebbb2381bc14d5",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 14.339997702991733,
       "mdd": -17.676767676785342,
@@ -18320,7 +18320,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "6db93972895831cea59d3c83395a393c1a65faa412829d9d039ec4a6979c888d",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 21.480844388109414,
       "mdd": -36.7159118429346,
@@ -18420,7 +18420,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "cc9ed5ad9107aadafe48f98bbed2f0f0dabb93cc81dae05f8f32eb5552376156",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 21.056972536780957,
       "mdd": -19.825179069869293,
@@ -18520,7 +18520,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "22e4ab23ab82623881e5114b4eb68518b3f349e53e559a7f71f08e6ec5c0998c",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.41823007700797,
       "mdd": -22.55163478381361,
@@ -18620,7 +18620,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "cb9a5294bc52ae61d4df0f4204972a84951db6d5ed4e6248ba7c5ea4f05921f3",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 27.29126839698172,
       "mdd": -33.669682208438445,
@@ -18720,7 +18720,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "c4d210722eb60cbfd771d5932f8726a94538833b6d75775274320d26725e93b4",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 29.609933198545658,
       "mdd": -44.47346186343037,
@@ -18820,7 +18820,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "1fec62191ec07df15a60c4d40143a923f3ebbb4be45fe2064d9a3bfb6a30b80f",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 12.930031848176041,
       "mdd": -17.295831469702705,
@@ -18920,7 +18920,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "f584fb11f0b45db9a3d5c236e998162e56cfbcf6960fc376be413db0711fc019",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.13689838922318,
       "mdd": -23.37975000457595,
@@ -19020,7 +19020,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "d9e116401eacf16740a338b3ad4e18d1777de7398f92301edeecb14d9ff59579",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 12.429333017410512,
       "mdd": -11.530944625461348,
@@ -19120,7 +19120,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "8bcf37d4c6704286d137660b57dc8f26dd2c19ebe8f994a2569dbb243a0c3e85",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.116561445322414,
       "mdd": -29.212664611936113,
@@ -19220,7 +19220,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "a93ed097e9906e42ce496ba92507de5656046e11717350351e3326f1319159ce",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.795271697022738,
       "mdd": -19.661283969812672,
@@ -19320,7 +19320,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "08ec9f33a2ef88a1e6639b0c638fdc5d4fa192e9086369519f5bbafd80513163",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 19.602874739252186,
       "mdd": -24.777301220583393,
@@ -19420,7 +19420,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "4dad0259e3b3e27d4cb82262137ecbcc1db6dc2a803debc94e188abe5c2114cf",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.111998580814515,
       "mdd": -29.40742003295268,
@@ -19520,7 +19520,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "49d6974dfdb1ec9cbe23faca514213752ec60225288165e5629e6de494fc8c72",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.799249138072664,
       "mdd": -43.83324309691391,
@@ -19620,7 +19620,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "6ed5ddc6faa7104fb76507bffe3f0ea769d03775c376c5eae7464728ec311842",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 31.24953700581478,
       "mdd": -43.63537414965985,
@@ -19720,7 +19720,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "0a546dcdc1fdac48495fe8fa90cde5852a9bf8c651ad8c6f8081725554a35fe6",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.801659351561707,
       "mdd": -43.95483941685849,
@@ -19820,7 +19820,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "a880e64366dbe55b7766eb9eb9321fe4529ba6e0e13bfcc24784cb333e4da049",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 31.27932997311074,
       "mdd": -43.83968065594994,
@@ -19920,7 +19920,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "f4f0e9052c7c3d75a812b0dfa4c1d17ed589ff53d7236a2d05d94a796612458b",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 31.024747473986576,
       "mdd": -43.830334190231355,
@@ -20020,7 +20020,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "bc211d52c4dde4afe0c9b6e6b4700dcab4efab260fd3940194dcfc0ed16eeb27",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 31.026141446541207,
       "mdd": -43.943322837562526,
@@ -20120,7 +20120,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "07bf7eb973435f760b7f54a97bcdf872c674e6984246dd75f04bdf58e3f21027",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.145487401720462,
       "mdd": -22.041157042789592,
@@ -20220,7 +20220,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "9bf559dfa951971fb398a4b714351c483f95c01261534af4cda45905c216c19d",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 14.25050076397396,
       "mdd": -17.631300935970796,
@@ -20320,7 +20320,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "4c27f923ef93ed3114c1c16336c94b723f91333b81654a9ffb15ad24d51df312",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 15.060981983559651,
       "mdd": -15.894306893360067,
@@ -20420,7 +20420,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "ad23b73432c808aafbd35b4e90742c2c50d815f111e40125bd766dba95a6c2ad",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 27.543930618740653,
       "mdd": -31.20401337784876,
@@ -20520,7 +20520,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "2db038fe7cf82091615db87ce05d0349c998a86edff79f68581585257ca1c076",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 23.505136974485534,
       "mdd": -25.57234294432458,
@@ -20620,7 +20620,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "0dae6cdf0694e4d89f7aa9d9f4429b39c872df198baf1d323c1b6ee9eb0757a6",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 19.63195717742051,
       "mdd": -21.824149926738677,
@@ -20720,7 +20720,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "4d79546644c02fe94abbc9b55f4bd7335a1a933eff9e7e03a9edc1ea3bcbe5f2",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.126114342223374,
       "mdd": -43.39977435125988,
@@ -20820,7 +20820,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "2d226e5591a6a795b6187b1cf379ea4b14bf3c711508b6866bc4c97202072466",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.12603967244733,
       "mdd": -43.636883215850645,
@@ -20920,7 +20920,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "27d2f28c16ec106ad11b011cf259acc5becab99e8104c541d3e21b811d2017fe",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.498240509930785,
       "mdd": -43.20597529445563,
@@ -21020,7 +21020,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "44c22c88b02e683d0c6cb5cf37a6911481921fc49f99857e381e50a8f7bee616",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.505027092811666,
       "mdd": -43.08904499715207,
@@ -21120,7 +21120,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "2192a3df84d277157af6fa0aac45da90a8a7142a1504692f8bd29859430a1eb5",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.65136947178572,
       "mdd": -47.49841000635997,
@@ -21220,7 +21220,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "fa0a193035fe2e2c4d1b4846d4c501d5dc43a1c28b0ca0915e4537fb8b66204c",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.65893779476875,
       "mdd": -47.33040201005026,
@@ -21320,7 +21320,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "2c4f2f6716bb4312ef33ebc7462e33d64262a4f6b34187ba696f1aa705541b7c",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.73580207373874,
       "mdd": -43.10876265962131,
@@ -21420,7 +21420,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "5c21998a0b83671af12ce99b8566140e8ab5f74d249724745481eeae060e8774",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.738544436630004,
       "mdd": -43.28472266445903,
@@ -21520,7 +21520,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "b7a7d38c613da5a790835ebd8de1d10cff2dcfbafc18cb5f4de98a9912e9602a",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.884145639908645,
       "mdd": -43.65755266696548,
@@ -21620,7 +21620,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "148d8e8d60d615da97a4105be901544f54cb7d4ffd6411af59b23c6766dc0fbc",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.88195228302376,
       "mdd": -43.83959354019235,
@@ -21720,7 +21720,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "31ded316439dab791043cb8d444e37c17c2e809d6a454be3835566e185207d99",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 27.60933753630448,
       "mdd": -44.102774361203615,
@@ -21820,7 +21820,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "c738a0de75c73bbbb5eb61e99a2f7fb97e723efd59160c8b50186df42f9ffba9",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.50453888256083,
       "mdd": -37.1924128503076,
@@ -21920,7 +21920,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "c12ae6b5e4c7ab241a9fe9f6336cc2e01110687492187149a623a57a483afa2a",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.49713136106694,
       "mdd": -37.28828131716963,
@@ -22020,7 +22020,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "cfeb900aa760eaa6da552e2783ee579141757e879f5a8fca8de8ac86f07959b9",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.668657735868045,
       "mdd": -43.53237878294826,
@@ -22120,7 +22120,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "93f78501016f9662a3b101ac1d20ea4c54d7385544787a8aca507ded7bcbf175",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.667537455512832,
       "mdd": -43.64791288566242,
@@ -22220,7 +22220,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "1df94abfda76c5b923937a8d0511b3e23edec35577c7ef43aed866b40ae59606",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.289819013312414,
       "mdd": -23.080621413146986,
@@ -22320,7 +22320,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "a32e327127c30e012042604aedadcdc914caed56dec9f82acdcf2b3db2fd14dd",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 15.659198629660517,
       "mdd": -14.259010735854428,
@@ -22420,7 +22420,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "7a18f756372f760a12fd771451eb511166073aba7e8df4f23ab8428ddf6900be",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 16.581347997176685,
       "mdd": -17.745208568392368,
@@ -22520,7 +22520,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "62d9b74ee8e86ce8c790ab42e4822381a639c58b67fd4bc505fecd73aa3f5629",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 31.299095985603763,
       "mdd": -44.10186840969354,
@@ -22620,7 +22620,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "8095ff61788862d74213d4c39865a6d588982f6228b8348dd3a9078d99876b5a",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 31.298059936761764,
       "mdd": -43.98728373173565,
@@ -22720,7 +22720,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "d7c37bf5307b6ccb2ba9893a709ed45318e68fbe5bef3e0277593cb869ceffb6",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.625485641642765,
       "mdd": -43.60537528679123,
@@ -22820,7 +22820,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "99c305788ea49f4d16553a7be3eef246c6b5b59b32546da8b163b9ffc3bcd6c8",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 19.669083370774416,
       "mdd": -21.918301241677163,
@@ -22920,7 +22920,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "0bca1572c1c5accaf6cbbc55c1e0feb77636089c3d74aa4ab2a635ba9cd6d26a",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.75420532149444,
       "mdd": -20.364029554748896,
@@ -23020,7 +23020,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "41316ccd31854f081d7783469065d38b5de134c513c6331de74035081dc46739",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.64649118892715,
       "mdd": -43.77923292797006,
@@ -23120,7 +23120,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "978c0f792ce0332e75266f0cc95dee9b8bba045a9fcb7f0d9a346a498fbdea1e",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 19.691036085110213,
       "mdd": -21.383535569831068,
@@ -23220,7 +23220,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "023942c2892a023c24f0bd2cd17b14b7d88cc72c3dbf97eed6db9d9d7776fc06",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 15.76174052236579,
       "mdd": -18.342355133208677,
@@ -23320,7 +23320,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "09a2f3f6d9b5c3221f1973fd7d7484dcd15cc6d2d59295e982984d5b44fb0895",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 12.644017872105604,
       "mdd": -15.381589299762089,
@@ -23420,7 +23420,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "0c46c8fccf079f8a7120390d3f4c70d698172141c963abaced067610dfaafdf0",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 19.710081052376164,
       "mdd": -21.7116971363857,
@@ -23520,7 +23520,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "7ab456fcb9f21f4d49c2051266ad2c505c1e06fefe6720ebb1df5e1761b183c5",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.552220032582415,
       "mdd": -22.36740968479968,
@@ -23620,7 +23620,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "7a595127bcd828b6fb3f7c4f06bffe5ed24af08720542d4570f71efe14e7ccc4",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 19.606853987280118,
       "mdd": -22.0029656667047,
@@ -23720,7 +23720,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "3aec6e4938b7bc162222224ba15a189484a94283d984d0180254e5eb6da66e5e",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 34.313319251499735,
       "mdd": -37.76963350785339,
@@ -23820,7 +23820,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "88784e55f9c433d84c2229af2addd21931a7adf4c1ce8d8de8041df8a42673c2",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 34.3170262050079,
       "mdd": -37.68403466638822,
@@ -23920,7 +23920,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "71fe0e911ec99a3768d78bef494512acba506d4ab487440a404a9dc71d354858",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 23.48959345578508,
       "mdd": -24.699751861042184,
@@ -24020,7 +24020,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "48c4c42cb21d7461340108a9f43962800a77d4ff7f30e65160d3f95c4465ad15",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 14.364505439873279,
       "mdd": -17.99286596240911,
@@ -24120,7 +24120,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "1375c233c213b883b6f48d487003c2441a9724ad8dc63d97ad1f56df78a67eac",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 14.363543863043809,
       "mdd": -17.90413854230586,
@@ -24220,7 +24220,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "6a387eb1a0ccc707dcae054df49b3f3ba37bdf58db1e35a6c8a7b75a786f6f2f",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.527667295524285,
       "mdd": -22.21859173337689,
@@ -24320,7 +24320,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "9f15dd42b834051214f3a624df731c7812f6fe55e409e1e8c05b297396e177f8",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 19.73346490869479,
       "mdd": -21.499448732083792,
@@ -24420,7 +24420,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "8e6e70d9e1982ec38434e1b0261823955cfdefeb10a6f9c375306519e1257a63",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 14.381977382371291,
       "mdd": -17.668994508102255,
@@ -24520,7 +24520,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "255e011b6f1d1ee179326b1df9435674ad33fdd5b455e7221af5e4a2ea7a94c2",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 34.28540245821196,
       "mdd": -37.3340864162666,
@@ -24620,7 +24620,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "8e2567114e8fdff52b332f3ac620f096392aab1fc3c0967762f394c00d0664df",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 21.697375227637423,
       "mdd": -29.957597870032536,
@@ -24720,7 +24720,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "848cd5750a35ceb60b4c92bc4b7b5d2f145106478ea95939912549589e4cd89a",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 34.288009191885564,
       "mdd": -37.417530631479735,
@@ -24820,7 +24820,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "790b6414be27877566c307f7c23a65b4e43c87f93f09b2e7a3ac7adac65a7106",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 21.705381692696374,
       "mdd": -29.727344056492743,
@@ -24920,7 +24920,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "f5b361b3d41b80b70f17f7091ec97b1e01cabc9f2bd8214b62f64aa66fe2a025",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.32791006266441,
       "mdd": -37.3972497503265,
@@ -25020,7 +25020,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "1c8c4bcb50e3a374ff838a1ad823ee49d90cead4d53175b059d4958fb782bc1e",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.330129178392966,
       "mdd": -37.43081180811808,
@@ -25120,7 +25120,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "8994cff75053728fa4bb7cd0c589afc1bcb176965822d931bc5f4b4a0e767385",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.15610308406405,
       "mdd": -47.62536873156342,
@@ -25220,7 +25220,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "d7fa6299d3ffd0f6268aaa8fb5044278184fe9531155732b0168da2485319996",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.22191095181767,
       "mdd": -47.765895106944036,
@@ -25320,7 +25320,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "4bf5e06f41c3a63fcde9aadc96ed446fcbb3e9192d3c742bf2d123d0551a4837",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.2035228084966,
       "mdd": -47.86001060525717,
@@ -25420,7 +25420,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "d8db4dc966d24749eeb1ad44b836c29a77efb94d9271e5b2b7013156d3da9035",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.23639471027893,
       "mdd": -47.98828426082936,
@@ -25520,7 +25520,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "92e75f6f0d59e251542f046882791a3dc60f376788c76da2c94df214450671f3",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.096766247725952,
       "mdd": -42.631649650725414,
@@ -25620,7 +25620,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "8bc9591b98693413db36025f09eceb43f27d99d783c77ab9515373f19e7741cf",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.119264221694923,
       "mdd": -42.82427769131877,
@@ -25720,7 +25720,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "46369026409b0d450d3f9f190d610e2010a86cf6f35189c504425ca3d6714eea",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 14.34080094248777,
       "mdd": -17.640603566701017,
@@ -25820,7 +25820,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "464ceee4e5d7d9663844ecca9e3a46293e6c389a14d5abe756b6e4dd18058f4e",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 26.738159188396903,
       "mdd": -31.47304479878512,
@@ -25920,7 +25920,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "8e514cbcac20eb1f6cc0248e8c216fdb80fc6f5ca2df5c8bae45b3f92f4942bf",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 26.749000244656518,
       "mdd": -31.922196796338675,
@@ -26020,7 +26020,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "ae02d2acc4d29ff85ee229f925ab487d320e5d721231c540179dad6464674183",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 21.01731478855455,
       "mdd": -29.16360669114647,
@@ -26120,7 +26120,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "831ecb97bc5f119f78ff4cbedace543055c15c277ee144c89eedb4ee445d8457",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 19.334747515115406,
       "mdd": -21.893360752056413,
@@ -26220,7 +26220,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "60148b61dc5f3d81d628e0a87ddb89e08e2083399236ba4bd90671e4d875e1c4",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 21.017886726700024,
       "mdd": -29.365469749139194,
@@ -26320,7 +26320,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "7b6d2a9940fbbdabbe47a017cb5b8877f1bf7e1c6594eaba4cedc7bbb551b86a",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 23.49265605825378,
       "mdd": -24.653274764063383,
@@ -26420,7 +26420,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "8559f1fb1a6528119d1974cc32a41ddb17cd51cb84c4e457ac2569c0d92af091",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 14.129647021917648,
       "mdd": -17.440567218126446,
@@ -26520,7 +26520,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "5da7ec02c789bb2d32eb16ace384b9c50f195c759e85a2753cc9129ee9ca5401",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 36.8684886999565,
       "mdd": -36.97464509602705,
@@ -26620,7 +26620,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "9c2327f211a7328615295a2178756f418f477db51698cfed6a2d1e4eeda55c5d",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 19.517338060152557,
       "mdd": -21.472348916761685,
@@ -26720,7 +26720,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "4ce50f28440c952c400d659bf429ac4a52fc27efa921933f0f3813922e338d12",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 19.360095320108037,
       "mdd": -21.047182369471972,
@@ -26820,7 +26820,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "47a1164a9cc73a249429fbcf0a3369839c91b0da4f495245c7d3369408b5defb",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 36.86881664438877,
       "mdd": -37.02828142613558,
@@ -26920,7 +26920,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "127cb10d2b6e857fdabfed871637121ba1fd7efc76835d03ee231f882029a5b9",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 13.692395426012153,
       "mdd": -15.817271418038459,
@@ -27020,7 +27020,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "5f1d912aa814acbe4bbfe5d0c42c30759c444981ece3cdaa70ac661e4a6e70a9",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 19.402859198482133,
       "mdd": -23.351628247347232,
@@ -27120,7 +27120,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "d1564a473170b21e0c7e3a6f569a4185df5ad1b4ee49be99cbcb5769efef34cc",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 19.345018100065356,
       "mdd": -21.84959349593495,
@@ -27220,7 +27220,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "f5ff368dad7b861c289a90a87cf7c4580d3eeeae54cb3aa88c9f278d0b9b6e56",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 34.8673480242877,
       "mdd": -36.509033468259446,
@@ -27320,7 +27320,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "172ceacf4c008258cfb1c48cdad21c43c896e1cd38e3c90b80a71e012500d720",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 34.870421825435535,
       "mdd": -36.597887254418005,
@@ -27420,7 +27420,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "838e4e9639a087610f8812897558564e42e71ac550f14b69007e975b118959da",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.429265501048405,
       "mdd": -21.367592208868626,
@@ -27520,7 +27520,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "0dee573f67304e4d84a958b3568560c46ee7e558293591e3c1380014f4afff21",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 31.459345349154876,
       "mdd": -46.67601683029453,
@@ -27620,7 +27620,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "2ff515024bc23842aeac4018a32d67f3a473a4d66ecfa67e9a1b6e593d23d28f",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.426275373634983,
       "mdd": -21.411354002161087,
@@ -27720,7 +27720,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "8616f526030f0bc0d35daa69c5ee5d8de4fd91c4e9a338e24b164ec96bfad8af",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 31.45662085318478,
       "mdd": -46.785633866246336,
@@ -27820,7 +27820,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "4441f3666fa35a3a784ee7e91b99aad3f1a1ca306461fada4a0953bcd312d7a2",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 17.33970560473213,
       "mdd": -28.56814877171501,
@@ -27920,7 +27920,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "b3d4b98766a08a8cb6ff5ba70b456647d12e54365226224bbb1eb8ee701642b9",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 17.352477845925108,
       "mdd": -28.7107425324426,
@@ -28020,7 +28020,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "fccd941096e3f6519763d378ac54152076f8e1af464e4a98d034054da6035728",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 16.50116467489221,
       "mdd": -13.019186944056461,
@@ -28120,7 +28120,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "789e658ec1c3d1b5230d9eb6a94bd6ec2dfd27cd91ea28fb9f222eba8d98043f",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 16.498539930568256,
       "mdd": -13.029676657315825,
@@ -28220,7 +28220,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "c709eabe48c6bbe42c08820d0727d72ac379300363bb53e00daa06003096739e",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 33.267368084041024,
       "mdd": -35.839872851892316,
@@ -28320,7 +28320,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "ab860f58b4dcd1da330a31a862a821824979f265240b7531cad5000a72b0073c",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 24.11315215388281,
       "mdd": -21.170108161258593,
@@ -28420,7 +28420,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "4de25b3f3789542e56d9a413f7180fccbd8828e8eedf745f02395d2d1de8248e",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.75952994557721,
       "mdd": -29.467312348668283,
@@ -28520,7 +28520,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "c8f80bcf854cff9913365fc53f2aee43941a8fc9655a56961851738b3dfed7e7",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 33.26936134157844,
       "mdd": -35.93423019431988,
@@ -28620,7 +28620,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "209112aa4277dd929f3e2fccdd3b23ace8847301ffde38030f9eb97ed876af34",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 24.111364792538915,
       "mdd": -21.252950432730135,
@@ -28720,7 +28720,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "849793085c6b41165232b9a3dc216a9bf54430b6a85f887e98e5d21a58f5ca01",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.76545898868155,
       "mdd": -29.7163695299838,
@@ -28820,7 +28820,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "fd7791eec8675180acfb884b253a4a458564ed789985e9fe83e54870bee4a6f0",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.260982551071415,
       "mdd": -43.43811270634368,
@@ -28920,7 +28920,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "43436e1b243179324a916bc7f601ea1dadda972c67f1e419a15c76acc7957d2d",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 16.149147972447693,
       "mdd": -12.559048705000809,
@@ -29020,7 +29020,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "32694cbbc0ff73c7331e92a7f61d666a1a82995ba10d216cc230abbf2cb94131",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.219595943503492,
       "mdd": -43.34254992319509,
@@ -29120,7 +29120,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "0c9c67fa54be8b57dc6e5322c574333538341e90b4ded0548fa1480f06db435c",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.389530114488668,
       "mdd": -21.67016185401509,
@@ -29220,7 +29220,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "06d42b7374282b93ba86df5fee2f822ce4399a0c30fec3a00b859254f65128fa",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 16.155857030400117,
       "mdd": -12.573433420365543,
@@ -29320,7 +29320,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "3b9ad0534cf4345985e68b29a27121bdd0c447e8e1b1f3ffb4325017f840419a",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 34.221965487397696,
       "mdd": -36.14442377991484,
@@ -29420,7 +29420,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "bf34235510aed4d524802b4d83fe52b23608792ef9b6409514844b40d97fdc53",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.469851054293567,
       "mdd": -14.25366856715582,
@@ -29520,7 +29520,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "a6e1f915d8c1485fd728072b4996114e22e1c94e9cec293517c0fa3e0ee124bf",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.466307987379484,
       "mdd": -14.275016381166349,
@@ -29620,7 +29620,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "35b9456c265ae6628c889828e73f9bd305eafe274cdb5ba8089fc0bc6086bd07",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 15.51649961661711,
       "mdd": -15.928898093019239,
@@ -29720,7 +29720,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "b8e383a85c4e8b237d55be16cce89132f99da7699c55e0c8b6984dd6a65f475a",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 15.520342587098135,
       "mdd": -16.064465817520134,
@@ -29820,7 +29820,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "afd815390cee7601c31c0365f714651d577fd993bb08f9aa53296b435b190d16",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 17.75954483492468,
       "mdd": -17.828229397359998,
@@ -29920,7 +29920,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "bfe88b977ecc61133a6c59e2357510843a360270b799a987c2d4c1b7739614ed",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 17.67857048101404,
       "mdd": -17.814854220293906,
@@ -30020,7 +30020,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "fdfafdf3ca8860308eb97e2f67f88d6c8a1842e4141eb52354c1e4c0cd9c7c16",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 29.523379939576166,
       "mdd": -39.783290248061164,
@@ -30120,7 +30120,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "fa956cc0c0a0f91e8c7ac8510922229673da0603d76de2857ba324e94cc6fed4",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 29.51886907181952,
       "mdd": -39.97461228544622,
@@ -30220,7 +30220,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "b4390551ba6f0393fec0cb9565555453c2c9f6add98b188e4cd8c1838820793f",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 34.643691046141015,
       "mdd": -35.60276155071694,
@@ -30320,7 +30320,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "95f52a582571c57cdc35c12096c84cfe5fad4c9f75218cac9008955d7fbcd08e",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 34.64704640104038,
       "mdd": -35.72568631623749,
@@ -30420,7 +30420,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "fbc04229798478d6aaffc2f5838080dd40b23d66489d0a71ece6fd684e96955f",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 21.459713406649435,
       "mdd": -22.546602525372727,
@@ -30520,7 +30520,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "4a11f805c8782d795bd595f229a17e6bf85bd604145a0d21703c5130e37facef",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.665857400409717,
       "mdd": -21.82269970028008,
@@ -30620,7 +30620,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "f72f2f60b8d66f90e51a4a51cda886ff248efd9089dd9ea4218ec1004d9aaf9e",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.98127923539569,
       "mdd": -21.945662698295987,
@@ -30720,7 +30720,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "d941a330fb63c62dee3629b72ec823647eb0612fc4a6f2118a2bdef49e977dda",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 31.35937180734493,
       "mdd": -43.83158668871037,
@@ -30820,7 +30820,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "bba12301686335f2a98d153386a4f31549536d5e334eb3e83da0049212da04bb",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 29.762844346712647,
       "mdd": -40.556542332741266,
@@ -30920,7 +30920,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "53ab2f4f1d5f935d2e34f96893b4df0a261f42a5e7148078fa2a9deeb7ce397f",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 29.76158741484988,
       "mdd": -40.705603320486205,
@@ -31020,7 +31020,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "10044e653fb9c4403b5718e0207eaac0c00e987c5b58a32964aee133f5adf397",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 12.78537371681033,
       "mdd": -16.238728710170026,
@@ -31120,7 +31120,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "3996493b9e71113cae9102d55e4689a3def549e558c0925e8923e576f05c7ff8",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.98463415416567,
       "mdd": -21.605884155333243,
@@ -31220,7 +31220,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "788d16fb097ab5ee0e7f92d10aae7667f01ae965fd8f9b80fd3121cbbb15071f",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 12.783431230470486,
       "mdd": -16.103446932283383,
@@ -31320,7 +31320,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "4d1e8d5fd096af4edb03700c813b3ba0640d482170fdeaf12cabb72220186473",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.2099593749391,
       "mdd": -43.99682112725042,
@@ -31420,7 +31420,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "39541be2ed9d81ad4abef002be4b1ff3a74ea0482da80f1c33754fa917e3eae2",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.93912231407266,
       "mdd": -23.21545752810866,
@@ -31520,7 +31520,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "db59c3080d0f4f2086a8992d30a227a4dbd62c31dd96bd40256947ffb569c5e4",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.208499527617523,
       "mdd": -43.67672243440847,
@@ -31620,7 +31620,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "c5cf9e700fd5e471bdc9ec87d7df5648d55888568d6318841afd14f4a89a4463",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.303511236850238,
       "mdd": -43.232399697199085,
@@ -31720,7 +31720,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "ba9c184d9673cfd4cf9cbc37d6a3d67f95c50a46da3a2ee8ee95f4d67d970a49",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 41.93741045840543,
       "mdd": -36.99413236702098,
@@ -31820,7 +31820,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "08fd8969beef863d72877af2aad65dfcdf2f65193179b0c34cbad3e3165974ee",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.297230715816852,
       "mdd": -43.09145880574452,
@@ -31920,7 +31920,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "1841e4bf5e2706ec87de61dde3127e2d0a5264b20a82ced4ecf15a3475668639",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 15.316625119563346,
       "mdd": -16.247192751490747,
@@ -32020,7 +32020,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "16719a01834cbc3dc4f2daa64855632f0e0ef1ab2a03899e6b45338bf1470e18",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 15.317887488882784,
       "mdd": -16.124294658730776,
@@ -32120,7 +32120,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "38f386a5abb95971980f0b6604ceb3e111493594c6123d575b8cedc2808550d5",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 19.012408933425608,
       "mdd": -30.07746416169531,
@@ -32220,7 +32220,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "bb817857936138def7aa09be2991ef4022420ef6e2becc6fbc66ba07bcfc0877",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 13.590675215460621,
       "mdd": -11.498371335576007,
@@ -32320,7 +32320,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "7f35329262844bf69bd18e0db753e100315eba1493fb61a695cabef260f3799d",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 19.001120073414835,
       "mdd": -29.74030594094629,
@@ -32420,7 +32420,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "92ccca5ba3af48d99194739a44ec1495c7ec0f21bc2fd1c254e3468fa8a91263",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 21.31472172424483,
       "mdd": -21.194640183783655,
@@ -32520,7 +32520,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "5b2f4b5efc972ad7a586cbfc2485e30738bf6646dceb4f26e099f9bdecd241ea",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 29.164658113553454,
       "mdd": -43.77040261135162,
@@ -32620,7 +32620,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "e2c059a25629c9c5a07ec71f246f30acb31d7f0fe6646fbcd2dd1e4eddeda109",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 31.179679778802445,
       "mdd": -47.44146625701274,
@@ -32720,7 +32720,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "8ec376302521a52287be35067fa97bc3519efa597d60969b2c3e336cdf2b018d",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 28.63123784016001,
       "mdd": -36.324431912423286,
@@ -32820,7 +32820,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "d37c0eae3999520cc8059d02d82e1cd9a7ea6481f26159244b349a75c94ec120",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 28.629433987988858,
       "mdd": -36.22647765895714,
@@ -32920,7 +32920,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "0cc7ad0267fc2c2b3272d3f6822a6f3c3bba1a92bccba0b301b085603b882935",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 24.938520727254932,
       "mdd": -42.75479744136461,
@@ -33020,7 +33020,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "25654018f18fa392476dc0ac5c784eb87b8063c678c0bb26fc9a4106b8cad65b",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 24.93969934647197,
       "mdd": -42.888850947584075,
@@ -33120,7 +33120,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "e96732ec253f36ccac3f6524d2f9f731e230a4acb230ef9dea5a53e7696b1bb2",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 24.962468947011082,
       "mdd": -43.018159048215395,
@@ -33220,7 +33220,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "0e017c641f744a20398fa87d268ac2d62440364d527ceea6a8c2399052248dd4",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 24.96780274821183,
       "mdd": -43.17551239595453,
@@ -33320,7 +33320,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "7f65aed5ab7c3d83df3edde55971ce902e2993aafa44579f6e0dd7e14cd59691",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 17.527774975558728,
       "mdd": -13.265724236390863,
@@ -33420,7 +33420,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "629a192fe332a9683f0ae5fafa04e72ab63d2d45fcb510b81d6fbacfc5026d21",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 16.296277712148854,
       "mdd": -28.364565587734237,
@@ -33520,7 +33520,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "d59186840d607b9cdb7dbff72c0ffd482be49688f26db5970277a01291670d14",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 16.29902196422692,
       "mdd": -28.082126975115905,
@@ -33620,7 +33620,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "574e2abfaf3976377c51bf17b35142e2514ac49139fea6cff2d14ba10c00dc84",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 19.84281993694531,
       "mdd": -27.472774222853836,
@@ -33720,7 +33720,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "1b693efde6dbd037cc191d84d0a52fb5146883912bc2940f7014d096b05f1216",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 22.292653533311807,
       "mdd": -25.3951219512195,
@@ -33820,7 +33820,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "cbeb714d7dbc1a7338d5ee5553a9f4d0acc26941e36a9638f5857f0542bed547",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 26.066017237817263,
       "mdd": -31.294282007783657,
@@ -33920,7 +33920,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "b4d52d532aaa8d02ede64c8242c025428b1ec560060d6786d7d1177b927e795b",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 26.048595378437795,
       "mdd": -31.171422869686694,
@@ -34020,7 +34020,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "a6841e4429dcc898312f8f012fb4d35dd551c18034b44a4f8d23f4a2f80afe63",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 24.42101026625573,
       "mdd": -23.037639493096272,
@@ -34120,7 +34120,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "744ef616708aa8a6204c75b222b2782ac68cadc0e6e656dfc6c116f6e2573eba",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 22.293286088077373,
       "mdd": -25.449043342444355,
@@ -34220,7 +34220,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "4ae6e88c762c0bcf3bde5cba61d30f4dbf9f58dfea8ebc0234554dac0774973c",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 24.440136107193503,
       "mdd": -23.063097152587265,
@@ -34320,7 +34320,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "653f96aa2df74658d9a618b40f68e2b0b69a00765e77ee30bd231aefd64ec9b4",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 26.252402930446184,
       "mdd": -22.890195334724062,
@@ -34420,7 +34420,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "0707f17d00fa16e267d732fc70e3a7cf32746dce4fc65e1825eb84c9dd61c585",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 26.254180505052627,
       "mdd": -22.925163615669163,
@@ -34520,7 +34520,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "ac15522ce7ca5dc4048be787ca66daeb3220d4f7506785c388642bf611c31cf9",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 22.550916421779053,
       "mdd": -24.65116279069768,
@@ -34620,7 +34620,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "fd73ce6fdbd3c7cb72e07ee6c9dbf7fba707d9cc0b0f7ebc890e99afe792d6af",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 17.171836673997365,
       "mdd": -21.677459142769038,
@@ -34720,7 +34720,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "f0b04880769b989e87ed8443dccdac9389736444140456699f9ddc31136b4bdd",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": null,
       "mdd": null,
@@ -34822,7 +34822,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "141de076dcd5054439613cbd76104943018ce3ba39ba01139a5f0a85a3c2b687",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 27.079985684416023,
       "mdd": -20.730016941321416,
@@ -34922,7 +34922,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "2020179ddad2bfa596ab21c0b9c1385f24eb60af29fc11abf2a3db54aff8738f",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 29.237820408023868,
       "mdd": -48.94438138479001,
@@ -35022,7 +35022,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "98c217a4d8ffb42f37f8365ab825372d2666b3122676f1bf695beb0c898e7e29",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 33.70618947678038,
       "mdd": -38.30184166467352,
@@ -35122,7 +35122,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "91787578fb65736a9ca95b495675d9f15b822b321c59136dcdd4bf3d169f0c0d",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 12.992287155380492,
       "mdd": -23.346674290070524,
@@ -35222,7 +35222,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "014e6c86b1513080bca8f88e74d1a1b84cac15cf2748ffac0378a34196cd9446",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 28.504729141677608,
       "mdd": -32.918643157612095,
@@ -35322,7 +35322,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "4dd77c148d5f111cc369c95df7b6ca931ea930544838cffb2c731f9bb4793722",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 28.75973033695963,
       "mdd": -34.67377552864631,
@@ -35422,7 +35422,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "3ebf6833ab8ccd1126a807e88f7f096ea34d634942f09aa07a327c37a354e72e",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 17.561392227359583,
       "mdd": -13.385043754972159,
@@ -35522,7 +35522,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "170067f9321231ffd30c9961a69e6342234a60521b3cf4ab58b66ec83495b191",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 15.231389275199334,
       "mdd": -18.280454953606707,
@@ -35622,7 +35622,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "7d7016fa1c32280b4beaf88f2e7e55f1bd95a0d2fc8f7b9b20223004fa3f5f55",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 34.15943871440984,
       "mdd": -38.33508403361344,
@@ -35722,7 +35722,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "fd595354d5975a236e45f6312746fcd34a292fe86b0760f0e4a1c7e376cec273",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 17.710849294161747,
       "mdd": -14.632592946421463,
@@ -35822,7 +35822,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "6f539e23da34ce63421301f29b91c0ac4aa299ac9668832188d21887d0d95858",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.167315961383036,
       "mdd": -45.00897525950207,
@@ -35922,7 +35922,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "9ac624e9ab43a9f6e35b4acf7b64faffefda8f25b58e1c5aeff9304e5a6f668c",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 30.410915411074335,
       "mdd": -44.97495303694428,
@@ -36022,7 +36022,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "cea1fb1f38069b193d786eda4e20b1959005a14c5b3d685e2c043edf4bd49b62",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 36.33405194791385,
       "mdd": -39.05874645119021,
@@ -36122,7 +36122,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "6f125aca5df52033c9f4150211cf3e24e27bb8c3b3453fbd780bb92d16855cb5",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.679538195463394,
       "mdd": -15.298984580669405,
@@ -36222,7 +36222,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "9e9561c6f228a7d9af52cbf015f4d80ee039ec7c17a705d5f692e5d556a2df2a",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 34.12227712576717,
       "mdd": -48.90493381468111,
@@ -36322,7 +36322,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "f6b9721249506490fb8f33e40425f0b0f8b9ed2d58ae0dcd2bf9eddca307e4b9",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.37283830528053,
       "mdd": -44.71563704309237,
@@ -36422,7 +36422,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "470fbd2e90f5622c509c7cf51d468f364725b410db3da47206c147f0985c86b0",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.20224424419184,
       "mdd": -45.001749679225476,
@@ -36522,7 +36522,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "4fe411abef43cf5f56a04474902918656007eff172341777dc48298285e66df4",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.34384994067756,
       "mdd": -44.967587853974756,
@@ -36622,7 +36622,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "f302386019d6b19593aac58122e1005b6e90da54db38be81095b2efc72b9b29b",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 22.593136406618697,
       "mdd": -29.6995410858083,
@@ -36722,7 +36722,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "903fcf64e4b28096e37b971f191602bb6df4d8df27e796687bcefe17332eb61a",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 31.75892093702723,
       "mdd": -41.96592865198552,
@@ -36822,7 +36822,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "bded5bb8477cd671ec698077d7f1d955199fae0cbe22bcdfa6cb221a95d55fee",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 24.653234084760193,
       "mdd": -33.49791112799089,
@@ -36922,7 +36922,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "277a1a54779098bb5e6f38c3fcd0bb7626a0d23c69aeac48e8f6a9898b40537b",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 31.53142379425627,
       "mdd": -41.53484221627322,
@@ -37022,7 +37022,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "4a78a2492aede9165fc46cff4bb8d302ce3174b6ab52fd2473377886cb03f443",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 23.78088814719307,
       "mdd": -25.620341059940767,
@@ -37122,7 +37122,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "a6d57741d86741be37c0590107914e18c7217c41095f3febcd797fb8b8bd4066",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 22.06867333253937,
       "mdd": -20.467422096205613,
@@ -37222,7 +37222,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "9126387528badaad0af590665f69069742ceaf014c090682a9a4c609d4f976e5",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 24.89676457598179,
       "mdd": -19.858284883720934,
@@ -37322,7 +37322,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "be038a24a8abc15eed8fc558c4aeb2715d7fc8918bc07a4f7eda39ee2b0004dc",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 36.30721842924689,
       "mdd": -38.489724390632475,
@@ -37422,7 +37422,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "77c7de552e2f2296289754708b0c7bc198b81803de70342328d1d92a592a6de0",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 16.06357937485068,
       "mdd": -17.910018686193286,
@@ -37522,7 +37522,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "7570745ef62c8f643d232bc3a086eb6e2ec31401852cbdca962810e2a12c5b32",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 16.062738704489234,
       "mdd": -18.051153533812702,
@@ -37622,7 +37622,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "ce64ed6b4955b1a08533ccc099990a492016ebacc7ddb1bcfcfa5950670bda91",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.784504508357898,
       "mdd": -20.178303468973436,
@@ -37722,7 +37722,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "97935b72a21c67178ac989a14a66067a33402234541111f504790f3a9373d7f5",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 16.54886295091975,
       "mdd": -17.480403135499113,
@@ -37822,7 +37822,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "7d3f8fd745973b171928a3def02bf6f0aeb3307a1ec35f85b4925c7acecfd963",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 21.480235338627445,
       "mdd": -36.58536585365854,
@@ -37922,7 +37922,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "a4f45ab88c872901aa24bb9bd100d649dff141582e106444c53dc2484d8acb7e",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 22.42563064072597,
       "mdd": -24.506482887513137,
@@ -38022,7 +38022,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "1164e6f72851de7619f03dfe725fdcc2808d59db0a1bbbabdf9be4f82ea75a75",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 15.068903929675482,
       "mdd": -15.745168360231121,
@@ -38122,7 +38122,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "e3509f844d3e89de959da5522c23afe2a8929ec8e30bf8651b77803ffa2c469f",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 23.510901312068235,
       "mdd": -25.540679711637495,
@@ -38222,7 +38222,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "e79e3fe6db5b2b8fbb03077499e04634a9b6aefef93bad56b334e68c1aef9c18",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 27.558370028381773,
       "mdd": -31.20412616544337,
@@ -38322,7 +38322,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "ee3de448e632429719d0b1701c470c53b33836f4ed0319fd320f7db8df0e842d",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 24.73845204548894,
       "mdd": -27.346205657648493,
@@ -38422,7 +38422,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "813db2434235a49a7c60ba1d06c6337029572a5eb24c2b97a823746f2ca7d20a",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 19.603670192359647,
       "mdd": -24.652216111290848,
@@ -38522,7 +38522,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "f5bbca1aa86d0659cc5bee5e763ee975c85d66312122739dae2a9776d0d076eb",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 27.287845126023058,
       "mdd": -33.40541770999318,
@@ -38622,7 +38622,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "4aff4f182ad4fef4842b155b5ed7990301125b9fb6458c8975f3900fe7197a57",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 24.900025484091195,
       "mdd": -29.160760910108174,
@@ -38722,7 +38722,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "e9151f7dccd545d2806dac3e3cbc19b1cb693a30c2de9461cde01dd8afa5aefb",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.79671580095103,
       "mdd": -19.60753532190219,
@@ -38822,7 +38822,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "52b4c5ba292163f2fae3d2cb802f8c80aea1b21e267859fa15a80040f6a9fd6b",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 27.606299399513183,
       "mdd": -44.05451448040887,
@@ -38922,7 +38922,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "4c16eba5c09e7f083db0d9b39778757c43fc70a45343d7809a4ffbbcb4502f94",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 23.734797945771003,
       "mdd": -25.369181380260063,
@@ -39022,7 +39022,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "35441e6d03dcd69321347a27e9e1aca29c6b5f3551ca249fda517c789d409a3b",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 24.52810052493624,
       "mdd": -18.493842115889358,
@@ -39122,7 +39122,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "44d81e7d9579706eb1a937dc340f1fcebdef7b882041ad78a2ca8330835526a3",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.467261153412345,
       "mdd": -44.82642777155655,
@@ -39222,7 +39222,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "c519119bf377d711ce7a004cc248ce1df88e230b5f725f276743152f56ec141d",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 16.67286730988061,
       "mdd": -14.737390700098452,
@@ -39322,7 +39322,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "adcf233a2532b0f54bc8b19b7a1487604ee79611de444ba89ff9628c688d2767",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 31.183943346090626,
       "mdd": -46.106204840004594,
@@ -39422,7 +39422,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "018b42ed098d188306fc379a6159e1a700ba1e7ab9e9abbaa7de0228910d11de",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 34.26586752123105,
       "mdd": -38.63576158940397,
@@ -39522,7 +39522,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "a2474b3f13b0574cf818c035967430ac8ffefda4858314e3c75b026a6b4d4c2b",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 15.734821975284987,
       "mdd": -15.519007818632213,
@@ -39622,7 +39622,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "07a4a75a782ca15f13edb8d17fd501e284e63f8136dd9e120b44044e4d05ad26",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 37.59559888418425,
       "mdd": -38.15602836883596,
@@ -39722,7 +39722,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "b00b3986d087239096ba0d88b911e8936710427333f6a423db147d34bfd0afef",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.76910352397396,
       "mdd": -45.23726244607672,
@@ -39822,7 +39822,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "27774af58d4dd5bfff166c2e7aea07428d23b1c64995507afa87dbc0df5872bd",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 19.269193843115247,
       "mdd": -15.660529597300666,
@@ -39922,7 +39922,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "6844b6cf7c51df8a5ca08e6bf1da53d794114e44a9da1b58f0d3385b1a0b6e30",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 18.116062027513905,
       "mdd": -13.873260290198397,
@@ -40022,7 +40022,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "20d0b8b7b06fe348df6334b7760e5938aefe143afb82f4f9e39bd0f19a41a6a2",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.523074476969924,
       "mdd": -45.38065254722381,
@@ -40122,7 +40122,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "e93d77178e1a7e0e3266443346ecebfff629d8f3fbeca1c014161de835511b90",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 21.8128753701014,
       "mdd": -20.502776965799473,
@@ -40222,7 +40222,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "e6800fd226fd047733f5a8ca5b92cdbd816bcf4503a93390fc9924e2d97af34b",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.44424490691165,
       "mdd": -44.87995198079231,
@@ -40322,7 +40322,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "5e8a7006336fa46321b6b8682686b2ead85a832bac88983cfb7f0379707b5e7b",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 36.00172030167493,
       "mdd": -38.806473364801086,
@@ -40422,7 +40422,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "883e01c8ca76a3d0df8e84600edb46a534549be53c15a80aedfdabe9d9e59c71",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 29.73398492629003,
       "mdd": -44.07143816301867,
@@ -40522,7 +40522,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "cc164bec96305b4419e35c1b9ad46a3bf0df2a20ede9fdfa5cb701eb06ef882a",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 39.38028611538607,
       "mdd": -39.2229827765734,
@@ -40622,7 +40622,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "b2b6c71bacd9181aea96cfb187df1dbc548f43042f1d82bed96943e73f4d57bf",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 28.887061046740765,
       "mdd": -38.27464247270491,
@@ -40722,7 +40722,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "556ccac312d42611fb4dfb73a4141ab6c9071371473ce84d53b92fb3d6ddc45c",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 28.8739127552106,
       "mdd": -34.850971922246224,
@@ -40822,7 +40822,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "69dbbb406e071c1087d0d5d0807a3b954086e59e1a03d09c68a92b72da21cfa1",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 34.43414801088724,
       "mdd": -49.22128487994808,
@@ -40922,7 +40922,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "dc92a1462144baa6750559f2f348edd24cfd99aa6ffd3689c5b482439d5ea2ee",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.48621151738823,
       "mdd": -45.371775417298934,
@@ -41022,7 +41022,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "010fe37c69b87e5dc10bf28e6671cdb76b72263736a03df2a1912a69f2c1927c",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 14.055706400784986,
       "mdd": -15.924333619948417,
@@ -41122,7 +41122,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "160c845adefe28e05e0f5d026064c5be329a9b331437a2e62cabdd0059a4cf83",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 32.377728972711964,
       "mdd": -44.99884232461218,
@@ -41222,7 +41222,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "9af73c0b5cdaed6ec7319a23bf7619e911855c35b1a3f6f715c663fb1d724374",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 17.984856269735417,
       "mdd": -16.527954931701128,
@@ -41322,7 +41322,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "8264ed05f6782c3ad03741198ccdc8328b45bcd6deed31a3072a9eb00bd023a4",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 18.502665207914855,
       "mdd": -28.278900983290622,
@@ -41422,7 +41422,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "e67f4190438bd4f075127380b32acb4105ef9f5effd93ae08d97c6a794f992e6",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 21.885185243502743,
       "mdd": -19.857482185273156,
@@ -41522,7 +41522,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "694a988c59886485c5e1fbfe51740e0118f047c0050dca809c63ed975935fe8d",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 23.623741694257493,
       "mdd": -18.340758741730802,
@@ -41622,7 +41622,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "8c523d605727d8f170401df9c633b1f5337a89cf976ea15584159f7a5d5c8b9a",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 17.844336871209745,
       "mdd": -13.775339533016663,
@@ -41722,7 +41722,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "456200445f2fc6e3c1ce242a244515459177bab171c8cbd80a3e67efe075665d",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 16.56635100106545,
       "mdd": -20.987864676874647,
@@ -41822,7 +41822,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "bcdb3356367043fd6d08c36705748a16a2514162ceab4c8d233e7f648f06be14",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 31.514679629891333,
       "mdd": -44.43853113353927,
@@ -41922,7 +41922,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "dafdd6a3071e5dc771ec67f0e79bea34dc7e8476ba01fa4e12982df7e8249355",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 20.631061457710466,
       "mdd": -29.88765861149276,
@@ -42022,7 +42022,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "60d59a456d274df99d6f8425aeba38e5d6f358b479cf6fb2cd52b2637bfda801",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 22.5768843216264,
       "mdd": -29.811036946507475,
@@ -42122,7 +42122,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "b36af0643957c1cdd0ff28d1fe5a0d3c8da82f3c0d4fb8b8baef07ff95f753ab",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 26.72631227844997,
       "mdd": -39.76,
@@ -42222,7 +42222,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "1d08cb63deb0d36ff26ab186b4a3a531531f33edbdb342731142ebc3ba2f1fe7",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 41.4026949170025,
       "mdd": -43.64199000238038,
@@ -42322,7 +42322,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "6f83df6f546e696cbb448646199c62ffaa759360493a34dc40b6bdce21b4c599",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 26.48264978076007,
       "mdd": -38.383067975974825,
@@ -42422,7 +42422,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "2323b75672a411f50e50a5bf0ebc39b6904715987fe017b72b036e9deebc7e70",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 13.841379122939765,
       "mdd": -17.061477721376207,
@@ -42522,7 +42522,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "7e3d7a1c71683c4492b54524cdcd227d8f827f7669b44c8844ab2e0743b48ac2",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 28.241092633317365,
       "mdd": -20.74538003556793,
@@ -42622,7 +42622,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "0678172c557474e7de2d62d7b90d51e62111a03b26c5df196ca84e6561b6505d",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 12.987121652165925,
       "mdd": -23.64929821183166,
@@ -42722,7 +42722,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "122d21c38101d9dfc23b86a6a80034e9f904d470ea3b0efdd3de13e06d45aeae",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 27.41964261699547,
       "mdd": -45.194575471698116,
@@ -42822,7 +42822,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "bf01dc9fc45dc95bfc4cf9d943b01e52df188c6a3bf13046f6dcae6133b14d50",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 12.429487238028043,
       "mdd": -11.504850476695616,
@@ -42922,7 +42922,7 @@
     "comparisonNote": "目录补齐并复算实际净值历史",
     "rawHistorySha256": "95f519c5373655b0bbe616af8f99d51c1ed06b73be28b8042867c18c846f2e7d",
     "historyNote": null,
-    "performanceCheckedAt": "2026-10-28T01:24:13+00:00",
+    "performanceCheckedAt": "2026-10-29T01:50:41+00:00",
     "risk3Period": {
       "vol": 24.945849420227496,
       "mdd": -29.655507398278758,
