@@ -113,62 +113,114 @@ var UPDATE_STATUS={
     },
     "quality": {
       "status": "checked",
-      "attemptedAt": "2026-10-29T01:51:04+00:00",
+      "attemptedAt": "2026-10-29T11:28:18+00:00",
       "exitCode": 0,
-      "seconds": 1.86,
+      "seconds": 1.94,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "checked",
-        "attemptedAt": "2026-10-29T01:51:04+00:00",
+        "attemptedAt": "2026-10-29T11:28:18+00:00",
         "exitCode": 0,
-        "seconds": 1.86,
+        "seconds": 1.94,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "research_funds": {
-      "status": "success",
-      "attemptedAt": "2026-10-29T01:50:41+00:00",
+      "status": "partial",
+      "attemptedAt": "2026-10-29T11:27:14+00:00",
       "records": 395,
-      "asOf": "2026-10-26",
-      "failures": {},
+      "asOf": "2026-10-28",
+      "failures": {
+        "019495": "已取得2026-10-28净值，收益历史仍截至2026-10-23",
+        "021773": "已取得2026-10-28净值，收益历史仍截至2026-10-23",
+        "513730": "已取得2026-10-28净值，收益历史仍截至2026-10-23"
+      },
       "message": "复用本轮已更新的行情曲线；原费率和研究核验日期保持独立",
       "mode": "online",
       "execution": {
         "exitCode": 0,
-        "seconds": 2.68
+        "seconds": 2.57
       },
       "lastOnlineAttempt": {
-        "status": "success",
-        "attemptedAt": "2026-10-29T01:50:41+00:00",
+        "status": "partial",
+        "attemptedAt": "2026-10-29T11:27:14+00:00",
         "records": 395,
-        "asOf": "2026-10-26",
-        "failures": {},
+        "asOf": "2026-10-28",
+        "failures": {
+          "019495": "已取得2026-10-28净值，收益历史仍截至2026-10-23",
+          "021773": "已取得2026-10-28净值，收益历史仍截至2026-10-23",
+          "513730": "已取得2026-10-28净值，收益历史仍截至2026-10-23"
+        },
         "message": "复用本轮已更新的行情曲线；原费率和研究核验日期保持独立",
         "mode": "online",
         "execution": {
           "exitCode": 0,
-          "seconds": 2.68
+          "seconds": 2.57
         }
       }
     },
     "portfolio": {
-      "status": "timeout",
-      "attemptedAt": "2026-10-29T01:50:35+00:00",
-      "exitCode": 124,
-      "seconds": 90.4,
-      "message": "组合每日历史：100 / 1873；已可用 100\n组合每日历史：200 / 1873；已可用 200\n组合每日历史：300 / 1873；已可用 300\n组合每日历史：400 / 1873；已可用 399\n组合每日历史：500 / 1873；已可用 499\n组合每日历史：600 / 1873；已可用 599\n组合每日历史：700 / 1873；已可用 698\n组合每日历史：800 / 1873；已可用 797\n组合每日历史：900 / 1873；已可用 896\n组合每日历史：1000 / 1873；已可用 995\n组合每日历史：1100 / 1873；已可用 1094\n组合每日历史：1200 / 1873；已可用 1192\n组合每日历史：1300 / 1873；已可用 1292\n组合每日历史：1400 / 1873；已可用 1392\n组合每日历史：1500 / 1873；已可用 1492\n组合每日历史：1600 / 1873；已可用 1592\n组合每日历史：1700 / 1873；已可用 1692\n组合每日历史：1800 / 1873；已可用 1792\n\n执行超过 90 秒，子进程已终止；该数据集不能视为更新成功。\n\n本阶段未成功，已恢复页面数据：snapshot.js。\n",
-      "error": "执行超过 90 秒，子进程已终止；该数据集不能视为更新成功。",
+      "status": "partial",
+      "attemptedAt": "2026-10-29T11:27:08+00:00",
       "mode": "online",
+      "records": 1873,
+      "total": 1873,
+      "available": 1873,
+      "missing": 0,
+      "historyFailures": {
+        "fund:019495": {
+          "error": "The read operation timed out",
+          "asOf": "2026-10-23",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_019495.html"
+        },
+        "fund:021773": {
+          "error": "The read operation timed out",
+          "asOf": "2026-10-23",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_021773.html"
+        },
+        "fund:513730": {
+          "error": "<urlopen error [Errno 104] Connection reset by peer>",
+          "asOf": "2026-10-23",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_513730.html"
+        }
+      },
+      "navUpdated": 1672,
+      "navWarnings": {},
+      "returnsUpdated": 1679,
+      "returnsRetained": {},
+      "message": "逐标的保存已验证历史；失败项保留原日期，收益与净值按同一份历史同步。",
       "lastOnlineAttempt": {
-        "status": "timeout",
-        "attemptedAt": "2026-10-29T01:50:35+00:00",
-        "exitCode": 124,
-        "seconds": 90.4,
-        "message": "组合每日历史：100 / 1873；已可用 100\n组合每日历史：200 / 1873；已可用 200\n组合每日历史：300 / 1873；已可用 300\n组合每日历史：400 / 1873；已可用 399\n组合每日历史：500 / 1873；已可用 499\n组合每日历史：600 / 1873；已可用 599\n组合每日历史：700 / 1873；已可用 698\n组合每日历史：800 / 1873；已可用 797\n组合每日历史：900 / 1873；已可用 896\n组合每日历史：1000 / 1873；已可用 995\n组合每日历史：1100 / 1873；已可用 1094\n组合每日历史：1200 / 1873；已可用 1192\n组合每日历史：1300 / 1873；已可用 1292\n组合每日历史：1400 / 1873；已可用 1392\n组合每日历史：1500 / 1873；已可用 1492\n组合每日历史：1600 / 1873；已可用 1592\n组合每日历史：1700 / 1873；已可用 1692\n组合每日历史：1800 / 1873；已可用 1792\n\n执行超过 90 秒，子进程已终止；该数据集不能视为更新成功。\n\n本阶段未成功，已恢复页面数据：snapshot.js。\n",
-        "error": "执行超过 90 秒，子进程已终止；该数据集不能视为更新成功。",
-        "mode": "online"
+        "status": "partial",
+        "attemptedAt": "2026-10-29T11:27:08+00:00",
+        "mode": "online",
+        "records": 1873,
+        "total": 1873,
+        "available": 1873,
+        "missing": 0,
+        "historyFailures": {
+          "fund:019495": {
+            "error": "The read operation timed out",
+            "asOf": "2026-10-23",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_019495.html"
+          },
+          "fund:021773": {
+            "error": "The read operation timed out",
+            "asOf": "2026-10-23",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_021773.html"
+          },
+          "fund:513730": {
+            "error": "<urlopen error [Errno 104] Connection reset by peer>",
+            "asOf": "2026-10-23",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_513730.html"
+          }
+        },
+        "navUpdated": 1672,
+        "navWarnings": {},
+        "returnsUpdated": 1679,
+        "returnsRetained": {},
+        "message": "逐标的保存已验证历史；失败项保留原日期，收益与净值按同一份历史同步。"
       }
     },
     "overseas_stocks": {
@@ -370,19 +422,21 @@ var UPDATE_STATUS={
       }
     },
     "crossborder": {
-      "status": "success",
-      "attemptedAt": "2026-10-29T01:50:54+00:00",
-      "exitCode": 0,
-      "seconds": 11.16,
+      "status": "timeout",
+      "attemptedAt": "2026-10-29T11:28:16+00:00",
+      "exitCode": 124,
+      "seconds": 60.07,
+      "message": "\n执行超过 60 秒，子进程已终止；该数据集不能视为更新成功。\n",
+      "error": "执行超过 60 秒，子进程已终止；该数据集不能视为更新成功。",
       "mode": "online",
-      "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
-        "status": "success",
-        "attemptedAt": "2026-10-29T01:50:54+00:00",
-        "exitCode": 0,
-        "seconds": 11.16,
-        "mode": "online",
-        "message": "执行成功；数据准确性与日期由质量报告单独说明。"
+        "status": "timeout",
+        "attemptedAt": "2026-10-29T11:28:16+00:00",
+        "exitCode": 124,
+        "seconds": 60.07,
+        "message": "\n执行超过 60 秒，子进程已终止；该数据集不能视为更新成功。\n",
+        "error": "执行超过 60 秒，子进程已终止；该数据集不能视为更新成功。",
+        "mode": "online"
       }
     },
     "market_history": {
@@ -403,7 +457,7 @@ var UPDATE_STATUS={
     },
     "fund_batch": {
       "status": "partial",
-      "attemptedAt": "2026-10-29T01:48:06+00:00",
+      "attemptedAt": "2026-10-29T11:24:29+00:00",
       "mode": "online",
       "records": 1683,
       "requested": 1690,
@@ -419,7 +473,7 @@ var UPDATE_STATUS={
       "message": "批量取得最新净值及其原日期；缺项基金使用独立历史接口",
       "lastOnlineAttempt": {
         "status": "partial",
-        "attemptedAt": "2026-10-29T01:48:06+00:00",
+        "attemptedAt": "2026-10-29T11:24:29+00:00",
         "mode": "online",
         "records": 1683,
         "requested": 1690,
@@ -437,20 +491,36 @@ var UPDATE_STATUS={
     },
     "benchmark_sync": {
       "status": "success",
-      "attemptedAt": "2026-10-29T01:50:38+00:00",
+      "attemptedAt": "2026-10-29T11:27:11+00:00",
       "exitCode": 0,
-      "seconds": 3.16,
+      "seconds": 3.18,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-10-29T01:50:38+00:00",
+        "attemptedAt": "2026-10-29T11:27:11+00:00",
         "exitCode": 0,
-        "seconds": 3.16,
+        "seconds": 3.18,
+        "mode": "online",
+        "message": "执行成功；数据准确性与日期由质量报告单独说明。"
+      }
+    },
+    "portfolio_sync": {
+      "status": "success",
+      "attemptedAt": "2026-10-29T11:27:08+00:00",
+      "exitCode": 0,
+      "seconds": 51.71,
+      "mode": "online",
+      "message": "执行成功；数据准确性与日期由质量报告单独说明。",
+      "lastOnlineAttempt": {
+        "status": "success",
+        "attemptedAt": "2026-10-29T11:27:08+00:00",
+        "exitCode": 0,
+        "seconds": 51.71,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     }
   },
-  "checkedAt": "2026-10-29T01:51:04+00:00"
+  "checkedAt": "2026-10-29T11:28:18+00:00"
 };

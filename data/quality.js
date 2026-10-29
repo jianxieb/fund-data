@@ -1,11 +1,11 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-10-29T01:51:04+00:00",
+  "checkedAt": "2026-10-29T11:28:18+00:00",
   "asOf": "2026-10-29",
   "status": "unverified",
   "summary": {
     "errors": 0,
-    "warnings": 5,
+    "warnings": 8,
     "unverified": 37
   },
   "datasets": [
@@ -17,10 +17,28 @@ var DATA_QUALITY={
       "records": 0,
       "issues": [
         {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:019495：The read operation timed out；保留历史截至2026-10-23",
+          "affected": "fund:019495"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:021773：The read operation timed out；保留历史截至2026-10-23",
+          "affected": "fund:021773"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:513730：<urlopen error [Errno 104] Connection reset by peer>；保留历史截至2026-10-23",
+          "affected": "fund:513730"
+        },
+        {
           "code": "source_refresh_retained",
           "severity": "warning",
-          "message": "标的行情：执行超过 90 秒，子进程已终止；该数据集不能视为更新成功。；保留已发布数据及原日期",
-          "affected": "portfolio"
+          "message": "跨境基金：执行超过 60 秒，子进程已终止；该数据集不能视为更新成功。；保留已发布数据及原日期",
+          "affected": "crossborder"
         }
       ],
       "status": "warning"
@@ -31,7 +49,7 @@ var DATA_QUALITY={
       "asOf": "2026-10-27",
       "dateRange": [
         "2026-10-27",
-        "2026-10-27"
+        "2026-10-28"
       ],
       "records": 46,
       "issues": [
@@ -313,7 +331,7 @@ var DATA_QUALITY={
       "label": "海外指数与ETF基准",
       "asOf": "2026-10-28",
       "dateRange": [
-        "2026-10-23",
+        "2026-10-28",
         "2026-10-28"
       ],
       "records": 36,
@@ -321,7 +339,7 @@ var DATA_QUALITY={
         {
           "code": "fx_risk_incomplete",
           "severity": "warning",
-          "message": "完整人民币日风险缺少实际汇率（2025-04-21、2026-10-28）；未沿用美元风险或填补汇率",
+          "message": "完整人民币日风险缺少实际汇率（2025-04-21）；未沿用美元风险或填补汇率",
           "affected": [
             "标普500指数",
             "SPY",
@@ -388,10 +406,10 @@ var DATA_QUALITY={
     {
       "id": "domestic_funds",
       "label": "扩展基金研究池",
-      "asOf": "2026-10-26",
+      "asOf": "2026-10-28",
       "dateRange": [
-        "2026-10-22",
-        "2026-10-26"
+        "2026-10-23",
+        "2026-10-28"
       ],
       "records": 1577,
       "issues": [
@@ -3165,10 +3183,10 @@ var DATA_QUALITY={
     {
       "id": "portfolio",
       "label": "组合每日历史",
-      "asOf": "2026-10-27",
+      "asOf": "2026-10-28",
       "dateRange": [
-        "2026-10-22",
-        "2026-10-27"
+        "2026-10-23",
+        "2026-10-28"
       ],
       "records": 1873,
       "issues": [],

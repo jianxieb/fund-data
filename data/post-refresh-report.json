@@ -1,87 +1,32 @@
 {
-  "startedAt": "2026-10-29T01:50:43+00:00",
+  "startedAt": "2026-10-29T11:27:16+00:00",
+  "datasets": [
+    "crossborder"
+  ],
   "steps": [
     {
-      "dataset": "fund_actions",
-      "status": "completed",
-      "exitCode": 0,
-      "seconds": 0.31,
-      "log": ".tmp-snap/refresh-fund_actions.log",
-      "publishedRollback": false,
-      "retainedPrevious": false,
-      "sourcePartial": false
-    },
-    {
       "dataset": "crossborder",
-      "status": "completed",
-      "exitCode": 0,
-      "seconds": 11.16,
+      "status": "timeout",
+      "exitCode": 124,
+      "seconds": 60.07,
       "log": ".tmp-snap/refresh-crossborder.log",
       "publishedRollback": false,
-      "retainedPrevious": false,
-      "sourcePartial": false
-    },
-    {
-      "dataset": "etf_distributions",
-      "status": "completed",
-      "exitCode": 0,
-      "seconds": 2.34,
-      "log": ".tmp-snap/refresh-etf_distributions.log",
-      "publishedRollback": false,
-      "retainedPrevious": false,
-      "sourcePartial": false
-    },
-    {
-      "dataset": "return_indices",
-      "status": "completed",
-      "exitCode": 0,
-      "seconds": 2.16,
-      "log": ".tmp-snap/refresh-return_indices.log",
-      "publishedRollback": false,
-      "retainedPrevious": false,
-      "sourcePartial": false
-    },
-    {
-      "dataset": "bank_fx",
-      "status": "completed",
-      "exitCode": 0,
-      "seconds": 3.91,
-      "log": ".tmp-snap/refresh-bank_fx.log",
-      "publishedRollback": false,
-      "retainedPrevious": false,
-      "sourcePartial": false
-    },
-    {
-      "dataset": "market_history",
-      "status": "completed",
-      "exitCode": 0,
-      "seconds": 15.71,
-      "log": ".tmp-snap/refresh-market_history.log",
-      "publishedRollback": false,
-      "retainedPrevious": false,
-      "sourcePartial": false
-    },
-    {
-      "dataset": "financial_events",
-      "status": "completed",
-      "exitCode": 0,
-      "seconds": 2.96,
-      "log": ".tmp-snap/refresh-financial_events.log",
-      "publishedRollback": false,
-      "retainedPrevious": false,
-      "sourcePartial": false
+      "retainedPrevious": true,
+      "sourcePartial": false,
+      "checkpointValidated": false
     },
     {
       "dataset": "quality",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 1.86,
+      "seconds": 1.94,
       "log": ".tmp-snap/refresh-quality.log",
       "publishedRollback": false,
       "retainedPrevious": false,
-      "sourcePartial": false
+      "sourcePartial": false,
+      "checkpointValidated": false
     }
   ],
-  "completedAt": "2026-10-29T01:51:04+00:00",
-  "status": "completed"
+  "completedAt": "2026-10-29T11:28:18+00:00",
+  "status": "partial"
 }
