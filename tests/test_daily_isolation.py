@@ -1,4 +1,5 @@
 import json
+import os
 import multiprocessing
 import subprocess
 import sys
@@ -30,6 +31,60 @@ def increment(path, name):
 
 
 class DailyIsolationTests(unittest.TestCase):
+    def test_targeted_repair_is_explicit_and_does_not_claim_all_nine_stages(self):
+        steps = [dict(dataset=name, status='completed', exitCode=0) for name in ('research_funds', 'portfolio', 'quality')]
+        report = {'scope': 'targeted', 'datasets': [s['dataset'] for s in steps], 'status': 'completed', 'steps': steps}
+        self.assertEqual(check_refresh.check_results(report, {'summary': {'errors': 0}}), [])
+        self.assertTrue(check_refresh.check_results({**report, 'scope': 'all'}, {'summary': {'errors': 0}}))
+        self.assertTrue(check_refresh.check_results({**report, 'datasets': ['portfolio']}, {'summary': {'errors': 0}}))
+        with tempfile.TemporaryDirectory() as temporary:
+            def done(name, *args, **kwargs):
+                return dict(dataset=name, status='completed', exitCode=0)
+            with patch.object(post_refresh, 'DATA', Path(temporary)), \
+                    patch.object(post_refresh, 'run_task', side_effect=done) as run, \
+                    patch.object(refresh, 'execute', side_effect=done):
+                self.assertEqual(post_refresh.main(['crossborder']), 0)
+            self.assertEqual([call.args[0] for call in run.call_args_list], ['crossborder'])
+
+    def test_timeout_keeps_a_valid_checkpoint_and_requires_metric_recovery(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            with patch.object(build_portfolio_data, 'ROOT', root), patch.object(build_portfolio_data, 'OUTPUT', root / 'data/portfolio'), \
+                    patch.object(refresh, 'ROOT', root), patch.object(refresh, 'DATA', root / 'data'), \
+                    patch.dict(os.environ, {'FUND_DATA_REFRESH_TOKEN': 'this-run'}):
+                a = dict(id='fund:000001', code='000001', currency='CNY')
+                b = dict(id='fund:000002', code='000002', currency='CNY')
+                old = [build_portfolio_data.publish_history(row, [['2026-10-23', 1], ['2026-10-26', 2]], 'provider_daily_return_or_explicit_actions', 'https://example.com') for row in (a, b)]
+                prior = {'assets': old, 'fx': {'id': 'fx:CNY', 'status': 'missing', 'missing': 'fixture FX absent'}}
+                path = root / 'data/portfolio/catalog.js'
+                before = ('var PORTFOLIO_CATALOG=' + json.dumps(prior) + ';').encode()
+                path.write_bytes(before)
+                updated = build_portfolio_data.publish_history(a, [['2026-10-23', 1], ['2026-10-26', 2], ['2026-10-27', 2.1]], 'provider_daily_return_or_explicit_actions', 'https://example.com')
+                checkpoint = build_portfolio_data.history_catalog([a, b], {a['id']: updated}, prior)
+                def interrupted(*args, **kwargs):
+                    path.write_text('var PORTFOLIO_CATALOG=' + json.dumps(checkpoint) + ';')
+                    raise subprocess.TimeoutExpired(args[0], 90)
+                with patch.object(refresh.subprocess, 'run', side_effect=interrupted), patch.object(refresh, 'write_status'):
+                    result = refresh.execute('portfolio', ['collector'], 90, allow_partial=True)
+                self.assertTrue(result['checkpointValidated'])
+                self.assertTrue(result['sourcePartial'])
+                self.assertFalse(result['publishedRollback'])
+                saved = json.loads(path.read_text().split('=', 1)[1].rstrip(';'))
+                self.assertEqual([r['asOf'] for r in saved['assets']], ['2026-10-27', '2026-10-26'])
+                steps = [dict(dataset=name, status='completed', exitCode=0) for name in check_refresh.EXPECTED_STEPS]
+                steps[7] = result
+                report = {'dailyMode': True, 'status': 'partial', 'steps': steps}
+                self.assertTrue(check_refresh.check_results(report, {'summary': {'errors': 0}}))
+                report['portfolioSync'] = {'exitCode': 0}
+                self.assertEqual(check_refresh.check_results(report, {'summary': {'errors': 0}}), [])
+                saved['refreshToken'] = 'previous-run'
+                path.write_text('var PORTFOLIO_CATALOG=' + json.dumps(saved) + ';')
+                self.assertIsNone(refresh.validated_portfolio_checkpoint(before))
+                saved['refreshToken'] = 'this-run'
+                saved['assets'][0]['sha256'] = 'corrupt'
+                path.write_text('var PORTFOLIO_CATALOG=' + json.dumps(saved) + ';')
+                self.assertIsNone(refresh.validated_portfolio_checkpoint(before))
+
     def test_individual_retained_histories_name_errors_and_original_dates(self):
         catalog = {'assets': [
             {'id': 'fund:020516', 'status': 'available', 'asOf': '2026-10-23',

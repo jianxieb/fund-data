@@ -41,6 +41,7 @@ const funds=M.dedupeFunds(s.FUNDS,s.EXTRA).map(f=>({
  inception:f.d||null,subscriptionStatus:f.st||null}));
 const stocks=(s.STOCKS||[]).map(f=>({id:'stock:'+f.c,code:f.c,name:f.n,kind:'stock',
  market:'cn',currency:'CNY',category:f.businessLabel||f.ind||'个股',sector:f.researchCategory||f.ind,board:M.stockBoard(f.c),
+ knownThrough:[f.returnAsOf||'',f.priceAsOf||''].sort().pop(),
  sourceUrl:f.sourceUrl||'https://finance.yahoo.com/quote/'+f.c+( /^[5689]/.test(f.c)?'.SS':'.SZ')+'/history/'}));
 const us=(s.BM||[]).filter(f=>f.symbol&&f.feesEmbedded).map(f=>({
  id:'us:'+f.symbol,code:f.symbol,name:f.symbol+' · '+(f.label||f.category||f.n),kind:'etf',
@@ -69,7 +70,7 @@ def fund_request(code, size):
     url = ('https://fundmobapi.eastmoney.com/FundMNewApi/FundMNHisNetList?FCODE=%s&pageIndex=1&pageSize=%s'
            '&startDate=&endDate=&plat=Android&appType=ttjj&product=EFund&Version=1&deviceid=1' % (code, size))
     request = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-    with urllib.request.urlopen(request, timeout=18) as response:
+    with urllib.request.urlopen(request, timeout=8 if os.environ.get('FUND_DATA_REFRESH_TOKEN') else 18) as response:
         payload = json.load(response)
     rows = payload.get('Datas')
     if not isinstance(rows, list) or not rows:
@@ -191,7 +192,9 @@ def stock_history(asset, offline=False, refresh=False):
         cached = json.loads(path.read_text(encoding='utf-8'))
     except (OSError, ValueError):
         cached = None
-    if not cached:
+    target = min(END, asset.get('knownThrough') or END)
+    cached_end = max((row[0] for row in (cached or {}).get('series', [])), default='')
+    if not cached or refresh and not offline and cached_end < target:
         if offline:
             raise ValueError('缺含分红复权股价；离线缓存未收录')
         import stock_screen
@@ -205,8 +208,10 @@ def stock_history(asset, offline=False, refresh=False):
     return cached.get('series') or [], 'provider_adjusted_close', cached.get('sourceUrl') or asset['sourceUrl'], None
 
 
-def overseas_history(symbol, offline=False):
+def overseas_history(symbol, offline=False, refresh=False):
     series = strategy_backtest.load_history(symbol, offline=offline)
+    if refresh and not offline and max(series, default='') < END:
+        series = strategy_backtest.load_history(symbol, refresh=True, offline=False)
     path = Path(strategy_backtest.cache_path(symbol))
     cached = json.loads(path.read_text(encoding='utf-8'))
     expected = 'CNY' if symbol == 'CNY=X' else 'USD'
@@ -293,15 +298,19 @@ def publish_history(asset, series, basis, source, warning=None, dividend_evidenc
 
 def incremental_fund(asset, previous):
     """Extend verified wealth with published daily returns, not NAV ratios."""
-    from scripts.fund_batch import latest, cached_rows, matches_latest, ordinary_weekend, ENDPOINT
-    quote = latest(asset['code'])
+    from scripts.fund_batch import latest, cached_rows, matches_latest, ordinary_weekend, verified_weekday_tail, ENDPOINT
+    quote = latest(asset['code'], END)
     if not quote or not previous or previous.get('status') != 'available':
         return None
     end = previous['asOf']
     observation = latest_nav_observation([quote], end)
     target = min(END, max(quote['FSRQ'], asset.get('knownThrough') or ''))
     if target <= end:
-        return {**previous, **asset, **({'navObservation': observation} if observation else {})}
+        result = {**previous, **asset, **({'navObservation': observation} if observation else {})}
+        result.pop('missing', None)
+        if (result.get('refreshWarning') or '').startswith(('本次',)):
+            result.pop('refreshWarning', None)
+        return result
     raw = (ROOT / previous['historyUrl']).read_bytes()
     if hashlib.sha256(raw).hexdigest() != previous['sha256']:
         raise ValueError('原历史校验和不一致：' + asset['code'])
@@ -316,6 +325,8 @@ def incremental_fund(asset, previous):
         newest = max(cached, key=lambda row: row['FSRQ']) if cached else None
         if newest and end in dates and matches_latest(newest, quote):
             rows = cached
+        elif (recorded := verified_weekday_tail(asset['code'], end, target, quote, previous)):
+            rows = recorded
         elif quote['FSRQ'] == target and ordinary_weekend(end, quote, cached, asset):
             rows = [quote]
         else:
@@ -348,7 +359,7 @@ def incremental_fund(asset, previous):
         evidence = {**evidence, 'coverageWarning': '现金分红明细仍截至' + evidence.get('through', '未知') + '；未按新行情日期延长'}
     result = publish_history(asset, series, history['basis'], history['sourceUrl'], dividend_evidence=evidence)
     result['navObservation'] = latest_nav_observation([last_source], series[-1][0])
-    result['latestNavSource'] = ENDPOINT if last_source is quote else 'https://fundmobapi.eastmoney.com/FundMNewApi/FundMNHisNetList'
+    result['latestNavSource'] = ENDPOINT if last_source is quote or last_source.get('sourceSha256') else 'https://fundmobapi.eastmoney.com/FundMNewApi/FundMNHisNetList'
     return result
 
 
@@ -368,7 +379,7 @@ def build_asset(asset, offline=False, refresh=False, previous=None):
             else:
                 values = stock_history(asset, offline, refresh)
         else:
-            values = overseas_history(asset['code'], offline)
+            values = overseas_history(asset['code'], offline, refresh)
         evidence = None
         if not asset['id'].startswith('fx:'):
             from scripts.build_portfolio_tax_data import dividend_evidence
@@ -599,6 +610,10 @@ def sync_verified_evidence():
         try:
             row, asset = rows[code], assets[code]
             endpoint = row['returnAsOf']
+            from scripts.fund_batch import latest
+            observation_now = latest(code, END)
+            if observation_now and observation_now['FSRQ'] > endpoint:
+                raise ValueError('已取得' + observation_now['FSRQ'] + '净值，收益历史仍截至' + endpoint)
             if asset['status'] != 'available' or endpoint != asset['asOf']:
                 raise ValueError('缺与当前收益同日的已验证曲线')
             observation = asset.get('navObservation')
@@ -669,6 +684,45 @@ def retained_history_failures(catalog):
     return failures
 
 
+def history_catalog(rows, results, prior, fx=None, complete=False):
+    """Publish each completed identity, retaining only unfinished/failed ones."""
+    old = {row['id']: row for row in prior.get('assets', [])}
+    assets = []
+    for asset in rows:
+        row = results.get(asset['id']) or {**asset, 'status': 'missing', 'missing': '本次标的历史刷新尚未完成'}
+        previous = old.get(asset['id']) or {}
+        if previous.get('status') == 'available' and (row['status'] != 'available' or row['asOf'] < previous['asOf']):
+            reason = row.get('missing') or '本次历史末日倒退，保留上一版已验证序列'
+            row = {**previous, **asset, 'missing': reason, 'refreshWarning': reason}
+        assets.append(row)
+    if fx is None or fx.get('status') != 'available' or fx.get('asOf', '') < (prior.get('fx') or {}).get('asOf', ''):
+        previous_fx = prior.get('fx') or {}
+        if previous_fx.get('status') == 'available':
+            fx = {**previous_fx, 'refreshWarning': (fx or {}).get('missing') or '本次汇率历史刷新尚未完成'}
+    return {'schemaVersion': 1, 'generatedAt': now_iso(), 'endLimit': END,
+            'currency': 'CNY', 'assets': assets, 'fx': fx or prior.get('fx') or {},
+            'refreshToken': os.environ.get('FUND_DATA_REFRESH_TOKEN'),
+            'refreshProgress': {'processed': len(results), 'total': len(rows), 'complete': complete},
+            'summary': {'total': len(assets), 'available': sum(row['status'] == 'available' for row in assets),
+                        'missing': sum(row['status'] != 'available' for row in assets)}}
+
+
+def sync_fund_metrics(catalog, offline=False):
+    risk = sync_fund_risk(catalog)
+    nav = sync_fund_nav(catalog)
+    returns = sync_fund_returns(catalog)
+    failures = retained_history_failures(catalog)
+    write_status('portfolio', 'cached' if offline else 'partial' if failures else 'success', mode='offline' if offline else 'online',
+                 records=len(catalog['assets']), **catalog['summary'], historyFailures=failures,
+                 navUpdated=nav['updated'], navWarnings=nav['warnings'],
+                 returnsUpdated=returns['updated'], returnsRetained=returns['retained'],
+                 message='逐标的保存已验证历史；失败项保留原日期，收益与净值按同一份历史同步。')
+    print('基金风险同步：', risk, flush=True)
+    print('基金单日净值同步：', nav, flush=True)
+    print('基金收益同步：', returns, flush=True)
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--offline', action='store_true')
@@ -681,11 +735,16 @@ def main():
     parser.add_argument('--sync-universe', action='store_true', help='refresh metadata and fetch only newly included securities; preserve existing histories')
     parser.add_argument('--sync-verified', action='store_true', help='sync verified fund evidence from the newly published histories')
     parser.add_argument('--sync-benchmarks', action='store_true', help='align ETF tables to their published verified histories')
+    parser.add_argument('--sync-funds', action='store_true', help='finish fund metrics from validated saved history progress')
     args = parser.parse_args()
     if args.sync_verified:
         return sync_verified_evidence()
     if args.sync_benchmarks:
         return sync_benchmark_evidence()
+    if args.sync_funds:
+        catalog = json.loads((OUTPUT / 'catalog.js').read_text().split('=', 1)[1].strip().rstrip(';'))
+        validate_catalog(catalog, universe())
+        return sync_fund_metrics(catalog, args.offline)
     if args.sync_universe:
         path = OUTPUT / 'catalog.js'
         catalog = json.loads(path.read_text(encoding='utf-8').split('=', 1)[1].strip().rstrip(';'))
@@ -740,50 +799,22 @@ def main():
             results[row['id']] = row
             if index % 100 == 0 or index == len(rows):
                 print('组合每日历史：%d / %d；已可用 %d' % (index, len(rows), sum(r['status'] == 'available' for r in results.values())), flush=True)
+                if os.environ.get('FUND_DATA_REFRESH_TOKEN') and prior:
+                    checkpoint = history_catalog(rows, results, prior)
+                    atomic_text(prior_path, 'var PORTFOLIO_CATALOG=' + json.dumps(checkpoint, ensure_ascii=False, allow_nan=False, separators=(',', ':')) + ';\n')
     fx_asset = {'id': 'fx:CNY', 'code': 'CNY=X', 'name': '美元兑人民币', 'currency': 'CNY'}
     try:
-        fx = publish_history(fx_asset, *overseas_history('CNY=X', args.offline))
+        fx = publish_history(fx_asset, *overseas_history('CNY=X', args.offline, args.refresh))
     except Exception as exc:
         fx = {**fx_asset, 'status': 'missing', 'missing': '缺美元兑人民币日汇率：' + str(exc)[:160]}
-    assets = [results[row['id']] for row in rows]
-    catalog = {'schemaVersion': 1, 'generatedAt': now_iso(), 'endLimit': END,
-               'currency': 'CNY', 'assets': assets, 'fx': fx,
-               'summary': {'total': len(assets), 'available': sum(row['status'] == 'available' for row in assets),
-                           'missing': sum(row['status'] != 'available' for row in assets)}}
-    # A failed interface call may retain a dated, validated history. Never replace
-    # an existing usable published series with an unavailable one or an older tail.
-    if prior_path.exists():
-        old = {row['id']: row for row in prior.get('assets') or []}
-        for row in assets:
-            previous = old.get(row['id'])
-            if previous and previous.get('status') == 'available' and (row['status'] != 'available' or row['asOf'] < previous['asOf']):
-                retained = {**row, **{k: previous[k] for k in ('status', 'basis', 'first', 'asOf', 'observations', 'historyUrl', 'sha256')}}
-                retained['performance'] = performance_preview(json.loads((ROOT / previous['historyUrl']).read_text(encoding='utf-8'))['series'])
-                retained['refreshWarning'] = row.get('missing') or '本次历史末日倒退，保留上一版已验证序列'
-                results[row['id']] = retained
-        catalog['assets'] = [results[row['id']] for row in rows]
-        catalog['summary'].update(available=sum(row['status'] == 'available' for row in catalog['assets']),
-                                  missing=sum(row['status'] != 'available' for row in catalog['assets']))
-        previous_fx = prior.get('fx') or {}
-        if previous_fx.get('status') == 'available' and (fx['status'] != 'available' or fx['asOf'] < previous_fx['asOf']):
-            catalog['fx'] = {**previous_fx, 'refreshWarning': fx.get('missing') or '本次汇率末日倒退，保留上一版'}
+    catalog = history_catalog(rows, results, prior, fx=fx, complete=True)
     validate_catalog(catalog, rows)
     atomic_text(prior_path, 'var PORTFOLIO_CATALOG=' + json.dumps(catalog, ensure_ascii=False, allow_nan=False, separators=(',', ':')) + ';\n')
-    risk_summary = sync_fund_risk(catalog)
-    nav_summary = sync_fund_nav(catalog)
-    returns_summary = sync_fund_returns(catalog)
+    sync_fund_metrics(catalog, args.offline)
     # Return-dependent candidate rules must follow the newly computed windows.
     if not os.environ.get('FUND_DATA_REFRESH_TOKEN'):
         subprocess.run([sys.executable, str(ROOT / 'screens/fund_screen.py'), 'policy'], cwd=ROOT, check=True)
-    history_failures = retained_history_failures(catalog)
-    write_status('portfolio', 'cached' if args.offline else 'partial' if history_failures else 'success', mode='offline' if args.offline else 'online',
-                 records=len(rows), **catalog['summary'], navUpdated=nav_summary['updated'], navWarnings=nav_summary['warnings'],
-                 returnsUpdated=returns_summary['updated'], returnsRetained=returns_summary['retained'], historyFailures=history_failures,
-                 message='全部研究对象纳入标的库；基金收益由已校验净值曲线复算，实际日期逐项保存；费率、规模、经理及经营研究保持独立证据日期。')
     print('组合历史发布：', catalog['summary'], flush=True)
-    print('基金风险同步：', risk_summary, flush=True)
-    print('基金单日净值同步：', nav_summary, flush=True)
-    print('基金收益同步：', returns_summary, flush=True)
     return 0
 
 

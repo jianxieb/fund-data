@@ -59,6 +59,20 @@ class FundBatchTests(unittest.TestCase):
         self.assertFalse(batch.ordinary_weekend('2026-01-30', {**quote, 'FSRQ': '2026-02-02'},
             [dict(FSRQ='2026-01-30', DWJZ='2')], {}))
 
+    def test_batch_keeps_original_dated_observations_after_a_failed_history_run(self):
+        old = {'rows': {'000001': dict(FCODE='000001', FSRQ='2026-10-27', DWJZ=2, JZZZL=1)}}
+        new = {'000001': dict(FCODE='000001', FSRQ='2026-10-28', DWJZ=2.02, JZZZL=1)}
+        history = batch.merge_history(old, new, '2026-10-29T01:00:00+00:00', [])
+        self.assertEqual([r['FSRQ'] for r in history['000001']], ['2026-10-27', '2026-10-28'])
+        self.assertEqual(history['000001'][-1]['sourceObservedAt'], '2026-10-29T01:00:00+00:00')
+        self.assertNotIn('sourceObservedAt', history['000001'][0])
+
+    def test_a_newer_nav_does_not_hide_the_saved_observation_at_the_history_limit(self):
+        newer = dict(FCODE='000001', FSRQ='2026-10-29', DWJZ=2.1, JZZZL=1)
+        yesterday = dict(FCODE='000001', FSRQ='2026-10-28', DWJZ=2.0, JZZZL=1)
+        with patch.object(batch, '_load', return_value={'000001': newer}), patch.object(batch, 'recent', return_value=[yesterday]):
+            self.assertEqual(batch.latest('000001', '2026-10-28'), yesterday)
+
 
 class IncrementalFundHistoryTests(unittest.TestCase):
     def setUp(self):
@@ -96,6 +110,26 @@ class IncrementalFundHistoryTests(unittest.TestCase):
         self.assertAlmostEqual(history['series'][-1][1], 2 * 1.05 * 1.10)
         with patch.object(batch, 'latest', return_value=quote), patch.object(portfolio, 'fund_request', return_value=raw[1:]):
             self.assertIsNone(portfolio.incremental_fund(self.asset, self.previous))
+
+    def test_two_missed_weekdays_use_saved_official_returns_without_per_fund_requests(self):
+        previous = portfolio.publish_history(self.asset, [['2026-10-23', 1.9], ['2026-10-26', 2]],
+            'provider_daily_return_or_explicit_actions', 'https://fund.eastmoney.com/000001.html')
+        previous['navObservation'] = dict(nav=2, navdate='2026-10-26', dz=0)
+        tail = [dict(FCODE='000001', FSRQ='2026-10-26', DWJZ=2, JZZZL=0),
+                dict(FCODE='000001', FSRQ='2026-10-27', DWJZ=2.01, JZZZL=.5),
+                dict(FCODE='000001', FSRQ='2026-10-28', DWJZ=.41, JZZZL=2)]
+        with patch.object(batch, 'latest', return_value=tail[-1]), patch.object(batch, 'recent', return_value=tail), \
+                patch.object(portfolio, 'fund_request') as request:
+            row = portfolio.incremental_fund(self.asset, previous)
+        request.assert_not_called()
+        history = json.loads((self.root / row['historyUrl']).read_text())
+        self.assertAlmostEqual(history['series'][-1][1], 2 * 1.005 * 1.02)
+        self.assertEqual(row['asOf'], '2026-10-28')
+        with patch.object(batch, 'recent', return_value=[tail[0], tail[2]]):
+            self.assertIsNone(batch.verified_weekday_tail('000001', '2026-10-26', '2026-10-28', tail[-1], previous))
+        with patch.object(batch, 'recent', return_value=tail):
+            self.assertIsNone(batch.verified_weekday_tail('000001', '2026-10-26', '2026-10-28', tail[-1],
+                {**previous, 'navObservation': dict(nav=3, navdate='2026-10-26')}))
 
     def test_saved_raw_tail_confirmed_by_batch_quote_is_not_requested_again(self):
         quote = dict(FCODE='000001', FSRQ='2026-10-26', DWJZ=2.2, JZZZL=10)
@@ -166,6 +200,13 @@ class IncrementalFundHistoryTests(unittest.TestCase):
         self.assertEqual(current['fees'], evidence['fees'])
         self.assertEqual(current['historySha256'], self.previous['sha256'])
         self.assertEqual(status.call_args.args[:2], ('research_funds', 'success'))
+        with patch('screens.fund_screen.parse_snapshot_extra', return_value=[row]), \
+                patch.object(batch, 'latest', return_value=dict(FSRQ='2026-10-23')), \
+                patch.object(portfolio, 'write_status') as status:
+            self.assertEqual(portfolio.sync_verified_evidence(), 0)
+        self.assertEqual(json.loads(path.read_text())[0], current)
+        self.assertEqual(status.call_args.args[:2], ('research_funds', 'partial'))
+        self.assertIn('收益历史仍截至2026-10-22', status.call_args.kwargs['failures']['000001'])
 
 
 if __name__ == '__main__':

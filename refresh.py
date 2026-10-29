@@ -22,10 +22,33 @@ PUBLISHED_OUTPUTS = {
     'strategy': ('snapshot.js', 'strategy-fees.js'),
     'portfolio': ('portfolio/catalog.js', 'snapshot.js', 'screening.js'),
     'benchmark_sync': ('snapshot.js',),
+    'portfolio_sync': ('snapshot.js',),
 }
 SNAPSHOT_BLOCKS = {'funds': ('FUNDS', 'META', 'BM', 'CHG'), 'research_funds': ('EXTRA',),
                    'stocks': ('STOCKS',), 'strategy': ('STRATEGY',), 'portfolio': ('FUNDS', 'EXTRA'),
-                   'benchmark_sync': ('BM', 'META')}
+                   'benchmark_sync': ('BM', 'META'), 'portfolio_sync': ('FUNDS', 'EXTRA')}
+
+
+def validated_portfolio_checkpoint(previous):
+    """A killed collector may keep proven completed rows, never an unverified file."""
+    token = os.environ.get('FUND_DATA_REFRESH_TOKEN')
+    if not token or not previous:
+        return None
+    from scripts.build_portfolio_data import validate_catalog, retained_history_failures
+    try:
+        catalog = json.loads((DATA / 'portfolio/catalog.js').read_text().split('=', 1)[1].strip().rstrip(';'))
+        old = json.loads(previous.decode().split('=', 1)[1].strip().rstrip(';'))
+        if catalog.get('refreshToken') != token or not catalog.get('refreshProgress', {}).get('processed'):
+            return None
+        validate_catalog(catalog, old['assets'])
+        current = {row['id']: row for row in catalog['assets']}
+        for row in [*old['assets'], old.get('fx') or {}]:
+            after = catalog.get('fx') if row.get('id', '').startswith('fx:') else current.get(row.get('id'))
+            if row.get('status') == 'available' and (not after or after.get('status') != 'available' or after.get('asOf', '') < row['asOf']):
+                return None
+        return {'historyFailures': retained_history_failures(catalog), 'progress': catalog['refreshProgress']}
+    except (OSError, ValueError, KeyError, TypeError):
+        return None
 
 
 def prepare_daily_funds(token):
@@ -75,6 +98,12 @@ def execute(dataset, command, timeout, offline=False, allow_partial=False):
     # These collectors validate their output and preserve failed individual rows
     # themselves. Exit 3 reports the source failures without discarding good rows.
     source_partial = allow_partial and code == 3 and dataset in ('funds', 'stocks')
+    checkpoint = (validated_portfolio_checkpoint(published_before.get(DATA / 'portfolio/catalog.js'))
+                  if allow_partial and code != 0 and dataset == 'portfolio' else None)
+    if checkpoint:
+        source_partial = True
+        write_status(dataset, 'partial', mode='online', **checkpoint,
+                     message='标的抓取未全部完成；已验证的逐标的进度已保存，后续单独同步收益。')
     error = next((line.strip() for line in reversed(log.splitlines()) if line.strip()), '')[:240] if code else None
     if source_partial:
         status = 'partial'
@@ -131,7 +160,7 @@ def execute(dataset, command, timeout, offline=False, allow_partial=False):
     return {'dataset': dataset, 'status': status, 'exitCode': code, 'seconds': duration,
             'log': '.tmp-snap/refresh-' + dataset + '.log',
             'publishedRollback': bool(restored), 'retainedPrevious': bool(retained),
-            'sourcePartial': source_partial}
+            'sourcePartial': source_partial, 'checkpointValidated': bool(checkpoint)}
 
 
 def main():
@@ -161,7 +190,8 @@ def main():
         os.write(descriptor, json.dumps({'pid': os.getpid(), 'startedAt': now_iso()}).encode())
         os.close(descriptor)
         run = {'schemaVersion': 1, 'startedAt': now_iso(), 'mode': 'offline' if args.offline else 'online',
-               'dailyMode': args.daily, 'steps': []}
+               'dailyMode': args.daily, 'scope': 'all' if set(selected) == set(DATASETS) else 'targeted',
+               'datasets': selected, 'steps': []}
         available = commands(args.offline)
         previous_token = os.environ.get('FUND_DATA_REFRESH_TOKEN')
         if args.daily and not args.offline:
@@ -200,6 +230,10 @@ def main():
                     from scripts.build_portfolio_data import prune
                     prune()  # Strategy readers have finished using the previous catalog.
                 if 'portfolio' in names:
+                    if results['portfolio'].get('checkpointValidated'):
+                        run['portfolioSync'] = execute('portfolio_sync',
+                            [sys.executable, str(ROOT / 'scripts/build_portfolio_data.py'), '--sync-funds'],
+                            args.portfolio_timeout or args.timeout, args.offline, allow_partial=True)
                     run['benchmarkSync'] = execute('benchmark_sync',
                         [sys.executable, str(ROOT / 'scripts/build_portfolio_data.py'), '--sync-benchmarks'],
                         15, args.offline, allow_partial=True)

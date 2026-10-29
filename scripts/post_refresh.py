@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Update independent derived data concurrently, retaining failed sources."""
+import argparse
 import json
 import sys
 from concurrent.futures import ThreadPoolExecutor
@@ -33,15 +34,20 @@ def run_task(name, timeout=60):
     return step
 
 
-def main():
-    report = {'startedAt': now_iso(), 'steps': []}
-    report['steps'].append(run_task('fund_actions'))
+def main(selected=None):
+    selected = list(TASKS) if selected is None else selected
+    if not selected or set(selected) - set(TASKS):
+        raise ValueError('Unknown or empty post-refresh dataset list')
+    report = {'startedAt': now_iso(), 'datasets': selected, 'steps': []}
+    if 'fund_actions' in selected:
+        report['steps'].append(run_task('fund_actions'))
     # Event chapters consume the new index catalog; do not race its atomic
     # catalog replacement and old-file cleanup. Unrelated sources stay parallel.
-    names = [name for name in TASKS if name not in ('fund_actions', 'financial_events')]
-    with ThreadPoolExecutor(max_workers=len(names)) as pool:
+    names = [name for name in selected if name not in ('fund_actions', 'financial_events')]
+    with ThreadPoolExecutor(max_workers=max(1, len(names))) as pool:
         report['steps'].extend(pool.map(run_task, names))
-    report['steps'].append(run_task('financial_events'))
+    if 'financial_events' in selected:
+        report['steps'].append(run_task('financial_events'))
     report['steps'].append(refresh.execute('quality', [sys.executable, str(ROOT / 'data_quality.py'), '--strict'],
                                            30, allow_partial=True))
     report['completedAt'] = now_iso()
@@ -51,4 +57,7 @@ def main():
 
 
 if __name__ == '__main__':
-    raise SystemExit(main())
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--datasets', help='Only refresh these comma-separated derived datasets')
+    args = parser.parse_args()
+    raise SystemExit(main(args.datasets.split(',') if args.datasets else None))

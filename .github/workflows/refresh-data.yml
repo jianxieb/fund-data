@@ -15,6 +15,10 @@ on:
         description: Commit validated data and publish the site
         type: boolean
         default: true
+      histories_only:
+        description: Repair asset histories and dependent fund returns only
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -67,9 +71,19 @@ jobs:
         run: python3 -m compileall -q refresh.py scripts update.py stock_screen.py overseas_stocks.py
       - name: Refresh scheduled datasets with isolated failures
         id: refresh
-        run: python3 refresh.py --daily --timeout 90 --funds-timeout 90 --portfolio-timeout 90
+        run: |
+          if [ "${{ inputs.histories_only }}" = "true" ]; then
+            python3 refresh.py --daily --datasets research_funds,portfolio,quality --timeout 90 --portfolio-timeout 90
+          else
+            python3 refresh.py --daily --timeout 90 --funds-timeout 90 --portfolio-timeout 90
+          fi
       - name: Update independent derived data and reference sources
-        run: python3 scripts/post_refresh.py
+        run: |
+          if [ "${{ inputs.histories_only }}" = "true" ]; then
+            python3 scripts/post_refresh.py --datasets crossborder
+          else
+            python3 scripts/post_refresh.py
+          fi
       - name: Validate generated data and browser assets
         run: python3 -c "from scripts.publish_refresh import ROOT, validate_outputs; validate_outputs(ROOT)"
       - name: Save source caches for later runs

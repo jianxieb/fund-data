@@ -6,7 +6,7 @@ import os
 import re
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from functools import lru_cache
 from pathlib import Path
 
@@ -14,6 +14,30 @@ from data_status import ROOT, DATA, atomic_text, write_status
 
 ENDPOINT = 'https://fundmobapi.eastmoney.com/FundMNewApi/FundMNFInfo'
 CACHE = ROOT / '.tmp-snap' / 'fund-latest.json'
+
+
+def merge_history(previous, rows, observed_at, sources):
+    """Keep dated daily evidence across runs, including failed history builds."""
+    history = {}
+    for code in set(previous.get('history', {})) | set(previous.get('rows', {})) | set(rows):
+        saved = {}
+        for row in [*previous.get('history', {}).get(code, []), previous.get('rows', {}).get(code), rows.get(code)]:
+            if not row:
+                continue
+            try:
+                clean = observation({'FCODE': row.get('FCODE'), 'PDATE': row.get('FSRQ'),
+                                     'NAV': row.get('DWJZ'), 'NAVCHGRT': row.get('JZZZL')}, {code})
+            except (KeyError, TypeError, ValueError):
+                continue
+            clean.update({k: row[k] for k in ('sourceObservedAt', 'sourceSha256') if row.get(k)})
+            if row is rows.get(code):
+                clean['sourceObservedAt'] = observed_at
+                clean['sourceSha256'] = next((source['sha256'] for source in sources
+                    if code in source['url'].split('Fcodes=')[-1].split(',')), None)
+            saved[clean['FSRQ']] = clean
+        if saved:
+            history[code] = [saved[day] for day in sorted(saved)[-10:]]
+    return history
 
 
 def observation(row, expected, today=None):
@@ -63,6 +87,10 @@ def fetch(codes):
 
 
 def prepare(codes, token):
+    try:
+        previous = json.loads((DATA / 'fund-latest-observations.json').read_text())
+    except (OSError, ValueError):
+        previous = {}
     codes = sorted(set(codes))
     chunks = [codes[i:i + 100] for i in range(0, len(codes), 100)]
     def requested(chunk):
@@ -78,6 +106,9 @@ def prepare(codes, token):
                 sources.append(source)
     audit = {'observedAt': datetime.now(timezone.utc).isoformat(), 'endpoint': ENDPOINT,
              'rows': rows, 'failures': failures, 'sources': sources}
+    audit['history'] = merge_history(previous, rows, audit['observedAt'], sources)
+    if previous.get('historyBackfill'):
+        audit['historyBackfill'] = previous['historyBackfill']
     atomic_text(CACHE, json.dumps({**audit, 'token': token}, ensure_ascii=False))
     atomic_text(DATA / 'fund-latest-observations.json', json.dumps(audit, ensure_ascii=False, separators=(',', ':')) + '\n')
     write_status('fund_batch', 'success' if not failures else 'partial' if rows else 'failed',
@@ -97,8 +128,43 @@ def _load(token):
         return {}
 
 
-def latest(code):
-    return _load(os.environ.get('FUND_DATA_REFRESH_TOKEN')).get(code)
+@lru_cache(maxsize=1)
+def _history(token):
+    if not token:
+        return {}
+    try:
+        payload = json.loads(CACHE.read_text())
+        return payload.get('history', {}) if payload.get('token') == token else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def recent(code):
+    return _history(os.environ.get('FUND_DATA_REFRESH_TOKEN')).get(code, [])
+
+
+def latest(code, through=None):
+    current = _load(os.environ.get('FUND_DATA_REFRESH_TOKEN')).get(code)
+    if not current or not through or current['FSRQ'] <= through:
+        return current
+    return max((row for row in recent(code) if row['FSRQ'] <= through),
+               key=lambda row: row['FSRQ'], default=None)
+
+
+def verified_weekday_tail(code, end, target, quote, previous):
+    """Bridge consecutive weekdays only when every official observation exists."""
+    saved = {row['FSRQ']: row for row in recent(code) if row.get('FCODE') == code}
+    start, stop = date.fromisoformat(end), date.fromisoformat(target)
+    days = [(start + timedelta(days=i)) for i in range(1, (stop - start).days + 1)]
+    if not days or len(days) > 7 or any(day.weekday() >= 5 or day.isoformat() not in saved for day in days):
+        return None
+    initial = saved.get(end)
+    nav = previous.get('navObservation') or {}
+    if not initial or nav.get('navdate') != end or abs(float(nav.get('nav') or 0) - initial['DWJZ']) > 1e-8:
+        return None
+    if not matches_latest(saved[target], quote):
+        return None
+    return [initial, *(saved[day.isoformat()] for day in days)]
 
 
 def cached_rows(code):
