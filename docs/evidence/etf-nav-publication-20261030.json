@@ -1,0 +1,1184 @@
+{
+  "checkedAt": "2026-10-30T15:34:41+00:00",
+  "baselineCommit": "09773ef4",
+  "dailyRun": {
+    "id": 40988830077,
+    "createdAt": "2026-10-30T01:57:10Z",
+    "completedAt": "2026-10-30T02:02:04Z",
+    "observedAt": "2026-10-30T01:57:38.393169+00:00",
+    "fund159612": {
+      "FCODE": "159612",
+      "FSRQ": "2026-10-28",
+      "DWJZ": 1.9296,
+      "JZZZL": 0.27,
+      "NEWPRICE": "2.051",
+      "CHANGERATIO": "-1.3"
+    }
+  },
+  "targetedBatch": {
+    "codes": [
+      "159100",
+      "159329",
+      "159502",
+      "159518",
+      "159529",
+      "159561",
+      "159605",
+      "159607",
+      "159687",
+      "159822",
+      "513030",
+      "513050",
+      "513080",
+      "513220",
+      "513350",
+      "513360",
+      "513400",
+      "513730",
+      "520580",
+      "520830",
+      "520870",
+      "513500",
+      "159655",
+      "159612",
+      "513650",
+      "513100",
+      "159941",
+      "513300",
+      "513390",
+      "513110",
+      "159660",
+      "159501",
+      "159659",
+      "159513",
+      "159696",
+      "159632",
+      "513870",
+      "159509",
+      "513290",
+      "513850",
+      "159577"
+    ],
+    "observedAt": "2026-10-30T15:32:30+00:00",
+    "rows": {
+      "159100": {
+        "FCODE": "159100",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 1.0027,
+        "JZZZL": -2.06,
+        "NEWPRICE": "1.007",
+        "CHANGERATIO": "-1.95"
+      },
+      "159329": {
+        "FCODE": "159329",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 0.8222,
+        "JZZZL": -1.17,
+        "NEWPRICE": "0.813",
+        "CHANGERATIO": "-1.33"
+      },
+      "159502": {
+        "FCODE": "159502",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 1.563,
+        "JZZZL": 0.2,
+        "NEWPRICE": "1.62",
+        "CHANGERATIO": "-0.31"
+      },
+      "159518": {
+        "FCODE": "159518",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 1.3375,
+        "JZZZL": -0.46,
+        "NEWPRICE": "1.466",
+        "CHANGERATIO": "1.1"
+      },
+      "159529": {
+        "FCODE": "159529",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 1.2967,
+        "JZZZL": 0.98,
+        "NEWPRICE": "1.363",
+        "CHANGERATIO": "-1.59"
+      },
+      "159561": {
+        "FCODE": "159561",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 1.2959,
+        "JZZZL": 1.39,
+        "NEWPRICE": "1.301",
+        "CHANGERATIO": "1.72"
+      },
+      "159605": {
+        "FCODE": "159605",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 0.6936,
+        "JZZZL": -1.51,
+        "NEWPRICE": "0.702",
+        "CHANGERATIO": "1.45"
+      },
+      "159607": {
+        "FCODE": "159607",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 0.6919,
+        "JZZZL": -1.54,
+        "NEWPRICE": "0.699",
+        "CHANGERATIO": "1.6"
+      },
+      "159687": {
+        "FCODE": "159687",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 1.7583,
+        "JZZZL": -0.42,
+        "NEWPRICE": "1.705",
+        "CHANGERATIO": "-1.96"
+      },
+      "159822": {
+        "FCODE": "159822",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 0.5239,
+        "JZZZL": -1.04,
+        "NEWPRICE": "0.527",
+        "CHANGERATIO": "0.57"
+      },
+      "513030": {
+        "FCODE": "513030",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 1.7698,
+        "JZZZL": 1.4,
+        "NEWPRICE": "1.789",
+        "CHANGERATIO": "1.25"
+      },
+      "513050": {
+        "FCODE": "513050",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 0.926,
+        "JZZZL": -1.96,
+        "NEWPRICE": "0.932",
+        "CHANGERATIO": "1.3"
+      },
+      "513080": {
+        "FCODE": "513080",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 1.5966,
+        "JZZZL": 1.14,
+        "NEWPRICE": "1.619",
+        "CHANGERATIO": "1.25"
+      },
+      "513220": {
+        "FCODE": "513220",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 0.8241,
+        "JZZZL": -1.38,
+        "NEWPRICE": "0.827",
+        "CHANGERATIO": "0.85"
+      },
+      "513350": {
+        "FCODE": "513350",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 1.4033,
+        "JZZZL": -0.45,
+        "NEWPRICE": "1.532",
+        "CHANGERATIO": "1.19"
+      },
+      "513360": {
+        "FCODE": "513360",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 0.4072,
+        "JZZZL": -4.55,
+        "NEWPRICE": "0.404",
+        "CHANGERATIO": "-1.7"
+      },
+      "513400": {
+        "FCODE": "513400",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 1.2787,
+        "JZZZL": -0.28,
+        "NEWPRICE": "1.308",
+        "CHANGERATIO": "-1.28"
+      },
+      "513730": {
+        "FCODE": "513730",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 1.0145,
+        "JZZZL": -1.2,
+        "NEWPRICE": "0.994",
+        "CHANGERATIO": "-1.09"
+      },
+      "520580": {
+        "FCODE": "520580",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 0.8826,
+        "JZZZL": -0.19,
+        "NEWPRICE": "0.874",
+        "CHANGERATIO": "-0.34"
+      },
+      "520830": {
+        "FCODE": "520830",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 0.8117,
+        "JZZZL": -1.16,
+        "NEWPRICE": "0.806",
+        "CHANGERATIO": "-1.47"
+      },
+      "520870": {
+        "FCODE": "520870",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 0.9929,
+        "JZZZL": -1.75,
+        "NEWPRICE": "1.003",
+        "CHANGERATIO": "-2.62"
+      },
+      "513500": {
+        "FCODE": "513500",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 2.451,
+        "JZZZL": -0.35,
+        "NEWPRICE": "2.657",
+        "CHANGERATIO": "-1.15"
+      },
+      "159655": {
+        "FCODE": "159655",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 1.872,
+        "JZZZL": -0.38,
+        "NEWPRICE": "1.984",
+        "CHANGERATIO": "-1.39"
+      },
+      "159612": {
+        "FCODE": "159612",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 1.9228,
+        "JZZZL": -0.35,
+        "NEWPRICE": "2.047",
+        "CHANGERATIO": "-1.49"
+      },
+      "513650": {
+        "FCODE": "513650",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 1.8675,
+        "JZZZL": -0.34,
+        "NEWPRICE": "1.982",
+        "CHANGERATIO": "-1.44"
+      },
+      "513100": {
+        "FCODE": "513100",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 1.9663,
+        "JZZZL": -1.4,
+        "NEWPRICE": "2.239",
+        "CHANGERATIO": "-2.23"
+      },
+      "159941": {
+        "FCODE": "159941",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 1.4706,
+        "JZZZL": -1.41,
+        "NEWPRICE": "1.649",
+        "CHANGERATIO": "-2.43"
+      },
+      "513300": {
+        "FCODE": "513300",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 2.4365,
+        "JZZZL": -1.46,
+        "NEWPRICE": "2.674",
+        "CHANGERATIO": "-2.59"
+      },
+      "513390": {
+        "FCODE": "513390",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 2.2066,
+        "JZZZL": -1.41,
+        "NEWPRICE": "2.42",
+        "CHANGERATIO": "-2.46"
+      },
+      "513110": {
+        "FCODE": "513110",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 2.2575,
+        "JZZZL": -1.4,
+        "NEWPRICE": "2.455",
+        "CHANGERATIO": "-2.89"
+      },
+      "159660": {
+        "FCODE": "159660",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 2.1488,
+        "JZZZL": -1.4,
+        "NEWPRICE": "2.358",
+        "CHANGERATIO": "-2.44"
+      },
+      "159501": {
+        "FCODE": "159501",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 1.8471,
+        "JZZZL": -1.4,
+        "NEWPRICE": "2.158",
+        "CHANGERATIO": "-1.24"
+      },
+      "159659": {
+        "FCODE": "159659",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 2.1254,
+        "JZZZL": -1.4,
+        "NEWPRICE": "2.356",
+        "CHANGERATIO": "-2.16"
+      },
+      "159513": {
+        "FCODE": "159513",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 1.6378,
+        "JZZZL": -1.41,
+        "NEWPRICE": "1.781",
+        "CHANGERATIO": "-2.62"
+      },
+      "159696": {
+        "FCODE": "159696",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 1.8313,
+        "JZZZL": -1.4,
+        "NEWPRICE": "2.072",
+        "CHANGERATIO": "-2.17"
+      },
+      "159632": {
+        "FCODE": "159632",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 2.2341,
+        "JZZZL": -1.41,
+        "NEWPRICE": "2.434",
+        "CHANGERATIO": "-2.72"
+      },
+      "513870": {
+        "FCODE": "513870",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 1.873,
+        "JZZZL": -1.4,
+        "NEWPRICE": "2.067",
+        "CHANGERATIO": "-2.55"
+      },
+      "159509": {
+        "FCODE": "159509",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 2.2283,
+        "JZZZL": -2.18,
+        "NEWPRICE": "3.005",
+        "CHANGERATIO": "-3.31"
+      },
+      "513290": {
+        "FCODE": "513290",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 1.757,
+        "JZZZL": 0.83,
+        "NEWPRICE": "1.881",
+        "CHANGERATIO": "0.32"
+      },
+      "513850": {
+        "FCODE": "513850",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 1.739,
+        "JZZZL": -0.92,
+        "NEWPRICE": "1.857",
+        "CHANGERATIO": "-2.47"
+      },
+      "159577": {
+        "FCODE": "159577",
+        "FSRQ": "2026-10-29",
+        "DWJZ": 1.562,
+        "JZZZL": -0.97,
+        "NEWPRICE": "1.662",
+        "CHANGERATIO": "-2.52"
+      }
+    },
+    "failures": {},
+    "sources": [
+      {
+        "url": "https://fundmobapi.eastmoney.com/FundMNewApi/FundMNFInfo?pageIndex=1&pageSize=100&plat=Android&appType=ttjj&product=EFund&Version=1&deviceid=1&Fcodes=159100,159329,159502,159518,159529,159561,159605,159607,159687,159822,513030,513050,513080,513220,513350,513360,513400,513730,520580,520830,520870,513500,159655,159612,513650,513100,159941,513300,513390,513110,159660,159501,159659,159513,159696,159632,513870,159509,513290,513850,159577",
+        "sha256": "924ac7e6adaece8e463d55f28445037e4869df25153857a14fec06f4a95fc4a2",
+        "records": 41
+      }
+    ],
+    "seconds": 0.136
+  },
+  "updates": [
+    {
+      "code": "159100",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 1.0027,
+        "navdate": "2026-10-29",
+        "dz": -2.06
+      },
+      "historyUrl": "data/portfolio/fund/159100-f44b333b183dd2bc.json",
+      "sha256": "f44b333b183dd2bceb8021e692f65dfc47997d1439b2e95ac3b8eab8686b387d"
+    },
+    {
+      "code": "159329",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 0.8222,
+        "navdate": "2026-10-29",
+        "dz": -1.17
+      },
+      "historyUrl": "data/portfolio/fund/159329-3835a563a3a2a57a.json",
+      "sha256": "3835a563a3a2a57a6da0bcfcead62460b6ffb1ebb869a99ae2f389cba2df99d9"
+    },
+    {
+      "code": "159501",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 1.8471,
+        "navdate": "2026-10-29",
+        "dz": -1.4
+      },
+      "historyUrl": "data/portfolio/fund/159501-fd7c103cb01dc5b5.json",
+      "sha256": "fd7c103cb01dc5b514d85fa1c6f74b6190b89058a84ff869ffa21f373e69f9b7"
+    },
+    {
+      "code": "159502",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 1.563,
+        "navdate": "2026-10-29",
+        "dz": 0.2
+      },
+      "historyUrl": "data/portfolio/fund/159502-cddc129c775936b5.json",
+      "sha256": "cddc129c775936b590b1c4a41e357d7a5df738c3062feed882d2a41a62339e87"
+    },
+    {
+      "code": "159509",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 2.2283,
+        "navdate": "2026-10-29",
+        "dz": -2.18
+      },
+      "historyUrl": "data/portfolio/fund/159509-4969353d724c4a4d.json",
+      "sha256": "4969353d724c4a4df591902c0aa605aed6df862ddd5038d6ad45283379a4f60b"
+    },
+    {
+      "code": "159513",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 1.6378,
+        "navdate": "2026-10-29",
+        "dz": -1.41
+      },
+      "historyUrl": "data/portfolio/fund/159513-3e61a729a276edd6.json",
+      "sha256": "3e61a729a276edd6dcc847f3329c9789549c3530edb3b090d142ec86d4369763"
+    },
+    {
+      "code": "159518",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 1.3375,
+        "navdate": "2026-10-29",
+        "dz": -0.46
+      },
+      "historyUrl": "data/portfolio/fund/159518-c55b3bd384d19ab8.json",
+      "sha256": "c55b3bd384d19ab8f5da6c4501a233515ad6f28765f6bbdad0fae7045b1f0ed0"
+    },
+    {
+      "code": "159529",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 1.2967,
+        "navdate": "2026-10-29",
+        "dz": 0.98
+      },
+      "historyUrl": "data/portfolio/fund/159529-852901fbb2814653.json",
+      "sha256": "852901fbb28146532f5b1ee1a632abcc6525092bee79a234bfb2d28820116293"
+    },
+    {
+      "code": "159561",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 1.2959,
+        "navdate": "2026-10-29",
+        "dz": 1.39
+      },
+      "historyUrl": "data/portfolio/fund/159561-7c45043d96e8f04d.json",
+      "sha256": "7c45043d96e8f04d5b0fc77d35fa8fd664e790d7eaa48ced16873ca086869f83"
+    },
+    {
+      "code": "159577",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 1.562,
+        "navdate": "2026-10-29",
+        "dz": -0.97
+      },
+      "historyUrl": "data/portfolio/fund/159577-af42d60aed72eff8.json",
+      "sha256": "af42d60aed72eff80c1c81069341074a66cd9c48613162393ecc9c96a24fed6f"
+    },
+    {
+      "code": "159605",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 0.6936,
+        "navdate": "2026-10-29",
+        "dz": -1.51
+      },
+      "historyUrl": "data/portfolio/fund/159605-5d02133c4b5b6d13.json",
+      "sha256": "5d02133c4b5b6d135803210be4fc6170b741186bf994eea5e4a71c711022b888"
+    },
+    {
+      "code": "159607",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 0.6919,
+        "navdate": "2026-10-29",
+        "dz": -1.54
+      },
+      "historyUrl": "data/portfolio/fund/159607-d1a13626d935cbb2.json",
+      "sha256": "d1a13626d935cbb22935b2b007701ca951affe28e5897d52f331df19349d6dd1"
+    },
+    {
+      "code": "159612",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 1.9228,
+        "navdate": "2026-10-29",
+        "dz": -0.35
+      },
+      "historyUrl": "data/portfolio/fund/159612-26f47510a8047115.json",
+      "sha256": "26f47510a8047115b9b11b96696cb29693c0d49aa202f192515a79c23e3950fa"
+    },
+    {
+      "code": "159632",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 2.2341,
+        "navdate": "2026-10-29",
+        "dz": -1.41
+      },
+      "historyUrl": "data/portfolio/fund/159632-aae6a6dcb8cb92eb.json",
+      "sha256": "aae6a6dcb8cb92ebef23132804cccd079ac4e0a993359db849ab1e0123cf5c70"
+    },
+    {
+      "code": "159655",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 1.872,
+        "navdate": "2026-10-29",
+        "dz": -0.38
+      },
+      "historyUrl": "data/portfolio/fund/159655-a55ef6f4c814b42d.json",
+      "sha256": "a55ef6f4c814b42d6a305a3a521f26791ee41d9f950930220e9c18307373513c"
+    },
+    {
+      "code": "159659",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 2.1254,
+        "navdate": "2026-10-29",
+        "dz": -1.4
+      },
+      "historyUrl": "data/portfolio/fund/159659-b6e99fcce12d4f80.json",
+      "sha256": "b6e99fcce12d4f80a4bd541619d17c9d7ddd3e818222a027f43695dc001b550f"
+    },
+    {
+      "code": "159660",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 2.1488,
+        "navdate": "2026-10-29",
+        "dz": -1.4
+      },
+      "historyUrl": "data/portfolio/fund/159660-73ec6ae31ce77803.json",
+      "sha256": "73ec6ae31ce778031f86df82a761abd6f5352fcb78133c2cd84f81d4b43ef631"
+    },
+    {
+      "code": "159687",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 1.7583,
+        "navdate": "2026-10-29",
+        "dz": -0.42
+      },
+      "historyUrl": "data/portfolio/fund/159687-598d2f935195eba0.json",
+      "sha256": "598d2f935195eba0db02ca3a00425dfb1b39edda90c712a519339880b380a4bc"
+    },
+    {
+      "code": "159696",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 1.8313,
+        "navdate": "2026-10-29",
+        "dz": -1.4
+      },
+      "historyUrl": "data/portfolio/fund/159696-86344eec1ac23321.json",
+      "sha256": "86344eec1ac23321145a7f8a6127350ffcdd2a5349d0815d93dc1030232f4a62"
+    },
+    {
+      "code": "159822",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 0.5239,
+        "navdate": "2026-10-29",
+        "dz": -1.04
+      },
+      "historyUrl": "data/portfolio/fund/159822-c36f81e2f38adabe.json",
+      "sha256": "c36f81e2f38adabed4a83175e4b8df8e6df7cb9269b4a786b5b5711d5d6342e8"
+    },
+    {
+      "code": "159941",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 1.4706,
+        "navdate": "2026-10-29",
+        "dz": -1.41
+      },
+      "historyUrl": "data/portfolio/fund/159941-e4515f7edb1074c8.json",
+      "sha256": "e4515f7edb1074c8ec6bfd354b019f2cd88a8ce046852a5cd1f0438d585e53e7"
+    },
+    {
+      "code": "513030",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 1.7698,
+        "navdate": "2026-10-29",
+        "dz": 1.4
+      },
+      "historyUrl": "data/portfolio/fund/513030-7ff07938acd74acf.json",
+      "sha256": "7ff07938acd74acf6942bf16af765af23e79abe7cb80b1b18f2409b135b92344"
+    },
+    {
+      "code": "513050",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 0.926,
+        "navdate": "2026-10-29",
+        "dz": -1.96
+      },
+      "historyUrl": "data/portfolio/fund/513050-02205329af96f6db.json",
+      "sha256": "02205329af96f6db228de3ce01d5c25c9cebbb782a238431016c43955d9abff9"
+    },
+    {
+      "code": "513080",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 1.5966,
+        "navdate": "2026-10-29",
+        "dz": 1.14
+      },
+      "historyUrl": "data/portfolio/fund/513080-936407b20a68b1a7.json",
+      "sha256": "936407b20a68b1a75f1390430ed11b2e76f9b519092f0d1731271f16d94d944d"
+    },
+    {
+      "code": "513100",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 1.9663,
+        "navdate": "2026-10-29",
+        "dz": -1.4
+      },
+      "historyUrl": "data/portfolio/fund/513100-794adbec8b9e808c.json",
+      "sha256": "794adbec8b9e808c7e21f394000711bbfd9a328c74381fcf9ca8f9f0d829c251"
+    },
+    {
+      "code": "513110",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 2.2575,
+        "navdate": "2026-10-29",
+        "dz": -1.4
+      },
+      "historyUrl": "data/portfolio/fund/513110-7ff10848646bbd82.json",
+      "sha256": "7ff10848646bbd82570e7c7707b936cad57832da5ed1d91dc0ae1e0531c8ea18"
+    },
+    {
+      "code": "513220",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 0.8241,
+        "navdate": "2026-10-29",
+        "dz": -1.38
+      },
+      "historyUrl": "data/portfolio/fund/513220-47eb1ed881e0182d.json",
+      "sha256": "47eb1ed881e0182d40d00e04b10171c381deeb309c30dad5af6413b97a05de45"
+    },
+    {
+      "code": "513290",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 1.757,
+        "navdate": "2026-10-29",
+        "dz": 0.83
+      },
+      "historyUrl": "data/portfolio/fund/513290-38d1e5f3237d6a64.json",
+      "sha256": "38d1e5f3237d6a64f2a58b29168c69b0560a6d532a08dcd99bb7296de1c2bf6c"
+    },
+    {
+      "code": "513300",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 2.4365,
+        "navdate": "2026-10-29",
+        "dz": -1.46
+      },
+      "historyUrl": "data/portfolio/fund/513300-062bd4723a638849.json",
+      "sha256": "062bd4723a638849eacb8fd56c9653ef3080a3eb1b2784e940be452f6b09b26f"
+    },
+    {
+      "code": "513350",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 1.4033,
+        "navdate": "2026-10-29",
+        "dz": -0.45
+      },
+      "historyUrl": "data/portfolio/fund/513350-7a8d8c24f6cc64cd.json",
+      "sha256": "7a8d8c24f6cc64cd0f13d4634c7550dcf426ab6eaf32e5c74a101ab4e83ecd4a"
+    },
+    {
+      "code": "513360",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 0.4072,
+        "navdate": "2026-10-29",
+        "dz": -4.55
+      },
+      "historyUrl": "data/portfolio/fund/513360-a8308de5e2abb7a3.json",
+      "sha256": "a8308de5e2abb7a3e7e0a6829718d5d4a355f05c375096c80ac7226b7924763d"
+    },
+    {
+      "code": "513390",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 2.2066,
+        "navdate": "2026-10-29",
+        "dz": -1.41
+      },
+      "historyUrl": "data/portfolio/fund/513390-88821d6aa8e02b1b.json",
+      "sha256": "88821d6aa8e02b1b86f255a8edf7a12a0f16bc8f23ae55cc4ad5304d9bd4fa9a"
+    },
+    {
+      "code": "513400",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 1.2787,
+        "navdate": "2026-10-29",
+        "dz": -0.28
+      },
+      "historyUrl": "data/portfolio/fund/513400-71093fe54481d0ba.json",
+      "sha256": "71093fe54481d0babc03078b41c469e207d14e7593579ad1f7aef37020132f74"
+    },
+    {
+      "code": "513500",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 2.451,
+        "navdate": "2026-10-29",
+        "dz": -0.35
+      },
+      "historyUrl": "data/portfolio/fund/513500-2b97105bfa225687.json",
+      "sha256": "2b97105bfa225687615764c83ac7ca5bb00f2222afe4809ac54edfda30925aa7"
+    },
+    {
+      "code": "513650",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 1.8675,
+        "navdate": "2026-10-29",
+        "dz": -0.34
+      },
+      "historyUrl": "data/portfolio/fund/513650-77609d4c65db06ec.json",
+      "sha256": "77609d4c65db06eca4f9ad4d16b8b83f9c7ffb56352f822edd88ba237d1dc206"
+    },
+    {
+      "code": "513730",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 1.0145,
+        "navdate": "2026-10-29",
+        "dz": -1.2
+      },
+      "historyUrl": "data/portfolio/fund/513730-149cac6073fbaa08.json",
+      "sha256": "149cac6073fbaa08d29ef2fd98ee46479bb251cec0c25f43398db4df13ad6421"
+    },
+    {
+      "code": "513850",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 1.739,
+        "navdate": "2026-10-29",
+        "dz": -0.92
+      },
+      "historyUrl": "data/portfolio/fund/513850-12048df575f02eac.json",
+      "sha256": "12048df575f02eac0b5f7316db04466f8548053d08cb3830ada403645ac03d82"
+    },
+    {
+      "code": "513870",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 1.873,
+        "navdate": "2026-10-29",
+        "dz": -1.4
+      },
+      "historyUrl": "data/portfolio/fund/513870-f0b66c64ac751074.json",
+      "sha256": "f0b66c64ac75107488492d7e64a8ea0a7b8595cd7433ba64b5d57216bf2e68d4"
+    },
+    {
+      "code": "520580",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 0.8826,
+        "navdate": "2026-10-29",
+        "dz": -0.19
+      },
+      "historyUrl": "data/portfolio/fund/520580-5be472059a636157.json",
+      "sha256": "5be472059a6361570fda0680208341e12ad66d78d0567bb3f90238857ef1d365"
+    },
+    {
+      "code": "520830",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 0.8117,
+        "navdate": "2026-10-29",
+        "dz": -1.16
+      },
+      "historyUrl": "data/portfolio/fund/520830-f9f17db7a55dfa74.json",
+      "sha256": "f9f17db7a55dfa74fedc62aa7e7add85ee4e7d7aaf7ed4e361d3b88fefe1b474"
+    },
+    {
+      "code": "520870",
+      "before": "2026-10-28",
+      "after": "2026-10-29",
+      "nav": {
+        "nav": 0.9929,
+        "navdate": "2026-10-29",
+        "dz": -1.75
+      },
+      "historyUrl": "data/portfolio/fund/520870-ba8e179990b09245.json",
+      "sha256": "ba8e179990b092451e56c74c7438c0d317b722c9046c8917ccd86bb5ffbbe253"
+    }
+  ],
+  "metrics": {
+    "risk": {
+      "updated": 41,
+      "partialFiveYear": 32
+    },
+    "nav": {
+      "updated": 41,
+      "warnings": {}
+    },
+    "returns": {
+      "updated": 41,
+      "retained": {}
+    }
+  },
+  "failures": {},
+  "derivedUpdates": {
+    "159100": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "159329": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "159502": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "159518": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "159529": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "159561": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "159605": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "159607": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "159687": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "159822": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "513030": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "513050": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "513080": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "513220": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "513350": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "513360": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "513400": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "513730": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "520580": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "520830": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "520870": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "513500": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "159655": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "159612": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "513650": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "513100": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "159941": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "513300": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "513390": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "513110": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "159660": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "159501": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "159659": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "159513": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "159696": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "159632": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "513870": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "159509": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "513290": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "513850": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    },
+    "159577": {
+      "navAsOf": "2026-10-29",
+      "marketAsOf": "2026-10-29",
+      "errors": []
+    }
+  },
+  "marketCacheReused": [
+    "159100",
+    "159501",
+    "159502",
+    "159513",
+    "159518",
+    "159561",
+    "159577",
+    "159605",
+    "159607",
+    "159632",
+    "159655",
+    "159659",
+    "159660",
+    "159696",
+    "159822",
+    "159941",
+    "513050",
+    "513080",
+    "513110",
+    "513220",
+    "513290",
+    "513300",
+    "513350",
+    "513360",
+    "513390",
+    "513400",
+    "513500",
+    "513650",
+    "513730",
+    "513850",
+    "513870",
+    "520580",
+    "520830",
+    "520870"
+  ],
+  "marketRequested": [
+    "159329",
+    "159509",
+    "159529",
+    "159612",
+    "159687",
+    "513030",
+    "513100"
+  ],
+  "retainedOtherAssets": 1832,
+  "dateRegressions": [],
+  "seconds": 5.534,
+  "validation": {
+    "selectedHistoriesVerified": 41,
+    "otherAssetRecordsUnchanged": 1832,
+    "fxUnchanged": true,
+    "historyPrefixesUnchanged": true,
+    "newDailyReturnsMatchSource": true,
+    "historySignificantDigits": 12,
+    "maxRelativeSerializationRounding": 2.9884983376859964e-12,
+    "navReturnRiskDates": "2026-10-29",
+    "strictQuality": {
+      "errors": 0,
+      "warnings": 4,
+      "unverified": 47
+    },
+    "npmCheck": "passed",
+    "liveWebsiteChecked": false
+  }
+}

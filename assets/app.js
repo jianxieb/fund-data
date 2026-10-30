@@ -380,7 +380,7 @@
     const returns = metricDate(f, 'return'), risk = metricDate(f, 'risk'), same = returns === risk;
     const compactDate = value => value === '未独立记录' ? '—' : value;
     const summary = same ? compactDate(returns) : '收益 ' + compactDate(returns) + ' / 风险 ' + compactDate(risk);
-    return '<span title="' + esc('收益截至 ' + returns + '；风险截至 ' + risk) + '">' + esc(summary) + '</span><span class="audit-mark" title="' + (verifiedReturn(f) ? '收益已复算' : '缺完整分红复权收益复算证据') + '">' + (verifiedReturn(f) ? ' ✓' : ' 缺收益复算') + '</span>';
+    return '<span title="' + esc('净值收益截至 ' + returns + '；风险截至 ' + risk) + '">' + esc(summary) + '</span><span class="audit-mark" title="' + (verifiedReturn(f) ? '收益已复算' : '缺完整分红复权收益复算证据') + '">' + (verifiedReturn(f) ? ' ✓' : ' 缺收益复算') + '</span>';
   }
   function fundRiskPeriod(f, years = 5, detail = false) {
     const p = f['risk' + years + 'Period'];
@@ -411,7 +411,7 @@
     add('nav', '净值 / 日涨跌', f => money(f.nav, 4) + ' <span class="nav-change">' + pc(f.dz, 2) + '</span>');
     add('inception', '成立日期', f => esc(f.d || '未收录'));
     add('quote', '交易价 / 溢价', f => money(f.p, 3) + ' / ' + pct(f.prem) + (f.priceAsOf || f.quotedAt ? '<span class="sub">' + esc(f.priceAsOf || f.quotedAt) + '</span>' : ''));
-    add('dates', '收益 / 风险截至', fundDateCell);
+    add('dates', '净值收益 / 风险截至', fundDateCell);
     return cols;
   }
   function fundTable(rows) {

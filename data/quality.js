@@ -1,6 +1,6 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-10-30T02:00:22+00:00",
+  "checkedAt": "2026-10-30T15:35:57+00:00",
   "asOf": "2026-10-30",
   "status": "unverified",
   "summary": {
@@ -15,7 +15,7 @@ var DATA_QUALITY={
       "asOf": "2026-10-28",
       "dateRange": [
         "2026-10-28",
-        "2026-10-28"
+        "2026-10-29"
       ],
       "records": 46,
       "issues": [
