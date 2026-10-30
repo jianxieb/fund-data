@@ -1,36 +1,20 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-10-29T11:37:52+00:00",
-  "asOf": "2026-10-29",
+  "checkedAt": "2026-10-30T02:00:22+00:00",
+  "asOf": "2026-10-30",
   "status": "unverified",
   "summary": {
     "errors": 0,
-    "warnings": 5,
-    "unverified": 37
+    "warnings": 4,
+    "unverified": 47
   },
   "datasets": [
     {
-      "id": "source_refresh",
-      "label": "本次未更新的来源",
-      "asOf": null,
-      "dateRange": null,
-      "records": 0,
-      "issues": [
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "158042：成交价历史：成交价历史落后净值超过7日；保留历史截至2026-10-26",
-          "affected": "158042"
-        }
-      ],
-      "status": "warning"
-    },
-    {
       "id": "funds",
       "label": "海外基金",
-      "asOf": "2026-10-27",
+      "asOf": "2026-10-28",
       "dateRange": [
-        "2026-10-27",
+        "2026-10-28",
         "2026-10-28"
       ],
       "records": 46,
@@ -94,10 +78,10 @@
     {
       "id": "overseas_stocks",
       "label": "海外个股",
-      "asOf": "2026-10-28",
+      "asOf": "2026-10-29",
       "dateRange": [
-        "2026-10-28",
-        "2026-10-28"
+        "2026-10-29",
+        "2026-10-29"
       ],
       "records": 79,
       "issues": [
@@ -110,6 +94,12 @@
         {
           "code": "overseas_business_review_pending",
           "severity": "unverified",
+          "message": "GOOGL经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
+          "affected": "GOOGL"
+        },
+        {
+          "code": "overseas_business_review_pending",
+          "severity": "unverified",
           "message": "META经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
           "affected": "META"
         },
@@ -118,6 +108,36 @@
           "severity": "unverified",
           "message": "NFLX经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
           "affected": "NFLX"
+        },
+        {
+          "code": "overseas_financial_fields_missing",
+          "severity": "unverified",
+          "message": "ADP 2026-09-30财季来源缺营业收入、净利润",
+          "affected": "ADP"
+        },
+        {
+          "code": "overseas_business_review_pending",
+          "severity": "unverified",
+          "message": "ADP经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
+          "affected": "ADP"
+        },
+        {
+          "code": "overseas_financial_fields_missing",
+          "severity": "unverified",
+          "message": "V 2026-09-30财季来源缺营业收入、净利润",
+          "affected": "V"
+        },
+        {
+          "code": "overseas_business_review_pending",
+          "severity": "unverified",
+          "message": "V经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
+          "affected": "V"
+        },
+        {
+          "code": "overseas_business_review_pending",
+          "severity": "unverified",
+          "message": "MA经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
+          "affected": "MA"
         },
         {
           "code": "overseas_business_review_pending",
@@ -148,6 +168,12 @@
           "severity": "unverified",
           "message": "JPM经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
           "affected": "JPM"
+        },
+        {
+          "code": "overseas_business_review_pending",
+          "severity": "unverified",
+          "message": "LLY经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
+          "affected": "LLY"
         },
         {
           "code": "overseas_business_review_pending",
@@ -196,12 +222,6 @@
           "severity": "unverified",
           "message": "PM经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
           "affected": "PM"
-        },
-        {
-          "code": "overseas_financial_fields_missing",
-          "severity": "unverified",
-          "message": "VZ 2026-09-30财季来源缺营业收入、净利润",
-          "affected": "VZ"
         },
         {
           "code": "overseas_business_review_pending",
@@ -272,6 +292,24 @@
         {
           "code": "overseas_business_review_pending",
           "severity": "unverified",
+          "message": "KLAC经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
+          "affected": "KLAC"
+        },
+        {
+          "code": "overseas_financial_fields_missing",
+          "severity": "unverified",
+          "message": "FTNT 2026-09-30财季来源缺营业收入、净利润",
+          "affected": "FTNT"
+        },
+        {
+          "code": "overseas_business_review_pending",
+          "severity": "unverified",
+          "message": "FTNT经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
+          "affected": "FTNT"
+        },
+        {
+          "code": "overseas_business_review_pending",
+          "severity": "unverified",
           "message": "NOW经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
           "affected": "NOW"
         },
@@ -302,6 +340,12 @@
         {
           "code": "overseas_business_review_pending",
           "severity": "unverified",
+          "message": "LIN经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
+          "affected": "LIN"
+        },
+        {
+          "code": "overseas_business_review_pending",
+          "severity": "unverified",
           "message": "WM经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
           "affected": "WM"
         }
@@ -311,10 +355,10 @@
     {
       "id": "benchmarks",
       "label": "海外指数与ETF基准",
-      "asOf": "2026-10-28",
+      "asOf": "2026-10-29",
       "dateRange": [
-        "2026-10-28",
-        "2026-10-28"
+        "2026-10-29",
+        "2026-10-29"
       ],
       "records": 36,
       "issues": [
@@ -363,10 +407,10 @@
     {
       "id": "stocks",
       "label": "股票观察清单",
-      "asOf": "2026-10-29",
+      "asOf": "2026-10-30",
       "dateRange": [
-        "2026-10-29",
-        "2026-10-29"
+        "2026-10-30",
+        "2026-10-30"
       ],
       "records": 71,
       "issues": [],
@@ -375,7 +419,7 @@
     {
       "id": "strategy",
       "label": "买入策略实验",
-      "asOf": "2026-10-28",
+      "asOf": "2026-10-29",
       "dateRange": null,
       "records": 162,
       "issues": [],
@@ -388,10 +432,10 @@
     {
       "id": "domestic_funds",
       "label": "扩展基金研究池",
-      "asOf": "2026-10-28",
+      "asOf": "2026-10-29",
       "dateRange": [
         "2026-10-23",
-        "2026-10-28"
+        "2026-10-29"
       ],
       "records": 1577,
       "issues": [
@@ -3144,10 +3188,10 @@
     {
       "id": "indices",
       "label": "国内指数",
-      "asOf": "2026-10-28",
+      "asOf": "2026-10-29",
       "dateRange": [
-        "2026-10-28",
-        "2026-10-28"
+        "2026-10-29",
+        "2026-10-29"
       ],
       "records": 13,
       "issues": [
@@ -3165,10 +3209,10 @@
     {
       "id": "portfolio",
       "label": "组合每日历史",
-      "asOf": "2026-10-28",
+      "asOf": "2026-10-29",
       "dateRange": [
         "2026-10-23",
-        "2026-10-28"
+        "2026-10-29"
       ],
       "records": 1873,
       "issues": [],
