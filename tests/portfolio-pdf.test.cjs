@@ -146,7 +146,7 @@ test('historical timing review labels its date and suppresses present-day buy an
   assert.equal(timing.historical, true);
   assert.ok(account.holdings.some(h => h.actualWeight - h.targetWeight > 5));
   assert.match(html, /截至 2025-01-08 共同收盘/);
-  assert.match(html, /历史时点加仓评分/);
+  assert.match(html, /历史时点旧规则分/);
   assert.match(html, /缺可靠长期分位/);
   assert.doesNotMatch(html, /优先考虑卖出超配部分|可按原计划分批投入|缺最近行情/);
 });
@@ -162,7 +162,7 @@ test('stale quotes suppress the overweight sell recommendation while retaining d
   assert.equal(timing.status, 'stale'); assert.equal(timing.historical, false);
   assert.ok(account.cashWeight - account.cash / account.grossValue * 100 > 5);
   assert.match(html, /最新共同报价为 2026-01-08/);
-  assert.match(html, /当前评分不可用/);
+  assert.match(html, /当前没有通过验证的加仓评分/);
   assert.match(html, /模拟账户的期末风险 · 2026-01-08/);
   assert.match(html, /每笔投入预留现金，不代表账户一直保持该现金比例/);
   assert.doesNotMatch(html, /优先考虑卖出超配部分|可按原计划分批投入/);
@@ -181,7 +181,7 @@ test('timing evidence names each missing forward horizon even when current posit
   assert.match(html, /分组缺完整 3 年后续样本/);
   assert.match(html, /0 个月<small>不重叠 0 个/);
   assert.match(html, /正收益比例不是未来胜率/);
-  const diagnostic = html.match(/<section><h2>加仓评分<\/h2>[\s\S]*?<\/section>/)[0];
+  const diagnostic = html.match(/<section><h2>加仓时机检验<\/h2>[\s\S]*?<\/section>/)[0];
   assert.doesNotMatch(diagnostic, /NaN|undefined/);
 });
 
@@ -271,9 +271,11 @@ test('a page kept open revalidates the manifest and recomputes from new historie
   await f.action('export-pdf');
   assert.equal(f.reports.at(-1).result.timing.scoring.value, timing.scoring.value);
   await f.action('export-score');
-  const exported = f.downloads.find(row => row[0].includes('加仓评分'));
+  const exported = f.downloads.find(row => row[0].includes('旧规则审计'));
   assert.match(exported[1], /add-score-v1/); assert.match(exported[1], /2026-04-17/);
   assert.match(exported[1], /长期位置分\/40/); assert.match(exported[1], /上限39分/);
+  assert.match(exported[1], /已撤回/); assert.match(exported[1], /不用于加仓决策/);
+  assert.doesNotMatch(exported[1], /暂缓额外加仓|小额分批候选|优先分批候选/);
 });
 
 test('failed freshness checks retain historical results but disable current score, band and gate', async () => {
@@ -287,7 +289,7 @@ test('failed freshness checks retain historical results but disable current scor
   assert.equal(t.scoring.gate.active, false); assert.ok(t.scoring.evidence.horizons.every(h => h.current === null));
   assert.ok(t.scoring.history.length > 0); assert.match(t.scoring.missing, /未能确认最新行情.*503/);
   const html = f.ui.view(f.helpers);
-  assert.match(html, /当前评分不可用/); assert.match(html, /过往评分记录/);
+  assert.match(html, /当前没有通过验证的加仓评分/); assert.match(html, /过往规则分记录/);
   assert.equal(f.reports.at(-1).result.catalogRefresh.available, false);
 });
 
@@ -316,7 +318,7 @@ test('failure downloading a newly published history invalidates the previous cur
   await f.action('run');
   const html = f.ui.view(f.helpers);
   assert.match(html, /本次行情更新失败：两倍测试ETF：历史文件请求失败（503）/);
-  assert.match(html, /当前评分不可用/); assert.doesNotMatch(html, /<strong>\d+<\/strong><span>\/ 100/);
+  assert.match(html, /当前没有通过验证的加仓评分/); assert.doesNotMatch(html, /<strong>\d+<\/strong><span>\/ 100/);
   f.context.fetch = originalFetch;
   await f.action('run'); await f.action('export-pdf');
   assert.equal(f.reports.at(-1).result.timing.status, 'available');

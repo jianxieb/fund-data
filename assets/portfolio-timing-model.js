@@ -12,10 +12,10 @@
   const band = percentile => percentile === null ? null : percentile <= 20 ? 'low' : percentile >= 80 ? 'high' : 'middle';
   const SCORE_VERSION = 'add-score-v1';
   const scoreBands = Object.freeze([
-    { id: 'wait', label: '暂缓额外加仓', min: 0, max: 39, action: '暂缓额外加仓，等待趋势或波动条件改善' },
-    { id: 'watch', label: '观察，维持原计划', min: 40, max: 59, action: '继续观察，维持原有投入计划' },
-    { id: 'small', label: '小额分批候选', min: 60, max: 79, action: '可列为小额分批候选，结合原有仓位执行' },
-    { id: 'priority', label: '优先分批候选', min: 80, max: 100, action: '在原有投入额度内优先考虑分批加仓' }
+    { id: 'wait', label: '0–39 规则分', min: 0, max: 39, action: null },
+    { id: 'watch', label: '40–59 规则分', min: 40, max: 59, action: null },
+    { id: 'small', label: '60–79 规则分', min: 60, max: 79, action: null },
+    { id: 'priority', label: '80–100 规则分', min: 80, max: 100, action: null }
   ].map(Object.freeze));
   function scoreFromMetrics(row) {
     if (!['value', 'ma200', 'ma200Prior20', 'ma50', 'percentile', 'volatilityPercentile'].every(key => Number.isFinite(row?.[key]))) return null;
@@ -31,7 +31,7 @@
     ], gate: { active, cap: active ? 39 : null, deduction: raw - capped, reason: active ? '净值低于200日均线且200日均线下降，评分上限39分' : null } };
   }
   function emptyScoring(missing) {
-    return { version: SCORE_VERSION, value: null, raw: null, band: null, components: [], gate: { active: false, cap: null, deduction: 0, reason: null }, change20: null, history: [], evidence: { validation: 'descriptive', assessment: assessEvidence([]), horizons: [] }, missing };
+    return { version: SCORE_VERSION, usage: 'withdrawn_audit_only', withdrawalReason: '人为设置的趋势奖励与下跌限分未验证能识别更好的加仓点；旧分数仅供审计，不用于加仓决策。', value: null, raw: null, band: null, components: [], gate: { active: false, cap: null, deduction: 0, reason: null }, change20: null, history: [], evidence: { validation: 'descriptive', assessment: assessEvidence([]), horizons: [] }, missing };
   }
   function quantile(sorted, fraction) {
     if (!sorted.length) return null;

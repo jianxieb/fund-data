@@ -32,7 +32,7 @@ function mainValue(html) {
   return html.match(/class="portfolio-score-value[^>]*>[\s\S]*?<strong>([^<]*)<\/strong>/)?.[1];
 }
 
-test('latest score explains its components, date, rule version and change without claiming a probability', () => {
+test('withdrawn rule calculations remain collapsed for audit even when retrospective evidence is favorable', () => {
   const html = V.render(fixture());
   assert.equal(mainValue(html), '65');
   assert.match(html, /截至 2026-10-23 共同收盘 · add-score-v1/);
@@ -42,9 +42,12 @@ test('latest score explains its components, date, rule version and change withou
   assert.match(html, /aria-valuemax="40" aria-valuenow="25"/);
   assert.match(html, /aria-valuemax="20" aria-valuenow="10"/);
   assert.match(html, /价格在200日均线上方。/);
-  assert.match(html, /规则分，不是上涨概率/);
-  assert.match(html, /<small>条件档位<\/small>小额分批候选/);
-  assert.match(html, /可按原定计划分批观察加仓。/);
+  assert.match(html, /已撤回 · 不用于加仓决策/);
+  assert.match(html, /<details class="portfolio-score-audit"><summary>已撤回规则的历史记录/);
+  assert.match(html, /当前没有通过验证的加仓评分/);
+  assert.doesNotMatch(html.split('<details')[0], /65|\/ 100/);
+  assert.doesNotMatch(html, /小额分批候选|优先分批候选|暂缓额外加仓|可按原定计划分批观察加仓。/);
+  assert.match(html, /旧规则高分组回溯收益较高，仍未经验证/);
 });
 
 test('four exact score bands are stable at every integer boundary', () => {
@@ -64,14 +67,15 @@ test('unsupported and insufficient evidence stay visible and suppress actionable
     timing.scoring.evidence.assessment.label = '历史对照尚未支持';
     const html = V.render(timing), beforeDetails = html.split('<details')[0];
     assert.equal(mainValue(html), '65');
-    assert.match(beforeDetails, /历史对照尚未支持/);
-    assert.match(beforeDetails, /先作为观察信号；当前组合历史尚未支持机械按分数加仓。/);
+    assert.match(beforeDetails, /当前没有通过验证的加仓评分/);
+    assert.doesNotMatch(beforeDetails, /65|\/ 100/);
+    assert.match(beforeDetails, /不能据此恢复加仓指引/);
     assert.match(beforeDetails, /≥60 分后一年中位收益 <strong>12.00%/);
     assert.match(beforeDetails, /&lt;60 分后一年中位收益 <strong>9.00%/);
     assert.doesNotMatch(html, /可按原定计划分批观察加仓。/);
   }
   const timing = fixture(); delete timing.scoring.evidence.assessment;
-  assert.match(V.render(timing), /历史验证样本不足/);
+  assert.match(V.render(timing), /旧规则缺足够历史样本/);
 });
 
 test('a trend gate shows the deduction and the exact reason next to the component total', () => {
@@ -80,7 +84,7 @@ test('a trend gate shows the deduction and the exact reason next to the componen
   timing.scoring.gate = { active: true, cap: 39, deduction: 26, reason: '价格低于200日均线，且长期均线向下。' };
   const html = V.render(timing);
   assert.equal(mainValue(html), '39');
-  assert.match(html, /趋势约束已触发/);
+  assert.match(html, /旧规则限分已触发/);
   assert.match(html, /价格低于200日均线，且长期均线向下。/);
   assert.match(html, /原始 65.0 分，限制为 39 分（扣减 26.0 分）/);
 });
@@ -92,7 +96,7 @@ test('stale and insufficient states show no active score or action and retain cl
     const html = V.render(timing);
     assert.equal(mainValue(html), '—');
     assert.match(html, /缺 2026-10-23 之后的有效共同报价/);
-    assert.match(html, /过往评分记录/);
+    assert.match(html, /过往规则分记录/);
     assert.match(html, /历史记录：2026-10-23 · 65 分/);
     assert.doesNotMatch(html, /role="meter"|aria-current="true"|可按原定计划分批观察加仓。/);
   }
@@ -102,9 +106,9 @@ test('a custom historical endpoint is explicit and does not reuse current action
   const timing = fixture(); timing.historical = true; timing.end = '2020-01-03';
   timing.scoring.history = timing.scoring.history.slice(0, 2);
   const html = V.render(timing);
-  assert.match(html, /历史时点加仓评分/);
+  assert.match(html, /历史时点旧规则分/);
   assert.match(html, /截至 2020-01-03 共同收盘/);
-  assert.match(html, /这是该历史时点的评分，不能代表今天的加仓条件。/);
+  assert.match(html, /仅用于复核原有计算，分数和档位均不代表加仓机会。/);
   assert.doesNotMatch(html, /可按原定计划分批观察加仓。/);
 });
 
@@ -125,7 +129,7 @@ test('outcome detail includes every band, same eligible baseline and explicit mi
 test('full daily history has accessible slider and date-scaled marker, and leaves long gaps disconnected', () => {
   const timing = fixture(), html = V.render(timing);
   assert.match(html, /id="portfolio-score-day" data-portfolio-score-day type="range" min="0" max="2" step="1" value="2"/);
-  assert.match(html, /aria-label="查看历史加仓评分"/);
+  assert.match(html, /aria-label="查看旧规则历史"/);
   assert.match(html, /id="portfolio-score-readout" for="portfolio-score-day" aria-live="polite"/);
   assert.match(html, /data-score-first="2020-01-02" data-score-last="2026-10-23"/);
   const path = html.match(/<path d="([^"]+)" class="portfolio-score-path"/)[1];
@@ -135,8 +139,8 @@ test('full daily history has accessible slider and date-scaled marker, and leave
   assert.equal(first.index, 0); assert.equal(first.x, 44);
   assert.equal(last.index, 2); assert.equal(last.x, 982);
   assert.ok(Math.abs(last.y - 84.6) < 1e-8);
-  assert.match(first.text, /2020-01-02 · 39 分 · 暂缓额外加仓 · 已触发趋势约束/);
-  assert.match(last.text, /2026-10-23 · 65 分 · 小额分批候选/);
+  assert.match(first.text, /2020-01-02 · 39 分 · 0–39 规则分 · 旧规则触发限分 · 已撤回/);
+  assert.match(last.text, /2026-10-23 · 65 分 · 60–79 规则分 · 已撤回/);
   assert.equal(V.inspect(timing, 'invalid').index, 2);
 });
 

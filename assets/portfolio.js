@@ -302,7 +302,7 @@
     const reviewAllocation = !liquidated && (cashShortfall || overweight.length > 0);
     const fmt = value => H.pct(value, 2, false);
     const allocation = '<details class="portfolio-timing-evidence"><summary>模拟账户的期末风险 · ' + r.end + '</summary><div class="portfolio-timing-account"><div><span>账户净值相对200日均线 ' + fmt(accountDeviation) + ' · 回撤 ' + fmt(account.at(-1)?.drawdown) + '（' + (account.at(-1)?.day || '缺共同收盘') + '）</span></div><p>' + drift.map(h => H.esc(h.code) + ' ' + fmt(h.weight) + '（目标 ' + fmt(h.targetWeight) + '）').join(' · ') + ' · 现金 ' + fmt(actualCash) + '（目标 ' + fmt(r.cashWeight) + '）</p>' + (liquidated ? '<p>此模拟已期末清仓；账户为现金。</p>' : reviewAllocation ? '<p class="negative">' + (cashShortfall ? '每笔投入预留现金，不代表账户一直保持该现金比例。' : '部分持仓已超出目标权重至少5个百分点。') + '</p>' : '') + '<small>使用本次模拟的持仓、入金与税费；仓位按未减预留税的市值计算，不参与加仓评分。' + (account.length < 200 ? '账户区间不足200个共同收盘，均线留空。' : '') + '</small></div></details>';
-    return H.card('加仓评分', '目标组合 · ' + currency(r.config).name + ' · 每次模拟按行情重算', body + allocation + '<a class="source-link" href="docs/portfolio-method.md#加仓评分与长期位置" target="_blank" rel="noopener">评分方法与证据边界 ↗</a>', t.scoring?.history?.length ? btn('导出评分历史', 'export-score', 'btn portfolio-export') : '');
+    return H.card('加仓时机检验', '目标组合 · ' + currency(r.config).name + ' · 每次模拟按行情重算', body + allocation + '<a class="source-link" href="docs/portfolio-method.md#加仓时机检验与旧规则审计" target="_blank" rel="noopener">检验方法与证据边界 ↗</a>', t.scoring?.history?.length ? btn('导出旧规则审计', 'export-score', 'btn portfolio-export') : '');
   }
   function results() {
     if (!result) return '<section class="portfolio-result-placeholder"><div><span class="eyebrow">YOUR PORTFOLIO, OVER TIME</span><h2>看组合如何走过市场起伏</h2><p>配置权重和投入方式后，开始模拟。</p></div><svg viewBox="0 0 460 135" aria-hidden="true"><path d="M3 120H457M3 80H457M3 40H457" stroke="#e0e5d7"/><path d="m3 101 37-13 37 14 38-28 37 7 38-22 38 12 37-31 37 5 40-26 38 6 40-23" fill="none" stroke="#96aa83" stroke-width="2"/><path d="m3 110 37-4 37 5 38-19 37 10 38-8 38-9 37 6 37-19 40 9 38-16 40 2" fill="none" stroke="#c3b291" stroke-width="1.5" stroke-dasharray="5 5"/></svg></section>';
@@ -352,12 +352,12 @@
   function exportScore() {
     const t = result?.timing;
     if (!t?.scoring?.history?.length) return;
-    const rows = [['日期', '加仓评分', '原始分', '分档', '趋势约束', '长期位置分/40', '趋势确认分/40', '波动稳定度分/20', '200日均线偏离%', '偏离历史分位%', '63日年化波动%', '波动历史分位%', '规则版本', '计价币种', '分析截至', '当前数据状态', '配置JSON'],
+    const rows = [['日期', '已撤回规则分', '原始分', '中性分组', '旧规则限分', '长期位置分/40', '趋势确认分/40', '波动稳定度分/20', '200日均线偏离%', '偏离历史分位%', '63日年化波动%', '波动历史分位%', '规则版本', '计价币种', '分析截至', '当前数据状态', '规则状态', '使用限制', '配置JSON'],
       ...t.curve.filter(p => M.finite(p.score)).map(p => {
         const s = window.ChanghengPortfolioTimingModel.scoreFromMetrics(p);
-        return [p.day, p.score, p.scoreRaw, s.band.label, s.gate.active ? '上限39分' : '', ...s.components.map(c => c.points), p.deviation, p.percentile, p.volatility63, p.volatilityPercentile, t.scoring.version, t.currency, t.end, t.status, JSON.stringify(result.config)];
+        return [p.day, p.score, p.scoreRaw, s.band.label, s.gate.active ? '上限39分' : '', ...s.components.map(c => c.points), p.deviation, p.percentile, p.volatility63, p.volatilityPercentile, t.scoring.version, t.currency, t.end, t.status, '已撤回', '不用于加仓决策', JSON.stringify(result.config)];
       })];
-    H.download('长衡-加仓评分-' + t.end + '.csv', M.csv(rows), 'text/csv;charset=utf-8');
+    H.download('长衡-旧规则审计-' + t.end + '.csv', M.csv(rows), 'text/csv;charset=utf-8');
   }
   async function exportPdf() {
     if (running || exportingPdf || !result) return;

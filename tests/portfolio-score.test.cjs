@@ -60,6 +60,9 @@ test('MA50, MA200 slope and sample volatility match independent calculations; pe
   close(current.volatilityPercentile, (lower + equal / 2) / prior.length * 100);
   assert.equal(current.volatilityPercentileSamples, prior.length);
   assert.equal(result.scoring.version, 'add-score-v1');
+  assert.equal(result.scoring.usage, 'withdrawn_audit_only');
+  assert.match(result.scoring.withdrawalReason, /不用于加仓决策/);
+  assert.ok(T.scoreBands.every(b => b.action === null && /规则分/.test(b.label)));
   assert.equal(result.scoring.value, current.score);
   const previous = result.curve.at(-21);
   assert.deepEqual(result.scoring.change20, { value: current.score - previous.score, day: previous.day, previous: previous.score });

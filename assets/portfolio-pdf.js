@@ -82,18 +82,18 @@
       const colWidth = width / 4;
       for (let offset = 0; offset < values.length; offset += 4) {
         let height = 104;
-        const items = values.slice(offset, offset + 4).map(([label, value, note]) => {
+        const items = values.slice(offset, offset + 4).map(([label, value, note, color]) => {
           const lines = wrap(ctx, label, colWidth - 28, 14), notes = note ? wrap(ctx, note, colWidth - 38, 12) : [];
           height = Math.max(height, 84 + lines.length * 20 + notes.length * 18);
           let size = 24; ctx.font = font(size, 700);
           while (ctx.measureText(value).width > colWidth - 38 && size > 10) ctx.font = font(--size, 700);
-          return { lines, value, notes, size };
+          return { lines, value, notes, size, color };
         });
         items.forEach((item, i) => {
           const x = MARGIN + i * colWidth;
           rect(x, y, colWidth - 10, height - 10, C.pale);
           item.lines.forEach((label, j) => text(label, x + 14, y + 13 + j * 20, 14, C.muted));
-          text(item.value, x + 14, y + 22 + item.lines.length * 20, item.size, C.green, 700);
+          text(item.value, x + 14, y + 22 + item.lines.length * 20, item.size, item.color || C.green, 700);
           item.notes.forEach((note, j) => text(note, x + 14, y + 60 + item.lines.length * 20 + j * 18, 12, C.muted));
         });
         y += height;
@@ -132,8 +132,8 @@
     }
     function scoreChart(history, end) {
       const rows = (history || []).filter(row => row.day <= end && finite(row.value) && row.value >= 0 && row.value <= 100 && Number.isFinite(Date.parse(row.day)));
-      if (!rows.length) { paragraph('历史评分：缺满足长期分位条件的每日样本。', C.gold); return; }
-      text('历史加仓评分 · 0-100分', MARGIN, y, 19, C.ink, 700); y += 34;
+      if (!rows.length) { paragraph('历史规则分：缺满足长期分位条件的每日样本。', C.gold); return; }
+      text('已撤回规则的历史分数 · 0-100规则分', MARGIN, y, 19, C.ink, 700); y += 34;
       const plot = { x: MARGIN + 54, y, w: width - 68, h: 170 };
       const first = Date.parse(rows[0].day), last = Date.parse(rows.at(-1).day);
       for (const value of [0, 40, 60, 80, 100]) {
@@ -141,8 +141,8 @@
         line(plot.x, yy, plot.w); text(String(value), plot.x - 12, yy - 8, 12, C.muted, 400, 'right');
       }
       const points = rows.map(row => [plot.x + (Date.parse(row.day) - first) / Math.max(1, last - first) * plot.w, plot.y + (100 - row.value) / 100 * plot.h]);
-      if (points.length > 1) ops.push({ type: 'path', role: 'score-history', points, y: plot.y - 2, h: plot.h + 4, color: C.green, dash: false });
-      else rect(points[0][0] - 3, points[0][1] - 3, 6, 6, C.green);
+      if (points.length > 1) ops.push({ type: 'path', role: 'score-history', points, y: plot.y - 2, h: plot.h + 4, color: C.muted, dash: false });
+      else rect(points[0][0] - 3, points[0][1] - 3, 6, 6, C.muted);
       text(rows[0].day, plot.x, plot.y + plot.h + 12, 12, C.muted);
       if (rows.length > 1) text(rows.at(-1).day, plot.x + plot.w, plot.y + plot.h + 12, 12, C.muted, 400, 'right');
       y += plot.h + 48;
@@ -205,36 +205,42 @@
     if (r.timing) {
       const timing = r.timing, q = timing.latest, scoring = timing.scoring;
       const validScore = timing.status === 'available' && finite(scoring?.value) && scoring.value >= 0 && scoring.value <= 100 && !timing.missing && !scoring.missing;
-      section('加仓评分', q ? '截至 ' + timing.end + ' 共同收盘 · 参考历史 ' + timing.first + ' - ' + timing.end : '历史证据不足');
+      section('加仓时机检验', q ? '截至 ' + timing.end + ' 共同收盘 · 参考历史 ' + timing.first + ' - ' + timing.end : '历史证据不足');
+      paragraph('当前无经过验证的加仓评分', C.negative, 20);
       if (timing.historical) paragraph('历史时点复盘，不能代表今天的买卖时机。', C.gold);
       if (timing.missing) paragraph(timing.missing, C.negative);
       if (scoring) {
-        paragraph('评分版本 ' + (scoring.version || '未记录') + ' · 固定规则的条件评分，不是上涨概率。', C.ink);
-        const componentCards = validScore ? (scoring.components || []).map(c => [c.label, number(c.points) + ' / ' + c.max + '分']) : [];
-        cards([[(timing.historical ? '指定历史时点评分' : '当前加仓评分'), validScore ? String(scoring.value) + ' / 100分' : '暂无有效评分', validScore ? scoring.band?.label : scoring.missing || timing.missing || '缺完整评分依据'], ...componentCards]);
+        paragraph('已撤回的规则分 · 不用于加仓决策', C.ink, 18);
+        paragraph('规则版本 ' + (scoring.version || '未记录') + ' · 以下仅保留旧规则的计算与检验记录。规则分不是上涨概率。');
+        const componentLabels = { location: '长期位置项', trend: '趋势项', stability: '波动项' };
+        const components = (scoring.components || []).filter(c => componentLabels[c.id]);
+        const componentCards = validScore ? components.map(c => [componentLabels[c.id], number(c.points) + ' / ' + c.max + '分', '', C.muted]) : [];
+        cards([[(timing.historical ? '指定历史时点的规则分' : '最新规则分（已撤回）'), validScore ? String(scoring.value) + ' / 100分' : '规则分暂缺', validScore ? '仅供审计，不用于加仓决策' : scoring.missing || timing.missing || '缺完整规则计算依据', C.muted], ...componentCards]);
         if (validScore) {
           const change = scoring.change20;
-          paragraph('较20个共同收盘前：' + (finite(change?.value) ? (change.value > 0 ? '+' : '') + change.value + '分（' + change.day + '：' + change.previous + '分）' : '缺20个共同收盘前的有效评分') + '。', C.ink);
-          paragraph(scoring.gate?.active ? '下行保护：' + scoring.gate.reason + '；原始分 ' + number(scoring.raw) + '，封顶扣减 ' + number(scoring.gate.deduction) + '分。' : '下行保护未触发；净值低于200日均线且均线下降时，评分上限39分。', scoring.gate?.active ? C.negative : C.muted);
-          (scoring.components || []).forEach(c => paragraph(c.label + '：' + c.detail, C.muted, 13));
+          paragraph('规则分较20个共同收盘前：' + (finite(change?.value) ? (change.value > 0 ? '+' : '') + change.value + '分（' + change.day + '：' + change.previous + '分）' : '缺20个共同收盘前的规则分') + '。', C.muted);
+          paragraph(scoring.gate?.active ? '旧规则封顶已触发：净值低于200日均线且200日均线下降，规则分上限39分；原始分 ' + number(scoring.raw) + '，封顶扣减 ' + number(scoring.gate.deduction) + '分。' : '旧规则封顶未触发；净值低于200日均线且均线下降时，规则分上限39分。', C.muted);
+          paragraph('旧公式：位置项40 × (1 − 均线偏离历史分位 / 100)；波动项20 × (1 − 63日波动历史分位 / 100)。', C.muted, 13);
+          paragraph('趋势项：高于200日均线计20分；200日均线较20个共同收盘前上升计10分；高于50日均线计10分。', C.muted, 13);
         }
         const evidence = scoring.evidence || {}, assessment = evidence.assessment;
-        paragraph('历史检验：' + (assessment?.label || '缺足够历史样本'), assessment?.status === 'favorable' ? C.green : C.negative, 18);
-        if (assessment?.detail) paragraph(assessment.detail);
-        if (assessment?.status !== 'favorable') paragraph('当前历史证据不足以支持“高分就是更好的加仓点”；评分只提供固定条件参考。', C.gold);
+        const assessmentLabels = { insufficient: '缺足够非重叠历史样本', not_supported: '暂未证实高规则分更好', mixed: '历史高规则分组收益与风险表现不一致', favorable: '历史高规则分组较有利（仅回溯描述）' };
+        paragraph('历史检验：' + (assessmentLabels[assessment?.status] || '缺足够历史样本'), C.muted, 18);
+        if (finite(assessment?.medianDifference)) paragraph('≥60与<60规则分组的一年收益中位数比较：前者较后者' + (assessment.medianDifference >= 0 ? '高 ' : '低 ') + number(Math.abs(assessment.medianDifference)) + ' 个百分点；两组非重叠窗口分别为 ' + (assessment.high?.nonOverlappingN ?? '缺数据') + ' / ' + (assessment.low?.nonOverlappingN ?? '缺数据') + '。');
+        paragraph('旧规则未经过独立样本外验证；即使某组回溯表现较好，也不恢复加仓建议。', C.gold);
         scoreChart(scoring.history, timing.end);
         const evidenceRows = (evidence.horizons || []).flatMap(h => [
-          ...(h.bands || []).map(b => ({ ...b, group: b.min + '-' + b.max + '分 · ' + b.label })),
+          ...(h.bands || []).map(b => ({ ...b, group: finite(b.min) && finite(b.max) ? b.min + '-' + b.max + '规则分' : '旧规则分组（缺范围）' })),
           ...(h.baseline ? [{ ...h.baseline, group: '全部可比月份' }] : [])
         ].map(s => ['随后' + h.years + '年\n' + s.group, pct(s.median), pct(s.positiveRate), pct(s.worstReturn), pct(s.worstDrawdown), String(s.n), String(s.nonOverlappingN)]));
-        if (evidenceRows.length) table(['持有期 / 评分档', '收益中位数', '正收益比例', '最差收益', '期间最深回撤', '月份数', '不重叠窗口'], evidenceRows, [2.5, 1.2, 1.2, 1.2, 1.3, .7, .9], { numeric: [1, 2, 3, 4, 5, 6] });
+        if (evidenceRows.length) table(['持有期 / 规则分组', '收益中位数', '正收益比例', '最差收益', '期间最深回撤', '月份数', '不重叠窗口'], evidenceRows, [2.5, 1.2, 1.2, 1.2, 1.3, .7, .9], { numeric: [1, 2, 3, 4, 5, 6] });
         (evidence.horizons || []).forEach(h => {
           const empty = (h.bands || []).filter(b => b.n === 0);
-          if (empty.length) paragraph('随后' + h.years + '年：' + empty.map(b => b.min + '-' + b.max + '分').join('、') + '缺完整后续样本。', C.gold);
+          if (empty.length) paragraph('随后' + h.years + '年：' + empty.map(b => finite(b.min) && finite(b.max) ? b.min + '-' + b.max + '规则分' : '旧规则分组').join('、') + '缺完整后续样本。', C.gold);
         });
-        paragraph('随后1年和3年均为累计收益；按当日评分分档，从信号后的下一共同收盘进入，只纳入截至分析日已经完整结束的持有期。');
+        paragraph('随后1年和3年均为累计收益；按当日规则分分组，从信号后的下一共同收盘进入，只纳入截至分析日已经完整结束的持有期。');
         paragraph('月度持有期重叠，历史正收益比例不是未来胜率；属于回溯描述，尚未验证扣税费后的择时优势。', C.gold);
-      } else paragraph('此旧报告未包含加仓评分；重新运行模拟后可生成评分和历史检验。下列保留原报告的历史位置与账户信息。', C.gold);
+      } else paragraph('此旧报告未包含规则分审计记录。下列保留原报告的历史位置与账户信息。', C.muted);
       if (q) {
         const position = { low: '偏低', middle: '中间区间', high: '偏高' }[timing.band] || '样本不足';
         const trend = q.trend === 'above' ? '高于200日均线' : q.trend === 'below' ? '低于200日均线' : q.trend === 'flat' ? '接近200日均线' : '均线历史不足';
