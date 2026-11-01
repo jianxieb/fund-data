@@ -1,0 +1,88 @@
+{
+  "id": "equal-budget-entry-v1",
+  "frozenDate": "2026-11-01",
+  "status": "frozen_before_new_candidate_results",
+  "priorExposure": "The same market history has already been inspected for failed add-score-v1 and entry-percentile-knn-v1. Temporal partitions below are historical replication, not a genuinely untouched holdout.",
+  "portfolio": {
+    "currency": "CNY",
+    "positions": [{ "id": "us:USD", "weight": 0.3 }, { "id": "us:TQQQ", "weight": 0.3 }],
+    "strategicCashWeight": 0.4,
+    "rebalance": "none"
+  },
+  "signal": {
+    "reference": "daily constant target-weight CNY total-return reference including zero-interest strategic cash; used only for signals, never as the tradable account",
+    "warmupObservations": 200,
+    "execution": "signal uses strictly preceding common close; execute at next common close; no carried product price for trades",
+    "drawdown": "relative to running peak of all reference history, not reset at episode start",
+    "ma": 200,
+    "returnLookback": 21
+  },
+  "candidates": [
+    { "id": "dd10_wait21", "feature": "drawdown", "threshold": -0.1, "maxWait": 21 },
+    { "id": "dd10_wait63", "feature": "drawdown", "threshold": -0.1, "maxWait": 63 },
+    { "id": "ma200_wait21", "feature": "deviation", "threshold": 0, "maxWait": 21 },
+    { "id": "ma200_wait63", "feature": "deviation", "threshold": 0, "maxWait": 63 },
+    { "id": "ret21_wait21", "feature": "return21", "threshold": -0.1, "maxWait": 21 },
+    { "id": "ret21_wait63", "feature": "return21", "threshold": -0.1, "maxWait": 63 },
+    { "id": "dd20_wait63", "feature": "drawdown", "threshold": -0.2, "maxWait": 63 }
+  ],
+  "benchmarks": [
+    { "id": "immediate", "tranches": [0] },
+    { "id": "three_tranches", "tranches": [0, 21, 42], "allocation": "split each arrival's risk budget into three equal initial sub-lots; each earns its own waiting interest" }
+  ],
+  "funding": {
+    "amountPerDeposit": 100,
+    "modes": ["existing_cash", "monthly_new_cash"],
+    "existing_cash": "100 arrives on episode start only",
+    "monthly_new_cash": "100 arrives on first common close of each calendar month in [start, anniversary); never on or after anniversary",
+    "budget": "Each deposit sets aside exactly 40% strategic cash. Remaining 60% including its waiting interest funds product purchases in 1:1 proportions and all buy fees. Never borrow, sell, or use future deposits. Outstanding lots are kept separate and can remain cash at terminal date.",
+    "deadline": "Lot buys when preceding-close feature <= fixed threshold or common-session index minus arrival index >= maxWait. Deadline does not depend on future episode end."
+  },
+  "episodes": {
+    "start": "first common close of every calendar month with at least 200 strictly preceding reference observations",
+    "primaryHorizonYears": 1,
+    "secondaryHorizonYears": 3,
+    "end": "first common close on/after start anniversary, at most 14 calendar days later; fixed from funding date, not purchase date; all positions liquidated on that date",
+    "partitions": [
+      { "id": "development", "start": null, "end": "2018-12-31" },
+      { "id": "validation", "start": "2019-01-01", "end": "2022-12-31" },
+      { "id": "replication", "start": "2023-01-01", "end": null }
+    ],
+    "purge": "Both funding start and full terminal outcome must lie inside the same partition; no boundary-crossing episode; signal may use prior history."
+  },
+  "scenarios": [
+    { "id": "base", "annualCashRate": 0, "feeRate": 0.001, "capitalTaxRate": 0, "dividendTaxRate": 0 },
+    { "id": "cash2", "annualCashRate": 0.02, "feeRate": 0.001, "capitalTaxRate": 0, "dividendTaxRate": 0 },
+    { "id": "fee20", "annualCashRate": 0, "feeRate": 0.002, "capitalTaxRate": 0, "dividendTaxRate": 0 }
+  ],
+  "accounting": {
+    "prices": "individual actual adjusted total-return asset prices converted to CNY with same-day or earlier FX no older than 7 calendar days; per-asset units drift between purchases; no synthetic backfilled leveraged history",
+    "cashInterest": "both strategic and pending cash earn same hypothetical net annual rate compounded by actual calendar days/365.2425; 2% is sensitivity, not historical cash-rate evidence",
+    "fees": "proportional per-asset on every purchase and terminal sale, funded from available cash; adjusted asset prices already include product expenses",
+    "tax": "phase-one screens use pre-personal-tax returns. A surviving candidate still requires actual dividend evidence and production-equivalent personal-tax validation before integration; cannot be called after-tax improvement.",
+    "drawdown": "cash-flow-unitized account NAV, including fees and all pending/strategic cash; deposits issue units at pre-deposit NAV; terminal liquidation included"
+  },
+  "metrics": ["paired_terminal_wealth_delta_per_total_contributions_pp", "mean_delta_pp", "median_delta_pp", "positive_delta_share", "p10_account_return_difference_pp", "median_max_drawdown_difference_pp", "worst_max_drawdown_difference_pp", "mean_wait_sessions", "non_overlapping_episode_count", "identical_external_flows"],
+  "metricDefinitions": {
+    "accountReturn": "100 * (terminal liquidated wealth / total contributions - 1); capital result, not annualized or time-weighted return",
+    "p10Difference": "quantile(candidate account returns, 0.1) minus quantile(immediate account returns, 0.1); also report paired-delta P10 separately for diagnosis",
+    "drawdownDifference": "candidate median/min of signed negative max drawdowns minus immediate median/min; positive means improvement",
+    "bootstrap": "Mulberry32 seed 0x6d2b79f5 reset per summary, non-circular consecutive 12-start blocks from positions 0..n-12, append blocks until n values then truncate, 2000 draws; n<12 uses whole segment but status insufficient_blocks and cannot pass integration"
+  },
+  "selection": {
+    "perFundingMode": true,
+    "data": "development primary-horizon base scenario only",
+    "rule": "Among rules satisfying all economic gates in development, select highest mean paired wealth delta. Ties within 1e-10 use candidate registry order. If none qualifies, select none; validation/replication results remain diagnostic and cannot be used to rescue another rule.",
+    "economicGates": {
+      "minMeanDeltaPp": 0.5,
+      "minMedianDeltaPp": 0.5,
+      "minWinRate": 0.6,
+      "minP10ReturnDifferencePp": -1,
+      "minMedianDrawdownDifferencePp": -2,
+      "minWorstDrawdownDifferencePp": -2
+    },
+    "confirmation": "Frozen winner must separately pass every economic gate against immediate baseline in both later partitions at 1 year, retain positive mean/median improvement under each stress scenario in each later partition, and not lose mean/median terminal wealth to three_tranches in either later partition. 3-year results are auxiliary, never substituted for a failed primary outcome.",
+    "uncertainty": "Report all monthly counts and non-overlap counts. Use fixed-seed moving-block bootstrap with 12 monthly-start blocks for primary-horizon paired differences, 2000 draws and 2.5/97.5 percentiles; intervals are descriptive under prior exposure and short dependent history, never a future success probability.",
+    "integrationGate": "No automatic UI score. Only a frozen winner passing economic confirmation, positive lower descriptive mean interval in both later partitions, independent ledger/causality audit and production-equivalent tax/data validation may be proposed for integration. Otherwise keep all candidates in research only. Record all failures; no same-version threshold, portfolio or horizon adjustment."
+  }
+}
