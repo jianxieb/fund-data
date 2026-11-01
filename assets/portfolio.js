@@ -80,15 +80,6 @@
     }
     catalog = next; window.PORTFOLIO_CATALOG = next;
   }
-  function disableCurrentScore(timing, missing) {
-    if (!timing || timing.historical) return;
-    timing.status = 'stale'; timing.missing = missing;
-    if (timing.entry) Object.assign(timing.entry, { status: 'stale', value: null, missing });
-    if (timing.scoring) {
-      Object.assign(timing.scoring, { value: null, raw: null, band: null, components: [], change20: null, gate: { active: false, cap: null, deduction: 0, reason: null }, missing });
-      for (const horizon of timing.scoring.evidence.horizons) horizon.current = null;
-    }
-  }
   async function run() {
     if (running || !catalog) return;
     for (const position of draft.positions) {
@@ -102,7 +93,7 @@
     try {
       let refreshMissing = '';
       try { await refreshCatalog(); }
-      catch (e) { refreshMissing = '未能确认最新行情：' + e.message + '。保留已有历史，本次不提供当前加仓评分。'; }
+      catch (e) { refreshMissing = '未能确认最新行情：' + e.message + '。本次模拟使用已保存的历史数据。'; }
       P.validateConfig(params, new Set(catalog.assets.map(a => a.id)));
       const selected = params.positions.filter(p => p.weight > 0).map(p => asset(p.id));
       await Promise.all(selected.map(loadHistory));
@@ -116,22 +107,16 @@
       const input = { catalog, histories: Object.fromEntries(histories), config: params, fxHistory: histories.get(catalog.fx?.id) };
       const computed = P.simulate(input);
       if (computed.error) {
-        error = computed.error;
-        disableCurrentScore(result?.timing, '本次模拟未完成：' + error + '。以下保留上次历史，本次不提供当前加仓评分。');
+        error = '本次模拟未完成：' + computed.error;
       }
       else {
         computed.snapshots = P.simulateWindows(input, computed.end);
-        const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
-        computed.timing = window.ChanghengPortfolioTimingModel?.analyze(input, { end: computed.end, today });
-        if (computed.timing) computed.timing.entry = window.ChanghengPortfolioEntryModel ? window.ChanghengPortfolioEntryModel.analyze(computed.timing) : { status: 'error', value: null, missing: '历史买点模型未加载，请刷新页面后重新模拟', history: [], walkForward: {} };
-        if (refreshMissing) disableCurrentScore(computed.timing, refreshMissing);
         computed.catalogRefresh = { checkedAt: new Date().toISOString(), available: !refreshMissing, missing: refreshMissing || null };
         result = computed; resultKey = JSON.stringify(params);
       }
     } catch (e) {
       if (token === runId) {
-        error = e.message;
-        disableCurrentScore(result?.timing, '本次行情更新失败：' + error + '。以下保留上次历史，本次不提供当前加仓评分。');
+        error = '本次行情更新失败：' + e.message;
       }
     }
     finally { if (token === runId) { running = false; update(); } }
@@ -287,24 +272,16 @@
       ['税后盈亏 / ' + unit, r => H.money(r.profit)], ['最大回撤', r => H.pc(r.mdd)], ['年化波动', r => H.pct(r.volatility, 2, false)]];
     return H.card('区间快照', '同一组合 · 同一投入方式 · 组合与对照收益均为现金流中性', '<div class="table-wrap"><table class="portfolio-snapshot-table"><thead><tr><th>指标</th>' + periods.map(r => '<th>近' + r.years + '年<small>' + (r.error ? '无法模拟' : r.start + ' — ' + r.end) + '</small></th>').join('') + '</tr></thead><tbody>' + measures.map(([label, format]) => '<tr><td>' + label + '</td>' + periods.map(r => '<td class="num">' + (r.error ? '—' : format(r)) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>' + periods.filter(r => r.error || r.benchmarkError).map(r => '<p class="portfolio-snapshot-missing">近' + r.years + '年' + (r.error ? '：' : '对照：') + H.esc(r.error || r.benchmarkError) + '</p>').join(''));
   }
-  function timingResults() {
-    const r = result, t = r.timing;
-    if (!t) return '';
-    const scoreView = window.ChanghengPortfolioScoreView;
-    const body = t.entry ? (window.ChanghengPortfolioEntryView ? window.ChanghengPortfolioEntryView.render(t) : '<p class="portfolio-timing-note">历史买点显示组件未加载，请刷新页面后重新模拟</p>') : scoreView ? scoreView.render(t, H) : '<p class="portfolio-timing-note">评分组件未加载，请刷新页面</p>';
-    const commonDays = new Set((t.curve || []).map(p => p.day));
-    const account = r.curve.filter(p => commonDays.has(p.day));
-    const mean = account.length >= 200 ? account.slice(-200).reduce((s, p) => s + p.nav, 0) / 200 : null;
-    const accountDeviation = mean ? (account.at(-1).nav / mean - 1) * 100 : null;
-    const actualCash = r.grossValue ? r.cash / r.grossValue * 100 : 0;
-    const drift = r.holdings.map(h => ({ ...h, weight: r.grossValue ? h.grossValue / r.grossValue * 100 : 0 }));
-    const overweight = drift.filter(h => h.weight - h.targetWeight >= 5);
-    const cashShortfall = r.cashWeight - actualCash >= 5;
-    const liquidated = r.config.tax?.liquidate;
-    const reviewAllocation = !liquidated && (cashShortfall || overweight.length > 0);
-    const fmt = value => H.pct(value, 2, false);
-    const allocation = '<details class="portfolio-timing-evidence"><summary>模拟账户的期末风险 · ' + r.end + '</summary><div class="portfolio-timing-account"><div><span>账户净值相对200日均线 ' + fmt(accountDeviation) + ' · 回撤 ' + fmt(account.at(-1)?.drawdown) + '（' + (account.at(-1)?.day || '缺共同收盘') + '）</span></div><p>' + drift.map(h => H.esc(h.code) + ' ' + fmt(h.weight) + '（目标 ' + fmt(h.targetWeight) + '）').join(' · ') + ' · 现金 ' + fmt(actualCash) + '（目标 ' + fmt(r.cashWeight) + '）</p>' + (liquidated ? '<p>此模拟已期末清仓；账户为现金。</p>' : reviewAllocation ? '<p class="negative">' + (cashShortfall ? '每笔投入预留现金，不代表账户一直保持该现金比例。' : '部分持仓已超出目标权重至少5个百分点。') + '</p>' : '') + '<small>使用本次模拟的持仓、入金与税费；仓位按未减预留税的市值计算，不参与加仓评分。' + (account.length < 200 ? '账户区间不足200个共同收盘，均线留空。' : '') + '</small></div></details>';
-    return H.card(t.entry ? '加仓时机 · 历史买点' : '加仓时机检验', '目标组合 · ' + currency(r.config).name + ' · 每次模拟按行情重算', body + allocation + '<a class="source-link" href="docs/portfolio-method.md#历史买点分" target="_blank" rel="noopener">检验方法与证据边界 ↗</a>', t.entry?.history?.length ? btn('导出买点历史', 'export-score', 'btn portfolio-export') : !t.entry && t.scoring?.history?.length ? btn('导出旧规则审计', 'export-score', 'btn portfolio-export') : '');
+  function accountRisk() {
+    const r = result, latest = r.curve.at(-1), fmt = value => H.pct(value, 2, false);
+    const actualCash = r.grossValue > 0 ? r.cash / r.grossValue * 100 : null;
+    const holdings = r.holdings.map(h => ({ ...h, weight: r.grossValue > 0 ? h.grossValue / r.grossValue * 100 : null }));
+    const cashShortfall = M.finite(actualCash) && r.cashWeight - actualCash >= 5;
+    const overweight = holdings.some(h => M.finite(h.weight) && h.weight - h.targetWeight >= 5);
+    const body = '<div class="portfolio-timing-account"><div><strong>期末回撤 ' + fmt(latest?.drawdown) + '</strong><span>实际现金 ' + fmt(actualCash) + ' · 目标现金 ' + fmt(r.cashWeight) + '</span></div><p>' + holdings.map(h => H.esc(h.code) + ' ' + fmt(h.weight) + '（目标 ' + fmt(h.targetWeight) + '）').join(' · ') + '</p>' +
+      (r.config.tax?.liquidate ? '<p>此模拟已期末清仓；账户为现金。</p>' : cashShortfall || overweight ? '<p class="negative">' + (cashShortfall ? '实际现金低于目标至少5个百分点。每笔投入预留现金，不代表账户一直保持该现金比例。' : '部分持仓已超出目标权重至少5个百分点。') + '</p>' : '') +
+      '<small>仓位按未减浮盈预留税的市值计算；回撤基于模拟账户的现金流中性净值。</small></div>';
+    return H.card('模拟账户的期末风险', r.end + ' · ' + currency(r.config).name + ' · 实际持仓与现金', '<div class="portfolio-risk-body">' + body + '<a class="source-link" href="docs/portfolio-method.md" target="_blank" rel="noopener">研究方法 ↗</a></div>');
   }
   function results() {
     if (!result) return '<section class="portfolio-result-placeholder"><div><span class="eyebrow">YOUR PORTFOLIO, OVER TIME</span><h2>看组合如何走过市场起伏</h2><p>配置权重和投入方式后，开始模拟。</p></div><svg viewBox="0 0 460 135" aria-hidden="true"><path d="M3 120H457M3 80H457M3 40H457" stroke="#e0e5d7"/><path d="m3 101 37-13 37 14 38-28 37 7 38-22 38 12 37-31 37 5 40-26 38 6 40-23" fill="none" stroke="#96aa83" stroke-width="2"/><path d="m3 110 37-4 37 5 38-19 37 10 38-8 38-9 37 6 37-19 40 9 38-16 40 2" fill="none" stroke="#c3b291" stroke-width="1.5" stroke-dasharray="5 5"/></svg></section>';
@@ -318,7 +295,7 @@
       '<div class="stats-grid portfolio-result-summary">' + H.stat('资金年化 XIRR', H.pct(r.xirr, 2, false), '', r.xirrMissing || '按实际投入时间和金额计算') +
       H.stat(H.annual ? '组合年化收益' : '组合累计收益', H.pct(H.annual ? r.annualReturn : r.totalReturn, 2, false), '', '现金流中性' + (r.benchmark ? ' · 对照持有 ' + H.pct(H.annual ? r.benchmark.annualReturn : r.benchmark.totalReturn) : ' · 剔除追加本金影响')) +
       H.stat('期末税后估值', H.money(r.value), unit, '累计投入 ' + H.money(r.contributed) + ' ' + unit) + H.stat(r.config.tax?.liquidate ? '清仓盈亏' : '税后盈亏', H.money(r.profit), unit, r.config.tax?.liquidate ? '已扣清仓交易费与盈利税' : '已减浮盈预留税 ' + H.money(r.taxReserve, 2) + ' ' + unit) + H.stat('最大回撤', H.pct(r.mdd, 2, false), '', '年化波动 ' + H.pct(r.volatility, 2, false)) + '</div>' +
-      timingResults() + snapshots() + (r.benchmarkError ? '<div class="portfolio-warning">' + H.esc(r.benchmarkError) + '，当前仅显示组合曲线。</div>' : '') +
+      (r.catalogRefresh?.available === false ? '<p class="portfolio-warning">' + H.esc(r.catalogRefresh.missing) + '</p>' : '') + accountRisk() + snapshots() + (r.benchmarkError ? '<div class="portfolio-warning">' + H.esc(r.benchmarkError) + '，当前仅显示组合曲线。</div>' : '') +
       chart() + '<div class="portfolio-result-notes"><span>入金 ' + r.deposits + '笔</span><span>买入 ' + r.transactions.filter(t => t.side === 'buy').length + '笔</span><span>再平衡 ' + r.rebalances + '次</span><span>交易费用 ' + H.money(r.tradeCost, 2) + ' ' + unit + '</span><span>已实现盈利税 ' + H.money(r.capitalTax, 2) + ' ' + unit + '</span><span>分红税 ' + H.money(r.dividendTax, 2) + ' ' + unit + '</span><span>浮盈预留税 ' + H.money(r.taxReserve, 2) + ' ' + unit + '</span>' + (r.initialReserve > .005 ? '<span>待投入本金 ' + H.money(r.initialReserve, 2) + ' ' + unit + '</span>' : '') + (r.timingChanges ? '<span>择时切换 ' + r.timingChanges + '次</span>' : '') + '</div>' + (usesMa && r.strategy.insufficientMaDays ? '<div class="portfolio-warning">均线不足200个共同交易日的阶段按常规投入，未将缺历史视为下跌信号。</div>' : '') +
       H.card('持仓贡献', r.start + ' — ' + r.end + ' · ' + name + ' · 已减浮盈预留税', '<div class="portfolio-structure portfolio-end-structure"><h3>期末结构</h3>' + structure(r.holdings.map(h => ({ id: h.id, weight: h.actualWeight }))) + '</div>' + holdingTable, btn('导出持仓', 'export-holdings', 'btn portfolio-export')) + '<section class="card portfolio-yearly"><div class="card-head"><h2>年度表现</h2><span class="small">现金流中性 · 累计收益</span></div><div class="portfolio-year-grid">' + r.annual.map(y => '<div><span>' + y.year + '</span><strong class="num">' + H.pc(y.return) + '</strong><small>' + y.start.slice(5) + ' — ' + y.end.slice(5) + '</small></div>').join('') + '</div></section></div>';
   }
@@ -350,23 +327,6 @@
     const rows = [['日期', amount('税后估值'), amount('累计投入'), amount('税后盈亏'), '组合净值', '组合累计收益%（现金流中性）', '组合年化收益%（现金流中性，首年至少一年）', '回撤%', amount('税费含当前预留'), amount('账户现金'), amount('待投入本金'), '择时仓位', '年费口径', '配置JSON', '全区间资金年化XIRR%', '资金年化缺项', amount('未减预留的资产'), amount('累计已发生税费'), amount('当前浮盈预留税')],
       ...result.curve.map(p => [p.day, p.value, p.contributed, p.profit, p.nav, p.totalReturn, p.annualReturn, p.drawdown, p.taxCost, p.cash, p.initialReserve, p.exposure, result.config.feeBasis, JSON.stringify(result.config), result.xirr, result.xirrMissing, p.grossValue, p.paidTax, p.taxReserve])];
     H.download('长衡-组合模拟-' + result.end + '.csv', M.csv(rows), 'text/csv;charset=utf-8');
-  }
-  function exportScore() {
-    const t = result?.timing;
-    if (t?.entry) {
-      const e = t.entry;
-      const predictions = [...e.history, ...(Number.isFinite(e.value) && !e.history.some(r => r.asOf === e.asOf) ? [e] : [])];
-      const rows = [['观察日', '买点历史分', '当时成熟月份', '相似月份', '相似一年收益中位数%', '全部一年收益中位数%', '相似收益P10%', '相似回撤中位数%', '当时最新训练到期日', '后来一年收益%', '后来一年到期日', '规则版本', '计价币种', '分析截至', '当前数据状态', '用途', '配置JSON'],
-        ...predictions.map(r => [r.asOf, r.value, r.trainingN, r.matched?.n, r.matched?.median, r.baseline?.median, r.matched?.p10, r.matched?.medianDrawdown, r.latestTrainingExit, r.actual?.return ?? '', r.actual?.exit ?? '', e.version, t.currency, t.end, t.status, '历史排名研究；非上涨概率；未证明择时优势', JSON.stringify(result.config)])];
-      H.download('长衡-买点历史-' + t.end + '.csv', M.csv(rows), 'text/csv;charset=utf-8'); return;
-    }
-    if (!t?.scoring?.history?.length) return;
-    const rows = [['日期', '已撤回规则分', '原始分', '中性分组', '旧规则限分', '长期位置分/40', '趋势确认分/40', '波动稳定度分/20', '200日均线偏离%', '偏离历史分位%', '63日年化波动%', '波动历史分位%', '规则版本', '计价币种', '分析截至', '当前数据状态', '规则状态', '使用限制', '配置JSON'],
-      ...t.curve.filter(p => M.finite(p.score)).map(p => {
-        const s = window.ChanghengPortfolioTimingModel.scoreFromMetrics(p);
-        return [p.day, p.score, p.scoreRaw, s.band.label, s.gate.active ? '上限39分' : '', ...s.components.map(c => c.points), p.deviation, p.percentile, p.volatility63, p.volatilityPercentile, t.scoring.version, t.currency, t.end, t.status, '已撤回', '不用于加仓决策', JSON.stringify(result.config)];
-      })];
-    H.download('长衡-旧规则审计-' + t.end + '.csv', M.csv(rows), 'text/csv;charset=utf-8');
   }
   async function exportPdf() {
     if (running || exportingPdf || !result) return;
@@ -418,7 +378,6 @@
       case 'method': method(); return;
       case 'sources': sources(); return;
       case 'export-result': exportResult(); return;
-      case 'export-score': exportScore(); return;
       case 'export-pdf': return exportPdf();
       case 'export-holdings': exportHoldings(); return;
       case 'tax-method': taxMethod(); return;
@@ -434,26 +393,6 @@
     update();
   }
   function handleInput(el) {
-    if (el.dataset.portfolioEntryDay !== undefined) {
-      const selected = window.ChanghengPortfolioEntryView?.inspect(result?.timing, el.value);
-      if (!selected) return false;
-      const readout = document.getElementById('portfolio-entry-readout'), cursor = document.getElementById('portfolio-entry-cursor'), point = document.getElementById('portfolio-entry-point');
-      if (readout) readout.textContent = selected.text;
-      el.setAttribute('aria-valuetext', selected.text);
-      cursor?.setAttribute('x1', selected.x); cursor?.setAttribute('x2', selected.x);
-      point?.setAttribute('cx', selected.x); point?.setAttribute('cy', selected.y);
-      return false;
-    }
-    if (el.dataset.portfolioScoreDay !== undefined) {
-      const selected = window.ChanghengPortfolioScoreView?.inspect(result?.timing, el.value);
-      if (!selected) return false;
-      const readout = document.getElementById('portfolio-score-readout'), cursor = document.getElementById('portfolio-score-cursor'), point = document.getElementById('portfolio-score-point');
-      if (readout) readout.textContent = (result.timing.status === 'available' ? '' : '历史记录：') + selected.text;
-      el.setAttribute('aria-valuetext', selected.text);
-      cursor?.setAttribute('x1', selected.x); cursor?.setAttribute('x2', selected.x);
-      point?.setAttribute('cx', selected.x); point?.setAttribute('cy', selected.y);
-      return false;
-    }
     if (el.id === 'portfolio-search') { query = el.value; H.resetList(); return true; }
     if (el.dataset.portfolioTaxAsset) {
       const id = el.dataset.portfolioTaxAsset, key = el.dataset.taxField;

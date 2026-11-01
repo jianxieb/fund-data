@@ -101,8 +101,7 @@ test('single-page PDF has binary-safe xref offsets, contiguous bands and correct
 function uiFixture(configure) {
   const { input } = fixture(), downloads = [], notices = [], reports = [], renderStates = [];
   if (configure) configure(input);
-  // Legacy report fixtures omit entry; dedicated tests below install the real new model.
-  const context = { window: { ChanghengPortfolioEntryModel: { analyze: () => undefined }, Changheng: M, ChanghengPortfolioModel: P, ChanghengPortfolioTimingModel: require('../assets/portfolio-timing-model.js'), ChanghengPortfolioScoreView: require('../assets/portfolio-score-view.js'), PORTFOLIO_CATALOG: input.catalog,
+  const context = { window: { Changheng: M, ChanghengPortfolioModel: P, PORTFOLIO_CATALOG: input.catalog,
     ChanghengPortfolioPdf: { snapshot: Pdf.snapshot, async create(report) { reports.push(report); return new Blob(['PDF']); } } },
     localStorage: { getItem: () => JSON.stringify(input.config), setItem() {} },
     document: { getElementById: () => null, querySelectorAll: () => [] }, TextEncoder,
@@ -111,7 +110,7 @@ function uiFixture(configure) {
   vm.runInContext(fs.readFileSync(path.resolve(__dirname, '../assets/portfolio.js'), 'utf8'), context);
   const ui = context.window.ChanghengPortfolio;
   const helpers = { esc: String, action: (label, act, cls, extra = '') => '<button data-action="' + act + '" ' + extra + '>' + label + '</button>',
-    annual: true, annualControl: '', pct: String, pc: String, money: String, card: (title, subtitle, html) => html,
+    annual: true, annualControl: '', pct: String, pc: String, money: String, card: (title, subtitle, html) => '<section><h2>' + title + '</h2><p>' + subtitle + '</p>' + html + '</section>',
     stat: (label, value, unit, note) => '<article class="stat"><strong>' + label + '</strong><b>' + value + '</b><small>' + note + '</small></article>', lazyRows: (key, rows, render) => rows.map(render).join(''), loadFooter: () => '', resetList() {},
     toast: message => notices.push(message), download: (...args) => downloads.push(args),
     render: () => renderStates.push(ui.view(helpers)) };
@@ -121,7 +120,7 @@ function uiFixture(configure) {
   return { ui, action, monthly, context, helpers, downloads, notices, reports, renderStates, input };
 }
 
-function timingUiFixture(configure) {
+function accountUiFixture(configure) {
   const f = uiFixture(input => {
     Object.assign(input.config, { monthly: 0, rebalance: 'none', transactionFee: 0 });
     input.config.positions.forEach((position, index) => { position.weight = index < 2 ? 30 : 0; });
@@ -135,98 +134,59 @@ function timingUiFixture(configure) {
   return f;
 }
 
-test('historical timing review labels its date and suppresses present-day buy and sell advice', async () => {
-  const f = timingUiFixture(input => Object.assign(input.config, { years: 'custom', start: '2024-01-01', end: '2025-01-08' }));
-  const T = require('../assets/portfolio-timing-model.js');
-  let timing;
-  f.context.window.ChanghengPortfolioTimingModel = { analyze(input, options) {
-    timing = T.analyze(input, { ...options, today: '2026-10-28' }); return timing;
-  } };
-  await f.action('run');
-  const html = f.ui.view(f.helpers), account = P.simulate(f.input);
-  assert.equal(timing.historical, true);
-  assert.ok(account.holdings.some(h => h.actualWeight - h.targetWeight > 5));
-  assert.match(html, /截至 2025-01-08 共同收盘/);
-  assert.match(html, /历史时点旧规则分/);
-  assert.match(html, /缺可靠长期分位/);
-  assert.doesNotMatch(html, /优先考虑卖出超配部分|可按原计划分批投入|缺最近行情/);
+const scoreUi = /买点历史分|历史买点分|规则分|加仓评分|已撤回|portfolio-(?:entry|score)-|导出买点历史|导出旧规则审计/;
+
+test('normal and historical simulations do not execute research models or render their components', async () => {
+  for (const historical of [false, true]) {
+    const f = accountUiFixture(input => { if (historical) Object.assign(input.config, { years: 'custom', start: '2024-01-01', end: '2025-01-08' }); });
+    let calls = 0;
+    for (const name of ['ChanghengPortfolioTimingModel', 'ChanghengPortfolioEntryModel']) f.context.window[name] = { analyze() { calls++; throw new Error('Research model must not run'); } };
+    for (const name of ['ChanghengPortfolioScoreView', 'ChanghengPortfolioEntryView']) f.context.window[name] = { render() { calls++; throw new Error('Research view must not render'); } };
+    await f.action('run'); await f.action('export-pdf');
+    assert.equal(calls, 0); assert.equal(f.reports.length, 1);
+    const report = f.reports[0], html = f.ui.view(f.helpers);
+    assert.equal(report.result.timing, undefined);
+    assert.match(html, /模拟账户的期末风险/); assert.ok(html.includes(report.result.end));
+    assert.doesNotMatch(html, scoreUi);
+    assert.equal((html.match(/href="docs\/portfolio-method\.md"/g) || []).length, 1);
+  }
 });
 
-test('stale quotes suppress the overweight sell recommendation while retaining dated exposure evidence', async () => {
-  const f = timingUiFixture(), T = require('../assets/portfolio-timing-model.js');
-  let timing;
-  f.context.window.ChanghengPortfolioTimingModel = { analyze(input, options) {
-    timing = T.analyze(input, { ...options, today: '2026-10-28' }); return timing;
-  } };
+test('the standalone risk card uses actual gross holdings, cash drift and account drawdown', async () => {
+  const f = accountUiFixture(input => {
+    input.config.tax = { cnFundCapitalGains: 30, cnStockCapitalGains: 30 };
+    for (const h of Object.values(input.histories)) h.dividendEvidence = { status: 'recorded', first: h.first, through: h.asOf, fractions: {} };
+  });
   await f.action('run');
-  const html = f.ui.view(f.helpers), account = P.simulate(f.input);
-  assert.equal(timing.status, 'stale'); assert.equal(timing.historical, false);
-  assert.ok(account.cashWeight - account.cash / account.grossValue * 100 > 5);
-  assert.match(html, /最新共同报价为 2026-01-08/);
-  assert.match(html, /当前没有通过验证的加仓评分/);
-  assert.match(html, /模拟账户的期末风险 · 2026-01-08/);
-  assert.match(html, /每笔投入预留现金，不代表账户一直保持该现金比例/);
-  assert.doesNotMatch(html, /优先考虑卖出超配部分|可按原计划分批投入/);
+  const html = f.ui.view(f.helpers), account = P.simulate(f.input), fmt = f.helpers.pct;
+  const card = html.match(/<section><h2>模拟账户的期末风险<\/h2>[\s\S]*?<\/section>/)[0];
+  assert.ok(account.cashWeight - account.cash / account.grossValue * 100 >= 5);
+  assert.ok(account.taxReserve > 0 && account.grossValue > account.value);
+  assert.ok(card.includes('期末回撤 ' + fmt(account.curve.at(-1).drawdown)));
+  assert.ok(card.includes('实际现金 ' + fmt(account.cash / account.grossValue * 100)));
+  for (const holding of account.holdings) assert.ok(card.includes(holding.code + ' ' + fmt(holding.grossValue / account.grossValue * 100) + '（目标 ' + fmt(holding.targetWeight) + '）'));
+  assert.match(card, /仓位按未减浮盈预留税的市值计算/);
+  assert.match(card, /实际现金低于目标至少5个百分点/);
+  assert.doesNotMatch(card, /优先考虑卖出|恢复目标权重|分批加仓|200日均线/);
+  assert.doesNotMatch(card, scoreUi);
 });
 
-test('timing evidence names each missing forward horizon even when current position metrics are available', async () => {
-  const f = timingUiFixture(), T = require('../assets/portfolio-timing-model.js');
-  f.context.window.ChanghengPortfolioTimingModel = { analyze(input, options) {
-    const timing = T.analyze(input, { ...options, today: options.end });
-    // Isolate rendering of a valid current diagnostic with no matured matches.
-    return { ...timing, status: 'available', missing: null, band: 'low', latest: { ...timing.latest, percentile: 10 } };
-  } };
-  await f.action('run');
-  const html = f.ui.view(f.helpers);
-  assert.match(html, /分组缺完整 1 年后续样本/);
-  assert.match(html, /分组缺完整 3 年后续样本/);
-  assert.match(html, /0 个月<small>不重叠 0 个/);
-  assert.match(html, /正收益比例不是未来胜率/);
-  const diagnostic = html.match(/<section><h2>加仓时机检验<\/h2>[\s\S]*?<\/section>/)[0];
-  assert.doesNotMatch(diagnostic, /NaN|undefined/);
-});
-
-test('mixed-market timing labels the common close separately from the later account valuation date', async () => {
-  const f = timingUiFixture(input => {
+test('mixed-market risk facts use the simulation valuation date without a reference signal date', async () => {
+  const f = accountUiFixture(input => {
     const asset = input.catalog.assets[1], history = input.histories[asset.id];
     history.series = history.series.filter(([day]) => day !== '2026-01-08');
     history.series.push(['2026-01-09', history.series.at(-1)[1] * 1.01]);
     history.asOf = asset.asOf = '2026-01-09';
   });
-  const T = require('../assets/portfolio-timing-model.js');
-  let timing;
-  f.context.window.ChanghengPortfolioTimingModel = { analyze(input, options) {
-    timing = T.analyze(input, { ...options, today: '2026-01-09' }); return timing;
-  } };
-  await f.action('run');
-  const html = f.ui.view(f.helpers), account = P.simulate(f.input);
-  assert.equal(account.end, '2026-01-08'); assert.equal(timing.end, '2026-01-07');
-  assert.match(html, /截至 2026-01-07 共同收盘/);
-  assert.match(html, /模拟账户的期末风险 · 2026-01-08/);
-  assert.match(html, /账户净值相对200日均线 [^<]+ · 回撤 [^<]+（2026-01-07）/);
+  await f.action('run'); await f.action('export-pdf');
+  const report = f.reports[0], html = f.ui.view(f.helpers);
+  assert.equal(report.result.end, '2026-01-08');
+  assert.match(html, /模拟账户的期末风险/); assert.match(html, /2026-01-08 · 人民币 · 实际持仓与现金/);
+  assert.ok(html.includes('期末回撤 ' + f.helpers.pct(report.result.curve.at(-1).drawdown)));
+  assert.equal(report.result.timing, undefined);
 });
 
-test('timing renders distinct reference metrics and the actual drifting account instead of reusing target weights', async () => {
-  const f = timingUiFixture(), T = require('../assets/portfolio-timing-model.js');
-  let timing;
-  f.context.window.ChanghengPortfolioTimingModel = { analyze(input, options) {
-    timing = T.analyze(input, { ...options, today: options.end }); return timing;
-  } };
-  await f.action('run');
-  const html = f.ui.view(f.helpers), account = P.simulate(f.input), fmt = f.helpers.pct;
-  const latest = account.curve.at(-1), ma = account.curve.slice(-200).reduce((total, point) => total + point.nav, 0) / 200;
-  const accountDeviation = (latest.nav / ma - 1) * 100;
-  assert.notEqual(fmt(timing.latest.deviation), fmt(accountDeviation));
-  assert.match(html, /不参与加仓评分/);
-  assert.ok(html.includes('账户净值相对200日均线 ' + fmt(accountDeviation) + ' · 回撤 ' + fmt(latest.drawdown)));
-  for (const holding of account.holdings) {
-    assert.ok(html.includes(holding.code + ' ' + fmt(holding.grossValue / account.grossValue * 100) + '（目标 ' + fmt(holding.targetWeight) + '）'));
-  }
-  assert.ok(html.includes('现金 ' + fmt(account.cash / account.grossValue * 100) + '（目标 40.00%）'));
-  assert.match(html, /目标组合 · 人民币 · 每次模拟按行情重算/);
-});
-
-function scoreUiFixture() {
+function longHistoryUiFixture() {
   return uiFixture(input => {
     Object.assign(input.config, { monthly: 0, rebalance: 'none', transactionFee: 0 });
     input.config.positions.forEach((p, i) => { p.weight = i < 2 ? 30 : 0; });
@@ -242,88 +202,76 @@ function scoreUiFixture() {
   });
 }
 
-test('a page kept open revalidates the manifest and recomputes from new histories 100 days later', async () => {
-  const f = scoreUiFixture(), T = require('../assets/portfolio-timing-model.js'), fetches = [], originalFetch = f.context.fetch;
+test('a page kept open refreshes the manifest and actual simulation from histories added 100 days later', async () => {
+  const f = longHistoryUiFixture(), fetches = [], originalFetch = f.context.fetch;
   f.context.fetch = async (url, options) => { fetches.push({ url, options }); return originalFetch(url); };
-  let today = '2026-01-08', timing;
-  f.context.window.ChanghengPortfolioTimingModel = { ...T, analyze(input, options) { timing = T.analyze(input, { ...options, today }); return timing; } };
+  await f.action('run'); await f.action('export-pdf');
+  const original = f.reports.at(-1).result;
   await f.action('run');
-  const firstScore = timing.scoring.value, priorHistory = JSON.stringify(timing.scoring.history);
-  assert.equal(timing.status, 'available'); assert.ok(Number.isFinite(firstScore));
-  await f.action('run');
-  assert.equal(fetches.filter(r => r.url.endsWith('.json')).length, 2, 'unchanged hashes reuse the two selected histories');
+  assert.equal(fetches.filter(r => r.url.endsWith('.json')).length, 2);
   assert.equal(fetches.filter(r => r.url === 'data/portfolio/catalog.js').length, 2);
   assert.ok(fetches.filter(r => r.url === 'data/portfolio/catalog.js').every(r => r.options.cache === 'no-store'));
-  today = '2026-04-18';
   for (const [k, a] of f.input.catalog.assets.entries()) {
     const h = f.input.histories[a.id], base = h.series.at(-1)[1];
-    for (let t = Date.parse('2026-01-09'), i = 1; t <= Date.parse(today); t += 86400000, i++) {
+    for (let t = Date.parse('2026-01-09'), i = 1; t <= Date.parse('2026-04-18'); t += 86400000, i++) {
       if ([0, 6].includes(new Date(t).getUTCDay())) continue;
       h.series.push([new Date(t).toISOString().slice(0, 10), base * Math.exp(-i * .009 - .02 * Math.sin(i * (1 + k)))]);
     }
     h.asOf = a.asOf = h.series.at(-1)[0]; a.sha256 = 'v2-' + a.id;
     a.historyUrl = a.historyUrl.replace('.json', '-v2.json');
   }
-  await f.action('run');
-  assert.equal(fetches.filter(r => r.url.endsWith('.json')).length, 4, 'changed content reloads selected histories');
-  assert.equal(timing.end, '2026-04-17'); assert.equal(timing.status, 'available');
-  assert.notEqual(timing.scoring.value, firstScore); assert.ok(timing.scoring.value <= 39);
-  assert.equal(JSON.stringify(timing.scoring.history.filter(p => p.day <= '2026-01-08')), priorHistory);
-  await f.action('export-pdf');
-  assert.equal(f.reports.at(-1).result.timing.scoring.value, timing.scoring.value);
-  await f.action('export-score');
-  const exported = f.downloads.find(row => row[0].includes('旧规则审计'));
-  assert.match(exported[1], /add-score-v1/); assert.match(exported[1], /2026-04-17/);
-  assert.match(exported[1], /长期位置分\/40/); assert.match(exported[1], /上限39分/);
-  assert.match(exported[1], /已撤回/); assert.match(exported[1], /不用于加仓决策/);
-  assert.doesNotMatch(exported[1], /暂缓额外加仓|小额分批候选|优先分批候选/);
+  await f.action('run'); await f.action('export-pdf');
+  const current = f.reports.at(-1).result;
+  assert.equal(fetches.filter(r => r.url.endsWith('.json')).length, 4);
+  assert.equal(current.end, '2026-04-17'); assert.notEqual(current.value, original.value);
+  assert.equal(current.catalogRefresh.available, true); assert.equal(current.timing, undefined);
+  assert.doesNotMatch(f.ui.view(f.helpers), scoreUi);
+  await f.action('export-result');
+  const csv = f.downloads.at(-1);
+  assert.match(csv[0], /组合模拟.*2026-04-17/); assert.match(csv[1], /税后估值/);
+  assert.doesNotMatch(csv[1], /add-score-v1|entry-percentile-knn-v1|买点历史分/);
 });
 
-test('failed freshness checks retain historical results but disable current score, band and gate', async () => {
-  const f = scoreUiFixture(), T = require('../assets/portfolio-timing-model.js'), originalFetch = f.context.fetch;
-  f.context.window.ChanghengPortfolioTimingModel = { ...T, analyze: (input, options) => T.analyze(input, { ...options, today: options.end }) };
-  await f.action('run');
+test('failed freshness checks retain dated simulation results and name the missing update in page and PDF', async () => {
+  const f = longHistoryUiFixture(), originalFetch = f.context.fetch;
+  await f.action('run'); await f.action('export-pdf');
+  const original = f.reports.at(-1).result;
   f.context.fetch = async url => url === 'data/portfolio/catalog.js' ? { ok: false, status: 503 } : originalFetch(url);
   await f.action('run'); await f.action('export-pdf');
-  const t = f.reports.at(-1).result.timing;
-  assert.equal(t.status, 'stale'); assert.equal(t.scoring.value, null); assert.equal(t.scoring.band, null);
-  assert.equal(t.scoring.gate.active, false); assert.ok(t.scoring.evidence.horizons.every(h => h.current === null));
-  assert.ok(t.scoring.history.length > 0); assert.match(t.scoring.missing, /未能确认最新行情.*503/);
-  const html = f.ui.view(f.helpers);
-  assert.match(html, /当前没有通过验证的加仓评分/); assert.match(html, /过往规则分记录/);
-  assert.equal(f.reports.at(-1).result.catalogRefresh.available, false);
+  const current = f.reports.at(-1).result;
+  assert.equal(current.value, original.value); assert.equal(current.end, original.end);
+  assert.equal(current.catalogRefresh.available, false); assert.match(current.catalogRefresh.missing, /未能确认最新行情.*503/);
+  const html = f.ui.view(f.helpers), pdfText = textOf(Pdf.layout(f.reports.at(-1), measure));
+  for (const text of [html, pdfText]) { assert.match(text, /本次模拟使用已保存的历史数据/); assert.doesNotMatch(text, scoreUi); }
+  assert.equal(current.timing, undefined);
 });
 
-test('history slider changes only its dated readout and cursor, leaving the current score and configuration intact', async () => {
-  const f = scoreUiFixture(), T = require('../assets/portfolio-timing-model.js');
-  let timing;
-  f.context.window.ChanghengPortfolioTimingModel = { ...T, analyze(input, options) { timing = T.analyze(input, { ...options, today: options.end }); return timing; } };
-  await f.action('run');
-  const nodes = Object.fromEntries(['portfolio-score-readout', 'portfolio-score-cursor', 'portfolio-score-point'].map(id => [id, { setAttribute(k, v) { this[k] = v; } }]));
-  f.context.document.getElementById = id => nodes[id] || null;
-  const slider = { dataset: { portfolioScoreDay: '' }, value: '0', setAttribute(k, v) { this[k] = v; } };
-  const before = JSON.stringify(timing), renders = f.renderStates.length;
-  f.ui.handleInput(slider);
-  assert.match(nodes['portfolio-score-readout'].textContent, new RegExp(timing.scoring.history[0].day));
-  assert.equal(nodes['portfolio-score-cursor'].x1, 44); assert.equal(nodes['portfolio-score-point'].cx, 44);
-  assert.equal(slider['aria-valuetext'], nodes['portfolio-score-readout'].textContent);
-  assert.equal(JSON.stringify(timing), before); assert.equal(f.renderStates.length, renders);
+test('retired score export and slider actions are inert while ordinary account exports remain available', async () => {
+  const f = accountUiFixture(); let calls = 0;
+  f.context.window.ChanghengPortfolioEntryView = { inspect() { calls++; throw new Error('No research slider'); } };
+  f.context.window.ChanghengPortfolioScoreView = { inspect() { calls++; throw new Error('No legacy slider'); } };
+  await f.action('run'); const before = f.downloads.length;
+  await f.action('export-score'); assert.equal(f.downloads.length, before);
+  for (const key of ['portfolioEntryDay', 'portfolioScoreDay']) f.ui.handleInput({ id: 'retired-slider', dataset: { [key]: '' }, value: '0' });
+  assert.equal(calls, 0); assert.doesNotMatch(f.ui.view(f.helpers), scoreUi);
+  await f.action('export-result'); assert.equal(f.downloads.length, before + 1); assert.match(f.downloads.at(-1)[0], /组合模拟/);
+  await f.action('export-holdings'); assert.equal(f.downloads.length, before + 2); assert.match(f.downloads.at(-1)[0], /持仓贡献/);
 });
 
-test('failure downloading a newly published history invalidates the previous current score until a successful rerun', async () => {
-  const f = scoreUiFixture(), T = require('../assets/portfolio-timing-model.js'), originalFetch = f.context.fetch;
-  f.context.window.ChanghengPortfolioTimingModel = { ...T, analyze: (input, options) => T.analyze(input, { ...options, today: options.end }) };
-  await f.action('run');
+test('a new history download failure preserves account facts and blocks export until a successful rerun', async () => {
+  const f = longHistoryUiFixture(), originalFetch = f.context.fetch;
+  await f.action('run'); await f.action('export-pdf'); const count = f.downloads.length;
   f.input.catalog.assets[0].sha256 = 'updated-content';
   f.context.fetch = async url => url === f.input.catalog.assets[0].historyUrl ? { ok: false, status: 503 } : originalFetch(url);
   await f.action('run');
   const html = f.ui.view(f.helpers);
   assert.match(html, /本次行情更新失败：两倍测试ETF：历史文件请求失败（503）/);
-  assert.match(html, /当前没有通过验证的加仓评分/); assert.doesNotMatch(html, /<strong>\d+<\/strong><span>\/ 100/);
+  assert.match(html, /模拟账户的期末风险/); assert.doesNotMatch(html, scoreUi);
+  await f.action('export-pdf'); assert.equal(f.downloads.length, count);
+  assert.match(f.notices.at(-1), /PDF 导出失败/);
   f.context.fetch = originalFetch;
   await f.action('run'); await f.action('export-pdf');
-  assert.equal(f.reports.at(-1).result.timing.status, 'available');
-  assert.ok(Number.isFinite(f.reports.at(-1).result.timing.scoring.value));
+  assert.equal(f.reports.at(-1).result.catalogRefresh.available, true); assert.equal(f.reports.at(-1).result.timing, undefined);
 });
 
 test('running with a cleared or saved blank allocation fills zero and preserves the 40% cash budget', async () => {
@@ -491,55 +439,11 @@ test('USD settings, tax reserve, PDF and CSV keep the same result currency after
   assert.equal(JSON.parse(f.downloads.at(-1)[1]).currency, 'USD');
 });
 
-test('history-derived entry analysis integrates with page, CSV, PDF and failed refresh without reviving v1 guidance', async () => {
-  const f = scoreUiFixture(), T = require('../assets/portfolio-timing-model.js');
-  f.context.window.ChanghengPortfolioEntryModel = require('../assets/portfolio-entry-model.js');
-  f.context.window.ChanghengPortfolioEntryView = require('../assets/portfolio-entry-view.js');
-  f.context.window.ChanghengPortfolioTimingModel = { ...T, analyze: (input, options) => T.analyze(input, { ...options, today: options.end }) };
-  await f.action('run'); await f.action('export-pdf');
-  const t = f.reports.at(-1).result.timing, e = t.entry;
-  assert.ok(Number.isFinite(e.value)); assert.equal(e.usage, 'experimental_history_rank');
-  assert.ok(e.neighbors.every(row => row.exit <= e.asOf));
-  const html = f.ui.view(f.helpers);
-  assert.match(html, /买点历史分/); assert.match(html, /逐月重演/);
-  assert.doesNotMatch(html, /当前没有通过验证的加仓评分|已撤回规则的历史记录/);
-  await f.action('export-score');
-  const csv = f.downloads.find(row => row[0].includes('买点历史'));
-  assert.ok(csv); assert.match(csv[1], /entry-percentile-knn-v1/); assert.match(csv[1], /当时最新训练到期日/);
-  assert.doesNotMatch(csv[1], /add-score-v1|优先分批候选/);
-  const originalFetch = f.context.fetch;
-  f.context.fetch = async url => url === 'data/portfolio/catalog.js' ? { ok: false, status: 503 } : originalFetch(url);
-  await f.action('run'); await f.action('export-pdf');
-  const stale = f.reports.at(-1).result.timing.entry;
-  assert.equal(stale.value, null); assert.match(stale.missing, /未能确认最新行情/); assert.ok(stale.history.length);
-});
-
-test('entry history slider reads dated scores and outcomes without changing the current prediction', async () => {
-  const f = scoreUiFixture(), T = require('../assets/portfolio-timing-model.js'); let timing;
-  f.context.window.ChanghengPortfolioEntryModel = require('../assets/portfolio-entry-model.js');
-  f.context.window.ChanghengPortfolioEntryView = require('../assets/portfolio-entry-view.js');
-  f.context.window.ChanghengPortfolioTimingModel = { ...T, analyze(input, options) { timing = T.analyze(input, { ...options, today: options.end }); return timing; } };
-  await f.action('run');
-  const nodes = Object.fromEntries(['portfolio-entry-readout', 'portfolio-entry-cursor', 'portfolio-entry-point'].map(id => [id, { setAttribute(k, v) { this[k] = v; } }]));
-  f.context.document.getElementById = id => nodes[id] || null;
-  const before = JSON.stringify(timing.entry), slider = { dataset: { portfolioEntryDay: '' }, value: '0', setAttribute(k, v) { this[k] = v; } };
-  f.ui.handleInput(slider);
-  assert.match(nodes['portfolio-entry-readout'].textContent, /当时已成熟.*随后一年/);
-  assert.equal(nodes['portfolio-entry-cursor'].x1, 44); assert.equal(JSON.stringify(timing.entry), before);
-});
-
-
-test('missing entry components explicitly report failure instead of restoring old scoring UI', async () => {
-  const f = scoreUiFixture(), T = require('../assets/portfolio-timing-model.js');
-  f.context.window.ChanghengPortfolioTimingModel = { ...T, analyze: (input, options) => T.analyze(input, { ...options, today: options.end }) };
-  f.context.window.ChanghengPortfolioEntryView = require('../assets/portfolio-entry-view.js');
-  delete f.context.window.ChanghengPortfolioEntryModel;
-  await f.action('run');
-  assert.match(f.ui.view(f.helpers), /历史买点模型未加载/);
-  assert.doesNotMatch(f.ui.view(f.helpers), /旧规则/);
-  f.context.window.ChanghengPortfolioEntryModel = require('../assets/portfolio-entry-model.js');
-  delete f.context.window.ChanghengPortfolioEntryView;
-  await f.action('run');
-  assert.match(f.ui.view(f.helpers), /历史买点显示组件未加载/);
-  assert.doesNotMatch(f.ui.view(f.helpers), /旧规则/);
+test('production entrypoint does not load research scoring modules, which remain available for research tests', () => {
+  const html = fs.readFileSync(path.resolve(__dirname, '../index.html'), 'utf8');
+  for (const file of ['portfolio-timing-model.js', 'portfolio-entry-model.js', 'portfolio-entry-view.js', 'portfolio-score-view.js', 'portfolio-score.css']) {
+    assert.ok(fs.existsSync(path.resolve(__dirname, '../assets', file)), file);
+    assert.ok(!html.includes('assets/' + file), file);
+  }
+  assert.match(html, /assets\/portfolio-model\.js/); assert.match(html, /assets\/portfolio-pdf\.js/); assert.match(html, /assets\/portfolio\.js/);
 });
