@@ -1,0 +1,94 @@
+{
+  "id": "equal-budget-mature-value-delay-v3",
+  "frozenDate": "2026-11-01",
+  "status": "frozen_before_v3_predictions_or_outcomes",
+  "purpose": "Test one target-alignment hypothesis: does the unchanged price-feature ridge method help monthly new money when it learns the actual one-year value of waiting five sessions instead of the five-session liquidation difference? This adds no new predictor information and does not promise an advantage.",
+  "targetPreference": "The user selected monthly new money versus fixed-date investing. Holding-period preference was asked asynchronously but has not been answered. One year remains the explicit provisional primary horizon from earlier research; three years is auxiliary. Do not interpret silence as user confirmation or select a horizon after observing results.",
+  "priorExposure": "The trend score, historical similarity score, seven v1 waiting rules, v2 five-session predictor, and the 1/10/20-day and 1/3-year scope audit have all been examined on this history. This is another registered historical study, not a genuinely untouched holdout. No formal correction for the entire adaptive research search is claimed; all prior failures remain unchanged.",
+  "frozenDependencies": [
+    { "path": "docs/research/portfolio-entry-protocol-v1.json", "sha256": "08c18500723cfef7474a7bea7ac8f0674c925c14f170307705293524e8c1365e" },
+    { "path": "docs/research/portfolio-entry-protocol-v2.json", "sha256": "835ad1d6b05b8ad4c07addee602d3e018614575829b584890553438305c06101" },
+    { "path": "scripts/research_portfolio_entry.cjs", "sha256": "60c813d6d260ef04ef24e4e24e22990838586934624545b80071146d87b0035e" },
+    { "path": "scripts/research_portfolio_entry_predictive.cjs", "sha256": "f3212aa549ba3666ad71bbe57d8f54296afcbbc03c8eb24e6cb1c13370bef6d3" },
+    { "path": "docs/research/portfolio-entry-scope-audit-protocol-v1.json", "sha256": "c0e34f76e3e52c598bc05c9f7ee40c27a13048fc7f124f7a63b4de8f52410dc1" },
+    { "path": "scripts/research_portfolio_entry_scope.cjs", "sha256": "7ae134cf89aa61cc4b6e89aa168d2a6e71191b43716a3be6499d0837cf4076e9" }
+  ],
+  "portfolioAndAccounts": "Inherit the exact v1 portfolio (USD 0.3, TQQQ 0.3, CNY strategic cash 0.4), actual adjusted asset prices and FX mapping, per-deposit 40/60 accounting, no rebalancing or borrowing, base/cash2/fee20 scenarios and pre-personal-tax limits. Inherit scope-audit funding calendars, equal-age and exact-twelve-deposit account endpoints, complete-outcome partitions, exclusion rules, account unitization, attribution and descriptive bootstrap block lengths. Do not modify any parent file or old result.",
+  "model": {
+    "id": "expanding_ridge_year1_delay5",
+    "candidates": 1,
+    "features": ["MA200_deviation", "all_history_drawdown", "return5", "return21", "volatility21"],
+    "featureDefinition": "Exactly v2 buildFeatures: daily constant-weight CNY reference including 40% zero-interest strategic cash, inclusive MA200 deviation, running all-history drawdown, five/21-session simple returns and sample SD of the latest 21 simple daily reference returns. Fractions, not percentage points. Reference is only a feature source, not the tradable account.",
+    "delaySessions": 5,
+    "labelHoldingYears": 1,
+    "labelEnd": "H(s) is the first actual common close on or after the one-calendar-year anniversary of the original funding date s, at most 14 calendar days later. February 29 clamps to February 28. Require s+5<=H(s) and complete finite features at s-1; absent or not-yet-observed endpoints do not produce labels.",
+    "label": "y_s = (1-0.001)/(1+0.001) * sum_j [originalWeight_j * CNY_price_j(H(s)) * (1/CNY_price_j(s+5) - 1/CNY_price_j(s))]. Original weights are 0.3 and 0.3, not normalized 0.5/0.5. This is delayed-minus-immediate one-year net terminal wealth divided by the whole deposit. Identical strategic cash cancels in the zero-interest base scenario.",
+    "labelUnits": "Fraction of the full original deposit. 100*y is the terminal difference in percentage points of total funding; 10000*y is basis points of the full deposit, not of the product budget.",
+    "causality": "Training feature for arrival s is at s-1. Prediction for arrival t uses features at t-1 and only labels with H(s)<=t-1. Sort mature-label events by (exitIndex, entryIndex), insert every newly mature label once, including multiple labels with the same endpoint. Do not replace a calendar year with 252 sessions or reuse v2's five-day maturation index.",
+    "training": "Expanding pool of all eligible, fully mature daily one-year labels. At least 756 labels. Standardize features using only this pool's means and population SD; zero-variance columns map to zero. Center y, unpenalized intercept, objective mean squared error + 1*sum(beta^2). No rolling-window search, clipping, winsorization, sign inversion or hyperparameter search.",
+    "minimumMatureLabels": 756,
+    "ridgeLambda": 1,
+    "prediction": "trainingMeanY + standardizedCurrentFeatures dot beta; use the same fixed v2 numerical ridge solver without changing its objective.",
+    "policy": "Each deposit makes one decision from its own preceding-close prediction: predicted y>1e-12 delays its complete 60% product-and-fee budget exactly five common closes; otherwise invest at arrival. Keep 40% strategic cash. Never re-predict during the wait, use future deposits, or change an order to fit the terminal date.",
+    "stress": "Base predictions and decisions are fixed for every cash/fee stress scenario. Do not refit labels or thresholds under stress."
+  },
+  "benchmarks": [
+    { "id": "immediate", "offsets": [0] },
+    { "id": "fixed_delay5", "offsets": [5] },
+    { "id": "three_tranches", "offsets": [0, 21, 42] }
+  ],
+  "evaluation": {
+    "primary": "Nominal day 1, equal_age_lot, holdingYears=1. Each unique monthly deposit has one common one-year endpoint and one pair of outcomes. Include unchanged/immediate decisions as exact zero improvement; do not discard them from the unconditional result.",
+    "allCalendars": [1, 10, 20],
+    "allScopes": ["equal_age_lot", "twelve_deposit_account"],
+    "allHoldingYears": [1, 3],
+    "calendarMeaning": "Cash is available only at the designated calendar day's first actual common close in that same month, as in the scope audit. This is a hypothetical funding schedule, not a claim about the user's payday.",
+    "warmup": "Exclude an entire paired account if any required arrival lacks a v3 prediction. All four strategies share the resulting eligibility and actual funding dates.",
+    "allResults": "Report all 108 calendar/scope/horizon/partition/scenario cells, including empty cells and full exclusion reasons. No new winner selection among dates or horizons.",
+    "accountScope": "The twelve-deposit account is an additional necessary non-inferiority check, not the same estimand as each lot held one year. Three-year accounts are auxiliary; short samples and missing outcomes cannot be substituted or stretched to obtain confirmation.",
+    "predictionDiagnostics": "On distinct eligible primary monthly dates, compare forecast MAE/MSE with the mean of exactly the same mature training pool. These diagnostics cannot substitute for actual paired wealth improvement. Record trainingN, featureDay, latestTrainingExit, predicted full-deposit basis points and the fixed action."
+  },
+  "selectionAndConfirmation": {
+    "candidateSelection": "None: exactly one fixed candidate. Development primary/base must satisfy all economic, action-coverage and concentration gates below before either later partition can confirm. A development failure makes later outputs diagnostic only. Never replace it with a better date, horizon, threshold or variant.",
+    "unconditionalGates": {
+      "minimumMeanDeltaPp": 0.5,
+      "minimumMedianDeltaPp": 0,
+      "minimumP10AccountReturnDifferencePp": -1,
+      "minimumMedianDrawdownDifferencePp": -2,
+      "minimumWorstDrawdownDifferencePp": -2
+    },
+    "actionGates": {
+      "minimumUniqueDelayedMonths": 12,
+      "minimumArrivalYearsWithDelay": 3,
+      "minimumNonOverlappingDelayedOneYearWindows": 3,
+      "minimumStrictPositiveShareAmongDelayedMonths": 0.6,
+      "minimumMedianDeltaPpAmongDelayedMonths": 0.5
+    },
+    "actionDefinitions": "Action means this deposit was actually delayed five sessions. Count unique arrival dates, not rolling-account occurrences. For non-overlap, sort delayed lots by arrival date and greedily keep a lot only when its arrival is strictly after the prior kept lot's terminal. These minimum counts are evidence screens, not a claim of independent observations or guaranteed statistical power.",
+    "concentration": "For each primary partition, delete each represented funding calendar year in turn and require the remaining unconditional mean delta to be strictly positive. Also enumerate every calendar-month start m from the earliest eligible month through the latest eligible month minus 11 months, and remove all arrivals in [m,m+12 calendar months). Do not skip a block because of an internal missing month or select blocks after seeing returns. Every remaining unconditional mean must be strictly positive. Require at least 24 eligible months and at least one full block. Preserve zeros, dates and removed/remaining counts. These diagnostics reduce single-period dependence but do not prove independent market regimes.",
+    "laterPartitions": "Both validation (2019-2022 full outcomes) and replication (2023 onward full outcomes) must separately satisfy all the same economic/action/concentration gates. The primary/base 12-month-block descriptive mean interval must have status descriptive and lower>0 in each. Keep the original 2000 draws, Mulberry32 seed 0x6d2b79f5 and 2.5/97.5 percentiles; no insufficient/empty interval passes.",
+    "benchmarks": "In each later primary/base partition, paired mean and median against fixed_delay5 and three_tranches must both be >=0 on identical qualified accounts.",
+    "stress": "In each later primary partition, cash2 and fee20 must each retain strictly positive unconditional mean delta versus immediate, nonnegative median, and the same risk lower bounds. Action dates stay fixed.",
+    "calendarTransfer": "In each later partition, nominal 10 and 20 equal-age one-year base results must each have nonnegative mean and median delta versus their own immediate benchmark. These are necessary transferability checks, never alternative primary winners or proof for every possible payday.",
+    "completeMonthlyAccount": "In each later partition, nominal 1 twelve-deposit/hold-one-year base accounts must each have nonnegative mean and median delta versus immediate, plus the same risk lower bounds. Report 24-month-block intervals and sample limits; do not claim those limited windows alone establish long-run monthly-account superiority.",
+    "precision": "Every numeric gate requires a finite value; null, undefined, nonfinite and empty/insufficient evidence fail, including nonnegative transfer/account checks. Counts are exact nonnegative integers, action share thresholds are fractions in [0,1] with no monetary tolerance. Monetary and risk gates operate on unrounded percentage-point values; >= gates allow only 1e-10 absolute floating-rounding tolerance. Strict positivity for wins, concentration, stress means and interval lower bounds means >1e-10 percentage points. Action threshold remains the fixed 1e-12 deposit fraction.",
+    "whyNewGates": "For unique-lot evaluation, unchanged actions have zero delta, so unconditional strict win share cannot exceed action frequency and a majority of unchanged months forces median zero. The new study separately requires total economic value, action quality, broad enough action coverage and concentration resistance. Old v1/v2 gates and failures are not reevaluated under these new gates.",
+    "integration": "Historical confirmation alone does not publish a score. Require an independent annual-label/model/ledger/causality audit, production-equivalent fee/dividend/personal-tax validation, precise validated portfolio/funding/holding scope and future recomputation behavior. Do not transform an unvalidated forecast into a 0-100 score or automatically integrate it."
+  },
+  "preOutcomeCalendarAudit": {
+    "basis": "Calendar and label-completeness counts only, computed before new label values, forecasts or strategy returns. Counts are not evidence of predictor quality.",
+    "firstLabelEntry": "2010-11-26",
+    "firstLabelExit": "2011-11-28",
+    "label756Entry": "2013-11-26",
+    "label756Exit": "2014-11-26",
+    "firstPrediction": "2014-11-28",
+    "firstMonthlyArrival": "2014-12-01",
+    "perCalendarEligibleCountsDevelopmentValidationReplication": {
+      "equal_age_lot_1": [37, 36, 34],
+      "equal_age_lot_3": [13, 12, 10],
+      "twelve_deposit_account_1": [26, 25, 23],
+      "twelve_deposit_account_3": [2, 1, 0]
+    },
+    "limitations": "All three calendar schedules have these counts on the current snapshot. 756 overlapping daily labels are not 756 independent years. Full twelve-deposit one-year account blocks number only 3/2 possible starts in development/validation and are insufficient in replication. These facts cannot be repaired by inventing outcomes or changing partitions after results."
+  }
+}
