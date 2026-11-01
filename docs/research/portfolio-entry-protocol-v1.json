@@ -67,7 +67,7 @@
     "accountReturn": "100 * (terminal liquidated wealth / total contributions - 1); capital result, not annualized or time-weighted return",
     "p10Difference": "quantile(candidate account returns, 0.1) minus quantile(immediate account returns, 0.1); also report paired-delta P10 separately for diagnosis",
     "drawdownDifference": "candidate median/min of signed negative max drawdowns minus immediate median/min; positive means improvement",
-    "bootstrap": "Mulberry32 seed 0x6d2b79f5 reset per summary, non-circular consecutive 12-start blocks from positions 0..n-12, append blocks until n values then truncate, 2000 draws; n<12 uses whole segment but status insufficient_blocks and cannot pass integration"
+    "bootstrap": "Mulberry32 seed 0x6d2b79f5 reset per summary, non-circular consecutive 12-start blocks from positions 0..n-12, append blocks until n values then truncate, 2000 draws; n<=12 uses whole segment but status insufficient_blocks and cannot pass integration"
   },
   "selection": {
     "perFundingMode": true,
