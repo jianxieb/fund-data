@@ -1,0 +1,39 @@
+{
+  "reviewDate": "2026-11-01",
+  "scope": "Raw source identity only; no model, data refresh, or investment validation",
+  "publishedFileSha256": "f6f4ddf31942134bc7603fc1d47fcec3645fdf83e003c05fcb3f86300aac2f74",
+  "sources": [
+    {
+      "id": "vxn",
+      "requestedUrl": "https://cdn.cboe.com/api/global/us_indices/daily_prices/VXN_History.csv",
+      "finalUrl": "https://cdn-api.cboe.com/api/global/us_indices/daily_prices/VXN_History.csv",
+      "httpLastModified": "Fri, 30 Oct 2026 21:30:41 GMT",
+      "httpDate": "Sun, 01 Nov 2026 15:36:36 GMT",
+      "retrievedAt": "2026-11-01T15:36:26.892132+00:00",
+      "sourceSha256": "febd159dcadd600281eff76a5d00bf87d973b1ca18713c69f3bc433829da530c",
+      "bytes": 219930,
+      "rows": 4312,
+      "matchesPublishedSourceSha256": true,
+      "publishedFetchedAt": "2026-11-01T01:11:36.231589+00:00",
+      "publishedSourceSha256": "febd159dcadd600281eff76a5d00bf87d973b1ca18713c69f3bc433829da530c",
+      "localArchive": ".tmp-snap/portfolio-entry-input-review-20261101/vxn-febd159dcadd600281eff76a5d00bf87d973b1ca18713c69f3bc433829da530c.csv",
+      "limitation": "Matching current source bytes do not establish historical publication availability or unrevised first-release values."
+    },
+    {
+      "id": "vix",
+      "requestedUrl": "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv",
+      "finalUrl": "https://cdn-api.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv",
+      "httpLastModified": "Sat, 31 Oct 2026 01:11:02 GMT",
+      "httpDate": "Sun, 01 Nov 2026 15:36:39 GMT",
+      "retrievedAt": "2026-11-01T15:36:30.578717+00:00",
+      "sourceSha256": "a5409500cdb8fdd86ba926dcfc7de5b1a54d365d4b7850a1a50c803ae57fddd1",
+      "bytes": 474349,
+      "rows": 9306,
+      "matchesPublishedSourceSha256": true,
+      "publishedFetchedAt": "2026-11-01T01:11:36.689278+00:00",
+      "publishedSourceSha256": "a5409500cdb8fdd86ba926dcfc7de5b1a54d365d4b7850a1a50c803ae57fddd1",
+      "localArchive": ".tmp-snap/portfolio-entry-input-review-20261101/vix-a5409500cdb8fdd86ba926dcfc7de5b1a54d365d4b7850a1a50c803ae57fddd1.csv",
+      "limitation": "Matching current source bytes do not establish historical publication availability or unrevised first-release values."
+    }
+  ]
+}

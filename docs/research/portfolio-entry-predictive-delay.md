@@ -44,3 +44,27 @@ node scripts/check_portfolio_entry_predictive.cjs --report docs/evidence/portfol
 独立程序用直接批量矩阵计算，复核154个月初和7个额外历史截点，最大预测差3.19×10⁻¹⁶；核对656个主情景账户、38022笔成交和12500笔外部入金，最大终值差8.19×10⁻¹²。它另对2015、2020、2022、2025四个截点的当前／未来价格进行突变，确认当日及之前的完整预测不变，未来确实受到修改影响。独立程序18项手算和错误拒绝检查通过。主情景账簿算对，不代表模型获得投资优势。
 
 本轮保留固定λ、特征、训练窗口、五日等待和触发阈值，不再在这个版本里寻找补救参数。下一步应先审查是否存在可按当时发布时间使用的新增信息，不能把两轮失败包装为已完成的加仓指标。
+
+## 下一轮输入审查（2026-11-01）
+
+已完成只读可行性调查，未运行新模型或调整参数。仓库已有期权市场隐含波动信息，但数据覆盖完整不代表已找到有效加仓指标，也不代表这些历史值在当时已经可用。
+
+| 已保存序列 | 观察范围 | 观察数 | 与组合日历核对 |
+| --- | --- | ---: | --- |
+| Cboe VXN | 2009-09-14—2026-10-30 | 4312 | 全部4206个共同交易日均有值 |
+| Cboe VIX | 2004-01-02—2026-10-30 | 5778 | 全部4206个共同交易日均有值 |
+
+数据位于`data/market-history.json`，`market_history.py`已有官方CSV的`DATE`／`CLOSE`解析和来源URL、采集时间、SHA256记录。已重新取得[VXN官方CSV](https://cdn-api.cboe.com/api/global/us_indices/daily_prices/VXN_History.csv)与[VIX官方CSV](https://cdn-api.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv)，两份原始响应SHA256均与现有发布文件记录完全一致；未改写生产数据或旧缓存。[本轮源文件核对记录](../evidence/portfolio-entry-input-review-v1.json)保留取得时间、HTTP文件时间、原始行数、指纹和本地归档路径。VIX原始响应有9306条，发布序列按既定起点保留5778条，不是数据缺失。
+
+VXN来自纳斯达克100期权，VIX来自标普500期权，两者不能互换。VXN不是TQQQ三倍波动率，也不是USD半导体ETF或30%／30%／40%组合的波动率；若后续研究使用它，只能作为外部特征，组合收益仍由原持仓、人民币汇率和现金账簿计算。[Cboe方法说明](https://cdn.cboe.com/api/global/us_indices/governance/Volatility_Index_Methodology_Selected_Broad_Based_Index_Equity_and_ETF_Volatility_Indices.pdf)、[VIX历史说明](https://www.cboe.com/tradable-products/vix/vix-historical-data/)
+
+仍缺的证据：
+
+- **可得时间与历史版本。** 现行方法列VXN发布至16:15美东时间，不能用当天最终值决定当天16:00的ETF收盘交易。CSV观察日、文件修改时间与历史首次发布时间不同；当前文件时间不能外推成历史发布承诺。Cboe允许追溯更正日终值，现有最新历史文件缺少逐日首次发布时间及当时版本。[Cboe指数政策§3.3](https://cdn.cboe.com/resources/indices/governance/Cboe_Index_Policies_Practices.pdf)
+- **FRED不能自动补齐早期版本。** [VXNCLS](https://fred.stlouisfed.org/series/VXNCLS)有2001年起的日收盘历史，但[ALFRED VXN页面](https://alfred.stlouisfed.org/series?seid=VXNCLS)显示的发布元数据从2014-04-17开始；尚未取得2010—2014逐日当时版本的证据。观察日、FRED更新时间和[vintage日期](https://alfred.stlouisfed.org/help/downloaddata)需要分别记录。
+- **历史原始响应归档。** 旧`.tmp-snap/market-history`缓存仅到2026-10-20，不能充当当前发布快照的原件。本轮匹配的原件已另存`.tmp-snap/portfolio-entry-input-review-20261101/`，原始文件只保存在本地、未加入Git；源指纹已入库。当前字节一致解决本次输入身份核对，仍不能证明更早历史从未修订或在相应决策日已发布。
+- **使用范围。** 尚需按实际研究、系统展示及再发布方式确认来源条款与已有授权范围；公开可下载本身不足以确认这些用途。[Cboe条款](https://www.cboe.com/terms/)、[FRED条款](https://fred.stlouisfed.org/legal/)
+
+[既有市场研究](../market-history-method.md)已经查看过VIX／VXN与随后实际波动、VXN加均线的相似历史收益。因此它们虽未进入本轮组合预测，也必须计入下一轮的历史已接触范围，不能称为未见数据。
+
+下一步先补齐可得时间和历史版本证据，明确使用范围，再冻结新增输入及缺失值处理协议；不能用VIX替补VXN、用指数收益替补组合收益，或直接据此宣称已找到有效指标。
