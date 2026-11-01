@@ -74,3 +74,5 @@ rtk proxy node scripts/check_portfolio_entry_ssi.cjs --report docs/evidence/port
 本轮拒绝的是上述固定SSI输入、学习方法和0／5日行动组合；不能据此证明所有份额信息或所有历史指标均无效，也不能为了找正数再改本轮阈值、月份或持有期限。此前[七条等待规则](portfolio-entry-research.md)、[五日价格预测](portfolio-entry-predictive-delay.md)、[年度资金差预测](portfolio-entry-value.md)和[分产品预测](portfolio-entry-components.md)仍未通过；[事后机会诊断](portfolio-entry-opportunity.md)也没有提供可执行预测。
 
 “验证并集成真正改善月度加仓效果的指标”尚未完成。后续研究需要新的独立依据或用户明确的不同执行范围，先登记再检验；本轮失败与当前无有效评分的状态保持原样。
+
+后续[日历与月度资金流核查](portfolio-entry-calendar-review.md)已完成论文窗口、到账日期和历史可得性对照；尚未形成新交易候选，没有增加收益试验或恢复评分。

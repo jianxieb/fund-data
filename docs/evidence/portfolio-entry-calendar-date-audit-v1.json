@@ -1,0 +1,3069 @@
+{
+  "id": "portfolio-entry-calendar-date-audit-v1",
+  "scope": "observed_dates_only_no_strategy_or_return_test",
+  "sources": [
+    {
+      "path": "data/portfolio/us/USD-7da045c18fc6ba1a.json",
+      "sha256": "7da045c18fc6ba1a7f4dc7259f930f8176c67f5679a7b422052bba7355a13675"
+    },
+    {
+      "path": "data/portfolio/us/TQQQ-0694d4779afd68bd.json",
+      "sha256": "0694d4779afd68bd9c0392d62592b1908601719f2eabfbebc5f8fa7be80e6d2c"
+    }
+  ],
+  "independentCrossCheck": {
+    "path": "docs/evidence/portfolio-entry-ssi-v5.json",
+    "sha256": "475f489fdf9f942d0c3b583d3d8826268e0b9bba4c1b782dc9b0768474bb3f99",
+    "field": "dailyPredictions[*].day",
+    "equal": true
+  },
+  "calendar": {
+    "first": "2010-02-11",
+    "last": "2026-10-30",
+    "observations": 4206,
+    "sha256": "2e3851fc6cf968b09f2a1f33a76ff1eaa949e824537cdc9678a665333f65f952"
+  },
+  "monthSelection": "Exclude initial partial month 2010-02; retain all 200 observed months 2010-03..2026-10, without model warmup, maturity or partition filtering.",
+  "arrivalDefinition": "First observed common date with calendar day >= nominal day; ordinal is one-based within that month's observed common dates.",
+  "limitations": [
+    "Observed dates are not a historical as-of schedule or a settlement calendar.",
+    "Matching date sources does not independently prove complete exchange coverage.",
+    "No outcome was calculated and no trading candidate was registered."
+  ],
+  "arrivals": [
+    {
+      "nominalDay": 1,
+      "months": 200,
+      "ordinalCounts": {
+        "1": 200
+      },
+      "rows": [
+        {
+          "month": "2010-03",
+          "arrival": "2010-03-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2010-04",
+          "arrival": "2010-04-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2010-05",
+          "arrival": "2010-05-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2010-06",
+          "arrival": "2010-06-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2010-07",
+          "arrival": "2010-07-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2010-08",
+          "arrival": "2010-08-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2010-09",
+          "arrival": "2010-09-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2010-10",
+          "arrival": "2010-10-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2010-11",
+          "arrival": "2010-11-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2010-12",
+          "arrival": "2010-12-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2011-01",
+          "arrival": "2011-01-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2011-02",
+          "arrival": "2011-02-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2011-03",
+          "arrival": "2011-03-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2011-04",
+          "arrival": "2011-04-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2011-05",
+          "arrival": "2011-05-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2011-06",
+          "arrival": "2011-06-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2011-07",
+          "arrival": "2011-07-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2011-08",
+          "arrival": "2011-08-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2011-09",
+          "arrival": "2011-09-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2011-10",
+          "arrival": "2011-10-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2011-11",
+          "arrival": "2011-11-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2011-12",
+          "arrival": "2011-12-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2012-01",
+          "arrival": "2012-01-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2012-02",
+          "arrival": "2012-02-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2012-03",
+          "arrival": "2012-03-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2012-04",
+          "arrival": "2012-04-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2012-05",
+          "arrival": "2012-05-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2012-06",
+          "arrival": "2012-06-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2012-07",
+          "arrival": "2012-07-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2012-08",
+          "arrival": "2012-08-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2012-09",
+          "arrival": "2012-09-04",
+          "ordinal": 1
+        },
+        {
+          "month": "2012-10",
+          "arrival": "2012-10-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2012-11",
+          "arrival": "2012-11-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2012-12",
+          "arrival": "2012-12-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2013-01",
+          "arrival": "2013-01-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2013-02",
+          "arrival": "2013-02-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2013-03",
+          "arrival": "2013-03-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2013-04",
+          "arrival": "2013-04-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2013-05",
+          "arrival": "2013-05-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2013-06",
+          "arrival": "2013-06-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2013-07",
+          "arrival": "2013-07-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2013-08",
+          "arrival": "2013-08-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2013-09",
+          "arrival": "2013-09-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2013-10",
+          "arrival": "2013-10-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2013-11",
+          "arrival": "2013-11-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2013-12",
+          "arrival": "2013-12-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2014-01",
+          "arrival": "2014-01-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2014-02",
+          "arrival": "2014-02-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2014-03",
+          "arrival": "2014-03-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2014-04",
+          "arrival": "2014-04-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2014-05",
+          "arrival": "2014-05-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2014-06",
+          "arrival": "2014-06-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2014-07",
+          "arrival": "2014-07-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2014-08",
+          "arrival": "2014-08-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2014-09",
+          "arrival": "2014-09-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2014-10",
+          "arrival": "2014-10-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2014-11",
+          "arrival": "2014-11-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2014-12",
+          "arrival": "2014-12-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2015-01",
+          "arrival": "2015-01-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2015-02",
+          "arrival": "2015-02-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2015-03",
+          "arrival": "2015-03-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2015-04",
+          "arrival": "2015-04-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2015-05",
+          "arrival": "2015-05-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2015-06",
+          "arrival": "2015-06-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2015-07",
+          "arrival": "2015-07-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2015-08",
+          "arrival": "2015-08-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2015-09",
+          "arrival": "2015-09-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2015-10",
+          "arrival": "2015-10-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2015-11",
+          "arrival": "2015-11-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2015-12",
+          "arrival": "2015-12-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2016-01",
+          "arrival": "2016-01-04",
+          "ordinal": 1
+        },
+        {
+          "month": "2016-02",
+          "arrival": "2016-02-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2016-03",
+          "arrival": "2016-03-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2016-04",
+          "arrival": "2016-04-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2016-05",
+          "arrival": "2016-05-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2016-06",
+          "arrival": "2016-06-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2016-07",
+          "arrival": "2016-07-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2016-08",
+          "arrival": "2016-08-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2016-09",
+          "arrival": "2016-09-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2016-10",
+          "arrival": "2016-10-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2016-11",
+          "arrival": "2016-11-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2016-12",
+          "arrival": "2016-12-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2017-01",
+          "arrival": "2017-01-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2017-02",
+          "arrival": "2017-02-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2017-03",
+          "arrival": "2017-03-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2017-04",
+          "arrival": "2017-04-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2017-05",
+          "arrival": "2017-05-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2017-06",
+          "arrival": "2017-06-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2017-07",
+          "arrival": "2017-07-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2017-08",
+          "arrival": "2017-08-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2017-09",
+          "arrival": "2017-09-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2017-10",
+          "arrival": "2017-10-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2017-11",
+          "arrival": "2017-11-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2017-12",
+          "arrival": "2017-12-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2018-01",
+          "arrival": "2018-01-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2018-02",
+          "arrival": "2018-02-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2018-03",
+          "arrival": "2018-03-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2018-04",
+          "arrival": "2018-04-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2018-05",
+          "arrival": "2018-05-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2018-06",
+          "arrival": "2018-06-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2018-07",
+          "arrival": "2018-07-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2018-08",
+          "arrival": "2018-08-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2018-09",
+          "arrival": "2018-09-04",
+          "ordinal": 1
+        },
+        {
+          "month": "2018-10",
+          "arrival": "2018-10-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2018-11",
+          "arrival": "2018-11-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2018-12",
+          "arrival": "2018-12-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2019-01",
+          "arrival": "2019-01-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2019-02",
+          "arrival": "2019-02-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2019-03",
+          "arrival": "2019-03-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2019-04",
+          "arrival": "2019-04-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2019-05",
+          "arrival": "2019-05-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2019-06",
+          "arrival": "2019-06-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2019-07",
+          "arrival": "2019-07-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2019-08",
+          "arrival": "2019-08-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2019-09",
+          "arrival": "2019-09-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2019-10",
+          "arrival": "2019-10-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2019-11",
+          "arrival": "2019-11-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2019-12",
+          "arrival": "2019-12-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2020-01",
+          "arrival": "2020-01-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2020-02",
+          "arrival": "2020-02-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2020-03",
+          "arrival": "2020-03-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2020-04",
+          "arrival": "2020-04-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2020-05",
+          "arrival": "2020-05-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2020-06",
+          "arrival": "2020-06-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2020-07",
+          "arrival": "2020-07-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2020-08",
+          "arrival": "2020-08-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2020-09",
+          "arrival": "2020-09-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2020-10",
+          "arrival": "2020-10-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2020-11",
+          "arrival": "2020-11-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2020-12",
+          "arrival": "2020-12-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2021-01",
+          "arrival": "2021-01-04",
+          "ordinal": 1
+        },
+        {
+          "month": "2021-02",
+          "arrival": "2021-02-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2021-03",
+          "arrival": "2021-03-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2021-04",
+          "arrival": "2021-04-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2021-05",
+          "arrival": "2021-05-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2021-06",
+          "arrival": "2021-06-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2021-07",
+          "arrival": "2021-07-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2021-08",
+          "arrival": "2021-08-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2021-09",
+          "arrival": "2021-09-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2021-10",
+          "arrival": "2021-10-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2021-11",
+          "arrival": "2021-11-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2021-12",
+          "arrival": "2021-12-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2022-01",
+          "arrival": "2022-01-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2022-02",
+          "arrival": "2022-02-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2022-03",
+          "arrival": "2022-03-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2022-04",
+          "arrival": "2022-04-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2022-05",
+          "arrival": "2022-05-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2022-06",
+          "arrival": "2022-06-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2022-07",
+          "arrival": "2022-07-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2022-08",
+          "arrival": "2022-08-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2022-09",
+          "arrival": "2022-09-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2022-10",
+          "arrival": "2022-10-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2022-11",
+          "arrival": "2022-11-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2022-12",
+          "arrival": "2022-12-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2023-01",
+          "arrival": "2023-01-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2023-02",
+          "arrival": "2023-02-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2023-03",
+          "arrival": "2023-03-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2023-04",
+          "arrival": "2023-04-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2023-05",
+          "arrival": "2023-05-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2023-06",
+          "arrival": "2023-06-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2023-07",
+          "arrival": "2023-07-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2023-08",
+          "arrival": "2023-08-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2023-09",
+          "arrival": "2023-09-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2023-10",
+          "arrival": "2023-10-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2023-11",
+          "arrival": "2023-11-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2023-12",
+          "arrival": "2023-12-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2024-01",
+          "arrival": "2024-01-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2024-02",
+          "arrival": "2024-02-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2024-03",
+          "arrival": "2024-03-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2024-04",
+          "arrival": "2024-04-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2024-05",
+          "arrival": "2024-05-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2024-06",
+          "arrival": "2024-06-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2024-07",
+          "arrival": "2024-07-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2024-08",
+          "arrival": "2024-08-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2024-09",
+          "arrival": "2024-09-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2024-10",
+          "arrival": "2024-10-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2024-11",
+          "arrival": "2024-11-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2024-12",
+          "arrival": "2024-12-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2025-01",
+          "arrival": "2025-01-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2025-02",
+          "arrival": "2025-02-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2025-03",
+          "arrival": "2025-03-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2025-04",
+          "arrival": "2025-04-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2025-05",
+          "arrival": "2025-05-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2025-06",
+          "arrival": "2025-06-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2025-07",
+          "arrival": "2025-07-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2025-08",
+          "arrival": "2025-08-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2025-09",
+          "arrival": "2025-09-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2025-10",
+          "arrival": "2025-10-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2025-11",
+          "arrival": "2025-11-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2025-12",
+          "arrival": "2025-12-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2026-01",
+          "arrival": "2026-01-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2026-02",
+          "arrival": "2026-02-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2026-03",
+          "arrival": "2026-03-02",
+          "ordinal": 1
+        },
+        {
+          "month": "2026-04",
+          "arrival": "2026-04-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2026-05",
+          "arrival": "2026-05-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2026-06",
+          "arrival": "2026-06-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2026-07",
+          "arrival": "2026-07-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2026-08",
+          "arrival": "2026-08-03",
+          "ordinal": 1
+        },
+        {
+          "month": "2026-09",
+          "arrival": "2026-09-01",
+          "ordinal": 1
+        },
+        {
+          "month": "2026-10",
+          "arrival": "2026-10-01",
+          "ordinal": 1
+        }
+      ]
+    },
+    {
+      "nominalDay": 10,
+      "months": 200,
+      "ordinalCounts": {
+        "5": 6,
+        "6": 39,
+        "7": 74,
+        "8": 81
+      },
+      "rows": [
+        {
+          "month": "2010-03",
+          "arrival": "2010-03-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2010-04",
+          "arrival": "2010-04-12",
+          "ordinal": 7
+        },
+        {
+          "month": "2010-05",
+          "arrival": "2010-05-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2010-06",
+          "arrival": "2010-06-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2010-07",
+          "arrival": "2010-07-12",
+          "ordinal": 7
+        },
+        {
+          "month": "2010-08",
+          "arrival": "2010-08-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2010-09",
+          "arrival": "2010-09-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2010-10",
+          "arrival": "2010-10-11",
+          "ordinal": 7
+        },
+        {
+          "month": "2010-11",
+          "arrival": "2010-11-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2010-12",
+          "arrival": "2010-12-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2011-01",
+          "arrival": "2011-01-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2011-02",
+          "arrival": "2011-02-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2011-03",
+          "arrival": "2011-03-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2011-04",
+          "arrival": "2011-04-11",
+          "ordinal": 7
+        },
+        {
+          "month": "2011-05",
+          "arrival": "2011-05-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2011-06",
+          "arrival": "2011-06-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2011-07",
+          "arrival": "2011-07-11",
+          "ordinal": 6
+        },
+        {
+          "month": "2011-08",
+          "arrival": "2011-08-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2011-09",
+          "arrival": "2011-09-12",
+          "ordinal": 7
+        },
+        {
+          "month": "2011-10",
+          "arrival": "2011-10-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2011-11",
+          "arrival": "2011-11-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2011-12",
+          "arrival": "2011-12-12",
+          "ordinal": 8
+        },
+        {
+          "month": "2012-01",
+          "arrival": "2012-01-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2012-02",
+          "arrival": "2012-02-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2012-03",
+          "arrival": "2012-03-12",
+          "ordinal": 8
+        },
+        {
+          "month": "2012-04",
+          "arrival": "2012-04-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2012-05",
+          "arrival": "2012-05-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2012-06",
+          "arrival": "2012-06-11",
+          "ordinal": 7
+        },
+        {
+          "month": "2012-07",
+          "arrival": "2012-07-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2012-08",
+          "arrival": "2012-08-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2012-09",
+          "arrival": "2012-09-10",
+          "ordinal": 5
+        },
+        {
+          "month": "2012-10",
+          "arrival": "2012-10-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2012-11",
+          "arrival": "2012-11-12",
+          "ordinal": 8
+        },
+        {
+          "month": "2012-12",
+          "arrival": "2012-12-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2013-01",
+          "arrival": "2013-01-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2013-02",
+          "arrival": "2013-02-11",
+          "ordinal": 7
+        },
+        {
+          "month": "2013-03",
+          "arrival": "2013-03-11",
+          "ordinal": 7
+        },
+        {
+          "month": "2013-04",
+          "arrival": "2013-04-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2013-05",
+          "arrival": "2013-05-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2013-06",
+          "arrival": "2013-06-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2013-07",
+          "arrival": "2013-07-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2013-08",
+          "arrival": "2013-08-12",
+          "ordinal": 8
+        },
+        {
+          "month": "2013-09",
+          "arrival": "2013-09-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2013-10",
+          "arrival": "2013-10-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2013-11",
+          "arrival": "2013-11-11",
+          "ordinal": 7
+        },
+        {
+          "month": "2013-12",
+          "arrival": "2013-12-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2014-01",
+          "arrival": "2014-01-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2014-02",
+          "arrival": "2014-02-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2014-03",
+          "arrival": "2014-03-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2014-04",
+          "arrival": "2014-04-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2014-05",
+          "arrival": "2014-05-12",
+          "ordinal": 8
+        },
+        {
+          "month": "2014-06",
+          "arrival": "2014-06-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2014-07",
+          "arrival": "2014-07-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2014-08",
+          "arrival": "2014-08-11",
+          "ordinal": 7
+        },
+        {
+          "month": "2014-09",
+          "arrival": "2014-09-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2014-10",
+          "arrival": "2014-10-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2014-11",
+          "arrival": "2014-11-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2014-12",
+          "arrival": "2014-12-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2015-01",
+          "arrival": "2015-01-12",
+          "ordinal": 7
+        },
+        {
+          "month": "2015-02",
+          "arrival": "2015-02-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2015-03",
+          "arrival": "2015-03-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2015-04",
+          "arrival": "2015-04-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2015-05",
+          "arrival": "2015-05-11",
+          "ordinal": 7
+        },
+        {
+          "month": "2015-06",
+          "arrival": "2015-06-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2015-07",
+          "arrival": "2015-07-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2015-08",
+          "arrival": "2015-08-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2015-09",
+          "arrival": "2015-09-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2015-10",
+          "arrival": "2015-10-12",
+          "ordinal": 8
+        },
+        {
+          "month": "2015-11",
+          "arrival": "2015-11-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2015-12",
+          "arrival": "2015-12-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2016-01",
+          "arrival": "2016-01-11",
+          "ordinal": 6
+        },
+        {
+          "month": "2016-02",
+          "arrival": "2016-02-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2016-03",
+          "arrival": "2016-03-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2016-04",
+          "arrival": "2016-04-11",
+          "ordinal": 7
+        },
+        {
+          "month": "2016-05",
+          "arrival": "2016-05-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2016-06",
+          "arrival": "2016-06-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2016-07",
+          "arrival": "2016-07-11",
+          "ordinal": 6
+        },
+        {
+          "month": "2016-08",
+          "arrival": "2016-08-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2016-09",
+          "arrival": "2016-09-12",
+          "ordinal": 7
+        },
+        {
+          "month": "2016-10",
+          "arrival": "2016-10-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2016-11",
+          "arrival": "2016-11-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2016-12",
+          "arrival": "2016-12-12",
+          "ordinal": 8
+        },
+        {
+          "month": "2017-01",
+          "arrival": "2017-01-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2017-02",
+          "arrival": "2017-02-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2017-03",
+          "arrival": "2017-03-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2017-04",
+          "arrival": "2017-04-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2017-05",
+          "arrival": "2017-05-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2017-06",
+          "arrival": "2017-06-12",
+          "ordinal": 8
+        },
+        {
+          "month": "2017-07",
+          "arrival": "2017-07-10",
+          "ordinal": 5
+        },
+        {
+          "month": "2017-08",
+          "arrival": "2017-08-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2017-09",
+          "arrival": "2017-09-11",
+          "ordinal": 6
+        },
+        {
+          "month": "2017-10",
+          "arrival": "2017-10-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2017-11",
+          "arrival": "2017-11-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2017-12",
+          "arrival": "2017-12-11",
+          "ordinal": 7
+        },
+        {
+          "month": "2018-01",
+          "arrival": "2018-01-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2018-02",
+          "arrival": "2018-02-12",
+          "ordinal": 8
+        },
+        {
+          "month": "2018-03",
+          "arrival": "2018-03-12",
+          "ordinal": 8
+        },
+        {
+          "month": "2018-04",
+          "arrival": "2018-04-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2018-05",
+          "arrival": "2018-05-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2018-06",
+          "arrival": "2018-06-11",
+          "ordinal": 7
+        },
+        {
+          "month": "2018-07",
+          "arrival": "2018-07-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2018-08",
+          "arrival": "2018-08-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2018-09",
+          "arrival": "2018-09-10",
+          "ordinal": 5
+        },
+        {
+          "month": "2018-10",
+          "arrival": "2018-10-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2018-11",
+          "arrival": "2018-11-12",
+          "ordinal": 8
+        },
+        {
+          "month": "2018-12",
+          "arrival": "2018-12-10",
+          "ordinal": 5
+        },
+        {
+          "month": "2019-01",
+          "arrival": "2019-01-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2019-02",
+          "arrival": "2019-02-11",
+          "ordinal": 7
+        },
+        {
+          "month": "2019-03",
+          "arrival": "2019-03-11",
+          "ordinal": 7
+        },
+        {
+          "month": "2019-04",
+          "arrival": "2019-04-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2019-05",
+          "arrival": "2019-05-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2019-06",
+          "arrival": "2019-06-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2019-07",
+          "arrival": "2019-07-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2019-08",
+          "arrival": "2019-08-12",
+          "ordinal": 8
+        },
+        {
+          "month": "2019-09",
+          "arrival": "2019-09-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2019-10",
+          "arrival": "2019-10-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2019-11",
+          "arrival": "2019-11-11",
+          "ordinal": 7
+        },
+        {
+          "month": "2019-12",
+          "arrival": "2019-12-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2020-01",
+          "arrival": "2020-01-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2020-02",
+          "arrival": "2020-02-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2020-03",
+          "arrival": "2020-03-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2020-04",
+          "arrival": "2020-04-13",
+          "ordinal": 8
+        },
+        {
+          "month": "2020-05",
+          "arrival": "2020-05-11",
+          "ordinal": 7
+        },
+        {
+          "month": "2020-06",
+          "arrival": "2020-06-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2020-07",
+          "arrival": "2020-07-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2020-08",
+          "arrival": "2020-08-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2020-09",
+          "arrival": "2020-09-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2020-10",
+          "arrival": "2020-10-12",
+          "ordinal": 8
+        },
+        {
+          "month": "2020-11",
+          "arrival": "2020-11-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2020-12",
+          "arrival": "2020-12-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2021-01",
+          "arrival": "2021-01-11",
+          "ordinal": 6
+        },
+        {
+          "month": "2021-02",
+          "arrival": "2021-02-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2021-03",
+          "arrival": "2021-03-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2021-04",
+          "arrival": "2021-04-12",
+          "ordinal": 7
+        },
+        {
+          "month": "2021-05",
+          "arrival": "2021-05-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2021-06",
+          "arrival": "2021-06-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2021-07",
+          "arrival": "2021-07-12",
+          "ordinal": 7
+        },
+        {
+          "month": "2021-08",
+          "arrival": "2021-08-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2021-09",
+          "arrival": "2021-09-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2021-10",
+          "arrival": "2021-10-11",
+          "ordinal": 7
+        },
+        {
+          "month": "2021-11",
+          "arrival": "2021-11-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2021-12",
+          "arrival": "2021-12-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2022-01",
+          "arrival": "2022-01-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2022-02",
+          "arrival": "2022-02-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2022-03",
+          "arrival": "2022-03-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2022-04",
+          "arrival": "2022-04-11",
+          "ordinal": 7
+        },
+        {
+          "month": "2022-05",
+          "arrival": "2022-05-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2022-06",
+          "arrival": "2022-06-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2022-07",
+          "arrival": "2022-07-11",
+          "ordinal": 6
+        },
+        {
+          "month": "2022-08",
+          "arrival": "2022-08-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2022-09",
+          "arrival": "2022-09-12",
+          "ordinal": 7
+        },
+        {
+          "month": "2022-10",
+          "arrival": "2022-10-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2022-11",
+          "arrival": "2022-11-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2022-12",
+          "arrival": "2022-12-12",
+          "ordinal": 8
+        },
+        {
+          "month": "2023-01",
+          "arrival": "2023-01-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2023-02",
+          "arrival": "2023-02-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2023-03",
+          "arrival": "2023-03-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2023-04",
+          "arrival": "2023-04-10",
+          "ordinal": 5
+        },
+        {
+          "month": "2023-05",
+          "arrival": "2023-05-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2023-06",
+          "arrival": "2023-06-12",
+          "ordinal": 8
+        },
+        {
+          "month": "2023-07",
+          "arrival": "2023-07-10",
+          "ordinal": 5
+        },
+        {
+          "month": "2023-08",
+          "arrival": "2023-08-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2023-09",
+          "arrival": "2023-09-11",
+          "ordinal": 6
+        },
+        {
+          "month": "2023-10",
+          "arrival": "2023-10-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2023-11",
+          "arrival": "2023-11-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2023-12",
+          "arrival": "2023-12-11",
+          "ordinal": 7
+        },
+        {
+          "month": "2024-01",
+          "arrival": "2024-01-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2024-02",
+          "arrival": "2024-02-12",
+          "ordinal": 8
+        },
+        {
+          "month": "2024-03",
+          "arrival": "2024-03-11",
+          "ordinal": 7
+        },
+        {
+          "month": "2024-04",
+          "arrival": "2024-04-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2024-05",
+          "arrival": "2024-05-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2024-06",
+          "arrival": "2024-06-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2024-07",
+          "arrival": "2024-07-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2024-08",
+          "arrival": "2024-08-12",
+          "ordinal": 8
+        },
+        {
+          "month": "2024-09",
+          "arrival": "2024-09-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2024-10",
+          "arrival": "2024-10-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2024-11",
+          "arrival": "2024-11-11",
+          "ordinal": 7
+        },
+        {
+          "month": "2024-12",
+          "arrival": "2024-12-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2025-01",
+          "arrival": "2025-01-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2025-02",
+          "arrival": "2025-02-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2025-03",
+          "arrival": "2025-03-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2025-04",
+          "arrival": "2025-04-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2025-05",
+          "arrival": "2025-05-12",
+          "ordinal": 8
+        },
+        {
+          "month": "2025-06",
+          "arrival": "2025-06-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2025-07",
+          "arrival": "2025-07-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2025-08",
+          "arrival": "2025-08-11",
+          "ordinal": 7
+        },
+        {
+          "month": "2025-09",
+          "arrival": "2025-09-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2025-10",
+          "arrival": "2025-10-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2025-11",
+          "arrival": "2025-11-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2025-12",
+          "arrival": "2025-12-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2026-01",
+          "arrival": "2026-01-12",
+          "ordinal": 7
+        },
+        {
+          "month": "2026-02",
+          "arrival": "2026-02-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2026-03",
+          "arrival": "2026-03-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2026-04",
+          "arrival": "2026-04-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2026-05",
+          "arrival": "2026-05-11",
+          "ordinal": 7
+        },
+        {
+          "month": "2026-06",
+          "arrival": "2026-06-10",
+          "ordinal": 8
+        },
+        {
+          "month": "2026-07",
+          "arrival": "2026-07-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2026-08",
+          "arrival": "2026-08-10",
+          "ordinal": 6
+        },
+        {
+          "month": "2026-09",
+          "arrival": "2026-09-10",
+          "ordinal": 7
+        },
+        {
+          "month": "2026-10",
+          "arrival": "2026-10-12",
+          "ordinal": 8
+        }
+      ]
+    },
+    {
+      "nominalDay": 20,
+      "months": 200,
+      "ordinalCounts": {
+        "12": 5,
+        "13": 44,
+        "14": 89,
+        "15": 45,
+        "16": 17
+      },
+      "rows": [
+        {
+          "month": "2010-03",
+          "arrival": "2010-03-22",
+          "ordinal": 16
+        },
+        {
+          "month": "2010-04",
+          "arrival": "2010-04-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2010-05",
+          "arrival": "2010-05-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2010-06",
+          "arrival": "2010-06-21",
+          "ordinal": 15
+        },
+        {
+          "month": "2010-07",
+          "arrival": "2010-07-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2010-08",
+          "arrival": "2010-08-20",
+          "ordinal": 15
+        },
+        {
+          "month": "2010-09",
+          "arrival": "2010-09-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2010-10",
+          "arrival": "2010-10-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2010-11",
+          "arrival": "2010-11-22",
+          "ordinal": 16
+        },
+        {
+          "month": "2010-12",
+          "arrival": "2010-12-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2011-01",
+          "arrival": "2011-01-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2011-02",
+          "arrival": "2011-02-22",
+          "ordinal": 15
+        },
+        {
+          "month": "2011-03",
+          "arrival": "2011-03-21",
+          "ordinal": 15
+        },
+        {
+          "month": "2011-04",
+          "arrival": "2011-04-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2011-05",
+          "arrival": "2011-05-20",
+          "ordinal": 15
+        },
+        {
+          "month": "2011-06",
+          "arrival": "2011-06-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2011-07",
+          "arrival": "2011-07-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2011-08",
+          "arrival": "2011-08-22",
+          "ordinal": 16
+        },
+        {
+          "month": "2011-09",
+          "arrival": "2011-09-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2011-10",
+          "arrival": "2011-10-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2011-11",
+          "arrival": "2011-11-21",
+          "ordinal": 15
+        },
+        {
+          "month": "2011-12",
+          "arrival": "2011-12-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2012-01",
+          "arrival": "2012-01-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2012-02",
+          "arrival": "2012-02-21",
+          "ordinal": 14
+        },
+        {
+          "month": "2012-03",
+          "arrival": "2012-03-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2012-04",
+          "arrival": "2012-04-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2012-05",
+          "arrival": "2012-05-21",
+          "ordinal": 15
+        },
+        {
+          "month": "2012-06",
+          "arrival": "2012-06-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2012-07",
+          "arrival": "2012-07-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2012-08",
+          "arrival": "2012-08-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2012-09",
+          "arrival": "2012-09-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2012-10",
+          "arrival": "2012-10-22",
+          "ordinal": 16
+        },
+        {
+          "month": "2012-11",
+          "arrival": "2012-11-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2012-12",
+          "arrival": "2012-12-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2013-01",
+          "arrival": "2013-01-22",
+          "ordinal": 14
+        },
+        {
+          "month": "2013-02",
+          "arrival": "2013-02-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2013-03",
+          "arrival": "2013-03-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2013-04",
+          "arrival": "2013-04-22",
+          "ordinal": 16
+        },
+        {
+          "month": "2013-05",
+          "arrival": "2013-05-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2013-06",
+          "arrival": "2013-06-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2013-07",
+          "arrival": "2013-07-22",
+          "ordinal": 15
+        },
+        {
+          "month": "2013-08",
+          "arrival": "2013-08-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2013-09",
+          "arrival": "2013-09-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2013-10",
+          "arrival": "2013-10-21",
+          "ordinal": 15
+        },
+        {
+          "month": "2013-11",
+          "arrival": "2013-11-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2013-12",
+          "arrival": "2013-12-20",
+          "ordinal": 15
+        },
+        {
+          "month": "2014-01",
+          "arrival": "2014-01-21",
+          "ordinal": 13
+        },
+        {
+          "month": "2014-02",
+          "arrival": "2014-02-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2014-03",
+          "arrival": "2014-03-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2014-04",
+          "arrival": "2014-04-21",
+          "ordinal": 14
+        },
+        {
+          "month": "2014-05",
+          "arrival": "2014-05-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2014-06",
+          "arrival": "2014-06-20",
+          "ordinal": 15
+        },
+        {
+          "month": "2014-07",
+          "arrival": "2014-07-21",
+          "ordinal": 14
+        },
+        {
+          "month": "2014-08",
+          "arrival": "2014-08-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2014-09",
+          "arrival": "2014-09-22",
+          "ordinal": 15
+        },
+        {
+          "month": "2014-10",
+          "arrival": "2014-10-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2014-11",
+          "arrival": "2014-11-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2014-12",
+          "arrival": "2014-12-22",
+          "ordinal": 16
+        },
+        {
+          "month": "2015-01",
+          "arrival": "2015-01-20",
+          "ordinal": 12
+        },
+        {
+          "month": "2015-02",
+          "arrival": "2015-02-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2015-03",
+          "arrival": "2015-03-20",
+          "ordinal": 15
+        },
+        {
+          "month": "2015-04",
+          "arrival": "2015-04-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2015-05",
+          "arrival": "2015-05-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2015-06",
+          "arrival": "2015-06-22",
+          "ordinal": 16
+        },
+        {
+          "month": "2015-07",
+          "arrival": "2015-07-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2015-08",
+          "arrival": "2015-08-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2015-09",
+          "arrival": "2015-09-21",
+          "ordinal": 14
+        },
+        {
+          "month": "2015-10",
+          "arrival": "2015-10-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2015-11",
+          "arrival": "2015-11-20",
+          "ordinal": 15
+        },
+        {
+          "month": "2015-12",
+          "arrival": "2015-12-21",
+          "ordinal": 15
+        },
+        {
+          "month": "2016-01",
+          "arrival": "2016-01-20",
+          "ordinal": 12
+        },
+        {
+          "month": "2016-02",
+          "arrival": "2016-02-22",
+          "ordinal": 15
+        },
+        {
+          "month": "2016-03",
+          "arrival": "2016-03-21",
+          "ordinal": 15
+        },
+        {
+          "month": "2016-04",
+          "arrival": "2016-04-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2016-05",
+          "arrival": "2016-05-20",
+          "ordinal": 15
+        },
+        {
+          "month": "2016-06",
+          "arrival": "2016-06-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2016-07",
+          "arrival": "2016-07-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2016-08",
+          "arrival": "2016-08-22",
+          "ordinal": 16
+        },
+        {
+          "month": "2016-09",
+          "arrival": "2016-09-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2016-10",
+          "arrival": "2016-10-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2016-11",
+          "arrival": "2016-11-21",
+          "ordinal": 15
+        },
+        {
+          "month": "2016-12",
+          "arrival": "2016-12-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2017-01",
+          "arrival": "2017-01-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2017-02",
+          "arrival": "2017-02-21",
+          "ordinal": 14
+        },
+        {
+          "month": "2017-03",
+          "arrival": "2017-03-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2017-04",
+          "arrival": "2017-04-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2017-05",
+          "arrival": "2017-05-22",
+          "ordinal": 16
+        },
+        {
+          "month": "2017-06",
+          "arrival": "2017-06-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2017-07",
+          "arrival": "2017-07-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2017-08",
+          "arrival": "2017-08-21",
+          "ordinal": 15
+        },
+        {
+          "month": "2017-09",
+          "arrival": "2017-09-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2017-10",
+          "arrival": "2017-10-20",
+          "ordinal": 15
+        },
+        {
+          "month": "2017-11",
+          "arrival": "2017-11-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2017-12",
+          "arrival": "2017-12-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2018-01",
+          "arrival": "2018-01-22",
+          "ordinal": 14
+        },
+        {
+          "month": "2018-02",
+          "arrival": "2018-02-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2018-03",
+          "arrival": "2018-03-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2018-04",
+          "arrival": "2018-04-20",
+          "ordinal": 15
+        },
+        {
+          "month": "2018-05",
+          "arrival": "2018-05-21",
+          "ordinal": 15
+        },
+        {
+          "month": "2018-06",
+          "arrival": "2018-06-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2018-07",
+          "arrival": "2018-07-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2018-08",
+          "arrival": "2018-08-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2018-09",
+          "arrival": "2018-09-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2018-10",
+          "arrival": "2018-10-22",
+          "ordinal": 16
+        },
+        {
+          "month": "2018-11",
+          "arrival": "2018-11-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2018-12",
+          "arrival": "2018-12-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2019-01",
+          "arrival": "2019-01-22",
+          "ordinal": 14
+        },
+        {
+          "month": "2019-02",
+          "arrival": "2019-02-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2019-03",
+          "arrival": "2019-03-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2019-04",
+          "arrival": "2019-04-22",
+          "ordinal": 15
+        },
+        {
+          "month": "2019-05",
+          "arrival": "2019-05-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2019-06",
+          "arrival": "2019-06-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2019-07",
+          "arrival": "2019-07-22",
+          "ordinal": 15
+        },
+        {
+          "month": "2019-08",
+          "arrival": "2019-08-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2019-09",
+          "arrival": "2019-09-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2019-10",
+          "arrival": "2019-10-21",
+          "ordinal": 15
+        },
+        {
+          "month": "2019-11",
+          "arrival": "2019-11-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2019-12",
+          "arrival": "2019-12-20",
+          "ordinal": 15
+        },
+        {
+          "month": "2020-01",
+          "arrival": "2020-01-21",
+          "ordinal": 13
+        },
+        {
+          "month": "2020-02",
+          "arrival": "2020-02-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2020-03",
+          "arrival": "2020-03-20",
+          "ordinal": 15
+        },
+        {
+          "month": "2020-04",
+          "arrival": "2020-04-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2020-05",
+          "arrival": "2020-05-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2020-06",
+          "arrival": "2020-06-22",
+          "ordinal": 16
+        },
+        {
+          "month": "2020-07",
+          "arrival": "2020-07-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2020-08",
+          "arrival": "2020-08-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2020-09",
+          "arrival": "2020-09-21",
+          "ordinal": 14
+        },
+        {
+          "month": "2020-10",
+          "arrival": "2020-10-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2020-11",
+          "arrival": "2020-11-20",
+          "ordinal": 15
+        },
+        {
+          "month": "2020-12",
+          "arrival": "2020-12-21",
+          "ordinal": 15
+        },
+        {
+          "month": "2021-01",
+          "arrival": "2021-01-20",
+          "ordinal": 12
+        },
+        {
+          "month": "2021-02",
+          "arrival": "2021-02-22",
+          "ordinal": 15
+        },
+        {
+          "month": "2021-03",
+          "arrival": "2021-03-22",
+          "ordinal": 16
+        },
+        {
+          "month": "2021-04",
+          "arrival": "2021-04-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2021-05",
+          "arrival": "2021-05-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2021-06",
+          "arrival": "2021-06-21",
+          "ordinal": 15
+        },
+        {
+          "month": "2021-07",
+          "arrival": "2021-07-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2021-08",
+          "arrival": "2021-08-20",
+          "ordinal": 15
+        },
+        {
+          "month": "2021-09",
+          "arrival": "2021-09-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2021-10",
+          "arrival": "2021-10-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2021-11",
+          "arrival": "2021-11-22",
+          "ordinal": 16
+        },
+        {
+          "month": "2021-12",
+          "arrival": "2021-12-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2022-01",
+          "arrival": "2022-01-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2022-02",
+          "arrival": "2022-02-22",
+          "ordinal": 15
+        },
+        {
+          "month": "2022-03",
+          "arrival": "2022-03-21",
+          "ordinal": 15
+        },
+        {
+          "month": "2022-04",
+          "arrival": "2022-04-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2022-05",
+          "arrival": "2022-05-20",
+          "ordinal": 15
+        },
+        {
+          "month": "2022-06",
+          "arrival": "2022-06-21",
+          "ordinal": 14
+        },
+        {
+          "month": "2022-07",
+          "arrival": "2022-07-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2022-08",
+          "arrival": "2022-08-22",
+          "ordinal": 16
+        },
+        {
+          "month": "2022-09",
+          "arrival": "2022-09-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2022-10",
+          "arrival": "2022-10-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2022-11",
+          "arrival": "2022-11-21",
+          "ordinal": 15
+        },
+        {
+          "month": "2022-12",
+          "arrival": "2022-12-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2023-01",
+          "arrival": "2023-01-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2023-02",
+          "arrival": "2023-02-21",
+          "ordinal": 14
+        },
+        {
+          "month": "2023-03",
+          "arrival": "2023-03-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2023-04",
+          "arrival": "2023-04-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2023-05",
+          "arrival": "2023-05-22",
+          "ordinal": 16
+        },
+        {
+          "month": "2023-06",
+          "arrival": "2023-06-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2023-07",
+          "arrival": "2023-07-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2023-08",
+          "arrival": "2023-08-21",
+          "ordinal": 15
+        },
+        {
+          "month": "2023-09",
+          "arrival": "2023-09-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2023-10",
+          "arrival": "2023-10-20",
+          "ordinal": 15
+        },
+        {
+          "month": "2023-11",
+          "arrival": "2023-11-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2023-12",
+          "arrival": "2023-12-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2024-01",
+          "arrival": "2024-01-22",
+          "ordinal": 14
+        },
+        {
+          "month": "2024-02",
+          "arrival": "2024-02-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2024-03",
+          "arrival": "2024-03-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2024-04",
+          "arrival": "2024-04-22",
+          "ordinal": 16
+        },
+        {
+          "month": "2024-05",
+          "arrival": "2024-05-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2024-06",
+          "arrival": "2024-06-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2024-07",
+          "arrival": "2024-07-22",
+          "ordinal": 15
+        },
+        {
+          "month": "2024-08",
+          "arrival": "2024-08-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2024-09",
+          "arrival": "2024-09-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2024-10",
+          "arrival": "2024-10-21",
+          "ordinal": 15
+        },
+        {
+          "month": "2024-11",
+          "arrival": "2024-11-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2024-12",
+          "arrival": "2024-12-20",
+          "ordinal": 15
+        },
+        {
+          "month": "2025-01",
+          "arrival": "2025-01-21",
+          "ordinal": 12
+        },
+        {
+          "month": "2025-02",
+          "arrival": "2025-02-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2025-03",
+          "arrival": "2025-03-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2025-04",
+          "arrival": "2025-04-21",
+          "ordinal": 14
+        },
+        {
+          "month": "2025-05",
+          "arrival": "2025-05-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2025-06",
+          "arrival": "2025-06-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2025-07",
+          "arrival": "2025-07-21",
+          "ordinal": 14
+        },
+        {
+          "month": "2025-08",
+          "arrival": "2025-08-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2025-09",
+          "arrival": "2025-09-22",
+          "ordinal": 15
+        },
+        {
+          "month": "2025-10",
+          "arrival": "2025-10-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2025-11",
+          "arrival": "2025-11-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2025-12",
+          "arrival": "2025-12-22",
+          "ordinal": 16
+        },
+        {
+          "month": "2026-01",
+          "arrival": "2026-01-20",
+          "ordinal": 12
+        },
+        {
+          "month": "2026-02",
+          "arrival": "2026-02-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2026-03",
+          "arrival": "2026-03-20",
+          "ordinal": 15
+        },
+        {
+          "month": "2026-04",
+          "arrival": "2026-04-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2026-05",
+          "arrival": "2026-05-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2026-06",
+          "arrival": "2026-06-22",
+          "ordinal": 15
+        },
+        {
+          "month": "2026-07",
+          "arrival": "2026-07-20",
+          "ordinal": 13
+        },
+        {
+          "month": "2026-08",
+          "arrival": "2026-08-20",
+          "ordinal": 14
+        },
+        {
+          "month": "2026-09",
+          "arrival": "2026-09-21",
+          "ordinal": 14
+        },
+        {
+          "month": "2026-10",
+          "arrival": "2026-10-20",
+          "ordinal": 14
+        }
+      ]
+    }
+  ]
+}
