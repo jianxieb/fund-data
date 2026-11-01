@@ -1,0 +1,1032 @@
+{
+  "schemaVersion": 1,
+  "id": "portfolio-entry-signal-feasibility-v1",
+  "checkedAt": "2026-11-01T17:29:42.333607+00:00",
+  "purpose": "Input availability and point-in-time feasibility only. No new SSI, labels, predictions, strategy returns or return association were computed.",
+  "status": "input_availability_confirmed_point_in_time_and_reconstruction_not_validated",
+  "newModelRegistered": false,
+  "oldV4StatusUnchanged": true,
+  "productionDataModified": false,
+  "rawArchiveDirectory": "/tmp/portfolio-entry-signal-inputs-20261101",
+  "rawArchiveIsGitTracked": false,
+  "primaryMechanism": {
+    "name": "Six leveraged ETF shares-outstanding inputs for Davies Speculation Sentiment Index",
+    "paperUrl": "https://www.cambridge.org/core/journals/journal-of-financial-and-quantitative-analysis/article/speculation-sentiment/846E44374D60D2760DFE5CE4B291F4EA",
+    "paperPublication": "2022-04-11 online; 2022-11 journal issue",
+    "scope": "Establish underlying share data and author legacy-series availability only; do not reproduce economic results or establish an edge for this portfolio.",
+    "independentInformation": "Primary-market changes in shares contain non-price activity, unlike the five v4 CNY-price features. Incremental predictive value has not been tested here.",
+    "officialDiscoveryUrl": "https://www.proshares.com/resources/data-downloads",
+    "officialHistory": [
+      {
+        "id": "SSO",
+        "url": "https://accounts.profunds.com/etfdata/ByFund/SSO-historical_nav.csv",
+        "resolvedUrl": "https://accounts.profunds.com/etfdata/ByFund/SSO-historical_nav.csv",
+        "localPath": "/tmp/portfolio-entry-signal-inputs-20261101/SSO-historical_nav.csv",
+        "retrievedAt": "2026-11-01T17:26:26.052177+00:00",
+        "httpStatus": 200,
+        "httpHeaders": {
+          "Content-Type": "text/csv",
+          "Last-Modified": "Sat, 31 Oct 2026 01:06:48 GMT",
+          "Date": "Sun, 01 Nov 2026 17:26:37 GMT",
+          "ETag": "\"717a2-65f1886fbef84\""
+        },
+        "bytes": 464802,
+        "sha256": "75d341894ee04523bbff65b613496935a3a745d8dcb06cfcb71f0a2e7989f544",
+        "priorInMemorySha256": "75d341894ee04523bbff65b613496935a3a745d8dcb06cfcb71f0a2e7989f544",
+        "matchesPriorInMemoryRead": true,
+        "initialAttemptError": null,
+        "rowCount": 5125,
+        "first": "2006-06-19",
+        "last": "2026-10-30",
+        "fields": [
+          "Date",
+          "ProShares Name",
+          "Ticker",
+          "NAV",
+          "Prior NAV",
+          "NAV Change (%)",
+          "NAV Change ($)",
+          "Shares Outstanding (000)",
+          "Assets Under Management"
+        ],
+        "quality": {
+          "missingOrNonfiniteSharesDates": [],
+          "zeroSharesDates": [],
+          "negativeSharesDates": [],
+          "duplicateDateCount": 0,
+          "consecutiveEqualReportedSharesPairs": 2451,
+          "minimumReportedSharesThousands": 2400.0,
+          "maximumNavTimesSharesVersusAumRelativeDifference": {
+            "day": "2006-07-13",
+            "reportedSharesThousands": 4800.02,
+            "impliedSharesThousandsFromAumDivNav": 4800.015999999999,
+            "absoluteRelativeDifference": 8.33330555893852e-07
+          },
+          "rowsWithIdentityDifferenceAboveOnePercent": 0
+        },
+        "splitEventCount": 4,
+        "earliestRawRow": {
+          "Date": "06/19/2006",
+          "ProShares Name": "ProShares Ultra S&P500",
+          "Ticker": "SSO",
+          "NAV": "4.375",
+          "Prior NAV": "4.375",
+          "NAV Change (%)": "0.00000",
+          "NAV Change ($)": "0",
+          "Shares Outstanding (000)": "2400",
+          "Assets Under Management": "10500000"
+        }
+      },
+      {
+        "id": "SDS",
+        "url": "https://accounts.profunds.com/etfdata/ByFund/SDS-historical_nav.csv",
+        "resolvedUrl": "https://accounts.profunds.com/etfdata/ByFund/SDS-historical_nav.csv",
+        "localPath": "/tmp/portfolio-entry-signal-inputs-20261101/SDS-historical_nav.csv",
+        "retrievedAt": "2026-11-01T17:26:26.052854+00:00",
+        "httpStatus": 200,
+        "httpHeaders": {
+          "Content-Type": "text/csv",
+          "Last-Modified": "Sat, 31 Oct 2026 01:06:41 GMT",
+          "Date": "Sun, 01 Nov 2026 17:26:37 GMT",
+          "ETag": "\"72145-65f18868f499e\""
+        },
+        "bytes": 467269,
+        "sha256": "1116ae9d3ca29811be7d8d49bce0209f81ca52daab0fe80be8d010bacb4e629b",
+        "priorInMemorySha256": "1116ae9d3ca29811be7d8d49bce0209f81ca52daab0fe80be8d010bacb4e629b",
+        "matchesPriorInMemoryRead": true,
+        "initialAttemptError": null,
+        "rowCount": 5110,
+        "first": "2006-07-11",
+        "last": "2026-10-30",
+        "fields": [
+          "Date",
+          "ProShares Name",
+          "Ticker",
+          "NAV",
+          "Prior NAV",
+          "NAV Change (%)",
+          "NAV Change ($)",
+          "Shares Outstanding (000)",
+          "Assets Under Management"
+        ],
+        "quality": {
+          "missingOrNonfiniteSharesDates": [],
+          "zeroSharesDates": [],
+          "negativeSharesDates": [],
+          "duplicateDateCount": 0,
+          "consecutiveEqualReportedSharesPairs": 1662,
+          "minimumReportedSharesThousands": 0.38,
+          "maximumNavTimesSharesVersusAumRelativeDifference": {
+            "day": "2006-07-11",
+            "reportedSharesThousands": 0.38,
+            "impliedSharesThousandsFromAumDivNav": 0.375,
+            "absoluteRelativeDifference": 0.01333333333333342
+          },
+          "rowsWithIdentityDifferenceAboveOnePercent": 6
+        },
+        "splitEventCount": 4,
+        "earliestRawRow": {
+          "Date": "07/11/2006",
+          "ProShares Name": "ProShares UltraShort S&P500",
+          "Ticker": "SDS",
+          "NAV": "28000",
+          "Prior NAV": "28000",
+          "NAV Change (%)": "0.00000",
+          "NAV Change ($)": "0",
+          "Shares Outstanding (000)": "0.38",
+          "Assets Under Management": "10500000"
+        }
+      },
+      {
+        "id": "QLD",
+        "url": "https://accounts.profunds.com/etfdata/ByFund/QLD-historical_nav.csv",
+        "resolvedUrl": "https://accounts.profunds.com/etfdata/ByFund/QLD-historical_nav.csv",
+        "localPath": "/tmp/portfolio-entry-signal-inputs-20261101/QLD-historical_nav.csv",
+        "retrievedAt": "2026-11-01T17:26:26.054857+00:00",
+        "httpStatus": 200,
+        "httpHeaders": {
+          "Content-Type": "text/csv",
+          "Last-Modified": "Sat, 31 Oct 2026 01:06:44 GMT",
+          "Date": "Sun, 01 Nov 2026 17:26:38 GMT",
+          "ETag": "\"6ff18-65f1886be80f2\""
+        },
+        "bytes": 458520,
+        "sha256": "a74848f118de5a9c54ee363eca7edc613525f4c23e7dac7e6b092988ac665e22",
+        "priorInMemorySha256": "a74848f118de5a9c54ee363eca7edc613525f4c23e7dac7e6b092988ac665e22",
+        "matchesPriorInMemoryRead": true,
+        "initialAttemptError": null,
+        "rowCount": 5125,
+        "first": "2006-06-19",
+        "last": "2026-10-30",
+        "fields": [
+          "Date",
+          "ProShares Name",
+          "Ticker",
+          "NAV",
+          "Prior NAV",
+          "NAV Change (%)",
+          "NAV Change ($)",
+          "Shares Outstanding (000)",
+          "Assets Under Management"
+        ],
+        "quality": {
+          "missingOrNonfiniteSharesDates": [],
+          "zeroSharesDates": [],
+          "negativeSharesDates": [],
+          "duplicateDateCount": 0,
+          "consecutiveEqualReportedSharesPairs": 2532,
+          "minimumReportedSharesThousands": 9600.0,
+          "maximumNavTimesSharesVersusAumRelativeDifference": {
+            "day": "2006-07-13",
+            "reportedSharesThousands": 19200.06,
+            "impliedSharesThousandsFromAumDivNav": 19200.064,
+            "absoluteRelativeDifference": 2.0833263891795184e-07
+          },
+          "rowsWithIdentityDifferenceAboveOnePercent": 0
+        },
+        "splitEventCount": 6,
+        "earliestRawRow": {
+          "Date": "06/19/2006",
+          "ProShares Name": "ProShares Ultra QQQ",
+          "Ticker": "QLD",
+          "NAV": "1.09375",
+          "Prior NAV": "1.09375",
+          "NAV Change (%)": "0.00000",
+          "NAV Change ($)": "0",
+          "Shares Outstanding (000)": "9600",
+          "Assets Under Management": "10500000"
+        }
+      },
+      {
+        "id": "QID",
+        "url": "https://accounts.profunds.com/etfdata/ByFund/QID-historical_nav.csv",
+        "resolvedUrl": "https://accounts.profunds.com/etfdata/ByFund/QID-historical_nav.csv",
+        "localPath": "/tmp/portfolio-entry-signal-inputs-20261101/QID-historical_nav.csv",
+        "retrievedAt": "2026-11-01T17:26:26.056987+00:00",
+        "httpStatus": 200,
+        "httpHeaders": {
+          "Content-Type": "text/csv",
+          "Last-Modified": "Sat, 31 Oct 2026 01:06:41 GMT",
+          "Date": "Sun, 01 Nov 2026 17:26:37 GMT",
+          "ETag": "\"6fc6a-65f1886940e5e\""
+        },
+        "bytes": 457834,
+        "sha256": "3bd86020b2f270e23aece8ab9dfa97afc71932ed3be463ab8b4840ea45242834",
+        "priorInMemorySha256": "3bd86020b2f270e23aece8ab9dfa97afc71932ed3be463ab8b4840ea45242834",
+        "matchesPriorInMemoryRead": true,
+        "initialAttemptError": null,
+        "rowCount": 5110,
+        "first": "2006-07-11",
+        "last": "2026-10-30",
+        "fields": [
+          "Date",
+          "ProShares Name",
+          "Ticker",
+          "NAV",
+          "Prior NAV",
+          "NAV Change (%)",
+          "NAV Change ($)",
+          "Shares Outstanding (000)",
+          "Assets Under Management"
+        ],
+        "quality": {
+          "missingOrNonfiniteSharesDates": [],
+          "zeroSharesDates": [],
+          "negativeSharesDates": [],
+          "duplicateDateCount": 0,
+          "consecutiveEqualReportedSharesPairs": 2169,
+          "minimumReportedSharesThousands": 0.09,
+          "maximumNavTimesSharesVersusAumRelativeDifference": {
+            "day": "2006-07-13",
+            "reportedSharesThousands": 0.09,
+            "impliedSharesThousandsFromAumDivNav": 0.09375065,
+            "absoluteRelativeDifference": 0.04000665595385211
+          },
+          "rowsWithIdentityDifferenceAboveOnePercent": 8
+        },
+        "splitEventCount": 5,
+        "earliestRawRow": {
+          "Date": "07/11/2006",
+          "ProShares Name": "ProShares UltraShort QQQ",
+          "Ticker": "QID",
+          "NAV": "112000",
+          "Prior NAV": "112000",
+          "NAV Change (%)": "0.00000",
+          "NAV Change ($)": "0",
+          "Shares Outstanding (000)": "0.09",
+          "Assets Under Management": "10500000"
+        }
+      },
+      {
+        "id": "DDM",
+        "url": "https://accounts.profunds.com/etfdata/ByFund/DDM-historical_nav.csv",
+        "resolvedUrl": "https://accounts.profunds.com/etfdata/ByFund/DDM-historical_nav.csv",
+        "localPath": "/tmp/portfolio-entry-signal-inputs-20261101/DDM-historical_nav.csv",
+        "retrievedAt": "2026-11-01T17:26:26.059026+00:00",
+        "httpStatus": 200,
+        "httpHeaders": {
+          "Content-Type": "text/csv",
+          "Last-Modified": "Sat, 31 Oct 2026 01:06:47 GMT",
+          "Date": "Sun, 01 Nov 2026 17:26:38 GMT",
+          "ETag": "\"73f84-65f1886e1ddef\""
+        },
+        "bytes": 475012,
+        "sha256": "05c14a31acd5bdd42fd56c8e345582e732b8688ae5b8378dd22c2ea9c19ed21f",
+        "priorInMemorySha256": "05c14a31acd5bdd42fd56c8e345582e732b8688ae5b8378dd22c2ea9c19ed21f",
+        "matchesPriorInMemoryRead": true,
+        "initialAttemptError": null,
+        "rowCount": 5125,
+        "first": "2006-06-19",
+        "last": "2026-10-30",
+        "fields": [
+          "Date",
+          "ProShares Name",
+          "Ticker",
+          "NAV",
+          "Prior NAV",
+          "NAV Change (%)",
+          "NAV Change ($)",
+          "Shares Outstanding (000)",
+          "Assets Under Management"
+        ],
+        "quality": {
+          "missingOrNonfiniteSharesDates": [],
+          "zeroSharesDates": [],
+          "negativeSharesDates": [],
+          "duplicateDateCount": 0,
+          "consecutiveEqualReportedSharesPairs": 3862,
+          "minimumReportedSharesThousands": 2700.0,
+          "maximumNavTimesSharesVersusAumRelativeDifference": {
+            "day": "2006-09-13",
+            "reportedSharesThousands": 5400.01,
+            "impliedSharesThousandsFromAumDivNav": 5400.012,
+            "absoluteRelativeDifference": 3.703695474754909e-07
+          },
+          "rowsWithIdentityDifferenceAboveOnePercent": 0
+        },
+        "splitEventCount": 3,
+        "earliestRawRow": {
+          "Date": "06/19/2006",
+          "ProShares Name": "ProShares Ultra Dow30",
+          "Ticker": "DDM",
+          "NAV": "5.8333333335",
+          "Prior NAV": "5.8333333335",
+          "NAV Change (%)": "0.00000",
+          "NAV Change ($)": "0",
+          "Shares Outstanding (000)": "2700",
+          "Assets Under Management": "15750000.00045"
+        }
+      },
+      {
+        "id": "DXD",
+        "url": "https://accounts.profunds.com/etfdata/ByFund/DXD-historical_nav.csv",
+        "resolvedUrl": "https://accounts.profunds.com/etfdata/ByFund/DXD-historical_nav.csv",
+        "localPath": "/tmp/portfolio-entry-signal-inputs-20261101/DXD-historical_nav.csv",
+        "retrievedAt": "2026-11-01T17:26:26.060985+00:00",
+        "httpStatus": 200,
+        "httpHeaders": {
+          "Content-Type": "text/csv",
+          "Last-Modified": "Sat, 31 Oct 2026 01:06:42 GMT",
+          "Date": "Sun, 01 Nov 2026 17:26:37 GMT",
+          "ETag": "\"71a30-65f18869633b6\""
+        },
+        "bytes": 465456,
+        "sha256": "d11090d51bf3afb58bf7d3e745f919f8618ffc547a815a8d80646ebb6034b207",
+        "priorInMemorySha256": "d11090d51bf3afb58bf7d3e745f919f8618ffc547a815a8d80646ebb6034b207",
+        "matchesPriorInMemoryRead": true,
+        "initialAttemptError": null,
+        "rowCount": 5110,
+        "first": "2006-07-11",
+        "last": "2026-10-30",
+        "fields": [
+          "Date",
+          "ProShares Name",
+          "Ticker",
+          "NAV",
+          "Prior NAV",
+          "NAV Change (%)",
+          "NAV Change ($)",
+          "Shares Outstanding (000)",
+          "Assets Under Management"
+        ],
+        "quality": {
+          "missingOrNonfiniteSharesDates": [],
+          "zeroSharesDates": [],
+          "negativeSharesDates": [],
+          "duplicateDateCount": 0,
+          "consecutiveEqualReportedSharesPairs": 3630,
+          "minimumReportedSharesThousands": 2.81,
+          "maximumNavTimesSharesVersusAumRelativeDifference": {
+            "day": "2006-07-14",
+            "reportedSharesThousands": 2.81,
+            "impliedSharesThousandsFromAumDivNav": 2.8125126000000007,
+            "absoluteRelativeDifference": 0.0008933648866145116
+          },
+          "rowsWithIdentityDifferenceAboveOnePercent": 0
+        },
+        "splitEventCount": 3,
+        "earliestRawRow": {
+          "Date": "07/11/2006",
+          "ProShares Name": "ProShares UltraShort Dow30",
+          "Ticker": "DXD",
+          "NAV": "5600",
+          "Prior NAV": "5600",
+          "NAV Change (%)": "0.00000",
+          "NAV Change ($)": "0",
+          "Shares Outstanding (000)": "2.81",
+          "Assets Under Management": "15750000"
+        }
+      }
+    ],
+    "fieldUnits": {
+      "Date": "Observation date, not first-publication time",
+      "NAV": "USD per fund share in provider historical adjustment basis",
+      "Prior NAV": "Prior NAV in provider basis, not necessarily originally published unadjusted NAV",
+      "NAV Change (%)": "Percent",
+      "NAV Change ($)": "USD",
+      "Shares Outstanding (000)": "Thousands of shares; up to two decimal places observed",
+      "Assets Under Management": "USD"
+    },
+    "calendar": {
+      "sixSeriesCommonDates": 5110,
+      "commonFirst": "2006-07-11",
+      "commonLast": "2026-10-30"
+    },
+    "splitHistory": {
+      "id": "splits",
+      "url": "https://accounts.profunds.com/etfdata/etf_splits.csv",
+      "resolvedUrl": "https://accounts.profunds.com/etfdata/etf_splits.csv",
+      "localPath": "/tmp/portfolio-entry-signal-inputs-20261101/etf_splits.csv",
+      "retrievedAt": "2026-11-01T17:26:26.062974+00:00",
+      "httpStatus": 200,
+      "httpHeaders": {
+        "Content-Type": "text/csv",
+        "Last-Modified": "Fri, 30 Oct 2026 09:00:12 GMT",
+        "Date": "Sun, 01 Nov 2026 17:26:37 GMT",
+        "ETag": "\"60da-65f0b0629805e\""
+      },
+      "bytes": 24794,
+      "sha256": "c5e7c93c207b21940d182b1acabeb844500dc8e81afe45ee325ab2cf2aef6a50",
+      "priorInMemorySha256": "c5e7c93c207b21940d182b1acabeb844500dc8e81afe45ee325ab2cf2aef6a50",
+      "matchesPriorInMemoryRead": true,
+      "initialAttemptError": null,
+      "allEventRows": 363,
+      "fields": [
+        "Symbol",
+        "Name",
+        "Pre Split Cusip",
+        "Post Split Cusip",
+        "Split Type",
+        "Ratio",
+        "Date of Split"
+      ],
+      "sixFundEventRows": 25,
+      "events": [
+        {
+          "Symbol": "QLD",
+          "Name": "Ultra QQQ",
+          "Pre Split Cusip": "74347R206",
+          "Post Split Cusip": "",
+          "Split Type": "Forward",
+          "Ratio": "2",
+          "Date of Split": "11/21/2025"
+        },
+        {
+          "Symbol": "DDM",
+          "Name": "Ultra Dow30",
+          "Pre Split Cusip": "74347R305",
+          "Post Split Cusip": "",
+          "Split Type": "Forward",
+          "Ratio": "2",
+          "Date of Split": "11/21/2025"
+        },
+        {
+          "Symbol": "SDS",
+          "Name": "UltraShort S&P500",
+          "Pre Split Cusip": "74347G416",
+          "Post Split Cusip": "74350P667",
+          "Split Type": "Reverse",
+          "Ratio": "5",
+          "Date of Split": "11/21/2025"
+        },
+        {
+          "Symbol": "SSO",
+          "Name": "Ultra S&P500",
+          "Pre Split Cusip": "74347R107",
+          "Post Split Cusip": "",
+          "Split Type": "Forward",
+          "Ratio": "2",
+          "Date of Split": "11/21/2025"
+        },
+        {
+          "Symbol": "QID",
+          "Name": "UltraShort QQQ",
+          "Pre Split Cusip": "74347G739",
+          "Post Split Cusip": "74349Y829",
+          "Split Type": "Reverse",
+          "Ratio": "5",
+          "Date of Split": "04/10/2024"
+        },
+        {
+          "Symbol": "SSO",
+          "Name": "Ultra S&P500",
+          "Pre Split Cusip": "74347R107",
+          "Post Split Cusip": "",
+          "Split Type": "Forward",
+          "Ratio": "2",
+          "Date of Split": "01/13/2022"
+        },
+        {
+          "Symbol": "SDS",
+          "Name": "UltraShort S&P500",
+          "Pre Split Cusip": "74347B383",
+          "Post Split Cusip": "74347G416",
+          "Split Type": "Reverse",
+          "Ratio": "5",
+          "Date of Split": "01/13/2022"
+        },
+        {
+          "Symbol": "DXD",
+          "Name": "UltraShort Dow30",
+          "Pre Split Cusip": "74347B276",
+          "Post Split Cusip": "74347G374",
+          "Split Type": "Reverse",
+          "Ratio": "5",
+          "Date of Split": "01/13/2022"
+        },
+        {
+          "Symbol": "QLD",
+          "Name": "Ultra QQQ",
+          "Pre Split Cusip": "74347R206",
+          "Post Split Cusip": "",
+          "Split Type": "Forward",
+          "Ratio": "2",
+          "Date of Split": "05/25/2021"
+        },
+        {
+          "Symbol": "QID",
+          "Name": "UltraShort QQQ",
+          "Pre Split Cusip": "74347B243",
+          "Post Split Cusip": "74347G739",
+          "Split Type": "Reverse",
+          "Ratio": "4",
+          "Date of Split": "01/21/2021"
+        },
+        {
+          "Symbol": "SSO",
+          "Name": "Ultra S&P500",
+          "Pre Split Cusip": "74347R107",
+          "Post Split Cusip": "",
+          "Split Type": "Forward",
+          "Ratio": "2",
+          "Date of Split": "08/18/2020"
+        },
+        {
+          "Symbol": "QLD",
+          "Name": "Ultra QQQ",
+          "Pre Split Cusip": "74347R206",
+          "Post Split Cusip": "",
+          "Split Type": "Forward",
+          "Ratio": "2",
+          "Date of Split": "08/18/2020"
+        },
+        {
+          "Symbol": "DXD",
+          "Name": "UltraShort Dow30",
+          "Pre Split Cusip": "74348A590",
+          "Post Split Cusip": "74347B276",
+          "Split Type": "Reverse",
+          "Ratio": "4",
+          "Date of Split": "05/24/2018"
+        },
+        {
+          "Symbol": "QID",
+          "Name": "UltraShort QQQ",
+          "Pre Split Cusip": "74348A426",
+          "Post Split Cusip": "74347B243",
+          "Split Type": "Reverse",
+          "Ratio": "4",
+          "Date of Split": "05/24/2018"
+        },
+        {
+          "Symbol": "DDM",
+          "Name": "Ultra Dow30",
+          "Pre Split Cusip": "74347R305",
+          "Post Split Cusip": "74347R305",
+          "Split Type": "Forward",
+          "Ratio": "3",
+          "Date of Split": "05/24/2018"
+        },
+        {
+          "Symbol": "SDS",
+          "Name": "UltraShort S&P500",
+          "Pre Split Cusip": "74347B300",
+          "Post Split Cusip": "74347B383",
+          "Split Type": "Reverse",
+          "Ratio": "4",
+          "Date of Split": "07/17/2017"
+        },
+        {
+          "Symbol": "QLD",
+          "Name": "Ultra QQQ",
+          "Pre Split Cusip": "74347R206",
+          "Post Split Cusip": "74347R206",
+          "Split Type": "Forward",
+          "Ratio": "2",
+          "Date of Split": "07/17/2017"
+        },
+        {
+          "Symbol": "SSO",
+          "Name": "Ultra S&P500",
+          "Pre Split Cusip": "74347R107",
+          "Post Split Cusip": "74347R107",
+          "Split Type": "Forward",
+          "Ratio": "2",
+          "Date of Split": "05/20/2015"
+        },
+        {
+          "Symbol": "QLD",
+          "Name": "Ultra QQQ",
+          "Pre Split Cusip": "74347R206",
+          "Post Split Cusip": "74347R206",
+          "Split Type": "Forward",
+          "Ratio": "2",
+          "Date of Split": "05/20/2015"
+        },
+        {
+          "Symbol": "DDM",
+          "Name": "Ultra Dow30",
+          "Pre Split Cusip": "74347R305",
+          "Post Split Cusip": "74347R305",
+          "Split Type": "Forward",
+          "Ratio": "2",
+          "Date of Split": "05/20/2015"
+        },
+        {
+          "Symbol": "QID",
+          "Name": "UltraShort QQQ",
+          "Pre Split Cusip": "74347X237",
+          "Post Split Cusip": "74348A426",
+          "Split Type": "Reverse",
+          "Ratio": "4",
+          "Date of Split": "01/24/2014"
+        },
+        {
+          "Symbol": "SDS",
+          "Name": "UltraShort S&P500",
+          "Pre Split Cusip": "74347R883",
+          "Post Split Cusip": "74347B300",
+          "Split Type": "Reverse",
+          "Ratio": "4",
+          "Date of Split": "10/05/2012"
+        },
+        {
+          "Symbol": "DXD",
+          "Name": "UltraShort Dow30",
+          "Pre Split Cusip": "74347R867",
+          "Post Split Cusip": "74348A590",
+          "Split Type": "Reverse",
+          "Ratio": "4",
+          "Date of Split": "05/11/2012"
+        },
+        {
+          "Symbol": "QLD",
+          "Name": "Ultra QQQ",
+          "Pre Split Cusip": "74347R206",
+          "Post Split Cusip": "74347R206",
+          "Split Type": "Forward",
+          "Ratio": "2",
+          "Date of Split": "05/11/2012"
+        },
+        {
+          "Symbol": "QID",
+          "Name": "UltraShort QQQ",
+          "Pre Split Cusip": "74347R875",
+          "Post Split Cusip": "74347X237",
+          "Split Type": "Reverse",
+          "Ratio": "5",
+          "Date of Split": "02/25/2011"
+        }
+      ],
+      "limits": [
+        "The split file gives direction, ratio, date and pre/post CUSIP. NAV/share files have no explicit per-row adjustment factor or vintage flag.",
+        "Historical NAV/share figures show a retrospectively adjusted form; event-by-event reconstruction and comparison against author SSI have not been performed.",
+        "Do not blindly apply split factors again to already-adjusted share histories."
+      ]
+    },
+    "authorPublishedSeries": {
+      "id": "author_ssi",
+      "url": "https://drive.google.com/uc?export=download&id=1K94Wt9JvERuv0qVLXE8eKb2RksHLVdO2",
+      "resolvedUrl": "https://drive.usercontent.google.com/download?id=1K94Wt9JvERuv0qVLXE8eKb2RksHLVdO2&export=download",
+      "localPath": "/tmp/portfolio-entry-signal-inputs-20261101/SpeculationSentimentIndex_04172020.xlsx",
+      "retrievedAt": "2026-11-01T17:26:26.066830+00:00",
+      "httpStatus": 200,
+      "httpHeaders": {
+        "Content-Type": "application/octet-stream",
+        "Last-Modified": "Thu, 30 Apr 2020 08:03:47 GMT",
+        "Date": "Sun, 01 Nov 2026 17:26:41 GMT"
+      },
+      "bytes": 27167,
+      "sha256": "9ff1cc88d5c3b904d8ca5ecb16b13bab139358c2b1d8a6c382d0ddd9ef150a26",
+      "priorInMemorySha256": "9ff1cc88d5c3b904d8ca5ecb16b13bab139358c2b1d8a6c382d0ddd9ef150a26",
+      "matchesPriorInMemoryRead": true,
+      "initialAttemptError": null,
+      "authorPage": "https://www.shaunwdavies.com/research",
+      "observedPublicLink": "https://drive.google.com/open?id=1K94Wt9JvERuv0qVLXE8eKb2RksHLVdO2",
+      "sheets": [
+        {
+          "name": "Series From Paper",
+          "fields": [
+            "AsOfDate",
+            "SSI"
+          ],
+          "validDateAndNumericSsiRows": 123,
+          "first": "2006-10-31",
+          "last": "2016-12-30",
+          "unit": "Standardized, per workbook note; no raw shares, publication times or vintage scaling parameters.",
+          "notes": [
+            "This is the series used in the paper.  The most current series is located on tab \"Current Series\"",
+            "SSI is calculated according to Eqn. 2 on page 16 of the manuscript",
+            "The series is standardized",
+            "© Shaun William Davies 2017-2020"
+          ]
+        },
+        {
+          "name": "Current Series",
+          "fields": [
+            "AsOfDate",
+            "SSI"
+          ],
+          "validDateAndNumericSsiRows": 149,
+          "first": "2006-10-31",
+          "last": "2019-02-28",
+          "unit": "Standardized, per workbook note; no raw shares, publication times or vintage scaling parameters.",
+          "notes": [
+            "This is the most current series.  The series used in the paper is located on tab \"Series From Paper.\" ",
+            "SSI is calculated according to Eqn. 2 on page 16 of the manuscript",
+            "The series is standardized",
+            "© Shaun William Davies 2017-2020"
+          ]
+        }
+      ],
+      "comparisonOfExistingValuesOnly": {
+        "overlappingMonths": 123,
+        "exactlyDifferentOverlappingValues": 123,
+        "firstDifferentMonth": "2006-10-31",
+        "seriesFromPaperValue": -1.08586401898953,
+        "currentSeriesValue": -1.1862518727247755,
+        "affineReconciliation": {
+          "purpose": "Reconcile two already-published standardized series only; no new SSI or return comparison.",
+          "equation": "current_series = intercept + slope * series_from_paper + residual",
+          "pairing": "Same YYYY-MM; preserve both supplied observation dates. No dates are treated as publication dates.",
+          "overlappingMonths": 123,
+          "identicalRawDateOverlap": 121,
+          "firstMonth": "2006-10",
+          "lastMonth": "2016-12",
+          "paperMonthsMissingFromCurrent": [],
+          "currentMonthsOutsidePaper": 26,
+          "monthsWithDifferentSuppliedDates": [
+            {
+              "month": "2010-05",
+              "paperDate": "2010-05-31",
+              "currentDate": "2010-05-28"
+            },
+            {
+              "month": "2013-03",
+              "paperDate": "2013-03-29",
+              "currentDate": "2013-03-28"
+            }
+          ],
+          "intercept": -0.0010360404020319628,
+          "slope": 1.0914956307564814,
+          "maximumAbsoluteResidual": 9.325873406851315e-15,
+          "rootMeanSquaredResidual": 2.0367654660866975e-15,
+          "compatibleWithNormalizationChange": true,
+          "interpretation": "Near-affine agreement is compatible with a changed centering/scaling window, but does not establish the cause or prove/reject raw-data revision. Exact value differences alone do not demonstrate changed underlying speculative demand."
+        },
+        "pairing": "YYYY-MM"
+      },
+      "limits": [
+        "Current Series is a workbook label, not evidence of continuous updates through 2026.",
+        "The two sheets end in 2016-12 and 2019-02; this file is not a complete reproduction of the 2022 published paper sample.",
+        "Only dates and standardized SSI are supplied, without raw shares, first-publication times, vintage records or standardization windows.",
+        "Same-date standardized values differ. See affine reconciliation; differences are compatible with changed normalization and do not by themselves demonstrate raw-data revision."
+      ]
+    },
+    "unresolved": [
+      "No historical first-disclosure timestamps, as-available snapshots or revision log; HTTP Last-Modified describes this current whole file only.",
+      "NAV record dates are not documented order, settlement, book-entry or publication times for creations/redemptions.",
+      "Consecutive unchanged shares can reflect no net activity or stale reporting; this static file alone cannot distinguish them.",
+      "Early reverse-split-adjusted share counts are rounded, materially affecting QID/SDS. AUM/NAV implicit shares are used only as a data-quality identity check, not as an approved substitute field.",
+      "Observation month-end, publication lag, earliest executable date, missing/revised values, normalization and split handling require a frozen data contract before candidate research.",
+      "Author legacy standardized values cannot be treated as historical real-time signals without establishing the scaling window and vintage.",
+      "Permission for downstream systematic redistribution of source raw data has not been established.",
+      "AP strategic creation/redemption timing, including the paper discussion of action delayed to T+6, is an economic-action lag. It is not evidence that ProShares officially publishes every observation six days late. Administrative reporting/publication lag must be established separately."
+    ]
+  },
+  "otherExistingInputs": {
+    "usdAndFxSeparation": {
+      "series": [
+        {
+          "path": "data/portfolio/us/USD-7da045c18fc6ba1a.json",
+          "sha256": "7da045c18fc6ba1a7f4dc7259f930f8176c67f5679a7b422052bba7355a13675",
+          "id": "us:USD",
+          "currency": "USD",
+          "basis": "provider_adjusted_close",
+          "fields": [
+            "date",
+            "provider_adjusted_close"
+          ],
+          "unit": "USD per provider-adjusted fund share unit",
+          "observations": 4969,
+          "first": "2007-02-01",
+          "last": "2026-10-30",
+          "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/USD?period1=631152000&period2=1793491200&interval=1d&events=div%2Csplits"
+        },
+        {
+          "path": "data/portfolio/us/TQQQ-0694d4779afd68bd.json",
+          "sha256": "0694d4779afd68bd9c0392d62592b1908601719f2eabfbebc5f8fa7be80e6d2c",
+          "id": "us:TQQQ",
+          "currency": "USD",
+          "basis": "provider_adjusted_close",
+          "fields": [
+            "date",
+            "provider_adjusted_close"
+          ],
+          "unit": "USD per provider-adjusted fund share unit",
+          "observations": 4206,
+          "first": "2010-02-11",
+          "last": "2026-10-30",
+          "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/TQQQ?period1=631152000&period2=1793491200&interval=1d&events=div%2Csplits"
+        },
+        {
+          "path": "data/portfolio/fx/CNY-a0951615a243c96e.json",
+          "sha256": "a0951615a243c96eab1f29ed11ea58d72ec3ae67d912f57a17a1acb511a3335a",
+          "id": "fx:CNY",
+          "currency": "CNY",
+          "basis": "provider_adjusted_close",
+          "fields": [
+            "date",
+            "provider_adjusted_close"
+          ],
+          "unit": "CNY per USD",
+          "observations": 6348,
+          "first": "2001-06-25",
+          "last": "2026-10-30",
+          "sourceUrl": "https://query1.finance.yahoo.com/v8/finance/chart/CNY=X?period1=631152000&period2=1793491200&interval=1d&events=div%2Csplits"
+        }
+      ],
+      "availability": "USD asset prices and CNY FX can be separated. This preserves information compressed by the CNY product, but is not a new external data source.",
+      "timeLimit": "US local equity dates and Europe/London FX dates are not the same closing instant. The existing model permits FX up to seven calendar days old; these are not executable FX quotes or historical first-publication evidence.",
+      "normalizationEvidencePath": "data/verification-fx.json"
+    },
+    "ohlcvRawCaches": [
+      {
+        "id": "USD",
+        "path": ".tmp-portfolio/dividends/USD.json",
+        "sha256": "c6d54b2494014ec4f17023f6854a5ee8b2db8dfb7f825c2a8efe9ab729b977ed",
+        "fields": [
+          "timestamp",
+          "indicators.quote[0].open",
+          "indicators.quote[0].high",
+          "indicators.quote[0].low",
+          "indicators.quote[0].close",
+          "indicators.quote[0].volume",
+          "events.dividends",
+          "events.splits"
+        ],
+        "priceUnit": "USD per provider price unit; close differs from adjclose; per-event split mapping not audited.",
+        "volumeUnit": "Provider-reported share volume; consistency with split-adjusted shares not yet verified.",
+        "observations": 4967,
+        "first": "2007-02-01",
+        "rawLast": "2026-10-28",
+        "closedSessionUsableThrough": "2026-10-27",
+        "rawLastIsIncompleteSession": true,
+        "regularMarketTime": "2026-10-28T11:23:43-04:00",
+        "finalSessionRegularEnd": "2026-10-28T16:00:00-04:00",
+        "volumeZeroCount": 6,
+        "volumeMissingCount": 0,
+        "separateFetchedAtPresent": false,
+        "matchesCurrentPublishedDividendEvidenceSha256": false
+      },
+      {
+        "id": "TQQQ",
+        "path": ".tmp-portfolio/dividends/TQQQ.json",
+        "sha256": "71043f2e3de7a5e6b8205fd9bef03981b7961cf76884baff3ef3952f99762b54",
+        "fields": [
+          "timestamp",
+          "indicators.quote[0].open",
+          "indicators.quote[0].high",
+          "indicators.quote[0].low",
+          "indicators.quote[0].close",
+          "indicators.quote[0].volume",
+          "events.dividends",
+          "events.splits"
+        ],
+        "priceUnit": "USD per provider price unit; close differs from adjclose; per-event split mapping not audited.",
+        "volumeUnit": "Provider-reported share volume; consistency with split-adjusted shares not yet verified.",
+        "observations": 4204,
+        "first": "2010-02-11",
+        "rawLast": "2026-10-28",
+        "closedSessionUsableThrough": "2026-10-27",
+        "rawLastIsIncompleteSession": true,
+        "regularMarketTime": "2026-10-28T11:25:45-04:00",
+        "finalSessionRegularEnd": "2026-10-28T16:00:00-04:00",
+        "volumeZeroCount": 0,
+        "volumeMissingCount": 0,
+        "separateFetchedAtPresent": false,
+        "matchesCurrentPublishedDividendEvidenceSha256": false
+      }
+    ],
+    "impliedVolatilityPublished": [
+      {
+        "id": "vix",
+        "path": "data/market-history.json",
+        "jsonField": "markets[id=spx].metrics[id=vix].points",
+        "fields": [
+          "date",
+          "close"
+        ],
+        "unit": "点",
+        "basis": "Cboe官方发布的标普500期权隐含未来30日年化波动率指数收盘值。它记录期权市场对未来波动的定价，不保证未来实际波动等于该值。",
+        "observations": 5778,
+        "first": "2004-01-02",
+        "last": "2026-10-30",
+        "source": {
+          "name": "Cboe · VIX",
+          "url": "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv",
+          "fetchedAt": "2026-11-01T01:11:36.689278+00:00",
+          "status": "available",
+          "sha256": "a5409500cdb8fdd86ba926dcfc7de5b1a54d365d4b7850a1a50c803ae57fddd1"
+        }
+      },
+      {
+        "id": "vxn",
+        "path": "data/market-history.json",
+        "jsonField": "markets[id=ndx].metrics[id=vxn].points",
+        "fields": [
+          "date",
+          "close"
+        ],
+        "unit": "点",
+        "basis": "Cboe官方发布的纳斯达克100期权隐含未来30日年化波动率指数收盘值。它记录期权市场对未来波动的定价，不保证未来实际波动等于该值。",
+        "observations": 4312,
+        "first": "2009-09-14",
+        "last": "2026-10-30",
+        "source": {
+          "name": "Cboe · VXN",
+          "url": "https://cdn.cboe.com/api/global/us_indices/daily_prices/VXN_History.csv",
+          "fetchedAt": "2026-11-01T01:11:36.231589+00:00",
+          "status": "available",
+          "sha256": "febd159dcadd600281eff76a5d00bf87d973b1ca18713c69f3bc433829da530c"
+        }
+      }
+    ],
+    "termAndVolatilityOfVolatilityRawCaches": [
+      {
+        "id": "vix3m",
+        "path": ".tmp-snap/market-history/vix3m.raw",
+        "sha256": "7d631c601dbbdf4fd70428605d847d9f72d5d1e1d2900041eed8b7685d1b86bb",
+        "fields": [
+          "DATE",
+          "OPEN",
+          "HIGH",
+          "LOW",
+          "CLOSE"
+        ],
+        "unit": "Annualized implied-volatility index points",
+        "observations": 4293,
+        "first": "2009-09-18",
+        "last": "2026-10-13",
+        "sourceMetadata": {
+          "fetchedAt": "2026-10-14T14:56:12.288871+00:00",
+          "url": "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX3M_History.csv"
+        },
+        "publishedInCurrentMarketHistory": false,
+        "currentCollectorSourceConfigured": false,
+        "kind": "SPX option implied volatility at 9-day or 93-day target tenor",
+        "isVxFuturesContractCurve": false
+      },
+      {
+        "id": "vix9d",
+        "path": ".tmp-snap/market-history/vix9d.raw",
+        "sha256": "123ac3d2959f3338d56d4e83319338dd9328431b1658da259d459bd30bfded0a",
+        "fields": [
+          "DATE",
+          "OPEN",
+          "HIGH",
+          "LOW",
+          "CLOSE"
+        ],
+        "unit": "Annualized implied-volatility index points",
+        "observations": 3967,
+        "first": "2011-01-04",
+        "last": "2026-10-13",
+        "sourceMetadata": {
+          "fetchedAt": "2026-10-14T14:56:11.544001+00:00",
+          "url": "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX9D_History.csv"
+        },
+        "publishedInCurrentMarketHistory": false,
+        "currentCollectorSourceConfigured": false,
+        "kind": "SPX option implied volatility at 9-day or 93-day target tenor",
+        "isVxFuturesContractCurve": false
+      },
+      {
+        "id": "vvix",
+        "path": ".tmp-snap/market-history/vvix.raw",
+        "sha256": "ece768c25c1776b47dbc8267465017d042d3da3b064a8e3cf69e32186b3bf474",
+        "fields": [
+          "DATE",
+          "VVIX"
+        ],
+        "unit": "Annualized implied-volatility index points",
+        "observations": 5124,
+        "first": "2006-03-06",
+        "last": "2026-10-13",
+        "sourceMetadata": {
+          "fetchedAt": "2026-10-14T14:56:11.581925+00:00",
+          "url": "https://cdn.cboe.com/api/global/us_indices/daily_prices/VVIX_History.csv"
+        },
+        "publishedInCurrentMarketHistory": false,
+        "currentCollectorSourceConfigured": false,
+        "kind": "VIX-option implied volatility of volatility",
+        "isVxFuturesContractCurve": false
+      }
+    ],
+    "vixFuturesCurve": {
+      "presentInInspectedDataAndMarketHistoryCaches": false,
+      "missing": [
+        "Contract identifiers and expiry dates",
+        "Daily settlements and availability timestamps",
+        "Roll or constant-tenor construction rule",
+        "Historical vintages"
+      ],
+      "note": "VIX9D/VIX/VIX3M are option-implied target-tenor indices, not a VX futures contract curve."
+    },
+    "definitions": [
+      {
+        "url": "https://cdn.cboe.com/api/global/us_indices/governance/Volatility_Index_Methodology_Selected_SPX_Target_Expected_Volatility_Term_Indices.pdf",
+        "note": "Current methodology specifies VIX9D at nine days and VIX3M at 93 days."
+      },
+      {
+        "url": "https://cdn.cboe.com/resources/index_values/2022/CGIF_Volatility_Indices_Threshold_Corrections.pdf",
+        "note": "Calculation filters changed on 2022-06-21. Current CSV values do not establish all historical vintages."
+      }
+    ],
+    "limits": [
+      "VIX/VXN current source identity and coverage are established; prior PIT and use-scope gaps documented in earlier input-review and vintage-feasibility evidence are not resolved here.",
+      "VIX3M/VIX9D/VVIX local raw caches stop at 2026-10-13 and are absent from current published source lists; do not claim continuous updates or full alignment with the latest research sample.",
+      "Local VVIX lacks common trading dates 2010-11-11 and 2013-05-13.",
+      "Implied volatility is non-directional option-price information, not evidence that five-day waiting or this portfolio wealth improves."
+    ]
+  },
+  "premiumNavCheck": {
+    "officialDefinitionUrl": "https://www.proshares.com/resources/tools/premium-discount",
+    "definition": "Premium/discount compares the NBBO midpoint at NAV calculation time against NAV, normally at 16:00 US Eastern.",
+    "historicalNavCsvContainsMarketPriceOrMidquote": false,
+    "limit": "TQQQ/USD official historical NAV CSVs are available with shares/AUM but no market midpoint/premium. Yahoo adjusted close divided by NAV is not the official premium.",
+    "secMechanismUrl": "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-24",
+    "mechanismLimit": "AP creation/redemption arbitrage can bring market price toward NAV; it does not establish that prior-day deviations survive to execution or that five-day delay improves wealth."
+  },
+  "nextDataValidationStep": "Audit split events, share precision, reconstruction against author legacy series and first-availability times only. No fitting, future-return association or restoration of withdrawn scores before a new frozen protocol."
+}
