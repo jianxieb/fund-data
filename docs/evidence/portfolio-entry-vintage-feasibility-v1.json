@@ -1,0 +1,203 @@
+{
+  "conclusion": "2026-11-01只核验公开ALFRED历史版本下载及时间边界。IPv4请求无需API key取得真实CSV；本文件仅保存请求元数据，不保存CSV原始值或训练数据。VXN早于首个已验证vintage的请求可HTTP200静默回退最新版本，必须检查列名日期和观察上限。FRED软件/机器学习使用限制尚未解决，数据尚未用于模型。",
+  "requests": [
+    {
+      "url": "https://alfred.stlouisfed.org/series/downloaddata?seid=VXNCLS",
+      "requestedVintage": null,
+      "httpStatus": null,
+      "returnedHeader": null,
+      "lastObservationDate": null,
+      "observationsAfterRequestedVintage": null,
+      "conclusion": "网页工具报告不可访问；未取得下载表单或CSV，不据此推断数据不存在。"
+    },
+    {
+      "url": "https://alfred.stlouisfed.org/series/downloaddata?seid=VIXCLS",
+      "requestedVintage": null,
+      "httpStatus": 502,
+      "returnedHeader": null,
+      "lastObservationDate": null,
+      "observationsAfterRequestedVintage": null,
+      "conclusion": "网页工具报告502 Bad Gateway；未取得CSV。"
+    },
+    {
+      "url": "https://alfred.stlouisfed.org/series?seid=VXNCLS",
+      "requestedVintage": null,
+      "httpStatus": null,
+      "returnedHeader": null,
+      "lastObservationDate": null,
+      "observationsAfterRequestedVintage": null,
+      "conclusion": "Python urllib读取超时，未取得HTTP状态或页面正文。"
+    },
+    {
+      "url": "https://alfred.stlouisfed.org/series/downloaddata?seid=VXNCLS",
+      "requestedVintage": null,
+      "httpStatus": null,
+      "returnedHeader": null,
+      "lastObservationDate": null,
+      "observationsAfterRequestedVintage": null,
+      "conclusion": "Python urllib读取超时；这是不同于网页工具的传输尝试，未取得CSV。"
+    },
+    {
+      "url": "https://alfred.stlouisfed.org/graph/?id=VXNCLS",
+      "requestedVintage": null,
+      "httpStatus": null,
+      "returnedHeader": null,
+      "lastObservationDate": null,
+      "observationsAfterRequestedVintage": null,
+      "conclusion": "Python urllib读取超时，未取得图表页面正文。"
+    },
+    {
+      "url": "https://alfred.stlouisfed.org/graph/alfredgraph.csv?id=VXNCLS&vintage_date=2014-04-17",
+      "requestedVintage": "2014-04-17",
+      "httpStatus": null,
+      "returnedHeader": null,
+      "lastObservationDate": null,
+      "observationsAfterRequestedVintage": null,
+      "conclusion": "网页工具报告不可访问；后续限时IPv4请求另行验证了同类入口。"
+    },
+    {
+      "url": "https://alfred.stlouisfed.org/graph/?id=VXNCLS&vintage_date=2014-04-17",
+      "requestedVintage": "2014-04-17",
+      "httpStatus": null,
+      "returnedHeader": null,
+      "lastObservationDate": null,
+      "observationsAfterRequestedVintage": null,
+      "conclusion": "网页工具报告不可访问；未取得该图表日期的历史值。"
+    },
+    {
+      "url": "https://alfred.stlouisfed.org/graph/alfredgraph.csv?id=VXNCLS&cosd=2014-04-01&coed=2014-04-30&vintage_date=2014-04-17",
+      "requestedVintage": "2014-04-17",
+      "httpStatus": null,
+      "returnedHeader": null,
+      "lastObservationDate": null,
+      "observationsAfterRequestedVintage": null,
+      "conclusion": "Python urllib读取超时；同一URL后续IPv4请求成功，保留此次失败记录。"
+    },
+    {
+      "url": "https://alfred.stlouisfed.org/graph/fredgraph.csv?id=VXNCLS&cosd=2018-12-01&coed=2018-12-31&vintage_date=2018-12-17",
+      "requestedVintage": "2018-12-17",
+      "httpStatus": null,
+      "returnedHeader": null,
+      "lastObservationDate": null,
+      "observationsAfterRequestedVintage": null,
+      "conclusion": "Python urllib读取超时；此备用路径未获验证，不作为可用下载入口。"
+    },
+    {
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=VIXCLS&cosd=2020-03-01&coed=2020-03-31&vintage_date=2020-03-16",
+      "requestedVintage": "2020-03-16",
+      "httpStatus": null,
+      "returnedHeader": null,
+      "lastObservationDate": null,
+      "observationsAfterRequestedVintage": null,
+      "conclusion": "Python urllib读取超时；未确认FRED图表入口是否遵守该vintage参数，不把它当作ALFRED替代入口。"
+    },
+    {
+      "url": "https://alfred.stlouisfed.org/series?seid=VXNCLS&vintage_date=2014-04-17",
+      "requestedVintage": "2014-04-17",
+      "httpStatus": null,
+      "returnedHeader": null,
+      "lastObservationDate": null,
+      "observationsAfterRequestedVintage": null,
+      "conclusion": "网页工具报告不可访问；未取得指定日期的序列页面。"
+    },
+    {
+      "url": "https://alfred.stlouisfed.org/series?seid=VXNCLS&vintage_date=2018-12-17",
+      "requestedVintage": "2018-12-17",
+      "httpStatus": null,
+      "returnedHeader": null,
+      "lastObservationDate": null,
+      "observationsAfterRequestedVintage": null,
+      "conclusion": "网页工具报告不可访问；未取得指定日期的序列页面。"
+    },
+    {
+      "url": "https://alfred.stlouisfed.org/series?seid=VIXCLS&vintage_date=2020-03-16",
+      "requestedVintage": "2020-03-16",
+      "httpStatus": null,
+      "returnedHeader": null,
+      "lastObservationDate": null,
+      "observationsAfterRequestedVintage": null,
+      "conclusion": "网页工具报告不可访问；未取得指定日期的序列页面。"
+    },
+    {
+      "url": "https://alfred.stlouisfed.org/graph/alfredgraph.csv?id=VXNCLS&cosd=2018-12-01&coed=2018-12-31&vintage_date=2018-12-17",
+      "requestedVintage": "2018-12-17",
+      "httpStatus": 200,
+      "returnedHeader": ["observation_date", "VXNCLS_20181217"],
+      "lastObservationDate": "2018-12-17",
+      "observationsAfterRequestedVintage": false,
+      "conclusion": "限时IPv4请求成功；列名日期匹配，返回数据在当时截断，空值保留。未核验日内发布时间。"
+    },
+    {
+      "url": "https://alfred.stlouisfed.org/graph/alfredgraph.csv?id=VXNCLS&cosd=2014-04-01&coed=2014-04-30&vintage_date=2014-04-16",
+      "requestedVintage": "2014-04-16",
+      "httpStatus": 200,
+      "returnedHeader": ["observation_date", "VXNCLS_20261101"],
+      "lastObservationDate": "2014-04-30",
+      "observationsAfterRequestedVintage": true,
+      "conclusion": "无效历史快照：早于最早已验证VXN版本的请求静默回退最新版本。HTTP200不能作为可得性证明；列名日期不符且包含请求vintage之后的观察，必须拒绝。"
+    },
+    {
+      "url": "https://alfred.stlouisfed.org/graph/alfredgraph.csv?id=VXNCLS&cosd=2014-04-01&coed=2014-04-30&vintage_date=2014-04-17",
+      "requestedVintage": "2014-04-17",
+      "httpStatus": 200,
+      "returnedHeader": ["observation_date", "VXNCLS_20140417"],
+      "lastObservationDate": "2014-04-17",
+      "observationsAfterRequestedVintage": false,
+      "conclusion": "本轮成功验证的最早VXN版本，与ALFRED元数据起点一致。只验证所请求短区间，尚未验证2010年以来完整历史前缀或日内发布时间。"
+    },
+    {
+      "url": "https://alfred.stlouisfed.org/graph/alfredgraph.csv?id=VXNCLS&cosd=2020-03-01&coed=2020-03-31&vintage_date=2020-03-16",
+      "requestedVintage": "2020-03-16",
+      "httpStatus": 200,
+      "returnedHeader": ["observation_date", "VXNCLS_20200316"],
+      "lastObservationDate": "2020-03-16",
+      "observationsAfterRequestedVintage": false,
+      "conclusion": "限时IPv4请求成功；列名日期匹配且没有请求vintage之后的观察。未核验日内发布时间。"
+    },
+    {
+      "url": "https://alfred.stlouisfed.org/graph/alfredgraph.csv?id=VIXCLS&cosd=2010-11-01&coed=2010-12-01&vintage_date=2010-11-19",
+      "requestedVintage": "2010-11-19",
+      "httpStatus": 404,
+      "returnedHeader": null,
+      "lastObservationDate": null,
+      "observationsAfterRequestedVintage": null,
+      "conclusion": "早于VIX元数据起点的边界请求返回404和空响应；未取得历史快照。"
+    },
+    {
+      "url": "https://alfred.stlouisfed.org/graph/alfredgraph.csv?id=VIXCLS&cosd=2010-11-01&coed=2010-12-01&vintage_date=2010-11-22",
+      "requestedVintage": "2010-11-22",
+      "httpStatus": 200,
+      "returnedHeader": ["observation_date", "VIXCLS_20101122"],
+      "lastObservationDate": "2010-11-19",
+      "observationsAfterRequestedVintage": false,
+      "conclusion": "本轮成功验证的最早VIX版本，与ALFRED元数据起点一致。最后观察日早于vintage，说明观察日与版本日不能混为一谈。"
+    },
+    {
+      "url": "https://alfred.stlouisfed.org/graph/alfredgraph.csv?id=VIXCLS&cosd=2014-04-01&coed=2014-04-30&vintage_date=2014-04-17",
+      "requestedVintage": "2014-04-17",
+      "httpStatus": 200,
+      "returnedHeader": ["observation_date", "VIXCLS_20140417"],
+      "lastObservationDate": "2014-04-17",
+      "observationsAfterRequestedVintage": false,
+      "conclusion": "限时IPv4请求成功；列名日期匹配且没有请求vintage之后的观察。未核验日内发布时间。"
+    },
+    {
+      "url": "https://alfred.stlouisfed.org/graph/alfredgraph.csv?id=VIXCLS&cosd=2018-12-01&coed=2018-12-31&vintage_date=2018-12-17",
+      "requestedVintage": "2018-12-17",
+      "httpStatus": 200,
+      "returnedHeader": ["observation_date", "VIXCLS_20181217"],
+      "lastObservationDate": "2018-12-17",
+      "observationsAfterRequestedVintage": false,
+      "conclusion": "限时IPv4请求成功；列名日期匹配，返回数据在当时截断，空值保留。未核验日内发布时间。"
+    },
+    {
+      "url": "https://alfred.stlouisfed.org/graph/alfredgraph.csv?id=VIXCLS&cosd=2020-03-01&coed=2020-03-31&vintage_date=2020-03-16",
+      "requestedVintage": "2020-03-16",
+      "httpStatus": 200,
+      "returnedHeader": ["observation_date", "VIXCLS_20200316"],
+      "lastObservationDate": "2020-03-16",
+      "observationsAfterRequestedVintage": false,
+      "conclusion": "限时IPv4请求成功；列名日期匹配且没有请求vintage之后的观察。未核验日内发布时间。"
+    }
+  ]
+}
