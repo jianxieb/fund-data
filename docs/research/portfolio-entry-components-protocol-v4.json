@@ -1,0 +1,220 @@
+{
+  "id": "equal-budget-component-value-delay-v4",
+  "status": "frozen_before_component_labels_predictions_and_outcomes",
+  "reviewState": "Root and independent protocol review completed before any v4 real-history labels, fitted predictions or candidate outcomes. Training-label eligibility and current-prediction availability are explicitly distinct. This reviewed protocol is frozen and must be committed and pushed before running the candidate.",
+  "basedOnDeliveryCommit": "c6b52f22",
+  "purpose": "Test one structural hypothesis: preserving each product's own price state and permitting separately timed fixed-budget purchases may improve monthly new-money outcomes that a single aggregate-state, common-action model misses. This is one joint policy with two required component regressions, not a search for the better component.",
+  "targetPreference": "The user selected monthly new money versus fixed-date investing. The user has not confirmed the pending holding-period or maximum-wait preferences. One year and exactly five common-session waiting remain provisional research assumptions, not user consent or a demonstrated solution to the user's full objective. Three years is auxiliary. Do not select a horizon or waiting period after seeing results.",
+  "priorExposure": "The same complete market history has been inspected for the trend score, historical similarity score, all seven v1 waiting rules, the v2 five-session predictor, the 1/10/20 and 1/3-year scope audit, and the failed v3 annual-value predictor. This would be another historically exposed study, never an untouched holdout. Splitting assets does not erase prior search or double independent evidence. No formal correction for the full adaptive research search is claimed; all prior failures remain unchanged.",
+  "frozenDependencies": [
+    {
+      "path": "docs/research/portfolio-entry-protocol-v1.json",
+      "sha256": "08c18500723cfef7474a7bea7ac8f0674c925c14f170307705293524e8c1365e"
+    },
+    {
+      "path": "docs/research/portfolio-entry-protocol-v2.json",
+      "sha256": "835ad1d6b05b8ad4c07addee602d3e018614575829b584890553438305c06101"
+    },
+    {
+      "path": "scripts/research_portfolio_entry.cjs",
+      "sha256": "60c813d6d260ef04ef24e4e24e22990838586934624545b80071146d87b0035e"
+    },
+    {
+      "path": "scripts/research_portfolio_entry_predictive.cjs",
+      "sha256": "f3212aa549ba3666ad71bbe57d8f54296afcbbc03c8eb24e6cb1c13370bef6d3"
+    },
+    {
+      "path": "docs/research/portfolio-entry-scope-audit-protocol-v1.json",
+      "sha256": "c0e34f76e3e52c598bc05c9f7ee40c27a13048fc7f124f7a63b4de8f52410dc1"
+    },
+    {
+      "path": "scripts/research_portfolio_entry_scope.cjs",
+      "sha256": "7ae134cf89aa61cc4b6e89aa168d2a6e71191b43716a3be6499d0837cf4076e9"
+    },
+    {
+      "path": "docs/research/portfolio-entry-value-protocol-v3.json",
+      "sha256": "5ececc10653f285a3521f7f9466daebabafd989258ddf964c8e392862aadd6f2"
+    },
+    {
+      "path": "scripts/research_portfolio_entry_value.cjs",
+      "sha256": "f42ac2783fd3d2902a380ce006b673614fb067f0a013017f9de19410846c4abe"
+    },
+    {
+      "path": "docs/evidence/portfolio-entry-value-v3.json",
+      "sha256": "f21e5a34d38998d32dbc337b75ed01d9805eb10548c12a9f8b43ed39118bd844"
+    }
+  ],
+  "inheritance": "Except for the explicit component-feature, component-label and component-action definitions below, inherit every v3 accounting, source, causality, eligibility, statistical and confirmation requirement. Verify all listed dependency hashes recursively. Do not change parent code, source data, protocols, gates or old results. The dependency names bind already frozen inputs; this v4 document is now frozen before candidate results.",
+  "sourceSnapshot": {
+    "evidencePath": "docs/evidence/portfolio-entry-value-v3.json",
+    "sourceSnapshotSha256": "1efe180552dde9ba7e6b2fdc3bc02f8a58ca7aa5b65a54e1074ea6672f2b2644",
+    "marketCalendarSha256": "2e3851fc6cf968b09f2a1f33a76ff1eaa949e824537cdc9678a665333f65f952",
+    "actualCnyPriceRowsSha256": "844d59469e6a35407c132b2ab08c1823bc9d293081e78f98fe83eadcbc1079cb",
+    "first": "2010-02-11",
+    "end": "2026-10-30",
+    "commonObservations": 4206,
+    "rule": "Use exactly the hash-bound v3 actual per-product CNY price rows and their common calendar, including the original same-day-or-earlier FX mapping and maximum age. Use the same history start for both components; do not extend USD with earlier solo history, use per-asset trading calendars, forward-fill product trade prices, fetch predictors or add external information."
+  },
+  "structuralRationale": {
+    "budgetSeparability": "With fixed component budgets, proportional fees, a common terminal and no borrowing or transfers, incremental terminal wealth is the sum of the two component increments. Requiring both products to take the same action is an additional restriction, not a financing necessity.",
+    "theoreticalBound": "If the true conditional mean increments m_USD and m_TQQQ were known under the same information set and the objective were expected terminal wealth alone, max(0,m_USD)+max(0,m_TQQQ) >= max(0,m_USD+m_TQQQ). This is a structural comparison of feasible actions, not a predictive or risk guarantee.",
+    "limits": "Each proposed estimator sees only its own five price features; it does not know those true conditional means under one common information set. Separate estimation increases model capacity and estimation error, may omit cross-product information, and need not improve results. This study simultaneously changes feature representation, model partitioning and action granularity, so any result cannot isolate one of these as the cause. Theoretical separability of expected wealth does not make joint tail risk or drawdown separable."
+  },
+  "portfolioAndAccounts": "Inherit the exact v1 portfolio (USD 0.3, TQQQ 0.3, CNY strategic cash 0.4), actual adjusted asset prices and FX mapping, per-deposit 40/60 accounting, no rebalancing or borrowing, base/cash2/fee20 scenarios and pre-personal-tax limits. Inherit scope-audit funding calendars, equal-age and exact-twelve-deposit account endpoints, complete-outcome partitions, exclusion rules, account unitization, attribution and descriptive bootstrap block lengths. Do not modify any parent file or old result.",
+  "model": {
+    "id": "expanding_component_ridge_year1_delay5",
+    "candidates": 1,
+    "componentRegressions": 2,
+    "components": [
+      {
+        "id": "us:USD",
+        "originalWeight": 0.3
+      },
+      {
+        "id": "us:TQQQ",
+        "originalWeight": 0.3
+      }
+    ],
+    "features": [
+      "MA200_deviation",
+      "all_history_drawdown",
+      "return5",
+      "return21",
+      "volatility21"
+    ],
+    "featureDefinition": "For each component j, build all five features directly from its own saved CNY adjusted price P_j on the unchanged common calendar: P_j(i)/mean(P_j(i-199..i))-1; P_j(i)/max(P_j(0..i))-1; P_j(i)/P_j(i-5)-1; P_j(i)/P_j(i-21)-1; sample standard deviation of the latest 21 simple one-session returns with denominator 20. All are fractions, not percentage points; volatility is not annualized. No 40% cash mixture, aggregate reference, extra indicator, cross-component feature or longer solo history enters these features.",
+    "delaySessions": 5,
+    "labelHoldingYears": 1,
+    "labelEnd": "H(s) is the first actual common close on or after the one-calendar-year anniversary of the original funding date s, at most 14 calendar days later. February 29 clamps to February 28. Require s+5<=H(s) and complete finite features at s-1; absent or not-yet-observed endpoints do not produce labels.",
+    "label": "For each component j, y_j,s=(1-0.001)/(1+0.001) * 0.3 * CNY_price_j(H(s)) * (1/CNY_price_j(s+5) - 1/CNY_price_j(s)). This is that component's delayed-minus-immediate net one-year terminal wealth divided by the full original deposit. Do not normalize 0.3 to 0.5 or 1.0. Both labels use the identical arrival, fifth common close and annual terminal.",
+    "labelUnits": "Each component label and forecast is a fraction of the full original deposit; multiply by 100 for percentage points or by 10000 for full-deposit basis points. These are not percentages of the component budget, probabilities or scores.",
+    "sharedMaturityPool": "Use one shared set of training entry dates s with finite prior features and finite annual labels for both components. Sort shared events by (exitIndex,entryIndex). For prediction t, both regressions use exactly the rows with H(s)<=t-1; insert every newly mature event once into each model, including all entries sharing one endpoint. Require at least 756 shared mature dates. Two labels on a date do not create two independent observations. A missing feature or annual label for either component excludes that training date s from both pools. Availability of a prediction at t requires finite t-1 features and valid fits for both components with sufficient shared mature training data; it does not require the annual label for t to exist or mature. If either current fit or prior feature is unavailable, the joint prediction is unavailable and all compared accounts exclude the affected arrival consistently. Outcome availability is a separate evaluation eligibility condition, never a prediction input.",
+    "causality": "Features for label y_j,s are observed at s-1. Each prediction for funding t uses only that component's features at t-1 and the shared annual-mature pool. Execution prices at t never enter the prediction. A year is a calendar anniversary, never a fixed 252-session lag. Appending or mutating prices from t onward must not alter either prediction or the action at t.",
+    "training": "Two expanding ridge regressions, both mandatory parts of one candidate. For each component separately, fit feature means and population SD from the shared mature training dates; a zero-variance column maps to zero. Center that component's y and leave its intercept unpenalized. Each objective is mean squared error + 1*sum(beta^2), with the same numerical solver as v3. No pooling or cross-component parameter selection, rolling-window search, clipping, winsorization, sign inversion, horizon change or hyperparameter search.",
+    "minimumMatureLabels": 756,
+    "ridgeLambda": 1,
+    "prediction": "For each j, predictedY_j=trainingMeanY_j+standardizedCurrentFeatures_j dot beta_j. Preserve both raw finite predictions and the shared training provenance. A component prediction is not a new portfolio allocation recommendation.",
+    "policy": "For each monthly deposit C, irrevocably reserve 0.4*C as strategic CNY cash and 0.3*C for each component including its buy fee. Decide once on arrival: predictedY_j>1e-12 gives that leg offset 5; otherwise offset 0. Each waiting leg retains only its own pending cash and accrued scenario interest. No transfers between legs, borrowing, use of future deposits, selling, re-prediction during the wait, early entry or extended deadlines. Positions drift after purchases; do not rebalance to restore market-value weights.",
+    "stress": "Freeze both base predictions and both leg offsets for base, cash2 and fee20. Reprice cash growth and fees in each scenario without refitting or altering actions. Each leg keeps its own waiting interest; strategic cash keeps its own interest. Preserve the inherited pre-personal-tax limitation."
+  },
+  "decisionTrace": {
+    "legOffsets": "An object keyed by exact component IDs us:USD and us:TQQQ, with each value exactly 0 or 5 for an available prediction.",
+    "anyDelay": "Boolean OR of the two comparisons legOffsets[j]===5. It means at least one product budget waits, not that the whole 60% budget waits.",
+    "actionCategory": {
+      "both_immediate": {
+        "us:USD": 0,
+        "us:TQQQ": 0
+      },
+      "delay_usd_only": {
+        "us:USD": 5,
+        "us:TQQQ": 0
+      },
+      "delay_tqqq_only": {
+        "us:USD": 0,
+        "us:TQQQ": 5
+      },
+      "delay_both": {
+        "us:USD": 5,
+        "us:TQQQ": 5
+      }
+    },
+    "unavailable": "When either model is unavailable, legOffsets, anyDelay and actionCategory are null with an explicit missing-evidence reason. Do not silently convert a missing component prediction to immediate investment.",
+    "provenance": "Record each component's features, training feature means/population SD, beta, training mean y, predicted y and full-deposit basis points. Record the shared entry/exit queue, trainingN, latestTrainingEntry, latestTrainingExit, featureDay, and hash-bound mature-pool prefix. Trades must identify their own component, arrival decision and locked execution date.",
+    "noFakeOffset": "Do not publish or pass a scalar offset=5 for the candidate when only one leg waits. No downstream accounting, action-count or audit helper may interpret anyDelay as both legs waiting. A budget-weighted mean wait of 0,2.5 or5 sessions may be reported as a summary only, never as an execution instruction."
+  },
+  "accountingIdentities": {
+    "primary": "For each base equal-age one-year deposit C, let A_j=1 if leg j has offset5, otherwise0. Candidate-minus-immediate money delta equals C*sum_j(A_j*y_j); its percentage-point delta is 100*sum_j(A_j*y_j). Verify this against actual units, fees and the common terminal. Do not replace A_j with anyDelay for both terms.",
+    "commonWait": "The sum y_USD+y_TQQQ must match the frozen v3 annual label on the same source dates, up to the fixed numerical audit tolerance. This is the both-delay counterfactual, not the realized increment when only one leg is delayed.",
+    "combinedRisk": "Build the full self-financing account from both component units and all strategic/pending cash. Use inherited flow-unitized NAV including buy and terminal-sale fees. Combined median returns, P10 and drawdowns are not sums or averages of per-leg statistics. Risk applies to the newly funded sleeve only, not pre-existing holdings.",
+    "attribution": "Keep each arrival/component/tranche separately, with its original budget, waiting cash interest, locked offset, execution, units, buy fee, terminal sale fee and terminal wealth. Reconcile all component claims plus strategic cash to the full account. Every benchmark has the identical deposits, eligible dates and common terminal."
+  },
+  "benchmarks": [
+    {
+      "id": "immediate",
+      "offsets": [
+        0
+      ],
+      "componentApplication": "Apply this same benchmark schedule independently to each fixed30% component budget; three_tranches divides each component's initial budget into equal thirds."
+    },
+    {
+      "id": "fixed_delay5",
+      "offsets": [
+        5
+      ],
+      "componentApplication": "Apply this same benchmark schedule independently to each fixed30% component budget; three_tranches divides each component's initial budget into equal thirds."
+    },
+    {
+      "id": "three_tranches",
+      "offsets": [
+        0,
+        21,
+        42
+      ],
+      "componentApplication": "Apply this same benchmark schedule independently to each fixed30% component budget; three_tranches divides each component's initial budget into equal thirds."
+    }
+  ],
+  "evaluation": {
+    "primary": "Nominal day 1, equal_age_lot, holdingYears=1. Each unique monthly deposit has one common one-year endpoint and one pair of outcomes. Include unchanged/immediate decisions as exact zero improvement; do not discard them from the unconditional result.",
+    "allCalendars": [
+      1,
+      10,
+      20
+    ],
+    "allScopes": [
+      "equal_age_lot",
+      "twelve_deposit_account"
+    ],
+    "allHoldingYears": [
+      1,
+      3
+    ],
+    "calendarMeaning": "Cash is available only at the designated calendar day's first actual common close in that same month, as in the scope audit. This is a hypothetical funding schedule, not a claim about the user's payday.",
+    "warmup": "Require valid v4 predictions for both components on every required arrival; otherwise exclude the whole paired account from candidate and all three benchmarks. Each regression uses at least756 shared mature annual dates. Do not let one valid component replace the other or extend the calendar.",
+    "allResults": "Report all 108 calendar/scope/horizon/partition/scenario cells, including empty cells and full exclusion reasons. No new winner selection among dates or horizons.",
+    "accountScope": "The twelve-deposit account is an additional necessary non-inferiority check, not the same estimand as each lot held one year. Three-year accounts are auxiliary; short samples and missing outcomes cannot be substituted or stretched to obtain confirmation.",
+    "predictionDiagnostics": "On distinct eligible primary monthly dates, report each component's annual-label MAE/MSE and same-mature-pool-mean forecast baseline. Also report the sum-of-component forecasts versus y_USD+y_TQQQ and the sum-of-training-means baseline, explicitly labeled the both-delay counterfactual. Neither forecast score substitutes for realized joint policy wealth."
+  },
+  "selectionAndConfirmation": {
+    "candidateSelection": "None: one fixed joint candidate with two mandatory regressions. Apply every inherited v3 gate to the combined account in development primary/base before either later partition can confirm. A development failure leaves later outputs diagnostic only. Never retain only a winning component, swap dates/horizons, or rank the four action categories as candidates.",
+    "unconditionalGates": {
+      "minimumMeanDeltaPp": 0.5,
+      "minimumMedianDeltaPp": 0,
+      "minimumP10AccountReturnDifferencePp": -1,
+      "minimumMedianDrawdownDifferencePp": -2,
+      "minimumWorstDrawdownDifferencePp": -2
+    },
+    "actionGates": {
+      "minimumUniqueDelayedMonths": 12,
+      "minimumArrivalYearsWithDelay": 3,
+      "minimumNonOverlappingDelayedOneYearWindows": 3,
+      "minimumStrictPositiveShareAmongDelayedMonths": 0.6,
+      "minimumMedianDeltaPpAmongDelayedMonths": 0.5
+    },
+    "actionDefinitions": "One unique primary monthly deposit is one action month iff anyDelay is true. Two delayed legs on that arrival still count once; a month with offset0 on both legs contributes exact zero delta. Action wins and action medians use the signed combined whole-deposit delta, not whether either component won. Sort any-delay monthly lots by arrival and greedily retain a lot only if its arrival is strictly after the previous retained common annual terminal. Counts are evidence screens, not independent-observation claims.",
+    "concentration": "For each primary partition, delete each represented funding calendar year in turn and require the remaining unconditional mean delta to be strictly positive. Also enumerate every calendar-month start m from the earliest eligible month through the latest eligible month minus 11 months, and remove all arrivals in [m,m+12 calendar months). Do not skip a block because of an internal missing month or select blocks after seeing returns. Every remaining unconditional mean must be strictly positive. Require at least 24 eligible months and at least one full block. Preserve zeros, dates and removed/remaining counts. These diagnostics reduce single-period dependence but do not prove independent market regimes. For every deletion, remove the whole monthly deposit including both component actions and outcomes together. At least one fully observed block means all12 calendar months in that block have eligible arrivals; incomplete blocks are still enumerated and must also pass, never filtered from the positivity requirement.",
+    "laterPartitions": "Both validation (2019-2022 full outcomes) and replication (2023 onward full outcomes) must separately satisfy all the same economic/action/concentration gates. The primary/base 12-month-block descriptive mean interval must have status descriptive and lower>0 in each. Keep the original 2000 draws, Mulberry32 seed 0x6d2b79f5 and 2.5/97.5 percentiles; no insufficient/empty interval passes. Bootstrap contiguous monthly blocks of combined per-deposit deltas; never resample the two components separately. All account block lengths and insufficient statuses remain inherited:12/36 for equal-age1/3-year lots and24/48 for twelve-deposit1/3-year accounts.",
+    "benchmarks": "In each later primary/base partition, paired mean and median against fixed_delay5 and three_tranches must both be >=0 on identical qualified accounts.",
+    "stress": "In each later primary partition, cash2 and fee20 must each retain strictly positive unconditional mean delta versus immediate, nonnegative median, and the same risk lower bounds. Action dates stay fixed.",
+    "calendarTransfer": "In each later partition, nominal 10 and 20 equal-age one-year base results must each have nonnegative mean and median delta versus their own immediate benchmark. These are necessary transferability checks, never alternative primary winners or proof for every possible payday.",
+    "completeMonthlyAccount": "In each later partition, nominal 1 twelve-deposit/hold-one-year base accounts must each have nonnegative mean and median delta versus immediate, plus the same risk lower bounds. Report 24-month-block intervals and sample limits; do not claim those limited windows alone establish long-run monthly-account superiority.",
+    "precision": "Every numeric gate requires a finite value; null, undefined, nonfinite and empty/insufficient evidence fail, including nonnegative transfer/account checks. Counts are exact nonnegative integers, action share thresholds are fractions in [0,1] with no monetary tolerance. Monetary and risk gates operate on unrounded percentage-point values; >= gates allow only 1e-10 absolute floating-rounding tolerance. Strict positivity for wins, concentration, stress means and interval lower bounds means >1e-10 percentage points. Action threshold remains the fixed 1e-12 deposit fraction.",
+    "whyNewGates": "No new numeric gate is introduced in v4. Inherit v3's abstention-compatible gates exactly, now evaluated on combined whole-deposit outcomes and any-delay months. Two potentially separate actions do not double coverage. Do not reevaluate v1, v2 or v3 as passing under this candidate or reinterpretation.",
+    "integration": "Historical confirmation alone does not publish a score. Require an independent annual-label/model/ledger/causality audit, production-equivalent fee/dividend/personal-tax validation, precise validated portfolio/funding/holding scope and future recomputation behavior. Do not transform an unvalidated forecast into a 0-100 score or automatically integrate it. This includes independent component-label/model and combined-ledger validation. Pending holding-period and maximum-wait preferences remain unconfirmed; research assumptions do not establish user suitability or complete the user's broader objective."
+  },
+  "componentDiagnostics": {
+    "predictions": "On distinct eligible primary monthly dates, report each component's annual-label MAE/MSE and same-mature-pool-mean forecast baseline. Also report the sum-of-component forecasts versus y_USD+y_TQQQ and the sum-of-training-means baseline, explicitly labeled the both-delay counterfactual. Neither forecast score substitutes for realized joint policy wealth.",
+    "categories": "Report counts and joint realized delta contributions for all four predeclared action categories, including zero-count categories. They are descriptive behavior categories, never four competing candidates or independently tested winners. A category's conditional result cannot replace the unconditional primary result.",
+    "dependence": "Report unique arrival months, any-delay months, per-component action counts and jointly defined non-overlap counts separately. Per-component counts are diagnostic and cannot be added to satisfy joint action coverage or described as additional independent samples.",
+    "historicalComparison": "Old v3 evidence stays frozen and failed. Any old-model comparison must use the same qualified dates and remain descriptive; no new gate or ranking may rescue v3 or replace the sole v4 candidate."
+  },
+  "auditRequirements": [
+    "Verify all frozen dependency, source-price, calendar, protocol, model-code, label-queue and prediction-trace hashes.",
+    "Independently reconstruct per-component CNY price features and annual labels, shared maturity pools including same-day events, population-standardized lambda1 batch fits at all monthly decision dates, and both locked leg actions.",
+    "Verify no current/future execution prices affect past component forecasts; preserve future-append and future-mutation checks.",
+    "Independently reconstruct combined accounts, per-leg claims, cash, proportional fees, NAV drawdown and primary label/action/wealth identities; distinguish full historical stress reconstruction from merely synthetic checks.",
+    "Independently recompute all108 cells including empties, joint action coverage, exact integer/ratio thresholds, all deletion blocks, shared-month bootstrap intervals, original risk/stress/transfer/account gates, and no-confirmation-after-development-failure behavior.",
+    "No audit pass or historical economic pass automatically publishes a score or permits production integration; keep dividend, personal-tax, executable-fee, user-scope and future-recomputation requirements."
+  ],
+  "stoppingRule": "Exactly this joint component policy is registered. Do not use outcomes to select a component, alter original weights, add cross-features, change lambda, waiting time, trigger, training window, horizon, partition or gate, or automatically create a successor variant. Preserve every failure. Any later materially different hypothesis needs independent justification and its own advance review and registration.",
+  "frozenDate": "2026-11-01"
+}
