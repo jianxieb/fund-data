@@ -1,0 +1,579 @@
+{
+  "status": "passed",
+  "protocolId": "equal-budget-component-value-delay-v4",
+  "method": "Independent own-CNY features, shared mature annual labels, two explicit batch matrix fits, separate per-leg cash claims, joint unitized NAV, joint evidence gates and independent BigInt bootstrap",
+  "annualSharedLabels": 3755,
+  "annualComponentLabels": 7510,
+  "dailyMaturityHeaders": 4206,
+  "multiLabelMaturityDays": 226,
+  "availableDailyPredictions": 2998,
+  "jointlyCheckedBatchDates": 458,
+  "componentBatchFits": 916,
+  "distinctMonthlyDates": 429,
+  "additionalDailyDates": 29,
+  "checkedDateCutsIncludingWarmup": 644,
+  "firstAvailablePrediction": "2014-11-28",
+  "latestPredictionTrainingN": 3754,
+  "registeredGroups": 108,
+  "emptyGroups": 9,
+  "baseWindows": 657,
+  "baseAccounts": 2628,
+  "independentlyRecomputedAllScenarioAccounts": 7884,
+  "baseTrades": 43632,
+  "baseExternalFlows": 12792,
+  "annualLotLabelIdentities": 321,
+  "independentlyRecomputedPairs": 1296,
+  "intervalStatuses": {
+    "descriptive": 540,
+    "insufficient_blocks": 648,
+    "no_samples": 108
+  },
+  "groups": [
+    {
+      "calendarDay": 1,
+      "evaluation": "equal_age_lot",
+      "years": 1,
+      "partition": "development",
+      "n": 37,
+      "nonOverlappingN": 3,
+      "blockLength": 12
+    },
+    {
+      "calendarDay": 1,
+      "evaluation": "equal_age_lot",
+      "years": 1,
+      "partition": "validation",
+      "n": 36,
+      "nonOverlappingN": 3,
+      "blockLength": 12
+    },
+    {
+      "calendarDay": 1,
+      "evaluation": "equal_age_lot",
+      "years": 1,
+      "partition": "replication",
+      "n": 34,
+      "nonOverlappingN": 3,
+      "blockLength": 12
+    },
+    {
+      "calendarDay": 1,
+      "evaluation": "equal_age_lot",
+      "years": 3,
+      "partition": "development",
+      "n": 13,
+      "nonOverlappingN": 1,
+      "blockLength": 36
+    },
+    {
+      "calendarDay": 1,
+      "evaluation": "equal_age_lot",
+      "years": 3,
+      "partition": "validation",
+      "n": 12,
+      "nonOverlappingN": 1,
+      "blockLength": 36
+    },
+    {
+      "calendarDay": 1,
+      "evaluation": "equal_age_lot",
+      "years": 3,
+      "partition": "replication",
+      "n": 10,
+      "nonOverlappingN": 1,
+      "blockLength": 36
+    },
+    {
+      "calendarDay": 1,
+      "evaluation": "twelve_deposit_account",
+      "years": 1,
+      "partition": "development",
+      "n": 26,
+      "nonOverlappingN": 2,
+      "blockLength": 24
+    },
+    {
+      "calendarDay": 1,
+      "evaluation": "twelve_deposit_account",
+      "years": 1,
+      "partition": "validation",
+      "n": 25,
+      "nonOverlappingN": 2,
+      "blockLength": 24
+    },
+    {
+      "calendarDay": 1,
+      "evaluation": "twelve_deposit_account",
+      "years": 1,
+      "partition": "replication",
+      "n": 23,
+      "nonOverlappingN": 1,
+      "blockLength": 24
+    },
+    {
+      "calendarDay": 1,
+      "evaluation": "twelve_deposit_account",
+      "years": 3,
+      "partition": "development",
+      "n": 2,
+      "nonOverlappingN": 1,
+      "blockLength": 48
+    },
+    {
+      "calendarDay": 1,
+      "evaluation": "twelve_deposit_account",
+      "years": 3,
+      "partition": "validation",
+      "n": 1,
+      "nonOverlappingN": 1,
+      "blockLength": 48
+    },
+    {
+      "calendarDay": 1,
+      "evaluation": "twelve_deposit_account",
+      "years": 3,
+      "partition": "replication",
+      "n": 0,
+      "nonOverlappingN": 0,
+      "blockLength": 48
+    },
+    {
+      "calendarDay": 10,
+      "evaluation": "equal_age_lot",
+      "years": 1,
+      "partition": "development",
+      "n": 37,
+      "nonOverlappingN": 3,
+      "blockLength": 12
+    },
+    {
+      "calendarDay": 10,
+      "evaluation": "equal_age_lot",
+      "years": 1,
+      "partition": "validation",
+      "n": 36,
+      "nonOverlappingN": 3,
+      "blockLength": 12
+    },
+    {
+      "calendarDay": 10,
+      "evaluation": "equal_age_lot",
+      "years": 1,
+      "partition": "replication",
+      "n": 34,
+      "nonOverlappingN": 3,
+      "blockLength": 12
+    },
+    {
+      "calendarDay": 10,
+      "evaluation": "equal_age_lot",
+      "years": 3,
+      "partition": "development",
+      "n": 13,
+      "nonOverlappingN": 1,
+      "blockLength": 36
+    },
+    {
+      "calendarDay": 10,
+      "evaluation": "equal_age_lot",
+      "years": 3,
+      "partition": "validation",
+      "n": 12,
+      "nonOverlappingN": 1,
+      "blockLength": 36
+    },
+    {
+      "calendarDay": 10,
+      "evaluation": "equal_age_lot",
+      "years": 3,
+      "partition": "replication",
+      "n": 10,
+      "nonOverlappingN": 1,
+      "blockLength": 36
+    },
+    {
+      "calendarDay": 10,
+      "evaluation": "twelve_deposit_account",
+      "years": 1,
+      "partition": "development",
+      "n": 26,
+      "nonOverlappingN": 2,
+      "blockLength": 24
+    },
+    {
+      "calendarDay": 10,
+      "evaluation": "twelve_deposit_account",
+      "years": 1,
+      "partition": "validation",
+      "n": 25,
+      "nonOverlappingN": 2,
+      "blockLength": 24
+    },
+    {
+      "calendarDay": 10,
+      "evaluation": "twelve_deposit_account",
+      "years": 1,
+      "partition": "replication",
+      "n": 23,
+      "nonOverlappingN": 1,
+      "blockLength": 24
+    },
+    {
+      "calendarDay": 10,
+      "evaluation": "twelve_deposit_account",
+      "years": 3,
+      "partition": "development",
+      "n": 2,
+      "nonOverlappingN": 1,
+      "blockLength": 48
+    },
+    {
+      "calendarDay": 10,
+      "evaluation": "twelve_deposit_account",
+      "years": 3,
+      "partition": "validation",
+      "n": 1,
+      "nonOverlappingN": 1,
+      "blockLength": 48
+    },
+    {
+      "calendarDay": 10,
+      "evaluation": "twelve_deposit_account",
+      "years": 3,
+      "partition": "replication",
+      "n": 0,
+      "nonOverlappingN": 0,
+      "blockLength": 48
+    },
+    {
+      "calendarDay": 20,
+      "evaluation": "equal_age_lot",
+      "years": 1,
+      "partition": "development",
+      "n": 37,
+      "nonOverlappingN": 3,
+      "blockLength": 12
+    },
+    {
+      "calendarDay": 20,
+      "evaluation": "equal_age_lot",
+      "years": 1,
+      "partition": "validation",
+      "n": 36,
+      "nonOverlappingN": 3,
+      "blockLength": 12
+    },
+    {
+      "calendarDay": 20,
+      "evaluation": "equal_age_lot",
+      "years": 1,
+      "partition": "replication",
+      "n": 34,
+      "nonOverlappingN": 3,
+      "blockLength": 12
+    },
+    {
+      "calendarDay": 20,
+      "evaluation": "equal_age_lot",
+      "years": 3,
+      "partition": "development",
+      "n": 13,
+      "nonOverlappingN": 1,
+      "blockLength": 36
+    },
+    {
+      "calendarDay": 20,
+      "evaluation": "equal_age_lot",
+      "years": 3,
+      "partition": "validation",
+      "n": 12,
+      "nonOverlappingN": 1,
+      "blockLength": 36
+    },
+    {
+      "calendarDay": 20,
+      "evaluation": "equal_age_lot",
+      "years": 3,
+      "partition": "replication",
+      "n": 10,
+      "nonOverlappingN": 1,
+      "blockLength": 36
+    },
+    {
+      "calendarDay": 20,
+      "evaluation": "twelve_deposit_account",
+      "years": 1,
+      "partition": "development",
+      "n": 26,
+      "nonOverlappingN": 2,
+      "blockLength": 24
+    },
+    {
+      "calendarDay": 20,
+      "evaluation": "twelve_deposit_account",
+      "years": 1,
+      "partition": "validation",
+      "n": 25,
+      "nonOverlappingN": 2,
+      "blockLength": 24
+    },
+    {
+      "calendarDay": 20,
+      "evaluation": "twelve_deposit_account",
+      "years": 1,
+      "partition": "replication",
+      "n": 23,
+      "nonOverlappingN": 1,
+      "blockLength": 24
+    },
+    {
+      "calendarDay": 20,
+      "evaluation": "twelve_deposit_account",
+      "years": 3,
+      "partition": "development",
+      "n": 2,
+      "nonOverlappingN": 1,
+      "blockLength": 48
+    },
+    {
+      "calendarDay": 20,
+      "evaluation": "twelve_deposit_account",
+      "years": 3,
+      "partition": "validation",
+      "n": 1,
+      "nonOverlappingN": 1,
+      "blockLength": 48
+    },
+    {
+      "calendarDay": 20,
+      "evaluation": "twelve_deposit_account",
+      "years": 3,
+      "partition": "replication",
+      "n": 0,
+      "nonOverlappingN": 0,
+      "blockLength": 48
+    }
+  ],
+  "primary": {
+    "development": {
+      "status": "failed",
+      "passed": false,
+      "actions": {
+        "allMonths": 37,
+        "delayedMonths": 12,
+        "arrivalYears": [
+          "2014",
+          "2015",
+          "2016",
+          "2017"
+        ],
+        "arrivalYearCount": 4,
+        "nonOverlappingDelayedN": 3,
+        "positiveShare": 0.3333333333333333,
+        "medianDeltaPp": -0.7153376634777828,
+        "meanDeltaPp": -0.7689999519637934,
+        "componentActionCounts": {
+          "us:USD": 11,
+          "us:TQQQ": 4
+        }
+      },
+      "concentrationPassed": false
+    },
+    "validation": {
+      "status": "insufficient",
+      "passed": false,
+      "actions": {
+        "allMonths": 36,
+        "delayedMonths": 7,
+        "arrivalYears": [
+          "2020",
+          "2021"
+        ],
+        "arrivalYearCount": 2,
+        "nonOverlappingDelayedN": 2,
+        "positiveShare": 0.42857142857142855,
+        "medianDeltaPp": -0.638250940206234,
+        "meanDeltaPp": 1.0796276846574986,
+        "componentActionCounts": {
+          "us:USD": 2,
+          "us:TQQQ": 5
+        }
+      },
+      "concentrationPassed": false
+    },
+    "replication": {
+      "status": "insufficient",
+      "passed": false,
+      "actions": {
+        "allMonths": 34,
+        "delayedMonths": 2,
+        "arrivalYears": [
+          "2023"
+        ],
+        "arrivalYearCount": 1,
+        "nonOverlappingDelayedN": 1,
+        "positiveShare": 1,
+        "medianDeltaPp": 3.9479680729022704,
+        "meanDeltaPp": 3.9479680729022704,
+        "componentActionCounts": {
+          "us:USD": 2,
+          "us:TQQQ": 0
+        }
+      },
+      "concentrationPassed": false
+    }
+  },
+  "decision": {
+    "independentlyRecomputed": true,
+    "developmentPassed": false,
+    "laterPassed": [
+      false,
+      false
+    ],
+    "historicalConfirmationPassed": false,
+    "integrationEligible": false
+  },
+  "causalChecks": {
+    "type": "separate_producer_metamorphic_check_not_expected_value_source",
+    "days": [
+      "2014-11-28",
+      "2019-01-02",
+      "2023-01-03",
+      "2026-10-30"
+    ],
+    "currentAndFutureMutation": true,
+    "futureTruncation": true
+  },
+  "maximumCommonWaitLabelDifferenceFromV3": 1.1102230246251565e-16,
+  "maximumAbsoluteLabelDifferences": {
+    "entryIndex": 0,
+    "exitIndex": 0,
+    "arrayElements": 3.9968028886505635e-15,
+    "y": 0
+  },
+  "maximumAbsolutePredictionDifferences": {
+    "arrayElements": 3.9968028886505635e-15,
+    "trainingN": 0,
+    "trainingMeanY": 1.474514954580286e-17,
+    "predictedY": 1.1102230246251565e-16,
+    "predictedFullDepositBps": 1.1084466677857563e-12,
+    "us:USD": 0,
+    "us:TQQQ": 0
+  },
+  "maximumAbsoluteLedgerDifferences": {
+    "terminalWealth": 1.3642420526593924e-12,
+    "contributed": 0,
+    "accountReturnPp": 1.2789769243681803e-13,
+    "navReturnPp": 1.8474111129762605e-13,
+    "maxDrawdownPp": 4.618527782440651e-14,
+    "fees": 1.7763568394002505e-15,
+    "interest": 0,
+    "pendingCash": 0,
+    "pendingLots": 0,
+    "meanWaitSessions": 0,
+    "executedMeanWaitSessions": 0,
+    "amount": 0,
+    "strategicCash": 0,
+    "strategicInterest": 0,
+    "originalBudget": 0,
+    "productLiquidationValue": 0,
+    "waitingInterest": 0,
+    "executedUnits": 0,
+    "offset": 0,
+    "scheduledIndex": 0,
+    "units": 2.842170943040401e-14,
+    "buyFees": 0,
+    "sellFees": 0,
+    "terminalGrossValue": 0,
+    "waitSessions": 0,
+    "us:USD": 0,
+    "us:TQQQ": 0,
+    "price": 0,
+    "notional": 4.547473508864641e-13,
+    "fee": 4.440892098500626e-16
+  },
+  "sourceFingerprints": {
+    "protocol": "08c18500723cfef7474a7bea7ac8f0674c925c14f170307705293524e8c1365e",
+    "catalog": "c5e6fc932cde908dfcc12eee851eb2b64eaea58211c828dcd3906d6056ba0a70",
+    "histories": [
+      {
+        "id": "us:USD",
+        "path": "data/portfolio/us/USD-7da045c18fc6ba1a.json",
+        "sha256": "7da045c18fc6ba1a7f4dc7259f930f8176c67f5679a7b422052bba7355a13675"
+      },
+      {
+        "id": "us:TQQQ",
+        "path": "data/portfolio/us/TQQQ-0694d4779afd68bd.json",
+        "sha256": "0694d4779afd68bd9c0392d62592b1908601719f2eabfbebc5f8fa7be80e6d2c"
+      },
+      {
+        "id": "fx:CNY",
+        "path": "data/portfolio/fx/CNY-a0951615a243c96e.json",
+        "sha256": "a0951615a243c96eab1f29ed11ea58d72ec3ae67d912f57a17a1acb511a3335a"
+      }
+    ]
+  },
+  "protocolSha256": "492c34a0be83da7bfb8488cf57bc2c045e8bb427804c162b1cf481ee776f99a7",
+  "limitations": [
+    "Saved-source hashes establish reproducibility, not vendor accuracy or historical data vintages.",
+    "Only base has complete producer transaction and attribution ledgers for individual matching. Cash2/fee20 account scalars, NAV risk and statistics are independently reconstructed; their full producer trade ledgers are not compared.",
+    "Both batch regressions are independently fitted on every actual 1/10/20 arrival and fixed extra cuts. Other daily fits receive causal-pool, own-feature and action-threshold checks rather than a separate full matrix refit.",
+    "Producer future mutation and truncation are separately identified metamorphic tests, not sources of independent expected values.",
+    "Exposed overlapping history, unconfirmed personal holding preferences and unimplemented personal taxes remain limitations. Audit correctness cannot make failed research useful or authorize integration."
+  ],
+  "selfTests": {
+    "passed": true,
+    "cases": 13,
+    "checks": [
+      "own CNY price feature definitions and no cross-asset reference",
+      "shared annual labels use original .3 weights and one common maturity",
+      "same-day annual events are all mature only on the following close",
+      "756 shared dates and current prediction requires no future current label",
+      "future mutation preserves both independent fits and locked actions",
+      "two ridge fits retain population SD lambda1 and free intercept",
+      "split-leg cash accounting and selected-label identity",
+      "cash/fee stresses keep budgets separate and do not change leg actions",
+      "four categories use individual strict thresholds and count a both-delay month once",
+      "joint concentration and evidence screens retain zeros and calendar missing blocks",
+      "combined NAV adjusts for deposits and is not the sum of leg drawdowns",
+      "nested component attribution detects budget transfer and double action counting",
+      "empty samples cannot pass and bootstrap retains fixed insufficient-block rule"
+    ]
+  },
+  "files": {
+    "checker": {
+      "path": "scripts/check_portfolio_entry_components.cjs",
+      "sha256": "dbe4c3e1eaae296e96f23451ab43a69f7b8a86e086e92e1348b64d677e1eb239"
+    },
+    "engine": {
+      "path": "scripts/research_portfolio_entry_components.cjs",
+      "sha256": "440b4db3f42db591d4da7869804d49a541ca3e69ea91ecbb03ba38d47e76e24a"
+    },
+    "report": {
+      "path": "docs/evidence/portfolio-entry-components-v4.json",
+      "sha256": "bc4e511b15f0b17675534a60fcf96157f6256ada955412925c90d946d6a3d1e6"
+    },
+    "ledger": {
+      "path": "/tmp/portfolio-entry-components-v4-ledgers.json",
+      "sha256": "89fc80de3f3d1cc82655f126e299e90f5a719479bdbee162a0177edfadc0319d"
+    },
+    "independentDependencies": [
+      {
+        "path": "scripts/check_portfolio_entry_research.cjs",
+        "sha256": "8f05d6cdd4536e3d93b456bc54993e6f38759d795936c81dcd39e00a81816f94"
+      },
+      {
+        "path": "scripts/check_portfolio_entry_predictive.cjs",
+        "sha256": "64a80def76b7cec813584e4b66ab64f55a8b867c9e61af1483cbf78aacebbf82"
+      },
+      {
+        "path": "scripts/check_portfolio_entry_scope.cjs",
+        "sha256": "593dfb80d2f6b24160ddeb867c669c6cef99490b6992e33457563243d0601f3c"
+      },
+      {
+        "path": "scripts/check_portfolio_entry_value.cjs",
+        "sha256": "e8f4d4fead7f5afa4de7a268a62b6a741741ca26205502b87107eab19969af99"
+      }
+    ]
+  }
+}
