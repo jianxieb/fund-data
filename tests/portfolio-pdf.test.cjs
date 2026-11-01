@@ -101,7 +101,8 @@ test('single-page PDF has binary-safe xref offsets, contiguous bands and correct
 function uiFixture(configure) {
   const { input } = fixture(), downloads = [], notices = [], reports = [], renderStates = [];
   if (configure) configure(input);
-  const context = { window: { Changheng: M, ChanghengPortfolioModel: P, ChanghengPortfolioTimingModel: require('../assets/portfolio-timing-model.js'), ChanghengPortfolioScoreView: require('../assets/portfolio-score-view.js'), PORTFOLIO_CATALOG: input.catalog,
+  // Legacy report fixtures omit entry; dedicated tests below install the real new model.
+  const context = { window: { ChanghengPortfolioEntryModel: { analyze: () => undefined }, Changheng: M, ChanghengPortfolioModel: P, ChanghengPortfolioTimingModel: require('../assets/portfolio-timing-model.js'), ChanghengPortfolioScoreView: require('../assets/portfolio-score-view.js'), PORTFOLIO_CATALOG: input.catalog,
     ChanghengPortfolioPdf: { snapshot: Pdf.snapshot, async create(report) { reports.push(report); return new Blob(['PDF']); } } },
     localStorage: { getItem: () => JSON.stringify(input.config), setItem() {} },
     document: { getElementById: () => null, querySelectorAll: () => [] }, TextEncoder,
@@ -488,4 +489,57 @@ test('USD settings, tax reserve, PDF and CSV keep the same result currency after
   await f.action('select', { field: 'currency', value: 'USD' });
   await f.action('save');
   assert.equal(JSON.parse(f.downloads.at(-1)[1]).currency, 'USD');
+});
+
+test('history-derived entry analysis integrates with page, CSV, PDF and failed refresh without reviving v1 guidance', async () => {
+  const f = scoreUiFixture(), T = require('../assets/portfolio-timing-model.js');
+  f.context.window.ChanghengPortfolioEntryModel = require('../assets/portfolio-entry-model.js');
+  f.context.window.ChanghengPortfolioEntryView = require('../assets/portfolio-entry-view.js');
+  f.context.window.ChanghengPortfolioTimingModel = { ...T, analyze: (input, options) => T.analyze(input, { ...options, today: options.end }) };
+  await f.action('run'); await f.action('export-pdf');
+  const t = f.reports.at(-1).result.timing, e = t.entry;
+  assert.ok(Number.isFinite(e.value)); assert.equal(e.usage, 'experimental_history_rank');
+  assert.ok(e.neighbors.every(row => row.exit <= e.asOf));
+  const html = f.ui.view(f.helpers);
+  assert.match(html, /买点历史分/); assert.match(html, /逐月重演/);
+  assert.doesNotMatch(html, /当前没有通过验证的加仓评分|已撤回规则的历史记录/);
+  await f.action('export-score');
+  const csv = f.downloads.find(row => row[0].includes('买点历史'));
+  assert.ok(csv); assert.match(csv[1], /entry-percentile-knn-v1/); assert.match(csv[1], /当时最新训练到期日/);
+  assert.doesNotMatch(csv[1], /add-score-v1|优先分批候选/);
+  const originalFetch = f.context.fetch;
+  f.context.fetch = async url => url === 'data/portfolio/catalog.js' ? { ok: false, status: 503 } : originalFetch(url);
+  await f.action('run'); await f.action('export-pdf');
+  const stale = f.reports.at(-1).result.timing.entry;
+  assert.equal(stale.value, null); assert.match(stale.missing, /未能确认最新行情/); assert.ok(stale.history.length);
+});
+
+test('entry history slider reads dated scores and outcomes without changing the current prediction', async () => {
+  const f = scoreUiFixture(), T = require('../assets/portfolio-timing-model.js'); let timing;
+  f.context.window.ChanghengPortfolioEntryModel = require('../assets/portfolio-entry-model.js');
+  f.context.window.ChanghengPortfolioEntryView = require('../assets/portfolio-entry-view.js');
+  f.context.window.ChanghengPortfolioTimingModel = { ...T, analyze(input, options) { timing = T.analyze(input, { ...options, today: options.end }); return timing; } };
+  await f.action('run');
+  const nodes = Object.fromEntries(['portfolio-entry-readout', 'portfolio-entry-cursor', 'portfolio-entry-point'].map(id => [id, { setAttribute(k, v) { this[k] = v; } }]));
+  f.context.document.getElementById = id => nodes[id] || null;
+  const before = JSON.stringify(timing.entry), slider = { dataset: { portfolioEntryDay: '' }, value: '0', setAttribute(k, v) { this[k] = v; } };
+  f.ui.handleInput(slider);
+  assert.match(nodes['portfolio-entry-readout'].textContent, /当时已成熟.*随后一年/);
+  assert.equal(nodes['portfolio-entry-cursor'].x1, 44); assert.equal(JSON.stringify(timing.entry), before);
+});
+
+
+test('missing entry components explicitly report failure instead of restoring old scoring UI', async () => {
+  const f = scoreUiFixture(), T = require('../assets/portfolio-timing-model.js');
+  f.context.window.ChanghengPortfolioTimingModel = { ...T, analyze: (input, options) => T.analyze(input, { ...options, today: options.end }) };
+  f.context.window.ChanghengPortfolioEntryView = require('../assets/portfolio-entry-view.js');
+  delete f.context.window.ChanghengPortfolioEntryModel;
+  await f.action('run');
+  assert.match(f.ui.view(f.helpers), /历史买点模型未加载/);
+  assert.doesNotMatch(f.ui.view(f.helpers), /旧规则/);
+  f.context.window.ChanghengPortfolioEntryModel = require('../assets/portfolio-entry-model.js');
+  delete f.context.window.ChanghengPortfolioEntryView;
+  await f.action('run');
+  assert.match(f.ui.view(f.helpers), /历史买点显示组件未加载/);
+  assert.doesNotMatch(f.ui.view(f.helpers), /旧规则/);
 });

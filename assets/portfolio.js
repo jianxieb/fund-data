@@ -83,6 +83,7 @@
   function disableCurrentScore(timing, missing) {
     if (!timing || timing.historical) return;
     timing.status = 'stale'; timing.missing = missing;
+    if (timing.entry) Object.assign(timing.entry, { status: 'stale', value: null, missing });
     if (timing.scoring) {
       Object.assign(timing.scoring, { value: null, raw: null, band: null, components: [], change20: null, gate: { active: false, cap: null, deduction: 0, reason: null }, missing });
       for (const horizon of timing.scoring.evidence.horizons) horizon.current = null;
@@ -122,6 +123,7 @@
         computed.snapshots = P.simulateWindows(input, computed.end);
         const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
         computed.timing = window.ChanghengPortfolioTimingModel?.analyze(input, { end: computed.end, today });
+        if (computed.timing) computed.timing.entry = window.ChanghengPortfolioEntryModel ? window.ChanghengPortfolioEntryModel.analyze(computed.timing) : { status: 'error', value: null, missing: '历史买点模型未加载，请刷新页面后重新模拟', history: [], walkForward: {} };
         if (refreshMissing) disableCurrentScore(computed.timing, refreshMissing);
         computed.catalogRefresh = { checkedAt: new Date().toISOString(), available: !refreshMissing, missing: refreshMissing || null };
         result = computed; resultKey = JSON.stringify(params);
@@ -289,7 +291,7 @@
     const r = result, t = r.timing;
     if (!t) return '';
     const scoreView = window.ChanghengPortfolioScoreView;
-    const body = scoreView ? scoreView.render(t, H) : '<p class="portfolio-timing-note">评分组件未加载，请刷新页面</p>';
+    const body = t.entry ? (window.ChanghengPortfolioEntryView ? window.ChanghengPortfolioEntryView.render(t) : '<p class="portfolio-timing-note">历史买点显示组件未加载，请刷新页面后重新模拟</p>') : scoreView ? scoreView.render(t, H) : '<p class="portfolio-timing-note">评分组件未加载，请刷新页面</p>';
     const commonDays = new Set((t.curve || []).map(p => p.day));
     const account = r.curve.filter(p => commonDays.has(p.day));
     const mean = account.length >= 200 ? account.slice(-200).reduce((s, p) => s + p.nav, 0) / 200 : null;
@@ -302,7 +304,7 @@
     const reviewAllocation = !liquidated && (cashShortfall || overweight.length > 0);
     const fmt = value => H.pct(value, 2, false);
     const allocation = '<details class="portfolio-timing-evidence"><summary>模拟账户的期末风险 · ' + r.end + '</summary><div class="portfolio-timing-account"><div><span>账户净值相对200日均线 ' + fmt(accountDeviation) + ' · 回撤 ' + fmt(account.at(-1)?.drawdown) + '（' + (account.at(-1)?.day || '缺共同收盘') + '）</span></div><p>' + drift.map(h => H.esc(h.code) + ' ' + fmt(h.weight) + '（目标 ' + fmt(h.targetWeight) + '）').join(' · ') + ' · 现金 ' + fmt(actualCash) + '（目标 ' + fmt(r.cashWeight) + '）</p>' + (liquidated ? '<p>此模拟已期末清仓；账户为现金。</p>' : reviewAllocation ? '<p class="negative">' + (cashShortfall ? '每笔投入预留现金，不代表账户一直保持该现金比例。' : '部分持仓已超出目标权重至少5个百分点。') + '</p>' : '') + '<small>使用本次模拟的持仓、入金与税费；仓位按未减预留税的市值计算，不参与加仓评分。' + (account.length < 200 ? '账户区间不足200个共同收盘，均线留空。' : '') + '</small></div></details>';
-    return H.card('加仓时机检验', '目标组合 · ' + currency(r.config).name + ' · 每次模拟按行情重算', body + allocation + '<a class="source-link" href="docs/portfolio-method.md#加仓时机检验与旧规则审计" target="_blank" rel="noopener">检验方法与证据边界 ↗</a>', t.scoring?.history?.length ? btn('导出旧规则审计', 'export-score', 'btn portfolio-export') : '');
+    return H.card(t.entry ? '加仓时机 · 历史买点' : '加仓时机检验', '目标组合 · ' + currency(r.config).name + ' · 每次模拟按行情重算', body + allocation + '<a class="source-link" href="docs/portfolio-method.md#历史买点分" target="_blank" rel="noopener">检验方法与证据边界 ↗</a>', t.entry?.history?.length ? btn('导出买点历史', 'export-score', 'btn portfolio-export') : !t.entry && t.scoring?.history?.length ? btn('导出旧规则审计', 'export-score', 'btn portfolio-export') : '');
   }
   function results() {
     if (!result) return '<section class="portfolio-result-placeholder"><div><span class="eyebrow">YOUR PORTFOLIO, OVER TIME</span><h2>看组合如何走过市场起伏</h2><p>配置权重和投入方式后，开始模拟。</p></div><svg viewBox="0 0 460 135" aria-hidden="true"><path d="M3 120H457M3 80H457M3 40H457" stroke="#e0e5d7"/><path d="m3 101 37-13 37 14 38-28 37 7 38-22 38 12 37-31 37 5 40-26 38 6 40-23" fill="none" stroke="#96aa83" stroke-width="2"/><path d="m3 110 37-4 37 5 38-19 37 10 38-8 38-9 37 6 37-19 40 9 38-16 40 2" fill="none" stroke="#c3b291" stroke-width="1.5" stroke-dasharray="5 5"/></svg></section>';
@@ -351,6 +353,13 @@
   }
   function exportScore() {
     const t = result?.timing;
+    if (t?.entry) {
+      const e = t.entry;
+      const predictions = [...e.history, ...(Number.isFinite(e.value) && !e.history.some(r => r.asOf === e.asOf) ? [e] : [])];
+      const rows = [['观察日', '买点历史分', '当时成熟月份', '相似月份', '相似一年收益中位数%', '全部一年收益中位数%', '相似收益P10%', '相似回撤中位数%', '当时最新训练到期日', '后来一年收益%', '后来一年到期日', '规则版本', '计价币种', '分析截至', '当前数据状态', '用途', '配置JSON'],
+        ...predictions.map(r => [r.asOf, r.value, r.trainingN, r.matched?.n, r.matched?.median, r.baseline?.median, r.matched?.p10, r.matched?.medianDrawdown, r.latestTrainingExit, r.actual?.return ?? '', r.actual?.exit ?? '', e.version, t.currency, t.end, t.status, '历史排名研究；非上涨概率；未证明择时优势', JSON.stringify(result.config)])];
+      H.download('长衡-买点历史-' + t.end + '.csv', M.csv(rows), 'text/csv;charset=utf-8'); return;
+    }
     if (!t?.scoring?.history?.length) return;
     const rows = [['日期', '已撤回规则分', '原始分', '中性分组', '旧规则限分', '长期位置分/40', '趋势确认分/40', '波动稳定度分/20', '200日均线偏离%', '偏离历史分位%', '63日年化波动%', '波动历史分位%', '规则版本', '计价币种', '分析截至', '当前数据状态', '规则状态', '使用限制', '配置JSON'],
       ...t.curve.filter(p => M.finite(p.score)).map(p => {
@@ -425,6 +434,16 @@
     update();
   }
   function handleInput(el) {
+    if (el.dataset.portfolioEntryDay !== undefined) {
+      const selected = window.ChanghengPortfolioEntryView?.inspect(result?.timing, el.value);
+      if (!selected) return false;
+      const readout = document.getElementById('portfolio-entry-readout'), cursor = document.getElementById('portfolio-entry-cursor'), point = document.getElementById('portfolio-entry-point');
+      if (readout) readout.textContent = selected.text;
+      el.setAttribute('aria-valuetext', selected.text);
+      cursor?.setAttribute('x1', selected.x); cursor?.setAttribute('x2', selected.x);
+      point?.setAttribute('cx', selected.x); point?.setAttribute('cy', selected.y);
+      return false;
+    }
     if (el.dataset.portfolioScoreDay !== undefined) {
       const selected = window.ChanghengPortfolioScoreView?.inspect(result?.timing, el.value);
       if (!selected) return false;
