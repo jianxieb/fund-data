@@ -1,0 +1,1078 @@
+{
+  "status": "passed",
+  "protocolId": "equal-budget-monthly-ssi-value-delay-v5",
+  "statisticsSha256": "65356b30c8a90fce1e521a49f3879f536a1f302ccbab6916c8000527bdbbd42e",
+  "tolerance": {
+    "numericAbsoluteOrRelative": 1e-8,
+    "monetaryGateAbsolute": 1e-10,
+    "actionFractionThreshold": 1e-12,
+    "ratiosAndCounts": "exact_without_monetary_tolerance"
+  },
+  "method": "Independent displayed-share CSV month ends, monthly annual terminal claims, direct mature-row one-variable ridge closed form, per-deposit cash claims/unitized NAV, inherited independent gates and BigInt bootstrap.",
+  "sourceMonths": 245,
+  "validSourceMonths": 243,
+  "trainingMonthlyLabels": 188,
+  "evaluationPriceLabels": 566,
+  "dailyIndependentFitsIncludingWarmup": 4206,
+  "availableDailyFits": 3205,
+  "multiMaturityDays": 0,
+  "firstAvailablePrediction": "2014-02-04",
+  "firstPrimaryMonthlyPrediction": "2014-03-03",
+  "latestTrainingN": 188,
+  "maximumAbsoluteModelDifferences": {
+    "0": 0,
+    "SSO": 0,
+    "QLD": 0,
+    "DDM": 0,
+    "value": 4.440892098500626e-16,
+    "SDS": 0,
+    "QID": 0,
+    "DXD": 0,
+    "entryIndex": 0,
+    "exitIndex": 0,
+    "y": 5.551115123125783e-16,
+    "labelHoldingYears": 0,
+    "trainingN": 0,
+    "featureValue": 0,
+    "assumedFeatureAvailableIndex": 0,
+    "predictedY": 2.0816681711721685e-17,
+    "predictedFullDepositBps": 2.2737367544323206e-13,
+    "offset": 0,
+    "featureMean": 1.3877787807814457e-16,
+    "featurePopulationSd": 1.6653345369377348e-16,
+    "beta": 1.6479873021779667e-17,
+    "trainingMeanY": 1.1709383462843448e-17,
+    "baseOffset": 0
+  },
+  "main": {
+    "registeredGroups": 108,
+    "emptyGroups": 9,
+    "baseWindows": 773,
+    "baseAccounts": 3092,
+    "independentlyReconstructedAllScenarioAccounts": 9276,
+    "baseLedgerTrades": 53608,
+    "baseLedgerExternalFlows": 15808,
+    "equalAgeAnnualLabelIdentities": 350,
+    "independentlyRecomputedPairs": 1296,
+    "intervalStatuses": {
+      "descriptive": 540,
+      "insufficient_blocks": 648,
+      "no_samples": 108
+    },
+    "groups": [
+      {
+        "calendarDay": 1,
+        "evaluation": "equal_age_lot",
+        "years": 1,
+        "partition": "development",
+        "n": 46,
+        "nonOverlappingN": 4,
+        "blockLength": 12
+      },
+      {
+        "calendarDay": 1,
+        "evaluation": "equal_age_lot",
+        "years": 1,
+        "partition": "validation",
+        "n": 36,
+        "nonOverlappingN": 3,
+        "blockLength": 12
+      },
+      {
+        "calendarDay": 1,
+        "evaluation": "equal_age_lot",
+        "years": 1,
+        "partition": "replication",
+        "n": 34,
+        "nonOverlappingN": 3,
+        "blockLength": 12
+      },
+      {
+        "calendarDay": 1,
+        "evaluation": "equal_age_lot",
+        "years": 3,
+        "partition": "development",
+        "n": 22,
+        "nonOverlappingN": 1,
+        "blockLength": 36
+      },
+      {
+        "calendarDay": 1,
+        "evaluation": "equal_age_lot",
+        "years": 3,
+        "partition": "validation",
+        "n": 12,
+        "nonOverlappingN": 1,
+        "blockLength": 36
+      },
+      {
+        "calendarDay": 1,
+        "evaluation": "equal_age_lot",
+        "years": 3,
+        "partition": "replication",
+        "n": 10,
+        "nonOverlappingN": 1,
+        "blockLength": 36
+      },
+      {
+        "calendarDay": 1,
+        "evaluation": "twelve_deposit_account",
+        "years": 1,
+        "partition": "development",
+        "n": 35,
+        "nonOverlappingN": 2,
+        "blockLength": 24
+      },
+      {
+        "calendarDay": 1,
+        "evaluation": "twelve_deposit_account",
+        "years": 1,
+        "partition": "validation",
+        "n": 25,
+        "nonOverlappingN": 2,
+        "blockLength": 24
+      },
+      {
+        "calendarDay": 1,
+        "evaluation": "twelve_deposit_account",
+        "years": 1,
+        "partition": "replication",
+        "n": 23,
+        "nonOverlappingN": 1,
+        "blockLength": 24
+      },
+      {
+        "calendarDay": 1,
+        "evaluation": "twelve_deposit_account",
+        "years": 3,
+        "partition": "development",
+        "n": 11,
+        "nonOverlappingN": 1,
+        "blockLength": 48
+      },
+      {
+        "calendarDay": 1,
+        "evaluation": "twelve_deposit_account",
+        "years": 3,
+        "partition": "validation",
+        "n": 1,
+        "nonOverlappingN": 1,
+        "blockLength": 48
+      },
+      {
+        "calendarDay": 1,
+        "evaluation": "twelve_deposit_account",
+        "years": 3,
+        "partition": "replication",
+        "n": 0,
+        "nonOverlappingN": 0,
+        "blockLength": 48
+      },
+      {
+        "calendarDay": 10,
+        "evaluation": "equal_age_lot",
+        "years": 1,
+        "partition": "development",
+        "n": 47,
+        "nonOverlappingN": 4,
+        "blockLength": 12
+      },
+      {
+        "calendarDay": 10,
+        "evaluation": "equal_age_lot",
+        "years": 1,
+        "partition": "validation",
+        "n": 36,
+        "nonOverlappingN": 3,
+        "blockLength": 12
+      },
+      {
+        "calendarDay": 10,
+        "evaluation": "equal_age_lot",
+        "years": 1,
+        "partition": "replication",
+        "n": 34,
+        "nonOverlappingN": 3,
+        "blockLength": 12
+      },
+      {
+        "calendarDay": 10,
+        "evaluation": "equal_age_lot",
+        "years": 3,
+        "partition": "development",
+        "n": 23,
+        "nonOverlappingN": 1,
+        "blockLength": 36
+      },
+      {
+        "calendarDay": 10,
+        "evaluation": "equal_age_lot",
+        "years": 3,
+        "partition": "validation",
+        "n": 12,
+        "nonOverlappingN": 1,
+        "blockLength": 36
+      },
+      {
+        "calendarDay": 10,
+        "evaluation": "equal_age_lot",
+        "years": 3,
+        "partition": "replication",
+        "n": 10,
+        "nonOverlappingN": 1,
+        "blockLength": 36
+      },
+      {
+        "calendarDay": 10,
+        "evaluation": "twelve_deposit_account",
+        "years": 1,
+        "partition": "development",
+        "n": 36,
+        "nonOverlappingN": 2,
+        "blockLength": 24
+      },
+      {
+        "calendarDay": 10,
+        "evaluation": "twelve_deposit_account",
+        "years": 1,
+        "partition": "validation",
+        "n": 25,
+        "nonOverlappingN": 2,
+        "blockLength": 24
+      },
+      {
+        "calendarDay": 10,
+        "evaluation": "twelve_deposit_account",
+        "years": 1,
+        "partition": "replication",
+        "n": 23,
+        "nonOverlappingN": 1,
+        "blockLength": 24
+      },
+      {
+        "calendarDay": 10,
+        "evaluation": "twelve_deposit_account",
+        "years": 3,
+        "partition": "development",
+        "n": 12,
+        "nonOverlappingN": 1,
+        "blockLength": 48
+      },
+      {
+        "calendarDay": 10,
+        "evaluation": "twelve_deposit_account",
+        "years": 3,
+        "partition": "validation",
+        "n": 1,
+        "nonOverlappingN": 1,
+        "blockLength": 48
+      },
+      {
+        "calendarDay": 10,
+        "evaluation": "twelve_deposit_account",
+        "years": 3,
+        "partition": "replication",
+        "n": 0,
+        "nonOverlappingN": 0,
+        "blockLength": 48
+      },
+      {
+        "calendarDay": 20,
+        "evaluation": "equal_age_lot",
+        "years": 1,
+        "partition": "development",
+        "n": 47,
+        "nonOverlappingN": 4,
+        "blockLength": 12
+      },
+      {
+        "calendarDay": 20,
+        "evaluation": "equal_age_lot",
+        "years": 1,
+        "partition": "validation",
+        "n": 36,
+        "nonOverlappingN": 3,
+        "blockLength": 12
+      },
+      {
+        "calendarDay": 20,
+        "evaluation": "equal_age_lot",
+        "years": 1,
+        "partition": "replication",
+        "n": 34,
+        "nonOverlappingN": 3,
+        "blockLength": 12
+      },
+      {
+        "calendarDay": 20,
+        "evaluation": "equal_age_lot",
+        "years": 3,
+        "partition": "development",
+        "n": 23,
+        "nonOverlappingN": 1,
+        "blockLength": 36
+      },
+      {
+        "calendarDay": 20,
+        "evaluation": "equal_age_lot",
+        "years": 3,
+        "partition": "validation",
+        "n": 12,
+        "nonOverlappingN": 1,
+        "blockLength": 36
+      },
+      {
+        "calendarDay": 20,
+        "evaluation": "equal_age_lot",
+        "years": 3,
+        "partition": "replication",
+        "n": 10,
+        "nonOverlappingN": 1,
+        "blockLength": 36
+      },
+      {
+        "calendarDay": 20,
+        "evaluation": "twelve_deposit_account",
+        "years": 1,
+        "partition": "development",
+        "n": 36,
+        "nonOverlappingN": 2,
+        "blockLength": 24
+      },
+      {
+        "calendarDay": 20,
+        "evaluation": "twelve_deposit_account",
+        "years": 1,
+        "partition": "validation",
+        "n": 25,
+        "nonOverlappingN": 2,
+        "blockLength": 24
+      },
+      {
+        "calendarDay": 20,
+        "evaluation": "twelve_deposit_account",
+        "years": 1,
+        "partition": "replication",
+        "n": 23,
+        "nonOverlappingN": 1,
+        "blockLength": 24
+      },
+      {
+        "calendarDay": 20,
+        "evaluation": "twelve_deposit_account",
+        "years": 3,
+        "partition": "development",
+        "n": 12,
+        "nonOverlappingN": 1,
+        "blockLength": 48
+      },
+      {
+        "calendarDay": 20,
+        "evaluation": "twelve_deposit_account",
+        "years": 3,
+        "partition": "validation",
+        "n": 1,
+        "nonOverlappingN": 1,
+        "blockLength": 48
+      },
+      {
+        "calendarDay": 20,
+        "evaluation": "twelve_deposit_account",
+        "years": 3,
+        "partition": "replication",
+        "n": 0,
+        "nonOverlappingN": 0,
+        "blockLength": 48
+      }
+    ],
+    "maximumAbsoluteAccountAndStatisticDifferences": {
+      "terminalWealth": 1.3642420526593924e-12,
+      "contributed": 0,
+      "accountReturnPp": 2.2737367544323206e-13,
+      "navReturnPp": 2.2737367544323206e-13,
+      "maxDrawdownPp": 4.618527782440651e-14,
+      "fees": 1.7763568394002505e-15,
+      "interest": 0,
+      "pendingCash": 0,
+      "pendingLots": 0,
+      "meanWaitSessions": 0,
+      "deltaPp": 1.7053025658242404e-13,
+      "n": 0,
+      "nonOverlappingN": 0,
+      "meanAccountReturnPp": 2.5011104298755527e-12,
+      "medianAccountReturnPp": 2.5579538487363607e-12,
+      "p10AccountReturnPp": 2.4726887204451486e-12,
+      "medianMaxDrawdownPp": 4.831690603168681e-13,
+      "worstMaxDrawdownPp": 5.258016244624741e-13,
+      "meanFees": 4.884981308350689e-15,
+      "meanInterest": 2.7981172934232745e-11,
+      "pendingEpisodes": 0,
+      "meanDeltaPp": 4.902744876744691e-13,
+      "medianDeltaPp": 5.400124791776761e-13,
+      "positiveDeltaShare": 0,
+      "pairedDeltaP10Pp": 5.826450433232822e-13,
+      "p10AccountReturnDifferencePp": 6.252776074688882e-13,
+      "medianMaxDrawdownDifferencePp": 3.090860900556436e-13,
+      "worstMaxDrawdownDifferencePp": 3.055333763768431e-13,
+      "blockLength": 0,
+      "lower": 4.902744876744691e-13,
+      "upper": 4.902744876744691e-13,
+      "distinctMonthDecisions": 0,
+      "delayedMonthDecisions": 0,
+      "maturedAnnualLabels": 0,
+      "meanRealizedWaitingAdvantageOfDelayedDecisions": 5.551115123125783e-17,
+      "MAE": 5.551115123125783e-17,
+      "MSE": 1.734723475976807e-17,
+      "referenceMAE": 2.7755575615628914e-17,
+      "referenceMSE": 1.3877787807814457e-17,
+      "R2": 3.3306690738754696e-16,
+      "eligiblePrimaryMonths": 0,
+      "availableForecastMonths": 0,
+      "fallbackMonths": 0,
+      "offset": 0,
+      "trainingN": 0,
+      "predictedY": 1.734723475976807e-17,
+      "predictedFullDepositBps": 1.7053025658242404e-13,
+      "referenceForecast": 1.1709383462843448e-17,
+      "actualY": 5.551115123125783e-16
+    }
+  },
+  "publicationCancellation": {
+    "registeredGroups": 108,
+    "emptyGroups": 9,
+    "baseWindows": 773,
+    "baseAccounts": 3092,
+    "independentlyReconstructedAllScenarioAccounts": 9276,
+    "baseLedgerTrades": 53608,
+    "baseLedgerExternalFlows": 15808,
+    "equalAgeAnnualLabelIdentities": 350,
+    "independentlyRecomputedPairs": 1296,
+    "intervalStatuses": {
+      "descriptive": 540,
+      "insufficient_blocks": 648,
+      "no_samples": 108
+    },
+    "groups": [
+      {
+        "calendarDay": 1,
+        "evaluation": "equal_age_lot",
+        "years": 1,
+        "partition": "development",
+        "n": 46,
+        "nonOverlappingN": 4,
+        "blockLength": 12
+      },
+      {
+        "calendarDay": 1,
+        "evaluation": "equal_age_lot",
+        "years": 1,
+        "partition": "validation",
+        "n": 36,
+        "nonOverlappingN": 3,
+        "blockLength": 12
+      },
+      {
+        "calendarDay": 1,
+        "evaluation": "equal_age_lot",
+        "years": 1,
+        "partition": "replication",
+        "n": 34,
+        "nonOverlappingN": 3,
+        "blockLength": 12
+      },
+      {
+        "calendarDay": 1,
+        "evaluation": "equal_age_lot",
+        "years": 3,
+        "partition": "development",
+        "n": 22,
+        "nonOverlappingN": 1,
+        "blockLength": 36
+      },
+      {
+        "calendarDay": 1,
+        "evaluation": "equal_age_lot",
+        "years": 3,
+        "partition": "validation",
+        "n": 12,
+        "nonOverlappingN": 1,
+        "blockLength": 36
+      },
+      {
+        "calendarDay": 1,
+        "evaluation": "equal_age_lot",
+        "years": 3,
+        "partition": "replication",
+        "n": 10,
+        "nonOverlappingN": 1,
+        "blockLength": 36
+      },
+      {
+        "calendarDay": 1,
+        "evaluation": "twelve_deposit_account",
+        "years": 1,
+        "partition": "development",
+        "n": 35,
+        "nonOverlappingN": 2,
+        "blockLength": 24
+      },
+      {
+        "calendarDay": 1,
+        "evaluation": "twelve_deposit_account",
+        "years": 1,
+        "partition": "validation",
+        "n": 25,
+        "nonOverlappingN": 2,
+        "blockLength": 24
+      },
+      {
+        "calendarDay": 1,
+        "evaluation": "twelve_deposit_account",
+        "years": 1,
+        "partition": "replication",
+        "n": 23,
+        "nonOverlappingN": 1,
+        "blockLength": 24
+      },
+      {
+        "calendarDay": 1,
+        "evaluation": "twelve_deposit_account",
+        "years": 3,
+        "partition": "development",
+        "n": 11,
+        "nonOverlappingN": 1,
+        "blockLength": 48
+      },
+      {
+        "calendarDay": 1,
+        "evaluation": "twelve_deposit_account",
+        "years": 3,
+        "partition": "validation",
+        "n": 1,
+        "nonOverlappingN": 1,
+        "blockLength": 48
+      },
+      {
+        "calendarDay": 1,
+        "evaluation": "twelve_deposit_account",
+        "years": 3,
+        "partition": "replication",
+        "n": 0,
+        "nonOverlappingN": 0,
+        "blockLength": 48
+      },
+      {
+        "calendarDay": 10,
+        "evaluation": "equal_age_lot",
+        "years": 1,
+        "partition": "development",
+        "n": 47,
+        "nonOverlappingN": 4,
+        "blockLength": 12
+      },
+      {
+        "calendarDay": 10,
+        "evaluation": "equal_age_lot",
+        "years": 1,
+        "partition": "validation",
+        "n": 36,
+        "nonOverlappingN": 3,
+        "blockLength": 12
+      },
+      {
+        "calendarDay": 10,
+        "evaluation": "equal_age_lot",
+        "years": 1,
+        "partition": "replication",
+        "n": 34,
+        "nonOverlappingN": 3,
+        "blockLength": 12
+      },
+      {
+        "calendarDay": 10,
+        "evaluation": "equal_age_lot",
+        "years": 3,
+        "partition": "development",
+        "n": 23,
+        "nonOverlappingN": 1,
+        "blockLength": 36
+      },
+      {
+        "calendarDay": 10,
+        "evaluation": "equal_age_lot",
+        "years": 3,
+        "partition": "validation",
+        "n": 12,
+        "nonOverlappingN": 1,
+        "blockLength": 36
+      },
+      {
+        "calendarDay": 10,
+        "evaluation": "equal_age_lot",
+        "years": 3,
+        "partition": "replication",
+        "n": 10,
+        "nonOverlappingN": 1,
+        "blockLength": 36
+      },
+      {
+        "calendarDay": 10,
+        "evaluation": "twelve_deposit_account",
+        "years": 1,
+        "partition": "development",
+        "n": 36,
+        "nonOverlappingN": 2,
+        "blockLength": 24
+      },
+      {
+        "calendarDay": 10,
+        "evaluation": "twelve_deposit_account",
+        "years": 1,
+        "partition": "validation",
+        "n": 25,
+        "nonOverlappingN": 2,
+        "blockLength": 24
+      },
+      {
+        "calendarDay": 10,
+        "evaluation": "twelve_deposit_account",
+        "years": 1,
+        "partition": "replication",
+        "n": 23,
+        "nonOverlappingN": 1,
+        "blockLength": 24
+      },
+      {
+        "calendarDay": 10,
+        "evaluation": "twelve_deposit_account",
+        "years": 3,
+        "partition": "development",
+        "n": 12,
+        "nonOverlappingN": 1,
+        "blockLength": 48
+      },
+      {
+        "calendarDay": 10,
+        "evaluation": "twelve_deposit_account",
+        "years": 3,
+        "partition": "validation",
+        "n": 1,
+        "nonOverlappingN": 1,
+        "blockLength": 48
+      },
+      {
+        "calendarDay": 10,
+        "evaluation": "twelve_deposit_account",
+        "years": 3,
+        "partition": "replication",
+        "n": 0,
+        "nonOverlappingN": 0,
+        "blockLength": 48
+      },
+      {
+        "calendarDay": 20,
+        "evaluation": "equal_age_lot",
+        "years": 1,
+        "partition": "development",
+        "n": 47,
+        "nonOverlappingN": 4,
+        "blockLength": 12
+      },
+      {
+        "calendarDay": 20,
+        "evaluation": "equal_age_lot",
+        "years": 1,
+        "partition": "validation",
+        "n": 36,
+        "nonOverlappingN": 3,
+        "blockLength": 12
+      },
+      {
+        "calendarDay": 20,
+        "evaluation": "equal_age_lot",
+        "years": 1,
+        "partition": "replication",
+        "n": 34,
+        "nonOverlappingN": 3,
+        "blockLength": 12
+      },
+      {
+        "calendarDay": 20,
+        "evaluation": "equal_age_lot",
+        "years": 3,
+        "partition": "development",
+        "n": 23,
+        "nonOverlappingN": 1,
+        "blockLength": 36
+      },
+      {
+        "calendarDay": 20,
+        "evaluation": "equal_age_lot",
+        "years": 3,
+        "partition": "validation",
+        "n": 12,
+        "nonOverlappingN": 1,
+        "blockLength": 36
+      },
+      {
+        "calendarDay": 20,
+        "evaluation": "equal_age_lot",
+        "years": 3,
+        "partition": "replication",
+        "n": 10,
+        "nonOverlappingN": 1,
+        "blockLength": 36
+      },
+      {
+        "calendarDay": 20,
+        "evaluation": "twelve_deposit_account",
+        "years": 1,
+        "partition": "development",
+        "n": 36,
+        "nonOverlappingN": 2,
+        "blockLength": 24
+      },
+      {
+        "calendarDay": 20,
+        "evaluation": "twelve_deposit_account",
+        "years": 1,
+        "partition": "validation",
+        "n": 25,
+        "nonOverlappingN": 2,
+        "blockLength": 24
+      },
+      {
+        "calendarDay": 20,
+        "evaluation": "twelve_deposit_account",
+        "years": 1,
+        "partition": "replication",
+        "n": 23,
+        "nonOverlappingN": 1,
+        "blockLength": 24
+      },
+      {
+        "calendarDay": 20,
+        "evaluation": "twelve_deposit_account",
+        "years": 3,
+        "partition": "development",
+        "n": 12,
+        "nonOverlappingN": 1,
+        "blockLength": 48
+      },
+      {
+        "calendarDay": 20,
+        "evaluation": "twelve_deposit_account",
+        "years": 3,
+        "partition": "validation",
+        "n": 1,
+        "nonOverlappingN": 1,
+        "blockLength": 48
+      },
+      {
+        "calendarDay": 20,
+        "evaluation": "twelve_deposit_account",
+        "years": 3,
+        "partition": "replication",
+        "n": 0,
+        "nonOverlappingN": 0,
+        "blockLength": 48
+      }
+    ],
+    "maximumAbsoluteAccountAndStatisticDifferences": {
+      "terminalWealth": 1.3642420526593924e-12,
+      "contributed": 0,
+      "accountReturnPp": 2.2737367544323206e-13,
+      "navReturnPp": 2.2737367544323206e-13,
+      "maxDrawdownPp": 4.618527782440651e-14,
+      "fees": 1.7763568394002505e-15,
+      "interest": 0,
+      "pendingCash": 0,
+      "pendingLots": 0,
+      "meanWaitSessions": 0,
+      "deltaPp": 1.7053025658242404e-13,
+      "n": 0,
+      "nonOverlappingN": 0,
+      "meanAccountReturnPp": 2.5011104298755527e-12,
+      "medianAccountReturnPp": 2.5579538487363607e-12,
+      "p10AccountReturnPp": 2.4726887204451486e-12,
+      "medianMaxDrawdownPp": 4.831690603168681e-13,
+      "worstMaxDrawdownPp": 5.258016244624741e-13,
+      "meanFees": 4.884981308350689e-15,
+      "meanInterest": 2.7981172934232745e-11,
+      "pendingEpisodes": 0,
+      "meanDeltaPp": 4.902744876744691e-13,
+      "medianDeltaPp": 5.400124791776761e-13,
+      "positiveDeltaShare": 0,
+      "pairedDeltaP10Pp": 5.826450433232822e-13,
+      "p10AccountReturnDifferencePp": 6.252776074688882e-13,
+      "medianMaxDrawdownDifferencePp": 3.090860900556436e-13,
+      "worstMaxDrawdownDifferencePp": 3.055333763768431e-13,
+      "blockLength": 0,
+      "lower": 4.902744876744691e-13,
+      "upper": 4.902744876744691e-13
+    },
+    "primaryZeroByConstruction": true,
+    "treatedAsPositiveRobustness": false,
+    "registeredBaseQualificationPreserved": true,
+    "trainingFitsUnchanged": true
+  },
+  "primary": {
+    "development": {
+      "status": "insufficient",
+      "passed": false,
+      "actions": {
+        "allMonths": 46,
+        "delayedMonths": 10,
+        "arrivalYears": [
+          "2014",
+          "2015",
+          "2016",
+          "2017"
+        ],
+        "arrivalYearCount": 4,
+        "nonOverlappingDelayedN": 3,
+        "positiveShare": 0.7,
+        "medianDeltaPp": 0.7047713383219048,
+        "meanDeltaPp": 3.3364162965521373,
+        "dates": [
+          {
+            "start": "2014-04-01",
+            "end": "2015-04-01",
+            "deltaPp": 6.165317423227577
+          },
+          {
+            "start": "2014-11-03",
+            "end": "2015-11-03",
+            "deltaPp": 0.007480876333801234
+          },
+          {
+            "start": "2015-01-02",
+            "end": "2016-01-04",
+            "deltaPp": 0.4240544290946815
+          },
+          {
+            "start": "2016-01-04",
+            "end": "2017-01-04",
+            "deltaPp": 12.723055102219973
+          },
+          {
+            "start": "2016-02-01",
+            "end": "2017-02-01",
+            "deltaPp": 24.5860829575104
+          },
+          {
+            "start": "2017-04-03",
+            "end": "2018-04-03",
+            "deltaPp": 1.0897916799086715
+          },
+          {
+            "start": "2017-05-01",
+            "end": "2018-05-01",
+            "deltaPp": -0.5814756594372739
+          },
+          {
+            "start": "2017-07-03",
+            "end": "2018-07-03",
+            "deltaPp": -8.260817488626742
+          },
+          {
+            "start": "2017-11-01",
+            "end": "2018-11-01",
+            "deltaPp": -3.774814602258843
+          },
+          {
+            "start": "2017-12-01",
+            "end": "2018-12-03",
+            "deltaPp": 0.985488247549128
+          }
+        ]
+      },
+      "concentrationPassed": false
+    },
+    "validation": {
+      "status": "insufficient",
+      "passed": false,
+      "actions": {
+        "allMonths": 36,
+        "delayedMonths": 1,
+        "arrivalYears": [
+          "2021"
+        ],
+        "arrivalYearCount": 1,
+        "nonOverlappingDelayedN": 1,
+        "positiveShare": 0,
+        "medianDeltaPp": -5.177115681227804,
+        "meanDeltaPp": -5.177115681227804,
+        "dates": [
+          {
+            "start": "2021-04-01",
+            "end": "2022-04-01",
+            "deltaPp": -5.177115681227804
+          }
+        ]
+      },
+      "concentrationPassed": false
+    },
+    "replication": {
+      "status": "insufficient",
+      "passed": false,
+      "actions": {
+        "allMonths": 34,
+        "delayedMonths": 0,
+        "arrivalYears": [],
+        "arrivalYearCount": 0,
+        "nonOverlappingDelayedN": 0,
+        "positiveShare": null,
+        "medianDeltaPp": null,
+        "meanDeltaPp": null,
+        "dates": []
+      },
+      "concentrationPassed": false
+    }
+  },
+  "decision": {
+    "independentlyRecomputed": true,
+    "developmentPassed": false,
+    "laterPassed": [
+      false,
+      false
+    ],
+    "historicalConfirmationPassed": false,
+    "integrationEligible": false
+  },
+  "causalChecks": {
+    "type": "separate_producer_metamorphic_checks_not_independent_expected_value_source",
+    "historicalCuts": [
+      "2014-02-04",
+      "2019-01-02",
+      "2023-01-03",
+      "2026-10-30"
+    ],
+    "changedCurrentAndFuturePrices": true,
+    "changedIncompleteAndFutureSsiMonths": true,
+    "futurePriceAndShareTruncation": true,
+    "futurePriceAndShareAppend": true,
+    "fitReadyMissingMonthRetained": "2014-05-01",
+    "noNewCandidateOrParameter": true
+  },
+  "sourceFingerprints": {
+    "protocol": "08c18500723cfef7474a7bea7ac8f0674c925c14f170307705293524e8c1365e",
+    "catalog": "c5e6fc932cde908dfcc12eee851eb2b64eaea58211c828dcd3906d6056ba0a70",
+    "histories": [
+      {
+        "id": "us:USD",
+        "path": "data/portfolio/us/USD-7da045c18fc6ba1a.json",
+        "sha256": "7da045c18fc6ba1a7f4dc7259f930f8176c67f5679a7b422052bba7355a13675"
+      },
+      {
+        "id": "us:TQQQ",
+        "path": "data/portfolio/us/TQQQ-0694d4779afd68bd.json",
+        "sha256": "0694d4779afd68bd9c0392d62592b1908601719f2eabfbebc5f8fa7be80e6d2c"
+      },
+      {
+        "id": "fx:CNY",
+        "path": "data/portfolio/fx/CNY-a0951615a243c96e.json",
+        "sha256": "a0951615a243c96eab1f29ed11ea58d72ec3ae67d912f57a17a1acb511a3335a"
+      }
+    ]
+  },
+  "shareFingerprints": [
+    {
+      "id": "SSO",
+      "path": "/tmp/portfolio-entry-signal-inputs-20261101/SSO-historical_nav.csv",
+      "sha256": "75d341894ee04523bbff65b613496935a3a745d8dcb06cfcb71f0a2e7989f544"
+    },
+    {
+      "id": "SDS",
+      "path": "/tmp/portfolio-entry-signal-inputs-20261101/SDS-historical_nav.csv",
+      "sha256": "1116ae9d3ca29811be7d8d49bce0209f81ca52daab0fe80be8d010bacb4e629b"
+    },
+    {
+      "id": "QLD",
+      "path": "/tmp/portfolio-entry-signal-inputs-20261101/QLD-historical_nav.csv",
+      "sha256": "a74848f118de5a9c54ee363eca7edc613525f4c23e7dac7e6b092988ac665e22"
+    },
+    {
+      "id": "QID",
+      "path": "/tmp/portfolio-entry-signal-inputs-20261101/QID-historical_nav.csv",
+      "sha256": "3bd86020b2f270e23aece8ab9dfa97afc71932ed3be463ab8b4840ea45242834"
+    },
+    {
+      "id": "DDM",
+      "path": "/tmp/portfolio-entry-signal-inputs-20261101/DDM-historical_nav.csv",
+      "sha256": "05c14a31acd5bdd42fd56c8e345582e732b8688ae5b8378dd22c2ea9c19ed21f"
+    },
+    {
+      "id": "DXD",
+      "path": "/tmp/portfolio-entry-signal-inputs-20261101/DXD-historical_nav.csv",
+      "sha256": "d11090d51bf3afb58bf7d3e745f919f8618ffc547a815a8d80646ebb6034b207"
+    }
+  ],
+  "snapshotMonthEndCrossCheck": {
+    "basis": "Six displayed-share endpoint dates compared with the last observed product-common close of each overlapping calendar month; not proof of publication time or future completeness.",
+    "comparedMonths": 201,
+    "mismatches": []
+  },
+  "limitations": [
+    "All fits and source arithmetic use the fixed current-vintage archive. Source hashes and date alignment do not establish historical publication, vintage availability, split adjustment accuracy or future input freshness.",
+    "Agreement among six source dates alone cannot detect six files all stopping before month end. Future integration needs complete month-end coverage and actual arrival/cutoff checks; the current archive does not prove execution 100 days later.",
+    "Full trades, fees, flows and per-deposit attribution are compared against producer ledgers for base cost only, for both main and cancellation streams. All three cost/cash scenarios have independently reconstructed terminal wealth, fees, interest, daily-unitized-NAV drawdown and aggregate statistics; stress trade ledgers were not supplied for direct comparison.",
+    "The extra publication session is a fixed-base-fit runtime cancellation diagnostic. Primary nominal1 outcomes are zero by construction and cannot be called positive robustness evidence.",
+    "36 overlapping annual monthly labels are not independent years; date/holding panels remain exposed history. Numerical correctness does not prove predictive validity, resolve personal tax/fee/holding preferences or authorize score integration."
+  ],
+  "selfTest": {
+    "passed": true,
+    "cases": 9,
+    "checks": [
+      "CSV quotes, thousands shares and last actual monthly endpoint",
+      "missing prior month cannot be bridged and short shares subtract",
+      "closed form mean-loss ridge uses population SD and free intercept",
+      "unique monthly labels, no price warmup and strict annual maturity",
+      "fit-ready missing current SSI falls back with a null forecast and retained action",
+      "one-extra-session publication cancellation preserves fits and primary zero actions",
+      "current/future prices and future monthly shares cannot alter the current decision",
+      "whole-deposit annual label equals independent fee-aware fixed-wait account difference",
+      "empty evidence retains null outcomes and fails positive and nonnegative gates"
+    ]
+  },
+  "bindings": {
+    "report": {
+      "path": "docs/evidence/portfolio-entry-ssi-v5.json",
+      "sha256": "475f489fdf9f942d0c3b583d3d8826268e0b9bba4c1b782dc9b0768474bb3f99"
+    },
+    "protocol": {
+      "path": "docs/research/portfolio-entry-ssi-protocol-v5.json",
+      "sha256": "943b6356c8826cb149d6d9aa9fcb9c18eac48730006257dac46565b54f7a64c9"
+    },
+    "engine": {
+      "path": "scripts/research_portfolio_entry_ssi.cjs",
+      "sha256": "d911614f5e16e1db4f0be0b0ff52b43ff9cd5468c9c86a83c57fe6b764add8a3"
+    },
+    "ledger": {
+      "path": "/tmp/portfolio-entry-ssi-v5-ledgers.json",
+      "sha256": "15b10a7a2d6e61d78292c3cd29e98786b02b7c90c5455e1377640feec5cb1d26"
+    },
+    "checker": {
+      "path": "scripts/check_portfolio_entry_ssi.cjs",
+      "sha256": "34f120b946e9c46c05c428132543f2cc0886518463fb770f1bed3f6249e97b17"
+    },
+    "independentDependencies": [
+      {
+        "path": "scripts/check_portfolio_entry_research.cjs",
+        "sha256": "8f05d6cdd4536e3d93b456bc54993e6f38759d795936c81dcd39e00a81816f94"
+      },
+      {
+        "path": "scripts/check_portfolio_entry_predictive.cjs",
+        "sha256": "64a80def76b7cec813584e4b66ab64f55a8b867c9e61af1483cbf78aacebbf82"
+      },
+      {
+        "path": "scripts/check_portfolio_entry_scope.cjs",
+        "sha256": "593dfb80d2f6b24160ddeb867c669c6cef99490b6992e33457563243d0601f3c"
+      },
+      {
+        "path": "scripts/check_portfolio_entry_value.cjs",
+        "sha256": "e8f4d4fead7f5afa4de7a268a62b6a741741ca26205502b87107eab19969af99"
+      }
+    ]
+  }
+}
