@@ -1,14 +1,30 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-10-31T01:40:00+00:00",
-  "asOf": "2026-10-31",
+  "checkedAt": "2026-11-01T01:11:54+00:00",
+  "asOf": "2026-11-01",
   "status": "unverified",
   "summary": {
     "errors": 0,
-    "warnings": 4,
+    "warnings": 5,
     "unverified": 50
   },
   "datasets": [
+    {
+      "id": "source_refresh",
+      "label": "本次未更新的来源",
+      "asOf": null,
+      "dateRange": null,
+      "records": 0,
+      "issues": [
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "158042：成交价历史：行情观测不足：158042.SZ；保留历史截至2026-10-29",
+          "affected": "158042"
+        }
+      ],
+      "status": "warning"
+    },
     {
       "id": "funds",
       "label": "海外基金",

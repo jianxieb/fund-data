@@ -36,27 +36,27 @@ window.MONEY_FLOW_QUOTES = {
         "EUR": {
           "buy": 7.4052,
           "sell": 7.4594,
-          "asOf": "2026-10-31 05:30:00"
+          "asOf": "2026-11-01 05:30:00"
         },
         "GBP": {
           "buy": 8.8836,
           "sell": 8.9496,
-          "asOf": "2026-10-31 05:30:00"
+          "asOf": "2026-11-01 05:30:00"
         },
         "HKD": {
           "buy": 0.8468,
           "sell": 0.8502,
-          "asOf": "2026-10-31 05:30:00"
+          "asOf": "2026-11-01 05:30:00"
         },
         "JPY": {
           "buy": 0.042083,
           "sell": 0.042409,
-          "asOf": "2026-10-31 05:30:00"
+          "asOf": "2026-11-01 05:30:00"
         },
         "USD": {
           "buy": 6.6449,
           "sell": 6.6728,
-          "asOf": "2026-10-31 05:30:00"
+          "asOf": "2026-11-01 05:30:00"
         }
       },
       "source": "https://www.boc.cn/sourcedb/whpj/"
@@ -186,31 +186,31 @@ window.MONEY_FLOW_QUOTES = {
         "USD": {
           "buy": 6.61498161,
           "sell": 6.6948251,
-          "asOf": "2026-10-30",
+          "asOf": "2026-10-31",
           "timePrecision": "day"
         },
         "HKD": {
           "buy": 0.84305161,
           "sell": 0.85356911,
-          "asOf": "2026-10-30",
+          "asOf": "2026-10-31",
           "timePrecision": "day"
         },
         "JPY": {
           "buy": 0.04125833,
           "sell": 0.04322776,
-          "asOf": "2026-10-30",
+          "asOf": "2026-10-31",
           "timePrecision": "day"
         },
         "GBP": {
           "buy": 8.70964061,
           "sell": 9.11362688,
-          "asOf": "2026-10-30",
+          "asOf": "2026-10-31",
           "timePrecision": "day"
         },
         "EUR": {
           "buy": 7.25970732,
           "sell": 7.59838003,
-          "asOf": "2026-10-30",
+          "asOf": "2026-10-31",
           "timePrecision": "day"
         }
       },
@@ -221,31 +221,31 @@ window.MONEY_FLOW_QUOTES = {
         "EUR": {
           "buy": 7.4018,
           "sell": 7.4612,
-          "asOf": "2026-10-31 09:39:43",
+          "asOf": "2026-11-01 09:11:36",
           "timeBasis": "observed"
         },
         "GBP": {
           "buy": 8.8828,
           "sell": 8.9541,
-          "asOf": "2026-10-31 09:39:43",
+          "asOf": "2026-11-01 09:11:36",
           "timeBasis": "observed"
         },
         "HKD": {
           "buy": 0.8471,
           "sell": 0.8503,
-          "asOf": "2026-10-31 09:39:43",
+          "asOf": "2026-11-01 09:11:36",
           "timeBasis": "observed"
         },
         "USD": {
           "buy": 6.6451,
           "sell": 6.6703,
-          "asOf": "2026-10-31 09:39:43",
+          "asOf": "2026-11-01 09:11:36",
           "timeBasis": "observed"
         },
         "JPY": {
           "buy": 0.0421,
           "sell": 0.0424,
-          "asOf": "2026-10-31 09:39:43",
+          "asOf": "2026-11-01 09:11:36",
           "timeBasis": "observed"
         }
       },
@@ -283,19 +283,19 @@ window.MONEY_FLOW_QUOTES = {
     }
   },
   "unit": "CNY per 1 foreign currency",
-  "capturedAt": "2026-10-31T01:39:42+00:00",
+  "capturedAt": "2026-11-01T01:11:35+00:00",
   "offshoreUsd": {
     "bochk": {
       "quotes": {
         "CNH": {
           "bidPerUsd": 6.61593,
           "askPerUsd": 6.69149,
-          "asOf": "2026-10-31 09:37:56"
+          "asOf": "2026-11-01 09:07:57"
         },
         "HKD": {
           "bidPerUsd": 7.8201,
           "askPerUsd": 7.8703,
-          "asOf": "2026-10-31 09:37:56"
+          "asOf": "2026-11-01 09:07:57"
         }
       },
       "source": "https://www.bochk.com/whk/rates/exchangeRatesUSD/exchangeRatesUSD-input.action?lang=cn",
@@ -306,12 +306,12 @@ window.MONEY_FLOW_QUOTES = {
         "HKD": {
           "bidPerUsd": 7.816,
           "askPerUsd": 7.875,
-          "asOf": "2026-10-31 09:31:00"
+          "asOf": "2026-11-01 04:21:00"
         },
         "CNH": {
           "bidPerUsd": 6.56861921,
           "askPerUsd": 6.73825618,
-          "asOf": "2026-10-31 09:31:00",
+          "asOf": "2026-11-01 04:21:00",
           "path": "via-HKD",
           "legs": {
             "usdBuy": 7.816,
@@ -388,7 +388,7 @@ window.MONEY_FLOW_QUOTES = {
         "CNH": {
           "bidPerUsd": 6.65141,
           "askPerUsd": 6.65321,
-          "asOf": "2026-10-31 09:39:08.970",
+          "asOf": "2026-11-01 09:08:41.373",
           "timeBasis": "snapshot",
           "marketDataAvailability": "ZB",
           "quoteStatus": "frozen",
@@ -403,23 +403,27 @@ window.MONEY_FLOW_QUOTES = {
   "refreshFailures": {
     "icbc": {
       "error": "URLError: <urlopen error [SSL: UNSAFE_LEGACY_RENEGOTIATION_DISABLED] unsafe legacy renegotiation disabled (_ssl.c:1010)>",
-      "attemptedAt": "2026-10-31T01:39:42+00:00"
+      "attemptedAt": "2026-11-01T01:11:35+00:00"
     },
     "ccb": {
       "error": "URLError: <urlopen error [SSL: UNSAFE_LEGACY_RENEGOTIATION_DISABLED] unsafe legacy renegotiation disabled (_ssl.c:1010)>",
-      "attemptedAt": "2026-10-31T01:39:42+00:00"
+      "attemptedAt": "2026-11-01T01:11:35+00:00"
     },
     "abc": {
       "error": "URLError: <urlopen error [SSL: UNSAFE_LEGACY_RENEGOTIATION_DISABLED] unsafe legacy renegotiation disabled (_ssl.c:1010)>",
-      "attemptedAt": "2026-10-31T01:39:42+00:00"
+      "attemptedAt": "2026-11-01T01:11:35+00:00"
     },
     "comm": {
       "error": "URLError: <urlopen error [SSL: UNSAFE_LEGACY_RENEGOTIATION_DISABLED] unsafe legacy renegotiation disabled (_ssl.c:1010)>",
-      "attemptedAt": "2026-10-31T01:39:42+00:00"
+      "attemptedAt": "2026-11-01T01:11:35+00:00"
     },
     "icbc-asia": {
       "error": "CalledProcessError: Command '['curl', '--fail', '--silent', '--show-error', '--location', '--max-time', '8.0', 'https://papi.icbc.com.cn/rest/currencies/asia/foreign']' returned non-zero exit status 3",
-      "attemptedAt": "2026-10-31T01:39:42+00:00"
+      "attemptedAt": "2026-11-01T01:11:35+00:00"
+    },
+    "cmb": {
+      "error": "URLError: <urlopen error [Errno 101] Network is unreachable>",
+      "attemptedAt": "2026-11-01T01:11:35+00:00"
     }
   }
 };
