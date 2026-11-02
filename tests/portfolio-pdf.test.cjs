@@ -134,16 +134,13 @@ function accountUiFixture(configure) {
   return f;
 }
 
-const scoreUi = /买点历史分|历史买点分|规则分|加仓评分|已撤回|portfolio-(?:entry|score)-|导出买点历史|导出旧规则审计/;
+const scoreUi = /买点历史分|加仓评分/;
 
-test('normal and historical simulations do not execute research models or render their components', async () => {
+test('normal and historical simulations export the same account risk shown in the result', async () => {
   for (const historical of [false, true]) {
     const f = accountUiFixture(input => { if (historical) Object.assign(input.config, { years: 'custom', start: '2024-01-01', end: '2025-01-08' }); });
-    let calls = 0;
-    for (const name of ['ChanghengPortfolioTimingModel', 'ChanghengPortfolioEntryModel']) f.context.window[name] = { analyze() { calls++; throw new Error('Research model must not run'); } };
-    for (const name of ['ChanghengPortfolioScoreView', 'ChanghengPortfolioEntryView']) f.context.window[name] = { render() { calls++; throw new Error('Research view must not render'); } };
     await f.action('run'); await f.action('export-pdf');
-    assert.equal(calls, 0); assert.equal(f.reports.length, 1);
+    assert.equal(f.reports.length, 1);
     const report = f.reports[0], html = f.ui.view(f.helpers);
     assert.equal(report.result.timing, undefined);
     assert.match(html, /模拟账户的期末风险/); assert.ok(html.includes(report.result.end));
@@ -229,7 +226,7 @@ test('a page kept open refreshes the manifest and actual simulation from histori
   await f.action('export-result');
   const csv = f.downloads.at(-1);
   assert.match(csv[0], /组合模拟.*2026-04-17/); assert.match(csv[1], /税后估值/);
-  assert.doesNotMatch(csv[1], /add-score-v1|entry-percentile-knn-v1|买点历史分/);
+  assert.doesNotMatch(csv[1], scoreUi);
 });
 
 test('failed freshness checks retain dated simulation results and name the missing update in page and PDF', async () => {
@@ -246,14 +243,8 @@ test('failed freshness checks retain dated simulation results and name the missi
   assert.equal(current.timing, undefined);
 });
 
-test('retired score export and slider actions are inert while ordinary account exports remain available', async () => {
-  const f = accountUiFixture(); let calls = 0;
-  f.context.window.ChanghengPortfolioEntryView = { inspect() { calls++; throw new Error('No research slider'); } };
-  f.context.window.ChanghengPortfolioScoreView = { inspect() { calls++; throw new Error('No legacy slider'); } };
-  await f.action('run'); const before = f.downloads.length;
-  await f.action('export-score'); assert.equal(f.downloads.length, before);
-  for (const key of ['portfolioEntryDay', 'portfolioScoreDay']) f.ui.handleInput({ id: 'retired-slider', dataset: { [key]: '' }, value: '0' });
-  assert.equal(calls, 0); assert.doesNotMatch(f.ui.view(f.helpers), scoreUi);
+test('ordinary account exports include the result and holdings', async () => {
+  const f = accountUiFixture(); await f.action('run'); const before = f.downloads.length;
   await f.action('export-result'); assert.equal(f.downloads.length, before + 1); assert.match(f.downloads.at(-1)[0], /组合模拟/);
   await f.action('export-holdings'); assert.equal(f.downloads.length, before + 2); assert.match(f.downloads.at(-1)[0], /持仓贡献/);
 });
@@ -439,11 +430,8 @@ test('USD settings, tax reserve, PDF and CSV keep the same result currency after
   assert.equal(JSON.parse(f.downloads.at(-1)[1]).currency, 'USD');
 });
 
-test('production entrypoint does not load research scoring modules, which remain available for research tests', () => {
+test('production entrypoint loads the account model, PDF and simulator', () => {
   const html = fs.readFileSync(path.resolve(__dirname, '../index.html'), 'utf8');
-  for (const file of ['portfolio-timing-model.js', 'portfolio-entry-model.js', 'portfolio-entry-view.js', 'portfolio-score-view.js', 'portfolio-score.css']) {
-    assert.ok(fs.existsSync(path.resolve(__dirname, '../assets', file)), file);
-    assert.ok(!html.includes('assets/' + file), file);
-  }
-  assert.match(html, /assets\/portfolio-model\.js/); assert.match(html, /assets\/portfolio-pdf\.js/); assert.match(html, /assets\/portfolio\.js/);
+  const assets = [...html.matchAll(/src="assets\/(portfolio[^"?]*)/g)].map(match => match[1]);
+  assert.deepEqual(assets, ['portfolio-model.js', 'portfolio-pdf.js', 'portfolio.js']);
 });

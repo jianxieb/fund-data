@@ -278,7 +278,7 @@
     const holdings = r.holdings.map(h => ({ ...h, weight: r.grossValue > 0 ? h.grossValue / r.grossValue * 100 : null }));
     const cashShortfall = M.finite(actualCash) && r.cashWeight - actualCash >= 5;
     const overweight = holdings.some(h => M.finite(h.weight) && h.weight - h.targetWeight >= 5);
-    const body = '<div class="portfolio-timing-account"><div><strong>期末回撤 ' + fmt(latest?.drawdown) + '</strong><span>实际现金 ' + fmt(actualCash) + ' · 目标现金 ' + fmt(r.cashWeight) + '</span></div><p>' + holdings.map(h => H.esc(h.code) + ' ' + fmt(h.weight) + '（目标 ' + fmt(h.targetWeight) + '）').join(' · ') + '</p>' +
+    const body = '<div class="portfolio-risk-account"><div><strong>期末回撤 ' + fmt(latest?.drawdown) + '</strong><span>实际现金 ' + fmt(actualCash) + ' · 目标现金 ' + fmt(r.cashWeight) + '</span></div><p>' + holdings.map(h => H.esc(h.code) + ' ' + fmt(h.weight) + '（目标 ' + fmt(h.targetWeight) + '）').join(' · ') + '</p>' +
       (r.config.tax?.liquidate ? '<p>此模拟已期末清仓；账户为现金。</p>' : cashShortfall || overweight ? '<p class="negative">' + (cashShortfall ? '实际现金低于目标至少5个百分点。每笔投入预留现金，不代表账户一直保持该现金比例。' : '部分持仓已超出目标权重至少5个百分点。') + '</p>' : '') +
       '<small>仓位按未减浮盈预留税的市值计算；回撤基于模拟账户的现金流中性净值。</small></div>';
     return H.card('模拟账户的期末风险', r.end + ' · ' + currency(r.config).name + ' · 实际持仓与现金', '<div class="portfolio-risk-body">' + body + '<a class="source-link" href="docs/portfolio-method.md" target="_blank" rel="noopener">研究方法 ↗</a></div>');
