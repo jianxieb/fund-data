@@ -19,6 +19,7 @@ TASKS = {
     'financial_events': ('scripts/build_financial_events.py', [], ('financial-events-history.json',)),
     'bank_fx': ('scripts/refresh_money_flow_quotes.py', ['--timeout', '8'], ('money-flow-quotes.js',)),
     'market_history': ('market_history.py', [], ('market-history.json',)),
+    'benchmark_valuations': ('scripts/collect_portfolio_benchmark_pe.py', [], ('portfolio/benchmark-valuations.json',)),
 }
 
 
