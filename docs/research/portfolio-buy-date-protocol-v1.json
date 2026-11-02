@@ -1,0 +1,41 @@
+{
+  "id": "portfolio-buy-date-drawdown-rank-v1",
+  "frozenDate": "2026-11-02",
+  "status": "frozen_before_new_candidate_outcomes",
+  "question": "At an arbitrary observed portfolio close, does a deep trailing one-year drawdown identify better subsequent entry dates than ordinary dates? Monthly income, amount, fixed-date DCA, a deadline to invest, and an investor's minimum holding period are not model inputs or preconditions. Separate buy-date quality from sell-date signals.",
+  "hypothesis": "One fixed descriptive state: an unusually deep drawdown may precede a rebound, or may precede further loss. Its 0-100 historical depth percentile is not a validated buy score or probability. Do not invert the old score, try alternative windows, or select a horizon from these results.",
+  "priorExposure": "Existing score and cash-timing studies used the same market history and examined drawdown states. This is a frozen historical replication for a different estimand, not untouched out-of-sample or formal control of the full search process.",
+  "market": {
+    "asOf": "2026-10-30",
+    "sources": [
+      {"id":"us:USD","path":"data/portfolio/us/USD-7da045c18fc6ba1a.json","sha256":"7da045c18fc6ba1a7f4dc7259f930f8176c67f5679a7b422052bba7355a13675","weight":0.3},
+      {"id":"us:TQQQ","path":"data/portfolio/us/TQQQ-0694d4779afd68bd.json","sha256":"0694d4779afd68bd9c0392d62592b1908601719f2eabfbebc5f8fa7be80e6d2c","weight":0.3},
+      {"id":"fx","path":"data/portfolio/fx/CNY-a0951615a243c96e.json","sha256":"a0951615a243c96eab1f29ed11ea58d72ec3ae67d912f57a17a1acb511a3335a"}
+    ],
+    "calendar": "Observed common product closes; multiply each provider-adjusted USD price by last FX on or before product date, no older than 7 calendar days. Expected 4206 dates, 2010-02-11..2026-10-30; compact JSON date-array SHA256 2e3851fc6cf968b09f2a1f33a76ff1eaa949e824537cdc9678a665333f65f952.",
+    "configuration": "Fixed test portfolio USD (semiconductor ETF, not the currency) 30%, TQQQ 30%, zero-interest CNY cash 40%. It is not asserted to be the user's actual holdings or representative of other portfolios."
+  },
+  "signal": {
+    "reference": "Start at 100. At each subsequent common close multiply by 1 + (.3*rUSD_CNY + .3*rTQQQ_CNY), in that arithmetic order. Daily constant-weight reference for the signal only.",
+    "depth": "After the t close, d_t=1-reference_t/max(reference[t-251:t inclusive]); unavailable before 252 closes.",
+    "rank": "Use all valid strictly earlier depths, at least 504. 100*(count strictly less + 0.5*count exactly equal)/N; unrounded double comparisons. No future observations or return labels. Flat history gives 50, not an artificial high or low.",
+    "bands": "high if score >=80, low if <=20, normal otherwise, on raw unrounded scores. Decision is after close, entry next observed common close. Include all eligible dates, not month-end or times of income. No historical or current score promoted to actionable UI while unconfirmed."
+  },
+  "labels": {
+    "horizonsCalendarMonths": [3,6,12],
+    "primary": "12 months. 3 and 6 months are prespecified supporting descriptions, not independent replications or alternatives for selection. These are observation horizons, not instructions to hold.",
+    "endpoint": "Anchor at actual entry date, add calendar months and clamp day to target month length; take first common close on or after anniversary <=14 calendar days late. No unfinished, cross-phase, or invented outcomes. Signal, entry and liquidation must all lie in the same phase.",
+    "account": "One hypothetical unit, same amount for each date; .4 cash, buy .3 in each product including 10 bp buy fee, quantities .3/(1.001*entry price); hold actual units, no rebalancing; liquidate on endpoint with 10 bp sale fee. Market value between entry and endpoint includes cash. Max drawdown starts from wealth 1 before entry, includes buy cost, daily closes and actual terminal liquidation wealth (do not insert an extra pre-sale endpoint observation). Result in percentage points of unit, before personal tax. No deposit schedule or waiting action.",
+    "partitions": {"development":"first..2018-12-31","validation":"2019-01-01..2022-12-31","later":"2023-01-01..snapshot_end"}
+  },
+  "reporting": "For each phase x horizon report n by band, mean/median/p10 net return, median/worst holding drawdown (nonpositive), high-normal and high-low median gaps and full Spearman midrank correlation. Quantiles linear interpolation at (n-1)*p. Report earliest day of each uninterrupted high run and its outcome, greedily counted nonoverlapping high windows (next entry strictly after last endpoint), and calendar-year concentration. Cluster indices are consecutive common signal dates, not calendar days. Counts are not independent trials.",
+  "decisionBeforeOutcomes": {
+    "effect": "At 12m separately in all three phases: high median exceeds normal median by >=1.0 pp, high mean > normal mean, high median > low median, Spearman >0. One pp is a project screening threshold, not a statistical discovery.",
+    "risk": "In each primary phase high p10 return and high median max drawdown must each be no worse than normal by more than 2 pp.",
+    "coverage": "In each primary phase at least 3 high runs across at least 2 distinct high-entry years, and >=3 nonoverlapping high 12m holding windows. Report high-run first-date results without treating adjacent runs as independent regimes.",
+    "concentration": "For each primary phase delete each represented entry year in turn, and each contiguous 12-calendar-month block entirely inside the eligible entry-month span. Remaining high-normal median return gap must be strictly positive; missing group fails.",
+    "uncertainty": "Primary later two phases separately: take all eligible dated observations together grouped by entry month (retain all bands), draw 12 consecutive calendar-month moving blocks with replacement until original month count, truncate last block; 2000 draws with Python random.Random(20261102) restarted for each phase. Require at least 24 represented month slots, at least 95% finite high-normal median gaps, and linearly interpolated 2.5th percentile strictly above 0. Report finite count and 2.5/97.5 interval when estimable. Descriptive due to dependent paths/prior exposure, not accuracy probability.",
+    "groupPolicy": "All primary gates conjunctive. Nonfinite/empty fails. Differences measured in percentage points; use 1e-10 pp for threshold equality noise, strict positive >1e-10 pp. No changing score, direction, threshold, interval or phase after seeing results. Do not replace a failure with positive pooled figures or a shorter horizon.",
+    "integration": "Only a historical screen passing all gates is eligible for further independent validation, exact production accounting / tax / data freshness and scope checks before release. A high depth percentile on its own must never appear as a confirmed buy score. No sell signal tested."
+  }
+}
