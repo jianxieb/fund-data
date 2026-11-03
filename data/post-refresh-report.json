@@ -1,5 +1,5 @@
 {
-  "startedAt": "2026-11-02T01:32:26+00:00",
+  "startedAt": "2026-11-03T03:31:53+00:00",
   "datasets": [
     "fund_actions",
     "crossborder",
@@ -7,14 +7,15 @@
     "return_indices",
     "financial_events",
     "bank_fx",
-    "market_history"
+    "market_history",
+    "benchmark_valuations"
   ],
   "steps": [
     {
       "dataset": "fund_actions",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 0.19,
+      "seconds": 0.31,
       "log": ".tmp-snap/refresh-fund_actions.log",
       "publishedRollback": false,
       "retainedPrevious": false,
@@ -25,7 +26,7 @@
       "dataset": "crossborder",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 7.87,
+      "seconds": 6.86,
       "log": ".tmp-snap/refresh-crossborder.log",
       "publishedRollback": false,
       "retainedPrevious": false,
@@ -36,7 +37,7 @@
       "dataset": "etf_distributions",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 1.39,
+      "seconds": 2.71,
       "log": ".tmp-snap/refresh-etf_distributions.log",
       "publishedRollback": false,
       "retainedPrevious": false,
@@ -47,7 +48,7 @@
       "dataset": "return_indices",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 1.72,
+      "seconds": 1.66,
       "log": ".tmp-snap/refresh-return_indices.log",
       "publishedRollback": false,
       "retainedPrevious": false,
@@ -58,7 +59,7 @@
       "dataset": "bank_fx",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 8.66,
+      "seconds": 3.92,
       "log": ".tmp-snap/refresh-bank_fx.log",
       "publishedRollback": false,
       "retainedPrevious": false,
@@ -69,8 +70,19 @@
       "dataset": "market_history",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 9.1,
+      "seconds": 14.98,
       "log": ".tmp-snap/refresh-market_history.log",
+      "publishedRollback": false,
+      "retainedPrevious": false,
+      "sourcePartial": false,
+      "checkpointValidated": false
+    },
+    {
+      "dataset": "benchmark_valuations",
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 0.97,
+      "log": ".tmp-snap/refresh-benchmark_valuations.log",
       "publishedRollback": false,
       "retainedPrevious": false,
       "sourcePartial": false,
@@ -80,7 +92,7 @@
       "dataset": "financial_events",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 3.43,
+      "seconds": 2.08,
       "log": ".tmp-snap/refresh-financial_events.log",
       "publishedRollback": false,
       "retainedPrevious": false,
@@ -91,7 +103,7 @@
       "dataset": "quality",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 1.18,
+      "seconds": 1.87,
       "log": ".tmp-snap/refresh-quality.log",
       "publishedRollback": false,
       "retainedPrevious": false,
@@ -99,6 +111,6 @@
       "checkpointValidated": false
     }
   ],
-  "completedAt": "2026-11-02T01:32:40+00:00",
+  "completedAt": "2026-11-03T03:32:12+00:00",
   "status": "completed"
 }
