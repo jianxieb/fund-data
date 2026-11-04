@@ -3,6 +3,7 @@ import hashlib
 import json
 import tempfile
 import unittest
+from datetime import date
 from pathlib import Path
 from unittest.mock import patch
 
@@ -38,6 +39,31 @@ def live_metrics(as_of, known, pb="9.45", dividend="0.59", value="44.39", symbol
 
 
 class BenchmarkValuationTests(unittest.TestCase):
+    def test_as_of_replays_the_issued_version_before_filtering_flagged_quarters(self):
+        def quote(as_of, known, value, flagged=False):
+            row = live_metrics(as_of, known + "T14:00:00Z", value=value, symbol="TQQQ")
+            return {**row, "qualityNote": "Check printed figure"} if flagged else row
+
+        rows = [quote("3/31/2017", "2017-04-10", "10"), quote("6/30/2017", "2017-07-10", "20"),
+                quote("9/30/2017", "2017-10-10", "30"), quote("12/31/2017", "2018-01-10", "40"),
+                quote("3/31/2018", "2018-04-10", "50"), quote("3/31/2018", "2018-04-20", "500", True),
+                quote("12/31/2018", "2019-01-16", "221.09", True),
+                quote("12/31/2018", "2019-03-19", "20")]
+
+        def state(day):
+            return pe.benchmark_pe_as_of(list(reversed(rows)), date.fromisoformat(day))["benchmarks"]["TQQQ"]
+
+        # The corrected edition was observed during March 19, not before that date.
+        blocked = state("2019-03-19")
+        self.assertEqual((blocked["knownBy"][:10], blocked["indexPE"], blocked["missingReason"]),
+                         ("2019-01-16", None, "flagged_current_observation"))
+        clean = state("2019-03-20")
+        self.assertEqual((clean["indexPE"], clean["priorValidQuarters"], clean["cheapnessPercentile"]),
+                         (20, 4, 62.5))  # Half credit for the tie. Neither version of 2018 Q1 counts.
+        self.assertEqual(state("2019-07-03")["missingReason"], "older_than_183_days")
+        self.assertEqual(state("2017-04-10")["missingReason"], "no_known_observation")
+        self.assertEqual(state("2017-04-11")["missingReason"], "fewer_than_four_prior_valid_quarters")
+
     def test_only_named_index_section_supplies_value_date_and_benchmark_identity(self):
         # The fund and index can report different values under an identically named field.
         fund = '''<section id="Fund"><h2>Fund Characteristics</h2><p>Nasdaq-100 Index</p>

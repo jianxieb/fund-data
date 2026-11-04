@@ -228,6 +228,55 @@ def fetch(symbol):
     return parse_page(symbol, body, datetime.now(timezone.utc).strftime(UTC_FORMAT))
 
 
+def benchmark_pe_as_of(observations, day):
+    """Replay issued observations as known before the UTC date, grouped by index."""
+    cutoff = day.isoformat()
+    results = {}
+    for symbol, name in NAMES.items():
+        quarters = {}
+        for row in observations:
+            if row["symbol"] != symbol or row["knownBy"][:10] >= cutoff:
+                continue
+            observed = date.fromisoformat(row["asOf"])
+            quarter = (observed.year, (observed.month - 1) // 3)
+            version = row["asOf"], row["knownBy"]
+            old = quarters.get(quarter)
+            if old is None or version > (old["asOf"], old["knownBy"]):
+                quarters[quarter] = row
+            elif version == (old["asOf"], old["knownBy"]) and (
+                row["indexPE"] != old["indexPE"] or bool(row.get("qualityNote")) != bool(old.get("qualityNote"))
+            ):
+                raise ValueError(f"conflicting {symbol} P/E or quality flag at {version}")
+        ordered = [quarters[k] for k in sorted(quarters)]
+        current = ordered[-1] if ordered else None
+        # Select versions before filtering. A flagged new edition invalidates its
+        # quarter, rather than reviving a superseded number from the same quarter.
+        history = [r for r in ordered[:-1] if not r.get("qualityNote") and r["indexPE"] > 0][-20:]
+        value = percentile = reason = None
+        if current is None:
+            reason = "no_known_observation"
+        elif current.get("qualityNote"):
+            reason = "flagged_current_observation"
+        elif (day - date.fromisoformat(current["asOf"])).days > 183:
+            reason = "older_than_183_days"
+        elif current["indexPE"] <= 0:
+            reason = "nonpositive_pe"
+        else:
+            value = current["indexPE"]
+            if len(history) < 4:
+                reason = "fewer_than_four_prior_valid_quarters"
+            else:
+                percentile = 100 * sum((r["indexPE"] > value) + 0.5 * (r["indexPE"] == value)
+                                       for r in history) / len(history)
+        results[symbol] = {
+            "indexName": name, "asOf": current["asOf"] if current else None,
+            "knownBy": current["knownBy"] if current else None, "indexPE": value,
+            "priorValidQuarters": len(history), "cheapnessPercentile": percentile,
+            "missingReason": reason,
+        }
+    return {"decisionDate": cutoff, "benchmarks": results}
+
+
 def collect(output, archive=None, archive_only=False, dry_run=False):
     new = []
     if archive is not None:
@@ -261,8 +310,19 @@ def main():
     parser.add_argument("--archive", type=Path, help="previously byte-verified archive observations (JSON)")
     parser.add_argument("--archive-only", action="store_true", help="only import archive rows; do not fetch live pages")
     parser.add_argument("--dry-run", action="store_true", help="validate and print merged records without writing")
+    parser.add_argument("--as-of", type=date.fromisoformat, metavar="YYYY-MM-DD",
+                        help="read the saved index valuations available before this UTC date, without fetching")
     args = parser.parse_args()
     try:
+        if args.as_of:
+            if args.archive or args.archive_only or args.dry_run:
+                parser.error("--as-of reads the saved archive and cannot be combined with collection options")
+            archive = json.loads(args.output.read_bytes())
+            if archive.get("schemaVersion") != 1 or not isinstance(archive.get("observations"), list):
+                raise ValueError("unsupported valuation archive")
+            rows = [checked(r) for r in archive["observations"]]
+            print(json.dumps(benchmark_pe_as_of(rows, args.as_of), indent=2, ensure_ascii=False))
+            return
         result = collect(args.output, args.archive, args.archive_only, args.dry_run)
     except (OSError, TypeError, KeyError, AttributeError, ValueError) as exc:
         parser.exit(1, f"Benchmark valuations unchanged: {exc}\n")
