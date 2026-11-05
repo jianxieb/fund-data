@@ -117,7 +117,50 @@ test('liquidation date never buys a returning risk sleeve just to sell it', () =
   const input = fixture({ tax: { liquidate: true } }); input.config.end = input.days[303];
   const r = run(input);
   assert.ok(!r.transactions.some(t => t.day === r.end && t.reason === 'qqq_timing_in'));
-  assert.equal(r.riskReserve, 0); assert.ok(r.holdings.every(h => h.grossValue === 0)); reconcile(input, r);
+  assert.equal(r.riskReserve, 0); assert.equal(r.qqqNextSignal, null); assert.ok(r.holdings.every(h => h.grossValue === 0)); reconcile(input, r);
+  assert.equal(r.qqqLatestSignal.available, true);
+});
+
+test('latest QQQ closing signal shows the pending exit or reentry before the next execution', () => {
+  const input = fixture(); input.config.end = input.days[279];
+  const exit = run(input);
+  assert.equal(exit.curve.at(-1).qqqOn, true); assert.equal(timing(exit).length, 0);
+  assert.equal(exit.qqqNextSignal.available, true); assert.equal(exit.qqqNextSignal.sourceDay, input.days[279]);
+  assert.equal(exit.qqqNextSignal.signalDay, input.days[279]); assert.equal(exit.qqqNextSignal.executedOn, true);
+  assert.equal(exit.qqqNextSignal.on, false); assert.equal(exit.qqqNextSignal.pendingChange, true);
+  input.config.end = input.days[302]; const enter = run(input);
+  assert.equal(enter.curve.at(-1).qqqOn, false); assert.equal(enter.qqqNextSignal.on, true);
+  assert.equal(enter.qqqNextSignal.pendingChange, true); assert.equal(enter.qqqNextSignal.sourceDay, input.days[302]);
+  input.config.end = input.days[303]; const executed = run(input);
+  assert.equal(executed.qqqNextSignal.pendingChange, false); assert.equal(executed.curve.at(-1).qqqOn, true);
+  const changed = structuredClone(input); changed.config.end = input.days[302];
+  changed.histories['us:QQQ'].series.filter(([day]) => day > input.days[302]).forEach(row => { row[1] = 1; });
+  assert.deepEqual(run(changed).qqqNextSignal, enter.qqqNextSignal);
+});
+
+test('a stale latest QQQ quote can support an earlier executed signal but not a fresh next signal', () => {
+  const input = fixture(); input.config.end = input.days[308];
+  const h = input.histories['us:QQQ']; h.series = h.series.slice(0, 301); h.asOf = input.days[300];
+  const r = run(input);
+  assert.equal(r.curve.at(-1).qqqSignalDay, input.days[307]);
+  assert.equal(r.curve.at(-1).qqqSourceDay, input.days[300]);
+  assert.equal(r.qqqNextSignal.available, false); assert.equal(r.qqqNextSignal.on, null);
+  assert.equal(r.qqqNextSignal.pendingChange, null); assert.equal(r.qqqNextSignal.sourceDay, input.days[300]);
+  assert.match(r.qqqNextSignal.missing, /前缺7日内/);
+});
+
+test('a newer QQQ-only close is an observation, while the next instruction remains at the last common close', () => {
+  const input = fixture(); input.config.end = input.days[279];
+  const h = input.histories['us:USD']; h.series = h.series.filter(([day]) => day !== input.days[279]);
+  const r = run(input);
+  assert.equal(r.end, input.days[279]); assert.equal(r.curve.at(-1).qqqOn, true);
+  assert.equal(r.qqqNextSignal.signalDay, input.days[278]); assert.equal(r.qqqNextSignal.sourceDay, input.days[278]);
+  assert.equal(r.qqqNextSignal.on, true); assert.equal(r.qqqNextSignal.pendingChange, false);
+  assert.equal(r.qqqLatestSignal.sourceDay, input.days[279]); assert.equal(r.qqqLatestSignal.on, false);
+  input.config.end = input.days[280]; const nextCommon = run(input);
+  assert.equal(timing(nextCommon).length, 0); assert.equal(nextCommon.qqqNextSignal.pendingChange, true);
+  input.config.end = input.days[281]; const executed = run(input);
+  assert.deepEqual(timing(executed).map(t => [t.day, t.signalDay]), [[input.days[281], input.days[280]]]);
 });
 
 test('history identity, proxy freshness, warmup and absent positive TQQQ fail explicitly', () => {

@@ -68,24 +68,28 @@ test('initial allocation equals lump sum; a previous-close deficit buys only the
   reconcile(input, r);
 });
 
-test('three holdings use previous positive gaps but current closing prices to cap total exposure', () => {
+test('three holdings execute yesterday fixed amounts even when the new close exceeds target exposure', () => {
   const days = ['2025-01-02', '2025-01-03', '2025-01-06'];
   const input = fixture(days, [[100, 50, 70], [100, 80, 100], [100, 100, 50]], [20, 30, 10]);
   const r = simulate(input), buys = topups(r);
   // Previous marks 10/24/10, wealth 84: positive gaps 6.8/1.2/0.
-  // Current marks 14/30/5, wealth 89: buy 4.4 using the old 85%/15% split.
+  // Yesterday fixed B=.6*84-44=6.4, split85%/15%. Today's prices do not resize it.
   assert.deepEqual(buys.map(t => t.id), ['stock:0', 'stock:1']);
-  close(buys[0].amount, 3.74); close(buys[1].amount, .66);
-  close(r.cash, 35.6); close(r.grossValue, 89);
-  close((r.grossValue - r.cash) / r.grossValue, .6);
+  close(buys[0].amount, 5.44); close(buys[1].amount, .96);
+  close(r.cash, 33.6); close(r.grossValue, 89);
+  close(r.maxActualExposure, 55.4 / 89); assert.ok(r.maxActualExposure > .6);
   reconcile(input, r);
 });
 
-test('a rebound can cancel a previous deficit; a new same-day drop cannot trigger its own buy', () => {
+test('a rebound cannot cancel an already fixed order and a new close can only plan a later buy', () => {
   const days = ['2025-01-02', '2025-01-03', '2025-01-06', '2025-01-07'];
   const input = fixture(days, [[100, 50, 200, 50], [100, 100, 200, 100]], [30, 30]);
   const r = simulate(input);
-  assert.equal(r.topupTimes, 0); assert.deepEqual(r.transactions, lump(input).transactions);
+  assert.equal(r.topupTimes, 1); close(r.topupAmount, 6);
+  assert.deepEqual(topups(r).map(t => t.day), [days[2]]);
+  close(r.maxActualExposure, 126 / 160);
+  assert.equal(r.nextTopupPlan.signalDay, days[3]); close(r.nextTopupPlan.amount, 1.8);
+  reconcile(input, r);
 });
 
 test('floating point rounding at the supported maximum account size cannot manufacture a top-up', () => {
@@ -95,7 +99,20 @@ test('floating point rounding at the supported maximum account size cannot manuf
   assert.equal(r.topupTimes, 0); assert.deepEqual(r.transactions, lump(input).transactions);
 });
 
-test('transaction fees are paid from existing cash and the post-fee portfolio reaches, not exceeds, its target', () => {
+test('the maximum supported principal executes a real fixed order without borrowing or resizing', () => {
+  const days = ['2025-01-02', '2025-01-03', '2025-01-06'];
+  const input = fixture(days, [[100, 50, 250], [100, 100, 10]], [30, 30], {
+    initial: 1e12, transactionFee: .1, years: 'custom', start: days[0], end: days[1]
+  });
+  const plan = simulate(input).nextTopupPlan;
+  close(plan.amount, 6e10 / 1.0006 / 1.0006, .001);
+  assert.ok(plan.cashRequired <= plan.availableCash);
+  input.config.end = days[2]; const r = simulate(input);
+  assert.deepEqual(topups(r).map(t => ({ id: t.id, amount: t.amount, fee: t.fee })), plan.orders);
+  assert.ok(r.curve.every(p => p.cash >= 0)); close(r.contributed, 1e12);
+});
+
+test('fixed order fees are paid from prior cash; unchanged prices reproduce the planned target', () => {
   const days = ['2025-01-02', '2025-01-03', '2025-01-06'];
   const input = fixture(days, [[100, 50, 50], [100, 100, 100]], [30, 30], { transactionFee: 1 });
   const r = simulate(input), scale = 1 / 1.006;
@@ -133,21 +150,53 @@ test('only common actual trading closes update the signal, and liquidation day c
   input.config.tax = { liquidate: true };
   const liquidated = simulate(input);
   assert.equal(liquidated.topupTimes, 0);
+  assert.equal(liquidated.nextTopupPlan, null);
   assert.ok(liquidated.transactions.filter(t => t.day === days[3]).every(t => t.reason === 'liquidation'));
   reconcile(input, liquidated);
 });
 
-test('income is processed before top-up and periodic rebalancing can remove its need', () => {
+test('the prior cash order executes before income and cannot be cancelled by periodic rebalance', () => {
   const days = ['2025-01-30', '2025-01-31', '2025-02-03', '2025-02-04'];
   const input = fixture(days, [[100, 50, 50, 50], [100, 100, 100, 100]], [30, 30], { monthly: 20 });
   const r = simulate(input);
   close(r.contributed, 120); close(r.topupAmount, 6); close(r.cash, 42);
   const dayTrades = r.transactions.filter(t => t.day === days[2]);
-  assert.deepEqual(dayTrades.map(t => t.reason), ['contribution', 'contribution', 'cash_topup']);
+  assert.deepEqual(dayTrades.map(t => t.reason), ['cash_topup', 'contribution', 'contribution']);
   input.config.rebalance = 'month';
   const balanced = simulate(input);
-  assert.equal(balanced.rebalances, 1); assert.equal(balanced.topupTimes, 0);
+  assert.equal(balanced.rebalances, 1); assert.equal(balanced.topupTimes, 1);
+  close(balanced.topupAmount, 6);
+  assert.equal(balanced.transactions.find(t => t.day === days[2]).reason, 'cash_topup');
   reconcile(input, balanced);
+});
+
+test('the last common close exposes exactly the currency orders that the next close executes', () => {
+  const days = ['2025-01-02', '2025-01-03', '2025-01-06'];
+  const input = fixture(days, [[100, 50, 250], [100, 100, 10]], [30, 30], { transactionFee: 1, years: 'custom', start: days[0], end: days[1] });
+  const before = simulate(input), plan = before.nextTopupPlan;
+  assert.equal(plan.signalDay, days[1]); assert.equal(before.topupSignalDay, days[1]);
+  close(plan.amount, 6 / 1.006 / 1.006); close(plan.fee, plan.amount * .01);
+  close(plan.cashRequired, plan.amount + plan.fee); assert.ok(plan.cashRequired <= plan.availableCash);
+  assert.deepEqual(plan.orders.map(o => o.id), ['stock:0']);
+  input.config.end = days[2]; const after = simulate(input);
+  assert.deepEqual(topups(after).map(t => ({ id: t.id, amount: t.amount, fee: t.fee })), plan.orders);
+  const altered = structuredClone(input); altered.histories['stock:0'].series[2][1] = 1; altered.histories['stock:1'].series[2][1] = 1000;
+  assert.deepEqual(topups(simulate(altered)).map(t => ({ id: t.id, amount: t.amount, fee: t.fee })), plan.orders);
+  reconcile(input, after);
+});
+
+test('a noncommon final valuation preserves the last common signal date and pending order', () => {
+  const days = ['2025-01-02', '2025-01-03', '2025-01-06'];
+  const input = fixture(days, [[100, 50, 200], [100, 100, 100]], [30, 30]);
+  input.histories['stock:1'].series.pop(); input.histories['stock:1'].asOf = days[1];
+  // Keep the shorter history's metadata coverage through a later actual close,
+  // while the requested end is an intermediate date without a common close.
+  input.histories['stock:1'].series.push(['2025-01-07', 100]); input.histories['stock:1'].asOf = '2025-01-07';
+  input.config.years = 'custom'; input.config.start = days[0]; input.config.end = days[2];
+  const r = simulate(input); assert.equal(r.end, days[2]); assert.equal(r.topupSignalDay, days[1]);
+  assert.equal(r.nextTopupPlan.signalDay, days[1]); close(r.nextTopupPlan.amount, 6); assert.equal(r.topupTimes, 0);
+  const noOrder = fixture(days, [[100, 100, 200], [100, 100, 100]], [30, 30]);
+  const flat = simulate(noOrder); assert.equal(flat.nextTopupPlan, null); assert.equal(flat.topupSignalDay, days[2]);
 });
 
 test('mixed currencies and three assets reconcile tax, dividends, additions, rebalance and optional liquidation', () => {

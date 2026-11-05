@@ -136,6 +136,61 @@ function accountUiFixture(configure) {
 
 const scoreUi = /买点历史分|加仓评分/;
 
+function nextPlanFixture(endIndex, mixedCalendar = false) {
+  return accountUiFixture(input => {
+    const asset = input.catalog.assets[0], oldId = asset.id, history = input.histories[oldId];
+    asset.id = 'us:TQQQ'; asset.code = 'TQQQ'; history.id = asset.id;
+    delete input.histories[oldId]; input.histories[asset.id] = history;
+    input.config.positions[0].id = asset.id;
+    const days = history.series.map(row => row[0]);
+    input.catalog.assets.push({ id: 'us:QQQ', code: 'QQQ', kind: 'etf', currency: 'USD', status: 'available', historyUrl: 'data/portfolio/etf/QQQ.json' });
+    input.histories['us:QQQ'] = { schemaVersion: 1, id: 'us:QQQ', currency: 'USD', basis: 'provider_adjusted_close', dividends: 'reinvested',
+      first: days[0], asOf: days.at(-1), series: days.map((day, i) => [day, i < 300 || i >= 320 ? 100 : 60]) };
+    Object.assign(input.config, { initialMethod: 'qqq_bear_confirm', years: 'custom', start: days[280], end: days[endIndex], benchmarkId: '', tax: { usCapitalGains: 0, usDividend: 0, cnStockDividend: 0 } });
+    if (mixedCalendar) input.histories[input.config.positions[1].id].series = input.histories[input.config.positions[1].id].series.filter(([day]) => day !== days[endIndex]);
+  });
+}
+
+test('next-trade panel distinguishes pending QQQ exits and entries from executed holdings', async () => {
+  for (const [endIndex, action, held] of [[319, '退出TQQQ对应仓位', '持有TQQQ'], [322, '买回TQQQ对应仓位', '持有对应现金']]) {
+    const f = nextPlanFixture(endIndex);
+    await f.action('run');
+    assert.equal(f.notices.length, 0, f.notices.join('; '));
+    const html = f.ui.view(f.helpers);
+    assert.equal(html.match(/role="alert">([^<]*)/)?.[1], undefined);
+    assert.match(html, /下一共同交易日/);
+    assert.ok(html.includes(action)); assert.match(html, /待执行/);
+    assert.ok(html.includes('模拟账户当前' + held));
+  }
+});
+
+test('a newer QQQ-only close is shown as observation, not the next common-day order', async () => {
+  const f = nextPlanFixture(319, true);
+  await f.action('run');
+  assert.equal(f.notices.length, 0, f.notices.join('; '));
+  const html = f.ui.view(f.helpers);
+  assert.equal(html.match(/role="alert">([^<]*)/)?.[1], undefined);
+  assert.match(html, /继续持有TQQQ/); assert.match(html, /较新观察：QQQ .*收盘为持有现金状态/);
+  assert.match(html, /暂不改变上述计划/);
+  assert.doesNotMatch(html, /退出TQQQ对应仓位|class="badge">待执行/);
+});
+
+test('cash-topup panel exposes predeclared per-asset order amounts and fees', async () => {
+  const f = accountUiFixture(input => {
+    const days = input.histories[input.config.positions[0].id].series.map(row => row[0]);
+    for (const p of input.config.positions.filter(p => p.weight)) input.histories[p.id].series.forEach((row, i) => { row[1] = i ? 80 : 100; });
+    Object.assign(input.config, { initialMethod: 'cash_topup', years: 'custom', start: days[0], end: days[1], benchmarkId: '', transactionFee: .1, tax: { usCapitalGains: 0, usDividend: 0, cnStockDividend: 0 } });
+  });
+  await f.action('run'); await f.action('export-pdf');
+  const html = f.ui.view(f.helpers);
+  assert.equal(html.match(/role="alert">([^<]*)/)?.[1], undefined);
+  const plan = f.reports[0].result.nextTopupPlan;
+  assert.ok(plan && plan.orders.length === 2);
+  for (const order of plan.orders) assert.ok(html.includes(String(order.amount)));
+  assert.ok(html.includes(String(plan.fee))); assert.ok(html.includes(plan.signalDay + '收盘确定'));
+  assert.match(html, /金额已确定；成交价格变化会使实际仓位偏离目标/);
+});
+
 test('normal and historical simulations export the same account risk shown in the result', async () => {
   for (const historical of [false, true]) {
     const f = accountUiFixture(input => { if (historical) Object.assign(input.config, { years: 'custom', start: '2024-01-01', end: '2025-01-08' }); });

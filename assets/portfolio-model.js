@@ -297,6 +297,7 @@
     const qqqTiming = strategy.initialMethod === 'qqq_bear_confirm';
     const tqqqIndex = series.findIndex(s => s.asset.id === 'us:TQQQ');
     const qqqSignals = new Map();
+    let qqqLatestSignal = null, qqqNextState = null;
     if (qqqTiming) {
       if (tqqqIndex < 0) fail('QQQ深熊确认调仓需要组合中有权重大于0的TQQQ');
       const qqqAsset = assets.get('us:QQQ'), qqqHistory = histories['us:QQQ'];
@@ -317,6 +318,16 @@
         if (!state?.ready) fail('QQQ在 ' + source.day + ' 缺252个交易日预热，无法计算200日均线与一年高点');
         qqqSignals.set(day, { signalDay, sourceDay: source.day, ...state });
       }
+      const latest = at(qqqRows, end, 7);
+      qqqLatestSignal = latest ? { available: true, signalDay: latest.day, sourceDay: latest.day, ...states.get(latest.day) } :
+        { available: false, signalDay: null, sourceDay: qqqRows.filter(r => r[0] <= end).at(-1)?.[0] || null,
+          on: null, missing: 'QQQ在模拟末日 ' + end + ' 前缺7日内实际复权收盘价' };
+      // A later QQQ-only close can be a useful observation, but the next actual
+      // shared-market execution uses the last common close, like the backtest.
+      const nextSignalDay = strategyDays.at(-1), nextSource = at(qqqRows, nextSignalDay, 7);
+      qqqNextState = nextSource ? { available: true, signalDay: nextSignalDay, sourceDay: nextSource.day, ...states.get(nextSource.day) } :
+        { available: false, signalDay: nextSignalDay, sourceDay: qqqRows.filter(r => r[0] <= nextSignalDay).at(-1)?.[0] || null,
+          on: null, missing: 'QQQ在最后共同收盘 ' + nextSignalDay + ' 前缺7日内实际复权收盘价' };
     }
     const months = strategyDays.filter((day, i) => !i || day.slice(0, 7) !== strategyDays[i - 1].slice(0, 7));
     // Signals use a separate target-weight reference, without investor cash flows,
@@ -387,13 +398,19 @@
     let cash = 0, contributed = 0, fundUnits = 0, tradeCost = 0, rebalances = 0, deposits = 0;
     let lastBalance = periodKey(start, config.rebalance), peak = 1, mdd = 0;
     let initialReserve = config.initial, exposure = 1, timingChanges = 0;
-    let previousAllocation = null, topupTimes = 0, topupAmount = 0, topupFees = 0;
+    let pendingTopup = null, topupSignalDay = null, topupTimes = 0, topupAmount = 0, topupFees = 0;
+    let maxActualExposure = 0, maxActualExposureDay = null;
     const cashTopup = strategy.initialMethod === 'cash_topup';
     const timing = config.initial > 0 && strategy.initialMethod === 'ma200_hold';
     let riskReserve = 0, qqqOn = true, qqqTimingChanges = 0, lastQqqSignal = null;
     const qqqTimingEvents = [];
     let carriedPrices = 0, carriedFx = 0;
     const value = prices => cash + sum(units.map((unit, i) => unit * prices[i]));
+    // Gross marked weight of all stocks, ETFs and funds; not leverage or volatility.
+    function recordExposure(day, prices) {
+      const gross = value(prices), weight = gross > 0 ? (gross - cash) / gross : 0;
+      if (weight > maxActualExposure) { maxActualExposure = weight; maxActualExposureDay = day; }
+    }
     // A valuation liability, never a cash debit or a daily tax payment. Actual
     // sales reduce both the position and its reserve, avoiding double taxation.
     const reserve = (i, price) => Math.max(0, units[i] * price * (1 - fee) - basis[i]) * series[i].tax.gain / 100;
@@ -427,6 +444,7 @@
       if (cash < -1e-5) fail('交易费用超过可用现金');
       if (Math.abs(cash) < 1e-5) cash = 0;
       tradeCost += charge;
+      recordExposure(day, prices);
     };
     function rebalance(day, prices, reason, targetExposure = exposure) {
       const wealth = Math.max(0, value(prices) - initialReserve), previous = units.map((u, i) => u * prices[i]);
@@ -477,24 +495,33 @@
       qqqTimingEvents.push({ day, signalDay: signal.signalDay, sourceDay: signal.sourceDay, on: qqqOn, ma: signal.ma, drawdown: signal.drawdown, riskReserve });
     }
     function topup(day, prices) {
-      if (!previousAllocation || day === start || day === end && tax.liquidate || cash <= EPS) return;
-      const target = total / 100;
-      const rounding = Math.max(EPS, Number.EPSILON * 16 * previousAllocation.wealth);
-      if (previousAllocation.stock >= target * previousAllocation.wealth - rounding) return;
-      const deficit = sum(previousAllocation.deficits);
-      if (deficit <= EPS) return;
-      // Eligibility and allocation ratios were fixed at the previous common close.
-      // Size at this close, after deposits/rebalancing, to respect the total target
-      // after paying the purchase fee. This is a closing target-weight order.
-      const stock = sum(units.map((unit, i) => unit * prices[i])), wealth = value(prices);
-      const amount = Math.min(cash / (1 + fee), Math.max(0, (target * wealth - stock) / (1 + target * fee)));
-      if (amount <= EPS) return;
-      const deltas = previousAllocation.deficits.map(d => amount * d / deficit).map(d => d > EPS ? d : 0);
-      const boughtAmount = sum(deltas);
-      if (boughtAmount <= EPS) return;
-      const fees = deltas.map(d => d * fee);
-      trade(day, prices, deltas, fees, 'cash_topup', previousAllocation.day);
-      topupTimes++; topupAmount += boughtAmount; topupFees += sum(fees);
+      const plan = pendingTopup; pendingTopup = null;
+      if (!plan || day === start || day === end && tax.liquidate) return;
+      const rounding = Math.max(EPS, Number.EPSILON * 16 * Math.max(cash, plan.cashRequired));
+      if (plan.cashRequired > cash + rounding) fail('前一共同收盘的补仓计划超过已留存现金');
+      // Execute yesterday's fixed currency amounts before today's deposits or
+      // rebalance. Today's price changes units, never the promised order budget.
+      const orders = new Map(plan.orders.map(order => [order.id, order]));
+      const deltas = series.map(s => orders.get(s.asset.id)?.amount || 0);
+      const fees = series.map(s => orders.get(s.asset.id)?.fee || 0);
+      trade(day, prices, deltas, fees, 'cash_topup', plan.signalDay);
+      topupTimes++; topupAmount += plan.amount; topupFees += plan.fee;
+    }
+    function planTopup(day, prices) {
+      topupSignalDay = day;
+      if (day === end && tax.liquidate) return null;
+      const marks = units.map((unit, i) => unit * prices[i]), wealth = value(prices), stock = sum(marks), target = total / 100;
+      const rounding = Math.max(EPS, Number.EPSILON * 16 * wealth);
+      if (cash <= EPS || stock >= target * wealth - rounding) return null;
+      const deficits = series.map((s, i) => Math.max(0, s.weight * wealth - marks[i])), deficit = sum(deficits);
+      if (deficit <= EPS) return null;
+      const budget = Math.min(cash / (1 + fee), Math.max(0, (target * wealth - stock) / (1 + target * fee)));
+      if (budget <= EPS) return null;
+      const orders = series.map((s, i) => ({ id: s.asset.id, amount: budget * deficits[i] / deficit }))
+        .filter(order => order.amount > EPS).map(order => ({ ...order, fee: order.amount * fee }));
+      const amount = sum(orders.map(order => order.amount)), charge = sum(orders.map(order => order.fee));
+      return amount > EPS ? { signalDay: day, amount, fee: charge, cashRequired: amount + charge, orders,
+        portfolioValue: wealth, stockValue: stock, availableCash: cash, targetWeight: total } : null;
     }
     const curve = [], holdingPaths = series.map(() => []), fxDates = new Set((fx || []).map(row => row[0]));
     let lastPrices = null;
@@ -516,7 +543,9 @@
       const tradesBefore = transactions.length;
       carriedPrices += observations.filter(p => p.carried).length;
       if (observations.some(p => p.fxCarried)) carriedFx++;
+      recordExposure(day, prices);
       if (commonSet.has(day)) {
+        if (cashTopup) topup(day, prices);
         if (qqqTiming) updateQqq(day, prices);
         if (day === start) deposit(day, config.initial, prices);
         const released = Math.min(initialReserve, initialPlan.get(day) || 0), income = incomePlan.get(day) || 0;
@@ -534,7 +563,6 @@
         if (config.rebalance !== 'none' && day !== start && balance !== lastBalance) {
           rebalance(day, prices, 'rebalance'); lastBalance = balance;
         }
-        if (cashTopup) topup(day, prices);
       }
       if (day === end && tax.liquidate) {
         const deltas = units.map((unit, i) => -unit * prices[i]);
@@ -543,8 +571,7 @@
       }
       if (qqqTiming && (riskReserve < -1e-5 || riskReserve > cash + 1e-5)) fail('QQQ风险现金与账户现金未勾稽');
       if (cashTopup && commonSet.has(day)) {
-        const marks = units.map((unit, i) => unit * prices[i]), wealth = value(prices);
-        previousAllocation = { day, wealth, stock: sum(marks), deficits: series.map((s, i) => Math.max(0, s.weight * wealth - marks[i])) };
+        pendingTopup = planTopup(day, prices);
       }
       const traded = new Set(transactions.slice(tradesBefore).map(t => t.id));
       series.forEach((s, i) => {
@@ -631,8 +658,12 @@
       // exaggerating one month's change into a full-year compound rate.
       xirr, xirrMissing,
       deposits, rebalances, transactions, tradeCost, initialReserve, timingChanges, topupTimes, topupAmount, topupFees,
-      ...(qqqTiming ? { qqqTimingChanges, riskReserve, qqqTimingEvents } : {}),
-      strategy: { ...strategy, warmupDays, insufficientMaDays, signalBasis: qqqTiming ? 'prior_common_close_actual_qqq_200ma_252high_20out_3in' : cashTopup ? 'prior_common_close_actual_allocation_current_close_sizing' : 'prior_common_close_target_weight_reference' },
+      maxActualExposure, maxActualExposureDay,
+      ...(cashTopup ? { nextTopupPlan: tax.liquidate ? null : pendingTopup, topupSignalDay } : {}),
+      ...(qqqTiming ? { qqqTimingChanges, riskReserve, qqqTimingEvents, qqqLatestSignal,
+        qqqNextSignal: tax.liquidate ? null : { ...qqqNextState, executedOn: qqqOn,
+          pendingChange: qqqNextState?.available ? qqqNextState.on !== qqqOn : null } } : {}),
+      strategy: { ...strategy, warmupDays, insufficientMaDays, signalBasis: qqqTiming ? 'prior_common_close_actual_qqq_200ma_252high_20out_3in' : cashTopup ? 'prior_common_close_fixed_cash_orders_next_common_close' : 'prior_common_close_target_weight_reference' },
       plan: { initial: [...initialPlan].map(([day, amount]) => ({ day, amount })), income: [...incomePlan].map(([day, amount]) => ({ day, amount })) }, taxEvents,
       grossValue: final.grossValue, taxReserve: final.taxReserve, paidTax: final.paidTax, taxCost: final.taxCost, capitalTax: sum(capitalTaxes), dividendTax: sum(dividendTaxes), carriedPrices, carriedFx, benchmark, benchmarkError,
       config: JSON.parse(JSON.stringify({ ...config, currency })) };

@@ -1,0 +1,177 @@
+{
+  "passed": true,
+  "pages": 7,
+  "tableCellsValidated": 193,
+  "inputsUnchanged": true,
+  "version": "2026-11-05 executable prior-close fixed-notional revision",
+  "searchableChineseProofs": [
+    "执行口径修订版",
+    "前日锁定金额",
+    "不在成交时重算金额或因反弹撤单",
+    "不是次日成交后的硬上限",
+    "63.75%",
+    "同时连续满足20个QQQ观察日",
+    "2022-06-02产生退出信号",
+    "80格的按年等权收益差为正",
+    "二十年税后实绩",
+    "准备金额不从现金重复扣除",
+    "现金补足目标仓位",
+    "QQQ深熊确认调仓",
+    "10,408条策略及基准记录",
+    "待执行不计作已成交",
+    "主研究无月供、无再平衡",
+    "满仓50／50",
+    "0.504个百分点（52胜28平1负）",
+    "0.267个百分点（21胜0平0负）"
+  ],
+  "fonts": {
+    "/BAAAAA+ArialUnicodeMS": {
+      "embedded": true,
+      "unicodeMap": true
+    },
+    "/CAAAAA+ArialMT": {
+      "embedded": true,
+      "unicodeMap": true
+    },
+    "/DAAAAA+ArialMT": {
+      "embedded": true,
+      "unicodeMap": true
+    },
+    "/EAAAAA+Arial-BoldMT": {
+      "embedded": true,
+      "unicodeMap": true
+    },
+    "/FAAAAA+Arial-BoldMT": {
+      "embedded": true,
+      "unicodeMap": true
+    },
+    "/GAAAAA+ArialUnicodeMS": {
+      "embedded": true,
+      "unicodeMap": true
+    },
+    "/HAAAAA+ArialUnicodeMS": {
+      "embedded": true,
+      "unicodeMap": true
+    },
+    "/IAAAAA+ArialUnicodeMS": {
+      "embedded": true,
+      "unicodeMap": true
+    },
+    "/JAAAAA+Arial-BoldMT": {
+      "embedded": true,
+      "unicodeMap": true
+    },
+    "/KAAAAA+ArialMT": {
+      "embedded": true,
+      "unicodeMap": true
+    },
+    "/LAAAAA+ArialUnicodeMS": {
+      "embedded": true,
+      "unicodeMap": true
+    },
+    "/MAAAAA+ArialUnicodeMS": {
+      "embedded": true,
+      "unicodeMap": true
+    },
+    "/NAAAAA+ArialMT": {
+      "embedded": true,
+      "unicodeMap": true
+    },
+    "/OAAAAA+ArialUnicodeMS": {
+      "embedded": true,
+      "unicodeMap": true
+    },
+    "/PAAAAA+ArialUnicodeMS": {
+      "embedded": true,
+      "unicodeMap": true
+    },
+    "/QAAAAA+ArialUnicodeMS": {
+      "embedded": true,
+      "unicodeMap": true
+    },
+    "/RAAAAA+Arial-BoldMT": {
+      "embedded": true,
+      "unicodeMap": true
+    },
+    "/SAAAAA+Arial-BoldMT": {
+      "embedded": true,
+      "unicodeMap": true
+    },
+    "/TAAAAA+LinuxLibertineG": {
+      "embedded": true,
+      "unicodeMap": true
+    }
+  },
+  "artifacts": {
+    "docx": {
+      "path": "/tmp/entry-executable-20261105/report/USD与TQQQ长期投入方法对照报告.docx",
+      "sha256": "fd2bf29130a6f968ee3080567b4dd9563cc251ebc128c5c3fcd49a3006977845",
+      "bytes": 48861,
+      "formalPath": "/Users/ajin/Documents/长衡研究报告/2026-11-05/USD与TQQQ长期投入方法对照报告.docx"
+    },
+    "pdf": {
+      "path": "/tmp/entry-executable-20261105/report/USD与TQQQ长期投入方法对照报告.pdf",
+      "sha256": "db15cb4a216dadfd917ed1dfd5ccd106955ea7611ae0614495bb01d7ff83d703",
+      "bytes": 816382,
+      "formalPath": "/Users/ajin/Documents/长衡研究报告/2026-11-05/USD与TQQQ长期投入方法对照报告.pdf"
+    }
+  },
+  "pngHashes": {
+    "page-1.png": "ec1a39386977d384648402bfa29fcc6ebf19e587c574523b3e4a29f7c81bc4d7",
+    "page-2.png": "d02f4448ab0ea0694266fb5a2ba996085472874dcfb342b18a71aa49ff085bbf",
+    "page-3.png": "daa8ce070363daabb7f8d31100f72e241f014ae9ac2b7fe39d576393bf0fc8f2",
+    "page-4.png": "80e58479ef5b8e0dad188c1390aff2307961d839aae6b3859db63ad930c90c84",
+    "page-5.png": "a014d5e90de539723b050a26af6b022f9b0f63f6836b3372dd4d191a4a6830fa",
+    "page-6.png": "c39c666dab73d8b5d062918927b4502315e652052e1558024ce5eb2a275f95a5",
+    "page-7.png": "44897b329d2e4e6a90221bd45a854e8a179e4bd8a5d510946c5fe3f65844fb5d"
+  },
+  "visualInspection": {
+    "passed": true,
+    "pagesInspected": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "method": "Final7pages rendered;newpage5 full-size visual recheck passed;pages1,2,3,4,6,7 pixel-identical to fully checked prior final.",
+    "findings": "All Chinese glyphs and tables visible;7pages;no overlap,clipping,or orphan source page."
+  },
+  "directNumericVerification": {
+    "passed": true,
+    "docxPdfAllCells": 236,
+    "cashGridCases": 96,
+    "mainRiskRows": 4,
+    "externalCashRows": 4,
+    "stalePrimaryClaimsAbsent": true
+  },
+  "previousVersion": {
+    "git": "5bd7adb1",
+    "pdfSHA256": "e78330dcb4b79bf4f685bf7c6aca8e2a4c7816a529d7f2c565f9482b884d3070",
+    "docxSHA256": "233b13d46f3f94351bac2f0d0ee611e6a26bd6ea23f5b1a2d046c952c1207ea7",
+    "preserved": "Original Git and reproduction archive; not overwritten in archival evidence"
+  },
+  "productionModelSHA256": "250c98f2ad801501c3d21521ad124ce568f3cb77e6da8e478318b6626ec420ac",
+  "completedAtUTC": "2026-11-05T17:06:47.083152+00:00",
+  "uiSynchronization": "Parent confirmed five browser scenarios,zero errors,and newer-QQQ-observation separation before formal delivery.",
+  "fullStockQQQSupplement": {
+    "source": "/tmp/entry-executable-20261105/qqq-fully-invested-evidence.json",
+    "sourceSHA256": "c842e4db745ce2d943b4b487866fab24c7eceb4f862e738145d628e5338404a6",
+    "tenYear": {
+      "CAGRpp": 0.5044248855029104,
+      "wins": 52,
+      "ties": 28,
+      "losses": 1
+    },
+    "fifteenYear": {
+      "CAGRpp": 0.2665205356299171,
+      "wins": 21,
+      "ties": 0,
+      "losses": 0
+    },
+    "page": 5,
+    "matchedOriginalAndExtractedEvidence": true
+  }
+}
