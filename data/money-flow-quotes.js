@@ -4,29 +4,29 @@ window.MONEY_FLOW_QUOTES = {
     "cmb": {
       "quotes": {
         "HKD": {
-          "buy": 0.85023,
-          "sell": 0.85363,
-          "asOf": "2026-11-04 10:24:44"
+          "buy": 0.84873,
+          "sell": 0.85213,
+          "asOf": "2026-11-05 10:32:09"
         },
         "USD": {
-          "buy": 6.67124,
-          "sell": 6.70031,
-          "asOf": "2026-11-04 10:24:44"
+          "buy": 6.65866,
+          "sell": 6.68768,
+          "asOf": "2026-11-05 10:32:09"
         },
         "EUR": {
-          "buy": 7.48565,
-          "sell": 7.54577,
-          "asOf": "2026-11-04 10:24:44"
+          "buy": 7.47818,
+          "sell": 7.53824,
+          "asOf": "2026-11-05 10:32:09"
         },
         "GBP": {
-          "buy": 8.9608,
-          "sell": 9.03278,
-          "asOf": "2026-11-04 10:24:44"
+          "buy": 8.96318,
+          "sell": 9.03518,
+          "asOf": "2026-11-05 10:32:09"
         },
         "JPY": {
-          "buy": 0.0422122,
-          "sell": 0.0425512,
-          "asOf": "2026-11-04 10:24:44"
+          "buy": 0.0420712,
+          "sell": 0.0424092,
+          "asOf": "2026-11-05 10:32:09"
         }
       },
       "source": "https://fx.cmbchina.com/hq/"
@@ -34,29 +34,29 @@ window.MONEY_FLOW_QUOTES = {
     "boc": {
       "quotes": {
         "EUR": {
-          "buy": 7.4895,
-          "sell": 7.5444,
-          "asOf": "2026-11-04 10:23:49"
+          "buy": 7.4802,
+          "sell": 7.535,
+          "asOf": "2026-11-05 10:30:00"
         },
         "GBP": {
-          "buy": 8.9653,
-          "sell": 9.0319,
-          "asOf": "2026-11-04 10:23:49"
+          "buy": 8.967,
+          "sell": 9.0336,
+          "asOf": "2026-11-05 10:30:00"
         },
         "HKD": {
-          "buy": 0.8502,
-          "sell": 0.8536,
-          "asOf": "2026-11-04 10:23:49"
+          "buy": 0.8486,
+          "sell": 0.852,
+          "asOf": "2026-11-05 10:30:00"
         },
         "JPY": {
-          "buy": 0.042218,
-          "sell": 0.042544,
-          "asOf": "2026-11-04 10:23:49"
+          "buy": 0.042061,
+          "sell": 0.042386,
+          "asOf": "2026-11-05 10:30:00"
         },
         "USD": {
-          "buy": 6.6715,
-          "sell": 6.6996,
-          "asOf": "2026-11-04 10:23:49"
+          "buy": 6.6585,
+          "sell": 6.6865,
+          "asOf": "2026-11-05 10:30:00"
         }
       },
       "source": "https://www.boc.cn/sourcedb/whpj/"
@@ -184,33 +184,33 @@ window.MONEY_FLOW_QUOTES = {
     "hsbc": {
       "quotes": {
         "USD": {
-          "buy": 6.64633332,
-          "sell": 6.71287361,
-          "asOf": "2026-11-04",
+          "buy": 6.63728121,
+          "sell": 6.70382373,
+          "asOf": "2026-11-05",
           "timePrecision": "day"
         },
         "HKD": {
-          "buy": 0.84754626,
-          "sell": 0.85570664,
-          "asOf": "2026-11-04",
+          "buy": 0.84646432,
+          "sell": 0.85462452,
+          "asOf": "2026-11-05",
           "timePrecision": "day"
         },
         "JPY": {
-          "buy": 0.04193497,
-          "sell": 0.04275605,
-          "asOf": "2026-11-04",
+          "buy": 0.04183324,
+          "sell": 0.04265426,
+          "asOf": "2026-11-05",
           "timePrecision": "day"
         },
         "GBP": {
-          "buy": 8.89527767,
-          "sell": 9.07864467,
-          "asOf": "2026-11-04",
+          "buy": 8.90491774,
+          "sell": 9.08828175,
+          "asOf": "2026-11-05",
           "timePrecision": "day"
         },
         "EUR": {
-          "buy": 7.4365366,
-          "sell": 7.5814724,
-          "asOf": "2026-11-04",
+          "buy": 7.43757089,
+          "sell": 7.58250716,
+          "asOf": "2026-11-05",
           "timePrecision": "day"
         }
       },
@@ -219,33 +219,33 @@ window.MONEY_FLOW_QUOTES = {
     "cib": {
       "quotes": {
         "EUR": {
-          "buy": 7.4886,
-          "sell": 7.5487,
-          "asOf": "2026-11-04 10:24:51",
+          "buy": 7.48,
+          "sell": 7.5401,
+          "asOf": "2026-11-05 10:32:18",
           "timeBasis": "observed"
         },
         "GBP": {
-          "buy": 8.9644,
-          "sell": 9.0364,
-          "asOf": "2026-11-04 10:24:51",
+          "buy": 8.9654,
+          "sell": 9.0374,
+          "asOf": "2026-11-05 10:32:18",
           "timeBasis": "observed"
         },
         "HKD": {
-          "buy": 0.8505,
-          "sell": 0.8537,
-          "asOf": "2026-11-04 10:24:51",
+          "buy": 0.8489,
+          "sell": 0.8521,
+          "asOf": "2026-11-05 10:32:18",
           "timeBasis": "observed"
         },
         "USD": {
-          "buy": 6.6722,
-          "sell": 6.6976,
-          "asOf": "2026-11-04 10:24:51",
+          "buy": 6.6586,
+          "sell": 6.684,
+          "asOf": "2026-11-05 10:32:18",
           "timeBasis": "observed"
         },
         "JPY": {
-          "buy": 0.0422,
-          "sell": 0.0426,
-          "asOf": "2026-11-04 10:24:51",
+          "buy": 0.0421,
+          "sell": 0.0424,
+          "asOf": "2026-11-05 10:32:18",
           "timeBasis": "observed"
         }
       },
@@ -254,48 +254,48 @@ window.MONEY_FLOW_QUOTES = {
     "hang": {
       "quotes": {
         "EUR": {
-          "buy": 7.400933,
-          "sell": 7.6263421,
-          "asOf": "2026-11-04 10:22:00"
+          "buy": 7.3918427,
+          "sell": 7.616975,
+          "asOf": "2026-11-05 10:27:00"
         },
         "GBP": {
-          "buy": 8.8599242,
-          "sell": 9.1297696,
-          "asOf": "2026-11-04 10:22:00"
+          "buy": 8.8607514,
+          "sell": 9.130622,
+          "asOf": "2026-11-05 10:27:00"
         },
         "HKD": {
-          "buy": 0.8390206,
-          "sell": 0.8645745,
-          "asOf": "2026-11-04 10:22:00"
+          "buy": 0.8374584,
+          "sell": 0.8629648,
+          "asOf": "2026-11-05 10:27:00"
         },
         "JPY": {
-          "buy": 0.0417321,
-          "sell": 0.0430032,
-          "asOf": "2026-11-04 10:22:00"
+          "buy": 0.0415888,
+          "sell": 0.0428554,
+          "asOf": "2026-11-05 10:27:00"
         },
         "USD": {
-          "buy": 6.5824103,
-          "sell": 6.7828898,
-          "asOf": "2026-11-04 10:22:00"
+          "buy": 6.569359,
+          "sell": 6.769441,
+          "asOf": "2026-11-05 10:27:00"
         }
       },
       "source": "https://www.hangseng.com.cn/zh-cn/index/useful-information/deposit-exchange-rates/"
     }
   },
   "unit": "CNY per 1 foreign currency",
-  "capturedAt": "2026-11-04T02:24:48+00:00",
+  "capturedAt": "2026-11-05T02:32:10+00:00",
   "offshoreUsd": {
     "bochk": {
       "quotes": {
         "CNH": {
-          "bidPerUsd": 6.64261,
-          "askPerUsd": 6.71839,
-          "asOf": "2026-11-04 10:22:59"
+          "bidPerUsd": 6.62708,
+          "askPerUsd": 6.70273,
+          "asOf": "2026-11-05 10:27:58"
         },
         "HKD": {
-          "bidPerUsd": 7.821,
-          "askPerUsd": 7.8712,
-          "asOf": "2026-11-04 10:22:59"
+          "bidPerUsd": 7.8202,
+          "askPerUsd": 7.8704,
+          "asOf": "2026-11-05 10:27:58"
         }
       },
       "source": "https://www.bochk.com/whk/rates/exchangeRatesUSD/exchangeRatesUSD-input.action?lang=cn",
@@ -304,20 +304,20 @@ window.MONEY_FLOW_QUOTES = {
     "hang": {
       "quotes": {
         "HKD": {
-          "bidPerUsd": 7.822,
+          "bidPerUsd": 7.821,
           "askPerUsd": 7.871,
-          "asOf": "2026-11-04 10:16:00"
+          "asOf": "2026-11-05 10:26:00"
         },
         "CNH": {
-          "bidPerUsd": 6.6203978,
-          "askPerUsd": 6.74002398,
-          "asOf": "2026-11-04 10:16:00",
+          "bidPerUsd": 6.60669032,
+          "askPerUsd": 6.72907583,
+          "asOf": "2026-11-05 10:26:00",
           "path": "via-HKD",
           "legs": {
-            "usdBuy": 7.822,
+            "usdBuy": 7.821,
             "usdSell": 7.871,
-            "cnhBuy": 1.1678,
-            "cnhSell": 1.1815
+            "cnhBuy": 1.1697,
+            "cnhSell": 1.1838
           }
         }
       },
@@ -327,20 +327,20 @@ window.MONEY_FLOW_QUOTES = {
     "hsbc": {
       "quotes": {
         "HKD": {
-          "bidPerUsd": 7.813,
-          "askPerUsd": 7.8776,
-          "asOf": "2026-11-04 10:14:16"
+          "bidPerUsd": 7.8124,
+          "askPerUsd": 7.877,
+          "asOf": "2026-11-05 10:13:07"
         },
         "CNH": {
-          "bidPerUsd": 6.61054235,
-          "askPerUsd": 6.74625332,
-          "asOf": "2026-11-04 10:14:16",
+          "bidPerUsd": 6.60165624,
+          "askPerUsd": 6.73708519,
+          "asOf": "2026-11-05 10:13:07",
           "path": "via-HKD",
           "legs": {
-            "usdBuy": 7.813,
-            "usdSell": 7.8776,
-            "cnhBuy": 1.1677,
-            "cnhSell": 1.1819
+            "usdBuy": 7.8124,
+            "usdSell": 7.877,
+            "cnhBuy": 1.1692,
+            "cnhSell": 1.1834
           }
         }
       },
@@ -373,9 +373,9 @@ window.MONEY_FLOW_QUOTES = {
     "ccb-asia": {
       "quotes": {
         "HKD": {
-          "bidPerUsd": 7.8211,
-          "askPerUsd": 7.8692,
-          "asOf": "2026-11-04 10:08:57"
+          "bidPerUsd": 7.8212,
+          "askPerUsd": 7.8697,
+          "asOf": "2026-11-05 10:23:57"
         }
       },
       "source": "https://www.asia.ccb.com/hongkong/personal/accounts/exchange_rate_enquiry.html",
@@ -386,9 +386,9 @@ window.MONEY_FLOW_QUOTES = {
     "ibkr": {
       "quotes": {
         "CNH": {
-          "bidPerUsd": 6.68101,
-          "askPerUsd": 6.68114,
-          "asOf": "2026-11-04 10:24:50.212",
+          "bidPerUsd": 6.66637,
+          "askPerUsd": 6.66646,
+          "asOf": "2026-11-05 10:32:07.679",
           "timeBasis": "snapshot",
           "marketDataAvailability": "RB",
           "quoteStatus": "live",
@@ -403,23 +403,23 @@ window.MONEY_FLOW_QUOTES = {
   "refreshFailures": {
     "icbc": {
       "error": "URLError: <urlopen error [SSL: UNSAFE_LEGACY_RENEGOTIATION_DISABLED] unsafe legacy renegotiation disabled (_ssl.c:1010)>",
-      "attemptedAt": "2026-11-04T02:24:48+00:00"
+      "attemptedAt": "2026-11-05T02:32:10+00:00"
     },
     "ccb": {
       "error": "URLError: <urlopen error [SSL: UNSAFE_LEGACY_RENEGOTIATION_DISABLED] unsafe legacy renegotiation disabled (_ssl.c:1010)>",
-      "attemptedAt": "2026-11-04T02:24:48+00:00"
+      "attemptedAt": "2026-11-05T02:32:10+00:00"
     },
     "abc": {
       "error": "URLError: <urlopen error [SSL: UNSAFE_LEGACY_RENEGOTIATION_DISABLED] unsafe legacy renegotiation disabled (_ssl.c:1010)>",
-      "attemptedAt": "2026-11-04T02:24:48+00:00"
+      "attemptedAt": "2026-11-05T02:32:10+00:00"
     },
     "comm": {
       "error": "URLError: <urlopen error [SSL: UNSAFE_LEGACY_RENEGOTIATION_DISABLED] unsafe legacy renegotiation disabled (_ssl.c:1010)>",
-      "attemptedAt": "2026-11-04T02:24:48+00:00"
+      "attemptedAt": "2026-11-05T02:32:10+00:00"
     },
     "icbc-asia": {
       "error": "CalledProcessError: Command '['curl', '--fail', '--silent', '--show-error', '--location', '--max-time', '8.0', 'https://papi.icbc.com.cn/rest/currencies/asia/foreign']' returned non-zero exit status 3",
-      "attemptedAt": "2026-11-04T02:24:48+00:00"
+      "attemptedAt": "2026-11-05T02:32:10+00:00"
     }
   }
 };
