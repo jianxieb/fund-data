@@ -956,3 +956,8 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .stock-table .stock-reason,.stock-table .stock-risk{min-width:0;max-width:none;font-size:13px;line-height:1.75}
 @media(max-width:650px){.stock-market-choice{min-width:0;flex:1}.stock-table th,.stock-table td{padding:16px 12px}}
 
+
+.portfolio-method-comparison{padding:0 24px 20px}
+.portfolio-results .portfolio-comparison-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+.portfolio-method-comparison .portfolio-warning{margin-bottom:0}
+@media(max-width:650px){.portfolio-method-comparison{padding:0 18px 18px}.portfolio-results .portfolio-comparison-stats{grid-template-columns:1fr}}

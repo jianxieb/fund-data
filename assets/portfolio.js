@@ -97,6 +97,7 @@
       P.validateConfig(params, new Set(catalog.assets.map(a => a.id)));
       const selected = params.positions.filter(p => p.weight > 0).map(p => asset(p.id));
       await Promise.all(selected.map(loadHistory));
+      if (params.initialMethod === 'qqq_bear_confirm') await loadHistory(asset('us:QQQ'));
       const benchmark = asset(params.benchmarkId);
       if (selected.some(a => a.currency !== currency(params).code)) await loadHistory(catalog.fx);
       else if (benchmark && benchmark.currency !== currency(params).code) await loadHistory(catalog.fx).catch(() => {});
@@ -111,6 +112,9 @@
       }
       else {
         computed.snapshots = P.simulateWindows(input, computed.end);
+        if (params.initialMethod !== 'lump_sum') {
+          computed.lumpSumComparison = P.simulate({ ...input, config: { ...params, initialMethod: 'lump_sum', benchmarkId: '' } });
+        }
         computed.catalogRefresh = { checkedAt: new Date().toISOString(), available: !refreshMissing, missing: refreshMissing || null };
         result = computed; resultKey = JSON.stringify(params);
       }
@@ -161,8 +165,8 @@
     return '<div class="portfolio-tax-bar"><div class="portfolio-tax-top"><strong>模拟税率</strong>' + presets + '<span id="portfolio-tax-summary">' + H.esc(taxSummary()) + '</span><div class="portfolio-tax-options"><label class="check-label"><input type="checkbox" id="portfolio-liquidate"' + (draft.tax.liquidate ? ' checked' : '') + '>期末清仓</label>' + btn('税费口径', 'tax-method', 'text-link small') + '</div></div><details class="portfolio-tax-settings"><summary>自定义税率</summary><div class="portfolio-tax-body"><div class="portfolio-tax-grid">' + number('美股卖出盈利税率', 'tax-usCapitalGains', draft.tax.usCapitalGains, 100, 'any', '%') + number('美股股息总税负', 'tax-usDividend', draft.tax.usDividend, 100, 'any', '%') + '</div><div class="portfolio-tax-domestic">' + domestic + '</div>' + (overrides ? '<details class="portfolio-tax-overrides"><summary>特殊标的税率</summary>' + overrides + '</details>' : '') + '</div></details><p class="portfolio-tax-assumption">未卖出的盈利也按所设税率预留，结果显示扣除预留税后的估值。</p><p id="portfolio-tax-assumption" class="portfolio-tax-assumption"' + (hasLongHoldTaxAssumption() ? '' : ' hidden') + '>A股股息按长期持有0%估算，未自动计入短期卖出补税。</p></div>';
   }
   function strategyHints() {
-    const initial = /^entry_(option|volatility|breadth|composite)$/.test(draft.initialMethod) ? '原研究投入方式已撤回：未证明优于一次性投入，请重新选择本金投入方式' : draft.initial === 0 ? '初始金额为0，仅执行持续投入' : ({
-      lump_sum: '初始本金一次买入', tranche_6: '初始本金分6份，每月投入一份', tranche_12: '初始本金分12份，每月投入一份',
+    const initial = /^entry_(option|volatility|breadth|composite)$/.test(draft.initialMethod) ? '原研究投入方式已撤回：未证明优于一次性投入，请重新选择本金投入方式' : draft.initial === 0 ? (draft.initialMethod === 'cash_topup' ? '持续投入后，用已有现金补足目标仓位，只买不卖' : draft.initialMethod === 'qqq_bear_confirm' ? '持续投入的TQQQ资金同样按QQQ状态持有或等待' : '初始金额为0，仅执行持续投入') : ({
+      lump_sum: '初始本金一次买入', cash_topup: '先按权重买入；仓位不足时用已有现金补足，只买不卖', qqq_bear_confirm: 'QQQ持续深跌时暂退TQQQ，趋势恢复后买回；其他持仓照常', tranche_6: '初始本金分6份，每月投入一份', tranche_12: '初始本金分12份，每月投入一份',
       tranche_24: '初始本金分24份，每月投入一份', drawdown_ladder: '先投入25%；回撤10% / 20% / 30%各投入25%', ma200_hold: '前收盘高于200日均线持有，否则持有现金'
     }[draft.initialMethod]);
     const income = draft.monthly === 0 ? '月预算为0，不追加投入' : ({
@@ -180,7 +184,7 @@
   }
   function settings() {
     const benchmark = asset(draft.benchmarkId), hints = strategyHints();
-    return '<section class="card portfolio-settings"><div class="portfolio-settings-top"><h2>模拟设置</h2><div class="portfolio-return-controls"><span class="muted">币种</span>' + menu('currency', '投入与计价币种', [['CNY', '人民币 CNY'], ['USD', '美元 USD']], draft.currency) + '<span class="muted">回测区间</span>' + menu('years', '回测区间', [[1, '近1年'], [2, '近2年'], [3, '近3年'], [5, '近5年'], [10, '近10年'], ['common', '共同历史'], ['custom', '自定义区间']], draft.years) + '</div></div>' +
+    return '<section class="card portfolio-settings"><div class="portfolio-settings-top"><h2>模拟设置</h2><div class="portfolio-return-controls"><span class="muted">币种</span>' + menu('currency', '投入与计价币种', [['CNY', '人民币 CNY'], ['USD', '美元 USD']], draft.currency) + '<span class="muted">回测区间</span>' + menu('years', '回测区间', [[1, '近1年'], [2, '近2年'], [3, '近3年'], [5, '近5年'], [10, '近10年'], [15, '近15年'], [20, '近20年'], ['common', '共同历史'], ['custom', '自定义区间']], draft.years) + '</div></div>' +
       '<div class="portfolio-settings-grid"><div class="portfolio-field"><span>本金投入方式</span>' + menu('initialMethod', '本金投入方式', P.initialMethods, draft.initialMethod) + '<small id="portfolio-initial-hint" class="portfolio-strategy-hint">' + H.esc(hints.initial || '') + '</small></div>' +
       '<div class="portfolio-field"><span>持续投入方式</span>' + menu('contributionMethod', '持续投入方式', P.contributionMethods, draft.contributionMethod) + '<small id="portfolio-income-hint" class="portfolio-strategy-hint">' + H.esc(hints.income || '') + '</small></div>' + number('基础月预算', 'monthly', draft.monthly, 1e10, 'any', currency().unit) +
       '<div class="portfolio-field"><span>再平衡</span>' + menu('rebalance', '再平衡周期', [['none', '不再平衡'], ['month', '每月'], ['quarter', '每季度'], ['year', '每年']], draft.rebalance) + '</div>' +
@@ -283,6 +287,21 @@
       '<small>仓位按未减浮盈预留税的市值计算；回撤基于模拟账户的现金流中性净值。</small></div>';
     return H.card('模拟账户的期末风险', r.end + ' · ' + currency(r.config).name + ' · 实际持仓与现金', '<div class="portfolio-risk-body">' + body + '<a class="source-link" href="docs/portfolio-method.md" target="_blank" rel="noopener">研究方法 ↗</a></div>');
   }
+  function lumpSumComparison() {
+    const r = result, b = r.lumpSumComparison;
+    if (!b) return '';
+    if (b.error) return '<p class="portfolio-warning">一次性投入对照未完成：' + H.esc(b.error) + '</p>';
+    const { unit } = currency(r.config), difference = r.value - b.value;
+    const verdict = Math.abs(difference) < .005 ? '本区间与一次性投入持平' : difference > 0 ? '本区间高于一次性投入' : '本区间低于一次性投入';
+    const pp = value => (value > 0 ? '+' : '') + value.toFixed(2) + ' 个百分点';
+    const body = '<div class="portfolio-method-comparison"><div class="stats-grid portfolio-comparison-stats">' +
+      H.stat('期末税后估值差', (difference > 0 ? '+' : '') + H.money(difference, 2), unit, '一次性投入 ' + H.money(b.value, 2) + ' ' + unit) +
+      H.stat('年化收益差', pp(r.annualReturn - b.annualReturn), '', '一次性投入 ' + H.pct(b.annualReturn, 2, false)) +
+      H.stat('最大回撤对照', H.pct(r.mdd, 2, false), '', '一次性投入 ' + H.pct(b.mdd, 2, false)) + '</div>' +
+      (r.config.initialMethod === 'cash_topup' ? '<p class="portfolio-warning">使用账户现金补仓 ' + (r.topupTimes || 0) + ' 次，累计买入 ' + H.money(r.topupAmount || 0, 2) + ' ' + unit + '。现金会减少，股票风险可能增加；满仓且无现金时不产生补仓。</p>' : r.config.initialMethod === 'qqq_bear_confirm' ? '<p class="portfolio-warning">截至 ' + H.esc(r.end) + '，规则状态：' + (r.curve.at(-1).qqqOn ? '持有TQQQ' : '暂持TQQQ对应现金') + '；本次模拟状态切换 ' + (r.qqqTimingChanges || 0) + ' 次。研究中的ETF收益优势主要来自2022年一次避险，不能视为已验证的普遍买卖信号。</p>' : '');
+    return H.card('与一次性投入比较', verdict + ' · 同本金、初始权重、追加、税费与再平衡设置', body + '</div>',
+      '<a class="source-link" href="docs/portfolio-entry-research.html" target="_blank" rel="noopener">投入方法研究 ↗</a>');
+  }
   function results() {
     if (!result) return '<section class="portfolio-result-placeholder"><div><span class="eyebrow">YOUR PORTFOLIO, OVER TIME</span><h2>看组合如何走过市场起伏</h2><p>配置权重和投入方式后，开始模拟。</p></div><svg viewBox="0 0 460 135" aria-hidden="true"><path d="M3 120H457M3 80H457M3 40H457" stroke="#e0e5d7"/><path d="m3 101 37-13 37 14 38-28 37 7 38-22 38 12 37-31 37 5 40-26 38 6 40-23" fill="none" stroke="#96aa83" stroke-width="2"/><path d="m3 110 37-4 37 5 38-19 37 10 38-8 38-9 37 6 37-19 40 9 38-16 40 2" fill="none" stroke="#c3b291" stroke-width="1.5" stroke-dasharray="5 5"/></svg></section>';
     const r = result, strategy = P.strategyNames(r.config), { unit, name } = currency(r.config);
@@ -295,7 +314,7 @@
       '<div class="stats-grid portfolio-result-summary">' + H.stat('资金年化 XIRR', H.pct(r.xirr, 2, false), '', r.xirrMissing || '按实际投入时间和金额计算') +
       H.stat(H.annual ? '组合年化收益' : '组合累计收益', H.pct(H.annual ? r.annualReturn : r.totalReturn, 2, false), '', '现金流中性' + (r.benchmark ? ' · 对照持有 ' + H.pct(H.annual ? r.benchmark.annualReturn : r.benchmark.totalReturn) : ' · 剔除追加本金影响')) +
       H.stat('期末税后估值', H.money(r.value), unit, '累计投入 ' + H.money(r.contributed) + ' ' + unit) + H.stat(r.config.tax?.liquidate ? '清仓盈亏' : '税后盈亏', H.money(r.profit), unit, r.config.tax?.liquidate ? '已扣清仓交易费与盈利税' : '已减浮盈预留税 ' + H.money(r.taxReserve, 2) + ' ' + unit) + H.stat('最大回撤', H.pct(r.mdd, 2, false), '', '年化波动 ' + H.pct(r.volatility, 2, false)) + '</div>' +
-      (r.catalogRefresh?.available === false ? '<p class="portfolio-warning">' + H.esc(r.catalogRefresh.missing) + '</p>' : '') + accountRisk() + snapshots() + (r.benchmarkError ? '<div class="portfolio-warning">' + H.esc(r.benchmarkError) + '，当前仅显示组合曲线。</div>' : '') +
+      (r.catalogRefresh?.available === false ? '<p class="portfolio-warning">' + H.esc(r.catalogRefresh.missing) + '</p>' : '') + lumpSumComparison() + accountRisk() + snapshots() + (r.benchmarkError ? '<div class="portfolio-warning">' + H.esc(r.benchmarkError) + '，当前仅显示组合曲线。</div>' : '') +
       chart() + '<div class="portfolio-result-notes"><span>入金 ' + r.deposits + '笔</span><span>买入 ' + r.transactions.filter(t => t.side === 'buy').length + '笔</span><span>再平衡 ' + r.rebalances + '次</span><span>交易费用 ' + H.money(r.tradeCost, 2) + ' ' + unit + '</span><span>已实现盈利税 ' + H.money(r.capitalTax, 2) + ' ' + unit + '</span><span>分红税 ' + H.money(r.dividendTax, 2) + ' ' + unit + '</span><span>浮盈预留税 ' + H.money(r.taxReserve, 2) + ' ' + unit + '</span>' + (r.initialReserve > .005 ? '<span>待投入本金 ' + H.money(r.initialReserve, 2) + ' ' + unit + '</span>' : '') + (r.timingChanges ? '<span>择时切换 ' + r.timingChanges + '次</span>' : '') + '</div>' + (usesMa && r.strategy.insufficientMaDays ? '<div class="portfolio-warning">均线不足200个共同交易日的阶段按常规投入，未将缺历史视为下跌信号。</div>' : '') +
       H.card('持仓贡献', r.start + ' — ' + r.end + ' · ' + name + ' · 已减浮盈预留税', '<div class="portfolio-structure portfolio-end-structure"><h3>期末结构</h3>' + structure(r.holdings.map(h => ({ id: h.id, weight: h.actualWeight }))) + '</div>' + holdingTable, btn('导出持仓', 'export-holdings', 'btn portfolio-export')) + '<section class="card portfolio-yearly"><div class="card-head"><h2>年度表现</h2><span class="small">现金流中性 · 累计收益</span></div><div class="portfolio-year-grid">' + r.annual.map(y => '<div><span>' + y.year + '</span><strong class="num">' + H.pc(y.return) + '</strong><small>' + y.start.slice(5) + ' — ' + y.end.slice(5) + '</small></div>').join('') + '</div></section></div>';
   }

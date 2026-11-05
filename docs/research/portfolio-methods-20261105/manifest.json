@@ -1,0 +1,741 @@
+{
+  "schemaVersion": 1,
+  "archive": "reproduction.tar.gz",
+  "archiveBytes": 14937080,
+  "archiveSHA256": "14ecba167f890fd202ab794440195dddd9df5ea20f70fc490a7c95f15a8afda0",
+  "entries": [
+    {
+      "path": "research/archive-cash-replay-check.json",
+      "bytes": 1431,
+      "sha256": "772814f3fbfc0c984c720aeddd83e632894f6e775e7c81a55220ee5678d66804"
+    },
+    {
+      "path": "research/archive-confirm-replay-check.json",
+      "bytes": 1505,
+      "sha256": "698a92f81fe95e8e830fd2c478c4f29b6a4c1f20b14fc0cc61e8b2c228ee130a"
+    },
+    {
+      "path": "research/baseline-audit.cjs",
+      "bytes": 1951,
+      "sha256": "302401128ef25926749085b20deb782586a4ee699a72912255ca93f60af64493"
+    },
+    {
+      "path": "research/baseline-audit.json",
+      "bytes": 139959,
+      "sha256": "01629537491aeb173ead39ea333bed64a36e3e485ec39dce34eb3421de4ef495"
+    },
+    {
+      "path": "research/buy/README.md",
+      "bytes": 3540,
+      "sha256": "42bc1c4b81a13e026c8e71b7dc7fdafc1027fccd3217cbca70ce75533602adc5"
+    },
+    {
+      "path": "research/buy/audit.py",
+      "bytes": 3289,
+      "sha256": "41800fe3d0c18412e16b1c5087bc744d9c15ffcbf03ae7238b0b33df156c1159"
+    },
+    {
+      "path": "research/buy/causality-audit.json",
+      "bytes": 205,
+      "sha256": "e8968cff9409339a221db8451c773e4aa5bcfa31423e5440ce4fcff3fec222d0"
+    },
+    {
+      "path": "research/buy/causality.cjs",
+      "bytes": 1856,
+      "sha256": "9e1c1724abe28dc1fcae80e87d941e426fb780772a096886310583f196acac14"
+    },
+    {
+      "path": "research/buy/controls.cjs",
+      "bytes": 1549,
+      "sha256": "80c872b0168de04a24065e32f705b9ec5c2d787eed8d71b1cbc70390cff21489"
+    },
+    {
+      "path": "research/buy/development.json",
+      "bytes": 544612,
+      "sha256": "994f44271ec7567dd1c1bdd8b39b4a78a6412755737ada5a0796d39daf2f6c75"
+    },
+    {
+      "path": "research/buy/evaluation.json",
+      "bytes": 1554691,
+      "sha256": "0c823eca2f53f1632aa2399a35e85b7a58fc8dded92637a193a5bfe003ecf8aa"
+    },
+    {
+      "path": "research/buy/fixed-delay-controls.json",
+      "bytes": 44497,
+      "sha256": "7f5aa6a426366b12de1fa37898afdea67ee466c6df92e46d0542707ed07a051a"
+    },
+    {
+      "path": "research/buy/independent-audit.json",
+      "bytes": 364,
+      "sha256": "16b2fc98107e5d852f712ddee822fe32c79d91d4ffe798d91ecd9ee8ec6924b9"
+    },
+    {
+      "path": "research/buy/protocol.json",
+      "bytes": 129218,
+      "sha256": "9db4d11190dfb3a4b1ddde28e7ba3f25af00dd3d819e01d0b0c959c9a4da9bb1"
+    },
+    {
+      "path": "research/buy/rebalance-execution-review.json",
+      "bytes": 10216,
+      "sha256": "e6a25f9c735846b91adf671b5b0dc296b4b3fc7e5c4f78e6cb1da516d20eeeb5"
+    },
+    {
+      "path": "research/buy/review-rebalance.py",
+      "bytes": 4174,
+      "sha256": "8bf081ad0d1164e26ae7a5f8c4d5f21120a82651c17cb110753a58dd8632fb66"
+    },
+    {
+      "path": "research/buy/risk-audit-summary.json",
+      "bytes": 12466,
+      "sha256": "bf7e6fb7e11281c9ee8c93bc1352255b03fd5505d133bbbeef9f9affca794b85"
+    },
+    {
+      "path": "research/buy/risk-causality-audit.cjs",
+      "bytes": 8240,
+      "sha256": "cf1917bd36582d5660bbf5f7d95b7469df0e45f9d19de91d510866ae3f590e72"
+    },
+    {
+      "path": "research/buy/risk-causality-audit.json",
+      "bytes": 7403,
+      "sha256": "272ec99603722f5025a08fe92b1b91b88a65835246885a36a3d87f79260fe74e"
+    },
+    {
+      "path": "research/buy/risk-episodes-independent-audit.json",
+      "bytes": 17074,
+      "sha256": "d448c9b980906e736b354504c2887a8f783e863e7897741ea76f17c564aa3e62"
+    },
+    {
+      "path": "research/buy/risk-episodes-independent-audit.py",
+      "bytes": 2974,
+      "sha256": "c6ccec65af4af18d749554d3e11a4a03602499c6ce1d09f213e8b66842759473"
+    },
+    {
+      "path": "research/buy/risk-independent-audit.json",
+      "bytes": 6133,
+      "sha256": "2b1bd2099b953d58fb5e102e7b5fdc5925bc1172d835d1c240d276c97c5bf7ad"
+    },
+    {
+      "path": "research/buy/risk-independent-audit.py",
+      "bytes": 6369,
+      "sha256": "598a676f25447329705b09c5ede6d2013ccc3c9669891e0cba53f4c0adfee736"
+    },
+    {
+      "path": "research/buy/risk-stress-independent-audit.json",
+      "bytes": 161943,
+      "sha256": "7b337d5dd1e63d7a2416fef392ea5488ce8d71429c49ce4c742d763190c02665"
+    },
+    {
+      "path": "research/buy/risk-stress-independent-audit.py",
+      "bytes": 3864,
+      "sha256": "cc18472539e3cf45af63e9f8c14389ddaf5cd1e89e6fed2e2ee54ada694f76ca"
+    },
+    {
+      "path": "research/buy/selection.json",
+      "bytes": 6645,
+      "sha256": "03d2085317ba785f1299af702296832685087a9c6c54d92ea0ae6b8d239f6940"
+    },
+    {
+      "path": "research/buy/study.cjs",
+      "bytes": 11115,
+      "sha256": "9d4d1361006cd2dcfe7e1b3fbd873b719101d427793df728a7294d49540f9ed5"
+    },
+    {
+      "path": "research/external-inputs.json",
+      "bytes": 1361073,
+      "sha256": "8db523a34385325396b976fbf70fcd846363d6cffbb997e15a86d1170d42d335"
+    },
+    {
+      "path": "research/external/README.md",
+      "bytes": 6028,
+      "sha256": "4a1f165df10f05d1217b583da43da4bc3633236d07c4c1c58e9f300a9f28f4f7"
+    },
+    {
+      "path": "research/external/protocol.json",
+      "bytes": 2889,
+      "sha256": "6bb73b273a2703b295e784dca9a49db5d487718c0a089eb92745f67256d18f39"
+    },
+    {
+      "path": "research/external/results.json",
+      "bytes": 6700728,
+      "sha256": "fe8c4b21f0cbb085a09dddc60c742f24a084131958add417561d98ce5623fa11"
+    },
+    {
+      "path": "research/external/study.py",
+      "bytes": 11801,
+      "sha256": "efb6874c7466488a74ec1865f9227ee3f87647f1b86fbaec6afa61b41a6eed17"
+    },
+    {
+      "path": "research/external/traces.json",
+      "bytes": 2873392,
+      "sha256": "9ba8ff0d3323e1a72727da8d4c66ee0724d8e05916d1a301cb19249d2d808653"
+    },
+    {
+      "path": "research/external/verification.json",
+      "bytes": 793,
+      "sha256": "7f82a0d4227943dc034e0d3745d901a6cb647a9c91b4540daf3658c425f9538f"
+    },
+    {
+      "path": "research/external/verify.py",
+      "bytes": 3533,
+      "sha256": "f73930a0257b2c124bd1b4f01ae1dd0a95db057232bcd664d52004e374950b3a"
+    },
+    {
+      "path": "research/inputs.json",
+      "bytes": 1072760,
+      "sha256": "7e61cb47f813ecaf8db7fa55b9afb1cfda073290b186b0124aa45cdc948f7995"
+    },
+    {
+      "path": "research/production-cash-audit.cjs",
+      "bytes": 2581,
+      "sha256": "834937300b563fb5937b5d4aff00c6cf8b5666284cf63036fc67b7a065820955"
+    },
+    {
+      "path": "research/production-cash-audit.json",
+      "bytes": 920784,
+      "sha256": "99f6d376878c1555607ac016698f2499c295b75ac07303ec3d5160ab7bf7dd21"
+    },
+    {
+      "path": "research/production/assets/model.js",
+      "bytes": 38389,
+      "sha256": "8d433de2935cb24663e8285f72ee8a9ff01e7d11e80ff063eb6c6533a02c6a26"
+    },
+    {
+      "path": "research/production/assets/portfolio-model.js",
+      "bytes": 45547,
+      "sha256": "2a9799027517ebbcab4e42fcfba64c33e5c24b56f16cb12824abdd4beed08494"
+    },
+    {
+      "path": "research/rebalance-daily/external-protocol.json",
+      "bytes": 1041,
+      "sha256": "0d1ce17dacbf42d7321eaac132ba8720ba34046920681b4d2e8b64a631c662e3"
+    },
+    {
+      "path": "research/rebalance-daily/external-results.json",
+      "bytes": 576821,
+      "sha256": "2d31792a073fd41393bd2b92444f91ce98e3c0779a1d4731b92f5e6032e538d7"
+    },
+    {
+      "path": "research/rebalance-daily/external.py",
+      "bytes": 2219,
+      "sha256": "529963faace971572a3eb2b3c898d9688c66768cff9578e67c5c53efeae2efa2"
+    },
+    {
+      "path": "research/rebalance-daily/pretax-results.json",
+      "bytes": 4516417,
+      "sha256": "b56f26054d9ef9677a0c3d4eb1fe2239d8b490a06707ce7dba5bfb82c1148e0b"
+    },
+    {
+      "path": "research/rebalance-daily/protocol.json",
+      "bytes": 3119,
+      "sha256": "da8c0acd6b78e95f76c37530a0f8972f6d72a080a708ba29c3b8c68b992eedbe"
+    },
+    {
+      "path": "research/rebalance-daily/study.py",
+      "bytes": 12461,
+      "sha256": "faf62e879fc98c8add8cd422ea2ee1d06d676cf4b993bf2b4432a933b6c7b976"
+    },
+    {
+      "path": "research/rebalance-daily/taxed-results.json",
+      "bytes": 4730634,
+      "sha256": "845d1e9f35c255525aca40eea8e0f09cece40450fd2a053240ee7601f3f35b01"
+    },
+    {
+      "path": "research/rebalance-daily/traces.json",
+      "bytes": 3606049,
+      "sha256": "3e08e6cc216a1931f2603b4f361682e9a922ea485cfa5623af430e69211ecb4c"
+    },
+    {
+      "path": "research/rebalance-daily/verification.json",
+      "bytes": 966,
+      "sha256": "10cd477e5d75fec471695b41e921cfb86f9fa1ca237cd24c57187ad5fa2f3d97"
+    },
+    {
+      "path": "research/rebalance-daily/verify.py",
+      "bytes": 3872,
+      "sha256": "7ec1c7e27b3e66d7ad76cfc766dd59af16e4cec2342831a6fd6708f81d52e2b7"
+    },
+    {
+      "path": "research/rebalance/audit.py",
+      "bytes": 9750,
+      "sha256": "9d71572c910cc1093d9da5aec37e2e656a54f23c434c9fbe5ec40fd1031098ae"
+    },
+    {
+      "path": "research/rebalance/development.json",
+      "bytes": 1505861,
+      "sha256": "b721043eab0e96bdb9a2fe9e7265a2b6e56aacde45a90fe383d25a12a6d6285f"
+    },
+    {
+      "path": "research/rebalance/diagnostics.json",
+      "bytes": 1871694,
+      "sha256": "b6b8b8df4d1138558b467fe4557d1ef3d3fea25863ea9fb55eebbbb3e634b83d"
+    },
+    {
+      "path": "research/rebalance/diagnostics.py",
+      "bytes": 3077,
+      "sha256": "b4131cfd21752f5949195b2bc5b09fff8ff992c611874e66bc2789eec9b35f25"
+    },
+    {
+      "path": "research/rebalance/evaluation.json",
+      "bytes": 686536,
+      "sha256": "6853887eff6b955a0cd6a9052092924b2335ce226fb6d6edb7d648fad645b768"
+    },
+    {
+      "path": "research/rebalance/independent-audit.json",
+      "bytes": 598672,
+      "sha256": "18e94f7cce7d39b8398828ec5c80c3103c6b2c939442bc6fdf9cc25643caba26"
+    },
+    {
+      "path": "research/rebalance/protocol.json",
+      "bytes": 11176,
+      "sha256": "24f4a6392bd1023a5769e92c9fbe11b042f7ced758da8d765847969aaa68aea2"
+    },
+    {
+      "path": "research/rebalance/selection.json",
+      "bytes": 7929,
+      "sha256": "595b64ac382233907a24e2f337b49f1e00aeca55d2d495ee319db01e35e3c441"
+    },
+    {
+      "path": "research/rebalance/study.cjs",
+      "bytes": 12497,
+      "sha256": "a606f1627bee93f4dbfd1e084b2d0f59e3ae5e458eff14ff98bf9a03506770b5"
+    },
+    {
+      "path": "research/replay.py",
+      "bytes": 3773,
+      "sha256": "a9f0876444a34e630190a0afcd46efe9dd0196ce09f9fba9a8796afe0ef0532f"
+    },
+    {
+      "path": "research/risk-confirm-independent-audit.json",
+      "bytes": 338,
+      "sha256": "b834ccf4c5f9829e7459214aa97348185c91baa46c812ea9b3507a1a36032adb"
+    },
+    {
+      "path": "research/risk-confirm-independent-audit.py",
+      "bytes": 4218,
+      "sha256": "a304405a49a68557a9e9d4b09a8dd22611cfdac3fcf78ac04fd9fca3ab76f272"
+    },
+    {
+      "path": "research/risk-confirm/development.json",
+      "bytes": 3623610,
+      "sha256": "df782bc222d8167f2632a077cfab977f8f18f9c6c521b7e78fd7fcd5402ebd9b"
+    },
+    {
+      "path": "research/risk-confirm/evaluate.json",
+      "bytes": 3972146,
+      "sha256": "30f9412c3cab2dd892e0701856ed9a25f69f47f5b8e7151080ce6526b6aad47c"
+    },
+    {
+      "path": "research/risk-confirm/external-protocol.json",
+      "bytes": 886,
+      "sha256": "7817f9c6815cdbe85a02bd248009802dcbee4e49d282aecc61a87ec51b100051"
+    },
+    {
+      "path": "research/risk-confirm/external-results.json",
+      "bytes": 438138,
+      "sha256": "add5b09a34e3e58454119b413d928a5b1dadb9d5ae8cb1a7d027c3344f295b21"
+    },
+    {
+      "path": "research/risk-confirm/external-validation.json",
+      "bytes": 232,
+      "sha256": "03b496cb5403b1e41e3e5da276ec6bacaa213f63900a661ff8579eb08dbde353"
+    },
+    {
+      "path": "research/risk-confirm/external.cjs",
+      "bytes": 5254,
+      "sha256": "267edf8162f4aea6ce8065bf98137125149ac80cb58be947a6d99cd79b652be6"
+    },
+    {
+      "path": "research/risk-confirm/production-audit.cjs",
+      "bytes": 4833,
+      "sha256": "6732f8c5f3d35d3319fd03c129200bf5c7f6c4f5ff75f5107a5739b20a639c03"
+    },
+    {
+      "path": "research/risk-confirm/production-audit.json",
+      "bytes": 1150297,
+      "sha256": "72ea3681025652362010a1c47c74e25283ac0d29e55a94d07413196219104218"
+    },
+    {
+      "path": "research/risk-confirm/production-ledger-audit.cjs",
+      "bytes": 5593,
+      "sha256": "cb1180ed838f8fc1422056287a74e36e1acff17d4cd301a58410b718b058975f"
+    },
+    {
+      "path": "research/risk-confirm/production-ledger-audit.json",
+      "bytes": 42202,
+      "sha256": "db31a67cc3c7142a82796452a66af44097a534f27c08f9d8f3159b2002076cac"
+    },
+    {
+      "path": "research/risk-confirm/protocol.json",
+      "bytes": 14557,
+      "sha256": "fd07ab9847b8489d048a7fa559a17c1050a3ab0f0fba694fcadbae5d72852c05"
+    },
+    {
+      "path": "research/risk-confirm/selection.json",
+      "bytes": 15665,
+      "sha256": "6d1d3e197b45c7b9d597cf14d85bc26b935af72984c787b9aaedf431e0d83337"
+    },
+    {
+      "path": "research/risk-confirm/signal-transitions.json",
+      "bytes": 13080,
+      "sha256": "451f0dc68e5be9a0eee42d6591e8384cf744a7ef7dc3d4e7497a96c9ae31d716"
+    },
+    {
+      "path": "research/risk-confirm/stress.json",
+      "bytes": 13147928,
+      "sha256": "a5ab90534cfe18a53d356e7e74b3030173cd3a64384f3c815cfe98dba916485e"
+    },
+    {
+      "path": "research/risk-confirm/study.cjs",
+      "bytes": 7865,
+      "sha256": "d765459645553b958a36f4ab12998774607eff25e254b3174deebc1964b90d82"
+    },
+    {
+      "path": "research/risk-confirm/validate.cjs",
+      "bytes": 2263,
+      "sha256": "c029adb0975dfcc63a8bf0a7e5a7dc7bc011d6ab7a6f120ca930b806e85f9ad3"
+    },
+    {
+      "path": "research/risk-confirm/validation.json",
+      "bytes": 1021,
+      "sha256": "eb9cbf13091c329a7d920b2a375593dd27bd3d0b2e5855691f1653b5db108b6f"
+    },
+    {
+      "path": "research/risk-daily/development.json",
+      "bytes": 8131696,
+      "sha256": "05cbbbafab43c42844526419cf853e58d2502b64f6f29c1b1defa27f094b9b7a"
+    },
+    {
+      "path": "research/risk-daily/evaluate.json",
+      "bytes": 3981409,
+      "sha256": "9350ea43cfb97cdc1ec19bac00d434b9bf8106d1008fd47ba8067f9a433ceacb"
+    },
+    {
+      "path": "research/risk-daily/protocol.json",
+      "bytes": 31658,
+      "sha256": "7490d286ea7c0503b07c6b9e6f041df8f6ad1354cf0bdbb9fb18d2e2a7de4776"
+    },
+    {
+      "path": "research/risk-daily/selection.json",
+      "bytes": 8153,
+      "sha256": "b628f2f6419bc6e20d6c4d0f2a88e6186950318c0ebe7b3533ac141bef3071ed"
+    },
+    {
+      "path": "research/risk-daily/stress.json",
+      "bytes": 13176451,
+      "sha256": "f36433fbc10b908578a9750e2399471b73b1ad1a95809c4ecd7775307a0bbeb5"
+    },
+    {
+      "path": "research/risk-daily/study.cjs",
+      "bytes": 10171,
+      "sha256": "a112b2bb7ec0a57a0c819d600e20ca3a3e711d08f665faa117b51e6b7e1f6a3f"
+    },
+    {
+      "path": "research/risk-daily/validate.cjs",
+      "bytes": 2784,
+      "sha256": "a4b9507ac1589b6e22f34e74aa0c9d441405f94e3f821d67488eda340d7ab77c"
+    },
+    {
+      "path": "research/risk-daily/validation.json",
+      "bytes": 1004,
+      "sha256": "124ac0afe932aadfd86a67857a5471d455fb9348956899db4646f242a00caab4"
+    },
+    {
+      "path": "research/risk/development.json",
+      "bytes": 1115200,
+      "sha256": "2abe91273e9df2c3d7b6c21270c7ccc0410b49260a6d4bcbc0c1297bcaac6a02"
+    },
+    {
+      "path": "research/risk/evaluate.cjs",
+      "bytes": 1854,
+      "sha256": "33bb7ebcf0224f400f581101e28d61cde6fbe7d1b99d6c52aca23383df3e4d93"
+    },
+    {
+      "path": "research/risk/evaluation.json",
+      "bytes": 477034,
+      "sha256": "20dbf7795a610f2ba9c1bf412196064a7f7bee255afd2c208ebd2ebd9560f384"
+    },
+    {
+      "path": "research/risk/neighborhood-protocol.json",
+      "bytes": 4178,
+      "sha256": "00529b39d406e9ed6d4318bff6d76c450613917ee6a13926daf855457b7392a1"
+    },
+    {
+      "path": "research/risk/neighborhood-results.json",
+      "bytes": 9169104,
+      "sha256": "7c16aa182b45e2ba5268ca319418bc1ad435fe18b6a8188ec32befa8da907477"
+    },
+    {
+      "path": "research/risk/neighborhood.cjs",
+      "bytes": 2390,
+      "sha256": "417826c7abeb90cd07774e3fb18b6347b4479e645b2713e68eaf0374657fe4bb"
+    },
+    {
+      "path": "research/risk/phase-episode-attribution.json",
+      "bytes": 18008,
+      "sha256": "3eb2729325b93b57fd7af393d607cc3bdb708c09c19e2c9f8de0bff164e13bfa"
+    },
+    {
+      "path": "research/risk/protocol.json",
+      "bytes": 16113,
+      "sha256": "4d94809492675dc112a3ecd8a3395014ad27918f72db377f84cce0e7e9df4c20"
+    },
+    {
+      "path": "research/risk/selection.json",
+      "bytes": 4151,
+      "sha256": "ed44843f0ac13ab30b0869e3a9b10d21e907ecf87334eeb5555214c3f1ed86d8"
+    },
+    {
+      "path": "research/risk/stage2-protocol.json",
+      "bytes": 1367,
+      "sha256": "b9fba85491395b1613edcf51bfd6e878738367d8aba3533195c467f132de5e06"
+    },
+    {
+      "path": "research/risk/stage2-results.json",
+      "bytes": 2631061,
+      "sha256": "1d0ce09cb547db03fe4325c75e21ce43ec8af73c6c4dec4d26c1488e67986fbc"
+    },
+    {
+      "path": "research/risk/stage2-trace-example.json",
+      "bytes": 797164,
+      "sha256": "299ee1b1f1e00569826cffde47702a305d2839df222aac0b4a8c91220ebef89a"
+    },
+    {
+      "path": "research/risk/stage2.cjs",
+      "bytes": 4316,
+      "sha256": "b8990a1a7c0b7c54d995b99fd68171118d2372087d7dd31fea5a9e6d812475c6"
+    },
+    {
+      "path": "research/risk/stress-engine.cjs",
+      "bytes": 2425,
+      "sha256": "ec562090bcb8a0ffe948bd1d3d2e80e7aa9b5505897471fc9221a93af3a8d92c"
+    },
+    {
+      "path": "research/risk/stress-protocol.json",
+      "bytes": 1219,
+      "sha256": "f1cd817faf29a795d52c253dd11ea31c6f156363a2dee17189cafeb8cf462f40"
+    },
+    {
+      "path": "research/risk/stress-results.json",
+      "bytes": 10165464,
+      "sha256": "afe6bf70683d385326d0c0f9c609e6a147bb05a37d29dcbdc2234ad03ca14f43"
+    },
+    {
+      "path": "research/risk/stress.cjs",
+      "bytes": 2101,
+      "sha256": "a77e41f25f4ff7e2bb920fb027554f23555bd079dd2f355e95f76fff06b5937c"
+    },
+    {
+      "path": "research/risk/study.cjs",
+      "bytes": 9139,
+      "sha256": "1e219c34d5d4f8ccf01e3285e37c94d4faee7d71b64906530a2d1b2ccc48a0ba"
+    },
+    {
+      "path": "research/tax-audit.json",
+      "bytes": 309335,
+      "sha256": "efff9e01605d4d508bcdab03b13206decadcf61fc99c89bfb09cd705c2b63596"
+    },
+    {
+      "path": "research/tax-audit.py",
+      "bytes": 3703,
+      "sha256": "e2966d82f9a86237ec43e4d18896e1486585115dc5967b40ee4ab6805142c345"
+    },
+    {
+      "path": "research/tax-inputs.json",
+      "bytes": 3613,
+      "sha256": "5c60d1d3971b5c8217423cea7eafac4eab049d5f5060e173ea8630ed8feec3d9"
+    }
+  ],
+  "trialLedger": [
+    {
+      "stage": "buy",
+      "candidates": 666,
+      "unit": "frozen candidate rules",
+      "protocol": "buy/protocol.json",
+      "development": "buy/development.json",
+      "results": "buy/evaluation.json",
+      "note": "Entry-only bounded waits/tranches; candidate grid count excludes evaluation weights/horizons/accounts."
+    },
+    {
+      "stage": "rebalance",
+      "candidates": 79,
+      "unit": "frozen candidate rules",
+      "protocol": "rebalance/protocol.json",
+      "development": "rebalance/development.json",
+      "results": "rebalance/evaluation.json",
+      "note": "Five holding-management families; fee/risk/ungated/neighborhood diagnostics separately in diagnostics.json."
+    },
+    {
+      "stage": "risk",
+      "candidates": 72,
+      "unit": "frozen candidate rules",
+      "protocol": "risk/protocol.json",
+      "development": "risk/development.json",
+      "results": "risk/evaluation.json",
+      "note": "Original risk grid; later4 masks,27 neighbors,30 fee/phase/delay settings are subsequent diagnostics, not72 additional independently validated strategies."
+    },
+    {
+      "stage": "risk-daily",
+      "candidates": 162,
+      "unit": "frozen candidate rules",
+      "protocol": "risk-daily/protocol.json",
+      "development": "risk-daily/development.json",
+      "results": "risk-daily/evaluate.json",
+      "note": "Later exploration after tax/phase results; stress.json contains fixed selected-rule robustness cases."
+    },
+    {
+      "stage": "rebalance-daily",
+      "candidates": 1,
+      "unit": "fixed policy, not optimized",
+      "protocol": "rebalance-daily/protocol.json",
+      "results": "rebalance-daily/taxed-results.json and pretax-results.json",
+      "evaluationCases": 96,
+      "uniqueTenYearOrigins": 81,
+      "uniqueFifteenYearOrigins": 21,
+      "note": "6 weights*2 fees*2 delays*2 tax settings*2 horizons;4896 paired ETF accounts are evaluations, not strategies. External20year is4 settings*77 different-fund accounts, pretax only."
+    },
+    {
+      "stage": "external",
+      "candidates": 1,
+      "unit": "previously fixed risk switch",
+      "protocol": "external/protocol.json",
+      "results": "external/results.json",
+      "evaluationCases": 45,
+      "note": "Actual SMPIX/UOPIX,10/15/20 years; 5 phase*3 fee*3 horizon sensitivity, no external reselection."
+    },
+    {
+      "stage": "risk-confirm",
+      "candidates": 72,
+      "unit": "frozen candidate rules",
+      "protocol": "risk-confirm/protocol.json",
+      "development": "risk-confirm/development.json",
+      "results": "risk-confirm/evaluate.json",
+      "note": "Third later retrospective risk exploration. The actual requested axes yield72, not216. Stress settings and account counts are not new strategies."
+    }
+  ],
+  "cashCSV": {
+    "file": "cash-results.csv",
+    "pairedRows": 5204,
+    "columns": 69,
+    "sha256": "5e7c63ff7fd421fc5f62cef5f1aa1ea03b45a678f27f79ed4b2a490a541e4bf0"
+  },
+  "cashSummarySHA256": "3ee8347e3cefb096134542d4e79fa09a9b1718e097a6811bd272845befc922a5",
+  "riskConfirmIncluded": true,
+  "cleanCashReplay": {
+    "status": "PASS",
+    "stage": "cash",
+    "allSevenOutputsByteIdenticalToFrozenRecords": true,
+    "outputs": [
+      {
+        "path": "rebalance-daily/taxed-results.json",
+        "sha256": "845d1e9f35c255525aca40eea8e0f09cece40450fd2a053240ee7601f3f35b01",
+        "byteIdentical": true
+      },
+      {
+        "path": "rebalance-daily/pretax-results.json",
+        "sha256": "b56f26054d9ef9677a0c3d4eb1fe2239d8b490a06707ce7dba5bfb82c1148e0b",
+        "byteIdentical": true
+      },
+      {
+        "path": "rebalance-daily/traces.json",
+        "sha256": "3e08e6cc216a1931f2603b4f361682e9a922ea485cfa5623af430e69211ecb4c",
+        "byteIdentical": true
+      },
+      {
+        "path": "rebalance-daily/verification.json",
+        "sha256": "10cd477e5d75fec471695b41e921cfb86f9fa1ca237cd24c57187ad5fa2f3d97",
+        "byteIdentical": true
+      },
+      {
+        "path": "rebalance-daily/external-results.json",
+        "sha256": "2d31792a073fd41393bd2b92444f91ce98e3c0779a1d4731b92f5e6032e538d7",
+        "byteIdentical": true
+      },
+      {
+        "path": "rebalance-daily/summary.json",
+        "sha256": "36a8e046dcb9a8340b8aa0f21f0375c9be8b540ae6f810ebf91b2286534a9a5a",
+        "byteIdentical": true
+      },
+      {
+        "path": "production-cash-audit.json",
+        "sha256": "99f6d376878c1555607ac016698f2499c295b75ac07303ec3d5160ab7bf7dd21",
+        "byteIdentical": true
+      }
+    ],
+    "productionModelSHA256": "bfd3fee55b7128165a652beff6ef4f20de4f2c285d4c398a03a0b61bbe5613e7"
+  },
+  "cleanConfirmReplay": {
+    "status": "PASS",
+    "stage": "risk-confirm",
+    "allEightOutputsByteIdenticalToFrozenRecords": true,
+    "outputs": [
+      {
+        "path": "risk-confirm/development.json",
+        "sha256": "df782bc222d8167f2632a077cfab977f8f18f9c6c521b7e78fd7fcd5402ebd9b",
+        "byteIdentical": true
+      },
+      {
+        "path": "risk-confirm/selection.json",
+        "sha256": "6d1d3e197b45c7b9d597cf14d85bc26b935af72984c787b9aaedf431e0d83337",
+        "byteIdentical": true
+      },
+      {
+        "path": "risk-confirm/evaluate.json",
+        "sha256": "30f9412c3cab2dd892e0701856ed9a25f69f47f5b8e7151080ce6526b6aad47c",
+        "byteIdentical": true
+      },
+      {
+        "path": "risk-confirm/stress.json",
+        "sha256": "a5ab90534cfe18a53d356e7e74b3030173cd3a64384f3c815cfe98dba916485e",
+        "byteIdentical": true
+      },
+      {
+        "path": "risk-confirm/validation.json",
+        "sha256": "eb9cbf13091c329a7d920b2a375593dd27bd3d0b2e5855691f1653b5db108b6f",
+        "byteIdentical": true
+      },
+      {
+        "path": "risk-confirm/external-protocol.json",
+        "sha256": "7817f9c6815cdbe85a02bd248009802dcbee4e49d282aecc61a87ec51b100051",
+        "byteIdentical": true
+      },
+      {
+        "path": "risk-confirm/external-results.json",
+        "sha256": "add5b09a34e3e58454119b413d928a5b1dadb9d5ae8cb1a7d027c3344f295b21",
+        "byteIdentical": true
+      },
+      {
+        "path": "risk-confirm-independent-audit.json",
+        "sha256": "b834ccf4c5f9829e7459214aa97348185c91baa46c812ea9b3507a1a36032adb",
+        "byteIdentical": true
+      }
+    ]
+  },
+  "frozenOriginalsUnmodified": true,
+  "omittedReconstructableLedger": {
+    "path": "research/risk/evaluation-ledgers.json.gz",
+    "uncompressedBytes": 91455214,
+    "reason": "Redundant daily decisions/trade detail reconstructable with risk/evaluate.cjs; all account outcomes, rule parameters and daily curve SHA256 remain in risk/evaluation.json. The original archive reference inside unchanged evaluation.json is historical, not a member of this compact delivery.",
+    "compressedSHA256": "408572afa9ffaf909fda0190ad4b512e81da9a66a31b3322997fd1648023cf66",
+    "reproduce": "python3 research/replay.py risk"
+  },
+  "reports": [
+    {
+      "file": "report.pdf",
+      "bytes": 811617,
+      "sha256": "e78330dcb4b79bf4f685bf7c6aca8e2a4c7816a529d7f2c565f9482b884d3070",
+      "pages": 7
+    },
+    {
+      "file": "report.docx",
+      "bytes": 48570,
+      "sha256": "233b13d46f3f94351bac2f0d0ee611e6a26bd6ea23f5b1a2d046c952c1207ea7",
+      "pages": 7
+    }
+  ],
+  "localValidation": {
+    "javascriptFullSuitePassed": 856,
+    "qqqSpecializedSuiteFinalPassed": 11,
+    "syntaxAndAssetVersions": "passed",
+    "browser": "changed35/25and50/50; cash topup equals lump at100%stock; QQQtiming exceeds baseline in tested2014-2024 window; zero browser errors"
+  }
+}

@@ -16,7 +16,8 @@
   }
   const initialMethods = [
     ['lump_sum', '一次性投入'], ['tranche_6', '6个月分批投入'], ['tranche_12', '12个月分批投入'],
-    ['tranche_24', '24个月分批投入'], ['drawdown_ladder', '回撤阶梯投入'], ['ma200_hold', '200日均线择时']
+    ['tranche_24', '24个月分批投入'], ['drawdown_ladder', '回撤阶梯投入'], ['ma200_hold', '200日均线择时'],
+    ['cash_topup', '现金补足目标仓位'], ['qqq_bear_confirm', 'QQQ深熊确认调仓']
   ];
   const contributionMethods = [
     ['dca_month', '每月定投'], ['dca_quarter', '每季度定投'], ['dca_year', '每年定投'],
@@ -87,6 +88,27 @@
     }
     if (index < 0 || gap(series[index][0], day) > maxGap) return null;
     return { day: series[index][0], value: series[index][1], carried: series[index][0] !== day };
+  }
+  function qqqBearStates(rows, end) {
+    const states = new Map();
+    let on = true, exitRun = 0, entryRun = 0;
+    for (let i = 0; i < rows.length && rows[i][0] <= end; i++) {
+      const [day, price] = rows[i];
+      if (i && gap(rows[i - 1][0], day) > 7) fail('QQQ在 ' + rows[i - 1][0] + ' — ' + day + ' 缺连续行情，无法确认退出与回归');
+      if (i < 251) { states.set(day, { ready: false }); continue; }
+      const ma = sum(rows.slice(i - 199, i + 1).map(r => r[1])) / 200;
+      const high = Math.max(...rows.slice(i - 251, i + 1).map(r => r[1]));
+      const drawdown = price / high - 1;
+      if (on) {
+        exitRun = price < ma && price / high <= .8 ? exitRun + 1 : 0;
+        if (exitRun >= 20) { on = false; exitRun = 0; entryRun = 0; }
+      } else {
+        entryRun = price > ma ? entryRun + 1 : 0;
+        if (entryRun >= 3) { on = true; exitRun = 0; entryRun = 0; }
+      }
+      states.set(day, { ready: true, on, ma, drawdown, exitRun, entryRun });
+    }
+    return states;
   }
   function annualReturn(ratio, start, end) {
     const years = gap(start, end) / YEAR;
@@ -192,7 +214,7 @@
     currencyInfo(config);
     const tax = taxConfig(config.tax);
     if (Object.keys(tax.overrides).some(id => !ids.has(id))) fail('单项税率含未收录的标的');
-    if (![1, 2, 3, 5, 10, 'common', 'custom'].includes(config.years)) fail('回测区间无效');
+    if (![1, 2, 3, 5, 10, 15, 20, 'common', 'custom'].includes(config.years)) fail('回测区间无效');
     if (config.years === 'custom' && (!M.validDate(config.start) || !M.validDate(config.end) || config.start >= config.end)) fail('请填写有效且先后有序的起止日期');
     return { positions, total, cashWeight: Math.max(0, 1 - total / 100) };
   }
@@ -272,6 +294,30 @@
         carried: observation.carried, fxCarried: !!quote?.carried };
     });
     const strategy = strategyConfig(config), strategyDays = common.filter(day => day >= start && day <= end);
+    const qqqTiming = strategy.initialMethod === 'qqq_bear_confirm';
+    const tqqqIndex = series.findIndex(s => s.asset.id === 'us:TQQQ');
+    const qqqSignals = new Map();
+    if (qqqTiming) {
+      if (tqqqIndex < 0) fail('QQQ深熊确认调仓需要组合中有权重大于0的TQQQ');
+      const qqqAsset = assets.get('us:QQQ'), qqqHistory = histories['us:QQQ'];
+      if (!qqqAsset || qqqAsset.currency !== 'USD' || qqqAsset.code !== 'QQQ' || qqqAsset.kind !== 'etf') fail('缺QQQ实际美元ETF身份，无法计算QQQ深熊确认调仓信号');
+      const qqqRows = validateHistory(qqqAsset, qqqHistory);
+      if (qqqHistory.basis !== 'provider_adjusted_close') fail('QQQ深熊确认调仓需要实际美元复权收盘价');
+      const states = qqqBearStates(qqqRows, end), previousDays = new Map(common.map((day, i) => [day, common[i - 1]]));
+      for (const day of strategyDays) {
+        // At the ETF's first common close there cannot be an earlier common
+        // close. Its already-published QQQ predecessor still supplies a causal
+        // initial state, provided it is fresh and has the full proxy warmup.
+        const priorCommon = previousDays.get(day);
+        const signalDay = priorCommon || qqqRows.filter(r => r[0] < day).at(-1)?.[0];
+        if (!signalDay || !priorCommon && gap(signalDay, day) > 7) fail('QQQ深熊确认调仓在开始日前缺7日内实际QQQ收盘价');
+        const source = at(qqqRows, signalDay, 7);
+        if (!source) fail('QQQ在信号日 ' + signalDay + ' 前缺7日内实际复权收盘价');
+        const state = states.get(source.day);
+        if (!state?.ready) fail('QQQ在 ' + source.day + ' 缺252个交易日预热，无法计算200日均线与一年高点');
+        qqqSignals.set(day, { signalDay, sourceDay: source.day, ...state });
+      }
+    }
     const months = strategyDays.filter((day, i) => !i || day.slice(0, 7) !== strategyDays[i - 1].slice(0, 7));
     // Signals use a separate target-weight reference, without investor cash flows,
     // fees or taxes. Each close is formed only from prices already published.
@@ -341,7 +387,11 @@
     let cash = 0, contributed = 0, fundUnits = 0, tradeCost = 0, rebalances = 0, deposits = 0;
     let lastBalance = periodKey(start, config.rebalance), peak = 1, mdd = 0;
     let initialReserve = config.initial, exposure = 1, timingChanges = 0;
+    let previousAllocation = null, topupTimes = 0, topupAmount = 0, topupFees = 0;
+    const cashTopup = strategy.initialMethod === 'cash_topup';
     const timing = config.initial > 0 && strategy.initialMethod === 'ma200_hold';
+    let riskReserve = 0, qqqOn = true, qqqTimingChanges = 0, lastQqqSignal = null;
+    const qqqTimingEvents = [];
     let carriedPrices = 0, carriedFx = 0;
     const value = prices => cash + sum(units.map((unit, i) => unit * prices[i]));
     // A valuation liability, never a cash debit or a daily tax payment. Actual
@@ -354,7 +404,7 @@
       const gain = Math.max(0, amount - saleFee - disposedBasis);
       return { disposedBasis, gain, tax: gain * series[i].tax.gain / 100 };
     };
-    const trade = (day, prices, deltas, fees, reason) => {
+    const trade = (day, prices, deltas, fees, reason, signalDay) => {
       let taxCharge = 0;
       deltas.forEach((delta, i) => {
         if (Math.abs(delta) > EPS) {
@@ -368,7 +418,8 @@
           holdingNav[i] *= delta > 0 ? after / (before + delta + fees[i]) : (after - delta - fees[i] - sale.tax) / before;
           if (delta > 0) bought[i] += delta; else sold[i] -= delta;
           costs[i] += fees[i];
-          transactions.push({ day, id: series[i].asset.id, side: delta > 0 ? 'buy' : 'sell', amount: Math.abs(delta), fee: fees[i], tax: sale.tax, reason });
+          transactions.push({ day, id: series[i].asset.id, side: delta > 0 ? 'buy' : 'sell', amount: Math.abs(delta), fee: fees[i], tax: sale.tax, reason,
+            ...(signalDay ? { signalDay } : {}) });
         }
       });
       const charge = sum(fees);
@@ -379,19 +430,21 @@
     };
     function rebalance(day, prices, reason, targetExposure = exposure) {
       const wealth = Math.max(0, value(prices) - initialReserve), previous = units.map((u, i) => u * prices[i]);
+      const target = (s, i) => qqqTiming && !qqqOn && i === tqqqIndex ? 0 : targetExposure * s.weight;
       let lo = 0, hi = wealth;
       if (fee || series.some(s => s.tax.gain > 0)) {
         for (let i = 0; i < 70; i++) {
           const charge = (lo + hi) / 2;
           const implied = sum(series.map((s, k) => {
-            const delta = targetExposure * s.weight * (wealth - charge) - previous[k], tradeFee = Math.abs(delta) * fee;
+            const delta = target(s, k) * (wealth - charge) - previous[k], tradeFee = Math.abs(delta) * fee;
             return tradeFee + (delta < 0 ? saleTax(k, -delta, prices[k], tradeFee).tax : 0);
           }));
           if (implied > charge) lo = charge; else hi = charge;
         }
       } else hi = 0;
-      const usable = wealth - hi, deltas = series.map((s, i) => targetExposure * s.weight * usable - previous[i]);
+      const usable = wealth - hi, deltas = series.map((s, i) => target(s, i) * usable - previous[i]);
       trade(day, prices, deltas, deltas.map(delta => Math.abs(delta) * fee), reason);
+      if (qqqTiming) riskReserve = qqqOn ? 0 : Math.min(Math.max(0, cash - initialReserve), usable * series[tqqqIndex].weight);
       if (reason === 'rebalance') rebalances++;
     }
     function deposit(day, amount, prices) {
@@ -405,8 +458,43 @@
     function invest(day, amount, prices, reason) {
       if (amount <= EPS || !exposure) return;
       const usable = amount / (1 + fee * total / 100);
-      const deltas = series.map(s => usable * s.weight);
+      const deltas = series.map((s, i) => qqqTiming && !qqqOn && i === tqqqIndex ? 0 : usable * s.weight);
       trade(day, prices, deltas, deltas.map(delta => delta * fee), reason);
+      if (qqqTiming && !qqqOn) riskReserve += usable * series[tqqqIndex].weight * (1 + fee);
+    }
+    function updateQqq(day, prices) {
+      const signal = qqqSignals.get(day), previous = qqqOn;
+      lastQqqSignal = signal;
+      // End liquidation never buys a parked sleeve merely to sell it again.
+      if (day === end && tax.liquidate && !qqqOn && signal.on) return;
+      qqqOn = signal.on;
+      if (day === start || previous === qqqOn) return;
+      const deltas = series.map(() => 0), beforeCash = cash;
+      deltas[tqqqIndex] = qqqOn ? riskReserve / (1 + fee) : -units[tqqqIndex] * prices[tqqqIndex];
+      trade(day, prices, deltas, deltas.map(d => Math.abs(d) * fee), qqqOn ? 'qqq_timing_in' : 'qqq_timing_out', signal.signalDay);
+      riskReserve = qqqOn ? 0 : riskReserve + cash - beforeCash;
+      qqqTimingChanges++;
+      qqqTimingEvents.push({ day, signalDay: signal.signalDay, sourceDay: signal.sourceDay, on: qqqOn, ma: signal.ma, drawdown: signal.drawdown, riskReserve });
+    }
+    function topup(day, prices) {
+      if (!previousAllocation || day === start || day === end && tax.liquidate || cash <= EPS) return;
+      const target = total / 100;
+      const rounding = Math.max(EPS, Number.EPSILON * 16 * previousAllocation.wealth);
+      if (previousAllocation.stock >= target * previousAllocation.wealth - rounding) return;
+      const deficit = sum(previousAllocation.deficits);
+      if (deficit <= EPS) return;
+      // Eligibility and allocation ratios were fixed at the previous common close.
+      // Size at this close, after deposits/rebalancing, to respect the total target
+      // after paying the purchase fee. This is a closing target-weight order.
+      const stock = sum(units.map((unit, i) => unit * prices[i])), wealth = value(prices);
+      const amount = Math.min(cash / (1 + fee), Math.max(0, (target * wealth - stock) / (1 + target * fee)));
+      if (amount <= EPS) return;
+      const deltas = previousAllocation.deficits.map(d => amount * d / deficit).map(d => d > EPS ? d : 0);
+      const boughtAmount = sum(deltas);
+      if (boughtAmount <= EPS) return;
+      const fees = deltas.map(d => d * fee);
+      trade(day, prices, deltas, fees, 'cash_topup', previousAllocation.day);
+      topupTimes++; topupAmount += boughtAmount; topupFees += sum(fees);
     }
     const curve = [], holdingPaths = series.map(() => []), fxDates = new Set((fx || []).map(row => row[0]));
     let lastPrices = null;
@@ -429,6 +517,7 @@
       carriedPrices += observations.filter(p => p.carried).length;
       if (observations.some(p => p.fxCarried)) carriedFx++;
       if (commonSet.has(day)) {
+        if (qqqTiming) updateQqq(day, prices);
         if (day === start) deposit(day, config.initial, prices);
         const released = Math.min(initialReserve, initialPlan.get(day) || 0), income = incomePlan.get(day) || 0;
         initialReserve = Math.max(0, initialReserve - released);
@@ -445,10 +534,17 @@
         if (config.rebalance !== 'none' && day !== start && balance !== lastBalance) {
           rebalance(day, prices, 'rebalance'); lastBalance = balance;
         }
+        if (cashTopup) topup(day, prices);
       }
       if (day === end && tax.liquidate) {
         const deltas = units.map((unit, i) => -unit * prices[i]);
         trade(day, prices, deltas, deltas.map(delta => -delta * fee), 'liquidation');
+        if (qqqTiming) riskReserve = 0;
+      }
+      if (qqqTiming && (riskReserve < -1e-5 || riskReserve > cash + 1e-5)) fail('QQQ风险现金与账户现金未勾稽');
+      if (cashTopup && commonSet.has(day)) {
+        const marks = units.map((unit, i) => unit * prices[i]), wealth = value(prices);
+        previousAllocation = { day, wealth, stock: sum(marks), deficits: series.map((s, i) => Math.max(0, s.weight * wealth - marks[i])) };
       }
       const traded = new Set(transactions.slice(tradesBefore).map(t => t.id));
       series.forEach((s, i) => {
@@ -462,7 +558,8 @@
       peak = Math.max(peak, nav); mdd = Math.min(mdd, (nav / peak - 1) * 100);
       curve.push({ day, value: account, contributed, profit: account - contributed, nav, totalReturn: (nav - 1) * 100,
         annualReturn: day === start ? (nav - 1) * 100 : annualReturn(nav, start, day), drawdown: (nav / peak - 1) * 100, cash, initialReserve, exposure,
-        grossValue: value(prices), taxReserve, paidTax, taxCost: paidTax + taxReserve });
+        grossValue: value(prices), taxReserve, paidTax, taxCost: paidTax + taxReserve,
+        ...(qqqTiming ? { riskReserve, qqqOn, qqqSignalDay: lastQqqSignal?.signalDay, qqqSourceDay: lastQqqSignal?.sourceDay } : {}) });
     }
     const final = curve.at(-1), prices = pricesAt(end).map(p => p.value);
     flows.push([end, final.value]);
@@ -533,8 +630,9 @@
       // A short-period money-weighted figure is left unannualized rather than
       // exaggerating one month's change into a full-year compound rate.
       xirr, xirrMissing,
-      deposits, rebalances, transactions, tradeCost, initialReserve, timingChanges,
-      strategy: { ...strategy, warmupDays, insufficientMaDays, signalBasis: 'prior_common_close_target_weight_reference' },
+      deposits, rebalances, transactions, tradeCost, initialReserve, timingChanges, topupTimes, topupAmount, topupFees,
+      ...(qqqTiming ? { qqqTimingChanges, riskReserve, qqqTimingEvents } : {}),
+      strategy: { ...strategy, warmupDays, insufficientMaDays, signalBasis: qqqTiming ? 'prior_common_close_actual_qqq_200ma_252high_20out_3in' : cashTopup ? 'prior_common_close_actual_allocation_current_close_sizing' : 'prior_common_close_target_weight_reference' },
       plan: { initial: [...initialPlan].map(([day, amount]) => ({ day, amount })), income: [...incomePlan].map(([day, amount]) => ({ day, amount })) }, taxEvents,
       grossValue: final.grossValue, taxReserve: final.taxReserve, paidTax: final.paidTax, taxCost: final.taxCost, capitalTax: sum(capitalTaxes), dividendTax: sum(dividendTaxes), carriedPrices, carriedFx, benchmark, benchmarkError,
       config: JSON.parse(JSON.stringify({ ...config, currency })) };
