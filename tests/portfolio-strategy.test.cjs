@@ -124,9 +124,7 @@ test('future prices cannot change earlier trading decisions, signals, taxes or a
 
 test('all initial and income combinations reconcile; legacy configs and exported strategies stay compatible', () => {
   const days = calendar('2024-01-01', '2025-03-02'), prices = days.map(() => 1), ids = new Set(['stock:0']);
-  // Entry research methods have an explicit USD/TQQQ scope and separate
-  // real-history integration checks; this fixture covers general strategies.
-  for (const [initialMethod] of P.initialMethods.filter(([id]) => !id.startsWith('entry_'))) for (const [contributionMethod] of P.contributionMethods) {
+  for (const [initialMethod] of P.initialMethods) for (const [contributionMethod] of P.contributionMethods) {
     const input = fixture(days, prices, { initial: 600, monthly: 100, initialMethod, contributionMethod });
     const r = simulate(input);
     close(r.value, r.contributed); close(r.profit, 0); assert.ok(r.cash >= r.initialReserve - 1e-6);
@@ -142,5 +140,43 @@ test('all initial and income combinations reconcile; legacy configs and exported
   for (const field of ['initialMethod', 'contributionMethod']) {
     assert.match(P.simulate({ ...input, config: { ...input.config, [field]: 'unknown' } }).error, /投入方式/);
     assert.throws(() => P.sanitizeDraft({ schemaVersion: 1, ...input.config, [field]: 1 }, ids), /投入方式/);
+  }
+});
+
+
+test('retired research methods cannot execute or import as a different strategy', () => {
+  const days = calendar('2025-01-01', '2025-01-05');
+  const input = fixture(days, days.map(() => 100));
+  assert.deepEqual(P.initialMethods.map(([id]) => id), ['lump_sum', 'tranche_6', 'tranche_12', 'tranche_24', 'drawdown_ladder', 'ma200_hold']);
+  for (const method of ['entry_option', 'entry_volatility', 'entry_breadth', 'entry_composite']) {
+    const config = { ...input.config, initialMethod: method };
+    const result = P.simulate({ ...input, config });
+    assert.match(result.error, /原研究投入方式已撤回：未证明优于一次性投入/);
+    assert.equal(result.curve, undefined);
+    assert.equal(result.transactions, undefined);
+    assert.equal(config.initialMethod, method);
+    assert.throws(() => P.sanitizeDraft({ schemaVersion: 1, ...config }, new Set(['stock:0'])), /原研究投入方式已撤回/);
+  }
+});
+
+
+test('all six ordinary methods accept changed holding and cash weights without the retired 30/30 scope', () => {
+  const days = calendar('2024-01-01', '2025-03-02');
+  const paths = [days.map((_, i) => 100 + i / 5), days.map((_, i) => 90 + i / 10)];
+  for (const weights of [[35, 25], [60, 40], [15, 65]]) for (const [initialMethod] of P.initialMethods) {
+    const input = fixture(days, paths, { initialMethod });
+    input.config.positions.forEach((p, i) => { p.weight = weights[i]; });
+    const result = simulate(input);
+    assert.deepEqual(result.config.positions.map(p => p.weight), weights);
+    close(result.cashWeight, 100 - weights[0] - weights[1]);
+    close(result.contributed, input.config.initial);
+    assert.equal(result.config.initialMethod, initialMethod);
+    assert.equal(result.entryOpportunity, undefined);
+    assert.equal(result.entryPlan, undefined);
+    assert.ok(Number.isFinite(result.value));
+    assert.ok(result.cash >= -1e-7);
+    const imported = P.sanitizeDraft({ schemaVersion: 1, ...input.config }, new Set(input.config.positions.map(p => p.id)));
+    assert.deepEqual(imported.positions, input.config.positions);
+    close(simulate({ ...input, config: imported }).value, result.value);
   }
 });

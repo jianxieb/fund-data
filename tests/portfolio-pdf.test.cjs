@@ -101,7 +101,7 @@ test('single-page PDF has binary-safe xref offsets, contiguous bands and correct
 function uiFixture(configure) {
   const { input } = fixture(), downloads = [], notices = [], reports = [], renderStates = [];
   if (configure) configure(input);
-  const context = { window: { Changheng: M, ChanghengPortfolioModel: P, ChanghengPortfolioEntry: require('../assets/portfolio-entry-model.js'), PORTFOLIO_CATALOG: input.catalog,
+  const context = { window: { Changheng: M, ChanghengPortfolioModel: P, PORTFOLIO_CATALOG: input.catalog,
     ChanghengPortfolioPdf: { snapshot: Pdf.snapshot, async create(report) { reports.push(report); return new Blob(['PDF']); } } },
     localStorage: { getItem: () => JSON.stringify(input.config), setItem() {} },
     document: { getElementById: () => null, querySelectorAll: () => [] }, TextEncoder,
@@ -433,60 +433,47 @@ test('USD settings, tax reserve, PDF and CSV keep the same result currency after
 test('production entrypoint loads the account model, PDF and simulator', () => {
   const html = fs.readFileSync(path.resolve(__dirname, '../index.html'), 'utf8');
   const assets = [...html.matchAll(/src="assets\/(portfolio[^"?]*)/g)].map(match => match[1]);
-  assert.deepEqual(assets, ['portfolio-entry-model.js', 'portfolio-model.js', 'portfolio-pdf.js', 'portfolio.js']);
+  assert.deepEqual(assets, ['portfolio-model.js', 'portfolio-pdf.js', 'portfolio.js']);
 });
 
 
-test('entry indicators refresh with new histories and preserve dated option input when its download fails', async () => {
-  const f = uiFixture(input => {
-    const next = {};
-    input.catalog.assets.forEach((asset, i) => {
-      const old = asset.id, id = ['us:USD', 'us:TQQQ', old][i];
-      asset.id = id; input.config.positions[i].id = id;
-      input.config.positions[i].weight = i < 2 ? 30 : 0;
-      next[id] = { ...input.histories[old], id };
-    });
-    input.histories = next;
-    Object.assign(input.config, { monthly: 0, rebalance: 'none', initialMethod: 'entry_composite', benchmarkId: '' });
-  });
-  let context = { schemaVersion: 1, status: 'available', asOf: '2026-01-08',
-    series: f.input.histories['us:USD'].series.map(([d], i) => [d, 18 + i % 11, 23]) };
-  let failContext = false, calls = 0;
-  const originalFetch = f.context.fetch;
-  f.context.fetch = async (url, options) => {
-    if (url !== 'data/portfolio/entry-context.json') return originalFetch(url);
-    calls++; assert.equal(options.cache, 'no-store');
-    if (failContext) throw new Error('VIX配对源暂时无法下载');
-    return { ok: true, json: async () => JSON.parse(JSON.stringify(context)) };
-  };
-  await f.action('run'); await f.action('export-pdf');
-  const first = f.reports.at(-1).result;
-  assert.equal(first.entryOpportunity.asOf, '2026-01-08');
-  assert.equal(first.entryOpportunity.methods.entry_composite.available, true);
-  assert.equal(first.entryContextRefresh.asOf, '2026-01-08');
-  failContext = true;
-  await f.action('run'); await f.action('export-pdf');
-  const retained = f.reports.at(-1).result;
-  assert.deepEqual(retained.entryOpportunity, first.entryOpportunity);
-  assert.equal(retained.entryContextRefresh.available, false);
-  assert.match(f.ui.view(f.helpers), /VIX配对源暂时无法下载/);
-  assert.match(f.ui.view(f.helpers), /恐慌指数沿用截至 2026-01-08/);
-  for (const asset of f.input.catalog.assets) {
-    const h = f.input.histories[asset.id], last = h.series.at(-1);
-    for (let i = 1; i <= 100; i++) h.series.push([new Date(Date.parse(last[0]) + i * 86400000).toISOString().slice(0, 10), last[1] * Math.exp(-i / 200)]);
-    h.asOf = asset.asOf = h.series.at(-1)[0]; asset.sha256 = 'updated-' + asset.id;
+test('retired saved entry methods retain allocations and require an explicit replacement before simulation', async () => {
+  for (const method of ['entry_option', 'entry_volatility', 'entry_breadth', 'entry_composite']) {
+    const f = uiFixture(input => { input.config.initialMethod = method; });
+    const fetches = [], originalFetch = f.context.fetch;
+    f.context.fetch = async (url, options) => { fetches.push(url); return originalFetch(url, options); };
+    let html = f.ui.view(f.helpers);
+    assert.match(html, /本金投入方式：已撤回，请重新选择/);
+    assert.match(html, /未证明优于一次性投入，请重新选择本金投入方式/);
+    assert.doesNotMatch(html, /data-value="entry_/);
+    await f.action('run'); await f.action('export-pdf');
+    assert.equal(fetches.length, 0); assert.equal(f.reports.length, 0);
+    assert.match(f.ui.view(f.helpers), /原研究投入方式已撤回/);
+    await f.action('select', { field: 'initialMethod', value: 'tranche_6' });
+    await f.action('run'); await f.action('export-pdf');
+    const result = f.reports.at(-1).result;
+    assert.equal(result.config.initialMethod, 'tranche_6');
+    assert.deepEqual(result.config.positions, f.input.config.positions);
+    assert.equal(result.config.initial, f.input.config.initial);
+    assert.equal(result.config.monthly, f.input.config.monthly);
+    assert.equal(result.entryOpportunity, undefined);
+    assert.equal(result.entryPlan, undefined);
+    assert.equal(fetches.some(url => url.includes('entry-context')), false);
+    html = f.ui.view(f.helpers);
+    assert.doesNotMatch(html, /综合加仓分数|回撤与期权恐慌|历史研究分数|data-value="entry_/);
   }
-  context = { ...context, asOf: f.input.catalog.assets[0].asOf,
-    series: f.input.histories['us:USD'].series.map(([d], i) => [d, 18 + i % 11, 23]) };
-  failContext = false;
-  await f.action('run'); await f.action('export-pdf');
-  const advanced = f.reports.at(-1).result;
-  assert.equal(advanced.entryOpportunity.asOf, context.asOf);
-  assert.equal(advanced.entryContextRefresh.asOf, context.asOf);
-  assert.ok(advanced.entryOpportunity.methods.entry_composite.score0to100 > first.entryOpportunity.methods.entry_composite.score0to100);
-  assert.equal(advanced.entryContextRefresh.available, true);
-  assert.equal(calls, 3);
-  const page = f.ui.view(f.helpers);
-  assert.equal((page.match(/href="docs\/portfolio-entry-research\.html"/g) || []).length, 1);
-  assert.match(page, /历史增益较小，尚无独立验证/);
+});
+
+test('retired imported methods fail explicitly without replacing the current allocation or method', async () => {
+  const f = uiFixture();
+  const imported = { schemaVersion: 1, ...f.input.config, initialMethod: 'entry_composite', initial: 999,
+    positions: f.input.config.positions.map((p, i) => ({ ...p, weight: i === 0 ? 100 : 0 })) };
+  const text = JSON.stringify(imported);
+  await f.ui.handleChange({ id: 'portfolio-import', files: [{ size: text.length, text: async () => text }] });
+  assert.match(f.ui.view(f.helpers), /配置导入失败：原研究投入方式已撤回/);
+  await f.action('save');
+  const retained = JSON.parse(f.downloads.at(-1)[1]);
+  assert.deepEqual(retained.positions, f.input.config.positions);
+  assert.equal(retained.initial, f.input.config.initial);
+  assert.notEqual(retained.initialMethod, 'entry_composite');
 });

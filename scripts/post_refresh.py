@@ -20,7 +20,6 @@ TASKS = {
     'bank_fx': ('scripts/refresh_money_flow_quotes.py', ['--timeout', '8'], ('money-flow-quotes.js',)),
     'market_history': ('market_history.py', [], ('market-history.json',)),
     'benchmark_valuations': ('scripts/collect_portfolio_benchmark_pe.py', [], ('portfolio/benchmark-valuations.json',)),
-    'portfolio_entry_context': ('scripts/build_portfolio_entry_context.py', ['--refresh'], ('portfolio/entry-context.json',)),
 }
 
 
