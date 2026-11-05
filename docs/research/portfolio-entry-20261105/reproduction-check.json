@@ -1,0 +1,32 @@
+{
+  "archiveSHA256": "115fbce5876e8d8e98e88fbe239f79c61d2c45954873457e923fb5c9dc7e8a97",
+  "fullGrid": true,
+  "exactFrozenOutputs": [
+    "buy-method-selection.json",
+    "buy-method-development-ranking.json",
+    "grid-results.csv",
+    "nonlinear-development.json",
+    "nonlinear-selection.json",
+    "nonlinear-results.json",
+    "qualifying-target-results.json",
+    "qualifying-external-results.json"
+  ],
+  "g0IndependentCheck": true,
+  "baselineReplay": [
+    {
+      "file": "system-baselines.json",
+      "n": 624,
+      "maxValueError": 4.547473508864641e-13,
+      "maxCAGRError": 2.4868995751603507e-14
+    },
+    {
+      "file": "external-baselines.json",
+      "n": 2484,
+      "maxValueError": 6.821210263296962e-13,
+      "maxCAGRError": 2.4868995751603507e-14
+    }
+  ],
+  "comparisonOrigins": 35,
+  "inputBoundary": "Frozen monthly factor snapshots and production baseline ledgers; no external downloads or factor-source regeneration.",
+  "outputDirectory": "/tmp/portfolio-entry-delivery-check-20261105"
+}

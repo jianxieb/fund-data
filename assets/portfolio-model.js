@@ -1,7 +1,7 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./model.js'));
-  else root.ChanghengPortfolioModel = factory(root.Changheng);
-})(typeof globalThis !== 'undefined' ? globalThis : this, function (M) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./model.js'), require('./portfolio-entry-model.js'));
+  else root.ChanghengPortfolioModel = factory(root.Changheng, root.ChanghengPortfolioEntry);
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (M, E) {
   'use strict';
   const DAY = 86400000, YEAR = 365.2425, EPS = 1e-8;
   const finite = M.finite;
@@ -16,7 +16,9 @@
   }
   const initialMethods = [
     ['lump_sum', '一次性投入'], ['tranche_6', '6个月分批投入'], ['tranche_12', '12个月分批投入'],
-    ['tranche_24', '24个月分批投入'], ['drawdown_ladder', '回撤阶梯投入'], ['ma200_hold', '200日均线择时']
+    ['tranche_24', '24个月分批投入'], ['drawdown_ladder', '回撤阶梯投入'], ['ma200_hold', '200日均线择时'],
+    ['entry_option', '回撤与恐慌分批'], ['entry_volatility', '回撤与波动分批'],
+    ['entry_breadth', '共同回撤分批'], ['entry_composite', '综合指标分批']
   ];
   const contributionMethods = [
     ['dca_month', '每月定投'], ['dca_quarter', '每季度定投'], ['dca_year', '每年定投'],
@@ -207,7 +209,7 @@
     return periods.map(years => ({ years, ...simulate({ ...input,
       config: { ...input.config, years: 'custom', start: addYears(end, -years), end } }) }));
   }
-  function run({ catalog, histories, config, fxHistory }) {
+  function run({ catalog, histories, config, fxHistory, entryContext }) {
     const assets = new Map((catalog?.assets || []).map(a => [a.id, a]));
     const { positions, total, cashWeight } = validateConfig(config, new Set(assets.keys()));
     const tax = taxConfig(config.tax);
@@ -272,6 +274,15 @@
     });
     const strategy = strategyConfig(config), strategyDays = common.filter(day => day >= start && day <= end);
     const months = strategyDays.filter((day, i) => !i || day.slice(0, 7) !== strategyDays[i - 1].slice(0, 7));
+    const entryScope = E.supports(config), usesEntryMethod = strategy.initialMethod.startsWith('entry_');
+    if (usesEntryMethod && !entryScope.supported) fail(entryScope.reason);
+    let entryFeatures = null, entryOpportunity = null, entryPlan = null;
+    if (entryScope.supported) {
+      const featureDays = common.filter(day => day <= end);
+      entryFeatures = E.buildFeatures({ dates: featureDays, prices: featureDays.map(day => pricesAt(day).map(p => p.value)),
+        weights: series.map(s => s.weight), context: entryContext });
+      entryOpportunity = { ...E.scores(entryFeatures.rows.at(-1)), scope: entryScope.scope };
+    }
     // Signals use a separate target-weight reference, without investor cash flows,
     // fees or taxes. Each close is formed only from prices already published.
     const signals = new Map(), needsSignal = strategy.initialMethod === 'drawdown_ladder' && config.initial > 0 ||
@@ -299,7 +310,12 @@
     }
     const initialPlan = new Map();
     if (config.initial > 0) {
-      if (strategy.initialMethod.startsWith('tranche_')) {
+      if (usesEntryMethod) {
+        const indices = new Map(common.map((day, i) => [day, i]));
+        entryPlan = E.plan(months.slice(0, 12).map(day => ({ day, signalDate: common[indices.get(day) - 1] || null })),
+          entryFeatures.byDate, strategy.initialMethod, config.initial);
+        entryPlan.orders.forEach(order => initialPlan.set(order.day, order.amount));
+      } else if (strategy.initialMethod.startsWith('tranche_')) {
         const count = Number(strategy.initialMethod.split('_')[1]);
         months.slice(0, count).forEach(day => initialPlan.set(day, config.initial / count));
       } else if (strategy.initialMethod === 'drawdown_ladder') {
@@ -532,7 +548,7 @@
       // A short-period money-weighted figure is left unannualized rather than
       // exaggerating one month's change into a full-year compound rate.
       xirr, xirrMissing,
-      deposits, rebalances, transactions, tradeCost, initialReserve, timingChanges,
+      deposits, rebalances, transactions, tradeCost, initialReserve, timingChanges, entryOpportunity, entryPlan,
       strategy: { ...strategy, warmupDays, insufficientMaDays, signalBasis: 'prior_common_close_target_weight_reference' },
       plan: { initial: [...initialPlan].map(([day, amount]) => ({ day, amount })), income: [...incomePlan].map(([day, amount]) => ({ day, amount })) }, taxEvents,
       grossValue: final.grossValue, taxReserve: final.taxReserve, paidTax: final.paidTax, taxCost: final.taxCost, capitalTax: sum(capitalTaxes), dividendTax: sum(dividendTaxes), carriedPrices, carriedFx, benchmark, benchmarkError,

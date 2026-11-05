@@ -124,7 +124,9 @@ test('future prices cannot change earlier trading decisions, signals, taxes or a
 
 test('all initial and income combinations reconcile; legacy configs and exported strategies stay compatible', () => {
   const days = calendar('2024-01-01', '2025-03-02'), prices = days.map(() => 1), ids = new Set(['stock:0']);
-  for (const [initialMethod] of P.initialMethods) for (const [contributionMethod] of P.contributionMethods) {
+  // Entry research methods have an explicit USD/TQQQ scope and separate
+  // real-history integration checks; this fixture covers general strategies.
+  for (const [initialMethod] of P.initialMethods.filter(([id]) => !id.startsWith('entry_'))) for (const [contributionMethod] of P.contributionMethods) {
     const input = fixture(days, prices, { initial: 600, monthly: 100, initialMethod, contributionMethod });
     const r = simulate(input);
     close(r.value, r.contributed); close(r.profit, 0); assert.ok(r.cash >= r.initialReserve - 1e-6);

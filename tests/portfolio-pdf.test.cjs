@@ -101,7 +101,7 @@ test('single-page PDF has binary-safe xref offsets, contiguous bands and correct
 function uiFixture(configure) {
   const { input } = fixture(), downloads = [], notices = [], reports = [], renderStates = [];
   if (configure) configure(input);
-  const context = { window: { Changheng: M, ChanghengPortfolioModel: P, PORTFOLIO_CATALOG: input.catalog,
+  const context = { window: { Changheng: M, ChanghengPortfolioModel: P, ChanghengPortfolioEntry: require('../assets/portfolio-entry-model.js'), PORTFOLIO_CATALOG: input.catalog,
     ChanghengPortfolioPdf: { snapshot: Pdf.snapshot, async create(report) { reports.push(report); return new Blob(['PDF']); } } },
     localStorage: { getItem: () => JSON.stringify(input.config), setItem() {} },
     document: { getElementById: () => null, querySelectorAll: () => [] }, TextEncoder,
@@ -433,5 +433,60 @@ test('USD settings, tax reserve, PDF and CSV keep the same result currency after
 test('production entrypoint loads the account model, PDF and simulator', () => {
   const html = fs.readFileSync(path.resolve(__dirname, '../index.html'), 'utf8');
   const assets = [...html.matchAll(/src="assets\/(portfolio[^"?]*)/g)].map(match => match[1]);
-  assert.deepEqual(assets, ['portfolio-model.js', 'portfolio-pdf.js', 'portfolio.js']);
+  assert.deepEqual(assets, ['portfolio-entry-model.js', 'portfolio-model.js', 'portfolio-pdf.js', 'portfolio.js']);
+});
+
+
+test('entry indicators refresh with new histories and preserve dated option input when its download fails', async () => {
+  const f = uiFixture(input => {
+    const next = {};
+    input.catalog.assets.forEach((asset, i) => {
+      const old = asset.id, id = ['us:USD', 'us:TQQQ', old][i];
+      asset.id = id; input.config.positions[i].id = id;
+      input.config.positions[i].weight = i < 2 ? 30 : 0;
+      next[id] = { ...input.histories[old], id };
+    });
+    input.histories = next;
+    Object.assign(input.config, { monthly: 0, rebalance: 'none', initialMethod: 'entry_composite', benchmarkId: '' });
+  });
+  let context = { schemaVersion: 1, status: 'available', asOf: '2026-01-08',
+    series: f.input.histories['us:USD'].series.map(([d], i) => [d, 18 + i % 11, 23]) };
+  let failContext = false, calls = 0;
+  const originalFetch = f.context.fetch;
+  f.context.fetch = async (url, options) => {
+    if (url !== 'data/portfolio/entry-context.json') return originalFetch(url);
+    calls++; assert.equal(options.cache, 'no-store');
+    if (failContext) throw new Error('VIX配对源暂时无法下载');
+    return { ok: true, json: async () => JSON.parse(JSON.stringify(context)) };
+  };
+  await f.action('run'); await f.action('export-pdf');
+  const first = f.reports.at(-1).result;
+  assert.equal(first.entryOpportunity.asOf, '2026-01-08');
+  assert.equal(first.entryOpportunity.methods.entry_composite.available, true);
+  assert.equal(first.entryContextRefresh.asOf, '2026-01-08');
+  failContext = true;
+  await f.action('run'); await f.action('export-pdf');
+  const retained = f.reports.at(-1).result;
+  assert.deepEqual(retained.entryOpportunity, first.entryOpportunity);
+  assert.equal(retained.entryContextRefresh.available, false);
+  assert.match(f.ui.view(f.helpers), /VIX配对源暂时无法下载/);
+  assert.match(f.ui.view(f.helpers), /恐慌指数沿用截至 2026-01-08/);
+  for (const asset of f.input.catalog.assets) {
+    const h = f.input.histories[asset.id], last = h.series.at(-1);
+    for (let i = 1; i <= 100; i++) h.series.push([new Date(Date.parse(last[0]) + i * 86400000).toISOString().slice(0, 10), last[1] * Math.exp(-i / 200)]);
+    h.asOf = asset.asOf = h.series.at(-1)[0]; asset.sha256 = 'updated-' + asset.id;
+  }
+  context = { ...context, asOf: f.input.catalog.assets[0].asOf,
+    series: f.input.histories['us:USD'].series.map(([d], i) => [d, 18 + i % 11, 23]) };
+  failContext = false;
+  await f.action('run'); await f.action('export-pdf');
+  const advanced = f.reports.at(-1).result;
+  assert.equal(advanced.entryOpportunity.asOf, context.asOf);
+  assert.equal(advanced.entryContextRefresh.asOf, context.asOf);
+  assert.ok(advanced.entryOpportunity.methods.entry_composite.score0to100 > first.entryOpportunity.methods.entry_composite.score0to100);
+  assert.equal(advanced.entryContextRefresh.available, true);
+  assert.equal(calls, 3);
+  const page = f.ui.view(f.helpers);
+  assert.equal((page.match(/href="docs\/portfolio-entry-research\.html"/g) || []).length, 1);
+  assert.match(page, /历史增益较小，尚无独立验证/);
 });
