@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory();
-  else root.ChanghengPortfolioSystematic = factory();
-})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./portfolio-opportunity.js'));
+  else root.ChanghengPortfolioSystematic = factory(root.ChanghengPortfolioOpportunity);
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (Opportunity) {
   'use strict';
   const DAY = 86400000, EPS = 1e-10;
-  const METHODS = ['vix_panic_reentry', 'relative_strength_rotation', 'dual_risk_guard'];
+  const METHODS = ['vix_panic_reentry', 'relative_strength_rotation', 'dual_risk_guard', ...Object.keys(Opportunity?.definitions || {})];
   const sum = values => values.reduce((a, b) => a + b, 0);
   const gap = (a, b) => (Date.parse(a) - Date.parse(b)) / DAY;
   const copy = value => JSON.parse(JSON.stringify(value));
@@ -137,7 +137,10 @@
     }
     weights = weights.slice();
     const W = sum(weights), originalShares = weights.map(w => w / W), rotation = method === 'relative_strength_rotation';
-    const vix = rotation ? [] : vixStates(validatedVix(vixContext));
+    const opportunity = Opportunity?.definitions[method] || null;
+    const needsVix = !rotation && (!opportunity || weights[1] > 0 || opportunity.family !== 'discount');
+    const vix = needsVix ? vixStates(validatedVix(vixContext)) : [];
+    const opportunityFeatures = opportunity ? Opportunity.createFeatures({ rawHistories, vixContext }) : null;
     const qqq = method === 'dual_risk_guard' ? qqqStates(rows(rawHistories['us:QQQ'], 'QQQ')) : [];
     const relative = rotation ? relativeStates(rows(rawHistories['us:USD'], 'USD'), rows(rawHistories['us:TQQQ'], 'TQQQ')) : [];
     let lastDay = null, strategyStart = null, lastReview = null, lastReviewDay = null, lastReviewAttemptDay = null;
@@ -181,6 +184,39 @@
       if (!Number.isFinite(ctx.fee) || ctx.fee < 0 || !Array.isArray(ctx.marks) || !Array.isArray(ctx.cashByLeg) ||
           ctx.marks.length !== 2 || ctx.cashByLeg.length !== 2 || ctx.marks.some(v => !Number.isFinite(v) || v < -EPS) || ctx.cashByLeg.some(v => !Number.isFinite(v))) {
         throw new Error('策略缺实际两腿市值、已结算现金或费率');
+      }
+      if (opportunity) {
+        const features = opportunityFeatures.at(ctx.day), v = needsVix ? observed(vix, ctx.day, true, 'VIX/VIX3M') : null;
+        const gateMissing = weights[1] > 0 ? v?.missing : null;
+        const previousOn = requestedOn;
+        if (!gateMissing) requestedOn = weights[1] > 0 ? !!v.on : true;
+        const exit = previousOn && !requestedOn;
+        if (previousOn !== requestedOn) changes++;
+        const sellFractions = [0, exit ? 1 : 0], buyAmounts = [0, 0];
+        const legs = features.legs.map((leg, k) => {
+          const score = leg.scores[opportunity.family], availableCash = Math.max(0, ctx.cashByLeg[k]);
+          const blockedByRisk = k === 1 && (!requestedOn || !!gateMissing);
+          const intensity = score === null || score < opportunity.threshold || blockedByRisk ? 0 :
+            Math.max(0, Math.min(1, (score - opportunity.threshold + 10) / (110 - opportunity.threshold)));
+          let budget = weights[k] > 0 ? availableCash * intensity : 0;
+          if (budget > 0 && availableCash - budget < Math.max(0, ctx.initial || 0) * .0001) budget = availableCash;
+          buyAmounts[k] = budget / (1 + ctx.fee);
+          return { id: leg.id, proxyId: leg.proxyId, sourceDay: leg.sourceDay, score,
+            inputs: leg.inputs, components: leg.components, weights: Opportunity.coefficients[opportunity.family],
+            availableCash, intensity, buyAmount: buyAmounts[k], blockedByRisk, missingReasons: leg.missingReasons[opportunity.family] };
+        });
+        const missingDetails = legs.filter((leg, k) => weights[k] > 0).flatMap(leg => leg.missingReasons);
+        const hardMissing = gateMissing || missingDetails.find(r => r.code.startsWith('missing_') || r.code.startsWith('stale_') || r.code.endsWith('_gap'))?.message || null;
+        const warmingUp = !hardMissing && missingDetails.length > 0;
+        const metadata = { sourceDay: v?.day || legs.find((leg, k) => weights[k] > 0)?.sourceDay || null,
+          vixDay: v?.day || null, vixOn: requestedOn, vixValue: v?.vix ?? null, vix3mValue: v?.vix3m ?? null,
+          vixRatio: v?.ratio ?? null, vixDecision: v?.decision || null, phase: requestedOn ? 'score-buying' : 'tqqq-parked',
+          allocationStateChange: previousOn !== requestedOn,
+          opportunity: { ...opportunity, legs, formula: Opportunity.formulas[opportunity.family],
+            execution: 'next_common_close_fixed_cash', tailCashFractionOfInitial: .0001 } };
+        publish(ctx.day, metadata, hardMissing, warmingUp);
+        if (hardMissing) return { ...answer([0, 0], [0, 0]), missing: hardMissing };
+        return answer(sellFractions, buyAmounts, { allocationStateChange: previousOn !== requestedOn });
       }
       if (!rotation) {
         const v = observed(vix, ctx.day, true, 'VIX/VIX3M'), q = method === 'dual_risk_guard' ? observed(qqq, ctx.day, false, 'QQQ') : null;
@@ -241,5 +277,5 @@
     }
     return { step, state: () => copy(current) };
   }
-  return { create };
+  return { create, opportunityDefinitions: Opportunity?.definitions || {} };
 });

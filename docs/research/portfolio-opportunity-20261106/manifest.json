@@ -1,0 +1,118 @@
+{
+  "status": "pass",
+  "checks": {
+    "fullJavaScriptTests": 928,
+    "additionalOpportunityUITests": 4,
+    "finalUiPdfRegressionTests": 40,
+    "sourceCheck": "npm run check",
+    "diffCheck": "git diff --check",
+    "browser": "CUA local form and score page; first-purchase amounts; latest no-cash case; 2020-03-31 fixed buy-order case",
+    "pdfPagesVisuallyReviewed": 9
+  },
+  "files": {
+    "docs/research/portfolio-opportunity-20261106/verify-production.cjs": {
+      "bytes": 11942,
+      "sha256": "abe97a73a6b65a85e4b7c0927e14204db9ebf523d773c663e0c3b6bb52b035e7"
+    },
+    "docs/research/portfolio-opportunity-20261106/errata.json": {
+      "bytes": 597,
+      "sha256": "6e4d0a73eb3558286918f62fe26698d30da58b9dda55b4d46ee1d7f6c043b003"
+    },
+    "docs/research/portfolio-opportunity-20261106/build-report.py": {
+      "bytes": 15760,
+      "sha256": "164a367ebb65cd7db82624c658c6aa616fca350e422c7b36f47730686f5bdc72"
+    },
+    "docs/research/portfolio-opportunity-20261106/all-candidates.csv": {
+      "bytes": 29636,
+      "sha256": "a1ae20862c775e857ca8ecb5f1170b2447bdafeeb9eca4a3b03a1988e02e934b"
+    },
+    "docs/research/portfolio-opportunity-20261106/replay-proof.json": {
+      "bytes": 664,
+      "sha256": "36c693e32aaa4b01ab2d9c132b2a313c81dfdffb4ff52207dcc6af3567a43e0b"
+    },
+    "docs/research/portfolio-opportunity-20261106/README.md": {
+      "bytes": 4559,
+      "sha256": "a9efeb9839afa74ca7e11f92b62f2ee7ce864e37a73df9fb7350661afff48d99"
+    },
+    "docs/research/portfolio-opportunity-20261106/reproduction.tar.gz": {
+      "bytes": 3177698,
+      "sha256": "77d8f01c9760bc988f9353ae96abad874650e6017b1d1f7d6f512a65f641746c"
+    },
+    "docs/research/portfolio-opportunity-20261106/build-site.py": {
+      "bytes": 5691,
+      "sha256": "1835f44a76954dade72f41c7bd59550062b91944a5c0a284905d7f1a07f79f4f"
+    },
+    "docs/research/portfolio-opportunity-20261106/report-data.json": {
+      "bytes": 369542,
+      "sha256": "072da0af47eb2c2db33d14a737469b1c4c4224084363d399057f5f9d75517296"
+    },
+    "docs/research/portfolio-opportunity-20261106/integration-audit.json": {
+      "bytes": 333335,
+      "sha256": "829475741815a76a1ebb42d3df06c4924c1d2cf956264a7d68038e714e6d39bf"
+    },
+    "docs/research/portfolio-opportunity-20261106/report.pdf": {
+      "bytes": 299565,
+      "sha256": "c55e234866c947a4371d30e6d9a43a58bc68900cde8b3143877a4ecf0623f8bd"
+    },
+    "docs/research/portfolio-opportunity-20261106/contract.json": {
+      "bytes": 4220,
+      "sha256": "5e42c2a211dc5ac868cc530224bb004835c54b9974c1f49fe4cb9f4e3d44741e"
+    },
+    "docs/research/portfolio-opportunity-20261106/report-qa.json": {
+      "bytes": 394,
+      "sha256": "6d3e5429d049fd98436771ba6e471421bf03919348e471ecb3e4c765dcbc6043"
+    },
+    "assets/portfolio-opportunity.js": {
+      "bytes": 9134,
+      "sha256": "e1be3fbc8fd1df3daf7e5198f5b28cc30604df77abad3f033844dd2f702e2fbf"
+    },
+    "assets/portfolio-systematic.js": {
+      "bytes": 20219,
+      "sha256": "6551e492d451880f42b769bb7ecee499df637585561829c33ba06c3e4b944c88"
+    },
+    "assets/portfolio-model.js": {
+      "bytes": 65983,
+      "sha256": "516a3db14a34d2a0126c5e4dc14d7d159f61a7aa5ca2b668b680e9ee7cd35fab"
+    },
+    "assets/portfolio-pdf.js": {
+      "bytes": 45870,
+      "sha256": "eaf9e6bfc90b48ff8a417abccfe01322afe79ebf4632ddde41ee68c9f54f4007"
+    },
+    "assets/portfolio.js": {
+      "bytes": 110568,
+      "sha256": "2a86057cdcca7d80e0db6253df188bf50b2ae6e5e6500428f4ec3da83c64ce16"
+    },
+    "assets/style.css": {
+      "bytes": 165292,
+      "sha256": "b3c5060590f945170755c62cf4fb1961aaab31d0f82e4101138725bb74021008"
+    },
+    "index.html": {
+      "bytes": 9531,
+      "sha256": "e79f6d3724a047436eb3a5ff85660c7db702536a45f7d6093149414008df7301"
+    },
+    "docs/portfolio-entry-research.html": {
+      "bytes": 26830,
+      "sha256": "9d03df31763e29491e3c30b95139814f383bf214b3c40638e3097652d3fd4f87"
+    },
+    "docs/portfolio-method.md": {
+      "bytes": 62906,
+      "sha256": "35a3fffa9b7af382bd7e961f5a981bb517040178382998373067774914bbfa57"
+    },
+    "tests/portfolio-opportunity.test.cjs": {
+      "bytes": 6732,
+      "sha256": "1743b560b841f961a011d146e1dc644f67ae1647da9f30cd32b18685e8557f95"
+    },
+    "tests/portfolio-opportunity-integration.test.cjs": {
+      "bytes": 14216,
+      "sha256": "c341a5ec0c46fa7239d1826c2debb39f7a2a57fb146aab2d53dea1d93c4e6286"
+    },
+    "tests/portfolio-opportunity-ui.test.cjs": {
+      "bytes": 6991,
+      "sha256": "ce8b61b94125cdd58e02925f33f7bcc5a3c9553e9dc939a736d26097273ede09"
+    },
+    "tests/portfolio-pdf.test.cjs": {
+      "bytes": 51434,
+      "sha256": "98745b1dd1b0f84a20ceb636725905fe4443076625b6b09c4d4f4de69f76fa3b"
+    }
+  }
+}

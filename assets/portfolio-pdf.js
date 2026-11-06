@@ -15,6 +15,8 @@
   const sourceUrl = value => { try { const url = new URL(value); return url.protocol === 'https:' ? url.href : ''; } catch (_) { return ''; } };
 
   function dailyDisplay(item) {
+    if (item.kind === 'buy_score') return { label: item.label, value: finite(item.value) ? number(item.value) + ' 分' : '—',
+      basis: '历史研究规则分数，不是胜率或仓位比例' };
     const allocation = item.basis === 'pair_stock_budget';
     return { label: allocation ? item.label : 'TQQQ策略状态',
       value: !finite(item.value) ? '—' : allocation ? pct(item.value) : item.value === 100 ? '持有状态' : '退出状态',
@@ -25,14 +27,37 @@
     return { deposits: r.deposits, contributed: r.contributed, initial: r.config.initial,
       buys: strategy.filter(t => t.side === 'buy').length, sells: strategy.filter(t => t.side === 'sell').length,
       contributionBuys: r.transactions.filter(t => t.reason === 'contribution' && t.side === 'buy').length,
-      days: r.systematic?.daily?.length || 0, holdDays: (r.systematic?.daily || []).filter(row => row.status === 'ready' && row.indicator === 100).length };
+      days: r.systematic?.daily?.length || 0, holdDays: (r.systematic?.daily || []).filter(row => row.status === 'ready' && row.indicators?.some(i => i.kind === 'holding_state' && i.value === 100)).length };
   }
   function explainDaily(row) {
     if (!row) return [];
     const m = row.metadata || {}, out = [], n = value => finite(value) ? String(Number(value.toPrecision(8))) : '—';
     const yes = value => value ? '满足' : '不满足', state = value => value ? '持有' : '退出';
-    if (row.status !== 'ready') return [['状态不可计算', row.missing || m.reason || (row.status === 'liquidated' ? '账户已清仓，不再形成待单。' : '历史仍在预热，未形成有效状态。')]];
-    if (row.method === 'relative_strength_rotation') {
+    if (row.status !== 'ready' && !(m.opportunity && ['warming-up', 'liquidated'].includes(row.status))) return [['状态不可计算', row.missing || m.reason || (row.status === 'liquidated' ? '账户已清仓，不再形成待单。' : '历史仍在预热，未形成有效状态。')]];
+    if (m.opportunity) {
+      const o = m.opportunity, labels = { D: '回撤折让', S: '历史相对低位', F: '恐慌水平', R: '恐慌回落' };
+      out.push(['分数定义', o.formula + '；各项归一到0至1。系数是研究前固定的规则权重，三个交付选项在历史比较后选出；分数不是预测胜率。']);
+      for (const leg of o.legs || []) {
+        if (row.positions?.length && !row.positions.some(p => p.id === leg.id && p.weight > 0)) continue;
+        const name = leg.id.replace('us:', ''), p = leg.inputs || {};
+        if (!finite(leg.score)) { out.push([name + '缺项', (leg.missingReasons || []).map(r => typeof r === 'string' ? r : r.message).join('；') || '缺完整历史，不能计算分数。']); continue; }
+        out.push([name + '分数代入', Object.entries(leg.weights || {}).map(([key, weight]) => n(weight) + ' × ' + n(leg.components?.[key]) + '（' + (labels[key] || key) + '）').join(' + ') + '，合计 × 100 = ' + n(leg.score) + ' 分。']);
+        if (finite(p.price) && finite(p.high252)) out.push([name + '回撤折让D', '基准 ' + leg.proxyId.replace('us:', '') + '：1 − ' + n(p.price) + ' ÷ ' + n(p.high252) + ' = ' + n((1 - p.price / p.high252) * 100) + '%；再除以25%，限制在0至1。']);
+        if (finite(p.stretch)) out.push([name + '相对低位S', '当前 ' + n(p.price) + ' ÷ MA252 ' + n(p.ma252) + ' = ' + n(p.stretch) + '；此前最多1260个完整比值中（' + n(p.rankGreater) + '个较高 + 0.5 × ' + n(p.rankEqual) + '个相等）÷ ' + n(p.rankCount) + ' = ' + n(leg.components.S) + '。当前值不进入历史样本。']);
+        if (leg.weights?.F) out.push([name + '恐慌水平F', '已知VIX=' + n(p.vix) + '；此前最多1260个收盘中，低于它的 ' + n(p.fearBelow) + ' 个 ÷ ' + n(p.fearCount) + ' 个 = ' + n(leg.components.F) + '。来源 ' + (p.vixDay || '—') + '。']);
+        if (leg.weights?.R) out.push([name + '恐慌回落R', '63次VIX峰值=' + n(p.vixPeak63) + '；限制[(' + n(p.vixPeak63) + ' − ' + n(p.vix) + ') ÷ (0.4 × ' + n(p.vixPeak63) + ')] × 限制[(' + n(p.vixPeak63) + ' − 20) ÷ 30] = ' + n(leg.components.R) + '，每个限制均为0至1。']);
+        const fraction = finite(leg.intensity) ? leg.intensity : 0;
+        out.push([name + '实际买入', '阈值 ' + o.threshold + ' 分；本日 ' + n(leg.score) + ' 分。' + (leg.blockedByRisk ? '风险门关闭，本日不买。' : '动用待加仓现金比例 = 限制[(' + n(leg.score) + ' − ' + o.threshold + ' + 10) ÷ ' + (110 - o.threshold) + '] = ' + n(fraction * 100) + '%（低于阈值为0）。') + '可用归属现金 ' + n(leg.availableCash) + '；计划买入 ' + n(leg.buyAmount) + ' ' + (row.currency === 'USD' ? 'USD' : '元') + '，交易费另从该现金支付。']);
+      }
+      out.push(['资金与时序', '首次先建基础仓，预留股票预算的' + n(o.reserve * 100) + '%；后续实际新增股票资金进入待加仓现金。只用已经存在的现金，前一共同收盘固定金额、下一共同收盘成交；连续高分不会产生额外入金。剩余尾款低于初始本金的0.01%时一并买入。低分不触发卖出。']);
+      const v = m.vixDecision;
+      if (v && (!row.positions?.length || row.positions.some(p => p.id === 'us:TQQQ' && p.weight > 0))) {
+        out.push(['TQQQ风险门判定', 'VIX/VIX3M=' + n(m.vixValue) + ' ÷ ' + n(m.vix3mValue) + ' = ' + n(m.vixRatio) + '。' + (v.previousOn ?
+          '退出计数' + (v.armedForExit ? '已启用' : '未启用') + '，R > 1.10连续 ' + n(v.exitCountTested) + '/10次；' + (v.exitTriggered ? '触发退出。' : '未触发退出。') :
+          '离场观察 ' + n(v.heldTested) + '次；VIX从离场峰值回落 ' + n(v.peakDropTested * 100) + '%（至少5次且回落30%），或R < 1连续 ' + n(v.calmCountTested) + '/5次；' + (v.recoveryByPeak || v.recoveryByCalm ? '恢复买入资格。' : '继续等待。')) + '本日' + (v.on ? '允许按分数买入' : '暂停TQQQ买入') + '。']);
+      }
+      if (row.status === 'liquidated') out.push(['清仓账户', '本日仍显示市场分数和来源；账户已清仓，所有待单与新增预算试算均已取消。']);
+    } else if (row.method === 'relative_strength_rotation') {
       const p = m.relativeInputs, shares = m.originalShares || [], leaders = m.leaders || [];
       if (p) out.push(['504日相对增长', '(' + n(p.usdEnd) + ' ÷ ' + n(p.usdStart) + ') ÷ (' + n(p.tqqqEnd) + ' ÷ ' + n(p.tqqqStart) + ') = ' + n(p.ratio) + '。价格区间 ' + p.startDay + ' 至 ' + p.endDay + '，美元复权价。']);
       out.push(['阈值与复核', '相对增长 > 1.25 转向USD，< 0.80 转向TQQQ，边界及中间保留该批原方向。' + (m.reviewedToday ? '本日已复核当月批次。' : '本日没有复核；今天的相对增长值只作观察，目标沿用已有批次记忆。')]);
@@ -67,7 +92,7 @@
       }
     }
     const orders = row.nextPlan?.orders || [];
-    out.push(['账户本日行动', orders.length ? orders.map(o => o.side === 'sell' ? '下一共同收盘卖出' + (o.code || o.id.replace('us:', '')) + '的信号日持仓 ' + n(o.sellFraction * 100) + '%' : '下一共同收盘买入' + (o.code || o.id.replace('us:', '')) + ' ' + n(o.amount) + ' ' + (row.currency === 'USD' ? 'USD' : '元')).join('；') : '没有新调仓订单；保持状态不会每天重复买入。']);
+    out.push(['账户本日行动', orders.length ? orders.map(o => o.side === 'sell' ? '下一共同收盘卖出' + (o.code || o.id.replace('us:', '')) + '的信号日持仓 ' + n(o.sellFraction * 100) + '%' : '下一共同收盘买入' + (o.code || o.id.replace('us:', '')) + ' ' + n(o.amount) + ' ' + (row.currency === 'USD' ? 'USD' : '元')).join('；') : m.opportunity ? '没有新买卖订单；逐腿核对上方分数阈值、风险门和可用现金。没有待加仓现金，即使高分也不会买入。' : '没有新调仓订单；保持状态不会每天重复买入。']);
     return out;
   }
 
@@ -258,10 +283,11 @@
 
     if (report.dailyIndicator) {
       const { row, budget, allocation, reason, sourceLabel, facts, calculation } = report.dailyIndicator;
-      section('每日策略状态', strategy.initial + ' · 所选决策收盘 ' + row.day);
+      const opportunity = !!row.metadata?.opportunity;
+      section(opportunity ? '每日加仓分数与订单' : '每日策略状态', strategy.initial + ' · 所选决策收盘 ' + row.day);
       cards((row.indicators || []).map(item => { const d = dailyDisplay(item); return [d.label, d.value, d.basis]; }));
       paragraph(reason || (row.status === 'liquidated' ? '该日已清仓，不生成新投入。' : '比例直接来自规则状态。'), row.status === 'missing' ? C.negative : C.ink);
-      paragraph('持有状态不触发每日买入；本图未衡量当日加仓是否更划算。跟踪起点 ' + (row.trackingStart || r.start) + '。');
+      paragraph(opportunity ? '分数控制实际待加仓现金的买入比例。组合历史收益优势主要来自VIX风险退出，评分因子的独立增益尚未证实。' : '持有状态不触发每日买入；本图未衡量当日加仓是否更划算。跟踪起点 ' + (row.trackingStart || r.start) + '。');
       const source = sourceLabel || ['vixDay', 'qqqDay', 'sourceDay'].filter(key => row.metadata?.[key]).map(key => key + ' ' + row.metadata[key]).join('；');
       paragraph('实际来源收盘：' + (source || '缺源日期'));
       if (facts.length) table(['当日依据', '数值'], facts, [1, 2]);
@@ -280,7 +306,7 @@
       if (orders.length) table(['动作', '标的', '提前确定的订单'], orders.map(order => [order.side === 'sell' ? '卖出' : '买入', assets.get(order.id)?.code || order.id,
         order.side === 'sell' ? '信号日持仓的 ' + pct(order.sellFraction * 100) : number(order.amount) + ' ' + unit]), [1, 1.5, 2.5]);
       paragraph('卖出显示信号日持仓比例，不把内部归一化复权份额当作券商股数；买单仅使用计划时已有资金。');
-      paragraph('完整规则、公式与历史检验：docs/portfolio-entry-research.html#' + row.method, C.green, 13);
+      paragraph('完整规则、公式与历史检验：docs/portfolio-entry-research.html#' + (opportunity ? 'opportunity' : row.method), C.green, 13);
     }
 
     section('模拟账户的期末风险', r.end + ' · 实际持仓与现金');

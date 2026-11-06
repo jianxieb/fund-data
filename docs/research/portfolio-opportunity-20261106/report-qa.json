@@ -1,0 +1,20 @@
+{
+  "pages": 9,
+  "visualReview": "All9pages rendered with Poppler and visually reviewed; no clipped tables or overlapping text.",
+  "completeCandidates": {
+    "round1": 36,
+    "round2": 18
+  },
+  "pdfSHA256": "c55e234866c947a4371d30e6d9a43a58bc68900cde8b3143877a4ecf0623f8bd",
+  "bodyCharactersByPage": [
+    765,
+    820,
+    746,
+    860,
+    887,
+    762,
+    901,
+    594,
+    878
+  ]
+}

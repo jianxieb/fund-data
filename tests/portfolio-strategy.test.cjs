@@ -150,7 +150,8 @@ test('ordinary initial and income combinations reconcile; legacy configs and exp
 test('retired research methods cannot execute or import as a different strategy', () => {
   const days = calendar('2025-01-01', '2025-01-05');
   const input = fixture(days, days.map(() => 100));
-  assert.deepEqual(P.initialMethods.map(([id]) => id), [...ordinaryMethods, 'qqq_bear_confirm', 'vix_panic_reentry', 'relative_strength_rotation', 'dual_risk_guard']);
+  assert.deepEqual(P.initialMethods.map(([id]) => id), [...ordinaryMethods, 'qqq_bear_confirm', 'vix_panic_reentry', 'relative_strength_rotation', 'dual_risk_guard',
+    'opportunity_discount_10', 'opportunity_discount_20', 'opportunity_mixed_10']);
   for (const method of ['entry_option', 'entry_volatility', 'entry_breadth', 'entry_composite']) {
     const config = { ...input.config, initialMethod: method };
     const result = P.simulate({ ...input, config });

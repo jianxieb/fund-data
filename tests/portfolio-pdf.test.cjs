@@ -29,6 +29,24 @@ function fixture() {
 const measure = { font: '', measureText(value) { const size = Number(this.font.match(/ (\d+)px/)[1]); return { width: Array.from(String(value)).reduce((s, c) => s + (c.charCodeAt(0) > 255 ? 1 : .58), 0) * size }; } };
 const textOf = document => document.ops.filter(op => op.type === 'text').map(op => op.value).join('\n');
 
+test('opportunity output identifies rule points, raw calculations and cash-limited buys', () => {
+  const item = { id: 'us:TQQQ', label: 'TQQQ加仓分数', kind: 'buy_score', value: 65 };
+  assert.equal(Pdf.dailyDisplay(item).value, '65.00 分');
+  assert.match(Pdf.dailyDisplay(item).basis, /不是胜率/);
+  const row = { status: 'ready', currency: 'CNY', metadata: { opportunity: {
+    family: 'mixed', reserve: .1, threshold: 35, formula: '100 × (0.4D + 0.3S + 0.15F + 0.15R)',
+    legs: [{ id: 'us:TQQQ', proxyId: 'us:QQQ', score: 76.625, inputs: { price: 80, high252: 100, ma252: 90,
+      stretch: 80 / 90, rankGreater: 800, rankEqual: 0, rankCount: 1000, vix: 25, vixPeak63: 40,
+      fearBelow: 750, fearCount: 1000, vixDay: '2024-01-02' }, components: { D: .8, S: .8, F: .75, R: .625 },
+      weights: { D: .4, S: .3, F: .15, R: .15 }, availableCash: 3000, intensity: 51.625 / 75, buyAmount: 2065 / 1.001 }]
+  } }, nextPlan: { orders: [{ id: 'us:TQQQ', side: 'buy', amount: 2065 / 1.001 }] } };
+  const text = Pdf.explainDaily(row).flat().join('\n');
+  for (const value of ['800个较高', '750 个 ÷ 1000', '63次VIX峰值=40', '阈值 35 分', '68.833333%', '下一共同收盘买入TQQQ']) assert.ok(text.includes(value), value);
+  assert.doesNotMatch(text, /NaN|undefined|持有开关/);
+  row.nextPlan = null;
+  assert.match(Pdf.explainDaily(row).flat().join(' '), /没有待加仓现金，即使高分也不会买入/);
+});
+
 test('PDF freezes the result and matching catalog, retaining zero-weight configuration', () => {
   const { input, result } = fixture();
   const report = Pdf.snapshot(result, input.catalog, '2026-10-08T00:00:00Z');
@@ -740,7 +758,7 @@ test('USD settings, tax reserve, PDF and CSV keep the same result currency after
 test('production entrypoint loads the account model, PDF and simulator', () => {
   const html = fs.readFileSync(path.resolve(__dirname, '../index.html'), 'utf8');
   const assets = [...html.matchAll(/src="assets\/(portfolio[^"?]*)/g)].map(match => match[1]);
-  assert.deepEqual(assets, ['portfolio-systematic.js', 'portfolio-model.js', 'portfolio-pdf.js', 'portfolio.js']);
+  assert.deepEqual(assets, ['portfolio-opportunity.js', 'portfolio-systematic.js', 'portfolio-model.js', 'portfolio-pdf.js', 'portfolio.js']);
 });
 
 

@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "frozenFiles": 20,
+  "checks": {
+    "results.json": "allfieldsidentical(excludinggeneratedfreezeclockmetadata)",
+    "round2-results.json": "allfieldsidentical(excludinggeneratedfreezeclockmetadata)",
+    "validation.json": "allfieldsidentical(excludinggeneratedfreezeclockmetadata)",
+    "report-data.json": "allfieldsidentical(excludinggeneratedfreezeclockmetadata)",
+    "daily-features.json": "allfieldsidentical(excludinggeneratedfreezeclockmetadata)",
+    "all-candidates.csv": "byteidentical"
+  },
+  "note": "54distinctexploratoryrules;36firstgridplus18secondgridwith2capitalallocations. Monthlystartwindowsarenotindependenttrials."
+}

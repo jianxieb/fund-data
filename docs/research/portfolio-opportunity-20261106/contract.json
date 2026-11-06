@@ -1,0 +1,45 @@
+{
+  "version": "buy-score-20261106-r2",
+  "recommendedMethod": "score_reserve_mixed",
+  "choices": [
+    {"method":"score_reserve_discount","family":"discount","reserve":0.1,"threshold":35},
+    {"method":"score_reserve_mixed","family":"mixed","reserve":0.1,"threshold":35},
+    {"method":"score_reserve_deep","family":"discount","reserve":0.2,"threshold":50}
+  ],
+  "meaning": "规则加仓分数：预先固定因子加权和，表达规则定义的价格折让/恐慌回落强度；不是胜率，也没有证据表明单独分数优于VIX旧规则。",
+  "input": {
+    "USD":"SOXX actual USD adjusted close, not synthetic USD history",
+    "TQQQ":"QQQ actual USD adjusted close",
+    "VIX":"Cboe VIX and VIX3M strictly earlier than decision day; max7 calendar day old",
+    "price":"latest same-day close permitted, order fixed then fills next common close; max7calendar day old",
+    "warmup":"252 closes for high and MA;252 earlier complete MA ratios for S;21 and126 log returns for volatility family;252 earlier VIX observations for F. Missing required data =>score null and no new order, never assumed50 or0."
+  },
+  "components": {
+    "D":{"label":"回撤折让","raw":"1-P/H252","normalized":"clamp(raw/0.25,0,1)","unit":"fraction"},
+    "S":{"label":"历史相对低位","raw":"P/MA252","normalized":"(number of earlier1260 valid ratios greater than raw +0.5*equal)/valid earlier count","unit":"percentile"},
+    "F":{"label":"恐慌水平","raw":"previous known VIX","normalized":"fraction of earlier1260 VIX observations below raw","unit":"percentile"},
+    "R":{"label":"恐慌回落","raw":"VIX and63-observation VIXpeak","normalized":"clamp((peak-VIX)/(.4*peak))*clamp((peak-20)/30)","unit":"fraction"}
+  },
+  "score": {
+    "discount":"100*(0.6D+0.4S)",
+    "mixed":"100*(0.4D+0.3S+0.15F+0.15R)",
+    "weightOrigin":"Fixed before first36-candidate run; not fitted regression or calibrated probabilities. The delivered3 methods chosen after seeing all36+18 results and are exploratory."
+  },
+  "execution": {
+    "firstBuy":"Each configured USD/TQQQ budget buys90% immediately, remaining10% stays attributed to that leg; deep choice buys80% and retains20%. Original unallocated cash and other assets remain outside policy.",
+    "scoreBuy":"If valid score >=threshold and sleeve risk gate on, spend sleeveCash*clamp((score-threshold+10)/(110-threshold),0,1); buy notional=spend/(1+fee). Fix budget now, fill next common close. Recalculate only after pending order fills. If remaining sleeve cash <initialAccountValue*0.0001, spend entire sleeve cash.",
+    "cashSource":"Only that leg initial retained reserve plus its sale proceeds and assigned deposits; no borrowing; no phantom new funding for repeated high scores.",
+    "TQQQExit":"Frozen originalVIX: previous knownVIX/VIX3M>1.1 for10 observations while armed ->sell allTQQQ next common close; proceeds attributedTQQQ.",
+    "TQQQReopen":"After at least5 off observations,VIX<=70%off-periodpeak OR ratio<1 for5observations ->gateon. Score still controlsactual subsequent purchase amount.",
+    "USDExit":"No sell purely due to low score. USD sleeve always on while necessary inputs valid.",
+    "rearm":"After VIX recovery, need ratio<1 for5observations before nextpanicexit can arm.",
+    "contribution":"Any actual configured new contribution increases assigned leg cash and follows identical score rule; historical comparison useszero contribution. Do not convert score into repeating deposits."
+  },
+  "dailyRow": {
+    "day":"decision day",
+    "scores":"[{id:us:USD|us:TQQQ,score:number|null,family,threshold,components:[{key,label,raw,normalized,weight,points}],priceSourceDay,vixSourceDay,missingReason}]",
+    "action":"{leg,riskGate,availableCash,buyFraction,buyBudget,buyNotional,plannedFillDay,blockedReason}",
+    "status":"research_rule, notvalidated_probability"
+  },
+  "example":{"initial":100000,"weights":{"USD":30,"TQQQ":30,"cash":40},"initialBeforeFees":{"USD":27000,"TQQQ":27000,"USDReserve":3000,"TQQQReserve":3000,"originalCash":40000},"score":65,"threshold":35,"fraction":0.5333333333333333,"TQQQReserveSpend":1600,"note":"score65 means53.33%of currentlegreserve thisexecution, not65%account andnot65%win probability."}
+}
