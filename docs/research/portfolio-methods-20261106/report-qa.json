@@ -1,0 +1,83 @@
+{
+  "status": "passed",
+  "pages": 10,
+  "tables": 13,
+  "tableCellsCrossFormatMatched": 328,
+  "dynamicNumericBindings": 159,
+  "allBoundNumbersPresentInPDF": true,
+  "visualInspection": {
+    "allPagesInspected": true,
+    "issues": [],
+    "fonts": "Arial and actual Arial Unicode MS via Fontconfig",
+    "renderer": "bundled headless LibreOffice through documents render_docx.py",
+    "pageImages": [
+      {
+        "page": 1,
+        "sha256": "705b955113d36bb79f68564680b311c8e3e7ea59e28a35fe5c6e02f34a9fb95f"
+      },
+      {
+        "page": 2,
+        "sha256": "0a16726ba509ff0cc57d004765133e2e9e39266523a3f86c48aad402cbb75ef2"
+      },
+      {
+        "page": 3,
+        "sha256": "7cc7f4bace32e05697ec460d5f2738ae93ca14a322cfe031573e65b860a8b4f2"
+      },
+      {
+        "page": 4,
+        "sha256": "51b8734ed54dcc7d635f06059cdb59dbae304c07c03440155ac2bf27a453cb88"
+      },
+      {
+        "page": 5,
+        "sha256": "3bc8a6dce00901876f18a077d9145b3838adc0475408abbf73e56eedfcb45b5f"
+      },
+      {
+        "page": 6,
+        "sha256": "0d522dbcc4d9872a793b80d8e67d4b4aac59a4352f7caa7b672cd3c60f00e047"
+      },
+      {
+        "page": 7,
+        "sha256": "220e4ec6041333de6ac97cc15a1a488e553defe878aaf71c93d95891cd88439b"
+      },
+      {
+        "page": 8,
+        "sha256": "2c7cc969fcaad2651355fdf391d3440224e1439ca4717484327644f31b9d4777"
+      },
+      {
+        "page": 9,
+        "sha256": "130da51ac0a4979cbed180d4710f67e07204bf5e28a7417cc5b8b4c2597d8e4c"
+      },
+      {
+        "page": 10,
+        "sha256": "5c443255427263de0977eca2d6b4d98be854df4206b7f64e61e7a95843932cfc"
+      }
+    ]
+  },
+  "csv": {
+    "rows": 10960,
+    "columns": 54,
+    "allFieldsReadBackEqual": true,
+    "sha256": "c3ee981bcdd0fa988457598e2424d2007f9027d52a2f9392d4b0bad7fe378c10"
+  },
+  "reportFiles": {
+    "report.pdf": {
+      "sha256": "8e0bea7ad839dcbdb0b2806162362fc29c6d4cbaba62112ccaf87e56ee9395d3",
+      "bytes": 880123
+    },
+    "report.docx": {
+      "sha256": "a14ca80040130edec172adac9c2c9329c16e3597dd6ef9a1538df6667f5a786a",
+      "bytes": 49356
+    }
+  },
+  "templatePreservation": {
+    "referenceSHA256": "fd2bf29130a6f968ee3080567b4dd9563cc251ebc128c5c3fcd49a3006977845",
+    "intentionalChangedParts": [
+      "word/document.xml",
+      "word/footer1.xml",
+      "docProps/core.xml",
+      "docProps/app.xml"
+    ],
+    "otherPartsByteIdentical": true
+  },
+  "marketEvidenceBoundary": "Overlapping retrospective windows, adaptive followups, no target ETF20year evidence."
+}

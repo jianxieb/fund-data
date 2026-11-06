@@ -1,7 +1,7 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./model.js'));
-  else root.ChanghengPortfolioModel = factory(root.Changheng);
-})(typeof globalThis !== 'undefined' ? globalThis : this, function (M) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./model.js'), require('./portfolio-systematic.js'));
+  else root.ChanghengPortfolioModel = factory(root.Changheng, root.ChanghengPortfolioSystematic);
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (M, Systematic) {
   'use strict';
   const DAY = 86400000, YEAR = 365.2425, EPS = 1e-8;
   const finite = M.finite;
@@ -17,7 +17,8 @@
   const initialMethods = [
     ['lump_sum', '一次性投入'], ['tranche_6', '6个月分批投入'], ['tranche_12', '12个月分批投入'],
     ['tranche_24', '24个月分批投入'], ['drawdown_ladder', '回撤阶梯投入'], ['ma200_hold', '200日均线择时'],
-    ['cash_topup', '现金补足目标仓位'], ['qqq_bear_confirm', 'QQQ深熊确认调仓']
+    ['cash_topup', '现金补足目标仓位'], ['qqq_bear_confirm', 'QQQ深熊确认调仓'],
+    ['vix_panic_reentry', 'VIX恐慌恢复调仓'], ['relative_strength_rotation', '三批相对强弱轮动'], ['dual_risk_guard', '双重风险门调仓']
   ];
   const contributionMethods = [
     ['dca_month', '每月定投'], ['dca_quarter', '每季度定投'], ['dca_year', '每年定投'],
@@ -230,7 +231,7 @@
     return periods.map(years => ({ years, ...simulate({ ...input,
       config: { ...input.config, years: 'custom', start: addYears(end, -years), end } }) }));
   }
-  function run({ catalog, histories, config, fxHistory }) {
+  function run({ catalog, histories, config, fxHistory, marketContext }) {
     const assets = new Map((catalog?.assets || []).map(a => [a.id, a]));
     const { positions, total, cashWeight } = validateConfig(config, new Set(assets.keys()));
     const tax = taxConfig(config.tax);
@@ -294,6 +295,25 @@
         carried: observation.carried, fxCarried: !!quote?.carried };
     });
     const strategy = strategyConfig(config), strategyDays = common.filter(day => day >= start && day <= end);
+    const systematicMethod = ['vix_panic_reentry', 'relative_strength_rotation', 'dual_risk_guard'].includes(strategy.initialMethod);
+    const pairIds = ['us:USD', 'us:TQQQ'], pairIndices = pairIds.map(id => series.findIndex(s => s.asset.id === id));
+    const pairWeights = pairIndices.map(i => i < 0 ? 0 : series[i].weight);
+    let systematicController = null;
+    if (systematicMethod) {
+      if (!Systematic) fail('系统投入方法模块未加载，请刷新页面');
+      if (pairIndices[1] < 0) fail('该投入方法需要组合中有权重大于0的TQQQ');
+      if (strategy.initialMethod === 'relative_strength_rotation' && pairIndices[0] < 0) fail('三批相对强弱轮动需要USD与TQQQ均有正权重');
+      const required = pairIds.filter((id, leg) => pairIndices[leg] >= 0);
+      if (strategy.initialMethod === 'dual_risk_guard') required.push('us:QQQ');
+      const rawHistories = {};
+      for (const id of required) {
+        const asset = assets.get(id), history = histories[id], code = id.slice(3);
+        if (!asset || asset.code !== code || asset.kind !== 'etf' || asset.currency !== 'USD') fail('缺' + code + '实际美元ETF身份，无法计算该投入方法');
+        rawHistories[id] = validateHistory(asset, history);
+        if (history.basis !== 'provider_adjusted_close') fail(code + '需要实际美元含分红复权收盘价');
+      }
+      systematicController = Systematic.create({ method: strategy.initialMethod, weights: pairWeights, rawHistories, vixContext: marketContext });
+    }
     const qqqTiming = strategy.initialMethod === 'qqq_bear_confirm';
     const tqqqIndex = series.findIndex(s => s.asset.id === 'us:TQQQ');
     const qqqSignals = new Map();
@@ -404,6 +424,11 @@
     const timing = config.initial > 0 && strategy.initialMethod === 'ma200_hold';
     let riskReserve = 0, qqqOn = true, qqqTimingChanges = 0, lastQqqSignal = null;
     const qqqTimingEvents = [];
+    // Only cash assigned to the USD/TQQQ pair may finance its strategy orders.
+    // Unallocated cash and other positions' proceeds remain outside this pool.
+    const systematicCash = [0, 0], systematicEvents = [];
+    let systematicTargets = pairWeights.slice(), systematicParked = [0, 0], pendingSystematic = null;
+    let systematicSignalDay = null, systematicPlans = 0, systematicTrades = 0, systematicFills = [];
     let carriedPrices = 0, carriedFx = 0;
     const value = prices => cash + sum(units.map((unit, i) => unit * prices[i]));
     // Gross marked weight of all stocks, ETFs and funds; not leverage or volatility.
@@ -446,9 +471,14 @@
       tradeCost += charge;
       recordExposure(day, prices);
     };
+    function targetWeight(s, i) {
+      const leg = pairIndices.indexOf(i);
+      if (systematicMethod && leg >= 0) return systematicTargets[leg];
+      return qqqTiming && !qqqOn && i === tqqqIndex ? 0 : s.weight;
+    }
     function rebalance(day, prices, reason, targetExposure = exposure) {
       const wealth = Math.max(0, value(prices) - initialReserve), previous = units.map((u, i) => u * prices[i]);
-      const target = (s, i) => qqqTiming && !qqqOn && i === tqqqIndex ? 0 : targetExposure * s.weight;
+      const target = (s, i) => targetExposure * targetWeight(s, i);
       let lo = 0, hi = wealth;
       if (fee || series.some(s => s.tax.gain > 0)) {
         for (let i = 0; i < 70; i++) {
@@ -463,6 +493,7 @@
       const usable = wealth - hi, deltas = series.map((s, i) => target(s, i) * usable - previous[i]);
       trade(day, prices, deltas, deltas.map(delta => Math.abs(delta) * fee), reason);
       if (qqqTiming) riskReserve = qqqOn ? 0 : Math.min(Math.max(0, cash - initialReserve), usable * series[tqqqIndex].weight);
+      if (systematicMethod) systematicParked.forEach((w, leg) => { systematicCash[leg] = usable * w; });
       if (reason === 'rebalance') rebalances++;
     }
     function deposit(day, amount, prices) {
@@ -476,9 +507,10 @@
     function invest(day, amount, prices, reason) {
       if (amount <= EPS || !exposure) return;
       const usable = amount / (1 + fee * total / 100);
-      const deltas = series.map((s, i) => qqqTiming && !qqqOn && i === tqqqIndex ? 0 : usable * s.weight);
+      const deltas = series.map((s, i) => usable * targetWeight(s, i));
       trade(day, prices, deltas, deltas.map(delta => delta * fee), reason);
       if (qqqTiming && !qqqOn) riskReserve += usable * series[tqqqIndex].weight * (1 + fee);
+      if (systematicMethod) systematicParked.forEach((w, leg) => { systematicCash[leg] += usable * w * (1 + fee); });
     }
     function updateQqq(day, prices) {
       const signal = qqqSignals.get(day), previous = qqqOn;
@@ -523,6 +555,78 @@
       return amount > EPS ? { signalDay: day, amount, fee: charge, cashRequired: amount + charge, orders,
         portfolioValue: wealth, stockValue: stock, availableCash: cash, targetWeight: total } : null;
     }
+    function executeSystematic(day, prices) {
+      systematicFills = [];
+      const plan = pendingSystematic; pendingSystematic = null;
+      if (!plan || day === start || day === end && tax.liquidate) return;
+      const available = Math.max(0, sum(systematicCash)), tolerance = Math.max(EPS, Number.EPSILON * 32 * value(prices));
+      if (plan.buyAmount + plan.buyFee > Math.min(cash, available) + tolerance) fail('前一收盘的策略订单超过已归属的可用现金');
+      const deltas = series.map(() => 0), charges = series.map(() => 0), before = transactions.length, fullySold = new Set();
+      for (const order of plan.orders) {
+        const i = series.findIndex(s => s.asset.id === order.id);
+        if (i < 0) fail('策略待单标的不在当前组合中');
+        const sellUnits = order.side === 'sell' ? Math.min(units[i], order.units) : 0;
+        if (order.side === 'sell' && sellUnits > 0 && sellUnits === units[i]) fullySold.add(i);
+        const delta = order.side === 'buy' ? order.amount : -sellUnits * prices[i];
+        deltas[i] += delta; charges[i] += Math.abs(delta) * fee;
+      }
+      trade(day, prices, deltas, charges, strategy.initialMethod, plan.signalDay);
+      // A complete inventory sale leaves exactly zero units and cost basis.
+      // Re-dividing its currency proceeds can otherwise leave a negative ULP
+      // that grows with the investor's capital and later quote changes.
+      fullySold.forEach(i => { units[i] = 0; basis[i] = 0; });
+      for (const transaction of transactions.slice(before)) {
+        const leg = pairIds.indexOf(transaction.id), netCash = transaction.side === 'sell'
+          ? transaction.amount - transaction.fee - transaction.tax : -transaction.amount - transaction.fee;
+        systematicCash[leg] += netCash;
+        systematicFills.push({ ...transaction, leg, units: transaction.amount / prices[pairIndices[leg]], netCash });
+      }
+      systematicTargets = plan.desiredTargets.slice(); systematicParked = plan.parkedWeights.slice();
+      systematicTrades += transactions.length - before;
+      systematicEvents.push({ day, signalDay: plan.signalDay, desiredTargets: systematicTargets.slice(), metadata: plan.metadata, trades: transactions.length - before });
+    }
+    function planSystematic(day, prices) {
+      systematicSignalDay = day;
+      if (day === end && tax.liquidate) return null;
+      const pairPrices = pairIndices.map(i => i < 0 ? 0 : prices[i]), pairUnits = pairIndices.map(i => i < 0 ? 0 : units[i]);
+      const marks = pairUnits.map((u, leg) => u * pairPrices[leg]), available = Math.max(0, sum(systematicCash));
+      const planned = systematicController.step({ day, prices: pairPrices, units: pairUnits, marks,
+        basis: pairIndices.map(i => i < 0 ? 0 : basis[i]), cash: available, cashByLeg: systematicCash.slice(),
+        wealth: sum(marks) + available, initialCash: 0, weights: pairWeights, fee, latestFills: systematicFills });
+      if (planned?.missing) {
+        if (day !== strategyDays.at(-1)) fail(planned.missing);
+        return null;
+      }
+      if (!planned) return null;
+      const orders = [];
+      for (let leg = 0; leg < 2; leg++) {
+        const fraction = planned.sellFractions[leg], amount = planned.buyAmounts[leg];
+        if (!finite(fraction) || fraction < 0 || fraction > 1 + 1e-10 || !finite(amount) || amount < 0) fail('策略订单比例或金额无效');
+        if (fraction > EPS && amount > EPS) fail('同一策略订单不能同时买卖同一标的');
+        if (pairIndices[leg] < 0 && (fraction > EPS || amount > EPS)) fail('策略不能交易零权重标的');
+        if (fraction > EPS && pairUnits[leg] > EPS) orders.push({ id: pairIds[leg], side: 'sell', sellFraction: Math.min(1, fraction), units: pairUnits[leg] * Math.min(1, fraction) });
+        if (amount > EPS) orders.push({ id: pairIds[leg], side: 'buy', amount });
+      }
+      const buyAmount = sum(orders.filter(o => o.side === 'buy').map(o => o.amount)), buyFee = buyAmount * fee;
+      if (buyAmount + buyFee > Math.min(cash, available) + Math.max(EPS, available * Number.EPSILON * 32)) fail('策略不能预花未来卖出回款或其他资产的现金');
+      if (!orders.length && !planned.allocationStateChange && !planned.metadata?.allocationStateChange) return null;
+      systematicPlans++;
+      return { signalDay: day, orders, buyAmount, buyFee, desiredTargets: planned.desiredTargets.slice(),
+        parkedWeights: planned.parkedWeights.slice(), metadata: planned.metadata };
+    }
+    function reconcileSystematicCash() {
+      const assigned = sum(systematicCash);
+      const rounding = Number.EPSILON * 32 * Math.max(1, Math.abs(cash), sum(systematicCash.map(Math.abs)));
+      // Rotation records transfers as opposite signed leg balances. Their
+      // cancellation can leave one ULP even when actual settled cash is zero.
+      // Restore only that representational boundary, never additional funding.
+      const corrected = assigned < 0 && -assigned <= rounding ? 0 :
+        assigned > cash && assigned - cash <= rounding ? cash : null;
+      if (corrected !== null) {
+        const leg = Math.abs(systematicCash[0]) >= Math.abs(systematicCash[1]) ? 0 : 1;
+        systematicCash[leg] = corrected - systematicCash[1 - leg];
+      }
+    }
     const curve = [], holdingPaths = series.map(() => []), fxDates = new Set((fx || []).map(row => row[0]));
     let lastPrices = null;
     for (const day of days) {
@@ -545,6 +649,7 @@
       if (observations.some(p => p.fxCarried)) carriedFx++;
       recordExposure(day, prices);
       if (commonSet.has(day)) {
+        if (systematicMethod) executeSystematic(day, prices);
         if (cashTopup) topup(day, prices);
         if (qqqTiming) updateQqq(day, prices);
         if (day === start) deposit(day, config.initial, prices);
@@ -568,10 +673,17 @@
         const deltas = units.map((unit, i) => -unit * prices[i]);
         trade(day, prices, deltas, deltas.map(delta => -delta * fee), 'liquidation');
         if (qqqTiming) riskReserve = 0;
+        if (systematicMethod) { systematicCash.fill(0); pendingSystematic = null; }
       }
       if (qqqTiming && (riskReserve < -1e-5 || riskReserve > cash + 1e-5)) fail('QQQ风险现金与账户现金未勾稽');
       if (cashTopup && commonSet.has(day)) {
         pendingTopup = planTopup(day, prices);
+      }
+      if (systematicMethod) {
+        reconcileSystematicCash();
+        const reserveCash = sum(systematicCash), tolerance = Math.max(1e-5, Math.abs(cash) * Number.EPSILON * 32);
+        if (reserveCash < -tolerance || reserveCash > cash + tolerance) fail('策略归属现金未与组合实际现金勾稽');
+        if (commonSet.has(day)) pendingSystematic = planSystematic(day, prices);
       }
       const traded = new Set(transactions.slice(tradesBefore).map(t => t.id));
       series.forEach((s, i) => {
@@ -586,6 +698,7 @@
       curve.push({ day, value: account, contributed, profit: account - contributed, nav, totalReturn: (nav - 1) * 100,
         annualReturn: day === start ? (nav - 1) * 100 : annualReturn(nav, start, day), drawdown: (nav / peak - 1) * 100, cash, initialReserve, exposure,
         grossValue: value(prices), taxReserve, paidTax, taxCost: paidTax + taxReserve,
+        ...(systematicMethod ? { systematicTargets: systematicTargets.slice(), systematicCash: systematicCash.slice() } : {}),
         ...(qqqTiming ? { riskReserve, qqqOn, qqqSignalDay: lastQqqSignal?.signalDay, qqqSourceDay: lastQqqSignal?.sourceDay } : {}) });
     }
     const final = curve.at(-1), prices = pricesAt(end).map(p => p.value);
@@ -660,10 +773,13 @@
       deposits, rebalances, transactions, tradeCost, initialReserve, timingChanges, topupTimes, topupAmount, topupFees,
       maxActualExposure, maxActualExposureDay,
       ...(cashTopup ? { nextTopupPlan: tax.liquidate ? null : pendingTopup, topupSignalDay } : {}),
+      ...(systematicMethod ? { systematic: { method: strategy.initialMethod, signalDay: systematicSignalDay,
+        state: systematicController.state(), executedTargets: systematicTargets.slice(), nextPlan: tax.liquidate ? null : pendingSystematic,
+        planCount: systematicPlans, tradeCount: systematicTrades, events: systematicEvents, cashByLeg: systematicCash.slice() } } : {}),
       ...(qqqTiming ? { qqqTimingChanges, riskReserve, qqqTimingEvents, qqqLatestSignal,
         qqqNextSignal: tax.liquidate ? null : { ...qqqNextState, executedOn: qqqOn,
           pendingChange: qqqNextState?.available ? qqqNextState.on !== qqqOn : null } } : {}),
-      strategy: { ...strategy, warmupDays, insufficientMaDays, signalBasis: qqqTiming ? 'prior_common_close_actual_qqq_200ma_252high_20out_3in' : cashTopup ? 'prior_common_close_fixed_cash_orders_next_common_close' : 'prior_common_close_target_weight_reference' },
+      strategy: { ...strategy, warmupDays, insufficientMaDays, signalBasis: systematicMethod ? 'prior_common_close_fixed_units_and_cash_orders' : qqqTiming ? 'prior_common_close_actual_qqq_200ma_252high_20out_3in' : cashTopup ? 'prior_common_close_fixed_cash_orders_next_common_close' : 'prior_common_close_target_weight_reference' },
       plan: { initial: [...initialPlan].map(([day, amount]) => ({ day, amount })), income: [...incomePlan].map(([day, amount]) => ({ day, amount })) }, taxEvents,
       grossValue: final.grossValue, taxReserve: final.taxReserve, paidTax: final.paidTax, taxCost: final.taxCost, capitalTax: sum(capitalTaxes), dividendTax: sum(dividendTaxes), carriedPrices, carriedFx, benchmark, benchmarkError,
       config: JSON.parse(JSON.stringify({ ...config, currency })) };

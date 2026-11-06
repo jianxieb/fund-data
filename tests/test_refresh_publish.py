@@ -7,6 +7,24 @@ from unittest.mock import patch
 from scripts import publish_refresh as publisher
 
 
+class OutputValidationTests(unittest.TestCase):
+    def test_invalid_saved_stress_context_stops_publication_checks_without_refreshing(self):
+        commands = []
+
+        def command(args, root):
+            commands.append(args)
+            if "scripts/build_portfolio_entry_context.py" in args:
+                self.assertEqual(args[2:], ["--check"])
+                raise RuntimeError("invalid saved VIX/VIX3M paired evidence")
+
+        with patch.object(publisher, "command", side_effect=command), \
+                patch.object(publisher, "test_generated_data") as browser_tests:
+            with self.assertRaisesRegex(RuntimeError, "invalid saved VIX/VIX3M"):
+                publisher.validate_outputs(Path("/unused-validation-fixture"))
+        browser_tests.assert_not_called()
+        self.assertFalse(any("--refresh" in args or args[0] == "npm" for args in commands))
+
+
 class RefreshPublicationTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()

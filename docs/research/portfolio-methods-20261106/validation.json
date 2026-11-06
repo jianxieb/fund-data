@@ -1,0 +1,3265 @@
+{
+  "scope": "Local verification after integration of scheduled data refresh; no Actions/Pages status polling or live post-deployment checks",
+  "integratedRemoteCommit": "45ddf385dc6d90a59a3f4085277e585e06bae348",
+  "checks": {
+    "javascript": {
+      "command": "npm test",
+      "tests": 892,
+      "passed": 892,
+      "failed": 0,
+      "logSHA256": "2a439387b829e174c176cd604e4ede5c3de57fa1fb62474ea2a40089fdd10423"
+    },
+    "python": {
+      "command": "python3 -m unittest tests.test_portfolio_entry_context tests.test_refresh_publish",
+      "tests": 19,
+      "passed": 19
+    },
+    "syntaxAndAssets": {
+      "command": "npm run check",
+      "passed": true,
+      "localResourceVersions": 58
+    },
+    "portfolioData": {
+      "command": "python3 scripts/build_portfolio_data.py --check",
+      "available": 1873,
+      "missing": 0
+    },
+    "vixContext": {
+      "command": "python3 scripts/build_portfolio_entry_context.py --check",
+      "asOf": "2026-11-04",
+      "pairedObservations": 4309
+    },
+    "diffWhitespace": {
+      "command": "git -c core.whitespace=cr-at-eol diff --cached --check",
+      "passed": true,
+      "note": "Standard CSV CRLF record endings retained; other whitespace errors remain checked."
+    }
+  },
+  "productionAudit": {
+    "status": "pass",
+    "scope": "Actual production core versus frozen research: genuine native USD/TQQQ/QQQ adjusted-price snapshots and CNY FX, 4207 common quote dates reconstructed exactly. VIX source identity retained. Zero monthly funding/rebalance; production next-common-close delay0. VIX/rotation taxes0/20%, hybrid20% only. Full native union-calendar risk is explicitly separate from frozen common-date research risk.",
+    "sources": {
+      "assets/portfolio-model.js": "4170983e0ce16339f28b48e099db3354ca2dde56faf7c6f84ce4267c2e4ae023",
+      "assets/portfolio-systematic.js": "e7a112f6a6bae8607f5f4d3e207488f88812a49806879154dd4d751ac5b8b382",
+      "assets/model.js": "8d433de2935cb24663e8285f72ee8a9ff01e7d11e80ff063eb6c6533a02c6a26",
+      "data/portfolio/catalog.js": "4530c6433205e81f7372b353da83c60cb97e596fbe2232f617831214892d0b2e",
+      "data/portfolio/us/USD-b2e099b598f25d1d.json": "b2e099b598f25d1d034bbf56054d02be7028eba99f9f9a4e90bb959fc62c138f",
+      "data/portfolio/us/TQQQ-235126570a4b63be.json": "235126570a4b63be210364b0242b1f9ab2bb502c9f0de95ad4ef2380742a6552",
+      "data/portfolio/us/QQQ-2d88370080c88a85.json": "2d88370080c88a85a4514c1b5c0a286a9c57347656b76fa4247f050328bde167",
+      "data/portfolio/fx/CNY-5f1b9958db2b35db.json": "5f1b9958db2b35db35208b97c3d4fbf54f4d3901f284c4e6cf2e6ec124103299",
+      "data/portfolio/entry-context.json": "9bce0093b7ede31bb7255457f814ca860c1a3187707eaddff4d5c9b1a71112dc"
+    },
+    "researchInputsSHA256": "7e61cb47f813ecaf8db7fa55b9afb1cfda073290b186b0124aa45cdc948f7995",
+    "auditScriptSHA256": "c7c1632de2468716d9fcc46afe73dd69e57fd2109665ebe4c56783e147443d62",
+    "engineSHA256": "e2f7dcae9a8c4fa162dcbe2f5d2ddc8f02f4f4c7b2e6e940c4b200a0d8477ec5",
+    "pricesChecked": 4207,
+    "counters": {
+      "accounts": 4080,
+      "fills": 39633,
+      "commonValuations": 11325560,
+      "maxValueError": 4.3655745685100555e-11,
+      "maxCommonMddError": 2.842170943040401e-14,
+      "maxFullCalendarMddDifference": 0.04908954896261264,
+      "maxPaidTaxError": 6.821210263296962e-13,
+      "maxFillError": 1.8189894035458565e-12
+    },
+    "elapsedSeconds": 175.61214170899999
+  },
+  "browser": {
+    "passed": true,
+    "isolatedBrowserContext": true,
+    "userBrowserStorageTouched": false,
+    "viewport": {
+      "width": 1920,
+      "height": 1080,
+      "deviceScaleFactor": 2
+    },
+    "results": [
+      {
+        "method": "vix_panic_reentry",
+        "weights": [
+          30,
+          30
+        ],
+        "actual": {
+          "method": "vix_panic_reentry",
+          "weights": [
+            30,
+            30
+          ],
+          "value": 1516873.0385879853,
+          "annualReturn": 31.252827058037823,
+          "mdd": -73.33586591322253,
+          "systematic": {
+            "method": "vix_panic_reentry",
+            "signalDay": "2024-01-02",
+            "state": {
+              "method": "vix_panic_reentry",
+              "day": "2024-01-02",
+              "sourceDay": "2023-12-29",
+              "desiredTargets": [
+                0.3,
+                0.3
+              ],
+              "parkedWeights": [
+                0,
+                0
+              ],
+              "targetShares": [
+                0.5,
+                0.5
+              ],
+              "status": "ready",
+              "missing": null,
+              "warmingUp": false,
+              "metadata": {
+                "sourceDay": "2023-12-29",
+                "vixDay": "2023-12-29",
+                "qqqDay": null,
+                "vixOn": true,
+                "qqqOn": null,
+                "vixRatio": 0.8158584534731324,
+                "vixPeak": 82.69,
+                "vixHeld": 0,
+                "qqqExitRun": null,
+                "qqqEntryRun": null,
+                "phase": "invested",
+                "allocationStateChange": false,
+                "targetShares": [
+                  0.5,
+                  0.5
+                ],
+                "desiredTargets": [
+                  0.3,
+                  0.3
+                ],
+                "parkedWeights": [
+                  0,
+                  0
+                ],
+                "changes": 2
+              }
+            },
+            "executedTargets": [
+              0.3,
+              0.3
+            ],
+            "nextPlan": null,
+            "planCount": 2,
+            "tradeCount": 2,
+            "events": [
+              {
+                "day": "2020-03-10",
+                "signalDay": "2020-03-09",
+                "desiredTargets": [
+                  0.3,
+                  0
+                ],
+                "metadata": {
+                  "sourceDay": "2020-03-06",
+                  "vixDay": "2020-03-06",
+                  "qqqDay": null,
+                  "vixOn": false,
+                  "qqqOn": null,
+                  "vixRatio": 1.182741116751269,
+                  "vixPeak": 41.94,
+                  "vixHeld": 0,
+                  "qqqExitRun": null,
+                  "qqqEntryRun": null,
+                  "phase": "parked",
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.5,
+                    0
+                  ],
+                  "desiredTargets": [
+                    0.3,
+                    0
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0.3
+                  ],
+                  "changes": 1
+                },
+                "trades": 1
+              },
+              {
+                "day": "2020-04-01",
+                "signalDay": "2020-03-31",
+                "desiredTargets": [
+                  0.3,
+                  0.3
+                ],
+                "metadata": {
+                  "sourceDay": "2020-03-30",
+                  "vixDay": "2020-03-30",
+                  "qqqDay": null,
+                  "vixOn": true,
+                  "qqqOn": null,
+                  "vixRatio": 1.1135388216933282,
+                  "vixPeak": 82.69,
+                  "vixHeld": 0,
+                  "qqqExitRun": null,
+                  "qqqEntryRun": null,
+                  "phase": "invested",
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.5,
+                    0.5
+                  ],
+                  "desiredTargets": [
+                    0.3,
+                    0.3
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 2
+                },
+                "trades": 1
+              }
+            ],
+            "cashByLeg": [
+              0,
+              0
+            ]
+          },
+          "end": "2024-01-02"
+        },
+        "baseline": {
+          "method": "lump_sum",
+          "weights": [
+            30,
+            30
+          ],
+          "value": 1280979.0293493338,
+          "annualReturn": 29.0526987616901,
+          "mdd": -73.97771387403158,
+          "end": "2024-01-02"
+        },
+        "planText": "下一共同交易日\n2024-01-02收盘确定\n暂无调仓计划\n\n最近执行目标：USD ETF 30.00% · TQQQ 30.00%；实际仓位见下方账户风险。",
+        "requests": [
+          "http://127.0.0.1:8765/data/portfolio/catalog.js",
+          "http://127.0.0.1:8765/data/portfolio/entry-context.json",
+          "http://127.0.0.1:8765/data/portfolio/us/USD-59ea9c9e93e2a9a9.json",
+          "http://127.0.0.1:8765/data/portfolio/us/TQQQ-cba82be905d54936.json",
+          "http://127.0.0.1:8765/data/portfolio/fx/CNY-20184885373d0ba1.json"
+        ]
+      },
+      {
+        "method": "vix_panic_reentry",
+        "weights": [
+          50,
+          50
+        ],
+        "actual": {
+          "method": "vix_panic_reentry",
+          "weights": [
+            50,
+            50
+          ],
+          "value": 2460511.4259259715,
+          "annualReturn": 37.758601930841465,
+          "mdd": -74.85027152156555,
+          "systematic": {
+            "method": "vix_panic_reentry",
+            "signalDay": "2024-01-02",
+            "state": {
+              "method": "vix_panic_reentry",
+              "day": "2024-01-02",
+              "sourceDay": "2023-12-29",
+              "desiredTargets": [
+                0.5,
+                0.5
+              ],
+              "parkedWeights": [
+                0,
+                0
+              ],
+              "targetShares": [
+                0.5,
+                0.5
+              ],
+              "status": "ready",
+              "missing": null,
+              "warmingUp": false,
+              "metadata": {
+                "sourceDay": "2023-12-29",
+                "vixDay": "2023-12-29",
+                "qqqDay": null,
+                "vixOn": true,
+                "qqqOn": null,
+                "vixRatio": 0.8158584534731324,
+                "vixPeak": 82.69,
+                "vixHeld": 0,
+                "qqqExitRun": null,
+                "qqqEntryRun": null,
+                "phase": "invested",
+                "allocationStateChange": false,
+                "targetShares": [
+                  0.5,
+                  0.5
+                ],
+                "desiredTargets": [
+                  0.5,
+                  0.5
+                ],
+                "parkedWeights": [
+                  0,
+                  0
+                ],
+                "changes": 2
+              }
+            },
+            "executedTargets": [
+              0.5,
+              0.5
+            ],
+            "nextPlan": null,
+            "planCount": 2,
+            "tradeCount": 2,
+            "events": [
+              {
+                "day": "2020-03-10",
+                "signalDay": "2020-03-09",
+                "desiredTargets": [
+                  0.5,
+                  0
+                ],
+                "metadata": {
+                  "sourceDay": "2020-03-06",
+                  "vixDay": "2020-03-06",
+                  "qqqDay": null,
+                  "vixOn": false,
+                  "qqqOn": null,
+                  "vixRatio": 1.182741116751269,
+                  "vixPeak": 41.94,
+                  "vixHeld": 0,
+                  "qqqExitRun": null,
+                  "qqqEntryRun": null,
+                  "phase": "parked",
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.5,
+                    0
+                  ],
+                  "desiredTargets": [
+                    0.5,
+                    0
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0.5
+                  ],
+                  "changes": 1
+                },
+                "trades": 1
+              },
+              {
+                "day": "2020-04-01",
+                "signalDay": "2020-03-31",
+                "desiredTargets": [
+                  0.5,
+                  0.5
+                ],
+                "metadata": {
+                  "sourceDay": "2020-03-30",
+                  "vixDay": "2020-03-30",
+                  "qqqDay": null,
+                  "vixOn": true,
+                  "qqqOn": null,
+                  "vixRatio": 1.1135388216933282,
+                  "vixPeak": 82.69,
+                  "vixHeld": 0,
+                  "qqqExitRun": null,
+                  "qqqEntryRun": null,
+                  "phase": "invested",
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.5,
+                    0.5
+                  ],
+                  "desiredTargets": [
+                    0.5,
+                    0.5
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 2
+                },
+                "trades": 1
+              }
+            ],
+            "cashByLeg": [
+              0,
+              0
+            ]
+          },
+          "end": "2024-01-02"
+        },
+        "baseline": {
+          "method": "lump_sum",
+          "weights": [
+            50,
+            50
+          ],
+          "value": 2067511.849428811,
+          "annualReturn": 35.3817454906515,
+          "mdd": -75.85784781750323,
+          "end": "2024-01-02"
+        },
+        "planText": "下一共同交易日\n2024-01-02收盘确定\n暂无调仓计划\n\n最近执行目标：USD ETF 50.00% · TQQQ 50.00%；实际仓位见下方账户风险。",
+        "requests": [
+          "http://127.0.0.1:8765/data/portfolio/catalog.js",
+          "http://127.0.0.1:8765/data/portfolio/entry-context.json"
+        ]
+      },
+      {
+        "method": "vix_panic_reentry",
+        "weights": [
+          20,
+          40
+        ],
+        "actual": {
+          "method": "vix_panic_reentry",
+          "weights": [
+            20,
+            40
+          ],
+          "value": 1550516.3369044047,
+          "annualReturn": 31.54110590191097,
+          "mdd": -74.21209122574024,
+          "systematic": {
+            "method": "vix_panic_reentry",
+            "signalDay": "2024-01-02",
+            "state": {
+              "method": "vix_panic_reentry",
+              "day": "2024-01-02",
+              "sourceDay": "2023-12-29",
+              "desiredTargets": [
+                0.2,
+                0.4
+              ],
+              "parkedWeights": [
+                0,
+                0
+              ],
+              "targetShares": [
+                0.3333333333333333,
+                0.6666666666666666
+              ],
+              "status": "ready",
+              "missing": null,
+              "warmingUp": false,
+              "metadata": {
+                "sourceDay": "2023-12-29",
+                "vixDay": "2023-12-29",
+                "qqqDay": null,
+                "vixOn": true,
+                "qqqOn": null,
+                "vixRatio": 0.8158584534731324,
+                "vixPeak": 82.69,
+                "vixHeld": 0,
+                "qqqExitRun": null,
+                "qqqEntryRun": null,
+                "phase": "invested",
+                "allocationStateChange": false,
+                "targetShares": [
+                  0.3333333333333333,
+                  0.6666666666666666
+                ],
+                "desiredTargets": [
+                  0.2,
+                  0.4
+                ],
+                "parkedWeights": [
+                  0,
+                  0
+                ],
+                "changes": 2
+              }
+            },
+            "executedTargets": [
+              0.2,
+              0.4
+            ],
+            "nextPlan": null,
+            "planCount": 2,
+            "tradeCount": 2,
+            "events": [
+              {
+                "day": "2020-03-10",
+                "signalDay": "2020-03-09",
+                "desiredTargets": [
+                  0.2,
+                  0
+                ],
+                "metadata": {
+                  "sourceDay": "2020-03-06",
+                  "vixDay": "2020-03-06",
+                  "qqqDay": null,
+                  "vixOn": false,
+                  "qqqOn": null,
+                  "vixRatio": 1.182741116751269,
+                  "vixPeak": 41.94,
+                  "vixHeld": 0,
+                  "qqqExitRun": null,
+                  "qqqEntryRun": null,
+                  "phase": "parked",
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.3333333333333333,
+                    0
+                  ],
+                  "desiredTargets": [
+                    0.2,
+                    0
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0.4
+                  ],
+                  "changes": 1
+                },
+                "trades": 1
+              },
+              {
+                "day": "2020-04-01",
+                "signalDay": "2020-03-31",
+                "desiredTargets": [
+                  0.2,
+                  0.4
+                ],
+                "metadata": {
+                  "sourceDay": "2020-03-30",
+                  "vixDay": "2020-03-30",
+                  "qqqDay": null,
+                  "vixOn": true,
+                  "qqqOn": null,
+                  "vixRatio": 1.1135388216933282,
+                  "vixPeak": 82.69,
+                  "vixHeld": 0,
+                  "qqqExitRun": null,
+                  "qqqEntryRun": null,
+                  "phase": "invested",
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.3333333333333333,
+                    0.6666666666666666
+                  ],
+                  "desiredTargets": [
+                    0.2,
+                    0.4
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 2
+                },
+                "trades": 1
+              }
+            ],
+            "cashByLeg": [
+              0,
+              0
+            ]
+          },
+          "end": "2024-01-02"
+        },
+        "baseline": {
+          "method": "lump_sum",
+          "weights": [
+            20,
+            40
+          ],
+          "value": 1235990.9912528696,
+          "annualReturn": 28.59208522548078,
+          "mdd": -74.68771186935767,
+          "end": "2024-01-02"
+        },
+        "planText": "下一共同交易日\n2024-01-02收盘确定\n暂无调仓计划\n\n最近执行目标：USD ETF 20.00% · TQQQ 40.00%；实际仓位见下方账户风险。",
+        "requests": [
+          "http://127.0.0.1:8765/data/portfolio/catalog.js",
+          "http://127.0.0.1:8765/data/portfolio/entry-context.json"
+        ]
+      },
+      {
+        "method": "relative_strength_rotation",
+        "weights": [
+          30,
+          30
+        ],
+        "actual": {
+          "method": "relative_strength_rotation",
+          "weights": [
+            30,
+            30
+          ],
+          "value": 1264101.449464283,
+          "annualReturn": 28.88162845378077,
+          "mdd": -77.45975626872588,
+          "systematic": {
+            "method": "relative_strength_rotation",
+            "signalDay": "2024-01-02",
+            "state": {
+              "method": "relative_strength_rotation",
+              "day": "2024-01-02",
+              "sourceDay": "2024-01-02",
+              "desiredTargets": [
+                0.6,
+                0
+              ],
+              "parkedWeights": [
+                0,
+                0
+              ],
+              "targetShares": [
+                1,
+                0
+              ],
+              "status": "ready",
+              "missing": null,
+              "warmingUp": false,
+              "metadata": {
+                "sourceDay": "2024-01-02",
+                "phase": 0,
+                "leaders": [
+                  0,
+                  0,
+                  0
+                ],
+                "relativeLogReturn": 0.48785063663987915,
+                "observations": 3496,
+                "allocationStateChange": false,
+                "targetShares": [
+                  1,
+                  0
+                ],
+                "desiredTargets": [
+                  0.6,
+                  0
+                ],
+                "parkedWeights": [
+                  0,
+                  0
+                ],
+                "changes": 8
+              }
+            },
+            "executedTargets": [
+              0.6,
+              0
+            ],
+            "nextPlan": null,
+            "planCount": 16,
+            "tradeCount": 17,
+            "events": [
+              {
+                "day": "2014-01-03",
+                "signalDay": "2014-01-02",
+                "desiredTargets": [
+                  0.19999999999999998,
+                  0.39999999999999997
+                ],
+                "metadata": {
+                  "sourceDay": "2014-01-02",
+                  "phase": 0,
+                  "leaders": [
+                    1,
+                    null,
+                    null
+                  ],
+                  "relativeLogReturn": -0.8334439076900821,
+                  "observations": 980,
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.3333333333333333,
+                    0.6666666666666666
+                  ],
+                  "desiredTargets": [
+                    0.19999999999999998,
+                    0.39999999999999997
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 1
+                },
+                "trades": 1
+              },
+              {
+                "day": "2014-01-06",
+                "signalDay": "2014-01-03",
+                "desiredTargets": [
+                  0.19999999999999998,
+                  0.39999999999999997
+                ],
+                "metadata": {
+                  "sourceDay": "2014-01-03",
+                  "phase": "cash-completion",
+                  "leaders": [
+                    1,
+                    null,
+                    null
+                  ],
+                  "relativeLogReturn": -0.8004607227031808,
+                  "observations": 981,
+                  "allocationStateChange": false,
+                  "targetShares": [
+                    0.3333333333333333,
+                    0.6666666666666666
+                  ],
+                  "desiredTargets": [
+                    0.19999999999999998,
+                    0.39999999999999997
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 1
+                },
+                "trades": 1
+              },
+              {
+                "day": "2014-02-04",
+                "signalDay": "2014-02-03",
+                "desiredTargets": [
+                  0.09999999999999999,
+                  0.5
+                ],
+                "metadata": {
+                  "sourceDay": "2014-02-03",
+                  "phase": 1,
+                  "leaders": [
+                    1,
+                    1,
+                    null
+                  ],
+                  "relativeLogReturn": -0.73510744307772,
+                  "observations": 1001,
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.16666666666666666,
+                    0.8333333333333334
+                  ],
+                  "desiredTargets": [
+                    0.09999999999999999,
+                    0.5
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 2
+                },
+                "trades": 1
+              },
+              {
+                "day": "2014-02-05",
+                "signalDay": "2014-02-04",
+                "desiredTargets": [
+                  0.09999999999999999,
+                  0.5
+                ],
+                "metadata": {
+                  "sourceDay": "2014-02-04",
+                  "phase": "cash-completion",
+                  "leaders": [
+                    1,
+                    1,
+                    null
+                  ],
+                  "relativeLogReturn": -0.7537452594689504,
+                  "observations": 1002,
+                  "allocationStateChange": false,
+                  "targetShares": [
+                    0.16666666666666666,
+                    0.8333333333333334
+                  ],
+                  "desiredTargets": [
+                    0.09999999999999999,
+                    0.5
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 2
+                },
+                "trades": 2
+              },
+              {
+                "day": "2014-03-04",
+                "signalDay": "2014-03-03",
+                "desiredTargets": [
+                  0,
+                  0.6
+                ],
+                "metadata": {
+                  "sourceDay": "2014-03-03",
+                  "phase": 2,
+                  "leaders": [
+                    1,
+                    1,
+                    1
+                  ],
+                  "relativeLogReturn": -0.6609012468522919,
+                  "observations": 1020,
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0,
+                    1
+                  ],
+                  "desiredTargets": [
+                    0,
+                    0.6
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 3
+                },
+                "trades": 1
+              },
+              {
+                "day": "2014-03-05",
+                "signalDay": "2014-03-04",
+                "desiredTargets": [
+                  0,
+                  0.6
+                ],
+                "metadata": {
+                  "sourceDay": "2014-03-04",
+                  "phase": "cash-completion",
+                  "leaders": [
+                    1,
+                    1,
+                    1
+                  ],
+                  "relativeLogReturn": -0.6555137160494613,
+                  "observations": 1021,
+                  "allocationStateChange": false,
+                  "targetShares": [
+                    0,
+                    1
+                  ],
+                  "desiredTargets": [
+                    0,
+                    0.6
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 3
+                },
+                "trades": 1
+              },
+              {
+                "day": "2017-08-02",
+                "signalDay": "2017-08-01",
+                "desiredTargets": [
+                  0.19999999999999998,
+                  0.39999999999999997
+                ],
+                "metadata": {
+                  "sourceDay": "2017-08-01",
+                  "phase": 1,
+                  "leaders": [
+                    1,
+                    0,
+                    1
+                  ],
+                  "relativeLogReturn": 0.2603263296173709,
+                  "observations": 1881,
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.3333333333333333,
+                    0.6666666666666666
+                  ],
+                  "desiredTargets": [
+                    0.19999999999999998,
+                    0.39999999999999997
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 4
+                },
+                "trades": 1
+              },
+              {
+                "day": "2017-08-03",
+                "signalDay": "2017-08-02",
+                "desiredTargets": [
+                  0.19999999999999998,
+                  0.39999999999999997
+                ],
+                "metadata": {
+                  "sourceDay": "2017-08-02",
+                  "phase": "cash-completion",
+                  "leaders": [
+                    1,
+                    0,
+                    1
+                  ],
+                  "relativeLogReturn": 0.25940809841679646,
+                  "observations": 1882,
+                  "allocationStateChange": false,
+                  "targetShares": [
+                    0.3333333333333333,
+                    0.6666666666666666
+                  ],
+                  "desiredTargets": [
+                    0.19999999999999998,
+                    0.39999999999999997
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 4
+                },
+                "trades": 1
+              },
+              {
+                "day": "2018-11-02",
+                "signalDay": "2018-11-01",
+                "desiredTargets": [
+                  0,
+                  0.6
+                ],
+                "metadata": {
+                  "sourceDay": "2018-11-01",
+                  "phase": 1,
+                  "leaders": [
+                    1,
+                    1,
+                    1
+                  ],
+                  "relativeLogReturn": -0.32747762247502166,
+                  "observations": 2198,
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0,
+                    1
+                  ],
+                  "desiredTargets": [
+                    0,
+                    0.6
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 5
+                },
+                "trades": 1
+              },
+              {
+                "day": "2018-11-05",
+                "signalDay": "2018-11-02",
+                "desiredTargets": [
+                  0,
+                  0.6
+                ],
+                "metadata": {
+                  "sourceDay": "2018-11-02",
+                  "phase": "cash-completion",
+                  "leaders": [
+                    1,
+                    1,
+                    1
+                  ],
+                  "relativeLogReturn": -0.3344914594473253,
+                  "observations": 2199,
+                  "allocationStateChange": false,
+                  "targetShares": [
+                    0,
+                    1
+                  ],
+                  "desiredTargets": [
+                    0,
+                    0.6
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 5
+                },
+                "trades": 1
+              },
+              {
+                "day": "2022-06-02",
+                "signalDay": "2022-06-01",
+                "desiredTargets": [
+                  0.19999999999999998,
+                  0.39999999999999997
+                ],
+                "metadata": {
+                  "sourceDay": "2022-06-01",
+                  "phase": 2,
+                  "leaders": [
+                    1,
+                    1,
+                    0
+                  ],
+                  "relativeLogReturn": 0.25592922995576317,
+                  "observations": 3098,
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.3333333333333333,
+                    0.6666666666666666
+                  ],
+                  "desiredTargets": [
+                    0.19999999999999998,
+                    0.39999999999999997
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 6
+                },
+                "trades": 1
+              },
+              {
+                "day": "2022-06-03",
+                "signalDay": "2022-06-02",
+                "desiredTargets": [
+                  0.19999999999999998,
+                  0.39999999999999997
+                ],
+                "metadata": {
+                  "sourceDay": "2022-06-02",
+                  "phase": "cash-completion",
+                  "leaders": [
+                    1,
+                    1,
+                    0
+                  ],
+                  "relativeLogReturn": 0.23188797675950468,
+                  "observations": 3099,
+                  "allocationStateChange": false,
+                  "targetShares": [
+                    0.3333333333333333,
+                    0.6666666666666666
+                  ],
+                  "desiredTargets": [
+                    0.19999999999999998,
+                    0.39999999999999997
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 6
+                },
+                "trades": 1
+              },
+              {
+                "day": "2022-08-02",
+                "signalDay": "2022-08-01",
+                "desiredTargets": [
+                  0.39999999999999997,
+                  0.19999999999999998
+                ],
+                "metadata": {
+                  "sourceDay": "2022-08-01",
+                  "phase": 1,
+                  "leaders": [
+                    1,
+                    0,
+                    0
+                  ],
+                  "relativeLogReturn": 0.2960678192444967,
+                  "observations": 3139,
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.6666666666666666,
+                    0.3333333333333333
+                  ],
+                  "desiredTargets": [
+                    0.39999999999999997,
+                    0.19999999999999998
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 7
+                },
+                "trades": 1
+              },
+              {
+                "day": "2022-08-03",
+                "signalDay": "2022-08-02",
+                "desiredTargets": [
+                  0.39999999999999997,
+                  0.19999999999999998
+                ],
+                "metadata": {
+                  "sourceDay": "2022-08-02",
+                  "phase": "cash-completion",
+                  "leaders": [
+                    1,
+                    0,
+                    0
+                  ],
+                  "relativeLogReturn": 0.36620586863821303,
+                  "observations": 3140,
+                  "allocationStateChange": false,
+                  "targetShares": [
+                    0.6666666666666666,
+                    0.3333333333333333
+                  ],
+                  "desiredTargets": [
+                    0.39999999999999997,
+                    0.19999999999999998
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 7
+                },
+                "trades": 1
+              },
+              {
+                "day": "2022-10-04",
+                "signalDay": "2022-10-03",
+                "desiredTargets": [
+                  0.6,
+                  0
+                ],
+                "metadata": {
+                  "sourceDay": "2022-10-03",
+                  "phase": 0,
+                  "leaders": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "relativeLogReturn": 0.2542070559858207,
+                  "observations": 3183,
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    1,
+                    0
+                  ],
+                  "desiredTargets": [
+                    0.6,
+                    0
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 8
+                },
+                "trades": 1
+              },
+              {
+                "day": "2022-10-05",
+                "signalDay": "2022-10-04",
+                "desiredTargets": [
+                  0.6,
+                  0
+                ],
+                "metadata": {
+                  "sourceDay": "2022-10-04",
+                  "phase": "cash-completion",
+                  "leaders": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "relativeLogReturn": 0.22544153861870847,
+                  "observations": 3184,
+                  "allocationStateChange": false,
+                  "targetShares": [
+                    1,
+                    0
+                  ],
+                  "desiredTargets": [
+                    0.6,
+                    0
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 8
+                },
+                "trades": 1
+              }
+            ],
+            "cashByLeg": [
+              -573126.8914897214,
+              573126.8914897214
+            ]
+          },
+          "end": "2024-01-02"
+        },
+        "baseline": {
+          "method": "lump_sum",
+          "weights": [
+            30,
+            30
+          ],
+          "value": 1280979.0293493338,
+          "annualReturn": 29.0526987616901,
+          "mdd": -73.97771387403158,
+          "end": "2024-01-02"
+        },
+        "planText": "下一共同交易日\n2024-01-02收盘确定\n暂无调仓计划\n\n最近执行目标：USD ETF 60.00% · TQQQ 0.00%；实际仓位见下方账户风险。",
+        "requests": [
+          "http://127.0.0.1:8765/data/portfolio/catalog.js"
+        ]
+      },
+      {
+        "method": "relative_strength_rotation",
+        "weights": [
+          50,
+          50
+        ],
+        "actual": {
+          "method": "relative_strength_rotation",
+          "weights": [
+            50,
+            50
+          ],
+          "value": 2039393.7900998362,
+          "annualReturn": 35.19646883591538,
+          "mdd": -79.34057846370303,
+          "systematic": {
+            "method": "relative_strength_rotation",
+            "signalDay": "2024-01-02",
+            "state": {
+              "method": "relative_strength_rotation",
+              "day": "2024-01-02",
+              "sourceDay": "2024-01-02",
+              "desiredTargets": [
+                1,
+                0
+              ],
+              "parkedWeights": [
+                0,
+                0
+              ],
+              "targetShares": [
+                1,
+                0
+              ],
+              "status": "ready",
+              "missing": null,
+              "warmingUp": false,
+              "metadata": {
+                "sourceDay": "2024-01-02",
+                "phase": 0,
+                "leaders": [
+                  0,
+                  0,
+                  0
+                ],
+                "relativeLogReturn": 0.48785063663987915,
+                "observations": 3496,
+                "allocationStateChange": false,
+                "targetShares": [
+                  1,
+                  0
+                ],
+                "desiredTargets": [
+                  1,
+                  0
+                ],
+                "parkedWeights": [
+                  0,
+                  0
+                ],
+                "changes": 8
+              }
+            },
+            "executedTargets": [
+              1,
+              0
+            ],
+            "nextPlan": null,
+            "planCount": 16,
+            "tradeCount": 17,
+            "events": [
+              {
+                "day": "2014-01-03",
+                "signalDay": "2014-01-02",
+                "desiredTargets": [
+                  0.3333333333333333,
+                  0.6666666666666666
+                ],
+                "metadata": {
+                  "sourceDay": "2014-01-02",
+                  "phase": 0,
+                  "leaders": [
+                    1,
+                    null,
+                    null
+                  ],
+                  "relativeLogReturn": -0.8334439076900821,
+                  "observations": 980,
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.3333333333333333,
+                    0.6666666666666666
+                  ],
+                  "desiredTargets": [
+                    0.3333333333333333,
+                    0.6666666666666666
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 1
+                },
+                "trades": 1
+              },
+              {
+                "day": "2014-01-06",
+                "signalDay": "2014-01-03",
+                "desiredTargets": [
+                  0.3333333333333333,
+                  0.6666666666666666
+                ],
+                "metadata": {
+                  "sourceDay": "2014-01-03",
+                  "phase": "cash-completion",
+                  "leaders": [
+                    1,
+                    null,
+                    null
+                  ],
+                  "relativeLogReturn": -0.8004607227031808,
+                  "observations": 981,
+                  "allocationStateChange": false,
+                  "targetShares": [
+                    0.3333333333333333,
+                    0.6666666666666666
+                  ],
+                  "desiredTargets": [
+                    0.3333333333333333,
+                    0.6666666666666666
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 1
+                },
+                "trades": 1
+              },
+              {
+                "day": "2014-02-04",
+                "signalDay": "2014-02-03",
+                "desiredTargets": [
+                  0.16666666666666666,
+                  0.8333333333333334
+                ],
+                "metadata": {
+                  "sourceDay": "2014-02-03",
+                  "phase": 1,
+                  "leaders": [
+                    1,
+                    1,
+                    null
+                  ],
+                  "relativeLogReturn": -0.73510744307772,
+                  "observations": 1001,
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.16666666666666666,
+                    0.8333333333333334
+                  ],
+                  "desiredTargets": [
+                    0.16666666666666666,
+                    0.8333333333333334
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 2
+                },
+                "trades": 1
+              },
+              {
+                "day": "2014-02-05",
+                "signalDay": "2014-02-04",
+                "desiredTargets": [
+                  0.16666666666666666,
+                  0.8333333333333334
+                ],
+                "metadata": {
+                  "sourceDay": "2014-02-04",
+                  "phase": "cash-completion",
+                  "leaders": [
+                    1,
+                    1,
+                    null
+                  ],
+                  "relativeLogReturn": -0.7537452594689504,
+                  "observations": 1002,
+                  "allocationStateChange": false,
+                  "targetShares": [
+                    0.16666666666666666,
+                    0.8333333333333334
+                  ],
+                  "desiredTargets": [
+                    0.16666666666666666,
+                    0.8333333333333334
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 2
+                },
+                "trades": 2
+              },
+              {
+                "day": "2014-03-04",
+                "signalDay": "2014-03-03",
+                "desiredTargets": [
+                  0,
+                  1
+                ],
+                "metadata": {
+                  "sourceDay": "2014-03-03",
+                  "phase": 2,
+                  "leaders": [
+                    1,
+                    1,
+                    1
+                  ],
+                  "relativeLogReturn": -0.6609012468522919,
+                  "observations": 1020,
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0,
+                    1
+                  ],
+                  "desiredTargets": [
+                    0,
+                    1
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 3
+                },
+                "trades": 1
+              },
+              {
+                "day": "2014-03-05",
+                "signalDay": "2014-03-04",
+                "desiredTargets": [
+                  0,
+                  1
+                ],
+                "metadata": {
+                  "sourceDay": "2014-03-04",
+                  "phase": "cash-completion",
+                  "leaders": [
+                    1,
+                    1,
+                    1
+                  ],
+                  "relativeLogReturn": -0.6555137160494613,
+                  "observations": 1021,
+                  "allocationStateChange": false,
+                  "targetShares": [
+                    0,
+                    1
+                  ],
+                  "desiredTargets": [
+                    0,
+                    1
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 3
+                },
+                "trades": 1
+              },
+              {
+                "day": "2017-08-02",
+                "signalDay": "2017-08-01",
+                "desiredTargets": [
+                  0.3333333333333333,
+                  0.6666666666666666
+                ],
+                "metadata": {
+                  "sourceDay": "2017-08-01",
+                  "phase": 1,
+                  "leaders": [
+                    1,
+                    0,
+                    1
+                  ],
+                  "relativeLogReturn": 0.2603263296173709,
+                  "observations": 1881,
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.3333333333333333,
+                    0.6666666666666666
+                  ],
+                  "desiredTargets": [
+                    0.3333333333333333,
+                    0.6666666666666666
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 4
+                },
+                "trades": 1
+              },
+              {
+                "day": "2017-08-03",
+                "signalDay": "2017-08-02",
+                "desiredTargets": [
+                  0.3333333333333333,
+                  0.6666666666666666
+                ],
+                "metadata": {
+                  "sourceDay": "2017-08-02",
+                  "phase": "cash-completion",
+                  "leaders": [
+                    1,
+                    0,
+                    1
+                  ],
+                  "relativeLogReturn": 0.25940809841679646,
+                  "observations": 1882,
+                  "allocationStateChange": false,
+                  "targetShares": [
+                    0.3333333333333333,
+                    0.6666666666666666
+                  ],
+                  "desiredTargets": [
+                    0.3333333333333333,
+                    0.6666666666666666
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 4
+                },
+                "trades": 1
+              },
+              {
+                "day": "2018-11-02",
+                "signalDay": "2018-11-01",
+                "desiredTargets": [
+                  0,
+                  1
+                ],
+                "metadata": {
+                  "sourceDay": "2018-11-01",
+                  "phase": 1,
+                  "leaders": [
+                    1,
+                    1,
+                    1
+                  ],
+                  "relativeLogReturn": -0.32747762247502166,
+                  "observations": 2198,
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0,
+                    1
+                  ],
+                  "desiredTargets": [
+                    0,
+                    1
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 5
+                },
+                "trades": 1
+              },
+              {
+                "day": "2018-11-05",
+                "signalDay": "2018-11-02",
+                "desiredTargets": [
+                  0,
+                  1
+                ],
+                "metadata": {
+                  "sourceDay": "2018-11-02",
+                  "phase": "cash-completion",
+                  "leaders": [
+                    1,
+                    1,
+                    1
+                  ],
+                  "relativeLogReturn": -0.3344914594473253,
+                  "observations": 2199,
+                  "allocationStateChange": false,
+                  "targetShares": [
+                    0,
+                    1
+                  ],
+                  "desiredTargets": [
+                    0,
+                    1
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 5
+                },
+                "trades": 1
+              },
+              {
+                "day": "2022-06-02",
+                "signalDay": "2022-06-01",
+                "desiredTargets": [
+                  0.3333333333333333,
+                  0.6666666666666666
+                ],
+                "metadata": {
+                  "sourceDay": "2022-06-01",
+                  "phase": 2,
+                  "leaders": [
+                    1,
+                    1,
+                    0
+                  ],
+                  "relativeLogReturn": 0.25592922995576317,
+                  "observations": 3098,
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.3333333333333333,
+                    0.6666666666666666
+                  ],
+                  "desiredTargets": [
+                    0.3333333333333333,
+                    0.6666666666666666
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 6
+                },
+                "trades": 1
+              },
+              {
+                "day": "2022-06-03",
+                "signalDay": "2022-06-02",
+                "desiredTargets": [
+                  0.3333333333333333,
+                  0.6666666666666666
+                ],
+                "metadata": {
+                  "sourceDay": "2022-06-02",
+                  "phase": "cash-completion",
+                  "leaders": [
+                    1,
+                    1,
+                    0
+                  ],
+                  "relativeLogReturn": 0.23188797675950468,
+                  "observations": 3099,
+                  "allocationStateChange": false,
+                  "targetShares": [
+                    0.3333333333333333,
+                    0.6666666666666666
+                  ],
+                  "desiredTargets": [
+                    0.3333333333333333,
+                    0.6666666666666666
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 6
+                },
+                "trades": 1
+              },
+              {
+                "day": "2022-08-02",
+                "signalDay": "2022-08-01",
+                "desiredTargets": [
+                  0.6666666666666666,
+                  0.3333333333333333
+                ],
+                "metadata": {
+                  "sourceDay": "2022-08-01",
+                  "phase": 1,
+                  "leaders": [
+                    1,
+                    0,
+                    0
+                  ],
+                  "relativeLogReturn": 0.2960678192444967,
+                  "observations": 3139,
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.6666666666666666,
+                    0.3333333333333333
+                  ],
+                  "desiredTargets": [
+                    0.6666666666666666,
+                    0.3333333333333333
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 7
+                },
+                "trades": 1
+              },
+              {
+                "day": "2022-08-03",
+                "signalDay": "2022-08-02",
+                "desiredTargets": [
+                  0.6666666666666666,
+                  0.3333333333333333
+                ],
+                "metadata": {
+                  "sourceDay": "2022-08-02",
+                  "phase": "cash-completion",
+                  "leaders": [
+                    1,
+                    0,
+                    0
+                  ],
+                  "relativeLogReturn": 0.36620586863821303,
+                  "observations": 3140,
+                  "allocationStateChange": false,
+                  "targetShares": [
+                    0.6666666666666666,
+                    0.3333333333333333
+                  ],
+                  "desiredTargets": [
+                    0.6666666666666666,
+                    0.3333333333333333
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 7
+                },
+                "trades": 1
+              },
+              {
+                "day": "2022-10-04",
+                "signalDay": "2022-10-03",
+                "desiredTargets": [
+                  1,
+                  0
+                ],
+                "metadata": {
+                  "sourceDay": "2022-10-03",
+                  "phase": 0,
+                  "leaders": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "relativeLogReturn": 0.2542070559858207,
+                  "observations": 3183,
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    1,
+                    0
+                  ],
+                  "desiredTargets": [
+                    1,
+                    0
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 8
+                },
+                "trades": 1
+              },
+              {
+                "day": "2022-10-05",
+                "signalDay": "2022-10-04",
+                "desiredTargets": [
+                  1,
+                  0
+                ],
+                "metadata": {
+                  "sourceDay": "2022-10-04",
+                  "phase": "cash-completion",
+                  "leaders": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "relativeLogReturn": 0.22544153861870847,
+                  "observations": 3184,
+                  "allocationStateChange": false,
+                  "targetShares": [
+                    1,
+                    0
+                  ],
+                  "desiredTargets": [
+                    1,
+                    0
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 8
+                },
+                "trades": 1
+              }
+            ],
+            "cashByLeg": [
+              -954829.7829247674,
+              954829.7829247674
+            ]
+          },
+          "end": "2024-01-02"
+        },
+        "baseline": {
+          "method": "lump_sum",
+          "weights": [
+            50,
+            50
+          ],
+          "value": 2067511.849428811,
+          "annualReturn": 35.3817454906515,
+          "mdd": -75.85784781750323,
+          "end": "2024-01-02"
+        },
+        "planText": "下一共同交易日\n2024-01-02收盘确定\n暂无调仓计划\n\n最近执行目标：USD ETF 100.00% · TQQQ 0.00%；实际仓位见下方账户风险。",
+        "requests": [
+          "http://127.0.0.1:8765/data/portfolio/catalog.js"
+        ]
+      },
+      {
+        "method": "relative_strength_rotation",
+        "weights": [
+          20,
+          40
+        ],
+        "actual": {
+          "method": "relative_strength_rotation",
+          "weights": [
+            20,
+            40
+          ],
+          "value": 1262532.1473238308,
+          "annualReturn": 28.865617805112098,
+          "mdd": -77.45755088169705,
+          "systematic": {
+            "method": "relative_strength_rotation",
+            "signalDay": "2024-01-02",
+            "state": {
+              "method": "relative_strength_rotation",
+              "day": "2024-01-02",
+              "sourceDay": "2024-01-02",
+              "desiredTargets": [
+                0.6000000000000001,
+                0
+              ],
+              "parkedWeights": [
+                0,
+                0
+              ],
+              "targetShares": [
+                1,
+                0
+              ],
+              "status": "ready",
+              "missing": null,
+              "warmingUp": false,
+              "metadata": {
+                "sourceDay": "2024-01-02",
+                "phase": 0,
+                "leaders": [
+                  0,
+                  0,
+                  0
+                ],
+                "relativeLogReturn": 0.48785063663987915,
+                "observations": 3496,
+                "allocationStateChange": false,
+                "targetShares": [
+                  1,
+                  0
+                ],
+                "desiredTargets": [
+                  0.6000000000000001,
+                  0
+                ],
+                "parkedWeights": [
+                  0,
+                  0
+                ],
+                "changes": 8
+              }
+            },
+            "executedTargets": [
+              0.6000000000000001,
+              0
+            ],
+            "nextPlan": null,
+            "planCount": 16,
+            "tradeCount": 17,
+            "events": [
+              {
+                "day": "2014-01-03",
+                "signalDay": "2014-01-02",
+                "desiredTargets": [
+                  0.13333333333333336,
+                  0.4666666666666667
+                ],
+                "metadata": {
+                  "sourceDay": "2014-01-02",
+                  "phase": 0,
+                  "leaders": [
+                    1,
+                    null,
+                    null
+                  ],
+                  "relativeLogReturn": -0.8334439076900821,
+                  "observations": 980,
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.22222222222222224,
+                    0.7777777777777777
+                  ],
+                  "desiredTargets": [
+                    0.13333333333333336,
+                    0.4666666666666667
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 1
+                },
+                "trades": 1
+              },
+              {
+                "day": "2014-01-06",
+                "signalDay": "2014-01-03",
+                "desiredTargets": [
+                  0.13333333333333336,
+                  0.4666666666666667
+                ],
+                "metadata": {
+                  "sourceDay": "2014-01-03",
+                  "phase": "cash-completion",
+                  "leaders": [
+                    1,
+                    null,
+                    null
+                  ],
+                  "relativeLogReturn": -0.8004607227031808,
+                  "observations": 981,
+                  "allocationStateChange": false,
+                  "targetShares": [
+                    0.22222222222222224,
+                    0.7777777777777777
+                  ],
+                  "desiredTargets": [
+                    0.13333333333333336,
+                    0.4666666666666667
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 1
+                },
+                "trades": 1
+              },
+              {
+                "day": "2014-02-04",
+                "signalDay": "2014-02-03",
+                "desiredTargets": [
+                  0.06666666666666668,
+                  0.5333333333333334
+                ],
+                "metadata": {
+                  "sourceDay": "2014-02-03",
+                  "phase": 1,
+                  "leaders": [
+                    1,
+                    1,
+                    null
+                  ],
+                  "relativeLogReturn": -0.73510744307772,
+                  "observations": 1001,
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.11111111111111112,
+                    0.888888888888889
+                  ],
+                  "desiredTargets": [
+                    0.06666666666666668,
+                    0.5333333333333334
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 2
+                },
+                "trades": 1
+              },
+              {
+                "day": "2014-02-05",
+                "signalDay": "2014-02-04",
+                "desiredTargets": [
+                  0.06666666666666668,
+                  0.5333333333333334
+                ],
+                "metadata": {
+                  "sourceDay": "2014-02-04",
+                  "phase": "cash-completion",
+                  "leaders": [
+                    1,
+                    1,
+                    null
+                  ],
+                  "relativeLogReturn": -0.7537452594689504,
+                  "observations": 1002,
+                  "allocationStateChange": false,
+                  "targetShares": [
+                    0.11111111111111112,
+                    0.888888888888889
+                  ],
+                  "desiredTargets": [
+                    0.06666666666666668,
+                    0.5333333333333334
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 2
+                },
+                "trades": 2
+              },
+              {
+                "day": "2014-03-04",
+                "signalDay": "2014-03-03",
+                "desiredTargets": [
+                  0,
+                  0.6000000000000001
+                ],
+                "metadata": {
+                  "sourceDay": "2014-03-03",
+                  "phase": 2,
+                  "leaders": [
+                    1,
+                    1,
+                    1
+                  ],
+                  "relativeLogReturn": -0.6609012468522919,
+                  "observations": 1020,
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0,
+                    1
+                  ],
+                  "desiredTargets": [
+                    0,
+                    0.6000000000000001
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 3
+                },
+                "trades": 1
+              },
+              {
+                "day": "2014-03-05",
+                "signalDay": "2014-03-04",
+                "desiredTargets": [
+                  0,
+                  0.6000000000000001
+                ],
+                "metadata": {
+                  "sourceDay": "2014-03-04",
+                  "phase": "cash-completion",
+                  "leaders": [
+                    1,
+                    1,
+                    1
+                  ],
+                  "relativeLogReturn": -0.6555137160494613,
+                  "observations": 1021,
+                  "allocationStateChange": false,
+                  "targetShares": [
+                    0,
+                    1
+                  ],
+                  "desiredTargets": [
+                    0,
+                    0.6000000000000001
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 3
+                },
+                "trades": 1
+              },
+              {
+                "day": "2017-08-02",
+                "signalDay": "2017-08-01",
+                "desiredTargets": [
+                  0.2,
+                  0.4
+                ],
+                "metadata": {
+                  "sourceDay": "2017-08-01",
+                  "phase": 1,
+                  "leaders": [
+                    1,
+                    0,
+                    1
+                  ],
+                  "relativeLogReturn": 0.2603263296173709,
+                  "observations": 1881,
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.3333333333333333,
+                    0.6666666666666666
+                  ],
+                  "desiredTargets": [
+                    0.2,
+                    0.4
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 4
+                },
+                "trades": 1
+              },
+              {
+                "day": "2017-08-03",
+                "signalDay": "2017-08-02",
+                "desiredTargets": [
+                  0.2,
+                  0.4
+                ],
+                "metadata": {
+                  "sourceDay": "2017-08-02",
+                  "phase": "cash-completion",
+                  "leaders": [
+                    1,
+                    0,
+                    1
+                  ],
+                  "relativeLogReturn": 0.25940809841679646,
+                  "observations": 1882,
+                  "allocationStateChange": false,
+                  "targetShares": [
+                    0.3333333333333333,
+                    0.6666666666666666
+                  ],
+                  "desiredTargets": [
+                    0.2,
+                    0.4
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 4
+                },
+                "trades": 1
+              },
+              {
+                "day": "2018-11-02",
+                "signalDay": "2018-11-01",
+                "desiredTargets": [
+                  0,
+                  0.6000000000000001
+                ],
+                "metadata": {
+                  "sourceDay": "2018-11-01",
+                  "phase": 1,
+                  "leaders": [
+                    1,
+                    1,
+                    1
+                  ],
+                  "relativeLogReturn": -0.32747762247502166,
+                  "observations": 2198,
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0,
+                    1
+                  ],
+                  "desiredTargets": [
+                    0,
+                    0.6000000000000001
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 5
+                },
+                "trades": 1
+              },
+              {
+                "day": "2018-11-05",
+                "signalDay": "2018-11-02",
+                "desiredTargets": [
+                  0,
+                  0.6000000000000001
+                ],
+                "metadata": {
+                  "sourceDay": "2018-11-02",
+                  "phase": "cash-completion",
+                  "leaders": [
+                    1,
+                    1,
+                    1
+                  ],
+                  "relativeLogReturn": -0.3344914594473253,
+                  "observations": 2199,
+                  "allocationStateChange": false,
+                  "targetShares": [
+                    0,
+                    1
+                  ],
+                  "desiredTargets": [
+                    0,
+                    0.6000000000000001
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 5
+                },
+                "trades": 1
+              },
+              {
+                "day": "2022-06-02",
+                "signalDay": "2022-06-01",
+                "desiredTargets": [
+                  0.2,
+                  0.4
+                ],
+                "metadata": {
+                  "sourceDay": "2022-06-01",
+                  "phase": 2,
+                  "leaders": [
+                    1,
+                    1,
+                    0
+                  ],
+                  "relativeLogReturn": 0.25592922995576317,
+                  "observations": 3098,
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.3333333333333333,
+                    0.6666666666666666
+                  ],
+                  "desiredTargets": [
+                    0.2,
+                    0.4
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 6
+                },
+                "trades": 1
+              },
+              {
+                "day": "2022-06-03",
+                "signalDay": "2022-06-02",
+                "desiredTargets": [
+                  0.2,
+                  0.4
+                ],
+                "metadata": {
+                  "sourceDay": "2022-06-02",
+                  "phase": "cash-completion",
+                  "leaders": [
+                    1,
+                    1,
+                    0
+                  ],
+                  "relativeLogReturn": 0.23188797675950468,
+                  "observations": 3099,
+                  "allocationStateChange": false,
+                  "targetShares": [
+                    0.3333333333333333,
+                    0.6666666666666666
+                  ],
+                  "desiredTargets": [
+                    0.2,
+                    0.4
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 6
+                },
+                "trades": 1
+              },
+              {
+                "day": "2022-08-02",
+                "signalDay": "2022-08-01",
+                "desiredTargets": [
+                  0.4,
+                  0.2
+                ],
+                "metadata": {
+                  "sourceDay": "2022-08-01",
+                  "phase": 1,
+                  "leaders": [
+                    1,
+                    0,
+                    0
+                  ],
+                  "relativeLogReturn": 0.2960678192444967,
+                  "observations": 3139,
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.6666666666666666,
+                    0.3333333333333333
+                  ],
+                  "desiredTargets": [
+                    0.4,
+                    0.2
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 7
+                },
+                "trades": 1
+              },
+              {
+                "day": "2022-08-03",
+                "signalDay": "2022-08-02",
+                "desiredTargets": [
+                  0.4,
+                  0.2
+                ],
+                "metadata": {
+                  "sourceDay": "2022-08-02",
+                  "phase": "cash-completion",
+                  "leaders": [
+                    1,
+                    0,
+                    0
+                  ],
+                  "relativeLogReturn": 0.36620586863821303,
+                  "observations": 3140,
+                  "allocationStateChange": false,
+                  "targetShares": [
+                    0.6666666666666666,
+                    0.3333333333333333
+                  ],
+                  "desiredTargets": [
+                    0.4,
+                    0.2
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 7
+                },
+                "trades": 1
+              },
+              {
+                "day": "2022-10-04",
+                "signalDay": "2022-10-03",
+                "desiredTargets": [
+                  0.6000000000000001,
+                  0
+                ],
+                "metadata": {
+                  "sourceDay": "2022-10-03",
+                  "phase": 0,
+                  "leaders": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "relativeLogReturn": 0.2542070559858207,
+                  "observations": 3183,
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    1,
+                    0
+                  ],
+                  "desiredTargets": [
+                    0.6000000000000001,
+                    0
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 8
+                },
+                "trades": 1
+              },
+              {
+                "day": "2022-10-05",
+                "signalDay": "2022-10-04",
+                "desiredTargets": [
+                  0.6000000000000001,
+                  0
+                ],
+                "metadata": {
+                  "sourceDay": "2022-10-04",
+                  "phase": "cash-completion",
+                  "leaders": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "relativeLogReturn": 0.22544153861870847,
+                  "observations": 3184,
+                  "allocationStateChange": false,
+                  "targetShares": [
+                    1,
+                    0
+                  ],
+                  "desiredTargets": [
+                    0.6000000000000001,
+                    0
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 8
+                },
+                "trades": 1
+              }
+            ],
+            "cashByLeg": [
+              -582478.7130913031,
+              582478.7130913031
+            ]
+          },
+          "end": "2024-01-02"
+        },
+        "baseline": {
+          "method": "lump_sum",
+          "weights": [
+            20,
+            40
+          ],
+          "value": 1235990.9912528696,
+          "annualReturn": 28.59208522548078,
+          "mdd": -74.68771186935767,
+          "end": "2024-01-02"
+        },
+        "planText": "下一共同交易日\n2024-01-02收盘确定\n暂无调仓计划\n\n最近执行目标：USD ETF 60.00% · TQQQ 0.00%；实际仓位见下方账户风险。",
+        "requests": [
+          "http://127.0.0.1:8765/data/portfolio/catalog.js"
+        ]
+      },
+      {
+        "method": "dual_risk_guard",
+        "weights": [
+          30,
+          30
+        ],
+        "actual": {
+          "method": "dual_risk_guard",
+          "weights": [
+            30,
+            30
+          ],
+          "value": 1634059.0771199495,
+          "annualReturn": 32.23331779827174,
+          "mdd": -63.75128068884685,
+          "systematic": {
+            "method": "dual_risk_guard",
+            "signalDay": "2024-01-02",
+            "state": {
+              "method": "dual_risk_guard",
+              "day": "2024-01-02",
+              "sourceDay": "2023-12-29",
+              "desiredTargets": [
+                0.3,
+                0.3
+              ],
+              "parkedWeights": [
+                0,
+                0
+              ],
+              "targetShares": [
+                0.5,
+                0.5
+              ],
+              "status": "ready",
+              "missing": null,
+              "warmingUp": false,
+              "metadata": {
+                "sourceDay": "2023-12-29",
+                "vixDay": "2023-12-29",
+                "qqqDay": "2024-01-02",
+                "vixOn": true,
+                "qqqOn": true,
+                "vixRatio": 0.8158584534731324,
+                "vixPeak": 82.69,
+                "vixHeld": 0,
+                "qqqExitRun": 0,
+                "qqqEntryRun": 0,
+                "phase": "invested",
+                "allocationStateChange": false,
+                "targetShares": [
+                  0.5,
+                  0.5
+                ],
+                "desiredTargets": [
+                  0.3,
+                  0.3
+                ],
+                "parkedWeights": [
+                  0,
+                  0
+                ],
+                "changes": 4
+              }
+            },
+            "executedTargets": [
+              0.3,
+              0.3
+            ],
+            "nextPlan": null,
+            "planCount": 4,
+            "tradeCount": 4,
+            "events": [
+              {
+                "day": "2020-03-10",
+                "signalDay": "2020-03-09",
+                "desiredTargets": [
+                  0.3,
+                  0
+                ],
+                "metadata": {
+                  "sourceDay": "2020-03-06",
+                  "vixDay": "2020-03-06",
+                  "qqqDay": "2020-03-09",
+                  "vixOn": false,
+                  "qqqOn": true,
+                  "vixRatio": 1.182741116751269,
+                  "vixPeak": 41.94,
+                  "vixHeld": 0,
+                  "qqqExitRun": 0,
+                  "qqqEntryRun": 0,
+                  "phase": "parked",
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.5,
+                    0
+                  ],
+                  "desiredTargets": [
+                    0.3,
+                    0
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0.3
+                  ],
+                  "changes": 1
+                },
+                "trades": 1
+              },
+              {
+                "day": "2020-04-01",
+                "signalDay": "2020-03-31",
+                "desiredTargets": [
+                  0.3,
+                  0.3
+                ],
+                "metadata": {
+                  "sourceDay": "2020-03-30",
+                  "vixDay": "2020-03-30",
+                  "qqqDay": "2020-03-31",
+                  "vixOn": true,
+                  "qqqOn": true,
+                  "vixRatio": 1.1135388216933282,
+                  "vixPeak": 82.69,
+                  "vixHeld": 0,
+                  "qqqExitRun": 0,
+                  "qqqEntryRun": 0,
+                  "phase": "invested",
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.5,
+                    0.5
+                  ],
+                  "desiredTargets": [
+                    0.3,
+                    0.3
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 2
+                },
+                "trades": 1
+              },
+              {
+                "day": "2022-06-03",
+                "signalDay": "2022-06-02",
+                "desiredTargets": [
+                  0.3,
+                  0
+                ],
+                "metadata": {
+                  "sourceDay": "2022-06-01",
+                  "vixDay": "2022-06-01",
+                  "qqqDay": "2022-06-02",
+                  "vixOn": true,
+                  "qqqOn": false,
+                  "vixRatio": 0.9267676767676769,
+                  "vixPeak": 82.69,
+                  "vixHeld": 0,
+                  "qqqExitRun": 0,
+                  "qqqEntryRun": 0,
+                  "phase": "parked",
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.5,
+                    0
+                  ],
+                  "desiredTargets": [
+                    0.3,
+                    0
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0.3
+                  ],
+                  "changes": 3
+                },
+                "trades": 1
+              },
+              {
+                "day": "2023-02-03",
+                "signalDay": "2023-02-02",
+                "desiredTargets": [
+                  0.3,
+                  0.3
+                ],
+                "metadata": {
+                  "sourceDay": "2023-02-01",
+                  "vixDay": "2023-02-01",
+                  "qqqDay": "2023-02-02",
+                  "vixOn": true,
+                  "qqqOn": true,
+                  "vixRatio": 0.8948422633950928,
+                  "vixPeak": 82.69,
+                  "vixHeld": 0,
+                  "qqqExitRun": 0,
+                  "qqqEntryRun": 0,
+                  "phase": "invested",
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.5,
+                    0.5
+                  ],
+                  "desiredTargets": [
+                    0.3,
+                    0.3
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 4
+                },
+                "trades": 1
+              }
+            ],
+            "cashByLeg": [
+              0,
+              0
+            ]
+          },
+          "end": "2024-01-02"
+        },
+        "baseline": {
+          "method": "lump_sum",
+          "weights": [
+            30,
+            30
+          ],
+          "value": 1280979.0293493338,
+          "annualReturn": 29.0526987616901,
+          "mdd": -73.97771387403158,
+          "end": "2024-01-02"
+        },
+        "planText": "下一共同交易日\n2024-01-02收盘确定\n暂无调仓计划\n\n最近执行目标：USD ETF 30.00% · TQQQ 30.00%；实际仓位见下方账户风险。",
+        "requests": [
+          "http://127.0.0.1:8765/data/portfolio/catalog.js",
+          "http://127.0.0.1:8765/data/portfolio/entry-context.json",
+          "http://127.0.0.1:8765/data/portfolio/us/QQQ-4e3e60d21b30d7ac.json"
+        ]
+      },
+      {
+        "method": "dual_risk_guard",
+        "weights": [
+          50,
+          50
+        ],
+        "actual": {
+          "method": "dual_risk_guard",
+          "weights": [
+            50,
+            50
+          ],
+          "value": 2655743.444166203,
+          "annualReturn": 38.81461269766435,
+          "mdd": -65.06776200139426,
+          "systematic": {
+            "method": "dual_risk_guard",
+            "signalDay": "2024-01-02",
+            "state": {
+              "method": "dual_risk_guard",
+              "day": "2024-01-02",
+              "sourceDay": "2023-12-29",
+              "desiredTargets": [
+                0.5,
+                0.5
+              ],
+              "parkedWeights": [
+                0,
+                0
+              ],
+              "targetShares": [
+                0.5,
+                0.5
+              ],
+              "status": "ready",
+              "missing": null,
+              "warmingUp": false,
+              "metadata": {
+                "sourceDay": "2023-12-29",
+                "vixDay": "2023-12-29",
+                "qqqDay": "2024-01-02",
+                "vixOn": true,
+                "qqqOn": true,
+                "vixRatio": 0.8158584534731324,
+                "vixPeak": 82.69,
+                "vixHeld": 0,
+                "qqqExitRun": 0,
+                "qqqEntryRun": 0,
+                "phase": "invested",
+                "allocationStateChange": false,
+                "targetShares": [
+                  0.5,
+                  0.5
+                ],
+                "desiredTargets": [
+                  0.5,
+                  0.5
+                ],
+                "parkedWeights": [
+                  0,
+                  0
+                ],
+                "changes": 4
+              }
+            },
+            "executedTargets": [
+              0.5,
+              0.5
+            ],
+            "nextPlan": null,
+            "planCount": 4,
+            "tradeCount": 4,
+            "events": [
+              {
+                "day": "2020-03-10",
+                "signalDay": "2020-03-09",
+                "desiredTargets": [
+                  0.5,
+                  0
+                ],
+                "metadata": {
+                  "sourceDay": "2020-03-06",
+                  "vixDay": "2020-03-06",
+                  "qqqDay": "2020-03-09",
+                  "vixOn": false,
+                  "qqqOn": true,
+                  "vixRatio": 1.182741116751269,
+                  "vixPeak": 41.94,
+                  "vixHeld": 0,
+                  "qqqExitRun": 0,
+                  "qqqEntryRun": 0,
+                  "phase": "parked",
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.5,
+                    0
+                  ],
+                  "desiredTargets": [
+                    0.5,
+                    0
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0.5
+                  ],
+                  "changes": 1
+                },
+                "trades": 1
+              },
+              {
+                "day": "2020-04-01",
+                "signalDay": "2020-03-31",
+                "desiredTargets": [
+                  0.5,
+                  0.5
+                ],
+                "metadata": {
+                  "sourceDay": "2020-03-30",
+                  "vixDay": "2020-03-30",
+                  "qqqDay": "2020-03-31",
+                  "vixOn": true,
+                  "qqqOn": true,
+                  "vixRatio": 1.1135388216933282,
+                  "vixPeak": 82.69,
+                  "vixHeld": 0,
+                  "qqqExitRun": 0,
+                  "qqqEntryRun": 0,
+                  "phase": "invested",
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.5,
+                    0.5
+                  ],
+                  "desiredTargets": [
+                    0.5,
+                    0.5
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 2
+                },
+                "trades": 1
+              },
+              {
+                "day": "2022-06-03",
+                "signalDay": "2022-06-02",
+                "desiredTargets": [
+                  0.5,
+                  0
+                ],
+                "metadata": {
+                  "sourceDay": "2022-06-01",
+                  "vixDay": "2022-06-01",
+                  "qqqDay": "2022-06-02",
+                  "vixOn": true,
+                  "qqqOn": false,
+                  "vixRatio": 0.9267676767676769,
+                  "vixPeak": 82.69,
+                  "vixHeld": 0,
+                  "qqqExitRun": 0,
+                  "qqqEntryRun": 0,
+                  "phase": "parked",
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.5,
+                    0
+                  ],
+                  "desiredTargets": [
+                    0.5,
+                    0
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0.5
+                  ],
+                  "changes": 3
+                },
+                "trades": 1
+              },
+              {
+                "day": "2023-02-03",
+                "signalDay": "2023-02-02",
+                "desiredTargets": [
+                  0.5,
+                  0.5
+                ],
+                "metadata": {
+                  "sourceDay": "2023-02-01",
+                  "vixDay": "2023-02-01",
+                  "qqqDay": "2023-02-02",
+                  "vixOn": true,
+                  "qqqOn": true,
+                  "vixRatio": 0.8948422633950928,
+                  "vixPeak": 82.69,
+                  "vixHeld": 0,
+                  "qqqExitRun": 0,
+                  "qqqEntryRun": 0,
+                  "phase": "invested",
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.5,
+                    0.5
+                  ],
+                  "desiredTargets": [
+                    0.5,
+                    0.5
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 4
+                },
+                "trades": 1
+              }
+            ],
+            "cashByLeg": [
+              0,
+              -1.1641532182693481e-10
+            ]
+          },
+          "end": "2024-01-02"
+        },
+        "baseline": {
+          "method": "lump_sum",
+          "weights": [
+            50,
+            50
+          ],
+          "value": 2067511.849428811,
+          "annualReturn": 35.3817454906515,
+          "mdd": -75.85784781750323,
+          "end": "2024-01-02"
+        },
+        "planText": "下一共同交易日\n2024-01-02收盘确定\n暂无调仓计划\n\n最近执行目标：USD ETF 50.00% · TQQQ 50.00%；实际仓位见下方账户风险。",
+        "requests": [
+          "http://127.0.0.1:8765/data/portfolio/catalog.js",
+          "http://127.0.0.1:8765/data/portfolio/entry-context.json"
+        ]
+      },
+      {
+        "method": "dual_risk_guard",
+        "weights": [
+          20,
+          40
+        ],
+        "actual": {
+          "method": "dual_risk_guard",
+          "weights": [
+            20,
+            40
+          ],
+          "value": 1706764.3882803565,
+          "annualReturn": 32.81028132423567,
+          "mdd": -62.84368978031717,
+          "systematic": {
+            "method": "dual_risk_guard",
+            "signalDay": "2024-01-02",
+            "state": {
+              "method": "dual_risk_guard",
+              "day": "2024-01-02",
+              "sourceDay": "2023-12-29",
+              "desiredTargets": [
+                0.2,
+                0.4
+              ],
+              "parkedWeights": [
+                0,
+                0
+              ],
+              "targetShares": [
+                0.3333333333333333,
+                0.6666666666666666
+              ],
+              "status": "ready",
+              "missing": null,
+              "warmingUp": false,
+              "metadata": {
+                "sourceDay": "2023-12-29",
+                "vixDay": "2023-12-29",
+                "qqqDay": "2024-01-02",
+                "vixOn": true,
+                "qqqOn": true,
+                "vixRatio": 0.8158584534731324,
+                "vixPeak": 82.69,
+                "vixHeld": 0,
+                "qqqExitRun": 0,
+                "qqqEntryRun": 0,
+                "phase": "invested",
+                "allocationStateChange": false,
+                "targetShares": [
+                  0.3333333333333333,
+                  0.6666666666666666
+                ],
+                "desiredTargets": [
+                  0.2,
+                  0.4
+                ],
+                "parkedWeights": [
+                  0,
+                  0
+                ],
+                "changes": 4
+              }
+            },
+            "executedTargets": [
+              0.2,
+              0.4
+            ],
+            "nextPlan": null,
+            "planCount": 4,
+            "tradeCount": 4,
+            "events": [
+              {
+                "day": "2020-03-10",
+                "signalDay": "2020-03-09",
+                "desiredTargets": [
+                  0.2,
+                  0
+                ],
+                "metadata": {
+                  "sourceDay": "2020-03-06",
+                  "vixDay": "2020-03-06",
+                  "qqqDay": "2020-03-09",
+                  "vixOn": false,
+                  "qqqOn": true,
+                  "vixRatio": 1.182741116751269,
+                  "vixPeak": 41.94,
+                  "vixHeld": 0,
+                  "qqqExitRun": 0,
+                  "qqqEntryRun": 0,
+                  "phase": "parked",
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.3333333333333333,
+                    0
+                  ],
+                  "desiredTargets": [
+                    0.2,
+                    0
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0.4
+                  ],
+                  "changes": 1
+                },
+                "trades": 1
+              },
+              {
+                "day": "2020-04-01",
+                "signalDay": "2020-03-31",
+                "desiredTargets": [
+                  0.2,
+                  0.4
+                ],
+                "metadata": {
+                  "sourceDay": "2020-03-30",
+                  "vixDay": "2020-03-30",
+                  "qqqDay": "2020-03-31",
+                  "vixOn": true,
+                  "qqqOn": true,
+                  "vixRatio": 1.1135388216933282,
+                  "vixPeak": 82.69,
+                  "vixHeld": 0,
+                  "qqqExitRun": 0,
+                  "qqqEntryRun": 0,
+                  "phase": "invested",
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.3333333333333333,
+                    0.6666666666666666
+                  ],
+                  "desiredTargets": [
+                    0.2,
+                    0.4
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 2
+                },
+                "trades": 1
+              },
+              {
+                "day": "2022-06-03",
+                "signalDay": "2022-06-02",
+                "desiredTargets": [
+                  0.2,
+                  0
+                ],
+                "metadata": {
+                  "sourceDay": "2022-06-01",
+                  "vixDay": "2022-06-01",
+                  "qqqDay": "2022-06-02",
+                  "vixOn": true,
+                  "qqqOn": false,
+                  "vixRatio": 0.9267676767676769,
+                  "vixPeak": 82.69,
+                  "vixHeld": 0,
+                  "qqqExitRun": 0,
+                  "qqqEntryRun": 0,
+                  "phase": "parked",
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.3333333333333333,
+                    0
+                  ],
+                  "desiredTargets": [
+                    0.2,
+                    0
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0.4
+                  ],
+                  "changes": 3
+                },
+                "trades": 1
+              },
+              {
+                "day": "2023-02-03",
+                "signalDay": "2023-02-02",
+                "desiredTargets": [
+                  0.2,
+                  0.4
+                ],
+                "metadata": {
+                  "sourceDay": "2023-02-01",
+                  "vixDay": "2023-02-01",
+                  "qqqDay": "2023-02-02",
+                  "vixOn": true,
+                  "qqqOn": true,
+                  "vixRatio": 0.8948422633950928,
+                  "vixPeak": 82.69,
+                  "vixHeld": 0,
+                  "qqqExitRun": 0,
+                  "qqqEntryRun": 0,
+                  "phase": "invested",
+                  "allocationStateChange": true,
+                  "targetShares": [
+                    0.3333333333333333,
+                    0.6666666666666666
+                  ],
+                  "desiredTargets": [
+                    0.2,
+                    0.4
+                  ],
+                  "parkedWeights": [
+                    0,
+                    0
+                  ],
+                  "changes": 4
+                },
+                "trades": 1
+              }
+            ],
+            "cashByLeg": [
+              0,
+              0
+            ]
+          },
+          "end": "2024-01-02"
+        },
+        "baseline": {
+          "method": "lump_sum",
+          "weights": [
+            20,
+            40
+          ],
+          "value": 1235990.9912528696,
+          "annualReturn": 28.59208522548078,
+          "mdd": -74.68771186935767,
+          "end": "2024-01-02"
+        },
+        "planText": "下一共同交易日\n2024-01-02收盘确定\n暂无调仓计划\n\n最近执行目标：USD ETF 20.00% · TQQQ 40.00%；实际仓位见下方账户风险。",
+        "requests": [
+          "http://127.0.0.1:8765/data/portfolio/catalog.js",
+          "http://127.0.0.1:8765/data/portfolio/entry-context.json"
+        ]
+      }
+    ],
+    "missingVix": {
+      "error": "本次行情更新失败：最新VIX/VIX3M配对数据请求失败（503）。仍显示上次成功模拟结果（2024-01-02）。",
+      "priorAccountRetained": true,
+      "simulationNotRecomputed": true,
+      "rotationStillWorks": true,
+      "recoveryWorks": true
+    },
+    "pageErrors": [],
+    "loadedSources": {
+      "assets/portfolio-model.js": "4170983e0ce16339f28b48e099db3354ca2dde56faf7c6f84ce4267c2e4ae023",
+      "assets/portfolio-systematic.js": "e7a112f6a6bae8607f5f4d3e207488f88812a49806879154dd4d751ac5b8b382",
+      "assets/portfolio.js": "3d730beb4897b6bdeb396ddbac84869c5ed89365cd864aca046e9bfdc749d07d"
+    },
+    "sourceFiles": {
+      "assets/portfolio.js": "3d730beb4897b6bdeb396ddbac84869c5ed89365cd864aca046e9bfdc749d07d",
+      "assets/portfolio-model.js": "4170983e0ce16339f28b48e099db3354ca2dde56faf7c6f84ce4267c2e4ae023",
+      "assets/portfolio-systematic.js": "e7a112f6a6bae8607f5f4d3e207488f88812a49806879154dd4d751ac5b8b382"
+    }
+  },
+  "browserSourceSHA256": "381682fa5f393dfc7e30fcbab58eea596f6e33e45fc8daa103fb026c3ff81c8b",
+  "codeSHA256": {
+    "assets/portfolio-systematic.js": "e7a112f6a6bae8607f5f4d3e207488f88812a49806879154dd4d751ac5b8b382",
+    "assets/portfolio-model.js": "4170983e0ce16339f28b48e099db3354ca2dde56faf7c6f84ce4267c2e4ae023",
+    "assets/portfolio.js": "3d730beb4897b6bdeb396ddbac84869c5ed89365cd864aca046e9bfdc749d07d",
+    "tests/portfolio-systematic.test.cjs": "23acf0f4735877dc03fcdc12009ec6e1ba319aa0e8b15d0c73007e748009be40",
+    "tests/portfolio-systematic-integration.test.cjs": "81d843d35a0ad0641c354694f21576c258a73e11a91809ca2cc38d78aaa6b853",
+    "tests/portfolio-pdf.test.cjs": "02d21eb482b603f0f89174ad938e99ba0f1bd86059514f398daf9c930318d437",
+    "tests/portfolio-strategy.test.cjs": "36e08318012597774ed8add86036f818722dba84fec0330b4fa03eead8937498"
+  }
+}

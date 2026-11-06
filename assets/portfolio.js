@@ -15,6 +15,7 @@
   if (draft.monthly == null || draft.monthly === '') draft.monthly = 0;
   draft.tax = { ...P.taxConfig(), ...draft.tax, overrides: { ...(draft.tax?.overrides || {}) } };
   const colors = ['#35654a', '#768855', '#aa8253', '#7d839f', '#64a6a1', '#ad6f78', '#8ba9cf', '#aab865'];
+  const systematicMethods = new Set(['vix_panic_reentry', 'relative_strength_rotation', 'dual_risk_guard']);
   const typeName = { stock: '个股', fund: '基金', etf: 'ETF' };
   const config = () => ({ ...draft, feeBasis: 'net', feeOverrides: {} });
   const signature = () => JSON.stringify(config());
@@ -80,6 +81,20 @@
     }
     catalog = next; window.PORTFOLIO_CATALOG = next;
   }
+  async function loadMarketContext() {
+    const response = await fetch('data/portfolio/entry-context.json', { cache: 'no-store' });
+    if (!response.ok) throw new Error('最新VIX/VIX3M配对数据请求失败（' + response.status + '）');
+    let context;
+    try { context = JSON.parse(await response.text()); }
+    catch (_) { throw new Error('最新VIX/VIX3M配对数据格式无效'); }
+    if (context?.schemaVersion !== 1 || context.status !== 'available' || !Array.isArray(context.series) ||
+        context.series.length < 2 || context.asOf !== context.series.at(-1)?.[0] || context.series.some((row, i) =>
+          !Array.isArray(row) || row.length !== 3 || !/^\d{4}-\d{2}-\d{2}$/.test(row[0]) ||
+          i > 0 && row[0] <= context.series[i - 1][0] || !row.slice(1).every(value => M.finite(value) && value > 0))) {
+      throw new Error('最新VIX/VIX3M配对数据不完整或日期无效');
+    }
+    return context;
+  }
   async function run() {
     if (running || !catalog) return;
     for (const position of draft.positions) {
@@ -95,9 +110,10 @@
       try { await refreshCatalog(); }
       catch (e) { refreshMissing = '未能确认最新行情：' + e.message + '。本次模拟使用已保存的历史数据。'; }
       P.validateConfig(params, new Set(catalog.assets.map(a => a.id)));
+      const marketContext = ['vix_panic_reentry', 'dual_risk_guard'].includes(params.initialMethod) ? await loadMarketContext() : null;
       const selected = params.positions.filter(p => p.weight > 0).map(p => asset(p.id));
       await Promise.all(selected.map(loadHistory));
-      if (params.initialMethod === 'qqq_bear_confirm') await loadHistory(asset('us:QQQ'));
+      if (['qqq_bear_confirm', 'dual_risk_guard'].includes(params.initialMethod)) await loadHistory(asset('us:QQQ'));
       const benchmark = asset(params.benchmarkId);
       if (selected.some(a => a.currency !== currency(params).code)) await loadHistory(catalog.fx);
       else if (benchmark && benchmark.currency !== currency(params).code) await loadHistory(catalog.fx).catch(() => {});
@@ -105,7 +121,7 @@
       // a valid user's combination impossible to simulate.
       if (benchmark && !selected.some(a => a.id === benchmark.id)) await loadHistory(benchmark).catch(() => {});
       if (token !== runId) return;
-      const input = { catalog, histories: Object.fromEntries(histories), config: params, fxHistory: histories.get(catalog.fx?.id) };
+      const input = { catalog, histories: Object.fromEntries(histories), config: params, fxHistory: histories.get(catalog.fx?.id), ...(marketContext ? { marketContext } : {}) };
       const computed = P.simulate(input);
       if (computed.error) {
         error = '本次模拟未完成：' + computed.error;
@@ -120,7 +136,7 @@
       }
     } catch (e) {
       if (token === runId) {
-        error = '本次行情更新失败：' + e.message;
+        error = '本次行情更新失败：' + e.message + (systematicMethods.has(params.initialMethod) && result ? '。仍显示上次成功模拟结果（' + result.end + '）。' : '');
       }
     }
     finally { if (token === runId) { running = false; update(); } }
@@ -165,10 +181,11 @@
     return '<div class="portfolio-tax-bar"><div class="portfolio-tax-top"><strong>模拟税率</strong>' + presets + '<span id="portfolio-tax-summary">' + H.esc(taxSummary()) + '</span><div class="portfolio-tax-options"><label class="check-label"><input type="checkbox" id="portfolio-liquidate"' + (draft.tax.liquidate ? ' checked' : '') + '>期末清仓</label>' + btn('税费口径', 'tax-method', 'text-link small') + '</div></div><details class="portfolio-tax-settings"><summary>自定义税率</summary><div class="portfolio-tax-body"><div class="portfolio-tax-grid">' + number('美股卖出盈利税率', 'tax-usCapitalGains', draft.tax.usCapitalGains, 100, 'any', '%') + number('美股股息总税负', 'tax-usDividend', draft.tax.usDividend, 100, 'any', '%') + '</div><div class="portfolio-tax-domestic">' + domestic + '</div>' + (overrides ? '<details class="portfolio-tax-overrides"><summary>特殊标的税率</summary>' + overrides + '</details>' : '') + '</div></details><p class="portfolio-tax-assumption">未卖出的盈利也按所设税率预留，结果显示扣除预留税后的估值。</p><p id="portfolio-tax-assumption" class="portfolio-tax-assumption"' + (hasLongHoldTaxAssumption() ? '' : ' hidden') + '>A股股息按长期持有0%估算，未自动计入短期卖出补税。</p></div>';
   }
   function strategyHints() {
-    const initial = /^entry_(option|volatility|breadth|composite)$/.test(draft.initialMethod) ? '原研究投入方式已撤回：未证明优于一次性投入，请重新选择本金投入方式' : draft.initial === 0 ? (draft.initialMethod === 'cash_topup' ? '持续投入后，用已有现金补足目标仓位，只买不卖' : draft.initialMethod === 'qqq_bear_confirm' ? '持续投入的TQQQ资金同样按QQQ状态持有或等待' : '初始金额为0，仅执行持续投入') : ({
+    const systematicHint = { vix_panic_reentry: 'VIX恐慌持续时暂退TQQQ，恐慌缓和后买回', relative_strength_rotation: '分三批在USD ETF与TQQQ之间调整股票资金', dual_risk_guard: 'VIX恐慌或QQQ深熊任一触发时暂退TQQQ，两者解除后买回' }[draft.initialMethod];
+    const initial = /^entry_(option|volatility|breadth|composite)$/.test(draft.initialMethod) ? '原研究投入方式已撤回：未证明优于一次性投入，请重新选择本金投入方式' : systematicHint || (draft.initial === 0 ? (draft.initialMethod === 'cash_topup' ? '持续投入后，用已有现金补足目标仓位，只买不卖' : draft.initialMethod === 'qqq_bear_confirm' ? '持续投入的TQQQ资金同样按QQQ状态持有或等待' : '初始金额为0，仅执行持续投入') : ({
       lump_sum: '初始本金一次买入', cash_topup: '按前日缺口用已有现金补仓，买入金额提前确定', qqq_bear_confirm: 'QQQ持续深跌时暂退TQQQ，趋势恢复后买回；其他持仓照常', tranche_6: '初始本金分6份，每月投入一份', tranche_12: '初始本金分12份，每月投入一份',
       tranche_24: '初始本金分24份，每月投入一份', drawdown_ladder: '先投入25%；回撤10% / 20% / 30%各投入25%', ma200_hold: '前收盘高于200日均线持有，否则持有现金'
-    }[draft.initialMethod]);
+    }[draft.initialMethod]));
     const income = draft.monthly === 0 ? '月预算为0，不追加投入' : ({
       dca_month: '每月投入基础月预算', dca_quarter: '季度首个共同交易日投入本季预算', dca_year: '年度首个共同交易日投入本年预算',
       dca_drawdown: '回撤10% / 20% / 30%时投入1.5 / 2 / 3倍月预算', dca_ma_trend: '不高于200日均线时投入半份月预算', dca_ma_contrarian: '不高于200日均线时投入双份月预算'
@@ -308,6 +325,30 @@
         '<p>模拟账户当前' + (s.executedOn ? '持有TQQQ' : '持有对应现金') + '；以上为下一共同交易日的动作。</p>';
       const latest = r.qqqLatestSignal;
       if (latest?.available && latest.sourceDay > s.sourceDay) body += '<p>较新观察：QQQ ' + H.esc(latest.sourceDay) + '收盘为' + (latest.on ? '持有TQQQ' : '持有现金') + '状态；尚未进入本组合的共同收盘决策，暂不改变上述计划。</p>';
+    } else if (systematicMethods.has(r.config.initialMethod)) {
+      const s = r.systematic, state = s?.state || {}, p = s?.nextPlan;
+      if (!s) return '<p class="portfolio-warning">下一交易日计划不可用：缺策略状态。</p>';
+      source = (p?.signalDay || s.signalDay || state.day || '最近共同交易日') + '收盘确定';
+      const orders = p?.orders || [], missing = Array.isArray(state.missing) ? state.missing.filter(Boolean).join('；') : state.missing;
+      if (orders.length) {
+        body = '<span class="badge">待执行</span><div class="portfolio-next-orders">' + orders.map(order => {
+          const code = r.holdings.find(h => h.id === order.id)?.code || asset(order.id)?.code || order.id;
+          const value = order.side === 'sell' ? (M.finite(order.sellFraction) ? '信号日持仓的 ' + H.pct(order.sellFraction * 100, 2, false) : '卖出比例缺失') : H.money(order.amount, 2) + ' ' + unit;
+          return '<div><span>' + (order.side === 'sell' ? '卖出 ' : '买入 ') + H.esc(code) + '</span><strong>' + value + '</strong></div>';
+        }).join('') + '</div>';
+        if (p.buyAmount > 0) body += '<p>固定买入金额 ' + H.money(p.buyAmount, 2) + ' ' + unit + '，另预留交易费 ' + H.money(p.buyFee || 0, 2) + ' ' + unit + '。</p>';
+        body += '<p>卖出比例以信号日持仓为准；买入金额提前确定。</p>';
+        if (orders.some(order => order.side === 'sell') && !orders.some(order => order.side === 'buy')) body += '<p>未来买入只使用已到账回款。</p>';
+      } else if (missing) {
+        body = '<strong>暂不生成新计划</strong>';
+      } else if (state.warmingUp) {
+        body = '<strong>等待信号历史积累</strong>';
+      } else {
+        body = '<strong>暂无调仓计划</strong>';
+      }
+      if (missing) body += '<p class="portfolio-warning">信号缺项：' + H.esc(missing) + '</p>';
+      else if (state.warmingUp) body += '<p>' + H.esc(typeof state.warmingUp === 'string' ? state.warmingUp : state.metadata?.reason || '历史观测不足，暂未形成完整信号。') + '</p>';
+      if (Array.isArray(s.executedTargets)) body += '<p>最近执行目标：' + ['USD ETF', 'TQQQ'].map((name, i) => name + ' ' + H.pct(s.executedTargets[i] * 100, 2, false)).join(' · ') + '；实际仓位见下方账户风险。</p>';
     } else return '';
     return '<div class="portfolio-next-plan"><div class="portfolio-next-head"><h3>下一共同交易日</h3><span>' + H.esc(source) + '</span></div>' + body + '</div>';
   }
@@ -322,7 +363,11 @@
       H.stat('期末税后估值差', (difference > 0 ? '+' : '') + H.money(difference, 2), unit, '一次性投入 ' + H.money(b.value, 2) + ' ' + unit) +
       H.stat('年化收益差', pp(r.annualReturn - b.annualReturn), '', '一次性投入 ' + H.pct(b.annualReturn, 2, false)) +
       H.stat('最大回撤对照', H.pct(r.mdd, 2, false), '', '一次性投入 ' + H.pct(b.mdd, 2, false)) + '</div>' +
-      nextTradePlan(r) + (r.config.initialMethod === 'cash_topup' ? '<p class="portfolio-warning">使用账户现金补仓 ' + (r.topupTimes || 0) + ' 次，累计买入 ' + H.money(r.topupAmount || 0, 2) + ' ' + unit + '。现金会减少，股票风险可能增加；满仓且无现金时不产生补仓。</p>' : r.config.initialMethod === 'qqq_bear_confirm' ? '<p class="portfolio-warning">本次模拟状态切换 ' + (r.qqqTimingChanges || 0) + ' 次。研究中的ETF收益优势主要来自2022年一次避险，不能视为已验证的普遍买卖信号。</p>' : '');
+      nextTradePlan(r) + (r.config.initialMethod === 'cash_topup' ? '<p class="portfolio-warning">使用账户现金补仓 ' + (r.topupTimes || 0) + ' 次，累计买入 ' + H.money(r.topupAmount || 0, 2) + ' ' + unit + '。现金会减少，股票风险可能增加；满仓且无现金时不产生补仓。</p>' : r.config.initialMethod === 'qqq_bear_confirm' ? '<p class="portfolio-warning">本次模拟状态切换 ' + (r.qqqTimingChanges || 0) + ' 次。研究中的ETF收益优势主要来自2022年一次避险，不能视为已验证的普遍买卖信号。</p>' : systematicMethods.has(r.config.initialMethod) ? '<p class="portfolio-warning">' + {
+        vix_panic_reentry: '研究收益优势主要来自2020年一次事件，结果对阈值敏感。',
+        relative_strength_rotation: '轮动可能集中于单只ETF，最大回撤可能增大。',
+        dual_risk_guard: '研究优势集中于2020和2022两个历史事件，独立验证证据有限。'
+      }[r.config.initialMethod] + '</p>' : '');
     return H.card('与一次性投入比较', verdict + ' · 同本金、初始权重、追加、税费与再平衡设置', body + '</div>',
       '<a class="source-link" href="docs/portfolio-entry-research.html" target="_blank" rel="noopener">投入方法研究 ↗</a>');
   }
@@ -351,7 +396,7 @@
       (draft.positions.some(p => (asset(p.id)?.leverage || 1) > 1 && p.weight > 0) ? '<div class="portfolio-warning">组合含每日杠杆ETF，长期表现取决于价格路径；杠杆并非长期收益的固定倍数。</div>' : '') + results();
   }
   function method() {
-    H.openModal(H.modalTitle('组合回测口径', currency().name + ' · 每日历史 · 按所设税率') + '<div class="rule-list"><p><strong>价格与分红：</strong>境内基金及ETF使用净值与已发布每日收益，默认不计场内溢价；个股和海外ETF使用含分红复权股价。分红视为再投资，支持碎股，不模拟申购暂停、涨跌停或整手限制。</p><p><strong>汇率与交易日：</strong>本金、持续投入、成本与结果统一使用所选币种；切换币种保留输入数值，不自动兑换本金。资产币种不同时按当日或此前有效的美元兑人民币历史汇率换算；同币种直接使用原始价格。休市日沿用最近已发布价格；新增投入和再平衡推迟到所选资产都有真实报价的共同日期，不使用未来价格。</p><p><strong>投入与权重：</strong>本金与持续投入方式可分别选择。分批、回撤阶梯的待投入本金持有零息现金，再平衡不提前使用。季投、年投在周期首个共同交易日一次入金该周期预算，末期按窗口内月份数计；倍数定投改变实际入金金额。再平衡只调整已释放资金。</p><p><strong>回撤阶梯与原200日均线：</strong>使用独立目标组合按所选币种计价的收益路径，现金为零息，按目标权重每日复位；不受实际入金、择时仓位或投资者费用税款影响。前一个共同交易日收盘确定回撤和200日均线信号，下一共同交易日执行。回撤从模拟起点峰值计算；均线可使用窗口前真实历史。不足200次时按常规投入，原200日均线择时作用于整个已释放组合。</p><p><strong>现金补仓：</strong>前一共同收盘按实际持仓缺口确定每只标的的买入金额，下一共同收盘先执行已知金额，再处理当天入金和周期再平衡。只用已有现金，不按成交日价格重算金额；成交后比例可偏离目标。</p><p><strong>QQQ深熊确认：</strong>使用QQQ自身美元复权价，仅控制TQQQ对应资金。QQQ低于200日均线且距252日高点跌至少20%连续20日才退出，高于均线连续3日才恢复；按前一共同收盘时可知的QQQ状态执行。下一共同日计划与账户已执行仓位分别展示；若有更晚的QQQ收盘观察，单独列出。</p><p><strong>费用与税：</strong>实际净值与复权股价已经反映产品持续年费，不再重复扣费，也不加回年费。买卖费率是统一自定义假设，未含最低佣金、换汇价差和申赎阶梯费率。投资者税使用所设综合税率；每日从持仓估值减去浮盈预留税，盈利下降时预留随之减少，不逐日重复扣款。期末清仓开启时扣实际清仓交易税费，并解除对应预留。跨境卖出和股息税后的渠道比较见“投资渠道”。</p><p><strong>收益：</strong>组合净值消除外部追加本金影响；税后盈亏为扣除浮盈预留税的期末资产减累计投入。首年年化按至少一年计算；不满一年不显示资金年化。对照线为同币种、同区间持有回报，使用同样税率和期末清仓设置，不计用户自定义交易费。</p><p><strong>持仓策略收益：</strong>逐笔使用实际买卖金额和费用。累计投入收益为（期末税后估值＋累计卖出净回款－累计买入含费金额）除以累计买入含费金额；反复买入的资金也计入分母。满一年按实际日期计算资金年化XIRR，不足一年显示累计投入收益、不外推；资金流找不到唯一年化解时留空。回撤和波动使用实际持仓的现金流中性净值，计入交易费、已发生税费及浮盈预留，追加和调仓转账本身不计收益。它们衡量持仓过程的风险，不是累计投入收益率的波动。</p></div><div class="actions"><a class="source-link" href="docs/portfolio-method.md" target="_blank" rel="noopener">完整公式与边界 ↗</a></div>');
+    H.openModal(H.modalTitle('组合回测口径', currency().name + ' · 每日历史 · 按所设税率') + '<div class="rule-list"><p><strong>价格与分红：</strong>境内基金及ETF使用净值与已发布每日收益，默认不计场内溢价；个股和海外ETF使用含分红复权股价。分红视为再投资，支持碎股，不模拟申购暂停、涨跌停或整手限制。</p><p><strong>汇率与交易日：</strong>本金、持续投入、成本与结果统一使用所选币种；切换币种保留输入数值，不自动兑换本金。资产币种不同时按当日或此前有效的美元兑人民币历史汇率换算；同币种直接使用原始价格。休市日沿用最近已发布价格；新增投入和再平衡推迟到所选资产都有真实报价的共同日期，不使用未来价格。</p><p><strong>投入与权重：</strong>本金与持续投入方式可分别选择。分批、回撤阶梯的待投入本金持有零息现金，再平衡不提前使用。季投、年投在周期首个共同交易日一次入金该周期预算，末期按窗口内月份数计；倍数定投改变实际入金金额。再平衡只调整已释放资金。</p><p><strong>回撤阶梯与原200日均线：</strong>使用独立目标组合按所选币种计价的收益路径，现金为零息，按目标权重每日复位；不受实际入金、择时仓位或投资者费用税款影响。前一个共同交易日收盘确定回撤和200日均线信号，下一共同交易日执行。回撤从模拟起点峰值计算；均线可使用窗口前真实历史。不足200次时按常规投入，原200日均线择时作用于整个已释放组合。</p><p><strong>现金补仓：</strong>前一共同收盘按实际持仓缺口确定每只标的的买入金额，下一共同收盘先执行已知金额，再处理当天入金和周期再平衡。只用已有现金，不按成交日价格重算金额；成交后比例可偏离目标。</p><p><strong>QQQ深熊确认：</strong>使用QQQ自身美元复权价，仅控制TQQQ对应资金。QQQ低于200日均线且距252日高点跌至少20%连续20日才退出，高于均线连续3日才恢复；按前一共同收盘时可知的QQQ状态执行。下一共同日计划与账户已执行仓位分别展示；若有更晚的QQQ收盘观察，单独列出。</p><p><strong>三种系统调仓：</strong>VIX恐慌恢复使用Cboe的VIX/VIX3M隐含波动指数控制TQQQ；三批相对强弱轮动在USD ETF与TQQQ之间分批调整股票资金；双重风险门合并VIX与QQQ状态。卖出比例对应的数量与买入金额在前一共同收盘确定，卖出回款到账后才用于后续买单；下一日计划与最近执行目标分别展示。</p><p><strong>费用与税：</strong>实际净值与复权股价已经反映产品持续年费，不再重复扣费，也不加回年费。买卖费率是统一自定义假设，未含最低佣金、换汇价差和申赎阶梯费率。投资者税使用所设综合税率；每日从持仓估值减去浮盈预留税，盈利下降时预留随之减少，不逐日重复扣款。期末清仓开启时扣实际清仓交易税费，并解除对应预留。跨境卖出和股息税后的渠道比较见“投资渠道”。</p><p><strong>收益：</strong>组合净值消除外部追加本金影响；税后盈亏为扣除浮盈预留税的期末资产减累计投入。首年年化按至少一年计算；不满一年不显示资金年化。对照线为同币种、同区间持有回报，使用同样税率和期末清仓设置，不计用户自定义交易费。</p><p><strong>持仓策略收益：</strong>逐笔使用实际买卖金额和费用。累计投入收益为（期末税后估值＋累计卖出净回款－累计买入含费金额）除以累计买入含费金额；反复买入的资金也计入分母。满一年按实际日期计算资金年化XIRR，不足一年显示累计投入收益、不外推；资金流找不到唯一年化解时留空。回撤和波动使用实际持仓的现金流中性净值，计入交易费、已发生税费及浮盈预留，追加和调仓转账本身不计收益。它们衡量持仓过程的风险，不是累计投入收益率的波动。</p></div><div class="actions"><a class="source-link" href="docs/portfolio-method.md" target="_blank" rel="noopener">完整公式与边界 ↗</a></div>');
   }
   function taxMethod() {
     H.openModal(H.modalTitle('组合税费口径', '中国大陆税收居民 · 2026-10-22更新') + '<div class="rule-list"><p><strong>美股普通股息的20%：</strong>是股息总税负。符合中美协定并向券商提交有效W-8BEN时，美国通常预扣10%；中国按20%计税，凭境外纳税凭证抵免10%后补税10%，合计20%。未享协定、ADR、REIT及特殊ETF分配需按实际性质与税单核定，不能一律套用20%，可在“特殊标的税率”中覆盖。</p><p><strong>卖出盈利税：</strong>大陆居民情景默认对美股正收益按20%估算。未卖出也按假设卖出计算：预留税＝max(0，持仓市值－预计卖出费－剩余成本)×税率，税后估值＝持仓市值＋现金－预留税。例如投入1,000美元、涨至1,200美元且无交易费，预留40美元，税后估值1,160美元。该预留只是估值扣减，不代表浮盈已产生实际纳税义务，不减少持股或可投资现金；实际卖出时解除对应预留并扣卖出税，避免重复。成本按所选币种移动平均计算，买入费用及税后分红再投入计入成本，逐笔亏损不抵减其他盈利。美元模式按美元收益估税，未模拟人民币申报折算差异。A股普通流通股卖出所得按现行暂免个税处理。</p><p><strong>境内分红：</strong>A股持股超过一年股息暂免，持股一个月以内为20%，超过一个月至一年为10%。默认只采用长期持有0%的简化情景，未自动重建逐笔持有期及卖出时的股息补税；短期买卖可单独设置股息税率。境内公募基金及ETF不在投资者层面追加个税，产品资产中已承担的税费仍保留在净值里。</p><p><strong>分红处理：</strong>复权行情已含税前分红再投，只按真实现金分配扣所设税额，再把净分红加入成本，避免重复增加分红或重复扣税。缺完整分红证据时停止应税回测，并指出缺失数据。</p><p><strong>不计税与期末清仓：</strong>“不计税”把模拟投资者税率设为0%，不会加回净值内已承担的税费。持仓估值已减浮盈预留税，但没有扣假设卖出的交易费本身；开启“期末清仓”会在末日卖出持仓并扣实际清仓交易费与正收益税；末日必须是所有持仓都有实际报价的共同交易日。休市日只能用于持仓估值，不能按沿用报价清仓；对照线同样要求当日实际报价。</p><p>这是统一有效税率情景，实际买卖与分红税、当前浮盈预留分别列示；未模拟申报延期、跨笔或跨年抵扣、外税结转、ADR费用和每次分配的税务分类。</p></div><div class="actions"><a class="source-link" href="https://www.irs.gov/pub/irs-trty/china.pdf" target="_blank" rel="noopener">中美税收协定第9条 ↗</a><a class="source-link" href="https://12366.chinatax.gov.cn/bzds/081/081-5-9.html" target="_blank" rel="noopener">境外所得抵免 ↗</a><a class="source-link" href="https://shanghai.chinatax.gov.cn/zcfw/zcfgk/grsds/201509/t418999.html" target="_blank" rel="noopener">A股股息持有期税率 ↗</a><a class="source-link" href="docs/portfolio-method.md" target="_blank" rel="noopener">完整依据与公式 ↗</a></div>');

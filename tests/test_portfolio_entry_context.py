@@ -1,11 +1,13 @@
 import copy
 import json
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from scripts import build_portfolio_entry_context as context
+import refresh
+from scripts import build_portfolio_entry_context as context, post_refresh
 
 
 def csv_bytes(rows, header="DATE,OPEN,HIGH,LOW,CLOSE"):
@@ -48,6 +50,36 @@ class EntryContextTests(unittest.TestCase):
             saved = json.loads(before)
             self.assertEqual(saved["asOf"], "2026-10-30")
             self.assertEqual(saved["sources"]["VIX3M"]["retrievedAt"], "2026-11-02")
+
+    def test_post_refresh_retains_saved_pair_and_dates_when_second_source_fails(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            data = root / "data"
+            target = data / "portfolio/entry-context.json"
+            context.build(target, local_snapshots=snapshots())
+            before = target.read_bytes()
+
+            def collector(command, **kwargs):
+                self.assertEqual(Path(command[1]).name, "build_portfolio_entry_context.py")
+                self.assertEqual(command[2:], ["--refresh"])
+                try:
+                    context.build(target, refresh=True)
+                except TimeoutError as exc:
+                    return subprocess.CompletedProcess(command, 1, "", "Entry context unchanged: " + str(exc))
+                self.fail("the second Cboe source should have failed")
+
+            with patch.object(post_refresh, "DATA", data), patch.object(refresh, "DATA", data), \
+                    patch.object(refresh, "ROOT", root), patch.dict(refresh.PUBLISHED_OUTPUTS), \
+                    patch.object(refresh.subprocess, "run", side_effect=collector), \
+                    patch.object(refresh, "write_status"), \
+                    patch.object(context, "fetch", side_effect=[snapshots()["VIX"], TimeoutError("VIX3M unavailable")]) as fetch:
+                step = post_refresh.run_task("portfolio_stress")
+                self.assertEqual(refresh.PUBLISHED_OUTPUTS["portfolio_stress"], ("portfolio/entry-context.json",))
+            self.assertEqual(fetch.call_count, 2)
+            self.assertEqual(step["status"], "failed")
+            self.assertTrue(step["retainedPrevious"])
+            self.assertEqual(target.read_bytes(), before)
+            self.assertEqual(json.loads(before)["asOf"], "2026-10-30")
 
     def test_missing_columns_duplicate_dates_and_nonfinite_values_are_rejected(self):
         bad = [b"<html>Access denied</html>", b"DATE,OPEN\n10/30/2026,20\n",

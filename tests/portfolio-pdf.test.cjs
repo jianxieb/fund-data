@@ -98,10 +98,10 @@ test('single-page PDF has binary-safe xref offsets, contiguous bands and correct
   for (const band of bands) assert.ok(bytes.includes(Buffer.from(band.bytes)));
 });
 
-function uiFixture(configure) {
+function uiFixture(configure, model = P) {
   const { input } = fixture(), downloads = [], notices = [], reports = [], renderStates = [];
   if (configure) configure(input);
-  const context = { window: { Changheng: M, ChanghengPortfolioModel: P, PORTFOLIO_CATALOG: input.catalog,
+  const context = { window: { Changheng: M, ChanghengPortfolioModel: model, PORTFOLIO_CATALOG: input.catalog,
     ChanghengPortfolioPdf: { snapshot: Pdf.snapshot, async create(report) { reports.push(report); return new Blob(['PDF']); } } },
     localStorage: { getItem: () => JSON.stringify(input.config), setItem() {} },
     document: { getElementById: () => null, querySelectorAll: () => [] }, TextEncoder,
@@ -119,6 +119,110 @@ function uiFixture(configure) {
   const monthly = value => ui.handleInput({ id: 'portfolio-monthly', value: String(value), dataset: { portfolioField: 'monthly' } });
   return { ui, action, monthly, context, helpers, downloads, notices, reports, renderStates, input };
 }
+
+function systematicUiFixture(method, state = {}) {
+  const calls = [], fetches = [], methods = ['vix_panic_reentry', 'relative_strength_rotation', 'dual_risk_guard'];
+  // Keep account rendering real while isolating the UI's data-loading and new
+  // result contract from the independently tested trading controllers.
+  const model = { ...P,
+    validateConfig: (config, ids) => P.validateConfig({ ...config, initialMethod: methods.includes(config.initialMethod) ? 'lump_sum' : config.initialMethod }, ids),
+    simulate(input) {
+      calls.push(input);
+      const systematic = methods.includes(input.config.initialMethod);
+      const computed = P.simulate({ ...input, config: { ...input.config, initialMethod: systematic ? 'lump_sum' : input.config.initialMethod } });
+      if (systematic && !computed.error) {
+        computed.config.initialMethod = input.config.initialMethod;
+        computed.systematic = { method: input.config.initialMethod, signalDay: computed.end,
+          executedTargets: [.3, .3], nextPlan: null, state: { missing: null, warmingUp: false, metadata: {} }, ...state };
+      }
+      return computed;
+    },
+    simulateWindows: () => []
+  };
+  const f = uiFixture(input => {
+    Object.assign(input.config, { initialMethod: method, monthly: 0, rebalance: 'none', benchmarkId: '', tax: P.taxConfig() });
+    for (const [i, id] of ['us:USD', 'us:TQQQ'].entries()) {
+      const a = input.catalog.assets[i], old = a.id, h = input.histories[old];
+      Object.assign(a, { id, code: id.slice(3), name: id.slice(3), kind: 'etf' });
+      h.id = id; delete input.histories[old]; input.histories[id] = h;
+      input.config.positions[i] = { id, weight: 30 };
+    }
+    const first = input.catalog.assets[0], history = input.histories[first.id];
+    input.catalog.assets.push({ ...first, id: 'us:QQQ', code: 'QQQ', name: 'QQQ', historyUrl: 'data/portfolio/etf/QQQ.json' });
+    input.histories['us:QQQ'] = { ...history, id: 'us:QQQ' };
+  }, model);
+  f.helpers.pct = value => M.finite(value) ? value.toFixed(2) + '%' : '—';
+  f.marketContext = { schemaVersion: 1, status: 'available', first: '2026-01-07', asOf: '2026-01-08', series: [['2026-01-07', 18, 21], ['2026-01-08', 19, 22]] };
+  const originalFetch = f.context.fetch;
+  f.context.fetch = async (url, options) => {
+    fetches.push({ url, options });
+    if (url === 'data/portfolio/entry-context.json') return { ok: true, text: async () => JSON.stringify(f.marketContext) };
+    return originalFetch(url, options);
+  };
+  return Object.assign(f, { calls, fetches });
+}
+
+test('systematic UI refreshes VIX evidence on every applicable run and isolates other methods', async () => {
+  for (const method of ['lump_sum', 'cash_topup', 'relative_strength_rotation', 'vix_panic_reentry', 'dual_risk_guard']) {
+    const f = systematicUiFixture(method);
+    await f.action('run');
+    const first = f.calls.find(call => call.config.initialMethod === method);
+    assert.ok(first, f.ui.view(f.helpers));
+    const needsVix = ['vix_panic_reentry', 'dual_risk_guard'].includes(method);
+    assert.equal(Boolean(first.marketContext), needsVix);
+    f.marketContext = { ...f.marketContext, asOf: '2026-01-09', series: [...f.marketContext.series, ['2026-01-09', 20, 23]] };
+    await f.action('run');
+    const vixFetches = f.fetches.filter(x => x.url === 'data/portfolio/entry-context.json');
+    assert.equal(vixFetches.length, needsVix ? 2 : 0);
+    assert.ok(vixFetches.every(x => x.options.cache === 'no-store'));
+    assert.equal(f.fetches.filter(x => x.url === 'data/portfolio/etf/QQQ.json').length, method === 'dual_risk_guard' ? 1 : 0);
+    if (needsVix) assert.equal(f.calls.filter(call => call.config.initialMethod === method).at(-1).marketContext.asOf, '2026-01-09');
+  }
+});
+
+test('systematic UI retains the prior account and blocks recomputation when VIX refresh fails', async () => {
+  for (const method of ['vix_panic_reentry', 'dual_risk_guard']) {
+    const f = systematicUiFixture(method), fetch = f.context.fetch;
+    await f.action('run'); await f.action('export-pdf');
+    assert.equal(f.reports.length, 1);
+    const value = f.reports[0].result.value, before = f.calls.length;
+    f.context.fetch = async (url, options) => url === 'data/portfolio/entry-context.json' ? { ok: false, status: 503 } : fetch(url, options);
+    await f.action('run');
+    assert.equal(f.calls.length, before);
+    const html = f.ui.view(f.helpers);
+    assert.match(html, /最新VIX\/VIX3M配对数据请求失败（503）/);
+    assert.match(html, /仍显示上次成功模拟结果/);
+    assert.ok(html.includes(String(value)));
+    await f.action('export-pdf'); assert.equal(f.reports.length, 1);
+    f.context.fetch = fetch; f.marketContext.series = [['2026-01-08', 19, 22], ['2026-01-07', 18, 21]];
+    await f.action('run'); assert.equal(f.calls.length, before);
+    assert.match(f.ui.view(f.helpers), /配对数据不完整或日期无效/);
+  }
+});
+
+test('systematic next-day orders show fixed money and signal-day sale proportions, never normalized units', async () => {
+  const f = systematicUiFixture('relative_strength_rotation', { nextPlan: { signalDay: '2026-01-08',
+    orders: [{ id: 'us:TQQQ', side: 'sell', sellFraction: .25, units: .123456789 }, { id: 'us:USD', side: 'buy', amount: 1234.56 }],
+    buyAmount: 1234.56, buyFee: 1.23, desiredTargets: [.4, .2], parkedWeights: [0, 0], metadata: {} } });
+  await f.action('run');
+  const html = f.ui.view(f.helpers);
+  assert.match(html, /待执行/); assert.match(html, /卖出 TQQQ/); assert.match(html, /信号日持仓的 25\.00%/);
+  assert.match(html, /买入 USD/); assert.match(html, /固定买入金额 1234\.56 元，另预留交易费 1\.23 元/);
+  assert.match(html, /最近执行目标：USD ETF 30\.00% · TQQQ 30\.00%/);
+  assert.doesNotMatch(html, /0\.123456789|<strong>[^<]*\d+(?:\.\d+)?\s*股<\/strong>/);
+  assert.match(html, /轮动可能集中于单只ETF，最大回撤可能增大/);
+});
+
+test('systematic no-order states distinguish missing evidence, warmup and an unchanged allocation', async () => {
+  for (const [state, expected] of [[{ missing: '缺同日VIX/VIX3M', metadata: {} }, /暂不生成新计划.*信号缺项：缺同日VIX\/VIX3M/],
+    [{ warmingUp: true, metadata: { reason: 'USD/TQQQ不足505个共同实际收盘' } }, /等待信号历史积累/], [{ metadata: {} }, /暂无调仓计划/]]) {
+    const f = systematicUiFixture('dual_risk_guard', { state });
+    await f.action('run');
+    const html = f.ui.view(f.helpers);
+    assert.match(html, expected); assert.doesNotMatch(html, /class="badge">待执行/);
+    assert.match(html, /2020和2022两个历史事件/);
+  }
+});
 
 function accountUiFixture(configure) {
   const f = uiFixture(input => {
@@ -488,7 +592,7 @@ test('USD settings, tax reserve, PDF and CSV keep the same result currency after
 test('production entrypoint loads the account model, PDF and simulator', () => {
   const html = fs.readFileSync(path.resolve(__dirname, '../index.html'), 'utf8');
   const assets = [...html.matchAll(/src="assets\/(portfolio[^"?]*)/g)].map(match => match[1]);
-  assert.deepEqual(assets, ['portfolio-model.js', 'portfolio-pdf.js', 'portfolio.js']);
+  assert.deepEqual(assets, ['portfolio-systematic.js', 'portfolio-model.js', 'portfolio-pdf.js', 'portfolio.js']);
 });
 
 

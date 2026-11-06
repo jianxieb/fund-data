@@ -1,6 +1,9 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const P = require('../assets/portfolio-model.js');
+// Asset-specific QQQ/VIX/rotation rules have their own identity, signal and
+// variable-weight integration fixtures; these seven work for generic stocks.
+const ordinaryMethods = ['lump_sum', 'tranche_6', 'tranche_12', 'tranche_24', 'drawdown_ladder', 'ma200_hold', 'cash_topup'];
 const close = (a, b, epsilon = 1e-7) => assert.ok(Math.abs(a - b) < epsilon, `${a} != ${b}`);
 function calendar(start, end) {
   const result = [];
@@ -122,9 +125,9 @@ test('future prices cannot change earlier trading decisions, signals, taxes or a
   assert.deepEqual(after.curve.filter(t => t.day <= cutoff), before.curve.filter(t => t.day <= cutoff));
 });
 
-test('all initial and income combinations reconcile; legacy configs and exported strategies stay compatible', () => {
+test('ordinary initial and income combinations reconcile; legacy configs and exported strategies stay compatible', () => {
   const days = calendar('2024-01-01', '2025-03-02'), prices = days.map(() => 1), ids = new Set(['stock:0']);
-  for (const [initialMethod] of P.initialMethods.filter(([id]) => id !== 'qqq_bear_confirm')) for (const [contributionMethod] of P.contributionMethods) {
+  for (const initialMethod of ordinaryMethods) for (const [contributionMethod] of P.contributionMethods) {
     const input = fixture(days, prices, { initial: 600, monthly: 100, initialMethod, contributionMethod });
     const r = simulate(input);
     close(r.value, r.contributed); close(r.profit, 0); assert.ok(r.cash >= r.initialReserve - 1e-6);
@@ -147,7 +150,7 @@ test('all initial and income combinations reconcile; legacy configs and exported
 test('retired research methods cannot execute or import as a different strategy', () => {
   const days = calendar('2025-01-01', '2025-01-05');
   const input = fixture(days, days.map(() => 100));
-  assert.deepEqual(P.initialMethods.map(([id]) => id), ['lump_sum', 'tranche_6', 'tranche_12', 'tranche_24', 'drawdown_ladder', 'ma200_hold', 'cash_topup', 'qqq_bear_confirm']);
+  assert.deepEqual(P.initialMethods.map(([id]) => id), [...ordinaryMethods, 'qqq_bear_confirm', 'vix_panic_reentry', 'relative_strength_rotation', 'dual_risk_guard']);
   for (const method of ['entry_option', 'entry_volatility', 'entry_breadth', 'entry_composite']) {
     const config = { ...input.config, initialMethod: method };
     const result = P.simulate({ ...input, config });
@@ -163,7 +166,7 @@ test('retired research methods cannot execute or import as a different strategy'
 test('all seven ordinary methods accept changed holding and cash weights without the retired 30/30 scope', () => {
   const days = calendar('2024-01-01', '2025-03-02');
   const paths = [days.map((_, i) => 100 + i / 5), days.map((_, i) => 90 + i / 10)];
-  for (const weights of [[35, 25], [60, 40], [15, 65]]) for (const [initialMethod] of P.initialMethods.filter(([id]) => id !== 'qqq_bear_confirm')) {
+  for (const weights of [[35, 25], [60, 40], [15, 65]]) for (const initialMethod of ordinaryMethods) {
     const input = fixture(days, paths, { initialMethod });
     input.config.positions.forEach((p, i) => { p.weight = weights[i]; });
     const result = simulate(input);
