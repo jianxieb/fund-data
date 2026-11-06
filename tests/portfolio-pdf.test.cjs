@@ -102,7 +102,7 @@ function uiFixture(configure, model = P) {
   const { input } = fixture(), downloads = [], notices = [], reports = [], renderStates = [];
   if (configure) configure(input);
   const context = { window: { Changheng: M, ChanghengPortfolioModel: model, PORTFOLIO_CATALOG: input.catalog,
-    ChanghengPortfolioPdf: { snapshot: Pdf.snapshot, async create(report) { reports.push(report); return new Blob(['PDF']); } } },
+    ChanghengPortfolioPdf: { ...Pdf, snapshot: Pdf.snapshot, async create(report) { reports.push(report); return new Blob(['PDF']); } } },
     localStorage: { getItem: () => JSON.stringify(input.config), setItem() {} },
     document: { getElementById: () => null, querySelectorAll: () => [] }, TextEncoder,
     fetch: async url => ({ ok: true, text: async () => url === 'data/portfolio/catalog.js' ? 'var PORTFOLIO_CATALOG=' + JSON.stringify(input.catalog) + ';' : JSON.stringify(Object.values(input.histories).find(h => input.catalog.assets.find(a => a.id === h.id).historyUrl === url)) }) };
@@ -241,11 +241,14 @@ test('daily UI selects historical indicators and budgets without changing the si
   const f = dailyUiFixture();
   await f.action('run');
   let html = f.ui.view(f.helpers);
-  assert.ok(html.indexOf('每日加仓指标') < html.indexOf('与一次性投入比较'));
-  assert.match(html, /TQQQ新增预算投入率.*100\.00%/);
-  assert.match(html, /预算试算，不改变回测/);
+  assert.ok(html.indexOf('每日策略状态') < html.indexOf('与一次性投入比较'));
+  assert.match(html, /TQQQ策略状态.*持有状态/);
+  assert.match(html, /预算试算，不计入回测年化/);
+  assert.match(html, /规则调仓买入 0笔、卖出 0笔/);
+  assert.match(html, /状态天数不等于买入次数/);
+  assert.doesNotMatch(html, /TQQQ新增预算投入率|每日加仓指标/);
   for (const field of ['indicator-index', 'indicator-date', 'indicator-budget']) assert.ok(html.includes('data-portfolio-field="' + field + '"'), 'root event routing: ' + field);
-  assert.equal((html.match(/指标说明与历史检验/g) || []).length, 1);
+  assert.equal((html.match(/规则说明与历史检验/g) || []).length, 1);
   assert.ok(html.includes('docs/portfolio-entry-research.html#vix_panic_reentry'));
   assert.match(html, /2026-01-08.*来源 VIX\/VIX3M 2026-01-07/);
   const calls = f.calls.length;
@@ -253,7 +256,7 @@ test('daily UI selects historical indicators and budgets without changing the si
   f.ui.handleInput({ id: 'portfolio-addition-budget', value: '4321', dataset: {} });
   html = f.ui.view(f.helpers);
   assert.match(html, /value="2026-01-07"/);
-  assert.match(html, /TQQQ新增预算投入率.*0\.00%/);
+  assert.match(html, /TQQQ策略状态.*退出状态/);
   assert.match(html, /TQQQ对应预算暂存现金/);
   assert.match(html, /原有账户 · 下一共同交易日/);
   assert.match(html, /这里是该日执行目标；下方账户风险为模拟期末/);
@@ -273,9 +276,38 @@ test('daily UI selects historical indicators and budgets without changing the si
   assert.match(f.ui.view(f.helpers), /value="2026-01-06"/);
   await f.action('export-daily');
   const csv = f.downloads.at(-1);
-  assert.match(csv[0], /每日加仓指标/);
+  assert.match(csv[0], /逐日策略状态/);
   for (const field of ['metadata.vixRatio', 'budgetAllocation.parkedCash', 'executedTargets', '2026-01-06', '2026-01-07', '2026-01-08', '4321']) assert.ok(csv[1].includes(field), field);
   assert.match(csv[1], /不是券商实际股数/);
+});
+
+test('daily explanation uses pre-reset trigger counts and separates state from the pending order', () => {
+  const row = dailyUiFixture().daily[1];
+  Object.assign(row.metadata, { vixValue: 24, vix3mValue: 20, vixRatio: 1.2, vixExitRun: 0,
+    vixDecision: { previousOn: true, previousArmed: true, armedForExit: true, stressed: true,
+      exitCountTested: 10, exitTriggered: true, on: false, lastTransitionDay: '2026-01-06' } });
+  row.nextPlan = { orders: [{ id: 'us:TQQQ', side: 'sell', sellFraction: 1 }] };
+  const text = Pdf.explainDaily(row).flat().join('\n');
+  assert.match(text, /24 ÷ 20 = 1\.2/);
+  assert.match(text, /本次连续 10 \/ 10 次/);
+  assert.match(text, /来源日状态从持有切换为退出/);
+  assert.match(text, /下一共同收盘卖出TQQQ的信号日持仓 100%/);
+  assert.equal(Pdf.dailyDisplay(row.indicators[0]).value, '退出状态');
+  row.nextPlan = null;
+  assert.match(Pdf.explainDaily(row).flat().join('\n'), /没有新调仓订单；保持状态不会每天重复买入/);
+});
+
+test('rotation explanation exposes price substitution and retains three phase memories between reviews', () => {
+  const row = { status: 'ready', method: 'relative_strength_rotation', metadata: {
+    relativeInputs: { startDay: '2024-01-02', endDay: '2026-01-06', usdStart: 100, usdEnd: 150, tqqqStart: 100, tqqqEnd: 100, ratio: 1.5 },
+    originalShares: [1/3, 2/3], leaders: [0, null, 1], reviewedToday: false,
+    phaseReviews: [{ day: '2025-10-01', sourceDay: '2025-10-01', ratio: 1.3, leader: 0 }, null,
+      { day: '2025-12-01', sourceDay: '2025-12-01', ratio: .7, leader: 1 }] }, nextPlan: null };
+  const text = Pdf.explainDaily(row).flat().join('\n');
+  assert.match(text, /\(150 ÷ 100\) ÷ \(100 ÷ 100\) = 1\.5/);
+  assert.match(text, /本日没有复核/);
+  assert.match(text, /\(100% \+ 33\.333333% \+ 0%\) ÷ 3 = 44\.444444%/);
+  assert.match(text, /2025-12-01复核；来源 2025-12-01，相对增长 0\.7；保留方向：TQQQ/);
 });
 
 test('daily indicators preserve missing and warmup semantics and freeze the same selection in PDF', async () => {
@@ -288,14 +320,14 @@ test('daily indicators preserve missing and warmup semantics and freeze the same
     orders: [{ id: 'us:TQQQ', side: 'sell', sellFraction: .25, units: .123456789 }], buyAmount: 0, buyFee: 0 };
   await f.action('run'); await f.action('export-pdf');
   let text = textOf(Pdf.layout(f.reports.at(-1), measure));
-  assert.match(text, /Cboe VIX\/VIX3M/); assert.match(text, /每日加仓指标/);
+  assert.match(text, /Cboe VIX\/VIX3M/); assert.match(text, /每日策略状态/);
   assert.match(text, /信号日持仓的 25\.00%/); assert.doesNotMatch(text, /0\.123456789/);
   await f.action('daily-prev'); await f.action('export-pdf');
   assert.equal(f.reports.at(-1).dailyIndicator.allocation.status, 'fallback');
   assert.match(f.ui.view(f.helpers), /预热期间沿用原配置/);
   await f.action('daily-prev'); await f.action('export-pdf');
   const html = f.ui.view(f.helpers);
-  assert.match(html, /TQQQ新增预算投入率<\/span><strong>—/);
+  assert.match(html, /TQQQ策略状态<\/span><strong>—/);
   assert.match(html, /VIX记录缺连续日线/);
   assert.equal(f.reports.at(-1).dailyIndicator.allocation, null);
   f.ui.handleInput({ id: 'portfolio-addition-budget', value: '-1', dataset: {} });

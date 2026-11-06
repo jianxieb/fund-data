@@ -4,8 +4,8 @@
   "sources": {
     "docs/research/portfolio-methods-20261106/reproduction.tar.gz": "a450134e9c8a02a7e6dab5cc0b97c21ce60581fd9b93e550febc8cc5b344e555",
     "assets/model.js": "8d433de2935cb24663e8285f72ee8a9ff01e7d11e80ff063eb6c6533a02c6a26",
-    "assets/portfolio-model.js": "57766429812aa052d94de108cf3e4bd720f0b742a1258516a5ba097a11a9916e",
-    "assets/portfolio-systematic.js": "82df794cd14f5cfcd5a13b102fa47e5634908754a4532399d858c09c5b854aaf"
+    "assets/portfolio-model.js": "cba37d0170bf086fa4d029e12467249cb792fb1627d8485dbe7a18e6c93c5b7e",
+    "assets/portfolio-systematic.js": "da0becf94de221dc36492db2ad4361405f015a6b42826571c52f4c6ccbc91682"
   },
   "frozenSources": {
     "data/portfolio/catalog.js": "4530c6433205e81f7372b353da83c60cb97e596fbe2232f617831214892d0b2e",
@@ -23,7 +23,7 @@
   "budgetQuotes": 181230,
   "prefixRows": 20331,
   "financialDifferences": 0,
-  "elapsedSeconds": 15.285636917,
+  "elapsedSeconds": 12.439624791999998,
   "records": [
     {
       "method": "vix_panic_reentry",

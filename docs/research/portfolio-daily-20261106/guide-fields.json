@@ -1,5 +1,15 @@
 [
   {
+    "value": 31.252827058037823,
+    "rendered": "31.25%",
+    "source": "examples.json stateAudit vix annualReturn"
+  },
+  {
+    "value": 29.0526987616901,
+    "rendered": "29.05%",
+    "source": "examples.json stateAudit lump annualReturn"
+  },
+  {
     "value": 3000,
     "rendered": "3000.00",
     "source": "examples.json reentry.cash"

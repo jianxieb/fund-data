@@ -149,9 +149,15 @@ test('every common close has an immutable numerical daily state even without an 
     assert.equal(Reflect.set(daily[0].metadata, 'sourceDay', '2099-01-01'), false);
     for (const row of daily) {
       if (row.status !== 'ready') { assert.ok(row.indicators.every(s => s.value === null)); continue; }
-      assert.ok(row.indicators.every(s => Number.isFinite(s.value) && s.unit === '%'));
-      if (method === 'relative_strength_rotation') near(sum(row.indicators.map(s => s.value)), 100);
-      else assert.ok([0, 100].includes(row.indicator));
+      assert.ok(row.indicators.every(s => Number.isFinite(s.value)));
+      if (method === 'relative_strength_rotation') {
+        assert.ok(row.indicators.every(s => s.unit === '%'));
+        near(sum(row.indicators.map(s => s.value)), 100);
+      } else {
+        assert.ok([0, 100].includes(row.indicator));
+        assert.equal(row.indicators[0].unit, 'state_code');
+        assert.equal(row.indicators[0].kind, 'holding_state');
+      }
     }
   }
 });

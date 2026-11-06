@@ -154,3 +154,61 @@ test('native relative return cancels a shared currency conversion and state copi
   const state = ca.state(); state.desiredTargets[0] = 99;
   assert.notEqual(ca.state().desiredTargets[0], 99);
 });
+
+test('VIX explanation preserves the ten observations and recovery conditions before counters reset', () => {
+  const c = S.create(setup());
+  for (let i = 299; i <= 310; i++) c.step(ctx(i));
+  const exit = c.state().metadata.vixDecision;
+  assert.equal(exit.exitCountTested, 10);
+  assert.equal(exit.exitTriggered, true);
+  assert.equal(exit.previousOn, true);
+  assert.equal(exit.on, false);
+  assert.equal(exit.transition, 'exit');
+  assert.equal(exit.lastTransitionDay, days[309]);
+  assert.equal(c.state().metadata.vixExitRun, 0, 'state counter resets, but decision evidence must not');
+  for (let i = 311; i <= 331; i++) c.step(ctx(i, { cashByLeg: [0, 80] }));
+  const entry = c.state().metadata.vixDecision;
+  assert.equal(entry.transition, 'reentry');
+  assert.equal(entry.recoveryByPeak, true);
+  assert.equal(entry.recoveryByCalm, false);
+  assert.ok(entry.heldTested >= 5);
+  close(entry.peakDropTested, .5);
+  assert.equal(c.state().metadata.vixHeld, 0);
+  assert.equal(c.step(ctx(332)), null, 'holding state does not create another purchase');
+  assert.equal(c.state().metadata.vixDecision.transition, 'hold');
+});
+
+test('QQQ decision evidence retains actual 20-day exit and 3-day recovery confirmations', () => {
+  const c = S.create(setup('dual_risk_guard'));
+  c.step(ctx(319));
+  const exit = c.state().metadata.qqqDecision;
+  assert.equal(exit.exitCountTested, 20);
+  assert.equal(exit.exitTriggered, true);
+  assert.equal(exit.on, false);
+  assert.equal(exit.belowMA && exit.drawdownAtLeast20, true);
+  c.step(ctx(352));
+  const entry = c.state().metadata.qqqDecision;
+  assert.equal(entry.entryCountTested, 3);
+  assert.equal(entry.reentryTriggered, true);
+  assert.equal(entry.on, true);
+  assert.equal(c.state().metadata.qqqEntryRun, 0);
+});
+
+test('rotation exposes its exact price operands and retains each phase review across ordinary days', () => {
+  const c = S.create(setup('relative_strength_rotation', { weights: [.2, .4] }));
+  c.step(ctx(520));
+  const m = c.state().metadata, operands = m.relativeInputs;
+  assert.equal(operands.startDay, days[16]);
+  assert.equal(operands.endDay, days[520]);
+  close(operands.usdGrowth, operands.usdEnd / operands.usdStart);
+  close(operands.tqqqGrowth, operands.tqqqEnd / operands.tqqqStart);
+  close(operands.ratio, operands.usdGrowth / operands.tqqqGrowth);
+  close(m.relativeRatio, operands.ratio);
+  close(m.originalShares[0], 1 / 3);
+  const phase = (Number(days[520].slice(5, 7)) - 1) % 3;
+  assert.equal(m.phaseReviews[phase].day, days[520]);
+  assert.equal(m.phaseReviews[phase].leader, 0);
+  c.step(ctx(521));
+  assert.deepEqual(c.state().metadata.phaseReviews, m.phaseReviews);
+  assert.equal(c.state().metadata.reviewedToday, false);
+});

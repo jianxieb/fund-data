@@ -1,6 +1,6 @@
 <!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>USD与TQQQ长期投入方法对照报告 · 长衡</title><style>
 :root{font-family:system-ui,-apple-system,"PingFang SC",sans-serif;color:#243d33;background:#f5f5ef;font-size:17px;line-height:1.8}body{margin:0}main{max-width:1120px;margin:48px auto;padding:48px 56px;background:white;border:1px solid #dce2d5;border-radius:20px}nav{display:flex;gap:24px;flex-wrap:wrap;font-size:14px}a{color:#396a4a}h1{font-size:36px;line-height:1.35;margin:32px 0 20px}h2{font-size:25px;margin:40px 0 16px}h3{font-size:19px}h2[id]{scroll-margin-top:24px}.guide-table{white-space:normal}.guide-table td,.guide-table th{text-align:left;vertical-align:top}.method-links{margin:24px 0}.formula{overflow-wrap:anywhere;background:#f5f7f1;padding:12px 16px;border-radius:8px}.lead{font-size:20px}.meta,.note{color:#6b776e;font-size:14px}.callout{background:#f1f5eb;border:1px solid #d9e5c9;padding:20px 24px;border-radius:12px}.warning{background:#faf4e9;border-left:4px solid #b9985a;padding:12px 20px}.scroll{overflow:auto}table{border-collapse:collapse;width:100%;font-size:15px;white-space:nowrap}td,th{border-bottom:1px solid #dfe5da;padding:13px 14px;text-align:right}th{background:#f2f5ed}td:first-child,th:first-child{text-align:left}footer{margin-top:40px;padding-top:20px;border-top:1px solid #dfe5da;font-size:13px;color:#6b776e}details{margin-top:24px}summary{cursor:pointer;color:#396a4a}code{font-size:14px}@media(max-width:700px){main{margin:12px;padding:24px}h1{font-size:28px}}
-</style><main><nav><a href="../#portfolio">返回组合模拟</a><a href="research/portfolio-methods-20261106/report.pdf">下载历史研究报告</a><a href="research/portfolio-daily-20261106/每日加仓指标使用说明.pdf">下载每日指标说明</a><a href="research/portfolio-methods-20261106/README.md">全部实验与复算证据</a></nav>
+</style><main><nav><a href="../#portfolio">返回组合模拟</a><a href="research/portfolio-methods-20261106/report.pdf">下载历史研究报告</a><a href="research/portfolio-daily-20261106/每日策略状态与调仓说明.pdf">下载策略状态说明</a><a href="research/portfolio-methods-20261106/README.md">全部实验与复算证据</a></nav>
 <p class="meta">长衡组合研究 · 2026年11月6日 · 真实目标ETF历史截至2026-11-02</p><h1>三种新增投入方法<br>与同配置一次性投入比较</h1>
 <p class="lead">VIX恐慌恢复、三批相对强弱轮动、双重风险门，在本轮完整十年及十五年历史中均高于同配置一次性投入。三种方法已接入组合模拟，持仓比例可改，并随实际行情重新计算下一笔买卖。</p>
 <p>主配置：初始本金100元人民币，USD ETF 30%、TQQQ 30%、现金40%；无新增资金、无周期再平衡。单侧交易费0.10%，模拟资本利得税和股息税各20%，未卖出盈利计提税负准备金。每个账户均配对同起点、同本金、同权重及费税的一次性投入。</p>
@@ -11,16 +11,21 @@
 <tr><td>同配置一次性投入</td><td>基准</td><td>基准</td><td>—</td><td>−71.95%／−76.38%</td></tr>
 </tbody></table></div><p class="note">年化差为先逐户配对、再按买入年等权，单位为百分点。十年81个起点：2010年3月至2016年11月；十五年21个起点：2010年3月至2011年11月，三种方法均为21胜。窗口高度重叠，不是81或21次独立市场检验。</p>
 <div class="warning">这三种方法都曾改变实际持仓，不能解释为“同风险赚得更多”。轮动回撤更深；VIX规则对参数敏感，其中心参数主要利用2020年一次事件；双重风险门主要叠加2020与2022年两次事件。历史选择偏差与失败情景在下文和完整报告中保留。</div>
-<nav class="method-links" aria-label="方法详细说明"><a href="#vix_panic_reentry">VIX恐慌恢复</a><a href="#relative_strength_rotation">三批相对强弱</a><a href="#dual_risk_guard">双重风险门</a><a href="#daily-allocation">每日比例与金额</a></nav>
-<div class="callout"><strong>每日指标表示分配比例。</strong>VIX和双重风险门的0%／100%，分母是原本分给TQQQ的预算；轮动的比例，分母是USD与TQQQ合计股票预算。100%不表示价格便宜、胜率100%或加满整个账户。已有账户的新增预算与旧仓处理分别计算，比例不能代替一张实际买单。</div>
+<nav class="method-links" aria-label="方法详细说明"><a href="#vix_panic_reentry">VIX恐慌恢复</a><a href="#relative_strength_rotation">三批相对强弱</a><a href="#dual_risk_guard">双重风险门</a><a href="#daily-allocation">状态与预算试算</a></nav>
+<div class="warning"><strong>用途纠正：现有输出是策略状态，尚未完成加仓时机优劣指标。</strong>旧界面的“每日加仓指标”把允许持有直接显示为100%、退出显示为0%，没有衡量当天买入是否更划算。该称呼和“已完成买点指标”的说法撤回。现在显示持有／退出状态及计算过程；轮动显示目标分配。</div>
+<h2 id="state-audit">状态天数与真实交易</h2>
+<p>同一组实际账本：2014-01-02至2024-01-02，期初100,000元人民币，USD30%／TQQQ30%／现金40%，不追加、不周期再平衡，单侧交易费0.10%，资本利得税和股息税各20%，期末未清仓。VIX方法的2,517个共同日里，2,501天旧图显示100（99.3643%），但首日建仓后仅2020-03-10卖出、2020-04-01买回一轮TQQQ。外部入金只有一笔，总计100,000元。</p>
+<p>这笔原本金对应的组合年化为31.25%，同配置一次性投入29.05%。这不是“出现100%就再追加一笔”的成绩。页面预算试算从未进入该收益计算；主研究同样没有新增本金。</p>
+<p class="formula"><code>旧VIX显示值=100×VIX允许持有</code>；<code>旧双门显示值=100×VIX允许持有×QQQ允许持有</code>。这是布尔状态编码，没有收益预测或买点排名。组合年化为 <code>100×[期末现金流中性净值^(1/实际年数)−1]</code>；资金XIRR另用实际入金日期与期末资产求解。</p>
+<p>此前63账户的财务一致性检查，仅确认新增显示没有改动原账本。它没有检验“高分日追加优于低分日”，不能用来证明加仓择时有效。本例数据和逐笔交易见<a href="research/portfolio-daily-20261106/state-claim-audit.json">状态与真实账本审计</a>。</p>
 <h2 id="vix_panic_reentry">一 VIX恐慌恢复调仓</h2>
 <p>观察VIX与VIX3M的比值。比值大于1.10连续10个源交易日后卖出TQQQ，离场后追踪VIX峰值；至少再经过5个源观测且VIX从峰值下降30%，或比值小于1连续5次，再买回。恢复后需要再经过5次正常比值才重新启用退出计数。</p>
 <p>只使用严格早于决策日的VIX数据，下一共同交易日收盘执行。只处理TQQQ及其卖出回款，不动用USD ETF、其他资产或原现金配置。VIX和VIX3M来自<a href="https://www.cboe.com/tradable_products/vix/term_structure">Cboe标普500期权的隐含波动期限结构</a>，不是纳斯达克专属估值指标。</p>
 <h3>每天看什么</h3>
 <p>输入为两个官方指数的收盘，计算比值 <code>R=VIX/VIX3M</code>；界面先核对源日期和比值，再看当前状态与连续确认天数。持有时，只有已启用退出计数、且 <code>R&gt;1.10</code> 连续10次才退出；中途不满足便重新计数。离场后，记录VIX最高值和当前回落幅度 <code>1−VIX/离场后峰值</code>，满足恢复条件才回归。单日恐慌升高或降低不直接改变仓位。</p>
-<h3>比例怎样变成动作</h3>
-<p>TQQQ对应预算的投入比例 <code>I=100×持有状态</code>：允许持有为100%，退出为0%。处于100%且状态未变时，已有TQQQ继续持有；只有输入新增预算时才试算该笔资金的买入额。由100%变0%时，下一共同收盘卖出原TQQQ；由0%变100%时，只用TQQQ专属已到账现金买回，买入成交额为 <code>现金÷(1+单侧费率)</code>。USD及原现金预算不因此增加或减少。</p>
-<p>例：退出计数为9／10时仍沿用持有状态，不把90%当投入比例；第10次满足条件才转为0%。离场后峰值为40，已等待至少5次观测，VIX降至28时达到30%回落条件，可恢复100%。这两个百分数分别是价格条件与预算比例，不能混用。</p>
+<h3>状态怎样变成动作</h3>
+<p>旧图使用 <code>I=100×持有状态</code> 编码，现改为直接显示持有／退出。持有且状态未变时，已有TQQQ继续持有，不重复追加；输入新增预算只试算该笔资金去向。转为退出时，下一共同收盘卖出原TQQQ；恢复持有时，只用TQQQ专属已到账现金买回，买入成交额为 <code>现金÷(1+单侧费率)</code>。USD及原现金预算不因此增加或减少。</p>
+<p>例：退出计数为9／10时仍沿用持有状态，不把90%当投入比例；第10次满足条件才转为退出。离场后峰值为40，已等待至少5次观测，VIX降至28时达到30%回落条件，可恢复持有。确认计数和回落幅度是触发条件，不能直接当成买点分数。</p>
 <div class="callout">真实目标ETF历史的中心规则只有一轮主要退出与恢复：2020-03-10卖出、2020-04-01买回。源状态分别形成于3月6日和3月30日，账户于3月9日和3月31日确定订单，再下一共同收盘成交。十年优势较大，不能据此推断每次恐慌都能避开下跌。</div>
 <p>27个相邻参数组合的十五年结果为13正、14负；中位差−0.079个百分点，范围约−1.861至+1.816。将27个参数平均后的版本，默认高费与额外延迟下的十五年差变为−0.181个百分点，未选作最终方法。</p>
 <h2 id="relative_strength_rotation">二 三批相对强弱轮动</h2>
@@ -41,23 +46,23 @@
 <p>合并固定VIX规则与既有QQQ深熊规则。QQQ低于200日均线且距252日高点下跌至少20%，连续20个交易日才触发退出；连续3日回到200日均线上恢复。任一风险门要求退出便卖出TQQQ，两个都恢复才买回。只使用已知信息和TQQQ自己的已结算现金。</p>
 <h3>先分别判断两扇风险门</h3>
 <p>QQQ信号来自其实际美元含分红收盘价P；<code>MA200</code>为最近200个QQQ收盘均值，<code>H252</code>为最近252个QQQ收盘最高值。持有状态下，<code>P&lt;MA200 且 P/H252≤0.80</code> 连续20次才退出；退出后，<code>P&gt;MA200</code> 连续3次才恢复。连续条件中断即重计，等于均线不算高于或低于。至少需要252个实际QQQ收盘预热。</p>
-<p class="formula"><code>I_TQQQ=100×VIX允许持有×QQQ允许持有</code>。两个条件都允许时为100%，任一个退出时为0%。VIX只取严格早于决策日的有效配对收盘；QQQ可以取决策日已完成的收盘，两者源日期分别显示。</p>
+<p class="formula"><code>TQQQ持有状态=VIX允许持有 且 QQQ允许持有</code>。两个条件都允许时持有，任一个退出时退出。VIX只取严格早于决策日的有效配对收盘；QQQ可以取决策日已完成的收盘，两者源日期分别显示。</p>
 <h3>额度和持仓处理</h3>
-<p>0%时，新增预算中原TQQQ份额及其预留买入费停放为专属现金；已有TQQQ按待单退出。100%时，新预算按原TQQQ权重试算；若刚恢复，则另用已到账专属现金买回。只有QQQ恢复、VIX仍退出时，仍然是0%，不能因一项转好便提前买回。</p>
+<p>退出时，额外提供的新预算中原TQQQ份额及其预留买入费停放为专属现金；已有TQQQ按待单退出。允许持有时，新预算按原TQQQ权重试算；若刚恢复，则另用已到账专属现金买回。只有QQQ恢复、VIX仍退出时，仍然退出，不能因一项转好便提前买回。</p>
 <p>例：VIX已恢复，QQQ回到均线上只有2次确认，继续等待；第3次满足后，两扇风险门同时允许，才形成下一共同收盘的回买计划。若专属现金为3,000、单侧费率0.10%，固定买入额为2,997.00，费用3.00；计算保留完整精度，页面金额四舍五入到分。</p>
 <p>主配置十年／十五年年化差为+3.256／+2.174个百分点，相对单独VIX规则再增加+0.633／+0.589个百分点；相对单独QQQ规则增加约+2.790／+1.917个百分点。并非每个账户都胜过父规则。</p>
 <p class="warning">组合方案是在观察两条父规则结果后提出，没有新搜阈值，但仍存在事后选择。优势主要来自2020年VIX与2022年QQQ事件，不能当作三次独立研究都验证了同一个规律。</p>
-<h2 id="daily-allocation">每日比例如何换算为新增金额</h2>
+<h2 id="daily-allocation">按当前策略试算新增资金</h2>
 <p>在既有组合的跟随页面，输入“本次新增预算”仅做预算试算，不回写历史入金，也不改变回测收益。若有待执行目标，按该目标试算下一笔新增资金；否则按最近已执行目标。原有持仓订单单列，不能把试算金额加进尚未到账的卖出回款。</p>
 <p>设预算B包含买入费，用户全部股票／ETF／基金原权重之和为W，单侧费率为f，各资产有效目标权重为a_i。先算 <code>U=B/(1+f×W)</code>，每资产买入额 <code>U×a_i</code>，手续费为买入额乘f。普通现金为 <code>U×(1−W)</code>；退出时TQQQ对应待投资金为 <code>U×w_TQQQ×(1+f)</code>，以后恢复只使用这笔专属资金及其已有净回款。</p>
 <p>精确算例：B=10,000，原配置USD 30%／TQQQ 30%／现金40%，f=0.10%，所以U=9,994.00359784。下表按分显示，所有金额合计均为10,000；预算与持仓使用所选币种，信号仍使用各自规定的原币来源。</p>
 <div class="scroll"><table><thead><tr><th>状态</th><th>买USD</th><th>买TQQQ</th><th>买入费</th><th>TQQQ待投资金</th><th>普通现金</th></tr></thead><tbody><tr><td>风险门允许持有</td><td>2,998.20</td><td>2,998.20</td><td>6.00</td><td>0.00</td><td>3,997.60</td></tr><tr><td>风险门退出TQQQ</td><td>2,998.20</td><td>0.00</td><td>3.00</td><td>3,001.20</td><td>3,997.60</td></tr><tr><td>轮动股票池66.67／33.33</td><td>3,997.60</td><td>1,998.80</td><td>6.00</td><td>0.00</td><td>3,997.60</td></tr></tbody></table></div>
 <p class="note">上表轮动使用精确的2/3与1/3计算，66.67／33.33仅为显示值。若还有其他资产，其预算保持原配置，不进入两只ETF的策略现金池。卖出费用与已实现盈利税取决于原仓成本，另由实际订单计算，不在这张新增买入预算表中预估。</p>
 <h3>首次建仓和每日跟随的区别</h3>
-<p>历史研究和模拟的首次购买仍按原配置一次性建立，之后才按三条规则管理。每日比例用于其后的新增预算和旧仓行动。若把某天0%用于跳过首次建仓，已经改变原研究策略，不能直接引用旧报告收益。初始资金为0但以后有追加时，也会持续保留状态供追加使用。</p>
+<p>历史研究和模拟的首次购买仍按原配置一次性建立，之后才按三条规则管理。策略状态用于其后的预算分配和旧仓行动。若根据某天退出状态跳过首次建仓，已经改变原研究策略，不能直接引用旧报告收益。初始资金为0但以后有追加时，也会持续保留状态供追加使用。</p>
 <h3>怎样每天延续</h3>
 <p>保存同一组合与跟踪起点，点击“延续到最新行情”只把结束日期续算至最新有效行情，三个轮动批次按原路径延续。修改权重、起点或规则属于新配置，须重新计算；编辑草稿或已清仓结果不能直接当成原跟踪继续。数据刷新是日线更新，不是盘中实时买卖；周末或休市未出现新共同收盘时，比例可能不变。</p>
-<p>界面区分来源收盘、共同收盘决策和下一共同收盘成交。缺来源、超过7天未更新或内部历史中断时，比例显示不可计算并停止预算试算，不能把缺数据当0%；刷新请求失败则保留上一份有效结果及其原日期。轮动预热不足时，指标未形成，预算可明确按原配置试算。清仓后不生成新的预算或待单。</p>
+<p>界面区分来源收盘、共同收盘决策和下一共同收盘成交。缺来源、超过7天未更新或内部历史中断时，比例显示不可计算并停止预算试算，不能把缺数据当0%；刷新请求失败则保留上一份有效结果及其原日期。轮动预热不足时，配置状态未形成，预算可明确按原配置试算。清仓后不生成新的预算或待单。</p>
 <h2>改变权重与执行成本后</h2>
 <div class="scroll"><table><thead><tr><th>方法</th><th>50／50满仓：十年</th><th>50／50满仓：十五年</th><th>主配置高费＋延迟：十年</th><th>主配置高费＋延迟：十五年</th></tr></thead><tbody>
 <tr><td>VIX恐慌恢复</td><td>+2.819</td><td>+1.647</td><td>+1.154</td><td>+0.553</td></tr>

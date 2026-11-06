@@ -203,5 +203,88 @@
     "cash": 3000,
     "amount": 2997.0029970029973,
     "fee": 2.997002997002997
+  },
+  "stateAudit": {
+    "config": {
+      "positions": [
+        {
+          "id": "us:USD",
+          "weight": 30
+        },
+        {
+          "id": "us:TQQQ",
+          "weight": 30
+        }
+      ],
+      "currency": "CNY",
+      "initial": 100000,
+      "monthly": 0,
+      "rebalance": "none",
+      "transactionFee": 0.1,
+      "feeBasis": "net",
+      "years": "custom",
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "contributionMethod": "dca_month",
+      "tax": {
+        "usCapitalGains": 20,
+        "usDividend": 20,
+        "liquidate": false
+      }
+    },
+    "results": [
+      {
+        "method": "lump_sum",
+        "annualReturn": 29.0526987616901,
+        "value": 1280979.0293493338,
+        "contributed": 100000,
+        "deposits": 1,
+        "dailyDays": 0,
+        "counts": {},
+        "nonInitialBuyCount": 0
+      },
+      {
+        "method": "vix_panic_reentry",
+        "annualReturn": 31.252827058037823,
+        "value": 1516873.0385879853,
+        "contributed": 100000,
+        "deposits": 1,
+        "dailyDays": 2517,
+        "counts": {
+          "us:TQQQ=100": 2501,
+          "us:TQQQ=0": 16
+        },
+        "nonInitialBuyCount": 1
+      },
+      {
+        "method": "dual_risk_guard",
+        "annualReturn": 32.23331779827174,
+        "value": 1634059.0771199495,
+        "contributed": 100000,
+        "deposits": 1,
+        "dailyDays": 2517,
+        "counts": {
+          "us:TQQQ=100": 2333,
+          "us:TQQQ=0": 184
+        },
+        "nonInitialBuyCount": 2
+      },
+      {
+        "method": "relative_strength_rotation",
+        "annualReturn": 28.88162845378077,
+        "value": 1264101.449464283,
+        "contributed": 100000,
+        "deposits": 1,
+        "dailyDays": 2517,
+        "counts": {
+          "us:USD=33.33333333333333,us:TQQQ=66.66666666666666": 379,
+          "us:USD=16.666666666666664,us:TQQQ=83.33333333333334": 19,
+          "us:USD=0,us:TQQQ=100": 1761,
+          "us:USD=66.66666666666666,us:TQQQ=33.33333333333333": 44,
+          "us:USD=100,us:TQQQ=0": 314
+        },
+        "nonInitialBuyCount": 9
+      }
+    ]
   }
 }

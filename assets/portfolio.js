@@ -328,14 +328,19 @@
     const rows = result?.systematic?.daily || [];
     return rows.find(row => row.day === dailyDay) || rows.at(-1) || null;
   }
+  function accountActivityMarkup(r) {
+    if (!r.systematic) return '';
+    const a = window.ChanghengPortfolioPdf.accountActivity(r), unit = currency(r.config).unit;
+    return '<div class="portfolio-account-activity"><strong>本次回测的实际资金与交易</strong><p>初始本金 ' + H.money(a.initial, 2) + ' ' + unit + ' · 入金 ' + a.deposits + '笔，累计 ' + H.money(a.contributed, 2) + ' ' + unit + ' · 规则调仓买入 ' + a.buys + '笔、卖出 ' + a.sells + '笔（不含初次建仓） · 追加资金买入 ' + a.contributionBuys + '笔</p><p>' + (r.config.initialMethod === 'relative_strength_rotation' ? '' : '持有状态 ' + a.holdDays + ' / ' + a.days + '个共同交易日；状态天数不等于买入次数。') + '年化来自实际模拟账本，新增预算试算不计入年化。</p></div>';
+  }
   function dailyReason(row) {
     if (row.status === 'missing') return row.missing || '缺少该日有效信号，不能确定投入比例。';
     if (row.status === 'liquidated') return '该日模拟已清仓，不生成下一笔投入。';
     if (row.status === 'warming-up') return row.metadata?.reason || '历史仍在积累，新增预算沿用原配置。';
     const m = row.metadata || {};
     if (row.method === 'relative_strength_rotation') return '三个复核批次合并确定股票预算去向；未到复核日时沿用已确定的比例。';
-    if (row.method === 'dual_risk_guard') return m.vixOn && m.qqqOn ? 'VIX与QQQ两道风险门均允许投入TQQQ。' : [m.vixOn === false ? 'VIX风险门尚未恢复' : '', m.qqqOn === false ? 'QQQ深熊风险门尚未恢复' : ''].filter(Boolean).join('；') + '，TQQQ对应预算暂存现金。';
-    return m.vixOn ? 'VIX规则允许投入TQQQ；没有新的状态变化时不调整旧持仓。' : 'VIX规则处于退出阶段，TQQQ对应预算暂存现金。';
+    if (row.method === 'dual_risk_guard') return m.vixOn && m.qqqOn ? 'VIX与QQQ两道风险门均处于持有状态；状态不变时不重复买入。' : [m.vixOn === false ? 'VIX风险门尚未恢复' : '', m.qqqOn === false ? 'QQQ深熊风险门尚未恢复' : ''].filter(Boolean).join('；') + '，TQQQ对应预算暂存现金。';
+    return m.vixOn ? 'VIX规则处于持有状态；没有新的状态变化时不调整旧持仓。' : 'VIX规则处于退出阶段，TQQQ对应预算暂存现金。';
   }
   function dailySources(row) {
     const m = row.metadata || {}, parts = [];
@@ -394,28 +399,28 @@
       }
       return '<path d="' + d + '" fill="none" stroke="' + colors[k] + '" stroke-width="2.3"' + (k ? ' stroke-dasharray="6 4"' : '') + '/>';
     }).join('');
-    return '<div class="portfolio-daily-history"><div class="portfolio-daily-legend">' + indicators.map((item, k) => '<span><i style="background:' + colors[k] + '"></i>' + H.esc(item.label) + '</span>').join('') + '</div><svg viewBox="0 0 ' + W + ' ' + HH + '" role="img" aria-label="逐共同交易日的规则投入比例，使用下方日期滑块查看数值">' +
-      [0, 50, 100].map(v => '<line x1="' + left + '" x2="' + (W - right) + '" y1="' + (top + (100 - v) / 100 * height) + '" y2="' + (top + (100 - v) / 100 * height) + '" stroke="#e0e6dc"/><text x="' + (left - 8) + '" y="' + (top + (100 - v) / 100 * height + 4) + '" text-anchor="end">' + v + '%</text>').join('') + paths +
+    return '<div class="portfolio-daily-history"><div class="portfolio-daily-legend">' + indicators.map((item, k) => '<span><i style="background:' + colors[k] + '"></i>' + H.esc(window.ChanghengPortfolioPdf.dailyDisplay(item).label) + '</span>').join('') + '</div><svg viewBox="0 0 ' + W + ' ' + HH + '" role="img" aria-label="逐共同交易日的策略状态，使用下方日期滑块查看">' +
+      (row.method === 'relative_strength_rotation' ? [0, 50, 100] : [0, 100]).map(v => '<line x1="' + left + '" x2="' + (W - right) + '" y1="' + (top + (100 - v) / 100 * height) + '" y2="' + (top + (100 - v) / 100 * height) + '" stroke="#e0e6dc"/><text x="' + (left - 8) + '" y="' + (top + (100 - v) / 100 * height + 4) + '" text-anchor="end">' + (row.method === 'relative_strength_rotation' ? v + '%' : v ? '持有' : '退出') + '</text>').join('') + paths +
       '<line x1="' + x(row.day) + '" x2="' + x(row.day) + '" y1="' + top + '" y2="' + (top + height) + '" stroke="#a18b63" stroke-dasharray="3 3"/>' +
       '<text x="' + left + '" y="180">' + rows[0].day + '</text><text x="' + (W - right) + '" y="180" text-anchor="end">' + rows.at(-1).day + '</text></svg>' +
-      '<input id="portfolio-daily-index" data-portfolio-field="indicator-index" type="range" min="0" max="' + (rows.length - 1) + '" step="1" value="' + rows.indexOf(row) + '" aria-label="逐日指标日期" aria-valuetext="' + row.day + '"></div>';
+      '<input id="portfolio-daily-index" data-portfolio-field="indicator-index" type="range" min="0" max="' + (rows.length - 1) + '" step="1" value="' + rows.indexOf(row) + '" aria-label="逐日策略状态日期" aria-valuetext="' + row.day + '"></div>';
   }
   function dailyCard() {
     if (!result || !systematicMethods.has(result.config.initialMethod)) return '';
     const r = result, rows = r.systematic?.daily || [], row = selectedDaily();
-    if (!row) return H.card('每日加仓指标', '缺逐日规则记录', '<p class="portfolio-warning">请重新模拟以读取完整指标。</p>');
+    if (!row) return H.card('每日策略状态', '缺逐日规则记录', '<p class="portfolio-warning">请重新模拟以读取完整策略状态。</p>');
     const index = rows.indexOf(row), unit = currency(r.config).unit;
     const blocked = resultKey !== signature() ? '参数已改动，请先重新模拟' : r.config.tax?.liquidate ? '期末已清仓，不能延续账户' : running ? '正在更新行情' : '';
     const action = btn('延续到最新行情', 'extend-latest', 'btn', 'id="portfolio-extend-latest"' + (blocked ? ' disabled title="' + H.esc(blocked) + '"' : ''));
     const body = '<div class="portfolio-daily-body"><div class="portfolio-daily-toolbar"><div class="portfolio-daily-date">' + btn('上一交易日', 'daily-prev', 'btn', index === 0 ? 'disabled' : '') +
-      '<label>指标日期<input id="portfolio-daily-date" data-portfolio-field="indicator-date" type="date" value="' + row.day + '" min="' + rows[0].day + '" max="' + rows.at(-1).day + '"></label>' + btn('下一交易日', 'daily-next', 'btn', index === rows.length - 1 ? 'disabled' : '') + '</div>' +
-      '<span id="portfolio-extend-reason" class="small muted">' + (blocked || '原起点 ' + r.start + ' 保持不变') + '</span></div><div class="portfolio-daily-main"><div class="portfolio-daily-signal"><div class="portfolio-daily-numbers">' + (row.indicators || []).map(item => '<div><span>' + H.esc(item.label) + '</span><strong>' + (M.finite(item.value) ? H.pct(item.value, 2, false) : '—') + '</strong><small>' + (item.basis === 'pair_stock_budget' ? '占USD与TQQQ股票预算' : '占TQQQ对应预算') + '</small></div>').join('') +
-      '</div><p class="portfolio-daily-reason"' + (row.status === 'missing' ? ' role="status"' : '') + '>' + H.esc(dailyReason(row)) + '</p><p class="portfolio-daily-source">决策收盘 ' + row.day + ' · 来源 ' + H.esc(dailySources(row)) + '</p><dl class="portfolio-daily-facts">' + dailyFacts(row).map(([label, value]) => '<div><dt>' + H.esc(label) + '</dt><dd>' + H.esc(value) + '</dd></div>').join('') + '</dl></div>' +
-      '<div class="portfolio-addition"><label class="portfolio-field"><span>本次新增预算 / ' + unit + '</span><input id="portfolio-addition-budget" data-portfolio-field="indicator-budget" type="number" min="0" max="1000000000000" step="any" value="' + inputValue(additionBudget, 2) + '"></label><p class="small muted">预算试算，不改变回测</p><div id="portfolio-addition-values">' + additionMarkup(row) + '</div></div></div>' + dailyChart(rows, row) +
-      '<p class="portfolio-daily-caption">比例直接来自所选规则，不代表盈利概率或价格便宜程度。源日与共同交易日不同；下一共同收盘才执行。</p>' +
+      '<label>状态日期<input id="portfolio-daily-date" data-portfolio-field="indicator-date" type="date" value="' + row.day + '" min="' + rows[0].day + '" max="' + rows.at(-1).day + '"></label>' + btn('下一交易日', 'daily-next', 'btn', index === rows.length - 1 ? 'disabled' : '') + '</div>' +
+      '<span id="portfolio-extend-reason" class="small muted">' + (blocked || '原起点 ' + r.start + ' 保持不变') + '</span></div><div class="portfolio-daily-main"><div class="portfolio-daily-signal"><div class="portfolio-daily-numbers">' + (row.indicators || []).map(item => { const d = window.ChanghengPortfolioPdf.dailyDisplay(item); return '<div><span>' + H.esc(d.label) + '</span><strong>' + H.esc(d.value) + '</strong><small>' + H.esc(d.basis) + '</small></div>'; }).join('') +
+      '</div><p class="portfolio-daily-reason"' + (row.status === 'missing' ? ' role="status"' : '') + '>' + H.esc(dailyReason(row)) + '</p><p class="portfolio-daily-source">决策收盘 ' + row.day + ' · 来源 ' + H.esc(dailySources(row)) + '</p><dl class="portfolio-daily-facts">' + dailyFacts(row).map(([label, value]) => '<div><dt>' + H.esc(label) + '</dt><dd>' + H.esc(value) + '</dd></div>').join('') + '</dl><details class="portfolio-daily-calculation"><summary>本日怎么算</summary><dl>' + window.ChanghengPortfolioPdf.explainDaily(row).map(([label, text]) => '<div><dt>' + H.esc(label) + '</dt><dd>' + H.esc(text) + '</dd></div>').join('') + '</dl></details></div>' +
+      '<div class="portfolio-addition"><h3>按当前策略分配新增资金（试算）</h3><label class="portfolio-field"><span>本次新增预算 / ' + unit + '</span><input id="portfolio-addition-budget" data-portfolio-field="indicator-budget" type="number" min="0" max="1000000000000" step="any" value="' + inputValue(additionBudget, 2) + '"></label><p class="small muted">预算试算，不计入回测年化</p><div id="portfolio-addition-values">' + additionMarkup(row) + '</div></div></div>' + dailyChart(rows, row) +
+      '<p class="portfolio-daily-caption">持有状态不触发每日买入；本图未衡量当日加仓是否更划算。实际待单在下一共同收盘执行。</p>' +
       nextTradePlan({ ...r, selectedDailyDay: row.day, config: { ...r.config, tax: { ...r.config.tax, liquidate: row.status === 'liquidated' } }, systematic: { ...r.systematic, signalDay: row.day, state: { ...row, day: row.day }, executedTargets: row.executedTargets, nextPlan: row.nextPlan } }) +
-      '<div class="portfolio-daily-footer">' + btn('导出每日指标 CSV', 'export-daily', 'text-link small') + '<a class="source-link" href="docs/portfolio-entry-research.html#' + H.esc(r.config.initialMethod) + '" target="_blank" rel="noopener">指标说明与历史检验 ↗</a></div></div>';
-    return H.card('每日加仓指标', P.strategyNames(r.config).initial + ' · ' + row.day + '收盘', body, action);
+      '<div class="portfolio-daily-footer">' + btn('导出逐日策略状态 CSV', 'export-daily', 'text-link small') + '<a class="source-link" href="docs/portfolio-entry-research.html#' + H.esc(r.config.initialMethod) + '" target="_blank" rel="noopener">规则说明与历史检验 ↗</a></div></div>';
+    return H.card('每日策略状态', P.strategyNames(r.config).initial + ' · ' + row.day + '收盘', body, action);
   }
   function nextTradePlan(r) {
     if (r.config.tax?.liquidate) return '';
@@ -496,7 +501,7 @@
       '<div class="stats-grid portfolio-result-summary">' + H.stat('资金年化 XIRR', H.pct(r.xirr, 2, false), '', r.xirrMissing || '按实际投入时间和金额计算') +
       H.stat(H.annual ? '组合年化收益' : '组合累计收益', H.pct(H.annual ? r.annualReturn : r.totalReturn, 2, false), '', '现金流中性' + (r.benchmark ? ' · 对照持有 ' + H.pct(H.annual ? r.benchmark.annualReturn : r.benchmark.totalReturn) : ' · 剔除追加本金影响')) +
       H.stat('期末税后估值', H.money(r.value), unit, '累计投入 ' + H.money(r.contributed) + ' ' + unit) + H.stat(r.config.tax?.liquidate ? '清仓盈亏' : '税后盈亏', H.money(r.profit), unit, r.config.tax?.liquidate ? '已扣清仓交易费与盈利税' : '已减浮盈预留税 ' + H.money(r.taxReserve, 2) + ' ' + unit) + H.stat('最大回撤', H.pct(r.mdd, 2, false), '', '年化波动 ' + H.pct(r.volatility, 2, false)) + '</div>' +
-      (r.catalogRefresh?.available === false ? '<p class="portfolio-warning">' + H.esc(r.catalogRefresh.missing) + '</p>' : '') + dailyCard() + lumpSumComparison() + accountRisk() + snapshots() + (r.benchmarkError ? '<div class="portfolio-warning">' + H.esc(r.benchmarkError) + '，当前仅显示组合曲线。</div>' : '') +
+      accountActivityMarkup(r) + (r.catalogRefresh?.available === false ? '<p class="portfolio-warning">' + H.esc(r.catalogRefresh.missing) + '</p>' : '') + dailyCard() + lumpSumComparison() + accountRisk() + snapshots() + (r.benchmarkError ? '<div class="portfolio-warning">' + H.esc(r.benchmarkError) + '，当前仅显示组合曲线。</div>' : '') +
       chart() + '<div class="portfolio-result-notes"><span>入金 ' + r.deposits + '笔</span><span>买入 ' + r.transactions.filter(t => t.side === 'buy').length + '笔</span><span>再平衡 ' + r.rebalances + '次</span><span>交易费用 ' + H.money(r.tradeCost, 2) + ' ' + unit + '</span><span>已实现盈利税 ' + H.money(r.capitalTax, 2) + ' ' + unit + '</span><span>分红税 ' + H.money(r.dividendTax, 2) + ' ' + unit + '</span><span>浮盈预留税 ' + H.money(r.taxReserve, 2) + ' ' + unit + '</span>' + (r.initialReserve > .005 ? '<span>待投入本金 ' + H.money(r.initialReserve, 2) + ' ' + unit + '</span>' : '') + (r.timingChanges ? '<span>择时切换 ' + r.timingChanges + '次</span>' : '') + '</div>' + (usesMa && r.strategy.insufficientMaDays ? '<div class="portfolio-warning">均线不足200个共同交易日的阶段按常规投入，未将缺历史视为下跌信号。</div>' : '') +
       H.card('持仓贡献', r.start + ' — ' + r.end + ' · ' + name + ' · 已减浮盈预留税', '<div class="portfolio-structure portfolio-end-structure"><h3>期末结构</h3>' + structure(r.holdings.map(h => ({ id: h.id, weight: h.actualWeight }))) + '</div>' + holdingTable, btn('导出持仓', 'export-holdings', 'btn portfolio-export')) + '<section class="card portfolio-yearly"><div class="card-head"><h2>年度表现</h2><span class="small">现金流中性 · 累计收益</span></div><div class="portfolio-year-grid">' + r.annual.map(y => '<div><span>' + y.year + '</span><strong class="num">' + H.pc(y.return) + '</strong><small>' + y.start.slice(5) + ' — ' + y.end.slice(5) + '</small></div>').join('') + '</div></section></div>';
   }
@@ -545,7 +550,7 @@
       reason: dailyReason(row), sourceLabel: dailySources(row), budgetInput: additionBudget,
       unitsBasis: 'nextPlan.orders.units为内部归一化复权份额，不是券商实际股数' }));
     const columns = [...new Set(records.flatMap(row => Object.keys(row)))];
-    H.download('长衡-每日加仓指标-' + result.start + '_' + result.end + '.csv', M.csv([columns, ...records.map(row => columns.map(key => row[key] ?? ''))]), 'text/csv;charset=utf-8');
+    H.download('长衡-逐日策略状态-' + result.start + '_' + result.end + '.csv', M.csv([columns, ...records.map(row => columns.map(key => row[key] ?? ''))]), 'text/csv;charset=utf-8');
   }
   async function exportPdf() {
     if (running || exportingPdf || !result) return;

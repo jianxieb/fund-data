@@ -14,6 +14,63 @@
   const font = (size, weight = 400) => weight + ' ' + size + 'px Arial, "PingFang SC", "Microsoft YaHei", sans-serif';
   const sourceUrl = value => { try { const url = new URL(value); return url.protocol === 'https:' ? url.href : ''; } catch (_) { return ''; } };
 
+  function dailyDisplay(item) {
+    const allocation = item.basis === 'pair_stock_budget';
+    return { label: allocation ? item.label : 'TQQQ策略状态',
+      value: !finite(item.value) ? '—' : allocation ? pct(item.value) : item.value === 100 ? '持有状态' : '退出状态',
+      basis: allocation ? '占USD与TQQQ股票预算' : '持有开关，不是加仓评分' };
+  }
+  function accountActivity(r) {
+    const strategy = r.transactions.filter(t => t.reason === r.config.initialMethod);
+    return { deposits: r.deposits, contributed: r.contributed, initial: r.config.initial,
+      buys: strategy.filter(t => t.side === 'buy').length, sells: strategy.filter(t => t.side === 'sell').length,
+      contributionBuys: r.transactions.filter(t => t.reason === 'contribution' && t.side === 'buy').length,
+      days: r.systematic?.daily?.length || 0, holdDays: (r.systematic?.daily || []).filter(row => row.status === 'ready' && row.indicator === 100).length };
+  }
+  function explainDaily(row) {
+    if (!row) return [];
+    const m = row.metadata || {}, out = [], n = value => finite(value) ? String(Number(value.toPrecision(8))) : '—';
+    const yes = value => value ? '满足' : '不满足', state = value => value ? '持有' : '退出';
+    if (row.status !== 'ready') return [['状态不可计算', row.missing || m.reason || (row.status === 'liquidated' ? '账户已清仓，不再形成待单。' : '历史仍在预热，未形成有效状态。')]];
+    if (row.method === 'relative_strength_rotation') {
+      const p = m.relativeInputs, shares = m.originalShares || [], leaders = m.leaders || [];
+      if (p) out.push(['504日相对增长', '(' + n(p.usdEnd) + ' ÷ ' + n(p.usdStart) + ') ÷ (' + n(p.tqqqEnd) + ' ÷ ' + n(p.tqqqStart) + ') = ' + n(p.ratio) + '。价格区间 ' + p.startDay + ' 至 ' + p.endDay + '，美元复权价。']);
+      out.push(['阈值与复核', '相对增长 > 1.25 转向USD，< 0.80 转向TQQQ，边界及中间保留该批原方向。' + (m.reviewedToday ? '本日已复核当月批次。' : '本日没有复核；今天的相对增长值只作观察，目标沿用已有批次记忆。')]);
+      if (leaders.length === 3 && shares.length === 2) {
+        for (let k = 0; k < 2; k++) {
+          const parts = leaders.map(leader => leader === null ? shares[k] : leader === k ? 1 : 0);
+          out.push([(k ? 'TQQQ' : 'USD') + '分配计算', '(' + parts.map(part => n(part * 100) + '%').join(' + ') + ') ÷ 3 = ' + n(parts.reduce((s, v) => s + v, 0) / 3 * 100) + '%，分母为两只ETF股票预算。']);
+        }
+      }
+      if (Array.isArray(m.phaseReviews)) m.phaseReviews.forEach((review, i) => out.push(['第' + (i + 1) + '批记忆', review ? review.day + '复核；来源 ' + review.sourceDay + '，相对增长 ' + n(review.ratio) + '；保留方向：' + (review.leader === 0 ? 'USD' : review.leader === 1 ? 'TQQQ' : '用户原比例') : '尚未形成方向，使用用户原比例。']));
+    } else {
+      const v = m.vixDecision;
+      out.push(['VIX比值', n(m.vixValue) + ' ÷ ' + n(m.vix3mValue) + ' = ' + n(m.vixRatio) + '；来源 ' + (m.vixDay || '—') + '。']);
+      if (v) {
+        if (v.previousOn) {
+          out.push(['VIX退出条件', 'R > 1.10：' + yes(v.stressed) + '；退出计数' + (v.armedForExit ? '已启用' : '未启用') + '；本次连续 ' + n(v.exitCountTested) + ' / 10 次。' + (v.exitTriggered ? '达到10次，来源日状态从持有切换为退出。' : '未触发退出，沿用持有状态。')]);
+          if (!v.previousArmed) out.push(['重新启用计数', 'R < 1 连续 ' + n(v.calmCountTested) + ' / 5 次；' + (v.armedForExit ? '本次已重新启用退出计数。' : '继续等待，不能重复触发退出。')]);
+        } else {
+          out.push(['VIX恢复条件一', '离场后观察 ' + n(v.heldTested) + ' 次（至少5次）；1 − ' + n(m.vixValue) + ' ÷ ' + n(v.peakTested) + ' = ' + n(v.peakDropTested * 100) + '%（至少30%）；两者同时满足：' + yes(v.recoveryByPeak) + '。']);
+          out.push(['VIX恢复条件二', 'R < 1 连续 ' + n(v.calmCountTested) + ' / 5 次：' + yes(v.recoveryByCalm) + '。任一恢复条件满足才转回持有；来源日结果：' + state(v.on) + '。']);
+        }
+        if (v.lastTransitionDay) out.push(['最近VIX状态切换', v.lastTransitionDay + '（来源收盘日）；当前' + state(v.on) + '。']);
+      } else out.push(['VIX完整条件', 'R > 1.10 连续10次才退出；离场至少5次且VIX从峰值下降30%，或R < 1连续5次才恢复。缺本日判定轨迹，请重新模拟。']);
+      if (row.method === 'dual_risk_guard') {
+        const q = m.qqqDecision;
+        if (q) {
+          out.push(['QQQ价格条件', 'P=' + n(q.price) + '；MA200=' + n(q.ma) + '（' + q.maFirstDay + '起200次均值）；H252=' + n(q.high) + '（' + q.highFirstDay + '起252次最高值）。']);
+          out.push(['QQQ回撤', n(q.price) + ' ÷ ' + n(q.high) + ' − 1 = ' + n((q.price / q.high - 1) * 100) + '%；低于MA200：' + yes(q.belowMA) + '，回撤至少20%：' + yes(q.drawdownAtLeast20) + '。']);
+          out.push(['QQQ状态判断', q.previousOn ? '两条件连续 ' + n(q.exitCountTested) + ' / 20 次；' + (q.exitTriggered ? '达到20次，转为退出。' : '未触发退出。') : 'P > MA200：' + yes(q.aboveMA) + '；连续 ' + n(q.entryCountTested) + ' / 3 次；' + (q.reentryTriggered ? '达到3次，恢复持有。' : '继续退出。')]);
+        }
+        out.push(['双门合并', 'VIX=' + state(m.vixOn) + '，QQQ=' + state(m.qqqOn) + '；两者均持有才允许持有TQQQ，合并结果=' + state(m.vixOn && m.qqqOn) + '。']);
+      }
+    }
+    const orders = row.nextPlan?.orders || [];
+    out.push(['账户本日行动', orders.length ? orders.map(o => o.side === 'sell' ? '下一共同收盘卖出' + (o.code || o.id.replace('us:', '')) + '的信号日持仓 ' + n(o.sellFraction * 100) + '%' : '下一共同收盘买入' + (o.code || o.id.replace('us:', '')) + ' ' + n(o.amount) + ' ' + (row.currency === 'USD' ? 'USD' : '元')).join('；') : '没有新调仓订单；保持状态不会每天重复买入。']);
+    return out;
+  }
+
   function snapshot(result, catalog, createdAt = new Date().toISOString(), dailySelection = null) {
     if (!result || result.error || !result.config || !result.curve?.length) throw new Error('先完成组合模拟，再导出 PDF');
     const ids = new Set([...result.config.positions.map(p => p.id), result.config.benchmarkId].filter(Boolean));
@@ -22,7 +79,7 @@
     if (row && (!finite(budget) || budget < 0)) throw new Error('请输入有效新增预算再导出');
     const dailyIndicator = row ? { row, budget, allocation: P.additionAllocation(row, budget),
       reason: dailySelection?.reason || row.missing || row.metadata?.reason || '',
-      sourceLabel: dailySelection?.sourceLabel || '', facts: dailySelection?.facts || [] } : null;
+      sourceLabel: dailySelection?.sourceLabel || '', facts: dailySelection?.facts || [], calculation: explainDaily(row) } : null;
     return JSON.parse(JSON.stringify({ result, createdAt, dailyIndicator, assets: catalog.assets.filter(a => ids.has(a.id)), fx: catalog.fx }));
   }
   function wrap(ctx, value, width, size = 15, weight = 400) {
@@ -188,6 +245,11 @@
     paragraph('入金 ' + r.deposits + '笔    再平衡 ' + r.rebalances + '次    买卖 ' + r.transactions.length + '笔    交易费合计 ' + number(r.tradeCost) + ' ' + unit + '    期末现金 ' + number(r.cash) + ' ' + unit);
     paragraph('税费含预留 ' + number(r.taxCost) + ' ' + unit + '    已实现盈利税 ' + number(r.capitalTax) + ' ' + unit + '    分红税 ' + number(r.dividendTax) + ' ' + unit);
     paragraph('当前浮盈预留税 ' + number(r.taxReserve) + ' ' + unit + '；只扣减估值，未实际缴纳，不影响持仓数量。');
+    if (r.systematic) {
+      const a = accountActivity(r);
+      paragraph('实际资金与交易：初始本金 ' + number(a.initial) + ' ' + unit + '；入金 ' + a.deposits + '笔，累计 ' + number(a.contributed) + ' ' + unit + '；规则调仓买入 ' + a.buys + '笔、卖出 ' + a.sells + '笔（不含初次建仓）；追加资金买入 ' + a.contributionBuys + '笔。');
+      paragraph('年化收益来自实际模拟账本。持有状态不触发每日买入，新增预算试算不计入年化。', C.ink);
+    }
     if (r.initialReserve > .005) paragraph('待投入本金 ' + number(r.initialReserve) + ' ' + unit + '，计入期末现金。');
     if (r.timingChanges) paragraph('200日均线择时切换 ' + r.timingChanges + '次，实际卖出税费已经计入。');
     if ((cfg.initial > 0 && cfg.initialMethod === 'ma200_hold' || cfg.monthly > 0 && ['dca_ma_trend', 'dca_ma_contrarian'].includes(cfg.contributionMethod)) && r.strategy?.insufficientMaDays) paragraph('不足200个共同交易日的均线阶段按常规投入；起始日已有 ' + r.strategy.warmupDays + '个共同交易日的历史。', C.gold);
@@ -195,15 +257,16 @@
     if (r.benchmarkError) paragraph('对照数据：' + r.benchmarkError, C.negative);
 
     if (report.dailyIndicator) {
-      const { row, budget, allocation, reason, sourceLabel, facts } = report.dailyIndicator;
-      section('每日加仓指标', strategy.initial + ' · 所选决策收盘 ' + row.day);
-      cards((row.indicators || []).map(item => [item.label, pct(item.value), item.basis === 'pair_stock_budget' ? '占USD与TQQQ股票预算' : '占TQQQ对应预算']));
+      const { row, budget, allocation, reason, sourceLabel, facts, calculation } = report.dailyIndicator;
+      section('每日策略状态', strategy.initial + ' · 所选决策收盘 ' + row.day);
+      cards((row.indicators || []).map(item => { const d = dailyDisplay(item); return [d.label, d.value, d.basis]; }));
       paragraph(reason || (row.status === 'liquidated' ? '该日已清仓，不生成新投入。' : '比例直接来自规则状态。'), row.status === 'missing' ? C.negative : C.ink);
-      paragraph('比例是规则资金分配，不是盈利概率或估值便宜程度。跟踪起点 ' + (row.trackingStart || r.start) + '。');
+      paragraph('持有状态不触发每日买入；本图未衡量当日加仓是否更划算。跟踪起点 ' + (row.trackingStart || r.start) + '。');
       const source = sourceLabel || ['vixDay', 'qqqDay', 'sourceDay'].filter(key => row.metadata?.[key]).map(key => key + ' ' + row.metadata[key]).join('；');
       paragraph('实际来源收盘：' + (source || '缺源日期'));
       if (facts.length) table(['当日依据', '数值'], facts, [1, 2]);
-      paragraph('新增预算试算 ' + number(budget) + ' ' + unit + '；不改变历史回测，不动用账户已有现金。', C.ink);
+      if (calculation?.length) table(['本日怎么算', '代入与判断'], calculation, [1, 3]);
+      paragraph('按当前策略分配新增资金（试算）：' + number(budget) + ' ' + unit + '；不改变历史回测，不动用账户已有现金。', C.ink);
       if (allocation) {
         table(['预算去向', '成交金额 / ' + unit, '交易费 / ' + unit], [
           ...allocation.orders.map(order => [order.code || order.id, number(order.amount), number(order.fee)]),
@@ -286,7 +349,7 @@
     paragraph('盈利税按所选币种的移动平均成本计算；美元模式未模拟人民币申报折算差异。未卖出时按max(0，市值－预计卖出费－剩余成本)×税率预留，不代表浮盈已实际纳税；真正卖出时解除相应预留，不重复扣税。买入费和税后分红再投入进入成本。分红仅扣设定综合税额，不重复记收益。未模拟跨笔亏损抵扣、申报延期、抵免结转或A股差别化持有期补税；ADR、REIT及特殊分配的实际税率需单项设置。');
     paragraph('本金投入与持续投入独立选择。分批按6/12/24个月等分；回撤阶梯先买25%，前收盘从窗口起点峰值跌10%/20%/30%时各买25%，36个月后释放剩余本金。待投入本金计入零息现金，不参加再平衡。');
     paragraph('持续投入以月预算为基数。季投、年投在周期首个共同交易日入金该周期预算，末期仅计窗口内月份；回撤倍数为1/1.5/2/3，顺势不高于均线买0.5份、逆势买2份。入金倍数改变实际本金。200日均线择时作用于整个已释放组合。');
-    paragraph('所选本金方法信号依据：' + signalBasis + '。三种系统调仓的每日比例、原始值与源日期单独列示；卖出数量和买入金额提前确定，下一共同收盘执行。');
+    paragraph('所选本金方法信号依据：' + signalBasis + '。三种系统调仓的每日状态、计算步骤与源日期单独列示；卖出数量和买入金额提前确定，下一共同收盘执行。状态未用于评估加仓点的优劣。');
     paragraph('原回撤阶梯、原200日均线及相关持续投入使用按目标权重每日复位的参考组合，只读取前一个共同交易日收盘；参考曲线不包含投资者现金流、交易费和税。均线可用窗口前真实历史，不足200次时按常规投入。');
     paragraph('指定开始日前取最近共同实际交易日。休市沿用价格 ' + r.carriedPrices + '次、汇率 ' + r.carriedFx + '日；价格最多沿用14日、汇率7日。追加与再平衡在共同实际交易日执行。');
     if (r.holdings.some(h => h.leveraged)) paragraph('每日杠杆 ETF 的长期表现取决于价格路径，不能按固定倍数外推长期回报。', C.negative);
@@ -361,5 +424,5 @@
     canvas.width = canvas.height = 0;
     return new Blob([assemble(content, bands)], { type: 'application/pdf' });
   }
-  return { snapshot, layout, paint, assemble, create };
+  return { snapshot, layout, paint, assemble, create, dailyDisplay, explainDaily, accountActivity };
 });

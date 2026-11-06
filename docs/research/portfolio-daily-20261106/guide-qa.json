@@ -1,9 +1,10 @@
 {
   "status": "passed",
+  "scope": "Corrected strategy-state explanation; does not validate a buy-opportunity metric. Replaces the previous misleading daily-addition guide.",
   "pages": 7,
   "tables": 11,
   "tableCellsCrossFormatMatched": 154,
-  "dynamicNumericFields": 19,
+  "dynamicNumericFields": 21,
   "allBoundNumbersPresentInPDF": true,
   "visualInspection": {
     "allPagesInspected": true,
@@ -13,11 +14,11 @@
     "pageImages": [
       {
         "page": 1,
-        "sha256": "28324baf6f3cab81d5f1c449d0532b4f4ed9dd5981c75eb5bbe228142290458d"
+        "sha256": "cacce6d415323a89f10de3fca8ce071a2c4830903d52b473f8bc364e452dc63e"
       },
       {
         "page": 2,
-        "sha256": "6752bde8c9f22d23c2cd95250ca2387da0a620a9cc4661a6f4bccdfb60def197"
+        "sha256": "df19feacdd566e7d23717e8c08968cd8f48b6e1ae5a5121af51f88911c30af2a"
       },
       {
         "page": 3,
@@ -25,7 +26,7 @@
       },
       {
         "page": 4,
-        "sha256": "87259e73906db383bef976d814d161f7544401d384d93fbbf6560cea5ab4e591"
+        "sha256": "cadb25278edc5fd3576493f5e4dd007159408b48b03fc7fb14797d8f3d2e03d0"
       },
       {
         "page": 5,
@@ -37,9 +38,18 @@
       },
       {
         "page": 7,
-        "sha256": "6aaa181b835400856d618d539928ea8f246fd0455ce59a0b2717546e609075e8"
+        "sha256": "0caf96db8de5b7433a3a5236ec2cd20ebc88f010335f4c46d231fb595236face"
       }
     ]
+  },
+  "stateAudit": {
+    "source": "state-claim-audit.json and examples.json stateAudit",
+    "commonDays": 2517,
+    "holdingStateDays": 2501,
+    "externalDeposits": 1,
+    "externalCapitalCNY": 100000,
+    "postInitialVixBuybacks": 1,
+    "annualReturnsShownAtTwoDecimals": true
   },
   "examples": {
     "source": "portfolio-model.js additionAllocation",
@@ -49,44 +59,43 @@
       "off",
       "rotation"
     ],
-    "maxBudgetRoundingError": 1.8189894035458565e-12,
     "fullPrecisionUsed": true
   },
   "templatePreservation": {
     "reference": "../portfolio-methods-20261106/report.docx",
     "referenceSHA256": "a14ca80040130edec172adac9c2c9329c16e3597dd6ef9a1538df6667f5a786a",
     "intentionalChangedParts": [
-      "word/document.xml",
       "docProps/core.xml",
-      "docProps/app.xml"
+      "docProps/app.xml",
+      "word/document.xml"
     ],
     "otherPartsByteIdentical": true,
     "oldResearchPDFUnchanged": true
   },
   "files": {
-    "每日加仓指标使用说明.pdf": {
-      "bytes": 732394,
-      "sha256": "f90c68ece6f1c7fb35c853767f99c673f72dbe2da553bd6d947fcd76542917d8"
+    "每日策略状态与调仓说明.pdf": {
+      "bytes": 742330,
+      "sha256": "55f6f9f7743832dc59b5523fad274a535464f44ff90861621e352e56f4de75e8"
     },
-    "每日加仓指标使用说明.docx": {
-      "bytes": 46164,
-      "sha256": "4d49165388a759685af25cd5b8ee6343bc5d4176128269508f24aff36aab3c33"
+    "每日策略状态与调仓说明.docx": {
+      "bytes": 46581,
+      "sha256": "25870dfed072ecfaf5a754e5bec80bb1fd56cb1f6f8422b1f14415ca48b827b5"
     },
     "build-guide.py": {
-      "bytes": 18764,
-      "sha256": "fb58d73ea3b23de7e939574b31370aaa8067ae1189ab2a551fbb4aabfacd46f1"
+      "bytes": 19617,
+      "sha256": "f3762424f2ed50c1f312cd3c2703167cb108d7d9d4b83e142a17bfbe5bce2bf2"
     },
     "examples.json": {
-      "bytes": 4627,
-      "sha256": "c4761001b55adabeeff0c534ac0fed659e364656d4850627b0ee03702ba20183"
+      "bytes": 6748,
+      "sha256": "d59aabbd881b1580eb35f26acb016d89adae83b42063e86ef8cb00e192eb46c5"
     },
     "guide-fields.json": {
-      "bytes": 1923,
-      "sha256": "b2f1e63382a6c6257105a6aad86f585f53f94a379149466606eaeb283a924e9a"
+      "bytes": 2174,
+      "sha256": "662b1c36c216cf9fd26b74a537f46ea81892dfd3a4eabdef0c7f3692a0dcd8be"
     },
     "guide-tables.json": {
-      "bytes": 5685,
-      "sha256": "d59733057fe9b4305dce477baf1f0df67d48c157e0a19a00e581d7c87d7bf1fa"
+      "bytes": 5659,
+      "sha256": "5ca05094f2f528cec769d55d47db64581fc7fbec76770efda8b527aff7d06316"
     }
   }
 }

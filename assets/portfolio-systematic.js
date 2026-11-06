@@ -37,39 +37,57 @@
       ? label + '在 ' + previous + ' 至 ' + day + ' 缺连续日线，无法确认历史状态' : null);
   }
   function vixStates(series) {
-    let on = true, armed = true, exitRun = 0, calmRun = 0, held = 0, peak = 0, missing = null;
+    let on = true, armed = true, exitRun = 0, calmRun = 0, held = 0, peak = 0, missing = null, lastTransitionDay = null;
     return series.map(([day, vix, vix3m], index) => {
       missing = continuity(series[index - 1]?.[0], day, 'VIX/VIX3M', missing);
       const ratio = vix / vix3m;
+      const decision = { previousOn: on, previousArmed: armed, ratio, stressed: ratio > 1.1, calm: ratio < 1,
+        armedForExit: null, exitCountTested: null, calmCountTested: null, heldTested: null, peakTested: null,
+        peakDropTested: null, exitTriggered: false, recoveryByPeak: false, recoveryByCalm: false };
       calmRun = ratio < 1 ? calmRun + 1 : 0;
+      decision.calmCountTested = calmRun;
       if (on) {
         if (!armed && calmRun >= 5) armed = true;
         exitRun = armed && ratio > 1.1 ? exitRun + 1 : 0;
+        decision.armedForExit = armed; decision.exitCountTested = exitRun;
+        decision.exitTriggered = exitRun >= 10;
         if (exitRun >= 10) { on = false; exitRun = calmRun = held = 0; peak = vix; }
       } else {
         held++; peak = Math.max(peak, vix);
+        decision.heldTested = held; decision.peakTested = peak; decision.peakDropTested = 1 - vix / peak;
+        decision.recoveryByPeak = held >= 5 && vix <= peak * .7;
+        decision.recoveryByCalm = calmRun >= 5;
         if (held >= 5 && vix <= peak * .7 || calmRun >= 5) {
           on = true; armed = false; exitRun = calmRun = held = 0;
         }
       }
-      return { day, on, ratio, vix, vix3m, peak, held, armed, exitRun, calmRun, missing };
+      if (on !== decision.previousOn) lastTransitionDay = day;
+      Object.assign(decision, { on, transition: on !== decision.previousOn ? on ? 'reentry' : 'exit' : on ? 'hold' : 'park', lastTransitionDay });
+      return { day, on, ratio, vix, vix3m, peak, held, armed, exitRun, calmRun, missing, decision };
     });
   }
   function qqqStates(series) {
-    let on = true, exitRun = 0, entryRun = 0, missing = null;
+    let on = true, exitRun = 0, entryRun = 0, missing = null, lastTransitionDay = null;
     return series.map(([day, price], index) => {
       missing = continuity(series[index - 1]?.[0], day, 'QQQ', missing);
       if (index < 251) return { day, price, on, ready: false, missing };
       const ma = sum(series.slice(index - 199, index + 1).map(r => r[1])) / 200;
       const high = Math.max(...series.slice(index - 251, index + 1).map(r => r[1]));
+      const decision = { previousOn: on, price, ma, high, maFirstDay: series[index - 199][0], highFirstDay: series[index - 251][0],
+        belowMA: price < ma, aboveMA: price > ma, drawdownAtLeast20: price / high <= .8,
+        exitCountTested: null, entryCountTested: null, exitTriggered: false, reentryTriggered: false };
       if (on) {
         exitRun = price < ma && price / high <= .8 ? exitRun + 1 : 0;
+        decision.exitCountTested = exitRun; decision.exitTriggered = exitRun >= 20;
         if (exitRun >= 20) { on = false; exitRun = entryRun = 0; }
       } else {
         entryRun = price > ma ? entryRun + 1 : 0;
+        decision.entryCountTested = entryRun; decision.reentryTriggered = entryRun >= 3;
         if (entryRun >= 3) { on = true; exitRun = entryRun = 0; }
       }
-      return { day, price, on, ready: true, ma, high, drawdown: price / high - 1, exitRun, entryRun, missing };
+      if (on !== decision.previousOn) lastTransitionDay = day;
+      Object.assign(decision, { on, transition: on !== decision.previousOn ? on ? 'reentry' : 'exit' : on ? 'hold' : 'park', lastTransitionDay });
+      return { day, price, on, ready: true, ma, high, drawdown: price / high - 1, exitRun, entryRun, missing, decision };
     });
   }
   function relativeStates(usd, tqqq) {
@@ -77,7 +95,11 @@
     let missing = null;
     return paired.map(([day, a, b], index) => {
       missing = continuity(paired[index - 1]?.[0], day, 'USD/TQQQ共同收盘', missing);
+      const prior = index >= 504 ? paired[index - 504] : null;
+      const inputs = prior ? { startDay: prior[0], endDay: day, usdStart: prior[1], usdEnd: a, tqqqStart: prior[2], tqqqEnd: b,
+        usdGrowth: a / prior[1], tqqqGrowth: b / prior[2], ratio: Math.exp(Math.log(a / prior[1]) - Math.log(b / prior[2])), intervals: 504 } : null;
       return { day, available: index >= 504, observations: index + 1, missing,
+        inputs,
         value: index >= 504 ? Math.log(a / paired[index - 504][1]) - Math.log(b / paired[index - 504][2]) : null };
     });
   }
@@ -121,6 +143,7 @@
     let lastDay = null, strategyStart = null, lastReview = null, lastReviewDay = null, lastReviewAttemptDay = null;
     let finish = false, requestedOn = true, shares = originalShares.slice(), changes = 0;
     const leaders = [null, null, null];
+    const phaseReviews = [null, null, null];
     let current = { method, day: null, sourceDay: null, desiredTargets: weights.slice(), parkedWeights: [0, 0],
       targetShares: originalShares.slice(), status: 'pending', missing: null, warmingUp: false, metadata: {} };
     function publish(day, metadata, missing = null, warmingUp = false) {
@@ -130,6 +153,7 @@
         targetShares: desiredTargets.map(w => w / W), status: missing ? 'missing' : warmingUp ? 'warming-up' : 'ready', missing, warmingUp,
         metadata: { ...metadata, targetShares: desiredTargets.map(w => w / W), desiredTargets: desiredTargets.slice(), parkedWeights: parkedWeights.slice(), changes,
           lastReviewDay, lastReviewAttemptDay, strategyStart,
+          ...(rotation ? { originalShares: originalShares.slice(), phaseReviews: copy(phaseReviews) } : {}),
           units: rotation ? { relativeRatio: 'gross_return_factor_ratio', relativeLogReturn: 'log_ratio', observations: 'common_closes', targetShares: 'fraction' } :
             { vixValue: 'index_points', vix3mValue: 'index_points', vixRatio: 'ratio', vixPeak: 'index_points', vixPeakDrop: 'fraction',
               vixHeld: 'source_observations', vixExitRun: 'source_observations', vixCalmRun: 'source_observations',
@@ -165,7 +189,8 @@
           vixValue: v.vix ?? null, vix3mValue: v.vix3m ?? null, vixPeakDrop: v.peak > 0 ? 1 - v.vix / v.peak : null,
           vixHeld: v.held ?? null, vixExitRun: v.exitRun ?? null, vixCalmRun: v.calmRun ?? null, vixArmed: v.armed ?? null,
           qqqPrice: q?.price ?? null, qqqMA: q?.ma ?? null, qqqHigh: q?.high ?? null, qqqDrawdown: q?.drawdown ?? null,
-          qqqMaDistance: q?.ma > 0 ? q.price / q.ma - 1 : null, qqqExitRun: q?.exitRun ?? null, qqqEntryRun: q?.entryRun ?? null };
+          qqqMaDistance: q?.ma > 0 ? q.price / q.ma - 1 : null, qqqExitRun: q?.exitRun ?? null, qqqEntryRun: q?.entryRun ?? null,
+          vixDecision: v.decision ?? null, qqqDecision: q?.decision ?? null };
         const missing = v.missing || q?.missing || (q && !q.ready ? 'QQQ在 ' + q.day + ' 缺252个实际收盘预热' : null);
         if (missing) return unavailable(ctx.day, missing, metadata);
         const on = v.on && (!q || q.on), changed = on !== requestedOn;
@@ -177,6 +202,7 @@
       const observation = observed(relative, ctx.day, false, 'USD/TQQQ');
       const metadata = { sourceDay: observation.day || null, phase: (+ctx.day.slice(5, 7) - 1) % 3, leaders: leaders.slice(),
         relativeLogReturn: observation.value ?? null, relativeRatio: observation.value == null ? null : Math.exp(observation.value),
+        relativeInputs: observation.inputs ?? null,
         observations: observation.observations || 0, allocationStateChange: false, reviewedToday: false };
       if (observation.missing) return unavailable(ctx.day, observation.missing, metadata);
       if (!observation.available) {
@@ -201,6 +227,7 @@
       const phase = (+ctx.day.slice(5, 7) - 1) % 3, band = Math.log1p(.25);
       if (observation.value > band) leaders[phase] = 0;
       else if (observation.value < -band) leaders[phase] = 1;
+      phaseReviews[phase] = { day: ctx.day, sourceDay: observation.day, ratio: Math.exp(observation.value), leader: leaders[phase] };
       const next = [0, 1].map(k => sum(leaders.map(leader => leader === null ? originalShares[k] : leader === k ? 1 : 0)) / 3);
       const changed = next.some((w, k) => Math.abs(w - shares[k]) >= 1e-12);
       shares = next;

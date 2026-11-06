@@ -1,0 +1,539 @@
+{
+  "status": "pass",
+  "scope": "Holding-state codes are not buy-opportunity scores. Positive state days do not create deposits or daily orders. This audit reconciles state counts against the actual account ledger; it does not validate a buy-merit indicator.",
+  "formula": {
+    "vixStateCode": "vixOn ? 100 : 0",
+    "dualStateCode": "vixOn && qqqOn ? 100 : 0",
+    "rotationAllocation": "mean of three retained phase allocations; not a buy-merit score",
+    "annualReturn": "100 * (finalCashFlowNeutralNAV ** (1 / years) - 1)",
+    "newBudgetPreview": "pure allocation calculation; not inserted into historical cash flows"
+  },
+  "config": {
+    "positions": [
+      {
+        "id": "us:USD",
+        "weight": 30
+      },
+      {
+        "id": "us:TQQQ",
+        "weight": 30
+      }
+    ],
+    "currency": "CNY",
+    "initial": 100000,
+    "monthly": 0,
+    "rebalance": "none",
+    "transactionFee": 0.1,
+    "feeBasis": "net",
+    "years": "custom",
+    "start": "2014-01-02",
+    "end": "2024-01-02",
+    "contributionMethod": "dca_month",
+    "tax": {
+      "usCapitalGains": 20,
+      "usDividend": 20,
+      "liquidate": false
+    }
+  },
+  "sources": {
+    "data/portfolio/catalog.js": "717e418c16e362f0f99ea64f9fc4cc029f31423a834991a926eb91cb7b03c3c3",
+    "data/portfolio/us/USD-59ea9c9e93e2a9a9.json": "59ea9c9e93e2a9a911cc69f15018e43783b8630a222bd8b9e17a54576d4f9652",
+    "data/portfolio/us/TQQQ-cba82be905d54936.json": "cba82be905d54936e55e3735835bd7cce1cfd2ba730d24308da6483b19f9853b",
+    "data/portfolio/us/QQQ-4e3e60d21b30d7ac.json": "4e3e60d21b30d7acd6a2866bdf27fab15638a44c158748f2bb5fa483d6210bf9",
+    "data/portfolio/fx/CNY-20184885373d0ba1.json": "20184885373d0ba1b37fa7ece9b8a479e547e6e06f67b73b33b611aa80fa7bb1",
+    "data/portfolio/entry-context.json": "9bce0093b7ede31bb7255457f814ca860c1a3187707eaddff4d5c9b1a71112dc",
+    "assets/portfolio-model.js": "cba37d0170bf086fa4d029e12467249cb792fb1627d8485dbe7a18e6c93c5b7e",
+    "assets/portfolio-systematic.js": "da0becf94de221dc36492db2ad4361405f015a6b42826571c52f4c6ccbc91682",
+    "assets/model.js": "8d433de2935cb24663e8285f72ee8a9ff01e7d11e80ff063eb6c6533a02c6a26"
+  },
+  "scriptSHA256": "a96591858054c033139564bb774e6ea41532f29bb72d7ae198f7fcdb07f3f63f",
+  "results": [
+    {
+      "method": "lump_sum",
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "deposits": 1,
+      "contributed": 100000,
+      "initialPlan": [
+        {
+          "day": "2014-01-02",
+          "amount": 100000
+        }
+      ],
+      "incomePlan": [],
+      "annualReturn": 29.0526987616901,
+      "xirr": 29.05269876169011,
+      "finalValue": 1280979.0293493338,
+      "commonDecisionDays": null,
+      "holdingStateDays": null,
+      "holdingStatePercent": null,
+      "initialBuys": 2,
+      "strategyBuys": 0,
+      "strategySales": 0,
+      "transactions": [
+        {
+          "day": "2014-01-02",
+          "id": "us:USD",
+          "side": "buy",
+          "amount": 29982.010793523885,
+          "fee": 29.982010793523884,
+          "tax": 0,
+          "reason": "initial"
+        },
+        {
+          "day": "2014-01-02",
+          "id": "us:TQQQ",
+          "side": "buy",
+          "amount": 29982.010793523885,
+          "fee": 29.982010793523884,
+          "tax": 0,
+          "reason": "initial"
+        }
+      ]
+    },
+    {
+      "method": "vix_panic_reentry",
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "deposits": 1,
+      "contributed": 100000,
+      "initialPlan": [
+        {
+          "day": "2014-01-02",
+          "amount": 100000
+        }
+      ],
+      "incomePlan": [],
+      "annualReturn": 31.252827058037823,
+      "xirr": 31.252827058037813,
+      "finalValue": 1516873.0385879853,
+      "commonDecisionDays": 2517,
+      "holdingStateDays": 2501,
+      "holdingStatePercent": 99.36432260627731,
+      "initialBuys": 2,
+      "strategyBuys": 1,
+      "strategySales": 1,
+      "transactions": [
+        {
+          "day": "2014-01-02",
+          "id": "us:USD",
+          "side": "buy",
+          "amount": 29982.010793523885,
+          "fee": 29.982010793523884,
+          "tax": 0,
+          "reason": "initial"
+        },
+        {
+          "day": "2014-01-02",
+          "id": "us:TQQQ",
+          "side": "buy",
+          "amount": 29982.010793523885,
+          "fee": 29.982010793523884,
+          "tax": 0,
+          "reason": "initial"
+        },
+        {
+          "day": "2020-03-10",
+          "id": "us:TQQQ",
+          "side": "sell",
+          "amount": 241860.12577977864,
+          "fee": 241.86012577977866,
+          "tax": 42268.09388787948,
+          "reason": "vix_panic_reentry",
+          "signalDay": "2020-03-09"
+        },
+        {
+          "day": "2020-04-01",
+          "id": "us:TQQQ",
+          "side": "buy",
+          "amount": 199151.02074537403,
+          "fee": 199.15102074537404,
+          "tax": 0,
+          "reason": "vix_panic_reentry",
+          "signalDay": "2020-03-31"
+        }
+      ],
+      "exitDecision": {
+        "sourceDay": "2020-03-06",
+        "vixDay": "2020-03-06",
+        "qqqDay": null,
+        "vixOn": false,
+        "qqqOn": null,
+        "vixRatio": 1.182741116751269,
+        "vixPeak": 41.94,
+        "vixValue": 41.94,
+        "vix3mValue": 35.46,
+        "vixPeakDrop": 0,
+        "vixHeld": 0,
+        "vixExitRun": 0,
+        "vixCalmRun": 0,
+        "vixArmed": true,
+        "qqqPrice": null,
+        "qqqMA": null,
+        "qqqHigh": null,
+        "qqqDrawdown": null,
+        "qqqMaDistance": null,
+        "qqqExitRun": null,
+        "qqqEntryRun": null,
+        "vixDecision": {
+          "previousOn": true,
+          "previousArmed": true,
+          "ratio": 1.182741116751269,
+          "stressed": true,
+          "calm": false,
+          "armedForExit": true,
+          "exitCountTested": 10,
+          "calmCountTested": 0,
+          "heldTested": null,
+          "peakTested": null,
+          "peakDropTested": null,
+          "exitTriggered": true,
+          "recoveryByPeak": false,
+          "recoveryByCalm": false,
+          "on": false,
+          "transition": "exit",
+          "lastTransitionDay": "2020-03-06"
+        },
+        "qqqDecision": null,
+        "phase": "parked",
+        "allocationStateChange": true,
+        "targetShares": [
+          0.5,
+          0
+        ],
+        "desiredTargets": [
+          0.3,
+          0
+        ],
+        "parkedWeights": [
+          0,
+          0.3
+        ],
+        "changes": 1,
+        "lastReviewDay": null,
+        "lastReviewAttemptDay": null,
+        "strategyStart": "2014-01-02",
+        "units": {
+          "vixValue": "index_points",
+          "vix3mValue": "index_points",
+          "vixRatio": "ratio",
+          "vixPeak": "index_points",
+          "vixPeakDrop": "fraction",
+          "vixHeld": "source_observations",
+          "vixExitRun": "source_observations",
+          "vixCalmRun": "source_observations",
+          "qqqPrice": "USD_adjusted_close",
+          "qqqMA": "USD_adjusted_close",
+          "qqqHigh": "USD_adjusted_close",
+          "qqqDrawdown": "fraction",
+          "qqqMaDistance": "fraction",
+          "qqqExitRun": "source_observations",
+          "qqqEntryRun": "source_observations"
+        },
+        "startup": {
+          "strategyStart": "2014-01-02",
+          "initialDecision": false,
+          "historyReady": true,
+          "neutralPhases": null
+        },
+        "observationDay": "2020-03-09"
+      }
+    },
+    {
+      "method": "dual_risk_guard",
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "deposits": 1,
+      "contributed": 100000,
+      "initialPlan": [
+        {
+          "day": "2014-01-02",
+          "amount": 100000
+        }
+      ],
+      "incomePlan": [],
+      "annualReturn": 32.23331779827174,
+      "xirr": 32.233317798271756,
+      "finalValue": 1634059.0771199495,
+      "commonDecisionDays": 2517,
+      "holdingStateDays": 2333,
+      "holdingStatePercent": 92.68970997218912,
+      "initialBuys": 2,
+      "strategyBuys": 2,
+      "strategySales": 2,
+      "transactions": [
+        {
+          "day": "2014-01-02",
+          "id": "us:USD",
+          "side": "buy",
+          "amount": 29982.010793523885,
+          "fee": 29.982010793523884,
+          "tax": 0,
+          "reason": "initial"
+        },
+        {
+          "day": "2014-01-02",
+          "id": "us:TQQQ",
+          "side": "buy",
+          "amount": 29982.010793523885,
+          "fee": 29.982010793523884,
+          "tax": 0,
+          "reason": "initial"
+        },
+        {
+          "day": "2020-03-10",
+          "id": "us:TQQQ",
+          "side": "sell",
+          "amount": 241860.12577977864,
+          "fee": 241.86012577977866,
+          "tax": 42268.09388787948,
+          "reason": "dual_risk_guard",
+          "signalDay": "2020-03-09"
+        },
+        {
+          "day": "2020-04-01",
+          "id": "us:TQQQ",
+          "side": "buy",
+          "amount": 199151.02074537403,
+          "fee": 199.15102074537404,
+          "tax": 0,
+          "reason": "dual_risk_guard",
+          "signalDay": "2020-03-31"
+        },
+        {
+          "day": "2022-06-03",
+          "id": "us:TQQQ",
+          "side": "sell",
+          "amount": 576956.3406850774,
+          "fee": 576.9563406850774,
+          "tax": 75405.84251565459,
+          "reason": "dual_risk_guard",
+          "signalDay": "2022-06-02"
+        },
+        {
+          "day": "2023-02-03",
+          "id": "us:TQQQ",
+          "side": "buy",
+          "amount": 500473.0687599778,
+          "fee": 500.4730687599778,
+          "tax": 0,
+          "reason": "dual_risk_guard",
+          "signalDay": "2023-02-02"
+        }
+      ]
+    },
+    {
+      "method": "relative_strength_rotation",
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "deposits": 1,
+      "contributed": 100000,
+      "initialPlan": [
+        {
+          "day": "2014-01-02",
+          "amount": 100000
+        }
+      ],
+      "incomePlan": [],
+      "annualReturn": 28.88162845378077,
+      "xirr": 28.88162845378076,
+      "finalValue": 1264101.449464283,
+      "commonDecisionDays": 2517,
+      "holdingStateDays": null,
+      "holdingStatePercent": null,
+      "initialBuys": 2,
+      "strategyBuys": 9,
+      "strategySales": 8,
+      "transactions": [
+        {
+          "day": "2014-01-02",
+          "id": "us:USD",
+          "side": "buy",
+          "amount": 29982.010793523885,
+          "fee": 29.982010793523884,
+          "tax": 0,
+          "reason": "initial"
+        },
+        {
+          "day": "2014-01-02",
+          "id": "us:TQQQ",
+          "side": "buy",
+          "amount": 29982.010793523885,
+          "fee": 29.982010793523884,
+          "tax": 0,
+          "reason": "initial"
+        },
+        {
+          "day": "2014-01-03",
+          "id": "us:USD",
+          "side": "sell",
+          "amount": 10013.426002958382,
+          "fee": 10.013426002958383,
+          "tax": 0,
+          "reason": "relative_strength_rotation",
+          "signalDay": "2014-01-02"
+        },
+        {
+          "day": "2014-01-06",
+          "id": "us:TQQQ",
+          "side": "buy",
+          "amount": 9993.419157797627,
+          "fee": 9.993419157797627,
+          "tax": 0,
+          "reason": "relative_strength_rotation",
+          "signalDay": "2014-01-03"
+        },
+        {
+          "day": "2014-02-04",
+          "id": "us:USD",
+          "side": "sell",
+          "amount": 9549.78974481367,
+          "fee": 9.54978974481367,
+          "tax": 0,
+          "reason": "relative_strength_rotation",
+          "signalDay": "2014-02-03"
+        },
+        {
+          "day": "2014-02-05",
+          "id": "us:USD",
+          "side": "buy",
+          "amount": 84.99929924829087,
+          "fee": 0.08499929924829087,
+          "tax": 0,
+          "reason": "relative_strength_rotation",
+          "signalDay": "2014-02-04"
+        },
+        {
+          "day": "2014-02-05",
+          "id": "us:TQQQ",
+          "side": "buy",
+          "amount": 9445.709946574743,
+          "fee": 9.445709946574743,
+          "tax": 0,
+          "reason": "relative_strength_rotation",
+          "signalDay": "2014-02-04"
+        },
+        {
+          "day": "2014-03-04",
+          "id": "us:USD",
+          "side": "sell",
+          "amount": 11164.534516852349,
+          "fee": 11.164534516852349,
+          "tax": 253.03739298211477,
+          "reason": "relative_strength_rotation",
+          "signalDay": "2014-03-03"
+        },
+        {
+          "day": "2014-03-05",
+          "id": "us:TQQQ",
+          "side": "buy",
+          "amount": 10889.443146207177,
+          "fee": 10.889443146207178,
+          "tax": 0,
+          "reason": "relative_strength_rotation",
+          "signalDay": "2014-03-04"
+        },
+        {
+          "day": "2017-08-02",
+          "id": "us:TQQQ",
+          "side": "sell",
+          "amount": 82014.18225649903,
+          "fee": 82.01418225649903,
+          "tax": 12359.531023037103,
+          "reason": "relative_strength_rotation",
+          "signalDay": "2017-08-01"
+        },
+        {
+          "day": "2017-08-03",
+          "id": "us:USD",
+          "side": "buy",
+          "amount": 69503.13391728813,
+          "fee": 69.50313391728812,
+          "tax": 0,
+          "reason": "relative_strength_rotation",
+          "signalDay": "2017-08-02"
+        },
+        {
+          "day": "2018-11-02",
+          "id": "us:USD",
+          "side": "sell",
+          "amount": 87735.0174450714,
+          "fee": 87.73501744507139,
+          "tax": 3533.553568989932,
+          "reason": "relative_strength_rotation",
+          "signalDay": "2018-11-01"
+        },
+        {
+          "day": "2018-11-05",
+          "id": "us:TQQQ",
+          "side": "buy",
+          "amount": 84029.69915947694,
+          "fee": 84.02969915947693,
+          "tax": 0,
+          "reason": "relative_strength_rotation",
+          "signalDay": "2018-11-02"
+        },
+        {
+          "day": "2022-06-02",
+          "id": "us:TQQQ",
+          "side": "sell",
+          "amount": 278653.07041376247,
+          "fee": 278.65307041376246,
+          "tax": 47352.41849728305,
+          "reason": "relative_strength_rotation",
+          "signalDay": "2022-06-01"
+        },
+        {
+          "day": "2022-06-03",
+          "id": "us:USD",
+          "side": "buy",
+          "amount": 230791.2076384273,
+          "fee": 230.7912076384273,
+          "tax": 0,
+          "reason": "relative_strength_rotation",
+          "signalDay": "2022-06-02"
+        },
+        {
+          "day": "2022-08-02",
+          "id": "us:TQQQ",
+          "side": "sell",
+          "amount": 283853.8272893461,
+          "fee": 283.8538272893461,
+          "tax": 47857.38302014355,
+          "reason": "relative_strength_rotation",
+          "signalDay": "2022-08-01"
+        },
+        {
+          "day": "2022-08-03",
+          "id": "us:USD",
+          "side": "buy",
+          "amount": 235477.1133285846,
+          "fee": 235.47711332858458,
+          "tax": 0,
+          "reason": "relative_strength_rotation",
+          "signalDay": "2022-08-02"
+        },
+        {
+          "day": "2022-10-04",
+          "id": "us:TQQQ",
+          "side": "sell",
+          "amount": 179559.53023210468,
+          "fee": 179.5595302321047,
+          "tax": 28087.67586986892,
+          "reason": "relative_strength_rotation",
+          "signalDay": "2022-10-03"
+        },
+        {
+          "day": "2022-10-05",
+          "id": "us:USD",
+          "side": "buy",
+          "amount": 151141.15367832535,
+          "fee": 151.14115367832537,
+          "tax": 0,
+          "reason": "relative_strength_rotation",
+          "signalDay": "2022-10-04"
+        }
+      ]
+    }
+  ]
+}
