@@ -1,0 +1,207 @@
+{
+  "budget": 10000,
+  "fee": 0.001,
+  "originalRiskWeight": 0.6,
+  "usable": 9994.003597841296,
+  "cases": [
+    {
+      "id": "on",
+      "input": {
+        "day": "2026-11-02",
+        "status": "ready",
+        "warmingUp": false,
+        "currency": "CNY",
+        "positions": [
+          {
+            "id": "us:USD",
+            "code": "USD",
+            "name": "USD ETF",
+            "weight": 0.3
+          },
+          {
+            "id": "us:TQQQ",
+            "code": "TQQQ",
+            "name": "TQQQ",
+            "weight": 0.3
+          }
+        ],
+        "fee": 0.001,
+        "executedTargets": [
+          0.3,
+          0.3
+        ],
+        "executedParked": [
+          0,
+          0
+        ]
+      },
+      "result": {
+        "day": "2026-11-02",
+        "status": "ready",
+        "reason": null,
+        "budget": 10000,
+        "currency": "CNY",
+        "feeRate": 0.001,
+        "orders": [
+          {
+            "id": "us:USD",
+            "code": "USD",
+            "name": "USD ETF",
+            "targetWeight": 0.3,
+            "amount": 2998.2010793523887,
+            "fee": 2.9982010793523886
+          },
+          {
+            "id": "us:TQQQ",
+            "code": "TQQQ",
+            "name": "TQQQ",
+            "targetWeight": 0.3,
+            "amount": 2998.2010793523887,
+            "fee": 2.9982010793523886
+          }
+        ],
+        "parked": [],
+        "parkedCash": 0,
+        "originalCash": 3997.601439136519,
+        "total": 10000,
+        "fee": 5.996402158704777
+      }
+    },
+    {
+      "id": "off",
+      "input": {
+        "day": "2026-11-02",
+        "status": "ready",
+        "warmingUp": false,
+        "currency": "CNY",
+        "positions": [
+          {
+            "id": "us:USD",
+            "code": "USD",
+            "name": "USD ETF",
+            "weight": 0.3
+          },
+          {
+            "id": "us:TQQQ",
+            "code": "TQQQ",
+            "name": "TQQQ",
+            "weight": 0.3
+          }
+        ],
+        "fee": 0.001,
+        "executedTargets": [
+          0.3,
+          0
+        ],
+        "executedParked": [
+          0,
+          0.3
+        ]
+      },
+      "result": {
+        "day": "2026-11-02",
+        "status": "ready",
+        "reason": null,
+        "budget": 10000,
+        "currency": "CNY",
+        "feeRate": 0.001,
+        "orders": [
+          {
+            "id": "us:USD",
+            "code": "USD",
+            "name": "USD ETF",
+            "targetWeight": 0.3,
+            "amount": 2998.2010793523887,
+            "fee": 2.9982010793523886
+          },
+          {
+            "id": "us:TQQQ",
+            "code": "TQQQ",
+            "name": "TQQQ",
+            "targetWeight": 0,
+            "amount": 0,
+            "fee": 0
+          }
+        ],
+        "parked": [
+          {
+            "id": "us:TQQQ",
+            "amount": 3001.1992804317406
+          }
+        ],
+        "parkedCash": 3001.1992804317406,
+        "originalCash": 3997.601439136519,
+        "total": 10000,
+        "fee": 2.9982010793523886
+      }
+    },
+    {
+      "id": "rotation",
+      "input": {
+        "day": "2026-11-02",
+        "status": "ready",
+        "warmingUp": false,
+        "currency": "CNY",
+        "positions": [
+          {
+            "id": "us:USD",
+            "code": "USD",
+            "name": "USD ETF",
+            "weight": 0.3
+          },
+          {
+            "id": "us:TQQQ",
+            "code": "TQQQ",
+            "name": "TQQQ",
+            "weight": 0.3
+          }
+        ],
+        "fee": 0.001,
+        "executedTargets": [
+          0.4,
+          0.2
+        ],
+        "executedParked": [
+          0,
+          0
+        ]
+      },
+      "result": {
+        "day": "2026-11-02",
+        "status": "ready",
+        "reason": null,
+        "budget": 10000,
+        "currency": "CNY",
+        "feeRate": 0.001,
+        "orders": [
+          {
+            "id": "us:USD",
+            "code": "USD",
+            "name": "USD ETF",
+            "targetWeight": 0.4,
+            "amount": 3997.601439136519,
+            "fee": 3.997601439136519
+          },
+          {
+            "id": "us:TQQQ",
+            "code": "TQQQ",
+            "name": "TQQQ",
+            "targetWeight": 0.2,
+            "amount": 1998.8007195682594,
+            "fee": 1.9988007195682596
+          }
+        ],
+        "parked": [],
+        "parkedCash": 0,
+        "originalCash": 3997.601439136519,
+        "total": 10000.000000000002,
+        "fee": 5.996402158704779
+      }
+    }
+  ],
+  "reentry": {
+    "cash": 3000,
+    "amount": 2997.0029970029973,
+    "fee": 2.997002997002997
+  }
+}

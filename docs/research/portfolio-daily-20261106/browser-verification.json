@@ -1,0 +1,284 @@
+{
+  "passed": true,
+  "isolatedContext": true,
+  "userStorageUntouched": true,
+  "viewport": {
+    "width": 1920,
+    "height": 1080,
+    "deviceScaleFactor": 2
+  },
+  "results": [
+    {
+      "method": "vix_panic_reentry",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "day": "2024-01-02",
+      "indicators": [
+        {
+          "id": "us:TQQQ",
+          "label": "TQQQ新增预算投入率",
+          "value": 100,
+          "unit": "%",
+          "kind": "execution_rate",
+          "basis": "assigned_asset_budget"
+        }
+      ],
+      "value": 1516873.0385879853
+    },
+    {
+      "method": "vix_panic_reentry",
+      "weights": [
+        50,
+        50
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "day": "2024-01-02",
+      "indicators": [
+        {
+          "id": "us:TQQQ",
+          "label": "TQQQ新增预算投入率",
+          "value": 100,
+          "unit": "%",
+          "kind": "execution_rate",
+          "basis": "assigned_asset_budget"
+        }
+      ],
+      "value": 2460511.4259259715
+    },
+    {
+      "method": "vix_panic_reentry",
+      "weights": [
+        20,
+        40
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "day": "2024-01-02",
+      "indicators": [
+        {
+          "id": "us:TQQQ",
+          "label": "TQQQ新增预算投入率",
+          "value": 100,
+          "unit": "%",
+          "kind": "execution_rate",
+          "basis": "assigned_asset_budget"
+        }
+      ],
+      "value": 1550516.3369044047
+    },
+    {
+      "method": "relative_strength_rotation",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "day": "2024-01-02",
+      "indicators": [
+        {
+          "id": "us:USD",
+          "label": "USD ETF股票预算分配",
+          "value": 100,
+          "unit": "%",
+          "kind": "allocation_share",
+          "basis": "pair_stock_budget"
+        },
+        {
+          "id": "us:TQQQ",
+          "label": "TQQQ股票预算分配",
+          "value": 0,
+          "unit": "%",
+          "kind": "allocation_share",
+          "basis": "pair_stock_budget"
+        }
+      ],
+      "value": 1264101.449464283
+    },
+    {
+      "method": "relative_strength_rotation",
+      "weights": [
+        50,
+        50
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "day": "2024-01-02",
+      "indicators": [
+        {
+          "id": "us:USD",
+          "label": "USD ETF股票预算分配",
+          "value": 100,
+          "unit": "%",
+          "kind": "allocation_share",
+          "basis": "pair_stock_budget"
+        },
+        {
+          "id": "us:TQQQ",
+          "label": "TQQQ股票预算分配",
+          "value": 0,
+          "unit": "%",
+          "kind": "allocation_share",
+          "basis": "pair_stock_budget"
+        }
+      ],
+      "value": 2039393.7900998362
+    },
+    {
+      "method": "relative_strength_rotation",
+      "weights": [
+        20,
+        40
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "day": "2024-01-02",
+      "indicators": [
+        {
+          "id": "us:USD",
+          "label": "USD ETF股票预算分配",
+          "value": 100,
+          "unit": "%",
+          "kind": "allocation_share",
+          "basis": "pair_stock_budget"
+        },
+        {
+          "id": "us:TQQQ",
+          "label": "TQQQ股票预算分配",
+          "value": 0,
+          "unit": "%",
+          "kind": "allocation_share",
+          "basis": "pair_stock_budget"
+        }
+      ],
+      "value": 1262532.1473238308
+    },
+    {
+      "method": "dual_risk_guard",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "day": "2024-01-02",
+      "indicators": [
+        {
+          "id": "us:TQQQ",
+          "label": "TQQQ新增预算投入率",
+          "value": 100,
+          "unit": "%",
+          "kind": "execution_rate",
+          "basis": "assigned_asset_budget"
+        }
+      ],
+      "value": 1634059.0771199495
+    },
+    {
+      "method": "dual_risk_guard",
+      "weights": [
+        50,
+        50
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "day": "2024-01-02",
+      "indicators": [
+        {
+          "id": "us:TQQQ",
+          "label": "TQQQ新增预算投入率",
+          "value": 100,
+          "unit": "%",
+          "kind": "execution_rate",
+          "basis": "assigned_asset_budget"
+        }
+      ],
+      "value": 2655743.444166203
+    },
+    {
+      "method": "dual_risk_guard",
+      "weights": [
+        20,
+        40
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "day": "2024-01-02",
+      "indicators": [
+        {
+          "id": "us:TQQQ",
+          "label": "TQQQ新增预算投入率",
+          "value": 100,
+          "unit": "%",
+          "kind": "execution_rate",
+          "basis": "assigned_asset_budget"
+        }
+      ],
+      "value": 1706764.3882803565
+    }
+  ],
+  "historicalBudget": {
+    "report": {
+      "day": "2020-03-09",
+      "budget": 25000,
+      "allocation": {
+        "day": "2020-03-09",
+        "status": "ready",
+        "reason": null,
+        "budget": 25000,
+        "currency": "CNY",
+        "feeRate": 0.001,
+        "orders": [
+          {
+            "id": "us:USD",
+            "code": "USD",
+            "name": "USD · 半导体 · 每日2倍做多",
+            "targetWeight": 0.3,
+            "amount": 7495.502698380971,
+            "fee": 7.495502698380971
+          },
+          {
+            "id": "us:TQQQ",
+            "code": "TQQQ",
+            "name": "TQQQ · 纳斯达克100 · 每日3倍做多",
+            "targetWeight": 0,
+            "amount": 0,
+            "fee": 0
+          }
+        ],
+        "parked": [
+          {
+            "id": "us:TQQQ",
+            "amount": 7502.998201079351
+          }
+        ],
+        "parkedCash": 7502.998201079351,
+        "originalCash": 9994.003597841296,
+        "total": 25000,
+        "fee": 7.495502698380971
+      },
+      "reason": "VIX规则处于退出阶段，TQQQ对应预算暂存现金。"
+    },
+    "budgetText": "买入 USD\n7,495.50 元\n买入 TQQQ\n0.00 元\n策略暂存现金\n7,503.00 元\n原配置现金\n9,994.00 元\n买入交易费\n7.50 元\n\n合计 25,000.00 元。只分配这笔新增预算，不动用账户原有现金或未到账卖出款。"
+  },
+  "extended": {
+    "start": "2014-01-02",
+    "end": "2026-11-05",
+    "prefixUnchanged": true
+  },
+  "dirtyDisabled": true,
+  "missingVixPreservesDaily": true,
+  "pageErrors": [],
+  "sourceFiles": {
+    "assets/portfolio.js": "b058cfc5f992ac83f6ba55c51f2698cf423895cc3abd35e0ada1d72d0302d663",
+    "assets/portfolio-pdf.js": "b22be5f99fcf0d3243b926a0229bc7ef083410982d7781f10c3495b24efc27a0",
+    "assets/portfolio-model.js": "57766429812aa052d94de108cf3e4bd720f0b742a1258516a5ba097a11a9916e",
+    "assets/portfolio-systematic.js": "82df794cd14f5cfcd5a13b102fa47e5634908754a4532399d858c09c5b854aaf",
+    "assets/style.css": "b28c8f6683353a631cece594951fc0523ca9b8abc8cc75a0258d7de4f04b5b06"
+  }
+}

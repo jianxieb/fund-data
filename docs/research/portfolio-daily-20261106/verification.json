@@ -1,0 +1,1100 @@
+{
+  "status": "pass",
+  "scope": "Daily reporting and new-budget preview only. Exact financial invariance versus delivered engine; real 10/15-year accounts, editable weights, monthly funding, yearly rebalance, zero initial capital and liquidation. Fixed-start extensions preserve all past daily snapshots. This does not retest predictive performance or establish an optimal strategy.",
+  "sources": {
+    "docs/research/portfolio-methods-20261106/reproduction.tar.gz": "a450134e9c8a02a7e6dab5cc0b97c21ce60581fd9b93e550febc8cc5b344e555",
+    "assets/model.js": "8d433de2935cb24663e8285f72ee8a9ff01e7d11e80ff063eb6c6533a02c6a26",
+    "assets/portfolio-model.js": "57766429812aa052d94de108cf3e4bd720f0b742a1258516a5ba097a11a9916e",
+    "assets/portfolio-systematic.js": "82df794cd14f5cfcd5a13b102fa47e5634908754a4532399d858c09c5b854aaf"
+  },
+  "frozenSources": {
+    "data/portfolio/catalog.js": "4530c6433205e81f7372b353da83c60cb97e596fbe2232f617831214892d0b2e",
+    "data/portfolio/us/USD-b2e099b598f25d1d.json": "b2e099b598f25d1d034bbf56054d02be7028eba99f9f9a4e90bb959fc62c138f",
+    "data/portfolio/us/TQQQ-235126570a4b63be.json": "235126570a4b63be210364b0242b1f9ab2bb502c9f0de95ad4ef2380742a6552",
+    "data/portfolio/us/QQQ-2d88370080c88a85.json": "2d88370080c88a85a4514c1b5c0a286a9c57347656b76fa4247f050328bde167",
+    "data/portfolio/fx/CNY-5f1b9958db2b35db.json": "5f1b9958db2b35db35208b97c3d4fbf54f4d3901f284c4e6cf2e6ec124103299",
+    "data/portfolio/entry-context.json": "9bce0093b7ede31bb7255457f814ca860c1a3187707eaddff4d5c9b1a71112dc"
+  },
+  "scriptSHA256": "afacd52a55bea25afb985ebaff40fad1ec58f08e0e1d139cd44c8cd1756bed8e",
+  "accounts": 63,
+  "valuations": 187893,
+  "transactions": 7729,
+  "snapshots": 181233,
+  "budgetQuotes": 181230,
+  "prefixRows": 20331,
+  "financialDifferences": 0,
+  "elapsedSeconds": 15.285636917,
+  "records": [
+    {
+      "method": "vix_panic_reentry",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2011-10-03",
+      "end": "2021-10-04",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 4352365.76130447,
+      "annualReturn": 45.814899817660205,
+      "dailyRows": 2518,
+      "transactions": 4
+    },
+    {
+      "method": "vix_panic_reentry",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2011-10-03",
+      "end": "2021-10-04",
+      "monthly": 1000,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 5420740.374875801,
+      "annualReturn": 44.334450270777424,
+      "dailyRows": 2518,
+      "transactions": 244
+    },
+    {
+      "method": "vix_panic_reentry",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 1516873.2042798786,
+      "annualReturn": 31.252828491912553,
+      "dailyRows": 2517,
+      "transactions": 4
+    },
+    {
+      "method": "vix_panic_reentry",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "monthly": 1000,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 2057818.3206979143,
+      "annualReturn": 30.36611509087308,
+      "dailyRows": 2517,
+      "transactions": 244
+    },
+    {
+      "method": "vix_panic_reentry",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2010-11-01",
+      "end": "2025-11-03",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 11178574.056584146,
+      "annualReturn": 36.93051205309803,
+      "dailyRows": 3775,
+      "transactions": 4
+    },
+    {
+      "method": "vix_panic_reentry",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2010-11-01",
+      "end": "2025-11-03",
+      "monthly": 1000,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 16361179.698121026,
+      "annualReturn": 36.30680428456034,
+      "dailyRows": 3775,
+      "transactions": 364
+    },
+    {
+      "method": "vix_panic_reentry",
+      "weights": [
+        50,
+        50
+      ],
+      "start": "2011-10-03",
+      "end": "2021-10-04",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 7184444.190411676,
+      "annualReturn": 53.30605233296954,
+      "dailyRows": 2518,
+      "transactions": 4
+    },
+    {
+      "method": "vix_panic_reentry",
+      "weights": [
+        50,
+        50
+      ],
+      "start": "2011-10-03",
+      "end": "2021-10-04",
+      "monthly": 1000,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 8884436.928239636,
+      "annualReturn": 52.661404282351754,
+      "dailyRows": 2518,
+      "transactions": 244
+    },
+    {
+      "method": "vix_panic_reentry",
+      "weights": [
+        50,
+        50
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 2460511.701968776,
+      "annualReturn": 37.75860347652396,
+      "dailyRows": 2517,
+      "transactions": 4
+    },
+    {
+      "method": "vix_panic_reentry",
+      "weights": [
+        50,
+        50
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "monthly": 1000,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 3281806.546270952,
+      "annualReturn": 37.52870590284074,
+      "dailyRows": 2517,
+      "transactions": 244
+    },
+    {
+      "method": "vix_panic_reentry",
+      "weights": [
+        50,
+        50
+      ],
+      "start": "2010-11-01",
+      "end": "2025-11-03",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 18556911.756606888,
+      "annualReturn": 41.634328072869955,
+      "dailyRows": 3775,
+      "transactions": 4
+    },
+    {
+      "method": "vix_panic_reentry",
+      "weights": [
+        50,
+        50
+      ],
+      "start": "2010-11-01",
+      "end": "2025-11-03",
+      "monthly": 1000,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 27071256.08714603,
+      "annualReturn": 41.56869098500113,
+      "dailyRows": 3775,
+      "transactions": 364
+    },
+    {
+      "method": "vix_panic_reentry",
+      "weights": [
+        20,
+        40
+      ],
+      "start": "2011-10-03",
+      "end": "2021-10-04",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 5292249.0449097995,
+      "annualReturn": 48.692729076450746,
+      "dailyRows": 2518,
+      "transactions": 4
+    },
+    {
+      "method": "vix_panic_reentry",
+      "weights": [
+        20,
+        40
+      ],
+      "start": "2011-10-03",
+      "end": "2021-10-04",
+      "monthly": 1000,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 6516560.59392244,
+      "annualReturn": 47.29902352255695,
+      "dailyRows": 2518,
+      "transactions": 244
+    },
+    {
+      "method": "vix_panic_reentry",
+      "weights": [
+        20,
+        40
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 1550516.557849015,
+      "annualReturn": 31.541107776556075,
+      "dailyRows": 2517,
+      "transactions": 4
+    },
+    {
+      "method": "vix_panic_reentry",
+      "weights": [
+        20,
+        40
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "monthly": 1000,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 2101343.704719971,
+      "annualReturn": 30.679032071737055,
+      "dailyRows": 2517,
+      "transactions": 244
+    },
+    {
+      "method": "vix_panic_reentry",
+      "weights": [
+        20,
+        40
+      ],
+      "start": "2010-11-01",
+      "end": "2025-11-03",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 11688017.918570686,
+      "annualReturn": 37.337764332877384,
+      "dailyRows": 3775,
+      "transactions": 4
+    },
+    {
+      "method": "vix_panic_reentry",
+      "weights": [
+        20,
+        40
+      ],
+      "start": "2010-11-01",
+      "end": "2025-11-03",
+      "monthly": 1000,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 16697399.407856777,
+      "annualReturn": 36.69043092359709,
+      "dailyRows": 3775,
+      "transactions": 364
+    },
+    {
+      "method": "relative_strength_rotation",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2011-10-03",
+      "end": "2021-10-04",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 4054393.7839111136,
+      "annualReturn": 44.78490502746328,
+      "dailyRows": 2518,
+      "transactions": 13
+    },
+    {
+      "method": "relative_strength_rotation",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2011-10-03",
+      "end": "2021-10-04",
+      "monthly": 1000,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 5052974.22466507,
+      "annualReturn": 43.699556766563255,
+      "dailyRows": 2518,
+      "transactions": 155
+    },
+    {
+      "method": "relative_strength_rotation",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 1264101.375388202,
+      "annualReturn": 28.88162769844922,
+      "dailyRows": 2517,
+      "transactions": 19
+    },
+    {
+      "method": "relative_strength_rotation",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "monthly": 1000,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 1733453.2581400534,
+      "annualReturn": 28.066849424134375,
+      "dailyRows": 2517,
+      "transactions": 160
+    },
+    {
+      "method": "relative_strength_rotation",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2010-11-01",
+      "end": "2025-11-03",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 15711777.549282225,
+      "annualReturn": 40.07218764928855,
+      "dailyRows": 3775,
+      "transactions": 20
+    },
+    {
+      "method": "relative_strength_rotation",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2010-11-01",
+      "end": "2025-11-03",
+      "monthly": 1000,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 22135769.207870316,
+      "annualReturn": 39.332131303377736,
+      "dailyRows": 3775,
+      "transactions": 237
+    },
+    {
+      "method": "relative_strength_rotation",
+      "weights": [
+        50,
+        50
+      ],
+      "start": "2011-10-03",
+      "end": "2021-10-04",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 6688022.677624811,
+      "annualReturn": 52.21277268647007,
+      "dailyRows": 2518,
+      "transactions": 13
+    },
+    {
+      "method": "relative_strength_rotation",
+      "weights": [
+        50,
+        50
+      ],
+      "start": "2011-10-03",
+      "end": "2021-10-04",
+      "monthly": 1000,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 8271738.27705605,
+      "annualReturn": 51.93945186133981,
+      "dailyRows": 2518,
+      "transactions": 155
+    },
+    {
+      "method": "relative_strength_rotation",
+      "weights": [
+        50,
+        50
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 2039393.6666890352,
+      "annualReturn": 35.19646801769938,
+      "dailyRows": 2517,
+      "transactions": 19
+    },
+    {
+      "method": "relative_strength_rotation",
+      "weights": [
+        50,
+        50
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "monthly": 1000,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 2741414.1360222097,
+      "annualReturn": 35.00810232716687,
+      "dailyRows": 2517,
+      "transactions": 160
+    },
+    {
+      "method": "relative_strength_rotation",
+      "weights": [
+        50,
+        50
+      ],
+      "start": "2010-11-01",
+      "end": "2025-11-03",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 26109231.79455843,
+      "annualReturn": 44.89391868136885,
+      "dailyRows": 3775,
+      "transactions": 20
+    },
+    {
+      "method": "relative_strength_rotation",
+      "weights": [
+        50,
+        50
+      ],
+      "start": "2010-11-01",
+      "end": "2025-11-03",
+      "monthly": 1000,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 36691726.05626879,
+      "annualReturn": 44.72496863058757,
+      "dailyRows": 3775,
+      "transactions": 237
+    },
+    {
+      "method": "relative_strength_rotation",
+      "weights": [
+        20,
+        40
+      ],
+      "start": "2011-10-03",
+      "end": "2021-10-04",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 4257849.175273507,
+      "annualReturn": 45.495246159509016,
+      "dailyRows": 2518,
+      "transactions": 14
+    },
+    {
+      "method": "relative_strength_rotation",
+      "weights": [
+        20,
+        40
+      ],
+      "start": "2011-10-03",
+      "end": "2021-10-04",
+      "monthly": 1000,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 5261556.949961723,
+      "annualReturn": 44.389682775327046,
+      "dailyRows": 2518,
+      "transactions": 156
+    },
+    {
+      "method": "relative_strength_rotation",
+      "weights": [
+        20,
+        40
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 1262532.0525882235,
+      "annualReturn": 28.865616838040985,
+      "dailyRows": 2517,
+      "transactions": 19
+    },
+    {
+      "method": "relative_strength_rotation",
+      "weights": [
+        20,
+        40
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "monthly": 1000,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 1731966.4016725493,
+      "annualReturn": 28.051498981541044,
+      "dailyRows": 2517,
+      "transactions": 160
+    },
+    {
+      "method": "relative_strength_rotation",
+      "weights": [
+        20,
+        40
+      ],
+      "start": "2010-11-01",
+      "end": "2025-11-03",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 16494947.147474075,
+      "annualReturn": 40.52696870782271,
+      "dailyRows": 3775,
+      "transactions": 20
+    },
+    {
+      "method": "relative_strength_rotation",
+      "weights": [
+        20,
+        40
+      ],
+      "start": "2010-11-01",
+      "end": "2025-11-03",
+      "monthly": 1000,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 23009419.14996367,
+      "annualReturn": 39.771950870333185,
+      "dailyRows": 3775,
+      "transactions": 237
+    },
+    {
+      "method": "dual_risk_guard",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2011-10-03",
+      "end": "2021-10-04",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 4352365.76130447,
+      "annualReturn": 45.814899817660205,
+      "dailyRows": 2518,
+      "transactions": 4
+    },
+    {
+      "method": "dual_risk_guard",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2011-10-03",
+      "end": "2021-10-04",
+      "monthly": 1000,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 5420740.374875801,
+      "annualReturn": 44.334450270777424,
+      "dailyRows": 2518,
+      "transactions": 244
+    },
+    {
+      "method": "dual_risk_guard",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 1634059.2862016228,
+      "annualReturn": 32.23331949042472,
+      "dailyRows": 2517,
+      "transactions": 6
+    },
+    {
+      "method": "dual_risk_guard",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "monthly": 1000,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 2212950.5715392274,
+      "annualReturn": 31.340549314853085,
+      "dailyRows": 2517,
+      "transactions": 238
+    },
+    {
+      "method": "dual_risk_guard",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2010-11-01",
+      "end": "2025-11-03",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 11849348.14792999,
+      "annualReturn": 37.463281909885126,
+      "dailyRows": 3775,
+      "transactions": 6
+    },
+    {
+      "method": "dual_risk_guard",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2010-11-01",
+      "end": "2025-11-03",
+      "monthly": 1000,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 17274644.80634763,
+      "annualReturn": 36.810856598313805,
+      "dailyRows": 3775,
+      "transactions": 358
+    },
+    {
+      "method": "dual_risk_guard",
+      "weights": [
+        50,
+        50
+      ],
+      "start": "2011-10-03",
+      "end": "2021-10-04",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 7184444.190411676,
+      "annualReturn": 53.30605233296954,
+      "dailyRows": 2518,
+      "transactions": 4
+    },
+    {
+      "method": "dual_risk_guard",
+      "weights": [
+        50,
+        50
+      ],
+      "start": "2011-10-03",
+      "end": "2021-10-04",
+      "monthly": 1000,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 8884436.928239636,
+      "annualReturn": 52.661404282351754,
+      "dailyRows": 2518,
+      "transactions": 244
+    },
+    {
+      "method": "dual_risk_guard",
+      "weights": [
+        50,
+        50
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 2655743.7924964107,
+      "annualReturn": 38.814614518583724,
+      "dailyRows": 2517,
+      "transactions": 6
+    },
+    {
+      "method": "dual_risk_guard",
+      "weights": [
+        50,
+        50
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "monthly": 1000,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 3540256.979490762,
+      "annualReturn": 38.592735225390754,
+      "dailyRows": 2517,
+      "transactions": 238
+    },
+    {
+      "method": "dual_risk_guard",
+      "weights": [
+        50,
+        50
+      ],
+      "start": "2010-11-01",
+      "end": "2025-11-03",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 19674421.83952505,
+      "annualReturn": 42.18732436057826,
+      "dailyRows": 3775,
+      "transactions": 6
+    },
+    {
+      "method": "dual_risk_guard",
+      "weights": [
+        50,
+        50
+      ],
+      "start": "2010-11-01",
+      "end": "2025-11-03",
+      "monthly": 1000,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 28593089.56581992,
+      "annualReturn": 42.09202938889067,
+      "dailyRows": 3775,
+      "transactions": 358
+    },
+    {
+      "method": "dual_risk_guard",
+      "weights": [
+        20,
+        40
+      ],
+      "start": "2011-10-03",
+      "end": "2021-10-04",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 5292249.0449097995,
+      "annualReturn": 48.692729076450746,
+      "dailyRows": 2518,
+      "transactions": 4
+    },
+    {
+      "method": "dual_risk_guard",
+      "weights": [
+        20,
+        40
+      ],
+      "start": "2011-10-03",
+      "end": "2021-10-04",
+      "monthly": 1000,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 6516560.59392244,
+      "annualReturn": 47.29902352255695,
+      "dailyRows": 2518,
+      "transactions": 244
+    },
+    {
+      "method": "dual_risk_guard",
+      "weights": [
+        20,
+        40
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 1706764.667078007,
+      "annualReturn": 32.81028349392594,
+      "dailyRows": 2517,
+      "transactions": 6
+    },
+    {
+      "method": "dual_risk_guard",
+      "weights": [
+        20,
+        40
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "monthly": 1000,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 2308186.705841721,
+      "annualReturn": 31.939257890595442,
+      "dailyRows": 2517,
+      "transactions": 238
+    },
+    {
+      "method": "dual_risk_guard",
+      "weights": [
+        20,
+        40
+      ],
+      "start": "2010-11-01",
+      "end": "2025-11-03",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 12582383.37369848,
+      "annualReturn": 38.014226646847945,
+      "dailyRows": 3775,
+      "transactions": 6
+    },
+    {
+      "method": "dual_risk_guard",
+      "weights": [
+        20,
+        40
+      ],
+      "start": "2010-11-01",
+      "end": "2025-11-03",
+      "monthly": 1000,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 17915352.88549225,
+      "annualReturn": 37.34307364145757,
+      "dailyRows": 3775,
+      "transactions": 358
+    },
+    {
+      "method": "vix_panic_reentry",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "year",
+      "liquidate": false,
+      "value": 1158128.521827067,
+      "annualReturn": 27.757985491618964,
+      "dailyRows": 2517,
+      "transactions": 24
+    },
+    {
+      "method": "vix_panic_reentry",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "monthly": 1000,
+      "initial": 0,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 556113.848460835,
+      "annualReturn": 27.522160307555875,
+      "dailyRows": 2517,
+      "transactions": 244
+    },
+    {
+      "method": "vix_panic_reentry",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": true,
+      "value": 1515088.959252176,
+      "annualReturn": 31.237379703941848,
+      "dailyRows": 2517,
+      "transactions": 6
+    },
+    {
+      "method": "relative_strength_rotation",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "year",
+      "liquidate": false,
+      "value": 1045052.4566253144,
+      "annualReturn": 26.451990266367574,
+      "dailyRows": 2517,
+      "transactions": 30
+    },
+    {
+      "method": "relative_strength_rotation",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "monthly": 1000,
+      "initial": 0,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 482004.4906567685,
+      "annualReturn": 25.45159231573526,
+      "dailyRows": 2517,
+      "transactions": 160
+    },
+    {
+      "method": "relative_strength_rotation",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": true,
+      "value": 1262726.475451288,
+      "annualReturn": 28.86760138976816,
+      "dailyRows": 2517,
+      "transactions": 20
+    },
+    {
+      "method": "dual_risk_guard",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "year",
+      "liquidate": false,
+      "value": 1099708.905686425,
+      "annualReturn": 27.098343996762054,
+      "dailyRows": 2517,
+      "transactions": 25
+    },
+    {
+      "method": "dual_risk_guard",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "monthly": 1000,
+      "initial": 0,
+      "rebalance": "none",
+      "liquidate": false,
+      "value": 595231.8781996216,
+      "annualReturn": 28.466698470906703,
+      "dailyRows": 2517,
+      "transactions": 238
+    },
+    {
+      "method": "dual_risk_guard",
+      "weights": [
+        30,
+        30
+      ],
+      "start": "2014-01-02",
+      "end": "2024-01-02",
+      "monthly": 0,
+      "initial": 100000,
+      "rebalance": "none",
+      "liquidate": true,
+      "value": 1632203.8023287782,
+      "annualReturn": 32.21829489357062,
+      "dailyRows": 2517,
+      "transactions": 8
+    }
+  ]
+}

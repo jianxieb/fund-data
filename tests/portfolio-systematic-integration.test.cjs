@@ -137,3 +137,128 @@ test('liquidation cancels pending reentry and clears strategy cash without a buy
   assert.equal(r.systematic.nextPlan, null); assert.deepEqual(r.systematic.cashByLeg, [0, 0]);
   near(r.value, r.cash); reconcile(input, r);
 });
+
+test('every common close has an immutable numerical daily state even without an order', () => {
+  for (const method of methods) {
+    const input = fixture(method), r = run(input), daily = r.systematic.daily;
+    assert.equal(daily.length, r.curve.length);
+    assert.equal(daily[0].trackingStart, r.start);
+    assert.ok(daily.some(row => row.nextPlan === null && row.status === 'ready'));
+    assert.ok(Object.isFrozen(daily) && Object.isFrozen(daily[0]) && Object.isFrozen(daily[0].metadata));
+    assert.ok(Object.isFrozen(daily[0].positions));
+    assert.equal(Reflect.set(daily[0].metadata, 'sourceDay', '2099-01-01'), false);
+    for (const row of daily) {
+      if (row.status !== 'ready') { assert.ok(row.indicators.every(s => s.value === null)); continue; }
+      assert.ok(row.indicators.every(s => Number.isFinite(s.value) && s.unit === '%'));
+      if (method === 'relative_strength_rotation') near(sum(row.indicators.map(s => s.value)), 100);
+      else assert.ok([0, 100].includes(row.indicator));
+    }
+  }
+});
+
+test('daily state preserves the full prefix when future dates and prices are extended with the same start', () => {
+  for (const method of methods) {
+    const input = fixture(method), cut = method === 'relative_strength_rotation' ? 650 : 335;
+    const earlier = run({ ...input, config: { ...input.config, end: input.days[cut] } });
+    const future = structuredClone(input);
+    for (const id of Object.keys(future.histories)) future.histories[id].series = future.histories[id].series.map((row, i) => [row[0], i > cut ? row[1] * (i % 2 ? 4 : .5) : row[1]]);
+    future.marketContext.series = future.marketContext.series.map((row, i) => [row[0], i > cut ? 80 : row[1], row[2]]);
+    const extended = run(future);
+    assert.deepEqual(extended.systematic.daily.filter(row => row.day <= input.days[cut]), earlier.systematic.daily);
+  }
+});
+
+test('addition quotes conserve the budget with fees, changed weights, parked cash and a third asset', () => {
+  for (const method of methods) {
+    const input = fixture(method, { positions: [{ id: 'us:USD', weight: 15 }, { id: 'us:TQQQ', weight: 45 }, { id: 'us:OTHER', weight: 20 }] });
+    const r = run(input);
+    for (const row of r.systematic.daily) for (const budget of [0, 1000.25]) {
+      const q = P.additionAllocation(row, budget);
+      assert.ok(q); near(q.total, budget);
+      near(sum(q.orders.map(o => o.amount + o.fee)) + q.parkedCash + q.originalCash, budget);
+      near(q.orders.find(o => o.id === 'us:OTHER').amount, budget / 1.0008 * .2);
+      near(q.originalCash, budget / 1.0008 * .2);
+      assert.equal(q.currency, 'USD');
+      assert.deepEqual(q, P.additionAllocation(row, budget));
+    }
+    assert.throws(() => P.additionAllocation(r.systematic.daily.at(-1), -1), /新增资金/);
+  }
+});
+
+test('a previous-close addition quote equals actual next-close contribution orders for every method', () => {
+  for (const method of methods) for (const initial of [0, 100]) {
+    const input = fixture(method, { initial, monthly: 123.45, positions: [{ id: 'us:USD', weight: 20 }, { id: 'us:TQQQ', weight: 40 }, { id: 'us:OTHER', weight: 10 }] });
+    input.marketContext.series = input.marketContext.series.map((row, i) => [row[0], i >= 300 && i < 360 ? 40 : 20, row[2]]);
+    const r = run(input), daily = r.systematic.daily;
+    for (const { day, amount } of r.plan.income) {
+      const index = daily.findIndex(row => row.day === day); if (index <= 0) continue;
+      const quote = P.additionAllocation(daily[index - 1], amount), trades = r.transactions.filter(t => t.day === day && t.reason === 'contribution');
+      assert.ok(quote);
+      for (const order of quote.orders) {
+        const actual = trades.find(t => t.id === order.id);
+        near(actual?.amount || 0, order.amount); near(actual?.fee || 0, order.fee);
+      }
+      const other = quote.orders.find(o => o.id === 'us:OTHER'); assert.ok(other.amount > 0);
+      if (quote.parkedCash > 0 && !strategyTrades(r).some(t => t.day === day)) {
+        const before = r.curve.find(row => row.day === daily[index - 1].day), after = r.curve.find(row => row.day === day);
+        near(sum(after.systematicCash) - sum(before.systematicCash), quote.parkedCash);
+      }
+    }
+  }
+});
+
+test('addition quotes use pending targets before executed targets change', () => {
+  const r = run(fixture()), out = r.systematic.daily.find(row => row.nextPlan?.orders.some(o => o.side === 'sell'));
+  assert.deepEqual(out.executedTargets, [.3, .3]); assert.deepEqual(out.desiredTargets, [.3, 0]);
+  const quote = P.additionAllocation(out, 1000);
+  assert.equal(quote.orders.find(o => o.id === 'us:TQQQ').amount, 0); assert.ok(quote.parkedCash > 300);
+  const incoming = r.systematic.daily.find(row => row.nextPlan?.orders.some(o => o.side === 'buy'));
+  assert.deepEqual(incoming.executedTargets, [.3, 0]);
+  assert.ok(P.additionAllocation(incoming, 1000).orders.find(o => o.id === 'us:TQQQ').amount > 0);
+});
+
+test('warmup is a labelled original-allocation fallback; missing and liquidation never become zero scores', () => {
+  const rotation = run(fixture('relative_strength_rotation')), warm = rotation.systematic.daily.find(row => row.warmingUp);
+  assert.equal(P.additionAllocation(warm, 1000).status, 'fallback');
+  assert.match(P.additionAllocation(warm, 1000).reason, /505/);
+  assert.equal(warm.indicator, null); assert.ok(warm.indicators.every(x => x.value === null));
+  near(P.additionAllocation(warm, 1000).orders[0].targetWeight, .3);
+  const missing = fixture(); missing.config.start = missing.days[299]; missing.config.end = missing.days[307];
+  missing.marketContext.series = missing.marketContext.series.slice(0, 300); missing.marketContext.asOf = missing.days[299];
+  const absent = run(missing).systematic.daily.at(-1);
+  assert.equal(absent.status, 'missing'); assert.equal(absent.indicator, null);
+  assert.ok(absent.indicators.every(x => x.value === null)); assert.equal(P.additionAllocation(absent, 1000), null);
+  const closed = fixture(undefined, { tax: { usCapitalGains: 20, usDividend: 20, liquidate: true } });
+  const last = run(closed).systematic.daily.at(-1);
+  assert.equal(last.status, 'liquidated'); assert.equal(last.indicator, null); assert.equal(last.nextPlan, null);
+  assert.equal(P.additionAllocation(last, 1000), null);
+});
+
+test('non-common valuation dates do not add decisions or advance confirmation counts', () => {
+  const input = fixture(undefined, { positions: [{ id: 'us:USD', weight: 20 }, { id: 'us:TQQQ', weight: 30 }, { id: 'us:OTHER', weight: 10 }] });
+  input.histories['us:OTHER'].series = input.histories['us:OTHER'].series.filter(row => row[0] !== input.days[311]);
+  const r = run(input);
+  assert.ok(r.curve.some(row => row.day === input.days[311]));
+  assert.ok(!r.systematic.daily.some(row => row.day === input.days[311]));
+  for (const row of r.systematic.daily) {
+    assert.ok(row.metadata.vixDay < row.day);
+    assert.equal(row.metadata.units.vixExitRun, 'source_observations');
+  }
+});
+
+test('daily explanatory data distinguishes warmup, initial neutral phases, and completed monthly review', () => {
+  const r = run(fixture('relative_strength_rotation')), daily = r.systematic.daily;
+  assert.equal(daily[0].metadata.startup.initialDecision, true);
+  assert.equal(daily[0].metadata.startup.neutralPhases, 3);
+  assert.equal(daily[0].metadata.lastReviewDay, null);
+  const reviewed = daily.find(row => row.metadata.reviewedToday);
+  assert.equal(reviewed.metadata.lastReviewDay, reviewed.day);
+  near(reviewed.metadata.relativeRatio, Math.exp(reviewed.metadata.relativeLogReturn));
+  const next = daily[daily.indexOf(reviewed) + 1];
+  assert.equal(next.metadata.lastReviewDay, reviewed.day);
+  assert.equal(next.metadata.reviewedToday, false);
+  const dual = run(fixture('dual_risk_guard')).systematic.daily.find(row => row.metadata.qqqExitRun === 19);
+  assert.equal(dual.metadata.qqqPrice, 70);
+  near(dual.metadata.qqqDrawdown, dual.metadata.qqqPrice / dual.metadata.qqqHigh - 1);
+  near(dual.metadata.qqqMaDistance, dual.metadata.qqqPrice / dual.metadata.qqqMA - 1);
+});

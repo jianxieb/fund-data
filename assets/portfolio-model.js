@@ -9,6 +9,41 @@
   const gap = (a, b) => (time(b) - time(a)) / DAY;
   const sum = values => values.reduce((a, b) => a + b, 0);
   const fail = message => { throw new Error(message); };
+  function immutableCopy(value) {
+    const cloned = JSON.parse(JSON.stringify(value));
+    function freeze(item) {
+      if (item && typeof item === 'object') { Object.values(item).forEach(freeze); Object.freeze(item); }
+      return item;
+    }
+    return freeze(cloned);
+  }
+  function additionAllocation(row, budget) {
+    if (!row || !['ready', 'warming-up'].includes(row.status) || row.missing || row.liquidated) return null;
+    if (!finite(budget) || budget < 0) fail('新增资金须为不小于0的有效金额');
+    const positions = row.positions, feeRate = row.fee;
+    if (!Array.isArray(positions) || !positions.length || !finite(feeRate) || feeRate < 0 ||
+        positions.some(p => !p || typeof p.id !== 'string' || !finite(p.weight) || p.weight <= 0)) return null;
+    const originalWeight = sum(positions.map(p => p.weight));
+    if (originalWeight > 1 + 1e-10) return null;
+    const desired = row.nextPlan?.desiredTargets || row.executedTargets;
+    const parkedWeights = row.nextPlan?.parkedWeights || row.executedParked;
+    if (![desired, parkedWeights].every(a => Array.isArray(a) && a.length === 2 && a.every(w => finite(w) && w >= 0))) return null;
+    const pair = ['us:USD', 'us:TQQQ'];
+    const targets = positions.map(p => pair.includes(p.id) ? desired[pair.indexOf(p.id)] : p.weight);
+    if (Math.abs(sum(targets) + sum(parkedWeights) - originalWeight) > 1e-9) return null;
+    // The same fee-funded budget as invest(): parked sleeves keep their
+    // unspent buying fee, while the user's original cash allocation stays idle.
+    const usable = budget / (1 + feeRate * originalWeight);
+    const orders = positions.map((p, i) => ({ id: p.id, code: p.code, name: p.name, targetWeight: targets[i],
+      amount: usable * targets[i], fee: usable * targets[i] * feeRate }));
+    const parked = pair.map((id, i) => ({ id, amount: usable * parkedWeights[i] * (1 + feeRate) })).filter(p => p.amount > 0);
+    const fee = sum(orders.map(p => p.fee)), parkedCash = sum(parked.map(p => p.amount));
+    const originalCash = usable * Math.max(0, 1 - originalWeight);
+    const total = sum(orders.map(p => p.amount)) + fee + parkedCash + originalCash;
+    return { day: row.day, status: row.warmingUp ? 'fallback' : 'ready',
+      reason: row.warmingUp ? row.metadata?.reason || '信号历史预热，按用户原比例分配' : null,
+      budget, currency: row.currency, feeRate, orders, parked, parkedCash, originalCash, total, fee };
+  }
   function currencyInfo(config = {}) {
     const code = config.currency === undefined ? 'CNY' : config.currency;
     if (!['CNY', 'USD'].includes(code)) fail('模拟币种须为人民币或美元');
@@ -426,7 +461,7 @@
     const qqqTimingEvents = [];
     // Only cash assigned to the USD/TQQQ pair may finance its strategy orders.
     // Unallocated cash and other positions' proceeds remain outside this pool.
-    const systematicCash = [0, 0], systematicEvents = [];
+    const systematicCash = [0, 0], systematicEvents = [], systematicDaily = [];
     let systematicTargets = pairWeights.slice(), systematicParked = [0, 0], pendingSystematic = null;
     let systematicSignalDay = null, systematicPlans = 0, systematicTrades = 0, systematicFills = [];
     let carriedPrices = 0, carriedFx = 0;
@@ -627,6 +662,22 @@
         systematicCash[leg] = corrected - systematicCash[1 - leg];
       }
     }
+    function snapshotSystematic(day) {
+      const state = systematicController.state(), liquidated = day === end && tax.liquidate;
+      const status = liquidated ? 'liquidated' : state.status, valid = status === 'ready';
+      const rotation = strategy.initialMethod === 'relative_strength_rotation';
+      const allowed = state.metadata?.vixOn && (strategy.initialMethod !== 'dual_risk_guard' || state.metadata?.qqqOn);
+      const indicator = rotation || !valid ? null : allowed ? 100 : 0;
+      const indicators = rotation ? ['us:USD', 'us:TQQQ'].map((id, i) => ({ id,
+        label: (i ? 'TQQQ' : 'USD ETF') + '股票预算分配', value: valid ? state.targetShares[i] * 100 : null,
+        unit: '%', kind: 'allocation_share', basis: 'pair_stock_budget' })) : [{ id: 'us:TQQQ',
+        label: 'TQQQ新增预算投入率', value: indicator, unit: '%', kind: 'execution_rate', basis: 'assigned_asset_budget' }];
+      systematicDaily.push(immutableCopy({ day, method: strategy.initialMethod, status, missing: state.missing,
+        warmingUp: state.warmingUp, liquidated, trackingStart: start, indicator, indicators,
+        metadata: { ...state.metadata, observationDay: state.day }, desiredTargets: state.desiredTargets,
+        executedTargets: systematicTargets, executedParked: systematicParked, nextPlan: liquidated ? null : pendingSystematic,
+        positions: series.map(s => ({ id: s.asset.id, code: s.asset.code, name: s.asset.name, weight: s.weight })), fee, currency }));
+    }
     const curve = [], holdingPaths = series.map(() => []), fxDates = new Set((fx || []).map(row => row[0]));
     let lastPrices = null;
     for (const day of days) {
@@ -683,7 +734,10 @@
         reconcileSystematicCash();
         const reserveCash = sum(systematicCash), tolerance = Math.max(1e-5, Math.abs(cash) * Number.EPSILON * 32);
         if (reserveCash < -tolerance || reserveCash > cash + tolerance) fail('策略归属现金未与组合实际现金勾稽');
-        if (commonSet.has(day)) pendingSystematic = planSystematic(day, prices);
+        if (commonSet.has(day)) {
+          pendingSystematic = planSystematic(day, prices);
+          snapshotSystematic(day);
+        }
       }
       const traded = new Set(transactions.slice(tradesBefore).map(t => t.id));
       series.forEach((s, i) => {
@@ -775,7 +829,8 @@
       ...(cashTopup ? { nextTopupPlan: tax.liquidate ? null : pendingTopup, topupSignalDay } : {}),
       ...(systematicMethod ? { systematic: { method: strategy.initialMethod, signalDay: systematicSignalDay,
         state: systematicController.state(), executedTargets: systematicTargets.slice(), nextPlan: tax.liquidate ? null : pendingSystematic,
-        planCount: systematicPlans, tradeCount: systematicTrades, events: systematicEvents, cashByLeg: systematicCash.slice() } } : {}),
+        planCount: systematicPlans, tradeCount: systematicTrades, events: systematicEvents, cashByLeg: systematicCash.slice(),
+        daily: Object.freeze(systematicDaily) } } : {}),
       ...(qqqTiming ? { qqqTimingChanges, riskReserve, qqqTimingEvents, qqqLatestSignal,
         qqqNextSignal: tax.liquidate ? null : { ...qqqNextState, executedOn: qqqOn,
           pendingChange: qqqNextState?.available ? qqqNextState.on !== qqqOn : null } } : {}),
@@ -797,5 +852,5 @@
     }
     return config;
   }
-  return { simulate, simulateWindows, validateHistory, validateConfig, sanitizeDraft, allocation, amountFromWeight, weightFromAmount, at, annualReturn, holdingXirr, addYears, taxConfig, taxRates, currencyInfo, strategyConfig, strategyNames, initialMethods, contributionMethods };
+  return { simulate, simulateWindows, validateHistory, validateConfig, sanitizeDraft, allocation, additionAllocation, amountFromWeight, weightFromAmount, at, annualReturn, holdingXirr, addYears, taxConfig, taxRates, currencyInfo, strategyConfig, strategyNames, initialMethods, contributionMethods };
 });

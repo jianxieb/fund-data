@@ -224,6 +224,122 @@ test('systematic no-order states distinguish missing evidence, warmup and an unc
   }
 });
 
+function dailyUiFixture(method = 'vix_panic_reentry') {
+  const daily = ['2026-01-06', '2026-01-07', '2026-01-08'].map((day, i) => ({ day, method, status: 'ready', missing: null,
+    warmingUp: false, trackingStart: '2024-01-01', currency: 'CNY', fee: .001,
+    indicator: i === 1 ? 0 : 100,
+    indicators: [{ id: 'us:TQQQ', label: 'TQQQ新增预算投入率', value: i === 1 ? 0 : 100, unit: '%', kind: 'execution_rate', basis: 'assigned_asset_budget' }],
+    positions: [{ id: 'us:USD', code: 'USD', name: 'USD ETF', weight: .3 }, { id: 'us:TQQQ', code: 'TQQQ', name: 'TQQQ', weight: .3 }],
+    desiredTargets: [.3, i === 1 ? 0 : .3], executedTargets: [.3, i === 1 ? 0 : .3], executedParked: [0, i === 1 ? .3 : 0], nextPlan: null,
+    metadata: { vixDay: '2026-01-0' + (5 + i), vixOn: i !== 1, vixRatio: 1.012 + i * .1, vixExitRun: i,
+      vixCalmRun: 0, vixArmed: true, vixPeakDrop: .25, vixHeld: 7 }
+  }));
+  return { ...systematicUiFixture(method, { daily }), daily };
+}
+
+test('daily UI selects historical indicators and budgets without changing the simulated account', async () => {
+  const f = dailyUiFixture();
+  await f.action('run');
+  let html = f.ui.view(f.helpers);
+  assert.ok(html.indexOf('每日加仓指标') < html.indexOf('与一次性投入比较'));
+  assert.match(html, /TQQQ新增预算投入率.*100\.00%/);
+  assert.match(html, /预算试算，不改变回测/);
+  for (const field of ['indicator-index', 'indicator-date', 'indicator-budget']) assert.ok(html.includes('data-portfolio-field="' + field + '"'), 'root event routing: ' + field);
+  assert.equal((html.match(/指标说明与历史检验/g) || []).length, 1);
+  assert.ok(html.includes('docs/portfolio-entry-research.html#vix_panic_reentry'));
+  assert.match(html, /2026-01-08.*来源 VIX\/VIX3M 2026-01-07/);
+  const calls = f.calls.length;
+  await f.action('daily-prev');
+  f.ui.handleInput({ id: 'portfolio-addition-budget', value: '4321', dataset: {} });
+  html = f.ui.view(f.helpers);
+  assert.match(html, /value="2026-01-07"/);
+  assert.match(html, /TQQQ新增预算投入率.*0\.00%/);
+  assert.match(html, /TQQQ对应预算暂存现金/);
+  assert.match(html, /原有账户 · 下一共同交易日/);
+  assert.match(html, /这里是该日执行目标；下方账户风险为模拟期末/);
+  const allocation = P.additionAllocation(f.daily[1], 4321);
+  assert.ok(html.includes(String(allocation.parkedCash)));
+  assert.equal(f.calls.length, calls, 'date and trial budget must not rerun the account');
+  await f.action('export-pdf');
+  const report = f.reports.at(-1), value = report.result.value;
+  assert.equal(report.dailyIndicator.row.day, '2026-01-07');
+  assert.equal(report.dailyIndicator.budget, 4321);
+  assert.equal(report.dailyIndicator.allocation.total, allocation.total);
+  await f.action('daily-next'); await f.action('export-pdf');
+  assert.equal(f.reports.at(-1).dailyIndicator.row.day, '2026-01-08');
+  assert.equal(f.reports.at(-1).result.value, value);
+  assert.equal(report.dailyIndicator.row.day, '2026-01-07', 'prior exported snapshot stays frozen');
+  await f.ui.handleChange({ id: 'portfolio-daily-date', value: '2026-01-06', dataset: {} });
+  assert.match(f.ui.view(f.helpers), /value="2026-01-06"/);
+  await f.action('export-daily');
+  const csv = f.downloads.at(-1);
+  assert.match(csv[0], /每日加仓指标/);
+  for (const field of ['metadata.vixRatio', 'budgetAllocation.parkedCash', 'executedTargets', '2026-01-06', '2026-01-07', '2026-01-08', '4321']) assert.ok(csv[1].includes(field), field);
+  assert.match(csv[1], /不是券商实际股数/);
+});
+
+test('daily indicators preserve missing and warmup semantics and freeze the same selection in PDF', async () => {
+  const f = dailyUiFixture();
+  Object.assign(f.daily[0], { status: 'missing', missing: 'VIX记录缺连续日线', indicator: null,
+    indicators: [{ ...f.daily[0].indicators[0], value: null }] });
+  Object.assign(f.daily[1], { status: 'warming-up', warmingUp: true, metadata: { reason: '不足505个共同收盘', sourceDay: '2026-01-07' },
+    executedTargets: [.3, .3], executedParked: [0, 0] });
+  f.daily[2].nextPlan = { signalDay: f.daily[2].day, desiredTargets: [.3, 0], parkedWeights: [0, .3],
+    orders: [{ id: 'us:TQQQ', side: 'sell', sellFraction: .25, units: .123456789 }], buyAmount: 0, buyFee: 0 };
+  await f.action('run'); await f.action('export-pdf');
+  let text = textOf(Pdf.layout(f.reports.at(-1), measure));
+  assert.match(text, /Cboe VIX\/VIX3M/); assert.match(text, /每日加仓指标/);
+  assert.match(text, /信号日持仓的 25\.00%/); assert.doesNotMatch(text, /0\.123456789/);
+  await f.action('daily-prev'); await f.action('export-pdf');
+  assert.equal(f.reports.at(-1).dailyIndicator.allocation.status, 'fallback');
+  assert.match(f.ui.view(f.helpers), /预热期间沿用原配置/);
+  await f.action('daily-prev'); await f.action('export-pdf');
+  const html = f.ui.view(f.helpers);
+  assert.match(html, /TQQQ新增预算投入率<\/span><strong>—/);
+  assert.match(html, /VIX记录缺连续日线/);
+  assert.equal(f.reports.at(-1).dailyIndicator.allocation, null);
+  f.ui.handleInput({ id: 'portfolio-addition-budget', value: '-1', dataset: {} });
+  const count = f.reports.length;
+  await f.action('export-pdf');
+  assert.equal(f.reports.length, count);
+  assert.match(f.notices.at(-1), /请输入有效新增预算/);
+});
+
+test('extend-to-latest refreshes coverage but preserves the original account start and rejects dirty or liquidated drafts', async () => {
+  const f = dailyUiFixture('relative_strength_rotation');
+  await f.action('select', { field: 'years', value: 'custom' });
+  f.ui.handleInput({ id: 'portfolio-start', value: '2024-06-03', dataset: { portfolioField: 'start' } });
+  f.ui.handleInput({ id: 'portfolio-end', value: '2025-06-03', dataset: { portfolioField: 'end' } });
+  await f.action('run'); await f.action('export-pdf');
+  const original = f.reports.at(-1).result;
+  await f.action('extend-latest'); await f.action('export-pdf');
+  const latest = f.reports.at(-1).result;
+  assert.equal(latest.start, original.start); assert.equal(latest.end, '2026-01-08');
+  assert.equal(latest.config.years, 'custom'); assert.equal(latest.config.start, original.start);
+  assert.deepEqual(latest.config.positions, original.config.positions);
+  assert.equal(f.fetches.filter(x => x.url.endsWith('entry-context.json')).length, 0);
+  const before = f.calls.length;
+  f.monthly(123);
+  await f.action('extend-latest'); assert.equal(f.calls.length, before);
+  assert.match(f.ui.view(f.helpers), /参数已改动，请先重新模拟/);
+  f.monthly(0); await f.ui.handleChange({ id: 'portfolio-liquidate', checked: true, dataset: {} });
+  await f.action('run');
+  const cleared = f.calls.length;
+  await f.action('extend-latest'); assert.equal(f.calls.length, cleared);
+  assert.match(f.ui.view(f.helpers), /期末已清仓，不能延续账户/);
+});
+
+test('extend-to-latest refuses an unconfirmed catalog and leaves the successful result intact', async () => {
+  const f = dailyUiFixture();
+  await f.action('run'); await f.action('export-pdf');
+  const prior = f.reports.at(-1).result.value, before = f.calls.length, fetch = f.context.fetch;
+  f.context.fetch = async (url, options) => url === 'data/portfolio/catalog.js' ? { ok: false, status: 503 } : fetch(url, options);
+  await f.action('extend-latest');
+  assert.equal(f.calls.length, before);
+  assert.ok(f.ui.view(f.helpers).includes(String(prior)));
+  assert.match(f.ui.view(f.helpers), /最新标的库请求失败（503）/);
+});
+
 function accountUiFixture(configure) {
   const f = uiFixture(input => {
     Object.assign(input.config, { monthly: 0, rebalance: 'none', transactionFee: 0 });

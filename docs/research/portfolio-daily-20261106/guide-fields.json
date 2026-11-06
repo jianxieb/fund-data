@@ -1,0 +1,97 @@
+[
+  {
+    "value": 3000,
+    "rendered": "3000.00",
+    "source": "examples.json reentry.cash"
+  },
+  {
+    "value": 2997.0029970029973,
+    "rendered": "2997.00",
+    "source": "examples.json reentry.amount"
+  },
+  {
+    "value": 2.997002997002997,
+    "rendered": "3.00",
+    "source": "examples.json reentry.fee"
+  },
+  {
+    "value": 9994.003597841296,
+    "rendered": "9994.00359784",
+    "source": "examples.json usable"
+  },
+  {
+    "value": 2998.2010793523887,
+    "rendered": "2998.20",
+    "source": "examples.json on"
+  },
+  {
+    "value": 2998.2010793523887,
+    "rendered": "2998.20",
+    "source": "examples.json on"
+  },
+  {
+    "value": 5.996402158704777,
+    "rendered": "6.00",
+    "source": "examples.json on"
+  },
+  {
+    "value": 0,
+    "rendered": "0.00",
+    "source": "examples.json on"
+  },
+  {
+    "value": 3997.601439136519,
+    "rendered": "3997.60",
+    "source": "examples.json on"
+  },
+  {
+    "value": 2998.2010793523887,
+    "rendered": "2998.20",
+    "source": "examples.json off"
+  },
+  {
+    "value": 0,
+    "rendered": "0.00",
+    "source": "examples.json off"
+  },
+  {
+    "value": 2.9982010793523886,
+    "rendered": "3.00",
+    "source": "examples.json off"
+  },
+  {
+    "value": 3001.1992804317406,
+    "rendered": "3001.20",
+    "source": "examples.json off"
+  },
+  {
+    "value": 3997.601439136519,
+    "rendered": "3997.60",
+    "source": "examples.json off"
+  },
+  {
+    "value": 3997.601439136519,
+    "rendered": "3997.60",
+    "source": "examples.json rotation"
+  },
+  {
+    "value": 1998.8007195682594,
+    "rendered": "1998.80",
+    "source": "examples.json rotation"
+  },
+  {
+    "value": 5.996402158704779,
+    "rendered": "6.00",
+    "source": "examples.json rotation"
+  },
+  {
+    "value": 0,
+    "rendered": "0.00",
+    "source": "examples.json rotation"
+  },
+  {
+    "value": 3997.601439136519,
+    "rendered": "3997.60",
+    "source": "examples.json rotation"
+  }
+]

@@ -52,14 +52,14 @@
           on = true; armed = false; exitRun = calmRun = held = 0;
         }
       }
-      return { day, on, ratio, vix, peak, held, armed, exitRun, calmRun, missing };
+      return { day, on, ratio, vix, vix3m, peak, held, armed, exitRun, calmRun, missing };
     });
   }
   function qqqStates(series) {
     let on = true, exitRun = 0, entryRun = 0, missing = null;
     return series.map(([day, price], index) => {
       missing = continuity(series[index - 1]?.[0], day, 'QQQ', missing);
-      if (index < 251) return { day, on, ready: false, missing };
+      if (index < 251) return { day, price, on, ready: false, missing };
       const ma = sum(series.slice(index - 199, index + 1).map(r => r[1])) / 200;
       const high = Math.max(...series.slice(index - 251, index + 1).map(r => r[1]));
       if (on) {
@@ -69,7 +69,7 @@
         entryRun = price > ma ? entryRun + 1 : 0;
         if (entryRun >= 3) { on = true; exitRun = entryRun = 0; }
       }
-      return { day, on, ready: true, ma, drawdown: price / high - 1, exitRun, entryRun, missing };
+      return { day, price, on, ready: true, ma, high, drawdown: price / high - 1, exitRun, entryRun, missing };
     });
   }
   function relativeStates(usd, tqqq) {
@@ -118,7 +118,8 @@
     const vix = rotation ? [] : vixStates(validatedVix(vixContext));
     const qqq = method === 'dual_risk_guard' ? qqqStates(rows(rawHistories['us:QQQ'], 'QQQ')) : [];
     const relative = rotation ? relativeStates(rows(rawHistories['us:USD'], 'USD'), rows(rawHistories['us:TQQQ'], 'TQQQ')) : [];
-    let lastDay = null, lastReview = null, finish = false, requestedOn = true, shares = originalShares.slice(), changes = 0;
+    let lastDay = null, strategyStart = null, lastReview = null, lastReviewDay = null, lastReviewAttemptDay = null;
+    let finish = false, requestedOn = true, shares = originalShares.slice(), changes = 0;
     const leaders = [null, null, null];
     let current = { method, day: null, sourceDay: null, desiredTargets: weights.slice(), parkedWeights: [0, 0],
       targetShares: originalShares.slice(), status: 'pending', missing: null, warmingUp: false, metadata: {} };
@@ -127,7 +128,15 @@
       const parkedWeights = [0, rotation || requestedOn ? 0 : weights[1]];
       current = { method, day, sourceDay: metadata.sourceDay || null, desiredTargets, parkedWeights,
         targetShares: desiredTargets.map(w => w / W), status: missing ? 'missing' : warmingUp ? 'warming-up' : 'ready', missing, warmingUp,
-        metadata: { ...metadata, targetShares: desiredTargets.map(w => w / W), desiredTargets: desiredTargets.slice(), parkedWeights: parkedWeights.slice(), changes } };
+        metadata: { ...metadata, targetShares: desiredTargets.map(w => w / W), desiredTargets: desiredTargets.slice(), parkedWeights: parkedWeights.slice(), changes,
+          lastReviewDay, lastReviewAttemptDay, strategyStart,
+          units: rotation ? { relativeRatio: 'gross_return_factor_ratio', relativeLogReturn: 'log_ratio', observations: 'common_closes', targetShares: 'fraction' } :
+            { vixValue: 'index_points', vix3mValue: 'index_points', vixRatio: 'ratio', vixPeak: 'index_points', vixPeakDrop: 'fraction',
+              vixHeld: 'source_observations', vixExitRun: 'source_observations', vixCalmRun: 'source_observations',
+              qqqPrice: 'USD_adjusted_close', qqqMA: 'USD_adjusted_close', qqqHigh: 'USD_adjusted_close', qqqDrawdown: 'fraction',
+              qqqMaDistance: 'fraction', qqqExitRun: 'source_observations', qqqEntryRun: 'source_observations' },
+          startup: { strategyStart, initialDecision: day === strategyStart, historyReady: !missing && !warmingUp,
+            neutralPhases: rotation ? leaders.filter(leader => leader === null).length : null } } };
     }
     function answer(sellFractions, buyAmounts, metadata = {}) {
       return { sellFractions, buyAmounts, desiredTargets: current.desiredTargets.slice(), parkedWeights: current.parkedWeights.slice(),
@@ -144,6 +153,7 @@
       if (lastDay && ctx.day < lastDay) throw new Error('策略决策日期不得倒退');
       if (ctx.day === lastDay) return null;
       lastDay = ctx.day;
+      if (strategyStart === null) strategyStart = ctx.day;
       if (!Number.isFinite(ctx.fee) || ctx.fee < 0 || !Array.isArray(ctx.marks) || !Array.isArray(ctx.cashByLeg) ||
           ctx.marks.length !== 2 || ctx.cashByLeg.length !== 2 || ctx.marks.some(v => !Number.isFinite(v) || v < -EPS) || ctx.cashByLeg.some(v => !Number.isFinite(v))) {
         throw new Error('策略缺实际两腿市值、已结算现金或费率');
@@ -152,7 +162,10 @@
         const v = observed(vix, ctx.day, true, 'VIX/VIX3M'), q = method === 'dual_risk_guard' ? observed(qqq, ctx.day, false, 'QQQ') : null;
         const metadata = { sourceDay: v.day || null, vixDay: v.day || null, qqqDay: q?.day || null,
           vixOn: v.on ?? null, qqqOn: q?.on ?? null, vixRatio: v.ratio ?? null, vixPeak: v.peak ?? null,
-          vixHeld: v.held ?? null, qqqExitRun: q?.exitRun ?? null, qqqEntryRun: q?.entryRun ?? null };
+          vixValue: v.vix ?? null, vix3mValue: v.vix3m ?? null, vixPeakDrop: v.peak > 0 ? 1 - v.vix / v.peak : null,
+          vixHeld: v.held ?? null, vixExitRun: v.exitRun ?? null, vixCalmRun: v.calmRun ?? null, vixArmed: v.armed ?? null,
+          qqqPrice: q?.price ?? null, qqqMA: q?.ma ?? null, qqqHigh: q?.high ?? null, qqqDrawdown: q?.drawdown ?? null,
+          qqqMaDistance: q?.ma > 0 ? q.price / q.ma - 1 : null, qqqExitRun: q?.exitRun ?? null, qqqEntryRun: q?.entryRun ?? null };
         const missing = v.missing || q?.missing || (q && !q.ready ? 'QQQ在 ' + q.day + ' 缺252个实际收盘预热' : null);
         if (missing) return unavailable(ctx.day, missing, metadata);
         const on = v.on && (!q || q.on), changed = on !== requestedOn;
@@ -163,9 +176,11 @@
       }
       const observation = observed(relative, ctx.day, false, 'USD/TQQQ');
       const metadata = { sourceDay: observation.day || null, phase: (+ctx.day.slice(5, 7) - 1) % 3, leaders: leaders.slice(),
-        relativeLogReturn: observation.value ?? null, observations: observation.observations || 0, allocationStateChange: false };
+        relativeLogReturn: observation.value ?? null, relativeRatio: observation.value == null ? null : Math.exp(observation.value),
+        observations: observation.observations || 0, allocationStateChange: false, reviewedToday: false };
       if (observation.missing) return unavailable(ctx.day, observation.missing, metadata);
       if (!observation.available) {
+        if (lastReview !== ctx.day.slice(0, 7)) lastReviewAttemptDay = ctx.day;
         lastReview = ctx.day.slice(0, 7);
         return unavailable(ctx.day, 'USD/TQQQ不足505个共同实际收盘，尚不能计算504日相对收益；保持原比例', metadata, true);
       }
@@ -182,6 +197,7 @@
       const month = ctx.day.slice(0, 7);
       if (month === lastReview) { publish(ctx.day, metadata); return null; }
       lastReview = month;
+      lastReviewDay = lastReviewAttemptDay = ctx.day;
       const phase = (+ctx.day.slice(5, 7) - 1) % 3, band = Math.log1p(.25);
       if (observation.value > band) leaders[phase] = 0;
       else if (observation.value < -band) leaders[phase] = 1;
@@ -189,7 +205,7 @@
       const changed = next.some((w, k) => Math.abs(w - shares[k]) >= 1e-12);
       shares = next;
       if (changed) { changes++; finish = true; }
-      publish(ctx.day, { ...metadata, phase, leaders: leaders.slice(), allocationStateChange: changed });
+      publish(ctx.day, { ...metadata, phase, leaders: leaders.slice(), reviewedToday: true, allocationStateChange: changed });
       if (!changed) return null;
       const targets = shares.map(w => w * pool), gaps = targets.map((t, k) => Math.max(0, t - ctx.marks[k]));
       const total = sum(gaps), budget = Math.min(available / (1 + ctx.fee), total / (1 + ctx.fee));
