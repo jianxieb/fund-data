@@ -1,12 +1,12 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-11-06T02:29:09+00:00",
-  "asOf": "2026-11-06",
+  "checkedAt": "2026-11-07T01:58:53+00:00",
+  "asOf": "2026-11-07",
   "status": "unverified",
   "summary": {
     "errors": 0,
     "warnings": 5,
-    "unverified": 64
+    "unverified": 62
   },
   "datasets": [
     {
@@ -17,10 +17,10 @@ var DATA_QUALITY={
       "records": 0,
       "issues": [
         {
-          "code": "source_history_retained",
+          "code": "source_refresh_retained",
           "severity": "warning",
-          "message": "158042：成交价历史：行情观测不足：158042.SZ；保留历史截至2026-11-03",
-          "affected": "158042"
+          "message": "A股：执行超过 90 秒，子进程已终止；该数据集不能视为更新成功。；保留已发布数据及原日期",
+          "affected": "stocks"
         }
       ],
       "status": "warning"
@@ -28,10 +28,10 @@ var DATA_QUALITY={
     {
       "id": "funds",
       "label": "海外基金",
-      "asOf": "2026-11-04",
+      "asOf": "2026-11-05",
       "dateRange": [
-        "2026-11-04",
-        "2026-11-04"
+        "2026-11-05",
+        "2026-11-05"
       ],
       "records": 46,
       "issues": [
@@ -94,10 +94,10 @@ var DATA_QUALITY={
     {
       "id": "overseas_stocks",
       "label": "海外个股",
-      "asOf": "2026-11-05",
+      "asOf": "2026-11-06",
       "dateRange": [
         "2026-11-05",
-        "2026-11-05"
+        "2026-11-06"
       ],
       "records": 79,
       "issues": [
@@ -174,12 +174,6 @@ var DATA_QUALITY={
           "affected": "KO"
         },
         {
-          "code": "overseas_financial_fields_missing",
-          "severity": "unverified",
-          "message": "MCD 2026-09-30财季来源缺营业收入、净利润",
-          "affected": "MCD"
-        },
-        {
           "code": "overseas_business_review_pending",
           "severity": "unverified",
           "message": "MCD经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
@@ -244,12 +238,6 @@ var DATA_QUALITY={
           "severity": "unverified",
           "message": "NEE经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
           "affected": "NEE"
-        },
-        {
-          "code": "overseas_financial_fields_missing",
-          "severity": "unverified",
-          "message": "DUK 2026-09-30财季来源缺营业收入、净利润",
-          "affected": "DUK"
         },
         {
           "code": "overseas_business_review_pending",
@@ -473,10 +461,10 @@ var DATA_QUALITY={
     {
       "id": "benchmarks",
       "label": "海外指数与ETF基准",
-      "asOf": "2026-11-05",
+      "asOf": "2026-11-06",
       "dateRange": [
         "2026-11-05",
-        "2026-11-05"
+        "2026-11-06"
       ],
       "records": 36,
       "issues": [
@@ -537,7 +525,7 @@ var DATA_QUALITY={
     {
       "id": "strategy",
       "label": "买入策略实验",
-      "asOf": "2026-11-05",
+      "asOf": "2026-11-06",
       "dateRange": null,
       "records": 162,
       "issues": [],
@@ -550,10 +538,10 @@ var DATA_QUALITY={
     {
       "id": "domestic_funds",
       "label": "扩展基金研究池",
-      "asOf": "2026-11-05",
+      "asOf": "2026-11-06",
       "dateRange": [
-        "2026-10-30",
-        "2026-11-05"
+        "2026-11-04",
+        "2026-11-06"
       ],
       "records": 1577,
       "issues": [
@@ -3392,10 +3380,10 @@ var DATA_QUALITY={
     {
       "id": "indices",
       "label": "国内指数",
-      "asOf": "2026-11-05",
+      "asOf": "2026-11-06",
       "dateRange": [
-        "2026-11-05",
-        "2026-11-05"
+        "2026-11-06",
+        "2026-11-06"
       ],
       "records": 13,
       "issues": [
@@ -3413,10 +3401,10 @@ var DATA_QUALITY={
     {
       "id": "portfolio",
       "label": "组合每日历史",
-      "asOf": "2026-11-05",
+      "asOf": "2026-11-06",
       "dateRange": [
-        "2026-10-30",
-        "2026-11-05"
+        "2026-11-04",
+        "2026-11-06"
       ],
       "records": 1873,
       "issues": [],
