@@ -28,6 +28,39 @@ function fixture(method = methods[0], config = {}) {
     tax: { usCapitalGains: 20, usDividend: 20 }, ...config } };
 }
 function run(input) { const r = P.simulate(input); assert.equal(r.error, undefined, r.error); return r; }
+test('market-only overlays reproduce each executed score and gate without a shadow account or future prices', () => {
+  const input = fixture('lump_sum'), lump = run(input), ref = P.chartReferences(lump, input);
+  const byId = Object.fromEntries(ref.series.map(line => [line.id, line]));
+  assert.deepEqual(byId['discount:us:TQQQ'].thresholds, [35, 50]);
+  assert.deepEqual(byId['mixed:us:TQQQ'].thresholds, [35]);
+  for (const method of [...methods, 'qqq_bear_confirm', 'vix_panic_reentry', 'dual_risk_guard', 'relative_strength_rotation']) {
+    const result = run({ ...input, config: { ...input.config, initialMethod: method } });
+    const current = P.chartIndicators(result).series;
+    assert.ok(current.length > 0);
+    for (const line of current.filter(line => line.kind !== 'allocation')) {
+      assert.deepEqual(line.points, byId[line.id].points, method + ' ' + line.id);
+      assert.equal(byId[line.id].reference, true);
+    }
+    const combined = P.chartIndicators(result, ref).series;
+    assert.equal(new Set(combined.map(l => l.id)).size, combined.length);
+    assert.ok(current.every(c => !combined.find(l => l.id === c.id).reference));
+    if (method === 'opportunity_discount_20') {
+      assert.deepEqual(current.find(l => l.id === 'discount:us:TQQQ').thresholds, [50]);
+      assert.match(combined.find(l => l.id === 'discount:us:TQQQ').thresholdLabel, /本次 50分；10%预留 35分/);
+    }
+    if (methods.includes(method)) for (const line of current.filter(l => l.kind === 'score')) {
+      const legId = line.id.slice(line.id.indexOf(':') + 1);
+      assert.deepEqual(line.points, result.systematic.daily.map(row => [row.day, row.indicators.find(i => i.id === legId).value]));
+    }
+  }
+  const cut = input.days[620], before = byId['mixed:us:TQQQ'].points.filter(([date]) => date < cut);
+  for (const row of input.histories['us:QQQ'].series) if (row[0] >= cut) row[1] *= 3;
+  assert.deepEqual(P.chartReferences(lump, input).series.find(l => l.id === 'mixed:us:TQQQ').points.slice(0, before.length), before);
+  const usdOnly = run({ ...input, config: { ...input.config, positions: [{ id: 'us:USD', weight: 100 }] } });
+  const partial = P.chartReferences(usdOnly, { ...input, marketContext: null });
+  assert.match(partial.reason, /VIX/);
+  assert.deepEqual(partial.series.filter(l => l.kind === 'score').map(l => l.id), ['discount:us:USD']);
+});
 const trades = r => r.transactions.filter(t => methods.includes(t.reason));
 function reconcile(input, r) {
   const ids = input.config.positions.filter(p => p.weight > 0).map(p => p.id), units = Object.fromEntries(ids.map(id => [id, 0]));

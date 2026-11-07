@@ -9,6 +9,8 @@
   const gap = (a, b) => (time(b) - time(a)) / DAY;
   const sum = values => values.reduce((a, b) => a + b, 0);
   const fail = message => { throw new Error(message); };
+  // Chart-only observations stay out of exported account ledgers and rolling-window comparisons.
+  const chartSources = new WeakMap();
   function immutableCopy(value) {
     const cloned = JSON.parse(JSON.stringify(value));
     function freeze(item) {
@@ -416,8 +418,10 @@
     // fees or taxes. Each close is formed only from prices already published.
     const signals = new Map(), needsSignal = strategy.initialMethod === 'drawdown_ladder' && config.initial > 0 ||
       strategy.initialMethod === 'ma200_hold' && config.initial > 0 || config.monthly > 0 && ['dca_drawdown', 'dca_ma_trend', 'dca_ma_contrarian'].includes(strategy.contributionMethod);
-    let warmupDays = 0, insufficientMaDays = 0;
-    if (needsSignal) {
+    let warmupDays = 0, insufficientMaDays = 0, referenceCloses = null;
+    function referenceHistory() {
+      if (referenceCloses) return referenceCloses;
+      referenceCloses = [];
       const warmDays = common.filter(day => day < start).slice(-200), referenceDays = [...warmDays, ...strategyDays];
       let reference = 1, referencePeak = null, previous = null, previousDay = null, closes = [];
       for (const day of referenceDays) {
@@ -434,9 +438,13 @@
         if (previous) reference *= cashWeight + sum(series.map((s, i) => s.weight * current[i] / previous[i]));
         closes.push(reference); if (closes.length > 200) closes.shift();
         if (day >= start) referencePeak = Math.max(referencePeak ?? reference, reference);
+        if (day >= start) referenceCloses.push({ day, drawdown: Math.min(0, reference / referencePeak - 1) * 100,
+          deviation: closes.length < 200 ? null : (reference / (sum(closes) / 200) - 1) * 100 });
         previous = current; previousDay = day;
       }
+      return referenceCloses;
     }
+    if (needsSignal) referenceHistory();
     const initialPlan = new Map();
     if (config.initial > 0) {
       if (strategy.initialMethod.startsWith('tranche_')) {
@@ -880,7 +888,7 @@
     const fullYear = end >= addYears(start, 1);
     const xirr = fullYear ? M.buyLocationXirr(flows) : null;
     const xirrMissing = xirr !== null ? null : !fullYear ? '模拟不足一年，不外推资金年化' : '实际资金流缺可用年化解';
-    return { start, end, requestedStart, requestedEnd, commonFirst: common[0], commonLast: common.at(-1), currency, usesFx: needsFx,
+    const result = { start, end, requestedStart, requestedEnd, commonFirst: common[0], commonLast: common.at(-1), currency, usesFx: needsFx,
       totalReturn: final.totalReturn, annualReturn: annualReturn(final.nav, start, end), value: final.value,
       contributed, profit: final.profit, mdd, volatility, cash, cashWeight: cashWeight * 100, holdings, curve, annual,
       // A short-period money-weighted figure is left unannualized rather than
@@ -900,6 +908,124 @@
       plan: { initial: [...initialPlan].map(([day, amount]) => ({ day, amount })), income: [...incomePlan].map(([day, amount]) => ({ day, amount })) }, taxEvents,
       grossValue: final.grossValue, taxReserve: final.taxReserve, paidTax: final.paidTax, taxCost: final.taxCost, capitalTax: sum(capitalTaxes), dividendTax: sum(dividendTaxes), carriedPrices, carriedFx, benchmark, benchmarkError,
       config: JSON.parse(JSON.stringify({ ...config, currency })) };
+    chartSources.set(result, { days: strategyDays, referenceHistory,
+      qqq: qqqTiming ? [...qqqSignals.values(), qqqNextState].filter(p => p && p.signalDay >= start)
+        .map(p => [p.signalDay, p.ready && p.on != null ? Number(p.on) * 100 : null]) : null });
+    return result;
+  }
+  // Closing positions after fills. Invested capital, target weights, and a
+  // timing rule's 0/1 permission do not measure what the account actually owns.
+  function accountAllocation(row) {
+    const gross = row?.grossValue, cash = row?.cash;
+    if (!finite(gross) || !finite(cash)) return { securitiesValue: null, cash: null, securitiesPct: null, cashPct: null };
+    const securitiesValue = gross - cash;
+    return { securitiesValue, cash, securitiesPct: gross > 0 ? securitiesValue / gross * 100 : null, cashPct: gross > 0 ? cash / gross * 100 : null };
+  }
+  const chartPair = ['us:USD', 'us:TQQQ'];
+  const chartLine = (id, label, kind, points, extra = {}) => ({ id, label, kind,
+    unit: kind === 'score' ? '分' : kind === 'state' ? '状态' : kind === 'gap' ? '百分点' : '%', points, ...extra });
+  const stateCode = on => typeof on === 'boolean' ? Number(on) * 100 : null;
+  const scoreId = (family, id) => family + ':' + id;
+  const scoreName = (family, id) => (family === 'discount' ? '低位' : '低位与恐慌') + '评分 · ' + (id === 'us:USD' ? 'USD ETF' : 'TQQQ');
+  const thresholdName = rule => Math.round(rule.reserve * 100) + '%预留 ' + rule.threshold + '分';
+  const stateNames = { qqq: 'QQQ 深熊确认 · TQQQ 持仓状态', vix: 'VIX 恐慌恢复 · TQQQ 持仓状态', dual: '双重风险门 · TQQQ 持仓状态' };
+  const relativeName = '相对强弱轮动 · USD 相对 TQQQ 强度';
+  const relativeNote = '504日复权收益倍率之比减1；三批轮动按月检视，+25%和−20%为切换门槛。';
+  function portfolioLines(result, source, { drawdown, deviation, gap }) {
+    const lines = [];
+    if (drawdown || deviation) {
+      const history = source.referenceHistory();
+      if (drawdown) lines.push(chartLine('basket:drawdown', '回撤阶梯 / 定投 · 参考组合回撤', 'drawdown',
+        history.map(p => [p.day, p.drawdown]), { thresholds: [-10, -20, -30], note: '目标权重组合自模拟开始的回撤，用于阶梯投入和回撤定投。' }));
+      if (deviation) lines.push(chartLine('basket:ma200', '均线择时 / 定投 · 参考组合距200日均线', 'deviation',
+        history.map(p => [p.day, p.deviation]), { thresholds: [0], note: '目标权重组合收盘高于均线为正；预热不足200次收盘时留空。' }));
+    }
+    if (gap) {
+      const dates = new Set(source.days), target = 100 - result.cashWeight;
+      lines.push(chartLine('account:topup', '现金补仓 · 本账户股票仓位缺口', 'gap',
+        result.curve.filter(p => dates.has(p.day)).map(p => [p.day, p.grossValue <= 0 || p.day === result.end && result.config.tax?.liquidate ? null :
+          Math.max(0, target - accountAllocation(p).securitiesPct)]),
+        { note: '按本次账户股票市值与总资产计算，显示低于目标仓位的百分点；实际买入还受现金与费用限制。' }));
+    }
+    return lines;
+  }
+  function chartIndicators(result, references) {
+    const source = chartSources.get(result), strategy = result?.strategy || {}, config = result?.config || {};
+    const active = source ? portfolioLines(result, source, {
+      drawdown: strategy.initialMethod === 'drawdown_ladder' && config.initial > 0 || strategy.contributionMethod === 'dca_drawdown' && config.monthly > 0,
+      deviation: strategy.initialMethod === 'ma200_hold' && config.initial > 0 || ['dca_ma_trend', 'dca_ma_contrarian'].includes(strategy.contributionMethod) && config.monthly > 0,
+      gap: strategy.initialMethod === 'cash_topup'
+    }) : [];
+    if (source?.qqq) active.push(chartLine('state:qqq', stateNames.qqq, 'state', source.qqq));
+    const daily = result?.systematic?.daily || [], method = strategy.initialMethod, rule = Systematic?.opportunityDefinitions?.[method];
+    if (daily.length) {
+      const ids = new Set(result.holdings.map(h => h.id));
+      for (const indicator of daily[0].indicators.filter(i => ids.has(i.id))) {
+        const points = daily.map(row => [row.day, row.indicators.find(i => i.id === indicator.id)?.value ?? null]);
+        if (rule) {
+          const id = scoreId(rule.family, indicator.id);
+          const variants = references?.series?.some(l => l.id === id) ? Object.values(Systematic.opportunityDefinitions)
+            .filter(r => r.family === rule.family && r.threshold !== rule.threshold) : [];
+          active.push(chartLine(id, scoreName(rule.family, indicator.id), 'score', points, {
+            thresholds: [rule.threshold, ...variants.map(r => r.threshold)], thresholdLabel: ['本次 ' + rule.threshold + '分', ...variants.map(thresholdName)].join('；'),
+            note: '本次策略买入门槛为' + rule.threshold + '分；分数不代表新增仓位比例。' }));
+        }
+        else if (indicator.kind === 'allocation_share') active.push(chartLine('rotation:' + indicator.id,
+          '轮动目标 · ' + indicator.id.slice(3) + ' 股票预算占比', 'allocation', points));
+        else {
+          const id = method === 'dual_risk_guard' ? 'dual' : 'vix';
+          active.push(chartLine('state:' + id, stateNames[id], 'state', points));
+        }
+      }
+      if (rule && ids.has('us:TQQQ')) active.push(chartLine('state:vix', stateNames.vix, 'state',
+        daily.map(row => [row.day, row.missing || !row.metadata?.vixDecision ? null : stateCode(row.metadata.vixOn)])));
+      if (method === 'relative_strength_rotation') active.push(chartLine('rotation:relative', relativeName, 'relative',
+        daily.map(row => [row.day, row.missing || row.metadata?.observationDay !== row.day || !finite(row.metadata?.relativeRatio) ? null :
+          100 * (row.metadata.relativeRatio - 1)]), { thresholds: [-20, 25], note: relativeNote }));
+    }
+    const ids = new Set(active.map(line => line.id));
+    const series = [...active, ...(references?.series || []).filter(line => !ids.has(line.id))];
+    return { series, reason: references?.reason || (series.length ? '' : '本次投入方式不使用行情指标。') };
+  }
+  function chartReferences(result, input) {
+    const source = chartSources.get(result);
+    if (!source || !input) return { series: [], reason: '缺本次模拟的共同交易日或行情。' };
+    const series = portfolioLines(result, source, { drawdown: true, deviation: true, gap: true });
+    const held = chartPair.map(id => result.holdings.some(h => h.id === id));
+    const missing = [];
+    if (held.some(Boolean)) {
+      const rawHistories = {};
+      for (const [i, proxy] of ['us:SOXX', 'us:QQQ'].entries()) if (held[i]) {
+        for (const id of [chartPair[i], proxy]) {
+          const asset = input.catalog?.assets?.find(a => a.id === id), history = input.histories?.[id], code = id.slice(3);
+          if (!asset || asset.code !== code || asset.kind !== 'etf' || asset.currency !== 'USD' || history?.basis !== 'provider_adjusted_close') {
+            missing.push('缺' + code + '实际美元ETF复权日线'); continue;
+          }
+          try { rawHistories[id] = validateHistory(asset, history); } catch (error) { missing.push(error.message); }
+        }
+      }
+      const { observations, missing: vixMissing } = Systematic.chartMarkets({ rawHistories, days: source.days, vixContext: input.marketContext });
+      if (vixMissing) missing.push(vixMissing);
+      for (const [leg, proxy] of ['us:SOXX', 'us:QQQ'].entries()) if (held[leg] && rawHistories[proxy] && rawHistories[chartPair[leg]]) {
+        for (const family of ['discount', 'mixed']) {
+          if (family === 'mixed' && vixMissing) continue;
+          const rules = Object.values(Systematic.opportunityDefinitions).filter(rule => rule.family === family);
+          const thresholds = [...new Set(rules.map(rule => rule.threshold))];
+          series.push(chartLine(scoreId(family, chartPair[leg]), scoreName(family, chartPair[leg]), 'score',
+            observations.map(o => [o.day, o.scores[leg][family]]), { thresholds, thresholdLabel: rules.map(thresholdName).join('；'),
+              note: rules.map(rule => '预留' + Math.round(rule.reserve * 100) + '%的买入门槛为' + rule.threshold + '分').join('；') + '。' }));
+        }
+      }
+      if (held[1] && rawHistories['us:TQQQ']) {
+        if (rawHistories['us:QQQ']) series.push(chartLine('state:qqq', stateNames.qqq, 'state', observations.map(o => [o.day, stateCode(o.qqqOn)])));
+        if (!vixMissing) series.push(chartLine('state:vix', stateNames.vix, 'state', observations.map(o => [o.day, stateCode(o.vixOn)])));
+        if (rawHistories['us:QQQ'] && !vixMissing) series.push(chartLine('state:dual', stateNames.dual, 'state',
+          observations.map(o => [o.day, o.vixOn === null || o.qqqOn === null ? null : stateCode(o.vixOn && o.qqqOn)])));
+      }
+      if (held.every(Boolean) && chartPair.every(id => rawHistories[id])) series.push(chartLine('rotation:relative', relativeName, 'relative',
+        observations.map(o => [o.day, o.relative]), { thresholds: [-20, 25], note: relativeNote }));
+    }
+    return { series: series.map(s => ({ ...s, reference: true })), reason: missing.join('；') };
   }
   function sanitizeDraft(value, ids) {
     if (!value || value.schemaVersion !== 1 || !Array.isArray(value.positions)) fail('组合配置格式无效');
@@ -914,5 +1040,5 @@
     }
     return config;
   }
-  return { simulate, simulateWindows, validateHistory, validateConfig, sanitizeDraft, allocation, additionAllocation, amountFromWeight, weightFromAmount, at, annualReturn, holdingXirr, addYears, taxConfig, taxRates, currencyInfo, strategyConfig, strategyNames, initialMethods, contributionMethods };
+  return { simulate, simulateWindows, chartIndicators, chartReferences, validateHistory, validateConfig, sanitizeDraft, allocation, accountAllocation, additionAllocation, amountFromWeight, weightFromAmount, at, annualReturn, holdingXirr, addYears, taxConfig, taxRates, currencyInfo, strategyConfig, strategyNames, initialMethods, contributionMethods };
 });

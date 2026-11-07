@@ -102,9 +102,8 @@
     const prices = proxies.map(id => priceFeatures(rawHistories[id]));
     const fears = fearFeatures(vixContext?.series);
     const cache = new Map();
-    function at(day) {
+    function compute(day) {
       if (!validDay(day)) throw new Error('买点评分日期无效');
-      if (cache.has(day)) return clone(cache.get(day));
       const fear = latest(fears, day, true);
       const vixMissing = !fear ? 'missing_vix' : gap(day, fear.day) > 7 ? 'stale_vix' : fear.sourceGap ? 'vix_gap' : null;
       const legs = prices.map((rows, i) => {
@@ -131,12 +130,17 @@
           vixDay: fear?.day || null, vix: fear?.vix ?? null, vix3m: fear?.vix3m ?? null, vixPeak63: fear?.peak63 ?? null,
           fearBelow: fear?.fearBelow ?? 0, fearCount: fear?.fearCount ?? 0, priorVixN: fear?.priorVixN ?? 0 }, components, scores, missingReasons };
       });
-      const result = { day, legs, vix: { ...(fear || {}), sourceDay: fear?.day || null,
+      return { day, legs, vix: { ...(fear || {}), sourceDay: fear?.day || null,
         missing: vixMissing ? { code: vixMissing, message: reasons[vixMissing] } : null },
       metadata: { version: 'opportunity-1', scoreUnit: 'points', probability: false, formulas, coefficients } };
-      cache.set(day, result); return clone(result);
     }
-    return { at };
+    function at(day) {
+      if (!cache.has(day)) cache.set(day, compute(day));
+      return clone(cache.get(day));
+    }
+    // Chart references need only the scores, not thousands of cached audit snapshots.
+    function scoresAt(day) { return compute(day).legs.map(leg => leg.scores); }
+    return { at, scoresAt };
   }
   return { createFeatures, priceFeatures, fearFeatures, definitions, formulas, coefficients };
 });

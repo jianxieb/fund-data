@@ -339,11 +339,13 @@
     ], [1.4, ...windows.map(() => 1)], { numeric: windows.map((s, i) => i + 1) });
     windows.forEach(s => { if (s.error) paragraph('近' + s.years + '年：' + s.error, C.negative); else if (s.benchmarkError) paragraph('近' + s.years + '年对照：' + s.benchmarkError, C.negative); });
 
-    section('组合走势', '收益率消除外部本金影响；账户资产同时显示累计投入。');
+    section('组合走势', '累计转入本金包括账户现金。证券仓位按证券市值占证券市值与现金之和计算。');
+    const opening = P.accountAllocation(r.curve[0]);
+    if (Number.isFinite(opening.securitiesPct)) paragraph('首日收盘：证券市值 ' + number(opening.securitiesValue) + ' ' + unit + '（仓位 ' + pct(opening.securitiesPct) + '），现金 ' + number(opening.cash) + ' ' + unit + '（' + pct(opening.cashPct) + '）。');
     const comparison = r.benchmark?.curve;
     chart('累计收益 / 现金流中性', r.curve.map(p => p.totalReturn), comparison?.map(p => (p.nav - 1) * 100), r.benchmark?.name);
     chart('年化收益 / 首年按至少一年计算', r.curve.map(p => p.annualReturn), comparison?.map(p => p.day === r.start ? 0 : P.annualReturn(p.nav, r.start, p.day)), r.benchmark?.name);
-    chart('税后估值与累计投入 / ' + name, r.curve.map(p => p.value), r.curve.map(p => p.contributed), '累计投入', unit);
+    chart('税后估值与累计转入本金 / ' + name, r.curve.map(p => p.value), r.curve.map(p => p.contributed), '累计转入本金（含现金）', unit);
     chart('组合回撤', r.curve.map(p => p.drawdown));
 
     section('持仓贡献', name + ' · 实际投入、追加、再平衡、买卖税费及浮盈预留均已计入。');

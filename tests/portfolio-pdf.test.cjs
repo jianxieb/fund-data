@@ -138,6 +138,52 @@ function uiFixture(configure, model = P) {
   return { ui, action, monthly, context, helpers, downloads, notices, reports, renderStates, input };
 }
 
+test('workspace tabs isolate settings, asset editing and results while preserving drafts and the last run', async () => {
+  const f = uiFixture(input => { input.config.positions = []; });
+  const view = () => f.ui.view(f.helpers), tab = value => f.action('tab', { value });
+  const selected = name => assert.match(view(), new RegExp('data-value="' + name + '" role="tab"[^>]*aria-selected="true"'));
+  selected('settings');
+  assert.doesNotMatch(view(), /id="portfolio-search"|class="portfolio-results"/);
+  f.monthly(777);
+  await tab('holdings');
+  assert.match(view(), /<h2>我的组合<\/h2>/);
+  assert.match(view(), /<h2>添加标的<\/h2>/);
+  assert.doesNotMatch(view(), /id="portfolio-monthly"/);
+  const [asset, benchmark] = f.input.catalog.assets;
+  f.ui.handleInput({ id: 'portfolio-search', value: asset.code, dataset: {} });
+  await f.action('add', { value: asset.id });
+  await tab('settings');
+  assert.match(view(), /id="portfolio-monthly"[^>]*value="777"/);
+  await f.action('benchmark');
+  assert.match(view(), /<h2>选择对照标的<\/h2>/);
+  assert.match(view(), /id="portfolio-search"[^>]*value=""/);
+  await f.action('add', { value: benchmark.id });
+  selected('settings');
+  assert.match(view(), /测试公司|TEST/);
+  await tab('results');
+  assert.match(view(), /portfolio-result-placeholder/);
+  await tab('holdings');
+  assert.match(view(), new RegExp('id="portfolio-search"[^>]*value="' + asset.code + '"'));
+  assert.doesNotMatch(view(), new RegExp('data-portfolio-weight="' + benchmark.id + '"'));
+  await f.action('run');
+  selected('results');
+  assert.match(view(), /class="portfolio-results"/);
+  assert.doesNotMatch(view(), /id="portfolio-monthly"|id="portfolio-search"/);
+  const html = view();
+  assert.ok(html.indexOf('组合走势') > html.indexOf('portfolio-result-summary'));
+  assert.ok(html.indexOf('组合走势') < html.indexOf('模拟账户的期末风险'));
+  await tab('settings'); f.monthly(222);
+  await tab('results');
+  assert.match(view(), /上次模拟结果/);
+  await tab('settings');
+  assert.match(view(), /id="portfolio-monthly"[^>]*value="222"/);
+  f.monthly(-1); await f.action('run');
+  selected('settings');
+  assert.match(view(), /role="alert"/);
+  await f.action('save'); // Invalid draft cannot replace or export the previous simulation.
+  assert.equal(f.downloads.length, 0);
+});
+
 function systematicUiFixture(method, state = {}) {
   const calls = [], fetches = [], methods = ['vix_panic_reentry', 'relative_strength_rotation', 'dual_risk_guard'];
   // Keep account rendering real while isolating the UI's data-loading and new
@@ -600,6 +646,7 @@ test('running with a cleared or saved blank allocation fills zero and preserves 
     if (mode !== 'saved') f.ui.handleInput({ id: '', value: '', validity: { badInput: false },
       dataset: mode === 'amount' ? { portfolioAmount: id } : { portfolioWeight: id } });
     await f.action('run');
+    await f.action('tab', { value: 'holdings' });
     const html = f.ui.view(f.helpers);
     assert.doesNotMatch(html, /请修正无效权重|每项权重须/);
     assert.ok(html.includes('value="0" data-portfolio-weight="' + id + '"'));
@@ -722,6 +769,7 @@ test('USD settings, tax reserve, PDF and CSV keep the same result currency after
     });
   });
   assert.match(f.ui.view(f.helpers), /投入与计价币种：美元 USD/);
+  await f.action('tab', { value: 'holdings' });
   assert.match(f.ui.view(f.helpers), /初始投入 · 美元/);
   await f.action('run');
   const html = f.ui.view(f.helpers), expected = P.simulate(f.input);
@@ -734,11 +782,14 @@ test('USD settings, tax reserve, PDF and CSV keep the same result currency after
   assert.equal(report.result.currency, 'USD');
   assert.equal(report.result.taxReserve, expected.taxReserve);
   assert.match(text, /初始投入 \/ USD/); assert.match(text, /浮盈预留税 \/ USD/);
-  assert.match(text, /税后估值与累计投入 \/ 美元/);
+  assert.match(text, /税后估值与累计转入本金 \/ 美元/);
   assert.doesNotMatch(text, /人民币现金|\/ 元|NaN|undefined/);
+  await f.action('tab', { value: 'settings' });
   await f.action('select', { field: 'currency', value: 'CNY' });
+  assert.match(f.ui.view(f.helpers), /投入与计价币种：人民币 CNY/);
+  await f.action('tab', { value: 'results' });
   const stale = f.ui.view(f.helpers);
-  assert.match(stale, /投入与计价币种：人民币 CNY/); assert.match(stale, /上次模拟结果/);
+  assert.match(stale, /上次模拟结果/);
   assert.match(stale, /税后估值 \/ USD/);
   await f.action('export-result');
   const curveCsv = f.downloads.at(-1)[1];

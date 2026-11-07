@@ -277,5 +277,24 @@
     }
     return { step, state: () => copy(current) };
   }
-  return { create, opportunityDefinitions: Opportunity?.definitions || {} };
+  // Read the same market observations as step(), without fabricating an account,
+  // orders, or cash balances. VIX is strictly before the decision close.
+  function chartMarkets({ rawHistories, vixContext, days }) {
+    let vixRows = [], missing = null;
+    try { vixRows = validatedVix(vixContext); } catch (error) { missing = error.message; }
+    const through = rows => (rows || []).filter(row => row[0] <= days.at(-1));
+    const histories = Object.fromEntries(Object.entries(rawHistories).map(([id, rows]) => [id, through(rows)]));
+    vixRows = through(vixRows);
+    const vix = vixStates(vixRows), qqq = qqqStates(histories['us:QQQ'] || []);
+    const relative = relativeStates(histories['us:USD'] || [], histories['us:TQQQ'] || []);
+    const features = Opportunity.createFeatures({ rawHistories: histories, vixContext: { series: vixRows } });
+    return { missing, observations: days.map(day => {
+      const v = observed(vix, day, true, 'VIX/VIX3M'), q = observed(qqq, day, false, 'QQQ');
+      const r = observed(relative, day, false, 'USD/TQQQ');
+      return { day, scores: features.scoresAt(day), vixOn: v.missing ? null : v.on,
+        qqqOn: q.missing || !q.ready ? null : q.on,
+        relative: !r.missing && r.available ? 100 * (r.inputs.ratio - 1) : null };
+    }) };
+  }
+  return { create, chartMarkets, opportunityDefinitions: Opportunity?.definitions || {} };
 });

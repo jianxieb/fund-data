@@ -2,11 +2,13 @@
   'use strict';
   const M = window.Changheng, P = window.ChanghengPortfolioModel, KEY = 'changheng.portfolio.v1';
   let H, catalog = window.PORTFOLIO_CATALOG || null, loading = false, loadError = '', running = false, runId = 0;
-  const histories = new Map(), requests = new Map();
+  const histories = new Map(), requests = new Map(), chartInputs = new WeakMap();
   const defaults = { positions: [], currency: 'CNY', initial: 100000, monthly: 0, initialMethod: 'lump_sum', contributionMethod: 'dca_month', rebalance: 'none', transactionFee: 0,
     years: 5, start: '', end: '', benchmarkId: 'us:SPY', feeOverrides: {},
     tax: { ...P.taxConfig(), usCapitalGains: 20, usDividend: 20 } };
   let draft = { ...defaults }, query = '', kind = 'all', market = 'all', hideBoards = false, pickerMode = 'holding';
+  const workspaceTabs = [['settings', '模拟设置'], ['holdings', '我的组合'], ['results', '模拟结果']];
+  let workspaceTab = 'settings', calculationOpen = false, holdingFilters;
   let result = null, resultKey = '', error = '', metric = 'return', importError = '', exportingPdf = false;
   let dailyDay = '', additionBudget = 10000;
   try {
@@ -53,8 +55,11 @@
   }
   async function loadHistory(row) {
     if (!row || row.status !== 'available') throw new Error(row?.name + '：' + (row?.missing || '缺每日历史'));
-    if (histories.has(row.id)) return histories.get(row.id);
-    if (requests.has(row.id)) return requests.get(row.id);
+    const currentRow = () => row.id === catalog.fx?.id ? catalog.fx : asset(row.id);
+    const matchesCatalog = () => { const current = currentRow(); return current?.sha256 === row.sha256 && current?.historyUrl === row.historyUrl; };
+    if (matchesCatalog() && histories.has(row.id)) return histories.get(row.id);
+    const key = [row.id, row.historyUrl, row.sha256].join(':');
+    if (requests.has(key)) return requests.get(key);
     const promise = (async () => {
       if (!/^data\/portfolio\/[a-z]+\/[\w-]+\.json$/.test(row.historyUrl || '')) throw new Error(row.name + '：历史文件路径无效');
       const response = await fetch(row.historyUrl);
@@ -65,11 +70,12 @@
         if (digest !== row.sha256) throw new Error(row.name + '：历史文件校验不一致，请刷新页面');
       }
       const history = JSON.parse(text);
-      P.validateHistory(row, history); histories.set(row.id, history);
+      P.validateHistory(row, history);
+      if (matchesCatalog()) histories.set(row.id, history);
       return history;
     })();
-    requests.set(row.id, promise);
-    try { return await promise; } finally { requests.delete(row.id); }
+    requests.set(key, promise);
+    try { return await promise; } finally { requests.delete(key); }
   }
   async function refreshCatalog() {
     // The document can stay open for months. Revalidate the published manifest
@@ -101,6 +107,34 @@
     }
     return context;
   }
+  function chartReferenceState(account) {
+    return chartInputs.get(account) || { status: 'idle', refs: null, error: '' };
+  }
+  async function loadChartReferences() {
+    const account = result, state = chartInputs.get(account);
+    if (!state || state.status === 'loading' || state.status === 'ready') return;
+    state.status = 'loading'; state.error = ''; update();
+    const input = state.input, ids = new Set(input.config.positions.filter(p => p.weight > 0).map(p => p.id));
+    const sources = [];
+    for (const [holding, proxy] of [['us:USD', 'us:SOXX'], ['us:TQQQ', 'us:QQQ']]) {
+      if (ids.has(holding) && !input.histories[proxy]) sources.push([proxy.slice(3), async () => {
+        const row = input.catalog.assets.find(a => a.id === proxy);
+        if (!row) throw new Error('标的库缺少 ' + proxy.slice(3));
+        input.histories[proxy] = await loadHistory(row);
+      }]);
+    }
+    if ((ids.has('us:TQQQ') || ids.has('us:USD')) && !input.marketContext) sources.push(['VIX/VIX3M', async () => { input.marketContext = await loadMarketContext(); }]);
+    try {
+      const loaded = await Promise.allSettled(sources.map(([, fetchSource]) => fetchSource()));
+      const missing = loaded.flatMap((item, i) => item.status === 'rejected' ? [sources[i][0] + '：' + (item.reason?.message || '读取失败')] : []);
+      state.refs = P.chartReferences(account, input);
+      state.error = missing.join('；');
+      state.status = missing.length ? 'error' : 'ready';
+    } catch (e) {
+      state.error = e.message; state.status = 'error';
+    }
+    if (account === result) update();
+  }
   async function run({ extend = false } = {}) {
     if (running || !catalog) return;
     if (extend && (!result || resultKey !== signature() || result.config.tax?.liquidate)) return;
@@ -110,8 +144,9 @@
     persist();
     const originalSignature = signature(), previousStart = result?.start;
     const params = JSON.parse(JSON.stringify(config())), token = ++runId;
+    let showResults = false;
     try { P.validateConfig(params, new Set(catalog.assets.map(a => a.id))); }
-    catch (e) { error = e.message; update(); return; }
+    catch (e) { error = e.message; update(); revealWorkspace(); return; }
     running = true; error = ''; update();
     try {
       let refreshMissing = '';
@@ -157,14 +192,22 @@
         if (extend && signature() === originalSignature) { Object.assign(draft, { years: params.years, start: params.start, end: params.end }); persist(); }
         dailyDay = computed.systematic?.daily?.at(-1)?.day || '';
         if (!extend) additionBudget = params.monthly > 0 ? params.monthly : 10000;
+        chartInputs.set(computed, { input, status: 'idle', refs: null, error: '' });
         result = computed; resultKey = JSON.stringify(params);
+        showResults = resultKey === signature();
       }
     } catch (e) {
       if (token === runId) {
         error = '本次行情更新失败：' + e.message + (systematicMethods.has(params.initialMethod) && result ? '。仍显示上次成功模拟结果（' + result.end + '）。' : '');
       }
     }
-    finally { if (token === runId) { running = false; update(); } }
+    finally {
+      if (token === runId) {
+        running = false;
+        if (showResults) openWorkspaceTab('results');
+        else { update(); if (error) revealWorkspace(); }
+      }
+    }
   }
   function menu(id, label, options, value) {
     const current = options.find(([key]) => String(key) === String(value)) || [value, id === 'initialMethod' && /^entry_(option|volatility|breadth|composite)$/.test(value) ? '已撤回，请重新选择' : '请选择'];
@@ -294,7 +337,7 @@
       '<div class="portfolio-settings-grid"><div class="portfolio-field"><span>本金投入方式</span>' + menu('initialMethod', '本金投入方式', P.initialMethods, draft.initialMethod) + '<small id="portfolio-initial-hint" class="portfolio-strategy-hint">' + H.esc(hints.initial || '') + '</small></div>' +
       '<div class="portfolio-field"><span>持续投入方式</span>' + menu('contributionMethod', '持续投入方式', P.contributionMethods, draft.contributionMethod) + '<small id="portfolio-income-hint" class="portfolio-strategy-hint">' + H.esc(hints.income || '') + '</small></div>' + number('基础月预算', 'monthly', draft.monthly, 1e10, 'any', currency().unit) +
       '<div class="portfolio-field"><span>再平衡</span>' + menu('rebalance', '再平衡周期', [['none', '不再平衡'], ['month', '每月'], ['quarter', '每季度'], ['year', '每年']], draft.rebalance) + '</div>' +
-      number('买卖交易费率', 'transactionFee', draft.transactionFee, 5, 'any', '%') + '<div class="portfolio-field portfolio-benchmark"><span>对照标的</span>' + btn(H.esc(benchmark?.code || '不设置') + '<span>更换</span>', 'benchmark', 'portfolio-benchmark-button', 'aria-label="更换对照标的"') + '</div></div>' +
+      number('买卖交易费率', 'transactionFee', draft.transactionFee, 5, 'any', '%') + '<div class="portfolio-field portfolio-benchmark"><span>对照标的</span>' + btn(H.esc(benchmark?.code || '不设置') + '<span>更换</span>', 'benchmark', 'portfolio-benchmark-button', 'id="portfolio-benchmark" aria-label="更换对照标的"') + '</div></div>' +
       '<div id="portfolio-purchase-plan" class="portfolio-purchase-plan" aria-live="polite">' + purchasePlanMarkup() + '</div>' +
       (draft.years === 'custom' ? '<div class="portfolio-dates"><label>开始日<input type="date" id="portfolio-start" data-portfolio-field="start" value="' + H.esc(draft.start) + '"></label><label>结束日<input type="date" id="portfolio-end" data-portfolio-field="end" value="' + H.esc(draft.end) + '"></label></div>' : '') +
       taxSettings() + '<div class="portfolio-settings-foot">' + H.feeControl + '<div class="portfolio-settings-note">' + currency().name + ' · 分红再投 · 境内ETF净值 ' + btn('口径', 'method', 'text-link small', 'aria-label="组合回测口径"') + '</div></div></section>';
@@ -352,27 +395,138 @@
       '<div class="segmented">' + [['all', '全部市场'], ['cn', '境内'], ['us', '海外']].map(([k, label]) => btn(label, 'market', k === market ? 'active' : '', 'data-value="' + k + '"')).join('') + '</div></div>' +
       '<div class="portfolio-library-tools"><label class="check-label"><input type="checkbox" id="portfolio-hide-boards"' + (hideBoards ? ' checked' : '') + '>隐藏科创板 / 创业板个股</label>' + (query || kind !== 'all' || market !== 'all' ? btn('重置筛选', 'reset-filter', 'text-link small') : '') + '</div></div>' +
       '<div class="portfolio-library-scroll"><div data-list-body="portfolio-library">' + H.lazyRows('portfolio-library', rows, pickerRow, 29) + '</div>' + H.loadFooter('portfolio-library') + (!rows.length ? '<div class="portfolio-no-match">没有匹配的已收录标的</div>' : '') + '</div>',
-      pickerMode === 'benchmark' ? '<div class="actions">' + btn('不设对照', 'no-benchmark', 'text-link small') + btn('返回添加标的', 'picker-holdings', 'text-link small') + '</div>' : '');
+      pickerMode === 'benchmark' ? '<div class="actions">' + btn('不设对照', 'no-benchmark', 'text-link small') + btn('返回模拟设置', 'picker-holdings', 'text-link small') + '</div>' : '');
+  }
+  const chartLayout = { width: 920, height: 330, left: 65, top: 28, bottom: 296 };
+  const indicatorColors = ['#366ca6', '#ad5e23', '#795395', '#168683', '#ae4669', '#617c25', '#8d6239', '#5864aa', '#b43e47', '#247c55', '#92822a', '#70617c', '#b35185'];
+  let chartView, plotted;
+  function chartState() {
+    if (chartView?.owner !== result) chartView = { owner: result, from: 0, to: result.curve.length - 1, preset: 'all', selected: new Set(), chooser: false,
+      refs: undefined, indicators: null, benchmark: new Map((result.benchmark?.curve || []).map(p => [p.day, p])) };
+    const reference = chartReferenceState(result);
+    if (!chartView.indicators || chartView.refs !== reference.refs) {
+      chartView.refs = reference.refs;
+      chartView.indicators = P.chartIndicators(result, reference.refs);
+    }
+    return chartView;
+  }
+  function curveIndex(day, end = false) {
+    const rows = result.curve;
+    let lo = 0, hi = rows.length;
+    while (lo < hi) {
+      const i = (lo + hi) >>> 1;
+      if (rows[i].day < day || (end && rows[i].day === day)) lo = i + 1;
+      else hi = i;
+    }
+    return Math.max(0, Math.min(rows.length - 1, end ? lo - 1 : lo));
+  }
+  function chartZoom(preset) {
+    const view = chartState(), last = result.curve.at(-1).day;
+    view.preset = preset; view.to = result.curve.length - 1;
+    if (preset === 'all') { view.from = 0; return; }
+    const date = new Date(last + 'T00:00:00Z'), d = date.getUTCDate();
+    // Calendar months, including ranges that end on the 29th–31st.
+    date.setUTCDate(1); date.setUTCMonth(date.getUTCMonth() - Number(preset) + 1); date.setUTCDate(0);
+    date.setUTCDate(Math.min(date.getUTCDate(), d));
+    view.from = curveIndex(date.toISOString().slice(0, 10));
+  }
+  function visibleValue(row) {
+    return metric === 'allocation' ? P.accountAllocation(row)?.securitiesPct : metric === 'amount' ? row.value : metric === 'drawdown' ? row.drawdown : H.annual ? row.annualReturn : row.totalReturn;
+  }
+  function comparisonValue(row, view) {
+    if (metric === 'amount') return row.contributed;
+    if (metric === 'allocation') return P.accountAllocation(row)?.cashPct;
+    const b = metric === 'return' && view.benchmark.get(row.day);
+    if (!b || !M.finite(b.nav)) return null;
+    return H.annual ? (row.day === result.start ? 0 : P.annualReturn(b.nav, result.start, row.day)) : (b.nav - 1) * 100;
+  }
+  function chartPath(values, x, y, step = false) {
+    let path = '', drawing = false;
+    values.forEach((v, i) => {
+      if (!M.finite(v)) { drawing = false; return; }
+      const xx = x(i).toFixed(2), yy = y(v).toFixed(2);
+      path += !drawing ? 'M' + xx + ' ' + yy + 'h0' : step ? 'H' + xx + 'V' + yy : 'L' + xx + ' ' + yy;
+      drawing = true;
+    });
+    return path;
+  }
+  const axisNames = { score: '分数', allocation: '分配比例', state: '开关', drawdown: '回撤', deviation: '均线偏离', gap: '仓位缺口', relative: '相对强弱' };
+  function chartAxis(key, lines) {
+    if (['score', 'allocation', 'state'].includes(key)) return [0, 100];
+    let low = 0, high = 0;
+    for (const {values} of lines) for (const v of values) if (M.finite(v)) { low = Math.min(low, v); high = Math.max(high, v); }
+    return low < high ? [low, high] : [0, 1];
+  }
+  function indicatorValue(line, v, tick = false) {
+    if (!M.finite(v)) return '无当日观测';
+    if (line.kind === 'state') return v ? '开启' : '关闭';
+    return Number(v.toFixed(tick ? 1 : 2)) + line.unit;
   }
   function chart() {
-    const rows = result.curve, W = 920, HH = 330, pad = { x: 63, y: 24, right: 16, bottom: 34 };
-    const primary = rows.map(p => metric === 'amount' ? p.value : metric === 'drawdown' ? p.drawdown : H.annual ? p.annualReturn : p.totalReturn);
-    const secondary = metric === 'amount' ? rows.map(p => p.contributed) : metric === 'return' && result.benchmark ? result.benchmark.curve.map(p => H.annual ? (p.day === result.start ? 0 : P.annualReturn(p.nav, result.start, p.day)) : (p.nav - 1) * 100) : null;
-    const values = [0, ...primary, ...(secondary || [])].filter(M.finite), min = Math.min(...values), max = Math.max(...values), span = max - min || 1;
-    const lo = min - span * .08, hi = max + span * .08;
-    const x = i => pad.x + i / Math.max(1, rows.length - 1) * (W - pad.x - pad.right);
-    const y = v => pad.y + (hi - v) / (hi - lo) * (HH - pad.y - pad.bottom);
-    const path = data => data.map((v, i) => (i ? 'L' : 'M') + x(i).toFixed(2) + ' ' + y(v).toFixed(2)).join(' ');
-    let grid = '';
-    for (let i = 0; i < 5; i++) {
+    const view = chartState(), { width: W, height: HH, left, top, bottom } = chartLayout;
+    const rows = result.curve.slice(view.from, view.to + 1), primary = rows.map(visibleValue);
+    const secondary = (['amount', 'allocation'].includes(metric) || (metric === 'return' && result.benchmark)) ? rows.map(row => comparisonValue(row, view)) : null;
+    const catalog = view.indicators, allLines = catalog.series;
+    const observed = allLines.filter(line => view.selected.has(line.id)).map(line => {
+      const byDay = new Map(line.points);
+      return { ...line, color: indicatorColors[allLines.indexOf(line) % indicatorColors.length], values: rows.map(r => byDay.get(r.day)) };
+    });
+    const axes = [...new Set(observed.map(s => s.kind))];
+    const right = W - 15 - axes.length * 57;
+    const x = i => rows.length === 1 ? (left + right) / 2 : left + i / (rows.length - 1) * (right - left);
+    const domain = [...primary, ...(secondary || [])].filter(M.finite), min = Math.min(...domain), max = Math.max(...domain);
+    const span = max - min || Math.abs(max) * .05 || 1;
+    const lo = metric === 'allocation' || !domain.length ? 0 : min - span * .06, hi = metric === 'allocation' || !domain.length ? 100 : max + span * .06;
+    const y = v => top + (hi - v) / (hi - lo) * (bottom - top);
+    plotted = { view, rows, primary, secondary, observed, x, y, right };
+    let grid = '', overlays = '';
+    for (let i = 0; i <= 4; i++) {
       const v = lo + (hi - lo) * i / 4, yy = y(v);
-      grid += '<line x1="' + pad.x + '" y1="' + yy + '" x2="' + (W - pad.right) + '" y2="' + yy + '" stroke="#e8ece3"/><text x="' + (pad.x - 10) + '" y="' + (yy + 4) + '" text-anchor="end">' + (metric === 'amount' ? H.money(v / 10000, 1) + '万' : v.toFixed(1) + '%') + '</text>';
+      grid += '<line x1="' + left + '" y1="' + yy + '" x2="' + right + '" y2="' + yy + '" stroke="#e8ece3"/><text x="' + (left - 7) + '" y="' + (yy + 4) + '" text-anchor="end">' + (metric === 'amount' ? H.money(v / 10000, 1) + '万' : v.toFixed(1) + '%') + '</text>';
     }
-    for (const i of [0, Math.floor((rows.length - 1) / 2), rows.length - 1]) grid += '<text x="' + x(i) + '" y="' + (HH - 8) + '" text-anchor="' + (i === 0 ? 'start' : i === rows.length - 1 ? 'end' : 'middle') + '">' + rows[i].day + '</text>';
-    const area = path(primary) + 'L' + x(rows.length - 1) + ' ' + y(0) + 'L' + x(0) + ' ' + y(0) + 'Z';
-    const label = metric === 'amount' ? '税后估值与累计投入 · ' + currency(result.config).name : metric === 'drawdown' ? '组合回撤' : H.annual ? '组合年化收益 · 现金流中性 · 首年按一年计' : '组合累计收益 · 现金流中性';
-    return H.card('组合走势', label, '<div class="portfolio-chart-body"><div class="portfolio-chart-legend"><span><i style="background:#35654a"></i>我的组合</span>' + (secondary ? '<span><i style="background:#9c8d6e"></i>' + H.esc(metric === 'amount' ? '累计投入' : result.benchmark.name) + '</span>' : '') + '<span id="portfolio-chart-readout" aria-live="polite"></span></div><div class="portfolio-plot-wrap"><div id="portfolio-tooltip" class="portfolio-tooltip" hidden></div><svg class="portfolio-plot" data-portfolio-plot data-min="' + lo + '" data-max="' + hi + '" viewBox="0 0 ' + W + ' ' + HH + '" role="img" aria-label="' + label + '"><title>' + label + '</title><defs><linearGradient id="portfolio-fill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#a4c1a2" stop-opacity=".24"/><stop offset="1" stop-color="#a4c1a2" stop-opacity=".02"/></linearGradient></defs>' + grid + '<path d="' + area + '" fill="url(#portfolio-fill)"/>' + (secondary ? '<path d="' + path(secondary) + '" stroke="#9c8d6e" fill="none" stroke-width="1.8" stroke-dasharray="5 4"/>' : '') + '<path d="' + path(primary) + '" stroke="#35654a" fill="none" stroke-width="2.3"/><line id="portfolio-cursor" x1="0" x2="0" y1="' + pad.y + '" y2="' + (HH - pad.bottom) + '" stroke="#83927c" stroke-dasharray="3 3" visibility="hidden" pointer-events="none"/><circle id="portfolio-point" r="4.5" fill="#35654a" stroke="white" stroke-width="2" visibility="hidden" pointer-events="none"/><rect x="63" y="24" width="841" height="272" fill="transparent" pointer-events="all"/></svg></div></div>',
-      '<div class="portfolio-chart-controls"><div class="segmented" aria-label="走势内容">' + [['return', '收益率'], ['amount', '账户资产'], ['drawdown', '回撤']].map(([key, name]) => btn(name, 'metric', key === metric ? 'active' : '', 'data-value="' + key + '"')).join('') + '</div>' + btn('导出走势', 'export-result', 'btn portfolio-export') + '</div>');
+    for (const i of new Set([0, Math.floor((rows.length - 1) / 2), rows.length - 1])) grid += '<text x="' + x(i) + '" y="' + (HH - 8) + '" text-anchor="' + (i === 0 ? 'start' : i === rows.length - 1 ? 'end' : 'middle') + '">' + rows[i].day + '</text>';
+    axes.forEach((kind, j) => {
+      const lines = observed.filter(s => s.kind === kind), line = lines[0], [low, high] = chartAxis(kind, lines);
+      const yy = v => bottom - (v - low) / (high - low) * (bottom - top), xx = right + 6 + j * 57;
+      grid += '<g data-indicator-axis="' + H.esc(kind) + '"><text x="' + xx + '" y="13">' + H.esc(axisNames[kind] || line.unit) + '</text>';
+      for (const fraction of kind === 'state' ? [0, 1] : [0, .5, 1]) {
+        const v = low + (high - low) * fraction;
+        grid += '<text x="' + xx + '" y="' + (yy(v) + 4) + '">' + H.esc(indicatorValue(line, v, true)) + '</text>';
+      }
+      grid += '</g>';
+      if (kind === 'score') for (const threshold of new Set(lines.flatMap(l => l.values.some(M.finite) ? l.thresholds || [] : []).filter(M.finite))) {
+        // Shared scores can have different buying thresholds for different reserve sizes.
+        grid += '<line data-score-threshold="' + threshold + '" x1="' + left + '" x2="' + right + '" y1="' + yy(threshold) + '" y2="' + yy(threshold) + '" stroke="#9e8474" stroke-dasharray="2 5"/>';
+      }
+      for (const l of lines) overlays += '<path data-indicator-line="' + H.esc(l.id) + '" d="' + chartPath(l.values, x, yy, kind === 'state' || kind === 'allocation') + '" stroke="' + l.color + '" fill="none" stroke-width="1.6" stroke-linecap="round"/>';
+    });
+    const mainPath = chartPath(primary, x, y);
+    const area = mainPath && primary.every(M.finite) ? '<path d="' + mainPath + 'L' + x(rows.length - 1) + ' ' + bottom + 'L' + x(0) + ' ' + bottom + 'Z" fill="url(#portfolio-fill)"/>' : '';
+    const label = metric === 'allocation' ? '实际持仓与现金占账户总市值的比例' : metric === 'amount' ? '税后估值与累计转入本金 · ' + currency(result.config).name : metric === 'drawdown' ? '组合回撤' : H.annual ? '组合年化收益 · 现金流中性 · 首年按一年计' : '组合累计收益 · 现金流中性';
+    const legend = (name, color) => '<span><i style="background:' + color + '"></i>' + H.esc(name) + '</span>';
+    const lineLabel = line => (line.reference ? '参考 · ' : '') + line.label;
+    const legendLabel = line => lineLabel(line) + (!line.values.some(M.finite) ? '（此区间无有效观测）' :
+      line.kind === 'score' && line.thresholds?.length ? '（买入门槛 ' + (line.thresholdLabel || line.thresholds.join(' / ') + '分') + '）' : '');
+    const chooser = '<div class="portfolio-chart-chooser">' + btn('叠加策略指标' + (observed.length ? ' · ' + observed.length : ''), 'chart-chooser', 'btn', 'aria-expanded="' + view.chooser + '" aria-controls="portfolio-overlay-options"') + '</div>';
+    const options = !view.chooser ? '' : '<div id="portfolio-overlay-options" class="portfolio-overlay-options">' +
+      allLines.map(s => '<label title="' + H.esc(s.note || s.label) + '"><input type="checkbox" data-portfolio-field="chart-indicator" data-value="' + H.esc(s.id) + '" value="' + H.esc(s.id) + '"' + (view.selected.has(s.id) ? ' checked' : '') + '> ' + H.esc(lineLabel(s)) + '</label>').join('') +
+      (catalog.reason ? '<span>' + H.esc(catalog.reason) + '</span>' : '') + chartReferenceControl() + '</div>';
+    const range = '<div class="portfolio-chart-range"><div class="segmented" aria-label="走势图时间范围">' +
+      [['1', '近1月'], ['3', '近3月'], ['12', '近1年'], ['36', '近3年'], ['all', '全部']].map(([key, name]) => btn(name, 'chart-zoom', view.preset === key ? 'active' : '', 'data-value="' + key + '" aria-pressed="' + (view.preset === key) + '"')).join('') + '</div>' +
+      '<div class="portfolio-chart-dates"><input data-portfolio-field="chart-from" type="date" aria-label="走势图起始日期" min="' + result.curve[0].day + '" max="' + rows.at(-1).day + '" value="' + rows[0].day + '"><span>至</span><input data-portfolio-field="chart-to" type="date" aria-label="走势图结束日期" min="' + rows[0].day + '" max="' + result.curve.at(-1).day + '" value="' + rows.at(-1).day + '"></div>' + chooser + '</div>';
+    const initial = P.accountAllocation(result.curve[0]);
+    const firstDay = M.finite(initial?.securitiesPct) ? '<div class="portfolio-first-allocation"><span>模拟首日 · ' + result.curve[0].day + '</span><span>实际持仓 <b>' + H.pct(initial.securitiesPct, 2, false) + '</b></span><span>现金 <b>' + H.pct(initial.cashPct, 2, false) + '</b></span></div>' : '';
+    return H.card('组合走势', label, '<div class="portfolio-chart-body">' + range + options + firstDay + '<div class="portfolio-chart-legend">' + legend(metric === 'allocation' ? '实际持仓' : '我的组合', '#35654a') +
+      (secondary ? legend(metric === 'amount' ? '累计转入本金（含现金）' : metric === 'allocation' ? '实际现金比例' : result.benchmark.name, '#9c8d6e') : '') + observed.map(l => legend(legendLabel(l), l.color)).join('') +
+      (observed.some(l => l.kind === 'score' && l.thresholds?.length && l.values.some(M.finite)) ? '<span class="portfolio-threshold-key">虚线：分数门槛</span>' : '') + '</div><div class="portfolio-plot-wrap"><div id="portfolio-tooltip" class="portfolio-tooltip" hidden></div><svg class="portfolio-plot" data-portfolio-plot viewBox="0 0 ' + W + ' ' + HH + '" role="img" aria-label="' + label + '"><title>' + label + '（横向拖动可放大）</title><defs><linearGradient id="portfolio-fill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#a4c1a2" stop-opacity=".24"/><stop offset="1" stop-color="#a4c1a2" stop-opacity=".02"/></linearGradient></defs>' + grid + area +
+      (secondary ? '<path d="' + chartPath(secondary, x, y) + '" stroke="#9c8d6e" fill="none" stroke-linecap="round" stroke-width="1.8" stroke-dasharray="5 4"/>' : '') + '<path d="' + mainPath + '" stroke="#35654a" fill="none" stroke-linecap="round" stroke-width="2.3"/>' + overlays +
+      '<rect id="portfolio-zoom-selection" y="' + top + '" height="' + (bottom - top) + '" fill="#508b79" opacity=".18" width="0"/><line id="portfolio-cursor" x1="0" x2="0" y1="' + top + '" y2="' + bottom + '" stroke="#83927c" stroke-dasharray="3 3" visibility="hidden"/><circle id="portfolio-point" r="4.5" fill="#35654a" stroke="white" stroke-width="2" visibility="hidden"/><rect x="' + left + '" y="' + top + '" width="' + (right - left) + '" height="' + (bottom - top) + '" fill="transparent" pointer-events="all"/></svg></div><div class="portfolio-chart-hint">' + (observed.length ? '指标按观察日显示 · ' : '') + '横向拖选可放大</div></div>',
+      '<div class="portfolio-chart-controls"><div class="segmented" aria-label="走势内容">' + [['return', '收益率'], ['amount', '账户资产'], ['allocation', '实际仓位'], ['drawdown', '回撤']].map(([key, name]) => btn(name, 'metric', key === metric ? 'active' : '', 'data-value="' + key + '"')).join('') + '</div>' + btn('导出走势', 'export-result', 'btn portfolio-export') + '</div>');
+  }
+  function chartReferenceControl() {
+    const {status, error} = chartReferenceState(result);
+    if (status === 'ready') return '';
+    return '<div class="portfolio-chart-reference">' + (status === 'error' ? '<span>' + H.esc(error) + '</span>' : '') + btn(status === 'error' ? '重试加载其他策略参考指标' : status === 'loading' ? '正在加载参考指标…' : '显示其他策略参考指标', 'chart-references', 'text-link small', status === 'loading' ? 'disabled' : '') + '</div>';
   }
   function snapshots() {
     const periods = result.snapshots || [], unit = currency(result.config).unit;
@@ -512,7 +666,7 @@
       '<span id="portfolio-extend-reason" class="small muted">' + (blocked || '原起点 ' + r.start + ' 保持不变') + '</span></div><div class="portfolio-daily-main"><div class="portfolio-daily-signal"><div class="portfolio-daily-numbers">' + (row.indicators || []).map(item => { const d = window.ChanghengPortfolioPdf.dailyDisplay(item); return '<div><span>' + H.esc(d.label) + '</span><strong>' + H.esc(d.value) + '</strong><small>' + H.esc(d.basis) + '</small></div>'; }).join('') +
       '</div><p class="portfolio-daily-reason"' + (row.status === 'missing' ? ' role="status"' : '') + '>' + H.esc(dailyReason(row)) + '</p><p class="portfolio-daily-source">决策收盘 ' + row.day + ' · 来源 ' + H.esc(dailySources(row)) + '</p><dl class="portfolio-daily-facts">' + dailyFacts(row).map(([label, value]) => '<div><dt>' + H.esc(label) + '</dt><dd>' + H.esc(value) + '</dd></div>').join('') + '</dl>' + (opportunity ? '' : '<details class="portfolio-daily-calculation"><summary>本日怎么算</summary>' + calculation + '</details>') + '</div>' +
       '<div class="portfolio-addition"><h3>' + (opportunity ? '按本日分数分配新增资金（试算）' : '按当前策略分配新增资金（试算）') + '</h3><label class="portfolio-field"><span>本次新增预算 / ' + unit + '</span><input id="portfolio-addition-budget" data-portfolio-field="indicator-budget" type="number" min="0" max="1000000000000" step="any" value="' + inputValue(additionBudget, 2) + '"></label><p class="small muted">预算试算，不计入回测年化</p><div id="portfolio-addition-values">' + additionMarkup(row) + '</div></div></div>' +
-      (opportunity ? '<section class="portfolio-daily-calculation portfolio-opportunity-calculation"><h3>本日分数与买入金额怎么算</h3>' + calculation + '</section>' : '') + dailyChart(rows, row) +
+      (opportunity ? '<details id="portfolio-score-calculation" class="portfolio-daily-calculation portfolio-opportunity-calculation"' + (calculationOpen ? ' open' : '') + '><summary>本日分数与买入金额怎么算</summary>' + calculation + '</details>' : '') + dailyChart(rows, row) +
       '<p class="portfolio-daily-caption">' + (opportunity ? '历史研究规则，非胜率。分数控制待加仓现金的投入速度；其独立收益增益尚未证实。' : '持有状态不触发每日买入；本图未衡量当日加仓是否更划算。') + '实际待单在下一共同收盘执行。</p>' +
       nextTradePlan({ ...r, selectedDailyDay: row.day, config: { ...r.config, tax: { ...r.config.tax, liquidate: row.status === 'liquidated' } }, systematic: { ...r.systematic, signalDay: row.day, state: { ...row, day: row.day }, executedTargets: row.executedTargets, nextPlan: row.nextPlan } }) +
       '<div class="portfolio-daily-footer">' + btn(opportunity ? '导出逐日加仓分数 CSV' : '导出逐日策略状态 CSV', 'export-daily', 'text-link small') + '<a class="source-link" href="docs/portfolio-entry-research.html#' + (opportunity ? 'opportunity' : H.esc(r.config.initialMethod)) + '" target="_blank" rel="noopener">规则说明与历史检验 ↗</a></div></div>';
@@ -586,7 +740,7 @@
       systematicMethods.has(r.config.initialMethod) ? '' : '<a class="source-link" href="docs/portfolio-entry-research.html" target="_blank" rel="noopener">投入方法研究 ↗</a>');
   }
   function results() {
-    if (!result) return '<section class="portfolio-result-placeholder"><div><span class="eyebrow">YOUR PORTFOLIO, OVER TIME</span><h2>看组合如何走过市场起伏</h2><p>配置权重和投入方式后，开始模拟。</p></div><svg viewBox="0 0 460 135" aria-hidden="true"><path d="M3 120H457M3 80H457M3 40H457" stroke="#e0e5d7"/><path d="m3 101 37-13 37 14 38-28 37 7 38-22 38 12 37-31 37 5 40-26 38 6 40-23" fill="none" stroke="#96aa83" stroke-width="2"/><path d="m3 110 37-4 37 5 38-19 37 10 38-8 38-9 37 6 37-19 40 9 38-16 40 2" fill="none" stroke="#c3b291" stroke-width="1.5" stroke-dasharray="5 5"/></svg></section>';
+    if (!result) return '<section class="portfolio-result-placeholder"><div><h2>还没有模拟结果</h2><p>' + (draft.positions.length ? '点击“开始模拟”查看组合走势和收益。' : '先添加标的并设置权重，再开始模拟。') + '</p></div><svg viewBox="0 0 460 135" aria-hidden="true"><path d="M3 120H457M3 80H457M3 40H457" stroke="#e0e5d7"/><path d="m3 101 37-13 37 14 38-28 37 7 38-22 38 12 37-31 37 5 40-26 38 6 40-23" fill="none" stroke="#96aa83" stroke-width="2"/><path d="m3 110 37-4 37 5 38-19 37 10 38-8 38-9 37 6 37-19 40 9 38-16 40 2" fill="none" stroke="#c3b291" stroke-width="1.5" stroke-dasharray="5 5"/></svg></section>';
     const r = result, strategy = P.strategyNames(r.config), { unit, name } = currency(r.config);
     const usesMa = r.config.initial > 0 && r.config.initialMethod === 'ma200_hold' || r.config.monthly > 0 && ['dca_ma_trend', 'dca_ma_contrarian'].includes(r.config.contributionMethod);
     const rows = r.holdings.map((h, i) => '<tr><td><span class="portfolio-result-name"><i style="background:' + colors[i % colors.length] + '"></i><span><strong>' + H.esc(h.name) + '</strong><small>' + H.esc(h.code) + '</small></span></span></td>' +
@@ -597,17 +751,70 @@
       '<div class="stats-grid portfolio-result-summary">' + H.stat('资金年化 XIRR', H.pct(r.xirr, 2, false), '', r.xirrMissing || '按实际投入时间和金额计算') +
       H.stat(H.annual ? '组合年化收益' : '组合累计收益', H.pct(H.annual ? r.annualReturn : r.totalReturn, 2, false), '', '现金流中性' + (r.benchmark ? ' · 对照持有 ' + H.pct(H.annual ? r.benchmark.annualReturn : r.benchmark.totalReturn) : ' · 剔除追加本金影响')) +
       H.stat('期末税后估值', H.money(r.value), unit, '累计投入 ' + H.money(r.contributed) + ' ' + unit) + H.stat(r.config.tax?.liquidate ? '清仓盈亏' : '税后盈亏', H.money(r.profit), unit, r.config.tax?.liquidate ? '已扣清仓交易费与盈利税' : '已减浮盈预留税 ' + H.money(r.taxReserve, 2) + ' ' + unit) + H.stat('最大回撤', H.pct(r.mdd, 2, false), '', '年化波动 ' + H.pct(r.volatility, 2, false)) + '</div>' +
-      accountActivityMarkup(r) + (r.catalogRefresh?.available === false ? '<p class="portfolio-warning">' + H.esc(r.catalogRefresh.missing) + '</p>' : '') + dailyCard() + lumpSumComparison() + accountRisk() + snapshots() + (r.benchmarkError ? '<div class="portfolio-warning">' + H.esc(r.benchmarkError) + '，当前仅显示组合曲线。</div>' : '') +
-      chart() + '<div class="portfolio-result-notes"><span>入金 ' + r.deposits + '笔</span><span>买入 ' + r.transactions.filter(t => t.side === 'buy').length + '笔</span><span>再平衡 ' + r.rebalances + '次</span><span>交易费用 ' + H.money(r.tradeCost, 2) + ' ' + unit + '</span><span>已实现盈利税 ' + H.money(r.capitalTax, 2) + ' ' + unit + '</span><span>分红税 ' + H.money(r.dividendTax, 2) + ' ' + unit + '</span><span>浮盈预留税 ' + H.money(r.taxReserve, 2) + ' ' + unit + '</span>' + (r.initialReserve > .005 ? '<span>待投入本金 ' + H.money(r.initialReserve, 2) + ' ' + unit + '</span>' : '') + (r.timingChanges ? '<span>择时切换 ' + r.timingChanges + '次</span>' : '') + '</div>' + (usesMa && r.strategy.insufficientMaDays ? '<div class="portfolio-warning">均线不足200个共同交易日的阶段按常规投入，未将缺历史视为下跌信号。</div>' : '') +
+      (r.catalogRefresh?.available === false ? '<p class="portfolio-warning">' + H.esc(r.catalogRefresh.missing) + '</p>' : '') + (r.benchmarkError ? '<div class="portfolio-warning">' + H.esc(r.benchmarkError) + '，当前仅显示组合曲线。</div>' : '') +
+      chart() + accountActivityMarkup(r) + dailyCard() + lumpSumComparison() + accountRisk() + snapshots() + '<div class="portfolio-result-notes"><span>入金 ' + r.deposits + '笔</span><span>买入 ' + r.transactions.filter(t => t.side === 'buy').length + '笔</span><span>再平衡 ' + r.rebalances + '次</span><span>交易费用 ' + H.money(r.tradeCost, 2) + ' ' + unit + '</span><span>已实现盈利税 ' + H.money(r.capitalTax, 2) + ' ' + unit + '</span><span>分红税 ' + H.money(r.dividendTax, 2) + ' ' + unit + '</span><span>浮盈预留税 ' + H.money(r.taxReserve, 2) + ' ' + unit + '</span>' + (r.initialReserve > .005 ? '<span>待投入本金 ' + H.money(r.initialReserve, 2) + ' ' + unit + '</span>' : '') + (r.timingChanges ? '<span>择时切换 ' + r.timingChanges + '次</span>' : '') + '</div>' + (usesMa && r.strategy.insufficientMaDays ? '<div class="portfolio-warning">均线不足200个共同交易日的阶段按常规投入，未将缺历史视为下跌信号。</div>' : '') +
       H.card('持仓贡献', r.start + ' — ' + r.end + ' · ' + name + ' · 已减浮盈预留税', '<div class="portfolio-structure portfolio-end-structure"><h3>期末结构</h3>' + structure(r.holdings.map(h => ({ id: h.id, weight: h.actualWeight }))) + '</div>' + holdingTable, btn('导出持仓', 'export-holdings', 'btn portfolio-export')) + '<section class="card portfolio-yearly"><div class="card-head"><h2>年度表现</h2><span class="small">现金流中性 · 累计收益</span></div><div class="portfolio-year-grid">' + r.annual.map(y => '<div><span>' + y.year + '</span><strong class="num">' + H.pc(y.return) + '</strong><small>' + y.start.slice(5) + ' — ' + y.end.slice(5) + '</small></div>').join('') + '</div></section></div>';
+  }
+  function revealWorkspace() {
+    const workspace = document.getElementById('portfolio-workspace');
+    if (workspace && workspace.getBoundingClientRect().top < 0) workspace.scrollIntoView({ block: 'start' });
+  }
+  function openWorkspaceTab(tab) {
+    if (!workspaceTabs.some(([id]) => id === tab)) return;
+    closeBenchmark();
+    workspaceTab = tab;
+    update();
+    document.getElementById('portfolio-tab-' + tab)?.focus({ preventScroll: true });
+    revealWorkspace();
+  }
+  function closeBenchmark() {
+    if (pickerMode !== 'benchmark') return;
+    ({ query, kind, market, hideBoards } = holdingFilters);
+    pickerMode = 'holding'; H.resetList();
+  }
+  function returnToSettings(benchmarkId) {
+    if (benchmarkId !== undefined) { draft.benchmarkId = benchmarkId; touch(); }
+    closeBenchmark(); update();
+    document.getElementById('portfolio-benchmark')?.focus({ preventScroll: true });
+  }
+  document.addEventListener?.('keydown', event => {
+    const tab = event.target.closest?.('[role="tab"][data-action="portfolio-tab"]');
+    if (!tab) return;
+    const index = workspaceTabs.findIndex(([id]) => id === tab.dataset.value), count = workspaceTabs.length;
+    const next = { ArrowLeft: (index + count - 1) % count, ArrowRight: (index + 1) % count, Home: 0, End: count - 1 }[event.key];
+    if (next === undefined) return;
+    event.preventDefault();
+    openWorkspaceTab(workspaceTabs[next][0]);
+  });
+  function workspaceBar() {
+    const tabs = workspaceTabs.map(([id, name]) => {
+      const active = id === workspaceTab;
+      return btn(name + (id === 'holdings' && draft.positions.length ? '<span class="portfolio-tab-count">' + draft.positions.length + '</span>' : ''), 'tab', 'portfolio-tab',
+        'id="portfolio-tab-' + id + '" data-value="' + id + '" role="tab" aria-controls="portfolio-panel-' + id + '" aria-selected="' + active + '" tabindex="' + (active ? '0' : '-1') + '"');
+    }).join('');
+    const primary = !draft.positions.length && workspaceTab !== 'holdings'
+      ? btn('添加标的', 'tab', 'btn primary', 'data-value="holdings"')
+      : btn(running ? '正在模拟…' : '开始模拟', 'run', 'btn primary', running || exportingPdf || !draft.positions.length ? 'disabled' : '');
+    return '<div class="portfolio-workspace-bar"><div class="portfolio-workspace-tabs" role="tablist" aria-label="组合模拟">' + tabs + '</div><div class="portfolio-run-controls"><span id="portfolio-dirty" role="status">' + (result && resultKey !== signature() ? '参数已改动，重新模拟后生效' : '') + '</span>' + primary + '</div></div>';
+  }
+  function workspaceContent() {
+    if (workspaceTab === 'settings') return pickerMode === 'benchmark' ? library() : settings();
+    if (workspaceTab === 'results') return results();
+    const unknown = draft.positions.filter(p => !asset(p.id));
+    const leveraged = draft.positions.some(p => (asset(p.id)?.leverage || 1) > 1 && p.weight > 0);
+    return (unknown.length ? '<div class="portfolio-warning">' + unknown.length + '只保存的标的已不在当前研究对象中，请移除后模拟。</div>' : '') +
+      (leveraged ? '<div class="portfolio-warning">组合含每日杠杆ETF，长期表现取决于价格路径；杠杆并非长期收益的固定倍数。</div>' : '') +
+      '<div class="portfolio-builder">' + composition() + library() + '</div>';
   }
   function view(context) {
     H = context; ensureCatalog();
     if (!catalog) return '<section class="card pad"><h2>' + (loadError ? '标的库加载失败' : '正在载入组合标的库') + '</h2><p class="muted">' + H.esc(loadError || 'ETF、个股与基金每日历史按需载入。') + '</p>' + (loadError ? btn('重新加载', 'retry', 'btn primary') : '') + '</section>';
-    const unknown = draft.positions.filter(p => !asset(p.id));
-    return settings() + (unknown.length ? '<div class="portfolio-warning">' + unknown.length + '只保存的标的已不在当前研究对象中，请移除后模拟。</div>' : '') +
-      '<div class="portfolio-builder">' + composition() + library() + '</div><div class="portfolio-run-bar"><div><span id="portfolio-dirty">' + (result && resultKey !== signature() ? '参数已改动，重新模拟后生效' : '') + '</span>' + (error || importError ? '<p class="negative" role="alert">' + H.esc(error || importError) + '</p>' : '') + '</div><div class="actions">' + btn(running ? '正在读取历史…' : '开始模拟', 'run', 'btn primary', running || exportingPdf || !draft.positions.length ? 'disabled' : '') + '</div></div>' +
-      (draft.positions.some(p => (asset(p.id)?.leverage || 1) > 1 && p.weight > 0) ? '<div class="portfolio-warning">组合含每日杠杆ETF，长期表现取决于价格路径；杠杆并非长期收益的固定倍数。</div>' : '') + results();
+    const previousCalculation = document.getElementById('portfolio-score-calculation');
+    if (previousCalculation) calculationOpen = previousCalculation.open;
+    return '<div id="portfolio-workspace">' + workspaceBar() +
+      (error || importError ? '<p class="portfolio-workspace-error negative" role="alert">' + H.esc(error || importError) + '</p>' : '') +
+      workspaceTabs.map(([id]) => '<div id="portfolio-panel-' + id + '" role="tabpanel" aria-labelledby="portfolio-tab-' + id + '"' +
+        (id === workspaceTab ? ' tabindex="0">' + workspaceContent() : ' hidden>') + '</div>').join('') + '</div>';
   }
   function method() {
     H.openModal(H.modalTitle('组合回测口径', currency().name + ' · 每日历史 · 按所设税率') + '<div class="rule-list"><p><strong>价格与分红：</strong>境内基金及ETF使用净值与已发布每日收益，默认不计场内溢价；个股和海外ETF使用含分红复权股价。分红视为再投资，支持碎股，不模拟申购暂停、涨跌停或整手限制。</p><p><strong>汇率与交易日：</strong>本金、持续投入、成本与结果统一使用所选币种；切换币种保留输入数值，不自动兑换本金。资产币种不同时按当日或此前有效的美元兑人民币历史汇率换算；同币种直接使用原始价格。休市日沿用最近已发布价格；新增投入和再平衡推迟到所选资产都有真实报价的共同日期，不使用未来价格。</p><p><strong>投入与权重：</strong>本金与持续投入方式可分别选择。分批、回撤阶梯的待投入本金持有零息现金，再平衡不提前使用。季投、年投在周期首个共同交易日一次入金该周期预算，末期按窗口内月份数计；倍数定投改变实际入金金额。再平衡只调整已释放资金。</p><p><strong>回撤阶梯与原200日均线：</strong>使用独立目标组合按所选币种计价的收益路径，现金为零息，按目标权重每日复位；不受实际入金、择时仓位或投资者费用税款影响。前一个共同交易日收盘确定回撤和200日均线信号，下一共同交易日执行。回撤从模拟起点峰值计算；均线可使用窗口前真实历史。不足200次时按常规投入，原200日均线择时作用于整个已释放组合。</p><p><strong>现金补仓：</strong>前一共同收盘按实际持仓缺口确定每只标的的买入金额，下一共同收盘先执行已知金额，再处理当天入金和周期再平衡。只用已有现金，不按成交日价格重算金额；成交后比例可偏离目标。</p><p><strong>QQQ深熊确认：</strong>使用QQQ自身美元复权价，仅控制TQQQ对应资金。QQQ低于200日均线且距252日高点跌至少20%连续20日才退出，高于均线连续3日才恢复；按前一共同收盘时可知的QQQ状态执行。下一共同日计划与账户已执行仓位分别展示；若有更晚的QQQ收盘观察，单独列出。</p><p><strong>三种系统调仓：</strong>VIX恐慌恢复使用Cboe的VIX/VIX3M隐含波动指数控制TQQQ；三批相对强弱轮动在USD ETF与TQQQ之间分批调整股票资金；双重风险门合并VIX与QQQ状态。卖出比例对应的数量与买入金额在前一共同收盘确定，卖出回款到账后才用于后续买单；下一日计划与最近执行目标分别展示。</p><p><strong>费用与税：</strong>实际净值与复权股价已经反映产品持续年费，不再重复扣费，也不加回年费。买卖费率是统一自定义假设，未含最低佣金、换汇价差和申赎阶梯费率。投资者税使用所设综合税率；每日从持仓估值减去浮盈预留税，盈利下降时预留随之减少，不逐日重复扣款。期末清仓开启时扣实际清仓交易税费，并解除对应预留。跨境卖出和股息税后的渠道比较见“投资渠道”。</p><p><strong>收益：</strong>组合净值消除外部追加本金影响；税后盈亏为扣除浮盈预留税的期末资产减累计投入。首年年化按至少一年计算；不满一年不显示资金年化。对照线为同币种、同区间持有回报，使用同样税率和期末清仓设置，不计用户自定义交易费。</p><p><strong>持仓策略收益：</strong>逐笔使用实际买卖金额和费用。累计投入收益为（期末税后估值＋累计卖出净回款－累计买入含费金额）除以累计买入含费金额；反复买入的资金也计入分母。满一年按实际日期计算资金年化XIRR，不足一年显示累计投入收益、不外推；资金流找不到唯一年化解时留空。回撤和波动使用实际持仓的现金流中性净值，计入交易费、已发生税费及浮盈预留，追加和调仓转账本身不计收益。它们衡量持仓过程的风险，不是累计投入收益率的波动。</p></div><div class="actions"><a class="source-link" href="docs/portfolio-method.md" target="_blank" rel="noopener">完整公式与边界 ↗</a></div>');
@@ -626,8 +833,11 @@
   function exportResult() {
     if (!result) return;
     const code = currency(result.config).code, amount = label => label + code;
-    const rows = [['日期', amount('税后估值'), amount('累计投入'), amount('税后盈亏'), '组合净值', '组合累计收益%（现金流中性）', '组合年化收益%（现金流中性，首年至少一年）', '回撤%', amount('税费含当前预留'), amount('账户现金'), amount('待投入本金'), '择时仓位', '年费口径', '配置JSON', '全区间资金年化XIRR%', '资金年化缺项', amount('未减预留的资产'), amount('累计已发生税费'), amount('当前浮盈预留税')],
-      ...result.curve.map(p => [p.day, p.value, p.contributed, p.profit, p.nav, p.totalReturn, p.annualReturn, p.drawdown, p.taxCost, p.cash, p.initialReserve, p.exposure, result.config.feeBasis, JSON.stringify(result.config), result.xirr, result.xirrMissing, p.grossValue, p.paidTax, p.taxReserve])];
+    const rows = [['日期', amount('税后估值'), amount('累计转入本金（含现金）'), amount('税后盈亏'), '组合净值', '组合累计收益%（现金流中性）', '组合年化收益%（现金流中性，首年至少一年）', '回撤%', amount('税费含当前预留'), amount('账户现金'), amount('分批策略待投入本金'), '实际证券仓位%', '年费口径', '配置JSON', '全区间资金年化XIRR%', '资金年化缺项', amount('未减预留的资产'), amount('累计已发生税费'), amount('当前浮盈预留税'), amount('实际证券市值'), '实际现金占比%', amount('加仓策略待加现金')],
+      ...result.curve.map(p => {
+        const a = P.accountAllocation(p);
+        return [p.day, p.value, p.contributed, p.profit, p.nav, p.totalReturn, p.annualReturn, p.drawdown, p.taxCost, p.cash, p.initialReserve, a.securitiesPct, result.config.feeBasis, JSON.stringify(result.config), result.xirr, result.xirrMissing, p.grossValue, p.paidTax, p.taxReserve, a.securitiesValue, a.cashPct, opportunityMethods.has(result.config.initialMethod) ? p.systematicCash.reduce((s, n) => s + n, 0) : null];
+      })];
     H.download('长衡-组合模拟-' + result.end + '.csv', M.csv(rows), 'text/csv;charset=utf-8');
   }
   function exportDaily() {
@@ -676,11 +886,12 @@
   function handleAction(button) {
     const act = button.dataset.action.replace('portfolio-', ''), val = button.dataset.value;
     switch (act) {
+      case 'tab': return openWorkspaceTab(val);
       case 'retry': loadError = ''; ensureCatalog(); break;
       case 'run': if (!exportingPdf) return run(); return;
       case 'add':
-        if (pickerMode === 'benchmark') { draft.benchmarkId = val; pickerMode = 'holding'; }
-        else if (asset(val) && !draft.positions.some(p => p.id === val)) draft.positions.push({ id: val, weight: draft.positions.length ? 0 : 100 });
+        if (pickerMode === 'benchmark') return returnToSettings(val);
+        if (asset(val) && !draft.positions.some(p => p.id === val)) draft.positions.push({ id: val, weight: draft.positions.length ? 0 : 100 });
         touch(); break;
       case 'remove': draft.positions = draft.positions.filter(p => p.id !== val); delete draft.tax.overrides[val]; touch(); break;
       case 'clear': draft.positions = []; draft.tax.overrides = {}; result = null; touch(); break;
@@ -694,10 +905,17 @@
       case 'kind': kind = val; H.resetList(); break;
       case 'market': market = val; H.resetList(); break;
       case 'reset-filter': query = ''; kind = 'all'; market = 'all'; hideBoards = false; H.resetList(); break;
-      case 'benchmark': pickerMode = 'benchmark'; break;
-      case 'no-benchmark': draft.benchmarkId = ''; pickerMode = 'holding'; touch(); break;
-      case 'picker-holdings': pickerMode = 'holding'; break;
+      case 'benchmark':
+        holdingFilters = { query, kind, market, hideBoards };
+        query = ''; kind = market = 'all'; hideBoards = false;
+        pickerMode = 'benchmark'; H.resetList(); update(); revealWorkspace();
+        document.getElementById('portfolio-search')?.focus({ preventScroll: true }); return;
+      case 'no-benchmark': return returnToSettings('');
+      case 'picker-holdings': return returnToSettings();
       case 'metric': metric = val; break;
+      case 'chart-chooser': chartState().chooser = !chartState().chooser; break;
+      case 'chart-zoom': if (['1', '3', '12', '36', 'all'].includes(val)) chartZoom(val); break;
+      case 'chart-references': return loadChartReferences();
       case 'extend-latest': return run({ extend: true });
       case 'daily-prev':
       case 'daily-next': {
@@ -724,6 +942,7 @@
     update();
   }
   function handleInput(el) {
+    if (el.dataset?.portfolioField?.startsWith('chart-')) return false;
     if (el.id === 'portfolio-addition-budget') {
       additionBudget = el.value.trim() ? Number(el.value) : NaN;
       const values = document.getElementById('portfolio-addition-values'), row = selectedDaily();
@@ -791,6 +1010,21 @@
     syncTax();
   }
   async function handleChange(el) {
+    const chartField = el.dataset?.portfolioField;
+    if (chartField?.startsWith('chart-') && result) {
+      const view = chartState();
+      if (chartField === 'chart-indicator') {
+        if (view.indicators.series.some(s => s.id === el.value)) {
+          if (el.checked) view.selected.add(el.value); else view.selected.delete(el.value);
+        }
+      } else if (['chart-from', 'chart-to'].includes(chartField) && /^\d{4}-\d{2}-\d{2}$/.test(el.value) && el.checkValidity()) {
+        if (chartField === 'chart-from') view.from = Math.min(view.to, curveIndex(el.value));
+        else view.to = Math.max(view.from, curveIndex(el.value, true));
+        view.preset = '';
+      }
+      update();
+      return;
+    }
     if (el.id === 'portfolio-addition-budget') { handleInput(el); return; }
     if (el.id === 'portfolio-daily-date' || el.id === 'portfolio-daily-index') {
       const rows = result?.systematic?.daily || [];
@@ -827,31 +1061,51 @@
     const plot = event.target.closest?.('[data-portfolio-plot]');
     if (!plot || !result) return;
     const box = plot.getBoundingClientRect();
-    const fraction = Math.max(0, Math.min(1, (event.clientX - box.left - box.width * 63 / 920) / (box.width * 841 / 920)));
-    const index = Math.round(fraction * (result.curve.length - 1)), point = result.curve[index];
-    const value = metric === 'amount' ? point.value : metric === 'drawdown' ? point.drawdown : H.annual ? point.annualReturn : point.totalReturn;
-    const unit = currency(result.config).unit;
-    const format = v => metric === 'amount' ? H.money(v, 2) + ' ' + unit : H.pct(v);
-    const comparison = metric === 'amount' ? point.contributed : metric === 'return' && result.benchmark
-      ? H.annual ? point.day === result.start ? 0 : P.annualReturn(result.benchmark.curve[index].nav, result.start, point.day)
-      : (result.benchmark.curve[index].nav - 1) * 100 : null;
-    const comparisonName = metric === 'amount' ? '累计投入' : result.benchmark?.name;
-    const x = 63 + index / Math.max(1, result.curve.length - 1) * 841;
-    const cursor = document.getElementById('portfolio-cursor'), dot = document.getElementById('portfolio-point');
-    if (cursor) { cursor.setAttribute('x1', x); cursor.setAttribute('x2', x); cursor.setAttribute('visibility', 'visible'); }
-    if (dot) {
-      const lo = Number(plot.dataset.min), hi = Number(plot.dataset.max);
-      dot.setAttribute('cx', x); dot.setAttribute('cy', 24 + (hi - value) / (hi - lo) * 272); dot.setAttribute('visibility', 'visible');
+    const {rows, view, x, y, primary, secondary, observed, right} = plotted;
+    const {left, width: W} = chartLayout;
+    const indexAt = px => Math.round(Math.max(0, Math.min(1, ((px - box.left) * W / box.width - left) / (right - left))) * (rows.length - 1));
+    const index = indexAt(event.clientX), point = rows[index], value = primary[index];
+    if (event.type === 'pointerdown' && event.button === 0 && event.pointerType !== 'touch' && !plot.hasPointerCapture(event.pointerId)) {
+      plot.setPointerCapture(event.pointerId);
+      const brush = document.getElementById('portfolio-zoom-selection'), anchor = event.clientX;
+      const move = e => {
+        if (e.pointerId !== event.pointerId || !brush) return;
+        const a = x(index), b = x(indexAt(e.clientX));
+        brush.setAttribute('x', Math.min(a, b)); brush.setAttribute('width', Math.abs(b - a));
+      };
+      const stop = e => {
+        if (e.pointerId !== event.pointerId) return;
+        plot.removeEventListener('pointermove', move); plot.removeEventListener('pointerup', stop);
+        plot.removeEventListener('lostpointercapture', stop);
+        brush?.setAttribute('width', 0);
+        if (e.type !== 'pointerup' || Math.abs(e.clientX - anchor) < 6) return;
+        const i = indexAt(e.clientX);
+        if (i === index) return;
+        const start = view.from;
+        view.from = start + Math.min(i, index); view.to = start + Math.max(i, index); view.preset = '';
+        update();
+      };
+      plot.addEventListener('pointermove', move); plot.addEventListener('pointerup', stop); plot.addEventListener('lostpointercapture', stop);
     }
-    const readout = document.getElementById('portfolio-chart-readout');
-    if (readout) readout.textContent = point.day + ' · 组合 ' + format(value) + (comparison !== null ? ' · 对照 ' + format(comparison) : '');
+    const unit = currency(result.config).unit, amount = v => H.money(v, 2) + ' ' + unit;
+    const format = v => !M.finite(v) ? '无当日观测' : metric === 'amount' ? amount(v) : H.pct(v);
+    const cursor = document.getElementById('portfolio-cursor'), dot = document.getElementById('portfolio-point');
+    if (cursor) { cursor.setAttribute('x1', x(index)); cursor.setAttribute('x2', x(index)); cursor.setAttribute('visibility', 'visible'); }
+    if (dot) {
+      if (M.finite(value)) { dot.setAttribute('cx', x(index)); dot.setAttribute('cy', y(value)); }
+      dot.setAttribute('visibility', M.finite(value) ? 'visible' : 'hidden');
+    }
     const tooltip = document.getElementById('portfolio-tooltip');
     if (tooltip) {
-      const entries = [[metric === 'drawdown' ? '组合回撤' : '我的组合', format(value)]];
-      if (comparison !== null) entries.push([comparisonName, format(comparison)]);
-      if (metric !== 'amount') entries.push(['税后估值', H.money(point.value, 2) + ' ' + unit], ['累计投入', H.money(point.contributed, 2) + ' ' + unit]);
-      entries.push(['税后盈亏', H.money(point.profit, 2) + ' ' + unit]);
+      const entries = [], alloc = P.accountAllocation(point);
+      if (metric !== 'allocation') entries.push([metric === 'drawdown' ? '组合回撤' : '我的组合', format(value)]);
+      if (secondary && metric === 'return') entries.push([result.benchmark.name, format(secondary[index])]);
+      if (metric !== 'amount') entries.push(['税后估值', amount(point.value)]);
+      entries.push(['累计转入本金（含现金）', amount(point.contributed)]);
+      if (M.finite(alloc?.securitiesValue)) entries.push(['实际持仓', amount(alloc.securitiesValue) + ' · ' + H.pct(alloc.securitiesPct, 2, false)], ['现金', amount(alloc.cash) + ' · ' + H.pct(alloc.cashPct, 2, false)]);
+      entries.push(['税后盈亏', amount(point.profit)]);
       if (metric !== 'drawdown') entries.push(['回撤', H.pct(point.drawdown)]);
+      for (const line of observed) entries.push([(line.reference ? '参考 · ' : '') + line.label, indicatorValue(line, line.values[index])]);
       tooltip.innerHTML = '<strong>' + point.day + '</strong>' + entries.map(([name, text]) => '<div><span>' + H.esc(name) + '</span><b>' + H.esc(text) + '</b></div>').join('');
       tooltip.hidden = false;
       const px = event.clientX - box.left, py = event.clientY - box.top;

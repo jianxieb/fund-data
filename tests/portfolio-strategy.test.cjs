@@ -18,6 +18,35 @@ function fixture(days, values, overrides = {}) {
 }
 function simulate(input) { const r = P.simulate(input); assert.equal(r.error, undefined); return r; }
 
+test('chart observations are on the decision close, omit holidays, and distinguish buy rules from account drawdown', () => {
+  const days = calendar('2025-01-01', '2025-01-05');
+  const input = fixture(days, [[100, 50, 50, 50, 50], [100, 100, 100, 100, 100]], { initialMethod: 'drawdown_ladder',
+    monthly: 20, contributionMethod: 'dca_ma_contrarian' });
+  input.histories['stock:1'].series.splice(3, 1);
+  const r = simulate(input), signals = P.chartIndicators(r).series;
+  assert.deepEqual(signals.map(line => line.kind), ['drawdown', 'deviation']);
+  assert.deepEqual(signals[0].points, [[days[0], 0], [days[1], -25], [days[2], -25], [days[4], -25]]);
+  assert.ok(signals[1].points.every(([, value]) => value === null)); // no MA warmup
+  assert.equal(r.plan.initial[1].day, days[2]);
+  assert.notEqual(r.curve[1].drawdown, signals[0].points[1][1]);
+  const lump = simulate({ ...input, config: { ...input.config, initialMethod: 'lump_sum', monthly: 0 } });
+  assert.deepEqual(P.chartIndicators(lump).series, []);
+  const comparison = P.chartReferences(lump, input);
+  assert.ok(comparison.series.every(line => line.reference));
+  assert.deepEqual(comparison.series[0].points, signals[0].points);
+  assert.ok(!comparison.series.some(line => line.kind === 'score'));
+});
+
+test('cash top-up chart measures the current account gap and omits post-liquidation orders', () => {
+  const days = calendar('2025-01-01', '2025-01-05');
+  const r = simulate(fixture(days, [100, 50, 50, 50, 50], { initialMethod: 'cash_topup',
+    positions: [{ id: 'stock:0', weight: 50 }], tax: { liquidate: true } }));
+  const series = P.chartIndicators(r).series[0];
+  close(series.points[1][1], 50 - 100 / 3);
+  assert.equal(series.points.at(-1)[1], null);
+  assert.equal(r.transactions.find(t => t.reason === 'cash_topup').day, days[2]);
+});
+
 test('staged principal enters the account immediately but only scheduled portions are invested', () => {
   const days = calendar('2025-01-05', '2025-02-10');
   for (const count of [6, 12, 24]) {

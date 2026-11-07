@@ -46,7 +46,7 @@ function setup(method, { weights = [30, 30], end = '2024-01-02', forbidden = [] 
 }
 
 for (const [method, weights] of [['opportunity_discount_10', [30, 30]], ['opportunity_discount_20', [20, 40]], ['opportunity_mixed_10', [40, 20]]]) {
-  test(method + ' exposes real first buys, visible score calculations and separate budget exports', async () => {
+  test(method + ' exposes real first buys, expandable score calculations and separate budget exports', async () => {
     const u = setup(method, { weights }), before = u.view();
     assert.match(before, /这笔钱怎么投入/);
     assert.match(before, /USD待加现金/);
@@ -64,9 +64,11 @@ for (const [method, weights] of [['opportunity_discount_10', [30, 30]], ['opport
     const html = u.view(), start = html.indexOf('<h2>每日加仓分数');
     assert.ok(start > 0);
     const card = html.slice(start, html.indexOf('<h2>', start + 5));
-    const calculation = card.slice(card.indexOf('本日分数与买入金额怎么算'), card.indexOf('<div class="portfolio-daily-history">'));
-    assert.ok(calculation.length > 200);
-    assert.doesNotMatch(calculation, /<details|NaN|undefined|—|\[object Object\]/);
+    const detail = card.match(/<details\b([^>]*)><summary>本日分数与买入金额怎么算<\/summary>([\s\S]*?)<\/details>/);
+    assert.ok(detail, 'score inputs and formula are accessible through the disclosure');
+    assert.doesNotMatch(detail[1], /\bopen\b/);
+    const calculation = detail[2];
+    assert.doesNotMatch(calculation, /NaN|undefined|—|\[object Object\]/);
     assert.match(calculation, /分数代入/);
     assert.match(card, /历史研究规则，非胜率/);
     for (const item of account.systematic.daily.at(-1).indicators) {
@@ -100,4 +102,44 @@ test('unconfigured legs never require their proxy history; USD-only discount als
     assert.equal(u.calls.includes('data/portfolio/entry-context.json'), needsVix);
     assert.match(u.view(), /每日加仓分数/);
   }
+});
+
+test('reserve 20% chart export records actual holdings, not transferred capital or the timing permission', async () => {
+  const u = setup('opportunity_discount_20', { weights: [50, 50], end: '2014-02-03' });
+  await u.action('run');
+  const account = u.accounts[0], first = account.curve[0];
+  const securities = account.transactions.filter(t => t.day === first.day && t.side === 'buy').reduce((s, t) => s + t.amount, 0);
+  assert.equal(first.contributed, 100000);
+  const a = P.accountAllocation(first);
+  assert.ok(Math.abs(a.securitiesValue - securities) < 1e-8);
+  assert.ok(Math.abs(a.securitiesPct - 80) < 1e-9 && Math.abs(a.cashPct - 20) < 1e-9);
+  await u.action('export-result');
+  const [, csv] = u.downloads.at(-1);
+  const fields = line => [...line.matchAll(/"((?:[^"]|"")*)"(?=,|$)/g)].map(m => m[1]);
+  const [header, row] = csv.split('\r\n', 2).map(fields);
+  const get = name => Number(row[header.indexOf(name)]);
+  assert.equal(get('累计转入本金（含现金）CNY'), 100000);
+  assert.equal(get('实际证券仓位%'), a.securitiesPct);
+  assert.equal(get('实际现金占比%'), a.cashPct);
+  assert.equal(get('实际证券市值CNY'), a.securitiesValue);
+  assert.equal(get('账户现金CNY'), first.cash);
+  assert.ok(Math.abs(get('加仓策略待加现金CNY') - first.cash) < 1e-8);
+});
+
+test('other strategy evidence loads on demand; a failed reference can retry without rerunning or changing the account', async () => {
+  const soxx = historyUrl('us:SOXX'), forbidden = [soxx], vix = 'data/portfolio/entry-context.json';
+  const u = setup('lump_sum', { end: '2014-02-03', forbidden });
+  await u.action('run');
+  const account = u.accounts[0], ledger = JSON.stringify(account);
+  const count = path => u.calls.filter(p => p === path).length;
+  assert.equal(count(soxx), 0); assert.equal(count(vix), 0);
+  await u.action('chart-chooser');
+  await u.action('chart-references');
+  assert.equal(count(soxx), 1); assert.equal(count(vix), 1);
+  assert.match(u.view(), /SOXX/);
+  forbidden.length = 0;
+  await u.action('chart-references');
+  await u.action('chart-references');
+  assert.equal(count(soxx), 2); assert.equal(count(vix), 1);
+  assert.equal(u.accounts.length, 1); assert.equal(JSON.stringify(account), ledger);
 });
