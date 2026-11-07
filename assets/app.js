@@ -193,12 +193,10 @@
   function financialEvents() { return window.ChanghengFinancialEvents.view({ head, render }); }
   function returnComparison() { return window.ChanghengReturnComparison.view({ head, render, download, annual:state.annual, annualControl }); }
   function portfolio() {
-    return head('PORTFOLIO RESEARCH', '组合模拟', '从标的、权重到投入方式，看看组合会如何表现。') + window.ChanghengPortfolio.view({
+    return head('PORTFOLIO RESEARCH', '组合模拟', '按历史行情回测自选组合，查看投入规则下的收益、回撤和实际仓位。') + window.ChanghengPortfolio.view({
       esc, money, pct, pc, action, stat, card, modalTitle, openModal, toast, download, render,
       lazyRows, loadFooter, resetList: () => loadedCounts.delete('portfolio-library'),
-      annual: state.annual, annualControl: annualControl(), feeControl: feeControl(),
-      feeBasis: state.annualFeeBasis, feeOverrides: state.annualFeeOverrides,
-      setFeeBasis: () => { state.annualFeeBasis = 'net'; }
+      annual: state.annual, annualControl: annualControl()
     });
   }
   function moneyFlow() {
@@ -1371,7 +1369,7 @@
       return;
     }
     if (el.dataset.moneyField || el.dataset.moneySelect || el.dataset.moneyQuote || el.dataset.moneyEligible || el.dataset.moneyCheck) { window.ChanghengMoneyFlow.handleChange(el); return; }
-    if (el.id === 'portfolio-import' || el.id === 'portfolio-hide-boards' || el.id === 'portfolio-liquidate' || el.dataset.portfolioWeight || el.dataset.portfolioAmount || el.dataset.portfolioField || el.dataset.portfolioFee || el.dataset.portfolioTaxAsset) {
+    if (el.id === 'portfolio-import' || el.id === 'portfolio-hide-boards' || el.dataset.portfolioWeight || el.dataset.portfolioAmount || el.dataset.portfolioField || el.dataset.portfolioTaxAsset) {
       window.ChanghengPortfolio.handleChange(el); return;
     }
     if (el.dataset.annualFeeCode) {
@@ -1460,11 +1458,16 @@
       if (menu) { menu.open = false; menu.querySelector('summary').focus(); e.preventDefault(); return; }
     }
     const current = e.target.closest('[role="tab"]');
-    if (!current || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
-    const tabs = [...current.closest('[role="tablist"]').querySelectorAll('[role="tab"]')];
-    const i = tabs.indexOf(current), next = e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length - 1 : (i + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
-    const key = tabs[next].dataset.value; e.preventDefault(); tabs[next].click();
-    const selected = $$('[role="tab"]').find(t => t.dataset.value === key); if (selected) selected.focus();
+    if (!current || e.defaultPrevented) return;
+    const list = current.closest('[role="tablist"]'), vertical = list.getAttribute('aria-orientation') === 'vertical';
+    const tabs = [...list.querySelectorAll('[role="tab"]')], i = tabs.indexOf(current), count = tabs.length;
+    const next = { [vertical ? 'ArrowUp' : 'ArrowLeft']: (i + count - 1) % count,
+      [vertical ? 'ArrowDown' : 'ArrowRight']: (i + 1) % count, Home: 0, End: count - 1 }[e.key];
+    if (next === undefined) return;
+    const target = tabs[next], id = target.id, key = target.dataset.value;
+    e.preventDefault(); target.click();
+    const selected = (id && document.getElementById(id)) || $$('[role="tab"]').find(t => t.dataset.value === key);
+    selected?.focus({ preventScroll: true });
   });
   window.addEventListener('hashchange', route);
   route();

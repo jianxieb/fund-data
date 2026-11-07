@@ -234,3 +234,19 @@ test('a missing browser scoring module cannot silently execute a different initi
   vm.runInContext(fs.readFileSync(require.resolve('../assets/portfolio-model.js'), 'utf8'), sandbox);
   assert.match(sandbox.ChanghengPortfolioModel.simulate(fixture()).error, /加仓评分模块未加载/);
 });
+
+test('a cash dividend on a scheduled TQQQ exit goes to ordinary cash, not to the scored sleeve', () => {
+  const input = fixture('opportunity_discount_20', {dividendPolicy: 'cash', transactionFee: 0, tax: P.taxConfig()});
+  const prior = run(input), ex = input.days[641];
+  input.histories['us:TQQQ'].dividendEvidence.fractions[ex] = .1;
+  const r = run(input);
+  const exit = account => account.transactions.find(t => t.day === ex && t.id === 'us:TQQQ' && t.side === 'sell');
+  const expected = exit(prior).amount * .1;
+  near(r.cashDividends, expected); near(exit(r).amount, exit(prior).amount - expected);
+  assert.equal(exit(r).signalDay, input.days[640]);
+  const closing = account => account.curve.find(p => p.day === ex);
+  near(closing(r).value, closing(prior).value); near(closing(r).cash, closing(prior).cash);
+  near(closing(prior).systematicCash[1] - closing(r).systematicCash[1], expected);
+  near(r.holdings.reduce((s, h) => s + h.performance.profit, 0), r.profit);
+  assert.deepEqual(r.systematic.daily.map(p => p.indicator), prior.systematic.daily.map(p => p.indicator));
+});

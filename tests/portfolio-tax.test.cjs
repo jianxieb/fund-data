@@ -140,3 +140,65 @@ test('cost includes acquisition fees; reserve anticipates exit fees without char
   close(sold.value, held.value - exitFee);
   close(sold.holdings[0].performance.profit, sold.profit);
 });
+
+test('cash dividends stay in cash through subsequent price gains, and a sale does not tax them again', () => {
+  const input = fixture([{ values: [100, 110, 220], fractions: { [days[1]]: 10 / 110 } }],
+    { currency: 'USD', dividendPolicy: 'cash', benchmarkId: 'us:A' });
+  const held = P.simulate(input); assert.equal(held.error, undefined);
+  const h = held.holdings[0];
+  // Ten shares, a $10 gross dividend on each, then a $100 -> $200 move.
+  close(held.curve[1].cash, 80); close(held.curve[1].value, 1080);
+  close(h.grossValue, 2000); close(h.costBasis, 1000); close(h.taxReserve, 200);
+  close(held.cashDividends, 80); close(h.cashDividends, 80); close(held.cash, 80);
+  close(held.contributed, 1000); assert.equal(held.deposits, 1); assert.equal(held.transactions.length, 1);
+  close(held.value, 1880); close(held.profit, h.profit); close(h.performance.profit, 880);
+  close(h.performance.returned, 80); close(h.performance.mdd, 0);
+  assert.deepEqual(h.performance.flows, [[days[0], -1000], [days[1], 80], [days[2], 1800]]);
+  close(held.benchmark.totalReturn, held.totalReturn); close(held.benchmark.cashDividends, 8);
+  close(held.taxEvents[0].cashPaid, 80); close(held.taxEvents[0].basisAdded, 0);
+  input.config.tax.liquidate = true;
+  const sold = P.simulate(input);
+  close(sold.cash, 1880); close(sold.capitalTax, 200); close(sold.dividendTax, 20); close(sold.taxReserve, 0);
+  close(sold.holdings[0].performance.returned, 1880); close(sold.benchmark.totalReturn, sold.totalReturn);
+  input.config.dividendPolicy = 'reinvest';
+  const reinvest = P.simulate(input); close(reinvest.cash, 1944); close(reinvest.cashDividends, 0);
+  close(reinvest.holdings[0].cashDividends, 0); close(reinvest.taxEvents[0].basisAdded, 80);
+  close(reinvest.benchmark.totalReturn, reinvest.totalReturn);
+});
+
+test('cash entitlements accrue only to pre-existing shares, stay in the reporting currency, and can fund an explicit rebalance', () => {
+  const input = fixture([{ values: [1, 1.1, 1.21], fractions: { [days[0]]: .5, [days[1]]: 1 / 11, [days[2]]: 1 / 11 } }],
+    { initial: 7000, monthly: 7000, currency: 'CNY', dividendPolicy: 'cash' });
+  input.fxHistory.series[2][1] = 8;
+  const r = P.simulate(input); assert.equal(r.error, undefined);
+  // First ex-date: only original 1000 USD shares receive 560 CNY; another 1000 shares then purchased.
+  // Second ex-date: 2000 USD shares pay 1280 CNY. The first 560 CNY are never retranslated.
+  close(r.curve[1].cash, 560); close(r.cashDividends, 1840); close(r.cash, 1840); close(r.contributed, 14000);
+  close(r.holdings[0].grossValue, 16000); close(r.dividendTax, 460);
+  assert.equal(r.taxEvents.filter(e => e.type === 'dividend').length, 2);
+  input.config.rebalance = 'month';
+  const rebalanced = P.simulate(input); assert.equal(rebalanced.error, undefined);
+  close(rebalanced.curve[1].cash, 0);
+  close(rebalanced.transactions.find(t => t.reason === 'rebalance').amount, 560);
+  close(rebalanced.cash, 2080 * .1 * 8 * .8);
+  close(rebalanced.profit, rebalanced.holdings[0].performance.profit);
+});
+
+test('a cash policy requires distribution coverage even without taxes; missing benchmark evidence stays isolated', () => {
+  const input = fixture([{ values: [1, 1, 1] }, { values: [1, 2, 3] }], {
+    currency: 'USD', positions: [{ id: 'us:A', weight: 100 }], dividendPolicy: 'cash', tax: P.taxConfig(), benchmarkId: 'us:B' });
+  delete input.histories['us:B'].dividendEvidence;
+  let r = P.simulate(input);
+  assert.equal(r.error, undefined); close(r.value, 1000); close(r.cashDividends, 0);
+  assert.match(r.benchmarkError, /资产1.*分红.*无法拆出现金分红/);
+  input.histories['us:A'].dividendEvidence.through = days[1];
+  assert.match(P.simulate(input).error, /资产0.*仅覆盖.*2025-02-03.*无法拆出现金分红/);
+  delete input.config.dividendPolicy;
+  r = P.simulate(input); assert.equal(r.error, undefined); assert.equal(r.config.dividendPolicy, 'reinvest');
+  const copy = policy => P.sanitizeDraft({schemaVersion: 1, ...input.config, dividendPolicy: policy}, new Set(['us:A', 'us:B']));
+  assert.equal(copy(undefined).dividendPolicy, 'reinvest'); assert.equal(copy('cash').dividendPolicy, 'cash');
+  for (const invalid of [null, false, 'withdraw']) {
+    assert.throws(() => copy(invalid), /分红处理/);
+    assert.match(P.simulate({...input, config: {...input.config, dividendPolicy: invalid}}).error, /分红处理/);
+  }
+});

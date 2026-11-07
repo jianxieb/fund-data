@@ -138,6 +138,32 @@ function uiFixture(configure, model = P) {
   return { ui, action, monthly, context, helpers, downloads, notices, reports, renderStates, input };
 }
 
+test('a dividend policy selected in holdings reaches the simulated cash ledger, exported configuration, PDF and sales CSV', async () => {
+  const f = uiFixture(input => {
+    Object.assign(input.config, { monthly: 0, rebalance: 'none', transactionFee: 0, tax: P.taxConfig() });
+    for (const h of Object.values(input.histories)) h.dividendEvidence = { status: 'recorded', first: h.first, through: h.asOf,
+      fractions: h.id === 'us:TWO' ? { '2025-02-03': .05 } : {} };
+  });
+  assert.doesNotMatch(f.ui.view(f.helpers), /分红处理/);
+  await f.action('tab', {value: 'holdings'});
+  assert.match(f.ui.view(f.helpers), /data-value="reinvest" aria-pressed="true"/);
+  await f.action('dividend-policy', {value: 'cash'});
+  await f.action('save'); assert.equal(JSON.parse(f.downloads.at(-1)[1]).dividendPolicy, 'cash');
+  await f.action('run'); await f.action('export-pdf');
+  const report = f.reports.at(-1), r = report.result, html = f.ui.view(f.helpers);
+  const control = P.simulate(f.input);
+  assert.ok(r.cashDividends > 0 && control.cashDividends === 0);
+  assert.ok(Math.abs(r.cash - control.cash - r.cashDividends) < 1e-7);
+  assert.equal(r.contributed, control.contributed);
+  assert.match(html, /累计现金分红/); assert.doesNotMatch(html, /已减浮盈预留税/);
+  const reportText = textOf(Pdf.layout(report, measure));
+  assert.match(reportText, /分红计入账户现金/); assert.match(reportText, /累计税后现金分红/);
+  await f.action('export-holdings');
+  const [head, first] = f.downloads.at(-1)[1].split(/\r?\n/).slice(0, 2).map(line => line.split('","').map(field => field.replace(/^\uFEFF?"|"$|^"/g, '')));
+  assert.equal(Number(first[head.indexOf('累计卖出净回款CNY')]), 0);
+  assert.equal(Number(first[head.indexOf('累计税后现金分红CNY')]), r.cashDividends);
+});
+
 test('workspace tabs isolate settings, asset editing and results while preserving drafts and the last run', async () => {
   const f = uiFixture(input => { input.config.positions = []; });
   const view = () => f.ui.view(f.helpers), tab = value => f.action('tab', { value });
@@ -171,7 +197,8 @@ test('workspace tabs isolate settings, asset editing and results while preservin
   assert.doesNotMatch(view(), /id="portfolio-monthly"|id="portfolio-search"/);
   const html = view();
   assert.ok(html.indexOf('组合走势') > html.indexOf('portfolio-result-summary'));
-  assert.ok(html.indexOf('组合走势') < html.indexOf('模拟账户的期末风险'));
+  assert.ok(html.indexOf('组合走势') < html.indexOf('区间快照'));
+  assert.doesNotMatch(html, /role="tabpanel"[^>]*tabindex=/);
   await tab('settings'); f.monthly(222);
   await tab('results');
   assert.match(view(), /上次模拟结果/);
@@ -182,6 +209,59 @@ test('workspace tabs isolate settings, asset editing and results while preservin
   assert.match(view(), /role="alert"/);
   await f.action('save'); // Invalid draft cannot replace or export the previous simulation.
   assert.equal(f.downloads.length, 0);
+});
+
+test('funding, strategy rules and settlement settings are grouped by what the investor changes', async () => {
+  const f = uiFixture(input => {
+    input.catalog.assets[0].market = 'us';
+    input.config.tax = {...P.taxConfig(), usCapitalGains: 20, usDividend: 20};
+  });
+  const view = () => f.ui.view(f.helpers);
+  f.helpers.card = (title, sub, body, right = '', foot = '') => '<section><h2>' + title + '</h2>' + sub + right + body + foot + '</section>';
+  const first = view(), funding = first.slice(first.indexOf('<h2>资金与回测'), first.indexOf('<h2>投入方式'));
+  const strategy = first.slice(first.indexOf('<h2>投入方式'), first.indexOf('<h2>交易与税费'));
+  assert.match(funding, /id="portfolio-initial"/); assert.match(funding, /id="portfolio-monthly"/);
+  assert.match(funding, /id="portfolio-benchmark"/);
+  assert.match(strategy, /id="portfolio-initialMethod"/); assert.match(strategy, /id="portfolio-purchase-plan"/);
+  assert.doesNotMatch(strategy, /id="portfolio-(?:transactionFee|benchmark)"/);
+  assert.doesNotMatch(first, /收益已含年费|境内ETF净值|人民币 · 分红再投/);
+  await f.action('tax-zero');
+  assert.match(view(), /id="portfolio-transactionFee"/);
+  assert.doesNotMatch(view(), /自定义税率|浮盈预留|portfolio-tax-usDividend|portfolio-tax-assumption/);
+  await f.action('settle-sell'); assert.match(view(), /扣除卖出手续费后结为现金/);
+  await f.action('save'); const free = JSON.parse(f.downloads.at(-1)[1]);
+  assert.equal(free.tax.liquidate, true); assert.equal(free.tax.usCapitalGains, 0);
+  assert.equal(free.transactionFee, f.input.config.transactionFee);
+  await f.action('tax-custom'); assert.match(view(), /id="portfolio-tax-usCapitalGains"/);
+  f.ui.handleInput({dataset:{portfolioField:'tax-usCapitalGains'},value:'15'});
+  assert.match(view(), /扣除卖出手续费和适用的盈利税/);
+  await f.action('settle-hold'); assert.match(view(), /估值扣除浮盈预留税，持股和现金不变/);
+  await f.action('save'); const manual = JSON.parse(f.downloads.at(-1)[1]);
+  assert.equal(manual.tax.liquidate, false); assert.equal(manual.tax.usCapitalGains, 15);
+  await f.action('tab', {value:'holdings'});
+  assert.doesNotMatch(view(), /id="portfolio-(?:initial|monthly)"|组合含每日杠杆ETF/);
+  assert.match(view(), /历史收益已扣产品年费/);
+  await f.action('tab', {value:'settings'}); await f.action('benchmark');
+  assert.match(view(), /取消并返回/); assert.match(view(), /不设对照/);
+  await f.action('picker-holdings'); await f.action('save');
+  assert.equal(JSON.parse(f.downloads.at(-1)[1]).benchmarkId, f.input.config.benchmarkId);
+  await f.action('benchmark'); await f.action('no-benchmark'); await f.action('save');
+  assert.equal(JSON.parse(f.downloads.at(-1)[1]).benchmarkId, '');
+});
+
+test('switching tabs resumes each reading position and a new simulation opens at the result summary', async () => {
+  const f = uiFixture(), win = f.context.window, workspaceTop = 180;
+  win.scrollY = 0;
+  win.scrollTo = ({ top }) => { win.scrollY = top; };
+  f.context.document.getElementById = id => id === 'portfolio-workspace' ? { getBoundingClientRect: () => ({ top: workspaceTop - win.scrollY }) } : null;
+  const tab = value => f.action('tab', { value });
+  await f.action('run');
+  win.scrollY = 2500;
+  await tab('settings'); assert.equal(win.scrollY, workspaceTop);
+  win.scrollY = 650;
+  await tab('results'); assert.equal(win.scrollY, 2500);
+  await tab('settings'); assert.equal(win.scrollY, 650);
+  await f.action('run'); assert.equal(win.scrollY, workspaceTop);
 });
 
 function systematicUiFixture(method, state = {}) {
@@ -323,7 +403,7 @@ test('daily UI selects historical indicators and budgets without changing the si
   assert.match(html, /TQQQ策略状态.*退出状态/);
   assert.match(html, /TQQQ对应预算暂存现金/);
   assert.match(html, /原有账户 · 下一共同交易日/);
-  assert.match(html, /这里是该日执行目标；下方账户风险为模拟期末/);
+  assert.match(html, /实际持仓见组合走势中的“实际仓位”/);
   const allocation = P.additionAllocation(f.daily[1], 4321);
   assert.ok(html.includes(String(allocation.parkedCash)));
   assert.equal(f.calls.length, calls, 'date and trial budget must not rerun the account');
@@ -418,7 +498,7 @@ test('extend-to-latest refreshes coverage but preserves the original account sta
   f.monthly(123);
   await f.action('extend-latest'); assert.equal(f.calls.length, before);
   assert.match(f.ui.view(f.helpers), /参数已改动，请先重新模拟/);
-  f.monthly(0); await f.ui.handleChange({ id: 'portfolio-liquidate', checked: true, dataset: {} });
+  f.monthly(0); await f.action('settle-sell');
   await f.action('run');
   const cleared = f.calls.length;
   await f.action('extend-latest'); assert.equal(f.calls.length, cleared);
@@ -507,39 +587,24 @@ test('cash-topup panel exposes predeclared per-asset order amounts and fees', as
   assert.match(html, /金额已确定；成交价格变化会使实际仓位偏离目标/);
 });
 
-test('normal and historical simulations export the same account risk shown in the result', async () => {
+test('normal and historical results retain holdings and drawdown without the retired terminal risk section', async () => {
   for (const historical of [false, true]) {
     const f = accountUiFixture(input => { if (historical) Object.assign(input.config, { years: 'custom', start: '2024-01-01', end: '2025-01-08' }); });
     await f.action('run'); await f.action('export-pdf');
     assert.equal(f.reports.length, 1);
     const report = f.reports[0], html = f.ui.view(f.helpers);
     assert.equal(report.result.timing, undefined);
-    assert.match(html, /模拟账户的期末风险/); assert.ok(html.includes(report.result.end));
+    const pdf = textOf(Pdf.layout(report, measure));
+    for (const surface of [html, pdf]) {
+      assert.doesNotMatch(surface, /模拟账户的期末风险|实际现金低于目标至少5个百分点/);
+      assert.match(surface, /最大回撤/); assert.match(surface, /持仓贡献/);
+      assert.ok(surface.includes(report.result.end));
+    }
     assert.doesNotMatch(html, scoreUi);
-    assert.equal((html.match(/href="docs\/portfolio-method\.md"/g) || []).length, 1);
   }
 });
 
-test('the standalone risk card uses actual gross holdings, cash drift and account drawdown', async () => {
-  const f = accountUiFixture(input => {
-    input.config.tax = { cnFundCapitalGains: 30, cnStockCapitalGains: 30 };
-    for (const h of Object.values(input.histories)) h.dividendEvidence = { status: 'recorded', first: h.first, through: h.asOf, fractions: {} };
-  });
-  await f.action('run');
-  const html = f.ui.view(f.helpers), account = P.simulate(f.input), fmt = f.helpers.pct;
-  const card = html.match(/<section><h2>模拟账户的期末风险<\/h2>[\s\S]*?<\/section>/)[0];
-  assert.ok(account.cashWeight - account.cash / account.grossValue * 100 >= 5);
-  assert.ok(account.taxReserve > 0 && account.grossValue > account.value);
-  assert.ok(card.includes('期末回撤 ' + fmt(account.curve.at(-1).drawdown)));
-  assert.ok(card.includes('实际现金 ' + fmt(account.cash / account.grossValue * 100)));
-  for (const holding of account.holdings) assert.ok(card.includes(holding.code + ' ' + fmt(holding.grossValue / account.grossValue * 100) + '（目标 ' + fmt(holding.targetWeight) + '）'));
-  assert.match(card, /仓位按未减浮盈预留税的市值计算/);
-  assert.match(card, /实际现金低于目标至少5个百分点/);
-  assert.doesNotMatch(card, /优先考虑卖出|恢复目标权重|分批加仓|200日均线/);
-  assert.doesNotMatch(card, scoreUi);
-});
-
-test('mixed-market risk facts use the simulation valuation date without a reference signal date', async () => {
+test('mixed-market reports use the actual simulation valuation date', async () => {
   const f = accountUiFixture(input => {
     const asset = input.catalog.assets[1], history = input.histories[asset.id];
     history.series = history.series.filter(([day]) => day !== '2026-01-08');
@@ -549,8 +614,8 @@ test('mixed-market risk facts use the simulation valuation date without a refere
   await f.action('run'); await f.action('export-pdf');
   const report = f.reports[0], html = f.ui.view(f.helpers);
   assert.equal(report.result.end, '2026-01-08');
-  assert.match(html, /模拟账户的期末风险/); assert.match(html, /2026-01-08 · 人民币 · 实际持仓与现金/);
-  assert.ok(html.includes('期末回撤 ' + f.helpers.pct(report.result.curve.at(-1).drawdown)));
+  assert.ok(html.includes(report.result.start + ' — ' + report.result.end));
+  assert.ok(textOf(Pdf.layout(report, measure)).includes(report.result.end));
   assert.equal(report.result.timing, undefined);
 });
 
@@ -628,7 +693,7 @@ test('a new history download failure preserves account facts and blocks export u
   await f.action('run');
   const html = f.ui.view(f.helpers);
   assert.match(html, /本次行情更新失败：两倍测试ETF：历史文件请求失败（503）/);
-  assert.match(html, /模拟账户的期末风险/); assert.doesNotMatch(html, scoreUi);
+  assert.match(html, /组合走势/); assert.doesNotMatch(html, scoreUi);
   await f.action('export-pdf'); assert.equal(f.downloads.length, count);
   assert.match(f.notices.at(-1), /PDF 导出失败/);
   f.context.fetch = originalFetch;
@@ -770,7 +835,8 @@ test('USD settings, tax reserve, PDF and CSV keep the same result currency after
   });
   assert.match(f.ui.view(f.helpers), /投入与计价币种：美元 USD/);
   await f.action('tab', { value: 'holdings' });
-  assert.match(f.ui.view(f.helpers), /初始投入 · 美元/);
+  assert.doesNotMatch(f.ui.view(f.helpers), /id="portfolio-(?:initial|monthly)"/);
+  assert.match(f.ui.view(f.helpers), /data-portfolio-amount="us:TWO"[^<]*><span>USD<\/span>/);
   await f.action('run');
   const html = f.ui.view(f.helpers), expected = P.simulate(f.input);
   assert.ok(expected.taxReserve > 0);

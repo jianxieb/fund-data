@@ -7,12 +7,12 @@
   <meta name="theme-color" content="#233d32">
   <title>长衡 · 全球投资研究工作台</title>
   <link rel="icon" type="image/svg+xml" href="assets/brand-mark.svg">
-  <link rel="stylesheet" href="assets/style.css?v=223a0a056c70">
+  <link rel="stylesheet" href="assets/style.css?v=3755fe4e70ef">
   <link rel="stylesheet" href="assets/table-scroll.css?v=8ed78573d567">
   <link rel="stylesheet" href="assets/investment-tax.css?v=ffdad2c97c8e">
   <link rel="stylesheet" href="assets/etf-distributions.css?v=c8831a2efcf8">
   <link rel="stylesheet" href="assets/market-history.css?v=5b4bbc469806">
-  <link rel="stylesheet" href="assets/global-finance.css?v=edda7bf9c014">
+  <link rel="stylesheet" href="assets/global-finance.css?v=e94ac57f1150">
   <link rel="stylesheet" href="assets/holding-period.css?v=e0939c6dbdbe">
   <link rel="stylesheet" href="assets/return-comparison.css?v=322381bd940f">
   <link rel="stylesheet" href="assets/financial-events.css?v=79f77cf7122d">
@@ -40,9 +40,9 @@
   <script defer src="assets/etf-distributions.js?v=cf238d888b81"></script>
   <script defer src="assets/portfolio-opportunity.js?v=fb33b8d2618e"></script>
   <script defer src="assets/portfolio-systematic.js?v=543afbd80b18"></script>
-  <script defer src="assets/portfolio-model.js?v=a387b06d7bc0"></script>
-  <script defer src="assets/portfolio-pdf.js?v=1aec4acb4274"></script>
-  <script defer src="assets/portfolio.js?v=f60c8632b306"></script>
+  <script defer src="assets/portfolio-model.js?v=bc6e6036c569"></script>
+  <script defer src="assets/portfolio-pdf.js?v=6c6e0cac0424"></script>
+  <script defer src="assets/portfolio.js?v=ddb102a10c72"></script>
   <script defer src="assets/overseas-stocks.js?v=c5f54fcb9cbb"></script>
   <script defer src="assets/money-flow-model.js?v=0afc210291f0"></script>
   <script defer src="assets/money-flow.js?v=9c90a1f5dfd0"></script>
@@ -65,7 +65,7 @@
   <script defer src="data/potential-screening.js?v=4bad63c6397a"></script>
   <script defer src="assets/potential-model.js?v=a085ceb5c458"></script>
   <script defer src="assets/potential-stocks.js?v=b85104121dd9"></script>
-  <script defer src="assets/app.js?v=2b1d6198a5fe"></script>
+  <script defer src="assets/app.js?v=ec5f248d078f"></script>
 </head>
 <body>
   <a class="skip" href="#main">跳转到主要内容</a>
@@ -90,18 +90,13 @@
       <a href="#return-comparison" data-route="return-comparison"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v16h17M6 16l4-6 4 3 6-8M6 18l6-3 4 2 4-5"/></svg><span>收益对比</span></a>
       <a href="#portfolio" data-route="portfolio"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v9h9A9 9 0 0 0 12 3ZM8.5 3.7A9 9 0 1 0 20.3 15.5H8.5Z"/></svg><span>组合模拟</span></a>
     </nav>
-    <div class="sidebar-bottom">
-      <a href="#quality" data-route="quality"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6ZM15 3v5h4M9 12h7M9 16h5"/></svg><span>数据与方法</span><span id="quality-dot" class="status-dot"></span></a>
-      <p>理解市场，检验方案。<br><span>资产 · 风险 · 成本</span></p>
-    </div>
   </aside>
   <div class="app-shell">
     <header class="topbar">
       <span id="breadcrumb">研究总览</span>
-      <div class="top-actions"><a class="quiet" href="#quality">数据状态 ↗</a></div>
+      <div class="top-actions"><a class="quiet" href="#quality" data-route="quality"><span id="quality-dot" class="status-dot" aria-hidden="true"></span>数据状态 ↗</a></div>
     </header>
     <main id="main" tabindex="-1"></main>
-    <footer class="footer"><span>长衡 · 全球投资研究工作台</span><a href="#quality">数据来源与研究方法</a></footer>
   </div>
   <dialog id="dialog" aria-labelledby="dialog-title"></dialog>
   <div id="toast" role="status" aria-live="polite"></div>

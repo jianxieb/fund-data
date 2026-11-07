@@ -122,6 +122,8 @@
   }
   function layout(report, ctx) {
     const r = report.result, cfg = r.config, { code, name, unit } = P.currencyInfo(cfg), assets = new Map(report.assets.map(a => [a.id, a]));
+    const cashPayout = cfg.dividendPolicy === 'cash', gainTax = r.holdings.some(h => h.taxRates?.gain > 0);
+    const taxed = gainTax || r.holdings.some(h => h.taxRates?.dividend > 0);
     const ops = [], links = [], width = WIDTH - MARGIN * 2;
     let y = 46, sectionNumber = 0;
     const rect = (x, top, w, h, color) => ops.push({ type: 'rect', x, y: top, w, h, color });
@@ -222,7 +224,8 @@
     text('长衡', MARGIN + 60, y + 6, 28, C.ink, 700); text('PORTFOLIO RESEARCH', WIDTH - MARGIN, y + 16, 12, C.muted, 600, 'right');
     y += 76; text('组合模拟报告', MARGIN, y, 36, C.ink, 700); y += 56;
     text(r.start + ' - ' + r.end, MARGIN, y, 20, C.green, 600); y += 36;
-    paragraph(name + ' · 分红再投 · ' + (cfg.feeBasis === 'net' ? '年费已含' : '扣费前估算') + ' · 已计模拟税费 · ' + (cfg.tax?.liquidate ? '期末清仓' : '期末税后估值，含浮盈预留'));
+    paragraph([name, cashPayout ? '分红计入账户现金' : '分红自动再投资', cfg.feeBasis === 'net' ? '年费已含' : '扣费前估算',
+      taxed ? '按所设税率计税' : '不计税', cfg.tax?.liquidate ? '期末清仓' : '期末保留持仓'].join(' · '));
     paragraph('导出时间 ' + new Date(report.createdAt).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', hour12: false }) + '（北京时间）', C.muted, 13);
 
     section('策略与组合');
@@ -268,7 +271,8 @@
       ['累计投入 / ' + unit, number(r.contributed)], ['税后盈亏 / ' + unit, number(r.profit)], ['最大回撤', pct(r.mdd)], ['年化波动', pct(r.volatility)]
     ]);
     paragraph('入金 ' + r.deposits + '笔    再平衡 ' + r.rebalances + '次    买卖 ' + r.transactions.length + '笔    交易费合计 ' + number(r.tradeCost) + ' ' + unit + '    期末现金 ' + number(r.cash) + ' ' + unit);
-    paragraph('税费含预留 ' + number(r.taxCost) + ' ' + unit + '    已实现盈利税 ' + number(r.capitalTax) + ' ' + unit + '    分红税 ' + number(r.dividendTax) + ' ' + unit);
+    if (cashPayout) paragraph('累计税后现金分红 ' + number(r.cashDividends) + ' ' + unit + '，已计入账户。');
+    if (taxed) paragraph('税费含预留 ' + number(r.taxCost) + ' ' + unit + '    已实现盈利税 ' + number(r.capitalTax) + ' ' + unit + '    分红税 ' + number(r.dividendTax) + ' ' + unit);
     paragraph('当前浮盈预留税 ' + number(r.taxReserve) + ' ' + unit + '；只扣减估值，未实际缴纳，不影响持仓数量。');
     if (r.systematic) {
       const a = accountActivity(r);
@@ -308,20 +312,6 @@
       paragraph('卖出显示信号日持仓比例，不把内部归一化复权份额当作券商股数；买单仅使用计划时已有资金。');
       paragraph('完整规则、公式与历史检验：docs/portfolio-entry-research.html#' + (opportunity ? 'opportunity' : row.method), C.green, 13);
     }
-
-    section('模拟账户的期末风险', r.end + ' · 实际持仓与现金');
-    if (r.catalogRefresh?.available === false) paragraph(r.catalogRefresh.missing || '未能确认最新行情，本报告使用已保存的历史数据。', C.gold);
-    const grossCashWeight = r.grossValue > 0 ? r.cash / r.grossValue * 100 : null;
-    const holdings = r.holdings.map(h => ({ ...h, grossWeight: r.grossValue > 0 ? h.grossValue / r.grossValue * 100 : null }));
-    const overweight = holdings.some(h => finite(h.grossWeight) && h.grossWeight - h.targetWeight >= 5);
-    const cashShortfall = finite(grossCashWeight) && r.cashWeight - grossCashWeight >= 5;
-    paragraph('仓位按未减浮盈预留税的市值计算；期末回撤 ' + pct(r.curve.at(-1)?.drawdown) + '，基于模拟账户的现金流中性净值。', C.ink);
-    table(['持仓 / 现金', '目标权重', '实际市值权重', '偏离 / 百分点'], [
-      ...holdings.map(h => [h.name + '\n' + h.code, pct(h.targetWeight), pct(h.grossWeight), finite(h.grossWeight) ? number(h.grossWeight - h.targetWeight) : '—']),
-      [name + '现金', pct(r.cashWeight), pct(grossCashWeight), finite(grossCashWeight) ? number(grossCashWeight - r.cashWeight) : '—']
-    ], [2.4, 1, 1.2, 1.2], { numeric: [1, 2, 3] });
-    if (cfg.tax?.liquidate) paragraph('此模拟已期末清仓，账户为现金；不把清仓后的仓位差异作为超配信号。');
-    else if (cashShortfall || overweight) paragraph(cashShortfall ? '实际现金低于目标至少5个百分点；每笔投入预留现金不代表账户始终保持目标现金比例。' : '部分持仓高于目标至少5个百分点。', C.negative);
 
     section('区间快照', '近1/2/3/5年分别重新建仓，使用相同组合与策略；组合与对照收益均为现金流中性。');
     const windows = r.snapshots || [];
@@ -365,6 +355,7 @@
     table(['年度', '实际区间', '累计收益'], r.annual.map(a => [a.year, a.start + ' - ' + a.end, pct(a.return)]), [1, 3, 1.5], { numeric: [2] });
 
     section('数据与口径');
+    if (r.catalogRefresh?.available === false) paragraph(r.catalogRefresh.missing || '未能确认最新行情，本报告使用已保存的历史数据。', C.gold);
     const sourceRows = r.holdings.map(h => {
       const a = assets.get(h.id);
       return [label(h), (h.basis === 'provider_adjusted_close' ? '含分红复权股价' : '净值及已发布每日收益') + '\n' + (h.currency === code ? name : (h.currency === 'USD' ? '美元' : '人民币') + '换算' + name) + (a?.refreshWarning ? '\n' + a.refreshWarning : ''), h.first + '\n' + h.asOf, { text: a?.sourceUrl || '缺来源链接', url: a?.sourceUrl, color: C.green }];
@@ -372,9 +363,9 @@
     if (r.usesFx || r.benchmark?.usesFx) sourceRows.push(['美元兑人民币', 'CNY=X 实际日汇率', report.fx.first + '\n' + report.fx.asOf, { text: 'https://finance.yahoo.com/quote/CNY%3DX/history/', url: 'https://finance.yahoo.com/quote/CNY%3DX/history/', color: C.green }]);
     if (benchmark && !r.holdings.some(h => h.id === benchmark.id)) sourceRows.push([benchmark.name + '\n' + benchmark.code + ' · 对照', '同区间持有回报', benchmark.first + '\n' + benchmark.asOf, { text: benchmark.sourceUrl || '缺来源链接', url: benchmark.sourceUrl, color: C.green }]);
     table(['标的', '收益依据', '可用历史', '来源'], sourceRows, [2, 2, 1.4, 3]);
-    paragraph('价格或净值已经包含产品持续年费；净收益模拟不重复扣费。分红再投资，境内 ETF 默认使用净值，不计场内溢价；资产币种与模拟币种不同时使用历史汇率。');
-    paragraph('自定义交易费从账户扣除；未含最低佣金、换汇价差及阶梯申赎费。' + (cfg.tax?.liquidate ? '期末卖出所有持仓，并扣除清仓交易费与正收益税。' : '期末税后估值已减浮盈预留税；未扣假设卖出的交易费本身。') + '现金为零息，允许碎股和任意基金份额。');
-    paragraph('盈利税按所选币种的移动平均成本计算；美元模式未模拟人民币申报折算差异。未卖出时按max(0，市值－预计卖出费－剩余成本)×税率预留，不代表浮盈已实际纳税；真正卖出时解除相应预留，不重复扣税。买入费和税后分红再投入进入成本。分红仅扣设定综合税额，不重复记收益。未模拟跨笔亏损抵扣、申报延期、抵免结转或A股差别化持有期补税；ADR、REIT及特殊分配的实际税率需单项设置。');
+    paragraph('价格或净值已经包含产品持续年费；净收益模拟不重复扣费。境内 ETF 默认使用净值，不计场内溢价；资产币种与模拟币种不同时使用历史汇率。' + (cashPayout ? '分红按除息日计入现金，不模拟实际到账延迟。' : '分红按净额自动再投资。'));
+    paragraph('自定义交易费从账户扣除；未含最低佣金、换汇价差及阶梯申赎费。' + (cfg.tax?.liquidate ? '期末卖出所有持仓，扣除实际卖出费及适用税款。' : gainTax ? '期末税后估值已减浮盈预留税；未扣假设卖出的交易费本身。' : '期末保留证券，不生成清仓交易。') + '现金为零息，允许碎股和任意基金份额。');
+    if (taxed) paragraph('盈利税按所选币种的移动平均成本计算；美元模式未模拟人民币申报折算差异。未卖出时按max(0，市值－预计卖出费－剩余成本)×税率预留，不代表浮盈已实际纳税；真正卖出时解除相应预留，不重复扣税。买入费计入成本；仅自动再投的净分红增加成本。分红只计一次。未模拟跨笔亏损抵扣、申报延期、抵免结转或A股差别化持有期补税；ADR、REIT及特殊分配的实际税率需单项设置。');
     paragraph('本金投入与持续投入独立选择。分批按6/12/24个月等分；回撤阶梯先买25%，前收盘从窗口起点峰值跌10%/20%/30%时各买25%，36个月后释放剩余本金。待投入本金计入零息现金，不参加再平衡。');
     paragraph('持续投入以月预算为基数。季投、年投在周期首个共同交易日入金该周期预算，末期仅计窗口内月份；回撤倍数为1/1.5/2/3，顺势不高于均线买0.5份、逆势买2份。入金倍数改变实际本金。200日均线择时作用于整个已释放组合。');
     paragraph('所选本金方法信号依据：' + signalBasis + '。三种系统调仓的每日状态、计算步骤与源日期单独列示；卖出数量和买入金额提前确定，下一共同收盘执行。状态未用于评估加仓点的优劣。');

@@ -1,6 +1,6 @@
 /* One light theme, existing Changheng tokens. Diagrams carry meaning, not decoration. */
 /* The added navigation entry must not make lower links unreachable on short desktops. */
-@media(min-width:781px){.sidebar{overflow-y:auto;overscroll-behavior:contain}.sidebar>.brand,.sidebar>nav,.sidebar>.sidebar-bottom{flex-shrink:0}}
+@media(min-width:781px){.sidebar{overflow-y:auto;overscroll-behavior:contain}.sidebar>.brand,.sidebar>nav{flex-shrink:0}}
 .page-global-finance{max-width:1580px;color:var(--ink)}
 #global-finance-root{font-size:14px;line-height:1.75;--gf-soft:#eef3e8;--gf-line:#dce3d6;--gf-muted:#5d6d61}
 .gf-page-head{display:flex;align-items:center;justify-content:space-between;gap:24px;margin:0 0 23px}
