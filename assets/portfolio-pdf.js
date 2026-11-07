@@ -349,7 +349,7 @@
     const performance = r.holdings.map(h => { const p = h.performance; return [label(h), pct(p.annualReturn) + '\n' + (p.annualMissing || (p.annualBasis === 'money_weighted_xirr' ? 'XIRR' : '不足一年不外推')), pct(p.totalReturn), pct(p.mdd), pct(p.volatility), p.start + '\n' + p.end]; });
     if (cashRow) performance.push([name + '现金', '0.00%', '0.00%', '0.00%', '0.00%', r.start + '\n' + r.end]);
     table(['标的', '策略年化收益', '累计投入收益', '最大回撤', '年化波动', '实际持仓区间'], performance, [2.5, 1.4, 1.25, 1.2, 1.2, 1.25], { numeric: [1, 2, 3, 4] });
-    paragraph('持仓年化使用实际买卖资金流的 XIRR；不足一年不外推。累计投入收益的分母含重复买入资金，与组合净值收益分开。回撤、波动基于持仓过程的现金流中性净值。');
+    paragraph('持仓年化按实际买卖、计入现金的税后分红及期末持仓估值计算 XIRR；不足一年不外推。累计投入收益的分母含重复买入资金，与组合净值收益分开。回撤、波动基于持仓过程的现金流中性净值。');
 
     section('年度表现', '现金流中性 · 每个实际年度窗口的累计收益，首末年可不完整。');
     table(['年度', '实际区间', '累计收益'], r.annual.map(a => [a.year, a.start + ' - ' + a.end, pct(a.return)]), [1, 3, 1.5], { numeric: [2] });
