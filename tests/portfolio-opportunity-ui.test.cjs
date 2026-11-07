@@ -35,13 +35,13 @@ function setup(method, { weights = [30, 30], end = '2024-01-02', forbidden = [] 
   const helpers = { esc: value => String(value ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('"', '&quot;'),
     action: (label, action, cls, extra = '') => '<button data-action="' + action + '" ' + extra + '>' + label + '</button>',
     annual: true, annualControl: '', pct: (n, digits = 2) => Number(n).toFixed(digits) + '%', pc: String, money,
-    card: (title, subtitle, body) => '<section><h2>' + title + '</h2><p>' + subtitle + '</p>' + body + '</section>',
+    card: (title, subtitle, body, controls = '', foot = '') => '<section><h2>' + title + '</h2><p>' + subtitle + '</p>' + controls + body + foot + '</section>',
     stat: (label, value, unit, note = '') => '<article>' + label + ' ' + value + ' ' + (unit || '') + ' ' + note + '</article>',
     lazyRows: (key, rows, render) => rows.map(render).join(''), loadFooter: () => '', resetList() {}, toast() {},
     download: (...args) => downloads.push(args), render: () => ui.view(helpers) };
   const view = () => ui.view(helpers);
   view();
-  const action = name => ui.handleAction({ dataset: { action: 'portfolio-' + name } });
+  const action = (name, value) => ui.handleAction({ dataset: { action: 'portfolio-' + name, value } });
   return { ui, view, action, calls, downloads, accounts };
 }
 
@@ -61,6 +61,7 @@ for (const [method, weights] of [['opportunity_discount_10', [30, 30]], ['opport
     }
     for (const id of ['us:USD', 'us:TQQQ', 'us:QQQ', 'us:SOXX']) assert.ok(u.calls.includes(historyUrl(id)), id);
     assert.ok(u.calls.includes('data/portfolio/entry-context.json'));
+    await u.action('result-tab', 'signals');
     const html = u.view(), start = html.indexOf('<h2>每日加仓分数');
     assert.ok(start > 0);
     const card = html.slice(start, html.indexOf('<h2>', start + 5));
@@ -100,6 +101,7 @@ test('unconfigured legs never require their proxy history; USD-only discount als
     assert.equal(u.accounts[0]?.error, undefined); assert.ok(u.accounts[0]?.curve.length > 0);
     assert.ok(forbidden.every(url => !u.calls.includes(url)));
     assert.equal(u.calls.includes('data/portfolio/entry-context.json'), needsVix);
+    await u.action('result-tab', 'signals');
     assert.match(u.view(), /每日加仓分数/);
   }
 });

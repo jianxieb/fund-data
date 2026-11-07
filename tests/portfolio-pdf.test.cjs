@@ -135,7 +135,7 @@ function uiFixture(configure, model = P) {
   ui.view(helpers);
   const action = (name, extras = {}) => ui.handleAction({ dataset: { action: 'portfolio-' + name, ...extras } });
   const monthly = value => ui.handleInput({ id: 'portfolio-monthly', value: String(value), dataset: { portfolioField: 'monthly' } });
-  return { ui, action, monthly, context, helpers, downloads, notices, reports, renderStates, input };
+  return { ui, action, section: value => action('result-tab', { value }), monthly, context, helpers, downloads, notices, reports, renderStates, input };
 }
 
 test('a dividend policy selected in holdings reaches the simulated cash ledger, exported configuration, PDF and sales CSV', async () => {
@@ -149,7 +149,7 @@ test('a dividend policy selected in holdings reaches the simulated cash ledger, 
   assert.match(f.ui.view(f.helpers), /data-value="reinvest" aria-pressed="true"/);
   await f.action('dividend-policy', {value: 'cash'});
   await f.action('save'); assert.equal(JSON.parse(f.downloads.at(-1)[1]).dividendPolicy, 'cash');
-  await f.action('run'); await f.action('export-pdf');
+  await f.action('run'); await f.section('holdings'); await f.action('export-pdf');
   const report = f.reports.at(-1), r = report.result, html = f.ui.view(f.helpers);
   const control = P.simulate(f.input);
   assert.ok(r.cashDividends > 0 && control.cashDividends === 0);
@@ -196,8 +196,10 @@ test('workspace tabs isolate settings, asset editing and results while preservin
   assert.match(view(), /class="portfolio-results"/);
   assert.doesNotMatch(view(), /id="portfolio-monthly"|id="portfolio-search"/);
   const html = view();
-  assert.ok(html.indexOf('组合走势') > html.indexOf('portfolio-result-summary'));
-  assert.ok(html.indexOf('组合走势') < html.indexOf('区间快照'));
+  assert.ok(html.indexOf('data-portfolio-plot') > html.indexOf('portfolio-result-summary'));
+  assert.doesNotMatch(html, /<h2>区间快照<\/h2>/);
+  await f.section('periods'); assert.match(view(), /<h2>区间快照<\/h2>/);
+  await f.section('overview');
   assert.doesNotMatch(html, /role="tabpanel"[^>]*tabindex=/);
   await tab('settings'); f.monthly(222);
   await tab('results');
@@ -209,6 +211,26 @@ test('workspace tabs isolate settings, asset editing and results while preservin
   assert.match(view(), /role="alert"/);
   await f.action('save'); // Invalid draft cannot replace or export the previous simulation.
   assert.equal(f.downloads.length, 0);
+});
+
+test('result sections show only the chosen analysis and name the funded strategy in the heading', async () => {
+  const f = uiFixture(input => Object.assign(input.config, { initial: 0, monthly: 400, contributionMethod: 'dca_quarter' }));
+  const view = () => f.ui.view(f.helpers);
+  await f.action('run');
+  const overview = view(), header = overview.slice(overview.indexOf('class="portfolio-result-head"'), overview.indexOf('class="portfolio-result-tabs"'));
+  assert.match(header, /<h2>每季度定投<\/h2>/);
+  assert.doesNotMatch(header, /一次性投入|年费|人民币|累计收益|现金流|\d{4}-\d{2}-\d{2}/);
+  assert.match(header, /<details[^>]*portfolio-report-menu[^>]*><summary>报告<\/summary>/);
+  assert.equal((overview.match(/data-action="portfolio-export-result"/g) || []).length, 1);
+  assert.doesNotMatch(overview, /id="portfolio-result-tab-signals"|<h2>区间快照|<h2>年度表现|<h2>持仓贡献/);
+  await f.action('result-tab', { value: 'periods' });
+  const periods = view();
+  assert.ok(periods.indexOf('<h2>区间快照') >= 0 && periods.indexOf('<h2>年度表现') > periods.indexOf('<h2>区间快照'));
+  assert.doesNotMatch(periods, /data-portfolio-plot|<h2>持仓贡献|portfolio-result-summary/);
+  await f.action('result-tab', { value: 'holdings' });
+  assert.match(view(), /<h2>持仓贡献/); assert.doesNotMatch(view(), /<h2>区间快照|<h2>年度表现|data-portfolio-plot/);
+  await f.action('run');
+  assert.match(view(), /data-portfolio-plot/);
 });
 
 test('funding, strategy rules and settlement settings are grouped by what the investor changes', async () => {
@@ -348,7 +370,7 @@ test('systematic next-day orders show fixed money and signal-day sale proportion
   const f = systematicUiFixture('relative_strength_rotation', { nextPlan: { signalDay: '2026-01-08',
     orders: [{ id: 'us:TQQQ', side: 'sell', sellFraction: .25, units: .123456789 }, { id: 'us:USD', side: 'buy', amount: 1234.56 }],
     buyAmount: 1234.56, buyFee: 1.23, desiredTargets: [.4, .2], parkedWeights: [0, 0], metadata: {} } });
-  await f.action('run');
+  await f.action('run'); await f.section('signals');
   const html = f.ui.view(f.helpers);
   assert.match(html, /待执行/); assert.match(html, /卖出 TQQQ/); assert.match(html, /信号日持仓的 25\.00%/);
   assert.match(html, /买入 USD/); assert.match(html, /固定买入金额 1234\.56 元，另预留交易费 1\.23 元/);
@@ -361,7 +383,7 @@ test('systematic no-order states distinguish missing evidence, warmup and an unc
   for (const [state, expected] of [[{ missing: '缺同日VIX/VIX3M', metadata: {} }, /暂不生成新计划.*信号缺项：缺同日VIX\/VIX3M/],
     [{ warmingUp: true, metadata: { reason: 'USD/TQQQ不足505个共同实际收盘' } }, /等待信号历史积累/], [{ metadata: {} }, /暂无调仓计划/]]) {
     const f = systematicUiFixture('dual_risk_guard', { state });
-    await f.action('run');
+    await f.action('run'); await f.section('signals');
     const html = f.ui.view(f.helpers);
     assert.match(html, expected); assert.doesNotMatch(html, /class="badge">待执行/);
     assert.match(html, /2020和2022两个历史事件/);
@@ -383,7 +405,7 @@ function dailyUiFixture(method = 'vix_panic_reentry') {
 
 test('daily UI selects historical indicators and budgets without changing the simulated account', async () => {
   const f = dailyUiFixture();
-  await f.action('run');
+  await f.action('run'); await f.section('signals');
   let html = f.ui.view(f.helpers);
   assert.ok(html.indexOf('每日策略状态') < html.indexOf('与一次性投入比较'));
   assert.match(html, /TQQQ策略状态.*持有状态/);
@@ -462,7 +484,7 @@ test('daily indicators preserve missing and warmup semantics and freeze the same
     executedTargets: [.3, .3], executedParked: [0, 0] });
   f.daily[2].nextPlan = { signalDay: f.daily[2].day, desiredTargets: [.3, 0], parkedWeights: [0, .3],
     orders: [{ id: 'us:TQQQ', side: 'sell', sellFraction: .25, units: .123456789 }], buyAmount: 0, buyFee: 0 };
-  await f.action('run'); await f.action('export-pdf');
+  await f.action('run'); await f.section('signals'); await f.action('export-pdf');
   let text = textOf(Pdf.layout(f.reports.at(-1), measure));
   assert.match(text, /Cboe VIX\/VIX3M/); assert.match(text, /每日策略状态/);
   assert.match(text, /信号日持仓的 25\.00%/); assert.doesNotMatch(text, /0\.123456789/);
@@ -488,6 +510,7 @@ test('extend-to-latest refreshes coverage but preserves the original account sta
   f.ui.handleInput({ id: 'portfolio-end', value: '2025-06-03', dataset: { portfolioField: 'end' } });
   await f.action('run'); await f.action('export-pdf');
   const original = f.reports.at(-1).result;
+  await f.section('signals');
   await f.action('extend-latest'); await f.action('export-pdf');
   const latest = f.reports.at(-1).result;
   assert.equal(latest.start, original.start); assert.equal(latest.end, '2026-01-08');
@@ -495,11 +518,12 @@ test('extend-to-latest refreshes coverage but preserves the original account sta
   assert.deepEqual(latest.config.positions, original.config.positions);
   assert.equal(f.fetches.filter(x => x.url.endsWith('entry-context.json')).length, 0);
   const before = f.calls.length;
-  f.monthly(123);
+  await f.action('tab', {value: 'settings'}); f.monthly(123); await f.action('tab', {value: 'results'});
   await f.action('extend-latest'); assert.equal(f.calls.length, before);
   assert.match(f.ui.view(f.helpers), /参数已改动，请先重新模拟/);
-  f.monthly(0); await f.action('settle-sell');
+  await f.action('tab', {value: 'settings'}); f.monthly(0); await f.action('settle-sell');
   await f.action('run');
+  await f.section('signals');
   const cleared = f.calls.length;
   await f.action('extend-latest'); assert.equal(f.calls.length, cleared);
   assert.match(f.ui.view(f.helpers), /期末已清仓，不能延续账户/);
@@ -507,11 +531,12 @@ test('extend-to-latest refreshes coverage but preserves the original account sta
 
 test('extend-to-latest refuses an unconfirmed catalog and leaves the successful result intact', async () => {
   const f = dailyUiFixture();
-  await f.action('run'); await f.action('export-pdf');
+  await f.action('run'); await f.section('signals'); await f.action('export-pdf');
   const prior = f.reports.at(-1).result.value, before = f.calls.length, fetch = f.context.fetch;
   f.context.fetch = async (url, options) => url === 'data/portfolio/catalog.js' ? { ok: false, status: 503 } : fetch(url, options);
   await f.action('extend-latest');
   assert.equal(f.calls.length, before);
+  await f.section('overview');
   assert.ok(f.ui.view(f.helpers).includes(String(prior)));
   assert.match(f.ui.view(f.helpers), /最新标的库请求失败（503）/);
 });
@@ -550,7 +575,7 @@ function nextPlanFixture(endIndex, mixedCalendar = false) {
 test('next-trade panel distinguishes pending QQQ exits and entries from executed holdings', async () => {
   for (const [endIndex, action, held] of [[319, '退出TQQQ对应仓位', '持有TQQQ'], [322, '买回TQQQ对应仓位', '持有对应现金']]) {
     const f = nextPlanFixture(endIndex);
-    await f.action('run');
+    await f.action('run'); await f.section('signals');
     assert.equal(f.notices.length, 0, f.notices.join('; '));
     const html = f.ui.view(f.helpers);
     assert.equal(html.match(/role="alert">([^<]*)/)?.[1], undefined);
@@ -562,7 +587,7 @@ test('next-trade panel distinguishes pending QQQ exits and entries from executed
 
 test('a newer QQQ-only close is shown as observation, not the next common-day order', async () => {
   const f = nextPlanFixture(319, true);
-  await f.action('run');
+  await f.action('run'); await f.section('signals');
   assert.equal(f.notices.length, 0, f.notices.join('; '));
   const html = f.ui.view(f.helpers);
   assert.equal(html.match(/role="alert">([^<]*)/)?.[1], undefined);
@@ -577,7 +602,7 @@ test('cash-topup panel exposes predeclared per-asset order amounts and fees', as
     for (const p of input.config.positions.filter(p => p.weight)) input.histories[p.id].series.forEach((row, i) => { row[1] = i ? 80 : 100; });
     Object.assign(input.config, { initialMethod: 'cash_topup', years: 'custom', start: days[0], end: days[1], benchmarkId: '', transactionFee: .1, tax: { usCapitalGains: 0, usDividend: 0, cnStockDividend: 0 } });
   });
-  await f.action('run'); await f.action('export-pdf');
+  await f.action('run'); await f.section('signals'); await f.action('export-pdf');
   const html = f.ui.view(f.helpers);
   assert.equal(html.match(/role="alert">([^<]*)/)?.[1], undefined);
   const plan = f.reports[0].result.nextTopupPlan;
@@ -595,9 +620,12 @@ test('normal and historical results retain holdings and drawdown without the ret
     const report = f.reports[0], html = f.ui.view(f.helpers);
     assert.equal(report.result.timing, undefined);
     const pdf = textOf(Pdf.layout(report, measure));
-    for (const surface of [html, pdf]) {
+    await f.section('holdings');
+    const holdings = f.ui.view(f.helpers);
+    assert.match(html, /最大回撤/); assert.match(holdings, /持仓贡献/);
+    assert.match(pdf, /最大回撤/); assert.match(pdf, /持仓贡献/);
+    for (const surface of [html, holdings, pdf]) {
       assert.doesNotMatch(surface, /模拟账户的期末风险|实际现金低于目标至少5个百分点/);
-      assert.match(surface, /最大回撤/); assert.match(surface, /持仓贡献/);
       assert.ok(surface.includes(report.result.end));
     }
     assert.doesNotMatch(html, scoreUi);
@@ -614,7 +642,9 @@ test('mixed-market reports use the actual simulation valuation date', async () =
   await f.action('run'); await f.action('export-pdf');
   const report = f.reports[0], html = f.ui.view(f.helpers);
   assert.equal(report.result.end, '2026-01-08');
-  assert.ok(html.includes(report.result.start + ' — ' + report.result.end));
+  for (const [field, day] of [['from', report.result.start], ['to', report.result.end]]) {
+    assert.match(html, new RegExp('data-portfolio-field="chart-' + field + '"[^>]*value="' + day + '"'));
+  }
   assert.ok(textOf(Pdf.layout(report, measure)).includes(report.result.end));
   assert.equal(report.result.timing, undefined);
 });
@@ -682,6 +712,7 @@ test('failed freshness checks retain dated simulation results and name the missi
 test('ordinary account exports include the result and holdings', async () => {
   const f = accountUiFixture(); await f.action('run'); const before = f.downloads.length;
   await f.action('export-result'); assert.equal(f.downloads.length, before + 1); assert.match(f.downloads.at(-1)[0], /组合模拟/);
+  await f.section('holdings');
   await f.action('export-holdings'); assert.equal(f.downloads.length, before + 2); assert.match(f.downloads.at(-1)[0], /持仓贡献/);
 });
 
@@ -693,7 +724,7 @@ test('a new history download failure preserves account facts and blocks export u
   await f.action('run');
   const html = f.ui.view(f.helpers);
   assert.match(html, /本次行情更新失败：两倍测试ETF：历史文件请求失败（503）/);
-  assert.match(html, /组合走势/); assert.doesNotMatch(html, scoreUi);
+  assert.match(html, /data-portfolio-plot/); assert.doesNotMatch(html, scoreUi);
   await f.action('export-pdf'); assert.equal(f.downloads.length, count);
   assert.match(f.notices.at(-1), /PDF 导出失败/);
   f.context.fetch = originalFetch;
@@ -741,7 +772,7 @@ test('funding XIRR stays annualized beside portfolio returns in both display mod
   const annual = summary(f.ui.view(f.helpers));
   assert.ok(annual.includes('<strong>资金年化 XIRR</strong><b>' + expected.xirr + '</b>'));
   assert.ok(annual.includes('<strong>组合年化收益</strong><b>' + expected.annualReturn + '</b>'));
-  assert.match(annual, /按实际投入时间和金额计算/); assert.match(annual, /现金流中性 · 对照持有/);
+  assert.notEqual(expected.xirr, expected.annualReturn, 'different contribution dates change XIRR without changing the portfolio’s return basis');
   f.helpers.annual = false;
   const cumulative = summary(f.ui.view(f.helpers));
   assert.ok(cumulative.includes('<strong>资金年化 XIRR</strong><b>' + expected.xirr + '</b>'));
@@ -773,6 +804,7 @@ test('short periods explain unavailable funding XIRR and snapshots retain exact 
     history.series = history.series.filter(([day]) => day >= '2025-07-01'); history.first = history.series[0][0];
   });
   await missing.action('run');
+  await missing.section('periods');
   const missingHtml = missing.ui.view(missing.helpers);
   assert.match(missingHtml, /近1年对照：对照标的的历史不覆盖组合区间/);
   assert.doesNotMatch(missingHtml, />无覆盖</);
@@ -842,7 +874,8 @@ test('USD settings, tax reserve, PDF and CSV keep the same result currency after
   assert.ok(expected.taxReserve > 0);
   assert.match(html, /期末税后估值/); assert.match(html, /浮盈预留税/);
   assert.doesNotMatch(html, /浮盈未征税|期末市值 \/ 元/);
-  assert.match(html, /税后估值 \/ USD/);
+  await f.section('holdings');
+  assert.match(f.ui.view(f.helpers), /税后估值 \/ USD/);
   await f.action('export-pdf');
   const report = f.reports[0], text = textOf(Pdf.layout(report, measure));
   assert.equal(report.result.currency, 'USD');
@@ -857,11 +890,11 @@ test('USD settings, tax reserve, PDF and CSV keep the same result currency after
   const stale = f.ui.view(f.helpers);
   assert.match(stale, /上次模拟结果/);
   assert.match(stale, /税后估值 \/ USD/);
-  await f.action('export-result');
+  await f.section('overview'); await f.action('export-result');
   const curveCsv = f.downloads.at(-1)[1];
   assert.match(curveCsv, /税后估值USD/); assert.match(curveCsv, /当前浮盈预留税USD/);
   assert.doesNotMatch(curveCsv.split('\n')[0], /CNY/);
-  await f.action('export-holdings');
+  await f.section('holdings'); await f.action('export-holdings');
   const holdingsCsv = f.downloads.at(-1)[1];
   assert.match(holdingsCsv, /当前浮盈预留税USD/); assert.match(holdingsCsv, /cash:USD/);
   assert.doesNotMatch(holdingsCsv.split('\n')[0], /CNY/);
