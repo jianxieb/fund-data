@@ -637,19 +637,16 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-backtest-row{display:flex;align-items:flex-start;flex-wrap:wrap;gap:12px 26px}
 .portfolio-backtest-row>.portfolio-field{width:166px}
 .portfolio-tax-settings{min-width:0;container:tax-settings / inline-size}
-/* Split the whole section, including its title, into tax and trading settings. */
 .portfolio-tax-controls,.portfolio-tax-group,.portfolio-fee-settlement{display:grid;grid-template-columns:minmax(0,1fr);align-items:start;gap:18px 26px}
-.portfolio-tax-picker{display:grid;max-width:100%;gap:9px}
-.portfolio-tax-label{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:4px 12px}
-.portfolio-tax-label .text-link{text-decoration:underline;text-underline-offset:3px}
+.portfolio-tax-controls{margin-top:16px}
+.portfolio-tax-mode h3{margin:0;font:inherit}
+.portfolio-tax-method{text-decoration:underline;text-underline-offset:3px}
 .portfolio-fee-settlement>label{width:100%;max-width:166px}
 @container tax-settings (min-width:400px){
   .portfolio-fee-settlement{grid-template-columns:minmax(110px,166px) minmax(0,1fr)}
 }
 @container tax-settings (min-width:740px){
   .portfolio-tax-controls{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .portfolio-tax-group{grid-template-columns:clamp(110px,15cqi,150px) minmax(0,1fr);column-gap:22px}
-  .portfolio-tax-body{grid-column:1/-1}
 }
 .portfolio-tax-mode{align-items:flex-start}
 .portfolio-settings-section .portfolio-field>small{font-size:12px;line-height:1.55;color:var(--muted)}
