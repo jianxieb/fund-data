@@ -213,21 +213,28 @@ test('workspace tabs isolate settings, asset editing and results while preservin
   assert.equal(f.downloads.length, 0);
 });
 
-test('result sections show only the chosen analysis and name the funded strategy in the heading', async () => {
+test('result sections retain direct exports and identify the funded method without making it the heading', async () => {
   const f = uiFixture(input => Object.assign(input.config, { initial: 0, monthly: 400, contributionMethod: 'dca_quarter' }));
   const view = () => f.ui.view(f.helpers);
   await f.action('run');
-  const overview = view(), header = overview.slice(overview.indexOf('class="portfolio-result-head"'), overview.indexOf('class="portfolio-result-tabs"'));
-  assert.match(header, /<h2>每季度定投<\/h2>/);
-  assert.doesNotMatch(header, /一次性投入|年费|人民币|累计收益|现金流|\d{4}-\d{2}-\d{2}/);
-  assert.match(header, /<details[^>]*portfolio-report-menu[^>]*><summary>报告<\/summary>/);
-  assert.equal((overview.match(/data-action="portfolio-export-result"/g) || []).length, 1);
+  const overview = view(), toolbar = overview.split('role="tabpanel" aria-labelledby="portfolio-result-tab-overview"')[0];
+  assert.match(toolbar, /每季度定投/);
+  assert.doesNotMatch(toolbar, /一次性投入|<h[1-6]\b[^>]*>[^<]*每季度定投|<summary[^>]*>报告/);
+  const directActions = html => {
+    const visible = html.replace(/<details\b[^>]*>[\s\S]*?<\/details>/g, '');
+    for (const id of ['sources', 'export-pdf', 'export-result', 'export-holdings']) {
+      assert.equal(visible.split('data-action="portfolio-' + id + '"').length - 1, 1, id + ' must be available in one click');
+    }
+  };
+  directActions(overview);
   assert.doesNotMatch(overview, /id="portfolio-result-tab-signals"|<h2>区间快照|<h2>年度表现|<h2>持仓贡献/);
   await f.action('result-tab', { value: 'periods' });
   const periods = view();
+  directActions(periods);
   assert.ok(periods.indexOf('<h2>区间快照') >= 0 && periods.indexOf('<h2>年度表现') > periods.indexOf('<h2>区间快照'));
   assert.doesNotMatch(periods, /data-portfolio-plot|<h2>持仓贡献|portfolio-result-summary/);
   await f.action('result-tab', { value: 'holdings' });
+  directActions(view());
   assert.match(view(), /<h2>持仓贡献/); assert.doesNotMatch(view(), /<h2>区间快照|<h2>年度表现|data-portfolio-plot/);
   await f.action('run');
   assert.match(view(), /data-portfolio-plot/);
@@ -240,12 +247,17 @@ test('funding, strategy rules and settlement settings are grouped by what the in
   });
   const view = () => f.ui.view(f.helpers);
   f.helpers.card = (title, sub, body, right = '', foot = '') => '<section><h2>' + title + '</h2>' + sub + right + body + foot + '</section>';
-  const first = view(), funding = first.slice(first.indexOf('<h2>资金与回测'), first.indexOf('<h2>投入方式'));
-  const strategy = first.slice(first.indexOf('<h2>投入方式'), first.indexOf('<h2>交易与税费'));
-  assert.match(funding, /id="portfolio-initial"/); assert.match(funding, /id="portfolio-monthly"/);
-  assert.match(funding, /id="portfolio-benchmark"/);
-  assert.match(strategy, /id="portfolio-initialMethod"/); assert.match(strategy, /id="portfolio-purchase-plan"/);
-  assert.doesNotMatch(strategy, /id="portfolio-(?:transactionFee|benchmark)"/);
+  const first = view();
+  const order = selectors => {
+    const indices = selectors.map(text => first.indexOf(text));
+    assert.ok(indices.every((at, i) => at >= 0 && (!i || at > indices[i - 1])), selectors.join(' → '));
+  };
+  order(['id="portfolio-initial"', 'id="portfolio-initialMethod"', 'id="portfolio-monthly"', 'id="portfolio-contributionMethod"', 'id="portfolio-benchmark"']);
+  order(['id="portfolio-transactionFee"', 'aria-label="期末处理"', 'aria-label="税务情景"']);
+  const directPlan = first.replace(/<details\b[^>]*>[\s\S]*?<\/details>/g, '');
+  assert.match(directPlan, /id="portfolio-purchase-plan"/);
+  assert.match(directPlan, /id="portfolio-contribution-plan"/);
+  assert.doesNotMatch(first, /<summary[^>]*>查看投入金额与执行规则/);
   assert.doesNotMatch(first, /收益已含年费|境内ETF净值|人民币 · 分红再投/);
   await f.action('tax-zero');
   assert.match(view(), /id="portfolio-transactionFee"/);

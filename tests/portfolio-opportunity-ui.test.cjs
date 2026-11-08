@@ -48,8 +48,8 @@ function setup(method, { weights = [30, 30], end = '2024-01-02', forbidden = [] 
 for (const [method, weights] of [['opportunity_discount_10', [30, 30]], ['opportunity_discount_20', [20, 40]], ['opportunity_mixed_10', [40, 20]]]) {
   test(method + ' exposes real first buys, expandable score calculations and separate budget exports', async () => {
     const u = setup(method, { weights }), before = u.view();
-    assert.match(before, /这笔钱怎么投入/);
-    assert.match(before, /USD待加现金/);
+    const visiblePlan = before.replace(/<details\b[^>]*>[\s\S]*?<\/details>/g, '');
+    assert.match(visiblePlan, /USD待加现金/);
     await u.action('run');
     const account = u.accounts[0]; assert.equal(account.error, undefined);
     assert.ok(account.systematic.daily.length >= 2500);
@@ -57,7 +57,7 @@ for (const [method, weights] of [['opportunity_discount_10', [30, 30]], ['opport
     assert.equal(initialOrders.length, 2);
     for (const order of initialOrders) {
       const code = order.id === 'us:USD' ? 'USD ETF' : 'TQQQ';
-      assert.ok(before.includes('<dt>买' + code + '</dt><dd>' + money(order.amount) + ' 元</dd>'), 'first quote matches the actual fee-funded order');
+      assert.ok(visiblePlan.includes('<dt>买' + code + '</dt><dd>' + money(order.amount) + ' 元</dd>'), 'the visible first quote matches the actual fee-funded order');
     }
     for (const id of ['us:USD', 'us:TQQQ', 'us:QQQ', 'us:SOXX']) assert.ok(u.calls.includes(historyUrl(id)), id);
     assert.ok(u.calls.includes('data/portfolio/entry-context.json'));

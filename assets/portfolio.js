@@ -273,41 +273,21 @@
     return '<section class="portfolio-settings-section"><div class="portfolio-settings-heading"><h2>交易与税费</h2>' +
       btn('税费口径', 'tax-method', 'text-link') + '</div><div class="portfolio-form-row portfolio-cost-row">' +
       number('买卖交易费率', 'transactionFee', draft.transactionFee, 5, 'any', '%') +
+      '<div class="portfolio-field"><span>期末处理</span>' + settlement + '<small id="portfolio-settlement-note">' + H.esc(settlementHint()) + '</small></div>' +
       '<div class="portfolio-field"><span>模拟税率</span>' + tax +
-      (mode === 'zero' ? '' : '<small id="portfolio-tax-summary">' + H.esc(taxSummary()) + '</small>') + '</div>' +
-      '<div class="portfolio-field"><span>期末处理</span>' + settlement + '<small id="portfolio-settlement-note">' + H.esc(settlementHint()) + '</small></div></div>' +
+      (mode === 'zero' ? '' : '<small id="portfolio-tax-summary">' + H.esc(taxSummary()) + '</small>') + '</div></div>' +
       (mode === 'custom' ? manualTaxFields() : '') +
       (mode !== 'zero' ? '<p id="portfolio-tax-assumption" class="portfolio-tax-assumption"' + (hasLongHoldTaxAssumption() ? '' : ' hidden') + '>A股股息按长期持有0%估算，未自动计入短期卖出补税。</p>' : '') + '</section>';
   }
   function opportunityTerms(method) {
     return method === 'opportunity_discount_20' ? {reserve: .2, threshold: 50} : {reserve: .1, threshold: 35};
   }
-  function strategyHints() {
-    const {reserve, threshold} = opportunityTerms(draft.initialMethod);
-    const systematicHint = opportunityMethods.has(draft.initialMethod) ? (draft.initial > 0 ? 'USD ETF、TQQQ 各预留其预算的' + reserve * 100 + '%，' : '新增的 USD ETF、TQQQ 预算先留现金，') + '评分达到' + threshold + '分后按规则加仓。' : { vix_panic_reentry: 'VIX恐慌持续时暂退TQQQ，恐慌缓和后买回', relative_strength_rotation: '分三批在USD ETF与TQQQ之间调整股票资金', dual_risk_guard: 'VIX恐慌或QQQ深熊任一触发时暂退TQQQ，两者解除后买回' }[draft.initialMethod];
-    const initial = /^entry_(option|volatility|breadth|composite)$/.test(draft.initialMethod) ? '原研究投入方式已撤回：未证明优于一次性投入，请重新选择本金投入方式' : systematicHint || (draft.initial === 0 ? (draft.initialMethod === 'cash_topup' ? '持续投入后，用已有现金补足目标仓位，只买不卖' : draft.initialMethod === 'qqq_bear_confirm' ? '持续投入的TQQQ资金同样按QQQ状态持有或等待' : '初始金额为0，仅执行持续投入') : ({
-      lump_sum: '初始本金一次买入', cash_topup: '按前日缺口用已有现金补仓，买入金额提前确定', qqq_bear_confirm: 'QQQ持续深跌时暂退TQQQ，趋势恢复后买回；其他持仓照常', tranche_6: '初始本金分6份，每月投入一份', tranche_12: '初始本金分12份，每月投入一份',
-      tranche_24: '初始本金分24份，每月投入一份', drawdown_ladder: '先投入25%；回撤10% / 20% / 30%各投入25%', ma200_hold: '前收盘高于200日均线持有，否则持有现金'
-    }[draft.initialMethod]));
-    const income = draft.monthly === 0 ? '月预算为0，不追加投入' : ({
-      dca_month: '每月投入基础月预算', dca_quarter: '季度首个共同交易日投入本季预算', dca_year: '年度首个共同交易日投入本年预算',
-      dca_drawdown: '回撤10% / 20% / 30%时投入1.5 / 2 / 3倍月预算', dca_ma_trend: '不高于200日均线时投入半份月预算', dca_ma_contrarian: '不高于200日均线时投入双份月预算'
-    }[draft.contributionMethod]);
-    return { initial, income };
-  }
-  function syncStrategyHints() {
-    const hints = strategyHints();
-    for (const [key, value] of Object.entries(hints)) {
-      const el = document.getElementById('portfolio-' + key + '-hint');
-      if (el) el.textContent = value || '';
-    }
-  }
   function purchasePlanMarkup() {
     const method = draft.initialMethod, unit = currency().unit, fee = draft.transactionFee / 100;
     const money = value => H.money(value, 2) + ' ' + unit;
     const opportunity = opportunityMethods.has(method), {reserve, threshold} = opportunityTerms(method);
     const instructions = {
-      lump_sum: { first: '首个共同交易日收盘，按配置比例一次性买入。', next: ['本金只投入这一次。后续新增资金按“持续投入方式”执行。'], execution: ['持有期间不会因为上涨或下跌自动重复买入。', '如设置再平衡，到所选周期才调整仓位。'] },
+      lump_sum: { first: '首个共同交易日收盘，按配置比例一次性买入。', next: [], execution: [] },
       vix_panic_reentry: { first: '首个共同交易日收盘，按原比例一次性建仓；此后才执行VIX退出与回买。', next: ['VIX ÷ VIX3M > 1.10 连续10次，卖出全部TQQQ。', '离场至少5次观测且VIX从离场后峰值回落30%，或比值 < 1 连续5次，才买回。'], execution: ['回买金额 = TQQQ已到账专属现金 ÷（1 + 买入费率）；不动用USD ETF或原配置现金。', 'VIX取严格早于决策日的收盘；订单在决策后的下一共同收盘成交。持有状态不变时，不重复买入。', '恢复后，比值 < 1 连续5次才重新启用退出计数。'] },
       relative_strength_rotation: { first: '首个共同交易日收盘，按原比例一次性建仓；三个批次也从原比例开始。', next: ['比较USD ETF与TQQQ的504日增长倍数：比值 > 1.25，本批转向USD；< 0.80，转向TQQQ；中间保留原方向。', '起始收盘复核当月批次，此后每月首个共同日更新一批；三批各占两只ETF股票资金的1/3。'], execution: ['只有三批合成目标变化才调仓；金额取决于两只ETF的持仓及专属现金，原配置现金不参与。', '下一共同收盘先卖出；回款到账后确定后续买单，再下一共同收盘买入。已有专属现金可先买。', '目标不变时不重复买入；不足505个共同收盘时保持原比例。'] },
       dual_risk_guard: { first: '首个共同交易日收盘，按原比例一次性建仓；此后由VIX与QQQ两道门管理TQQQ。', next: ['VIX门：比值 > 1.10 连续10次退出；等待至少5次且VIX回落30%，或比值 < 1 连续5次恢复。', 'QQQ门：低于200日均线且距252日高点跌至少20%，连续20次退出；高于均线连续3次恢复。'], execution: ['任一门退出就卖出全部TQQQ；两门都恢复，才用TQQQ专属现金 ÷（1 + 买入费率）买回。', 'VIX取决策日前收盘，QQQ可用决策日收盘；下一共同收盘成交。状态不变不重复买入，USD和原现金不参与。'] },
@@ -324,10 +304,10 @@
     };
     if (/^tranche_(6|12|24)$/.test(method)) {
       const count = Number(method.slice(8)); fraction = 1 / count;
-      info = { first: '本金分成' + count + '份，首个共同交易日投入第1份。', next: ['之后每月首个共同交易日投入1份，每份预算 ' + (M.finite(draft.initial) ? money(draft.initial / count) : '待填写本金') + '，均按原配置比例分配。', '总共只投入这' + count + '份；窗口结束前未到期的部分仍为待投入本金。'], execution: ['按月份执行，不需要等待涨跌条件。', '已投入部分继续持有，剩余本金不参加再平衡。'] };
+      info = { first: '本金分成' + count + '份，首个共同交易日投入第1份。', next: ['之后每月首个共同交易日投入1份，每份预算 ' + (M.finite(draft.initial) ? money(draft.initial / count) : '待填写本金') + '，均按原配置比例分配。', '未到期的本金保留为现金，不参加再平衡。'], execution: [] };
     }
-    if (!info) return '<p class="portfolio-purchase-pending">选择一种有效本金投入方式后显示具体买法。</p>';
-    if (method === 'ma200_hold' && draft.initial === 0) info = { ...info, next: ['初始本金为0时，此本金均线择时不开启。新增资金只按当前持续投入方式执行。'], execution: ['如需对新增资金使用均线条件，可在“持续投入方式”中选择对应方式。'] };
+    if (!info) return '<p class="portfolio-purchase-pending">' + (/^entry_(option|volatility|breadth|composite)$/.test(method) ? '原研究投入方式已撤回：未证明优于一次性投入，请重新选择本金投入方式。' : '请选择有效的本金投入方式。') + '</p>';
+    if (draft.initial === 0 && (method === 'lump_sum' || method === 'ma200_hold' || method === 'drawdown_ladder' || method.startsWith('tranche_'))) return '<p>初始本金为 0，仅执行持续投入。</p>';
     const raw = draft.positions || [], validWeights = raw.length && raw.every(p => M.finite(p.weight) && p.weight >= 0 && p.weight <= 100);
     const positions = validWeights ? raw.filter(p => p.weight > 0).map(p => ({ id: p.id, code: asset(p.id)?.code || p.id, name: asset(p.id)?.name || p.id, weight: p.weight / 100 })) : [];
     const weight = positions.reduce((sum, p) => sum + p.weight, 0);
@@ -343,14 +323,33 @@
       const parked = ['us:USD', 'us:TQQQ'].map((id, i) => ({ id, amount: usable * pairWeights[i] * reserve })).filter(p => p.amount > 0);
       quote = { orders, parked, originalCash: usable * Math.max(0, 1 - weight), fee: orders.reduce((total, order) => total + order.amount * fee, 0), total: draft.initial };
     }
-    const initialText = draft.initial === 0 ? '当前初始本金为0，不执行首次建仓；第一笔资金由持续投入设置决定。' : info.first;
-    const allocations = quote && draft.initial > 0 ? '<dl class="portfolio-purchase-amounts">' + quote.orders.map(order => '<div><dt>' + H.esc(order.code === 'USD' ? '买USD ETF' : '买' + order.code) + '</dt><dd>' + money(order.amount) + '</dd></div>').join('') + (opportunity ? quote.parked.map(p => '<div><dt>' + H.esc(p.id.replace('us:', '')) + '待加现金</dt><dd>' + money(p.amount) + '</dd></div>').join('') : '') + '<div><dt>' + (opportunity ? '原配置现金' : '本笔保留现金') + '</dt><dd>' + money(quote.originalCash) + '</dd></div><div><dt>本笔买入费</dt><dd>' + money(quote.fee) + '</dd></div></dl><p class="portfolio-purchase-caption">' + (info.conditional ? '上述为持有条件满足时的首笔金额。' : '') + '成交额、现金和交易费合计 ' + money(quote.total) + '，均来自本笔本金。</p>' : draft.initial === 0 ? '' : '<p class="portfolio-purchase-pending">补齐有效本金、标的权重和交易费率后，显示每只标的的首笔金额。</p>';
+    const initialText = draft.initial === 0 ? '初始本金为 0，不执行首次建仓。' : info.first;
+    let allocations = '';
+    if (quote && draft.initial > 0) {
+      const amounts = [
+        ...quote.orders.map(order => [order.code === 'USD' ? '买USD ETF' : '买' + order.code, order.amount]),
+        ...(opportunity ? quote.parked.map(p => [p.id.replace('us:', '') + '待加现金', p.amount]) : []),
+        ...(quote.originalCash > 0 ? [[opportunity ? '原配置现金' : '本笔保留现金', quote.originalCash]] : []),
+        ...(quote.fee > 0 ? [['本笔买入费', quote.fee]] : [])
+      ];
+      allocations = '<dl class="portfolio-purchase-amounts" aria-label="首笔金额">' + amounts.map(([label, amount]) => '<div><dt>' + H.esc(label) + '</dt><dd>' + money(amount) + '</dd></div>').join('') + '</dl>';
+      if (info.conditional) allocations += '<p class="portfolio-purchase-caption">以上金额以首日满足持有条件为前提。</p>';
+    } else if (draft.initial !== 0 && hasRequired) {
+      const missing = !M.finite(draft.initial) || draft.initial < 0 || draft.initial > 1e12 ? '请填写有效的初始本金。' :
+        !raw.length ? '添加持仓后可查看各标的首笔金额。' : !validWeights || !positions.length || weight > 1 + 1e-10 ? '请检查组合权重。' : '请检查买卖交易费率。';
+      allocations = '<p class="portfolio-purchase-pending">' + missing + '</p>';
+    }
     const required = opportunity ? hasRequired ? '' : '此方法需要USD ETF或TQQQ有正权重。' : systematicMethods.has(method) || method === 'qqq_bear_confirm' ? !positions.some(p => p.id === 'us:TQQQ') ? '此方法需要TQQQ有正权重。' : method === 'relative_strength_rotation' && !positions.some(p => p.id === 'us:USD') ? '三批轮动还需要USD ETF有正权重。' : '' : '';
-    const paragraphs = lines => lines.map(line => '<p>' + H.esc(line) + '</p>').join('');
+    const rules = info.next.concat(info.execution);
+    return (required ? '<p class="portfolio-purchase-pending">' + required + '</p>' : '') + '<p>' + H.esc(initialText) + '</p>' + allocations +
+      (rules.length ? '<ul class="portfolio-execution-rules" aria-label="执行规则">' + rules.map(line => '<li>' + H.esc(line) + '</li>').join('') + '</ul>' : '');
+  }
+  function contributionPlan() {
+    const method = draft.initialMethod, money = value => H.money(value, 2) + ' ' + currency().unit;
     const monthly = draft.monthly;
-    let income = '基础月预算为0，不追加外部资金。';
-    if (!M.finite(monthly) || monthly < 0) income = '填写有效基础月预算后显示持续投入金额。';
-    else if (monthly > 0) income = ({
+    let income = '预算为 0，不追加资金。';
+    if (!M.finite(monthly) || monthly < 0 || monthly > 1e10) return '填写有效的每月追加预算后显示投入金额。';
+    if (monthly > 0) income = ({
       dca_month: '每月首个共同交易日追加 ' + money(monthly) + '。',
       dca_quarter: '每季首个可投入的共同交易日追加本季预算，完整季度为 ' + money(monthly * 3) + '；首尾不足整季按窗口内月份计。',
       dca_year: '每年首个可投入的共同交易日追加本年预算，完整年度为 ' + money(monthly * 12) + '；首尾不足整年按窗口内月份计。',
@@ -358,30 +357,34 @@
       dca_ma_trend: '每月追加 ' + money(monthly) + '；前收盘不高于200日均线时减为 ' + money(monthly * .5) + '。',
       dca_ma_contrarian: '每月追加 ' + money(monthly) + '；前收盘不高于200日均线时增为 ' + money(monthly * 2) + '。'
     }[draft.contributionMethod] || '按所选持续投入方式执行。') + (draft.initial > 0 ? ' 从建仓后的下一月开始。' : ' 从首个模拟月份开始。');
-    if (monthly > 0 && opportunity) income += ' USD ETF与TQQQ的新增股票预算全部进入各自待加现金池，按每日分数买入；其他标的和原现金比例照常。';
+    if (monthly > 0 && opportunityMethods.has(method)) income += ' USD ETF与TQQQ的新增股票预算全部进入各自待加现金池，按每日分数买入；其他标的和原现金比例照常。';
     else if (monthly > 0 && systematicMethods.has(method)) income += ' 到账后按已执行的策略配置分配；不会因“持有状态”每天自动追加。';
-    return '<div class="portfolio-purchase-head"><h3>这笔钱怎么投入</h3><span>' + H.esc(P.initialMethods.find(([key]) => key === method)?.[1] || '') + '</span></div>' + (required ? '<p class="portfolio-purchase-pending">' + required + '</p>' : '') + '<div class="portfolio-purchase-grid"><section><h4>首次买入</h4><p>' + H.esc(initialText) + '</p>' + allocations + '</section><section><h4>后续触发</h4>' + paragraphs(info.next) + '</section><section><h4>金额与成交</h4>' + paragraphs(info.execution) + '</section></div><div class="portfolio-purchase-income"><strong>持续投入</strong><span>' + H.esc(income) + '</span></div>';
+    return income;
   }
   function syncPurchasePlan() {
-    const node = document.getElementById('portfolio-purchase-plan');
-    if (node && H && catalog) node.innerHTML = purchasePlanMarkup();
+    const initial = document.getElementById('portfolio-purchase-plan'), monthly = document.getElementById('portfolio-contribution-plan');
+    if (initial && H && catalog) initial.innerHTML = purchasePlanMarkup();
+    if (monthly && H) monthly.textContent = contributionPlan();
   }
   function settings() {
-    const benchmark = asset(draft.benchmarkId), hints = strategyHints();
-    const field = (label, control, hint = '') => '<div class="portfolio-field"><span>' + label + '</span>' + control + hint + '</div>';
-    const hint = (id, value) => '<small id="portfolio-' + id + '-hint" class="portfolio-strategy-hint">' + H.esc(value || '') + '</small>';
-    return '<div class="card portfolio-settings"><section class="portfolio-settings-section"><h2>资金与回测</h2><div class="portfolio-form-row portfolio-funding-row">' +
-      number('初始本金', 'initial', draft.initial, 1e12, '0.01', currency().unit) + number('每月追加预算', 'monthly', draft.monthly, 1e10, 'any', currency().unit) +
+    const benchmark = asset(draft.benchmarkId);
+    const field = (label, control) => '<div class="portfolio-field"><span>' + label + '</span>' + control + '</div>';
+    return '<div class="card portfolio-settings"><section class="portfolio-settings-section portfolio-investments" aria-label="资金投入">' +
+      '<div class="portfolio-investment-pair" role="group" aria-label="本金投入"><div class="portfolio-pair-fields">' +
+      number('初始本金', 'initial', draft.initial, 1e12, '0.01', currency().unit) +
+      field('本金投入方式', menu('initialMethod', '本金投入方式', P.initialMethods, draft.initialMethod)) +
+      '</div><div id="portfolio-purchase-plan" class="portfolio-purchase-plan">' + purchasePlanMarkup() + '</div></div>' +
+      '<div class="portfolio-investment-pair" role="group" aria-label="持续投入"><div class="portfolio-pair-fields">' +
+      number('每月追加预算', 'monthly', draft.monthly, 1e10, 'any', currency().unit) +
+      field('持续投入方式', menu('contributionMethod', '持续投入方式', P.contributionMethods, draft.contributionMethod)) +
+      '</div><p id="portfolio-contribution-plan" class="portfolio-contribution-plan">' + H.esc(contributionPlan()) + '</p></div></section>' +
+      '<section class="portfolio-settings-section"><h2>回测设置</h2><div class="portfolio-form-row portfolio-backtest-row">' +
       field('计价币种', menu('currency', '投入与计价币种', [['CNY', '人民币 CNY'], ['USD', '美元 USD']], draft.currency)) +
       field('回测区间', menu('years', '回测区间', [[1, '近1年'], [2, '近2年'], [3, '近3年'], [5, '近5年'], [10, '近10年'], [15, '近15年'], [20, '近20年'], ['common', '共同历史'], ['custom', '自定义区间']], draft.years)) +
-      field('对照标的', btn(H.esc(benchmark?.code || '不设置') + '<span>更换</span>', 'benchmark', 'portfolio-benchmark-button', 'id="portfolio-benchmark" aria-label="更换对照标的"')) + '</div>' +
+      field('对照标的', btn(H.esc(benchmark?.code || '不设置') + '<span>更换</span>', 'benchmark', 'portfolio-benchmark-button', 'id="portfolio-benchmark" aria-label="更换对照标的"')) +
+      field('再平衡', menu('rebalance', '再平衡周期', [['none', '不再平衡'], ['month', '每月'], ['quarter', '每季度'], ['year', '每年']], draft.rebalance)) + '</div>' +
       (draft.years === 'custom' ? '<div class="portfolio-dates"><label>开始日<input type="date" id="portfolio-start" data-portfolio-field="start" value="' + H.esc(draft.start) + '"></label><label>结束日<input type="date" id="portfolio-end" data-portfolio-field="end" value="' + H.esc(draft.end) + '"></label></div>' : '') +
-      '</section><section class="portfolio-settings-section"><h2>投入方式</h2><div class="portfolio-form-row portfolio-strategy-row">' +
-      field('本金投入方式', menu('initialMethod', '本金投入方式', P.initialMethods, draft.initialMethod), hint('initial', hints.initial)) +
-      field('持续投入方式', menu('contributionMethod', '持续投入方式', P.contributionMethods, draft.contributionMethod), hint('income', hints.income)) +
-      field('再平衡', menu('rebalance', '再平衡周期', [['none', '不再平衡'], ['month', '每月'], ['quarter', '每季度'], ['year', '每年']], draft.rebalance)) +
-      '</div><details id="portfolio-plan-detail" class="portfolio-plan-detail"' + (document.getElementById('portfolio-plan-detail')?.open ? ' open' : '') + '><summary>查看投入金额与执行规则</summary><div id="portfolio-purchase-plan" class="portfolio-purchase-plan">' + purchasePlanMarkup() + '</div></details></section>' +
-      taxSettings() + '</div>';
+      '</section>' + taxSettings() + '</div>';
   }
   function holdingRow(position, index) {
     const row = asset(position.id);
@@ -790,7 +793,8 @@
     if (!row) return H.card(title, '缺逐日规则记录', '<p class="portfolio-warning">请重新模拟以读取完整记录。</p>');
     const index = rows.indexOf(row), unit = currency(r.config).unit;
     const blocked = resultKey !== signature() ? '参数已改动，请先重新模拟' : r.config.tax?.liquidate ? '期末已清仓，不能延续账户' : running ? '正在更新行情' : '';
-    const action = btn('延续到最新行情', 'extend-latest', 'btn', 'id="portfolio-extend-latest"' + (blocked ? ' disabled title="' + H.esc(blocked) + '"' : ''));
+    const action = '<div class="actions">' + btn(opportunity ? '导出逐日加仓分数 CSV' : '导出逐日策略状态 CSV', 'export-daily', 'portfolio-result-link') +
+      btn('延续到最新行情', 'extend-latest', 'btn', 'id="portfolio-extend-latest"' + (blocked ? ' disabled title="' + H.esc(blocked) + '"' : '')) + '</div>';
     const calculation = '<dl>' + window.ChanghengPortfolioPdf.explainDaily(row).map(([label, text]) => '<div><dt>' + H.esc(label) + '</dt><dd>' + H.esc(text) + '</dd></div>').join('') + '</dl>';
     const body = '<div class="portfolio-daily-body"><div class="portfolio-daily-toolbar"><div class="portfolio-daily-date">' + btn('上一交易日', 'daily-prev', 'btn', index === 0 ? 'disabled' : '') +
       '<label>' + (opportunity ? '评分日期' : '状态日期') + '<input id="portfolio-daily-date" data-portfolio-field="indicator-date" type="date" value="' + row.day + '" min="' + rows[0].day + '" max="' + rows.at(-1).day + '"></label>' + btn('下一交易日', 'daily-next', 'btn', index === rows.length - 1 ? 'disabled' : '') + '</div>' +
@@ -910,14 +914,12 @@
   function results() {
     if (!result) return '<section class="portfolio-result-placeholder"><div><h2>还没有模拟结果</h2><p>' + (draft.positions.length ? '点击“开始模拟”查看组合走势和收益。' : '先添加标的并设置权重，再开始模拟。') + '</p></div><svg viewBox="0 0 460 135" aria-hidden="true"><path d="M3 120H457M3 80H457M3 40H457" stroke="#e0e5d7"/><path d="m3 101 37-13 37 14 38-28 37 7 38-22 38 12 37-31 37 5 40-26 38 6 40-23" fill="none" stroke="#96aa83" stroke-width="2"/><path d="m3 110 37-4 37 5 38-19 37 10 38-8 38-9 37 6 37-19 40 9 38-16 40 2" fill="none" stroke="#c3b291" stroke-width="1.5" stroke-dasharray="5 5"/></svg></section>';
     const r = result, strategy = P.strategyNames(r.config), tabs = resultTabs(r);
-    const title = [r.config.initial > 0 || tabs.some(([id]) => id === 'signals') ? strategy.initial : '', r.config.monthly > 0 ? strategy.contribution : ''].filter(Boolean).join(' ＋ ');
+    const method = [r.config.initial > 0 || tabs.some(([id]) => id === 'signals') ? strategy.initial : '', r.config.monthly > 0 ? strategy.contribution : ''].filter(Boolean).join(' ＋ ');
     const navigation = tabs.map(([id, label]) => btn(label, 'result-tab', 'portfolio-result-tab',
       'id="portfolio-result-tab-' + id + '" data-value="' + id + '" role="tab" aria-controls="portfolio-result-content" aria-selected="' + (resultTab === id) + '" tabindex="' + (resultTab === id ? 0 : -1) + '"')).join('');
-    const tools = '<details class="select-menu short portfolio-report-menu"><summary>报告</summary><div class="select-menu-list">' +
-      btn('区间与来源', 'sources', 'select-menu-option') +
-      btn(exportingPdf ? '正在生成 PDF…' : '导出 PDF', 'export-pdf', 'select-menu-option', running || exportingPdf ? 'disabled' : '') +
-      btn('导出走势 CSV', 'export-result', 'select-menu-option') + btn('导出持仓 CSV', 'export-holdings', 'select-menu-option') +
-      (r.systematic?.daily?.length ? btn(opportunityMethods.has(r.config.initialMethod) ? '导出逐日加仓分数 CSV' : '导出逐日策略状态 CSV', 'export-daily', 'select-menu-option') : '') + '</div></details>';
+    const actions = '<div class="portfolio-result-actions">' + btn('区间与来源', 'sources', 'portfolio-result-link') +
+      btn(exportingPdf ? '正在生成 PDF…' : '导出 PDF', 'export-pdf', 'portfolio-result-link', running || exportingPdf ? 'disabled' : '') +
+      btn('导出走势 CSV', 'export-result', 'portfolio-result-link') + btn('导出持仓 CSV', 'export-holdings', 'portfolio-result-link') + '</div>';
     let body;
     if (resultTab === 'periods') body = snapshots() + yearlyResults(r);
     else if (resultTab === 'holdings') body = resultHoldings(r);
@@ -928,9 +930,8 @@
         chart() + (tabs.some(([id]) => id === 'signals') ? '' : lumpSumComparison()) +
         (usesMa && r.strategy.insufficientMaDays ? '<div class="portfolio-warning">均线不足200个共同交易日的阶段按常规投入，未将缺历史视为下跌信号。</div>' : '');
     }
-    return '<div class="portfolio-results"><div class="portfolio-result-head"><div><h2>' + H.esc(title) + '</h2>' +
-      (resultKey !== signature() ? '<span class="small muted">上次模拟结果</span>' : '') + '</div>' + tools + '</div>' +
-      '<div class="portfolio-result-tabs" role="tablist" aria-label="模拟结果分区">' + navigation + '</div>' +
+    return '<div class="portfolio-results"><div class="portfolio-result-bar"><div class="portfolio-result-tabs" role="tablist" aria-label="模拟结果分区">' + navigation + '</div>' +
+      '<p class="portfolio-result-method"><span>投入方式</span> ' + H.esc(method) + (resultKey !== signature() ? ' <small>上次模拟结果</small>' : '') + '</p>' + actions + '</div>' +
       (r.catalogRefresh?.available === false ? '<p class="portfolio-warning">' + H.esc(r.catalogRefresh.missing) + '</p>' : '') +
       '<div class="portfolio-result-content" id="portfolio-result-content" role="tabpanel" aria-labelledby="portfolio-result-tab-' + resultTab + '">' + body + '</div></div>';
   }
@@ -965,10 +966,6 @@
     closeBenchmark(); update();
     document.getElementById('portfolio-benchmark')?.focus({ preventScroll: true });
   }
-  const sideNavigation = window.matchMedia?.('(min-width: 1360px)');
-  sideNavigation?.addEventListener('change', () => {
-    document.querySelector('#portfolio-workspace [role="tablist"]')?.setAttribute('aria-orientation', sideNavigation.matches ? 'vertical' : 'horizontal');
-  });
   function workspaceBar() {
     const tabs = workspaceTabs.map(([id, name]) => {
       const active = id === workspaceTab;
@@ -978,7 +975,7 @@
     const primary = !draft.positions.length && workspaceTab !== 'holdings'
       ? btn('添加标的', 'tab', 'btn primary', 'data-value="holdings"')
       : btn(running ? '正在模拟…' : '开始模拟', 'run', 'btn primary', running || exportingPdf || !draft.positions.length ? 'disabled' : '');
-    return '<div class="portfolio-workspace-bar"><div class="portfolio-workspace-tabs" role="tablist" aria-label="组合模拟" aria-orientation="' + (sideNavigation?.matches ? 'vertical' : 'horizontal') + '">' + tabs + '</div><div class="portfolio-run-controls"><span id="portfolio-dirty" role="status">' + (result && resultKey !== signature() ? '参数已改动，重新模拟后生效' : '') + '</span>' + primary + '</div></div>';
+    return '<div class="portfolio-workspace-bar"><div class="portfolio-workspace-tabs" role="tablist" aria-label="组合模拟" aria-orientation="horizontal">' + tabs + '</div>' + primary + '</div>';
   }
   function workspaceContent() {
     if (workspaceTab === 'settings') return pickerMode === 'benchmark' ? library() : settings();
@@ -992,7 +989,7 @@
     if (!catalog) return '<section class="card pad"><h2>' + (loadError ? '标的库加载失败' : '正在载入组合标的库') + '</h2><p class="muted">' + H.esc(loadError || 'ETF、个股与基金每日历史按需载入。') + '</p>' + (loadError ? btn('重新加载', 'retry', 'btn primary') : '') + '</section>';
     const previousCalculation = document.getElementById('portfolio-score-calculation');
     if (previousCalculation) calculationOpen = previousCalculation.open;
-    return '<div id="portfolio-workspace">' + workspaceBar() + '<div class="portfolio-workspace-body">' +
+    return '<div id="portfolio-workspace">' + workspaceBar() + '<div class="portfolio-workspace-body"><p id="portfolio-dirty" role="status">' + (result && resultKey !== signature() ? '参数已改动，重新模拟后生效' : '') + '</p>' +
       (error || importError ? '<p class="portfolio-workspace-error negative" role="alert">' + H.esc(error || importError) + '</p>' : '') +
       workspaceTabs.map(([id]) => '<div id="portfolio-panel-' + id + '" role="tabpanel" aria-labelledby="portfolio-tab-' + id + '"' +
         (id === workspaceTab ? '>' + workspaceContent() : ' hidden>') + '</div>').join('') + '</div></div>';
@@ -1066,11 +1063,6 @@
   }
   function handleAction(button) {
     const act = button.dataset.action.replace('portfolio-', ''), val = button.dataset.value;
-    const reportMenu = button.closest?.('.portfolio-report-menu');
-    if (reportMenu) {
-      reportMenu.open = false;
-      reportMenu.querySelector('summary').focus({ preventScroll: true });
-    }
     switch (act) {
       case 'tab': return openWorkspaceTab(val);
       case 'result-tab': return openResultTab(val);
@@ -1174,7 +1166,6 @@
       else draft[key] = el.value.trim() ? Number(el.value) : key === 'monthly' && !el.validity.badInput ? 0 : NaN;
       touch();
       if (key === 'initial') syncBudget(el);
-      if (['initial', 'monthly'].includes(key)) syncStrategyHints();
       if (key.startsWith('tax-')) syncTax();
       return false;
     }
