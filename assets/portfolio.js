@@ -264,8 +264,8 @@
     }).join('');
     return '<div class="portfolio-tax-body"><div class="portfolio-tax-grid">' +
       number('美股卖出盈利税率', 'tax-usCapitalGains', draft.tax.usCapitalGains, 100, 'any', '%') + number('美股股息总税负', 'tax-usDividend', draft.tax.usDividend, 100, 'any', '%') +
-      '</div><details class="portfolio-tax-overrides"><summary>境内标的税率</summary><div class="portfolio-tax-grid">' + domestic + '</div></details>' +
-      (overrides ? '<details class="portfolio-tax-overrides"><summary>单只标的税率</summary>' + overrides + '</details>' : '') + '</div>';
+      '</div><div class="portfolio-tax-details"><details class="portfolio-tax-overrides"><summary>境内标的税率</summary><div class="portfolio-tax-grid">' + domestic + '</div></details>' +
+      (overrides ? '<details class="portfolio-tax-overrides"><summary>单只标的税率</summary>' + overrides + '</details>' : '') + '</div></div>';
   }
   function taxSettings() {
     const mode = selectedTaxMode();
@@ -274,12 +274,12 @@
     const tax = choices('税务情景', [['mainland', '大陆居民假设'], ['zero', '不计税'], ['custom', '手动设置']], mode, 'tax-');
     const settlement = choices('期末处理', [['hold', '保留持仓'], ['sell', '全部卖出']], draft.tax.liquidate ? 'sell' : 'hold', 'settle-');
     return '<section class="portfolio-settings-section portfolio-assumption-row"><div class="portfolio-settings-heading"><h2>税费与期末处理</h2>' +
-      btn('税费口径', 'tax-method', 'text-link') + '</div><div class="portfolio-assumption-body"><div class="portfolio-field portfolio-tax-mode"><span>模拟税率</span>' + tax +
-      (mode === 'zero' ? '' : '<small id="portfolio-tax-summary">' + H.esc(taxSummary()) + '</small>') + '</div>' +
-      (mode === 'custom' ? manualTaxFields() : '') +
+      btn('税费口径', 'tax-method', 'text-link') + '</div><div class="portfolio-tax-settings"><div class="portfolio-tax-controls"><div class="portfolio-field portfolio-tax-mode"><span>模拟税率</span>' + tax +
+      (mode === 'zero' ? '' : '<small id="portfolio-tax-summary">' + H.esc(taxSummary()) + '</small>') +
       (mode !== 'zero' ? '<p id="portfolio-tax-assumption" class="portfolio-tax-assumption"' + (hasLongHoldTaxAssumption() ? '' : ' hidden') + '>A股股息按长期持有0%估算，未自动计入短期卖出补税。</p>' : '') +
-      '<div class="portfolio-cost-row">' + number('买卖交易费率', 'transactionFee', draft.transactionFee, 5, 'any', '%') +
-      '<div class="portfolio-field"><span>期末处理</span>' + settlement + '<small id="portfolio-settlement-note">' + H.esc(settlementHint()) + '</small></div></div></div></section>';
+      '</div>' + (mode === 'custom' ? manualTaxFields() : '') +
+      number('买卖交易费率', 'transactionFee', draft.transactionFee, 5, 'any', '%') +
+      '<div class="portfolio-field portfolio-settlement"><span>期末处理</span>' + settlement + '<small id="portfolio-settlement-note">' + H.esc(settlementHint()) + '</small></div></div></div></section>';
   }
   function opportunityTerms(method) {
     return method === 'opportunity_discount_20' ? {reserve: .2, threshold: 50} : {reserve: .1, threshold: 35};
