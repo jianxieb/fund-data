@@ -273,11 +273,12 @@
       options.map(([key, title]) => btn(title, action + key, selected === key ? 'active' : '', 'aria-pressed="' + (selected === key) + '"')).join('') + '</div>';
     const tax = choices('税务情景', [['mainland', '大陆居民假设'], ['zero', '不计税'], ['custom', '手动设置']], mode, 'tax-');
     const settlement = choices('期末处理', [['hold', '保留持仓'], ['sell', '全部卖出']], draft.tax.liquidate ? 'sell' : 'hold', 'settle-');
-    return '<section class="portfolio-settings-section portfolio-assumption-row"><div class="portfolio-settings-heading"><h2>税费与期末处理</h2>' +
-      btn('税费口径', 'tax-method', 'text-link') + '</div><div class="portfolio-tax-settings"><div class="portfolio-tax-controls"><div class="portfolio-field portfolio-tax-mode"><span>模拟税率</span>' + tax +
+    return '<section class="portfolio-settings-section portfolio-tax-settings"><div class="portfolio-tax-controls">' +
+      '<div class="portfolio-tax-group"><h2>税费与期末处理</h2><div class="portfolio-field portfolio-tax-mode"><div class="portfolio-tax-label"><span>模拟税率</span>' +
+      btn('税费口径', 'tax-method', 'text-link', 'aria-haspopup="dialog"') + '</div>' + tax +
       (mode === 'zero' ? '' : '<small id="portfolio-tax-summary">' + H.esc(taxSummary()) + '</small>') +
       (mode !== 'zero' ? '<p id="portfolio-tax-assumption" class="portfolio-tax-assumption"' + (hasLongHoldTaxAssumption() ? '' : ' hidden') + '>A股股息按长期持有0%估算，未自动计入短期卖出补税。</p>' : '') +
-      '</div>' + (mode === 'custom' ? manualTaxFields() : '') +
+      '</div>' + (mode === 'custom' ? manualTaxFields() : '') + '</div><div class="portfolio-fee-settlement">' +
       number('买卖交易费率', 'transactionFee', draft.transactionFee, 5, 'any', '%') +
       '<div class="portfolio-field portfolio-settlement"><span>期末处理</span>' + settlement + '<small id="portfolio-settlement-note">' + H.esc(settlementHint()) + '</small></div></div></div></section>';
   }
