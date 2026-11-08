@@ -267,19 +267,20 @@
       '</div><div class="portfolio-tax-details"><details class="portfolio-tax-overrides"><summary>境内标的税率</summary><div class="portfolio-tax-grid">' + domestic + '</div></details>' +
       (overrides ? '<details class="portfolio-tax-overrides"><summary>单只标的税率</summary>' + overrides + '</details>' : '') + '</div></div>';
   }
-  function settingChoices(label, options, selected, action) {
-    return '<div class="segmented portfolio-setting-choices" role="group" aria-label="' + label + '">' +
-      options.map(([key, title]) => btn(title, action + key, selected === key ? 'active' : '', 'aria-pressed="' + (selected === key) + '"')).join('') + '</div>';
-  }
   function taxSettings() {
     const mode = selectedTaxMode();
-    const tax = settingChoices('税务情景', [['mainland', '大陆居民假设'], ['zero', '不计税'], ['custom', '手动设置']], mode, 'tax-');
-    return '<section class="card portfolio-settings-section" aria-labelledby="portfolio-tax-title"><h2 id="portfolio-tax-title">模拟税率</h2>' +
-      '<div class="portfolio-field portfolio-tax-mode">' + tax +
+    const choices = (label, options, selected, action) => '<div class="segmented portfolio-setting-choices" role="group" aria-label="' + label + '">' +
+      options.map(([key, title]) => btn(title, action + key, selected === key ? 'active' : '', 'aria-pressed="' + (selected === key) + '"')).join('') + '</div>';
+    const tax = choices('税务情景', [['mainland', '大陆居民假设'], ['zero', '不计税'], ['custom', '手动设置']], mode, 'tax-');
+    const settlement = choices('期末处理', [['hold', '保留持仓'], ['sell', '全部卖出']], draft.tax.liquidate ? 'sell' : 'hold', 'settle-');
+    return '<section class="portfolio-settings-section portfolio-tax-settings" aria-labelledby="portfolio-tax-title"><h2 id="portfolio-tax-title">税费与期末处理</h2><div class="portfolio-tax-controls">' +
+      '<div class="portfolio-tax-group"><h3>模拟税率</h3><div class="portfolio-tax-options"><div class="portfolio-field portfolio-tax-mode">' + tax +
       (mode === 'zero' ? '' : '<small id="portfolio-tax-summary">' + H.esc(taxSummary()) + '</small>') +
       (mode !== 'zero' ? '<p id="portfolio-tax-assumption" class="portfolio-tax-assumption"' + (hasLongHoldTaxAssumption() ? '' : ' hidden') + '>A股股息按长期持有0%估算，未自动计入短期卖出补税。</p>' : '') +
       btn('税费口径', 'tax-method', 'text-link portfolio-tax-method', 'aria-haspopup="dialog"') + '</div>' +
-      (mode === 'custom' ? manualTaxFields() : '') + '</section>';
+      (mode === 'custom' ? manualTaxFields() : '') + '</div></div><div class="portfolio-fee-settlement">' +
+      number('买卖交易费率', 'transactionFee', draft.transactionFee, 5, 'any', '%') +
+      '<div class="portfolio-field portfolio-settlement"><span>期末处理</span>' + settlement + '<small id="portfolio-settlement-note">' + H.esc(settlementHint()) + '</small></div></div></div></section>';
   }
   function opportunityTerms(method) {
     return method === 'opportunity_discount_20' ? {reserve: .2, threshold: 50} : {reserve: .1, threshold: 35};
@@ -365,33 +366,25 @@
   function syncPurchasePlan() {
     const initial = document.getElementById('portfolio-purchase-plan'), monthly = document.getElementById('portfolio-contribution-plan');
     if (initial && H && catalog) initial.innerHTML = purchasePlanMarkup();
-    if (monthly && H) {
-      monthly.className = contributionNoteClass();
-      monthly.textContent = contributionPlan();
-    }
-  }
-  function contributionNoteClass() {
-    return 'portfolio-contribution-plan' + (draft.monthly === 0 ? ' portfolio-budget-note' : '');
+    if (monthly && H) monthly.textContent = contributionPlan();
   }
   function settings() {
     const field = (label, control) => '<div class="portfolio-field"><span>' + label + '</span>' + control + '</div>';
     return '<div class="portfolio-settings"><section class="card portfolio-settings-section portfolio-strategy-settings" aria-labelledby="portfolio-strategy-settings-title"><h2 id="portfolio-strategy-settings-title">交易策略</h2>' +
-      '<div class="portfolio-strategy-grid"><div class="portfolio-decision" role="group" aria-label="本金投入">' +
+      '<div class="portfolio-decision" role="group" aria-label="本金投入">' +
       field('本金投入方式', menu('initialMethod', '本金投入方式', P.initialMethods, draft.initialMethod)) +
       number('初始本金', 'initial', draft.initial, 1e12, '0.01', currency().unit) +
       '<div id="portfolio-purchase-plan" class="portfolio-purchase-plan">' + purchasePlanMarkup() + '</div></div>' +
       '<div class="portfolio-decision" role="group" aria-label="持续投入" aria-describedby="portfolio-contribution-plan">' +
       field('持续投入方式', menu('contributionMethod', '持续投入方式', P.contributionMethods, draft.contributionMethod)) +
       number('每月追加预算', 'monthly', draft.monthly, 1e10, 'any', currency().unit) +
-      '<p id="portfolio-contribution-plan" class="' + contributionNoteClass() + '">' + H.esc(contributionPlan()) + '</p></div>' +
-      field('再平衡周期', menu('rebalance', '再平衡周期', [['none', '不再平衡'], ['month', '每月'], ['quarter', '每季度'], ['year', '每年']], draft.rebalance)) + '</div></section>' +
-      '<section class="card portfolio-settings-section" aria-labelledby="portfolio-conditions-title"><h2 id="portfolio-conditions-title">回测条件</h2><div class="portfolio-conditions"><div><div class="portfolio-period-fields">' +
+      '<p id="portfolio-contribution-plan" class="portfolio-contribution-plan">' + H.esc(contributionPlan()) + '</p></div>' +
+      '<div class="portfolio-decision">' + field('再平衡周期', menu('rebalance', '再平衡周期', [['none', '不再平衡'], ['month', '每月'], ['quarter', '每季度'], ['year', '每年']], draft.rebalance)) + '</div></section>' +
+      '<div class="card portfolio-model-settings"><section class="portfolio-settings-section" aria-labelledby="portfolio-conditions-title"><h2 id="portfolio-conditions-title">回测条件</h2><div class="portfolio-backtest-row">' +
       field('回测区间', menu('years', '回测区间', [[1, '近1年'], [2, '近2年'], [3, '近3年'], [5, '近5年'], [10, '近10年'], [15, '近15年'], [20, '近20年'], ['common', '共同历史'], ['custom', '自定义区间']], draft.years)) +
       field('计价币种', menu('currency', '投入与计价币种', [['CNY', '人民币 CNY'], ['USD', '美元 USD']], draft.currency)) + '</div>' +
-      (draft.years === 'custom' ? '<div class="portfolio-period-fields portfolio-dates"><label class="portfolio-field"><span>开始日</span><input type="date" id="portfolio-start" data-portfolio-field="start" value="' + H.esc(draft.start) + '"></label><label class="portfolio-field"><span>结束日</span><input type="date" id="portfolio-end" data-portfolio-field="end" value="' + H.esc(draft.end) + '"></label></div>' : '') +
-      '</div><div class="portfolio-fee-settlement">' + number('买卖交易费率', 'transactionFee', draft.transactionFee, 5, 'any', '%') +
-      '<div class="portfolio-field"><span>期末处理</span>' + settingChoices('期末处理', [['hold','保留持仓'],['sell','全部卖出']], draft.tax.liquidate ? 'sell' : 'hold', 'settle-') +
-      '<small id="portfolio-settlement-note">' + H.esc(settlementHint()) + '</small></div></div></div></section>' + taxSettings() + '</div>';
+      (draft.years === 'custom' ? '<div class="portfolio-dates"><label>开始日<input type="date" id="portfolio-start" data-portfolio-field="start" value="' + H.esc(draft.start) + '"></label><label>结束日<input type="date" id="portfolio-end" data-portfolio-field="end" value="' + H.esc(draft.end) + '"></label></div>' : '') +
+      '</section>' + taxSettings() + '</div></div>';
   }
   function holdingRow(position, index) {
     const row = asset(position.id);
