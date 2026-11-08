@@ -77,7 +77,11 @@ try {
   await js('document.fonts.ready.then(()=>new Promise(done=>requestAnimationFrame(()=>requestAnimationFrame(()=>done(true)))))');
   const geometry = await js(`(()=>{const box=s=>{const r=document.querySelector(s)?.getBoundingClientRect();return r&&[r.x,r.y,r.width,r.height]};
     return { viewport:[innerWidth,innerHeight],dpr:devicePixelRatio,layoutWidth:document.body.getBoundingClientRect().width,
-      sidebar:box('.sidebar'),topbar:box('.topbar'),workspace:box('#portfolio-workspace'),firstCard:box('#portfolio-workspace .card') };})()`);
+      sidebar:box('.sidebar'),sidebarQuality:box('.sidebar-bottom a[href="#quality"]'),topbar:box('.topbar'),workspace:box('#portfolio-workspace'),firstCard:box('#portfolio-workspace .card') };})()`);
+  if (width > 650) {
+    const link = geometry.sidebarQuality;
+    if (!link || !link[2] || !link[3] || link[1] < 0 || link[1] + link[3] > height) throw new Error('Lower-left data and methods link is missing or outside the viewport');
+  }
   const { data } = await page('Page.captureScreenshot', { format:'png', fromSurface:true, captureBeyondViewport:false });
   const png = Buffer.from(data, 'base64'), pixelSize = [png.readUInt32BE(16), png.readUInt32BE(20)];
   if (pixelSize[0] !== Math.round(width*dpr) || pixelSize[1] !== Math.round(height*dpr)) throw new Error('Unexpected PNG dimensions: ' + pixelSize);

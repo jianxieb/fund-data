@@ -7,12 +7,12 @@
   <meta name="theme-color" content="#233d32">
   <title>长衡 · 全球投资研究工作台</title>
   <link rel="icon" type="image/svg+xml" href="assets/brand-mark.svg">
-  <link rel="stylesheet" href="assets/style.css?v=7fc34baef7f5">
+  <link rel="stylesheet" href="assets/style.css?v=fa6da2221c13">
   <link rel="stylesheet" href="assets/table-scroll.css?v=8ed78573d567">
   <link rel="stylesheet" href="assets/investment-tax.css?v=ffdad2c97c8e">
   <link rel="stylesheet" href="assets/etf-distributions.css?v=c8831a2efcf8">
   <link rel="stylesheet" href="assets/market-history.css?v=5b4bbc469806">
-  <link rel="stylesheet" href="assets/global-finance.css?v=e94ac57f1150">
+  <link rel="stylesheet" href="assets/global-finance.css?v=7719f7648c2a">
   <link rel="stylesheet" href="assets/holding-period.css?v=e0939c6dbdbe">
   <link rel="stylesheet" href="assets/return-comparison.css?v=322381bd940f">
   <link rel="stylesheet" href="assets/financial-events.css?v=79f77cf7122d">
@@ -65,7 +65,7 @@
   <script defer src="data/potential-screening.js?v=4bad63c6397a"></script>
   <script defer src="assets/potential-model.js?v=a085ceb5c458"></script>
   <script defer src="assets/potential-stocks.js?v=b85104121dd9"></script>
-  <script defer src="assets/app.js?v=8c0f6e7df210"></script>
+  <script defer src="assets/app.js?v=61584096f410"></script>
 </head>
 <body>
   <a class="skip" href="#main">跳转到主要内容</a>
@@ -90,13 +90,18 @@
       <a href="#return-comparison" data-route="return-comparison"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v16h17M6 16l4-6 4 3 6-8M6 18l6-3 4 2 4-5"/></svg><span>收益对比</span></a>
       <a href="#portfolio" data-route="portfolio"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v9h9A9 9 0 0 0 12 3ZM8.5 3.7A9 9 0 1 0 20.3 15.5H8.5Z"/></svg><span>组合模拟</span></a>
     </nav>
+    <div class="sidebar-bottom">
+      <a href="#quality" data-route="quality"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6ZM15 3v5h4M9 12h7M9 16h5"/></svg><span>数据与方法</span><span id="quality-dot" class="status-dot" aria-hidden="true"></span></a>
+      <p>理解市场，检验方案。<br><span>资产 · 风险 · 成本</span></p>
+    </div>
   </aside>
   <div class="app-shell">
     <header class="topbar">
       <span id="breadcrumb">研究总览</span>
-      <div class="top-actions"><a class="quiet" href="#quality" data-route="quality"><span id="quality-dot" class="status-dot" aria-hidden="true"></span>数据状态 ↗</a></div>
+      <div class="top-actions"><a class="quiet" href="#quality-status"><span class="status-dot" aria-hidden="true"></span>数据状态 ↗</a></div>
     </header>
     <main id="main" tabindex="-1"></main>
+    <footer class="footer"><span>长衡 · 全球投资研究工作台</span><a href="#quality-method">数据来源与研究方法</a></footer>
   </div>
   <dialog id="dialog" aria-labelledby="dialog-title"></dialog>
   <div id="toast" role="status" aria-live="polite"></div>
