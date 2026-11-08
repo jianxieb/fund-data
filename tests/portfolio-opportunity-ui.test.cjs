@@ -14,15 +14,16 @@ const catalog = catalogContext.PORTFOLIO_CATALOG;
 const historyUrl = id => catalog.assets.find(a => a.id === id).historyUrl;
 const money = value => Number(value).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-function setup(method, { weights = [30, 30], end = '2024-01-02', forbidden = [] } = {}) {
+function setup(method, { weights = [30, 30], start = '2014-01-02', end = '2024-01-02', fee = .1, forbidden = [] } = {}) {
   const config = { positions: [{ id: 'us:USD', weight: weights[0] }, { id: 'us:TQQQ', weight: weights[1] }],
     currency: 'CNY', initial: 100000, monthly: 0, initialMethod: method, contributionMethod: 'dca_month',
-    rebalance: 'none', transactionFee: .1, years: 'custom', start: '2014-01-02', end,
+    rebalance: 'none', transactionFee: fee, years: 'custom', start, end,
     benchmarkId: '', tax: { ...P.taxConfig(), usCapitalGains: 20, usDividend: 20 } };
-  const calls = [], downloads = [], accounts = [];
+  const calls = [], downloads = [], accounts = [], runs = [];
   // The real account and fee engine runs once. Historical snapshot windows are
   // a separate model concern and would repeat the same integration work here.
   const model = { ...P, simulate(input) { const result = P.simulate(input);
+    runs.push(result);
     if (input.config.initialMethod === method) accounts.push(result); return result;
   }, simulateWindows: () => [] };
   const context = { window: { Changheng: M, ChanghengPortfolioModel: model, ChanghengPortfolioPdf: Pdf,
@@ -42,8 +43,59 @@ function setup(method, { weights = [30, 30], end = '2024-01-02', forbidden = [] 
   const view = () => ui.view(helpers);
   view();
   const action = (name, value) => ui.handleAction({ dataset: { action: 'portfolio-' + name, value } });
-  return { ui, view, action, calls, downloads, accounts };
+  const selectMethod = value => ui.handleAction({ dataset: { action: 'portfolio-select', field: 'initialMethod', value } });
+  return { ui, view, action, selectMethod, calls, downloads, accounts, runs };
 }
+
+test('switching from the dual risk gate to each discount rule shows only its own trades and returns', async () => {
+  const forbidden = [], u = setup('dual_risk_guard', {weights: [0, 30], start: '2010-02-11', end: '2010-06-30', fee: 0, forbidden});
+  await u.action('run');
+  const original = u.runs[0];
+  assert.equal(original.curve[0].positionPrincipal, 30000);
+  const results = [];
+  for (const [method, name, principal, reserve, threshold] of [
+    ['opportunity_discount_10', '低位评分加仓·10%预留', 27000, 3000, 35],
+    ['opportunity_discount_20', '低位评分加仓·20%预留', 24000, 6000, 50]
+  ]) {
+    await u.action('tab', 'settings'); await u.selectMethod(method); await u.action('tab', 'results');
+    assert.match(u.view(), /尚无本策略的模拟结果/);
+    assert.doesNotMatch(u.view(), /portfolio-result-summary|data-portfolio-plot|portfolio-export-pdf/);
+    const count = u.downloads.length;
+    for (const action of ['export-result', 'export-holdings', 'export-daily']) await u.action(action);
+    assert.equal(u.downloads.length, count);
+    // A failed retry must never present the previous strategy's 30,000 / 27,000 as this one's first purchase.
+    forbidden.push('data/portfolio/entry-context.json');
+    await u.action('run'); assert.match(u.view(), /role="alert"/);
+    assert.doesNotMatch(u.view(), /portfolio-result-summary|仍显示上次成功/);
+    forbidden.pop();
+    const n = u.runs.length;
+    await u.action('run');
+    const r = u.runs[n]; results.push(r);
+    assert.equal(r.systematic.method, method);
+    assert.equal(r.transactions.find(t => t.reason === 'initial').amount, principal);
+    assert.equal(r.curve[0].positionPrincipal, principal);
+    assert.equal(r.systematic.daily[0].metadata.opportunity.threshold, threshold);
+    assert.deepEqual(r.systematic.daily[0].indicators.map(i => i.id), ['us:TQQQ']);
+    const report = Pdf.layout(Pdf.snapshot(r, catalog), {measureText: s => ({ width: [...s].length * 10 })});
+    const text = report.ops.filter(op => op.type === 'text').map(op => op.value).join('');
+    assert.ok(text.includes('QQQ美元复权价、VIX/VIX3M · 买入门槛 ' + threshold + ' 分'));
+    assert.ok(u.view().includes('class="portfolio-run-strategy">' + name));
+    assert.ok(u.view().includes('<dt>首日实际持仓</dt><dd><span>' + money(principal) + ' 元'));
+    assert.ok(u.view().includes('待加仓现金 ' + money(reserve) + ' 元'));
+    assert.ok(u.view().includes(money(r.profit)));
+  }
+  assert.notEqual(results[0].value, results[1].value);
+  assert.notEqual(results[0].annualReturn, results[1].annualReturn);
+  assert.notEqual(...results.map(r => r.transactions.find(t => t.reason === r.systematic.method && t.side === 'buy').day));
+  // If the selected rule changes during a data refresh, retain the last matching successful ledger.
+  const n = u.runs.length;
+  await u.action('tab', 'settings'); await u.selectMethod('opportunity_discount_10');
+  const inflight = u.action('run');
+  await u.selectMethod('opportunity_discount_20'); await inflight;
+  await u.action('tab', 'results');
+  assert.equal(u.runs.length, n);
+  assert.ok(u.view().includes('<dt>首日实际持仓</dt><dd><span>24,000.00 元'));
+});
 
 for (const [method, weights] of [['opportunity_discount_10', [30, 30]], ['opportunity_discount_20', [20, 40]], ['opportunity_mixed_10', [40, 20]]]) {
   test(method + ' exposes real first buys, expandable score calculations and separate budget exports', async () => {

@@ -802,7 +802,7 @@
         sum(pairWeights.map((w, i) => w * (scoreLegs[i]?.score || 0))) / sum(pairWeights) : null;
       const indicator = opportunity ? state.missing ? null : weightedScore : rotation || !valid ? null : allowed ? 100 : 0;
       const indicators = opportunity ? pairIds.map((id, i) => ({ id, label: (i ? 'TQQQ' : 'USD ETF') + '加仓分数',
-        value: state.missing ? null : scoreLegs[i]?.score ?? null, unit: 'points', kind: 'buy_score', basis: 'opportunity_rule' })) : rotation ? ['us:USD', 'us:TQQQ'].map((id, i) => ({ id,
+        value: state.missing ? null : scoreLegs[i]?.score ?? null, unit: 'points', kind: 'buy_score', basis: 'opportunity_rule' })).filter((_, i) => pairWeights[i] > 0) : rotation ? ['us:USD', 'us:TQQQ'].map((id, i) => ({ id,
         label: (i ? 'TQQQ' : 'USD ETF') + '股票预算分配', value: valid ? state.targetShares[i] * 100 : null,
         unit: '%', kind: 'allocation_share', basis: 'pair_stock_budget' })) : [{ id: 'us:TQQQ',
         label: 'TQQQ持仓状态', value: indicator, unit: 'state_code', kind: 'holding_state', basis: 'holding_permission' }];

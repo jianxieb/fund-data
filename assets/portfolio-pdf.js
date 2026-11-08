@@ -231,7 +231,10 @@
     section('策略与组合');
     const benchmark = assets.get(cfg.benchmarkId);
     const strategy = P.strategyNames(cfg);
-    const signalBasis = ({ vix_panic_reentry: 'Cboe VIX/VIX3M · 严格早于决策日', relative_strength_rotation: '实际USD/TQQQ美元复权价 · 三批复核',
+    const state = r.systematic?.state?.metadata, rule = state?.opportunity;
+    const signalBasis = rule ? rule.legs.filter(leg => r.holdings.some(h => h.id === leg.id)).map(leg => leg.proxyId.slice(3)).join('、') +
+      '美元复权价' + (state.vixDay ? '、VIX/VIX3M' : '') + ' · 买入门槛 ' + rule.threshold + ' 分' :
+      ({ vix_panic_reentry: 'Cboe VIX/VIX3M · 严格早于决策日', relative_strength_rotation: '实际USD/TQQQ美元复权价 · 三批复核',
       dual_risk_guard: 'Cboe VIX/VIX3M与实际QQQ美元复权价', qqq_bear_confirm: '实际QQQ美元复权价 · 前共同收盘',
       cash_topup: '前共同收盘的实际账户持仓及现金' })[cfg.initialMethod] || '目标组合 · 前共同交易日收盘';
     const years = typeof cfg.years === 'number' ? '近' + cfg.years + '年' : cfg.years === 'common' ? '共同历史' : '自定义区间';

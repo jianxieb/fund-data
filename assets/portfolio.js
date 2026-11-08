@@ -36,8 +36,10 @@
         'data-value="' + id + '" aria-pressed="' + (id === draft.dividendPolicy) + '"')).join('') + '</div></div>';
   }
   function update() { H.render(); }
+  const differentInitialMethod = () => result && result.config.initialMethod !== draft.initialMethod;
   function draftNotice() {
     if (!result || resultKey === signature()) return '';
+    if (workspaceTab === 'results' && differentInitialMethod()) return '';
     return workspaceTab === 'results' ? '参数已改动，当前显示上次模拟结果。' : '参数已改动，重新模拟后生效';
   }
   function touch() {
@@ -179,7 +181,7 @@
       // Benchmark coverage is independent: an unavailable comparison cannot make
       // a valid user's combination impossible to simulate.
       if (benchmark && !selected.some(a => a.id === benchmark.id)) await loadHistory(benchmark).catch(() => {});
-      if (token !== runId) return;
+      if (token !== runId || params.initialMethod !== draft.initialMethod) return;
       if (extend) {
         const rows = selected.map(a => histories.get(a.id).series);
         const common = rows.slice(1).map(series => new Set(series.map(row => row[0])));
@@ -207,8 +209,8 @@
         showResults = resultKey === signature();
       }
     } catch (e) {
-      if (token === runId) {
-        error = '本次行情更新失败：' + e.message + (systematicMethods.has(params.initialMethod) && result ? '。仍显示上次成功模拟结果（' + result.end + '）。' : '');
+      if (token === runId && params.initialMethod === draft.initialMethod) {
+        error = '本次行情更新失败：' + e.message + (systematicMethods.has(params.initialMethod) && result && !differentInitialMethod() ? '。仍显示上次成功模拟结果（' + result.end + '）。' : '');
       }
     }
     finally {
@@ -1039,9 +1041,12 @@
     const position = (label, weight) => '<span class="portfolio-run-position">' + H.esc(label) + ' <b>' + inputValue(weight) + '%</b></span>';
     const allocations = r.holdings.map(h => position(!h.code || h.name.includes(h.code) ? h.name : h.name + ' (' + h.code + ')', h.targetWeight));
     if (r.cashWeight > 1e-8) allocations.push(position('现金', r.cashWeight));
+    const first = r.curve[0], reserve = first.systematicCash;
+    const opening = opportunityMethods.has(cfg.initialMethod) && Array.isArray(reserve) ?
+      '<dt>首日实际持仓</dt><dd><span>' + H.money(P.accountAllocation(first).securitiesValue, 2) + ' ' + unit + '</span><span class="portfolio-run-meta">待加仓现金 ' + H.money(reserve.reduce((s, n) => s + n, 0), 2) + ' ' + unit + '</span></dd>' : '';
     return '<dl class="portfolio-run-context"><dt>目标配置</dt><dd class="portfolio-run-positions">' + allocations.join('') + '</dd>' +
       '<dt>本次策略</dt><dd><strong class="portfolio-run-strategy">' + H.esc(methods.join(' ＋ ')) + '</strong><span class="portfolio-run-meta">' + H.esc(amounts.join(' · ')) + '</span></dd>' +
-      '<dt>回测区间</dt><dd><span>' + H.esc(r.start) + ' 至 ' + H.esc(r.end) + '</span><span class="portfolio-run-meta">' + H.esc(name) + '计价</span>' + resultExtendControl(r) + '</dd></dl>';
+      opening + '<dt>回测区间</dt><dd><span>' + H.esc(r.start) + ' 至 ' + H.esc(r.end) + '</span><span class="portfolio-run-meta">' + H.esc(name) + '计价</span>' + resultExtendControl(r) + '</dd></dl>';
   }
   function extendBlock(r) {
     return resultKey !== signature() ? '参数已改动，请先重新模拟' : r.config.tax?.liquidate ? '期末已清仓，不能延续账户' : running ? '正在更新行情' : '';
@@ -1110,7 +1115,13 @@
   }
   function workspaceContent() {
     if (workspaceTab === 'settings') return settings();
-    if (workspaceTab === 'results') return results();
+    if (workspaceTab === 'results') {
+      if (differentInitialMethod()) {
+        const name = P.initialMethods.find(([id]) => id === draft.initialMethod)?.[1] || '当前策略';
+        return '<section class="portfolio-result-placeholder"><div><h2>' + H.esc(name) + '</h2><p>' + (running ? '正在模拟…' : '尚无本策略的模拟结果。') + '</p></div></section>';
+      }
+      return results();
+    }
     const unknown = draft.positions.filter(p => !asset(p.id));
     return (unknown.length ? '<div class="portfolio-warning">' + unknown.length + '只保存的标的已不在当前研究对象中，请移除后模拟。</div>' : '') +
       '<div class="portfolio-builder">' + composition() + library() + '</div>';
@@ -1140,7 +1151,7 @@
       (s.warning ? '<span class="sub">' + H.esc(s.warning) + '</span>' : '') + '</td></tr>').join('') + '</tbody></table></div><p class="note">开始日采用指定日前最近共同交易日；结束日采用共同历史内的实际估值日。休市沿用最近价格 ' + r.carriedPrices + '次，沿用汇率 ' + r.carriedFx + '日。价格最多沿用14日，汇率最多7日；超限停止回测。</p>');
   }
   function exportResult() {
-    if (!result) return;
+    if (!result || differentInitialMethod()) return;
     const code = currency(result.config).code, amount = label => label + code;
     const rows = [['日期', amount('税后估值'), amount('累计转入本金（含现金）'), amount('税后盈亏'), '组合净值', '组合累计收益%（现金流中性）', '组合年化收益%（现金流中性，首年至少一年）', '回撤%', amount('税费含当前预留'), amount('账户现金'), amount('分批策略待投入本金'), '实际证券仓位%', '年费口径', '配置JSON', '全区间资金年化XIRR%', '资金年化缺项', amount('未减预留的资产'), amount('累计已发生税费'), amount('当前浮盈预留税'), amount('实际证券市值'), '实际现金占比%', amount('加仓策略待加现金'), amount(principalLabel)],
       ...result.curve.map(p => {
@@ -1150,6 +1161,7 @@
     H.download('长衡-组合逐日走势-' + result.start + '_' + result.end + '.csv', M.csv(rows), 'text/csv;charset=utf-8');
   }
   function exportDaily() {
+    if (differentInitialMethod()) return;
     const daily = result?.systematic?.daily || [];
     if (!daily.length) return;
     if (!M.finite(additionBudget) || additionBudget < 0) { H.toast('请输入有效新增预算再导出'); return; }
@@ -1185,7 +1197,7 @@
     finally { exportingPdf = false; update(); }
   }
   function exportHoldings() {
-    if (!result) return;
+    if (!result || differentInitialMethod()) return;
     const code = currency(result.config).code, amount = label => label + code;
     const rows = [['标的ID', '代码', '名称', '起始日', '结束日', '计价币种', '策略年化收益%', '累计投入收益%', '持仓净值最大回撤%', '持仓净值年化波动%', '目标权重%', '期末权重%', amount('期末税后估值'), amount('盈亏贡献'), amount('交易费'), amount('累计买入含费'), amount('累计卖出净回款'), '年化口径', '收益口径', amount('已实现盈利税'), amount('分红税'), amount('税费含当前预留'), '卖出盈利税率%', '分红综合税率%', amount('当前浮盈预留税'), amount('未减预留的市值'), amount('累计税后现金分红')],
       ...result.holdings.map(h => [h.id, h.code, h.name, result.start, result.end, code, h.performance.annualReturn, h.performance.totalReturn, h.performance.mdd, h.performance.volatility, h.targetWeight, h.actualWeight, h.value, h.profit, h.transactionCost, h.performance.invested, h.performance.returned - h.cashDividends, h.performance.annualBasis, (result.config.dividendPolicy === 'cash' ? '分红计入账户现金' : '分红自动再投') + '；按本次交易费与税费计算', h.capitalTax, h.dividendTax, h.taxCost, h.taxRates.gain, h.taxRates.dividend, h.taxReserve, h.grossValue, h.cashDividends])];
