@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#233d32">
   <title>长衡 · 全球投资研究工作台</title>
   <link rel="icon" type="image/svg+xml" href="assets/brand-mark.svg">
-  <link rel="stylesheet" href="assets/style.css?v=2bc018d7c3c9">
+  <link rel="stylesheet" href="assets/style.css?v=5409ae906334">
   <link rel="stylesheet" href="assets/table-scroll.css?v=8ed78573d567">
   <link rel="stylesheet" href="assets/investment-tax.css?v=ffdad2c97c8e">
   <link rel="stylesheet" href="assets/etf-distributions.css?v=c8831a2efcf8">
@@ -65,7 +65,7 @@
   <script defer src="data/potential-screening.js?v=4bad63c6397a"></script>
   <script defer src="assets/potential-model.js?v=a085ceb5c458"></script>
   <script defer src="assets/potential-stocks.js?v=b85104121dd9"></script>
-  <script defer src="assets/app.js?v=15556181ea36"></script>
+  <script defer src="assets/app.js?v=f6511f16566f"></script>
 </head>
 <body>
   <a class="skip" href="#main">跳转到主要内容</a>
@@ -89,6 +89,7 @@
       <span class="nav-divider">组合研究</span>
       <a href="#return-comparison" data-route="return-comparison"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v16h17M6 16l4-6 4 3 6-8M6 18l6-3 4 2 4-5"/></svg><span>收益对比</span></a>
       <a href="#portfolio" data-route="portfolio"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v9h9A9 9 0 0 0 12 3ZM8.5 3.7A9 9 0 1 0 20.3 15.5H8.5Z"/></svg><span>组合模拟</span></a>
+      <a href="#quality" data-route="quality" class="nav-quality-mobile">数据与方法</a>
     </nav>
     <div class="sidebar-bottom">
       <a href="#quality" data-route="quality"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6ZM15 3v5h4M9 12h7M9 16h5"/></svg><span>数据与方法</span><span id="quality-dot" class="status-dot" aria-hidden="true"></span></a>
@@ -96,10 +97,6 @@
     </div>
   </aside>
   <div class="app-shell">
-    <header class="topbar">
-      <span id="breadcrumb">研究总览</span>
-      <div class="top-actions"><a class="quiet" href="#quality-status"><span class="status-dot" aria-hidden="true"></span>数据状态 ↗</a></div>
-    </header>
     <main id="main" tabindex="-1"></main>
   </div>
   <dialog id="dialog" aria-labelledby="dialog-title"></dialog>

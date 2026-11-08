@@ -77,7 +77,7 @@ try {
   await js('document.fonts.ready.then(()=>new Promise(done=>requestAnimationFrame(()=>requestAnimationFrame(()=>done(true)))))');
   const geometry = await js(`(()=>{const box=s=>{const r=document.querySelector(s)?.getBoundingClientRect();return r&&[r.x,r.y,r.width,r.height]};
     return { viewport:[innerWidth,innerHeight],dpr:devicePixelRatio,layoutWidth:document.body.getBoundingClientRect().width,
-      sidebar:box('.sidebar'),sidebarQuality:box('.sidebar-bottom a[href="#quality"]'),topbar:box('.topbar'),workspace:box('#portfolio-workspace'),firstCard:box('#portfolio-workspace .card') };})()`);
+      sidebar:box('.sidebar'),sidebarQuality:box('.sidebar-bottom a[href="#quality"]'),workspace:box('#portfolio-workspace'),firstCard:box('#portfolio-workspace .card') };})()`);
   if (width > 650) {
     const link = geometry.sidebarQuality;
     if (!link || !link[2] || !link[3] || link[1] < 0 || link[1] + link[3] > height) throw new Error('Lower-left data and methods link is missing or outside the viewport');
@@ -88,8 +88,8 @@ try {
   if (!o.results && !o.draft && width === 2540 && height === 1309 && dpr === 2) {
     // Reference anchors exclude the native window border.
     const anchors = { layoutWidth:[geometry.layoutWidth,2525], sidebarWidth:[geometry.sidebar?.[2],212],
-      headerHeight:[geometry.topbar?.[3],72], cardLeft:[geometry.firstCard?.[0],651.5],
-      cardTop:[geometry.firstCard?.[1],305.5], cardWidth:[geometry.firstCard?.[2],1434] };
+      cardLeft:[geometry.firstCard?.[0],651.5],
+      cardTop:[geometry.firstCard?.[1],233.5], cardWidth:[geometry.firstCard?.[2],1434] };
     for (const [name,[actual,expected]] of Object.entries(anchors)) {
       if (!Number.isFinite(actual) || Math.abs(actual-expected) > 1) throw new Error(name + ': expected ' + expected + ' ±1 CSS px, received ' + actual);
     }

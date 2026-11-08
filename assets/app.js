@@ -1119,8 +1119,6 @@
     const renderers = { overview: home, indices, 'market-history': marketHistory, 'holding-period': holdingPeriod, 'global-finance': globalFinance, 'financial-events': financialEvents, funds: fundView, stocks, reports: reportsView, strategy: strategies, 'buy-location': buyLocation, 'money-flow': moneyFlow, portfolio, 'return-comparison':returnComparison, quality };
     const focus = captureFocus(document.activeElement);
     document.title = '长衡 · ' + (state.route === 'overview' ? '全球投资研究工作台' : titles[state.route]);
-    const group = { indices: '研究对象', 'market-history': '研究对象', 'global-finance': '全球金融', 'financial-events': '全球金融', 'holding-period': '研究方法', funds: '研究对象', stocks: '研究对象', reports: '研究对象', strategy: '研究方法', 'buy-location': '研究方法', 'money-flow': '研究方法', portfolio: '组合研究', 'return-comparison':'组合研究' }[state.route];
-    $('#breadcrumb').innerHTML = (group ? '<span>' + group + '</span><span class="breadcrumb-separator" aria-hidden="true">/</span>' : '') + (state.route === 'reports' ? '<a href="#stocks">个股深入</a><span class="breadcrumb-separator" aria-hidden="true">/</span>' : '') + '<span aria-current="page">' + titles[state.route] + '</span>';
     $$('[data-route]').forEach(a => { const active = a.dataset.route === (state.route === 'reports' ? 'stocks' : state.route); a.classList.toggle('active', active); if (active) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
     $('#main').className = 'page-' + state.route;
     lazyLists.clear();
