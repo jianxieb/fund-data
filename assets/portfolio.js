@@ -1088,7 +1088,8 @@
     const primary = !draft.positions.length && workspaceTab !== 'holdings'
       ? btn('添加标的', 'tab', 'btn primary', 'data-value="holdings"')
       : btn(running ? '正在模拟…' : '开始模拟', 'run', 'btn primary', running || exportingPdf || !draft.positions.length ? 'disabled' : '');
-    return '<div class="portfolio-workspace-bar"><div class="portfolio-workspace-tabs" role="tablist" aria-label="组合模拟" aria-orientation="horizontal">' + tabs + '</div>' + primary + '</div>';
+    return '<div class="portfolio-workspace-bar"><div class="portfolio-workspace-tabs" role="tablist" aria-label="组合模拟" aria-orientation="horizontal">' + tabs +
+      '</div><div class="portfolio-run-actions"><span id="portfolio-dirty" role="status">' + draftNotice() + '</span>' + primary + '</div></div>';
   }
   function workspaceContent() {
     if (workspaceTab === 'settings') return settings();
@@ -1102,7 +1103,7 @@
     if (!catalog) return '<section class="card pad"><h2>' + (loadError ? '标的库加载失败' : '正在载入组合标的库') + '</h2><p class="muted">' + H.esc(loadError || 'ETF、个股与基金每日历史按需载入。') + '</p>' + (loadError ? btn('重新加载', 'retry', 'btn primary') : '') + '</section>';
     const previousCalculation = document.getElementById('portfolio-score-calculation');
     if (previousCalculation) calculationOpen = previousCalculation.open;
-    return '<div id="portfolio-workspace">' + workspaceBar() + '<div class="portfolio-workspace-body"><p id="portfolio-dirty" role="status">' + draftNotice() + '</p>' +
+    return '<div id="portfolio-workspace">' + workspaceBar() + '<div class="portfolio-workspace-body">' +
       (error || importError ? '<p class="portfolio-workspace-error negative" role="alert">' + H.esc(error || importError) + '</p>' : '') +
       workspaceTabs.map(([id]) => '<div id="portfolio-panel-' + id + '" role="tabpanel" aria-labelledby="portfolio-tab-' + id + '"' +
         (id === workspaceTab ? '>' + workspaceContent() : ' hidden>') + '</div>').join('') + '</div></div>';
