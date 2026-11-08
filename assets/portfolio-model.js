@@ -305,6 +305,48 @@
     return periods.map(years => ({ years, ...simulate({ ...input,
       config: { ...input.config, years: 'custom', start: addYears(end, -years), end } }) }));
   }
+  // Comparisons use the account's existing valuation dates; a new benchmark never trades or shortens that account.
+  function compareBenchmark({ catalog, histories, fxHistory }, { start, end, curve, config }, benchmarkId = config.benchmarkId) {
+    if (!benchmarkId) return { benchmark: null, benchmarkError: null };
+    try {
+      const asset = catalog.assets.find(a => a.id === benchmarkId), history = histories[benchmarkId];
+      const currency = currencyInfo(config).code, tax = taxConfig(config.tax), dividendPolicy = dividendPolicyOf(config);
+      if (!asset || asset.status !== 'available') fail('对照标的缺有效每日历史');
+      const rows = validateHistory(asset, history);
+      const benchmarkFx = asset.currency !== currency ? validateHistory(catalog.fx, fxHistory) : null;
+      if (rows[0][0] > start || rows.at(-1)[0] < end) fail('对照标的的历史不覆盖组合区间：' + asset.name + '仅有 ' + rows[0][0] + ' — ' + rows.at(-1)[0]);
+      if (benchmarkFx && (benchmarkFx[0][0] > start || benchmarkFx.at(-1)[0] < end)) fail('对照所需汇率不覆盖组合区间：仅有 ' + benchmarkFx[0][0] + ' — ' + benchmarkFx.at(-1)[0]);
+      if (tax.liquidate && !rows.some(row => row[0] === end)) fail('对照标的' + asset.name + '在期末 ' + end + ' 缺当日实际报价，无法计算该日的清仓后对照收益');
+      const info = M.annualFeeInfo({ ...asset, n: asset.name }, config.feeOverrides?.[asset.code]);
+      if (config.feeBasis === 'gross_estimate' && info.applicable && info.rate === null) fail('对照标的' + info.missing);
+      const rate = config.feeBasis === 'gross_estimate' && info.applicable ? info.rate : 0;
+      const quote = day => {
+        const p = at(rows, day), f = asset.currency !== currency ? at(benchmarkFx, day, 7) : null;
+        if (!p || asset.currency !== currency && !f) fail('对照标的在 ' + day + ' 缺可用价格或汇率');
+        return p.value * (f ? currency === 'USD' ? 1 / f.value : f.value : 1) * (rate ? M.annualFeeFactor(rate, start, day) : 1);
+      };
+      const base = quote(start), rates = taxRates(asset, config.tax);
+      validateDividendEvidence(asset, history, start, end, rates, dividendPolicy);
+      let units = 1, basis = base, paidTax = 0, taxReserve = 0, cashDividends = 0, priceFactor = 1;
+      const values = new Map();
+      const quoteDays = [...new Set([...rows.map(r => r[0]), ...curve.map(p => p.day)])].filter(day => day >= start && day <= end).sort();
+      for (const day of quoteDays) {
+        const price = quote(day) * priceFactor, fraction = day > start ? history.dividendEvidence?.fractions?.[day] || 0 : 0;
+        const d = distribution(units, price, fraction, rates.dividend, dividendPolicy);
+        units -= d.removedUnits; basis += d.basisAdded; paidTax += d.tax;
+        cashDividends += d.cashPaid; priceFactor *= d.priceFactor;
+        const stockValue = units * price * d.priceFactor;
+        taxReserve = Math.max(0, stockValue - basis) * rates.gain / 100;
+        const value = stockValue + cashDividends - taxReserve;
+        if (day === end && tax.liquidate) { paidTax += taxReserve; taxReserve = 0; }
+        values.set(day, value);
+      }
+      const points = curve.map(p => ({ day: p.day, nav: values.get(p.day) / base }));
+      const benchmark = { id: asset.id, name: asset.name, curve: points, dividendPolicy, cashDividends, totalReturn: (points.at(-1).nav - 1) * 100,
+        annualReturn: annualReturn(points.at(-1).nav, start, end), taxCost: paidTax + taxReserve, paidTax, taxReserve, usesFx: !!benchmarkFx, taxRates: rates, taxBasis: 'same_simulation_rates' };
+      return { benchmark, benchmarkError: null };
+    } catch (error) { return { benchmark: null, benchmarkError: error.message }; }
+  }
   function run({ catalog, histories, config, fxHistory, marketContext }) {
     const assets = new Map((catalog?.assets || []).map(a => [a.id, a]));
     const { positions, total, cashWeight, dividendPolicy } = validateConfig(config, new Set(assets.keys()));
@@ -869,45 +911,7 @@
         if (curve[i + 1]) { year = curve[i + 1].day.slice(0, 4); from = curve[i + 1].day; }
       }
     }
-    let benchmark = null, benchmarkError = null;
-    if (config.benchmarkId) {
-      try {
-        const asset = assets.get(config.benchmarkId), history = histories[config.benchmarkId];
-        if (!asset || asset.status !== 'available') fail('对照标的缺有效每日历史');
-        const rows = validateHistory(asset, history);
-        let benchmarkFx = asset.currency !== currency ? fx : null;
-        if (asset.currency !== currency && !benchmarkFx) benchmarkFx = validateHistory(catalog.fx, fxHistory);
-        if (rows[0][0] > start || rows.at(-1)[0] < end || benchmarkFx && (benchmarkFx[0][0] > start || benchmarkFx.at(-1)[0] < end)) fail('对照标的的历史不覆盖组合区间');
-        if (tax.liquidate && !rows.some(row => row[0] === end)) fail('对照标的' + asset.name + '在期末 ' + end + ' 缺当日实际报价，无法计算该日的清仓后对照收益');
-        const info = M.annualFeeInfo({ ...asset, n: asset.name }, config.feeOverrides?.[asset.code]);
-        if (config.feeBasis === 'gross_estimate' && info.applicable && info.rate === null) fail('对照标的' + info.missing);
-        const rate = config.feeBasis === 'gross_estimate' && info.applicable ? info.rate : 0;
-        const quote = day => {
-          const p = at(rows, day), f = asset.currency !== currency ? at(benchmarkFx, day, 7) : null;
-          if (!p || asset.currency !== currency && !f) fail('对照标的在 ' + day + ' 缺可用价格或汇率');
-          return p.value * (f ? currency === 'USD' ? 1 / f.value : f.value : 1) * (rate ? M.annualFeeFactor(rate, start, day) : 1);
-        };
-        const base = quote(start), rates = taxRates(asset, config.tax);
-        validateDividendEvidence(asset, history, start, end, rates, dividendPolicy);
-        let units = 1, basis = base, paidTax = 0, taxReserve = 0, cashDividends = 0, priceFactor = 1;
-        const values = new Map();
-        const quoteDays = [...new Set([...rows.map(r => r[0]), ...curve.map(p => p.day)])].filter(day => day >= start && day <= end).sort();
-        for (const day of quoteDays) {
-          const price = quote(day) * priceFactor, fraction = day > start ? history.dividendEvidence?.fractions?.[day] || 0 : 0;
-          const d = distribution(units, price, fraction, rates.dividend, dividendPolicy);
-          units -= d.removedUnits; basis += d.basisAdded; paidTax += d.tax;
-          cashDividends += d.cashPaid; priceFactor *= d.priceFactor;
-          const stockValue = units * price * d.priceFactor;
-          taxReserve = Math.max(0, stockValue - basis) * rates.gain / 100;
-          const value = stockValue + cashDividends - taxReserve;
-          if (day === end && tax.liquidate) { paidTax += taxReserve; taxReserve = 0; }
-          values.set(day, value);
-        }
-        const points = curve.map(p => ({ day: p.day, nav: values.get(p.day) / base }));
-        benchmark = { id: asset.id, name: asset.name, curve: points, dividendPolicy, cashDividends, totalReturn: (points.at(-1).nav - 1) * 100,
-          annualReturn: annualReturn(points.at(-1).nav, start, end), taxCost: paidTax + taxReserve, paidTax, taxReserve, usesFx: !!benchmarkFx, taxRates: rates, taxBasis: 'same_simulation_rates' };
-      } catch (error) { benchmarkError = error.message; }
-    }
+    const { benchmark, benchmarkError } = compareBenchmark({ catalog, histories, fxHistory }, { start, end, curve, config });
     const fullYear = end >= addYears(start, 1);
     const xirr = fullYear ? M.buyLocationXirr(flows) : null;
     const xirrMissing = xirr !== null ? null : !fullYear ? '模拟不足一年，不外推资金年化' : '实际资金流缺可用年化解';
@@ -1063,5 +1067,5 @@
     }
     return config;
   }
-  return { simulate, simulateWindows, chartIndicators, chartReferences, validateHistory, validateConfig, sanitizeDraft, allocation, accountAllocation, additionAllocation, amountFromWeight, weightFromAmount, at, annualReturn, holdingXirr, addYears, taxConfig, taxRates, currencyInfo, strategyConfig, strategyNames, initialMethods, contributionMethods, dividendPolicies };
+  return { simulate, simulateWindows, compareBenchmark, chartIndicators, chartReferences, validateHistory, validateConfig, sanitizeDraft, allocation, accountAllocation, additionAllocation, amountFromWeight, weightFromAmount, at, annualReturn, holdingXirr, addYears, taxConfig, taxRates, currencyInfo, strategyConfig, strategyNames, initialMethods, contributionMethods, dividendPolicies };
 });

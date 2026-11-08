@@ -164,6 +164,65 @@ test('a dividend policy selected in holdings reaches the simulated cash ledger, 
   assert.equal(Number(first[head.indexOf('累计税后现金分红CNY')]), r.cashDividends);
 });
 
+test('changing the chart benchmark preserves the simulated ledger, dirty draft and zoom; missing evidence affects only the comparison', async () => {
+  let runs = 0, account, modal;
+  const model = { ...P, simulate(input) { runs++; account = P.simulate(input); return account; } };
+  const f = uiFixture(input => {
+    const history = input.histories['fund:ZERO'];
+    history.series = history.series.slice(90); history.first = history.series[0][0];
+    input.catalog.assets[2].first = history.first;
+  }, model);
+  f.helpers.openModal = html => { modal = html; }; f.helpers.modalTitle = title => '<h2>' + title + '</h2>';
+  const view = () => f.ui.view(f.helpers);
+  await f.action('run'); assert.equal(runs, 1);
+  await f.action('chart-zoom', { value: '3' });
+  const saved = JSON.stringify([account.curve, account.transactions, account.value, account.start, account.end]);
+  const zoomRow = view().match(/data-portfolio-field="chart-from"[^>]+value="([^"]+)"/)[1];
+  await f.action('tab', {value:'settings'}); f.monthly(4001);
+  await f.action('tab', {value:'results'}); await f.action('benchmark');
+  assert.match(modal, /搜索对照标的/); assert.match(modal, /取消并返回/); assert.match(modal, /不设对照/);
+  assert.equal(account.config.benchmarkId, 'us:TWO', 'opening the picker must not change the active benchmark');
+  await f.action('select-benchmark', { value: 'stock:TEST' });
+  assert.equal(account.benchmark.id, 'stock:TEST');
+  assert.deepEqual(account.benchmark, P.simulate({ ...f.input, config: { ...f.input.config, benchmarkId: 'stock:TEST' } }).benchmark);
+  assert.equal(account.config.monthly, 3000);
+  assert.ok(account.snapshots.filter(w => !w.error).every(w => w.config.benchmarkId === 'stock:TEST' && w.benchmark.id === 'stock:TEST'));
+  assert.match(view(), /上次模拟结果/);
+  assert.equal(view().match(/data-portfolio-field="chart-from"[^>]+value="([^"]+)"/)[1], zoomRow);
+  assert.match(view(), /对照：测试公司/);
+  await f.action('select-benchmark', {value:'fund:ZERO'});
+  assert.equal(account.benchmark, null); assert.match(account.benchmarkError, /不覆盖组合区间/);
+  assert.ok(account.snapshots.find(w => w.years === 1).benchmark, 'a covered short snapshot can still compare');
+  await f.action('no-benchmark'); assert.equal(account.benchmarkError, null);
+  assert.match(view(), /添加对照标的/);
+  assert.ok(account.snapshots.filter(w => !w.error).every(w => !w.config.benchmarkId && !w.benchmark && !w.benchmarkError));
+  assert.equal(JSON.stringify([account.curve, account.transactions, account.value, account.start, account.end]), saved);
+  await f.action('save'); const draft = JSON.parse(f.downloads.at(-1)[1]);
+  assert.equal(draft.monthly, 4001); assert.equal(draft.benchmarkId, '');
+  assert.equal(runs, 1, 'comparison changes must not execute account strategies again');
+});
+
+test('clearing a benchmark during a slow history download keeps the chart and exported report cleared', async () => {
+  const f = uiFixture(), fetch = f.context.fetch;
+  await f.action('run');
+  let release;
+  f.context.fetch = async (url, ...args) => {
+    if (url.endsWith('ZERO.json')) await new Promise(resolve => { release = resolve; });
+    return fetch(url, ...args);
+  };
+  const pending = f.action('select-benchmark', {value:'fund:ZERO'});
+  assert.match(f.ui.view(f.helpers), /正在读取 ZERO/);
+  await f.action('no-benchmark');
+  release(); await pending;
+  assert.match(f.ui.view(f.helpers), /添加对照标的/);
+  assert.doesNotMatch(f.ui.view(f.helpers), /正在读取 ZERO|上次模拟结果/);
+  await f.action('export-pdf');
+  const result = f.reports.at(-1).result;
+  assert.equal(result.config.benchmarkId, '');
+  assert.equal(result.benchmark, null);
+  assert.ok(result.snapshots.filter(w => !w.error).every(w => !w.benchmark));
+});
+
 test('workspace tabs isolate settings, asset editing and results while preserving drafts and the last run', async () => {
   const f = uiFixture(input => { input.config.positions = []; });
   const view = () => f.ui.view(f.helpers), tab = value => f.action('tab', { value });
@@ -180,12 +239,6 @@ test('workspace tabs isolate settings, asset editing and results while preservin
   await f.action('add', { value: asset.id });
   await tab('settings');
   assert.match(view(), /id="portfolio-monthly"[^>]*value="777"/);
-  await f.action('benchmark');
-  assert.match(view(), /<h2>选择对照标的<\/h2>/);
-  assert.match(view(), /id="portfolio-search"[^>]*value=""/);
-  await f.action('add', { value: benchmark.id });
-  selected('settings');
-  assert.match(view(), /测试公司|TEST/);
   await tab('results');
   assert.match(view(), /portfolio-result-placeholder/);
   await tab('holdings');
@@ -213,13 +266,14 @@ test('workspace tabs isolate settings, asset editing and results while preservin
   assert.equal(f.downloads.length, 0);
 });
 
-test('result sections retain direct exports and identify the funded method without making it the heading', async () => {
+test('result navigation contains actions and tabs; the chart identifies the funded strategy', async () => {
   const f = uiFixture(input => Object.assign(input.config, { initial: 0, monthly: 400, contributionMethod: 'dca_quarter' }));
   const view = () => f.ui.view(f.helpers);
   await f.action('run');
   const overview = view(), toolbar = overview.split('role="tabpanel" aria-labelledby="portfolio-result-tab-overview"')[0];
-  assert.match(toolbar, /每季度定投/);
-  assert.doesNotMatch(toolbar, /一次性投入|<h[1-6]\b[^>]*>[^<]*每季度定投|<summary[^>]*>报告/);
+  assert.doesNotMatch(toolbar, /每季度定投|一次性投入|<summary[^>]*>报告/);
+  assert.match(overview.slice(overview.indexOf('<h2>组合走势')), /每季度定投/);
+  assert.doesNotMatch(overview, /一次性投入|<h[1-6]\b[^>]*>[^<]*每季度定投/);
   const directActions = html => {
     const visible = html.replace(/<details\b[^>]*>[\s\S]*?<\/details>/g, '');
     for (const id of ['sources', 'export-pdf', 'export-result', 'export-holdings']) {
@@ -232,10 +286,10 @@ test('result sections retain direct exports and identify the funded method witho
   const periods = view();
   directActions(periods);
   assert.ok(periods.indexOf('<h2>区间快照') >= 0 && periods.indexOf('<h2>年度表现') > periods.indexOf('<h2>区间快照'));
-  assert.doesNotMatch(periods, /data-portfolio-plot|<h2>持仓贡献|portfolio-result-summary/);
+  assert.doesNotMatch(periods, /data-portfolio-plot|<h2>持仓贡献|portfolio-result-summary|portfolio-chart-strategy/);
   await f.action('result-tab', { value: 'holdings' });
   directActions(view());
-  assert.match(view(), /<h2>持仓贡献/); assert.doesNotMatch(view(), /<h2>区间快照|<h2>年度表现|data-portfolio-plot/);
+  assert.match(view(), /<h2>持仓贡献/); assert.doesNotMatch(view(), /<h2>区间快照|<h2>年度表现|data-portfolio-plot|portfolio-chart-strategy/);
   await f.action('run');
   assert.match(view(), /data-portfolio-plot/);
 });
@@ -252,8 +306,9 @@ test('funding, strategy rules and settlement settings are grouped by what the in
     const indices = selectors.map(text => first.indexOf(text));
     assert.ok(indices.every((at, i) => at >= 0 && (!i || at > indices[i - 1])), selectors.join(' → '));
   };
-  order(['id="portfolio-initial"', 'id="portfolio-initialMethod"', 'id="portfolio-monthly"', 'id="portfolio-contributionMethod"', 'id="portfolio-benchmark"']);
-  order(['id="portfolio-transactionFee"', 'aria-label="期末处理"', 'aria-label="税务情景"']);
+  order(['id="portfolio-initialMethod"', 'id="portfolio-initial"', 'id="portfolio-contributionMethod"', 'id="portfolio-monthly"', 'id="portfolio-rebalance"', 'id="portfolio-years"']);
+  assert.doesNotMatch(first, /id="portfolio-benchmark"/);
+  order(['aria-label="税务情景"', 'id="portfolio-transactionFee"', 'aria-label="期末处理"']);
   const directPlan = first.replace(/<details\b[^>]*>[\s\S]*?<\/details>/g, '');
   assert.match(directPlan, /id="portfolio-purchase-plan"/);
   assert.match(directPlan, /id="portfolio-contribution-plan"/);
@@ -267,6 +322,7 @@ test('funding, strategy rules and settlement settings are grouped by what the in
   assert.equal(free.tax.liquidate, true); assert.equal(free.tax.usCapitalGains, 0);
   assert.equal(free.transactionFee, f.input.config.transactionFee);
   await f.action('tax-custom'); assert.match(view(), /id="portfolio-tax-usCapitalGains"/);
+  assert.ok(view().indexOf('id="portfolio-tax-usCapitalGains"') < view().indexOf('id="portfolio-transactionFee"'));
   f.ui.handleInput({dataset:{portfolioField:'tax-usCapitalGains'},value:'15'});
   assert.match(view(), /扣除卖出手续费和适用的盈利税/);
   await f.action('settle-hold'); assert.match(view(), /估值扣除浮盈预留税，持股和现金不变/);
@@ -275,12 +331,7 @@ test('funding, strategy rules and settlement settings are grouped by what the in
   await f.action('tab', {value:'holdings'});
   assert.doesNotMatch(view(), /id="portfolio-(?:initial|monthly)"|组合含每日杠杆ETF/);
   assert.match(view(), /历史收益已扣产品年费/);
-  await f.action('tab', {value:'settings'}); await f.action('benchmark');
-  assert.match(view(), /取消并返回/); assert.match(view(), /不设对照/);
-  await f.action('picker-holdings'); await f.action('save');
-  assert.equal(JSON.parse(f.downloads.at(-1)[1]).benchmarkId, f.input.config.benchmarkId);
-  await f.action('benchmark'); await f.action('no-benchmark'); await f.action('save');
-  assert.equal(JSON.parse(f.downloads.at(-1)[1]).benchmarkId, '');
+
 });
 
 test('switching tabs resumes each reading position and a new simulation opens at the result summary', async () => {
