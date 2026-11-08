@@ -627,7 +627,14 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-decision .portfolio-menu summary{background:#f6f8f2}
 .portfolio-decision .portfolio-menu summary>span{min-width:0;white-space:normal;overflow-wrap:anywhere}
 .portfolio-decision .portfolio-number input{background:white}
-.portfolio-purchase-plan,.portfolio-contribution-plan{min-width:0;max-width:74ch;margin:0;align-self:end;font-size:13px;line-height:1.7;color:var(--muted)}
+.portfolio-purchase-plan,.portfolio-contribution-plan{min-width:0;max-width:74ch;margin:0;font-size:13px;line-height:1.7;color:var(--muted)}
+@media(width > 820px){
+  .portfolio-decision{--caption-height:1.4rem;--caption-gap:9px;align-items:center}
+  .portfolio-decision>.portfolio-field{gap:var(--caption-gap)}
+  .portfolio-decision>.portfolio-field>:first-child{line-height:var(--caption-height)}
+  /* Reserve the same caption space in all three columns so their contents share a center. */
+  .portfolio-purchase-plan,.portfolio-contribution-plan{margin-block-start:calc(var(--caption-height) + var(--caption-gap))}
+}
 .portfolio-purchase-plan p{margin:0}
 .portfolio-purchase-amounts{display:flex;flex-wrap:wrap;gap:3px 19px;margin:7px 0 0;font-size:12px;font-variant-numeric:tabular-nums}
 .portfolio-purchase-amounts>div{display:flex;align-items:baseline;flex-wrap:wrap;gap:0 6px;max-width:100%}
