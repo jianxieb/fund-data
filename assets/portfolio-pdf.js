@@ -360,7 +360,11 @@
       const a = assets.get(h.id);
       return [label(h), (h.basis === 'provider_adjusted_close' ? '含分红复权股价' : '净值及已发布每日收益') + '\n' + (h.currency === code ? name : (h.currency === 'USD' ? '美元' : '人民币') + '换算' + name) + (a?.refreshWarning ? '\n' + a.refreshWarning : ''), h.first + '\n' + h.asOf, { text: a?.sourceUrl || '缺来源链接', url: a?.sourceUrl, color: C.green }];
     });
-    if (r.usesFx || r.benchmark?.usesFx) sourceRows.push(['美元兑人民币', 'CNY=X 实际日汇率', report.fx.first + '\n' + report.fx.asOf, { text: 'https://finance.yahoo.com/quote/CNY%3DX/history/', url: 'https://finance.yahoo.com/quote/CNY%3DX/history/', color: C.green }]);
+    if (r.usesFx || r.benchmark?.usesFx) {
+      sourceRows.push(['美元兑人民币', 'CNY=X 实际日汇率', report.fx.first + '\n' + report.fx.asOf, { text: 'https://finance.yahoo.com/quote/CNY%3DX/history/', url: 'https://finance.yahoo.com/quote/CNY%3DX/history/', color: C.green }]);
+      const s = report.fx.supplement;
+      if (s) sourceRows.push(['美元兑人民币', s.name + ' 历史补档', s.first + '\n' + s.asOf, { text: s.sourceUrl, url: s.sourceUrl, color: C.green }]);
+    }
     if (benchmark && !r.holdings.some(h => h.id === benchmark.id)) sourceRows.push([benchmark.name + '\n' + benchmark.code + ' · 对照', '同区间持有回报', benchmark.first + '\n' + benchmark.asOf, { text: benchmark.sourceUrl || '缺来源链接', url: benchmark.sourceUrl, color: C.green }]);
     table(['标的', '收益依据', '可用历史', '来源'], sourceRows, [2, 2, 1.4, 3]);
     paragraph('价格或净值已经包含产品持续年费；净收益模拟不重复扣费。境内 ETF 默认使用净值，不计场内溢价；资产币种与模拟币种不同时使用历史汇率。' + (cashPayout ? '分红按除息日计入现金，不模拟实际到账延迟。' : '分红按净额自动再投资。'));

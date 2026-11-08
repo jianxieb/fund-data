@@ -1016,6 +1016,10 @@
       const basis = fx ? '美元兑人民币日汇率' : ({ provider_adjusted_close: '含分红复权收盘价', provider_daily_return_or_explicit_actions: '基金净值及每日收益' })[h?.basis] || '缺收益口径';
       collect((a?.name || id) + (uses.length === 1 && uses[0] === '组合' ? '' : ' · ' + uses.join(' / ')),
         basis, h?.sourceUrl || a?.sourceUrl, h?.first, h?.asOf, a?.refreshWarning);
+      if (fx && h?.supplement) {
+        const s = h.supplement;
+        collect(s.name + ' · 汇率历史补档', basis, s.sourceUrl, s.first, s.asOf);
+      }
     }
     if (['vix_panic_reentry', 'dual_risk_guard', 'opportunity_mixed_10'].includes(method) || (opportunityMethods.has(method) && has('us:TQQQ'))) {
       for (const code of ['VIX', 'VIX3M']) {

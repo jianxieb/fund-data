@@ -13,7 +13,9 @@
 | 境内基金、ETF | Eastmoney `FundMNHisNetList` 每日单位净值、已发布每日涨跌幅与已记录分红拆分事件 | 再投资 | 人民币 |
 | 个股 | Yahoo明确的 `indicators.adjclose`；核对代码、交易所及CNY币种 | 已包含于复权股价 | 人民币 |
 | 海外ETF | Yahoo明确的 `indicators.adjclose`；核对代码及USD币种 | 已包含于复权股价 | 美元；仅在人民币模拟中按历史汇率换算 |
-| 美元兑人民币 | `CNY=X`；沿用已有的交易所在地日历与时区证据 | 不适用 | 每美元人民币数值 |
+| 美元兑人民币 | `CNY=X`；2003 年的历史缺口用美联储 H.10 的实际观测补齐 | 不适用 | 每美元人民币数值 |
+
+Yahoo 的美元兑人民币序列在 2003-04-29 与 2003-12-01 之间没有观测。[美联储 H.10 人民币历史表](https://www.federalreserve.gov/releases/h10/hist/dat00_ch.htm)使用纽约中午的现汇买入价（人民币元/美元），与 Yahoo 的报价时点不同。[FRED DEXCHUS 原始 CSV](https://fred.stlouisfed.org/graph/fredgraph.csv?id=DEXCHUS&cosd=2003-04-30&coed=2003-11-30)已保存为 `data/portfolio/fx-h10-2003.csv`；日期取 `observation_date`，汇率取非空的 `DEXCHUS`。147 条非空记录已与美联储表逐日核对；2003-05-07 为 8.2769。刷新时只补 Yahoo 没有的日期，不填节假日、不覆盖原报价；逐日来源见汇率 JSON 的 `supplement.dates`。已有的七日沿用上限不变。
 
 境内基金的旧历史可能有未提供涨跌幅的财务净值观察。仅在同一基金的 `https://fund.eastmoney.com/pingzhongdata/{code}.js` 明确给出匹配日期、相同单位净值及 `equityReturn` 时补入该收益值；包括**明确发布的0**。不会把缺失值猜成0。单位累计净值 `LJJZ` 不是分红再投资序列，不能用其比值计算回报。
 

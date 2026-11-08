@@ -14,6 +14,19 @@ from screens.fund_screen import parse_js_record
 
 
 class PortfolioHistoryTests(unittest.TestCase):
+    def test_fx_backfill_uses_only_observed_fed_rates_and_preserves_primary_quotes(self):
+        primary = [('2003-04-29', 8.277), ('2003-05-08', 8.27), ('2003-12-01', 8.2672)]
+        with tempfile.TemporaryDirectory() as directory, patch.object(portfolio, 'OUTPUT', Path(directory)):
+            row = portfolio.publish_fx_history(primary, 'provider_adjusted_close', 'https://finance.yahoo.com/')
+            history = json.loads(next(Path(directory).glob('fx/*.json')).read_bytes())
+        actual = dict(history['series'])
+        self.assertEqual(actual['2003-05-07'], 8.2769)
+        self.assertEqual(actual['2003-05-08'], 8.27)
+        self.assertNotIn('2003-11-27', actual)  # holiday, no observation
+        self.assertNotIn('2003-05-08', history['supplement']['dates'])
+        self.assertEqual(set(history['supplement']['dates']), actual.keys() - dict(primary).keys())
+        self.assertEqual(row['supplement']['observations'], len(actual) - len(primary))
+
     def test_momentum_benchmarks_reconcile_to_their_own_published_histories(self):
         snapshot = (portfolio.ROOT / 'data/snapshot.js').read_text()
         block = snapshot.split('/*__DATA_BM_BEGIN__*/', 1)[1].split('/*__DATA_BM_END__*/', 1)[0]

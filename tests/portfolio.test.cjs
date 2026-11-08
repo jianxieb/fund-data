@@ -361,6 +361,23 @@ test('import accepts only tracked identities and valid funding, weights and fee 
   assert.throws(() => P.sanitizeDraft({ ...config, feeOverrides: { '123456': -1 } }, new Set(['stock:1'])), /年费/);
 });
 
+test('published USD/CNY observations support the full QQQ account through the 2003 Yahoo outage', () => {
+  const fs = require('node:fs'), vm = require('node:vm'), path = require('node:path'), ctx = {};
+  const read = name => fs.readFileSync(path.join(__dirname, '..', name), 'utf8');
+  vm.runInNewContext(read('data/portfolio/catalog.js'), ctx);
+  const catalog = ctx.PORTFOLIO_CATALOG, id = 'us:QQQ';
+  const history = JSON.parse(read(catalog.assets.find(a => a.id === id).historyUrl));
+  const fxHistory = JSON.parse(read(catalog.fx.historyUrl));
+  const r = P.simulate({ catalog, histories: { [id]: history }, fxHistory,
+    config: { positions: [{ id, weight: 100 }], currency: 'CNY', initial: 100000, monthly: 0, transactionFee: 0, rebalance: 'none', years: 'common', feeBasis: 'net' } });
+  assert.equal(r.error, undefined);
+  assert.ok(r.start < '2003-04-29' && r.end > '2003-12-01');
+  const px = new Map(history.series), fx = new Map(fxHistory.series);
+  assert.equal(fx.get('2003-05-07'), 8.2769);
+  close(r.curve.find(p => p.day === '2003-05-07').value,
+    100000 * px.get('2003-05-07') * fx.get('2003-05-07') / (px.get(r.start) * fx.get(r.start)));
+});
+
 test('shipped catalog covers the exact research universe and a real mixed combination reconciles', () => {
   const fs = require('node:fs'), vm = require('node:vm'), path = require('node:path');
   const root = path.resolve(__dirname, '..'), context = {};

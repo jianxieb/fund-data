@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Publish verified daily histories for every tracked investable research object."""
 import argparse
+import csv
 import hashlib
 import json
 import math
@@ -269,13 +270,37 @@ def preview_matches(actual, expected):
     return type(actual) is type(expected) and actual == expected
 
 
-def publish_history(asset, series, basis, source, warning=None, dividend_evidence=None):
+def publish_fx_history(series, basis, source, warning=None):
+    asset = {'id': 'fx:CNY', 'code': 'CNY=X', 'name': '美元兑人民币', 'currency': 'CNY'}
+    primary = validate_series(series)
+    merged = dict(primary)
+    # Saved Fed H.10 observations fill the historical Yahoo outage only. An
+    # empty Fed cell is a non-observation, and an actual Yahoo quote wins.
+    with (ROOT / 'data/portfolio/fx-h10-2003.csv').open(newline='') as f:
+        supplement = validate_series([(r['observation_date'], float(r['DEXCHUS']))
+                                      for r in csv.DictReader(f) if r['DEXCHUS']])
+    dates = []
+    for day, rate in supplement:
+        if not '2003-04-29' < day < '2003-12-01':
+            raise ValueError('美联储2003年汇率补档日期超出范围：' + day)
+        if primary[0][0] < day < primary[-1][0] and day not in merged:
+            merged[day] = rate
+            dates.append(day)
+    if dates:
+        asset['supplement'] = {'name': '美联储 H.10', 'sourceUrl': 'https://www.federalreserve.gov/releases/h10/hist/dat00_ch.htm',
+                               'first': dates[0], 'asOf': dates[-1], 'observations': len(dates)}
+    return publish_history(asset, sorted(merged.items()), basis, source, warning, supplement_dates=dates)
+
+
+def publish_history(asset, series, basis, source, warning=None, dividend_evidence=None, supplement_dates=None):
     series = validate_series(series)
     body = {'schemaVersion': 1, 'id': asset['id'], 'currency': asset['currency'],
             'basis': basis, 'dividends': 'reinvested', 'first': series[0][0],
             'asOf': series[-1][0], 'sourceUrl': source, 'series': series}
     if dividend_evidence is not None:
         body['dividendEvidence'] = dividend_evidence
+    if supplement_dates:
+        body['supplement'] = {**asset['supplement'], 'dates': supplement_dates}
     encoded = json.dumps(body, ensure_ascii=False, allow_nan=False, separators=(',', ':')) + '\n'
     digest = hashlib.sha256(encoded.encode()).hexdigest()
     namespace, code = asset['id'].split(':')
@@ -811,7 +836,7 @@ def main():
                     atomic_text(prior_path, 'var PORTFOLIO_CATALOG=' + json.dumps(checkpoint, ensure_ascii=False, allow_nan=False, separators=(',', ':')) + ';\n')
     fx_asset = {'id': 'fx:CNY', 'code': 'CNY=X', 'name': '美元兑人民币', 'currency': 'CNY'}
     try:
-        fx = publish_history(fx_asset, *overseas_history('CNY=X', args.offline, args.refresh))
+        fx = publish_fx_history(*overseas_history('CNY=X', args.offline, args.refresh))
     except Exception as exc:
         fx = {**fx_asset, 'status': 'missing', 'missing': '缺美元兑人民币日汇率：' + str(exc)[:160]}
     catalog = history_catalog(rows, results, prior, fx=fx, complete=True)
