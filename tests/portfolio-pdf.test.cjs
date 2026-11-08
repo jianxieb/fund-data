@@ -295,8 +295,10 @@ test('result tabs keep the run and global tools visible while isolating each sec
   assert.ok(resultTabButton(view(), 'chart').includes('aria-selected="true"'));
   assert.equal(resultTabButton(view(), 'daily'), undefined, 'no daily signals for ordinary contributions');
   assert.equal(resultTabButton(view(), 'comparison'), undefined, 'no initial strategy for the lump-sum comparison');
-  const sections = { chart: '组合走势', snapshots: '区间快照', annual: '年度表现', holdings: '持仓贡献' };
-  for (const [key, title] of Object.entries(sections)) {
+  const sections = { chart: ['组合走势'], periods: ['区间快照', '年度表现'], holdings: ['持仓贡献'] };
+  assert.equal(resultTabButton(view(), 'annual'), undefined);
+  assert.equal(resultTabButton(view(), 'snapshots'), undefined);
+  for (const [key, titles] of Object.entries(sections)) {
     const html = await f.resultTab(key);
     const context = html.match(/<dl class="portfolio-run-context">([\s\S]*?)<\/dl>/)[1];
     for (const item of ['每季度定投', 'TWO', 'TEST', '现金', '每季再平衡', '2026-01-08']) assert.ok(context.includes(item), item);
@@ -305,12 +307,14 @@ test('result tabs keep the run and global tools visible while isolating each sec
       assert.equal(html.split(control).length - 1, 1, 'one global ' + control);
     }
     assert.ok(html.indexOf('data-action="portfolio-result-tab"') < html.indexOf('aria-label="收益口径"'));
-    for (const heading of Object.values(sections)) assert.equal(html.includes('<h2>' + heading + '</h2>'), heading === title);
+    for (const heading of Object.values(sections).flat()) assert.equal(html.includes('<h2>' + heading + '</h2>'), titles.includes(heading));
     for (const [action, tab] of [['export-result', 'chart'], ['export-holdings', 'holdings'], ['sources', 'holdings']]) {
       assert.equal(html.includes('data-action="portfolio-' + action + '"'), key === tab);
     }
-    if (key === 'snapshots') assert.match(html, /近1年/);
-    if (key === 'annual') assert.match(html, /2025/);
+    if (key === 'periods') {
+      assert.match(html, /区间快照<\/h2>[\s\S]*各区间独立建仓[\s\S]*近1年/);
+      assert.match(html, /年度表现<\/h2>[\s\S]*自然年累计收益[\s\S]*2025/);
+    }
   }
   // Draft edits preserve the previous run and its reading tab. A new simulation starts on the chart.
   await f.action('tab', { value: 'settings' });
@@ -906,7 +910,7 @@ test('short periods explain unavailable funding XIRR and snapshots retain exact 
     history.series = history.series.filter(([day]) => day >= '2025-07-01'); history.first = history.series[0][0];
   });
   await missing.action('run');
-  const missingHtml = await missing.resultTab('snapshots');
+  const missingHtml = await missing.resultTab('periods');
   assert.match(missingHtml, /近1年对照：对照标的的历史不覆盖组合区间/);
   assert.doesNotMatch(missingHtml, />无覆盖</);
 });

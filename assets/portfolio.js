@@ -980,7 +980,7 @@
       btn('逐项来源', 'sources', 'portfolio-result-link', 'aria-haspopup="dialog"') + '</div>';
   }
   function yearlyResults(r) {
-    return '<section class="card portfolio-yearly"><div class="card-head"><h2>年度表现</h2><span class="small">年度累计收益</span></div><div class="portfolio-year-grid">' + r.annual.map(y => '<div><span>' + y.year + '</span><strong class="num">' + H.pc(y.return) + '</strong><small>' + y.start.slice(5) + ' — ' + y.end.slice(5) + '</small></div>').join('') + '</div></section>';
+    return '<section class="card portfolio-yearly"><div class="card-head"><h2>年度表现</h2><span class="small">本次账户 · 自然年累计收益</span></div><div class="portfolio-year-grid">' + r.annual.map(y => '<div><span>' + y.year + '</span><strong class="num">' + H.pc(y.return) + '</strong><small>' + y.start.slice(5) + ' — ' + y.end.slice(5) + '</small></div>').join('') + '</div></section>';
   }
   function resultSummary(r) {
     const { unit } = currency(r.config);
@@ -1064,7 +1064,7 @@
       (usesMa && r.strategy.insufficientMaDays ? '<p class="portfolio-warning">均线不足200个共同交易日的阶段按常规投入，未将缺历史视为下跌信号。</p>' : '')]];
     if (systematicMethods.has(r.config.initialMethod)) sections.push(['daily', opportunityMethods.has(r.config.initialMethod) ? '每日加仓分数' : '每日策略状态', () => dailyCard() + accountActivityMarkup(r)]);
     if (r.lumpSumComparison) sections.push(['comparison', '策略对照', lumpSumComparison]);
-    return sections.concat([['snapshots', '区间快照', snapshots], ['annual', '年度表现', () => yearlyResults(r)], ['holdings', '持仓贡献', () => resultHoldings(r)]]);
+    return sections.concat([['periods', '区间表现', () => snapshots() + yearlyResults(r)], ['holdings', '持仓贡献', () => resultHoldings(r)]]);
   }
   function results() {
     if (!result) return '<section class="portfolio-result-placeholder"><div><h2>还没有模拟结果</h2><p>' + (draft.positions.length ? '点击“开始模拟”查看组合走势和收益。' : '先添加标的并设置权重，再开始模拟。') + '</p></div><svg viewBox="0 0 460 135" aria-hidden="true"><path d="M3 120H457M3 80H457M3 40H457" stroke="#e0e5d7"/><path d="m3 101 37-13 37 14 38-28 37 7 38-22 38 12 37-31 37 5 40-26 38 6 40-23" fill="none" stroke="#96aa83" stroke-width="2"/><path d="m3 110 37-4 37 5 38-19 37 10 38-8 38-9 37 6 37-19 40 9 38-16 40 2" fill="none" stroke="#c3b291" stroke-width="1.5" stroke-dasharray="5 5"/></svg></section>';
