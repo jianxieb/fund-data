@@ -618,7 +618,6 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-settings-section+.portfolio-settings-section{border-top:1px solid var(--line)}
 .portfolio-settings-section h2{margin:0;font-size:16px;font-weight:600}
 .portfolio-decision{display:grid;grid-template-columns:minmax(210px,260px) minmax(125px,166px) minmax(0,1fr);align-items:start;column-gap:26px;padding:16px 0}
-.portfolio-decision+.portfolio-decision{border-top:1px solid #e9ede4}
 .portfolio-decision:last-child{padding-bottom:0}
 .portfolio-decision>.portfolio-field:first-child>span:first-child{font-size:14px;font-weight:600;color:var(--ink)}
 .portfolio-decision .portfolio-menu summary{background:#f6f8f2}
