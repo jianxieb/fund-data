@@ -36,6 +36,7 @@ test('cash distributions are taxed once and net reinvestments become capital cos
   const r = P.simulate(input); assert.equal(r.error, undefined);
   close(r.dividendTax, 20); close(r.capitalTax, 0); close(r.value, 1080); close(r.profit, 80);
   close(r.holdings[0].performance.totalReturn, 8); close(r.taxEvents.find(t => t.type === 'dividend').basisAdded, 80);
+  close(r.curve[1].positionPrincipal, 1000); close(r.curve.at(-1).positionPrincipal, 0);
   input.config.tax.usDividend = 0;
   const untaxedDividend = P.simulate(input); close(untaxedDividend.value, 1100); close(untaxedDividend.capitalTax, 0);
 });

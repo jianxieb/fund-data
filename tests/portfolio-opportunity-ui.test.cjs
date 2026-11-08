@@ -119,6 +119,8 @@ test('reserve 20% chart export records actual holdings, not transferred capital 
   const [header, row] = csv.split('\r\n', 2).map(fields);
   const get = name => Number(row[header.indexOf(name)]);
   assert.equal(get('累计转入本金（含现金）CNY'), 100000);
+  const buyFees = account.transactions.filter(t => t.day === first.day && t.side === 'buy').reduce((s, t) => s + t.fee, 0);
+  assert.ok(Math.abs(get('持仓本金（不含现金）CNY') - (securities + buyFees)) < 1e-8);
   assert.equal(get('实际证券仓位%'), a.securitiesPct);
   assert.equal(get('实际现金占比%'), a.cashPct);
   assert.equal(get('实际证券市值CNY'), a.securitiesValue);

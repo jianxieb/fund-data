@@ -10,7 +10,7 @@ const read = file => fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
 test('chart zoom, cash weights and independent overlays follow the same dates without filling missing signals', async () => {
   const data = {};
   vm.runInNewContext(read('data/portfolio/catalog.js'), data);
-  const cfg = {positions: [{id: 'us:SPY', weight: 80}], initial: 100000, currency: 'USD', monthly: 0,
+  const cfg = {positions: [{id: 'us:SPY', weight: 30}], initial: 100000, currency: 'USD', monthly: 0,
     initialMethod: 'lump_sum', contributionMethod: 'dca_month', benchmarkId: '', years: 'custom', start: '2024-01-02', end: '2024-04-30'};
   // Exercise the actual simulation and UI with deliberately sparse indicator observations.
   const model = {...P, simulateWindows: () => [], chartIndicators: r => ({reason: '', series: [
@@ -38,6 +38,17 @@ test('chart zoom, cash weights and independent overlays follow the same dates wi
   assert.doesNotMatch(chart(), /模拟首日|现金流中性|首年按|<title>|横向拖选可放大/);
   assert.ok(chart().indexOf('data-chart-rail') > chart().indexOf('</svg>'));
   assert.match(chart(), /role="slider" data-nav-handle="from"/); assert.match(chart(), /role="slider" data-nav-handle="to"/);
+  const events = {}, plot = {getBoundingClientRect: () => ({left: 0, top: 0, width: 920, height: 330}), hasPointerCapture: () => false, setPointerCapture() {},
+    addEventListener: (key, cb) => {events[key] = cb;}, removeEventListener: key => {delete events[key];}};
+  const hover = (x, type = 'pointermove') => ui.showPoint({type, button: 0, pointerId: 1, pointerType: 'mouse', clientX: x, clientY: 100, target: {closest: () => plot}});
+  for (const mode of ['amount', 'allocation']) {
+    click('metric', mode);
+    assert.match(chart(), mode === 'amount' ? /持仓本金（不含现金）/ : /实际现金比例/);
+    hover(65);
+    assert.match(tooltip.innerHTML, /持仓本金（不含现金）<\/span><b>30000\.00 USD/);
+    assert.match(tooltip.innerHTML, /现金<\/span><b>70000\.00 USD · 70\.00%/);
+  }
+  click('metric', 'return');
   click('chart-chooser'); await change('indicator', 'score'); await change('indicator', 'gate');
   assert.match(chart(), /data-indicator-axis="score"/); assert.match(chart(), /data-indicator-axis="state"/);
   assert.match(chart(), /data-score-threshold="60"/); assert.match(chart(), /买入门槛 60分/);
@@ -57,9 +68,6 @@ test('chart zoom, cash weights and independent overlays follow the same dates wi
   assert.doesNotMatch(html, /NaN|undefined/);
   click('tab', 'settings'); click('tab', 'results'); assert.deepEqual(range(), ['2024-04-01', cfg.end]);
   await change('to', '2024-04-03');
-  const events = {}, plot = {getBoundingClientRect: () => ({left: 0, top: 0, width: 920, height: 330}), hasPointerCapture: () => false, setPointerCapture() {},
-    addEventListener: (key, cb) => {events[key] = cb;}, removeEventListener: key => {delete events[key];}};
-  const hover = (x, type = 'pointermove') => ui.showPoint({type, button: 0, pointerId: 1, pointerType: 'mouse', clientX: x, clientY: 100, target: {closest: () => plot}});
   hover(65); assert.match(tooltip.innerHTML, /^<strong>2024-04-01/); assert.match(tooltip.innerHTML, /4分/); assert.match(tooltip.innerHTML, /开启/);
   hover(428); assert.match(tooltip.innerHTML, /^<strong>2024-04-02/); assert.match(tooltip.innerHTML, /无当日观测/); assert.doesNotMatch(tooltip.innerHTML, /77分|开启/);
   hover(791); assert.match(tooltip.innerHTML, /^<strong>2024-04-03/); assert.match(tooltip.innerHTML, /77分/);

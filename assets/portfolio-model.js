@@ -541,6 +541,9 @@
     }
     const units = series.map(() => 0), bought = series.map(() => 0), sold = series.map(() => 0), costs = series.map(() => 0);
     const basis = series.map(() => 0), capitalTaxes = series.map(() => 0), dividendTaxes = series.map(() => 0), taxEvents = [];
+    // Cash actually spent buying the remaining shares. Automatic dividend
+    // reinvestment increases tax basis, but adds no principal from the account.
+    const positionPrincipal = series.map(() => 0);
     const dividendPriceFactor = series.map(() => 1), cashDividends = series.map(() => 0), dividendFlows = series.map(() => []);
     const holdingNav = series.map(() => 1);
     const fee = config.transactionFee / 100, transactions = [], flows = [];
@@ -583,6 +586,8 @@
           const before = netHolding(i, prices[i]);
           const sale = delta < 0 ? saleTax(i, -delta, prices[i], fees[i]) : { disposedBasis: 0, gain: 0, tax: 0 };
           basis[i] += delta > 0 ? delta + fees[i] : -sale.disposedBasis;
+          if (delta > 0) positionPrincipal[i] += delta + fees[i];
+          else positionPrincipal[i] *= Math.max(0, 1 + delta / (units[i] * prices[i]));
           capitalTaxes[i] += sale.tax; taxCharge += sale.tax;
           if (delta < 0) taxEvents.push({ day, id: series[i].asset.id, type: 'capital', proceeds: -delta, basis: sale.disposedBasis, gain: sale.gain, rate: series[i].tax.gain, tax: sale.tax });
           units[i] += delta / prices[i];
@@ -724,7 +729,7 @@
       // A complete inventory sale leaves exactly zero units and cost basis.
       // Re-dividing its currency proceeds can otherwise leave a negative ULP
       // that grows with the investor's capital and later quote changes.
-      fullySold.forEach(i => { units[i] = 0; basis[i] = 0; });
+      fullySold.forEach(i => { units[i] = 0; basis[i] = 0; positionPrincipal[i] = 0; });
       for (const transaction of transactions.slice(before)) {
         const leg = pairIds.indexOf(transaction.id), netCash = transaction.side === 'sell'
           ? transaction.amount - transaction.fee - transaction.tax : -transaction.amount - transaction.fee;
@@ -883,7 +888,7 @@
       const account = netValue(prices), nav = account / fundUnits;
       const taxReserve = sum(prices.map((price, i) => reserve(i, price))), paidTax = sum(capitalTaxes) + sum(dividendTaxes);
       peak = Math.max(peak, nav); mdd = Math.min(mdd, (nav / peak - 1) * 100);
-      curve.push({ day, value: account, contributed, profit: account - contributed, nav, totalReturn: (nav - 1) * 100,
+      curve.push({ day, value: account, contributed, positionPrincipal: sum(positionPrincipal), profit: account - contributed, nav, totalReturn: (nav - 1) * 100,
         annualReturn: day === start ? (nav - 1) * 100 : annualReturn(nav, start, day), drawdown: (nav / peak - 1) * 100, cash, initialReserve, exposure,
         grossValue: value(prices), taxReserve, paidTax, taxCost: paidTax + taxReserve,
         ...(systematicMethod ? { systematicTargets: systematicTargets.slice(), systematicCash: systematicCash.slice() } : {}),

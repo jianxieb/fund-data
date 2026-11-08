@@ -523,6 +523,7 @@
       'id="portfolio-benchmark" aria-haspopup="dialog"' + (running || exportingPdf ? ' disabled' : ''));
   }
   const chartLayout = { width: 920, height: 330, left: 65, top: 28, bottom: 296 };
+  const principalLabel = '持仓本金（不含现金）';
   const indicatorColors = ['#366ca6', '#ad5e23', '#795395', '#168683', '#ae4669', '#617c25', '#8d6239', '#5864aa', '#b43e47', '#247c55', '#92822a', '#70617c', '#b35185'];
   let chartView, plotted;
   const chartObservations = new WeakMap();
@@ -564,7 +565,7 @@
     return metric === 'allocation' ? P.accountAllocation(row)?.securitiesPct : metric === 'amount' ? row.value : metric === 'drawdown' ? row.drawdown : H.annual ? row.annualReturn : row.totalReturn;
   }
   function comparisonValue(row, view) {
-    if (metric === 'amount') return row.contributed;
+    if (metric === 'amount') return row.positionPrincipal;
     if (metric === 'allocation') return P.accountAllocation(row)?.cashPct;
     const b = metric === 'return' && view.benchmark.get(row.day);
     if (!b || !M.finite(b.nav)) return null;
@@ -639,7 +640,7 @@
     const legendLabel = line => lineLabel(line) + (!line.values.some(M.finite) ? '（此区间无有效观测）' :
       line.kind === 'score' && line.thresholds?.length ? '（买入门槛 ' + (line.thresholdLabel || line.thresholds.join(' / ') + '分') + '）' : '');
     return '<div class="portfolio-chart-legend">' + legend(metric === 'return' ? '我的组合 ' + H.pct(primary.at(-1)) : metric === 'allocation' ? '实际持仓' : '我的组合', '#35654a') +
-      (metric === 'return' ? benchmarkLegend(secondary?.at(-1)) : secondary ? legend(metric === 'amount' ? '累计转入本金（含现金）' : '实际现金比例', '#9c8d6e') : '') + observed.map(l => legend(legendLabel(l), l.color)).join('') +
+      (metric === 'return' ? benchmarkLegend(secondary?.at(-1)) : secondary ? legend(metric === 'amount' ? principalLabel : '实际现金比例', '#9c8d6e') : '') + observed.map(l => legend(legendLabel(l), l.color)).join('') +
       (observed.some(l => l.kind === 'score' && l.thresholds?.length && l.values.some(M.finite)) ? '<span class="portfolio-threshold-key">虚线：分数门槛</span>' : '') + '</div><div class="portfolio-plot-wrap"><div id="portfolio-tooltip" class="portfolio-tooltip" hidden></div><svg class="portfolio-plot" data-portfolio-plot viewBox="0 0 ' + W + ' ' + HH + '" role="img" aria-label="' + label + '"><defs><linearGradient id="portfolio-fill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#a4c1a2" stop-opacity=".24"/><stop offset="1" stop-color="#a4c1a2" stop-opacity=".02"/></linearGradient></defs>' + grid + area +
       (secondary ? '<path d="' + chartPath(secondary, x, y) + '" stroke="#9c8d6e" fill="none" stroke-linecap="round" stroke-width="1.8" stroke-dasharray="5 4"/>' : '') + '<path d="' + mainPath + '" stroke="#35654a" fill="none" stroke-linecap="round" stroke-width="2.3"/>' + overlays +
       '<rect id="portfolio-zoom-selection" y="' + top + '" height="' + (bottom - top) + '" fill="#508b79" opacity=".18" width="0"/><line id="portfolio-cursor" x1="0" x2="0" y1="' + top + '" y2="' + bottom + '" stroke="#83927c" stroke-dasharray="3 3" visibility="hidden"/><circle id="portfolio-point" r="4.5" fill="#35654a" stroke="white" stroke-width="2" visibility="hidden"/><rect x="' + left + '" y="' + top + '" width="' + (right - left) + '" height="' + (bottom - top) + '" fill="transparent" pointer-events="all"/></svg></div>';
@@ -1123,10 +1124,10 @@
   function exportResult() {
     if (!result) return;
     const code = currency(result.config).code, amount = label => label + code;
-    const rows = [['日期', amount('税后估值'), amount('累计转入本金（含现金）'), amount('税后盈亏'), '组合净值', '组合累计收益%（现金流中性）', '组合年化收益%（现金流中性，首年至少一年）', '回撤%', amount('税费含当前预留'), amount('账户现金'), amount('分批策略待投入本金'), '实际证券仓位%', '年费口径', '配置JSON', '全区间资金年化XIRR%', '资金年化缺项', amount('未减预留的资产'), amount('累计已发生税费'), amount('当前浮盈预留税'), amount('实际证券市值'), '实际现金占比%', amount('加仓策略待加现金')],
+    const rows = [['日期', amount('税后估值'), amount('累计转入本金（含现金）'), amount('税后盈亏'), '组合净值', '组合累计收益%（现金流中性）', '组合年化收益%（现金流中性，首年至少一年）', '回撤%', amount('税费含当前预留'), amount('账户现金'), amount('分批策略待投入本金'), '实际证券仓位%', '年费口径', '配置JSON', '全区间资金年化XIRR%', '资金年化缺项', amount('未减预留的资产'), amount('累计已发生税费'), amount('当前浮盈预留税'), amount('实际证券市值'), '实际现金占比%', amount('加仓策略待加现金'), amount(principalLabel)],
       ...result.curve.map(p => {
         const a = P.accountAllocation(p);
-        return [p.day, p.value, p.contributed, p.profit, p.nav, p.totalReturn, p.annualReturn, p.drawdown, p.taxCost, p.cash, p.initialReserve, a.securitiesPct, result.config.feeBasis, JSON.stringify(result.config), result.xirr, result.xirrMissing, p.grossValue, p.paidTax, p.taxReserve, a.securitiesValue, a.cashPct, opportunityMethods.has(result.config.initialMethod) ? p.systematicCash.reduce((s, n) => s + n, 0) : null];
+        return [p.day, p.value, p.contributed, p.profit, p.nav, p.totalReturn, p.annualReturn, p.drawdown, p.taxCost, p.cash, p.initialReserve, a.securitiesPct, result.config.feeBasis, JSON.stringify(result.config), result.xirr, result.xirrMissing, p.grossValue, p.paidTax, p.taxReserve, a.securitiesValue, a.cashPct, opportunityMethods.has(result.config.initialMethod) ? p.systematicCash.reduce((s, n) => s + n, 0) : null, p.positionPrincipal];
       })];
     H.download('长衡-组合逐日走势-' + result.start + '_' + result.end + '.csv', M.csv(rows), 'text/csv;charset=utf-8');
   }
@@ -1407,7 +1408,7 @@
         if (M.finite(value) && M.finite(secondary[index])) entries.push(['与对照相差', H.money(value - secondary[index], 2) + ' 个百分点']);
       }
       if (metric !== 'amount') entries.push(['税后估值', amount(point.value)]);
-      entries.push(['累计转入本金（含现金）', amount(point.contributed)]);
+      entries.push([principalLabel, amount(point.positionPrincipal)]);
       if (M.finite(alloc?.securitiesValue)) entries.push(['实际持仓', amount(alloc.securitiesValue) + ' · ' + H.pct(alloc.securitiesPct, 2, false)], ['现金', amount(alloc.cash) + ' · ' + H.pct(alloc.cashPct, 2, false)]);
       entries.push(['税后盈亏', amount(point.profit)]);
       if (metric !== 'drawdown') entries.push(['回撤', H.pct(point.drawdown)]);

@@ -968,7 +968,7 @@ test('USD settings, tax reserve, PDF and CSV keep the same result currency after
   assert.equal(report.result.currency, 'USD');
   assert.equal(report.result.taxReserve, expected.taxReserve);
   assert.match(text, /初始投入 \/ USD/); assert.match(text, /浮盈预留税 \/ USD/);
-  assert.match(text, /税后估值与累计转入本金 \/ 美元/);
+  assert.match(text, /税后估值与持仓本金 \/ 美元/);
   assert.doesNotMatch(text, /人民币现金|\/ 元|NaN|undefined/);
   await f.action('tab', { value: 'settings' });
   await f.action('select', { field: 'currency', value: 'CNY' });

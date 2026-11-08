@@ -45,6 +45,19 @@ test('amount conversion leaves overspending visible and does not divide by a zer
   assert.ok(Number.isNaN(P.amountFromWeight(NaN, 30)));
 });
 
+test('daily position principal excludes idle cash and releases the sold shares’ cost, not their proceeds', () => {
+  const input = fixture([{ values: [1, 10, 10] }], { initial: 100000, rebalance: 'month', tax: { liquidate: true } });
+  input.config.positions[0].weight = 30;
+  const r = P.simulate(input);
+  assert.equal(r.error, undefined);
+  const [opened, rebalanced, sold] = r.curve;
+  close(opened.cash, 70000); close(opened.positionPrincipal, 30000);
+  // After the price increases tenfold, 30% of the 370,000 account is 11,100 shares at an original cost of 1.
+  close(rebalanced.cash, 259000); close(rebalanced.positionPrincipal, 11100);
+  close(sold.cash, 370000); close(sold.positionPrincipal, 0);
+  assert.ok(r.curve.every(p => p.contributed === 100000));
+});
+
 test('portfolio structure counts weights and treats 2x/3x as ETF subsets', () => {
   const assets = [{ id: 'e2', kind: 'etf', leverage: 2 }, { id: 'e3', kind: 'etf', leverage: 3 },
     { id: 'e1', kind: 'etf' }, { id: 's', kind: 'stock', leverage: 2 }, { id: 'f', kind: 'fund' }];
@@ -250,6 +263,7 @@ test('transaction cost is paid from available cash and rebalancing is self finan
   assert.equal(r.error, undefined);
   assert.ok(r.cash >= 0);
   close(r.transactions.filter(t => t.reason === 'initial').reduce((s, t) => s + t.amount + t.fee, 0), 1000);
+  close(r.curve[0].positionPrincipal, 1000);
   close(r.holdings.reduce((s, h) => s + h.profit, 0), r.value - r.contributed);
   close(r.tradeCost, r.transactions.reduce((s, t) => s + t.fee, 0));
   close(r.holdings.reduce((s, h) => s + h.value, 0) + r.cash, r.value);
