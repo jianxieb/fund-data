@@ -639,7 +639,8 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-tax-settings{min-width:0;container:tax-settings / inline-size}
 /* Split the whole section, including its title, into tax and trading settings. */
 .portfolio-tax-controls,.portfolio-tax-group,.portfolio-fee-settlement{display:grid;grid-template-columns:minmax(0,1fr);align-items:start;gap:18px 26px}
-.portfolio-tax-label{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px}
+.portfolio-tax-picker{display:grid;max-width:100%;gap:9px}
+.portfolio-tax-label{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:4px 12px}
 .portfolio-tax-label .text-link{text-decoration:underline;text-underline-offset:3px}
 .portfolio-fee-settlement>label{width:100%;max-width:166px}
 @container tax-settings (min-width:400px){
