@@ -47,7 +47,7 @@ function setup(method, { weights = [30, 30], start = '2014-01-02', end = '2024-0
   return { ui, view, action, selectMethod, calls, downloads, accounts, runs };
 }
 
-test('switching from the dual risk gate to each discount rule shows only its own trades and returns', async () => {
+test('draft strategy changes keep the last successful ledger visible until the selected strategy completes', async () => {
   const forbidden = [], u = setup('dual_risk_guard', {weights: [0, 30], start: '2010-02-11', end: '2010-06-30', fee: 0, forbidden});
   await u.action('run');
   const original = u.runs[0];
@@ -57,16 +57,30 @@ test('switching from the dual risk gate to each discount rule shows only its own
     ['opportunity_discount_10', '低位评分加仓·10%预留', 27000, 3000, 35],
     ['opportunity_discount_20', '低位评分加仓·20%预留', 24000, 6000, 50]
   ]) {
+    const previous = results.at(-1) || original, previousName = P.strategyNames(previous.config).initial;
     await u.action('tab', 'settings'); await u.selectMethod(method); await u.action('tab', 'results');
-    assert.match(u.view(), /尚无本策略的模拟结果/);
-    assert.doesNotMatch(u.view(), /portfolio-result-summary|data-portfolio-plot|portfolio-export-pdf/);
+    const lastRun = () => {
+      const html = u.view();
+      assert.match(html, /当前显示上次模拟结果/);
+      assert.match(html, /portfolio-result-summary/);
+      assert.match(html, /data-portfolio-plot/);
+      assert.match(html, /重新模拟并导出 PDF/);
+      assert.ok(html.includes('<dt>上次模拟策略</dt><dd><strong class="portfolio-run-strategy">' + previousName));
+      assert.ok(html.includes(money(previous.profit)));
+      assert.ok(!html.includes('class="portfolio-run-strategy">' + name));
+    };
+    lastRun();
     const count = u.downloads.length;
     for (const action of ['export-result', 'export-holdings', 'export-daily']) await u.action(action);
-    assert.equal(u.downloads.length, count);
-    // A failed retry must never present the previous strategy's 30,000 / 27,000 as this one's first purchase.
+    assert.equal(u.downloads.length, count + 3);
+    assert.ok(u.downloads[count][1].includes(previous.config.initialMethod));
+    assert.ok(!u.downloads[count][1].includes(method));
+    // The previous strategy's 30,000 / 27,000 stays attached to its own configuration, even after failure.
     forbidden.push('data/portfolio/entry-context.json');
+    const attempts = u.runs.length;
     await u.action('run'); assert.match(u.view(), /role="alert"/);
-    assert.doesNotMatch(u.view(), /portfolio-result-summary|仍显示上次成功/);
+    lastRun();
+    assert.equal(u.runs.length, attempts);
     forbidden.pop();
     const n = u.runs.length;
     await u.action('run');
