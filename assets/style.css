@@ -826,10 +826,34 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 }
 @media(max-width:650px){.portfolio-tax-grid{gap:12px}}
 .portfolio-results .stats-grid{gap:16px}
-.portfolio-results .portfolio-result-summary{grid-template-columns:repeat(5,minmax(0,1fr))}
 .portfolio-results .stat-foot{line-height:1.7;font-size:11px}
-@media(max-width:1450px){.portfolio-results .stats-grid.portfolio-result-summary{grid-template-columns:repeat(6,minmax(0,1fr))}.portfolio-result-summary>.stat{grid-column:span 2}.portfolio-result-summary>.stat:nth-child(-n+2){grid-column:span 3}}
-@media(max-width:650px){.portfolio-results .stats-grid.portfolio-result-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.portfolio-result-summary>.stat,.portfolio-result-summary>.stat:nth-child(-n+2){grid-column:auto}.portfolio-result-summary>.stat:last-child{grid-column:1/-1}}
+.portfolio-result-summary{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(2,minmax(0,1fr));overflow:hidden;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper);font-variant-numeric:tabular-nums}
+.portfolio-summary-metric{min-width:0;padding:20px clamp(18px,2vw,32px);overflow-wrap:anywhere}
+.portfolio-summary-metric+.portfolio-summary-metric{border-inline-start:1px solid var(--line)}
+.portfolio-summary-account{background:#eef3e8}
+.portfolio-summary-metric h2{font-size:14px;font-weight:550;color:#465d4d}
+.portfolio-summary-value{margin:6px 0;font-size:clamp(26px,2.1vw,34px);line-height:1.25;font-weight:600;letter-spacing:-.025em}
+.portfolio-summary-account .portfolio-summary-value{font-size:clamp(30px,2.4vw,38px)}
+.portfolio-summary-value small,.portfolio-summary-detail small{font-size:14px;font-weight:400;letter-spacing:0}
+.portfolio-summary-detail,.portfolio-summary-basis,.portfolio-summary-note{font-size:13px;line-height:1.6;color:#506454}
+.portfolio-summary-detail,.portfolio-summary-basis summary{display:flex;align-items:baseline;flex-wrap:wrap;gap:0 8px}
+.portfolio-summary-detail b,.portfolio-summary-basis b{font-weight:600}
+.portfolio-summary-basis summary{width:fit-content;list-style:none;cursor:pointer}
+.portfolio-summary-basis summary::-webkit-details-marker{display:none}
+.portfolio-summary-basis summary b::after{content:"";display:inline-block;vertical-align:.22em;margin-inline-start:6px;width:5px;height:5px;border:solid currentColor;border-width:0 1px 1px 0;transform:rotate(45deg)}
+.portfolio-summary-basis[open] summary b::after{vertical-align:0;transform:rotate(225deg)}
+.portfolio-summary-basis p,.portfolio-summary-account .portfolio-summary-note{margin-top:4px}
+@media(max-width:900px){
+  .portfolio-result-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .portfolio-summary-account{grid-column:1/-1;border-bottom:1px solid var(--line)}
+  .portfolio-summary-account+.portfolio-summary-metric{border-inline-start:0}
+  .portfolio-summary-metric{padding:14px 16px}
+  .portfolio-summary-basis summary{column-gap:4px}
+}
+@media(max-width:360px){
+  .portfolio-summary-metric:not(.portfolio-summary-account){padding-inline:10px}
+  .portfolio-summary-metric:not(.portfolio-summary-account) .portfolio-summary-value{font-size:24px}
+}
 .portfolio-chart-body{padding:17px 19px 14px}
 .portfolio-chart-range,.portfolio-chart-dates{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
 .portfolio-chart-range{justify-content:space-between;gap:8px 18px;margin-top:10px}

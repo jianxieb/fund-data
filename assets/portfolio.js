@@ -567,6 +567,9 @@
   function visibleValue(row) {
     return metric === 'allocation' ? P.accountAllocation(row)?.securitiesPct : metric === 'amount' ? row.value : metric === 'drawdown' ? row.drawdown : H.annual ? row.annualReturn : row.totalReturn;
   }
+  function returnBasis(r) {
+    return !H.annual ? '累计' : r.end >= P.addYears(r.start, 1) ? '年化' : '区间';
+  }
   function comparisonValue(row, view) {
     if (metric === 'amount') return row.positionPrincipal;
     if (metric === 'allocation') return P.accountAllocation(row)?.cashPct;
@@ -637,7 +640,7 @@
     });
     const mainPath = chartPath(primary, x, y);
     const area = mainPath && primary.every(M.finite) ? '<path d="' + mainPath + 'L' + x(rows.length - 1) + ' ' + bottom + 'L' + x(0) + ' ' + bottom + 'Z" fill="url(#portfolio-fill)"/>' : '';
-    const label = metric === 'allocation' ? '实际仓位' : metric === 'amount' ? '账户资产 · ' + currency(result.config).name : metric === 'drawdown' ? '组合回撤' : H.annual ? '组合年化收益' : '组合累计收益';
+    const label = metric === 'allocation' ? '实际仓位' : metric === 'amount' ? '账户资产 · ' + currency(result.config).name : metric === 'drawdown' ? '组合回撤' : '组合' + returnBasis(result) + '收益';
     const legend = (name, color) => '<span><i style="background:' + color + '"></i>' + H.esc(name) + '</span>';
     const lineLabel = line => (line.reference ? '参考 · ' : '') + line.label;
     const legendLabel = line => lineLabel(line) + (!line.values.some(M.finite) ? '（此区间无有效观测）' :
@@ -769,8 +772,8 @@
     const comparison = btn(benchmarkRequest ? '正在读取 ' + H.esc(benchmarkRequest.name) + '…' : code ?
       H.esc(code) + (H.annual ? ' 持有年化收益' : ' 持有累计收益') + '<span>更换</span>' : '添加对照标的',
       'benchmark', 'portfolio-benchmark-trigger', 'id="portfolio-period-benchmark" aria-haspopup="dialog"' + (running || exportingPdf ? ' disabled' : ''));
-    const measures = [['资金年化 XIRR', r => M.finite(r.xirr) ? H.pc(r.xirr) : '<span class="muted">' + H.esc(r.xirrMissing) + '</span>'],
-      [H.annual ? '组合年化收益' : '组合累计收益', r => H.pc(H.annual ? r.annualReturn : r.totalReturn)],
+    const measures = [[H.annual ? '组合年化收益' : '组合累计收益', r => H.pc(H.annual ? r.annualReturn : r.totalReturn)],
+      ...(periods.some(r => !r.error && r.deposits > 1) ? [['资金年化 XIRR', r => M.finite(r.xirr) ? H.pc(r.xirr) : '<span class="muted">' + H.esc(r.xirrMissing) + '</span>']] : []),
       [comparison, r => r.benchmark ? H.pc(H.annual ? r.benchmark.annualReturn : r.benchmark.totalReturn) : '<span class="muted">' + (r.config.benchmarkId ? '缺对照数据' : '未设置') + '</span>'],
       ['税后估值 / ' + unit, r => H.money(r.value)], ['累计投入 / ' + unit, r => H.money(r.contributed)],
       ['税后盈亏 / ' + unit, r => H.money(r.profit)], ['最大回撤', r => H.pc(r.mdd)], ['年化波动', r => H.pct(r.volatility, 2, false)]];
@@ -957,7 +960,7 @@
     const pp = value => (value > 0 ? '+' : '') + value.toFixed(2) + ' 个百分点';
     const body = '<div class="portfolio-method-comparison"><div class="stats-grid portfolio-comparison-stats">' +
       H.stat('期末税后估值差', (difference > 0 ? '+' : '') + H.money(difference, 2), unit, '一次性投入 ' + H.money(b.value, 2) + ' ' + unit) +
-      H.stat(H.annual ? '年化收益差' : '累计收益差', M.finite(selectedReturn) && M.finite(baselineReturn) ? pp(selectedReturn - baselineReturn) : '—', '', '一次性投入 ' + H.pct(baselineReturn, 2, false)) +
+      H.stat(returnBasis(r) + '收益差', M.finite(selectedReturn) && M.finite(baselineReturn) ? pp(selectedReturn - baselineReturn) : '—', '', '一次性投入 ' + H.pct(baselineReturn, 2, false)) +
       H.stat('最大回撤对照', H.pct(r.mdd, 2, false), '', '一次性投入 ' + H.pct(b.mdd, 2, false)) + '</div>' +
       (systematicMethods.has(r.config.initialMethod) && r.systematic?.daily?.length ? '' : nextTradePlan(r)) + (opportunityMethods.has(r.config.initialMethod) ? '<p class="portfolio-warning">历史研究规则，非胜率。历史收益优势主要来自VIX风险退出，分数自身的独立增益尚未证实。</p>' : r.config.initialMethod === 'cash_topup' ? '<p class="portfolio-warning">使用账户现金补仓 ' + (r.topupTimes || 0) + ' 次，累计买入 ' + H.money(r.topupAmount || 0, 2) + ' ' + unit + '。现金会减少，股票风险可能增加；满仓且无现金时不产生补仓。</p>' : r.config.initialMethod === 'qqq_bear_confirm' ? '<p class="portfolio-warning">本次模拟状态切换 ' + (r.qqqTimingChanges || 0) + ' 次。研究中的ETF收益优势主要来自2022年一次避险，不能视为已验证的普遍买卖信号。</p>' : systematicMethods.has(r.config.initialMethod) ? '<p class="portfolio-warning">' + {
         vix_panic_reentry: '研究收益优势主要来自2020年一次事件，结果对阈值敏感。',
@@ -984,15 +987,29 @@
   }
   function resultSummary(r) {
     const { unit } = currency(r.config);
-    const gainTax = r.holdings.some(h => h.taxRates.gain > 0), dividendTax = r.holdings.some(h => h.taxRates.dividend > 0);
-    const taxed = gainTax || dividendTax, closed = r.config.tax.liquidate;
-    const valueLabel = taxed ? '税后估值' : '账户资产';
-    return '<div class="stats-grid portfolio-result-summary">' +
-      H.stat('资金年化 XIRR', H.pct(r.xirr, 2, false), '', r.xirrMissing || '') +
-      H.stat(H.annual ? '组合年化收益' : '组合累计收益', H.pct(H.annual ? r.annualReturn : r.totalReturn, 2, false), '', '') +
-      H.stat(closed ? '清仓后现金' : '期末' + valueLabel, H.money(r.value), unit, '累计投入 ' + H.money(r.contributed) + ' ' + unit) +
-      H.stat(closed ? '清仓盈亏' : taxed ? '税后盈亏' : '账户盈亏', H.money(r.profit), unit, gainTax && !closed ? '浮盈预留税 ' + H.money(r.taxReserve, 2) + ' ' + unit : '') +
-      H.stat('最大回撤', H.pct(r.mdd, 2, false), '', '年化波动 ' + H.pct(r.volatility, 2, false)) + '</div>';
+    const taxed = r.holdings.some(h => h.taxRates.gain > 0 || h.taxRates.dividend > 0), closed = r.config.tax.liquidate;
+    const fullYear = r.end >= P.addYears(r.start, 1), basis = returnBasis(r);
+    const pct = n => H.pct(M.finite(n) && Math.abs(n) < .005 ? 0 : n, 2, false);
+    const amount = (n, signed = false) => {
+      const digits = n !== 0 && Math.abs(n) < 1 ? 2 : 0;
+      const rounded = Math.abs(n) < .005 ? 0 : n;
+      return (signed && rounded > 0 ? '+' : '') + H.money(rounded, digits) + ' <small>' + unit + '</small>';
+    };
+    const line = (label, value, color = '') => '<p class="portfolio-summary-detail"><span>' + label + '</span><b' + (color ? ' class="' + color + '"' : '') + '>' + value + '</b></p>';
+    const metric = (label, value, detail, cls = '') => '<div class="portfolio-summary-metric' + (cls ? ' ' + cls : '') + '"><h2>' + label + '</h2><p class="portfolio-summary-value">' + value + '</p>' + detail + '</div>';
+    const account = metric(closed ? '清仓后现金' : taxed ? '期末税后估值' : '期末账户资产', amount(r.value),
+      line(closed ? '清仓盈亏' : taxed ? '税后净盈亏' : '账户净盈亏', amount(r.profit, true), r.profit < -.005 ? 'negative' : '') +
+      (!closed && r.taxReserve >= .005 ? '<p class="portfolio-summary-note">已扣浮盈预留税 ' + H.money(r.taxReserve, 2) + ' ' + unit + '</p>' : ''), 'portfolio-summary-account');
+    let returnDetail = '';
+    if (fullYear && r.deposits > 1) {
+      returnDetail = '<details class="portfolio-summary-basis"><summary>资金年化 XIRR <b>' + (M.finite(r.xirr) ? pct(r.xirr) : H.esc(r.xirrMissing)) +
+        '</b></summary><p>组合收益看净值涨跌；资金年化还考虑每笔入金的日期和金额。</p></details>';
+    } else if (H.annual && !fullYear) {
+      returnDetail = '<p class="portfolio-summary-note">不足一年，显示区间实际收益</p>';
+    }
+    return '<section class="portfolio-result-summary" aria-label="模拟结果摘要">' + account +
+      metric('组合' + basis + '收益', pct(basis === '年化' ? r.annualReturn : r.totalReturn), returnDetail) +
+      metric('最大回撤', pct(r.mdd), line('年化波动', pct(r.volatility))) + '</section>';
   }
   function hasResultSignals(r) {
     return systematicMethods.has(r.config.initialMethod) || ['qqq_bear_confirm', 'cash_topup'].includes(r.config.initialMethod);

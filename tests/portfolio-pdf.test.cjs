@@ -713,7 +713,8 @@ test('cash-topup panel exposes predeclared per-asset order amounts and fees', as
   for (const order of plan.orders) assert.ok(html.includes(String(order.amount)));
   assert.ok(html.includes(String(plan.fee))); assert.ok(html.includes(plan.signalDay + '收盘确定'));
   assert.match(html, /金额已确定；成交价格变化会使实际仓位偏离目标/);
-  assert.match(html, /年化收益差/);
+  assert.match(html, /区间收益差/);
+  assert.doesNotMatch(html, /年化收益差/);
   f.helpers.annual = false;
   const cumulative = f.ui.view(f.helpers);
   assert.match(cumulative, /累计收益差/);
@@ -870,20 +871,38 @@ test('blank allocation defaults never hide malformed, negative or excessive weig
   }
 });
 
+const summaryOf = html => html.match(/<section class="portfolio-result-summary"[^>]*>([\s\S]*?)<\/section>/)[1];
+
+test('one deposit with staggered purchases shows the account outcome and one headline return', async () => {
+  const f = uiFixture(input => Object.assign(input.config, { monthly: 0, initialMethod: 'tranche_12', tax: { ...P.taxConfig(), liquidate: true } }));
+  await f.action('run');
+  const r = P.simulate(f.input), summary = summaryOf(f.ui.view(f.helpers));
+  assert.equal(r.deposits, 1);
+  assert.ok(r.plan.initial.length > 1);
+  assert.ok(summary.includes('清仓后现金</h2><p class="portfolio-summary-value">' + r.value));
+  assert.ok(summary.includes('清仓盈亏</span><b>+' + r.profit));
+  assert.ok(summary.includes('组合年化收益</h2><p class="portfolio-summary-value">' + r.annualReturn));
+  assert.doesNotMatch(summary, /XIRR|累计投入|浮盈预留税/);
+  const periods = await f.resultTab('periods');
+  assert.doesNotMatch(periods, /资金年化 XIRR/);
+  assert.match(periods, /累计投入 \/ 元/);
+});
+
 test('funding XIRR stays annualized beside portfolio returns in both display modes and exports', async () => {
   const f = uiFixture();
   await f.action('run');
   const expected = P.simulate(f.input);
-  const summary = html => html.match(/<div class="stats-grid portfolio-result-summary">([\s\S]*?)<\/div>/)[1];
-  const annual = summary(f.ui.view(f.helpers));
-  assert.ok(annual.includes('<strong>资金年化 XIRR</strong><b>' + expected.xirr + '</b>'));
-  assert.ok(annual.includes('<strong>组合年化收益</strong><b>' + expected.annualReturn + '</b>'));
+  const annual = summaryOf(f.ui.view(f.helpers));
+  assert.ok(annual.includes('资金年化 XIRR <b>' + expected.xirr + '</b>'));
+  assert.ok(annual.includes('组合年化收益</h2><p class="portfolio-summary-value">' + expected.annualReturn));
   assert.notEqual(expected.xirr, expected.annualReturn, 'different contribution dates change XIRR without changing the portfolio’s return basis');
   f.helpers.annual = false;
-  const cumulative = summary(f.ui.view(f.helpers));
-  assert.ok(cumulative.includes('<strong>资金年化 XIRR</strong><b>' + expected.xirr + '</b>'));
-  assert.ok(cumulative.includes('<strong>组合累计收益</strong><b>' + expected.totalReturn + '</b>'));
-  assert.doesNotMatch(cumulative, /资金累计|资金年化 XIRR.*组合年化收益/);
+  const cumulative = summaryOf(f.ui.view(f.helpers));
+  assert.ok(cumulative.includes('资金年化 XIRR <b>' + expected.xirr + '</b>'));
+  assert.ok(cumulative.includes('组合累计收益</h2><p class="portfolio-summary-value">' + expected.totalReturn));
+  assert.doesNotMatch(cumulative, /资金累计|组合年化收益|累计投入/);
+  assert.match(await f.resultTab('periods'), /<td>资金年化 XIRR<\/td>/);
+  await f.resultTab('chart');
   await f.action('export-result');
   assert.match(f.downloads[0][1], /组合累计收益%（现金流中性）/);
   assert.match(f.downloads[0][1], /全区间资金年化XIRR%/);
@@ -899,7 +918,11 @@ test('short periods explain unavailable funding XIRR and snapshots retain exact 
   const short = uiFixture(input => Object.assign(input.config, { years: 'custom', start: '2025-08-01', end: '2026-01-08' }));
   await short.action('run');
   const html = short.ui.view(short.helpers);
-  assert.match(html, /资金年化 XIRR[\s\S]*模拟不足一年，不外推资金年化/);
+  const summary = summaryOf(html);
+  assert.match(summary, /组合区间收益[\s\S]*不足一年/);
+  assert.doesNotMatch(summary, /资金年化 XIRR|组合年化收益/);
+  const r = P.simulate(short.input);
+  assert.ok(summary.includes(String(r.totalReturn)));
   await short.action('export-pdf');
   assert.match(textOf(Pdf.layout(short.reports[0], measure)), /模拟不足一年，不外推资金年化/);
   const missing = uiFixture(input => {
