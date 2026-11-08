@@ -195,7 +195,7 @@
   function portfolio() {
     return head('PORTFOLIO RESEARCH', '组合模拟', '按历史行情回测自选组合，查看投入规则下的收益、回撤和实际仓位。') + window.ChanghengPortfolio.view({
       esc, money, pct, pc, action, stat, card, modalTitle, openModal, toast, download, render,
-      lazyRows, loadFooter, resetList: () => loadedCounts.delete('portfolio-library'),
+      lazyRows, loadFooter, bindAutoLoad, resetList: (key = 'portfolio-library') => loadedCounts.delete(key),
       annual: state.annual, annualControl: annualControl()
     });
   }

@@ -64,6 +64,7 @@ try {
     return r.result.value;
   };
   await page('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor:dpr, mobile:false });
+  await page('Page.enable');
   await page('Page.addScriptToEvaluateOnNewDocument', { source:
     'if (location.origin === ' + JSON.stringify(url.origin) + ') localStorage.setItem("changheng.portfolio.v1",' + JSON.stringify(JSON.stringify(draft)) + ')' });
   await page('Page.navigate', { url: url.href });

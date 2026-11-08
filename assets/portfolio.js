@@ -8,7 +8,7 @@
     tax: { ...P.taxConfig(), usCapitalGains: 20, usDividend: 20 } };
   let draft = { ...defaults }, query = '', kind = 'all', market = 'all', hideBoards = false;
   const workspaceTabs = [['settings', '模拟设置'], ['holdings', '我的组合'], ['results', '模拟结果']];
-  let workspaceTab = 'settings', resultTab = 'overview', calculationOpen = false, benchmarkRequest = null;
+  let workspaceTab = 'settings', calculationOpen = false, benchmarkRequest = null;
   let result = null, resultKey = '', error = '', metric = 'return', importError = '', exportingPdf = false;
   let dailyDay = '', additionBudget = 10000;
   try {
@@ -44,8 +44,8 @@
     const label = document.getElementById('portfolio-dirty');
     if (label) label.textContent = draftNotice();
     const extend = document.getElementById('portfolio-extend-latest'), reason = document.getElementById('portfolio-extend-reason');
-    if (extend) extend.disabled = !result || resultKey !== signature() || result.config.tax?.liquidate || running;
-    if (reason && result) reason.textContent = resultKey !== signature() ? '参数已改动，请先重新模拟' : result.config.tax?.liquidate ? '期末已清仓，不能延续账户' : '原起点 ' + result.start + ' 保持不变';
+    if (extend && result) extend.disabled = !!extendBlock(result);
+    if (reason && result) reason.textContent = extendBlock(result);
     syncPurchasePlan();
   }
   function ensureCatalog() {
@@ -203,7 +203,6 @@
         if (!extend) additionBudget = params.monthly > 0 ? params.monthly : 10000;
         chartInputs.set(computed, { input, status: 'idle', refs: null, error: '' });
         result = computed; resultKey = JSON.stringify(params);
-        if (!extend) resultTab = 'overview';
         showResults = resultKey === signature();
       }
     } catch (e) {
@@ -290,7 +289,7 @@
     const money = value => H.money(value, 2) + ' ' + unit;
     const opportunity = opportunityMethods.has(method), {reserve, threshold} = opportunityTerms(method);
     const instructions = {
-      lump_sum: { first: '首个共同交易日收盘，按配置比例一次性买入。', next: [], execution: [] },
+      lump_sum: { first: '首个共同交易日收盘，按配置比例一次性买入。此后涨跌不会触发这笔本金重复买入。', next: [], execution: [] },
       vix_panic_reentry: { first: '首个共同交易日收盘，按原比例一次性建仓；此后才执行VIX退出与回买。', next: ['VIX ÷ VIX3M > 1.10 连续10次，卖出全部TQQQ。', '离场至少5次观测且VIX从离场后峰值回落30%，或比值 < 1 连续5次，才买回。'], execution: ['回买金额 = TQQQ已到账专属现金 ÷（1 + 买入费率）；不动用USD ETF或原配置现金。', 'VIX取严格早于决策日的收盘；订单在决策后的下一共同收盘成交。持有状态不变时，不重复买入。', '恢复后，比值 < 1 连续5次才重新启用退出计数。'] },
       relative_strength_rotation: { first: '首个共同交易日收盘，按原比例一次性建仓；三个批次也从原比例开始。', next: ['比较USD ETF与TQQQ的504日增长倍数：比值 > 1.25，本批转向USD；< 0.80，转向TQQQ；中间保留原方向。', '起始收盘复核当月批次，此后每月首个共同日更新一批；三批各占两只ETF股票资金的1/3。'], execution: ['只有三批合成目标变化才调仓；金额取决于两只ETF的持仓及专属现金，原配置现金不参与。', '下一共同收盘先卖出；回款到账后确定后续买单，再下一共同收盘买入。已有专属现金可先买。', '目标不变时不重复买入；不足505个共同收盘时保持原比例。'] },
       dual_risk_guard: { first: '首个共同交易日收盘，按原比例一次性建仓；此后由VIX与QQQ两道门管理TQQQ。', next: ['VIX门：比值 > 1.10 连续10次退出；等待至少5次且VIX回落30%，或比值 < 1 连续5次恢复。', 'QQQ门：低于200日均线且距252日高点跌至少20%，连续20次退出；高于均线连续3次恢复。'], execution: ['任一门退出就卖出全部TQQQ；两门都恢复，才用TQQQ专属现金 ÷（1 + 买入费率）买回。', 'VIX取决策日前收盘，QQQ可用决策日收盘；下一共同收盘成交。状态不变不重复买入，USD和原现金不参与。'] },
@@ -332,8 +331,7 @@
       const amounts = [
         ...quote.orders.map(order => [order.code === 'USD' ? '买USD ETF' : '买' + order.code, order.amount]),
         ...(opportunity ? quote.parked.map(p => [p.id.replace('us:', '') + '待加现金', p.amount]) : []),
-        ...(quote.originalCash > 0 ? [[opportunity ? '原配置现金' : '本笔保留现金', quote.originalCash]] : []),
-        ...(quote.fee > 0 ? [['本笔买入费', quote.fee]] : [])
+        [opportunity ? '原配置现金' : '本笔保留现金', quote.originalCash], ['本笔买入费', quote.fee], ['首笔合计', quote.total]
       ];
       allocations = '<dl class="portfolio-purchase-amounts" aria-label="首笔金额">' + amounts.map(([label, amount]) => '<div><dt>' + H.esc(label) + '</dt><dd>' + money(amount) + '</dd></div>').join('') + '</dl>';
       if (info.conditional) allocations += '<p class="portfolio-purchase-caption">以上金额以首日满足持有条件为前提。</p>';
@@ -414,27 +412,31 @@
       '<div class="actions">' + btn('均分权重', 'equal', 'text-link small', draft.positions.length ? '' : 'disabled') + (draft.positions.length ? btn('清空', 'clear', 'text-link small') : '') + '</div>',
       '<div class="actions portfolio-config-actions">' + btn('导入配置', 'import', 'btn portfolio-export') + btn('导出配置', 'save', 'btn portfolio-export', draft.positions.length ? '' : 'disabled') + '<input type="file" id="portfolio-import" accept="application/json,.json" hidden></div>');
   }
-  function libraryRows() {
-    const q = query.trim().toLowerCase();
-    return (catalog?.assets || []).filter(a => (kind === 'all' || a.kind === kind) && (market === 'all' || a.market === market) &&
-      (!hideBoards || !/^stock:(68[89]|30[01])/.test(a.id)) && (!q || (a.name + ' ' + a.code + ' ' + a.category + ' ' + (a.style || '')).toLowerCase().includes(q)));
+  function filterAssets(assets, filters) {
+    const q = filters.query.trim().toLowerCase();
+    return assets.filter(a => (filters.kind === 'all' || a.kind === filters.kind) && (filters.market === 'all' || a.market === filters.market) &&
+      (!filters.hideBoards || !/^stock:(68[89]|30[01])/.test(a.id)) &&
+      (!q || [a.name, a.code, a.category, a.style, a.id].filter(Boolean).join(' ').toLowerCase().includes(q)));
+  }
+  function pickerMetrics(row, showRiskYears = false) {
+    const preview = row.performance;
+    const metric = (label, value, reason, note, range) => '<div title="' + H.esc(reason || range || '') + '"><span>' + label + '</span><b class="' + (M.finite(value) ? value < 0 ? 'negative' : 'positive' : 'muted') + '">' + (M.finite(value) ? H.pct(value, 1) : reason?.startsWith('历史不足') ? H.esc(reason.replace('历史', '')) : '—') + '</b>' + (note ? '<small>' + H.esc(note) + '</small>' : '') + '</div>';
+    return '<div class="portfolio-library-metrics" role="group" aria-label="' + H.esc(row.name + '的历史收益与回撤') + '">' + [1, 3, 5].map(y => {
+      const r = preview?.annual?.[y];
+      return metric(y + '年年化', r?.value, r?.reason || (!r ? row.missing || '缺收益历史' : ''), '', r?.start && r.start + ' — ' + r.end);
+    }).join('') + metric('5年内最大回撤', preview?.risk5?.mdd, preview?.risk5?.reason || (!preview ? row.missing || '缺回撤历史' : ''), M.finite(preview?.risk5?.actualYears) && (showRiskYears || preview.risk5.partial) ? '实际' + H.money(preview.risk5.actualYears, 1) + '年' : '', preview?.risk5?.start && preview.risk5.start + ' — ' + preview.risk5.end) + '</div>';
   }
   function pickerRow(row) {
     const selected = draft.positions.some(p => p.id === row.id);
     const stock = row.kind === 'stock' ? (window.STOCKS || []).find(s => s.c === row.code) : null;
     const status = stock ? M.stockResearchStatus(stock) : null;
-    const preview = row.performance;
-    const metric = (label, value, reason, note, range) => '<div title="' + H.esc(reason || range || '') + '"><span>' + label + '</span><b class="' + (M.finite(value) ? value < 0 ? 'negative' : 'positive' : 'muted') + '">' + (M.finite(value) ? H.pct(value, 1) : reason?.startsWith('历史不足') ? H.esc(reason.replace('历史', '')) : '—') + '</b>' + (note ? '<small>' + H.esc(note) + '</small>' : '') + '</div>';
-    const performance = '<div class="portfolio-library-metrics" role="group" aria-label="' + H.esc(row.name + '的历史收益与回撤') + '">' + [1, 3, 5].map(y => {
-      const r = preview?.annual?.[y];
-      return metric(y + '年年化', r?.value, r?.reason || (!r ? row.missing || '缺收益历史' : ''), '', r?.start && r.start + ' — ' + r.end);
-    }).join('') + metric('5年内最大回撤', preview?.risk5?.mdd, preview?.risk5?.reason || (!preview ? row.missing || '缺回撤历史' : ''), preview?.risk5?.partial ? '实际' + H.money(preview.risk5.actualYears, 1) + '年' : '', preview?.risk5?.start && preview.risk5.start + ' — ' + preview.risk5.end) + '</div>';
+    const performance = pickerMetrics(row);
     return '<div class="portfolio-library-row"><div class="portfolio-library-main"><strong>' + H.esc(row.name) + ((row.leverage || 1) > 1 ? tag(row.leverage + '倍', 'warn') : '') + '</strong><span>' + H.esc(row.code) + ' · ' + H.esc(typeName[row.kind]) + ' · ' + (row.market === 'us' ? '海外 · 美元' : '境内 · 人民币') + ' · ' + H.esc(row.category || '') + '</span><small>' + H.esc(row.status === 'available' ? row.first + ' — ' + row.asOf : row.missing) + '</small>' +
       (status ? '<div class="portfolio-stock-status"><span>' + H.esc(status.label) + '</span>' + H.action('研究详情', 'stock-detail', 'text-link small', 'data-code="' + H.esc(stock.c) + '" aria-label="' + H.esc(stock.n + '研究详情') + '"') + '</div>' : '') + '</div>' + performance +
       btn(selected ? '已选' : '+', 'add', 'portfolio-add' + (selected ? ' selected' : ''), 'data-value="' + H.esc(row.id) + '" aria-label="' + H.esc((selected ? '已选择' : '添加') + row.name) + '"' + (selected ? ' disabled' : '')) + '</div>';
   }
   function library() {
-    const rows = libraryRows();
+    const rows = filterAssets(catalog?.assets || [], { query, kind, market, hideBoards });
     return H.card('添加标的', '已收录 ' + (catalog?.summary.total || 0) + '只 · 当前匹配 ' + rows.length + '只',
       '<div class="portfolio-library-controls"><input id="portfolio-search" type="search" placeholder="搜索名称、代码或行业" aria-label="搜索组合标的" value="' + H.esc(query) + '"><div class="portfolio-filters">' +
       '<div class="filter-chips">' + [['all', '全部'], ['etf', 'ETF'], ['stock', '个股'], ['fund', '基金']].map(([k, label]) => btn(label, 'kind', 'filter-chip' + (kind === k ? ' active' : ''), 'data-value="' + k + '" aria-pressed="' + (kind === k) + '"')).join('') + '</div>' +
@@ -442,21 +444,40 @@
       '<div class="portfolio-library-tools"><label class="check-label"><input type="checkbox" id="portfolio-hide-boards"' + (hideBoards ? ' checked' : '') + '>隐藏科创板 / 创业板个股</label>' + (query || kind !== 'all' || market !== 'all' ? btn('重置筛选', 'reset-filter', 'text-link small') : '') + '</div></div>' +
       '<div class="portfolio-library-scroll"><div data-list-body="portfolio-library">' + H.lazyRows('portfolio-library', rows, pickerRow, 29) + '</div>' + H.loadFooter('portfolio-library') + (!rows.length ? '<div class="portfolio-no-match">没有匹配的已收录标的</div>' : '') + '</div>');
   }
-  function benchmarkOptions(search = '') {
-    const saved = chartInputs.get(result).input.catalog.assets, q = search.trim().toLowerCase();
+  const benchmarkFilters = { query: '', market: 'all', kind: 'all' };
+  function benchmarkOptions() {
+    const saved = chartInputs.get(result).input.catalog.assets;
+    const q = benchmarkFilters.query.trim().toLowerCase();
     const preferred = new Set([result.config.benchmarkId, ...result.config.positions.filter(p => p.weight > 0).map(p => p.id), 'us:SPY', 'us:QQQ'].filter(Boolean));
-    const rows = saved.filter(a => q ? [a.code, a.name, a.id].some(text => text?.toLowerCase().includes(q)) : preferred.has(a.id));
+    const rows = filterAssets(saved, benchmarkFilters);
     rows.sort((a,b) => Number(b.code.toLowerCase() === q) - Number(a.code.toLowerCase() === q) || Number(preferred.has(b.id)) - Number(preferred.has(a.id)));
-    if (!rows.length) return '<p class="muted">没有匹配的代码或名称</p>';
-    return rows.slice(0, 40).map(a => btn('<strong>' + H.esc(a.code) + '</strong><span>' + H.esc(a.name) + '</span>' + (a.id === result.config.benchmarkId ? '<small>当前对照</small>' : ''),
-      'select-benchmark', 'portfolio-benchmark-option', 'data-value="' + H.esc(a.id) + '"')).join('') + (rows.length > 40 ? '<p class="muted">输入更完整的代码或名称可缩小范围</p>' : '');
+    if (!rows.length) return '<p class="muted">没有匹配的对照标的</p>';
+    const row = a => {
+      const current = a.id === result.config.benchmarkId, active = current && result.benchmark;
+      const choice = active ? '当前对照' : current ? '重试对照' : '选作对照';
+      return '<div class="portfolio-library-row"><div class="portfolio-library-main"><strong>' + H.esc(a.name) + '</strong><span>' +
+        H.esc(a.code) + ' · ' + H.esc(typeName[a.kind] || a.kind) + '</span><small>' + H.esc(a.status === 'available' ? a.first + ' — ' + a.asOf : a.missing || '缺历史行情') +
+        '</small></div>' + pickerMetrics(a, true) + btn(choice, 'select-benchmark', 'text-link small',
+        'data-value="' + H.esc(a.id) + '" aria-label="' + H.esc(a.name + '：' + choice) + '"' + (active ? ' disabled' : '')) + '</div>';
+    };
+    return '<div data-list-body="portfolio-benchmarks">' + H.lazyRows('portfolio-benchmarks', rows, row, 24) + '</div>' + H.loadFooter('portfolio-benchmarks');
   }
-  function openBenchmark() {
+  function benchmarkFilter(field, label, options) {
+    return '<label>' + label + '<select data-portfolio-field="benchmark-' + field + '">' +
+      options.map(([id,name]) => '<option value="' + id + '">' + name + '</option>').join('') + '</select></label>';
+  }
+  let benchmarkTriggerId = 'portfolio-benchmark';
+  function openBenchmark(button) {
     if (!result || running || exportingPdf) return;
-    H.openModal(H.modalTitle('选择对照标的') + '<div class="portfolio-benchmark-search"><input type="search" id="portfolio-benchmark-query" data-portfolio-field="benchmark-query" aria-label="搜索对照标的" placeholder="搜索代码或名称">' +
-      '<div class="portfolio-benchmark-options" id="portfolio-benchmark-options">' + benchmarkOptions() + '</div><div class="portfolio-benchmark-actions">' +
+    benchmarkTriggerId = button.id || 'portfolio-benchmark';
+    Object.assign(benchmarkFilters, { query: '', market: 'all', kind: 'all' });
+    H.resetList('portfolio-benchmarks');
+    H.openModal(H.modalTitle('选择对照标的') + '<div class="portfolio-benchmark-search"><div class="portfolio-benchmark-filters"><input type="search" id="portfolio-benchmark-query" data-portfolio-field="benchmark-query" aria-label="搜索对照标的" placeholder="搜索代码或名称">' +
+      benchmarkFilter('market', '市场', [['all', '全部市场'], ['cn', '境内'], ['us', '海外']]) + benchmarkFilter('kind', '类别', [['all','全部类别'], ['etf','ETF'], ['stock','个股'], ['fund','基金']]) + '</div>' +
+      '<div class="portfolio-library-scroll portfolio-benchmark-options" id="portfolio-benchmark-options">' + benchmarkOptions() + '</div><div class="portfolio-benchmark-actions">' +
       H.action('取消并返回', 'close', 'btn') + btn('不设对照', 'no-benchmark', 'btn primary') + '</div></div>');
     const search = document.getElementById('portfolio-benchmark-query');
+    H.bindAutoLoad?.();
     search?.addEventListener('compositionend', () => handleInput(search));
     search?.focus({preventScroll:true});
   }
@@ -466,9 +487,10 @@
     const row = id ? input.catalog.assets.find(a => a.id === id) : null;
     if (id && !row) return;
     document.getElementById('dialog')?.close();
-    const request = { id, name: row?.code };
+    const request = { id, name: row?.code }, triggerId = benchmarkTriggerId;
+    const refocus = () => document.getElementById(triggerId)?.focus({ preventScroll: true });
     benchmarkRequest = request;
-    if (id) update();
+    if (id) { update(); refocus(); }
     let failure = null;
     try {
       if (row) {
@@ -488,7 +510,9 @@
     }
     input.config.benchmarkId = id;
     resultKey = JSON.stringify(input.config);
+    const refocusAfterRender = !id || document.activeElement?.id === triggerId;
     draft.benchmarkId = id; persist(); update();
+    if (refocusAfterRender) refocus();
   }
   function benchmarkLegend(value) {
     const a = asset(result.config.benchmarkId);
@@ -647,8 +671,9 @@
   }
   function chart() {
     const view = chartState();
-    return H.card('组合走势', chartStrategyCaption(result), '<div class="portfolio-chart-body"><div id="portfolio-chart-figure">' + chartFigure() + '</div>' + chartNavigator(view) + '</div>',
-      '<div class="portfolio-chart-controls"><div class="segmented" aria-label="走势内容">' + [['return', '收益率'], ['amount', '账户资产'], ['allocation', '实际仓位'], ['drawdown', '回撤']].map(([key, name]) => btn(name, 'metric', key === metric ? 'active' : '', 'data-value="' + key + '"')).join('') + '</div>' + (metric === 'return' ? H.annualControl : '') + chartChooser(view) + '</div>');
+    return H.card('组合走势', '', '<div class="portfolio-chart-body"><div id="portfolio-chart-figure">' + chartFigure() + '</div>' + chartNavigator(view) + '</div>',
+      '<div class="portfolio-chart-controls"><div class="segmented" aria-label="走势内容">' + [['return', '收益率'], ['amount', '账户资产'], ['allocation', '实际仓位'], ['drawdown', '回撤']].map(([key, name]) => btn(name, 'metric', key === metric ? 'active' : '', 'data-value="' + key + '" aria-pressed="' + (key === metric) + '"')).join('') + '</div>' + chartChooser(view) +
+      btn('导出逐日走势 CSV', 'export-result', 'portfolio-result-link') + '</div>');
   }
   function closeChartChooser(focus = false) {
     if (!chartView?.chooser) return;
@@ -734,12 +759,17 @@
   }
   function snapshots() {
     const periods = result.snapshots || [], unit = currency(result.config).unit;
+    const benchmark = asset(result.config.benchmarkId);
+    const code = benchmark?.code || result.benchmark?.name || result.config.benchmarkId;
+    const comparison = btn(benchmarkRequest ? '正在读取 ' + H.esc(benchmarkRequest.name) + '…' : code ?
+      H.esc(code) + (H.annual ? ' 持有年化收益' : ' 持有累计收益') + '<span>更换</span>' : '添加对照标的',
+      'benchmark', 'portfolio-benchmark-trigger', 'id="portfolio-period-benchmark" aria-haspopup="dialog"' + (running || exportingPdf ? ' disabled' : ''));
     const measures = [['资金年化 XIRR', r => M.finite(r.xirr) ? H.pc(r.xirr) : '<span class="muted">' + H.esc(r.xirrMissing) + '</span>'],
       [H.annual ? '组合年化收益' : '组合累计收益', r => H.pc(H.annual ? r.annualReturn : r.totalReturn)],
-      [H.annual ? '对照持有年化' : '对照持有累计', r => r.benchmark ? H.pc(H.annual ? r.benchmark.annualReturn : r.benchmark.totalReturn) : '<span class="muted">' + (r.config.benchmarkId ? '缺对照数据' : '未设置') + '</span>'],
+      [comparison, r => r.benchmark ? H.pc(H.annual ? r.benchmark.annualReturn : r.benchmark.totalReturn) : '<span class="muted">' + (r.config.benchmarkId ? '缺对照数据' : '未设置') + '</span>'],
       ['税后估值 / ' + unit, r => H.money(r.value)], ['累计投入 / ' + unit, r => H.money(r.contributed)],
       ['税后盈亏 / ' + unit, r => H.money(r.profit)], ['最大回撤', r => H.pc(r.mdd)], ['年化波动', r => H.pct(r.volatility, 2, false)]];
-    return H.card('区间快照', '各区间独立建仓', '<div class="table-wrap"><table class="portfolio-snapshot-table"><thead><tr><th>指标</th>' + periods.map(r => '<th>近' + r.years + '年<small>' + (r.error ? '无法模拟' : r.start + ' — ' + r.end) + '</small></th>').join('') + '</tr></thead><tbody>' + measures.map(([label, format]) => '<tr><td>' + label + '</td>' + periods.map(r => '<td class="num">' + (r.error ? '—' : format(r)) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>' + periods.filter(r => r.error || r.benchmarkError).map(r => '<p class="portfolio-snapshot-missing">近' + r.years + '年' + (r.error ? '：' : '对照：') + H.esc(r.error || r.benchmarkError) + '</p>').join(''), H.annualControl);
+    return H.card('区间快照', '各区间独立建仓', '<div class="table-wrap"><table class="portfolio-snapshot-table"><thead><tr><th>指标</th>' + periods.map(r => '<th>近' + r.years + '年<small>' + (r.error ? '无法模拟' : r.start + ' — ' + r.end) + '</small></th>').join('') + '</tr></thead><tbody>' + measures.map(([label, format]) => '<tr><td>' + label + '</td>' + periods.map(r => '<td class="num">' + (r.error ? '—' : format(r)) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>' + periods.filter(r => r.error || r.benchmarkError).map(r => '<p class="portfolio-snapshot-missing">近' + r.years + '年' + (r.error ? '：' : '对照：') + H.esc(r.error || r.benchmarkError) + '</p>').join(''));
   }
   function selectedDaily() {
     const rows = result?.systematic?.daily || [];
@@ -851,13 +881,11 @@
     const opportunity = opportunityMethods.has(r.config.initialMethod), title = opportunity ? '每日加仓分数' : '每日策略状态';
     if (!row) return H.card(title, '缺逐日规则记录', '<p class="portfolio-warning">请重新模拟以读取完整记录。</p>');
     const index = rows.indexOf(row), unit = currency(r.config).unit;
-    const blocked = resultKey !== signature() ? '参数已改动，请先重新模拟' : r.config.tax?.liquidate ? '期末已清仓，不能延续账户' : running ? '正在更新行情' : '';
-    const action = '<div class="actions">' + btn(opportunity ? '导出逐日加仓分数 CSV' : '导出逐日策略状态 CSV', 'export-daily', 'portfolio-result-link') +
-      btn('延续到最新行情', 'extend-latest', 'btn', 'id="portfolio-extend-latest"' + (blocked ? ' disabled title="' + H.esc(blocked) + '"' : '')) + '</div>';
+    const action = btn(opportunity ? '导出逐日加仓分数 CSV' : '导出逐日策略状态 CSV', 'export-daily', 'portfolio-result-link');
     const calculation = '<dl>' + window.ChanghengPortfolioPdf.explainDaily(row).map(([label, text]) => '<div><dt>' + H.esc(label) + '</dt><dd>' + H.esc(text) + '</dd></div>').join('') + '</dl>';
     const body = '<div class="portfolio-daily-body"><div class="portfolio-daily-toolbar"><div class="portfolio-daily-date">' + btn('上一交易日', 'daily-prev', 'btn', index === 0 ? 'disabled' : '') +
       '<label>' + (opportunity ? '评分日期' : '状态日期') + '<input id="portfolio-daily-date" data-portfolio-field="indicator-date" type="date" value="' + row.day + '" min="' + rows[0].day + '" max="' + rows.at(-1).day + '"></label>' + btn('下一交易日', 'daily-next', 'btn', index === rows.length - 1 ? 'disabled' : '') + '</div>' +
-      '<span id="portfolio-extend-reason" class="small muted">' + (blocked || '原起点 ' + r.start + ' 保持不变') + '</span></div><div class="portfolio-daily-main"><div class="portfolio-daily-signal"><div class="portfolio-daily-numbers">' + (row.indicators || []).map(item => { const d = window.ChanghengPortfolioPdf.dailyDisplay(item); return '<div><span>' + H.esc(d.label) + '</span><strong>' + H.esc(d.value) + '</strong><small>' + H.esc(d.basis) + '</small></div>'; }).join('') +
+      '</div><div class="portfolio-daily-main"><div class="portfolio-daily-signal"><div class="portfolio-daily-numbers">' + (row.indicators || []).map(item => { const d = window.ChanghengPortfolioPdf.dailyDisplay(item); return '<div><span>' + H.esc(d.label) + '</span><strong>' + H.esc(d.value) + '</strong><small>' + H.esc(d.basis) + '</small></div>'; }).join('') +
       '</div><p class="portfolio-daily-reason"' + (row.status === 'missing' ? ' role="status"' : '') + '>' + H.esc(dailyReason(row)) + '</p><p class="portfolio-daily-source">决策收盘 ' + row.day + ' · 来源 ' + H.esc(dailySources(row)) + '</p><dl class="portfolio-daily-facts">' + dailyFacts(row).map(([label, value]) => '<div><dt>' + H.esc(label) + '</dt><dd>' + H.esc(value) + '</dd></div>').join('') + '</dl>' + (opportunity ? '' : '<details class="portfolio-daily-calculation"><summary>本日怎么算</summary>' + calculation + '</details>') + '</div>' +
       '<div class="portfolio-addition"><h3>' + (opportunity ? '按本日分数分配新增资金（试算）' : '按当前策略分配新增资金（试算）') + '</h3><label class="portfolio-field"><span>本次新增预算 / ' + unit + '</span><input id="portfolio-addition-budget" data-portfolio-field="indicator-budget" type="number" min="0" max="1000000000000" step="any" value="' + inputValue(additionBudget, 2) + '"></label><p class="small muted">预算试算，不计入回测年化</p><div id="portfolio-addition-values">' + additionMarkup(row) + '</div></div></div>' +
       (opportunity ? '<details id="portfolio-score-calculation" class="portfolio-daily-calculation portfolio-opportunity-calculation"' + (calculationOpen ? ' open' : '') + '><summary>本日分数与买入金额怎么算</summary>' + calculation + '</details>' : '') + dailyChart(rows, row) +
@@ -920,10 +948,11 @@
     if (b.error) return '<p class="portfolio-warning">一次性投入对照未完成：' + H.esc(b.error) + '</p>';
     const { unit } = currency(r.config), difference = r.value - b.value;
     const verdict = Math.abs(difference) < .005 ? '本区间与一次性投入持平' : difference > 0 ? '本区间高于一次性投入' : '本区间低于一次性投入';
+    const selectedReturn = H.annual ? r.annualReturn : r.totalReturn, baselineReturn = H.annual ? b.annualReturn : b.totalReturn;
     const pp = value => (value > 0 ? '+' : '') + value.toFixed(2) + ' 个百分点';
     const body = '<div class="portfolio-method-comparison"><div class="stats-grid portfolio-comparison-stats">' +
       H.stat('期末税后估值差', (difference > 0 ? '+' : '') + H.money(difference, 2), unit, '一次性投入 ' + H.money(b.value, 2) + ' ' + unit) +
-      H.stat('年化收益差', pp(r.annualReturn - b.annualReturn), '', '一次性投入 ' + H.pct(b.annualReturn, 2, false)) +
+      H.stat(H.annual ? '年化收益差' : '累计收益差', M.finite(selectedReturn) && M.finite(baselineReturn) ? pp(selectedReturn - baselineReturn) : '—', '', '一次性投入 ' + H.pct(baselineReturn, 2, false)) +
       H.stat('最大回撤对照', H.pct(r.mdd, 2, false), '', '一次性投入 ' + H.pct(b.mdd, 2, false)) + '</div>' +
       (systematicMethods.has(r.config.initialMethod) && r.systematic?.daily?.length ? '' : nextTradePlan(r)) + (opportunityMethods.has(r.config.initialMethod) ? '<p class="portfolio-warning">历史研究规则，非胜率。历史收益优势主要来自VIX风险退出，分数自身的独立增益尚未证实。</p>' : r.config.initialMethod === 'cash_topup' ? '<p class="portfolio-warning">使用账户现金补仓 ' + (r.topupTimes || 0) + ' 次，累计买入 ' + H.money(r.topupAmount || 0, 2) + ' ' + unit + '。现金会减少，股票风险可能增加；满仓且无现金时不产生补仓。</p>' : r.config.initialMethod === 'qqq_bear_confirm' ? '<p class="portfolio-warning">本次模拟状态切换 ' + (r.qqqTimingChanges || 0) + ' 次。研究中的ETF收益优势主要来自2022年一次避险，不能视为已验证的普遍买卖信号。</p>' : systematicMethods.has(r.config.initialMethod) ? '<p class="portfolio-warning">' + {
         vix_panic_reentry: '研究收益优势主要来自2020年一次事件，结果对阈值敏感。',
@@ -941,7 +970,8 @@
       '<td class="num">' + H.pc(h.performance.annualReturn) + '<span class="sub">' + H.esc(h.performance.annualMissing || (h.performance.annualBasis === 'money_weighted_xirr' ? 'XIRR' : '不足一年不外推')) + '</span></td><td class="num">' + H.pc(h.performance.totalReturn) + '</td><td class="num">' + H.pc(h.performance.mdd) + '</td><td class="num">' + H.pct(h.performance.volatility, 2, false) + '</td>' +
       '<td class="num">' + H.pct(h.targetWeight, 2, false) + '</td><td class="num">' + H.pct(h.actualWeight, 2, false) + '</td><td class="num">' + H.money(h.value, 2) + '</td><td class="num"><span class="' + (h.profit < 0 ? 'negative' : 'positive') + '">' + H.money(h.profit, 2) + '</span></td><td class="num">' + H.money(h.transactionCost, 2) + '</td><td class="num">' + H.money(h.taxCost, 2) + '</td></tr>').join('');
     const holdingTable = '<div class="table-wrap" tabindex="0" role="region" aria-label="持仓收益与风险明细"><table class="portfolio-holdings-table"><thead><tr class="portfolio-holdings-groups"><th rowspan="2" scope="col">标的</th><th colspan="4" scope="colgroup">策略收益与风险</th><th colspan="6" scope="colgroup">投入与贡献</th></tr><tr><th scope="col">策略年化收益</th><th scope="col" title="实际盈亏 ÷ 累计买入金额（含买入费）">累计投入收益</th><th scope="col">最大回撤</th><th scope="col">年化波动</th><th scope="col">目标权重</th><th scope="col">期末权重</th><th scope="col">税后估值 / ' + unit + '</th><th scope="col">盈亏贡献 / ' + unit + '</th><th scope="col">交易费 / ' + unit + '</th><th scope="col">税费含预留 / ' + unit + '</th></tr></thead><tbody>' + rows + (r.cash > .005 ? '<tr><td>现金</td><td class="num">0.00%</td><td class="num">0.00%</td><td class="num">0.00%</td><td class="num">0.00%</td><td class="num">' + H.pct(r.cashWeight, 2, false) + '</td><td class="num">' + H.pct(r.cash / r.value * 100, 2, false) + '</td><td class="num">' + H.money(r.cash, 2) + '</td><td class="num">0.00</td><td class="num">0.00</td><td class="num">0.00</td></tr>' : '') + '</tbody></table></div>';
-    return H.card('持仓贡献', r.start + ' — ' + r.end + ' · ' + name + (gainTax && !closed ? ' · 已减浮盈预留税' : ''), '<div class="portfolio-structure portfolio-end-structure"><h3>期末结构</h3>' + structure(r.holdings.map(h => ({ id: h.id, weight: h.actualWeight }))) + '</div>' + holdingTable) + '<div class="portfolio-result-notes"><span>入金 ' + r.deposits + '笔</span><span>买入 ' + r.transactions.filter(t => t.side === 'buy').length + '笔</span><span>再平衡 ' + r.rebalances + '次</span><span>交易费用 ' + H.money(r.tradeCost, 2) + ' ' + unit + '</span>' + (gainTax ? '<span>已实现盈利税 ' + H.money(r.capitalTax, 2) + ' ' + unit + '</span>' : '') + (dividendTax ? '<span>分红税 ' + H.money(r.dividendTax, 2) + ' ' + unit + '</span>' : '') + (gainTax && !closed ? '<span>浮盈预留税 ' + H.money(r.taxReserve, 2) + ' ' + unit + '</span>' : '') + (r.config.dividendPolicy === 'cash' ? '<span>累计现金分红 ' + H.money(r.cashDividends, 2) + ' ' + unit + '</span>' : '') + (r.initialReserve > .005 ? '<span>待投入本金 ' + H.money(r.initialReserve, 2) + ' ' + unit + '</span>' : '') + (r.timingChanges ? '<span>择时切换 ' + r.timingChanges + '次</span>' : '') + '</div>';
+    return H.card('持仓贡献', r.start + ' — ' + r.end + ' · ' + name + (gainTax && !closed ? ' · 已减浮盈预留税' : ''), '<div class="portfolio-structure portfolio-end-structure"><h3>期末结构</h3>' + structure(r.holdings.map(h => ({ id: h.id, weight: h.actualWeight }))) + '</div>' + holdingTable,
+      btn('导出持仓收益明细 CSV', 'export-holdings', 'portfolio-result-link')) + '<div class="portfolio-result-notes"><span>入金 ' + r.deposits + '笔</span><span>买入 ' + r.transactions.filter(t => t.side === 'buy').length + '笔</span><span>再平衡 ' + r.rebalances + '次</span><span>交易费用 ' + H.money(r.tradeCost, 2) + ' ' + unit + '</span>' + (gainTax ? '<span>已实现盈利税 ' + H.money(r.capitalTax, 2) + ' ' + unit + '</span>' : '') + (dividendTax ? '<span>分红税 ' + H.money(r.dividendTax, 2) + ' ' + unit + '</span>' : '') + (gainTax && !closed ? '<span>浮盈预留税 ' + H.money(r.taxReserve, 2) + ' ' + unit + '</span>' : '') + (r.config.dividendPolicy === 'cash' ? '<span>累计现金分红 ' + H.money(r.cashDividends, 2) + ' ' + unit + '</span>' : '') + (r.initialReserve > .005 ? '<span>待投入本金 ' + H.money(r.initialReserve, 2) + ' ' + unit + '</span>' : '') + (r.timingChanges ? '<span>择时切换 ' + r.timingChanges + '次</span>' : '') + '</div>';
   }
   function yearlyResults(r) {
     return '<section class="card portfolio-yearly"><div class="card-head"><h2>年度表现</h2><span class="small">年度累计收益</span></div><div class="portfolio-year-grid">' + r.annual.map(y => '<div><span>' + y.year + '</span><strong class="num">' + H.pc(y.return) + '</strong><small>' + y.start.slice(5) + ' — ' + y.end.slice(5) + '</small></div>').join('') + '</div></section>';
@@ -958,47 +988,80 @@
       H.stat(closed ? '清仓盈亏' : taxed ? '税后盈亏' : '账户盈亏', H.money(r.profit), unit, gainTax && !closed ? '浮盈预留税 ' + H.money(r.taxReserve, 2) + ' ' + unit : '') +
       H.stat('最大回撤', H.pct(r.mdd, 2, false), '', '年化波动 ' + H.pct(r.volatility, 2, false)) + '</div>';
   }
-  function resultTabs(r) {
-    const method = r.config.initialMethod, scoring = opportunityMethods.has(method);
-    const hasSignals = systematicMethods.has(method) || ['qqq_bear_confirm', 'cash_topup'].includes(method);
-    return [['overview', '结果与走势'], ...(hasSignals ? [['signals', scoring ? '加仓分数' : '策略信号']] : []),
-      ['periods', '区间表现'], ['holdings', '持仓明细']];
+  function hasResultSignals(r) {
+    return systematicMethods.has(r.config.initialMethod) || ['qqq_bear_confirm', 'cash_topup'].includes(r.config.initialMethod);
   }
-  function chartStrategyCaption(r) {
-    const cfg = r.config, strategy = P.strategyNames(cfg), parts = [];
-    if (cfg.initial > 0) parts.push('本金：' + strategy.initial);
-    else if (resultTabs(r).some(([id]) => id === 'signals')) parts.push('仓位策略：' + strategy.initial);
-    if (cfg.monthly > 0) parts.push('追加：' + strategy.contribution);
-    parts.push(({ none: '不再平衡', month: '每月再平衡', quarter: '每季再平衡', year: '每年再平衡' })[cfg.rebalance]);
-    return '<span class="portfolio-chart-strategy">' + H.esc(parts.join(' · ')) + '</span>';
+  function runSourceRows(r) {
+    const { catalog: manifest, histories, fxHistory, marketContext } = chartInputs.get(r).input;
+    const rows = [], roles = new Map(), method = r.config.initialMethod;
+    const add = (id, role) => roles.set(id, [...(roles.get(id) || []), role]);
+    r.holdings.forEach(h => add(h.id, '组合'));
+    if (r.benchmark) add(r.benchmark.id, '对照');
+    const has = id => r.holdings.some(h => h.id === id);
+    if (['qqq_bear_confirm', 'dual_risk_guard'].includes(method) || (opportunityMethods.has(method) && has('us:TQQQ'))) add('us:QQQ', '策略参考');
+    if (opportunityMethods.has(method) && has('us:USD')) add('us:SOXX', '策略参考');
+    if (r.usesFx || r.benchmark?.usesFx) add(manifest.fx.id, '汇率');
+    const collect = (name, basis, url, first, asOf, warning) => {
+      const host = /^https:\/\/([a-z\d.-]+)(?:[/:?#]|$)/i.exec(url || '')?.[1]?.toLowerCase();
+      const provider = !host ? '缺来源链接' : /(^|\.)yahoo\.com$/.test(host) ? 'Yahoo Finance' :
+        /(^|\.)eastmoney\.com$/.test(host) ? '东方财富' : /(^|\.)cboe\.com$/.test(host) ? 'Cboe' : host;
+      rows.push({ name, basis, url: host ? url : '', provider, first, asOf, warning });
+    };
+    for (const [id, uses] of roles) {
+      const fx = id === manifest.fx?.id, a = fx ? manifest.fx : manifest.assets.find(row => row.id === id);
+      const h = fx ? fxHistory : histories[id];
+      const basis = fx ? '美元兑人民币日汇率' : ({ provider_adjusted_close: '含分红复权收盘价', provider_daily_return_or_explicit_actions: '基金净值及每日收益' })[h?.basis] || '缺收益口径';
+      collect((a?.name || id) + (uses.length === 1 && uses[0] === '组合' ? '' : ' · ' + uses.join(' / ')),
+        basis, h?.sourceUrl || a?.sourceUrl, h?.first, h?.asOf, a?.refreshWarning);
+    }
+    if (['vix_panic_reentry', 'dual_risk_guard', 'opportunity_mixed_10'].includes(method) || (opportunityMethods.has(method) && has('us:TQQQ'))) {
+      for (const code of ['VIX', 'VIX3M']) {
+        const s = marketContext?.sources?.[code];
+        collect(code + ' · 策略参考', '波动率指数收盘值', s?.actualUrl || s?.url, s?.first, s?.asOf);
+      }
+    }
+    return rows;
   }
-  function openResultTab(id) {
-    if (!result || !resultTabs(result).some(([key]) => key === id) || resultTab === id) return;
-    resultTab = id;
-    update();
-    document.getElementById('portfolio-result-tab-' + id)?.focus({ preventScroll: true });
+  function resultContext(r) {
+    const cfg = r.config, strategy = P.strategyNames(cfg), methods = [], amounts = [], { name, unit } = currency(cfg);
+    if (cfg.initial > 0 || hasResultSignals(r)) methods.push(strategy.initial);
+    if (cfg.initial > 0) amounts.push('本金 ' + H.money(cfg.initial) + ' ' + unit);
+    if (cfg.monthly > 0) { methods.push(strategy.contribution); amounts.push('每月预算 ' + H.money(cfg.monthly) + ' ' + unit); }
+    amounts.push(({ none: '不再平衡', month: '每月再平衡', quarter: '每季再平衡', year: '每年再平衡' })[cfg.rebalance]);
+    const position = (label, weight) => '<span class="portfolio-run-position">' + H.esc(label) + ' <b>' + inputValue(weight) + '%</b></span>';
+    const allocations = r.holdings.map(h => position(!h.code || h.name.includes(h.code) ? h.name : h.name + ' (' + h.code + ')', h.targetWeight));
+    if (r.cashWeight > 1e-8) allocations.push(position('现金', r.cashWeight));
+    const groups = new Map();
+    for (const s of runSourceRows(r)) {
+      if (!groups.has(s.provider)) groups.set(s.provider, new Set());
+      groups.get(s.provider).add(s.basis);
+    }
+    const sources = [...groups].map(([p, bases]) => H.esc(p + '（' + [...bases].join('、') + '）')).join('；');
+    return '<dl class="portfolio-run-context"><dt>目标配置</dt><dd class="portfolio-run-positions">' + allocations.join('') + '</dd>' +
+      '<dt>本次策略</dt><dd><strong class="portfolio-run-strategy">' + H.esc(methods.join(' ＋ ')) + '</strong><span class="portfolio-run-meta">' + H.esc(amounts.join(' · ')) + '</span></dd>' +
+      '<dt>回测区间</dt><dd><span>' + H.esc(r.start) + ' 至 ' + H.esc(r.end) + '</span><span class="portfolio-run-meta">' + H.esc(name) + '计价</span>' + resultExtendControl(r) + '</dd>' +
+      '<dt>数据来源</dt><dd><span>' + sources + '</span>' + btn('逐项来源', 'sources', 'portfolio-result-link', 'aria-haspopup="dialog"') + '</dd></dl>';
+  }
+  function extendBlock(r) {
+    return resultKey !== signature() ? '参数已改动，请先重新模拟' : r.config.tax?.liquidate ? '期末已清仓，不能延续账户' : running ? '正在更新行情' : '';
+  }
+  function resultExtendControl(r) {
+    if (!systematicMethods.has(r.config.initialMethod)) return '';
+    const blocked = extendBlock(r);
+    return btn('延续到最新行情', 'extend-latest', 'text-link', 'id="portfolio-extend-latest" aria-describedby="portfolio-extend-reason"' + (blocked ? ' disabled' : '')) +
+      '<small id="portfolio-extend-reason">' + H.esc(blocked) + '</small>';
   }
   function results() {
     if (!result) return '<section class="portfolio-result-placeholder"><div><h2>还没有模拟结果</h2><p>' + (draft.positions.length ? '点击“开始模拟”查看组合走势和收益。' : '先添加标的并设置权重，再开始模拟。') + '</p></div><svg viewBox="0 0 460 135" aria-hidden="true"><path d="M3 120H457M3 80H457M3 40H457" stroke="#e0e5d7"/><path d="m3 101 37-13 37 14 38-28 37 7 38-22 38 12 37-31 37 5 40-26 38 6 40-23" fill="none" stroke="#96aa83" stroke-width="2"/><path d="m3 110 37-4 37 5 38-19 37 10 38-8 38-9 37 6 37-19 40 9 38-16 40 2" fill="none" stroke="#c3b291" stroke-width="1.5" stroke-dasharray="5 5"/></svg></section>';
-    const r = result, tabs = resultTabs(r);
-    const navigation = tabs.map(([id, label]) => btn(label, 'result-tab', 'portfolio-result-tab',
-      'id="portfolio-result-tab-' + id + '" data-value="' + id + '" role="tab" aria-controls="portfolio-result-content" aria-selected="' + (resultTab === id) + '" tabindex="' + (resultTab === id ? 0 : -1) + '"')).join('');
-    const actions = '<div class="portfolio-result-actions">' + btn('区间与来源', 'sources', 'portfolio-result-link') +
-      btn(exportingPdf ? '正在生成 PDF…' : '导出 PDF', 'export-pdf', 'portfolio-result-link', running || exportingPdf ? 'disabled' : '') +
-      btn('导出走势 CSV', 'export-result', 'portfolio-result-link') + btn('导出持仓 CSV', 'export-holdings', 'portfolio-result-link') + '</div>';
-    let body;
-    if (resultTab === 'periods') body = snapshots() + yearlyResults(r);
-    else if (resultTab === 'holdings') body = resultHoldings(r);
-    else if (resultTab === 'signals') body = dailyCard() + accountActivityMarkup(r) + lumpSumComparison();
-    else {
-      const usesMa = r.config.initial > 0 && r.config.initialMethod === 'ma200_hold' || r.config.monthly > 0 && ['dca_ma_trend', 'dca_ma_contrarian'].includes(r.config.contributionMethod);
-      body = resultSummary(r) + (r.benchmarkError ? '<p class="portfolio-warning">' + H.esc(r.benchmarkError) + '，当前仅显示组合曲线。</p>' : '') +
-        chart() + (tabs.some(([id]) => id === 'signals') ? '' : lumpSumComparison()) +
-        (usesMa && r.strategy.insufficientMaDays ? '<div class="portfolio-warning">均线不足200个共同交易日的阶段按常规投入，未将缺历史视为下跌信号。</div>' : '');
-    }
-    return '<div class="portfolio-results"><div class="portfolio-result-bar"><div class="portfolio-result-tabs" role="tablist" aria-label="模拟结果分区">' + navigation + '</div>' + actions + '</div>' +
-      (r.catalogRefresh?.available === false ? '<p class="portfolio-warning">' + H.esc(r.catalogRefresh.missing) + '</p>' : '') +
-      '<div class="portfolio-result-content" id="portfolio-result-content" role="tabpanel" aria-labelledby="portfolio-result-tab-' + resultTab + '">' + body + '</div></div>';
+    const r = result;
+    const tools = '<div class="portfolio-result-tools">' + H.annualControl +
+      btn(exportingPdf ? '正在生成模拟报告…' : '导出模拟报告 PDF', 'export-pdf', 'portfolio-result-link', running || exportingPdf ? 'disabled' : '') + '</div>';
+    const usesMa = r.config.initial > 0 && r.config.initialMethod === 'ma200_hold' || r.config.monthly > 0 && ['dca_ma_trend', 'dca_ma_contrarian'].includes(r.config.contributionMethod);
+    return '<div class="portfolio-results"><div class="portfolio-result-head">' + resultContext(r) + tools + '</div><div class="portfolio-result-content">' +
+      (r.catalogRefresh?.available === false ? '<p class="portfolio-warning">' + H.esc(r.catalogRefresh.missing) + '</p>' : '') + resultSummary(r) +
+      (r.benchmarkError ? '<p class="portfolio-warning">' + H.esc(r.benchmarkError) + '，当前仅显示组合曲线。</p>' : '') + chart() +
+      (usesMa && r.strategy.insufficientMaDays ? '<p class="portfolio-warning">均线不足200个共同交易日的阶段按常规投入，未将缺历史视为下跌信号。</p>' : '') +
+      dailyCard() + accountActivityMarkup(r) + lumpSumComparison() + snapshots() + yearlyResults(r) + resultHoldings(r) + '</div></div>';
   }
   function revealWorkspace() {
     const workspace = document.getElementById('portfolio-workspace');
@@ -1056,13 +1119,11 @@
   }
   function sources() {
     if (!result) return;
-    const r = result, input = chartInputs.get(r).input, manifest = input.catalog;
-    const b = manifest.assets.find(a => a.id === r.config.benchmarkId);
-    const rows = b && !r.holdings.some(h => h.id === b.id) ? [...r.holdings, { ...b, basis: input.histories[b.id]?.basis }] : r.holdings;
-    H.openModal(H.modalTitle('区间与来源', r.start + ' — ' + r.end + ' · ' + currency(r.config).name) + '<div class="table-wrap"><table><thead><tr><th>标的</th><th>历史区间</th><th>收益来源</th></tr></thead><tbody>' + rows.map(h => {
-      const a = manifest.assets.find(a => a.id === h.id);
-      return '<tr><td>' + H.esc(h.name) + (h.id === b?.id ? ' · 对照' : '') + '</td><td>' + H.esc(h.first || '缺起始日期') + '<br>' + H.esc(h.asOf || '缺结束日期') + '</td><td>' + (a?.sourceUrl && /^https:\/\//.test(a.sourceUrl) ? '<a class="source-link" href="' + H.esc(a.sourceUrl) + '" target="_blank" rel="noopener">' + (h.basis === 'provider_adjusted_close' ? '含分红复权股价' : h.basis ? '净值及已发布每日收益' : '行情来源') + ' ↗</a>' : '缺来源链接') + (a?.refreshWarning ? '<span class="sub">' + H.esc(a.refreshWarning) + '</span>' : '') + '</td></tr>';
-    }).join('') + (r.usesFx || r.benchmark?.usesFx ? '<tr><td>美元兑人民币</td><td>' + manifest.fx.first + '<br>' + manifest.fx.asOf + '</td><td><a class="source-link" href="https://finance.yahoo.com/quote/CNY%3DX/history/" target="_blank" rel="noopener">CNY=X实际日汇率 ↗</a></td></tr>' : '') + '</tbody></table></div><p class="note">开始日采用指定日前最近共同交易日；结束日采用共同历史内的实际估值日。休市沿用最近价格 ' + r.carriedPrices + '次，沿用汇率 ' + r.carriedFx + '日。价格最多沿用14日，汇率最多7日；超限停止回测。</p>');
+    const r = result;
+    H.openModal(H.modalTitle('逐项数据来源', r.start + ' — ' + r.end + ' · ' + currency(r.config).name) + '<div class="table-wrap"><table><thead><tr><th>标的</th><th>可用历史</th><th>数据口径</th><th>来源</th></tr></thead><tbody>' + runSourceRows(r).map(s =>
+      '<tr><td>' + H.esc(s.name) + '</td><td>' + H.esc(s.first || '缺起始日期') + '<br>' + H.esc(s.asOf || '缺结束日期') + '</td><td>' + H.esc(s.basis) + '</td><td>' +
+      (s.url ? '<a class="source-link" href="' + H.esc(s.url) + '" target="_blank" rel="noopener">' + H.esc(s.provider) + ' ↗</a>' : '缺来源链接') +
+      (s.warning ? '<span class="sub">' + H.esc(s.warning) + '</span>' : '') + '</td></tr>').join('') + '</tbody></table></div><p class="note">开始日采用指定日前最近共同交易日；结束日采用共同历史内的实际估值日。休市沿用最近价格 ' + r.carriedPrices + '次，沿用汇率 ' + r.carriedFx + '日。价格最多沿用14日，汇率最多7日；超限停止回测。</p>');
   }
   function exportResult() {
     if (!result) return;
@@ -1072,7 +1133,7 @@
         const a = P.accountAllocation(p);
         return [p.day, p.value, p.contributed, p.profit, p.nav, p.totalReturn, p.annualReturn, p.drawdown, p.taxCost, p.cash, p.initialReserve, a.securitiesPct, result.config.feeBasis, JSON.stringify(result.config), result.xirr, result.xirrMissing, p.grossValue, p.paidTax, p.taxReserve, a.securitiesValue, a.cashPct, opportunityMethods.has(result.config.initialMethod) ? p.systematicCash.reduce((s, n) => s + n, 0) : null];
       })];
-    H.download('长衡-组合模拟-' + result.end + '.csv', M.csv(rows), 'text/csv;charset=utf-8');
+    H.download('长衡-组合逐日走势-' + result.start + '_' + result.end + '.csv', M.csv(rows), 'text/csv;charset=utf-8');
   }
   function exportDaily() {
     const daily = result?.systematic?.daily || [];
@@ -1105,7 +1166,7 @@
       } : null);
       const blob = await window.ChanghengPortfolioPdf.create(report);
       H.download('长衡-组合模拟-' + report.result.start + '_' + report.result.end + '.pdf', blob, 'application/pdf');
-      H.toast('组合报告已导出');
+      H.toast('组合模拟报告 PDF 已导出');
     } catch (e) { H.toast('PDF 导出失败：' + e.message); }
     finally { exportingPdf = false; update(); }
   }
@@ -1115,13 +1176,12 @@
     const rows = [['标的ID', '代码', '名称', '起始日', '结束日', '计价币种', '策略年化收益%', '累计投入收益%', '持仓净值最大回撤%', '持仓净值年化波动%', '目标权重%', '期末权重%', amount('期末税后估值'), amount('盈亏贡献'), amount('交易费'), amount('累计买入含费'), amount('累计卖出净回款'), '年化口径', '收益口径', amount('已实现盈利税'), amount('分红税'), amount('税费含当前预留'), '卖出盈利税率%', '分红综合税率%', amount('当前浮盈预留税'), amount('未减预留的市值'), amount('累计税后现金分红')],
       ...result.holdings.map(h => [h.id, h.code, h.name, result.start, result.end, code, h.performance.annualReturn, h.performance.totalReturn, h.performance.mdd, h.performance.volatility, h.targetWeight, h.actualWeight, h.value, h.profit, h.transactionCost, h.performance.invested, h.performance.returned - h.cashDividends, h.performance.annualBasis, (result.config.dividendPolicy === 'cash' ? '分红计入账户现金' : '分红自动再投') + '；按本次交易费与税费计算', h.capitalTax, h.dividendTax, h.taxCost, h.taxRates.gain, h.taxRates.dividend, h.taxReserve, h.grossValue, h.cashDividends])];
     if (result.cash > .005) rows.push(['cash:' + code, '', '现金', result.start, result.end, code, 0, 0, 0, 0, result.cashWeight, result.cash / result.value * 100, result.cash, 0, 0, '', '', '', '零息现金', 0, 0, 0, 0, 0, 0, result.cash, '']);
-    H.download('长衡-持仓贡献-' + result.end + '.csv', M.csv(rows), 'text/csv;charset=utf-8');
+    H.download('长衡-持仓收益明细-' + result.start + '_' + result.end + '.csv', M.csv(rows), 'text/csv;charset=utf-8');
   }
   function handleAction(button) {
     const act = button.dataset.action.replace('portfolio-', ''), val = button.dataset.value;
     switch (act) {
       case 'tab': return openWorkspaceTab(val);
-      case 'result-tab': return openResultTab(val);
       case 'retry': loadError = ''; ensureCatalog(); break;
       case 'run': if (!exportingPdf) return run(); return;
       case 'add':
@@ -1139,7 +1199,7 @@
       case 'kind': kind = val; H.resetList(); break;
       case 'market': market = val; H.resetList(); break;
       case 'reset-filter': query = ''; kind = 'all'; market = 'all'; hideBoards = false; H.resetList(); break;
-      case 'benchmark': return openBenchmark();
+      case 'benchmark': return openBenchmark(button);
       case 'select-benchmark': return changeBenchmark(val);
       case 'no-benchmark': return changeBenchmark('');
       case 'metric': metric = val; break;
@@ -1193,9 +1253,16 @@
       return false;
     }
     if (el.id === 'portfolio-daily-index' || el.id === 'portfolio-daily-date') return false;
-    if (el.dataset.portfolioField === 'benchmark-query') {
-      const list = document.getElementById('portfolio-benchmark-options');
-      if (list && result) { list.innerHTML = benchmarkOptions(el.value); list.scrollTop = 0; }
+    if (['benchmark-query', 'benchmark-kind', 'benchmark-market'].includes(el.dataset.portfolioField)) {
+      const key = el.dataset.portfolioField.slice(10);
+      if (benchmarkFilters[key] !== el.value) {
+        benchmarkFilters[key] = el.value;
+        const list = document.getElementById('portfolio-benchmark-options');
+        if (list && result) {
+          H.resetList('portfolio-benchmarks');
+          list.innerHTML = benchmarkOptions(); list.scrollTop = 0; H.bindAutoLoad?.();
+        }
+      }
       return false;
     }
     if (el.id === 'portfolio-search') { query = el.value; H.resetList(); return true; }

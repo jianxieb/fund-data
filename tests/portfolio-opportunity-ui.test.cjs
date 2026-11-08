@@ -61,7 +61,6 @@ for (const [method, weights] of [['opportunity_discount_10', [30, 30]], ['opport
     }
     for (const id of ['us:USD', 'us:TQQQ', 'us:QQQ', 'us:SOXX']) assert.ok(u.calls.includes(historyUrl(id)), id);
     assert.ok(u.calls.includes('data/portfolio/entry-context.json'));
-    await u.action('result-tab', 'signals');
     const html = u.view(), start = html.indexOf('<h2>每日加仓分数');
     assert.ok(start > 0);
     const card = html.slice(start, html.indexOf('<h2>', start + 5));
@@ -101,7 +100,6 @@ test('unconfigured legs never require their proxy history; USD-only discount als
     assert.equal(u.accounts[0]?.error, undefined); assert.ok(u.accounts[0]?.curve.length > 0);
     assert.ok(forbidden.every(url => !u.calls.includes(url)));
     assert.equal(u.calls.includes('data/portfolio/entry-context.json'), needsVix);
-    await u.action('result-tab', 'signals');
     assert.match(u.view(), /每日加仓分数/);
   }
 });
