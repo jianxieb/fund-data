@@ -748,7 +748,7 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-workspace-body{min-width:0}
 .portfolio-workspace-bar{position:sticky;top:0;z-index:12;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--bg);padding:6px 0 8px;margin-bottom:16px;border-bottom:1px solid var(--line)}
 .portfolio-workspace-tabs{display:flex;align-items:center;gap:4px;min-width:0}
-.portfolio-tab{display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;min-height:40px;padding:7px 15px;border-radius:7px;color:#526659;font-size:14px;line-height:1.4}
+.portfolio-tab{display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;min-height:44px;padding:8px 18px;border-radius:7px;color:#526659;font-size:16px;line-height:1.4}
 .portfolio-tab:hover{background:#eaf0e6}.portfolio-tab[aria-selected="true"]{background:#dfe9da;color:#274e34;font-weight:600}
 .portfolio-tab:focus-visible,.page-portfolio .table-wrap:focus-visible{outline:2px solid #587f3e;outline-offset:-2px}
 .portfolio-tab-count{color:#526659;font-size:12px;line-height:18px;font-variant-numeric:tabular-nums}
@@ -758,7 +758,7 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 @media(max-width:700px){
   .portfolio-workspace-bar{gap:6px;padding:4px 0 6px;margin-bottom:12px}
   .portfolio-workspace-tabs{flex:1;gap:2px;max-width:300px}
-  .portfolio-tab{flex:1;min-height:44px;padding:6px 3px;font-size:13px}
+  .portfolio-tab{flex:1;padding:6px 3px;font-size:14px}
   .portfolio-tab-count{display:none}.portfolio-workspace-bar>.btn{min-height:44px;padding:6px 9px;font-size:13px}
 }
 @media print{.portfolio-workspace-bar{display:none}}
