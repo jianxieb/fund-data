@@ -4,6 +4,10 @@
   else root.MONEY_FLOW = data;
 }(typeof window === 'object' ? window : globalThis, function () {
   'use strict';
+  const ibkrWithdrawals = {
+    withdrawalMethod: 'wire', freeWithdrawals: 2, withdrawUsd: 10, cnhWithdrawalFees: { local: 7, wire: 60 },
+    withdrawalText: 'USD电汇每个自然月前两次出金免券商手续费，之后每笔10 USD；各币种共用免费次数，收款行与代理行费用另计。'
+  };
   return {
     verifiedAt: '2026-10-12',
     calculator: {
@@ -487,7 +491,7 @@
     corporateReceivingBanks: [
       { id: 'citic', corporateName: '中信国际', corporateLocalUsdInward: { feeHkd: 20, accountType: '公司业务', sources: ['citicBusinessInward'] } }
     ],
-    broker: { name: 'IBKR直接客户', depositUsd: 0, depositCurrencies: { fps: ['HKD', 'CNH'], edda: ['HKD', 'CNH'] }, manualRate: 0.00002, manualMinimumUsd: 2, autoMarkup: 0.0003, freeWithdrawals: 2, withdrawUsd: 10, withdrawHkdWire: 95, withdrawHkdLocal: 8, sources: ['ibFx', 'ibFees', 'ibFunding', 'ibDeposits', 'ibEdda'] },
+    broker: { name: 'IBKR直接客户', depositUsd: 0, depositCurrencies: { fps: ['HKD', 'CNH'], edda: ['HKD', 'CNH'] }, manualRate: 0.00002, manualMinimumUsd: 2, autoMarkup: 0.0003, ...ibkrWithdrawals, withdrawHkdWire: 95, withdrawHkdLocal: 8, sources: ['ibFx', 'ibFees', 'ibFunding', 'ibDeposits', 'ibEdda'] },
     brokers: [
       { id: 'firstrade', name: 'Firstrade · 第一证券', checkedAt: '2026-10-19', swiftDestination: 'overseas', usdDepositMethods: ['swift'],
         shareStep: .00001, minimumBuyUsd: 5, minimumTradeShares: .00002,
@@ -508,19 +512,18 @@
         sources: ['schwabPricing', 'schwabGuide', 'schwabWire', 'schwabFractions', 'secFees', 'finraHoliday', 'finraSchedule'] },
       { id: 'ibkr', name: 'IBKR Pro', swiftDestination: 'overseas', commission: { perShare: .005, minimum: 1, cap: .01, capWins: true },
         fractionalCommission: { rate: .01, minimum: .01 }, catMinimum: 0,
-        depositUsd: 0, depositCurrencies: { fps: ['HKD', 'CNH'], edda: ['HKD', 'CNH'] }, freeWithdrawals: 2, withdrawUsd: 10, withdrawalMethod: 'wire',
+        depositUsd: 0, depositCurrencies: { fps: ['HKD', 'CNH'], edda: ['HKD', 'CNH'] }, ...ibkrWithdrawals,
         localUsdFunding: { otherCny: 0, evidence: '香港花旗／渣打收款指示 · 公开记录0额外扣费', sources: ['ibLocalUsd', 'ibLocalCiti'] },
         feeText: '整股佣金0.005 USD/股，最低1 USD/单，最高成交额1%；不足1股按成交额1%、最低0.01 USD；平台费0',
         feeShort: 'Pro固定 · 每单1 USD起；香港与境外收款指示分开',
-        fundingText: 'USD香港收款指示走本地CHATS；美国收款指示走SWIFT。HKD/CNH支持FPS/eDDA', withdrawalText: 'USD电汇到本人香港银行；每月前2次免费，之后10 USD',
+        fundingText: 'USD香港收款指示走本地CHATS；美国收款指示走SWIFT。HKD/CNH支持FPS/eDDA',
         sources: ['ibStocks', 'ibFx', 'ibAutoFxTerms', 'ibFees', 'ibFunding', 'ibDeposits', 'ibLocalUsd', 'ibLocalCiti', 'ibEdda', 'secFees', 'finraHoliday', 'finraSchedule'] },
       { id: 'ibkr-lite', name: 'IBKR Lite', pricingPlan: 'lite', swiftDestination: 'overseas', usdDepositMethods: ['swift'], depositCurrencies: { fps: ['HKD', 'CNH'], edda: ['HKD', 'CNH'], swift: ['USD', 'HKD', 'CNH'] },
         commission: null, fractionalCommission: null, catMinimum: 0, depositUsd: 0,
-        freeWithdrawals: 2, withdrawUsd: 10, withdrawalMethod: 'wire',
+        ...ibkrWithdrawals,
         feeText: 'Lite限合资格美国居民；常规交易时段美国上市股免佣。低价股特殊订单超过月成交量10%时按0.005 USD/股或成交额1%孰低收费；非上市股、隔夜和定期投资按Fixed。',
         feeShort: '合资格美国居民 · 常规上市股免佣金；监管费另计',
         fundingText: 'CNH／HKD原币入金可选FPS、eDDA或SWIFT，再在IBKR换USD；也可先在香港银行换USD，经SWIFT或本人Wise入金。按本人账户提供的对应币种收款指示选择渠道。',
-        withdrawalText: 'USD电汇；每月前2次免费，之后10 USD；第三方费用另计',
         sources: ['ibLite', 'ibFunding', 'ibFundingUs', 'ibFundingHKD', 'ibFundingCNH', 'ibConversion', 'ibCnhDeposits', 'ibFx', 'ibAutoFxTerms', 'ibFees', 'ibStocks', 'secFees', 'finraHoliday', 'finraSchedule'] },
       { id: 'hsbc', name: '汇丰 · Trade25 / 普通证券', integratedBank: 'hsbc', wholeSharesOnly: true, depositUsd: 0, withdrawUsd: 0, withdrawalMethod: 'internal',
         feeText: 'Trade25：仅美股月费豁免至另行通知；月成交首25万HKD及首次跨额整单免佣，之后每单18 USD起；监管费另计',

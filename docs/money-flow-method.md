@@ -603,6 +603,8 @@ IBKR[公开入金工具](https://www.interactivebrokers.com/en/support/fund-my-a
 
 [Android官方出金说明](https://www.ibkrguides.com/android/withdrawal.htm)把HKD／CNH本地方式列为LVP的GIRO/ACH，要求对应币种的当地收款。该说明里的旧“一次／30天”费率文字与现行价目表冲突，只用其方法及同名范围，费用按现行收费页。2026-09-17更新的[客户门户说明](https://ibkrguides.com/clientportal/transferandpay/withdrawfunds.htm)介绍账户内操作，并未证明所有实体与居住档位均显示同一个港币方法。
 
+2026-11-08复核香港人民币出金：[Lite／Pro对照表](https://www.interactivebrokers.com/en/general/compare-lite-pro.php)对两种方案均列示外汇交易；[现行出金价目表](https://www.interactivebrokers.com/en/pricing/other-fees.php)按币种及渠道列出CNH收费，没有列明Pro专属限制。因此两种方案均可测算“卖出美元换CNH → 本人香港人民币账户”，使用同一出金费表。是否可执行须以本人客户门户的提款币种、渠道和收款账户为准。入金指示不证明出金权限；香港人民币账户到账也不等于可以直接汇入内地银行卡。
+
 [实际港币出金攻略](https://tisztsmartmoney.com/platforms/ib-withdraw-funds/)作为“先在IBKR换HKD再取回”的候选依据，其两次／8港元额度已与官网核对。但其CHATS/FPS合称不能替代官方GIRO/ACH渠道定义，历史兑换示例不能补当前执行价，概括的美元代理扣费不能变成所有汇路固定值。中银香港企业自动付款价目及工银亚洲CHATS收款10港元也都不能直接用于个人GIRO/ACH收款。
 
 [结构化来源及范围记录](evidence/money-flow-feedback/ibkr-withdrawal-method-scope-20261012.json)保存四份200响应、原件哈希、收费数值及取舍。具名银行的个人LVP收款收费与账户执行价尚未取得，此次没有接入含伪造0费或假报价的新路径；A01继续由开发者调查。

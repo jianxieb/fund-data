@@ -613,7 +613,7 @@
     const wireBroker = s.broker.withdrawalMethod === 'wire' && !s.broker.integratedBank;
     const withdrawalSettings =
       (wireBroker ? select('withdrawDestination', '出金目的地', [['hong-kong', '香港银行'], ['mainland', '直接到内地USD账户']]) : '') +
-      (s.broker.id === 'ibkr' && !direct ? select('withdrawCurrency', '券商出金币种', [['USD', '美元'], ['CNH', '人民币 · IBKR先换汇']]) : '') +
+      (s.broker.cnhWithdrawalFees && !direct ? select('withdrawCurrency', '券商出金币种', [['USD', '美元'], ['CNH', '人民币 · IBKR先换汇']]) : '') +
       (withdrawCurrency === 'CNH' ? select('cnhWithdrawalMethod', 'CNH出金渠道', [['local', '香港本地转账'], ['wire', '电汇']]) :
         s.broker.withdrawalChannels ? select('brokerWireChannel', '出金渠道', Object.entries(s.broker.withdrawalChannels).map(([id, channel]) => [id, channel.label])) : '') +
       (s.broker.freeWithdrawals ? action('本月第' + esc(state.withdrawalIndex) + '次出金', 'detail', 'data-value="profit-settings"', 'flow-setting-button') :
@@ -621,7 +621,7 @@
       (direct ? checkbox('directReceiptConfirmed', '已确认券商可向本人内地USD账户出金，且银行可接收本笔资金') : '');
     if (state.outcome !== 'broker-balance') html += edge(data, withdrawKeys,
       (withdrawCurrency === 'CNH' ? 'IBKR换人民币 → CNH出金 → ' : shortName(s.broker) + '出金 → ') + shortName(direct ? s.exit : s.returning),
-      withdrawalSettings, 'withdraw', withdrawCurrency === 'CNH' ? '手动换汇每单最低2 USD；实际汇率见明细。香港本地CNH出金须以券商可选渠道为准。' : direct ? 'USD到账与人民币结汇是两个动作；资金来源及收款资格分别审核。' : '');
+      withdrawalSettings, 'withdraw', withdrawCurrency === 'CNH' ? '手动换汇每单最低2 USD。收款账户须为本人香港人民币账户，渠道以IBKR提款页为准。' : direct ? 'USD到账与人民币结汇是两个动作；资金来源及收款资格分别审核。' : '');
     const endpoint = state.outcome === 'broker-balance' ? s.broker : direct ? s.exit : s.returning;
     const endpointKey = state.outcome === 'broker-balance' ? 'broker' : direct ? 'exitBank' : 'returnBank';
     const endpointLabel = state.outcome === 'broker-balance' ? '资金所在账户' : direct ? '内地美元收款银行' : '取回银行';
@@ -895,9 +895,9 @@
     if (key === 'returnBank' && next.outcome === 'cnh-card') next.exitPrice = '';
     if (key === 'broker') {
       next.useVoucher = false; next.voucherScope = value === 'za' ? 'platform' : 'commission';
-      if (value !== 'ibkr') next.withdrawCurrency = 'USD';
       if (!M.supportsBrokerFx(value) && next.route !== 'USD') next.fxMode = 'bank';
       const provider = D.brokers.find(b => b.id === value);
+      if (!provider.cnhWithdrawalFees) next.withdrawCurrency = 'USD';
       if (provider.withdrawalMethod !== 'wire' || provider.integratedBank) next.withdrawDestination = 'hong-kong';
     }
     const channels = availableChannels(next);
@@ -1093,7 +1093,7 @@
       if (stage === '03' && state.depositMethod === 'wise') content += '<p>' + esc(D.wiseFunding.condition) + '</p><p>' + esc(D.wiseFunding.evidence) + '</p>' +
         '<div class="flow-form-grid">' + field('depositHkd', '香港银行 → Wise整段费用', 'HKD', '留空按10 HKD参考费') +
         field('depositOtherCny', 'Wise → IBKR整段费用折人民币', 'CNY', '留空按10 HKD折算') + '</div>';
-      if (s.broker.usdDepositMethods && ['03', 'trade', 'withdraw'].includes(stage) && !(stage === '03' && state.depositMethod === 'wise')) content += '<p>' +
+      if (s.broker.usdDepositMethods && (stage === 'trade' || stage === '03' && state.depositMethod !== 'wise' || stage === 'withdraw' && state.withdrawCurrency === 'USD')) content += '<p>' +
         esc(stage === '03' ? s.broker.fundingText : stage === 'trade' ? s.broker.feeText : s.broker.withdrawalText) + '</p>';
       if (stage === '01') {
         content += '<p>' + esc(transferHint() || sourceTariffCopy(s.start)) + '</p>';
@@ -1110,7 +1110,11 @@
       }
       keys = [...actionSources(stage, s, r), ...(r?.rows || []).filter(item => edgeKeys.includes(item.key))
         .flatMap(item => [...(item.sources || []), ...(item.items || []).flatMap(part => part.sources || [])])];
-      if (stage === 'withdraw' && state.withdrawCurrency === 'CNH') content += '<div class="flow-form-grid">' + field('brokerExitPrice', 'IBKR卖出后USD/CNH实际成交价', 'CNH/USD', '留空使用已存公开参考价') + field('inwardHkd', '香港CNH收款行费用', 'HKD', '仅填已确认费用') + '</div><p>手动换汇按每月首档0.20基点、每单最低2 USD计算，金额大时佣金超过2美元；未取得可成交报价，不宣称汇率最优。每月前两次出金免费，之后CNH本地转账7 CNH、电汇60 CNH。IBKR账户可选币种／渠道及收款银行实际支持情况仍须匹配。</p>';
+      if (stage === 'withdraw' && state.withdrawCurrency === 'CNH' && s.broker.cnhWithdrawalFees) {
+        const fees = s.broker.cnhWithdrawalFees;
+        content += '<div class="flow-form-grid">' + field('brokerExitPrice', 'IBKR卖出后USD/CNH实际成交价', 'CNH/USD', '留空使用已存公开参考价') + field('inwardHkd', '香港CNH收款行费用', 'HKD', '仅填已确认费用') +
+          '</div><p>手动换汇按首档0.20基点、每单最低2 USD计算。每个自然月各币种合计前两次免券商出金费，之后本地转账' + fees.local + ' CNH／笔、电汇' + fees.wire + ' CNH／笔。收款行与中转行费用另计。</p>';
+      }
       if (stage === 'withdraw' && state.withdrawDestination === 'mainland') content += '<div class="flow-form-grid">' + field('directInwardCny', '内地收款行费', 'CNY', '留空使用本行收费') + field('intermediaryCny', '券商直达内地的中转费', 'CNY', '尚未取得请留空') + '</div><p>这里展示本人账户已确认可出金及收款的条件情景。境外投资资金原币入账不代表自动符合结汇资格；不得将其改报为工资、赡家款或其他用途。未确认时保留券商余额。</p>';
       if (stage === '04' && state.outcome === 'atm') {
         const profile = M.mainlandCashProfile(state, D);

@@ -1,0 +1,68 @@
+{
+  "page": "http://127.0.0.1:8765/#money-flow",
+  "browser": "Chrome/157.0.8103.38",
+  "environment": "Headless Chrome, isolated temporary profile",
+  "steps": {
+    "liteUsd": {
+      "broker": "ibkr-lite",
+      "withdrawCurrency": "USD",
+      "method": null,
+      "destination": "hong-kong",
+      "returnBank": "hsbc",
+      "outcome": "cnh-card",
+      "currencyControl": "券商出金币种：美元",
+      "withdrawal": "IBKR Lite出金 → 汇丰 HSBC One",
+      "bankBalance": "出金到账\n14,969.70 USD\n累计费用 0.116%",
+      "followingAction": "美元换人民币 → 商户刷卡"
+    },
+    "liteCnh": {
+      "broker": "ibkr-lite",
+      "withdrawCurrency": "CNH",
+      "method": "local",
+      "destination": "hong-kong",
+      "returnBank": "hsbc",
+      "outcome": "cnh-card",
+      "currencyControl": "券商出金币种：人民币 · IBKR先换汇",
+      "withdrawal": "IBKR换人民币 → CNH出金 → 汇丰 HSBC One",
+      "bankBalance": "出金到账\n99,903.23 CNH\n累计费用 0.097%",
+      "followingAction": "人民币余额 → 商户刷卡"
+    },
+    "proCnh": {
+      "broker": "ibkr",
+      "withdrawCurrency": "CNH",
+      "method": "local",
+      "destination": "hong-kong",
+      "returnBank": "hsbc",
+      "outcome": "cnh-card",
+      "currencyControl": "券商出金币种：人民币 · IBKR先换汇",
+      "withdrawal": "IBKR换人民币 → CNH出金 → 汇丰 HSBC One",
+      "bankBalance": "出金到账\n99,889.89 CNH\n累计费用 0.110%",
+      "followingAction": "人民币余额 → 商户刷卡"
+    },
+    "backToLite": {
+      "broker": "ibkr-lite",
+      "withdrawCurrency": "CNH",
+      "method": "local",
+      "destination": "hong-kong",
+      "returnBank": "hsbc",
+      "outcome": "cnh-card",
+      "currencyControl": "券商出金币种：人民币 · IBKR先换汇",
+      "withdrawal": "IBKR换人民币 → CNH出金 → 汇丰 HSBC One",
+      "bankBalance": "出金到账\n99,903.23 CNH\n累计费用 0.097%",
+      "followingAction": "人民币余额 → 商户刷卡"
+    },
+    "afterReload": {
+      "broker": "ibkr-lite",
+      "withdrawCurrency": "CNH",
+      "method": "local",
+      "destination": "hong-kong",
+      "returnBank": "hsbc",
+      "outcome": "cnh-card",
+      "currencyControl": "券商出金币种：人民币 · IBKR先换汇",
+      "withdrawal": "IBKR换人民币 → CNH出金 → 汇丰 HSBC One",
+      "bankBalance": "出金到账\n99,903.23 CNH\n累计费用 0.097%",
+      "followingAction": "人民币余额 → 商户刷卡"
+    }
+  },
+  "pageExceptions": []
+}

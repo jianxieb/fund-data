@@ -1372,7 +1372,7 @@
       steps.afterTaxUsd = balance;
       if (!keepInBroker && !['USD', 'CNH'].includes(withdrawCurrency)) return downstreamError('出金币种须为USD或CNH。', '04', 'withdraw');
       if (!keepInBroker && !['hong-kong', 'mainland'].includes(config.withdrawDestination || 'hong-kong')) return downstreamError('请选择香港或内地收款。', '04', 'withdraw');
-      if (!keepInBroker && withdrawCurrency === 'CNH' && provider.id !== 'ibkr') return downstreamError(provider.name + '尚无本页CNH换汇及出金依据；已保留券商美元余额。', '04', 'withdraw');
+      if (!keepInBroker && withdrawCurrency === 'CNH' && !provider.cnhWithdrawalFees) return downstreamError(provider.name + '尚无本页CNH换汇及出金依据；已保留券商美元余额。', '04', 'withdraw');
       if (!keepInBroker && withdrawCurrency === 'CNH' && (mainlandReturn || directReturn || outcome === 'usd-card')) return downstreamError('本页CNH出金只到香港人民币账户；内地人民币汇入资格和渠道尚未核实。内地美元收款请选择USD。', '04', 'withdraw');
       if (directReturn && (provider.withdrawalMethod !== 'wire' || provider.integratedBank || withdrawCurrency !== 'USD' || !mainlandReturn))
         return downstreamError('券商直达内地仅提供USD电汇条件情景，请选择内地美元账户或到账后结汇。', '04', 'withdraw');
@@ -1380,7 +1380,8 @@
       if (!keepInBroker && (withdrawCurrency === 'CNH' || directReturn)) {
         if (provider.freeWithdrawals && (!positive(withdrawalIndex) || !Number.isInteger(withdrawalIndex))) return downstreamError('本月券商出金次数须为正整数。', '04', 'withdraw');
         if (withdrawCurrency === 'CNH') {
-          if (!['local', 'wire'].includes(config.cnhWithdrawalMethod || 'local')) return downstreamError('请选择CNH本地转账或CNH电汇。', '04', 'withdraw');
+          const method = config.cnhWithdrawalMethod || 'local';
+          if (!Object.hasOwn(provider.cnhWithdrawalFees, method)) return downstreamError('请选择CNH本地转账或CNH电汇。', '04', 'withdraw');
           if (returning.cnhAccountRequiresHkid && !config[returning.cnhAccountField]) return downstreamError(returning.name + '人民币账户须符合香港身份证及开户条件。', '04', 'withdraw');
           const commission = Math.max(2, balance * .00002 / 1.00002);
           if (balance <= commission) return downstreamError('美元余额不足以支付IBKR最低2 USD换汇佣金。', '04', 'withdraw');
@@ -1404,10 +1405,10 @@
               estimate: 'IBKR公开买卖盘参考，实际成交以账户为准', quote: brokerCnhQuote, sources: ['ibFxQuotes', 'ibFxFields'] });
           }
           steps.brokerCnh = balance;
-          const local = (config.cnhWithdrawalMethod || 'local') === 'local';
-          const fee = withdrawalIndex <= provider.freeWithdrawals ? 0 : local ? 7 : 60;
+          const local = method === 'local', tariff = provider.cnhWithdrawalFees[method];
+          const fee = withdrawalIndex <= provider.freeWithdrawals ? 0 : tariff;
           add('withdraw', 'IBKR CNH' + (local ? '本地' : '电汇') + '出金费', fee * refs.CNH, 'withdraw');
-          Object.assign(rows[rows.length - 1], { nativeCurrency: 'CNH', evidence: '本月第' + withdrawalIndex + '次 · 前两次免，其后' + (local ? 7 : 60) + ' CNH', sources: ['ibFees', 'ibCnhWithdrawal'] });
+          Object.assign(rows[rows.length - 1], { nativeCurrency: 'CNH', evidence: '本月第' + withdrawalIndex + '次 · 前两次免，其后' + tariff + ' CNH', sources: ['ibFees', 'ibCnhWithdrawal'] });
           const localReceipt = local && data.localCnhReceipt?.[returning.id];
           const inward = own('inwardHkd', isSelectedReturn) ?? (local ? localReceipt?.hkd ?? null : inwardFee(returning, balance * refs.CNH / refs.HKD, 'broker'));
           add('returnInward', returning.name + 'CNH' + (local ? '本地转账' : '电汇') + '入账费', inward == null ? null : inward * refs.HKD, 'withdraw');
@@ -1890,7 +1891,6 @@
       if (s.route === 'USD' || s.fxMode === 'bank') {
         if (!['swift', 'wise'].includes(s.depositMethod)) { s.depositMethod = 'swift'; s.depositHkd = ''; s.depositOtherCny = ''; }
       } else if (!['fps', 'edda', 'swift'].includes(s.depositMethod)) { s.depositMethod = 'fps'; s.depositHkd = ''; s.depositOtherCny = ''; }
-      if (s.withdrawCurrency === 'CNH') { s.withdrawCurrency = 'USD'; s.brokerExitPrice = ''; s.inwardHkd = ''; s.intermediaryCny = ''; }
     }
     const paired = ({ boc: 'bochk', hsbc: 'hsbc', hang: 'hang', sc: 'sc' })[s.startBank] === s.bank;
     s.mainlandMethod ||= s.startBank === 'icbc' && s.bank === 'icbc-asia' && ['USD', 'HKD'].includes(s.route) ? 'icbc-mobile' :

@@ -104,12 +104,52 @@ test('IBKR Pro and Lite are distinct accounts with distinct funding and the corr
   assert.deepEqual(M.calculatorChannels({ ...base, broker: 'ibkr-lite', route: 'USD' }, D).depositMethods, ['swift', 'wise']);
   for (const depositMethod of ['chats', 'fps', 'edda']) assert.match(run({ broker: 'ibkr-lite', route: 'USD', depositMethod }).error, /美国USD收款指示/);
 });
+test('both IBKR plans show the USD withdrawal selection and credit USD before the bank uses it', () => {
+  const prices = require('./fixtures/money-flow-quotes-20261025.json');
+  for (const broker of ['ibkr', 'ibkr-lite']) {
+    const subject = ui({ ...base, broker, returnBank: 'hsbc', outcome: 'cnh-card', cardMode: 'cnh',
+      withdrawCurrency: 'USD', withdrawalIndex: 3 }, prices, '2026-10-25');
+    const html = subject.render();
+    assert.ok(/data-value="withdrawCurrency"[^>]*aria-label="[^"]*美元/.test(html), broker + ': selected USD must be visible');
+    const r = subject.result().selected;
+    assert.ok(r.steps.returnUsd > 0); assert.equal(r.steps.returnCnh, undefined);
+    assert.equal(row(r, 'brokerExitCommission'), undefined);
+    close(row(r, 'withdraw').cny, 10 * r.refs.USD);
+    assert.match(section(html, '卖出后的资金'), /出金到账[^]*<small>USD<\/small>/);
+    subject.act('choose', 'outcome', 'usd-balance'); subject.render();
+    const retained = subject.result().selected;
+    assert.equal(retained.currency, 'USD'); close(retained.net, retained.steps.returnUsd);
+    assert.equal(row(retained, 'exitFx'), undefined);
+  }
+});
+test('switching IBKR pricing plans retains the selected Hong Kong withdrawal currency and channel', () => {
+  const prices = require('./fixtures/money-flow-quotes-20261025.json');
+  const subject = ui({ ...base, returnBank: 'hsbc', outcome: 'usd-balance', withdrawCurrency: 'CNH',
+    cnhWithdrawalMethod: 'wire', withdrawalIndex: 3 }, prices, '2026-10-25');
+  subject.render();
+  for (const broker of ['ibkr-lite', 'ibkr']) {
+    subject.act('choose', 'broker', broker); subject.render();
+    const reopened = ui(subject.saved(), prices, '2026-10-25');
+    assert.equal(reopened.saved().withdrawCurrency, 'CNH');
+    assert.equal(reopened.saved().returnBank, 'hsbc');
+    const result = reopened.result(), r = result.selected;
+    assert.ok(r, result.error);
+    assert.equal(r.cnhWithdrawalMethod, 'wire');
+    assert.ok(r.steps.returnCnh > 0); assert.equal(r.steps.returnUsd, undefined);
+    close(row(r, 'withdraw').cny, 60 * r.refs.CNH);
+    reopened.render(); reopened.act('choose', 'withdrawCurrency', 'USD'); reopened.render();
+    assert.ok(reopened.result().selected.steps.returnUsd > 0);
+  }
+});
 test('legacy Lite state migrates the account and clears inapplicable Pro funding quotes without moving banks', () => {
-  const subject = ui({ ...base, route: 'USD', broker: 'ibkr', ibkrPricing: 'lite', depositMethod: 'chats', depositHkd: 0, depositOtherCny: 0 });
+  const subject = ui({ ...base, route: 'USD', broker: 'ibkr', ibkrPricing: 'lite', depositMethod: 'chats', depositHkd: 0, depositOtherCny: 0,
+    withdrawCurrency: 'CNH', cnhWithdrawalMethod: 'wire', brokerExitPrice: 6.8, inwardHkd: 12, intermediaryCny: 7, outcome: 'usd-balance' });
   let html = subject.render();
   assert.equal(subject.saved().broker, 'ibkr-lite'); assert.equal(subject.saved().depositMethod, 'swift');
   assert.equal(subject.saved().depositHkd, ''); assert.equal(subject.saved().depositOtherCny, '');
   assert.equal(subject.saved().bank, 'hsbc'); assert.equal(subject.saved().returnBank, 'bochk');
+  assert.equal(subject.saved().withdrawCurrency, 'CNH'); assert.equal(subject.saved().brokerExitPrice, 6.8);
+  assert.equal(subject.saved().inwardHkd, 12); assert.equal(subject.saved().intermediaryCny, 7);
   assert.match(section(html, '买美股的账户'), /IBKR Lite/);
   assert.doesNotMatch(section(html, '转入买股账户'), /香港收款指示|CHATS|FPS|eDDA/);
   subject.act('choose', 'broker', 'ibkr'); html = subject.render();
