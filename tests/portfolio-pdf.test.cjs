@@ -455,14 +455,14 @@ test('systematic UI retains the prior account and blocks recomputation when VIX 
     const f = systematicUiFixture(method), fetch = f.context.fetch;
     await f.action('run'); await f.action('export-pdf');
     assert.equal(f.reports.length, 1);
-    const value = f.reports[0].result.value, before = f.calls.length;
+    const previousSummary = summaryOf(f.ui.view(f.helpers)), before = f.calls.length;
     f.context.fetch = async (url, options) => url === 'data/portfolio/entry-context.json' ? { ok: false, status: 503 } : fetch(url, options);
     await f.action('run');
     assert.equal(f.calls.length, before);
     const html = f.ui.view(f.helpers);
     assert.match(html, /最新VIX\/VIX3M配对数据请求失败（503）/);
     assert.match(html, /仍显示上次成功模拟结果/);
-    assert.ok(html.includes(String(value)));
+    assert.equal(summaryOf(html), previousSummary);
     await f.action('export-pdf'); assert.equal(f.reports.length, 1);
     f.context.fetch = fetch; f.marketContext.series = [['2026-01-08', 19, 22], ['2026-01-07', 18, 21]];
     await f.action('run'); assert.equal(f.calls.length, before);
@@ -636,11 +636,11 @@ test('extend-to-latest refreshes coverage but preserves the original account sta
 test('extend-to-latest refuses an unconfirmed catalog and leaves the successful result intact', async () => {
   const f = dailyUiFixture();
   await f.action('run'); await f.action('export-pdf');
-  const prior = f.reports.at(-1).result.value, before = f.calls.length, fetch = f.context.fetch;
+  const prior = summaryOf(f.ui.view(f.helpers)), before = f.calls.length, fetch = f.context.fetch;
   f.context.fetch = async (url, options) => url === 'data/portfolio/catalog.js' ? { ok: false, status: 503 } : fetch(url, options);
   await f.action('extend-latest');
   assert.equal(f.calls.length, before);
-  assert.ok(f.ui.view(f.helpers).includes(String(prior)));
+  assert.equal(summaryOf(f.ui.view(f.helpers)), prior);
   assert.match(f.ui.view(f.helpers), /最新标的库请求失败（503）/);
 });
 
@@ -879,8 +879,11 @@ test('one deposit with staggered purchases shows the account outcome and one hea
   const r = P.simulate(f.input), summary = summaryOf(f.ui.view(f.helpers));
   assert.equal(r.deposits, 1);
   assert.ok(r.plan.initial.length > 1);
-  assert.ok(summary.includes('清仓后现金</h2><p class="portfolio-summary-value">' + r.value));
-  assert.ok(summary.includes('清仓盈亏</span><b>+' + r.profit));
+  assert.deepEqual([...summary.matchAll(/<h2>([^<]+)<\/h2>/g)].map(m => m[1]),
+    ['持仓本金（不含现金）', '组合年化收益', '清仓盈亏', '最大回撤']);
+  assert.ok(summary.includes('持仓本金（不含现金）</h2><p class="portfolio-summary-value">0 元'));
+  assert.ok(summary.includes('清仓盈亏</h2><p class="portfolio-summary-value">+' + r.profit));
+  assert.match(await f.resultTab('holdings'), /清仓后现金/);
   assert.ok(summary.includes('组合年化收益</h2><p class="portfolio-summary-value">' + r.annualReturn));
   assert.doesNotMatch(summary, /XIRR|累计投入|浮盈预留税/);
   const periods = await f.resultTab('periods');
@@ -893,6 +896,7 @@ test('funding XIRR stays annualized beside portfolio returns in both display mod
   await f.action('run');
   const expected = P.simulate(f.input);
   const annual = summaryOf(f.ui.view(f.helpers));
+  assert.ok(annual.includes('持仓本金（不含现金）</h2><p class="portfolio-summary-value">' + expected.curve.at(-1).positionPrincipal));
   assert.ok(annual.includes('资金年化 XIRR <b>' + expected.xirr + '</b>'));
   assert.ok(annual.includes('组合年化收益</h2><p class="portfolio-summary-value">' + expected.annualReturn));
   assert.notEqual(expected.xirr, expected.annualReturn, 'different contribution dates change XIRR without changing the portfolio’s return basis');

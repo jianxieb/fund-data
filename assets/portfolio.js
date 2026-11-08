@@ -989,7 +989,8 @@
       '<td class="num">' + H.pc(h.performance.annualReturn) + '<span class="sub">' + H.esc(h.performance.annualMissing || (h.performance.annualBasis === 'money_weighted_xirr' ? 'XIRR' : '不足一年不外推')) + '</span></td><td class="num">' + H.pc(h.performance.totalReturn) + '</td><td class="num">' + H.pc(h.performance.mdd) + '</td><td class="num">' + H.pct(h.performance.volatility, 2, false) + '</td>' +
       '<td class="num">' + H.pct(h.targetWeight, 2, false) + '</td><td class="num">' + H.pct(h.actualWeight, 2, false) + '</td><td class="num">' + H.money(h.value, 2) + '</td><td class="num"><span class="' + (h.profit < 0 ? 'negative' : 'positive') + '">' + H.money(h.profit, 2) + '</span></td><td class="num">' + H.money(h.transactionCost, 2) + '</td><td class="num">' + H.money(h.taxCost, 2) + '</td></tr>').join('');
     const holdingTable = '<div class="table-wrap" tabindex="0" role="region" aria-label="持仓收益与风险明细"><table class="portfolio-holdings-table"><thead><tr class="portfolio-holdings-groups"><th rowspan="2" scope="col">标的</th><th colspan="4" scope="colgroup">策略收益与风险</th><th colspan="6" scope="colgroup">投入与贡献</th></tr><tr><th scope="col">策略年化收益</th><th scope="col" title="实际盈亏 ÷ 累计买入金额（含买入费）">累计投入收益</th><th scope="col">最大回撤</th><th scope="col">年化波动</th><th scope="col">目标权重</th><th scope="col">期末权重</th><th scope="col">税后估值 / ' + unit + '</th><th scope="col">盈亏贡献 / ' + unit + '</th><th scope="col">交易费 / ' + unit + '</th><th scope="col">税费含预留 / ' + unit + '</th></tr></thead><tbody>' + rows + (r.cash > .005 ? '<tr><td>现金</td><td class="num">0.00%</td><td class="num">0.00%</td><td class="num">0.00%</td><td class="num">0.00%</td><td class="num">' + H.pct(r.cashWeight, 2, false) + '</td><td class="num">' + H.pct(r.cash / r.value * 100, 2, false) + '</td><td class="num">' + H.money(r.cash, 2) + '</td><td class="num">0.00</td><td class="num">0.00</td><td class="num">0.00</td></tr>' : '') + '</tbody></table></div>';
-    return H.card('持仓贡献', r.start + ' — ' + r.end + ' · ' + name + (gainTax && !closed ? ' · 已减浮盈预留税' : ''), '<div class="portfolio-structure portfolio-end-structure"><h3>期末结构</h3>' + structure(r.holdings.map(h => ({ id: h.id, weight: h.actualWeight }))) + '</div>' + holdingTable,
+    const endLabel = closed ? '清仓后现金' : gainTax || dividendTax ? '期末税后估值' : '期末账户资产';
+    return H.card('持仓贡献', r.start + ' — ' + r.end + ' · ' + name + (gainTax && !closed ? ' · 已减浮盈预留税' : ''), '<div class="portfolio-structure portfolio-end-structure"><h3>期末结构</h3><p class="portfolio-end-totals"><span>' + endLabel + ' <b>' + H.money(r.value, 2) + ' ' + unit + '</b></span><span>年化波动 <b>' + H.pct(r.volatility, 2, false) + '</b></span></p>' + structure(r.holdings.map(h => ({ id: h.id, weight: h.actualWeight }))) + '</div>' + holdingTable,
       btn('导出持仓收益明细 CSV', 'export-holdings', 'portfolio-result-link')) + '<div class="portfolio-result-notes"><span>入金 ' + r.deposits + '笔</span><span>买入 ' + r.transactions.filter(t => t.side === 'buy').length + '笔</span><span>再平衡 ' + r.rebalances + '次</span><span>交易费用 ' + H.money(r.tradeCost, 2) + ' ' + unit + '</span>' + (gainTax ? '<span>已实现盈利税 ' + H.money(r.capitalTax, 2) + ' ' + unit + '</span>' : '') + (dividendTax ? '<span>分红税 ' + H.money(r.dividendTax, 2) + ' ' + unit + '</span>' : '') + (gainTax && !closed ? '<span>浮盈预留税 ' + H.money(r.taxReserve, 2) + ' ' + unit + '</span>' : '') + (r.config.dividendPolicy === 'cash' ? '<span>累计现金分红 ' + H.money(r.cashDividends, 2) + ' ' + unit + '</span>' : '') + (r.initialReserve > .005 ? '<span>待投入本金 ' + H.money(r.initialReserve, 2) + ' ' + unit + '</span>' : '') + (r.timingChanges ? '<span>择时切换 ' + r.timingChanges + '次</span>' : '') +
       btn('逐项来源', 'sources', 'portfolio-result-link', 'aria-haspopup="dialog"') + '</div>';
   }
@@ -1004,13 +1005,9 @@
     const amount = (n, signed = false) => {
       const digits = n !== 0 && Math.abs(n) < 1 ? 2 : 0;
       const rounded = Math.abs(n) < .005 ? 0 : n;
-      return (signed && rounded > 0 ? '+' : '') + H.money(rounded, digits) + ' <small>' + unit + '</small>';
+      return (signed && rounded > 0 ? '+' : '') + H.money(rounded, digits) + ' ' + unit;
     };
-    const line = (label, value, color = '') => '<p class="portfolio-summary-detail"><span>' + label + '</span><b' + (color ? ' class="' + color + '"' : '') + '>' + value + '</b></p>';
-    const metric = (label, value, detail, cls = '') => '<div class="portfolio-summary-metric' + (cls ? ' ' + cls : '') + '"><h2>' + label + '</h2><p class="portfolio-summary-value">' + value + '</p>' + detail + '</div>';
-    const account = metric(closed ? '清仓后现金' : taxed ? '期末税后估值' : '期末账户资产', amount(r.value),
-      line(closed ? '清仓盈亏' : taxed ? '税后净盈亏' : '账户净盈亏', amount(r.profit, true), r.profit < -.005 ? 'negative' : '') +
-      (!closed && r.taxReserve >= .005 ? '<p class="portfolio-summary-note">已扣浮盈预留税 ' + H.money(r.taxReserve, 2) + ' ' + unit + '</p>' : ''), 'portfolio-summary-account');
+    const metric = (label, value, detail = '') => '<div class="portfolio-summary-metric"><h2>' + label + '</h2><p class="portfolio-summary-value">' + value + '</p>' + detail + '</div>';
     let returnDetail = '';
     if (fullYear && r.deposits > 1) {
       returnDetail = '<details class="portfolio-summary-basis"><summary>资金年化 XIRR <b>' + (M.finite(r.xirr) ? pct(r.xirr) : H.esc(r.xirrMissing)) +
@@ -1018,9 +1015,11 @@
     } else if (H.annual && !fullYear) {
       returnDetail = '<p class="portfolio-summary-note">不足一年，显示区间实际收益</p>';
     }
-    return '<section class="portfolio-result-summary" aria-label="模拟结果摘要">' + account +
+    return '<section class="portfolio-result-summary" aria-label="模拟结果摘要">' +
+      metric(principalLabel, amount(r.curve.at(-1).positionPrincipal)) +
       metric('组合' + basis + '收益', pct(basis === '年化' ? r.annualReturn : r.totalReturn), returnDetail) +
-      metric('最大回撤', pct(r.mdd), line('年化波动', pct(r.volatility))) + '</section>';
+      metric(closed ? '清仓盈亏' : taxed ? '税后盈亏' : '账户盈亏', amount(r.profit, true)) +
+      metric('最大回撤', pct(r.mdd)) + '</section>';
   }
   function hasResultSignals(r) {
     return systematicMethods.has(r.config.initialMethod) || ['qqq_bear_confirm', 'cash_topup'].includes(r.config.initialMethod);
@@ -1063,7 +1062,7 @@
   function resultContext(r) {
     const cfg = r.config, strategy = P.strategyNames(cfg), methods = [], amounts = [], { name, unit } = currency(cfg);
     if (cfg.initial > 0 || hasResultSignals(r)) methods.push(strategy.initial);
-    if (cfg.initial > 0) amounts.push('本金 ' + H.money(cfg.initial) + ' ' + unit);
+    if (cfg.initial > 0) amounts.push('初始入金 ' + H.money(cfg.initial) + ' ' + unit);
     if (cfg.monthly > 0) { methods.push(strategy.contribution); amounts.push('每月预算 ' + H.money(cfg.monthly) + ' ' + unit); }
     amounts.push(({ none: '不再平衡', month: '每月再平衡', quarter: '每季再平衡', year: '每年再平衡' })[cfg.rebalance]);
     const position = (label, weight) => '<span class="portfolio-run-position">' + H.esc(label) + ' <b>' + inputValue(weight) + '%</b></span>';
