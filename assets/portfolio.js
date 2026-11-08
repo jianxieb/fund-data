@@ -346,7 +346,7 @@
     const required = opportunity ? hasRequired ? '' : '此方法需要USD ETF或TQQQ有正权重。' : systematicMethods.has(method) || method === 'qqq_bear_confirm' ? !positions.some(p => p.id === 'us:TQQQ') ? '此方法需要TQQQ有正权重。' : method === 'relative_strength_rotation' && !positions.some(p => p.id === 'us:USD') ? '三批轮动还需要USD ETF有正权重。' : '' : '';
     const rules = info.next.concat(info.execution);
     return (required ? '<p class="portfolio-purchase-pending">' + required + '</p>' : '') + '<p>' + H.esc(initialText) + '</p>' + allocations +
-      (rules.length ? '<ul class="portfolio-execution-rules" aria-label="执行规则">' + rules.map(line => '<li>' + H.esc(line) + '</li>').join('') + '</ul>' : '');
+      (rules.length ? '<div class="portfolio-plan-rules"><h4>后续执行规则</h4><ul class="portfolio-execution-rules">' + rules.map(line => '<li>' + H.esc(line) + '</li>').join('') + '</ul></div>' : '');
   }
   function contributionPlan() {
     const method = draft.initialMethod, money = value => H.money(value, 2) + ' ' + currency().unit;
@@ -373,15 +373,15 @@
   function settings() {
     const field = (label, control) => '<div class="portfolio-field"><span>' + label + '</span>' + control + '</div>';
     return '<div class="portfolio-settings"><section class="card portfolio-settings-section portfolio-strategy-settings" aria-labelledby="portfolio-strategy-settings-title"><h2 id="portfolio-strategy-settings-title">交易策略</h2>' +
-      '<div class="portfolio-decision" role="group" aria-label="本金投入">' +
+      '<div class="portfolio-decision" role="group" aria-label="本金投入"><div class="portfolio-decision-controls">' +
       field('本金投入方式', menu('initialMethod', '本金投入方式', P.initialMethods, draft.initialMethod)) +
       number('初始本金', 'initial', draft.initial, 1e12, '0.01', currency().unit) +
-      '<div id="portfolio-purchase-plan" class="portfolio-purchase-plan">' + purchasePlanMarkup() + '</div></div>' +
-      '<div class="portfolio-decision" role="group" aria-label="持续投入" aria-describedby="portfolio-contribution-plan">' +
+      '</div><section class="portfolio-plan-panel" aria-labelledby="portfolio-opening-title"><h3 id="portfolio-opening-title">本金策略说明</h3><div id="portfolio-purchase-plan" class="portfolio-purchase-plan">' + purchasePlanMarkup() + '</div></section></div>' +
+      '<div class="portfolio-decision" role="group" aria-label="持续投入" aria-describedby="portfolio-contribution-plan"><div class="portfolio-decision-controls">' +
       field('持续投入方式', menu('contributionMethod', '持续投入方式', P.contributionMethods, draft.contributionMethod)) +
       number('每月追加预算', 'monthly', draft.monthly, 1e10, 'any', currency().unit) +
-      '<p id="portfolio-contribution-plan" class="portfolio-contribution-plan">' + H.esc(contributionPlan()) + '</p></div>' +
-      '<div class="portfolio-decision">' + field('再平衡周期', menu('rebalance', '再平衡周期', [['none', '不再平衡'], ['month', '每月'], ['quarter', '每季度'], ['year', '每年']], draft.rebalance)) + '</div></section>' +
+      '</div><section class="portfolio-plan-panel" aria-labelledby="portfolio-recurring-title"><h3 id="portfolio-recurring-title">追加安排</h3><p id="portfolio-contribution-plan">' + H.esc(contributionPlan()) + '</p></section></div>' +
+      '<div class="portfolio-decision"><div class="portfolio-decision-controls">' + field('再平衡周期', menu('rebalance', '再平衡周期', [['none', '不再平衡'], ['month', '每月'], ['quarter', '每季度'], ['year', '每年']], draft.rebalance)) + '</div></div></section>' +
       '<div class="card portfolio-model-settings"><section class="portfolio-settings-section" aria-labelledby="portfolio-conditions-title"><h2 id="portfolio-conditions-title">回测条件</h2><div class="portfolio-backtest-row">' +
       field('回测区间', menu('years', '回测区间', [[1, '近1年'], [2, '近2年'], [3, '近3年'], [5, '近5年'], [10, '近10年'], [15, '近15年'], [20, '近20年'], ['common', '共同历史'], ['custom', '自定义区间']], draft.years)) +
       field('计价币种', menu('currency', '投入与计价币种', [['CNY', '人民币 CNY'], ['USD', '美元 USD']], draft.currency)) + '</div>' +
