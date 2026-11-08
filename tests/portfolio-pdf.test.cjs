@@ -116,6 +116,9 @@ test('single-page PDF has binary-safe xref offsets, contiguous bands and correct
   for (const band of bands) assert.ok(bytes.includes(Buffer.from(band.bytes)));
 });
 
+const resultTabButton = (html, value) => (html.match(/<button\b[^>]*>/g) || []).find(
+  tag => tag.includes('data-action="portfolio-result-tab"') && tag.includes('data-value="' + value + '"'));
+
 function uiFixture(configure, model = P) {
   const { input } = fixture(), downloads = [], notices = [], reports = [], renderStates = [];
   if (configure) configure(input);
@@ -135,7 +138,15 @@ function uiFixture(configure, model = P) {
   ui.view(helpers);
   const action = (name, extras = {}) => ui.handleAction({ dataset: { action: 'portfolio-' + name, ...extras } });
   const monthly = value => ui.handleInput({ id: 'portfolio-monthly', value: String(value), dataset: { portfolioField: 'monthly' } });
-  return { ui, action, monthly, context, helpers, downloads, notices, reports, renderStates, input };
+  const resultTab = async value => {
+    const button = resultTabButton(ui.view(helpers), value);
+    assert.ok(button, 'No visible result tab: ' + value);
+    await action('result-tab', { value });
+    const html = ui.view(helpers);
+    assert.ok(resultTabButton(html, value).includes('aria-selected="true"'), 'Tab should be selected: ' + value);
+    return html;
+  };
+  return { ui, action, resultTab, monthly, context, helpers, downloads, notices, reports, renderStates, input };
 }
 
 test('a dividend policy selected in holdings reaches the simulated cash ledger, exported configuration, PDF and sales CSV', async () => {
@@ -150,7 +161,7 @@ test('a dividend policy selected in holdings reaches the simulated cash ledger, 
   await f.action('dividend-policy', {value: 'cash'});
   await f.action('save'); assert.equal(JSON.parse(f.downloads.at(-1)[1]).dividendPolicy, 'cash');
   await f.action('run'); await f.action('export-pdf');
-  const report = f.reports.at(-1), r = report.result, html = f.ui.view(f.helpers);
+  const report = f.reports.at(-1), r = report.result, html = await f.resultTab('holdings');
   const control = P.simulate(f.input);
   assert.ok(r.cashDividends > 0 && control.cashDividends === 0);
   assert.ok(Math.abs(r.cash - control.cash - r.cashDividends) < 1e-7);
@@ -262,7 +273,7 @@ test('workspace tabs isolate settings, asset editing and results while preservin
   assert.doesNotMatch(view(), /id="portfolio-monthly"|id="portfolio-search"/);
   const html = view();
   assert.ok(html.indexOf('data-portfolio-plot') > html.indexOf('portfolio-result-summary'));
-  assert.match(html, /<h2>区间快照<\/h2>/);
+  assert.doesNotMatch(html, /<h2>区间快照<\/h2>/);
   assert.match(html, /一次性投入 ＋ 每月定投/);
   assert.doesNotMatch(html, /role="tabpanel"[^>]*tabindex=/);
   await tab('settings'); f.monthly(222);
@@ -277,41 +288,41 @@ test('workspace tabs isolate settings, asset editing and results while preservin
   assert.equal(f.downloads.length, 0);
 });
 
-test('one result page identifies the run, with a shared return switch and downloads next to their data', async () => {
+test('result tabs keep the run and global tools visible while isolating each section and its export', async () => {
   const f = uiFixture(input => Object.assign(input.config, { initial: 0, monthly: 400, contributionMethod: 'dca_quarter' }));
+  const view = () => f.ui.view(f.helpers);
   await f.action('run');
-  const html = f.ui.view(f.helpers);
-  const visible = html.replace(/<details\b(?![^>]*\bopen\b)[^>]*>[\s\S]*?<\/details>/g, '');
-  const summary = visible.indexOf('portfolio-result-summary');
-  assert.ok(summary > 0);
-  const intro = visible.slice(0, summary);
-  assert.match(intro, /portfolio-run-context/);
-  assert.match(intro, /每季度定投/);
-  assert.doesNotMatch(intro, /一次性投入|零权重仍应完整收录的基金/);
-  for (const value of ['TWO', 'TEST', '现金', '每季再平衡', '2026-01-08', '收益口径', '导出模拟报告 PDF']) assert.ok(intro.includes(value), value);
-  assert.doesNotMatch(intro, /数据来源|逐项来源|example\.org|含分红复权收盘价/);
-  assert.match(visible.slice(summary), /data-action="portfolio-sources"/);
-  assert.doesNotMatch(intro, /data-action="portfolio-export-(?:result|holdings)"/);
-  assert.doesNotMatch(html, /data-action="portfolio-result-tab"|aria-label="模拟结果分区"/);
-  for (const control of ['aria-label="收益口径"', 'data-action="portfolio-export-pdf"', 'data-action="portfolio-export-result"', 'data-action="portfolio-export-holdings"']) {
-    assert.equal(visible.split(control).length - 1, 1, 'one visible ' + control);
+  assert.ok(resultTabButton(view(), 'chart').includes('aria-selected="true"'));
+  assert.equal(resultTabButton(view(), 'daily'), undefined, 'no daily signals for ordinary contributions');
+  assert.equal(resultTabButton(view(), 'comparison'), undefined, 'no initial strategy for the lump-sum comparison');
+  const sections = { chart: '组合走势', snapshots: '区间快照', annual: '年度表现', holdings: '持仓贡献' };
+  for (const [key, title] of Object.entries(sections)) {
+    const html = await f.resultTab(key);
+    const context = html.match(/<dl class="portfolio-run-context">([\s\S]*?)<\/dl>/)[1];
+    for (const item of ['每季度定投', 'TWO', 'TEST', '现金', '每季再平衡', '2026-01-08']) assert.ok(context.includes(item), item);
+    assert.doesNotMatch(context, /一次性投入|零权重仍应完整收录的基金|数据来源|逐项来源|example\.org|含分红复权收盘价/);
+    for (const control of ['portfolio-result-summary', 'aria-label="收益口径"', 'data-action="portfolio-export-pdf"']) {
+      assert.equal(html.split(control).length - 1, 1, 'one global ' + control);
+    }
+    assert.ok(html.indexOf('data-action="portfolio-result-tab"') < html.indexOf('aria-label="收益口径"'));
+    for (const heading of Object.values(sections)) assert.equal(html.includes('<h2>' + heading + '</h2>'), heading === title);
+    for (const [action, tab] of [['export-result', 'chart'], ['export-holdings', 'holdings'], ['sources', 'holdings']]) {
+      assert.equal(html.includes('data-action="portfolio-' + action + '"'), key === tab);
+    }
+    if (key === 'snapshots') assert.match(html, /近1年/);
+    if (key === 'annual') assert.match(html, /2025/);
   }
-  const card = title => {
-    const start = visible.indexOf('<h2>' + title + '</h2>');
-    assert.ok(start >= 0, title + ' must be visible on the result page');
-    return visible.slice(start, visible.indexOf('</section>', start));
-  };
-  assert.match(card('组合走势'), /data-action="portfolio-export-result"/);
-  assert.match(card('持仓贡献'), /data-action="portfolio-export-holdings"/);
-  assert.match(card('区间快照'), /近1年/);
-  assert.match(card('年度表现'), /2025/);
-  // Editing a draft must not relabel the last result until a new run succeeds.
+  // Draft edits preserve the previous run and its reading tab. A new simulation starts on the chart.
   await f.action('tab', { value: 'settings' });
   await f.action('select', { field: 'contributionMethod', value: 'dca_month' });
   await f.action('tab', { value: 'results' });
-  const stale = f.ui.view(f.helpers);
+  const stale = view();
   assert.match(stale, /上次模拟结果/);
-  assert.match(stale.slice(0, stale.indexOf('portfolio-result-summary')), /每季度定投/);
+  assert.ok(resultTabButton(stale, 'holdings').includes('aria-selected="true"'));
+  assert.match(stale, /每季度定投/);
+  await f.action('run');
+  assert.ok(resultTabButton(view(), 'chart').includes('aria-selected="true"'));
+  assert.doesNotMatch(view(), /每季度定投|上次模拟结果/);
 });
 
 test('funding, strategy rules and settlement settings are grouped by what the investor changes', async () => {
@@ -460,7 +471,7 @@ test('systematic next-day orders show fixed money and signal-day sale proportion
     orders: [{ id: 'us:TQQQ', side: 'sell', sellFraction: .25, units: .123456789 }, { id: 'us:USD', side: 'buy', amount: 1234.56 }],
     buyAmount: 1234.56, buyFee: 1.23, desiredTargets: [.4, .2], parkedWeights: [0, 0], metadata: {} } });
   await f.action('run');
-  const html = f.ui.view(f.helpers);
+  const html = await f.resultTab('comparison');
   assert.match(html, /待执行/); assert.match(html, /卖出 TQQQ/); assert.match(html, /信号日持仓的 25\.00%/);
   assert.match(html, /买入 USD/); assert.match(html, /固定买入金额 1234\.56 元，另预留交易费 1\.23 元/);
   assert.match(html, /最近执行目标：USD ETF 30\.00% · TQQQ 30\.00%/);
@@ -473,7 +484,7 @@ test('systematic no-order states distinguish missing evidence, warmup and an unc
     [{ warmingUp: true, metadata: { reason: 'USD/TQQQ不足505个共同实际收盘' } }, /等待信号历史积累/], [{ metadata: {} }, /暂无调仓计划/]]) {
     const f = systematicUiFixture('dual_risk_guard', { state });
     await f.action('run');
-    const html = f.ui.view(f.helpers);
+    const html = await f.resultTab('comparison');
     assert.match(html, expected); assert.doesNotMatch(html, /class="badge">待执行/);
     assert.match(html, /2020和2022两个历史事件/);
   }
@@ -495,8 +506,8 @@ function dailyUiFixture(method = 'vix_panic_reentry') {
 test('daily UI selects historical indicators and budgets without changing the simulated account', async () => {
   const f = dailyUiFixture();
   await f.action('run');
-  let html = f.ui.view(f.helpers);
-  assert.ok(html.indexOf('每日策略状态') < html.indexOf('与一次性投入比较'));
+  let html = await f.resultTab('daily');
+  assert.match(html, /<h2>每日策略状态/); assert.doesNotMatch(html, /<h2>与一次性投入比较/);
   assert.match(html, /TQQQ策略状态.*持有状态/);
   assert.match(html, /预算试算，不计入回测年化/);
   assert.match(html, /规则调仓买入 0笔、卖出 0笔/);
@@ -573,7 +584,7 @@ test('daily indicators preserve missing and warmup semantics and freeze the same
     executedTargets: [.3, .3], executedParked: [0, 0] });
   f.daily[2].nextPlan = { signalDay: f.daily[2].day, desiredTargets: [.3, 0], parkedWeights: [0, .3],
     orders: [{ id: 'us:TQQQ', side: 'sell', sellFraction: .25, units: .123456789 }], buyAmount: 0, buyFee: 0 };
-  await f.action('run'); await f.action('export-pdf');
+  await f.action('run'); await f.resultTab('daily'); await f.action('export-pdf');
   let text = textOf(Pdf.layout(f.reports.at(-1), measure));
   assert.match(text, /Cboe VIX\/VIX3M/); assert.match(text, /每日策略状态/);
   assert.match(text, /信号日持仓的 25\.00%/); assert.doesNotMatch(text, /0\.123456789/);
@@ -599,8 +610,10 @@ test('extend-to-latest refreshes coverage but preserves the original account sta
   f.ui.handleInput({ id: 'portfolio-end', value: '2025-06-03', dataset: { portfolioField: 'end' } });
   await f.action('run'); await f.action('export-pdf');
   const original = f.reports.at(-1).result;
+  await f.resultTab('daily');
   await f.action('extend-latest'); await f.action('export-pdf');
   const latest = f.reports.at(-1).result;
+  assert.ok(resultTabButton(f.ui.view(f.helpers), 'daily').includes('aria-selected="true"'));
   assert.equal(latest.start, original.start); assert.equal(latest.end, '2026-01-08');
   assert.equal(latest.config.years, 'custom'); assert.equal(latest.config.start, original.start);
   assert.deepEqual(latest.config.positions, original.config.positions);
@@ -663,7 +676,7 @@ test('next-trade panel distinguishes pending QQQ exits and entries from executed
     const f = nextPlanFixture(endIndex);
     await f.action('run');
     assert.equal(f.notices.length, 0, f.notices.join('; '));
-    const html = f.ui.view(f.helpers);
+    const html = await f.resultTab('comparison');
     assert.equal(html.match(/role="alert">([^<]*)/)?.[1], undefined);
     assert.match(html, /下一共同交易日/);
     assert.ok(html.includes(action)); assert.match(html, /待执行/);
@@ -675,7 +688,7 @@ test('a newer QQQ-only close is shown as observation, not the next common-day or
   const f = nextPlanFixture(319, true);
   await f.action('run');
   assert.equal(f.notices.length, 0, f.notices.join('; '));
-  const html = f.ui.view(f.helpers);
+  const html = await f.resultTab('comparison');
   assert.equal(html.match(/role="alert">([^<]*)/)?.[1], undefined);
   assert.match(html, /继续持有TQQQ/); assert.match(html, /较新观察：QQQ .*收盘为持有现金状态/);
   assert.match(html, /暂不改变上述计划/);
@@ -689,7 +702,7 @@ test('cash-topup panel exposes predeclared per-asset order amounts and fees', as
     Object.assign(input.config, { initialMethod: 'cash_topup', years: 'custom', start: days[0], end: days[1], benchmarkId: '', transactionFee: .1, tax: { usCapitalGains: 0, usDividend: 0, cnStockDividend: 0 } });
   });
   await f.action('run'); await f.action('export-pdf');
-  const html = f.ui.view(f.helpers);
+  const html = await f.resultTab('comparison');
   assert.equal(html.match(/role="alert">([^<]*)/)?.[1], undefined);
   const plan = f.reports[0].result.nextTopupPlan;
   assert.ok(plan && plan.orders.length === 2);
@@ -708,7 +721,7 @@ test('normal and historical results retain holdings and drawdown without the ret
     const f = accountUiFixture(input => { if (historical) Object.assign(input.config, { years: 'custom', start: '2024-01-01', end: '2025-01-08' }); });
     await f.action('run'); await f.action('export-pdf');
     assert.equal(f.reports.length, 1);
-    const report = f.reports[0], html = f.ui.view(f.helpers);
+    const report = f.reports[0], html = await f.resultTab('holdings');
     assert.equal(report.result.timing, undefined);
     const pdf = textOf(Pdf.layout(report, measure));
 
@@ -802,7 +815,7 @@ test('failed freshness checks retain dated simulation results and name the missi
 test('ordinary account exports include the result and holdings', async () => {
   const f = accountUiFixture(); await f.action('run'); const before = f.downloads.length;
   await f.action('export-result'); assert.equal(f.downloads.length, before + 1); assert.match(f.downloads.at(-1)[0], /组合逐日走势/);
-  await f.action('export-holdings'); assert.equal(f.downloads.length, before + 2); assert.match(f.downloads.at(-1)[0], /持仓收益明细/);
+  await f.resultTab('holdings'); await f.action('export-holdings'); assert.equal(f.downloads.length, before + 2); assert.match(f.downloads.at(-1)[0], /持仓收益明细/);
 });
 
 test('a new history download failure preserves account facts and blocks export until a successful rerun', async () => {
@@ -893,7 +906,7 @@ test('short periods explain unavailable funding XIRR and snapshots retain exact 
     history.series = history.series.filter(([day]) => day >= '2025-07-01'); history.first = history.series[0][0];
   });
   await missing.action('run');
-  const missingHtml = missing.ui.view(missing.helpers);
+  const missingHtml = await missing.resultTab('snapshots');
   assert.match(missingHtml, /近1年对照：对照标的的历史不覆盖组合区间/);
   assert.doesNotMatch(missingHtml, />无覆盖</);
 });
@@ -958,7 +971,7 @@ test('USD settings, tax reserve, PDF and CSV keep the same result currency after
   assert.doesNotMatch(f.ui.view(f.helpers), /id="portfolio-(?:initial|monthly)"/);
   assert.match(f.ui.view(f.helpers), /data-portfolio-amount="us:TWO"[^<]*><span>USD<\/span>/);
   await f.action('run');
-  const html = f.ui.view(f.helpers), expected = P.simulate(f.input);
+  const html = await f.resultTab('holdings'), expected = P.simulate(f.input);
   assert.ok(expected.taxReserve > 0);
   assert.match(html, /期末税后估值/); assert.match(html, /浮盈预留税/);
   assert.doesNotMatch(html, /浮盈未征税|期末市值 \/ 元/);
@@ -977,11 +990,11 @@ test('USD settings, tax reserve, PDF and CSV keep the same result currency after
   const stale = f.ui.view(f.helpers);
   assert.match(stale, /上次模拟结果/);
   assert.match(stale, /税后估值 \/ USD/);
-  await f.action('export-result');
+  await f.resultTab('chart'); await f.action('export-result');
   const curveCsv = f.downloads.at(-1)[1];
   assert.match(curveCsv, /税后估值USD/); assert.match(curveCsv, /当前浮盈预留税USD/);
   assert.doesNotMatch(curveCsv.split('\n')[0], /CNY/);
-  await f.action('export-holdings');
+  await f.resultTab('holdings'); await f.action('export-holdings');
   const holdingsCsv = f.downloads.at(-1)[1];
   assert.match(holdingsCsv, /当前浮盈预留税USD/); assert.match(holdingsCsv, /cash:USD/);
   assert.doesNotMatch(holdingsCsv.split('\n')[0], /CNY/);

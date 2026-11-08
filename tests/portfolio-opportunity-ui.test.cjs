@@ -61,9 +61,11 @@ for (const [method, weights] of [['opportunity_discount_10', [30, 30]], ['opport
     }
     for (const id of ['us:USD', 'us:TQQQ', 'us:QQQ', 'us:SOXX']) assert.ok(u.calls.includes(historyUrl(id)), id);
     assert.ok(u.calls.includes('data/portfolio/entry-context.json'));
+    assert.doesNotMatch(u.view(), /<h2>每日加仓分数/);
+    await u.action('result-tab', 'daily');
     const html = u.view(), start = html.indexOf('<h2>每日加仓分数');
     assert.ok(start > 0);
-    const card = html.slice(start, html.indexOf('<h2>', start + 5));
+    const card = html.slice(start, html.indexOf('</section>', start));
     const detail = card.match(/<details\b([^>]*)><summary>本日分数与买入金额怎么算<\/summary>([\s\S]*?)<\/details>/);
     assert.ok(detail, 'score inputs and formula are accessible through the disclosure');
     assert.doesNotMatch(detail[1], /\bopen\b/);
@@ -100,7 +102,8 @@ test('unconfigured legs never require their proxy history; USD-only discount als
     assert.equal(u.accounts[0]?.error, undefined); assert.ok(u.accounts[0]?.curve.length > 0);
     assert.ok(forbidden.every(url => !u.calls.includes(url)));
     assert.equal(u.calls.includes('data/portfolio/entry-context.json'), needsVix);
-    assert.match(u.view(), /每日加仓分数/);
+    await u.action('result-tab', 'daily');
+    assert.match(u.view(), /<h2>每日加仓分数/);
   }
 });
 

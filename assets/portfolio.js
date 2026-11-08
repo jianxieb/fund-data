@@ -9,6 +9,7 @@
   let draft = { ...defaults }, query = '', kind = 'all', market = 'all', hideBoards = false;
   const workspaceTabs = [['settings', '模拟设置'], ['holdings', '我的组合'], ['results', '模拟结果']];
   let workspaceTab = 'settings', calculationOpen = false, benchmarkRequest = null;
+  let resultTab = 'chart';
   let result = null, resultKey = '', error = '', metric = 'return', importError = '', exportingPdf = false;
   let dailyDay = '', additionBudget = 10000;
   try {
@@ -200,7 +201,7 @@
         computed.catalogRefresh = { checkedAt: new Date().toISOString(), available: !refreshMissing, missing: refreshMissing || null };
         if (extend && signature() === originalSignature) { Object.assign(draft, { years: params.years, start: params.start, end: params.end }); persist(); }
         dailyDay = computed.systematic?.daily?.at(-1)?.day || '';
-        if (!extend) additionBudget = params.monthly > 0 ? params.monthly : 10000;
+        if (!extend) { additionBudget = params.monthly > 0 ? params.monthly : 10000; resultTab = 'chart'; }
         chartInputs.set(computed, { input, status: 'idle', refs: null, error: '' });
         result = computed; resultKey = JSON.stringify(params);
         showResults = resultKey === signature();
@@ -1051,17 +1052,29 @@
     return btn('延续到最新行情', 'extend-latest', 'text-link', 'id="portfolio-extend-latest" aria-describedby="portfolio-extend-reason"' + (blocked ? ' disabled' : '')) +
       '<small id="portfolio-extend-reason">' + H.esc(blocked) + '</small>';
   }
+  function resultSections(r) {
+    const usesMa = r.config.initial > 0 && r.config.initialMethod === 'ma200_hold' || r.config.monthly > 0 && ['dca_ma_trend', 'dca_ma_contrarian'].includes(r.config.contributionMethod);
+    const sections = [['chart', '组合走势', () =>
+      (r.benchmarkError ? '<p class="portfolio-warning">' + H.esc(r.benchmarkError) + '，当前仅显示组合曲线。</p>' : '') + chart() +
+      (usesMa && r.strategy.insufficientMaDays ? '<p class="portfolio-warning">均线不足200个共同交易日的阶段按常规投入，未将缺历史视为下跌信号。</p>' : '')]];
+    if (systematicMethods.has(r.config.initialMethod)) sections.push(['daily', opportunityMethods.has(r.config.initialMethod) ? '每日加仓分数' : '每日策略状态', () => dailyCard() + accountActivityMarkup(r)]);
+    if (r.lumpSumComparison) sections.push(['comparison', '策略对照', lumpSumComparison]);
+    return sections.concat([['snapshots', '区间快照', snapshots], ['annual', '年度表现', () => yearlyResults(r)], ['holdings', '持仓贡献', () => resultHoldings(r)]]);
+  }
   function results() {
     if (!result) return '<section class="portfolio-result-placeholder"><div><h2>还没有模拟结果</h2><p>' + (draft.positions.length ? '点击“开始模拟”查看组合走势和收益。' : '先添加标的并设置权重，再开始模拟。') + '</p></div><svg viewBox="0 0 460 135" aria-hidden="true"><path d="M3 120H457M3 80H457M3 40H457" stroke="#e0e5d7"/><path d="m3 101 37-13 37 14 38-28 37 7 38-22 38 12 37-31 37 5 40-26 38 6 40-23" fill="none" stroke="#96aa83" stroke-width="2"/><path d="m3 110 37-4 37 5 38-19 37 10 38-8 38-9 37 6 37-19 40 9 38-16 40 2" fill="none" stroke="#c3b291" stroke-width="1.5" stroke-dasharray="5 5"/></svg></section>';
-    const r = result;
+    const r = result, sections = resultSections(r);
+    if (!sections.some(([id]) => id === resultTab)) resultTab = 'chart';
+    const tabs = sections.map(([id, label]) => btn(label, 'result-tab', 'portfolio-result-tab',
+      'id="portfolio-result-tab-' + id + '" data-value="' + id + '" role="tab" aria-controls="portfolio-result-pane-' + id +
+      '" aria-selected="' + (id === resultTab) + '" tabindex="' + (id === resultTab ? '0' : '-1') + '"')).join('');
     const tools = '<div class="portfolio-result-tools">' + H.annualControl +
       btn(exportingPdf ? '正在生成模拟报告…' : '导出模拟报告 PDF', 'export-pdf', 'portfolio-result-link', running || exportingPdf ? 'disabled' : '') + '</div>';
-    const usesMa = r.config.initial > 0 && r.config.initialMethod === 'ma200_hold' || r.config.monthly > 0 && ['dca_ma_trend', 'dca_ma_contrarian'].includes(r.config.contributionMethod);
-    return '<div class="portfolio-results"><div class="portfolio-result-head">' + resultContext(r) + tools + '</div><div class="portfolio-result-content">' +
+    return '<div class="portfolio-results"><div class="portfolio-result-head">' + resultContext(r) +
+      '<div class="portfolio-result-nav"><div role="tablist" aria-label="模拟结果分区" class="portfolio-result-tabs">' + tabs + '</div>' + tools + '</div></div><div class="portfolio-result-content">' +
       (r.catalogRefresh?.available === false ? '<p class="portfolio-warning">' + H.esc(r.catalogRefresh.missing) + '</p>' : '') + resultSummary(r) +
-      (r.benchmarkError ? '<p class="portfolio-warning">' + H.esc(r.benchmarkError) + '，当前仅显示组合曲线。</p>' : '') + chart() +
-      (usesMa && r.strategy.insufficientMaDays ? '<p class="portfolio-warning">均线不足200个共同交易日的阶段按常规投入，未将缺历史视为下跌信号。</p>' : '') +
-      dailyCard() + accountActivityMarkup(r) + lumpSumComparison() + snapshots() + yearlyResults(r) + resultHoldings(r) + '</div></div>';
+      sections.map(([id, , content]) => '<div class="portfolio-result-pane" id="portfolio-result-pane-' + id + '" role="tabpanel" aria-labelledby="portfolio-result-tab-' +
+        id + '"' + (id === resultTab ? '>' + content() : ' hidden>') + '</div>').join('') + '</div></div>';
   }
   function revealWorkspace() {
     const workspace = document.getElementById('portfolio-workspace');
@@ -1183,6 +1196,11 @@
     const act = button.dataset.action.replace('portfolio-', ''), val = button.dataset.value;
     switch (act) {
       case 'tab': return openWorkspaceTab(val);
+      case 'result-tab':
+        if (!result || resultTab === val || !resultSections(result).some(([id]) => id === val)) return;
+        resultTab = val; update();
+        document.getElementById('portfolio-result-tab-' + val)?.focus({preventScroll: true});
+        return;
       case 'retry': loadError = ''; ensureCatalog(); break;
       case 'run': if (!exportingPdf) return run(); return;
       case 'add':

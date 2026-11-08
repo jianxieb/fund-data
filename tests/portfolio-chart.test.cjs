@@ -66,6 +66,11 @@ test('chart zoom, cash weights and independent overlays follow the same dates wi
   assert.match(html, /实际现金比例/); assert.match(html, /data-indicator-line="score"/);
   assert.ok(html.match(/data-indicator-line="score" d="([^"]*)"/)[1].split('M').length >= 4);
   assert.doesNotMatch(html, /NaN|undefined/);
+  click('result-tab', 'annual');
+  assert.doesNotMatch(ui.view(h), /data-portfolio-plot/);
+  click('result-tab', 'chart');
+  assert.deepEqual(range(), ['2024-04-01', cfg.end]);
+  assert.match(chart(), /data-indicator-line="score"/);
   click('tab', 'settings'); click('tab', 'results'); assert.deepEqual(range(), ['2024-04-01', cfg.end]);
   await change('to', '2024-04-03');
   hover(65); assert.match(tooltip.innerHTML, /^<strong>2024-04-01/); assert.match(tooltip.innerHTML, /4分/); assert.match(tooltip.innerHTML, /开启/);
