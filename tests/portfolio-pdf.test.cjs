@@ -288,7 +288,9 @@ test('one result page identifies the run, with a shared return switch and downlo
   assert.match(intro, /portfolio-run-context/);
   assert.match(intro, /每季度定投/);
   assert.doesNotMatch(intro, /一次性投入|零权重仍应完整收录的基金/);
-  for (const value of ['TWO', 'TEST', '现金', '每季再平衡', '2026-01-08', 'example.org', '含分红复权收盘价', '收益口径', '导出模拟报告 PDF']) assert.ok(intro.includes(value), value);
+  for (const value of ['TWO', 'TEST', '现金', '每季再平衡', '2026-01-08', '收益口径', '导出模拟报告 PDF']) assert.ok(intro.includes(value), value);
+  assert.doesNotMatch(intro, /数据来源|逐项来源|example\.org|含分红复权收盘价/);
+  assert.match(visible.slice(summary), /data-action="portfolio-sources"/);
   assert.doesNotMatch(intro, /data-action="portfolio-export-(?:result|holdings)"/);
   assert.doesNotMatch(html, /data-action="portfolio-result-tab"|aria-label="模拟结果分区"/);
   for (const control of ['aria-label="收益口径"', 'data-action="portfolio-export-pdf"', 'data-action="portfolio-export-result"', 'data-action="portfolio-export-holdings"']) {

@@ -781,7 +781,6 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-run-positions,.portfolio-run-strategy{font-weight:600;font-size:16px}
 .portfolio-run-position b{font-weight:500;color:var(--green)}
 .portfolio-run-meta{font-size:13px;color:var(--muted)}
-.portfolio-run-context .portfolio-result-link{font-size:13px;min-height:0;padding:0}
 @media(max-width:650px){.portfolio-run-context{column-gap:10px}.portfolio-run-positions,.portfolio-run-strategy{font-size:15px}}
 .portfolio-result-tools{flex:none;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
 .portfolio-result-link{padding:5px 0;min-height:38px;font-size:13px;color:var(--green);white-space:nowrap;text-decoration:underline;text-decoration-color:#a4b59e;text-underline-offset:3px}.portfolio-result-link:hover{text-decoration-color:currentColor}
