@@ -12,6 +12,6 @@
 | 4 | 长期股 | 名称暗示精选结论，实际仅23个预设样本；分红和风险日期未逐项交代 | 改为个股观察，展示有限覆盖与每条日期 |
 | 5 | 绩优基金 | 说明称81、97等不同数量；1268行研究池混作备选；I份额与规则矛盾；没有个人配置功能 | 有上限、可解释短名单；研究池分页；明确覆盖缺口 |
 
-截图：[海外](screenshots/01-before-overseas.png)、[指数](screenshots/02-before-indices.png)、[策略](screenshots/03-before-strategies.png)、[股票](screenshots/04-before-stocks.png)、[基金](screenshots/05-before-funds.png)。
+截图：[海外](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/screenshots/01-before-overseas.png)、[指数](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/screenshots/02-before-indices.png)、[策略](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/screenshots/03-before-strategies.png)、[股票](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/screenshots/04-before-stocks.png)、[基金](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/screenshots/05-before-funds.png)。
 
 截图已逐一查看。视觉风险包括缺乏主要行动、首屏信息密度过高、固定开关遮挡底部内容、分类维度平铺。截图不能证明完整键盘或读屏可访问性；重构后检查标签、焦点、弹窗、搜索、表头排序与窄屏。

@@ -71,14 +71,14 @@
 
 ## 界面记录
 
-- [新版配置总览](screenshots/06-after-overview.png)
-- [目标试算](screenshots/07-after-goal.png)
-- [独立指数观察](screenshots/08-after-indices.png)
-- [统一红利费用](screenshots/09-after-dividend-fees.png)
-- [手机首页](screenshots/10-after-mobile-overview.png)
-- [手机研究页](screenshots/11-after-mobile-funds.png)
-- [手机持仓录入](screenshots/12-after-mobile-editor.png)
-- [数据与方法](screenshots/13-after-quality.png)
-- [当前与目标情景](screenshots/14-after-stress.png)
+- [新版配置总览](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/screenshots/06-after-overview.png)
+- [目标试算](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/screenshots/07-after-goal.png)
+- [独立指数观察](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/screenshots/08-after-indices.png)
+- [统一红利费用](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/screenshots/09-after-dividend-fees.png)
+- [手机首页](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/screenshots/10-after-mobile-overview.png)
+- [手机研究页](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/screenshots/11-after-mobile-funds.png)
+- [手机持仓录入](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/screenshots/12-after-mobile-editor.png)
+- [数据与方法](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/screenshots/13-after-quality.png)
+- [当前与目标情景](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/screenshots/14-after-stress.png)
 
 后续真实使用从首页“建立我的配置”开始，录入本人持仓与目标；示例金额与比例没有替用户作出投资决定。

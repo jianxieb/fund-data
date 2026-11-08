@@ -48,7 +48,7 @@
 
 README按研究问题组织用途、当前覆盖和方法入口；网站首页、标签页标题、元描述、侧栏短句、页脚及包描述同步采用新定位。GitHub仓库描述已写入并读回核对，同时补上现有Pages网站入口。
 
-JavaScript语法与38个资源版本检查通过，README及本文的仓库文档链接已检查；本地浏览器确认首页标题、介绍与现有入口正常展示，[截图存档](evidence/product-positioning-20261016.jpg)。本轮只调整定位与介绍，未修改研究数据或计算模型；发布结果以对应提交的Pages工作流为准。
+JavaScript语法与38个资源版本检查通过，README及本文的仓库文档链接已检查；本地浏览器确认首页标题、介绍与现有入口正常展示，[截图存档](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/product-positioning-20261016.jpg)。本轮只调整定位与介绍，未修改研究数据或计算模型；发布结果以对应提交的Pages工作流为准。
 
 ## 1. 定位与方案选择（2026-09历史决策）
 

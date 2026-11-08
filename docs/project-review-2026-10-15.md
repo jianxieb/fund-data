@@ -70,41 +70,41 @@
 <details>
 <summary>总览与研究对象：改前基线</summary>
 
-![原首页](evidence/audit-20261015/01-overview.jpg)
-![原历史分位](evidence/audit-20261015/02-market-history.jpg)
-![指数观察](evidence/audit-20261015/05-indices.jpg)
-![基金筛选](evidence/audit-20261015/06-funds.jpg)
-![公司列表](evidence/audit-20261015/07-stocks.jpg)
-![公司报告](evidence/audit-20261015/13-company-report.jpg)
+- [原首页](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261015/01-overview.jpg)
+- [原历史分位](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261015/02-market-history.jpg)
+- [指数观察](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261015/05-indices.jpg)
+- [基金筛选](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261015/06-funds.jpg)
+- [公司列表](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261015/07-stocks.jpg)
+- [公司报告](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261015/13-company-report.jpg)
 
 </details>
 
 <details>
 <summary>知识、投入、税费和资金路径</summary>
 
-![全球金融](evidence/audit-20261015/08-global-finance.jpg)
-![投入策略](evidence/audit-20261015/09-strategy.jpg)
-![投资渠道](evidence/audit-20261015/10-buy-location.jpg)
-![跨境资金](evidence/audit-20261015/11-money-flow.jpg)
-![组合配置](evidence/audit-20261015/03-portfolio.jpg)
-![原组合结果](evidence/audit-20261015/04-portfolio-result.jpg)
+- [全球金融](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261015/08-global-finance.jpg)
+- [投入策略](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261015/09-strategy.jpg)
+- [投资渠道](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261015/10-buy-location.jpg)
+- [跨境资金](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261015/11-money-flow.jpg)
+- [组合配置](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261015/03-portfolio.jpg)
+- [原组合结果](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261015/04-portfolio-result.jpg)
 
 </details>
 
 <details>
 <summary>证据说明、首页和组合结果：改后</summary>
 
-![原数据状态](evidence/audit-20261015/12-quality-before.jpg)
-![修正的数据状态](evidence/audit-20261015/15-quality-updated.jpg)
-![历史分位图表保留](evidence/audit-20261015/14-history-updated.jpg)
-![预测PE缺口](evidence/audit-20261015/16-forward-pe-updated.jpg)
-![资金与组合收益并列](evidence/audit-20261015/17-portfolio-updated.jpg)
-![首页补齐研究入口](evidence/audit-20261015/21-overview-updated.jpg)
+- [原数据状态](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261015/12-quality-before.jpg)
+- [修正的数据状态](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261015/15-quality-updated.jpg)
+- [历史分位图表保留](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261015/14-history-updated.jpg)
+- [预测PE缺口](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261015/16-forward-pe-updated.jpg)
+- [资金与组合收益并列](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261015/17-portfolio-updated.jpg)
+- [首页补齐研究入口](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261015/21-overview-updated.jpg)
 
 </details>
 
 ### 新增持有期研究
 
-![持有期研究首屏](evidence/audit-20261015/18-holding-period.jpg)
-![月度买入起点的完整持有回报](evidence/audit-20261015/19-holding-chart.jpg)
-![人民币路径与可复算端点](evidence/audit-20261015/20-holding-fx-detail.jpg)
+- [持有期研究首屏](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261015/18-holding-period.jpg)
+- [月度买入起点的完整持有回报](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261015/19-holding-chart.jpg)
+- [人民币路径与可复算端点](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261015/20-holding-fx-detail.jpg)

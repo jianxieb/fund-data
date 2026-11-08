@@ -46,6 +46,6 @@
 - 组合目录1786项全部通过历史校验；现有25项基准、1778项组合资产及汇率内容均与本次改动前一致。
 - 数据质量审计为0错误；全站原有3项警告、4项未独立核验状态保留，未将缺失汇率或其他既有证据缺口标为通过。
 - 浏览器实测美元年化、人民币累计、SGOV十年缺口、TLT详情和持有期跳转。SGOV的5年美元最大回撤显示为−0.03%，避免一位小数误显示为−0.0%。
-- 页面实图：[美元年化](evidence/treasury-etfs/usd-annual.jpg)、[人民币累计](evidence/treasury-etfs/cny-cumulative.jpg)。沿用当前本地桌面视口；较窄窗口通过现有表格横向滚动查看末列。
+- 页面实图：[美元年化](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/treasury-etfs/usd-annual.jpg)、[人民币累计](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/treasury-etfs/cny-cumulative.jpg)。沿用当前本地桌面视口；较窄窗口通过现有表格横向滚动查看末列。
 
 按用户要求不检查线上页面；发布结果以对应提交的GitHub Pages工作流为准。

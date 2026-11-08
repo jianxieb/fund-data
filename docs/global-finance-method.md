@@ -109,14 +109,14 @@
 
 `npm run check` 通过，35个本地资源的内容哈希一致。浏览器默认桌面尺寸为1280×720；实测页面无横向溢出，侧栏可滚动，控制台无错误。检查包括六种情景切换、节点打开知识详情并转移焦点、检索及清除、八条债券主题筛选、滑块改变数值和图形、零通胀与零利率分支。
 
-- [传导地图截图](evidence/global-finance/20261015-map.png)
-- [政策现场截图](evidence/global-finance/20261015-policy.png)
-- [汇率实验截图](evidence/global-finance/20261015-fx-lab.png)
+- [传导地图截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/global-finance/20261015-map.png)
+- [政策现场截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/global-finance/20261015-policy.png)
+- [汇率实验截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/global-finance/20261015-fx-lab.png)
 - [本地交互记录](evidence/global-finance/20261015-interaction.json)
 
 上述记录是实现验证，不等同于用户验收。未把教学曲线当成真实市场数据，也未按测试通过推断资料已经穷尽。按用户要求不打开线上页面复核；发布状态通过仓库部署流程确认。
 
-本次传导表述修订另完成13项全球金融测试及 `npm run check`，均通过。本地逐一切换六种情景，确认78个节点完整显示、页面无横向溢出；抽查汇率、期权、人民币回报三条知识链及节点跳转，控制台无错误。知识链箭头会伸出卡片，因此未将装饰箭头造成的 `scrollWidth` 差异误认作文字裁切。参见[修订后页面](evidence/global-finance/20261015-causal-copy.jpg)与[交互记录](evidence/global-finance/20261015-causal-copy.json)。
+本次传导表述修订另完成13项全球金融测试及 `npm run check`，均通过。本地逐一切换六种情景，确认78个节点完整显示、页面无横向溢出；抽查汇率、期权、人民币回报三条知识链及节点跳转，控制台无错误。知识链箭头会伸出卡片，因此未将装饰箭头造成的 `scrollWidth` 差异误认作文字裁切。参见[修订后页面](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/global-finance/20261015-causal-copy.jpg)与[交互记录](evidence/global-finance/20261015-causal-copy.json)。
 
 
 ## 独立导航与历史事件（2026-10-17）

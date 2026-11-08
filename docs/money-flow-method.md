@@ -553,7 +553,7 @@ IBKR[公开入金工具](https://www.interactivebrokers.com/en/support/fund-my-a
 
 当前中行USD卖出6.7111 CNY；兴业普通买入6.6748、卖出6.7163，寰宇人生利润优惠后的参考卖出6.705925 CNY。10万元中行手机同名美元汇款到中银香港，再本地USD转ZA，购汇差额77.11 CNY、买卖28.97 CNY，总额106.08 CNY／0.106%、最后14,896.37 USD。按固定历史快照检查0.451%等旧回归仍保留；生产金额随已取得的新报价重新计算，不修改历史原件迎合当前数值。
 
-356项全项目JavaScript、22项资源版本检查及完整默认／渠道／资格／边界账簿通过。实际页面逐个切换810个上游组合、45个人民币资格组合及五张优选；439次账户菜单目录及顺序一致。[原始页面文本与检查结果](evidence/money-flow-feedback/browser-refreshed-quotes-20261012.json)、[完整截图](evidence/money-flow-feedback/local-refreshed-default-20261012.jpg)均标明本地页面与新快照。[需求文档末节](money-flow-requirements.md#2026-10-12新报价与810个上游组合实测a01a07a09a11a14)列五条独立汇路金额和具体范围。操作、数学对账与金融证据完整性分别判定；此刷新未关闭A01缺项，也不把旧发布页金额作为新快照线上证据。
+356项全项目JavaScript、22项资源版本检查及完整默认／渠道／资格／边界账簿通过。实际页面逐个切换810个上游组合、45个人民币资格组合及五张优选；439次账户菜单目录及顺序一致。[原始页面文本与检查结果](evidence/money-flow-feedback/browser-refreshed-quotes-20261012.json)、[完整截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-refreshed-default-20261012.jpg)均标明本地页面与新快照。[需求文档末节](money-flow-requirements.md#2026-10-12新报价与810个上游组合实测a01a07a09a11a14)列五条独立汇路金额和具体范围。操作、数学对账与金融证据完整性分别判定；此刷新未关闭A01缺项，也不把旧发布页金额作为新快照线上证据。
 
 ### 私人报价入口与国内转账优惠继续核查（2026-10-12）
 
@@ -565,7 +565,7 @@ IBKR[公开入金工具](https://www.interactivebrokers.com/en/support/fund-my-a
 
 [结构化核查记录](evidence/money-flow-feedback/quote-access-and-privileges-20261012.json)保存这次原件内容哈希、实际入口、币种和决定范围；公开页面没有取得证据只说明本次核查结果，不声称全部可能来源均已穷尽。A01继续开放，不把检索交给用户。本文前部已同步纠正Go是否可选及当前审计计数，保留注明日期的历史记录。
 
-`65ebd40`的[部署](https://github.com/jianxieb/fund-data/actions/runs/38180789682)成功后，[真实线上记录](evidence/money-flow-feedback/browser-published-refreshed-65ebd40-20261012.json)取得工银亚洲已确认e账通114.55 CNY／0.115%及实际重置后的默认106.08 CNY／0.106%、14,896.37 USD。[发布页完整截图](evidence/money-flow-feedback/published-refreshed-default-65ebd40-20261012.jpg)显示新快照，原生调用超时后的恢复读数分别记录；未扩称810个本地配置都已线上重测。
+`65ebd40`的[部署](https://github.com/jianxieb/fund-data/actions/runs/38180789682)成功后，[真实线上记录](evidence/money-flow-feedback/browser-published-refreshed-65ebd40-20261012.json)取得工银亚洲已确认e账通114.55 CNY／0.115%及实际重置后的默认106.08 CNY／0.106%、14,896.37 USD。[发布页完整截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/published-refreshed-default-65ebd40-20261012.jpg)显示新快照，原生调用超时后的恢复读数分别记录；未扩称810个本地配置都已线上重测。
 
 
 ## 港币回内地与所选银行的两次换汇（2026-10-12）
@@ -576,7 +576,7 @@ IBKR[公开入金工具](https://www.interactivebrokers.com/en/support/fund-my-a
 
 收款银行列表与正文共用对应币种、返程日期及个人成交覆盖。兴业优惠按回款日生效：12个月后HKD原牌价0.8505，0个月有效五折参考买入0.851825 CNY/HKD；不沿用购汇当日优惠到未来卖出日。缺香港个人买入价保留兑换前USD，缺内地买入价保留已经按该香港银行价格取得的HKD；未报价部分不计入完整推荐。
 
-365项全项目JavaScript、267项Python测试及22项资源检查通过。[540个真实返程账户／币种组合](evidence/money-flow-feedback/browser-hkd-return-20261012.json)的费用逐条与模型一致；[额外实际操作](evidence/money-flow-feedback/browser-hkd-return-actions-20261012.json)包括私有价、优惠日期、刷新、Esc及5张不同汇路的HKD方案应用。[5,000元小额完整截图](evidence/money-flow-feedback/local-hkd-small-return-20261012.jpg)记录741.02 USD→5,797.40 HKD→4,935.33 CNY、参考费用64.67 CNY／1.293%；[实际重置截图](evidence/money-flow-feedback/local-hkd-feature-default-20261012.jpg)仍为10万元默认106.08 CNY／0.106%。计算采用完整精度，显示金额四舍五入到分。
+365项全项目JavaScript、267项Python测试及22项资源检查通过。[540个真实返程账户／币种组合](evidence/money-flow-feedback/browser-hkd-return-20261012.json)的费用逐条与模型一致；[额外实际操作](evidence/money-flow-feedback/browser-hkd-return-actions-20261012.json)包括私有价、优惠日期、刷新、Esc及5张不同汇路的HKD方案应用。[5,000元小额完整截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-hkd-small-return-20261012.jpg)记录741.02 USD→5,797.40 HKD→4,935.33 CNY、参考费用64.67 CNY／1.293%；[实际重置截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-hkd-feature-default-20261012.jpg)仍为10万元默认106.08 CNY／0.106%。计算采用完整精度，显示金额四舍五入到分。
 
 本轮目录与渠道审计计数已在前部同步：262,440个目录状态及6,873,990个渠道／资格状态，63,180次数值边界。目录审计配置的2笔及已确认优惠独立于主界面默认1笔／未确认豁免；不能将两组金额混比。A01个人成交报价、普通汇路代理费及地区定价仍未完成，本地交互通过不当作全金融数据齐全或已完成线上验收。
 

@@ -6,7 +6,7 @@
 
 - 根因：基金收益控制旁与基金表格标题同时显示同一费用口径。
 - 修复：基金页收益控件不再追加“收益已含年费”；保留表格标题中的“人民币净值口径 · 年费已计入”。标普500参照仍独立标明自身的 ETF 或价格指数口径，费用详情保留计算依据。
-- 验证：本地浏览器检查长期主动权益及其他基金分组；收益周期和年化/累计控件保持原行为。截图见 `evidence/maintenance-2026-10-14/fund-fee-once.png`。
+- 验证：本地浏览器检查长期主动权益及其他基金分组；收益周期和年化/累计控件保持原行为。截图见 [fund-fee-once.png](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/maintenance-2026-10-14/fund-fee-once.png)。
 
 ## 每日自动更新
 
@@ -29,8 +29,8 @@
 - 修复：共用 `table-scroll.js` / `table-scroll.css` 管理有横向溢出的表格。控件停在当前可见表格视区底部，直接控制原表的 `scrollLeft`，保留原有冻结首列；不复制表头。多行表头按实际行高排列。表格保留底部空间，最后一行与加载提示可以完整显示。控件支持拖动、点击和方向键/Home/End，并随窗口、内容和展开详情调整。
 - 基金/个股加载提示纳入有界表格视区，自动加载观察对应滚动容器。宽表最大高度有上限，研究池追加行不再持续延长整张页面。无需横向滚动的表格不显示控件；弹窗外的控件在弹窗打开时隐藏。
 - 本地页面核对：基金112/112行实际加载完成，`scrollTop` 达到4776/4776，最后一行在530px、加载提示底部589px，滚动控件在约600px，未遮住尾行与提示。拖拽从最右回到最左成功；从原表按方向键后控件同步为40px；表头与表体的水平位置相等。
-- 全池收益补齐后的再次核对：默认候选随真实收益重新筛选为99只，实际加载99/99；`scrollTop`为4172/4172、`scrollLeft`为1016/1016。最后一行底部529.97px、加载提示底部588.97px，控件顶部599.88px；表头与尾行对应列左边同为1111.34px。见 `table-scroll-current.json` / `fund-bottom-current.png`。
-- 同类页面核对：海外ETF、境内跨境指数基金、A股财务、投入策略、投资渠道、组合持仓。组合双行表头第二行距离首行40.09px，表头与表体水平位置同为66px。基金对比及个股财务弹窗在本桌面窗口内能够完整容纳表格，因此没有多余横向控件。范围和尺寸记录见 `evidence/maintenance-2026-10-14/table-scroll-browser.json`，对应截图在同目录。
+- 全池收益补齐后的再次核对：默认候选随真实收益重新筛选为99只，实际加载99/99；`scrollTop`为4172/4172、`scrollLeft`为1016/1016。最后一行底部529.97px、加载提示底部588.97px，控件顶部599.88px；表头与尾行对应列左边同为1111.34px。见 `table-scroll-current.json` / [fund-bottom-current.png](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/maintenance-2026-10-14/fund-bottom-current.png)。
+- 同类页面核对：海外ETF、境内跨境指数基金、A股财务、投入策略、投资渠道、组合持仓。组合双行表头第二行距离首行40.09px，表头与表体水平位置同为66px。基金对比及个股财务弹窗在本桌面窗口内能够完整容纳表格，因此没有多余横向控件。范围和尺寸记录见 `evidence/maintenance-2026-10-14/table-scroll-browser.json`，截图见[历史验收记录](https://github.com/jianxieb/fund-data/tree/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/maintenance-2026-10-14)。
 - 以上是本地浏览器验证；发布后的数据与页面复核单独记录，用户接受仍待用户实际使用反馈。
 
 ## 个股长说明
@@ -38,8 +38,8 @@
 - 根因：`.stock-table td .sub` 与 `.stock-annual` 强制 `white-space: nowrap`，非正净资产等连续说明成为列的最小宽度；同类同比状态也可能受 `strong` 的不换行限制影响。
 - 修复：A股、美股表格的补充说明和年度文字正常换行，文字块最大宽度190px，长词也允许换行；同比状态、研究理由与风险使用相同换行原则。全文保留，没有按公司代码或某一句文案特判，也没有截断或省略说明。
 - 浏览器核对：艾伯维的完整ROE说明显示为两行；在其他已收录全表内，同类说明随列宽显示为两至三行。资本回报列从约382px回到约211–215px，完整财务表宽度从1499px回到其原有1380px下限。
-- 已加载39家美股，核对430条补充/年度文字，其中艾伯维、菲利普莫里斯的非正净资产说明以及SpaceX的“缺连续四季利润/经营现金”说明均没有文字块溢出。另核对美股红利分组32条、A股财务144条及A股估值64条文字，全部取消强制单行且未观察到横向溢出。详见 `evidence/maintenance-2026-10-14/stock-long-text-browser.json` 及 `stock-long-text-before.png` / `stock-long-text-after.png`。
-- 更新财报后的艾伯维再次核对：完整的2026-06和2025-06非正净资产说明显示两行，文字块宽190px、实际高35px、`white-space: normal`且没有横向文字溢出。见 `stock-long-text-current.json` / `stock-long-text-current.png`。
+- 已加载39家美股，核对430条补充/年度文字，其中艾伯维、菲利普莫里斯的非正净资产说明以及SpaceX的“缺连续四季利润/经营现金”说明均没有文字块溢出。另核对美股红利分组32条、A股财务144条及A股估值64条文字，全部取消强制单行且未观察到横向溢出。详见 `evidence/maintenance-2026-10-14/stock-long-text-browser.json` 及 [stock-long-text-before.png](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/maintenance-2026-10-14/stock-long-text-before.png) / [stock-long-text-after.png](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/maintenance-2026-10-14/stock-long-text-after.png)。
+- 更新财报后的艾伯维再次核对：完整的2026-06和2025-06非正净资产说明显示两行，文字块宽190px、实际高35px、`white-space: normal`且没有横向文字溢出。见 `stock-long-text-current.json` / [stock-long-text-current.png](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/maintenance-2026-10-14/stock-long-text-current.png)。
 
 ## 发布核对
 

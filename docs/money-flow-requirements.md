@@ -33,7 +33,7 @@ R198：“ibkr lite为什么不能和ibkr pro一样出金人民币”。截图�
 - [x] 使用既有参考值排序，当前顺序为人民币原币IBKR、兴业经Wise入IBKR、中行经中银香港入IBKR、兴业经Trade25。四项均显示“全程参考损耗”，完整消费路线和R195内容外浮窗保留；缺项方案排在完整方案之后。
 - [x] 本地浏览器确认四条卡片和升序，控制台警告／错误0；54项支付账户、产品交互及公开报价回归通过，无失败、跳过或取消，语法、研究资料、57项资源版本和差异检查通过。实现、测试适配及证据同次提交并立即推送，不检查GitHub发布或线上页面。
 
-证据：[四条优选及新标签截图](evidence/money-flow-feedback/local-r196-sorted-plans-20261027.png)、[实际顺序和界面记录](evidence/money-flow-feedback/local-r196-browser-20261027.json)、[原有配置、费用及报价哈希保留](evidence/money-flow-feedback/r196-retained-values-20261027.json)。已合并远端既有数据更新；本轮没有执行报价采集，剩余四条配置与各自完整精度参考费用均与本轮改动前相同。测试按方案ID定位返程费用，避免删除ZA后旧数组下标误指Wise。以上仅为实现及本地验证，不记录为用户接受。
+证据：[四条优选及新标签截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r196-sorted-plans-20261027.png)、[实际顺序和界面记录](evidence/money-flow-feedback/local-r196-browser-20261027.json)、[原有配置、费用及报价哈希保留](evidence/money-flow-feedback/r196-retained-values-20261027.json)。已合并远端既有数据更新；本轮没有执行报价采集，剩余四条配置与各自完整精度参考费用均与本轮改动前相同。测试按方案ID定位返程费用，避免删除ZA后旧数组下标误指Wise。以上仅为实现及本地验证，不记录为用户接受。
 
 ## 上一轮纠正：说明只能使用内容外的额外右侧空间（R195，2026-10-26）
 
@@ -45,7 +45,7 @@ R198：“ibkr lite为什么不能和ibkr pro一样出金人民币”。截图�
 - [x] 说明浮窗从完整列表右边缘之外16px定位，仅在悬浮或键盘查看时出现；不占文档流，移入浮窗可继续阅读，Esc及移出可关闭。键盘聚焦引起自动滚动时不因指针离开而误关。
 - [x] 同一本地窗口中，列表宽度由上轮661px恢复到977px，五行均94px；全部账户、消费端和费用列可直接查看，列表`scrollWidth=clientWidth=977`。五个浮窗均从列表右边缘外16px开始，显示前后行宽、文档坐标、费用列位置不变。
 
-本地证据：[恢复完整宽度](evidence/money-flow-feedback/local-r195-full-width-20261026.png)、[完整路线与额外右侧浮窗](evidence/money-flow-feedback/local-r195-external-tooltip-20261026.png)、[显示前后几何、鼠标／键盘与文件哈希](evidence/money-flow-feedback/local-r195-browser-20261026.json)。截图包含内容外的额外右侧区域，不把原窄窗口当作27英寸4K实物验收；可用窗口较窄时说明仍保持在内容外，不能再为适配说明而压缩核心内容。移入说明继续阅读、Tab查看、Esc及移出关闭均已验证，控制台警告／错误0。47项既有支付账户／产品交互回归通过，脚本语法、研究资料一致性、57项资源版本与差异检查通过。费用模型、规则数据与报价文件逐字节保持；此前远端两项独立修复已合并，本轮改动、需求记录和证据一起提交并立即推送，不查看Actions、Pages或线上资源。以上是本地实现与有限验证，不记为用户接受。
+本地证据：[恢复完整宽度](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r195-full-width-20261026.png)、[完整路线与额外右侧浮窗](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r195-external-tooltip-20261026.png)、[显示前后几何、鼠标／键盘与文件哈希](evidence/money-flow-feedback/local-r195-browser-20261026.json)。截图包含内容外的额外右侧区域，不把原窄窗口当作27英寸4K实物验收；可用窗口较窄时说明仍保持在内容外，不能再为适配说明而压缩核心内容。移入说明继续阅读、Tab查看、Esc及移出关闭均已验证，控制台警告／错误0。47项既有支付账户／产品交互回归通过，脚本语法、研究资料一致性、57项资源版本与差异检查通过。费用模型、规则数据与报价文件逐字节保持；此前远端两项独立修复已合并，本轮改动、需求记录和证据一起提交并立即推送，不查看Actions、Pages或线上资源。以上是本地实现与有限验证，不记为用户接受。
 
 R193上一轮的300px独立区域与核心路线共用同一个宽度，导致核心内容缩窄并新增横向滚动，已被用户明确否定。旧截图、几何断言和通过测试均不能当作这项设计已满足要求。R194的费用修正继续保留，本轮仅修改布局及相关交互，不重抓或重算报价。
 
@@ -63,7 +63,7 @@ R193上一轮的300px独立区域与核心路线共用同一个宽度，导致�
 - [x] 报价文件及既有执行价保持；支付通来源GET入口、参数、单位、发布／核查时间、适用范围和失败处理追加至[方法文档](money-flow-method.md#跨境支付通汇出收费来源与参考范围2026-10-26)。[来源响应与哈希记录](evidence/money-flow-feedback/payment-connect-fee-sources-20261026.json)保存成功响应及失败原因。
 - [x] 完成本地交互、382项完整费用回归，最后展示调整后47项支付账户／界面回归再次通过，均无失败、跳过或取消；脚本语法、研究资料一致性、57项资源版本及差异检查通过。实现、数据、来源和验证证据随本轮提交并立即推送。
 
-本地浏览器逐项核对五个浮窗均在列表外右侧、底边保持在说明区域内；五行均72px，悬浮切换前后行高和文档坐标不变。Esc关闭、键盘Tab查看、移入说明区域继续阅读及移出关闭均通过，控制台警告／错误0。当前较窄窗口的列表可横向滚动，右侧说明不随之移动；这是有限本地验证，未改变用户窗口，不是27英寸4K实物验收。证据：[右侧说明](evidence/money-flow-feedback/local-r193-right-rail-20261026.png)、[滚动至消费端与费用列](evidence/money-flow-feedback/local-r193-right-rail-route-end-20261026.png)、[移除默认豁免后的费用页](evidence/money-flow-feedback/local-r194-payment-fee-20261026.png)、[地区参考与原文来源](evidence/money-flow-feedback/local-r194-payment-fee-detail-20261026.txt)、[逐项浏览器记录](evidence/money-flow-feedback/local-r193-r194-browser-20261026.json)。已存报价SHA-256及五条参考总费用与改动前完全相同，见[费用与报价保留记录](evidence/money-flow-feedback/r194-fee-reference-checks-20261026.json)。没有检查Actions、Pages或线上资源。
+本地浏览器逐项核对五个浮窗均在列表外右侧、底边保持在说明区域内；五行均72px，悬浮切换前后行高和文档坐标不变。Esc关闭、键盘Tab查看、移入说明区域继续阅读及移出关闭均通过，控制台警告／错误0。当前较窄窗口的列表可横向滚动，右侧说明不随之移动；这是有限本地验证，未改变用户窗口，不是27英寸4K实物验收。证据：[右侧说明](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r193-right-rail-20261026.png)、[滚动至消费端与费用列](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r193-right-rail-route-end-20261026.png)、[移除默认豁免后的费用页](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r194-payment-fee-20261026.png)、[地区参考与原文来源](evidence/money-flow-feedback/local-r194-payment-fee-detail-20261026.txt)、[逐项浏览器记录](evidence/money-flow-feedback/local-r193-r194-browser-20261026.json)。已存报价SHA-256及五条参考总费用与改动前完全相同，见[费用与报价保留记录](evidence/money-flow-feedback/r194-fee-reference-checks-20261026.json)。没有检查Actions、Pages或线上资源。
 
 R191上轮“卡片内右侧／末两行向上展开”的实现已被用户否定，旧截图和通过测试仅是当时状态，不构成接受。R194也否定了首条支付通情景的默认个人豁免前提；本轮用有地区边界、明确标记且可覆盖的公开参考替换，不将参考完整解释成所有账户费率已确认。四家银行全国现行南向费表、未覆盖的港币汇出与三家香港收款费仍在U04保留，不能把未取得资料从清单删掉。
 
@@ -85,7 +85,7 @@ R191上轮“卡片内右侧／末两行向上展开”的实现已被用户否�
 
 [本次用户截图](evidence/money-flow-feedback/user-r189-r192-20261026.png)与[再次出现负费用的截图](evidence/money-flow-feedback/user-r188-20261026.png)保留为反馈证据。当前本地浏览器每条优选均为94px高，各账户列约99.85px、等分舍入差不足0.01px，同角色横坐标一致；悬浮前后各行文档坐标与尺寸相同。长名称在当前较窄内容区内换行，仍与图标同组；没有调整用户窗口，也不把这个窗口等同于27英寸4K实物验收。实际点击首条方案后，本地25万元本金保持，FPS入金段继续显示35.29 CNY费用，没有负数“参考损耗”。鼠标离开、键盘Tab进入与Esc关闭均核对，控制台警告／错误0。
 
-证据：[五条统一布局](evidence/money-flow-feedback/local-r189-r192-presets-20261026.png)、[首条右侧限制悬浮窗](evidence/money-flow-feedback/local-r191-hover-20261026.png)、[逐行位置、悬浮与键盘检查](evidence/money-flow-feedback/local-r189-r192-browser-20261026.json)。45项现有支付账户／产品交互回归通过；旧测试“主卡片不重复资格说明”的断言限于卡片正文，并验证各说明留在独立浮窗。`npm run check`语法、研究资料一致性及57项资源版本检查通过。完成必要本地检查后提交并立即推送，不检查Actions、Pages或线上资源；这些是有限实现证据，未记录为用户接受。
+证据：[五条统一布局](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r189-r192-presets-20261026.png)、[首条右侧限制悬浮窗](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r191-hover-20261026.png)、[逐行位置、悬浮与键盘检查](evidence/money-flow-feedback/local-r189-r192-browser-20261026.json)。45项现有支付账户／产品交互回归通过；旧测试“主卡片不重复资格说明”的断言限于卡片正文，并验证各说明留在独立浮窗。`npm run check`语法、研究资料一致性及57项资源版本检查通过。完成必要本地检查后提交并立即推送，不检查Actions、Pages或线上资源；这些是有限实现证据，未记录为用户接受。
 
 ## 最新纠正：费用不再为负，并按授权补齐参考情景（R185–R187，2026-10-26）
 
@@ -104,7 +104,7 @@ R191上轮“卡片内右侧／末两行向上展开”的实现已被用户否�
 
 固定10万元、既定方案假设及原报价下，五项参考费用依次为59.68／1,245.28／1,271.54／567.23／149.62 CNY。第二、三项现在计入此前缺少的末段汇丰换人民币成本；估算价格较宽，不能称为最佳可成交价。[逐项原币余额、费用、估值变化及守恒残差](evidence/money-flow-feedback/costs-and-estimates-20261026.json)保存配置及报价文件SHA-256；金额守恒使用本金＋盈亏−费用−税＋估值变化，不通过改写本金制造费用为正。
 
-本地实际浏览器已核对25万元Lite＋FPS的35.29 CNY费用、37,478.92 USD入金；刷新仍保留本金和渠道。[正费用截图](evidence/money-flow-feedback/local-r185-positive-funding-20261026.png)、[五条完整参考方案](evidence/money-flow-feedback/local-r187-preferred-estimates-20261026.png)、[出金估算来源](evidence/money-flow-feedback/local-r187-withdrawal-source-20261026.png)、[刷新后记录](evidence/money-flow-feedback/local-r185-reload-20261026.txt)均为本地页面，未改变用户窗口。测试输入6.7 CNH/USD与7 CNY实际值覆盖估算后显示对应执行价和7元代理费，随后清空测试输入恢复公开参考；[覆盖记录](evidence/money-flow-feedback/local-r187-actual-overrides-20261026.txt)明确为验证值，非用户成交单。估值差在[全程明细记录](evidence/money-flow-feedback/local-r185-valuation-detail-20261026.txt)独立保留。
+本地实际浏览器已核对25万元Lite＋FPS的35.29 CNY费用、37,478.92 USD入金；刷新仍保留本金和渠道。[正费用截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r185-positive-funding-20261026.png)、[五条完整参考方案](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r187-preferred-estimates-20261026.png)、[出金估算来源](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r187-withdrawal-source-20261026.png)、[刷新后记录](evidence/money-flow-feedback/local-r185-reload-20261026.txt)均为本地页面，未改变用户窗口。测试输入6.7 CNH/USD与7 CNY实际值覆盖估算后显示对应执行价和7元代理费，随后清空测试输入恢复公开参考；[覆盖记录](evidence/money-flow-feedback/local-r187-actual-overrides-20261026.txt)明确为验证值，非用户成交单。估值差在[全程明细记录](evidence/money-flow-feedback/local-r185-valuation-detail-20261026.txt)独立保留。
 
 验证：379项完整跨境资金JavaScript回归通过，失败／跳过／取消0；随后补充来源链接回归后的25项界面回归全部通过。`npm run check`的语法、研究资料一致性和57项资源版本检查通过，`git diff --check`通过。本地控制台警告／错误0，[最终浏览器检查](evidence/money-flow-feedback/local-r185-browser-checks-20261026.json)确认原币金额、正费用及明细来源。完成检查后fetch远端、提交并立即推送；不检查Actions、Pages或线上资源。以上是实现与有限验证，不记录为用户已接受。R184的本金争议按R185明确的负费用原因修复，不再要求用户重复说明原始金额；支付通用途／本人额度、其他银行尚缺成交价与其他汇路费用仍按原具体条目保留。授权估算使本轮五条情景可算，不等于所有银行私人成交资料或全部U项已核实。
 
@@ -123,7 +123,7 @@ R191上轮“卡片内右侧／末两行向上展开”的实现已被用户否�
 
 [用户截图](evidence/money-flow-feedback/user-r183-r184-20261026.png)中的4.84 CNY = 银行转账59.5718475 + 换汇佣金13.3492 − 参考汇差68.0828153。最后一项沿用R137统一人民币估值口径，包含CNY原币到港后递延至兑换时的基准差异；它不是银行返现，也不会再次扣减或增加现金本金。本轮没有擅自归零负汇差或更换比较基准。[可复核数值、公式及报价哈希](evidence/money-flow-feedback/principal-r184-20261026.json)保存10万／25万元的原SWIFT与FPS四个情景。
 
-本地真实浏览器已确认Lite菜单显示FPS、eDDA、SWIFT，选择FPS后银行转账／代理／入金费均为0；25万元本金、250,000 CNH到账和37,478.92 USD入金在重新打开页面后保持，控制台警告／错误0，未调整窗口。[菜单截图](evidence/money-flow-feedback/local-r183-lite-fps-options-20261026.png)、[Lite与FPS金额截图](evidence/money-flow-feedback/local-r183-lite-fps-balances-20261026.png)、[重新打开后的金额记录](evidence/money-flow-feedback/local-r183-lite-principal-reload-20261026.txt)已保存。必要回归覆盖两种原币、两种换汇方式、FPS／eDDA、收费方案切换、旧设置迁移及用户主动选择SWIFT后的保留；测试与本地截图不等同用户接受。
+本地真实浏览器已确认Lite菜单显示FPS、eDDA、SWIFT，选择FPS后银行转账／代理／入金费均为0；25万元本金、250,000 CNH到账和37,478.92 USD入金在重新打开页面后保持，控制台警告／错误0，未调整窗口。[菜单截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r183-lite-fps-options-20261026.png)、[Lite与FPS金额截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r183-lite-fps-balances-20261026.png)、[重新打开后的金额记录](evidence/money-flow-feedback/local-r183-lite-principal-reload-20261026.txt)已保存。必要回归覆盖两种原币、两种换汇方式、FPS／eDDA、收费方案切换、旧设置迁移及用户主动选择SWIFT后的保留；测试与本地截图不等同用户接受。
 
 验证：376项跨境资金JavaScript回归全部通过，无失败、跳过或取消；脚本语法、研究资料一致性与57项资源版本检查通过。实现、数据配置、回归与本段证据同次提交并立即推送；不检查Actions、Pages或线上资源。本段是R183当时的验证范围；R184后续按R185处理，报价／费用在R187授权范围内使用有来源估算。
 
@@ -178,7 +178,7 @@ IBKR官网Global Access的外汇组件公开了USD.CNH合约113342317及84／86�
 
 本地验证：374项跨境资金JavaScript回归、22项采集Python回归全部通过，均无失败、跳过或取消；脚本语法、研究资料一致性、57项资源版本及差异检查通过。新增回归覆盖真实IBKR原始样本、买卖方向、冻结／无效状态、初始化重试、失败保留、个人覆盖、AutoFX不重复加价、人民币消费面值、陈旧价格和逐段金额守恒。已修正账簿遗漏CNH出金及消费折算行的问题，旧支票费断言另排除新增折算差额，仍验证原币银行收费未变。
 
-实际浏览器逐项应用五个优选，卡片与正文费用一致；第一／第五项显示参考全程及99,940.37／99,796.15 CNY消费金额，第二／第三项仍保留美元余额。图标与名称同组同行，当前同一窗口五项高度96／110／110／92／92px，未调整窗口。报价详情显示6.66889／6.67006、休市冻结状态、原快照时间及官方链接；每行重复本金分母已删除，控制台警告／错误0。证据：[优选截图](evidence/money-flow-feedback/local-r180-quotes-presets-20261025.png)、[完整页面](evidence/money-flow-feedback/local-r180-quotes-full-20261025.png)、[逐条应用与详情记录](evidence/money-flow-feedback/browser-r180-quotes-20261025.json)。这些本地检查不构成用户接受，也不关闭上述三个实际缺口。
+实际浏览器逐项应用五个优选，卡片与正文费用一致；第一／第五项显示参考全程及99,940.37／99,796.15 CNY消费金额，第二／第三项仍保留美元余额。图标与名称同组同行，当前同一窗口五项高度96／110／110／92／92px，未调整窗口。报价详情显示6.66889／6.67006、休市冻结状态、原快照时间及官方链接；每行重复本金分母已删除，控制台警告／错误0。证据：[优选截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r180-quotes-presets-20261025.png)、[完整页面](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r180-quotes-full-20261025.png)、[逐条应用与详情记录](evidence/money-flow-feedback/browser-r180-quotes-20261025.json)。这些本地检查不构成用户接受，也不关闭上述三个实际缺口。
 
 ## 上一轮纠正：优选行高、图标同行与报价复用（R175–R176，2026-10-25）
 
@@ -196,7 +196,7 @@ R172–R174上轮截图、测试和提交只证明当时实现状态；R175否�
 
 本地结果：撤掉图标独占行和1101–1650px强制上下布局，机构图标与名称成组同行；节点小字压缩为币种／用途，所有账户与消费终点保留。在同一当前窗口内，五项高度从198／176／176／158／198px变为136／110／110／92／118px，缩减31%–42%。逐项比较全部金额、报价说明文字完全相同；费用模型、数据及采集脚本的Git差异为空，报价文件在97a3b645和本轮起点d3576f2e的Git对象均为326c96124e7a6c47d9236f4ad296db4ab9f83d3e。本轮没有重新定价，也没有把已有交叉价伪装成新增直接成交价；上轮扩围的费用口径不因本轮布局修正而视为接受。
 
-验证：现有支付通／优选交互18项通过；脚本语法、研究资料一致性、57项资源版本与差异检查通过。[布局截图](evidence/money-flow-feedback/local-r175-inline-presets-20261025.png)、[同窗口行高、图标位置和报价对比](evidence/money-flow-feedback/browser-r175-inline-presets-20261025.json)已保存；没有调整窗口大小，也没有检查线上页面或发布状态。
+验证：现有支付通／优选交互18项通过；脚本语法、研究资料一致性、57项资源版本与差异检查通过。[布局截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r175-inline-presets-20261025.png)、[同窗口行高、图标位置和报价对比](evidence/money-flow-feedback/browser-r175-inline-presets-20261025.json)已保存；没有调整窗口大小，也没有检查线上页面或发布状态。
 
 ## 上一轮反馈：完整消费优选、第五项节点与待核实信息（R172–R174，2026-10-25）
 
@@ -238,7 +238,7 @@ R172–R174上轮截图、测试和提交只证明当时实现状态；R175否�
 
 本地当前窗口逐条应用，默认10万元、当日已存报价下的已计费用为42.12／74.68／101.24／484.97／118.40 CNY，分别与优选栏一致。第一条缺IBKR两次执行价，第二、三条缺汇丰直接USD/CNH价，第四条缺两段代理费，第五条缺IBKR返程执行价；所有金额都标为已计费用，不冒称确定的全程总价。缺换汇价时保留最后可计原币余额，不制造人民币到账金额。Wise两段各10 HKD分别扣一次，返程换汇佣金另计。
 
-证据：[第五条独立账户与消费终点](evidence/money-flow-feedback/local-r172-wise-consumption-20261025.png)、[本地优选交互记录](evidence/money-flow-feedback/browser-r172-consumption-20261025.json)、[限额与收费详情检查](evidence/money-flow-feedback/browser-r174-evidence-20261025.json)。仅记录当前本地窗口，未调整用户窗口或宣称27英寸4K实物验收；旧U08实现覆盖及U11–U14整体验收缺口仍按原范围保留。
+证据：[第五条独立账户与消费终点](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r172-wise-consumption-20261025.png)、[本地优选交互记录](evidence/money-flow-feedback/browser-r172-consumption-20261025.json)、[限额与收费详情检查](evidence/money-flow-feedback/browser-r174-evidence-20261025.json)。仅记录当前本地窗口，未调整用户窗口或宣称27英寸4K实物验收；旧U08实现覆盖及U11–U14整体验收缺口仍按原范围保留。
 
 本地验证：完整测试808／808通过；最终补入渣打、工银亚洲和建行亚洲本地收款费表后，支付通、返程用途及ZA返还相关35／35项回归再次通过。脚本语法、研究数据一致性、57项资源版本及Git差异检查通过。浏览器逐条应用五项优选，核对消费终点、费用、第五条六个独立节点、限额详情和建行亚洲名称；这些是本地验证证据，不等同用户接受。交付前先拉取远端更新，提交后立即推送，不检查自动发布状态或线上资源。
 
@@ -344,8 +344,8 @@ R172–R174上轮截图、测试和提交只证明当时实现状态；R175否�
 Wise美元入金方式同时供Pro／Lite选择。第一段银行→Wise、第二段Wise→IBKR各按用户提供的10 HKD参考费；金额仍是USD，以HKD参考汇率折CNY并扣USD等值，直接电汇／CHATS资费不再叠加。到港多笔汇款汇总后一次Wise入金，不把内地汇出笔数误当成Wise笔数。两段实际费用可分别输入；切换银行、币种或不支持的券商清除对应旧报价。用户参考收费不写成官方统一费表，最终余额标签使用“按参考情景计算”。
 
 本地实际验证：
-- 应用人民币首位方案：香港100,000.00 CNH，IBKR手动换汇后参考14,983.08 USD，买卖后参考14,980.77 USD；已计费用28.80 CNY／0.029%，另列尚缺IBKR CNH/USD实时成交点差。[人民币优选截图](evidence/money-flow-feedback/local-r167-rmb-preferred-20261022.png)。
-- 应用Wise方案：香港14,954.05 USD→Wise参考14,952.78 USD→IBKR14,951.51 USD；两段各10 HKD、各折8.51 CNY，合计17.02 CNY。买卖后参考14,949.19 USD。Wise为额外真实中转动作，原香港银行保持汇丰。[Wise费用与前后金额截图](evidence/money-flow-feedback/local-r168-wise-funding-20261022.png)。
+- 应用人民币首位方案：香港100,000.00 CNH，IBKR手动换汇后参考14,983.08 USD，买卖后参考14,980.77 USD；已计费用28.80 CNY／0.029%，另列尚缺IBKR CNH/USD实时成交点差。[人民币优选截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r167-rmb-preferred-20261022.png)。
+- 应用Wise方案：香港14,954.05 USD→Wise参考14,952.78 USD→IBKR14,951.51 USD；两段各10 HKD、各折8.51 CNY，合计17.02 CNY。买卖后参考14,949.19 USD。Wise为额外真实中转动作，原香港银行保持汇丰。[Wise费用与前后金额截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r168-wise-funding-20261022.png)。
 - 实际切换Pro→Lite、刷新、填写第一段25 HKD／第二段13 CNY，到账重算为14,948.92 USD；恢复优选清除覆盖值。还从美元Wise切回人民币，入金恢复FPS、换汇仍为IBKR手动；再次应用人民币优选保留上述原币顺序。实际收费覆盖后选择器不继续写固定20 HKD。[页面记录](evidence/money-flow-feedback/local-r167-r168-20261022.txt)。
 - 截图已实际查看，使用现有桌面浏览器，未调整用户窗口；不宣称27英寸4K实物验收或整页用户接受。
 
@@ -367,7 +367,7 @@ Wise美元入金方式同时供Pro／Lite选择。第一段银行→Wise、第�
 
 实际在本地将Lite切到汇丰换汇，复现用户截图的14,820.79 USD金额后，再从同一控件切回IBKR手动／自动换汇。10万元CNH支付通豁免情景下，手动换汇显示Lite入金参考14,974.16 USD、买卖后参考14,973.85 USD；自动模式在买入前显示99,940.49 CNH，刷新后模式仍保留。港币自动模式显示117,429.57 HKD原币入金；人民币／港币切换没有改掉Lite及收款银行。这些都是含缺价／缺费的测算，不是实际到账保证。
 
-证据：[恢复的三个选项](evidence/money-flow-feedback/local-r166-lite-fx-options-20261021.png)、[Lite手动换汇与金额](evidence/money-flow-feedback/local-r166-lite-manual-20261021.png)、[人民币手动／自动、刷新及港币实际页面记录](evidence/money-flow-feedback/local-r166-lite-fx-20261021.txt)。截图已实际查看，未改变用户浏览器尺寸。
+证据：[恢复的三个选项](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r166-lite-fx-options-20261021.png)、[Lite手动换汇与金额](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r166-lite-manual-20261021.png)、[人民币手动／自动、刷新及港币实际页面记录](evidence/money-flow-feedback/local-r166-lite-fx-20261021.txt)。截图已实际查看，未改变用户浏览器尺寸。
 
 验证：新增3项回归，覆盖CNH／HKD原币电汇、IBKR手动／自动计算及费用所属阶段、选择器从银行切回IBKR、刷新和旧Lite迁移、Pro／Lite互切保留方式，以及Firstrade／嘉信仍只按USD入金。18项定向回归和57项资源版本／语法检查通过。全项目777项检查中，776项通过；唯一失败为旧测试将所有非Pro账户都视为银行换汇的断言，已按R166更新，并复跑相关12项全部通过。最终完整版本由Actions再次全量复核。按R146完成提交推送并检查Actions发布结果，不做上线页面巡检；U02–U14保留其原有金融证据缺口。
 
@@ -384,10 +384,10 @@ Wise美元入金方式同时供Pro／Lite选择。第一段银行→Wise、第�
 
 | 对应反馈 | 本轮实现及验证 | 证据与边界 |
 | --- | --- | --- |
-| R162 | 四家出发银行与六家香港收款银行，在CNH／HKD到账时提供跨境支付通，USD不提供。按“已享跨境支付通手续费豁免”条件计算服务费，不套SWIFT电讯费、中转费或普通汇入费。取消豁免后未核实的服务费显示缺项；汇丰官方已核收款免费仍为0。本人实际收费覆盖值优先。 | [渠道截图](evidence/money-flow-feedback/local-r162-payment-connect-20261021.png)及[最终CNH页面记录](evidence/money-flow-feedback/local-r162-r165-20261021.txt)。HKD使用独立的支付通成交价；缺该价时按明确标识的基准估算，不能冒用普通银行卖出价或把换汇差额填0。单笔／每日账户可用限额仍未核实，界面保留短提示；未自动拆单，也未将此渠道加入证券入金优选。 |
-| R163 | 买股账户拆为IBKR Pro与IBKR Lite两个选项。Lite按美国USD SWIFT收款情景计算，不再显示香港USD CHATS、FPS或eDDA；CNH／HKD先在香港银行换USD。旧Lite状态自动迁移并清除Pro本地费用／换汇覆盖值，保留出发、收款、取回银行。 | [独立账户菜单](evidence/money-flow-feedback/local-r163-accounts-20261021.png)、[Lite美元路线](evidence/money-flow-feedback/local-r163-lite-usd-20261021.png)。实际切换Pro／Lite并验证银行不变；Lite正常佣金与第三方监管费继续分开。此为本页按用户账户反馈建立的美国USD汇路，不能推导出所有Lite账户在全球一律没有其他币种／收款行。 |
-| R164 | 美元／港币有历史价格时保留香港及券商金额，显示参考性质和报价日期；确实没有换算依据时才显示缺价。终点、汇总和明细保持相同金额口径。 | [港币到账与USD参考金额](evidence/money-flow-feedback/local-r164-hkd-20261021.png)、[历史美元金额](evidence/money-flow-feedback/local-r164-stale-usd-20261021.png)。实际工行USD 2026-10-14报价显示香港及Pro入金各14,882.41 USD，明确为历史参考且费用未齐；兴业HKD显示117,360.56 HKD及14,949.34 USD参考入金。 |
-| R165 | CNH手动换汇后显示USD参考金额及“缺换汇成交价”；AutoFX在买入前仍保留原币余额。仅入金换汇可依据现有基准显示估算，未改变R157缺少出金换汇价时保留最后已知原币／账户的规则。 | [人民币与Pro参考金额](evidence/money-flow-feedback/local-r165-cnh-pro-20261021.png)：10万元、跨境支付通豁免情景，香港100,000.00 CNH，Pro入金参考14,983.08 USD，买卖后参考14,980.77 USD；IBKR CNH/USD实际成交差额仍明确缺失。普通人民币电汇也实测显示99,800.20 CNH及14,953.14 USD参考入金，没有把普通汇款改成免费。 |
+| R162 | 四家出发银行与六家香港收款银行，在CNH／HKD到账时提供跨境支付通，USD不提供。按“已享跨境支付通手续费豁免”条件计算服务费，不套SWIFT电讯费、中转费或普通汇入费。取消豁免后未核实的服务费显示缺项；汇丰官方已核收款免费仍为0。本人实际收费覆盖值优先。 | [渠道截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r162-payment-connect-20261021.png)及[最终CNH页面记录](evidence/money-flow-feedback/local-r162-r165-20261021.txt)。HKD使用独立的支付通成交价；缺该价时按明确标识的基准估算，不能冒用普通银行卖出价或把换汇差额填0。单笔／每日账户可用限额仍未核实，界面保留短提示；未自动拆单，也未将此渠道加入证券入金优选。 |
+| R163 | 买股账户拆为IBKR Pro与IBKR Lite两个选项。Lite按美国USD SWIFT收款情景计算，不再显示香港USD CHATS、FPS或eDDA；CNH／HKD先在香港银行换USD。旧Lite状态自动迁移并清除Pro本地费用／换汇覆盖值，保留出发、收款、取回银行。 | [独立账户菜单](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r163-accounts-20261021.png)、[Lite美元路线](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r163-lite-usd-20261021.png)。实际切换Pro／Lite并验证银行不变；Lite正常佣金与第三方监管费继续分开。此为本页按用户账户反馈建立的美国USD汇路，不能推导出所有Lite账户在全球一律没有其他币种／收款行。 |
+| R164 | 美元／港币有历史价格时保留香港及券商金额，显示参考性质和报价日期；确实没有换算依据时才显示缺价。终点、汇总和明细保持相同金额口径。 | [港币到账与USD参考金额](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r164-hkd-20261021.png)、[历史美元金额](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r164-stale-usd-20261021.png)。实际工行USD 2026-10-14报价显示香港及Pro入金各14,882.41 USD，明确为历史参考且费用未齐；兴业HKD显示117,360.56 HKD及14,949.34 USD参考入金。 |
+| R165 | CNH手动换汇后显示USD参考金额及“缺换汇成交价”；AutoFX在买入前仍保留原币余额。仅入金换汇可依据现有基准显示估算，未改变R157缺少出金换汇价时保留最后已知原币／账户的规则。 | [人民币与Pro参考金额](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r165-cnh-pro-20261021.png)：10万元、跨境支付通豁免情景，香港100,000.00 CNH，Pro入金参考14,983.08 USD，买卖后参考14,980.77 USD；IBKR CNH/USD实际成交差额仍明确缺失。普通人民币电汇也实测显示99,800.20 CNH及14,953.14 USD参考入金，没有把普通汇款改成免费。 |
 
 研究依据（2026-10-21）：[香港金管局现行参与机构及南向条件](https://www.hkma.gov.hk/eng/smart-consumers/payment-connect/)、[中国银行服务公告](https://www.boc.cn/aboutboc/bi1/202506/t20250620_25390382.html)支持人民币汇出、CNH或HKD到账；[汇丰收款说明](https://www.hsbc.com.hk/zh-cn/transfer-payments/products/pay-abroad-with-fps/)明确香港收款免费。尚未取得四家出发银行统一适用的2026年南向手续费豁免公告，因此免费作为明确可切换的条件，不能宣称永久、无条件免费。南向仍受每年等值5万美元便利化额度、银行限额及获准用途约束，服务可用性不等于境外证券入金用途获准。[IBKR Lite官方说明](https://www.interactivebrokers.com/en/trading/why-ibkr-lite.php)确认美国居民资格与正常美国上市股佣金规则；[官方入金说明](https://www.interactivebrokers.com/en/support/fund-my-account.php)须按本人账户生成指示，收费方案与法律实体／收款银行并非同一概念。
 
@@ -409,11 +409,11 @@ Wise美元入金方式同时供Pro／Lite选择。第一段银行→Wise、第�
 
 | 对应要求 | 本轮实现及本地证据 |
 | --- | --- |
-| R157：券商先换CNH再出金 | IBKR卖出后可手动USD→CNH，按0.20基点且最低2 USD计算佣金，再选择香港本地转账或电汇及当月出金序次；不会到香港银行重复换汇。成交价未填时明确缺“IBKR卖出后换汇成交价”，不显示虚构CNH可用余额。参见[实际页面](evidence/money-flow-feedback/local-r157-ibkr-cnh-atm-20261019.png)。 |
-| R158：内地USD收款 | 分开券商直达和香港银行转汇。直达需确认券商目的地可用及内地银行接受该资金；未确认显示“出金条件待确认”，不虚构已到账。确认后只有券商出金、内地入账及相应中转费用，没有额外香港返程汇款或该取回银行期间费。实测确认勾选／取消、第四节点直接显示内地银行，见[未确认状态](evidence/money-flow-feedback/local-r158-direct-mainland-usd-20261019.png)。 |
-| R159：中银香港→中国银行 | “回内地美元账户”保留USD，不自动结汇；“回内地人民币账户”另算结汇。中银快汇基本费与未知代理费分列，美元收款银行菜单不再混入人民币结汇报价，见[USD保留终点](evidence/money-flow-feedback/local-r159-bochk-boc-usd-20261019.png)。 |
-| R160：中银银联卡Apple Pay | 独立列出银联卡、银联Apple Pay及原Mastercard模式；CNH余额直接扣账，界面标明已关联人民币账户和内地银联闪付受理范围。没有扩展为任意扫码支付或转账，见[Apple Pay实测](evidence/money-flow-feedback/local-r160-bochk-apple-pay-20261019.png)。 |
-| R161：不同卡种ATM取现 | 新增计划现金金额、笔数、各银行ATM卡种／网络，末端分列实际现金和银行剩余余额。汇丰集团／非集团、工银亚洲HKD／RMB卡及建亚陆港通分别计算；陆港通HKD联动另计10 CNY/笔、每年50 HKD，不能套集团ATM免费。实际设5000 CNY、1笔时显示超过单笔3000 CNY限制，见[限额实测](evidence/money-flow-feedback/local-r161-ccb-atm-limit-20261019.png)。个人日限额、机具单笔限额可独立填入，切换银行／卡种会清掉不适用的私有报价与限额。 |
+| R157：券商先换CNH再出金 | IBKR卖出后可手动USD→CNH，按0.20基点且最低2 USD计算佣金，再选择香港本地转账或电汇及当月出金序次；不会到香港银行重复换汇。成交价未填时明确缺“IBKR卖出后换汇成交价”，不显示虚构CNH可用余额。参见[实际页面](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r157-ibkr-cnh-atm-20261019.png)。 |
+| R158：内地USD收款 | 分开券商直达和香港银行转汇。直达需确认券商目的地可用及内地银行接受该资金；未确认显示“出金条件待确认”，不虚构已到账。确认后只有券商出金、内地入账及相应中转费用，没有额外香港返程汇款或该取回银行期间费。实测确认勾选／取消、第四节点直接显示内地银行，见[未确认状态](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r158-direct-mainland-usd-20261019.png)。 |
+| R159：中银香港→中国银行 | “回内地美元账户”保留USD，不自动结汇；“回内地人民币账户”另算结汇。中银快汇基本费与未知代理费分列，美元收款银行菜单不再混入人民币结汇报价，见[USD保留终点](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r159-bochk-boc-usd-20261019.png)。 |
+| R160：中银银联卡Apple Pay | 独立列出银联卡、银联Apple Pay及原Mastercard模式；CNH余额直接扣账，界面标明已关联人民币账户和内地银联闪付受理范围。没有扩展为任意扫码支付或转账，见[Apple Pay实测](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r160-bochk-apple-pay-20261019.png)。 |
+| R161：不同卡种ATM取现 | 新增计划现金金额、笔数、各银行ATM卡种／网络，末端分列实际现金和银行剩余余额。汇丰集团／非集团、工银亚洲HKD／RMB卡及建亚陆港通分别计算；陆港通HKD联动另计10 CNY/笔、每年50 HKD，不能套集团ATM免费。实际设5000 CNY、1笔时显示超过单笔3000 CNY限制，见[限额实测](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r161-ccb-atm-limit-20261019.png)。个人日限额、机具单笔限额可独立填入，切换银行／卡种会清掉不适用的私有报价与限额。 |
 
 ATM港币扣账使用实际现金／本金扣账汇率，已单列费用不重复计入；没有取得该汇率时明确缺项，不拿银行换汇报价替代。现金与账户的统一人民币估值差额单列为“非手续费”，不把CNH／CNY估值差当成ATM额外收费。已换成CNH却选择只支持HKD扣账的卡种时明确不适用，不暗中再换币。多卡分别比较费用和限制，不相加成保证可提额度，也不推导可以规避银行审核。
 
@@ -433,7 +433,7 @@ ATM港币扣账使用实际现金／本金扣账汇率，已单列费用不重�
 
 来源：[Firstrade收费](https://www.firstrade.com/trading/pricing)、[美元收款指示](https://www.firstrade.com/support/funding/wire)、[电汇费用](https://help.firstrade.info/en/articles/9260062-what-are-the-fees-for-wire-transfers)、[碎股规则](https://help.firstrade.info/en/articles/9264067-fractional-shares-trading)；[嘉信国际收费](https://international.schwab.com/pricing)、[完整价目表](https://www.schwab.com/legal/schwab-pricing-guide-for-individual-investors)、[国际收款指示](https://international.schwab.com/resource/instructions-to-transfer-money-to-your-schwab-account)。核查日期2026-10-19。
 
-本地浏览器实操：[七家证券账户菜单](evidence/money-flow-feedback/local-us-brokers-picker-20261019.png)、[Firstrade国际出金25美元](evidence/money-flow-feedback/local-firstrade-withdrawal-20261019.png)、[嘉信网上出金15美元](evidence/money-flow-feedback/local-schwab-withdrawal-20261019.png)。切换券商保留兴业、汇丰香港及建行亚洲的独立选择；入金显示美国USD SWIFT，缺代理费保留缺项。嘉信网上／人工渠道实际切换为15／25美元，折人民币费用随之重算，刷新保留账户及渠道。界面使用现有浏览器窗口检查，未宣称4K布局或整体用户验收通过。
+本地浏览器实操：[七家证券账户菜单](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-us-brokers-picker-20261019.png)、[Firstrade国际出金25美元](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-firstrade-withdrawal-20261019.png)、[嘉信网上出金15美元](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-schwab-withdrawal-20261019.png)。切换券商保留兴业、汇丰香港及建行亚洲的独立选择；入金显示美国USD SWIFT，缺代理费保留缺项。嘉信网上／人工渠道实际切换为15／25美元，折人民币费用随之重算，刷新保留账户及渠道。界面使用现有浏览器窗口检查，未宣称4K布局或整体用户验收通过。
 
 验证：全项目748项JavaScript测试通过，失败／取消／跳过均0，耗时72.65秒；`npm run check`语法、研究数据一致性及57项资源版本检查通过。回归扩展覆盖七家账户的币种、收款／取回银行、管理费、ZA电汇免费次数、渠道隔离和金额守恒；新增碎股最低金额、股数单位、整股余款及嘉信出金渠道边界。旧测试将目录写死为五家、假定每家都有CHATS及公开完整代理费的断言已按真实渠道修正，未把美国电汇缺项补成0。R155首次发布检查因旧测试禁止引用寰宇人生权益页而失败；本轮已更新该断言，以核对外汇优惠为何不适用于人民币。
 
@@ -449,7 +449,7 @@ ATM港币扣账使用实际现金／本金扣账汇率，已单列费用不重�
 
 2026-10-19重读[兴业综合服务价目表000302／000305](https://www.cib.com.cn/cn/aboutCIB/about/charges/adjustment/combined.html)及[寰宇人生现行权益](https://mobile.cib.com.cn/netbank/cn/personal/debit/index.html)：普通人民币跨境电汇按1‰、最低50／最高200元另加100元电讯费；寰宇人生卡的手续费及前30笔电讯费优惠限跨境外汇汇款，有效期至2027-06-30。VIP等级另有减免，不能把普通寰宇人生卡等同钻石客户。人民币中转费没有该汇路的确定证据，继续保留缺项；不继承美元／港币实录的0代理费。
 
-验证：主流程在人民币原币电汇时说明外汇双免不适用；明细展示含费预算、本金、本行费用的对账并链接两份官方依据。实际浏览器切换人民币／美元，确认99.80＋100与外币0＋0分别显示；[人民币费用截图](evidence/money-flow-feedback/local-cib-rmb-20261019.png)、[完整费用明细](evidence/money-flow-feedback/local-cib-rmb-detail-20261019.png)。54项相关模型及产品回归通过，覆盖人民币最低／封顶／多笔／优惠期，以及USD、HKD切换。按R146提交推送并发布，不做上线页面复核。此项不关闭U02–U14，也不视为用户已接受整体产品。
+验证：主流程在人民币原币电汇时说明外汇双免不适用；明细展示含费预算、本金、本行费用的对账并链接两份官方依据。实际浏览器切换人民币／美元，确认99.80＋100与外币0＋0分别显示；[人民币费用截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-cib-rmb-20261019.png)、[完整费用明细](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-cib-rmb-detail-20261019.png)。54项相关模型及产品回归通过，覆盖人民币最低／封顶／多笔／优惠期，以及USD、HKD切换。按R146提交推送并发布，不做上线页面复核。此项不关闭U02–U14，也不视为用户已接受整体产品。
 
 ## 上一轮反馈：内地消费终点与取回银行（R152–R154，2026-10-15）
 
@@ -467,7 +467,7 @@ ATM港币扣账使用实际现金／本金扣账汇率，已单列费用不重�
 - **陆港通联动。** [官方产品](https://www.asia.ccb.com/hongkong_sc/personal/crossborder_services/cblc.html)及[条款](https://www.asia.ccb.com/hongkong_sc/doc/personal/accounts/crossborder/F554AChi.pdf)要求关联本人两地账户。内地余额不足时整笔依次扣香港人民币／港币；本页选择港币联动，POS手续费免、年费50 HKD按年度周期计入，每日消费累计等值50,000 HKD。内地建行关联账户单独显示，不能写成已提前汇入的人民币余额。联动HKD/CNY按内地建行现汇买入牌价测算时标“参考”；本人含费扣账汇率优先。ATM联动另收10 CNY/笔，不计入POS结果。北向跨境支付通有香港身份证资格，不作为内地居民默认免费通道。
 - **工银亚洲。** [官方借记卡页面](https://www.icbcasia.com/hk/sc/personal/banking/others/debit-card/default.html)确认内地银联POS及ICBC Pay银联二维码商户支付。默认提供港币卡方式，不错误要求先有香港身份证人民币账户；主动选择人民币扣账才显示该身份条件。银联HKD/CNY支付实际汇率缺失时保留港币余额，不能用银行现汇报价或内地工行ATM的RMB→USD→HKD规则替代POS结算。填入“人民币消费金额÷港币总扣账”时包含该笔全部扣费。[湾区账户通](https://www.icbcasia.com/hk/sc/cross-border/cross-border-services/greater-bay-financial-services/greater-bay-area-account-opening-service/default.html)为另开的内地II／III类账户，有资格和限额；不是香港余额自动成为内地通用钱包。
 
-**验证证据。** 本地实际切换建行亚洲→内地建行收款、未关联／已关联陆港通、工银亚洲港币卡、汇丰人民币直接兑换缺价状态；两个普通用途／支付控件均为40px，独立箭杆保留。截图：[内地银行卡终点](evidence/money-flow-feedback/local-r153-mainland-20261015.png)、[陆港通联动](evidence/money-flow-feedback/local-r154-ccb-link-20261015.png)、[工银亚洲缺价保留港币](evidence/money-flow-feedback/local-r154-icbc-card-20261015.png)；[DOM及状态记录](evidence/money-flow-feedback/browser-r152-r154-20261015.json)。核算覆盖收款渠道分费、年费周期、身份资格、直接／交叉报价、缺价保留余额和切换清除旧覆盖价；全站455项JS测试、20项银行报价解析测试通过，资源版本检查通过。已合并远端定时更新d53acbb并保留其全部报价，仅新增建行亚洲记录。按照R146提交推送并走发布流程，不进行上线页面核对。
+**验证证据。** 本地实际切换建行亚洲→内地建行收款、未关联／已关联陆港通、工银亚洲港币卡、汇丰人民币直接兑换缺价状态；两个普通用途／支付控件均为40px，独立箭杆保留。截图：[内地银行卡终点](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r153-mainland-20261015.png)、[陆港通联动](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r154-ccb-link-20261015.png)、[工银亚洲缺价保留港币](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r154-icbc-card-20261015.png)；[DOM及状态记录](evidence/money-flow-feedback/browser-r152-r154-20261015.json)。核算覆盖收款渠道分费、年费周期、身份资格、直接／交叉报价、缺价保留余额和切换清除旧覆盖价；全站455项JS测试、20项银行报价解析测试通过，资源版本检查通过。已合并远端定时更新d53acbb并保留其全部报价，仅新增建行亚洲记录。按照R146提交推送并走发布流程，不进行上线页面核对。
 
 **仍缺的证据。** 汇丰、恒生、工银亚洲的公开港币交叉报价不是直接USD/CNH客户价；工银亚洲银联／ICBC Pay实际扣账汇率未取得；陆港通当笔联动汇率仍以实际扣账为准，公开牌价仅供参考；建行亚洲本地USD支票存入适用收费未取得。上述项目不填0、不借其他银行报价；其他U02–U14原有缺口不因本轮局部通过而关闭。
 
@@ -479,7 +479,7 @@ ATM港币扣账使用实际现金／本金扣账汇率，已单列费用不重�
 
 **当前状态：已补齐竖直箭杆并完成本地检查，待用户观察。** 修改前版本48bcdaa只留下折角，未满足独立箭头的完整形态；此前“没有线段伪元素”的检查不能证明箭头设计正确。R149控件尺寸、R147选择器箭头和共享列布局保持。
 
-共用损耗行SVG改为20×28px的完整向下箭头，包含22px竖直箭杆和相连的箭头尖端；容器高度同步为28px。在自然1175px窗口实际查看截图，汇往香港、入金、买卖、出金、汇回内地、内地结汇六个箭头都完整位于各自损耗行内，账户间仍无连续竖线；笔数和普通渠道仍为100×40px。证据：[本地箭杆效果](evidence/money-flow-feedback/local-r151-arrow-20261014.png)、[六个箭头与边界记录](evidence/money-flow-feedback/browser-r151-20261014.json)。`npm run check`的脚本语法及24项资源版本检查通过，`git diff --check`通过；本轮仅改图标及容器，不重复费用模型测试。记录、实现及证据同次提交推送，按R146走现有发布流程，不核对上线页面。
+共用损耗行SVG改为20×28px的完整向下箭头，包含22px竖直箭杆和相连的箭头尖端；容器高度同步为28px。在自然1175px窗口实际查看截图，汇往香港、入金、买卖、出金、汇回内地、内地结汇六个箭头都完整位于各自损耗行内，账户间仍无连续竖线；笔数和普通渠道仍为100×40px。证据：[本地箭杆效果](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r151-arrow-20261014.png)、[六个箭头与边界记录](evidence/money-flow-feedback/browser-r151-20261014.json)。`npm run check`的脚本语法及24项资源版本检查通过，`git diff --check`通过；本轮仅改图标及容器，不重复费用模型测试。记录、实现及证据同次提交推送，按R146走现有发布流程，不核对上线页面。
 
 ## 上一轮反馈：普通设置框统一尺度，移除贯穿竖线（R149–R150，2026-10-14）
 
@@ -488,7 +488,7 @@ ATM港币扣账使用实际现金／本金扣账汇率，已单列费用不重�
 | R149 | “这也太大了啊这两个框。你每个框都搞异类啊。” | 笔数及渠道使用与其他普通设置一致的高度、内边距和字号，回到紧凑宽度，不能再单独采用46px高、随格子放大到168px宽的规则。保留两列居中和正确的箭头位置；长选项不能让普通设置框再次单独变大。 |
 | R150 | “左边的线不要全部连着，损耗那里有箭头就行” | 删除账户行、损耗行及终点的全部连续竖线，只在损耗行保留独立方向箭头；保持节点编号和已对齐的列。此要求覆盖旧的贯穿方向线规格。 |
 
-**当前状态：R150的无箭杆实现已被R151重新打开；以下为历史验证，不代表用户接受。** 上轮两框尺寸已被否定，R147矢量箭头保留。修改前版本为160551a，[上轮宽桌面截图](evidence/money-flow-feedback/local-r148-wide-20261014.png)保存原尺寸与连线。
+**当前状态：R150的无箭杆实现已被R151重新打开；以下为历史验证，不代表用户接受。** 上轮两框尺寸已被否定，R147矢量箭头保留。修改前版本为160551a，[上轮宽桌面截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r148-wide-20261014.png)保存原尺寸与连线。
 
 ### R149–R150实现与本地验证
 
@@ -496,7 +496,7 @@ ATM港币扣账使用实际现金／本金扣账汇率，已单列费用不重�
 - **移除贯穿线。** 删除账户、损耗行的竖线伪元素以及无后续动作时的终点尾线，不以背景遮挡掩盖连线。01–04编号保留，每条损耗行仍有一个独立向下箭头。
 - **本地检查。** 检查1175px自然窗口及1920px宽桌面、中行长渠道、汇回内地与香港保留美元两类终点。四条最终状态记录中所有被检普通控件均40px高，选择器可见箭头中心差0px，四行金额中心一致，没有线段伪元素。长渠道窄框的文字省略是预期裁切，其余设置没有溢出；修正账户月数继承的输入上边距，并在较窄窗口将资金用途与回款币种上下排列，避免文字越框。临时视口已恢复，路线恢复为兴业→汇丰证券→汇回内地。
 
-证据：[默认两框与独立箭头](evidence/money-flow-feedback/local-r150-source-20261014.png)、[宽桌面全流程](evidence/money-flow-feedback/local-r150-wide-20261014.png)、[尺寸及结构记录](evidence/money-flow-feedback/browser-r150-20261014.json)。产品契约及银行期间费16项检查通过，脚本语法及24项资源版本一致，`git diff --check`通过。本轮不更改费用模型；记录、实现和证据同次提交并推送至`main`，由既有GitHub Pages流程发布，按R146不追加上线后核对。U02–U14保留为其原有独立缺口。
+证据：[默认两框与独立箭头](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r150-source-20261014.png)、[宽桌面全流程](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r150-wide-20261014.png)、[尺寸及结构记录](evidence/money-flow-feedback/browser-r150-20261014.json)。产品契约及银行期间费16项检查通过，脚本语法及24项资源版本一致，`git diff --check`通过。本轮不更改费用模型；记录、实现和证据同次提交并推送至`main`，由既有GitHub Pages流程发布，按R146不追加上线后核对。U02–U14保留为其原有独立缺口。
 
 ## 上一轮反馈：选择器箭头垂直居中与笔数／渠道尺寸（R147–R148，2026-10-14）
 
@@ -513,7 +513,7 @@ ATM港币扣账使用实际现金／本金扣账汇率，已单列费用不重�
 - **两框尺寸。** 笔数及渠道从原68×38px／76×38px增大；当前默认1287px窗口中两框均约137×46px，1920px宽桌面均168×46px。增大内边距和标签间距，宽度随各自格子适应；长渠道名称换行时按内容增高，唯一渠道的只读框也使用相同尺度。
 - **本地检查。** 实际操作一／两笔汇款、中行长渠道、ZA交易权益及优惠弹窗，并检查出发、香港收款、买股、取回、内地收款和资金用途的共用箭头。7条状态记录中可见路径中心与按钮中心差均为0px，未发现旧文字箭头或设置溢出；四行金额中心线保持一致。已查看正常／长渠道及宽桌面截图，临时视口已恢复。
 
-证据：[修改前](evidence/money-flow-feedback/local-r148-before-20261014.png)、[放大后的两框](evidence/money-flow-feedback/local-r148-source-20261014.png)、[长渠道换行](evidence/money-flow-feedback/local-r148-long-channel-20261014.png)、[宽桌面与机构箭头](evidence/money-flow-feedback/local-r148-wide-20261014.png)、[操作及路径中心记录](evidence/money-flow-feedback/browser-r148-20261014.json)。本地产品契约及银行期间费16项检查通过，脚本语法及24项资源版本一致，`git diff --check`通过。本轮不更改费用模型；记录、实现、证据同次提交并推送至`main`，经既有GitHub Pages流程发布，不追加线上复核。
+证据：[修改前](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r148-before-20261014.png)、[放大后的两框](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r148-source-20261014.png)、[长渠道换行](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r148-long-channel-20261014.png)、[宽桌面与机构箭头](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r148-wide-20261014.png)、[操作及路径中心记录](evidence/money-flow-feedback/browser-r148-20261014.json)。本地产品契约及银行期间费16项检查通过，脚本语法及24项资源版本一致，`git diff --check`通过。本轮不更改费用模型；记录、实现、证据同次提交并推送至`main`，经既有GitHub Pages流程发布，不追加线上复核。
 
 ## 上一轮反馈：照常上线，省去上线后核对（R146，2026-10-14）
 
@@ -540,7 +540,7 @@ ATM港币扣账使用实际现金／本金扣账汇率，已单列费用不重�
 - **桌面证据。** 当前默认1398×1233中四行金额中心均为715.71px，设置区均从832.42px开始、宽493.58px；1920×1080宽桌面金额列均宽284px、中心881.50px，设置区均宽710px，三格各约224.67px。金额组与机构主体垂直中心差为0px，两列设置的对应中心相同。另查1280和1100px桌面窗口，未见横向溢出；临时视口已恢复。
 - **实际交互。** 检查五类买股账户、五种资金用途、USD／HKD回款、HSBC零／非零管理费、多家银行期间费及无豁免银行状态。非零费用、不同设置数量和长选项没有改变四行共同列边界；所测设置无横向溢出。含箭头机构内容组中心偏差为0px，文字动作按钮最大偏差0.004px。20条记录包含重复及不同视口状态，不冒称20条独立金融路线，也不关闭U02–U14。
 
-证据：[用户标注](evidence/money-flow-feedback/codex-clipboard-e696c1ff-a970-41fa-8566-7eab934fb498.png)、[修改前本地页面](evidence/money-flow-feedback/local-r145-before-20261014.png)、[默认桌面对齐结果](evidence/money-flow-feedback/local-r145-aligned-20261014.png)、[宽桌面对齐结果](evidence/money-flow-feedback/local-r145-wide-20261014.png)、[本地操作与网格测量](evidence/money-flow-feedback/browser-r145-20261014.json)。截图保留四个账户行及中间动作的完整边界。
+证据：[用户标注](evidence/money-flow-feedback/codex-clipboard-e696c1ff-a970-41fa-8566-7eab934fb498.png)、[修改前本地页面](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r145-before-20261014.png)、[默认桌面对齐结果](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r145-aligned-20261014.png)、[宽桌面对齐结果](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r145-wide-20261014.png)、[本地操作与网格测量](evidence/money-flow-feedback/browser-r145-20261014.json)。截图保留四个账户行及中间动作的完整边界。
 
 本地产品契约及银行期间费16项检查通过，脚本语法与24项资源版本一致，`git diff --check`通过。按R144、R146完成本地检查后照常提交、推送并发布，省去上线后的页面与资源核对；其余金融证据及用户验收继续保留在现有清单中。
 
@@ -553,7 +553,7 @@ ATM港币扣账使用实际现金／本金扣账汇率，已单列费用不重�
 | R143 | “汇回渠道……也是紧贴着，右边给空气占位置”，汇回内地截图 | 内地收款银行与渠道使用覆盖可用宽度的均衡两列，标签及控件内容在各列居中；移除只限制渠道宽度造成的右侧空白。渠道保持普通控件尺度，可选渠道的箭头也参与文字组居中。 |
 | R144 | “不需要你核对上线的” | 按R146澄清，修改照常上线；停止额外的上线页面、线上资源核对，不再为线上复核延长任务。本条不取消正式发布。 |
 
-原图：[管理费两端对齐](evidence/money-flow-feedback/codex-clipboard-93fbf380-0362-4839-9c2b-4e32b4f903db.png)、[汇回渠道靠左留空](evidence/money-flow-feedback/codex-clipboard-b78b96b9-34b6-40fb-b5ff-cfb369b4ed01.png)、[箭头没有参与居中](evidence/money-flow-feedback/codex-clipboard-465f31a6-a6c2-4165-96c5-826210f34edf.png)。[修改前本地复现](evidence/money-flow-feedback/local-r143-before-20261014.png)使用同步自动更新后的8aef5b9；正常桌面视口1290×1233。
+原图：[管理费两端对齐](evidence/money-flow-feedback/codex-clipboard-93fbf380-0362-4839-9c2b-4e32b4f903db.png)、[汇回渠道靠左留空](evidence/money-flow-feedback/codex-clipboard-b78b96b9-34b6-40fb-b5ff-cfb369b4ed01.png)、[箭头没有参与居中](evidence/money-flow-feedback/codex-clipboard-465f31a6-a6c2-4165-96c5-826210f34edf.png)。[修改前本地复现](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r143-before-20261014.png)使用同步自动更新后的8aef5b9；正常桌面视口1290×1233。
 
 **当前状态：反馈先登记后完成实现及本地复查，尚未获得用户接受。** R129、R131、R139此前被否定的布局不视为通过；箭头参与居中和格内居中优先于旧实现中的右侧独立箭头／费用两端对齐。全部金额、收费及报价缺项仍按既有模型呈现；本轮局部布局检查不关闭U02–U14。
 
@@ -563,7 +563,7 @@ ATM港币扣账使用实际现金／本金扣账汇率，已单列费用不重�
 - **账户设置。** 金额信息在其金额格居中；月数、管理费名称＋金额、豁免勾选＋条件分别成格，取消名称与金额两端拉开。月数、费用组和金额组的垂直中心与机构主体一致；条件在较窄格内正常换行。12／24个月可编辑；HSBC豁免开启／关闭为0／1,023.74 CNY，四个节点的位置和尺寸均不变。额外取回银行的期间费也复查了同一结构，条件详情仍可打开，Esc关闭且焦点返回。
 - **汇回两列。** 收款银行和渠道各占可用宽度的一半，列标签及所选内容居中；单一渠道仍是38px普通控件，可选渠道的文字与箭头作为整体居中。正常桌面两列各291.5px，1920px宽桌面各500px，两列宽差、控件垂直中心差及右侧残余空白均为0px。USD／HKD、普通网上电汇及中银快汇切换可用，费用归属与公式未修改。
 
-本轮记录32次实际操作状态，含重复状态，不称为32条独立金融路线。正常桌面1290×1233；为复现原360px上限在宽桌面造成的右侧留空，另核1920×1080，完成后已恢复默认视口。证据：[账户分格宽桌面截图](evidence/money-flow-feedback/local-r143-bank-wide-20261014.png)、[汇回两列截图](evidence/money-flow-feedback/local-r143-return-20261014.png)、[默认桌面整页](evidence/money-flow-feedback/local-r143-after-20261014.png)、[宽桌面整页](evidence/money-flow-feedback/local-r143-wide-20261014.png)、[操作及几何记录](evidence/money-flow-feedback/browser-r143-20261014.json)。整页截图中的悬浮汇总按截图时滚动位置显示；局部截图保留模块完整边界。
+本轮记录32次实际操作状态，含重复状态，不称为32条独立金融路线。正常桌面1290×1233；为复现原360px上限在宽桌面造成的右侧留空，另核1920×1080，完成后已恢复默认视口。证据：[账户分格宽桌面截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r143-bank-wide-20261014.png)、[汇回两列截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r143-return-20261014.png)、[默认桌面整页](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r143-after-20261014.png)、[宽桌面整页](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r143-wide-20261014.png)、[操作及几何记录](evidence/money-flow-feedback/browser-r143-20261014.json)。整页截图中的悬浮汇总按截图时滚动位置显示；局部截图保留模块完整边界。
 
 本地产品契约与银行期间费16项检查通过，脚本语法及24项资源版本一致，`git diff --check`通过。修改、需求记录与证据已随5e4b6c8提交并推送；推送前已合入自动更新8aef5b9并再次fetch确认远端，无覆盖数据。按R144停止上线核对，不声称已经完成正式页实屏复验，也不再将其作为本轮交付条件。其余金融证据、全产品及用户验收继续按U02–U14保存，不以这批居中测量替代。
 
@@ -588,7 +588,7 @@ ATM港币扣账使用实际现金／本金扣账汇率，已单列费用不重�
 
 14日00:03刷新四家内地银行和中银香港、汇丰香港、恒生香港、工银亚洲共8个官网报价源；各内地银行USD、HKD报价均通过价格方向与时效校验。当天相同兴业→汇丰→ZA→汇丰→兴业USD回程，统一USD/CNY基准6.69485，实际优惠卖出6.70165、买入6.68895：购汇差额101.47 CNY，买卖28.72，汇回手续费59.70，结汇差额87.96，已计合计277.85，已扣已核费用后余额99,722.15 CNY。结汇前实际外币14,908.490167787186 USD，结汇差额按该数额×(6.69485−6.68895)计算。与13日旧报价的397.73不同来自官网报价更新，不换核算公式。普通汇路中转费仍未取得统一确定资费，以上是已计小计，不能称为完整总损耗；U06继续打开。
 
-证据：[修改前复现](evidence/money-flow-feedback/local-r140-before-20261013.png)、[最终出发段](evidence/money-flow-feedback/local-r140-source-final-20261014.png)、[最终回程](evidence/money-flow-feedback/local-r140-return-final-20261014.png)、[完整页面](evidence/money-flow-feedback/local-r140-main-final-20261014.png)、[实屏操作与几何记录](evidence/money-flow-feedback/browser-r140-20261014.json)。26条记录包括旧／新报价、弹窗及重复状态，独立回程是四家收款×两种回款币种8种，不冒称26条独立路线或整个产品验收。
+证据：[修改前复现](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r140-before-20261013.png)、[最终出发段](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r140-source-final-20261014.png)、[最终回程](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r140-return-final-20261014.png)、[完整页面](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r140-main-final-20261014.png)、[实屏操作与几何记录](evidence/money-flow-feedback/browser-r140-20261014.json)。26条记录包括旧／新报价、弹窗及重复状态，独立回程是四家收款×两种回款币种8种，不冒称26条独立路线或整个产品验收。
 
 本地实际检查8种回程：框外角色、机构84px、主体居中、真实图标加载、无横向溢出；汇回明细在当前桌面宽度同一行，汇率只在对应换汇动作出现一次。转账与结汇详情分别显示本段费用及来源，外点／Esc关闭且焦点返回入口；下方收款和币种选择不改变固定优选目录。新增购汇／结汇共同基准、最优银行两段均有真实差额、96种币种／银行估值对账、迁移、独立费用归属和分币稳定性检查。全项目413项通过后，最后的选择器百分比与弹窗去重调整再跑相关204项，均通过；官网解析及故障回退19项通过，语法和22项资源版本一致。大批参数模型检查仅用于数值与程序回归，不证明金融报价已齐或用户接受设计；U02–U14继续打开。
 
@@ -610,7 +610,7 @@ ATM港币扣账使用实际现金／本金扣账汇率，已单列费用不重�
 - 管理费改为费用名称／金额及豁免条件两行，主界面保留“3个月均值≥1万HKD／开户豁免”这一必要条件，完整定义与来源在同一详情入口。默认例中管理费区由95px降至53px；不是缩小正文或预留空行。零／非零切换没有移动账户或金额位置。
 - 五类资金用途统一为40px普通选择控件，角色是“资金用途”；不再使用128px机构卡，也不将不同对象强制做成同高大框。用途及银行仍可分别选择。
 
-原图：[被否定的管理费段落](evidence/money-flow-feedback/codex-clipboard-56c3e226-bff0-4648-9413-78622ba4ffe5.png)、[孤立渠道](evidence/money-flow-feedback/codex-clipboard-277542dd-6a09-4c9d-9ad4-7f95cf394098.png)、[巨大用途卡](evidence/money-flow-feedback/codex-clipboard-f03b1f3a-58f1-4dea-97e8-54634eaed787.png)、[角色在机构框内](evidence/money-flow-feedback/codex-clipboard-c7d16446-9ee0-4e00-82ad-43c473602315.png)。修改后：[出发与收款设置](evidence/money-flow-feedback/local-r136-source-bank-20261013.png)、[同一消费用途的第四步](evidence/money-flow-feedback/local-r136-purpose-20261013.png)、[整页](evidence/money-flow-feedback/local-r136-main-20261013.png)。[本轮实屏记录](evidence/money-flow-feedback/browser-r136-controls-20261013.json)保存实际切换、费用变化、焦点返回及边界信息。
+原图：[被否定的管理费段落](evidence/money-flow-feedback/codex-clipboard-56c3e226-bff0-4648-9413-78622ba4ffe5.png)、[孤立渠道](evidence/money-flow-feedback/codex-clipboard-277542dd-6a09-4c9d-9ad4-7f95cf394098.png)、[巨大用途卡](evidence/money-flow-feedback/codex-clipboard-f03b1f3a-58f1-4dea-97e8-54634eaed787.png)、[角色在机构框内](evidence/money-flow-feedback/codex-clipboard-c7d16446-9ee0-4e00-82ad-43c473602315.png)。修改后：[出发与收款设置](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r136-source-bank-20261013.png)、[同一消费用途的第四步](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r136-purpose-20261013.png)、[整页](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r136-main-20261013.png)。[本轮实屏记录](evidence/money-flow-feedback/browser-r136-controls-20261013.json)保存实际切换、费用变化、焦点返回及边界信息。
 
 复查覆盖四家出发、六家收款、六家取回、五类买股账户、五种用途、三种币种、一／两笔渠道、管理费切换和条件详情。正常桌面视口中未发现角色仍在框内、用途仍套大卡或横向溢出；完整条件详情与普通用途选择外点关闭并返回焦点。金额、收费规则、独立优选及底部悬浮汇总保持。相关198项检查通过；最后的条件文字调整后9项产品契约再次通过，语法与22项缓存版本一致。记录包含重复操作状态，不称为全部独立金融组合；U01–U14继续打开。
 
@@ -638,7 +638,7 @@ ATM港币扣账使用实际现金／本金扣账汇率，已单列费用不重�
 | R131：月数与管理费区 | 月数单独可改，与管理费区之间24px；管理费名称与最终费用成组居中，豁免及收费条件在该组下居中。 | 汇丰豁免开启／关闭对应0与1,025.37 CNY，四节点位置／高度、优选位置均未变化；24个月与12个月可改。记录使用页面文档坐标，排除自动化工具滚动造成的视口位移。 |
 | 共用交互及既有结构 | 底部悬浮总损耗保持；出金仍在买股账户与取回银行之间；人民币／美元／港币顺序和独立选择保持。 | 金额、账户、换汇地点和费用券弹窗外点关闭；Esc关闭金额／费用券；焦点回到对应入口。费用券有效／关闭、人民币／港币长控件和所有优选应用均复查。 |
 
-修改前：[本轮原页面](evidence/money-flow-feedback/local-before-r132-20261013.png)。修改后：[完整默认流程](evidence/money-flow-feedback/local-r132-main-20261013.png)、[回内地复用选择框](evidence/money-flow-feedback/local-r132-return-20261013.png)。实屏操作与几何记录：[本轮浏览器证据](evidence/money-flow-feedback/browser-r132-layout-20261013.json)。首轮发现优选价格列溢出以及旧`justify-content`造成主体左缩，均在交付前修正；失败记录不作为通过证据。
+修改前：[本轮原页面](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-before-r132-20261013.png)。修改后：[完整默认流程](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r132-main-20261013.png)、[回内地复用选择框](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-r132-return-20261013.png)。实屏操作与几何记录：[本轮浏览器证据](evidence/money-flow-feedback/browser-r132-layout-20261013.json)。首轮发现优选价格列溢出以及旧`justify-content`造成主体左缩，均在交付前修正；失败记录不作为通过证据。
 
 验证：`npm run check`通过（22个资源版本一致），资金模型及产品契约198项通过、0失败。本轮记录43次通过本地复查的操作状态，包含重复状态，不宣称43条独立资金组合或完整金融验收。新增模块边界的1px连线偏移在最终复查中修正，最终节点／箭头与方向线中心一致。U01–U14仍打开；本轮截图与自动检查不能证明所有报价／资费确定，也不能视为用户接受。
 
@@ -663,7 +663,7 @@ ATM港币扣账使用实际现金／本金扣账汇率，已单列费用不重�
 
 ### 修改前逐项对照
 
-本地实际截图：[本轮被否定的完整页面](evidence/money-flow-feedback/local-rejected-main-flow-20261013.png)。下面是修改前状态，后续必须另记实屏验证范围；不是用户验收结论。
+本地实际截图：[本轮被否定的完整页面](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-rejected-main-flow-20261013.png)。下面是修改前状态，后续必须另记实屏验证范围；不是用户验收结论。
 
 | 对照项 | 修改前实屏结论 | 本轮处理 |
 | --- | --- | --- |
@@ -1025,11 +1025,11 @@ ATM港币扣账使用实际现金／本金扣账汇率，已单列费用不重�
 
 | 已落实内容 | 检查证据 |
 | --- | --- |
-| 左侧四步路线持续显示已选账户，右侧只编辑当前步；重要账户按钮醒目 | [新版默认页](evidence/money-flow-feedback/rebuild-default.jpg)，取代顶部概览加整页平铺 |
+| 左侧四步路线持续显示已选账户，右侧只编辑当前步；重要账户按钮醒目 | [新版默认页](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/rebuild-default.jpg)，取代顶部概览加整页平铺 |
 | 9家内地银行、5家香港银行、5个买股账户，顺序固定且独立可选；农业银行不显示 | [目录与全组合检查](../tests/money-flow-catalog.test.cjs)，[UI操作回归](../tests/money-flow.test.cjs) |
 | 5个快捷方案可再编辑；保留本金、汇出笔数、月数与用户资格；不强制GO或增加笔数 | 自动回归；浏览器由招行设置3笔后选汇丰方案，仍为3笔 |
-| 同一个购汇基准；汇丰10万元购汇差额450.87元、损耗0.451%，不再出现596.40元／0.596% | [汇丰金额回归截图](evidence/money-flow-feedback/rebuild-hsbc-reconciled.jpg) |
-| 招行人民币原币汇出仍收199.80元；汇出99,800.20 CNH | [招行金额回归截图](evidence/money-flow-feedback/rebuild-cmb-rmb.jpg) |
+| 同一个购汇基准；汇丰10万元购汇差额450.87元、损耗0.451%，不再出现596.40元／0.596% | [汇丰金额回归截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/rebuild-hsbc-reconciled.jpg) |
+| 招行人民币原币汇出仍收199.80元；汇出99,800.20 CNH | [招行金额回归截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/rebuild-cmb-rmb.jpg) |
 | 中银香港收款与ZA／汇丰证券独立；换股票账户保留收款银行；HSBC One条件归第二步 | 浏览器实际切换ZA→汇丰证券、重新打开香港银行选择器；自动回归检查 |
 | 费用券留空不清空已知银行收费；Trade25仅美股月费0；银行100 HKD/月×12个月=1,200 HKD | 自动回归与浏览器实际点击；第二步1,200 HKD折合1,024.77 CNY |
 | 不强制出金或汇回；新增留在买股账户，并保留其他4种用途 | 自动回归检查未使用的回款账户、出金、结汇不收费 |
@@ -1046,15 +1046,15 @@ ATM港币扣账使用实际现金／本金扣账汇率，已单列费用不重�
 
 | 本轮改动与实际核对 | 证据 |
 | --- | --- |
-| 四个节点同页，账户、币种、余额、本段损耗、主要费用与全程合计一起展示；默认本金10万元，仅一个修改入口 | [默认完整页](evidence/money-flow-feedback/ledger-default-20261011.png)；默认购汇121.46 CNY＋买卖28.95 CNY＝全程150.41 CNY／0.150% |
+| 四个节点同页，账户、币种、余额、本段损耗、主要费用与全程合计一起展示；默认本金10万元，仅一个修改入口 | [默认完整页](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/ledger-default-20261011.png)；默认购汇121.46 CNY＋买卖28.95 CNY＝全程150.41 CNY／0.150% |
 | 主界面直接显示6条方案路径与同条件费用；保留兴业、IBKR路线，不能将缺项小计宣称为最优 | 方案结果与应用后模型一致性测试；R69的全目录优选仍未完成 |
-| 汇丰购汇单一口径450.87 CNY／0.451%；Trade25与银行豁免独立 | [汇丰实测](evidence/money-flow-feedback/ledger-hsbc-20261011.png)：勾选两项实际资格后交易费2.28 CNY，合计453.14 CNY／0.453%；期间银行费0 |
+| 汇丰购汇单一口径450.87 CNY／0.451%；Trade25与银行豁免独立 | [汇丰实测](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/ledger-hsbc-20261011.png)：勾选两项实际资格后交易费2.28 CNY，合计453.14 CNY／0.453%；期间银行费0 |
 | 费用券留空不改变银行费、到账余额或原交易资费；主界面不把未抵扣称为已启用 | 实际浏览器勾选后，银行到账仍14,903.35 USD、购汇121.46 CNY；费用券按实际抵扣额或“未抵扣”显示 |
 | 收款银行／买股账户独立；单一渠道直接显示，多个渠道才打开选择器 | 9／5／5固定目录回归、每家银行及券商的组合渲染回归 |
 | 香港人民币消费使用所选银行牌价；汇丰／恒生经HKD的两次兑换分别核算 | 模型两段金额守恒测试；浏览器实测汇丰CNH→HKD→USD及USD→HKD→CNH，无强制改中银 |
 | 恒生中国、汇丰香港、恒生香港自动牌价；盈立传统香港银行本地支票出金0，数字银行约7.5 USD单独标参考费 | 官网接口原始快照、16项报价解析测试、出金边界与参考费用回归 |
 | 工行、渣打中国个人境外汇入费0；汇丰／中银本地美元支票存入0；渣打香港本地汇出22 USD不误写HKD | 官方资料见方法文档与数据源；新增按收费科目回归 |
-| 弹窗点击外面、Esc、关闭按钮均关闭并返回触发控件焦点；窄屏无横向溢出 | [窄屏银行选择器](evidence/money-flow-feedback/ledger-picker-narrow-20261011.png)，测试后恢复桌面视口 |
+| 弹窗点击外面、Esc、关闭按钮均关闭并返回触发控件焦点；窄屏无横向溢出 | [窄屏银行选择器](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/ledger-picker-narrow-20261011.png)，测试后恢复桌面视口 |
 
 本轮全项目210项JavaScript测试、264项Python测试、资源版本检查及1,774条组合历史构建检查通过。独立全目录审计检查151,875个状态，其中3,590个科目有数值（去重334条）、131,410个有缺项、16,875个有具体币种／报价问题。135,000个有余额状态均守恒。统计包含重复及公开实测／参考资费，不能宣传“全部组合确定无损”。
 
@@ -1099,7 +1099,7 @@ R69从固定方案改为目录计算。五张卡分别对应五个买股账户�
 
 自动验证涵盖独立穷举对比、私有报价及费用券不跨方案套用、未知小计不能胜出、报价过期、所有卡片应用后重现总额。本轮219项全项目JavaScript检查通过。浏览器实际点击五张卡，与摘要逐一核对；再将汇出笔数设为2并明确勾选Trade25、HSBC One免管理费，兴业→汇丰香港→汇丰证券显示102.28 CNY／0.102%，应用后完全一致；最后恢复默认10万元、1笔、优惠未勾选。
 
-证据：[默认连续资金流](evidence/money-flow-feedback/ledger-default-20261011.png)、[明确优惠资格后的兴业路线](evidence/money-flow-feedback/ledger-ranked-eligible-20261011.png)。R69实现核对不等于用户验收，也不关闭前述A01的银行报价与汇路证据缺项。
+证据：[默认连续资金流](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/ledger-default-20261011.png)、[明确优惠资格后的兴业路线](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/ledger-ranked-eligible-20261011.png)。R69实现核对不等于用户验收，也不关闭前述A01的银行报价与汇路证据缺项。
 
 同日修正银行管理费归属的正文标签：例如中银香港收款、汇丰证券买股时，直接写“汇丰HSBC One管理费”，避免将所用银行账户合计误读成中银香港收费；该费用仍属于香港银行节点，不计入Trade25月费。
 
@@ -1109,13 +1109,13 @@ R69从固定方案改为目录计算。五张卡分别对应五个买股账户�
 
 更新后的151,875状态审计：3,949个全科目有数值、117,551个报价缺项、30,375个具体币种／资格／汇路／报价问题，121,500个最终余额核对通过。分类变化不是补齐了银行报价。加入对应回归，交易币种覆盖测试改用支持美元支票的回款银行，避免把真实不支持的路线当作成功基线。
 
-222项全项目JavaScript测试及资源版本检查通过；浏览器核对[出金不支持时保留前序结果](evidence/money-flow-feedback/ledger-withdraw-issue-20261011.png)，原因仅在实际出金动作显示一次，随后恢复默认10万元方案。
+222项全项目JavaScript测试及资源版本检查通过；浏览器核对[出金不支持时保留前序结果](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/ledger-withdraw-issue-20261011.png)，原因仅在实际出金动作显示一次，随后恢复默认10万元方案。
 
 ### 2026-10-11恒生中国账户级别及资费补核
 
 从官网现行入口取得2026年2月1日个人价目表，确认7.1外币汇入免费；8.2优越理财普通外币电汇为0.5‰、最低50元、最高500元，另加120元电报费，已补入USD/HKD计算。8.5的跨域转账全免只适用于优越理财；优进理财为累计前3次免本行手续费、电报费，代理费不包含。现有全免情景明确标为“恒生中国 · 优越理财”，不再把不同级别笼统称作免费。银行目录仍为9家，未增加或删除银行；优进理财的完整计费尚未实现，不能声称覆盖全部账户级别。
 
-223项JavaScript测试通过，检查普通汇款按笔收费、专用渠道豁免、汇入0及代理费不被误免；[浏览器核对](evidence/money-flow-feedback/ledger-hang-tariff-20261011.png)10万元普通汇款本行费用为170元。重新审计151,875个状态，121,500个可计余额核对通过；完整状态仍为3,949个，因为本次补齐的科目与其他真实汇路缺项重叠，不能宣称已实现全部完整报价。
+223项JavaScript测试通过，检查普通汇款按笔收费、专用渠道豁免、汇入0及代理费不被误免；[浏览器核对](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/ledger-hang-tariff-20261011.png)10万元普通汇款本行费用为170元。重新审计151,875个状态，121,500个可计余额核对通过；完整状态仍为3,949个，因为本次补齐的科目与其他真实汇路缺项重叠，不能宣称已实现全部完整报价。
 
 另核对[ZA官方汇率查询说明](https://bank.za.group/en/faqs/Individuals/Bank_services/Money_exchange/671605c5701eb769e4bff53c)：当前买卖价需登录App查询。此事实作为采集缺口的证据保存；不能将输入框、别家银行报价或市场中间价包装成已取得ZA成交价。
 
@@ -1131,7 +1131,7 @@ R69从固定方案改为目录计算。五张卡分别对应五个买股账户�
 
 含费本金在金额档位间逐档反算，并检查跳升、百万档位后的费率下降及多笔分摊。2,004元例子为汇出2,000元、手续费2元、留在内地2元；余款不是费用，总资产核对包含它。另修正逐段账簿提前将CNY/CNH参考值差当作第一步购汇损耗的问题，差额跟随真正的兑换动作。
 
-实操检查发现缺汇率的费用行错误套用了“代理行收费未公开”标签，以及未换美元时底部丢失已算出的CNH余额；已一并修正。浏览器证据：[渣打10万元人民币本行费5.50元](evidence/money-flow-feedback/ledger-sc-rmb-tariff-20261011.png)、[缺换汇价仍保留99,994.50 CNH](evidence/money-flow-feedback/ledger-rmb-unconverted-balance-20261011.png)、[跨档余款保留](evidence/money-flow-feedback/ledger-rmb-band-remainder-20261011.png)。检查后恢复默认10万元、1笔、优惠未勾选，总损耗150.41 CNY／0.150%，无浏览器脚本错误。
+实操检查发现缺汇率的费用行错误套用了“代理行收费未公开”标签，以及未换美元时底部丢失已算出的CNH余额；已一并修正。浏览器证据：[渣打10万元人民币本行费5.50元](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/ledger-sc-rmb-tariff-20261011.png)、[缺换汇价仍保留99,994.50 CNH](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/ledger-rmb-unconverted-balance-20261011.png)、[跨档余款保留](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/ledger-rmb-band-remainder-20261011.png)。检查后恢复默认10万元、1笔、优惠未勾选，总损耗150.41 CNY／0.150%，无浏览器脚本错误。
 
 226项全项目JavaScript测试及22项资源版本检查通过。重新审计151,875个状态，121,500个可计余额守恒，3,949个全科目有数值；恒生／渣打／汇丰人民币本行费缺项已消除，但中转费及银行报价缺口仍存在。纠正渣打人民币渠道后，相关中转费也不再被错误豁免；完整状态没有凭标签或删选项增加，A01仍未完成。
 
@@ -1139,7 +1139,7 @@ R69从固定方案改为目录计算。五张卡分别对应五个买股账户�
 
 兴业官网综合服务价目表000302的零售汇出服务明确包括跨境人民币，按1‰、50–200元收费，000305另收100元电讯费。寰宇人生卡的双免条款明确是跨境外汇汇款，人民币标准价不继承前30笔豁免或外汇优惠到期日。默认10万元含费本金、1笔，本行费用199.80 CNY，汇出99,800.20 CNH；中转费和香港收款费仍分别核算。
 
-浏览器实际切换人民币／美元核对：人民币分别显示99.80元手续费、100元电讯费，渠道和银行选择器均显示人民币标准价；切回美元，本行两项费用恢复0，账户选择保持。证据：[兴业人民币收费](evidence/money-flow-feedback/ledger-cib-rmb-tariff-20261011.png)。228项JavaScript测试通过，覆盖按笔收费、最低／封顶、优惠次数和日期边界。全目录审计已移除4,860个兴业汇出手续费及4,860个电讯费缺项；完整状态仍为3,949个，其他汇路费用没有被当成免费。
+浏览器实际切换人民币／美元核对：人民币分别显示99.80元手续费、100元电讯费，渠道和银行选择器均显示人民币标准价；切回美元，本行两项费用恢复0，账户选择保持。证据：[兴业人民币收费](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/ledger-cib-rmb-tariff-20261011.png)。228项JavaScript测试通过，覆盖按笔收费、最低／封顶、优惠次数和日期边界。全目录审计已移除4,860个兴业汇出手续费及4,860个电讯费缺项；完整状态仍为3,949个，其他汇路费用没有被当成免费。
 
 中行个人[境外汇入说明](https://www.boc.cn/pbservice/pb4/200806/t20080626_762.html)只说明互开往来账户时一般全额汇达以及转汇行扣费；这不是明确的个人收款费价目，也不能拿境外分行／对公页面的免费条款代替。该证据缺口保持打开。
 
@@ -1149,25 +1149,25 @@ R69从固定方案改为目录计算。五张卡分别对应五个买股账户�
 
 同时修复兴业人民币汇款依据仍引用外币前30笔豁免的问题，以及旧保存设置使ZA路线误显示“转入IBKR”的问题。人民币详情不出现外币优惠次数控件；外币准确区分手续费免与优惠期前30笔电讯费免。缺内地结汇价时，也不把内部人民币参考值展示为该行买入牌价。
 
-231项全项目JavaScript测试和22项资源版本检查通过。浏览器核对兴业人民币收费详情、渣打收款后缺换汇价的正文与全程明细：最后可计余额一致为99,800.20 CNH，不出现伪造的USD／CNY最终余额。证据：[缺价时的完整资金流](evidence/money-flow-feedback/ledger-missing-fx-details-20261011.png)。这次是显示与旧状态修复，没有声称补齐仍缺的银行报价或代理行收费，A01继续未完成。
+231项全项目JavaScript测试和22项资源版本检查通过。浏览器核对兴业人民币收费详情、渣打收款后缺换汇价的正文与全程明细：最后可计余额一致为99,800.20 CNH，不出现伪造的USD／CNY最终余额。证据：[缺价时的完整资金流](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/ledger-missing-fx-details-20261011.png)。这次是显示与旧状态修复，没有声称补齐仍缺的银行报价或代理行收费，A01继续未完成。
 
 同日进一步逐章核对中行监管减免、电子银行、其他综合服务和减费公告，并取得渣打官网实际链接指向的2026年10月英文收费表。没有找到足以补成确定0的中行个人境外收款费或渣打本地USD支票存入费证据，未修改其金额。已核对的具体章节及不能跨科目套用的原因记录在[方法文档](money-flow-method.md#收款缺项的交叉核对2026-10-11)，后续不再重复把这些章节当作尚未读过的新线索。
 
 继续核对发现：缺香港／IBKR换汇成交价时，下游按金额／股数计算的交易费、换汇佣金及按金额分档的汇入费仍依赖参考美元金额。现逐项标出这种估算，汇总不再将其称为全程已核费用。固定银行收费、明确免收的交易科目和已确认交易费保持原值；取得有效换汇价后取消相关估算标记。此举纠正结果的确定性，不等于补齐实际成交报价。
 
-232项全项目JavaScript测试及22项资源版本检查通过。浏览器实测人民币经渣打换汇缺价的ZA路线：独立银行费用合计347.24 CNY，交易费估算28.95 CNY，费用小计376.19 CNY；最后可计余额仍为99,800.20 CNH，正文及明细均不展示伪造的美元余额。检查后恢复默认10万元方案，默认全程150.41 CNY／0.150%。[证据截图](evidence/money-flow-feedback/ledger-missing-fx-details-20261011.png)已更新；A01的剩余实际报价和汇路收费继续保持打开。
+232项全项目JavaScript测试及22项资源版本检查通过。浏览器实测人民币经渣打换汇缺价的ZA路线：独立银行费用合计347.24 CNY，交易费估算28.95 CNY，费用小计376.19 CNY；最后可计余额仍为99,800.20 CNH，正文及明细均不展示伪造的美元余额。检查后恢复默认10万元方案，默认全程150.41 CNY／0.150%。[证据截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/ledger-missing-fx-details-20261011.png)已更新；A01的剩余实际报价和汇路收费继续保持打开。
 
 ### 2026-10-11工行附加服务补齐
 
 现行官方价目表06030033美元全额到账为另加25 USD／笔，已补入明确选择的渠道，并纳入相同条件下的方案计算。汇出手续费、电讯费及香港收款行本行汇入费分别计算；选择其他银行或非美元币种后不继承此项。默认仍为普通网银，不增加笔数或变更账户。
 
-235项全项目JavaScript测试及22项资源版本检查通过，新增5家香港收款银行×5个买股账户×3种笔数的75个完整渠道核对，以及缺报价、币种切换和明细一致性回归。浏览器核对10万元、1笔工行→中银香港→ZA：第一段480.46 CNY、全程509.42 CNY／0.509%、最终14,845.46 USD，正文与明细一致；切换港币后恢复普通网银渠道，账户仍可独立选择。[截图](evidence/money-flow-feedback/ledger-icbc-full-20261011.png)与[逐项依据](money-flow-method.md#工行美元全额到账与人民币收费范围2026-10-11补核)已保存，最后恢复默认方案。工行／交行人民币资费的适用范围仍未核齐，没有借本次美元服务补齐而关闭该缺项。
+235项全项目JavaScript测试及22项资源版本检查通过，新增5家香港收款银行×5个买股账户×3种笔数的75个完整渠道核对，以及缺报价、币种切换和明细一致性回归。浏览器核对10万元、1笔工行→中银香港→ZA：第一段480.46 CNY、全程509.42 CNY／0.509%、最终14,845.46 USD，正文与明细一致；切换港币后恢复普通网银渠道，账户仍可独立选择。[截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/ledger-icbc-full-20261011.png)与[逐项依据](money-flow-method.md#工行美元全额到账与人民币收费范围2026-10-11补核)已保存，最后恢复默认方案。工行／交行人民币资费的适用范围仍未核齐，没有借本次美元服务补齐而关闭该缺项。
 
 ### 2026-10-11选择器动作与资费对齐
 
 继续实看各步骤发现：内地收款银行选择器复用了汇出费用，人民币出发选项在没有专用说明时也复用了外币文案。现将内地收款选择器改为该行境外USD汇入费及USD现汇买入价；不受第一步汇出币种影响。人民币出发的渠道、选择器和依据共用人民币收费说明，不出现仅适用于外币的双免／25美元附加费。工行／交行人民币适用价目未取得的状态如实保留，不能靠换文案声称已核实。
 
-237项全项目JavaScript测试及22项资源版本检查通过。浏览器逐项核对9家内地收款银行的费用与结汇价、人民币出发列表，并恢复默认方案。证据：[内地收款银行选择器](evidence/money-flow-feedback/ledger-return-picker-20261011.png)。此项修复R09、R31、R41所要求的同一动作使用同一资费口径，不代表A01剩余银行资料已收齐。
+237项全项目JavaScript测试及22项资源版本检查通过。浏览器逐项核对9家内地收款银行的费用与结汇价、人民币出发列表，并恢复默认方案。证据：[内地收款银行选择器](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/ledger-return-picker-20261011.png)。此项修复R09、R31、R41所要求的同一动作使用同一资费口径，不代表A01剩余银行资料已收齐。
 
 继续在正式页面复查时遇到旧版保存的农业银行设置。对空值、已退出目录和不存在的银行作三币种恢复检查，发现人民币渠道文案会解引用不存在的银行并导致页面报错；现修正这一空值访问。失效选择保留明确提示和可操作的银行选择器，不能静默换成另一家银行并套用其费用。农业银行仍不出现在可选目录；用户换选后原有香港银行与券商保持。
 
@@ -1187,17 +1187,17 @@ R02／R19／R20对应的手续费与电报费证据得到加强；A01仍保留�
 
 优惠窗口在勾选前即可查看对应资格条款；交易费用详情只列已使用优惠。HSBC One管理费来源归银行账户费用，Trade25来源归交易。补上空值／已退出目录的旧出发银行设置在第一步详情中的空值保护，不静默更换账户。
 
-242项全项目JavaScript测试通过，覆盖渠道切换、未启用优惠、银行与交易收费归属、IBKR本地／境外美元入金来源、实际内地收款银行、消费银行及旧设置详情。浏览器核对中行第一步仅保留四条相关来源、未勾选Trade25时可看资格、HSBC One银行费用及Esc关闭，并恢复默认10万元、1笔，费用仍为150.41 CNY／0.150%。[实际收费依据截图](evidence/money-flow-feedback/ledger-action-sources-20261011.png)已保存。此项纠正R13／R21／R31／R42对应的步骤和依据错位，不代表金融证据缺口已全部关闭。
+242项全项目JavaScript测试通过，覆盖渠道切换、未启用优惠、银行与交易收费归属、IBKR本地／境外美元入金来源、实际内地收款银行、消费银行及旧设置详情。浏览器核对中行第一步仅保留四条相关来源、未勾选Trade25时可看资格、HSBC One银行费用及Esc关闭，并恢复默认10万元、1笔，费用仍为150.41 CNY／0.150%。[实际收费依据截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/ledger-action-sources-20261011.png)已保存。此项纠正R13／R21／R31／R42对应的步骤和依据错位，不代表金融证据缺口已全部关闭。
 
 同日对齐中行代理费的证据级别：银行已确认的汇出手续费、电报费和中银香港同名基本汇入费仍是0；仅依据同行SHA实录计入0的代理费标为参考测算。因此步骤、优选方案和底部使用一致的“参考损耗”口径，继续显示150.41 CNY／0.150%及14,899.03 USD，不将其改成无金额的待确认。已确认本人代理费后解除该参考标记；购汇价缺失时仍保留已确认的银行双免。
 
-243项全项目JavaScript测试通过；浏览器核对参考标记、两项双免和原有金额，实际截图见[默认方案证据级别](evidence/money-flow-feedback/ledger-mobile-reference-20261011.png)。这纠正了把部分实录依据的总额显示为无条件确定金额的问题，不代表另查到了代理费银行保证。
+243项全项目JavaScript测试通过；浏览器核对参考标记、两项双免和原有金额，实际截图见[默认方案证据级别](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/ledger-mobile-reference-20261011.png)。这纠正了把部分实录依据的总额显示为无条件确定金额的问题，不代表另查到了代理费银行保证。
 
 ### 2026-10-11渣打人民币汇出优惠遗漏修复
 
 沿官方收费入口核对到2026年优惠政策第3项：优先理财人民币跨境汇出手续费在2026-01-01至12-31豁免，代理行费用另计。此前只读标准收费表，错误收取了金额分档手续费。现普通人民币渠道按本行手续费0计算，2027-01-01恢复标准分档；不套用优先私人理财的代理费豁免，也不恢复仅支持外币的全球账户渠道。
 
-已检查各收费档位、优惠到期边界、1／2笔汇款、币种切换及本金守恒；全目录151,875个状态的审计结果保持可复核。浏览器核对渣打→中银香港人民币路径：汇出手续费及电讯费0，中银香港60 HKD汇入费仍单列；依据与选择器使用同一优惠说明，保留代理费缺项。证据：[渣打人民币优惠](evidence/money-flow-feedback/ledger-sc-rmb-waiver-20261011.png)。此项关闭该明确的本行资费错误，A01未完成项继续保留。
+已检查各收费档位、优惠到期边界、1／2笔汇款、币种切换及本金守恒；全目录151,875个状态的审计结果保持可复核。浏览器核对渣打→中银香港人民币路径：汇出手续费及电讯费0，中银香港60 HKD汇入费仍单列；依据与选择器使用同一优惠说明，保留代理费缺项。证据：[渣打人民币优惠](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/ledger-sc-rmb-waiver-20261011.png)。此项关闭该明确的本行资费错误，A01未完成项继续保留。
 
 ### 2026-10-11内地账户持有费用补齐
 
@@ -1205,7 +1205,7 @@ R02／R19／R20对应的手续费与电报费证据得到加强；A01仍保留�
 
 默认按标准月费计入；部分豁免按实际收费月份计算，满期豁免才为0。同一账户出发及回款不重复计费，资金留在境外不计未使用的内地回款账户，缺购汇价时仍保留CNY月费。新增校验还发现小额本金不能覆盖期间费时原来会清空整条金额，现保留已算步骤、剩余现金及全部费用，并点明不足支付期间费。
 
-浏览器实测汇丰中国12个月中免6个月：300×6＝1,800 CNY；HSBC One未确认豁免则另计1,024.77 CNY，账户期间费合计2,824.77 CNY。汇丰两地同名→ZA路径全程3,304.59 CNY／3.305%，末端14,428.38 USD。勾选内地豁免后香港收费不变。[截图](evidence/money-flow-feedback/ledger-mainland-account-fees-20261011.png)保存真实操作结果。全目录审计已重算，仍有A01列明的实际报价与汇路证据缺口，不将金额对账通过当作金融数据已全部齐全。
+浏览器实测汇丰中国12个月中免6个月：300×6＝1,800 CNY；HSBC One未确认豁免则另计1,024.77 CNY，账户期间费合计2,824.77 CNY。汇丰两地同名→ZA路径全程3,304.59 CNY／3.305%，末端14,428.38 USD。勾选内地豁免后香港收费不变。[截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/ledger-mainland-account-fees-20261011.png)保存真实操作结果。全目录审计已重算，仍有A01列明的实际报价与汇路证据缺口，不将金额对账通过当作金融数据已全部齐全。
 
 246项全项目JavaScript测试、22项资源版本检查通过；最后对未使用银行的无效旧输入作局部回归，确认不会阻断其他银行的计算。全组合151,875个状态、121,500个可计余额守恒检查通过；账户费用修复没有把未知汇率或中转费改成0。
 
@@ -1216,7 +1216,7 @@ R02／R19／R20对应的手续费与电报费证据得到加强；A01仍保留�
 - 0个月时保留真实月单价，期间总额为0；不再用0的总额反推“0 HKD／月”。收款银行、买股所用配套银行和取回银行采用同一规则。
 - 账户使用／持有月数改为非负整数，避免0.5个月按半月收费而说明四舍五入成1个月。输入框旁显示错误；剩余免收费月份同样就地提示。
 - 全项目248项JavaScript测试、资源版本与差异检查通过；新增覆盖0／1／12个月、豁免、不同账户归属、自填月费和无效月份。
-- 浏览器核对0→0.5→12个月：分别显示100 HKD／月×0个月、输入旁错误、1,200 HKD折合1,024.77 CNY。证据：[0个月](evidence/money-flow-feedback/ledger-zero-months-20261011.png)、[无效月份](evidence/money-flow-feedback/ledger-invalid-months-20261011.png)。随后恢复默认10万元／12个月方案，仍为150.41 CNY／0.150%，余额14,899.03 USD。
+- 浏览器核对0→0.5→12个月：分别显示100 HKD／月×0个月、输入旁错误、1,200 HKD折合1,024.77 CNY。证据：[0个月](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/ledger-zero-months-20261011.png)、[无效月份](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/ledger-invalid-months-20261011.png)。随后恢复默认10万元／12个月方案，仍为150.41 CNY／0.150%，余额14,899.03 USD。
 
 ### 2026-10-11按R70／R71继续验收整个产品
 
@@ -1278,7 +1278,7 @@ R02／R19／R20对应的手续费与电报费证据得到加强；A01仍保留�
 
 既有151,875个目录默认状态审计同时保留：4,870个科目有数值、116,630个部分报价、30,375个具体问题、121,500次账簿核对，数值路线去重454条。两份统计范围不同且有重复，不能合并宣传成“全部现实组合都有确定损耗”。本轮255项全项目JavaScript、264项Python、22项资源版本及1,774条组合历史检查通过；发布数据质量检查错误0。测试通过没有关闭A01。
 
-本轮证据：[修改前重复方案](evidence/money-flow-feedback/01-audit-before-20261011.png)、[五条不同汇路与完整主页](evidence/money-flow-feedback/02-diverse-routes-20261011.png)、[券商选择器](evidence/money-flow-feedback/03-stock-account-picker-20261011.png)、[输入旁错误](evidence/money-flow-feedback/04-input-validation-20261011.png)、[汇丰人民币消费](evidence/money-flow-feedback/05-hsbc-consumption-20261011.png)、[期间费与资金终点](evidence/money-flow-feedback/06-period-fees-and-terminal-20261011.png)、[实际操作JSON](evidence/money-flow-feedback/browser-acceptance-20261011.json)。
+本轮证据：[修改前重复方案](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/01-audit-before-20261011.png)、[五条不同汇路与完整主页](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/02-diverse-routes-20261011.png)、[券商选择器](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/03-stock-account-picker-20261011.png)、[输入旁错误](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/04-input-validation-20261011.png)、[汇丰人民币消费](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/05-hsbc-consumption-20261011.png)、[期间费与资金终点](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/06-period-fees-and-terminal-20261011.png)、[实际操作JSON](evidence/money-flow-feedback/browser-acceptance-20261011.json)。
 
 ### 2026-10-11渣打美元支票补核与出金设置复查
 
@@ -1574,7 +1574,7 @@ IBKR涉及出金的4种用途仍没有完整费用方案；本轮公开工具的
 
 332项全项目JavaScript与22项资源版本检查通过，无跳过；151,875个默认状态、1,940,970个渠道／资格状态、43,875个数值边界再次检查，分类及数值账簿统计未变化。该修正降低部分路线中原先错误的本行费用，未凭此补出收款方、代理行或个人成交价，A01仍未通过。
 
-用户已明确纠正Mac只是熄屏，从未锁定，登记为R72；此前文档中的“工具报告锁定”仅保留为历史连接报错，不是实际Mac状态。重新建立页面后，1e9976e发布页真实读取、重置及桌面截图成功：本金100,000 CNY，五条优选分别为中行／工行／建行／兴业／恒生中国，上游不同、ZA买股账户相同；默认费用150.41 CNY／0.150%，与正文一致。[截图](evidence/money-flow-feedback/live-default-1e9976e-20261011.jpg)记录该发布版本，不冒充尚未发布的恒生修正。继续操作银行权益时连接再次超时，这条操作未判通过；不再让用户解锁或代查，后续实际操作链及金融证据继续验收。
+用户已明确纠正Mac只是熄屏，从未锁定，登记为R72；此前文档中的“工具报告锁定”仅保留为历史连接报错，不是实际Mac状态。重新建立页面后，1e9976e发布页真实读取、重置及桌面截图成功：本金100,000 CNY，五条优选分别为中行／工行／建行／兴业／恒生中国，上游不同、ZA买股账户相同；默认费用150.41 CNY／0.150%，与正文一致。[截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/live-default-1e9976e-20261011.jpg)记录该发布版本，不冒充尚未发布的恒生修正。继续操作银行权益时连接再次超时，这条操作未判通过；不再让用户解锁或代查，后续实际操作链及金融证据继续验收。
 
 ### 2026-10-11渣打香港本地美元渠道范围（A01／A05／A07／A13）
 
@@ -1592,7 +1592,7 @@ IBKR涉及出金的4种用途仍没有完整费用方案；本轮公开工具的
 
 340项全项目JavaScript检查与22项资源版本检查通过，无跳过；完整渠道／资格审计重新生成2,146,274个状态，27,928个具备完整数值条件（其中12,586个含公开标准／操作记录参考费），1,625,068个部分报价、493,278个具体操作／输入问题；1,652,996个有数值结果全部逐项对账。151,875个默认状态及43,875次数值边界亦记录在[完整报告](money-flow-combinations.json)，新增收款银行维度不能当作等量缺报价已解决。
 
-实际本地浏览器已点击中行→中银香港→盈立，再选择企业汇丰CHATS收款：已选中银香港和盈立保持，收款标准费15 HKD／12.81 CNY，入金14,901.44 USD，最终14,896.43 USD，全程167.87 CNY／0.168%，没有多收本人汇丰银行期间费。[截图](evidence/money-flow-feedback/local-corporate-hsbc-20261012.jpg)和[操作记录](evidence/money-flow-feedback/browser-corporate-chats-local-20261012.json)明确标为待发布工作树版本。新计算通过不代表所有公开报价、全部真实页面交互或A01已完成；全产品验收继续。
+实际本地浏览器已点击中行→中银香港→盈立，再选择企业汇丰CHATS收款：已选中银香港和盈立保持，收款标准费15 HKD／12.81 CNY，入金14,901.44 USD，最终14,896.43 USD，全程167.87 CNY／0.168%，没有多收本人汇丰银行期间费。[截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-corporate-hsbc-20261012.jpg)和[操作记录](evidence/money-flow-feedback/browser-corporate-chats-local-20261012.json)明确标为待发布工作树版本。新计算通过不代表所有公开报价、全部真实页面交互或A01已完成；全产品验收继续。
 
 ### 2026-10-12切换独立账户保留仍适用的指定渠道（A04／A05／A13）
 
@@ -1600,13 +1600,13 @@ IBKR涉及出金的4种用途仍没有完整费用方案；本轮公开工具的
 
 先以失败回归复现，再逐项检查两家出发×五家香港银行×五家买股账户共50次切换，另核工行→建行→中行、兴业服务、指定企业／本人收款银行、改为同银行、改币种、主动重选同行。342项全项目JavaScript检查全部通过，无跳过，22项资源版本与差异格式检查通过；金额模型和全组合分类未改，不重复宣传为新增金融报价。
 
-修复后实际本地页面工行→ZA→盈立仍显示全额到账：汇出部分429.23 CNY、到账14,857.43 USD；随后企业中银香港CHATS收款12.81 CNY、交易33.58 CNY，全程475.62 CNY／0.476%，最终14,850.51 USD。原有账户、本金和一笔汇出均保持。[修复前后操作记录](evidence/money-flow-feedback/browser-channel-preservation-20261012.json)及[完整页面截图](evidence/money-flow-feedback/local-full-amount-retained-20261012.jpg)保存实际证据。675个上游账户／币种组合的真实点击及其余操作链继续验收，A01和整体验收尚未完成。
+修复后实际本地页面工行→ZA→盈立仍显示全额到账：汇出部分429.23 CNY、到账14,857.43 USD；随后企业中银香港CHATS收款12.81 CNY、交易33.58 CNY，全程475.62 CNY／0.476%，最终14,850.51 USD。原有账户、本金和一笔汇出均保持。[修复前后操作记录](evidence/money-flow-feedback/browser-channel-preservation-20261012.json)及[完整页面截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-full-amount-retained-20261012.jpg)保存实际证据。675个上游账户／币种组合的真实点击及其余操作链继续验收，A01和整体验收尚未完成。
 
 ### 2026-10-12默认返程收款银行（A02／A07／A09／A13）
 
 整条返程实测发现，重置后的中行→中银香港→ZA在首次选择“汇回内地结汇”时，预选了无关的汇丰中国，额外计入12个月3,600 CNY管理费。默认收款行改为中行，与默认出发账户一致；主动选择或已保存的其他收款银行不被覆盖，刷新仍保留。只有重置恢复默认。未增加自动换行规则或额外控件。
 
-实际页面修复前已核费用4,549.68 CNY、汇丰中国管理费3,600 CNY；修复后已核费用447.65 CNY、管理费0，终点已扣已核费用后的余额99,552.35 CNY。中银快汇本行费和内地中行收款费均按已核规则为0，仍未取得的美元代理费没有补成0，也未把该部分结果写成完整损耗。[修复前后实际记录](evidence/money-flow-feedback/browser-default-return-20261012.json)及[工作树页面截图](evidence/money-flow-feedback/local-default-return-20261012.jpg)保存具体数值；另实选汇丰中国并刷新，指定账户保持。
+实际页面修复前已核费用4,549.68 CNY、汇丰中国管理费3,600 CNY；修复后已核费用447.65 CNY、管理费0，终点已扣已核费用后的余额99,552.35 CNY。中银快汇本行费和内地中行收款费均按已核规则为0，仍未取得的美元代理费没有补成0，也未把该部分结果写成完整损耗。[修复前后实际记录](evidence/money-flow-feedback/browser-default-return-20261012.json)及[工作树页面截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-default-return-20261012.jpg)保存具体数值；另实选汇丰中国并刷新，指定账户保持。
 
 343项全项目JavaScript检查全部通过，无跳过；新增回归检查首次返程、已有指定收款行、用途切换、重置及费用归属。此修复只改变界面的默认选项，金额模型、报价和全组合审计分类未变，A01与整体验收仍未完成。
 
@@ -1620,13 +1620,13 @@ IBKR涉及出金的4种用途仍没有完整费用方案；本轮公开工具的
 | 4：汇款及入金渠道 | [指定全额到账保留](evidence/money-flow-feedback/browser-channel-preservation-20261012.json)复现并修复；[73种实际USD入金方式](evidence/money-flow-feedback/browser-funding-channels-20261012.json)包括券商企业具名收款银行、本人银行中转、同行和固定银行交收。所有账户保持。 | 确定资费按相应币种、个人／企业及收款银行计算；未支持方法保持说明，不隐藏账户。数字不是新增73条银行费率保证。 |
 | 5、10：参数、金额不足和异常输入 | [参数与优惠记录](evidence/money-flow-feedback/browser-parameters-offers-20261012.json)包含本金／笔数9个稳定读取状态、月数5个、买卖股价／笔数11个及恢复；12万元／3笔刷新一致。0／负数、小数笔数、超出范围及ZA不足1股时，错误在对应输入旁。 | 最初在120ms更新前即时读取的四条快照不作为通过证据，已用重新打开后的稳定记录取代。有限输入集合不等于所有连续数值穷举。 |
 | 6、7、11：费用券、ZA、Trade25、One和刷新 | 同一[参数与优惠记录](evidence/money-flow-feedback/browser-parameters-offers-20261012.json)实测券空值、空日期、过期、100 USD超额、2笔订单、关闭，银行汇款／入金保持。ZA Lv2买入先扣1.99、返0.80 USD，卖出先扣2.33、返0.80 USD；净交易18.26 CNY，切换券商和刷新一致。Trade25仅美股月费0，其他月成交30万HKD用尽额度时交易费243.54 CNY；独立One豁免只改变银行期间费。 | ZA余额按返还后计算；不将未到账返还资金用于当前订单，不把银行资格当成券商资格。个人券示例不是对所有券条款的免费承诺。 |
-| 8：HKD／CNH兑换地点 | 同一[记录的六种兑换配置](evidence/money-flow-feedback/browser-parameters-offers-20261012.json)逐项选择IBKR手动、自动及中银香港换汇，币种与余额保留，动作只在发生步骤出现；另有[发布页汇丰人民币消费截图](evidence/money-flow-feedback/live-hsbc-consumption-ebd030d-20261012.jpg)。 | 银行报价与IBKR未取得的实时成交点差分别处理。手动2 USD佣金和自动0.03%加价不能代替成交点差，也未借其他银行价格补ZA／渣打。 |
+| 8：HKD／CNH兑换地点 | 同一[记录的六种兑换配置](evidence/money-flow-feedback/browser-parameters-offers-20261012.json)逐项选择IBKR手动、自动及中银香港换汇，币种与余额保留，动作只在发生步骤出现；另有[发布页汇丰人民币消费截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/live-hsbc-consumption-ebd030d-20261012.jpg)。 | 银行报价与IBKR未取得的实时成交点差分别处理。手动2 USD佣金和自动0.03%加价不能代替成交点差，也未借其他银行价格补ZA／渣打。 |
 | 9：资金用途及返程 | [105种用途／取回银行状态](evidence/money-flow-feedback/browser-outcomes-105-20261012.json)及[225个返程银行配置](evidence/money-flow-feedback/browser-return-banks-225-20261012.json)实际点击。后者5买股×5香港取回×9内地收款，225种互异配置；默认中行和中银香港上游保持，9家内地收款行始终可选，未发生NaN／undefined。默认预选无关汇丰中国的管理费问题已按上一节修复。 | ZA不支持美元原币卡的用途不伪装完成；未报价出金、回款、结汇仅保留可核余额。不是225条完整成交费用承诺。 |
 | 12：所有弹窗和键盘 | [28个入口](evidence/money-flow-feedback/browser-modals-20261012.json)分别实测外点、Esc、关闭按钮、焦点恢复和首尾循环，无失败。包含三类账户、用途、入金及返程方法、本金、笔数、交易、优惠、各段依据、总明细、银行权益和内地账户费用。 | 第1–21个入口为d11bc44，之后为85ba33d工作树。实际桌面检查；未把前轮窄屏证据说成此次重新实测。 |
 
 本轮实际切换的5个买股账户仍是IBKR、汇丰、ZA、致富、盈立；9家内地银行和5家香港银行未缩减。所有关键费用在对应动作正文可见，依据与采集信息只在详情中。新增记录本身不改变A01的未完成状态。
 
-`85ba33d`的[发布任务](https://github.com/jianxieb/fund-data/actions/runs/38160847482)成功后，直接在[发布页面](https://jianxieb.github.io/fund-data/?review=85ba33d#money-flow)重置、选择资金用途、更换券商和入金渠道、应用工行方案并独立更换收款银行，取得[六个发布状态记录](evidence/money-flow-feedback/browser-acceptance-85ba33d-20261012.json)及[默认完整页面截图](evidence/money-flow-feedback/live-default-85ba33d-20261012.jpg)。默认10万元、1笔、12个月，五条不同出发汇路均可见；默认费用150.41 CNY／0.150%，末端14,899.03 USD。默认返程收款行中国银行，期间费0、已核小计447.65 CNY，未报价中转费仍保留。中银香港→盈立企业汇丰CHATS收款15 HKD／12.81 CNY，没有附加本人One银行管理费。工行全额到账优选更换香港收款行为ZA后，仍是全额到账、汇出费用429.23 CNY，盈立账户不变；其企业中银香港CHATS收款另计15 HKD／12.81 CNY。此记录补足三个新修复的发布复验，不覆盖尚无证据的全部金融收费。
+`85ba33d`的[发布任务](https://github.com/jianxieb/fund-data/actions/runs/38160847482)成功后，直接在[发布页面](https://jianxieb.github.io/fund-data/?review=85ba33d#money-flow)重置、选择资金用途、更换券商和入金渠道、应用工行方案并独立更换收款银行，取得[六个发布状态记录](evidence/money-flow-feedback/browser-acceptance-85ba33d-20261012.json)及[默认完整页面截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/live-default-85ba33d-20261012.jpg)。默认10万元、1笔、12个月，五条不同出发汇路均可见；默认费用150.41 CNY／0.150%，末端14,899.03 USD。默认返程收款行中国银行，期间费0、已核小计447.65 CNY，未报价中转费仍保留。中银香港→盈立企业汇丰CHATS收款15 HKD／12.81 CNY，没有附加本人One银行管理费。工行全额到账优选更换香港收款行为ZA后，仍是全额到账、汇出费用429.23 CNY，盈立账户不变；其企业中银香港CHATS收款另计15 HKD／12.81 CNY。此记录补足三个新修复的发布复验，不覆盖尚无证据的全部金融收费。
 
 返程检索另核[中行官方中银快汇说明](https://www.boc.cn/pbservice/pb4/200910/t20091014_855082.html)、[中银香港现行收费](https://www.bochk.com/sc/servicecharge.html)、[2026-06-27港卡回款讨论](https://linux.do/t/topic/2487402)及[IBKR攻略的6月6日提款更新](https://yolkinsight.hk/ib-funds/)。中银快汇基本费豁免已计入；讨论中具名的原币回款为HKD，未拿来证明USD代理费为0。IBKR更新只说小额提款到汇丰免费，没有金额或执行实体范围，未将其套用全目录美元出金。网上攻略中的全路径免费概括、反方向记录、旧活动与官方费用边界分别核对，检索不交给用户代做，A01及完整产品仍未通过。
 
@@ -1636,11 +1636,11 @@ IBKR涉及出金的4种用途仍没有完整费用方案；本轮公开工具的
 
 发布页复验发现，返程正文已明确中国银行USD收款费0，汇总却仍用“回内地中转／收款费”笼统标记缺项。汇总现在使用模型逐项缺失证据，只列真正未报价的中转费。渣打结汇缺价时，保留具体银行USD买入价缺项，去掉重复的“内地结汇差额”；IBKR原有HKD／CNH实时成交点差名称仍完整保留，不能变成没有账户和币种的泛化说明。费用、余额、选择及报价完整性判定没有改变。
 
-先复现默认返程的失败回归，再修正汇总；新增渣打缺价及免费收款的独立检查，原有IBKR末端余额检查一并通过。344项全项目JavaScript检查全部通过，无跳过；22项资源版本检查通过。[九家收款银行的实际记录](evidence/money-flow-feedback/browser-precise-missing-fees-20261012.json)及[中行返程截图](evidence/money-flow-feedback/local-precise-missing-fees-20261012.jpg)保存当前工作树结果。一次批量连接超时的尝试未记为通过，恢复后完成九家切换；渣打刷新后再读取最终去重结果。
+先复现默认返程的失败回归，再修正汇总；新增渣打缺价及免费收款的独立检查，原有IBKR末端余额检查一并通过。344项全项目JavaScript检查全部通过，无跳过；22项资源版本检查通过。[九家收款银行的实际记录](evidence/money-flow-feedback/browser-precise-missing-fees-20261012.json)及[中行返程截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-precise-missing-fees-20261012.jpg)保存当前工作树结果。一次批量连接超时的尝试未记为通过，恢复后完成九家切换；渣打刷新后再读取最终去重结果。
 
 此修复消除“已确定的费用也被说成待查”及重复文案，不代表尚无公开成交价或代理费证据已补齐，A01保持未完成。
 
-`3f28776`的[发布任务](https://github.com/jianxieb/fund-data/actions/runs/38164326138)成功后，实际选择“汇回内地结汇”：中国银行USD收款费0，汇总只列“回内地中转行费”；已核小计447.65 CNY、期间费0、已扣已核费用后的余额99,552.35 CNY。[发布状态记录](evidence/money-flow-feedback/browser-acceptance-3f28776-20261012.json)及[返程截图](evidence/money-flow-feedback/live-precise-return-3f28776-20261012.jpg)保留原始页面文本和可见金额。随后实际重置，默认10万元／1笔／12个月、参考总损耗150.41 CNY／0.150%、末端14,899.03 USD，五张优选仍分别从中行／工行／建行／兴业／恒生中国出发，见[默认发布截图](evidence/money-flow-feedback/live-default-3f28776-20261012.jpg)。本轮最初一次标签页读取超时没有记为通过；使用同一浏览器已有标签页恢复读取后取得以上记录，未据连接报错判断Mac锁定，也未要求用户解锁。渣打及其他八家收款银行的去重检查仍按前述本地记录界定，不扩称全部已在发布页重测。
+`3f28776`的[发布任务](https://github.com/jianxieb/fund-data/actions/runs/38164326138)成功后，实际选择“汇回内地结汇”：中国银行USD收款费0，汇总只列“回内地中转行费”；已核小计447.65 CNY、期间费0、已扣已核费用后的余额99,552.35 CNY。[发布状态记录](evidence/money-flow-feedback/browser-acceptance-3f28776-20261012.json)及[返程截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/live-precise-return-3f28776-20261012.jpg)保留原始页面文本和可见金额。随后实际重置，默认10万元／1笔／12个月、参考总损耗150.41 CNY／0.150%、末端14,899.03 USD，五张优选仍分别从中行／工行／建行／兴业／恒生中国出发，见[默认发布截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/live-default-3f28776-20261012.jpg)。本轮最初一次标签页读取超时没有记为通过；使用同一浏览器已有标签页恢复读取后取得以上记录，未据连接报错判断Mac锁定，也未要求用户解锁。渣打及其他八家收款银行的去重检查仍按前述本地记录界定，不扩称全部已在发布页重测。
 
 ### 2026-10-12盈立工银亚洲企业收款渠道（A01／A02／A04／A05／A07／A13）
 
@@ -1648,13 +1648,13 @@ IBKR涉及出金的4种用途仍没有完整费用方案；本轮公开工具的
 
 先用失败回归复现遗漏，再检查五家香港银行、三种入金币种、对应企业收款目标、一／二／三笔汇出、小额本金、实际费用覆盖、其他券商及保存渠道异常。345项全项目JavaScript检查通过，无跳过；22项资源版本检查通过。完整渠道／资格审计重跑2,281,096个状态：30,548个具备完整数值条件（其中15,206个含公开标准／实录参考费）、1,740,112个部分报价、510,436个明确动作／输入问题，1,770,660个有数值结果均对账。默认151,875个状态及43,875次数值边界分类未变；新增可计状态不等同补齐相同数量的金融报价。
 
-实际本地页面从中行→中银香港→盈立，选择工银亚洲企业CHATS：收款标准价10 HKD／8.54 CNY，入金14,902.08 USD，全程参考损耗163.60 CNY／0.164%，最后14,897.06 USD、账户期间费0。随后逐个切换五家香港收款银行，目标与10 HKD标准价保持；渣打另收22 USD本行费，HSBC One只在实际选本人汇丰时计期间费。恢复中银香港并刷新，渠道、余额及总额一致；依据详情可打开官方收费表。实际[操作记录](evidence/money-flow-feedback/browser-usmart-icbc-asia-20261012.json)和[完整截图](evidence/money-flow-feedback/local-usmart-icbc-asia-20261012.jpg)标为本地工作树。`5aed0bd`及随后`aa14450`已发布；后者的线上金额复验见末节，不拿本地截图称已上线。A01与整体验收仍未完成。
+实际本地页面从中行→中银香港→盈立，选择工银亚洲企业CHATS：收款标准价10 HKD／8.54 CNY，入金14,902.08 USD，全程参考损耗163.60 CNY／0.164%，最后14,897.06 USD、账户期间费0。随后逐个切换五家香港收款银行，目标与10 HKD标准价保持；渣打另收22 USD本行费，HSBC One只在实际选本人汇丰时计期间费。恢复中银香港并刷新，渠道、余额及总额一致；依据详情可打开官方收费表。实际[操作记录](evidence/money-flow-feedback/browser-usmart-icbc-asia-20261012.json)和[完整截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-usmart-icbc-asia-20261012.jpg)标为本地工作树。`5aed0bd`及随后`aa14450`已发布；后者的线上金额复验见末节，不拿本地截图称已上线。A01与整体验收仍未完成。
 
 ### 2026-10-12盈立四家企业收款账户逐项验收（A01／A02／A04／A05／A07／A13）
 
 盈立官方收款表另有中信国际，补入具名USD CHATS渠道。中信国际现行通用表2026-02-27生效，第4页CHATS免费附“+”，第7页明确不适用于公司业务部。公司业务现行四页收费表2025-10-30生效，第3页CHATS收款20 HKD；不能把通用个人免费、网上汇出55 HKD或其他银行的10／15 HKD套入此企业标准价。页面按“公司业务 · 企业CHATS收款标准价20 HKD”参考情景计算，不声称已取得盈立实际账户所属部门或私下协议减免的确认。实际入账费用覆盖仍优先；选择中信收款不创建用户中信个人账户或管理费。官网链接、页码、有效日及内容哈希统一见[资费核查摘要](../tests/fixtures/money-flow-corporate-chats-20261012.json)和[方法说明](money-flow-method.md#券商企业账户的本地美元chats收款2026-10-12)。
 
-本地真实页面对五家香港出款银行与四个盈立具名企业收款目标逐个点击：同行不重复列跨行目标，共18种跨行选择，分别显示中银／汇丰15 HKD、工银亚洲10 HKD、中信国际20 HKD，渣打22 USD本行汇出费另列。账户选择、本金、期间与已完成上游均保持；再恢复中银香港、刷新并打开收费依据。中行→中银香港→盈立中信企业收款为20 HKD／17.08 CNY，入金14,900.80 USD、末端14,895.79 USD，全程参考损耗172.14 CNY／0.172%、期间费0。[21条操作记录](evidence/money-flow-feedback/browser-usmart-all-corporate-receipts-20261012.json)包含18种选择和三个复验状态，[完整截图](evidence/money-flow-feedback/local-usmart-citic-20261012.jpg)来自本地工作树，尚不作发布页证据。
+本地真实页面对五家香港出款银行与四个盈立具名企业收款目标逐个点击：同行不重复列跨行目标，共18种跨行选择，分别显示中银／汇丰15 HKD、工银亚洲10 HKD、中信国际20 HKD，渣打22 USD本行汇出费另列。账户选择、本金、期间与已完成上游均保持；再恢复中银香港、刷新并打开收费依据。中行→中银香港→盈立中信企业收款为20 HKD／17.08 CNY，入金14,900.80 USD、末端14,895.79 USD，全程参考损耗172.14 CNY／0.172%、期间费0。[21条操作记录](evidence/money-flow-feedback/browser-usmart-all-corporate-receipts-20261012.json)包含18种选择和三个复验状态，[完整截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-usmart-citic-20261012.jpg)来自本地工作树，尚不作发布页证据。
 
 346项全项目JavaScript检查通过，无跳过；22项资源版本检查通过。渠道／资格报告更新为2,415,918个状态：33,168个具备完整数值条件（其中17,826个含标准价或操作记录参考费）、1,855,156个部分报价、527,594个明确动作／输入问题，1,888,324个有数值结果逐项对账。默认151,875个及43,875次数值边界分类不变；新增收款目标不能当作等量真实金融报价已经确认。A01及全产品验收保持未完成，继续核对公开报价与实际汇路。
 
@@ -1662,9 +1662,9 @@ IBKR涉及出金的4种用途仍没有完整费用方案；本轮公开工具的
 
 `aa14450`的[发布任务](https://github.com/jianxieb/fund-data/actions/runs/38167584659)成功后，在实际发布页选择盈立的工银亚洲、随后中信国际企业CHATS收款。前者仍为10 HKD／8.54 CNY、入金14,902.08 USD、最终14,897.06 USD、163.60 CNY／0.164%；后者为公司业务参考标准价20 HKD／17.08 CNY、入金14,900.80 USD、最终14,895.79 USD、172.14 CNY／0.172%。本人中银香港选择及0期间费保持；没有把券商企业收款账户算作用户另外持有的银行账户。
 
-实际刷新后，中信渠道与金额保持；收费详情列出中信国际公司业务收费表第3页和盈立四家收款账户来源。[五条发布页记录](evidence/money-flow-feedback/browser-published-corporate-receipts-aa14450-20261012.json)及[中信完整资金流截图](evidence/money-flow-feedback/live-usmart-citic-aa14450-20261012.jpg)记录这项线上检查。20 HKD仍是公司业务标准价参考情景，不能从官网标准价推定盈立实际账户分类、协议价或代收安排已经确认。
+实际刷新后，中信渠道与金额保持；收费详情列出中信国际公司业务收费表第3页和盈立四家收款账户来源。[五条发布页记录](evidence/money-flow-feedback/browser-published-corporate-receipts-aa14450-20261012.json)及[中信完整资金流截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/live-usmart-citic-aa14450-20261012.jpg)记录这项线上检查。20 HKD仍是公司业务标准价参考情景，不能从官网标准价推定盈立实际账户分类、协议价或代收安排已经确认。
 
-随后实际重置为100,000 CNY／1笔／12个月／ZA，五张优选分别从中行、工行、建行、兴业、恒生中国出发，保持所选买股账户。默认全程150.41 CNY／0.150%、最终14,899.03 USD；[默认发布页完整截图](evidence/money-flow-feedback/live-default-aa14450-20261012.jpg)可同时核对卡片、各节点及汇总。此次发布复验未重跑全部675个本地上游状态，不把限定检查扩称全部已在线上重测；也未依据页面连接耗时判断Mac锁定。
+随后实际重置为100,000 CNY／1笔／12个月／ZA，五张优选分别从中行、工行、建行、兴业、恒生中国出发，保持所选买股账户。默认全程150.41 CNY／0.150%、最终14,899.03 USD；[默认发布页完整截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/live-default-aa14450-20261012.jpg)可同时核对卡片、各节点及汇总。此次发布复验未重跑全部675个本地上游状态，不把限定检查扩称全部已在线上重测；也未依据页面连接耗时判断Mac锁定。
 
 ### 2026-10-12监管费日期再核（A01／A07／A08／A13）
 
@@ -1689,7 +1689,7 @@ IBKR涉及出金的4种用途仍没有完整费用方案；本轮公开工具的
 | 3：优选方案 | 工银亚洲e账通资格已确认时，五张不同出发汇路逐张应用 | 均保持盈立，金额及百分比与正文一致；工行→工银亚洲与中行→中银香港是不同汇路，不靠换券商凑数。 |
 | 12：弹窗 | 新银行费用视图键盘首尾、Esc；六家香港银行选择器外点 | 关闭后焦点回原控件，外点没有跳离跨境资金。既有28个弹窗的逐入口记录保留，本次未宣称全部重新点击。 |
 
-10万元、1笔、12个月、盈立、e账通未确认时：集团手机汇出本行费0、工银亚洲收款60 HKD／51.24 CNY、买卖33.60 CNY，全程参考186.95 CNY／0.187%。确认e账通后香港收款基本费0，入金14,906.24 USD、最终14,901.23 USD、全程参考135.71 CNY／0.136%、期间费0；购汇相对损耗102.11 CNY与交易33.60 CNY分别列在对应动作。这是公布报价和具名到账参考下的测算，不是原币汇款免费就等于购汇及交易零损耗。[完整本地页面截图](evidence/money-flow-feedback/local-icbc-qualified-flow-20261012.jpg)直接展示各节点、主要费用和汇总。
+10万元、1笔、12个月、盈立、e账通未确认时：集团手机汇出本行费0、工银亚洲收款60 HKD／51.24 CNY、买卖33.60 CNY，全程参考186.95 CNY／0.187%。确认e账通后香港收款基本费0，入金14,906.24 USD、最终14,901.23 USD、全程参考135.71 CNY／0.136%、期间费0；购汇相对损耗102.11 CNY与交易33.60 CNY分别列在对应动作。这是公布报价和具名到账参考下的测算，不是原币汇款免费就等于购汇及交易零损耗。[完整本地页面截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-icbc-qualified-flow-20261012.jpg)直接展示各节点、主要费用和汇总。
 
 355项全项目JavaScript、266项Python检查全部通过，无跳过；22项资源版本检查通过。默认目录扩大为218,700状态：8,466个全科目有数值、147,621个部分报价、62,613个明确动作／输入问题，156,087个有最终余额的账簿均通过。渠道／资格三组共3,935,665状态：53,758个具备完整数值条件（其中29,912个含标准价或操作参考）、2,996,533个部分报价、885,374个明确动作／输入问题；3,050,291个有数值结果逐项对账。数值边界52,650次、23,199个账簿另核。[机器报告](money-flow-combinations.json)保留具体缺项，不以扩大组合数量说成同等数量的新金融数据。
 
@@ -1703,7 +1703,7 @@ IBKR涉及出金的4种用途仍没有完整费用方案；本轮公开工具的
 
 先复现两个失败检查，再修复。旧保存Go设置自动回到普通汇款，只清汇出费、汇入费和中转费的旧渠道覆盖，不清购汇成交价、账户、本金、笔数、月数、券及其他交易／返程费用。独立检查具体银行／币种匹配、有效日、到期、无效渠道操作、重新载入和其他有效全额到账渠道的保持。356项全项目JavaScript检查全部通过，无跳过；增加当前六家目录断言后相关三个检查再次通过。22项资源版本、语法及差异检查通过。
 
-实际本地页面[记录](evidence/money-flow-feedback/browser-swift-go-gating-20261012.json)保留修复前、修复后及第二次刷新；随后兴业与6家香港银行×5个买股×3币种共90个互异状态逐个点击。账号与10万元／2笔保持，没有Go假选项、NaN、undefined或HTML实体。此检查不声称90个状态都已取得完整金融报价。[修复前截图](evidence/money-flow-feedback/local-swift-go-unverified-before-20261012.jpg)及[修复后整条资金流](evidence/money-flow-feedback/local-swift-go-gating-20261012.jpg)均标明本地工作树。
+实际本地页面[记录](evidence/money-flow-feedback/browser-swift-go-gating-20261012.json)保留修复前、修复后及第二次刷新；随后兴业与6家香港银行×5个买股×3币种共90个互异状态逐个点击。账号与10万元／2笔保持，没有Go假选项、NaN、undefined或HTML实体。此检查不声称90个状态都已取得完整金融报价。[修复前截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-swift-go-unverified-before-20261012.jpg)及[修复后整条资金流](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-swift-go-gating-20261012.jpg)均标明本地工作树。
 
 兴业→汇丰→盈立、10万元／2笔／12个月且未确认One管理费豁免：旧Go状态总额1,158.37 CNY／1.158%、末端14,748.63 USD；改普通汇款后1,058.38 CNY／1.058%、末端14,763.55 USD，包含One期间1,024.77 CNY及交易33.61 CNY。交易金额随入金余额重算，不能把总额减少机械写成恰好100元。两个刷新结果一致，主界面仍直接显示对应账户、余额、段损耗、费用及总额。
 
@@ -1721,7 +1721,7 @@ IBKR涉及出金的4种用途仍没有完整费用方案；本轮公开工具的
 
 ### 2026-10-12工银亚洲及Go修复发布页复验（A02／A04／A05／A07／A11–A14）
 
-`b7320ae`的[发布任务](https://github.com/jianxieb/fund-data/actions/runs/38175829347)已成功。[实际线上记录](evidence/money-flow-feedback/browser-published-acceptance-20261012.json)保留默认正文及逐项观察，[默认截图](evidence/money-flow-feedback/published-default-flow-20261012.jpg)来自实际发布页。五张方案分别为中行、工行、建行、兴业、恒生中国出发，保持ZA买股账户；默认费用依次150.41／225.00／494.42／1,053.72／3,321.55 CNY，不靠换券商重复同一路线。默认全程150.41 CNY／0.150%、最终14,899.03 USD与正文一致。
+`b7320ae`的[发布任务](https://github.com/jianxieb/fund-data/actions/runs/38175829347)已成功。[实际线上记录](evidence/money-flow-feedback/browser-published-acceptance-20261012.json)保留默认正文及逐项观察，[默认截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/published-default-flow-20261012.jpg)来自实际发布页。五张方案分别为中行、工行、建行、兴业、恒生中国出发，保持ZA买股账户；默认费用依次150.41／225.00／494.42／1,053.72／3,321.55 CNY，不靠换券商重复同一路线。默认全程150.41 CNY／0.150%、最终14,899.03 USD与正文一致。
 
 实际点击工行→工银亚洲→ZA：香港普通汇入60 HKD／51.24 CNY、本地转到ZA 50 HKD／42.70 CNY，本行汇出手续费及电讯费0；全程225.00 CNY／0.225%、最终14,887.90 USD，与卡片一致。在香港银行节点确认e账通资格后，仅香港集团汇入基本费改0，本地50 HKD及美股交易费保留；汇款到账14,906.24 USD、买股入金14,899.87 USD、最终14,895.55 USD，全程173.76 CNY／0.174%。没有将资格自动勾选或把该优惠套至个人本地CHATS。
 
@@ -1751,7 +1751,7 @@ IBKR涉及出金的4种用途仍没有完整费用方案；本轮公开工具的
 
 五条汇路分别有不同出发、渠道或换汇动作，不靠换券商凑数；费用包含实际未豁免的银行期间费，不自动勾选资格制造低价。招行→汇丰→ZA、人民币原币场景的手续费99.80 CNY及电讯费100 CNY仍在正文，第一段已核199.80 CNY，未因本动作不换汇而把汇款收费显示为0。
 
-重置并实际刷新后，默认金额、选择和结果一致；[完整默认截图](evidence/money-flow-feedback/local-refreshed-default-20261012.jpg)来自本地实际页面，所有节点、转移动作、主要费用及汇总同页可见。页面无浏览器错误／警告，采集日志仍只在详情。此截图与810状态是本地新快照证据，须待该提交发布后另核线上结果；上一节b7320ae线上150.41 CNY是旧报价，不能混作当前默认值。
+重置并实际刷新后，默认金额、选择和结果一致；[完整默认截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-refreshed-default-20261012.jpg)来自本地实际页面，所有节点、转移动作、主要费用及汇总同页可见。页面无浏览器错误／警告，采集日志仍只在详情。此截图与810状态是本地新快照证据，须待该提交发布后另核线上结果；上一节b7320ae线上150.41 CNY是旧报价，不能混作当前默认值。
 
 356项全项目JavaScript检查全部通过，无跳过；22项资源版本及语法检查通过。新快照重跑[完整组合报告](money-flow-combinations.json)：默认218,700个状态、156,087个有余额账簿；三个渠道／资格组3,793,913个状态，其中53,758个全科目有数值（29,912个含标准价／实录参考）、2,968,361个部分报价、771,794个明确动作／输入问题，3,022,119个数值结果逐项对账。另52,650次数值边界、23,199个账簿通过。统计范围和分类未因换快照改变，不能据几百万次计算声称新取得几百万项金融资料。A01及整体验收仍未完成，缺报价、具体地区资费及代理费继续由开发者核查。
 
@@ -1767,7 +1767,7 @@ IBKR涉及出金的4种用途仍没有完整费用方案；本轮公开工具的
 
 实际点击重置时调用超时，随后恢复同一浏览器读取，明确取得默认10万元／1笔／12个月、ZA：第一段77.11 CNY／0.077%、交易28.97 CNY／0.029%、全程106.08 CNY／0.106%、最后14,896.37 USD、期间费0。五张优选分别从中行、工行、建行、兴业及恒生中国出发，金额与本地新快照一致；未确认e账通的工行卡为165.82 CNY。这里只记录实际拿到的返回状态，超时本身不记通过，也不推断Mac锁定。
 
-[限定线上状态记录](evidence/money-flow-feedback/browser-published-refreshed-65ebd40-20261012.json)及[实际发布页完整截图](evidence/money-flow-feedback/published-refreshed-default-65ebd40-20261012.jpg)保存结果；完整截图与本地默认渲染字节相同，均为1265×1763。线上没有重做810个上游切换或五张逐张应用，不能扩大该记录范围。全部810个实际切换和五条应用按本地新快照证据界定；线上复验补足该数据更新的实际显示。A01与全产品研究完整性仍未完成，检索不转交用户。
+[限定线上状态记录](evidence/money-flow-feedback/browser-published-refreshed-65ebd40-20261012.json)及[实际发布页完整截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/published-refreshed-default-65ebd40-20261012.jpg)保存结果；完整截图与本地默认渲染字节相同，均为1265×1763。线上没有重做810个上游切换或五张逐张应用，不能扩大该记录范围。全部810个实际切换和五条应用按本地新快照证据界定；线上复验补足该数据更新的实际显示。A01与全产品研究完整性仍未完成，检索不转交用户。
 
 截图之后另试线上兴业卡应用及恢复原生读取，两次均超时，没有保存第三个结果状态，未记为通过；截图不声明这些额外尝试之后的最终选中状态。本任务旧版本临时标签页已清理，当前本地25和发布27保留继续验收，没有关闭用户自建内容或要求解锁Mac。
 
@@ -1785,11 +1785,11 @@ IBKR涉及出金的4种用途仍没有完整费用方案；本轮公开工具的
 | 额外实际操作 | 结果 |
 | --- | --- |
 | 5,000 CNY／1笔／12个月，中行→中银香港→ZA→中银香港HKD快汇→内地中行 | 买卖后741.02 USD→5,797.40 HKD→4,935.33 CNY；香港换汇15.52 CNY、内地结汇18.41 CNY；全程参考费用64.67 CNY／1.293%。采用完整精度计算，再显示到分，不能将逐行舍入差理解为额外银行收费。小额代理费为明确参考，基本汇出及本行收款0独立标识。 |
-| 同一状态刷新 | 本金、HKD、银行、ZA及64.67 CNY汇总保持；[实际文本](evidence/money-flow-feedback/browser-hkd-small-return-20261012.json)、[完整截图](evidence/money-flow-feedback/local-hkd-small-return-20261012.jpg)保存。 |
+| 同一状态刷新 | 本金、HKD、银行、ZA及64.67 CNY汇总保持；[实际文本](evidence/money-flow-feedback/browser-hkd-small-return-20261012.json)、[完整截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-hkd-small-return-20261012.jpg)保存。 |
 | 改ZA取回，再改中银香港取回／渣打中国结汇 | ZA缺USD/HKD个人价保留741.02 USD；渣打中国缺HKD结汇价时保留扣65 HKD基本汇出费后的5,732.40 HKD。上游买卖及银行费用不清空，不强迫改中银。 |
 | 兴业结汇列表、Esc关闭、焦点 | HKD列表全部9行使用HKD；12个月原价与0个月有效优惠价各自匹配模型，Esc关闭后焦点回内地收款控件。 |
 | 5,000 CNY／0个月的五张HKD返程方案逐张应用 | 兴业→汇丰60.77 CNY、中行→中银香港64.60 CNY、汇丰两地80.64 CNY、恒生两地113.96 CNY、工行→工银亚洲156.25 CNY；每张保持ZA／本金／笔数／HKD，卡片与应用后汇总一致。0个月是此次主动测试输入，不是产品替用户修改默认条件。 |
-| 实际重置 | 恢复10万元／1笔／12个月／ZA／留在买股账户；全程106.08 CNY／0.106%、14,896.37 USD。五张不同汇路仍在主界面；[完整默认截图](evidence/money-flow-feedback/local-hkd-feature-default-20261012.jpg)保存。 |
+| 实际重置 | 恢复10万元／1笔／12个月／ZA／留在买股账户；全程106.08 CNY／0.106%、14,896.37 USD。五张不同汇路仍在主界面；[完整默认截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-hkd-feature-default-20261012.jpg)保存。 |
 
 [补充连续操作记录](evidence/money-flow-feedback/browser-hkd-return-actions-20261012.json)保存私有价、两种兴业期限、刷新、Esc与五张方案应用的实际文本。365项全项目JavaScript、267项Python测试通过，无跳过；最后仅补收款费独立依据后，5项港币模型测试再通过，22项资源版本及语法检查通过。
 
@@ -1809,7 +1809,7 @@ IBKR涉及出金的4种用途仍没有完整费用方案；本轮公开工具的
 
 实际下载官网同一链接的PDF，当前为2026-09-29制作的两页10月版：会员点差折扣活动为7月1日–12月31日，迎新为10月1日–12月31日，合资格1万港币交易后的100 HKD奖励在2027-02-28前发放。搜索缓存仍返回旧四页版本，因此逐页渲染读取原件后才记录期限。没有把折扣率当完整成交价，也没有自动把未来奖励抵扣当前汇款资金。[原件哈希及范围](../tests/fixtures/money-flow-private-fx-scope-20261012.json)保存四个官网原件的核查。
 
-回归先复现资金入金详情缺香港渣打报价来源，再修复。187项资金模型／UI检查通过；最后补入当前条款链接后对应检查再次通过。[实际本地界面记录](evidence/money-flow-feedback/browser-sc-hk-fx-source-20261012.json)及[详情截图](evidence/money-flow-feedback/local-sc-hk-fx-source-20261012.jpg)明确展示本行两条链接、22 USD CHATS费用及保留的ZA账户。Esc关闭后重置，默认仍为106.08 CNY／0.106%和14,896.37 USD。此轮没有新取得私人成交价，不因此关闭A01或称所有组合已获确定报价。
+回归先复现资金入金详情缺香港渣打报价来源，再修复。187项资金模型／UI检查通过；最后补入当前条款链接后对应检查再次通过。[实际本地界面记录](evidence/money-flow-feedback/browser-sc-hk-fx-source-20261012.json)及[详情截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-sc-hk-fx-source-20261012.jpg)明确展示本行两条链接、22 USD CHATS费用及保留的ZA账户。Esc关闭后重置，默认仍为106.08 CNY／0.106%和14,896.37 USD。此轮没有新取得私人成交价，不因此关闭A01或称所有组合已获确定报价。
 
 ### 2026-10-12港币返程正式发布及真实线上复验（A02–A07／A09–A14）
 
@@ -1827,7 +1827,7 @@ IBKR涉及出金的4种用途仍没有完整费用方案；本轮公开工具的
 | 打开香港收款银行菜单，再选渣打及港币汇出 | 六家菜单保持，ZA买股账户保持。已核到账116,810.75 HKD和22 USD CHATS收费仍显示，换汇缺价没有清空已核费用或强制更换银行。 |
 | 打开渣打换汇依据后关闭并重置 | 两条新增香港个人外汇入口／10月会员条款链接在真实发布页出现，未混为内地入口；关闭按钮正常，最后恢复十万元默认路线。 |
 
-[真实线上默认截图](evidence/money-flow-feedback/published-hkd-default-c8840c6-20261012.jpg)、[港币小额返程截图](evidence/money-flow-feedback/published-hkd-small-return-c8840c6-20261012.jpg)、[渣打来源截图](evidence/money-flow-feedback/published-sc-hk-fx-source-c8840c6-20261012.jpg)均已逐张查看，分别为1265×1763、1265×2314及1265×712。没有重新缩放桌面视口，也没有以本地截图替代线上结果。
+[真实线上默认截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/published-hkd-default-c8840c6-20261012.jpg)、[港币小额返程截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/published-hkd-small-return-c8840c6-20261012.jpg)、[渣打来源截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/published-sc-hk-fx-source-c8840c6-20261012.jpg)均已逐张查看，分别为1265×1763、1265×2314及1265×712。没有重新缩放桌面视口，也没有以本地截图替代线上结果。
 
 连接间歇超时时先读取实际页面再继续，没有反复点击或修改隐藏状态。本金修改已发生但按键调用未完成的[早期b7bccf5记录](evidence/money-flow-feedback/browser-published-hkd-return-b7bccf5-20261012.json)原样保留；没有把该次线上Esc计为通过。R72的熄屏判断仍按用户更正，不推断Mac锁定、不要求解锁。本地28项弹窗键盘／外点记录保持独立范围。
 
@@ -1848,7 +1848,7 @@ IBKR官网再次确认每历月前两次现金提款免费，其后USD电汇10 U
 
 现自动选项明确为IBKR现金账户，原币转入段只包含实际入金收费，节点保留HKD／CNH；自动加价、成交点差及对应官网依据移到买入段。人民币原币的估值差也随换汇时点结转，两侧逐段对账。手动兑换、银行先换USD、美元原币路径保留原顺序。无法取得执行价格时，不清空已核原币入金，也不在资金终点误写“美元留在账户”。本测算按IBKR碎股使用全部可买资金，因此没有借这次时点纠错声称旧版全程重复扣了自动换汇费。
 
-[22个真实本地状态](evidence/money-flow-feedback/browser-autofx-timing-local-20261012.json)包含六家香港銀行×HKD／CNH自动换汇的12个实际控件组合。十一项保留可计原币余额；工银亚洲CNH未确认人民币账户条件时显示具体开户条件，没有伪造入金。另明确勾选该条件后取得99,769.01 CNH，eDDA仍不提前换美元；这是测试资格输入，不是对用户身份的认定。入金详情不再包含买入加价，买入详情包含正确资费与G3／G4来源；手动、银行及USD对照各自保留流程。最终重置回10万元／1笔／12个月／ZA，106.08 CNY／0.106%、14,896.37 USD，无弹窗或控制台错误／警告。[港币自动换汇完整截图](evidence/money-flow-feedback/local-autofx-hkd-timing-20261012.jpg)已实际查看，1265×1870。
+[22个真实本地状态](evidence/money-flow-feedback/browser-autofx-timing-local-20261012.json)包含六家香港銀行×HKD／CNH自动换汇的12个实际控件组合。十一项保留可计原币余额；工银亚洲CNH未确认人民币账户条件时显示具体开户条件，没有伪造入金。另明确勾选该条件后取得99,769.01 CNH，eDDA仍不提前换美元；这是测试资格输入，不是对用户身份的认定。入金详情不再包含买入加价，买入详情包含正确资费与G3／G4来源；手动、银行及USD对照各自保留流程。最终重置回10万元／1笔／12个月／ZA，106.08 CNY／0.106%、14,896.37 USD，无弹窗或控制台错误／警告。[港币自动换汇完整截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-autofx-hkd-timing-20261012.jpg)已实际查看，1265×1870。
 
 全项目368项JavaScript通过，无失败或跳过；末端币种说明调整后对应3项回归再次通过，22项资产版本及语法检查通过。新[组合报告](money-flow-combinations.json)保持262,440个目录状态及192,888个余额对账；三个渠道／资格组共6,873,990个状态、5,564,654个数值结果，其中254,079个AutoFX结果额外核对原币入金、费用归属、缺价所属步骤及每一段的本金／盈亏／税款／估值守恒。另63,180次数值边界、28,230个账簿通过。这些数字是计算覆盖，不是取得相同数量的新金融报价。
 
@@ -1860,7 +1860,7 @@ IBKR官网再次确认每历月前两次现金提款免费，其后USD电汇10 U
 
 真实本地页面以合成的8 HKD/USD重现：117,000.12 HKD原币入金不变，旧版另扣29.41 CNY自动加价；修正后实际价差只计一次，交易后的余额由14,618.29变为14,622.67 USD，合计由1,970.86变为1,941.45 CNY。此价格仅用于QA，不是现时IBKR市场价或用户回单，不能用于优选排名。报价字段明确为“IBKR每1USD成交价（含自动加价）”；买入动作显示已含加价及无单独佣金。没有实际报价时仍保留通常0.03%的参考加价，不把缺价改成0。
 
-[真实页面记录](evidence/money-flow-feedback/browser-autofx-effective-price-local-20261012.json)包含六家香港银行×HKD／CNH的12个实际输入及切换状态，旧币种／银行报价均清除。十一项按含加价成交价计费，工银亚洲CNH未确认开户条件时仍准确保留该条件，没有以测试汇率绕过账户资格。另实测手动兑换8 HKD/USD仍单独收2 USD佣金、银行先换美元、刷新保持实际报价、字段单位及最终重置。最后恢复10万元／1笔／12个月／ZA，106.08 CNY、14,896.37 USD，弹窗关闭，无控制台错误或警告。[实际成交价测试完整截图](evidence/money-flow-feedback/local-autofx-effective-price-20261012.jpg)已查看，1265×1874；不作为生产现价展示。
+[真实页面记录](evidence/money-flow-feedback/browser-autofx-effective-price-local-20261012.json)包含六家香港银行×HKD／CNH的12个实际输入及切换状态，旧币种／银行报价均清除。十一项按含加价成交价计费，工银亚洲CNH未确认开户条件时仍准确保留该条件，没有以测试汇率绕过账户资格。另实测手动兑换8 HKD/USD仍单独收2 USD佣金、银行先换美元、刷新保持实际报价、字段单位及最终重置。最后恢复10万元／1笔／12个月／ZA，106.08 CNY、14,896.37 USD，弹窗关闭，无控制台错误或警告。[实际成交价测试完整截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-autofx-effective-price-20261012.jpg)已查看，1265×1874；不作为生产现价展示。
 
 全项目369项JavaScript全部通过，无失败或跳过，新增12个原币／计价口径／本金情景分别核对实际AutoFX、未报价参考场景和手动／银行兑换；每段余额及费用、全程本金／盈亏／税款守恒。字段名称明确每1USD后，对应4项回归再次通过。资源版本及语法检查通过。已有全目录审计与此独立报价分支测试各自保留范围，不把合成成交价称为新金融数据；A01和整体验收仍未完成。
 
@@ -1874,7 +1874,7 @@ IBKR官网再次确认每历月前两次现金提款免费，其后USD电汇10 U
 | 在实际报价字段输入合成8 HKD/USD，关闭弹窗 | 字段明确每1USD、含自动加价；买入差额1,899.42 CNY、交易15.70 CNY、总费用1,941.45 CNY、终点14,622.67 USD。没有再扣0.03%；该合成报价不成为市场价格或优选依据。 |
 | 清除测试值并重置 | 中行→中银香港→ZA，10万元／1笔／12个月；106.08 CNY／0.106%、14,896.37 USD。没有弹窗或控制台错误／警告。 |
 
-[正式页合成报价对账截图](evidence/money-flow-feedback/published-autofx-effective-price-aef1cad-20261012.jpg)与[已恢复默认页面](evidence/money-flow-feedback/published-default-aef1cad-20261012.jpg)均已实际查看。此轮正式页复验限于上述操作，不再次声称线上运行了全部810个上游或540个返程状态。
+[正式页合成报价对账截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/published-autofx-effective-price-aef1cad-20261012.jpg)与[已恢复默认页面](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/published-default-aef1cad-20261012.jpg)均已实际查看。此轮正式页复验限于上述操作，不再次声称线上运行了全部810个上游或540个返程状态。
 
 持续组合审计新增`executedFxPrices`分组：合成8 HKD/USD及6.72 CNH/USD，5,000／100,000／1,500,000 CNY本金，自动／手动两个地点，9家出发×6家香港收款、各实际使用的取回／内地银行、五种用途、美元／港币返程及本月第1／3次出金。未使用的取回、结汇银行和出金次数不生成额外重复状态。人民币账户资格及One免管理费是记录中的明确测试输入，不写入用户默认设置。
 
@@ -1891,11 +1891,11 @@ IBKR官网再次确认每历月前两次现金提款免费，其后USD电汇10 U
 
 全项目372项JavaScript检查通过，失败／取消／跳过均0，耗时298.25秒。新增检查覆盖致富／盈立、5,000／100,000／1,500,000 CNY、各种实际末端用途、USD／HKD返程、第30／31／200张、预填条件、本人回单覆盖、未出金及错误序号。收费、每段币种与费用等式、全程金额守恒均核对。修改选择列表的支票文案后，另做资金UI检查，不用此前结果冒充其验证。
 
-[真实本地操作记录](evidence/money-flow-feedback/browser-bochk-cheque-local-20261012.json)保留六家银行×两个券商的连续操作、稳定完整菜单、30／31边界、刷新保存、来源及Esc焦点返回；输入后尚未完成计算的早期快照明确不计通过。中银香港第31张原币1 HKD／折合0.85 CNY；致富场景费用102.23 CNY、余额14,896.94 USD，正文、节点及合计一致。[已查看完整截图](evidence/money-flow-feedback/local-bochk-cheque31-20261012.jpg)保存。最终重置为10万元／1笔／12个月／ZA、106.08 CNY和14,896.37 USD，无控制台错误／警告。
+[真实本地操作记录](evidence/money-flow-feedback/browser-bochk-cheque-local-20261012.json)保留六家银行×两个券商的连续操作、稳定完整菜单、30／31边界、刷新保存、来源及Esc焦点返回；输入后尚未完成计算的早期快照明确不计通过。中银香港第31张原币1 HKD／折合0.85 CNY；致富场景费用102.23 CNY、余额14,896.94 USD，正文、节点及合计一致。[已查看完整截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-bochk-cheque31-20261012.jpg)保存。最终重置为10万元／1笔／12个月／ZA、106.08 CNY和14,896.37 USD，无控制台错误／警告。
 
 连续操作还发现取回银行列表写通用转账费用，与支票动作不一致；已改为对应本次存票费，不借此隐藏或禁用银行。新文案须再次在真实页面核验。上述范围是本地证据，发布后另验正式页；没有宣称A01或整体验收完成。IBKR内部换HKD再本地取回的路线仍是另外一项待实现工作，个人执行报价、地区资费及普通汇路代理费继续由开发者核查。
 
-选择列表已按真实控件再次核验：[截图](evidence/money-flow-feedback/local-cheque-return-bank-picker-20261012.jpg)显示中银1 HKD、渣打及工银亚洲各2 HKD、汇丰及恒生0、ZA不接支票；六家可选入口与选中标记仍在。资金UI全部191项通过，随后新增选项费率断言的3项针对检查再通过，22项资源版本及语法检查通过。
+选择列表已按真实控件再次核验：[截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-cheque-return-bank-picker-20261012.jpg)显示中银1 HKD、渣打及工银亚洲各2 HKD、汇丰及恒生0、ZA不接支票；六家可选入口与选中标记仍在。资金UI全部191项通过，随后新增选项费率断言的3项针对检查再通过，22项资源版本及语法检查通过。
 
 最新[完整组合报告](money-flow-combinations.json)保留262,440个目录状态；新增中银香港额度边界后，三组渠道／资格共7,565,782次计算、6,256,446个有数值结果对账，另63,180次输入边界、163,944次合成成交价状态。新增数量来自测试边界，并非新的实盘汇路或已取得报价，不能借此关闭A01。
 
@@ -1905,7 +1905,7 @@ IBKR官网再次确认每历月前两次现金提款免费，其后USD电汇10 U
 
 新增自动检查实际应用810次出发银行／汇出币种／股票账户／香港收款银行选择、150次券商／用途／返程币种／取回银行选择；菜单费用与应用后同一动作费用、管理费逐项比较，并验证e账通60→0、本人回单、切换清除及无效输入不会显示伪造0。资金UI全部194项通过，失败／取消／跳过0，38.92秒；随后核资源与语法。本项没有变更金融模型、价目或组合报告，没有用这些UI检查替代金融研究。
 
-[真实本地页面记录](evidence/money-flow-feedback/browser-current-bank-fee-local-20261012.json)保留修正前后的15个状态：IBKR电汇中银香港60 HKD，兴业非集团首次汇入中银香港60 HKD，盈立→ZA参考7.5 USD／50.29 CNY，ZA→工银亚洲本地收款10 HKD／8.54 CNY，One12个月管理费1,025.37 CNY独立计入。切换股票账户没有覆盖收款银行；刷新保持选择；最后恢复10万元／1笔／12个月／ZA、106.08 CNY及14,896.37 USD，无控制台错误／警告。[菜单截图](evidence/money-flow-feedback/local-current-wire-bank-menu-20261012.jpg)已查看，边框完整、六家与已选标记可见。该记录是本地操作，不能冒充新版正式页复验。
+[真实本地页面记录](evidence/money-flow-feedback/browser-current-bank-fee-local-20261012.json)保留修正前后的15个状态：IBKR电汇中银香港60 HKD，兴业非集团首次汇入中银香港60 HKD，盈立→ZA参考7.5 USD／50.29 CNY，ZA→工银亚洲本地收款10 HKD／8.54 CNY，One12个月管理费1,025.37 CNY独立计入。切换股票账户没有覆盖收款银行；刷新保持选择；最后恢复10万元／1笔／12个月／ZA、106.08 CNY及14,896.37 USD，无控制台错误／警告。[菜单截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-current-wire-bank-menu-20261012.jpg)已查看，边框完整、六家与已选标记可见。该记录是本地操作，不能冒充新版正式页复验。
 
 前项支票收费提交`129bc14d49c639be8c3450cc5c5431040293f948`的[构建与部署](https://github.com/jianxieb/fund-data/actions/runs/38200372068)已成功。本次切到正式页的浏览器接口持续超时，尚未读取新版正式页结果；不称Mac锁定、不要求用户解锁，也不将CI成功当作真实点击通过。代码、官网核查与剩余整体验收继续，A01未关闭。
 
@@ -1917,9 +1917,9 @@ IBKR官网再次确认每历月前两次现金提款免费，其后USD电汇10 U
 
 | 实际路线／操作 | 页面结果 |
 | --- | --- |
-| 中行→中银香港→IBKR，USD取回中银香港 | 取回已核51.27 CNY／0.051%，全程已核144.08 CNY／0.144%，余额14,890.70 USD；IBKR提款中转行费仍缺证。六家取回银行均可选，没有覆盖首次收款银行。[完整截图](evidence/money-flow-feedback/local-counted-ratio-wire-20261012.jpg)已查看。 |
+| 中行→中银香港→IBKR，USD取回中银香港 | 取回已核51.27 CNY／0.051%，全程已核144.08 CNY／0.144%，余额14,890.70 USD；IBKR提款中转行费仍缺证。六家取回银行均可选，没有覆盖首次收款银行。[完整截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-counted-ratio-wire-20261012.jpg)已查看。 |
 | 将取回银行改为渣打，USD汇回内地 | 已计全程476.93 CNY／0.477%，末端99,523.07 CNY；普通汇路中转行费仍单列缺项。 |
-| 将渣打返程改HKD，随后刷新 | 上游中行／中银香港／IBKR保持；缺渣打USD/HKD买入价时保留最后可计14,898.35 USD，返程413.79 CNY／0.414%、全程506.60 CNY／0.507%明确含估算。下游结汇估算371.07 CNY没有冒充实际成交或可消费港币。[完整截图](evidence/money-flow-feedback/local-counted-ratio-unquoted-20261012.jpg)已查看。 |
+| 将渣打返程改HKD，随后刷新 | 上游中行／中银香港／IBKR保持；缺渣打USD/HKD买入价时保留最后可计14,898.35 USD，返程413.79 CNY／0.414%、全程506.60 CNY／0.507%明确含估算。下游结汇估算371.07 CNY没有冒充实际成交或可消费港币。[完整截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-counted-ratio-unquoted-20261012.jpg)已查看。 |
 | 最终重置 | 恢复十万元／1笔／12个月／ZA，五条不同出发汇路，费用106.08 CNY／0.106%、14,896.37 USD。 |
 
 197项资金UI检查全部通过，失败／取消／跳过0，耗时39.19秒；新增测试分别核对部分报价的实际费用比例、非零小额费用和历史报价与缺项同时存在的标签，保留无报价／无本金及正常全报价行为。22项资源版本及语法检查通过。截图是本地真实状态，历史标签分支由针对测试验证，没有扩称其已在正式页点击。
@@ -1941,7 +1941,7 @@ IBKR官网再次确认每历月前两次现金提款免费，其后USD电汇10 U
 
 [实际本地连续操作记录](evidence/money-flow-feedback/browser-recommendation-quality-local-20261012.json)包含5个买股账户×5种用途×两种One资格的50个状态和161次逐张方案应用。每个状态的买股账户／用途菜单及顺序均读取核对；默认三张卡应用后另外打开全部出发／收款／买股菜单，共9次检查，目录仍为9／6／5。所有实际记录与本次源代码、当前报价快照独立复算，比对方案ID、卡片与正文费用、百分比、银行期间费、终点原币余额、固定本金和关闭状态。较早中断且未持久保存的批次不计入这50／161的数量。
 
-已逐张查看[默认三条方案](evidence/money-flow-feedback/local-recommendation-quality-default-20261012.jpg)、[确认One资格后的兴业方案](evidence/money-flow-feedback/local-recommendation-quality-one-20261012.jpg)、[未推荐但仍可选的兴业路线](evidence/money-flow-feedback/local-recommendation-quality-manual-20261012.jpg)、[确认恒生资格后的两次换汇](evidence/money-flow-feedback/local-recommendation-quality-hang-20261012.jpg)。最后重置为默认10万元／1笔／12个月／ZA，没有保留测试资格；106.08 CNY／0.106%、14,896.37 USD，无弹窗或控制台错误／警告。原实际桌面视口保持，没有为截图重新缩放。
+已逐张查看[默认三条方案](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-recommendation-quality-default-20261012.jpg)、[确认One资格后的兴业方案](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-recommendation-quality-one-20261012.jpg)、[未推荐但仍可选的兴业路线](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-recommendation-quality-manual-20261012.jpg)、[确认恒生资格后的两次换汇](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-recommendation-quality-hang-20261012.jpg)。最后重置为默认10万元／1笔／12个月／ZA，没有保留测试资格；106.08 CNY／0.106%、14,896.37 USD，无弹窗或控制台错误／警告。原实际桌面视口保持，没有为截图重新缩放。
 
 新增独立回归核对默认管理费筛选、明确资格恢复、零持有期、证券账户共同期间费与更简便路线保留；原全目录最低费用比较在明确资格场景继续执行。全项目383项JavaScript检查全部通过，失败／取消／跳过均0，耗时294.22秒；22项资源版本及语法检查通过。本轮没有变更金融价目、取得私人现价或把缺项改0，因此不重新生成或冒称新增金融组合数据。
 
@@ -1965,7 +1965,7 @@ IBKR官网再次确认每历月前两次现金提款免费，其后USD电汇10 U
 | ZA取回汇丰，把实际月费测试值设为3 HKD，使用12个月 | 银行期间费30.76 CNY；留在买股账户时该第二银行输入不出现。 |
 | 汇丰收款、汇丰证券、取回同一汇丰账户 | 无内部转账费用输入，无第二份月费／保留资产输入；未假定One免管理费。 |
 
-已查看[实际收款费与合计](evidence/money-flow-feedback/local-actual-receipt-20261012.jpg)、[银行内部交收弹窗](evidence/money-flow-feedback/local-actual-fees-internal-20261012.jpg)、[同一汇丰账户弹窗](evidence/money-flow-feedback/local-actual-fees-hsbc-20261012.jpg)，边框与输入单位完整。最后重置为10万元／1笔／12个月／ZA，未保留测试回单、月费或资格。
+已查看[实际收款费与合计](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-actual-receipt-20261012.jpg)、[银行内部交收弹窗](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-actual-fees-internal-20261012.jpg)、[同一汇丰账户弹窗](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-actual-fees-hsbc-20261012.jpg)，边框与输入单位完整。最后重置为10万元／1笔／12个月／ZA，未保留测试回单、月费或资格。
 
 全项目390项JavaScript检查通过，失败／取消／跳过0，306.49秒；22项资源版本与语法检查通过。上项优选修正`980c15fc6b81ea3b8dba13cc31d3c603ea58194d`的[构建与部署](https://github.com/jianxieb/fund-data/actions/runs/38207294601)已成功。本节未取得新版正式页点击证据，不以工具超时推断Mac锁定，不要求用户解锁；研究与整体验收继续。
 
@@ -1975,7 +1975,7 @@ IBKR官网再次确认每历月前两次现金提款免费，其后USD电汇10 U
 
 旧版本保存的支付通状态另有隐蔽错位：现在股票入金不提供该渠道，但保存值仍可能在“普通汇款”文字下计算直连支付。启动时恢复为有效普通汇款，清除旧渠道的三项费用覆盖，保留账户、兑换报价与无关收费。此迁移只由自动回归验证，未声称在现有股票渠道菜单中实际点击支付通。底层直连支付计费场景也不再接受不会发生的SWIFT中转行费用输入。
 
-[真实本地记录](evidence/money-flow-feedback/browser-partial-known-fees-local-20261012.json)包含四个状态：渣打USD源报价缺失时，已核期间费1,800.00 CNY／1.800%；填入QA开户费123 CNY后为1,923.00 CNY／1.923%，期间费不变，最终外币余额仍暂不可算。全程明细逐项保留1,800及123 CNY。[已查看实际截图](evidence/money-flow-feedback/local-partial-opening-cost-20261012.jpg)与记录一致。最后重置为10万元／1笔／12个月／ZA、106.08 CNY／0.106%、14,896.37 USD，无控制台错误或警告；QA金额不是金融收费资料。
+[真实本地记录](evidence/money-flow-feedback/browser-partial-known-fees-local-20261012.json)包含四个状态：渣打USD源报价缺失时，已核期间费1,800.00 CNY／1.800%；填入QA开户费123 CNY后为1,923.00 CNY／1.923%，期间费不变，最终外币余额仍暂不可算。全程明细逐项保留1,800及123 CNY。[已查看实际截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-partial-opening-cost-20261012.jpg)与记录一致。最后重置为10万元／1笔／12个月／ZA、106.08 CNY／0.106%、14,896.37 USD，无控制台错误或警告；QA金额不是金融收费资料。
 
 217项本轮相关JavaScript回归全部通过，失败／取消／跳过0，55.54秒；包含源缺价固定成本、退役渠道迁移及原不可用Go迁移。22项资源版本与语法检查通过；上一独立变更的全项目390项结果保留，不冒称本轮再次运行全部项目。A01及整体验收继续开放，后续研究和页面验收由开发者承担。
 
@@ -1995,7 +1995,7 @@ IBKR官网再次确认每历月前两次现金提款免费，其后USD电汇10 U
 
 [实际浏览器记录](evidence/money-flow-feedback/browser-displayed-cost-reconciliation-local-20261012.json)保存75个5账户×3币种×5用途的实际操作，以及默认、自填99 HKD、恢复和最终资源刷新，共79个读取结果，无分项／段／总额对账失败。记录只读页面DOM，账户与用途均通过实体控件改变，未注入应用状态。仅75个状态通过数值显示检查不能代替此前全部银行、优惠和渠道检查，更不能补齐A01私人执行价或代理费。
 
-[修复前完整页](evidence/money-flow-feedback/local-acceptance-current-default-20261012.jpg)与[已查看修复后完整页](evidence/money-flow-feedback/local-acceptance-reconciled-default-20261012.jpg)保留，桌面视口未重设。实际[99 HKD回单截图](evidence/money-flow-feedback/local-acceptance-actual-99hkd-20261012.jpg)显示该项≈84.59 CNY，单计一次：106.08＋84.59＝190.67 CNY／0.191%，终点14,883.75 USD。99 HKD是QA输入，未改写银行公开价。最后恢复10万元／1笔／12个月／ZA默认。
+[修复前完整页](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-acceptance-current-default-20261012.jpg)与[已查看修复后完整页](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-acceptance-reconciled-default-20261012.jpg)保留，桌面视口未重设。实际[99 HKD回单截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-acceptance-actual-99hkd-20261012.jpg)显示该项≈84.59 CNY，单计一次：106.08＋84.59＝190.67 CNY／0.191%，终点14,883.75 USD。99 HKD是QA输入，未改写银行公开价。最后恢复10万元／1笔／12个月／ZA默认。
 
 全项目398项JavaScript回归通过，失败／取消／跳过0，304.56秒；22项资源版本与语法检查通过。上一阶段提交c7c1b2d、23d3d27、66b6c9a的构建与部署均已成功。新截图与点击证据属于本地页面，正式页版本的部署、截图和点击验收分开记录；不以浏览器读取超时声称Mac被锁定。A01和整体验收继续开放。
 
@@ -2003,7 +2003,7 @@ IBKR官网再次确认每历月前两次现金提款免费，其后USD电汇10 U
 
 全页截图还发现，非选中方案悬停背景与真正选中颜色太近，容易把鼠标位置误认作当前路线。现真正选中方案标题显示勾号，普通悬停改为中性色，不改变路线、费用或推荐算法。自填实际费用与公开方案不同的时候，三个方案均没有已选勾号；点击公开方案恢复后，只给费用和余额均与正文一致的那张标记。
 
-[六个真实页面状态](evidence/money-flow-feedback/browser-preset-selected-status-local-20261012.json)保存默认、中行／工行／建行各方案应用、137 CNY测试回单和公开报价恢复。对应总额106.08／165.82／534.92 CNY与正文、实际账户相符；实际回单状态243.08 CNY没有错标公开方案，恢复为106.08。已查看[勾选状态截图](evidence/money-flow-feedback/local-preset-selected-status-20261012.jpg)。17项既有方案、账户独立性及费用回归通过，22项资源／语法检查通过；此独立视觉改动未重复运行或冒称新增全部金融研究。
+[六个真实页面状态](evidence/money-flow-feedback/browser-preset-selected-status-local-20261012.json)保存默认、中行／工行／建行各方案应用、137 CNY测试回单和公开报价恢复。对应总额106.08／165.82／534.92 CNY与正文、实际账户相符；实际回单状态243.08 CNY没有错标公开方案，恢复为106.08。已查看[勾选状态截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-preset-selected-status-20261012.jpg)。17项既有方案、账户独立性及费用回归通过，22项资源／语法检查通过；此独立视觉改动未重复运行或冒称新增全部金融研究。
 
 ### 2026-10-12汇丰One柜台USD存票纠错与全分支核算（A01／A06–A08／A10／A13–A14）
 
@@ -2013,7 +2013,7 @@ IBKR官网再次确认每历月前两次现金提款免费，其后USD电汇10 U
 
 [164个真实页面读取结果](evidence/money-flow-feedback/browser-hsbc-cheque-local-20261012.json)含154个组合检查：致富3币种×6取回银行×5用途的90个、盈立USD×6银行×5用途的30个、盈立HKD／CNH到汇丰×5用途的10个，以及两券商×3币种×4出金用途的24个非柜台状态。失败0。另10次检查 actual3 HKD回单覆盖、刷新、券商／银行变更、同一出金优选切换和最终重置。曾超时且未保存的初始批次不计入这164个数量。
 
-在明确勾选One管理费豁免的QA场景，致富经中行→中银香港、USD出金至汇丰，柜台5 HKD≈4.27 CNY，总105.64 CNY／0.106%、14,896.43 USD；[已查看柜台截图](evidence/money-flow-feedback/local-hsbc-cheque-counter-20261012.jpg)。非柜台为0 HKD，总101.37 CNY／0.101%、14,897.07 USD；[已查看非柜台截图](evidence/money-flow-feedback/local-hsbc-cheque-noncounter-20261012.jpg)。实际3 HKD是测试回单值，并非新银行公开资费。最后恢复旧默认10万元／1笔／12个月／ZA、106.08 CNY；本轮新增默认免管理费偏好将在下一独立修正落实，未用此记录混称已经完成。
+在明确勾选One管理费豁免的QA场景，致富经中行→中银香港、USD出金至汇丰，柜台5 HKD≈4.27 CNY，总105.64 CNY／0.106%、14,896.43 USD；[已查看柜台截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-hsbc-cheque-counter-20261012.jpg)。非柜台为0 HKD，总101.37 CNY／0.101%、14,897.07 USD；[已查看非柜台截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-hsbc-cheque-noncounter-20261012.jpg)。实际3 HKD是测试回单值，并非新银行公开资费。最后恢复旧默认10万元／1笔／12个月／ZA、106.08 CNY；本轮新增默认免管理费偏好将在下一独立修正落实，未用此记录混称已经完成。
 
 402项全项目JavaScript检查通过，失败／取消／跳过0，370.84秒；首轮两个沿用旧免费假设的断言失败后，已按本次核实资费修正并完整重跑。22项资源与语法检查通过。当前报价重新审计262,440个目录状态、192,888次余额对账，8,562个科目有数值；三组渠道／资格连同每日额度及柜台／非柜台分支共8,558,758次，7,249,422个有数值结果（含部分报价）对账通过。结构化审计包含非柜台资格，不能伪造“第0张支票免费”。全部资费、脚本、冻结回归、组合报告和页面证据在同一提交。
 
@@ -2043,7 +2043,7 @@ IBKR官网再次确认每历月前两次现金提款免费，其后USD电汇10 U
 
 [真实本地操作记录](evidence/money-flow-feedback/browser-qualified-preferred-local-20261012.json)覆盖5个买股账户×5种用途的25个配置及其中全部72张推荐逐次应用：每张卡与正文费用、比例、银行期间费、末端币种余额同数，四节点保留，无弹窗残留。46次账户／用途菜单读取及四张默认卡之后的12次账户菜单检查，顺序和启用状态仍为9家内地／6家香港／5个买股账户。One及三个内地管理费的默认已勾、分别取消后刷新保持、重置恢复，均实际操作。没有完整报价的4个IBKR出金用途另列在记录的noCompletePlans，未被算作完整报价或推荐验收完成。
 
-返程的内地收款行、币种和渠道曾在同一flex行被管理费选项挤成竖排，本轮改为独立网格，账户条件另行排列。[最终完整截图](evidence/money-flow-feedback/local-qualified-mainland-20261012.jpg)已逐张查看，显示824.61 CNY／0.825%、期间费0、末端99,175.39 CNY，控件不重叠。原实际桌面视口保持。当前25／72个数值及菜单与本地模型、固定报价独立重算无差异；控制台错误／警告0。
+返程的内地收款行、币种和渠道曾在同一flex行被管理费选项挤成竖排，本轮改为独立网格，账户条件另行排列。[最终完整截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-qualified-mainland-20261012.jpg)已逐张查看，显示824.61 CNY／0.825%、期间费0、末端99,175.39 CNY，控件不重叠。原实际桌面视口保持。当前25／72个数值及菜单与本地模型、固定报价独立重算无差异；控制台错误／警告0。
 
 407项全项目JavaScript回归通过，无失败、跳过或取消；22个资源版本及语法检查一致。原完整目录和渠道／资格账簿检查仍保留，未将这次筛选和默认偏好改动冒称新增8百万条金融证据。源代码、适用数据、测试、截图和本段同次提交；正式页面须等部署后另验。
 
@@ -2071,7 +2071,7 @@ IBKR官网再次确认每历月前两次现金提款免费，其后USD电汇10 U
 
 取消One豁免后，所选兴业／ZA返程实际计银行期间费1,025.37 CNY、合计1,849.98 CNY；再取消汇丰中国豁免后期间费4,625.37 CNY、合计5,449.98 CNY，刷新保持；重置恢复已满足条件的默认。默认和旧状态迁移的前轮证明仍保留，没有借新筛选硬免实际收费。
 
-[已查看的完整桌面截图](evidence/money-flow-feedback/local-all-candidates-mainland-20261012.jpg)显示全程824.61 CNY／0.825%、期间费0、最终99,175.39 CNY。读实际视口1231 px时，主标题在124 px、汇总底部1219 px，主界面和汇总同时可见，不需要滚到页尾才能看到。返程控件无竖排、重叠，保持原视口。
+[已查看的完整桌面截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-all-candidates-mainland-20261012.jpg)显示全程824.61 CNY／0.825%、期间费0、最终99,175.39 CNY。读实际视口1231 px时，主标题在124 px、汇总底部1219 px，主界面和汇总同时可见，不需要滚到页尾才能看到。返程控件无竖排、重叠，保持原视口。
 
 409项全项目JavaScript回归全部通过，无失败、跳过或取消；22个资源版本及语法检查一致。新增回归先复现全额到账候选丢失，再核对费用明确的替代路线及同一银行真实权衡；旧CCB必入选断言改为手动可计算且被较好完整路线胜出才不推荐。此前8,558,758次渠道／资格计算及账簿检查保留原范围，费用模型和收费来源未借这次筛选改写。代码、相关测试、文档和实际截图同次提交，正式页面部署后再记复验；A01研究缺项仍由开发者继续核查，整体验收未宣称完成。
 
@@ -2083,7 +2083,7 @@ IBKR官网再次确认每历月前两次现金提款免费，其后USD电汇10 U
 
 ### 2026-10-12默认管理费与优选筛选的正式发布验收（R70–R76；A02–A04／A06–A08／A12–A14）
 
-`eccc324`的[正式部署](https://github.com/jianxieb/fund-data/actions/runs/38233273970)于北京时间18:13:10完成。随后使用实际页面操作，取得默认留款三条28.97／106.08／399.14 CNY及0.029%／0.106%／0.399%；[默认完整截图](evidence/money-flow-feedback/published-all-candidates-default-eccc324-20261012.jpg)已查看。改为美元回内地后逐张点击三个优选，记录如下，均为10万元、1笔汇出、持有12个月、ZA标准权益、股价100 USD、买卖各1笔、盈亏0，银行管理费条件默认已满足。
+`eccc324`的[正式部署](https://github.com/jianxieb/fund-data/actions/runs/38233273970)于北京时间18:13:10完成。随后使用实际页面操作，取得默认留款三条28.97／106.08／399.14 CNY及0.029%／0.106%／0.399%；[默认完整截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/published-all-candidates-default-eccc324-20261012.jpg)已查看。改为美元回内地后逐张点击三个优选，记录如下，均为10万元、1笔汇出、持有12个月、ZA标准权益、股价100 USD、买卖各1笔、盈亏0，银行管理费条件默认已满足。
 
 | 正式页面所选汇路 | 实际总损耗 | 银行期间费 | 结汇后余额 |
 | --- | --- | --- | --- |
@@ -2093,13 +2093,13 @@ IBKR官网再次确认每历月前两次现金提款免费，其后USD电汇10 U
 
 [真实正式页面记录](evidence/money-flow-feedback/browser-all-candidates-published-eccc324-20261012.json)分别记录15张卡片读数、三个优选实际应用、四个可计完整汇总、一个保留手动路线的部分费用汇总及23段费用，全部按同日快照与独立模型复核。三条均未用恒生中国，不强制凑五条，也未把三条设为固定上限。兴业／中行代理费的公开实录情景继续标参考费用，工行全额到账价单独列出已包含的代理及收款费用。未把阶段间的公开基准差额或估算0宣称现实保证无损。
 
-选完工行优选再打开三种账户菜单：9家内地、6家香港和5个买股账户的ID及顺序与目录完全一致，禁用项0。随后将ZA改为IBKR，节点所示原工行出发、汇丰香港收款及汇丰香港取回均保留。五种资金用途仍可选；上述操作后弹窗残留0、控制台警告／错误0。[兴业返程完整截图](evidence/money-flow-feedback/published-all-candidates-mainland-eccc324-20261012.jpg)已实际查看，四节点、阶段损耗、银行资格控件、返程币种／渠道与最终汇总在同页。
+选完工行优选再打开三种账户菜单：9家内地、6家香港和5个买股账户的ID及顺序与目录完全一致，禁用项0。随后将ZA改为IBKR，节点所示原工行出发、汇丰香港收款及汇丰香港取回均保留。五种资金用途仍可选；上述操作后弹窗残留0、控制台警告／错误0。[兴业返程完整截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/published-all-candidates-mainland-eccc324-20261012.jpg)已实际查看，四节点、阶段损耗、银行资格控件、返程币种／渠道与最终汇总在同页。
 
 手动把原中行默认改成回内地时，没有擅自替换用户银行。中银香港快汇USD返程代理费仍缺，该状态显示“总损耗尚缺：回内地中转行费”和已核费用447.58 CNY／0.448%，不是完整优选，未当作费用确定或最终到账保证。这个A01缺项仍由开发者继续研究，不要求用户代查。
 
 标签修复`1693eda`的[发布检查](https://github.com/jianxieb/fund-data/actions/runs/38238692852)实际通过410项JavaScript（失败、跳过、取消均0）、267项Python及22个资源版本，部署于北京时间19:05:53完成。页面实际加载模型`f1899fbafe92`、界面`d3d56f518625`和样式`b9290498f6e2`，报价资源仍为`d28668eab34c`。独立[正式前后记录](evidence/money-flow-feedback/browser-recommendation-label-published-20261012.json)证明IBKR留款工行路线的“银行费按官方价”改为“参考费项更少”，卡片15.70／92.81／385.87 CNY、合计及银行选择不变。此处410是发布环境的完整检查，不能冒称本机为这项文案修改重新跑过410项；本机前轮409项及69次真实应用保留原范围。
 
-最后在`1693eda`正式版本改回ZA及美元回内地，再实际选择兴业最低损耗卡。记录的`finalReturn`分别核对三张卡、五段费用、四节点、期间费0、总费824.61 CNY／0.825%及99,175.39 CNY余额，弹窗残留和控制台警告／错误均0；[最新正式页完整截图](evidence/money-flow-feedback/published-preferred-mainland-final-1693eda-20261012.jpg)已保存并实际查看。它是最新版本的实际复验，不把早前截图换个文件名冒充新截图，也没有借截图取消手动银行选择。
+最后在`1693eda`正式版本改回ZA及美元回内地，再实际选择兴业最低损耗卡。记录的`finalReturn`分别核对三张卡、五段费用、四节点、期间费0、总费824.61 CNY／0.825%及99,175.39 CNY余额，弹窗残留和控制台警告／错误均0；[最新正式页完整截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/published-preferred-mainland-final-1693eda-20261012.jpg)已保存并实际查看。它是最新版本的实际复验，不把早前截图换个文件名冒充新截图，也没有借截图取消手动银行选择。
 
 继续核查[Flyert实际讨论](https://www.flyert.com.cn/forum.php?extra=page%3D1&mobile=2&mod=viewthread&tid=4838435)及第二页：4月的10 USD扣费评论描述IBKR经Chase及汇丰美国到汇丰香港，但缺汇出金额、IBKR实体和可核回单；9月的小额全额到账评论明确来自英国Barclays，不是同一IBKR汇路。未把这两例拼成通用0或10 USD代理费。[IBKR现行价目](https://www.interactivebrokers.com/en/pricing/other-fees.php)再次确认每月前两次本方提款免、第三方扣费另计；[渣打中国个人外汇页](https://www.sc.com/cn/foreign-exchange/wfx/)仍说明按客户及渠道取得即时价，[全球账户页面](https://www.sc.com/cn/bank-with-us/online-banking-global-link/)的限额说明也不是公开USD／HKD现汇买卖价。这些资料加强对应范围，没有因此填入虚构价格、修改金融费率或关闭A01。
 
@@ -2120,7 +2120,7 @@ ZA作为交易账户时，权益入口在第03步；ZA仅作为香港收款银�
 
 [29个真实本地检查点](evidence/money-flow-feedback/browser-account-controls-local-20261012.json)保留失败和修复过程、角色归属、实际金额、菜单状态、各节点／卡片的DOM几何、日期及输入值。正常浏览器视口1280×720，未调整用户屏幕或浏览器尺寸。One取消再恢复豁免、内地汇丰取消再恢复豁免及致富费用券开／关后，四节点和账户区x／y／宽／高差均0；对应费用区亦保持位置，优选区域高度不变。One切换时卡片数量实际2→3但均高181 px；不凑条数，横向单行区域避免新一行把流程往下推。第一次自动点击尚未在视口的One控件引起工具滚动422 px，该观察单独保留，不冒称那次屏幕坐标完全不变；在控件可见后的切换才用于上述零位移结论。
 
-买卖设置与优惠区实际同y坐标、同高73 px，有独立列；四个账户区都有语义SVG图标。文档横向宽度与视口宽度一致，无页面横向溢出。主界面所有损耗标题位于各自明细前。[已查看的完整优惠券截图](evidence/money-flow-feedback/local-account-controls-chief-coupon-20261012.png)及[美元回内地完整截图](evidence/money-flow-feedback/local-account-controls-mainland-20261012.png)保存真实页面。出发银行及优惠弹窗外点关闭、用途Esc关闭实际通过，控制台警告／错误0；此前28入口键盘循环记录保留历史范围，本轮不冒称重新跑遍所有屏幕和所有弹窗。
+买卖设置与优惠区实际同y坐标、同高73 px，有独立列；四个账户区都有语义SVG图标。文档横向宽度与视口宽度一致，无页面横向溢出。主界面所有损耗标题位于各自明细前。[已查看的完整优惠券截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-account-controls-chief-coupon-20261012.png)及[美元回内地完整截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-account-controls-mainland-20261012.png)保存真实页面。出发银行及优惠弹窗外点关闭、用途Esc关闭实际通过，控制台警告／错误0；此前28入口键盘循环记录保留历史范围，本轮不冒称重新跑遍所有屏幕和所有弹窗。
 
 本轮415项全项目JavaScript检查全部通过（失败／跳过／取消0，322.49秒）；随后实测发现的Lite选择处理缺项修复后，新回归单独通过。首轮针对UI旧假设的8处失败已按新节点及净费用行为逐项核对、修复，并完整重跑相关226项通过；不以旧布局断言代替新用户要求。22个资源版本和JavaScript语法检查通过，未改动其他页面或真实金融费率。正式发布仍须按部署版本记录，不能把本地图片换名作为正式页证明。
 
@@ -2135,10 +2135,10 @@ ZA作为交易账户时，权益入口在第03步；ZA仅作为香港收款银�
 | --- | --- | --- |
 | R91、R105、R106、R113、R114 | 优选卡合并为两行资金路线和一行损耗；直接命名兴业寰宇人生及汇丰Trade25。取消重复标题、末尾“xx卡／已开通Trade25”说明、排序／当前券商说明、固定高度和预留空行。 | 三张固定策略逐个应用，卡片与正文总价一致：Trade25 2.08 CNY、ZA 28.77 CNY、IBKR 92.61 CNY，均为此次10万元参考情景。改变管理费资格时三张卡仍在原位、价格不变；自动回归另核对不同券商和金额。没有宣称这三条覆盖全市场或保证所有费用。 |
 | R105、R23、R43 | 出发目录仅中行、兴业、招商、工行；香港收款银行六家、买股账户五个保持独立及可改。旧删除出发行迁移到中行，清掉其出发报价。 | 实际读取4／6／5菜单，选项均启用；招商切换后显示99.80 CNY手续费及100.00 CNY电讯费，没有外部仍显示0的旧错误。自动回归核对全部删除ID及未知ID的保存状态迁移，保留其他账户。 |
-| R92–R97、R107–R112 | 官网机构标识；机构与金额合并在同一行。全程损耗放流程前并保持可见，过渡区靠左先显示阶段损耗，向下箭头放大。第一段只称汇往香港；完整明细进入同一弹窗。未发生的美元入金换汇不再列两项0费用。 | 已查看[完整页面](evidence/money-flow-feedback/local-merged-money-flow-20261013.png)及[方案卡局部](evidence/money-flow-feedback/local-merged-plans-20261013.png)。正常浏览器视口1176×1231，无页面横向溢出。未改变浏览器视口，也不把这张截图当成已完成4K屏实物验收。 |
+| R92–R97、R107–R112 | 官网机构标识；机构与金额合并在同一行。全程损耗放流程前并保持可见，过渡区靠左先显示阶段损耗，向下箭头放大。第一段只称汇往香港；完整明细进入同一弹窗。未发生的美元入金换汇不再列两项0费用。 | 已查看[完整页面](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-merged-money-flow-20261013.png)及[方案卡局部](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-merged-plans-20261013.png)。正常浏览器视口1176×1231，无页面横向溢出。未改变浏览器视口，也不把这张截图当成已完成4K屏实物验收。 |
 | R98、R99 | 账户月数单独可改；管理费、条件和豁免放同一银行组。零／非零金额有稳定宽度。第四步两框同高、顶边对齐；工银亚洲去掉重复的综合账户字样。 | 六家取回银行逐个实测。最初复现5.5px顶边差及工银亚洲98px／76px框高差；修正后六组均76px且顶边相同。资格切换时方案卡位置和流程起点不动，没有靠卡片空白解决。 |
 | R100–R102 | 页面不再出现交易日期输入或一年后的默认卖出日。银行月数只作为期间费输入；页面买卖资费使用核算当天。券商出金在第三节点与第四取回银行之间，银行消费／换汇在第四节点之后。保留美元时取消重复终点。 | 实际Trade25及ZA路线读到正确动作顺序；自动回归核对出金、银行换汇及汇总位置。独立模型接口和退款时点仍有U10列出的研究限制，不宣称全部日期规则已核齐。 |
-| R05、R09–R11、R83 | 费用券不影响银行收费；逐单与总抵扣按同一4位USD展示分配。详情只显示一组买入、卖出和托管费。 | 致富当前买、卖两单均抵掉平台费。招商上游例1.1877＋1.1876＝2.3753 USD；兴业上游复测1.1930＋1.1929＝2.3859 USD。最初复现详情重复行后已删除，最终买入／卖出各一行，见[费用券截图](evidence/money-flow-feedback/local-merged-coupon-20261013.png)。第三方清算／监管费仍保留；券商最终账单取整规则尚未全部核齐。 |
+| R05、R09–R11、R83 | 费用券不影响银行收费；逐单与总抵扣按同一4位USD展示分配。详情只显示一组买入、卖出和托管费。 | 致富当前买、卖两单均抵掉平台费。招商上游例1.1877＋1.1876＝2.3753 USD；兴业上游复测1.1930＋1.1929＝2.3859 USD。最初复现详情重复行后已删除，最终买入／卖出各一行，见[费用券截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-merged-coupon-20261013.png)。第三方清算／监管费仍保留；券商最终账单取整规则尚未全部核齐。 |
 | R14、R19、R24–R25、R40 | 选择在弹窗，不推挤正文；关闭、外点、Esc及焦点返回保留。 | 实测交易详情外点关闭并返回原明细按钮，银行菜单Esc关闭并返回原选择。此记录只证明所操作入口，未把旧版本全部弹窗记录当成本轮全验。 |
 
 [本轮真实操作记录](evidence/money-flow-feedback/browser-merged-money-flow-20261013.json)保留发现错误时的状态及修正后复测，不能只阅读前一组失败记录或把中间截图当成最终实现。机构资源均来自官网，未生成卡通标识，来源记录在[标识清单](../assets/institutions/sources.json)。
@@ -2152,7 +2152,7 @@ ZA作为交易账户时，权益入口在第03步；ZA仅作为香港收款银�
 
 按最新反馈，每条优选改为一行横向路线，三条方案的出发银行、香港收款银行、买股账户、终点、箭头和损耗位置逐列对齐。机构名称保持16px，损耗保持23px；选中状态仅改变底色与边框，不再在名称前加勾导致文字移动。IBKR留在账户的终点用分隔点，不画成一次不存在的出金。没有增加说明行或固定卡片高度。
 
-实际逐个应用三条方案，卡片与正文分别仍为2.08／28.77／92.61 CNY。三组状态中机构列及箭头的横坐标完全一致，选中切换后保持；比例和金额之间至少10px，无文字重叠或横向溢出。[操作测量记录](evidence/money-flow-feedback/browser-horizontal-plans-20261013.json)及[已查看的横向排列截图](evidence/money-flow-feedback/local-horizontal-plans-20261013.png)。本轮改变排列，不改变策略、费用或资格规则；此前金融数据缺口和整页未接受状态保留。
+实际逐个应用三条方案，卡片与正文分别仍为2.08／28.77／92.61 CNY。三组状态中机构列及箭头的横坐标完全一致，选中切换后保持；比例和金额之间至少10px，无文字重叠或横向溢出。[操作测量记录](evidence/money-flow-feedback/browser-horizontal-plans-20261013.json)及[已查看的横向排列截图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-horizontal-plans-20261013.png)。本轮改变排列，不改变策略、费用或资格规则；此前金融数据缺口和整页未接受状态保留。
 
 本轮相关198项回归通过，失败／取消／跳过均0；语法与22项资源版本一致。验证范围是优选排列、选择应用及既有费用回归，不将此记作剩余金融数据或整页已达标。
 
@@ -2185,6 +2185,6 @@ ZA作为交易账户时，权益入口在第03步；ZA仅作为香港收款银�
 | R04、R95、R100、R105：既有目录和直接控制 | 四家指定出发银行、六家收款／取回银行、五类买股账户保持独立可选；币种仍人民币／美元／港币；没有买卖日期表单。 | 全目录实际操作及产品回归。 |
 | R18、R31、R34、R64等：数据齐备 | **尚未达到。** U01–U14保留具体金融证据及整体验收缺口；这批布局及交互验证不能证明未知收费、个人成交报价及正式页验收已解决。 | 不以参考金额、局部通过或用户未继续指出错误当作接受。 |
 
-本地截图：[最终整页](evidence/money-flow-feedback/local-aligned-main-flow-20261013.png)、[底部悬浮视口](evidence/money-flow-feedback/local-aligned-main-flow-viewport-20261013.png)、[本金单一修改入口](evidence/money-flow-feedback/local-aligned-principal-20261013.png)、[未完成换汇的返程](evidence/money-flow-feedback/local-aligned-return-flow-20261013.png)。[最终操作及坐标记录](evidence/money-flow-feedback/browser-aligned-main-flow-20261013.json)保存75次操作状态、27类弹窗与独立稳定性证据；[第一轮发现记录](evidence/money-flow-feedback/browser-aligned-main-flow-first-pass-20261013.json)保留已复现的IBKR控件溢出和第四步附加条件问题，不能混作修复后通过结果。
+本地截图：[最终整页](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-aligned-main-flow-20261013.png)、[底部悬浮视口](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-aligned-main-flow-viewport-20261013.png)、[本金单一修改入口](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-aligned-principal-20261013.png)、[未完成换汇的返程](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/money-flow-feedback/local-aligned-return-flow-20261013.png)。[最终操作及坐标记录](evidence/money-flow-feedback/browser-aligned-main-flow-20261013.json)保存75次操作状态、27类弹窗与独立稳定性证据；[第一轮发现记录](evidence/money-flow-feedback/browser-aligned-main-flow-first-pass-20261013.json)保留已复现的IBKR控件溢出和第四步附加条件问题，不能混作修复后通过结果。
 
 相关198项JavaScript回归通过；产品回归增加末段缺报价时账户标签与余额一致、实际期间费覆盖不能误标免费、保持单一本金修改入口的断言，9项产品回归再次通过。npm run check核对22项资源版本及脚本语法通过，git diff --check通过。没有修改费用模型、费表或其余页面，没有为布局重复运行百万状态枚举。记录、实现、必要验证一起提交推送，不单独发布文档。

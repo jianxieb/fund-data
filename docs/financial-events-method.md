@@ -41,4 +41,4 @@ python3 scripts/build_financial_events.py --check
 
 ## 验证
 
-自动检查覆盖前收盘与交易日计数、周末锚点、已知缺口、共同日期归一化、独立日线回撤、短期不年化、指数身份及15章全部可复算的期限回报。桌面交互检查覆盖章节与类型切换、完整/事件窗口、柱图、时间游标和2026年未完成区间。证据图片存于`docs/evidence/product-expansion-20261016/`。
+自动检查覆盖前收盘与交易日计数、周末锚点、已知缺口、共同日期归一化、独立日线回撤、短期不年化、指数身份及15章全部可复算的期限回报。桌面交互检查覆盖章节与类型切换、完整/事件窗口、柱图、时间游标和2026年未完成区间。证据图片存于[历史截图目录](https://github.com/jianxieb/fund-data/tree/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/product-expansion-20261016)。

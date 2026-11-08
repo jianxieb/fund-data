@@ -35,4 +35,4 @@
 - 浏览器交互已核对指数与基金表头三态排序、排序后详情匹配、基金表各列居中、策略双页签与同图曲线。自动化测试与质量检查命令见下方维护指南；本次严格质量结果为0错误、5类限制、4类待核验，这不代表上游数据都已独立审计。
 - 本次策略行情截至2026-09-25；其他数据集的真实截至日逐行展示。人民币海外指数的完整日度风险因缺真实汇率观测仍留空。扩展基金池仍有未逐只复算、规模日期未独立收录等限制，详情和质量页继续呈现。
 
-上一版界面截图保留为修改前参照：[总览](screenshots/2026-09-23-feedback/05-overview-after-large.png)、[基金](screenshots/2026-09-23-feedback/07-funds-after-large.png)、[指数](screenshots/2026-09-23-feedback/06-indices-after-large.png)、[策略](screenshots/2026-09-23-feedback/08-strategy-after-large.png)。这些截图不代表当前四页签和双视图版本。
+上一版界面截图保留为修改前参照：[总览](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/screenshots/2026-09-23-feedback/05-overview-after-large.png)、[基金](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/screenshots/2026-09-23-feedback/07-funds-after-large.png)、[指数](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/screenshots/2026-09-23-feedback/06-indices-after-large.png)、[策略](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/screenshots/2026-09-23-feedback/08-strategy-after-large.png)。这些截图不代表当前四页签和双视图版本。

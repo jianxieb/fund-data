@@ -88,8 +88,8 @@ python3 refresh.py --offline --datasets quality
 
 | 阶段 | 截图 |
 | --- | --- |
-| 修订前 | [旧个人总览](screenshots/15-before-public-overview.png)、[旧基金研究](screenshots/16-before-fund-research.png) |
-| 当前桌面 | [基金研究](screenshots/17-public-funds-desktop.png)、[公开总览](screenshots/18-public-overview-desktop.png) |
-| 当前手机 | [基金表格](screenshots/19-public-funds-mobile.png)、[公开总览](screenshots/20-public-overview-mobile.png) |
+| 修订前 | [旧个人总览](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/screenshots/15-before-public-overview.png)、[旧基金研究](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/screenshots/16-before-fund-research.png) |
+| 当前桌面 | [基金研究](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/screenshots/17-public-funds-desktop.png)、[公开总览](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/screenshots/18-public-overview-desktop.png) |
+| 当前手机 | [基金表格](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/screenshots/19-public-funds-mobile.png)、[公开总览](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/screenshots/20-public-overview-mobile.png) |
 
 后续数据工作应继续补足历史池的逐只复算、正式费率生效日、规模观察日与财务报告期，并扩展债券、现金和黄金的可核验样本。它们是明确记录的数据覆盖缺口，不应通过隐藏字段、填零或更改页面日期掩盖。

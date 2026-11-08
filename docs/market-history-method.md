@@ -59,7 +59,7 @@
 - 全量 `npm test`：449项通过；`python3 -m unittest discover -s tests`：308项通过；`npm run check`通过（30个资源版本一致）；`git diff --check`通过。
 - 浏览器实际下载年度CSV共21行，以原始指数起止价格逐行复算收益，并与同日PE查值比对，全部一致。原有14项指标、价格、收盘和来源元数据未变；恢复的21,918个历史观测与初版对应原始行情派生记录逐点一致，见[此次数据核对](evidence/market-history/overlay-audit.json)。
 - 桌面本地页面无横向溢出，两个数据表都在容器内完整显示，SVG无NaN或Infinity，浏览器无warning/error；年度表可展开21行并收起。
-- 保存[主叠图预览](evidence/market-history/overlay-main.jpg)、[年度组合图和表格](evidence/market-history/overlay-annual.jpg)。不把本地截图视为用户验收。
+- 保存[主叠图预览](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/market-history/overlay-main.jpg)、[年度组合图和表格](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/market-history/overlay-annual.jpg)。不把本地截图视为用户验收。
 - 按照用户要求，只做本地检查，提交推送后不访问上线页面核对。
 
 ## 已被拒绝的版本记录：直接研究指标与后续结果（2026-10-15）
@@ -148,7 +148,7 @@ VIX—随后21日实际波动R²为50.0712%；VXN对应为38.4410%。这两个�
 - `npm run check`通过，28个本地资源版本一致；`git diff --check`通过。
 - 两份公开PE历史逐点与原始响应一致；原始响应SHA-256匹配发布元数据。原有价格、风险、宏观和旧来源元数据未改动。浏览器下载108行SPX样本CSV，按每行起止价格重新计算累计收益，全部一致。审计范围与结果见[数据审计记录](evidence/market-history/data-audit.json)，不扩大为成分股财报独立核验。
 - 本地浏览器验证：双指数及单指数切换；1/5年、累计/年化、月度/不重叠；5年观察窗配5年持有期的空样本；点击及Enter打开实际价格路径；样本详情与CSV下载；市场环境和来源详情。浏览器无warning/error。
-- 保存[标普研究主视图](evidence/market-history/research-spx.png)及[单个历史点的五年价格路径](evidence/market-history/research-path.png)。这是本地实现证据，**仍待用户评价，不等同于用户验收**。
+- 保存[标普研究主视图](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/market-history/research-spx.png)及[单个历史点的五年价格路径](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/market-history/research-path.png)。这是本地实现证据，**仍待用户评价，不等同于用户验收**。
 
 ## 旧版记录（已被以上规范替代）
 
@@ -227,7 +227,7 @@ VIX—随后21日实际波动R²为50.0712%；VXN对应为38.4410%。这两个�
 
 `python3 market_history.py`刷新，`--check`验证，`--offline`应用当前选取规则并保留原始值、观测日、来源时间。沿用既有刷新工作流。来源失败保留旧证据，回退仍受发布限制；历史截断、日期倒退或缺少核心序列时拒绝发布。
 
-测试覆盖分位、身份、来源URL、估算标记、旧数据恢复、禁止PE再次出现、缺口及历史截断。12条保留序列已与原始缓存逐点复算核对。本地浏览器检查默认8项、市场环境4项、缺口说明、详情与区间切换。截图在`docs/evidence/market-history/`，仅作本地验证证据。
+测试覆盖分位、身份、来源URL、估算标记、旧数据恢复、禁止PE再次出现、缺口及历史截断。12条保留序列已与原始缓存逐点复算核对。本地浏览器检查默认8项、市场环境4项、缺口说明、详情与区间切换。截图在[历史截图目录](https://github.com/jianxieb/fund-data/tree/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/market-history)，仅作本地验证证据。
 
 
 ## 价格联动与历史情景（2026-10-14）
@@ -294,6 +294,6 @@ SPX中间50%收益区间重叠，不据此宣称择时优势；NDX提示样本�
 - 303项Python测试和434项JavaScript测试全部通过，包含下一交易日入场、已成熟窗口、同日关联、固定分组边界、去重叠、空样本、价格缺口、未来数据不改变既有结果，以及指数身份／币种／来源失败回退。
 - 两份价格历史已与SHA-256匹配的原始Yahoo响应逐点一致；剔除新增`prices`字段后，发布数据与前一提交完全相同，未替换原指标、采集时间或报告日。
 - 本地浏览器验证默认两个指数、单VIX切换、5年窗口、日期滑杆读数、12个月收益与样本明细、折叠区内历史分布切换，以及宏观数据单独展示；未出现控制台错误。6个月SPX样本CSV下载成功，含22段相似样本、36段基准和1行表头，保留信号值、价格口径与完整精度。
-- `report.png`为两个指数默认联动分析；`scenarios-spx.png`为单指数视图。只记录本地验证，不代表上线核对或用户验收。
+- [report.png](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/market-history/report.png)为两个指数默认联动分析；[scenarios-spx.png](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/market-history/scenarios-spx.png)为单指数视图。只记录本地验证，不代表上线核对或用户验收。
 
 </details>

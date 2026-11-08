@@ -8,7 +8,7 @@
 
 美股与A股最右侧恢复“其他已收录”页签，汇总未入选长期优质、盈利成长、业绩爆发或红利价值的全部已收录公司，并显示未入选原因。它不受其他分组的“仅入选 / 全部相关公司”开关影响；搜索、行业类别、A股板块筛选及财务、估值、收益视图继续可用。潜力研究保留独立入口。
 
-验证：67项相关前端测试、语法与资源版本检查通过。浏览器核对[美股26家](evidence/restore-unselected-20261023/us-other.jpg)（包括Adobe、高通）及[A股38家](evidence/restore-unselected-20261023/cn-other.jpg)，页签位于最右侧；先开启“全部相关公司”再切入该页签，仍展示完整未入选名单及原因。
+验证：67项相关前端测试、语法与资源版本检查通过。浏览器核对[美股26家](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/restore-unselected-20261023/us-other.jpg)（包括Adobe、高通）及[A股38家](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/restore-unselected-20261023/cn-other.jpg)，页签位于最右侧；先开启“全部相关公司”再切入该页签，仍展示完整未入选名单及原因。
 
 ## 当前名单：2026-10-17公司重新选择
 

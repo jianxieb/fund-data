@@ -58,4 +58,4 @@ MTUM 自 2020-11-23 改为跟踪 SR Variant，此前是 MSCI USA Momentum Index�
 - 组合库全覆盖、内容哈希、收益预览一致性。
 - 本地桌面检查美元/人民币、累计/年化、10年旧基准提示和产品详情。发布后不核对线上页面。
 
-2026-10-15验证结果：446项 JavaScript 测试、308项 Python 测试通过；资源语法与缓存版本检查通过，数据质量审计0错误。对照提交前快照，原有1,774个组合对象、FX历史和其他快照数据块保持一致。浏览器控制台无错误；本地预览见[美元年化](evidence/momentum-etfs/usd-annual.jpg)和[人民币累计](evidence/momentum-etfs/cny-cumulative.jpg)。
+2026-10-15验证结果：446项 JavaScript 测试、308项 Python 测试通过；资源语法与缓存版本检查通过，数据质量审计0错误。对照提交前快照，原有1,774个组合对象、FX历史和其他快照数据块保持一致。浏览器控制台无错误；本地预览见[美元年化](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/momentum-etfs/usd-annual.jpg)和[人民币累计](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/momentum-etfs/cny-cumulative.jpg)。

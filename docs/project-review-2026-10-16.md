@@ -84,41 +84,41 @@
 
 ### 持有压力：改前与改后
 
-![原窗口详情](evidence/audit-20261016/03-holding-window-before.jpg)
-![窗口详情新增风险](evidence/audit-20261016/18-holding-risk-after.jpg)
-![累计与币种期限状态](evidence/audit-20261016/22-holding-state-after.jpg)
+- [原窗口详情](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261016/03-holding-window-before.jpg)
+- [窗口详情新增风险](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261016/18-holding-risk-after.jpg)
+- [累计与币种期限状态](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261016/22-holding-state-after.jpg)
 
 <details><summary>研究入口与历史图</summary>
 
-![知识条目原状态](evidence/audit-20261016/05-knowledge-before.jpg)
-![知识连接历史](evidence/audit-20261016/16-knowledge-link-after.jpg)
-![历史图保留指数、指标和窗口](evidence/audit-20261016/17-history-link-after.jpg)
+- [知识条目原状态](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261016/05-knowledge-before.jpg)
+- [知识连接历史](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261016/16-knowledge-link-after.jpg)
+- [历史图保留指数、指标和窗口](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261016/17-history-link-after.jpg)
 
 </details>
 
 <details><summary>数值修复的本地页面</summary>
 
-![股息率修复前](evidence/audit-20261016/13-dividend-before.jpg)
-![股息率修复后](evidence/audit-20261016/20-dividend-after.jpg)
-![修正后的策略结果](evidence/audit-20261016/19-strategy-after.jpg)
-![最低佣金不足](evidence/audit-20261016/21-channel-minimum-after.jpg)
+- [股息率修复前](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261016/13-dividend-before.jpg)
+- [股息率修复后](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261016/20-dividend-after.jpg)
+- [修正后的策略结果](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261016/19-strategy-after.jpg)
+- [最低佣金不足](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261016/21-channel-minimum-after.jpg)
 
 </details>
 
 <details><summary>其余全站基线</summary>
 
-![总览](evidence/audit-20261016/01-overview.jpg)
-![持有期原首屏](evidence/audit-20261016/02-holding-period.jpg)
-![全球金融](evidence/audit-20261016/04-global-finance.jpg)
-![历史分位基线](evidence/audit-20261016/06-history-before.jpg)
-![投入策略基线](evidence/audit-20261016/07-strategy-before.jpg)
-![投资渠道](evidence/audit-20261016/08-buy-location.jpg)
-![税务实例](evidence/audit-20261016/09-tax-examples.jpg)
-![跨境资金](evidence/audit-20261016/10-money-flow.jpg)
-![基金研究](evidence/audit-20261016/11-funds.jpg)
-![指数观察](evidence/audit-20261016/12-indices.jpg)
-![组合模拟](evidence/audit-20261016/14-portfolio.jpg)
-![数据状态](evidence/audit-20261016/15-quality.jpg)
+- [总览](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261016/01-overview.jpg)
+- [持有期原首屏](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261016/02-holding-period.jpg)
+- [全球金融](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261016/04-global-finance.jpg)
+- [历史分位基线](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261016/06-history-before.jpg)
+- [投入策略基线](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261016/07-strategy-before.jpg)
+- [投资渠道](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261016/08-buy-location.jpg)
+- [税务实例](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261016/09-tax-examples.jpg)
+- [跨境资金](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261016/10-money-flow.jpg)
+- [基金研究](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261016/11-funds.jpg)
+- [指数观察](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261016/12-indices.jpg)
+- [组合模拟](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261016/14-portfolio.jpg)
+- [数据状态](https://github.com/jianxieb/fund-data/blob/8c3f783ffc35d185ef7fdccedb04c644642be7c3/docs/evidence/audit-20261016/15-quality.jpg)
 
 </details>
 
