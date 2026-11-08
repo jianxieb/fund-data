@@ -326,7 +326,7 @@ test('funding, strategy rules and settlement settings are grouped by what the in
   };
   order(['id="portfolio-initialMethod"', 'id="portfolio-initial"', 'id="portfolio-contributionMethod"', 'id="portfolio-monthly"', 'id="portfolio-rebalance"', 'id="portfolio-years"']);
   assert.doesNotMatch(first, /id="portfolio-benchmark"/);
-  order(['aria-label="税务情景"', 'id="portfolio-transactionFee"', 'aria-label="期末处理"']);
+  order(['id="portfolio-years"', 'id="portfolio-currency"', 'id="portfolio-transactionFee"', 'aria-label="期末处理"', 'aria-label="税务情景"']);
   const directPlan = first.replace(/<details\b[^>]*>[\s\S]*?<\/details>/g, '');
   assert.match(directPlan, /id="portfolio-purchase-plan"/);
   assert.match(directPlan, /id="portfolio-contribution-plan"/);
@@ -340,7 +340,7 @@ test('funding, strategy rules and settlement settings are grouped by what the in
   assert.equal(free.tax.liquidate, true); assert.equal(free.tax.usCapitalGains, 0);
   assert.equal(free.transactionFee, f.input.config.transactionFee);
   await f.action('tax-custom'); assert.match(view(), /id="portfolio-tax-usCapitalGains"/);
-  assert.ok(view().indexOf('id="portfolio-tax-usCapitalGains"') < view().indexOf('id="portfolio-transactionFee"'));
+  assert.ok(view().indexOf('id="portfolio-tax-usCapitalGains"') > view().indexOf('aria-label="税务情景"'));
   f.ui.handleInput({dataset:{portfolioField:'tax-usCapitalGains'},value:'15'});
   assert.match(view(), /扣除卖出手续费和适用的盈利税/);
   await f.action('settle-hold'); assert.match(view(), /估值扣除浮盈预留税，持股和现金不变/);

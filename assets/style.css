@@ -614,16 +614,17 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .home-secondary>:last-child:nth-child(odd){grid-column:1/-1}
 .portfolio-settings{display:grid;gap:18px;margin-bottom:22px}
 .portfolio-settings .card{overflow:visible}
-.portfolio-settings-section{padding:22px 26px}
-.portfolio-settings-section+.portfolio-settings-section{border-top:1px solid var(--line)}
-.portfolio-settings-section h2{margin:0;font-size:16px;font-weight:600}
-.portfolio-decision{display:grid;grid-template-columns:minmax(210px,260px) minmax(125px,166px) minmax(0,1fr);align-items:start;column-gap:26px;padding:16px 0}
-.portfolio-decision:last-child{padding-bottom:0}
-.portfolio-decision>.portfolio-field:first-child>span:first-child{font-size:14px;font-weight:600;color:var(--ink)}
-.portfolio-decision .portfolio-menu summary{background:#f6f8f2}
-.portfolio-decision .portfolio-menu summary>span{min-width:0;white-space:normal;overflow-wrap:anywhere}
-.portfolio-decision .portfolio-number input{background:white}
-.portfolio-purchase-plan,.portfolio-contribution-plan{min-width:0;max-width:74ch;margin:0;align-self:center;font-size:13px;line-height:1.7;color:var(--muted)}
+.portfolio-settings-section{padding:22px 26px;container-type:inline-size}
+.portfolio-settings-section>h2{margin:0 0 16px;font-size:16px;font-weight:600}
+.portfolio-strategy-grid{display:grid;grid-template-columns:minmax(0,1fr);align-items:start;gap:22px 30px}
+.portfolio-decision{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);align-items:start;gap:9px 16px}
+.portfolio-strategy-grid>.portfolio-field{max-width:220px}
+.portfolio-strategy-grid .portfolio-menu{min-width:0}
+.portfolio-strategy-grid .portfolio-menu summary>span{min-width:0;white-space:normal;overflow-wrap:anywhere}
+.portfolio-purchase-plan,.portfolio-contribution-plan{grid-column:1/-1;min-width:0;margin:0;font-size:12px;line-height:1.55;color:var(--muted)}
+.portfolio-budget-note{grid-column:2}
+@container(min-width:660px){.portfolio-strategy-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@container(min-width:920px){.portfolio-strategy-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(126px,.42fr)}}
 .portfolio-purchase-plan p{margin:0}
 .portfolio-purchase-amounts{display:flex;flex-wrap:wrap;gap:3px 19px;margin:7px 0 0;font-size:12px;font-variant-numeric:tabular-nums}
 .portfolio-purchase-amounts>div{display:flex;align-items:baseline;flex-wrap:wrap;gap:0 6px;max-width:100%}
@@ -632,26 +633,19 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-purchase-plan .portfolio-purchase-caption,.portfolio-execution-rules{margin:8px 0 0}
 .portfolio-execution-rules{padding-left:1.2em}
 .portfolio-purchase-pending{color:#886427}
-.portfolio-assumption-row{display:grid;grid-template-columns:150px minmax(0,1fr);align-items:start;gap:22px}
-.portfolio-assumption-body{min-width:0}
-.portfolio-backtest-row{display:flex;align-items:flex-start;flex-wrap:wrap;gap:12px 26px}
-.portfolio-backtest-row>.portfolio-field{width:166px}
-.portfolio-tax-settings{min-width:0;container:tax-settings / inline-size}
-.portfolio-tax-controls,.portfolio-tax-group,.portfolio-fee-settlement{display:grid;grid-template-columns:minmax(0,1fr);align-items:start;gap:18px 26px}
-.portfolio-tax-controls{margin-top:16px}
-.portfolio-tax-mode h3{margin:0;font:inherit}
+.portfolio-conditions,.portfolio-period-fields,.portfolio-fee-settlement{display:grid;grid-template-columns:minmax(0,1fr);gap:18px 26px;align-items:start}
+.portfolio-period-fields{grid-template-columns:repeat(2,minmax(0,185px))}
+.portfolio-period-fields .portfolio-menu{min-width:0}
+.portfolio-dates{margin-top:14px}
 .portfolio-tax-method{text-decoration:underline;text-underline-offset:3px}
-.portfolio-fee-settlement>label{width:100%;max-width:166px}
-@container tax-settings (min-width:400px){
-  .portfolio-fee-settlement{grid-template-columns:minmax(110px,166px) minmax(0,1fr)}
-}
-@container tax-settings (min-width:740px){
-  .portfolio-tax-controls{grid-template-columns:repeat(2,minmax(0,1fr))}
-}
+.portfolio-tax-body{max-width:680px;margin-top:16px}
+@container (min-width:390px){.portfolio-fee-settlement{grid-template-columns:minmax(110px,166px) minmax(0,1fr)}}
+@container (min-width:740px){.portfolio-conditions{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@container (max-width:350px){.portfolio-period-fields{gap:12px}.portfolio-dates{grid-template-columns:minmax(0,1fr)}}
 .portfolio-tax-mode{align-items:flex-start}
 .portfolio-settings-section .portfolio-field>small{font-size:12px;line-height:1.55;color:var(--muted)}
 .portfolio-tax-overrides>summary{cursor:pointer;color:var(--green);font-size:13px}
-.portfolio-settings-section .portfolio-dates{padding:0;margin-top:14px}
+
 .portfolio-setting-choices{align-self:flex-start;flex-wrap:wrap}
 .portfolio-setting-choices button{min-height:32px;white-space:nowrap}
 .portfolio-benchmark-search{display:grid;gap:14px}
@@ -666,9 +660,9 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-benchmark-actions{display:flex;gap:16px;flex-wrap:wrap;justify-content:flex-end}
 .portfolio-benchmark-actions .btn{font-size:14px;min-height:40px;padding:8px 16px}
 .portfolio-product-fees{color:var(--muted);margin:14px 0 0;font-size:12px}
-@media(max-width:1100px){.portfolio-decision{grid-template-columns:minmax(175px,220px) minmax(112px,140px) minmax(0,1fr);column-gap:18px}.portfolio-assumption-row{grid-template-columns:126px minmax(0,1fr);gap:16px}}
-@media(max-width:820px){.portfolio-decision{grid-template-columns:minmax(0,270px) minmax(0,155px);row-gap:10px}.portfolio-purchase-plan,.portfolio-contribution-plan{grid-column:1/-1;max-width:none}.portfolio-assumption-row{grid-template-columns:1fr}}
-@media(max-width:650px){.portfolio-settings-section{padding:18px}.portfolio-decision{grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:9px 12px}.portfolio-decision .portfolio-menu{min-width:0}.portfolio-backtest-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.portfolio-backtest-row>.portfolio-field{width:auto}.portfolio-setting-choices button{padding:6px 8px}}
+
+
+@media(max-width:650px){.portfolio-settings-section{padding:18px}.portfolio-setting-choices button{padding:6px 8px}}
 .portfolio-field{display:flex;flex-direction:column;gap:9px;font-size:12px;color:var(--muted);min-width:0}
 .portfolio-field input{margin:0;width:100%;font-size:14px;min-height:39px}
 .portfolio-number{position:relative;display:block}
@@ -679,9 +673,9 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-menu summary{font-size:13px;min-height:39px;background:#fbfcf8}
 
 
-.portfolio-dates{display:flex;gap:20px;padding:0 24px 20px}
-.portfolio-dates label{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--muted)}
-.portfolio-dates input{margin:0}
+
+
+
 .portfolio-builder{display:grid;grid-template-columns:minmax(360px,.8fr) minmax(0,1.2fr);gap:22px;align-items:start}
 .portfolio-builder .card-head{padding-bottom:16px;border-bottom:1px solid #edf0e7;min-height:80px}
 .portfolio-composition{padding:20px 24px 16px}
@@ -867,7 +861,7 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 @media(max-width:1150px){.portfolio-builder{grid-template-columns:minmax(310px,1fr) minmax(0,1.1fr)}.portfolio-filters{gap:10px}.portfolio-library-row{padding:14px 19px}.portfolio-composition{padding:20px 19px 16px}}
 @media(max-width:1050px){.portfolio-builder{grid-template-columns:1fr}}
 @media(max-width:900px){.portfolio-builder{grid-template-columns:1fr}.portfolio-empty-holdings{min-height:160px;padding:25px 0}.portfolio-library-scroll{max-height:340px}.portfolio-result-placeholder{gap:25px;padding:25px}.portfolio-results .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.portfolio-result-notes{gap:16px}}
-@media(max-width:650px){.portfolio-dates{padding:0 18px 18px;flex-wrap:wrap}.portfolio-builder{gap:16px}.portfolio-library-controls{padding:18px}.portfolio-result-placeholder{grid-template-columns:1fr}.portfolio-result-placeholder svg{display:none}.portfolio-chart-legend{gap:12px;padding-left:0;font-size:11px}.portfolio-plot text{font-size:13px}.portfolio-chart-body{padding:15px 10px 10px}.portfolio-results .card-head{align-items:flex-start;flex-wrap:wrap}.portfolio-year-grid{gap:18px;padding:22px 18px}}
+@media(max-width:650px){.portfolio-builder{gap:16px}.portfolio-library-controls{padding:18px}.portfolio-result-placeholder{grid-template-columns:1fr}.portfolio-result-placeholder svg{display:none}.portfolio-chart-legend{gap:12px;padding-left:0;font-size:11px}.portfolio-plot text{font-size:13px}.portfolio-chart-body{padding:15px 10px 10px}.portfolio-results .card-head{align-items:flex-start;flex-wrap:wrap}.portfolio-year-grid{gap:18px;padding:22px 18px}}
 @media(max-width:650px){.portfolio-library-row{grid-template-columns:minmax(0,1fr) auto}.portfolio-library-main{grid-column:1;grid-row:1}.portfolio-library-metrics{grid-column:1;grid-row:2;width:min(280px,100%);justify-self:end}.portfolio-library-row>.portfolio-add{grid-column:2;grid-row:1/3}}
 
 .annual-fee-note{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);white-space:nowrap}
