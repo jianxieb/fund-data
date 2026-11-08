@@ -401,10 +401,6 @@ html{scrollbar-gutter:stable}
 @media(min-width:651px) and (max-width:900px){.sidebar-bottom{padding-left:14px;padding-right:8px}}
 @media(min-width:651px) and (max-height:800px){.sidebar-bottom{padding-top:8px}.sidebar-bottom p{padding-top:6px;margin-top:4px;line-height:1.6}}
 @media(max-width:650px){.sidebar-bottom{display:none}}
-.footer{max-width:1510px;margin:auto;padding:20px 38px;border-top:1px solid var(--line);color:var(--muted);font-size:11px;display:flex;justify-content:space-between;gap:10px}
-.footer a{color:var(--green);text-underline-offset:3px}.footer a:hover{text-decoration:underline}
-@media(max-width:650px){.footer{padding:18px;flex-direction:column;gap:5px}}
-@media print{.footer{display:none}}
 
 
 

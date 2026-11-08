@@ -906,7 +906,7 @@
       '<div class="stats-grid">' + stat('公开国内指数', (window.INDEX_DATA || []).filter(r => ['available', 'cached'].includes(r.status)).length, '个', '指数源独立于基金产品') + stat('研究产品', funds.length, '只', '按基金代码去重') + stat('长期主动权益', funds.filter(f => M.fundScopeMatches(f, policy.byCode[f.c], 'equity', defaults)).length, '只', '默认权益筛选条件') + stat('待核验类别', q.summary.unverified || 0, '项', '逐项说明见下方') + '</div>' +
       '<div class="dataset-grid" id="quality-status" tabindex="-1" role="region" aria-label="各数据集的更新状态">' + (q.datasets || []).map(d => '<article class="dataset-card"><header><h3>' + esc(datasetLabel(d)) + '</h3>' + badge(datasetStatus(d), ['checked', 'available'].includes(d.status) ? 'green' : 'warn') + '</header><p>数据日期 ' + esc(datasetDates(d)) + (d.records != null ? ' · ' + d.records + '条' : '') + '</p>' + (coverage(d) ? '<p class="dataset-coverage">' + coverage(d) + '</p>' : '') + (d.issues && d.issues.length ? '<ul>' + d.issues.map(i => '<li>' + esc(i.message) + '</li>').join('') + '</ul>' : '') + runNote(d) + '</article>').join('') +
       (window.BUY_LOCATION_DATA ? '<article class="dataset-card"><header><h3>投资渠道</h3>' + badge('固定研究快照', 'warn') + '</header><p>行情截至 ' + esc(window.BUY_LOCATION_DATA.asOf) + ' · ' + window.BUY_LOCATION_DATA.products.length + '只产品</p><p>同日价格、净值及汇率经脚本构建；券商费用可调整，个人税使用已披露的协定与抵免基准，税后结果是模拟值。</p><a class="text-link" href="docs/buy-location-method.md" target="_blank" rel="noopener">查看来源与计算边界 ↗</a></article>' : '') + '</div>' +
-      '<div class="section-head"><h2 id="quality-method" tabindex="-1">计算口径</h2></div><div class="quality-principles">' + [
+      '<div class="section-head"><h2>计算口径</h2></div><div class="quality-principles">' + [
         ['指数与产品', '指数取编制方日线；ETF 和基金按各自行情计算。'],
         ['收益周期', '不满完整周期留空；年化与累计可切换。'],
         ['缺失数据', '不以其他指数、币种或较短期间补齐。']
@@ -1129,7 +1129,7 @@
     bindAutoLoad();
   }
   function route() {
-    const hash = location.hash.replace('#', '').split('?')[0], legacy = { us: 'funds', cn: 'funds', cnidx: 'indices', stock: 'stocks', potential: 'stocks', 'quality-status': 'quality', 'quality-method': 'quality' };
+    const hash = location.hash.replace('#', '').split('?')[0], legacy = { us: 'funds', cn: 'funds', cnidx: 'indices', stock: 'stocks', potential: 'stocks', 'quality-status': 'quality' };
     if (hash === 'potential') { state.stockPotential = true; history.replaceState(null, '', '#stocks'); }
     if (hash === 'main') { $('#main').focus(); return; }
     if (hash === 'us') { state.fundTab = 'all'; state.poolCategory = 'overseas'; }
