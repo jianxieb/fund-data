@@ -680,6 +680,9 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-product-fees{color:var(--muted);margin:14px 0 0;font-size:12px}
 @media(max-width:650px){.portfolio-settings-section{padding:18px}.portfolio-decision-controls{gap:9px 12px}.portfolio-plan-panel{padding:12px 14px}.portfolio-decision .portfolio-menu{min-width:0}.portfolio-backtest-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.portfolio-backtest-row>.portfolio-field{width:auto}.portfolio-setting-choices button{padding:6px 8px}}
 .portfolio-field{display:flex;flex-direction:column;gap:9px;font-size:12px;color:var(--muted);min-width:0}
+.portfolio-reserve-branch{grid-column:1/-1;align-items:flex-start}
+.portfolio-reserve-branch .segmented{max-width:100%;flex-wrap:wrap}
+.portfolio-reserve-branch strong,.portfolio-reserve-branch .segmented button{color:var(--ink);font-size:13px}
 .portfolio-field input{margin:0;width:100%;font-size:14px;min-height:39px}
 .portfolio-number{position:relative;display:block}
 .portfolio-number input{padding-right:39px;font-variant-numeric:tabular-nums;background:#fbfcf8}

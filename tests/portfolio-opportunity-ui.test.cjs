@@ -47,6 +47,34 @@ function setup(method, { weights = [30, 30], start = '2014-01-02', end = '2024-0
   return { ui, view, action, selectMethod, calls, downloads, accounts, runs };
 }
 
+test('scoring families expose only their implemented reserve branches and run the exact saved rule', async () => {
+  const u = setup('opportunity_discount_20', { weights: [0, 30], start: '2014-01-02', end: '2014-02-04', fee: 0 });
+  const selected = id => u.view().includes('data-value="' + id + '" aria-pressed="true"');
+  const familyMenu = () => u.view().match(/<summary id="portfolio-initialMethod"[^]*?<\/details>/)[0];
+  assert.ok(selected('opportunity_discount_20'), 'a saved 20% rule restores the correct branch');
+  assert.match(familyMenu(), /本金投入方式：低位评分加仓/);
+  assert.doesNotMatch(familyMenu(), /opportunity_discount_\d+|opportunity_mixed_\d+|预留/);
+  await u.selectMethod('discount');
+  assert.ok(selected('opportunity_discount_20'), 'choosing the same family preserves its active branch');
+  for (const [method, firstBuy, threshold] of [['opportunity_discount_10', 27000, 35], ['opportunity_discount_20', 24000, 50]]) {
+    await u.action('reserve-branch', method);
+    assert.ok(selected(method)); const n = u.runs.length;
+    await u.action('run'); const r = u.runs[n];
+    assert.equal(r.config.initialMethod, method);
+    assert.equal(r.curve[0].positionPrincipal, firstBuy);
+    assert.equal(r.systematic.daily[0].metadata.opportunity.threshold, threshold);
+    await u.action('tab', 'settings');
+  }
+  await u.selectMethod('mixed');
+  assert.match(familyMenu(), /本金投入方式：低位与恐慌评分加仓/);
+  assert.match(u.view(), /首笔股票预算预留<\/span><strong>10%（35 分起买）/);
+  assert.doesNotMatch(u.view(), /data-action="portfolio-reserve-branch"/);
+  const n = u.runs.length;
+  await u.action('run'); assert.equal(u.runs[n].config.initialMethod, 'opportunity_mixed_10');
+  await u.action('tab', 'settings'); await u.selectMethod('dual_risk_guard');
+  assert.doesNotMatch(u.view(), /首笔股票预算预留|data-action="portfolio-reserve-branch"/);
+});
+
 test('draft strategy changes keep the last successful ledger visible until the selected strategy completes', async () => {
   const forbidden = [], u = setup('dual_risk_guard', {weights: [0, 30], start: '2010-02-11', end: '2010-06-30', fee: 0, forbidden});
   await u.action('run');

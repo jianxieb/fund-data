@@ -19,7 +19,11 @@
   if (draft.monthly == null || draft.monthly === '') draft.monthly = 0;
   draft.tax = { ...P.taxConfig(), ...draft.tax, overrides: { ...(draft.tax?.overrides || {}) } };
   const colors = ['#35654a', '#768855', '#aa8253', '#7d839f', '#64a6a1', '#ad6f78', '#8ba9cf', '#aab865'];
-  const opportunityMethods = new Set(['opportunity_discount_10', 'opportunity_discount_20', 'opportunity_mixed_10']);
+  const opportunityRules = P.opportunityDefinitions, opportunityMethods = new Set(Object.keys(opportunityRules));
+  const scoreFamilies = new Map([['discount', '低位评分加仓'], ['mixed', '低位与恐慌评分加仓']]);
+  const reserveBranches = family => Object.entries(opportunityRules).filter(([, rule]) => rule.family === family);
+  const initialMethodOptions = [...P.initialMethods.filter(([id]) => !opportunityMethods.has(id)),
+    ...Array.from(scoreFamilies).filter(([family]) => reserveBranches(family).length)];
   const systematicMethods = new Set(['vix_panic_reentry', 'relative_strength_rotation', 'dual_risk_guard', ...opportunityMethods]);
   const typeName = { stock: '个股', fund: '基金', etf: 'ETF' };
   const config = () => ({ ...draft, feeBasis: 'net', feeOverrides: {} });
@@ -168,7 +172,7 @@
       }
       P.validateConfig(params, new Set(catalog.assets.map(a => a.id)));
       const positiveIds = new Set(params.positions.filter(p => p.weight > 0).map(p => p.id));
-      const needsOpportunityVix = opportunityMethods.has(params.initialMethod) && (positiveIds.has('us:TQQQ') || params.initialMethod === 'opportunity_mixed_10');
+      const needsOpportunityVix = opportunityMethods.has(params.initialMethod) && (positiveIds.has('us:TQQQ') || opportunityRules[params.initialMethod].family === 'mixed');
       const marketContext = ['vix_panic_reentry', 'dual_risk_guard'].includes(params.initialMethod) || needsOpportunityVix ? await loadMarketContext() : null;
       const selected = params.positions.filter(p => p.weight > 0).map(p => asset(p.id));
       await Promise.all(selected.map(loadHistory));
@@ -284,13 +288,21 @@
       number('买卖交易费率', 'transactionFee', draft.transactionFee, 5, 'any', '%') +
       '<div class="portfolio-field portfolio-settlement"><span>期末处理</span>' + settlement + '<small id="portfolio-settlement-note">' + H.esc(settlementHint()) + '</small></div></div></div></section>';
   }
-  function opportunityTerms(method) {
-    return method === 'opportunity_discount_20' ? {reserve: .2, threshold: 50} : {reserve: .1, threshold: 35};
+  function reserveControl(method) {
+    const rule = opportunityRules[method];
+    if (!rule) return '';
+    const branches = reserveBranches(rule.family);
+    const label = r => Math.round(r.reserve * 100) + '%（' + r.threshold + ' 分起买）';
+    return '<div class="portfolio-field portfolio-reserve-branch"><span id="portfolio-reserve-label">首笔股票预算预留</span>' +
+      (branches.length === 1 ? '<strong>' + label(rule) + '</strong>' :
+        '<div class="segmented" role="group" aria-labelledby="portfolio-reserve-label">' + branches.map(([id, variant]) =>
+          btn(label(variant), 'reserve-branch', id === method ? 'active' : '',
+            'id="portfolio-branch-' + id + '" data-value="' + id + '" aria-pressed="' + (id === method) + '"')).join('') + '</div>') + '</div>';
   }
   function purchasePlanMarkup() {
     const method = draft.initialMethod, unit = currency().unit, fee = draft.transactionFee / 100;
     const money = value => H.money(value, 2) + ' ' + unit;
-    const opportunity = opportunityMethods.has(method), {reserve, threshold} = opportunityTerms(method);
+    const opportunity = opportunityRules[method], {reserve, threshold} = opportunity || {};
     const instructions = {
       lump_sum: { first: '首个共同交易日收盘，按配置比例一次性买入。此后涨跌不会触发这笔本金重复买入。', next: [], execution: [] },
       vix_panic_reentry: { first: '首个共同交易日收盘，按原比例一次性建仓；此后才执行VIX退出与回买。', next: ['VIX ÷ VIX3M > 1.10 连续10次，卖出全部TQQQ。', '离场至少5次观测且VIX从离场后峰值回落30%，或比值 < 1 连续5次，才买回。'], execution: ['回买金额 = TQQQ已到账专属现金 ÷（1 + 买入费率）；不动用USD ETF或原配置现金。', 'VIX取严格早于决策日的收盘；订单在决策后的下一共同收盘成交。持有状态不变时，不重复买入。', '恢复后，比值 < 1 连续5次才重新启用退出计数。'] },
@@ -374,8 +386,8 @@
     const field = (label, control) => '<div class="portfolio-field"><span>' + label + '</span>' + control + '</div>';
     return '<div class="portfolio-settings"><section class="card portfolio-settings-section portfolio-strategy-settings" aria-labelledby="portfolio-strategy-settings-title"><h2 id="portfolio-strategy-settings-title">交易策略</h2>' +
       '<div class="portfolio-decision" role="group" aria-label="本金投入"><div class="portfolio-decision-controls">' +
-      field('本金投入方式', menu('initialMethod', '本金投入方式', P.initialMethods, draft.initialMethod)) +
-      number('初始本金', 'initial', draft.initial, 1e12, '0.01', currency().unit) +
+      field('本金投入方式', menu('initialMethod', '本金投入方式', initialMethodOptions, opportunityRules[draft.initialMethod]?.family || draft.initialMethod)) +
+      number('初始本金', 'initial', draft.initial, 1e12, '0.01', currency().unit) + reserveControl(draft.initialMethod) +
       '</div><section class="portfolio-plan-panel" aria-labelledby="portfolio-opening-title"><h3 id="portfolio-opening-title">本金策略说明</h3><div id="portfolio-purchase-plan" class="portfolio-purchase-plan">' + purchasePlanMarkup() + '</div></section></div>' +
       '<div class="portfolio-decision" role="group" aria-label="持续投入" aria-describedby="portfolio-contribution-plan"><div class="portfolio-decision-controls">' +
       field('持续投入方式', menu('contributionMethod', '持续投入方式', P.contributionMethods, draft.contributionMethod)) +
@@ -1040,7 +1052,7 @@
         collect(s.name + ' · 汇率历史补档', basis, s.sourceUrl, s.first, s.asOf);
       }
     }
-    if (['vix_panic_reentry', 'dual_risk_guard', 'opportunity_mixed_10'].includes(method) || (opportunityMethods.has(method) && has('us:TQQQ'))) {
+    if (['vix_panic_reentry', 'dual_risk_guard'].includes(method) || (opportunityMethods.has(method) && (opportunityRules[method].family === 'mixed' || has('us:TQQQ')))) {
       for (const code of ['VIX', 'VIX3M']) {
         const s = marketContext?.sources?.[code];
         collect(code + ' · 策略参考', '波动率指数收盘值', s?.actualUrl || s?.url, s?.first, s?.asOf);
@@ -1230,9 +1242,17 @@
       case 'remove': draft.positions = draft.positions.filter(p => p.id !== val); delete draft.tax.overrides[val]; touch(); break;
       case 'clear': draft.positions = []; draft.tax.overrides = {}; touch(); break;
       case 'equal': draft.positions.forEach((p, i) => { p.weight = i === draft.positions.length - 1 ? 100 - Math.floor(10000 / draft.positions.length) / 100 * i : Math.floor(10000 / draft.positions.length) / 100; }); touch(); break;
+      case 'reserve-branch':
+        if (!opportunityMethods.has(val) || opportunityRules[val].family !== opportunityRules[draft.initialMethod]?.family) return;
+        draft.initialMethod = val; touch(); update();
+        document.getElementById('portfolio-branch-' + val)?.focus({preventScroll: true});
+        return;
       case 'select': {
         const field = button.dataset.field;
         if (field === 'years') draft.years = /^\d+$/.test(val) ? Number(val) : val;
+        else if (field === 'initialMethod' && scoreFamilies.has(val)) {
+          if (opportunityRules[draft.initialMethod]?.family !== val) draft.initialMethod = reserveBranches(val)[0][0];
+        }
         else if (['currency', 'rebalance', 'initialMethod', 'contributionMethod'].includes(field)) draft[field] = val;
         touch(); break;
       }
