@@ -424,7 +424,7 @@
     const hasFund = draft.positions.some(p => p.weight > 0 && ['fund', 'etf'].includes(asset(p.id)?.kind));
     return H.card('我的组合', draft.positions.length + '只标的', '<div class="portfolio-composition"><div id="portfolio-allocation-summary" aria-live="polite">' + allocationMarkup() + '</div>' + dividendControl() +
       (draft.positions.length ? draft.positions.map(holdingRow).join('') : '<div class="portfolio-empty-holdings"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 8h13v13H8zM27 8h13v13H27zM8 27h13v13H8zM33.5 27v13M27 33.5h13"/></svg><h3>从标的库开始构建</h3><p>ETF、个股和基金可以放在同一个组合中。</p></div>') + (hasFund ? '<p class="portfolio-product-fees">基金与 ETF 的历史收益已扣产品年费。</p>' : '') + '</div>',
-      '<div class="actions">' + btn('均分权重', 'equal', 'text-link small', draft.positions.length ? '' : 'disabled') + (draft.positions.length ? btn('清空', 'clear', 'text-link small') : '') + '</div>',
+      '<div class="actions portfolio-weight-actions">' + btn('均分权重', 'equal', 'text-link', draft.positions.length ? '' : 'disabled') + (draft.positions.length ? btn('清空', 'clear', 'text-link') : '') + '</div>',
       '<div class="actions portfolio-config-actions">' + btn('导入配置', 'import', 'btn portfolio-export') + btn('导出配置', 'save', 'btn portfolio-export', draft.positions.length ? '' : 'disabled') + '<input type="file" id="portfolio-import" accept="application/json,.json" hidden></div>');
   }
   function filterAssets(assets, filters) {

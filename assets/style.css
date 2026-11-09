@@ -697,6 +697,7 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-dates input{margin:0}
 .portfolio-builder{display:grid;grid-template-columns:minmax(360px,.8fr) minmax(0,1.2fr);gap:22px;align-items:start}
 .portfolio-builder .card-head{padding-bottom:16px;border-bottom:1px solid #edf0e7;min-height:80px}
+.portfolio-weight-actions .text-link{min-height:44px;min-width:44px;padding:4px 8px;font-size:16px;line-height:1.4;font-weight:500}
 .portfolio-composition{padding:20px 24px 16px}
 .portfolio-dividend-control{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:15px 0;border-bottom:1px solid var(--line);font-size:14px}
 .portfolio-dividend-control button{min-height:36px}
