@@ -1060,18 +1060,15 @@
     return rows;
   }
   function resultContext(r) {
-    const cfg = r.config, strategy = P.strategyNames(cfg), methods = [], { name, unit } = currency(cfg);
+    const cfg = r.config, strategy = P.strategyNames(cfg), methods = [], { name } = currency(cfg);
     if (cfg.initial > 0 || hasResultSignals(r)) methods.push(strategy.initial);
     if (cfg.monthly > 0) methods.push(strategy.contribution);
     const position = (label, weight) => '<span class="portfolio-run-position">' + H.esc(label) + ' <b>' + inputValue(weight) + '%</b></span>';
     const allocations = r.holdings.map(h => position(!h.code || h.name.includes(h.code) ? h.name : h.name + ' (' + h.code + ')', h.targetWeight));
     if (r.cashWeight > 1e-8) allocations.push(position('现金', r.cashWeight));
-    const first = r.curve[0], reserve = first.systematicCash;
-    const opening = opportunityMethods.has(cfg.initialMethod) && Array.isArray(reserve) ?
-      '<dt>首日实际持仓</dt><dd><span>' + H.money(P.accountAllocation(first).securitiesValue, 2) + ' ' + unit + '</span><span class="portfolio-run-meta">待加仓现金 ' + H.money(reserve.reduce((s, n) => s + n, 0), 2) + ' ' + unit + '</span></dd>' : '';
     return '<dl class="portfolio-run-context"><dt>目标配置</dt><dd class="portfolio-run-positions">' + allocations.join('') + '</dd>' +
       '<dt>' + (resultKey === signature() ? '本次策略' : '上次模拟策略') + '</dt><dd><strong class="portfolio-run-strategy">' + H.esc(methods.join(' ＋ ')) + '</strong></dd>' +
-      opening + '<dt>回测区间</dt><dd><span>' + H.esc(r.start) + ' 至 ' + H.esc(r.end) + '</span><span class="portfolio-run-meta">' + H.esc(name) + '计价</span>' + resultExtendControl(r) + '</dd></dl>';
+      '<dt>回测区间</dt><dd><span>' + H.esc(r.start) + ' 至 ' + H.esc(r.end) + '</span><span class="portfolio-run-meta">' + H.esc(name) + '计价</span>' + resultExtendControl(r) + '</dd></dl>';
   }
   function extendBlock(r) {
     return resultKey !== signature() ? '参数已改动，请先重新模拟' : r.config.tax?.liquidate ? '期末已清仓，不能延续账户' : running ? '正在更新行情' : '';

@@ -122,8 +122,8 @@ test('draft strategy changes keep the last successful ledger visible until the s
     const text = report.ops.filter(op => op.type === 'text').map(op => op.value).join('');
     assert.ok(text.includes('QQQ美元复权价、VIX/VIX3M · 买入门槛 ' + threshold + ' 分'));
     assert.ok(u.view().includes('class="portfolio-run-strategy">' + name));
-    assert.ok(u.view().includes('<dt>首日实际持仓</dt><dd><span>' + money(principal) + ' 元'));
-    assert.ok(u.view().includes('待加仓现金 ' + money(reserve) + ' 元'));
+    assert.equal(r.curve[0].systematicCash.reduce((a, b) => a + b, 0), reserve);
+    assert.doesNotMatch(u.view().match(/<dl class="portfolio-run-context">([\s\S]*?)<\/dl>/)[1], /首日实际持仓|待加仓现金/);
     assert.ok(u.view().includes(money(r.profit)));
   }
   assert.notEqual(results[0].value, results[1].value);
@@ -136,7 +136,7 @@ test('draft strategy changes keep the last successful ledger visible until the s
   await u.selectMethod('opportunity_discount_20'); await inflight;
   await u.action('tab', 'results');
   assert.equal(u.runs.length, n);
-  assert.ok(u.view().includes('<dt>首日实际持仓</dt><dd><span>24,000.00 元'));
+  assert.ok(u.view().includes(money(results[1].profit)));
 });
 
 for (const [method, weights] of [['opportunity_discount_10', [30, 30]], ['opportunity_discount_20', [20, 40]], ['opportunity_mixed_10', [40, 20]]]) {
