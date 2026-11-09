@@ -231,6 +231,24 @@
   function number(label, field, value, max, step = 'any', suffix = '') {
     return '<label class="portfolio-field"><span>' + label + '</span><span class="portfolio-number"><input id="portfolio-' + field + '" type="number" min="0" max="' + max + '" step="' + step + '" value="' + inputValue(value) + '" data-portfolio-field="' + field + '" aria-label="' + label + '">' + (suffix ? '<span>' + suffix + '</span>' : '') + '</span></label>';
   }
+  function parseDateText(value) {
+    const text = value.trim();
+    const parts = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(text.replace(/[/.]/g, '-')) || /^(\d{4})(\d{2})(\d{2})$/.exec(text);
+    if (!parts) return '';
+    const iso = parts[1] + '-' + parts[2].padStart(2, '0') + '-' + parts[3].padStart(2, '0');
+    return M.validDate(iso) ? iso : '';
+  }
+  function customDates() {
+    const field = (key, label) => {
+      const value = String(draft[key] || ''), pickerLabel = '从日历选择' + label;
+      return '<div class="portfolio-date-field"><label for="portfolio-' + key + '">' + label + '</label><div class="portfolio-date-entry">' +
+        '<input type="text" id="portfolio-' + key + '" data-portfolio-field="' + key + '" placeholder="YYYY-MM-DD" inputmode="numeric" autocomplete="off" spellcheck="false" value="' + H.esc(value) + '">' +
+        '<span class="portfolio-calendar-control"><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M7.5 3v4m9-4v4M4 10h16"/></svg>' +
+        '<input type="date" id="portfolio-calendar-' + key + '" data-portfolio-field="calendar-' + key + '" aria-label="' + pickerLabel + '" title="' + pickerLabel + '" value="' + parseDateText(value) + '"></span></div></div>';
+    };
+    return '<div class="portfolio-dates" role="group" aria-label="自定义回测日期">' + field('start', '开始日') +
+      btn('互换', 'swap-dates', 'portfolio-date-swap', 'id="portfolio-swap-dates" aria-label="互换开始日和结束日"') + field('end', '结束日') + '</div>';
+  }
   let manualTaxChoice = false;
   const selectedTaxMode = () => manualTaxChoice ? 'custom' : taxScenario();
   function taxSummary() {
@@ -397,9 +415,9 @@
       '</div><section class="portfolio-plan-panel" aria-labelledby="portfolio-recurring-title"><h3 id="portfolio-recurring-title">追加安排</h3><p id="portfolio-contribution-plan">' + H.esc(contributionPlan()) + '</p></section></div>' +
       '<div class="portfolio-decision"><div class="portfolio-decision-controls">' + field('再平衡周期', menu('rebalance', '再平衡周期', [['none', '不再平衡'], ['month', '每月'], ['quarter', '每季度'], ['year', '每年']], draft.rebalance)) + '</div></div></section>' +
       '<div class="card portfolio-model-settings"><section class="portfolio-settings-section" aria-labelledby="portfolio-conditions-title"><h2 id="portfolio-conditions-title">回测条件</h2><div class="portfolio-backtest-row">' +
-      field('回测区间', menu('years', '回测区间', [[1, '近1年'], [2, '近2年'], [3, '近3年'], [5, '近5年'], [10, '近10年'], [15, '近15年'], [20, '近20年'], ['common', '共同历史'], ['custom', '自定义区间']], draft.years)) +
+      '<div class="portfolio-period-field">' + field('回测区间', menu('years', '回测区间', [[1, '近1年'], [2, '近2年'], [3, '近3年'], [5, '近5年'], [10, '近10年'], [15, '近15年'], [20, '近20年'], ['common', '共同历史'], ['custom', '自定义区间']], draft.years)) +
+      (draft.years === 'custom' ? customDates() : '') + '</div>' +
       field('计价币种', menu('currency', '投入与计价币种', [['CNY', '人民币 CNY'], ['USD', '美元 USD']], draft.currency)) + '</div>' +
-      (draft.years === 'custom' ? '<div class="portfolio-dates"><label>开始日<input type="date" id="portfolio-start" data-portfolio-field="start" value="' + H.esc(draft.start) + '"></label><label>结束日<input type="date" id="portfolio-end" data-portfolio-field="end" value="' + H.esc(draft.end) + '"></label></div>' : '') +
       '</section>' + taxSettings() + '</div></div>';
   }
   function holdingRow(position, index) {
@@ -1245,6 +1263,12 @@
       }
       case 'remove': draft.positions = draft.positions.filter(p => p.id !== val); delete draft.tax.overrides[val]; touch(); break;
       case 'clear': return confirmClear();
+      case 'swap-dates':
+        if (draft.years !== 'custom') return;
+        [draft.start, draft.end] = [draft.end, draft.start];
+        touch(); update();
+        document.getElementById('portfolio-swap-dates')?.focus({preventScroll: true});
+        return;
       case 'equal': draft.positions.forEach((p, i) => { p.weight = i === draft.positions.length - 1 ? 100 - Math.floor(10000 / draft.positions.length) / 100 * i : Math.floor(10000 / draft.positions.length) / 100; }); touch(); break;
       case 'reserve-branch':
         if (!opportunityMethods.has(val) || opportunityRules[val].family !== opportunityRules[draft.initialMethod]?.family) return;
@@ -1348,8 +1372,17 @@
     if (el.dataset.portfolioField) {
       const key = el.dataset.portfolioField;
       if (key.startsWith('tax-')) draft.tax[key.slice(4)] = el.value.trim() ? Number(el.value) : NaN;
-      else if (['start', 'end'].includes(key)) draft[key] = el.value;
-      else draft[key] = el.value.trim() ? Number(el.value) : key === 'monthly' && !el.validity.badInput ? 0 : NaN;
+      else if (key === 'start' || key === 'end') {
+        const iso = parseDateText(el.value);
+        draft[key] = iso || el.value.trim();
+        const picker = document.getElementById('portfolio-calendar-' + key);
+        if (picker) picker.value = iso;
+      } else if (key === 'calendar-start' || key === 'calendar-end') {
+        const side = key.slice(9);
+        draft[side] = el.value;
+        const input = document.getElementById('portfolio-' + side);
+        if (input) input.value = el.value;
+      } else draft[key] = el.value.trim() ? Number(el.value) : key === 'monthly' && !el.validity.badInput ? 0 : NaN;
       touch();
       if (key === 'initial') syncBudget(el);
       if (key.startsWith('tax-')) syncTax();
@@ -1426,6 +1459,7 @@
     if (el.id === 'portfolio-hide-boards') { hideBoards = el.checked; H.resetList(); update(); return; }
     if (el.dataset.portfolioWeight || el.dataset.portfolioAmount || el.dataset.portfolioField || el.dataset.portfolioTaxAsset) {
       handleInput(el);
+      if ((chartField === 'start' || chartField === 'end') && M.validDate(draft[chartField])) el.value = draft[chartField];
       if (el.dataset.portfolioField === 'monthly' && !el.value.trim() && !el.validity.badInput) el.value = '0';
     }
   }

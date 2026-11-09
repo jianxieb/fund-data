@@ -627,7 +627,7 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-decision:last-child{padding-bottom:0}
 .portfolio-strategy-settings>.portfolio-decision:first-of-type{padding-top:0}
 .portfolio-decision-controls>.portfolio-field:first-child>span:first-child,
-.portfolio-backtest-row>.portfolio-field>span:first-child,
+.portfolio-backtest-row .portfolio-field>span:first-child,
 .portfolio-tax-group>h3,
 .portfolio-fee-settlement>.portfolio-field>span:first-child{font-size:14px;font-weight:600;color:var(--ink)}
 .portfolio-decision .portfolio-menu summary{background:#f6f8f2}
@@ -650,7 +650,9 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-execution-rules li+li{margin-top:.25em}
 .portfolio-purchase-pending{color:#886427}
 .portfolio-backtest-row{display:flex;align-items:flex-start;flex-wrap:wrap;gap:12px 26px}
-.portfolio-backtest-row>.portfolio-field{width:166px}
+.portfolio-backtest-row>.portfolio-field,.portfolio-period-field{width:min(100%,166px)}
+.portfolio-period-field{min-width:0;container:portfolio-period / inline-size}
+.portfolio-period-field:has(.portfolio-dates){width:min(100%,376px)}
 .portfolio-tax-settings{min-width:0;container:tax-settings / inline-size}
 .portfolio-tax-controls,.portfolio-tax-group,.portfolio-fee-settlement{display:grid;grid-template-columns:minmax(0,1fr);align-items:start;gap:18px 26px}
 .portfolio-tax-group{row-gap:9px}
@@ -667,7 +669,6 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-tax-mode{align-items:flex-start}
 .portfolio-settings-section .portfolio-field>small{font-size:12px;line-height:1.55;color:var(--muted)}
 .portfolio-tax-overrides>summary{cursor:pointer;color:var(--green);font-size:13px}
-.portfolio-settings-section .portfolio-dates{padding:0;margin-top:14px}
 .portfolio-setting-choices{align-self:flex-start;flex-wrap:wrap}
 .portfolio-setting-choices button{min-height:32px;white-space:nowrap}
 .portfolio-benchmark-search{display:grid;gap:14px}
@@ -682,7 +683,7 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-benchmark-actions{display:flex;gap:16px;flex-wrap:wrap;justify-content:flex-end}
 .portfolio-benchmark-actions .btn{font-size:14px;min-height:40px;padding:8px 16px}
 .portfolio-product-fees{color:var(--muted);margin:14px 0 0;font-size:12px}
-@media(max-width:650px){.portfolio-settings-section{padding:18px}.portfolio-decision-controls{gap:9px 12px}.portfolio-plan-panel{padding:12px 14px}.portfolio-decision .portfolio-menu{min-width:0}.portfolio-backtest-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.portfolio-backtest-row>.portfolio-field{width:auto}.portfolio-setting-choices button{padding:6px 8px}}
+@media(max-width:650px){.portfolio-settings-section{padding:18px}.portfolio-decision-controls{gap:9px 12px}.portfolio-plan-panel{padding:12px 14px}.portfolio-decision .portfolio-menu{min-width:0}.portfolio-backtest-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.portfolio-backtest-row>.portfolio-field,.portfolio-period-field{width:100%}.portfolio-backtest-row:has(.portfolio-dates){grid-template-columns:minmax(0,1fr)}.portfolio-backtest-row:has(.portfolio-dates)>.portfolio-field{max-width:166px}.portfolio-setting-choices button{padding:6px 8px}}
 .portfolio-field{display:flex;flex-direction:column;gap:9px;font-size:12px;color:var(--muted);min-width:0}
 .portfolio-reserve-branch{grid-column:1/-1;align-items:flex-start}
 .portfolio-reserve-branch .segmented{max-width:100%;flex-wrap:wrap}
@@ -696,9 +697,24 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-menu summary{font-size:13px;min-height:39px;background:#fbfcf8}
 
 
-.portfolio-dates{display:flex;gap:20px;padding:0 24px 20px}
-.portfolio-dates label{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--muted)}
-.portfolio-dates input{margin:0}
+/* The two endpoints belong to the period selector; currency stays in its own field. */
+.portfolio-dates{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:end;gap:8px;margin-top:12px}
+.portfolio-date-field{display:grid;gap:5px;min-width:0}
+.portfolio-date-field>label{font-size:13px;color:#506454;white-space:nowrap}
+.portfolio-date-entry{position:relative;display:block;min-width:0}
+.portfolio-date-entry>input{display:block;width:100%;min-height:39px;margin:0;padding:7px 35px 7px 10px;font-size:14px;font-variant-numeric:tabular-nums}
+.portfolio-calendar-control{position:absolute;inset:2px 2px 2px auto;width:32px;display:grid;place-items:center;border-radius:6px;color:var(--green)}
+.portfolio-calendar-control:hover,.portfolio-date-swap:hover{background:var(--green-bg)}
+.portfolio-calendar-control:focus-within{outline:2px solid var(--green);outline-offset:-2px}
+.portfolio-calendar-control svg{width:16px;height:16px;pointer-events:none}
+.portfolio-calendar-control input[type=date]{position:absolute;inset:0;width:100%;height:100%;min-height:0;margin:0;padding:0;opacity:0;cursor:pointer}
+.portfolio-calendar-control input::-webkit-calendar-picker-indicator{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;cursor:pointer}
+.portfolio-date-swap{min-height:39px;min-width:44px;padding:6px 8px;border:1px solid var(--line);border-radius:7px;color:var(--green);font-size:14px;white-space:nowrap}
+@container portfolio-period (max-width:319px){
+  .portfolio-dates{grid-template-columns:minmax(0,1fr) auto;gap:8px 12px}
+  .portfolio-date-field{grid-column:1}
+  .portfolio-date-swap{grid-column:2;grid-row:1/span 2;align-self:center}
+}
 .portfolio-builder{display:grid;grid-template-columns:minmax(360px,.8fr) minmax(0,1.2fr);gap:22px;align-items:start}
 .portfolio-builder .card-head{padding-bottom:16px;border-bottom:1px solid #edf0e7;min-height:80px}
 .portfolio-weight-actions .text-link{min-height:44px;min-width:44px;padding:4px 8px;font-size:16px;line-height:1.4;font-weight:500}
@@ -911,7 +927,7 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 @media(max-width:1150px){.portfolio-builder{grid-template-columns:minmax(310px,1fr) minmax(0,1.1fr)}.portfolio-filters{gap:10px}.portfolio-library-row{padding:14px 19px}.portfolio-composition{padding:20px 19px 16px}}
 @media(max-width:1050px){.portfolio-builder{grid-template-columns:1fr}}
 @media(max-width:900px){.portfolio-builder{grid-template-columns:1fr}.portfolio-empty-holdings{min-height:160px;padding:25px 0}.portfolio-library-scroll{max-height:340px}.portfolio-result-placeholder{gap:25px;padding:25px}.portfolio-results .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.portfolio-result-notes{gap:16px}}
-@media(max-width:650px){.portfolio-dates{padding:0 18px 18px;flex-wrap:wrap}.portfolio-builder{gap:16px}.portfolio-library-controls{padding:18px}.portfolio-result-placeholder{grid-template-columns:1fr}.portfolio-result-placeholder svg{display:none}.portfolio-chart-legend{gap:12px;padding-left:0;font-size:11px}.portfolio-plot text{font-size:13px}.portfolio-chart-body{padding:15px 10px 10px}.portfolio-results .card-head{align-items:flex-start;flex-wrap:wrap}.portfolio-year-grid{gap:18px;padding:22px 18px}}
+@media(max-width:650px){.portfolio-builder{gap:16px}.portfolio-library-controls{padding:18px}.portfolio-result-placeholder{grid-template-columns:1fr}.portfolio-result-placeholder svg{display:none}.portfolio-chart-legend{gap:12px;padding-left:0;font-size:11px}.portfolio-plot text{font-size:13px}.portfolio-chart-body{padding:15px 10px 10px}.portfolio-results .card-head{align-items:flex-start;flex-wrap:wrap}.portfolio-year-grid{gap:18px;padding:22px 18px}}
 @media(max-width:650px){.portfolio-library-row{grid-template-columns:minmax(0,1fr) auto}.portfolio-library-main{grid-column:1;grid-row:1}.portfolio-library-metrics{grid-column:1;grid-row:2;width:min(280px,100%);justify-self:end}.portfolio-library-row>.portfolio-add{grid-column:2;grid-row:1/3}}
 
 .annual-fee-note{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);white-space:nowrap}

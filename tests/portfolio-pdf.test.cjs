@@ -658,6 +658,23 @@ test('a fresh systematic simulation keeps the chosen end date when newer history
   assert.equal(account.end, '2025-06-03');
 });
 
+test('custom dates can be typed, picked and swapped without running a different date range', async () => {
+  const f = uiFixture();
+  await f.action('select', { field: 'years', value: 'custom' });
+  const edit = (key, value) => f.ui.handleChange({ id: 'portfolio-' + key, dataset: { portfolioField: key }, value });
+  await edit('start', '20250230');
+  await edit('end', '2024/6/3');
+  await f.action('run');
+  assert.match(f.ui.view(f.helpers), /有效且先后有序的起止日期/);
+  await edit('calendar-start', '2025-06-03');
+  await f.action('swap-dates');
+  const settings = f.ui.view(f.helpers);
+  assert.match(settings, /id="portfolio-start"[^>]*value="2024-06-03"/);
+  assert.match(settings, /id="portfolio-calendar-end"[^>]*value="2025-06-03"/);
+  await f.action('run');
+  assert.match(f.ui.view(f.helpers), /2024-06-03 至 2025-06-03/);
+});
+
 function accountUiFixture(configure) {
   const f = uiFixture(input => {
     Object.assign(input.config, { monthly: 0, rebalance: 'none', transactionFee: 0 });
