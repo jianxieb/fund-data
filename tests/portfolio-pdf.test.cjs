@@ -246,8 +246,21 @@ test('clearing a benchmark during a slow history download keeps the chart and ex
   assert.ok(result.snapshots.filter(w => !w.error).every(w => !w.benchmark));
 });
 
+function selectionDialog(f) {
+  let apply, html;
+  const dialog = { open: false, close() { this.open = false; } };
+  const get = f.context.document.getElementById;
+  f.context.document.getElementById = id => id === 'dialog' ? dialog :
+    id === 'portfolio-selection-apply' ? { addEventListener(_, fn) { apply = fn; } } :
+    id === 'portfolio-selection-cancel' ? { focus() {} } : get(id);
+  f.helpers.modalTitle = title => '<h2>' + title + '</h2>';
+  f.helpers.openModal = value => { html = value; dialog.open = true; };
+  return { cancel: () => dialog.close(), confirm: () => apply(), text: () => html };
+}
+
 test('workspace tabs isolate settings, asset editing and results while preserving drafts and the last run', async () => {
   const f = uiFixture(input => { input.config.positions = []; });
+  const dialog = selectionDialog(f);
   const view = () => f.ui.view(f.helpers), tab = value => f.action('tab', { value });
   const selected = name => assert.match(view(), new RegExp('data-value="' + name + '" role="tab"[^>]*aria-selected="true"'));
   selected('settings');
@@ -260,6 +273,13 @@ test('workspace tabs isolate settings, asset editing and results while preservin
   const [asset, benchmark] = f.input.catalog.assets;
   f.ui.handleInput({ id: 'portfolio-search', value: asset.code, dataset: {} });
   await f.action('add', { value: asset.id });
+  assert.match(dialog.text(), /加入我的组合/);
+  assert.ok(dialog.text().includes(asset.name));
+  dialog.cancel();
+  assert.doesNotMatch(view(), /data-portfolio-weight=/);
+  await f.action('add', { value: asset.id });
+  dialog.confirm();
+  assert.match(view(), /data-portfolio-weight=/);
   await tab('settings');
   assert.match(view(), /id="portfolio-monthly"[^>]*value="777"/);
   await tab('results');
@@ -1092,6 +1112,29 @@ test('retired saved entry methods retain allocations and require an explicit rep
     html = f.ui.view(f.helpers);
     assert.doesNotMatch(html, /综合加仓分数|回撤与期权恐慌|历史研究分数|data-value="entry_/);
   }
+});
+
+test('importing a saved composition previews the change and keeps the prior result until rerun', async () => {
+  const f = uiFixture(), dialog = selectionDialog(f);
+  await f.action('run');
+  const oldSummary = summaryOf(f.ui.view(f.helpers));
+  await f.action('tab', { value: 'holdings' });
+  const next = { ...f.input.config, schemaVersion: 1, positions: [{ id: 'us:TWO', weight: 30 }], initial: 80000 };
+  const file = { name: '组合.json', size: 1000, text: async () => JSON.stringify(next) };
+  const selectFile = () => f.ui.handleChange({ id: 'portfolio-import', files: [file] });
+  const saved = async () => { await f.action('save'); return JSON.parse(f.downloads.at(-1)[1]); };
+  await selectFile();
+  assert.ok(dialog.text().includes(file.name));
+  assert.match(dialog.text(), /TWO 30%/);
+  dialog.cancel();
+  assert.deepEqual((await saved()).positions, f.input.config.positions);
+  await selectFile(); dialog.confirm();
+  const applied = await saved();
+  assert.deepEqual(applied.positions, next.positions);
+  assert.equal(applied.initial, next.initial);
+  await f.action('tab', { value: 'results' });
+  assert.equal(summaryOf(f.ui.view(f.helpers)), oldSummary);
+  assert.match(f.ui.view(f.helpers), /上次模拟策略/);
 });
 
 test('retired imported methods fail explicitly without replacing the current allocation or method', async () => {

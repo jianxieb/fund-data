@@ -463,7 +463,7 @@
     const performance = pickerMetrics(row);
     return '<div class="portfolio-library-row"><div class="portfolio-library-main"><strong>' + H.esc(row.name) + ((row.leverage || 1) > 1 ? tag(row.leverage + '倍', 'warn') : '') + '</strong><span>' + H.esc(row.code) + ' · ' + H.esc(typeName[row.kind]) + ' · ' + (row.market === 'us' ? '海外 · 美元' : '境内 · 人民币') + ' · ' + H.esc(row.category || '') + '</span><small>' + H.esc(row.status === 'available' ? row.first + ' — ' + row.asOf : row.missing) + '</small>' +
       (status ? '<div class="portfolio-stock-status"><span>' + H.esc(status.label) + '</span>' + H.action('研究详情', 'stock-detail', 'text-link small', 'data-code="' + H.esc(stock.c) + '" aria-label="' + H.esc(stock.n + '研究详情') + '"') + '</div>' : '') + '</div>' + performance +
-      btn(selected ? '已选' : '+', 'add', 'portfolio-add' + (selected ? ' selected' : ''), 'data-value="' + H.esc(row.id) + '" aria-label="' + H.esc((selected ? '已选择' : '添加') + row.name) + '"' + (selected ? ' disabled' : '')) + '</div>';
+      btn(selected ? '已选' : '+', 'add', 'portfolio-add' + (selected ? ' selected' : ''), 'data-value="' + H.esc(row.id) + '" aria-haspopup="dialog" aria-label="' + H.esc((selected ? '已选择' : '添加') + row.name) + '"' + (selected ? ' disabled' : '')) + '</div>';
   }
   function library() {
     const rows = filterAssets(catalog?.assets || [], { query, kind, market, hideBoards });
@@ -1235,6 +1235,19 @@
     if (result.cash > .005) rows.push(['cash:' + code, '', '现金', result.start, result.end, code, 0, 0, 0, 0, result.cashWeight, result.cash / result.value * 100, result.cash, 0, 0, '', '', '', '零息现金', 0, 0, 0, 0, 0, 0, result.cash, '']);
     H.download('长衡-持仓收益明细-' + result.start + '_' + result.end + '.csv', M.csv(rows), 'text/csv;charset=utf-8');
   }
+  function confirmComposition(title, description, confirmLabel, apply) {
+    H.openModal('<div class="portfolio-selection-confirm">' + H.modalTitle(title) +
+      '<p>' + H.esc(description) + '</p><div class="actions">' +
+      H.action('取消', 'close', 'btn', 'id="portfolio-selection-cancel"') +
+      '<button type="button" class="btn primary" id="portfolio-selection-apply">' + confirmLabel + '</button></div></div>');
+    const dialog = document.getElementById('dialog');
+    document.getElementById('portfolio-selection-apply').addEventListener('click', () => {
+      if (!dialog.open) return;
+      dialog.close();
+      apply(); touch(); update();
+    }, {once: true});
+    document.getElementById('portfolio-selection-cancel').focus({preventScroll: true});
+  }
   function handleAction(button) {
     const act = button.dataset.action.replace('portfolio-', ''), val = button.dataset.value;
     switch (act) {
@@ -1246,9 +1259,13 @@
         return;
       case 'retry': loadError = ''; ensureCatalog(); break;
       case 'run': if (!exportingPdf) return run(); return;
-      case 'add':
-        if (asset(val) && !draft.positions.some(p => p.id === val)) draft.positions.push({ id: val, weight: draft.positions.length ? 0 : 100 });
-        touch(); break;
+      case 'add': {
+        const row = asset(val);
+        if (!row || draft.positions.some(p => p.id === val)) return;
+        const weight = draft.positions.length ? 0 : 100;
+        return confirmComposition('加入我的组合？', row.name + '（' + row.code + '） · 初始权重 ' + weight + '%', '确认加入',
+          () => draft.positions.push({ id: val, weight }));
+      }
       case 'remove': draft.positions = draft.positions.filter(p => p.id !== val); delete draft.tax.overrides[val]; touch(); break;
       case 'clear': draft.positions = []; draft.tax.overrides = {}; touch(); break;
       case 'equal': draft.positions.forEach((p, i) => { p.weight = i === draft.positions.length - 1 ? 100 - Math.floor(10000 / draft.positions.length) / 100 * i : Math.floor(10000 / draft.positions.length) / 100; }); touch(); break;
@@ -1424,8 +1441,12 @@
       try {
         if (file.size > 1024 * 1024) throw new Error('配置文件大于1MB');
         const next = P.sanitizeDraft(JSON.parse(await file.text()), new Set(catalog.assets.map(a => a.id)));
-        manualTaxChoice = false; draft = { ...defaults, ...next }; delete draft.feeBasis;
-        importError = ''; touch();
+        el.value = '';
+        const holdings = next.positions.slice(0, 3).map(p => (asset(p.id)?.code || p.id) + ' ' + inputValue(p.weight) + '%').join('、');
+        return confirmComposition('导入组合配置？', (file.name || '所选文件') + ' 包含 ' + next.positions.length +
+          ' 只标的（' + holdings + (next.positions.length > 3 ? ' 等' : '') + '）。确认后将替换当前持仓和模拟设置。', '确认导入', () => {
+          manualTaxChoice = false; draft = { ...defaults, ...next }; delete draft.feeBasis; importError = '';
+        });
       } catch (e) { importError = '配置导入失败：' + e.message; }
       update(); return;
     }

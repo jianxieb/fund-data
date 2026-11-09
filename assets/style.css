@@ -520,6 +520,9 @@ dialog:has(.stock-detail){width:min(1180px,94vw);max-width:1180px}
 
 @media(max-width:900px){.fund-controls{grid-template-columns:1fr;gap:12px}.fund-controls .return-controls{flex-direction:row;align-items:center;justify-content:space-between;width:100%;flex-wrap:wrap}.fund-controls .period-control{justify-content:flex-start;flex-wrap:wrap}}
 #dialog:has(.fund-columns){width:min(500px,calc(100% - 32px))}
+#dialog:has(.portfolio-selection-confirm){width:min(460px,calc(100% - 32px))}
+.portfolio-selection-confirm>p{overflow-wrap:anywhere}
+.portfolio-selection-confirm .actions{justify-content:flex-end;margin-top:20px}
 .fund-column-options{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin:16px 0 22px}
 .fund-column-options label{display:flex;align-items:center;gap:9px;padding:10px 4px;font-size:13px;cursor:pointer}
 .fund-column-options input{width:16px;min-height:16px;margin:0;flex:none}
