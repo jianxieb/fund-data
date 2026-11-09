@@ -70,7 +70,7 @@
       if (Array.isArray(m.phaseReviews)) m.phaseReviews.forEach((review, i) => out.push(['第' + (i + 1) + '批记忆', review ? review.day + '复核；来源 ' + review.sourceDay + '，相对增长 ' + n(review.ratio) + '；保留方向：' + (review.leader === 0 ? 'USD' : review.leader === 1 ? 'TQQQ' : '用户原比例') : '尚未形成方向，使用用户原比例。']));
     } else {
       const v = m.vixDecision;
-      out.push(['VIX比值', n(m.vixValue) + ' ÷ ' + n(m.vix3mValue) + ' = ' + n(m.vixRatio) + '；来源 ' + (m.vixDay || '—') + '。']);
+      out.push(['VIX比值', 'R = VIX ÷ VIX3M = ' + n(m.vixValue) + ' ÷ ' + n(m.vix3mValue) + ' = ' + n(m.vixRatio) + '；来源 ' + (m.vixDay || '—') + '。']);
       if (v) {
         if (v.previousOn) {
           out.push(['VIX退出条件', 'R > 1.10：' + yes(v.stressed) + '；退出计数' + (v.armedForExit ? '已启用' : '未启用') + '；本次连续 ' + n(v.exitCountTested) + ' / 10 次。' + (v.exitTriggered ? '达到10次，来源日状态从持有切换为退出。' : '未触发退出，沿用持有状态。')]);
