@@ -60,9 +60,6 @@
     error = ''; errorField = ''; persist();
     const label = document.getElementById('portfolio-dirty');
     if (label) label.textContent = draftNotice();
-    const extend = document.getElementById('portfolio-extend-latest'), reason = document.getElementById('portfolio-extend-reason');
-    if (extend && result) extend.disabled = !!extendBlock(result);
-    if (reason && result) reason.textContent = extendBlock(result);
     syncPurchasePlan();
   }
   function ensureCatalog() {
@@ -161,14 +158,13 @@
     }
     if (account === result) update();
   }
-  async function run({ extend = false } = {}) {
+  async function run() {
     if (running || !catalog) return;
-    if (extend && (!result || resultKey !== signature() || result.config.tax?.liquidate)) return;
     for (const position of draft.positions) {
       if (position.weight == null || typeof position.weight === 'string' && !position.weight.trim()) position.weight = 0;
     }
     persist();
-    const originalSignature = signature(), previousStart = result?.start;
+    const originalSignature = signature();
     const params = JSON.parse(JSON.stringify(config())), token = ++runId;
     let showResults = false;
     try { P.validateConfig(params, new Set(catalog.assets.map(a => a.id))); }
@@ -178,7 +174,6 @@
       let refreshMissing = '';
       try { await refreshCatalog(); }
       catch (e) {
-        if (extend) throw e;
         refreshMissing = '未能确认最新行情：' + e.message + '。本次模拟使用已保存的历史数据。';
       }
       P.validateConfig(params, new Set(catalog.assets.map(a => a.id)));
@@ -196,14 +191,6 @@
       // a valid user's combination impossible to simulate.
       if (benchmark && !selected.some(a => a.id === benchmark.id)) await loadHistory(benchmark).catch(() => {});
       if (token !== runId || originalSignature !== signature()) return;
-      if (extend) {
-        const rows = selected.map(a => histories.get(a.id).series);
-        const common = rows.slice(1).map(series => new Set(series.map(row => row[0])));
-        const fxEnd = selected.some(a => a.currency !== currency(params).code) ? histories.get(catalog.fx.id).series.at(-1)[0] : '9999-12-31';
-        const latest = rows[0].filter(row => row[0] <= fxEnd && common.every(days => days.has(row[0]))).at(-1)?.[0];
-        if (!latest || latest < previousStart) throw new Error('最新历史没有覆盖原模拟起点的共同交易日');
-        Object.assign(params, { years: 'custom', start: previousStart, end: latest });
-      }
       const input = { catalog, histories: Object.fromEntries(histories), config: params, fxHistory: histories.get(catalog.fx?.id), ...(marketContext ? { marketContext } : {}) };
       const computed = P.simulate(input);
       if (computed.error) {
@@ -216,9 +203,9 @@
           computed.lumpSumComparison = P.simulate({ ...input, config: { ...params, initialMethod: 'lump_sum', benchmarkId: '' } });
         }
         computed.catalogRefresh = { checkedAt: new Date().toISOString(), available: !refreshMissing, missing: refreshMissing || null };
-        if (extend && signature() === originalSignature) { Object.assign(draft, { years: params.years, start: params.start, end: params.end }); persist(); }
         dailyDay = computed.systematic?.daily?.at(-1)?.day || '';
-        if (!extend) { additionBudget = params.monthly > 0 ? params.monthly : 10000; resultTab = 'chart'; }
+        additionBudget = params.monthly > 0 ? params.monthly : 10000;
+        resultTab = 'chart';
         chartInputs.set(computed, { input, status: 'idle', refs: null, error: '' });
         result = computed; resultKey = JSON.stringify(params);
         showResults = resultKey === signature();
@@ -1083,16 +1070,7 @@
     if (r.cashWeight > 1e-8) allocations.push(position('现金', r.cashWeight));
     return '<dl class="portfolio-run-context"><dt>目标配置</dt><dd class="portfolio-run-positions">' + allocations.join('') + '</dd>' +
       '<dt>' + (resultKey === signature() ? '本次策略' : '上次模拟策略') + '</dt><dd><strong class="portfolio-run-strategy">' + H.esc(methods.join(' ＋ ')) + '</strong></dd>' +
-      '<dt>回测区间</dt><dd><span>' + H.esc(r.start) + ' 至 ' + H.esc(r.end) + '</span><span class="portfolio-run-meta">' + H.esc(name) + '计价</span>' + resultExtendControl(r) + '</dd></dl>';
-  }
-  function extendBlock(r) {
-    return resultKey !== signature() ? '参数已改动，请先重新模拟' : r.config.tax?.liquidate ? '期末已清仓，不能延续账户' : running ? '正在更新行情' : '';
-  }
-  function resultExtendControl(r) {
-    if (!systematicMethods.has(r.config.initialMethod)) return '';
-    const blocked = extendBlock(r);
-    return btn('延续到最新行情', 'extend-latest', 'text-link', 'id="portfolio-extend-latest" aria-describedby="portfolio-extend-reason"' + (blocked ? ' disabled' : '')) +
-      '<small id="portfolio-extend-reason">' + H.esc(blocked) + '</small>';
+      '<dt>回测区间</dt><dd><span>' + H.esc(r.start) + ' 至 ' + H.esc(r.end) + '</span><span class="portfolio-run-meta">' + H.esc(name) + '计价</span></dd></dl>';
   }
   function resultSections(r) {
     const usesMa = r.config.initial > 0 && r.config.initialMethod === 'ma200_hold' || r.config.monthly > 0 && ['dca_ma_trend', 'dca_ma_contrarian'].includes(r.config.contributionMethod);
@@ -1300,7 +1278,6 @@
       }
       case 'chart-zoom': if (['1', '3', '12', '36', 'all'].includes(val)) chartZoom(val); break;
       case 'chart-references': return loadChartReferences();
-      case 'extend-latest': return run({ extend: true });
       case 'daily-prev':
       case 'daily-next': {
         const rows = result?.systematic?.daily || [], index = rows.indexOf(selectedDaily());

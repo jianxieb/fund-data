@@ -643,41 +643,19 @@ test('daily indicators preserve missing and warmup semantics and freeze the same
   assert.match(f.notices.at(-1), /请输入有效新增预算/);
 });
 
-test('extend-to-latest refreshes coverage but preserves the original account start and rejects dirty or liquidated drafts', async () => {
+test('a fresh systematic simulation keeps the chosen end date when newer history is available', async () => {
   const f = dailyUiFixture('relative_strength_rotation');
   await f.action('select', { field: 'years', value: 'custom' });
   f.ui.handleInput({ id: 'portfolio-start', value: '2024-06-03', dataset: { portfolioField: 'start' } });
   f.ui.handleInput({ id: 'portfolio-end', value: '2025-06-03', dataset: { portfolioField: 'end' } });
-  await f.action('run'); await f.action('export-pdf');
-  const original = f.reports.at(-1).result;
-  await f.resultTab('daily');
-  await f.action('extend-latest'); await f.action('export-pdf');
-  const latest = f.reports.at(-1).result;
-  assert.ok(resultTabButton(f.ui.view(f.helpers), 'daily').includes('aria-selected="true"'));
-  assert.equal(latest.start, original.start); assert.equal(latest.end, '2026-01-08');
-  assert.equal(latest.config.years, 'custom'); assert.equal(latest.config.start, original.start);
-  assert.deepEqual(latest.config.positions, original.config.positions);
-  assert.equal(f.fetches.filter(x => x.url.endsWith('entry-context.json')).length, 0);
-  const before = f.calls.length;
-  await f.action('tab', {value: 'settings'}); f.monthly(123); await f.action('tab', {value: 'results'});
-  await f.action('extend-latest'); assert.equal(f.calls.length, before);
-  assert.match(f.ui.view(f.helpers), /参数已改动，请先重新模拟/);
-  await f.action('tab', {value: 'settings'}); f.monthly(0); await f.action('settle-sell');
   await f.action('run');
-  const cleared = f.calls.length;
-  await f.action('extend-latest'); assert.equal(f.calls.length, cleared);
-  assert.match(f.ui.view(f.helpers), /期末已清仓，不能延续账户/);
-});
-
-test('extend-to-latest refuses an unconfirmed catalog and leaves the successful result intact', async () => {
-  const f = dailyUiFixture();
-  await f.action('run'); await f.action('export-pdf');
-  const prior = summaryOf(f.ui.view(f.helpers)), before = f.calls.length, fetch = f.context.fetch;
-  f.context.fetch = async (url, options) => url === 'data/portfolio/catalog.js' ? { ok: false, status: 503 } : fetch(url, options);
-  await f.action('extend-latest');
-  assert.equal(f.calls.length, before);
-  assert.equal(summaryOf(f.ui.view(f.helpers)), prior);
-  assert.match(f.ui.view(f.helpers), /最新标的库请求失败（503）/);
+  const html = await f.resultTab('daily');
+  assert.match(html, /2024-06-03 至 2025-06-03/);
+  assert.doesNotMatch(html, /延续到最新行情/);
+  await f.action('export-pdf');
+  const account = f.reports.at(-1).result;
+  assert.equal(account.start, '2024-06-03');
+  assert.equal(account.end, '2025-06-03');
 });
 
 function accountUiFixture(configure) {
