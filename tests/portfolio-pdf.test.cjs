@@ -301,7 +301,8 @@ test('result tabs keep the run and global tools visible while isolating each sec
   for (const [key, titles] of Object.entries(sections)) {
     const html = await f.resultTab(key);
     const context = html.match(/<dl class="portfolio-run-context">([\s\S]*?)<\/dl>/)[1];
-    for (const item of ['每季度定投', 'TWO', 'TEST', '现金', '每季再平衡', '2026-01-08']) assert.ok(context.includes(item), item);
+    for (const item of ['每季度定投', 'TWO', 'TEST', '现金', '2026-01-08']) assert.ok(context.includes(item), item);
+    assert.doesNotMatch(context, /每月预算|初始入金|再平衡/);
     assert.doesNotMatch(context, /一次性投入|零权重仍应完整收录的基金|数据来源|逐项来源|example\.org|含分红复权收盘价/);
     for (const control of ['portfolio-result-summary', 'aria-label="收益口径"', 'data-action="portfolio-export-pdf"']) {
       assert.equal(html.split(control).length - 1, 1, 'one global ' + control);

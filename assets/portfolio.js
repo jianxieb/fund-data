@@ -1060,11 +1060,9 @@
     return rows;
   }
   function resultContext(r) {
-    const cfg = r.config, strategy = P.strategyNames(cfg), methods = [], amounts = [], { name, unit } = currency(cfg);
+    const cfg = r.config, strategy = P.strategyNames(cfg), methods = [], { name, unit } = currency(cfg);
     if (cfg.initial > 0 || hasResultSignals(r)) methods.push(strategy.initial);
-    if (cfg.initial > 0) amounts.push('初始入金 ' + H.money(cfg.initial) + ' ' + unit);
-    if (cfg.monthly > 0) { methods.push(strategy.contribution); amounts.push('每月预算 ' + H.money(cfg.monthly) + ' ' + unit); }
-    amounts.push(({ none: '不再平衡', month: '每月再平衡', quarter: '每季再平衡', year: '每年再平衡' })[cfg.rebalance]);
+    if (cfg.monthly > 0) methods.push(strategy.contribution);
     const position = (label, weight) => '<span class="portfolio-run-position">' + H.esc(label) + ' <b>' + inputValue(weight) + '%</b></span>';
     const allocations = r.holdings.map(h => position(!h.code || h.name.includes(h.code) ? h.name : h.name + ' (' + h.code + ')', h.targetWeight));
     if (r.cashWeight > 1e-8) allocations.push(position('现金', r.cashWeight));
@@ -1072,7 +1070,7 @@
     const opening = opportunityMethods.has(cfg.initialMethod) && Array.isArray(reserve) ?
       '<dt>首日实际持仓</dt><dd><span>' + H.money(P.accountAllocation(first).securitiesValue, 2) + ' ' + unit + '</span><span class="portfolio-run-meta">待加仓现金 ' + H.money(reserve.reduce((s, n) => s + n, 0), 2) + ' ' + unit + '</span></dd>' : '';
     return '<dl class="portfolio-run-context"><dt>目标配置</dt><dd class="portfolio-run-positions">' + allocations.join('') + '</dd>' +
-      '<dt>' + (resultKey === signature() ? '本次策略' : '上次模拟策略') + '</dt><dd><strong class="portfolio-run-strategy">' + H.esc(methods.join(' ＋ ')) + '</strong><span class="portfolio-run-meta">' + H.esc(amounts.join(' · ')) + '</span></dd>' +
+      '<dt>' + (resultKey === signature() ? '本次策略' : '上次模拟策略') + '</dt><dd><strong class="portfolio-run-strategy">' + H.esc(methods.join(' ＋ ')) + '</strong></dd>' +
       opening + '<dt>回测区间</dt><dd><span>' + H.esc(r.start) + ' 至 ' + H.esc(r.end) + '</span><span class="portfolio-run-meta">' + H.esc(name) + '计价</span>' + resultExtendControl(r) + '</dd></dl>';
   }
   function extendBlock(r) {
