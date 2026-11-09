@@ -5,6 +5,7 @@
 })(typeof window === 'object' ? window : globalThis, function () {
   'use strict';
   const DAY = 86400000;
+  const PE_JUMP_RATIO = 0.05;
   const gapDays = { daily: 10, weekly: 15, monthly: 65, quarterly: 140 };
   function viewFromHash(hash, data) {
     const [route, query] = String(hash || '').split('?');
@@ -96,10 +97,10 @@
     }
     return [...indices].sort((a, b) => a - b).map(i => points[i]);
   }
-  function segments(points, frequency) {
+  function segments(points, frequency, breakDates) {
     const output = [[]], threshold = (gapDays[frequency] || 140) * DAY;
     points.forEach((p, i) => {
-      if (i && Date.parse(p[0]) - Date.parse(points[i - 1][0]) > threshold) output.push([]);
+      if (i && (breakDates?.has(p[0]) || Date.parse(p[0]) - Date.parse(points[i - 1][0]) > threshold)) output.push([]);
       output.at(-1).push(p);
     });
     return output;
@@ -121,8 +122,33 @@
   }
   function priceHistory(market, asOf) {
     const h = market.prices, symbol = {spx:'^GSPC', ndx:'^NDX'}[market.id];
-    if (!symbol || !h || h.symbol !== symbol || h.basis !== 'price_index' || h.currency !== 'USD' || h.source !== 'yahoo-' + market.id) return null;
-    return h.points.filter(([d,v]) => d <= asOf && Number.isFinite(v) && v > 0);
+    if (!symbol || !Array.isArray(h?.points) || h.symbol !== symbol || h.basis !== 'price_index' || h.currency !== 'USD' || h.source !== 'yahoo-' + market.id) return null;
+    return h.points.filter(([d,v]) => (asOf === undefined || d <= asOf) && Number.isFinite(v) && v > 0);
+  }
+  // Prepare a display/statistics sample without modifying the published provider history.
+  // A flagged transition is a divergence from price movement, not a rejected PE reading.
+  function prepareMarketPE(market) {
+    const prices = priceHistory(market) || [], closeIndex = new Map(prices.map(([d],i) => [d,i]));
+    const metrics = market.metrics.map(metric => {
+      if (metric.id !== 'pe' || !eligibleMetric(market.id, metric)) return metric;
+      const points = [], unmatchedPoints = [], jumps = [], missingSessionStarts = [];
+      for (const p of metric.points) (closeIndex.has(p[0]) ? points : unmatchedPoints).push(p);
+      for (let i = 1; i < points.length; i++) {
+        const [date, pe] = points[i], [previousDate, previousPE] = points[i - 1];
+        const session = closeIndex.get(date), previousSession = closeIndex.get(previousDate);
+        if (session > previousSession + 1) {
+          missingSessionStarts.push(date);
+          continue;
+        }
+        if (!(pe > 0 && previousPE > 0) || Date.parse(date) - Date.parse(previousDate) > gapDays.daily * DAY) continue;
+        const peRatio = pe / previousPE, priceRatio = prices[session][1] / prices[previousSession][1];
+        if (Math.abs(peRatio / priceRatio - 1) >= PE_JUMP_RATIO - Number.EPSILON) {
+          jumps.push({date, previousDate, previousPE, pe, priceChange:(priceRatio - 1) * 100, peChange:(peRatio - 1) * 100});
+        }
+      }
+      return {...metric, points, unmatchedPoints, jumps, missingSessionStarts};
+    });
+    return {...market, metrics};
   }
   // A shared calendar axis, with exact-date lookups. No interpolation or last-value
   // carry-forward: a weekly release and a holiday keep their own observation dates.
@@ -349,7 +375,7 @@
     return '\uFEFF'+rows.map(row=>row.map(cell).join(',')).join('\r\n')+'\r\n';
   }
   return { viewFromHash, viewHash, knowledgeTopic, shanghaiDate, observationFreshness, eligibleMetric, windowStart, quantile, percentile, summarize, downsample, segments, histogram, csv,
-    priceHistory, overlay, nearestObservation, annualRows, annualCSV,
+    priceHistory, PE_JUMP_RATIO, prepareMarketPE, overlay, nearestObservation, annualRows, annualCSV,
     stateBand, inBand, outcomeStats, nonOverlapping, forwardOutcome, study, studyCSV, horizons,
     regression, relationStats, disjointObservations, monthOffset, pathOutcome, relationship, relationshipCSV };
 });

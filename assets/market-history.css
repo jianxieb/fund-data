@@ -31,6 +31,7 @@
 .mh-price-series{fill:none;stroke:#365e4c;stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}.mh-indicator-series{fill:none;stroke:#a27637;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
 .mh-price-series-point,.mh-price-dot{fill:#365e4c;stroke:white;stroke-width:1.5}.mh-indicator-series-point,.mh-indicator-dot{fill:#a27637;stroke:white;stroke-width:1.5}
 .mh-price-ink{color:#365e4c!important;fill:#365e4c!important}.mh-indicator-ink{color:#986c2e!important;fill:#986c2e!important}
+.mh-pe-jump{cursor:crosshair;fill:#fff;stroke:#986c2e;stroke-width:1.6}.mh-key-jump{width:9px;height:9px;border:1.6px solid #986c2e;border-radius:50%;background:#fff}.mh-pe-diagnostics details{border-top:1px solid #dce4d3;padding:8px 0}.mh-pe-diagnostics summary{cursor:pointer;color:#354f3d;font-weight:550}.mh-pe-diagnostics .mh-table-scroll{max-height:20rem;overflow:auto}.mh-pe-diagnostics thead th{position:sticky;top:0}
 .mh-missing-label{fill:#9a8d72!important;font-size:12px!important}.mh-hit-area{fill:transparent;cursor:crosshair}.mh-cursor{pointer-events:none}.mh-cursor line{stroke:#9ba994;stroke-width:1;stroke-dasharray:3 4}
 .mh-chart-reading{font-size:13px;line-height:1.8;color:#5b6f5d;margin:12px 0 13px}.mh-chart-reading b{font-weight:600;color:#354f3d}
 .mh-chart-foot{display:flex;justify-content:space-between;align-items:center;gap:20px;border-top:1px solid #e6ebdf;padding-top:11px;font-size:11px;color:#7d8878;flex-wrap:wrap}

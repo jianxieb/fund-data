@@ -25,19 +25,24 @@ test('historical chart URLs cannot request an unpublished metric or mix VIX with
   }
 });
 
-async function renderReport(data, checkedOn = data.asOf) {
+async function renderReport(data, checkedOn = data.asOf, detailKey) {
   let finish;
   const ready = new Promise(resolve => { finish = resolve; });
+  const events={};let modal;
   const sandbox = {
     window: {ChanghengMarketHistoryModel:{...M,shanghaiDate:()=>checkedOn}}, location:{hash:'#market-history'},
-    document: {addEventListener() {}, querySelector() { return {dataset:{src:'report.json'}}; }},
+    document: {addEventListener(type,callback) {events[type]=callback;}, querySelector() { return {dataset:{src:'report.json'}}; }},
     fetch: async () => ({ok:true, json:async () => data})
   };
   vm.runInNewContext(fs.readFileSync(require.resolve('../assets/market-history.js'), 'utf8'), sandbox);
-  const ctx = {render:finish};
+  const ctx = {render:finish,modalTitle:(title,subtitle)=>`<h2>${title}</h2><p>${subtitle}</p>`,openModal:html=>{modal=html;}};
   sandbox.window.ChanghengMarketHistory.view(ctx);
   await ready;
-  return sandbox.window.ChanghengMarketHistory.view(ctx);
+  const html=sandbox.window.ChanghengMarketHistory.view(ctx);
+  if(typeof detailKey==='function')return detailKey(html,events);
+  if(!detailKey)return html;
+  events.click({target:{closest:()=>({dataset:{marketAction:'detail',value:detailKey}})}});
+  return modal;
 }
 
 test('historical rank handles ties, endpoints and empty data without a false zero', () => {
@@ -164,7 +169,7 @@ test('overdue observations are retained as historical values when the published 
   assert.ok(!html.includes('年初至今'));
   assert.ok(html.includes('年初至'+data.asOf.slice(5)));
   assert.ok(html.includes('class="mh-price-series"') && html.includes('class="mh-indicator-series"'));
-  const metric = data.markets[0].metrics[0], s = M.summarize(metric,data.asOf,20,checkedOn);
+  const metric = M.prepareMarketPE(data.markets[0]).metrics[0], s = M.summarize(metric,data.asOf,20,checkedOn);
   assert.ok(html.includes(`<b>${s.last[1].toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2})}</b>`));
   assert.ok(html.includes(`<b>${s.percentile.toLocaleString('zh-CN',{minimumFractionDigits:1,maximumFractionDigits:1})}%</b>`));
   assert.ok(html.includes('class="mh-annual-chart"'));
@@ -182,7 +187,7 @@ test('a device date before the published observation is flagged without deleting
   assert.ok(html.includes('class="mh-price-series"'));
   assert.ok(!html.includes('NaN') && !html.includes('undefined'));
 });
-test('price and PE freshness stay independent when only one source advances', async () => {
+test('freshness uses the latest price and the latest PE paired to a close independently', async () => {
   for (const futureSource of ['price','pe']) {
     const data = structuredClone(require('../data/market-history.json'));
     const market = data.markets[0], metric = market.metrics.find(m => m.id === 'pe');
@@ -194,12 +199,14 @@ test('price and PE freshness stay independent when only one source advances', as
     metric.points.push([day(futureSource==='pe'?2:1),metric.points.at(-1)[1]]);
     const html = await renderReport(data,checkedOn);
     const chart = html.match(/<section class="mh-panel mh-main-chart"[\s\S]*?<\/section>/)[0];
-    const label = futureSource==='price'?'指数':metric.label;
-    assert.ok(chart.includes(`${label}观测日 ${day(2)} 晚于设备北京时间 ${checkedOn}`),futureSource);
-    assert.equal((chart.match(/晚于设备北京时间/g)||[]).length,1,futureSource);
+    // Either new PE date is unpaired, so it must not move the PE reading or its freshness.
+    const pairedLast=M.prepareMarketPE(market).metrics.find(m=>m.id==='pe').points.at(-1);
+    assert.ok(chart.includes(metric.label+' <small>'+pairedLast[0]+'</small>'));
+    assert.equal(chart.includes(`指数观测日 ${day(2)} 晚于设备北京时间 ${checkedOn}`),futureSource==='price');
+    assert.equal((chart.match(/晚于设备北京时间/g)||[]).length,futureSource==='price'?1:0,futureSource);
     assert.equal(chart.includes('末次指数收盘'),futureSource==='price',futureSource);
-    assert.equal(chart.includes('当前处于可用历史'),futureSource==='price',futureSource);
-    assert.equal(chart.includes('末次观测 · '+metric.label),futureSource==='pe',futureSource);
+    assert.ok(chart.includes('当前处于可用历史'),futureSource);
+    assert.ok(!chart.includes('末次观测 · '+metric.label),futureSource);
     assert.ok(chart.includes('class="mh-price-series"') && chart.includes('class="mh-indicator-series"'));
     assert.ok(chart.includes('data-readout-price') && chart.includes('data-readout-metric'));
     assert.ok(!html.includes('NaN') && !html.includes('undefined'));
@@ -310,6 +317,40 @@ test('the page leads with an actual shared-time overlay, annual combination char
   const missingHTML=await renderReport(missing);
   assert.ok(missingHTML.includes('缺少同一指数的美元价格历史'));
   assert.ok(missingHTML.includes('data-metric="spx:pe"'));
+});
+
+test('the PE overlay breaks at an unexplained change and exposes both raw values in its detail', async () => {
+  const data=structuredClone(require('../data/market-history.json')),market=data.markets[0];
+  data.asOf='2021-04-07';
+  market.prices.points=[['2021-03-29',100],['2021-03-30',101],['2021-03-31',101],['2021-04-01',102],['2021-04-05',103],['2021-04-06',104],['2021-04-07',105]];
+  market.metrics[0].points=[['2021-03-28',90],['2021-03-29',30],['2021-03-30',30.3],['2021-03-31',20],['2021-04-01',20.2],['2021-04-06',20.6],['2021-04-07',20.8]];
+  const html=await renderReport(data),svg=html.match(/<svg class="mh-overlay"[\s\S]*?<\/svg>/)[0];
+  assert.equal((svg.match(/<path class="mh-indicator-series"/g)||[]).length,3); // jump and missing 04-05 PE each break the line
+  assert.equal((svg.match(/<path class="mh-price-series"/g)||[]).length,1);
+  assert.equal((svg.match(/<circle class="mh-pe-jump"/g)||[]).length,1);
+  assert.ok(svg.indexOf('class="mh-hit-area"')<svg.indexOf('data-pe-date="2021-03-31"'));
+  await renderReport(data,data.asOf,(_html,events)=>{
+    const fields={},panel={querySelector:key=>(fields[key]??={})};
+    const plot={dataset:{mhPlot:'main'},closest:()=>panel,querySelector:()=>({setAttribute(){}})};
+    const marker={dataset:{peDate:'2021-03-31'},closest:key=>key==='[data-mh-plot]'?plot:marker};
+    events.pointermove({target:marker});
+    assert.equal(fields['[data-readout-date]'].textContent,'2021-03-31');
+    assert.equal(fields['[data-readout-change]'].textContent,'PE -34.0% · 指数 0.0%（较 2021-03-30）');
+    const keydown=key=>events.keydown({target:{closest:()=>plot},key,preventDefault(){}});
+    keydown('ArrowLeft');
+    assert.equal(fields['[data-readout-date]'].textContent,'2021-03-30');
+    assert.ok(!fields['[data-readout-change]'].textContent.includes('-34.0%'));
+    keydown('ArrowRight');
+    assert.ok(fields['[data-readout-change]'].textContent.includes('-34.0%'));
+  });
+  const detail=await renderReport(data,data.asOf,'spx:pe');
+  assert.ok(detail.includes('2021-03-30 → 2021-03-31') && detail.includes('30.3000 → 20.0000'));
+  assert.ok(detail.includes('2021-03-28') && detail.includes('90.0000'));
+  market.metrics[0].points=[['2021-03-28',90]];
+  const empty=await renderReport(data);
+  assert.ok(empty.includes('没有能与同日指数收盘配对的 PE 观测') && empty.includes('data-market-select="metric"'));
+  const emptyDetail=await renderReport(data,data.asOf,'spx:pe');
+  assert.ok(emptyDetail.includes('2021-03-28') && emptyDetail.includes('90.0000'));
 });
 
 test('overlay aligns actual calendar dates, retains missing observations and rejects index proxies', () => {
