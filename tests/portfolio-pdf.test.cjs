@@ -880,8 +880,8 @@ test('one deposit with staggered purchases shows the account outcome and one hea
   assert.equal(r.deposits, 1);
   assert.ok(r.plan.initial.length > 1);
   assert.deepEqual([...summary.matchAll(/<h2>([^<]+)<\/h2>/g)].map(m => m[1]),
-    ['持仓本金（不含现金）', '组合年化收益', '清仓盈亏', '最大回撤']);
-  assert.ok(summary.includes('持仓本金（不含现金）</h2><p class="portfolio-summary-value">0 元'));
+    ['总投入本金', '组合年化收益', '清仓盈亏', '最大回撤']);
+  assert.ok(summary.includes('总投入本金</h2><p class="portfolio-summary-value">100000 元</p>'));
   assert.ok(summary.includes('清仓盈亏</h2><p class="portfolio-summary-value">+' + r.profit));
   assert.match(await f.resultTab('holdings'), /清仓后现金/);
   assert.ok(summary.includes('组合年化收益</h2><p class="portfolio-summary-value">' + r.annualReturn));
@@ -896,7 +896,8 @@ test('funding XIRR stays annualized beside portfolio returns in both display mod
   await f.action('run');
   const expected = P.simulate(f.input);
   const annual = summaryOf(f.ui.view(f.helpers));
-  assert.ok(annual.includes('持仓本金（不含现金）</h2><p class="portfolio-summary-value">' + expected.curve.at(-1).positionPrincipal));
+  // Initial 100,000 plus 24 actual monthly deposits of 3,000.
+  assert.ok(annual.includes('总投入本金</h2><p class="portfolio-summary-value">172000 元</p>'));
   assert.ok(annual.includes('资金年化 XIRR <b>' + expected.xirr + '</b>'));
   assert.ok(annual.includes('组合年化收益</h2><p class="portfolio-summary-value">' + expected.annualReturn));
   assert.notEqual(expected.xirr, expected.annualReturn, 'different contribution dates change XIRR without changing the portfolio’s return basis');

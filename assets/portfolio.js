@@ -1016,7 +1016,7 @@
       returnDetail = '<p class="portfolio-summary-note">不足一年，显示区间实际收益</p>';
     }
     return '<section class="portfolio-result-summary" aria-label="模拟结果摘要">' +
-      metric(principalLabel, amount(r.curve.at(-1).positionPrincipal)) +
+      metric('总投入本金', amount(r.contributed)) +
       metric('组合' + basis + '收益', pct(basis === '年化' ? r.annualReturn : r.totalReturn), returnDetail) +
       metric(closed ? '清仓盈亏' : taxed ? '税后盈亏' : '账户盈亏', amount(r.profit, true)) +
       metric('最大回撤', pct(r.mdd)) + '</section>';
