@@ -708,6 +708,7 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-calendar-control:focus-within{outline:2px solid var(--green);outline-offset:-2px}
 .portfolio-calendar-control svg{width:16px;height:16px;pointer-events:none}
 .portfolio-calendar-control input[type=date]{position:absolute;inset:0;width:100%;height:100%;min-height:0;margin:0;padding:0;opacity:0;cursor:pointer}
+.portfolio-calendar-control button{position:absolute;inset:0;background:transparent;border:0;cursor:pointer}
 .portfolio-calendar-control input::-webkit-calendar-picker-indicator{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;cursor:pointer}
 .portfolio-date-swap{min-height:39px;min-width:44px;padding:6px 8px;border:1px solid var(--line);border-radius:7px;color:var(--green);font-size:14px;white-space:nowrap}
 @container portfolio-period (max-width:319px){

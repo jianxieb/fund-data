@@ -239,12 +239,14 @@
     return M.validDate(iso) ? iso : '';
   }
   function customDates() {
+    const pickerButton = typeof window.HTMLInputElement?.prototype.showPicker === 'function';
     const field = (key, label) => {
       const value = String(draft[key] || ''), pickerLabel = '从日历选择' + label;
       return '<div class="portfolio-date-field"><label for="portfolio-' + key + '">' + label + '</label><div class="portfolio-date-entry">' +
         '<input type="text" id="portfolio-' + key + '" data-portfolio-field="' + key + '" placeholder="YYYY-MM-DD" inputmode="numeric" autocomplete="off" spellcheck="false" value="' + H.esc(value) + '">' +
         '<span class="portfolio-calendar-control"><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M7.5 3v4m9-4v4M4 10h16"/></svg>' +
-        '<input type="date" id="portfolio-calendar-' + key + '" data-portfolio-field="calendar-' + key + '" aria-label="' + pickerLabel + '" title="' + pickerLabel + '" value="' + parseDateText(value) + '"></span></div></div>';
+        '<input type="date" id="portfolio-calendar-' + key + '" data-portfolio-field="calendar-' + key + '" aria-label="' + pickerLabel + '" title="' + pickerLabel + '" value="' + parseDateText(value) + '"' + (pickerButton ? ' tabindex="-1" aria-hidden="true"' : '') + '>' +
+        (pickerButton ? '<button type="button" data-action="portfolio-open-calendar" data-value="' + key + '" aria-label="' + pickerLabel + '" aria-haspopup="dialog" title="' + pickerLabel + '"></button>' : '') + '</span></div></div>';
     };
     return '<div class="portfolio-dates" role="group" aria-label="自定义回测日期">' + field('start', '开始日') +
       btn('互换', 'swap-dates', 'portfolio-date-swap', 'id="portfolio-swap-dates" aria-label="互换开始日和结束日"') + field('end', '结束日') + '</div>';
@@ -1263,6 +1265,9 @@
       }
       case 'remove': draft.positions = draft.positions.filter(p => p.id !== val); delete draft.tax.overrides[val]; touch(); break;
       case 'clear': return confirmClear();
+      case 'open-calendar':
+        document.getElementById('portfolio-calendar-' + val)?.showPicker();
+        return;
       case 'swap-dates':
         if (draft.years !== 'custom') return;
         [draft.start, draft.end] = [draft.end, draft.start];
