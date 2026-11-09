@@ -451,6 +451,28 @@ test('systematic UI refreshes VIX evidence on every applicable run and isolates 
   }
 });
 
+test('incompatible strategy weights point to the draft strategy without displacing the previous result', async () => {
+  const f = uiFixture(), view = () => f.ui.view(f.helpers);
+  await f.action('run');
+  const prior = summaryOf(view());
+  await f.action('tab', { value: 'settings' });
+  await f.action('select', { field: 'initialMethod', value: 'relative_strength_rotation' });
+  await f.action('tab', { value: 'results' });
+  await f.action('run');
+  const failed = view();
+  assert.match(failed, /id="portfolio-initialMethod" aria-describedby="portfolio-strategy-error"/);
+  assert.match(failed, /id="portfolio-strategy-error"[^>]*role="alert">本次模拟未完成：三批相对强弱轮动需要USD与TQQQ均有正权重。仍显示上次成功模拟结果/);
+  assert.ok(failed.indexOf('id="portfolio-initialMethod"') < failed.indexOf('id="portfolio-strategy-error"'));
+  assert.ok(failed.indexOf('id="portfolio-strategy-error"') < failed.indexOf('id="portfolio-contributionMethod"'));
+  assert.doesNotMatch(failed, /portfolio-workspace-error/);
+  await f.action('tab', { value: 'results' });
+  assert.equal(summaryOf(view()), prior);
+  assert.doesNotMatch(view(), /role="alert"/);
+  await f.action('tab', { value: 'settings' });
+  await f.action('select', { field: 'initialMethod', value: 'lump_sum' });
+  assert.doesNotMatch(view(), /portfolio-strategy-error/);
+});
+
 test('systematic UI retains the prior account and blocks recomputation when VIX refresh fails', async () => {
   for (const method of ['vix_panic_reentry', 'dual_risk_guard']) {
     const f = systematicUiFixture(method), fetch = f.context.fetch;

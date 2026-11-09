@@ -9,6 +9,7 @@
   const gap = (a, b) => (time(b) - time(a)) / DAY;
   const sum = values => values.reduce((a, b) => a + b, 0);
   const fail = message => { throw new Error(message); };
+  const failStrategy = message => { throw Object.assign(new Error(message), { field: 'initialMethod' }); };
   // Chart-only observations stay out of exported account ledgers and rolling-window comparisons.
   const chartSources = new WeakMap();
   function immutableCopy(value) {
@@ -84,7 +85,7 @@
   ];
   function strategyConfig(config) {
     const strategy = { initialMethod: config.initialMethod ?? 'lump_sum', contributionMethod: config.contributionMethod ?? 'dca_month' };
-    if (/^entry_(option|volatility|breadth|composite)$/.test(strategy.initialMethod)) fail('原研究投入方式已撤回：未证明优于一次性投入，请重新选择本金投入方式');
+    if (/^entry_(option|volatility|breadth|composite)$/.test(strategy.initialMethod)) failStrategy('原研究投入方式已撤回：未证明优于一次性投入，请重新选择本金投入方式');
     if (!initialMethods.some(([key]) => key === strategy.initialMethod) || !contributionMethods.some(([key]) => key === strategy.contributionMethod)) fail('投入方式无效');
     return strategy;
   }
@@ -299,7 +300,7 @@
     return day.slice(0, 4);
   }
   function simulate(input) {
-    try { return run(input); } catch (error) { return { error: error.message }; }
+    try { return run(input); } catch (error) { return { error: error.message, ...(error.field ? { errorField: error.field } : {}) }; }
   }
   function simulateWindows(input, end, periods = [1, 2, 3, 5]) {
     return periods.map(years => ({ years, ...simulate({ ...input,
@@ -419,8 +420,8 @@
     let systematicController = null;
     if (systematicMethod) {
       if (!Systematic) fail('系统投入方法模块未加载，请刷新页面');
-      if (opportunity ? pairIndices.every(i => i < 0) : pairIndices[1] < 0) fail(opportunity ? '加仓评分需要组合中有USD或TQQQ' : '该投入方法需要组合中有权重大于0的TQQQ');
-      if (strategy.initialMethod === 'relative_strength_rotation' && pairIndices[0] < 0) fail('三批相对强弱轮动需要USD与TQQQ均有正权重');
+      if (strategy.initialMethod === 'relative_strength_rotation' && pairIndices.some(i => i < 0)) failStrategy('三批相对强弱轮动需要USD与TQQQ均有正权重');
+      if (opportunity ? pairIndices.every(i => i < 0) : pairIndices[1] < 0) failStrategy(opportunity ? '加仓评分需要组合中有USD或TQQQ' : '该投入方法需要组合中有权重大于0的TQQQ');
       const required = pairIds.filter((id, leg) => pairIndices[leg] >= 0);
       if (strategy.initialMethod === 'dual_risk_guard') required.push('us:QQQ');
       if (opportunity) {
@@ -441,7 +442,7 @@
     const qqqSignals = new Map();
     let qqqLatestSignal = null, qqqNextState = null;
     if (qqqTiming) {
-      if (tqqqIndex < 0) fail('QQQ深熊确认调仓需要组合中有权重大于0的TQQQ');
+      if (tqqqIndex < 0) failStrategy('QQQ深熊确认调仓需要组合中有权重大于0的TQQQ');
       const qqqAsset = assets.get('us:QQQ'), qqqHistory = histories['us:QQQ'];
       if (!qqqAsset || qqqAsset.currency !== 'USD' || qqqAsset.code !== 'QQQ' || qqqAsset.kind !== 'etf') fail('缺QQQ实际美元ETF身份，无法计算QQQ深熊确认调仓信号');
       const qqqRows = validateHistory(qqqAsset, qqqHistory);

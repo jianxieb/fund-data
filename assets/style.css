@@ -620,6 +620,7 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-strategy-settings{container:strategy-settings / inline-size}
 .portfolio-decision{display:grid;grid-template-columns:minmax(0,1fr);align-items:start;gap:12px 24px;padding:12px 0}
 .portfolio-decision-controls{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);align-items:start;gap:12px 18px;width:100%;max-width:444px}
+.portfolio-strategy-error{grid-column:1/-1;margin:0;font-size:14px;line-height:1.6}
 .portfolio-decision:last-child{padding-bottom:0}
 .portfolio-strategy-settings>.portfolio-decision:first-of-type{padding-top:0}
 .portfolio-decision-controls>.portfolio-field:first-child>span:first-child,

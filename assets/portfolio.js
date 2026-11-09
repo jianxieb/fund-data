@@ -10,7 +10,7 @@
   const workspaceTabs = [['settings', '模拟设置'], ['holdings', '我的组合'], ['results', '模拟结果']];
   let workspaceTab = 'settings', calculationOpen = false, benchmarkRequest = null;
   let resultTab = 'chart';
-  let result = null, resultKey = '', error = '', metric = 'return', importError = '', exportingPdf = false;
+  let result = null, resultKey = '', error = '', errorField = '', metric = 'return', importError = '', exportingPdf = false;
   let dailyDay = '', additionBudget = 10000;
   try {
     const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
@@ -45,8 +45,19 @@
     return workspaceTab === 'results' ? '参数已改动，当前显示上次模拟结果。' : '参数已改动，重新模拟后生效';
   }
   const runError = message => message + (result ? '。仍显示上次成功模拟结果（' + result.end + '）。' : '');
+  function showRunError() {
+    if (errorField === 'initialMethod') {
+      if (workspaceTab !== 'settings') openWorkspaceTab('settings'); else update();
+      document.getElementById('portfolio-initialMethod')?.focus({ preventScroll: true });
+      document.getElementById('portfolio-strategy-error')?.scrollIntoView({ block: 'nearest' });
+    } else { update(); revealWorkspace(); }
+  }
   function touch() {
-    error = ''; persist();
+    if (errorField) {
+      document.getElementById('portfolio-strategy-error')?.remove();
+      document.getElementById('portfolio-initialMethod')?.removeAttribute('aria-describedby');
+    }
+    error = ''; errorField = ''; persist();
     const label = document.getElementById('portfolio-dirty');
     if (label) label.textContent = draftNotice();
     const extend = document.getElementById('portfolio-extend-latest'), reason = document.getElementById('portfolio-extend-reason');
@@ -161,8 +172,8 @@
     const params = JSON.parse(JSON.stringify(config())), token = ++runId;
     let showResults = false;
     try { P.validateConfig(params, new Set(catalog.assets.map(a => a.id))); }
-    catch (e) { error = runError(e.message); update(); revealWorkspace(); return; }
-    benchmarkRequest = null; running = true; error = ''; update();
+    catch (e) { error = runError(e.message); errorField = e.field || ''; showRunError(); return; }
+    benchmarkRequest = null; running = true; error = ''; errorField = ''; update();
     try {
       let refreshMissing = '';
       try { await refreshCatalog(); }
@@ -197,6 +208,7 @@
       const computed = P.simulate(input);
       if (computed.error) {
         error = runError('本次模拟未完成：' + computed.error);
+        errorField = computed.errorField || '';
       }
       else {
         computed.snapshots = P.simulateWindows(input, computed.end);
@@ -220,13 +232,14 @@
       if (token === runId) {
         running = false;
         if (showResults) openWorkspaceTab('results', { fresh: true });
-        else { update(); if (error) revealWorkspace(); }
+        else if (error) showRunError();
+        else update();
       }
     }
   }
   function menu(id, label, options, value) {
     const current = options.find(([key]) => String(key) === String(value)) || [value, id === 'initialMethod' && /^entry_(option|volatility|breadth|composite)$/.test(value) ? '已撤回，请重新选择' : '请选择'];
-    return '<details class="select-menu portfolio-menu"><summary id="portfolio-' + id + '" aria-label="' + H.esc(label + '：' + current[1]) + '"><span>' + H.esc(current[1]) + '</span></summary><div class="select-menu-list" role="group" aria-label="' + H.esc(label) + '">' + options.map(([key, name]) => btn(H.esc(name), 'select', 'select-menu-option' + (String(key) === String(value) ? ' active' : ''), 'data-field="' + id + '" data-value="' + H.esc(key) + '"')).join('') + '</div></details>';
+    return '<details class="select-menu portfolio-menu"><summary id="portfolio-' + id + '"' + (id === errorField ? ' aria-describedby="portfolio-strategy-error"' : '') + ' aria-label="' + H.esc(label + '：' + current[1]) + '"><span>' + H.esc(current[1]) + '</span></summary><div class="select-menu-list" role="group" aria-label="' + H.esc(label) + '">' + options.map(([key, name]) => btn(H.esc(name), 'select', 'select-menu-option' + (String(key) === String(value) ? ' active' : ''), 'data-field="' + id + '" data-value="' + H.esc(key) + '"')).join('') + '</div></details>';
   }
   function number(label, field, value, max, step = 'any', suffix = '') {
     return '<label class="portfolio-field"><span>' + label + '</span><span class="portfolio-number"><input id="portfolio-' + field + '" type="number" min="0" max="' + max + '" step="' + step + '" value="' + inputValue(value) + '" data-portfolio-field="' + field + '" aria-label="' + label + '">' + (suffix ? '<span>' + suffix + '</span>' : '') + '</span></label>';
@@ -358,7 +371,7 @@
     }
     const required = opportunity ? hasRequired ? '' : '此方法需要USD ETF或TQQQ有正权重。' : systematicMethods.has(method) || method === 'qqq_bear_confirm' ? !positions.some(p => p.id === 'us:TQQQ') ? '此方法需要TQQQ有正权重。' : method === 'relative_strength_rotation' && !positions.some(p => p.id === 'us:USD') ? '三批轮动还需要USD ETF有正权重。' : '' : '';
     const rules = info.next.concat(info.execution);
-    return (required ? '<p class="portfolio-purchase-pending">' + required + '</p>' : '') + '<p>' + H.esc(initialText) + '</p>' + allocations +
+    return (required && errorField !== 'initialMethod' ? '<p class="portfolio-purchase-pending">' + required + '</p>' : '') + '<p>' + H.esc(initialText) + '</p>' + allocations +
       (rules.length ? '<div class="portfolio-plan-rules"><h4>后续执行规则</h4><ul class="portfolio-execution-rules">' + rules.map(line => '<li>' + H.esc(line) + '</li>').join('') + '</ul></div>' : '');
   }
   function contributionPlan() {
@@ -389,6 +402,7 @@
       '<div class="portfolio-decision" role="group" aria-label="本金投入"><div class="portfolio-decision-controls">' +
       field('本金投入方式', menu('initialMethod', '本金投入方式', initialMethodOptions, opportunityRules[draft.initialMethod]?.family || draft.initialMethod)) +
       number('初始本金', 'initial', draft.initial, 1e12, '0.01', currency().unit) + reserveControl(draft.initialMethod) +
+      (errorField === 'initialMethod' ? '<p id="portfolio-strategy-error" class="portfolio-strategy-error negative" role="alert">' + H.esc(error) + '</p>' : '') +
       '</div><section class="portfolio-plan-panel" aria-labelledby="portfolio-opening-title"><h3 id="portfolio-opening-title">本金策略说明</h3><div id="portfolio-purchase-plan" class="portfolio-purchase-plan">' + purchasePlanMarkup() + '</div></section></div>' +
       '<div class="portfolio-decision" role="group" aria-label="持续投入" aria-describedby="portfolio-contribution-plan"><div class="portfolio-decision-controls">' +
       field('持续投入方式', menu('contributionMethod', '持续投入方式', P.contributionMethods, draft.contributionMethod)) +
@@ -1148,8 +1162,9 @@
     if (!catalog) return '<section class="card pad"><h2>' + (loadError ? '标的库加载失败' : '正在载入组合标的库') + '</h2><p class="muted">' + H.esc(loadError || 'ETF、个股与基金每日历史按需载入。') + '</p>' + (loadError ? btn('重新加载', 'retry', 'btn primary') : '') + '</section>';
     const previousCalculation = document.getElementById('portfolio-score-calculation');
     if (previousCalculation) calculationOpen = previousCalculation.open;
+    const workspaceError = (!errorField && error) || importError;
     return '<div id="portfolio-workspace">' + workspaceBar() + '<div class="portfolio-workspace-body">' +
-      (error || importError ? '<p class="portfolio-workspace-error negative" role="alert">' + H.esc(error || importError) + '</p>' : '') +
+      (workspaceError ? '<p class="portfolio-workspace-error negative" role="alert">' + H.esc(workspaceError) + '</p>' : '') +
       workspaceTabs.map(([id]) => '<div id="portfolio-panel-' + id + '" role="tabpanel" aria-labelledby="portfolio-tab-' + id + '"' +
         (id === workspaceTab ? '>' + workspaceContent() : ' hidden>') + '</div>').join('') + '</div></div>';
   }
