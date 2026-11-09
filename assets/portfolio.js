@@ -1088,7 +1088,7 @@
     if (r.cashWeight > 1e-8) allocations.push(position('现金', r.cashWeight));
     return '<dl class="portfolio-run-context"><dt>目标配置</dt><dd class="portfolio-run-positions">' + allocations.join('') + '</dd>' +
       '<dt>' + (resultKey === signature() ? '本次策略' : '上次模拟策略') + '</dt><dd><strong class="portfolio-run-strategy">' + H.esc(methods.join(' ＋ ')) + '</strong></dd>' +
-      '<dt>回测区间</dt><dd><span>' + H.esc(r.start) + ' 至 ' + H.esc(r.end) + '</span><span class="portfolio-run-meta">' + H.esc(name) + '计价</span></dd></dl>';
+      '<dt>' + (cfg.years === 'custom' && r.start > r.requestedStart ? '实际回测区间' : '回测区间') + '</dt><dd><span>' + H.esc(r.start) + ' 至 ' + H.esc(r.end) + '</span><span class="portfolio-run-meta">' + H.esc(name) + '计价</span></dd></dl>';
   }
   function resultSections(r) {
     const usesMa = r.config.initial > 0 && r.config.initialMethod === 'ma200_hold' || r.config.monthly > 0 && ['dca_ma_trend', 'dca_ma_contrarian'].includes(r.config.contributionMethod);
@@ -1176,7 +1176,7 @@
     H.openModal(H.modalTitle('逐项数据来源', r.start + ' — ' + r.end + ' · ' + currency(r.config).name) + '<div class="table-wrap"><table><thead><tr><th>标的</th><th>可用历史</th><th>数据口径</th><th>来源</th></tr></thead><tbody>' + runSourceRows(r).map(s =>
       '<tr><td>' + H.esc(s.name) + '</td><td>' + H.esc(s.first || '缺起始日期') + '<br>' + H.esc(s.asOf || '缺结束日期') + '</td><td>' + H.esc(s.basis) + '</td><td>' +
       (s.url ? '<a class="source-link" href="' + H.esc(s.url) + '" target="_blank" rel="noopener">' + H.esc(s.provider) + ' ↗</a>' : '缺来源链接') +
-      (s.warning ? '<span class="sub">' + H.esc(s.warning) + '</span>' : '') + '</td></tr>').join('') + '</tbody></table></div><p class="note">开始日采用指定日前最近共同交易日；结束日采用共同历史内的实际估值日。休市沿用最近价格 ' + r.carriedPrices + '次，沿用汇率 ' + r.carriedFx + '日。价格最多沿用14日，汇率最多7日；超限停止回测。</p>');
+      (s.warning ? '<span class="sub">' + H.esc(s.warning) + '</span>' : '') + '</td></tr>').join('') + '</tbody></table></div><p class="note">自定义开始日早于共同历史时，从首个可建仓日开始；其余开始日取当日或此前最近的共同交易日。结束日取共同历史内的实际估值日。休市沿用最近价格 ' + r.carriedPrices + '次，沿用汇率 ' + r.carriedFx + '日。价格最多沿用14日，汇率最多7日；超限停止回测。</p>');
   }
   function exportResult() {
     if (!result) return;

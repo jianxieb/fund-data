@@ -303,7 +303,7 @@
     try { return run(input); } catch (error) { return { error: error.message, ...(error.field ? { errorField: error.field } : {}) }; }
   }
   function simulateWindows(input, end, periods = [1, 2, 3, 5]) {
-    return periods.map(years => ({ years, ...simulate({ ...input,
+    return periods.map(years => ({ years, ...simulate({ ...input, requireFullWindow: true,
       config: { ...input.config, years: 'custom', start: addYears(end, -years), end } }) }));
   }
   // Comparisons use the account's existing valuation dates; a new benchmark never trades or shortens that account.
@@ -348,7 +348,7 @@
       return { benchmark, benchmarkError: null };
     } catch (error) { return { benchmark: null, benchmarkError: error.message }; }
   }
-  function run({ catalog, histories, config, fxHistory, marketContext }) {
+  function run({ catalog, histories, config, fxHistory, marketContext, requireFullWindow = false }) {
     const assets = new Map((catalog?.assets || []).map(a => [a.id, a]));
     const { positions, total, cashWeight, dividendPolicy } = validateConfig(config, new Set(assets.keys()));
     const tax = taxConfig(config.tax);
@@ -380,14 +380,16 @@
     const requestedEnd = config.years === 'custom' ? config.end : last;
     if (requestedEnd > last) fail('结束日超过共同历史末日 ' + last);
     const requestedStart = config.years === 'common' ? common[0] : config.years === 'custom' ? config.start : addYears(requestedEnd, -config.years);
-    if (requestedStart < first) {
+    const startAtInception = config.years === 'custom' && !requireFullWindow && requestedStart < common[0];
+    if (!startAtInception && requestedStart < first) {
       const latest = series.filter(s => s.rows[0][0] === first).map(s => s.asset.name).join('、') || '人民币汇率';
       fail(latest + '的历史始于 ' + first + '，不覆盖所选区间；可选择“共同历史”');
     }
-    const start = common.filter(day => day <= requestedStart).at(-1);
-    if (!start || gap(start, requestedStart) > 14) fail('开始日前14日内缺共同实际交易日；可选择“共同历史”或调整日期');
+    const start = startAtInception ? common[0] : common.filter(day => day <= requestedStart).at(-1);
+    if (!start || (!startAtInception && gap(start, requestedStart) > 14)) fail('开始日前14日内缺共同实际交易日；可选择“共同历史”或调整日期');
     const days = [...new Set([...series.flatMap(s => s.rows.map(r => r[0])), ...(fx ? fx.map(r => r[0]) : [])])].filter(day => day >= start && day <= requestedEnd).sort();
     const end = days.at(-1);
+    if (startAtInception && (!end || end <= start)) fail('最早共同建仓日为 ' + start + '；所选区间内还没有之后的估值日，请延后结束日');
     if (!end || end <= start || gap(end, requestedEnd) > 14) fail('结束日前14日内缺有效估值，无法回测');
     if (tax.liquidate && !commonSet.has(end)) {
       const unavailable = series.filter(s => !s.dates.has(end)).map(s => s.asset.name).join('、');

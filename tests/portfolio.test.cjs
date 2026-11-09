@@ -348,6 +348,32 @@ test('a requested long window cannot silently become a short inception window', 
   assert.match(P.simulate(input).error, /末日/);
 });
 
+test('a custom start before inception uses the first actual joint trading day for funding and returns', () => {
+  const input = fixture([
+    { days: ['2010-02-11', '2010-02-12', '2010-02-16'], values: [5, 10, 15] },
+    { days: ['2010-02-10', '2010-02-12', '2010-02-16'], values: [10, 20, 30] }
+  ], { years: 'custom', start: '2010-01-11', end: '2010-02-16' });
+  const r = P.simulate(input);
+  assert.equal(r.error, undefined);
+  assert.equal(r.requestedStart, '2010-01-11'); assert.equal(r.start, '2010-02-12');
+  assert.deepEqual(r.curve.map(p => p.day), ['2010-02-12', '2010-02-16']);
+  assert.deepEqual(r.transactions.map(t => t.day), ['2010-02-12', '2010-02-12']);
+  assert.equal(input.config.start, '2010-01-11');
+  const explicit = P.simulate({ ...input, config: { ...input.config, start: r.start } });
+  assert.equal(r.annualReturn, explicit.annualReturn); close(r.value, 1500);
+  for (const end of ['2010-02-05', '2010-02-12']) {
+    assert.match(P.simulate({ ...input, config: { ...input.config, end } }).error, /最早共同建仓日为 2010-02-12/);
+  }
+});
+
+test('a custom period cannot fund a foreign holding before an actual FX observation is available', () => {
+  const input = fixture([{ currency: 'USD', days: ['2010-02-10', '2010-02-11', '2010-02-12'], values: [5, 10, 15] }],
+    { years: 'custom', start: '2010-02-10', end: '2010-02-12', fxDays: ['2010-02-11', '2010-02-12'], fxValues: [7, 7] });
+  const r = P.simulate(input);
+  assert.equal(r.error, undefined);
+  assert.equal(r.start, '2010-02-11'); close(r.value, 1500);
+});
+
 test('a gap inside a single-asset window cannot disappear just because other markets are absent', () => {
   const input = fixture([{ values: [1, 2, 3], days: ['2025-01-02', '2025-02-03', '2025-02-04'] }]);
   assert.match(P.simulate(input).error, /超过14日/);

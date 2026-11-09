@@ -675,6 +675,14 @@ test('custom dates can be typed, picked and swapped without running a different 
   assert.match(f.ui.view(f.helpers), /2024-06-03 至 2025-06-03/);
 });
 
+test('an early custom start stays in settings while the result displays the actual simulated period', async () => {
+  const f = uiFixture(input => Object.assign(input.config, { years: 'custom', start: '2023-09-01', end: '2025-06-03' }));
+  await f.action('run');
+  assert.match(f.ui.view(f.helpers), /实际回测区间<\/dt><dd><span>2024-01-01 至 2025-06-03/);
+  await f.action('tab', { value: 'settings' });
+  assert.match(f.ui.view(f.helpers), /id="portfolio-start"[^>]*value="2023-09-01"/);
+});
+
 function accountUiFixture(configure) {
   const f = uiFixture(input => {
     Object.assign(input.config, { monthly: 0, rebalance: 'none', transactionFee: 0 });
