@@ -5,9 +5,10 @@
   const groups = { unrecovered:'未收复', recovered:'已收复', all:'全部大跌' };
   const statuses = { ...groups, pending:'观察中', gap:'观察期行情断档' };
   const horizons = D.horizons, terms = { 5:'1周', 21:'1个月', 63:'3个月', 252:'1年' };
+  const dropCutoff = () => '跌超 ' + state.threshold + '%';
   const facetLabels = {
     rebound:{any:'不限',none:'没有收回或继续下跌',partial:'收回部分，不足一半',half:'收回至少一半，未收回全部',full:'收回全部或更多'},
-    repeat:{any:'不限',first:'没有其他大跌',repeat:'至少还有一次大跌'},
+    get repeat(){return {any:'不限',first:'没有一天'+dropCutoff(),repeat:'至少一天'+dropCutoff()};},
     trend:{any:'不限',above:'高于均线',below:'等于或低于均线'},
     drawdown:{any:'不限',near:'不足 5%',pullback:'5% 至不足 10%',correction:'10% 至不足 20%',bear:'20% 及以上'},
     cap:Object.fromEntries(D.facetOptions.cap.map(v=>[v,v==='any'?'不限':'不超过 '+v+'%'])),
@@ -74,7 +75,7 @@
       choices.map(([v,l]) => '<option value="' + v + '"' + (state[key] === v ? ' selected' : '') + '>' + l + '</option>').join('') + '</select></label>';
   }
   const filterNames = {
-    rebound:'观察期末收回的跌幅', repeat:'跌前 21 个交易日内的其他大跌',
+    rebound:'观察期末收回的跌幅', get repeat(){return '此前 21 个交易日单日'+dropCutoff();},
     trend:'跌前收盘与 200 日均线', drawdown:'跌前距 252 日最高收盘的回撤',
     vol:'跌前 21 日年化波动率', cap:'大跌日的跌幅上限', get peer(){return peerName()+'同日涨跌';},
     low:'观察期内是否跌破大跌日收盘'
@@ -88,7 +89,7 @@
     const counts = result?.facetCounts[key];
     const unavailable = key === 'peer' ? peerStatus() : '';
     const choices = D.facetOptions[key].filter(v=>key!=='cap' || v==='any' || Number(v)>state.threshold || v===state.cap)
-      .map(v=>[v,facetLabels[key][v] + (counts && !unavailable ? ' · ' + counts[v] + ' 次' : '')]);
+      .map(v=>[v,facetLabels[key][v] + (counts && !unavailable ? ' · ' + counts[v] + (key==='repeat'?' 次事件':' 次') : '')]);
     const missing = {repeat:'缺完整的 21 个日涨跌幅',trend:'缺完整的 200 日收盘',drawdown:'缺完整的 252 日收盘',
       vol:'缺完整的 21 个日涨跌幅',peer:'缺对照指数同一对交易日的收盘'};
     let hint = '';
@@ -151,7 +152,7 @@
     const f = e.features;
     return {
       rebound:f.reboundPct == null ? (e.status === 'gap' ? '观察期行情断档' : '观察期未满') : f.reboundPct.toFixed(2) + '%',
-      repeat:f.priorDrops == null ? '缺完整的 21 个日涨跌幅' : f.priorDrops + ' 次',
+      repeat:f.priorDrops == null ? '缺完整的 21 个日涨跌幅' : f.priorDrops + ' 天',
       trend:f.ma200Pct == null ? '缺完整的 200 日收盘' : pct(f.ma200Pct),
       drawdown:f.drawdownPct == null ? '缺完整的 252 日收盘' : f.drawdownPct.toFixed(2) + '%',
       peer:f.peerPct == null ? (peerStatus() || '缺同一对交易日的收盘') : pct(f.peerPct),
@@ -183,7 +184,7 @@
     return '<section class="ds-current" aria-label="最近一次大跌"><div class="ds-current-copy"><div class="ds-kicker">最近一次大跌 · ' + markets[state.market][0] + '</div>' +
       '<h2>' + e.date + '<span class="ds-drop">' + pct(e.dropPct) + '</span></h2><p><b>' + statuses[e.status] + '</b> · ' + observation +
       (e.anchorDate && !matches ? '此次不符合当前筛选。' : '') + '</p><p class="ds-latest-facts">' +
-      (e.anchorDate ? '期末收回比例 <b>' + facts.rebound + '</b> · ' : '') + '此前 21 个交易日跌超 ' + state.threshold + '%：<b>' + facts.repeat + '</b></p>' +
+      (e.anchorDate ? '期末收回比例 <b>' + facts.rebound + '</b> · ' : '') + filterNames.repeat + '：<b>' + facts.repeat + '</b></p>' +
       (context ? '<p class="ds-latest-facts">' + context + '</p>' : '') + '</div>' + timeline(e) + '</section>';
   }
   function summaryTable() {
@@ -270,7 +271,7 @@
   function method() {
     const symbol = markets[state.market][1];
     return '<details class="ds-method"><summary>统计口径与数据来源</summary><p>单日跌幅与上一交易日收盘比较，恰好等于阈值不入样。观察期内任何一次收盘回到或超过跌前收盘即为已收复，盘中触及不计。所有组的起算点都是观察期最后一个收盘。</p>' +
-      '<p>期末收回比例＝（观察期末收盘 − 大跌日收盘）÷（跌前收盘 − 大跌日收盘）。期内曾收复的事件也可能在期末再度回落。此前 21 个交易日的其他大跌沿用当前跌幅门槛，不计大跌日当天。</p>' +
+      '<p>期末收回比例＝（观察期末收盘 − 大跌日收盘）÷（跌前收盘 − 大跌日收盘）。期内曾收复的事件也可能在期末再度回落。此前 21 个交易日逐日比较相邻收盘，只数单日'+dropCutoff()+'的天数，不含本次大跌日。</p>' +
       '<p>「大跌前」的均线及 252 日高点回撤截至前一日。「自定义区间」则算到大跌日收盘：回撤取含当日的 N 个收盘中的最高点，累计跌幅与 N 个交易日前的收盘比较。两项均须严格超过设定值；历史不足或跨行情断档时，只有该项不限才保留。选项旁的次数保留其余筛选条件。</p>' +
       '<p>跌幅须超过起筛门槛，选了上限则可以等于上限。另一指数的涨跌比较同一对交易日的收盘。跌前波动率用截至前一交易日的 21 个日对数收益的样本标准差年化；观察期内只要有一天收盘低于大跌日收盘，就记为曾跌破。</p>' +
       '<p>基准使用同一指数、同一覆盖期内所有具备同等观察窗口的交易日，包含触发事件的日期。每期平均数为算术平均；上涨占比只数涨幅大于零的记录。相邻收盘相隔超过 10 个自然日视为行情断档，跨过断档的窗口不计算。</p>' +
@@ -294,7 +295,7 @@
   function exportRows() {
     const rows = bin == null ? result.events : distribution()[bin].rows;
     const prefix = ['指数','行情截至','筛选组别','收益区间筛选','跌幅阈值%','观察天数','跌前日期','跌前收盘','大跌日','大跌日收盘','单日涨跌%','观察结果','首次收复日','后续起算日','起算收盘'];
-    const header = [...prefix,...facetKeys.map(k=>'筛选：'+filterNames[k]),'期末收回原跌幅%','此前21个交易日其他大跌次数','跌前收盘相对200日均线%','跌前距252日最高收盘回撤%',
+    const header = [...prefix,...facetKeys.map(k=>'筛选：'+filterNames[k]),'期末收回原跌幅%',filterNames.repeat+'的天数','跌前收盘相对200日均线%','跌前距252日最高收盘回撤%',
       '对照指数','对照指数同日涨跌%','对照行情状态','跌前21日年化波动率%','观察期内收盘曾跌破大跌日收盘',
       '高点回看交易日数','筛选：回撤超过%','区间最高收盘日','区间最高收盘','大跌日距区间高点回撤%','累计跌幅交易日数','筛选：累计跌幅超过%','累计跌幅起算日','起算日指数收盘','截至大跌日累计跌幅%（正数为下跌）',
       ...Array.from({ length:state.wait },(_,i)=>['观察日'+(i+1),'收盘点位'+(i+1)]).flat(),
