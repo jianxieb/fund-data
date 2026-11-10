@@ -12,7 +12,7 @@
   const signed = n => '<span class="' + (n < 0 ? 'negative' : n > 0 ? 'positive' : '') + '">' + pct(n) + '</span>';
   const escape = M.escapeHtml;
   const cache = new Map();
-  let H, state, result, signature, horizon = 252, bin = null, page = 1;
+  let H, state, result, signature, horizon = 252, bin = null, page = 1, showBaseline = false;
   const size = 10;
 
   function readState() {
@@ -75,14 +75,16 @@
       const r = result.summary[h], b = result.baseline[h];
       return '<tr><th scope="row">' + terms[h] + '<small>' + h + ' 个交易日</small></th><td><strong>' + signed(r.median) +
         '</strong></td><td><strong>' + signed(r.mean) + '</strong></td><td>' + (r.upPct == null ? '—' : r.upPct.toFixed(1) + '%') +
-        '</td><td>' + r.n + '</td><td class="ds-benchmark">' + pct(b.median) + '</td><td>' + pct(b.mean) + '</td><td>' + b.n.toLocaleString() + '</td></tr>';
+        '</td><td>' + r.n + '</td>' + (showBaseline ? '<td class="ds-benchmark">' + pct(b.median) + '</td><td>' + pct(b.mean) + '</td><td>' + b.n.toLocaleString() + '</td>' : '') + '</tr>';
     }).join('');
     const c = result.counts;
     return '<section class="ds-panel" aria-labelledby="ds-summary-title"><div class="ds-panel-head"><div><h2 id="ds-summary-title">确认之后，指数涨跌了多少？</h2><p>从第 ' +
-      state.wait + ' 个交易日收盘起算 · 美元价格指数累计涨跌，不含分红</p></div><span class="ds-coverage">' + result.first + ' — ' + result.asOf + '</span></div>' +
-      '<div class="ds-scroll"><table class="ds-summary"><thead><tr><th rowspan="2" scope="col">后续期限</th><th colspan="4" scope="colgroup">' + group + ' · ' + result.events.length +
-      ' 次</th><th class="ds-benchmark" colspan="3" scope="colgroup">同期全部可比交易日</th></tr><tr><th>中位数</th><th>平均数</th><th>上涨占比</th><th>有效样本</th>' +
-      '<th class="ds-benchmark">中位数</th><th>平均数</th><th>有效样本</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      state.wait + ' 个交易日收盘起算 · 美元价格指数累计涨跌，不含分红</p></div><div class="ds-summary-tools"><span class="ds-coverage">' + result.first + ' — ' + result.asOf + '</span>' +
+      '<button type="button" class="btn sm" aria-controls="ds-summary-table" aria-expanded="' + showBaseline + '" data-ds-action="baseline">' + (showBaseline ? '收起交易日对比' : '对比全部交易日') + '</button></div></div>' +
+      '<div class="ds-scroll"><table id="ds-summary-table" class="ds-summary"><thead><tr><th rowspan="2" scope="col">后续期限</th><th colspan="4" scope="colgroup">' + group + ' · ' + result.events.length +
+      ' 次</th>' + (showBaseline ? '<th class="ds-benchmark" colspan="3" scope="colgroup">同期全部可比交易日</th>' : '') +
+      '</tr><tr><th>中位数</th><th>平均数</th><th>上涨占比</th><th>有效样本</th>' +
+      (showBaseline ? '<th class="ds-benchmark">中位数</th><th>平均数</th><th>有效样本</th>' : '') + '</tr></thead><tbody>' + rows + '</tbody></table></div>' +
       '<div class="ds-foot">单日跌超 ' + state.threshold + '% 共 <b>' + c.total + '</b> 次，' + c.unrecovered + ' 次未收复，' + c.recovered + ' 次已收复' +
       (c.pending ? '，' + c.pending + ' 次观察中' : '') + (c.gap ? '，' + c.gap + ' 次观察期断档' : '') + '。每个期限只计入已有完整行情的事件。</div></section>';
   }
@@ -203,6 +205,7 @@
     else if (el.dataset.dsBin != null) { const n = +el.dataset.dsBin; bin = n === bin ? null : n; page = 1; }
     else if (el.dataset.dsEvent) { const e = result.events.find(r=>r.date===el.dataset.dsEvent); if (e) detail(e); return; }
     else switch (el.dataset.dsAction) {
+      case 'baseline': showBaseline = !showBaseline; break;
       case 'prev': page--; break;
       case 'next': page++; break;
       case 'clear-bin': bin = null; page = 1; break;
