@@ -57,8 +57,7 @@
     return Object.fromEntries(Object.keys(defaults).map(k=>[k,Object.hasOwn(choices[k],q.get(k)) ? q.get(k) : defaults[k]]));
   }
   function select(field,label,st) {
-    return '<label>' + label + '<select id="mt-' + field + '" data-mt-field="' + field + '">' +
-      Object.entries(choices[field]).map(([v,t])=>'<option value="' + v + '"' + (st[field]===v ? ' selected':'') + '>' + t + '</option>').join('') + '</select></label>';
+    return H.menu('mt-'+field,label,Object.entries(choices[field]),st[field]);
   }
   function observationNote(r) {
     const s = r.summary['12m'], last = r.events[0];
@@ -125,18 +124,17 @@
     active=results.get(key);
     return head + '<div class="mt-controls">' + select('era','选举样本',st) + select('entry','起算点',st) + '</div>' + highlight(active) + summary(active) + eventRows(active,st) + method();
   }
-  document.addEventListener('change', e=>{
-    const key=e.target.dataset.mtField;
-    if (!Object.hasOwn(defaults,key) || !Object.hasOwn(choices[key],e.target.value)) return;
-    const next={...state(),[key]:e.target.value}, q=new URLSearchParams();
+  function choose(key,value) {
+    if (!Object.hasOwn(defaults,key) || !Object.hasOwn(choices[key],value)) return;
+    const next={...state(),[key]:value}, q=new URLSearchParams();
     for (const k of Object.keys(defaults)) if (next[k]!==defaults[k]) q.set(k,next[k]);
     history.replaceState(null,'','#midterm-study'+(q.size?'?'+q:''));
     H.render();
-  });
+  }
   document.addEventListener('click',e=>{
     const key=e.target.closest('[data-mt-action]')?.dataset.mtAction;
     if (key==='retry') {error=''; H.render();}
     if (key==='csv' && active) download();
   });
-  window.ChanghengMidtermStudy={view};
+  window.ChanghengMidtermStudy={view,choose};
 })();

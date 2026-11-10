@@ -25,10 +25,14 @@
   const stamp = v => v && /T/.test(v) && Number.isFinite(Date.parse(v)) ? new Date(v).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', hour12: false }) : v || '未记录';
   const basisText = value => ({ price_index: '价格指数，不含现金分红再投资', provider_adjusted_close: '供应商复权收盘价', provider_daily_return_or_explicit_actions: '根据每日净值及分红、拆分事件复算' }[value] || value || '口径未记录');
   const action = (text, act, cls = 'btn', extra = '') => '<button type="button" class="' + cls + '" data-action="' + act + '" ' + extra + '>' + text + '</button>';
-  function selectMenu(id, label, options, value, cls = '') {
+  function selectMenu(id, label, options, value, cls = '', choiceAction = 'menu-choice') {
     const current = options.find(([key]) => key === value) || options[0] || ['', '暂无可选项'];
     return '<details class="select-menu ' + cls + '"><summary id="' + esc(id) + '" aria-label="' + esc(label + '：' + current[1]) + '"><span>' + esc(current[1]) + '</span></summary>' +
-      '<div class="select-menu-list" role="group" aria-label="' + esc(label) + '">' + options.map(([key, text]) => action(esc(text), 'menu-choice', 'select-menu-option' + (key === value ? ' active' : ''), 'data-menu="' + esc(id) + '" data-value="' + esc(key) + '" aria-label="' + esc(text) + '" aria-current="' + (key === value) + '"')).join('') + '</div></details>';
+      '<div class="select-menu-list" role="group" aria-label="' + esc(label) + '">' + options.map(([key, text, disabled]) => action(esc(text), choiceAction, 'select-menu-option' + (key === value ? ' active' : ''), 'data-menu="' + esc(id) + '" data-value="' + esc(key) + '" aria-label="' + esc(text) + '" aria-current="' + (key === value) + '"' + (disabled ? ' disabled' : ''))).join('') + '</div></details>';
+  }
+  function eventStudyMenu(id, label, choices, value) {
+    return '<div class="event-menu-field"><span>' + esc(label) + '</span>' +
+      selectMenu(id, label, choices, value, 'event-study-menu', 'event-study-choice') + '</div>';
   }
   const years = [1, 2, 3, 5, 10], titles = { overview: '研究总览', indices: '指数观察', 'market-history': '历史分位', 'holding-period': '持有期研究', 'drop-study': '大跌后表现', 'midterm-study': '中期选举后表现', 'global-finance': '金融传导', 'financial-events': '历史事件', funds: '基金研究', stocks: '个股深入', reports: '深入报告', strategy: '投入策略', 'buy-location': '投资渠道', 'money-flow': '跨境资金', portfolio: '组合模拟', 'return-comparison':'收益对比', quality: '数据与方法' };
   const funds = M.dedupeFunds(window.FUNDS, window.EXTRA);
@@ -196,8 +200,8 @@
       '<a href="#' + route + '"' + (state.route === route ? ' aria-current="page"' : '') + '>' + label + '</a>').join('');
     return head(...args) + '<nav class="event-study-nav" aria-label="事件类型">' + links + '</nav>';
   }
-  function dropStudy() { return window.ChanghengDropStudy.view({ head:eventStudyHead, render, openModal, modalTitle, download }); }
-  function midtermStudy() { return window.ChanghengMidtermStudy.view({ head:eventStudyHead, render, download }); }
+  function dropStudy() { return window.ChanghengDropStudy.view({ head:eventStudyHead, menu:eventStudyMenu, render, openModal, modalTitle, download }); }
+  function midtermStudy() { return window.ChanghengMidtermStudy.view({ head:eventStudyHead, menu:eventStudyMenu, render, download }); }
   function financialEvents() { return window.ChanghengFinancialEvents.view({ head, render }); }
   function returnComparison() { return window.ChanghengReturnComparison.view({ head, render, download, annual:state.annual, annualControl }); }
   function portfolio() {
@@ -1169,6 +1173,13 @@
     $$('.select-menu[open],.column-picker[open]').forEach(menu => { if (menu !== currentMenu) menu.open = false; });
     const button = event.target.closest('[data-action]'); if (!button || button.disabled) return;
     const act = button.dataset.action, val = button.dataset.value, code = button.dataset.code;
+    if (act === 'event-study-choice') {
+      const menu = button.closest('.event-study-menu'), trigger = menu.querySelector('summary');
+      menu.open = false;
+      trigger.focus({preventScroll:true});
+      (state.route === 'drop-study' ? window.ChanghengDropStudy : window.ChanghengMidtermStudy).choose(trigger.id.slice(3), val);
+      return;
+    }
     if (act.startsWith('potential-')) { window.ChanghengPotential.handleAction(button); return; }
     if (act.startsWith('os-stock-')) { window.ChanghengOverseasStocks.handleAction(button); return; }
     if (act.startsWith('portfolio-')) { window.ChanghengPortfolio.handleAction(button); return; }
@@ -1461,10 +1472,32 @@
     }
   });
   $('#dialog').addEventListener('close', () => { if (lastFocus && lastFocus.isConnected) lastFocus.focus(); else restoreFocus(lastFocus); });
+  document.addEventListener('toggle', e => {
+    const menu = e.target;
+    if (!menu.matches?.('.event-study-menu[open]')) return;
+    $$('.event-study-menu[open]').forEach(other=>{ if (other !== menu) other.open = false; });
+    if (menu.getBoundingClientRect().bottom > window.innerHeight) menu.scrollIntoView({block:'nearest',behavior:'instant'});
+  },true);
+  document.addEventListener('focusout', e => {
+    const menu=e.target.closest('.event-study-menu[open]');
+    // Pointer activation closes via click, after mouseup: collapsing earlier moves the next control.
+    if (menu && document.documentElement.dataset.inputMode==='keyboard' && e.relatedTarget && !menu.contains(e.relatedTarget)) menu.open=false;
+  });
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       const menu = e.target.closest('.select-menu[open],.column-picker[open]') || $('.select-menu[open],.column-picker[open]');
       if (menu) { menu.open = false; menu.querySelector('summary').focus(); e.preventDefault(); return; }
+    }
+    const menu = e.target.closest('.event-study-menu');
+    if (menu && ['ArrowDown','ArrowUp','Home','End'].includes(e.key)) {
+      const buttons = [...menu.querySelectorAll('button:not(:disabled)')], i = buttons.indexOf(e.target);
+      if (!buttons.length) return;
+      e.preventDefault();
+      menu.open = true;
+      const active = buttons.find(b=>b.classList.contains('active'));
+      const next = e.key==='Home' ? buttons[0] : e.key==='End' ? buttons.at(-1) : i<0 ? active || (e.key==='ArrowDown'?buttons[0]:buttons.at(-1)) :
+        buttons[(i + (e.key==='ArrowDown'?1:-1) + buttons.length) % buttons.length];
+      next.focus(); return;
     }
     const current = e.target.closest('[role="tab"]');
     if (!current || e.defaultPrevented) return;

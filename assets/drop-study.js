@@ -2,12 +2,14 @@
   'use strict';
   const D = window.ChanghengDropStudyModel, W = window.ChanghengDropWindowModel, R = window.ChanghengResearchHistory, M = window.Changheng;
   const markets = { ndx:['纳斯达克100','^NDX'], spx:['标普500','^GSPC'] };
-  const groups = { unrecovered:'未收复', recovered:'已收复', all:'全部大跌' };
+  const groups = { unrecovered:'始终未收复', recovered:'至少一次收复', all:'全部已观察事件' };
   const statuses = { ...groups, pending:'观察中', gap:'观察期行情断档' };
   const horizons = D.horizons, terms = { 5:'1周', 21:'1个月', 63:'3个月', 252:'1年' };
   const dropCutoff = () => '跌超 ' + state.threshold + '%';
   const facetLabels = {
-    rebound:{any:'不限',none:'没有收回或继续下跌',partial:'收回部分，不足一半',half:'收回至少一半，未收回全部',full:'收回全部或更多'},
+    get rebound(){return state.group==='recovered'
+      ? {any:'不限',full:'守住跌前收盘（收回 ≥100%）',half:'回落，收回 50% 至不足 100%',partial:'回落，收回部分但不足 50%',none:'回落到大跌日收盘或更低'}
+      : {any:'不限',none:'未收回或继续下跌',partial:'收回部分但不足 50%',half:'收回 50% 至不足 100%',full:'收回全部或更多'};},
     get repeat(){return {any:'不限',first:'没有一天'+dropCutoff(),repeat:'至少一天'+dropCutoff()};},
     trend:{any:'不限',above:'高于均线',below:'等于或低于均线'},
     drawdown:{any:'不限',near:'不足 5%',pullback:'5% 至不足 10%',correction:'10% 至不足 20%',bear:'20% 及以上'},
@@ -71,11 +73,11 @@
   }
 
   function select(label, key, choices) {
-    return '<label><span>' + label + '</span><select id="ds-' + key + '" data-ds-field="' + key + '">' +
-      choices.map(([v,l]) => '<option value="' + v + '"' + (state[key] === v ? ' selected' : '') + '>' + l + '</option>').join('') + '</select></label>';
+    return H.menu('ds-'+key,label,choices,state[key]);
   }
   const filterNames = {
-    rebound:'观察期末收回的跌幅', get repeat(){return '此前 21 个交易日单日'+dropCutoff();},
+    get rebound(){return '第 '+state.wait+' 天收盘：'+(state.group==='recovered'?'守住还是回落':'收回多少原跌幅');},
+    get repeat(){return '此前 21 个交易日单日'+dropCutoff();},
     trend:'跌前收盘与 200 日均线', drawdown:'跌前距 252 日最高收盘的回撤',
     vol:'跌前 21 日年化波动率', cap:'大跌日的跌幅上限', get peer(){return peerName()+'同日涨跌';},
     low:'观察期内是否跌破大跌日收盘'
@@ -88,12 +90,20 @@
   function facetSelect(key) {
     const counts = result?.facetCounts[key];
     const unavailable = key === 'peer' ? peerStatus() : '';
-    const choices = D.facetOptions[key].filter(v=>key!=='cap' || v==='any' || Number(v)>state.threshold || v===state.cap)
-      .map(v=>[v,facetLabels[key][v] + (counts && !unavailable ? ' · ' + counts[v] + (key==='repeat'?' 次事件':' 次') : '')]);
+    let values = D.facetOptions[key];
+    if (key === 'rebound') {
+      if (state.group==='recovered') values = ['any','full','half','partial','none'];
+      if (state.group==='unrecovered' && state.rebound!=='full') values = values.filter(v=>v!=='full');
+    }
+    const choices = values.filter(v=>key!=='cap' || v==='any' || Number(v)>state.threshold || v===state.cap)
+      .map(v=>[v,facetLabels[key][v] + (counts && !unavailable ? ' · ' + counts[v] + (key==='repeat'?' 次事件':' 次') : ''),
+        key==='rebound' && v!=='any' && (counts?.[v]===0 || (v==='full' && state.group==='unrecovered'))]);
     const missing = {repeat:'缺完整的 21 个日涨跌幅',trend:'缺完整的 200 日收盘',drawdown:'缺完整的 252 日收盘',
       vol:'缺完整的 21 个日涨跌幅',peer:'缺对照指数同一对交易日的收盘'};
     let hint = '';
     if (unavailable) hint = escape(unavailable) + (cache.get(peerMarket())?.error ? ' <button type="button" class="text-link" data-ds-action="retry-peer">重试</button>' : '…');
+    else if (key==='rebound' && state.group==='unrecovered' && state.rebound==='full') hint = '期内始终未收复，期末不可能收回全部。 <button type="button" class="text-link" data-ds-action="clear-rebound">清除期末条件</button>';
+    else if (key==='rebound' && state.group==='recovered' && counts?.any) hint = '曾收复的 '+counts.any+' 次中，'+counts.full+' 次守住，'+(counts.half+counts.partial+counts.none)+' 次回落。';
     else if (key === 'cap' && capConflict()) hint = '上限须高于起筛跌幅 ' + state.threshold + '%，否则没有匹配事件。';
     else if (counts?.missing && missing[key]) hint = counts.missing + ' 次' + missing[key];
     return '<div>' + select(filterNames[key],key,choices) + (hint ? '<small class="ds-missing">' + hint + '</small>' : '') + '</div>';
@@ -128,7 +138,7 @@
     return '<div class="ds-controls">' + select('研究指数','market', Object.entries(markets).map(([k,[l]])=>[k,l])) +
       select('单日收盘跌幅','threshold', [...steps.map(v => [v,'超过 ' + v + '%']),['custom','自定义跌幅…']]) +
       select('跌后观察期','wait',options.wait.map(v => [v,v + ' 个交易日'])) +
-      select('纳入统计的大跌','group',Object.entries(groups).map(([v,l]) => [v, v === 'all' ? '全部已观察事件' : '期内' + l])) +
+      select('观察期内是否收复跌前收盘','group',Object.entries(groups)) +
       facetSelect('rebound') + facetSelect('repeat') + '</div>' +
       '<div class="ds-filter-bar"><button type="button" class="text-link" data-ds-action="extra-filters" aria-controls="ds-extra-filters" aria-expanded="' + showExtra + '">' +
       (showExtra ? '▾' : '▸') + ' 更多可选条件</button>' +
@@ -182,7 +192,7 @@
       .map(k=>filterNames[k]+'：<b>'+escape(facts[k])+'</b>'),
       ...activeWindows().map(k=>windowName(k)+'：<b>'+windowValue(e,k)+'</b>')].join(' · ');
     return '<section class="ds-current" aria-label="最近一次大跌"><div class="ds-current-copy"><div class="ds-kicker">最近一次大跌 · ' + markets[state.market][0] + '</div>' +
-      '<h2>' + e.date + '<span class="ds-drop">' + pct(e.dropPct) + '</span></h2><p><b>' + statuses[e.status] + '</b> · ' + observation +
+      '<h2>' + e.date + '<span class="ds-drop">' + pct(e.dropPct) + '</span></h2><p><b>' + recoveryPath(e) + '</b> · ' + observation +
       (e.anchorDate && !matches ? '此次不符合当前筛选。' : '') + '</p><p class="ds-latest-facts">' +
       (e.anchorDate ? '期末收回比例 <b>' + facts.rebound + '</b> · ' : '') + filterNames.repeat + '：<b>' + facts.repeat + '</b></p>' +
       (context ? '<p class="ds-latest-facts">' + context + '</p>' : '') + '</div>' + timeline(e) + '</section>';
@@ -203,7 +213,7 @@
       ' 次</th>' + (showBaseline ? '<th class="ds-benchmark" colspan="3" scope="colgroup">同期全部可比交易日</th>' : '') +
       '</tr><tr><th>中位数</th><th>平均数</th><th>上涨占比</th><th>有效样本</th>' +
       (showBaseline ? '<th class="ds-benchmark">中位数</th><th>平均数</th><th>有效样本</th>' : '') + '</tr></thead><tbody>' + rows + '</tbody></table></div>' +
-      '<div class="ds-foot">单日跌超 ' + state.threshold + '% 共 <b>' + c.total + '</b> 次，' + c.unrecovered + ' 次未收复，' + c.recovered + ' 次已收复' +
+      '<div class="ds-foot">单日跌超 ' + state.threshold + '% 共 <b>' + c.total + '</b> 次，' + c.unrecovered + ' 次始终未收复，' + c.recovered + ' 次曾收复' +
       (c.pending ? '，' + c.pending + ' 次观察中' : '') + (c.gap ? '，' + c.gap + ' 次观察期断档' : '') + '。每个期限只计入已有完整行情的事件。</div></section>';
   }
 
@@ -262,11 +272,15 @@
       (rows.length ? '<div class="ds-scroll"><table class="ds-events"><thead><tr><th>大跌日</th><th>单日涨跌</th><th>观察结果</th><th>起算日</th>' +
       horizons.map(h=>'<th>' + terms[h] + '后</th>').join('') + '</tr></thead><tbody>' +
       rows.slice((page-1)*size,page*size).map(e=>'<tr><td><button class="text-link" data-ds-event="' + e.date + '" aria-label="查看 ' + e.date + ' 大跌明细">' +
-        e.date + '</button></td><td>' + signed(e.dropPct) + '</td><td>' + statuses[e.status] + '</td><td>' + e.anchorDate + '</td>' +
+        e.date + '</button></td><td>' + signed(e.dropPct) + '</td><td>' + recoveryPath(e) + '</td><td>' + e.anchorDate + '</td>' +
         horizons.map(h=>'<td>' + outcomeText(e.outcomes[h]) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>' +
       (pages > 1 ? '<div class="ds-pagination"><button class="btn sm" data-ds-action="prev"' + (page === 1 ? ' disabled' : '') + '>上一页</button><span>' + page + ' / ' + pages +
         '</span><button class="btn sm" data-ds-action="next"' + (page === pages ? ' disabled' : '') + '>下一页</button></div>' : '') :
       '<p class="ds-foot">没有符合当前条件的事件。</p>') + '</section>';
+  }
+  function recoveryPath(e) {
+    if (e.status!=='recovered') return statuses[e.status];
+    return '曾收复，期末'+(e.anchorClose >= e.priorClose ? '守住' : '回落');
   }
   function method() {
     const symbol = markets[state.market][1];
@@ -285,9 +299,9 @@
       const r = e.outcomes[h];
       return '<tr><th scope="row">' + terms[h] + '</th><td>' + (r.date || '—') + '</td><td>' + (r.close == null ? '—' : fmt(r.close)) + '</td><td>' + outcomeText(r) + '</td></tr>';
     }).join('');
-    H.openModal(H.modalTitle(e.date + ' · ' + markets[state.market][0], '单日 ' + pct(e.dropPct) + ' · ' + state.wait + ' 个交易日内' + statuses[e.status]) +
+    H.openModal(H.modalTitle(e.date + ' · ' + markets[state.market][0], '单日 ' + pct(e.dropPct) + ' · 观察 ' + state.wait + ' 个交易日：' + recoveryPath(e)) +
       '<div class="ds-detail">' + timeline(e) + '<dl class="ds-feature-values">' +
-      facetKeys.filter(k=>k!=='cap').map(k=>'<div><dt>' + (k === 'trend' ? '跌前收盘相对 200 日均线' : filterNames[k]) + '</dt><dd>' + escape(facts[k]) + '</dd></div>').join('') +
+      facetKeys.filter(k=>k!=='cap').map(k=>'<div><dt>' + (k === 'trend' ? '跌前收盘相对 200 日均线' : k==='rebound' ? '第 '+state.wait+' 天收回原跌幅的比例' : filterNames[k]) + '</dt><dd>' + escape(facts[k]) + '</dd></div>').join('') +
       windowKeys.map(k=>'<div><dt>截至大跌日 · '+windowName(k)+'</dt><dd>'+escape(windowValue(e,k,true))+'</dd></div>').join('') +
       '</dl><p>从 ' + e.anchorDate + ' 收盘 ' + fmt(e.anchorClose) + ' 点起算' +
       (e.recoveryDate ? '；首次收复于 ' + e.recoveryDate : '') + '。</p><div class="ds-scroll"><table><thead><tr><th>后续期限</th><th>实际终日</th><th>指数收盘</th><th>累计涨跌</th></tr></thead><tbody>' + rows + '</tbody></table></div></div>');
@@ -302,7 +316,7 @@
       ...horizons.flatMap(h=>[h+'日状态',h+'日实际终日',h+'日收盘',h+'日累计涨跌%'])];
     const filter = bin == null ? '不限' : terms[horizon] + '后 ' + labelBin(distribution()[bin]);
     const data = rows.map(e=>[markets[state.market][1],result.asOf,groups[state.group],filter,state.threshold,state.wait,e.priorDate,e.priorClose,e.date,e.close,e.dropPct,
-      statuses[e.status],e.recoveryDate,e.anchorDate,e.anchorClose,...facetKeys.map(k=>facetLabels[k][state[k]]),
+      recoveryPath(e),e.recoveryDate,e.anchorDate,e.anchorClose,...facetKeys.map(k=>facetLabels[k][state[k]]),
       e.features.reboundPct,e.features.priorDrops,e.features.ma200Pct,e.features.drawdownPct,
       markets[peerMarket()][1],e.features.peerPct,e.features.peerPct == null ? (peerStatus() || '缺同一对交易日的收盘') : '同一对交易日',
       e.features.volPct,e.features.brokeLow == null ? null : e.features.brokeLow ? '是' : '否',
@@ -336,20 +350,19 @@
   function setFields(fields) {
     const q = new URLSearchParams();
     const next = {...state,...fields};
+    if (fields.group==='unrecovered' && next.rebound==='full') next.rebound='any';
     for (const [k,v] of Object.entries(next)) if (String(v) !== String(defaults[k])) q.set(k,v);
     history.replaceState(null,'','#drop-study' + (q.size ? '?' + q : ''));
     redraw();
   }
-  document.addEventListener('change', event => {
-    const key = event.target.dataset.dsField;
-    if (key === 'threshold' && event.target.value === 'custom') {
-      event.target.value = String(state.threshold);
+  function choose(key, value) {
+    if (key === 'threshold' && value === 'custom') {
       H.openModal(H.modalTitle('自定义跌幅') + '<form id="ds-threshold-form"><label>跌幅门槛（3%–10%）<input name="threshold" type="number" min="3" max="10" step="0.01" required value="' + state.threshold +
         '"></label><button type="submit" class="btn primary">应用</button></form>');
       const input = document.querySelector('#ds-threshold-form input');
       input.focus(); input.select();
-    } else if (key === 'threshold' || Object.hasOwn(options,key)) setFields({[key]:event.target.value});
-  });
+    } else if (key === 'threshold' || Object.hasOwn(options,key)) setFields({[key]:value});
+  }
   document.addEventListener('submit', event => {
     if (event.target.id === 'ds-window-form') {
       event.preventDefault();
@@ -379,6 +392,7 @@
         setFields({[k+'Days']:windowDefaults[k+'Days'],[k+'Min']:null}); return;
       }
       case 'extra-filters': showExtra = !showExtra; break;
+      case 'clear-rebound': setFields({rebound:'any'}); return;
       case 'clear-peer': setFields({peer:'any'}); return;
       case 'retry-peer': cache.delete(peerMarket()); break;
       case 'reset-facets': setFields({...facetDefaults,...windowDefaults}); return;
@@ -392,5 +406,5 @@
     }
     redraw();
   });
-  window.ChanghengDropStudy = { view };
+  window.ChanghengDropStudy = { view, choose };
 })();
