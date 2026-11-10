@@ -14,20 +14,32 @@
     rebound: Object.freeze(['any', 'none', 'partial', 'half', 'full']),
     repeat: Object.freeze(['any', 'first', 'repeat']),
     trend: Object.freeze(['any', 'above', 'below']),
-    drawdown: Object.freeze(['any', 'near', 'pullback', 'correction', 'bear'])
+    drawdown: Object.freeze(['any', 'near', 'pullback', 'correction', 'bear']),
+    cap: Object.freeze(['any', '4', '5', '6', '7', '8', '9', '10', '12', '15']),
+    peer: Object.freeze(['any', 'up', 'mild', 'moderate', 'severe']),
+    vol: Object.freeze(['any', 'calm', 'active', 'high']),
+    low: Object.freeze(['any', 'hold', 'break'])
   });
   const facetKeys = Object.keys(facetOptions);
-  function buckets({ reboundPct: r, priorDrops: n, ma200Pct: m, drawdownPct: d }) {
+  const caps = facetOptions.cap.slice(1).map(Number);
+  function facetValues({ dropPct, features: { reboundPct: r, priorDrops: n, ma200Pct: m, drawdownPct: d,
+    peerPct: p, volPct: v, brokeLow } }) {
     return {
       rebound: r == null ? null : r <= 0 ? 'none' : r < 50 ? 'partial' : r < 100 ? 'half' : 'full',
       repeat: n == null ? null : n === 0 ? 'first' : 'repeat',
       trend: m == null ? null : m > 0 ? 'above' : 'below',
-      drawdown: d == null ? null : d < 5 ? 'near' : d < 10 ? 'pullback' : d < 20 ? 'correction' : 'bear'
+      drawdown: d == null ? null : d < 5 ? 'near' : d < 10 ? 'pullback' : d < 20 ? 'correction' : 'bear',
+      cap: snap(-dropPct, caps, 200 * Number.EPSILON),
+      peer: p == null ? null : p >= 0 ? 'up' : p > -2 ? 'mild' : p > -4 ? 'moderate' : 'severe',
+      vol: v == null ? null : v < 20 ? 'calm' : v < 30 ? 'active' : 'high',
+      low: brokeLow == null ? null : brokeLow ? 'break' : 'hold'
     };
   }
+  // An upper bound is inclusive and cumulative; other options are disjoint buckets.
+  const matchesOne = (k, value, option) => k === 'cap' ? value <= Number(option) : value === option;
   const matches = (values, options, except) => facetKeys.every(k =>
-    k === except || options[k] === undefined || options[k] === 'any' || values[k] === options[k]);
-  const matchesFilters = (e, options = {}) => !!e && matches(buckets(e.features), options);
+    k === except || options[k] === undefined || options[k] === 'any' || matchesOne(k, values[k], options[k]));
+  const matchesFilters = (e, options = {}) => !!e && matches(facetValues(e), options);
   function isDrop(prior, close, threshold) {
     const boundary = prior * (100 - threshold) / 100;
     return boundary - close > Number.EPSILON * prior * 2;
@@ -46,13 +58,22 @@
     };
   }
 
-  // The caller supplies validated, ordered [date, close] rows for ONE price index.
-  function study(series, options = {}) {
+  // Each input is an independent, validated series of ordered [date, close] rows.
+  function study(series, options = {}, peerSeries = null) {
     const { threshold = 5, wait = 2, group = 'unrecovered' } = options;
     if (!validThreshold(threshold) || !waits.includes(wait) ||
         !['unrecovered', 'recovered', 'all'].includes(group) ||
         facetKeys.some(k => options[k] !== undefined && !facetOptions[k].includes(options[k]))) throw new Error('未知的大跌统计条件');
     const last = series.length - 1;
+    const peerDates = new Map(peerSeries?.map(([date], i) => [date, i]));
+    function peerChange(i) {
+      const j = peerDates.get(series[i][0]);
+      // Must be the same two adjacent closing dates on both indices.
+      if (!(j > 0) || peerSeries[j-1][0] !== series[i-1][0]) return null;
+      const prior = peerSeries[j-1][1], close = peerSeries[j][1];
+      if (![prior, close].every(n => Number.isFinite(n) && n > 0)) return null;
+      return snap(change(prior, close), [-4, -2], 200 * Number.EPSILON);
+    }
     // Each long break starts a new segment. Weekends/holidays are not synthetic rows.
     let segment = 0, previousDay;
     const segments = series.map(([date], i) => {
@@ -70,16 +91,24 @@
       return { status: 'complete', date, close, pct: change(series[anchor][1], close) };
     }
 
-    function features(i, prior, close, anchor) {
-      // All three lookbacks end at T−1; the 21 daily losses require 22 closing prices.
+    function features(i, prior, close, anchor, observations) {
+      // Historical windows end at T−1; 21 daily returns require 22 closing prices.
       const available = n => i >= n && segments[i - n] === segments[i - 1];
-      let reboundPct = null, priorDrops = null, ma200Pct = null, drawdownPct = null;
+      let reboundPct = null, priorDrops = null, ma200Pct = null, drawdownPct = null, volPct = null;
       if (anchor !== null) {
         reboundPct = snap((anchor - close) / (prior - close) * 100, [50], 200 * Number.EPSILON * prior / (prior - close));
       }
       if (available(22)) {
         priorDrops = 0;
-        for (let j = i - 21; j < i; j++) if (isDrop(series[j-1][1], series[j][1], threshold)) priorDrops++;
+        const logs = [];
+        for (let j = i - 21; j < i; j++) {
+          const prev = series[j-1][1], next = series[j][1];
+          if (isDrop(prev, next, threshold)) priorDrops++;
+          logs.push(Math.log(next / prev));
+        }
+        const mean = logs.reduce((a, b) => a + b, 0) / logs.length;
+        const variance = logs.reduce((sum, v) => sum + (v - mean) ** 2, 0) / (logs.length - 1);
+        volPct = snap(Math.sqrt(variance * 252) * 100, [20, 30], 400 * Math.sqrt(252) * Number.EPSILON);
       }
       if (available(200)) {
         // Sum deviations from the last close: a flat decimal-valued series must stay exactly flat.
@@ -93,7 +122,8 @@
         for (let j = i - 252; j < i - 1; j++) high = Math.max(high, series[j][1]);
         drawdownPct = snap((high - prior) / high * 100, [5, 10, 20], 200 * Number.EPSILON);
       }
-      return { reboundPct, priorDrops, ma200Pct, drawdownPct };
+      return { reboundPct, priorDrops, ma200Pct, drawdownPct, volPct, peerPct: peerChange(i),
+        brokeLow: anchor === null ? null : observations.some(([, v]) => v < close) };
     }
     const events = [], counts = { unrecovered: 0, recovered: 0, pending: 0, gap: 0, total: 0 };
     const groupValues = byHorizon(() => []), allValues = byHorizon(() => []);
@@ -127,14 +157,16 @@
       const outcomes = byHorizon(h => anchorDate ? outcome(i + wait, h) : empty(status));
       latest = { date, close, priorDate, priorClose, dropPct: change(priorClose, close),
         status, observations, recoveryDate, anchorDate, anchorClose, outcomes,
-        features: features(i, priorClose, close, anchorClose) };
+        features: features(i, priorClose, close, anchorClose, observations) };
       counts[status]++; counts.total++;
       if (anchorDate && (group === 'all' || group === status)) {
         cohortN++;
-        const values = buckets(latest.features);
+        const values = facetValues(latest);
         for (const k of facetKeys) if (matches(values, options, k)) {
-          facetCounts[k].any++;
-          facetCounts[k][values[k] ?? 'missing']++;
+          const count = facetCounts[k];
+          count.any++;
+          if (values[k] == null) count.missing++;
+          else for (const option of facetOptions[k]) if (option !== 'any' && matchesOne(k, values[k], option)) count[option]++;
         }
         if (!matches(values, options)) continue;
         events.push(latest);

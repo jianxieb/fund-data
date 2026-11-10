@@ -191,7 +191,77 @@ test('combining facets retains matching outcomes while counts offer alternatives
   assert.deepEqual(selected.facetCounts.repeat, { any: 2, first: 1, repeat: 1, missing: 0 });
   assert.deepEqual(selected.facetCounts.rebound, { any: 2, none: 0, partial: 1, half: 1, full: 0, missing: 0 });
   assert.equal(matchesFilters(selected.latest, { rebound: 'half', repeat: 'first' }), false);
-  for (const key of ['rebound', 'repeat', 'trend', 'drawdown']) {
+  for (const key of ['rebound', 'repeat', 'trend', 'drawdown', 'cap', 'peer', 'vol', 'low']) {
     assert.throws(() => study(s, { [key]: 'other' }), /统计条件/);
   }
+});
+
+test('loss caps are inclusive and their preview counts overlap; the lower trigger stays strict', () => {
+  const prices = Array(24).fill(123.45);
+  // 5%, exactly 7%, just over 7%, 10%, and over the largest cap.
+  for (const [i, loss] of [[1, 5], [5, 7], [9, 7.0001], [13, 10], [17, 16]]) {
+    const close = Number((123.45 * (1 - loss / 100)).toFixed(10));
+    prices.splice(i, 3, close, close, close);
+  }
+  const s = sessions(prices), r = study(s, { cap: '7', low: 'hold' });
+  assert.equal(r.cohortN, 4);
+  assert.deepEqual(r.events.map(e => e.date), [s[5][0]]);
+  assert.deepEqual(r.facetCounts.cap, {any:4, 4:0, 5:0, 6:0, 7:1, 8:2, 9:2, 10:3, 12:3, 15:3, missing:0});
+  assert.equal(r.facetCounts.low.any, 1);
+  assert.deepEqual(r.baseline, study(s).baseline);
+  assert.equal(matchesFilters(r.latest, {cap:'15'}), false);
+});
+
+test('peer moves use both exact consecutive closing dates; absent or mismatched prices stay unknown', () => {
+  const s = [['2020-01-02', 100], ['2020-01-06', 90], ['2020-01-07', 92], ['2020-01-08', 93]];
+  const peer = s.map(([d]) => [d,123.45]);
+  for (const [loss, bucket] of [[-1,'up'], [0,'up'], [1.999,'mild'], [2,'moderate'], [3.999,'moderate'], [4,'severe'], [8,'severe']]) {
+    const prices = peer.map(([d,n],i)=>[d,i===1 ? Number((n*(1-loss/100)).toFixed(9)) : n]);
+    const r = study(s, {peer:bucket}, prices);
+    assert.equal(r.events.length, 1);
+    near(r.latest.features.peerPct, -loss);
+    assert.equal(r.facetCounts.peer[bucket], 1);
+  }
+  for (const prices of [undefined, peer.slice(1), [peer[0], ...peer.slice(2)],
+    [peer[0], ['2020-01-03',123], ...peer.slice(1)], [[peer[0][0], null], ...peer.slice(1)]]) {
+    const r = study(s, {}, prices);
+    assert.equal(r.events.length, 1);
+    assert.equal(r.latest.features.peerPct, null);
+    assert.deepEqual(r.facetCounts.peer, {any:1, up:0, mild:0, moderate:0, severe:0, missing:1});
+    assert.equal(study(s, {peer:'mild'}, prices).events.length, 0);
+  }
+});
+
+test('realized volatility uses 21 pre-drop log returns, sample variance and 252-session annualization', () => {
+  // Ten +/- pairs and one flat return: sample variance is exactly a².
+  function trace(annualPct) {
+    const a = annualPct / (100 * Math.sqrt(252)), prices = [100];
+    for (let j = 0; j < 10; j++) prices.push(100*Math.exp(a),100);
+    return sessions([...prices,100,90,91,92]);
+  }
+  for (const [vol,bucket] of [[0,'calm'],[19.999,'calm'],[20,'active'],[29.999,'active'],[30,'high'],[42,'high']]) {
+    const r = study(trace(vol), {vol:bucket});
+    near(r.latest.features.volPct, vol);
+    assert.equal(r.events.length, 1);
+  }
+  const short = trace(20).slice(1);
+  const r = study([['2017-04-03',100],...short], {vol:'calm'});
+  assert.equal(r.events.length, 0);
+  assert.equal(r.latest.features.volPct, null);
+  assert.equal(r.facetCounts.vol.missing, 1);
+});
+
+test('a lower observation close stays a breach after a rebound; a tie is not a new low', () => {
+  for (const [p,low] of [[[100,90,89,95],'break'],[[100,90,91,89],'break'],[[100,90,90,95],'hold']]) {
+    const s = sessions(p), r = study(s,{low});
+    assert.equal(r.events.length, 1);
+    assert.equal(r.latest.features.brokeLow, low === 'break');
+    assert.equal(r.facetCounts.low[low], 1);
+    const pending = study(s.slice(0,-1)).latest;
+    assert.equal(pending.features.brokeLow,null);
+    assert.equal(matchesFilters(pending,{low}),false);
+  }
+  const broken = study([...sessions([100,90,89]),['2021-03-22',95]]).latest;
+  assert.equal(broken.status,'gap');
+  assert.equal(broken.features.brokeLow,null);
 });

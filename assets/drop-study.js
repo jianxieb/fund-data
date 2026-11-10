@@ -9,8 +9,13 @@
     rebound:{any:'不限',none:'没有收回或继续下跌',partial:'收回部分，不足一半',half:'收回至少一半，未收回全部',full:'收回全部或更多'},
     repeat:{any:'不限',first:'没有其他大跌',repeat:'至少还有一次大跌'},
     trend:{any:'不限',above:'高于均线',below:'等于或低于均线'},
-    drawdown:{any:'不限',near:'不足 5%',pullback:'5% 至不足 10%',correction:'10% 至不足 20%',bear:'20% 及以上'}
+    drawdown:{any:'不限',near:'不足 5%',pullback:'5% 至不足 10%',correction:'10% 至不足 20%',bear:'20% 及以上'},
+    cap:Object.fromEntries(D.facetOptions.cap.map(v=>[v,v==='any'?'不限':'不超过 '+v+'%'])),
+    peer:{any:'不限',up:'持平或上涨',mild:'下跌不足 2%',moderate:'下跌 2% 至不足 4%',severe:'下跌 4% 及以上'},
+    vol:{any:'不限',calm:'低于 20%',active:'20% 至不足 30%',high:'30% 及以上'},
+    low:{any:'不限',hold:'收盘未再跌破',break:'收盘曾再跌破'}
   };
+  const advancedKeys = ['trend','drawdown','vol','cap','peer','low'];
   const facetKeys = Object.keys(facetLabels);
   const facetDefaults = Object.fromEntries(facetKeys.map(k=>[k,'any']));
   const defaults = { market:'ndx', threshold:5, wait:2, group:'unrecovered', ...facetDefaults };
@@ -21,8 +26,10 @@
   const signed = n => '<span class="' + (n < 0 ? 'negative' : n > 0 ? 'positive' : '') + '">' + pct(n) + '</span>';
   const escape = M.escapeHtml;
   const cache = new Map();
-  let H, state, result, signature, horizon = 252, bin = null, page = 1, showBaseline = false, showTrend = false;
+  let H, state, result, signature, resultPeer, horizon = 252, bin = null, page = 1, showBaseline = false, showExtra = false;
   const size = 10;
+  const peerMarket = () => state.market === 'ndx' ? 'spx' : 'ndx';
+  const peerName = () => markets[peerMarket()][0];
 
   function readState() {
     const q = new URLSearchParams(location.hash.split('?')[1]);
@@ -55,30 +62,46 @@
   }
   const filterNames = {
     rebound:'观察期末收回的跌幅', repeat:'跌前 21 个交易日内的其他大跌',
-    trend:'跌前收盘与 200 日均线', drawdown:'跌前距 252 日最高收盘的回撤'
+    trend:'跌前收盘与 200 日均线', drawdown:'跌前距 252 日最高收盘的回撤',
+    vol:'跌前 21 日年化波动率', cap:'大跌日的跌幅上限', get peer(){return peerName()+'同日涨跌';},
+    low:'观察期内是否跌破大跌日收盘'
   };
+  function peerStatus() {
+    const slot = cache.get(peerMarket());
+    if (slot?.series) return '';
+    return slot?.error ? peerName() + '日线未能读取：' + slot.error : '正在读取' + peerName() + '日线';
+  }
   function facetSelect(key) {
     const counts = result?.facetCounts[key];
-    const choices = D.facetOptions[key].map(v=>[v,facetLabels[key][v] + (counts ? ' · ' + counts[v] + ' 次' : '')]);
-    const missing = {repeat:'缺完整的 21 个日涨跌幅',trend:'缺完整的 200 日收盘',drawdown:'缺完整的 252 日收盘'};
-    return '<div>' + select(filterNames[key],key,choices) +
-      (counts?.missing && missing[key] ? '<small class="ds-missing">' + counts.missing + ' 次' + missing[key] + '</small>' : '') + '</div>';
+    const unavailable = key === 'peer' ? peerStatus() : '';
+    const choices = D.facetOptions[key].filter(v=>key!=='cap' || v==='any' || Number(v)>state.threshold || v===state.cap)
+      .map(v=>[v,facetLabels[key][v] + (counts && !unavailable ? ' · ' + counts[v] + ' 次' : '')]);
+    const missing = {repeat:'缺完整的 21 个日涨跌幅',trend:'缺完整的 200 日收盘',drawdown:'缺完整的 252 日收盘',
+      vol:'缺完整的 21 个日涨跌幅',peer:'缺对照指数同一对交易日的收盘'};
+    let hint = '';
+    if (unavailable) hint = escape(unavailable) + (cache.get(peerMarket())?.error ? ' <button type="button" class="text-link" data-ds-action="retry-peer">重试</button>' : '…');
+    else if (key === 'cap' && capConflict()) hint = '上限须高于起筛跌幅 ' + state.threshold + '%，否则没有匹配事件。';
+    else if (counts?.missing && missing[key]) hint = counts.missing + ' 次' + missing[key];
+    return '<div>' + select(filterNames[key],key,choices) + (hint ? '<small class="ds-missing">' + hint + '</small>' : '') + '</div>';
   }
+  const capConflict = () => state.cap!=='any' && Number(state.cap)<=state.threshold;
   function controls() {
     const steps = thresholds.includes(state.threshold) ? thresholds : [...thresholds,state.threshold].sort((a,b)=>a-b);
-    const advanced = ['trend','drawdown'].filter(k=>state[k]!=='any');
+    const advanced = advancedKeys.filter(k=>state[k]!=='any');
     const filtered = facetKeys.some(k=>state[k]!=='any');
     return '<div class="ds-controls">' + select('研究指数','market', Object.entries(markets).map(([k,[l]])=>[k,l])) +
       select('单日收盘跌幅','threshold', [...steps.map(v => [v,'超过 ' + v + '%']),['custom','自定义跌幅…']]) +
       select('跌后观察期','wait',options.wait.map(v => [v,v + ' 个交易日'])) +
       select('纳入统计的大跌','group',Object.entries(groups).map(([v,l]) => [v, v === 'all' ? '全部已观察事件' : '期内' + l])) +
       facetSelect('rebound') + facetSelect('repeat') + '</div>' +
-      '<div class="ds-filter-bar"><button type="button" class="text-link" data-ds-action="trend-filters" aria-controls="ds-trend-filters" aria-expanded="' + showTrend + '">' +
-      (showTrend ? '▾' : '▸') + ' 跌前趋势与回撤</button>' +
-      (!showTrend && advanced.length ? '<span>' + advanced.map(k=>(k==='drawdown'?'回撤 ':'')+facetLabels[k][state[k]]).join(' · ') + '</span>' : '') +
+      '<div class="ds-filter-bar"><button type="button" class="text-link" data-ds-action="extra-filters" aria-controls="ds-extra-filters" aria-expanded="' + showExtra + '">' +
+      (showExtra ? '▾' : '▸') + ' 更多可选条件</button>' +
+      (!showExtra && advanced.length ? '<span class="ds-active-filters">' + advanced.map(k=>filterNames[k]+'：'+facetLabels[k][state[k]]).join('；') + '</span>' : '') +
       (result ? '<span class="ds-match-count" role="status">匹配 <b>' + result.events.length + '</b> / ' + result.cohortN + ' 次事件</span>' : '') +
       (filtered ? '<button type="button" class="text-link" data-ds-action="reset-facets">清除细分条件</button>' : '') + '</div>' +
-      '<div id="ds-trend-filters" class="ds-controls ds-extra-controls"' + (showTrend ? '' : ' hidden') + '>' + facetSelect('trend') + facetSelect('drawdown') + '</div>';
+      '<div id="ds-extra-filters" class="ds-extra-filters"' + (showExtra ? '' : ' hidden') + '>' +
+      '<fieldset><legend>大跌前</legend>' + ['trend','drawdown','vol'].map(facetSelect).join('') + '</fieldset>' +
+      '<fieldset><legend>大跌当天及观察期</legend>' + ['cap','peer','low'].map(facetSelect).join('') + '</fieldset></div>';
   }
   function eventPoints(e) {
     return [['跌前收盘', e.priorDate, e.priorClose], ['大跌日',e.date,e.close],
@@ -94,7 +117,10 @@
       rebound:f.reboundPct == null ? (e.status === 'gap' ? '观察期行情断档' : '观察期未满') : f.reboundPct.toFixed(2) + '%',
       repeat:f.priorDrops == null ? '缺完整的 21 个日涨跌幅' : f.priorDrops + ' 次',
       trend:f.ma200Pct == null ? '缺完整的 200 日收盘' : pct(f.ma200Pct),
-      drawdown:f.drawdownPct == null ? '缺完整的 252 日收盘' : f.drawdownPct.toFixed(2) + '%'
+      drawdown:f.drawdownPct == null ? '缺完整的 252 日收盘' : f.drawdownPct.toFixed(2) + '%',
+      peer:f.peerPct == null ? (peerStatus() || '缺同一对交易日的收盘') : pct(f.peerPct),
+      vol:f.volPct == null ? '缺完整的 21 个日涨跌幅' : f.volPct.toFixed(2) + '%',
+      low:f.brokeLow == null ? (e.status === 'gap' ? '观察期行情断档' : '观察期未满') : (f.brokeLow ? '曾跌破' : '未跌破')
     };
   }
   function latest() {
@@ -108,10 +134,13 @@
       (distance === 0 ? '观察期末回到跌前收盘点位。' : '观察期末' + (distance < 0 ? '低于' : '高于') + '跌前收盘 ' + Math.abs(distance).toFixed(2) + '%。');
     const matches = e.anchorDate && (state.group === 'all' || state.group === e.status) && D.matchesFilters(e,state);
     const facts = featureValues(e);
+    const context = ['vol','peer','low'].filter(k => state[k] !== 'any')
+      .map(k=>filterNames[k]+'：<b>'+escape(facts[k])+'</b>').join(' · ');
     return '<section class="ds-current" aria-label="最近一次大跌"><div class="ds-current-copy"><div class="ds-kicker">最近一次大跌 · ' + markets[state.market][0] + '</div>' +
       '<h2>' + e.date + '<span class="ds-drop">' + pct(e.dropPct) + '</span></h2><p><b>' + statuses[e.status] + '</b> · ' + observation +
       (e.anchorDate && !matches ? '此次不符合当前筛选。' : '') + '</p><p class="ds-latest-facts">' +
-      (e.anchorDate ? '期末收回比例 <b>' + facts.rebound + '</b> · ' : '') + '此前 21 个交易日跌超 ' + state.threshold + '%：<b>' + facts.repeat + '</b></p></div>' + timeline(e) + '</section>';
+      (e.anchorDate ? '期末收回比例 <b>' + facts.rebound + '</b> · ' : '') + '此前 21 个交易日跌超 ' + state.threshold + '%：<b>' + facts.repeat + '</b></p>' +
+      (context ? '<p class="ds-latest-facts">' + context + '</p>' : '') + '</div>' + timeline(e) + '</section>';
   }
   function summaryTable() {
     const group = state.group === 'all' ? '全部已观察大跌' : '期内' + groups[state.group];
@@ -159,7 +188,9 @@
       .map(y => ({ y, n:counts.get(y) + counts.get(y+1) })).sort((a,b) => b.n - a.n || a.y - b.y);
     const c = clusters[0];
     const lead = c && c.n >= events.length / 3 ? '所选 ' + events.length + ' 次大跌中，' + c.n + ' 次发生在 ' + c.y + '–' + (c.y+1) + ' 年。' : '';
-    return '<p class="ds-note">' + lead + '同一轮下跌可能多次触发，后续区间也可能重叠，样本数不等于独立危机的次数。</p>';
+    const n = result.summary[252].n;
+    const sample = n > 0 && n <= 5 ? '一年期只有 ' + n + ' 次完整结果，可逐次查看。' : '';
+    return '<p class="ds-note">' + sample + lead + '同一轮下跌可能多次触发，后续区间也可能重叠，样本数不等于独立危机的次数。</p>';
   }
   function distributions(bins) {
     const r = result.summary[horizon];
@@ -197,6 +228,7 @@
     return '<details class="ds-method"><summary>统计口径与数据来源</summary><p>单日跌幅与上一交易日收盘比较，恰好等于阈值不入样。观察期内任何一次收盘回到或超过跌前收盘即为已收复，盘中触及不计。所有组的起算点都是观察期最后一个收盘。</p>' +
       '<p>期末收回比例＝（观察期末收盘 − 大跌日收盘）÷（跌前收盘 − 大跌日收盘）。期内曾收复的事件也可能在期末再度回落。此前 21 个交易日的其他大跌沿用当前跌幅门槛，不计大跌日当天。</p>' +
       '<p>均线和距高点回撤都截至大跌前一日收盘，分别用 200 日简单均线和近 252 个交易日的最高收盘。历史不足或跨行情断档时，该项只有在选「不限」时才保留。选项旁的次数保留其余筛选条件，含已确认但后续尚未到期的事件。</p>' +
+      '<p>跌幅须超过起筛门槛，选了上限则可以等于上限。另一指数的涨跌比较同一对交易日的收盘。跌前波动率用截至前一交易日的 21 个日对数收益的样本标准差年化；观察期内只要有一天收盘低于大跌日收盘，就记为曾跌破。</p>' +
       '<p>基准使用同一指数、同一覆盖期内所有具备同等观察窗口的交易日，包含触发事件的日期。每期平均数为算术平均；上涨占比只数涨幅大于零的记录。相邻收盘相隔超过 10 个自然日视为行情断档，跨过断档的窗口不计算。</p>' +
       (state.market === 'ndx' ? '<p>历史样本按 Yahoo 日线筛选。截至 2026-11-09，默认条件的全部触发日期及四期中位数、平均数（保留两位小数）已用 Nasdaq 官方历史日线复核。</p>' : '') +
       '<p><a href="https://finance.yahoo.com/quote/' + encodeURIComponent(symbol) + '/history/" target="_blank" rel="noopener noreferrer">Yahoo Finance · ' + symbol +
@@ -210,7 +242,7 @@
     }).join('');
     H.openModal(H.modalTitle(e.date + ' · ' + markets[state.market][0], '单日 ' + pct(e.dropPct) + ' · ' + state.wait + ' 个交易日内' + statuses[e.status]) +
       '<div class="ds-detail">' + timeline(e) + '<dl class="ds-feature-values">' +
-      facetKeys.map(k=>'<div><dt>' + (k === 'trend' ? '跌前收盘相对 200 日均线' : filterNames[k]) + '</dt><dd>' + facts[k] + '</dd></div>').join('') +
+      facetKeys.filter(k=>k!=='cap').map(k=>'<div><dt>' + (k === 'trend' ? '跌前收盘相对 200 日均线' : filterNames[k]) + '</dt><dd>' + escape(facts[k]) + '</dd></div>').join('') +
       '</dl><p>从 ' + e.anchorDate + ' 收盘 ' + fmt(e.anchorClose) + ' 点起算' +
       (e.recoveryDate ? '；首次收复于 ' + e.recoveryDate : '') + '。</p><div class="ds-scroll"><table><thead><tr><th>后续期限</th><th>实际终日</th><th>指数收盘</th><th>累计涨跌</th></tr></thead><tbody>' + rows + '</tbody></table></div></div>');
   }
@@ -218,27 +250,38 @@
     const rows = bin == null ? result.events : distribution()[bin].rows;
     const prefix = ['指数','行情截至','筛选组别','收益区间筛选','跌幅阈值%','观察天数','跌前日期','跌前收盘','大跌日','大跌日收盘','单日涨跌%','观察结果','首次收复日','后续起算日','起算收盘'];
     const header = [...prefix,...facetKeys.map(k=>'筛选：'+filterNames[k]),'期末收回原跌幅%','此前21个交易日其他大跌次数','跌前收盘相对200日均线%','跌前距252日最高收盘回撤%',
+      '对照指数','对照指数同日涨跌%','对照行情状态','跌前21日年化波动率%','观察期内收盘曾跌破大跌日收盘',
       ...Array.from({ length:state.wait },(_,i)=>['观察日'+(i+1),'收盘点位'+(i+1)]).flat(),
       ...horizons.flatMap(h=>[h+'日状态',h+'日实际终日',h+'日收盘',h+'日累计涨跌%'])];
     const filter = bin == null ? '不限' : terms[horizon] + '后 ' + labelBin(distribution()[bin]);
     const data = rows.map(e=>[markets[state.market][1],result.asOf,groups[state.group],filter,state.threshold,state.wait,e.priorDate,e.priorClose,e.date,e.close,e.dropPct,
       statuses[e.status],e.recoveryDate,e.anchorDate,e.anchorClose,...facetKeys.map(k=>facetLabels[k][state[k]]),
-      e.features.reboundPct,e.features.priorDrops,e.features.ma200Pct,e.features.drawdownPct,...e.observations.flat(),
+      e.features.reboundPct,e.features.priorDrops,e.features.ma200Pct,e.features.drawdownPct,
+      markets[peerMarket()][1],e.features.peerPct,e.features.peerPct == null ? (peerStatus() || '缺同一对交易日的收盘') : '同一对交易日',
+      e.features.volPct,e.features.brokeLow == null ? null : e.features.brokeLow ? '是' : '否',...e.observations.flat(),
       ...horizons.flatMap(h=>{const r=e.outcomes[h];return [r.status==='complete'?'已到期':r.status==='gap'?'行情断档':'未到期',r.date,r.close,r.pct];})]);
     H.download('大跌后表现-'+markets[state.market][0]+'-'+result.asOf+'.csv',M.csv([header,...data]),'text/csv;charset=utf-8');
   }
   function view(helpers) {
     H = helpers;
     const next = readState();
-    if (['trend','drawdown'].some(k=>next[k]!=='any' && next[k]!==state?.[k])) showTrend = true;
+    if (advancedKeys.some(k=>next[k]!=='any' && next[k]!==state?.[k]) ||
+        (next.threshold !== state?.threshold && next.cap!=='any' && Number(next.cap)<=next.threshold)) showExtra = true;
     state = next;
     const sig = JSON.stringify(state);
     if (sig !== signature) { result = null; signature = sig; bin = null; page = 1; }
     const title = H.head('MARKET EVENT STUDY', '大跌后表现', '指数单日大跌后，短期内是否收复失地，与随后一周至一年的涨跌有什么关系？');
-    const slot = cache.get(state.market);
+    const other = peerMarket(), slot = cache.get(state.market), peer = cache.get(other);
     if (!slot) load(state.market);
+    if (!peer) load(other);
     if (!slot?.series) return title + controls() + '<div role="status" class="ds-panel ds-loading">' + (slot?.error ? escape(slot.error) + ' <button class="text-link" data-ds-action="retry">重新加载</button>' : '正在读取指数收盘日线…') + '</div>';
-    if (!result) result = D.study(slot.series, state);
+    if (state.peer !== 'any' && !peer?.series) return title + controls() + '<div role="status" class="ds-panel ds-loading">' +
+      (peer?.error ? '缺少' + peerName() + '日线，暂时无法统计所选的同日涨跌区间。' : '正在读取' + peerName() + '日线，等待核对同日涨跌。') +
+      ' <button class="text-link" data-ds-action="clear-peer">取消同日涨跌筛选</button></div>';
+    if (!result || resultPeer !== peer?.series) {
+      resultPeer = peer?.series;
+      result = D.study(slot.series, state, resultPeer);
+    }
     const bins = distribution();
     return title + controls() + latest() + summaryTable() + sampleNote() + distributions(bins) + eventsTable(bins) + method();
   }
@@ -274,7 +317,9 @@
     else if (el.dataset.dsBin != null) { const n = +el.dataset.dsBin; bin = n === bin ? null : n; page = 1; }
     else if (el.dataset.dsEvent) { const e = result.events.find(r=>r.date===el.dataset.dsEvent); if (e) detail(e); return; }
     else switch (el.dataset.dsAction) {
-      case 'trend-filters': showTrend = !showTrend; break;
+      case 'extra-filters': showExtra = !showExtra; break;
+      case 'clear-peer': setFields({peer:'any'}); return;
+      case 'retry-peer': cache.delete(peerMarket()); break;
       case 'reset-facets': setFields(facetDefaults); return;
       case 'baseline': showBaseline = !showBaseline; break;
       case 'prev': page--; break;
