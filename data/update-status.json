@@ -3,124 +3,106 @@
   "datasets": {
     "strategy": {
       "status": "success",
-      "attemptedAt": "2026-11-09T01:46:08+00:00",
-      "asOf": "2026-11-06",
+      "attemptedAt": "2026-11-10T04:09:22+00:00",
+      "asOf": "2026-11-09",
       "records": 432,
       "basis": "provider_adjusted_close",
       "mode": "online",
       "execution": {
         "exitCode": 0,
-        "seconds": 62.15
+        "seconds": 51.52
       },
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-09T01:46:08+00:00",
-        "asOf": "2026-11-06",
+        "attemptedAt": "2026-11-10T04:09:22+00:00",
+        "asOf": "2026-11-09",
         "records": 432,
         "basis": "provider_adjusted_close",
         "mode": "online",
         "execution": {
           "exitCode": 0,
-          "seconds": 62.15
+          "seconds": 51.52
         }
       }
     },
     "funds": {
-      "status": "success",
-      "attemptedAt": "2026-11-09T01:44:47+00:00",
-      "asOf": "2026-11-05",
-      "records": 46,
-      "requested": 46,
-      "failures": [],
-      "metadataWarnings": [],
+      "status": "timeout",
+      "attemptedAt": "2026-11-10T04:08:30+00:00",
+      "exitCode": 124,
+      "seconds": 90.13,
+      "message": "\n执行超过 90 秒，子进程已终止；该数据集不能视为更新成功。\n",
+      "error": "执行超过 90 秒，子进程已终止；该数据集不能视为更新成功。",
       "mode": "online",
-      "execution": {
-        "exitCode": 0,
-        "seconds": 43.88
-      },
       "lastOnlineAttempt": {
-        "status": "success",
-        "attemptedAt": "2026-11-09T01:44:47+00:00",
-        "asOf": "2026-11-05",
-        "records": 46,
-        "requested": 46,
-        "failures": [],
-        "metadataWarnings": [],
-        "mode": "online",
-        "execution": {
-          "exitCode": 0,
-          "seconds": 43.88
-        }
+        "status": "timeout",
+        "attemptedAt": "2026-11-10T04:08:30+00:00",
+        "exitCode": 124,
+        "seconds": 90.13,
+        "message": "\n执行超过 90 秒，子进程已终止；该数据集不能视为更新成功。\n",
+        "error": "执行超过 90 秒，子进程已终止；该数据集不能视为更新成功。",
+        "mode": "online"
       }
     },
     "indices": {
       "status": "success",
-      "attemptedAt": "2026-11-09T01:44:23+00:00",
+      "attemptedAt": "2026-11-10T04:07:20+00:00",
       "exitCode": 0,
-      "seconds": 19.56,
+      "seconds": 20.86,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-09T01:44:23+00:00",
+        "attemptedAt": "2026-11-10T04:07:20+00:00",
         "exitCode": 0,
-        "seconds": 19.56,
+        "seconds": 20.86,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "stocks": {
-      "status": "success",
-      "attemptedAt": "2026-11-09T01:45:06+00:00",
-      "records": 71,
-      "failures": [],
-      "metadataWarnings": [],
-      "asOf": "2026-11-09",
+      "status": "timeout",
+      "attemptedAt": "2026-11-10T04:08:30+00:00",
+      "exitCode": 124,
+      "seconds": 90.12,
+      "message": "\n执行超过 90 秒，子进程已终止；该数据集不能视为更新成功。\n",
+      "error": "执行超过 90 秒，子进程已终止；该数据集不能视为更新成功。",
       "mode": "online",
-      "execution": {
-        "exitCode": 0,
-        "seconds": 62.17
-      },
       "lastOnlineAttempt": {
-        "status": "success",
-        "attemptedAt": "2026-11-09T01:45:06+00:00",
-        "records": 71,
-        "failures": [],
-        "metadataWarnings": [],
-        "asOf": "2026-11-09",
-        "mode": "online",
-        "execution": {
-          "exitCode": 0,
-          "seconds": 62.17
-        }
+        "status": "timeout",
+        "attemptedAt": "2026-11-10T04:08:30+00:00",
+        "exitCode": 124,
+        "seconds": 90.12,
+        "message": "\n执行超过 90 秒，子进程已终止；该数据集不能视为更新成功。\n",
+        "error": "执行超过 90 秒，子进程已终止；该数据集不能视为更新成功。",
+        "mode": "online"
       }
     },
     "screening": {
       "status": "checked",
-      "attemptedAt": "2026-11-09T01:46:29+00:00",
+      "attemptedAt": "2026-11-10T04:11:07+00:00",
       "exitCode": 0,
-      "seconds": 2.62,
+      "seconds": 2.52,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "checked",
-        "attemptedAt": "2026-11-09T01:46:29+00:00",
+        "attemptedAt": "2026-11-10T04:11:07+00:00",
         "exitCode": 0,
-        "seconds": 2.62,
+        "seconds": 2.52,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "quality": {
       "status": "checked",
-      "attemptedAt": "2026-11-09T01:46:52+00:00",
+      "attemptedAt": "2026-11-10T04:11:29+00:00",
       "exitCode": 0,
       "seconds": 1.86,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "checked",
-        "attemptedAt": "2026-11-09T01:46:52+00:00",
+        "attemptedAt": "2026-11-10T04:11:29+00:00",
         "exitCode": 0,
         "seconds": 1.86,
         "mode": "online",
@@ -128,107 +110,949 @@
       }
     },
     "research_funds": {
-      "status": "success",
-      "attemptedAt": "2026-11-09T01:46:29+00:00",
+      "status": "partial",
+      "attemptedAt": "2026-11-10T04:11:07+00:00",
       "records": 395,
-      "asOf": "2026-11-06",
-      "failures": {},
+      "asOf": "2026-11-09",
+      "failures": {
+        "519191": "已取得2026-11-09净值，收益历史仍截至2026-11-06",
+        "000354": "已取得2026-11-09净值，收益历史仍截至2026-11-06",
+        "520520": "已取得2026-11-09净值，收益历史仍截至2026-11-06",
+        "513970": "已取得2026-11-09净值，收益历史仍截至2026-11-06",
+        "520570": "已取得2026-11-09净值，收益历史仍截至2026-11-06",
+        "520500": "已取得2026-11-09净值，收益历史仍截至2026-11-06",
+        "520590": "已取得2026-11-09净值，收益历史仍截至2026-11-06",
+        "520920": "已取得2026-11-09净值，收益历史仍截至2026-11-06"
+      },
       "refreshedCodes": null,
       "message": "复用本轮已更新的行情曲线；原费率和研究核验日期保持独立",
       "mode": "online",
       "execution": {
         "exitCode": 0,
-        "seconds": 2.55
+        "seconds": 2.42
       },
       "lastOnlineAttempt": {
-        "status": "success",
-        "attemptedAt": "2026-11-09T01:46:29+00:00",
+        "status": "partial",
+        "attemptedAt": "2026-11-10T04:11:07+00:00",
         "records": 395,
-        "asOf": "2026-11-06",
-        "failures": {},
+        "asOf": "2026-11-09",
+        "failures": {
+          "519191": "已取得2026-11-09净值，收益历史仍截至2026-11-06",
+          "000354": "已取得2026-11-09净值，收益历史仍截至2026-11-06",
+          "520520": "已取得2026-11-09净值，收益历史仍截至2026-11-06",
+          "513970": "已取得2026-11-09净值，收益历史仍截至2026-11-06",
+          "520570": "已取得2026-11-09净值，收益历史仍截至2026-11-06",
+          "520500": "已取得2026-11-09净值，收益历史仍截至2026-11-06",
+          "520590": "已取得2026-11-09净值，收益历史仍截至2026-11-06",
+          "520920": "已取得2026-11-09净值，收益历史仍截至2026-11-06"
+        },
         "refreshedCodes": null,
         "message": "复用本轮已更新的行情曲线；原费率和研究核验日期保持独立",
         "mode": "online",
         "execution": {
           "exitCode": 0,
-          "seconds": 2.55
+          "seconds": 2.42
         }
       }
     },
     "portfolio": {
-      "status": "success",
-      "attemptedAt": "2026-11-09T01:46:23+00:00",
+      "status": "partial",
+      "attemptedAt": "2026-11-10T04:11:01+00:00",
+      "mode": "online",
       "records": 1873,
       "total": 1873,
       "available": 1873,
       "missing": 0,
-      "historyFailures": {},
-      "navUpdated": 0,
+      "historyFailures": {
+        "fund:519191": {
+          "error": "The read operation timed out",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_519191.html"
+        },
+        "fund:257070": {
+          "error": "Remote end closed connection without response",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_257070.html"
+        },
+        "fund:006522": {
+          "error": "The read operation timed out",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_006522.html"
+        },
+        "fund:000165": {
+          "error": "The read operation timed out",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_000165.html"
+        },
+        "fund:000354": {
+          "error": "The read operation timed out",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_000354.html"
+        },
+        "fund:001511": {
+          "error": "Remote end closed connection without response",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_001511.html"
+        },
+        "fund:002537": {
+          "error": "<urlopen error [Errno 104] Connection reset by peer>",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_002537.html"
+        },
+        "fund:519979": {
+          "error": "The read operation timed out",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_519979.html"
+        },
+        "fund:159901": {
+          "error": "The read operation timed out",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_159901.html"
+        },
+        "fund:513970": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_513970.html"
+        },
+        "fund:520500": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_520500.html"
+        },
+        "fund:520520": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_520520.html"
+        },
+        "fund:520570": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_520570.html"
+        },
+        "fund:520590": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_520590.html"
+        },
+        "fund:520920": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_520920.html"
+        },
+        "fund:002236": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_002236.html"
+        },
+        "fund:006593": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_006593.html"
+        },
+        "fund:003016": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_003016.html"
+        },
+        "fund:005994": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_005994.html"
+        },
+        "fund:003986": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_003986.html"
+        },
+        "fund:006048": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_006048.html"
+        },
+        "fund:001050": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_001050.html"
+        },
+        "fund:007028": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_007028.html"
+        },
+        "fund:004945": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_004945.html"
+        },
+        "fund:006611": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_006611.html"
+        },
+        "fund:006214": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_006214.html"
+        },
+        "fund:002311": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_002311.html"
+        },
+        "fund:006682": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_006682.html"
+        },
+        "fund:161017": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_161017.html"
+        },
+        "fund:001556": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_001556.html"
+        },
+        "fund:162216": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_162216.html"
+        },
+        "fund:000478": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_000478.html"
+        },
+        "fund:673100": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_673100.html"
+        },
+        "fund:000656": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_000656.html"
+        },
+        "fund:001074": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_001074.html"
+        },
+        "fund:003015": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_003015.html"
+        },
+        "fund:166802": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_166802.html"
+        },
+        "fund:007044": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_007044.html"
+        },
+        "fund:310318": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_310318.html"
+        },
+        "fund:163407": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_163407.html"
+        },
+        "fund:162213": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_162213.html"
+        },
+        "fund:001015": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_001015.html"
+        },
+        "fund:000312": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_000312.html"
+        },
+        "fund:007275": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_007275.html"
+        },
+        "fund:050002": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_050002.html"
+        },
+        "fund:160807": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_160807.html"
+        },
+        "fund:165310": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_165310.html"
+        },
+        "fund:519116": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_519116.html"
+        },
+        "fund:000311": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_000311.html"
+        },
+        "fund:002310": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_002310.html"
+        },
+        "fund:000512": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_000512.html"
+        },
+        "fund:160706": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_160706.html"
+        },
+        "fund:110030": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_110030.html"
+        },
+        "fund:200002": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_200002.html"
+        },
+        "fund:161121": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_161121.html"
+        },
+        "fund:161723": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_161723.html"
+        },
+        "fund:161029": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_161029.html"
+        },
+        "fund:005788": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_005788.html"
+        },
+        "fund:217027": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_217027.html"
+        },
+        "fund:161039": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_161039.html"
+        },
+        "fund:005313": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_005313.html"
+        },
+        "fund:004194": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_004194.html"
+        },
+        "fund:005561": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_005561.html"
+        },
+        "fund:161907": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_161907.html"
+        },
+        "fund:100032": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_100032.html"
+        },
+        "fund:213010": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_213010.html"
+        },
+        "fund:519100": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_519100.html"
+        },
+        "fund:163808": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_163808.html"
+        },
+        "fund:410008": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_410008.html"
+        },
+        "fund:310398": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_310398.html"
+        },
+        "fund:006248": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_006248.html"
+        },
+        "fund:050021": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_050021.html"
+        },
+        "fund:001879": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_001879.html"
+        },
+        "fund:110026": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_110026.html"
+        },
+        "fund:161613": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_161613.html"
+        },
+        "fund:001420": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_001420.html"
+        },
+        "fund:159977": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_159977.html"
+        },
+        "fund:159957": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_159957.html"
+        },
+        "fund:159971": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_159971.html"
+        },
+        "fund:159958": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_159958.html"
+        },
+        "fund:159964": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_159964.html"
+        },
+        "fund:159961": {
+          "error": "本次标的历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_159961.html"
+        },
+        "fx:CNY": {
+          "error": "本次汇率历史刷新尚未完成",
+          "asOf": "2026-11-06",
+          "sourceUrl": null
+        }
+      },
+      "navUpdated": 1601,
       "navWarnings": {},
-      "returnsUpdated": 46,
+      "returnsUpdated": 1601,
       "returnsRetained": {},
       "message": "逐标的保存已验证历史；失败项保留原日期，收益与净值按同一份历史同步。",
-      "mode": "online",
-      "execution": {
-        "exitCode": 0,
-        "seconds": 76.89
-      },
       "lastOnlineAttempt": {
-        "status": "success",
-        "attemptedAt": "2026-11-09T01:46:23+00:00",
+        "status": "partial",
+        "attemptedAt": "2026-11-10T04:11:01+00:00",
+        "mode": "online",
         "records": 1873,
         "total": 1873,
         "available": 1873,
         "missing": 0,
-        "historyFailures": {},
-        "navUpdated": 0,
+        "historyFailures": {
+          "fund:519191": {
+            "error": "The read operation timed out",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_519191.html"
+          },
+          "fund:257070": {
+            "error": "Remote end closed connection without response",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_257070.html"
+          },
+          "fund:006522": {
+            "error": "The read operation timed out",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_006522.html"
+          },
+          "fund:000165": {
+            "error": "The read operation timed out",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_000165.html"
+          },
+          "fund:000354": {
+            "error": "The read operation timed out",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_000354.html"
+          },
+          "fund:001511": {
+            "error": "Remote end closed connection without response",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_001511.html"
+          },
+          "fund:002537": {
+            "error": "<urlopen error [Errno 104] Connection reset by peer>",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_002537.html"
+          },
+          "fund:519979": {
+            "error": "The read operation timed out",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_519979.html"
+          },
+          "fund:159901": {
+            "error": "The read operation timed out",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_159901.html"
+          },
+          "fund:513970": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_513970.html"
+          },
+          "fund:520500": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_520500.html"
+          },
+          "fund:520520": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_520520.html"
+          },
+          "fund:520570": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_520570.html"
+          },
+          "fund:520590": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_520590.html"
+          },
+          "fund:520920": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_520920.html"
+          },
+          "fund:002236": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_002236.html"
+          },
+          "fund:006593": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_006593.html"
+          },
+          "fund:003016": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_003016.html"
+          },
+          "fund:005994": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_005994.html"
+          },
+          "fund:003986": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_003986.html"
+          },
+          "fund:006048": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_006048.html"
+          },
+          "fund:001050": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_001050.html"
+          },
+          "fund:007028": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_007028.html"
+          },
+          "fund:004945": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_004945.html"
+          },
+          "fund:006611": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_006611.html"
+          },
+          "fund:006214": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_006214.html"
+          },
+          "fund:002311": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_002311.html"
+          },
+          "fund:006682": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_006682.html"
+          },
+          "fund:161017": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_161017.html"
+          },
+          "fund:001556": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_001556.html"
+          },
+          "fund:162216": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_162216.html"
+          },
+          "fund:000478": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_000478.html"
+          },
+          "fund:673100": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_673100.html"
+          },
+          "fund:000656": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_000656.html"
+          },
+          "fund:001074": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_001074.html"
+          },
+          "fund:003015": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_003015.html"
+          },
+          "fund:166802": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_166802.html"
+          },
+          "fund:007044": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_007044.html"
+          },
+          "fund:310318": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_310318.html"
+          },
+          "fund:163407": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_163407.html"
+          },
+          "fund:162213": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_162213.html"
+          },
+          "fund:001015": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_001015.html"
+          },
+          "fund:000312": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_000312.html"
+          },
+          "fund:007275": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_007275.html"
+          },
+          "fund:050002": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_050002.html"
+          },
+          "fund:160807": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_160807.html"
+          },
+          "fund:165310": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_165310.html"
+          },
+          "fund:519116": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_519116.html"
+          },
+          "fund:000311": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_000311.html"
+          },
+          "fund:002310": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_002310.html"
+          },
+          "fund:000512": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_000512.html"
+          },
+          "fund:160706": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_160706.html"
+          },
+          "fund:110030": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_110030.html"
+          },
+          "fund:200002": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_200002.html"
+          },
+          "fund:161121": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_161121.html"
+          },
+          "fund:161723": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_161723.html"
+          },
+          "fund:161029": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_161029.html"
+          },
+          "fund:005788": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_005788.html"
+          },
+          "fund:217027": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_217027.html"
+          },
+          "fund:161039": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_161039.html"
+          },
+          "fund:005313": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_005313.html"
+          },
+          "fund:004194": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_004194.html"
+          },
+          "fund:005561": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_005561.html"
+          },
+          "fund:161907": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_161907.html"
+          },
+          "fund:100032": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_100032.html"
+          },
+          "fund:213010": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_213010.html"
+          },
+          "fund:519100": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_519100.html"
+          },
+          "fund:163808": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_163808.html"
+          },
+          "fund:410008": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_410008.html"
+          },
+          "fund:310398": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_310398.html"
+          },
+          "fund:006248": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_006248.html"
+          },
+          "fund:050021": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_050021.html"
+          },
+          "fund:001879": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_001879.html"
+          },
+          "fund:110026": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_110026.html"
+          },
+          "fund:161613": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_161613.html"
+          },
+          "fund:001420": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_001420.html"
+          },
+          "fund:159977": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_159977.html"
+          },
+          "fund:159957": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_159957.html"
+          },
+          "fund:159971": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_159971.html"
+          },
+          "fund:159958": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_159958.html"
+          },
+          "fund:159964": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_159964.html"
+          },
+          "fund:159961": {
+            "error": "本次标的历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_159961.html"
+          },
+          "fx:CNY": {
+            "error": "本次汇率历史刷新尚未完成",
+            "asOf": "2026-11-06",
+            "sourceUrl": null
+          }
+        },
+        "navUpdated": 1601,
         "navWarnings": {},
-        "returnsUpdated": 46,
+        "returnsUpdated": 1601,
         "returnsRetained": {},
-        "message": "逐标的保存已验证历史；失败项保留原日期，收益与净值按同一份历史同步。",
-        "mode": "online",
-        "execution": {
-          "exitCode": 0,
-          "seconds": 76.89
-        }
+        "message": "逐标的保存已验证历史；失败项保留原日期，收益与净值按同一份历史同步。"
       }
     },
     "overseas_stocks": {
       "status": "success",
-      "attemptedAt": "2026-11-09T01:44:30+00:00",
-      "asOf": "2026-11-06",
+      "attemptedAt": "2026-11-10T04:07:25+00:00",
+      "asOf": "2026-11-09",
       "records": 79,
       "metadataWarnings": [],
       "message": "发行人、股票类型、币种及上市历史已核对；财报与估值分别标注日期。",
       "mode": "online",
       "execution": {
         "exitCode": 0,
-        "seconds": 26.45
+        "seconds": 25.19
       },
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-09T01:44:30+00:00",
-        "asOf": "2026-11-06",
+        "attemptedAt": "2026-11-10T04:07:25+00:00",
+        "asOf": "2026-11-09",
         "records": 79,
         "metadataWarnings": [],
         "message": "发行人、股票类型、币种及上市历史已核对；财报与估值分别标注日期。",
         "mode": "online",
         "execution": {
           "exitCode": 0,
-          "seconds": 26.45
+          "seconds": 25.19
         }
       }
     },
     "fund_actions": {
       "status": "success",
-      "attemptedAt": "2026-11-09T01:46:31+00:00",
+      "attemptedAt": "2026-11-10T04:11:09+00:00",
       "exitCode": 0,
       "seconds": 0.3,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-09T01:46:31+00:00",
+        "attemptedAt": "2026-11-10T04:11:09+00:00",
         "exitCode": 0,
         "seconds": 0.3,
         "mode": "online",
@@ -237,113 +1061,123 @@
     },
     "etf_distributions": {
       "status": "success",
-      "attemptedAt": "2026-11-09T01:46:34+00:00",
+      "attemptedAt": "2026-11-10T04:11:12+00:00",
       "exitCode": 0,
-      "seconds": 2.63,
+      "seconds": 2.86,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-09T01:46:34+00:00",
+        "attemptedAt": "2026-11-10T04:11:12+00:00",
         "exitCode": 0,
-        "seconds": 2.63,
+        "seconds": 2.86,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "return_indices": {
       "status": "success",
-      "attemptedAt": "2026-11-09T01:46:33+00:00",
+      "attemptedAt": "2026-11-10T04:11:11+00:00",
       "exitCode": 0,
-      "seconds": 1.67,
+      "seconds": 1.81,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-09T01:46:33+00:00",
+        "attemptedAt": "2026-11-10T04:11:11+00:00",
         "exitCode": 0,
-        "seconds": 1.67,
+        "seconds": 1.81,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "financial_events": {
       "status": "success",
-      "attemptedAt": "2026-11-09T01:46:50+00:00",
+      "attemptedAt": "2026-11-10T04:11:27+00:00",
       "exitCode": 0,
-      "seconds": 2.24,
+      "seconds": 2.32,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-09T01:46:50+00:00",
+        "attemptedAt": "2026-11-10T04:11:27+00:00",
         "exitCode": 0,
-        "seconds": 2.24,
+        "seconds": 2.32,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "bank_fx": {
       "status": "success",
-      "attemptedAt": "2026-11-09T01:46:36+00:00",
+      "attemptedAt": "2026-11-10T04:11:13+00:00",
       "exitCode": 0,
-      "seconds": 4.33,
+      "seconds": 3.76,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-09T01:46:36+00:00",
+        "attemptedAt": "2026-11-10T04:11:13+00:00",
         "exitCode": 0,
-        "seconds": 4.33,
+        "seconds": 3.76,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "crossborder": {
-      "status": "success",
-      "attemptedAt": "2026-11-09T01:46:39+00:00",
+      "status": "partial",
+      "attemptedAt": "2026-11-10T04:11:16+00:00",
       "records": 305,
-      "historyFailures": {},
+      "historyFailures": {
+        "158042": {
+          "error": "成交价历史：行情观测不足：158042.SZ",
+          "asOf": "2026-11-06"
+        }
+      },
       "message": "净值复用已发布且哈希核对的曲线；成交价失败保留原同期比较及日期。",
       "mode": "online",
       "execution": {
         "exitCode": 0,
-        "seconds": 7.23
+        "seconds": 6.99
       },
       "lastOnlineAttempt": {
-        "status": "success",
-        "attemptedAt": "2026-11-09T01:46:39+00:00",
+        "status": "partial",
+        "attemptedAt": "2026-11-10T04:11:16+00:00",
         "records": 305,
-        "historyFailures": {},
+        "historyFailures": {
+          "158042": {
+            "error": "成交价历史：行情观测不足：158042.SZ",
+            "asOf": "2026-11-06"
+          }
+        },
         "message": "净值复用已发布且哈希核对的曲线；成交价失败保留原同期比较及日期。",
         "mode": "online",
         "execution": {
           "exitCode": 0,
-          "seconds": 7.23
+          "seconds": 6.99
         }
       }
     },
     "market_history": {
       "status": "success",
-      "attemptedAt": "2026-11-09T01:46:48+00:00",
+      "attemptedAt": "2026-11-10T04:11:24+00:00",
       "exitCode": 0,
-      "seconds": 16.76,
+      "seconds": 15.16,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-09T01:46:48+00:00",
+        "attemptedAt": "2026-11-10T04:11:24+00:00",
         "exitCode": 0,
-        "seconds": 16.76,
+        "seconds": 15.16,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "fund_batch": {
       "status": "partial",
-      "attemptedAt": "2026-11-09T01:44:03+00:00",
+      "attemptedAt": "2026-11-10T04:07:00+00:00",
       "mode": "online",
-      "records": 1682,
+      "records": 1683,
       "requested": 1690,
       "failures": {
         "000970": "could not convert string to float: '--'",
@@ -351,16 +1185,15 @@
         "002924": "could not convert string to float: '--'",
         "004848": "could not convert string to float: '--'",
         "006111": "could not convert string to float: '--'",
-        "006150": "could not convert string to float: '--'",
         "006158": "could not convert string to float: '--'",
         "506009": "could not convert string to float: '--'"
       },
       "message": "批量取得最新净值及其原日期；缺项基金使用独立历史接口",
       "lastOnlineAttempt": {
         "status": "partial",
-        "attemptedAt": "2026-11-09T01:44:03+00:00",
+        "attemptedAt": "2026-11-10T04:07:00+00:00",
         "mode": "online",
-        "records": 1682,
+        "records": 1683,
         "requested": 1690,
         "failures": {
           "000970": "could not convert string to float: '--'",
@@ -368,7 +1201,6 @@
           "002924": "could not convert string to float: '--'",
           "004848": "could not convert string to float: '--'",
           "006111": "could not convert string to float: '--'",
-          "006150": "could not convert string to float: '--'",
           "006158": "could not convert string to float: '--'",
           "506009": "could not convert string to float: '--'"
         },
@@ -377,62 +1209,62 @@
     },
     "benchmark_sync": {
       "status": "success",
-      "attemptedAt": "2026-11-09T01:46:26+00:00",
+      "attemptedAt": "2026-11-10T04:11:04+00:00",
       "exitCode": 0,
-      "seconds": 3.22,
+      "seconds": 3.06,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-09T01:46:26+00:00",
+        "attemptedAt": "2026-11-10T04:11:04+00:00",
         "exitCode": 0,
-        "seconds": 3.22,
+        "seconds": 3.06,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "portfolio_sync": {
       "status": "success",
-      "attemptedAt": "2026-11-05T02:32:02+00:00",
+      "attemptedAt": "2026-11-10T04:11:01+00:00",
       "exitCode": 0,
-      "seconds": 43.83,
+      "seconds": 46.6,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-05T02:32:02+00:00",
+        "attemptedAt": "2026-11-10T04:11:01+00:00",
         "exitCode": 0,
-        "seconds": 43.83,
+        "seconds": 46.6,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "benchmark_valuations": {
       "status": "success",
-      "attemptedAt": "2026-11-09T01:46:32+00:00",
+      "attemptedAt": "2026-11-10T04:11:11+00:00",
       "exitCode": 0,
-      "seconds": 1.14,
+      "seconds": 1.81,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-09T01:46:32+00:00",
+        "attemptedAt": "2026-11-10T04:11:11+00:00",
         "exitCode": 0,
-        "seconds": 1.14,
+        "seconds": 1.81,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "portfolio_stress": {
       "status": "success",
-      "attemptedAt": "2026-11-09T01:46:32+00:00",
+      "attemptedAt": "2026-11-10T04:11:10+00:00",
       "exitCode": 0,
       "seconds": 0.9,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-09T01:46:32+00:00",
+        "attemptedAt": "2026-11-10T04:11:10+00:00",
         "exitCode": 0,
         "seconds": 0.9,
         "mode": "online",
@@ -440,5 +1272,5 @@
       }
     }
   },
-  "checkedAt": "2026-11-09T01:46:52+00:00"
+  "checkedAt": "2026-11-10T04:11:29+00:00"
 }
