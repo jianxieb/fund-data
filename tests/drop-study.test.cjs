@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { study, horizons } = require('../assets/drop-study-model.js');
+const { study, horizons, matchesFilters } = require('../assets/drop-study-model.js');
 
 function sessions(prices, start = '2020-01-02') {
   const day = new Date(start + 'T00:00:00Z');
@@ -114,4 +114,84 @@ test('long gaps invalidate daily drops, confirmations and forward returns on bot
   assert.equal(broken.events.length, 0);
   assert.equal(study([['2020-01-01', 100], ['2020-01-11', 90]]).counts.total, 1);
   assert.equal(study([['2020-01-01', 100], ['2020-01-12', 90]]).counts.total, 0);
+});
+
+test('end-of-observation rebound uses lost points, independent of an earlier full recovery', () => {
+  for (const [anchor, bucket] of [[89, 'none'], [90, 'none'], [94.99, 'partial'], [95, 'half'],
+    [99.99, 'half'], [100, 'full'], [101, 'full']]) {
+    const r = study(sessions([100, 90, 100, anchor]), { group: 'recovered', rebound: bucket });
+    assert.equal(r.events.length, 1);
+    near(r.events[0].features.reboundPct, (anchor - 90) * 10);
+    assert.equal(r.facetCounts.rebound[bucket], 1);
+  }
+  const pending = study(sessions([100, 90, 99])).latest;
+  assert.equal(pending.features.reboundPct, null);
+  assert.equal(matchesFilters(pending, { rebound: 'half' }), false);
+});
+
+test('the 21 preceding session returns exclude today, include day −21, and follow the chosen threshold', () => {
+  function history(day, value) {
+    const prices = Array(36).fill(100);
+    prices[day] = value;
+    prices.splice(30, 3, 89, 90, 94);
+    return sessions(prices);
+  }
+  for (const [day, value, threshold, priorDrops] of [[9, 94, 5, 1], [8, 94, 5, 0], [9, 94, 7, 0], [9, 95, 5, 0]]) {
+    const s = history(day, value);
+    const r = study(s, { threshold, repeat: priorDrops ? 'repeat' : 'first' });
+    assert.equal(r.events.length, 1);
+    assert.equal(r.events[0].date, s[30][0]);
+    assert.equal(r.events[0].features.priorDrops, priorDrops);
+  }
+});
+
+test('pre-drop features need their own complete lookbacks after a gap; any retains missing events', () => {
+  const before = sessions(Array(260).fill(99));
+  for (const n of [21, 22, 199, 200, 251, 252]) {
+    const after = sessions([...Array(n).fill(111.11), 100, 101, 105], '2023-01-03');
+    const s = [...before, ...after];
+    const r = study(s);
+    assert.equal(r.events.length, 1);
+    const f = r.latest.features;
+    assert.deepEqual([f.priorDrops, f.ma200Pct, f.drawdownPct], [n < 22 ? null : 0, n < 200 ? null : 0, n < 252 ? null : 0]);
+    for (const [key, value, need] of [['repeat', 'first', 22], ['trend', 'below', 200], ['drawdown', 'near', 252]]) {
+      const filtered = study(s, { [key]: value });
+      assert.equal(filtered.events.length, n < need ? 0 : 1);
+      assert.equal(filtered.facetCounts[key].any, 1);
+      assert.equal(filtered.facetCounts[key].missing, n < need ? 1 : 0);
+      assert.equal(filtered.cohortN, 1);
+    }
+  }
+});
+
+test('MA and drawdown only use pre-event closes and partition boundary values consistently', () => {
+  const high = 123.4;
+  for (const [pct, bucket] of [[0, 'near'], [4.99, 'near'], [5, 'pullback'], [10, 'correction'], [20, 'bear']]) {
+    const prior = high * (1 - pct / 100);
+    const s = sessions([high * 2, high, ...Array(250).fill(prior - 1), prior, prior * .9, prior * .91, prior * .92]);
+    const r = study(s, { trend: 'above', drawdown: bucket });
+    assert.equal(r.events[0].date, s.at(-3)[0]);
+    near(r.latest.features.drawdownPct, pct);
+    near(r.latest.features.ma200Pct, (prior / (prior - 199 / 200) - 1) * 100);
+  }
+});
+
+test('combining facets retains matching outcomes while counts offer alternatives within the other active filters', () => {
+  const p = Array(340).fill(100);
+  for (const [i, anchor] of [[265, 96], [275, 94], [300, 94], [310, 96]]) p.splice(i, 3, 90, 91, anchor);
+  const s = sessions(p), all = study(s);
+  const selected = study(s, { rebound: 'half', repeat: 'first' });
+  assert.equal(selected.cohortN, 4);
+  assert.deepEqual(selected.events, [all.events.at(-1)]);
+  assert.deepEqual(selected.latest, all.latest);
+  assert.deepEqual(selected.counts, all.counts);
+  assert.deepEqual(selected.baseline, all.baseline);
+  assert.equal(selected.summary[21].n, 1);
+  near(selected.summary[21].mean, selected.events[0].outcomes[21].pct);
+  assert.deepEqual(selected.facetCounts.repeat, { any: 2, first: 1, repeat: 1, missing: 0 });
+  assert.deepEqual(selected.facetCounts.rebound, { any: 2, none: 0, partial: 1, half: 1, full: 0, missing: 0 });
+  assert.equal(matchesFilters(selected.latest, { rebound: 'half', repeat: 'first' }), false);
+  for (const key of ['rebound', 'repeat', 'trend', 'drawdown']) {
+    assert.throws(() => study(s, { [key]: 'other' }), /统计条件/);
+  }
 });
