@@ -15,11 +15,13 @@
   <link rel="stylesheet" href="assets/global-finance.css?v=7719f7648c2a">
   <link rel="stylesheet" href="assets/holding-period.css?v=e0939c6dbdbe">
   <link rel="stylesheet" href="assets/return-comparison.css?v=322381bd940f">
+  <link rel="stylesheet" href="assets/midterm-study.css?v=375e64212cd5">
   <link rel="stylesheet" href="assets/drop-study.css?v=c9c2c1af0497">
   <link rel="stylesheet" href="assets/financial-events.css?v=79f77cf7122d">
   <link rel="stylesheet" href="assets/potential-stocks.css?v=cd25b7dd2d0a">
   <meta id="financial-events-source" data-src="data/financial-events.json?v=3ea0accc5fd6">
   <meta id="financial-events-history-source" data-src="data/financial-events-history.json?v=cf379daa0a1a">
+  <meta id="us-midterms-source" data-src="data/us-midterms-history.json?v=9ecacd3d8a70">
   <meta id="return-index-source" data-src="data/return-comparison/catalog.json?v=f55f134c4f64">
   <meta id="market-history-source" data-src="data/market-history.json?v=65710aabb468">
   <script defer src="data/snapshot.js?v=0e5c854e667a"></script>
@@ -58,6 +60,8 @@
   <script defer src="assets/holding-period.js?v=4e51362d820e"></script>
   <script defer src="assets/return-comparison-model.js?v=003708df2538"></script>
   <script defer src="assets/research-history.js?v=2c30f8a7ed6a"></script>
+  <script defer src="assets/midterm-study-model.js?v=71f22319d0ee"></script>
+  <script defer src="assets/midterm-study.js?v=a430b412417a"></script>
   <script defer src="assets/drop-study-model.js?v=928a90fecb2f"></script>
   <script defer src="assets/drop-study.js?v=76f6eac5d079"></script>
   <script defer src="assets/research-charts.js?v=f7e68e11c471"></script>
@@ -68,7 +72,7 @@
   <script defer src="data/potential-screening.js?v=4bad63c6397a"></script>
   <script defer src="assets/potential-model.js?v=a085ceb5c458"></script>
   <script defer src="assets/potential-stocks.js?v=b85104121dd9"></script>
-  <script defer src="assets/app.js?v=0dfa5dc3ef9b"></script>
+  <script defer src="assets/app.js?v=86a6ba91276a"></script>
 </head>
 <body>
   <a class="skip" href="#main">跳转到主要内容</a>
@@ -85,7 +89,7 @@
       <a href="#global-finance" data-route="global-finance"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5ZM3 12l9 5 9-5M3 16l9 5 9-5"/></svg><span>金融传导</span></a>
       <a href="#financial-events" data-route="financial-events"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3v18M5 6h14M5 12h10M5 18h14"/><circle cx="5" cy="6" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="5" cy="18" r="2"/></svg><span>历史事件</span></a>
       <span class="nav-divider">研究方法</span>
-      <a href="#drop-study" data-route="drop-study"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4v16h18M5 7l5 8 4-3 3 1 4-6"/></svg><span>大跌后表现</span></a>
+      <a href="#drop-study" data-route="drop-study"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4v16h18M5 7l5 8 4-3 3 1 4-6"/></svg><span>事件后表现</span></a>
       <a href="#holding-period" data-route="holding-period"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5v15h16M6 16l4-6 4 3 6-8M7 3v4M17 3v4"/></svg><span>持有期研究</span></a>
       <a href="#strategy" data-route="strategy"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20v-5M12 20V9M19 20V4M3 20h18"/></svg><span>投入策略</span></a>
       <a href="#buy-location" data-route="buy-location"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16m-4-4 4 4-4 4M20 17H4m4-4-4 4 4 4"/></svg><span>投资渠道</span></a>

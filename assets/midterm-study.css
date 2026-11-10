@@ -1,0 +1,29 @@
+.event-study-nav{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 20px;padding-bottom:10px;border-bottom:1px solid #dfe6da}
+.event-study-nav a{padding:7px 14px;border-radius:7px;font-size:14px;font-weight:550;color:#526758;text-decoration:none}
+.event-study-nav a:hover{background:#f0f4ed}
+.event-study-nav a[aria-current=page]{color:#fff;background:#395742}
+.page-midterm-study{--ds-border:#dfe6da;--ds-muted:#5e7062;font-variant-numeric:tabular-nums}
+.page-midterm-study .page-head{margin-bottom:20px}
+.mt-controls,.mt-tools{display:flex;align-items:flex-end;gap:12px 18px;flex-wrap:wrap}
+.mt-controls{margin:0 0 16px}
+.mt-controls label,.mt-tools label{display:grid;gap:4px;min-width:0;font-size:12px;color:var(--ds-muted)}
+.mt-controls select,.mt-tools select{height:36px;font-size:14px}
+.mt-controls select{min-width:235px}
+.mt-highlight{background:#edf3e8;border:1px solid #d9e3d4;border-left:4px solid #77916b;border-radius:12px;padding:20px 24px 16px}
+.mt-topline{display:flex;align-items:baseline;gap:5px 16px;flex-wrap:wrap}
+.mt-topline h2{font-size:21px;color:#294534}
+.mt-topline span,.mt-figures small,.mt-highlight p{font-size:12px;color:#536956}
+.mt-figures{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) minmax(0,1.35fr);margin:18px 0;gap:18px}
+.mt-figures>div+div{border-left:1px solid #cad7c4;padding-left:18px}
+.mt-figures span,.mt-figures small,.mt-events small{display:block}
+.mt-figures span{font-size:13px;font-weight:550;color:#3e5843}
+.mt-figures strong{display:block;font-size:clamp(24px,2vw,34px);line-height:1.35;color:#253f30}
+.mt-highlight p{padding-top:10px;border-top:1px solid #d6e1d1;margin:0}
+.mt-panel th,.mt-panel td{padding:10px 16px;text-align:right}
+.mt-panel tr>:first-child{text-align:left}
+.mt-panel tbody th{color:#344b3b;background:transparent;font-size:14px;font-weight:600}
+.mt-summary .mt-year{background:#f2f6ef;font-weight:600}
+.mt-tools{gap:8px 14px}
+.mt-events small{font-size:11px;color:var(--ds-muted);font-weight:400}
+@media(max-width:1000px){.mt-figures{grid-template-columns:repeat(2,minmax(0,1fr))}.mt-figures>div:nth-child(3){border-left:0;padding-left:0}}
+@media(max-width:650px){.mt-highlight{padding:16px}.mt-figures{gap:14px 8px}.mt-figures>div+div{padding-left:10px}.mt-figures>div:nth-child(3){padding-left:0}.mt-controls{display:grid;grid-template-columns:1fr}.mt-controls select{width:100%;min-width:0}.mt-panel th,.mt-panel td{padding:8px 12px}}
