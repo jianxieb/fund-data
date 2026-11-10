@@ -13,6 +13,19 @@
 .ds-extra-filters legend{padding:0;margin-bottom:6px;color:#3c5844;font-size:13px;font-weight:600}
 .ds-extra-filters label{font-size:12px;color:var(--ds-muted)}
 .ds-extra-filters select{font-size:13px}
+.ds-extra-filters .ds-window-rules{grid-column:1/-1;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 24px}
+.ds-window-rule{min-width:0}
+.ds-window-rule>span{display:block;font-size:12px;color:var(--ds-muted);margin-bottom:5px}
+.ds-window-actions{display:flex;align-items:center;gap:10px}
+.ds-window-edit{display:flex;justify-content:space-between;align-items:center;gap:10px;flex:1;min-width:0;min-height:36px;padding:6px 11px;text-align:left;border:1px solid var(--ds-border);border-radius:6px;background:#fff;color:#294534;font-size:13px}
+.ds-window-edit:hover{border-color:#839b81}
+.ds-window-verb{color:#526d56;font-weight:600}
+.ds-window-actions .text-link{flex-shrink:0;font-size:12px}
+dialog:has(#ds-window-form){width:min(460px,calc(100% - 32px))}
+#ds-window-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:end;gap:14px}
+#ds-window-form input{width:100%}
+#ds-window-form button{grid-column:1/-1;justify-self:end}
+@media(max-width:650px){.ds-extra-filters .ds-window-rules{grid-template-columns:1fr}}
 .ds-active-filters{flex:1 1 300px}
 @media(max-width:1350px){.ds-extra-filters{grid-template-columns:1fr}}
 @media(max-width:650px){.ds-extra-filters fieldset{grid-template-columns:1fr}.ds-extra-filters{padding:12px 14px}}

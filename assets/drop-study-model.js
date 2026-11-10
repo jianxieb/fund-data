@@ -1,7 +1,7 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory();
-  else root.ChanghengDropStudyModel = factory();
-})(typeof window === 'object' ? window : this, function () {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./drop-window-model.js'));
+  else root.ChanghengDropStudyModel = factory(root.ChanghengDropWindowModel);
+})(typeof window === 'object' ? window : this, function (W) {
   'use strict';
   const horizons = Object.freeze([5, 21, 63, 252]);
   const waits = Object.freeze([2, 3, 4, 5]);
@@ -21,6 +21,8 @@
     low: Object.freeze(['any', 'hold', 'break'])
   });
   const facetKeys = Object.keys(facetOptions);
+  const windowKeys = ['peak','loss'];
+  const matchesWindow = (windows, options, k) => options[k+'Min'] == null || W.exceeds(windows?.[k], options[k+'Min']);
   const caps = facetOptions.cap.slice(1).map(Number);
   function facetValues({ dropPct, features: { reboundPct: r, priorDrops: n, ma200Pct: m, drawdownPct: d,
     peerPct: p, volPct: v, brokeLow } }) {
@@ -39,7 +41,8 @@
   const matchesOne = (k, value, option) => k === 'cap' ? value <= Number(option) : value === option;
   const matches = (values, options, except) => facetKeys.every(k =>
     k === except || options[k] === undefined || options[k] === 'any' || matchesOne(k, values[k], options[k]));
-  const matchesFilters = (e, options = {}) => !!e && matches(facetValues(e), options);
+  const matchesFilters = (e, options = {}) => !!e && matches(facetValues(e), options) &&
+    windowKeys.every(k => matchesWindow(e.features.windows, options, k));
   function isDrop(prior, close, threshold) {
     const boundary = prior * (100 - threshold) / 100;
     return boundary - close > Number.EPSILON * prior * 2;
@@ -60,11 +63,14 @@
 
   // Each input is an independent, validated series of ordered [date, close] rows.
   function study(series, options = {}, peerSeries = null) {
-    const { threshold = 5, wait = 2, group = 'unrecovered' } = options;
+    const { threshold = 5, wait = 2, group = 'unrecovered', peakDays = 252, lossDays = 5 } = options;
     if (!validThreshold(threshold) || !waits.includes(wait) ||
+        !W.validDays('peak', peakDays) || !W.validDays('loss', lossDays) ||
+        windowKeys.some(k => options[k+'Min'] != null && !W.validThreshold(options[k+'Min'])) ||
         !['unrecovered', 'recovered', 'all'].includes(group) ||
         facetKeys.some(k => options[k] !== undefined && !facetOptions[k].includes(options[k]))) throw new Error('未知的大跌统计条件');
     const last = series.length - 1;
+    const windows = W.rolling(series, {peakDays, lossDays});
     const peerDates = new Map(peerSeries?.map(([date], i) => [date, i]));
     function peerChange(i) {
       const j = peerDates.get(series[i][0]);
@@ -92,7 +98,7 @@
     }
 
     function features(i, prior, close, anchor, observations) {
-      // Historical windows end at T−1; 21 daily returns require 22 closing prices.
+      // Pre-drop context ends at T−1; the two selectable windows end at the actual drop close T.
       const available = n => i >= n && segments[i - n] === segments[i - 1];
       let reboundPct = null, priorDrops = null, ma200Pct = null, drawdownPct = null, volPct = null;
       if (anchor !== null) {
@@ -122,16 +128,18 @@
         for (let j = i - 252; j < i - 1; j++) high = Math.max(high, series[j][1]);
         drawdownPct = snap((high - prior) / high * 100, [5, 10, 20], 200 * Number.EPSILON);
       }
-      return { reboundPct, priorDrops, ma200Pct, drawdownPct, volPct, peerPct: peerChange(i),
+      return { windows: windows[i], reboundPct, priorDrops, ma200Pct, drawdownPct, volPct, peerPct: peerChange(i),
         brokeLow: anchor === null ? null : observations.some(([, v]) => v < close) };
     }
     const events = [], counts = { unrecovered: 0, recovered: 0, pending: 0, gap: 0, total: 0 };
     const groupValues = byHorizon(() => []), allValues = byHorizon(() => []);
     const facetCounts = Object.fromEntries(facetKeys.map(k => [k,
       Object.fromEntries([...facetOptions[k], 'missing'].map(v => [v, 0]))]));
+    const windowCounts = Object.fromEntries(windowKeys.map(k => [k,
+      {any: 0, match: options[k+'Min'] == null ? null : 0, missing: 0}]));
     let latest = null, cohortN = 0;
     for (let i = 1; i <= last; i++) {
-      // Every comparable anchor must have the same available lookback as an event.
+      // Comparable anchors require the basic daily-drop/observation prefix, never the optional filters.
       // These unconditional windows include events, and may overlap.
       if (i >= wait + 1 && segments[i] === segments[i - wait - 1]) {
         for (const h of horizons) {
@@ -162,19 +170,32 @@
       if (anchorDate && (group === 'all' || group === status)) {
         cohortN++;
         const values = facetValues(latest);
+        const passesFacets = matches(values, options);
+        const passesPeak = matchesWindow(windows[i], options, 'peak');
+        const passesLoss = matchesWindow(windows[i], options, 'loss');
+        if (passesFacets) {
+          for (const k of windowKeys) {
+            if (!(k === 'peak' ? passesLoss : passesPeak)) continue; // Preview this window with all other filters intact.
+            const count = windowCounts[k];
+            count.any++;
+            if (windows[i][k] == null) count.missing++;
+            else if (count.match != null && (k === 'peak' ? passesPeak : passesLoss)) count.match++;
+          }
+        }
+        if (!passesPeak || !passesLoss) continue;
         for (const k of facetKeys) if (matches(values, options, k)) {
           const count = facetCounts[k];
           count.any++;
           if (values[k] == null) count.missing++;
           else for (const option of facetOptions[k]) if (option !== 'any' && matchesOne(k, values[k], option)) count[option]++;
         }
-        if (!matches(values, options)) continue;
+        if (!passesFacets) continue;
         events.push(latest);
         for (const h of horizons) if (outcomes[h].status === 'complete') groupValues[h].push(outcomes[h].pct);
       }
     }
     return { first: series[0]?.[0] ?? null, asOf: series[last]?.[0] ?? null, threshold, wait, group,
-      latest, counts, cohortN, facetCounts, events: events.reverse(), summary: byHorizon(h => summarize(groupValues[h])),
+      latest, counts, cohortN, facetCounts, windowCounts, events: events.reverse(), summary: byHorizon(h => summarize(groupValues[h])),
       baseline: byHorizon(h => summarize(allValues[h])) };
   }
   return { study, horizons, waits, validThreshold, facetOptions, matchesFilters };
