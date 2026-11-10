@@ -1,7 +1,15 @@
 (function () {
   'use strict';
-  let catalogPromise;
+  let catalogPromise, indexCatalogPromise;
   const histories = new Map();
+  function indexCatalog() {
+    if (!indexCatalogPromise) indexCatalogPromise = (async () => {
+      const response = await fetch(document.querySelector('#return-index-source').dataset.src);
+      if (!response.ok) throw new Error('指数日线目录加载失败');
+      return (await response.json()).assets;
+    })().catch(error => { indexCatalogPromise = null; throw error; });
+    return indexCatalogPromise;
+  }
   async function catalog() {
     if (!catalogPromise) catalogPromise = (async () => {
       const portfolio = window.PORTFOLIO_CATALOG || await new Promise((resolve, reject) => {
@@ -11,10 +19,7 @@
         script.onerror = () => reject(new Error('标的库加载失败'));
         document.head.append(script);
       });
-      const response = await fetch(document.querySelector('#return-index-source').dataset.src);
-      if (!response.ok) throw new Error('指数日线目录加载失败');
-      const indices = await response.json();
-      return { assets: [...indices.assets, ...portfolio.assets].map(window.ChanghengReturnComparisonModel.describeAsset), fx: portfolio.fx };
+      return { assets: [...await indexCatalog(), ...portfolio.assets].map(window.ChanghengReturnComparisonModel.describeAsset), fx: portfolio.fx };
     })().catch(error => { catalogPromise = null; throw error; });
     return catalogPromise;
   }
@@ -33,5 +38,5 @@
     })().catch(error => { histories.delete(row.id); throw error; }));
     return histories.get(row.id);
   }
-  window.ChanghengResearchHistory = { catalog, history };
+  window.ChanghengResearchHistory = { catalog, indexCatalog, history };
 })();

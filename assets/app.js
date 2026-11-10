@@ -30,7 +30,7 @@
     return '<details class="select-menu ' + cls + '"><summary id="' + esc(id) + '" aria-label="' + esc(label + '：' + current[1]) + '"><span>' + esc(current[1]) + '</span></summary>' +
       '<div class="select-menu-list" role="group" aria-label="' + esc(label) + '">' + options.map(([key, text]) => action(esc(text), 'menu-choice', 'select-menu-option' + (key === value ? ' active' : ''), 'data-menu="' + esc(id) + '" data-value="' + esc(key) + '" aria-label="' + esc(text) + '" aria-current="' + (key === value) + '"')).join('') + '</div></details>';
   }
-  const years = [1, 2, 3, 5, 10], titles = { overview: '研究总览', indices: '指数观察', 'market-history': '历史分位', 'holding-period': '持有期研究', 'global-finance': '金融传导', 'financial-events': '历史事件', funds: '基金研究', stocks: '个股深入', reports: '深入报告', strategy: '投入策略', 'buy-location': '投资渠道', 'money-flow': '跨境资金', portfolio: '组合模拟', 'return-comparison':'收益对比', quality: '数据与方法' };
+  const years = [1, 2, 3, 5, 10], titles = { overview: '研究总览', indices: '指数观察', 'market-history': '历史分位', 'holding-period': '持有期研究', 'drop-study': '大跌后表现', 'global-finance': '金融传导', 'financial-events': '历史事件', funds: '基金研究', stocks: '个股深入', reports: '深入报告', strategy: '投入策略', 'buy-location': '投资渠道', 'money-flow': '跨境资金', portfolio: '组合模拟', 'return-comparison':'收益对比', quality: '数据与方法' };
   const funds = M.dedupeFunds(window.FUNDS, window.EXTRA);
   const policy = window.SCREEN_POLICY || { shortlist: [], byCode: {}, rules: [], counts: {} };
   const VIEW = 'changheng.research-view.v2';
@@ -171,6 +171,7 @@
     ];
     const followups = [
       ['market-history', 'MARKET CONTEXT', '历史分位', '把标普500、纳斯达克100的价格与估值、波动和利率放到同一时间轴。', ['价格与指标叠图', '历史分位', '年度表现']],
+      ['drop-study', 'AFTER A MARKET DROP', '大跌后表现', '看指数单日大跌后是否收复失地，以及从观察期末起算的四档历史涨跌幅。', ['收复与未收复', '后续回报分布', '逐次大跌记录']],
       ['financial-events', 'HISTORICAL EVENTS', '历史事件', '沿时间线观察重大事件的市场结果，分析政策、信用与能源冲击的传导。', ['15个历史阶段', '实际收益叠图', '事件后回报']],
       ['global-finance', 'GLOBAL FINANCE', '金融传导', '从美元、通胀与利率出发，理解政策怎样影响黄金、债券、股票与生活。', ['传导关系', '政策现场', '计算实验']],
       ['stocks', 'COMPANY RESEARCH', '个股深入', companyCount + '，结合财务、业务证据与深入报告研究长期经营能力。', ['业务与盈利', '估值口径', '收益与股息']],
@@ -190,6 +191,7 @@
     return window.ChanghengHoldingPeriod.view({ render, openModal, modalTitle, download, symbol: state.holdingSymbol,
       annual: state.annual, setAnnual: value => { state.annual = value; savePrefs(); render(); } });
   }
+  function dropStudy() { return window.ChanghengDropStudy.view({ head, render, openModal, modalTitle, download }); }
   function financialEvents() { return window.ChanghengFinancialEvents.view({ head, render }); }
   function returnComparison() { return window.ChanghengReturnComparison.view({ head, render, download, annual:state.annual, annualControl }); }
   function portfolio() {
@@ -1116,7 +1118,7 @@
     }
   }
   function render() {
-    const renderers = { overview: home, indices, 'market-history': marketHistory, 'holding-period': holdingPeriod, 'global-finance': globalFinance, 'financial-events': financialEvents, funds: fundView, stocks, reports: reportsView, strategy: strategies, 'buy-location': buyLocation, 'money-flow': moneyFlow, portfolio, 'return-comparison':returnComparison, quality };
+    const renderers = { overview: home, indices, 'market-history': marketHistory, 'holding-period': holdingPeriod, 'drop-study': dropStudy, 'global-finance': globalFinance, 'financial-events': financialEvents, funds: fundView, stocks, reports: reportsView, strategy: strategies, 'buy-location': buyLocation, 'money-flow': moneyFlow, portfolio, 'return-comparison':returnComparison, quality };
     const focus = captureFocus(document.activeElement);
     document.title = '长衡 · ' + (state.route === 'overview' ? '全球投资研究工作台' : titles[state.route]);
     $$('[data-route]').forEach(a => { const active = a.dataset.route === (state.route === 'reports' ? 'stocks' : state.route); a.classList.toggle('active', active); if (active) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
