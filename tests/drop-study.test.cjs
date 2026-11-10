@@ -14,12 +14,21 @@ function sessions(prices, start = '2020-01-02') {
 const near = (a, b) => assert.ok(Math.abs(a - b) < 1e-10, `${a} ≠ ${b}`);
 
 test('only one-session losses strictly beyond the selected threshold qualify', () => {
-  for (const threshold of [3, 5, 7, 10]) {
-    const cutoff = Number((123.45 * (1 - threshold / 100)).toFixed(5));
+  for (const threshold of [3, 3.01, 4, 4.35, 5, 6, 6.5, 7, 8, 9, 9.99, 10]) {
+    const cutoff = Number((123.45 * (1 - threshold / 100)).toFixed(6));
     assert.equal(study(sessions([123.45, cutoff]), { threshold }).latest, null);
     assert.equal(study(sessions([123.45, cutoff - 0.000001]), { threshold }).counts.total, 1);
   }
   assert.equal(study(sessions([100, 97, 94, 91])).counts.total, 0);
+});
+
+test('reject out-of-range thresholds, excess precision and non-session observation lengths', () => {
+  for (const threshold of [2.99, 10.01, 6.125, NaN, Infinity, '5', null]) {
+    assert.throws(() => study([], { threshold }), /统计条件/);
+  }
+  for (const wait of [1, 6, 2.5, '3', null]) {
+    assert.throws(() => study([], { wait }), /统计条件/);
+  }
 });
 
 test('a recovery on day one still counts if the index falls back; returns start on day two', () => {
@@ -37,8 +46,22 @@ test('a recovery on day one still counts if the index falls back; returns start 
   assert.deepEqual([e.priorDate, e.priorClose, e.date, e.close, e.dropPct], [s[0][0], 100, s[1][0], 90, -10]);
   assert.deepEqual([e.anchorDate, e.anchorClose, e.outcomes[5].date], [s[3][0], 96, s[8][0]]);
   near(e.outcomes[5].pct, 10);
-  assert.equal(study(s, { wait: 1, group: 'all' }).latest.anchorClose, 100);
-  assert.equal(study(s, { wait: 5, group: 'all' }).latest.anchorClose, 99);
+});
+
+test('a late recovery changes the event group but each observation length has its own return anchor', () => {
+  const s = sessions([100, 93, 96, 99, 100, 98, 99, 99, 101, 103, 105, 106, 107]);
+  const cases = [[2, 'unrecovered', 99], [3, 'recovered', 100], [4, 'recovered', 98], [5, 'recovered', 99]];
+  for (const [wait, status, anchorClose] of cases) {
+    const anchor = 1 + wait;
+    const r = study(s, { threshold: 6.99, wait, group: status });
+    assert.equal(r.events.length, 1);
+    const e = r.events[0];
+    assert.equal(e.recoveryDate, wait === 2 ? null : s[4][0]);
+    assert.deepEqual([e.anchorDate, e.anchorClose, e.outcomes[5].date], [s[anchor][0], anchorClose, s[anchor + 5][0]]);
+    near(r.summary[5].mean, (s[anchor + 5][1] / anchorClose - 1) * 100);
+    assert.equal(study(s.slice(0, anchor), { wait, group: 'all' }).latest.status, 'pending');
+    assert.equal(study(s, { threshold: 7, wait }).counts.total, 0); // exactly 7%, not more
+  }
 });
 
 test('overlapping event windows each count once and a flat finish is not a gain', () => {

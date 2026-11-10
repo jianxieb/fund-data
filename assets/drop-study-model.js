@@ -4,6 +4,9 @@
 })(typeof window === 'object' ? window : this, function () {
   'use strict';
   const horizons = Object.freeze([5, 21, 63, 252]);
+  const waits = Object.freeze([2, 3, 4, 5]);
+  const validThreshold = value => Number.isFinite(value) && value >= 3 && value <= 10 &&
+    Math.round(value * 100) / 100 === value;
   const days = 86400000;
   const byHorizon = fn => Object.fromEntries(horizons.map(h => [h, fn(h)]));
   const change = (before, after) => 100 * ((after - before) / before);
@@ -22,7 +25,7 @@
 
   // The caller supplies validated, ordered [date, close] rows for ONE price index.
   function study(series, { threshold = 5, wait = 2, group = 'unrecovered' } = {}) {
-    if (![3, 5, 7, 10].includes(threshold) || ![1, 2, 5].includes(wait) ||
+    if (!validThreshold(threshold) || !waits.includes(wait) ||
         !['unrecovered', 'recovered', 'all'].includes(group)) throw new Error('未知的大跌统计条件');
     const last = series.length - 1;
     // Each long break starts a new segment. Weekends/holidays are not synthetic rows.
@@ -84,5 +87,5 @@
       latest, counts, events: events.reverse(), summary: byHorizon(h => summarize(groupValues[h])),
       baseline: byHorizon(h => summarize(allValues[h])) };
   }
-  return { study, horizons };
+  return { study, horizons, waits, validThreshold };
 });

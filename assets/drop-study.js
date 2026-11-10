@@ -6,7 +6,8 @@
   const statuses = { ...groups, pending:'观察中', gap:'观察期行情断档' };
   const horizons = D.horizons, terms = { 5:'1周', 21:'1个月', 63:'3个月', 252:'1年' };
   const defaults = { market:'ndx', threshold:5, wait:2, group:'unrecovered' };
-  const options = { market:Object.keys(markets), threshold:[3,5,7,10], wait:[1,2,5], group:Object.keys(groups) };
+  const options = { market:Object.keys(markets), wait:D.waits, group:Object.keys(groups) };
+  const thresholds = [3,4,5,6,7,8,9,10];
   const fmt = n => n.toLocaleString('zh-CN', { minimumFractionDigits:2, maximumFractionDigits:2 });
   const pct = n => n == null ? '—' : (n > 0 ? '+' : n < 0 ? '−' : '') + Math.abs(n).toFixed(2) + '%';
   const signed = n => '<span class="' + (n < 0 ? 'negative' : n > 0 ? 'positive' : '') + '">' + pct(n) + '</span>';
@@ -17,8 +18,10 @@
 
   function readState() {
     const q = new URLSearchParams(location.hash.split('?')[1]);
-    return Object.fromEntries(Object.entries(options).map(([k, values]) =>
-      [k, values.find(v => String(v) === q.get(k)) ?? defaults[k]]));
+    const threshold = Number(q.get('threshold'));
+    return { threshold:D.validThreshold(threshold) ? threshold : defaults.threshold,
+      ...Object.fromEntries(Object.entries(options).map(([k, values]) =>
+        [k, values.find(v => String(v) === q.get(k)) ?? defaults[k]])) };
   }
   function redraw() {
     if (location.hash.split('?')[0] === '#drop-study') H.render();
@@ -43,8 +46,9 @@
       choices.map(([v,l]) => '<option value="' + v + '"' + (state[key] === v ? ' selected' : '') + '>' + l + '</option>').join('') + '</select></label>';
   }
   function controls() {
+    const steps = thresholds.includes(state.threshold) ? thresholds : [...thresholds,state.threshold].sort((a,b)=>a-b);
     return '<div class="ds-controls">' + select('研究指数','market', Object.entries(markets).map(([k,[l]])=>[k,l])) +
-      select('单日收盘跌幅','threshold', options.threshold.map(v => [v, '超过 ' + v + '%'])) +
+      select('单日收盘跌幅','threshold', [...steps.map(v => [v,'超过 ' + v + '%']),['custom','自定义跌幅…']]) +
       select('跌后观察期','wait',options.wait.map(v => [v,v + ' 个交易日'])) +
       select('纳入统计的大跌','group',Object.entries(groups).map(([v,l]) => [v, v === 'all' ? '全部已观察事件' : '期内' + l])) + '</div>';
   }
@@ -189,14 +193,30 @@
     const bins = distribution();
     return title + controls() + latest() + summaryTable() + sampleNote() + distributions(bins) + eventsTable(bins) + method();
   }
-  document.addEventListener('change', event => {
-    const key = event.target.dataset.dsField;
-    if (!Object.hasOwn(options,key)) return;
+  function setField(key, value) {
     const q = new URLSearchParams();
-    const next = {...state,[key]:event.target.value};
+    const next = {...state,[key]:value};
     for (const [k,v] of Object.entries(next)) if (String(v) !== String(defaults[k])) q.set(k,v);
     history.replaceState(null,'','#drop-study' + (q.size ? '?' + q : ''));
     redraw();
+  }
+  document.addEventListener('change', event => {
+    const key = event.target.dataset.dsField;
+    if (key === 'threshold' && event.target.value === 'custom') {
+      event.target.value = String(state.threshold);
+      H.openModal(H.modalTitle('自定义跌幅') + '<form id="ds-threshold-form"><label>跌幅门槛（3%–10%）<input name="threshold" type="number" min="3" max="10" step="0.01" required value="' + state.threshold +
+        '"></label><button type="submit" class="btn primary">应用</button></form>');
+      const input = document.querySelector('#ds-threshold-form input');
+      input.focus(); input.select();
+    } else if (key === 'threshold' || Object.hasOwn(options,key)) setField(key,event.target.value);
+  });
+  document.addEventListener('submit', event => {
+    if (event.target.id !== 'ds-threshold-form') return;
+    event.preventDefault();
+    const value = event.target.elements.threshold.valueAsNumber;
+    if (!D.validThreshold(value)) return;
+    event.target.closest('dialog').close();
+    setField('threshold',value);
   });
   document.addEventListener('click', event => {
     const el = event.target.closest('[data-ds-action],[data-ds-h],[data-ds-bin],[data-ds-event]');
