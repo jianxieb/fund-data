@@ -1472,15 +1472,28 @@
     }
   });
   $('#dialog').addEventListener('close', () => { if (lastFocus && lastFocus.isConnected) lastFocus.focus(); else restoreFocus(lastFocus); });
+  function positionEventMenu(menu) {
+    const trigger=menu.querySelector('summary').getBoundingClientRect();
+    const field=menu.closest('.event-menu-field').getBoundingClientRect();
+    const list=menu.querySelector('.select-menu-list');
+    const below=window.innerHeight-trigger.bottom-12, above=field.top-12;
+    const opensAbove=below<96 && above>below;
+    list.style.top=opensAbove ? 'auto' : 'calc(100% + 4px)';
+    list.style.bottom=opensAbove ? (trigger.bottom-field.top+4)+'px' : 'auto';
+    list.style.maxHeight=Math.max(0,Math.min(244,opensAbove?above:below))+'px';
+  }
+  const positionOpenEventMenus=()=>$$('.event-study-menu[open]').forEach(positionEventMenu);
+  window.addEventListener('resize',positionOpenEventMenus);
+  document.addEventListener('scroll',positionOpenEventMenus,{capture:true,passive:true});
   document.addEventListener('toggle', e => {
     const menu = e.target;
     if (!menu.matches?.('.event-study-menu[open]')) return;
     $$('.event-study-menu[open]').forEach(other=>{ if (other !== menu) other.open = false; });
-    if (menu.getBoundingClientRect().bottom > window.innerHeight) menu.scrollIntoView({block:'nearest',behavior:'instant'});
+    positionEventMenu(menu);
   },true);
   document.addEventListener('focusout', e => {
     const menu=e.target.closest('.event-study-menu[open]');
-    // Pointer activation closes via click, after mouseup: collapsing earlier moves the next control.
+    // Pointer activation closes via click; keyboard navigation closes on leaving the menu.
     if (menu && document.documentElement.dataset.inputMode==='keyboard' && e.relatedTarget && !menu.contains(e.relatedTarget)) menu.open=false;
   });
   document.addEventListener('keydown', e => {
@@ -1494,6 +1507,7 @@
       if (!buttons.length) return;
       e.preventDefault();
       menu.open = true;
+      positionEventMenu(menu);
       const active = buttons.find(b=>b.classList.contains('active'));
       const next = e.key==='Home' ? buttons[0] : e.key==='End' ? buttons.at(-1) : i<0 ? active || (e.key==='ArrowDown'?buttons[0]:buttons.at(-1)) :
         buttons[(i + (e.key==='ArrowDown'?1:-1) + buttons.length) % buttons.length];
