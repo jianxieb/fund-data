@@ -1,11 +1,11 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-11-10T04:11:28+00:00",
-  "asOf": "2026-11-10",
+  "checkedAt": "2026-11-11T02:00:43+00:00",
+  "asOf": "2026-11-11",
   "status": "unverified",
   "summary": {
     "errors": 0,
-    "warnings": 90,
+    "warnings": 12,
     "unverified": 63
   },
   "datasets": [
@@ -23,508 +23,40 @@ var DATA_QUALITY={
           "affected": "funds"
         },
         {
-          "code": "source_refresh_retained",
-          "severity": "warning",
-          "message": "A股：执行超过 90 秒，子进程已终止；该数据集不能视为更新成功。；保留已发布数据及原日期",
-          "affected": "stocks"
-        },
-        {
           "code": "source_history_retained",
           "severity": "warning",
-          "message": "fund:519191：The read operation timed out；保留历史截至2026-11-06",
-          "affected": "fund:519191"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:257070：Remote end closed connection without response；保留历史截至2026-11-06",
+          "message": "fund:257070：The read operation timed out；保留历史截至2026-11-06",
           "affected": "fund:257070"
         },
         {
           "code": "source_history_retained",
           "severity": "warning",
-          "message": "fund:006522：The read operation timed out；保留历史截至2026-11-06",
-          "affected": "fund:006522"
+          "message": "fund:000369：The read operation timed out；保留历史截至2026-11-06",
+          "affected": "fund:000369"
         },
         {
           "code": "source_history_retained",
           "severity": "warning",
-          "message": "fund:000165：The read operation timed out；保留历史截至2026-11-06",
-          "affected": "fund:000165"
+          "message": "fund:016280：The read operation timed out；保留历史截至2026-11-06",
+          "affected": "fund:016280"
         },
         {
           "code": "source_history_retained",
           "severity": "warning",
-          "message": "fund:000354：The read operation timed out；保留历史截至2026-11-06",
-          "affected": "fund:000354"
+          "message": "fund:513220：<urlopen error [Errno 104] Connection reset by peer>；保留历史截至2026-11-06",
+          "affected": "fund:513220"
         },
         {
           "code": "source_history_retained",
           "severity": "warning",
-          "message": "fund:001511：Remote end closed connection without response；保留历史截至2026-11-06",
-          "affected": "fund:001511"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:002537：<urlopen error [Errno 104] Connection reset by peer>；保留历史截至2026-11-06",
-          "affected": "fund:002537"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:519979：The read operation timed out；保留历史截至2026-11-06",
-          "affected": "fund:519979"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:159901：The read operation timed out；保留历史截至2026-11-06",
-          "affected": "fund:159901"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:513970：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:513970"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:520500：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:520500"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:520520：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:520520"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:520570：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:520570"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:520590：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:520590"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:520920：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:520920"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:002236：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:002236"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:006593：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:006593"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:003016：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:003016"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:005994：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:005994"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:003986：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:003986"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:006048：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:006048"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:001050：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:001050"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:007028：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
+          "message": "fund:007028：The read operation timed out；保留历史截至2026-11-06",
           "affected": "fund:007028"
         },
         {
           "code": "source_history_retained",
           "severity": "warning",
-          "message": "fund:004945：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:004945"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:006611：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:006611"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:006214：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:006214"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:002311：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:002311"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:006682：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:006682"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:161017：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
+          "message": "fund:161017：The read operation timed out；保留历史截至2026-11-06",
           "affected": "fund:161017"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:001556：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:001556"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:162216：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:162216"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:000478：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:000478"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:673100：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:673100"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:000656：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:000656"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:001074：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:001074"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:003015：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:003015"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:166802：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:166802"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:007044：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:007044"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:310318：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:310318"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:163407：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:163407"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:162213：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:162213"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:001015：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:001015"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:000312：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:000312"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:007275：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:007275"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:050002：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:050002"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:160807：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:160807"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:165310：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:165310"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:519116：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:519116"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:000311：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:000311"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:002310：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:002310"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:000512：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:000512"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:160706：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:160706"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:110030：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:110030"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:200002：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:200002"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:161121：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:161121"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:161723：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:161723"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:161029：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:161029"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:005788：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:005788"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:217027：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:217027"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:161039：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:161039"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:005313：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:005313"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:004194：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:004194"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:005561：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:005561"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:161907：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:161907"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:100032：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:100032"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:213010：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:213010"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:519100：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:519100"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:163808：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:163808"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:410008：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:410008"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:310398：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:310398"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:006248：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:006248"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:050021：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:050021"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:001879：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:001879"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:110026：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:110026"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:161613：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:161613"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:001420：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:001420"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:159977：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:159977"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:159957：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:159957"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:159971：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:159971"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:159958：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:159958"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:159964：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:159964"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:159961：本次标的历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fund:159961"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fx:CNY：本次汇率历史刷新尚未完成；保留历史截至2026-11-06",
-          "affected": "fx:CNY"
         },
         {
           "code": "source_history_retained",
@@ -540,8 +72,8 @@ var DATA_QUALITY={
       "label": "海外基金",
       "asOf": "2026-11-05",
       "dateRange": [
-        "2026-11-06",
-        "2026-11-06"
+        "2026-11-09",
+        "2026-11-09"
       ],
       "records": 46,
       "issues": [
@@ -604,10 +136,10 @@ var DATA_QUALITY={
     {
       "id": "overseas_stocks",
       "label": "海外个股",
-      "asOf": "2026-11-09",
+      "asOf": "2026-11-10",
       "dateRange": [
         "2026-11-09",
-        "2026-11-09"
+        "2026-11-10"
       ],
       "records": 79,
       "issues": [
@@ -977,17 +509,17 @@ var DATA_QUALITY={
     {
       "id": "benchmarks",
       "label": "海外指数与ETF基准",
-      "asOf": "2026-11-09",
+      "asOf": "2026-11-10",
       "dateRange": [
-        "2026-11-06",
-        "2026-11-09"
+        "2026-11-09",
+        "2026-11-10"
       ],
       "records": 36,
       "issues": [
         {
           "code": "fx_risk_incomplete",
           "severity": "warning",
-          "message": "完整人民币日风险缺少实际汇率（2025-04-21、2026-11-09）；未沿用美元风险或填补汇率",
+          "message": "完整人民币日风险缺少实际汇率（2025-04-21）；未沿用美元风险或填补汇率",
           "affected": [
             "标普500指数",
             "SPY",
@@ -1029,10 +561,10 @@ var DATA_QUALITY={
     {
       "id": "stocks",
       "label": "股票观察清单",
-      "asOf": "2026-11-09",
+      "asOf": "2026-11-11",
       "dateRange": [
-        "2026-11-09",
-        "2026-11-09"
+        "2026-11-11",
+        "2026-11-11"
       ],
       "records": 71,
       "issues": [],
@@ -1041,7 +573,7 @@ var DATA_QUALITY={
     {
       "id": "strategy",
       "label": "买入策略实验",
-      "asOf": "2026-11-09",
+      "asOf": "2026-11-10",
       "dateRange": null,
       "records": 162,
       "issues": [],
@@ -1054,10 +586,10 @@ var DATA_QUALITY={
     {
       "id": "domestic_funds",
       "label": "扩展基金研究池",
-      "asOf": "2026-11-09",
+      "asOf": "2026-11-10",
       "dateRange": [
-        "2026-11-05",
-        "2026-11-09"
+        "2026-11-06",
+        "2026-11-10"
       ],
       "records": 1577,
       "issues": [
@@ -3896,10 +3428,10 @@ var DATA_QUALITY={
     {
       "id": "indices",
       "label": "国内指数",
-      "asOf": "2026-11-09",
+      "asOf": "2026-11-10",
       "dateRange": [
-        "2026-11-09",
-        "2026-11-09"
+        "2026-11-10",
+        "2026-11-10"
       ],
       "records": 13,
       "issues": [
@@ -3917,10 +3449,10 @@ var DATA_QUALITY={
     {
       "id": "portfolio",
       "label": "组合每日历史",
-      "asOf": "2026-11-09",
+      "asOf": "2026-11-10",
       "dateRange": [
-        "2026-11-05",
-        "2026-11-09"
+        "2026-11-06",
+        "2026-11-10"
       ],
       "records": 1873,
       "issues": [],
