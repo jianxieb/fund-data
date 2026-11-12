@@ -83,6 +83,7 @@
     ['dca_month', '每月定投'], ['dca_quarter', '每季度定投'], ['dca_year', '每年定投'],
     ['dca_drawdown', '回撤倍数定投'], ['dca_ma_trend', '均线顺势定投'], ['dca_ma_contrarian', '均线逆势定投']
   ];
+  const comparisonMethods = initialMethods.filter(([id]) => !['lump_sum', 'tranche_6', 'tranche_12', 'tranche_24'].includes(id));
   function strategyConfig(config) {
     const strategy = { initialMethod: config.initialMethod ?? 'lump_sum', contributionMethod: config.contributionMethod ?? 'dca_month' };
     if (/^entry_(option|volatility|breadth|composite)$/.test(strategy.initialMethod)) failStrategy('原研究投入方式已撤回：未证明优于一次性投入，请重新选择本金投入方式');
@@ -305,6 +306,28 @@
   function simulateWindows(input, end, periods = [1, 2, 3, 5]) {
     return periods.map(years => ({ years, ...simulate({ ...input, requireFullWindow: true,
       config: { ...input.config, years: 'custom', start: addYears(end, -years), end } }) }));
+  }
+  // Each row owns the entire configured account. These are parallel scenarios,
+  // not sleeves sharing money or votes controlling a combined trade.
+  function simulateStrategies(input) {
+    const config = input?.config;
+    try {
+      validateConfig({ ...config, initialMethod: 'lump_sum' }, new Set((input?.catalog?.assets || []).map(a => a.id)));
+    } catch (error) {
+      return { config, start: null, end: null, strategies: [], error: error.message,
+        ...(error.field ? { errorField: error.field } : {}) };
+    }
+    let start = null, end = null;
+    const strategies = comparisonMethods.map(([id, label]) => {
+      const result = simulate({ ...input, config: { ...config, initialMethod: id, benchmarkId: '' } });
+      if (result.error) return { id, label, error: result.error, ...(result.errorField ? { errorField: result.errorField } : {}) };
+      if (start !== null && (result.start !== start || result.end !== end)) {
+        return { id, label, error: '实际回测区间与其他策略不一致，无法按同一区间比较' };
+      }
+      start = result.start; end = result.end;
+      return { id, label, result };
+    });
+    return { config: JSON.parse(JSON.stringify(config)), start, end, strategies };
   }
   // Comparisons use the account's existing valuation dates; a new benchmark never trades or shortens that account.
   function compareBenchmark({ catalog, histories, fxHistory }, { start, end, curve, config }, benchmarkId = config.benchmarkId) {
@@ -956,6 +979,77 @@
     const securitiesValue = gross - cash;
     return { securitiesValue, cash, securitiesPct: gross > 0 ? securitiesValue / gross * 100 : null, cashPct: gross > 0 ? cash / gross * 100 : null };
   }
+  function strategyStatus(result, day = result?.end) {
+    if (!result?.curve?.length || !M.validDate(day)) return null;
+    const latest = rows => {
+      let lo = 0, hi = rows.length - 1, index = -1;
+      while (lo <= hi) {
+        const mid = (lo + hi) >> 1;
+        if (rows[mid].day <= day) { index = mid; lo = mid + 1; } else hi = mid - 1;
+      }
+      return rows[index] || null;
+    };
+    const point = latest(result.curve);
+    if (!point) return null;
+    const method = result.strategy.initialMethod, allocation = accountAllocation(point), source = chartSources.get(result);
+    const atEnd = point.day === result.end, liquidated = atEnd && !!result.config.tax?.liquidate;
+    const account = { day: point.day, value: point.value, cash: point.cash, grossValue: point.grossValue,
+      securitiesValue: allocation.securitiesValue, securitiesPct: allocation.securitiesPct,
+      initialReserve: point.initialReserve, positionPrincipal: point.positionPrincipal };
+    const observationDay = source?.days.filter(value => value <= point.day).at(-1) || point.day;
+    const state = { day: point.day, observationDay, method, status: liquidated ? 'liquidated' : 'ready',
+      label: liquidated ? '已清仓' : '持仓中', detail: '', account, signalDay: null, sourceDay: null,
+      indicators: [], nextPlan: null, nextPlanAvailable: liquidated, nextSignal: null, observation: null };
+    const number = value => Number(value.toFixed(2));
+    const observation = latest(result.systematic?.daily || []);
+    if (observation) {
+      Object.assign(state, { status: observation.status, observationDay: observation.day, signalDay: observation.day,
+        sourceDay: observation.metadata?.sourceDay || null, indicators: observation.indicators,
+        nextPlan: observation.nextPlan, nextPlanAvailable: true, observation });
+      if (observation.status === 'liquidated') state.label = '已清仓';
+      else if (observation.status === 'missing') { state.label = '缺少策略数据'; state.detail = observation.missing; }
+      else if (observation.status === 'warming-up') { state.label = '策略预热中'; state.detail = observation.metadata?.reason || '有效历史不足，尚未形成策略信号'; }
+      else if (observation.metadata?.opportunity) {
+        state.label = observation.nextPlan?.orders.some(o => o.side === 'sell') ? '待退出' : observation.nextPlan?.orders.some(o => o.side === 'buy') ? '待加仓' : '暂无新订单';
+        state.detail = observation.indicators.map(i => i.label + ' ' + (finite(i.value) ? number(i.value) + ' 分' : '暂无评分')).join('；');
+      } else if (method === 'relative_strength_rotation') {
+        state.label = '轮动配置';
+        state.detail = observation.indicators.map(i => i.label + ' ' + (finite(i.value) ? number(i.value) + '%' : '暂无数据')).join('；');
+      } else {
+        state.label = observation.indicator === 100 ? 'TQQQ 持有信号' : 'TQQQ 退出信号';
+        state.detail = observation.nextPlan?.orders.length ? '信号已生成，等待下一共同收盘执行' : '状态未改变，暂无新订单';
+      }
+      return state;
+    }
+    if (liquidated) return state;
+    if (method === 'drawdown_ladder') {
+      state.label = point.initialReserve > EPS ? '等待阶梯加仓' : '本金已释放';
+      state.detail = result.config.initial > 0 ? '已释放初始本金 ' + number(result.config.initial - point.initialReserve) : '未设置初始本金';
+    } else if (method === 'ma200_hold') {
+      const completed = source ? Math.max(0, source.days.filter(d => d <= point.day).length - 1) : 0;
+      if (result.config.initial <= 0) { state.label = '未启用本金择时'; state.detail = '初始本金为 0，按持续投入设置运行'; }
+      else if (source && result.strategy.warmupDays + completed < 200) {
+        state.status = 'warming-up'; state.label = '均线预热中'; state.detail = '未满 200 个共同收盘，按原配置投入';
+      } else { state.label = point.exposure ? '均线策略持有' : '均线策略持币'; state.detail = '最近执行的仓位状态'; }
+    } else if (method === 'qqq_bear_confirm') {
+      state.label = point.qqqOn ? 'TQQQ 允许持有' : 'TQQQ 已退出';
+      state.signalDay = point.qqqSignalDay || null; state.sourceDay = point.qqqSourceDay || null;
+      state.detail = '最近执行的风险状态';
+      if (atEnd) {
+        state.nextSignal = result.qqqNextSignal;
+        if (state.nextSignal?.available && state.nextSignal.pendingChange) state.detail += state.nextSignal.on ? '；下一共同收盘恢复 TQQQ' : '；下一共同收盘退出 TQQQ';
+        else if (state.nextSignal?.missing) state.detail += '；' + state.nextSignal.missing;
+      }
+    } else if (method === 'cash_topup') {
+      state.label = allocation.securitiesPct !== null && allocation.securitiesPct < 100 - result.cashWeight - 1e-8 ? '低于目标仓位' : '已达目标仓位';
+      state.detail = '目标股票仓位 ' + number(100 - result.cashWeight) + '%';
+      if (atEnd) {
+        state.nextPlanAvailable = true; state.signalDay = result.topupSignalDay;
+        if (result.nextTopupPlan) state.nextPlan = { ...result.nextTopupPlan, orders: result.nextTopupPlan.orders.map(order => ({ ...order, side: 'buy' })) };
+      }
+    }
+    return state;
+  }
   const chartPair = ['us:USD', 'us:TQQQ'];
   const chartLine = (id, label, kind, points, extra = {}) => ({ id, label, kind,
     unit: kind === 'score' ? '分' : kind === 'state' ? '状态' : kind === 'gap' ? '百分点' : '%', points, ...extra });
@@ -1075,5 +1169,5 @@
     }
     return config;
   }
-  return { simulate, simulateWindows, compareBenchmark, chartIndicators, chartReferences, validateHistory, validateConfig, sanitizeDraft, allocation, accountAllocation, additionAllocation, amountFromWeight, weightFromAmount, at, annualReturn, holdingXirr, addYears, taxConfig, taxRates, currencyInfo, strategyConfig, strategyNames, initialMethods, contributionMethods, dividendPolicies, opportunityDefinitions: Systematic?.opportunityDefinitions || {} };
+  return { simulate, simulateWindows, simulateStrategies, strategyStatus, comparisonMethods, compareBenchmark, chartIndicators, chartReferences, validateHistory, validateConfig, sanitizeDraft, allocation, accountAllocation, additionAllocation, amountFromWeight, weightFromAmount, at, annualReturn, holdingXirr, addYears, taxConfig, taxRates, currencyInfo, strategyConfig, strategyNames, initialMethods, contributionMethods, dividendPolicies, opportunityDefinitions: Systematic?.opportunityDefinitions || {} };
 });

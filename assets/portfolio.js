@@ -7,11 +7,13 @@
     years: 5, start: '', end: '', benchmarkId: 'us:SPY', dividendPolicy: 'reinvest', feeOverrides: {},
     tax: { ...P.taxConfig(), usCapitalGains: 20, usDividend: 20 } };
   let draft = { ...defaults }, query = '', kind = 'all', market = 'all', hideBoards = false;
-  const workspaceTabs = [['settings', '模拟设置'], ['holdings', '我的组合'], ['results', '模拟结果']];
+  const workspaceTabs = [['settings', '模拟设置'], ['holdings', '我的组合'], ['results', '模拟结果'], ['strategies', '多策略对比']];
   let workspaceTab = 'settings', calculationOpen = false, benchmarkRequest = null;
   let resultTab = 'chart';
   let result = null, resultKey = '', error = '', errorField = '', metric = 'return', importError = '', exportingPdf = false;
   let dailyDay = '', additionBudget = 10000;
+  let comparison = null, comparisonKey = '', comparisonError = '', comparing = false, comparisonRunId = 0;
+  let comparisonView = { tab: 'performance', metric: 'return', day: '', hidden: new Set() };
   try {
     const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
     if (saved && Array.isArray(saved.positions)) draft = { ...defaults, ...saved };
@@ -28,6 +30,8 @@
   const typeName = { stock: '个股', fund: '基金', etf: 'ETF' };
   const config = () => ({ ...draft, feeBasis: 'net', feeOverrides: {} });
   const signature = () => JSON.stringify(config());
+  const comparisonConfig = () => ({ ...config(), initialMethod: 'lump_sum', benchmarkId: '' });
+  const comparisonSignature = () => JSON.stringify(comparisonConfig());
   const currency = (cfg = draft) => P.currencyInfo(cfg);
   const asset = id => catalog?.assets.find(a => a.id === id);
   const inputValue = (value, digits = 8) => M.finite(value) ? String(Number(value.toFixed(digits))) : '';
@@ -41,6 +45,7 @@
   }
   function update() { H.render(); }
   function draftNotice() {
+    if (workspaceTab === 'strategies') return comparison && comparisonKey !== comparisonSignature() ? '参数已改动，当前显示上次对比结果。' : '';
     if (!result || resultKey === signature()) return '';
     return workspaceTab === 'results' ? '参数已改动，当前显示上次模拟结果。' : '参数已改动，重新模拟后生效';
   }
@@ -57,7 +62,7 @@
       document.getElementById('portfolio-strategy-error')?.remove();
       document.getElementById('portfolio-initialMethod')?.removeAttribute('aria-describedby');
     }
-    error = ''; errorField = ''; persist();
+    error = ''; errorField = ''; comparisonError = ''; persist();
     const label = document.getElementById('portfolio-dirty');
     if (label) label.textContent = draftNotice();
     syncPurchasePlan();
@@ -159,7 +164,7 @@
     if (account === result) update();
   }
   async function run() {
-    if (running || !catalog) return;
+    if (running || comparing || !catalog) return;
     for (const position of draft.positions) {
       if (position.weight == null || typeof position.weight === 'string' && !position.weight.trim()) position.weight = 0;
     }
@@ -223,6 +228,55 @@
         else update();
       }
     }
+  }
+  async function runComparison() {
+    if (comparing || running || !catalog) return;
+    for (const position of draft.positions) {
+      if (position.weight == null || typeof position.weight === 'string' && !position.weight.trim()) position.weight = 0;
+    }
+    persist();
+    const params = JSON.parse(JSON.stringify(comparisonConfig())), originalKey = comparisonSignature(), token = ++comparisonRunId;
+    const failed = message => message + (comparison ? '。仍显示上次对比结果。' : '');
+    try { P.validateConfig(params, new Set(catalog.assets.map(a => a.id))); }
+    catch (e) { comparisonError = failed(e.message); update(); return; }
+    comparing = true; comparisonError = ''; update();
+    try {
+      let refreshMissing = '';
+      try { await refreshCatalog(); }
+      catch (e) { refreshMissing = '未能确认最新行情：' + e.message + '。本次对比使用已保存的历史数据。'; }
+      P.validateConfig(params, new Set(catalog.assets.map(a => a.id)));
+      const selected = params.positions.filter(p => p.weight > 0).map(p => asset(p.id));
+      await Promise.all(selected.map(loadHistory));
+      if (selected.some(a => a.currency !== currency(params).code)) await loadHistory(catalog.fx);
+      const ids = new Set(selected.map(a => a.id)), references = [];
+      if (ids.has('us:TQQQ')) references.push(['us:QQQ', () => loadHistory(asset('us:QQQ'))]);
+      if (ids.has('us:USD')) references.push(['us:SOXX', () => loadHistory(asset('us:SOXX'))]);
+      let marketContext = null;
+      if (ids.has('us:TQQQ') || ids.has('us:USD')) references.push(['VIX/VIX3M', async () => { marketContext = await loadMarketContext(); }]);
+      const loaded = await Promise.allSettled(references.map(([, load]) => load()));
+      const missingSources = loaded.flatMap((item, i) => item.status === 'rejected' ? [{ id: references[i][0], error: item.reason?.message || '数据读取失败' }] : []);
+      if (token !== comparisonRunId || originalKey !== comparisonSignature()) return;
+      const input = { catalog, histories: Object.fromEntries(histories), config: params, fxHistory: histories.get(catalog.fx?.id), marketContext };
+      // Let the loading state paint before computing the independent ledgers.
+      await new Promise(resolve => setTimeout(resolve, 0));
+      if (token !== comparisonRunId || originalKey !== comparisonSignature()) return;
+      const computed = P.simulateStrategies(input);
+      if (computed.error || comparison && !computed.strategies.some(item => item.result)) {
+        comparisonError = failed(computed.error || computed.strategies.map(item => item.label + '：' + item.error).join('；'));
+        return;
+      }
+      computed.catalogRefresh = { checkedAt: new Date().toISOString(), available: !refreshMissing, missing: refreshMissing || null };
+      computed.missingSources = missingSources;
+      comparison = computed; comparisonKey = originalKey;
+      comparisonView = { tab: comparisonView.tab, metric: comparisonView.metric, day: computed.end || '', hidden: new Set() };
+    } catch (e) {
+      if (token === comparisonRunId && originalKey === comparisonSignature()) comparisonError = failed('本次对比未完成：' + e.message);
+    } finally {
+      if (token === comparisonRunId) { comparing = false; update(); }
+    }
+  }
+  function comparisonDays() {
+    return comparison?.strategies.find(item => item.result)?.result.curve.map(row => row.day) || [];
   }
   function menu(id, label, options, value) {
     const current = options.find(([key]) => String(key) === String(value)) || [value, id === 'initialMethod' && /^entry_(option|volatility|breadth|composite)$/.test(value) ? '已撤回，请重新选择' : '请选择'];
@@ -1144,13 +1198,14 @@
     }).join('');
     const primary = !draft.positions.length && workspaceTab !== 'holdings'
       ? btn('添加标的', 'tab', 'btn primary', 'data-value="holdings"')
-      : btn(running ? '正在模拟…' : '开始模拟', 'run', 'btn primary', running || exportingPdf || !draft.positions.length ? 'disabled' : '');
+      : btn(comparing ? '正在对比…' : running ? '正在模拟…' : workspaceTab === 'strategies' ? '开始对比' : '开始模拟', 'run', 'btn primary', running || comparing || exportingPdf || !draft.positions.length ? 'disabled' : '');
     return '<div class="portfolio-workspace-bar"><div class="portfolio-workspace-tabs" role="tablist" aria-label="组合模拟" aria-orientation="horizontal">' + tabs +
       '</div><div class="portfolio-run-actions"><span id="portfolio-dirty" role="status">' + draftNotice() + '</span>' + primary + '</div></div>';
   }
   function workspaceContent() {
     if (workspaceTab === 'settings') return settings();
     if (workspaceTab === 'results') return results();
+    if (workspaceTab === 'strategies') return window.ChanghengPortfolioComparison.view(comparison, { ...comparisonView, error: comparisonError }, H);
     const unknown = draft.positions.filter(p => !asset(p.id));
     return (unknown.length ? '<div class="portfolio-warning">' + unknown.length + '只保存的标的已不在当前研究对象中，请移除后模拟。</div>' : '') +
       '<div class="portfolio-builder">' + composition() + library() + '</div>';
@@ -1160,7 +1215,7 @@
     if (!catalog) return '<section class="card pad"><h2>' + (loadError ? '标的库加载失败' : '正在载入组合标的库') + '</h2><p class="muted">' + H.esc(loadError || 'ETF、个股与基金每日历史按需载入。') + '</p>' + (loadError ? btn('重新加载', 'retry', 'btn primary') : '') + '</section>';
     const previousCalculation = document.getElementById('portfolio-score-calculation');
     if (previousCalculation) calculationOpen = previousCalculation.open;
-    const workspaceError = (!errorField && error) || importError;
+    const workspaceError = workspaceTab === 'strategies' ? importError : (!errorField && error) || importError;
     return '<div id="portfolio-workspace">' + workspaceBar() + '<div class="portfolio-workspace-body">' +
       (workspaceError ? '<p class="portfolio-workspace-error negative" role="alert">' + H.esc(workspaceError) + '</p>' : '') +
       workspaceTabs.map(([id]) => '<div id="portfolio-panel-' + id + '" role="tabpanel" aria-labelledby="portfolio-tab-' + id + '"' +
@@ -1258,7 +1313,35 @@
         document.getElementById('portfolio-result-tab-' + val)?.focus({preventScroll: true});
         return;
       case 'retry': loadError = ''; ensureCatalog(); break;
-      case 'run': if (!exportingPdf) return run(); return;
+      case 'run': if (!exportingPdf && !comparing && !running) return workspaceTab === 'strategies' ? runComparison() : run(); return;
+      case 'compare-tab':
+        if (!['performance', 'states'].includes(val)) return;
+        comparisonView.tab = val; update();
+        document.getElementById('portfolio-compare-tab-' + val)?.focus({ preventScroll: true });
+        return;
+      case 'compare-metric':
+        if (!['return', 'drawdown', 'amount'].includes(val)) return;
+        comparisonView.metric = val; break;
+      case 'compare-toggle':
+        if (!comparison?.strategies.some(item => item.id === val && item.result)) return;
+        if (comparisonView.hidden.has(val)) comparisonView.hidden.delete(val); else comparisonView.hidden.add(val);
+        update();
+        document.getElementById('portfolio-compare-toggle-' + val)?.focus({ preventScroll: true });
+        return;
+      case 'compare-prev':
+      case 'compare-next': {
+        const days = comparisonDays(), index = days.indexOf(comparisonView.day);
+        comparisonView.day = days[Math.max(0, Math.min(days.length - 1, index + (act === 'compare-prev' ? -1 : 1)))] || '';
+        break;
+      }
+      case 'compare-export':
+        if (!comparison) return;
+        H.download('长衡-多策略对比-' + (comparison.end || '未完成') + '.csv', window.ChanghengPortfolioComparison.summaryCsv(comparison), 'text/csv;charset=utf-8');
+        return;
+      case 'compare-export-states':
+        if (!comparison) return;
+        H.download('长衡-多策略状态-' + comparisonView.day + '.csv', window.ChanghengPortfolioComparison.statesCsv(comparison, comparisonView.day), 'text/csv;charset=utf-8');
+        return;
       case 'add': {
         if (!asset(val) || draft.positions.some(p => p.id === val)) return;
         draft.positions.push({ id: val, weight: draft.positions.length ? 0 : 100 }); touch(); break;
@@ -1337,6 +1420,7 @@
     update();
   }
   function handleInput(el) {
+    if (el.dataset?.portfolioField?.startsWith('compare-')) return false;
     if (el.dataset?.portfolioField?.startsWith('chart-')) return false;
     if (el.id === 'portfolio-addition-budget') {
       additionBudget = el.value.trim() ? Number(el.value) : NaN;
@@ -1422,6 +1506,11 @@
   }
   async function handleChange(el) {
     const chartField = el.dataset?.portfolioField;
+    if (chartField === 'compare-date') {
+      const days = comparisonDays();
+      if (M.validDate(el.value)) comparisonView.day = days.filter(day => day <= el.value).at(-1) || days[0] || '';
+      update(); return;
+    }
     if (chartField?.startsWith('chart-') && result) {
       const view = chartState();
       if (chartField === 'chart-indicator') {

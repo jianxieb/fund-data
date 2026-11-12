@@ -790,7 +790,7 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-workspace-error{margin:0 0 16px;font-size:13px}
 @media(max-width:700px){
   .portfolio-workspace-bar{gap:6px;padding:4px 0 6px;margin-bottom:12px}
-  .portfolio-workspace-tabs{flex:1;gap:2px;max-width:300px}
+  .portfolio-workspace-tabs{flex:1 1 100%;gap:2px;max-width:none;flex-wrap:wrap}
   .portfolio-tab{flex:1;padding:6px 3px;font-size:14px}
   .portfolio-tab-count{display:none}.portfolio-run-actions>.btn{min-height:44px;padding:6px 9px;font-size:13px}
   .portfolio-run-actions:has(#portfolio-dirty:not(:empty)){flex-basis:100%}
@@ -930,6 +930,92 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 @media(max-width:900px){.portfolio-builder{grid-template-columns:1fr}.portfolio-empty-holdings{min-height:160px;padding:25px 0}.portfolio-library-scroll{max-height:340px}.portfolio-result-placeholder{gap:25px;padding:25px}.portfolio-results .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.portfolio-result-notes{gap:16px}}
 @media(max-width:650px){.portfolio-builder{gap:16px}.portfolio-library-controls{padding:18px}.portfolio-result-placeholder{grid-template-columns:1fr}.portfolio-result-placeholder svg{display:none}.portfolio-chart-legend{gap:12px;padding-left:0;font-size:11px}.portfolio-plot text{font-size:13px}.portfolio-chart-body{padding:15px 10px 10px}.portfolio-results .card-head{align-items:flex-start;flex-wrap:wrap}.portfolio-year-grid{gap:18px;padding:22px 18px}}
 @media(max-width:650px){.portfolio-library-row{grid-template-columns:minmax(0,1fr) auto}.portfolio-library-main{grid-column:1;grid-row:1}.portfolio-library-metrics{grid-column:1;grid-row:2;width:min(280px,100%);justify-self:end}.portfolio-library-row>.portfolio-add{grid-column:2;grid-row:1/3}}
+
+.portfolio-comparison{min-width:0}
+.portfolio-compare-placeholder{padding:25px 28px;display:grid;gap:9px;background:#f0f4e9}
+.portfolio-compare-placeholder h2{font-size:18px}
+.portfolio-compare-placeholder p{font-size:14px;color:#536755}
+.portfolio-compare-error{margin-bottom:16px;font-size:14px}
+.portfolio-compare-context{display:grid;gap:7px;margin-bottom:17px;color:#536755;font-size:14px;overflow-wrap:anywhere}
+.portfolio-compare-context>p{display:flex;flex-wrap:wrap;align-items:baseline;gap:5px 20px}
+.portfolio-compare-context strong{font-size:16px;color:var(--ink);font-weight:550}
+.portfolio-compare-nav{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 20px;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:18px}
+.portfolio-compare-tools{display:flex;align-items:center;flex-wrap:wrap;gap:12px 20px;margin-left:auto}
+.portfolio-compare-tools .portfolio-result-link{font-size:14px;min-height:39px}
+.portfolio-compare-content{display:grid;gap:20px;min-width:0}
+.portfolio-compare-table{min-width:840px;font-size:15px}
+.portfolio-compare-table th{font-size:14px;color:#4d6253;padding:15px 17px}
+.portfolio-compare-table td{font-size:15px;white-space:nowrap;padding:15px 17px}
+.portfolio-compare-table th:first-child{min-width:230px}
+.portfolio-compare-table tbody th{background:transparent;white-space:normal;font-weight:500}
+.portfolio-compare-table tbody th,.portfolio-compare-table thead th:first-child{position:sticky;left:0;z-index:1;background:var(--paper)}
+.portfolio-compare-table thead th:first-child{background:#f8f9f4}
+.portfolio-compare-name{display:flex;align-items:baseline;gap:10px;min-width:0}
+.portfolio-compare-name>i{display:inline-block;flex:none;width:9px;height:9px;border-radius:3px}
+.portfolio-compare-name>strong{font-size:14px;line-height:1.65;font-weight:550;overflow-wrap:anywhere}
+.portfolio-compare-period{display:block;margin:5px 0 0 19px;color:#647467;font-size:12px}
+.portfolio-compare-table .portfolio-compare-unavailable td{white-space:normal;text-align:left}
+.portfolio-compare-unavailable .portfolio-compare-name{color:#788477}
+.portfolio-compare-failure{font-size:14px;color:#97674f;line-height:1.7;overflow-wrap:anywhere}
+.portfolio-compare-section-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px 20px}
+.portfolio-compare-section-head h2{font-size:16px;letter-spacing:0}
+.portfolio-compare-section-head .segmented button{font-size:14px;min-height:36px}
+.portfolio-compare-chart{padding:20px 22px 16px}
+.portfolio-compare-legend{display:flex;flex-wrap:wrap;gap:5px 18px;margin:14px 0}
+.portfolio-compare-legend-item{display:flex;align-items:center;gap:7px;min-height:34px;padding:3px 0;font-size:13px;color:#405b46;cursor:pointer}
+.portfolio-compare-legend-item input{display:inline-block;flex:none;width:16px;height:16px;min-height:16px;margin:0;accent-color:var(--green)}
+.portfolio-compare-legend-item i{flex:none;width:16px;height:3px;border-radius:2px}
+.portfolio-compare-legend-item.is-hidden{color:#849080}
+.portfolio-compare-legend-item.is-hidden i{opacity:.5}
+.portfolio-compare-plot-scroll{max-width:100%;overflow-x:auto}
+.portfolio-compare-plot{display:block;width:100%;min-width:620px;height:auto}
+.portfolio-compare-plot text{font-family:var(--font);font-size:12px;fill:#748170;font-variant-numeric:tabular-nums}
+.portfolio-compare-chart-empty{display:grid;place-items:center;min-height:260px;color:#687a67;font-size:14px}
+.portfolio-compare-states{display:grid;gap:14px}
+.portfolio-compare-date-controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.portfolio-compare-date-controls label{display:flex;align-items:center;gap:10px;font-size:14px;color:#526659;white-space:nowrap}
+.portfolio-compare-date-controls input{width:151px;font-size:14px;margin:0}
+.portfolio-compare-date-controls .btn{font-size:14px;padding:7px 13px}
+.portfolio-compare-state-table{table-layout:fixed;min-width:1040px}
+.portfolio-compare-state-table thead th:first-child{width:21%}
+.portfolio-compare-state-table thead th:nth-child(2){width:14%}
+.portfolio-compare-state-table thead th:nth-child(3){width:13%}
+.portfolio-compare-state-table thead th:nth-child(4){width:29%}
+.portfolio-compare-state-table thead th:nth-child(5){width:23%}
+.portfolio-compare-state-table tbody th,.portfolio-compare-state-table tbody td{vertical-align:top;padding:12px 17px}
+.portfolio-compare-state-table .portfolio-compare-state,.portfolio-compare-state-table .portfolio-compare-next{white-space:normal;text-align:left}
+.portfolio-compare-state-table th:nth-child(n+4){text-align:left}
+.portfolio-compare-state p,.portfolio-compare-next li{font-size:13px;line-height:1.75;color:#405647;overflow-wrap:anywhere}
+.portfolio-compare-state p{margin-top:3px}
+.portfolio-compare-position-pct{display:block;margin-top:4px;font-size:13px;color:#647564}
+.portfolio-compare-status-label{font-size:14px;font-weight:550;color:var(--green)}
+.portfolio-compare-status-label.negative{color:var(--red)}
+.portfolio-compare-status-date{display:block;font-size:12px;color:#6a7b6b;margin:5px 0 0 19px}
+.portfolio-compare-observation{display:block;margin-top:3px;font-size:12px;color:#7b856f}
+.portfolio-compare-next ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.portfolio-compare-details{margin-top:5px;font-size:13px;color:#4f6553}
+.portfolio-compare-details>summary{cursor:pointer;width:fit-content;color:var(--green);padding:3px 0}
+.portfolio-compare-indicators{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px 25px;margin:16px 0}
+.portfolio-compare-indicators dt{font-size:13px;color:#687b69}
+.portfolio-compare-indicators dd{font-size:16px;margin:3px 0;font-weight:550}
+.portfolio-compare-indicators span{font-size:12px;color:#687b69}
+.portfolio-compare-facts{display:grid;gap:11px;margin:14px 0 2px;max-width:100%}
+.portfolio-compare-facts>div{display:grid;grid-template-columns:minmax(0,1fr);gap:3px}
+.portfolio-compare-facts dt{color:#637966;font-size:13px}
+.portfolio-compare-facts dd{margin:0;font-size:13px;line-height:1.8;overflow-wrap:anywhere}
+@media(max-width:650px){
+  .portfolio-compare-context>p{gap:4px 13px}
+  .portfolio-compare-context strong{width:100%;font-size:15px}
+  .portfolio-compare-nav{gap:10px}
+  .portfolio-compare-tools{margin-left:0;width:100%;justify-content:space-between}
+  .portfolio-compare-chart{padding:17px 14px 12px}
+  .portfolio-compare-legend{gap:3px 14px}
+  .portfolio-compare-date-controls{width:100%;gap:7px}
+  .portfolio-compare-date-controls label{order:-1;width:100%}
+  .portfolio-compare-date-controls .btn{min-height:39px}
+  .portfolio-compare-date-controls input{width:156px}
+  .portfolio-compare-placeholder{padding:20px}
+}
 
 .annual-fee-note{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);white-space:nowrap}
 .annual-fee-note::before{content:"";width:5px;height:5px;background:#879d75;border-radius:50%}

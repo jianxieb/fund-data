@@ -125,9 +125,10 @@ function uiFixture(configure, model = P) {
   const context = { window: { Changheng: M, ChanghengPortfolioModel: model, PORTFOLIO_CATALOG: input.catalog,
     ChanghengPortfolioPdf: { ...Pdf, snapshot: Pdf.snapshot, async create(report) { reports.push(report); return new Blob(['PDF']); } } },
     localStorage: { getItem: () => JSON.stringify(input.config), setItem() {} },
-    document: { getElementById: () => null, querySelectorAll: () => [] }, TextEncoder,
+    document: { getElementById: () => null, querySelectorAll: () => [] }, TextEncoder, setTimeout,
     fetch: async url => ({ ok: true, text: async () => url === 'data/portfolio/catalog.js' ? 'var PORTFOLIO_CATALOG=' + JSON.stringify(input.catalog) + ';' : JSON.stringify(Object.values(input.histories).find(h => input.catalog.assets.find(a => a.id === h.id).historyUrl === url)) }) };
   vm.createContext(context);
+  vm.runInContext(fs.readFileSync(path.resolve(__dirname, '../assets/portfolio-comparison.js'), 'utf8'), context);
   vm.runInContext(fs.readFileSync(path.resolve(__dirname, '../assets/portfolio.js'), 'utf8'), context);
   const ui = context.window.ChanghengPortfolio;
   const helpers = { esc: String, action: (label, act, cls, extra = '') => '<button data-action="' + act + '" ' + extra + '>' + label + '</button>',
@@ -1079,7 +1080,7 @@ test('USD settings, tax reserve, PDF and CSV keep the same result currency after
 test('production entrypoint loads the account model, PDF and simulator', () => {
   const html = fs.readFileSync(path.resolve(__dirname, '../index.html'), 'utf8');
   const assets = [...html.matchAll(/src="assets\/(portfolio[^"?]*)/g)].map(match => match[1]);
-  assert.deepEqual(assets, ['portfolio-opportunity.js', 'portfolio-systematic.js', 'portfolio-model.js', 'portfolio-pdf.js', 'portfolio.js']);
+  assert.deepEqual(assets, ['portfolio-opportunity.js', 'portfolio-systematic.js', 'portfolio-model.js', 'portfolio-pdf.js', 'portfolio-comparison.js', 'portfolio.js']);
 });
 
 
@@ -1156,4 +1157,165 @@ test('retired imported methods fail explicitly without replacing the current all
   assert.deepEqual(retained.positions, f.input.config.positions);
   assert.equal(retained.initial, f.input.config.initial);
   assert.notEqual(retained.initialMethod, 'entry_composite');
+});
+
+function comparisonUiFixture() {
+  const comparisons = [], singleRuns = [], fetches = [];
+  const model = { ...P,
+    simulate(input) { const result = P.simulate(input); singleRuns.push(result); return result; },
+    simulateStrategies(input) { const result = P.simulateStrategies(input); comparisons.push(result); return result; }
+  };
+  const f = uiFixture(input => {
+    Object.assign(input.config, { currency: 'USD', initialMethod: 'lump_sum', monthly: 0, rebalance: 'none', transactionFee: 0,
+      years: 'custom', start: '2025-06-03', end: '2026-01-08', benchmarkId: '', tax: P.taxConfig() });
+    for (const [i, id] of ['us:USD', 'us:TQQQ'].entries()) {
+      const asset = input.catalog.assets[i], old = asset.id, history = input.histories[old];
+      Object.assign(asset, { id, code: id.slice(3), name: id.slice(3), kind: 'etf', currency: 'USD' });
+      Object.assign(history, { id, currency: 'USD' }); delete input.histories[old]; input.histories[id] = history;
+      input.config.positions[i] = { id, weight: 30 };
+    }
+    for (const [id, basis] of [['us:QQQ', 'us:TQQQ'], ['us:SOXX', 'us:USD']]) {
+      const asset = input.catalog.assets.find(a => a.id === basis), history = input.histories[basis];
+      input.catalog.assets.push({ ...asset, id, code: id.slice(3), name: id.slice(3), historyUrl: 'data/portfolio/etf/' + id.slice(3) + '.json' });
+      input.histories[id] = { ...history, id };
+    }
+  }, model);
+  const series = f.input.histories['us:TQQQ'].series.map(([day]) => [day, 18, 21]);
+  const context = { schemaVersion: 1, status: 'available', first: series[0][0], asOf: series.at(-1)[0], series,
+    sources: Object.fromEntries(['VIX', 'VIX3M'].map(id => [id, {
+      url: 'https://cdn.cboe.com/api/global/us_indices/daily_prices/' + id + '_History.csv',
+      first: series[0][0], asOf: series.at(-1)[0], sha256: 'a'.repeat(64), retrievedAt: '2026-01-09T00:00:00Z'
+    }])) };
+  const fetch = f.context.fetch;
+  f.context.fetch = async (url, options) => {
+    fetches.push(url);
+    if (url === 'data/portfolio/entry-context.json') return { ok: true, text: async () => JSON.stringify(context) };
+    return fetch(url, options);
+  };
+  return { ...f, comparisons, singleRuns, fetches };
+}
+
+test('advanced strategy comparison loads all rule evidence and displays independent funded results', async () => {
+  const f = comparisonUiFixture();
+  await f.action('tab', { value: 'strategies' });
+  assert.match(f.ui.view(f.helpers), /开始对比/);
+  await f.action('run');
+  const compared = f.comparisons.at(-1);
+  assert.equal(compared.error, undefined);
+  assert.equal(compared.strategies.length, 10);
+  assert.ok(compared.strategies.every(row => row.result && !row.error), JSON.stringify(compared.strategies.filter(row => row.error)));
+  assert.ok(compared.strategies.every(row => !['lump_sum', 'tranche_6', 'tranche_12', 'tranche_24'].includes(row.id)));
+  assert.ok(compared.strategies.every(row => row.result.config.initial === 100000 && row.result.config.monthly === 0));
+  assert.ok(compared.strategies.every(row => row.result.start === '2025-06-03' && row.result.end === '2026-01-08'));
+  const branch10 = compared.strategies.find(row => row.id === 'opportunity_discount_10');
+  const branch20 = compared.strategies.find(row => row.id === 'opportunity_discount_20');
+  assert.ok(Math.abs(branch10.result.curve[0].positionPrincipal - 54000) < 1e-7);
+  assert.ok(Math.abs(branch20.result.curve[0].positionPrincipal - 48000) < 1e-7);
+  const html = f.ui.view(f.helpers);
+  for (const row of compared.strategies) assert.ok(html.includes(row.label), row.label);
+  assert.doesNotMatch(html, /NaN|undefined|本次对比未完成/);
+  assert.ok(f.fetches.includes('data/portfolio/etf/QQQ.json'));
+  assert.ok(f.fetches.includes('data/portfolio/etf/SOXX.json'));
+  assert.equal(f.fetches.filter(url => url === 'data/portfolio/entry-context.json').length, 1);
+  await f.action('compare-export');
+  const exported = f.downloads.at(-1);
+  assert.match(exported[0], /多策略对比/);
+  assert.match(exported[1], /低位评分加仓·10%预留/);
+  assert.match(exported[1], /低位评分加仓·20%预留/);
+  assert.ok(exported[1].includes(String(branch10.result.value)));
+  assert.ok(exported[1].includes(String(branch20.result.value)));
+  const shortRow = exported[1].split(/\r?\n/).find(line => line.startsWith('"opportunity_discount_10",')).split('","');
+  assert.equal(shortRow[8], '', 'a period under one year must not be exported as annualized return');
+  assert.equal(Number(shortRow[9]), branch10.result.totalReturn);
+});
+
+test('comparison dates and controls leave the draft and single account intact; dirty comparisons persist until rerun', async () => {
+  const f = comparisonUiFixture();
+  await f.action('run'); await f.action('export-result');
+  const singleCsv = f.downloads.at(-1)[1], singleRuns = f.singleRuns.length;
+  await f.action('tab', { value: 'strategies' }); await f.action('run'); await f.action('compare-export');
+  const oldComparisonCsv = f.downloads.at(-1)[1], comparisonRuns = f.comparisons.length;
+  await f.action('save'); const before = JSON.parse(f.downloads.at(-1)[1]);
+  await f.action('compare-tab', { value: 'states' });
+  await f.ui.handleChange({ id: 'portfolio-compare-date', dataset: { portfolioField: 'compare-date' }, value: '2025-07-04' });
+  assert.match(f.ui.view(f.helpers), /value="2025-07-04"/);
+  await f.action('compare-prev'); assert.match(f.ui.view(f.helpers), /value="2025-07-03"/);
+  await f.action('compare-next');
+  await f.action('compare-export-states');
+  assert.match(f.downloads.at(-1)[0], /2025-07-04/);
+  assert.match(f.downloads.at(-1)[1], /2025-07-04/);
+  assert.match(f.downloads.at(-1)[1], /"状态日期","策略观察日"/);
+  await f.action('compare-tab', { value: 'performance' });
+  await f.action('compare-toggle', { value: 'opportunity_discount_20' });
+  await f.action('compare-metric', { value: 'drawdown' });
+  await f.action('save');
+  assert.deepEqual(JSON.parse(f.downloads.at(-1)[1]), before);
+  assert.equal(f.comparisons.length, comparisonRuns);
+  assert.equal(f.singleRuns.length, singleRuns);
+  await f.action('tab', { value: 'results' }); await f.action('export-result');
+  assert.equal(f.downloads.at(-1)[1], singleCsv, 'comparison must not replace the successful single-strategy ledger');
+  await f.action('select', { field: 'initialMethod', value: 'cash_topup' });
+  await f.action('tab', { value: 'strategies' });
+  assert.doesNotMatch(f.ui.view(f.helpers), /参数已改动/);
+  f.monthly(1234);
+  assert.match(f.ui.view(f.helpers), /参数已改动/);
+  await f.action('compare-export');
+  assert.equal(f.downloads.at(-1)[1], oldComparisonCsv);
+  await f.action('tab', { value: 'results' }); await f.action('run');
+  await f.action('tab', { value: 'strategies' }); await f.action('compare-export');
+  assert.equal(f.downloads.at(-1)[1], oldComparisonCsv, 'a fresh single simulation must not replace or recompute the comparison');
+  await f.action('run');
+  assert.equal(f.comparisons.length, comparisonRuns + 1);
+  assert.ok(f.comparisons.at(-1).strategies.filter(row => row.result).every(row => row.result.config.monthly === 1234));
+  assert.doesNotMatch(f.ui.view(f.helpers), /参数已改动/);
+  await f.action('compare-export');
+  const newComparisonCsv = f.downloads.at(-1)[1];
+  assert.notEqual(newComparisonCsv, oldComparisonCsv);
+  f.monthly(-1); await f.action('run'); await f.action('compare-export');
+  assert.equal(f.downloads.at(-1)[1], newComparisonCsv, 'invalid shared settings must retain the previous comparison');
+  assert.match(f.ui.view(f.helpers), /仍显示上次对比结果/);
+});
+
+test('a missing VIX source stays local to dependent comparison rows and does not hide other advanced strategies', async () => {
+  const f = comparisonUiFixture(), fetch = f.context.fetch;
+  f.context.fetch = async (url, options) => url === 'data/portfolio/entry-context.json' ? { ok: false, status: 503 } : fetch(url, options);
+  await f.action('tab', { value: 'strategies' }); await f.action('run');
+  const compared = f.comparisons.at(-1);
+  assert.equal(compared.strategies.length, 10);
+  for (const id of ['drawdown_ladder', 'ma200_hold', 'cash_topup', 'qqq_bear_confirm', 'relative_strength_rotation']) {
+    const row = compared.strategies.find(row => row.id === id);
+    assert.ok(row.result && !row.error, id + ': ' + row.error);
+  }
+  assert.match(compared.strategies.find(row => row.id === 'vix_panic_reentry').error, /VIX/);
+  assert.ok(compared.missingSources.some(source => /VIX/.test(source.id) && /503/.test(source.error)));
+  const html = f.ui.view(f.helpers);
+  for (const row of compared.strategies) assert.ok(html.includes(row.label), row.label);
+  assert.doesNotMatch(html, /本次对比未完成|NaN|undefined/);
+  await f.action('compare-export');
+  assert.match(f.downloads.at(-1)[1], /VIX/);
+  assert.match(f.downloads.at(-1)[1], /回撤阶梯投入/);
+});
+
+test('an unavailable shared period renders every comparison failure and cannot replace an existing comparison', async () => {
+  const f = comparisonUiFixture();
+  const setEnd = value => f.ui.handleChange({ id: 'portfolio-end', dataset: { portfolioField: 'end' }, value });
+  await setEnd('2026-02-01');
+  await f.action('tab', { value: 'strategies' }); await f.action('run');
+  const failed = f.comparisons.at(-1);
+  assert.equal(failed.start, null); assert.equal(failed.end, null);
+  assert.equal(failed.strategies.length, 10);
+  assert.ok(failed.strategies.every(row => !row.result && /结束日超过共同历史末日/.test(row.error)));
+  let html = f.ui.view(f.helpers);
+  for (const row of failed.strategies) assert.ok(html.includes(row.label), row.label);
+  assert.doesNotMatch(html, /RangeError|Invalid time|NaN|undefined/);
+  await f.action('compare-tab', { value: 'states' });
+  html = f.ui.view(f.helpers);
+  for (const row of failed.strategies) assert.ok(html.includes(row.label), row.label);
+  await setEnd('2026-01-08'); await f.action('run'); await f.action('compare-export');
+  const successfulCsv = f.downloads.at(-1)[1];
+  assert.ok(f.comparisons.at(-1).strategies.every(row => row.result));
+  await setEnd('2026-02-01'); await f.action('run'); await f.action('compare-export');
+  assert.equal(f.downloads.at(-1)[1], successfulCsv);
+  assert.match(f.ui.view(f.helpers), /仍显示上次对比结果/);
+  assert.match(f.ui.view(f.helpers), /结束日超过共同历史末日/);
 });
