@@ -4,6 +4,7 @@
 })(typeof window === 'object' ? window : this, function () {
   'use strict';
   const horizons = Object.freeze(['1w','1m','3m','6m','12m']);
+  const parties = Object.freeze(['any','dem','rep','unknown']);
   const dayMs = 86400000, maxGap = 10, launch = '1957-03-04';
   const iso = date => date.toISOString().slice(0,10);
   const dayNumber = date => Date.parse(date + 'T00:00:00Z') / dayMs;
@@ -25,8 +26,32 @@
       median:n ? (values[(n-1)>>1] + values[n>>1])/2 : null,min:n ? values[0] : null,max:n ? values[n-1] : null,
       pending:outcomes.filter(o => o.status === 'pending').length, missing:outcomes.filter(o => o.status === 'missing').length};
   }
-  function study(series, {entry='election',era='all',asOf} = {}) {
-    if (!['election','next'].includes(entry) || !['all','live'].includes(era)) throw new Error('未知的中期选举统计条件');
+  function congressIndex(rows) {
+    if (!Array.isArray(rows)) throw new Error('选后两院控制党资料格式有误');
+    const index = new Map();
+    for (const row of rows) {
+      if (!row || !Number.isInteger(row.year) || row.year < 1950 || (row.year-1950)%4 !== 0 || index.has(row.year) ||
+          ![null,'dem','rep'].includes(row.house) || ![null,'dem','rep'].includes(row.senate) ||
+          !Number.isInteger(row.congress) || row.congress < 1 || !['confirmed','projected','unknown'].includes(row.status) ||
+          typeof row.note !== 'string' || !Array.isArray(row.sourceUrls) || row.sourceUrls.some(url=>typeof url!=='string' || !/^https:\/\//.test(url)))
+        throw new Error('选后两院控制党资料含重复届次或无效字段');
+      index.set(row.year,row);
+    }
+    return index;
+  }
+  function congressFor(year, index) {
+    const row=index.get(year);
+    if (row) {
+      const missing=[row.house==null?'众议院':'',row.senate==null?'参议院':''].filter(Boolean).join('、');
+      return {...row,sourceUrls:row.sourceUrls.slice(),note:row.note || (missing?year+' 届选后'+missing+'控制党资料缺失':'')};
+    }
+    return {year,house:null,senate:null,congress:null,status:'unknown',note:year+' 届选后众议院、参议院控制党资料缺失',sourceUrls:[]};
+  }
+  const partyMatches = (value, filter) => filter==='any' || (filter==='unknown' ? value==null : value===filter);
+  function study(series, {entry='election',era='all',asOf,house='any',senate='any'} = {}, congressRows=[]) {
+    if (!['election','next'].includes(entry) || !['all','live'].includes(era) || !parties.includes(house) || !parties.includes(senate))
+      throw new Error('未知的中期选举统计条件');
+    const congress=congressIndex(congressRows);
     const days = [], segments = [];
     for (let i = 0; i < series.length; i++) {
       const [d,p] = series[i], t = dayNumber(d);
@@ -99,10 +124,19 @@
         }
         outcomes[h] = {targetDate:target,date:actual,close,pct:actual ? (close/anchorClose-1)*100 : null,maxDrawdownPct,status,reason};
       }
-      events.push({year,date,preLaunch:date<launch,anchorDate,anchorClose,anchorStatus,anchorReason,outcomes});
+      events.push({year,date,preLaunch:date<launch,anchorDate,anchorClose,anchorStatus,anchorReason,outcomes,congress:congressFor(year,congress)});
     }
-    const summary = Object.fromEntries(horizons.map(h=>[h,summarize(events.map(e=>e.outcomes[h]))]));
-    return {first,asOf:cutoff,entry,era,events:events.reverse(),summary};
+    const filters={house,senate};
+    const facetCounts=Object.fromEntries(['house','senate'].map(chamber=>{
+      const other=chamber==='house'?'senate':'house';
+      const candidates=events.filter(e=>partyMatches(e.congress[other],filters[other]));
+      return [chamber,Object.fromEntries(parties.map(party=>[party,candidates.filter(e=>partyMatches(e.congress[chamber],party)).length]))];
+    }));
+    const matching=events.filter(e=>partyMatches(e.congress.house,house) && partyMatches(e.congress.senate,senate));
+    const summary = Object.fromEntries(horizons.map(h=>[h,summarize(matching.map(e=>e.outcomes[h]))]));
+    return {first,asOf:cutoff,entry,era,house,senate,cohortN:events.length,
+      partyMissingN:events.filter(e=>e.congress.house==null || e.congress.senate==null).length,
+      facetCounts,events:matching.reverse(),summary};
   }
-  return {study,electionDate,horizons};
+  return {study,electionDate,horizons,parties};
 });

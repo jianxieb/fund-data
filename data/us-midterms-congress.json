@@ -1,0 +1,245 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-11-11",
+  "rows": [
+    {
+      "year": 1950,
+      "house": "dem",
+      "senate": "dem",
+      "congress": 82,
+      "status": "confirmed",
+      "note": "按第82届国会初始控制党分类，不改用1952年期间的席位变化。",
+      "sourceUrls": [
+        "https://history.house.gov/Institution/Presidents-Coinciding/Party-Government/",
+        "https://www.senate.gov/about/parties-leadership/party-division.shtml"
+      ]
+    },
+    {
+      "year": 1954,
+      "house": "dem",
+      "senate": "dem",
+      "congress": 84,
+      "status": "confirmed",
+      "note": "参院历史办公室现行表的第84届第1会期开届列为47名民主党、47名共和党和2名独立议员（Wayne Morse、Strom Thurmond）；两人均与民主党结盟。Morse于1955-02-17正式改为民主党籍，不能用期末党籍倒推开届。",
+      "sourceUrls": [
+        "https://history.house.gov/Institution/Presidents-Coinciding/Party-Government/",
+        "https://www.senate.gov/about/parties-leadership/party-division.shtml"
+      ]
+    },
+    {
+      "year": 1958,
+      "house": "dem",
+      "senate": "dem",
+      "congress": 86,
+      "status": "confirmed",
+      "note": "",
+      "sourceUrls": [
+        "https://history.house.gov/Institution/Presidents-Coinciding/Party-Government/",
+        "https://www.senate.gov/about/parties-leadership/party-division.shtml"
+      ]
+    },
+    {
+      "year": 1962,
+      "house": "dem",
+      "senate": "dem",
+      "congress": 88,
+      "status": "confirmed",
+      "note": "",
+      "sourceUrls": [
+        "https://history.house.gov/Institution/Presidents-Coinciding/Party-Government/",
+        "https://www.senate.gov/about/parties-leadership/party-division.shtml"
+      ]
+    },
+    {
+      "year": 1966,
+      "house": "dem",
+      "senate": "dem",
+      "congress": 90,
+      "status": "confirmed",
+      "note": "",
+      "sourceUrls": [
+        "https://history.house.gov/Institution/Presidents-Coinciding/Party-Government/",
+        "https://www.senate.gov/about/parties-leadership/party-division.shtml"
+      ]
+    },
+    {
+      "year": 1970,
+      "house": "dem",
+      "senate": "dem",
+      "congress": 92,
+      "status": "confirmed",
+      "note": "",
+      "sourceUrls": [
+        "https://history.house.gov/Institution/Presidents-Coinciding/Party-Government/",
+        "https://www.senate.gov/about/parties-leadership/party-division.shtml"
+      ]
+    },
+    {
+      "year": 1974,
+      "house": "dem",
+      "senate": "dem",
+      "congress": 94,
+      "status": "confirmed",
+      "note": "",
+      "sourceUrls": [
+        "https://history.house.gov/Institution/Presidents-Coinciding/Party-Government/",
+        "https://www.senate.gov/about/parties-leadership/party-division.shtml"
+      ]
+    },
+    {
+      "year": 1978,
+      "house": "dem",
+      "senate": "dem",
+      "congress": 96,
+      "status": "confirmed",
+      "note": "",
+      "sourceUrls": [
+        "https://history.house.gov/Institution/Presidents-Coinciding/Party-Government/",
+        "https://www.senate.gov/about/parties-leadership/party-division.shtml"
+      ]
+    },
+    {
+      "year": 1982,
+      "house": "dem",
+      "senate": "rep",
+      "congress": 98,
+      "status": "confirmed",
+      "note": "",
+      "sourceUrls": [
+        "https://history.house.gov/Institution/Presidents-Coinciding/Party-Government/",
+        "https://www.senate.gov/about/parties-leadership/party-division.shtml"
+      ]
+    },
+    {
+      "year": 1986,
+      "house": "dem",
+      "senate": "dem",
+      "congress": 100,
+      "status": "confirmed",
+      "note": "",
+      "sourceUrls": [
+        "https://history.house.gov/Institution/Presidents-Coinciding/Party-Government/",
+        "https://www.senate.gov/about/parties-leadership/party-division.shtml"
+      ]
+    },
+    {
+      "year": 1990,
+      "house": "dem",
+      "senate": "dem",
+      "congress": 102,
+      "status": "confirmed",
+      "note": "",
+      "sourceUrls": [
+        "https://history.house.gov/Institution/Presidents-Coinciding/Party-Government/",
+        "https://www.senate.gov/about/parties-leadership/party-division.shtml"
+      ]
+    },
+    {
+      "year": 1994,
+      "house": "rep",
+      "senate": "rep",
+      "congress": 104,
+      "status": "confirmed",
+      "note": "",
+      "sourceUrls": [
+        "https://history.house.gov/Institution/Presidents-Coinciding/Party-Government/",
+        "https://www.senate.gov/about/parties-leadership/party-division.shtml"
+      ]
+    },
+    {
+      "year": 1998,
+      "house": "rep",
+      "senate": "rep",
+      "congress": 106,
+      "status": "confirmed",
+      "note": "",
+      "sourceUrls": [
+        "https://history.house.gov/Institution/Presidents-Coinciding/Party-Government/",
+        "https://www.senate.gov/about/parties-leadership/party-division.shtml"
+      ]
+    },
+    {
+      "year": 2002,
+      "house": "rep",
+      "senate": "rep",
+      "congress": 108,
+      "status": "confirmed",
+      "note": "",
+      "sourceUrls": [
+        "https://history.house.gov/Institution/Presidents-Coinciding/Party-Government/",
+        "https://www.senate.gov/about/parties-leadership/party-division.shtml"
+      ]
+    },
+    {
+      "year": 2006,
+      "house": "dem",
+      "senate": "dem",
+      "congress": 110,
+      "status": "confirmed",
+      "note": "参议院49名民主党、49名共和党及2名其他党籍议员；两人均与民主党结盟，民主党控制参院。",
+      "sourceUrls": [
+        "https://history.house.gov/Institution/Presidents-Coinciding/Party-Government/",
+        "https://www.senate.gov/about/parties-leadership/party-division.shtml"
+      ]
+    },
+    {
+      "year": 2010,
+      "house": "rep",
+      "senate": "dem",
+      "congress": 112,
+      "status": "confirmed",
+      "note": "参议院独立议员按实际结盟计入民主党组织多数。",
+      "sourceUrls": [
+        "https://history.house.gov/Institution/Presidents-Coinciding/Party-Government/",
+        "https://www.senate.gov/about/parties-leadership/party-division.shtml"
+      ]
+    },
+    {
+      "year": 2014,
+      "house": "rep",
+      "senate": "rep",
+      "congress": 114,
+      "status": "confirmed",
+      "note": "",
+      "sourceUrls": [
+        "https://history.house.gov/Institution/Presidents-Coinciding/Party-Government/",
+        "https://www.senate.gov/about/parties-leadership/party-division.shtml"
+      ]
+    },
+    {
+      "year": 2018,
+      "house": "dem",
+      "senate": "rep",
+      "congress": 116,
+      "status": "confirmed",
+      "note": "",
+      "sourceUrls": [
+        "https://history.house.gov/Institution/Presidents-Coinciding/Party-Government/",
+        "https://www.senate.gov/about/parties-leadership/party-division.shtml"
+      ]
+    },
+    {
+      "year": 2022,
+      "house": "rep",
+      "senate": "dem",
+      "congress": 118,
+      "status": "confirmed",
+      "note": "第118届参议院开届48名民主党、49名共和党及3名独立议员；三人均与民主党结盟，民主党控制参院。",
+      "sourceUrls": [
+        "https://history.house.gov/Institution/Presidents-Coinciding/Party-Government/",
+        "https://www.senate.gov/about/parties-leadership/party-division.shtml"
+      ]
+    },
+    {
+      "year": 2026,
+      "house": "dem",
+      "senate": "dem",
+      "congress": 120,
+      "status": "projected",
+      "note": "AP于2026-11-03晚判定民主党赢得参院、11-04凌晨判定赢得众院。第120届尚未就职；此处为媒体判定的选后控制权，不是已认证的最终席位数。",
+      "sourceUrls": [
+        "https://www.ap.org/the-definitive-source/behind-the-news/calling-control-of-congress-in-the-2026-midterm-elections/"
+      ]
+    }
+  ]
+}

@@ -201,7 +201,7 @@
     return head(...args) + '<nav class="event-study-nav" aria-label="事件类型">' + links + '</nav>';
   }
   function dropStudy() { return window.ChanghengDropStudy.view({ head:eventStudyHead, menu:eventStudyMenu, render, openModal, modalTitle, download }); }
-  function midtermStudy() { return window.ChanghengMidtermStudy.view({ head:eventStudyHead, menu:eventStudyMenu, render, download }); }
+  function midtermStudy() { return window.ChanghengMidtermStudy.view({ head:eventStudyHead, menu:eventStudyMenu, render, openModal, modalTitle, download }); }
   function financialEvents() { return window.ChanghengFinancialEvents.view({ head, render }); }
   function returnComparison() { return window.ChanghengReturnComparison.view({ head, render, download, annual:state.annual, annualControl }); }
   function portfolio() {

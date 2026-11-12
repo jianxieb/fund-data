@@ -81,3 +81,67 @@ test('mature gains, flats and losses have separate counts; drawdown is measured 
   near(r.events.find(e=>e.year===2022).outcomes['1w'].maxDrawdownPct,-100/3);
   const fresh=r.events[0].outcomes['1w']; assert.equal(fresh.status,'pending'); assert.equal(fresh.maxDrawdownPct,null);
 });
+
+const control=(year,house,senate,status='confirmed')=>({
+  year,house,senate,congress:(year-1786)/2,status,note:'',sourceUrls:['https://example.org/congress/'+year]
+});
+test('chamber filters intersect and recompute each horizon while preview counts preserve the other chamber',()=>{
+  const quotes=sessions('1950-01-03','1963-11-07',day=>day==='1954-11-09'?120:day==='1958-11-11'?90:100);
+  const rows=[control(1950,'dem','dem'),control(1954,'rep','rep'),control(1958,'dem','rep'),control(1962,'rep','dem')];
+  const all=study(quotes,{},rows);
+  assert.equal(all.cohortN,4); assert.equal(all.partyMissingN,0);
+  assert.deepEqual(all.events.map(e=>e.year),[1962,1958,1954,1950]);
+  const house=study(quotes,{house:'dem'},rows);
+  assert.deepEqual(house.events.map(e=>e.year),[1958,1950]);
+  assert.equal(house.summary['1w'].n,2); near(house.summary['1w'].mean,-5);
+  assert.deepEqual(house.facetCounts,{
+    house:{any:4,dem:2,rep:2,unknown:0},senate:{any:2,dem:1,rep:1,unknown:0}
+  });
+  const split=study(quotes,{house:'dem',senate:'rep'},rows);
+  assert.deepEqual(split.events.map(e=>e.year),[1958]);
+  assert.equal(split.cohortN,4); assert.equal(split.summary['1w'].n,1); near(split.summary['1w'].mean,-10);
+  assert.deepEqual(split.events[0].outcomes,all.events.find(e=>e.year===1958).outcomes);
+  const live=study(quotes,{era:'live',house:'rep',senate:'rep'},rows);
+  assert.equal(live.cohortN,2); assert.equal(live.events.length,0); assert.equal(live.summary['12m'].mean,null);
+  assert.deepEqual(live.facetCounts.house,{any:1,dem:1,rep:0,unknown:0});
+});
+
+test('unknown chamber evidence remains distinct from both parties and missing data never removes default returns',()=>{
+  const quotes=sessions('1950-01-03','1959-11-05');
+  const rows=[control(1950,'dem',null,'unknown'),control(1954,'rep','rep')];
+  const all=study(quotes,{},rows), absent=study(quotes);
+  assert.equal(all.partyMissingN,2); assert.equal(all.cohortN,3);
+  assert.deepEqual(all.summary,absent.summary);
+  assert.deepEqual(all.events.map(e=>e.outcomes),absent.events.map(e=>e.outcomes));
+  const unknown=study(quotes,{senate:'unknown'},rows);
+  assert.deepEqual(unknown.events.map(e=>e.year),[1958,1950]);
+  assert.match(unknown.events[0].congress.note,/1958.*众议院、参议院.*缺失/);
+  assert.match(unknown.events[1].congress.note,/1950.*参议院.*缺失/);
+  assert.equal(study(quotes,{house:'dem'}).events.length,0);
+  assert.equal(study(quotes,{house:'unknown'}).events.length,3);
+  assert.equal(absent.partyMissingN,3);
+});
+
+test('projected control is labelled and immature returns remain excluded independently for each horizon',()=>{
+  const quotes=sessions('2026-11-02','2026-11-10',day=>day==='2026-11-10'?103:100);
+  const rows=[control(2026,'dem','rep','projected')];
+  const r=study(quotes,{house:'dem',senate:'rep'},rows);
+  assert.equal(r.events.length,1); assert.equal(r.events[0].congress.status,'projected');
+  assert.equal(r.summary['1w'].n,1); near(r.summary['1w'].mean,3);
+  assert.equal(r.summary['12m'].n,0); assert.equal(r.summary['12m'].pending,1);
+  const before=study(quotes,{house:'dem',asOf:'2026-11-09'},rows);
+  assert.equal(before.summary['1w'].n,0); assert.equal(before.summary['1w'].pending,1);
+});
+
+test('duplicate or malformed political evidence is rejected before it can silently classify a cohort',()=>{
+  const good=control(1950,'dem','dem');
+  for (const rows of [null,[good,good],[{...good,house:'Democratic'}],[{...good,senate:undefined}],
+    [{...good,status:'probably'}],[{...good,year:1952}],[{...good,congress:82.5}],[{...good,sourceUrls:['javascript:alert(1)']}]]) {
+    assert.throws(()=>study([],{},rows),/控制党资料/);
+  }
+  assert.throws(()=>study([],{house:'green'}),/统计条件/);
+  assert.throws(()=>study([],{senate:null}),/统计条件/);
+  const s=sessions('1950-11-01','1951-11-08'), result=study(s,{},[good]);
+  result.events[0].congress.sourceUrls.push('https://example.org/modified');
+  assert.deepEqual(good.sourceUrls,['https://example.org/congress/1950']);
+});
