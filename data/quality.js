@@ -1,11 +1,11 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-11-11T02:00:43+00:00",
-  "asOf": "2026-11-11",
+  "checkedAt": "2026-11-12T03:03:16+00:00",
+  "asOf": "2026-11-12",
   "status": "unverified",
   "summary": {
     "errors": 0,
-    "warnings": 12,
+    "warnings": 6,
     "unverified": 63
   },
   "datasets": [
@@ -19,44 +19,8 @@ var DATA_QUALITY={
         {
           "code": "source_refresh_retained",
           "severity": "warning",
-          "message": "海外基金：执行超过 90 秒，子进程已终止；该数据集不能视为更新成功。；保留已发布数据及原日期",
-          "affected": "funds"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:257070：The read operation timed out；保留历史截至2026-11-06",
-          "affected": "fund:257070"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:000369：The read operation timed out；保留历史截至2026-11-06",
-          "affected": "fund:000369"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:016280：The read operation timed out；保留历史截至2026-11-06",
-          "affected": "fund:016280"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:513220：<urlopen error [Errno 104] Connection reset by peer>；保留历史截至2026-11-06",
-          "affected": "fund:513220"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:007028：The read operation timed out；保留历史截至2026-11-06",
-          "affected": "fund:007028"
-        },
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:161017：The read operation timed out；保留历史截至2026-11-06",
-          "affected": "fund:161017"
+          "message": "A股：执行超过 90 秒，子进程已终止；该数据集不能视为更新成功。；保留已发布数据及原日期",
+          "affected": "stocks"
         },
         {
           "code": "source_history_retained",
@@ -70,10 +34,10 @@ var DATA_QUALITY={
     {
       "id": "funds",
       "label": "海外基金",
-      "asOf": "2026-11-05",
+      "asOf": "2026-11-10",
       "dateRange": [
-        "2026-11-09",
-        "2026-11-09"
+        "2026-11-10",
+        "2026-11-10"
       ],
       "records": 46,
       "issues": [
@@ -136,10 +100,10 @@ var DATA_QUALITY={
     {
       "id": "overseas_stocks",
       "label": "海外个股",
-      "asOf": "2026-11-10",
+      "asOf": "2026-11-11",
       "dateRange": [
-        "2026-11-09",
-        "2026-11-10"
+        "2026-11-11",
+        "2026-11-11"
       ],
       "records": 79,
       "issues": [
@@ -509,10 +473,10 @@ var DATA_QUALITY={
     {
       "id": "benchmarks",
       "label": "海外指数与ETF基准",
-      "asOf": "2026-11-10",
+      "asOf": "2026-11-11",
       "dateRange": [
-        "2026-11-09",
-        "2026-11-10"
+        "2026-11-11",
+        "2026-11-11"
       ],
       "records": 36,
       "issues": [
@@ -573,7 +537,7 @@ var DATA_QUALITY={
     {
       "id": "strategy",
       "label": "买入策略实验",
-      "asOf": "2026-11-10",
+      "asOf": "2026-11-11",
       "dateRange": null,
       "records": 162,
       "issues": [],
@@ -586,10 +550,10 @@ var DATA_QUALITY={
     {
       "id": "domestic_funds",
       "label": "扩展基金研究池",
-      "asOf": "2026-11-10",
+      "asOf": "2026-11-11",
       "dateRange": [
         "2026-11-06",
-        "2026-11-10"
+        "2026-11-11"
       ],
       "records": 1577,
       "issues": [
@@ -3428,10 +3392,10 @@ var DATA_QUALITY={
     {
       "id": "indices",
       "label": "国内指数",
-      "asOf": "2026-11-10",
+      "asOf": "2026-11-11",
       "dateRange": [
-        "2026-11-10",
-        "2026-11-10"
+        "2026-11-11",
+        "2026-11-11"
       ],
       "records": 13,
       "issues": [
@@ -3449,10 +3413,10 @@ var DATA_QUALITY={
     {
       "id": "portfolio",
       "label": "组合每日历史",
-      "asOf": "2026-11-10",
+      "asOf": "2026-11-11",
       "dateRange": [
         "2026-11-06",
-        "2026-11-10"
+        "2026-11-11"
       ],
       "records": 1873,
       "issues": [],
