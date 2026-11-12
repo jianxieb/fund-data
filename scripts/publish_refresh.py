@@ -9,13 +9,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_PATHS = ('index.html', ':(top,glob)data/*.js', ':(top,glob)data/*.json',
-                'data/portfolio', 'data/return-comparison')
+                'data/portfolio', 'data/return-comparison', 'data/drop-study')
 MEANINGFUL_PATHS = (
     'data/snapshot.js', 'data/overseas-stocks.js', 'data/indices.js', 'data/index-history.json',
     'data/market-history.json', 'data/screening.js', 'data/fund-actions.json', 'data/crossborder.js',
     'data/etf-distributions.js', 'data/money-flow-quotes.js', ':(top,glob)data/*validation.json',
     ':(top,glob)data/verification*.json', ':(top,glob)data/*reconciliation.json', 'data/portfolio', 'data/return-comparison',
-    'data/financial-events-history.json',
+    'data/financial-events-history.json', 'data/drop-study',
 )
 # These files configure/render the browser calculator. Neither the nine refresh
 # collectors nor their post-refresh builders read them; the full test suite does.
@@ -86,6 +86,7 @@ def test_generated_data(root):
 def validate_outputs(root):
     command([sys.executable, 'scripts/check_refresh.py'], root)
     command([sys.executable, 'scripts/build_return_indices.py', '--check'], root)
+    command([sys.executable, 'scripts/build_drop_highs.py', '--check'], root)
     command([sys.executable, 'scripts/build_financial_events.py', '--check'], root)
     command([sys.executable, 'scripts/build_portfolio_entry_context.py', '--check'], root)
     test_generated_data(root)

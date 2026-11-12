@@ -16,6 +16,7 @@ TASKS = {
     'crossborder': ('scripts/build_crossborder_data.py', [], ('crossborder.js',)),
     'etf_distributions': ('scripts/build_etf_distributions.py', [], ('etf-distributions.js',)),
     'return_indices': ('scripts/build_return_indices.py', [], ()),
+    'drop_highs': ('scripts/build_drop_highs.py', ['--refresh'], ()),
     'financial_events': ('scripts/build_financial_events.py', [], ('financial-events-history.json',)),
     'bank_fx': ('scripts/refresh_money_flow_quotes.py', ['--timeout', '8'], ('money-flow-quotes.js',)),
     'market_history': ('market_history.py', [], ('market-history.json',)),
@@ -30,6 +31,8 @@ def run_task(name, timeout=60):
     # every old referenced file available if this process is interrupted.
     if name == 'return_indices':
         outputs = tuple(p.relative_to(DATA).as_posix() for p in (DATA / 'return-comparison').glob('*.json'))
+    elif name == 'drop_highs':
+        outputs = tuple(p.relative_to(DATA).as_posix() for p in (DATA / 'drop-study').glob('*.json'))
     refresh.PUBLISHED_OUTPUTS[name] = outputs
     step = refresh.execute(name, [sys.executable, str(ROOT / script), *args], timeout, allow_partial=True)
     print(name + ': ' + step['status'] + ' (%.2fs)' % step['seconds'], flush=True)
@@ -43,13 +46,15 @@ def main(selected=None):
     report = {'startedAt': now_iso(), 'datasets': selected, 'steps': []}
     if 'fund_actions' in selected:
         report['steps'].append(run_task('fund_actions'))
-    # Event chapters consume the new index catalog; do not race its atomic
-    # catalog replacement and old-file cleanup. Unrelated sources stay parallel.
-    names = [name for name in selected if name not in ('fund_actions', 'financial_events')]
+    # Event chapters and index-high verification consume the new index catalog;
+    # do not race its atomic replacement and cleanup. Other sources stay parallel.
+    names = [name for name in selected if name not in ('fund_actions', 'financial_events', 'drop_highs')]
     with ThreadPoolExecutor(max_workers=max(1, len(names))) as pool:
         report['steps'].extend(pool.map(run_task, names))
     if 'financial_events' in selected:
         report['steps'].append(run_task('financial_events'))
+    if 'drop_highs' in selected:
+        report['steps'].append(run_task('drop_highs'))
     report['steps'].append(refresh.execute('quality', [sys.executable, str(ROOT / 'data_quality.py'), '--strict'],
                                            30, allow_partial=True))
     report['completedAt'] = now_iso()

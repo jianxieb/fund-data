@@ -5,6 +5,8 @@
   'use strict';
   const horizons = Object.freeze([5, 21, 63, 252]);
   const waits = Object.freeze([2, 3, 4, 5]);
+  const eraRanges = Object.freeze({ exclude_dotcom: Object.freeze(['2000-01-01', '2002-12-31']) });
+  const excludedDate = (date, era) => !!eraRanges[era] && date >= eraRanges[era][0] && date <= eraRanges[era][1];
   const validThreshold = value => Number.isFinite(value) && value >= 3 && value <= 10 &&
     Math.round(value * 100) / 100 === value;
   const days = 86400000;
@@ -41,7 +43,7 @@
   const matchesOne = (k, value, option) => k === 'cap' ? value <= Number(option) : value === option;
   const matches = (values, options, except) => facetKeys.every(k =>
     k === except || options[k] === undefined || options[k] === 'any' || matchesOne(k, values[k], options[k]));
-  const matchesFilters = (e, options = {}) => !!e && matches(facetValues(e), options) &&
+  const matchesFilters = (e, options = {}) => !!e && !excludedDate(e.date, options.era) && matches(facetValues(e), options) &&
     windowKeys.every(k => matchesWindow(e.features.windows, options, k));
   function isDrop(prior, close, threshold) {
     const boundary = prior * (100 - threshold) / 100;
@@ -61,16 +63,37 @@
     };
   }
 
-  // Each input is an independent, validated series of ordered [date, close] rows.
-  function study(series, options = {}, peerSeries = null) {
-    const { threshold = 5, wait = 2, group = 'unrecovered', peakDays = 252, lossDays = 5 } = options;
+  // Close histories remain intact: the optional high history changes only the
+  // recovery observation, never the drop trigger, return anchor or price path.
+  function study(series, options = {}, peerSeries = null, highSeries = null) {
+    const { threshold = 5, wait = 2, group = 'unrecovered', peakDays = 252, lossDays = 5, recovery = 'close', era = 'all' } = options;
     if (!validThreshold(threshold) || !waits.includes(wait) ||
         !W.validDays('peak', peakDays) || !W.validDays('loss', lossDays) ||
         windowKeys.some(k => options[k+'Min'] != null && !W.validThreshold(options[k+'Min'])) ||
-        !['unrecovered', 'recovered', 'all'].includes(group) ||
+        !['unrecovered', 'recovered', 'all'].includes(group) || !['close', 'high'].includes(recovery) ||
+        !['all', ...Object.keys(eraRanges)].includes(era) ||
         facetKeys.some(k => options[k] !== undefined && !facetOptions[k].includes(options[k]))) throw new Error('未知的大跌统计条件');
     const last = series.length - 1;
     const windows = W.rolling(series, {peakDays, lossDays});
+    const highDates = new Map();
+    if (recovery === 'high' && highSeries != null) {
+      if (!Array.isArray(highSeries)) throw new Error('盘中最高价历史须为逐日数据');
+      let previous = '';
+      for (const row of highSeries) {
+        const day = row?.[0], stamp = typeof day === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(day) ? Date.parse(day) : NaN;
+        if (!Array.isArray(row) || row.length !== 2 || !Number.isFinite(stamp) || new Date(stamp).toISOString().slice(0, 10) !== day || day <= previous)
+          throw new Error('盘中最高价历史日期或顺序无效');
+        highDates.set(day, row[1]); previous = day;
+      }
+    }
+    const highAt = i => {
+      const [day, close] = series[i], high = highDates.get(day);
+      return Number.isFinite(high) && high > 0 && high + Number.EPSILON * close * 4 >= close ? high : null;
+    };
+    const completeHighs = (first, end) => {
+      for (let j = first; j <= end; j++) if (highAt(j) === null) return false;
+      return true;
+    };
     const peerDates = new Map(peerSeries?.map(([date], i) => [date, i]));
     function peerChange(i) {
       const j = peerDates.get(series[i][0]);
@@ -131,17 +154,19 @@
       return { windows: windows[i], reboundPct, priorDrops, ma200Pct, drawdownPct, volPct, peerPct: peerChange(i),
         brokeLow: anchor === null ? null : observations.some(([, v]) => v < close) };
     }
-    const events = [], counts = { unrecovered: 0, recovered: 0, pending: 0, gap: 0, total: 0 };
+    const events = [], counts = { unrecovered: 0, recovered: 0, pending: 0, gap: 0, missingHigh: 0, total: 0 };
     const groupValues = byHorizon(() => []), allValues = byHorizon(() => []);
     const facetCounts = Object.fromEntries(facetKeys.map(k => [k,
       Object.fromEntries([...facetOptions[k], 'missing'].map(v => [v, 0]))]));
     const windowCounts = Object.fromEntries(windowKeys.map(k => [k,
       {any: 0, match: options[k+'Min'] == null ? null : 0, missing: 0}]));
-    let latest = null, cohortN = 0;
+    let latest = null, cohortN = 0, excludedEvents = 0;
     for (let i = 1; i <= last; i++) {
       // Comparable anchors require the basic daily-drop/observation prefix, never the optional filters.
       // These unconditional windows include events, and may overlap.
-      if (i >= wait + 1 && segments[i] === segments[i - wait - 1]) {
+      if (i >= wait + 1 && segments[i] === segments[i - wait - 1] &&
+          !excludedDate(series[i - wait][0], era) &&
+          (recovery === 'close' || completeHighs(i - wait + 1, i))) {
         for (const h of horizons) {
           const end = i + h;
           if (end <= last && segments[end] === segments[i]) allValues[h].push(change(series[i][1], series[end][1]));
@@ -150,24 +175,34 @@
       if (segments[i] !== segments[i - 1]) continue; // Not a one-session return.
       const [priorDate, priorClose] = series[i - 1], [date, close] = series[i];
       if (!isDrop(priorClose, close, threshold)) continue;
+      if (excludedDate(date, era)) { excludedEvents++; continue; }
 
-      const observations = [];
+      const observations = [], observationHighs = [], missingHighDates = [];
       let status = 'pending', recoveryDate = null, anchorDate = null, anchorClose = null;
       for (let j = i + 1; j <= Math.min(i + wait, last); j++) {
         if (segments[j] !== segments[i]) { status = 'gap'; break; }
         observations.push(series[j]);
-        if (!recoveryDate && series[j][1] >= priorClose) recoveryDate = series[j][0];
+        const observed = recovery === 'high' ? highAt(j) : series[j][1];
+        if (recovery === 'high') {
+          observationHighs.push([series[j][0], observed]);
+          if (observed === null) missingHighDates.push(series[j][0]);
+        }
+        if (!recoveryDate && observed !== null && observed >= priorClose) recoveryDate = series[j][0];
         if (j === i + wait) {
-          status = recoveryDate ? 'recovered' : 'unrecovered';
+          status = missingHighDates.length ? 'missingHigh' : recoveryDate ? 'recovered' : 'unrecovered';
           [anchorDate, anchorClose] = series[j];
         }
       }
+      // Missing an earlier high leaves the first recovery day unknown. A later
+      // observed touch must not be advertised as the first touch in that window.
+      if (missingHighDates.length) recoveryDate = null;
       const outcomes = byHorizon(h => anchorDate ? outcome(i + wait, h) : empty(status));
       latest = { date, close, priorDate, priorClose, dropPct: change(priorClose, close),
         status, observations, recoveryDate, anchorDate, anchorClose, outcomes,
+        ...(recovery === 'high' ? { observationHighs, missingHighDates } : {}),
         features: features(i, priorClose, close, anchorClose, observations) };
       counts[status]++; counts.total++;
-      if (anchorDate && (group === 'all' || group === status)) {
+      if (anchorDate && status !== 'missingHigh' && (group === 'all' || group === status)) {
         cohortN++;
         const values = facetValues(latest);
         const passesFacets = matches(values, options);
@@ -194,9 +229,9 @@
         for (const h of horizons) if (outcomes[h].status === 'complete') groupValues[h].push(outcomes[h].pct);
       }
     }
-    return { first: series[0]?.[0] ?? null, asOf: series[last]?.[0] ?? null, threshold, wait, group,
-      latest, counts, cohortN, facetCounts, windowCounts, events: events.reverse(), summary: byHorizon(h => summarize(groupValues[h])),
+    return { first: series[0]?.[0] ?? null, asOf: series[last]?.[0] ?? null, threshold, wait, group, recovery, era,
+      latest, counts, excludedEvents, cohortN, facetCounts, windowCounts, events: events.reverse(), summary: byHorizon(h => summarize(groupValues[h])),
       baseline: byHorizon(h => summarize(allValues[h])) };
   }
-  return { study, horizons, waits, validThreshold, facetOptions, matchesFilters };
+  return { study, horizons, waits, validThreshold, facetOptions, matchesFilters, eraRanges };
 });
