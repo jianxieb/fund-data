@@ -34,7 +34,7 @@
     return '<div class="event-menu-field"><span>' + esc(label) + '</span>' +
       selectMenu(id, label, choices, value, 'event-study-menu', 'event-study-choice') + '</div>';
   }
-  const years = [1, 2, 3, 5, 10], titles = { overview: '研究总览', indices: '指数观察', 'market-history': '历史分位', 'holding-period': '持有期研究', 'drop-study': '大跌后表现', 'midterm-study': '中期选举后表现', 'global-finance': '金融传导', 'financial-events': '历史事件', funds: '基金研究', stocks: '个股深入', reports: '深入报告', strategy: '投入策略', 'buy-location': '投资渠道', 'money-flow': '跨境资金', portfolio: '组合模拟', 'return-comparison':'收益对比', quality: '数据与方法' };
+  const years = [1, 2, 3, 5, 10], titles = { overview: '研究总览', indices: '指数观察', 'market-history': '历史分位', 'holding-period': '持有期研究', 'drop-study': '大跌后表现', 'midterm-study': '中期选举后表现', 'ma-study': '均线穿越后表现', 'global-finance': '金融传导', 'financial-events': '历史事件', funds: '基金研究', stocks: '个股深入', reports: '深入报告', strategy: '投入策略', 'buy-location': '投资渠道', 'money-flow': '跨境资金', portfolio: '组合模拟', 'return-comparison':'收益对比', quality: '数据与方法' };
   const funds = M.dedupeFunds(window.FUNDS, window.EXTRA);
   const policy = window.SCREEN_POLICY || { shortlist: [], byCode: {}, rules: [], counts: {} };
   const VIEW = 'changheng.research-view.v2';
@@ -175,7 +175,7 @@
     ];
     const followups = [
       ['market-history', 'MARKET CONTEXT', '历史分位', '把标普500、纳斯达克100的价格与估值、波动和利率放到同一时间轴。', ['价格与指标叠图', '历史分位', '年度表现']],
-      ['drop-study', 'MARKET EVENT STUDIES', '事件后表现', '比较指数在单日大跌或美国中期选举之后的表现，查看每次事件的实际结果。', ['指数大跌', '美国中期选举', '逐次收益']],
+      ['drop-study', 'MARKET EVENT STUDIES', '事件后表现', '比较指数大跌、美国中期选举和均线穿越之后的收益与回撤，查看每次事件的实际走势。', ['指数大跌', '美国中期选举', '均线穿越']],
       ['financial-events', 'HISTORICAL EVENTS', '历史事件', '沿时间线观察重大事件的市场结果，分析政策、信用与能源冲击的传导。', ['15个历史阶段', '实际收益叠图', '事件后回报']],
       ['global-finance', 'GLOBAL FINANCE', '金融传导', '从美元、通胀与利率出发，理解政策怎样影响黄金、债券、股票与生活。', ['传导关系', '政策现场', '计算实验']],
       ['stocks', 'COMPANY RESEARCH', '个股深入', companyCount + '，结合财务、业务证据与深入报告研究长期经营能力。', ['业务与盈利', '估值口径', '收益与股息']],
@@ -196,12 +196,13 @@
       annual: state.annual, setAnnual: value => { state.annual = value; savePrefs(); render(); } });
   }
   function eventStudyHead(...args) {
-    const links = [['drop-study','指数大跌'],['midterm-study','美国中期选举']].map(([route,label]) =>
+    const links = [['drop-study','指数大跌'],['midterm-study','美国中期选举'],['ma-study','均线穿越']].map(([route,label]) =>
       '<a href="#' + route + '"' + (state.route === route ? ' aria-current="page"' : '') + '>' + label + '</a>').join('');
     return head(...args) + '<nav class="event-study-nav" aria-label="事件类型">' + links + '</nav>';
   }
   function dropStudy() { return window.ChanghengDropStudy.view({ head:eventStudyHead, menu:eventStudyMenu, render, openModal, modalTitle, download }); }
   function midtermStudy() { return window.ChanghengMidtermStudy.view({ head:eventStudyHead, menu:eventStudyMenu, render, openModal, modalTitle, download }); }
+  function maStudy() { return window.ChanghengMAStudy.view({ head:eventStudyHead, menu:eventStudyMenu, render, openModal, modalTitle, download }); }
   function financialEvents() { return window.ChanghengFinancialEvents.view({ head, render }); }
   function returnComparison() { return window.ChanghengReturnComparison.view({ head, render, download, annual:state.annual, annualControl }); }
   function portfolio() {
@@ -1128,10 +1129,10 @@
     }
   }
   function render() {
-    const renderers = { overview: home, indices, 'market-history': marketHistory, 'holding-period': holdingPeriod, 'drop-study': dropStudy, 'midterm-study': midtermStudy, 'global-finance': globalFinance, 'financial-events': financialEvents, funds: fundView, stocks, reports: reportsView, strategy: strategies, 'buy-location': buyLocation, 'money-flow': moneyFlow, portfolio, 'return-comparison':returnComparison, quality };
+    const renderers = { overview: home, indices, 'market-history': marketHistory, 'holding-period': holdingPeriod, 'drop-study': dropStudy, 'midterm-study': midtermStudy, 'ma-study': maStudy, 'global-finance': globalFinance, 'financial-events': financialEvents, funds: fundView, stocks, reports: reportsView, strategy: strategies, 'buy-location': buyLocation, 'money-flow': moneyFlow, portfolio, 'return-comparison':returnComparison, quality };
     const focus = captureFocus(document.activeElement);
     document.title = '长衡 · ' + (state.route === 'overview' ? '全球投资研究工作台' : titles[state.route]);
-    $$('[data-route]').forEach(a => { const active = a.dataset.route === (state.route === 'reports' ? 'stocks' : state.route === 'midterm-study' ? 'drop-study' : state.route); a.classList.toggle('active', active); if (active) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+    $$('[data-route]').forEach(a => { const active = a.dataset.route === (state.route === 'reports' ? 'stocks' : ['midterm-study','ma-study'].includes(state.route) ? 'drop-study' : state.route); a.classList.toggle('active', active); if (active) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
     $('#main').className = 'page-' + state.route;
     lazyLists.clear();
     $('#main').innerHTML = renderers[state.route]();
@@ -1177,7 +1178,8 @@
       const menu = button.closest('.event-study-menu'), trigger = menu.querySelector('summary');
       menu.open = false;
       trigger.focus({preventScroll:true});
-      (state.route === 'drop-study' ? window.ChanghengDropStudy : window.ChanghengMidtermStudy).choose(trigger.id.slice(3), val);
+      const study = { 'drop-study':window.ChanghengDropStudy, 'midterm-study':window.ChanghengMidtermStudy, 'ma-study':window.ChanghengMAStudy }[state.route];
+      if (study) study.choose(trigger.id.slice(3), val);
       return;
     }
     if (act.startsWith('potential-')) { window.ChanghengPotential.handleAction(button); return; }
