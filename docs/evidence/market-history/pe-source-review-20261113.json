@@ -1,0 +1,1187 @@
+{
+  "schemaVersion": 1,
+  "reviewDate": "2026-11-13",
+  "scope": "Read-only source investigation for SPX/NDX PE. No replacement dataset or corrected daily values are established by this record.",
+  "legu": {
+    "pages": {
+      "spx": "https://legulegu.com/stockdata/market/sandp",
+      "ndx": "https://legulegu.com/stockdata/market/nasdaq100"
+    },
+    "publicScriptUrl": "https://legulegu.com/static/js/lg-charts-vip-exp-aggregation-chart.js?date=202611070010",
+    "requestRecipe": {
+      "method": "POST",
+      "spxEndpoint": "https://legulegu.com/api/get-aggregation-data/exp",
+      "ndxEndpoint": "https://legulegu.com/api/get-aggregation-data/preview",
+      "token": "MD5 of the request date YYYY-MM-DD, as implemented by the public script",
+      "csrf": "Anonymous page _csrf meta field; same anonymous cookie session",
+      "bodyKeys": [
+        "requestedDataKeys",
+        "types",
+        "requestedDataColors",
+        "splitLines",
+        "markLinesOfQuantile"
+      ],
+      "spxRequestedDataKeys": [
+        "sp500UsMarketIndex",
+        "sp500Pe"
+      ],
+      "ndxRequestedDataKeys": [
+        "nasdaq100UsMarketIndex",
+        "nasdaq100Pe"
+      ]
+    },
+    "fetchedData": {
+      "spx": {
+        "peCount": 383,
+        "first": [
+          "1995-01-31",
+          14.89
+        ],
+        "last": [
+          "2026-11-11",
+          25.91
+        ],
+        "apiRestrict": false,
+        "pageVIPRestrict": false
+      },
+      "ndx": {
+        "peCount": 439,
+        "first": [
+          "1990-05-31",
+          24.27
+        ],
+        "last": [
+          "2026-11-11",
+          29.83
+        ],
+        "apiRestrict": false,
+        "pageVIPRestrict": true,
+        "accessUsed": "Public PREVIEW route only",
+        "description": "月度PE-TTM走势图",
+        "lastNonNullPrice": [
+          "2026-08-18",
+          29490.96
+        ]
+      }
+    },
+    "multplComparison": {
+      "sourceUrl": "https://www.multpl.com/s-p-500-pe-ratio/table/by-month",
+      "comparison": "Compare the Legu row labelled calendar month-end with the Multpl row labelled day 1 of that same month; no date shifting or value modification is proposed.",
+      "comparableMonths": 382,
+      "equalPrintedPEMonths": 372,
+      "nonEstimatedComparableMonths": 378,
+      "nonEstimatedEqualPrintedPEMonths": 368,
+      "dateLabelExamples": [
+        {
+          "leguDate": "2020-12-31",
+          "leguPE": 39.26,
+          "multplDate": "2020-12-01",
+          "multplPE": 39.26,
+          "multplEstimated": false
+        },
+        {
+          "leguDate": "2021-03-31",
+          "leguPE": 30.5,
+          "multplDate": "2021-03-01",
+          "multplPE": 30.5,
+          "multplEstimated": false
+        },
+        {
+          "leguDate": "2026-07-31",
+          "leguPE": 25.33,
+          "multplDate": "2026-07-01",
+          "multplPE": 25.33,
+          "multplEstimated": true
+        },
+        {
+          "leguDate": "2026-10-31",
+          "leguPE": 26.16,
+          "multplDate": "2026-10-01",
+          "multplPE": 26.16,
+          "multplEstimated": true
+        }
+      ],
+      "estimatedCounterpartRows": [
+        {
+          "leguDate": "2026-07-31",
+          "leguPE": 25.33,
+          "multplDate": "2026-07-01",
+          "multplPE": 25.33,
+          "multplEstimated": true
+        },
+        {
+          "leguDate": "2026-08-31",
+          "leguPE": 26.11,
+          "multplDate": "2026-08-01",
+          "multplPE": 26.11,
+          "multplEstimated": true
+        },
+        {
+          "leguDate": "2026-09-30",
+          "leguPE": 25.96,
+          "multplDate": "2026-09-01",
+          "multplPE": 25.96,
+          "multplEstimated": true
+        },
+        {
+          "leguDate": "2026-10-31",
+          "leguPE": 26.16,
+          "multplDate": "2026-10-01",
+          "multplPE": 26.16,
+          "multplEstimated": true
+        }
+      ],
+      "differentPrintedValues": [
+        {
+          "leguDate": "2023-10-31",
+          "leguPE": 23.12,
+          "multplDate": "2023-10-01",
+          "multplPE": 22.78,
+          "multplEstimated": false
+        },
+        {
+          "leguDate": "2024-04-30",
+          "leguPE": 26.5,
+          "multplDate": "2024-04-01",
+          "multplPE": 26.41,
+          "multplEstimated": false
+        },
+        {
+          "leguDate": "2024-07-31",
+          "leguPE": 28.06,
+          "multplDate": "2024-07-01",
+          "multplPE": 28.08,
+          "multplEstimated": false
+        },
+        {
+          "leguDate": "2024-08-31",
+          "leguPE": 27.55,
+          "multplDate": "2024-08-01",
+          "multplPE": 27.67,
+          "multplEstimated": false
+        },
+        {
+          "leguDate": "2024-09-30",
+          "leguPE": 28.07,
+          "multplDate": "2024-09-01",
+          "multplPE": 28.09,
+          "multplEstimated": false
+        },
+        {
+          "leguDate": "2024-10-31",
+          "leguPE": 28.92,
+          "multplDate": "2024-10-01",
+          "multplPE": 28.45,
+          "multplEstimated": false
+        },
+        {
+          "leguDate": "2025-01-31",
+          "leguPE": 28.45,
+          "multplDate": "2025-01-01",
+          "multplPE": 28.16,
+          "multplEstimated": false
+        },
+        {
+          "leguDate": "2025-10-31",
+          "leguPE": 28.78,
+          "multplDate": "2025-10-01",
+          "multplPE": 28.42,
+          "multplEstimated": false
+        },
+        {
+          "leguDate": "2025-11-30",
+          "leguPE": 28.8,
+          "multplDate": "2025-11-01",
+          "multplPE": 28.22,
+          "multplEstimated": false
+        },
+        {
+          "leguDate": "2025-12-31",
+          "leguPE": 29.28,
+          "multplDate": "2025-12-01",
+          "multplPE": 28.48,
+          "multplEstimated": false
+        }
+      ],
+      "interpretationLimit": "Matching values and differing date labels are observed. They do not by themselves establish the upstream provenance or the correct economic observation date."
+    },
+    "remainingEvidence": [
+      "SPX publication/observation-date and monthly-price conventions; the displayed Legu page does not establish that the values are exact month-end observations.",
+      "Independent SPX source lineage and handling of the recent values marked estimated by Multpl.",
+      "NDX earnings aggregation, loss-making constituent handling, source lineage, and date convention."
+    ]
+  },
+  "proshares": {
+    "currentPages": [
+      "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "https://www.proshares.com/our-etfs/leveraged-and-inverse/upro"
+    ],
+    "currentPrintedIndex": {
+      "name": "S&P 500 Index",
+      "date": "2026-09-30",
+      "pe": 24.77,
+      "pb": 5.59,
+      "dividendYieldPct": 1.07,
+      "section": "Index; not the ETF NAV or leveraged fund valuation"
+    },
+    "verifiedHistoricalEvidence": {
+      "oldIndexPages": [
+        {
+          "date": "2009-09-30",
+          "pe": 19.92,
+          "archiveUrl": "https://web.archive.org/web/20091015172407id_/http://proshares.com:80/funds/sso_index.html",
+          "cdxSha1Base32": "FN4Z5TPRB4PPKVIK5VVEU5VGFOC5WZLL",
+          "rawFile": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20091015172407.html"
+        },
+        {
+          "date": "2011-09-30",
+          "pe": 12.38,
+          "archiveUrl": "https://web.archive.org/web/20111016045359id_/http://proshares.com/funds/sso_index.html",
+          "cdxSha1Base32": "CWR6ROTKQMUQJFGCPH6FF5RA5YOL6OOP",
+          "rawFile": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20111016045359.html"
+        },
+        {
+          "date": "2013-09-30",
+          "pe": 16.12,
+          "archiveUrl": "https://web.archive.org/web/20131023083140id_/http://www.proshares.com:80/funds/sso_index.html",
+          "cdxSha1Base32": "263RIDSKRZJYZN3WW4PDABX73UT42OTC",
+          "rawFile": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20131023083140.html"
+        },
+        {
+          "date": "2015-06-30",
+          "pe": 17.86,
+          "archiveUrl": "https://web.archive.org/web/20150814010200id_/http://www.proshares.com:80/funds/sso_index.html",
+          "cdxSha1Base32": "KTHHDXTYK4VTKRN4H7JLG4YCVYFEAMGH",
+          "rawFile": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20150814010200.html"
+        },
+        {
+          "date": "2016-09-30",
+          "pe": 20.42,
+          "archiveUrl": "https://web.archive.org/web/20161021081340id_/http://www.proshares.com:80/funds/sso_index.html",
+          "cdxSha1Base32": "AOUGQGQIKEHGEB57BEF37MMAWPFUWJFL",
+          "rawFile": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20161021081340.html"
+        },
+        {
+          "date": "2019-06-28",
+          "pe": 19.31,
+          "archiveUrl": "https://web.archive.org/web/20190923072516id_/https://www.proshares.com/funds/sso_index.html",
+          "cdxSha1Base32": "CJPD5XD423KJCDFJZ3VNUUHDFBE4XXB5",
+          "rawFile": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20190923072516.html"
+        }
+      ],
+      "newIndexPages": {
+        "capturesDownloadedAndCdxVerified": 33,
+        "capturesWithParsedDateAndPE": 21,
+        "uniqueParsedDates": 18,
+        "firstParsedObservation": "2021-11-30",
+        "lastParsedObservation": "2026-06-30",
+        "rawResultManifest": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-new-results.json"
+      },
+      "totalDistinctSPXDatesActuallyParsedIncludingLive": 25,
+      "notClaimed": "This count is not continuous coverage or proof of identical earnings methodology."
+    },
+    "observedPublicationIssues": [
+      {
+        "captures": [
+          "20230528221756",
+          "20230616041835"
+        ],
+        "publishedDates": [
+          "2023-04-30",
+          "2023-05-31"
+        ],
+        "publishedPE": [
+          21.08,
+          21.08
+        ],
+        "fact": "Different month labels carry the same PE; the cause has not been established."
+      },
+      {
+        "captures": [
+          "20250805193052",
+          "20250916165812",
+          "20251009044946"
+        ],
+        "publishedDates": [
+          "2025-06-30",
+          "2025-08-31",
+          "2025-06-30"
+        ],
+        "publishedPE": [
+          26.761,
+          26.76,
+          26.76
+        ],
+        "fact": "The later captured page reverts the printed index date to June; displayed precision also changes."
+      }
+    ],
+    "existingNDXArchive": {
+      "records": 132,
+      "distinctObservationDates": 63,
+      "distinctCalendarQuarters": 57,
+      "recordsWithQualityNote": 2,
+      "qualityNoteDates": [
+        "2018-12-31"
+      ],
+      "latestPerDateWithQualityNote": 0,
+      "scope": "Counts reflect the saved repository archive, not an independent re-audit of every NDX source in this review."
+    },
+    "remainingEvidence": [
+      "Stable historical earnings aggregation and loss-making constituent treatment across issuer editions.",
+      "An explicit TTM definition if a replacement is to be labelled TTM.",
+      "Review of repeated values, changed observation dates, and missing periods before publication.",
+      "No ProShares evidence obtained here resolves Jiucai isolated daily values."
+    ]
+  },
+  "spglobal": {
+    "originalUrl": "https://www.spglobal.com/spdji/en/documents/additional-material/sp-500-eps-est.xlsx",
+    "archiveUrl": "https://web.archive.org/web/20260527232437id_/https://www.spglobal.com/spdji/en/documents/additional-material/sp-500-eps-est.xlsx",
+    "archiveCapturedAt": "2026-05-27T23:24:37Z",
+    "cdxSha1Base32": "ITHLCNONNIBZHY4JTH7AFNUA2MLVGENT",
+    "verifiedCdxSha1": true,
+    "hashScope": "CDX digest is for the compressed response body. The workbook bytes are its gzip-decompressed contents.",
+    "compressedResponseSha1Hex": "44ceb135cd6a0393e38999fe02b680d3175311b3",
+    "compressedResponseSha256": "a8712d4f76ee92d9b62a6b4065ca8e34719e4492889c2501de7c67e4c145dfe6",
+    "workbookSha256": "2fed7a13e117d077e061c4b5a1f8ddd0a5f3b768e737d9688a857888a5e3dfd6",
+    "workbookPublicationDate": "2026-01-30",
+    "publicationDateCell": "ESTIMATES&PEs!A16",
+    "publicationStopped": {
+      "cell": "ESTIMATES&PEs!A4",
+      "text": "My public files have been discontinued",
+      "relatedRetirementDateCell": "ESTIMATES&PEs!A1"
+    },
+    "quarterlySource": {
+      "sheet": "QUARTERLY DATA",
+      "columns": {
+        "A": "quarter end / publisher date",
+        "B": "operating earnings per share for the quarter",
+        "C": "as-reported earnings per share for the quarter",
+        "H": "quarter-end index price"
+      },
+      "completeEPSQuarters": 151,
+      "first": "1988-03-31",
+      "last": "2025-09-30",
+      "computableFourQuarterPEObservations": 148,
+      "calculation": "TTM EPS = sum of the four consecutive quarterly EPS values ending in the row; TTM PE = row H price / TTM EPS. Preserve separate reported and operating results.",
+      "nextQuarter": "2025-12-31",
+      "nextQuarterEPS": "B7 and C7 empty; H7 contains the index price."
+    },
+    "selectedQuarterlyData": [
+      {
+        "date": "2020-12-31",
+        "row": 27,
+        "operatingEPS": 38.18,
+        "reportedEPS": 31.44,
+        "price": 3756.0714689572,
+        "reportedTTMEPS": 94.13,
+        "operatingTTMEPS": 122.37,
+        "reportedTTMPE": 39.903022086021465,
+        "operatingTTMPE": 30.694381539243278
+      },
+      {
+        "date": "2021-03-31",
+        "row": 26,
+        "operatingEPS": 47.41,
+        "reportedEPS": 45.95,
+        "price": 3972.89220843025,
+        "reportedTTMEPS": 128.2,
+        "operatingTTMEPS": 150.28,
+        "reportedTTMPE": 30.98979881770866,
+        "operatingTTMPE": 26.43659973669317
+      },
+      {
+        "date": "2021-06-30",
+        "row": 25,
+        "operatingEPS": 52.05,
+        "reportedEPS": 48.39,
+        "price": 4297.49663188187,
+        "reportedTTMEPS": 158.76,
+        "operatingTTMEPS": 175.54,
+        "reportedTTMPE": 27.069139782576656,
+        "operatingTTMPE": 24.481580448227582
+      },
+      {
+        "date": "2025-09-30",
+        "row": 8,
+        "operatingEPS": 72.03,
+        "reportedEPS": 63.52,
+        "price": 6688.45903689016,
+        "reportedTTMEPS": 234.06,
+        "operatingTTMEPS": 254.76,
+        "reportedTTMPE": 28.575831141118346,
+        "operatingTTMPE": 26.253960735163133
+      }
+    ],
+    "dailyComparison": [
+      {
+        "date": "2021-03-30",
+        "projectClose": 3958.550049,
+        "jiucaiPE": 40.0497,
+        "reportedEPSQuarterUsed": "2020-12-31",
+        "officialReportedTTMEPS": 94.13,
+        "priceDividedByReportedTTMEPS": 42.05407467332413,
+        "differenceJiucaiMinusComputed": -2.004374673324129,
+        "priceDividedByOperatingTTMEPS": 32.349023853885754,
+        "priceDividedByJiucaiPE": 98.84094135536596
+      },
+      {
+        "date": "2021-03-31",
+        "projectClose": 3972.889893,
+        "jiucaiPE": 31.4228,
+        "reportedEPSQuarterUsed": "2021-03-31",
+        "officialReportedTTMEPS": 128.2,
+        "priceDividedByReportedTTMEPS": 30.989780756630267,
+        "differenceJiucaiMinusComputed": 0.4330192433697313,
+        "priceDividedByOperatingTTMEPS": 26.436584329252064,
+        "priceDividedByJiucaiPE": 126.43335071985948
+      },
+      {
+        "date": "2021-06-29",
+        "projectClose": 4291.799805,
+        "jiucaiPE": 31.9781,
+        "reportedEPSQuarterUsed": "2021-03-31",
+        "officialReportedTTMEPS": 128.2,
+        "priceDividedByReportedTTMEPS": 33.47737757410297,
+        "differenceJiucaiMinusComputed": -1.4992775741029654,
+        "priceDividedByOperatingTTMEPS": 28.558689146925737,
+        "priceDividedByJiucaiPE": 134.21059428171154
+      },
+      {
+        "date": "2021-06-30",
+        "projectClose": 4297.5,
+        "jiucaiPE": 26.9931,
+        "reportedEPSQuarterUsed": "2021-06-30",
+        "officialReportedTTMEPS": 158.76,
+        "priceDividedByReportedTTMEPS": 27.06916099773243,
+        "differenceJiucaiMinusComputed": -0.07606099773243002,
+        "priceDividedByOperatingTTMEPS": 24.481599635410735,
+        "priceDividedByJiucaiPE": 159.20735299020862
+      }
+    ],
+    "comparisonConclusion": "The computed quarter-boundary values do not exactly reproduce the Jiucai daily PE values. Similar directions do not establish that Jiucai directly reused this workbook or prove the cause of its daily jumps.",
+    "remainingEvidence": [
+      "A continuing post-2025Q3 source with the same published definitions.",
+      "Daily point-in-time earnings/constituent evidence for the Jiucai series; the retrospective quarterly workbook cannot determine each historic daily PE or financial release time."
+    ]
+  },
+  "sourceFiles": {
+    "fund-pe-legu-nasdaq100.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-legu-nasdaq100.html",
+      "sha256": "01c2b803bdb1ba9477daa028bf0e79afafc1cdcfd98590f9f84bf21572aee2da",
+      "bytes": 67172
+    },
+    "fund-pe-legu-nasdaq100.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-legu-nasdaq100.json",
+      "sha256": "b601a02e28308ecb6bfb6296c117612ac41c5d8077409c16fa7cd5c20133911a",
+      "bytes": 242779
+    },
+    "fund-pe-legu-sandp.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-legu-sandp.html",
+      "sha256": "0a5acd8168f6626e27c16b3f57dfcdffc92f910b5b402cc9e5c2c3e1d7ccd4c9",
+      "bytes": 68610
+    },
+    "fund-pe-legu-sandp.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-legu-sandp.json",
+      "sha256": "024dd342ec7859a230ba221f5795691c581485050d1602b95976b92ef690a6c5",
+      "bytes": 212877
+    },
+    "fund-pe-multpl.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-multpl.html",
+      "sha256": "e66db10d9ea12fc098ef13172e5e71bf3143879acda9d20bd9fcc6a1fba453df",
+      "bytes": 149679
+    },
+    "fund-pe-spglobal-20260527232437.raw.gz": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-spglobal-20260527232437.raw.gz",
+      "sha256": "a8712d4f76ee92d9b62a6b4065ca8e34719e4492889c2501de7c67e4c145dfe6",
+      "bytes": 381983
+    },
+    "fund-pe-spglobal-20260527232437.xlsx": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-spglobal-20260527232437.xlsx",
+      "sha256": "2fed7a13e117d077e061c4b5a1f8ddd0a5f3b768e737d9688a857888a5e3dfd6",
+      "bytes": 393696
+    },
+    "fund-pe-spglobal-cdx.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-spglobal-cdx.json",
+      "sha256": "af468bd917f2367bcf7d6c716c44912ffa8ec40df636de8ba3986dff8a0dd028",
+      "bytes": 1610
+    },
+    "fund-pe-spglobal-quarterly.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-spglobal-quarterly.json",
+      "sha256": "4257b59d2b71125f681e9b2a956f6aa804a5ac41943720f05f40116523591b40",
+      "bytes": 32639
+    },
+    "fund-pe-sso-20091015172407.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20091015172407.html",
+      "sha256": "fd7e93978d6fff6802efe2222ef3af3875f0b767cc954ead97063eadcea42924",
+      "bytes": 21148
+    },
+    "fund-pe-sso-20111016045359.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20111016045359.html",
+      "sha256": "a8eeca2cb8c1434edcac28cbee9511939ddd3aa76c5ac8f57e6aa49ba912e9f9",
+      "bytes": 15628
+    },
+    "fund-pe-sso-20131023083140.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20131023083140.html",
+      "sha256": "a7cdf887d81f9ae70731c8ec1b9a1263796e0f9a876a30c599f259b05ee0531b",
+      "bytes": 37255
+    },
+    "fund-pe-sso-20150814010200.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20150814010200.html",
+      "sha256": "f3b72dfea1ffbe5ecdd149efdcd6396c93f7734d4c78ed19f01fe8e87adbbda5",
+      "bytes": 43943
+    },
+    "fund-pe-sso-20161021081340.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20161021081340.html",
+      "sha256": "931f365badd67bb1595bc3a2f06f95e01afa49994c7af785822ba17a6719104b",
+      "bytes": 44354
+    },
+    "fund-pe-sso-20190923072516.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20190923072516.html",
+      "sha256": "8e88db0c0d94f949c2d1bcc68699f42eaefc6006a36212f12ce006153a524d18",
+      "bytes": 46868
+    },
+    "fund-pe-sso-20211225015254.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20211225015254.html",
+      "sha256": "26ea871ffd6874f8261b6b1fb758e106bc24bf18467c620305070b3d2746823e",
+      "bytes": 442525
+    },
+    "fund-pe-sso-20220117094848.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20220117094848.html",
+      "sha256": "a988fb47f972e88644fc0c8719e17bcbece2b06ac11114405bbfa48b373090ec",
+      "bytes": 442368
+    },
+    "fund-pe-sso-20220704115115.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20220704115115.html",
+      "sha256": "a2f3511cc0949bb4e858050853b65ab336ea43704a3f0035899153f4f2a6020d",
+      "bytes": 447818
+    },
+    "fund-pe-sso-20220923094554.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20220923094554.html",
+      "sha256": "8563c384c73cacaff5bfb7ddf2dc818f358cf716a0c104923d9fd27310671b3e",
+      "bytes": 73741
+    },
+    "fund-pe-sso-20221005045819.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20221005045819.html",
+      "sha256": "13efdb1dc5bb871de375258ee679dfab539153f3565675c650be32f55af3a68c",
+      "bytes": 481422
+    },
+    "fund-pe-sso-20221123015408.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20221123015408.html",
+      "sha256": "2d7b20cc39bdd8dbc3180b56c4f87388226b0c4933ed696a1a06eb5e0e11c040",
+      "bytes": 482330
+    },
+    "fund-pe-sso-20230131161828.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20230131161828.html",
+      "sha256": "adf6583a95b8d3fbfc6e69ec9569578079d67054a46eaf9bb26cf56805095530",
+      "bytes": 484245
+    },
+    "fund-pe-sso-20230321161843.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20230321161843.html",
+      "sha256": "c498f5602b9e0b523a17ae236eecc8bc9b00bf5bdbe9a58cd6f8a2ca680d0f51",
+      "bytes": 73818
+    },
+    "fund-pe-sso-20230528221756.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20230528221756.html",
+      "sha256": "cd2ffa07f420d0af86a831594c08ed1715d81050613005c5e602b42c86d712ce",
+      "bytes": 478752
+    },
+    "fund-pe-sso-20230616041835.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20230616041835.html",
+      "sha256": "97eff942c02af68f04227905617dfd7448c591f8ef7b16afbcfbdf3c78e0bb09",
+      "bytes": 479653
+    },
+    "fund-pe-sso-20231201060830.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20231201060830.html",
+      "sha256": "146cc1ce97cd3f461c6740228b95bf6f23f3a96e7f33f81178f281b5180cf795",
+      "bytes": 482414
+    },
+    "fund-pe-sso-20240126160444.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20240126160444.html",
+      "sha256": "6211be1cf43bde2e4b8fb14869f864141e16b5a8503adc1a797c2188a4539bb6",
+      "bytes": 485108
+    },
+    "fund-pe-sso-20240224060900.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20240224060900.html",
+      "sha256": "e1fa2c3c49c152f78e7d6fbde20d6cc7e1951b58e77b1130f763f9d3459a7368",
+      "bytes": 73848
+    },
+    "fund-pe-sso-20240519201918.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20240519201918.html",
+      "sha256": "16f4f5ad014b4ccda844871d78b0df84d89397df27bddcd845751c174ccc13ad",
+      "bytes": 703092
+    },
+    "fund-pe-sso-20240604234854.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20240604234854.html",
+      "sha256": "e00d0eeb103423450dfc1b54caace534d3977e5192d96cbf9d080ce0989b74d7",
+      "bytes": 49402
+    },
+    "fund-pe-sso-20240907233655.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20240907233655.html",
+      "sha256": "0ffda160fbd271694c21df4ba7af6b0adffcac405df43de74e9e98b9d463a06c",
+      "bytes": 491286
+    },
+    "fund-pe-sso-20250112234755.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20250112234755.html",
+      "sha256": "75ea6d8bcb78206f992556dc25176346a9bbaab371f80c5901f56ee27a4d9d9a",
+      "bytes": 513856
+    },
+    "fund-pe-sso-20250327175327.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20250327175327.html",
+      "sha256": "7d799d051627de82dd5438d0f103f85ff6d81c39edd38b68065ec6884e9ce73c",
+      "bytes": 49177
+    },
+    "fund-pe-sso-20250521013806.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20250521013806.html",
+      "sha256": "f8a6826067ad41cc81b9c7dc47dd7b7359ce1af96a01dea26173260a172da0f3",
+      "bytes": 549742
+    },
+    "fund-pe-sso-20250607194646.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20250607194646.html",
+      "sha256": "fd00e35fa48cf8c49b05b90e38a3fb7ceedffc086acfaab5c0aa7fe33a4d48ef",
+      "bytes": 49834
+    },
+    "fund-pe-sso-20250726115632.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20250726115632.html",
+      "sha256": "60137695bee4dfdfaea173ebd3d33ae50fd948298a1c350330db5482b3301cb6",
+      "bytes": 49496
+    },
+    "fund-pe-sso-20250805193052.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20250805193052.html",
+      "sha256": "183817bbe5cb715ca650b2464af0f9fcf4393927e4cc54aa3b7051fe3b3786fd",
+      "bytes": 522828
+    },
+    "fund-pe-sso-20250916165812.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20250916165812.html",
+      "sha256": "93f388bacc2eb7cff3ed9adabef5d2afe5b2ab70861930959b519f32bb98b22d",
+      "bytes": 522188
+    },
+    "fund-pe-sso-20251009044946.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20251009044946.html",
+      "sha256": "172145940b5e50f8760f499bf39f8a0d9d355cd921b03e3857ee4d496a31d65e",
+      "bytes": 519428
+    },
+    "fund-pe-sso-20251112234802.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20251112234802.html",
+      "sha256": "ce2674eb13d6c55b44634f6a0a08b71940967df4b3341642c468ede613260ae6",
+      "bytes": 49800
+    },
+    "fund-pe-sso-20251230142200.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20251230142200.html",
+      "sha256": "cba295690a7ab7e8f3d9f163863256c19e3333031b7d57a85c706ff4604124e6",
+      "bytes": 50511
+    },
+    "fund-pe-sso-20260117002706.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20260117002706.html",
+      "sha256": "484b43eca52e67a8e9b21d548846625d36589ac007361a4f98c98775c94031c6",
+      "bytes": 527938
+    },
+    "fund-pe-sso-20260312030117.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20260312030117.html",
+      "sha256": "0b6f46d17d959cb0e67fded0354547b4870e5521c1de52b143eb14b7b91438ee",
+      "bytes": 50208
+    },
+    "fund-pe-sso-20260419075501.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20260419075501.html",
+      "sha256": "03ef670b49f2e4b12b4dbf703b72798582705e5dd83e14fa8f898488941f04bc",
+      "bytes": 530926
+    },
+    "fund-pe-sso-20260714224822.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20260714224822.html",
+      "sha256": "3bd51c29ad2d59f31328fa1fd7faa45f1eff3513d2462cd9967a4bf7eb66d29b",
+      "bytes": 532999
+    },
+    "fund-pe-sso-20260813063511.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20260813063511.html",
+      "sha256": "b6fa96814ad96f1f79c401eff8436cdc3fe295fc87f6f2754c5f96364bce1cbb",
+      "bytes": 50354
+    },
+    "fund-pe-sso-20260907193342.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20260907193342.html",
+      "sha256": "7da4126b1e5429c6db803c6df0038533cafd6c69dcb3ecb2c3c5d2a1c2716aed",
+      "bytes": 526685
+    },
+    "fund-pe-sso-20261014145004.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-20261014145004.html",
+      "sha256": "4303ba9efcd4143059cf630f4b6a1e58f9c108368987c66687aa5302cf2e4781",
+      "bytes": 50732
+    },
+    "fund-pe-sso-legacy-pdf-cdx.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-legacy-pdf-cdx.json",
+      "sha256": "004bba0be869e31fd9c86e1314eb898b9dfe46a81f3750240d5c34c4c7b643b9",
+      "bytes": 1452
+    },
+    "fund-pe-sso-new-html-cdx.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-new-html-cdx.json",
+      "sha256": "7dec40492a6398d70f0d13211bc08c16b6aa3cd12dc6843a41270d134f7a6f5a",
+      "bytes": 3997
+    },
+    "fund-pe-sso-new-pdf-cdx.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-new-pdf-cdx.json",
+      "sha256": "8e2e9202dac956f478cfb70f86861e185d51873fb990bbec78203a66ee3fabc5",
+      "bytes": 2212
+    },
+    "fund-pe-sso-cdx.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-cdx.json",
+      "sha256": "ed12a544ea9bb789db5a9c85f0f9e91ba1c5162373e0ed3919007cc445223ac9",
+      "bytes": 5278
+    },
+    "fund-pe-sso-new-results.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-sso-new-results.json",
+      "sha256": "9756a56636e200922a2f581cb62813e9346ee301107e064511dd2b571e2a1b8e",
+      "bytes": 9347
+    },
+    "fund-pe-proshares-sso.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-proshares-sso.html",
+      "sha256": "763d485e4b92f5ff6dfa04a6ce863b761c424567bca1d723848a9cae87e475d6",
+      "bytes": 530800
+    },
+    "fund-pe-proshares-tqqq.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-proshares-tqqq.html",
+      "sha256": "b1572c7dc59beea4961e8fb946e48e0b0154bdab9b1ef1a877b0ad989d173f4a",
+      "bytes": 337261
+    },
+    "fund-pe-proshares-upro.html": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-proshares-upro.html",
+      "sha256": "e13759aa5b523e87cda49a9f81595f7faf4b1babaf334199714a95a39292b606",
+      "bytes": 531094
+    },
+    "fund-pe-upro-cdx.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-upro-cdx.json",
+      "sha256": "70e0a67f83d01f720ecce5ac1a2f0b5d241c1c1010b45d7511ac09a9c559fa24",
+      "bytes": 5551
+    },
+    "fund-pe-spxu-cdx.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-spxu-cdx.json",
+      "sha256": "af6e401f5fb786effdd686a7fc1b1a73d1e865c541173459fb3193d3f5fc7027",
+      "bytes": 5439
+    },
+    "fund-pe-bridge-ProSharesFactSheetSPXU_pdf.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-bridge-ProSharesFactSheetSPXU_pdf.json",
+      "sha256": "45b9f0621fbaed2b77df87c6596b25ec1608437484bf6ea3ff9e2812afbf5214",
+      "bytes": 166
+    },
+    "fund-pe-bridge-ProSharesFactSheetUPRO_pdf.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-bridge-ProSharesFactSheetUPRO_pdf.json",
+      "sha256": "123d7a6e74865fd347afdf61c03bc55f712a0865a641ff7e3c03761d2c1e4f16",
+      "bytes": 690
+    },
+    "fund-pe-bridge-sso_html.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/fund-pe-bridge-sso_html.json",
+      "sha256": "49c07c2f0b126c3517753bdbefa24e496767dfc77c8064dea7175a9ac263b55d",
+      "bytes": 3246
+    },
+    "legu-aggregation-chart-202611070010.js": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/legu-aggregation-chart-202611070010.js",
+      "sha256": "d458584ab0b42f1eeb549189eb0d409e3d6228c204de145544574e4ef2f8e6fa",
+      "bytes": 648282
+    },
+    "existing-proshares-benchmark-valuations.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/existing-proshares-benchmark-valuations.json",
+      "sha256": "78e2bdd5911be6ce2e0427835b21844989cd9596ce3387aa2a529c23ebdb84fd",
+      "bytes": 161642
+    },
+    "published-market-history.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/published-market-history.json",
+      "sha256": "6d3018dec86f5f59aa696682c6117d1dd2da1153c57ee034d459a921be544700",
+      "bytes": 2403762
+    },
+    "pe-research-SPX.GI-pe.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/pe-research-SPX.GI-pe.json",
+      "sha256": "c8418a9873d832e42f3a36bfad4ca69418af44893af5b0ea73ad488b39b70d14",
+      "bytes": 577018
+    },
+    "pe-research-SPX.GI-pb.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/pe-research-SPX.GI-pb.json",
+      "sha256": "43d2fad038b1aac255d8f207dc1f7c535790380a50bdba144c778e3250c96913",
+      "bytes": 571224
+    },
+    "pe-research-SPX.GI-close.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/pe-research-SPX.GI-close.json",
+      "sha256": "ebee24769b60c278dfa764fd120e2b48afb234e5c415069ad348ad74b328e935",
+      "bytes": 574024
+    },
+    "pe-research-SPX.GI.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/pe-research-SPX.GI.json",
+      "sha256": "c59b99c7e694ef8afcaf0859a0d9e0271c35056f8b68085b79b0446d9c685996",
+      "bytes": 103
+    },
+    "pe-research-NDX.GI-pe.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/pe-research-NDX.GI-pe.json",
+      "sha256": "2fbd1ab11196d02e394d22d2448eea2c6b893b49846f352a09eb5a0688fe486d",
+      "bytes": 580889
+    },
+    "pe-research-NDX.GI-pb.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/pe-research-NDX.GI-pb.json",
+      "sha256": "79c436839abd75ef30963987186925143db2d9a4d3d220f9853141933745907e",
+      "bytes": 572301
+    },
+    "pe-research-NDX.GI-close.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/pe-research-NDX.GI-close.json",
+      "sha256": "0e26d3d5dd30da3576e96dc50a7e7fdf680c811e2ba82c84d44aa0c4d3e6b10f",
+      "bytes": 597654
+    },
+    "pe-research-NDX.GI.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/pe-research-NDX.GI.json",
+      "sha256": "0e80ab617681c64f5f3d55e6c86fe737726a72369a45f039a3bb32f8d9f53426",
+      "bytes": 103
+    },
+    "danjuan-ndx-3y.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/danjuan-ndx-3y.json",
+      "sha256": "4c31e9478be67490bc4af46ae9d40b0fcca096066820f4a1f51f4476a816bb58",
+      "bytes": 5646
+    },
+    "danjuan-ndx-5y.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/danjuan-ndx-5y.json",
+      "sha256": "965aa92bad148a7d4886818c9a3917207223dc613cdd9060de4bfe46124e0bc8",
+      "bytes": 9070
+    },
+    "danjuan-ndx-all.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/danjuan-ndx-all.json",
+      "sha256": "2c82d1aeffb756f58d3182cb5ad58d4505ba9d2d15e981acb01195cc1a9a9a15",
+      "bytes": 17741
+    },
+    "jiucai-new.js": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/jiucai-new.js",
+      "sha256": "f02534a739a0ed0d553c19d2b30a602ab599fc2b64dfca641f570470959a1c60",
+      "bytes": 2523104
+    },
+    "danjuan-detail.js": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/danjuan-detail.js",
+      "sha256": "27791ce17ae490f030a83419552b59600068aa11afbb1c08077780c0619775b0",
+      "bytes": 42544
+    },
+    "lxr-lxr-shared-fe.js": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/lxr-lxr-shared-fe.js",
+      "sha256": "844dd1c02515d3d323f55d3c30618226b9a9e770130e4b726e4cf588779b57f5",
+      "bytes": 591609
+    },
+    "lxr-bundle.analytics.index.js": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/lxr-bundle.analytics.index.js",
+      "sha256": "69484eccffba229dcf30c44ee1919c20ebaf7ffa5274540e788b8a8d205989f4",
+      "bytes": 317843
+    },
+    "lxr-lxr-shared.js": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/lxr-lxr-shared.js",
+      "sha256": "8d410fe63a39d3740dc5b1048694aed21c8ba8fd45d0cc26b9e2c7c3f4b1a8fb",
+      "bytes": 2508814
+    },
+    "pe-data-audit-20261113.json": {
+      "path": ".tmp-snap/market-history/pe-review-20261113/pe-data-audit-20261113.json",
+      "sha256": "d9d4254f780be867551f562f1fbf1244497edecdd0e41d700c42ff8b9b039de9",
+      "bytes": 5520
+    }
+  },
+  "additionalSourceAudit": {
+    "sources": [
+      {
+        "url": "https://ai2.jiucaishuo.com/api/index-valuation/history?code=SPX.GI&metric=pe",
+        "path": ".tmp-snap/market-history/pe-review-20261113/pe-research-SPX.GI-pe.json",
+        "sha256": "c8418a9873d832e42f3a36bfad4ca69418af44893af5b0ea73ad488b39b70d14",
+        "bytes": 577018,
+        "savedAt": "2026-11-13T13:45:28.386147+00:00"
+      },
+      {
+        "url": "https://ai2.jiucaishuo.com/api/index-valuation/history?code=SPX.GI&metric=pb",
+        "path": ".tmp-snap/market-history/pe-review-20261113/pe-research-SPX.GI-pb.json",
+        "sha256": "43d2fad038b1aac255d8f207dc1f7c535790380a50bdba144c778e3250c96913",
+        "bytes": 571224,
+        "savedAt": "2026-11-13T13:45:28.434520+00:00"
+      },
+      {
+        "url": "https://ai2.jiucaishuo.com/api/index-valuation/history?code=SPX.GI&metric=close",
+        "path": ".tmp-snap/market-history/pe-review-20261113/pe-research-SPX.GI-close.json",
+        "sha256": "ebee24769b60c278dfa764fd120e2b48afb234e5c415069ad348ad74b328e935",
+        "bytes": 574024,
+        "savedAt": "2026-11-13T13:45:28.350453+00:00"
+      },
+      {
+        "url": "https://ai2.jiucaishuo.com/api/index-valuation/forecast?code=SPX.GI",
+        "path": ".tmp-snap/market-history/pe-review-20261113/pe-research-SPX.GI.json",
+        "sha256": "c59b99c7e694ef8afcaf0859a0d9e0271c35056f8b68085b79b0446d9c685996",
+        "bytes": 103,
+        "savedAt": "2026-11-13T13:45:28.209867+00:00"
+      },
+      {
+        "url": "https://ai2.jiucaishuo.com/api/index-valuation/history?code=NDX.GI&metric=pe",
+        "path": ".tmp-snap/market-history/pe-review-20261113/pe-research-NDX.GI-pe.json",
+        "sha256": "2fbd1ab11196d02e394d22d2448eea2c6b893b49846f352a09eb5a0688fe486d",
+        "bytes": 580889,
+        "savedAt": "2026-11-13T13:45:28.362058+00:00"
+      },
+      {
+        "url": "https://ai2.jiucaishuo.com/api/index-valuation/history?code=NDX.GI&metric=pb",
+        "path": ".tmp-snap/market-history/pe-review-20261113/pe-research-NDX.GI-pb.json",
+        "sha256": "79c436839abd75ef30963987186925143db2d9a4d3d220f9853141933745907e",
+        "bytes": 572301,
+        "savedAt": "2026-11-13T13:45:28.333699+00:00"
+      },
+      {
+        "url": "https://ai2.jiucaishuo.com/api/index-valuation/history?code=NDX.GI&metric=close",
+        "path": ".tmp-snap/market-history/pe-review-20261113/pe-research-NDX.GI-close.json",
+        "sha256": "0e26d3d5dd30da3576e96dc50a7e7fdf680c811e2ba82c84d44aa0c4d3e6b10f",
+        "bytes": 597654,
+        "savedAt": "2026-11-13T13:45:28.373084+00:00"
+      },
+      {
+        "url": "https://ai2.jiucaishuo.com/api/index-valuation/forecast?code=NDX.GI",
+        "path": ".tmp-snap/market-history/pe-review-20261113/pe-research-NDX.GI.json",
+        "sha256": "0e80ab617681c64f5f3d55e6c86fe737726a72369a45f039a3bb32f8d9f53426",
+        "bytes": 103,
+        "savedAt": "2026-11-13T13:45:28.151751+00:00"
+      },
+      {
+        "url": "https://danjuanfunds.com/djapi/index_eva/pe_history/NDX?day=3y",
+        "path": ".tmp-snap/market-history/pe-review-20261113/danjuan-ndx-3y.json",
+        "sha256": "4c31e9478be67490bc4af46ae9d40b0fcca096066820f4a1f51f4476a816bb58",
+        "bytes": 5646,
+        "savedAt": "2026-11-13T13:47:09.318876+00:00"
+      },
+      {
+        "url": "https://danjuanfunds.com/djapi/index_eva/pe_history/NDX?day=5y",
+        "path": ".tmp-snap/market-history/pe-review-20261113/danjuan-ndx-5y.json",
+        "sha256": "965aa92bad148a7d4886818c9a3917207223dc613cdd9060de4bfe46124e0bc8",
+        "bytes": 9070,
+        "savedAt": "2026-11-13T13:47:09.357812+00:00"
+      },
+      {
+        "url": "https://danjuanfunds.com/djapi/index_eva/pe_history/NDX?day=all",
+        "path": ".tmp-snap/market-history/pe-review-20261113/danjuan-ndx-all.json",
+        "sha256": "2c82d1aeffb756f58d3182cb5ad58d4505ba9d2d15e981acb01195cc1a9a9a15",
+        "bytes": 17741,
+        "savedAt": "2026-11-13T13:47:09.324508+00:00"
+      },
+      {
+        "url": "https://www.jiucaishuo.com/assets/index-D1Chnqgd.js",
+        "path": ".tmp-snap/market-history/pe-review-20261113/jiucai-new.js",
+        "sha256": "f02534a739a0ed0d553c19d2b30a602ab599fc2b64dfca641f570470959a1c60",
+        "bytes": 2523104,
+        "savedAt": "2026-11-13T13:46:19.248663+00:00"
+      },
+      {
+        "url": "https://djfunds-static.imedao.com/static/js/valuation_table-dj-valuation-table-detail.172fd239.js",
+        "path": ".tmp-snap/market-history/pe-review-20261113/danjuan-detail.js",
+        "sha256": "27791ce17ae490f030a83419552b59600068aa11afbb1c08077780c0619775b0",
+        "bytes": 42544,
+        "savedAt": "2026-11-13T13:46:52.870764+00:00"
+      },
+      {
+        "url": "https://resource.lixinger.com/static/lxr-shared-fe.js?2d3030d180960e9b-5",
+        "path": ".tmp-snap/market-history/pe-review-20261113/lxr-lxr-shared-fe.js",
+        "sha256": "844dd1c02515d3d323f55d3c30618226b9a9e770130e4b726e4cf588779b57f5",
+        "bytes": 591609,
+        "savedAt": "2026-11-13T13:50:55.932410+00:00"
+      },
+      {
+        "url": "https://resource.lixinger.com/static/bundle.analytics.index.js?5f525f258a5a8487-5",
+        "path": ".tmp-snap/market-history/pe-review-20261113/lxr-bundle.analytics.index.js",
+        "sha256": "69484eccffba229dcf30c44ee1919c20ebaf7ffa5274540e788b8a8d205989f4",
+        "bytes": 317843,
+        "savedAt": "2026-11-13T13:52:43.177121+00:00"
+      },
+      {
+        "url": "https://resource.lixinger.com/static/lxr-shared.js?6daf2b9464bbc323-5",
+        "path": ".tmp-snap/market-history/pe-review-20261113/lxr-lxr-shared.js",
+        "sha256": "8d410fe63a39d3740dc5b1048694aed21c8ba8fd45d0cc26b9e2c7c3f4b1a8fb",
+        "bytes": 2508814,
+        "savedAt": "2026-11-13T13:50:51.770771+00:00"
+      }
+    ],
+    "lixingerAuthenticationBoundary": {
+      "url": "https://www.lixinger.com/api/ii/price-metrics/get-price-metrics-chart-info",
+      "method": "POST",
+      "stockIds": [
+        101000000006472,
+        101000000009592
+      ],
+      "bodyParameters": {
+        "granularity": "y10",
+        "metricsTypes": [
+          "mcw"
+        ],
+        "leftMetricsNames": [
+          "pe_ttm"
+        ],
+        "rightMetricsNames": [
+          "cp"
+        ]
+      },
+      "status": 401,
+      "response": {
+        "code": 0,
+        "error": {
+          "name": "UnauthorizedError",
+          "message": "This api requires user signs in."
+        }
+      }
+    },
+    "authenticationEvidenceNote": "The 401 response is recorded by the independent source-research agent in its audit manifest; the public script response bytes are saved and hashed. No authenticated response was obtained.",
+    "jiucaiExamples": {
+      "fields": {
+        "value": "Provider PE, unchanged",
+        "close": "Close supplied inside the same provider PE response, unchanged"
+      },
+      "observations": {
+        "SPX.GI": [
+          {
+            "date": "2021-03-30",
+            "value": 40.0497,
+            "close": 3958.55
+          },
+          {
+            "date": "2021-03-31",
+            "value": 31.4228,
+            "close": 3972.89
+          },
+          {
+            "date": "2021-06-29",
+            "value": 31.9781,
+            "close": 4291.8
+          },
+          {
+            "date": "2021-06-30",
+            "value": 26.9931,
+            "close": 4297.5
+          },
+          {
+            "date": "2026-07-02",
+            "value": 25.433,
+            "close": 7483.24
+          },
+          {
+            "date": "2026-07-03",
+            "value": 28.0606,
+            "close": 7483.24
+          },
+          {
+            "date": "2026-07-06",
+            "value": 25.5471,
+            "close": 7537.43
+          },
+          {
+            "date": "2026-11-04",
+            "value": 23.6684,
+            "close": 7688.62
+          },
+          {
+            "date": "2026-11-05",
+            "value": 24.0167,
+            "close": 7353.73
+          },
+          {
+            "date": "2026-11-06",
+            "value": 23.0242,
+            "close": 7376.86
+          }
+        ],
+        "NDX.GI": [
+          {
+            "date": "2020-04-28",
+            "value": 25.2787,
+            "close": 8677.6
+          },
+          {
+            "date": "2020-04-29",
+            "value": 30.5858,
+            "close": 8982.76
+          },
+          {
+            "date": "2020-04-30",
+            "value": 26.1231,
+            "close": 9000.51
+          },
+          {
+            "date": "2026-04-28",
+            "value": 36.9105,
+            "close": 27029.012
+          },
+          {
+            "date": "2026-04-29",
+            "value": 34.1959,
+            "close": 27186.985
+          },
+          {
+            "date": "2026-04-30",
+            "value": 36.4389,
+            "close": 27452.12
+          },
+          {
+            "date": "2026-07-23",
+            "value": 33.4737,
+            "close": 28454.808
+          },
+          {
+            "date": "2026-07-24",
+            "value": 28.8248,
+            "close": 28128.342
+          }
+        ]
+      },
+      "remainingEvidence": [
+        "Provider date and earnings-publication convention.",
+        "Constituent earnings or provider correction records sufficient to explain or replace individual jumps."
+      ],
+      "status": "Examples reproduce source values; they do not identify the correct replacement PE."
+    },
+    "danjuan": {
+      "publicScriptUrl": "https://djfunds-static.imedao.com/static/js/valuation_table-dj-valuation-table-detail.172fd239.js",
+      "publicScriptPeriodLabels": {
+        "3y": "近3年",
+        "5y": "近5年",
+        "all": "近10年"
+      },
+      "publicRequestPattern": "GET /djapi/index_eva/{type}_history/{code}, query parameter day = selected chartPeriod; PE requests use type=pe and code=NDX.",
+      "verifiedResponses": [
+        {
+          "day": "3y",
+          "resultCode": 0,
+          "count": 157,
+          "first": {
+            "pe": 33.2972,
+            "ts": 1699804800000,
+            "dateAtUTCPlus8": "2023-11-13"
+          },
+          "last": {
+            "pe": 27.1704,
+            "ts": 1794412800000,
+            "dateAtUTCPlus8": "2026-11-12"
+          }
+        },
+        {
+          "day": "5y",
+          "resultCode": 0,
+          "count": 258,
+          "first": {
+            "pe": 33.4491,
+            "ts": 1636646400000,
+            "dateAtUTCPlus8": "2021-11-12"
+          },
+          "last": {
+            "pe": 27.1704,
+            "ts": 1794412800000,
+            "dateAtUTCPlus8": "2026-11-12"
+          }
+        },
+        {
+          "day": "all",
+          "resultCode": 0,
+          "count": 514,
+          "first": {
+            "pe": 25.2658,
+            "ts": 1479052800000,
+            "dateAtUTCPlus8": "2016-11-14"
+          },
+          "last": {
+            "pe": 27.1704,
+            "ts": 1794412800000,
+            "dateAtUTCPlus8": "2026-11-12"
+          }
+        }
+      ],
+      "dateConversion": "Dates shown here convert the response ts (Unix milliseconds) at UTC+08:00; no dates or values were changed in the saved source response.",
+      "remainingEvidence": [
+        "Explicit PE aggregation/earnings methodology and consistent date convention.",
+        "Independent validation of the historical values; the fact that the public API responds does not establish correctness."
+      ]
+    }
+  }
+}

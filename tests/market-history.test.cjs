@@ -319,32 +319,34 @@ test('the page leads with an actual shared-time overlay, annual combination char
   assert.ok(missingHTML.includes('data-metric="spx:pe"'));
 });
 
-test('the PE overlay breaks at an unexplained change and exposes both raw values in its detail', async () => {
+test('the PE overlay keeps unexplained value changes continuous while leaving real missing observations unjoined', async () => {
   const data=structuredClone(require('../data/market-history.json')),market=data.markets[0];
   data.asOf='2021-04-07';
   market.prices.points=[['2021-03-29',100],['2021-03-30',101],['2021-03-31',101],['2021-04-01',102],['2021-04-05',103],['2021-04-06',104],['2021-04-07',105]];
   market.metrics[0].points=[['2021-03-28',90],['2021-03-29',30],['2021-03-30',30.3],['2021-03-31',20],['2021-04-01',20.2],['2021-04-06',20.6],['2021-04-07',20.8]];
   const html=await renderReport(data),svg=html.match(/<svg class="mh-overlay"[\s\S]*?<\/svg>/)[0];
-  assert.equal((svg.match(/<path class="mh-indicator-series"/g)||[]).length,3); // jump and missing 04-05 PE each break the line
+  assert.equal((svg.match(/<path class="mh-indicator-series"/g)||[]).length,2); // Only missing 04-05 PE breaks the line.
   assert.equal((svg.match(/<path class="mh-price-series"/g)||[]).length,1);
-  assert.equal((svg.match(/<circle class="mh-pe-jump"/g)||[]).length,1);
-  assert.ok(svg.indexOf('class="mh-hit-area"')<svg.indexOf('data-pe-date="2021-03-31"'));
+  assert.ok(!html.includes('mh-pe-jump') && !html.includes('data-pe-date') && !html.includes('空心点'));
+  assert.ok(html.includes('该来源的历史 PE 存在未解释的跳变，分位仅描述这份供应商数据。'));
   await renderReport(data,data.asOf,(_html,events)=>{
     const fields={},panel={querySelector:key=>(fields[key]??={})};
     const plot={dataset:{mhPlot:'main'},closest:()=>panel,querySelector:()=>({setAttribute(){}})};
-    const marker={dataset:{peDate:'2021-03-31'},closest:key=>key==='[data-mh-plot]'?plot:marker};
-    events.pointermove({target:marker});
-    assert.equal(fields['[data-readout-date]'].textContent,'2021-03-31');
-    assert.equal(fields['[data-readout-change]'].textContent,'PE -34.0% · 指数 0.0%（较 2021-03-30）');
     const keydown=key=>events.keydown({target:{closest:()=>plot},key,preventDefault(){}});
-    keydown('ArrowLeft');
-    assert.equal(fields['[data-readout-date]'].textContent,'2021-03-30');
-    assert.ok(!fields['[data-readout-change]'].textContent.includes('-34.0%'));
+    keydown('Home');
     keydown('ArrowRight');
-    assert.ok(fields['[data-readout-change]'].textContent.includes('-34.0%'));
+    assert.equal(fields['[data-readout-date]'].textContent,'2021-03-30');
+    assert.equal(fields['[data-readout-metric]'].textContent,'30.30 倍');
+    keydown('ArrowRight');
+    assert.equal(fields['[data-readout-date]'].textContent,'2021-03-31');
+    assert.equal(fields['[data-readout-metric]'].textContent,'20.00 倍');
+    keydown('ArrowRight');
+    keydown('ArrowRight');
+    assert.equal(fields['[data-readout-date]'].textContent,'2021-04-05');
+    assert.equal(fields['[data-readout-metric]'].textContent,'无同日观测');
   });
   const detail=await renderReport(data,data.asOf,'spx:pe');
-  assert.ok(detail.includes('2021-03-30 → 2021-03-31') && detail.includes('30.3000 → 20.0000'));
+  assert.ok(!detail.includes('跳变待核对') && !detail.includes('标记条件'));
   assert.ok(detail.includes('2021-03-28') && detail.includes('90.0000'));
   market.metrics[0].points=[['2021-03-28',90]];
   const empty=await renderReport(data);
