@@ -30,7 +30,7 @@
   const windowKeys = Object.keys(windowRules);
   const windowDefaults = Object.fromEntries(windowKeys.flatMap(k=>[[k+'Days',windowRules[k].days],[k+'Min',null]]));
   const defaults = { market:'ndx', threshold:5, wait:2, recovery:'close', era:'all', group:'unrecovered', ...facetDefaults, ...windowDefaults };
-  const options = { market:Object.keys(markets), wait:D.waits, recovery:Object.keys(recoveries), era:Object.keys(eras), group:Object.keys(groups), ...D.facetOptions };
+  const options = { market:Object.keys(markets), recovery:Object.keys(recoveries), era:Object.keys(eras), group:Object.keys(groups), ...D.facetOptions };
   const thresholds = [3,4,5,6,7,8,9,10];
   const fmt = n => n.toLocaleString('zh-CN', { minimumFractionDigits:2, maximumFractionDigits:2 });
   const pct = n => n == null ? '—' : (n > 0 ? '+' : n < 0 ? '−' : '') + Math.abs(n).toFixed(2) + '%';
@@ -45,6 +45,7 @@
   function readState() {
     const q = new URLSearchParams(location.hash.split('?')[1]);
     const threshold = Number(q.get('threshold'));
+    const wait = Number(q.get('wait'));
     const windows = {...windowDefaults};
     for (const k of windowKeys) {
       const days = q.has(k+'Days') ? Number(q.get(k+'Days')) : windowDefaults[k+'Days'], min = Number(q.get(k+'Min'));
@@ -52,7 +53,8 @@
         windows[k+'Days'] = days; windows[k+'Min'] = min;
       }
     }
-    return { threshold:D.validThreshold(threshold) ? threshold : defaults.threshold, ...windows,
+    return { threshold:D.validThreshold(threshold) ? threshold : defaults.threshold,
+      wait:D.validWait(wait) ? wait : defaults.wait, ...windows,
       ...Object.fromEntries(Object.entries(options).map(([k, values]) =>
         [k, values.find(v => String(v) === q.get(k)) ?? defaults[k]])) };
   }
@@ -172,11 +174,13 @@
   }
   function controls() {
     const steps = thresholds.includes(state.threshold) ? thresholds : [...thresholds,state.threshold].sort((a,b)=>a-b);
+    const waits = D.waits.includes(state.wait) ? D.waits : [...D.waits,state.wait].sort((a,b)=>a-b);
+    const waitTerms = {5:'约1周',10:'约2周',21:'约1个月',42:'约2个月',63:'约3个月',126:'约半年',252:'约1年'};
     const advanced = advancedKeys.filter(k=>state[k]!=='any');
     const applied = [...advanced.map(k=>filterNames[k]+'：'+facetLabels[k][state[k]]), ...activeWindows().map(windowShort)];
     return '<div class="ds-controls">' + select('研究指数','market', Object.entries(markets).map(([k,[l]])=>[k,l])) +
       select('单日收盘跌幅','threshold', [...steps.map(v => [v,'超过 ' + v + '%']),['custom','自定义跌幅…']]) +
-      select('跌后观察期','wait',options.wait.map(v => [v,v + ' 个交易日'])) +
+      select('跌后观察期','wait',[...waits.map(v => [v,v + ' 个交易日'+(waitTerms[v]?' · '+waitTerms[v]:'')]),['custom','自定义观察期…']]) +
       select('历史事件范围','era',Object.entries(eras)) +
       select('收复判定','recovery',Object.entries(recoveries)) +
       select('观察期内是否收复跌前收盘','group',Object.entries(groups)) +
@@ -197,10 +201,19 @@
   }
   function timeline(e) {
     const highs = new Map(e.observationHighs || []);
-    return '<ol class="ds-timeline">' + eventPoints(e).map(([label,day,close],i) =>
-      '<li' + (i === 1 ? ' class="ds-fall"' : '') + '><span>' + label + '</span><b>' + fmt(close) + '</b>' +
-      (state.recovery === 'high' && i > 1 ? '<small>最高 ' + (Number.isFinite(highs.get(day)) ? fmt(highs.get(day)) : '缺数据') + '</small>' : '') +
-      '<time>' + day + '</time></li>').join('') + '</ol>';
+    const points = eventPoints(e);
+    const list = indexes => '<ol class="ds-timeline">' + indexes.map(i => {
+      const [label,day,close] = points[i];
+      return '<li' + (i === 1 ? ' class="ds-fall"' : '') + '><span>' + label + '</span><b>' + fmt(close) + '</b>' +
+        (state.recovery === 'high' && i > 1 ? '<small>最高 ' + (Number.isFinite(highs.get(day)) ? fmt(highs.get(day)) : '缺数据') + '</small>' : '') +
+        '<time>' + day + '</time></li>';
+    }).join('') + '</ol>';
+    const all = points.map((_,i)=>i);
+    if (e.observations.length <= 5) return list(all);
+    const recoveryIndex = points.findIndex(([,day])=>day===e.recoveryDate);
+    const landmarks = [...new Set([0,1,2,recoveryIndex,points.length-1])].filter(i=>i>=0).sort((a,b)=>a-b);
+    return '<div class="ds-observations">'+list(landmarks)+
+      '<details class="ds-observation-details"><summary>逐日观察记录 · '+e.observations.length+' / '+state.wait+' 个交易日</summary>'+list(all)+'</details></div>';
   }
   function featureValues(e) {
     const f = e.features;
@@ -332,7 +345,7 @@
   }
   function method() {
     const symbol = markets[state.market][1];
-    return '<details class="ds-method"><summary>统计口径与数据来源</summary><p>单日跌幅与上一交易日收盘比较，恰好等于阈值不入样。“收盘确认”看观察期内任一次收盘是否达到跌前收盘；“盘中触及”看完整交易日的最高价是否达到该点位，不包含正在交易的实时报价。最高价缺失时不猜测收复结果。所有组的起算点仍是观察期最后一个收盘。</p>' +
+    return '<details class="ds-method"><summary>统计口径与数据来源</summary><p>单日跌幅与上一交易日收盘比较，恰好等于阈值不入样。“收盘确认”看观察期内任一次收盘是否达到跌前收盘；“盘中触及”看完整交易日的最高价是否达到该点位，不包含正在交易的实时报价。最高价缺失时不猜测收复结果。观察期可选 2–252 个交易日，所有组均等完整观察期结束后入样，后续收益从观察期最后一个收盘起算，不含观察期内的涨跌。</p>' +
       '<p>“排除 2000—2002 年事件”只排除大跌发生在这三个日历年的事件，不删除行情或截断前后收益。同期可比交易日也排除对应事件日起点，用于对照样本范围的影响；保留全部历史为默认。</p>' +
       '<p>期末收回比例＝（观察期末收盘 − 大跌日收盘）÷（跌前收盘 − 大跌日收盘）。期内曾收复的事件也可能在期末再度回落。此前 21 个交易日逐日比较相邻收盘，只数单日'+dropCutoff()+'的天数，不含本次大跌日。</p>' +
       '<p>「大跌前」的均线及 252 日高点回撤截至前一日。「自定义区间」则算到大跌日收盘：回撤取含当日的 N 个收盘中的最高点，累计跌幅与 N 个交易日前的收盘比较。两项均须严格超过设定值；历史不足或跨行情断档时，只有该项不限才保留。选项旁的次数保留其余筛选条件。</p>' +
@@ -382,7 +395,7 @@
     state = next;
     const sig = JSON.stringify(state);
     if (sig !== signature) { result = null; signature = sig; bin = null; page = 1; }
-    const title = H.head('MARKET EVENT STUDY', '大跌后表现', '指数单日大跌后，短期内是否收复失地，与随后一周至一年的涨跌有什么关系？');
+    const title = H.head('MARKET EVENT STUDY', '大跌后表现', '指数单日大跌后，观察期内是否收复失地，与随后一周至一年的涨跌有什么关系？');
     const other = peerMarket(), slot = cache.get(state.market), peer = cache.get(other);
     if (!slot) load(state.market);
     if (!peer) load(other);
@@ -416,7 +429,15 @@
     redraw();
   }
   function choose(key, value) {
-    if (key === 'threshold' && value === 'custom') {
+    if (key === 'wait' && value === 'custom') {
+      H.openModal(H.modalTitle('自定义观察期','从大跌后的下一个交易日开始观察，后续收益从观察期末收盘起算。') +
+        '<form id="ds-wait-form"><label>观察交易日数（2–252）<input name="wait" type="number" min="2" max="252" step="1" required value="'+state.wait+'"></label><button type="submit" class="btn primary">应用</button></form>');
+      const input = document.querySelector('#ds-wait-form input');
+      input.focus(); input.select();
+    } else if (key === 'wait') {
+      const wait = Number(value);
+      if (D.validWait(wait)) setFields({wait});
+    } else if (key === 'threshold' && value === 'custom') {
       H.openModal(H.modalTitle('自定义跌幅') + '<form id="ds-threshold-form"><label>跌幅门槛（3%–10%）<input name="threshold" type="number" min="3" max="10" step="0.01" required value="' + state.threshold +
         '"></label><button type="submit" class="btn primary">应用</button></form>');
       const input = document.querySelector('#ds-threshold-form input');
@@ -424,6 +445,14 @@
     } else if (key === 'threshold' || Object.hasOwn(options,key)) setFields({[key]:value});
   }
   document.addEventListener('submit', event => {
+    if (event.target.id === 'ds-wait-form') {
+      event.preventDefault();
+      const wait = event.target.elements.wait.valueAsNumber;
+      if (!D.validWait(wait)) return;
+      event.target.closest('dialog').close();
+      setFields({wait});
+      return;
+    }
     if (event.target.id === 'ds-window-form') {
       event.preventDefault();
       const form=event.target,k=form.dataset.rule,days=form.elements.days.valueAsNumber,min=form.elements.min.valueAsNumber;

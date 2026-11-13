@@ -26,7 +26,7 @@ test('reject out-of-range thresholds, excess precision and non-session observati
   for (const threshold of [2.99, 10.01, 6.125, NaN, Infinity, '5', null]) {
     assert.throws(() => study([], { threshold }), /统计条件/);
   }
-  for (const wait of [1, 6, 2.5, '3', null]) {
+  for (const wait of [1, 253, 2.5, '3', null, NaN, Infinity]) {
     assert.throws(() => study([], { wait }), /统计条件/);
   }
 });

@@ -4,7 +4,8 @@
 })(typeof window === 'object' ? window : this, function (W) {
   'use strict';
   const horizons = Object.freeze([5, 21, 63, 252]);
-  const waits = Object.freeze([2, 3, 4, 5]);
+  const waits = Object.freeze([2, 3, 4, 5, 10, 21, 42, 63, 126, 252]);
+  const validWait = value => Number.isInteger(value) && value >= 2 && value <= 252;
   const eraRanges = Object.freeze({ exclude_dotcom: Object.freeze(['2000-01-01', '2002-12-31']) });
   const excludedDate = (date, era) => !!eraRanges[era] && date >= eraRanges[era][0] && date <= eraRanges[era][1];
   const validThreshold = value => Number.isFinite(value) && value >= 3 && value <= 10 &&
@@ -67,7 +68,7 @@
   // recovery observation, never the drop trigger, return anchor or price path.
   function study(series, options = {}, peerSeries = null, highSeries = null) {
     const { threshold = 5, wait = 2, group = 'unrecovered', peakDays = 252, lossDays = 5, recovery = 'close', era = 'all' } = options;
-    if (!validThreshold(threshold) || !waits.includes(wait) ||
+    if (!validThreshold(threshold) || !validWait(wait) ||
         !W.validDays('peak', peakDays) || !W.validDays('loss', lossDays) ||
         windowKeys.some(k => options[k+'Min'] != null && !W.validThreshold(options[k+'Min'])) ||
         !['unrecovered', 'recovered', 'all'].includes(group) || !['close', 'high'].includes(recovery) ||
@@ -233,5 +234,5 @@
       latest, counts, excludedEvents, cohortN, facetCounts, windowCounts, events: events.reverse(), summary: byHorizon(h => summarize(groupValues[h])),
       baseline: byHorizon(h => summarize(allValues[h])) };
   }
-  return { study, horizons, waits, validThreshold, facetOptions, matchesFilters, eraRanges };
+  return { study, horizons, waits, validWait, validThreshold, facetOptions, matchesFilters, eraRanges };
 });
