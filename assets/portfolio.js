@@ -674,7 +674,7 @@
     });
     return path;
   }
-  const axisNames = { score: '分数', allocation: '分配比例', state: '开关', drawdown: '回撤', deviation: '均线偏离', gap: '仓位缺口', relative: '相对强弱' };
+  const axisNames = { score: '分数', allocation: '分配比例', drawdown: '回撤', deviation: '均线偏离', gap: '仓位缺口', relative: '相对强弱' };
   function chartAxis(key, lines) {
     if (['score', 'allocation', 'state'].includes(key)) return [0, 100];
     let low = 0, high = 0;
@@ -696,7 +696,7 @@
       const byDay = chartObservations.get(line);
       return { ...line, color: indicatorColors[allLines.indexOf(line) % indicatorColors.length], values: rows.map(r => byDay.get(r.day)) };
     });
-    const axes = [...new Set(observed.map(s => s.kind))];
+    const kinds = [...new Set(observed.map(s => s.kind))], axes = kinds.filter(kind => kind !== 'state');
     const right = W - 15 - axes.length * 57;
     const x = i => rows.length === 1 ? (left + right) / 2 : left + i / (rows.length - 1) * (right - left);
     const domain = [...primary, ...(secondary || [])].filter(M.finite), min = Math.min(...domain), max = Math.max(...domain);
@@ -710,15 +710,18 @@
       grid += '<line x1="' + left + '" y1="' + yy + '" x2="' + right + '" y2="' + yy + '" stroke="#e8ece3"/><text x="' + (left - 7) + '" y="' + (yy + 4) + '" text-anchor="end">' + (metric === 'amount' ? H.money(v / 10000, 1) + '万' : v.toFixed(1) + '%') + '</text>';
     }
     for (const i of new Set([0, Math.floor((rows.length - 1) / 2), rows.length - 1])) grid += '<text x="' + x(i) + '" y="' + (HH - 8) + '" text-anchor="' + (i === 0 ? 'start' : i === rows.length - 1 ? 'end' : 'middle') + '">' + rows[i].day + '</text>';
-    axes.forEach((kind, j) => {
+    kinds.forEach(kind => {
       const lines = observed.filter(s => s.kind === kind), line = lines[0], [low, high] = chartAxis(kind, lines);
-      const yy = v => bottom - (v - low) / (high - low) * (bottom - top), xx = right + 6 + j * 57;
-      grid += '<g data-indicator-axis="' + H.esc(kind) + '"><text x="' + xx + '" y="13">' + H.esc(axisNames[kind] || line.unit) + '</text>';
-      for (const fraction of kind === 'state' ? [0, 1] : [0, .5, 1]) {
-        const v = low + (high - low) * fraction;
-        grid += '<text x="' + xx + '" y="' + (yy(v) + 4) + '">' + H.esc(indicatorValue(line, v, true)) + '</text>';
+      const yy = v => bottom - (v - low) / (high - low) * (bottom - top);
+      if (kind !== 'state') {
+        const xx = right + 6 + axes.indexOf(kind) * 57;
+        grid += '<g data-indicator-axis="' + H.esc(kind) + '"><text x="' + xx + '" y="13">' + H.esc(axisNames[kind] || line.unit) + '</text>';
+        for (const fraction of [0, .5, 1]) {
+          const v = low + (high - low) * fraction;
+          grid += '<text x="' + xx + '" y="' + (yy(v) + 4) + '">' + H.esc(indicatorValue(line, v, true)) + '</text>';
+        }
+        grid += '</g>';
       }
-      grid += '</g>';
       if (kind === 'score') for (const threshold of new Set(lines.flatMap(l => l.values.some(M.finite) ? l.thresholds || [] : []).filter(M.finite))) {
         // Shared scores can have different buying thresholds for different reserve sizes.
         grid += '<line data-score-threshold="' + threshold + '" x1="' + left + '" x2="' + right + '" y1="' + yy(threshold) + '" y2="' + yy(threshold) + '" stroke="#9e8474" stroke-dasharray="2 5"/>';
@@ -734,6 +737,7 @@
       line.kind === 'score' && line.thresholds?.length ? '（买入门槛 ' + (line.thresholdLabel || line.thresholds.join(' / ') + '分') + '）' : '');
     return '<div class="portfolio-chart-legend">' + legend(metric === 'return' ? '我的组合 ' + H.pct(primary.at(-1)) : metric === 'allocation' ? '实际持仓' : '我的组合', '#35654a') +
       (metric === 'return' ? benchmarkLegend(secondary?.at(-1)) : secondary ? legend(metric === 'amount' ? principalLabel : '实际现金比例', '#9c8d6e') : '') + observed.map(l => legend(legendLabel(l), l.color)).join('') +
+      (observed.some(l => l.kind === 'state' && l.values.some(M.finite)) ? '<span class="portfolio-state-key">状态线：上方开启，下方关闭</span>' : '') +
       (observed.some(l => l.kind === 'score' && l.thresholds?.length && l.values.some(M.finite)) ? '<span class="portfolio-threshold-key">虚线：分数门槛</span>' : '') + '</div><div class="portfolio-plot-wrap"><div id="portfolio-tooltip" class="portfolio-tooltip" hidden></div><svg class="portfolio-plot" data-portfolio-plot viewBox="0 0 ' + W + ' ' + HH + '" role="img" aria-label="' + label + '"><defs><linearGradient id="portfolio-fill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#a4c1a2" stop-opacity=".24"/><stop offset="1" stop-color="#a4c1a2" stop-opacity=".02"/></linearGradient></defs>' + grid + area +
       (secondary ? '<path d="' + chartPath(secondary, x, y) + '" stroke="#9c8d6e" fill="none" stroke-linecap="round" stroke-width="1.8" stroke-dasharray="5 4"/>' : '') + '<path d="' + mainPath + '" stroke="#35654a" fill="none" stroke-linecap="round" stroke-width="2.3"/>' + overlays +
       '<rect id="portfolio-zoom-selection" y="' + top + '" height="' + (bottom - top) + '" fill="#508b79" opacity=".18" width="0"/><line id="portfolio-cursor" x1="0" x2="0" y1="' + top + '" y2="' + bottom + '" stroke="#83927c" stroke-dasharray="3 3" visibility="hidden"/><circle id="portfolio-point" r="4.5" fill="#35654a" stroke="white" stroke-width="2" visibility="hidden"/><rect x="' + left + '" y="' + top + '" width="' + (right - left) + '" height="' + (bottom - top) + '" fill="transparent" pointer-events="all"/></svg></div>';

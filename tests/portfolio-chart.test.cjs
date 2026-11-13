@@ -50,7 +50,8 @@ test('chart zoom, cash weights and independent overlays follow the same dates wi
   }
   click('metric', 'return');
   click('chart-chooser'); await change('indicator', 'score'); await change('indicator', 'gate');
-  assert.match(chart(), /data-indicator-axis="score"/); assert.match(chart(), /data-indicator-axis="state"/);
+  assert.match(chart(), /data-indicator-axis="score"/); assert.doesNotMatch(chart(), /data-indicator-axis="state"/);
+  assert.match(chart(), /状态线：上方开启，下方关闭/);
   assert.match(chart(), /data-score-threshold="60"/); assert.match(chart(), /买入门槛 60分/);
   assert.match(chart(), /参考 · 开关样本/);
   assert.match(chart(), /role="dialog" aria-label="选择叠加策略指标"/);
@@ -74,9 +75,9 @@ test('chart zoom, cash weights and independent overlays follow the same dates wi
   click('tab', 'settings'); click('tab', 'results'); assert.deepEqual(range(), ['2024-04-01', cfg.end]);
   await change('to', '2024-04-03');
   hover(65); assert.match(tooltip.innerHTML, /^<strong>2024-04-01/); assert.match(tooltip.innerHTML, /4分/); assert.match(tooltip.innerHTML, /开启/);
-  hover(428); assert.match(tooltip.innerHTML, /^<strong>2024-04-02/); assert.match(tooltip.innerHTML, /无当日观测/); assert.doesNotMatch(tooltip.innerHTML, /77分|开启/);
-  hover(791); assert.match(tooltip.innerHTML, /^<strong>2024-04-03/); assert.match(tooltip.innerHTML, /77分/);
-  hover(791, 'pointerdown'); events.pointerup({type: 'pointerup', pointerId: 1, clientX: 428});
+  hover(456.5); assert.match(tooltip.innerHTML, /^<strong>2024-04-02/); assert.match(tooltip.innerHTML, /无当日观测/); assert.doesNotMatch(tooltip.innerHTML, /77分|开启/);
+  hover(848); assert.match(tooltip.innerHTML, /^<strong>2024-04-03/); assert.match(tooltip.innerHTML, /77分/);
+  hover(848, 'pointerdown'); events.pointerup({type: 'pointerup', pointerId: 1, clientX: 456.5});
   assert.deepEqual(range(), ['2024-04-02', '2024-04-03']);
   assert.match(chart(), /参考 · 开关样本（此区间无有效观测）/);
   click('chart-zoom', 'all'); assert.deepEqual(range(), [cfg.start, cfg.end]);
@@ -102,5 +103,7 @@ test('chart zoom, cash weights and independent overlays follow the same dates wi
   eventsFor('keydown', {key: 'ArrowLeft', target: parts.from}); assert.deepEqual(bound(), [7, last - 7]);
   eventsFor('keydown', {key: 'Home', target: parts.from}); eventsFor('keydown', {key: 'End', target: parts.to});
   assert.deepEqual(range(), [cfg.start, cfg.end]);
-  await change('indicator', 'score', false); assert.doesNotMatch(chart(), /data-indicator-axis="score"/); assert.match(chart(), /data-indicator-axis="state"/);
+  await change('indicator', 'score', false); assert.doesNotMatch(chart(), /data-indicator-axis=/);
+  assert.match(chart(), /data-indicator-line="gate"/);
+  assert.match(chart(), /x2="905"/);
 });
