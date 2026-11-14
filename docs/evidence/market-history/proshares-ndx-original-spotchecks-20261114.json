@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "reviewDate": "2026-11-14",
+  "scope": "Original issuer archive spot checks for date/section extraction, separate from methodology crosschecks.",
+  "checks": [
+    {
+      "asOf": "2022-12-31",
+      "archiveUrl": "https://web.archive.org/web/20230321161823id_/https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "file": ".tmp-snap/market-history/pe-review-20261114/proshares-tqqq-2022-12-31.pdf",
+      "sha256": "7885264314fa1aee017a70b7d9cc9cd67845c0eafe0a6db988d234b33570d43f",
+      "bytes": 1313764,
+      "status": "reverified_original_bytes_and_rendered_pages",
+      "existingExtractionHashMatches": true,
+      "dateEvidence": "Page 1: FACT SHEET As of 12/31/22",
+      "metricEvidence": "Page 2: Index characteristics; Price/Earnings Ratio 22.30, Price/Book Ratio 5.73, Dividend Yield 0.99%",
+      "indexName": "Nasdaq-100 Index",
+      "indexPE": 22.3,
+      "indexPB": 5.73,
+      "dividendYieldPct": 0.99,
+      "renderNote": "Poppler emitted malformed embedded image-stream warnings; both complete pages rendered with date and index-characteristic text legible."
+    },
+    {
+      "asOf": "2021-12-31",
+      "archiveUrl": "https://web.archive.org/web/20220203135306id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq/",
+      "status": "not_newly_reverified",
+      "reason": "Exact original archive URL returned HTTP 429 during this review; the existing extraction is retained as prior evidence, not presented as a newly checked original."
+    }
+  ]
+}

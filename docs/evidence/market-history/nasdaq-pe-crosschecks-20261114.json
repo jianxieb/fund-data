@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "reviewDate": "2026-11-14",
+  "scope": "Independent original-publisher crosschecks, preserving source basis and historical vintage.",
+  "sources": [
+    {
+      "id": "nasdaq2020",
+      "url": "https://indexes.nasdaq.com/docs/NDX_Fundamentals.pdf",
+      "path": ".tmp-snap/market-history/pe-review-20261114/nasdaq-ndx-fundamentals.pdf",
+      "page": 30,
+      "interpretation": "Printed adjusted and unadjusted trailing one-year P/E as of 2020-12-31.",
+      "bytes": 4738548,
+      "sha256": "30215e1afb6fdaadc1baf2c6dcc4c50475f6cfcc1344e523f7a641cc127eb784"
+    },
+    {
+      "id": "nasdaq2022",
+      "url": "https://indexes.nasdaq.com/docs/NDX%20Research%202022.pdf",
+      "path": ".tmp-snap/market-history/pe-review-20261114/nasdaq-ndx-research-2022.pdf",
+      "page": 9,
+      "interpretation": "Year-end trailing P/E chart, historical values as reproduced in a 2022 report; vintage differs from original year-end issuer captures.",
+      "bytes": 284594,
+      "sha256": "5cd257927e9c6fd8e7c452193f2367c997a6a78ba107c06af90b4f8499f29c55"
+    },
+    {
+      "id": "nasdaq2023",
+      "url": "https://www.nasdaq.com/docs/2023/12/19/NDXE_Research_Update_November_2023_%281%29%5B1%5D.pdf",
+      "page": 2,
+      "interpretation": "Text identifies NDX trailing P/E at year-end 2022 and 2023-11-13; reviewed via official PDF web tool."
+    }
+  ],
+  "sameLabelDateChecks": [
+    {
+      "index": "NDX",
+      "asOf": "2020-12-31",
+      "officialPE": 37.92,
+      "officialBasis": "adjusted trailing one-year",
+      "sourceId": "nasdaq2020",
+      "prosharesPE": 37.92,
+      "prosharesKnownBy": "2021-03-28T13:07:11Z",
+      "prosharesArchiveUrl": "https://web.archive.org/web/20210328130711id_/https://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "differencePct": 0.0,
+      "interpretation": "Exact numeric match"
+    },
+    {
+      "index": "NDX",
+      "asOf": "2020-12-31",
+      "officialPE": 38.79,
+      "officialBasis": "unadjusted trailing one-year",
+      "sourceId": "nasdaq2020",
+      "prosharesPE": 37.92,
+      "prosharesKnownBy": "2021-03-28T13:07:11Z",
+      "prosharesArchiveUrl": "https://web.archive.org/web/20210328130711id_/https://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "differencePct": -2.2428460943542117,
+      "interpretation": "Different printed values; neither error nor common methodology is established by the difference alone."
+    },
+    {
+      "index": "NDX",
+      "asOf": "2014-12-31",
+      "officialPE": 22.3,
+      "officialBasis": "year-end trailing chart, printed one decimal",
+      "sourceId": "nasdaq2022",
+      "prosharesPE": 22.25,
+      "prosharesKnownBy": "2015-04-03T15:43:46Z",
+      "prosharesArchiveUrl": "https://web.archive.org/web/20150403154346id_/http://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "differencePct": -0.22421524663677195,
+      "interpretation": "Close at displayed precision"
+    },
+    {
+      "index": "NDX",
+      "asOf": "2020-12-31",
+      "officialPE": 37.7,
+      "officialBasis": "year-end trailing chart, printed one decimal",
+      "sourceId": "nasdaq2022",
+      "prosharesPE": 37.92,
+      "prosharesKnownBy": "2021-03-28T13:07:11Z",
+      "prosharesArchiveUrl": "https://web.archive.org/web/20210328130711id_/https://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "differencePct": 0.5835543766578244,
+      "interpretation": "Different printed values; neither error nor common methodology is established by the difference alone."
+    },
+    {
+      "index": "NDX",
+      "asOf": "2021-12-31",
+      "officialPE": 37.3,
+      "officialBasis": "year-end trailing chart, printed one decimal",
+      "sourceId": "nasdaq2022",
+      "prosharesPE": 39.82,
+      "prosharesKnownBy": "2022-02-03T13:53:06Z",
+      "prosharesArchiveUrl": "https://web.archive.org/web/20220203135306id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq/",
+      "differencePct": 6.756032171581783,
+      "interpretation": "Different printed values; neither error nor common methodology is established by the difference alone."
+    },
+    {
+      "index": "NDX",
+      "asOf": "2022-12-31",
+      "officialPE": 20.68,
+      "officialBasis": "trailing P/E at year-end",
+      "sourceId": "nasdaq2023",
+      "prosharesPE": 22.3,
+      "prosharesKnownBy": "2023-03-21T16:18:23Z",
+      "prosharesArchiveUrl": "https://web.archive.org/web/20230321161823id_/https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "differencePct": 7.833655705996145,
+      "interpretation": "Different printed values; neither error nor common methodology is established by the difference alone."
+    }
+  ],
+  "officialAdditionalObservations": [
+    {
+      "index": "SPX",
+      "asOf": "2020-12-31",
+      "adjustedPE": 30.33,
+      "unadjustedPE": 39.79,
+      "sourceId": "nasdaq2020"
+    },
+    {
+      "index": "NDX",
+      "asOf": "2023-11-13",
+      "trailingPE": 30.74,
+      "sourceId": "nasdaq2023"
+    }
+  ],
+  "remainingEvidence": [
+    "The exact explanation of ProShares versus Nasdaq differences in 2021 and 2022 is not established.",
+    "An issuer series may be published under its own definition; the 2020 exact match alone is not proof that every historical observation uses Nasdaq research methodology."
+  ]
+}

@@ -85,6 +85,7 @@ def test_generated_data(root):
 
 def validate_outputs(root):
     command([sys.executable, 'scripts/check_refresh.py'], root)
+    command([sys.executable, 'market_history.py', '--check'], root)
     command([sys.executable, 'scripts/build_return_indices.py', '--check'], root)
     command([sys.executable, 'scripts/build_drop_highs.py', '--check'], root)
     command([sys.executable, 'scripts/build_financial_events.py', '--check'], root)

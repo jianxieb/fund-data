@@ -29,6 +29,7 @@ sys.path.insert(0, str(ROOT))
 from data_status import atomic_text, file_transaction
 
 NAMES = {"USD": "Dow Jones U.S. Semiconductors Index", "TQQQ": "Nasdaq-100 Index"}
+ALL_NAMES = {**NAMES, "SSO": "S&P 500 Index"}
 BASE = "https://www.proshares.com/our-etfs/leveraged-and-inverse/"
 DEFAULT_OUTPUT = ROOT / "data/portfolio/benchmark-valuations.json"
 UTC_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -55,8 +56,8 @@ def parse_page(symbol, body, known_by):
         raise ValueError("wrong Index heading")
     about = one(re.findall(r"<h6\b[^>]*>\s*About the Index\s*</h6>\s*<p\b[^>]*>(.*?)</p>",
                            section, re.I | re.S), "About the Index paragraph")
-    if not re.match(r"^(?:The )?" + re.escape(NAMES[symbol]) + r"\s+is\b", visible(about), re.I):
-        raise ValueError(f"About the Index does not identify {NAMES[symbol]}")
+    if not re.match(r"^(?:The )?" + re.escape(ALL_NAMES[symbol]) + r"\s+is\b", visible(about), re.I):
+        raise ValueError(f"About the Index does not identify {ALL_NAMES[symbol]}")
     date_text = one(re.findall(r'''<p\b[^>]*?\sid\s*=\s*['"]index-asOfDate['"][^>]*>(.*?)</p>''',
                                section, re.I | re.S), "index as-of date")
     match = re.fullmatch(r"as of (\d{1,2}/\d{1,2}/\d{4})", visible(date_text), re.I)
@@ -81,7 +82,7 @@ def parse_page(symbol, body, known_by):
             raise ValueError(f"missing or invalid numeric index {key}")
         values[key] = float(numeric)
         decimals[key] = len(numeric.partition(".")[2])
-    return checked({"symbol": symbol, "indexName": NAMES[symbol], "asOf": as_of, "knownBy": known_by,
+    return checked({"symbol": symbol, "indexName": ALL_NAMES[symbol], "asOf": as_of, "knownBy": known_by,
                     **values, "displayDecimals": decimals, "sourceUrl": BASE + symbol.lower(),
                     "sourceSha256": hashlib.sha256(body).hexdigest(), "evidenceType": "issuer_live"})
 
@@ -102,7 +103,7 @@ def official_path(url, symbol):
 
 def checked(row, archive_only=False):
     symbol = row["symbol"]
-    if symbol not in NAMES or row["indexName"] != NAMES[symbol]:
+    if symbol not in ALL_NAMES or row["indexName"] != ALL_NAMES[symbol]:
         raise ValueError("unexpected product/benchmark combination")
     as_of = date.fromisoformat(row["asOf"])
     known = datetime.strptime(row["knownBy"], UTC_FORMAT)
@@ -225,7 +226,11 @@ def fetch(symbol):
         body = response.read(limit + 1)
         if len(body) > limit:
             raise ValueError("response too large")
-    return parse_page(symbol, body, datetime.now(timezone.utc).strftime(UTC_FORMAT))
+    row = parse_page(symbol, body, datetime.now(timezone.utc).strftime(UTC_FORMAT))
+    evidence = ROOT / '.tmp-snap/proshares'
+    evidence.mkdir(parents=True, exist_ok=True)
+    (evidence / (row['sourceSha256'] + '.html')).write_bytes(body)
+    return row
 
 
 def benchmark_pe_as_of(observations, day):
@@ -277,7 +282,10 @@ def benchmark_pe_as_of(observations, day):
     return {"decisionDate": cutoff, "benchmarks": results}
 
 
-def collect(output, archive=None, archive_only=False, dry_run=False):
+def collect(output, archive=None, archive_only=False, dry_run=False, symbols=None):
+    symbols = list(NAMES) if symbols is None else list(symbols)
+    if not symbols or len(set(symbols)) != len(symbols) or set(symbols) - set(ALL_NAMES):
+        raise ValueError("unsupported or duplicate benchmark symbols")
     new = []
     if archive is not None:
         payload = json.loads(archive.read_bytes())
@@ -288,7 +296,7 @@ def collect(output, archive=None, archive_only=False, dry_run=False):
     if archive_only and archive is None:
         raise ValueError("--archive-only requires --archive")
     if not archive_only:
-        for symbol in NAMES:
+        for symbol in symbols:
             try:
                 new.append(fetch(symbol))
             except (OSError, HTTPException, ValueError) as e:
@@ -310,6 +318,7 @@ def main():
     parser.add_argument("--archive", type=Path, help="previously byte-verified archive observations (JSON)")
     parser.add_argument("--archive-only", action="store_true", help="only import archive rows; do not fetch live pages")
     parser.add_argument("--dry-run", action="store_true", help="validate and print merged records without writing")
+    parser.add_argument("--symbols", help="comma-separated issuer products; defaults to the portfolio benchmarks")
     parser.add_argument("--as-of", type=date.fromisoformat, metavar="YYYY-MM-DD",
                         help="read the saved index valuations available before this UTC date, without fetching")
     args = parser.parse_args()
@@ -323,7 +332,8 @@ def main():
             rows = [checked(r) for r in archive["observations"]]
             print(json.dumps(benchmark_pe_as_of(rows, args.as_of), indent=2, ensure_ascii=False))
             return
-        result = collect(args.output, args.archive, args.archive_only, args.dry_run)
+        result = collect(args.output, args.archive, args.archive_only, args.dry_run,
+                         args.symbols.split(',') if args.symbols else None)
     except (OSError, TypeError, KeyError, AttributeError, ValueError) as exc:
         parser.exit(1, f"Benchmark valuations unchanged: {exc}\n")
     if args.dry_run:

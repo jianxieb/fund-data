@@ -1,0 +1,271 @@
+{
+  "schemaVersion": 1,
+  "reviewDate": "2026-11-14",
+  "scope": "Corrected original-source dates and independently checked definitions; replaces specific conflicting findings in pe-source-review-20261113.json.",
+  "sourceFiles": [
+    {
+      "url": "https://danjuanfunds.com/djmodule/value-center?channel=1300100135",
+      "path": ".tmp-snap/market-history/pe-review-20261114/danjuan-value-center.html",
+      "bytes": 718502,
+      "sha256": "9bdd570abea3bcb7f47098f759ce509d05407cdef8b15b861b421a48c7601794"
+    },
+    {
+      "url": "https://www.proshares.com/glossary",
+      "path": ".tmp-snap/market-history/pe-review-20261114/proshares-glossary.html",
+      "bytes": 197829,
+      "sha256": "1681158fddcce0371361dac94bc6e86e048f2a2439a5bc5f26442d941a42f4af"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/caibingcheng/djeva/master/source/2022-07-15.json",
+      "path": ".tmp-snap/market-history/pe-review-20261114/djeva-2022-07-15.json",
+      "bytes": 34438,
+      "sha256": "95bfbe9e9b3053818d31d7fc316f9aab0910e0cd25bef092b8c289f1a73e9590",
+      "originType": "third-party archive of publisher response; not a publisher-hosted historical page"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/caibingcheng/djeva/master/source/2022-07-18.json",
+      "path": ".tmp-snap/market-history/pe-review-20261114/djeva-2022-07-18.json",
+      "bytes": 34475,
+      "sha256": "4b7f78e06b4467db7cbe619996eed61baa3321944bac7fd6cdbe631133692e94",
+      "originType": "third-party archive of publisher response; not a publisher-hosted historical page"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/caibingcheng/djeva/master/source/2022-07-20.json",
+      "path": ".tmp-snap/market-history/pe-review-20261114/djeva-2022-07-20.json",
+      "bytes": 34479,
+      "sha256": "bf2ed395afeebbd5aebeb283c0a148cc7a2e0cb21344e0550d4e697b3d538e37",
+      "originType": "third-party archive of publisher response; not a publisher-hosted historical page"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/caibingcheng/djeva/master/source/2022-07-22.json",
+      "path": ".tmp-snap/market-history/pe-review-20261114/djeva-2022-07-22.json",
+      "bytes": 34485,
+      "sha256": "d03da8916d3b2787c1b8b7de5958999c66ba8e17249b3e853f511ace4bf23553",
+      "originType": "third-party archive of publisher response; not a publisher-hosted historical page"
+    }
+  ],
+  "correctionsToPreviousReview": {
+    "issue": "The earlier SSO new-page exploratory extractor selected a date from another page section. The Index block has its own quarterly as-of date. The issuer was not shown to have mislabeled those observations.",
+    "correctedDates": [
+      {
+        "capture": "20211225015254",
+        "previousResearchDate": "2021-11-30",
+        "verifiedIndexDate": "2021-09-30",
+        "indexPE": 25.8,
+        "archiveUrl": "https://web.archive.org/web/20211225015254id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso"
+      },
+      {
+        "capture": "20220117094848",
+        "previousResearchDate": "2021-11-30",
+        "verifiedIndexDate": "2021-09-30",
+        "indexPE": 25.8,
+        "archiveUrl": "https://web.archive.org/web/20220117094848id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso"
+      },
+      {
+        "capture": "20220704115115",
+        "previousResearchDate": "2022-05-31",
+        "verifiedIndexDate": "2022-03-31",
+        "indexPE": 22.56,
+        "archiveUrl": "https://web.archive.org/web/20220704115115id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso"
+      },
+      {
+        "capture": "20221005045819",
+        "previousResearchDate": "2022-08-31",
+        "verifiedIndexDate": "2022-06-30",
+        "indexPE": 18.39,
+        "archiveUrl": "https://web.archive.org/web/20221005045819id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso"
+      },
+      {
+        "capture": "20221123015408",
+        "previousResearchDate": "2022-10-31",
+        "verifiedIndexDate": "2022-09-30",
+        "indexPE": 17.139,
+        "archiveUrl": "https://web.archive.org/web/20221123015408id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso"
+      },
+      {
+        "capture": "20230131161828",
+        "previousResearchDate": "2022-12-31",
+        "verifiedIndexDate": "2022-12-30",
+        "indexPE": 17.983,
+        "archiveUrl": "https://web.archive.org/web/20230131161828id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso"
+      },
+      {
+        "capture": "20230528221756",
+        "previousResearchDate": "2023-04-30",
+        "verifiedIndexDate": "2023-03-31",
+        "indexPE": 21.08,
+        "archiveUrl": "https://web.archive.org/web/20230528221756id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso"
+      },
+      {
+        "capture": "20230616041835",
+        "previousResearchDate": "2023-05-31",
+        "verifiedIndexDate": "2023-03-31",
+        "indexPE": 21.08,
+        "archiveUrl": "https://web.archive.org/web/20230616041835id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso"
+      },
+      {
+        "capture": "20231201060830",
+        "previousResearchDate": "2023-10-31",
+        "verifiedIndexDate": "2023-09-29",
+        "indexPE": 21.259,
+        "archiveUrl": "https://web.archive.org/web/20231201060830id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso"
+      },
+      {
+        "capture": "20240126160444",
+        "previousResearchDate": "2023-12-31",
+        "verifiedIndexDate": "2023-12-29",
+        "indexPE": 23.448,
+        "archiveUrl": "https://web.archive.org/web/20240126160444id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/SSO"
+      },
+      {
+        "capture": "20240519201918",
+        "previousResearchDate": "2024-04-30",
+        "verifiedIndexDate": "2024-03-28",
+        "indexPE": 25.528,
+        "archiveUrl": "https://web.archive.org/web/20240519201918id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso"
+      },
+      {
+        "capture": "20240907233655",
+        "previousResearchDate": "2024-07-31",
+        "verifiedIndexDate": "2024-06-28",
+        "indexPE": 26.404,
+        "archiveUrl": "https://web.archive.org/web/20240907233655id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso"
+      },
+      {
+        "capture": "20250112234755",
+        "previousResearchDate": "2024-11-30",
+        "verifiedIndexDate": "2024-09-30",
+        "indexPE": 27.386,
+        "archiveUrl": "https://web.archive.org/web/20250112234755id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso"
+      },
+      {
+        "capture": "20250521013806",
+        "previousResearchDate": "2025-04-30",
+        "verifiedIndexDate": "2025-03-31",
+        "indexPE": 24.797,
+        "archiveUrl": "https://web.archive.org/web/20250521013806id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso"
+      },
+      {
+        "capture": "20250916165812",
+        "previousResearchDate": "2025-08-31",
+        "verifiedIndexDate": "2025-06-30",
+        "indexPE": 26.76,
+        "archiveUrl": "https://web.archive.org/web/20250916165812id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso"
+      }
+    ],
+    "withdrawnInferences": [
+      "SSO 2023 April and May same PE as evidence of issuer repeated month dates.",
+      "SSO 2025 August to June as evidence of issuer date rollback."
+    ],
+    "replacementArtifact": "docs/evidence/market-history/proshares-spx-archive-20261114.json"
+  },
+  "danjuan": {
+    "publishedDefinitions": [
+      {
+        "url": "https://danjuanfunds.com/article/337.html",
+        "facts": [
+          "Identifies PE-TTM and says data mainly comes from Choice.",
+          "Says SPX and NDX history begins 2012-01-04; the present public all option nevertheless supplies a rolling near-ten-year chart."
+        ]
+      },
+      {
+        "url": "https://danjuanfunds.com/djmodule/value-center?channel=1300100135",
+        "facts": [
+          "Current embedded frontend text identifies PE(TTM) as total constituent market value divided by total constituent TTM net profit.",
+          "Current frontend text says the data mainly comes from Wind."
+        ],
+        "sourceFile": ".tmp-snap/market-history/pe-review-20261114/danjuan-value-center.html"
+      },
+      {
+        "url": "https://danjuanfunds.com/article/1008.html",
+        "facts": [
+          "States index PE equals aggregate market capitalization divided by aggregate profit; does not itself identify Wind or an explicit TTM period."
+        ]
+      }
+    ],
+    "historicalVendorTransitionDate": "not established",
+    "sameTimestampConflict": {
+      "timestamp": 1658073600000,
+      "publisherLabelDateUTCPlus8": "2022-07-18",
+      "currentHistoryResponsePE": 19.8703,
+      "currentHistoryResponseFile": ".tmp-snap/market-history/pe-review-20261113/danjuan-ndx-all.json",
+      "originalDailyArchivePE": 24.1839,
+      "originalDailyArchiveFile": ".tmp-snap/market-history/pe-review-20261114/djeva-2022-07-18.json",
+      "interpretation": "Different values at the same supplier timestamp. Neither a corrected value nor a stable US trading-date mapping has been established."
+    },
+    "nearbyOriginalDailySnapshots": [
+      {
+        "fileDate": "2022-07-04",
+        "ts": 1656864000000,
+        "pe": 23.3842
+      },
+      {
+        "fileDate": "2022-07-05",
+        "ts": 1656950400000,
+        "pe": 23.3842
+      },
+      {
+        "fileDate": "2022-07-06",
+        "ts": 1657036800000,
+        "pe": 23.8578
+      },
+      {
+        "fileDate": "2022-07-07",
+        "ts": 1657123200000,
+        "pe": 24.0105
+      },
+      {
+        "fileDate": "2022-07-15",
+        "ts": 1657814400000,
+        "pe": 23.7769
+      },
+      {
+        "fileDate": "2022-07-18",
+        "ts": 1658073600000,
+        "pe": 24.1839
+      },
+      {
+        "fileDate": "2022-07-20",
+        "ts": 1658246400000,
+        "pe": 24.693
+      },
+      {
+        "fileDate": "2022-07-22",
+        "ts": 1658419200000,
+        "pe": 25.3336
+      }
+    ],
+    "selectionAssessment": "Definition alone no longer blocks use. Current historical endpoint conflicts with contemporaneous snapshots and trading-day interpretation remains unsettled; not selected as a clean replacement on present evidence."
+  },
+  "proshares": {
+    "definitionUrl": "https://www.proshares.com/glossary",
+    "definitionFact": "Publisher glossary defines trailing price-to-earnings using collective component earnings for the most recent 12 months. Index page labels are generic Price/Earnings Ratio; this glossary does not establish every historical loss or extraordinary-item treatment.",
+    "officialCrosschecks": "docs/evidence/market-history/nasdaq-pe-crosschecks-20261114.json",
+    "spxCoverage": {
+      "verifiedArchiveRecords": 41,
+      "distinctAsOfDates": 25,
+      "distinctQuarterCount": 25,
+      "firstAsOf": "2009-09-30",
+      "lastAsOf": "2026-06-30",
+      "missingQuarters2022Q1Through2026Q2": [
+        "2023Q2"
+      ]
+    },
+    "collectionLimit": "Most additional Wayback requests returned HTTP 429. Parallel collection was stopped; a later single legacy-PDF request also returned HTTP 429. No access control was bypassed.",
+    "selectionAssessment": "Suitable as its own issuer-reported index valuation series at original dated observations; choose at most one observation per calendar quarter, preserve actual date and latest verified source vintage, and do not imply exact equivalence to other suppliers. No per-stock reconstruction is required to publish the issuer series."
+  },
+  "selectionCriteria": [
+    "The observation names the intended underlying index, not an ETF valuation.",
+    "Keep actual index as-of date separate from publication or archive capture time; match comparison dates exactly, identifying weekends separately.",
+    "Keep one named provider and earnings basis through the series, with source editions retained and known changes documented.",
+    "Treat raw weekly, monthly or quarterly frequencies as valid; never create daily interpolation or select fewer points because the curve looks smoother.",
+    "Retain original values and source bytes/hash; compare across independent publishers without declaring a mismatch erroneous when basis or vintage differs.",
+    "For percentiles, use one observation per intended period and explicitly report coverage; do not count repeated archived captures or mixed capture frequency as additional observations."
+  ],
+  "remainingEvidence": [
+    "Exact historical date of Choice-to-Wind source-description change.",
+    "Correct US market date and explanation of Danjuan 2022-07-18 historical discrepancy.",
+    "Explanation of ProShares versus Nasdaq 2021/2022 year-end values.",
+    "Additional SSO archived quarters before 2021 and missing 2023Q2, when archive access allows."
+  ]
+}

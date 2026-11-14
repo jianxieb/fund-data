@@ -5,63 +5,66 @@ const M = require('../assets/market-history-model.js');
 function market(id, closes, readings) {
   return {id, symbol:id.toUpperCase(), prices:{symbol:id === 'spx' ? '^GSPC' : '^NDX',
     source:'yahoo-' + id, basis:'price_index', currency:'USD', points:closes},
-    metrics:[{id:'pe', source:'jiucai-' + id, evidence:'provider', valuationBasis:'aggregate_ttm',
-      vintage:'latest_available', limitations:'No constituent earnings history', frequency:'daily', unit:'倍', points:readings}]};
+    metrics:[{id:'pe', label:'指数 PE · TTM', source:'proshares-' + id, evidence:'provider',
+      valuationBasis:'issuer_trailing_pe', vintage:'latest_verified_publication',
+      limitations:'Issuer benchmark disclosure; not a point-in-time earnings archive',
+      frequency:'quarterly', unit:'倍', points:readings}]};
 }
 
-test('SPX keeps a quarter-end PE jump, real crisis moves and only exact-close observations', () => {
-  const raw = market('spx', [
-    ['2020-03-13',2711.02002], ['2020-03-16',2386.129883],
-    ['2021-03-30',3958.550049], ['2021-03-31',3972.889893],
-    ['2026-07-02',7483.240234], ['2026-07-06',7537.430176]
-  ], [
-    ['2020-03-13',19.2447], ['2020-03-16',16.9582],
-    ['2021-03-30',40.0497], ['2021-03-31',31.4228],
-    ['2026-07-02',25.433], ['2026-07-03',28.0606], ['2026-07-06',25.5471]
-  ]);
+test('only the reviewed issuer, index, methodology and quarterly frequency qualify as PE', () => {
+  for (const id of ['spx','ndx']) {
+    const metric = market(id, [], []).metrics[0];
+    assert.ok(M.eligibleMetric(id, metric));
+    for (const patch of [
+      {source:'jiucai-' + id,valuationBasis:'aggregate_ttm',vintage:'latest_available',frequency:'daily'},
+      {source:'proshares-' + (id === 'spx' ? 'ndx' : 'spx')}, {evidence:'published'},
+      {valuationBasis:'etf_pe'}, {vintage:'latest_available'}, {frequency:'daily'}, {limitations:''}
+    ]) assert.equal(M.eligibleMetric(id, {...metric,...patch}), false, JSON.stringify(patch));
+  }
+});
+
+test('weekend quarter ends remain original observations in charts, statistics and exports', () => {
+  const raw = market('ndx', [['2022-12-30',100],['2023-01-03',101],['2023-03-31',110],['2023-06-30',115]],
+    [['2022-12-31',20],['2023-03-31',40],['2023-06-30',30]]);
   const original = structuredClone(raw), view = M.prepareMarketPE(raw), pe = view.metrics[0];
   assert.deepEqual(raw, original);
-  assert.deepEqual(pe.unmatchedPoints, [['2026-07-03',28.0606]]);
-  // The intervening provider-only July 3 reading does not turn a closed exchange into a missing trading session.
-  assert.deepEqual(pe.missingSessionStarts, []);
-  assert.deepEqual(pe.points, original.metrics[0].points.filter(([d]) => d !== '2026-07-03'));
-  assert.deepEqual(M.segments(pe.points, 'daily', new Set(pe.missingSessionStarts)), [
-    pe.points.slice(0,2),pe.points.slice(2,4),pe.points.slice(4)
-  ]);
-  const summary = M.summarize(pe, '2026-07-06', 10);
-  assert.equal(summary.count, 6);
-  assert.equal(summary.percentile, 100 * 3.5 / 6);
-  const csv = M.csv(view, pe, summary);
-  assert.ok(csv.includes('"2021-03-31","31.4228"'));
-  assert.ok(!csv.includes('2026-07-03'));
+  assert.deepEqual(pe.points, original.metrics[0].points);
+  const a = M.overlay(view, pe, '2023-06-30', 5, '2023-06-30');
+  assert.deepEqual(a.timeline.find(p => p.date === '2022-12-31'), {date:'2022-12-31',price:null,value:20});
+  assert.deepEqual(a.timeline.find(p => p.date === '2022-12-30'), {date:'2022-12-30',price:100,value:null});
+  assert.equal(a.timeline.find(p => p.date === '2023-01-03').value, null);
+  assert.deepEqual(a.metricPoints, original.metrics[0].points);
+  assert.deepEqual(a.prices, original.prices.points);
+  assert.equal(a.summary.count, 3);
+  assert.equal(a.summary.percentile, 50);
+  const csv = M.csv(view, pe, a.summary);
+  assert.ok(csv.includes('"2022-12-31","20"'));
+  assert.ok(!csv.includes('2022-12-30') && !csv.includes('2023-01-03'));
 });
 
-test('the Nasdaq April 2020 spike remains an unaltered continuous line across actual observations', () => {
-  const raw = market('ndx', [['2020-04-28',8677.599609],['2020-04-29',8982.759766],['2020-04-30',9000.509766]],
-    [['2020-04-28',25.2787],['2020-04-29',30.5858],['2020-04-30',26.1231]]);
+test('quarterly observations stay connected across ordinary trading sessions and large changes', () => {
+  const raw = market('spx', [['2020-12-31',100],['2021-01-04',101],['2021-03-31',102]],
+    [['2020-12-31',40],['2021-03-31',20],['2021-06-30',60]]);
   const pe = M.prepareMarketPE(raw).metrics[0];
-  assert.deepEqual(pe.points, raw.metrics[0].points);
-  assert.deepEqual(M.segments(pe.points, 'daily', new Set(pe.missingSessionStarts)), [pe.points]);
+  assert.deepEqual(M.segments(pe.points, pe.frequency), [pe.points]);
+  assert.equal(M.summarize(pe, '2021-06-30', 5, '2021-07-31').stale, false);
 });
 
-test('only missing PE sessions and long history gaps break the line, regardless of value changes', () => {
-  const day = n => '2026-06-' + String(n).padStart(2,'0');
-  const raw = market('spx', [1,2,3,4,15,16,17].map(n => [day(n),100]),
-    [[1,20],[3,10],[4,10.5],[15,21],[16,19.95],[17,20.94]].map(([n,v]) => [day(n),v]));
+test('a missing quarter remains a genuine gap without manufactured observations', () => {
+  const raw = market('ndx', [], [['2020-12-31',30],['2021-03-31',40],['2021-09-30',35]]);
   const pe = M.prepareMarketPE(raw).metrics[0];
-  assert.deepEqual(pe.missingSessionStarts, [day(3)]);
-  assert.deepEqual(M.segments(pe.points, 'daily', new Set(pe.missingSessionStarts))
-    .map(segment => segment.map(p => p[0])), [[day(1)],[day(3),day(4)],[day(15),day(16),day(17)]]);
+  assert.deepEqual(M.segments(pe.points, pe.frequency), [pe.points.slice(0,2),pe.points.slice(2)]);
+  assert.equal(M.summarize(pe, '2021-09-30', 5).count, 3);
+  assert.ok(!pe.points.some(([d]) => d === '2021-06-30'));
 });
 
-test('a mismatched index, ETF, currency, source or absent price history cannot produce valid PE statistics', () => {
+test('PE is preserved independently of missing prices, while the overlay still rejects index proxies', () => {
   const day = '2026-06-30', raw = market('ndx', [[day,100]], [[day,20]]);
   for (const prices of [null, {...raw.prices, points:undefined}, {...raw.prices, symbol:'^IXIC'},
     {...raw.prices, basis:'etf_price'}, {...raw.prices, currency:'CNY'}, {...raw.prices, source:'yahoo-spx'}]) {
-    const pe = M.prepareMarketPE({...raw, prices}).metrics[0];
-    assert.deepEqual(pe.points, []);
-    assert.deepEqual(pe.missingSessionStarts, []);
-    assert.deepEqual(pe.unmatchedPoints, [[day,20]]);
-    assert.equal(M.summarize(pe, day, 5), null);
+    const view = M.prepareMarketPE({...raw, prices}), pe = view.metrics[0];
+    assert.deepEqual(pe.points, [[day,20]]);
+    assert.equal(M.summarize(pe, day, 5).count, 1);
+    assert.equal(M.overlay(view, pe, day, 5).error, '缺少同一指数的美元价格历史');
   }
 });

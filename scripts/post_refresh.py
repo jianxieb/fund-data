@@ -20,6 +20,8 @@ TASKS = {
     'financial_events': ('scripts/build_financial_events.py', [], ('financial-events-history.json',)),
     'bank_fx': ('scripts/refresh_money_flow_quotes.py', ['--timeout', '8'], ('money-flow-quotes.js',)),
     'market_history': ('market_history.py', [], ('market-history.json',)),
+    'market_history_pe': ('scripts/collect_portfolio_benchmark_pe.py',
+        ['--output', 'data/market-history-pe.json', '--symbols', 'SSO,TQQQ'], ('market-history-pe.json',)),
     'benchmark_valuations': ('scripts/collect_portfolio_benchmark_pe.py', [], ('portfolio/benchmark-valuations.json',)),
     'portfolio_stress': ('scripts/build_portfolio_entry_context.py', ['--refresh'], ('portfolio/entry-context.json',)),
 }
@@ -48,9 +50,13 @@ def main(selected=None):
         report['steps'].append(run_task('fund_actions'))
     # Event chapters and index-high verification consume the new index catalog;
     # do not race its atomic replacement and cleanup. Other sources stay parallel.
-    names = [name for name in selected if name not in ('fund_actions', 'financial_events', 'drop_highs')]
+    names = [name for name in selected if name not in ('fund_actions', 'financial_events', 'drop_highs', 'market_history')]
     with ThreadPoolExecutor(max_workers=max(1, len(names))) as pool:
         report['steps'].extend(pool.map(run_task, names))
+    # Historical PE consumes the issuer archive. It must see the completed
+    # collection (or the retained, already verified archive) rather than race it.
+    if 'market_history' in selected:
+        report['steps'].append(run_task('market_history'))
     if 'financial_events' in selected:
         report['steps'].append(run_task('financial_events'))
     if 'drop_highs' in selected:

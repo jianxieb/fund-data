@@ -40,7 +40,7 @@
     const { id, source, evidence } = metric;
     if (typeof source !== 'string') return false;
     if (marketId === 'spx' || marketId === 'ndx') {
-      if (id === 'pe') return source === 'jiucai-' + marketId && evidence === 'provider' && metric.valuationBasis === 'aggregate_ttm' && metric.vintage === 'latest_available' && !!metric.limitations;
+      if (id === 'pe') return source === 'proshares-' + marketId && evidence === 'provider' && metric.valuationBasis === 'issuer_trailing_pe' && metric.vintage === 'latest_verified_publication' && metric.frequency === 'quarterly' && !!metric.limitations;
       const vol = marketId === 'spx' ? 'vix' : 'vxn';
       if (id === vol) return source === vol && evidence === 'published';
       return ['rv21', 'drawdown', 'mdd252', 'ma200', 'momentum'].includes(id) && source === 'yahoo-' + marketId && evidence === 'calculated';
@@ -124,19 +124,12 @@
     if (!symbol || !Array.isArray(h?.points) || h.symbol !== symbol || h.basis !== 'price_index' || h.currency !== 'USD' || h.source !== 'yahoo-' + market.id) return null;
     return h.points.filter(([d,v]) => (asOf === undefined || d <= asOf) && Number.isFinite(v) && v > 0);
   }
-  // Prepare a display/statistics sample without modifying the published provider history.
+  // Issuer observations keep their reported dates and frequency, including weekend
+  // quarter ends. Price pairing is an independent exact-date lookup in overlay().
   function prepareMarketPE(market) {
-    const prices = priceHistory(market) || [], closeIndex = new Map(prices.map(([d],i) => [d,i]));
     const metrics = market.metrics.map(metric => {
       if (metric.id !== 'pe' || !eligibleMetric(market.id, metric)) return metric;
-      const points = [], unmatchedPoints = [], missingSessionStarts = [];
-      for (const p of metric.points) (closeIndex.has(p[0]) ? points : unmatchedPoints).push(p);
-      for (let i = 1; i < points.length; i++) {
-        const [date] = points[i], [previousDate] = points[i - 1];
-        const session = closeIndex.get(date), previousSession = closeIndex.get(previousDate);
-        if (session > previousSession + 1) missingSessionStarts.push(date);
-      }
-      return {...metric, points, unmatchedPoints, missingSessionStarts};
+      return {...metric, points:metric.points.map(p => [...p])};
     });
     return {...market, metrics};
   }
@@ -328,7 +321,7 @@
     if(!symbol||!history||history.symbol!==symbol||history.source!=='yahoo-'+market.id||history.currency!=='USD'||history.basis!=='price_index')return {error:'缺少同一指数的美元价格历史'};
     const id=kind==='valuation'?'pe':market.id==='spx'?'vix':'vxn';
     const metric=market.metrics.find(m=>m.id===id&&eligibleMetric(market.id,m));
-    if(!metric)return {error:'缺少'+(kind==='valuation'?'整体法TTM PE历史':'官方隐含波动历史')};
+    if(!metric)return {error:'缺少'+(kind==='valuation'?'发行人披露的指数PE历史':'官方隐含波动历史')};
     const prices=history.points.filter(p=>p[0]<=asOf&&Number.isFinite(p[1])&&p[1]>0);
     const lookup=new Map(metric.points.filter(p=>p[0]<=asOf&&Number.isFinite(p[1])));
     const current=[...prices].reverse().find(p=>lookup.has(p[0]));

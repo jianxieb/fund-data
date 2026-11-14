@@ -1183,5 +1183,10 @@
         "Independent validation of the historical values; the fact that the public API responds does not establish correctness."
       ]
     }
+  },
+  "supersededFindings": {
+    "reviewDate": "2026-11-14",
+    "evidence": "pe-source-review-addendum-20261114.json",
+    "correction": "The exploratory SPX ProShares new-page extraction used dates outside the Index block for 15 captures. Its purported monthly date repetition/regression findings and the resulting SPX comparison dates are withdrawn. Use the corrected Index-only observations in proshares-spx-archive-20261114.json and pe-date-comparison-20261114.json. Raw files and hashes remain unchanged."
   }
 }

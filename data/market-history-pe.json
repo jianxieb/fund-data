@@ -1,0 +1,3289 @@
+{
+  "schemaVersion": 1,
+  "observations": [
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2009-09-30",
+      "knownBy": "2009-10-15T17:24:07Z",
+      "indexPE": 19.92,
+      "indexPB": 2.16,
+      "dividendYieldPct": 2.39,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "http://proshares.com:80/funds/sso_index.html",
+      "sourceSha256": "fd7e93978d6fff6802efe2222ef3af3875f0b767cc954ead97063eadcea42924",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20091015172407id_/http://proshares.com:80/funds/sso_index.html",
+      "archiveDigestSha1Base32": "FN4Z5TPRB4PPKVIK5VVEU5VGFOC5WZLL"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2011-09-30",
+      "knownBy": "2011-10-16T04:53:59Z",
+      "indexPE": 12.38,
+      "indexPB": 1.85,
+      "dividendYieldPct": 2.3,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "http://proshares.com/funds/sso_index.html",
+      "sourceSha256": "a8eeca2cb8c1434edcac28cbee9511939ddd3aa76c5ac8f57e6aa49ba912e9f9",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20111016045359id_/http://proshares.com/funds/sso_index.html",
+      "archiveDigestSha1Base32": "CWR6ROTKQMUQJFGCPH6FF5RA5YOL6OOP"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2013-03-31",
+      "knownBy": "2013-05-22T10:10:31Z",
+      "indexPE": 15.46,
+      "indexPB": 2.35,
+      "dividendYieldPct": 2.1,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "http://www.proshares.com:80/funds/sso_index.html",
+      "sourceSha256": "6ac6164fe06f0aa99e8138c7e7afaeba5de4dedf3e1e73e678f784745d6cb755",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20130522101031id_/http://www.proshares.com:80/funds/sso_index.html",
+      "archiveDigestSha1Base32": "FU5VRL2Z5D3RQBCWTGTMTDUYF5G4YUH2"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2013-09-30",
+      "knownBy": "2013-10-23T08:31:40Z",
+      "indexPE": 16.12,
+      "indexPB": 2.47,
+      "dividendYieldPct": 2.09,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "http://www.proshares.com:80/funds/sso_index.html",
+      "sourceSha256": "a7cdf887d81f9ae70731c8ec1b9a1263796e0f9a876a30c599f259b05ee0531b",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20131023083140id_/http://www.proshares.com:80/funds/sso_index.html",
+      "archiveDigestSha1Base32": "263RIDSKRZJYZN3WW4PDABX73UT42OTC"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2013-09-30",
+      "knownBy": "2013-12-24T05:50:50Z",
+      "indexPE": 16.12,
+      "indexPB": 2.47,
+      "dividendYieldPct": 2.09,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "http://www.proshares.com:80/funds/sso_index.html",
+      "sourceSha256": "ccb5af2249ed315d456416fc529c5426dd53cf97366e76b257428e8b0f82005f",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20131224055050id_/http://www.proshares.com:80/funds/sso_index.html",
+      "archiveDigestSha1Base32": "ILV6CQUSKMHQD4G6GCP2ZUVXXQWHWJB6"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2015-06-30",
+      "knownBy": "2015-08-14T01:02:00Z",
+      "indexPE": 17.86,
+      "indexPB": 2.81,
+      "dividendYieldPct": 2.05,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "http://www.proshares.com:80/funds/sso_index.html",
+      "sourceSha256": "f3b72dfea1ffbe5ecdd149efdcd6396c93f7734d4c78ed19f01fe8e87adbbda5",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20150814010200id_/http://www.proshares.com:80/funds/sso_index.html",
+      "archiveDigestSha1Base32": "KTHHDXTYK4VTKRN4H7JLG4YCVYFEAMGH"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2016-09-30",
+      "knownBy": "2016-10-21T08:13:40Z",
+      "indexPE": 20.42,
+      "indexPB": 2.86,
+      "dividendYieldPct": 2.13,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "http://www.proshares.com:80/funds/sso_index.html",
+      "sourceSha256": "931f365badd67bb1595bc3a2f06f95e01afa49994c7af785822ba17a6719104b",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20161021081340id_/http://www.proshares.com:80/funds/sso_index.html",
+      "archiveDigestSha1Base32": "AOUGQGQIKEHGEB57BEF37MMAWPFUWJFL"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2019-06-28",
+      "knownBy": "2019-09-23T07:25:16Z",
+      "indexPE": 19.31,
+      "indexPB": 3.43,
+      "dividendYieldPct": 1.98,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/funds/sso_index.html",
+      "sourceSha256": "8e88db0c0d94f949c2d1bcc68699f42eaefc6006a36212f12ce006153a524d18",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20190923072516id_/https://www.proshares.com/funds/sso_index.html",
+      "archiveDigestSha1Base32": "CJPD5XD423KJCDFJZ3VNUUHDFBE4XXB5"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2021-09-30",
+      "knownBy": "2021-12-25T01:52:54Z",
+      "indexPE": 25.8,
+      "indexPB": 4.52,
+      "dividendYieldPct": 1.41,
+      "displayDecimals": {
+        "indexPE": 1,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "26ea871ffd6874f8261b6b1fb758e106bc24bf18467c620305070b3d2746823e",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20211225015254id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "3W25POA5HPPRK5P7CAYU4XTJ45DUEXSO"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2021-09-30",
+      "knownBy": "2022-01-17T09:48:48Z",
+      "indexPE": 25.8,
+      "indexPB": 4.52,
+      "dividendYieldPct": 1.41,
+      "displayDecimals": {
+        "indexPE": 1,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "a988fb47f972e88644fc0c8719e17bcbece2b06ac11114405bbfa48b373090ec",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20220117094848id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "KSVX5CYYKPLMBTYQJDBP3QVFQPERSZTB"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2022-03-31",
+      "knownBy": "2022-07-04T11:51:15Z",
+      "indexPE": 22.56,
+      "indexPB": 4.53,
+      "dividendYieldPct": 1.37,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "a2f3511cc0949bb4e858050853b65ab336ea43704a3f0035899153f4f2a6020d",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20220704115115id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "6NXEJ4ZTKSVHSQIVX3I4S7KDUYK62FZY"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2022-06-30",
+      "knownBy": "2022-09-23T09:45:54Z",
+      "indexPE": 18.39,
+      "indexPB": 3.76,
+      "dividendYieldPct": 1.73,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "8563c384c73cacaff5bfb7ddf2dc818f358cf716a0c104923d9fd27310671b3e",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20220923094554id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "WVEMH2SYQC6BZWWQJULCKOZMPFEVQ4HR"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2022-06-30",
+      "knownBy": "2022-10-05T04:58:19Z",
+      "indexPE": 18.39,
+      "indexPB": 3.76,
+      "dividendYieldPct": 1.73,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "13efdb1dc5bb871de375258ee679dfab539153f3565675c650be32f55af3a68c",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20221005045819id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "ER5W6IRXEVYLGBLFQAV62L3OPQRZAALC"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2022-09-30",
+      "knownBy": "2022-11-23T01:54:08Z",
+      "indexPE": 17.139,
+      "indexPB": 3.609,
+      "dividendYieldPct": 1.85,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "2d7b20cc39bdd8dbc3180b56c4f87388226b0c4933ed696a1a06eb5e0e11c040",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20221123015408id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "NAEJ24IB23VG4XBNEERV7ZWTFEH2GDQJ"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2022-12-30",
+      "knownBy": "2023-01-31T16:18:28Z",
+      "indexPE": 17.983,
+      "indexPB": 3.868,
+      "dividendYieldPct": 1.76,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "adf6583a95b8d3fbfc6e69ec9569578079d67054a46eaf9bb26cf56805095530",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20230131161828id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "QLSL6ZTOODN4FYV4G6OXL2Y4Z3SYOPLL"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2022-12-30",
+      "knownBy": "2023-03-21T16:18:43Z",
+      "indexPE": 17.983,
+      "indexPB": 3.868,
+      "dividendYieldPct": 1.76,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "c498f5602b9e0b523a17ae236eecc8bc9b00bf5bdbe9a58cd6f8a2ca680d0f51",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20230321161843id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "FKJPURY4WLJDBFXUIERM4MDSTHOMGPC6"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2023-03-31",
+      "knownBy": "2023-05-28T22:17:56Z",
+      "indexPE": 21.08,
+      "indexPB": 4.06,
+      "dividendYieldPct": 1.68,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "cd2ffa07f420d0af86a831594c08ed1715d81050613005c5e602b42c86d712ce",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20230528221756id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "BXRIXXYGBCPDN3FWWSAXKR53W2G23GXN"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2023-03-31",
+      "knownBy": "2023-06-16T04:18:35Z",
+      "indexPE": 21.08,
+      "indexPB": 4.06,
+      "dividendYieldPct": 1.68,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "97eff942c02af68f04227905617dfd7448c591f8ef7b16afbcfbdf3c78e0bb09",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20230616041835id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "LYIATQXHXV5VIL5N64F7J25HBMBACY5I"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2023-09-29",
+      "knownBy": "2023-12-01T06:08:30Z",
+      "indexPE": 21.259,
+      "indexPB": 4.081,
+      "dividendYieldPct": 1.61,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "146cc1ce97cd3f461c6740228b95bf6f23f3a96e7f33f81178f281b5180cf795",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20231201060830id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "7ATQLWV4R4PA4B6NVZWVXGTDFSJQE7LP"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2023-12-29",
+      "knownBy": "2024-01-26T16:04:44Z",
+      "indexPE": 23.448,
+      "indexPB": 4.48,
+      "dividendYieldPct": 1.49,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/SSO",
+      "sourceSha256": "6211be1cf43bde2e4b8fb14869f864141e16b5a8503adc1a797c2188a4539bb6",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20240126160444id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/SSO",
+      "archiveDigestSha1Base32": "56W5CS2HEXTG744QF6CLZY5AV2JKMW3Y"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2023-12-29",
+      "knownBy": "2024-02-24T06:09:00Z",
+      "indexPE": 23.448,
+      "indexPB": 4.48,
+      "dividendYieldPct": 1.49,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "e1fa2c3c49c152f78e7d6fbde20d6cc7e1951b58e77b1130f763f9d3459a7368",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20240224060900id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "B6MRC4PNPL66S44MVNYZ474JA63SRGI5"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2024-03-28",
+      "knownBy": "2024-05-19T20:19:18Z",
+      "indexPE": 25.528,
+      "indexPB": 4.809,
+      "dividendYieldPct": 1.36,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "16f4f5ad014b4ccda844871d78b0df84d89397df27bddcd845751c174ccc13ad",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20240519201918id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "STXX2VZQYPSUFJIJLMKY22V3NWJT3OBW"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2024-03-28",
+      "knownBy": "2024-06-04T23:48:54Z",
+      "indexPE": 25.528,
+      "indexPB": 4.809,
+      "dividendYieldPct": 1.36,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "e00d0eeb103423450dfc1b54caace534d3977e5192d96cbf9d080ce0989b74d7",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20240604234854id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "I4F3VNUGWF7BTWHY5BBMTRBIZTYYGO63"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2024-06-28",
+      "knownBy": "2024-09-07T23:36:55Z",
+      "indexPE": 26.404,
+      "indexPB": 4.944,
+      "dividendYieldPct": 1.33,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "0ffda160fbd271694c21df4ba7af6b0adffcac405df43de74e9e98b9d463a06c",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20240907233655id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "3VY267RURPHA24XG2UQQ65YABSDQRWHZ"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2024-09-30",
+      "knownBy": "2025-01-12T23:47:55Z",
+      "indexPE": 27.386,
+      "indexPB": 5.138,
+      "dividendYieldPct": 1.28,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "75ea6d8bcb78206f992556dc25176346a9bbaab371f80c5901f56ee27a4d9d9a",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20250112234755id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "H7LVPKQMA4KWEMPECZUYRDEIGGJ2H6Y4"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2024-12-31",
+      "knownBy": "2025-03-27T17:53:27Z",
+      "indexPE": 27.117,
+      "indexPB": 5.111,
+      "dividendYieldPct": 1.27,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "7d799d051627de82dd5438d0f103f85ff6d81c39edd38b68065ec6884e9ce73c",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20250327175327id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "KCK3VP2XWCNJLL32O47PRMUV2PLAQXFC"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2025-03-31",
+      "knownBy": "2025-05-21T01:38:06Z",
+      "indexPE": 24.797,
+      "indexPB": 4.823,
+      "dividendYieldPct": 1.36,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "f8a6826067ad41cc81b9c7dc47dd7b7359ce1af96a01dea26173260a172da0f3",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20250521013806id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "TI7E5SRULDV4KZE76DJS2JTKXZQ2ORSZ"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2025-03-31",
+      "knownBy": "2025-06-07T19:46:46Z",
+      "indexPE": 24.797,
+      "indexPB": 4.823,
+      "dividendYieldPct": 1.36,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "fd00e35fa48cf8c49b05b90e38a3fb7ceedffc086acfaab5c0aa7fe33a4d48ef",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20250607194646id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "SO6WOMGNY2THSAK4RMMJ2YV2Y2OPB7KR"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2025-06-30",
+      "knownBy": "2025-07-26T11:56:32Z",
+      "indexPE": 26.761,
+      "indexPB": 5.241,
+      "dividendYieldPct": 1.24,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "60137695bee4dfdfaea173ebd3d33ae50fd948298a1c350330db5482b3301cb6",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20250726115632id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "ME7WAHZULV3FBBZ3XT2V2CFTVN3ASQJB"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2025-06-30",
+      "knownBy": "2025-08-05T19:30:52Z",
+      "indexPE": 26.761,
+      "indexPB": 5.241,
+      "dividendYieldPct": 1.24,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "183817bbe5cb715ca650b2464af0f9fcf4393927e4cc54aa3b7051fe3b3786fd",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20250805193052id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "U2D5JWPL4RPIXONYW6RS3AWNIWIAW6HF"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2025-06-30",
+      "knownBy": "2025-09-16T16:58:12Z",
+      "indexPE": 26.76,
+      "indexPB": 5.24,
+      "dividendYieldPct": 1.24,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "93f388bacc2eb7cff3ed9adabef5d2afe5b2ab70861930959b519f32bb98b22d",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20250916165812id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "7R5ILNDBMJ7RCZ2PQGWSXKHDT5RCIF5S"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2025-06-30",
+      "knownBy": "2025-10-09T04:49:46Z",
+      "indexPE": 26.76,
+      "indexPB": 5.24,
+      "dividendYieldPct": 1.24,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "172145940b5e50f8760f499bf39f8a0d9d355cd921b03e3857ee4d496a31d65e",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20251009044946id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "TWIWVHWOTJITHNO5QAMC44RKAVN2CSC5"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2025-09-30",
+      "knownBy": "2025-11-12T23:48:02Z",
+      "indexPE": 28.25,
+      "indexPB": 5.47,
+      "dividendYieldPct": 1.17,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "ce2674eb13d6c55b44634f6a0a08b71940967df4b3341642c468ede613260ae6",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20251112234802id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "EC7PER7KPH2SDWOC5O3ZTBACTAGSIRZ6"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2025-09-30",
+      "knownBy": "2025-12-30T14:22:00Z",
+      "indexPE": 28.25,
+      "indexPB": 5.47,
+      "dividendYieldPct": 1.17,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "cba295690a7ab7e8f3d9f163863256c19e3333031b7d57a85c706ff4604124e6",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20251230142200id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "3B2WJ7VP76TUT4ZDZUOEU3DLIFSJLCPC"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2025-12-31",
+      "knownBy": "2026-01-17T00:27:06Z",
+      "indexPE": 27.79,
+      "indexPB": 5.47,
+      "dividendYieldPct": 1.14,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "484b43eca52e67a8e9b21d548846625d36589ac007361a4f98c98775c94031c6",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20260117002706id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "V44VTCRDM334FJVNYP4U3H75XVT35GVA"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2025-12-31",
+      "knownBy": "2026-03-12T03:01:17Z",
+      "indexPE": 27.79,
+      "indexPB": 5.47,
+      "dividendYieldPct": 1.14,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "0b6f46d17d959cb0e67fded0354547b4870e5521c1de52b143eb14b7b91438ee",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20260312030117id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "DICXMCUQYY4Y7ZPRMVTWQ7GNWA57M4K3"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2026-03-31",
+      "knownBy": "2026-04-19T07:55:01Z",
+      "indexPE": 25.79,
+      "indexPB": 5.09,
+      "dividendYieldPct": 1.22,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "03ef670b49f2e4b12b4dbf703b72798582705e5dd83e14fa8f898488941f04bc",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20260419075501id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "6FILL3WRAFQC5PSYF3DT4FQ4LNIDE6ZI"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2026-06-30",
+      "knownBy": "2026-07-14T22:48:22Z",
+      "indexPE": 27.43,
+      "indexPB": 5.7,
+      "dividendYieldPct": 1.08,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/SSO",
+      "sourceSha256": "3bd51c29ad2d59f31328fa1fd7faa45f1eff3513d2462cd9967a4bf7eb66d29b",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20260714224822id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/SSO",
+      "archiveDigestSha1Base32": "HITSJPPQA2Q6XYPI5PXE2S2HFXI57MMK"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2026-06-30",
+      "knownBy": "2026-08-13T06:35:11Z",
+      "indexPE": 27.43,
+      "indexPB": 5.7,
+      "dividendYieldPct": 1.08,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "b6fa96814ad96f1f79c401eff8436cdc3fe295fc87f6f2754c5f96364bce1cbb",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20260813063511id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "2L5PPZPAV2H7BDSC4JE2CKFFRTLDM7MV"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2026-06-30",
+      "knownBy": "2026-09-07T19:33:42Z",
+      "indexPE": 27.43,
+      "indexPB": 5.7,
+      "dividendYieldPct": 1.08,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "7da4126b1e5429c6db803c6df0038533cafd6c69dcb3ecb2c3c5d2a1c2716aed",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20260907193342id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "S5FRD23T32IK76WDD7BP2PH42IDMU5BF"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2026-06-30",
+      "knownBy": "2026-10-14T14:50:04Z",
+      "indexPE": 27.43,
+      "indexPB": 5.7,
+      "dividendYieldPct": 1.08,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "4303ba9efcd4143059cf630f4b6a1e58f9c108368987c66687aa5302cf2e4781",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20261014145004id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "archiveDigestSha1Base32": "IQ73FD4PA37KCWPFDQUAFXVX3VPPQT32"
+    },
+    {
+      "symbol": "SSO",
+      "indexName": "S&P 500 Index",
+      "asOf": "2026-09-30",
+      "knownBy": "2026-11-14T03:02:22Z",
+      "indexPE": 24.77,
+      "indexPB": 5.59,
+      "dividendYieldPct": 1.07,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/sso",
+      "sourceSha256": "411c4af9c00e177357c6ccae7012adedf7c53793c708fbc2789115ebe28639c6",
+      "evidenceType": "issuer_live"
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2010-03-31",
+      "knownBy": "2010-04-23T03:55:08Z",
+      "indexPE": 22.84,
+      "sourceUrl": "http://proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "7055317637178207fa0f47140e917c83a12c6116ee763e08a1404c110a0b84ab",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20100423035508id_/http://proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "4GDXNCOY5KUXUXEYT4Q4T3C72LYB6EHP",
+      "indexPB": 3.76,
+      "dividendYieldPct": 0.65,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2010-12-31",
+      "knownBy": "2011-02-21T08:30:06Z",
+      "indexPE": 19.58,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "b033540800beab8c2f4879675b1107dc78892ca45a8f9840627be9684626b8d3",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20110221083006id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "DJHVG2HKZCVPKBBK757RUH7KDVRHM4CM",
+      "indexPB": 3.83,
+      "dividendYieldPct": 0.81,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2011-03-31",
+      "knownBy": "2011-07-03T13:44:45Z",
+      "indexPE": 19.42,
+      "sourceUrl": "http://proshares.com/funds/tqqq_index.html",
+      "sourceSha256": "e2360e0f8d3cc8d4b143ed3b99578a3e0885459bbc1fdb1606977922dd6aa5fd",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20110703134445id_/http://proshares.com/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "TM5LBER3NUHKDTP22RTMYMR3OGEUWF6I",
+      "indexPB": 3.76,
+      "dividendYieldPct": 0.79,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2011-06-30",
+      "knownBy": "2011-09-03T07:50:40Z",
+      "indexPE": 17.11,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "599fa534e386960f42dabbb387c41f6ca896d3cc2962b40f92168f1241dd4622",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20110903075040id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "NS5POBKWUWQ2RXPWME5CD5HJFJG5VKQU",
+      "indexPB": 3.44,
+      "dividendYieldPct": 0.96,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2011-09-30",
+      "knownBy": "2011-10-16T03:21:27Z",
+      "indexPE": 14.94,
+      "sourceUrl": "http://proshares.com/funds/tqqq_index.html",
+      "sourceSha256": "d844d40ceefd13b5f2f262f1412a25cdb0a3110a8fc0c6709107c7a419b9bb0f",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20111016032127id_/http://proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "Y7VJ4B566AYGFUTZ2KJCOBBG2OA2R7FQ",
+      "indexPB": 3.07,
+      "dividendYieldPct": 1.02,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2011-12-31",
+      "knownBy": "2012-02-11T01:56:44Z",
+      "indexPE": 15.58,
+      "sourceUrl": "http://www.proshares.com/funds/tqqq_index.html",
+      "sourceSha256": "f056d8682bbfc919c55bc4de2f7169c44f00df799cef6d7a37f68f5851856ff1",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20120211015644id_/http://www.proshares.com/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "OP57H4EHBHM7EVXLZMSL5YMOLJID3SRL",
+      "indexPB": 3.24,
+      "dividendYieldPct": 1.02,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2011-12-31",
+      "knownBy": "2012-03-27T07:20:45Z",
+      "indexPE": 15.58,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "c3c866fa154a79e5b16e243c76f0f82d552b47de27c3a5b825e0cfb0fcc3a55b",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20120327072045id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "ELGEQIQHJJNWEXEDFC4GZPEU2MU5VWBG",
+      "indexPB": 3.24,
+      "dividendYieldPct": 1.02,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2012-03-31",
+      "knownBy": "2012-05-04T15:02:05Z",
+      "indexPE": 17.78,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "879f19f169e0c074db5ac80b1f32103122b39239330009f8e2e9c08ce5d0d429",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20120504150205id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "Q7OXJOAZC7DGN5637TFAEKI7UNM2JSAF",
+      "indexPB": 3.79,
+      "dividendYieldPct": 0.88,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2012-06-30",
+      "knownBy": "2012-07-20T09:15:46Z",
+      "indexPE": 16.06,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "ff178de365bbc615025c4910364a48280a6aefefe19cbfa7dfddf33c8c3ab8c2",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20120720091546id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "N7QFAYGUGO2FDQFAN7E5VN2MX4PTM6TN",
+      "indexPB": 3.51,
+      "dividendYieldPct": 0.99,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2012-09-30",
+      "knownBy": "2012-11-22T06:55:31Z",
+      "indexPE": 16.78,
+      "sourceUrl": "http://www.proshares.com/funds/tqqq_index.html",
+      "sourceSha256": "0f91eddaddee4ade61f1aea6fc6a7f60f843513a25d720197fd325e852e7edd0",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20121122065531id_/http://www.proshares.com/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "J6QPIKLYSTBGESD47RA2M75GJQ5GOUGN",
+      "indexPB": 3.54,
+      "dividendYieldPct": 1.11,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2012-12-31",
+      "knownBy": "2013-03-07T14:58:10Z",
+      "indexPE": 16.14,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "032e7d81c3d63e5f212d975473ded75af9b608cfbaf0e87d3eb8ab9f88f0bacb",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20130307145810id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "CFG4VTMSTXBTNHI2D35P5QOJQMWMO55C",
+      "indexPB": 3.3,
+      "dividendYieldPct": 1.39,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2012-12-31",
+      "knownBy": "2013-04-07T11:47:52Z",
+      "indexPE": 16.14,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "78723e7ab6afdb363db953e84f069f9766bf7603454fef585f4dcff8192065de",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20130407114752id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "XH5XAA5EWRFQ3MQWPMQ72ROW2LCBWL3O",
+      "indexPB": 3.3,
+      "dividendYieldPct": 1.39,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2013-03-31",
+      "knownBy": "2013-06-01T09:22:00Z",
+      "indexPE": 17.24,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "85e443044a2d619074df8650af5a57b2245d54d6e051ae7196f2d53bf691f4a8",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20130601092200id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "G6DYNT32NYOE3JKUTGAWAOWIH577MJGD",
+      "indexPB": 3.41,
+      "dividendYieldPct": 1.42,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2014-03-31",
+      "knownBy": "2014-07-03T23:37:26Z",
+      "indexPE": 20.93,
+      "sourceUrl": "http://www.proshares.com/funds/tqqq_index.html",
+      "sourceSha256": "00ae1711ba75a8cc1b055387bf24be9873aee365b9fa63edfa71b6866a9b962d",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20140703233726id_/http://www.proshares.com/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "MX2P2C2XTQCNOASTHWOEHEWX7VVDZQ7M",
+      "indexPB": 4.18,
+      "dividendYieldPct": 1.37,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2014-09-30",
+      "knownBy": "2014-12-22T09:51:43Z",
+      "indexPE": 22.89,
+      "sourceUrl": "http://www.proshares.com:80/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "sourceSha256": "3dc8321ebd60479bef7c53f0f8805d00e8efb5e7f368cc68a36265ccfc6412bd",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20141222095143id_/http://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "archiveDigestSha1Base32": "VBGDT66UVWVLON7P3KHL3P6M4EF2I4O4",
+      "indexPB": 4.61,
+      "dividendYieldPct": 1.28,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2014-12-31",
+      "knownBy": "2015-02-28T11:54:22Z",
+      "indexPE": 22.25,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "72e8bb041f7e413eac3f6ae6bfc021f41c92211a3a7cb5807eddfec617df3eb2",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20150228115422id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "ZPEPUGACMHSDGGJEOOFZBS3IE5KYBA2M",
+      "indexPB": 4.67,
+      "dividendYieldPct": 1.28,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2014-12-31",
+      "knownBy": "2015-03-28T00:11:37Z",
+      "indexPE": 22.25,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "f278b53173dd5f2055567ac520bbf9fc964f9b2d4721e3f309873f4fb1bfa9ba",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20150328001137id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "K6RG7ACBSMNE2O5JSLY6O7LCJ3WQ6UJ5",
+      "indexPB": 4.67,
+      "dividendYieldPct": 1.28,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2014-12-31",
+      "knownBy": "2015-04-03T09:23:05Z",
+      "indexPE": 22.25,
+      "sourceUrl": "http://www.proshares.com/funds/tqqq_index.html",
+      "sourceSha256": "f278b53173dd5f2055567ac520bbf9fc964f9b2d4721e3f309873f4fb1bfa9ba",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20150403092305id_/http://www.proshares.com/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "K6RG7ACBSMNE2O5JSLY6O7LCJ3WQ6UJ5",
+      "indexPB": 4.67,
+      "dividendYieldPct": 1.28,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2014-12-31",
+      "knownBy": "2015-04-03T15:43:46Z",
+      "indexPE": 22.25,
+      "sourceUrl": "http://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "sourceSha256": "1aa67b0f85ea4922cc7520122a65f6bfe30c5736ce3df738a43ddc977dd1c26c",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20150403154346id_/http://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "archiveDigestSha1Base32": "Z76LHVIDEWSPM5TZOSUX4QDUYOEEIZQ6",
+      "indexPB": 4.67,
+      "dividendYieldPct": 1.28,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2015-03-31",
+      "knownBy": "2015-05-28T14:55:55Z",
+      "indexPE": 21.31,
+      "sourceUrl": "http://www.proshares.com:80/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "sourceSha256": "b2a3b615edda07ccc0e680dff030be87b03eef4cadd6b6bdb9ae5c8b3c5e2bf6",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20150528145555id_/http://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "archiveDigestSha1Base32": "RMC3HLLRNKJ7TGUZFOO25C3YHNWVNKNQ",
+      "indexPB": 4.62,
+      "dividendYieldPct": 1.22,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2015-03-31",
+      "knownBy": "2015-05-30T05:05:38Z",
+      "indexPE": 21.31,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "2fe4b7e0b89905344bc9981b694d54e04b87892adfc0c9f05efc6c6e8921605f",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20150530050538id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "SUBEXDWMKXR4Z5FJ36LCRKRRVS6TIPR4",
+      "indexPB": 4.62,
+      "dividendYieldPct": 1.22,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2015-03-31",
+      "knownBy": "2015-06-30T15:20:38Z",
+      "indexPE": 21.31,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "3d96efe033fc0c922409fdcddd66a389ec01245997b02ee4fe27702e83b653f4",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20150630152038id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "MDPJZS5XST5C2ROIV2YTNJXBL7VVZHT3",
+      "indexPB": 4.62,
+      "dividendYieldPct": 1.22,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2015-06-30",
+      "knownBy": "2015-07-31T07:48:21Z",
+      "indexPE": 20.48,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "9034136f710e3af77c4562625b6ed6ca30a10a582fb2e56248f127d435500731",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20150731074821id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "V6ONCPPVTIDOUKXVJLNGFJJ55A6KFTSX",
+      "indexPB": 4.62,
+      "dividendYieldPct": 1.23,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2015-06-30",
+      "knownBy": "2015-09-14T18:15:16Z",
+      "indexPE": 20.48,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "a3bc132eeca04388cf32c37f47d9e2ba80acc2eab8593dd7af1bb7cd9bbee06f",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20150914181516id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "MEZYQCDJIJUVQ57EBEID5N2HNNEAK6PD",
+      "indexPB": 4.62,
+      "dividendYieldPct": 1.23,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2015-06-30",
+      "knownBy": "2015-10-15T06:17:27Z",
+      "indexPE": 20.48,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "0e908e08eb964fc24a7bfc7cc3ee3246c0bd11bea30cde6a730ea08247f6a11e",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20151015061727id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "IPKFB7K27S6BFQQIJEJOPMU6WRDPUO44",
+      "indexPB": 4.62,
+      "dividendYieldPct": 1.23,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2015-12-31",
+      "knownBy": "2016-03-26T07:19:14Z",
+      "indexPE": 21.88,
+      "sourceUrl": "http://www.proshares.com/funds/tqqq_index.html",
+      "sourceSha256": "dfaaf23a3bed65af3d7eadb7c8e763109df5f59448255e29c30d032ae34a2b3f",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20160326071914id_/http://www.proshares.com/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "4O7FREPYGVUOWQ4DD5FCFJEIIA5IXGYM",
+      "indexPB": 4.6,
+      "dividendYieldPct": 1.17,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2015-12-31",
+      "knownBy": "2016-03-26T09:16:43Z",
+      "indexPE": 21.87,
+      "sourceUrl": "http://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "sourceSha256": "8cd14e09cf1f03d25857b4523d0695d2edc839a37eae84015e3ab27da1bc681f",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20160326091643id_/http://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "archiveDigestSha1Base32": "T4DPOFUZINCZA647NJZJUEQZTA2NSVM7",
+      "indexPB": 4.6,
+      "dividendYieldPct": 1.17,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2015-12-31",
+      "knownBy": "2016-04-03T20:03:48Z",
+      "indexPE": 21.88,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "dfaaf23a3bed65af3d7eadb7c8e763109df5f59448255e29c30d032ae34a2b3f",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20160403200348id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "4O7FREPYGVUOWQ4DD5FCFJEIIA5IXGYM",
+      "indexPB": 4.6,
+      "dividendYieldPct": 1.17,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2016-03-31",
+      "knownBy": "2016-05-04T19:28:17Z",
+      "indexPE": 21.13,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "72a4be7eaf50c47183d70a8ebc1ed582c5dfd4dbe8a2c5392d8220f64511c17c",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20160504192817id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "KJ46PABN4AVHXC74L5QUXAHSXZQ2KC2G",
+      "indexPB": 4.33,
+      "dividendYieldPct": 1.26,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2016-03-31",
+      "knownBy": "2016-06-06T03:42:35Z",
+      "indexPE": 21.13,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "72a4be7eaf50c47183d70a8ebc1ed582c5dfd4dbe8a2c5392d8220f64511c17c",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20160606034235id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "KJ46PABN4AVHXC74L5QUXAHSXZQ2KC2G",
+      "indexPB": 4.33,
+      "dividendYieldPct": 1.26,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2016-03-31",
+      "knownBy": "2016-07-09T07:16:44Z",
+      "indexPE": 21.13,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "045d8b63f226590ddddbf33155c33f5deb9952797c569bcdd6eaf55aa5784319",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20160709071644id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "Z73LUHVY4C7HZO2ZU3NG3M7P2NHNTIX2",
+      "indexPB": 4.33,
+      "dividendYieldPct": 1.26,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2016-06-30",
+      "knownBy": "2016-08-06T21:21:48Z",
+      "indexPE": 22.51,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "5a00b3fd63802d756f46b6084d3b892cd1746f7ca63e50f98165e93ebdb7f6d5",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20160806212148id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "4QKAM2R7OADLB2NTJSBZS2AUE5EKXA3R",
+      "indexPB": 4.25,
+      "dividendYieldPct": 1.3,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2016-06-30",
+      "knownBy": "2016-09-06T22:07:59Z",
+      "indexPE": 22.51,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "49b00af3d8caa83f4311e715c9653ccfe6a3ca808f68fb20dc4393672fc47329",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20160906220759id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "UMJVYNXW5226KIXDYKGDGL6KLGLJPGHH",
+      "indexPB": 4.25,
+      "dividendYieldPct": 1.3,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2016-06-30",
+      "knownBy": "2016-10-07T22:00:46Z",
+      "indexPE": 22.51,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "d2e08d29585d8be27e82ec499b5049755ff053746049fa73e181fdcc2ae45d3e",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20161007220046id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "BACFPXXTD7L6P4NDJ5KNJPVIVBUCVFUF",
+      "indexPB": 4.25,
+      "dividendYieldPct": 1.3,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2016-09-30",
+      "knownBy": "2016-11-07T21:28:21Z",
+      "indexPE": 24.36,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "bfca74f0d06dc16250beb3d382b64862ee1065cf2866257336f46fbbdfeab648",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20161107212821id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "LVCRQBCUM4F7J4LFFGURVGW6LLVPRJZT",
+      "indexPB": 4.48,
+      "dividendYieldPct": 1.21,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2016-09-30",
+      "knownBy": "2016-12-02T08:13:04Z",
+      "indexPE": 24.36,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "bfca74f0d06dc16250beb3d382b64862ee1065cf2866257336f46fbbdfeab648",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20161202081304id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "LVCRQBCUM4F7J4LFFGURVGW6LLVPRJZT",
+      "indexPB": 4.48,
+      "dividendYieldPct": 1.21,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2016-09-30",
+      "knownBy": "2016-12-07T18:03:20Z",
+      "indexPE": 24.36,
+      "sourceUrl": "http://www.proshares.com:80/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "sourceSha256": "f0dfb111ece018ede3b406543f089e6ee24c59356b300127bfdc051928f128da",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20161207180320id_/http://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "archiveDigestSha1Base32": "RBPIV3IDK4S4IMF2QFLQY2LBHHELY52X",
+      "indexPB": 4.48,
+      "dividendYieldPct": 1.21,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2016-12-31",
+      "knownBy": "2017-03-09T14:05:14Z",
+      "indexPE": 22.99,
+      "sourceUrl": "http://www.proshares.com:80/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "sourceSha256": "1d8dd0ff7023d2658b59a396f799fa6e8cfa85d78713a49f065e6fd57552c852",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20170309140514id_/http://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "archiveDigestSha1Base32": "367746Y5RY473ZJ4ZO3TSSIKDI2TS2NL",
+      "indexPB": 4.3,
+      "dividendYieldPct": 1.71,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2017-03-31",
+      "knownBy": "2017-05-04T07:43:10Z",
+      "indexPE": 24.66,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "cb81bcb64c04ec58a04e3c4974f441aaa868d48bce857d0b67e323aab4ea7f35",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20170504074310id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "ZZQ5WKU5W22LIIUOGISISTLZHSLGGUWN",
+      "indexPB": 4.73,
+      "dividendYieldPct": 1.61,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2017-03-31",
+      "knownBy": "2017-06-04T23:24:15Z",
+      "indexPE": 24.66,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "b5f04abc9f2a6fd5362258c1621e5ed37451d128744d0a3e0d16145bc0791667",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20170604232415id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "U4MM6OMMUTIQ6IOS5GNPRL5NT74EHDBB",
+      "indexPB": 4.73,
+      "dividendYieldPct": 1.61,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2017-03-31",
+      "knownBy": "2017-06-22T15:31:01Z",
+      "indexPE": 24.66,
+      "sourceUrl": "http://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "sourceSha256": "5cee605362c0172dbcb2941d2ef22e44e997cbb2156b76821aa4609f09e833e6",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20170622153101id_/http://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "archiveDigestSha1Base32": "BRQSZYYVVUTTLD2LTZNSBBJGZWTMA2J6",
+      "indexPB": 4.73,
+      "dividendYieldPct": 1.61,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2017-03-31",
+      "knownBy": "2017-07-06T16:37:07Z",
+      "indexPE": 24.66,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "b5f04abc9f2a6fd5362258c1621e5ed37451d128744d0a3e0d16145bc0791667",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20170706163707id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "U4MM6OMMUTIQ6IOS5GNPRL5NT74EHDBB",
+      "indexPB": 4.73,
+      "dividendYieldPct": 1.61,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2017-06-30",
+      "knownBy": "2017-08-08T17:18:40Z",
+      "indexPE": 25.46,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "47fee0eaa167a565dd934c4d839a126581d7f1c0f9b39abbd6e4497a599b1eb2",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20170808171840id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "DVFV3RGVWY475TOYJAF5YNH7EJEECS6S",
+      "indexPB": 4.9,
+      "dividendYieldPct": 1.14,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2017-06-30",
+      "knownBy": "2017-08-22T13:25:28Z",
+      "indexPE": 25.46,
+      "sourceUrl": "http://www.proshares.com:80/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "sourceSha256": "f539ff42db53f86772719649c221ba819cd21a60b86255e84c209497657d7f41",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20170822132528id_/http://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "archiveDigestSha1Base32": "G2NVFNPQQ7WJUL3BJFHUMCRK7BAMBYWX",
+      "indexPB": 4.9,
+      "dividendYieldPct": 1.14,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2017-06-30",
+      "knownBy": "2017-09-17T20:06:28Z",
+      "indexPE": 25.46,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "89b2195700118c16c13a7f923085e3e63185d6448644994cc5b18ae36e5b957d",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20170917200628id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "IQ7L2YDKDHB7XAASV3SY27D2CUMZI7SM",
+      "indexPB": 4.9,
+      "dividendYieldPct": 1.14,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2017-06-30",
+      "knownBy": "2017-10-18T06:59:14Z",
+      "indexPE": 25.46,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "89b2195700118c16c13a7f923085e3e63185d6448644994cc5b18ae36e5b957d",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20171018065914id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "IQ7L2YDKDHB7XAASV3SY27D2CUMZI7SM",
+      "indexPB": 4.9,
+      "dividendYieldPct": 1.14,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2017-09-29",
+      "knownBy": "2017-11-28T10:41:23Z",
+      "indexPE": 25.79,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "21fa37afa4aa19a43433930e932c00053f3ce638cfd37c2439a56b63fd89c76e",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20171128104123id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "6YDJH2WTTI5OHDNPQ6LEWHRZ3PKPN22C",
+      "indexPB": 5.06,
+      "dividendYieldPct": 1.11,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2017-09-29",
+      "knownBy": "2017-12-29T09:09:17Z",
+      "indexPE": 25.79,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "21fa37afa4aa19a43433930e932c00053f3ce638cfd37c2439a56b63fd89c76e",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20171229090917id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "6YDJH2WTTI5OHDNPQ6LEWHRZ3PKPN22C",
+      "indexPB": 5.06,
+      "dividendYieldPct": 1.11,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2017-09-30",
+      "knownBy": "2017-12-08T15:16:38Z",
+      "indexPE": 25.79,
+      "sourceUrl": "http://www.proshares.com:80/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "sourceSha256": "a452d2f22af199c03b7a5c6c58a2a02133e3994d1ca6651726312d95c80ff11d",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20171208151638id_/http://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "archiveDigestSha1Base32": "GCZCPPTN5RQ5TXCI6MKLXUJF64UZU63E",
+      "indexPB": 5.06,
+      "dividendYieldPct": 1.11,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2017-12-29",
+      "knownBy": "2018-01-28T19:05:13Z",
+      "indexPE": 27.59,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "e898f7cbe7ece0d6e51c717093526355d0e81fa899fe4b05a9544ebefb471be0",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20180128190513id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "ILOCD7NX6F5NXCQCBQQGUVFCGDRFAEMT",
+      "indexPB": 5.51,
+      "dividendYieldPct": 1.01,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2017-12-29",
+      "knownBy": "2018-03-01T15:29:00Z",
+      "indexPE": 27.59,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "4450465bd3f4c67ac8eb9662c69f1dbe4a2114d4478fd946ad546f251756db97",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20180301152900id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "QOKHAPGHY6U6ADVNFFSMQZPPAJPPE3E7",
+      "indexPB": 5.51,
+      "dividendYieldPct": 1.01,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2017-12-31",
+      "knownBy": "2018-03-04T07:59:12Z",
+      "indexPE": 27.59,
+      "sourceUrl": "http://www.proshares.com:80/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "sourceSha256": "1ec94899245e24b5dcffba0ea423891e415e10bdbb5af46eef4014319fb67c88",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20180304075912id_/http://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "archiveDigestSha1Base32": "FCYT4CY5SCYMIGZ5J4H2BKLDRHK7YJ4M",
+      "indexPB": 5.51,
+      "dividendYieldPct": 1.01,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2018-03-29",
+      "knownBy": "2018-05-01T08:49:11Z",
+      "indexPE": 24.77,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "ca47abba2f734e2c118f685baf09245a9fae3e4dec249ad4c353d659e70f2a2b",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20180501084911id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "FMQ7IY4IGDTWI23XOJECQ3RFRILQY4PZ",
+      "indexPB": 5.25,
+      "dividendYieldPct": 1.08,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2018-03-29",
+      "knownBy": "2018-06-10T23:46:02Z",
+      "indexPE": 24.77,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "ca47abba2f734e2c118f685baf09245a9fae3e4dec249ad4c353d659e70f2a2b",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20180610234602id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "FMQ7IY4IGDTWI23XOJECQ3RFRILQY4PZ",
+      "indexPB": 5.25,
+      "dividendYieldPct": 1.08,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2018-03-29",
+      "knownBy": "2018-07-11T20:05:20Z",
+      "indexPE": 24.77,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "8e27313d752fad537b567aaced68e287754d087039af51b4e460ecc1dfc98bd9",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20180711200520id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "J5YNDXAEOCE2D5FQRKRLFSYYOU6DWSN4",
+      "indexPB": 5.25,
+      "dividendYieldPct": 1.08,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2018-06-29",
+      "knownBy": "2018-08-12T15:58:14Z",
+      "indexPE": 26.5,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "cb3f60eb690d472f401d7653d5df8687deb17bf725c9c3d27ebc0ae7c0e35f28",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20180812155814id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "DOBOMPWAQE5YJZZYEGFETXCE6RIIDIXP",
+      "indexPB": 5.92,
+      "dividendYieldPct": 0.94,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2018-06-29",
+      "knownBy": "2018-09-06T13:02:02Z",
+      "indexPE": 26.5,
+      "sourceUrl": "http://www.proshares.com/funds/tqqq_index.html",
+      "sourceSha256": "ddb1fa99922f57bdef18858db793878e0aef8731a10c662e3edf5bbb19779f84",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20180906130202id_/http://www.proshares.com/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "3KCMHT252NDQBYQ7B32Q3Q7HHGLPXEMO",
+      "indexPB": 5.92,
+      "dividendYieldPct": 0.94,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2018-06-29",
+      "knownBy": "2018-10-14T11:14:42Z",
+      "indexPE": 26.5,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "6d2811787a0338da70a8d5f09ff283ec247850840a48f7f01b4ba3910d2f7411",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20181014111442id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "WEJVQUTOIC3VLCD6GECKLGTXGJQA4JAZ",
+      "indexPB": 5.92,
+      "dividendYieldPct": 0.94,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2018-06-30",
+      "knownBy": "2018-09-06T17:08:08Z",
+      "indexPE": 26.5,
+      "sourceUrl": "http://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "sourceSha256": "4ed63dbd464745e8840b796848874548ff8cf166ee7344cf2de85a930ff731df",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20180906170808id_/http://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "archiveDigestSha1Base32": "XVKH3OGRE5SK2UEYDDYE5BAAB6O6ZFQX",
+      "indexPB": 5.92,
+      "dividendYieldPct": 0.94,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2018-09-28",
+      "knownBy": "2018-11-14T08:44:11Z",
+      "indexPE": 24.22,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "1ab62d7f8d39cfcfdff1b98d670076e7dc70a82e0712461d505516b884cbc9a0",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20181114084411id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "KLLH6PSUA2DBCVRIH3DI4AUYGLNYX65M",
+      "indexPB": 5.75,
+      "dividendYieldPct": 1.06,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2018-09-28",
+      "knownBy": "2018-12-15T02:46:04Z",
+      "indexPE": 24.22,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "b92400d8117485763d67dcaaaee34f1f2280f6493a2209e61ef88d9222b038f5",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20181215024604id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "6BAC6FMRJ5JLDUQWPSGKT2CELALSJ2XK",
+      "indexPB": 5.75,
+      "dividendYieldPct": 1.06,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2018-09-30",
+      "knownBy": "2018-10-24T18:17:27Z",
+      "indexPE": 24.22,
+      "sourceUrl": "http://www.proshares.com:80/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "sourceSha256": "c5816265a7154f6ca36822dca502cb363066d25abf3140780c85056749ee7c61",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20181024181727id_/http://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "archiveDigestSha1Base32": "LRX5FICKQWDBRYIKYLAT25BCSJAVPCTD",
+      "indexPB": 5.75,
+      "dividendYieldPct": 1.06,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2018-12-31",
+      "knownBy": "2019-01-16T01:14:21Z",
+      "indexPE": 221.09,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "bb7570207a4061b20c49c8b3a7991e71595a8622f4ebbcf075dcb4d4aaa6fe8b",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20190116011421id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "ZTIVEM4M4XXMOOXFQZDKJ4LQYZ3D3ATX",
+      "qualityNote": "Unusually high P/E printed in the archived index fundamentals; economically unconfirmed at this capture. Preserve the original value and availability date.",
+      "indexPB": 5.31,
+      "dividendYieldPct": 1.18,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2018-12-31",
+      "knownBy": "2019-02-16T13:42:20Z",
+      "indexPE": 221.09,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "bb7570207a4061b20c49c8b3a7991e71595a8622f4ebbcf075dcb4d4aaa6fe8b",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20190216134220id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "ZTIVEM4M4XXMOOXFQZDKJ4LQYZ3D3ATX",
+      "qualityNote": "Unusually high P/E printed in the archived index fundamentals; economically unconfirmed at this capture. Preserve the original value and availability date.",
+      "indexPB": 5.31,
+      "dividendYieldPct": 1.18,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2018-12-31",
+      "knownBy": "2019-03-19T18:32:08Z",
+      "indexPE": 21.09,
+      "sourceUrl": "http://www.proshares.com:80/funds/tqqq_index.html",
+      "sourceSha256": "45cfa1c0ca80a39f0582ba7b2c948440c90f97b43143bd82e2414b584c2f01ac",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20190319183208id_/http://www.proshares.com:80/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "IKHWWCLUYCN74AANO3MC67PJIXR56DDH",
+      "indexPB": 5.31,
+      "dividendYieldPct": 1.18,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceNote": "The issuer now prints P/E 21.09 for this same period; earlier available captures printed 221.09. This is a dated revision, not a retroactive correction."
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2019-06-28",
+      "knownBy": "2019-09-23T09:10:05Z",
+      "indexPE": 24.54,
+      "sourceUrl": "https://www.proshares.com/funds/tqqq_index.html",
+      "sourceSha256": "ba803f541f44a95c0c0f0e3e83069c66750e9958eb01453b8d03b8c70dc78329",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20190923091005id_/https://www.proshares.com/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "WKFURERHVLELFJZONLMJJGMLLOTYLTX6",
+      "indexPB": 6.18,
+      "dividendYieldPct": 1.04,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2019-09-30",
+      "knownBy": "2019-12-05T17:10:40Z",
+      "indexPE": 24.28,
+      "sourceUrl": "https://www.proshares.com/funds/tqqq_index.html",
+      "sourceSha256": "beb2a48ef9939f42657cb8b92dfc618cfc4dda9ef612ecc86df973e1ef6607a1",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20191205171040id_/https://www.proshares.com/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "74KD2AUNETJ6GVUVHRR54GXDVJEY4F3D",
+      "indexPB": 6.11,
+      "dividendYieldPct": 1.05,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2020-06-30",
+      "knownBy": "2020-08-27T21:20:32Z",
+      "indexPE": 32.94,
+      "sourceUrl": "https://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "sourceSha256": "9dc2feed97022c9b7e7af9ff29d50aa8ea3116d2822e1ae6947ca5c90d61e592",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20200827212032id_/https://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "archiveDigestSha1Base32": "K7K4KEDGECELEOWBDZ7GMK6CTAGYZELD",
+      "indexPB": 7.72,
+      "dividendYieldPct": 0.82,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2020-06-30",
+      "knownBy": "2020-08-27T21:23:41Z",
+      "indexPE": 32.94,
+      "sourceUrl": "https://www.proshares.com/funds/tqqq_index.html",
+      "sourceSha256": "68f3bebcf8596d215c8e674fda4b1fe348344bf0f11d1bd9c18e44cdcf09d7f7",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20200827212341id_/https://www.proshares.com/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "5PVO5Z6GGOUEGWSWTHYTVARPQ4ZKIOWZ",
+      "indexPB": 7.72,
+      "dividendYieldPct": 0.82,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2020-09-30",
+      "knownBy": "2020-11-11T17:39:03Z",
+      "indexPE": 36.95,
+      "sourceUrl": "https://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "sourceSha256": "d5064d5ae466aa3dee6a96d059cd25ecb482ab086c0aa8653e14844de0cc1496",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20201111173903id_/https://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "archiveDigestSha1Base32": "PT4EKOEV6AQ3DCNY545J7RHXLZCCDBUD",
+      "indexPB": 8.07,
+      "dividendYieldPct": 0.77,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2020-12-31",
+      "knownBy": "2021-03-28T13:07:11Z",
+      "indexPE": 37.92,
+      "sourceUrl": "https://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "sourceSha256": "8cb4ef3806011c539d3d62e5388c41a67aac3b0bc9ef5b94c90989da32b1d918",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20210328130711id_/https://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "archiveDigestSha1Base32": "UFS67G75X5XIN2WO7NG34ETK42QHHFOX",
+      "indexPB": 8.59,
+      "dividendYieldPct": 0.76,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2021-03-31",
+      "knownBy": "2021-05-09T04:35:17Z",
+      "indexPE": 36.73,
+      "sourceUrl": "https://www.proshares.com/funds/tqqq_index.html",
+      "sourceSha256": "aa4df3aa8307bdc396136dd234c6880f3a53db8b1a2491f9c4387ef2612c4df8",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20210509043517id_/https://www.proshares.com/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "YBHLZUYAJTJL4A7LQIXBQ5SZ6Q46PVDA",
+      "indexPB": 8.25,
+      "dividendYieldPct": 0.75,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2021-03-31",
+      "knownBy": "2021-06-24T13:04:27Z",
+      "indexPE": 36.73,
+      "sourceUrl": "https://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "sourceSha256": "60b7922d47af0c8979864867d3a5b8dd6a861a5c66471ecdca0f7b0a2a17a930",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20210624130427id_/https://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "archiveDigestSha1Base32": "JHKH5KB2THDUW6TVJCALLZDL4PWGRFZI",
+      "indexPB": 8.25,
+      "dividendYieldPct": 0.75,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2021-06-30",
+      "knownBy": "2021-09-17T13:01:13Z",
+      "indexPE": 38.05,
+      "sourceUrl": "https://www.proshares.com/funds/tqqq_index.html",
+      "sourceSha256": "85f256afceb2e2c8c651b2977fb456592fe487485f9e64dfd096c86c63dfc098",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20210917130113id_/https://www.proshares.com/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "HUBFWWSZ7ZV6OPBXQTMDTGS775EXUJJH",
+      "indexPB": 8.89,
+      "dividendYieldPct": 0.69,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2021-09-30",
+      "knownBy": "2021-11-03T17:58:39Z",
+      "indexPE": 32.2,
+      "sourceUrl": "https://www.proshares.com/funds/tqqq_index.html",
+      "sourceSha256": "50d21c5476ff5e170a5b61d62cab3f4f0f4b36607946f7fc19166bcdd431bb13",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20211103175839id_/https://www.proshares.com/funds/tqqq_index.html",
+      "archiveDigestSha1Base32": "ZUZIMUAV3YJ7VZ2EKSUUKN7D5KDIHWF4",
+      "indexPB": 8.65,
+      "dividendYieldPct": 0.7,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2021-09-30",
+      "knownBy": "2021-11-10T06:41:29Z",
+      "indexPE": 32.2,
+      "sourceUrl": "https://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "sourceSha256": "01c3cea211b9c1d13d823bb6f22e83e495b1c245adf68acb62dff97f618d2f08",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20211110064129id_/https://www.proshares.com/media/fact_sheet/ProSharesFactSheetTQQQ.pdf",
+      "archiveDigestSha1Base32": "UY7L6RSTXQMLJVESQOYRDPGDTFQRFIVW",
+      "indexPB": 8.65,
+      "dividendYieldPct": 0.7,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2021-09-30",
+      "knownBy": "2021-12-23T00:38:34Z",
+      "indexPE": 32.2,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "ce341c7a41c2091fb0348204734bf98e1cc44a0a704614ae5a22f94a149ec3b6",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20211223003834id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "HUJSKQDKIY7H2EJNZFJDATUTXZR5M2AD",
+      "indexPB": 8.65,
+      "dividendYieldPct": 0.7,
+      "displayDecimals": {
+        "indexPE": 1,
+        "indexPB": 2,
+        "dividendYieldPct": 1
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2021-09-30",
+      "knownBy": "2022-01-17T10:11:31Z",
+      "indexPE": 32.2,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq/",
+      "sourceSha256": "95fac23d5a7f1bc2571c794e3a55264f6ce9bcff6f2d0c939463f8dc3ad86c19",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20220117101131id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq/",
+      "archiveDigestSha1Base32": "4TYVYGTUJDJRRCO6R3L6HDZD2CRBMF2R",
+      "indexPB": 8.65,
+      "dividendYieldPct": 0.7,
+      "displayDecimals": {
+        "indexPE": 1,
+        "indexPB": 2,
+        "dividendYieldPct": 1
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2021-12-31",
+      "knownBy": "2022-02-03T13:53:06Z",
+      "indexPE": 39.82,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq/",
+      "sourceSha256": "c9d9b435ff2eaf5dcef5290a39fa2f1d5c4855a046bc4abdde045aad19ba3bc2",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20220203135306id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq/",
+      "archiveDigestSha1Base32": "HNFHGFZW4KP5JXOWZKXFPGLIJ46EGD6J",
+      "indexPB": 9.24,
+      "dividendYieldPct": 0.62,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2022-03-31",
+      "knownBy": "2022-07-03T09:28:04Z",
+      "indexPE": 29.07,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "7f4e6b26cc8288ad5efe91def2c99d530c40034d7d9a66ff78f6258ebd938942",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20220703092804id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "JIXPGUX6BQZY2CYIHDQOBO4ZPTOT32F5",
+      "indexPB": 8.1,
+      "dividendYieldPct": 0.7,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 1,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2022-06-30",
+      "knownBy": "2022-08-19T02:43:24Z",
+      "indexPE": 22.16,
+      "sourceUrl": "https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "sourceSha256": "e2f7a3de1b71aeb2d1d22c32a28ad2d0d7b140f4e3c3b3c42e4ac73b0981a030",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20220819024324id_/https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "archiveDigestSha1Base32": "QL6TJDBVCTHQI7TSKL5VJ3NSOXH5PX4C",
+      "indexPB": 6.12,
+      "dividendYieldPct": 0.93,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2022-06-30",
+      "knownBy": "2022-09-06T04:27:20Z",
+      "indexPE": 22.16,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "e9d305e0b3edfb5b641925743a8f6ca41e627454a5df5046332d2caa3cc89a19",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20220906042720id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "2YLSKWL3VDTWBSE7BLA35453NDSTIXQS",
+      "indexPB": 6.12,
+      "dividendYieldPct": 0.93,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2022-06-30",
+      "knownBy": "2022-10-02T07:22:37Z",
+      "indexPE": 22.16,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "1a2e1ea009624200ac44c77f7dc2dd965fdef485023b363e354ed24915c37cf6",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20221002072237id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "PIOAJXUYQ3WSLEHQPYWSU34HCOJ2YU5M",
+      "indexPB": 6.12,
+      "dividendYieldPct": 0.93,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2022-09-30",
+      "knownBy": "2022-11-13T16:41:19Z",
+      "indexPE": 21.48,
+      "sourceUrl": "https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "sourceSha256": "46ef257f2c6748459137a1d8c48f6bf7257d4b3a2dcb1589c21f842b3e97768e",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20221113164119id_/https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "archiveDigestSha1Base32": "PLKJ6Y7WE3NQ3MMUH3PHW2U6MHL4JPVG",
+      "indexPB": 5.85,
+      "dividendYieldPct": 1.0,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2022-09-30",
+      "knownBy": "2022-11-13T16:46:56Z",
+      "indexPE": 21.477,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "3e0c287cff0fe015d17c70232345ebf2acc652ec311427a7d739d2da49b03542",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20221113164656id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "B6SMRNPMCULM3DL5ZQGGJLLT5SRUU52N",
+      "indexPB": 5.852,
+      "dividendYieldPct": 1.0,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2022-09-30",
+      "knownBy": "2022-12-14T08:14:39Z",
+      "indexPE": 21.477,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "264994bec5760efe3c3fbcd1d30beb79cac72d6d0525d590b4798ca8307b540d",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20221214081439id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "A42P33PJGCBGVIEBQXOEXCNT5BV5V67T",
+      "indexPB": 5.852,
+      "dividendYieldPct": 1.0,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2022-12-30",
+      "knownBy": "2023-02-21T19:56:55Z",
+      "indexPE": 22.304,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "447a39b827c14c16ca8ec6b4a9b5b673a464a61d6f9637e5527daa80563a7867",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20230221195655id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "2MQ4T5LGIE2CO2DACBR3Y2AANB7N2VBA",
+      "indexPB": 5.728,
+      "dividendYieldPct": 0.99,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2022-12-30",
+      "knownBy": "2023-03-21T16:18:43Z",
+      "indexPE": 22.304,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "66713ed99c18e7f168d46130a71ac5644610c85ec5ff795f49a1b21ef7ed6ea4",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20230321161843id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "OBKMYFACM3LHWO457UFZ4GYHUXURHWEJ",
+      "indexPB": 5.728,
+      "dividendYieldPct": 0.99,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2022-12-31",
+      "knownBy": "2023-03-21T16:18:23Z",
+      "indexPE": 22.3,
+      "sourceUrl": "https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "sourceSha256": "7885264314fa1aee017a70b7d9cc9cd67845c0eafe0a6db988d234b33570d43f",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20230321161823id_/https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "archiveDigestSha1Base32": "O73VUVZZL4MWWBSFLV4HCUKRZJUFGK26",
+      "indexPB": 5.73,
+      "dividendYieldPct": 0.99,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2023-03-31",
+      "knownBy": "2023-05-26T09:26:32Z",
+      "indexPE": 30.642,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "1bdaf949981300c290b3023150bd1f705b46e0e405d6d9d994b84000546cddcb",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20230526092632id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "RIPA2FUVNQLNEEIMV2YGEJVDE5FILHUO",
+      "indexPB": 6.761,
+      "dividendYieldPct": 0.84,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2023-03-31",
+      "knownBy": "2023-07-04T10:36:15Z",
+      "indexPE": 30.642,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "f97e4e4cb63c17175bd3af2dc0a47a2f4d1bdc60c22d0604b03563aaef2a144d",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20230704103615id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "Y5L3JU5OZ6GRGNNPCCNK2OMXD4HMPQRE",
+      "indexPB": 6.761,
+      "dividendYieldPct": 0.84,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2023-06-30",
+      "knownBy": "2023-09-30T20:23:12Z",
+      "indexPE": 35.951,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "bb1266acbf390b623895cc91fc3f1934ba4f873da1f397c81310d1345ba7ebf2",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20230930202312id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "PL6NAJSZOS6GHQH3AM74P6U7S7ZMLYXL",
+      "indexPB": 7.595,
+      "dividendYieldPct": 0.73,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2023-06-30",
+      "knownBy": "2023-10-16T12:14:43Z",
+      "indexPE": 35.951,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "8f72ff26d36160237db8eebc32c028e1c0beb18e9370a22f9bc3d2c97e06bc16",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20231016121443id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "FHLKKJ3CECMBWLWBDAOBK4O5F52UL6HW",
+      "indexPB": 7.595,
+      "dividendYieldPct": 0.73,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2023-09-29",
+      "knownBy": "2023-12-16T13:35:44Z",
+      "indexPE": 32.614,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "fc47947862779a5fdd30c247474fba8a083f3c60fd800c0de91fccc3220d4c03",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20231216133544id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "YVGMSUHZQRSFCCJXNZRQABL4Q2BR6OHF",
+      "indexPB": 7.235,
+      "dividendYieldPct": 0.88,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2023-09-29",
+      "knownBy": "2024-01-05T02:09:45Z",
+      "indexPE": 32.614,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "59331b93af0e4e586a3102dc40b1c84807c3ad5b1692a2f972896219641f9a5b",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20240105020945id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "XUW4KYAIIDAD5NB4UYZ2IHEY64QFB2WM",
+      "indexPB": 7.235,
+      "dividendYieldPct": 0.88,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2023-09-30",
+      "knownBy": "2024-01-16T12:47:18Z",
+      "indexPE": 32.61,
+      "sourceUrl": "https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "sourceSha256": "49ac0ef8303c288e1df95cfcc56ca688530312a19abb8739884d7341934e8814",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20240116124718id_/https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "archiveDigestSha1Base32": "UXXDO2ETFQPUDTNMDXWJQE6VBMGLV2HK",
+      "indexPB": 7.24,
+      "dividendYieldPct": 0.88,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2023-12-29",
+      "knownBy": "2024-02-23T03:34:42Z",
+      "indexPE": 32.858,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "ffe8452b103b486af571f053c74b8b07dbe993d6cd263e805dc99a89f68d7aa7",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20240223033442id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "UJ5YY6BT4LFLQ6TCERY5TNNOV3WOCEIN",
+      "indexPB": 7.447,
+      "dividendYieldPct": 0.87,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2023-12-29",
+      "knownBy": "2024-04-12T10:33:37Z",
+      "indexPE": 32.858,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "f5012de4ff13141159712f968ea5c9e1771e08dd2adff438ca8368b984ab3019",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20240412103337id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "DE4S72CEDPQV2IVKTAK7UCPZFD7NTKDK",
+      "indexPB": 7.447,
+      "dividendYieldPct": 0.87,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2024-03-28",
+      "knownBy": "2024-05-28T05:37:10Z",
+      "indexPE": 33.676,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "fa17fe84a70df5d51c3f312f2a65f84a35c2ccbfbc7de61a832bc85f21f10913",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20240528053710id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "3OXTVBG26B5IEKJE3BALEGASQSPV5RH6",
+      "indexPB": 7.505,
+      "dividendYieldPct": 0.83,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2024-03-28",
+      "knownBy": "2024-06-17T05:16:48Z",
+      "indexPE": 33.676,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "ec49c61526b5cdeb0cc874b58339e1c4a8cd03cf1b419cb3da98d4d262ce8413",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20240617051648id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "SSZJYDSLCYR5WQJZXM2U5E7YIBGEW7T2",
+      "indexPB": 7.505,
+      "dividendYieldPct": 0.83,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2024-06-28",
+      "knownBy": "2024-09-07T00:51:59Z",
+      "indexPE": 35.083,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "7909d57e46e3bd18dfc7fef198d1c85766b04f151e31f10aedc3eba2cd31e20b",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20240907005159id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "6QSM2SL2OJBCAPDCQPGQSQQLGABSXSYW",
+      "indexPB": 8.007,
+      "dividendYieldPct": 0.8,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2024-09-30",
+      "knownBy": "2024-11-22T18:27:16Z",
+      "indexPE": 35.424,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "ac49081e1e81ec16a6865c3fb2ad0af2b60da8f843edc5525a7932c95fda7f43",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20241122182716id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "F57QJOZK4M3G7BCQV2CW6B4CA7S5OSZG",
+      "indexPB": 8.011,
+      "dividendYieldPct": 0.8,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2024-09-30",
+      "knownBy": "2024-11-28T11:24:42Z",
+      "indexPE": 35.42,
+      "sourceUrl": "https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "sourceSha256": "2749056eb14835b84b1669f2dac7529cca8726348c8fa70c298489245bfdd1bb",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20241128112442id_/https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "archiveDigestSha1Base32": "DSPQK2KTZS3TOIM5DSOYOEQZCW2JWQ3Z",
+      "indexPB": 8.01,
+      "dividendYieldPct": 0.8,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2024-09-30",
+      "knownBy": "2024-12-20T04:14:27Z",
+      "indexPE": 35.424,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "b703a363597afe1016673d59b96dfc99a8844f5363a8ab19784c93d6a37bf12c",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20241220041427id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "52TV3PKBG3XX5NM7GHAK4LUKDV77TFCL",
+      "indexPB": 8.011,
+      "dividendYieldPct": 0.8,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2024-09-30",
+      "knownBy": "2025-01-12T15:01:41Z",
+      "indexPE": 35.424,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "069a7066201d80c62e4f7285e7e0bad617629e77711be571bd149ae6ca354207",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20250112150141id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "GPDUULMXOBD3FJDD5LIFEMBW7H5FNS7D",
+      "indexPB": 8.011,
+      "dividendYieldPct": 0.8,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2024-12-31",
+      "knownBy": "2025-02-06T16:46:57Z",
+      "indexPE": 36.242,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "e7346edfbde2abc11cc8a047bb2bde37e432f868f2173289a94a80d53811232f",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20250206164657id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "6KPYD3G6CCPDXWPN2FAEQ4F63XLDIWCL",
+      "indexPB": 8.212,
+      "dividendYieldPct": 0.73,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2024-12-31",
+      "knownBy": "2025-03-12T00:34:17Z",
+      "indexPE": 36.242,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "cd248447ef7b1431b6d2b3cb4edff9ab1cf83b27009c98a02e0264fb42afb099",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20250312003417id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "WIVBCQIJ5LWPBVHF5UJZ2XBU5BBJ3NHF",
+      "indexPB": 8.212,
+      "dividendYieldPct": 0.73,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2024-12-31",
+      "knownBy": "2025-04-01T03:59:03Z",
+      "indexPE": 36.242,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "dda69c71c3f867c833b47690e55cd07b95d4d8e509957901ca556d458472f056",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20250401035903id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "TIFKWYIJVM24Y2CNXVMRDSGTQSV3NQZ2",
+      "indexPB": 8.212,
+      "dividendYieldPct": 0.73,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2025-03-31",
+      "knownBy": "2025-05-15T15:44:49Z",
+      "indexPE": 31.933,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "92952f9043209ce2084a1606d6cb23ed723dd0d034801e2bba81bb1b3a4128d7",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20250515154449id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "PVJOFQ5B7DB4Y74I5MMXG2IY643GMXUM",
+      "indexPB": 7.397,
+      "dividendYieldPct": 0.81,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2025-03-31",
+      "knownBy": "2025-06-16T21:57:58Z",
+      "indexPE": 31.93,
+      "sourceUrl": "https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "sourceSha256": "0a6cdca0feb511871e38ee01bfbeaadbaedefaff55d272667f687436bc9f1c0d",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20250616215758id_/https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "archiveDigestSha1Base32": "NWMVG3V5D4JFQPU32BQRJW2Z7OKZ6V24",
+      "indexPB": 7.4,
+      "dividendYieldPct": 0.81,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2025-03-31",
+      "knownBy": "2025-07-12T20:17:00Z",
+      "indexPE": 31.933,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "91b5043dd48375ad9e5126cccbe4b2564c7ccdb87b439b363bc402ba97be4037",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20250712201700id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "P4HNANRCJD6AUPZSVCPV7DTXNRLZDWUY",
+      "indexPB": 7.397,
+      "dividendYieldPct": 0.81,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2025-06-30",
+      "knownBy": "2025-08-01T03:51:30Z",
+      "indexPE": 35.07,
+      "sourceUrl": "https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "sourceSha256": "73c954aa47f73864caecdf2b5d5123fd54f92de7412a6cc8d8d6b0ab4c5d2e61",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20250801035130id_/https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "archiveDigestSha1Base32": "APJ4P25IYVA2IB4XNTJIW56IWITKFFPR",
+      "indexPB": 8.48,
+      "dividendYieldPct": 0.69,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2025-06-30",
+      "knownBy": "2025-08-18T02:47:35Z",
+      "indexPE": 35.069,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "71889f48173112e26d4c70826703394795ced1f79d9de9e494bdeb2b09008399",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20250818024735id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "N4CLOYGAJ2VWXDYMPYMAJCZYZBHPHX4U",
+      "indexPB": 8.477,
+      "dividendYieldPct": 0.69,
+      "displayDecimals": {
+        "indexPE": 3,
+        "indexPB": 3,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2025-06-30",
+      "knownBy": "2025-08-18T07:12:31Z",
+      "indexPE": 35.07,
+      "sourceUrl": "https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "sourceSha256": "29ff58b4291663d7a89cc49291e5f3d4a6508f4d4e1273bc984609124463c8f5",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20250818071231id_/https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "archiveDigestSha1Base32": "325F67FVCJVO42B37A3TSWSRNK3GTS2J",
+      "indexPB": 8.48,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2025-06-30",
+      "knownBy": "2025-09-29T11:04:44Z",
+      "indexPE": 35.07,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/TQQQ",
+      "sourceSha256": "1791a859916637b2a2b427318510de342ac3376f97e248a1f58cd26d7dad6002",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20250929110444id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/TQQQ",
+      "archiveDigestSha1Base32": "3KDZZWYIXOYSZSANB2RUKT7RPHQNSAVJ",
+      "indexPB": 8.48,
+      "dividendYieldPct": 0.69,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2025-09-30",
+      "knownBy": "2025-11-08T16:50:32Z",
+      "indexPE": 35.89,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "17d146a2767baf8ffbeb8973db0e28fbc8f4beb6fb8bf650deacb6490fd9c7a7",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20251108165032id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "CJPM2KAAVS2A7PVYMS3CLPL36NBI5MEB",
+      "indexPB": 8.79,
+      "dividendYieldPct": 0.65,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2025-09-30",
+      "knownBy": "2026-01-04T23:24:01Z",
+      "indexPE": 35.89,
+      "sourceUrl": "https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "sourceSha256": "4000324670cbebd4895551faf8b87fdcc17dee3d53fb16e8e9f9b819e4ee5950",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20260104232401id_/https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "archiveDigestSha1Base32": "4V3KNMNAD2F2A3WUWAUJRMQSWX5KEBMU",
+      "indexPB": 8.79,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2025-09-30",
+      "knownBy": "2026-01-05T11:08:51Z",
+      "indexPE": 35.89,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/TQQQ",
+      "sourceSha256": "590b2d08edc4a2ddfafa934d924d4f657f8fc831d9edcfcc1d93df8ba263ced9",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20260105110851id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/TQQQ",
+      "archiveDigestSha1Base32": "ESHW52I3ZVUFGD7QMGP2SQIY7EX6277X",
+      "indexPB": 8.79,
+      "dividendYieldPct": 0.65,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2025-12-31",
+      "knownBy": "2026-02-02T07:59:19Z",
+      "indexPE": 35.26,
+      "sourceUrl": "https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "sourceSha256": "ef07b2ad7c889f4e63af48924c0ca1360fd11e5b6cfd3ea99a8ec63ee4a426c5",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20260202075919id_/https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "archiveDigestSha1Base32": "CHTKTXYTNQQ6L3MGWVGPIKQDUCXAPDRN",
+      "indexPB": 8.67,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2025-12-31",
+      "knownBy": "2026-02-18T19:09:09Z",
+      "indexPE": 35.26,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "9c0f2ab9680ac4826b4c40caeb79794360bf39e90b01fb64a4e9073803fa083e",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20260218190909id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "MFRE3ZHNOY3WQEFBJSVA5R2YHIBZCXEU",
+      "indexPB": 8.67,
+      "dividendYieldPct": 0.64,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2025-12-31",
+      "knownBy": "2026-03-17T22:27:35Z",
+      "indexPE": 35.26,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "8ac7fa73e2c0cc814cf7d7e85d5028cb1db2fef36aa50a6aed3f4505a1662006",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20260317222735id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "J54HCLNEO7IIS4QMAPSSYAP5TOW2NZFE",
+      "indexPB": 8.67,
+      "dividendYieldPct": 0.64,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2025-12-31",
+      "knownBy": "2026-04-02T21:33:12Z",
+      "indexPE": 35.26,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "60fb838902db690fca7a5e923e24f6953a3ba6875914c7d207396851ce865a22",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20260402213312id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "Z56K4XB6XI6LWUZSPH7G2DGK2CLHBXHB",
+      "indexPB": 8.67,
+      "dividendYieldPct": 0.64,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2026-03-31",
+      "knownBy": "2026-05-04T16:56:24Z",
+      "indexPE": 31.84,
+      "sourceUrl": "https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "sourceSha256": "4796b0837c34c32fd767bd421f0f31f9729600c689c5d8fa1d279d9fb49a30a2",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20260504165624id_/https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "archiveDigestSha1Base32": "463TFHFU6DZMKYZZNTEB5WTFPACIVDKU",
+      "indexPB": 7.76,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2026-03-31",
+      "knownBy": "2026-05-14T20:16:51Z",
+      "indexPE": 31.84,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "2c03cea45c8ffc7cf0155e3f31a8d223b3cc1e08d63819f3d167b09b8a35b8f9",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20260514201651id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "L4V2FCVYXJWIKVJ5JCZMIW6KO22VXI2H",
+      "indexPB": 7.76,
+      "dividendYieldPct": 0.69,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2026-03-31",
+      "knownBy": "2026-06-05T06:53:16Z",
+      "indexPE": 31.84,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "421f53b30efdc3a57e0b65c20ec14d23deb9d961295083cf69651f92e9473159",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20260605065316id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "DDOCVBHIO2R6RFHNUTNYYR4O6ZPMMRMU",
+      "indexPB": 7.76,
+      "dividendYieldPct": 0.69,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2026-03-31",
+      "knownBy": "2026-06-09T14:57:04Z",
+      "indexPE": 31.84,
+      "sourceUrl": "https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "sourceSha256": "6dd32cbef5e016c3cbd761433b2d01847b5e15e307323b1b8f4e7ab7a8404c39",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20260609145704id_/https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "archiveDigestSha1Base32": "PHRZOARH6HBUQGLASWQFXFYXHMT55Z22",
+      "indexPB": 7.76,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2026-06-30",
+      "knownBy": "2026-07-14T21:37:28Z",
+      "indexPE": 36.9,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "98779ac60c794997f603fe862ed1c5c5ed231efecc176a0d77493ed570a76b29",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20260714213728id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "RTOQJEADT2B3QDPH5FUAPAEQ3KPWAL4V",
+      "indexPB": 9.46,
+      "dividendYieldPct": 0.55,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2026-06-30",
+      "knownBy": "2026-08-06T18:33:31Z",
+      "indexPE": 36.9,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "a52e4a514ca9e2add929e0d6429c8c7d13e50d7440522d533ea6210f13cd5284",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20260806183331id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "DK2YXLCKIY47DKGLO2E42HXN2MJGLHW7",
+      "indexPB": 9.46,
+      "dividendYieldPct": 0.55,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2026-06-30",
+      "knownBy": "2026-08-28T09:32:36Z",
+      "indexPE": 36.9,
+      "sourceUrl": "https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "sourceSha256": "08786e1ee7812b35e363e9e9db6117ceadeb8c56269b4870e7498e31eaf08eaa",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20260828093236id_/https://www.proshares.com/globalassets/proshares/fact-sheet/prosharesfactsheettqqq.pdf",
+      "archiveDigestSha1Base32": "YUJYQ4DQR6ZQBQVJE66J3GX5DTQR4QKH",
+      "indexPB": 9.46,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2026-06-30",
+      "knownBy": "2026-09-07T08:00:53Z",
+      "indexPE": 36.9,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "a1d0a2a6c3b6b8cd756f5f0e0c13d4b70dd29ffcd7c014e4aa7ee2a016d2d247",
+      "evidenceType": "verified_archive",
+      "archiveUrl": "https://web.archive.org/web/20260907080053id_/https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "archiveDigestSha1Base32": "Y5NQS3FSSKVOT5JEKN7B6BDNTTBVRXQX",
+      "indexPB": 9.46,
+      "dividendYieldPct": 0.55,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      }
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2026-09-30",
+      "knownBy": "2026-11-02T12:44:57Z",
+      "indexPE": 31.69,
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "3acf32123b08ccbdb964df9b4ff798c4fcfaebd6067847a781fd87356e881851",
+      "evidenceType": "issuer_live"
+    },
+    {
+      "symbol": "TQQQ",
+      "indexName": "Nasdaq-100 Index",
+      "asOf": "2026-09-30",
+      "knownBy": "2026-11-02T12:53:59Z",
+      "indexPE": 31.69,
+      "indexPB": 9.2,
+      "dividendYieldPct": 0.53,
+      "displayDecimals": {
+        "indexPE": 2,
+        "indexPB": 2,
+        "dividendYieldPct": 2
+      },
+      "sourceUrl": "https://www.proshares.com/our-etfs/leveraged-and-inverse/tqqq",
+      "sourceSha256": "e75e3377b7c310224bc9c81a825c82313e29ed84c55f69f61a6d350a9f83724c",
+      "evidenceType": "issuer_live"
+    }
+  ]
+}

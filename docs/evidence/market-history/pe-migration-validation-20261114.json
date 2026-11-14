@@ -1,0 +1,67 @@
+{
+  "reviewDate": "2026-11-14",
+  "baseCommit": "94e73d48cf57a48eab90518e55138607c8b2b846",
+  "previousArtifactSha256": "8f603bdc0e51eeb95aec51e46fe181dff9ee519cc4c1c0101eeddb1667e58be2",
+  "newArtifactSha256": "f32f0e12ceb3bcd8df3d5f1bd758152c865f61eba3adbfa289ca1cc24e691145",
+  "unchangedCanonicalSha256": {
+    "spx/prices": "ad75bcbb683b7b81cad78d3bcf7e0e43d9f85446e95cec0114cf0c14e20f5ef8",
+    "spx/close": "00ea4bd29f96234d62fddb8a5abc67aa176ceb5d395a21bbfeaeee59886bba2a",
+    "spx/nonPEMetrics": "a92b566c921700d29da3b35548175ae133507ce65e5e9cf2c0b47ded52606121",
+    "ndx/prices": "ce9ca18c946727f013524483bde1f2be5aaafaa1c8a9f0313f6d791a24033436",
+    "ndx/close": "6e8d024f9861a2054044546c7e1371c423fdc0a75e9fa1fca761581c15be134c",
+    "ndx/nonPEMetrics": "be065c3c964de7bfdcd64409ca8f497c6a192a19a48f54deb644e5b3ed6cc183",
+    "context": "6d6a07fea53eb7135843b748ab81e9aebd5ba00458c499e8874d6f1c88214f7c",
+    "crossChecks": "a6a2f90ffb1928eb1600192cddf272e6c0e6282a4012c460ed4f0c8ed8b3e6ad",
+    "nonPESourceMetadata": "2f8fed216dd53229d041863ead78c44236b9a2a9fbd13290a77b422469785669"
+  },
+  "newPE": {
+    "spx": {
+      "source": "proshares-spx",
+      "count": 26,
+      "first": [
+        "2009-09-30",
+        19.92
+      ],
+      "last": [
+        "2026-09-30",
+        24.77
+      ],
+      "inputPublications": 42
+    },
+    "ndx": {
+      "source": "proshares-ndx",
+      "count": 57,
+      "first": [
+        "2010-03-31",
+        22.84
+      ],
+      "last": [
+        "2026-09-30",
+        31.69
+      ],
+      "inputPublications": 132
+    }
+  },
+  "validation": {
+    "marketHistoryPythonTests": 45,
+    "benchmarkPythonTests": 10,
+    "refreshPythonTests": 15,
+    "allJavaScriptTests": 1040,
+    "finalHistoricalJavaScriptTests": 36,
+    "assetVersions": 73,
+    "browser": {
+      "viewport": [
+        1920,
+        1080
+      ],
+      "scriptErrors": [],
+      "horizontalOverflow": false,
+      "SPXQuarterCount": 26,
+      "NDXQuarterCount": 57
+    }
+  },
+  "limits": [
+    "Browser and automated checks verify implementation and source-record consistency, not user acceptance or universal agreement between valuation methodologies.",
+    "NDX historical source extracts are inherited from the existing verified archive; this review did not re-download every original document."
+  ]
+}

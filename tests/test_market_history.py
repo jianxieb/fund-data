@@ -10,131 +10,6 @@ import market_history as mh
 
 
 class MarketHistoryTests(unittest.TestCase):
-    def refresh_inputs(self):
-        previous = json.loads(mh.OUTPUT.read_text())
-        asof = (date.fromisoformat(previous['asOf']) + timedelta(days=1)).isoformat()
-        pe = next(m for m in previous['markets'][0]['metrics'] if m['id'] == 'pe')
-        points = pe['points'] + [[asof, 24.1234]]
-        raw = {'jiucai-spx': json.dumps(dict(code='SPX.GI', metric='pe', latest=points[-1][1],
-                   series=[dict(date=day, value=value) for day, value in points])).encode(),
-               'jiucai-spx-detail': json.dumps(dict(header=dict(code='SPX.GI', name='标普500',
-                   metric='pe', value=24.12), update_time=asof)).encode()}
-        vix = next(m for m in previous['markets'][0]['metrics'] if m['id'] == 'vix')
-        raw['vix'] = ('DATE,CLOSE\n' + '\n'.join(date.fromisoformat(day).strftime('%m/%d/%Y') + ',' + str(value)
-                      for day, value in vix['points'] + [[asof, 21.25]])).encode()
-        fetched = {key: asof + 'T21:00:00+00:00' for key in raw}
-        return previous, asof, raw, fetched
-
-    def test_misaligned_valuation_pair_retains_exact_evidence_while_vix_advances(self):
-        previous, asof, original, fetched = self.refresh_inputs()
-        for failure in ('date', 'value', 'identity', 'missing_history', 'missing_detail'):
-            raw = dict(original)
-            detail = json.loads(raw['jiucai-spx-detail'])
-            if failure == 'date':
-                detail['update_time'] = previous['asOf']
-            elif failure == 'value':
-                detail['header']['value'] = 30
-            elif failure == 'identity':
-                detail['header']['code'] = 'NDX.GI'
-            raw['jiucai-spx-detail'] = json.dumps(detail).encode()
-            if failure == 'missing_history':
-                del raw['jiucai-spx']
-            elif failure == 'missing_detail':
-                del raw['jiucai-spx-detail']
-            with self.subTest(failure=failure):
-                data = mh.build_with_source_fallback(raw, asof, fetched, previous=copy.deepcopy(previous))
-                current = {m['id']: m for m in data['markets'][0]['metrics']}
-                old = {m['id']: m for m in previous['markets'][0]['metrics']}
-                self.assertEqual(current['pe'], old['pe'])
-                for key in ('jiucai-spx', 'jiucai-spx-detail'):
-                    self.assertEqual(data['sources'][key], previous['sources'][key])
-                    self.assertTrue(data['refreshFailures'][key])
-                self.assertEqual(current['vix']['points'][-1], [asof, 21.25])
-                self.assertEqual(data['sources']['vix']['fetchedAt'], fetched['vix'])
-                mh.validate(data)
-                mh.reject_regression(data, previous)
-
-    def test_aligned_valuation_pair_advances_and_missing_prior_evidence_still_fails(self):
-        previous, asof, raw, fetched = self.refresh_inputs()
-        data = mh.build_with_source_fallback(raw, asof, fetched, previous=previous)
-        pe = next(m for m in data['markets'][0]['metrics'] if m['id'] == 'pe')
-        self.assertEqual(pe['points'][-1], [asof, 24.1234])
-        self.assertEqual(pe['publisherCheck']['detailValue'], 24.12)
-        self.assertNotIn('jiucai-spx', data['refreshFailures'])
-        self.assertEqual(data['sources']['jiucai-spx']['fetchedAt'], fetched['jiucai-spx'])
-        del raw['jiucai-spx-detail']
-        with self.assertRaisesRegex(ValueError, 'Missing source evidence'):
-            mh.build_with_source_fallback(raw, asof, fetched)
-        previous['sources'].pop('jiucai-spx-detail')
-        with self.assertRaisesRegex(ValueError, 'no previous evidence'):
-            mh.build_with_source_fallback(raw, asof, fetched, previous=previous)
-
-    def test_provider_valuation_requires_identity_positive_values_and_snapshot_alignment(self):
-        payload = dict(code='SPX.GI', metric='pe', latest=25.2089,
-            series=[dict(date='2026-10-12', value=25.19), dict(date='2026-10-13', value=25.2089)])
-        detail = dict(header=dict(code='SPX.GI', name='标普500', metric='pe', value=25.2), update_time='2026-10-13')
-        raw = lambda d: json.dumps(d).encode()
-        metric = mh.valuation_metric(raw(payload), raw(detail), 'spx', '2026-10-13')
-        self.assertEqual(metric['points'][-1], ['2026-10-13', 25.2089])
-        self.assertEqual(metric['valuationBasis'], 'aggregate_ttm')
-        self.assertEqual(metric['vintage'], 'latest_available')
-        self.assertIn('逐成分股', metric['limitations'])
-        for update in [dict(code='NDX.GI'), dict(metric='forward_pe'), dict(latest=26)]:
-            with self.assertRaises(ValueError):
-                mh.valuation_history(raw(dict(payload, **update)), 'spx', '2026-10-13')
-        for value in [float('nan'), float('inf'), -1, 0, True, '25.2', None]:
-            changed = copy.deepcopy(payload)
-            changed['series'][0]['value'] = value
-            with self.assertRaises(ValueError):
-                mh.valuation_history(raw(changed), 'spx', '2026-10-13')
-            with self.assertRaises(ValueError):
-                mh.valuation_history(raw(dict(payload, latest=value)), 'spx', '2026-10-13')
-            changed_detail = copy.deepcopy(detail)
-            changed_detail['header']['value'] = value
-            with self.assertRaises(ValueError):
-                mh.valuation_metric(raw(payload), raw(changed_detail), 'spx', '2026-10-13')
-            with self.assertRaises(ValueError):
-                mh.check_source('jiucai-spx-detail', raw(changed_detail), '2026-10-13')
-        detail['update_time'] = '2026-10-12'
-        with self.assertRaisesRegex(ValueError, 'date or value mismatch'):
-            mh.valuation_metric(raw(payload), raw(detail), 'spx', '2026-10-13')
-
-    def test_rolling_provider_history_preserves_archived_prefix_with_original_provenance(self):
-        # Begin with explicit old provenance, independent of how many rolling
-        # prefixes the daily job has already archived in the published data.
-        previous = {'sources': {'source': {'sha256': 'old-response'}}, 'context': {'id': 'macro', 'metrics': []},
-                    'markets': [{'id': 'spx', 'metrics': [{'id': 'pe', 'source': 'source',
-                        'points': [['2016-10-13', 20], ['2016-10-14', 21], ['2016-10-17', 22], ['2016-10-18', 23]],
-                        'sourceRange': ['2016-10-13', '2016-10-18']}]}]}
-        data = copy.deepcopy(previous)
-        old = previous['markets'][0]['metrics'][0]
-        current = data['markets'][0]['metrics'][0]
-        current['points'] = current['points'][2:]
-        current['sourceRange'] = [current['points'][0][0], current['points'][-1][0]]
-        data['sources'][current['source']]['sha256'] = 'new-response'
-        mh.retain_valuation_prefix(data, previous)
-        self.assertEqual(current['points'], old['points'])
-        self.assertEqual(current['archivedSources'][0]['sha256'], previous['sources'][old['source']]['sha256'])
-        self.assertEqual(current['archivedSources'][0]['retainedThrough'], old['points'][1][0])
-        mh.reject_regression(data, previous)
-        next_report = copy.deepcopy(data)
-        next_report['markets'][0]['metrics'][0]['points'] = current['points'][2:]
-        mh.retain_valuation_prefix(next_report, data)
-        self.assertEqual(next_report['markets'][0]['metrics'][0]['archivedSources'], current['archivedSources'])
-
-    def test_published_pe_cannot_lose_method_or_latest_snapshot_evidence(self):
-        published = json.loads(mh.OUTPUT.read_text())
-        for field in ['valuationBasis', 'vintage', 'limitations', 'publisherCheck']:
-            data = copy.deepcopy(published)
-            del data['markets'][0]['metrics'][0][field]
-            with self.assertRaises(ValueError):
-                mh.validate(data)
-        for value in [float('nan'), float('inf'), True, '25.2', None]:
-            data = copy.deepcopy(published)
-            data['markets'][0]['metrics'][0]['publisherCheck']['detailValue'] = value
-            with self.assertRaises(ValueError):
-                mh.validate(data)
-
     def test_parser_retains_estimate_and_negative_sign(self):
         raw = '<table><tr><td>Oct 13, 2026</td><td><abbr>†</abbr>26.64</td></tr><tr><td>Sep 30, 2025</td><td>−16.87%</td></tr></table>'.encode()
         points, estimates = mh.multpl(raw, '2026-10-13')
@@ -253,7 +128,7 @@ class MarketHistoryTests(unittest.TestCase):
         previous = json.loads(mh.OUTPUT.read_text())
         data = copy.deepcopy(previous)
         data['markets'][0]['metrics'][0]['points'] = data['markets'][0]['metrics'][0]['points'][20:]
-        with self.assertRaisesRegex(ValueError, 'regressed'):
+        with self.assertRaisesRegex(ValueError, 'historical quarter disappeared'):
             mh.reject_regression(data, previous)
 
     def test_price_history_identity_close_and_regression_guards(self):
