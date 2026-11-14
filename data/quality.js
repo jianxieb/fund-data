@@ -1,12 +1,12 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-11-13T02:41:57+00:00",
-  "asOf": "2026-11-13",
+  "checkedAt": "2026-11-14T02:29:26+00:00",
+  "asOf": "2026-11-14",
   "status": "unverified",
   "summary": {
     "errors": 0,
     "warnings": 5,
-    "unverified": 63
+    "unverified": 65
   },
   "datasets": [
     {
@@ -17,10 +17,10 @@ var DATA_QUALITY={
       "records": 0,
       "issues": [
         {
-          "code": "source_refresh_retained",
+          "code": "source_history_retained",
           "severity": "warning",
-          "message": "A股：执行超过 90 秒，子进程已终止；该数据集不能视为更新成功。；保留已发布数据及原日期",
-          "affected": "stocks"
+          "message": "158042：成交价历史：行情观测不足：158042.SZ；保留历史截至2026-11-11",
+          "affected": "158042"
         }
       ],
       "status": "warning"
@@ -28,10 +28,10 @@ var DATA_QUALITY={
     {
       "id": "funds",
       "label": "海外基金",
-      "asOf": "2026-11-11",
+      "asOf": "2026-11-12",
       "dateRange": [
-        "2026-11-11",
-        "2026-11-11"
+        "2026-11-12",
+        "2026-11-12"
       ],
       "records": 46,
       "issues": [
@@ -94,10 +94,10 @@ var DATA_QUALITY={
     {
       "id": "overseas_stocks",
       "label": "海外个股",
-      "asOf": "2026-11-12",
+      "asOf": "2026-11-13",
       "dateRange": [
         "2026-11-12",
-        "2026-11-12"
+        "2026-11-13"
       ],
       "records": 79,
       "issues": [
@@ -342,6 +342,18 @@ var DATA_QUALITY={
           "affected": "QCOM"
         },
         {
+          "code": "overseas_financial_fields_missing",
+          "severity": "unverified",
+          "message": "AMAT 2026-10-31财季来源缺营业收入、净利润",
+          "affected": "AMAT"
+        },
+        {
+          "code": "overseas_business_review_pending",
+          "severity": "unverified",
+          "message": "AMAT经营复核仅覆盖2026-07-26，最新财报2026-10-31尚待经营复核",
+          "affected": "AMAT"
+        },
+        {
           "code": "overseas_business_review_pending",
           "severity": "unverified",
           "message": "LRCX经营复核仅覆盖2026-06-28，最新财报2026-09-27尚待经营复核",
@@ -467,10 +479,10 @@ var DATA_QUALITY={
     {
       "id": "benchmarks",
       "label": "海外指数与ETF基准",
-      "asOf": "2026-11-12",
+      "asOf": "2026-11-13",
       "dateRange": [
         "2026-11-12",
-        "2026-11-12"
+        "2026-11-13"
       ],
       "records": 36,
       "issues": [
@@ -519,10 +531,10 @@ var DATA_QUALITY={
     {
       "id": "stocks",
       "label": "股票观察清单",
-      "asOf": "2026-11-11",
+      "asOf": "2026-11-13",
       "dateRange": [
-        "2026-11-11",
-        "2026-11-11"
+        "2026-11-13",
+        "2026-11-13"
       ],
       "records": 71,
       "issues": [],
@@ -531,7 +543,7 @@ var DATA_QUALITY={
     {
       "id": "strategy",
       "label": "买入策略实验",
-      "asOf": "2026-11-12",
+      "asOf": "2026-11-13",
       "dateRange": null,
       "records": 162,
       "issues": [],
@@ -544,10 +556,10 @@ var DATA_QUALITY={
     {
       "id": "domestic_funds",
       "label": "扩展基金研究池",
-      "asOf": "2026-11-12",
+      "asOf": "2026-11-13",
       "dateRange": [
-        "2026-11-06",
-        "2026-11-12"
+        "2026-11-11",
+        "2026-11-13"
       ],
       "records": 1577,
       "issues": [
@@ -3386,10 +3398,10 @@ var DATA_QUALITY={
     {
       "id": "indices",
       "label": "国内指数",
-      "asOf": "2026-11-12",
+      "asOf": "2026-11-13",
       "dateRange": [
         "2026-11-11",
-        "2026-11-12"
+        "2026-11-13"
       ],
       "records": 13,
       "issues": [
@@ -3407,10 +3419,10 @@ var DATA_QUALITY={
     {
       "id": "portfolio",
       "label": "组合每日历史",
-      "asOf": "2026-11-12",
+      "asOf": "2026-11-13",
       "dateRange": [
-        "2026-11-06",
-        "2026-11-12"
+        "2026-11-11",
+        "2026-11-13"
       ],
       "records": 1873,
       "issues": [],
