@@ -392,6 +392,28 @@ test('risk tab hides correlation for one holding and the market-value line witho
   assert.doesNotMatch(html, /持仓相关性|市值口径/);
 });
 
+test('threshold rebalancing is chosen in settings, reaches the ledger and is named in the report', async () => {
+  const runs = [];
+  const f = uiFixture(input => Object.assign(input.config, { monthly: 0, rebalance: 'none' }),
+    { ...P, simulate(input) { const result = P.simulate(input); runs.push(result); return result; } });
+  let html = f.ui.view(f.helpers);
+  assert.ok(html.includes('再平衡方式') && html.includes('data-value="band"'));
+  assert.doesNotMatch(html, /data-portfolio-field="rebalanceBand"|再平衡周期/);
+  await f.action('select', { field: 'rebalance', value: 'band' });
+  html = f.ui.view(f.helpers);
+  assert.match(html, /data-portfolio-field="rebalanceBand"/);
+  assert.ok(html.includes('任一持仓占比偏离目标达到阈值，下一共同交易日再平衡。'));
+  f.ui.handleInput({ id: 'portfolio-rebalanceBand', value: '3', dataset: { portfolioField: 'rebalanceBand' } });
+  await f.action('run');
+  assert.equal(runs[0].config.rebalance, 'band'); assert.equal(runs[0].config.rebalanceBand, 3);
+  assert.ok(runs[0].rebalances > 0, 'the fixture drifts more than three points');
+  await f.action('export-pdf');
+  assert.ok(textOf(Pdf.layout(f.reports.at(-1), measure)).includes('偏离3个百分点'));
+  f.ui.handleInput({ id: 'portfolio-rebalanceBand', value: '', dataset: { portfolioField: 'rebalanceBand' } });
+  await f.action('run');
+  assert.match(f.ui.view(f.helpers), /偏离阈值须大于0且不超过50个百分点/);
+});
+
 test('funding, strategy rules and settlement settings are grouped by what the investor changes', async () => {
   const f = uiFixture(input => {
     input.catalog.assets[0].market = 'us';

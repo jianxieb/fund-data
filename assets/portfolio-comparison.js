@@ -172,7 +172,8 @@
     const tabs = [['performance', '收益对比'], ['states', '策略状态']].map(([key, label]) => action(H, label, 'tab', 'portfolio-result-tab', 'id="portfolio-compare-tab-' + key + '" data-value="' + key + '" role="tab" aria-selected="' + (tab === key) + '" aria-controls="portfolio-compare-pane-' + key + '" tabindex="' + (tab === key ? '0' : '-1') + '"')).join('');
     const tools = '<div class="portfolio-compare-tools">' + (tab === 'performance' ? H.annualControl || '' : '') + action(H, tab === 'states' ? '导出所选日状态 CSV' : '导出对比结果 CSV', tab === 'states' ? 'export-states' : 'export', 'portfolio-result-link', !items.length ? 'disabled' : '') + '</div>';
     const contribution = P.contributionMethods.find(([id]) => id === comparison.config.contributionMethod)?.[1] || '每月定投';
-    const rebalance = { none: '不再平衡', month: '每月再平衡', quarter: '每季再平衡', year: '每年再平衡' }[comparison.config.rebalance] || '不再平衡';
+    const rebalance = comparison.config.rebalance === 'band' ? '偏离' + comparison.config.rebalanceBand + '个百分点再平衡' :
+      { none: '不再平衡', month: '每月再平衡', quarter: '每季再平衡', year: '每年再平衡' }[comparison.config.rebalance] || '不再平衡';
     const header = '<div class="portfolio-compare-context"><p><strong>' + H.esc(comparison.start || '—') + ' 至 ' + H.esc(comparison.end || '—') + '</strong><span>' + name + '计价</span><span>初始本金 ' + amount(comparison.config.initial, H) + ' ' + unit + '</span></p><p>' + (comparison.config.monthly > 0 ? '<span>' + H.esc(contribution) + ' · 基础月预算 ' + amount(comparison.config.monthly, H) + ' ' + unit + '</span>' : '<span>不追加资金</span>') + '<span>' + rebalance + '</span></p>' +
       (holdings.length ? '<p>' + H.esc(holdings.join(' · ')) + '</p>' : '') + '</div>';
     const notice = comparison.catalogRefresh?.available === false ? '<p class="portfolio-warning">' + H.esc(comparison.catalogRefresh.missing) + '</p>' : '';

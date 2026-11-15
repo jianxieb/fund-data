@@ -285,7 +285,8 @@
     if (total > 100 + EPS) fail('权重合计超过100%；请调整权重');
     if (!finite(config.initial) || config.initial < 0 || config.initial > 1e12 || !finite(config.monthly) || config.monthly < 0 || config.monthly > 1e10 || config.initial + config.monthly <= 0) fail('初始投入与每月投入须为有效非负金额，至少一项大于0');
     if (!finite(config.transactionFee) || config.transactionFee < 0 || config.transactionFee > 5) fail('交易费率须在0至5%之间');
-    if (!['none', 'month', 'quarter', 'year'].includes(config.rebalance)) fail('再平衡周期无效');
+    if (!['none', 'month', 'quarter', 'year', 'band'].includes(config.rebalance)) fail('再平衡方式无效');
+    if (config.rebalance === 'band' && (!finite(config.rebalanceBand) || config.rebalanceBand <= 0 || config.rebalanceBand > 50)) fail('偏离阈值须大于0且不超过50个百分点');
     if (!['net', 'gross_estimate'].includes(config.feeBasis)) fail('年费口径无效');
     strategyConfig(config);
     currencyInfo(config);
@@ -578,6 +579,9 @@
     const fee = config.transactionFee / 100, transactions = [], flows = [];
     let cash = 0, contributed = 0, fundUnits = 0, grossUnits = 0, tradeCost = 0, rebalances = 0, deposits = 0;
     let lastBalance = periodKey(start, config.rebalance), peak = 1, mdd = 0;
+    const calendarRebalance = ['month', 'quarter', 'year'].includes(config.rebalance);
+    const band = config.rebalance === 'band' ? config.rebalanceBand / 100 : null;
+    let bandSignal = null;
     let initialReserve = config.initial, exposure = 1, timingChanges = 0;
     let pendingTopup = null, topupSignalDay = null, topupTimes = 0, topupAmount = 0, topupFees = 0;
     let maxActualExposure = 0, maxActualExposureDay = null;
@@ -640,7 +644,9 @@
       if (systematicMethod && leg >= 0) return systematicTargets[leg];
       return qqqTiming && !qqqOn && i === tqqqIndex ? 0 : s.weight;
     }
-    function rebalance(day, prices, reason, targetExposure = exposure) {
+    // What a rebalance would restore right now. The drift measure shares it,
+    // so a threshold rebalance leaves exactly zero drift behind.
+    function allocationState(prices, targetExposure = exposure) {
       const wealth = Math.max(0, value(prices) - initialReserve), previous = units.map((u, i) => u * prices[i]);
       // A periodic rebalance must not recreate a spent opportunity reserve.
       // Preserve each sleeve's current stock/cash split while restoring its
@@ -653,6 +659,15 @@
         const leg = pairIndices.indexOf(i);
         return targetExposure * (opportunity && leg >= 0 ? pairWeights[leg] * keptFractions[leg] : targetWeight(s, i));
       };
+      return { wealth, previous, keptFractions, target };
+    }
+    // Largest gap between a holding's market weight and its current target.
+    function drift(prices) {
+      const { wealth, previous, target } = allocationState(prices);
+      return wealth > EPS ? Math.max(...series.map((s, i) => Math.abs(previous[i] / wealth - target(s, i)))) : 0;
+    }
+    function rebalance(day, prices, reason, targetExposure = exposure, signalDay) {
+      const { wealth, previous, keptFractions, target } = allocationState(prices, targetExposure);
       let lo = 0, hi = wealth;
       if (fee || series.some(s => s.tax.gain > 0)) {
         for (let i = 0; i < 70; i++) {
@@ -665,7 +680,7 @@
         }
       } else hi = 0;
       const usable = wealth - hi, deltas = series.map((s, i) => target(s, i) * usable - previous[i]);
-      trade(day, prices, deltas, deltas.map(delta => Math.abs(delta) * fee), reason);
+      trade(day, prices, deltas, deltas.map(delta => Math.abs(delta) * fee), reason, signalDay);
       if (qqqTiming) riskReserve = qqqOn ? 0 : Math.min(Math.max(0, cash - initialReserve), usable * series[tqqqIndex].weight);
       if (systematicMethod) systematicParked.forEach((w, leg) => {
         systematicCash[leg] = usable * (opportunity ? pairWeights[leg] * (1 - keptFractions[leg]) : w);
@@ -887,9 +902,11 @@
           invest(day, income, prices, 'contribution');
         }
         const balance = periodKey(day, config.rebalance);
-        if (config.rebalance !== 'none' && day !== start && balance !== lastBalance) {
+        if (calendarRebalance && day !== start && balance !== lastBalance) {
           rebalance(day, prices, 'rebalance'); lastBalance = balance;
         }
+        // The previous common close decided; this close fills.
+        if (bandSignal && day !== start && bandSignal.drift >= band - 1e-12) rebalance(day, prices, 'rebalance', exposure, bandSignal.day);
       }
       if (day === end && tax.liquidate) {
         const deltas = units.map((unit, i) => -unit * prices[i]);
@@ -897,6 +914,7 @@
         if (qqqTiming) riskReserve = 0;
         if (systematicMethod) { systematicCash.fill(0); pendingSystematic = null; }
       }
+      if (band !== null && commonSet.has(day)) bandSignal = { day, drift: drift(prices) };
       if (qqqTiming && (riskReserve < -1e-5 || riskReserve > cash + 1e-5)) fail('QQQ风险现金与账户现金未勾稽');
       if (cashTopup && commonSet.has(day)) {
         pendingTopup = planTopup(day, prices);
@@ -1244,7 +1262,7 @@
   function sanitizeDraft(value, ids) {
     if (!value || value.schemaVersion !== 1 || !Array.isArray(value.positions)) fail('组合配置格式无效');
     const positions = value.positions.map(p => ({ id: p.id, weight: p.weight }));
-    const config = { positions, currency: currencyInfo(value).code, dividendPolicy: dividendPolicyOf(value), initial: value.initial, monthly: value.monthly, rebalance: value.rebalance,
+    const config = { positions, currency: currencyInfo(value).code, dividendPolicy: dividendPolicyOf(value), initial: value.initial, monthly: value.monthly, rebalance: value.rebalance, ...(value.rebalance === 'band' ? { rebalanceBand: value.rebalanceBand } : {}),
       years: value.years, start: value.start || '', end: value.end || '', transactionFee: value.transactionFee,
       feeBasis: value.feeBasis || 'net', feeOverrides: value.feeOverrides || {}, benchmarkId: value.benchmarkId || '', tax: taxConfig(value.tax), ...strategyConfig(value) };
     validateConfig(config, ids);

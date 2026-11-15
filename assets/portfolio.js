@@ -3,7 +3,7 @@
   const M = window.Changheng, P = window.ChanghengPortfolioModel, KEY = 'changheng.portfolio.v1';
   let H, catalog = window.PORTFOLIO_CATALOG || null, loading = false, loadError = '', running = false, runId = 0;
   const histories = new Map(), requests = new Map(), chartInputs = new WeakMap();
-  const defaults = { positions: [], currency: 'CNY', initial: 100000, monthly: 0, initialMethod: 'lump_sum', contributionMethod: 'dca_month', rebalance: 'none', transactionFee: 0,
+  const defaults = { positions: [], currency: 'CNY', initial: 100000, monthly: 0, initialMethod: 'lump_sum', contributionMethod: 'dca_month', rebalance: 'none', rebalanceBand: 5, transactionFee: 0,
     years: 5, start: '', end: '', benchmarkId: 'us:SPY', dividendPolicy: 'reinvest', feeOverrides: {},
     tax: { ...P.taxConfig(), usCapitalGains: 20, usDividend: 20 } };
   let draft = { ...defaults }, query = '', kind = 'all', market = 'all', hideBoards = false;
@@ -469,7 +469,9 @@
       field('持续投入方式', menu('contributionMethod', '持续投入方式', P.contributionMethods, draft.contributionMethod)) +
       number('每月追加预算', 'monthly', draft.monthly, 1e10, 'any', currency().unit) +
       '</div><section class="portfolio-plan-panel" aria-labelledby="portfolio-recurring-title"><h3 id="portfolio-recurring-title">追加安排</h3><p id="portfolio-contribution-plan">' + H.esc(contributionPlan()) + '</p></section></div>' +
-      '<div class="portfolio-decision"><div class="portfolio-decision-controls">' + field('再平衡周期', menu('rebalance', '再平衡周期', [['none', '不再平衡'], ['month', '每月'], ['quarter', '每季度'], ['year', '每年']], draft.rebalance)) + '</div></div></section>' +
+      '<div class="portfolio-decision"><div class="portfolio-decision-controls">' + field('再平衡方式', menu('rebalance', '再平衡方式', [['none', '不再平衡'], ['month', '每月'], ['quarter', '每季度'], ['year', '每年'], ['band', '偏离阈值']], draft.rebalance)) +
+      (draft.rebalance === 'band' ? number('偏离阈值', 'rebalanceBand', draft.rebalanceBand, 50, 'any', '百分点') : '') + '</div>' +
+      (draft.rebalance === 'band' ? '<section class="portfolio-plan-panel" aria-labelledby="portfolio-rebalance-title"><h3 id="portfolio-rebalance-title">再平衡规则</h3><p>任一持仓占比偏离目标达到阈值，下一共同交易日再平衡。</p></section>' : '') + '</div></section>' +
       '<div class="card portfolio-model-settings"><section class="portfolio-settings-section" aria-labelledby="portfolio-conditions-title"><h2 id="portfolio-conditions-title">回测条件</h2><div class="portfolio-backtest-row">' +
       '<div class="portfolio-period-field">' + field('回测区间', menu('years', '回测区间', [[1, '近1年'], [2, '近2年'], [3, '近3年'], [5, '近5年'], [10, '近10年'], [15, '近15年'], [20, '近20年'], ['common', '共同历史'], ['custom', '自定义区间']], draft.years)) +
       (draft.years === 'custom' ? customDates() : '') + '</div>' +

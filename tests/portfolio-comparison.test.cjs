@@ -147,3 +147,12 @@ test('the comparison carries a lump-sum baseline beside the ten strategies, neve
   const failed = P.simulateStrategies(unfunded).baseline;
   assert.equal(failed.result, undefined); assert.ok(failed.error);
 });
+
+test('every advanced strategy runs with a band and none rebuys a parked TQQQ sleeve through it', () => {
+  const comparison = P.simulateStrategies(fixture({ rebalance: 'band', rebalanceBand: 5 }));
+  for (const row of [comparison.baseline, ...comparison.strategies]) assert.equal(row.error, undefined, row.label + ': ' + row.error);
+  const qqq = comparison.strategies.find(row => row.id === 'qqq_bear_confirm').result;
+  const parked = new Set(qqq.curve.filter(p => p.qqqOn === false).map(p => p.day));
+  assert.ok(parked.size > 5, 'the fixture must park TQQQ');
+  assert.deepEqual(qqq.transactions.filter(t => t.id === 'us:TQQQ' && t.side === 'buy' && t.reason === 'rebalance' && parked.has(t.day)), []);
+});
