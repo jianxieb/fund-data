@@ -922,7 +922,7 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-result-name small{display:block;color:var(--muted);font-size:11px;margin-top:4px}
 .portfolio-year-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:22px;padding:22px 24px 25px}
 .portfolio-year-grid>div{padding:0 15px;border-left:1px solid var(--line)}
-.portfolio-year-grid span{display:block;font-size:12px;color:var(--muted)}
+.portfolio-year-grid>div>span{display:block;font-size:12px;color:var(--muted)}
 .portfolio-year-grid strong{display:block;font-size:var(--portfolio-metric-size);font-weight:500;margin-top:7px}
 .portfolio-year-grid small{display:block;color:#9aa292;font-size:10px;margin-top:7px}
 .portfolio-risk-grid{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:26px}
