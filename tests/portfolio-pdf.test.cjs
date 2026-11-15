@@ -309,7 +309,7 @@ test('result tabs keep the run and global tools visible while isolating each sec
   assert.ok(resultTabButton(view(), 'chart').includes('aria-selected="true"'));
   assert.equal(resultTabButton(view(), 'daily'), undefined, 'no daily signals for ordinary contributions');
   assert.equal(resultTabButton(view(), 'comparison'), undefined, 'no initial strategy for the lump-sum comparison');
-  const sections = { chart: ['组合走势'], periods: ['区间快照', '年度表现'], holdings: ['持仓贡献'] };
+  const sections = { chart: ['组合走势'], periods: ['区间快照', '年度表现'], risk: ['过程风险', '相对本金', '前5次回撤', '持仓相关性'], holdings: ['持仓贡献'] };
   assert.equal(resultTabButton(view(), 'annual'), undefined);
   assert.equal(resultTabButton(view(), 'snapshots'), undefined);
   for (const [key, titles] of Object.entries(sections)) {
@@ -342,6 +342,39 @@ test('result tabs keep the run and global tools visible while isolating each sec
   await f.action('run');
   assert.ok(resultTabButton(view(), 'chart').includes('aria-selected="true"'));
   assert.doesNotMatch(view(), /每季度定投|上次模拟结果/);
+});
+
+test('risk tab shows the model’s episodes, principal risk and correlation without recomputing them', async () => {
+  const runs = [];
+  const f = uiFixture(input => {
+    Object.assign(input.config, { monthly: 0, rebalance: 'none', transactionFee: 0, tax: { ...P.taxConfig(), cnStockCapitalGains: 20 } });
+    for (const h of Object.values(input.histories)) h.dividendEvidence = { status: 'recorded', first: h.first, through: h.asOf, fractions: {} };
+  }, { ...P, simulate(input) { const result = P.simulate(input); runs.push(result); return result; } });
+  await f.action('run');
+  const html = await f.resultTab('risk'), risk = P.riskAnalysis(runs[0]), c = P.holdingCorrelation(runs[0]);
+  assert.ok(risk.maxDrawdown && risk.marketDrawdown && c.matrix, 'fixture must exercise every card');
+  for (const label of ['年化波动', '收益回撤比', '收益波动比', '最大回撤', '最长回撤期', '当前回撤', '相对本金最深亏损', '最长连续低于本金']) assert.ok(html.includes('<span>' + label + '</span>'), label);
+  assert.ok(html.includes('峰值 ' + risk.maxDrawdown.peakDay + ' · 低点 ' + risk.maxDrawdown.troughDay));
+  assert.ok(html.includes('市值口径 ' + String(risk.marketDrawdown.depth) + '（未减浮盈预留税）'));
+  assert.ok(html.includes(risk.returnToDrawdown.value.toFixed(2)) && html.includes(risk.returnToVolatility.value.toFixed(2)));
+  const table = html.split('<h2>前5次回撤</h2>')[1].split('</section>')[0];
+  assert.equal(table.split('<tr><td>').length - 1, risk.drawdowns.length);
+  for (const e of risk.drawdowns) assert.ok(table.includes('<td>' + e.peakDay + '</td><td>' + e.troughDay + '</td>'), e.peakDay);
+  const matrix = html.split('<h2>持仓相关性</h2>')[1].split('</section>')[0];
+  assert.ok(matrix.includes('周收益 ' + c.observations + '个') && matrix.includes(c.first + ' — ' + c.last));
+  assert.ok(matrix.includes('>' + c.matrix[0][1].toFixed(2) + '</td>'));
+  assert.doesNotMatch(html, /NaN|undefined|Infinity/);
+});
+
+test('risk tab hides correlation for one holding and the market-value line without gains tax', async () => {
+  const f = uiFixture(input => {
+    Object.assign(input.config, { monthly: 0, rebalance: 'none', transactionFee: 0, tax: P.taxConfig() });
+    input.config.positions[1].weight = 0;
+  });
+  await f.action('run');
+  const html = await f.resultTab('risk');
+  assert.ok(html.includes('<h2>过程风险</h2>') && html.includes('<h2>前5次回撤</h2>'));
+  assert.doesNotMatch(html, /持仓相关性|市值口径/);
 });
 
 test('funding, strategy rules and settlement settings are grouped by what the investor changes', async () => {

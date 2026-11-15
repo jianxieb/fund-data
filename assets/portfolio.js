@@ -1150,6 +1150,48 @@
       '<dt>' + (resultKey === signature() ? '本次策略' : '上次模拟策略') + '</dt><dd><strong class="portfolio-run-strategy">' + H.esc(methods.join(' ＋ ')) + '</strong></dd>' +
       '<dt>' + (cfg.years === 'custom' && r.start > r.requestedStart ? '实际回测区间' : '回测区间') + '</dt><dd><span>' + H.esc(r.start) + ' 至 ' + H.esc(r.end) + '</span><span class="portfolio-run-meta">' + H.esc(name) + '计价</span></dd></dl>';
   }
+  const riskViews = new WeakMap();
+  function riskOf(r) {
+    if (!riskViews.has(r)) riskViews.set(r, { risk: P.riskAnalysis(r), correlation: P.holdingCorrelation(r) });
+    return riskViews.get(r);
+  }
+  function riskCards(r) {
+    const { risk, correlation } = riskOf(r);
+    if (!risk) return '';
+    const days = n => n + '天', span = (from, to) => from + ' — ' + to;
+    const pct = n => H.pct(Math.abs(n) < .005 ? 0 : n, 2, false);
+    const ratio = item => item.value === null ? '<span class="portfolio-risk-missing">' + H.esc(item.missing) + '</span>' : item.value.toFixed(2);
+    const cell = (label, value, notes = []) => '<div><span>' + label + '</span><strong class="num">' + value + '</strong>' +
+      notes.filter(Boolean).map(note => '<small>' + H.esc(note) + '</small>').join('') + '</div>';
+    const max = risk.maxDrawdown, longest = risk.longestDrawdown, principal = risk.principal, below = principal.longestBelow;
+    const process = '<div class="portfolio-year-grid portfolio-risk-grid">' +
+      cell('年化波动', H.pct(risk.volatility, 2, false)) +
+      cell('收益回撤比', ratio(risk.returnToDrawdown), ['年化收益 ÷ 最大回撤']) +
+      cell('收益波动比', ratio(risk.returnToVolatility), ['未扣无风险利率']) +
+      cell('最大回撤', pct(max ? max.depth : 0), max ? ['峰值 ' + max.peakDay + ' · 低点 ' + max.troughDay,
+        risk.marketDrawdown ? '市值口径 ' + H.pct(risk.marketDrawdown.depth, 2, false) + '（未减浮盈预留税）' : ''] : ['区间内未出现回撤']) +
+      cell('最长回撤期', days(longest ? longest.totalDays : 0), longest ? [span(longest.peakDay, longest.recoveryDay || r.end), longest.recovered ? '已修复' : '期末仍未修复'] : []) +
+      cell('当前回撤', pct(risk.currentDrawdown), risk.currentDrawdown < 0 ? [] : ['期末处于净值高点']) + '</div>';
+    const relative = '<div class="portfolio-year-grid portfolio-risk-grid">' +
+      cell('相对本金最深亏损', pct(principal.deepestLoss), [principal.deepestLossDay || '未跌破本金']) +
+      cell('最长连续低于本金', days(below ? below.days : 0), below ? [span(below.start, below.end), below.recovered ? '已恢复' : '期末仍低于本金'] : ['没有估值低于本金']) + '</div>';
+    const rows = risk.drawdowns.map(e => '<tr><td>' + e.peakDay + '</td><td>' + e.troughDay + '</td><td class="num">' + H.pc(e.depth) + '</td><td class="num">' + days(e.declineDays) + '</td><td>' +
+      (e.recovered ? e.recoveryDay : '<span class="muted">尚未修复</span>') + '</td><td class="num">' + (e.recovered ? days(e.recoveryDays) : '—') + '</td><td class="num">' + days(e.totalDays) + '</td></tr>').join('');
+    const episodes = rows ? '<div class="table-wrap" tabindex="0" role="region" aria-label="前5次回撤"><table class="portfolio-risk-table"><thead><tr><th scope="col">峰值日</th><th scope="col">低点日</th><th scope="col">回撤幅度</th><th scope="col">下跌历时</th><th scope="col">修复日</th><th scope="col">修复历时</th><th scope="col">总历时</th></tr></thead><tbody>' + rows + '</tbody></table></div>' :
+      '<p class="portfolio-risk-empty">区间内未出现回撤</p>';
+    let matrix = '';
+    if (correlation?.missing) matrix = H.card('持仓相关性', '', '<p class="portfolio-risk-empty">' + H.esc(correlation.missing) + '，不计算相关性。</p>');
+    else if (correlation) {
+      const tint = v => v === null ? '' : ' style="background:rgba(' + (v < 0 ? '173,111,120' : '53,101,74') + ',' + (Math.abs(v) * .28).toFixed(3) + ')"';
+      matrix = H.card('持仓相关性', '周收益 ' + correlation.observations + '个 · ' + span(correlation.first, correlation.last) + ' · ' + currency(r.config).name + '计价',
+        '<div class="table-wrap" tabindex="0" role="region" aria-label="持仓周收益相关系数"><table class="portfolio-correlation-table"><thead><tr><th scope="col"></th>' +
+        correlation.codes.map(code => '<th scope="col">' + H.esc(code) + '</th>').join('') + '</tr></thead><tbody>' +
+        correlation.matrix.map((row, i) => '<tr><th scope="row">' + H.esc(correlation.codes[i]) + '</th>' +
+          row.map(v => '<td class="num"' + tint(v) + '>' + (v === null ? '—' : v.toFixed(2)) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>');
+    }
+    return H.card('过程风险', '现金流中性净值 · ' + span(r.start, r.end), process) + H.card('相对本金', '税后估值对比累计投入本金', relative) +
+      H.card('前5次回撤', '按幅度从深到浅', episodes) + matrix;
+  }
   function resultSections(r) {
     const usesMa = r.config.initial > 0 && r.config.initialMethod === 'ma200_hold' || r.config.monthly > 0 && ['dca_ma_trend', 'dca_ma_contrarian'].includes(r.config.contributionMethod);
     const sections = [['chart', '组合走势', () =>
@@ -1157,7 +1199,7 @@
       (usesMa && r.strategy.insufficientMaDays ? '<p class="portfolio-warning">均线不足200个共同交易日的阶段按常规投入，未将缺历史视为下跌信号。</p>' : '')]];
     if (systematicMethods.has(r.config.initialMethod)) sections.push(['daily', opportunityMethods.has(r.config.initialMethod) ? '每日加仓分数' : '每日策略状态', () => dailyCard() + accountActivityMarkup(r)]);
     if (r.lumpSumComparison) sections.push(['comparison', '策略对照', lumpSumComparison]);
-    return sections.concat([['periods', '区间表现', () => snapshots() + yearlyResults(r)], ['holdings', '持仓贡献', () => resultHoldings(r)]]);
+    return sections.concat([['periods', '区间表现', () => snapshots() + yearlyResults(r)], ['risk', '风险', () => riskCards(r)], ['holdings', '持仓贡献', () => resultHoldings(r)]]);
   }
   function results() {
     if (!result) return '<section class="portfolio-result-placeholder"><div><h2>还没有模拟结果</h2><p>' + (draft.positions.length ? '点击“开始模拟”查看组合走势和收益。' : '先添加标的并设置权重，再开始模拟。') + '</p></div><svg viewBox="0 0 460 135" aria-hidden="true"><path d="M3 120H457M3 80H457M3 40H457" stroke="#e0e5d7"/><path d="m3 101 37-13 37 14 38-28 37 7 38-22 38 12 37-31 37 5 40-26 38 6 40-23" fill="none" stroke="#96aa83" stroke-width="2"/><path d="m3 110 37-4 37 5 38-19 37 10 38-8 38-9 37 6 37-19 40 9 38-16 40 2" fill="none" stroke="#c3b291" stroke-width="1.5" stroke-dasharray="5 5"/></svg></section>';
