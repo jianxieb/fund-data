@@ -3,7 +3,7 @@
   const M = window.Changheng, P = window.ChanghengPortfolioModel, KEY = 'changheng.portfolio.v1';
   let H, catalog = window.PORTFOLIO_CATALOG || null, loading = false, loadError = '', running = false, runId = 0;
   const histories = new Map(), requests = new Map(), chartInputs = new WeakMap();
-  const defaults = { positions: [], currency: 'CNY', initial: 100000, monthly: 0, initialMethod: 'lump_sum', contributionMethod: 'dca_month', rebalance: 'none', rebalanceBand: 5, transactionFee: 0,
+  const defaults = { positions: [], currency: 'CNY', initial: 100000, monthly: 0, initialMethod: 'lump_sum', contributionMethod: 'dca_month', contributionAllocation: 'target', rebalance: 'none', rebalanceBand: 5, transactionFee: 0,
     years: 5, start: '', end: '', benchmarkId: 'us:SPY', dividendPolicy: 'reinvest', feeOverrides: {},
     tax: { ...P.taxConfig(), usCapitalGains: 20, usDividend: 20 } };
   let draft = { ...defaults }, query = '', kind = 'all', market = 'all', hideBoards = false;
@@ -450,6 +450,7 @@
     }[draft.contributionMethod] || '按所选持续投入方式执行。') + (draft.initial > 0 ? ' 从建仓后的下一月开始。' : ' 从首个模拟月份开始。');
     if (monthly > 0 && opportunityMethods.has(method)) income += ' USD ETF与TQQQ的新增股票预算全部进入各自待加现金池，按每日分数买入；其他标的和原现金比例照常。';
     else if (monthly > 0 && systematicMethods.has(method)) income += ' 到账后按已执行的策略配置分配；不会因“持有状态”每天自动追加。';
+    if (monthly > 0 && draft.contributionAllocation === 'underweight') income += ' 每笔追加按各持仓低于目标的缺口分配，不卖出已有持仓。';
     return income;
   }
   function syncPurchasePlan() {
@@ -468,6 +469,9 @@
       '<div class="portfolio-decision" role="group" aria-label="持续投入" aria-describedby="portfolio-contribution-plan"><div class="portfolio-decision-controls">' +
       field('持续投入方式', menu('contributionMethod', '持续投入方式', P.contributionMethods, draft.contributionMethod)) +
       number('每月追加预算', 'monthly', draft.monthly, 1e10, 'any', currency().unit) +
+      '<div class="portfolio-field"><span id="portfolio-allocation-label">追加资金去向</span><div class="segmented" role="group" aria-labelledby="portfolio-allocation-label">' +
+      [['target', '按目标比例'], ['underweight', '优先补低配']].map(([id, label]) => btn(label, 'contribution-allocation', id === draft.contributionAllocation ? 'active' : '',
+        'data-value="' + id + '" aria-pressed="' + (id === draft.contributionAllocation) + '"')).join('') + '</div></div>' +
       '</div><section class="portfolio-plan-panel" aria-labelledby="portfolio-recurring-title"><h3 id="portfolio-recurring-title">追加安排</h3><p id="portfolio-contribution-plan">' + H.esc(contributionPlan()) + '</p></section></div>' +
       '<div class="portfolio-decision"><div class="portfolio-decision-controls">' + field('再平衡方式', menu('rebalance', '再平衡方式', [['none', '不再平衡'], ['month', '每月'], ['quarter', '每季度'], ['year', '每年'], ['band', '偏离阈值']], draft.rebalance)) +
       (draft.rebalance === 'band' ? number('偏离阈值', 'rebalanceBand', draft.rebalanceBand, 50, 'any', '百分点') : '') + '</div>' +
@@ -1454,6 +1458,9 @@
       case 'dividend-policy':
         if (!P.dividendPolicies.some(([id]) => id === val)) return;
         draft.dividendPolicy = val; touch(); break;
+      case 'contribution-allocation':
+        if (!['target', 'underweight'].includes(val)) return;
+        draft.contributionAllocation = val; touch(); break;
       case 'settle-hold': case 'settle-sell': draft.tax.liquidate = act === 'settle-sell'; touch(); break;
       case 'tax-custom': manualTaxChoice = true; break;
       case 'tax-mainland': manualTaxChoice = false; draft.tax = { ...P.taxConfig(), usCapitalGains: 20, usDividend: 20, liquidate: draft.tax.liquidate }; touch(); break;

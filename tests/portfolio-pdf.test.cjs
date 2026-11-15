@@ -414,6 +414,29 @@ test('threshold rebalancing is chosen in settings, reaches the ledger and is nam
   assert.match(f.ui.view(f.helpers), /偏离阈值须大于0且不超过50个百分点/);
 });
 
+test('where new money goes is chosen beside the contribution method and explained in one sentence', async () => {
+  const runs = [];
+  const f = uiFixture(input => Object.assign(input.config, { monthly: 500, rebalance: 'none' }),
+    { ...P, simulate(input) { const result = P.simulate(input); runs.push(result); return result; } });
+  let html = f.ui.view(f.helpers);
+  assert.ok(html.includes('追加资金去向') && html.includes('按目标比例') && html.includes('优先补低配'));
+  assert.match(html, /data-action="portfolio-contribution-allocation" data-value="target" aria-pressed="true"/);
+  await f.action('contribution-allocation', { value: 'underweight' });
+  html = f.ui.view(f.helpers);
+  assert.match(html, /data-action="portfolio-contribution-allocation" data-value="underweight" aria-pressed="true"/);
+  assert.ok(html.includes('每笔追加按各持仓低于目标的缺口分配，不卖出已有持仓。'));
+  await f.action('run');
+  assert.equal(runs[0].config.contributionAllocation, 'underweight');
+  await f.action('export-pdf');
+  assert.ok(textOf(Pdf.layout(f.reports.at(-1), measure)).includes('优先补低配'));
+  await f.action('tab', { value: 'settings' });
+  await f.action('select', { field: 'initialMethod', value: 'ma200_hold' });
+  await f.action('run');
+  assert.match(f.ui.view(f.helpers), /优先补低配只能与一次性、分批或回撤阶梯投入同时使用/);
+  await f.action('contribution-allocation', { value: 'momentum' });
+  assert.match(f.ui.view(f.helpers), /data-value="underweight" aria-pressed="true"/, 'an unknown value is ignored');
+});
+
 test('funding, strategy rules and settlement settings are grouped by what the investor changes', async () => {
   const f = uiFixture(input => {
     input.catalog.assets[0].market = 'us';

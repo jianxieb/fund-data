@@ -74,3 +74,56 @@ test('band settings are validated and survive import; other modes do not require
   assert.throws(() => P.sanitizeDraft({ ...draft, rebalanceBand: 0 }, ids), /偏离阈值/);
   assert.equal(P.sanitizeDraft({ ...draft, rebalance: 'year' }, ids).rebalanceBand, undefined);
 });
+
+const month = (before, after) => Array.from({ length: 35 }, (_, i) => day(i) < '2024-02-01' ? before : after);   // 2024-01-01 … 2024-02-04
+const contributions = r => r.transactions.filter(t => t.reason === 'contribution');
+
+test('a contribution buys the holdings below target in proportion to their gaps and sells nothing', () => {
+  const r = run([{ values: month(100, 200) }, { values: month(100, 100) }], { monthly: 1000, contributionAllocation: 'underweight' });
+  // 1 Feb: A is worth 1000 and B 500; with the new 1000 each target is 1250, so the gaps are 250 and 750.
+  assert.deepEqual(contributions(r).map(t => [t.day, t.id, t.side]), [['2024-02-01', 'stock:A', 'buy'], ['2024-02-01', 'stock:B', 'buy']]);
+  close(contributions(r)[0].amount, 250); close(contributions(r)[1].amount, 750);
+  assert.deepEqual(r.holdings.map(h => Math.round(h.grossValue * 1e6) / 1e6), [1250, 1250]);
+  assert.equal(r.transactions.filter(t => t.side === 'sell').length, 0);
+  const proportional = run([{ values: month(100, 200) }, { values: month(100, 100) }], { monthly: 1000 });
+  assert.deepEqual(contributions(proportional).map(t => t.amount), [500, 500]);
+  assert.equal(r.contributed, proportional.contributed); assert.equal(r.deposits, proportional.deposits);
+});
+
+test('a holding above target receives nothing and none is bought past its target', () => {
+  const r = run([{ values: month(100, 400) }, { values: month(100, 100) }], { monthly: 1000, contributionAllocation: 'underweight' });
+  // A is worth 2000 against a 1750 target; all 1000 goes to B, which ends at 1500, still under 1750.
+  assert.deepEqual(contributions(r).map(t => [t.id, Math.round(t.amount * 1e6) / 1e6]), [['stock:B', 1000]]);
+});
+
+test('on target, underweight equals the proportional purchase to the cent, with a fee and a cash share', () => {
+  const specs = [{ values: month(100, 100) }, { values: month(100, 100) }];
+  const config = { positions: [{ id: 'stock:A', weight: 30 }, { id: 'stock:B', weight: 30 }], monthly: 1000, transactionFee: 1 };
+  const proportional = run(specs, config), under = run(specs, { ...config, contributionAllocation: 'underweight' });
+  assert.equal(contributions(under).length, 2);
+  contributions(under).forEach((t, i) => { close(t.amount, contributions(proportional)[i].amount); close(t.fee, contributions(proportional)[i].fee); });
+  close(under.cash, proportional.cash); close(under.value, proportional.value);
+});
+
+test('underweight contributions realise no gains tax where a calendar rebalance would', () => {
+  const specs = [{ values: month(100, 200) }, { values: month(100, 100) }], tax = { cnStockCapitalGains: 20 };
+  const under = run(specs, { monthly: 1000, contributionAllocation: 'underweight', tax });
+  const calendar = run(specs, { monthly: 1000, rebalance: 'month', tax });
+  assert.equal(under.capitalTax, 0); assert.ok(calendar.capitalTax > 0);
+});
+
+test('underweight is rejected with position-managing methods, ignored without a budget, and validated', () => {
+  const input = account([{ values: month(100, 100) }, { values: month(100, 100) }], { monthly: 1000, contributionAllocation: 'underweight' });
+  for (const initialMethod of ['ma200_hold', 'cash_topup']) {
+    const r = P.simulate({ ...input, config: { ...input.config, initialMethod } });
+    assert.equal(r.error, '优先补低配只能与一次性、分批或回撤阶梯投入同时使用'); assert.equal(r.errorField, 'initialMethod');
+  }
+  for (const initialMethod of ['lump_sum', 'tranche_6', 'tranche_12', 'tranche_24', 'drawdown_ladder']) {
+    assert.equal(P.simulate({ ...input, config: { ...input.config, initialMethod } }).error, undefined, initialMethod);
+  }
+  assert.equal(P.simulate({ ...input, config: { ...input.config, initialMethod: 'ma200_hold', monthly: 0 } }).error, undefined);
+  assert.match(P.simulate({ ...input, config: { ...input.config, contributionAllocation: 'momentum' } }).error, /追加资金去向无效/);
+  const ids = new Set(['stock:A', 'stock:B']);
+  assert.equal(P.sanitizeDraft({ schemaVersion: 1, ...input.config }, ids).contributionAllocation, 'underweight');
+  assert.equal(P.sanitizeDraft({ schemaVersion: 1, ...input.config, contributionAllocation: undefined }, ids).contributionAllocation, 'target');
+});

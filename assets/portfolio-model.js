@@ -287,6 +287,7 @@
     if (!finite(config.transactionFee) || config.transactionFee < 0 || config.transactionFee > 5) fail('交易费率须在0至5%之间');
     if (!['none', 'month', 'quarter', 'year', 'band'].includes(config.rebalance)) fail('再平衡方式无效');
     if (config.rebalance === 'band' && (!finite(config.rebalanceBand) || config.rebalanceBand <= 0 || config.rebalanceBand > 50)) fail('偏离阈值须大于0且不超过50个百分点');
+    if (!['target', 'underweight'].includes(config.contributionAllocation ?? 'target')) fail('追加资金去向无效');
     if (!['net', 'gross_estimate'].includes(config.feeBasis)) fail('年费口径无效');
     strategyConfig(config);
     currencyInfo(config);
@@ -441,6 +442,9 @@
         carried: observation.carried, fxCarried: !!quote?.carried };
     });
     const strategy = strategyConfig(config), strategyDays = common.filter(day => day >= start && day <= end);
+    // New money can only be steered where no rule already owns the positions or their cash.
+    const underweight = (config.contributionAllocation ?? 'target') === 'underweight' && config.monthly > 0;
+    if (underweight && !/^(lump_sum|tranche_(6|12|24)|drawdown_ladder)$/.test(strategy.initialMethod)) failStrategy('优先补低配只能与一次性、分批或回撤阶梯投入同时使用');
     const opportunity = Systematic?.opportunityDefinitions?.[strategy.initialMethod] || null;
     if (strategy.initialMethod.startsWith('opportunity_') && !opportunity) fail('加仓评分模块未加载，请刷新页面');
     const systematicMethod = !!opportunity || ['vix_panic_reentry', 'relative_strength_rotation', 'dual_risk_guard'].includes(strategy.initialMethod);
@@ -714,6 +718,19 @@
       if (qqqTiming && !qqqOn) riskReserve += usable * series[tqqqIndex].weight * (1 + fee);
       if (systematicMethod) systematicParked.forEach((w, leg) => { systematicCash[leg] += usable * w * (1 + fee); });
     }
+    // The deposit is already in cash. Every position's gap to its target after
+    // the deposit is filled in proportion; the gaps always cover the deposit, so
+    // nothing is bought past target and nothing is sold. On target this equals invest().
+    function investUnderweight(day, amount, prices) {
+      if (amount <= EPS) return;
+      const wealth = Math.max(0, value(prices) - initialReserve), marks = units.map((u, i) => u * prices[i]);
+      const gaps = series.map((s, i) => Math.max(0, s.weight * wealth - marks[i]));
+      const cashGap = Math.max(0, cashWeight * wealth - (cash - initialReserve - amount));
+      const budget = sum(gaps) * (1 + fee) + cashGap;
+      if (budget <= EPS) return invest(day, amount, prices, 'contribution');
+      const deltas = gaps.map(g => amount * g / budget);
+      trade(day, prices, deltas, deltas.map(delta => delta * fee), 'contribution');
+    }
     function updateQqq(day, prices) {
       const signal = qqqSignals.get(day), previous = qqqOn;
       lastQqqSignal = signal;
@@ -899,7 +916,7 @@
         if (switched) { rebalance(day, prices, exposure ? 'timing_in' : 'timing_out'); if (day !== start) timingChanges++; }
         else {
           invest(day, released, prices, day === start ? 'initial' : 'initial_plan');
-          invest(day, income, prices, 'contribution');
+          if (underweight) investUnderweight(day, income, prices); else invest(day, income, prices, 'contribution');
         }
         const balance = periodKey(day, config.rebalance);
         if (calendarRebalance && day !== start && balance !== lastBalance) {
@@ -1262,7 +1279,7 @@
   function sanitizeDraft(value, ids) {
     if (!value || value.schemaVersion !== 1 || !Array.isArray(value.positions)) fail('组合配置格式无效');
     const positions = value.positions.map(p => ({ id: p.id, weight: p.weight }));
-    const config = { positions, currency: currencyInfo(value).code, dividendPolicy: dividendPolicyOf(value), initial: value.initial, monthly: value.monthly, rebalance: value.rebalance, ...(value.rebalance === 'band' ? { rebalanceBand: value.rebalanceBand } : {}),
+    const config = { positions, currency: currencyInfo(value).code, dividendPolicy: dividendPolicyOf(value), initial: value.initial, monthly: value.monthly, rebalance: value.rebalance, ...(value.rebalance === 'band' ? { rebalanceBand: value.rebalanceBand } : {}), contributionAllocation: value.contributionAllocation ?? 'target',
       years: value.years, start: value.start || '', end: value.end || '', transactionFee: value.transactionFee,
       feeBasis: value.feeBasis || 'net', feeOverrides: value.feeOverrides || {}, benchmarkId: value.benchmarkId || '', tax: taxConfig(value.tax), ...strategyConfig(value) };
     validateConfig(config, ids);

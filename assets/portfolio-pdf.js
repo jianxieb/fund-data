@@ -244,6 +244,7 @@
       ['回测窗口', years, '信号依据', signalBasis],
       ['初始投入 / ' + unit, number(cfg.initial), '基础月预算 / ' + unit, number(cfg.monthly)],
       ['再平衡', cfg.rebalance === 'band' ? '偏离' + cfg.rebalanceBand + '个百分点' : rebalanceName[cfg.rebalance], '买卖交易费率', settingPct(cfg.transactionFee)],
+      ['追加资金去向', cfg.contributionAllocation === 'underweight' ? '优先补低配' : '按目标比例', '现金年利率', settingPct(cfg.cashRate ?? 0)],
       ['指定区间', r.requestedStart + ' - ' + r.requestedEnd, '实际模拟区间', r.start + ' - ' + r.end],
       ['对照标的', benchmark ? benchmark.name + ' · ' + benchmark.code : '不设置', '持续年费', cfg.feeBasis === 'net' ? '使用已扣年费的真实历史' : '扣费前估算，按有效费率加回']
     ], [1, 2, 1, 2]);
