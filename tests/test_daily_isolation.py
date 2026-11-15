@@ -261,15 +261,20 @@ class DailyIsolationTests(unittest.TestCase):
 
     def test_event_chapters_wait_for_the_new_index_catalog_while_unrelated_tasks_run_together(self):
         with tempfile.TemporaryDirectory() as temporary:
-            independent = set(post_refresh.TASKS) - {'fund_actions', 'financial_events'}
+            sequential = {'fund_actions', 'market_history', 'financial_events', 'drop_highs'}
+            independent = set(post_refresh.TASKS) - sequential
             barrier = threading.Barrier(len(independent))
             done, guard = set(), threading.Lock()
 
             def run_task(name):
                 if name in independent:
                     barrier.wait(3)
-                if name == 'financial_events':
+                if name in ('market_history', 'financial_events', 'drop_highs'):
                     self.assertTrue(independent <= done)
+                if name == 'financial_events':
+                    self.assertIn('market_history', done)
+                if name == 'drop_highs':
+                    self.assertIn('financial_events', done)
                 with guard:
                     done.add(name)
                 return dict(dataset=name, status='completed', exitCode=0, seconds=0)
