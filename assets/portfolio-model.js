@@ -288,6 +288,7 @@
     if (!['none', 'month', 'quarter', 'year', 'band'].includes(config.rebalance)) fail('再平衡方式无效');
     if (config.rebalance === 'band' && (!finite(config.rebalanceBand) || config.rebalanceBand <= 0 || config.rebalanceBand > 50)) fail('偏离阈值须大于0且不超过50个百分点');
     if (!['target', 'underweight'].includes(config.contributionAllocation ?? 'target')) fail('追加资金去向无效');
+    if (!finite(config.cashRate ?? 0) || (config.cashRate ?? 0) < 0 || (config.cashRate ?? 0) > 20) fail('现金年利率须在0至20%之间');
     if (!['net', 'gross_estimate'].includes(config.feeBasis)) fail('年费口径无效');
     strategyConfig(config);
     currencyInfo(config);
@@ -586,6 +587,10 @@
     const calendarRebalance = ['month', 'quarter', 'year'].includes(config.rebalance);
     const band = config.rebalance === 'band' ? config.rebalanceBand / 100 : null;
     let bandSignal = null;
+    // One scenario rate for the whole window, entered after tax. Strategy cash
+    // labels are not scaled: interest is free cash, so labels never exceed real cash.
+    const cashGrowth = (config.cashRate ?? 0) / 100;
+    let cashInterest = 0, accruedDay = null;
     let initialReserve = config.initial, exposure = 1, timingChanges = 0;
     let pendingTopup = null, topupSignalDay = null, topupTimes = 0, topupAmount = 0, topupFees = 0;
     let maxActualExposure = 0, maxActualExposureDay = null;
@@ -879,6 +884,11 @@
     const curve = [], holdingPaths = series.map(() => []), fxDates = new Set((fx || []).map(row => row[0]));
     let lastPrices = null;
     for (const day of days) {
+      if (cashGrowth && accruedDay && cash > 0) {
+        const interest = cash * (Math.pow(1 + cashGrowth, gap(accruedDay, day) / YEAR) - 1);
+        cash += interest; cashInterest += interest;
+      }
+      accruedDay = day;
       const observations = pricesAt(day), prices = observations.map((p, i) => p.value * dividendPriceFactor[i]);
       series.forEach((s, i) => {
         const beforeMark = lastPrices && units[i] > EPS ? netHolding(i, lastPrices[i]) : 0;
@@ -956,7 +966,7 @@
       const taxReserve = sum(prices.map((price, i) => reserve(i, price))), paidTax = sum(capitalTaxes) + sum(dividendTaxes);
       peak = Math.max(peak, nav); mdd = Math.min(mdd, (nav / peak - 1) * 100);
       curve.push({ day, value: account, contributed, positionPrincipal: sum(positionPrincipal), profit: account - contributed, nav, totalReturn: (nav - 1) * 100,
-        annualReturn: day === start ? (nav - 1) * 100 : annualReturn(nav, start, day), drawdown: (nav / peak - 1) * 100, cash, initialReserve, exposure,
+        annualReturn: day === start ? (nav - 1) * 100 : annualReturn(nav, start, day), drawdown: (nav / peak - 1) * 100, cash, cashInterest, initialReserve, exposure,
         grossValue: value(prices), grossNav: value(prices) / grossUnits, taxReserve, paidTax, taxCost: paidTax + taxReserve,
         ...(systematicMethod ? { systematicTargets: systematicTargets.slice(), systematicCash: systematicCash.slice() } : {}),
         ...(qqqTiming ? { riskReserve, qqqOn, qqqSignalDay: lastQqqSignal?.signalDay, qqqSourceDay: lastQqqSignal?.sourceDay } : {}) });
@@ -972,7 +982,7 @@
       basis: histories[s.asset.id].basis, currency: s.asset.currency, feeRate: s.feeRate,
       leveraged: (s.asset.leverage || 1) > 1,
       performance: holdingPerformance(holdingPaths[i], transactions.filter(t => t.id === s.asset.id), netHolding(i, prices[i]), currency, dividendFlows[i], dividendPolicy) }));
-    if (Math.abs(sum(holdings.map(h => h.profit)) - final.profit) > Math.max(1e-4, contributed * 1e-10)) fail('组合持仓盈亏未与账户勾稽');
+    if (Math.abs(sum(holdings.map(h => h.profit)) + cashInterest - final.profit) > Math.max(1e-4, contributed * 1e-10)) fail('组合持仓盈亏未与账户勾稽');
     const annual = [];
     let base = 1, year = curve[0].day.slice(0, 4), from = start;
     for (let i = 0; i < curve.length; i++) {
@@ -989,7 +999,7 @@
     const xirrMissing = xirr !== null ? null : !fullYear ? '模拟不足一年，不外推资金年化' : '实际资金流缺可用年化解';
     const result = { start, end, requestedStart, requestedEnd, commonFirst: common[0], commonLast: common.at(-1), currency, usesFx: needsFx,
       totalReturn: final.totalReturn, annualReturn: annualReturn(final.nav, start, end), value: final.value,
-      contributed, profit: final.profit, mdd, volatility, cash, cashDividends: sum(cashDividends), cashWeight: cashWeight * 100, holdings, curve, annual,
+      contributed, profit: final.profit, mdd, volatility, cash, cashInterest, cashDividends: sum(cashDividends), cashWeight: cashWeight * 100, holdings, curve, annual,
       // A short-period money-weighted figure is left unannualized rather than
       // exaggerating one month's change into a full-year compound rate.
       xirr, xirrMissing,
@@ -1279,7 +1289,7 @@
   function sanitizeDraft(value, ids) {
     if (!value || value.schemaVersion !== 1 || !Array.isArray(value.positions)) fail('组合配置格式无效');
     const positions = value.positions.map(p => ({ id: p.id, weight: p.weight }));
-    const config = { positions, currency: currencyInfo(value).code, dividendPolicy: dividendPolicyOf(value), initial: value.initial, monthly: value.monthly, rebalance: value.rebalance, ...(value.rebalance === 'band' ? { rebalanceBand: value.rebalanceBand } : {}), contributionAllocation: value.contributionAllocation ?? 'target',
+    const config = { positions, currency: currencyInfo(value).code, dividendPolicy: dividendPolicyOf(value), initial: value.initial, monthly: value.monthly, rebalance: value.rebalance, ...(value.rebalance === 'band' ? { rebalanceBand: value.rebalanceBand } : {}), contributionAllocation: value.contributionAllocation ?? 'target', cashRate: value.cashRate ?? 0,
       years: value.years, start: value.start || '', end: value.end || '', transactionFee: value.transactionFee,
       feeBasis: value.feeBasis || 'net', feeOverrides: value.feeOverrides || {}, benchmarkId: value.benchmarkId || '', tax: taxConfig(value.tax), ...strategyConfig(value) };
     validateConfig(config, ids);

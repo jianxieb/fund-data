@@ -437,6 +437,31 @@ test('where new money goes is chosen beside the contribution method and explaine
   assert.match(f.ui.view(f.helpers), /data-value="underweight" aria-pressed="true"/, 'an unknown value is ignored');
 });
 
+test('the cash rate is set with the backtest conditions and its interest is shown, exported and reported', async () => {
+  const runs = [];
+  const f = uiFixture(input => Object.assign(input.config, { monthly: 0, rebalance: 'none', transactionFee: 0 }),
+    { ...P, simulate(input) { const result = P.simulate(input); runs.push(result); return result; } });
+  assert.match(f.ui.view(f.helpers), /现金年利率[\s\S]*data-portfolio-field="cashRate"/);
+  f.ui.handleInput({ id: 'portfolio-cashRate', value: '2.5', dataset: { portfolioField: 'cashRate' } });
+  await f.action('run');
+  const r = runs[0];
+  assert.equal(r.config.cashRate, 2.5); assert.ok(r.cashInterest > 0);
+  const html = await f.resultTab('holdings');
+  assert.ok(html.includes('现金利息 ' + String(r.cashInterest)), 'the notes name the interest');
+  assert.ok(html.includes('<td class="num">' + String(r.cashInterest) + '</td>'), 'the cash row carries it as its contribution');
+  await f.action('export-holdings');
+  assert.ok(f.downloads.at(-1)[1].split(/\r?\n/).find(line => line.startsWith('"cash:CNY"')).includes('"' + r.cashInterest + '"'));
+  await f.action('export-result');
+  assert.ok(f.downloads.at(-1)[1].split(/\r?\n/)[0].includes('累计现金利息CNY'));
+  assert.ok(f.downloads.at(-1)[1].split(/\r?\n/).at(-1).endsWith('"' + r.cashInterest + '"'));
+  await f.action('export-pdf');
+  const text = textOf(Pdf.layout(f.reports.at(-1), measure));
+  assert.ok(text.includes('现金年利率') && text.includes('2.5%') && text.includes('累计现金利息'));
+  f.ui.handleInput({ id: 'portfolio-cashRate', value: '', dataset: { portfolioField: 'cashRate' }, validity: { badInput: false } });
+  await f.action('save');
+  assert.equal(JSON.parse(f.downloads.at(-1)[1]).cashRate, 0, 'an emptied rate means zero, like the monthly budget');
+});
+
 test('funding, strategy rules and settlement settings are grouped by what the investor changes', async () => {
   const f = uiFixture(input => {
     input.catalog.assets[0].market = 'us';

@@ -276,6 +276,7 @@
       ['累计投入 / ' + unit, number(r.contributed)], ['税后盈亏 / ' + unit, number(r.profit)], ['最大回撤', pct(r.mdd)], ['年化波动', pct(r.volatility)]
     ]);
     paragraph('入金 ' + r.deposits + '笔    再平衡 ' + r.rebalances + '次    买卖 ' + r.transactions.length + '笔    交易费合计 ' + number(r.tradeCost) + ' ' + unit + '    期末现金 ' + number(r.cash) + ' ' + unit);
+    if (r.cashInterest > .005) paragraph('累计现金利息 ' + number(r.cashInterest) + ' ' + unit + '（现金年利率 ' + settingPct(cfg.cashRate) + '，计入收益，不计入投入本金）。');
     if (cashPayout) paragraph('累计税后现金分红 ' + number(r.cashDividends) + ' ' + unit + '，已计入账户。');
     if (taxed) paragraph('税费含预留 ' + number(r.taxCost) + ' ' + unit + '    已实现盈利税 ' + number(r.capitalTax) + ' ' + unit + '    分红税 ' + number(r.dividendTax) + ' ' + unit);
     paragraph('当前浮盈预留税 ' + number(r.taxReserve) + ' ' + unit + '；只扣减估值，未实际缴纳，不影响持仓数量。');
@@ -373,7 +374,7 @@
     const cashRow = r.cash > .005;
     const label = h => h.name + '\n' + h.code;
     const contributions = r.holdings.map(h => [label(h), pct(h.targetWeight), pct(h.actualWeight), number(h.value), { text: number(h.profit), color: h.profit < 0 ? C.negative : C.green }, number(h.transactionCost)]);
-    if (cashRow) contributions.push([name + '现金', pct(r.cashWeight), pct(r.cash / r.value * 100), number(r.cash), '0.00', '0.00']);
+    if (cashRow) contributions.push([name + '现金', pct(r.cashWeight), pct(r.cash / r.value * 100), number(r.cash), number(r.cashInterest || 0), '0.00']);
     table(['标的', '目标权重', '期末权重', '税后估值 / ' + unit, '盈亏贡献 / ' + unit, '交易费 / ' + unit], contributions, [2.5, 1, 1, 1.5, 1.5, 1.3], { numeric: [1, 2, 3, 4, 5] });
     table(['标的', '已实现盈利税 / ' + unit, '分红税 / ' + unit, '浮盈预留税 / ' + unit, '税费含预留 / ' + unit], r.holdings.map(h => [label(h), number(h.capitalTax), number(h.dividendTax), number(h.taxReserve), number(h.taxCost)]), [2.5, 1.5, 1.5, 1.5, 1.5], { numeric: [1, 2, 3, 4] });
     const performance = r.holdings.map(h => { const p = h.performance; return [label(h), pct(p.annualReturn) + '\n' + (p.annualMissing || (p.annualBasis === 'money_weighted_xirr' ? 'XIRR' : '不足一年不外推')), pct(p.totalReturn), pct(p.mdd), pct(p.volatility), p.start + '\n' + p.end]; });

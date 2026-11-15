@@ -127,3 +127,53 @@ test('underweight is rejected with position-managing methods, ignored without a 
   assert.equal(P.sanitizeDraft({ schemaVersion: 1, ...input.config }, ids).contributionAllocation, 'underweight');
   assert.equal(P.sanitizeDraft({ schemaVersion: 1, ...input.config, contributionAllocation: undefined }, ids).contributionAllocation, 'target');
 });
+
+const YEAR = 365.2425, flat = n => Array.from({ length: n }, () => 100);
+const half = { positions: [{ id: 'stock:A', weight: 50 }] };
+
+test('idle cash compounds at the annual rate by calendar days, whatever the spacing of valuation days', () => {
+  const r = run([{ values: flat(367) }], { ...half, cashRate: 3 });   // 2024-01-01 … 2025-01-01, 366 days
+  close(r.cashInterest, 500 * (Math.pow(1.03, 366 / YEAR) - 1));
+  close(r.cash, 500 + r.cashInterest); close(r.value, 1000 + r.cashInterest); close(r.profit, r.cashInterest);
+  assert.equal(r.contributed, 1000);
+  close(r.curve.at(-1).cashInterest, r.cashInterest); assert.equal(r.curve[0].cashInterest, 0);
+  const input = account([{ values: flat(367) }], { ...half, cashRate: 3 });
+  const sparse = input.histories['stock:A'];
+  sparse.series = sparse.series.filter((_, i) => i % 5 === 0 || i === 366);
+  close(P.simulate(input).cashInterest, r.cashInterest);
+});
+
+test('interest is return, not capital: NAV, XIRR and the cash row rise while contributions and signals stay put', () => {
+  const values = Array.from({ length: 400 }, (_, i) => i < 200 ? 100 + i * .2 : i < 260 ? 140 - (i - 200) : 80 + (i - 260) * .3);
+  const config = { positions: [{ id: 'stock:A', weight: 60 }], initialMethod: 'drawdown_ladder', monthly: 100, contributionMethod: 'dca_drawdown' };
+  const zero = run([{ values }], config), paid = run([{ values }], { ...config, cashRate: 4 });
+  assert.equal(paid.contributed, zero.contributed);
+  assert.deepEqual(paid.plan, zero.plan, 'no drawdown trigger may move with the cash rate');
+  assert.ok(paid.cashInterest > 0 && paid.value > zero.value && paid.xirr > zero.xirr && paid.annualReturn > zero.annualReturn);
+  close(paid.holdings.reduce((sum, h) => sum + h.profit, 0) + paid.cashInterest, paid.profit, 1e-6);
+  assert.equal(zero.cashInterest, 0);
+});
+
+test('principal waiting in a tranche plan earns interest and is still released in the planned amounts', () => {
+  const r = run([{ values: flat(200) }], { positions: [{ id: 'stock:A', weight: 100 }], initial: 600, initialMethod: 'tranche_6', cashRate: 5 });
+  assert.deepEqual(r.plan.initial.map(p => p.amount), [100, 100, 100, 100, 100, 100]);
+  let cash = 600, last = null, expected = 0;
+  for (const p of r.curve) {   // the same account written out by hand: accrue, then release 100 on each planned day
+    if (last) { const interest = cash * (Math.pow(1.05, (Date.parse(p.day) - Date.parse(last)) / 86400000 / YEAR) - 1); cash += interest; expected += interest; }
+    if (r.plan.initial.some(step => step.day === p.day)) cash -= 100;
+    last = p.day;
+  }
+  close(r.cashInterest, expected); close(r.profit, expected); close(r.cash, expected);
+});
+
+test('the cash rate is validated, defaults to zero, and an unset configuration reproduces the earlier ledger', () => {
+  const input = account([{ values: flat(40) }], half);
+  for (const cashRate of [-0.1, 20.1, NaN, '2']) assert.match(P.simulate({ ...input, config: { ...input.config, cashRate } }).error, /现金年利率须在0至20%之间/);
+  const plain = P.simulate(input), explicit = P.simulate({ ...input, config: { ...input.config, cashRate: 0, contributionAllocation: 'target' } });
+  assert.deepEqual(explicit.curve, plain.curve); assert.deepEqual(explicit.transactions, plain.transactions);
+  assert.equal(plain.cashInterest, 0);
+  const ids = new Set(['stock:A']);
+  assert.equal(P.sanitizeDraft({ schemaVersion: 1, ...input.config }, ids).cashRate, 0);
+  assert.equal(P.sanitizeDraft({ schemaVersion: 1, ...input.config, cashRate: 2.5 }, ids).cashRate, 2.5);
+  assert.throws(() => P.sanitizeDraft({ schemaVersion: 1, ...input.config, cashRate: 99 }, ids), /现金年利率/);
+});
