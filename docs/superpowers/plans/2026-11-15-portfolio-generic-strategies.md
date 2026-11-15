@@ -10,6 +10,8 @@
 
 Spec: `docs/superpowers/specs/2026-11-15-portfolio-generic-strategies-design.md`.
 
+**Status:** completed 2026-11-16 in `1ef6e46f` (threshold rebalancing), `b8d1ec99` (underweight contributions) and the cash-interest commit that follows them.
+
 ## Global Constraints
 
 - A configuration without `rebalanceBand`, `contributionAllocation` and `cashRate` must produce a ledger deep-equal to today's.
@@ -47,7 +49,7 @@ Spec: `docs/superpowers/specs/2026-11-15-portfolio-generic-strategies-design.md`
 **Interfaces:**
 - Produces: `config.rebalance === 'band'` with `config.rebalanceBand`; rebalance trades carry `signalDay` in band mode.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `tests/portfolio-generic.test.cjs`:
 
@@ -142,12 +144,12 @@ test('every advanced strategy runs with a band and none rebuys a parked TQQQ sle
 });
 ```
 
-- [ ] **Step 2: Run and confirm they fail**
+- [x] **Step 2: Run and confirm they fail**
 
 Run: `node --test tests/portfolio-generic.test.cjs tests/portfolio-comparison.test.cjs 2>&1 | grep -E "^✖|^ℹ (pass|fail)"`
 Expected: the five new generic tests and the new comparison test fail (`再平衡周期无效` or missing trades).
 
-- [ ] **Step 3: Validate the band**
+- [x] **Step 3: Validate the band**
 
 In `validateConfig` replace
 ```js
@@ -163,7 +165,7 @@ In `sanitizeDraft`, change `rebalance: value.rebalance,` to
 rebalance: value.rebalance, ...(value.rebalance === 'band' ? { rebalanceBand: value.rebalanceBand } : {}),
 ```
 
-- [ ] **Step 4: Share the rebalance target and add the trigger**
+- [x] **Step 4: Share the rebalance target and add the trigger**
 
 Change the line `let lastBalance = periodKey(start, config.rebalance), peak = 1, mdd = 0;` to
 ```js
@@ -221,12 +223,12 @@ and insert immediately before the line `if (qqqTiming && (riskReserve < -1e-5 ||
       if (band !== null && commonSet.has(day)) bandSignal = { day, drift: drift(prices) };
 ```
 
-- [ ] **Step 5: Run the model tests**
+- [x] **Step 5: Run the model tests**
 
 Run: `node --test tests/portfolio-generic.test.cjs tests/portfolio-comparison.test.cjs tests/portfolio*.test.cjs 2>&1 | grep -E "^✖|^ℹ (pass|fail)"`
 Expected: `fail 0`.
 
-- [ ] **Step 6: Settings control and labels (test first)**
+- [x] **Step 6: Settings control and labels (test first)**
 
 Add to `tests/portfolio-pdf.test.cjs` after the test `risk tab hides correlation for one holding and the market-value line without gains tax`:
 ```js
@@ -278,11 +280,11 @@ In `assets/portfolio-pdf.js` replace `['再平衡', rebalanceName[cfg.rebalance]
 
 Run: `node --test tests/portfolio-pdf.test.cjs 2>&1 | tail -6` — expected `fail 0`.
 
-- [ ] **Step 7: Independent check**
+- [x] **Step 7: Independent check**
 
 Extend `<scratchpad>/audit/independent.py` with the band rule for ordinary methods (drift of each holding's market weight in `gross − reserve` wealth against its configured weight at the previous common close; rebalance at the next) and compare final value, return, drawdown, fees, taxes and rebalance count with the model for: USD 30 / TQQQ 30 / 现金 40 (CNY, 10 years, fee 0.10%, tax 20/20, band 5); SPY 60 / TLT 40 (USD, 10 years, fee 0.10%, band 3, 2,000 monthly); 510300 50 / SPY 50 (CNY, 5 years, band 10, tranche_12). Expected: relative difference below `1e-7` on every figure and equal counts.
 
-- [ ] **Step 8: Document**
+- [x] **Step 8: Document**
 
 Insert before `## 风险分析（2026-11-15新增）` in `docs/portfolio-method.md`:
 ```markdown
@@ -305,7 +307,7 @@ Insert before `## 风险分析（2026-11-15新增）` in `docs/portfolio-method.
 ```
 (Fill nothing in; this subsection has no measured figures.)
 
-- [ ] **Step 9: Full verification, commit and push**
+- [x] **Step 9: Full verification, commit and push**
 
 ```bash
 npm run version-assets && npm test 2>&1 | tail -8 && npm run check 2>&1 | tail -2
@@ -326,7 +328,7 @@ git fetch origin && git rebase origin/main && git push origin main
 **Interfaces:**
 - Produces: `config.contributionAllocation` (`'target'` default, `'underweight'`).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Append to `tests/portfolio-generic.test.cjs`:
 ```js
@@ -384,12 +386,12 @@ test('underweight is rejected with position-managing methods, ignored without a 
 });
 ```
 
-- [ ] **Step 2: Run and confirm they fail**
+- [x] **Step 2: Run and confirm they fail**
 
 Run: `node --test tests/portfolio-generic.test.cjs 2>&1 | grep -E "^✖|^ℹ (pass|fail)"`
 Expected: the five new tests fail; the Task 1 tests still pass.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 In `validateConfig`, after the band line, add
 ```js
@@ -424,11 +426,11 @@ In the ledger loop change `invest(day, income, prices, 'contribution');` to
           if (underweight) investUnderweight(day, income, prices); else invest(day, income, prices, 'contribution');
 ```
 
-- [ ] **Step 4: Run the model tests**
+- [x] **Step 4: Run the model tests**
 
 Run: `node --test tests/portfolio*.test.cjs 2>&1 | grep -E "^✖|^ℹ (pass|fail)"` — expected `fail 0`.
 
-- [ ] **Step 5: Settings control (test first)**
+- [x] **Step 5: Settings control (test first)**
 
 Add to `tests/portfolio-pdf.test.cjs` after the threshold test:
 ```js
@@ -480,11 +482,11 @@ In `assets/portfolio-pdf.js`, after the settings row that begins `['再平衡',`
 
 Run: `node --test tests/portfolio-pdf.test.cjs 2>&1 | tail -6` — expected `fail 0`.
 
-- [ ] **Step 6: Independent check**
+- [x] **Step 6: Independent check**
 
 Extend the audit ledger with the underweight rule and compare with the model for: SPY 50 / QQQ 30 / TLT 20 (USD, 10 years, 100,000 + 2,000 monthly, fee 0.10%, tax 20/20); 510300 50 / SPY 30 with 20% cash (CNY, 5 years, 3,000 monthly `dca_drawdown`, `tranche_12`, fee 0.15%); USD 30 / TQQQ 30 / 现金 40 (CNY, 10 years, 1,000 monthly, band 5). Expected: relative difference below `1e-7` on every figure.
 
-- [ ] **Step 7: Document**
+- [x] **Step 7: Document**
 
 Append to the `## 通用策略选项（2026-11-15新增）` section:
 ```markdown
@@ -504,7 +506,7 @@ k = D / (Σ缺口_i × (1 + r) + 现金缺口)
 仅与一次性投入、6/12/24个月分批和回撤阶梯同时使用。其余本金方式自行管理仓位或专属现金，同时选择时模拟停止并提示“优先补低配只能与一次性、分批或回撤阶梯投入同时使用”；每月追加预算为 0 时不检查。多策略对比中不适用的行各自显示该原因。
 ```
 
-- [ ] **Step 8: Full verification, commit and push**
+- [x] **Step 8: Full verification, commit and push**
 
 ```bash
 npm run version-assets && npm test 2>&1 | tail -8 && npm run check 2>&1 | tail -2
@@ -525,7 +527,7 @@ git fetch origin && git rebase origin/main && git push origin main
 **Interfaces:**
 - Produces: `config.cashRate`; `result.cashInterest`; `curve[i].cashInterest` (cumulative).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Append to `tests/portfolio-generic.test.cjs`:
 ```js
@@ -580,12 +582,12 @@ test('the cash rate is validated, defaults to zero, and an unset configuration r
 });
 ```
 
-- [ ] **Step 2: Run and confirm they fail**
+- [x] **Step 2: Run and confirm they fail**
 
 Run: `node --test tests/portfolio-generic.test.cjs 2>&1 | grep -E "^✖|^ℹ (pass|fail)"`
 Expected: the four new tests fail; earlier ones pass.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 In `validateConfig`, after the allocation line, add
 ```js
@@ -615,11 +617,11 @@ Change the reconciliation line to
 ```
 In the `result` object change `cash, cashDividends: sum(cashDividends),` to `cash, cashInterest, cashDividends: sum(cashDividends),`.
 
-- [ ] **Step 4: Run the model tests**
+- [x] **Step 4: Run the model tests**
 
 Run: `node --test tests/portfolio*.test.cjs 2>&1 | grep -E "^✖|^ℹ (pass|fail)"` — expected `fail 0`.
 
-- [ ] **Step 5: Settings, results and exports (test first)**
+- [x] **Step 5: Settings, results and exports (test first)**
 
 Add to `tests/portfolio-pdf.test.cjs` after the allocation test:
 ```js
@@ -667,11 +669,11 @@ In `assets/portfolio-pdf.js`, in the holdings contribution table change the cash
 
 Run: `node --test tests/portfolio-pdf.test.cjs 2>&1 | tail -6` — expected `fail 0`.
 
-- [ ] **Step 6: Independent check**
+- [x] **Step 6: Independent check**
 
 Extend the audit ledger with the accrual and compare with the model for: USD 30 / TQQQ 30 / 现金 40 (CNY, 10 years, fee 0.10%, tax 20/20, cash 2%, band 5); 510300 50 / SPY 30 with 20% cash (CNY, 5 years, `tranche_12`, 3,000 monthly underweight, cash 1.5%); SPY 100 (USD, 5 years, `ma200_hold`, cash 4%). Expected: relative difference below `1e-7` on every figure, including cumulative interest.
 
-- [ ] **Step 7: Document and record the validation**
+- [x] **Step 7: Document and record the validation**
 
 Append to the `## 通用策略选项（2026-11-15新增）` section, filling each `<…>` with the figure measured in this session:
 ```markdown
@@ -695,7 +697,7 @@ Append to the `## 通用策略选项（2026-11-15新增）` section, filling eac
 - 完整 JavaScript 测试 <总数> 项、Python 测试 <Python总数> 项通过。本地页面核对三项设置、结果与导出；未查看线上页面。自动测试与本地验证不代表用户验收。
 ```
 
-- [ ] **Step 8: Full verification, commit and push**
+- [x] **Step 8: Full verification, commit and push**
 
 ```bash
 npm run version-assets && npm test 2>&1 | tail -8 && npm run check 2>&1 | tail -2 && python3 -m unittest discover -s tests -q 2>&1 | tail -3
