@@ -573,7 +573,7 @@
     const dividendPriceFactor = series.map(() => 1), cashDividends = series.map(() => 0), dividendFlows = series.map(() => []);
     const holdingNav = series.map(() => 1);
     const fee = config.transactionFee / 100, transactions = [], flows = [];
-    let cash = 0, contributed = 0, fundUnits = 0, tradeCost = 0, rebalances = 0, deposits = 0;
+    let cash = 0, contributed = 0, fundUnits = 0, grossUnits = 0, tradeCost = 0, rebalances = 0, deposits = 0;
     let lastBalance = periodKey(start, config.rebalance), peak = 1, mdd = 0;
     let initialReserve = config.initial, exposure = 1, timingChanges = 0;
     let pendingTopup = null, topupSignalDay = null, topupTimes = 0, topupAmount = 0, topupFees = 0;
@@ -674,6 +674,9 @@
       const before = netValue(prices), nav = fundUnits ? before / fundUnits : 1;
       if (!finite(nav) || nav <= 0) fail('组合净值无效');
       fundUnits += amount / nav;
+      // Market value before the unrealised reserve keeps its own units, so a
+      // deposit is return-neutral on that series too.
+      grossUnits += amount / (grossUnits ? value(prices) / grossUnits : 1);
       cash += amount; contributed += amount; deposits++;
       flows.push([day, -amount]);
     }
@@ -916,7 +919,7 @@
       peak = Math.max(peak, nav); mdd = Math.min(mdd, (nav / peak - 1) * 100);
       curve.push({ day, value: account, contributed, positionPrincipal: sum(positionPrincipal), profit: account - contributed, nav, totalReturn: (nav - 1) * 100,
         annualReturn: day === start ? (nav - 1) * 100 : annualReturn(nav, start, day), drawdown: (nav / peak - 1) * 100, cash, initialReserve, exposure,
-        grossValue: value(prices), taxReserve, paidTax, taxCost: paidTax + taxReserve,
+        grossValue: value(prices), grossNav: value(prices) / grossUnits, taxReserve, paidTax, taxCost: paidTax + taxReserve,
         ...(systematicMethod ? { systematicTargets: systematicTargets.slice(), systematicCash: systematicCash.slice() } : {}),
         ...(qqqTiming ? { riskReserve, qqqOn, qqqSignalDay: lastQqqSignal?.signalDay, qqqSourceDay: lastQqqSignal?.sourceDay } : {}) });
     }
@@ -966,7 +969,7 @@
       plan: { initial: [...initialPlan].map(([day, amount]) => ({ day, amount })), income: [...incomePlan].map(([day, amount]) => ({ day, amount })) }, taxEvents,
       grossValue: final.grossValue, taxReserve: final.taxReserve, paidTax: final.paidTax, taxCost: final.taxCost, capitalTax: sum(capitalTaxes), dividendTax: sum(dividendTaxes), carriedPrices, carriedFx, benchmark, benchmarkError,
       config: JSON.parse(JSON.stringify({ ...config, currency, dividendPolicy })) };
-    chartSources.set(result, { days: strategyDays, referenceHistory,
+    chartSources.set(result, { days: strategyDays, referenceHistory, prices: day => pricesAt(day).map(p => p.value),
       qqq: qqqTiming ? [...qqqSignals.values(), qqqNextState].filter(p => p && p.signalDay >= start)
         .map(p => [p.signalDay, p.ready && p.on != null ? Number(p.on) * 100 : null]) : null });
     return result;
@@ -978,6 +981,85 @@
     if (!finite(gross) || !finite(cash)) return { securitiesValue: null, cash: null, securitiesPct: null, cashPct: null };
     const securitiesValue = gross - cash;
     return { securitiesValue, cash, securitiesPct: gross > 0 ? securitiesValue / gross * 100 : null, cashPct: gross > 0 ? cash / gross * 100 : null };
+  }
+  // Episodes below a running peak. The opening base counts, so a first-day
+  // trading fee starts an episode on the start day, as the ledger's own
+  // maximum drawdown already does.
+  function drawdownEpisodes(rows, base = 1) {
+    const open = [];
+    if (!rows.length) return open;
+    let peak = base, peakDay = rows[0][0], active = null;
+    for (const [day, value] of rows) {
+      if (value < peak * (1 - 1e-12)) {
+        if (!active) { active = { peakDay, peak, trough: value, troughDay: day, recoveryDay: null }; open.push(active); }
+        else if (value < active.trough) { active.trough = value; active.troughDay = day; }
+      } else {
+        if (active) { active.recoveryDay = day; active = null; }
+        peak = Math.max(peak, value); peakDay = day;
+      }
+    }
+    const end = rows.at(-1)[0];
+    return open.map(e => {
+      const recovered = e.recoveryDay !== null;
+      return { peakDay: e.peakDay, troughDay: e.troughDay, recoveryDay: e.recoveryDay, recovered, depth: (e.trough / e.peak - 1) * 100,
+        declineDays: gap(e.peakDay, e.troughDay), recoveryDays: recovered ? gap(e.troughDay, e.recoveryDay) : null,
+        totalDays: gap(e.peakDay, recovered ? e.recoveryDay : end) };
+    });
+  }
+  // After-reserve account value against contributed capital, as 持有期研究 does.
+  function principalRisk(curve) {
+    const spells = [];
+    let deepestLoss = 0, deepestLossDay = null, active = null;
+    for (const p of curve) {
+      if (!(p.contributed > 0)) continue;
+      const below = p.value < p.contributed * (1 - 1e-12), loss = (p.value / p.contributed - 1) * 100;
+      if (below && loss < deepestLoss) { deepestLoss = loss; deepestLossDay = p.day; }
+      if (below && !active) { active = { start: p.day, end: null, recovered: false }; spells.push(active); }
+      else if (!below && active) { active.end = p.day; active.recovered = true; active = null; }
+    }
+    for (const spell of spells) { if (spell.end === null) spell.end = curve.at(-1).day; spell.days = gap(spell.start, spell.end); }
+    return { deepestLoss, deepestLossDay, longestBelow: spells.reduce((best, e) => !best || e.days > best.days ? e : best, null),
+      endingBelow: spells.find(e => !e.recovered) || null, episodes: spells.length };
+  }
+  function riskRatios(result) {
+    const fullYear = result.end >= addYears(result.start, 1);
+    const ratio = (denominator, zero) => !fullYear ? { value: null, missing: '不足一年' } :
+      !(denominator > 0) ? { value: null, missing: zero } : { value: result.annualReturn / denominator, missing: null };
+    return { fullYear, drawdown: ratio(-result.mdd, '未出现回撤'), volatility: ratio(result.volatility, '波动为零') };
+  }
+  function riskAnalysis(result) {
+    if (!result?.curve?.length) return null;
+    const episodes = drawdownEpisodes(result.curve.map(p => [p.day, p.nav]));
+    const byDepth = episodes.slice().sort((a, b) => a.depth - b.depth || a.peakDay.localeCompare(b.peakDay));
+    const longest = episodes.reduce((best, e) => !best || e.totalDays > best.totalDays ||
+      e.totalDays === best.totalDays && e.depth < best.depth ? e : best, null);
+    const taxed = result.holdings.some(h => h.taxRates?.gain > 0) && result.curve.every(p => finite(p.grossNav));
+    const market = taxed ? drawdownEpisodes(result.curve.map(p => [p.day, p.grossNav])).reduce((best, e) => !best || e.depth < best.depth ? e : best, null) : null;
+    const ratios = riskRatios(result);
+    return { fullYear: ratios.fullYear, volatility: result.volatility, returnToDrawdown: ratios.drawdown, returnToVolatility: ratios.volatility,
+      maxDrawdown: byDepth[0] || null, marketDrawdown: market ? { depth: market.depth, peakDay: market.peakDay, troughDay: market.troughDay } : null,
+      longestDrawdown: longest, currentDrawdown: result.curve.at(-1).drawdown, drawdowns: byDepth.slice(0, 5), episodes: episodes.length,
+      principal: principalRisk(result.curve) };
+  }
+  // Weekly, because A-share and US closes are not simultaneous and daily
+  // figures read too low. Prices are the run's own converted total-return quotes.
+  function holdingCorrelation(result) {
+    const source = result ? chartSources.get(result) : null;
+    if (!source?.prices || result.holdings.length < 2) return null;
+    const week = day => time(day) - (new Date(time(day)).getUTCDay() + 6) % 7 * DAY;
+    const days = source.days.filter((day, i, all) => i === all.length - 1 || week(all[i + 1]) !== week(day));
+    const observations = Math.max(0, days.length - 1);
+    if (observations < 26) return { missing: '共同周收益仅 ' + observations + ' 个，少于 26 个' };
+    const prices = days.map(source.prices);
+    const centred = result.holdings.map((_, k) => {
+      const returns = prices.slice(1).map((row, i) => row[k] / prices[i][k] - 1), mean = sum(returns) / returns.length;
+      return returns.map(value => value - mean);
+    });
+    const spread = centred.map(values => Math.sqrt(sum(values.map(v => v * v))));
+    const moving = i => spread[i] > 1e-12;
+    const matrix = centred.map((a, i) => centred.map((b, j) => !moving(i) || !moving(j) ? null : i === j ? 1 :
+      Math.max(-1, Math.min(1, sum(a.map((v, n) => v * b[n])) / (spread[i] * spread[j])))));
+    return { ids: result.holdings.map(h => h.id), codes: result.holdings.map(h => h.code), matrix, observations, first: days[0], last: days.at(-1) };
   }
   function strategyStatus(result, day = result?.end) {
     if (!result?.curve?.length || !M.validDate(day)) return null;
@@ -1169,5 +1251,5 @@
     }
     return config;
   }
-  return { simulate, simulateWindows, simulateStrategies, strategyStatus, comparisonMethods, compareBenchmark, chartIndicators, chartReferences, validateHistory, validateConfig, sanitizeDraft, allocation, accountAllocation, additionAllocation, amountFromWeight, weightFromAmount, at, annualReturn, holdingXirr, addYears, taxConfig, taxRates, currencyInfo, strategyConfig, strategyNames, initialMethods, contributionMethods, dividendPolicies, opportunityDefinitions: Systematic?.opportunityDefinitions || {} };
+  return { simulate, simulateWindows, simulateStrategies, strategyStatus, riskAnalysis, riskRatios, holdingCorrelation, comparisonMethods, compareBenchmark, chartIndicators, chartReferences, validateHistory, validateConfig, sanitizeDraft, allocation, accountAllocation, additionAllocation, amountFromWeight, weightFromAmount, at, annualReturn, holdingXirr, addYears, taxConfig, taxRates, currencyInfo, strategyConfig, strategyNames, initialMethods, contributionMethods, dividendPolicies, opportunityDefinitions: Systematic?.opportunityDefinitions || {} };
 });
