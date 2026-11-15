@@ -10,6 +10,11 @@
 
 Spec: `docs/superpowers/specs/2026-11-15-portfolio-risk-readout-design.md`.
 
+**Status:** completed 2026-11-15 in `e16cf1f9` (model), `e29bb03c` (风险 tab), `5d89e947` (baseline) and `8c12d77d` (PDF).
+Two details changed during the build: the 风险 grid prints its percentages as plain text, not through the colour helper, because the
+shared grid rule shrank any nested span; and the market-value figure quoted in the method doc is −73.06%, measured from the
+ledger, not the −73.07% of an untaxed run.
+
 ## Global Constraints
 
 - No existing output field may change value. `comparisonMethods` and `comparison.strategies` keep exactly ten rows.
@@ -51,7 +56,7 @@ Spec: `docs/superpowers/specs/2026-11-15-portfolio-risk-readout-design.md`.
 - Produces: `P.riskAnalysis(result) → null | { fullYear, volatility, returnToDrawdown: Ratio, returnToVolatility: Ratio, maxDrawdown: Episode|null, marketDrawdown: { depth, peakDay, troughDay }|null, longestDrawdown: Episode|null, currentDrawdown: number, drawdowns: Episode[], episodes: number, principal: { deepestLoss, deepestLossDay, longestBelow, endingBelow, episodes } }` where `Episode = { peakDay, troughDay, recoveryDay|null, recovered, depth, declineDays, recoveryDays|null, totalDays }` and a below-principal episode is `{ start, end, recovered, days }`.
 - Produces: `P.holdingCorrelation(result) → null | { missing: string } | { ids, codes, matrix: (number|null)[][], observations, first, last }`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `tests/portfolio-risk.test.cjs`:
 
@@ -209,12 +214,12 @@ test('a foreign holding is correlated on converted prices, not on its native pri
 });
 ```
 
-- [ ] **Step 2: Run the tests and confirm they fail**
+- [x] **Step 2: Run the tests and confirm they fail**
 
 Run: `node --test tests/portfolio-risk.test.cjs`
 Expected: all 8 tests FAIL, the first with `P.riskAnalysis is not a function`.
 
-- [ ] **Step 3: Add the market-value NAV to the ledger**
+- [x] **Step 3: Add the market-value NAV to the ledger**
 
 In `assets/portfolio-model.js`, inside `run`:
 
@@ -251,7 +256,7 @@ to
         grossValue: value(prices), grossNav: value(prices) / grossUnits, taxReserve, paidTax, taxCost: paidTax + taxReserve,
 ```
 
-- [ ] **Step 4: Keep the run's prices reachable for correlation**
+- [x] **Step 4: Keep the run's prices reachable for correlation**
 
 Change the `chartSources.set(result, { days: strategyDays, referenceHistory,` line so the object also carries the price reader:
 ```js
@@ -259,7 +264,7 @@ Change the `chartSources.set(result, { days: strategyDays, referenceHistory,` li
 ```
 (the rest of that statement is unchanged).
 
-- [ ] **Step 5: Add the risk functions**
+- [x] **Step 5: Add the risk functions**
 
 Insert immediately before `function strategyStatus(result, day = result?.end) {`:
 
@@ -347,12 +352,12 @@ Insert immediately before `function strategyStatus(result, day = result?.end) {`
 
 Add the three public names to the returned object at the end of the file: change `strategyStatus, comparisonMethods,` to `strategyStatus, riskAnalysis, riskRatios, holdingCorrelation, comparisonMethods,`.
 
-- [ ] **Step 6: Run the new tests and confirm they pass**
+- [x] **Step 6: Run the new tests and confirm they pass**
 
 Run: `node --test tests/portfolio-risk.test.cjs`
 Expected: `pass 8`, `fail 0`.
 
-- [ ] **Step 7: Recompute the readout independently**
+- [x] **Step 7: Recompute the readout independently**
 
 Extend the audit ledger at `<scratchpad>/audit/independent.py` (outside the repository) so `simulate` also records `contributed` per day and a separately unitised market-value NAV, then compute episodes, principal figures and weekly correlation with code that shares nothing with the model. Compare against `P.riskAnalysis` and `P.holdingCorrelation` for:
 
@@ -362,7 +367,7 @@ Extend the audit ledger at `<scratchpad>/audit/independent.py` (outside the repo
 
 Expected: every date identical; every depth, loss, day count and correlation equal within `1e-7` relative. Note the market-value drawdown printed for case 1: it is quoted in the method doc in Step 8.
 
-- [ ] **Step 8: Document the method**
+- [x] **Step 8: Document the method**
 
 In `docs/portfolio-method.md`, insert this section immediately before `## 长 PDF 导出`, replacing `<市值回撤>` with the figure printed for case 1 in Step 7:
 
@@ -416,12 +421,12 @@ In `docs/portfolio-method.md`, insert this section immediately before `## 长 PD
 取区间内每个自然周（周一至周日）最后一个共同交易日的价格，计算相邻两次取样之间的简单收益，再求皮尔逊相关系数。采用周收益是因为 A 股与美股收盘不同时，日收益会低估跨市场相关性。某周没有共同交易日时跳过该周，下一段收益对所有持仓同样跨越该周。共同周收益少于 26 个时不计算并说明数量；价格没有波动的持仓显示“—”。相关系数描述这段历史，不代表未来。
 ```
 
-- [ ] **Step 9: Full verification**
+- [x] **Step 9: Full verification**
 
 Run: `npm run version-assets && npm test 2>&1 | tail -8 && npm run check 2>&1 | tail -3`
 Expected: `fail 0`; the check ends with `资源版本一致`.
 
-- [ ] **Step 10: Commit and push**
+- [x] **Step 10: Commit and push**
 
 ```bash
 git add assets/portfolio-model.js tests/portfolio-risk.test.cjs docs/portfolio-method.md index.html
@@ -442,7 +447,7 @@ git fetch origin && git rebase origin/main && git push origin main
 - Consumes: `P.riskAnalysis(result)`, `P.holdingCorrelation(result)` from Task 1.
 - Produces: result sub-tab id `risk`, label `风险`, headings `过程风险`, `相对本金`, `前5次回撤`, `持仓相关性`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 In `tests/portfolio-pdf.test.cjs`, in the test `result tabs keep the run and global tools visible while isolating each section and its export`, change
 ```js
@@ -489,12 +494,12 @@ test('risk tab hides correlation for one holding and the market-value line witho
 });
 ```
 
-- [ ] **Step 2: Run and confirm they fail**
+- [x] **Step 2: Run and confirm they fail**
 
 Run: `node --test tests/portfolio-pdf.test.cjs 2>&1 | grep -E "^not ok|risk tab|No visible result tab" | head`
 Expected: the two new tests and the `result tabs keep…` test fail with `No visible result tab: risk`.
 
-- [ ] **Step 3: Render the tab**
+- [x] **Step 3: Render the tab**
 
 In `assets/portfolio.js`, insert immediately before `function resultSections(r) {`:
 
@@ -551,7 +556,7 @@ to
     return sections.concat([['periods', '区间表现', () => snapshots() + yearlyResults(r)], ['risk', '风险', () => riskCards(r)], ['holdings', '持仓贡献', () => resultHoldings(r)]]);
 ```
 
-- [ ] **Step 4: Style it**
+- [x] **Step 4: Style it**
 
 In `assets/style.css`, insert after the line beginning `.portfolio-year-grid small{`:
 
@@ -569,16 +574,16 @@ In `assets/style.css`, insert after the line beginning `.portfolio-year-grid sma
 @media(max-width:700px){.portfolio-risk-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 ```
 
-- [ ] **Step 5: Run the tests and confirm they pass**
+- [x] **Step 5: Run the tests and confirm they pass**
 
 Run: `node --test tests/portfolio-pdf.test.cjs 2>&1 | tail -8`
 Expected: `fail 0`.
 
-- [ ] **Step 6: Check it on the local site**
+- [x] **Step 6: Check it on the local site**
 
 With the site served at `http://127.0.0.1:8765`, open `#portfolio`, run USD 30 / TQQQ 30 / 现金 40 (CNY, 10 years, fee 0.10%, 大陆居民假设) and open 模拟结果 › 风险. Expected: the six 过程风险 figures, both 相对本金 figures, the five table rows and the 2×2 matrix equal the Step 7 figures of Task 1; no console errors; the grid and tables are aligned at 1600 px and 2540 px wide. Adjust only CSS if the layout is off.
 
-- [ ] **Step 7: Full verification, commit and push**
+- [x] **Step 7: Full verification, commit and push**
 
 ```bash
 npm run version-assets && npm test 2>&1 | tail -8 && npm run check 2>&1 | tail -3
@@ -604,7 +609,7 @@ Expected before committing: `fail 0` and `资源版本一致`.
 - Consumes: `P.riskRatios(result)` from Task 1.
 - Produces: `simulateStrategies(input).baseline → { id: 'lump_sum', label: '一次性投入', result } | { id, label, error } | null` (null only when shared validation fails).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Append to `tests/portfolio-comparison.test.cjs`:
 ```js
@@ -649,12 +654,12 @@ and add after the line `assert.equal(Number(shortRow[9]), branch10.result.totalR
   assert.doesNotMatch(f.ui.view(f.helpers), /data-comparison-line="lump_sum"/);
 ```
 
-- [ ] **Step 2: Run and confirm they fail**
+- [x] **Step 2: Run and confirm they fail**
 
 Run: `node --test tests/portfolio-comparison.test.cjs tests/portfolio-pdf.test.cjs 2>&1 | grep -E "^not ok" | head`
 Expected: the new comparison test and `advanced strategy comparison loads all rule evidence…` fail.
 
-- [ ] **Step 3: Run the baseline in the model**
+- [x] **Step 3: Run the baseline in the model**
 
 In `assets/portfolio-model.js`, replace the body of `simulateStrategies` from `let start = null, end = null;` to its closing `return` with:
 
@@ -676,7 +681,7 @@ In `assets/portfolio-model.js`, replace the body of `simulateStrategies` from `l
 ```
 and in the early validation `return` of the same function add `baseline: null,` after `strategies: [],`.
 
-- [ ] **Step 4: Render the baseline row, columns, chart line and CSV**
+- [x] **Step 4: Render the baseline row, columns, chart line and CSV**
 
 In `assets/portfolio-comparison.js`:
 
@@ -773,12 +778,12 @@ In `assets/style.css`, change `.portfolio-compare-table{min-width:840px;font-siz
 .portfolio-compare-missing{font-size:12px;color:var(--muted)}
 ```
 
-- [ ] **Step 5: Run the tests and confirm they pass**
+- [x] **Step 5: Run the tests and confirm they pass**
 
 Run: `node --test tests/portfolio-comparison.test.cjs tests/portfolio-pdf.test.cjs 2>&1 | tail -8`
 Expected: `fail 0`.
 
-- [ ] **Step 6: Update the method doc**
+- [x] **Step 6: Update the method doc**
 
 In `docs/portfolio-method.md`, section `### 多策略并行比较`:
 
@@ -791,11 +796,11 @@ Add as a new paragraph after the paragraph that begins `每行都使用完整的
 收益对比表在每行给出“较一次性投入”的收益差（百分点，随年化／累计开关切换）、年化波动和收益回撤比；收益回撤比的定义与缺值规则见“风险分析”。基准行与各策略使用同一组共同设置和实际起止日。基准运行失败时保留原因，差值留空，不用其他策略代替。基准不出现在“策略状态”页签，因为它没有信号和后续订单。导出的对比 CSV 在原有列之后追加年化波动、收益回撤比和两项差值，原列位置不变。
 ```
 
-- [ ] **Step 7: Check it on the local site**
+- [x] **Step 7: Check it on the local site**
 
 Open 多策略对比 for USD 30 / TQQQ 30 / 现金 40 and run it. Expected: 一次性投入 is the first row and reads 基准; its 年化收益, 最大回撤 and 期末资产 equal the 模拟结果 summary of a 一次性投入 run (32.70%, −70.98%, 1,694,775 on 2016-11-11 — 2026-11-13); each 较一次性投入 cell equals that row's return minus 32.70; the dotted baseline line can be toggled off and on.
 
-- [ ] **Step 8: Full verification, commit and push**
+- [x] **Step 8: Full verification, commit and push**
 
 ```bash
 npm run version-assets && npm test 2>&1 | tail -8 && npm run check 2>&1 | tail -3
@@ -817,7 +822,7 @@ git fetch origin && git rebase origin/main && git push origin main
 - Consumes: `P.riskAnalysis(result)`, `P.holdingCorrelation(result)` from Task 1.
 - Produces: `report.correlation` on the object returned by `Pdf.snapshot`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Add to `tests/portfolio-pdf.test.cjs` after the test `PDF includes actual strategy results, precise fee and weights, all curves and missing windows`:
 ```js
@@ -837,12 +842,12 @@ test('PDF carries the risk section; a stored report without live prices omits co
 });
 ```
 
-- [ ] **Step 2: Run and confirm it fails**
+- [x] **Step 2: Run and confirm it fails**
 
 Run: `node --test tests/portfolio-pdf.test.cjs 2>&1 | grep -E "^not ok" | head`
 Expected: the new test fails on `report.correlation`.
 
-- [ ] **Step 3: Capture correlation and lay out the section**
+- [x] **Step 3: Capture correlation and lay out the section**
 
 In `assets/portfolio-pdf.js`, in `snapshot`, change the final `return` to:
 ```js
@@ -878,12 +883,12 @@ In `layout`, insert immediately before `section('持仓贡献',`:
     }
 ```
 
-- [ ] **Step 4: Run the tests and confirm they pass**
+- [x] **Step 4: Run the tests and confirm they pass**
 
 Run: `node --test tests/portfolio-pdf.test.cjs 2>&1 | tail -8`
 Expected: `fail 0`.
 
-- [ ] **Step 5: Document the report and record the validation**
+- [x] **Step 5: Document the report and record the validation**
 
 In `docs/portfolio-method.md`, in the first paragraph of `## 长 PDF 导出`, change `累计/年化收益、账户资产及回撤四种走势、持仓策略贡献` to `累计/年化收益、账户资产及回撤四种走势、风险分析（过程风险、相对本金、前5次回撤与持仓相关性）、持仓策略贡献`, and append to that paragraph: `持仓相关性在导出时从当次模拟的行情计算并随报告保存；脱离当次行情的报告副本不重新估算。`
 
@@ -898,11 +903,11 @@ Append a new section at the end of the file, filling each `<…>` with the figur
 - 本地页面以 USD ETF 30%／TQQQ 30%／现金 40%、人民币、近10年核对：风险页签与独立重算一致，多策略对比的基准行与一次性投入的模拟结果一致。自动测试与本地验证不代表用户验收。
 ```
 
-- [ ] **Step 6: Export a real report**
+- [x] **Step 6: Export a real report**
 
 On the local site, export the PDF for the USD / TQQQ run. Expected: the 风险分析 section appears after 组合走势 with eight cards, the market-value line, five table rows and the 2×2 matrix; no text overflows a card.
 
-- [ ] **Step 7: Full verification, commit and push**
+- [x] **Step 7: Full verification, commit and push**
 
 ```bash
 npm run version-assets && npm test 2>&1 | tail -8 && npm run check 2>&1 | tail -3
