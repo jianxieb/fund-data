@@ -74,6 +74,21 @@ test('PDF includes actual strategy results, precise fee and weights, all curves 
   assert.ok(document.ops.every(op => op.y + op.h <= document.height));
 });
 
+test('PDF carries the risk section; a stored report without live prices omits correlation instead of inventing it', () => {
+  const { input, result } = fixture();
+  const report = Pdf.snapshot(result, input.catalog), document = Pdf.layout(report, measure), text = textOf(document);
+  const risk = P.riskAnalysis(result), c = P.holdingCorrelation(result);
+  assert.deepEqual(report.correlation, JSON.parse(JSON.stringify(c)));
+  for (const value of ['风险分析', '年化波动', '收益回撤比', '收益波动比', '最长回撤期', '当前回撤', '相对本金最深亏损', '最长连续低于本金', '峰值日', '修复历时', '持仓相关性：周收益 ' + c.observations + '个']) assert.ok(text.includes(value), value);
+  for (const e of risk.drawdowns) { assert.ok(text.includes(e.peakDay), e.peakDay); assert.ok(text.includes(e.troughDay), e.troughDay); }
+  assert.ok(text.includes(c.matrix[0][1].toFixed(2)));
+  assert.equal(document.ops.filter(op => op.type === 'path').length, 7, 'the risk section adds tables and cards, not charts');
+  assert.doesNotMatch(text, /NaN|Infinity|undefined/);
+  assert.ok(document.ops.every(op => op.y + op.h <= document.height));
+  const stored = textOf(Pdf.layout({ ...report, correlation: null }, measure));
+  assert.ok(stored.includes('风险分析')); assert.doesNotMatch(stored, /持仓相关性/);
+});
+
 test('long names and maximum funding fit their report bounds; all positions reach the bottom', () => {
   const { input, result } = fixture();
   result.config.initial = 1e12; result.value = 9876543210987.65; result.contributed = 9999999999999.99;

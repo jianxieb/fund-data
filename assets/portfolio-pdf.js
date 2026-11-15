@@ -105,7 +105,8 @@
     const dailyIndicator = row ? { row, budget, allocation: P.additionAllocation(row, budget),
       reason: dailySelection?.reason || row.missing || row.metadata?.reason || '',
       sourceLabel: dailySelection?.sourceLabel || '', facts: dailySelection?.facts || [], calculation: explainDaily(row) } : null;
-    return JSON.parse(JSON.stringify({ result, createdAt, dailyIndicator, assets: catalog.assets.filter(a => ids.has(a.id)), fx: catalog.fx }));
+    // Correlation needs the live run's prices; the copy below cannot recompute it.
+    return JSON.parse(JSON.stringify({ result, createdAt, dailyIndicator, correlation: P.holdingCorrelation(result), assets: catalog.assets.filter(a => ids.has(a.id)), fx: catalog.fx }));
   }
   function wrap(ctx, value, width, size = 15, weight = 400) {
     ctx.font = font(size, weight);
@@ -340,6 +341,31 @@
     chart('年化收益 / 首年按至少一年计算', r.curve.map(p => p.annualReturn), comparison?.map(p => p.day === r.start ? 0 : P.annualReturn(p.nav, r.start, p.day)), r.benchmark?.name);
     chart('税后估值与持仓本金 / ' + name, r.curve.map(p => p.value), r.curve.map(p => p.positionPrincipal), '持仓本金（不含现金）', unit);
     chart('组合回撤', r.curve.map(p => p.drawdown));
+
+    const risk = P.riskAnalysis(r);
+    if (risk) {
+      section('风险分析', '回撤与波动按现金流中性净值计算；相对本金按税后估值与累计投入比较。');
+      const ratio = item => item.value === null ? item.missing : item.value.toFixed(2);
+      const max = risk.maxDrawdown, longest = risk.longestDrawdown, below = risk.principal.longestBelow;
+      cards([
+        ['年化波动', pct(risk.volatility)], ['收益回撤比', ratio(risk.returnToDrawdown), '年化收益 ÷ 最大回撤'], ['收益波动比', ratio(risk.returnToVolatility), '未扣无风险利率'],
+        ['最大回撤', pct(max ? max.depth : 0), max ? max.peakDay + ' — ' + max.troughDay : '区间内未出现回撤'],
+        ['最长回撤期', (longest ? longest.totalDays : 0) + '天', longest ? longest.peakDay + ' — ' + (longest.recoveryDay || r.end) + '\n' + (longest.recovered ? '已修复' : '期末仍未修复') : ''],
+        ['当前回撤', pct(risk.currentDrawdown), risk.currentDrawdown < 0 ? '' : '期末处于净值高点'],
+        ['相对本金最深亏损', pct(risk.principal.deepestLoss), risk.principal.deepestLossDay || '未跌破本金'],
+        ['最长连续低于本金', (below ? below.days : 0) + '天', below ? below.start + ' — ' + below.end + '\n' + (below.recovered ? '已恢复' : '期末仍低于本金') : '没有估值低于本金']
+      ]);
+      if (risk.marketDrawdown) paragraph('市值口径最大回撤 ' + pct(risk.marketDrawdown.depth) + '（未减浮盈预留税），峰值 ' + risk.marketDrawdown.peakDay + '，低点 ' + risk.marketDrawdown.troughDay + '。');
+      if (risk.drawdowns.length) table(['峰值日', '低点日', '回撤幅度', '下跌历时', '修复日', '修复历时', '总历时'],
+        risk.drawdowns.map(e => [e.peakDay, e.troughDay, { text: pct(e.depth), color: C.negative }, e.declineDays + '天', e.recovered ? e.recoveryDay : '尚未修复', e.recovered ? e.recoveryDays + '天' : '—', e.totalDays + '天']),
+        [1.3, 1.3, 1.1, 1, 1.3, 1, 1], { numeric: [2, 3, 5, 6] });
+      const c = report.correlation;
+      if (c?.missing) paragraph('持仓相关性：' + c.missing + '，不计算相关性。');
+      else if (c?.matrix) {
+        paragraph('持仓相关性：周收益 ' + c.observations + '个，' + c.first + ' — ' + c.last + '，' + name + '计价。', C.ink);
+        table(['', ...c.codes], c.matrix.map((row, i) => [c.codes[i], ...row.map(v => v === null ? '—' : v.toFixed(2))]), [1.4, ...c.codes.map(() => 1)], { numeric: c.codes.map((_, i) => i + 1) });
+      }
+    }
 
     section('持仓贡献', name + ' · 实际投入、追加、再平衡、买卖税费及浮盈预留均已计入。');
     structure(r.holdings.map(h => ({ id: h.id, weight: h.actualWeight })));
