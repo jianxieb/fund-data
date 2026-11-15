@@ -1247,6 +1247,16 @@ test('advanced strategy comparison loads all rule evidence and displays independ
   const html = f.ui.view(f.helpers);
   for (const row of compared.strategies) assert.ok(html.includes(row.label), row.label);
   assert.doesNotMatch(html, /NaN|undefined|本次对比未完成/);
+  const base = compared.baseline.result;
+  assert.ok(base && compared.baseline.id === 'lump_sum');
+  for (const heading of ['较一次性投入', '年化波动', '收益回撤比']) assert.ok(html.includes('<th scope="col">' + heading + '</th>'), heading);
+  assert.ok(html.indexOf('portfolio-compare-baseline') < html.indexOf(compared.strategies[0].label), 'the baseline row comes first');
+  assert.match(html, /portfolio-compare-baseline[\s\S]*?<td class="num">基准<\/td>/);
+  assert.ok(html.includes('一次性投入（基准）'), 'the chart legend names the baseline');
+  assert.ok(html.includes('data-comparison-line="lump_sum"'));
+  const gap = branch10.result.totalReturn - base.totalReturn;
+  assert.ok(html.includes((gap > .005 ? '+' : '') + (Math.abs(gap) < .005 ? 0 : gap).toFixed(2) + ' 个百分点'));
+  assert.ok(html.includes('不足一年'), 'a run under one year names the missing ratio');
   assert.ok(f.fetches.includes('data/portfolio/etf/QQQ.json'));
   assert.ok(f.fetches.includes('data/portfolio/etf/SOXX.json'));
   assert.equal(f.fetches.filter(url => url === 'data/portfolio/entry-context.json').length, 1);
@@ -1260,6 +1270,16 @@ test('advanced strategy comparison loads all rule evidence and displays independ
   const shortRow = exported[1].split(/\r?\n/).find(line => line.startsWith('"opportunity_discount_10",')).split('","');
   assert.equal(shortRow[8], '', 'a period under one year must not be exported as annualized return');
   assert.equal(Number(shortRow[9]), branch10.result.totalReturn);
+  // The configuration JSON column contains `","` itself, so the appended columns are read from the end of each line.
+  const lines = exported[1].split(/\r?\n/), tail = line => line.split('","').slice(-4).map(cell => cell.replace(/"$/, ''));
+  assert.deepEqual(tail(lines[0]), ['年化波动%', '收益回撤比', '较一次性投入年化差（百分点）', '较一次性投入累计差（百分点）']);
+  assert.ok(lines[1].startsWith('"lump_sum","一次性投入（基准）","已完成"'));
+  const added = tail(lines.find(line => line.startsWith('"opportunity_discount_10",')));
+  assert.equal(Number(added[0]), branch10.result.volatility);
+  assert.equal(added[1], '', 'no ratio under one year'); assert.equal(added[2], '', 'no annualized difference under one year');
+  assert.equal(Number(added[3]), branch10.result.totalReturn - base.totalReturn);
+  await f.action('compare-toggle', { value: 'lump_sum' });
+  assert.doesNotMatch(f.ui.view(f.helpers), /data-comparison-line="lump_sum"/);
 });
 
 test('comparison dates and controls leave the draft and single account intact; dirty comparisons persist until rerun', async () => {

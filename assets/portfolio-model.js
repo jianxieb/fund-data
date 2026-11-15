@@ -314,11 +314,11 @@
     try {
       validateConfig({ ...config, initialMethod: 'lump_sum' }, new Set((input?.catalog?.assets || []).map(a => a.id)));
     } catch (error) {
-      return { config, start: null, end: null, strategies: [], error: error.message,
+      return { config, start: null, end: null, strategies: [], baseline: null, error: error.message,
         ...(error.field ? { errorField: error.field } : {}) };
     }
     let start = null, end = null;
-    const strategies = comparisonMethods.map(([id, label]) => {
+    const row = (id, label) => {
       const result = simulate({ ...input, config: { ...config, initialMethod: id, benchmarkId: '' } });
       if (result.error) return { id, label, error: result.error, ...(result.errorField ? { errorField: result.errorField } : {}) };
       if (start !== null && (result.start !== start || result.end !== end)) {
@@ -326,8 +326,11 @@
       }
       start = result.start; end = result.end;
       return { id, label, result };
-    });
-    return { config: JSON.parse(JSON.stringify(config)), start, end, strategies };
+    };
+    const strategies = comparisonMethods.map(([id, label]) => row(id, label));
+    // The same account bought once and held: the reference every row is read against.
+    const baseline = row('lump_sum', '一次性投入');
+    return { config: JSON.parse(JSON.stringify(config)), start, end, strategies, baseline };
   }
   // Comparisons use the account's existing valuation dates; a new benchmark never trades or shortens that account.
   function compareBenchmark({ catalog, histories, fxHistory }, { start, end, curve, config }, benchmarkId = config.benchmarkId) {

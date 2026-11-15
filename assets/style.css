@@ -955,13 +955,15 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-compare-tools{display:flex;align-items:center;flex-wrap:wrap;gap:12px 20px;margin-left:auto}
 .portfolio-compare-tools .portfolio-result-link{font-size:14px;min-height:39px}
 .portfolio-compare-content{display:grid;gap:20px;min-width:0}
-.portfolio-compare-table{min-width:840px;font-size:15px}
+.portfolio-compare-table{min-width:1180px;font-size:15px}
 .portfolio-compare-table th{font-size:14px;color:#4d6253;padding:15px 17px}
 .portfolio-compare-table td{font-size:15px;white-space:nowrap;padding:15px 17px}
 .portfolio-compare-table th:first-child{min-width:230px}
 .portfolio-compare-table tbody th{background:transparent;white-space:normal;font-weight:500}
 .portfolio-compare-table tbody th,.portfolio-compare-table thead th:first-child{position:sticky;left:0;z-index:1;background:var(--paper)}
 .portfolio-compare-table thead th:first-child{background:#f8f9f4}
+.portfolio-compare-table tbody .portfolio-compare-baseline th,.portfolio-compare-baseline td{background:#f8f9f4}
+.portfolio-compare-missing{font-size:12px;color:var(--muted)}
 .portfolio-compare-name{display:flex;align-items:baseline;gap:10px;min-width:0}
 .portfolio-compare-name>i{display:inline-block;flex:none;width:9px;height:9px;border-radius:3px}
 .portfolio-compare-name>strong{font-size:14px;line-height:1.65;font-weight:550;overflow-wrap:anywhere}

@@ -134,3 +134,16 @@ test('a valuation-only day cannot advance a moving-average strategy out of warmu
   assert.equal(P.strategyStatus(result, input.days[200]).observationDay, input.days[199]);
   assert.equal(P.strategyStatus(result, input.days[201]).status, 'ready');
 });
+
+test('the comparison carries a lump-sum baseline beside the ten strategies, never among them', () => {
+  const input = fixture(), comparison = P.simulateStrategies(input);
+  assert.equal(comparison.strategies.length, 10);
+  assert.equal(comparison.baseline.id, 'lump_sum'); assert.equal(comparison.baseline.label, '一次性投入');
+  assert.deepEqual(comparison.baseline.result, P.simulate({ ...input, config: { ...input.config, initialMethod: 'lump_sum', benchmarkId: '' } }));
+  assert.equal(comparison.baseline.result.start, comparison.start); assert.equal(comparison.baseline.result.end, comparison.end);
+  const invalid = P.simulateStrategies({ ...input, config: { ...input.config, initial: -1 } });
+  assert.equal(invalid.baseline, null);
+  const unfunded = fixture({ positions: [{ id: 'us:TQQQ', weight: 30 }] }); delete unfunded.histories['us:TQQQ'];
+  const failed = P.simulateStrategies(unfunded).baseline;
+  assert.equal(failed.result, undefined); assert.ok(failed.error);
+});

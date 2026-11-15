@@ -4,6 +4,9 @@
   const colors = ['#35654a', '#a16738', '#627aab', '#936485', '#378d89', '#9b8637', '#a4555c', '#687c46', '#517b91', '#88766a'];
   const finite = value => typeof value === 'number' && Number.isFinite(value);
   const successful = comparison => (comparison?.strategies || []).filter(item => item.result && !item.result.error && item.result.curve?.length);
+  const BASELINE_COLOR = '#555b50';
+  const baselineOf = comparison => { const row = comparison?.baseline; return row?.result && !row.result.error && row.result.curve?.length ? row : null; };
+  const rowsOf = comparison => (comparison.baseline ? [comparison.baseline] : []).concat(comparison.strategies);
   function dates(comparison) {
     const items = successful(comparison);
     if (!items.length) return [];
@@ -29,20 +32,25 @@
   }
   function colorFor(index) { return colors[index % colors.length]; }
   function action(H, label, name, classes, extra = '') { return H.action(label, 'portfolio-compare-' + name, classes || 'btn', extra); }
-  function strategyName(item, index, H) {
-    return '<span class="portfolio-compare-name"><i style="background:' + colorFor(index) + '"></i><strong>' + H.esc(item.label) + '</strong></span>';
+  function colorOf(comparison, item) { return item === comparison.baseline ? BASELINE_COLOR : colorFor(comparison.strategies.indexOf(item)); }
+  function strategyName(item, color, H) {
+    return '<span class="portfolio-compare-name"><i style="background:' + color + '"></i><strong>' + H.esc(item.label) + '</strong></span>';
   }
   function performanceTable(comparison, H) {
-    const { unit } = P.currencyInfo(comparison.config);
-    const rows = comparison.strategies.map((item, index) => {
-      const r = item.result;
-      if (!r || r.error) return '<tr class="portfolio-compare-unavailable"><th scope="row">' + strategyName(item, index, H) + '</th><td colspan="5"><span class="portfolio-compare-failure">' + H.esc(item.error || r?.error || '未取得本策略结果') + '</span></td></tr>';
+    const { unit } = P.currencyInfo(comparison.config), base = baselineOf(comparison)?.result;
+    const rows = rowsOf(comparison).map(item => {
+      const r = item.result, isBase = item === comparison.baseline, name = strategyName(item, colorOf(comparison, item), H);
+      if (!r || r.error) return '<tr class="portfolio-compare-unavailable"><th scope="row">' + name + '</th><td colspan="8"><span class="portfolio-compare-failure">' + H.esc(item.error || r?.error || '未取得本策略结果') + '</span></td></tr>';
       const value = returnValue(r, H.annual), gainClass = value < 0 ? 'negative' : 'positive', profitClass = r.profit < 0 ? 'negative' : 'positive';
-      return '<tr><th scope="row">' + strategyName(item, index, H) + (r.start !== comparison.start || r.end !== comparison.end ? '<span class="portfolio-compare-period">' + H.esc(r.start) + ' 至 ' + H.esc(r.end) + '</span>' : '') + '</th>' +
+      const gap = base && !isBase ? value - returnValue(base, H.annual) : null, ratio = P.riskRatios(r).drawdown;
+      const difference = isBase ? '基准' : !finite(gap) ? '—' : (gap > .005 ? '+' : '') + (Math.abs(gap) < .005 ? 0 : gap).toFixed(2) + ' 个百分点';
+      return '<tr' + (isBase ? ' class="portfolio-compare-baseline"' : '') + '><th scope="row">' + name + (r.start !== comparison.start || r.end !== comparison.end ? '<span class="portfolio-compare-period">' + H.esc(r.start) + ' 至 ' + H.esc(r.end) + '</span>' : '') + '</th>' +
         '<td class="num">' + amount(r.contributed, H) + '</td><td class="num ' + gainClass + '">' + percent(value, H) + '</td>' +
-        '<td class="num ' + profitClass + '">' + signedAmount(r.profit, H) + '</td><td class="num">' + percent(r.mdd, H) + '</td><td class="num">' + amount(r.value, H) + '</td></tr>';
+        '<td class="num' + (!finite(gap) ? '' : gap > .005 ? ' positive' : gap < -.005 ? ' negative' : '') + '">' + difference + '</td>' +
+        '<td class="num ' + profitClass + '">' + signedAmount(r.profit, H) + '</td><td class="num">' + percent(r.mdd, H) + '</td><td class="num">' + percent(r.volatility, H) + '</td>' +
+        '<td class="num">' + (ratio.value === null ? '<span class="portfolio-compare-missing">' + H.esc(ratio.missing) + '</span>' : ratio.value.toFixed(2)) + '</td><td class="num">' + amount(r.value, H) + '</td></tr>';
     }).join('');
-    return '<section class="card portfolio-compare-table-card" aria-label="各策略模拟结果"><div class="table-wrap" role="region" aria-label="策略收益与风险对比" tabindex="0"><table class="portfolio-compare-table"><thead><tr><th scope="col">策略</th><th scope="col">总投入本金 / ' + unit + '</th><th scope="col">' + returnBasis(comparison, H.annual) + '</th><th scope="col">盈亏 / ' + unit + '</th><th scope="col">最大回撤</th><th scope="col">期末资产 / ' + unit + '</th></tr></thead><tbody>' + rows + '</tbody></table></div></section>';
+    return '<section class="card portfolio-compare-table-card" aria-label="各策略模拟结果"><div class="table-wrap" role="region" aria-label="策略收益与风险对比" tabindex="0"><table class="portfolio-compare-table"><thead><tr><th scope="col">策略</th><th scope="col">总投入本金 / ' + unit + '</th><th scope="col">' + returnBasis(comparison, H.annual) + '</th><th scope="col">较一次性投入</th><th scope="col">盈亏 / ' + unit + '</th><th scope="col">最大回撤</th><th scope="col">年化波动</th><th scope="col">收益回撤比</th><th scope="col">期末资产 / ' + unit + '</th></tr></thead><tbody>' + rows + '</tbody></table></div></section>';
   }
   function plotValue(point, result, metric, annual) {
     if (metric === 'amount') return point.value;
@@ -50,14 +58,14 @@
     return annual ? point.annualReturn : point.totalReturn;
   }
   function plot(comparison, state, H) {
-    const items = successful(comparison), metric = ['return', 'drawdown', 'amount'].includes(state.metric) ? state.metric : 'return';
+    const items = (baselineOf(comparison) ? [comparison.baseline] : []).concat(successful(comparison)), metric = ['return', 'drawdown', 'amount'].includes(state.metric) ? state.metric : 'return';
     if (!items.length) return '';
     const hidden = state.hidden || new Set(), visible = items.filter(item => !hidden.has(item.id));
     const basis = returnBasis(comparison, H.annual), annual = H.annual && basis === '年化收益';
     const name = metric === 'amount' ? '账户资产' : metric === 'drawdown' ? '回撤' : basis;
     const legend = items.map(item => {
-      const index = comparison.strategies.indexOf(item), selected = !hidden.has(item.id);
-      return '<label class="portfolio-compare-legend-item' + (selected ? '' : ' is-hidden') + '"><input id="portfolio-compare-toggle-' + H.esc(item.id) + '" type="checkbox" data-action="portfolio-compare-toggle" data-value="' + H.esc(item.id) + '"' + (selected ? ' checked' : '') + ' aria-label="显示' + H.esc(item.label) + '曲线"><i style="background:' + colorFor(index) + '"></i><span>' + H.esc(item.label) + '</span></label>';
+      const selected = !hidden.has(item.id), label = item === comparison.baseline ? item.label + '（基准）' : item.label;
+      return '<label class="portfolio-compare-legend-item' + (selected ? '' : ' is-hidden') + '"><input id="portfolio-compare-toggle-' + H.esc(item.id) + '" type="checkbox" data-action="portfolio-compare-toggle" data-value="' + H.esc(item.id) + '"' + (selected ? ' checked' : '') + ' aria-label="显示' + H.esc(label) + '曲线"><i style="background:' + colorOf(comparison, item) + '"></i><span>' + H.esc(label) + '</span></label>';
     }).join('');
     const metricControl = '<div class="segmented" role="group" aria-label="策略对比曲线内容">' + [['return', '收益率'], ['drawdown', '回撤'], ['amount', '账户资产']].map(([key, label]) => action(H, label, 'metric', key === metric ? 'active' : '', 'data-value="' + key + '" aria-pressed="' + (key === metric) + '"')).join('') + '</div>';
     let figure = '<p class="portfolio-compare-chart-empty">勾选策略以显示曲线。</p>';
@@ -84,14 +92,14 @@
         grid += '<text x="' + x(day).toFixed(2) + '" y="' + (HH - 10) + '" text-anchor="' + (index === 0 ? 'start' : index === 2 ? 'end' : 'middle') + '">' + H.esc(day) + '</text>';
       });
       const paths = visible.map(item => {
-        const index = comparison.strategies.indexOf(item); let path = '', connected = false;
+        const isBase = item === comparison.baseline, index = comparison.strategies.indexOf(item); let path = '', connected = false;
         for (const point of item.result.curve) {
           if (point.day < comparison.start || point.day > comparison.end) continue;
           const value = plotValue(point, item.result, metric, annual);
           if (!finite(value)) { connected = false; continue; }
           path += (connected ? 'L' : 'M') + x(point.day).toFixed(2) + ',' + y(value).toFixed(2); connected = true;
         }
-        return '<path data-comparison-line="' + H.esc(item.id) + '" d="' + path + '" stroke="' + colorFor(index) + '" stroke-width="2"' + (index >= 5 ? ' stroke-dasharray="7 3"' : '') + ' fill="none" stroke-linecap="round"><title>' + H.esc(item.label) + '</title></path>';
+        return '<path data-comparison-line="' + H.esc(item.id) + '" d="' + path + '" stroke="' + colorOf(comparison, item) + '" stroke-width="2"' + (isBase ? ' stroke-dasharray="2 5"' : index >= 5 ? ' stroke-dasharray="7 3"' : '') + ' fill="none" stroke-linecap="round"><title>' + H.esc(item.label) + '</title></path>';
       }).join('');
       figure = '<div class="portfolio-compare-plot-scroll"><svg class="portfolio-compare-plot" viewBox="0 0 ' + W + ' ' + HH + '" role="img" aria-label="各策略' + name + '对比曲线">' + grid + paths + '</svg></div>';
     }
@@ -140,9 +148,9 @@
       action(H, '下一日', 'next', 'btn', index === days.length - 1 ? 'disabled' : '') + '</div>' : '';
     const rows = comparison.strategies.map((item, strategyIndex) => {
       const r = item.result;
-      if (!r || r.error) return '<tr class="portfolio-compare-unavailable"><th scope="row">' + strategyName(item, strategyIndex, H) + '</th><td colspan="4"><p class="portfolio-compare-failure">' + H.esc(item.error || r?.error || '未取得本策略结果') + '</p></td></tr>';
+      if (!r || r.error) return '<tr class="portfolio-compare-unavailable"><th scope="row">' + strategyName(item, colorFor(strategyIndex), H) + '</th><td colspan="4"><p class="portfolio-compare-failure">' + H.esc(item.error || r?.error || '未取得本策略结果') + '</p></td></tr>';
       const status = P.strategyStatus(r, day), account = status.account || {}, next = orderLines(status, r, H);
-      return '<tr data-comparison-status="' + H.esc(item.id) + '"><th scope="row">' + strategyName(item, strategyIndex, H) +
+      return '<tr data-comparison-status="' + H.esc(item.id) + '"><th scope="row">' + strategyName(item, colorFor(strategyIndex), H) +
         (account.day && account.day !== day ? '<span class="portfolio-compare-status-date">账户截至 ' + H.esc(account.day) + '</span>' : '') + '</th>' +
         '<td class="portfolio-compare-account num">' + amount(account.securitiesValue, H, 2) + '<span class="portfolio-compare-position-pct">' + percent(account.securitiesPct, H) + '</span></td>' +
         '<td class="portfolio-compare-cash num">' + amount(account.cash, H, 2) + '</td>' +
@@ -172,12 +180,15 @@
       '<div id="portfolio-compare-pane-' + tab + '" role="tabpanel" aria-labelledby="portfolio-compare-tab-' + tab + '" class="portfolio-compare-content">' + (tab === 'states' ? states(comparison, state, H) : performanceTable(comparison, H) + plot(comparison, state, H)) + '</div></div>';
   }
   function summaryCsv(comparison) {
-    const code = P.currencyInfo(comparison.config).code;
-    const rows = [['策略ID', '策略', '模拟状态', '缺项', '实际开始日', '实际结束日', '计价币种', '总投入本金' + code, '组合年化收益%', '组合累计收益%', '税后盈亏' + code, '最大回撤%', '期末账户资产' + code, '期末现金' + code, '资金年化XIRR%', '资金年化缺项', '配置JSON']];
-    for (const item of comparison.strategies) {
-      const r = item.result;
-      rows.push(!r || r.error ? [item.id, item.label, '未完成', item.error || r?.error || '缺结果', '', '', code, '', '', '', '', '', '', '', '', '', JSON.stringify({ ...comparison.config, initialMethod: item.id })] :
-        [item.id, item.label, '已完成', '', r.start, r.end, code, r.contributed, r.end >= P.addYears(r.start, 1) ? r.annualReturn : '', r.totalReturn, r.profit, r.mdd, r.value, r.cash, r.xirr, r.xirrMissing, JSON.stringify(r.config)]);
+    const code = P.currencyInfo(comparison.config).code, base = baselineOf(comparison)?.result;
+    const rows = [['策略ID', '策略', '模拟状态', '缺项', '实际开始日', '实际结束日', '计价币种', '总投入本金' + code, '组合年化收益%', '组合累计收益%', '税后盈亏' + code, '最大回撤%', '期末账户资产' + code, '期末现金' + code, '资金年化XIRR%', '资金年化缺项', '配置JSON',
+      '年化波动%', '收益回撤比', '较一次性投入年化差（百分点）', '较一次性投入累计差（百分点）']];
+    for (const item of rowsOf(comparison)) {
+      const r = item.result, isBase = item === comparison.baseline, label = isBase ? item.label + '（基准）' : item.label;
+      if (!r || r.error) { rows.push([item.id, label, '未完成', item.error || r?.error || '缺结果', '', '', code, '', '', '', '', '', '', '', '', '', JSON.stringify({ ...comparison.config, initialMethod: item.id }), '', '', '', '']); continue; }
+      const fullYear = r.end >= P.addYears(r.start, 1), compared = !!base && !isBase;
+      rows.push([item.id, label, '已完成', '', r.start, r.end, code, r.contributed, fullYear ? r.annualReturn : '', r.totalReturn, r.profit, r.mdd, r.value, r.cash, r.xirr, r.xirrMissing, JSON.stringify(r.config),
+        r.volatility, P.riskRatios(r).drawdown.value ?? '', compared && fullYear ? r.annualReturn - base.annualReturn : '', compared ? r.totalReturn - base.totalReturn : '']);
     }
     return M.csv(rows);
   }

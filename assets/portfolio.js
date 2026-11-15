@@ -1369,7 +1369,7 @@
         if (!['return', 'drawdown', 'amount'].includes(val)) return;
         comparisonView.metric = val; break;
       case 'compare-toggle':
-        if (!comparison?.strategies.some(item => item.id === val && item.result)) return;
+        if (![comparison?.baseline, ...(comparison?.strategies || [])].some(item => item?.id === val && item.result)) return;
         if (comparisonView.hidden.has(val)) comparisonView.hidden.delete(val); else comparisonView.hidden.add(val);
         update();
         document.getElementById('portfolio-compare-toggle-' + val)?.focus({ preventScroll: true });
