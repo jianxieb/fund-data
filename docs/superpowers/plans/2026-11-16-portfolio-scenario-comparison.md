@@ -42,7 +42,7 @@ Spec: `docs/superpowers/specs/2026-11-16-portfolio-scenario-comparison-design.md
 - Produces: `P.simulateScenarios(input, scenarios) → { config: { years, start, end, currency }, start, end, scenarios: [{ id, label, result } | { id, label, error }] }`, where `scenarios` is `[{ id, name, config }]` and `input.config` supplies the shared window and currency.
 - Produces: `Scenarios.load() → Scenario[]`; `Scenarios.store(list) → boolean`; `Scenarios.nextName(list) → string`; `Scenarios.nameError(list, name) → string` (empty when acceptable); `Scenarios.summary(config, assets) → { holdings, rules }`; `Scenarios.windowLabel(config) → string`; `Scenarios.csv(run) → string`; `Scenarios.view(state, H) → string`.
 
-- [ ] **Step 1: Failing model test** — append to `tests/portfolio-comparison.test.cjs`:
+- [x] **Step 1: Failing model test** — append to `tests/portfolio-comparison.test.cjs`:
 
 ```js
 test('saved scenarios run as independent accounts on the shared window and currency', () => {
@@ -67,11 +67,11 @@ test('saved scenarios run as independent accounts on the shared window and curre
 });
 ```
 
-- [ ] **Step 2: Failing storage test** — create `tests/portfolio-scenarios.test.cjs` covering: round trip through a fake `localStorage`; a stored non-array, malformed entries and a throwing `getItem` give `[]` or drop the bad entries; `store` returns `false` when `setItem` throws; `nextName` skips used names and is empty when A–H are taken; `nameError` for empty, 21-character, duplicate and ninth 方案; `summary` for a two-holding configuration with cash, monthly budget and a 5-point band; `windowLabel` for a number of years, `common` and `custom`; `csv` has one line per row with the failure reason for a row that could not run.
+- [x] **Step 2: Failing storage test** — create `tests/portfolio-scenarios.test.cjs` covering: round trip through a fake `localStorage`; a stored non-array, malformed entries and a throwing `getItem` give `[]` or drop the bad entries; `store` returns `false` when `setItem` throws; `nextName` skips used names and is empty when A–H are taken; `nameError` for empty, 21-character, duplicate and ninth 方案; `summary` for a two-holding configuration with cash, monthly budget and a 5-point band; `windowLabel` for a number of years, `common` and `custom`; `csv` has one line per row with the failure reason for a row that could not run.
 
-- [ ] **Step 3: Run both and confirm they fail** (`simulateScenarios is not a function`, module file missing).
+- [x] **Step 3: Run both and confirm they fail** (`simulateScenarios is not a function`, module file missing).
 
-- [ ] **Step 4: Implement `simulateScenarios`** in `assets/portfolio-model.js` after `simulateStrategies`, and export it:
+- [x] **Step 4: Implement `simulateScenarios`** in `assets/portfolio-model.js` after `simulateStrategies`, and export it:
 
 ```js
   // Saved setups compared on one window and currency. Each keeps its own account;
@@ -87,15 +87,15 @@ test('saved scenarios run as independent accounts on the shared window and curre
   }
 ```
 
-- [ ] **Step 5: Implement `assets/portfolio-scenarios.js`** with the interface above. `load` keeps only entries that are objects with a string `id`, a string `name` and a `config.positions` array, at most 8. `summary.holdings` joins `代码 权重%` for positive weights and appends `现金 x%` when the weights total under 100; `summary.rules` joins the principal method, the contribution method when `monthly > 0`, and the rebalance label (`不再平衡`, `每月再平衡`, `每季再平衡`, `每年再平衡`, `偏离N个百分点再平衡`). `view` renders the 已保存方案 card (name field `id="portfolio-scenario-name"` with `data-portfolio-field="scenario-name"`, actions `portfolio-scenario-save`, `portfolio-scenario-load`, `portfolio-scenario-delete`), then, when `state.run` exists, the shared-window header, the warning line when dates differ, the table (方案 | 总投入本金 | 收益 | 盈亏 | 最大回撤 | 年化波动 | 收益回撤比 | 交易费 | 税费含预留 | 期末资产), and `ChanghengPortfolioComparison.plot({ ...run, strategies: run.scenarios, baseline: null }, state.view, H, { prefix: 'scenario', noun: '方案' })`.
+- [x] **Step 5: Implement `assets/portfolio-scenarios.js`** with the interface above. `load` keeps only entries that are objects with a string `id`, a string `name` and a `config.positions` array, at most 8. `summary.holdings` joins `代码 权重%` for positive weights and appends `现金 x%` when the weights total under 100; `summary.rules` joins the principal method, the contribution method when `monthly > 0`, and the rebalance label (`不再平衡`, `每月再平衡`, `每季再平衡`, `每年再平衡`, `偏离N个百分点再平衡`). `view` renders the 已保存方案 card (name field `id="portfolio-scenario-name"` with `data-portfolio-field="scenario-name"`, actions `portfolio-scenario-save`, `portfolio-scenario-load`, `portfolio-scenario-delete`), then, when `state.run` exists, the shared-window header, the warning line when dates differ, the table (方案 | 总投入本金 | 收益 | 盈亏 | 最大回撤 | 年化波动 | 收益回撤比 | 交易费 | 税费含预留 | 期末资产), and `ChanghengPortfolioComparison.plot({ ...run, strategies: run.scenarios, baseline: null }, state.view, H, { prefix: 'scenario', noun: '方案' })`.
 
-- [ ] **Step 6: Generalise the chart** in `assets/portfolio-comparison.js`: `plot(comparison, state, H, options = {})` reads `prefix = options.prefix || 'compare'` and `noun = options.noun || '策略'`, uses them for the checkbox id and `data-action` (`portfolio-<prefix>-toggle`), the metric action (`portfolio-<prefix>-metric`) and the four labels that say 策略; export `plot` and `colorFor`.
+- [x] **Step 6: Generalise the chart** in `assets/portfolio-comparison.js`: `plot(comparison, state, H, options = {})` reads `prefix = options.prefix || 'compare'` and `noun = options.noun || '策略'`, uses them for the checkbox id and `data-action` (`portfolio-<prefix>-toggle`), the metric action (`portfolio-<prefix>-metric`) and the four labels that say 策略; export `plot` and `colorFor`.
 
-- [ ] **Step 7: Wire the file** — `index.html`: `<script defer src="assets/portfolio-scenarios.js"></script>` immediately before the `portfolio.js` tag; `package.json` `check`: add `node --check assets/portfolio-scenarios.js &&` before `node --check assets/portfolio.js`.
+- [x] **Step 7: Wire the file** — `index.html`: `<script defer src="assets/portfolio-scenarios.js"></script>` immediately before the `portfolio.js` tag; `package.json` `check`: add `node --check assets/portfolio-scenarios.js &&` before `node --check assets/portfolio.js`.
 
-- [ ] **Step 8: Run** `node --test tests/portfolio*.test.cjs` — expected `fail 0`, including every existing 多策略对比 test unchanged.
+- [x] **Step 8: Run** `node --test tests/portfolio*.test.cjs` — expected `fail 0`, including every existing 多策略对比 test unchanged.
 
-- [ ] **Step 9: Commit and push**
+- [x] **Step 9: Commit and push**
 
 ```bash
 npm run version-assets && npm test 2>&1 | tail -8 && npm run check 2>&1 | tail -2
@@ -112,14 +112,14 @@ git fetch origin && git rebase origin/main && git push origin main
 - Consumes: everything Task 1 produces.
 - Produces: workspace tab id `scenarios`; actions `portfolio-scenario-save`, `-load`, `-delete`, `-load-confirm`, `-delete-confirm`, `-metric`, `-toggle`, `-export`.
 
-- [ ] **Step 1: Failing interface tests** — in `tests/portfolio-pdf.test.cjs`, load `assets/portfolio-scenarios.js` in `uiFixture` before `portfolio.js`, then add two tests:
+- [x] **Step 1: Failing interface tests** — in `tests/portfolio-pdf.test.cjs`, load `assets/portfolio-scenarios.js` in `uiFixture` before `portfolio.js`, then add two tests:
 
 1. *scenarios are saved, listed, compared, loaded and deleted*: empty state and offered name `方案A`; 开始对比 disabled with nothing saved; saving twice (second named `每年再平衡` after switching rebalancing) lists both with their summaries and `2 / 8`; a duplicate name is refused with a toast; 开始对比 shows both rows whose figures equal direct `P.simulate` runs, the shared window, one chart line per 方案 and no warning line; metric and legend toggles work; the CSV has a header and two rows; `scenario-load` opens a confirmation naming the 方案 and `scenario-load-confirm` restores its rebalancing in the exported configuration; changing the window shows the stale notice; `scenario-delete-confirm` leaves `1 / 8`.
 2. *a 方案 with a younger asset shows its own dates and the warning*: with one history shortened and the window set to 共同历史, the later-starting row carries its dates and the line `各方案实际区间不同，收益不能直接比较。` appears.
 
-- [ ] **Step 2: Run and confirm they fail** on the missing tab.
+- [x] **Step 2: Run and confirm they fail** on the missing tab.
 
-- [ ] **Step 3: Controller** in `assets/portfolio.js`:
+- [x] **Step 3: Controller** in `assets/portfolio.js`:
   - `workspaceTabs` gains `['scenarios', '方案对比']`.
   - State: `scenarios` (from `Scenarios.load()`, `[]` when the module is absent), `scenarioName`, `scenarioRun`, `scenarioKey`, `scenarioError`, `scenarioRunId`, `scenarioView = { metric: 'return', hidden: new Set() }`; `scenarioSignature()` is the JSON of the list with the draft's `years`, `start`, `end`, `currency`.
   - `draftNotice` returns `方案或区间已改动，当前显示上次对比结果。` on this tab when a run exists and the signature differs.
@@ -129,15 +129,15 @@ git fetch origin && git rebase origin/main && git push origin main
   - `handleInput` intercepts `data-portfolio-field="scenario-name"` before the generic field handling.
   - `handleAction`: `run` dispatches by tab; `scenario-save` validates the name with `nameError` and the settings with `P.validateConfig`, appends `{ id, name, config }`, stores it and clears the name; `scenario-load` / `scenario-delete` open a confirmation whose confirm button is the `-confirm` action; `scenario-load-confirm` replaces the draft exactly as a configuration import does; `scenario-delete-confirm` removes the entry; `scenario-metric`, `scenario-toggle`, `scenario-export`.
 
-- [ ] **Step 4: Styles** in `assets/style.css` for `.portfolio-scenarios`, `.portfolio-scenario-list`, `.portfolio-scenario`, `.portfolio-scenario-actions`, `.portfolio-scenario-save`, `.portfolio-scenario-empty`.
+- [x] **Step 4: Styles** in `assets/style.css` for `.portfolio-scenarios`, `.portfolio-scenario-list`, `.portfolio-scenario`, `.portfolio-scenario-actions`, `.portfolio-scenario-save`, `.portfolio-scenario-empty`.
 
-- [ ] **Step 5: Run** `node --test tests/portfolio*.test.cjs` — expected `fail 0`.
+- [x] **Step 5: Run** `node --test tests/portfolio*.test.cjs` — expected `fail 0`.
 
-- [ ] **Step 6: Check on the local site** — save three 方案 of USD 30 / TQQQ 30 / 现金 40 (CNY, 10 years, fee 0.10%, 大陆居民假设): no rebalancing, a 5-point band, yearly. Expected rows: 32.70% / −70.98% and 26.23% / −48.60% for the first two, matching the single runs recorded in the method doc; list, table and chart aligned at 1600 px; no console errors; reload keeps the list.
+- [x] **Step 6: Check on the local site** — save three 方案 of USD 30 / TQQQ 30 / 现金 40 (CNY, 10 years, fee 0.10%, 大陆居民假设): no rebalancing, a 5-point band, yearly. Expected rows: 32.70% / −70.98% and 26.23% / −48.60% for the first two, matching the single runs recorded in the method doc; list, table and chart aligned at 1600 px; no console errors; reload keeps the list.
 
-- [ ] **Step 7: Document** — add `## 方案对比（2026-11-16新增）` to `docs/portfolio-method.md` before `## 风险分析（2026-11-15新增）`: what a 方案 stores and where; the 8-entry limit and naming; that 载入 and 删除 confirm; which three settings a comparison shares and that amounts keep their numbers across currencies; that rows are independent and never aligned, with the different-dates rule and its warning line; the columns; and a short validation record with the measured test totals.
+- [x] **Step 7: Document** — add `## 方案对比（2026-11-16新增）` to `docs/portfolio-method.md` before `## 风险分析（2026-11-15新增）`: what a 方案 stores and where; the 8-entry limit and naming; that 载入 and 删除 confirm; which three settings a comparison shares and that amounts keep their numbers across currencies; that rows are independent and never aligned, with the different-dates rule and its warning line; the columns; and a short validation record with the measured test totals.
 
-- [ ] **Step 8: Commit and push**
+- [x] **Step 8: Commit and push**
 
 ```bash
 npm run version-assets && npm test 2>&1 | tail -8 && npm run check 2>&1 | tail -2
