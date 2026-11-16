@@ -972,7 +972,7 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-scenario-empty{padding:18px 24px 22px;font-size:13px;color:var(--muted)}
 .portfolio-scenario-shared{font-size:12px;color:var(--muted)}
 .portfolio-rolling{display:grid;gap:20px}
-.portfolio-rolling-controls{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:16px 24px 20px;font-size:13px;color:#465d4d}
+.portfolio-rolling-controls{display:flex;align-items:center;gap:14px;flex-wrap:wrap;min-height:40px;font-size:14px;color:#465d4d}
 .portfolio-rolling-progress{margin-left:8px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
 .portfolio-rolling-caveat{margin:0 24px}
 .portfolio-rolling-controls .segmented button{font-size:13px;padding:6px 14px;color:var(--ink)}
@@ -982,6 +982,9 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-rolling-headline{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px}
 .portfolio-rolling-headline span,.portfolio-rolling-headline small{font-size:13px;color:var(--muted)}
 .portfolio-rolling-headline strong{font-size:30px;font-weight:600;letter-spacing:-.5px;color:var(--ink)}
+.portfolio-rolling-headline strong~strong{font-size:22px}
+.portfolio-rolling-headline strong+span{margin-left:8px}
+.portfolio-rolling-panel h3 small{margin-left:10px;font-size:13px;font-weight:400;color:var(--muted)}
 .portfolio-rolling-dist{display:block;width:100%;height:auto;margin-top:6px;overflow:visible}
 .portfolio-rolling-dist text{font-size:12px;fill:#5d6b60;font-variant-numeric:tabular-nums}
 .portfolio-rolling-dist .strong{font-weight:600;fill:var(--ink)}

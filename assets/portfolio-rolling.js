@@ -174,11 +174,11 @@
     const run = state.run;
     if (!run) return '';
     const s = run.summary;
-    const overview = '<div class="portfolio-rolling-overview"><div class="portfolio-rolling-panel"><h3>年化收益分布</h3><div class="portfolio-rolling-headline"><span>中位年化收益</span><strong class="num">' + H.pct(s.annual.median, 2) + '</strong>' +
+    const overview = '<div class="portfolio-rolling-overview"><div class="portfolio-rolling-panel"><h3>年化收益分布</h3><div class="portfolio-rolling-headline"><span>中位年化收益</span><strong class="num">' + H.pct(s.annual.median, 2) + '</strong><span>平均</span><strong class="num">' + H.pct(s.annual.mean, 2) + '</strong>' +
       '<small>中间一半起点在 ' + H.pct(s.annual.q1, 2) + ' 至 ' + H.pct(s.annual.q3, 2) + ' 之间</small></div>' + histogram(run, H) + '</div>' +
-      '<div class="portfolio-rolling-aside"><div class="portfolio-rolling-panel"><h3>最大回撤</h3>' + drawdownStrip(s, H) + '</div>' + meters(s, run, H) + '</div></div>';
+      '<div class="portfolio-rolling-aside"><div class="portfolio-rolling-panel"><h3>最大回撤<small>平均 ' + H.pct(s.drawdown.mean, 2, false) + '</small></h3>' + drawdownStrip(s, H) + '</div>' + meters(s, run, H) + '</div></div>';
     return (run.catalogRefresh?.available === false ? '<p class="portfolio-warning">' + H.esc(run.catalogRefresh.missing) + '</p>' : '') +
-      H.card('起点分布', '起点 ' + s.firstStart + ' — ' + s.lastStart + ' · ' + s.count + ' 个 · 每个持有 ' + run.years + ' 年' + (s.failed ? ' · ' + s.failed + ' 个起点无法模拟' : ''),
+      H.card('起点分布', '每月首个共同交易日建仓 · ' + s.firstStart + ' — ' + s.lastStart + ' · ' + s.count + ' 个起点 · 各持有 ' + run.years + ' 年' + (s.failed ? ' · ' + s.failed + ' 个起点无法模拟' : ''),
         '<p class="portfolio-warning portfolio-rolling-caveat">相邻起点的区间大部分重叠，不是 ' + s.count + ' 次独立检验。</p>' + overview,
         H.action('导出全部起点 CSV', 'portfolio-rolling-export', 'portfolio-result-link')) +
       chart(run, H) + extremes('最差5个起点', s.worst, run, H) + extremes('最好5个起点', s.best, run, H);
@@ -186,7 +186,7 @@
   function view(state, H) {
     const run = state.run, empty = run && !run.summary.count;
     return '<div class="portfolio-comparison portfolio-rolling">' + (state.error ? '<p class="portfolio-compare-error negative" role="alert">' + H.esc(state.error) + '</p>' : '') +
-      '<section class="card portfolio-rolling-setup"><div class="card-head"><div><h2>起点检验</h2><p>每个月的首个共同交易日各建一次仓，按当前设置持有到期。</p></div></div>' + controls(state, H) + '</section>' +
+      controls(state, H) +
       (empty ? '<p class="portfolio-warning">' + run.summary.failed + ' 个起点都无法模拟：' + H.esc(run.rows[0].error) + '</p>' : results(state, H)) + '</div>';
   }
   function csv(run) {

@@ -64,8 +64,8 @@ test('the summary gives quartiles, losses and strict wins, and counts failed sta
   const s = P.rollingSummary(rows);
   assert.equal(s.count, 5); assert.equal(s.failed, 1);
   assert.equal(s.firstStart, '2020-01-01'); assert.equal(s.lastStart, '2020-05-01');
-  assert.deepEqual(s.annual, { min: -5, q1: 0, median: 5, q3: 10, max: 20 });
-  assert.deepEqual(s.drawdown, { worst: -30, q1: -20, median: -15, q3: -10, best: -5 });
+  assert.deepEqual(s.annual, { min: -5, q1: 0, median: 5, q3: 10, max: 20, mean: 6 });
+  assert.deepEqual(s.drawdown, { worst: -30, q1: -20, median: -15, q3: -10, best: -5, mean: -16 });
   assert.equal(s.losses, 1);
   assert.deepEqual(s.beatLumpSum, { wins: 1, of: 4 });
   assert.equal(s.beatBenchmark, null);
@@ -163,6 +163,8 @@ test('the distribution card draws a histogram on round bins, a drawdown strip an
   for (let i = 1; i < bins.length; i++) assert.equal(bins[i].from, bins[i - 1].to, 'bins are contiguous');
   assert.ok(bins[0].from <= s.annual.min && bins.at(-1).to >= s.annual.max);
   for (const key of ['q1', 'median', 'q3']) assert.match(card, new RegExp('data-rolling-marker="' + key + '"'));
+  assert.ok(card.includes('<span>平均</span><strong class="num">' + String(s.annual.mean) + '</strong>'), 'the mean sits beside the median');
+  assert.ok(card.includes('<h3>最大回撤<small>平均 ' + String(s.drawdown.mean) + '</small></h3>'));
   for (const value of [s.annual.min, s.annual.q1, s.annual.median, s.annual.q3, s.annual.max, s.drawdown.worst, s.drawdown.q1, s.drawdown.median, s.drawdown.q3, s.drawdown.best])
     assert.ok(card.includes('>' + String(value) + '<'), String(value));
   for (const key of ['worst', 'q1', 'median', 'q3', 'best']) assert.match(card, new RegExp('data-rolling-drawdown="' + key + '"'));
@@ -174,4 +176,13 @@ test('the distribution card draws a histogram on round bins, a drawdown strip an
   assert.doesNotMatch(card, /NaN|undefined|概率/);
   const plain = Rolling.view({ years: 5, run: syntheticRun(), progress: null, error: '' }, H).split('<h2>起点分布</h2>')[1].split('各起点的年化收益')[0];
   assert.doesNotMatch(plain, /data-rolling-meter="beatLumpSum"|data-rolling-meter="beatBenchmark"/);
+});
+
+test('the period choice is one bare control row, and the start rule moves into the result subtitle', () => {
+  const Rolling = rollingView(), run = syntheticRun();
+  const empty = Rolling.view({ years: 5, run: null, progress: null, error: '' }, H);
+  assert.doesNotMatch(empty, /<h2>起点检验<\/h2>|card-head/, 'no card title above the period choice');
+  assert.match(empty, /^<div class="portfolio-comparison portfolio-rolling"><div class="portfolio-rolling-controls">/);
+  const html = Rolling.view({ years: 5, run, progress: null, error: '' }, H);
+  assert.ok(html.includes('<p>每月首个共同交易日建仓 · ' + run.summary.firstStart + ' — ' + run.summary.lastStart + ' · ' + run.summary.count + ' 个起点 · 各持有 5 年</p>'));
 });
