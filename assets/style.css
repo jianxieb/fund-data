@@ -688,6 +688,8 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-reserve-branch{grid-column:1/-1;align-items:flex-start}
 .portfolio-reserve-branch .segmented{max-width:100%;flex-wrap:wrap}
 .portfolio-reserve-branch strong,.portfolio-reserve-branch .segmented button{color:var(--ink);font-size:13px}
+.portfolio-inline-choice{grid-column:1/-1;flex-direction:row;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.portfolio-inline-choice .segmented button{color:var(--ink);font-size:13px}
 .portfolio-field input{margin:0;width:100%;font-size:14px;min-height:39px}
 .portfolio-number{position:relative;display:block}
 .portfolio-number input{padding-right:39px;font-variant-numeric:tabular-nums;background:#fbfcf8}

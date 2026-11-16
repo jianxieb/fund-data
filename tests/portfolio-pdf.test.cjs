@@ -422,6 +422,7 @@ test('where new money goes is chosen beside the contribution method and explaine
     { ...P, simulate(input) { const result = P.simulate(input); runs.push(result); return result; } });
   let html = f.ui.view(f.helpers);
   assert.ok(html.includes('追加资金去向') && html.includes('按目标比例') && html.includes('优先补低配'));
+  assert.ok(html.includes('<div class="portfolio-field portfolio-inline-choice"><span id="portfolio-allocation-label">追加资金去向</span>'), 'label and buttons share one line');
   assert.match(html, /data-action="portfolio-contribution-allocation" data-value="target" aria-pressed="true"/);
   await f.action('contribution-allocation', { value: 'underweight' });
   html = f.ui.view(f.helpers);

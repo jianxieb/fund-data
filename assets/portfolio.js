@@ -607,7 +607,7 @@
       '<div class="portfolio-decision" role="group" aria-label="持续投入" aria-describedby="portfolio-contribution-plan"><div class="portfolio-decision-controls">' +
       field('持续投入方式', menu('contributionMethod', '持续投入方式', P.contributionMethods, draft.contributionMethod)) +
       number('每月追加预算', 'monthly', draft.monthly, 1e10, 'any', currency().unit) +
-      '<div class="portfolio-field"><span id="portfolio-allocation-label">追加资金去向</span><div class="segmented" role="group" aria-labelledby="portfolio-allocation-label">' +
+      '<div class="portfolio-field portfolio-inline-choice"><span id="portfolio-allocation-label">追加资金去向</span><div class="segmented" role="group" aria-labelledby="portfolio-allocation-label">' +
       [['target', '按目标比例'], ['underweight', '优先补低配']].map(([id, label]) => btn(label, 'contribution-allocation', id === draft.contributionAllocation ? 'active' : '',
         'data-value="' + id + '" aria-pressed="' + (id === draft.contributionAllocation) + '"')).join('') + '</div></div>' +
       '</div><section class="portfolio-plan-panel" aria-labelledby="portfolio-recurring-title"><h3 id="portfolio-recurring-title">追加安排</h3><p id="portfolio-contribution-plan">' + H.esc(contributionPlan()) + '</p></section></div>' +
