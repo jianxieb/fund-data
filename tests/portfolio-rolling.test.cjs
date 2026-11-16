@@ -65,7 +65,7 @@ test('the summary gives quartiles, losses and strict wins, and counts failed sta
   assert.equal(s.count, 5); assert.equal(s.failed, 1);
   assert.equal(s.firstStart, '2020-01-01'); assert.equal(s.lastStart, '2020-05-01');
   assert.deepEqual(s.annual, { min: -5, q1: 0, median: 5, q3: 10, max: 20 });
-  assert.deepEqual(s.drawdown, { worst: -30, median: -15 });
+  assert.deepEqual(s.drawdown, { worst: -30, q1: -20, median: -15, q3: -10, best: -5 });
   assert.equal(s.losses, 1);
   assert.deepEqual(s.beatLumpSum, { wins: 1, of: 4 });
   assert.equal(s.beatBenchmark, null);
@@ -143,4 +143,35 @@ test('legend samples copy each line’s colour and dash, and the axis uses round
   const negative = ticksOf(Rolling.view({ years: 5, run: syntheticRun({ annualAt: i => -6 + i / 3 }), progress: null, error: '' }, H));
   assert.ok(negative.includes(0) && negative[0] < 0 && negative[0] <= -6);
   assert.deepEqual([...chartOf(html).matchAll(/data-rolling-year="(\d{4})"/g)].map(m => m[1]), ['2016', '2017', '2018', '2019', '2020']);
+});
+
+test('the distribution card draws a histogram on round bins, a drawdown strip and count bars, keeping every figure as text', () => {
+  const Rolling = rollingView();
+  const run = syntheticRun({ annualAt: i => -6 + i / 3 + 2 * Math.sin(i), lumpSumAt: (i, annual) => annual - 1 + (i % 3), benchmarkAt: i => 4 + (i % 5) });
+  const s = run.summary, html = Rolling.view({ years: 5, run, progress: null, error: '' }, H);
+  const card = html.split('<h2>起点分布</h2>')[1].split('各起点的年化收益')[0];
+  const bins = [...card.matchAll(/<rect data-rolling-bin="(-?[\d.]+)\|(-?[\d.]+)" data-count="(\d+)" fill="([^"]+)"/g)].map(m => ({ from: +m[1], to: +m[2], count: +m[3], fill: m[4] }));
+  assert.ok(bins.length >= 5, 'bins ' + bins.length);
+  const step = bins[0].to - bins[0].from;
+  assert.ok([1, 2, 2.5, 5, 10].includes(step), 'round bin width ' + step);
+  assert.equal(bins.reduce((n, b) => n + b.count, 0), s.count, 'every start falls in one bin');
+  for (const b of bins) {
+    assert.ok(Math.abs(b.from / step - Math.round(b.from / step)) < 1e-9 && b.from >= 0 === b.to > 0, 'no bin straddles 0: ' + b.from);
+    assert.equal(b.fill, b.from >= 0 ? '#6f9f7e' : '#cf8072');
+  }
+  assert.ok(bins.some(b => b.from < 0) && bins.some(b => b.from >= 0));
+  for (let i = 1; i < bins.length; i++) assert.equal(bins[i].from, bins[i - 1].to, 'bins are contiguous');
+  assert.ok(bins[0].from <= s.annual.min && bins.at(-1).to >= s.annual.max);
+  for (const key of ['q1', 'median', 'q3']) assert.match(card, new RegExp('data-rolling-marker="' + key + '"'));
+  for (const value of [s.annual.min, s.annual.q1, s.annual.median, s.annual.q3, s.annual.max, s.drawdown.worst, s.drawdown.q1, s.drawdown.median, s.drawdown.q3, s.drawdown.best])
+    assert.ok(card.includes('>' + String(value) + '<'), String(value));
+  for (const key of ['worst', 'q1', 'median', 'q3', 'best']) assert.match(card, new RegExp('data-rolling-drawdown="' + key + '"'));
+  const meter = key => card.match(new RegExp('data-rolling-meter="' + key + '" style="width:([\\d.]+)%"'))?.[1];
+  assert.equal(Number(meter('losses')), +(100 * s.losses / s.count).toFixed(2));
+  assert.equal(Number(meter('beatLumpSum')), +(100 * s.beatLumpSum.wins / s.beatLumpSum.of).toFixed(2));
+  assert.equal(Number(meter('beatBenchmark')), +(100 * s.beatBenchmark.wins / s.beatBenchmark.of).toFixed(2));
+  assert.ok(card.includes(s.losses + ' / ' + s.count) && card.includes('胜过对照 SPY'));
+  assert.doesNotMatch(card, /NaN|undefined|概率/);
+  const plain = Rolling.view({ years: 5, run: syntheticRun(), progress: null, error: '' }, H).split('<h2>起点分布</h2>')[1].split('各起点的年化收益')[0];
+  assert.doesNotMatch(plain, /data-rolling-meter="beatLumpSum"|data-rolling-meter="beatBenchmark"/);
 });

@@ -389,7 +389,7 @@
     const ordered = ran.slice().sort((a, b) => a.annualReturn - b.annualReturn || a.start.localeCompare(b.start));
     return { count: ran.length, failed, firstStart: ran[0].start, lastStart: ran.at(-1).start,
       annual: { min: annual[0], q1: quantile(annual, .25), median: quantile(annual, .5), q3: quantile(annual, .75), max: annual.at(-1) },
-      drawdown: { worst: depths[0], median: quantile(depths, .5) }, losses: ran.filter(row => row.totalReturn < 0).length,
+      drawdown: { worst: depths[0], q1: quantile(depths, .25), median: quantile(depths, .5), q3: quantile(depths, .75), best: depths.at(-1) }, losses: ran.filter(row => row.totalReturn < 0).length,
       beatLumpSum: wins('lumpSum'), beatBenchmark: wins('benchmark'), worst: ordered.slice(0, 5), best: ordered.slice(-5).reverse() };
   }
   // Comparisons use the account's existing valuation dates; a new benchmark never trades or shortens that account.
