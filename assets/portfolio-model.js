@@ -144,17 +144,24 @@
     if (d.getUTCMonth() !== month) d.setUTCDate(0);
     return d.toISOString().slice(0, 10);
   }
+  const checkedSeries = Systematic?.seriesMemo ? Systematic.seriesMemo(2) : null;
   function validateHistory(asset, history) {
     if (!history || history.schemaVersion !== 1 || history.id !== asset.id || history.currency !== asset.currency) fail(asset.name + '：历史身份或币种不一致');
     if (!['provider_adjusted_close', 'provider_daily_return_or_explicit_actions'].includes(history.basis) || history.dividends !== 'reinvested') fail(asset.name + '：缺含分红再投资的历史口径');
     if (!Array.isArray(history.series) || history.series.length < 2) fail(asset.name + '：每日历史不足两条');
-    let previous = '';
-    for (const row of history.series) {
-      if (!Array.isArray(row) || !M.validDate(row[0]) || row[0] <= previous || !finite(row[1]) || row[1] <= 0) fail(asset.name + '：历史日期或数值无效');
-      previous = row[0];
-    }
-    if (history.first !== history.series[0][0] || history.asOf !== previous) fail(asset.name + '：历史日期与元数据不一致');
-    return history.series;
+    const series = history.series;
+    // An unchanged series is checked row by row once; repeated windows over it skip to the metadata check.
+    const check = () => {
+      let previous = '';
+      for (const row of series) {
+        if (!Array.isArray(row) || !M.validDate(row[0]) || row[0] <= previous || !finite(row[1]) || row[1] <= 0) fail(asset.name + '：历史日期或数值无效');
+        previous = row[0];
+      }
+      return true;
+    };
+    if (checkedSeries) checkedSeries(series, check); else check();
+    if (history.first !== series[0][0] || history.asOf !== series[series.length - 1][0]) fail(asset.name + '：历史日期与元数据不一致');
+    return series;
   }
   function at(series, day, maxGap = 14) {
     let lo = 0, hi = series.length - 1, index = -1;

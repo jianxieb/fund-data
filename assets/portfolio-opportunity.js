@@ -49,7 +49,7 @@
     const average = mean(values);
     return Math.sqrt(sum(values.map(v => (v - average) ** 2)) / (values.length - 1) * 252);
   }
-  function priceFeatures(input) {
+  function computePriceFeatures(input) {
     const observations = series(input, '基准ETF'), out = [], returns = [], stretches = []; let sourceGap = null;
     for (let i = 0; i < observations.length; i++) {
       const [day, price] = observations[i];
@@ -75,7 +75,7 @@
     }
     return out;
   }
-  function fearFeatures(input) {
+  function computeFearFeatures(input) {
     let sourceGap = null;
     return series(input, 'VIX/VIX3M', 3).map(([day, vix, vix3m], i, all) => {
       if (i && gap(day, all[i - 1][0]) > 7) sourceGap ||= { from: all[i - 1][0], to: day };
@@ -89,6 +89,32 @@
         R: peak63 === null ? null : clip((peak63 - vix) / (.4 * peak63)) * clip((peak63 - 20) / 30) };
     });
   }
+  // Remembers a value built from a [day, value…] series until any row, date or value in it changes.
+  // Comparing a snapshot is linear and exact, far cheaper than rebuilding rolling ranks over the whole history.
+  function seriesMemo(columns) {
+    const store = new WeakMap();
+    return function remember(series, build) {
+      if (!Array.isArray(series) || !series.length) return build();
+      const hit = store.get(series), n = series.length, width = columns - 1;
+      if (hit && hit.rows.length === n) {
+        let same = true;
+        for (let i = 0; same && i < n; i++) {
+          const row = series[i];
+          if (row !== hit.rows[i] || !Array.isArray(row) || row[0] !== hit.days[i]) same = false;
+          else for (let c = 1; c <= width; c++) if (row[c] !== hit.values[i * width + c - 1]) { same = false; break; }
+        }
+        if (same) return hit.value;
+      }
+      const value = build(), values = new Array(n * width);
+      for (let i = 0; i < n; i++) for (let c = 1; c <= width; c++) values[i * width + c - 1] = series[i][c];
+      store.set(series, { rows: series.slice(), days: series.map(row => row[0]), values, value });
+      return value;
+    };
+  }
+  const freezeRows = rows => Object.freeze(rows.map(row => Object.freeze(row)));
+  const priceMemo = seriesMemo(2), fearMemo = seriesMemo(3);
+  const priceFeatures = input => priceMemo(input, () => freezeRows(computePriceFeatures(input)));
+  const fearFeatures = input => fearMemo(input, () => freezeRows(computeFearFeatures(input)));
   function latest(rows, day, strict = false) {
     let left = 0, right = rows.length;
     while (left < right) {
@@ -142,5 +168,5 @@
     function scoresAt(day) { return compute(day).legs.map(leg => leg.scores); }
     return { at, scoresAt };
   }
-  return { createFeatures, priceFeatures, fearFeatures, definitions, formulas, coefficients };
+  return { createFeatures, priceFeatures, fearFeatures, seriesMemo, definitions, formulas, coefficients };
 });

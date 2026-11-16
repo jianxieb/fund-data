@@ -12,16 +12,36 @@
     return typeof day === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(day) &&
       Number.isFinite(Date.parse(day)) && new Date(day).toISOString().slice(0, 10) === day;
   }
+  // Each simulation over an unchanged series reuses its checked rows and the signal states built from them;
+  // any changed row, date or value is checked again (see Opportunity.seriesMemo).
+  const rowMemos = new Map(), stateMemo = new WeakMap();
+  const seriesMemo = Opportunity?.seriesMemo;
   function rows(value, label, columns = 2) {
     if (!Array.isArray(value) || !value.length) return [];
-    let previous = '';
-    return value.map(row => {
-      if (!Array.isArray(row) || row.length < columns || !validDay(row[0]) || row[0] <= previous ||
-          row.slice(1, columns).some(v => !Number.isFinite(v) || v <= 0)) {
-        throw new Error(label + '日期、顺序或正值记录无效');
-      }
-      previous = row[0]; return row.slice(0, columns);
-    });
+    const build = () => {
+      let previous = '';
+      return Object.freeze(value.map(row => {
+        if (!Array.isArray(row) || row.length < columns || !validDay(row[0]) || row[0] <= previous ||
+            row.slice(1, columns).some(v => !Number.isFinite(v) || v <= 0)) {
+          throw new Error(label + '日期、顺序或正值记录无效');
+        }
+        previous = row[0]; return Object.freeze(row.slice(0, columns));
+      }));
+    };
+    if (!seriesMemo) return build();
+    if (!rowMemos.has(columns)) rowMemos.set(columns, seriesMemo(columns));
+    return rowMemos.get(columns)(value, build);
+  }
+  function remembered(build, ...inputs) {
+    let level = stateMemo.get(build);
+    if (!level) stateMemo.set(build, level = new WeakMap());
+    for (const input of inputs.slice(0, -1)) {
+      if (!level.has(input)) level.set(input, new WeakMap());
+      level = level.get(input);
+    }
+    const key = inputs[inputs.length - 1];
+    if (!level.has(key)) level.set(key, Object.freeze(build(...inputs).map(row => Object.freeze(row))));
+    return level.get(key);
   }
   function latest(series, day, strict) {
     let lo = 0, hi = series.length;
@@ -139,10 +159,10 @@
     const W = sum(weights), originalShares = weights.map(w => w / W), rotation = method === 'relative_strength_rotation';
     const opportunity = Opportunity?.definitions[method] || null;
     const needsVix = !rotation && (!opportunity || weights[1] > 0 || opportunity.family !== 'discount');
-    const vix = needsVix ? vixStates(validatedVix(vixContext)) : [];
+    const vix = needsVix ? remembered(vixStates, validatedVix(vixContext)) : [];
     const opportunityFeatures = opportunity ? Opportunity.createFeatures({ rawHistories, vixContext }) : null;
-    const qqq = method === 'dual_risk_guard' ? qqqStates(rows(rawHistories['us:QQQ'], 'QQQ')) : [];
-    const relative = rotation ? relativeStates(rows(rawHistories['us:USD'], 'USD'), rows(rawHistories['us:TQQQ'], 'TQQQ')) : [];
+    const qqq = method === 'dual_risk_guard' ? remembered(qqqStates, rows(rawHistories['us:QQQ'], 'QQQ')) : [];
+    const relative = rotation ? remembered(relativeStates, rows(rawHistories['us:USD'], 'USD'), rows(rawHistories['us:TQQQ'], 'TQQQ')) : [];
     let lastDay = null, strategyStart = null, lastReview = null, lastReviewDay = null, lastReviewAttemptDay = null;
     let finish = false, requestedOn = true, shares = originalShares.slice(), changes = 0;
     const leaders = [null, null, null];
@@ -296,5 +316,5 @@
         relative: !r.missing && r.available ? 100 * (r.inputs.ratio - 1) : null };
     }) };
   }
-  return { create, chartMarkets, opportunityDefinitions: Opportunity?.definitions || {} };
+  return { create, chartMarkets, seriesMemo, opportunityDefinitions: Opportunity?.definitions || {} };
 });
