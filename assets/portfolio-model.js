@@ -346,6 +346,52 @@
     const ran = rows.filter(row => row.result).map(row => row.result);
     return { config: JSON.parse(JSON.stringify(shared)), start: ran.map(r => r.start).sort()[0] || null, end: ran.map(r => r.end).sort().at(-1) || null, scenarios: rows };
   }
+  // Every month's first common trading day that leaves a full holding period.
+  // The calendar comes from the engine itself, through a plain buy-and-hold over
+  // the whole common history, so a strategy's warm-up, tax evidence or final sale
+  // cannot hide starts that the windows themselves can run.
+  function rollingStarts(input, years) {
+    if (![1, 3, 5, 10].includes(years)) return { error: '持有期须为1、3、5或10年' };
+    const span = simulate({ ...input, config: { positions: input.config.positions, currency: input.config.currency, initial: 1, monthly: 0, years: 'common',
+      rebalance: 'none', transactionFee: 0, feeBasis: 'net', benchmarkId: '' } });
+    if (span.error) return { error: span.error };
+    const days = chartSources.get(span).days, last = days.at(-1);
+    return { years, first: days[0], last,
+      starts: days.filter((day, i) => (!i || day.slice(0, 7) !== days[i - 1].slice(0, 7)) && addYears(day, years) <= last) };
+  }
+  // One start: the current configuration over exactly that window, kept as a
+  // compact row so hundreds of starts do not hold hundreds of daily ledgers.
+  function rollingWindow(input, start, years) {
+    const config = { ...input.config, years: 'custom', start, end: addYears(start, years) };
+    const result = simulate({ ...input, requireFullWindow: true, config });
+    if (result.error) return { start, error: result.error };
+    let lumpSum = null;
+    if (result.strategy.initialMethod !== 'lump_sum') {
+      const plain = simulate({ ...input, requireFullWindow: true, config: { ...config, initialMethod: 'lump_sum', benchmarkId: '' } });
+      if (!plain.error) lumpSum = plain.annualReturn;
+    }
+    return { start, actualStart: result.start, end: result.end, annualReturn: result.annualReturn, totalReturn: result.totalReturn, mdd: result.mdd,
+      contributed: result.contributed, value: result.value, lumpSum, benchmark: result.benchmark ? result.benchmark.annualReturn : null };
+  }
+  function rollingSummary(rows) {
+    const ran = rows.filter(row => !row.error), failed = rows.length - ran.length;
+    if (!ran.length) return { count: 0, failed, firstStart: null, lastStart: null, annual: null, drawdown: null, losses: null, beatLumpSum: null, beatBenchmark: null, worst: [], best: [] };
+    const quantile = (sorted, p) => {
+      const at = (sorted.length - 1) * p, low = Math.floor(at), high = Math.ceil(at);
+      return sorted[low] + (sorted[high] - sorted[low]) * (at - low);
+    };
+    const annual = ran.map(row => row.annualReturn).sort((a, b) => a - b), depths = ran.map(row => row.mdd).sort((a, b) => a - b);
+    // A tie is not a win, and a start without the reference leaves the denominator.
+    const wins = key => {
+      const both = ran.filter(row => finite(row[key]));
+      return both.length ? { wins: both.filter(row => row.annualReturn > row[key]).length, of: both.length } : null;
+    };
+    const ordered = ran.slice().sort((a, b) => a.annualReturn - b.annualReturn || a.start.localeCompare(b.start));
+    return { count: ran.length, failed, firstStart: ran[0].start, lastStart: ran.at(-1).start,
+      annual: { min: annual[0], q1: quantile(annual, .25), median: quantile(annual, .5), q3: quantile(annual, .75), max: annual.at(-1) },
+      drawdown: { worst: depths[0], median: quantile(depths, .5) }, losses: ran.filter(row => row.totalReturn < 0).length,
+      beatLumpSum: wins('lumpSum'), beatBenchmark: wins('benchmark'), worst: ordered.slice(0, 5), best: ordered.slice(-5).reverse() };
+  }
   // Comparisons use the account's existing valuation dates; a new benchmark never trades or shortens that account.
   function compareBenchmark({ catalog, histories, fxHistory }, { start, end, curve, config }, benchmarkId = config.benchmarkId) {
     if (!benchmarkId) return { benchmark: null, benchmarkError: null };
@@ -1310,5 +1356,5 @@
     }
     return config;
   }
-  return { simulate, simulateWindows, simulateStrategies, simulateScenarios, strategyStatus, riskAnalysis, riskRatios, holdingCorrelation, comparisonMethods, compareBenchmark, chartIndicators, chartReferences, validateHistory, validateConfig, sanitizeDraft, allocation, accountAllocation, additionAllocation, amountFromWeight, weightFromAmount, at, annualReturn, holdingXirr, addYears, taxConfig, taxRates, currencyInfo, strategyConfig, strategyNames, initialMethods, contributionMethods, dividendPolicies, opportunityDefinitions: Systematic?.opportunityDefinitions || {} };
+  return { simulate, simulateWindows, simulateStrategies, simulateScenarios, rollingStarts, rollingWindow, rollingSummary, strategyStatus, riskAnalysis, riskRatios, holdingCorrelation, comparisonMethods, compareBenchmark, chartIndicators, chartReferences, validateHistory, validateConfig, sanitizeDraft, allocation, accountAllocation, additionAllocation, amountFromWeight, weightFromAmount, at, annualReturn, holdingXirr, addYears, taxConfig, taxRates, currencyInfo, strategyConfig, strategyNames, initialMethods, contributionMethods, dividendPolicies, opportunityDefinitions: Systematic?.opportunityDefinitions || {} };
 });
