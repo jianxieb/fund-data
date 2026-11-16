@@ -76,3 +76,71 @@ test('the summary gives quartiles, losses and strict wins, and counts failed sta
   const none = P.rollingSummary([{ start: '2020-01-01', error: 'x' }]);
   assert.deepEqual(none, { count: 0, failed: 1, firstStart: null, lastStart: null, annual: null, drawdown: null, losses: null, beatLumpSum: null, beatBenchmark: null, worst: [], best: [] });
 });
+
+const fs = require('node:fs');
+const path = require('node:path');
+const vm = require('node:vm');
+const M = require('../assets/model.js');
+function rollingView() {
+  const context = { window: { Changheng: M, ChanghengPortfolioModel: P } };
+  vm.createContext(context);
+  vm.runInContext(fs.readFileSync(path.resolve(__dirname, '../assets/portfolio-rolling.js'), 'utf8'), context);
+  return context.window.ChanghengPortfolioRolling;
+}
+const H = { esc: String, pct: String, pc: String, money: String,
+  action: (label, act, cls, extra = '') => '<button data-action="' + act + '" ' + extra + '>' + label + '</button>',
+  card: (title, subtitle, html, controls = '') => '<section><h2>' + title + '</h2><p>' + subtitle + '</p>' + controls + html + '</section>' };
+// 72 monthly starts from 2015-01; references are set per start by the caller.
+function syntheticRun({ annualAt = i => 12 + 9 * Math.sin(i / 6), lumpSumAt = () => null, benchmarkAt = () => null, mddAt = i => -20 - (i % 9) * 3 } = {}) {
+  const rows = Array.from({ length: 72 }, (_, i) => {
+    const start = new Date(Date.UTC(2015, i, 1)).toISOString().slice(0, 10), annual = annualAt(i);
+    return { start, actualStart: start, end: P.addYears(start, 5), annualReturn: annual, totalReturn: annual * 5, mdd: mddAt(i), contributed: 10000,
+      value: 10000 * (1 + annual / 100) ** 5, lumpSum: lumpSumAt(i, annual), benchmark: benchmarkAt(i) };
+  });
+  return { config: { currency: 'CNY' }, years: 5, rows, summary: P.rollingSummary(rows), benchmark: 'SPY', catalogRefresh: null };
+}
+const chartOf = html => html.split('各起点的年化收益')[1];
+const ticksOf = html => [...chartOf(html).matchAll(/data-rolling-tick="(-?[\d.]+)"/g)].map(m => Number(m[1]));
+const lineOf = (html, key) => chartOf(html).match(new RegExp('<path data-rolling-line="' + key + '"[^>]*>'))?.[0];
+const attr = (tag, name) => tag.match(new RegExp(' ' + name + '="([^"]*)"'))?.[1];
+
+test('a reference identical to the setup stays visible: drawn on top in its own colour, counted and shaded only where they differ', () => {
+  const Rolling = rollingView();
+  // The first 30 starts match 一次性投入 exactly; later ones sit above, then below, crossing once.
+  const run = syntheticRun({ lumpSumAt: (i, annual) => i < 30 ? annual : annual + (i < 50 ? -4 : 3) });
+  const html = Rolling.view({ years: 5, run, progress: null, error: '' }, H);
+  const setup = lineOf(html, 'setup'), lumpSum = lineOf(html, 'lumpSum');
+  assert.ok(setup && lumpSum);
+  assert.ok(chartOf(html).indexOf(setup) < chartOf(html).indexOf(lumpSum), '一次性投入 is drawn after, so on top of, the setup');
+  assert.equal(attr(lumpSum, 'stroke'), '#4a6fb5');
+  assert.notEqual(attr(lumpSum, 'stroke'), attr(setup, 'stroke'));
+  assert.ok(html.includes('30 个起点的结果与一次性投入完全相同，两条线重合。'));
+  assert.match(chartOf(html), /<path data-rolling-gap="above" [^>]*d="M/);
+  assert.match(chartOf(html), /<path data-rolling-gap="below" [^>]*d="M/);
+  const allSame = Rolling.view({ years: 5, run: syntheticRun({ lumpSumAt: (i, annual) => annual }), progress: null, error: '' }, H);
+  assert.ok(allSame.includes('72 个起点的结果与一次性投入完全相同'));
+  assert.doesNotMatch(chartOf(allSame), /data-rolling-gap/);
+  const lumpSumSetup = Rolling.view({ years: 5, run: syntheticRun(), progress: null, error: '' }, H);
+  assert.doesNotMatch(lumpSumSetup, /完全相同|data-rolling-gap|data-rolling-line="lumpSum"/);
+});
+
+test('legend samples copy each line’s colour and dash, and the axis uses round ticks that include zero', () => {
+  const Rolling = rollingView();
+  const run = syntheticRun({ lumpSumAt: (i, annual) => annual - 3, benchmarkAt: i => 8 + (i % 7) });
+  const html = Rolling.view({ years: 5, run, progress: null, error: '' }, H);
+  for (const key of ['setup', 'lumpSum', 'benchmark']) {
+    const path = lineOf(html, key), sample = html.match(new RegExp('<line data-rolling-sample="' + key + '"[^>]*>'))?.[0];
+    assert.ok(sample, key + ' has a legend sample');
+    assert.equal(attr(sample, 'stroke'), attr(path, 'stroke'), key);
+    assert.equal(attr(sample, 'stroke-dasharray') || '', attr(path, 'stroke-dasharray') || '', key);
+  }
+  const positive = ticksOf(html), step = positive[1] - positive[0];
+  assert.ok([1, 2, 2.5, 5, 10, 20, 25, 50].includes(step), 'round step ' + step);
+  assert.ok(positive.every(v => Math.abs(v / step - Math.round(v / step)) < 1e-9));
+  assert.equal(positive[0], 0, 'all values are positive, so the axis starts at 0 with no negative tick');
+  const values = run.rows.flatMap(r => [r.annualReturn, r.lumpSum, r.benchmark]);
+  assert.ok(positive.at(-1) >= Math.max(...values) && positive.at(-2) < Math.max(...values));
+  const negative = ticksOf(Rolling.view({ years: 5, run: syntheticRun({ annualAt: i => -6 + i / 3 }), progress: null, error: '' }, H));
+  assert.ok(negative.includes(0) && negative[0] < 0 && negative[0] <= -6);
+  assert.deepEqual([...chartOf(html).matchAll(/data-rolling-year="(\d{4})"/g)].map(m => m[1]), ['2016', '2017', '2018', '2019', '2020']);
+});
