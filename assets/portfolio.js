@@ -1233,16 +1233,13 @@
       return (signed && rounded > 0 ? '+' : '') + H.money(rounded, digits) + ' ' + unit;
     };
     const metric = (label, value, detail = '') => '<div class="portfolio-summary-metric"><h2>' + label + '</h2><p class="portfolio-summary-value">' + value + '</p>' + detail + '</div>';
-    let returnDetail = '';
-    if (fullYear && r.deposits > 1) {
-      returnDetail = '<details class="portfolio-summary-basis"><summary>资金年化 XIRR <b>' + (M.finite(r.xirr) ? pct(r.xirr) : H.esc(r.xirrMissing)) +
-        '</b></summary><p>组合收益看净值涨跌；资金年化还考虑每笔入金的日期和金额。</p></details>';
-    } else if (H.annual && !fullYear) {
-      returnDetail = '<p class="portfolio-summary-note">不足一年，显示区间实际收益</p>';
-    }
+    // With later deposits the money-weighted XIRR differs from the portfolio's own return, so it stands beside it.
+    const xirr = fullYear && r.deposits > 1 ? '<div class="portfolio-summary-metric"><h2 title="组合收益看净值涨跌；资金年化还考虑每笔入金的日期和金额。">资金年化 XIRR</h2>' +
+      (M.finite(r.xirr) ? '<p class="portfolio-summary-value">' + pct(r.xirr) + '</p>' : '<p class="portfolio-summary-note">' + H.esc(r.xirrMissing) + '</p>') + '</div>' : '';
+    const returnDetail = H.annual && !fullYear ? '<p class="portfolio-summary-note">不足一年，显示区间实际收益</p>' : '';
     return '<section class="portfolio-result-summary" aria-label="模拟结果摘要">' +
       metric('总投入本金', amount(r.contributed)) +
-      metric('组合' + basis + '收益', pct(basis === '年化' ? r.annualReturn : r.totalReturn), returnDetail) +
+      metric('组合' + basis + '收益', pct(basis === '年化' ? r.annualReturn : r.totalReturn), returnDetail) + xirr +
       metric(closed ? '清仓盈亏' : taxed ? '税后盈亏' : '账户盈亏', amount(r.profit, true)) +
       metric('最大回撤', pct(r.mdd)) + '</section>';
   }

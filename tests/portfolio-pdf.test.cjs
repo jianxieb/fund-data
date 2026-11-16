@@ -1059,12 +1059,16 @@ test('funding XIRR stays annualized beside portfolio returns in both display mod
   const annual = summaryOf(f.ui.view(f.helpers));
   // Initial 100,000 plus 24 actual monthly deposits of 3,000.
   assert.ok(annual.includes('总投入本金</h2><p class="portfolio-summary-value">172000 元</p>'));
-  assert.ok(annual.includes('资金年化 XIRR <b>' + expected.xirr + '</b>'));
+  const headings = html => [...html.matchAll(/<h2[^>]*>([^<]+)<\/h2>/g)].map(m => m[1]);
+  assert.deepEqual(headings(annual).slice(1, 3), ['组合年化收益', '资金年化 XIRR'], 'XIRR is a metric of its own beside the portfolio return');
+  assert.ok(annual.includes('资金年化 XIRR</h2><p class="portfolio-summary-value">' + expected.xirr + '</p>'));
+  assert.doesNotMatch(annual, /<details/);
   assert.ok(annual.includes('组合年化收益</h2><p class="portfolio-summary-value">' + expected.annualReturn));
   assert.notEqual(expected.xirr, expected.annualReturn, 'different contribution dates change XIRR without changing the portfolio’s return basis');
   f.helpers.annual = false;
   const cumulative = summaryOf(f.ui.view(f.helpers));
-  assert.ok(cumulative.includes('资金年化 XIRR <b>' + expected.xirr + '</b>'));
+  assert.deepEqual(headings(cumulative).slice(1, 3), ['组合累计收益', '资金年化 XIRR']);
+  assert.ok(cumulative.includes('资金年化 XIRR</h2><p class="portfolio-summary-value">' + expected.xirr + '</p>'));
   assert.ok(cumulative.includes('组合累计收益</h2><p class="portfolio-summary-value">' + expected.totalReturn));
   assert.doesNotMatch(cumulative, /资金累计|组合年化收益|累计投入/);
   const periods = await f.resultTab('periods');

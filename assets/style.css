@@ -854,24 +854,18 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-results{--portfolio-metric-size:18px}
 .portfolio-results .stats-grid{gap:16px}
 .portfolio-results .stat-foot{line-height:1.7;font-size:11px}
-.portfolio-result-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));overflow:hidden;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper);font-variant-numeric:tabular-nums}
+.portfolio-result-summary{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);overflow:hidden;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper);font-variant-numeric:tabular-nums}
 .portfolio-summary-metric{min-width:0;padding:14px 20px;overflow-wrap:anywhere}
 .portfolio-summary-metric+.portfolio-summary-metric{border-inline-start:1px solid var(--line)}
 .portfolio-summary-metric h2{font-size:16px;font-weight:550;color:#465d4d}
 .portfolio-summary-value{margin:3px 0;font-size:var(--portfolio-metric-size);line-height:1.4;font-weight:600}
-.portfolio-summary-basis,.portfolio-summary-note{font-size:14px;line-height:1.6;color:#506454}
-.portfolio-summary-basis summary{display:flex;align-items:baseline;flex-wrap:wrap;gap:0 8px}
-.portfolio-summary-basis summary{width:fit-content;list-style:none;cursor:pointer}
-.portfolio-summary-basis summary::-webkit-details-marker{display:none}
-.portfolio-summary-basis summary b::after{content:"";display:inline-block;vertical-align:.22em;margin-inline-start:6px;width:5px;height:5px;border:solid currentColor;border-width:0 1px 1px 0;transform:rotate(45deg)}
-.portfolio-summary-basis[open] summary b::after{vertical-align:0;transform:rotate(225deg)}
-.portfolio-summary-basis p{margin-top:4px}
+.portfolio-summary-note{font-size:14px;line-height:1.6;color:#506454}
+.portfolio-summary-metric h2[title]{cursor:help}
 @media(max-width:900px){
-  .portfolio-result-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .portfolio-result-summary{grid-auto-flow:row;grid-template-columns:repeat(2,minmax(0,1fr))}
   .portfolio-summary-metric:nth-child(odd){border-inline-start:0}
   .portfolio-summary-metric:nth-child(n+3){border-top:1px solid var(--line)}
   .portfolio-summary-metric{padding:14px 16px}
-  .portfolio-summary-basis summary{column-gap:4px}
 }
 @media(max-width:360px){
   .portfolio-summary-metric{padding-inline:10px}
