@@ -144,6 +144,7 @@ function uiFixture(configure, model = P) {
     fetch: async url => ({ ok: true, text: async () => url === 'data/portfolio/catalog.js' ? 'var PORTFOLIO_CATALOG=' + JSON.stringify(input.catalog) + ';' : JSON.stringify(Object.values(input.histories).find(h => input.catalog.assets.find(a => a.id === h.id).historyUrl === url)) }) };
   vm.createContext(context);
   vm.runInContext(fs.readFileSync(path.resolve(__dirname, '../assets/portfolio-comparison.js'), 'utf8'), context);
+  vm.runInContext(fs.readFileSync(path.resolve(__dirname, '../assets/portfolio-scenarios.js'), 'utf8'), context);
   vm.runInContext(fs.readFileSync(path.resolve(__dirname, '../assets/portfolio.js'), 'utf8'), context);
   const ui = context.window.ChanghengPortfolio;
   const helpers = { esc: String, action: (label, act, cls, extra = '') => '<button data-action="' + act + '" ' + extra + '>' + label + '</button>',
@@ -1193,6 +1194,79 @@ test('USD settings, tax reserve, PDF and CSV keep the same result currency after
   await f.action('select', { field: 'currency', value: 'USD' });
   await f.action('save');
   assert.equal(JSON.parse(f.downloads.at(-1)[1]).currency, 'USD');
+});
+
+test('scenarios are saved, listed, compared, loaded and deleted without touching one another', async () => {
+  const compared = [];
+  const f = uiFixture(input => Object.assign(input.config, { monthly: 0, rebalance: 'none' }),
+    { ...P, simulateScenarios(input, list) { const run = P.simulateScenarios(input, list); compared.push({ run, input, list }); return run; } });
+  const modals = [], view = () => f.ui.view(f.helpers);
+  Object.assign(f.helpers, { openModal: html => modals.push(html), modalTitle: title => '<h2>' + title + '</h2>' });
+  const rename = value => f.ui.handleInput({ id: 'portfolio-scenario-name', value, dataset: { portfolioField: 'scenario-name' } });
+  await f.action('tab', { value: 'scenarios' });
+  let html = view();
+  assert.ok(html.includes('还没有保存方案') && html.includes('value="方案A"') && html.includes('0 / 8'));
+  assert.match(html, /<button data-action="portfolio-run" disabled>开始对比<\/button>/);
+  await f.action('scenario-save');
+  await f.action('select', { field: 'rebalance', value: 'year' });
+  rename(' 每年再平衡 ');
+  await f.action('scenario-save');
+  html = view();
+  assert.ok(html.includes('2 / 8') && html.includes('<strong>方案A</strong>') && html.includes('<strong>每年再平衡</strong>'));
+  assert.ok(html.includes('一次性投入 · 不再平衡') && html.includes('一次性投入 · 每年再平衡') && html.includes('TWO 47.12% · TEST 42.88% · 现金 10%'));
+  assert.ok(html.includes('value="方案B"'), 'the next free name is offered');
+  rename('方案A'); await f.action('scenario-save');
+  assert.match(f.notices.at(-1), /已有同名方案/); assert.ok(view().includes('2 / 8'));
+  await f.action('run');
+  const { run, input, list } = compared.at(-1);
+  html = view();
+  assert.equal(list.length, 2);
+  for (const [i, row] of run.scenarios.entries()) {
+    assert.equal(row.result.value, P.simulate({ ...input, config: { ...list[i].config, ...run.config, benchmarkId: '' } }).value);
+    assert.ok(html.includes('data-comparison-line="' + row.id + '"') && html.includes('<td class="num">' + String(row.result.value) + '</td>'), row.label);
+  }
+  assert.notEqual(run.scenarios[0].result.value, run.scenarios[1].result.value);
+  assert.ok(html.includes('共同历史') && html.includes('区间与币种取当前设置'));
+  assert.doesNotMatch(html, /各方案实际区间不同|NaN|undefined/);
+  await f.action('scenario-metric', { value: 'drawdown' });
+  assert.match(view(), /data-action="portfolio-scenario-metric" data-value="drawdown" aria-pressed="true"/);
+  await f.action('scenario-toggle', { value: run.scenarios[0].id });
+  assert.ok(!view().includes('data-comparison-line="' + run.scenarios[0].id + '"') && view().includes('data-comparison-line="' + run.scenarios[1].id + '"'));
+  await f.action('scenario-export');
+  assert.match(f.downloads.at(-1)[0], /方案对比/); assert.equal(f.downloads.at(-1)[1].split(/\r?\n/).length, 3);
+  await f.action('scenario-load', { value: list[0].id });
+  assert.ok(modals.at(-1).includes('载入方案“方案A”') && modals.at(-1).includes('data-action="portfolio-scenario-load-confirm"'));
+  await f.action('save'); assert.equal(JSON.parse(f.downloads.at(-1)[1]).rebalance, 'year', 'nothing changes before confirmation');
+  await f.action('scenario-load-confirm', { value: list[0].id });
+  await f.action('save'); assert.equal(JSON.parse(f.downloads.at(-1)[1]).rebalance, 'none');
+  assert.doesNotMatch(view(), /方案或区间已改动/, 'loading a scenario changes neither the list nor the window');
+  await f.action('select', { field: 'years', value: '1' });
+  assert.ok(view().includes('方案或区间已改动，当前显示上次对比结果。'));
+  await f.action('scenario-delete', { value: list[1].id });
+  assert.ok(modals.at(-1).includes('删除方案“每年再平衡”') && view().includes('2 / 8'));
+  await f.action('scenario-delete-confirm', { value: list[1].id });
+  // The last comparison stays on screen as a stale result; only the saved list loses the entry.
+  const saved = view().split('portfolio-compare-context')[0];
+  assert.ok(saved.includes('1 / 8') && saved.includes('<strong>方案A</strong>') && !saved.includes('<strong>每年再平衡</strong>'));
+  assert.ok(view().includes('方案或区间已改动，当前显示上次对比结果。'));
+});
+
+test('a scenario with a younger asset keeps its own dates and the comparison says so', async () => {
+  let first = '';
+  const f = uiFixture(input => {
+    Object.assign(input.config, { monthly: 0, rebalance: 'none' });
+    const young = input.histories['stock:TEST']; young.series = young.series.slice(100); first = young.first = young.series[0][0];
+    input.catalog.assets.find(a => a.id === 'stock:TEST').first = first;
+  });
+  const weight = (id, value) => f.ui.handleInput({ value: String(value), dataset: { portfolioWeight: id } });
+  await f.action('tab', { value: 'scenarios' });
+  weight('stock:TEST', 0); await f.action('scenario-save');
+  weight('us:TWO', 0); weight('stock:TEST', 50); await f.action('scenario-save');
+  await f.action('run');
+  const html = f.ui.view(f.helpers);
+  assert.ok(html.includes('各方案实际区间不同，收益不能直接比较。'));
+  assert.ok(html.includes('<span class="portfolio-compare-period">' + first + ' 至 2026-01-08</span>'));
+  assert.equal(html.split('portfolio-compare-period').length - 1, 1, 'only the row that differs carries its dates');
 });
 
 test('production entrypoint loads the account model, PDF and simulator', () => {

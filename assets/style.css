@@ -964,6 +964,17 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-compare-table thead th:first-child{background:#f8f9f4}
 .portfolio-compare-table tbody .portfolio-compare-baseline th,.portfolio-compare-baseline td{background:#f8f9f4}
 .portfolio-compare-missing{font-size:12px;color:var(--muted)}
+.portfolio-scenarios{display:grid;gap:20px}
+.portfolio-scenario-list{list-style:none;margin:0;padding:0}
+.portfolio-scenario{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:15px 24px;border-top:1px solid var(--line)}
+.portfolio-scenario>div:first-child{min-width:0}
+.portfolio-scenario strong{display:block;font-size:14px;font-weight:550}
+.portfolio-scenario span,.portfolio-scenario small{display:block;font-size:12px;color:var(--muted);margin-top:4px;line-height:1.6;overflow-wrap:anywhere}
+.portfolio-scenario-actions{display:flex;gap:18px;flex:none}
+.portfolio-scenario-save{display:flex;gap:10px;align-items:center}
+.portfolio-scenario-save input{width:190px}
+.portfolio-scenario-empty{padding:18px 24px 22px;font-size:13px;color:var(--muted)}
+.portfolio-scenario-shared{font-size:12px;color:var(--muted)}
 .portfolio-compare-name{display:flex;align-items:baseline;gap:10px;min-width:0}
 .portfolio-compare-name>i{display:inline-block;flex:none;width:9px;height:9px;border-radius:3px}
 .portfolio-compare-name>strong{font-size:14px;line-height:1.65;font-weight:550;overflow-wrap:anywhere}

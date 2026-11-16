@@ -7,13 +7,17 @@
     years: 5, start: '', end: '', benchmarkId: 'us:SPY', dividendPolicy: 'reinvest', feeOverrides: {},
     tax: { ...P.taxConfig(), usCapitalGains: 20, usDividend: 20 } };
   let draft = { ...defaults }, query = '', kind = 'all', market = 'all', hideBoards = false;
-  const workspaceTabs = [['settings', '模拟设置'], ['holdings', '我的组合'], ['results', '模拟结果'], ['strategies', '多策略对比']];
+  const workspaceTabs = [['settings', '模拟设置'], ['holdings', '我的组合'], ['results', '模拟结果'], ['strategies', '多策略对比'], ['scenarios', '方案对比']];
   let workspaceTab = 'settings', calculationOpen = false, benchmarkRequest = null;
   let resultTab = 'chart';
   let result = null, resultKey = '', error = '', errorField = '', metric = 'return', importError = '', exportingPdf = false;
   let dailyDay = '', additionBudget = 10000;
   let comparison = null, comparisonKey = '', comparisonError = '', comparing = false, comparisonRunId = 0;
   let comparisonView = { tab: 'performance', metric: 'return', day: '', hidden: new Set() };
+  // Saved 方案 live beside the working draft and are compared on the draft's window and currency.
+  const Scenarios = window.ChanghengPortfolioScenarios;
+  let scenarios = Scenarios?.load() || [], scenarioName = '', scenarioRun = null, scenarioKey = '', scenarioError = '', scenarioRunId = 0;
+  let scenarioView = { metric: 'return', hidden: new Set() };
   try {
     const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
     if (saved && Array.isArray(saved.positions)) draft = { ...defaults, ...saved };
@@ -32,6 +36,7 @@
   const signature = () => JSON.stringify(config());
   const comparisonConfig = () => ({ ...config(), initialMethod: 'lump_sum', benchmarkId: '' });
   const comparisonSignature = () => JSON.stringify(comparisonConfig());
+  const scenarioSignature = () => JSON.stringify([scenarios, draft.years, draft.start, draft.end, draft.currency]);
   const currency = (cfg = draft) => P.currencyInfo(cfg);
   const asset = id => catalog?.assets.find(a => a.id === id);
   const inputValue = (value, digits = 8) => M.finite(value) ? String(Number(value.toFixed(digits))) : '';
@@ -46,6 +51,7 @@
   function update() { H.render(); }
   function draftNotice() {
     if (workspaceTab === 'strategies') return comparison && comparisonKey !== comparisonSignature() ? '参数已改动，当前显示上次对比结果。' : '';
+    if (workspaceTab === 'scenarios') return scenarioRun && scenarioKey !== scenarioSignature() ? '方案或区间已改动，当前显示上次对比结果。' : '';
     if (!result || resultKey === signature()) return '';
     return workspaceTab === 'results' ? '参数已改动，当前显示上次模拟结果。' : '参数已改动，重新模拟后生效';
   }
@@ -274,6 +280,82 @@
     } finally {
       if (token === comparisonRunId) { comparing = false; update(); }
     }
+  }
+  async function runScenarios() {
+    if (comparing || running || !catalog || !scenarios.length) return;
+    const list = JSON.parse(JSON.stringify(scenarios)), shared = { years: draft.years, start: draft.start, end: draft.end, currency: draft.currency };
+    const originalKey = scenarioSignature(), token = ++scenarioRunId;
+    comparing = true; scenarioError = ''; update();
+    try {
+      let refreshMissing = '';
+      try { await refreshCatalog(); }
+      catch (e) { refreshMissing = '未能确认最新行情：' + e.message + '。本次对比使用已保存的历史数据。'; }
+      const code = currency(shared).code, wanted = new Map();
+      let needsVix = false, needsFx = false;
+      for (const item of list) {
+        const held = item.config.positions.filter(p => p.weight > 0).map(p => asset(p.id)).filter(Boolean), ids = new Set(held.map(a => a.id));
+        const method = item.config.initialMethod, proxies = [];
+        for (const a of held) { wanted.set(a.id, a); if (a.currency !== code) needsFx = true; }
+        if (opportunityMethods.has(method)) {
+          if (ids.has('us:TQQQ')) proxies.push('us:QQQ');
+          if (ids.has('us:USD')) proxies.push('us:SOXX');
+          if (ids.has('us:TQQQ') || opportunityRules[method].family === 'mixed') needsVix = true;
+        } else if (['qqq_bear_confirm', 'dual_risk_guard'].includes(method)) proxies.push('us:QQQ');
+        if (['vix_panic_reentry', 'dual_risk_guard'].includes(method)) needsVix = true;
+        for (const id of proxies) if (asset(id)) wanted.set(id, asset(id));
+      }
+      // One 方案's missing evidence must not stop the others; the engine names what each row lacks.
+      await Promise.allSettled([...wanted.values()].map(loadHistory));
+      if (needsFx) await loadHistory(catalog.fx).catch(() => {});
+      const marketContext = needsVix ? await loadMarketContext().catch(() => null) : null;
+      if (token !== scenarioRunId || originalKey !== scenarioSignature()) return;
+      // Let the loading state paint before computing the independent ledgers.
+      await new Promise(resolve => setTimeout(resolve, 0));
+      if (token !== scenarioRunId || originalKey !== scenarioSignature()) return;
+      const computed = P.simulateScenarios({ catalog, histories: Object.fromEntries(histories), config: shared, fxHistory: histories.get(catalog.fx?.id),
+        ...(marketContext ? { marketContext } : {}) }, list);
+      computed.catalogRefresh = { checkedAt: new Date().toISOString(), available: !refreshMissing, missing: refreshMissing || null };
+      scenarioRun = computed; scenarioKey = originalKey; scenarioView = { metric: scenarioView.metric, hidden: new Set() };
+    } catch (e) {
+      if (token === scenarioRunId) scenarioError = '本次对比未完成：' + e.message + (scenarioRun ? '。仍显示上次对比结果。' : '');
+    } finally {
+      if (token === scenarioRunId) { comparing = false; update(); }
+    }
+  }
+  function confirmScenario(id, kind) {
+    const item = scenarios.find(s => s.id === id), loading = kind === 'load';
+    if (!item) return;
+    H.openModal('<div class="portfolio-selection-confirm">' + H.modalTitle((loading ? '载入方案“' : '删除方案“') + H.esc(item.name) + '”？') +
+      '<p>' + (loading ? '当前设置将被该方案替换，未保存的改动会丢失。' : '删除后不能恢复，其他方案不受影响。') + '</p><div class="actions">' +
+      H.action('取消', 'close', 'btn', 'id="portfolio-selection-cancel"') +
+      btn(loading ? '确认载入' : '确认删除', 'scenario-' + kind + '-confirm', 'btn primary', 'data-value="' + H.esc(id) + '"') + '</div></div>');
+    document.getElementById('portfolio-selection-cancel')?.focus({ preventScroll: true });
+  }
+  function applyScenario(id, kind) {
+    const item = scenarios.find(s => s.id === id);
+    document.getElementById('dialog')?.close?.();
+    if (!item) return;
+    if (kind === 'load') {
+      // Replace the draft exactly as a configuration import does.
+      manualTaxChoice = false;
+      draft = { ...defaults, ...JSON.parse(JSON.stringify(item.config)) }; delete draft.feeBasis;
+      draft.tax = { ...P.taxConfig(), ...draft.tax, overrides: { ...(draft.tax?.overrides || {}) } };
+      touch(); H.toast('已载入' + item.name);
+    } else {
+      scenarios = scenarios.filter(s => s.id !== id);
+      if (!Scenarios.store(scenarios)) H.toast('浏览器未能保存方案列表，刷新页面后会恢复原样');
+    }
+    update();
+  }
+  function saveScenario() {
+    const name = (scenarioName || Scenarios.nextName(scenarios)).trim(), problem = Scenarios.nameError(scenarios, name);
+    if (problem) { H.toast(problem); return; }
+    let saved;
+    try { saved = JSON.parse(JSON.stringify(config())); P.validateConfig(saved, new Set(catalog.assets.map(a => a.id))); }
+    catch (e) { H.toast('当前设置无法保存为方案：' + e.message); return; }
+    scenarios = [...scenarios, { id: 's' + Date.now().toString(36) + scenarios.length, name, config: saved }];
+    if (!Scenarios.store(scenarios)) H.toast('浏览器未能保存方案，刷新页面后会丢失');
+    scenarioName = ''; update();
   }
   function comparisonDays() {
     return comparison?.strategies.find(item => item.result)?.result.curve.map(row => row.day) || [];
@@ -1248,7 +1330,9 @@
       return btn(name + (id === 'holdings' && draft.positions.length ? '<span class="portfolio-tab-count">' + draft.positions.length + '</span>' : ''), 'tab', 'portfolio-tab',
         'id="portfolio-tab-' + id + '" data-value="' + id + '" role="tab" aria-controls="portfolio-panel-' + id + '" aria-selected="' + active + '" tabindex="' + (active ? '0' : '-1') + '"');
     }).join('');
-    const primary = !draft.positions.length && workspaceTab !== 'holdings'
+    const primary = workspaceTab === 'scenarios'
+      ? btn(comparing ? '正在对比…' : '开始对比', 'run', 'btn primary', running || comparing || exportingPdf || !scenarios.length ? 'disabled' : '')
+      : !draft.positions.length && workspaceTab !== 'holdings'
       ? btn('添加标的', 'tab', 'btn primary', 'data-value="holdings"')
       : btn(comparing ? '正在对比…' : running ? '正在模拟…' : workspaceTab === 'strategies' ? '开始对比' : '开始模拟', 'run', 'btn primary', running || comparing || exportingPdf || !draft.positions.length ? 'disabled' : '');
     return '<div class="portfolio-workspace-bar"><div class="portfolio-workspace-tabs" role="tablist" aria-label="组合模拟" aria-orientation="horizontal">' + tabs +
@@ -1258,6 +1342,8 @@
     if (workspaceTab === 'settings') return settings();
     if (workspaceTab === 'results') return results();
     if (workspaceTab === 'strategies') return window.ChanghengPortfolioComparison.view(comparison, { ...comparisonView, error: comparisonError }, H);
+    if (workspaceTab === 'scenarios') return Scenarios.view({ scenarios, name: scenarioName || Scenarios.nextName(scenarios), run: scenarioRun, view: scenarioView,
+      error: scenarioError, assets: catalog.assets, canSave: draft.positions.length > 0 }, H);
     const unknown = draft.positions.filter(p => !asset(p.id));
     return (unknown.length ? '<div class="portfolio-warning">' + unknown.length + '只保存的标的已不在当前研究对象中，请移除后模拟。</div>' : '') +
       '<div class="portfolio-builder">' + composition() + library() + '</div>';
@@ -1365,7 +1451,23 @@
         document.getElementById('portfolio-result-tab-' + val)?.focus({preventScroll: true});
         return;
       case 'retry': loadError = ''; ensureCatalog(); break;
-      case 'run': if (!exportingPdf && !comparing && !running) return workspaceTab === 'strategies' ? runComparison() : run(); return;
+      case 'run': if (!exportingPdf && !comparing && !running) return workspaceTab === 'strategies' ? runComparison() : workspaceTab === 'scenarios' ? runScenarios() : run(); return;
+      case 'scenario-save': return saveScenario();
+      case 'scenario-load': case 'scenario-delete': return confirmScenario(val, act.slice(9));
+      case 'scenario-load-confirm': case 'scenario-delete-confirm': return applyScenario(val, act.split('-')[1]);
+      case 'scenario-metric':
+        if (!['return', 'drawdown', 'amount'].includes(val)) return;
+        scenarioView.metric = val; break;
+      case 'scenario-toggle':
+        if (!scenarioRun?.scenarios.some(row => row.id === val && row.result)) return;
+        if (scenarioView.hidden.has(val)) scenarioView.hidden.delete(val); else scenarioView.hidden.add(val);
+        update();
+        document.getElementById('portfolio-scenario-toggle-' + val)?.focus({ preventScroll: true });
+        return;
+      case 'scenario-export':
+        if (!scenarioRun) return;
+        H.download('长衡-方案对比-' + (scenarioRun.end || '未完成') + '.csv', Scenarios.csv(scenarioRun), 'text/csv;charset=utf-8');
+        return;
       case 'compare-tab':
         if (!['performance', 'states'].includes(val)) return;
         comparisonView.tab = val; update();
@@ -1475,6 +1577,7 @@
     update();
   }
   function handleInput(el) {
+    if (el.dataset?.portfolioField === 'scenario-name') { scenarioName = el.value; return false; }
     if (el.dataset?.portfolioField?.startsWith('compare-')) return false;
     if (el.dataset?.portfolioField?.startsWith('chart-')) return false;
     if (el.id === 'portfolio-addition-budget') {
