@@ -186,3 +186,23 @@ test('the period choice is one bare control row, and the start rule moves into t
   const html = Rolling.view({ years: 5, run, progress: null, error: '' }, H);
   assert.ok(html.includes('<p>每月首个共同交易日建仓 · ' + run.summary.firstStart + ' — ' + run.summary.lastStart + ' · ' + run.summary.count + ' 个起点 · 各持有 5 年</p>'));
 });
+
+test('a window can skip its own lump-sum reference, and stability reads every row against 一次性投入 at the same start', () => {
+  const input = fixture({ initialMethod: 'tranche_6', monthly: 0 });
+  const start = P.rollingStarts(input, 1).starts[0];
+  assert.equal(P.rollingWindow(input, start, 1, { reference: false }).lumpSum, null);
+  assert.notEqual(P.rollingWindow(input, start, 1).lumpSum, null);
+  const row = (start, annualReturn, mdd = -10) => ({ start, actualStart: start, end: start, annualReturn, totalReturn: annualReturn, mdd, contributed: 1, value: 1, lumpSum: null, benchmark: null });
+  const windows = {
+    lump_sum: [row('2020-01-01', 10), row('2020-02-01', 5), row('2020-03-01', 8), { start: '2020-04-01', error: '缺历史' }],
+    drawdown_ladder: [row('2020-01-01', 12), row('2020-02-01', 5), row('2020-03-01', 7), row('2020-04-01', 9)],
+    ma200_hold: [{ start: '2020-01-01', error: '缺预热' }]
+  };
+  const s = P.rollingStability(windows);
+  assert.equal(s.lump_sum.beatLumpSum, null, 'the reference is not compared with itself');
+  assert.equal(s.lump_sum.count, 3); assert.equal(s.lump_sum.annual.median, 8);
+  assert.deepEqual(s.drawdown_ladder.beatLumpSum, { wins: 1, of: 3 }, 'a tie is no win; a start the reference lacks leaves the denominator');
+  assert.equal(s.drawdown_ladder.annual.min, 5); assert.equal(s.drawdown_ladder.count, 4);
+  assert.equal(s.ma200_hold.count, 0); assert.equal(s.ma200_hold.failed, 1);
+  assert.equal(windows.drawdown_ladder[0].lumpSum, null, 'inputs are not modified');
+});

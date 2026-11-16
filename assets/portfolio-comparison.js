@@ -36,11 +36,31 @@
   function strategyName(item, color, H) {
     return '<span class="portfolio-compare-name"><i style="background:' + color + '"></i><strong>' + H.esc(item.label) + '</strong></span>';
   }
-  function performanceTable(comparison, H) {
+  const PERIODS = [1, 3, 5, 10];
+  // 起点稳定性 is measured on request: it reruns every row from each monthly start and takes a while.
+  function stabilityBar(stability, H) {
+    if (!stability) return '';
+    const { years, run, progress, error } = stability;
+    const periods = PERIODS.map(n => H.action(n + '年', 'portfolio-rolling-years', n === years ? 'active' : '', 'data-value="' + n + '" aria-pressed="' + (n === years) + '"' + (progress ? ' disabled' : ''))).join('');
+    const status = progress
+      ? '<span id="portfolio-stability-progress" class="portfolio-compare-stability-note" role="status">' + (progress.total ? '已完成 ' + progress.done + ' / ' + progress.total + ' 次模拟' : '正在读取行情…') + '</span>' + H.action('停止', 'portfolio-compare-stability-stop', 'btn')
+      : (!run || run.years !== years ? H.action('测算', 'portfolio-compare-stability', 'btn') : '') +
+        '<span class="portfolio-compare-stability-note">' + (run ? '持有' + run.years + '年 · ' + run.starts + ' 个起点' : '每个策略从每月首个共同交易日各建仓一次，耗时较长') + '</span>';
+    return '<div class="portfolio-compare-stability"><span id="portfolio-stability-label">起点稳定性</span><div class="segmented" role="group" aria-labelledby="portfolio-stability-label">' + periods + '</div>' + status +
+      (error ? '<span class="negative" role="alert">' + H.esc(error) + '</span>' : '') + '</div>';
+  }
+  function stabilityCell(item, isBase, run, H) {
+    const s = run?.byId[item.id];
+    if (!s) return '<td class="num" data-stability="' + H.esc(item.id) + '">—</td>';
+    if (!s.count) return '<td data-stability="' + H.esc(item.id) + '"><span class="portfolio-compare-missing">起点都无法模拟</span></td>';
+    return '<td class="num portfolio-compare-stability-cell" data-stability="' + H.esc(item.id) + '"><span>中位 ' + percent(s.annual.median, H) + '</span><span>最差 ' + percent(s.annual.min, H) + '</span>' +
+      '<small>' + (isBase ? '基准' : s.beatLumpSum ? '胜过一次性投入 ' + s.beatLumpSum.wins + ' / ' + s.beatLumpSum.of : '') + '</small></td>';
+  }
+  function performanceTable(comparison, H, stability = null) {
     const { unit } = P.currencyInfo(comparison.config), base = baselineOf(comparison)?.result;
     const rows = rowsOf(comparison).map(item => {
       const r = item.result, isBase = item === comparison.baseline, name = strategyName(item, colorOf(comparison, item), H);
-      if (!r || r.error) return '<tr class="portfolio-compare-unavailable"><th scope="row">' + name + '</th><td colspan="8"><span class="portfolio-compare-failure">' + H.esc(item.error || r?.error || '未取得本策略结果') + '</span></td></tr>';
+      if (!r || r.error) return '<tr class="portfolio-compare-unavailable"><th scope="row">' + name + '</th><td colspan="' + (stability ? 9 : 8) + '"><span class="portfolio-compare-failure">' + H.esc(item.error || r?.error || '未取得本策略结果') + '</span></td></tr>';
       const value = returnValue(r, H.annual), gainClass = value < 0 ? 'negative' : 'positive', profitClass = r.profit < 0 ? 'negative' : 'positive';
       const gap = base && !isBase ? value - returnValue(base, H.annual) : null, ratio = P.riskRatios(r).drawdown;
       const difference = isBase ? '基准' : !finite(gap) ? '—' : (gap > .005 ? '+' : '') + (Math.abs(gap) < .005 ? 0 : gap).toFixed(2) + ' 个百分点';
@@ -48,9 +68,10 @@
         '<td class="num">' + amount(r.contributed, H) + '</td><td class="num ' + gainClass + '">' + percent(value, H) + '</td>' +
         '<td class="num' + (!finite(gap) ? '' : gap > .005 ? ' positive' : gap < -.005 ? ' negative' : '') + '">' + difference + '</td>' +
         '<td class="num ' + profitClass + '">' + signedAmount(r.profit, H) + '</td><td class="num">' + percent(r.mdd, H) + '</td><td class="num">' + percent(r.volatility, H) + '</td>' +
-        '<td class="num">' + (ratio.value === null ? '<span class="portfolio-compare-missing">' + H.esc(ratio.missing) + '</span>' : ratio.value.toFixed(2)) + '</td><td class="num">' + amount(r.value, H) + '</td></tr>';
+        '<td class="num">' + (ratio.value === null ? '<span class="portfolio-compare-missing">' + H.esc(ratio.missing) + '</span>' : ratio.value.toFixed(2)) + '</td><td class="num">' + amount(r.value, H) + '</td>' +
+        (stability ? stabilityCell(item, isBase, stability, H) : '') + '</tr>';
     }).join('');
-    return '<section class="card portfolio-compare-table-card" aria-label="各策略模拟结果"><div class="table-wrap" role="region" aria-label="策略收益与风险对比" tabindex="0"><table class="portfolio-compare-table"><thead><tr><th scope="col">策略</th><th scope="col">总投入本金 / ' + unit + '</th><th scope="col">' + returnBasis(comparison, H.annual) + '</th><th scope="col">较一次性投入</th><th scope="col">盈亏 / ' + unit + '</th><th scope="col">最大回撤</th><th scope="col">年化波动</th><th scope="col">收益回撤比</th><th scope="col">期末资产 / ' + unit + '</th></tr></thead><tbody>' + rows + '</tbody></table></div></section>';
+    return '<section class="card portfolio-compare-table-card" aria-label="各策略模拟结果"><div class="table-wrap" role="region" aria-label="策略收益与风险对比" tabindex="0"><table class="portfolio-compare-table"><thead><tr><th scope="col">策略</th><th scope="col">总投入本金 / ' + unit + '</th><th scope="col">' + returnBasis(comparison, H.annual) + '</th><th scope="col">较一次性投入</th><th scope="col">盈亏 / ' + unit + '</th><th scope="col">最大回撤</th><th scope="col">年化波动</th><th scope="col">收益回撤比</th><th scope="col">期末资产 / ' + unit + '</th>' + (stability ? '<th scope="col">起点稳定性<small>持有' + stability.years + '年 · 年化</small></th>' : '') + '</tr></thead><tbody>' + rows + '</tbody></table></div></section>';
   }
   function plotValue(point, result, metric, annual) {
     if (metric === 'amount') return point.value;
@@ -180,18 +201,23 @@
       (holdings.length ? '<p>' + H.esc(holdings.join(' · ')) + '</p>' : '') + '</div>';
     const notice = comparison.catalogRefresh?.available === false ? '<p class="portfolio-warning">' + H.esc(comparison.catalogRefresh.missing) + '</p>' : '';
     return '<div class="portfolio-comparison">' + error + header + '<div class="portfolio-compare-nav"><div class="portfolio-result-tabs" role="tablist" aria-label="多策略对比分区">' + tabs + '</div>' + tools + '</div>' + notice +
-      '<div id="portfolio-compare-pane-' + tab + '" role="tabpanel" aria-labelledby="portfolio-compare-tab-' + tab + '" class="portfolio-compare-content">' + (tab === 'states' ? states(comparison, state, H) : performanceTable(comparison, H) + plot(comparison, state, H)) + '</div></div>';
+      '<div id="portfolio-compare-pane-' + tab + '" role="tabpanel" aria-labelledby="portfolio-compare-tab-' + tab + '" class="portfolio-compare-content">' + (tab === 'states' ? states(comparison, state, H) : stabilityBar(state.stability, H) + performanceTable(comparison, H, state.stability?.run || null) + plot(comparison, state, H)) + '</div></div>';
   }
-  function summaryCsv(comparison) {
+  function summaryCsv(comparison, stability = null) {
     const code = P.currencyInfo(comparison.config).code, base = baselineOf(comparison)?.result;
     const rows = [['策略ID', '策略', '模拟状态', '缺项', '实际开始日', '实际结束日', '计价币种', '总投入本金' + code, '组合年化收益%', '组合累计收益%', '税后盈亏' + code, '最大回撤%', '期末账户资产' + code, '期末现金' + code, '资金年化XIRR%', '资金年化缺项', '配置JSON',
-      '年化波动%', '收益回撤比', '较一次性投入年化差（百分点）', '较一次性投入累计差（百分点）']];
+      '年化波动%', '收益回撤比', '较一次性投入年化差（百分点）', '较一次性投入累计差（百分点）',
+      ...(stability ? ['起点稳定性持有年数', '起点个数', '起点中位年化%', '最差起点年化%', '胜过一次性投入起点数', '可比起点数'] : [])]];
+    const stable = id => {
+      const s = stability?.byId[id];
+      return stability ? [stability.years, s?.count ?? '', s?.annual?.median ?? '', s?.annual?.min ?? '', s?.beatLumpSum?.wins ?? '', s?.beatLumpSum?.of ?? ''] : [];
+    };
     for (const item of rowsOf(comparison)) {
       const r = item.result, isBase = item === comparison.baseline, label = isBase ? item.label + '（基准）' : item.label;
-      if (!r || r.error) { rows.push([item.id, label, '未完成', item.error || r?.error || '缺结果', '', '', code, '', '', '', '', '', '', '', '', '', JSON.stringify({ ...comparison.config, initialMethod: item.id }), '', '', '', '']); continue; }
+      if (!r || r.error) { rows.push([item.id, label, '未完成', item.error || r?.error || '缺结果', '', '', code, '', '', '', '', '', '', '', '', '', JSON.stringify({ ...comparison.config, initialMethod: item.id }), '', '', '', '', ...stable(item.id)]); continue; }
       const fullYear = r.end >= P.addYears(r.start, 1), compared = !!base && !isBase;
       rows.push([item.id, label, '已完成', '', r.start, r.end, code, r.contributed, fullYear ? r.annualReturn : '', r.totalReturn, r.profit, r.mdd, r.value, r.cash, r.xirr, r.xirrMissing, JSON.stringify(r.config),
-        r.volatility, P.riskRatios(r).drawdown.value ?? '', compared && fullYear ? r.annualReturn - base.annualReturn : '', compared ? r.totalReturn - base.totalReturn : '']);
+        r.volatility, P.riskRatios(r).drawdown.value ?? '', compared && fullYear ? r.annualReturn - base.annualReturn : '', compared ? r.totalReturn - base.totalReturn : '', ...stable(item.id)]);
     }
     return M.csv(rows);
   }

@@ -1597,3 +1597,55 @@ test('an unavailable shared period renders every comparison failure and cannot r
   assert.match(f.ui.view(f.helpers), /仍显示上次对比结果/);
   assert.match(f.ui.view(f.helpers), /结束日超过共同历史末日/);
 });
+
+test('多策略对比 adds a start-date stability column only on request, each row read against 一次性投入 at the same start', async () => {
+  const calls = [], captured = [];
+  const model = { ...P,
+    rollingWindow(input, start, years, options) { calls.push({ config: input.config, start, years, options }); return P.rollingWindow(input, start, years, options); },
+    rollingStability(windows) { const out = P.rollingStability(windows); captured.push({ windows, out }); return out; } };
+  const f = uiFixture(input => Object.assign(input.config, { monthly: 0, rebalance: 'none' }), model);
+  const view = () => f.ui.view(f.helpers);
+  await f.action('tab', { value: 'strategies' });
+  await f.action('run');
+  let html = view();
+  assert.ok(html.includes('data-action="portfolio-compare-stability"'));
+  assert.doesNotMatch(html, /<th scope="col">起点稳定性/, 'no column until it is measured');
+  await f.action('rolling-years', { value: '1' });
+  await f.action('compare-stability');
+  html = view();
+  assert.match(html, /<th scope="col">起点稳定性<small>持有1年 · 年化<\/small><\/th>/);
+  const { windows, out } = captured.at(-1), ids = Object.keys(windows);
+  assert.equal(ids[0], 'lump_sum', '一次性投入 runs first');
+  assert.ok(ids.length >= 3, 'every comparison row with a result: ' + ids.join(','));
+  assert.ok(calls.every(c => c.options?.reference === false && c.config.benchmarkId === '' && c.years === 1));
+  for (const id of ids) assert.ok(calls.some(c => c.config.initialMethod === id));
+  const starts = P.rollingStarts({ ...f.input, config: calls[0].config }, 1).starts;
+  assert.equal(calls.length, ids.length * starts.length);
+  for (const id of ids) {
+    const s = out[id], cell = html.split('data-stability="' + id + '"')[1].split('</td>')[0];
+    assert.ok(cell.includes('中位 ' + String(s.annual.median)) && cell.includes('最差 ' + String(s.annual.min)), id);
+    if (id === 'lump_sum') assert.ok(cell.includes('基准'));
+    else assert.ok(cell.includes('胜过一次性投入 ' + s.beatLumpSum.wins + ' / ' + s.beatLumpSum.of), id);
+  }
+  assert.ok(html.includes('持有1年 · ' + starts.length + ' 个起点'));
+  await f.action('compare-export');
+  const csv = f.downloads.at(-1)[1].split(/\r?\n/);
+  assert.ok(csv[0].endsWith(['起点稳定性持有年数', '起点个数', '起点中位年化%', '最差起点年化%', '胜过一次性投入起点数', '可比起点数'].map(v => '"' + v + '"').join(',')));
+  const base = csv.find(line => line.startsWith('"lump_sum"')).split('","');
+  assert.equal(base.at(-4), String(out.lump_sum.annual.median));
+  await f.action('rolling-years', { value: '3' });
+  assert.ok(view().includes('data-action="portfolio-compare-stability"'), 'a different period can be measured again');
+  await f.action('run');
+  assert.doesNotMatch(view(), /<th scope="col">起点稳定性/, 'a new comparison drops the old column');
+});
+
+test('stopping the stability run leaves the comparison as it was', async () => {
+  const f = uiFixture(input => Object.assign(input.config, { monthly: 0, rebalance: 'none' }));
+  await f.action('tab', { value: 'strategies' }); await f.action('run'); await f.action('rolling-years', { value: '1' });
+  const pending = f.action('compare-stability');
+  assert.ok(f.ui.view(f.helpers).includes('data-action="portfolio-compare-stability-stop"'));
+  await f.action('compare-stability-stop'); await pending;
+  const html = f.ui.view(f.helpers);
+  assert.doesNotMatch(html, /已完成 \d+ \/ \d+ 次模拟|portfolio-compare-stability-stop|<th scope="col">起点稳定性/);
+  assert.ok(html.includes('data-action="portfolio-compare-stability"'));
+});

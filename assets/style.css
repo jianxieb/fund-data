@@ -951,6 +951,13 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-compare-tools{display:flex;align-items:center;flex-wrap:wrap;gap:12px 20px;margin-left:auto}
 .portfolio-compare-tools .portfolio-result-link{font-size:14px;min-height:39px}
 .portfolio-compare-content{display:grid;gap:20px;min-width:0}
+.portfolio-compare-stability{display:flex;align-items:center;flex-wrap:wrap;gap:10px 14px;padding:12px 18px;border:1px solid var(--line);border-radius:12px;background:var(--paper);font-size:14px;color:var(--ink)}
+.portfolio-compare-stability>span:first-child{font-weight:600}
+.portfolio-compare-stability .segmented button{font-size:13px;padding:6px 12px;color:var(--ink)}
+.portfolio-compare-stability-note{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.portfolio-compare-table th small{display:block;margin-top:2px;font-size:12px;font-weight:400;color:var(--muted)}
+.portfolio-compare-stability-cell span{display:block;white-space:nowrap}
+.portfolio-compare-stability-cell small{display:block;margin-top:2px;font-size:12px;color:var(--muted);white-space:nowrap}
 .portfolio-compare-table{min-width:1180px;font-size:15px}
 .portfolio-compare-table th{font-size:14px;color:#4d6253;padding:15px 17px}
 .portfolio-compare-table td{font-size:15px;white-space:nowrap;padding:15px 17px}

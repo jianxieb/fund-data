@@ -21,6 +21,8 @@
   // 起点检验 reruns the current settings from every monthly start; progress is non-null while it runs.
   const Rolling = window.ChanghengPortfolioRolling;
   let rollingYears = 5, rollingRun = null, rollingKey = '', rollingError = '', rollingProgress = null, rollingRunId = 0;
+  // 起点稳定性 runs the same start-date test for every row of the current 多策略对比; it belongs to that comparison only.
+  let stabilityRun = null, stabilityProgress = null, stabilityError = '', stabilityRunId = 0;
   try {
     const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
     if (saved && Array.isArray(saved.positions)) draft = { ...defaults, ...saved };
@@ -241,7 +243,7 @@
     }
   }
   async function runComparison() {
-    if (comparing || running || !catalog) return;
+    if (comparing || running || stabilityProgress || !catalog) return;
     for (const position of draft.positions) {
       if (position.weight == null || typeof position.weight === 'string' && !position.weight.trim()) position.weight = 0;
     }
@@ -308,8 +310,57 @@
     if (needsFx) await loadHistory(catalog.fx).catch(() => {});
     return needsVix ? await loadMarketContext().catch(() => null) : null;
   }
+  // Long tests hand control back between slices. Browsers may clamp timers (background or occluded windows)
+  // to hundreds of milliseconds, so slices yield through a message, which still lets the page paint and take input.
+  function yieldToPage() {
+    if (typeof MessageChannel !== 'function') return new Promise(resolve => setTimeout(resolve, 0));
+    return new Promise(resolve => { const channel = new MessageChannel(); channel.port1.onmessage = () => resolve(); channel.port2.postMessage(0); });
+  }
+  async function runStability() {
+    if (!comparison || running || comparing || rollingProgress || stabilityProgress || !catalog) return;
+    const target = comparison, years = rollingYears, token = ++stabilityRunId;
+    const current = () => token === stabilityRunId && comparison === target;
+    const items = [target.baseline, ...target.strategies].filter(item => item?.result);
+    const configs = items.map(item => ({ ...target.config, initialMethod: item.id, benchmarkId: '' }));
+    stabilityProgress = { done: 0, total: 0 }; stabilityError = ''; update();
+    try {
+      const marketContext = await loadEvidence(configs, currency(target.config).code);
+      if (!current()) return;
+      const base = { catalog, histories: Object.fromEntries(histories), fxHistory: histories.get(catalog.fx?.id), ...(marketContext ? { marketContext } : {}) };
+      const calendar = P.rollingStarts({ ...base, config: target.config }, years);
+      if (calendar.error) throw new Error(calendar.error + '。');
+      if (!calendar.starts.length) throw new Error('共同历史不足 ' + years + ' 年，没有可检验的起点。');
+      const total = items.length * calendar.starts.length, windows = {};
+      let done = 0, slice = Date.now();
+      stabilityProgress = { done, total }; update();
+      for (const [k, item] of items.entries()) {
+        const input = { ...base, config: configs[k] };
+        windows[item.id] = [];
+        for (const start of calendar.starts) {
+          // 一次性投入 at the same start is the reference, so no window repeats it.
+          windows[item.id].push(P.rollingWindow(input, start, years, { reference: false })); done++;
+          if (Date.now() - slice > 40 && done < total) {
+            stabilityProgress = { done, total };
+            const line = document.getElementById('portfolio-stability-progress');
+            if (line) line.textContent = '已完成 ' + done + ' / ' + total + ' 次模拟';
+            await yieldToPage();
+            if (!current()) return;
+            slice = Date.now();
+          }
+        }
+      }
+      stabilityRun = { comparison: target, years, starts: calendar.starts.length, byId: P.rollingStability(windows) };
+    } catch (e) {
+      if (current()) stabilityError = e.message;
+    } finally {
+      if (token === stabilityRunId) { stabilityProgress = null; update(); }
+    }
+  }
+  function stabilityState() {
+    return { years: rollingYears, run: stabilityRun?.comparison === comparison ? stabilityRun : null, progress: stabilityProgress, error: stabilityError };
+  }
   async function runRolling() {
-    if (running || comparing || rollingProgress || !catalog) return;
+    if (running || comparing || rollingProgress || stabilityProgress || !catalog) return;
     for (const position of draft.positions) {
       if (position.weight == null || typeof position.weight === 'string' && !position.weight.trim()) position.weight = 0;
     }
@@ -340,7 +391,7 @@
           rollingProgress = { done: rows.length, total };
           const line = document.getElementById('portfolio-rolling-progress');
           if (line) line.textContent = '已完成 ' + rows.length + ' / ' + total + ' 个起点';
-          await new Promise(resolve => setTimeout(resolve, 0));
+          await yieldToPage();
           if (!current()) return;
           slice = Date.now();
         }
@@ -1384,21 +1435,21 @@
       return btn(name + (id === 'holdings' && draft.positions.length ? '<span class="portfolio-tab-count">' + draft.positions.length + '</span>' : ''), 'tab', 'portfolio-tab',
         'id="portfolio-tab-' + id + '" data-value="' + id + '" role="tab" aria-controls="portfolio-panel-' + id + '" aria-selected="' + active + '" tabindex="' + (active ? '0' : '-1') + '"');
     }).join('');
-    const busy = running || comparing || exportingPdf || !!rollingProgress;
+    const busy = running || comparing || exportingPdf || !!rollingProgress || !!stabilityProgress;
     const primary = workspaceTab === 'scenarios'
       ? btn(comparing ? '正在对比…' : '开始对比', 'run', 'btn primary', busy || !scenarios.length ? 'disabled' : '')
       : workspaceTab === 'rolling' && draft.positions.length
       ? btn(rollingProgress ? '正在检验…' : '开始检验', 'run', 'btn primary', busy ? 'disabled' : '')
       : !draft.positions.length && workspaceTab !== 'holdings'
       ? btn('添加标的', 'tab', 'btn primary', 'data-value="holdings"')
-      : btn(comparing ? '正在对比…' : running ? '正在模拟…' : workspaceTab === 'strategies' ? '开始对比' : '开始模拟', 'run', 'btn primary', running || comparing || exportingPdf || !draft.positions.length ? 'disabled' : '');
+      : btn(comparing ? '正在对比…' : running ? '正在模拟…' : workspaceTab === 'strategies' ? '开始对比' : '开始模拟', 'run', 'btn primary', busy || !draft.positions.length ? 'disabled' : '');
     return '<div class="portfolio-workspace-bar"><div class="portfolio-workspace-tabs" role="tablist" aria-label="组合模拟" aria-orientation="horizontal">' + tabs +
       '</div><div class="portfolio-run-actions"><span id="portfolio-dirty" role="status">' + draftNotice() + '</span>' + primary + '</div></div>';
   }
   function workspaceContent() {
     if (workspaceTab === 'settings') return settings();
     if (workspaceTab === 'results') return results();
-    if (workspaceTab === 'strategies') return window.ChanghengPortfolioComparison.view(comparison, { ...comparisonView, error: comparisonError }, H);
+    if (workspaceTab === 'strategies') return window.ChanghengPortfolioComparison.view(comparison, { ...comparisonView, error: comparisonError, stability: stabilityState() }, H);
     if (workspaceTab === 'rolling') return Rolling.view({ years: rollingYears, run: rollingRun, progress: rollingProgress, error: rollingError }, H);
     if (workspaceTab === 'scenarios') return Scenarios.view({ scenarios, name: scenarioName || Scenarios.nextName(scenarios), run: scenarioRun, view: scenarioView,
       error: scenarioError, assets: catalog.assets, canSave: draft.positions.length > 0 }, H);
@@ -1510,11 +1561,11 @@
         return;
       case 'retry': loadError = ''; ensureCatalog(); break;
       case 'run':
-        if (exportingPdf || comparing || running || rollingProgress) return;
+        if (exportingPdf || comparing || running || rollingProgress || stabilityProgress) return;
         return workspaceTab === 'strategies' ? runComparison() : workspaceTab === 'scenarios' ? runScenarios() : workspaceTab === 'rolling' ? runRolling() : run();
       case 'rolling-years':
-        if (!Rolling.PERIODS.includes(Number(val)) || rollingProgress) return;
-        rollingYears = Number(val); break;
+        if (!Rolling.PERIODS.includes(Number(val)) || rollingProgress || stabilityProgress) return;
+        rollingYears = Number(val); stabilityError = ''; break;
       case 'rolling-stop':
         if (!rollingProgress) return;
         rollingRunId++; rollingProgress = null; break;
@@ -1560,8 +1611,12 @@
       }
       case 'compare-export':
         if (!comparison) return;
-        H.download('长衡-多策略对比-' + (comparison.end || '未完成') + '.csv', window.ChanghengPortfolioComparison.summaryCsv(comparison), 'text/csv;charset=utf-8');
+        H.download('长衡-多策略对比-' + (comparison.end || '未完成') + '.csv', window.ChanghengPortfolioComparison.summaryCsv(comparison, stabilityState().run), 'text/csv;charset=utf-8');
         return;
+      case 'compare-stability': return runStability();
+      case 'compare-stability-stop':
+        if (!stabilityProgress) return;
+        stabilityRunId++; stabilityProgress = null; break;
       case 'compare-export-states':
         if (!comparison) return;
         H.download('长衡-多策略状态-' + comparisonView.day + '.csv', window.ChanghengPortfolioComparison.statesCsv(comparison, comparisonView.day), 'text/csv;charset=utf-8');
