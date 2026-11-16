@@ -145,6 +145,7 @@ function uiFixture(configure, model = P) {
   vm.createContext(context);
   vm.runInContext(fs.readFileSync(path.resolve(__dirname, '../assets/portfolio-comparison.js'), 'utf8'), context);
   vm.runInContext(fs.readFileSync(path.resolve(__dirname, '../assets/portfolio-scenarios.js'), 'utf8'), context);
+  vm.runInContext(fs.readFileSync(path.resolve(__dirname, '../assets/portfolio-rolling.js'), 'utf8'), context);
   vm.runInContext(fs.readFileSync(path.resolve(__dirname, '../assets/portfolio.js'), 'utf8'), context);
   const ui = context.window.ChanghengPortfolio;
   const helpers = { esc: String, action: (label, act, cls, extra = '') => '<button data-action="' + act + '" ' + extra + '>' + label + '</button>',
@@ -1269,10 +1270,62 @@ test('a scenario with a younger asset keeps its own dates and the comparison say
   assert.equal(html.split('portfolio-compare-period').length - 1, 1, 'only the row that differs carries its dates');
 });
 
+test('the start-date test reruns every monthly start and reports the spread as counts', async () => {
+  const f = uiFixture(input => Object.assign(input.config, { monthly: 0, rebalance: 'none' }));
+  const view = () => f.ui.view(f.helpers);
+  await f.action('tab', { value: 'rolling' });
+  let html = view();
+  assert.match(html, /data-action="portfolio-rolling-years" data-value="5" aria-pressed="true"/);
+  assert.match(html, /data-action="portfolio-run" ?>开始检验</);
+  await f.action('rolling-years', { value: '1' });
+  await f.action('run');
+  html = view();
+  await f.action('save');
+  const config = JSON.parse(f.downloads.at(-1)[1]); delete config.schemaVersion;
+  const input = { catalog: f.input.catalog, histories: f.input.histories, config };
+  const calendar = P.rollingStarts(input, 1), s = P.rollingSummary(calendar.starts.map(start => P.rollingWindow(input, start, 1)));
+  assert.equal(calendar.starts.length, 13); assert.equal(s.count, 13);
+  assert.ok(html.includes('13 个') && html.includes('相邻起点的区间大部分重叠，不是 13 次独立检验。'));
+  for (const value of [s.annual.min, s.annual.q1, s.annual.median, s.annual.q3, s.annual.max, s.drawdown.worst, s.drawdown.median]) assert.ok(html.includes('>' + String(value) + '<'), String(value));
+  assert.ok(html.includes('胜过对照 TWO') && html.includes(s.beatBenchmark.wins + ' / ' + s.beatBenchmark.of) && html.includes(s.losses + ' / 13'));
+  assert.doesNotMatch(html, /胜过一次性投入|data-rolling-line="lumpSum"|NaN|undefined/);
+  assert.ok(html.includes('data-rolling-line="setup"') && html.includes('data-rolling-line="benchmark"'));
+  for (const title of ['最差5个起点', '最好5个起点']) assert.equal(html.split('<h2>' + title + '</h2>')[1].split('</section>')[0].split('<tr><td>').length - 1, 5, title);
+  assert.ok(html.includes('<tr><td>' + s.worst[0].start + '</td>') && html.includes('<tr><td>' + s.best[0].start + '</td>'));
+  await f.action('rolling-export');
+  assert.match(f.downloads.at(-1)[0], /起点检验/); assert.equal(f.downloads.at(-1)[1].split(/\r?\n/).length, 14);
+  await f.action('rolling-years', { value: '3' });
+  assert.ok(view().includes('设置或持有期已改动，当前显示上次检验结果。'));
+  await f.action('run');
+  html = view();
+  assert.ok(html.includes('共同历史不足 3 年，没有可检验的起点。') && html.includes('不是 13 次独立检验'), 'a failed test keeps the previous result');
+  await f.action('rolling-years', { value: '7' });
+  assert.match(view(), /data-action="portfolio-rolling-years" data-value="3" aria-pressed="true"/, 'an unsupported period is ignored');
+});
+
+test('a principal strategy other than lump sum is also compared with lump sum at every start', async () => {
+  const f = uiFixture(input => Object.assign(input.config, { monthly: 0, rebalance: 'none', initialMethod: 'tranche_6', benchmarkId: '' }));
+  await f.action('tab', { value: 'rolling' }); await f.action('rolling-years', { value: '1' }); await f.action('run');
+  const html = f.ui.view(f.helpers);
+  assert.ok(html.includes('胜过一次性投入') && html.includes('data-rolling-line="lumpSum"'));
+  assert.doesNotMatch(html, /胜过对照|data-rolling-line="benchmark"/);
+});
+
+test('stopping a start-date test leaves no progress and no partial result', async () => {
+  const f = uiFixture(input => Object.assign(input.config, { monthly: 0, rebalance: 'none' }));
+  await f.action('tab', { value: 'rolling' }); await f.action('rolling-years', { value: '1' });
+  const pending = f.action('run');
+  assert.ok(f.ui.view(f.helpers).includes('data-action="portfolio-rolling-stop"'));
+  await f.action('rolling-stop'); await pending;
+  assert.doesNotMatch(f.ui.view(f.helpers), /已完成|正在读取|portfolio-rolling-stop|独立检验/);
+  await f.action('run');
+  assert.ok(f.ui.view(f.helpers).includes('独立检验'), 'a later run still works');
+});
+
 test('production entrypoint loads the account model, PDF and simulator', () => {
   const html = fs.readFileSync(path.resolve(__dirname, '../index.html'), 'utf8');
   const assets = [...html.matchAll(/src="assets\/(portfolio[^"?]*)/g)].map(match => match[1]);
-  assert.deepEqual(assets, ['portfolio-opportunity.js', 'portfolio-systematic.js', 'portfolio-model.js', 'portfolio-pdf.js', 'portfolio-comparison.js', 'portfolio-scenarios.js', 'portfolio.js']);
+  assert.deepEqual(assets, ['portfolio-opportunity.js', 'portfolio-systematic.js', 'portfolio-model.js', 'portfolio-pdf.js', 'portfolio-comparison.js', 'portfolio-scenarios.js', 'portfolio-rolling.js', 'portfolio.js']);
 });
 
 

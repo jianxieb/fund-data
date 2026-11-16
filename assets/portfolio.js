@@ -7,7 +7,7 @@
     years: 5, start: '', end: '', benchmarkId: 'us:SPY', dividendPolicy: 'reinvest', feeOverrides: {},
     tax: { ...P.taxConfig(), usCapitalGains: 20, usDividend: 20 } };
   let draft = { ...defaults }, query = '', kind = 'all', market = 'all', hideBoards = false;
-  const workspaceTabs = [['settings', '模拟设置'], ['holdings', '我的组合'], ['results', '模拟结果'], ['strategies', '多策略对比'], ['scenarios', '方案对比']];
+  const workspaceTabs = [['settings', '模拟设置'], ['holdings', '我的组合'], ['results', '模拟结果'], ['strategies', '多策略对比'], ['scenarios', '方案对比'], ['rolling', '起点检验']];
   let workspaceTab = 'settings', calculationOpen = false, benchmarkRequest = null;
   let resultTab = 'chart';
   let result = null, resultKey = '', error = '', errorField = '', metric = 'return', importError = '', exportingPdf = false;
@@ -18,6 +18,9 @@
   const Scenarios = window.ChanghengPortfolioScenarios;
   let scenarios = Scenarios?.load() || [], scenarioName = '', scenarioRun = null, scenarioKey = '', scenarioError = '', scenarioRunId = 0;
   let scenarioView = { metric: 'return', hidden: new Set() };
+  // 起点检验 reruns the current settings from every monthly start; progress is non-null while it runs.
+  const Rolling = window.ChanghengPortfolioRolling;
+  let rollingYears = 5, rollingRun = null, rollingKey = '', rollingError = '', rollingProgress = null, rollingRunId = 0;
   try {
     const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
     if (saved && Array.isArray(saved.positions)) draft = { ...defaults, ...saved };
@@ -37,6 +40,7 @@
   const comparisonConfig = () => ({ ...config(), initialMethod: 'lump_sum', benchmarkId: '' });
   const comparisonSignature = () => JSON.stringify(comparisonConfig());
   const scenarioSignature = () => JSON.stringify([scenarios, draft.years, draft.start, draft.end, draft.currency]);
+  const rollingSignature = () => JSON.stringify([config(), rollingYears]);
   const currency = (cfg = draft) => P.currencyInfo(cfg);
   const asset = id => catalog?.assets.find(a => a.id === id);
   const inputValue = (value, digits = 8) => M.finite(value) ? String(Number(value.toFixed(digits))) : '';
@@ -52,6 +56,7 @@
   function draftNotice() {
     if (workspaceTab === 'strategies') return comparison && comparisonKey !== comparisonSignature() ? '参数已改动，当前显示上次对比结果。' : '';
     if (workspaceTab === 'scenarios') return scenarioRun && scenarioKey !== scenarioSignature() ? '方案或区间已改动，当前显示上次对比结果。' : '';
+    if (workspaceTab === 'rolling') return rollingRun && rollingKey !== rollingSignature() ? '设置或持有期已改动，当前显示上次检验结果。' : '';
     if (!result || resultKey === signature()) return '';
     return workspaceTab === 'results' ? '参数已改动，当前显示上次模拟结果。' : '参数已改动，重新模拟后生效';
   }
@@ -281,6 +286,74 @@
       if (token === comparisonRunId) { comparing = false; update(); }
     }
   }
+  // Histories, strategy proxies, FX and VIX context that a set of configurations needs.
+  // One configuration's missing evidence must not stop the others; the engine names what each lacks.
+  async function loadEvidence(configs, code) {
+    const wanted = new Map();
+    let needsVix = false, needsFx = false;
+    for (const cfg of configs) {
+      const held = cfg.positions.filter(p => p.weight > 0).map(p => asset(p.id)).filter(Boolean), ids = new Set(held.map(a => a.id));
+      const method = cfg.initialMethod, proxies = [];
+      const reference = asset(cfg.benchmarkId);
+      for (const a of reference ? held.concat(reference) : held) { wanted.set(a.id, a); if (a.currency !== code) needsFx = true; }
+      if (opportunityMethods.has(method)) {
+        if (ids.has('us:TQQQ')) proxies.push('us:QQQ');
+        if (ids.has('us:USD')) proxies.push('us:SOXX');
+        if (ids.has('us:TQQQ') || opportunityRules[method].family === 'mixed') needsVix = true;
+      } else if (['qqq_bear_confirm', 'dual_risk_guard'].includes(method)) proxies.push('us:QQQ');
+      if (['vix_panic_reentry', 'dual_risk_guard'].includes(method)) needsVix = true;
+      for (const id of proxies) if (asset(id)) wanted.set(id, asset(id));
+    }
+    await Promise.allSettled([...wanted.values()].map(loadHistory));
+    if (needsFx) await loadHistory(catalog.fx).catch(() => {});
+    return needsVix ? await loadMarketContext().catch(() => null) : null;
+  }
+  async function runRolling() {
+    if (running || comparing || rollingProgress || !catalog) return;
+    for (const position of draft.positions) {
+      if (position.weight == null || typeof position.weight === 'string' && !position.weight.trim()) position.weight = 0;
+    }
+    persist();
+    const params = JSON.parse(JSON.stringify(config())), years = rollingYears, originalKey = rollingSignature(), token = ++rollingRunId;
+    const current = () => token === rollingRunId && originalKey === rollingSignature();
+    const failed = message => message + (rollingRun ? ' 仍显示上次检验结果。' : '');
+    try { P.validateConfig(params, new Set(catalog.assets.map(a => a.id))); }
+    catch (e) { rollingError = failed(e.message + '。'); update(); return; }
+    rollingProgress = { done: 0, total: 0 }; rollingError = ''; update();
+    try {
+      let refreshMissing = '';
+      try { await refreshCatalog(); }
+      catch (e) { refreshMissing = '未能确认最新行情：' + e.message + '。本次检验使用已保存的历史数据。'; }
+      const marketContext = await loadEvidence([params], currency(params).code);
+      if (!current()) return;
+      const input = { catalog, histories: Object.fromEntries(histories), config: params, fxHistory: histories.get(catalog.fx?.id), ...(marketContext ? { marketContext } : {}) };
+      const calendar = P.rollingStarts(input, years);
+      if (calendar.error) throw new Error(calendar.error + '。');
+      if (!calendar.starts.length) throw new Error('共同历史不足 ' + years + ' 年，没有可检验的起点。');
+      const rows = [], total = calendar.starts.length;
+      let slice = Date.now();
+      rollingProgress = { done: 0, total }; update();
+      for (const start of calendar.starts) {
+        rows.push(P.rollingWindow(input, start, years));
+        // Work in short slices so the page keeps painting and 停止 is heard.
+        if (Date.now() - slice > 40 && rows.length < total) {
+          rollingProgress = { done: rows.length, total };
+          const line = document.getElementById('portfolio-rolling-progress');
+          if (line) line.textContent = '已完成 ' + rows.length + ' / ' + total + ' 个起点';
+          await new Promise(resolve => setTimeout(resolve, 0));
+          if (!current()) return;
+          slice = Date.now();
+        }
+      }
+      rollingRun = { config: params, years, rows, summary: P.rollingSummary(rows), benchmark: asset(params.benchmarkId)?.code || '',
+        catalogRefresh: { checkedAt: new Date().toISOString(), available: !refreshMissing, missing: refreshMissing || null } };
+      rollingKey = originalKey;
+    } catch (e) {
+      if (token === rollingRunId) rollingError = failed(e.message);
+    } finally {
+      if (token === rollingRunId) { rollingProgress = null; update(); }
+    }
+  }
   async function runScenarios() {
     if (comparing || running || !catalog || !scenarios.length) return;
     const list = JSON.parse(JSON.stringify(scenarios)), shared = { years: draft.years, start: draft.start, end: draft.end, currency: draft.currency };
@@ -290,24 +363,7 @@
       let refreshMissing = '';
       try { await refreshCatalog(); }
       catch (e) { refreshMissing = '未能确认最新行情：' + e.message + '。本次对比使用已保存的历史数据。'; }
-      const code = currency(shared).code, wanted = new Map();
-      let needsVix = false, needsFx = false;
-      for (const item of list) {
-        const held = item.config.positions.filter(p => p.weight > 0).map(p => asset(p.id)).filter(Boolean), ids = new Set(held.map(a => a.id));
-        const method = item.config.initialMethod, proxies = [];
-        for (const a of held) { wanted.set(a.id, a); if (a.currency !== code) needsFx = true; }
-        if (opportunityMethods.has(method)) {
-          if (ids.has('us:TQQQ')) proxies.push('us:QQQ');
-          if (ids.has('us:USD')) proxies.push('us:SOXX');
-          if (ids.has('us:TQQQ') || opportunityRules[method].family === 'mixed') needsVix = true;
-        } else if (['qqq_bear_confirm', 'dual_risk_guard'].includes(method)) proxies.push('us:QQQ');
-        if (['vix_panic_reentry', 'dual_risk_guard'].includes(method)) needsVix = true;
-        for (const id of proxies) if (asset(id)) wanted.set(id, asset(id));
-      }
-      // One 方案's missing evidence must not stop the others; the engine names what each row lacks.
-      await Promise.allSettled([...wanted.values()].map(loadHistory));
-      if (needsFx) await loadHistory(catalog.fx).catch(() => {});
-      const marketContext = needsVix ? await loadMarketContext().catch(() => null) : null;
+      const marketContext = await loadEvidence(list.map(item => ({ ...item.config, benchmarkId: '' })), currency(shared).code);
       if (token !== scenarioRunId || originalKey !== scenarioSignature()) return;
       // Let the loading state paint before computing the independent ledgers.
       await new Promise(resolve => setTimeout(resolve, 0));
@@ -1330,8 +1386,11 @@
       return btn(name + (id === 'holdings' && draft.positions.length ? '<span class="portfolio-tab-count">' + draft.positions.length + '</span>' : ''), 'tab', 'portfolio-tab',
         'id="portfolio-tab-' + id + '" data-value="' + id + '" role="tab" aria-controls="portfolio-panel-' + id + '" aria-selected="' + active + '" tabindex="' + (active ? '0' : '-1') + '"');
     }).join('');
+    const busy = running || comparing || exportingPdf || !!rollingProgress;
     const primary = workspaceTab === 'scenarios'
-      ? btn(comparing ? '正在对比…' : '开始对比', 'run', 'btn primary', running || comparing || exportingPdf || !scenarios.length ? 'disabled' : '')
+      ? btn(comparing ? '正在对比…' : '开始对比', 'run', 'btn primary', busy || !scenarios.length ? 'disabled' : '')
+      : workspaceTab === 'rolling' && draft.positions.length
+      ? btn(rollingProgress ? '正在检验…' : '开始检验', 'run', 'btn primary', busy ? 'disabled' : '')
       : !draft.positions.length && workspaceTab !== 'holdings'
       ? btn('添加标的', 'tab', 'btn primary', 'data-value="holdings"')
       : btn(comparing ? '正在对比…' : running ? '正在模拟…' : workspaceTab === 'strategies' ? '开始对比' : '开始模拟', 'run', 'btn primary', running || comparing || exportingPdf || !draft.positions.length ? 'disabled' : '');
@@ -1342,6 +1401,7 @@
     if (workspaceTab === 'settings') return settings();
     if (workspaceTab === 'results') return results();
     if (workspaceTab === 'strategies') return window.ChanghengPortfolioComparison.view(comparison, { ...comparisonView, error: comparisonError }, H);
+    if (workspaceTab === 'rolling') return Rolling.view({ years: rollingYears, run: rollingRun, progress: rollingProgress, error: rollingError }, H);
     if (workspaceTab === 'scenarios') return Scenarios.view({ scenarios, name: scenarioName || Scenarios.nextName(scenarios), run: scenarioRun, view: scenarioView,
       error: scenarioError, assets: catalog.assets, canSave: draft.positions.length > 0 }, H);
     const unknown = draft.positions.filter(p => !asset(p.id));
@@ -1451,7 +1511,19 @@
         document.getElementById('portfolio-result-tab-' + val)?.focus({preventScroll: true});
         return;
       case 'retry': loadError = ''; ensureCatalog(); break;
-      case 'run': if (!exportingPdf && !comparing && !running) return workspaceTab === 'strategies' ? runComparison() : workspaceTab === 'scenarios' ? runScenarios() : run(); return;
+      case 'run':
+        if (exportingPdf || comparing || running || rollingProgress) return;
+        return workspaceTab === 'strategies' ? runComparison() : workspaceTab === 'scenarios' ? runScenarios() : workspaceTab === 'rolling' ? runRolling() : run();
+      case 'rolling-years':
+        if (!Rolling.PERIODS.includes(Number(val)) || rollingProgress) return;
+        rollingYears = Number(val); break;
+      case 'rolling-stop':
+        if (!rollingProgress) return;
+        rollingRunId++; rollingProgress = null; break;
+      case 'rolling-export':
+        if (!rollingRun) return;
+        H.download('长衡-起点检验-持有' + rollingRun.years + '年-' + (rollingRun.summary.lastStart || '未完成') + '.csv', Rolling.csv(rollingRun), 'text/csv;charset=utf-8');
+        return;
       case 'scenario-save': return saveScenario();
       case 'scenario-load': case 'scenario-delete': return confirmScenario(val, act.slice(9));
       case 'scenario-load-confirm': case 'scenario-delete-confirm': return applyScenario(val, act.split('-')[1]);
