@@ -1047,7 +1047,7 @@ test('one deposit with staggered purchases shows the account outcome and one hea
   assert.ok(summary.includes('组合年化收益</h2><p class="portfolio-summary-value">' + r.annualReturn));
   assert.doesNotMatch(summary, /XIRR|累计投入|浮盈预留税/);
   const periods = await f.resultTab('periods');
-  assert.doesNotMatch(periods, /资金年化 XIRR/);
+  assert.doesNotMatch(periods, /XIRR/, 'one deposit: XIRR equals the portfolio return and is not repeated');
   assert.match(periods, /累计投入 \/ 元/);
 });
 
@@ -1066,7 +1066,15 @@ test('funding XIRR stays annualized beside portfolio returns in both display mod
   assert.ok(cumulative.includes('资金年化 XIRR <b>' + expected.xirr + '</b>'));
   assert.ok(cumulative.includes('组合累计收益</h2><p class="portfolio-summary-value">' + expected.totalReturn));
   assert.doesNotMatch(cumulative, /资金累计|组合年化收益|累计投入/);
-  assert.match(await f.resultTab('periods'), /<td>资金年化 XIRR<\/td>/);
+  const periods = await f.resultTab('periods');
+  assert.doesNotMatch(periods, /<td>资金年化 XIRR<\/td>/, 'XIRR has no row of its own');
+  const returnRow = periods.split('<td>组合累计收益')[1].split('</tr>')[0];
+  const windows = P.simulateWindows(f.input, expected.end);
+  assert.ok(windows.some(w => !w.error && w.deposits > 1), 'the fixture adds money inside a snapshot window');
+  for (const [cell, w] of returnRow.split('<td class="num">').slice(1).map((cell, i) => [cell, windows[i]])) {
+    if (w.error || w.deposits <= 1) assert.doesNotMatch(cell, /XIRR/, '近' + w.years + '年 has one deposit');
+    else assert.ok(cell.includes(String(w.totalReturn) + '<span class="sub">XIRR ' + (Number.isFinite(w.xirr) ? String(w.xirr) : w.xirrMissing) + '</span>'), '近' + w.years + '年');
+  }
   await f.resultTab('chart');
   await f.action('export-result');
   assert.match(f.downloads[0][1], /组合累计收益%（现金流中性）/);

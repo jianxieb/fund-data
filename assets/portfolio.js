@@ -1007,8 +1007,9 @@
     const comparison = btn(benchmarkRequest ? '正在读取 ' + H.esc(benchmarkRequest.name) + '…' : code ?
       H.esc(code) + (H.annual ? ' 持有年化收益' : ' 持有累计收益') + '<span>更换</span>' : '添加对照标的',
       'benchmark', 'portfolio-benchmark-trigger', 'id="portfolio-period-benchmark" aria-haspopup="dialog"' + (running || exportingPdf ? ' disabled' : ''));
-    const measures = [[H.annual ? '组合年化收益' : '组合累计收益', r => H.pc(H.annual ? r.annualReturn : r.totalReturn)],
-      ...(periods.some(r => !r.error && r.deposits > 1) ? [['资金年化 XIRR', r => M.finite(r.xirr) ? H.pc(r.xirr) : '<span class="muted">' + H.esc(r.xirrMissing) + '</span>']] : []),
+    // With a single deposit XIRR equals the portfolio return, so the second line appears only for windows with later deposits.
+    const xirr = r => r.deposits > 1 ? '<span class="sub">XIRR ' + (M.finite(r.xirr) ? H.pct(r.xirr) : H.esc(r.xirrMissing)) + '</span>' : '';
+    const measures = [[H.annual ? '组合年化收益' : '组合累计收益', r => H.pc(H.annual ? r.annualReturn : r.totalReturn) + xirr(r)],
       [comparison, r => r.benchmark ? H.pc(H.annual ? r.benchmark.annualReturn : r.benchmark.totalReturn) : '<span class="muted">' + (r.config.benchmarkId ? '缺对照数据' : '未设置') + '</span>'],
       ['税后估值 / ' + unit, r => H.money(r.value)], ['累计投入 / ' + unit, r => H.money(r.contributed)],
       ['税后盈亏 / ' + unit, r => H.money(r.profit)], ['最大回撤', r => H.pc(r.mdd)], ['年化波动', r => H.pct(r.volatility, 2, false)]];
