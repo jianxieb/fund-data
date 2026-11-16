@@ -57,7 +57,9 @@
     if (metric === 'drawdown') return point.drawdown;
     return annual ? point.annualReturn : point.totalReturn;
   }
-  function plot(comparison, state, H) {
+  // The same chart serves 多策略对比 and 方案对比; the options only rename its actions and labels.
+  function plot(comparison, state, H, options = {}) {
+    const prefix = options.prefix || 'compare', noun = options.noun || '策略';
     const items = (baselineOf(comparison) ? [comparison.baseline] : []).concat(successful(comparison)), metric = ['return', 'drawdown', 'amount'].includes(state.metric) ? state.metric : 'return';
     if (!items.length) return '';
     const hidden = state.hidden || new Set(), visible = items.filter(item => !hidden.has(item.id));
@@ -65,10 +67,10 @@
     const name = metric === 'amount' ? '账户资产' : metric === 'drawdown' ? '回撤' : basis;
     const legend = items.map(item => {
       const selected = !hidden.has(item.id), label = item === comparison.baseline ? item.label + '（基准）' : item.label;
-      return '<label class="portfolio-compare-legend-item' + (selected ? '' : ' is-hidden') + '"><input id="portfolio-compare-toggle-' + H.esc(item.id) + '" type="checkbox" data-action="portfolio-compare-toggle" data-value="' + H.esc(item.id) + '"' + (selected ? ' checked' : '') + ' aria-label="显示' + H.esc(label) + '曲线"><i style="background:' + colorOf(comparison, item) + '"></i><span>' + H.esc(label) + '</span></label>';
+      return '<label class="portfolio-compare-legend-item' + (selected ? '' : ' is-hidden') + '"><input id="portfolio-' + prefix + '-toggle-' + H.esc(item.id) + '" type="checkbox" data-action="portfolio-' + prefix + '-toggle" data-value="' + H.esc(item.id) + '"' + (selected ? ' checked' : '') + ' aria-label="显示' + H.esc(label) + '曲线"><i style="background:' + colorOf(comparison, item) + '"></i><span>' + H.esc(label) + '</span></label>';
     }).join('');
-    const metricControl = '<div class="segmented" role="group" aria-label="策略对比曲线内容">' + [['return', '收益率'], ['drawdown', '回撤'], ['amount', '账户资产']].map(([key, label]) => action(H, label, 'metric', key === metric ? 'active' : '', 'data-value="' + key + '" aria-pressed="' + (key === metric) + '"')).join('') + '</div>';
-    let figure = '<p class="portfolio-compare-chart-empty">勾选策略以显示曲线。</p>';
+    const metricControl = '<div class="segmented" role="group" aria-label="' + noun + '对比曲线内容">' + [['return', '收益率'], ['drawdown', '回撤'], ['amount', '账户资产']].map(([key, label]) => H.action(label, 'portfolio-' + prefix + '-metric', key === metric ? 'active' : '', 'data-value="' + key + '" aria-pressed="' + (key === metric) + '"')).join('') + '</div>';
+    let figure = '<p class="portfolio-compare-chart-empty">勾选' + noun + '以显示曲线。</p>';
     if (visible.length) {
       const W = 1120, HH = 330, left = 80, right = W - 25, top = 20, bottom = HH - 38;
       const start = Date.parse(comparison.start), end = Date.parse(comparison.end);
@@ -101,9 +103,9 @@
         }
         return '<path data-comparison-line="' + H.esc(item.id) + '" d="' + path + '" stroke="' + colorOf(comparison, item) + '" stroke-width="2"' + (isBase ? ' stroke-dasharray="2 5"' : index >= 5 ? ' stroke-dasharray="7 3"' : '') + ' fill="none" stroke-linecap="round"><title>' + H.esc(item.label) + '</title></path>';
       }).join('');
-      figure = '<div class="portfolio-compare-plot-scroll"><svg class="portfolio-compare-plot" viewBox="0 0 ' + W + ' ' + HH + '" role="img" aria-label="各策略' + name + '对比曲线">' + grid + paths + '</svg></div>';
+      figure = '<div class="portfolio-compare-plot-scroll"><svg class="portfolio-compare-plot" viewBox="0 0 ' + W + ' ' + HH + '" role="img" aria-label="各' + noun + name + '对比曲线">' + grid + paths + '</svg></div>';
     }
-    return '<section class="card portfolio-compare-chart"><div class="portfolio-compare-section-head"><h2>' + name + '走势' + (metric === 'amount' ? ' · ' + P.currencyInfo(comparison.config).name : '') + '</h2>' + metricControl + '</div><div class="portfolio-compare-legend" role="group" aria-label="选择显示的策略曲线">' + legend + '</div>' + figure + '</section>';
+    return '<section class="card portfolio-compare-chart"><div class="portfolio-compare-section-head"><h2>' + name + '走势' + (metric === 'amount' ? ' · ' + P.currencyInfo(comparison.config).name : '') + '</h2>' + metricControl + '</div><div class="portfolio-compare-legend" role="group" aria-label="选择显示的' + noun + '曲线">' + legend + '</div>' + figure + '</section>';
   }
   function orderLines(status, result, H) {
     const { unit } = P.currencyInfo(result.config);
@@ -205,5 +207,5 @@
     }
     return M.csv(rows);
   }
-  window.ChanghengPortfolioComparison = { view, summaryCsv, statesCsv, dates, selectedDay };
+  window.ChanghengPortfolioComparison = { view, plot, colorFor, summaryCsv, statesCsv, dates, selectedDay };
 })();

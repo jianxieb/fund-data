@@ -156,3 +156,24 @@ test('every advanced strategy runs with a band and none rebuys a parked TQQQ sle
   assert.ok(parked.size > 5, 'the fixture must park TQQQ');
   assert.deepEqual(qqq.transactions.filter(t => t.id === 'us:TQQQ' && t.side === 'buy' && t.reason === 'rebalance' && parked.has(t.day)), []);
 });
+
+test('saved scenarios run as independent accounts on the shared window and currency', () => {
+  const input = fixture(), before = JSON.stringify(input);
+  const scenarios = [
+    { id: 'a', name: '方案A', config: { ...input.config, rebalance: 'none', currency: 'CNY', years: 5, benchmarkId: 'us:QQQ' } },
+    { id: 'b', name: '方案B', config: { ...input.config, positions: [{ id: 'us:USD', weight: 40 }], rebalance: 'band', rebalanceBand: 5 } },
+    { id: 'c', name: '失效', config: { ...input.config, positions: [{ id: 'us:GONE', weight: 50 }] } }
+  ];
+  const run = P.simulateScenarios(input, scenarios);
+  assert.equal(JSON.stringify(input), before);
+  assert.deepEqual(run.config, { years: 'custom', start: input.config.start, end: input.config.end, currency: 'USD' });
+  for (const [i, s] of scenarios.slice(0, 2).entries()) {
+    assert.deepEqual(run.scenarios[i].result, P.simulate({ ...input, config: { ...s.config, ...run.config, benchmarkId: '' } }));
+    assert.equal(run.scenarios[i].label, s.name); assert.equal(run.scenarios[i].id, s.id);
+  }
+  assert.equal(run.scenarios[0].result.currency, 'USD'); assert.equal(run.scenarios[0].result.benchmark, null);
+  assert.notEqual(run.scenarios[0].result.value, run.scenarios[1].result.value);
+  assert.match(run.scenarios[2].error, /未收录/); assert.equal(run.scenarios[2].result, undefined);
+  assert.equal(run.start, input.config.start); assert.equal(run.end, input.config.end);
+  assert.deepEqual(P.simulateScenarios(input, []), { config: run.config, start: null, end: null, scenarios: [] });
+});

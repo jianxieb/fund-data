@@ -1198,7 +1198,7 @@ test('USD settings, tax reserve, PDF and CSV keep the same result currency after
 test('production entrypoint loads the account model, PDF and simulator', () => {
   const html = fs.readFileSync(path.resolve(__dirname, '../index.html'), 'utf8');
   const assets = [...html.matchAll(/src="assets\/(portfolio[^"?]*)/g)].map(match => match[1]);
-  assert.deepEqual(assets, ['portfolio-opportunity.js', 'portfolio-systematic.js', 'portfolio-model.js', 'portfolio-pdf.js', 'portfolio-comparison.js', 'portfolio.js']);
+  assert.deepEqual(assets, ['portfolio-opportunity.js', 'portfolio-systematic.js', 'portfolio-model.js', 'portfolio-pdf.js', 'portfolio-comparison.js', 'portfolio-scenarios.js', 'portfolio.js']);
 });
 
 

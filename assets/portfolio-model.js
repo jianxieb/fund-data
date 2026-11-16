@@ -335,6 +335,17 @@
     const baseline = row('lump_sum', '一次性投入');
     return { config: JSON.parse(JSON.stringify(config)), start, end, strategies, baseline };
   }
+  // Saved setups compared on one window and currency. Each keeps its own account;
+  // nothing is aligned, summed or ranked.
+  function simulateScenarios(input, scenarios) {
+    const shared = { years: input.config.years, start: input.config.start, end: input.config.end, currency: currencyInfo(input.config).code };
+    const rows = scenarios.map(({ id, name, config }) => {
+      const result = simulate({ ...input, config: { ...config, ...shared, benchmarkId: '' } });
+      return result.error ? { id, label: name, error: result.error } : { id, label: name, result };
+    });
+    const ran = rows.filter(row => row.result).map(row => row.result);
+    return { config: JSON.parse(JSON.stringify(shared)), start: ran.map(r => r.start).sort()[0] || null, end: ran.map(r => r.end).sort().at(-1) || null, scenarios: rows };
+  }
   // Comparisons use the account's existing valuation dates; a new benchmark never trades or shortens that account.
   function compareBenchmark({ catalog, histories, fxHistory }, { start, end, curve, config }, benchmarkId = config.benchmarkId) {
     if (!benchmarkId) return { benchmark: null, benchmarkError: null };
@@ -1299,5 +1310,5 @@
     }
     return config;
   }
-  return { simulate, simulateWindows, simulateStrategies, strategyStatus, riskAnalysis, riskRatios, holdingCorrelation, comparisonMethods, compareBenchmark, chartIndicators, chartReferences, validateHistory, validateConfig, sanitizeDraft, allocation, accountAllocation, additionAllocation, amountFromWeight, weightFromAmount, at, annualReturn, holdingXirr, addYears, taxConfig, taxRates, currencyInfo, strategyConfig, strategyNames, initialMethods, contributionMethods, dividendPolicies, opportunityDefinitions: Systematic?.opportunityDefinitions || {} };
+  return { simulate, simulateWindows, simulateStrategies, simulateScenarios, strategyStatus, riskAnalysis, riskRatios, holdingCorrelation, comparisonMethods, compareBenchmark, chartIndicators, chartReferences, validateHistory, validateConfig, sanitizeDraft, allocation, accountAllocation, additionAllocation, amountFromWeight, weightFromAmount, at, annualReturn, holdingXirr, addYears, taxConfig, taxRates, currencyInfo, strategyConfig, strategyNames, initialMethods, contributionMethods, dividendPolicies, opportunityDefinitions: Systematic?.opportunityDefinitions || {} };
 });
