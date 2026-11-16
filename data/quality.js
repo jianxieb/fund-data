@@ -1,14 +1,42 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-11-15T01:57:22+00:00",
-  "asOf": "2026-11-15",
+  "checkedAt": "2026-11-16T02:09:22+00:00",
+  "asOf": "2026-11-16",
   "status": "unverified",
   "summary": {
     "errors": 0,
-    "warnings": 4,
+    "warnings": 7,
     "unverified": 65
   },
   "datasets": [
+    {
+      "id": "source_refresh",
+      "label": "本次未更新的来源",
+      "asOf": null,
+      "dateRange": null,
+      "records": 0,
+      "issues": [
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:013309：本次历史末日倒退，保留上一版已验证序列；保留历史截至2026-11-13",
+          "affected": "fund:013309"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:015310：本次历史末日倒退，保留上一版已验证序列；保留历史截至2026-11-13",
+          "affected": "fund:015310"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "158042：成交价历史：行情观测不足：158042.SZ；保留历史截至2026-11-13",
+          "affected": "158042"
+        }
+      ],
+      "status": "warning"
+    },
     {
       "id": "funds",
       "label": "海外基金",
@@ -515,10 +543,10 @@ var DATA_QUALITY={
     {
       "id": "stocks",
       "label": "股票观察清单",
-      "asOf": "2026-11-13",
+      "asOf": "2026-11-16",
       "dateRange": [
-        "2026-11-13",
-        "2026-11-13"
+        "2026-11-16",
+        "2026-11-16"
       ],
       "records": 71,
       "issues": [],

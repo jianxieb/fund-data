@@ -3,31 +3,31 @@ var UPDATE_STATUS={
   "datasets": {
     "strategy": {
       "status": "success",
-      "attemptedAt": "2026-11-15T01:56:45+00:00",
+      "attemptedAt": "2026-11-16T02:08:26+00:00",
       "asOf": "2026-11-13",
       "records": 432,
       "basis": "provider_adjusted_close",
       "mode": "online",
       "execution": {
         "exitCode": 0,
-        "seconds": 46.46
+        "seconds": 37.15
       },
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-15T01:56:45+00:00",
+        "attemptedAt": "2026-11-16T02:08:26+00:00",
         "asOf": "2026-11-13",
         "records": 432,
         "basis": "provider_adjusted_close",
         "mode": "online",
         "execution": {
           "exitCode": 0,
-          "seconds": 46.46
+          "seconds": 37.15
         }
       }
     },
     "funds": {
       "status": "success",
-      "attemptedAt": "2026-11-15T01:55:22+00:00",
+      "attemptedAt": "2026-11-16T02:06:56+00:00",
       "asOf": "2026-11-12",
       "records": 46,
       "requested": 46,
@@ -36,11 +36,11 @@ var UPDATE_STATUS={
       "mode": "online",
       "execution": {
         "exitCode": 0,
-        "seconds": 31.1
+        "seconds": 36.7
       },
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-15T01:55:22+00:00",
+        "attemptedAt": "2026-11-16T02:06:56+00:00",
         "asOf": "2026-11-12",
         "records": 46,
         "requested": 46,
@@ -49,62 +49,62 @@ var UPDATE_STATUS={
         "mode": "online",
         "execution": {
           "exitCode": 0,
-          "seconds": 31.1
+          "seconds": 36.7
         }
       }
     },
     "indices": {
       "status": "success",
-      "attemptedAt": "2026-11-15T01:55:11+00:00",
+      "attemptedAt": "2026-11-16T02:07:01+00:00",
       "exitCode": 0,
-      "seconds": 19.59,
+      "seconds": 41.83,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-15T01:55:11+00:00",
+        "attemptedAt": "2026-11-16T02:07:01+00:00",
         "exitCode": 0,
-        "seconds": 19.59,
+        "seconds": 41.83,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "stocks": {
       "status": "success",
-      "attemptedAt": "2026-11-15T01:55:59+00:00",
+      "attemptedAt": "2026-11-16T02:07:48+00:00",
       "records": 71,
       "failures": [],
       "metadataWarnings": [],
-      "asOf": "2026-11-13",
+      "asOf": "2026-11-16",
       "mode": "online",
       "execution": {
         "exitCode": 0,
-        "seconds": 67.34
+        "seconds": 88.76
       },
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-15T01:55:59+00:00",
+        "attemptedAt": "2026-11-16T02:07:48+00:00",
         "records": 71,
         "failures": [],
         "metadataWarnings": [],
-        "asOf": "2026-11-13",
+        "asOf": "2026-11-16",
         "mode": "online",
         "execution": {
           "exitCode": 0,
-          "seconds": 67.34
+          "seconds": 88.76
         }
       }
     },
     "screening": {
       "status": "checked",
-      "attemptedAt": "2026-11-15T01:57:01+00:00",
+      "attemptedAt": "2026-11-16T02:08:59+00:00",
       "exitCode": 0,
       "seconds": 1.92,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "checked",
-        "attemptedAt": "2026-11-15T01:57:01+00:00",
+        "attemptedAt": "2026-11-16T02:08:59+00:00",
         "exitCode": 0,
         "seconds": 1.92,
         "mode": "online",
@@ -113,23 +113,23 @@ var UPDATE_STATUS={
     },
     "quality": {
       "status": "checked",
-      "attemptedAt": "2026-11-15T01:57:22+00:00",
+      "attemptedAt": "2026-11-16T02:09:22+00:00",
       "exitCode": 0,
-      "seconds": 1.53,
+      "seconds": 1.51,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "checked",
-        "attemptedAt": "2026-11-15T01:57:22+00:00",
+        "attemptedAt": "2026-11-16T02:09:22+00:00",
         "exitCode": 0,
-        "seconds": 1.53,
+        "seconds": 1.51,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "research_funds": {
       "status": "success",
-      "attemptedAt": "2026-11-15T01:57:01+00:00",
+      "attemptedAt": "2026-11-16T02:08:59+00:00",
       "records": 395,
       "asOf": "2026-11-13",
       "failures": {},
@@ -138,11 +138,11 @@ var UPDATE_STATUS={
       "mode": "online",
       "execution": {
         "exitCode": 0,
-        "seconds": 1.84
+        "seconds": 1.83
       },
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-15T01:57:01+00:00",
+        "attemptedAt": "2026-11-16T02:08:59+00:00",
         "records": 395,
         "asOf": "2026-11-13",
         "failures": {},
@@ -151,51 +151,73 @@ var UPDATE_STATUS={
         "mode": "online",
         "execution": {
           "exitCode": 0,
-          "seconds": 1.84
+          "seconds": 1.83
         }
       }
     },
     "portfolio": {
-      "status": "success",
-      "attemptedAt": "2026-11-15T01:56:56+00:00",
+      "status": "partial",
+      "attemptedAt": "2026-11-16T02:08:54+00:00",
       "records": 1873,
       "total": 1873,
       "available": 1873,
       "missing": 0,
-      "historyFailures": {},
+      "historyFailures": {
+        "fund:013309": {
+          "error": "本次历史末日倒退，保留上一版已验证序列",
+          "asOf": "2026-11-13",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_013309.html"
+        },
+        "fund:015310": {
+          "error": "本次历史末日倒退，保留上一版已验证序列",
+          "asOf": "2026-11-13",
+          "sourceUrl": "https://fundf10.eastmoney.com/jjjz_015310.html"
+        }
+      },
       "navUpdated": 0,
       "navWarnings": {},
-      "returnsUpdated": 46,
+      "returnsUpdated": 133,
       "returnsRetained": {},
       "message": "逐标的保存已验证历史；失败项保留原日期，收益与净值按同一份历史同步。",
       "mode": "online",
       "execution": {
         "exitCode": 0,
-        "seconds": 57.39
+        "seconds": 65.55
       },
       "lastOnlineAttempt": {
-        "status": "success",
-        "attemptedAt": "2026-11-15T01:56:56+00:00",
+        "status": "partial",
+        "attemptedAt": "2026-11-16T02:08:54+00:00",
         "records": 1873,
         "total": 1873,
         "available": 1873,
         "missing": 0,
-        "historyFailures": {},
+        "historyFailures": {
+          "fund:013309": {
+            "error": "本次历史末日倒退，保留上一版已验证序列",
+            "asOf": "2026-11-13",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_013309.html"
+          },
+          "fund:015310": {
+            "error": "本次历史末日倒退，保留上一版已验证序列",
+            "asOf": "2026-11-13",
+            "sourceUrl": "https://fundf10.eastmoney.com/jjjz_015310.html"
+          }
+        },
         "navUpdated": 0,
         "navWarnings": {},
-        "returnsUpdated": 46,
+        "returnsUpdated": 133,
         "returnsRetained": {},
         "message": "逐标的保存已验证历史；失败项保留原日期，收益与净值按同一份历史同步。",
         "mode": "online",
         "execution": {
           "exitCode": 0,
-          "seconds": 57.39
+          "seconds": 65.55
         }
       }
     },
     "overseas_stocks": {
       "status": "partial",
-      "attemptedAt": "2026-11-15T01:55:24+00:00",
+      "attemptedAt": "2026-11-16T02:06:48+00:00",
       "asOf": "2026-11-13",
       "records": 79,
       "metadataWarnings": [
@@ -213,11 +235,11 @@ var UPDATE_STATUS={
       "mode": "online",
       "execution": {
         "exitCode": 0,
-        "seconds": 32.3
+        "seconds": 28.49
       },
       "lastOnlineAttempt": {
         "status": "partial",
-        "attemptedAt": "2026-11-15T01:55:24+00:00",
+        "attemptedAt": "2026-11-16T02:06:48+00:00",
         "asOf": "2026-11-13",
         "records": 79,
         "metadataWarnings": [
@@ -235,20 +257,20 @@ var UPDATE_STATUS={
         "mode": "online",
         "execution": {
           "exitCode": 0,
-          "seconds": 32.3
+          "seconds": 28.49
         }
       }
     },
     "fund_actions": {
       "status": "success",
-      "attemptedAt": "2026-11-15T01:57:03+00:00",
+      "attemptedAt": "2026-11-16T02:09:01+00:00",
       "exitCode": 0,
       "seconds": 0.25,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-15T01:57:03+00:00",
+        "attemptedAt": "2026-11-16T02:09:01+00:00",
         "exitCode": 0,
         "seconds": 0.25,
         "mode": "online",
@@ -257,113 +279,123 @@ var UPDATE_STATUS={
     },
     "etf_distributions": {
       "status": "success",
-      "attemptedAt": "2026-11-15T01:57:05+00:00",
+      "attemptedAt": "2026-11-16T02:09:03+00:00",
       "exitCode": 0,
-      "seconds": 1.91,
+      "seconds": 1.89,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-15T01:57:05+00:00",
+        "attemptedAt": "2026-11-16T02:09:03+00:00",
         "exitCode": 0,
-        "seconds": 1.91,
+        "seconds": 1.89,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "return_indices": {
       "status": "success",
-      "attemptedAt": "2026-11-15T01:57:04+00:00",
+      "attemptedAt": "2026-11-16T02:09:03+00:00",
       "exitCode": 0,
-      "seconds": 1.29,
+      "seconds": 2.78,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-15T01:57:04+00:00",
+        "attemptedAt": "2026-11-16T02:09:03+00:00",
         "exitCode": 0,
-        "seconds": 1.29,
+        "seconds": 2.78,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "financial_events": {
       "status": "success",
-      "attemptedAt": "2026-11-15T01:57:20+00:00",
+      "attemptedAt": "2026-11-16T02:09:19+00:00",
       "exitCode": 0,
-      "seconds": 2.11,
+      "seconds": 2.93,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-15T01:57:20+00:00",
+        "attemptedAt": "2026-11-16T02:09:19+00:00",
         "exitCode": 0,
-        "seconds": 2.11,
+        "seconds": 2.93,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "bank_fx": {
       "status": "success",
-      "attemptedAt": "2026-11-15T01:57:09+00:00",
+      "attemptedAt": "2026-11-16T02:09:05+00:00",
       "exitCode": 0,
-      "seconds": 5.97,
+      "seconds": 4.55,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-15T01:57:09+00:00",
+        "attemptedAt": "2026-11-16T02:09:05+00:00",
         "exitCode": 0,
-        "seconds": 5.97,
+        "seconds": 4.55,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "crossborder": {
-      "status": "success",
-      "attemptedAt": "2026-11-15T01:57:08+00:00",
+      "status": "partial",
+      "attemptedAt": "2026-11-16T02:09:08+00:00",
       "records": 305,
-      "historyFailures": {},
+      "historyFailures": {
+        "158042": {
+          "error": "成交价历史：行情观测不足：158042.SZ",
+          "asOf": "2026-11-13"
+        }
+      },
       "message": "净值复用已发布且哈希核对的曲线；成交价失败保留原同期比较及日期。",
       "mode": "online",
       "execution": {
         "exitCode": 0,
-        "seconds": 5.62
+        "seconds": 7.22
       },
       "lastOnlineAttempt": {
-        "status": "success",
-        "attemptedAt": "2026-11-15T01:57:08+00:00",
+        "status": "partial",
+        "attemptedAt": "2026-11-16T02:09:08+00:00",
         "records": 305,
-        "historyFailures": {},
+        "historyFailures": {
+          "158042": {
+            "error": "成交价历史：行情观测不足：158042.SZ",
+            "asOf": "2026-11-13"
+          }
+        },
         "message": "净值复用已发布且哈希核对的曲线；成交价失败保留原同期比较及日期。",
         "mode": "online",
         "execution": {
           "exitCode": 0,
-          "seconds": 5.62
+          "seconds": 7.22
         }
       }
     },
     "market_history": {
       "status": "success",
-      "attemptedAt": "2026-11-15T01:57:17+00:00",
+      "attemptedAt": "2026-11-16T02:09:16+00:00",
       "exitCode": 0,
-      "seconds": 8.59,
+      "seconds": 8.48,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-15T01:57:17+00:00",
+        "attemptedAt": "2026-11-16T02:09:16+00:00",
         "exitCode": 0,
-        "seconds": 8.59,
+        "seconds": 8.48,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "fund_batch": {
       "status": "partial",
-      "attemptedAt": "2026-11-15T01:54:51+00:00",
+      "attemptedAt": "2026-11-16T02:06:19+00:00",
       "mode": "online",
-      "records": 1683,
+      "records": 1583,
       "requested": 1690,
       "failures": {
         "000970": "could not convert string to float: '--'",
@@ -372,14 +404,114 @@ var UPDATE_STATUS={
         "004848": "could not convert string to float: '--'",
         "006111": "could not convert string to float: '--'",
         "006158": "could not convert string to float: '--'",
+        "012870": "The read operation timed out",
+        "012920": "The read operation timed out",
+        "012979": "The read operation timed out",
+        "012980": "The read operation timed out",
+        "013107": "The read operation timed out",
+        "013127": "The read operation timed out",
+        "013128": "The read operation timed out",
+        "013171": "The read operation timed out",
+        "013172": "The read operation timed out",
+        "013238": "The read operation timed out",
+        "013308": "The read operation timed out",
+        "013309": "The read operation timed out",
+        "013369": "The read operation timed out",
+        "013402": "The read operation timed out",
+        "013403": "The read operation timed out",
+        "013721": "The read operation timed out",
+        "013840": "The read operation timed out",
+        "013945": "The read operation timed out",
+        "014023": "The read operation timed out",
+        "014191": "The read operation timed out",
+        "014341": "The read operation timed out",
+        "014424": "The read operation timed out",
+        "014425": "The read operation timed out",
+        "014438": "The read operation timed out",
+        "014439": "The read operation timed out",
+        "014611": "The read operation timed out",
+        "014727": "The read operation timed out",
+        "014736": "The read operation timed out",
+        "014807": "The read operation timed out",
+        "014854": "The read operation timed out",
+        "014915": "The read operation timed out",
+        "014978": "The read operation timed out",
+        "014982": "The read operation timed out",
+        "015016": "The read operation timed out",
+        "015096": "The read operation timed out",
+        "015282": "The read operation timed out",
+        "015283": "The read operation timed out",
+        "015299": "The read operation timed out",
+        "015300": "The read operation timed out",
+        "015310": "The read operation timed out",
+        "015311": "The read operation timed out",
+        "015368": "The read operation timed out",
+        "015546": "The read operation timed out",
+        "015967": "The read operation timed out",
+        "016055": "The read operation timed out",
+        "016057": "The read operation timed out",
+        "016157": "The read operation timed out",
+        "016237": "The read operation timed out",
+        "016278": "The read operation timed out",
+        "016280": "The read operation timed out",
+        "016370": "The read operation timed out",
+        "016372": "The read operation timed out",
+        "016452": "The read operation timed out",
+        "016453": "The read operation timed out",
+        "016470": "The read operation timed out",
+        "016485": "The read operation timed out",
+        "016500": "The read operation timed out",
+        "016507": "The read operation timed out",
+        "016532": "The read operation timed out",
+        "016533": "The read operation timed out",
+        "016558": "The read operation timed out",
+        "016664": "The read operation timed out",
+        "016668": "The read operation timed out",
+        "016701": "The read operation timed out",
+        "016729": "The read operation timed out",
+        "016970": "The read operation timed out",
+        "016971": "The read operation timed out",
+        "017028": "The read operation timed out",
+        "017030": "The read operation timed out",
+        "017075": "The read operation timed out",
+        "017086": "The read operation timed out",
+        "017091": "The read operation timed out",
+        "017093": "The read operation timed out",
+        "017102": "The read operation timed out",
+        "017192": "The read operation timed out",
+        "017436": "The read operation timed out",
+        "017469": "The read operation timed out",
+        "017488": "The read operation timed out",
+        "017490": "The read operation timed out",
+        "017559": "The read operation timed out",
+        "017573": "The read operation timed out",
+        "017639": "The read operation timed out",
+        "017641": "The read operation timed out",
+        "017644": "The read operation timed out",
+        "017723": "The read operation timed out",
+        "017730": "The read operation timed out",
+        "017737": "The read operation timed out",
+        "017744": "The read operation timed out",
+        "017746": "The read operation timed out",
+        "017794": "The read operation timed out",
+        "017801": "The read operation timed out",
+        "017828": "The read operation timed out",
+        "017894": "The read operation timed out",
+        "017895": "The read operation timed out",
+        "017960": "The read operation timed out",
+        "018000": "The read operation timed out",
+        "018043": "The read operation timed out",
+        "018044": "The read operation timed out",
+        "018064": "The read operation timed out",
+        "018065": "The read operation timed out",
         "506009": "could not convert string to float: '--'"
       },
       "message": "批量取得最新净值及其原日期；缺项基金使用独立历史接口",
       "lastOnlineAttempt": {
         "status": "partial",
-        "attemptedAt": "2026-11-15T01:54:51+00:00",
+        "attemptedAt": "2026-11-16T02:06:19+00:00",
         "mode": "online",
-        "records": 1683,
+        "records": 1583,
         "requested": 1690,
         "failures": {
           "000970": "could not convert string to float: '--'",
@@ -388,6 +520,106 @@ var UPDATE_STATUS={
           "004848": "could not convert string to float: '--'",
           "006111": "could not convert string to float: '--'",
           "006158": "could not convert string to float: '--'",
+          "012870": "The read operation timed out",
+          "012920": "The read operation timed out",
+          "012979": "The read operation timed out",
+          "012980": "The read operation timed out",
+          "013107": "The read operation timed out",
+          "013127": "The read operation timed out",
+          "013128": "The read operation timed out",
+          "013171": "The read operation timed out",
+          "013172": "The read operation timed out",
+          "013238": "The read operation timed out",
+          "013308": "The read operation timed out",
+          "013309": "The read operation timed out",
+          "013369": "The read operation timed out",
+          "013402": "The read operation timed out",
+          "013403": "The read operation timed out",
+          "013721": "The read operation timed out",
+          "013840": "The read operation timed out",
+          "013945": "The read operation timed out",
+          "014023": "The read operation timed out",
+          "014191": "The read operation timed out",
+          "014341": "The read operation timed out",
+          "014424": "The read operation timed out",
+          "014425": "The read operation timed out",
+          "014438": "The read operation timed out",
+          "014439": "The read operation timed out",
+          "014611": "The read operation timed out",
+          "014727": "The read operation timed out",
+          "014736": "The read operation timed out",
+          "014807": "The read operation timed out",
+          "014854": "The read operation timed out",
+          "014915": "The read operation timed out",
+          "014978": "The read operation timed out",
+          "014982": "The read operation timed out",
+          "015016": "The read operation timed out",
+          "015096": "The read operation timed out",
+          "015282": "The read operation timed out",
+          "015283": "The read operation timed out",
+          "015299": "The read operation timed out",
+          "015300": "The read operation timed out",
+          "015310": "The read operation timed out",
+          "015311": "The read operation timed out",
+          "015368": "The read operation timed out",
+          "015546": "The read operation timed out",
+          "015967": "The read operation timed out",
+          "016055": "The read operation timed out",
+          "016057": "The read operation timed out",
+          "016157": "The read operation timed out",
+          "016237": "The read operation timed out",
+          "016278": "The read operation timed out",
+          "016280": "The read operation timed out",
+          "016370": "The read operation timed out",
+          "016372": "The read operation timed out",
+          "016452": "The read operation timed out",
+          "016453": "The read operation timed out",
+          "016470": "The read operation timed out",
+          "016485": "The read operation timed out",
+          "016500": "The read operation timed out",
+          "016507": "The read operation timed out",
+          "016532": "The read operation timed out",
+          "016533": "The read operation timed out",
+          "016558": "The read operation timed out",
+          "016664": "The read operation timed out",
+          "016668": "The read operation timed out",
+          "016701": "The read operation timed out",
+          "016729": "The read operation timed out",
+          "016970": "The read operation timed out",
+          "016971": "The read operation timed out",
+          "017028": "The read operation timed out",
+          "017030": "The read operation timed out",
+          "017075": "The read operation timed out",
+          "017086": "The read operation timed out",
+          "017091": "The read operation timed out",
+          "017093": "The read operation timed out",
+          "017102": "The read operation timed out",
+          "017192": "The read operation timed out",
+          "017436": "The read operation timed out",
+          "017469": "The read operation timed out",
+          "017488": "The read operation timed out",
+          "017490": "The read operation timed out",
+          "017559": "The read operation timed out",
+          "017573": "The read operation timed out",
+          "017639": "The read operation timed out",
+          "017641": "The read operation timed out",
+          "017644": "The read operation timed out",
+          "017723": "The read operation timed out",
+          "017730": "The read operation timed out",
+          "017737": "The read operation timed out",
+          "017744": "The read operation timed out",
+          "017746": "The read operation timed out",
+          "017794": "The read operation timed out",
+          "017801": "The read operation timed out",
+          "017828": "The read operation timed out",
+          "017894": "The read operation timed out",
+          "017895": "The read operation timed out",
+          "017960": "The read operation timed out",
+          "018000": "The read operation timed out",
+          "018043": "The read operation timed out",
+          "018044": "The read operation timed out",
+          "018064": "The read operation timed out",
+          "018065": "The read operation timed out",
           "506009": "could not convert string to float: '--'"
         },
         "message": "批量取得最新净值及其原日期；缺项基金使用独立历史接口"
@@ -395,16 +627,16 @@ var UPDATE_STATUS={
     },
     "benchmark_sync": {
       "status": "success",
-      "attemptedAt": "2026-11-15T01:56:59+00:00",
+      "attemptedAt": "2026-11-16T02:08:57+00:00",
       "exitCode": 0,
-      "seconds": 2.67,
+      "seconds": 2.58,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-15T01:56:59+00:00",
+        "attemptedAt": "2026-11-16T02:08:57+00:00",
         "exitCode": 0,
-        "seconds": 2.67,
+        "seconds": 2.58,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
@@ -427,68 +659,68 @@ var UPDATE_STATUS={
     },
     "benchmark_valuations": {
       "status": "success",
-      "attemptedAt": "2026-11-15T01:57:04+00:00",
+      "attemptedAt": "2026-11-16T02:09:02+00:00",
       "exitCode": 0,
-      "seconds": 0.94,
+      "seconds": 1.45,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-15T01:57:04+00:00",
+        "attemptedAt": "2026-11-16T02:09:02+00:00",
         "exitCode": 0,
-        "seconds": 0.94,
+        "seconds": 1.45,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "portfolio_stress": {
       "status": "success",
-      "attemptedAt": "2026-11-15T01:57:04+00:00",
+      "attemptedAt": "2026-11-16T02:09:02+00:00",
       "exitCode": 0,
-      "seconds": 0.68,
+      "seconds": 0.8,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-15T01:57:04+00:00",
+        "attemptedAt": "2026-11-16T02:09:02+00:00",
         "exitCode": 0,
-        "seconds": 0.68,
+        "seconds": 0.8,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "drop_highs": {
       "status": "success",
-      "attemptedAt": "2026-11-15T01:57:20+00:00",
+      "attemptedAt": "2026-11-16T02:09:21+00:00",
       "exitCode": 0,
-      "seconds": 0.79,
+      "seconds": 1.31,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-15T01:57:20+00:00",
+        "attemptedAt": "2026-11-16T02:09:21+00:00",
         "exitCode": 0,
-        "seconds": 0.79,
+        "seconds": 1.31,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     },
     "market_history_pe": {
       "status": "success",
-      "attemptedAt": "2026-11-15T01:57:04+00:00",
+      "attemptedAt": "2026-11-16T02:09:02+00:00",
       "exitCode": 0,
-      "seconds": 0.97,
+      "seconds": 1.49,
       "mode": "online",
       "message": "执行成功；数据准确性与日期由质量报告单独说明。",
       "lastOnlineAttempt": {
         "status": "success",
-        "attemptedAt": "2026-11-15T01:57:04+00:00",
+        "attemptedAt": "2026-11-16T02:09:02+00:00",
         "exitCode": 0,
-        "seconds": 0.97,
+        "seconds": 1.49,
         "mode": "online",
         "message": "执行成功；数据准确性与日期由质量报告单独说明。"
       }
     }
   },
-  "checkedAt": "2026-11-15T01:57:22+00:00"
+  "checkedAt": "2026-11-16T02:09:22+00:00"
 };
