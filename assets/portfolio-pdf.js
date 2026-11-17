@@ -207,12 +207,15 @@
       y += 30;
       const plot = { x: MARGIN + 90, y, w: width - 108, h: 256 };
       const all = [0, ...primary, ...(secondary || [])].filter(finite);
-      const min = all.reduce((v, n) => Math.min(v, n), 0), max = all.reduce((v, n) => Math.max(v, n), 0), span = max - min || 1, lo = min - span * .08, hi = max + span * .08;
+      const min = all.reduce((v, n) => Math.min(v, n), 0), max = all.reduce((v, n) => Math.max(v, n), 0), axis = P.niceAxis(min, max), lo = axis.low, hi = axis.high;
       const first = Date.parse(r.curve[0].day), last = Date.parse(r.curve.at(-1).day);
       const point = (value, i) => [plot.x + (Date.parse(r.curve[i].day) - first) / Math.max(1, last - first) * plot.w, plot.y + (hi - value) / (hi - lo) * plot.h];
-      for (let i = 0; i < 5; i++) {
-        const value = hi - (hi - lo) * i / 4, yy = plot.y + plot.h * i / 4;
-        line(plot.x, yy, plot.w); text(unit !== '%' ? number(value / 10000) + '万' : number(value) + '%', plot.x - 14, yy - 8, 12, C.muted, 400, 'right');
+      const digits = (n, d) => n.toLocaleString('zh-CN', { minimumFractionDigits: d, maximumFractionDigits: d });
+      for (const value of axis.ticks.slice().reverse()) {
+        const yy = plot.y + (hi - value) / (hi - lo) * plot.h;
+        line(plot.x, yy, plot.w);
+        text(unit !== '%' ? digits(value / 10000, P.stepDecimals(axis.step / 10000)) + '万' : digits(value, axis.decimals) + '%', plot.x - 14, yy - 8, 12, C.muted, 400, 'right');
+        ops.at(-1).axis = true;
       }
       for (const [values, color, dash] of [[primary, C.green, false], [secondary, C.gold, true]]) {
         if (values) ops.push({ type: 'path', points: values.map(point), y: plot.y - 2, h: plot.h + 4, color, dash });

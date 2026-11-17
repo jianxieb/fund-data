@@ -102,13 +102,12 @@
         const value = plotValue(point, item.result, metric, annual);
         if (finite(value)) { min = Math.min(min, value); max = Math.max(max, value); }
       }
-      const span = max - min || 1, low = min - span * .06, high = max + span * .06;
+      const axis = P.niceAxis(min, max), low = axis.low, high = axis.high;
       const y = value => top + (high - value) / (high - low) * (bottom - top);
-      const tick = value => metric === 'amount' ? Math.abs(value) >= 10000 ? H.money(value / 10000, 1) + '万' : H.money(value, 0) : H.money(value, 1) + '%';
+      const tick = value => metric !== 'amount' ? value.toFixed(axis.decimals) + '%' : axis.step >= 10000 ? H.money(value / 10000, P.stepDecimals(axis.step / 10000)) + '万' : H.money(value, axis.decimals);
       let grid = '';
-      for (let i = 0; i <= 4; i++) {
-        const value = low + (high - low) * i / 4;
-        grid += '<line x1="' + left + '" x2="' + right + '" y1="' + y(value).toFixed(2) + '" y2="' + y(value).toFixed(2) + '" stroke="#e5eadd"/><text x="' + (left - 12) + '" y="' + (y(value) + 4).toFixed(2) + '" text-anchor="end">' + H.esc(tick(value)) + '</text>';
+      for (const value of axis.ticks) {
+        grid += '<line x1="' + left + '" x2="' + right + '" y1="' + y(value).toFixed(2) + '" y2="' + y(value).toFixed(2) + '" stroke="' + (value === 0 && low < 0 ? '#cfd6c8' : '#e5eadd') + '"/><text data-axis-tick="' + value + '" x="' + (left - 12) + '" y="' + (y(value) + 4).toFixed(2) + '" text-anchor="end">' + H.esc(tick(value)) + '</text>';
       }
       const middle = new Date(start + (end - start) / 2).toISOString().slice(0, 10);
       [comparison.start, middle, comparison.end].forEach((day, index) => {

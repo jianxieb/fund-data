@@ -1649,3 +1649,30 @@ test('stopping the stability run leaves the comparison as it was', async () => {
   assert.doesNotMatch(html, /已完成 \d+ \/ \d+ 次模拟|portfolio-compare-stability-stop|<th scope="col">起点稳定性/);
   assert.ok(html.includes('data-action="portfolio-compare-stability"'));
 });
+
+test('the account chart, comparison chart and PDF chart label their value axis on round steps', async () => {
+  const round = (labels, name) => {
+    const values = labels.map(label => Number(label.replace(/[%万,]/g, '')));
+    assert.ok(values.length >= 3, name + ' has ticks: ' + labels.join(' '));
+    const step = values[1] - values[0];
+    assert.ok([1, 2, 2.5, 5].includes(+(step / 10 ** Math.floor(Math.log10(step))).toFixed(6)), name + ' step ' + step + ' in ' + labels.join(' '));
+    for (let i = 1; i < values.length; i++) assert.ok(Math.abs(values[i] - values[i - 1] - step) < 1e-6, name + ' even steps: ' + labels.join(' '));
+    assert.ok(values.every(v => Math.abs(v / step - Math.round(v / step)) < 1e-6), name + ' on the step: ' + labels.join(' '));
+  };
+  const f = uiFixture();
+  await f.action('run');
+  for (const metric of ['return', 'drawdown', 'amount']) {
+    await f.action('metric', { value: metric });
+    const html = f.ui.view(f.helpers);
+    round([...html.matchAll(/data-axis-tick="[^"]*"[^>]*>([^<]+)</g)].map(m => m[1]), 'account ' + metric);
+  }
+  await f.action('tab', { value: 'strategies' }); await f.action('run');
+  round([...f.ui.view(f.helpers).matchAll(/data-axis-tick="[^"]*"[^>]*>([^<]+)</g)].map(m => m[1]), 'comparison');
+  await f.action('tab', { value: 'results' }); await f.action('export-pdf');
+  const ticks = Pdf.layout(f.reports.at(-1), measure).ops.filter(op => op.type === 'text' && op.axis), charts = [];
+  // Each chart lists its ticks strictly from the top value down, so any value not below the last starts the next chart.
+  const value = op => Number(op.value.replace(/[%万,]/g, ''));
+  for (const op of ticks) { if (!charts.length || value(op) >= value(charts.at(-1).at(-1))) charts.push([]); charts.at(-1).push(op); }
+  assert.ok(charts.length >= 2, 'PDF charts: ' + charts.length);
+  charts.forEach((chart, i) => round(chart.map(op => op.value).reverse(), 'PDF chart ' + i));
+});

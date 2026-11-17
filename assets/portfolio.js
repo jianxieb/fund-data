@@ -895,14 +895,15 @@
     const right = W - 15 - axes.length * 57;
     const x = i => rows.length === 1 ? (left + right) / 2 : left + i / (rows.length - 1) * (right - left);
     const domain = [...primary, ...(secondary || [])].filter(M.finite), min = Math.min(...domain), max = Math.max(...domain);
-    const span = max - min || Math.abs(max) * .05 || 1;
-    const lo = metric === 'allocation' || !domain.length ? 0 : min - span * .06, hi = metric === 'allocation' || !domain.length ? 100 : max + span * .06;
+    const axis = metric === 'allocation' || !domain.length ? P.niceAxis(0, 100) : P.niceAxis(min, max, { includeZero: metric !== 'amount' });
+    const lo = axis.low, hi = axis.high;
     const y = v => top + (hi - v) / (hi - lo) * (bottom - top);
     plotted = { view, rows, primary, secondary, observed, x, y, right };
     let grid = '', overlays = '';
-    for (let i = 0; i <= 4; i++) {
-      const v = lo + (hi - lo) * i / 4, yy = y(v);
-      grid += '<line x1="' + left + '" y1="' + yy + '" x2="' + right + '" y2="' + yy + '" stroke="#e8ece3"/><text x="' + (left - 7) + '" y="' + (yy + 4) + '" text-anchor="end">' + (metric === 'amount' ? H.money(v / 10000, 1) + '万' : v.toFixed(1) + '%') + '</text>';
+    const tickLabel = v => metric !== 'amount' ? v.toFixed(axis.decimals) + '%' : axis.step >= 10000 ? H.money(v / 10000, P.stepDecimals(axis.step / 10000)) + '万' : H.money(v, axis.decimals);
+    for (const v of axis.ticks) {
+      const yy = y(v);
+      grid += '<line x1="' + left + '" y1="' + yy + '" x2="' + right + '" y2="' + yy + '" stroke="' + (v === 0 && lo < 0 ? '#cfd6c8' : '#e8ece3') + '"/><text data-axis-tick="' + v + '" x="' + (left - 7) + '" y="' + (yy + 4) + '" text-anchor="end">' + tickLabel(v) + '</text>';
     }
     for (const i of new Set([0, Math.floor((rows.length - 1) / 2), rows.length - 1])) grid += '<text x="' + x(i) + '" y="' + (HH - 8) + '" text-anchor="' + (i === 0 ? 'start' : i === rows.length - 1 ? 'end' : 'middle') + '">' + rows[i].day + '</text>';
     kinds.forEach(kind => {

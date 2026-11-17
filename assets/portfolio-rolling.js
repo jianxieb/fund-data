@@ -12,12 +12,7 @@
   const valueOf = (row, key) => key === 'setup' ? row.annualReturn : row[key];
   const tickLabel = value => String(+value.toFixed(2)) + '%';
   // Round steps that always include 0, so no negative tick appears unless a value is negative.
-  function axis(min, max) {
-    const lo = Math.min(0, min), hi = Math.max(0, max), raw = (hi - lo || 1) / 5, magnitude = 10 ** Math.floor(Math.log10(raw));
-    const step = [1, 2, 2.5, 5, 10].map(m => m * magnitude).find(s => s >= raw - 1e-12);
-    const low = Math.floor(lo / step + 1e-9) * step, high = Math.max(low + step, Math.ceil(hi / step - 1e-9) * step);
-    return { low, high, step, ticks: Array.from({ length: Math.round((high - low) / step) + 1 }, (_, i) => +(low + i * step).toFixed(10)) };
-  }
+  const axis = (min, max) => P.niceAxis(min, max);
   function timeTicks(first, last) {
     const firstYear = Number(first.slice(0, 4)), lastYear = Number(last.slice(0, 4)), ticks = [];
     if (Date.parse(last) - Date.parse(first) < 3 * 365.25 * 864e5) {

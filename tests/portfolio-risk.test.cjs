@@ -149,3 +149,24 @@ test('a foreign holding is correlated on converted prices, not on its native pri
   assert.equal(usd.matrix[1][1], null);   // and does not move in USD
   assert.equal(usd.matrix[0][1], null);
 });
+
+test('chart axes use round steps that cover the data, reaching zero unless told not to', () => {
+  const check = (min, max, options, expected) => {
+    const a = P.niceAxis(min, max, options);
+    if (expected) assert.deepEqual(a.ticks, expected);
+    assert.ok([1, 2, 2.5, 5].includes(+(a.step / 10 ** Math.floor(Math.log10(a.step))).toFixed(6)), 'round step ' + a.step);
+    assert.ok(a.ticks.every(v => Math.abs(v / a.step - Math.round(v / a.step)) < 1e-9), 'ticks sit on the step');
+    assert.ok(a.low <= min && a.high >= max, 'covers the data');
+    if (max > min && max > 0) assert.ok(a.high - a.step < max, 'no spare step above the data');
+    assert.equal(a.low, a.ticks[0]); assert.equal(a.high, a.ticks.at(-1));
+    return a;
+  };
+  check(5.2, 46, undefined, [0, 10, 20, 30, 40, 50]);
+  check(-6, 17.7, undefined, [-10, -5, 0, 5, 10, 15, 20]);
+  check(-73.06, 0, undefined, [-80, -60, -40, -20, 0]);
+  check(95000, 1694775, { includeZero: false }, [0, 500000, 1000000, 1500000, 2000000]);
+  check(1620000, 1694775, { includeZero: false }, [1620000, 1640000, 1660000, 1680000, 1700000]);
+  assert.ok(!check(61.3, 61.3, { includeZero: false }).ticks.includes(0), 'a flat line gets a small round range around it');
+  assert.deepEqual(P.niceAxis(0, 0).ticks.slice(0, 1), [0]);
+  assert.deepEqual(P.niceAxis(0, 100).ticks, [0, 20, 40, 60, 80, 100]);
+});

@@ -400,6 +400,18 @@
       drawdown: { worst: depths[0], q1: quantile(depths, .25), median: quantile(depths, .5), q3: quantile(depths, .75), best: depths.at(-1), mean: mean(depths) }, losses: ran.filter(row => row.totalReturn < 0).length,
       beatLumpSum: wins('lumpSum'), beatBenchmark: wins('benchmark'), worst: ordered.slice(0, 5), best: ordered.slice(-5).reverse() };
   }
+  // Chart value axes: round steps (1, 2, 2.5 or 5 × 10^k) that cover the data. With includeZero the range
+  // always reaches 0, so no negative tick appears unless a value is negative.
+  const stepDecimals = step => [0, 1, 2, 3].find(d => Math.abs(step * 10 ** d - Math.round(step * 10 ** d)) < 1e-6) ?? 4;
+  function niceAxis(min, max, { includeZero = true, intervals = 5 } = {}) {
+    let lo = includeZero ? Math.min(0, min) : min, hi = includeZero ? Math.max(0, max) : max;
+    if (!(hi - lo > 1e-12)) { const pad = Math.abs(hi) * .05 || 1; if (!(includeZero && lo === 0)) lo -= pad; hi += pad; }
+    const raw = (hi - lo) / intervals, magnitude = 10 ** Math.floor(Math.log10(raw));
+    const step = +([1, 2, 2.5, 5, 10].map(m => m * magnitude).find(v => v >= raw * (1 - 1e-9))).toPrecision(12);
+    const low = Math.floor(lo / step + 1e-9) * step, high = Math.max(low + step, Math.ceil(hi / step - 1e-9) * step);
+    const ticks = Array.from({ length: Math.round((high - low) / step) + 1 }, (_, i) => +(low + i * step).toPrecision(12));
+    return { low: ticks[0], high: ticks[ticks.length - 1], step, ticks, decimals: stepDecimals(step) };
+  }
   // 起点稳定性: each comparison row's windows, read against 一次性投入 at the same start.
   function rollingStability(windows, baselineId = 'lump_sum') {
     const base = new Map((windows[baselineId] || []).filter(row => !row.error).map(row => [row.start, row.annualReturn]));
@@ -1370,5 +1382,5 @@
     }
     return config;
   }
-  return { simulate, simulateWindows, simulateStrategies, simulateScenarios, rollingStarts, rollingWindow, rollingSummary, rollingStability, strategyStatus, riskAnalysis, riskRatios, holdingCorrelation, comparisonMethods, compareBenchmark, chartIndicators, chartReferences, validateHistory, validateConfig, sanitizeDraft, allocation, accountAllocation, additionAllocation, amountFromWeight, weightFromAmount, at, annualReturn, holdingXirr, addYears, taxConfig, taxRates, currencyInfo, strategyConfig, strategyNames, initialMethods, contributionMethods, dividendPolicies, opportunityDefinitions: Systematic?.opportunityDefinitions || {} };
+  return { simulate, simulateWindows, simulateStrategies, simulateScenarios, rollingStarts, rollingWindow, rollingSummary, rollingStability, niceAxis, stepDecimals, strategyStatus, riskAnalysis, riskRatios, holdingCorrelation, comparisonMethods, compareBenchmark, chartIndicators, chartReferences, validateHistory, validateConfig, sanitizeDraft, allocation, accountAllocation, additionAllocation, amountFromWeight, weightFromAmount, at, annualReturn, holdingXirr, addYears, taxConfig, taxRates, currencyInfo, strategyConfig, strategyNames, initialMethods, contributionMethods, dividendPolicies, opportunityDefinitions: Systematic?.opportunityDefinitions || {} };
 });
