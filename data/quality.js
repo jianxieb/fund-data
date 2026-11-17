@@ -1,11 +1,11 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-11-16T02:09:22+00:00",
-  "asOf": "2026-11-16",
+  "checkedAt": "2026-11-17T04:32:51+00:00",
+  "asOf": "2026-11-17",
   "status": "unverified",
   "summary": {
     "errors": 0,
-    "warnings": 7,
+    "warnings": 20,
     "unverified": 65
   },
   "datasets": [
@@ -17,22 +17,100 @@ var DATA_QUALITY={
       "records": 0,
       "issues": [
         {
-          "code": "source_history_retained",
+          "code": "source_refresh_retained",
           "severity": "warning",
-          "message": "fund:013309：本次历史末日倒退，保留上一版已验证序列；保留历史截至2026-11-13",
-          "affected": "fund:013309"
+          "message": "海外基金：执行超过 90 秒，子进程已终止；该数据集不能视为更新成功。；保留已发布数据及原日期",
+          "affected": "funds"
         },
         {
           "code": "source_history_retained",
           "severity": "warning",
-          "message": "fund:015310：本次历史末日倒退，保留上一版已验证序列；保留历史截至2026-11-13",
-          "affected": "fund:015310"
+          "message": "fund:001323：<urlopen error [Errno 104] Connection reset by peer>；保留历史截至2026-11-13",
+          "affected": "fund:001323"
         },
         {
           "code": "source_history_retained",
           "severity": "warning",
-          "message": "158042：成交价历史：行情观测不足：158042.SZ；保留历史截至2026-11-13",
-          "affected": "158042"
+          "message": "fund:005094：Remote end closed connection without response；保留历史截至2026-11-13",
+          "affected": "fund:005094"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:000979：The read operation timed out；保留历史截至2026-11-13",
+          "affected": "fund:000979"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:002252：The read operation timed out；保留历史截至2026-11-13",
+          "affected": "fund:002252"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:006567：The read operation timed out；保留历史截至2026-11-13",
+          "affected": "fund:006567"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:090013：The read operation timed out；保留历史截至2026-11-13",
+          "affected": "fund:090013"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:519697：Remote end closed connection without response；保留历史截至2026-11-13",
+          "affected": "fund:519697"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:001036：Remote end closed connection without response；保留历史截至2026-11-13",
+          "affected": "fund:001036"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:003165：The read operation timed out；保留历史截至2026-11-13",
+          "affected": "fund:003165"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:160518：The read operation timed out；保留历史截至2026-11-13",
+          "affected": "fund:160518"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:005717：The read operation timed out；保留历史截至2026-11-13",
+          "affected": "fund:005717"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:000189：The read operation timed out；保留历史截至2026-11-13",
+          "affected": "fund:000189"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:001003：Remote end closed connection without response；保留历史截至2026-11-13",
+          "affected": "fund:001003"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:024393：The read operation timed out；保留历史截至2026-11-13",
+          "affected": "fund:024393"
+        },
+        {
+          "code": "source_history_retained",
+          "severity": "warning",
+          "message": "fund:513210：The read operation timed out；保留历史截至2026-11-13",
+          "affected": "fund:513210"
         }
       ],
       "status": "warning"
@@ -42,8 +120,8 @@ var DATA_QUALITY={
       "label": "海外基金",
       "asOf": "2026-11-12",
       "dateRange": [
-        "2026-11-12",
-        "2026-11-12"
+        "2026-11-13",
+        "2026-11-13"
       ],
       "records": 46,
       "issues": [
@@ -106,10 +184,10 @@ var DATA_QUALITY={
     {
       "id": "overseas_stocks",
       "label": "海外个股",
-      "asOf": "2026-11-13",
+      "asOf": "2026-11-16",
       "dateRange": [
-        "2026-11-13",
-        "2026-11-13"
+        "2026-11-16",
+        "2026-11-16"
       ],
       "records": 79,
       "issues": [
@@ -491,10 +569,10 @@ var DATA_QUALITY={
     {
       "id": "benchmarks",
       "label": "海外指数与ETF基准",
-      "asOf": "2026-11-13",
+      "asOf": "2026-11-16",
       "dateRange": [
         "2026-11-13",
-        "2026-11-13"
+        "2026-11-16"
       ],
       "records": 36,
       "issues": [
@@ -543,10 +621,10 @@ var DATA_QUALITY={
     {
       "id": "stocks",
       "label": "股票观察清单",
-      "asOf": "2026-11-16",
+      "asOf": "2026-11-17",
       "dateRange": [
-        "2026-11-16",
-        "2026-11-16"
+        "2026-11-17",
+        "2026-11-17"
       ],
       "records": 71,
       "issues": [],
@@ -555,7 +633,7 @@ var DATA_QUALITY={
     {
       "id": "strategy",
       "label": "买入策略实验",
-      "asOf": "2026-11-13",
+      "asOf": "2026-11-16",
       "dateRange": null,
       "records": 162,
       "issues": [],
@@ -568,10 +646,10 @@ var DATA_QUALITY={
     {
       "id": "domestic_funds",
       "label": "扩展基金研究池",
-      "asOf": "2026-11-13",
+      "asOf": "2026-11-16",
       "dateRange": [
-        "2026-11-11",
-        "2026-11-13"
+        "2026-11-12",
+        "2026-11-16"
       ],
       "records": 1577,
       "issues": [
@@ -3410,10 +3488,10 @@ var DATA_QUALITY={
     {
       "id": "indices",
       "label": "国内指数",
-      "asOf": "2026-11-13",
+      "asOf": "2026-11-16",
       "dateRange": [
-        "2026-11-11",
-        "2026-11-13"
+        "2026-11-16",
+        "2026-11-16"
       ],
       "records": 13,
       "issues": [
@@ -3431,10 +3509,10 @@ var DATA_QUALITY={
     {
       "id": "portfolio",
       "label": "组合每日历史",
-      "asOf": "2026-11-13",
+      "asOf": "2026-11-16",
       "dateRange": [
-        "2026-11-11",
-        "2026-11-13"
+        "2026-11-12",
+        "2026-11-16"
       ],
       "records": 1873,
       "issues": [],
