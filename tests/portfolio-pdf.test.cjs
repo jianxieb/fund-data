@@ -135,12 +135,12 @@ const resultTabButton = (html, value) => (html.match(/<button\b[^>]*>/g) || []).
   tag => tag.includes('data-action="portfolio-result-tab"') && tag.includes('data-value="' + value + '"'));
 
 function uiFixture(configure, model = P) {
-  const { input } = fixture(), downloads = [], notices = [], reports = [], renderStates = [];
+  const { input } = fixture(), downloads = [], notices = [], reports = [], renderStates = [], listeners = {};
   if (configure) configure(input);
   const context = { window: { Changheng: M, ChanghengPortfolioModel: model, PORTFOLIO_CATALOG: input.catalog,
     ChanghengPortfolioPdf: { ...Pdf, snapshot: Pdf.snapshot, async create(report) { reports.push(report); return new Blob(['PDF']); } } },
     localStorage: { getItem: () => JSON.stringify(input.config), setItem() {} },
-    document: { getElementById: () => null, querySelectorAll: () => [] }, TextEncoder, setTimeout,
+    document: { getElementById: () => null, querySelectorAll: () => [], addEventListener: (type, fn, options) => (listeners[type] ||= []).push({ fn, options }) }, TextEncoder, setTimeout,
     fetch: async url => ({ ok: true, text: async () => url === 'data/portfolio/catalog.js' ? 'var PORTFOLIO_CATALOG=' + JSON.stringify(input.catalog) + ';' : JSON.stringify(Object.values(input.histories).find(h => input.catalog.assets.find(a => a.id === h.id).historyUrl === url)) }) };
   vm.createContext(context);
   vm.runInContext(fs.readFileSync(path.resolve(__dirname, '../assets/portfolio-comparison.js'), 'utf8'), context);
@@ -164,7 +164,7 @@ function uiFixture(configure, model = P) {
     assert.ok(resultTabButton(html, value).includes('aria-selected="true"'), 'Tab should be selected: ' + value);
     return html;
   };
-  return { ui, action, resultTab, monthly, context, helpers, downloads, notices, reports, renderStates, input };
+  return { ui, action, resultTab, monthly, context, helpers, downloads, notices, reports, renderStates, input, listeners };
 }
 
 test('a dividend policy selected in holdings reaches the simulated cash ledger, exported configuration, PDF and sales CSV', async () => {
@@ -1675,4 +1675,43 @@ test('the account chart, comparison chart and PDF chart label their value axis o
   for (const op of ticks) { if (!charts.length || value(op) >= value(charts.at(-1).at(-1))) charts.push([]); charts.at(-1).push(op); }
   assert.ok(charts.length >= 2, 'PDF charts: ' + charts.length);
   charts.forEach((chart, i) => round(chart.map(op => op.value).reverse(), 'PDF chart ' + i));
+});
+
+
+test('the wheel zooms the account chart around the date under the pointer, pans sideways, and leaves the page alone at full range', async () => {
+  const f = uiFixture();
+  await f.action('run');
+  const wheel = f.listeners.wheel?.[0];
+  assert.ok(wheel, 'a wheel listener is registered'); assert.equal(wheel.options?.passive, false, 'it may cancel page scrolling');
+  const range = () => { const html = f.ui.view(f.helpers); return ['from', 'to'].map(side => html.match(new RegExp('data-portfolio-field="chart-' + side + '"[^>]*value="([^"]+)"'))[1]); };
+  const days = P.simulate(f.input).curve.map(p => p.day), index = day => days.indexOf(day);
+  const plot = { getBoundingClientRect: () => ({ left: 0, width: 1000 }) };
+  const send = (deltaY, clientX, deltaX = 0) => {
+    const event = { deltaY, deltaX, deltaMode: 0, clientX, target: { closest: selector => selector === '[data-portfolio-plot]' ? plot : null }, prevented: false, preventDefault() { this.prevented = true; } };
+    wheel.fn(event); return event;
+  };
+  const [first, last] = range();
+  assert.deepEqual([first, last], [days[0], days.at(-1)]);
+  assert.equal(send(100, 500).prevented, false, 'wheel down at full range scrolls the page');
+  assert.deepEqual(range(), [first, last]);
+  // Pointer at the left edge: the first visible date stays put while the span shrinks.
+  assert.equal(send(-100, -50).prevented, true);
+  let [from, to] = range();
+  assert.equal(from, first); assert.ok(index(to) < days.length - 1 && index(to) > days.length * .6, 'zoomed in by about a fifth: ' + to);
+  // Pointer at the right edge: the last visible date stays put.
+  send(-100, 5000);
+  const [from2, to2] = range();
+  assert.equal(to2, to); assert.ok(index(from2) > index(from));
+  // Sideways swipe pans without changing the span.
+  const span = index(to2) - index(from2);
+  send(0, 500, -200);
+  const [from3, to3] = range();
+  assert.ok(index(from3) < index(from2)); assert.equal(index(to3) - index(from3), span);
+  // Zooming in stops at 20 trading days; zooming out returns to the whole run.
+  for (let i = 0; i < 60; i++) send(-100, 500);
+  const [a, b] = range(); assert.equal(index(b) - index(a), 20);
+  assert.equal(send(-100, 500).prevented, true, 'still over the chart: the page does not jump');
+  for (let i = 0; i < 80; i++) send(100, 500);
+  assert.deepEqual(range(), [first, last]);
+  assert.match(f.ui.view(f.helpers), /data-action="portfolio-chart-zoom" data-value="all"[^>]*aria-pressed="true"|aria-pressed="true"[^>]*data-value="all"/);
 });

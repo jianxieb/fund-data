@@ -1047,6 +1047,45 @@
   document.addEventListener?.('focusin', event => {
     if (chartView?.chooser && !event.target.closest?.('.portfolio-chart-chooser')) closeChartChooser();
   });
+  // Row of the visible curve under a pointer position on the plot.
+  function plotIndexAt(plot, clientX) {
+    const box = plot.getBoundingClientRect(), { rows, right } = plotted, { left, width: W } = chartLayout;
+    return Math.round(Math.max(0, Math.min(1, ((clientX - box.left) * W / box.width - left) / (right - left))) * (rows.length - 1));
+  }
+  // The wheel zooms around the date under the pointer and a sideways swipe pans. A wheel that cannot change
+  // the range (down at full range) is left to the page, so scrolling past the chart still works.
+  const MIN_CHART_SPAN = 20;
+  let wheelFrame = 0;
+  document.addEventListener?.('wheel', event => {
+    const plot = event.target.closest?.('[data-portfolio-plot]');
+    if (!plot || !result || !plotted) return;
+    const view = chartState(), n = result.curve.length - 1, span = view.to - view.from, minSpan = Math.min(n, MIN_CHART_SPAN);
+    if (n < 1) return;
+    const scale = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? 400 : 1, dx = event.deltaX * scale, dy = event.deltaY * scale;
+    let from = view.from, to = view.to;
+    if (Math.abs(dx) > Math.abs(dy)) {
+      const shift = Math.round(dx / 400 * span) || Math.sign(dx), delta = Math.max(-from, Math.min(n - to, shift));
+      from += delta; to += delta;
+    } else if (dy) {
+      if (dy > 0 && span >= n) return;
+      const factor = Math.min(2, Math.max(.5, Math.exp(dy * .002)));
+      let next = Math.round(span * factor);
+      if (next === span) next += Math.sign(dy);
+      next = Math.max(minSpan, Math.min(n, next));
+      const anchor = view.from + plotIndexAt(plot, event.clientX), ratio = span ? (anchor - view.from) / span : .5;
+      from = Math.max(0, Math.min(n - next, Math.round(anchor - ratio * next))); to = from + next;
+    }
+    event.preventDefault();
+    if (from === view.from && to === view.to) return;
+    view.from = from; view.to = to; view.preset = from === 0 && to === n ? 'all' : '';
+    const paint = () => {
+      wheelFrame = 0;
+      const rail = document.querySelector?.('[data-chart-rail]');
+      if (rail && view === chartView) updateRangePlot(rail, view); else update();
+    };
+    if (typeof requestAnimationFrame !== 'function') paint();
+    else if (!wheelFrame) wheelFrame = requestAnimationFrame(paint);
+  }, { passive: false });
   function chartReferenceControl() {
     const {status, error} = chartReferenceState(result);
     if (status === 'ready') return '';
@@ -1844,10 +1883,8 @@
   function showPoint(event) {
     const plot = event.target.closest?.('[data-portfolio-plot]');
     if (!plot || !result) return;
-    const box = plot.getBoundingClientRect();
-    const {rows, view, x, y, primary, secondary, observed, right} = plotted;
-    const {left, width: W} = chartLayout;
-    const indexAt = px => Math.round(Math.max(0, Math.min(1, ((px - box.left) * W / box.width - left) / (right - left))) * (rows.length - 1));
+    const box = plot.getBoundingClientRect(), {rows, view, x, y, primary, secondary, observed} = plotted;
+    const indexAt = px => plotIndexAt(plot, px);
     const index = indexAt(event.clientX), point = rows[index], value = primary[index];
     if (event.type === 'pointerdown' && event.button === 0 && event.pointerType !== 'touch' && !plot.hasPointerCapture(event.pointerId)) {
       plot.setPointerCapture(event.pointerId);
