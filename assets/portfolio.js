@@ -7,7 +7,7 @@
     years: 5, start: '', end: '', benchmarkId: 'us:SPY', dividendPolicy: 'reinvest', feeOverrides: {},
     tax: { ...P.taxConfig(), usCapitalGains: 20, usDividend: 20 } };
   let draft = { ...defaults }, query = '', kind = 'all', market = 'all', hideBoards = false;
-  const workspaceTabs = [['settings', '模拟设置'], ['holdings', '我的组合'], ['results', '模拟结果'], ['strategies', '多策略对比'], ['scenarios', '方案对比'], ['rolling', '起点检验']];
+  const workspaceTabs = [['settings', '模拟设置'], ['holdings', '我的组合'], ['results', '模拟结果'], ['strategies', '多策略对比'], ['scenarios', '方案对比'], ['rolling', '起点检验'], ['search', '策略寻优']];
   let workspaceTab = 'settings', calculationOpen = false, benchmarkRequest = null;
   let resultTab = 'chart';
   let result = null, resultKey = '', error = '', errorField = '', metric = 'return', importError = '', exportingPdf = false;
@@ -23,6 +23,9 @@
   let rollingYears = 5, rollingRun = null, rollingKey = '', rollingError = '', rollingProgress = null, rollingRunId = 0;
   // 起点稳定性 runs the same start-date test for every row of the current 多策略对比; it belongs to that comparison only.
   let stabilityRun = null, stabilityProgress = null, stabilityError = '', stabilityRunId = 0;
+  // 策略寻优 scores every rule and blend of rules from every monthly start of the current settings.
+  const Search = window.ChanghengPortfolioSearch;
+  let searchRun = null, searchKey = '', searchError = '', searchProgress = null, searchRunId = 0, searchView = { criterion: 'median', scope: 'all' };
   try {
     const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
     if (saved && Array.isArray(saved.positions)) draft = { ...defaults, ...saved };
@@ -43,6 +46,7 @@
   const comparisonSignature = () => JSON.stringify(comparisonConfig());
   const scenarioSignature = () => JSON.stringify([scenarios, draft.years, draft.start, draft.end, draft.currency]);
   const rollingSignature = () => JSON.stringify([config(), rollingYears]);
+  const searchSignature = () => JSON.stringify(['search', config(), rollingYears]);
   const currency = (cfg = draft) => P.currencyInfo(cfg);
   const asset = id => catalog?.assets.find(a => a.id === id);
   const inputValue = (value, digits = 8) => M.finite(value) ? String(Number(value.toFixed(digits))) : '';
@@ -59,6 +63,7 @@
     if (workspaceTab === 'strategies') return comparison && comparisonKey !== comparisonSignature() ? '参数已改动，当前显示上次对比结果。' : '';
     if (workspaceTab === 'scenarios') return scenarioRun && scenarioKey !== scenarioSignature() ? '方案或区间已改动，当前显示上次对比结果。' : '';
     if (workspaceTab === 'rolling') return rollingRun && rollingKey !== rollingSignature() ? '设置或持有期已改动，当前显示上次检验结果。' : '';
+    if (workspaceTab === 'search') return searchRun && searchKey !== searchSignature() ? '设置或持有期已改动，当前显示上次寻优结果。' : '';
     if (!result || resultKey === signature()) return '';
     return workspaceTab === 'results' ? '参数已改动，当前显示上次模拟结果。' : '参数已改动，重新模拟后生效';
   }
@@ -359,8 +364,72 @@
   function stabilityState() {
     return { years: rollingYears, run: stabilityRun?.comparison === comparison ? stabilityRun : null, progress: stabilityProgress, error: stabilityError };
   }
+  async function runSearch() {
+    if (running || comparing || rollingProgress || stabilityProgress || searchProgress || !catalog) return;
+    for (const position of draft.positions) {
+      if (position.weight == null || typeof position.weight === 'string' && !position.weight.trim()) position.weight = 0;
+    }
+    persist();
+    const params = JSON.parse(JSON.stringify(config())), years = rollingYears, originalKey = searchSignature(), token = ++searchRunId;
+    const current = () => token === searchRunId && originalKey === searchSignature();
+    const failed = message => message + (searchRun ? ' 仍显示上次寻优结果。' : '');
+    try { P.validateConfig(params, new Set(catalog.assets.map(a => a.id))); }
+    catch (e) { searchError = failed(e.message + '。'); update(); return; }
+    searchProgress = { done: 0, total: 0 }; searchError = ''; update();
+    try {
+      let refreshMissing = '';
+      try { await refreshCatalog(); }
+      catch (e) { refreshMissing = '未能确认最新行情：' + e.message + '。本次寻优使用已保存的历史数据。'; }
+      const ids = P.initialMethods.map(([id]) => id);
+      const marketContext = await loadEvidence(ids.map(id => ({ ...params, initialMethod: id, benchmarkId: '' })), currency(params).code);
+      if (!current()) return;
+      const input = { catalog, histories: Object.fromEntries(histories), config: params, fxHistory: histories.get(catalog.fx?.id), ...(marketContext ? { marketContext } : {}) };
+      const calendar = P.rollingStarts(input, years);
+      if (calendar.error) throw new Error(calendar.error + '。');
+      if (!calendar.starts.length) throw new Error('共同历史不足 ' + years + ' 年，没有可检验的起点。');
+      const candidates = P.searchCandidates(ids), evaluated = [], ruleRuns = {}, ruleErrors = {}, total = calendar.starts.length * ids.length;
+      let done = 0, slice = Date.now();
+      searchProgress = { done, total }; update();
+      for (const start of calendar.starts) {
+        const paths = [];
+        for (const id of ids) {
+          const path = P.rollingPath(input, start, years, id);
+          if (path.error) ruleErrors[id] ??= path.error; else ruleRuns[id] = (ruleRuns[id] || 0) + 1;
+          paths.push(path); done++;
+          if (Date.now() - slice > 40 && done < total) {
+            searchProgress = { done, total };
+            const line = document.getElementById('portfolio-search-progress');
+            if (line) line.textContent = '已完成 ' + done + ' / ' + total + ' 次模拟';
+            await yieldToPage();
+            if (!current()) return;
+            slice = Date.now();
+          }
+        }
+        evaluated.push(P.searchEvaluate(P.searchWindow(start, paths), candidates));
+      }
+      // Where the target mix stood against its 200-day line at the close before each start, and at the latest close.
+      const trend = P.referenceTrend(input), deviationBefore = {};
+      if (!trend.error) trend.days.forEach((day, i) => { if (i) deviationBefore[day] = trend.deviation[i - 1]; });
+      // What each rule has put in by the latest close when started at the close before it.
+      const today = {};
+      if (!trend.error && trend.days.length > 1) for (const id of ids) {
+        const r = P.simulate({ ...input, config: { ...params, initialMethod: id, benchmarkId: '', years: 'custom', start: trend.days.at(-2), end: trend.days.at(-1) } });
+        const last = r.error ? null : r.curve.at(-1);
+        today[id] = last && last.contributed > 0 ? 100 * last.positionPrincipal / last.contributed : null;
+      }
+      searchRun = { config: params, years, candidates, evaluated, starts: calendar.starts, today, target: 100 - P.allocation(params.positions, catalog.assets).cash,
+        todayDeviation: trend.error ? null : trend.deviation.at(-1), deviationBefore,
+        ruleErrors: Object.fromEntries(Object.entries(ruleErrors).filter(([id]) => !ruleRuns[id])),
+        catalogRefresh: { checkedAt: new Date().toISOString(), available: !refreshMissing, missing: refreshMissing || null } };
+      searchKey = originalKey;
+    } catch (e) {
+      if (token === searchRunId) searchError = failed(e.message);
+    } finally {
+      if (token === searchRunId) { searchProgress = null; update(); }
+    }
+  }
   async function runRolling() {
-    if (running || comparing || rollingProgress || stabilityProgress || !catalog) return;
+    if (running || comparing || rollingProgress || stabilityProgress || searchProgress || !catalog) return;
     for (const position of draft.positions) {
       if (position.weight == null || typeof position.weight === 'string' && !position.weight.trim()) position.weight = 0;
     }
@@ -1475,11 +1544,13 @@
       return btn(name + (id === 'holdings' && draft.positions.length ? '<span class="portfolio-tab-count">' + draft.positions.length + '</span>' : ''), 'tab', 'portfolio-tab',
         'id="portfolio-tab-' + id + '" data-value="' + id + '" role="tab" aria-controls="portfolio-panel-' + id + '" aria-selected="' + active + '" tabindex="' + (active ? '0' : '-1') + '"');
     }).join('');
-    const busy = running || comparing || exportingPdf || !!rollingProgress || !!stabilityProgress;
+    const busy = running || comparing || exportingPdf || !!rollingProgress || !!stabilityProgress || !!searchProgress;
     const primary = workspaceTab === 'scenarios'
       ? btn(comparing ? '正在对比…' : '开始对比', 'run', 'btn primary', busy || !scenarios.length ? 'disabled' : '')
       : workspaceTab === 'rolling' && draft.positions.length
       ? btn(rollingProgress ? '正在检验…' : '开始检验', 'run', 'btn primary', busy ? 'disabled' : '')
+      : workspaceTab === 'search' && draft.positions.length
+      ? btn(searchProgress ? '正在寻优…' : '开始寻优', 'run', 'btn primary', busy ? 'disabled' : '')
       : !draft.positions.length && workspaceTab !== 'holdings'
       ? btn('添加标的', 'tab', 'btn primary', 'data-value="holdings"')
       : btn(comparing ? '正在对比…' : running ? '正在模拟…' : workspaceTab === 'strategies' ? '开始对比' : '开始模拟', 'run', 'btn primary', busy || !draft.positions.length ? 'disabled' : '');
@@ -1491,6 +1562,7 @@
     if (workspaceTab === 'results') return results();
     if (workspaceTab === 'strategies') return window.ChanghengPortfolioComparison.view(comparison, { ...comparisonView, error: comparisonError, stability: stabilityState() }, H);
     if (workspaceTab === 'rolling') return Rolling.view({ years: rollingYears, run: rollingRun, progress: rollingProgress, error: rollingError }, H);
+    if (workspaceTab === 'search') return Search.view({ years: rollingYears, run: searchRun, progress: searchProgress, error: searchError, ...searchView }, H);
     if (workspaceTab === 'scenarios') return Scenarios.view({ scenarios, name: scenarioName || Scenarios.nextName(scenarios), run: scenarioRun, view: scenarioView,
       error: scenarioError, assets: catalog.assets, canSave: draft.positions.length > 0 }, H);
     const unknown = draft.positions.filter(p => !asset(p.id));
@@ -1601,10 +1673,10 @@
         return;
       case 'retry': loadError = ''; ensureCatalog(); break;
       case 'run':
-        if (exportingPdf || comparing || running || rollingProgress || stabilityProgress) return;
-        return workspaceTab === 'strategies' ? runComparison() : workspaceTab === 'scenarios' ? runScenarios() : workspaceTab === 'rolling' ? runRolling() : run();
+        if (exportingPdf || comparing || running || rollingProgress || stabilityProgress || searchProgress) return;
+        return workspaceTab === 'strategies' ? runComparison() : workspaceTab === 'scenarios' ? runScenarios() : workspaceTab === 'rolling' ? runRolling() : workspaceTab === 'search' ? runSearch() : run();
       case 'rolling-years':
-        if (!Rolling.PERIODS.includes(Number(val)) || rollingProgress || stabilityProgress) return;
+        if (!Rolling.PERIODS.includes(Number(val)) || rollingProgress || stabilityProgress || searchProgress) return;
         rollingYears = Number(val); stabilityError = ''; break;
       case 'rolling-stop':
         if (!rollingProgress) return;
@@ -1654,6 +1726,19 @@
         H.download('长衡-多策略对比-' + (comparison.end || '未完成') + '.csv', window.ChanghengPortfolioComparison.summaryCsv(comparison, stabilityState().run), 'text/csv;charset=utf-8');
         return;
       case 'compare-stability': return runStability();
+      case 'search-criterion':
+        if (!['median', 'worst', 'ratio', 'wins'].includes(val)) return;
+        searchView.criterion = val; break;
+      case 'search-scope':
+        if (!['all', 'similar'].includes(val)) return;
+        searchView.scope = val; break;
+      case 'search-stop':
+        if (!searchProgress) return;
+        searchRunId++; searchProgress = null; break;
+      case 'search-export':
+        if (!searchRun) return;
+        H.download('长衡-策略寻优-持有' + searchRun.years + '年-' + searchRun.starts.at(-1) + '.csv', Search.csv(searchRun, searchView), 'text/csv;charset=utf-8');
+        return;
       case 'compare-stability-stop':
         if (!stabilityProgress) return;
         stabilityRunId++; stabilityProgress = null; break;

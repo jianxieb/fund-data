@@ -983,6 +983,25 @@ html[data-input-mode=keyboard] .sidebar a:focus-visible{outline:2px solid var(--
 .portfolio-rolling-progress{margin-left:8px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
 .portfolio-rolling-caveat{margin:0 24px}
 .portfolio-rolling-controls .segmented button{font-size:13px;padding:6px 14px;color:var(--ink)}
+.portfolio-search-tools{display:flex;flex-wrap:wrap;align-items:center;gap:12px 28px;padding:16px 24px 0}
+.portfolio-search-choice{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--ink)}
+.portfolio-search-choice .segmented button{font-size:13px;padding:6px 12px;color:var(--ink)}
+.portfolio-search-trend{font-size:13px;color:var(--muted)}
+.portfolio-search-pick{margin:18px 24px 6px;padding:18px 22px;border:1px solid #cfdcc8;border-radius:12px;background:#f3f7ee}
+.portfolio-search-pick-label{display:block;font-size:13px;color:#4c6a52}
+.portfolio-search-pick>strong{display:block;margin:4px 0 14px;font-size:22px;font-weight:600;color:var(--ink)}
+.portfolio-search-pick dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px 22px;margin:0}
+.portfolio-search-pick dt{font-size:12px;color:var(--muted)}
+.portfolio-search-pick dd{margin:3px 0 0;font-size:17px;font-weight:600;color:var(--ink)}
+.portfolio-search-pick dd small,.portfolio-search-table td small{display:block;font-size:12px;font-weight:400;color:var(--muted)}
+.portfolio-search-pick p{margin:14px 0 0;font-size:13px;color:#506454}
+.portfolio-search .table-wrap{padding:12px 0 0}
+.portfolio-search-table tbody tr.portfolio-search-chosen{background:#eef4e8}
+.portfolio-search-table th:first-child,.portfolio-search-table td:first-child{min-width:0;width:64px;text-align:center}
+.portfolio-search-table thead th:nth-child(2),.portfolio-search-table th[scope=row]{text-align:left;font-weight:500;white-space:normal;min-width:320px}
+.portfolio-search-pick .portfolio-search-wide{grid-column:span 2}
+.portfolio-search-pick .portfolio-search-wide dd{white-space:nowrap}
+.portfolio-search-missing{margin:14px 24px 20px;font-size:13px;color:var(--muted)}
 .portfolio-rolling-overview{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(320px,1fr);align-items:start;gap:20px;padding:18px 24px 24px}
 .portfolio-rolling-panel{border:1px solid var(--line);border-radius:12px;padding:16px 18px 10px;background:#fbfcf8;min-width:0}
 .portfolio-rolling-panel h3{margin:0 0 8px;font-size:14px;color:#344c39}

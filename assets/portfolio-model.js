@@ -418,6 +418,111 @@
     return Object.fromEntries(Object.entries(windows).map(([id, rows]) => [id, rollingSummary(id === baselineId ? rows :
       rows.map(row => row.error ? row : { ...row, lumpSum: base.has(row.start) ? base.get(row.start) : null }))]));
   }
+  // 策略寻优: every rule alone and in blends, scored from every start. A blend splits the capital (and any
+  // monthly additions) into separate sleeves run by their own rules; fees, taxes and cash interest scale with
+  // capital, so each sleeve is its rule's full-capital path scaled by its share.
+  function searchCandidates(ids) {
+    const out = ids.map(id => ({ id, legs: [{ id, weight: 1 }] }));
+    for (let a = 0; a < ids.length; a++) for (let b = a + 1; b < ids.length; b++) {
+      for (const share of [25, 50, 75]) out.push({ id: ids[a] + ':' + share + '+' + ids[b] + ':' + (100 - share), legs: [{ id: ids[a], weight: share / 100 }, { id: ids[b], weight: 1 - share / 100 }] });
+    }
+    for (let a = 0; a < ids.length; a++) for (let b = a + 1; b < ids.length; b++) for (let c = b + 1; c < ids.length; c++) {
+      out.push({ id: [ids[a], ids[b], ids[c]].map(id => id + ':33').join('+'), legs: [ids[a], ids[b], ids[c]].map(id => ({ id, weight: 1 / 3 })) });
+    }
+    return out;
+  }
+  function rollingPath(input, start, years, id) {
+    const result = simulate({ ...input, requireFullWindow: true, config: { ...input.config, initialMethod: id, benchmarkId: '', years: 'custom', start, end: addYears(start, years) } });
+    if (result.error) return { id, error: result.error };
+    return { id, start: result.start, end: result.end, days: result.curve.map(p => p.day), annualReturn: result.annualReturn, mdd: result.mdd,
+      value: Float64Array.from(result.curve, p => p.value), nav: Float64Array.from(result.curve, p => p.nav) };
+  }
+  // One start's paths, kept only where every rule valued the account on the same days.
+  function searchWindow(start, paths) {
+    const window = { start, actualStart: null, end: null, paths: {}, errors: {} };
+    let days = null;
+    for (const path of paths) {
+      if (path.error) { window.errors[path.id] = path.error; continue; }
+      if (days && (path.days.length !== days.length || path.days.some((d, i) => d !== days[i]))) { window.errors[path.id] = '估值日与其他规则不一致，不能分仓合成'; continue; }
+      if (!days) { days = path.days; window.actualStart = path.start; window.end = path.end; }
+      window.paths[path.id] = { annualReturn: path.annualReturn, mdd: path.mdd, value: path.value, nav: path.nav };
+    }
+    return window;
+  }
+  // The blend's unit value grows each day by its sleeves' unit-value returns weighted by their previous values.
+  function blendWindow(window, legs) {
+    const sleeves = legs.map(leg => window.paths[leg.id]);
+    if (sleeves.some(sleeve => !sleeve)) return null;
+    if (legs.length === 1) return { annualReturn: sleeves[0].annualReturn, mdd: sleeves[0].mdd };
+    const shares = legs.map(leg => leg.weight), n = sleeves[0].nav.length;
+    // First close: combined value over combined units (each sleeve's units are its value over its unit value).
+    let value = 0, units = 0;
+    sleeves.forEach((sleeve, k) => { value += shares[k] * sleeve.value[0]; units += shares[k] * sleeve.value[0] / sleeve.nav[0]; });
+    let nav = units > 0 ? value / units : sleeves[0].nav[0], peak = nav, mdd = 0;
+    for (let t = 1; t < n; t++) {
+      let before = 0, grown = 0;
+      for (let k = 0; k < sleeves.length; k++) {
+        const value = shares[k] * sleeves[k].value[t - 1];
+        before += value; grown += value * sleeves[k].nav[t] / sleeves[k].nav[t - 1];
+      }
+      if (before > 0) nav *= grown / before;
+      if (nav > peak) peak = nav; else mdd = Math.min(mdd, (nav / peak - 1) * 100);
+    }
+    return { annualReturn: annualReturn(nav, window.actualStart, window.end), mdd };
+  }
+  function searchEvaluate(window, candidates) {
+    const annual = new Float64Array(candidates.length).fill(NaN), mdd = new Float64Array(candidates.length).fill(NaN);
+    candidates.forEach((candidate, i) => {
+      const result = blendWindow(window, candidate.legs);
+      if (result && finite(result.annualReturn) && finite(result.mdd)) { annual[i] = result.annualReturn; mdd[i] = result.mdd; }
+    });
+    return { start: window.start, annual, mdd };
+  }
+  function searchSummary(evaluated, candidates, { baselineId = 'lump_sum', include = () => true } = {}) {
+    const windows = evaluated.filter(w => include(w.start)).sort((a, b) => a.start.localeCompare(b.start));
+    const half = Math.ceil(windows.length / 2), base = candidates.findIndex(c => c.id === baselineId);
+    const median = sorted => {
+      if (!sorted.length) return null;
+      const at = (sorted.length - 1) / 2, low = Math.floor(at), high = Math.ceil(at);
+      return sorted[low] + (sorted[high] - sorted[low]) * (at - low);
+    };
+    const stats = (rows, i) => {
+      const ran = rows.filter(w => !Number.isNaN(w.annual[i])), annual = ran.map(w => w.annual[i]).sort((a, b) => a - b), depths = ran.map(w => w.mdd[i]).sort((a, b) => a - b);
+      const both = base < 0 || i === base ? null : ran.filter(w => !Number.isNaN(w.annual[base]));
+      const m = median(annual), d = median(depths);
+      return { count: ran.length, failed: rows.length - ran.length, median: m, worst: ran.length ? annual[0] : null, mddMedian: d, mddWorst: ran.length ? depths[0] : null,
+        ratio: m === null || !d ? null : m / Math.abs(d), beat: !both || !both.length ? null : { wins: both.filter(w => w.annual[i] > w.annual[base]).length, of: both.length } };
+    };
+    return candidates.map((candidate, i) => ({ id: candidate.id, legs: candidate.legs, all: stats(windows, i), early: stats(windows.slice(0, half), i), late: stats(windows.slice(half), i) }));
+  }
+  const searchCriteria = {
+    median: s => s.median, worst: s => s.worst, ratio: s => s.ratio, wins: s => s.beat ? s.beat.wins / s.beat.of : null
+  };
+  // Highest first by the criterion on the given part of the starts; ties go to the higher median, then the id.
+  function searchRank(summaries, criterion = 'median', part = 'all') {
+    const key = searchCriteria[criterion] || searchCriteria.median;
+    return summaries.filter(s => s[part].count > 0).sort((a, b) => {
+      const x = key(a[part]), y = key(b[part]);
+      if (x === null || y === null) return x === null && y === null ? 0 : x === null ? 1 : -1;
+      return y - x || (b[part].median ?? -Infinity) - (a[part].median ?? -Infinity) || a.id.localeCompare(b.id);
+    });
+  }
+  // The pick: the candidate whose weaker half of the starts ranks best, so its lead held in both halves.
+  function searchPick(summaries, criterion = 'median') {
+    const ranked = searchRank(summaries, criterion), place = part => new Map(searchRank(summaries, criterion, part).map((s, i) => [s.id, i + 1]));
+    const early = place('early'), late = place('late'), ranks = {};
+    ranked.forEach((s, i) => { ranks[s.id] = { all: i + 1, early: early.get(s.id) ?? null, late: late.get(s.id) ?? null }; });
+    const weaker = s => Math.max(ranks[s.id].early ?? Infinity, ranks[s.id].late ?? Infinity);
+    const robust = ranked.slice().sort((a, b) => weaker(a) - weaker(b) || ranks[a.id].all - ranks[b.id].all)[0] || null;
+    return { ranked, robust, ranks };
+  }
+  // The target mix's distance from its own 200-day average at each close, as the 200日均线 rule sees it.
+  function referenceTrend(input) {
+    const result = simulate({ ...input, config: { ...input.config, initialMethod: 'ma200_hold', initial: input.config.initial > 0 ? input.config.initial : 1, monthly: 0, years: 'common', benchmarkId: '' } });
+    if (result.error) return { error: result.error };
+    const rows = chartSources.get(result).referenceHistory();
+    return { days: rows.map(row => row.day), deviation: rows.map(row => row.deviation) };
+  }
   // Comparisons use the account's existing valuation dates; a new benchmark never trades or shortens that account.
   function compareBenchmark({ catalog, histories, fxHistory }, { start, end, curve, config }, benchmarkId = config.benchmarkId) {
     if (!benchmarkId) return { benchmark: null, benchmarkError: null };
@@ -1382,5 +1487,5 @@
     }
     return config;
   }
-  return { simulate, simulateWindows, simulateStrategies, simulateScenarios, rollingStarts, rollingWindow, rollingSummary, rollingStability, niceAxis, stepDecimals, strategyStatus, riskAnalysis, riskRatios, holdingCorrelation, comparisonMethods, compareBenchmark, chartIndicators, chartReferences, validateHistory, validateConfig, sanitizeDraft, allocation, accountAllocation, additionAllocation, amountFromWeight, weightFromAmount, at, annualReturn, holdingXirr, addYears, taxConfig, taxRates, currencyInfo, strategyConfig, strategyNames, initialMethods, contributionMethods, dividendPolicies, opportunityDefinitions: Systematic?.opportunityDefinitions || {} };
+  return { simulate, simulateWindows, simulateStrategies, simulateScenarios, rollingStarts, rollingWindow, rollingSummary, rollingStability, niceAxis, stepDecimals, searchCandidates, rollingPath, searchWindow, blendWindow, searchEvaluate, searchSummary, searchRank, searchPick, referenceTrend, strategyStatus, riskAnalysis, riskRatios, holdingCorrelation, comparisonMethods, compareBenchmark, chartIndicators, chartReferences, validateHistory, validateConfig, sanitizeDraft, allocation, accountAllocation, additionAllocation, amountFromWeight, weightFromAmount, at, annualReturn, holdingXirr, addYears, taxConfig, taxRates, currencyInfo, strategyConfig, strategyNames, initialMethods, contributionMethods, dividendPolicies, opportunityDefinitions: Systematic?.opportunityDefinitions || {} };
 });

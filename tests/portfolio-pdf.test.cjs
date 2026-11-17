@@ -146,6 +146,7 @@ function uiFixture(configure, model = P) {
   vm.runInContext(fs.readFileSync(path.resolve(__dirname, '../assets/portfolio-comparison.js'), 'utf8'), context);
   vm.runInContext(fs.readFileSync(path.resolve(__dirname, '../assets/portfolio-scenarios.js'), 'utf8'), context);
   vm.runInContext(fs.readFileSync(path.resolve(__dirname, '../assets/portfolio-rolling.js'), 'utf8'), context);
+  vm.runInContext(fs.readFileSync(path.resolve(__dirname, '../assets/portfolio-search.js'), 'utf8'), context);
   vm.runInContext(fs.readFileSync(path.resolve(__dirname, '../assets/portfolio.js'), 'utf8'), context);
   const ui = context.window.ChanghengPortfolio;
   const helpers = { esc: String, action: (label, act, cls, extra = '') => '<button data-action="' + act + '" ' + extra + '>' + label + '</button>',
@@ -1338,7 +1339,7 @@ test('stopping a start-date test leaves no progress and no partial result', asyn
 test('production entrypoint loads the account model, PDF and simulator', () => {
   const html = fs.readFileSync(path.resolve(__dirname, '../index.html'), 'utf8');
   const assets = [...html.matchAll(/src="assets\/(portfolio[^"?]*)/g)].map(match => match[1]);
-  assert.deepEqual(assets, ['portfolio-opportunity.js', 'portfolio-systematic.js', 'portfolio-model.js', 'portfolio-pdf.js', 'portfolio-comparison.js', 'portfolio-scenarios.js', 'portfolio-rolling.js', 'portfolio.js']);
+  assert.deepEqual(assets, ['portfolio-opportunity.js', 'portfolio-systematic.js', 'portfolio-model.js', 'portfolio-pdf.js', 'portfolio-comparison.js', 'portfolio-scenarios.js', 'portfolio-rolling.js', 'portfolio-search.js', 'portfolio.js']);
 });
 
 
@@ -1714,4 +1715,52 @@ test('the wheel zooms the account chart around the date under the pointer, pans 
   for (let i = 0; i < 80; i++) send(100, 500);
   assert.deepEqual(range(), [first, last]);
   assert.match(f.ui.view(f.helpers), /data-action="portfolio-chart-zoom" data-value="all"[^>]*aria-pressed="true"|aria-pressed="true"[^>]*data-value="all"/);
+});
+
+
+test('策略寻优 scores every rule and blend from every start and names the one that ranks well in both halves', async () => {
+  const f = uiFixture(input => Object.assign(input.config, { monthly: 0, rebalance: 'none' }));
+  const view = () => f.ui.view(f.helpers);
+  await f.action('tab', { value: 'search' });
+  assert.match(view(), /data-action="portfolio-run" ?>开始寻优</);
+  await f.action('rolling-years', { value: '1' });
+  await f.action('run');
+  let html = view();
+  await f.action('save');
+  const config = JSON.parse(f.downloads.at(-1)[1]); delete config.schemaVersion;
+  const input = { catalog: f.input.catalog, histories: f.input.histories, config };
+  const ids = P.initialMethods.map(([id]) => id), names = Object.fromEntries(P.initialMethods), candidates = P.searchCandidates(ids), starts = P.rollingStarts(input, 1).starts;
+  const evaluated = starts.map(start => P.searchEvaluate(P.searchWindow(start, ids.map(id => P.rollingPath(input, start, 1, id))), candidates));
+  const label = c => c.legs.map(l => names[l.id] + (c.legs.length > 1 ? ' ' + Math.round(l.weight * 100) + '%' : '')).join(' + ');
+  let pick = P.searchPick(P.searchSummary(evaluated, candidates), 'median');
+  assert.ok(pick.ranked.length > 20 && pick.ranked.length < candidates.length, 'rules that cannot run here leave their blends out');
+  assert.ok(html.includes(pick.ranked.length + ' 个方案') && html.includes(starts.length + ' 个起点'));
+  const panel = html.split('class="portfolio-search-pick"')[1].split('</section>')[0];
+  assert.ok(panel.includes('<strong>' + label(pick.robust) + '</strong>'), 'the both-halves pick is named');
+  assert.ok(panel.includes(String(pick.robust.all.median)) && panel.includes('前半第 ' + pick.ranks[pick.robust.id].early) && panel.includes('后半第 ' + pick.ranks[pick.robust.id].late));
+  assert.match(html, /无法模拟[\s\S]*TQQQ/, 'the rules that never ran say why');
+  const rows = html.split('<tbody>')[1].split('</tbody>')[0].split('<tr').slice(1);
+  const lumpRank = pick.ranks.lump_sum.all;
+  assert.equal(rows.length, 20 + (lumpRank > 20 ? 1 : 0), 'twenty leaders, plus 一次性投入 when it is not among them');
+  pick.ranked.slice(0, 20).forEach((r, i) => assert.ok(rows[i].includes(label(r)), 'row ' + (i + 1)));
+  assert.ok(rows.some(row => row.includes('<th scope="row">一次性投入</th>')));
+  await f.action('search-criterion', { value: 'worst' });
+  pick = P.searchPick(P.searchSummary(evaluated, candidates), 'worst');
+  assert.ok(view().split('<tbody>')[1].split('<tr')[1].includes(label(pick.ranked[0])), 'the order follows the chosen criterion');
+  await f.action('search-export');
+  const csv = f.downloads.at(-1);
+  assert.match(csv[0], /策略寻优/);
+  assert.equal(csv[1].trim().split(/\r?\n/).length, 1 + candidates.length, 'every candidate, ranked or not');
+  await f.action('rolling-years', { value: '3' });
+  assert.ok(view().includes('设置或持有期已改动，当前显示上次寻优结果。'));
+});
+
+test('stopping a search leaves no progress and no partial result', async () => {
+  const f = uiFixture(input => Object.assign(input.config, { monthly: 0, rebalance: 'none' }));
+  await f.action('tab', { value: 'search' }); await f.action('rolling-years', { value: '1' });
+  const pending = f.action('run');
+  assert.ok(f.ui.view(f.helpers).includes('data-action="portfolio-search-stop"'));
+  await f.action('search-stop'); await pending;
+  const html = f.ui.view(f.helpers);
+  assert.doesNotMatch(html, /已完成 \d+ \/ \d+ 次模拟|portfolio-search-stop|portfolio-search-pick/);
 });
