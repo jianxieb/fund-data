@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "startedAt": "2026-11-17T04:28:48+00:00",
+  "startedAt": "2026-11-18T03:42:57+00:00",
   "mode": "online",
   "dailyMode": true,
   "scope": "all",
@@ -18,12 +18,12 @@
   "steps": [
     {
       "dataset": "funds",
-      "status": "timeout",
-      "exitCode": 124,
-      "seconds": 90.36,
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 59.04,
       "log": ".tmp-snap/refresh-funds.log",
-      "publishedRollback": true,
-      "retainedPrevious": true,
+      "publishedRollback": false,
+      "retainedPrevious": false,
       "sourcePartial": false,
       "checkpointValidated": false
     },
@@ -31,7 +31,7 @@
       "dataset": "research_funds",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 1.27,
+      "seconds": 1.32,
       "log": ".tmp-snap/refresh-research_funds.log",
       "publishedRollback": false,
       "retainedPrevious": false,
@@ -42,7 +42,7 @@
       "dataset": "indices",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 25.59,
+      "seconds": 16.61,
       "log": ".tmp-snap/refresh-indices.log",
       "publishedRollback": false,
       "retainedPrevious": false,
@@ -53,7 +53,7 @@
       "dataset": "stocks",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 55.5,
+      "seconds": 69.77,
       "log": ".tmp-snap/refresh-stocks.log",
       "publishedRollback": false,
       "retainedPrevious": false,
@@ -64,7 +64,7 @@
       "dataset": "overseas_stocks",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 22.23,
+      "seconds": 17.53,
       "log": ".tmp-snap/refresh-overseas_stocks.log",
       "publishedRollback": false,
       "retainedPrevious": false,
@@ -86,7 +86,7 @@
       "dataset": "strategy",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 24.59,
+      "seconds": 25.35,
       "log": ".tmp-snap/refresh-strategy.log",
       "publishedRollback": false,
       "retainedPrevious": false,
@@ -95,20 +95,20 @@
     },
     {
       "dataset": "portfolio",
-      "status": "partial",
-      "exitCode": 124,
-      "seconds": 98.64,
+      "status": "completed",
+      "exitCode": 0,
+      "seconds": 65.14,
       "log": ".tmp-snap/refresh-portfolio.log",
       "publishedRollback": false,
       "retainedPrevious": false,
-      "sourcePartial": true,
-      "checkpointValidated": true
+      "sourcePartial": false,
+      "checkpointValidated": false
     },
     {
       "dataset": "quality",
       "status": "completed",
       "exitCode": 0,
-      "seconds": 1.06,
+      "seconds": 1.05,
       "log": ".tmp-snap/refresh-quality.log",
       "publishedRollback": false,
       "retainedPrevious": false,
@@ -117,18 +117,7 @@
     }
   ],
   "batchFundRecords": 1683,
-  "batchFundSeconds": 4.41,
-  "portfolioSync": {
-    "dataset": "portfolio_sync",
-    "status": "completed",
-    "exitCode": 0,
-    "seconds": 28.22,
-    "log": ".tmp-snap/refresh-portfolio_sync.log",
-    "publishedRollback": false,
-    "retainedPrevious": false,
-    "sourcePartial": false,
-    "checkpointValidated": false
-  },
+  "batchFundSeconds": 4.48,
   "benchmarkSync": {
     "dataset": "benchmark_sync",
     "status": "completed",
@@ -140,6 +129,6 @@
     "sourcePartial": false,
     "checkpointValidated": false
   },
-  "completedAt": "2026-11-17T04:32:34+00:00",
-  "status": "partial"
+  "completedAt": "2026-11-18T03:45:21+00:00",
+  "status": "completed"
 }
