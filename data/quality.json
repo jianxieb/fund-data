@@ -1,37 +1,21 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-11-18T03:45:37+00:00",
-  "asOf": "2026-11-18",
+  "checkedAt": "2026-11-19T03:31:05+00:00",
+  "asOf": "2026-11-19",
   "status": "unverified",
   "summary": {
     "errors": 0,
-    "warnings": 5,
-    "unverified": 65
+    "warnings": 4,
+    "unverified": 67
   },
   "datasets": [
     {
-      "id": "source_refresh",
-      "label": "本次未更新的来源",
-      "asOf": null,
-      "dateRange": null,
-      "records": 0,
-      "issues": [
-        {
-          "code": "source_history_retained",
-          "severity": "warning",
-          "message": "fund:000369：<urlopen error [Errno 104] Connection reset by peer>；保留历史截至2026-11-13",
-          "affected": "fund:000369"
-        }
-      ],
-      "status": "warning"
-    },
-    {
       "id": "funds",
       "label": "海外基金",
-      "asOf": "2026-11-16",
+      "asOf": "2026-11-17",
       "dateRange": [
-        "2026-11-16",
-        "2026-11-16"
+        "2026-11-17",
+        "2026-11-17"
       ],
       "records": 46,
       "issues": [
@@ -94,10 +78,10 @@
     {
       "id": "overseas_stocks",
       "label": "海外个股",
-      "asOf": "2026-11-17",
+      "asOf": "2026-11-18",
       "dateRange": [
-        "2026-11-17",
-        "2026-11-17"
+        "2026-11-18",
+        "2026-11-18"
       ],
       "records": 79,
       "issues": [
@@ -178,6 +162,18 @@
           "severity": "unverified",
           "message": "MCD经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
           "affected": "MCD"
+        },
+        {
+          "code": "overseas_financial_fields_missing",
+          "severity": "unverified",
+          "message": "HD 2026-10-31财季来源缺营业收入、净利润",
+          "affected": "HD"
+        },
+        {
+          "code": "overseas_business_review_pending",
+          "severity": "unverified",
+          "message": "HD经营复核仅覆盖2026-08-02，最新财报2026-10-31尚待经营复核",
+          "affected": "HD"
         },
         {
           "code": "overseas_business_review_pending",
@@ -479,10 +475,10 @@
     {
       "id": "benchmarks",
       "label": "海外指数与ETF基准",
-      "asOf": "2026-11-17",
+      "asOf": "2026-11-18",
       "dateRange": [
-        "2026-11-17",
-        "2026-11-17"
+        "2026-11-18",
+        "2026-11-18"
       ],
       "records": 36,
       "issues": [
@@ -531,10 +527,10 @@
     {
       "id": "stocks",
       "label": "股票观察清单",
-      "asOf": "2026-11-18",
+      "asOf": "2026-11-19",
       "dateRange": [
-        "2026-11-18",
-        "2026-11-18"
+        "2026-11-19",
+        "2026-11-19"
       ],
       "records": 71,
       "issues": [],
@@ -543,7 +539,7 @@
     {
       "id": "strategy",
       "label": "买入策略实验",
-      "asOf": "2026-11-17",
+      "asOf": "2026-11-18",
       "dateRange": null,
       "records": 162,
       "issues": [],
@@ -556,10 +552,10 @@
     {
       "id": "domestic_funds",
       "label": "扩展基金研究池",
-      "asOf": "2026-11-17",
+      "asOf": "2026-11-18",
       "dateRange": [
         "2026-11-13",
-        "2026-11-17"
+        "2026-11-18"
       ],
       "records": 1577,
       "issues": [
@@ -3398,10 +3394,10 @@
     {
       "id": "indices",
       "label": "国内指数",
-      "asOf": "2026-11-17",
+      "asOf": "2026-11-18",
       "dateRange": [
-        "2026-11-17",
-        "2026-11-17"
+        "2026-11-18",
+        "2026-11-18"
       ],
       "records": 13,
       "issues": [
@@ -3419,10 +3415,10 @@
     {
       "id": "portfolio",
       "label": "组合每日历史",
-      "asOf": "2026-11-17",
+      "asOf": "2026-11-18",
       "dateRange": [
         "2026-11-13",
-        "2026-11-17"
+        "2026-11-18"
       ],
       "records": 1873,
       "issues": [],
