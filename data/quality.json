@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-11-19T03:31:05+00:00",
-  "asOf": "2026-11-19",
+  "checkedAt": "2026-11-20T03:18:16+00:00",
+  "asOf": "2026-11-20",
   "status": "unverified",
   "summary": {
     "errors": 0,
     "warnings": 4,
-    "unverified": 67
+    "unverified": 70
   },
   "datasets": [
     {
       "id": "funds",
       "label": "海外基金",
-      "asOf": "2026-11-17",
+      "asOf": "2026-11-18",
       "dateRange": [
-        "2026-11-17",
-        "2026-11-17"
+        "2026-11-18",
+        "2026-11-18"
       ],
       "records": 46,
       "issues": [
@@ -78,10 +78,10 @@
     {
       "id": "overseas_stocks",
       "label": "海外个股",
-      "asOf": "2026-11-18",
+      "asOf": "2026-11-19",
       "dateRange": [
         "2026-11-18",
-        "2026-11-18"
+        "2026-11-19"
       ],
       "records": 79,
       "issues": [
@@ -120,6 +120,12 @@
           "severity": "unverified",
           "message": "NFLX经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
           "affected": "NFLX"
+        },
+        {
+          "code": "overseas_business_review_pending",
+          "severity": "unverified",
+          "message": "INTU经营复核仅覆盖2026-07-31，最新财报2026-10-31尚待经营复核",
+          "affected": "INTU"
         },
         {
           "code": "overseas_business_review_pending",
@@ -356,6 +362,18 @@
           "affected": "LRCX"
         },
         {
+          "code": "overseas_financial_fields_missing",
+          "severity": "unverified",
+          "message": "NVDA 2026-10-31财季来源缺营业收入、净利润",
+          "affected": "NVDA"
+        },
+        {
+          "code": "overseas_business_review_pending",
+          "severity": "unverified",
+          "message": "NVDA经营复核仅覆盖2026-07-26，最新财报2026-10-31尚待经营复核",
+          "affected": "NVDA"
+        },
+        {
           "code": "overseas_business_review_pending",
           "severity": "unverified",
           "message": "TSM经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
@@ -475,10 +493,10 @@
     {
       "id": "benchmarks",
       "label": "海外指数与ETF基准",
-      "asOf": "2026-11-18",
+      "asOf": "2026-11-19",
       "dateRange": [
         "2026-11-18",
-        "2026-11-18"
+        "2026-11-19"
       ],
       "records": 36,
       "issues": [
@@ -527,10 +545,10 @@
     {
       "id": "stocks",
       "label": "股票观察清单",
-      "asOf": "2026-11-19",
+      "asOf": "2026-11-20",
       "dateRange": [
-        "2026-11-19",
-        "2026-11-19"
+        "2026-11-20",
+        "2026-11-20"
       ],
       "records": 71,
       "issues": [],
@@ -539,7 +557,7 @@
     {
       "id": "strategy",
       "label": "买入策略实验",
-      "asOf": "2026-11-18",
+      "asOf": "2026-11-19",
       "dateRange": null,
       "records": 162,
       "issues": [],
@@ -552,10 +570,10 @@
     {
       "id": "domestic_funds",
       "label": "扩展基金研究池",
-      "asOf": "2026-11-18",
+      "asOf": "2026-11-19",
       "dateRange": [
         "2026-11-13",
-        "2026-11-18"
+        "2026-11-19"
       ],
       "records": 1577,
       "issues": [
@@ -3394,10 +3412,10 @@
     {
       "id": "indices",
       "label": "国内指数",
-      "asOf": "2026-11-18",
+      "asOf": "2026-11-19",
       "dateRange": [
-        "2026-11-18",
-        "2026-11-18"
+        "2026-11-19",
+        "2026-11-19"
       ],
       "records": 13,
       "issues": [
@@ -3415,10 +3433,10 @@
     {
       "id": "portfolio",
       "label": "组合每日历史",
-      "asOf": "2026-11-18",
+      "asOf": "2026-11-19",
       "dateRange": [
         "2026-11-13",
-        "2026-11-18"
+        "2026-11-19"
       ],
       "records": 1873,
       "issues": [],
