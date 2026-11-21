@@ -3,8 +3,8 @@
   "funds": {
     "050025": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_050025.html",
-      "observedAt": "2026-11-18",
-      "sourceSha256": "e8a59b485f51f1e47d23b61d4b1fde5d7f9e1b19aac5f9f5d8b8d0f9c0246cc6",
+      "observedAt": "2026-11-21",
+      "sourceSha256": "06155f2b562b5779972977bd146b06f54df4a8da84ae1fa18913e1becfc71049",
       "dividends": {
         "2012-09-20": 0.028000000000000004,
         "2014-01-09": 0.0066,
@@ -14,22 +14,22 @@
     },
     "161125": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_161125.html",
-      "observedAt": "2026-11-18",
-      "sourceSha256": "dabc212547fc83f217fd3d12ec799eeb65b3f964ef71224f9823e0676447ba23",
+      "observedAt": "2026-11-21",
+      "sourceSha256": "1aec66ddabee650be63434ecd6e022c1d46f25aa0ec6525285bc51a73eb3859d",
       "dividends": {},
       "splits": {}
     },
     "018064": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_018064.html",
-      "observedAt": "2026-11-18",
-      "sourceSha256": "482bd7a186fda13be69a531f9e9b20fd67de401f873d95fde00c4ca02075993c",
+      "observedAt": "2026-11-21",
+      "sourceSha256": "2f64204c03cd258d4435289f99ab44b869628a59abc2c304901ea2996bf4f6d8",
       "dividends": {},
       "splits": {}
     },
     "096001": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_096001.html",
-      "observedAt": "2026-11-18",
-      "sourceSha256": "e6a0c2655adb73885d448cbed171fc9a04646fd9572576dd8d7b26342f484b0e",
+      "observedAt": "2026-11-21",
+      "sourceSha256": "dbffca7ffe6cdf3a499275c9a0480e23d8542ed52727bdbfba6ca0b570a9a332",
       "dividends": {
         "2014-01-17": 0.0048000000000000004,
         "2015-01-19": 0.0187,
@@ -56,15 +56,15 @@
     },
     "007721": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_007721.html",
-      "observedAt": "2026-11-18",
-      "sourceSha256": "6927c32a70f79db3b58162339cedb1ccdf0b305a5496191230396c57f153c113",
+      "observedAt": "2026-11-21",
+      "sourceSha256": "8803dcabf7d289eac4391b3ab02c21face08b115a17066d28244f871bc9218dd",
       "dividends": {},
       "splits": {}
     },
     "513500": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_513500.html",
-      "observedAt": "2026-11-18",
-      "sourceSha256": "4d417adf82222cbfa3ee6eb3f2317d9ededc62e7597ac350bf3162c22a9f2b91",
+      "observedAt": "2026-11-21",
+      "sourceSha256": "eb46eca38490667c444ca0e86df1760385c765619a68fda915c8e55c637fd2e5",
       "dividends": {},
       "splits": {
         "2022-03-29": 2.0
@@ -72,29 +72,29 @@
     },
     "159655": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_159655.html",
-      "observedAt": "2026-11-18",
-      "sourceSha256": "2109ee395e1654f64e8e4093e9ebbb8086d012e31562bbc99ac834ad4cbc9676",
+      "observedAt": "2026-11-21",
+      "sourceSha256": "94bd4da69f0f6994d2b0f1ff22665bc92277816ced366716046a01b2d39ef701",
       "dividends": {},
       "splits": {}
     },
     "159612": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_159612.html",
-      "observedAt": "2026-11-18",
-      "sourceSha256": "eab25eec736cd4107510b7412d9688c93507d03f731f6316ccf8a1919768a683",
+      "observedAt": "2026-11-21",
+      "sourceSha256": "b9bc185c727aceea42512750bf84a300a6c3566bf5fcfe8cb58e6c0be0b208d0",
       "dividends": {},
       "splits": {}
     },
     "513650": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_513650.html",
-      "observedAt": "2026-11-18",
-      "sourceSha256": "676974785c4536a05897975e49685368fd15f418828d6df2f7c3e4d19a16ae49",
+      "observedAt": "2026-11-21",
+      "sourceSha256": "40f534d1d6a0bd42ffbab18d9254e78a3c8ac066a16378c96ca0c652b77bb8fd",
       "dividends": {},
       "splits": {}
     },
     "160213": {
       "sourceUrl": "https://fundf10.eastmoney.com/fhsp_160213.html",
-      "observedAt": "2026-11-18",
-      "sourceSha256": "7de7d444e3abe35b9556115f4982ff872559a078cb19e2ed91d1252e492996f0",
+      "observedAt": "2026-11-21",
+      "sourceSha256": "f525ed0404a8f01f77b5fb14899b7657ba8341177ddba4a77be9ae745ea2b57e",
       "dividends": {
         "2011-02-16": 0.04,
         "2012-03-06": 0.04,

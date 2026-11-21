@@ -1,21 +1,21 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-11-20T03:18:16+00:00",
-  "asOf": "2026-11-20",
+  "checkedAt": "2026-11-21T03:15:42+00:00",
+  "asOf": "2026-11-21",
   "status": "unverified",
   "summary": {
     "errors": 0,
     "warnings": 4,
-    "unverified": 70
+    "unverified": 69
   },
   "datasets": [
     {
       "id": "funds",
       "label": "海外基金",
-      "asOf": "2026-11-18",
+      "asOf": "2026-11-19",
       "dateRange": [
-        "2026-11-18",
-        "2026-11-18"
+        "2026-11-19",
+        "2026-11-19"
       ],
       "records": 46,
       "issues": [
@@ -78,10 +78,10 @@ var DATA_QUALITY={
     {
       "id": "overseas_stocks",
       "label": "海外个股",
-      "asOf": "2026-11-19",
+      "asOf": "2026-11-20",
       "dateRange": [
-        "2026-11-18",
-        "2026-11-19"
+        "2026-11-20",
+        "2026-11-20"
       ],
       "records": 79,
       "issues": [
@@ -170,15 +170,9 @@ var DATA_QUALITY={
           "affected": "MCD"
         },
         {
-          "code": "overseas_financial_fields_missing",
-          "severity": "unverified",
-          "message": "HD 2026-10-31财季来源缺营业收入、净利润",
-          "affected": "HD"
-        },
-        {
           "code": "overseas_business_review_pending",
           "severity": "unverified",
-          "message": "HD经营复核仅覆盖2026-08-02，最新财报2026-10-31尚待经营复核",
+          "message": "HD经营复核仅覆盖2026-08-02，最新财报2026-11-01尚待经营复核",
           "affected": "HD"
         },
         {
@@ -493,10 +487,10 @@ var DATA_QUALITY={
     {
       "id": "benchmarks",
       "label": "海外指数与ETF基准",
-      "asOf": "2026-11-19",
+      "asOf": "2026-11-20",
       "dateRange": [
-        "2026-11-18",
-        "2026-11-19"
+        "2026-11-20",
+        "2026-11-20"
       ],
       "records": 36,
       "issues": [
@@ -557,7 +551,7 @@ var DATA_QUALITY={
     {
       "id": "strategy",
       "label": "买入策略实验",
-      "asOf": "2026-11-19",
+      "asOf": "2026-11-20",
       "dateRange": null,
       "records": 162,
       "issues": [],
@@ -570,10 +564,10 @@ var DATA_QUALITY={
     {
       "id": "domestic_funds",
       "label": "扩展基金研究池",
-      "asOf": "2026-11-19",
+      "asOf": "2026-11-20",
       "dateRange": [
-        "2026-11-13",
-        "2026-11-19"
+        "2026-11-18",
+        "2026-11-20"
       ],
       "records": 1577,
       "issues": [
@@ -3412,10 +3406,10 @@ var DATA_QUALITY={
     {
       "id": "indices",
       "label": "国内指数",
-      "asOf": "2026-11-19",
+      "asOf": "2026-11-20",
       "dateRange": [
-        "2026-11-19",
-        "2026-11-19"
+        "2026-11-20",
+        "2026-11-20"
       ],
       "records": 13,
       "issues": [
@@ -3433,10 +3427,10 @@ var DATA_QUALITY={
     {
       "id": "portfolio",
       "label": "组合每日历史",
-      "asOf": "2026-11-19",
+      "asOf": "2026-11-20",
       "dateRange": [
-        "2026-11-13",
-        "2026-11-19"
+        "2026-11-18",
+        "2026-11-20"
       ],
       "records": 1873,
       "issues": [],
