@@ -209,3 +209,56 @@ test('paths and their spread are set to 100 at each signal and stop at the lates
   near(at(10).median, [100, 200, 300].map(i => closes[i + 10] / closes[i] * 100).sort((a, b) => a - b)[1]);
   near(C.percentile(d, 'r1', d.values.r1[d.last]), 100 * d.stats.r1.sorted.filter(v => v <= d.values.r1[d.last]).length / d.stats.r1.n);
 });
+
+test('VIX readings come only from same-date Cboe closes, ignore other dates and never fill gaps', () => {
+  const closes = wave(320), rows = sessions(closes), dates = rows.map(r => r[0]);
+  const level = i => 15 + 10 * Math.abs(Math.sin(i / 11));
+  const vix = [];
+  dates.forEach((date, i) => {
+    if (i !== 100) vix.push([date, level(i)]); // Cboe has no close for session 100.
+    // Cboe also publishes on some exchange holidays; those dates are off the index calendar and must not leak in.
+    const day = new Date(date + 'T00:00:00Z');
+    if (day.getUTCDay() === 5) { day.setUTCDate(day.getUTCDate() + 1); vix.push([day.toISOString().slice(0, 10), 99]); }
+  });
+  const clean = vix;
+  const d = C.compute(rows, { vix:clean });
+  assert.ok(!Array.from(d.values.vix).includes(99));
+  near(d.values.vix[200], level(200));
+  assert.ok(Number.isNaN(d.values.vix[100]));
+  near(d.values.vix5[200], (level(200) / level(195) - 1) * 100);
+  for (const i of [100, 105]) assert.ok(Number.isNaN(d.values.vix5[i]), 'a missing end of the 5-session window leaves the change unknown: ' + i);
+  for (const i of [101, 104, 106]) assert.ok(Number.isFinite(d.values.vix5[i]), i);
+  assert.ok(Number.isNaN(d.values.vix5[4]), 'the change needs five earlier sessions');
+  assert.deepEqual(d.vix, { first:dates[0], asOf:vix.at(-1)[0], missing:[dates[100]] });
+  assert.equal(d.stats.vix.n, closes.length - 1);
+  const without = C.compute(rows);
+  assert.equal(without.vix, null);
+  assert.ok(without.values.vix.every(Number.isNaN) && without.values.vix5.every(Number.isNaN));
+  assert.equal(C.suggest(without, 'vix'), null);
+  for (const bad of [[[dates[1], 20], [dates[0], 20]], [[dates[0], 0], [dates[1], 20]], [[dates[0], 20]], [['2001-02-30', 20], [dates[1], 20]]])
+    assert.throws(() => C.compute(rows, { vix:bad }), /VIX/);
+  // Readings at the latest close stay unknown when Cboe has not published that date yet.
+  const late = C.compute(rows, { vix:clean.filter(([date]) => date < dates.at(-1)) });
+  assert.ok(Number.isNaN(late.values.vix[late.last]));
+  assert.ok(late.vix.asOf < dates.at(-1));
+  assert.equal(late.vix.missing.length, 1, 'the latest session is outside the VIX file and not counted as a gap inside it');
+  assert.equal(C.suggest(late, 'vix'), null);
+});
+
+test('the latest-close fit records every attempt in order, with the sample count that decided it', () => {
+  const closes = wave(1600), rows = sessions(closes);
+  const vix = rows.map(([date], i) => [date, 14 + 12 * Math.abs(Math.sin(i / 17))]);
+  const d = C.compute(rows, { vix }), fit = C.fit(d, { gap:21 });
+  assert.deepEqual(fit.steps.map(s => s.id), C.fitOrder);
+  assert.ok(C.fitOrder.includes('vix'));
+  const kept = {};
+  for (const step of fit.steps) {
+    if (!step.band) { assert.equal(step.episodes, null); continue; }
+    assert.deepEqual(step.band, C.suggest(d, step.id));
+    assert.equal(step.episodes, C.count(d, { ...kept, [step.id]:step.band }, 21));
+    assert.equal(step.kept, step.episodes >= 10);
+    if (step.kept) kept[step.id] = step.band;
+  }
+  assert.deepEqual(fit.conditions, kept);
+  assert.deepEqual(fit.added, fit.steps.filter(s => s.kept).map(s => s.id));
+});

@@ -7,15 +7,38 @@
   const gapTerms = { 5:'约1周', 10:'约2周', 21:'约1个月', 63:'约3个月', 126:'约半年', 252:'约1年' };
   const shortLabels = { r1:'当日', r3:'近3日', r5:'近5日', r21:'近21日', r63:'近63日', r252:'近252日', worst21:'21日最差单日',
     dd252:'距252日高点', ddMax:'距历史高点', rise252:'高于252日低点', since252:'高点后', ma50:'距50日线', ma200:'距200日线',
-    cross:'50/200日线', vol21:'波动率', rsi14:'RSI', down:'连跌', up:'连涨' };
-  const signedIds = new Set(['r1','r3','r5','r21','r63','r252','worst21','ma50','ma200','cross']);
+    cross:'50/200日线', vix:'VIX', vix5:'VIX 5日变化', vol21:'波动率', rsi14:'RSI', down:'连跌', up:'连涨' };
+  const signedIds = new Set(['r1','r3','r5','r21','r63','r252','worst21','ma50','ma200','cross','vix5']);
+  // What each reading is, then how it is usually read. Shown on demand beside its name.
+  const notes = {
+    r1:['信号日收盘相对前一交易日收盘的涨跌。', '单日冲击的大小；配合近 3、5 日涨跌，可区分一次性急跌与连续下跌。'],
+    r3:['相对 3 个交易日前收盘的涨跌，不要求每天同向。', '捕捉几天之内的急跌或急涨。'],
+    r5:['相对 5 个交易日前（约一周）收盘的涨跌。', '一周内的累计冲击。'],
+    r21:['相对 21 个交易日前（约一个月）收盘的涨跌。', '区分短线回调与持续一个月的下跌。'],
+    r63:['相对 63 个交易日前（约三个月）收盘的涨跌。', '季度级别的趋势。'],
+    r252:['相对 252 个交易日前（约一年）收盘的涨跌。', '所处的牛熊背景。'],
+    worst21:['近 21 个交易日（含当日）中跌得最多的一天。', '用来筛选近一个月内出现过大跌，不要求大跌就在当天。'],
+    dd252:['收盘比近 252 个交易日内的最高收盘低多少。', '常说的回调 10%、熊市 20%，看的就是距前高的跌幅。'],
+    ddMax:['收盘比数据起点以来的最高收盘低多少。', '接近 0 表示仍在历史高位附近。'],
+    rise252:['收盘比近 252 个交易日内的最低收盘高多少。', '接近 0 表示仍在一年低点附近。'],
+    since252:['近 252 个交易日的最高收盘出现在几个交易日之前。', '数值小表示刚从高点回落；接近 251 表示一年来未再创新高。'],
+    ma50:['收盘相对含当日的 50 日简单均线偏离多少。', '正值在均线上方，衡量中短期的偏离。'],
+    ma200:['收盘相对含当日的 200 日简单均线偏离多少。', '常用的长期趋势线；负值即收在 200 日线下方。'],
+    cross:['50 日均线相对 200 日均线高出或低于多少。', '正值即 50 日线在上方（俗称金叉后的状态），负值为死叉后的状态。'],
+    vix:['Cboe 按标普500期权价格计算的未来 30 天隐含波动率。研究纳斯达克100时也用它代表美股整体的恐慌程度。', '常用分界为 15、20、30，越高表示期权市场预期的波动越大。'],
+    vix5:['VIX 相对 5 个交易日前的变化。', '大幅上升表示恐慌快速升温；与 VIX 水平一起看，可区分突然飙升与长期高位。'],
+    vol21:['近 21 个交易日实际日收益的年化波动率。', '这是已经发生的波动；VIX 则是期权市场对未来的预期。'],
+    rsi14:['14 日相对强弱指标，范围 0–100，按 Wilder 平滑。', '常把 30 以下视为超卖、70 以上视为超买。'],
+    down:['截至当日连续收低的交易日数，收平即中断。', '下跌持续了几天。'],
+    up:['截至当日连续收高的交易日数，收平即中断。', '上涨持续了几天。']
+  };
   const defaults = { market:'ndx', gap:21 };
   const status = { complete:'已到期', pending:'未到期', gap:'行情断档' };
   const issues = { number:'请输入数字', size:'数值过大', integer:'请输入整数', decimals:'最多两位小数', order:'下限不能高于上限' };
   const pageSize = 15, maxLines = 80, minBand = 3;
   const esc = M.escapeHtml;
   const cache = new Map(), results = new Map(), fits = new Map(), charts = new Map();
-  let H, st, data, result, fitted, shown = null, signature = '', page = 1;
+  let H, st, data, result, fitted, shown = null, signature = '', page = 1, vixLoad = null;
 
   const fixed = (v, digits = 2) => v.toLocaleString('zh-CN', { minimumFractionDigits:digits, maximumFractionDigits:digits });
   const pct = v => v == null ? '—' : (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(2) + '%';
@@ -28,6 +51,7 @@
     if (v == null || !Number.isFinite(v)) return '—';
     if (signedIds.has(m.id)) return pct(v);
     if (m.id === 'rsi14') return v.toFixed(1);
+    if (m.id === 'vix') return v.toFixed(2);
     if (m.integer) return v + (m.id === 'since252' ? ' 个交易日' : ' 日');
     return v.toFixed(2) + '%';
   }
@@ -65,17 +89,47 @@
     H.render();
   }
   function redraw() { if (location.hash.split('?')[0] === route) H.render(); }
+  async function readVix() {
+    const response = await fetch(document.querySelector('#condition-vix-source')?.dataset.src || 'data/condition-study/catalog.json', { cache:'no-cache' });
+    if (!response.ok) throw new Error('VIX 目录加载失败（' + response.status + '）');
+    const catalog = await response.json();
+    const row = catalog.schemaVersion === 1 && catalog.assets?.find(item => item.id === 'index:^VIX');
+    if (!row || row.status !== 'available') throw new Error(row?.missing || '目录中没有可用的 VIX 日线');
+    if (row.code !== '^VIX' || row.basis !== 'implied_volatility_index' || !/^data\/condition-study\/VIX-[a-f0-9]{16}\.json$/.test(row.historyUrl || ''))
+      throw new Error('VIX 身份或文件路径无效');
+    const fetched = await fetch(row.historyUrl);
+    if (!fetched.ok) throw new Error('VIX 文件加载失败（' + fetched.status + '）');
+    const text = await fetched.text();
+    if (globalThis.crypto?.subtle) {
+      const hash = [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)))].map(n => n.toString(16).padStart(2, '0')).join('');
+      if (hash !== row.sha256) throw new Error('VIX 文件版本不一致，请刷新页面');
+    }
+    const history = JSON.parse(text);
+    if (history.schemaVersion !== 1 || history.id !== row.id || history.basis !== row.basis || history.field !== 'CLOSE' || history.closedSessionsOnly !== true ||
+        !Array.isArray(history.series) || history.first !== row.first || history.asOf !== row.asOf ||
+        history.series[0]?.[0] !== history.first || history.series.at(-1)?.[0] !== history.asOf)
+      throw new Error('VIX 日线的身份、日期或口径不一致');
+    return { series:history.series, row };
+  }
+  const vixOnce = () => vixLoad || (vixLoad = readVix().catch(e => { vixLoad = null; return { error:e.message || 'VIX 日线读取失败' }; }));
   async function load(market) {
     const slot = {};
     cache.set(market, slot);
     try {
-      const code = markets[market][1];
+      const code = markets[market][1], vix = vixOnce();
       const row = (await R.indexCatalog()).find(r => r.id === 'index:' + code);
       if (row?.kind !== 'index' || row.code !== code || row.currency !== 'USD' || row.basis !== 'price_index')
         throw new Error('缺少 ' + code + ' 的美元价格指数日线');
       const history = await R.history(row);
       if (history.dividends !== 'excluded') throw new Error(code + ' 缺少不含分红的价格指数口径');
-      slot.data = C.compute(history.series);
+      slot.vix = await vix;
+      try { slot.data = C.compute(history.series, slot.vix.series ? { vix:slot.vix.series } : {}); }
+      catch (e) {
+        if (!slot.vix.series) throw e;
+        // A malformed VIX file must not hide the index study; its readings stay unknown and say why.
+        slot.vix = { error:e.message };
+        slot.data = C.compute(history.series);
+      }
     } catch (e) { slot.error = e.message || '无法读取指数日线'; }
     redraw();
   }
@@ -90,23 +144,70 @@
     return '<div class="cs-toolbar">' +
       H.menu('cs-market', '研究指数', Object.entries(markets).map(([k, v]) => [k, v[0]]), st.market) +
       H.menu('cs-gap', '相邻样本至少相隔', C.gaps.map(g => [String(g), g + ' 个交易日 · ' + gapTerms[g]]), String(st.gap)) +
-      '<div class="cs-toolbar-actions"><button type="button" class="btn primary" data-cs-action="fit" aria-pressed="' + !st.manual + '">' +
-      (st.manual ? '按最新收盘匹配' : '✓ 已按最新收盘匹配') + '</button>' +
+      '<div class="cs-toolbar-actions"><span class="cs-fit"><button type="button" class="btn primary" data-cs-action="fit" aria-pressed="' + !st.manual + '">' +
+      (st.manual ? '按最新收盘匹配' : '✓ 已按最新收盘匹配') + '</button>' + fitInfo() + '</span>' +
       (Object.keys(r.conditions).length ? '<button type="button" class="text-link" data-cs-action="clear">清除全部条件</button>' : '') + '</div>' +
       '<p class="cs-match" role="status">匹配 <b>' + r.episodes.length + '</b> 段 · ' + r.matchingDays.toLocaleString('zh-CN') + ' 个交易日满足条件</p></div>';
   }
   function fitNote() {
     const n = Object.keys(result.conditions).length;
     if (st.manual) return n ? '自选 ' + n + ' 项条件' : '未选择条件';
-    const short = fitted.skipped.filter(s => s.episodes != null).length;
+    const short = fitted.steps.filter(step => step.band && !step.kept).map(step => shortLabels[step.id]);
     return '已按 ' + fitted.asOf + ' 收盘选取 ' + fitted.added.length + ' 项，保留至少 ' + fitted.minEpisodes + ' 段历史' +
-      (short ? '；另 ' + short + ' 项加入后不足 ' + fitted.minEpisodes + ' 段，未勾选' : '') + '。';
+      (short.length ? '；' + short.join('、') + ' 加入后不足 ' + fitted.minEpisodes + ' 段，未勾选' : '') + '。';
   }
   function currentStatus() {
     const c = result.current, n = Object.keys(result.conditions).length;
     if (!n) return '';
     return '<p class="cs-now-status' + (c.matches ? ' is-match' : '') + '">' + c.date + ' 收盘' +
       (c.matches ? '满足全部 ' + n + ' 项条件' : '不满足：' + c.failing.map(id => esc(label(C.byId[id]))).join('、')) + '</p>';
+  }
+  // Native popovers: light dismiss and Esc come from the browser; the page only anchors them under their button.
+  function info(id, label, title, body) {
+    return '<button type="button" class="cs-info" popovertarget="cs-info-' + id + '" aria-label="' + esc(label) + '">i</button>' +
+      '<div id="cs-info-' + id + '" class="cs-info-pop" popover><b>' + esc(title) + '</b>' + body.map(p => '<p>' + p + '</p>').join('') + '</div>';
+  }
+  const fitList = () => C.fitOrder.map(id => shortLabels[id]).join('、');
+  function fitInfo() {
+    return info('fit', '按最新收盘匹配如何选条件', '按最新收盘匹配如何选条件', [
+      '依次尝试 ' + C.fitOrder.length + ' 项：' + esc(fitList()) + '。',
+      '每项以最新读数为中心取一段范围；最新读数处于历史最低或最高 10% 时只限一侧。',
+      '加入后仍有至少 ' + C.fitDefaults.minEpisodes + ' 段历史样本才勾选，否则跳过。其余 ' + (C.metrics.length - C.fitOrder.length) +
+        ' 项与这些含义相近或更细，不自动尝试，可手动勾选。']);
+  }
+  function vixGap(m) {
+    if (m.source !== 'vix') return '';
+    if (!data.vix) return '缺 VIX 日线';
+    const days = m.id === 'vix5' ? [data.last, data.last - 5] : [data.last];
+    const gap = days.find(i => i >= 0 && !Number.isFinite(data.values.vix[i]));
+    return gap === undefined ? '' : '缺 ' + data.dates[gap] + ' VIX';
+  }
+  function nowNote(m, v, p) {
+    if (p != null) return '分位 ' + (p < 1 || p > 99 ? p.toFixed(1) : Math.round(p)) + '%';
+    return vixGap(m) || (Number.isFinite(v) ? '缺历史' : '缺当日读数');
+  }
+  function fitLine(m) {
+    const preview = result.previews[m.id], range = result.conditions[m.id];
+    const offer = preview?.kind === 'with' ? '勾选后按最新读数取 ' + esc(rangeText(m, preview.range)) + '，剩 ' + preview.episodes + ' 段。' : '';
+    if (st.manual) return range ? '已勾选 ' + esc(rangeText(m, range)) + '；去掉后 ' + preview.episodes + ' 段。' : offer || '最新读数未知，无法按最新收盘取范围。';
+    const k = C.fitOrder.indexOf(m.id), step = fitted.steps[k];
+    if (k < 0) return '按最新收盘匹配不尝试此项。' + offer;
+    if (!step.band) return '按最新收盘匹配第 ' + (k + 1) + ' 项：最新读数未知，无法取范围。';
+    return '按最新收盘匹配第 ' + (k + 1) + ' 项：取 ' + esc(rangeText(m, step.band)) + '，加入时' +
+      (step.kept ? '仍有 ' + step.episodes + ' 段，已勾选。' : '只剩 ' + step.episodes + ' 段，少于 ' + fitted.minEpisodes + ' 段，未勾选' +
+        // Later conditions may narrow it further, so the count for ticking it now can differ.
+        (preview?.kind === 'with' && preview.episodes !== step.episodes ? '；按现有条件勾选会剩 ' + preview.episodes + ' 段' : '') + '。');
+  }
+  function vixSource(m) {
+    if (m.source !== 'vix') return [];
+    if (!data.vix) return ['缺 VIX 日线：' + esc(cache.get(st.market)?.vix?.error || '未能读取') + '。'];
+    const row = cache.get(st.market).vix.row, gaps = data.vix.missing;
+    return ['数据：Cboe 官方日收盘，' + data.vix.first + ' 至 ' + data.vix.asOf + (gaps.length ? '；缺 ' + gaps.join('、') + ' 的读数，当日按未知处理' : '') + '。' +
+      (row?.refreshMissing ? '最近一次更新失败，保留原读数。' : '')];
+  }
+  function rowInfo(m) {
+    const [what, read] = notes[m.id], first = m.id === 'ddMax' ? what.replace('数据起点', ' ' + data.stats.ddMax.first.slice(0, 4) + ' 年数据起点') : what;
+    return info(m.id, '关于' + label(m), label(m), [esc(first), esc(read), ...vixSource(m), '<span class="cs-info-fit">' + fitLine(m) + '</span>']);
   }
   function strip(m, v, range) {
     const s = data.stats[m.id];
@@ -133,9 +234,9 @@
       '" data-cs-bound="' + side + '" value="' + (range?.[side] ?? '') + '" placeholder="不限" aria-label="' + esc(name + (side === 'lo' ? ' 下限' : ' 上限') + (m.unit ? '（' + m.unit + '）' : '')) + '">';
     const count = !preview ? '' : preview.kind === 'without' ? '去掉后 <b>' + preview.episodes + '</b> 段' : '勾选后 <b>' + preview.episodes + '</b> 段';
     return '<div class="cs-row' + (range ? ' is-active' : '') + '">' +
-      '<label class="cs-name"><input id="cs-' + m.id + '-on" type="checkbox" data-cs-toggle="' + m.id + '"' + (range ? ' checked' : '') +
-      (preview || range ? '' : ' disabled') + '><span>' + esc(name) + (hint(m) ? '<small>' + esc(hint(m)) + '</small>' : '') + '</span></label>' +
-      '<span class="cs-now"><b>' + value(m, v) + '</b><small>' + (p == null ? '缺历史' : '分位 ' + (p < 1 || p > 99 ? p.toFixed(1) : Math.round(p)) + '%') + '</small></span>' +
+      '<div class="cs-name"><label><input id="cs-' + m.id + '-on" type="checkbox" data-cs-toggle="' + m.id + '"' + (range ? ' checked' : '') +
+      (preview || range ? '' : ' disabled') + '><span>' + esc(name) + (hint(m) ? '<small>' + esc(hint(m)) + '</small>' : '') + '</span></label>' + rowInfo(m) + '</div>' +
+      '<span class="cs-now"><b>' + value(m, v) + '</b><small>' + nowNote(m, v, p) + '</small></span>' +
       strip(m, v, range) +
       '<span class="cs-range">' + input('lo') + '<span>至</span>' + input('hi') + '<span class="cs-unit">' + esc(m.unit === '日' ? '日' : m.unit) + '</span></span>' +
       '<span class="cs-count">' + count + '</span></div>';
@@ -316,7 +417,7 @@
   function method() {
     return '<details class="ds-method"><summary>条件、样本与收益口径</summary>' +
       '<p>所有指标都截至信号日收盘，只用当天及以前的收盘价：涨跌与 N 个交易日前的收盘比较；回撤取含当天的 252 个收盘中的最高点；均线含当天；波动率为 21 个日对数收益的样本标准差年化；RSI 为 14 日 Wilder 平滑。范围两端都包含在内，留空表示不限。</p>' +
-      '<p>一段从首个满足全部条件的交易日开始，其后若干交易日内再次满足的日期并入同一段，后续收益从信号日收盘起算。按最新收盘匹配时，依次尝试距 252 日最高收盘、近 21 日、近 5 日、当日涨跌、200 日均线、波动率、近 3 日和近 63 日；每项取最新值附近的范围，最新值处于历史最低或最高的 10% 时改为单侧，加入后不足 10 段的项目不勾选。</p>' +
+      '<p>一段从首个满足全部条件的交易日开始，其后若干交易日内再次满足的日期并入同一段，后续收益从信号日收盘起算。按最新收盘匹配时，依次尝试' + esc(fitList()) + '；每项取最新值附近的范围，最新值处于历史最低或最高的 10% 时改为单侧，加入后不足 10 段的项目不勾选。VIX 为 Cboe 官方日收盘，只按同一日期配对，缺读数的交易日不补值。</p>' +
       '<p>结果描述历史样本，不代表下一次的概率；样本少时，范围稍变就可能明显改变结果。</p>' +
       '<p><a href="https://finance.yahoo.com/quote/' + encodeURIComponent(markets[st.market][1]) + '/history/" target="_blank" rel="noopener noreferrer">指数历史收盘 ↗</a> · ' +
       '<a href="https://github.com/jianxieb/fund-data/blob/main/docs/condition-study-method.md" target="_blank" rel="noopener noreferrer">完整方法与核对记录 ↗</a></p></details>';
@@ -324,7 +425,7 @@
 
   function view(helpers) {
     H = helpers; st = readState();
-    const title = H.head('MARKET CONDITION STUDY', '行情条件后表现', '按近期涨跌、距高点回撤、均线与波动率筛选历史交易日，查看之后一周至一年的涨跌与回撤。');
+    const title = H.head('MARKET CONDITION STUDY', '行情条件后表现', '按近期涨跌、距高点回撤、均线、波动率与 VIX 筛选历史交易日，查看之后一周至一年的涨跌与回撤。');
     if (!cache.has(st.market)) load(st.market);
     const slot = cache.get(st.market);
     if (!slot.data) return title + '<div class="ds-panel ds-loading" role="status">' + (slot.error ? esc(slot.error) + ' <button type="button" class="text-link" data-cs-action="retry">重新加载</button>' :
@@ -401,6 +502,24 @@
       if (model && box.width) showAt(svg, model.x0 + ((event.clientX - box.left) / box.width * model.width - model.left) / (model.right - model.left) * (model.x1 - model.x0));
     } else if (shown && shown !== document.activeElement) hideTip(shown);
   });
+  document.addEventListener('beforetoggle', event => {
+    const pop = event.target;
+    if (event.newState !== 'open' || !pop.classList?.contains('cs-info-pop')) return;
+    const button = document.querySelector('[popovertarget="' + pop.id + '"]');
+    if (!button) return;
+    const box = button.getBoundingClientRect(), width = Math.min(360, innerWidth - 32);
+    pop.style.width = width + 'px';
+    pop.style.left = Math.round(scrollX + Math.max(16, Math.min(box.left, innerWidth - width - 16))) + 'px';
+    pop.style.top = Math.round(scrollY + box.bottom + 6) + 'px';
+  }, true);
+  // Near the bottom edge, open upward instead once the height is known.
+  document.addEventListener('toggle', event => {
+    const pop = event.target;
+    if (event.newState !== 'open' || !pop.classList?.contains('cs-info-pop')) return;
+    const button = document.querySelector('[popovertarget="' + pop.id + '"]'), box = button?.getBoundingClientRect();
+    if (box && box.bottom + 6 + pop.offsetHeight > innerHeight && box.top - 6 - pop.offsetHeight > 0)
+      pop.style.top = Math.round(scrollY + box.top - 6 - pop.offsetHeight) + 'px';
+  }, true);
   document.addEventListener('focusin', event => { if (event.target.matches?.('svg[data-cs-chart]')) showAt(event.target, charts.get(event.target.dataset.csChart)?.focus ?? 0); });
   document.addEventListener('focusout', event => { if (event.target.matches?.('svg[data-cs-chart]')) hideTip(event.target); });
   document.addEventListener('keydown', event => {

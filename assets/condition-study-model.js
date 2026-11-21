@@ -30,6 +30,9 @@
     metric({ id:'ma50', group:'trend', label:'收盘相对 50 日均线', unit:'%', step:1 }),
     metric({ id:'ma200', group:'trend', label:'收盘相对 200 日均线', unit:'%', step:1 }),
     metric({ id:'cross', group:'trend', label:'50 日均线相对 200 日均线', unit:'%', step:1 }),
+    // VIX is Cboe's S&P 500 options index; it is used for both indices and matched by date only.
+    metric({ id:'vix', group:'rhythm', label:'VIX 收盘', hint:'标普500期权隐含波动率', unit:'', step:1, min:0, source:'vix' }),
+    metric({ id:'vix5', group:'rhythm', label:'VIX 近 5 日变化', unit:'%', step:5, source:'vix' }),
     metric({ id:'vol21', group:'rhythm', label:'21 日年化波动率', unit:'%', step:1, min:0 }),
     metric({ id:'rsi14', group:'rhythm', label:'14 日 RSI', unit:'', step:1, min:0, max:100 }),
     metric({ id:'down', group:'rhythm', label:'连续收跌', unit:'日', step:1, min:0, integer:true }),
@@ -37,7 +40,7 @@
   ]);
   const byId = Object.freeze(Object.fromEntries(metrics.map(m => [m.id, m])));
   // Market state first, then the speed of the move, then trend and volatility.
-  const fitOrder = Object.freeze(['dd252', 'r21', 'r5', 'r1', 'ma200', 'vol21', 'r3', 'r63']);
+  const fitOrder = Object.freeze(['dd252', 'r21', 'r5', 'r1', 'ma200', 'vix', 'vol21', 'r3', 'r63']);
   const fitDefaults = Object.freeze({ width:0.75, minEpisodes:10, tail:0.1 });
 
   const round = value => Number(value.toFixed(6));
@@ -89,16 +92,33 @@
       upPct:100 * sorted.filter(v => v > 0).length / n, min:sorted[0], max:sorted[n - 1] };
   }
 
+  const isoDay = date => {
+    const stamp = typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date) ? Date.parse(date + 'T00:00:00Z') : NaN;
+    return Number.isFinite(stamp) && new Date(stamp).toISOString().slice(0, 10) === date ? stamp : NaN;
+  };
+  // Optional VIX closes: [ISO date, positive close] pairs, strictly ascending; days off the index calendar are ignored.
+  function vixByDate(vix) {
+    const out = new Map();
+    let previous = '';
+    for (const row of vix) {
+      const [date, close] = Array.isArray(row) ? row : [];
+      if (!Array.isArray(row) || row.length !== 2 || !Number.isFinite(isoDay(date)) || date <= previous || !Number.isFinite(close) || close <= 0)
+        throw new Error('VIX 日线的日期、顺序或读数有误');
+      out.set(date, close);
+      previous = date;
+    }
+    if (out.size < 2) throw new Error('VIX 日线过短');
+    return out;
+  }
+
   // Input: [ISO trading date, positive price-index close] pairs, strictly ascending.
-  function compute(series) {
+  function compute(series, { vix = null } = {}) {
     if (!Array.isArray(series) || series.length < 2) throw new Error('指数收盘序列过短');
     const n = series.length, last = n - 1, dates = new Array(n), closes = new Float64Array(n), starts = new Int32Array(n);
     let start = 0, previous = NaN;
     for (let i = 0; i < n; i++) {
-      const row = series[i], date = row?.[0], close = row?.[1];
-      const stamp = typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date) ? Date.parse(date + 'T00:00:00Z') : NaN;
-      if (!Array.isArray(row) || row.length !== 2 || !Number.isFinite(stamp) || new Date(stamp).toISOString().slice(0, 10) !== date ||
-          (i && stamp <= previous) || !Number.isFinite(close) || close <= 0)
+      const row = series[i], date = row?.[0], close = row?.[1], stamp = isoDay(date);
+      if (!Array.isArray(row) || row.length !== 2 || !Number.isFinite(stamp) || (i && stamp <= previous) || !Number.isFinite(close) || close <= 0)
         throw new Error('指数收盘序列的日期、顺序或点位有误');
       // A known outage of more than ten calendar days starts a fresh history; windows never bridge it.
       if (i && stamp - previous > 10 * dayMs) start = i;
@@ -181,6 +201,17 @@
       up[i] = closes[i] > closes[i - 1] ? up[i - 1] + 1 : 0;
     }
     Object.assign(values, { down, up });
+    // A VIX reading exists only for a session with its own Cboe close on that date; nothing is carried forward.
+    const vixClose = blank(), vixChange = blank(), vixDates = vix ? vixByDate(vix) : null;
+    if (vixDates) {
+      for (let i = 0; i < n; i++) if (vixDates.has(dates[i])) vixClose[i] = vixDates.get(dates[i]);
+      for (let i = 0; i < n; i++) if (has(i, 5) && Number.isFinite(vixClose[i]) && Number.isFinite(vixClose[i - 5]))
+        vixChange[i] = (vixClose[i] / vixClose[i - 5] - 1) * 100;
+    }
+    Object.assign(values, { vix:vixClose, vix5:vixChange });
+    const vixKeys = vixDates ? [...vixDates.keys()] : [];
+    const vixInfo = vixDates ? { first:vixKeys[0], asOf:vixKeys[vixKeys.length - 1],
+      missing:dates.filter((d, i) => d >= vixKeys[0] && d <= vixKeys[vixKeys.length - 1] && !Number.isFinite(vixClose[i])) } : null;
 
     const stats = {};
     for (const m of metrics) {
@@ -211,7 +242,7 @@
       const pct = outcomes[h].pct.filter(Number.isFinite), drawdown = outcomes[h].drawdown.filter(Number.isFinite);
       return [h, { ...summarize(Array.from(pct)), drawdown:summarize(Array.from(drawdown)) }];
     }));
-    return { dates, closes, starts, values, stats, outcomes, baseline, last, first:dates[0], asOf:dates[last] };
+    return { dates, closes, starts, values, stats, outcomes, baseline, last, first:dates[0], asOf:dates[last], vix:vixInfo };
   }
 
   const inRange = (value, { lo = null, hi = null }) => Number.isFinite(value) &&
@@ -260,15 +291,16 @@
   // enough separate historical samples remain to read a distribution.
   function fit(data, { gap = 21, minEpisodes = fitDefaults.minEpisodes, width = fitDefaults.width } = {}) {
     if (!validGap(gap)) throw new Error('未知的样本间隔');
-    const conditions = {}, added = [], skipped = [];
+    const conditions = {}, added = [], skipped = [], steps = [];
     for (const id of fitOrder) {
       const band = suggest(data, id, { width });
-      if (!band) { skipped.push({ id, episodes:null }); continue; }
-      const trial = { ...conditions, [id]:band }, episodes = count(data, trial, gap);
-      if (episodes >= minEpisodes) { conditions[id] = band; added.push(id); }
+      if (!band) { skipped.push({ id, episodes:null }); steps.push({ id, band:null, episodes:null, kept:false }); continue; }
+      const trial = { ...conditions, [id]:band }, episodes = count(data, trial, gap), kept = episodes >= minEpisodes;
+      if (kept) { conditions[id] = band; added.push(id); }
       else skipped.push({ id, episodes });
+      steps.push({ id, band, episodes, kept });
     }
-    return { conditions, added, skipped, asOf:data.asOf, gap, minEpisodes, episodes:count(data, conditions, gap) };
+    return { conditions, added, skipped, steps, asOf:data.asOf, gap, minEpisodes, episodes:count(data, conditions, gap) };
   }
 
   function outcome(data, i, h) {

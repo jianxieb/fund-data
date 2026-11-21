@@ -24,19 +24,34 @@ function walk(n, seed) {
     return Number(close.toFixed(2));
   });
 }
+// Cboe-style VIX closes on the same sessions, plus one session without a published close.
+const vixFor = (series, skip = 40) => series.filter((_, i) => i !== skip).map(([date], i) => [date, Number((14 + 14 * Math.abs(Math.sin(i / 23)) + (i % 7)).toFixed(2))]);
 const element = tag => ({ tag, className:'', textContent:'', children:[], append(...nodes) { this.children.push(...nodes); } });
 const text = node => node.textContent || node.children.map(text).filter(Boolean).join(' ');
 
-function fixture({ hash = '#condition-study', seed = 2, series = sessions(walk(2600, seed)), badIdentity = false, dividends = 'excluded', fail = false } = {}) {
+function fixture({ hash = '#condition-study', seed = 2, series = sessions(walk(2600, seed)), badIdentity = false, dividends = 'excluded', fail = false,
+  vix = vixFor(series), vixMode = 'ok' } = {}) {
   const assets = ['NDX', 'GSPC'].map(code => ({ id:'index:^' + code, code:'^' + code, kind:'index', currency:'USD', basis:'price_index' }));
   if (badIdentity) assets[0].basis = 'etf_price';
-  const location = { hash }, listeners = {}, downloads = [], modals = [], renders = [], state = { fail };
+  const location = { hash }, listeners = {}, downloads = [], modals = [], renders = [], state = { fail, fetches:[] }, nodes = {};
+  const vixRow = { id:'index:^VIX', code:'^VIX', basis:'implied_volatility_index', status:'available', first:vix[0][0], asOf:vix.at(-1)[0],
+    historyUrl:'data/condition-study/VIX-0123456789abcdef.json', sha256:'0'.repeat(64), ...(vixMode === 'stale' ? { refreshMissing:'source timed out' } : {}) };
+  const vixHistory = { schemaVersion:1, id:vixRow.id, basis:vixRow.basis, field:'CLOSE', closedSessionsOnly:true, first:vixRow.first, asOf:vixRow.asOf,
+    series:vixMode === 'unordered' ? [...vix.slice(0, 5), vix[6], vix[5], ...vix.slice(7)] : vix };
+  async function fetch(url) {
+    state.fetches.push(url);
+    if (vixMode === 'down') return { ok:false, status:503 };
+    if (url.startsWith('data/condition-study/catalog.json')) return { ok:true, json:async () => ({ schemaVersion:1, assets:[vixRow] }) };
+    if (url === vixRow.historyUrl) return { ok:true, text:async () => JSON.stringify(vixHistory) };
+    return { ok:false, status:404 };
+  }
   const context = {
     window:{ Changheng:M, ChanghengConditionStudyModel:C, ChanghengResearchHistory:{
       indexCatalog:async () => assets,
       history:async () => { if (state.fail) throw new Error('缺少日线 <503>'); return { dividends, series }; } } },
-    document:{ addEventListener:(type, listener) => { listeners[type] = listener; }, createElement:element },
-    location, URLSearchParams, setTimeout,
+    document:{ addEventListener:(type, listener) => { listeners[type] = listener; }, createElement:element,
+      querySelector:selector => selector === '#condition-vix-source' ? { dataset:{ src:'data/condition-study/catalog.json?v=test' } } : nodes[selector] || null },
+    location, URLSearchParams, setTimeout, fetch, innerWidth:1600, innerHeight:900, scrollX:0, scrollY:1000,
     history:{ replaceState:(_, __, next) => { location.hash = next; } } };
   vm.createContext(context);
   vm.runInContext(fs.readFileSync(require.resolve('../assets/condition-study.js'), 'utf8'), context);
@@ -64,7 +79,8 @@ function fixture({ hash = '#condition-study', seed = 2, series = sessions(walk(2
     return ui.view(H);
   }
   ui.view(H);
-  return { ui, H, series, data:C.compute(series), location, listeners, downloads, modals, renders, state, click, toggle, enter, settle };
+  const data = C.compute(series, ['ok', 'stale'].includes(vixMode) ? { vix } : {});
+  return { ui, H, series, vix, data, location, listeners, downloads, modals, renders, state, nodes, click, toggle, enter, settle };
 }
 const checked = (html, id) => new RegExp('id="cs-' + id + '-on"[^>]*\\schecked').test(html);
 const inputValue = (html, id, side) => html.match(new RegExp('id="cs-' + id + '-' + side + '"[^>]*value="([^"]*)"'))?.[1];
@@ -75,8 +91,9 @@ test('with no conditions in the address, the page matches the latest close and s
   assert.ok(fit.added.length >= 1 && fit.skipped.length >= 1, 'the fixture must exercise both kept and dropped conditions');
   assert.equal(f.location.hash, '#condition-study');
   assert.match(html, /data-cs-action="fit" aria-pressed="true">✓ 已按最新收盘匹配/);
-  assert.ok(html.includes('已按 ' + f.data.asOf + ' 收盘选取 ' + fit.added.length + ' 项，保留至少 10 段历史；另 ' +
-    fit.skipped.filter(s => s.episodes != null).length + ' 项加入后不足 10 段，未勾选。'));
+  const skipped = fit.steps.filter(s => s.band && !s.kept).map(s => ({ dd252:'距252日高点', r21:'近21日', r5:'近5日', r1:'当日', ma200:'距200日线',
+    vix:'VIX', vol21:'波动率', r3:'近3日', r63:'近63日' })[s.id]);
+  assert.ok(html.includes('已按 ' + f.data.asOf + ' 收盘选取 ' + fit.added.length + ' 项，保留至少 10 段历史；' + skipped.join('、') + ' 加入后不足 10 段，未勾选。'));
   for (const m of C.metrics) assert.equal(checked(html, m.id), fit.added.includes(m.id), m.id);
   for (const id of fit.added) {
     assert.equal(inputValue(html, id, 'lo'), String(fit.conditions[id].lo ?? ''));
@@ -183,7 +200,8 @@ test('when nothing matches, each row shows what removing it would leave and expo
 });
 
 test('CSV holds every episode and the condition source; paging reaches the rest of the table', async () => {
-  const f = fixture({ seed:4 });
+  // Without VIX this walk keeps more than one page of samples; it also shows a VIX outage leaves the study usable.
+  const f = fixture({ seed:4, vixMode:'down' });
   let html = await f.settle();
   const fit = C.fit(f.data, { gap:21 }), r = C.study(f.data, { conditions:fit.conditions, gap:21 });
   assert.ok(r.episodes.length > 15, 'the fixture needs more than one page');
@@ -193,6 +211,7 @@ test('CSV holds every episode and the condition source; paging reaches the rest 
   assert.equal(lines.length, r.episodes.length + 1);
   assert.match(lines[0], /"条件来源"/);
   assert.match(lines[0], /"1年相对信号日最低%"/);
+  assert.match(lines[0], /"VIX 收盘"/);
   assert.ok(lines[1].includes('"按 ' + f.data.asOf + ' 收盘自动选取"'));
   for (const id of fit.added) assert.ok(lines[1].includes(C.byId[id].label), id);
   assert.ok(lines.at(-1).includes('"' + r.episodes.at(-1).date + '"'));
@@ -291,4 +310,89 @@ test('wrong source identity and load failures are explicit, and retry reloads', 
   failed.click('action', 'retry');
   html = await failed.settle();
   assert.match(html, /cs-conditions-title/);
+});
+
+test('VIX loads once for both indices, names its exact gaps, and a VIX outage leaves the index study intact', async () => {
+  const f = fixture();
+  let html = await f.settle();
+  const now = id => html.match(new RegExp('id="cs-' + id + '-on"[\\s\\S]*?<span class="cs-now"><b>([^<]*)</b><small>([^<]*)</small>'))?.slice(1);
+  assert.ok(f.data.vix && f.data.vix.missing.length === 1, 'the fixture has one session without a Cboe close');
+  assert.equal(now('vix')[0], f.vix.at(-1)[1].toFixed(2));
+  assert.match(now('vix')[1], /^分位 /);
+  assert.ok(html.includes('缺 ' + f.data.vix.missing[0] + ' 的读数，当日按未知处理'));
+  f.ui.choose('market', 'spx');
+  await f.settle();
+  assert.equal(f.state.fetches.filter(url => url.startsWith('data/condition-study/catalog.json')).length, 1, 'both indices share one VIX download');
+
+  const lagging = fixture({ vix:vixFor(sessions(walk(2600, 2))).slice(0, -1) });
+  html = await lagging.settle();
+  const asOf = lagging.data.asOf;
+  const lagNow = id => html.match(new RegExp('id="cs-' + id + '-on"[\\s\\S]*?<span class="cs-now"><b>([^<]*)</b><small>([^<]*)</small>'))?.slice(1);
+  assert.deepEqual(lagNow('vix'), ['—', '缺 ' + asOf + ' VIX'], 'a VIX file that stops a day early names the missing date');
+  assert.deepEqual(lagNow('vix5'), ['—', '缺 ' + asOf + ' VIX']);
+  assert.match(html, /id="cs-vix-on"[^>]*disabled/);
+
+  const down = fixture({ vixMode:'down' });
+  html = await down.settle();
+  assert.match(html, /缺 VIX 日线：VIX 目录加载失败（503）/);
+  assert.match(html, /id="cs-vix-on"[^>]*disabled/);
+  assert.match(html, /cs-conditions-title/);
+  assert.ok(!html.includes('ds-loading'), 'the index study still renders');
+
+  const unordered = fixture({ vixMode:'unordered' });
+  assert.match(await unordered.settle(), /缺 VIX 日线：VIX 日线的日期、顺序或读数有误/);
+
+  const stale = fixture({ vixMode:'stale' });
+  assert.match(await stale.settle(), /最近一次更新失败，保留原读数/);
+});
+
+test('each indicator explains itself, and the match explains why it ticked or skipped it', async () => {
+  const f = fixture();
+  const html = await f.settle();
+  const fit = C.fit(f.data, { gap:21 }), r = C.study(f.data, { conditions:fit.conditions, gap:21 });
+  const pop = id => html.match(new RegExp('<div id="cs-info-' + id + '" class="cs-info-pop" popover>(.*?)</div>'))?.[1] || '';
+  for (const m of C.metrics) {
+    assert.match(html, new RegExp('<button type="button" class="cs-info" popovertarget="cs-info-' + m.id + '" aria-label="关于' + m.label + '">i</button>'), m.id);
+    assert.ok(pop(m.id).startsWith('<b>' + m.label + '</b><p>'), m.id);
+  }
+  assert.doesNotMatch(html, /<label[^>]*>(?:(?!<\/label>).)*<button/, 'an info button is never nested inside a label');
+  const rule = pop('fit');
+  assert.ok(rule.includes('依次尝试 ' + C.fitOrder.length + ' 项：距252日高点、近21日、近5日、当日、距200日线、VIX、波动率、近3日、近63日。'));
+  assert.ok(rule.includes('其余 ' + (C.metrics.length - C.fitOrder.length) + ' 项'));
+  const kept = fit.steps.find(s => s.kept), keptAt = C.fitOrder.indexOf(kept.id) + 1;
+  assert.ok(pop(kept.id).includes('按最新收盘匹配第 ' + keptAt + ' 项：') && pop(kept.id).includes('加入时仍有 ' + kept.episodes + ' 段，已勾选。'), kept.id);
+  const skipped = fit.steps.find(s => s.band && !s.kept);
+  assert.ok(pop(skipped.id).includes('加入时只剩 ' + skipped.episodes + ' 段，少于 10 段，未勾选'), skipped.id);
+  const now = r.previews[skipped.id].episodes;
+  if (now !== skipped.episodes) assert.ok(pop(skipped.id).includes('按现有条件勾选会剩 ' + now + ' 段'));
+  assert.ok(pop('rsi14').includes('按最新收盘匹配不尝试此项。勾选后按最新读数取 '), 'a reading outside the automatic list says so');
+  assert.match(pop('ddMax'), /收盘比 2001 年数据起点以来的最高收盘低多少/);
+  assert.match(pop('vix'), /研究纳斯达克100时也用它/);
+  assert.match(pop('vix'), /数据：Cboe 官方日收盘，2001-01-02 至 /);
+
+  f.toggle('rsi14', true);
+  const manual = await f.settle();
+  const after = id => manual.match(new RegExp('<div id="cs-info-' + id + '" class="cs-info-pop" popover>(.*?)</div>'))?.[1] || '';
+  assert.match(after('rsi14'), /已勾选 (?:[≥≤] \d+|\d+ 至 \d+)；去掉后 \d+ 段。/);
+  assert.match(after('up'), /勾选后按最新读数取 |最新读数未知/);
+});
+
+test('an info popover opens under its button, inside the window, and upward near the bottom edge', async () => {
+  const f = fixture();
+  await f.settle();
+  const style = {}, pop = { id:'cs-info-vix', classList:{ contains:name => name === 'cs-info-pop' }, style, offsetHeight:180 };
+  f.nodes['[popovertarget="cs-info-vix"]'] = { getBoundingClientRect:() => ({ left:1500, top:300, bottom:318 }) };
+  f.listeners.beforetoggle({ target:pop, newState:'open' });
+  assert.deepEqual(style, { width:'360px', left:String(1600 - 360 - 16) + 'px', top:String(1000 + 318 + 6) + 'px' });
+  f.listeners.toggle({ target:pop, newState:'open' });
+  assert.equal(style.top, String(1000 + 318 + 6) + 'px', 'enough room below keeps it under the button');
+  f.nodes['[popovertarget="cs-info-vix"]'] = { getBoundingClientRect:() => ({ left:20, top:820, bottom:838 }) };
+  f.listeners.beforetoggle({ target:pop, newState:'open' });
+  f.listeners.toggle({ target:pop, newState:'open' });
+  assert.equal(style.top, String(1000 + 820 - 6 - 180) + 'px');
+  assert.equal(style.left, '20px');
+  const untouched = { ...style };
+  f.listeners.beforetoggle({ target:{ ...pop, classList:{ contains:() => false } }, newState:'open' });
+  f.listeners.beforetoggle({ target:pop, newState:'closed' });
+  assert.deepEqual(style, untouched);
 });
