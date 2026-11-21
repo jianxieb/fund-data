@@ -14,6 +14,7 @@
 | 美股与海外ETF、指数 | Yahoo chart按证券一次请求区间数据；`timestamp`、`indicators.adjclose`及币种、交易所时区元数据；财报另用Yahoo财务字段及SEC companyfacts | `overseas_stocks.py/strategy_backtest.py`；按交易所实际收盘过滤，保留价格、估值、财报各自日期。季度仅有EPS时标明缺收入/净利润，行情仍可更新 |
 | 国内指数 | 中证、国证等原指数来源，身份与序列规范见`indices.py`的`SPECS`及各解析器 | `data/indices.js`、`data/index-history.json`。授权指数缺原始日线时明确保留缺项，不拿另一指数或ETF代替 |
 | 银行与券商换汇参考 | 逐来源的官方页面/接口、参数、字段、单位和失败处理已记录在[money-flow-method.md](money-flow-method.md)的逐源配方 | `scripts/refresh_money_flow_quotes.py`；逐币种保留原价格、原时间、原来源，失败不写新零值 |
+| 行情条件中的 VIX | Cboe 官方 `cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv`（会跳转到 `cdn-api.cboe.com`），无请求参数；`DATE`（MM/DD/YYYY）为交易日，`CLOSE` 为收盘点位，`OPEN/HIGH/LOW` 不使用 | `scripts/build_condition_vix.py` 写入 `data/condition-study/`，文件按内容哈希命名，原始响应存 `.tmp-strategy/condition-study-vix.json`。纽约时间 17:00 前不收当天的行；抓取失败或新文件缺少已保存的日期时，保留上一份读数及原 `fetchedAt`，目录记 `refreshMissing`。页面只按同一日期与指数收盘配对，不补值 |
 | 市场历史与估值位置 | `market_history.py`的`source_specs`定义各行情与估值来源，估值快照和历史成对核验 | `data/market-history.json`包含原来源、哈希、时间及`refreshFailures`；一对证据不同步时保留原一对，不交叉拼接 |
 
 ## 页面与每日任务各做什么

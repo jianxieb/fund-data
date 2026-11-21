@@ -17,6 +17,7 @@ TASKS = {
     'etf_distributions': ('scripts/build_etf_distributions.py', [], ('etf-distributions.js',)),
     'return_indices': ('scripts/build_return_indices.py', [], ()),
     'drop_highs': ('scripts/build_drop_highs.py', ['--refresh'], ()),
+    'condition_vix': ('scripts/build_condition_vix.py', ['--refresh'], ()),
     'financial_events': ('scripts/build_financial_events.py', [], ('financial-events-history.json',)),
     'bank_fx': ('scripts/refresh_money_flow_quotes.py', ['--timeout', '8'], ('money-flow-quotes.js',)),
     'market_history': ('market_history.py', [], ('market-history.json',)),
@@ -33,8 +34,9 @@ def run_task(name, timeout=60):
     # every old referenced file available if this process is interrupted.
     if name == 'return_indices':
         outputs = tuple(p.relative_to(DATA).as_posix() for p in (DATA / 'return-comparison').glob('*.json'))
-    elif name == 'drop_highs':
-        outputs = tuple(p.relative_to(DATA).as_posix() for p in (DATA / 'drop-study').glob('*.json'))
+    elif name in ('drop_highs', 'condition_vix'):
+        folder = 'drop-study' if name == 'drop_highs' else 'condition-study'
+        outputs = tuple(p.relative_to(DATA).as_posix() for p in (DATA / folder).glob('*.json'))
     refresh.PUBLISHED_OUTPUTS[name] = outputs
     step = refresh.execute(name, [sys.executable, str(ROOT / script), *args], timeout, allow_partial=True)
     print(name + ': ' + step['status'] + ' (%.2fs)' % step['seconds'], flush=True)
