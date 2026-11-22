@@ -13,13 +13,15 @@
 html[lang="en"]{--font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"PingFang SC","Microsoft YaHei",sans-serif}
 html[lang="en"] .brand{letter-spacing:.6px}
 /* English labels are longer than the Chinese ones: a wider sidebar keeps the navigation on single lines. */
-html[lang="en"] .sidebar{width:252px}
-html[lang="en"] .app-shell{margin-left:252px}
+html[lang="en"] .sidebar{width:264px}
+html[lang="en"] .app-shell{margin-left:264px}
 html[lang="en"] .sidebar nav>a{letter-spacing:0}
 html[lang="en"] .brand{gap:10px;font-size:22px;letter-spacing:.2px}
 html[lang="en"] .sidebar-bottom p{font-family:var(--font)}
-@media(max-width:1150px){html[lang="en"] .sidebar{width:226px}html[lang="en"] .app-shell{margin-left:226px}}
+@media(max-width:1150px){html[lang="en"] .sidebar{width:244px}html[lang="en"] .app-shell{margin-left:244px}}
 @media(max-width:900px){html[lang="en"] .sidebar{width:204px}html[lang="en"] .app-shell{margin-left:204px}html[lang="en"] .brand{font-size:19px}}
 @media(max-width:650px){html[lang="en"] .sidebar{width:100%}html[lang="en"] .app-shell{margin-left:0}}
+/* English notes are longer than the Chinese ones: a long badge wraps inside its card instead of running off the page. */
+html[lang="en"] .dataset-card header .badge{white-space:normal;max-width:100%;border-radius:10px;line-height:1.5}
 /* The switch stays hidden until the English text covers every page; ?lang=en works meanwhile. Delete this rule to show it. */
 .lang-switch,.lang-switch-top{display:none!important}
