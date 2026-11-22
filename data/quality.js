@@ -1,12 +1,12 @@
 var DATA_QUALITY={
   "schemaVersion": 1,
-  "checkedAt": "2026-11-21T03:15:42+00:00",
-  "asOf": "2026-11-21",
+  "checkedAt": "2026-11-22T02:16:56+00:00",
+  "asOf": "2026-11-22",
   "status": "unverified",
   "summary": {
     "errors": 0,
     "warnings": 4,
-    "unverified": 69
+    "unverified": 71
   },
   "datasets": [
     {
@@ -150,6 +150,18 @@ var DATA_QUALITY={
           "severity": "unverified",
           "message": "SPGI经营复核仅覆盖2026-06-30，最新财报2026-09-30尚待经营复核",
           "affected": "SPGI"
+        },
+        {
+          "code": "overseas_financial_fields_missing",
+          "severity": "unverified",
+          "message": "WMT 2026-10-31财季来源缺营业收入、净利润",
+          "affected": "WMT"
+        },
+        {
+          "code": "overseas_business_review_pending",
+          "severity": "unverified",
+          "message": "WMT经营复核仅覆盖2026-07-31，最新财报2026-10-31尚待经营复核",
+          "affected": "WMT"
         },
         {
           "code": "overseas_business_review_pending",
