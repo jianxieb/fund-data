@@ -21,12 +21,15 @@
   <link rel="stylesheet" href="assets/ma-study.css?v=6ca0fa18069e">
   <link rel="stylesheet" href="assets/financial-events.css?v=79f77cf7122d">
   <link rel="stylesheet" href="assets/potential-stocks.css?v=cd25b7dd2d0a">
+  <link rel="stylesheet" href="assets/i18n.css?v=c8ad2a157e22">
   <meta id="financial-events-source" data-src="data/financial-events.json?v=3ea0accc5fd6">
   <meta id="financial-events-history-source" data-src="data/financial-events-history.json?v=8d8c1c76a26a">
   <meta id="us-midterms-source" data-src="data/us-midterms-history.json?v=9ecacd3d8a70">
   <meta id="us-midterms-congress-source" data-src="data/us-midterms-congress.json?v=e40a018233bd">
   <meta id="return-index-source" data-src="data/return-comparison/catalog.json?v=9b7a18b7c8d4">
   <meta id="market-history-source" data-src="data/market-history.json?v=c7d1e81ef096">
+  <script defer src="assets/i18n.js?v=322234eb91f0"></script>
+  <script defer src="assets/i18n/en-core.js?v=c1549c38c9da"></script>
   <script defer src="data/snapshot.js?v=796bb9ff9b1f"></script>
   <script defer src="data/overseas-stocks.js?v=7810fde97b3a"></script>
   <script defer src="data/stock-reports.js?v=92bcf07197df"></script>
@@ -89,6 +92,10 @@
   <a class="skip" href="#main">跳转到主要内容</a>
   <aside class="sidebar">
     <a class="brand" href="#overview" aria-label="长衡首页"><img src="assets/brand-mark.svg" class="brand-mark" width="42" height="42" alt=""><span>长衡</span></a>
+    <div class="lang-switch lang-switch-top" role="group" aria-label="语言 / Language" translate="no">
+      <button type="button" data-lang-set="zh" lang="zh-CN" aria-pressed="true">中文</button>
+      <button type="button" data-lang-set="en" lang="en" aria-pressed="false">EN</button>
+    </div>
     <nav aria-label="主导航">
       <a href="#overview" data-route="overview" class="nav-home"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="6" height="6" rx="1.2"/><rect x="14.5" y="3.5" width="6" height="6" rx="1.2"/><rect x="3.5" y="14.5" width="6" height="6" rx="1.2"/><rect x="14.5" y="14.5" width="6" height="6" rx="1.2"/></svg><span>研究总览</span></a>
       <span class="nav-divider">研究对象</span>
@@ -113,6 +120,10 @@
     <div class="sidebar-bottom">
       <a href="#quality" data-route="quality"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6ZM15 3v5h4M9 12h7M9 16h5"/></svg><span>数据与方法</span><span id="quality-dot" class="status-dot" aria-hidden="true"></span></a>
       <p>理解市场，检验方案。<br><span>资产 · 风险 · 成本</span></p>
+      <div class="lang-switch" role="group" aria-label="语言 / Language" translate="no">
+        <button type="button" data-lang-set="zh" lang="zh-CN" aria-pressed="true">中文</button>
+        <button type="button" data-lang-set="en" lang="en" aria-pressed="false">EN</button>
+      </div>
     </div>
   </aside>
   <div class="app-shell">
