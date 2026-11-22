@@ -366,9 +366,18 @@
     if (!t.passive && (!finite(t.managerYears) || !finite(limits.minManagerYears) || t.managerYears < limits.minManagerYears)) return false;
     return true;
   }
+  // An export follows the language of the page: header words and statuses are translated, names and numbers stay as they are.
+  const CJK_CELL = /[\u3400-\u9fff]/;
+  const wording = () => { const i18n = typeof window !== 'undefined' ? window.ChanghengI18n : null; return i18n && typeof i18n.text === 'function' ? i18n.text : null; };
   function csv(rows) {
+    const say = wording(), said = new Map();
+    const worded = v => {
+      if (!say || typeof v !== 'string' || !CJK_CELL.test(v)) return v;
+      if (!said.has(v)) said.set(v, say(v));
+      return said.get(v);
+    };
     return '\ufeff' + rows.map(row => row.map(v => {
-      let s = v == null ? '' : String(v);
+      let s = v == null ? '' : String(worded(v));
       if (typeof v === 'string' && (/^[=+\-@\t\r\n]/.test(s) || /^[\s\u0000]*[=+\-@]/.test(s))) s = "'" + s;
       return '"' + s.replace(/"/g, '""') + '"';
     }).join(',')).join('\r\n');

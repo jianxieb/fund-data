@@ -109,7 +109,7 @@
   function savePrefs() { try { localStorage.setItem(VIEW, JSON.stringify({ annual: state.annual, periods: state.periods, columns: [...state.columns] })); } catch (_) {} }
   function download(name, text, type) {
     const url = URL.createObjectURL(new Blob([text], { type: type || 'application/json;charset=utf-8' }));
-    const a = document.createElement('a'); a.href = url; a.download = name;
+    const a = document.createElement('a'); a.href = url; a.download = window.ChanghengI18n ? window.ChanghengI18n.text(name) : name;
     document.body.append(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 30000);
   }

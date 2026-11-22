@@ -139,7 +139,10 @@
         study.annual === false ? '累计' : '年化', study.annual === false ? s.totalReturn : s.annualReturn, risk.available ? '完整收盘路径' : risk.reason,
         risk.maxDrawdown, risk.drawdownPeak, risk.drawdownTrough, risk.minimumReturn, risk.minimumDate, water?.start, water?.end, water?.days, water ? (water.recovered ? '已恢复' : '截至终日未恢复') : risk.available ? '从未低于本金' : '', risk.endingUnderwater?.start, risk.missingDates?.join('、')]);
     }
-    return '\ufeff' + rows.map(row => row.map(value => '"' + String(value ?? '').replace(/"/g, '""') + '"').join(',')).join('\r\n');
+    // Headers and statuses follow the page language; names and numbers stay as they are.
+    const say = typeof window !== 'undefined' && window.ChanghengI18n && typeof window.ChanghengI18n.text === 'function' ? window.ChanghengI18n.text : null;
+    const worded = value => say && typeof value === 'string' && /[\u3400-\u9fff]/.test(value) ? say(value) : value;
+    return '\ufeff' + rows.map(row => row.map(value => '"' + String(worded(value) ?? '').replace(/"/g, '""') + '"').join(',')).join('\r\n');
   }
   return { PERIODS, eligibleAssets, validateHistory, indexAt, monthEnd, quantile, summarize, analyze, windowPath, pathRisk, toCSV };
 });

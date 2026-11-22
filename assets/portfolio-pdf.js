@@ -6,6 +6,11 @@
   const WIDTH = 1120, MARGIN = 48, BAND = 1280, SCALE = 2;
   const C = { ink: '#24362c', green: '#35654a', muted: '#748074', line: '#e0e6dc', pale: '#f3f5ef', gold: '#a18b63', negative: '#b45f4f', lime: '#dbe6a8' };
   const finite = n => typeof n === 'number' && Number.isFinite(n);
+  // The report is drawn on a canvas, so the page's own translation never reaches it: ask the dictionary for each text.
+  const i18n = () => typeof window !== 'undefined' ? window.ChanghengI18n : null;
+  // A cell may stack several facts on separate lines (name, then code; start, then end): each line is looked up on its own.
+  const tr = value => { const api = i18n(); return api && typeof api.text === 'function' && typeof value === 'string' ? value.split('\n').map(line => api.text(line)).join('\n') : value; };
+  const english = () => { const api = i18n(); return !!api && typeof api.lang === 'function' && api.lang() === 'en'; };
   const number = n => finite(n) ? n.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
   const pct = n => finite(n) ? number(n) + '%' : '—';
   const settingPct = n => finite(n) ? n.toLocaleString('zh-CN', { maximumFractionDigits: 12 }) + '%' : '—';
@@ -108,16 +113,23 @@
     // Correlation needs the live run's prices; the copy below cannot recompute it.
     return JSON.parse(JSON.stringify({ result, createdAt, dailyIndicator, correlation: P.holdingCorrelation(result), assets: catalog.assets.filter(a => ids.has(a.id)), fx: catalog.fx }));
   }
+  // Chinese breaks between any two characters; English breaks between words and only splits a word that cannot fit on a line.
   function wrap(ctx, value, width, size = 15, weight = 400) {
     ctx.font = font(size, weight);
-    const lines = [];
-    for (const paragraph of String(value ?? '').split('\n')) {
+    const words = english(), lines = [];
+    for (const paragraph of String(tr(value) ?? '').split('\n')) {
+      const units = words ? paragraph.match(/[\u3000-\u9fff\uff00-\uffef]|[^\s\u3000-\u9fff\uff00-\uffef]+\s*|\s+/g) || [] : Array.from(paragraph);
       let line = '';
-      for (const char of Array.from(paragraph)) {
-        if (line && ctx.measureText(line + char).width > width) { lines.push(line); line = ''; }
-        line += char;
+      for (const unit of units) {
+        if (line && ctx.measureText(words ? (line + unit).trimEnd() : line + unit).width > width) { lines.push(words ? line.trimEnd() : line); line = ''; }
+        if (words && !line && ctx.measureText(unit.trimEnd()).width > width) {
+          for (const char of Array.from(unit)) {
+            if (line && ctx.measureText(line + char).width > width) { lines.push(line); line = ''; }
+            line += char;
+          }
+        } else line += unit;
       }
-      lines.push(line);
+      lines.push(words ? line.trimEnd() : line);
     }
     return lines;
   }
@@ -129,7 +141,7 @@
     let y = 46, sectionNumber = 0;
     const rect = (x, top, w, h, color) => ops.push({ type: 'rect', x, y: top, w, h, color });
     const line = (x, top, w, color = C.line) => ops.push({ type: 'line', x, y: top, w, h: 1, color });
-    const text = (value, x, top, size = 15, color = C.ink, weight = 400, align = 'left') => ops.push({ type: 'text', value: String(value), x, y: top, h: size * 1.6, size, color, weight, align });
+    const text = (value, x, top, size = 15, color = C.ink, weight = 400, align = 'left') => ops.push({ type: 'text', value: String(tr(String(value))), x, y: top, h: size * 1.6, size, color, weight, align });
     function paragraph(value, color = C.muted, size = 15) {
       const lines = wrap(ctx, value, width, size);
       lines.forEach((s, i) => text(s, MARGIN, y + i * (size + 8), size, color));
@@ -224,13 +236,13 @@
       days.forEach((day, i) => text(day, plot.x + (Date.parse(day) - first) / Math.max(1, last - first) * plot.w, plot.y + plot.h + 12, 12, C.muted, 400, i === 0 ? 'left' : i === 2 ? 'right' : 'center'));
       y += plot.h + 66;
     }
-    rect(MARGIN, y, 44, 44, C.lime); text('衡', MARGIN + 22, y + 8, 25, C.ink, 700, 'center');
+    rect(MARGIN, y, 44, 44, C.lime); text(english() ? 'C' : '衡', MARGIN + 22, y + 8, 25, C.ink, 700, 'center');
     text('长衡', MARGIN + 60, y + 6, 28, C.ink, 700); text('PORTFOLIO RESEARCH', WIDTH - MARGIN, y + 16, 12, C.muted, 600, 'right');
     y += 76; text('组合模拟报告', MARGIN, y, 36, C.ink, 700); y += 56;
     text(r.start + ' - ' + r.end, MARGIN, y, 20, C.green, 600); y += 36;
     paragraph([name, cashPayout ? '分红计入账户现金' : '分红自动再投资', cfg.feeBasis === 'net' ? '年费已含' : '扣费前估算',
       taxed ? '按所设税率计税' : '不计税', cfg.tax?.liquidate ? '期末清仓' : '期末保留持仓'].join(' · '));
-    paragraph('导出时间 ' + new Date(report.createdAt).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', hour12: false }) + '（北京时间）', C.muted, 13);
+    paragraph('导出时间 ' + new Date(report.createdAt).toLocaleString(english() ? 'sv-SE' : 'zh-CN', { timeZone: 'Asia/Shanghai', hour12: false }) + '（北京时间）', C.muted, 13);
 
     section('策略与组合');
     const benchmark = assets.get(cfg.benchmarkId);
@@ -406,7 +418,8 @@
     if (taxed) paragraph('盈利税按所选币种的移动平均成本计算；美元模式未模拟人民币申报折算差异。未卖出时按max(0，市值－预计卖出费－剩余成本)×税率预留，不代表浮盈已实际纳税；真正卖出时解除相应预留，不重复扣税。买入费计入成本；仅自动再投的净分红增加成本。分红只计一次。未模拟跨笔亏损抵扣、申报延期、抵免结转或A股差别化持有期补税；ADR、REIT及特殊分配的实际税率需单项设置。');
     paragraph('本金投入与持续投入独立选择。分批按6/12/24个月等分；回撤阶梯先买25%，前收盘从窗口起点峰值跌10%/20%/30%时各买25%，36个月后释放剩余本金。待投入本金计入零息现金，不参加再平衡。');
     paragraph('持续投入以月预算为基数。季投、年投在周期首个共同交易日入金该周期预算，末期仅计窗口内月份；回撤倍数为1/1.5/2/3，顺势不高于均线买0.5份、逆势买2份。入金倍数改变实际本金。200日均线择时作用于整个已释放组合。');
-    paragraph('所选本金方法信号依据：' + signalBasis + '。三种系统调仓的每日状态、计算步骤与源日期单独列示；卖出数量和买入金额提前确定，下一共同收盘执行。状态未用于评估加仓点的优劣。');
+    // The basis is spliced into the first sentence, so each sentence is looked up on its own.
+    paragraph(['所选本金方法信号依据：' + signalBasis + '。', '三种系统调仓的每日状态、计算步骤与源日期单独列示；卖出数量和买入金额提前确定，下一共同收盘执行。', '状态未用于评估加仓点的优劣。'].map(tr).join(english() ? ' ' : ''));
     paragraph('原回撤阶梯、原200日均线及相关持续投入使用按目标权重每日复位的参考组合，只读取前一个共同交易日收盘；参考曲线不包含投资者现金流、交易费和税。均线可用窗口前真实历史，不足200次时按常规投入。');
     paragraph('指定开始日前取最近共同实际交易日。休市沿用价格 ' + r.carriedPrices + '次、汇率 ' + r.carriedFx + '日；价格最多沿用14日、汇率7日。追加与再平衡在共同实际交易日执行。');
     if (r.holdings.some(h => h.leveraged)) paragraph('每日杠杆 ETF 的长期表现取决于价格路径，不能按固定倍数外推长期回报。', C.negative);
@@ -436,7 +449,7 @@
   // A single PDF page contains adjacent RGB JPEG bands. Banding avoids the
   // browser's maximum canvas height without cropping or paginating the report.
   // PDF 1.6 UserUnit preserves very long physical pages within 14,400 user units.
-  function assemble(document, bands, title = '长衡组合模拟报告') {
+  function assemble(document, bands, title = tr('长衡组合模拟报告')) {
     const scale = 720 / document.width, physicalHeight = document.height * scale, userUnit = Math.max(1, Math.ceil(physicalHeight / 14400));
     const unit = scale / userUnit, pageWidth = document.width * unit, pageHeight = document.height * unit;
     const commands = bands.map((b, i) => 'q ' + pdfNumber(pageWidth) + ' 0 0 ' + pdfNumber(b.logicalHeight * unit) + ' 0 ' + pdfNumber((document.height - b.top - b.logicalHeight) * unit) + ' cm /B' + i + ' Do Q\n').join('');
