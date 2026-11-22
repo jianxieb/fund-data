@@ -59,7 +59,8 @@
   const pageSize = 15, maxLines = 80, minBand = 3;
   const esc = M.escapeHtml;
   const cache = new Map(), highCache = new Map(), frames = new Map(), results = new Map(), fits = new Map(), charts = new Map();
-  let H, st, data, ref, result, fitted, shown = null, signature = '', page = 1, vixLoad = null;
+  // `idle`: ticked rows that follow the reference date but have no reading there, so they are not applied.
+  let H, st, data, ref, result, fitted, idle = [], shown = null, signature = '', page = 1, vixLoad = null;
 
   const fixed = (v, digits = 2) => v.toLocaleString('zh-CN', { minimumFractionDigits:digits, maximumFractionDigits:digits });
   const pct = v => v == null ? '—' : (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(2) + '%';
@@ -102,17 +103,19 @@
     const date = M.validDate(q.get('date')) ? q.get('date') : null;
     const picked = (q.get('h') || '').split(',').map(Number).filter(h => C.horizonChoices.includes(h));
     const params = Object.fromEntries(Object.entries(C.params).map(([k, spec]) => [k, C.validParam(k, num(k)) ? num(k) : spec.fallback]));
-    const conditions = {};
+    // A typed range stays as written; `id=ref` takes the range from the reference date's reading and follows that date.
+    const conditions = {}, follow = [];
     for (const m of C.metrics) if (q.has(m.id) && (m.source !== 'obs' || wait)) {
       const text = q.get(m.id);
+      if (text === 'ref' && !m.choice) { follow.push(m.id); continue; }
       const range = m.choice ? (text === 'yes' ? { lo:1, hi:1 } : text === 'no' ? { lo:0, hi:0 } : null) : C.parseRange(text);
       if (range && C.validRange(m.id, range)) conditions[m.id] = range;
     }
     return { market:Object.hasOwn(markets, q.get('market')) ? q.get('market') : defaults.market,
       gap:C.validGap(num('gap')) ? num('gap') : defaults.gap, wait, basis:q.get('basis') === 'high' ? 'high' : 'close',
       era:C.validEra(q.get('era')) ? q.get('era') : defaults.era, date,
-      horizons:picked.length ? C.horizonChoices.filter(h => picked.includes(h)) : [...defaults.horizons], params, conditions,
-      manual:Object.keys(conditions).length > 0 || q.get('mode') === 'manual' };
+      horizons:picked.length ? C.horizonChoices.filter(h => picked.includes(h)) : [...defaults.horizons], params, conditions, follow,
+      manual:Object.keys(conditions).length > 0 || follow.length > 0 || q.get('mode') === 'manual' };
   }
   // Built by hand so the ranges stay readable in the address bar (no %7E for "~").
   function address(next) {
@@ -126,8 +129,10 @@
     if (next.horizons.join() !== defaults.horizons.join()) parts.push('h=' + next.horizons.join(','));
     for (const [k, spec] of Object.entries(C.params)) if (next.params[k] !== spec.fallback) parts.push(k + '=' + next.params[k]);
     if (next.manual) {
-      const ids = C.metrics.filter(m => next.conditions[m.id] && (m.source !== 'obs' || next.wait)).map(m => m.id);
-      for (const id of ids) parts.push(id + '=' + (C.byId[id].choice ? (next.conditions[id].lo === 1 ? 'yes' : 'no') : C.formatRange(next.conditions[id])));
+      const follow = next.follow || [];
+      const ids = C.metrics.filter(m => (next.conditions[m.id] || follow.includes(m.id)) && (m.source !== 'obs' || next.wait)).map(m => m.id);
+      for (const id of ids) parts.push(id + '=' + (follow.includes(id) ? 'ref' :
+        C.byId[id].choice ? (next.conditions[id].lo === 1 ? 'yes' : 'no') : C.formatRange(next.conditions[id])));
       if (!ids.length) parts.push('mode=manual');
     }
     return route + (parts.length ? '?' + parts.join('&') : '');
@@ -266,7 +271,8 @@
   }
   function fitNote() {
     const n = Object.keys(result.conditions).length;
-    if (st.manual) return n ? '自选 ' + n + ' 项条件' : '未选择条件';
+    if (st.manual) return (n ? '自选 ' + n + ' 项条件' : '未选择条件') +
+      (idle.length ? '；' + idle.map(shortLabel).join('、') + ' 参照日无读数，暂不生效' : '');
     const short = fitted.steps.filter(step => step.band && !step.kept).map(step => shortLabel(step.id));
     return '已按 ' + fitted.date + ' 的读数选取 ' + fitted.added.length + ' 项，保留至少 ' + fitted.minEpisodes + ' 段历史' +
       (short.length ? '；' + short.join('、') + ' 加入后不足 ' + fitted.minEpisodes + ' 段，未勾选' : '') + '。改任一数字即转为自选。';
@@ -329,10 +335,12 @@
   }
   function fitLine(m) {
     const preview = result.previews[m.id], range = result.conditions[m.id];
-    const offer = preview?.kind === 'with' ? '勾选后按参照日读数取 ' + esc(rangeText(m, preview.range)) + '，剩 ' + preview.episodes + ' 段。' : '';
+    const offer = preview?.kind === 'with' ? '勾选后按参照日读数取 ' + esc(rangeText(m, preview.range)) + '，匹配 ' + preview.episodes + ' 段。' : '';
     if (st.manual) {
-      if (m.choice) return range ? '已选 ' + rangeText(m, range) + '；改为不限后 ' + preview.without + ' 段。' : '';
-      return range ? '已勾选 ' + esc(rangeText(m, range)) + '；去掉后 ' + preview.episodes + ' 段。' : offer || '参照日读数未知，无法按参照日取范围。';
+      if (m.choice) return range ? '已选 ' + rangeText(m, range) + '；改为不限后匹配 ' + preview.without + ' 段。' : '';
+      if (idle.includes(m.id)) return '已勾选，范围随参照日；参照日读数未知，暂不生效。';
+      return range ? '已勾选 ' + esc(rangeText(m, range)) + (following(m.id) ? '，范围随参照日' : '，手动填写') + '；取消勾选后匹配 ' + preview.episodes + ' 段。' :
+        offer || '参照日读数未知，无法按参照日取范围。';
     }
     const k = C.fitOrder.indexOf(m.id), step = fitted.steps[k];
     if (k < 0) return '按参照日匹配不尝试此项。' + offer;
@@ -393,21 +401,25 @@
       '<div class="cs-name"><span class="cs-name-text">' + esc(label(m)) + '</span>' + rowInfo(m) + '</div>' +
       '<span class="cs-now"><b>' + value(m, v) + '</b><small>' + nowNote(m, v, null) + '</small></span>' +
       '<span class="cs-range cs-choice" role="group" aria-label="' + esc(label(m)) + '">' + option('any', '不限') + option('yes', choices[m.id].yes, p?.yes) +
-      option('no', choices[m.id].no, p?.no) + '</span><span class="cs-count">' + (p?.without != null ? '不限时 <b>' + p.without + '</b> 段' : '') + '</span></div>';
+      option('no', choices[m.id].no, p?.no) + '</span><span class="cs-count">' + (p?.without != null ? '<small>改为不限后</small><b>' + p.without + '</b> 段' : '') + '</span></div>';
   }
   function row(m) {
     if (m.choice) return choiceRow(m);
-    const range = result.conditions[m.id], v = result.reference.values[m.id], p = C.percentile(data, m.id, v);
+    const range = result.conditions[m.id], resting = idle.includes(m.id), on = !!range || resting, v = result.reference.values[m.id], p = C.percentile(data, m.id, v);
     const preview = result.previews[m.id], name = label(m), unit = m.unit;
     const input = side => '<input id="cs-' + m.id + '-' + side + '" type="number" inputmode="decimal" step="any" data-cs-metric="' + m.id +
       '" data-cs-bound="' + side + '" value="' + (range?.[side] ?? '') + '" placeholder="不限" aria-label="' + esc(name + (side === 'lo' ? ' 下限' : ' 上限') + (unit ? '（' + unit + '）' : '')) + '">';
-    const count = !preview ? '' : preview.kind === 'without' ? '去掉后 <b>' + preview.episodes + '</b> 段' : '勾选后 <b>' + preview.episodes + '</b> 段';
-    return '<div class="cs-row' + (range ? ' is-active' : '') + '">' +
-      '<div class="cs-name"><label><input id="cs-' + m.id + '-on" type="checkbox" data-cs-toggle="' + m.id + '" aria-label="' + esc(name) + '"' + (range ? ' checked' : '') +
-      (preview || range ? '' : ' disabled') + '><span>' + nameHtml(m) + (hint(m) ? '<small>' + esc(hint(m)) + '</small>' : '') + '</span></label>' + rowInfo(m) + '</div>' +
+    // What ticking or unticking this row would leave, in the same unit as the match count above.
+    const count = !preview ? '' : '<small>' + (preview.kind === 'without' ? '取消勾选后' : '勾选后') + '</small><b>' + preview.episodes.toLocaleString('zh-CN') + '</b> 段';
+    const mode = !on ? '' : resting ? '<small class="cs-mode">参照日无读数，暂不生效</small>' : following(m.id) ?
+      '<small class="cs-mode" title="范围按参照日读数自动取，换参照日会跟着调整；改动数字后改为手动填写">随参照日</small>' :
+      '<small class="cs-mode" title="手动填写的范围，换参照日也不变；取消勾选再勾选可改回随参照日">手动填写</small>';
+    return '<div class="cs-row' + (range ? ' is-active' : resting ? ' is-idle' : '') + '">' +
+      '<div class="cs-name"><label><input id="cs-' + m.id + '-on" type="checkbox" data-cs-toggle="' + m.id + '" aria-label="' + esc(name) + '"' + (on ? ' checked' : '') +
+      (preview || on ? '' : ' disabled') + '><span>' + nameHtml(m) + (hint(m) ? '<small>' + esc(hint(m)) + '</small>' : '') + '</span></label>' + rowInfo(m) + '</div>' +
       '<span class="cs-now"><b>' + value(m, v) + '</b><small>' + nowNote(m, v, p) + '</small></span>' +
       strip(m, v, range) +
-      '<span class="cs-range">' + input('lo') + '<span>至</span>' + input('hi') + '<span class="cs-unit">' + esc(unit) + '</span></span>' +
+      '<span class="cs-range">' + input('lo') + '<span>至</span>' + input('hi') + '<span class="cs-unit">' + esc(unit) + '</span>' + mode + '</span>' +
       '<span class="cs-count">' + count + '</span></div>';
   }
   function conditionPanel() {
@@ -419,11 +431,11 @@
       (st.manual ? '按参照日匹配' : '✓ 已按参照日匹配') + '</button>' + fitInfo() + '</span>' +
       (n ? '<button type="button" class="text-link" data-cs-action="clear">清除全部条件</button>' : '') + '</div>' +
       '<div class="cs-conditions-status"><p class="cs-match" role="status">匹配 <b>' + result.episodes.length + '</b> 段 · ' +
-      result.matchingDays.toLocaleString('zh-CN') + ' 个交易日满足条件</p>' + referenceStatus() +
+      result.matchingDays.toLocaleString('zh-CN') + ' 个交易日满足条件' + (st.gap > 1 ? '<small>距信号日不足 ' + st.gap + ' 个交易日的满足日并入同一段</small>' : '') + '</p>' + referenceStatus() +
       '<p class="cs-key" aria-hidden="true"><span class="cs-key-now"></span>参照日读数<span class="cs-key-band"></span>条件范围<span class="cs-key-iqr"></span>历史中间 50%</p></div></div>' +
       '<div class="cs-groups">' + C.groups.filter(([g]) => g !== 'obs' || st.wait).map(([g, title]) => '<fieldset class="cs-group cs-group-' + g + '"><legend>' + legend(g, title) +
         '</legend><div class="cs-row cs-row-head" aria-hidden="true"><span>指标</span><span>' + date + (g === 'obs' ? ' 起' : '') + '</span><span>历史分布</span><span>' +
-        (g === 'obs' ? '范围' : '范围（含边界）') + '</span><span>样本</span></div>' + C.metrics.filter(m => m.group === g).map(row).join('') + '</fieldset>').join('') +
+        (g === 'obs' ? '范围' : '范围（含边界）') + '</span><span>改选后匹配</span></div>' + C.metrics.filter(m => m.group === g).map(row).join('') + '</fieldset>').join('') +
       '</div></section>';
   }
 
@@ -671,7 +683,15 @@
     ref = st.date ? C.sessionOn(data, st.date) ?? 0 : data.last;
     if (needHighs && !highSlot.series && !highSlot.error) return title + toolbar() + '<div class="ds-panel ds-loading" role="status">正在读取已收盘交易日的历史最高价…</div>';
     fitted = st.manual ? null : fitFor(frameKey);
-    const conditions = st.manual ? st.conditions : fitted.conditions;
+    idle = [];
+    let conditions = fitted?.conditions;
+    if (st.manual) {
+      conditions = { ...st.conditions };
+      for (const id of st.follow) {
+        const band = C.suggest(data, id, { ref });
+        if (band) conditions[id] = band; else idle.push(id);
+      }
+    }
     const sig = JSON.stringify([frameKey, st.gap, st.era, st.horizons, ref, C.metrics.map(m => conditions[m.id] ? C.formatRange(conditions[m.id]) : '')]);
     if (sig !== signature) { signature = sig; page = 1; }
     if (!results.has(sig)) results.set(sig, C.study(data, { conditions, gap:st.gap, era:st.era, horizons:st.horizons, ref }));
@@ -697,34 +717,43 @@
     const input = document.querySelector('#cs-wait-form input');
     input?.focus(); input?.select();
   }
+  // The selection as the address holds it. An automatic match's ranges came from the reference date, so they keep following it.
+  const picked = () => st.manual ? { conditions:{ ...st.conditions }, follow:[...st.follow] } : { conditions:{}, follow:Object.keys(fitted.conditions) };
+  const following = id => st.manual ? st.follow.includes(id) : Object.hasOwn(fitted.conditions, id);
+  function without(next, id) {
+    delete next.conditions[id];
+    next.follow = next.follow.filter(x => x !== id);
+    return next;
+  }
+  // Ticking takes the range from the reference date's reading; it moves with that date until a number is typed.
   function toggle(id, on) {
-    const conditions = { ...result.conditions };
+    const next = without(picked(), id);
     if (on) {
-      const band = C.suggest(data, id, { ref });
-      if (!band) { H.render(); return; }
-      conditions[id] = band;
-    } else delete conditions[id];
-    write({ ...st, manual:true, conditions });
+      if (!C.suggest(data, id, { ref })) { H.render(); return; }
+      next.follow.push(id);
+    }
+    write({ ...st, manual:true, ...next });
   }
   function edit(input) {
     const id = input.dataset.csMetric, side = input.dataset.csBound, raw = String(input.value).trim();
     if (!C.byId[id] || !['lo', 'hi'].includes(side)) return;
     // Text a number field cannot parse reads as empty; keep it on screen instead of treating it as "no limit".
     if (input.validity?.badInput) { input.reportValidity?.(); return; }
+    // A typed number fixes the whole range as shown, so it no longer follows the reference date.
     const entered = raw === '' ? null : Number(raw), range = { lo:null, hi:null, ...result.conditions[id], [side]:entered };
-    const conditions = { ...result.conditions }, issue = C.rangeIssue(id, range);
-    if (issue === 'empty') delete conditions[id];
-    else if (issue) {
+    const next = without(picked(), id), issue = C.rangeIssue(id, range);
+    if (issue && issue !== 'empty') {
       input.setCustomValidity(issues[issue] || '无法使用这个范围'); input.reportValidity?.();
       return;
-    } else conditions[id] = range;
-    write({ ...st, manual:true, conditions });
+    }
+    if (!issue) next.conditions[id] = range;
+    write({ ...st, manual:true, ...next });
   }
   function editParam(input) {
     const k = input.dataset.csParam, v = Number(String(input.value).trim());
     if (!Object.hasOwn(C.params, k)) return;
     if (input.validity?.badInput || !C.validParam(k, v)) { input.setCustomValidity(paramIssues[k]); input.reportValidity?.(); return; }
-    // Ticked ranges stay as typed and are re-read with the new N; an automatic match stays automatic.
+    // Typed ranges stay and are re-read with the new N; ranges taken from the reference date are taken again.
     write({ ...st, params:{ ...st.params, [k]:v } });
   }
   function editDate(input) {
@@ -732,12 +761,11 @@
     const at = C.sessionOn(data, input.value) ?? 0;
     write({ ...readState(), date:at === data.last ? null : data.dates[at] });
   }
-  function pickChoice(id, picked) {
-    const conditions = { ...result.conditions };
-    if (picked === 'yes') conditions[id] = { lo:1, hi:1 };
-    else if (picked === 'no') conditions[id] = { lo:0, hi:0 };
-    else delete conditions[id];
-    write({ ...st, manual:true, conditions });
+  function pickChoice(id, answer) {
+    const next = without(picked(), id);
+    if (answer === 'yes') next.conditions[id] = { lo:1, hi:1 };
+    else if (answer === 'no') next.conditions[id] = { lo:0, hi:0 };
+    write({ ...st, manual:true, ...next });
   }
   const active = () => H && location.hash.split('?')[0] === route && result;
   document.addEventListener('change', event => {
@@ -774,8 +802,8 @@
     const button = target.closest?.('[data-cs-action]');
     if (!button || button.disabled) return;
     switch (button.dataset.csAction) {
-      case 'fit': write({ ...readState(), manual:false, conditions:{} }); break;
-      case 'clear': write({ ...readState(), manual:true, conditions:{} }); break;
+      case 'fit': write({ ...readState(), manual:false, conditions:{}, follow:[] }); break;
+      case 'clear': write({ ...readState(), manual:true, conditions:{}, follow:[] }); break;
       case 'latest': write({ ...readState(), date:null }); break;
       case 'retry': cache.delete(readState().market); results.clear(); fits.clear(); frames.clear(); H.render(); break;
       case 'retry-high': highCache.delete(readState().market); H.render(); break;

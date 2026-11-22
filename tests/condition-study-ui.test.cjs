@@ -116,6 +116,11 @@ function fixture({ hash = '#condition-study', seed = 2, series = sessions(walk(2
 }
 const checked = (html, id) => new RegExp('id="cs-' + id + '-on"[^>]*\\schecked').test(html);
 const inputValue = (html, id, side) => html.match(new RegExp('id="cs-' + id + '-' + side + '"[^>]*value="([^"]*)"'))?.[1];
+// One condition row, from its opening tag to the next row.
+function rowOf(html, id) {
+  const at = html.indexOf('id="cs-' + id + '-on"'), end = html.indexOf('<div class="cs-row', at);
+  return html.slice(html.lastIndexOf('<div class="cs-row', at), end < 0 ? undefined : end);
+}
 const nameOf = m => ({ rN:'近 10 日涨跌', ddN:'距近 63 日最高收盘', drops:'近 21 日跌超 5% 的天数', peer1:'标普500当日涨跌' })[m.id] || m.label;
 
 test('with no conditions in the address, the page matches the latest close and says what it left out', async () => {
@@ -132,7 +137,10 @@ test('with no conditions in the address, the page matches the latest close and s
   for (const id of fit.added) {
     assert.equal(inputValue(html, id, 'lo'), String(fit.conditions[id].lo ?? ''));
     assert.equal(inputValue(html, id, 'hi'), String(fit.conditions[id].hi ?? ''));
+    assert.ok(rowOf(html, id).includes('>随参照日</small>'), id);
   }
+  assert.ok(html.includes('<span>范围（含边界）</span><span>改选后匹配</span>'));
+  assert.ok(html.includes('个交易日满足条件<small>距信号日不足 21 个交易日的满足日并入同一段</small>'));
   assert.ok(html.includes('匹配 <b>' + r.episodes.length + '</b> 段'));
   assert.ok(html.includes(f.data.asOf + ' 收盘满足全部 ' + fit.added.length + ' 项条件'));
   assert.match(html, /含最新收盘/);
@@ -153,19 +161,28 @@ test('ticking or editing a condition switches to manual and keeps readable range
   const fit = C.fit(f.view, { gap:21 }), extra = C.metrics.find(m => !m.choice && !fit.added.includes(m.id) && C.suggest(f.view, m.id)).id;
   f.toggle(extra, true);
   let html = await f.settle();
-  const manual = { ...fit.conditions, [extra]:C.suggest(f.view, extra) };
-  const expected = C.metrics.filter(m => manual[m.id]).map(m => m.id + '=' + C.formatRange(manual[m.id])).join('&');
-  assert.equal(f.location.hash, '#condition-study?' + expected);
-  assert.match(f.location.hash, /~/);
+  // Ranges taken from the reference date keep following it, so the address names the rows, not their numbers.
+  const ticked = [...fit.added, extra];
+  assert.equal(f.location.hash, '#condition-study?' + C.metrics.filter(m => ticked.includes(m.id)).map(m => m.id + '=ref').join('&'));
   assert.match(html, /data-cs-action="fit" aria-pressed="false">按参照日匹配/);
-  assert.ok(html.includes('自选 ' + Object.keys(manual).length + ' 项条件'));
+  assert.ok(html.includes('自选 ' + ticked.length + ' 项条件'));
   assert.ok(checked(html, extra));
+  const band = C.suggest(f.view, extra);
+  assert.deepEqual([inputValue(html, extra, 'lo'), inputValue(html, extra, 'hi')], [String(band.lo ?? ''), String(band.hi ?? '')]);
+  assert.ok(rowOf(html, extra).includes('>随参照日</small>'));
+  const r = C.study(f.view, { conditions:{ ...fit.conditions, [extra]:band }, gap:21 });
+  assert.ok(html.includes('匹配 <b>' + r.episodes.length + '</b> 段'));
+  assert.ok(rowOf(html, extra).includes('<small>取消勾选后</small><b>' + r.previews[extra].episodes.toLocaleString('zh-CN') + '</b> 段'));
 
+  // Typing a number fixes that row as shown, other bound included; the other rows still follow the date.
   const id = fit.added[0], { lo, hi } = fit.conditions[id];
   const wider = hi === null ? { lo:lo - 1, hi:null } : { lo, hi:hi + 1 };
   let input = await f.enter(id, hi === null ? 'lo' : 'hi', String(hi === null ? wider.lo : wider.hi));
   assert.equal(input.error, '');
   assert.ok(f.location.hash.includes(id + '=' + C.formatRange(wider)));
+  assert.ok(f.location.hash.includes(extra + '=ref'));
+  html = await f.settle();
+  assert.ok(rowOf(html, id).includes('>手动填写</small>'));
 
   const before = f.location.hash;
   input = await f.enter(id, 'lo', '1000');
@@ -231,6 +248,67 @@ test('a chosen reference date re-reads every row and the match, and returns to t
   assert.match(html, /<small>最新收盘<\/small>/);
 });
 
+test('ticked ranges follow the reference date, typed numbers stay, and a row without a reading waits', async () => {
+  const f = fixture();
+  await f.settle();
+  const at = f.data.n - 400, date = f.data.dates[at];
+  const moves = id => C.suggest(f.view, id) && C.suggest(f.view, id, { ref:at }) &&
+    C.formatRange(C.suggest(f.view, id)) !== C.formatRange(C.suggest(f.view, id, { ref:at }));
+  const [a, b] = C.metrics.filter(m => !m.choice && m.id !== 'r1' && moves(m.id)).map(m => m.id);
+  assert.ok(a && b, 'the fixture must move at least two suggested ranges between the dates');
+  f.click('action', 'clear');
+  await f.settle();
+  f.toggle(a, true);
+  await f.settle();
+  f.toggle(b, true);
+  await f.settle();
+  await f.enter('r1', 'hi', '-2');
+  const ids = C.metrics.filter(m => [a, b, 'r1'].includes(m.id)).map(m => m.id);
+  const query = ids.map(id => id + '=' + (id === 'r1' ? '~-2' : 'ref')).join('&');
+  assert.equal(f.location.hash, '#condition-study?' + query);
+
+  let html = await f.setDate(date);
+  assert.equal(f.location.hash, '#condition-study?date=' + date + '&' + query);
+  const conditions = { [a]:C.suggest(f.view, a, { ref:at }), [b]:C.suggest(f.view, b, { ref:at }), r1:{ lo:null, hi:-2 } };
+  for (const id of [a, b]) {
+    assert.deepEqual([inputValue(html, id, 'lo'), inputValue(html, id, 'hi')], [String(conditions[id].lo ?? ''), String(conditions[id].hi ?? '')], id);
+    assert.ok(rowOf(html, id).includes('>随参照日</small>'), id);
+  }
+  assert.equal(inputValue(html, 'r1', 'hi'), '-2');
+  assert.ok(rowOf(html, 'r1').includes('>手动填写</small>'));
+  const r = C.study(f.view, { conditions, gap:21, ref:at });
+  assert.ok(html.includes('匹配 <b>' + r.episodes.length + '</b> 段'));
+  // Ranges taken from the date always hold there, so only the typed one can fail.
+  assert.deepEqual(r.reference.failing.filter(id => id !== 'r1'), []);
+  assert.ok(html.includes(r.reference.matches ? date + ' 收盘满足全部 3 项条件' : date + ' 收盘不满足：当日涨跌'));
+
+  // Typing into a following row fixes it with the range shown, the other bound included.
+  const band = conditions[a], side = band.hi === null ? 'lo' : 'hi', moved = side === 'lo' ? band.lo - 1 : band.hi + 1;
+  await f.enter(a, side, String(moved));
+  assert.ok(f.location.hash.includes(a + '=' + C.formatRange({ ...band, [side]:moved })));
+  html = await f.setDate(f.data.asOf);
+  assert.equal(inputValue(html, a, side), String(moved));
+  assert.ok(rowOf(html, a).includes('>手动填写</small>'));
+  assert.deepEqual([inputValue(html, b, 'lo'), inputValue(html, b, 'hi')].join(), [C.suggest(f.view, b).lo ?? '', C.suggest(f.view, b).hi ?? ''].join());
+
+  // With an observation still running at the latest close, a followed observation reading has nothing to follow yet.
+  const g = fixture({ hash:'#condition-study?obs=2&r1=~-2&rebound=ref' });
+  html = await g.settle();
+  const v = g.frameFor({ wait:2 });
+  assert.equal(C.suggest(v, 'rebound'), null);
+  assert.ok(html.includes('自选 1 项条件；收回比例 参照日无读数，暂不生效'));
+  assert.ok(checked(html, 'rebound') && rowOf(html, 'rebound').includes('参照日无读数，暂不生效'));
+  assert.ok(html.includes('匹配 <b>' + C.study(v, { conditions:{ r1:{ lo:null, hi:-2 } }, gap:21 }).episodes.length + '</b> 段'));
+  // On a day with a finished period and a down signal day, the same row applies.
+  let day = v.last;
+  while (day > 0 && !C.suggest(v, 'rebound', { ref:day })) day--;
+  html = await g.setDate(v.dates[day]);
+  const rebound = C.suggest(v, 'rebound', { ref:day });
+  assert.ok(html.includes('自选 2 项条件'));
+  assert.equal(inputValue(html, 'rebound', 'lo'), String(rebound.lo ?? ''));
+  assert.ok(html.includes('匹配 <b>' + C.study(v, { conditions:{ r1:{ lo:null, hi:-2 }, rebound }, gap:21, ref:day }).episodes.length + '</b> 段'));
+});
+
 test('an observation period adds the recovery rows, moves where results start and shows each period', async () => {
   const f = fixture({ hash:'#condition-study?obs=2&r1=~-2' });
   let html = await f.settle();
@@ -252,7 +330,7 @@ test('an observation period adds the recovery rows, moves where results start an
   const unrecovered = C.study(v, { conditions:{ r1:{ lo:null, hi:-2 }, recov:{ lo:0, hi:0 } }, gap:21 }), e = unrecovered.episodes[0];
   assert.equal(unrecovered.historical, p.no, 'the count on the choice is the sample it leaves');
   assert.ok(html.includes('匹配 <b>' + unrecovered.episodes.length + '</b> 段'));
-  assert.ok(html.includes('不限时 <b>' + C.count(v, { r1:{ lo:null, hi:-2 } }, 21) + '</b> 段'));
+  assert.ok(html.includes('<small>改为不限后</small><b>' + C.count(v, { r1:{ lo:null, hi:-2 } }, 21) + '</b> 段'));
   assert.ok(html.includes('始终未收复<small>观察期 ' + pct(e.observation.move)));
   assert.ok(html.includes('<td>' + e.observation.anchorDate + '</td>'));
   f.click('event', e.date);
@@ -410,8 +488,9 @@ test('when nothing matches, each row shows what removing it would leave and expo
   assert.match(html, /没有同时满足全部条件的交易日/);
   assert.match(html, /data-cs-action="csv" disabled/);
   assert.match(html, /不满足：当日涨跌/);
-  assert.ok(html.includes('去掉后 <b>' + C.count(f.view, { dd252:{ lo:0, hi:null } }, 21) + '</b> 段'));
-  assert.match(html, /勾选后 <b>0<\/b> 段/);
+  assert.ok(html.includes('<small>取消勾选后</small><b>' + C.count(f.view, { dd252:{ lo:0, hi:null } }, 21).toLocaleString('zh-CN') + '</b> 段'));
+  assert.match(html, /<small>勾选后<\/small><b>0<\/b> 段/);
+  assert.ok(rowOf(html, 'r1').includes('>手动填写</small>'), 'ranges from the address are typed ones');
   f.click('action', 'csv');
   assert.equal(f.downloads.length, 0);
 });
@@ -589,7 +668,7 @@ test('each indicator explains itself, and the match explains why it ticked or sk
   f.toggle('rsi14', true);
   const manual = await f.settle();
   const after = id => manual.match(new RegExp('<div id="cs-info-' + id + '" class="cs-info-pop" popover>(.*?)</div>'))?.[1] || '';
-  assert.match(after('rsi14'), /已勾选 (?:[≥≤] \d+|\d+ 至 \d+)；去掉后 \d+ 段。/);
+  assert.match(after('rsi14'), /已勾选 (?:[≥≤] \d+|\d+ 至 \d+)，范围随参照日；取消勾选后匹配 \d+ 段。/);
   assert.match(after('up'), /勾选后按参照日读数取 |参照日读数未知/);
 });
 
