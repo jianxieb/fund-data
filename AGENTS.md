@@ -16,6 +16,7 @@
 - Give each research topic one clear navigation path. Do not repeat calls to action for the same destination on the same page.
 - Keep return period and annualized/cumulative controls consistent across index, fund and stock pages.
 - Prioritize the desktop layout. The primary display is 27 inches at 4K resolution.
+- Chinese is the default language and stays the source text. Any new Chinese interface text (labels, status lines, export headers, PDF text) needs its English entry in `assets/i18n/en-*.js`; read `docs/i18n.md` first. Keep names, codes, numbers and dates out of the dictionary, and do not change a Chinese string only to make it easier to translate.
 
 ## Data integrity
 

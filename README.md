@@ -4,7 +4,7 @@
 
 长衡面向中国个人投资者，把宏观金融、指数与基金、公司研究、历史回测和投资成本连接起来。既研究资产过去如何表现，也检验买入时点、持有年限、投入方式、组合权重及资金路径如何改变结果，为自己的投资判断提供依据。
 
-[打开长衡](https://jianxieb.github.io/fund-data/) · [产品定位与边界](docs/product-decisions.md#current-positioning) · [数据更新与维护](docs/maintenance.md)
+[打开长衡](https://jianxieb.github.io/fund-data/) · [产品定位与边界](docs/product-decisions.md#current-positioning) · [数据更新与维护](docs/maintenance.md) · [English](README.en.md)
 
 ## 从一个投资问题开始
 
