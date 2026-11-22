@@ -127,6 +127,7 @@ test('entries joined by a plus sign translate piece by piece', () => {
   assert.equal(en(I, '收益 50% + 回撤 30% + 收益 20%'), 'Return 50% + Drawdown 30% + Return 20%');
   assert.equal(en(I, '收益 60% + 未知 40%'), null, 'one unknown piece leaves the whole text alone');
   assert.equal(en(I, 'A + B'), null);
+  assert.equal(en(I, '收益 ＋ 回撤'), 'Return + Drawdown', 'a full-width plus joins pieces too');
 });
 
 test('sentences strung together with a space translate one by one', () => {

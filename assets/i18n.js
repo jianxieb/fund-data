@@ -234,9 +234,9 @@
       const base = translate(key.replace(TRAILING_MARK, ''), { lang, depth: (options.depth || 0) + 1, segments });
       if (base != null) result = base + ' ' + TRAILING_MARK.exec(key)[1];
     }
-    // Two or three entries joined by " + " (a combination of strategies, each with its share) translate piece by piece.
-    if (result == null && key.includes(' + ') && (options.depth || 0) < 3) {
-      const pieces = key.split(' + '), done = pieces.map(p => CJK.test(p) ? translate(p, { lang, depth: (options.depth || 0) + 1, segments }) : p);
+    // Entries joined by " + " or " ＋ " (a combination of strategies, each with its share) translate piece by piece.
+    if (result == null && /\s[+＋]\s/.test(key) && (options.depth || 0) < 3) {
+      const pieces = key.split(/\s[+＋]\s/), done = pieces.map(p => CJK.test(p) ? translate(p, { lang, depth: (options.depth || 0) + 1, segments }) : p);
       if (done.every(p => p != null) && done.some((p, at) => p !== pieces[at])) result = done.join(' + ');
     }
     // Sentences a page strings together with a space after the full stop translate one by one, in order.
