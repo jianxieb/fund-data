@@ -109,6 +109,17 @@ test('a year count prints as a calendar year or a span, and a sort arrow stays b
   assert.equal(en(I, '收益↓'), null, 'only an arrow set apart from the label counts');
 });
 
+test('a share after a translated label keeps its number', () => {
+  const { I } = load();
+  I.add('en', { '收益': 'Return', '标普{0}': 'S&P {0}' });
+  assert.equal(en(I, '收益 25%'), 'Return 25%');
+  assert.equal(en(I, '收益 12.5%'), 'Return 12.5%');
+  assert.equal(en(I, '收益 -3%'), 'Return -3%');
+  assert.equal(en(I, '标普500 40%'), 'S&P 500 40%');
+  assert.equal(en(I, '未知 25%'), null, 'a share does not make an unknown label translatable');
+  assert.equal(en(I, '收益25%'), null, 'only a share set apart from the label counts');
+});
+
 test('text() follows the active language for output that never reaches the DOM', () => {
   const { I } = load();
   I.add('en', { '收益': 'Return' });

@@ -160,7 +160,8 @@
   /* ---------- Lookup ---------- */
   const SEPARATORS = { '，': ', ', ',': ', ', '；': '; ', ';': '; ', '：': ': ', ':': ': ', '、': ', ', '。': '. ', '·': ' · ', '・': ' · ', '/': ' / ', '／': ' / ', '|': ' | ', '｜': ' | ', '→': ' → ', '（': ' (', '(': ' (', '）': ')', ')': ')', '—': ' — ' };
   const SEPARATOR = /[，,；;：:、。·・/／|｜→（(）)—]/;
-  const SORT_ARROW = /\s+([↑↓▲▼])$/;
+  // A sort arrow or a share such as 25% after a label is a symbol, not a word.
+  const TRAILING_MARK = /\s+([↑↓▲▼]|[+\-−]?\d[\d,]*(?:\.\d+)?%)$/;
   // Lookup of one normalised string, without a segment fallback. Returns { entry, ctx } or null.
   function match(d, text) {
     const exact = d.exact.get(text);
@@ -228,10 +229,10 @@
     if (d.cache.has(cacheKey)) return d.cache.get(cacheKey);
     const hit = match(d, key);
     let result = hit && !hit.entry.slotted ? fill(hit.entry.parts, hit.ctx) : null;
-    // A sort arrow after a label is a symbol, not a word: translate the label and keep the arrow.
-    if (result == null && SORT_ARROW.test(key)) {
-      const base = translate(key.replace(SORT_ARROW, ''), { lang, depth: (options.depth || 0) + 1, segments });
-      if (base != null) result = base + ' ' + SORT_ARROW.exec(key)[1];
+    // A sort arrow or a share after a label is a symbol, not a word: translate the label and keep the mark.
+    if (result == null && TRAILING_MARK.test(key)) {
+      const base = translate(key.replace(TRAILING_MARK, ''), { lang, depth: (options.depth || 0) + 1, segments });
+      if (base != null) result = base + ' ' + TRAILING_MARK.exec(key)[1];
     }
     if (result == null && segments) result = bySegments(d, key, options.depth || 0);
     if (d.cache.size > CACHE_LIMIT) d.cache.clear();
