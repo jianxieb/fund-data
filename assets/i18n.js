@@ -135,6 +135,7 @@
     date: isoDate,
     long: longDate,
     mon: v => MONTHS[numeric(v) - 1] || String(v),
+    ord: v => { const n = numeric(v), last = n % 100; return String(v) + (last >= 11 && last <= 13 ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' }[n % 10] || 'th')); },
     wan: v => compact(numeric(v) * 1e4),
     yi: v => compact(numeric(v) * 1e8),
     wanyi: v => compact(numeric(v) * 1e12),

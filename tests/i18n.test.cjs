@@ -73,6 +73,8 @@ test('prose date modifiers print month names', () => {
   assert.equal(en(I, '在6月'), 'In June');
   assert.equal(en(I, '早于6月19日'), 'Before 06-19');
   assert.equal(en(I, '取13月5日会议'), 'At the 13-05 meeting', 'an impossible month falls back to the numeric form');
+  I.add('en', { '于{0}日发布': 'Published on the {0:ord}' });
+  assert.deepEqual([1, 2, 3, 4, 11, 12, 13, 21, 22, 23, 24, 101, 111].map(n => en(I, '于' + n + '日发布')), ['Published on the 1st', 'Published on the 2nd', 'Published on the 3rd', 'Published on the 4th', 'Published on the 11th', 'Published on the 12th', 'Published on the 13th', 'Published on the 21st', 'Published on the 22nd', 'Published on the 23rd', 'Published on the 24th', 'Published on the 101st', 'Published on the 111th']);
 });
 
 test('the most specific wildcard wins and slot entries are ignored by plain text lookup', () => {
